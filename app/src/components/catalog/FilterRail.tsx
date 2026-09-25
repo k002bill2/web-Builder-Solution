@@ -1,5 +1,11 @@
 import type { MotionLevel } from "../../domain/reference";
-import { FILTER_GROUPS, MOTION_OPTIONS, type FilterGroupKey } from "../../fixtures/catalogFilters";
+import {
+  FILTER_GROUPS,
+  MOTION_OPTIONS,
+  TRAILING_FILTER_GROUPS,
+  type AnyFilterGroup,
+  type FilterGroupKey,
+} from "../../fixtures/catalogFilters";
 import { Checkbox } from "../ds/Checkbox";
 import { SegmentedControl } from "../ds/SegmentedControl";
 
@@ -10,7 +16,33 @@ const MOTION_SEGMENTS: ReadonlyArray<{ value: MotionValue; label: string }> = [
   ...MOTION_OPTIONS.map((o) => ({ value: o.id, label: o.label })),
 ];
 
-/** 왼쪽 필터 레일 (목업 76~85행). */
+function CheckboxGroup({
+  group,
+  isSelected,
+  onToggle,
+}: {
+  readonly group: AnyFilterGroup;
+  readonly isSelected: (key: FilterGroupKey, id: string) => boolean;
+  readonly onToggle: (key: FilterGroupKey, id: string) => void;
+}) {
+  return (
+    <fieldset>
+      <legend className="ds-label mb-2 text-label-neutral">{group.name}</legend>
+      <div className="flex flex-col gap-2">
+        {group.options.map((option) => (
+          <Checkbox
+            key={option.id}
+            label={option.label}
+            checked={isSelected(group.key, option.id)}
+            onChange={() => onToggle(group.key, option.id)}
+          />
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+/** 왼쪽 필터 레일 (목업 76~85행). 색상·디바이스 그룹은 목업에 없어 모션 강도 다음에 덧붙인다. */
 export function FilterRail({
   isSelected,
   motion,
@@ -38,19 +70,7 @@ export function FilterRail({
         </button>
       </div>
       {FILTER_GROUPS.map((group) => (
-        <fieldset key={group.key}>
-          <legend className="ds-label mb-2 text-label-neutral">{group.name}</legend>
-          <div className="flex flex-col gap-2">
-            {group.options.map((option) => (
-              <Checkbox
-                key={option.id}
-                label={option.label}
-                checked={isSelected(group.key, option.id)}
-                onChange={() => onToggle(group.key, option.id)}
-              />
-            ))}
-          </div>
-        </fieldset>
+        <CheckboxGroup key={group.key} group={group} isSelected={isSelected} onToggle={onToggle} />
       ))}
       <div className="flex flex-col gap-2">
         <span className="ds-label text-label-neutral">모션 강도</span>
@@ -63,6 +83,9 @@ export function FilterRail({
           onChange={(v) => onMotionChange(v === "all" ? undefined : v)}
         />
       </div>
+      {TRAILING_FILTER_GROUPS.map((group) => (
+        <CheckboxGroup key={group.key} group={group} isSelected={isSelected} onToggle={onToggle} />
+      ))}
     </aside>
   );
 }

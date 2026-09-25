@@ -1,7 +1,7 @@
 import type { IndustryId, MotionLevel, ReferenceQuery, SortKey } from "../../domain/reference";
 import {
+  ALL_FILTER_GROUPS,
   CATALOG_TABS,
-  FILTER_GROUPS,
   INDUSTRY_ORDER,
   MOTION_OPTIONS,
   SORT_OPTIONS,
@@ -22,7 +22,7 @@ export const DEFAULT_SORT: SortKey = "score";
 export const DEFAULT_TAB: CatalogTab = "all";
 
 function optionIds(key: FilterGroupKey): readonly string[] {
-  return FILTER_GROUPS.find((g) => g.key === key)?.options.map((o) => o.id) ?? [];
+  return ALL_FILTER_GROUPS.find((g) => g.key === key)?.options.map((o) => o.id) ?? [];
 }
 
 const GROUP_OPTION_IDS: Readonly<Record<FilterGroupKey, readonly string[]>> = Object.freeze({
@@ -31,6 +31,8 @@ const GROUP_OPTION_IDS: Readonly<Record<FilterGroupKey, readonly string[]>> = Ob
   layout: optionIds("layout"),
   purpose: optionIds("purpose"),
   license: optionIds("license"),
+  color: optionIds("color"),
+  device: optionIds("device"),
 });
 
 function pickOne<T extends string>(raw: string | null, allowed: readonly T[]): T | undefined {

@@ -57,6 +57,18 @@ describe("메모리 ReferenceRepository", () => {
     expect(keys(await repo.list({ sort: "latest" }))).toEqual(["F", "A", "D", "B", "C", "E"]);
   });
 
+  it("색상 계열 필터는 대표색(c1) 계열로 거른다 (FR-CAT-01)", async () => {
+    expect(keys(await repo.list({ color: ["warm"] }))).toEqual(["A", "F"]);
+    expect(keys(await repo.list({ color: ["neutral", "green"] }))).toEqual(["B", "D", "E"]);
+    expect(keys(await repo.list({ color: ["cool"], purpose: ["sales"] }))).toEqual([]);
+  });
+
+  it("디바이스 필터는 지원 디바이스 중 하나라도 겹치면 통과한다 (FR-CAT-01)", async () => {
+    expect(keys(await repo.list({ device: ["desktop"] }))).toEqual(["A", "C", "E"]);
+    expect(keys(await repo.list({ device: ["desktop", "mobile"] }))).toEqual(["A", "B", "C", "D", "E", "F"]);
+    expect(keys(await repo.list({ device: ["desktop"], color: ["warm"] }))).toEqual(["A"]);
+  });
+
   it("id로 단건을 조회한다", async () => {
     expect((await repo.get("ref-c"))?.title).toBe("동네 치과 클리닉");
   });

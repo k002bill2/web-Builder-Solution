@@ -6,8 +6,8 @@
 | # | 단계 | 상태 | 커밋 |
 |---|---|---|---|
 | 0 | 읽기(브리프 0절 순서) + `npm ci` | 완료 | — |
-| 1 | 폰트 자체 호스팅 (`fonts.test.ts`) | 완료 | (작업 1 커밋) |
-| 2 | 색상·디바이스 필터 | 대기 | |
+| 1 | 폰트 자체 호스팅 (`fonts.test.ts`) | 완료 | 18a0c52 |
+| 2 | 색상·디바이스 필터 (`colorFamily.test.ts`, 저장소·카탈로그 테스트) | 완료 | (작업 2 커밋) |
 | 3 | 1a-02 레퍼런스 상세 | 대기 | |
 | 4 | 검증 4종 + Codex 리뷰 + REPORT.md | 대기 | |
 
@@ -59,3 +59,50 @@ AssertionError: expected '"Pretendard JP"' to be '"Pretendard"'
   - 콘솔 error·warning·예외 **0건**
   - `body` font-family 첫 항목 `Pretendard`
 - 검증 4종: typecheck 0 · lint 0 · test 63 passed (9 files) · build 0
+
+## 작업 2 — 색상·디바이스 필터 (FR-CAT-01 보완)
+
+### 결정
+1. **색 계열은 저장하지 않고 계산**한다: `domain/colorFamily.ts` — `colorPalette.primary`(목업 c1) → HSL → 계열. 경계값은 `COLOR_FAMILY_RULES` 상수 + 테스트로 고정.
+   | 계열(id) | 라벨 | 규칙 |
+   |---|---|---|
+   | neutral | 무채색 | 채도 < 15% 또는 명도 < 8% 또는 명도 > 95% (먼저 판정) |
+   | warm | 따뜻한 계열 | 색상각 [0°, 70°) ∪ [330°, 360°) |
+   | green | 그린 계열 | [70°, 170°) |
+   | cool | 차가운 계열 | [170°, 330°) |
+   - 픽스처 결과: A 26°·F 34° → 따뜻한, B(채도 0)·E(채도 5%) → 무채색, C 216° → 차가운, **D 167°(#00A884) → 그린**(경계 170° 바로 아래라 경계 양쪽 값을 테스트).
+   - 명도 극단을 무채색으로 둔 이유: `#1a0000` 같은 아주 어두운 색은 HSL 채도가 100%로 나오지만 눈에는 검정이다.
+   - 라벨을 "따뜻한 계열"로 한 이유: 콘셉트 그룹의 "따뜻한" 체크박스와 접근성 이름이 겹치지 않게.
+2. **디바이스**: `DesignReference.devices: DeviceId[]` (`desktop|mobile|responsive`). 픽스처 값은 임시값(주석). 기존 `responsive: true`와 모순되지 않게 6개 모두 `responsive`를 넣고 desktop·mobile로 차이를 둠 — A·C 데스크톱+모바일, B·D·F 모바일, E 데스크톱. `responsive` 불리언과 필드가 겹친다(질문으로 남김).
+3. **레일 배치**: 기존 `FILTER_GROUPS`는 모션 강도 앞에 렌더되므로 `TRAILING_FILTER_GROUPS`(색상·디바이스)를 따로 두고 모션 강도 뒤에 같은 `fieldset + Checkbox` 그룹으로 렌더(`CheckboxGroup`으로 추출, 간격 `gap-5.5` 공유). URL 파싱·직렬화는 `ALL_FILTER_GROUPS` 기준 — 키 `color`, `device`, 그룹 안 OR·쉼표 구분·모르는 값 버림은 기존과 동일.
+4. 칩 색 견본은 넣지 않음(브리프 "가능" 항목). 기존 `Checkbox`가 문자열 라벨만 받아 DS 컴포넌트를 바꿔야 하므로 범위를 넓히지 않았다.
+
+### RED
+```
+ FAIL  src/domain/colorFamily.test.ts
+Error: Failed to resolve import "./colorFamily" from "src/domain/colorFamily.test.ts". Does the file exist?
+ × 색상 계열 필터는 대표색(c1) 계열로 거른다 (FR-CAT-01)
+AssertionError: expected [ 'A', 'B', 'C', 'D', 'E', 'F' ] to deeply equal [ 'A', 'F' ]
+ × 디바이스 필터는 지원 디바이스 중 하나라도 겹치면 통과한다 (FR-CAT-01)
+AssertionError: expected [ 'A', 'B', 'C', 'D', 'E', 'F' ] to deeply equal [ 'A', 'C', 'E' ]
+ × 색상·디바이스 그룹은 레일 맨 아래, 모션 강도 다음에 있다
+AssertionError: expected [ '콘텐츠 목적', '라이선스', '모션 강도' ] to deeply equal [ '모션 강도', '색상', '디바이스' ]
+ × 색상 계열·디바이스를 고르면 카드가 줄고 URL 쿼리에 남는다 (FR-CAT-01)
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "따뜻한 계열"
+ × 새로고침(초기 URL)하면 색상·디바이스 필터를 복원한다
+AssertionError: expected [ <article …(2)>…(2)</article>, …(5) ] to have a length of 2 but got 6
+      Tests  5 failed | 28 passed (33)
+```
+
+### GREEN
+```
+ ✓ colorFamily: 경계값 상수 고정 / hex→HSL / 잘못된 hex 거부 / 픽스처 6개 분류 / 채도 15% 경계 / 명도 8%·95% 경계 / 색상각 70°·170°·330° 경계   (7)
+ ✓ 저장소: 색상 계열 필터 / 디바이스 필터 (그룹 안 OR, 다른 그룹과 AND)
+ ✓ 카탈로그: 레일 순서(모션 강도 → 색상 → 디바이스) / 체크 → 카드 수·URL(color=warm, device=desktop) / 초기 URL 복원 + 초기화
+ ✓ 기존 '알 수 없는 쿼리 값은 무시한다'에 color=pink&device=tv 추가
+      Tests  75 passed (75)
+```
+- 전체 첫 실행에서 `필터 없이 진입하면 6개` 테스트가 5초 타임아웃(6.7초, 콜드 트랜스폼)으로 1회 실패 → 바로 3회 재실행 모두 75 passed(3.4~3.9초). 재현되지 않는 콜드 스타트 지연으로 기록.
+
+### 확인
+- 브라우저(1280, `/catalog?color=warm&device=desktop`): 레일 순서 필터·타깃·콘셉트·레이아웃·콘텐츠 목적·라이선스·모션 강도·**색상·디바이스**, 그룹 간격 동일, 카드 1개(A), 체크 상태 복원. scrollWidth 1265(스크롤바 15).

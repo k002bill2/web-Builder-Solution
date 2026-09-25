@@ -1,3 +1,4 @@
+import { colorFamilyOf } from "../domain/colorFamily";
 import {
   EXPOSED_LICENSE_STATUSES,
   type DesignReference,
@@ -30,7 +31,9 @@ function matches(ref: DesignReference, q: ReferenceQuery): boolean {
     anyOf(q.layout, [ref.layoutType]) &&
     anyOf(q.purpose, ref.purpose) &&
     anyOf(q.license, [ref.licenseStatus]) &&
-    (q.motion === undefined || ref.motionLevel === q.motion)
+    (q.motion === undefined || ref.motionLevel === q.motion) &&
+    anyOf(q.color, [colorFamilyOf(ref.colorPalette.primary)]) &&
+    anyOf(q.device, ref.devices)
   );
 }
 

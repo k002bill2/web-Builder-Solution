@@ -1,5 +1,7 @@
+import type { ColorFamily } from "../domain/colorFamily";
 import type {
   AudienceId,
+  DeviceId,
   ExposedLicenseStatus,
   IndustryId,
   LayoutTypeId,
@@ -67,7 +69,20 @@ export const MOTION_LABELS: Readonly<Record<MotionLevel, string>> = Object.freez
   high: "높음",
 });
 
-export type FilterGroupKey = "audience" | "concept" | "layout" | "purpose" | "license";
+export const COLOR_FAMILY_LABELS: Readonly<Record<ColorFamily, string>> = Object.freeze({
+  neutral: "무채색",
+  warm: "따뜻한 계열",
+  green: "그린 계열",
+  cool: "차가운 계열",
+});
+
+export const DEVICE_LABELS: Readonly<Record<DeviceId, string>> = Object.freeze({
+  desktop: "데스크톱",
+  mobile: "모바일",
+  responsive: "반응형",
+});
+
+export type FilterGroupKey = "audience" | "concept" | "layout" | "purpose" | "license" | "color" | "device";
 
 interface FilterGroup<K extends FilterGroupKey, T extends string> {
   readonly key: K;
@@ -80,7 +95,12 @@ export type AnyFilterGroup =
   | FilterGroup<"concept", VisualTagId>
   | FilterGroup<"layout", LayoutTypeId>
   | FilterGroup<"purpose", PurposeId>
-  | FilterGroup<"license", ExposedLicenseStatus>;
+  | FilterGroup<"license", ExposedLicenseStatus>
+  | FilterGroup<"color", ColorFamily>
+  | FilterGroup<"device", DeviceId>;
+
+const optionsOf = <T extends string>(labels: Readonly<Record<T, string>>): Option<T>[] =>
+  (Object.keys(labels) as T[]).map((id) => ({ id, label: labels[id] }));
 
 export const FILTER_GROUPS: readonly AnyFilterGroup[] = Object.freeze([
   {
@@ -128,6 +148,14 @@ export const FILTER_GROUPS: readonly AnyFilterGroup[] = Object.freeze([
     ],
   },
 ]);
+
+/** 목업 레일에 없는 FR-CAT-01 필터 — 레일 맨 아래, 모션 강도 다음에 같은 체크박스 그룹으로 둔다 (M1-UI-02 작업 2). */
+export const TRAILING_FILTER_GROUPS: readonly AnyFilterGroup[] = Object.freeze([
+  { key: "color", name: "색상", options: optionsOf(COLOR_FAMILY_LABELS) },
+  { key: "device", name: "디바이스", options: optionsOf(DEVICE_LABELS) },
+]);
+
+export const ALL_FILTER_GROUPS: readonly AnyFilterGroup[] = Object.freeze([...FILTER_GROUPS, ...TRAILING_FILTER_GROUPS]);
 
 export const MOTION_OPTIONS: readonly Option<MotionLevel>[] = Object.freeze([
   { id: "low", label: "낮음" },

@@ -124,6 +124,32 @@ describe("ReferenceDetailPage (1a-02, FR-CAT-03)", () => {
     expect(within(screen.getByRole("region", { name: "점수" })).getByText(String(referenceFixtures[5]!.scores.accessibility))).toBeInTheDocument();
   });
 
+  it("유사 레퍼런스의 응답이 늦어도 이전 레퍼런스 내용 대신 로딩 상태를 보인다 (경쟁 상태)", async () => {
+    const memory = createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures);
+    // ref-f 응답만 테스트가 풀어 줄 때까지 붙잡는다
+    let release = () => {};
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const held = <T,>(id: string, read: () => Promise<T>) => (id === "ref-f" ? gate.then(read) : read());
+    renderApp("/references/ref-a", {
+      list: (query) => memory.list(query),
+      getById: (id) => held(id, () => memory.getById(id)),
+      getDetail: (id) => held(id, () => memory.getDetail(id)),
+      getSimilar: (id) => held(id, () => memory.getSimilar(id)),
+    });
+    await heading("모던 카페 브랜드");
+    const similar = screen.getByRole("region", { name: "유사 레퍼런스" });
+    await userEvent.click(within(similar).getAllByRole("link", { name: "로컬 베이커리" })[0]!);
+
+    expect(await screen.findByRole("status")).toHaveTextContent("불러오는 중");
+    expect(screen.queryByRole("heading", { level: 1, name: "모던 카페 브랜드" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "점수" })).not.toBeInTheDocument();
+
+    release();
+    expect(await heading("로컬 베이커리")).toBeInTheDocument();
+  });
+
   it("템플릿으로 가져오기는 다음 단계 안내만 한다", async () => {
     const { router } = renderApp("/references/ref-a");
     await heading("모던 카페 브랜드");

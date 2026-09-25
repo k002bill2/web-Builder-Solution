@@ -8,8 +8,8 @@
 | 0 | 읽기(브리프 0절 순서) + 번들 실측 | 완료 | — |
 | A | D04·D05·D06 시각 결함 | 완료 | 317b192 |
 | B | D07·D08·A01·A02·A03 키보드 접근성 | 완료 | 7a46d4b |
-| C | 초기 JS ≤ 90KB gzip | 완료 | (그룹 C 커밋) |
-| D | 라우트 스크롤·경쟁 상태 테스트 | 대기 | |
+| C | 초기 JS ≤ 90KB gzip | 완료 | 1ffd4e8 |
+| D | 라우트 스크롤·경쟁 상태 테스트 | 완료 | (그룹 D 커밋) |
 | E | 검증 4종·브라우저·Codex·보고서 | 대기 | |
 
 ## 0단계 — 읽기와 사전 실측
@@ -157,4 +157,43 @@ lint exit=0
  Test Files  15 passed (15)
       Tests  105 passed (105)
 build exit=0 (예산 검사 포함)
+```
+
+## 그룹 D — 라우트 스크롤·경쟁 상태 테스트
+
+### 구현
+- `app/useRouteScroll.ts` (AppLayout에서 호출). 선언형 라우터라 `ScrollRestoration`을 못 써서 직접 구현:
+  - 경로가 바뀌는 PUSH/REPLACE(상세 진입·유사 레퍼런스 이동) → `scrollTo(0, 0)`
+  - 쿼리만 바뀌는 이동(카탈로그 필터·탭, 상세 탭) → 그대로
+  - POP(뒤로·앞으로) → `location.key`별로 기록한 위치 복원. 화면이 lazy 청크·데이터로 늦게 커지므로 목표에 닿을 때까지 rAF로 최대 60프레임(약 1초) 재시도
+  - 위치는 scroll 이벤트마다 현재 history 항목에 기록(이동 순간에는 화면이 줄어 값이 잘려 있을 수 있어서), `history.scrollRestoration = "manual"`
+  - 같은 history 항목(첫 화면·StrictMode 재실행)이면 아무것도 하지 않는다
+  - 한계: 위치 기록은 메모리라 새로고침 후 뒤로 가기는 복원하지 않는다. 복원 중(최대 1초) 사용자가 스크롤하면 목표 위치로 당겨질 수 있다.
+- 상세 로딩 상태가 빈 `div`에서 `LoadingState`로 바뀌었다(그룹 C). m1-ui-02 REPORT 13번의 "빈 main 때문에 우연히 맨 위" 부수 효과 대신 명시적 `scrollTo`가 맡는다.
+
+### RED
+스크롤 (`src/app/routeScroll.test.tsx`, jsdom `scrollTo`/`scrollY` 대역):
+```
+     × 카탈로그를 내린 뒤 상세로 들어가면 맨 위에서 시작한다   expected 2500 to be +0
+     × 상세에서 유사 레퍼런스로 옮겨 가도 맨 위에서 시작한다   expected 900 to be +0
+     × 상세에서 뒤로 가면 카탈로그의 이전 위치로 돌아간다      expected 300 to be 1200
+      Tests  3 failed | 15 passed (18)
+```
+- "필터를 바꾸면 위치 유지"는 구현 전에도 통과(회귀 방지용). 구현 중 첫 화면(초기 POP)에서 `scrollTo(0,0)`을 부르는 실수를 이 테스트가 잡았다.
+
+경쟁 상태 (`ReferenceDetailPage.test.tsx` "유사 레퍼런스의 응답이 늦어도 …"): ref-f의 저장소 응답을 테스트가 풀어 줄 때까지 붙잡고, 그 사이 이전 레퍼런스 제목·점수가 없고 "불러오는 중"이 보이는지 본다. `useReferenceDetail`의 `loaded.id !== id` 검사를 지우면:
+```
+     × 유사 레퍼런스의 응답이 늦어도 이전 레퍼런스 내용 대신 로딩 상태를 보인다 (경쟁 상태)
+       expect(element).toHaveTextContent()   ← 이전 상세의 status 영역이 잡힘 = 이전 내용이 남아 있음
+      Tests  1 failed | 13 passed (14)
+```
+원복 → `Tests  14 passed (14)`. m1-ui-02 REPORT의 테스트 한계("검사를 지워도 통과")를 해소.
+
+### GREEN · 그룹 D 게이트
+```
+typecheck exit=0
+lint exit=0
+ Test Files  16 passed (16)
+      Tests  110 passed (110)
+build exit=0 — [bundle] 초기 JS (gzip): 86.90KB / 예산 90KB (Vite 표기 87.79 kB)
 ```

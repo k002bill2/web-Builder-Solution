@@ -33,7 +33,8 @@ describe("ReferenceCard", () => {
     expect(q.getByText("카페·F&B · 풀블리드 히어로")).toBeInTheDocument();
     expect(q.getByText("미니멀")).toBeInTheDocument();
     expect(q.getByText("따뜻한")).toBeInTheDocument();
-    expect(q.getByRole("img", { name: "대표 색상 #8B5E3C · #F3E9DD · #2C2C2C" })).toBeInTheDocument();
+    const { primary, surface, ink } = cafe.colorPalette;
+    expect(q.getByRole("img", { name: `대표 색상 ${primary} · ${surface} · ${ink}` })).toBeInTheDocument();
     expect(q.getByText(/접근성/)).toHaveTextContent("접근성 96 · 성능 92 · 모션 낮음");
     expect(q.getByText("internal")).toBeInTheDocument();
     expect(q.getByText("점수 측정 2026.09.20 · 반응형 지원")).toBeInTheDocument();

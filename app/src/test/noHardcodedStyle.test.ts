@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const SRC = fileURLToPath(new URL("../", import.meta.url));
-/** 검사 대상: 화면·컴포넌트 코드. fixtures(데이터)와 테스트 파일은 제외. */
+/** 검사 대상: 화면·컴포넌트 디렉터리 전체(테스트 포함). fixtures(데이터)는 대상 밖. */
 const SCANNED_DIRS = ["components", "pages"].map((d) => join(SRC, d));
 
 const RULES: ReadonlyArray<{ name: string; pattern: RegExp }> = [
@@ -22,9 +22,7 @@ function listFiles(dir: string): string[] {
   });
 }
 
-const scanned = SCANNED_DIRS.flatMap(listFiles).filter(
-  (f) => /\.(ts|tsx|css)$/.test(f) && !/\.test\.(ts|tsx)$/.test(f),
-);
+const scanned = SCANNED_DIRS.flatMap(listFiles).filter((f) => /\.(ts|tsx|css)$/.test(f));
 
 describe("스타일 하드코딩 금지", () => {
   it("검사할 화면·컴포넌트 파일이 있다", () => {

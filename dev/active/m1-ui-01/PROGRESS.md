@@ -233,6 +233,22 @@ No actionable correctness, security, performance, or maintainability defects wer
 ```
 - `git diff --stat main -- design/` → 비어 있음 (design/ 무수정). 원격 없음, push 없음.
 
+### 마무리 — 가드 테스트의 grep 수용 기준 정합
+- 문제: 독립 grep(`grep -rniE 'apfs|농업정책' src`, `grep -rniE '#[0-9a-f]{3,6}' src/components src/pages`)이 가드 테스트 파일 자신과 카드 테스트의 hex 리터럴에 걸렸다(테스트는 자기 제외·테스트 파일 제외로 통과하고 있었음).
+- 수정: 금지어는 조각을 이어 만들고 자기 제외를 없앰. 하드코딩 검사는 테스트 파일도 포함, 카드 테스트의 기대값은 픽스처 팔레트로 조립. 브랜드 토큰 **참조** 검사만 제품 코드 대상(테스트 제외)으로 한정.
+- 가드가 여전히 잡는지 확인: `src/components/__planted.ts`에 `"APFS"`·`"#fff"`·`"bg-brand-primary"`를 심으면 각각 RED → 삭제 후 GREEN.
+- 결과: 두 grep 0줄. 검증 4종 fresh:
+```
+typecheck exit=0
+lint exit=0
+ Test Files  8 passed (8)
+      Tests  58 passed (58)
+test exit=0
+✓ built in 199ms
+build exit=0
+```
+- 참고: 4단계 카드 테스트의 RED는 "모듈 없음"뿐이었다. 목업을 그대로 옮긴 초안 카드가 카드 테스트 6개를 통과했고, 그 단계의 의미 있는 RED는 하드코딩 가드가 냈다.
+
 ## 목업과 다른 부분
 1. **Logo → BrandMark**: APFS 그라디언트 워드마크 대신 중립 단색 사각 마크(`bg-label-normal`) + `brand.name` 텍스트 (ADR-002).
 2. **`--brand-inverse*` → `--surface-inverse*`** 개명 (설계 결정 2).
@@ -247,6 +263,11 @@ No actionable correctness, security, performance, or maintainability defects wer
 11. **비교 트레이 초기값**: 목업은 A·B·C가 담긴 상태, 구현은 빈 트레이에서 시작(사용자 상태). 빈 상태 안내 문구 추가, 7번째 추가 시 트레이 안에 `role=status` 안내.
 12. **정렬 Select 높이**: 목업 hint 32px, 번들 sm 규격(40px)을 따랐다. 업종 칩도 번들 md(36px).
 13. **390 폭 대응**: GNB 메뉴는 md 미만에서 숨김, 필터 레일은 lg 미만에서 그리드 위로 쌓임, 카드 1열(sm 2열·xl 3열), 트레이 칩 목록은 md 미만에서 숨기고 개수·버튼만 표시.
+14. **카드 순서**: 기본 정렬이 목업 Select 기본값(점수순)이라 C·E·A·F·B·D 순. 목업 그림은 A~F 순서.
+15. **GNB 링크 대상(해석)**: 보관함 → `/catalog?tab=saved`, 프로젝트·새 프로젝트 → `/profile`, 카드 이름 → `/references/:id`.
+16. **트레이 위치**: 하단에서 20px 띄운 sticky(`bottom-5`). 목업은 `bottom:0` + 하단 margin 20px.
+17. **DS 컴포넌트는 1a-01이 쓰는 변형만 구현**: Tag는 tint 6톤(neutral·blue·green·red·orange·violet), Chip은 md만(닫기 버튼 없음), Button은 loading·iconOnly 없음, Avatar는 sm·md(이미지·인증 배지 없음), TextField·Select는 에러·disabled·라벨 표시 없음, Checkbox는 disabled·round 없음. 아이콘은 7종만 복사.
+18. **브랜드 교체 시 실제 수정 범위**: `brand.config.ts`·`brand.css`에 더해, 로고를 바꾸면 `BrandMark.tsx`(또는 새 로고 컴포넌트), 탭 제목은 `index.html`의 `<title>`도 바뀐다. ADR-002의 "두 파일만"보다 넓다.
 
 ## 질문
 1. **타깃·콘텐츠 목적·등록일 데이터가 목업에 없음.** 목업 refs에는 audience·purpose·createdAt이 없어 필터·최신순이 동작하려면 값이 필요하다. `fixtures/references.ts`에 **임시값**을 넣었다(A 20~30대/예약, B 20~30대/예약, C 가족/예약·문의, D 20~30대/예약, E B2B/문의, F 가족·20~30대/판매, createdAt 2026-08-30~09-19). 실제 값 확정 필요.
@@ -254,4 +275,5 @@ No actionable correctness, security, performance, or maintainability defects wer
 3. **폰트 원격 로드.** 복사한 `fonts.css`는 jsDelivr CDN에서 Pretendard를 받는다(ADR-001 "확인 필요"에 기록된 현 상태 유지). 브리프 5절 "외부 사이트 URL 금지"를 레퍼런스 사이트 한정으로 해석했다. 자체 호스팅(npm `pretendard`)으로 바꿀지 결정 필요.
 4. **검색·추천.** 검색 입력은 표시만 하고, '추천' 탭과 '추천 받기'는 다음 단계 안내만 한다. 이번 범위에 넣어야 하면 알려 달라.
 5. **FR-CAT-01의 색상·디바이스 필터.** PRD는 컬러·디바이스 필터도 요구하지만 목업 1a-01 레일에는 없다. 이번엔 목업 기준으로 구현했다(Codex P1 보류). 다음 handoff에 넣을지 결정 필요.
+6. **TRD 4.1과 타입 매핑.** TS 필드는 camelCase(`licenseStatus` ↔ `license_status` 등). TRD의 `layout_tags[]`는 1a가 히어로 레이아웃 하나만 쓰므로 단일 `layoutType`으로 두었다. 점수는 TRD 4.2 BenchmarkScore에서 `scores{accessibility, performance, measuredAt}`로 내장했다. 목업 표기용 `key`(A~F)와 정렬용 `createdAt`을 추가했다. 백엔드 계약 시 확정 필요.
 

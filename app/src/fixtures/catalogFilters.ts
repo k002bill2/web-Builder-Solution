@@ -63,6 +63,12 @@ export const VISUAL_TAG_LABELS: Readonly<Record<VisualTagId, string>> = Object.f
   handmade: "수제",
 });
 
+export const PURPOSE_LABELS: Readonly<Record<PurposeId, string>> = Object.freeze({
+  booking: "예약",
+  inquiry: "문의",
+  sales: "판매",
+});
+
 export const MOTION_LABELS: Readonly<Record<MotionLevel, string>> = Object.freeze({
   low: "낮음",
   mid: "중간",

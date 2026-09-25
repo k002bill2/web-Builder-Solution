@@ -7,7 +7,15 @@ const ICON_URLS = import.meta.glob<string>("../../assets/icons/*.svg", {
   import: "default",
 });
 
-export type IconName = "plus" | "search" | "sparkle" | "bookmark" | "bookmark-fill" | "close" | "arrow-right";
+export type IconName =
+  | "plus"
+  | "search"
+  | "sparkle"
+  | "bookmark"
+  | "bookmark-fill"
+  | "close"
+  | "arrow-right"
+  | "chevron-left";
 export type IconSize = 14 | 16 | 18 | 20 | 22 | 24;
 
 const SIZE_CLASS: Record<IconSize, string> = {

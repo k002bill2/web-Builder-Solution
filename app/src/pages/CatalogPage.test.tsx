@@ -158,7 +158,6 @@ describe("라우팅", () => {
   });
 
   it.each([
-    ["/references/ref-a", "레퍼런스 상세"],
     ["/compare", "비교 보드"],
     ["/profile", "디자인 프로필 · 3안 생성"],
     ["/studio", "편집기"],

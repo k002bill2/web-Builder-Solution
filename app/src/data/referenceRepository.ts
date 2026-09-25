@@ -6,11 +6,16 @@ import {
   type ReferenceQuery,
   type SortKey,
 } from "../domain/reference";
+import { SIMILAR_KINDS, SIMILAR_LIMIT, type ReferenceDetail, type SimilarGroup } from "../domain/referenceDetail";
 
 /** 화면이 의존하는 유일한 데이터 경계. 백엔드 연결 시 이 인터페이스를 유지한다 (ADR-001). */
 export interface ReferenceRepository {
   list(query?: ReferenceQuery): Promise<readonly DesignReference[]>;
-  get(id: string): Promise<DesignReference | undefined>;
+  getById(id: string): Promise<DesignReference | undefined>;
+  /** 상세 화면 데이터 (FR-CAT-03). 비노출·없는 id는 undefined. */
+  getDetail(id: string): Promise<ReferenceDetail | undefined>;
+  /** 유사 업종·콘셉트·레이아웃 3그룹. 그룹마다 자기 자신·비노출 제외, 최대 6개 (T-API-CAT-04). */
+  getSimilar(id: string): Promise<readonly SimilarGroup[]>;
 }
 
 /** FR-CAT-04: internal·licensed 만 노출한다. 다른 모든 필터보다 먼저 적용된다. */
@@ -44,15 +49,35 @@ const COMPARATORS: Record<SortKey, (a: DesignReference, b: DesignReference) => n
   latest: (a, b) => b.createdAt.localeCompare(a.createdAt),
 };
 
-export function createMemoryReferenceRepository(records: readonly DesignReference[]): ReferenceRepository {
+export function createMemoryReferenceRepository(
+  records: readonly DesignReference[],
+  details: Readonly<Record<string, ReferenceDetail>> = {},
+): ReferenceRepository {
   const exposed = records.filter(isExposed);
+  const byId = new Map(exposed.map((ref) => [ref.id, ref]));
+  const detailOf = (id: string) => (byId.has(id) ? details[id] : undefined);
+
+  /** 큐레이션 id 목록 → 자기 자신·중복·비노출·없는 id 제거 후 상한까지. */
+  const resolveSimilar = (selfId: string, ids: readonly string[]) =>
+    [...new Set(ids)]
+      .filter((id) => id !== selfId)
+      .flatMap((id) => byId.get(id) ?? [])
+      .slice(0, SIMILAR_LIMIT);
+
   return {
     async list(query = {}) {
       const found = exposed.filter((ref) => matches(ref, query));
       return query.sort ? [...found].sort(COMPARATORS[query.sort]) : found;
     },
-    async get(id) {
-      return exposed.find((ref) => ref.id === id);
+    async getById(id) {
+      return byId.get(id);
+    },
+    async getDetail(id) {
+      return detailOf(id);
+    },
+    async getSimilar(id) {
+      const similar = detailOf(id)?.similar;
+      return SIMILAR_KINDS.map((kind) => ({ kind, items: similar ? resolveSimilar(id, similar[kind]) : [] }));
     },
   };
 }

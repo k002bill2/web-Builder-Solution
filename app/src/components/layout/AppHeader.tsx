@@ -7,12 +7,15 @@ import { Button } from "../ds/Button";
 const navClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? "font-bold text-label-normal" : "hover:text-label-normal";
 
-/** 보관함은 카탈로그의 저장함 탭(/catalog?tab=saved)이라 경로만으로는 구분되지 않는다. */
+/**
+ * 보관함은 카탈로그의 저장함 탭(/catalog?tab=saved)이라 경로만으로는 구분되지 않는다.
+ * 레퍼런스 상세(/references/:id)는 카탈로그 하위 화면이다 (목업 1a-02 GNB).
+ */
 function useCatalogView() {
   const { pathname, search } = useLocation();
   const onCatalog = pathname === "/catalog";
   const saved = onCatalog && new URLSearchParams(search).get("tab") === "saved";
-  return { catalog: onCatalog && !saved, saved };
+  return { catalog: (onCatalog && !saved) || pathname.startsWith("/references/"), saved };
 }
 
 /** 상단 GNB (목업 57~64행). */

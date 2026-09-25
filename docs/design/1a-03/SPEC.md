@@ -16,7 +16,7 @@
 | 선택 단위 | 표시 문자열이 아니라 **우리 섹션 변형(`type+variant`) 또는 토큰 묶음**에 바인딩 (FR-SEL-02) |
 | 템플릿 모드 (FR-SEL-01) | 모드 토글을 두지 않는다. 열 머리글의 **"이 레퍼런스로 전부 선택"** 한 번으로 모든 행을 그 레퍼런스에서 고른다 |
 | 확정 최소 조건 | **Hero 1개 선택**. 고르지 않은 행은 Hero를 고른 레퍼런스(기준 레퍼런스)의 값으로 채우고, 초안에 "기본값"으로 보여준다 |
-| 저장 | 선택은 바뀔 때마다 자동 저장(`PUT …/picks`). **프로필 확정**은 별도 행동(`POST /profiles` → v1 → `/profile`) |
+| 저장 | 선택은 바뀔 때마다 자동 저장(`PUT …/picks`, revision 조건부·직렬화). **프로필 확정**은 저장이 끝난 revision으로만 가능한 별도 행동(처음 `POST /profiles` → v1, 이후 `POST /profiles/{id}/versions` → v2…) |
 | 경고 | 보드에서 미리 알리는 규칙은 R-07·R-08·R-12 세 가지. 구조로 보장되는 규칙(R-01·R-02·R-06·R-15)은 경고하지 않는다 |
 | 반응형 | ≥1280 표 + 옆 패널 · 768~1279 표(가로 스크롤) + 하단 요약 바 · <768 **항목 아코디언** |
 | 새 컴포넌트 | ComparisonTable · ColumnHeader · PickButton · ComparisonAccordion · DraftPanel · DraftItem · CustomStyleFields · DS `Callout` |
@@ -133,7 +133,7 @@
 | P-5 | "이 레퍼런스로 전부 선택"은 그 열에서 선택 가능한 모든 행을 고른다. 기존 선택을 덮어쓰므로, 이미 다른 열 선택이 1개 이상 있으면 실행 후 "기존 선택 N개를 A로 바꿨습니다 · 되돌리기" 안내를 준다(확인 대화상자 대신 되돌리기) |
 | P-6 | 선택은 **레퍼런스 id**로 저장한다(열 문자 아님). 열 문자는 표시용 |
 | P-7 | 열을 빼면 그 열에서 고른 선택은 모두 해제되고 알림 영역에 "B를 빼서 Hero·카드 선택이 해제됐습니다"가 나온다 |
-| P-8 | 확정 가능 조건은 **Hero 선택 1개**뿐이다(나머지는 3.2 기본값). 경고(3.3)는 확정을 막지 않는다 |
+| P-8 | 확정 가능 조건은 **Hero 선택 1개** + **저장 완료 상태**(저장 중·저장 실패가 아님)다. 나머지 행은 3.2 기본값. 경고(3.3)는 확정을 막지 않는다. 저장 중이면 확정 버튼 이유 텍스트 "선택을 저장하는 중입니다", 실패면 "저장하지 못한 선택이 있습니다 · 다시 시도" |
 
 ### 3.2 기준 레퍼런스와 기본값 (결정성)
 
@@ -150,7 +150,7 @@
 | R-03·R-04 목적별 필수 섹션 | **보드에서 하지 않음.** 프로젝트 목적 입력이 이 화면에 없다 → 1a-04 lint | 질문 Q2 |
 | R-05 인접 배경·풀블리드 연속 | 보드에서 하지 않음 (생성 시 자동 보정) | 자동 보정 규칙 |
 | R-06 타입 스케일·radius 테마 단일 | 경고 없음 — 팔레트·폰트를 `global` 행으로 둔 것이 곧 이 규칙 | 구조 |
-| **R-07 모션 상한** | **정보 Callout** — 모션 "높음"(L3)을 고르면 "생성 상한이 L2라 '중간'으로 적용됩니다". 확정 가능 | MVP 상한 L2 |
+| **R-07 모션 상한** | **정보 Callout** — 모션 "높음"(L3)을 고르면 "생성 상한이 L2라 '중간'으로 적용됩니다". 확정 가능. **"L2 섹션 ≤ 3개"는 보드가 다루지 않는다** — `motion_preset`은 프로필 전체의 *상한*이고, 섹션별 모션 배정(어느 섹션이 L2이고 나머지는 L1로 강등되는지)은 composer가 `section_plan` 순서로 결정적으로 정한다(생성 단계 lint가 검증). 이 위임을 1a-04/생성 브리프에 넘긴다 | MVP 상한 L2 |
 | **R-08 대비 AA** | **경고 Callout + 대체안** (아래 3.4) — 확정은 막지 않는다. 미해결 경고는 1a-04로 넘어가 FR-PRF-02 보정 제안에서 다시 보인다 | FR-SEL-02 "원인·대체안 표시" |
 | R-09~R-11·R-13 | 1a-05(편집·게이트) | 콘텐츠가 아직 없다 |
 | **R-12 푸터 사업자정보** | **경고 Callout + 대체안** — 고른 Footer에 사업자정보가 없으면 "발행 전에 사업자정보가 있는 푸터가 필요합니다". 대체안: 보드에 사업자정보 Footer가 있는 열이 있으면 "C의 Footer로 바꾸기" 버튼, 없으면 "확정 시 같은 모양의 사업자정보 확장 변형으로 바꿉니다" 안내 | FR-KOR-01, 발행 차단 규칙을 미리 알림 |
@@ -159,7 +159,7 @@
 
 ### 3.4 대비 검사 (R-08) — 보드에서 계산하는 것
 
-적용될 팔레트(사용자 대표색 또는 팔레트 행의 선택/기본값)로 다음 3가지만 계산한다. WCAG 상대 휘도 공식, 본문 기준 4.5:1.
+적용될 역할 팔레트(`derivePalette` 결과 — 8.3, 확정 시 저장되는 것과 같은 값)로 다음 3가지만 계산한다. WCAG 상대 휘도 공식, 본문 기준 4.5:1.
 
 | ID | 검사 | 대체안 |
 |---|---|---|
@@ -173,7 +173,7 @@
 ### 3.5 사용자 지정 색·폰트
 
 - 위치: **초안 패널 안**(`CustomStyleFields`). 두 값 모두 `global`이라 특정 열에 속하지 않기 때문이다.
-- 대표색: `TextField` + 견본. `#RRGGBB`만 허용(zod 검증). 잘못된 값은 저장하지 않고 필드 아래 오류 텍스트(`aria-invalid`, `aria-describedby`). 역할 팔레트 변환은 1a-04(FR-PRF-02). 보드는 대표색 하나만 받는다.
+- 대표색: `TextField` + 견본. `#RRGGBB`만 허용(zod 검증). 잘못된 값은 저장하지 않고 필드 아래 오류 텍스트(`aria-invalid`, `aria-describedby`). 보드는 대표색 하나만 받고, 역할 팔레트는 8.3의 `derivePalette`로 만든다. **3.4 대비 검사와 서버 확정이 같은 `derivePalette` 결과를 쓴다**(보드가 본 색 = 저장되는 색). 보정 제안은 1a-04(FR-PRF-02).
 - 폰트: **허용 목록 `Select`** (자유 입력 금지 — TR-POL-05 라이선스, TRD 8절 "폰트 ≤ 2 계열"). 목록 초안: Pretendard · Noto Sans KR · Noto Serif KR (질문 Q4).
 - "지우기"로 사용자 값을 빼면 팔레트/폰트 행 선택(또는 기본값)으로 돌아간다.
 
@@ -195,10 +195,10 @@
 | S-10 | 선택 없음 | 초안 목록 대신 안내 "항목에서 '이 요소 선택'을 누르면 여기에 담깁니다". 확정 `aria-disabled` + 이유 | 선택 |
 | S-11 | 선택 충돌·대비 경고 | 3.3·3.4의 Callout. 경고가 있어도 확정 가능 | 대체안 적용 |
 | S-12 | 자동 저장 중 / 저장됨 / 저장 실패 | 머리 오른쪽 캡션: "저장 중…" → "저장됨" → 실패 시 "저장하지 못했습니다 · 다시 시도"(`role=alert`는 실패일 때만) | 다시 시도 |
-| S-13 | 확정 중 | 확정 버튼 `aria-busy`, 문구 "확정 중…", 중복 클릭 무시 | — |
-| S-14 | 확정 오류 | 패널 상단 `Callout tone=negative`. 코드별 문구: `UNSUPPORTED_COMBINATION` → 원인·대체안, `LICENSE_BLOCKED` → 해당 열을 S-08로 바꿈, `SCHEMA_INVALID`·기타 → "확정하지 못했습니다. 선택은 저장돼 있습니다 · 다시 시도" | 다시 시도 |
+| S-13 | 확정 중 | 확정 버튼 `aria-busy`, 문구 "확정 중…", 중복 클릭 무시. 확정 중에는 선택 버튼도 `aria-disabled`(확정 대상 스냅샷이 바뀌지 않게) | — |
+| S-14 | 확정 오류 | 패널 상단 `Callout tone=negative`. 코드별 문구: `UNSUPPORTED_COMBINATION` → 원인·대체안, `LICENSE_BLOCKED` → 해당 열을 S-08로 바꿈, `STALE_BOARD` → 최신 보드를 다시 받아 표시하고 "다른 곳에서 바뀐 선택을 불러왔습니다. 확인 후 다시 확정하세요", `SCHEMA_INVALID`·기타 → "확정하지 못했습니다. 선택은 저장돼 있습니다 · 다시 시도" | 다시 시도 |
 | S-15 | 확정됨 (v1) | 성공 즉시 `/profile/:id` 이동. 돌아오면 태그 "v1 확정됨" | 계속 편집 |
-| S-16 | 확정 이후 변경됨 | 태그 "v1 이후 변경됨", 버튼 "새 버전으로 확정 (v2)" | 새 버전 확정 |
+| S-16 | 확정 이후 변경됨 | 태그 "v1 이후 변경됨", 버튼 "새 버전으로 확정 (v2)" — 같은 프로필 계열의 새 버전(`…/versions`) | 새 버전 확정 |
 | S-17 | 초안 비우기 직후 | 모든 선택·사용자 값 해제. 패널에 "선택 N개를 비웠습니다 · 되돌리기"(포커스가 되돌리기로 이동). 다음 선택을 하거나 화면을 떠나면 되돌리기 사라짐 | 되돌리기 |
 | S-18 | 긴 이름·긴 값 | 열 제목 2줄 말줄임 + `title`·접근 이름에 전체. **셀 값과 초안 값은 자르지 않고 줄바꿈**(`keep-all` + `overflow-wrap:anywhere` 기존 규칙) | — |
 
@@ -352,6 +352,7 @@ export interface ComparisonCell {
   readonly label: string;                 // "스플릿 (카피 / 이미지)" · 없으면 "없음"
   readonly binding: CellBinding | null;   // null = 선택 불가(없음·info 행)
   readonly meta?: { readonly hasBusinessInfo?: boolean }; // footer만
+  readonly unavailableReason?: "library";  // 현재 라이브러리 버전에 없는 변형 (8.2)
 }
 
 /** 레퍼런스 1개의 비교 데이터. internal은 composition(PageDoc)에서 계산, licensed는 큐레이터 입력. */
@@ -382,7 +383,9 @@ export interface CompareBoard {
   readonly columns: readonly BoardColumn[];   // ≤ COMPARE_LIMIT, 추가 순서
   readonly picks: Picks;
   readonly custom: CustomStyle;
-  readonly confirmed?: { readonly profileId: string; readonly version: number; readonly picksHash: string };
+  readonly confirmed?: { readonly profileId: string; readonly version: number; readonly revision: number };
+  /** 저장마다 1씩 증가. 조건부 저장·확정의 기준 (8.2) */
+  readonly revision: number;
   readonly updatedAt: string;
 }
 ```
@@ -397,9 +400,9 @@ export interface CompareBoard {
 | `getBoard(): Promise<CompareBoard>` | (신규) `GET /compare-boards/current` | 현재 사용자 보드. 없으면 빈 보드 |
 | `addReference(refId): Promise<AddResult>` | (신규) `POST /compare-boards/{id}/references` | 한도 `COMPARE_LIMIT`·중복·비노출 거부. 비어 있는 가장 앞 문자 부여 |
 | `removeReference(refId): Promise<CompareBoard>` | (신규) `DELETE …/references/{refId}` | 그 id의 picks 제거까지 **한 번에**(서버가 정본) |
-| `savePicks(picks, custom): Promise<CompareBoard>` | `PUT /compare-boards/{id}/picks` | zod 검증: 행 id·레퍼런스 id가 보드 열에 있는지, 회수된 열 참조 금지, hex 형식 |
-| `getComparison(refIds): Promise<readonly ComparisonResult[]>` | `POST /compare` | `ComparisonResult = {referenceId, status: ColumnStatus, reference?: DesignReference, comparison?: ReferenceComparison}` — **회수·없음을 `undefined`로 버리지 않고 상태로 돌려준다** (지금 `getById`+`filter`는 조용히 사라지게 함) |
-| `confirmProfile(boardId): Promise<{profileId, version}>` | `POST /profiles` | 서버가 8.3 매핑을 다시 계산·검증. 오류 `UNSUPPORTED_COMBINATION`·`SCHEMA_INVALID`·`LICENSE_BLOCKED` |
+| `savePicks(picks, custom, expectedRevision): Promise<CompareBoard>` | `PUT /compare-boards/{id}/picks` (`If-Match: revision`) | zod 검증: 행 id·레퍼런스 id가 보드 열에 있는지, 회수된 열 참조 금지, hex 형식. **조건부 저장** — `expectedRevision`이 서버 값과 다르면 `409 STALE_BOARD`로 거부하고 클라이언트는 최신 보드를 다시 받아 화면을 맞춘다. 클라이언트는 저장 요청을 **직렬화**(앞 요청이 끝난 뒤 최신 상태로 한 번만 보냄)해 역순 완료를 막는다 |
+| `getComparison(refIds): Promise<{ libraryVersion: string; results: readonly ComparisonResult[] }>` | `POST /compare` | `ComparisonResult = {referenceId, status: ColumnStatus, reference?: DesignReference, comparison?: ReferenceComparison}` — **회수·없음을 `undefined`로 버리지 않고 상태로 돌려준다** (지금 `getById`+`filter`는 조용히 사라지게 함). **라이브러리 호환**: 서버는 모든 셀 바인딩을 응답의 `libraryVersion` 하나로 해석한다. 레퍼런스가 만들어진 버전의 변형이 그 버전에 없으면(삭제·이름 변경) 결정적 대응표(`variantMigrations`)로 바꾸고, 대응이 없으면 `binding: null` + `unavailableReason: 'library'`로 돌려준다 → 셀에 "현재 라이브러리에 없는 변형"이라 적고 선택 버튼을 두지 않는다. 확정 시 서버는 같은 버전으로 다시 검사해 불일치면 `UNSUPPORTED_COMBINATION` |
+| `confirmProfile(boardId, revision): Promise<{profileId, version}>` | 처음: `POST /profiles` (v1) · `board.confirmed`가 있으면: `POST /profiles/{profileId}/versions` (v2…) | **화면에 보이는 `revision`을 함께 보낸다.** 서버는 그 revision의 보드 스냅샷으로 8.3 매핑을 다시 계산·검증하고, 서버 revision과 다르면 `409 STALE_BOARD`. 재확정은 같은 프로필 계열에 새 버전을 만들고 이전 버전은 불변(FR-PRF-03). 오류 `UNSUPPORTED_COMBINATION`·`SCHEMA_INVALID`·`LICENSE_BLOCKED`·`STALE_BOARD` |
 
 ### 8.3 초안 → DesignProfile 매핑 (TRD 4.3)
 
@@ -409,13 +412,13 @@ export interface CompareBoard {
 |---|---|
 | `source_reference_ids` | 선택(기본값 제외)에 쓰인 레퍼런스 id + 기준 레퍼런스, **열 문자 순** 정렬 |
 | `visual_direction` · `layout_direction` | 기준 레퍼런스의 `visualTags[0]` · `layoutType` (1a-04에서 수정 가능) |
-| `color_tokens` | 사용자 대표색이 있으면 `{ seed: primaryColor }`(역할 팔레트 변환은 1a-04, FR-PRF-02), 없으면 팔레트 행 바인딩의 역할 팔레트 |
+| `color_tokens` | **항상 역할 팔레트(DTCG semantic)로 저장한다.** 사용자 대표색이 있으면 `derivePalette(primaryColor, basePalette)`(순수 함수, `domain/palette.ts`)로 역할 팔레트를 만든다 — 대표색만 바꾸고 surface·ink·bg 등 나머지 역할은 팔레트 행(선택/기본값)에서 가져온다. 없으면 팔레트 행 바인딩의 역할 팔레트 그대로. 대표색 원값은 `color_tokens.$extensions.seed`에 기록만 한다. 1a-04(FR-PRF-02)는 이 팔레트에 **보정 제안**을 하는 단계이지 변환 단계가 아니다 |
 | `typography_tokens` | 사용자 폰트 > 폰트 행 바인딩 |
 | `spacing_tokens` | 기준 레퍼런스 상세의 `spacing` |
 | `motion_preset` | 모션 행: low→L1, mid→L2, high→**L2(상한)** |
 | `component_choices` | `hero` · `header` · `footer`(section 바인딩) · `cta_placement` · `card_style` · `media_ratio` · `mobile_pattern` |
 | `section_plan` | 기준 레퍼런스의 `sectionPlan`에서 header·hero·footer의 variant를 선택값으로 바꾼다. footer가 없으면 끝에 추가(R-01). **모든 선택이 한 레퍼런스이고 사용자 값이 없으면 그 레퍼런스 `sectionPlan` 그대로**(FR-SEL-01 "같은 섹션 구성") |
-| `library_version` | 기준 레퍼런스의 값 |
+| `library_version` | **보드가 해석한 단일 라이브러리 버전**(`getComparison` 응답의 `libraryVersion` = 현재 공개 라이브러리 버전). 기준 레퍼런스 값이 아니다. 모든 선택의 `type+variant`는 이 한 버전에서 해석된다(8.2). 저장된 프로필은 이 값을 고정하므로 이후 라이브러리가 바뀌어도 같은 버전으로 재현된다(FR-GEN-03) |
 | `seed` | `picks`·`custom`·열 id 정규화 JSON의 해시(같은 선택 → 같은 seed) |
 | (제안) `selection_mode` | `'template' \| 'mix'` — TRD 4.3에 없음. 계측·1a-04 표시용(Q5) |
 
@@ -459,8 +462,12 @@ export interface CompareBoard {
 | AC-20 | `/compare` 진입 | — | `document.title`이 "비교 보드 · …"이고 포커스가 `h1` | V |
 | AC-21 | 6개 · 1280 / 3개 · 768 / 3개 · 390 | 캡처 | 1280: 표 가로 스크롤 + 행 머리글 고정 + 초안 패널 보임. 768: 하단 요약 바. 390: 아코디언, **문서 가로 넘침 0**, 모든 값이 펼침으로 확인 가능 | Q |
 | AC-22 | 보드 화면 | DOM 검사 | URL 입력 필드 0개, "레퍼런스 추가"는 `/catalog`로만 간다 (FR-SEL-06) | V |
+| AC-23 | Hero=A 저장됨, 저장소 응답을 지연시킴 | Hero를 B로 바꾸고 저장이 끝나기 전에 확정 클릭 | 확정은 호출되지 않고(`aria-disabled`, 이유 "선택을 저장하는 중입니다"), 저장 완료 후 확정하면 `confirmProfile`이 B가 반영된 `revision`으로 호출된다. 저장 응답이 역순으로 와도 최종 보드는 B | V |
+| AC-24 | 사용자 대표색 입력 | 확정 | 저장소에 넘어간 `color_tokens`가 역할 팔레트 전체(primary·surface·ink·muted·bg)이고, 보드 대비 Callout이 계산한 색과 같다 | V |
+| AC-25 | v1 확정 후 선택 변경 | "새 버전으로 확정 (v2)" | `POST /profiles/{같은 id}/versions`에 해당하는 저장소 메서드가 호출되고 v1 기록은 바뀌지 않는다 | V |
+| AC-26 | 열 B의 Footer 변형이 현재 라이브러리 버전에 없음 | 진입 | B Footer 셀에 "현재 라이브러리에 없는 변형", 선택 버튼 없음. 확정 결과 `library_version`은 `getComparison`의 `libraryVersion`과 같다 | V |
 
-(22개 — 브리프 10~20 권고보다 2개 많다. AC-21·AC-22는 QA·권리 경계 확인용이라 유지.)
+(26개 — 브리프 10~20 권고보다 많다. AC-21·22는 QA·권리 경계, AC-23~26은 Codex 1라운드 지적(저장 경합·색 정규화·버전·라이브러리 호환)을 테스트로 고정하려고 추가했다.)
 
 ---
 

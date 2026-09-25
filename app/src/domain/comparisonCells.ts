@@ -5,13 +5,14 @@
 import type {
   BoundSectionType,
   ComparisonCell,
+  ComparisonResult,
   ComparisonRowId,
   CtaPlacement,
   ReferenceComparison,
   SectionPlanEntry,
   SurfaceTone,
 } from "./compareBoard";
-import type { DesignReference, MotionLevel } from "./reference";
+import { EXPOSED_LICENSE_STATUSES, type DesignReference, type MotionLevel } from "./reference";
 import type { ReferenceDetail } from "./referenceDetail";
 import { resolveVariant, type SectionLibrary } from "./sectionLibrary";
 
@@ -92,4 +93,30 @@ export function buildReferenceComparison(
 export function isRowUniform(rowId: ComparisonRowId, comparisons: readonly ReferenceComparison[]): boolean {
   const first = comparisons[0];
   return first !== undefined && comparisons.every((c) => c.cells[rowId].label === first.cells[rowId].label);
+}
+
+/** 비교 데이터 출처 — 레퍼런스 전체(비노출 포함)와 상세·비교 속성 */
+export interface ComparisonCatalog {
+  readonly references: readonly DesignReference[];
+  readonly details: Readonly<Record<string, ReferenceDetail>>;
+  readonly attributes: Readonly<Record<string, ComparisonAttributes>>;
+}
+
+/**
+ * id 목록 → 비교 결과. 회수(비노출 전환)·없음을 버리지 않고 상태로 돌려준다 (SPEC 8.2).
+ * 회수된 레퍼런스는 머리글 표시를 위해 reference·comparison을 함께 준다(셀은 흐리게 읽기용).
+ */
+export function resolveComparisons(
+  ids: readonly string[],
+  catalog: ComparisonCatalog,
+  library: SectionLibrary,
+): readonly ComparisonResult[] {
+  return ids.map((referenceId): ComparisonResult => {
+    const reference = catalog.references.find((r) => r.id === referenceId);
+    const detail = catalog.details[referenceId];
+    const attributes = catalog.attributes[referenceId];
+    if (!reference || !detail || !attributes) return { referenceId, status: "missing" };
+    const status = (EXPOSED_LICENSE_STATUSES as readonly string[]).includes(reference.licenseStatus) ? "available" : "withdrawn";
+    return { referenceId, status, reference, comparison: buildReferenceComparison({ reference, detail, attributes }, library) };
+  });
 }

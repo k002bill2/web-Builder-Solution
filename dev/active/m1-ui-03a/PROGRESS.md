@@ -10,7 +10,7 @@
 | 10 | ADR-004 번들 검사: 라우트별 첫 화면 합계 ≤ 100KB | 완료 | (이 커밋) |
 | 1 | 타입 `domain/compareBoard.ts` | 완료 | (1·2 커밋) |
 | 2 | 행 정의·셀 값 (섹션 라이브러리·비교 픽스처) | 완료 | (1·2 커밋) |
-| 3 | 선택 규칙 P-1~P-7 | 대기 | |
+| 3 | 선택 규칙 P-1~P-7 | 완료 | (3 커밋) |
 | 5 | `contrast.ts` + `derivePalette` | 대기 | |
 | 4 | `buildProfileDraft` | 대기 | |
 | 6 | R-12 Footer 경고 데이터 | 대기 | |
@@ -33,3 +33,10 @@
 - `domain/comparisonCells.ts` + `fixtures/referenceComparisons.ts`: 레퍼런스·상세·비교 속성 → 12행 셀. 없음 → `binding:null`, 라이브러리에 없는 변형 → "현재 라이브러리에 없는 변형"(AC-26), 대응표 → 새 변형.
 - RED: 두 테스트 파일 모두 모듈 없음으로 실패 → GREEN 20/20.
 - SPEC과 다르게: `ComparisonRowDef.shortLabel`(알림 문장용 "Hero·카드"), `ReferenceComparison.spacing`(spacing_tokens 출처) 추가. A 섹션 수는 footer를 넣어 **9개**(목업 8) — SPEC 8.5 따름, 상세 픽스처는 8개 그대로. `DesignReference.key`는 기존 테스트가 쓰므로 유지(보드 표기에는 안 씀).
+
+## 항목 3 — 선택 규칙 (P-1~P-7 · S-08/S-09)
+- `domain/boardColumns.ts`: `addColumn`(중복·한도, 비어 있는 가장 앞 문자) · `removeColumn`(P-7 선택 해제 + 알림 "B를 빼서 Hero·카드 선택 해제") · `releaseNotice`. 트레이가 쓰므로 의존 없음.
+- `domain/boardPicks.ts`: `togglePick`(P-1 교체·P-2 해제·P-3 info 불가·P-4 없음 불가·회수 열 불가·P-6 id 저장) · `pickAnnouncement`(A-4) · `pickAllFrom`(P-5, 다른 열 선택만 N으로 셈 + 되돌리기용 `previous`) · `releaseUnavailablePicks`(AC-15 데이터).
+- `domain/comparisonCells.ts#resolveComparisons`: 회수(비노출 전환)=`withdrawn`, 없음=`missing`을 상태로 반환.
+- RED: 모듈 없음으로 두 파일 실패 → GREEN 28/28 (domain 전체 48).
+- 문구: SPEC P-7/1.3은 "해제됐습니다", A-4/AC-08은 "해제" → **AC-08 문구**("B를 빼서 카드 선택 해제")를 따름.

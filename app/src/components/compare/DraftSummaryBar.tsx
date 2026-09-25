@@ -31,7 +31,7 @@ export function DraftSummaryBar({
         초안 {pickedCount}/{total}
         {warningCount > 0 && ` · 경고 ${warningCount}`}
       </p>
-      <Button variant="assistive" size="sm" onClick={onShowDraft}>
+      <Button variant="secondary" size="sm" onClick={onShowDraft}>
         초안 보기
       </Button>
       <Button
@@ -41,7 +41,7 @@ export function DraftSummaryBar({
         aria-busy={confirming || undefined}
         aria-describedby={!canConfirm.ok ? reasonId : undefined}
         onClick={onConfirm}
-        className="aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
+        className="aria-disabled:cursor-not-allowed aria-disabled:bg-inverse-fill-normal aria-disabled:text-inverse-label-disable"
       >
         {confirming ? "확정 중…" : "프로필 확정"}
       </Button>

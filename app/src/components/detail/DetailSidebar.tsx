@@ -12,7 +12,7 @@ const SIMILAR_LABELS: Readonly<Record<SimilarKind, string>> = {
 
 /** Lighthouse 구간: 90 이상 양호, 50 이상 보통, 그 아래 미흡. */
 const scoreTone = (score: number) =>
-  score >= 90 ? "text-status-positive" : score >= 50 ? "text-status-cautionary" : "text-status-negative";
+  score >= 90 ? "text-status-positive-text" : score >= 50 ? "text-status-cautionary-text" : "text-status-negative-text";
 
 function ScoreTile({ label, score }: { readonly label: string; readonly score: number }) {
   return (
@@ -49,7 +49,7 @@ export function ScoreActionsCard({
         <ScoreTile label="접근성" score={r.scores.accessibility} />
         <ScoreTile label="성능" score={r.scores.performance} />
       </div>
-      <div className="ds-caption2 text-label-assistive">
+      <div className="ds-caption2 text-label-alternative">
         측정 {formatDate(r.scores.measuredAt)} · {detail.measuredWith}
       </div>
       <Button variant="primary" size="lg" fullWidth onClick={onImportTemplate}>
@@ -66,8 +66,8 @@ export function ScoreActionsCard({
           저장
         </Button>
         <Button
-          variant={inTray ? "assistive" : "outline"}
-          leadingIcon={inTray ? undefined : "plus"}
+          variant="outline"
+          leadingIcon={inTray ? "check" : "plus"}
           fullWidth
           aria-label={inTray ? "비교 중, 비교에서 빼기" : undefined}
           onClick={onToggleCompare}
@@ -94,7 +94,7 @@ export function SimilarReferences({ groups }: { readonly groups: readonly Simila
           <div key={g.kind}>
             <h3 className="ds-caption1 mb-2 text-label-alternative">{SIMILAR_LABELS[g.kind]}</h3>
             {g.items.length === 0 ? (
-              <p className="ds-caption2 text-label-assistive">추천할 레퍼런스가 없습니다</p>
+              <p className="ds-caption2 text-label-alternative">추천할 레퍼런스가 없습니다</p>
             ) : (
               <ul className="grid grid-cols-3 gap-2">
                 {g.items.map((r) => (

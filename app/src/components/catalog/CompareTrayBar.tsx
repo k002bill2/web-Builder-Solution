@@ -53,14 +53,14 @@ export function CompareTrayBar({
       }
     >
       <span className="ds-label flex-none">
-        비교 보드 <span className="text-blue-70">{references.length}</span> / {COMPARE_LIMIT}
+        비교 보드 <span className="tabular-nums">{references.length}</span> / {COMPARE_LIMIT}
       </span>
       {references.length > 0 ? (
         <ul className="hidden min-w-0 flex-1 flex-wrap gap-2 md:flex">
           {references.map((r, i) => (
             <li
               key={r.id}
-              className="inline-flex items-center gap-2 rounded-full bg-on-surface-inverse/10 py-1.5 pr-2 pl-2.5 text-caption1 font-medium"
+              className="inline-flex items-center gap-2 rounded-full bg-inverse-fill-normal py-1.5 pr-2 pl-2.5 text-caption1 font-medium"
             >
               <span className="size-2.5 rounded-full" style={{ backgroundColor: r.colorPalette.primary }} />
               {r.title}
@@ -72,7 +72,7 @@ export function CompareTrayBar({
                 type="button"
                 aria-label={`${r.title} 비교에서 제거`}
                 onClick={() => removeAt(i, r.id)}
-                className="inline-flex cursor-pointer rounded-full opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                className="inline-flex cursor-pointer rounded-full text-inverse-label-alternative hover:text-on-surface-inverse focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
               >
                 <Icon name="close" size={14} />
               </button>
@@ -80,7 +80,7 @@ export function CompareTrayBar({
           ))}
         </ul>
       ) : (
-        <span className="ds-caption1 hidden min-w-0 flex-1 opacity-70 md:inline">
+        <span className="ds-caption1 hidden min-w-0 flex-1 text-inverse-label-alternative md:inline">
           카드의 ‘비교 추가’로 최대 {COMPARE_LIMIT}개까지 담을 수 있습니다
         </span>
       )}

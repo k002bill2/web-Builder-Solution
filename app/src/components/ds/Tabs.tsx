@@ -71,7 +71,7 @@ export function Tabs<T extends string>({
           >
             {it.label}
             {it.count != null && (
-              <span className={cx("ml-1 font-medium", active ? "text-primary" : "text-label-assistive")}>{it.count}</span>
+              <span className={cx("ml-1 font-medium", active ? "text-primary" : "text-label-alternative")}>{it.count}</span>
             )}
           </button>
         );

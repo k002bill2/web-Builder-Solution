@@ -33,7 +33,7 @@ function SaveCaption({ status, onRetry }: { readonly status: SaveStatus; readonl
   }
   if (status !== "error") return null;
   return (
-    <div role="alert" className="ds-caption1 flex items-center gap-2 text-status-negative">
+    <div role="alert" className="ds-caption1 flex items-center gap-2 text-status-negative-text">
       저장하지 못했습니다
       <Button variant="outline" size="sm" onClick={onRetry}>
         다시 시도

@@ -24,7 +24,7 @@ export function SectionsPanel({ detail }: PanelProps) {
             key={`${s.name}-${i}`}
             className="inline-flex items-center gap-2 rounded-md border border-line-normal px-3 py-2 text-body3 font-medium"
           >
-            <span className="ds-caption2 text-label-assistive">{String(i + 1).padStart(2, "0")}</span>
+            <span className="ds-caption2 text-label-alternative">{String(i + 1).padStart(2, "0")}</span>
             {s.name}
             <span className="ds-caption2 text-label-alternative">{s.variant}</span>
           </li>
@@ -123,7 +123,7 @@ export function ScoresPanel({ reference, detail }: PanelProps) {
           </tr>
         </tbody>
       </table>
-      <p className="ds-caption1 mt-2 text-label-assistive">이전 측정 기록이 없습니다.</p>
+      <p className="ds-caption1 mt-2 text-label-alternative">이전 측정 기록이 없습니다.</p>
     </>
   );
 }

@@ -14,10 +14,12 @@ const BASE =
 
 const VARIANT: Record<ButtonVariant, string> = {
   primary: "border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable",
+  /** 역상 면(bg-surface-inverse) 안에서만 — 요약 바·필 목록 (A11Y-01 4.5 · v2 V2-AC-11, tokenUsage 가드) */
   secondary:
-    "border-transparent bg-surface-inverse text-on-surface-inverse enabled:hover:bg-surface-inverse-hover disabled:bg-fill-strong disabled:text-label-disable",
-  assistive:
-    "border-transparent bg-fill-normal text-label-normal enabled:hover:bg-fill-strong disabled:bg-fill-alternative disabled:text-label-disable",
+    "border-transparent bg-inverse-fill-normal text-on-surface-inverse enabled:hover:bg-inverse-fill-strong " +
+    "disabled:text-inverse-label-disable aria-disabled:bg-inverse-fill-normal aria-disabled:text-inverse-label-disable",
+  /** ghost — 투명 면 (v2 Button ghost) */
+  assistive: "border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable",
   outline:
     "bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong " +
     "disabled:text-label-disable disabled:border-line-alternative",
@@ -39,7 +41,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   readonly fullWidth?: boolean;
 }
 
-/** 목업 번들 Button: primary·secondary·assistive·outline × sm·md·lg, 앞·뒤 아이콘, 전체 폭. */
+/** Button: primary·secondary(역상)·assistive(ghost)·outline × sm·md·lg, 앞·뒤 아이콘, 전체 폭 (v2 SPEC 3.5). */
 export function Button({
   variant = "primary",
   size = "md",

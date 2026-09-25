@@ -82,7 +82,7 @@ export function CustomStyleFields({ value, fonts, checkPrimaryColor, onChange }:
         />
       </div>
       {error && (
-        <p id={errorId} className="ds-caption1 text-status-negative">
+        <p id={errorId} className="ds-caption1 text-status-negative-text">
           {error}
         </p>
       )}

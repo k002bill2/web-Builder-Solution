@@ -18,6 +18,8 @@ interface CompareTrayValue {
   readonly sync: (board: CompareBoard) => void;
   /** 아직 보여주지 않은 선택 해제 안내를 꺼낸다 — 한 번만 (SPEC 1.3 · S-08) */
   readonly takeReleasedNotices: () => readonly string[];
+  /** 진행 중인 트레이 변경(추가·빼기)이 모두 끝날 때 — 보드 화면은 그 뒤에 조회한다 (Codex R1) */
+  readonly whenIdle: () => Promise<unknown>;
 }
 
 const CompareTrayContext = createContext<CompareTrayValue | null>(null);
@@ -115,9 +117,10 @@ export function CompareTrayProvider({
   // 열 구성이 같으면 같은 배열을 준다 — 서버 응답마다 트레이 레퍼런스를 다시 조회하지 않게
   const trayKey = board.columns.map((c) => c.referenceId).join("\n");
   const tray = useMemo<CompareTray>(() => (trayKey ? trayKey.split("\n") : []), [trayKey]);
+  const whenIdle = useCallback(() => queue.current, []);
   const value = useMemo(
-    () => ({ tray, board, add, remove, repository, loaded, sync, takeReleasedNotices }),
-    [tray, board, add, remove, repository, loaded, sync, takeReleasedNotices],
+    () => ({ tray, board, add, remove, repository, loaded, sync, takeReleasedNotices, whenIdle }),
+    [tray, board, add, remove, repository, loaded, sync, takeReleasedNotices, whenIdle],
   );
   return <CompareTrayContext.Provider value={value}>{children}</CompareTrayContext.Provider>;
 }

@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import type { PrimaryColorCheck } from "../../components/compare/CustomStyleFields";
 import type { Announcement, PanelNotice, UndoView } from "../../components/compare/DraftPanel";
-import { removeColumn as removeBoardColumn } from "../../domain/boardColumns";
+import { removeColumn as removeBoardColumn, withoutReference } from "../../domain/boardColumns";
 import type { WarningFix } from "../../domain/boardWarnings";
 import { draftStatusOf, type CompareBoard, type ComparisonRowId, type CustomStyle, type DraftStatus } from "../../domain/compareBoard";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
@@ -26,7 +26,7 @@ const REJECT_UNTIL_LOADED: PrimaryColorCheck = () => ({ ok: false, error: "잠�
 const UNCONFIRMED: DraftStatus = { kind: "unconfirmed", nextVersion: 1 };
 
 export function useCompareBoard() {
-  const { repository, loaded, sync, takeReleasedNotices } = useCompareTray();
+  const { repository, loaded, sync, takeReleasedNotices, whenIdle } = useCompareTray();
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>("loading");
   const [attempt, setAttempt] = useState(0);
@@ -76,7 +76,8 @@ export function useCompareBoard() {
     let cancelled = false;
     const load = async () => {
       // 엔진(선택 규칙·초안·zod)은 데이터와 함께 받는다 — 첫 화면 정적 JS에서 뺀다 (ADR-004 · boardEngine.ts)
-      const [{ boardEngine }, { board, released }] = await Promise.all([import("./boardEngine"), repository.getBoard()]);
+      // 카탈로그에서 막 한 추가·빼기가 끝난 뒤의 보드를 읽는다 (Codex R1)
+      const [{ boardEngine }, { board, released }] = await Promise.all([import("./boardEngine"), whenIdle().then(() => repository.getBoard())]);
       // 해제 안내는 한 번만 온다 — 취소된 실행(StrictMode 재실행)이 받아도 잃지 않게 보관한다
       pendingReleased.current = [...pendingReleased.current, ...takeReleasedNotices(), ...released.map((r) => r.notice)];
       const next = await repository.getComparison(board.columns.map((c) => c.referenceId));
@@ -98,7 +99,7 @@ export function useCompareBoard() {
     return () => {
       cancelled = true;
     };
-  }, [loaded, attempt, repository, startSaver, takeReleasedNotices]);
+  }, [loaded, attempt, repository, startSaver, takeReleasedNotices, whenIdle]);
 
   // 열 구성이 바뀌면(빼기·다른 곳의 변경) 비교 데이터를 다시 받는다
   const columnKey = saved?.board.columns.map((c) => c.referenceId).join("\n") ?? "";
@@ -175,12 +176,15 @@ export function useCompareBoard() {
   const removeColumn = async (referenceId: string) => {
     if (!board || !engine || locked) return;
     const local = removeBoardColumn(board, referenceId);
-    const next: Intent = { picks: local.board.picks, custom: intent.custom };
     const label = board.columns.find((c) => c.referenceId === referenceId)?.label ?? "";
     setRemoving(true);
     setUndo(null);
     try {
       await lastSave.current;
+      // 앞 저장이 STALE_BOARD로 끝나 서버 선택으로 맞췄으면 그 선택을 기준으로 뺀다 — 옛 로컬 선택으로 덮지 않게 (Codex R1)
+      const after = saver.current!.getState();
+      const base: Intent = after.error === "STALE_BOARD" ? intentOf(after.board) : { picks: local.board.picks, custom: intent.custom };
+      const next: Intent = { picks: withoutReference(base.picks, referenceId), custom: base.custom };
       const { board: server } = await repository.removeReference(referenceId);
       startSaver(server);
       setIntent(next);
@@ -205,7 +209,8 @@ export function useCompareBoard() {
   };
 
   const onConfirmError = async (error: unknown) => {
-    const plan = engineRef.current?.confirmErrorPlan(error, () => void confirm());
+    // 다시 시도는 그때의 최신 핸들러로 — 실패 당시 상태로 확정 가능 여부를 판단하지 않게 (Codex R1)
+    const plan = engineRef.current?.confirmErrorPlan(error, () => void latestConfirm.current());
     if (!plan) return;
     if (plan.kind === "resync") {
       startSaver(plan.board);
@@ -237,6 +242,11 @@ export function useCompareBoard() {
       setConfirming(false);
     }
   }
+
+  const latestConfirm = useRef(confirm);
+  useEffect(() => {
+    latestConfirm.current = confirm;
+  });
 
   return {
     phase,

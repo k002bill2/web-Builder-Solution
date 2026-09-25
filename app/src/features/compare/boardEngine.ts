@@ -12,7 +12,7 @@ import type { CompareBoard } from "../../domain/compareBoard";
 import { buildProfileDraft } from "../../domain/profileDraft";
 import type { PrimaryColorCheck } from "../../components/compare/CustomStyleFields";
 import type { Comparison, Evaluation } from "./boardScreen";
-import { STALE_SAVE_NOTICE, confirmErrorPlan, customAnnouncement, releasedNotices, sameIntent, withWarningDelta } from "./boardMessages";
+import { STALE_SAVE_NOTICE, confirmErrorPlan, customAnnouncement, releasedNotices, sameIntent, unchangedSinceConfirm, withWarningDelta } from "./boardMessages";
 import { buildBoardView } from "./boardView";
 import { draftItemsView } from "./draftView";
 import { createPicksSaver } from "./picksSaver";
@@ -35,6 +35,7 @@ export const boardEngine = Object.freeze({
   fonts: FONT_OPTIONS,
   confirmErrorPlan,
   sameIntent,
+  unchangedSinceConfirm,
   withWarningDelta,
   customAnnouncement,
   releasedNotices,

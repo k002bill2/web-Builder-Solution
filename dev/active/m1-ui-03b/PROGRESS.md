@@ -78,3 +78,7 @@
 - [x] 2. 번들 검사: 진입 직후 자동 로드 포함 합계 ≤ 125KB를 실패 조건으로(`ROUTE_EAGER_BUDGET_KB`), ADR-004 표에 개정 행 1줄.
   - RED(한도 120 임시): `[bundle] 예산 검사 실패 — /compare: 진입 직후 자동 로드 포함 120.51KB > 120KB` · exit 1 → 125 원복 exit 0.
   - 현재: `/compare` 첫 화면 99.93KB / 100 · 진입 직후 120.51KB / 125. `/catalog` 97.98 / 100.36 · `/references/:id` 95.64 / 98.02 · 자리표시 89.40 / 91.79.
+- [x] 3. 변경 없는 재확정 차단(S-15·S-16): `ConfirmedRef`에 확정 시점 `picks`·`custom` 스냅샷(선택 필드, 없으면 revision 비교) — 메모리 저장소 `confirmInto`가 기록. 엔진 `unchangedSinceConfirm`(sameIntent 깊은 비교) → `confirmAvailability` 3번째 인자로 "확정한 뒤 바뀐 내용이 없습니다", 화면 버튼·`confirm()` 둘 다 같은 판정. 되돌려 같아지면 태그도 "v1 확정됨".
+  - RED: 새 테스트 2건 — `toHaveAttribute("aria-disabled", "true")` 실패 · `toHaveAccessibleDescription()` 실패. GREEN 310.
+  - 기존 테스트 변경 1건(의도): `memoryCompareBoardRepository.test.ts` AC-25의 `confirmed` 기대값에 스냅샷 추가.
+  - 저장소(서버 역할)는 변경 없는 새 버전 요청을 막지 않는다 — 화면 게이트만(브리프 범위). 번들 `/compare` 첫 화면 99.97KB(여유 0.03KB).

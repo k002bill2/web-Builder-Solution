@@ -13,6 +13,14 @@ const STALE_CONFIRM_MESSAGE = "다른 곳에서 바뀐 선택을 불러왔습니
 const normalized = (record: object) => JSON.stringify(Object.entries(record).sort(([a], [b]) => a.localeCompare(b)));
 export const sameIntent = (a: Intent, b: Intent) => normalized(a.picks) === normalized(b.picks) && normalized(a.custom) === normalized(b.custom);
 
+/** S-15 — 확정 시점 선택과 지금 선택(picks·custom)이 같은지. 확정 전이면 false, 스냅샷이 없으면 revision으로 */
+export function unchangedSinceConfirm(board: CompareBoard): boolean {
+  const { confirmed } = board;
+  if (!confirmed) return false;
+  if (!confirmed.picks || !confirmed.custom) return confirmed.revision === board.revision;
+  return sameIntent(board, { picks: confirmed.picks, custom: confirmed.custom });
+}
+
 /** A-9: 새로 생긴 경고는 알림 문장에 "경고 N개 추가"로 함께 알린다 (정보 안내는 세지 않음) */
 export function withWarningDelta(text: string, before: Evaluation, after: Evaluation): string {
   const count = (e: Evaluation) => e.warnings.filter((w) => w.tone === "warning").length;

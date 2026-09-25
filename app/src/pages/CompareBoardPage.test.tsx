@@ -380,6 +380,44 @@ describe("저장·확정 (S-12~S-17)", () => {
     expect(versions.map((v) => v.version)).toEqual([1, 2]);
     expect(versions[0]).toEqual(v1);
   });
+
+  it("S-15(FIX-R1): v1 확정 뒤 바뀐 내용이 없으면 '새 버전으로 확정 (v2)'는 aria-disabled + 이유, 눌러도 새 버전을 만들지 않는다", async () => {
+    const repo = boardRepo(THREE, { hero: "ref-a" });
+    const createVersion = vi.spyOn(repo, "createProfileVersion");
+    const confirm = vi.spyOn(repo, "confirmProfile");
+    const { router } = await openBoard(repo);
+    await userEvent.click(confirmButton());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
+    await act(() => router.navigate("/compare"));
+    expect(await screen.findByText("v1 확정됨")).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: "새 버전으로 확정 (v2)" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveAccessibleDescription("확정한 뒤 바뀐 내용이 없습니다");
+    await userEvent.click(button);
+    expect(createVersion).not.toHaveBeenCalled();
+    expect(confirm).toHaveBeenCalledTimes(1);
+  });
+
+  it("S-15·S-16(FIX-R1): v1 뒤 B로 바꿨다 A로 되돌리면 확정한 선택과 같아 막히고, 다시 B로 바꾸면 새 버전 1회", async () => {
+    const repo = boardRepo(THREE, { hero: "ref-a" });
+    const createVersion = vi.spyOn(repo, "createProfileVersion");
+    const { router } = await openBoard(repo);
+    await userEvent.click(confirmButton());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
+    await act(() => router.navigate("/compare"));
+    await screen.findByText("v1 확정됨");
+    await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
+    await userEvent.click(pick("Hero 구성", "A 모던 카페 브랜드"));
+    await waitFor(async () => expect((await savedBoard(repo)).picks).toEqual({ hero: "ref-a" }));
+    await waitFor(() => expect(confirmButton()).toHaveAccessibleDescription("확정한 뒤 바뀐 내용이 없습니다"));
+    expect(screen.getByText("v1 확정됨")).toBeInTheDocument();
+    await userEvent.click(confirmButton());
+    expect(createVersion).not.toHaveBeenCalled();
+    await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
+    await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
+    await userEvent.click(confirmButton());
+    await waitFor(() => expect(createVersion).toHaveBeenCalledTimes(1));
+  });
 });
 
 describe("Codex R1 회귀", () => {

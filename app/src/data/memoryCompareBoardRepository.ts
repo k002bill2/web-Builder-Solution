@@ -93,7 +93,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     if (unsupported) throw new CompareBoardError("UNSUPPORTED_COMBINATION", `라이브러리 ${library.version}에 없는 변형: ${unsupported.type}/${unsupported.variant}`);
     const record: StoredProfile = { profileId, version, boardRevision: revision, profile: withBusinessInfoFooter(draft.profile, library), createdAt: now() };
     profiles = [...profiles, deepFreeze(record)];
-    board = { ...board, confirmed: { profileId, version, revision } };
+    board = { ...board, confirmed: { profileId, version, revision, picks: board.picks, custom: board.custom } };
     return { profileId, version };
   }
 

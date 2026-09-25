@@ -122,6 +122,8 @@ export function useCompareBoard() {
   const evaluation = useMemo(() => (board && engine ? engine.evaluate(board, comparison) : null), [board, comparison, engine]);
   const view = useMemo(() => (board && engine ? engine.buildBoardView(board, comparison.results) : null), [board, comparison.results, engine]);
   const locked = confirming || removing;
+  // S-15 — 확정한 선택에서 바뀐 게 없으면 새 버전으로 확정하지 않는다 (태그도 "확정됨")
+  const unchanged = useMemo(() => (board && engine ? engine.unchangedSinceConfirm(board) : false), [board, engine]);
 
   const commit = (next: Intent, text: string) => {
     if (!board || !evaluation || !engine || !saver.current) return;
@@ -224,7 +226,7 @@ export function useCompareBoard() {
   /** S-13~S-16 — 저장이 끝난 revision으로만 확정. 연타는 ref로 막는다(AC-17) */
   async function confirm() {
     if (confirmLock.current || removing || !evaluation || !saved || !saver.current) return;
-    const availability = engineRef.current!.confirmAvailability(evaluation.draft, saved.status);
+    const availability = engineRef.current!.confirmAvailability(evaluation.draft, saved.status, unchanged);
     if (!availability.ok) return announce(availability.reason);
     confirmLock.current = true;
     setConfirming(true);
@@ -259,8 +261,8 @@ export function useCompareBoard() {
     items: evaluation && engine ? engine.draftItemsView(evaluation.draft, comparison.results) : [],
     checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
     warnings: evaluation?.warnings ?? [],
-    draftStatus: saved ? draftStatusOf(saved.board) : UNCONFIRMED,
-    availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status),
+    draftStatus: saved?.board.confirmed && unchanged ? { kind: "confirmed" as const, version: saved.board.confirmed.version } : saved ? draftStatusOf(saved.board) : UNCONFIRMED,
+    availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status, unchanged),
     fonts: engine?.fonts ?? [],
     saveStatus: saved?.status ?? "idle",
     notices,

@@ -1,0 +1,67 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/qa-1a-01/app
+
+ ✓ src/test/noHardcodedStyle.test.ts > 스타일 하드코딩 금지 > 검사할 화면·컴포넌트 파일이 있다 1ms
+ ✓ src/test/noHardcodedStyle.test.ts > 스타일 하드코딩 금지 > src/components·src/pages에 hex·px 하드코딩이 0건이다 7ms
+ ✓ src/styles/tokens.test.ts > 디자인 토큰 > 라이트 테마의 --primary는 #3366ff로 해석된다 6ms
+ ✓ src/styles/tokens.test.ts > 디자인 토큰 > 다크 테마의 --primary는 #5b84ff로 해석된다 8ms
+ ✓ src/styles/tokens.test.ts > 디자인 토큰 > --radius-lg는 16px이다 2ms
+ ✓ src/styles/tokens.test.ts > 디자인 토큰 > --font-size-body1은 16px이다 3ms
+ ✓ src/styles/tokens.test.ts > 디자인 토큰 > --primary는 브랜드 토큰(--brand-primary)을 참조한다 (ADR-002) 1ms
+ ✓ src/styles/tokens.test.ts > 디자인 토큰 > 토큰 복사본마다 원본 번들 경로를 출처 주석으로 남긴다 1ms
+ ✓ src/test/brandIsolation.test.ts > 브랜드 격리 (ADR-002) > src에 이전 브랜드 명칭이 없다 (출처 경로 주석 제외) 36ms
+ ✓ src/test/brandIsolation.test.ts > 브랜드 격리 (ADR-002) > --brand-* 정의는 brand.css에만 존재한다 7ms
+ ✓ src/test/brandIsolation.test.ts > 브랜드 격리 (ADR-002) > --brand-* 참조는 토큰 계층(styles/tokens) 밖에 없다 13ms
+ ✓ src/test/brandIsolation.test.ts > 브랜드 격리 (ADR-002) > brand.config.ts가 제품명과 로고 컴포넌트를 제공한다 30ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 최대 개수는 6개다 (FR-CMP-02) 1ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 추가하면 끝에 담긴다 1ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 이미 담긴 레퍼런스는 다시 담지 않는다 0ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 6개가 찬 상태에서 7번째 추가는 거부한다 0ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 6번째 추가까지는 허용한다 0ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 해제하면 해당 레퍼런스만 빠진다 0ms
+ ✓ src/features/compare/compareTray.test.ts > 비교 트레이 > 추가·해제는 입력 트레이를 변경하지 않는다 0ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 필터 없이 목업 레퍼런스 6개를 돌려준다 1ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 업종=카페·F&B 필터는 A·F 2개를 돌려준다 0ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > external_observed 레코드는 목록·단건 조회 어디에도 나오지 않는다 (FR-CAT-04) 1ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 같은 그룹 안의 선택은 OR로 결합한다 0ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 서로 다른 그룹의 선택은 AND로 결합한다 0ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 타깃·레이아웃·목적·라이선스·모션 필터를 각각 적용한다 0ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 점수순은 접근성+성능 합계 내림차순, 최신순은 등록일 내림차순이다 7ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > id로 단건을 조회한다 0ms
+ ✓ src/data/referenceRepository.test.ts > 메모리 ReferenceRepository > 입력 레코드 배열을 변경하지 않는다 0ms
+ ✓ src/components/ds/Button.test.tsx > Button > outline 변형은 테두리 색 클래스가 line-normal 하나뿐이다 (transparent와 충돌 금지) 82ms
+ ✓ src/components/ds/Button.test.tsx > Button > primary 변형은 투명 테두리 하나만 가진다 5ms
+ ✓ src/components/ds/Button.test.tsx > Button > secondary 변형은 투명 테두리 하나만 가진다 4ms
+ ✓ src/components/ds/Button.test.tsx > Button > assistive 변형은 투명 테두리 하나만 가진다 4ms
+ ✓ src/components/ds/Button.test.tsx > Button > 기본 type은 button이다 5ms
+ ✓ src/components/catalog/ReferenceCard.test.tsx > ReferenceCard > 목업 카드 필드를 빠짐없이 표시한다 (FR-CAT-02) 106ms
+ ✓ src/components/catalog/ReferenceCard.test.tsx > ReferenceCard > 이름은 레퍼런스 상세로 연결된다 11ms
+ ✓ src/components/catalog/ReferenceCard.test.tsx > ReferenceCard > 저장 버튼은 이름을 포함한 aria-label과 눌림 상태를 가진다 24ms
+ ✓ src/components/catalog/ReferenceCard.test.tsx > ReferenceCard > 비교 버튼은 이름을 포함한 aria-label을 갖는다 17ms
+ ✓ src/components/catalog/ReferenceCard.test.tsx > ReferenceCard > 트레이에 담긴 카드는 '비교 중'으로 표시되고, 접근성 이름이 보이는 문구와 빼기 동작을 담는다 16ms
+ ✓ src/components/catalog/ReferenceCard.test.tsx > ReferenceCard > licensed 레퍼런스는 licensed 배지를 표시한다 6ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 필터 없이 진입하면 노출 가능한 레퍼런스 6개를 보여준다 135ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 업종 칩을 누르면 카드가 줄고 URL 쿼리에 남는다 (FR-CAT-01) 111ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 체크박스 필터는 그룹 안 OR로 URL에 쌓인다 124ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 모션 강도를 고르면 해당 카드만 남고 URL에 반영된다 48ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 새로고침(초기 URL)하면 필터 상태를 복원한다 53ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 알 수 없는 쿼리 값은 무시한다 23ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 정렬을 바꾸면 순서와 URL이 바뀐다 79ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 초기화는 필터 쿼리를 지우고 전체를 보여준다 55ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 저장한 레퍼런스는 저장함 탭에서 모아 본다 68ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 비교 추가·해제가 하단 트레이에 반영된다 (FR-CMP-02) 93ms
+ ✓ src/pages/CatalogPage.test.tsx > CatalogPage (1a-01) > 7번째 비교 추가는 막고 안내한다 233ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > / 는 /catalog 로 이동한다 16ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > /references/ref-a 는 다음 단계 자리표시 페이지다 6ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > /compare 는 다음 단계 자리표시 페이지다 5ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > /profile 는 다음 단계 자리표시 페이지다 5ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > /studio 는 다음 단계 자리표시 페이지다 5ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > 보관함(/catalog?tab=saved)에서는 GNB의 보관함만 현재 위치로 표시한다 18ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > 카탈로그에서는 GNB의 카탈로그만 현재 위치로 표시한다 14ms
+ ✓ src/pages/CatalogPage.test.tsx > 라우팅 > 비교 보드 열기는 /compare 로 이동한다 46ms
+
+ Test Files  8 passed (8)
+      Tests  58 passed (58)
+   Start at  19:07:08
+   Duration  2.67s (environment 58%, tests 18%, setup 16%, transform 5%, import 3%, worker 1%)
+

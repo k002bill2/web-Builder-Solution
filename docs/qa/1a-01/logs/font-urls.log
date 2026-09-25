@@ -1,0 +1,11 @@
+# 2026-09-25 19:08:03 KST Pretendard @font-face URL 확인 (curl)
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-Bold.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-Medium.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-Regular.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-SemiBold.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Medium.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Regular.woff2
+404 https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2
+# 대조: jsDelivr 자체는 정상
+200 https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Regular.woff2

@@ -1,8 +1,9 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
 import type { DesignReference } from "../domain/reference";
+import { ALL_FILTER_GROUPS, INDUSTRY_LABELS, MOTION_OPTIONS } from "../fixtures/catalogFilters";
 import { referenceFixtures } from "../fixtures/references";
 import { renderApp } from "../test/renderApp";
 
@@ -103,13 +104,14 @@ describe("CatalogPage (1a-01)", () => {
     expect(new URLSearchParams(router.state.location.search).get("sort")).toBe("latest");
   });
 
-  it("초기화는 필터 쿼리를 지우고 전체를 보여준다", async () => {
+  it("초기화는 레일 필터만 지우고 업종은 남긴다 (Q8)", async () => {
     const { router } = renderApp("/catalog?industry=beauty&audience=b2b");
     await expectCardCount(0);
     expect(screen.getByText("조건에 맞는 레퍼런스가 없습니다")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "필터 초기화" }));
-    await expectCardCount(6);
-    expect(router.state.location.search).toBe("");
+    await expectCardCount(1);
+    expect(titles()).toEqual(["프리미엄 헤어살롱"]);
+    expect(router.state.location.search).toBe("?industry=beauty");
   });
 
   it("저장한 레퍼런스는 GNB 보관함(?tab=saved)에서 모아 본다 (V2-AC-21)", async () => {
@@ -221,6 +223,124 @@ describe("카탈로그 상단 v2 (SPEC 4.2 r2)", () => {
     expect(chips.className.split(/\s+/)).toEqual(expect.arrayContaining(["overflow-x-auto", "lg:flex-wrap"]));
     const grid = cards()[0]!.parentElement!;
     expect(grid.className).toBe("grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3");
+  });
+});
+
+describe("필터 레일 r2 (SPEC 4.2)", () => {
+  const checkbox = (name: string) => screen.getByRole("checkbox", { name });
+  const chip = (name: string) => within(screen.getByRole("group", { name: "업종" })).getByRole("button", { name });
+  const reset = () => screen.getByRole("button", { name: "필터 초기화" });
+  const filterToggle = () => screen.getByRole("button", { name: "필터" });
+  const rail = () => screen.getByRole("complementary", { name: "필터" });
+
+  it("옵션·업종 칩 개수는 자기 그룹을 뺀 조건의 수다 — 이름은 옵션명, 개수는 설명 (V2-AC-41)", async () => {
+    renderApp("/catalog?concept=minimal,warm");
+    await expectCardCount(1);
+    await waitFor(() => expect(checkbox("대담한")).toHaveAccessibleDescription("1개"));
+    expect(checkbox("대담한")).toHaveAccessibleName("대담한");
+    expect(checkbox("미니멀")).toHaveAccessibleDescription("1개");
+    expect(checkbox("풀블리드 히어로")).toHaveAccessibleDescription("1개");
+    expect(checkbox("스플릿")).toHaveAccessibleDescription("0개");
+    expect(chip("전체")).toHaveAccessibleDescription("1개");
+    expect(chip("카페·F&B")).toHaveAccessibleName("카페·F&B");
+    expect(chip("카페·F&B")).toHaveAccessibleDescription("1개");
+    expect(chip("뷰티")).toHaveAccessibleDescription("0개");
+  });
+
+  it("보관함(?tab=saved)은 저장한 레퍼런스만 센다 (V2-AC-41)", async () => {
+    renderApp("/catalog");
+    await expectCardCount(6);
+    await userEvent.click(screen.getByRole("button", { name: "프리미엄 헤어살롱 저장" }));
+    await userEvent.click(within(screen.getByRole("navigation", { name: "주 메뉴" })).getByRole("link", { name: "보관함" }));
+    await expectCardCount(1);
+    await waitFor(() => expect(chip("전체")).toHaveAccessibleDescription("1개"));
+    expect(chip("뷰티")).toHaveAccessibleDescription("1개");
+    expect(chip("카페·F&B")).toHaveAccessibleDescription("0개");
+    expect(checkbox("대담한")).toHaveAccessibleDescription("1개");
+    expect(checkbox("미니멀")).toHaveAccessibleDescription("0개");
+  });
+
+  it("0개 옵션도 체크할 수 있다", async () => {
+    const { router } = renderApp("/catalog?industry=education");
+    await expectCardCount(0);
+    await waitFor(() => expect(checkbox("미니멀")).toHaveAccessibleDescription("0개"));
+    expect(checkbox("미니멀")).toBeEnabled();
+    await userEvent.click(checkbox("미니멀"));
+    expect(checkbox("미니멀")).toBeChecked();
+    expect(new URLSearchParams(router.state.location.search).get("concept")).toBe("minimal");
+  });
+
+  it("'초기화 · N': N = 체크 수 + 모션, 레일만 지우고 업종·정렬·tab 유지 (V2-AC-42)", async () => {
+    const { router } = renderApp("/catalog?industry=beauty&concept=minimal,bold&motion=mid&sort=latest&tab=saved");
+    await screen.findByRole("heading", { level: 1, name: "보관함" });
+    expect(reset()).toHaveTextContent("초기화 · 3");
+    expect(reset()).toHaveAccessibleDescription("선택 3개");
+    expect(filterToggle()).toHaveTextContent("필터 3");
+    expect(filterToggle()).toHaveAccessibleDescription("선택 3개");
+    await userEvent.click(reset());
+    expect(router.state.location.search).toBe("?industry=beauty&sort=latest&tab=saved");
+    expect(reset()).toHaveTextContent(/^초기화$/);
+    expect(reset()).toBeDisabled();
+    expect(reset()).toHaveAccessibleDescription("선택 0개");
+    expect(filterToggle()).toHaveTextContent(/^필터$/);
+  });
+
+  it("업종만으로 0건이면 초기화가 비활성이고 '업종을 전체로' 안내를 보인다", async () => {
+    renderApp("/catalog?industry=education");
+    await expectCardCount(0);
+    expect(reset()).toBeDisabled();
+    expect(screen.getByText("업종을 '전체'로 바꿔 보세요.")).toBeInTheDocument();
+    expect(screen.queryByText("필터를 줄이거나 초기화해 보세요.")).not.toBeInTheDocument();
+  });
+
+  it("<1024 '필터 N' 버튼이 같은 레일 한 벌을 펼치고, 펼친 채 선택이 URL에 반영된다 (V2-AC-19r2)", async () => {
+    const { router } = renderApp("/catalog?concept=minimal");
+    await expectCardCount(1);
+    const toggle = filterToggle();
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(toggle).toHaveAttribute("aria-controls", rail().id);
+    expect(toggle.className.split(/\s+/)).toContain("lg:hidden");
+    expect(rail().className.split(/\s+/)).toEqual(expect.arrayContaining(["hidden", "lg:flex"]));
+    // DOM 순서 = 보이는 순서: 필터 N → 업종 칩 → 정렬 → 레일
+    expect(toggle.compareDocumentPosition(screen.getByRole("group", { name: "업종" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(rail().className.split(/\s+/)).not.toContain("hidden");
+    await userEvent.click(checkbox("대담한"));
+    expect(new URLSearchParams(router.state.location.search).get("concept")).toBe("minimal,bold");
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getAllByRole("complementary", { name: "필터" })).toHaveLength(1);
+  });
+
+  it("9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)", async () => {
+    const { router } = renderApp("/catalog");
+    await expectCardCount(6);
+    for (const group of ALL_FILTER_GROUPS) {
+      for (const option of group.options) {
+        expect(screen.getAllByRole("checkbox", { name: option.label })).toHaveLength(1);
+        await userEvent.click(checkbox(option.label));
+      }
+    }
+    for (const option of MOTION_OPTIONS) expect(screen.getAllByRole("radio", { name: option.label })).toHaveLength(1);
+    await userEvent.click(screen.getByRole("radio", { name: "높음" }));
+    for (const label of Object.values(INDUSTRY_LABELS)) expect(screen.getAllByRole("button", { name: label })).toHaveLength(1);
+    await userEvent.click(chip("리테일"));
+    expect(screen.getAllByRole("radiogroup", { name: "모션 강도" })).toHaveLength(1);
+    expect(screen.getAllByRole("radiogroup", { name: "정렬" })).toHaveLength(1);
+
+    const search = router.state.location.search;
+    const params = new URLSearchParams(search);
+    for (const group of ALL_FILTER_GROUPS) expect(params.get(group.key)).toBe(group.options.map((o) => o.id).join(","));
+    expect(params.get("motion")).toBe("high");
+    expect(params.get("industry")).toBe("retail");
+    cleanup();
+
+    renderApp(`/catalog${search}`);
+    await screen.findByRole("heading", { level: 1 });
+    for (const group of ALL_FILTER_GROUPS) for (const option of group.options) expect(checkbox(option.label)).toBeChecked();
+    expect(screen.getByRole("radio", { name: "높음" })).toHaveAttribute("aria-checked", "true");
+    expect(chip("리테일")).toHaveAttribute("aria-pressed", "true");
   });
 });
 

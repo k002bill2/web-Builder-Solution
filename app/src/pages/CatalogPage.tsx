@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { CatalogHero } from "../components/catalog/CatalogHero";
 import { CatalogToolbar } from "../components/catalog/CatalogToolbar";
@@ -7,12 +7,15 @@ import { FilterRail } from "../components/catalog/FilterRail";
 import { ReferenceCard } from "../components/catalog/ReferenceCard";
 import { CATALOG_RESULTS_ID } from "../components/layout/SkipLinks";
 import {
+  clearRailFilters,
   parseCatalogParams,
+  railSelectionCount,
   selectedIn,
   toCatalogParams,
   toggleGroupOption,
   type CatalogState,
 } from "../features/catalog/catalogSearchParams";
+import { useFacetCounts } from "../features/catalog/useFacetCounts";
 import { useReferenceList } from "../features/catalog/useReferenceList";
 import { COMPARE_LIMIT_NOTICE } from "../features/compare/compareTray";
 import { useCompareTray } from "../features/compare/CompareTrayContext";
@@ -30,6 +33,11 @@ export function CatalogPage() {
   const { tray, add, remove } = useCompareTray();
   const trayReferences = useTrayReferences(tray);
   const [notice, setNotice] = useState<string | null>(null);
+  const counts = useFacetCounts(state.filters, items, state.tab === "saved" ? saved : undefined);
+  const selectionCount = railSelectionCount(state.filters);
+  const railId = useId();
+  /** <1024 레일 펼침 — 화면 상태라 URL에 두지 않는다 (SPEC 4.2). */
+  const [railOpen, setRailOpen] = useState(false);
 
   const update = (patch: Partial<CatalogState>) => setSearchParams(toCatalogParams({ ...state, ...patch }));
   const savedItems = items.filter((r) => saved.has(r.id));
@@ -67,11 +75,20 @@ export function CatalogPage() {
             void _previous;
             update({ filters: industry ? { ...rest, industry } : rest });
           }}
+          counts={counts}
           sort={state.sort}
           onSortChange={(sort) => update({ sort })}
+          railId={railId}
+          railOpen={railOpen}
+          selectionCount={selectionCount}
+          onRailToggle={() => setRailOpen((open) => !open)}
         />
         <div className="grid gap-7 pt-5 lg:grid-cols-[--spacing(58)_minmax(0,1fr)]">
           <FilterRail
+            id={railId}
+            open={railOpen}
+            counts={counts}
+            selectionCount={selectionCount}
             isSelected={(key, id) => selectedIn(state.filters, key).includes(id)}
             motion={state.filters.motion}
             onToggle={(key, id) => update({ filters: toggleGroupOption(state.filters, key, id) })}
@@ -80,7 +97,7 @@ export function CatalogPage() {
               void _previous;
               update({ filters: motion ? { ...rest, motion } : rest });
             }}
-            onReset={() => update({ filters: {} })}
+            onReset={() => update({ filters: clearRailFilters(state.filters) })}
           />
           <section id={CATALOG_RESULTS_ID} tabIndex={-1} aria-label="레퍼런스 목록" className="min-w-0 focus:outline-none">
             {state.tab === "rec" ? (
@@ -96,7 +113,11 @@ export function CatalogPage() {
             ) : loaded && visible.length === 0 ? (
               <div className="py-16 text-center">
                 <p className="ds-body1 text-label-normal">조건에 맞는 레퍼런스가 없습니다</p>
-                <p className="ds-body3 mt-1 text-label-alternative">필터를 줄이거나 초기화해 보세요.</p>
+                <p className="ds-body3 mt-1 text-label-alternative">
+                  {selectionCount === 0 && state.filters.industry
+                    ? "업종을 '전체'로 바꿔 보세요."
+                    : "필터를 줄이거나 초기화해 보세요."}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

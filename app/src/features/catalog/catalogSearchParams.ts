@@ -90,3 +90,14 @@ export function toggleGroupOption(filters: CatalogFilters, key: FilterGroupKey, 
   void _removed;
   return values.length > 0 ? ({ ...rest, [key]: values } as CatalogFilters) : rest;
 }
+
+/** 레일 선택 수 = 체크된 옵션 수(7그룹) + 모션이 "전체"가 아니면 1. 업종은 레일 밖이라 세지 않는다 (V2-AC-42). */
+export function railSelectionCount(filters: CatalogFilters): number {
+  const checked = (Object.keys(GROUP_OPTION_IDS) as FilterGroupKey[]).reduce((n, key) => n + selectedIn(filters, key).length, 0);
+  return checked + (filters.motion ? 1 : 0);
+}
+
+/** 레일 초기화 — 레일 8그룹만 지우고 업종은 남긴다 (Q8). */
+export function clearRailFilters(filters: CatalogFilters): CatalogFilters {
+  return filters.industry ? { industry: filters.industry } : {};
+}

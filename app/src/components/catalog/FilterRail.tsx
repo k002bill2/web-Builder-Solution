@@ -1,4 +1,6 @@
+import { useId } from "react";
 import type { MotionLevel } from "../../domain/reference";
+import type { FacetCounts } from "../../features/catalog/facetCounts";
 import {
   FILTER_GROUPS,
   MOTION_OPTIONS,
@@ -6,6 +8,7 @@ import {
   type AnyFilterGroup,
   type FilterGroupKey,
 } from "../../fixtures/catalogFilters";
+import { Button } from "../ds/Button";
 import { Checkbox } from "../ds/Checkbox";
 import { SegmentedControl } from "../ds/SegmentedControl";
 
@@ -18,10 +21,12 @@ const MOTION_SEGMENTS: ReadonlyArray<{ value: MotionValue; label: string }> = [
 
 function CheckboxGroup({
   group,
+  counts,
   isSelected,
   onToggle,
 }: {
   readonly group: AnyFilterGroup;
+  readonly counts: FacetCounts;
   readonly isSelected: (key: FilterGroupKey, id: string) => boolean;
   readonly onToggle: (key: FilterGroupKey, id: string) => void;
 }) {
@@ -33,6 +38,7 @@ function CheckboxGroup({
           <Checkbox
             key={option.id}
             label={option.label}
+            count={counts[group.key][option.id] ?? 0}
             checked={isSelected(group.key, option.id)}
             onChange={() => onToggle(group.key, option.id)}
           />
@@ -42,35 +48,52 @@ function CheckboxGroup({
   );
 }
 
-/** 왼쪽 필터 레일 (목업 76~85행). 색상·디바이스 그룹은 목업에 없어 모션 강도 다음에 덧붙인다. */
+/**
+ * 왼쪽 필터 레일 (v2 SPEC 4.2 r2). 색상·디바이스 그룹은 목업에 없어 모션 강도 다음에 덧붙인다 (C-01r2).
+ * 한 벌만 렌더한다 — <1024 접힘은 CSS(`hidden lg:flex`)로만, 펼침은 칩 줄의 "필터 N" 버튼이 `open`으로 연다.
+ */
 export function FilterRail({
+  id,
+  open,
+  counts,
+  selectionCount,
   isSelected,
   motion,
   onToggle,
   onMotionChange,
   onReset,
 }: {
+  readonly id: string;
+  readonly open: boolean;
+  readonly counts: FacetCounts;
+  readonly selectionCount: number;
   readonly isSelected: (key: FilterGroupKey, id: string) => boolean;
   readonly motion: MotionLevel | undefined;
   readonly onToggle: (key: FilterGroupKey, id: string) => void;
   readonly onMotionChange: (motion: MotionLevel | undefined) => void;
   readonly onReset: () => void;
 }) {
+  const resetDescriptionId = useId();
   return (
-    <aside aria-label="필터" className="flex flex-col gap-5.5">
+    <aside id={id} aria-label="필터" className={`${open ? "flex" : "hidden lg:flex"} flex-col gap-5.5`}>
       <div className="flex items-center justify-between">
         <h2 className="ds-heading2">필터</h2>
-        <button
-          type="button"
+        <Button
+          variant="assistive"
+          size="sm"
           aria-label="필터 초기화"
+          aria-describedby={resetDescriptionId}
+          disabled={selectionCount === 0}
           onClick={onReset}
-          className="ds-caption1 cursor-pointer font-semibold text-primary hover:text-primary-hover"
         >
-          초기화
-        </button>
+          {selectionCount > 0 ? `초기화 · ${selectionCount}` : "초기화"}
+        </Button>
+        <span id={resetDescriptionId} hidden>
+          선택 {selectionCount}개
+        </span>
       </div>
       {FILTER_GROUPS.map((group) => (
-        <CheckboxGroup key={group.key} group={group} isSelected={isSelected} onToggle={onToggle} />
+        <CheckboxGroup key={group.key} group={group} counts={counts} isSelected={isSelected} onToggle={onToggle} />
       ))}
       <div className="flex flex-col gap-2">
         <span className="ds-label text-label-neutral">모션 강도</span>
@@ -84,7 +107,7 @@ export function FilterRail({
         />
       </div>
       {TRAILING_FILTER_GROUPS.map((group) => (
-        <CheckboxGroup key={group.key} group={group} isSelected={isSelected} onToggle={onToggle} />
+        <CheckboxGroup key={group.key} group={group} counts={counts} isSelected={isSelected} onToggle={onToggle} />
       ))}
     </aside>
   );

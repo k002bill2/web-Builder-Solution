@@ -8,10 +8,15 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-pressed: var(--primary-pressed);
   --color-primary-container: var(--primary-container);
+  --color-primary-text: var(--primary-text);
   --color-on-primary: var(--on-primary);
   --color-surface-inverse: var(--surface-inverse);
   --color-surface-inverse-hover: var(--surface-inverse-hover);
   --color-on-surface-inverse: var(--on-surface-inverse);
+  --color-inverse-fill-normal: var(--inverse-fill-normal);
+  --color-inverse-fill-strong: var(--inverse-fill-strong);
+  --color-inverse-label-alternative: var(--inverse-label-alternative);
+  --color-inverse-label-disable: var(--inverse-label-disable);
 
   --color-label-normal: var(--label-normal);
   --color-label-strong: var(--label-strong);
@@ -25,6 +30,7 @@
   --color-background-alternative: var(--background-alternative);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
 
   --color-fill-normal: var(--fill-normal);
   --color-fill-strong: var(--fill-strong);
@@ -37,12 +43,16 @@
 
   --color-status-positive: var(--status-positive);
   --color-status-positive-bg: var(--status-positive-bg);
+  --color-status-positive-text: var(--status-positive-text);
   --color-status-negative: var(--status-negative);
   --color-status-negative-bg: var(--status-negative-bg);
+  --color-status-negative-text: var(--status-negative-text);
   --color-status-cautionary: var(--status-cautionary);
   --color-status-cautionary-bg: var(--status-cautionary-bg);
+  --color-status-cautionary-text: var(--status-cautionary-text);
   --color-status-informative: var(--status-informative);
   --color-status-informative-bg: var(--status-informative-bg);
+  --color-status-informative-text: var(--status-informative-text);
 
   --color-accent-blue: var(--accent-blue);
   --color-accent-blue-bg: var(--accent-blue-bg);
@@ -54,11 +64,6 @@
   --color-accent-orange-bg: var(--accent-orange-bg);
   --color-accent-violet: var(--accent-violet);
   --color-accent-violet-bg: var(--accent-violet-bg);
-
-  /* 목업이 직접 쓰는 원시 색 (썸네일 와이어프레임·트레이 카운트) */
-  --color-common-100: var(--common-100);
-  --color-cool-neutral-90: var(--cool-neutral-90);
-  --color-blue-70: var(--blue-70);
 
   --spacing: var(--space-100);
 

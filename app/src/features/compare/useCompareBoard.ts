@@ -260,6 +260,7 @@ export function useCompareBoard() {
     view,
     items: evaluation && engine ? engine.draftItemsView(evaluation.draft, comparison.results) : [],
     checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
+    CustomStyleFields: engine?.CustomStyleFields,
     warnings: evaluation?.warnings ?? [],
     draftStatus: saved?.board.confirmed && unchanged ? { kind: "confirmed" as const, version: saved.board.confirmed.version } : saved ? draftStatusOf(saved.board) : UNCONFIRMED,
     availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status, unchanged),

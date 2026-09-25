@@ -14,15 +14,15 @@ export function TextField({
   return (
     <label
       className={
-        "flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-normal bg-background-normal px-4 " +
+        "flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 " +
         "transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard " +
-        "hover:border-line-strong focus-within:border-primary focus-within:shadow-(--focus-ring)"
+        "hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"
       }
     >
       <span className="sr-only">{label}</span>
       {leadingIcon && <Icon name={leadingIcon} size={20} className="text-label-alternative" />}
       <input
-        className="min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-assistive"
+        className="min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"
         {...rest}
       />
     </label>

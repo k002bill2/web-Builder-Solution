@@ -12,7 +12,7 @@ export function ReferencePreview({ reference: r }: { readonly reference: DesignR
       >
         <div className="flex justify-between">
           <span className="h-1.5 w-10 rounded-[--spacing(0.5)]" style={{ backgroundColor: p.ink }} />
-          <span className="h-1.5 w-30 rounded-[--spacing(0.5)] bg-cool-neutral-90" />
+          <span className="h-1.5 w-30 rounded-[--spacing(0.5)] bg-line-normal" />
         </div>
         <div
           className="flex flex-1 flex-col items-start justify-end gap-2.5 rounded-sm p-4.5"
@@ -23,11 +23,11 @@ export function ReferencePreview({ reference: r }: { readonly reference: DesignR
         </div>
         <div className="flex h-14 gap-2.5">
           {[0, 1, 2].map((i) => (
-            <span key={i} className="flex-1 rounded-[--spacing(1.5)] border border-line-alternative bg-common-100" />
+            <span key={i} className="flex-1 rounded-[--spacing(1.5)] border border-line-alternative bg-surface-elevated" />
           ))}
         </div>
       </div>
-      <figcaption className="ds-caption1 mt-2 text-label-assistive">
+      <figcaption className="ds-caption1 mt-2 text-label-alternative">
         자체 렌더 미리보기 — 외부 캡처를 사용하지 않습니다
       </figcaption>
     </figure>

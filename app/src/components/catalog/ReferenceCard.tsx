@@ -25,14 +25,14 @@ function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
     >
       <div className="flex h-1.25 w-full justify-between">
         <span className="h-1.25 w-7 rounded-[--spacing(0.5)]" style={{ backgroundColor: p.ink }} />
-        <span className="h-1.25 w-12 rounded-[--spacing(0.5)] bg-cool-neutral-90" />
+        <span className="h-1.25 w-12 rounded-[--spacing(0.5)] bg-line-normal" />
       </div>
       <div className="flex flex-1 items-end rounded-[--spacing(1.5)] p-2.5" style={{ backgroundColor: p.primary }}>
         <span className="h-2 w-[44%] rounded-[--spacing(0.5)] opacity-90" style={{ backgroundColor: p.surface }} />
       </div>
       <div className="flex h-5.5 gap-1.5">
         {[0, 1, 2].map((i) => (
-          <span key={i} className="flex-1 rounded-xs border border-line-alternative bg-common-100" />
+          <span key={i} className="flex-1 rounded-xs border border-line-alternative bg-surface-elevated" />
         ))}
       </div>
       <div className="absolute top-2.5 right-2.5">
@@ -101,15 +101,16 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
             <b className="text-label-normal">{r.scores.performance}</b> · 모션 {MOTION_LABELS[r.motionLevel]}
           </span>
           <Button
-            variant={inTray ? "assistive" : "outline"}
+            variant="outline"
             size="sm"
+            leadingIcon={inTray ? "check" : undefined}
             aria-label={inTray ? `${r.title} 비교 중, 비교에서 빼기` : `${r.title} 비교 추가`}
             onClick={() => onToggleCompare(r.id)}
           >
             {inTray ? "비교 중" : "비교 추가"}
           </Button>
         </div>
-        <div className="ds-caption2 mt-1.5 text-label-assistive">
+        <div className="ds-caption2 mt-1.5 text-label-alternative">
           점수 측정 {formatDate(r.scores.measuredAt)} · {r.responsive ? "반응형 지원" : "반응형 미지원"}
         </div>
       </div>

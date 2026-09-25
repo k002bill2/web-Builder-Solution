@@ -37,9 +37,9 @@ export function Select<T extends string>({
           if (next) onChange(next.value);
         }}
         className={cx(
-          "w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-normal bg-background-normal text-label-normal outline-none",
+          "w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none",
           "transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard",
-          "hover:border-line-strong focus-visible:border-primary focus-visible:shadow-(--focus-ring)",
+          "hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring)",
           SIZE[size],
         )}
       >

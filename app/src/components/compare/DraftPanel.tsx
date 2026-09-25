@@ -1,16 +1,15 @@
-import { useEffect, useId, useRef, type Ref } from "react";
+import { useEffect, useId, useRef, type ComponentType, type Ref } from "react";
 import type { BoardWarning, WarningFix } from "../../domain/boardWarnings";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
 import type { CustomStyle, DraftStatus } from "../../domain/compareBoard";
 import type { FontOption } from "../../domain/fonts";
 import { confirmLabel, statusLabel } from "../../features/compare/draftLabels";
 import type { DraftItemView } from "../../features/compare/draftView";
-import type { PrimaryColorCheck } from "./CustomStyleFields";
+import type { CustomStyleFieldsProps, PrimaryColorCheck } from "./CustomStyleFields";
 import { Button } from "../ds/Button";
 import { Callout, type CalloutTone } from "../ds/Callout";
 import { cx } from "../ds/cx";
 import { Tag, type TagTone } from "../ds/Tag";
-import { CustomStyleFields } from "./CustomStyleFields";
 import { DraftItem } from "./DraftItem";
 
 /** 패널 상단 안내 — 열 해제(S-08·1.3)·동기화(S-14 STALE)·확정 오류(S-14) */
@@ -54,6 +53,8 @@ export interface DraftPanelProps {
   readonly onUndo: () => void;
   readonly onCustomChange: (custom: CustomStyle) => void;
   readonly onApplyFix: (fix: WarningFix) => void;
+  /** 사용자 스타일 입력 — 엔진 청크가 싣는다(첫 화면 JS에서 뺌, V2-1 · SPEC B-5). 없으면 그리지 않는다 */
+  readonly CustomStyleFields?: ComponentType<CustomStyleFieldsProps>;
   readonly headingRef?: Ref<HTMLHeadingElement>;
   readonly className?: string;
 }
@@ -121,6 +122,7 @@ export function DraftPanel({
   onUndo,
   onCustomChange,
   onApplyFix,
+  CustomStyleFields,
   headingRef,
   className,
 }: DraftPanelProps) {
@@ -185,7 +187,7 @@ export function DraftPanel({
       ) : (
         <p className="ds-body3 rounded-md bg-surface-elevated px-3.5 py-3 text-label-alternative">항목에서 '이 요소 선택'을 누르면 여기에 담깁니다</p>
       )}
-      <CustomStyleFields value={custom} fonts={fonts} checkPrimaryColor={checkPrimaryColor} onChange={onCustomChange} />
+      {CustomStyleFields && <CustomStyleFields value={custom} fonts={fonts} checkPrimaryColor={checkPrimaryColor} onChange={onCustomChange} />}
       {warnings.length > 0 && (
         <div className="flex flex-col gap-2">
           {warnings.map((warning) => (

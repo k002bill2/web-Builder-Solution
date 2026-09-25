@@ -1,0 +1,41 @@
+ElementResolutionError: Locator loc=href:/references/ref-f matched 3 elements (3 visible, 0 hidden). Candidates: 1. a "로컬 베이커리" (visible); 2. a "로컬 베이커리" (visible); 3. a "로컬 베이커리" (visible). Use a current snapshot ref or a more specific role, text, or CSS selector.
+    at ambiguityError (file:////[eval1]:10631:12)
+    at locatorCountError (file:////[eval1]:10594:12)
+    at async findUniqueLocatorContext (file:////[eval1]:10351:19)
+    at async resolveLocatorObjectId (file:////[eval1]:10322:19)
+    at async clickInPage (file:////[eval1]:14065:20)
+    at async #retryElementAction (file:////[eval1]:18867:24)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+C1 card->detail {"url":"http://127.0.0.1:4327/references/ref-a","h1":"모던 카페 브랜드","scrollY":0}
+C7 fonts {"fontReq":["200 /assets/Pretendard-Bold.subset-NvQkMce4.woff2","200 /assets/Pretendard-SemiBold.subset-DdMYyxPR.woff2","200 /assets/Pretendard-Medium.subset-D07TkZcI.woff2","200 /assets/Pretendard-Regular.subset-BZqc2FCe.woff2"],"external":[],"bad":[],"loaded":["Pretendard/400/loaded","Pretendard/500/loaded","Pretendard/600/loaded","Pretendard/700/loaded"],"bodyFont":"Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Apple SD Gothic Neo\", Arial, sans-serif","check600":true}
+tabs [{"n":"섹션 구성","sel":"true","ti":0},{"n":"토큰","sel":"false","ti":0},{"n":"모바일","sel":"false","ti":0},{"n":"점수 이력","sel":"false","ti":0}]
+C2 tabs [{"name":"토큰","url":"http://127.0.0.1:4327/references/ref-a?tab=tokens","panel":"토큰 요약\n팔레트\n대표 #8B5E3C · 본문 대비 7.2:1\n폰트\nPretendard\n제목 700 / 본문 400 · 스케일 1.25\n간격 ·"},{"name":"모바일","url":"http://127.0.0.1:4327/references/ref-a?tab=mobile","panel":"모바일 구조\n단일 컬럼\n햄버거 메뉴\n히어로 4:5\n카드 세로 스택\n하단 고정 CTA"},{"name":"점수 이력","url":"http://127.0.0.1:4327/references/ref-a?tab=scores","panel":"점수 이력\n측정일\t도구\t접근성\t성능\n2026.09.20\tLighthouse 12\t96\t92\n\n이전 측정 기록이 없습니다."},{"name":"섹션 구성","url":"http://127.0.0.1:4327/references/ref-a","panel":"섹션 구성 · 8개\n01\nHeader\nsticky\n02\nHero\nfullbleed-left\n03\nAbout\nsplit\n04\nServices\ngr"}]
+C2 reload {"before":"http://127.0.0.1:4327/references/ref-a?tab=mobile","after":"http://127.0.0.1:4327/references/ref-a?tab=mobile","selected":"모바일"}
+C3 similar links [{"t":"로컬 베이커리","h":"/references/ref-f"},{"t":"필라테스 스튜디오","h":"/references/ref-d"},{"t":"프리미엄 헤어살롱","h":"/references/ref-b"},{"t":"부티크 법률사무소","h":"/references/ref-e"},{"t":"동네 치과 클리닉","h":"/references/ref-c"},{"t":"로컬 베이커리","h":"/references/ref-f"},{"t":"필라테스 스튜디오","h":"/references/ref-d"},{"t":"로컬 베이커리","h":"/references/ref-f"}]
+
+ego's nodejs process exited with code 1.
+C3 after click {"url":"http://127.0.0.1:4327/references/ref-f","h1":"로컬 베이커리","hasCafeTitle":false,"hasCafeMeta":false,"scrollY":0,"simSelf":0}
+C4 {"detailBtns":["저장|pressed=true","비교 중|pressed=null"],"backUrl":"http://127.0.0.1:4327/catalog","trayText":["비교 보드 1 / 6"],"pressed":["전체","모던 카페 브랜드 저장"]}
+C4 status after 6 []
+C5 404 "Design Studio | 카탈로그 | 보관함 | 비교 보드 | 프로젝트 | 새 프로젝트 | 강영 | 404 | 레퍼런스를 찾을 수 없습니다 | 삭제되었거나 카탈로그에 공개되지 않은 레퍼런스입니다. | 카탈로그로 돌아가기"
+C6 groups ["타깃 | 20~30대 | 가족 | B2B","콘셉트 | 미니멀 | 따뜻한 | 대담한","레이아웃 | 풀블리드 히어로 | 스플릿 | 그리드","콘텐츠 목적 | 예약 | 문의 | 판매","라이선스 | internal | licensed","색상 | 무채색 | 따뜻한 계열 | 그린 계열 | 차가운 계열","디바이스 | 데스크톱 | 모바일 | 반응형"]
+C8 console errors []
+C9 tab stops ["A:Design Studio:fv","A:카탈로그:fv","A:보관함:fv","A:비교 보드:fv","A:프로젝트:fv","BUTTON:새 프로젝트:fv","A:카탈로그:fv","BUTTON:섹션 구성:fv","BUTTON:토큰:fv","BUTTON:모바일:fv","BUTTON:점수 이력:fv","BUTTON:템플릿으로 가져오기:fv","BUTTON:저장:fv","BUTTON:비교 추가:fv","A:로컬 베이커리:fv","A:필라테스 스튜디오:fv","A:프리미엄 헤어살롱:fv","A:부티크 법률사무소:fv","A:동네 치과 클리닉:fv","A:로컬 베이커리:fv","A:필라테스 스튜디오:fv","A:로컬 베이커리:fv","BODY:Design Studio카:-","A:Design Studio:fv","A:카탈로그:fv","A:보관함:fv","A:비교 보드:fv","A:프로젝트:fv"]
+
+ElementResolutionError: page.click timed out after 3000ms: Locator loc=role:checkbox[name='따뜻한 계열'] matched 1 elements, but none can receive input; element has a zero-sized bounding box
+    at #retryElementAction (file:////[eval1]:18884:27)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+
+ego's nodejs process exited with code 1.
+ElementResolutionError: page.click timed out after 3000ms: page.click failed: element is not visible in the viewport
+    at #retryElementAction (file:////[eval1]:18884:27)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+
+ego's nodejs process exited with code 1.
+C6 {"base":["동네 치과 클리닉","부티크 법률사무소","모던 카페 브랜드","로컬 베이커리","프리미엄 헤어살롱","필라테스 스튜디오"],"c1":{"url":"http://127.0.0.1:4327/catalog?color=warm","cards":["모던 카페 브랜드","로컬 베이커리"]},"c2":{"url":"http://127.0.0.1:4327/catalog?color=warm&device=mobile","cards":["모던 카페 브랜드","로컬 베이커리"]},"c3":{"url":"http://127.0.0.1:4327/catalog?color=warm&device=mobile","cards":["모던 카페 브랜드","로컬 베이커리"],"checked":["따뜻한 계열","모바일"]},"c4":{"url":"http://127.0.0.1:4327/catalog?color=cool&concept=minimal","cards":[]},"c5":{"url":"http://127.0.0.1:4327/catalog?color=green&device=desktop","cards":[]}}
+C9 enter tab "http://127.0.0.1:4327/references/ref-a?tab=tokens"
+B responsive [{"w":768,"q":"","iw":768,"sw":768,"over":[],"stacked":false,"mainW":768,"asideW":712},{"w":768,"q":"?tab=tokens","iw":768,"sw":768,"over":[],"stacked":false,"mainW":768,"asideW":712},{"w":390,"q":"","iw":390,"sw":390,"over":[],"stacked":false,"mainW":390,"asideW":358},{"w":390,"q":"?tab=tokens","iw":390,"sw":390,"over":[],"stacked":false,"mainW":390,"asideW":358}]
+

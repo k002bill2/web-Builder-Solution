@@ -10,8 +10,8 @@
 | 2 | 데이터 계층 (`referenceRepository.test.ts`) | 완료 | a4cb632 |
 | 3 | 비교 트레이 (`compareTray.test.ts`) | 완료 | 20f4254 |
 | 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 완료 | afd386f |
-| 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 완료 | (이 커밋) |
-| 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 대기 | |
+| 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 완료 | 9f0af08 |
+| 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 진행 중 | (이 커밋: 브라우저 확인·버튼 수정) |
 
 ## 0단계 — 스캐폴드
 - package.json 직접 작성(대화형 create 미사용), 버전 exact 고정.
@@ -187,6 +187,29 @@ GREEN:
 - URL 쿼리 키: `industry`, `audience`, `concept`, `layout`, `purpose`, `license`, `motion`, `sort`(기본 score 생략), `tab`(기본 all 생략). 값은 한글 라벨이 아닌 id, 다중값은 쉼표 구분, 모르는 값은 버림.
 - 저장·비교 트레이 상태는 앱 수준 Context(세션 메모리)라 라우트를 오가도 유지된다. 영구 저장은 범위 밖.
 
+### 6단계 — 브라우저 확인(ego-browser, `vite preview`)
+| 폭 | scrollWidth / innerWidth | 카드 열 | 비고 |
+|---|---|---|---|
+| 1280 | 1265 / 1280 (스크롤바 15) | 3열 (305.7px×3) | 반경 16px, `--primary` #36f |
+| 390 | 375 / 390 | 1열 (343px) | 레일→그리드 순으로 쌓임, 트레이는 개수+버튼 |
+
+- 실제 브라우저에서 발견한 결함: **outline 버튼 테두리가 투명**. Tailwind 산출 CSS에서 `.border-transparent`가 `.border-line-normal`보다 뒤에 있어 덮어씀.
+  - RED: `Button.test.tsx` — `expected [ 'border-transparent', …(1) ] to deeply equal [ 'border-line-normal' ]` (1 failed | 4 passed)
+  - 수정: `border-transparent`를 공통 클래스에서 빼고 primary·secondary·assistive 변형에만 둠
+  - GREEN: 5 passed. 브라우저 재확인 `borderColor: rgba(112, 115, 124, 0.22)`
+- 폰트: jsDelivr CDN 로드가 느려 `load` 이벤트가 15초 안에 끝나지 않았고 확인 시점엔 폴백 글꼴로 렌더됨(질문 3 참조).
+
+검증 4종 (fresh):
+```
+typecheck exit=0
+lint exit=0
+ Test Files  8 passed (8)
+      Tests  56 passed (56)
+test exit=0
+✓ built in 191ms
+build exit=0
+```
+
 ## 목업과 다른 부분
 1. **Logo → BrandMark**: APFS 그라디언트 워드마크 대신 중립 단색 사각 마크(`bg-label-normal`) + `brand.name` 텍스트 (ADR-002).
 2. **`--brand-inverse*` → `--surface-inverse*`** 개명 (설계 결정 2).
@@ -205,3 +228,6 @@ GREEN:
 ## 질문
 1. **타깃·콘텐츠 목적·등록일 데이터가 목업에 없음.** 목업 refs에는 audience·purpose·createdAt이 없어 필터·최신순이 동작하려면 값이 필요하다. `fixtures/references.ts`에 **임시값**을 넣었다(A 20~30대/예약, B 20~30대/예약, C 가족/예약·문의, D 20~30대/예약, E B2B/문의, F 가족·20~30대/판매, createdAt 2026-08-30~09-19). 실제 값 확정 필요.
 2. **모션 단계.** TRD 4.1은 L0~L3(4단계), 목업은 낮음·중간·높음(3단계). 이번엔 목업 3단계(`low|mid|high`)로 구현했다. 백엔드 연결 시 매핑 규칙 확정 필요.
+3. **폰트 원격 로드.** 복사한 `fonts.css`는 jsDelivr CDN에서 Pretendard를 받는다(ADR-001 "확인 필요"에 기록된 현 상태 유지). 브리프 5절 "외부 사이트 URL 금지"를 레퍼런스 사이트 한정으로 해석했다. 자체 호스팅(npm `pretendard`)으로 바꿀지 결정 필요.
+4. **검색·추천.** 검색 입력은 표시만 하고, '추천' 탭과 '추천 받기'는 다음 단계 안내만 한다. 이번 범위에 넣어야 하면 알려 달라.
+

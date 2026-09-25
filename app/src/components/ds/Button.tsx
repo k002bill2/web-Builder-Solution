@@ -7,17 +7,17 @@ export type ButtonSize = "sm" | "md" | "lg";
 
 const BASE =
   "inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer " +
-  "border border-transparent font-semibold leading-none tracking-(--tracking-snug) " +
+  "border font-semibold leading-none tracking-(--tracking-snug) " +
   "transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard " +
   "focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 " +
   "disabled:cursor-not-allowed disabled:active:scale-100";
 
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable",
+  primary: "border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable",
   secondary:
-    "bg-surface-inverse text-on-surface-inverse enabled:hover:bg-surface-inverse-hover disabled:bg-fill-strong disabled:text-label-disable",
+    "border-transparent bg-surface-inverse text-on-surface-inverse enabled:hover:bg-surface-inverse-hover disabled:bg-fill-strong disabled:text-label-disable",
   assistive:
-    "bg-fill-normal text-label-normal enabled:hover:bg-fill-strong disabled:bg-fill-alternative disabled:text-label-disable",
+    "border-transparent bg-fill-normal text-label-normal enabled:hover:bg-fill-strong disabled:bg-fill-alternative disabled:text-label-disable",
   outline:
     "bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong " +
     "disabled:text-label-disable disabled:border-line-alternative",

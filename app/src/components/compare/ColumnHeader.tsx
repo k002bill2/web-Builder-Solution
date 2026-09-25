@@ -1,10 +1,15 @@
 import type { Ref } from "react";
+import type { ColumnStatus } from "../../domain/compareBoard";
 import type { BoardColumnView } from "../../features/compare/boardView";
-import { UNAVAILABLE_REASON } from "../../features/compare/boardView";
 import { LICENSE_TONE } from "../catalog/referenceDisplay";
 import { Button } from "../ds/Button";
 import { Icon } from "../ds/Icon";
 import { Tag } from "../ds/Tag";
+
+const UNAVAILABLE_REASON: Readonly<Record<Exclude<ColumnStatus, "available">, string>> = Object.freeze({
+  withdrawn: "라이선스가 바뀌어 더 이상 쓸 수 없습니다",
+  missing: "찾을 수 없는 레퍼런스입니다",
+});
 
 /**
  * 비교 열 머리글 (SPEC 2.2 · S-08 · S-09 · S-18). 제목은 2줄 말줄임 + title에 전체.

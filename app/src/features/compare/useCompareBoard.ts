@@ -1,0 +1,291 @@
+/**
+ * 비교 보드 화면 상태 (SPEC 4 · S-01~S-17). 03a API를 연결만 한다:
+ * 저장소 → togglePick·pickAllFrom → picksSaver(직렬화 자동 저장) → buildProfileDraft·evaluateBoardWarnings·confirmAvailability.
+ * 화면에 보이는 선택(intent)은 저장 요청 전에 바로 반영하고, 저장소가 확인한 보드(revision)는 saver 상태로 따로 둔다.
+ */
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import type { PrimaryColorCheck } from "../../components/compare/CustomStyleFields";
+import type { Announcement, PanelNotice, UndoView } from "../../components/compare/DraftPanel";
+import { removeColumn as removeBoardColumn } from "../../domain/boardColumns";
+import type { WarningFix } from "../../domain/boardWarnings";
+import { draftStatusOf, type CompareBoard, type ComparisonRowId, type CustomStyle, type DraftStatus } from "../../domain/compareBoard";
+import { confirmAvailability, type ConfirmAvailability } from "../../domain/confirmGate";
+import {
+  EMPTY_ANNOUNCEMENT,
+  STALE_CONFIRM_MESSAGE,
+  confirmFailure,
+  customAnnouncement,
+  intentOf,
+  releasedNotices,
+  sameIntent,
+  withWarningDelta,
+  type Comparison,
+  type Intent,
+} from "./boardScreen";
+import { useCompareTray } from "./CompareTrayContext";
+import type { BoardEngine } from "./boardEngine";
+import type { PicksSaver, PicksSaverState } from "./picksSaver";
+
+type Phase = "loading" | "error" | "ready";
+interface UndoEntry extends UndoView {
+  readonly previous: Intent;
+}
+
+const CONFIRMING: ConfirmAvailability = { ok: false, reason: "프로필을 확정하는 중입니다" };
+const REJECT_UNTIL_LOADED: PrimaryColorCheck = () => ({ ok: false, error: "잠시 후 다시 입력하세요" });
+const UNCONFIRMED: DraftStatus = { kind: "unconfirmed", nextVersion: 1 };
+
+export function useCompareBoard() {
+  const { repository, loaded, sync, takeReleasedNotices } = useCompareTray();
+  const navigate = useNavigate();
+  const [phase, setPhase] = useState<Phase>("loading");
+  const [attempt, setAttempt] = useState(0);
+  const [saved, setSaved] = useState<PicksSaverState | null>(null);
+  const [intent, setIntent] = useState<Intent>({ picks: {}, custom: {} });
+  const [comparison, setComparison] = useState<Comparison>({ libraryVersion: "", results: [] });
+  const [notices, setNotices] = useState<readonly PanelNotice[]>([]);
+  const [announcement, setAnnouncement] = useState<Announcement>(EMPTY_ANNOUNCEMENT);
+  const [undo, setUndo] = useState<UndoEntry | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const [engine, setEngine] = useState<BoardEngine | null>(null);
+  const engineRef = useRef<BoardEngine | null>(null);
+  const saver = useRef<PicksSaver | null>(null);
+  const lastSave = useRef<Promise<void>>(Promise.resolve());
+  const confirmLock = useRef(false);
+  const pendingReleased = useRef<readonly string[]>([]);
+
+  const announce = useCallback((text: string) => setAnnouncement((a) => ({ text, key: a.key + 1 })), []);
+  const putNotice = useCallback((id: string, notice: PanelNotice | null) => {
+    setNotices((current) => [...current.filter((n) => n.id !== id), ...(notice ? [notice] : [])]);
+  }, []);
+
+  /** 저장소가 확인한 보드로 saver를 새로 만든다 — 진입·열 빼기·확정 충돌 뒤 revision을 맞춘다 */
+  const startSaver = useCallback(
+    (board: CompareBoard) => {
+      const next = engineRef.current!.createPicksSaver(repository, board, (state) => {
+        if (saver.current !== next) return;
+        setSaved(state);
+        sync(state.board);
+        // 다른 곳에서 바뀐 보드로 맞췄다 — 화면 선택도 서버 값으로 (S-14). 재조회 중 새 선택이 있으면(saving) 그것을 둔다
+        if (state.error === "STALE_BOARD" && state.status === "saved") {
+          setIntent(intentOf(state.board));
+          putNotice("stale", { id: "stale", tone: "info", title: "선택을 다시 불러왔습니다", message: "다른 곳에서 바뀐 선택을 불러왔습니다" });
+        }
+      });
+      saver.current = next;
+      lastSave.current = Promise.resolve();
+      setSaved(next.getState());
+      sync(board);
+    },
+    [repository, sync, putNotice],
+  );
+
+  useEffect(() => {
+    if (!loaded) return;
+    let cancelled = false;
+    const load = async () => {
+      // 엔진(선택 규칙·초안·zod)은 데이터와 함께 받는다 — 첫 화면 정적 JS에서 뺀다 (ADR-004 · boardEngine.ts)
+      const [{ boardEngine }, { board, released }] = await Promise.all([import("./boardEngine"), repository.getBoard()]);
+      // 해제 안내는 한 번만 온다 — 취소된 실행(StrictMode 재실행)이 받아도 잃지 않게 보관한다
+      pendingReleased.current = [...pendingReleased.current, ...takeReleasedNotices(), ...released.map((r) => r.notice)];
+      const next = await repository.getComparison(board.columns.map((c) => c.referenceId));
+      if (cancelled) return;
+      engineRef.current = boardEngine;
+      setEngine(boardEngine);
+      startSaver(board);
+      setIntent(intentOf(board));
+      setComparison(next);
+      setNotices(releasedNotices(pendingReleased.current));
+      pendingReleased.current = [];
+      setPhase("ready");
+    };
+    load().catch((error: unknown) => {
+      if (cancelled) return;
+      console.error("[compare] 비교 보드 불러오기 실패", error);
+      setPhase("error");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [loaded, attempt, repository, startSaver, takeReleasedNotices]);
+
+  // 열 구성이 바뀌면(빼기·다른 곳의 변경) 비교 데이터를 다시 받는다
+  const columnKey = saved?.board.columns.map((c) => c.referenceId).join("\n") ?? "";
+  const comparedKey = comparison.results.map((r) => r.referenceId).join("\n");
+  useEffect(() => {
+    if (phase !== "ready" || columnKey === comparedKey) return;
+    let cancelled = false;
+    repository.getComparison(columnKey ? columnKey.split("\n") : []).then(
+      (next) => {
+        if (!cancelled) setComparison(next);
+      },
+      (error: unknown) => console.error("[compare] 비교 데이터 다시 받기 실패", error),
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, columnKey, comparedKey, repository]);
+
+  const board = useMemo(() => (saved ? { ...saved.board, picks: intent.picks, custom: intent.custom } : null), [saved, intent]);
+  const evaluation = useMemo(() => (board && engine ? engine.evaluate(board, comparison) : null), [board, comparison, engine]);
+  const view = useMemo(() => (board && engine ? engine.buildBoardView(board, comparison.results) : null), [board, comparison.results, engine]);
+  const locked = confirming || removing;
+
+  const commit = (next: Intent, text: string) => {
+    if (!board || !evaluation || !engine || !saver.current) return;
+    setIntent(next);
+    lastSave.current = saver.current.save(next.picks, next.custom);
+    announce(withWarningDelta(text, evaluation, engine.evaluate({ ...board, ...next }, comparison)));
+  };
+
+  const toggle = (rowId: ComparisonRowId, referenceId: string) => {
+    if (!board || !engine || locked) return;
+    const result = engine.togglePick(board, comparison.results, rowId, referenceId);
+    if (!result.ok) return;
+    setUndo(null);
+    commit({ picks: result.picks, custom: intent.custom }, engine.pickAnnouncement(board, result.change));
+  };
+
+  const pickAll = (referenceId: string) => {
+    if (!board || !engine || locked) return;
+    const result = engine.pickAllFrom(board, comparison.results, referenceId);
+    const label = board.columns.find((c) => c.referenceId === referenceId)?.label ?? "";
+    setUndo(result.notice ? { message: result.notice, previous: intent, focus: false } : null);
+    commit({ picks: result.picks, custom: intent.custom }, result.notice ?? `${label}의 요소로 전부 선택`);
+  };
+
+  const clear = () => {
+    if (!board || locked) return;
+    const count = Object.keys(intent.picks).length;
+    if (count === 0 && Object.keys(intent.custom).length === 0) return announce("비울 선택이 없습니다");
+    const message = `선택 ${count}개를 비웠습니다`;
+    setUndo({ message, previous: intent, focus: true });
+    commit({ picks: {}, custom: {} }, message);
+  };
+
+  const undoLast = () => {
+    if (!undo || locked) return;
+    setUndo(null);
+    commit(undo.previous, "되돌렸습니다");
+  };
+
+  const changeCustom = (custom: CustomStyle) => {
+    if (!board || locked) return;
+    setUndo(null);
+    commit({ picks: intent.picks, custom }, customAnnouncement(intent.custom, custom));
+  };
+
+  const applyFix = (fix: WarningFix) => {
+    if (fix.kind === "use-corrected-primary") changeCustom({ ...intent.custom, primaryColor: fix.hex });
+    else if (fix.kind === "pick-column" && intent.picks[fix.rowId] !== fix.referenceId) toggle(fix.rowId, fix.referenceId);
+  };
+
+  /** P-7 열 빼기 — 앞 저장이 끝난 뒤 빼고, 그 응답의 revision으로 saver를 다시 만든다(다음 선택이 STALE로 버려지지 않게) */
+  const removeColumn = async (referenceId: string) => {
+    if (!board || locked) return;
+    const local = removeBoardColumn(board, referenceId);
+    const next: Intent = { picks: local.board.picks, custom: intent.custom };
+    const label = board.columns.find((c) => c.referenceId === referenceId)?.label ?? "";
+    setRemoving(true);
+    setUndo(null);
+    try {
+      await lastSave.current;
+      const { board: server } = await repository.removeReference(referenceId);
+      startSaver(server);
+      setIntent(next);
+      if (!sameIntent(next, intentOf(server))) lastSave.current = saver.current!.save(next.picks, next.custom);
+      announce(local.released?.notice ?? `${label}를 뺐습니다`);
+    } catch (error) {
+      console.error("[compare] 열 빼기 실패", error);
+      announce(`${label}를 빼지 못했습니다. 다시 시도하세요`);
+    } finally {
+      setRemoving(false);
+    }
+  };
+
+  /** LICENSE_BLOCKED — 최신 보드·비교 결과로 다시 맞춘다(회수 열은 S-08로 보임) */
+  const refresh = async () => {
+    const { board: latest, released } = await repository.getBoard();
+    const next = await repository.getComparison(latest.columns.map((c) => c.referenceId));
+    startSaver(latest);
+    setIntent(intentOf(latest));
+    setComparison(next);
+    setNotices((current) => [...current, ...releasedNotices(released.map((r) => r.notice))]);
+  };
+
+  const onConfirmError = async (error: unknown) => {
+    const { code, board: latest } = engineRef.current?.boardErrorOf(error) ?? {};
+    if (code === "STALE_BOARD" && latest) {
+      startSaver(latest);
+      setIntent(intentOf(latest));
+      return putNotice("confirm", confirmFailure(STALE_CONFIRM_MESSAGE));
+    }
+    if (code === "LICENSE_BLOCKED" || code === "STALE_BOARD") {
+      await refresh().catch((e: unknown) => console.error("[compare] 보드 다시 받기 실패", e));
+      const message = code === "STALE_BOARD" ? STALE_CONFIRM_MESSAGE : "사용할 수 없게 된 레퍼런스가 있습니다. '사용 불가' 열을 확인한 뒤 다시 확정하세요";
+      return putNotice("confirm", confirmFailure(message));
+    }
+    if (code === "UNSUPPORTED_COMBINATION") {
+      return putNotice("confirm", confirmFailure("지금 선택 조합은 현재 라이브러리로 확정할 수 없습니다. 사용할 수 없는 항목을 다른 레퍼런스 값으로 바꾼 뒤 다시 확정하세요"));
+    }
+    console.error("[compare] 프로필 확정 실패", error);
+    putNotice("confirm", confirmFailure("확정하지 못했습니다. 선택은 저장돼 있습니다", () => void confirm()));
+  };
+
+  /** S-13~S-16 — 저장이 끝난 revision으로만 확정. 연타는 ref로 막는다(AC-17) */
+  async function confirm() {
+    if (confirmLock.current || removing || !evaluation || !saved || !saver.current) return;
+    const availability = confirmAvailability(evaluation.draft, saved.status);
+    if (!availability.ok) return announce(availability.reason);
+    confirmLock.current = true;
+    setConfirming(true);
+    putNotice("confirm", null);
+    try {
+      const target = saver.current.getState().board;
+      const result = target.confirmed
+        ? await repository.createProfileVersion(target.confirmed.profileId, target.revision)
+        : await repository.confirmProfile(target.revision);
+      navigate(`/profile/${result.profileId}`);
+    } catch (error) {
+      await onConfirmError(error);
+    } finally {
+      confirmLock.current = false;
+      setConfirming(false);
+    }
+  }
+
+  return {
+    phase,
+    reload: () => {
+      setPhase("loading");
+      setAttempt((a) => a + 1);
+    },
+    board,
+    view,
+    items: evaluation && engine ? engine.draftItemsView(evaluation.draft, comparison.results) : [],
+    checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
+    warnings: evaluation?.warnings ?? [],
+    draftStatus: saved ? draftStatusOf(saved.board) : UNCONFIRMED,
+    availability: confirming ? CONFIRMING : evaluation && saved ? confirmAvailability(evaluation.draft, saved.status) : CONFIRMING,
+    saveStatus: saved?.status ?? "idle",
+    notices,
+    announcement,
+    undo,
+    confirming,
+    locked,
+    announce,
+    toggle,
+    pickAll,
+    clear,
+    undoLast,
+    changeCustom,
+    applyFix,
+    removeColumn,
+    confirm,
+    retrySave: () => {
+      if (saver.current) lastSave.current = saver.current.retry();
+    },
+  };
+}

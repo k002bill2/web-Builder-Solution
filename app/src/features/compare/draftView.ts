@@ -1,5 +1,5 @@
 /** 초안 목록 화면 모델 (SPEC 2.4 · ADR-005 D2). 도메인 초안 항목에 표시용 보조 정보만 붙인다. */
-import type { ComparisonResult, DraftStatus } from "../../domain/compareBoard";
+import type { ComparisonResult } from "../../domain/compareBoard";
 import type { DraftItemData, ProfileDraft } from "../../domain/profileDraft";
 import { SECTION_LIBRARY, resolveVariant } from "../../domain/sectionLibrary";
 
@@ -32,16 +32,3 @@ export function draftItemsView(draft: ProfileDraft, results: readonly Comparison
   });
 }
 
-export function statusLabel(status: DraftStatus): string {
-  if (status.kind === "unconfirmed") return "확정 전";
-  if (status.kind === "confirmed") return `v${status.version} 확정됨`;
-  return `v${status.version} 이후 변경됨`;
-}
-
-/** 확정 버튼 문구 — 확정 이후에는 같은 프로필 계열의 새 버전 (S-15·S-16 · ADR-005 Q3) */
-export function confirmLabel(status: DraftStatus, confirming: boolean): string {
-  if (confirming) return "확정 중…";
-  if (status.kind === "unconfirmed") return "프로필 확정 (v1)";
-  const next = status.kind === "changed" ? status.nextVersion : status.version + 1;
-  return `새 버전으로 확정 (v${next})`;
-}

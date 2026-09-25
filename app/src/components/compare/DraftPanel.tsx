@@ -3,7 +3,9 @@ import type { BoardWarning, WarningFix } from "../../domain/boardWarnings";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
 import type { CustomStyle, DraftStatus } from "../../domain/compareBoard";
 import type { FontOption } from "../../domain/fonts";
-import { confirmLabel, statusLabel, type DraftItemView } from "../../features/compare/draftView";
+import { confirmLabel, statusLabel } from "../../features/compare/draftLabels";
+import type { DraftItemView } from "../../features/compare/draftView";
+import type { PrimaryColorCheck } from "./CustomStyleFields";
 import { Button } from "../ds/Button";
 import { Callout, type CalloutTone } from "../ds/Callout";
 import { cx } from "../ds/cx";
@@ -42,6 +44,7 @@ export interface DraftPanelProps {
   readonly notices: readonly PanelNotice[];
   readonly custom: CustomStyle;
   readonly fonts: readonly FontOption[];
+  readonly checkPrimaryColor: PrimaryColorCheck;
   readonly canConfirm: ConfirmAvailability;
   readonly confirming: boolean;
   readonly announcement: Announcement;
@@ -108,6 +111,7 @@ export function DraftPanel({
   notices,
   custom,
   fonts,
+  checkPrimaryColor,
   canConfirm,
   confirming,
   announcement,
@@ -181,7 +185,7 @@ export function DraftPanel({
       ) : (
         <p className="ds-body3 rounded-md bg-surface-elevated px-3.5 py-3 text-label-alternative">항목에서 '이 요소 선택'을 누르면 여기에 담깁니다</p>
       )}
-      <CustomStyleFields value={custom} fonts={fonts} onChange={onCustomChange} />
+      <CustomStyleFields value={custom} fonts={fonts} checkPrimaryColor={checkPrimaryColor} onChange={onCustomChange} />
       {warnings.length > 0 && (
         <div className="flex flex-col gap-2">
           {warnings.map((warning) => (

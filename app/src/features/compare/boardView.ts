@@ -15,10 +15,6 @@ import { EMPTY_CELL_LABEL, isRowUniform } from "../../domain/comparisonCells";
 import type { LicenseStatus } from "../../domain/reference";
 import { INDUSTRY_LABELS } from "../../fixtures/catalogFilters";
 
-export const UNAVAILABLE_REASON: Readonly<Record<Exclude<ColumnStatus, "available">, string>> = Object.freeze({
-  withdrawn: "라이선스가 바뀌어 더 이상 쓸 수 없습니다",
-  missing: "찾을 수 없는 레퍼런스입니다",
-});
 const MISSING_TITLE = "찾을 수 없는 레퍼런스";
 
 export interface BoardColumnView {

@@ -8,6 +8,7 @@ import type { CustomStyle, Picks } from "../../domain/compareBoard";
 import { FONT_OPTIONS } from "../../domain/fonts";
 import { buildProfileDraft } from "../../domain/profileDraft";
 import { SECTION_LIBRARY } from "../../domain/sectionLibrary";
+import { boardEngine } from "../../features/compare/boardEngine";
 import { FOOTER_AUTO_NOTE, draftItemsView } from "../../features/compare/draftView";
 import { LOW_CONTRAST_PRIMARY, boardOf, resultsOf } from "../../test/compareFixtures";
 import { CustomStyleFields } from "./CustomStyleFields";
@@ -28,6 +29,7 @@ function panelProps(picks: Picks, custom: CustomStyle = {}, overrides: Partial<C
     notices: [],
     custom,
     fonts: FONT_OPTIONS,
+    checkPrimaryColor: boardEngine.checkPrimaryColor,
     canConfirm: { ok: true } as const,
     confirming: false,
     announcement: { text: "", key: 0 },
@@ -136,6 +138,7 @@ function Fields({ onChange }: { readonly onChange: (value: CustomStyle) => void 
     <CustomStyleFields
       value={value}
       fonts={FONT_OPTIONS}
+      checkPrimaryColor={boardEngine.checkPrimaryColor}
       onChange={(next) => {
         onChange(next);
         setValue(next);

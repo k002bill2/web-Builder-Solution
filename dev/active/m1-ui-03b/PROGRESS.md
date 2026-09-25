@@ -10,9 +10,9 @@
 | 1 | DS `Callout` + 아이콘 5종 복사 | 완료 | (1 커밋) |
 | 2 | `PickButton`·`ColumnHeader`·`ComparisonTable` + 가로 전용 roving | 완료 | (2 커밋) |
 | 3 | `DraftPanel`·`DraftItem`·`CustomStyleFields` + 폰트 3종 활성 | 완료 | (3 커밋) |
-| 4 | `CompareBoardPage` (`/compare`, lazy) 상태 S-01~S-18 | 대기 | |
+| 4 | `CompareBoardPage` (`/compare`, lazy) 상태 S-01~S-18 | 완료 | (4 커밋) |
 | 5 | 반응형 (≥1280 · 768~1279 · <768 아코디언) | 대기 | |
-| 6 | 진입 경로 (트레이 → `/compare`, 레퍼런스 추가 → `/catalog`) | 대기 | |
+| 6 | 진입 경로 (트레이 → `/compare`, 레퍼런스 추가 → `/catalog`) | 완료(테스트 추가) | (4 커밋) |
 | 7 | `addToTray`·`removeFromTray` 정리 판단 | 대기 | |
 
 ## 단계 1 — Callout + 아이콘
@@ -38,3 +38,21 @@
 - RED: `boardInput`(3종 활성 2건)·`comparisonCells`(D1)·`profileDraft`(폰트 기본값) 4 failed, `DraftPanel.test.tsx` import 실패.
 - 중간 실패: AC-11 화면 테스트가 모션 "높음"이 없는 A·B·C로 구성 → 모션 높음인 D를 추가. lint `react-hooks/refs`(props 객체에 ref) → 구조 분해로 수정.
 - GREEN: 컴포넌트·도메인·가드 130 passed, typecheck·lint 통과.
+
+## 단계 4 — `/compare` 화면
+- 연결: `useCompareBoard`(features/compare) = 트레이 컨텍스트의 저장소 → `getBoard`·`getComparison` → `togglePick`·`pickAllFrom` → `picksSaver.save` → `buildProfileDraft`·`evaluateBoardWarnings`·`confirmAvailability`. 새 도메인 규칙 없음.
+- 트레이 컨텍스트 최소 확장(REPORT 기록): `repository`·`loaded`·`sync(board)`·`takeReleasedNotices()`.
+  - 이유 ①: 메모리 `getBoard()`는 자동 해제 안내(`released`)를 한 번만 준다 — 트레이의 진입 조회가 먼저 받아 버리면 화면이 AC-15 안내를 잃는다 → 컨텍스트가 보관, 화면이 한 번 꺼냄.
+  - 이유 ②: 카탈로그에서 뺀 열의 안내(SPEC 1.3)도 `removeReference` 서버 응답으로 보관 → **S-08 결정: 돌아왔을 때 한 번 보여 준다**(SPEC 1.3 그대로. 트레이의 낙관적 선택은 최신이 아닐 수 있어 서버 응답 사용).
+  - 이유 ③: 화면 저장 결과를 트레이 보드에 반영(`sync`, revision이 같거나 새로울 때만) — 카탈로그 트레이의 낙관적 빼기가 옛 선택으로 계산하지 않게.
+- 열 빼기: 앞 저장이 끝난 뒤 `removeReference`, 그 응답 revision으로 saver를 새로 만든다(그러지 않으면 다음 선택이 STALE_BOARD로 조용히 버려짐 — AC-08 회귀 테스트 "다음 선택도 저장된다"). 알림 문장은 화면의 최신 선택으로 `removeColumn().released.notice`.
+- 확정: saver가 확인한 revision으로만, 연타는 ref 잠금(AC-17). v1 이후는 `createProfileVersion(profileId, revision)`을 직접 호출(AC-25).
+- RED: `CompareBoardPage.test.tsx` 29 failed / 1 passed(자리표시 페이지; 통과 1건은 이미 있던 트레이 → `/compare` 이동).
+- 중간 실패 ①: 되돌리기 문구가 알림 영역에도 있어 `getByText` 중복 → 알림 영역 제외 쿼리. ② `toHaveValue(expect.stringMatching)` 미지원 → value 정규식. ③ S-02 테스트: 트레이 진입 조회 + 재동기화가 먼저 `getBoard`를 2번 부름 → 거부 3회로.
+- **기존 테스트 변경 1건(의도)**: `CatalogPage.test.tsx` "자리표시 페이지" each의 `/compare` 항목 → `/profile/profile-1`(확정 후 이동하는 자리표시). `/compare`가 실제 화면이 됐기 때문. 테스트 수는 그대로.
+- 번들(ADR-004) — 첫 빌드 `/compare` 114.04KB로 실패:
+  1. 새 아이콘 5종이 data URI로 인라인돼 `Icon`의 eager glob을 타고 **공통 청크**에 들어감(공통 88.46 → 90.09, `/catalog` 99.02) → `vite.config.ts` `assetsInlineLimit` 함수형으로 **새 5종만** 인라인 제외(기존 8종은 그대로). 공통 88.92.
+  2. 도메인 엔진(선택 규칙·초안·대비·zod·saver)을 `features/compare/boardEngine.ts`로 묶어 **데이터와 함께 동적 로드**(메모리 저장소 청크가 이미 같은 모듈을 정적으로 씀). 대표색 검사는 `checkPrimaryColor` prop.
+  - 결과: `/compare` **99.66KB**(정적) · 진입 직후 자동 로드 포함 참고 **119.30KB**(스크립트 참고 출력에 엔진·저장소·비교 픽스처 추가). 공통 88.96 · `/catalog` 97.98(기준 96.67, +1.31) · `/references/:id` 95.64(기준 94.82, +0.82).
+  - 카탈로그·상세 증가분: 공통 +0.50(트레이 컨텍스트 확장) + Rolldown이 `Tag`·`Select`·`catalogFilters`를 공유 청크로 나눈 청크 오버헤드. REPORT 질문으로 남김.
+- GREEN: 34 files · 298 passed, typecheck·lint·build 통과.

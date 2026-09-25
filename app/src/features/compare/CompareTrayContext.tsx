@@ -10,6 +10,14 @@ interface CompareTrayValue {
   readonly board: CompareBoard;
   readonly add: (id: string) => AddResult;
   readonly remove: (id: string) => void;
+  /** 비교 보드 화면이 같은 저장소를 쓴다 (03b) */
+  readonly repository: CompareBoardRepository;
+  /** 진입 시 보드 조회가 끝났는지 — 화면은 그 뒤에 보드를 불러온다(자동 해제 안내를 놓치지 않게) */
+  readonly loaded: boolean;
+  /** 보드 화면의 저장 결과를 트레이에 반영한다 (같거나 새 revision만) */
+  readonly sync: (board: CompareBoard) => void;
+  /** 아직 보여주지 않은 선택 해제 안내를 꺼낸다 — 한 번만 (SPEC 1.3 · S-08) */
+  readonly takeReleasedNotices: () => readonly string[];
 }
 
 const CompareTrayContext = createContext<CompareTrayValue | null>(null);
@@ -30,6 +38,11 @@ export function CompareTrayProvider({
   const latest = useRef(board);
   const queue = useRef<Promise<unknown>>(Promise.resolve());
   const inFlight = useRef(0);
+  const [loaded, setLoaded] = useState(false);
+  const released = useRef<readonly string[]>([]);
+  const keepNotices = useCallback((notices: readonly string[]) => {
+    released.current = [...released.current, ...notices];
+  }, []);
 
   const apply = useCallback((next: CompareBoard) => {
     latest.current = next;
@@ -46,13 +59,20 @@ export function CompareTrayProvider({
       // 실패하면 서버 보드로 다시 맞춘다. 그것도 실패하면 화면 상태를 유지한다(Provider는 라우트 오류 경계 밖이다)
       const resync = () => repository.getBoard().then((load) => load.board, () => undefined);
       queue.current = queue.current.then(() => request().catch(resync)).then(settle);
+      return queue.current;
     },
     [apply, repository],
   );
 
   useEffect(() => {
-    enqueue(() => repository.getBoard().then((load) => load.board));
-  }, [enqueue, repository]);
+    // 회수·삭제로 자동 해제한 선택의 안내는 이 조회에만 한 번 온다 — 보드 화면이 보여줄 수 있게 보관한다
+    enqueue(() =>
+      repository.getBoard().then((load) => {
+        keepNotices(load.released.map((r) => r.notice));
+        return load.board;
+      }),
+    ).then(() => setLoaded(true));
+  }, [enqueue, keepNotices, repository]);
 
   const add = useCallback(
     (id: string): AddResult => {
@@ -68,15 +88,37 @@ export function CompareTrayProvider({
   const remove = useCallback(
     (id: string) => {
       apply(removeColumn(latest.current, id).board);
-      enqueue(() => repository.removeReference(id).then((r) => r.board));
+      // 해제 안내는 서버 응답으로 만든다 — 트레이의 선택은 보드 화면 밖에서 최신이 아닐 수 있다
+      enqueue(() =>
+        repository.removeReference(id).then((r) => {
+          if (r.released) keepNotices([r.released.notice]);
+          return r.board;
+        }),
+      );
     },
-    [apply, enqueue, repository],
+    [apply, enqueue, keepNotices, repository],
   );
+
+  const sync = useCallback(
+    (next: CompareBoard) => {
+      if (next.revision >= latest.current.revision) apply(next);
+    },
+    [apply],
+  );
+
+  const takeReleasedNotices = useCallback(() => {
+    const notices = released.current;
+    released.current = [];
+    return notices;
+  }, []);
 
   // 열 구성이 같으면 같은 배열을 준다 — 서버 응답마다 트레이 레퍼런스를 다시 조회하지 않게
   const trayKey = board.columns.map((c) => c.referenceId).join("\n");
   const tray = useMemo<CompareTray>(() => (trayKey ? trayKey.split("\n") : []), [trayKey]);
-  const value = useMemo(() => ({ tray, board, add, remove }), [tray, board, add, remove]);
+  const value = useMemo(
+    () => ({ tray, board, add, remove, repository, loaded, sync, takeReleasedNotices }),
+    [tray, board, add, remove, repository, loaded, sync, takeReleasedNotices],
+  );
   return <CompareTrayContext.Provider value={value}>{children}</CompareTrayContext.Provider>;
 }
 

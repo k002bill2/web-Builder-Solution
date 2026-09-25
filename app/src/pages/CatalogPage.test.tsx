@@ -98,7 +98,7 @@ describe("CatalogPage (1a-01)", () => {
     const { router } = renderApp("/catalog");
     await expectCardCount(6);
     expect(titles()[0]).toBe("동네 치과 클리닉");
-    await userEvent.selectOptions(screen.getByRole("combobox", { name: "정렬" }), "latest");
+    await userEvent.click(within(screen.getByRole("radiogroup", { name: "정렬" })).getByRole("radio", { name: "최신순" }));
     await waitFor(() => expect(titles()[0]).toBe("로컬 베이커리"));
     expect(new URLSearchParams(router.state.location.search).get("sort")).toBe("latest");
   });
@@ -112,14 +112,18 @@ describe("CatalogPage (1a-01)", () => {
     expect(router.state.location.search).toBe("");
   });
 
-  it("저장한 레퍼런스는 저장함 탭에서 모아 본다", async () => {
+  it("저장한 레퍼런스는 GNB 보관함(?tab=saved)에서 모아 본다 (V2-AC-21)", async () => {
     const { router } = renderApp("/catalog");
     await expectCardCount(6);
     await userEvent.click(screen.getByRole("button", { name: "프리미엄 헤어살롱 저장" }));
-    await userEvent.click(screen.getByRole("tab", { name: /저장함/ }));
+    const nav = screen.getByRole("navigation", { name: "주 메뉴" });
+    await userEvent.click(within(nav).getByRole("link", { name: "보관함" }));
     await expectCardCount(1);
     expect(titles()).toEqual(["프리미엄 헤어살롱"]);
     expect(new URLSearchParams(router.state.location.search).get("tab")).toBe("saved");
+    expect(screen.getByRole("heading", { level: 1, name: "보관함" })).toBeInTheDocument();
+    expect(screen.getByText("저장한 레퍼런스 1개")).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: "보관함" })).toHaveAttribute("aria-current", "page");
   });
 
   it("비교 추가·해제가 하단 트레이에 반영된다 (FR-CMP-02)", async () => {
@@ -148,6 +152,75 @@ describe("CatalogPage (1a-01)", () => {
     expect(screen.getByRole("status")).toHaveTextContent("비교 보드에는 최대 6개까지 담을 수 있습니다");
     expect(screen.getByRole("button", { name: "일곱째 레퍼런스 비교 추가" })).toHaveTextContent("비교 추가");
     expect(within(tray()).queryByText("일곱째 레퍼런스")).not.toBeInTheDocument();
+  });
+});
+
+describe("카탈로그 상단 v2 (SPEC 4.2 r2)", () => {
+  it("탭이 없고 기본 보기는 h1 '레퍼런스 카탈로그' + 노출 레퍼런스 수다 (V2-AC-21)", async () => {
+    renderApp("/catalog");
+    await expectCardCount(6);
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "레퍼런스 카탈로그" })).toBeInTheDocument();
+    expect(screen.getByText("internal · licensed 레퍼런스 6개")).toBeInTheDocument();
+  });
+
+  it("?tab=rec 는 h1 '추천' + 안내 + '전체 보기' 링크, 링크는 tab만 지운다 (V2-AC-21)", async () => {
+    const { router } = renderApp("/catalog?tab=rec&industry=beauty&sort=latest");
+    expect(await screen.findByRole("heading", { level: 1, name: "추천" })).toBeInTheDocument();
+    expect(screen.getByText("브리프 기반 추천은 다음 단계에서 제공됩니다.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("link", { name: "전체 보기" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "레퍼런스 카탈로그" })).toBeInTheDocument();
+    const params = new URLSearchParams(router.state.location.search);
+    expect(params.get("tab")).toBeNull();
+    expect(params.get("industry")).toBe("beauty");
+    expect(params.get("sort")).toBe("latest");
+  });
+
+  it("추천 받기는 ?tab=rec 로 바꾼다", async () => {
+    const { router } = renderApp("/catalog");
+    await expectCardCount(6);
+    await userEvent.click(screen.getByRole("button", { name: "추천 받기" }));
+    expect(new URLSearchParams(router.state.location.search).get("tab")).toBe("rec");
+    expect(await screen.findByRole("heading", { level: 1, name: "추천" })).toBeInTheDocument();
+  });
+
+  it("정렬은 radiogroup '정렬'(점수순·최신순) 한 벌이고 URL sort를 복원한다 (V2-AC-20)", async () => {
+    renderApp("/catalog?sort=latest");
+    await expectCardCount(6);
+    const groups = screen.getAllByRole("radiogroup", { name: "정렬" });
+    expect(groups).toHaveLength(1);
+    const radios = within(groups[0]!).getAllByRole("radio");
+    expect(radios.map((r) => r.textContent)).toEqual(["점수순", "최신순"]);
+    expect(within(groups[0]!).getByRole("radio", { name: "최신순" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.queryByRole("combobox", { name: "정렬" })).not.toBeInTheDocument();
+  });
+
+  it("DOM 순서 = 업종 칩 → 정렬 → 레일 → 결과, 본문은 --layout-max-width 상한 안에 있다", async () => {
+    renderApp("/catalog");
+    await expectCardCount(6);
+    const order = [
+      screen.getByRole("group", { name: "업종" }),
+      screen.getByRole("radiogroup", { name: "정렬" }),
+      screen.getByRole("complementary", { name: "필터" }),
+      screen.getByRole("region", { name: "레퍼런스 목록" }),
+    ];
+    for (let i = 1; i < order.length; i++) {
+      expect(order[i - 1]!.compareDocumentPosition(order[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+    const body = screen.getByRole("region", { name: "레퍼런스 목록" }).closest('[class*="max-w-(--layout-max-width)"]');
+    expect(body).not.toBeNull();
+    expect(body).toContainElement(screen.getByRole("group", { name: "업종" }));
+    expect(body).toContainElement(screen.getByRole("heading", { level: 1 }));
+  });
+
+  it("업종 칩 줄은 <1024 가로 스크롤(잘림 없음), 카드 그리드 클래스는 그대로다", async () => {
+    renderApp("/catalog");
+    await expectCardCount(6);
+    const chips = screen.getByRole("group", { name: "업종" });
+    expect(chips.className.split(/\s+/)).toEqual(expect.arrayContaining(["overflow-x-auto", "lg:flex-wrap"]));
+    const grid = cards()[0]!.parentElement!;
+    expect(grid.className).toBe("grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3");
   });
 });
 

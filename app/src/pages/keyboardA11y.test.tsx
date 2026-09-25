@@ -87,36 +87,24 @@ describe("모션 강도 radiogroup — roving tabindex (A01)", () => {
   });
 });
 
-describe("결과 탭 tablist (A02)", () => {
-  it("Tab 정지점은 선택된 탭 하나이고, ←/→는 포커스만 옮기며 Enter·Space로 선택한다", async () => {
+describe("정렬 radiogroup — roving tabindex (V2-AC-20, 카탈로그 탭 삭제로 A02 대체)", () => {
+  it("Tab 정지점은 선택된 정렬 하나이고, 방향키로 이동하며 URL sort를 바꾼다", async () => {
     const { router } = renderApp("/catalog");
     await expectCardCount(6);
-    const list = screen.getByRole("tablist", { name: "카탈로그 보기" });
-    const tab = (name: RegExp) => within(list).getByRole("tab", { name });
-    expect(tabStops(list, "tab")).toEqual([tab(/^전체/)]);
-
-    tab(/^전체/).focus();
+    const group = screen.getByRole("radiogroup", { name: "정렬" });
+    const radio = (name: string) => within(group).getByRole("radio", { name });
+    expect(tabStops(group, "radio").map((r) => r.textContent)).toEqual(["점수순"]);
+    radio("점수순").focus();
     await userEvent.keyboard("{ArrowRight}");
-    expect(tab(/^추천/)).toHaveFocus();
-    expect(tab(/^전체/)).toHaveAttribute("aria-selected", "true");
-    expect(tabStops(list, "tab")).toEqual([tab(/^추천/)]);
-
-    await userEvent.keyboard("{ArrowRight}");
-    expect(tab(/^저장함/)).toHaveFocus();
-    await userEvent.keyboard("{Enter}");
-    expect(tab(/^저장함/)).toHaveAttribute("aria-selected", "true");
-    expect(search(router).get("tab")).toBe("saved");
-
-    // 끝에서 →는 처음으로 순환, Home/End 지원
-    await userEvent.keyboard("{ArrowRight}");
-    expect(tab(/^전체/)).toHaveFocus();
-    await userEvent.keyboard("{End}");
-    expect(tab(/^저장함/)).toHaveFocus();
-    await userEvent.keyboard("{Home} ");
-    expect(tab(/^전체/)).toHaveAttribute("aria-selected", "true");
-    expect(search(router).get("tab")).toBeNull();
+    expect(radio("최신순")).toHaveFocus();
+    expect(search(router).get("sort")).toBe("latest");
+    await userEvent.keyboard("{Home}");
+    expect(radio("점수순")).toHaveFocus();
+    expect(search(router).get("sort")).toBeNull();
   });
+});
 
+describe("상세 탭 tablist (A02)", () => {
   it("상세 화면(1a-02)의 탭도 같은 방식으로 동작한다", async () => {
     const { router } = renderApp("/references/ref-a");
     await screen.findByRole("heading", { level: 1, name: "모던 카페 브랜드" });
@@ -151,9 +139,9 @@ describe("건너뛰기 링크 (A03)", () => {
     expect(screen.getByRole("link", { name: "결과로 건너뛰기" })).toHaveFocus();
     await userEvent.keyboard("{Enter}");
     expect(screen.getByRole("region", { name: "레퍼런스 목록" })).toHaveFocus();
-    // 다음 Tab은 결과 영역 안의 첫 컨트롤(결과 탭)
+    // 다음 Tab은 결과 영역 안의 첫 컨트롤(첫 카드 — 결과 탭은 v2에서 삭제)
     await userEvent.tab();
-    expect(screen.getByRole("tab", { name: /^전체/ })).toHaveFocus();
+    expect(screen.getAllByRole("article")[0]).toContainElement(document.activeElement as HTMLElement);
   });
 
   it("상세 화면에도 '본문으로 건너뛰기'가 있고, '결과로 건너뛰기'는 없다", async () => {

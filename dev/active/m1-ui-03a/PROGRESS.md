@@ -13,8 +13,8 @@
 | 3 | 선택 규칙 P-1~P-7 | 완료 | (3 커밋) |
 | 5 | `contrast.ts` + `derivePalette` | 완료 | (5 커밋) |
 | 4 | `buildProfileDraft` | 완료 | (4 커밋) |
-| 6 | R-12 Footer 경고 데이터 | 대기 | |
-| 7 | 사용자 대표색(zod)·폰트 허용 목록 | 대기 | |
+| 6 | R-12 Footer 경고 데이터 | 완료 | (6·7 커밋) |
+| 7 | 사용자 대표색(zod)·폰트 허용 목록 | 완료 | (6·7 커밋) |
 | 8 | `compareBoardRepository` 메모리 구현 + 저장 직렬화 | 대기 | |
 | 9 | 트레이 통합 | 대기 | |
 
@@ -54,3 +54,10 @@
 - `section_plan`: 기준 sectionPlan에서 header·hero·footer 변형만 교체, footer 없으면 끝에 추가(R-01). `seed`: 열(문자 순)·picks·custom 키 정렬 JSON의 FNV-1a. `selection_mode`: 고른 레퍼런스가 1개이고 사용자 값이 없으면 `template`.
 - RED: 모듈 없음 → GREEN 15/15 (AC-07·09·10·11 포함).
 - 해석: SPEC 8.3 "모든 선택이 한 레퍼런스면 sectionPlan 그대로"와 R-01(footer 추가)이 겹치면 R-01 우선(기준에 footer가 없을 때만 차이). 인자는 브리프 시그니처(`board, references, libraryVersion`)를 따름 — SPEC의 `rows` 인자는 `COMPARISON_ROWS` 상수로 대체.
+
+## 항목 6·7 — 경고 데이터·입력 검증
+- `domain/boardWarnings.ts#evaluateBoardWarnings(board, results, draft)`: R-07(정보) · R-08 C-1/C-2/C-3(원인·수치 `x.x:1`·대체안) · R-12(사업자정보 Footer 열 → "C의 Footer로 바꾸기", 없으면 "확정 시 같은 모양의 사업자정보 확장 변형으로 바꿉니다") · R-15(정보). 대비는 `draft.palette`(= 확정 color_tokens와 같은 derivePalette 결과)로 계산.
+- `domain/boardInput.ts`: zod/mini — 대표색 `#RRGGBB`(대문자 정규화, AC-14), 폰트는 **활성 폰트만**(ADR-005 Q4: Pretendard), savePicks 입력(선택 행 id·문자열 id). `domain/fonts.ts`: 목록 3개, Noto 2종은 `enabled:false`·"라이선스 확인 중".
+- 의존성: `zod@4.6.5` (`--save-exact`). 공통 청크 밖에서만 import.
+- RED: 모듈 없음 → GREEN 19/19 (AC-11 문구·AC-12 계산·AC-13·AC-14).
+- 해석: C-3 대체안에 밝은 카드 열이 없으면 SPEC은 "C-1 보정 제안"이지만, 흰 글자 기준으로 대표색을 어둡게 하면 어두운 잉크와의 C-3 대비가 더 나빠질 수 있어 **잉크 대비 4.5:1 보정**으로 계산(ADR-003 기능 우선).

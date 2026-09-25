@@ -239,3 +239,8 @@ build exit=0 — [bundle] 초기 JS (gzip): 86.90KB / 예산 90KB (Vite 표기 8
   - RED: `× /catalog: …`, `× /references/ref-a: … Unable to find role="alert"` (2 failed) → GREEN.
 - 게이트: typecheck 0 · lint 0 · `Test Files 17 passed · Tests 115 passed` · build 0 (초기 JS 87.22KB, Vite 표기 88.11 kB).
 - 3라운드: 이어하기 브리프 턴 예산(55턴 후 보고서 우선) 때문에 실행하지 않았다.
+
+### 자체 재확인 — R1 `key={pathname}`이 경쟁 상태 테스트를 무력화 → 수정 (f1f4641)
+- 9f3a229의 `RouteErrorBoundary key={pathname}`는 ref-a → ref-f 이동 때 `Outlet` 아래를 재마운트해 `useReferenceDetail`의 `loaded`를 초기화했다. 그래서 HEAD(37e5554)에서 `loaded.id !== id`를 지워도 경쟁 상태 테스트가 `1 passed`였다.
+- 수정: `resetKey={pathname}` prop + `componentDidUpdate`에서 경로가 바뀌면 오류만 해제(자식 재마운트 없음).
+- 재확인: 검사 제거 → `× … (경쟁 상태)  Tests 1 failed | 14 skipped` → 원복 → 전체 `Test Files 17 passed · Tests 115 passed`, typecheck 0 · lint 0 · build 0 (초기 JS 87.26KB, Vite 88.15 kB). "다른 화면으로 이동하면 오류 상태를 벗어난다" 테스트도 통과.

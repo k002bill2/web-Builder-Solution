@@ -66,3 +66,6 @@
 - `ReferenceCard` "비교 중" outline + `check`(상세와 같은 규칙).
 - Q3·Q4 적용으로 글자·입력 테두리가 v2 원값보다 짙음.
 - `brand.css`에 `--brand-primary-text` 추가(ADR-002 개정 1, Q2). `--brand-gradient`는 사용처 0이지만 정의 유지.
+
+## 6. 검증 게이트 (Codex)
+- `codex-companion review --scope branch --base c7efdf9` 1라운드: **수정할 결함 없음**, typecheck 통과 확인. Codex 쪽 Vitest는 읽기 전용 샌드박스라 Vite가 임시 설정 파일을 쓰지 못해 실행되지 않음 — 테스트 근거는 3절의 로컬 fresh 실행(431 passed).

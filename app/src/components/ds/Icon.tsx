@@ -15,7 +15,12 @@ export type IconName =
   | "bookmark-fill"
   | "close"
   | "arrow-right"
-  | "chevron-left";
+  | "chevron-left"
+  | "check"
+  | "circle-check"
+  | "warning"
+  | "circle-info"
+  | "chevron-down";
 export type IconSize = 14 | 16 | 18 | 20 | 22 | 24;
 
 const SIZE_CLASS: Record<IconSize, string> = {

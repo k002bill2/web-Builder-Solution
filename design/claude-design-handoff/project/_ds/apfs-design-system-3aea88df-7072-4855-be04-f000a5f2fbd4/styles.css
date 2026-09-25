@@ -1,0 +1,12 @@
+/* ============================================================
+   APFS Design System — global stylesheet entry point
+   Consumers link THIS one file. It only @imports the token and
+   base layers; component styling is inline via these tokens.
+   ============================================================ */
+
+@import "./tokens/fonts.css";
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/shape.css";
+@import "./tokens/base.css";

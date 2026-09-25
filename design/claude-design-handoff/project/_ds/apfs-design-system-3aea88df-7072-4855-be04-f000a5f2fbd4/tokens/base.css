@@ -1,0 +1,33 @@
+/* ============================================================
+   APFS / Wanted — Base layer
+   Light global defaults + the mask-based icon utility.
+   ============================================================ */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--label-normal);
+  background: var(--background-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Icon utility ----
+   Renders an SVG asset recolourable via `color`. The SVG is used as a
+   mask so any single-colour glyph inherits the current text colour.
+   Usage: <i class="apfs-icon" style="--icon:url(assets/icons/search.svg)"></i>
+   or set the mask inline. Size with font-size / width / height. */
+.apfs-icon {
+  display: inline-block;
+  width: 1.5em;          /* 24px at 16px base */
+  height: 1.5em;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}

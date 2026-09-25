@@ -1,0 +1,8 @@
+ 추가 참여 요청 — E. 교차검토 (Claude-Fable·Claude-Opus 5.5 분장은 그대로 유지)
+두 산출물이 준비됐습니다: docs/00-research/buzz/claude-fable.md, docs/00-research/buzz/claude-opus-5.5.md
+1. MVP 범위·패턴 수집 방식·선택 축(Fable 4축 vs Opus 선택층/조립층)·"표현방법" 축 위치에 대한 두 판단을 비판적으로 검토하고 충돌 지점과 권고안을 정리해 주세요.
+2. 경쟁 빌더(아임웹·카페24·식스샵·Wix·Framer) 비교의 출처 URL을 교차 확인하고, 확인되지 않은 주장은 "확인 필요"로 표시해 주세요.
+3. 빠진 요구사항(운영·관리자·SEO·접근성·반응형·호스팅·과금 등)을 PRD/TRD 후보로 보강해 주세요.
+산출물: docs/00-research/buzz/gpt-sol.md (경로 기준: /Users/younghwankang/Work/web-builder-solution/)
+추가 제한: GDWEB robots.txt가 전체 수집 거부(Disallow: /)이므로 GDWEB에는 새로 접근하지 말고 두 산출물의 관찰 기록만 사용해 주세요.
+공통 규칙은 이 스레드 원글과 동일합니다(결론 → 근거 → 사실/추정/확인 필요 → 요구사항 후보, 선정작 복제 금지, 외부 게시·Git 원격 쓰기 금지). 이 스레드에 답글 1건으로 요약과 산출물 경로를 남겨 주세요.

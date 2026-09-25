@@ -382,6 +382,53 @@ describe("저장·확정 (S-12~S-17)", () => {
   });
 });
 
+describe("Codex R1 회귀", () => {
+  it("Codex R1 [P1]: 확정 실패 안내의 '다시 시도'는 지금의 저장 상태로 검사한다 — 저장 중이면 확정하지 않는다", async () => {
+    const gate = deferred();
+    const repo = boardRepo(THREE, { hero: "ref-a" }, {
+      delay: (call) => (call.method === "savePicks" && call.phase === "response" ? gate.promise : undefined),
+    });
+    const confirm = vi.spyOn(repo, "confirmProfile").mockRejectedValueOnce(new Error("네트워크"));
+    await openBoard(repo);
+    await userEvent.click(confirmButton());
+    await screen.findByRole("alert");
+    await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
+    expect(screen.getByText("저장 중…")).toBeInTheDocument();
+    await userEvent.click(within(screen.getByRole("alert")).getByRole("button", { name: "다시 시도" }));
+    expect(confirm).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(status()).toHaveTextContent("선택을 저장하는 중입니다"));
+    await act(async () => gate.resolve());
+  });
+
+  it("Codex R1 [P2]: 카탈로그에서 추가한 직후 보드로 가면 추가가 끝난 뒤의 보드를 조회한다", async () => {
+    const gate = deferred();
+    const repo = boardRepo(THREE, {}, {
+      delay: (call) => (call.method === "addReference" && call.phase === "request" ? gate.promise : undefined),
+    });
+    const { router } = renderApp("/catalog", references(), repo);
+    await userEvent.click(await screen.findByRole("button", { name: "필라테스 스튜디오 비교 추가" }));
+    await act(() => router.navigate("/compare"));
+    await act(async () => gate.resolve());
+    expect(await screen.findByRole("table", { name: "레퍼런스 4개, 비교 항목 12개" })).toBeInTheDocument();
+  });
+
+  it("Codex R1 [P2]: 저장 중 열을 빼고 앞 저장이 STALE로 서버 선택에 맞춰지면 서버 선택 기준으로 뺀다", async () => {
+    const gate = deferred();
+    const repo = boardRepo(THREE, { hero: "ref-a" }, {
+      delay: (call) => (call.method === "savePicks" && call.seq === 1 && call.phase === "request" ? gate.promise : undefined),
+    });
+    await openBoard(repo);
+    await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
+    // 화면 저장이 도착하기 전에 다른 곳에서 먼저 저장한다 — 서버 선택 Hero=C·카드=B
+    await repo.savePicks({ hero: "ref-c", card: "ref-b" }, {}, (await savedBoard(repo)).revision);
+    await userEvent.click(screen.getByRole("button", { name: "프리미엄 헤어살롱 비교에서 빼기" }));
+    await act(async () => gate.resolve());
+    await waitFor(async () => expect((await savedBoard(repo)).columns.map((c) => c.referenceId)).toEqual(["ref-a", "ref-c"]));
+    await waitFor(() => expect(pick("Hero 구성", "C 동네 치과 클리닉")).toHaveAttribute("aria-pressed", "true"));
+    await waitFor(async () => expect((await savedBoard(repo)).picks).toEqual({ hero: "ref-c" }));
+  });
+});
+
 describe("진입 경로 (단계 6)", () => {
   it("카탈로그 트레이의 '비교 보드 열기'는 /compare로 간다", async () => {
     const { router } = renderApp("/catalog", references(), boardRepo(["ref-a"]));

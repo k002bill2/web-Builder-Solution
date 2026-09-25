@@ -69,3 +69,9 @@
 ## Codex R1 · REPORT
 - R1 P1 1 · P2 2 반영(5297948). 회귀 테스트·R2는 턴 한도로 미실행 — REPORT 참조.
 - 브라우저 확인: screens/ 3장, 서버 종료 확인.
+
+## 보완 FIX-R1 (FIX-R1_BRIEF.md · 2026-09-26)
+- [x] 1. Codex R1 회귀 테스트 3건(`CompareBoardPage.test.tsx` "Codex R1 회귀") — 수정 한 줄씩 되돌려 RED 확인 후 `git checkout`으로 원복·GREEN. 305 → 308.
+  - P1 `latestConfirm` → `void confirm()`: `expected "confirmProfile" to be called 1 times, but got 2 times`
+  - P2 `whenIdle().then(getBoard)` → `getBoard()`: `Unable to find role="table" and name "레퍼런스 4개, 비교 항목 12개"`
+  - P2 STALE 기준 → 항상 로컬 선택: `toHaveAttribute("aria-pressed", "true")` 실패(Hero=C 선택이 사라짐)

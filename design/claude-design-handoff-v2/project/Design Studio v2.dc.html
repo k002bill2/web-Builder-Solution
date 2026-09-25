@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/apfs-dashboard-ds-709895f7-436c-49cd-8113-09fa8a455665/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/apfs-dashboard-ds-709895f7-436c-49cd-8113-09fa8a455665/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/apfs-dashboard-ds-709895f7-436c-49cd-8113-09fa8a455665/styles.css">
+<script src="_ds/apfs-dashboard-ds-709895f7-436c-49cd-8113-09fa8a455665/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--bg-deep);font-family:var(--font-sans);color:var(--foreground);font-size:13.5px}
+a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
+.dv-turn{padding:40px 44px 32px;scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:var(--foreground);color:#fff;border-radius:4px}
+.dv-tname{font-size:13px;font-weight:600;color:var(--foreground)}
+.dv-opt{display:flex;flex-direction:column;gap:14px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(31,54,40,.1);color:var(--foreground);border-radius:5px}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--muted-foreground)}
+.dv-card{background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-sm);overflow:hidden}
+.dv-cap{font-size:11px;font-weight:600;color:var(--caption);margin:18px 0 6px;letter-spacing:.02em}
+.dv-row{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.in{height:38px;padding:0 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--card);color:var(--foreground);font:inherit;font-size:13.5px;width:100%;box-sizing:border-box;display:flex;align-items:center}
+.in.ph{color:var(--caption)}
+.thumb{background:var(--muted);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.thumb .bar{height:4px;border-radius:2px}
+.thumb .row{display:flex;gap:4px}
+.thumb .row span{flex:1;background:var(--card);border-radius:3px}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><span class="dv-tid">2</span><span class="dv-tname">Hermes Design Benchmark Studio — 카탈로그 허브(1a) 슬림 리비전 · APFS Dashboard DS 적용</span></div>
+<div style="max-width:1180px;margin:0 0 26px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:13px;line-height:1.65;color:var(--muted-foreground)">
+<b style="color:var(--foreground)">이번 변경</b> · 1b 삭제. 1a를 52px 헤더, 흰 배경 단일 표면, 사이드 필터 레일 → 한 줄 칩 필터, 카드 보더 제거(썸네일만 muted 표면), 비교 트레이를 플로팅 필로 축소. 컴포넌트·색·타이포는 APFS Dashboard DS 토큰(--primary, --muted, t-*)만 사용.
+</div>
+
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><span class="dv-oid">2a</span>카탈로그 허브 — 슬림 · 데스크톱 1280 / 모바일 390</div>
+
+<div class="dv-cap">01 · 레퍼런스 카탈로그 (FR-CAT-01·02·04)</div>
+<div class="dv-card" style="width:1280px" data-screen-label="2a-01 카탈로그">
+<header style="height:52px;display:flex;align-items:center;gap:32px;padding:0 32px;border-bottom:1px solid var(--border)">
+<span style="font-size:15px;font-weight:800;letter-spacing:-.02em">Design Studio</span>
+<nav style="display:flex;gap:20px;flex:1;font-size:13.5px;font-weight:500;color:var(--muted-foreground)"><span style="color:var(--foreground);font-weight:700">카탈로그</span><span>보관함</span><span>비교 보드</span><span>프로젝트</span></nav>
+<x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" leading-icon="plus" hint-size="auto,32px">새 프로젝트</x-import>
+<span style="width:30px;height:30px;border-radius:99px;background:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted-foreground)">강</span>
+</header>
+<div style="padding:36px 32px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+<div><div class="t-h1">레퍼런스 카탈로그</div><div class="t-body" style="color:var(--muted-foreground);margin-top:4px">internal · licensed 레퍼런스 128개 · 점수 측정 2026.09.20</div></div>
+<div style="display:flex;gap:8px;width:520px"><div style="flex:1;position:relative"><div class="in ph" style="padding-left:34px">업종, 타깃, 콘셉트로 검색</div><span style="position:absolute;left:11px;top:11px;width:16px;height:16px;border:2px solid var(--caption);border-radius:99px;box-sizing:border-box"></span></div><x-import component-from-global-scope="APFS.Button" variant="outline" size="md" leading-icon="star" hint-size="auto,38px">추천 받기</x-import></div>
+</div>
+<div style="padding:22px 32px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
+<sc-for list="{{ industries }}" as="c" hint-placeholder-count="6"><x-import component-from-global-scope="APFS.FilterChip" active="{{ c.on }}" count="{{ c.n }}" hint-size="auto,28px">{{ c.label }}</x-import></sc-for>
+<span style="width:1px;height:18px;background:var(--border-strong);margin:0 6px"></span>
+<sc-for list="{{ facets }}" as="f" hint-placeholder-count="4"><x-import component-from-global-scope="APFS.Button" variant="{{ f.variant }}" size="sm" trailing-icon="chevron-down" hint-size="auto,30px">{{ f.label }}</x-import></sc-for>
+<span style="margin-left:auto"><x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ sortOpts }}" value="score" hint-size="auto,30px"></x-import></span>
+</div>
+<div style="padding:22px 32px 100px;display:grid;grid-template-columns:{{ gridCols }};gap:24px 20px">
+<sc-for list="{{ refs }}" as="r" hint-placeholder-count="8">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="thumb" style="aspect-ratio:4/3;position:relative">
+<div style="display:flex;justify-content:space-between"><span class="bar" style="width:22px;background:{{ r.c3 }}"></span><span class="bar" style="width:40px;background:var(--border-strong)"></span></div>
+<div style="flex:1;background:{{ r.c1 }};border-radius:6px;display:flex;align-items:flex-end;padding:9px"><span class="bar" style="width:44%;height:6px;background:{{ r.c2 }}"></span></div>
+<div class="row" style="height:18px"><span></span><span></span><span></span></div>
+<span style="position:absolute;top:8px;right:8px"><x-import component-from-global-scope="APFS.StatusBadge" tone="{{ r.licTone }}" label="{{ r.lic }}" size="sm" dot="{{ false }}" hint-size="auto,18px"></x-import></span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+<div style="min-width:0"><div class="t-cardtitle" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div><div class="t-caption" style="margin-top:2px">{{ r.ind }} · {{ r.layout }} · 모션 {{ r.motion }}</div></div>
+<span class="tabular" style="font-size:12.5px;font-weight:700;color:var(--muted-foreground);white-space:nowrap">{{ r.a11y }} <span style="color:var(--caption);font-weight:500">/</span> {{ r.perf }}</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span style="display:inline-flex;gap:4px"><span style="width:12px;height:12px;border-radius:99px;background:{{ r.c1 }}"></span><span style="width:12px;height:12px;border-radius:99px;background:{{ r.c2 }};border:1px solid var(--border)"></span><span style="width:12px;height:12px;border-radius:99px;background:{{ r.c3 }}"></span></span>
+<span style="display:inline-flex;gap:4px"><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="bookmark" hint-size="28px,28px"></x-import><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="{{ r.cmpIcon }}" hint-size="28px,28px"></x-import></span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="position:sticky;bottom:0;display:flex;justify-content:center;margin-top:-76px;padding:0 0 20px;pointer-events:none">
+<div style="pointer-events:auto;background:var(--foreground);color:#fff;border-radius:99px;padding:8px 8px 8px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-lg)">
+<span style="font-size:13px;font-weight:600">비교 <span class="tabular">3</span><span style="opacity:.5"> / 6</span></span>
+<span style="display:flex;gap:-4px"><sc-for list="{{ trayRefs }}" as="r" hint-placeholder-count="3"><span style="width:22px;height:22px;border-radius:99px;background:{{ r.c1 }};border:2px solid var(--foreground);margin-left:-6px"></span></sc-for></span>
+<x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" trailing-icon="arrow-right" style="{{ pill }}" hint-size="auto,30px">비교 보드</x-import>
+</div>
+</div>
+</div>
+
+<div class="dv-cap">02 · 레퍼런스 상세 (FR-CAT-03)</div>
+<div class="dv-card" style="width:1280px" data-screen-label="2a-02 상세">
+<header style="height:52px;display:flex;align-items:center;gap:32px;padding:0 32px;border-bottom:1px solid var(--border)">
+<span style="font-size:15px;font-weight:800;letter-spacing:-.02em">Design Studio</span>
+<nav style="display:flex;gap:20px;flex:1;font-size:13.5px;font-weight:500;color:var(--muted-foreground)"><span style="color:var(--foreground);font-weight:700">카탈로그</span><span>보관함</span><span>비교 보드</span><span>프로젝트</span></nav>
+<span style="width:30px;height:30px;border-radius:99px;background:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted-foreground)">강</span>
+</header>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;min-height:760px">
+<div style="background:var(--muted);padding:28px 32px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between"><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="chevron-left" hint-size="auto,30px">카탈로그</x-import><x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ viewports }}" value="desktop" hint-size="auto,30px"></x-import></div>
+<div style="background:var(--card);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden;flex:1;display:flex;flex-direction:column">
+<div style="height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border)"><span style="width:40px;height:5px;background:#2C2C2C;border-radius:2px"></span><span style="width:120px;height:5px;background:var(--border-strong);border-radius:2px"></span></div>
+<div style="height:220px;background:#8B5E3C;padding:26px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px"><span style="width:38%;height:14px;background:#F3E9DD;border-radius:3px"></span><span style="width:24%;height:8px;background:#F3E9DD;border-radius:3px;opacity:.7"></span></div>
+<div style="padding:22px 26px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px"><span style="height:72px;border-radius:8px;border:1px solid var(--border)"></span><span style="height:72px;border-radius:8px;border:1px solid var(--border)"></span><span style="height:72px;border-radius:8px;border:1px solid var(--border)"></span></div>
+<div style="padding:0 26px 22px;display:grid;grid-template-columns:1fr 1fr;gap:12px"><span style="height:96px;border-radius:8px;background:#F3E9DD"></span><span style="height:96px;border-radius:8px;background:#F3E9DD"></span></div>
+<div style="margin-top:auto;height:56px;background:#2C2C2C"></div>
+</div>
+<div class="t-caption" style="text-align:center">자체 렌더 미리보기 · 외부 캡처 미사용</div>
+</div>
+<aside style="padding:28px 28px 28px;display:flex;flex-direction:column;gap:22px;border-left:1px solid var(--border)">
+<div><div style="display:flex;align-items:center;gap:8px"><span class="t-h2">모던 카페 브랜드</span><x-import component-from-global-scope="APFS.StatusBadge" tone="success" label="internal" size="sm" dot="{{ false }}" hint-size="auto,18px"></x-import></div><div class="t-caption" style="margin-top:4px">카페·F&amp;B · 풀블리드 히어로 · 20~30대 여성 타깃</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+<div><div class="t-label">접근성</div><div class="tabular" style="font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--success-text)">96</div></div>
+<div><div class="t-label">성능</div><div class="tabular" style="font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--success-text)">92</div></div>
+<div><div class="t-label">모션</div><div style="font-size:22px;font-weight:800;letter-spacing:-.02em">낮음</div></div>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><x-import component-from-global-scope="APFS.FilterChip" active="{{ true }}" hint-size="auto,28px">미니멀</x-import><x-import component-from-global-scope="APFS.FilterChip" active="{{ true }}" hint-size="auto,28px">따뜻한</x-import><x-import component-from-global-scope="APFS.FilterChip" hint-size="auto,28px">예약 유도</x-import><x-import component-from-global-scope="APFS.FilterChip" hint-size="auto,28px">반응형</x-import></div>
+<div><div class="t-label" style="margin-bottom:8px">섹션 구성 · 8</div>
+<div style="display:flex;flex-direction:column"><sc-for list="{{ refSections }}" as="s" hint-placeholder-count="8"><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)"><span class="t-caption tabular" style="width:18px">{{ s.n }}</span><span style="flex:1;font-size:13px;font-weight:600">{{ s.name }}</span><span class="t-caption">{{ s.variant }}</span></div></sc-for></div></div>
+<div><div class="t-label" style="margin-bottom:8px">토큰</div>
+<div style="display:flex;gap:5px"><span style="flex:1;height:26px;border-radius:6px;background:#8B5E3C"></span><span style="flex:1;height:26px;border-radius:6px;background:#F3E9DD"></span><span style="flex:1;height:26px;border-radius:6px;background:#2C2C2C"></span><span style="flex:1;height:26px;border-radius:6px;background:#fff;border:1px solid var(--border-strong)"></span></div>
+<div class="t-caption" style="margin-top:8px">Pretendard 700/400 · 스케일 1.25 · 8pt · 본문 대비 7.2:1</div></div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" style="{{ fullW }}" hint-size="100%,40px">템플릿으로 가져오기</x-import><div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" leading-icon="bookmark" style="{{ fullW }}" hint-size="100%,38px">저장</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" leading-icon="plus" style="{{ fullW }}" hint-size="100%,38px">비교 추가</x-import></div></div>
+</aside>
+</div>
+</div>
+
+<div class="dv-cap">03 · 비교 보드 + 프로필 초안 (FR-CMP-02·03, FR-SEL-02)</div>
+<div class="dv-card" style="width:1280px" data-screen-label="2a-03 비교 보드">
+<header style="height:52px;display:flex;align-items:center;gap:32px;padding:0 32px;border-bottom:1px solid var(--border)">
+<span style="font-size:15px;font-weight:800;letter-spacing:-.02em">Design Studio</span>
+<nav style="display:flex;gap:20px;flex:1;font-size:13.5px;font-weight:500;color:var(--muted-foreground)"><span>카탈로그</span><span>보관함</span><span style="color:var(--foreground);font-weight:700">비교 보드</span><span>프로젝트</span></nav>
+<x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="external" hint-size="auto,30px">조직 공유</x-import>
+<span style="width:30px;height:30px;border-radius:99px;background:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted-foreground)">강</span>
+</header>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;min-height:740px">
+<main style="padding:28px 32px 32px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px">
+<div><div class="t-h1">강남 카페 리브랜딩</div><div class="t-body" style="color:var(--muted-foreground);margin-top:4px">3 / 6 비교 중 · 항목별로 원하는 요소를 선택하면 프로필 초안에 담깁니다</div></div>
+<x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ selModes }}" value="mix" hint-size="auto,30px"></x-import>
+</div>
+<div style="display:grid;grid-template-columns:120px repeat(3,minmax(0,1fr))">
+<div style="padding:0 0 12px"></div>
+<sc-for list="{{ trayRefs }}" as="r" hint-placeholder-count="3">
+<div style="padding:0 14px 12px;display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px;border-radius:7px;background:{{ r.c1 }};display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">{{ r.key }}</span><div style="min-width:0"><div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div><div class="t-caption">{{ r.ind }}</div></div></div>
+</sc-for>
+<sc-for list="{{ cmpRows }}" as="row" hint-placeholder-count="10">
+<div style="padding:11px 0;border-top:1px solid var(--border)"><span class="t-label">{{ row.name }}</span></div>
+<sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="3">
+<div style="padding:9px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;background:{{ cell.bg }};border-radius:{{ cell.radius }}">
+<span style="font-size:13px;color:var(--foreground)">{{ cell.v }}</span>
+<sc-if value="{{ cell.picked }}" hint-placeholder-val="{{ false }}"><span style="width:18px;height:18px;border-radius:99px;background:var(--primary);display:inline-flex;align-items:center;justify-content:center;flex:none"><span style="width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)"></span></span></sc-if>
+<sc-if value="{{ cell.pickable }}" hint-placeholder-val="{{ false }}"><span style="width:18px;height:18px;border-radius:99px;border:1.5px solid var(--border-strong);flex:none"></span></sc-if>
+</div>
+</sc-for>
+</sc-for>
+</div>
+</main>
+<aside style="padding:28px 24px;border-left:1px solid var(--border);display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span class="t-h2">프로필 초안</span><x-import component-from-global-scope="APFS.StatusBadge" tone="warning" label="저장 전" size="sm" hint-size="auto,18px"></x-import></div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ draft }}" as="d" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><span style="width:10px;height:10px;border-radius:99px;background:{{ d.c }};flex:none"></span><div style="flex:1;min-width:0"><div class="t-caption">{{ d.kind }}</div><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.v }}</div></div><span class="t-caption tabular">{{ d.from }}</span></div></sc-for>
+</div>
+<div style="padding:10px 12px;border-radius:8px;background:var(--warning-soft);color:var(--warning-text);font-size:12.5px;line-height:1.5"><b>조합 lint</b> · B 카드(어두운 배경)와 배경색 대비 3.9:1. 카드 표면을 #FFFFFF로 보정 제안</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" style="{{ fullW }}" hint-size="100%,40px">프로필 확정 (v1)</x-import><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" style="{{ fullW }}" hint-size="100%,30px">초안 비우기</x-import></div>
+</aside>
+</div>
+</div>
+
+<div class="dv-cap">04 · 디자인 프로필 · 3안 생성 (FR-PRF-01·02·03, FR-GEN-04·05)</div>
+<div class="dv-card" style="width:1280px" data-screen-label="2a-04 프로필·생성">
+<header style="height:52px;display:flex;align-items:center;gap:32px;padding:0 32px;border-bottom:1px solid var(--border)">
+<span style="font-size:15px;font-weight:800;letter-spacing:-.02em">Design Studio</span>
+<nav style="display:flex;gap:20px;flex:1;font-size:13.5px;font-weight:500;color:var(--muted-foreground)"><span>카탈로그</span><span>보관함</span><span>비교 보드</span><span style="color:var(--foreground);font-weight:700">프로젝트</span></nav>
+<span style="width:30px;height:30px;border-radius:99px;background:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted-foreground)">강</span>
+</header>
+<div style="padding:28px 32px 36px;display:grid;grid-template-columns:340px minmax(0,1fr);gap:40px">
+<aside style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span class="t-h2">디자인 프로필</span><x-import component-from-global-scope="APFS.StatusBadge" tone="primary" label="v3 · 현재" size="sm" dot="{{ false }}" hint-size="auto,18px"></x-import></div>
+<div><div class="t-label" style="margin-bottom:8px">시각 방향</div><div style="display:flex;gap:6px;flex-wrap:wrap"><x-import component-from-global-scope="APFS.FilterChip" active="{{ true }}" hint-size="auto,28px">미니멀</x-import><x-import component-from-global-scope="APFS.FilterChip" active="{{ true }}" hint-size="auto,28px">따뜻한</x-import><x-import component-from-global-scope="APFS.FilterChip" hint-size="auto,28px">hero: fullbleed</x-import><x-import component-from-global-scope="APFS.FilterChip" hint-size="auto,28px">card: elevated</x-import></div></div>
+<div><div class="t-label" style="margin-bottom:8px">역할 팔레트</div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px"><sc-for list="{{ palette }}" as="p" hint-placeholder-count="5"><div><div style="height:34px;border-radius:7px;background:{{ p.hex }};border:1px solid var(--border)"></div><div class="t-caption" style="margin-top:4px">{{ p.role }}</div></div></sc-for></div>
+<div style="margin-top:10px;padding:9px 12px;border-radius:8px;background:var(--info-soft);color:var(--info-text);font-size:12.5px;line-height:1.5">보조 텍스트 대비 4.2:1 → #6B4A2E로 보정 제안 (4.6:1)</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div><div class="t-label">타이포</div><div style="font-size:14px;font-weight:600;margin-top:4px">Pretendard · 1.25</div></div><div><div class="t-label">섹션 리듬</div><div style="font-size:14px;font-weight:600;margin-top:4px">96 / 64px · 교차 배경</div></div></div>
+<div><div class="t-label" style="margin-bottom:10px">전역 조정 · 테마 허용 범위 안</div>
+<div style="display:flex;flex-direction:column;gap:14px"><sc-for list="{{ globals }}" as="g" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px"><span style="width:32px;font-size:13px;color:var(--muted-foreground)">{{ g.name }}</span><div style="flex:1;height:4px;border-radius:99px;background:var(--muted);position:relative"><span style="position:absolute;left:{{ g.min }};right:{{ g.maxR }};top:0;bottom:0;background:color-mix(in srgb,var(--primary) 30%,transparent);border-radius:99px"></span><span style="position:absolute;left:{{ g.val }};top:-5px;width:14px;height:14px;border-radius:99px;background:var(--card);border:2px solid var(--primary);box-sizing:border-box"></span></div><span class="t-caption" style="width:32px;text-align:right">{{ g.label }}</span></div></sc-for></div></div>
+<div><div class="t-label" style="margin-bottom:6px">버전</div>
+<sc-for list="{{ versions }}" as="v" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="width:7px;height:7px;border-radius:99px;background:{{ v.dot }}"></span><span class="tabular" style="width:24px;font-size:13px;font-weight:700">{{ v.n }}</span><span style="flex:1;font-size:13px;color:var(--muted-foreground)">{{ v.note }}</span><span class="t-caption">{{ v.when }}</span></div></sc-for></div>
+</aside>
+<main>
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px">
+<div><div class="t-h1">생성된 3안</div><div class="t-body" style="color:var(--muted-foreground);margin-top:4px">같은 프로필 · 라이브러리 v1.4 · seed 4127 → 재생성 시 동일 결과</div></div>
+<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="file" hint-size="auto,30px">생성 로그</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="refresh" hint-size="auto,30px">다시 생성</x-import></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+<sc-for list="{{ variants }}" as="v" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="thumb" style="aspect-ratio:4/5;outline:{{ v.outline }};outline-offset:3px;border-radius:10px">
+<div style="display:flex;justify-content:space-between"><span class="bar" style="width:20px;background:#2C2C2C"></span><span class="bar" style="width:40px;background:var(--border-strong)"></span></div>
+<div style="height:{{ v.heroH }};background:#8B5E3C;border-radius:6px;display:flex;align-items:center;justify-content:{{ v.heroJ }};padding:12px"><span class="bar" style="width:40%;height:7px;background:#F3E9DD"></span></div>
+<div style="display:grid;grid-template-columns:{{ v.grid }};gap:5px;flex:1"><span style="background:var(--card);border-radius:4px"></span><span style="background:var(--card);border-radius:4px"></span><span style="background:var(--card);border-radius:4px"></span><span style="background:var(--card);border-radius:4px"></span><span style="background:var(--card);border-radius:4px"></span><span style="background:var(--card);border-radius:4px"></span></div>
+<div style="height:26px;background:#2C2C2C;border-radius:4px"></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span class="t-cardtitle">{{ v.name }}</span><sc-if value="{{ v.sel }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="APFS.StatusBadge" tone="primary" label="선택" size="sm" hint-size="auto,18px"></x-import></sc-if></div>
+<div class="t-caption">{{ v.axes }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--muted-foreground)">{{ v.log }}</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:28px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="lg" hint-size="auto,40px">프로필로 돌아가기</x-import><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" trailing-icon="arrow-right" hint-size="auto,40px">A안으로 편집 시작</x-import></div>
+</main>
+</div>
+</div>
+
+<div class="dv-cap">05 · 편집 · 미리보기 · 품질 게이트 · 발행 (FR-EDT-01~06, FR-PUB-01~04)</div>
+<div class="dv-card" style="width:1280px" data-screen-label="2a-05 편집기">
+<header style="height:52px;display:flex;align-items:center;gap:14px;padding:0 20px;border-bottom:1px solid var(--border)">
+<x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="chevron-left" hint-size="30px,30px"></x-import>
+<span style="font-size:13.5px;font-weight:700">강남 카페 리브랜딩</span><x-import component-from-global-scope="APFS.StatusBadge" tone="primary" label="A안 · 프로필 v3" size="sm" dot="{{ false }}" hint-size="auto,18px"></x-import>
+<span class="t-caption">자동 저장 · 12초 전</span>
+<div style="flex:1;display:flex;justify-content:center"><x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ viewports }}" value="desktop" hint-size="auto,30px"></x-import></div>
+<x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="clock" hint-size="auto,30px">스냅샷</x-import>
+<x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="external" hint-size="auto,30px">미리보기 링크</x-import>
+<x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" leading-icon="check-circle" hint-size="auto,30px">검사 후 발행</x-import>
+</header>
+<div style="display:grid;grid-template-columns:220px minmax(0,1fr) 300px;min-height:760px">
+<aside style="border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 10px 10px"><span class="t-label">섹션 · 9</span><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="plus" hint-size="26px,26px"></x-import></div>
+<sc-for list="{{ sectionPlan }}" as="s" hint-placeholder-count="9">
+<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:{{ s.bg }}">
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:{{ s.fg }}">{{ s.name }}</div><div class="t-caption">{{ s.variant }}</div></div>
+<sc-if value="{{ s.warn }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:99px;background:var(--warning)"></span></sc-if>
+</div>
+</sc-for>
+<div style="margin-top:auto;padding:6px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="layers" style="{{ fullW }}" hint-size="100%,30px">테마 스왑</x-import></div>
+</aside>
+<main style="background:var(--muted);padding:24px;display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:640px;background:var(--card);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden">
+<div style="height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:700">카페 온도</span><span style="display:flex;gap:10px;align-items:center"><span style="width:24px;height:4px;background:var(--border-strong);border-radius:2px"></span><span style="width:24px;height:4px;background:var(--border-strong);border-radius:2px"></span><span style="width:24px;height:4px;background:var(--border-strong);border-radius:2px"></span><span style="width:36px;height:12px;background:#8B5E3C;border-radius:3px"></span></span></div>
+<div style="height:220px;background:#8B5E3C;padding:32px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;outline:2px solid var(--primary);outline-offset:-2px;position:relative">
+<span style="position:absolute;top:10px;left:10px;background:var(--primary);color:#fff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px">Hero · fullbleed-left</span>
+<div style="font-size:26px;line-height:1.25;font-weight:700;color:#F3E9DD;letter-spacing:-.02em;max-width:320px">한 잔의 온도로<br>하루를 시작하세요</div>
+<div style="font-size:13px;color:#F3E9DD;opacity:.85">강남역 3번 출구 · 매일 07:00–22:00</div>
+<span style="width:96px;height:32px;border-radius:8px;background:#F3E9DD;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#2C2C2C">예약하기</span>
+</div>
+<div style="padding:28px 32px"><div style="font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px">Services</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"><span style="height:88px;border-radius:8px;border:1px solid var(--border)"></span><span style="height:88px;border-radius:8px;border:1px solid var(--border)"></span><span style="height:88px;border-radius:8px;border:1px solid var(--border);outline:2px solid var(--warning);outline-offset:-2px"></span></div>
+<div style="margin-top:10px;color:var(--warning-text);font-size:12px;font-weight:600">3번 카드 제목이 2줄 초과 (34/28자)</div></div>
+<div style="height:90px;background:#2C2C2C;padding:20px 32px;display:grid;grid-template-columns:1fr auto;gap:16px"><div><div style="font-size:11px;font-weight:600;color:#fff">카페 온도 · 대표 김온도</div><div style="font-size:10px;line-height:1.6;color:rgba(255,255,255,.6);margin-top:4px">사업자등록번호 000-00-00000 · 통신판매업 2026-서울강남-0000<br>서울 강남구 테헤란로 00 · 02-000-0000</div></div><div style="font-size:10px;font-weight:500;color:rgba(255,255,255,.75)">개인정보처리방침 · 이용약관</div></div>
+</div>
+</main>
+<aside style="border-left:1px solid var(--border);display:flex;flex-direction:column">
+<div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span class="t-h2" style="font-size:15px">Hero</span><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" trailing-icon="chevron-down" hint-size="auto,30px">fullbleed-left</x-import></div>
+<div><div class="t-label" style="margin-bottom:6px">제목</div><div class="in">한 잔의 온도로 하루를 시작하세요</div><div class="t-caption tabular" style="margin-top:4px">18 / 24자</div></div>
+<div><div class="t-label" style="margin-bottom:6px">부제</div><div class="in">강남역 3번 출구 · 매일 07:00–22:00</div></div>
+<div><div class="t-label" style="margin-bottom:6px">CTA 라벨</div><div class="in">예약하기</div></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px">배경 이미지 슬롯</span><x-import component-from-global-scope="APFS.Switch" checked="{{ true }}" hint-size="36px,20px"></x-import></div>
+</div>
+<div style="padding:18px 20px;display:flex;flex-direction:column;gap:6px;flex:1">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="t-h2" style="font-size:15px">품질 게이트</span><x-import component-from-global-scope="APFS.StatusBadge" tone="danger" label="차단 1 · 경고 1" size="sm" hint-size="auto,18px"></x-import></div>
+<sc-for list="{{ gates }}" as="g" hint-placeholder-count="7"><div style="display:flex;align-items:center;gap:8px;padding:6px 0"><span style="width:7px;height:7px;border-radius:99px;background:{{ g.dot }};flex:none"></span><span style="flex:1;font-size:13px">{{ g.name }}</span><span class="t-caption" style="color:{{ g.color }}">{{ g.v }}</span></div></sc-for>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+<x-import component-from-global-scope="APFS.Button" variant="primary" disabled="{{ true }}" style="{{ fullW }}" hint-size="100%,38px">cafe-ondo.hermes.site 발행</x-import>
+<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="download" disabled="{{ true }}" style="{{ fullW }}" hint-size="100%,30px">React zip</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="download" disabled="{{ true }}" style="{{ fullW }}" hint-size="100%,30px">정적 HTML</x-import></div>
+<div class="t-caption" style="text-align:center">차단 0일 때 내보내기·발행이 열립니다</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+
+<div class="dv-cap">06 · 모바일 390 — 카탈로그 / 편집</div>
+<div class="dv-row">
+<div class="dv-card" style="width:390px" data-screen-label="2a-06 모바일 카탈로그">
+<div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px"><span style="font-size:15px;font-weight:800;letter-spacing:-.02em">Design Studio</span><span style="width:30px;height:30px;border-radius:99px;background:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted-foreground)">강</span></div>
+<div style="padding:4px 16px 0"><div class="in ph">업종, 콘셉트 검색</div></div>
+<div style="display:flex;gap:6px;padding:12px 16px;overflow:hidden;border-bottom:1px solid var(--border)"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="filter" hint-size="auto,30px">필터 3</x-import><sc-for list="{{ industriesShort }}" as="c" hint-placeholder-count="4"><x-import component-from-global-scope="APFS.FilterChip" active="{{ c.on }}" hint-size="auto,28px">{{ c.label }}</x-import></sc-for></div>
+<div style="padding:16px 16px 96px;display:flex;flex-direction:column;gap:20px">
+<sc-for list="{{ refsMobile }}" as="r" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div class="thumb" style="aspect-ratio:16/9;position:relative"><div style="flex:1;background:{{ r.c1 }};border-radius:5px"></div><div class="row" style="height:14px"><span></span><span></span><span></span></div><span style="position:absolute;top:8px;right:8px"><x-import component-from-global-scope="APFS.StatusBadge" tone="{{ r.licTone }}" label="{{ r.lic }}" size="sm" dot="{{ false }}" hint-size="auto,18px"></x-import></span></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><div><div class="t-cardtitle">{{ r.name }}</div><div class="t-caption">{{ r.ind }} · 접근성 {{ r.a11y }} · 성능 {{ r.perf }}</div></div><span style="display:inline-flex;gap:4px"><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="bookmark" hint-size="32px,32px"></x-import><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="{{ r.cmpIcon }}" hint-size="32px,32px"></x-import></span></div>
+</div>
+</sc-for>
+</div>
+<div style="position:sticky;bottom:0;display:flex;justify-content:center;margin-top:-76px;padding-bottom:16px"><div style="background:var(--foreground);color:#fff;border-radius:99px;padding:6px 6px 6px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-lg)"><span style="font-size:13px;font-weight:600">비교 <span class="tabular">3</span><span style="opacity:.5"> / 6</span></span><x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" trailing-icon="arrow-right" style="{{ pill }}" hint-size="auto,30px">비교 보드</x-import></div></div>
+</div>
+
+<div class="dv-card" style="width:390px" data-screen-label="2a-07 모바일 편집">
+<div style="height:52px;display:flex;align-items:center;gap:8px;padding:0 10px 0 6px;border-bottom:1px solid var(--border)"><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" leading-icon="chevron-left" hint-size="32px,32px"></x-import><div style="flex:1"><div style="font-size:13.5px;font-weight:700">강남 카페 리브랜딩</div><div class="t-caption">A안 · 자동 저장됨</div></div><x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" hint-size="auto,30px">검사</x-import></div>
+<div style="padding:12px 16px;display:flex;justify-content:center"><x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ viewports }}" value="mobile" hint-size="auto,30px"></x-import></div>
+<div style="background:var(--muted);padding:16px">
+<div style="background:var(--card);border-radius:8px;box-shadow:var(--shadow-sm);overflow:hidden">
+<div style="height:32px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--border)"><span style="font-size:11px;font-weight:700">카페 온도</span><span style="width:16px;height:2px;background:#2C2C2C;box-shadow:0 5px 0 #2C2C2C,0 -5px 0 #2C2C2C"></span></div>
+<div style="height:190px;background:#8B5E3C;padding:20px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;outline:2px solid var(--primary);outline-offset:-2px"><div style="font-size:20px;line-height:1.25;font-weight:700;color:#F3E9DD;letter-spacing:-.02em">한 잔의 온도로<br>하루를 시작하세요</div><span style="width:88px;height:30px;border-radius:8px;background:#F3E9DD;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#2C2C2C">예약하기</span></div>
+<div style="padding:16px"><div style="font-size:14px;font-weight:700;margin-bottom:10px">Services</div><div style="display:flex;flex-direction:column;gap:8px"><span style="height:44px;border-radius:6px;border:1px solid var(--border)"></span><span style="height:44px;border-radius:6px;border:1px solid var(--border);outline:2px solid var(--warning);outline-offset:-2px"></span></div></div>
+</div>
+</div>
+<div style="padding:16px 16px 20px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span class="t-h2" style="font-size:15px">Hero</span><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" trailing-icon="chevron-down" hint-size="auto,30px">fullbleed-left</x-import></div>
+<div><div class="t-label" style="margin-bottom:6px">제목</div><div class="in">한 잔의 온도로 하루를 시작하세요</div><div class="t-caption tabular" style="margin-top:4px">18 / 24자</div></div>
+<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" style="{{ fullW }}" hint-size="100%,30px">위로</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" style="{{ fullW }}" hint-size="100%,30px">아래로</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="trash" style="{{ fullW }}" hint-size="100%,30px">삭제</x-import></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showGateBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;상태&quot;,&quot;description&quot;:&quot;SEO 메타 차단 항목 표시&quot;},&quot;gridColumns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[3,4],&quot;default&quot;:4,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;카탈로그&quot;,&quot;description&quot;:&quot;카탈로그 카드 열 수&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const gateBlock = this.props.showGateBlock ?? true;
+    const cols = this.props.gridColumns ?? 4;
+    const refs = [
+      {key:"A",name:"모던 카페 브랜드",ind:"카페·F&B",c1:"#8B5E3C",c2:"#F3E9DD",c3:"#2C2C2C",layout:"풀블리드",motion:"낮음",a11y:96,perf:92,lic:"internal",licTone:"success",inTray:true},
+      {key:"B",name:"프리미엄 헤어살롱",ind:"뷰티",c1:"#1F1F1F",c2:"#E8E4DF",c3:"#C9A96E",layout:"스플릿",motion:"중간",a11y:91,perf:88,lic:"licensed",licTone:"info",inTray:true},
+      {key:"C",name:"동네 치과 클리닉",ind:"의료",c1:"#1F5FBF",c2:"#EAF2FE",c3:"#2C2C2C",layout:"센터",motion:"낮음",a11y:98,perf:95,lic:"internal",licTone:"success",inTray:true},
+      {key:"D",name:"필라테스 스튜디오",ind:"피트니스",c1:"#00A884",c2:"#E6FFF6",c3:"#111111",layout:"그리드",motion:"높음",a11y:89,perf:84,lic:"internal",licTone:"success",inTray:false},
+      {key:"E",name:"부티크 법률사무소",ind:"전문서비스",c1:"#1B1C1E",c2:"#F7F7F8",c3:"#6541F2",layout:"텍스트",motion:"낮음",a11y:97,perf:93,lic:"licensed",licTone:"info",inTray:false},
+      {key:"F",name:"로컬 베이커리",ind:"카페·F&B",c1:"#D47800",c2:"#FFF3E0",c3:"#2E2F33",layout:"이미지",motion:"중간",a11y:93,perf:90,lic:"internal",licTone:"success",inTray:false},
+      {key:"G",name:"브런치 다이닝",ind:"카페·F&B",c1:"#5B7A3C",c2:"#F1F5E4",c3:"#23291A",layout:"풀블리드",motion:"낮음",a11y:94,perf:91,lic:"internal",licTone:"success",inTray:false},
+      {key:"H",name:"로스터리 랩",ind:"카페·F&B",c1:"#3A2E2A",c2:"#E9DCCF",c3:"#C8742E",layout:"스플릿",motion:"중간",a11y:90,perf:87,lic:"licensed",licTone:"info",inTray:false},
+    ].map(r => ({...r, cmpIcon: r.inTray ? "check" : "plus"}));
+    const trayRefs = refs.filter(r => r.inTray);
+    const rowDefs = [
+      ["Hero",["풀블리드 · 좌측 카피","스플릿","센터 카피"],0],["메뉴",["5개 · 우측 CTA","4개 · 햄버거","6개 · 2단"],0],["CTA",["히어로 좌하단","헤더 우측 고정","히어로 중앙"],1],
+      ["섹션 수",["8","7","9"],-1],["팔레트",["#8B5E3C · 크림","#1F1F1F · 골드","#1F5FBF · 화이트"],-2],["폰트",["Pretendard 700/400","Noto Serif KR 700","Pretendard 700/400"],0],
+      ["카드",["보더 · 16px","엘리베이티드 · 다크","보더 · 12px"],1],["이미지 비율",["16:9","4:5","1:1"],-1],["모션",["낮음","중간","낮음"],-1],["Footer",["확장형 사업자정보","미니멀","확장형 + 지도"],2],
+    ];
+    const cmpRows = rowDefs.map(([name, vals, picked]) => ({name, cells: vals.map((v,i) => ({v, picked: i===picked, pickable: picked!==-2 && i!==picked, bg: i===picked ? "color-mix(in srgb,var(--primary) 7%,transparent)" : "transparent", radius: i===picked ? "6px" : "0"}))}));
+    const draft = [
+      {kind:"Hero",v:"풀블리드 좌측 카피",from:"A",c:"#8B5E3C"},{kind:"메뉴",v:"5개 · 우측 CTA",from:"A",c:"#8B5E3C"},{kind:"CTA",v:"헤더 우측 고정",from:"B",c:"#1F1F1F"},
+      {kind:"카드",v:"엘리베이티드",from:"B",c:"#1F1F1F"},{kind:"Footer",v:"확장형 + 지도",from:"C",c:"#1F5FBF"},{kind:"컬러·폰트",v:"#8B5E3C · Pretendard",from:"사용자",c:"#F3E9DD"},
+    ];
+    const sectionDefs = [["Header","sticky",false],["Hero","fullbleed-left",true],["About","split",false],["Services","grid-3",false],["Portfolio","masonry",false],["Testimonials","carousel",false],["FAQ","accordion",false],["Contact","map + form",false],["Footer","biz-extended",false]];
+    const sectionPlan = sectionDefs.map(([name,variant,sel]) => ({name, variant, warn: name==="Services", bg: sel ? "var(--muted)" : "transparent", fg: sel ? "var(--primary)" : "var(--foreground)"}));
+    const gates = [
+      ["대비 AA","통과","ok"],["대체텍스트","통과","ok"],["헤딩 순서","경고 · h4→h2","warn"],["필수 섹션","통과","ok"],["모션 예산","통과","ok"],["SEO 메타",gateBlock?"차단 · description":"통과",gateBlock?"block":"ok"],["성능 예산","LCP 1.9s","ok"],
+    ].map(([name,v,s]) => ({name, v, dot: s==="ok" ? "var(--success)" : s==="warn" ? "var(--warning)" : "var(--danger)", color: s==="ok" ? "var(--caption)" : s==="warn" ? "var(--warning-text)" : "var(--danger-text)"}));
+    const variants = [
+      {name:"A안",axes:"풀블리드 히어로 · 3열 그리드 · 스케일 1.25",sel:true,heroH:"38%",heroJ:"flex-start",grid:"repeat(3,1fr)",log:"hero_type 유지 · 목적 '예약'으로 Contact 필수 · pricing 제외"},
+      {name:"B안",axes:"스플릿 히어로 · 2열 그리드 · 스케일 1.2",sel:false,heroH:"30%",heroJ:"flex-end",grid:"repeat(2,1fr)",log:"hero 변형 교체 · 카드 밀도 상향 · 동일 토큰"},
+      {name:"C안",axes:"센터 히어로 · 마소니 · 스케일 1.33",sel:false,heroH:"46%",heroJ:"center",grid:"2fr 1fr 1fr",log:"제목 스케일 확대 · Portfolio 앞으로 · 동일 팔레트"},
+    ].map(v => ({...v, outline: v.sel ? "2px solid var(--primary)" : "2px solid transparent"}));
+    return {
+      refs: refs.slice(0, cols*2), trayRefs, refsMobile: refs.slice(0,3), cmpRows, draft, gates, variants, sectionPlan,
+      fullW: {width:"100%"}, pill: {borderRadius:"99px"}, gridCols: `repeat(${cols},minmax(0,1fr))`,
+      industries: [["전체",128],["카페·F&B",31],["뷰티",18],["의료",22],["피트니스",14],["전문서비스",19],["교육",12]].map(([l,n],i) => ({label:l, n, on:i===1})),
+      industriesShort: ["카페·F&B","뷰티","의료","피트니스"].map((l,i) => ({label:l, on:i===0})),
+      facets: [["콘셉트 · 2","outline"],["목적 · 예약","outline"],["라이선스","ghost"],["모션","ghost"]].map(([label,variant]) => ({label,variant})),
+      sortOpts: [{label:"점수순",value:"score"},{label:"최신순",value:"latest"}],
+      viewports: [{label:"Desktop",value:"desktop"},{label:"Tablet",value:"tablet"},{label:"Mobile",value:"mobile"}],
+      selModes: [{label:"템플릿",value:"tpl"},{label:"스타일 조합",value:"mix"}],
+      refSections: sectionDefs.slice(0,8).map(([name,variant],i) => ({n:String(i+1).padStart(2,"0"), name, variant})),
+      palette: [{role:"primary",hex:"#8B5E3C"},{role:"surface",hex:"#F3E9DD"},{role:"ink",hex:"#2C2C2C"},{role:"muted",hex:"#9A7B63"},{role:"bg",hex:"#FFFFFF"}],
+      globals: [{name:"밀도",min:"20%",maxR:"20%",val:"48%",label:"보통"},{name:"대비",min:"35%",maxR:"0%",val:"62%",label:"AA"},{name:"모션",min:"0%",maxR:"45%",val:"18%",label:"낮음"}],
+      versions: [{n:"v3",note:"Footer를 C(확장형+지도)로 교체",when:"방금",dot:"var(--primary)"},{n:"v2",note:"대표색 보정 #8B5E3C",when:"12분 전",dot:"var(--border-strong)"},{n:"v1",note:"비교 보드에서 최초 확정",when:"어제",dot:"var(--border-strong)"}],
+    };
+  }
+}
+</script>
+</body>
+</html>

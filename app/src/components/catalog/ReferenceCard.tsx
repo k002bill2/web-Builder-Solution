@@ -65,7 +65,7 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 id={titleId} className="ds-heading2 text-label-normal">
-              <Link to={`/references/${r.id}`} className="hover:text-primary focus-visible:underline focus-visible:outline-none">
+              <Link to={`/references/${r.id}`} className="rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none">
                 {r.title}
               </Link>
             </h3>

@@ -83,3 +83,5 @@
   - 기존 테스트 변경 1건(의도): `memoryCompareBoardRepository.test.ts` AC-25의 `confirmed` 기대값에 스냅샷 추가.
   - 저장소(서버 역할)는 변경 없는 새 버전 요청을 막지 않는다 — 화면 게이트만(브리프 범위). 번들 `/compare` 첫 화면 99.97KB(여유 0.03KB).
 - [x] 4. 미사용 `compareTray.ts#addToTray`·`removeFromTray` 삭제(grep: 다른 사용처 없음 — `keyboardA11y.test.tsx`의 `addToTray`는 별개 로컬 헬퍼). 이것만 검사하던 테스트 6건 삭제, `COMPARE_LIMIT` 테스트 1건 유지. `AddResult`·`CompareTray` 타입은 `CompareTrayContext`가 써서 유지. 310 → 304.
+- [x] 5. 가득 찬 "레퍼런스 추가"(`aria-disabled`)에 확정 버튼과 같은 비활성 토큰 클래스(`aria-disabled:cursor-not-allowed·bg-fill-strong·text-label-disable`). 누르면 `COMPARE_LIMIT_NOTICE` 그대로(AC-16 유지).
+  - RED: `expected [] to deeply equal [ …(3) ]` → GREEN 305. 번들 `/compare` 99.98 / 120.64KB.

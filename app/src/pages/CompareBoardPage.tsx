@@ -127,7 +127,14 @@ export function CompareBoardPage() {
         <div className="flex flex-none items-center gap-3">
           <SaveCaption status={board.saveStatus} onRetry={board.retrySave} />
           {columns.length > 0 && (
-            <Button variant="outline" leadingIcon="plus" data-focus-fallback aria-disabled={full || undefined} onClick={addReference}>
+            <Button
+              variant="outline"
+              leadingIcon="plus"
+              data-focus-fallback
+              aria-disabled={full || undefined}
+              onClick={addReference}
+              className="aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
+            >
               레퍼런스 추가
             </Button>
           )}

@@ -249,6 +249,13 @@ describe("회수·한도·권리 경계", () => {
     expect(status()).toHaveTextContent(COMPARE_LIMIT_NOTICE);
   });
 
+  it("FIX-R1: 가득 찬 '레퍼런스 추가'는 확정 버튼과 같은 비활성 스타일(aria-disabled 토큰 클래스)", async () => {
+    await openBoard(boardRepo(SIX));
+    const disabledStyle = (el: HTMLElement) => [...el.classList].filter((c) => c.startsWith("aria-disabled:"));
+    expect(disabledStyle(confirmButton()).length).toBeGreaterThan(0);
+    expect(disabledStyle(screen.getByRole("button", { name: "레퍼런스 추가" }))).toEqual(disabledStyle(confirmButton()));
+  });
+
   it("AC-22: URL 입력 필드가 없고 '레퍼런스 추가'는 /catalog로만 간다", async () => {
     const { router } = await openBoard();
     expect(document.querySelectorAll('input[type="url"]')).toHaveLength(0);

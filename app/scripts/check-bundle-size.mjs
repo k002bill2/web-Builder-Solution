@@ -1,19 +1,22 @@
-// 초기 JS 번들 예산 검사 (M1-UI-01-FIX 그룹 C, TRD 8절 "초기 JS ≤ 90KB gzip").
+// 앱 첫 화면 JS 예산 검사 (ADR-004: Design Studio 앱은 라우트별 첫 화면 JS 합계 gzip ≤ 100KB).
 // `vite build`가 만든 dist/.vite/manifest.json을 읽는다.
-//  - 초기 JS: index.html 엔트리 청크 + 그 정적 import 전부(= <script type=module> + <link rel=modulepreload>).
-//  - 라우트별 합계: 초기 JS + 해당 페이지 lazy 청크와 그 정적 import (참고용, 예산 판정에는 쓰지 않는다).
+//  - 공통 JS: index.html 엔트리 청크 + 그 정적 import 전부(= <script type=module> + <link rel=modulepreload>). 참고 출력.
+//  - 라우트별 첫 화면 합계: 공통 JS + 해당 페이지 lazy 청크와 그 정적 import. **예산 판정 대상**.
 // gzip 크기는 Node zlib 기본 레벨, KB = 1000 bytes (Vite 빌드 출력 표기와 같은 단위).
 // Vite 8 빌드 출력의 gzip 값은 네이티브 리포터라 이 값보다 약 1% 크게 나온다(예: 86.58 vs 87.47). 둘 다 예산 안에 두도록 여유를 둔다.
+// 생성 홈페이지(export)의 초기 JS ≤ 90KB(TRD 8절)는 이 스크립트의 대상이 아니다.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
-const BUDGET_KB = 90;
+const ROUTE_BUDGET_KB = 100;
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
+/** 라우트 → 페이지 모듈. 라우트를 추가하면 여기에도 추가한다 (src/app/routes.tsx). */
 const ROUTE_PAGES = {
   "/catalog": "src/pages/CatalogPage.tsx",
   "/references/:id": "src/pages/ReferenceDetailPage.tsx",
+  "/compare · /profile · /studio (자리표시)": "src/pages/PlaceholderPage.tsx",
 };
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
@@ -34,18 +37,23 @@ const format = (kb) => `${kb.toFixed(2)}KB`;
 const entryKey = Object.keys(manifest).find((key) => manifest[key].isEntry);
 if (!entryKey) throw new Error("manifest에 엔트리 청크가 없습니다. vite build --manifest 설정을 확인하세요.");
 
-const initial = staticClosure(entryKey);
-const initialKb = sumKb(initial);
+const common = staticClosure(entryKey);
+console.log(`[bundle] 공통 JS (gzip, 참고): ${format(sumKb(common))}`);
+for (const file of common) console.log(`  - ${file} ${format(gzipKb(file))}`);
 
-console.log(`[bundle] 초기 JS (gzip): ${format(initialKb)} / 예산 ${BUDGET_KB}KB`);
-for (const file of initial) console.log(`  - ${file} ${format(gzipKb(file))}`);
+const failures = [];
 for (const [route, page] of Object.entries(ROUTE_PAGES)) {
-  if (!manifest[page]) continue;
-  const routeFiles = staticClosure(page, new Set(initial));
-  console.log(`[bundle] ${route} 첫 화면 합계 (참고): ${format(sumKb(routeFiles))}`);
+  // 설정한 페이지가 manifest에 없으면 검사가 조용히 빠지므로 실패로 본다
+  if (!manifest[page]) {
+    failures.push(`${route}: manifest에 ${page}가 없습니다 (경로 변경 시 ROUTE_PAGES를 고치세요)`);
+    continue;
+  }
+  const routeKb = sumKb(staticClosure(page, new Set(common)));
+  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB`);
+  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
 }
 
-if (initialKb > BUDGET_KB) {
-  console.error(`[bundle] 예산 초과: 초기 JS ${format(initialKb)} > ${BUDGET_KB}KB`);
+if (failures.length > 0) {
+  for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
   process.exit(1);
 }

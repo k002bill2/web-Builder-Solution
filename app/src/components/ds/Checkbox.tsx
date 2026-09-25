@@ -9,7 +9,7 @@ export function Checkbox({
   readonly onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-2 text-body2 text-label-normal select-none">
+    <label className="inline-flex cursor-pointer items-center gap-2 text-body2 leading-(--line-height-body3) text-label-normal select-none">
       <input
         type="checkbox"
         checked={checked}

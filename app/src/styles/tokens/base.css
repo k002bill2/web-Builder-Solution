@@ -16,6 +16,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* 한국어는 어절 단위로 줄바꿈하고, 긴 영문·URL은 넘치지 않게 끊는다 (QA-1A-01 D06, 원본에 없음) */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* ---- Icon utility ----

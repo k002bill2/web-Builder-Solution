@@ -40,7 +40,7 @@ export function SegmentedControl<T extends string>({
               "cursor-pointer whitespace-nowrap rounded-sm font-semibold",
               "transition-[background-color,color] duration-(--duration-fast) ease-standard",
               "focus-visible:outline-none focus-visible:shadow-(--focus-ring)",
-              size === "sm" ? "px-3 py-1 text-caption1" : "px-4 py-1.5 text-body3",
+              size === "sm" ? "px-3 py-1 text-caption1 leading-(--line-height-label)" : "px-4 py-1.5 text-body3 leading-(--line-height-label)",
               fullWidth && "flex-1",
               active ? "bg-background-normal text-label-normal shadow-1" : "text-label-alternative hover:text-label-normal",
             )}

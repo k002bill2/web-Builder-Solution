@@ -30,7 +30,7 @@ export function Tabs<T extends string>({
             aria-selected={active}
             onClick={() => onChange(it.value)}
             className={cx(
-              "relative cursor-pointer whitespace-nowrap py-3 text-body1 font-semibold",
+              "relative cursor-pointer whitespace-nowrap py-3 text-body1 leading-(--line-height-heading2) font-semibold",
               "transition-colors duration-(--duration-fast) ease-standard hover:text-label-normal",
               "focus-visible:outline-none focus-visible:shadow-(--focus-ring)",
               active

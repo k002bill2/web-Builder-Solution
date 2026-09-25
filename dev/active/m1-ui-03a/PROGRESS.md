@@ -12,7 +12,7 @@
 | 2 | 행 정의·셀 값 (섹션 라이브러리·비교 픽스처) | 완료 | (1·2 커밋) |
 | 3 | 선택 규칙 P-1~P-7 | 완료 | (3 커밋) |
 | 5 | `contrast.ts` + `derivePalette` | 완료 | (5 커밋) |
-| 4 | `buildProfileDraft` | 대기 | |
+| 4 | `buildProfileDraft` | 완료 | (4 커밋) |
 | 6 | R-12 Footer 경고 데이터 | 대기 | |
 | 7 | 사용자 대표색(zod)·폰트 허용 목록 | 대기 | |
 | 8 | `compareBoardRepository` 메모리 구현 + 저장 직렬화 | 대기 | |
@@ -47,3 +47,10 @@
 - 고정값: F `#D47800` 3.24 · D `#00A884` 3.03 · A `#8B5E3C` 5.58 (`toBeCloseTo(…, 2)`). 보정값은 기준 이상 + 한 단계 더 가까우면 미만.
 - RED: 모듈 없음 → GREEN 15/15.
 - 해석: C-3 색 쌍 = 카드 표면 대표색 / 카드 글자 잉크 (목업 B 다크 카드 = 검정 + 골드). 테스트 이름에 명시.
+
+## 항목 4 — 기준 레퍼런스·기본값·초안 (`domain/profileDraft.ts`)
+- `buildProfileDraft(board, results, libraryVersion)` → `needs-hero`(고른 항목만 출처, 나머지 "Hero를 먼저 고르세요") | `ready`(기준 레퍼런스 = Hero 열, 항목 10개, `profile`, 대비 검사용 `palette`, `cardTone`, `notices{motionCapped(R-07), rebinding(R-15)}`).
+- 값 결정: 선택 → 기준 레퍼런스 기본값 → (Footer만) 라이브러리 기본 `biz-extended`. 회수·없음 열의 선택은 무시(기본값).
+- `section_plan`: 기준 sectionPlan에서 header·hero·footer 변형만 교체, footer 없으면 끝에 추가(R-01). `seed`: 열(문자 순)·picks·custom 키 정렬 JSON의 FNV-1a. `selection_mode`: 고른 레퍼런스가 1개이고 사용자 값이 없으면 `template`.
+- RED: 모듈 없음 → GREEN 15/15 (AC-07·09·10·11 포함).
+- 해석: SPEC 8.3 "모든 선택이 한 레퍼런스면 sectionPlan 그대로"와 R-01(footer 추가)이 겹치면 R-01 우선(기준에 footer가 없을 때만 차이). 인자는 브리프 시그니처(`board, references, libraryVersion`)를 따름 — SPEC의 `rows` 인자는 `COMPARISON_ROWS` 상수로 대체.

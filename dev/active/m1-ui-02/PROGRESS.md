@@ -123,6 +123,8 @@ AssertionError: expected [ <article …(2)>…(2)</article>, …(5) ] to have a 
 1. **유사 추천은 큐레이션 id 목록 + 저장소 규칙.** 픽스처 6개는 visualTags가 서로 하나도 겹치지 않고 layoutType도 전부 달라 동등 비교 규칙이면 콘셉트·레이아웃 그룹이 모든 레퍼런스에서 빈다. 목업 `similarGroups`도 규칙이 아니라 큐레이션(A '유사 업종'에 뷰티·피트니스)이다. 계산 규칙은 백엔드(T-API-CAT-04) 몫으로 남긴다.
 2. **탭은 패널 전환**(`role=tabpanel`). 목업 정적 그림은 '섹션 구성' 탭에서 섹션·토큰·모바일 블록이 모두 보이지만, 탭이 URL로 유지되는 전환 UI라 선택 탭의 패널만 보여준다. 탭 상태는 쿼리 `?tab=tokens|mobile|scores`(기본 sections 생략, 모르는 값은 sections), 전환은 `replace`(뒤로 가기가 탭을 되감지 않음).
 3. **로딩·재조회**: `{id, …}` 상태로 응답이 현재 id 것일 때만 사용 → 로드 전 404 깜빡임 없음, 유사 항목으로 `:id`만 바뀌어도 이전 레퍼런스가 남지 않는다. 뷰는 `key={id}`로 안내 문구 등을 초기화.
+   - 한계: 유사 이동 테스트는 `findByRole`이 새 데이터를 기다리므로 id 일치 검사를 지워도 통과한다(판별력 없음). 이 검사는 코드로만 보장된다.
+   - 스크롤: 실측(ego-browser) 390 폭 카탈로그 scrollY 2500 → 카드 클릭 → 상세 0, 1280 상세 51.5 → 유사 클릭 → 0. 로딩 중 빈 `main`으로 문서 높이가 줄어 생기는 부수 효과다. `ScrollRestoration`은 카탈로그 필터(`setSearchParams`)마다 맨 위로 튈 수 있어 쓰지 않았다.
 4. **404**: 없는 id·비노출(external_observed) id 모두 "레퍼런스를 찾을 수 없습니다" + 카탈로그 링크. 레퍼런스는 있는데 상세 데이터가 없는 경우도 404로 둔다(노출 6개 모두 상세 보유를 테스트로 고정).
 5. **저장·비교**: 1a-01과 같은 `SavedReferencesContext`·`CompareTrayContext`. 상세에는 트레이 바가 없어 7번째 추가 거부 안내를 점수 카드 안 `role=status`로 표시. "템플릿으로 가져오기"는 같은 자리에 다음 단계 안내만.
 6. **점수 색**: Lighthouse 구간(90↑ positive, 50↑ cautionary, 그 아래 negative). 목업 A(96·92)는 초록 그대로.

@@ -19,17 +19,14 @@ function without(value: CustomStyle, key: keyof CustomStyle): CustomStyle {
  * 잘못된 값은 저장하지 않고 필드에 오류를 붙인다(aria-invalid · aria-describedby).
  * 폰트는 허용 목록 Select만 — 이 화면은 폰트 파일을 싣지 않고 이름·견본 텍스트만 보여 준다.
  */
-export function CustomStyleFields({
-  value,
-  fonts,
-  checkPrimaryColor,
-  onChange,
-}: {
+export interface CustomStyleFieldsProps {
   readonly value: CustomStyle;
   readonly fonts: readonly FontOption[];
   readonly checkPrimaryColor: PrimaryColorCheck;
   readonly onChange: (value: CustomStyle) => void;
-}) {
+}
+
+export function CustomStyleFields({ value, fonts, checkPrimaryColor, onChange }: CustomStyleFieldsProps) {
   const errorId = useId();
   const [text, setText] = useState(value.primaryColor ?? "");
   const [error, setError] = useState<string | null>(null);

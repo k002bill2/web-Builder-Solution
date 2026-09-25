@@ -192,6 +192,7 @@ export function CompareBoardPage() {
             onUndo={board.undoLast}
             onCustomChange={board.changeCustom}
             onApplyFix={board.applyFix}
+            CustomStyleFields={board.CustomStyleFields}
           />
           {viewport !== "wide" && (
             <DraftSummaryBar

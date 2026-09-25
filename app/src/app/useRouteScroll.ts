@@ -44,6 +44,8 @@ export function useRouteScroll() {
 
     if (navigationType !== "POP") {
       if (pathChanged) window.scrollTo(0, 0);
+      // 쿼리만 바뀐 새 항목은 위치가 그대로라 scroll 이벤트가 없다 — 유지한 위치를 새 항목에 기록한다
+      else positions.current.set(location.key, window.scrollY);
       return;
     }
     const target = positions.current.get(location.key) ?? 0;

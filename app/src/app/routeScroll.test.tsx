@@ -77,4 +77,20 @@ describe("라우트 이동 시 스크롤 제어 (그룹 D)", () => {
     expect(router.state.location.pathname).toBe("/catalog");
     expect(window.scrollY).toBe(1200);
   });
+
+  it("필터를 바꾼 뒤 스크롤 없이 상세에 갔다 돌아와도 필터 적용 후 위치로 돌아간다", async () => {
+    const { router } = renderApp("/catalog");
+    await screen.findByRole("link", { name: "동네 치과 클리닉" });
+    userScrollsTo(700);
+    await userEvent.click(screen.getByRole("checkbox", { name: "미니멀" }));
+    await userEvent.click(await screen.findByRole("link", { name: "모던 카페 브랜드" }));
+    await heading("모던 카페 브랜드");
+
+    await act(async () => {
+      await router.navigate(-1);
+    });
+    await screen.findByRole("link", { name: "모던 카페 브랜드" });
+    expect(router.state.location.search).toContain("concept");
+    expect(window.scrollY).toBe(700);
+  });
 });

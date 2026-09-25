@@ -10,8 +10,8 @@
 | B | D07·D08·A01·A02·A03 키보드 접근성 | 완료 | 7a46d4b |
 | C | 초기 JS ≤ 90KB gzip | 완료 | 1ffd4e8 |
 | D | 라우트 스크롤·경쟁 상태 테스트 | 완료 | d825166 |
-| B-DET-02 | 유사 레퍼런스 이름 말줄임 | 완료 | (B-DET-02 커밋) |
-| E | 검증 4종·브라우저·Codex·보고서 | 대기 | |
+| B-DET-02 | 유사 레퍼런스 이름 말줄임 | 완료 | 5dcd61a |
+| E | 검증 4종·브라우저·Codex·보고서 | 진행 중 | |
 
 ## 0단계 — 읽기와 사전 실측
 - 읽음: CLAUDE.md, ADR-002, `docs/qa/1a-01/REPORT.md` 전체, `dev/active/m1-ui-01/PROGRESS.md`, `dev/active/m1-ui-02/REPORT.md`, 목업 55~125행.
@@ -207,3 +207,28 @@ build exit=0 — [bundle] 초기 JS (gzip): 86.90KB / 예산 90KB (Vite 표기 8
 - 테스트 (`ReferenceDetailPage.test.tsx` "유사 레퍼런스 긴 이름"): 30자 이상 이름(`필라테스 스튜디오 리포머 그룹 레슨 강남 본점 예약 안내 페이지`) 픽스처로 링크 `title`·`line-clamp-2`·`truncate` 없음 확인. jsdom은 레이아웃이 없어 줄 수는 브라우저에서 확인한다(검증 단계).
 - RED: `expect(element).toHaveAttribute("title", …)` 실패 `Tests  1 failed | 14 skipped (15)` → GREEN `Tests  15 passed (15)`.
 - 게이트: typecheck 0 · lint 0 · `Test Files 16 passed · Tests 111 passed` · build 0 (초기 JS 86.90KB).
+
+## E — 브라우저 확인 (ego-browser, `vite preview` 127.0.0.1:4317, TaskSpace 74·75)
+| 항목 | 1280 | 390 |
+|---|---|---|
+| 가로 넘침 | 없음 | 없음 |
+| 카탈로그 스크롤 후 상세 진입 | 529 → 0 | 1500 → 0 |
+| 상세에서 뒤로 가기 | 0 → 529 복원 | 0 → 1500 복원 |
+| 유사 레퍼런스 이동 | 49.5 → 0 | 400 → 0 |
+| 필터 변경(포인터 클릭) | 250 → 250 유지 | 600 → 600 유지 |
+| 유사 레퍼런스 이름 줄 수 | 1~2줄, 잘림 없음 | 1~2줄, 잘림 없음 |
+- 1280 필터를 **스크립트로 화면 밖 label 클릭**했을 때 529 → 54.5가 됐다. 같은 체크박스에 `focus()`만 줘도 54.5 → 포커스된 요소를 보이게 하는 브라우저 기본 동작이고 라우트 스크롤 코드와 무관. 실제 포인터 클릭(화면 안)은 유지됨.
+- 키보드: 첫 Tab = "본문으로 건너뛰기", Enter → `#main-content` 포커스.
+- 콘솔: CDP Runtime·Log 이벤트 중 `exceptionThrown`·error 레벨 0건.
+- 캡처: ego `Page.captureScreenshot`이 이번에도 15초 타임아웃(그룹 A와 같은 증상)이라 이미지 없음. 수치로 대신한다.
+- 서버 종료 후 `lsof -iTCP:4317 -iTCP:4318 -sTCP:LISTEN` → 출력 없음(exit 1).
+
+## E — Codex 리뷰 (`review --scope branch --base main`)
+### 1라운드: P2 2건 → 둘 다 반영
+1. [P2] `useRouteScroll` — 쿼리만 바뀐 PUSH는 새 history 항목에 위치를 기록하지 않아, 필터 변경 → (스크롤 없이) 상세 → 뒤로 가면 맨 위로 감.
+   - 수정: 같은 경로 PUSH/REPLACE에서 현재 `scrollY`를 새 `location.key`에 기록.
+   - RED: `× 필터를 바꾼 뒤 스크롤 없이 상세에 갔다 돌아와도 … expected +0 to be 700` → GREEN.
+2. [P2] `AppLayout` — lazy 청크 로드 실패(배포 후 이전 청크 삭제·오프라인)를 잡을 오류 경계가 없어 앱 전체가 언마운트(data router의 기본 오류 경계가 없어짐).
+   - 수정: `components/layout/RouteErrorBoundary.tsx` — 헤더는 유지, `role="alert"` "화면을 불러오지 못했습니다" + 새로고침 버튼. `key={pathname}`이라 다른 경로로 가면 오류 상태를 벗어난다.
+   - RED: `× 앱 전체가 사라지지 않고 헤더를 유지한 채 … Unable to find role="alert"` → GREEN.
+- 게이트: typecheck 0 · lint 0 · `Test Files 17 passed · Tests 113 passed` · build 0 (초기 JS 87.21KB, Vite 표기 88.10 kB).

@@ -8,8 +8,8 @@
 | 0 | 읽기(브리프 0절 순서) + `npm ci` | 완료 | — |
 | 1 | 폰트 자체 호스팅 (`fonts.test.ts`) | 완료 | 18a0c52 |
 | 2 | 색상·디바이스 필터 (`colorFamily.test.ts`, 저장소·카탈로그 테스트) | 완료 | 1f9eb6d |
-| 3 | 1a-02 레퍼런스 상세 (`ReferenceDetailPage.test.tsx`, 저장소 상세·유사 테스트) | 완료 | (작업 3 커밋) |
-| 4 | 검증 4종 + Codex 리뷰 + REPORT.md | 대기 | |
+| 3 | 1a-02 레퍼런스 상세 (`ReferenceDetailPage.test.tsx`, 저장소 상세·유사 테스트) | 완료 | 08d8fa0 |
+| 4 | 검증 4종 + Codex 리뷰 + REPORT.md | 완료 | (보고서 커밋) |
 
 ## 작업 1 — 폰트 자체 호스팅
 
@@ -174,3 +174,8 @@ AssertionError: expected [ <article …(2)>…(2)</article>, …(5) ] to have a 
 - 카탈로그 카드 '모던 카페 브랜드' 클릭 → `/references/ref-a`, '토큰' 탭 → `?tab=tokens`, 콘솔 error·warning 0, 4xx 0.
 - 폰트 서브셋 커버리지 재확인: 제품 코드 한글 음절 392자 누락 0.
 - typecheck 0 · lint 0 · build 0
+
+## 마무리 — 검증 4종 + Codex
+- fresh: typecheck 0 · lint 0 · test 91 passed (11 files) · build 0. `git diff main -- design/` 0줄.
+- Codex 1라운드(`review --scope branch --base main`): "No actionable correctness issues were found in the diff." (Codex 샌드박스가 읽기 전용이라 vitest는 Codex 쪽에서 미실행) → 지적 0건으로 종료.
+- 최종 보고: `REPORT.md`.

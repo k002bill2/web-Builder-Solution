@@ -95,7 +95,7 @@ describe("CatalogPage (1a-01)", () => {
     await userEvent.click(screen.getByRole("button", { name: "모던 카페 브랜드 비교 추가" }));
     await waitFor(() => expect(within(tray()).getByText("모던 카페 브랜드")).toBeInTheDocument());
     expect(within(tray()).getByText("1")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "모던 카페 브랜드 비교 추가" })).toHaveTextContent("비교 중");
+    expect(screen.getByRole("button", { name: "모던 카페 브랜드 비교 중, 비교에서 빼기" })).toHaveTextContent("비교 중");
 
     await userEvent.click(within(tray()).getByRole("button", { name: "모던 카페 브랜드 비교에서 제거" }));
     await waitFor(() => expect(within(tray()).queryByText("모던 카페 브랜드")).not.toBeInTheDocument());
@@ -112,7 +112,7 @@ describe("CatalogPage (1a-01)", () => {
     await waitFor(() => expect(within(tray()).getByText("6")).toBeInTheDocument());
     await userEvent.click(screen.getByRole("button", { name: "일곱째 레퍼런스 비교 추가" }));
     expect(screen.getByRole("status")).toHaveTextContent("비교 보드에는 최대 6개까지 담을 수 있습니다");
-    expect(screen.getByRole("button", { name: "일곱째 레퍼런스 비교 추가" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "일곱째 레퍼런스 비교 추가" })).toHaveTextContent("비교 추가");
     expect(within(tray()).queryByText("일곱째 레퍼런스")).not.toBeInTheDocument();
   });
 });
@@ -132,6 +132,20 @@ describe("라우팅", () => {
     renderApp(path);
     expect(await screen.findByRole("heading", { level: 1, name: title })).toBeInTheDocument();
     expect(screen.getByText(/다음 단계에서 구현됩니다/)).toBeInTheDocument();
+  });
+
+  it("보관함(/catalog?tab=saved)에서는 GNB의 보관함만 현재 위치로 표시한다", async () => {
+    renderApp("/catalog?tab=saved");
+    const nav = await screen.findByRole("navigation", { name: "주 메뉴" });
+    expect(within(nav).getByRole("link", { name: "보관함" })).toHaveAttribute("aria-current", "page");
+    expect(within(nav).getByRole("link", { name: "카탈로그" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("카탈로그에서는 GNB의 카탈로그만 현재 위치로 표시한다", async () => {
+    renderApp("/catalog?industry=beauty");
+    const nav = await screen.findByRole("navigation", { name: "주 메뉴" });
+    expect(within(nav).getByRole("link", { name: "카탈로그" })).toHaveAttribute("aria-current", "page");
+    expect(within(nav).getByRole("link", { name: "보관함" })).not.toHaveAttribute("aria-current");
   });
 
   it("비교 보드 열기는 /compare 로 이동한다", async () => {

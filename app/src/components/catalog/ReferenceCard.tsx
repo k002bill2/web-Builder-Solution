@@ -110,8 +110,7 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
           <Button
             variant={inTray ? "assistive" : "outline"}
             size="sm"
-            aria-label={`${r.title} 비교 추가`}
-            aria-pressed={inTray}
+            aria-label={inTray ? `${r.title} 비교 중, 비교에서 빼기` : `${r.title} 비교 추가`}
             onClick={() => onToggleCompare(r.id)}
           >
             {inTray ? "비교 중" : "비교 추가"}

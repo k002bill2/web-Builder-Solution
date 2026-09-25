@@ -52,20 +52,21 @@ describe("ReferenceCard", () => {
     expect(onToggleSave).toHaveBeenCalledWith("ref-a");
   });
 
-  it("비교 버튼은 이름을 포함한 aria-label을 갖고, 트레이 상태에 따라 문구가 바뀐다", async () => {
+  it("비교 버튼은 이름을 포함한 aria-label을 갖는다", async () => {
     const { card, onToggleCompare } = renderCard();
     const compare = within(card).getByRole("button", { name: "모던 카페 브랜드 비교 추가" });
-    expect(compare).toHaveAttribute("aria-pressed", "false");
     expect(compare).toHaveTextContent("비교 추가");
     await userEvent.click(compare);
     expect(onToggleCompare).toHaveBeenCalledWith("ref-a");
   });
 
-  it("트레이에 담긴 카드는 '비교 중'으로 표시된다", () => {
-    const { card } = renderCard({ inTray: true });
-    const compare = within(card).getByRole("button", { name: "모던 카페 브랜드 비교 추가" });
-    expect(compare).toHaveAttribute("aria-pressed", "true");
+  it("트레이에 담긴 카드는 '비교 중'으로 표시되고, 접근성 이름이 보이는 문구와 빼기 동작을 담는다", async () => {
+    const { card, onToggleCompare } = renderCard({ inTray: true });
+    const compare = within(card).getByRole("button", { name: "모던 카페 브랜드 비교 중, 비교에서 빼기" });
     expect(compare).toHaveTextContent("비교 중");
+    expect(compare).not.toHaveAttribute("aria-pressed");
+    await userEvent.click(compare);
+    expect(onToggleCompare).toHaveBeenCalledWith("ref-a");
   });
 
   it("licensed 레퍼런스는 licensed 배지를 표시한다", () => {

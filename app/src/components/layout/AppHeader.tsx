@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from "react-router";
+import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { brand } from "../../brand/brand.config";
 import { CURRENT_USER } from "../../fixtures/catalogFilters";
 import { Avatar } from "../ds/Avatar";
@@ -7,10 +7,19 @@ import { Button } from "../ds/Button";
 const navClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? "font-bold text-label-normal" : "hover:text-label-normal";
 
+/** 보관함은 카탈로그의 저장함 탭(/catalog?tab=saved)이라 경로만으로는 구분되지 않는다. */
+function useCatalogView() {
+  const { pathname, search } = useLocation();
+  const onCatalog = pathname === "/catalog";
+  const saved = onCatalog && new URLSearchParams(search).get("tab") === "saved";
+  return { catalog: onCatalog && !saved, saved };
+}
+
 /** 상단 GNB (목업 57~64행). */
 export function AppHeader() {
   const navigate = useNavigate();
   const { Logo, name } = brand;
+  const view = useCatalogView();
   return (
     <header className="flex h-15 items-center gap-7 border-b border-line-neutral bg-background-normal px-4 md:px-7">
       <Link to="/catalog" className="flex flex-none items-center gap-2.5">
@@ -18,10 +27,14 @@ export function AppHeader() {
         <span className="text-body1 font-bold tracking-(--tracking-tight)">{name}</span>
       </Link>
       <nav aria-label="주 메뉴" className="hidden flex-1 gap-5.5 text-body2 font-medium text-label-alternative md:flex">
-        <NavLink to="/catalog" end className={navClass}>
+        <Link to="/catalog" aria-current={view.catalog ? "page" : undefined} className={navClass({ isActive: view.catalog })}>
           카탈로그
-        </NavLink>
-        <Link to="/catalog?tab=saved" className="hover:text-label-normal">
+        </Link>
+        <Link
+          to="/catalog?tab=saved"
+          aria-current={view.saved ? "page" : undefined}
+          className={navClass({ isActive: view.saved })}
+        >
           보관함
         </Link>
         <NavLink to="/compare" className={navClass}>

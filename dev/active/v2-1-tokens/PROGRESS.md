@@ -47,7 +47,7 @@
 - 6.3 목록의 `tokens.test.ts`(값·출처 정규식)·`brandIsolation.test.ts`(marker 끝 `/` 제거)만 개정. `Button.test.tsx` 기존 단언은 새 정의에서도 그대로 통과.
 
 ### 바뀐 것
-- 토큰(기준 `c7efdf9` 대비, cssTokens로 계산): 라이트 값 변경 **52** · 다크 **56**, 추가 **11**(`--brand-primary-text`·`--primary-text`·`--inverse-*` 4·`--surface-raised`·`--status-*-text` 4), 삭제 **59**(원시 램프 50 · accent 4종 8 · `--primary-strong`/`-heavy` … 합계).
+- 토큰(기준 `c7efdf9` 대비, cssTokens로 계산): 라이트 값 변경 **52** · 다크 **56**, 추가 **11**(`--brand-primary-text`·`--primary-text`·`--inverse-*` 4·`--surface-raised`·`--status-*-text` 4), 삭제 **59**(원시 램프 49 · accent 4종 8 · `--primary-strong`/`-heavy` 2).
 - theme.css: `primary-text`·`inverse-*` 4·`surface-raised`·`status-*-text` 4 연결, `common-100`·`cool-neutral-90`·`blue-70` 연결 삭제.
 - Button `secondary` = 역상 변형(aria-disabled 쌍 포함), `assistive` = ghost. 새 변형 키 없음. 포커스 링 2중(brand.css, 다크 재선언).
 - Q4: TextField·Select 테두리 `line-normal` → `line-strong`(3:1), hover `label-alternative`. Checkbox는 이미 `line-strong`.

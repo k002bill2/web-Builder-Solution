@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useReferenceRepository } from "../../data/ReferenceRepositoryContext";
+import { useThrowToBoundary } from "../../data/useThrowToBoundary";
 import type { DesignReference } from "../../domain/reference";
 import type { ReferenceDetail, SimilarGroup } from "../../domain/referenceDetail";
 
@@ -26,6 +27,7 @@ export type ReferenceDetailState =
  */
 export function useReferenceDetail(id: string): ReferenceDetailState {
   const repository = useReferenceRepository();
+  const fail = useThrowToBoundary();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -33,11 +35,14 @@ export function useReferenceDetail(id: string): ReferenceDetailState {
       ([reference, detail, similar]) => {
         if (!cancelled) setLoaded({ id, reference, detail, similar });
       },
+      (error: unknown) => {
+        if (!cancelled) fail(error);
+      },
     );
     return () => {
       cancelled = true;
     };
-  }, [repository, id]);
+  }, [repository, id, fail]);
 
   if (!loaded || loaded.id !== id) return { status: "loading" };
   if (!loaded.reference || !loaded.detail) return { status: "not-found" };

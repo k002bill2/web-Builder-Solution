@@ -6,6 +6,7 @@ import { FilterRail } from "../components/catalog/FilterRail";
 import { ReferenceCard } from "../components/catalog/ReferenceCard";
 import { Select } from "../components/ds/Select";
 import { Tabs } from "../components/ds/Tabs";
+import { CATALOG_RESULTS_ID } from "../components/layout/SkipLinks";
 import { SORT_OPTIONS, type CatalogTab } from "../fixtures/catalogFilters";
 import {
   parseCatalogParams,
@@ -49,7 +50,7 @@ export function CatalogPage() {
   };
 
   return (
-    <main>
+    <>
       <CatalogHero
         industry={state.filters.industry}
         onIndustryChange={(industry) => {
@@ -71,7 +72,7 @@ export function CatalogPage() {
           }}
           onReset={() => update({ filters: {} })}
         />
-        <section aria-label="레퍼런스 목록" className="min-w-0">
+        <section id={CATALOG_RESULTS_ID} tabIndex={-1} aria-label="레퍼런스 목록" className="min-w-0 focus:outline-none">
           <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
             <Tabs<CatalogTab>
               label="카탈로그 보기"
@@ -129,6 +130,6 @@ export function CatalogPage() {
         }}
         onOpen={() => navigate("/compare")}
       />
-    </main>
+    </>
   );
 }

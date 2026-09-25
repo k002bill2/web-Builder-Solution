@@ -181,6 +181,3 @@ export const CATALOG_TABS: readonly Option<CatalogTab>[] = Object.freeze([
   { id: "rec", label: "추천" },
   { id: "saved", label: "저장함" },
 ]);
-
-/** 목업 GNB의 현재 사용자 (인증은 범위 밖). */
-export const CURRENT_USER = Object.freeze({ name: "강영환" });

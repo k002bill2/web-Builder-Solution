@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { brand } from "../../brand/brand.config";
-import { CURRENT_USER } from "../../fixtures/catalogFilters";
+import { CURRENT_USER } from "../../fixtures/currentUser";
 import { Avatar } from "../ds/Avatar";
 import { Button } from "../ds/Button";
 

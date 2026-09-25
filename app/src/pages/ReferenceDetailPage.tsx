@@ -5,6 +5,7 @@ import { MobilePanel, ScoresPanel, SectionsPanel, TokensPanel } from "../compone
 import { ScoreActionsCard, SimilarReferences } from "../components/detail/DetailSidebar";
 import { ReferencePreview } from "../components/detail/ReferencePreview";
 import { Icon } from "../components/ds/Icon";
+import { LoadingState } from "../components/layout/LoadingState";
 import { Tabs } from "../components/ds/Tabs";
 import { Tag, type TagTone } from "../components/ds/Tag";
 import type { DesignReference } from "../domain/reference";
@@ -72,14 +73,14 @@ function DetailHeader({ reference: r, detail }: { readonly reference: DesignRefe
 
 function NotFound() {
   return (
-    <main className="mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7">
+    <div className="mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7">
       <span className="ds-caption1 text-label-alternative">404</span>
       <h1 className="ds-title1">레퍼런스를 찾을 수 없습니다</h1>
       <p className="ds-body2 text-label-alternative">삭제되었거나 카탈로그에 공개되지 않은 레퍼런스입니다.</p>
       <Link to="/catalog" className="ds-label text-primary hover:text-primary-hover">
         카탈로그로 돌아가기
       </Link>
-    </main>
+    </div>
   );
 }
 
@@ -87,7 +88,7 @@ function NotFound() {
 export function ReferenceDetailPage() {
   const { id = "" } = useParams();
   const state = useReferenceDetail(id);
-  if (state.status === "loading") return <main aria-busy="true" />;
+  if (state.status === "loading") return <LoadingState />;
   if (state.status === "not-found") return <NotFound />;
   // 레퍼런스가 바뀌면 안내 문구 등 화면 상태를 새로 시작한다
   return <ReferenceDetailView key={id} {...state} />;
@@ -117,7 +118,7 @@ function ReferenceDetailView({
   };
 
   return (
-    <main className="px-4 pt-4 pb-12 md:px-7">
+    <div className="px-4 pt-4 pb-12 md:px-7">
       <Breadcrumb />
       <div className="mt-2 grid gap-8 lg:grid-cols-[minmax(0,1fr)_--spacing(85)]">
         <div className="min-w-0">
@@ -149,6 +150,6 @@ function ReferenceDetailView({
           <SimilarReferences groups={similar} />
         </aside>
       </div>
-    </main>
+    </div>
   );
 }

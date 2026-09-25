@@ -20,18 +20,18 @@ describe("사용자 대표색 검증 (AC-14 · SPEC 3.5)", () => {
   });
 });
 
-describe("폰트 허용 목록 (ADR-005 Q4)", () => {
-  it("목록은 Pretendard · Noto Sans KR · Noto Serif KR이고 확인 전에는 Pretendard만 활성이다", () => {
+describe("폰트 허용 목록 (ADR-005 Q4 · D1-갱신)", () => {
+  it("목록은 Pretendard · Noto Sans KR · Noto Serif KR이고 FONT-01 확인 후 3종 모두 활성이다", () => {
     expect(FONT_OPTIONS.map((f) => [f.family, f.enabled])).toEqual([
       ["Pretendard", true],
-      ["Noto Sans KR", false],
-      ["Noto Serif KR", false],
+      ["Noto Sans KR", true],
+      ["Noto Serif KR", true],
     ]);
   });
 
-  it("활성 폰트만 받는다 — 비활성·목록 밖은 거부", () => {
+  it("허용 목록 폰트만 받는다 — 목록 밖은 거부", () => {
     expect(parseCustomStyle({ fontFamily: "pretendard" })).toEqual({ ok: true, value: { fontFamily: "pretendard" } });
-    expect(parseCustomStyle({ fontFamily: "noto-serif-kr" })).toEqual({ ok: false, errors: { fontFamily: FONT_ERROR } });
+    expect(parseCustomStyle({ fontFamily: "noto-serif-kr" })).toEqual({ ok: true, value: { fontFamily: "noto-serif-kr" } });
     expect(parseCustomStyle({ fontFamily: "Comic Sans" })).toEqual({ ok: false, errors: { fontFamily: FONT_ERROR } });
   });
 });

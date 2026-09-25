@@ -78,8 +78,8 @@ export interface ComparisonCell {
   readonly binding: CellBinding | null;
   /** footer만 */
   readonly meta?: { readonly hasBusinessInfo?: boolean };
-  /** 현재 라이브러리 버전에 없는 변형 (SPEC 8.2 · AC-26) */
-  readonly unavailableReason?: "library";
+  /** 현재 라이브러리 버전에 없는 변형 (SPEC 8.2 · AC-26) · 허용 목록 밖 폰트 (ADR-005 D1) */
+  readonly unavailableReason?: "library" | "license";
 }
 
 /** 레퍼런스 1개의 비교 데이터. */

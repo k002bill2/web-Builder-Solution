@@ -19,6 +19,7 @@ import {
   type SectionPlanEntry,
   type SurfaceTone,
 } from "./compareBoard";
+import { EMPTY_CELL_LABEL } from "./comparisonCells";
 import { fontFamilyOf } from "./fonts";
 import { derivePalette } from "./palette";
 import type { MotionLevel } from "./reference";
@@ -29,7 +30,7 @@ export type DraftSource =
   | { readonly kind: "pick" | "default"; readonly referenceId: string; readonly columnLabel: ColumnLabel; readonly title: string }
   /** 사용자 대표색·폰트 */
   | { readonly kind: "custom" }
-  /** 기준 레퍼런스에 값이 없어 라이브러리 기본값 (Footer만) */
+  /** 기준 레퍼런스에 값이 없어 기본값 (Footer: 라이브러리 기본 Footer · 폰트: Pretendard · 그 외: 없음) */
   | { readonly kind: "fallback" }
   /** Hero 전 — 기본값을 계산할 수 없음 */
   | { readonly kind: "pending" };
@@ -67,6 +68,8 @@ export interface ReadyDraft {
 export type ProfileDraft = NeedsHeroDraft | ReadyDraft;
 
 export const NEEDS_HERO_LABEL = "Hero를 먼저 고르세요";
+/** 폰트 행 값이 없을 때 typography_tokens 기본값의 표시 */
+export const DEFAULT_FONT_LABEL = "Pretendard 700 / 400";
 const MOTION_PRESET: Readonly<Record<MotionLevel, MotionPreset>> = { low: "L1", mid: "L2", high: "L2" };
 
 interface Resolved {
@@ -99,12 +102,14 @@ function resolveRow(row: PickableRowId, board: CompareBoard, results: readonly C
   return { cell: { label, binding }, binding, source: { kind: "fallback" } };
 }
 
-function itemOf(row: PickableRowId, resolved: Resolved | undefined, board: CompareBoard): DraftItemData {
+function itemOf(row: PickableRowId, resolved: Resolved | undefined, board: CompareBoard, hasBase: boolean): DraftItemData {
   const label = rowDef(row).label;
   const { primaryColor, fontFamily } = board.custom;
   if (row === "palette" && primaryColor) return { rowId: row, label, valueLabel: `${primaryColor} · 사용자 대표색`, source: { kind: "custom" } };
   if (row === "font" && fontFamily) return { rowId: row, label, valueLabel: fontFamilyOf(fontFamily), source: { kind: "custom" } };
-  if (!resolved) return { rowId: row, label, valueLabel: NEEDS_HERO_LABEL, source: { kind: "pending" } };
+  if (!resolved && !hasBase) return { rowId: row, label, valueLabel: NEEDS_HERO_LABEL, source: { kind: "pending" } };
+  // 기준 레퍼런스에도 값이 없는 행(목록 밖 폰트·없는 섹션) — 확정 값과 같은 기본값을 보여 준다
+  if (!resolved) return { rowId: row, label, valueLabel: row === "font" ? DEFAULT_FONT_LABEL : EMPTY_CELL_LABEL, source: { kind: "fallback" } };
   return { rowId: row, label, valueLabel: resolved.cell.label, source: resolved.source };
 }
 
@@ -141,7 +146,7 @@ export function buildProfileDraft(board: CompareBoard, results: readonly Compari
   const heroId = board.picks.hero;
   const base = available(results, heroId)?.comparison?.cells.hero.binding ? available(results, heroId) : undefined;
   const resolved = new Map(PICKABLE_ROW_IDS.map((row) => [row, resolveRow(row, board, results, base?.referenceId)] as const));
-  const items = PICKABLE_ROW_IDS.map((row) => itemOf(row, resolved.get(row), board));
+  const items = PICKABLE_ROW_IDS.map((row) => itemOf(row, resolved.get(row), board, base !== undefined));
   if (!base?.comparison || !base.reference) return { status: "needs-hero", items };
 
   const bindingOf = <K extends CellBinding["kind"]>(row: PickableRowId, kind: K) => {

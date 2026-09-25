@@ -164,6 +164,14 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
   });
 });
 
+describe("확정 시 라이브러리 재검사 (SPEC 8.2 — Codex R2)", () => {
+  it("기본값으로 들어간 섹션 변형이 현재 라이브러리에 없으면 UNSUPPORTED_COMBINATION", async () => {
+    const library: SectionLibrary = { ...SECTION_LIBRARY, version: "1.5", sections: { ...SECTION_LIBRARY.sections, header: {} } };
+    const repo = repoWith({ hero: "ref-a" }, { catalog: FIXTURE_CATALOG, library });
+    expect(await codeOf(repo.confirmProfile(1))).toBe("UNSUPPORTED_COMBINATION");
+  });
+});
+
 describe("실패 주입", () => {
   it("지정한 호출을 실패시킬 수 있다", async () => {
     const repo = repoWith({}, { catalog: FIXTURE_CATALOG, fail: ({ method }) => (method === "getBoard" ? new Error("네트워크") : undefined) });

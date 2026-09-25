@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CompareBoardError } from "../../data/compareBoardRepository";
 import { createMemoryCompareBoardRepository, type BoardCall } from "../../data/memoryCompareBoardRepository";
 import { confirmAvailability } from "../../domain/confirmGate";
 import { buildProfileDraft } from "../../domain/profileDraft";
@@ -77,6 +78,25 @@ describe("AC-23 저장 직렬화 (클라이언트)", () => {
     await saver.retry();
     expect(saver.getState()).toMatchObject({ status: "saved", board: { picks: { hero: "ref-c" } } });
     expect((await repo.getBoard()).board.picks).toEqual({ hero: "ref-c" });
+  });
+
+  it("STALE_BOARD 뒤 최신 보드 재조회까지 실패하면 error 상태로 두고 다시 시도할 수 있다 (Codex R2)", async () => {
+    let saves = 0;
+    const repo = {
+      savePicks: async () => {
+        saves += 1;
+        throw new CompareBoardError("STALE_BOARD", "보드 없음");
+      },
+      getBoard: async () => {
+        throw new Error("네트워크");
+      },
+    };
+    const saver = createPicksSaver(repo, boardOf(IDS, { hero: "ref-a" }));
+    await saver.save({ hero: "ref-b" }, {});
+    expect(saver.getState()).toMatchObject({ status: "error", error: "STALE_BOARD" });
+    await saver.retry();
+    expect(saves).toBe(2);
+    expect(saver.getState().status).toBe("error");
   });
 
   it("STALE_BOARD면 최신 보드로 맞추고 stale 표시를 남긴다 (S-14)", async () => {

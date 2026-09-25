@@ -86,6 +86,11 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     assertPicks(board.picks, results);
     const draft = buildProfileDraft(board, results, library.version);
     if (draft.status !== "ready") throw new CompareBoardError("UNSUPPORTED_COMBINATION", "Hero 선택이 필요합니다");
+    // 기본값으로 들어간 섹션까지 현재 라이브러리 버전으로 다시 검사한다 (SPEC 8.2)
+    const unsupported = draft.profile.section_plan.find(
+      (s) => (s.type === "header" || s.type === "hero" || s.type === "footer") && resolveVariant(library, s.type, s.variant)?.variant !== s.variant,
+    );
+    if (unsupported) throw new CompareBoardError("UNSUPPORTED_COMBINATION", `라이브러리 ${library.version}에 없는 변형: ${unsupported.type}/${unsupported.variant}`);
     const record: StoredProfile = { profileId, version, boardRevision: revision, profile: withBusinessInfoFooter(draft.profile, library), createdAt: now() };
     profiles = [...profiles, deepFreeze(record)];
     board = { ...board, confirmed: { profileId, version, revision } };

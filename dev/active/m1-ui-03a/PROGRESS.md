@@ -77,3 +77,15 @@
 - `COMPARE_LIMIT` = `BOARD_COLUMN_LIMIT`(열 문자 수) — 값 6 그대로, 문구 그대로.
 - RED: `trayBoard.test.tsx` 4개 실패(보드 열이 트레이에 안 보임·저장소에 안 담김) → GREEN 4/4. **전체 228/228**(기존 115 포함, D07 포커스·6개 제한 테스트 통과).
 - 번들: 공통 87.26 → 88.43KB(참고), `/catalog` 95.34 → **96.64KB**, `/references/:id` 94.79KB, 자리표시 88.87KB — 모두 ≤ 100KB. zod·검증 코드는 공통 청크에 없음(빌드 산출물 grep).
+
+## 검증 · Codex
+- 브라우저(ego-browser, `vite preview`): 카탈로그에서 2개 추가 → 칩 1개 제거 → "1 / 6", 포커스가 다음 칩으로 이동(D07). 보드 저장소 청크는 지연 로드.
+- **Codex R1** (`review --scope branch --base main`) — P2 3건, 모두 반영(3b58b15):
+  1. 저장 중 바꾼 최신 선택이 앞 저장 실패 시 버려짐 → 실패 시 `pending ?? attempt`를 재시도 대상으로 보존. RED 1 → GREEN.
+  2. 트레이 진입 조회가 보드 저장소 청크(zod 포함 10.73KB)를 첫 화면에 로드 → 카탈로그 실제 로드 110.78KB. `createDeferredCompareBoardRepository(load, initial)`로 불러오기 전 조회는 빈 보드(메모리 구현은 불러오기 전 상태가 곧 초기 보드). 번들 검사에 "진입 직후 자동 로드 포함(참고)" 합계 추가. RED 1 → GREEN. 카탈로그 정적 96.67KB · 자동 로드 포함 99.05KB.
+  3. 다른 곳에서 뺀 열을 옛 revision으로 저장하면 SCHEMA_INVALID로 동기화 불가 → revision 검사를 열 소속 검사 앞으로. RED 1 → GREEN.
+- 전체 232/232 · typecheck · lint · build 통과.
+- **Codex R2** — P2 2건, 모두 반영:
+  1. 기준 레퍼런스 기본값으로 들어간 header 변형이 현재 라이브러리에 없어도 확정됨 → 확정 시 section_plan의 header·hero·footer를 현재 라이브러리 버전으로 다시 검사, 없으면 `UNSUPPORTED_COMBINATION`(SPEC 8.2). RED 1 → GREEN.
+  2. `board` 없는 STALE_BOARD 뒤 `getBoard`까지 실패하면 `saving`에 고착 → 재조회 실패를 잡아 `error`로 두고 최신 선택을 재시도 대상으로 보존. RED 1 → GREEN.
+- 전체 234/234 · typecheck · lint · build 통과.

@@ -43,10 +43,10 @@ export function createPicksSaver(
     const latestIntent = pending ?? attempt;
     pending = undefined;
     if (error instanceof CompareBoardError && error.code === "STALE_BOARD") {
-      // 다른 곳에서 바뀐 보드를 받아 화면을 맞춘다 (S-14)
-      const latest = error.board ?? (await repository.getBoard()).board;
-      failed = undefined;
-      set({ board: latest, status: "error", error: "STALE_BOARD" });
+      // 다른 곳에서 바뀐 보드를 받아 화면을 맞춘다 (S-14). 재조회도 실패하면 다시 시도로 재조회·저장을 되풀이할 수 있게 남긴다
+      const latest = error.board ?? (await repository.getBoard().then((load) => load.board, () => undefined));
+      failed = latest ? undefined : latestIntent;
+      set({ board: latest ?? state.board, status: "error", error: "STALE_BOARD" });
       return;
     }
     failed = latestIntent;

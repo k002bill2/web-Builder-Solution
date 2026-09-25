@@ -7,8 +7,8 @@
 |---|---|---|---|
 | 0 | 읽기(브리프 0절 순서) + 번들 실측 | 완료 | — |
 | A | D04·D05·D06 시각 결함 | 완료 | 317b192 |
-| B | D07·D08·A01·A02·A03 키보드 접근성 | 완료 | (그룹 B 커밋) |
-| C | 초기 JS ≤ 90KB gzip | 진행 중 | |
+| B | D07·D08·A01·A02·A03 키보드 접근성 | 완료 | 7a46d4b |
+| C | 초기 JS ≤ 90KB gzip | 완료 | (그룹 C 커밋) |
 | D | 라우트 스크롤·경쟁 상태 테스트 | 대기 | |
 | E | 검증 4종·브라우저·Codex·보고서 | 대기 | |
 
@@ -108,4 +108,53 @@ typecheck exit=0
 lint exit=0
  Test Files  13 passed (13)
       Tests  102 passed (102)
+```
+
+## 그룹 C — 초기 JS ≤ 90KB gzip
+
+이전 실행이 턴 한도로 미커밋 상태로 남긴 변경(선언형 라우터·lazy 라우트·`check-bundle-size.mjs`)을 이어받아 완성했다 (이어하기 브리프 M1-UI-01-FIX-R).
+
+### 변경
+- `createBrowserRouter`(data router) → `BrowserRouter` + `useRoutes`(`AppRoutes`). 0단계 실측대로 data router는 react-router만 gzip 약 32KB라 예산을 넘는다. 테스트 `renderApp`은 `MemoryRouter` + 라우터 상태 프로브로 바꾸고 `router.state.location`·`router.navigate` 모양은 유지했다.
+- 카탈로그·상세·자리표시 페이지를 `React.lazy`로 분할, `AppLayout`의 `<main>` 안 `Suspense`.
+- 로딩 상태: `components/layout/LoadingState.tsx` — `role="status"` "불러오는 중…"(토큰 스타일). Suspense fallback과 상세 데이터 로딩(이전에는 빈 `div aria-busy`)에 같이 쓴다. 빈 화면 금지(이어하기 브리프 1절).
+- 픽스처를 초기 청크에서 뺐다: `data/deferredReferenceRepository.ts` — 첫 조회 때 `import()`로 불러와 메모리 저장소에 위임, 실패하면 다음 호출에서 재시도. 저장소 인터페이스가 Promise라 화면은 바뀌지 않는다(-1.75KB).
+- `CURRENT_USER`를 `fixtures/currentUser.ts`로 분리 — 헤더가 `catalogFilters` 전체(필터 라벨)를 초기 청크로 끌고 오던 것을 끊었다(-1.1KB).
+- `scripts/check-bundle-size.mjs`: `dist/.vite/manifest.json`에서 엔트리 + 정적 import 합계를 gzip으로 재고 90KB 초과 시 exit 1. `npm run build` 끝에 연결, `npm run check:bundle` 단독 실행 가능. eslint 대상에 `.mjs` 추가.
+- 벤더 청크 분리: **하지 않음.** 스크립트·브라우저 모두 정적 import를 초기 로드로 받으므로 react-dom을 따로 떼도 초기 합계는 같다. 캐시 이점은 배포 체계가 정해진 뒤 판단.
+- 폰트 preload: **하지 않음.** woff2 서브셋이 웨이트당 약 268KB라 1개만 preload해도 초기 JS(약 87KB)의 3배를 첫 로드 경쟁에 올린다. `font-display: swap`이라 시스템 글꼴로 먼저 그려지고 교체되므로 빈 글자 구간이 없다.
+- `setup.ts`: `asyncUtilTimeout` 3초 — lazy + Suspense로 첫 화면이 비동기가 되어 병렬 실행 부하에서 기본 1초가 모자랐다(이전 실행 기록).
+
+### RED — 분할 전 상태에서 예산 검사 실패
+`HEAD`(154c383, data router 단일 청크)를 임시 worktree에 꺼내 같은 스크립트로 검사(워크트리는 검사 후 제거):
+```
+dist/assets/index-C4UFBe4c.js   370.02 kB │ gzip: 114.65 kB
+[bundle] 초기 JS (gzip): 113.51KB / 예산 90KB
+[bundle] 예산 초과: 초기 JS 113.51KB > 90KB
+exit=1
+```
+로딩 상태·지연 저장소 테스트 RED:
+```
+     × 빈 화면 대신 보이는 로딩 상태를 알린다 3029ms
+       TestingLibraryElementError: Unable to find role="status"
+Error: Failed to resolve import "./deferredReferenceRepository" ...
+ Test Files  2 failed (2)
+```
+- `AppLayout.test.tsx`는 끝나지 않는 `lazy`로 fallback을 본다 — 라우트 `lazy`는 모듈 캐시 때문에 한 번 풀리면 다시 fallback을 안 보여 앱 전체 렌더로는 순서 의존 테스트가 된다.
+
+### GREEN
+```
+[bundle] 초기 JS (gzip): 86.58KB / 예산 90KB     (Vite 출력 표기: index-*.js gzip 87.47 kB)
+[bundle] /catalog 첫 화면 합계 (참고): 94.58KB
+[bundle] /references/:id 첫 화면 합계 (참고): 92.73KB
+```
+- 측정 차이: Vite 8 빌드 출력의 gzip은 네이티브 리포터라 Node zlib(레벨 6)보다 약 1% 크다. 분할 직후 스크립트 89.46 / Vite 90.35로 판정이 갈려서 여유를 확보했다(위 픽스처·CURRENT_USER 분리).
+
+### 그룹 C 게이트
+```
+typecheck exit=0
+lint exit=0
+ Test Files  15 passed (15)
+      Tests  105 passed (105)
+build exit=0 (예산 검사 포함)
 ```

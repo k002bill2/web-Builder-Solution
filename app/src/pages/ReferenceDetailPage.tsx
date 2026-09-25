@@ -5,6 +5,7 @@ import { MobilePanel, ScoresPanel, SectionsPanel, TokensPanel } from "../compone
 import { ScoreActionsCard, SimilarReferences } from "../components/detail/DetailSidebar";
 import { ReferencePreview } from "../components/detail/ReferencePreview";
 import { Icon } from "../components/ds/Icon";
+import { LoadingState } from "../components/layout/LoadingState";
 import { Tabs } from "../components/ds/Tabs";
 import { Tag, type TagTone } from "../components/ds/Tag";
 import type { DesignReference } from "../domain/reference";
@@ -87,7 +88,7 @@ function NotFound() {
 export function ReferenceDetailPage() {
   const { id = "" } = useParams();
   const state = useReferenceDetail(id);
-  if (state.status === "loading") return <div aria-busy="true" />;
+  if (state.status === "loading") return <LoadingState />;
   if (state.status === "not-found") return <NotFound />;
   // 레퍼런스가 바뀌면 안내 문구 등 화면 상태를 새로 시작한다
   return <ReferenceDetailView key={id} {...state} />;

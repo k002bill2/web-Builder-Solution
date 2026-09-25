@@ -18,7 +18,7 @@ export function Avatar({ name, size = "md" }: { readonly name: string; readonly 
     <span
       role="img"
       aria-label={name}
-      className={`inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-fill-strong font-semibold text-label-alternative ${SIZE[size]}`}
+      className={`inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral ${SIZE[size]}`}
     >
       {initials(name)}
     </span>

@@ -11,7 +11,7 @@
 | 3 | 비교 트레이 (`compareTray.test.ts`) | 완료 | 20f4254 |
 | 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 완료 | afd386f |
 | 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 완료 | 9f0af08 |
-| 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 진행 중 | (이 커밋: 브라우저 확인·버튼 수정) |
+| 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 완료 | afef49b, 980053b, (이 커밋) |
 
 ## 0단계 — 스캐폴드
 - package.json 직접 작성(대화형 create 미사용), 버전 exact 고정.
@@ -225,6 +225,13 @@ RED (테스트 먼저 수정):
       Tests  3 failed | 22 passed (25)
 ```
 GREEN: `Tests  25 passed (25)` (카드·페이지), 전체 58 passed.
+
+### Codex 리뷰 2라운드
+```
+Target: branch diff against main
+No actionable correctness, security, performance, or maintainability defects were found in the changes.
+```
+- `git diff --stat main -- design/` → 비어 있음 (design/ 무수정). 원격 없음, push 없음.
 
 ## 목업과 다른 부분
 1. **Logo → BrandMark**: APFS 그라디언트 워드마크 대신 중립 단색 사각 마크(`bg-label-normal`) + `brand.name` 텍스트 (ADR-002).

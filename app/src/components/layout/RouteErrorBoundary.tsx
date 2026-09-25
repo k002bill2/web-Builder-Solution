@@ -7,13 +7,23 @@ interface State {
 
 /**
  * 라우트 영역의 렌더 오류(대표적으로 lazy 청크 로드 실패)를 잡아 헤더는 남기고 복구 방법을 보인다.
- * 선언형 라우터라 data router의 기본 오류 경계가 없다. 경로가 바뀌면 `key`로 새로 마운트해 오류 상태를 벗어난다.
+ * 선언형 라우터라 data router의 기본 오류 경계가 없다. `resetKey`(경로)가 바뀌면 오류 상태를 벗어난다 —
+ * `key`로 재마운트하면 정상 이동에서도 화면 상태가 매번 초기화돼 쓰지 않는다.
  */
-export class RouteErrorBoundary extends Component<{ readonly children: ReactNode }, State> {
+interface Props {
+  readonly resetKey: string;
+  readonly children: ReactNode;
+}
+
+export class RouteErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
     return { error };
+  }
+
+  componentDidUpdate(prev: Props) {
+    if (this.state.error && prev.resetKey !== this.props.resetKey) this.setState({ error: null });
   }
 
   componentDidCatch(error: Error) {

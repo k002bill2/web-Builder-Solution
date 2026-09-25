@@ -14,7 +14,7 @@ export function AppLayout() {
       <SkipLinks />
       <AppHeader />
       <main id={MAIN_CONTENT_ID} tabIndex={-1} className="focus:outline-none">
-        <RouteErrorBoundary key={pathname}>
+        <RouteErrorBoundary resetKey={pathname}>
           <Suspense fallback={<LoadingState />}>
             <Outlet />
           </Suspense>

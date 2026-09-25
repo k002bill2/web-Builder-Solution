@@ -9,8 +9,8 @@
 | 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 완료 | 27fc0d0 |
 | 2 | 데이터 계층 (`referenceRepository.test.ts`) | 완료 | a4cb632 |
 | 3 | 비교 트레이 (`compareTray.test.ts`) | 완료 | 20f4254 |
-| 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 완료 | (이 커밋) |
-| 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 대기 | |
+| 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 완료 | afd386f |
+| 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 완료 | (이 커밋) |
 | 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 대기 | |
 
 ## 0단계 — 스캐폴드
@@ -146,12 +146,60 @@ GREEN (DS 컴포넌트 10종 + 토큰·Tailwind 유틸리티 카드):
 - 하드코딩 가드 범위: `src/components`·`src/pages`의 `.ts/.tsx/.css`(테스트 파일 제외). 규칙 4종: hex(`#[0-9a-f]{3,8}`, 대소문자 무시), `text-[..px]`, 임의값 px 유틸리티, 인라인 style px.
 - 목업의 비토큰 값(2px·5px·6px 등)은 4px 그리드 토큰 배수로 표현: `h-1.25`, `rounded-[--spacing(1.5)]`, `border-(length:--border-thick)`. 빌드 산출 CSS로 전부 `calc(var(--space-100) * n)`·`var(--토큰)`으로 생성됨을 확인.
 
+### 5단계 — 카탈로그 화면 + 라우팅
+RED ① 테스트만 작성: `Failed to resolve import "../app/routes" from "src/test/renderApp.tsx"`
+RED ② 라우트·프로바이더·자리표시 페이지 + **필터 없는 카탈로그 골격**(카드만 나열):
+```
+ × 업종 칩을 누르면 카드가 줄고 URL 쿼리에 남는다 (FR-CAT-01)
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "카페·F&B"
+ × 체크박스 필터는 그룹 안 OR로 URL에 쌓인다
+ × 모션 강도를 고르면 해당 카드만 남고 URL에 반영된다
+ × 새로고침(초기 URL)하면 필터 상태를 복원한다
+ × 정렬을 바꾸면 순서와 URL이 바뀐다
+ × 초기화는 필터 쿼리를 지우고 전체를 보여준다
+ × 저장한 레퍼런스는 저장함 탭에서 모아 본다
+ × 비교 추가·해제가 하단 트레이에 반영된다 (FR-CMP-02)
+ × 7번째 비교 추가는 막고 안내한다
+ × 비교 보드 열기는 /compare 로 이동한다
+      Tests  10 failed | 7 passed (17)
+```
+GREEN:
+```
+ ✓ CatalogPage (1a-01) > 필터 없이 진입하면 노출 가능한 레퍼런스 6개를 보여준다 129ms
+ ✓ CatalogPage (1a-01) > 업종 칩을 누르면 카드가 줄고 URL 쿼리에 남는다 (FR-CAT-01) 109ms
+ ✓ CatalogPage (1a-01) > 체크박스 필터는 그룹 안 OR로 URL에 쌓인다 119ms
+ ✓ CatalogPage (1a-01) > 모션 강도를 고르면 해당 카드만 남고 URL에 반영된다 49ms
+ ✓ CatalogPage (1a-01) > 새로고침(초기 URL)하면 필터 상태를 복원한다 46ms
+ ✓ CatalogPage (1a-01) > 알 수 없는 쿼리 값은 무시한다 21ms
+ ✓ CatalogPage (1a-01) > 정렬을 바꾸면 순서와 URL이 바뀐다 72ms
+ ✓ CatalogPage (1a-01) > 초기화는 필터 쿼리를 지우고 전체를 보여준다 42ms
+ ✓ CatalogPage (1a-01) > 저장한 레퍼런스는 저장함 탭에서 모아 본다 62ms
+ ✓ CatalogPage (1a-01) > 비교 추가·해제가 하단 트레이에 반영된다 (FR-CMP-02) 89ms
+ ✓ CatalogPage (1a-01) > 7번째 비교 추가는 막고 안내한다 266ms
+ ✓ 라우팅 > / 는 /catalog 로 이동한다 16ms
+ ✓ 라우팅 > /references/ref-a 는 다음 단계 자리표시 페이지다 5ms
+ ✓ 라우팅 > /compare 는 다음 단계 자리표시 페이지다 4ms
+ ✓ 라우팅 > /profile 는 다음 단계 자리표시 페이지다 5ms
+ ✓ 라우팅 > /studio 는 다음 단계 자리표시 페이지다 5ms
+ ✓ 라우팅 > 비교 보드 열기는 /compare 로 이동한다 42ms
+      Tests  17 passed (17)
+```
+- URL 쿼리 키: `industry`, `audience`, `concept`, `layout`, `purpose`, `license`, `motion`, `sort`(기본 score 생략), `tab`(기본 all 생략). 값은 한글 라벨이 아닌 id, 다중값은 쉼표 구분, 모르는 값은 버림.
+- 저장·비교 트레이 상태는 앱 수준 Context(세션 메모리)라 라우트를 오가도 유지된다. 영구 저장은 범위 밖.
+
 ## 목업과 다른 부분
 1. **Logo → BrandMark**: APFS 그라디언트 워드마크 대신 중립 단색 사각 마크(`bg-label-normal`) + `brand.name` 텍스트 (ADR-002).
 2. **`--brand-inverse*` → `--surface-inverse*`** 개명 (설계 결정 2).
 3. **SegmentedControl 시맨틱**: 번들은 `tablist/tab`, 필터 용도라 `radiogroup/radio`로 구현. 모양은 동일.
 4. **Avatar sm 글자 크기**: 번들 32px×0.4=12.8px → 토큰 `caption2`(12px).
 5. **카드 저장 아이콘**: 목업은 장식용 `<i>`, 구현은 `aria-pressed` 토글 버튼(저장 시 `bookmark-fill`+primary 색).
+7. **초기 필터 상태**: 목업은 카페 칩·20~30대·미니멀·따뜻한·예약·internal·licensed·모션 낮음이 선택된 정적 그림이지만, 그대로 쓰면 결과가 0~1개다. 초기 상태는 **필터 없음(6개)**.
+8. **모션 강도에 '전체' 추가**: 목업 세그먼트는 낮음/중간/높음 3개뿐이라 "제약 없음"을 고를 수 없다. 맨 앞에 '전체'를 두었다.
+9. **탭 카운트**: 목업 20/5/3 고정값 대신 현재 필터 결과 기준 실제 값. '추천' 탭은 추천 로직이 범위 밖이라 카운트 없이 "다음 단계" 안내를 보여준다. '추천 받기' 버튼은 추천 탭으로 전환한다.
+10. **검색 입력**: 목업처럼 표시만 하고 필터링은 하지 않는다(브리프 동작 목록에 없음).
+11. **비교 트레이 초기값**: 목업은 A·B·C가 담긴 상태, 구현은 빈 트레이에서 시작(사용자 상태). 빈 상태 안내 문구 추가, 7번째 추가 시 트레이 안에 `role=status` 안내.
+12. **정렬 Select 높이**: 목업 hint 32px, 번들 sm 규격(40px)을 따랐다. 업종 칩도 번들 md(36px).
+13. **390 폭 대응**: GNB 메뉴는 md 미만에서 숨김, 필터 레일은 lg 미만에서 그리드 위로 쌓임, 카드 1열(sm 2열·xl 3열), 트레이 칩 목록은 md 미만에서 숨기고 개수·버튼만 표시.
 6. **카드 썸네일 흰 박스**: 목업 `#fff` → `--common-100`(테마와 무관한 "사이트 캔버스" 흰색), 카드 배경 `#fff` → `--surface-elevated`.
 
 ## 질문

@@ -19,6 +19,12 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+    },
+  },
+  {
+    // Fast Refresh 경계는 화면·컴포넌트 파일에만 적용 (Context 파일은 Provider와 훅을 함께 둔다)
+    files: ["src/components/**/*.tsx", "src/pages/**/*.tsx"],
+    rules: {
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
     },
   },

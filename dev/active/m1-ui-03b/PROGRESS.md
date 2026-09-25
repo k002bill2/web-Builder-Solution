@@ -75,3 +75,6 @@
   - P1 `latestConfirm` → `void confirm()`: `expected "confirmProfile" to be called 1 times, but got 2 times`
   - P2 `whenIdle().then(getBoard)` → `getBoard()`: `Unable to find role="table" and name "레퍼런스 4개, 비교 항목 12개"`
   - P2 STALE 기준 → 항상 로컬 선택: `toHaveAttribute("aria-pressed", "true")` 실패(Hero=C 선택이 사라짐)
+- [x] 2. 번들 검사: 진입 직후 자동 로드 포함 합계 ≤ 125KB를 실패 조건으로(`ROUTE_EAGER_BUDGET_KB`), ADR-004 표에 개정 행 1줄.
+  - RED(한도 120 임시): `[bundle] 예산 검사 실패 — /compare: 진입 직후 자동 로드 포함 120.51KB > 120KB` · exit 1 → 125 원복 exit 0.
+  - 현재: `/compare` 첫 화면 99.93KB / 100 · 진입 직후 120.51KB / 125. `/catalog` 97.98 / 100.36 · `/references/:id` 95.64 / 98.02 · 자리표시 89.40 / 91.79.

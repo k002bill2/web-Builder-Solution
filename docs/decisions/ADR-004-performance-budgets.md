@@ -10,6 +10,7 @@ TRD 8절의 "초기 JS ≤ 90KB gzip"은 **생성되는 홈페이지(export)** �
 | 대상 | 측정 | 예산 |
 |---|---|---|
 | **Design Studio 앱** | 라우트별 **첫 화면 JS 합계**(공통 청크 + 해당 라우트 청크, gzip) | **≤ 100KB** |
+| **Design Studio 앱** (2026-09-26 개정) | 라우트별 **진입 직후 자동 로드 포함 합계**(첫 화면 합계 + 조작 없이 바로 받는 dynamic import, gzip) | **≤ 125KB** |
 | 생성 홈페이지(export) | 초기 JS gzip | ≤ 90KB (TRD 8절 그대로) |
 
 - `app/scripts/check-bundle-size.mjs`는 라우트별 첫 화면 합계를 **예산 대상**으로 검사하도록 바꾼다(현재 공통 청크만 대상, 라우트 합계는 참고 출력). 다음 Developer handoff에 포함.

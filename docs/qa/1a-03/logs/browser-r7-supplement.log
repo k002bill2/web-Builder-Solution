@@ -1,0 +1,12 @@
+space 79
+detail compare add {"url":"/references/ref-a","btnText":"비교 중","btnLabel":"비교 중, 비교에서 빼기","notice":[]}
+catalog tray after detail add "비교 보드 1 / 6 | 모던 카페 브랜드 | 비교 보드 열기"
+hero names ["Hero 구성: A 모던 카페 브랜드의 요소 선택","Hero 구성: B 동네 치과 클리닉의 요소 선택","Hero 구성: C 부티크 법률사무소의 요소 선택"]
+A-4 replace ["Hero 구성: A 선택","Hero 구성: A → C"]
+default label visible {"text":"기본값 · C","top":378,"inView":true,"contrast":{"label":"기본값","text":"기본값 · C","fg":"#858588","bg":"#ffffff","ratio":3.67,"size":"13px","weight":"500","cssColor":"rgba(55, 56, 60, 0.61)"}}
+shot "defect-qa02-default-label-1280.png"
+color error {"invalid":"true","text":"대표색은 #RRGGBB 형식의 6자리 hex로 입력하세요 (예: #8B5E3C)","contrast":{"label":"오류","text":"대표색은 #RRGGBB 형식의 6자리 hex로 입력하세요 (예: #8B5","fg":"#ff4242","bg":"#f7f7f8","ratio":3.21,"size":"13px","weight":"500","cssColor":"rgb(255, 66, 66)"}}
+shot "defect-qa03-color-error-1280.png"
+errs []
+finished
+

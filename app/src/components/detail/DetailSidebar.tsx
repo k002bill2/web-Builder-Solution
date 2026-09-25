@@ -101,13 +101,14 @@ export function SimilarReferences({ groups }: { readonly groups: readonly Simila
                   <li key={r.id} className="min-w-0">
                     <Link
                       to={`/references/${r.id}`}
+                      title={r.title}
                       className={
                         "block rounded-sm border border-line-alternative p-1.5 hover:border-line-strong " +
                         "focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
                       }
                     >
                       <span className="block h-8 rounded-xs" style={{ backgroundColor: r.colorPalette.primary }} />
-                      <span className="ds-caption2 mt-1.5 block truncate">{r.title}</span>
+                      <span className="ds-caption2 mt-1.5 line-clamp-2">{r.title}</span>
                     </Link>
                   </li>
                 ))}

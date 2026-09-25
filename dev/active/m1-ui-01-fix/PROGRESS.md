@@ -9,7 +9,8 @@
 | A | D04·D05·D06 시각 결함 | 완료 | 317b192 |
 | B | D07·D08·A01·A02·A03 키보드 접근성 | 완료 | 7a46d4b |
 | C | 초기 JS ≤ 90KB gzip | 완료 | 1ffd4e8 |
-| D | 라우트 스크롤·경쟁 상태 테스트 | 완료 | (그룹 D 커밋) |
+| D | 라우트 스크롤·경쟁 상태 테스트 | 완료 | d825166 |
+| B-DET-02 | 유사 레퍼런스 이름 말줄임 | 완료 | (B-DET-02 커밋) |
 | E | 검증 4종·브라우저·Codex·보고서 | 대기 | |
 
 ## 0단계 — 읽기와 사전 실측
@@ -197,3 +198,12 @@ lint exit=0
       Tests  110 passed (110)
 build exit=0 — [bundle] 초기 JS (gzip): 86.90KB / 예산 90KB (Vite 표기 87.79 kB)
 ```
+
+## B-DET-02 — 유사 레퍼런스 이름 말줄임 (BACKLOG, ADR-003 사용성 유지 항목)
+
+- 원인: 상세 사이드바 유사 레퍼런스 3열 그리드의 이름이 `truncate`(한 줄 말줄임)라 "필라테스 스튜…"처럼 식별이 안 됐다.
+- 수정 (`components/detail/DetailSidebar.tsx`): 이름을 `line-clamp-2`(2줄까지), 링크에 `title={r.title}`(2줄도 넘는 이름은 포인터 툴팁). 링크의 접근성 이름은 원래부터 전체 이름이다.
+- 목업과 다른 점: 목업은 한 줄 말줄임. 이름 식별(사용성)이 우선이라 2줄 허용 (ADR-003 1·2순위).
+- 테스트 (`ReferenceDetailPage.test.tsx` "유사 레퍼런스 긴 이름"): 30자 이상 이름(`필라테스 스튜디오 리포머 그룹 레슨 강남 본점 예약 안내 페이지`) 픽스처로 링크 `title`·`line-clamp-2`·`truncate` 없음 확인. jsdom은 레이아웃이 없어 줄 수는 브라우저에서 확인한다(검증 단계).
+- RED: `expect(element).toHaveAttribute("title", …)` 실패 `Tests  1 failed | 14 skipped (15)` → GREEN `Tests  15 passed (15)`.
+- 게이트: typecheck 0 · lint 0 · `Test Files 16 passed · Tests 111 passed` · build 0 (초기 JS 86.90KB).

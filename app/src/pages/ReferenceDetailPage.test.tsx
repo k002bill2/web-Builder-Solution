@@ -215,3 +215,25 @@ describe("상세 ↔ 카탈로그 상태 공유", () => {
     expect(within(nav).getByRole("link", { name: "카탈로그" })).toHaveAttribute("aria-current", "page");
   });
 });
+
+describe("유사 레퍼런스 긴 이름 (B-DET-02)", () => {
+  const LONG_TITLE = "필라테스 스튜디오 리포머 그룹 레슨 강남 본점 예약 안내 페이지";
+
+  it("30자 넘는 이름도 식별할 수 있게 2줄까지 보여 주고 전체 이름을 노출한다", async () => {
+    expect(LONG_TITLE.length).toBeGreaterThanOrEqual(30);
+    const records = referenceFixtures.map((r) => (r.id === "ref-f" ? { ...r, title: LONG_TITLE } : r));
+    renderApp("/references/ref-a", createMemoryReferenceRepository(records, referenceDetailFixtures));
+    await heading("모던 카페 브랜드");
+
+    const similar = screen.getByRole("region", { name: "유사 레퍼런스" });
+    const links = within(similar).getAllByRole("link", { name: LONG_TITLE });
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      // 2줄을 넘는 경우를 위해 포인터 툴팁으로도 전체 이름을 준다
+      expect(link).toHaveAttribute("title", LONG_TITLE);
+      const name = within(link).getByText(LONG_TITLE);
+      expect(name).toHaveClass("line-clamp-2");
+      expect(name).not.toHaveClass("truncate");
+    }
+  });
+});

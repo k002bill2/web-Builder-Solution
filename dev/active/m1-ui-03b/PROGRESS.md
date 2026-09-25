@@ -13,7 +13,7 @@
 | 4 | `CompareBoardPage` (`/compare`, lazy) 상태 S-01~S-18 | 완료 | (4 커밋) |
 | 5 | 반응형 (≥1280 · 768~1279 · <768 아코디언) | 완료 | (5 커밋) |
 | 6 | 진입 경로 (트레이 → `/compare`, 레퍼런스 추가 → `/catalog`) | 완료(테스트 추가) | (4 커밋) |
-| 7 | `addToTray`·`removeFromTray` 정리 판단 | 대기 | |
+| 7 | `addToTray`·`removeFromTray` 정리 판단 | 유지(REPORT 사유) | — |
 
 ## 단계 1 — Callout + 아이콘
 - 아이콘 `check`·`circle-check`·`warning`·`circle-info`·`chevron-down`을 `design/claude-design-handoff/project/assets/icons/`에서 `app/src/assets/icons/`로 복사만 함(`design/` 변경 없음).
@@ -65,3 +65,7 @@
 - 번들: 아코디언을 lazy로 두면 Rolldown이 `jsx-runtime`을 별도 청크로 떼어 **공통이 88.96 → 89.45**(모든 라우트 +0.5)가 됨 → 정적 import로 되돌림. 대신 알림 문구·확정 오류 방침(`boardMessages.ts`)·`confirmGate`·`FONT_OPTIONS`를 엔진 경유로 옮김.
   - 결과: 공통 88.94 · `/catalog` 97.96 · `/references/:id` 95.62 · **`/compare` 99.84KB**(여유 0.16KB) · 자동 로드 포함 참고 120.41KB.
 - GREEN: 35 files · 305 passed, typecheck·lint·build 통과.
+
+## Codex R1 · REPORT
+- R1 P1 1 · P2 2 반영(5297948). 회귀 테스트·R2는 턴 한도로 미실행 — REPORT 참조.
+- 브라우저 확인: screens/ 3장, 서버 종료 확인.

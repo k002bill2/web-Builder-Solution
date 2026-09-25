@@ -8,8 +8,8 @@
 | 0 | 읽기(브리프 1절 순서) + `app/` 스캐폴드 | 완료 | afa7794 |
 | 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 완료 | 27fc0d0 |
 | 2 | 데이터 계층 (`referenceRepository.test.ts`) | 완료 | a4cb632 |
-| 3 | 비교 트레이 (`compareTray.test.ts`) | 완료 | (이 커밋) |
-| 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 대기 | |
+| 3 | 비교 트레이 (`compareTray.test.ts`) | 완료 | 20f4254 |
+| 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 완료 | (이 커밋) |
 | 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 대기 | |
 | 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 대기 | |
 
@@ -113,8 +113,46 @@ GREEN:
       Tests  7 passed (7)
 ```
 
+### 4단계 — DS 컴포넌트 + 카드 + 하드코딩 가드
+RED ① 테스트만 작성:
+```
+ FAIL  src/components/catalog/ReferenceCard.test.tsx
+Error: Failed to resolve import "./ReferenceCard" from "src/components/catalog/ReferenceCard.test.tsx". Does the file exist?
+ × 검사할 화면·컴포넌트 파일이 있다
+AssertionError: expected 0 to be greater than 0
+```
+RED ② 카드 초안을 목업 인라인 스타일 그대로 옮긴 상태 — 카드 테스트 6개는 통과, 하드코딩 가드가 실제 위반을 잡음:
+```
+ × src/components·src/pages에 hex·px 하드코딩이 0건이다
++   "components/catalog/ReferenceCard.tsx:17 [hex 색상] <article … background: \"#fff\" }}>",
++   "components/catalog/ReferenceCard.tsx:17 [인라인 style px] <article … border: \"1px solid var(--line-neutral)\" …",
++   "components/catalog/ReferenceCard.tsx:18 [인라인 style px] <div … padding: \"12px 14px\" …",
++   "components/catalog/ReferenceCard.tsx:20 [인라인 style px] <span style={{ width: \"28px\", height: \"5px\", background: p.ink }} />",
+    … (8건)
+      Tests  1 failed | 7 passed (8)
+```
+GREEN (DS 컴포넌트 10종 + 토큰·Tailwind 유틸리티 카드):
+```
+ ✓ 스타일 하드코딩 금지 > 검사할 화면·컴포넌트 파일이 있다
+ ✓ 스타일 하드코딩 금지 > src/components·src/pages에 hex·px 하드코딩이 0건이다
+ ✓ ReferenceCard > 목업 카드 필드를 빠짐없이 표시한다 (FR-CAT-02)
+ ✓ ReferenceCard > 이름은 레퍼런스 상세로 연결된다
+ ✓ ReferenceCard > 저장 버튼은 이름을 포함한 aria-label과 눌림 상태를 가진다
+ ✓ ReferenceCard > 비교 버튼은 이름을 포함한 aria-label을 갖고, 트레이 상태에 따라 문구가 바뀐다
+ ✓ ReferenceCard > 트레이에 담긴 카드는 '비교 중'으로 표시된다
+ ✓ ReferenceCard > licensed 레퍼런스는 licensed 배지를 표시한다
+      Tests  8 passed (8)
+```
+- 하드코딩 가드 범위: `src/components`·`src/pages`의 `.ts/.tsx/.css`(테스트 파일 제외). 규칙 4종: hex(`#[0-9a-f]{3,8}`, 대소문자 무시), `text-[..px]`, 임의값 px 유틸리티, 인라인 style px.
+- 목업의 비토큰 값(2px·5px·6px 등)은 4px 그리드 토큰 배수로 표현: `h-1.25`, `rounded-[--spacing(1.5)]`, `border-(length:--border-thick)`. 빌드 산출 CSS로 전부 `calc(var(--space-100) * n)`·`var(--토큰)`으로 생성됨을 확인.
+
 ## 목업과 다른 부분
-(단계별로 추가)
+1. **Logo → BrandMark**: APFS 그라디언트 워드마크 대신 중립 단색 사각 마크(`bg-label-normal`) + `brand.name` 텍스트 (ADR-002).
+2. **`--brand-inverse*` → `--surface-inverse*`** 개명 (설계 결정 2).
+3. **SegmentedControl 시맨틱**: 번들은 `tablist/tab`, 필터 용도라 `radiogroup/radio`로 구현. 모양은 동일.
+4. **Avatar sm 글자 크기**: 번들 32px×0.4=12.8px → 토큰 `caption2`(12px).
+5. **카드 저장 아이콘**: 목업은 장식용 `<i>`, 구현은 `aria-pressed` 토글 버튼(저장 시 `bookmark-fill`+primary 색).
+6. **카드 썸네일 흰 박스**: 목업 `#fff` → `--common-100`(테마와 무관한 "사이트 캔버스" 흰색), 카드 배경 `#fff` → `--surface-elevated`.
 
 ## 질문
 1. **타깃·콘텐츠 목적·등록일 데이터가 목업에 없음.** 목업 refs에는 audience·purpose·createdAt이 없어 필터·최신순이 동작하려면 값이 필요하다. `fixtures/references.ts`에 **임시값**을 넣었다(A 20~30대/예약, B 20~30대/예약, C 가족/예약·문의, D 20~30대/예약, E B2B/문의, F 가족·20~30대/판매, createdAt 2026-08-30~09-19). 실제 값 확정 필요.

@@ -89,3 +89,5 @@
   1. 기준 레퍼런스 기본값으로 들어간 header 변형이 현재 라이브러리에 없어도 확정됨 → 확정 시 section_plan의 header·hero·footer를 현재 라이브러리 버전으로 다시 검사, 없으면 `UNSUPPORTED_COMBINATION`(SPEC 8.2). RED 1 → GREEN.
   2. `board` 없는 STALE_BOARD 뒤 `getBoard`까지 실패하면 `saving`에 고착 → 재조회 실패를 잡아 `error`로 두고 최신 선택을 재시도 대상으로 보존. RED 1 → GREEN.
 - 전체 234/234 · typecheck · lint · build 통과.
+- **Codex R3**(상한) — P2 2건 반영(451a15a): 사용자 대표색 적용 시 팔레트 출처 보존, STALE 동기화 뒤 `saved`+안내로 확정 가능. RED 2 → GREEN. 전체 235/235 · 검증 4종 통과. 라운드 상한 도달 → R4 없음.
+- 80턴 도달 → 새 작업 중단, REPORT.md 작성.

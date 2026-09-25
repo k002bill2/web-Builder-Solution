@@ -4,9 +4,9 @@
 
 ## 결론
 - 브리프 항목 1~10을 모두 완료했습니다. UI 컴포넌트와 `/compare` 페이지는 만들지 않았습니다(03b 범위).
-- 검증 4종이 통과했습니다: typecheck · lint · **test 234/234**(기존 115 + 신규 119) · build.
+- 검증 4종이 통과했습니다: typecheck · lint · **test 235/235**(기존 115 + 신규 120) · build.
 - 번들: 라우트별 첫 화면 합계가 모두 100KB 이하입니다. `/catalog`는 96.67KB입니다.
-- Codex: R1 P2 3건과 R2 P2 2건을 모두 반영했습니다. R3 결과는 아래 "Codex 결과"에 적습니다.
+- Codex: 상한인 3라운드를 모두 돌렸고, P2 7건(R1 3·R2 2·R3 2)을 모두 반영했습니다(451a15a). 라운드 상한에 도달해 R4는 돌리지 않았습니다. 따라서 R3 수정분은 Codex 재검토를 받지 않았습니다.
 - 기존 카탈로그·상세 동작과 테스트는 그대로 통과합니다. 여기에는 6개 제한, `COMPARE_LIMIT_NOTICE`, 칩 제거 후 포커스 이동(D07)이 포함됩니다. 브라우저에서도 확인했습니다.
 
 ## 항목 1~10 완료 여부
@@ -49,12 +49,12 @@
 - **번들 RED**:
   - 예산을 95로 낮추면 `/catalog: 95.34KB > 95KB`로 exit 1이 났고, 100으로 원복했습니다.
   - 페이지 경로를 없는 파일로 바꾸면 "manifest에 … 없습니다"로 exit 1이 났고, 원복했습니다.
-- Codex 지적 5건은 모두 회귀 테스트 RED를 확인한 뒤 수정해 GREEN으로 만들었습니다.
+- Codex 지적 7건은 모두 회귀 테스트 RED를 확인한 뒤 수정해 GREEN으로 만들었습니다.
 
 ## 검증 4종 · 번들
 ```
 cd app && npm run typecheck && npm run lint && npm test -- --run && npm run build
-Test Files 29 passed (29) · Tests 234 passed (234)
+Test Files 29 passed (29) · Tests 235 passed (235)
 [bundle] 공통 JS (gzip, 참고): 88.46KB
 [bundle] /catalog 첫 화면 합계: 96.67KB / 예산 100KB (진입 직후 자동 로드 포함 참고: 99.05KB)
 [bundle] /references/:id 첫 화면 합계: 94.82KB / 예산 100KB (진입 직후 자동 로드 포함 참고: 97.20KB)
@@ -74,7 +74,10 @@ Test Files 29 passed (29) · Tests 234 passed (234)
 - **R2**: P2 2건을 모두 반영했습니다(83b38de).
   1. 기본값으로 들어간 섹션 변형도 확정할 때 현재 라이브러리 버전으로 다시 검사합니다.
   2. 충돌 뒤 최신 보드 재조회까지 실패하면 저장 상태가 `saving`에 멈췄습니다. 이제 `error`로 바뀌고 다시 시도할 수 있습니다.
-- **R3**: 아래 "R3 결과" 절에 적습니다.
+- **R3**: P2 2건을 모두 반영했습니다(451a15a).
+  1. 사용자 대표색을 넣으면 팔레트 레퍼런스가 `source_reference_ids`와 R-15 판정에서 빠졌습니다. 출처를 실제 해석된 선택에서 세도록 바꿨습니다.
+  2. STALE_BOARD 동기화 뒤 상태가 `error`에 남아 확정이 막혔습니다. 최신 보드로 맞추면 `saved`가 되고 `error: "STALE_BOARD"` 안내만 남습니다. 재조회가 실패하면 `error`입니다.
+- R3 수정 뒤 검증 4종을 다시 통과했습니다(235/235). R4는 라운드 상한 때문에 돌리지 않았습니다.
 
 ## SPEC과 다르게 한 부분 (사유)
 - `ComparisonRowDef.shortLabel` 추가: 알림 문장 "B를 빼서 Hero·카드 선택 해제"에 짧은 이름이 필요합니다.
@@ -108,6 +111,8 @@ Test Files 29 passed (29) · Tests 234 passed (234)
 
 ## 커밋
 ```
+451a15a fix: Codex R3 — 사용자 대표색 적용 시 팔레트 출처 보존, STALE 동기화 후 확정 가능 상태로 복구
+b64ab25 docs: M1-UI-03a REPORT (Codex R3 대기)
 83b38de fix: Codex R2 — 확정 시 기본 섹션 라이브러리 재검사, 충돌 후 재조회 실패 시 저장 상태 고착 방지
 3b58b15 fix: Codex R1 — 저장 실패 시 최신 선택 보존, 열 삭제 경합은 STALE_BOARD, 보드 저장소를 첫 화면에서 불러오지 않음
 b1a60f3 feat: 비교 트레이를 비교 보드 열 목록으로 통합, 보드 저장소 지연 로드 (M1-UI-03a 9)
@@ -121,7 +126,4 @@ b1a60f3 feat: 비교 트레이를 비교 보드 열 목록으로 통합, 보드 
 bc85bbc build: 번들 검사를 라우트별 첫 화면 합계 100KB 예산으로 변경 (ADR-004)
 66a0e6a docs: M1-UI-03a PROGRESS 시작
 ```
-(이 REPORT 커밋은 위 목록 다음입니다.)
-
-## R3 결과
-(R3 결과를 기다리는 중)
+(REPORT 최종 갱신 커밋은 위 목록 다음입니다.)

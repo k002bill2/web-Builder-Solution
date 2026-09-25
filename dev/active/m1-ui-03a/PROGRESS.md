@@ -15,7 +15,7 @@
 | 4 | `buildProfileDraft` | 완료 | (4 커밋) |
 | 6 | R-12 Footer 경고 데이터 | 완료 | (6·7 커밋) |
 | 7 | 사용자 대표색(zod)·폰트 허용 목록 | 완료 | (6·7 커밋) |
-| 8 | `compareBoardRepository` 메모리 구현 + 저장 직렬화 | 대기 | |
+| 8 | `compareBoardRepository` 메모리 구현 + 저장 직렬화 | 완료 | 76ecad2 |
 | 9 | 트레이 통합 | 대기 | |
 
 작업 순서는 의존 관계 기준(10 → 1·2 → 3 → 5 → 4 → 6·7 → 8 → 9).
@@ -61,3 +61,12 @@
 - 의존성: `zod@4.6.5` (`--save-exact`). 공통 청크 밖에서만 import.
 - RED: 모듈 없음 → GREEN 19/19 (AC-11 문구·AC-12 계산·AC-13·AC-14).
 - 해석: C-3 대체안에 밝은 카드 열이 없으면 SPEC은 "C-1 보정 제안"이지만, 흰 글자 기준으로 대표색을 어둡게 하면 어두운 잉크와의 C-3 대비가 더 나빠질 수 있어 **잉크 대비 4.5:1 보정**으로 계산(ADR-003 기능 우선).
+
+## 항목 8 — 저장소·저장 직렬화·확정
+- `data/compareBoardRepository.ts`: 인터페이스·`CompareBoardError(code, board?)`·`BoardLoad`·`StoredProfile` (공통 청크용, 구현 없음).
+- `data/memoryCompareBoardRepository.ts`: `getBoard`(회수·삭제 열 선택 자동 해제 → 그 응답에만 `released`), `addReference`(비노출·없음 `unavailable`), `removeReference`, `savePicks`(zod → 열 소속 SCHEMA_INVALID·회수 LICENSE_BLOCKED·값 없음 UNSUPPORTED_COMBINATION → revision 불일치 STALE_BOARD + 최신 보드), `getComparison`(`libraryVersion` 하나로 해석), `confirmProfile`(v1 / 확정돼 있으면 새 버전), `createProfileVersion`(같은 계열 v2…, 기록 deep freeze), `getProfileVersions`. 지연 `delay({method, seq, phase: request|response})`·실패 `fail` 주입.
+- `features/compare/picksSaver.ts`: 앞 요청이 끝난 뒤 최신 선택 한 번만 전송, STALE_BOARD면 최신 보드로 맞춤, 실패 시 `retry`. `domain/confirmGate.ts`: P-8 이유 문구.
+- RED: 모듈 없음 → GREEN 19/19.
+- **AC-23 RED ① 저장소 revision 검사 제거** → `× AC-23: 같은 revision으로 보낸 두 저장이 역순으로 도착해도 최종 보드는 늦게 요청한 B다` (`expected undefined to be 'STALE_BOARD'`) + STALE 테스트 실패, 2 failed → 복원 후 통과.
+- **AC-23 RED ② 클라이언트 직렬화 제거**(`running ??=` → `running =`) → `× AC-23: 앞 저장 응답이 늦게 와도 …` (`expected [ 'save#1', 'save#2', 'save#3' ] to have a length of 2`) → 복원 후 통과.
+- SPEC과 다르게: `getBoard()`가 `{ board, released }`를 돌려준다(자동 해제 안내를 한 번 보여주려면 해제 정보가 필요, S-08). `getProfileVersions` 추가(AC-25 검증·1a-04용). R-12 확정 시 사업자정보 없는 Footer는 `businessInfoVariant`로 바꿔 저장(SPEC 3.3 안내 문구의 실제 동작).

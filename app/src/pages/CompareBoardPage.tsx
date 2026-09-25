@@ -1,17 +1,20 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { brand } from "../brand/brand.config";
+import { ComparisonAccordion } from "../components/compare/ComparisonAccordion";
 import { ComparisonTable } from "../components/compare/ComparisonTable";
 import { DraftPanel } from "../components/compare/DraftPanel";
+import { DraftSummaryBar } from "../components/compare/DraftSummaryBar";
 import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Icon } from "../components/ds/Icon";
 import { LoadingState } from "../components/layout/LoadingState";
 import type { SaveStatus } from "../domain/compareBoard";
-import { FONT_OPTIONS } from "../domain/fonts";
 import { COMPARE_LIMIT, COMPARE_LIMIT_NOTICE } from "../features/compare/compareTray";
 import { useCompareBoard } from "../features/compare/useCompareBoard";
+import { useViewport } from "../features/compare/useViewport";
 import { useSavedReferences } from "../features/saved/SavedReferencesContext";
+
 
 const PAGE = "mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7";
 /** 열을 뺀 뒤 포커스 대상이 없을 때 — "레퍼런스 추가"(또는 빈 상태의 "카탈로그에서 고르기") (A-6) */
@@ -44,7 +47,9 @@ export function CompareBoardPage() {
   const board = useCompareBoard();
   const { saved } = useSavedReferences();
   const navigate = useNavigate();
+  const viewport = useViewport();
   const heading = useRef<HTMLHeadingElement>(null);
+  const draftHeading = useRef<HTMLHeadingElement>(null);
   const root = useRef<HTMLDivElement>(null);
   const pendingFocus = useRef<string | null>(null);
   const focused = useRef(false);
@@ -97,6 +102,17 @@ export function CompareBoardPage() {
     void board.removeColumn(referenceId);
   };
 
+  const comparisonProps = {
+    columns: board.view?.columns ?? [],
+    rows: board.view?.rows ?? [],
+    picks: board.board?.picks ?? {},
+    pickAllLabel: columns.length === 1 ? "이 레퍼런스로 프로필 만들기" : "이 레퍼런스로 전부 선택",
+    disabled: board.locked,
+    onToggle: board.toggle,
+    onRemoveColumn: removeColumn,
+    onPickAll: board.pickAll,
+  };
+
   return (
     <div ref={root} className={PAGE}>
       <header className="flex flex-wrap items-start gap-x-4 gap-y-3">
@@ -143,18 +159,14 @@ export function CompareBoardPage() {
                 하나 더 담으면 항목별로 골라 조합할 수 있습니다. 지금은 열의 ‘이 레퍼런스로 프로필 만들기’로 이 레퍼런스 구성을 그대로 쓸 수 있습니다.
               </Callout>
             )}
-            <ComparisonTable
-              columns={board.view.columns}
-              rows={board.view.rows}
-              picks={board.board?.picks ?? {}}
-              pickAllLabel={columns.length === 1 ? "이 레퍼런스로 프로필 만들기" : "이 레퍼런스로 전부 선택"}
-              disabled={board.locked}
-              onToggle={board.toggle}
-              onRemoveColumn={removeColumn}
-              onPickAll={board.pickAll}
-            />
+            {viewport === "narrow" ? (
+              <ComparisonAccordion {...comparisonProps} />
+            ) : (
+              <ComparisonTable {...comparisonProps} />
+            )}
           </div>
           <DraftPanel
+            headingRef={draftHeading}
             className="xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"
             items={board.items}
             status={board.draftStatus}
@@ -162,7 +174,7 @@ export function CompareBoardPage() {
             warnings={board.warnings}
             notices={board.notices}
             custom={board.board?.custom ?? {}}
-            fonts={FONT_OPTIONS}
+            fonts={board.fonts}
             checkPrimaryColor={board.checkPrimaryColor}
             canConfirm={board.availability}
             confirming={board.confirming}
@@ -174,6 +186,17 @@ export function CompareBoardPage() {
             onCustomChange={board.changeCustom}
             onApplyFix={board.applyFix}
           />
+          {viewport !== "wide" && (
+            <DraftSummaryBar
+              pickedCount={board.items.filter((i) => i.source.kind === "pick" || i.source.kind === "custom").length}
+              total={board.items.length}
+              warningCount={board.warnings.filter((w) => w.tone === "warning").length}
+              canConfirm={board.availability}
+              confirming={board.confirming}
+              onShowDraft={() => draftHeading.current?.focus()}
+              onConfirm={() => void board.confirm()}
+            />
+          )}
         </div>
       )}
     </div>

@@ -11,7 +11,7 @@
 | 2 | `PickButton`·`ColumnHeader`·`ComparisonTable` + 가로 전용 roving | 완료 | (2 커밋) |
 | 3 | `DraftPanel`·`DraftItem`·`CustomStyleFields` + 폰트 3종 활성 | 완료 | (3 커밋) |
 | 4 | `CompareBoardPage` (`/compare`, lazy) 상태 S-01~S-18 | 완료 | (4 커밋) |
-| 5 | 반응형 (≥1280 · 768~1279 · <768 아코디언) | 대기 | |
+| 5 | 반응형 (≥1280 · 768~1279 · <768 아코디언) | 완료 | (5 커밋) |
 | 6 | 진입 경로 (트레이 → `/compare`, 레퍼런스 추가 → `/catalog`) | 완료(테스트 추가) | (4 커밋) |
 | 7 | `addToTray`·`removeFromTray` 정리 판단 | 대기 | |
 
@@ -56,3 +56,12 @@
   - 결과: `/compare` **99.66KB**(정적) · 진입 직후 자동 로드 포함 참고 **119.30KB**(스크립트 참고 출력에 엔진·저장소·비교 픽스처 추가). 공통 88.96 · `/catalog` 97.98(기준 96.67, +1.31) · `/references/:id` 95.64(기준 94.82, +0.82).
   - 카탈로그·상세 증가분: 공통 +0.50(트레이 컨텍스트 확장) + Rolldown이 `Tag`·`Select`·`catalogFilters`를 공유 청크로 나눈 청크 오버헤드. REPORT 질문으로 남김.
 - GREEN: 34 files · 298 passed, typecheck·lint·build 통과.
+
+## 단계 5 — 반응형
+- `useViewport`(matchMedia `48rem`·`80rem`, useSyncExternalStore): 표·아코디언을 CSS로 숨기지 않고 **하나만 렌더** — 둘 다 그리면 선택 버튼이 두 벌 생겨 Tab·보조기기에 중복. matchMedia가 없으면(jsdom) 넓은 화면.
+- ≥1280: 표 + sticky 패널(`max-h` 화면 높이 − 여백, 넘치면 패널만 스크롤 — 확정 버튼이 화면 밖으로 밀리지 않게). 768~1279: 표 + 패널 아래 + 하단 `DraftSummaryBar`("초안 N/10 · 경고 N", 초안 보기 → 패널 제목 포커스, 확정은 같은 aria-disabled+이유). <768: `ComparisonAccordion`(h3 > button[aria-expanded][aria-controls], region+aria-labelledby, 처음엔 Hero만, 접힌 머리글에 "B 선택됨/선택 안 함/비교 정보", 열 목록은 가로 스크롤 목록 + 각 열 빼기·전부 선택).
+- RED: `CompareBoardResponsive.test.tsx` 6 failed / 1 passed(≥1280 요약 바 없음은 원래 없음).
+- 중간 실패: 아코디언 머리글 이름이 선택 버튼 이름("Hero 구성: …")과 같은 접두어라 쿼리 중복 → 머리글 쿼리를 "Hero 구성 ·"로.
+- 번들: 아코디언을 lazy로 두면 Rolldown이 `jsx-runtime`을 별도 청크로 떼어 **공통이 88.96 → 89.45**(모든 라우트 +0.5)가 됨 → 정적 import로 되돌림. 대신 알림 문구·확정 오류 방침(`boardMessages.ts`)·`confirmGate`·`FONT_OPTIONS`를 엔진 경유로 옮김.
+  - 결과: 공통 88.94 · `/catalog` 97.96 · `/references/:id` 95.62 · **`/compare` 99.84KB**(여유 0.16KB) · 자동 로드 포함 참고 120.41KB.
+- GREEN: 35 files · 305 passed, typecheck·lint·build 통과.

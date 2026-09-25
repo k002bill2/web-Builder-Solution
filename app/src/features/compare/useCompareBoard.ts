@@ -10,19 +10,8 @@ import type { Announcement, PanelNotice, UndoView } from "../../components/compa
 import { removeColumn as removeBoardColumn } from "../../domain/boardColumns";
 import type { WarningFix } from "../../domain/boardWarnings";
 import { draftStatusOf, type CompareBoard, type ComparisonRowId, type CustomStyle, type DraftStatus } from "../../domain/compareBoard";
-import { confirmAvailability, type ConfirmAvailability } from "../../domain/confirmGate";
-import {
-  EMPTY_ANNOUNCEMENT,
-  STALE_CONFIRM_MESSAGE,
-  confirmFailure,
-  customAnnouncement,
-  intentOf,
-  releasedNotices,
-  sameIntent,
-  withWarningDelta,
-  type Comparison,
-  type Intent,
-} from "./boardScreen";
+import type { ConfirmAvailability } from "../../domain/confirmGate";
+import { EMPTY_ANNOUNCEMENT, intentOf, type Comparison, type Intent } from "./boardScreen";
 import { useCompareTray } from "./CompareTrayContext";
 import type { BoardEngine } from "./boardEngine";
 import type { PicksSaver, PicksSaverState } from "./picksSaver";
@@ -71,7 +60,7 @@ export function useCompareBoard() {
         // 다른 곳에서 바뀐 보드로 맞췄다 — 화면 선택도 서버 값으로 (S-14). 재조회 중 새 선택이 있으면(saving) 그것을 둔다
         if (state.error === "STALE_BOARD" && state.status === "saved") {
           setIntent(intentOf(state.board));
-          putNotice("stale", { id: "stale", tone: "info", title: "선택을 다시 불러왔습니다", message: "다른 곳에서 바뀐 선택을 불러왔습니다" });
+          putNotice("stale", engineRef.current!.STALE_SAVE_NOTICE);
         }
       });
       saver.current = next;
@@ -97,7 +86,7 @@ export function useCompareBoard() {
       startSaver(board);
       setIntent(intentOf(board));
       setComparison(next);
-      setNotices(releasedNotices(pendingReleased.current));
+      setNotices(boardEngine.releasedNotices(pendingReleased.current));
       pendingReleased.current = [];
       setPhase("ready");
     };
@@ -137,7 +126,7 @@ export function useCompareBoard() {
     if (!board || !evaluation || !engine || !saver.current) return;
     setIntent(next);
     lastSave.current = saver.current.save(next.picks, next.custom);
-    announce(withWarningDelta(text, evaluation, engine.evaluate({ ...board, ...next }, comparison)));
+    announce(engine.withWarningDelta(text, evaluation, engine.evaluate({ ...board, ...next }, comparison)));
   };
 
   const toggle = (rowId: ComparisonRowId, referenceId: string) => {
@@ -172,9 +161,9 @@ export function useCompareBoard() {
   };
 
   const changeCustom = (custom: CustomStyle) => {
-    if (!board || locked) return;
+    if (!board || !engine || locked) return;
     setUndo(null);
-    commit({ picks: intent.picks, custom }, customAnnouncement(intent.custom, custom));
+    commit({ picks: intent.picks, custom }, engine.customAnnouncement(intent.custom, custom));
   };
 
   const applyFix = (fix: WarningFix) => {
@@ -184,7 +173,7 @@ export function useCompareBoard() {
 
   /** P-7 열 빼기 — 앞 저장이 끝난 뒤 빼고, 그 응답의 revision으로 saver를 다시 만든다(다음 선택이 STALE로 버려지지 않게) */
   const removeColumn = async (referenceId: string) => {
-    if (!board || locked) return;
+    if (!board || !engine || locked) return;
     const local = removeBoardColumn(board, referenceId);
     const next: Intent = { picks: local.board.picks, custom: intent.custom };
     const label = board.columns.find((c) => c.referenceId === referenceId)?.label ?? "";
@@ -195,7 +184,7 @@ export function useCompareBoard() {
       const { board: server } = await repository.removeReference(referenceId);
       startSaver(server);
       setIntent(next);
-      if (!sameIntent(next, intentOf(server))) lastSave.current = saver.current!.save(next.picks, next.custom);
+      if (!engine.sameIntent(next, intentOf(server))) lastSave.current = saver.current!.save(next.picks, next.custom);
       announce(local.released?.notice ?? `${label}를 뺐습니다`);
     } catch (error) {
       console.error("[compare] 열 빼기 실패", error);
@@ -212,32 +201,25 @@ export function useCompareBoard() {
     startSaver(latest);
     setIntent(intentOf(latest));
     setComparison(next);
-    setNotices((current) => [...current, ...releasedNotices(released.map((r) => r.notice))]);
+    setNotices((current) => [...current, ...(engineRef.current?.releasedNotices(released.map((r) => r.notice)) ?? [])]);
   };
 
   const onConfirmError = async (error: unknown) => {
-    const { code, board: latest } = engineRef.current?.boardErrorOf(error) ?? {};
-    if (code === "STALE_BOARD" && latest) {
-      startSaver(latest);
-      setIntent(intentOf(latest));
-      return putNotice("confirm", confirmFailure(STALE_CONFIRM_MESSAGE));
+    const plan = engineRef.current?.confirmErrorPlan(error, () => void confirm());
+    if (!plan) return;
+    if (plan.kind === "resync") {
+      startSaver(plan.board);
+      setIntent(intentOf(plan.board));
     }
-    if (code === "LICENSE_BLOCKED" || code === "STALE_BOARD") {
-      await refresh().catch((e: unknown) => console.error("[compare] 보드 다시 받기 실패", e));
-      const message = code === "STALE_BOARD" ? STALE_CONFIRM_MESSAGE : "사용할 수 없게 된 레퍼런스가 있습니다. '사용 불가' 열을 확인한 뒤 다시 확정하세요";
-      return putNotice("confirm", confirmFailure(message));
-    }
-    if (code === "UNSUPPORTED_COMBINATION") {
-      return putNotice("confirm", confirmFailure("지금 선택 조합은 현재 라이브러리로 확정할 수 없습니다. 사용할 수 없는 항목을 다른 레퍼런스 값으로 바꾼 뒤 다시 확정하세요"));
-    }
-    console.error("[compare] 프로필 확정 실패", error);
-    putNotice("confirm", confirmFailure("확정하지 못했습니다. 선택은 저장돼 있습니다", () => void confirm()));
+    if (plan.kind === "refresh") await refresh().catch((e: unknown) => console.error("[compare] 보드 다시 받기 실패", e));
+    if (plan.kind === "notice" && plan.unexpected) console.error("[compare] 프로필 확정 실패", error);
+    putNotice("confirm", plan.notice);
   };
 
   /** S-13~S-16 — 저장이 끝난 revision으로만 확정. 연타는 ref로 막는다(AC-17) */
   async function confirm() {
     if (confirmLock.current || removing || !evaluation || !saved || !saver.current) return;
-    const availability = confirmAvailability(evaluation.draft, saved.status);
+    const availability = engineRef.current!.confirmAvailability(evaluation.draft, saved.status);
     if (!availability.ok) return announce(availability.reason);
     confirmLock.current = true;
     setConfirming(true);
@@ -268,7 +250,8 @@ export function useCompareBoard() {
     checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
     warnings: evaluation?.warnings ?? [],
     draftStatus: saved ? draftStatusOf(saved.board) : UNCONFIRMED,
-    availability: confirming ? CONFIRMING : evaluation && saved ? confirmAvailability(evaluation.draft, saved.status) : CONFIRMING,
+    availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status),
+    fonts: engine?.fonts ?? [],
     saveStatus: saved?.status ?? "idle",
     notices,
     announcement,

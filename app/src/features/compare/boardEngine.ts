@@ -3,14 +3,16 @@
  * 화면이 데이터(보드 저장소 청크)와 함께 동적으로 불러온다: 이 모듈들은 저장소 메모리 구현도 쓰는 것이라
  * 어차피 데이터와 같이 내려온다. 첫 화면 정적 JS(ADR-004)에는 표·패널 UI만 남긴다.
  */
-import { CompareBoardError } from "../../data/compareBoardRepository";
 import { parseCustomStyle } from "../../domain/boardInput";
 import { pickAllFrom, pickAnnouncement, togglePick } from "../../domain/boardPicks";
 import { evaluateBoardWarnings } from "../../domain/boardWarnings";
-import type { CompareBoard, CompareBoardErrorCode } from "../../domain/compareBoard";
+import { confirmAvailability } from "../../domain/confirmGate";
+import { FONT_OPTIONS } from "../../domain/fonts";
+import type { CompareBoard } from "../../domain/compareBoard";
 import { buildProfileDraft } from "../../domain/profileDraft";
 import type { PrimaryColorCheck } from "../../components/compare/CustomStyleFields";
 import type { Comparison, Evaluation } from "./boardScreen";
+import { STALE_SAVE_NOTICE, confirmErrorPlan, customAnnouncement, releasedNotices, sameIntent, withWarningDelta } from "./boardMessages";
 import { buildBoardView } from "./boardView";
 import { draftItemsView } from "./draftView";
 import { createPicksSaver } from "./picksSaver";
@@ -27,14 +29,16 @@ const checkPrimaryColor: PrimaryColorCheck = (input) => {
   return { ok: true, value: parsed.value.primaryColor ?? input };
 };
 
-/** 확정 오류 코드와 (STALE_BOARD면) 서버의 최신 보드 */
-function boardErrorOf(error: unknown): { readonly code?: CompareBoardErrorCode; readonly board?: CompareBoard } {
-  return error instanceof CompareBoardError ? { code: error.code, ...(error.board && { board: error.board }) } : {};
-}
-
 export const boardEngine = Object.freeze({
   createPicksSaver,
-  boardErrorOf,
+  confirmAvailability,
+  fonts: FONT_OPTIONS,
+  confirmErrorPlan,
+  sameIntent,
+  withWarningDelta,
+  customAnnouncement,
+  releasedNotices,
+  STALE_SAVE_NOTICE,
   togglePick,
   pickAllFrom,
   pickAnnouncement,

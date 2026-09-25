@@ -1,152 +1,82 @@
-/* source: design/claude-design-handoff/project/_ds/apfs-design-system-3aea88df-7072-4855-be04-f000a5f2fbd4/tokens/colors.css */
+/* source: design/claude-design-handoff-v2/project/_ds/apfs-dashboard-ds-709895f7-436c-49cd-8113-09fa8a455665/_ds_bundle.css (:root · .dark) */
 /* ============================================================
-   Wanted 계열 디자인 언어 — Color tokens
+   Color tokens — 디자인 v2 (docs/design/v2/SPEC.md 2.3)
    Light theme on :root. Dark theme on [data-theme="dark"].
-   Two layers:
-   1) PRIMITIVES  — raw palette ramps (--blue-50 …)
-   2) SEMANTIC    — role aliases that components consume
-                    (--primary, --label-normal, --line-normal …)
-   Always consume the SEMANTIC layer in components.
+   이름은 우리 것, 값은 v2. 의미 토큰이 값을 직접 갖는다(원시 램프 없음, SPEC 2.7).
+   글자는 불투명 hex, 선·면(fill·line)만 알파. v2에 없는 토큰은 v2 중성 베이스
+   rgb(31,54,40)(라이트)·흰색(다크) 알파로 파생했다.
+   글자 값은 A11Y-01 방법으로 보정(필수 배경 최저 ≥ 4.6, SPEC 3.2 · Q3) — tokenContrast.test.ts
+   Always consume these tokens in components (Tailwind: theme.css).
    ============================================================ */
 
 :root {
-  /* ---- Primitives: Common ---- */
-  --common-100: #ffffff;
-  --common-0: #000000;
-
-  /* ---- Primitives: Cool Neutral (the core grey ramp) ---- */
-  --cool-neutral-5: #0f0f10;
-  --cool-neutral-10: #171719;
-  --cool-neutral-15: #1b1c1e;
-  --cool-neutral-22: #2e2f33;
-  --cool-neutral-40: #5a5c63;
-  --cool-neutral-50: #70737c;
-  --cool-neutral-60: #878a93;
-  --cool-neutral-70: #989ba2;
-  --cool-neutral-80: #aeb0b6;
-  --cool-neutral-90: #c2c4c8;
-  --cool-neutral-95: #dbdcdf;
-  --cool-neutral-96: #e1e2e4;
-  --cool-neutral-98: #ebebec;
-  --cool-neutral-99: #f7f7f8;
-
-  /* ---- Primitives: Blue (brand primary ramp) ---- */
-  --blue-30: #003e9c;
-  --blue-40: #0054d1;
-  --blue-45: #005eeb;
-  --blue-50: #0066ff;
-  --blue-55: #1a75ff;
-  --blue-60: #3385ff;
-  --blue-70: #69a5ff;
-  --blue-80: #9ec5ff;
-  --blue-90: #c9defe;
-  --blue-95: #eaf2fe;
-  --blue-99: #f7fbff;
-
-  /* ---- Primitives: Accent ramps (categories, tags, status) ---- */
-  --green-40: #009632;
-  --green-50: #00bf40;   /* status: positive */
-  --green-95: #ebffee;
-  --red-40: #e52222;
-  --red-50: #ff4242;     /* status: negative */
-  --red-95: #ffecec;
-  --orange-40: #d47800;
-  --orange-50: #ff9200;  /* status: cautionary */
-  --orange-95: #fff3e0;
-  --violet-45: #5b37ed;
-  --violet-50: #6541f2;  /* secondary accent */
-  --violet-95: #f0ecfe;
-  --purple-40: #ad36e3;
-  --purple-50: #cb59ff;
-  --purple-95: #f9edff;
-  --pink-46: #e846cd;
-  --pink-95: #fff0fc;
-  --cyan-40: #0098b2;
-  --cyan-50: #00bdde;
-  --cyan-95: #e7fbff;
-  --lime-37: #429e00;
-  --lime-95: #e6ffd4;
-
-  /* ============================================================
-     SEMANTIC — Primary (brand action color)
-     ============================================================ */
-  /* 값은 brand.css의 --brand-* (ADR-002) */
-  --primary: var(--brand-primary);          /* Primary / Normal */
-  --primary-strong: var(--blue-45);
-  --primary-heavy: var(--blue-40);
+  /* ---- Primary (brand action color) — 값은 brand.css의 --brand-* (ADR-002) ---- */
+  --primary: var(--brand-primary);
   --primary-hover: var(--brand-primary-hover);
   --primary-pressed: var(--brand-primary-pressed);
-  --primary-container: var(--brand-primary-container);  /* light blue surface */
+  --primary-container: var(--brand-primary-container);
+  --primary-text: var(--brand-primary-text); /* 주 색 글자(링크·primary 배지) */
   --on-primary: #ffffff;
 
-  /* Inverse surface (near-black CTA, footers)
-     원본 이름 --brand-inverse* → 제품 브랜드와 무관한 중립 표면이므로 개명 (ADR-002) */
-  --surface-inverse: #2c2c2c;
-  --surface-inverse-hover: #1e1e1e;
+  /* ---- Inverse surface (플로팅 필·요약 바·열 문자 배지·건너뛰기 링크) ----
+     역상 면 안의 자식은 on-surface-inverse·inverse-*만 쓴다. opacity 금지 (A11Y-01 4.2) */
+  --surface-inverse: #1a2620;
+  --surface-inverse-hover: #111a15;
   --on-surface-inverse: #ffffff;
+  --inverse-fill-normal: rgba(255, 255, 255, 0.12);
+  --inverse-fill-strong: rgba(255, 255, 255, 0.16);
+  --inverse-label-alternative: rgba(255, 255, 255, 0.72);
+  --inverse-label-disable: rgba(255, 255, 255, 0.4);
 
-  /* ============================================================
-     SEMANTIC — Labels (text) — alpha over a neutral base
-     ============================================================ */
-  --label-normal: #171719;                  /* primary text */
-  --label-strong: #000000;                  /* maximum emphasis */
-  --label-neutral: rgba(46, 47, 51, 0.88);  /* slightly softened body */
-  --label-alternative: rgba(55, 56, 60, 0.61); /* secondary / captions ≈ #70737C */
-  --label-assistive: rgba(55, 56, 60, 0.28);   /* placeholder / hint */
-  --label-disable: rgba(55, 56, 60, 0.16);     /* disabled text */
-  --on-color: #ffffff;                       /* text on colored fills */
+  /* ---- Labels (text) ---- */
+  --label-normal: #1a2620;         /* v2 --foreground */
+  --label-strong: #1a2620;         /* v2는 전경 1단계 — normal과 같다 */
+  --label-neutral: #4c574e;        /* v2 --muted-foreground #5e6b60 보정 */
+  --label-alternative: #56615a;    /* v2 --caption #66726a 보정 */
+  --label-assistive: rgba(31, 54, 40, 0.28); /* 글자 금지 (A11Y-01 3절, tokenUsage 가드) */
+  --label-disable: rgba(31, 54, 40, 0.16);   /* 비활성 글자 (1.4.3 예외) */
+  --on-color: #ffffff;
 
-  /* ============================================================
-     SEMANTIC — Backgrounds & surfaces
-     ============================================================ */
-  --background-normal: #ffffff;             /* page base */
-  --background-alternative: #f7f7f8;        /* sunken / app chrome */
-  --surface-elevated: #ffffff;              /* cards, sheets */
-  --surface-sunken: #f7f7f8;
+  /* ---- Backgrounds & surfaces ---- */
+  --background-normal: #ffffff;       /* v2 --bg */
+  --background-alternative: #f0f3ee;  /* v2 --muted */
+  --surface-elevated: #ffffff;        /* v2 --card */
+  --surface-sunken: #f0f3ee;          /* v2 --muted */
+  --surface-raised: #ffffff;          /* v2 --card-raised · --popover */
 
-  /* ============================================================
-     SEMANTIC — Fills (subtle neutral fills on controls)
-     ============================================================ */
-  --fill-normal: rgba(112, 115, 124, 0.08);
-  --fill-strong: rgba(112, 115, 124, 0.16);
-  --fill-alternative: rgba(112, 115, 124, 0.05);
+  /* ---- Fills (subtle neutral fills on controls) — 파생 ---- */
+  --fill-normal: rgba(31, 54, 40, 0.06);
+  --fill-strong: rgba(31, 54, 40, 0.12);
+  --fill-alternative: rgba(31, 54, 40, 0.04);
 
-  /* ============================================================
-     SEMANTIC — Lines / borders (alpha grey)
-     ============================================================ */
-  --line-normal: rgba(112, 115, 124, 0.22);
-  --line-neutral: rgba(112, 115, 124, 0.16);
-  --line-alternative: rgba(112, 115, 124, 0.08);
-  --line-strong: rgba(112, 115, 124, 0.52);
+  /* ---- Lines / borders ---- */
+  --line-alternative: rgba(31, 54, 40, 0.08); /* 파생 */
+  --line-neutral: rgba(31, 54, 40, 0.12);     /* v2 --border */
+  --line-normal: rgba(31, 54, 40, 0.2);       /* v2 --border-strong */
+  --line-strong: rgba(31, 54, 40, 0.54);      /* 파생 — 입력칸·선택 상자·체크박스 경계 3:1 (Q4) */
 
-  /* ============================================================
-     SEMANTIC — Status / feedback
-     ============================================================ */
-  --status-positive: var(--green-50);
-  --status-positive-bg: var(--green-95);
-  --status-negative: var(--red-50);
-  --status-negative-bg: var(--red-95);
-  --status-cautionary: var(--orange-50);
-  --status-cautionary-bg: var(--orange-95);
-  --status-informative: var(--primary);
-  --status-informative-bg: var(--blue-95);
+  /* ---- Status — 아이콘·면용 색과 글자용 *-text를 나눈다 (A11Y-01 6절) ---- */
+  --status-positive: #32d1af;
+  --status-positive-bg: #def7f0;
+  --status-positive-text: #066b5a;
+  --status-cautionary: #fbb424;
+  --status-cautionary-bg: #fef3da;
+  --status-cautionary-text: #825500;
+  --status-negative: #ff6b42;
+  --status-negative-bg: #ffe7df;
+  --status-negative-text: #af2e0d;
+  --status-informative: #3b82f6;
+  --status-informative-bg: #f0f7ff;
+  --status-informative-text: #1b58c8;
 
-  /* ============================================================
-     SEMANTIC — Accent pairs (foreground + tint) for chips/tags
-     ============================================================ */
-  --accent-blue: var(--blue-45);          --accent-blue-bg: var(--blue-95);
-  --accent-green: var(--green-40);        --accent-green-bg: var(--green-95);
-  --accent-red: var(--red-40);            --accent-red-bg: var(--red-95);
-  --accent-orange: var(--orange-40);      --accent-orange-bg: var(--orange-95);
-  --accent-violet: var(--violet-45);      --accent-violet-bg: var(--violet-95);
-  --accent-purple: var(--purple-40);      --accent-purple-bg: var(--purple-95);
-  --accent-pink: var(--pink-46);          --accent-pink-bg: var(--pink-95);
-  --accent-cyan: var(--cyan-40);          --accent-cyan-bg: var(--cyan-95);
-  --accent-lime: var(--lime-37);          --accent-lime-bg: var(--lime-95);
+  /* ---- Tag 톤 — 상태 토큰 별칭 (v2 StatusBadge 톤, D-A11Y-N2 해소) ---- */
+  --accent-green: var(--status-positive-text);      --accent-green-bg: var(--status-positive-bg);
+  --accent-orange: var(--status-cautionary-text);   --accent-orange-bg: var(--status-cautionary-bg);
+  --accent-red: var(--status-negative-text);        --accent-red-bg: var(--status-negative-bg);
+  --accent-blue: var(--status-informative-text);    --accent-blue-bg: var(--status-informative-bg);
+  --accent-violet: var(--primary-text);             --accent-violet-bg: var(--primary-container);
 
-  /* ============================================================
-     SEMANTIC — Overlays & utilities
-     ============================================================ */
+  /* ---- Overlays & utilities (v2에 없음 — 2a-04~07 모달·스크림용으로 유지) ---- */
   --overlay-dim: rgba(0, 0, 0, 0.5);     /* modal scrim */
   --overlay-blanket: rgba(0, 0, 0, 0.7);
   --overlay-scrim-light: rgba(255, 255, 255, 0.8);
@@ -154,48 +84,65 @@
 }
 
 /* ============================================================
-   DARK THEME
+   DARK THEME — var() 별칭도 같은 이름으로 다시 선언한다: :root에서 계산된 var() 값은
+   하위 요소에 data-theme을 붙여도 다시 계산되지 않는다.
    ============================================================ */
 [data-theme="dark"] {
-  /* 브랜드 참조를 다시 선언해야 하위 요소에 data-theme을 붙여도 다크 브랜드 값으로 재계산된다 */
   --primary: var(--brand-primary);
-  --primary-strong: var(--blue-55);
   --primary-hover: var(--brand-primary-hover);
   --primary-pressed: var(--brand-primary-pressed);
   --primary-container: var(--brand-primary-container);
-  --on-primary: #ffffff;
-  --status-informative: var(--primary);
+  --primary-text: var(--brand-primary-text);
+  --on-primary: #10142e; /* 흰 글자는 #818cf8 위 2.98 */
 
-  --surface-inverse: #f7f7f8;
-  --surface-inverse-hover: #ffffff;
-  --on-surface-inverse: #1b1c1e;
+  --surface-inverse: #e6ebe2;
+  --surface-inverse-hover: #f4f7f2;
+  --on-surface-inverse: #0f1310;
+  --inverse-fill-normal: rgba(15, 19, 16, 0.12);
+  --inverse-fill-strong: rgba(15, 19, 16, 0.16);
+  --inverse-label-alternative: rgba(15, 19, 16, 0.72);
+  --inverse-label-disable: rgba(15, 19, 16, 0.4);
 
-  --label-normal: #f7f7f7;
-  --label-strong: #ffffff;
-  --label-neutral: rgba(194, 196, 200, 0.88);
-  --label-alternative: rgba(174, 176, 182, 0.61);
-  --label-assistive: rgba(174, 176, 182, 0.28);
-  --label-disable: rgba(152, 155, 162, 0.16);
+  --label-normal: #e6ebe2;
+  --label-strong: #e6ebe2;
+  --label-neutral: #acb6a7;
+  --label-alternative: #9fa89b;
+  --label-assistive: rgba(230, 235, 226, 0.28);
+  --label-disable: rgba(230, 235, 226, 0.16);
 
-  --background-normal: #1b1c1e;
-  --background-alternative: #0f0f10;
-  --surface-elevated: #26282b;
-  --surface-sunken: #141416;
+  --background-normal: #0f1310;
+  --background-alternative: #1f261d;
+  --surface-elevated: #181d17;
+  --surface-sunken: #1f261d;
+  --surface-raised: #1d231c;
 
-  --fill-normal: rgba(112, 115, 124, 0.22);
-  --fill-strong: rgba(112, 115, 124, 0.28);
-  --fill-alternative: rgba(112, 115, 124, 0.12);
+  --fill-normal: rgba(255, 255, 255, 0.06);
+  --fill-strong: rgba(255, 255, 255, 0.1);
+  --fill-alternative: rgba(255, 255, 255, 0.04);
 
-  --line-normal: rgba(112, 115, 124, 0.32);
-  --line-neutral: rgba(112, 115, 124, 0.28);
-  --line-alternative: rgba(112, 115, 124, 0.22);
-  --line-strong: rgba(194, 196, 200, 0.52);
+  --line-alternative: rgba(255, 255, 255, 0.06);
+  --line-neutral: rgba(255, 255, 255, 0.1);
+  --line-normal: rgba(255, 255, 255, 0.16);
+  --line-strong: rgba(255, 255, 255, 0.35);
 
-  --status-positive-bg: rgba(0, 191, 64, 0.16);
-  --status-negative-bg: rgba(255, 66, 66, 0.16);
-  --status-cautionary-bg: rgba(255, 146, 0, 0.16);
-  --status-informative-bg: rgba(51, 102, 255, 0.18);
+  --status-positive: #33ddb8;
+  --status-positive-bg: rgba(51, 221, 184, 0.16);
+  --status-positive-text: #33ddb8;
+  --status-cautionary: #fbc04a;
+  --status-cautionary-bg: rgba(251, 180, 36, 0.16);
+  --status-cautionary-text: #fbc04a;
+  --status-negative: #ff7e59;
+  --status-negative-bg: rgba(255, 107, 66, 0.18);
+  --status-negative-text: #ff825e;
+  --status-informative: #60a5fa;
+  --status-informative-bg: rgba(96, 165, 250, 0.16);
+  --status-informative-text: #65a8fa;
 
-  --surface-elevated: #26282b;
+  --accent-green: var(--status-positive-text);      --accent-green-bg: var(--status-positive-bg);
+  --accent-orange: var(--status-cautionary-text);   --accent-orange-bg: var(--status-cautionary-bg);
+  --accent-red: var(--status-negative-text);        --accent-red-bg: var(--status-negative-bg);
+  --accent-blue: var(--status-informative-text);    --accent-blue-bg: var(--status-informative-bg);
+  --accent-violet: var(--primary-text);             --accent-violet-bg: var(--primary-container);
+
   --interaction-overlay: rgba(255, 255, 255, 0.08);
 }

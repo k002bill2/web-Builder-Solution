@@ -7,8 +7,8 @@ import { describe, expect, it } from "vitest";
 const SRC = fileURLToPath(new URL("../", import.meta.url));
 const BRAND_CSS = join(SRC, "styles/tokens/brand.css");
 const TOKENS_DIR = join(SRC, "styles/tokens");
-/** 출처 주석의 번들 경로 표기만 예외로 허용한다. */
-const SOURCE_PATH_MARKER = "design/claude-design-handoff/";
+/** 출처 주석의 번들 경로 표기만 예외로 허용한다 — v1(`…-handoff/`)·v2(`…-handoff-v2/`) 둘 다 (SPEC 6.3). */
+const SOURCE_PATH_MARKER = "design/claude-design-handoff";
 /** 이전(목업) 브랜드 명칭. 이 파일 자체도 grep 수용 기준을 통과하도록 조각을 이어 만든다. */
 const LEGACY_BRAND = ["a", "p", "f", "s"].join("");
 const LEGACY_INSTITUTION = ["농업", "정책"].join("");

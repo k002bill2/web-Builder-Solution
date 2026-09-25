@@ -1,25 +1,33 @@
 /* ============================================================
-   제품 브랜드 레이어 (ADR-002)
+   제품 브랜드 레이어 (ADR-002, 개정 1)
    브랜드 교체 = 이 파일 + src/brand/brand.config.ts 두 곳만 수정한다.
    의미 토큰(--primary 등)은 colors.css에서 여기의 --brand-* 를 참조한다.
-   임시 값: 확정 전까지 목업의 primary(#3366ff) 계열을 유지한다.
+   임시 값: 제품 브랜드 확정 전까지 디자인 v2의 인디고(--primary #5A5FE8) 계열을 쓴다 (v2 SPEC 2.2 · Q1).
+   --brand-primary-text: 주 색을 글자로 쓸 때(링크·primary 배지) — 필수 배경 최저 4.6 (Q2, ADR-002 개정 1).
    ============================================================ */
 
 :root {
-  --brand-primary: #3366ff;
-  --brand-primary-hover: #2a5cf0;
-  --brand-primary-pressed: #005eeb;
-  --brand-primary-container: #eaf2fe;
-  --brand-accent: #6541f2;
+  --brand-primary: #5a5fe8;
+  --brand-primary-hover: #4f46e5;
+  --brand-primary-pressed: #4338ca;
+  --brand-primary-container: #f2f2fd; /* 주 색 8%를 흰 면에 합성한 고정값 (color-mix는 대비 테스트가 못 읽는다) */
+  --brand-primary-text: #4147e5;
+  --brand-accent: #2563eb;
   --brand-gradient: linear-gradient(105deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
 
-  --focus-ring: 0 0 0 3px rgba(51, 102, 255, 0.28);
+  /* 2중 링: 안쪽 간격(자기 면 색) + 바깥 링 — 어느 면·primary 버튼 위에서도 링이 간격 색과 맞닿아 3:1 이상 (v2 SPEC 3.4) */
+  --focus-ring: 0 0 0 2px var(--background-normal), 0 0 0 4px var(--brand-accent);
 }
 
+/* var() 참조는 다크 블록에도 다시 선언해야 하위 요소의 data-theme 전환 때 다크 값으로 다시 계산된다 */
 [data-theme="dark"] {
-  --brand-primary: #5b84ff;
-  --brand-primary-hover: #6f93ff;
-  --brand-primary-pressed: #1a75ff;
-  --brand-primary-container: #18233a;
+  --brand-primary: #818cf8;
+  --brand-primary-hover: #a5b4fc;
+  --brand-primary-pressed: #c7d2fe;
+  --brand-primary-container: rgba(129, 140, 248, 0.16);
+  --brand-primary-text: #949ef9;
+  --brand-accent: #60a5fa;
   --brand-gradient: linear-gradient(105deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+
+  --focus-ring: 0 0 0 2px var(--background-normal), 0 0 0 4px var(--brand-accent);
 }

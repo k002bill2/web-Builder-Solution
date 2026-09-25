@@ -147,3 +147,43 @@ ec9c07f feat: 비교 보드 반응형 — 768~1279 하단 요약 바, 768 미만
 57e2b03 feat: DS Callout + 아이콘 5종 복사 (M1-UI-03b 1)
 ```
 (REPORT 커밋은 위 목록 다음입니다.)
+
+## 보완(FIX-R1)
+브리프: `FIX-R1_BRIEF.md`(2026-09-26, 결정 Q1~Q3 = 위 질문 1~3). Codex 재리뷰는 브리프대로 하지 않았습니다(Jarvis 수행).
+
+### 항목별 결과
+| # | 항목 | 결과 | 커밋 |
+|---|---|---|---|
+| 1 | Codex R1 수정 3건 회귀 테스트 (`CompareBoardPage.test.tsx` "Codex R1 회귀") | 완료 | `66b0516` |
+| 2 | 번들: 진입 직후 자동 로드 포함 합계 ≤ 125KB를 실패 조건으로 + ADR-004 표에 개정 행 | 완료 | `b0c0de4` |
+| 3 | v1 확정 후 바뀐 내용 없는 재확정 차단 (S-15·S-16) | 완료 | `d830863` |
+| 4 | `addToTray`·`removeFromTray`와 전용 테스트 삭제 | 완료 | `b0e6d70` |
+| 5 | 가득 찬 "레퍼런스 추가" 비활성 표시 | 완료 | `454c9d5` |
+
+### RED 출력 (수정을 한 줄씩 되돌려 확인 → `git checkout`으로 원복 → GREEN)
+1. P1 재시도 `latestConfirm` → `void confirm()`: `AssertionError: expected "confirmProfile" to be called 1 times, but got 2 times`
+2. P2 `whenIdle().then(getBoard)` → `getBoard()`: `TestingLibraryElementError: Unable to find role="table" and name "레퍼런스 4개, 비교 항목 12개"`
+3. P2 STALE 기준 → 항상 옛 로컬 선택: `expect(element).toHaveAttribute("aria-pressed", "true")` 실패 (서버 선택 Hero=C가 사라짐)
+4. 번들 한도 120 임시: `[bundle] 예산 검사 실패 — /compare: 진입 직후 자동 로드 포함 120.51KB > 120KB` · exit 1 (125 원복 → exit 0)
+5. (+α) 재확정 차단 테스트 2건(구현 전): `toHaveAttribute("aria-disabled", "true")` 실패 · `toHaveAccessibleDescription()` 실패
+6. (+α) 추가 버튼 비활성 스타일(구현 전): `AssertionError: expected [] to deeply equal [ …(3) ]`
+
+### 번들 (최종 빌드, gzip)
+| 라우트 | 첫 화면 합계 / 100KB | 진입 직후 자동 로드 포함 / 125KB |
+|---|---|---|
+| `/catalog` | 97.98 | 100.36 |
+| `/references/:id` | 95.64 | 98.02 |
+| `/compare` | **99.98** | **120.64** |
+| 자리표시 | 89.40 | 91.79 |
+- `/compare` 첫 화면 여유가 **0.02KB**입니다(항목 3의 훅 판정 +0.04, 항목 5의 클래스 +0.01). 다음 변경은 첫 화면에서 무언가를 빼야 들어갑니다.
+
+### 테스트 수 변화
+305 → 308(+3, 항목 1) → 310(+2, 항목 3) → 304(−6, 항목 4 삭제) → **305**(+1, 항목 5). 파일 35개 그대로.
+
+### 설계 메모·범위
+- 항목 3: `ConfirmedRef`에 확정 시점 `picks`·`custom` 스냅샷을 **선택 필드로 추가**했습니다(API 계약 추가 — 백엔드 결정 시 `board.confirmed`에 같은 값이 필요). 스냅샷이 없으면 revision 비교로 대신합니다. 판정(`unchangedSinceConfirm`, `sameIntent` 깊은 비교)은 엔진 청크에 두고 버튼 표시·`confirm()` 둘 다 같은 판정을 씁니다. B→A로 되돌려 같아지면 태그도 "v1 확정됨"으로 돌아갑니다.
+- 항목 3의 기존 테스트 변경 1건(의도): `memoryCompareBoardRepository.test.ts` AC-25의 `confirmed` 기대값에 스냅샷 추가.
+- 항목 3은 화면 게이트만입니다. 메모리 저장소(서버 역할)는 같은 내용의 새 버전 요청을 거부하지 않습니다 — 서버 측 거부가 필요하면 별건.
+- 항목 2: ADR-004 결정 표에 "2026-09-26 개정" 행 1줄을 더했습니다.
+- 검증: `npm run typecheck && npm run lint && npm test -- --run && npm run build` 모두 통과(305 passed, build exit 0).
+- 브라우저 확인 없음(브리프: 불필요).

@@ -3,7 +3,9 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { AppProviders } from "./app/AppProviders";
 import { AppRoutes } from "./app/routes";
+import { createDeferredCompareBoardRepository } from "./data/deferredCompareBoardRepository";
 import { createDeferredReferenceRepository } from "./data/deferredReferenceRepository";
+import { emptyBoard } from "./domain/compareBoard";
 import { createMemoryReferenceRepository } from "./data/referenceRepository";
 import "./index.css";
 
@@ -19,9 +21,27 @@ const repository = createDeferredReferenceRepository(async () => {
   return createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures);
 });
 
+// 비교 보드 저장소(zod·초안 계산·비교 픽스처)는 공통 청크 밖에서 첫 변경 때 받는다 (ADR-004).
+// 그 전의 보드 조회(트레이 진입)는 빈 보드 — 메모리 구현은 새로고침하면 비어 있다.
+const boardRepository = createDeferredCompareBoardRepository(
+  async () => {
+  const [{ createMemoryCompareBoardRepository }, { referenceFixtures }, { referenceDetailFixtures }, { referenceComparisonAttributes }] =
+    await Promise.all([
+      import("./data/memoryCompareBoardRepository"),
+      import("./fixtures/references"),
+      import("./fixtures/referenceDetails"),
+      import("./fixtures/referenceComparisons"),
+    ]);
+    return createMemoryCompareBoardRepository({
+      catalog: { references: referenceFixtures, details: referenceDetailFixtures, attributes: referenceComparisonAttributes },
+    });
+  },
+  { board: emptyBoard("board-current", ""), released: [] },
+);
+
 createRoot(root).render(
   <StrictMode>
-    <AppProviders repository={repository}>
+    <AppProviders repository={repository} boardRepository={boardRepository}>
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>

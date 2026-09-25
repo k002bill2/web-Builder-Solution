@@ -2,9 +2,12 @@ import { render } from "@testing-library/react";
 import { MemoryRouter, useLocation, useNavigate, type Location, type NavigateFunction } from "react-router";
 import { AppProviders } from "../app/AppProviders";
 import { AppRoutes } from "../app/routes";
+import type { CompareBoardRepository } from "../data/compareBoardRepository";
+import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
 import { createMemoryReferenceRepository, type ReferenceRepository } from "../data/referenceRepository";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
+import { FIXTURE_CATALOG } from "./compareFixtures";
 // lazy 라우트 모듈을 미리 로드해 둔다 — 첫 테스트의 콜드 변환이 findBy 대기 시간(1초)을 넘지 않게 한다
 import "../pages/CatalogPage";
 import "../pages/PlaceholderPage";
@@ -25,6 +28,7 @@ function RouterProbe({ onRender }: { readonly onRender: (location: Location, nav
 export function renderApp(
   path: string,
   repository: ReferenceRepository = createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures),
+  boardRepository: CompareBoardRepository = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG }),
 ): { readonly router: TestRouter } {
   let current: { location: Location; navigate: NavigateFunction } | null = null;
   const probe = (location: Location, navigate: NavigateFunction) => {
@@ -35,7 +39,7 @@ export function renderApp(
     return current;
   };
   render(
-    <AppProviders repository={repository}>
+    <AppProviders repository={repository} boardRepository={boardRepository}>
       <MemoryRouter initialEntries={[path]}>
         <RouterProbe onRender={probe} />
         <AppRoutes />

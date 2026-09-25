@@ -55,8 +55,42 @@ describe("CatalogPage (1a-01)", () => {
     expect(screen.getByRole("radio", { name: "낮음" })).toHaveAttribute("aria-checked", "true");
   });
 
+  it("색상·디바이스 그룹은 레일 맨 아래, 모션 강도 다음에 있다", async () => {
+    renderApp("/catalog");
+    await expectCardCount(6);
+    const rail = screen.getByRole("complementary", { name: "필터" });
+    const headings = [...rail.querySelectorAll("legend, span.ds-label")].map((el) => el.textContent);
+    expect(headings.slice(-3)).toEqual(["모션 강도", "색상", "디바이스"]);
+  });
+
+  it("색상 계열·디바이스를 고르면 카드가 줄고 URL 쿼리에 남는다 (FR-CAT-01)", async () => {
+    const { router } = renderApp("/catalog");
+    await expectCardCount(6);
+    await userEvent.click(screen.getByRole("checkbox", { name: "따뜻한 계열" }));
+    await expectCardCount(2);
+    expect(titles()).toEqual(["모던 카페 브랜드", "로컬 베이커리"]);
+    await userEvent.click(screen.getByRole("checkbox", { name: "데스크톱" }));
+    await expectCardCount(1);
+    const params = new URLSearchParams(router.state.location.search);
+    expect(params.get("color")).toBe("warm");
+    expect(params.get("device")).toBe("desktop");
+  });
+
+  it("새로고침(초기 URL)하면 색상·디바이스 필터를 복원한다", async () => {
+    const { router } = renderApp("/catalog?color=cool,neutral&device=desktop");
+    await expectCardCount(2);
+    expect(titles()).toEqual(["동네 치과 클리닉", "부티크 법률사무소"]);
+    expect(screen.getByRole("checkbox", { name: "차가운 계열" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "무채색" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "따뜻한 계열" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "데스크톱" })).toBeChecked();
+    await userEvent.click(screen.getByRole("button", { name: "필터 초기화" }));
+    await expectCardCount(6);
+    expect(router.state.location.search).toBe("");
+  });
+
   it("알 수 없는 쿼리 값은 무시한다", async () => {
-    renderApp("/catalog?industry=unknown&concept=nope");
+    renderApp("/catalog?industry=unknown&concept=nope&color=pink&device=tv");
     await expectCardCount(6);
   });
 
@@ -124,7 +158,6 @@ describe("라우팅", () => {
   });
 
   it.each([
-    ["/references/ref-a", "레퍼런스 상세"],
     ["/compare", "비교 보드"],
     ["/profile", "디자인 프로필 · 3안 생성"],
     ["/studio", "편집기"],

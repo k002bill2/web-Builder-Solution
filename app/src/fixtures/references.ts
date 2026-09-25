@@ -3,6 +3,8 @@ import type { DesignReference } from "../domain/reference";
 /**
  * 목업 renderVals().refs 6개 (design/…/Design Studio Mockups.dc.html 617~624행).
  * audience·purpose·createdAt 은 목업에 없는 값이라 필터·정렬 동작용 임시값이다 (PROGRESS.md 질문 참조).
+ * devices 도 목업에 없는 임시값이다 (M1-UI-02 작업 2). 카드의 "반응형 지원"(responsive: true)과 맞추려고
+ * 6개 모두 "responsive"를 넣고, 데스크톱·모바일 최적화 여부로 차이를 두었다.
  */
 export const referenceFixtures: readonly DesignReference[] = Object.freeze([
   {
@@ -19,6 +21,7 @@ export const referenceFixtures: readonly DesignReference[] = Object.freeze([
     colorPalette: { primary: "#8B5E3C", surface: "#F3E9DD", ink: "#2C2C2C" },
     motionLevel: "low",
     responsive: true,
+    devices: ["desktop", "mobile", "responsive"],
     scores: { accessibility: 96, performance: 92, measuredAt: "2026-09-20" },
     createdAt: "2026-09-18",
   },
@@ -36,6 +39,7 @@ export const referenceFixtures: readonly DesignReference[] = Object.freeze([
     colorPalette: { primary: "#1F1F1F", surface: "#E8E4DF", ink: "#C9A96E" },
     motionLevel: "mid",
     responsive: true,
+    devices: ["mobile", "responsive"],
     scores: { accessibility: 91, performance: 88, measuredAt: "2026-09-20" },
     createdAt: "2026-09-12",
   },
@@ -53,6 +57,7 @@ export const referenceFixtures: readonly DesignReference[] = Object.freeze([
     colorPalette: { primary: "#1F5FBF", surface: "#EAF2FE", ink: "#2C2C2C" },
     motionLevel: "low",
     responsive: true,
+    devices: ["desktop", "mobile", "responsive"],
     scores: { accessibility: 98, performance: 95, measuredAt: "2026-09-20" },
     createdAt: "2026-09-05",
   },
@@ -70,6 +75,7 @@ export const referenceFixtures: readonly DesignReference[] = Object.freeze([
     colorPalette: { primary: "#00A884", surface: "#E6FFF6", ink: "#111111" },
     motionLevel: "high",
     responsive: true,
+    devices: ["mobile", "responsive"],
     scores: { accessibility: 89, performance: 84, measuredAt: "2026-09-20" },
     createdAt: "2026-09-15",
   },
@@ -87,6 +93,7 @@ export const referenceFixtures: readonly DesignReference[] = Object.freeze([
     colorPalette: { primary: "#1B1C1E", surface: "#F7F7F8", ink: "#6541F2" },
     motionLevel: "low",
     responsive: true,
+    devices: ["desktop", "responsive"],
     scores: { accessibility: 97, performance: 93, measuredAt: "2026-09-20" },
     createdAt: "2026-08-30",
   },
@@ -104,6 +111,7 @@ export const referenceFixtures: readonly DesignReference[] = Object.freeze([
     colorPalette: { primary: "#D47800", surface: "#FFF3E0", ink: "#2E2F33" },
     motionLevel: "mid",
     responsive: true,
+    devices: ["mobile", "responsive"],
     scores: { accessibility: 93, performance: 90, measuredAt: "2026-09-20" },
     createdAt: "2026-09-19",
   },

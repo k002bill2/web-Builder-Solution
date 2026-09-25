@@ -1,9 +1,10 @@
 import { Link } from "react-router";
-import type { DesignReference, LicenseStatus } from "../../domain/reference";
+import type { DesignReference } from "../../domain/reference";
 import { INDUSTRY_LABELS, LAYOUT_LABELS, MOTION_LABELS, VISUAL_TAG_LABELS } from "../../fixtures/catalogFilters";
 import { Button } from "../ds/Button";
 import { Icon } from "../ds/Icon";
-import { Tag, type TagTone } from "../ds/Tag";
+import { Tag } from "../ds/Tag";
+import { formatDate, LICENSE_TONE } from "./referenceDisplay";
 
 export interface ReferenceCardProps {
   readonly reference: DesignReference;
@@ -12,14 +13,6 @@ export interface ReferenceCardProps {
   readonly onToggleSave: (id: string) => void;
   readonly onToggleCompare: (id: string) => void;
 }
-
-const LICENSE_TONE: Record<LicenseStatus, TagTone> = {
-  internal: "green",
-  licensed: "violet",
-  external_observed: "neutral",
-};
-
-const formatDate = (iso: string) => iso.replaceAll("-", ".");
 
 /** 자체 렌더 와이어프레임 썸네일 — 외부 캡처를 쓰지 않는다. 색은 레퍼런스 팔레트 데이터에서 온다. */
 function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {

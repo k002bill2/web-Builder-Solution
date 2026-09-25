@@ -15,12 +15,11 @@ import {
   type CatalogState,
 } from "../features/catalog/catalogSearchParams";
 import { useReferenceList } from "../features/catalog/useReferenceList";
-import { COMPARE_LIMIT } from "../features/compare/compareTray";
+import { COMPARE_LIMIT_NOTICE } from "../features/compare/compareTray";
 import { useCompareTray } from "../features/compare/CompareTrayContext";
 import { useTrayReferences } from "../features/compare/useTrayReferences";
 import { useSavedReferences } from "../features/saved/SavedReferencesContext";
 
-const LIMIT_NOTICE = `비교 보드에는 최대 ${COMPARE_LIMIT}개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.`;
 const SORT_SELECT_OPTIONS = SORT_OPTIONS.map((o) => ({ value: o.id, label: o.label }));
 
 /** 1a-01 레퍼런스 카탈로그 (목업 56~124행). 필터·정렬·탭 상태의 원본은 URL 쿼리다. */
@@ -46,7 +45,7 @@ export function CatalogPage() {
       return;
     }
     const result = add(id);
-    setNotice(result.ok ? null : result.reason === "limit" ? LIMIT_NOTICE : null);
+    setNotice(result.ok ? null : result.reason === "limit" ? COMPARE_LIMIT_NOTICE : null);
   };
 
   return (

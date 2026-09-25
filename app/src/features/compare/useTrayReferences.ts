@@ -9,7 +9,7 @@ export function useTrayReferences(tray: CompareTray): readonly DesignReference[]
   const [references, setReferences] = useState<readonly DesignReference[]>([]);
   useEffect(() => {
     let cancelled = false;
-    Promise.all(tray.map((id) => repository.get(id))).then((found) => {
+    Promise.all(tray.map((id) => repository.getById(id))).then((found) => {
       if (!cancelled) setReferences(found.filter((r): r is DesignReference => r !== undefined));
     });
     return () => {

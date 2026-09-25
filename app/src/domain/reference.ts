@@ -1,5 +1,7 @@
 /** 카탈로그 레퍼런스 도메인 타입 — TRD 4.1 DesignReference 중 시안 1a가 쓰는 필드. */
 
+import type { ColorFamily } from "./colorFamily";
+
 export type LicenseStatus = "internal" | "licensed" | "external_observed";
 /** MVP 카탈로그에 노출 가능한 라이선스 (FR-CAT-04). */
 export type ExposedLicenseStatus = Exclude<LicenseStatus, "external_observed">;
@@ -11,6 +13,8 @@ export type PurposeId = "booking" | "inquiry" | "sales";
 export type LayoutTypeId = "fullbleed" | "split" | "center" | "grid" | "text" | "image";
 /** TRD motion_level(L0~L3) 대신 목업 표기 3단계(낮음·중간·높음)를 쓴다. */
 export type MotionLevel = "low" | "mid" | "high";
+/** 지원 디바이스 (FR-CAT-01 디바이스 필터). */
+export type DeviceId = "desktop" | "mobile" | "responsive";
 export type VisualTagId =
   | "minimal"
   | "warm"
@@ -56,6 +60,7 @@ export interface DesignReference {
   readonly colorPalette: ColorPalette;
   readonly motionLevel: MotionLevel;
   readonly responsive: boolean;
+  readonly devices: readonly DeviceId[];
   readonly scores: BenchmarkScores;
   /** ISO 날짜 — 최신순 정렬 기준 */
   readonly createdAt: string;
@@ -72,5 +77,8 @@ export interface ReferenceQuery {
   readonly purpose?: readonly PurposeId[];
   readonly license?: readonly ExposedLicenseStatus[];
   readonly motion?: MotionLevel;
+  /** 대표색 계열 (팔레트 primary에서 계산) */
+  readonly color?: readonly ColorFamily[];
+  readonly device?: readonly DeviceId[];
   readonly sort?: SortKey;
 }

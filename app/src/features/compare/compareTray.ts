@@ -1,4 +1,6 @@
 export const COMPARE_LIMIT = 6;
+/** 7번째 추가를 막을 때의 안내 (카탈로그·상세 공통). */
+export const COMPARE_LIMIT_NOTICE = `비교 보드에는 최대 ${COMPARE_LIMIT}개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.`;
 
 /** 비교 트레이에 담긴 레퍼런스 id (담은 순서 유지). */
 export type CompareTray = readonly string[];

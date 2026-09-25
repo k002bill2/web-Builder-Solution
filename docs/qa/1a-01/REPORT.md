@@ -84,4 +84,8 @@ ID 안내: D01~D03은 이전 실행이 기록 없이 종료돼 번호만 비어 
 - 이번 세션은 이전 실행의 `dist/`를 재사용했다(`app/`·`design/` 무변경).
 
 ## 6. 커밋
-`docs/qa/1a-01/`만 로컬 커밋, push 없음. 커밋 해시는 `git log -1 -- docs/qa/1a-01`로 확인한다.
+`docs/qa/1a-01/`만 로컬 커밋, push 없음.
+- `bb43a22` — REPORT.md·PROGRESS.md·screens/ 27장
+- `e259f1c` — logs/ 6개. 저장소 `.gitignore`의 `*.log` 규칙에 걸려 `git add -f`로 추가
+- 이 해시 기록 커밋은 그 뒤의 HEAD(파일이 자기 커밋 해시를 담을 수 없음)
+- `git diff --stat 1c90ae9 HEAD -- app design` → 비어 있음(검증 대상 코드 동일)

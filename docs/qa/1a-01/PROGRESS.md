@@ -10,7 +10,7 @@
 | 3 | A. 시각 충실도 캡처·측정 | 완료 — mockup-1280·app-1280(목업 상태)·app-1280-default |
 | 4 | B. 반응형 | 완료 — 390·768 가로 스크롤 없음 |
 | 5 | C. 기능 | 완료 — C1~C5 측정(이어하기 세션), C6 콘솔 오류 8건(D-FONT) |
-| 6 | 서버 종료·REPORT·커밋 | 완료 — 19:21 KST lsof 4317·4318 LISTEN 없음, REPORT.md 작성 |
+| 6 | 서버 종료·REPORT·커밋 | 완료 — 19:21 KST lsof 4317·4318 LISTEN 없음, REPORT.md 작성, 커밋 `bb43a22`·`e259f1c` |
 
 - 대상 차이: 브리프는 `main @ 1c90ae9`, 실제 HEAD는 `a6ec2bf`(브리프 문서 커밋). `git diff --stat 1c90ae9 a6ec2bf -- app design` 비어 있음 → 검증 대상 코드 동일.
 - 발견(중간): Pretendard @font-face 8개 URL 전부 jsDelivr 404 (curl 확인, 번들 원본과 동일 URL). 콘솔 오류 8건 = 전부 이 404. 이 PC는 로컬 설치 Pretendard로 렌더됨.

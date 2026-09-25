@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CompareBoardError } from "../../data/compareBoardRepository";
 import { createMemoryCompareBoardRepository, type BoardCall } from "../../data/memoryCompareBoardRepository";
 import { confirmAvailability } from "../../domain/confirmGate";
@@ -105,6 +105,39 @@ describe("AC-23 저장 직렬화 (클라이언트)", () => {
     await saver.save({ hero: "ref-b" }, {});
     // 최신 보드로 맞췄으므로 저장할 것이 남지 않았다 — 확정을 막지 않고 STALE 안내만 남긴다 (Codex R3)
     expect(saver.getState()).toMatchObject({ status: "saved", error: "STALE_BOARD", board: { picks: { hero: "ref-c" }, revision: 2 } });
+  });
+
+  it("AC-23: STALE_BOARD 재조회 중에 들어온 새 선택이 저장될 때까지 saving이고 확정할 수 없다 (Codex R4)", async () => {
+    const reload = deferred<{ board: ReturnType<typeof boardOf>; released: [] }>();
+    const secondSave = deferred();
+    const latest = boardOf(IDS, { hero: "ref-c" }, { revision: 2 });
+    let saves = 0;
+    let reloads = 0;
+    const repo = {
+      savePicks: async () => {
+        saves += 1;
+        if (saves === 1) throw new CompareBoardError("STALE_BOARD", "보드 없음");
+        await secondSave.promise;
+        return boardOf(IDS, { hero: "ref-a" }, { revision: 3 });
+      },
+      getBoard: () => {
+        reloads += 1;
+        return reload.promise;
+      },
+    };
+    const saver = createPicksSaver(repo, boardOf(IDS, { hero: "ref-a" }));
+    const { libraryVersion, results } = await setup().repo.getComparison(IDS);
+    const draft = buildProfileDraft(boardOf(IDS, { hero: "ref-a" }), results, libraryVersion);
+    const first = saver.save({ hero: "ref-b" }, {});
+    await vi.waitFor(() => expect(reloads).toBe(1));
+    const second = saver.save({ hero: "ref-a" }, {});
+    reload.resolve({ board: latest, released: [] });
+    await vi.waitFor(() => expect(saves).toBe(2));
+    expect(saver.getState()).toMatchObject({ status: "saving", board: { revision: 2 } });
+    expect(confirmAvailability(draft, saver.getState().status)).toEqual({ ok: false, reason: "선택을 저장하는 중입니다" });
+    secondSave.resolve();
+    await Promise.all([first, second]);
+    expect(saver.getState()).toMatchObject({ status: "saved", board: { picks: { hero: "ref-a" }, revision: 3 } });
   });
 });
 

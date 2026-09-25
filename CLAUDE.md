@@ -16,7 +16,8 @@ web-builder-solution/
 │       ├── components/…          # 화면 컴포넌트
 │       ├── domain/ data/ features/ fixtures/ pages/
 │       └── test/                 # 가드 테스트(브랜드 격리·하드코딩 금지)
-├── design/claude-design-handoff/ # Claude Design 핸드오프 원본 — 수정 금지. 구현 기준은 시안 1a
+├── design/claude-design-handoff-v2/ # Claude Design 핸드오프 v2 원본 — 수정 금지. 구현 기준은 2a (ADR-006)
+├── design/claude-design-handoff/ # v1 원본(시안 1a) — 이력 보존, 수정 금지
 ├── docs/                         # PRD·TRD·개발계획서·TDD, decisions/(ADR), 06-handoff/(작업 브리프)
 └── dev/active/<task>/PROGRESS.md # 작업 체크포인트
 ```
@@ -82,5 +83,5 @@ npm test -- --run --coverage   # 커버리지 (필요 시 @vitest/coverage-v8 �
 
 ## Key Features
 
-- 레퍼런스 카탈로그: 필터(URL 동기화)·카드·저장·비교 트레이 — 구현됨 (1a-01)
-- 레퍼런스 상세·비교 보드·디자인 프로필·3안 생성·편집기·모바일 — 예정 (1a-02~07)
+- 레퍼런스 카탈로그·상세·비교 보드 — 구현됨 (1a-01~03), v2(2a-01~03) 디자인으로 전환 예정 (ADR-006, `docs/design/v2/`)
+- 디자인 프로필·3안 생성·편집기·모바일 — 예정 (2a-04~07)

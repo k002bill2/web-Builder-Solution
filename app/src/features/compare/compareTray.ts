@@ -1,4 +1,7 @@
-export const COMPARE_LIMIT = 6;
+import { BOARD_COLUMN_LIMIT } from "../../domain/boardColumns";
+
+/** 보드 열 한도와 같다 (열 문자 A~F) */
+export const COMPARE_LIMIT = BOARD_COLUMN_LIMIT;
 /** 7번째 추가를 막을 때의 안내 (카탈로그·상세 공통). */
 export const COMPARE_LIMIT_NOTICE = `비교 보드에는 최대 ${COMPARE_LIMIT}개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.`;
 

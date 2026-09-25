@@ -16,7 +16,7 @@
 | 6 | R-12 Footer 경고 데이터 | 완료 | (6·7 커밋) |
 | 7 | 사용자 대표색(zod)·폰트 허용 목록 | 완료 | (6·7 커밋) |
 | 8 | `compareBoardRepository` 메모리 구현 + 저장 직렬화 | 완료 | 76ecad2 |
-| 9 | 트레이 통합 | 대기 | |
+| 9 | 트레이 통합 | 완료 | (9 커밋) |
 
 작업 순서는 의존 관계 기준(10 → 1·2 → 3 → 5 → 4 → 6·7 → 8 → 9).
 
@@ -70,3 +70,10 @@
 - **AC-23 RED ① 저장소 revision 검사 제거** → `× AC-23: 같은 revision으로 보낸 두 저장이 역순으로 도착해도 최종 보드는 늦게 요청한 B다` (`expected undefined to be 'STALE_BOARD'`) + STALE 테스트 실패, 2 failed → 복원 후 통과.
 - **AC-23 RED ② 클라이언트 직렬화 제거**(`running ??=` → `running =`) → `× AC-23: 앞 저장 응답이 늦게 와도 …` (`expected [ 'save#1', 'save#2', 'save#3' ] to have a length of 2`) → 복원 후 통과.
 - SPEC과 다르게: `getBoard()`가 `{ board, released }`를 돌려준다(자동 해제 안내를 한 번 보여주려면 해제 정보가 필요, S-08). `getProfileVersions` 추가(AC-25 검증·1a-04용). R-12 확정 시 사업자정보 없는 Footer는 `businessInfoVariant`로 바꿔 저장(SPEC 3.3 안내 문구의 실제 동작).
+
+## 항목 9 — 트레이 통합 (트레이 = 보드의 열 목록)
+- `CompareTrayContext`: 상태를 보드 하나로 바꿈. `add`는 지금 열로 한도·중복을 **동기** 판정해 `AddResult`를 바로 돌려주고(카탈로그·상세 알림 그대로), 저장소 `addReference`/`removeReference`는 순서대로 보내 마지막 응답만 반영. 진입 시 `getBoard`. 컨텍스트에 `board` 추가(03b용).
+- `AppProviders`에 `boardRepository` prop, `main.tsx`는 `createDeferredCompareBoardRepository`로 메모리 구현·zod·비교 픽스처를 dynamic import(공통 청크 밖). `renderApp` 세 번째 인자.
+- `COMPARE_LIMIT` = `BOARD_COLUMN_LIMIT`(열 문자 수) — 값 6 그대로, 문구 그대로.
+- RED: `trayBoard.test.tsx` 4개 실패(보드 열이 트레이에 안 보임·저장소에 안 담김) → GREEN 4/4. **전체 228/228**(기존 115 포함, D07 포커스·6개 제한 테스트 통과).
+- 번들: 공통 87.26 → 88.43KB(참고), `/catalog` 95.34 → **96.64KB**, `/references/:id` 94.79KB, 자리표시 88.87KB — 모두 ≤ 100KB. zod·검증 코드는 공통 청크에 없음(빌드 산출물 grep).

@@ -13,3 +13,12 @@ export function rovingTargetIndex(key: string, current: number, length: number):
   if (key === "End") return length - 1;
   return null;
 }
+
+/**
+ * 가로 전용 변형 — 비교 표의 행 안 열 이동 (SPEC A-5). ←/→·Home/End만 쓰고 ↑/↓는 무시한다
+ * (↑/↓는 스크린리더의 표 탐색 키와 겹친다).
+ */
+export function rovingRowTargetIndex(key: string, current: number, length: number): number | null {
+  if (key === "ArrowUp" || key === "ArrowDown") return null;
+  return rovingTargetIndex(key, current, length);
+}

@@ -9,3 +9,8 @@ coverage/
 !.env.example
 playwright-report/
 test-results/
+
+# Claude Code 로컬 백업
+.claude/settings.json.bak*
+.claude/.settings-backups
+.claude/settings.local.json

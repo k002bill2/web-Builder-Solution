@@ -8,8 +8,8 @@
 |---|---|---|---|
 | 0 | 읽기(브리프 0절 순서) + `npm ci` + 기준선(테스트 115·build 통과) | 완료 | — |
 | 10 | ADR-004 번들 검사: 라우트별 첫 화면 합계 ≤ 100KB | 완료 | (이 커밋) |
-| 1 | 타입 `domain/compareBoard.ts` | 대기 | |
-| 2 | 행 정의·셀 값 (섹션 라이브러리·비교 픽스처) | 대기 | |
+| 1 | 타입 `domain/compareBoard.ts` | 완료 | (1·2 커밋) |
+| 2 | 행 정의·셀 값 (섹션 라이브러리·비교 픽스처) | 완료 | (1·2 커밋) |
 | 3 | 선택 규칙 P-1~P-7 | 대기 | |
 | 5 | `contrast.ts` + `derivePalette` | 대기 | |
 | 4 | `buildProfileDraft` | 대기 | |
@@ -26,3 +26,10 @@
 - GREEN: 공통 87.26KB(참고) · `/catalog` 95.34KB · `/references/:id` 93.49KB · 자리표시 87.70KB → exit 0
 - RED ①: 예산을 95로 낮춤 → `예산 검사 실패 — /catalog: 95.34KB > 95KB`, exit 1 → 100으로 원복
 - RED ②: 페이지 경로를 없는 파일로 바꿈 → `manifest에 src/pages/PlaceholderPageX.tsx가 없습니다`, exit 1 → 원복
+
+## 항목 1·2 — 타입·행 정의·셀 값
+- `domain/compareBoard.ts`: SPEC 8.1 타입 + `COMPARISON_ROWS`(12행·역할·required) + `PICKABLE_ROW_IDS`(10) + 열 문자 `nextColumnLabel`(비어 있는 가장 앞) + `draftStatusOf`(확정 전/vN 확정됨/변경됨) + `DesignProfileInput`(`selection_mode` 포함, ADR-005 Q5). 트레이가 쓰는 공통 청크용이라 zod·대비 계산 없음.
+- `domain/sectionLibrary.ts`: 라이브러리 v1.4(header·hero·footer 변형, footer 사업자정보 여부·확장 변형) + `variantMigrations` + `resolveVariant`.
+- `domain/comparisonCells.ts` + `fixtures/referenceComparisons.ts`: 레퍼런스·상세·비교 속성 → 12행 셀. 없음 → `binding:null`, 라이브러리에 없는 변형 → "현재 라이브러리에 없는 변형"(AC-26), 대응표 → 새 변형.
+- RED: 두 테스트 파일 모두 모듈 없음으로 실패 → GREEN 20/20.
+- SPEC과 다르게: `ComparisonRowDef.shortLabel`(알림 문장용 "Hero·카드"), `ReferenceComparison.spacing`(spacing_tokens 출처) 추가. A 섹션 수는 footer를 넣어 **9개**(목업 8) — SPEC 8.5 따름, 상세 픽스처는 8개 그대로. `DesignReference.key`는 기존 테스트가 쓰므로 유지(보드 표기에는 안 씀).

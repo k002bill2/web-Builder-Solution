@@ -69,3 +69,7 @@
 
 ## 6. 검증 게이트 (Codex)
 - `codex-companion review --scope branch --base c7efdf9` 1라운드: **수정할 결함 없음**, typecheck 통과 확인. Codex 쪽 Vitest는 읽기 전용 샌드박스라 Vite가 임시 설정 파일을 쓰지 못해 실행되지 않음 — 테스트 근거는 3절의 로컬 fresh 실행(431 passed).
+- Jarvis 독립 재실행(병합 전, 같은 base): **결함 없음** (`/tmp/wbs_codex_v21_r1.txt`). 병합 후 main에서 검증 4종 재실행 통과(431 passed), 번들 실측 동일.
+
+## 7. 결정 (영환님 2026-09-26 "1 진행하고 push 해")
+- **R-1 수용:** 공통 JS +0.49KB를 받아들이고 V2-2a를 진행한다. V2-2a 실측에서 예산 초과가 예상되면 그때 번들러 청크 설정 조사를 별도 작업으로 만든다.

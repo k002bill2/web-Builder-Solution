@@ -16,10 +16,10 @@
 ## 1. 범위 (단계 = 커밋 단위)
 1. **DS `Callout`** + 아이콘 5종(핸드오프 `assets/icons/`에서 복사만, `design/` 수정 금지).
 2. **`PickButton`·`ColumnHeader`·`ComparisonTable`** — A-1·A-2·A-3·A-5(가로 전용 roving 변형 `rovingFocus.ts`에 추가, ↑/↓ 무시)·A-6. 5열 이상 가로 스크롤 컨테이너(`tabIndex=0`, `aria-label`), 행 머리글 고정.
-3. **`DraftPanel`·`DraftItem`·`CustomStyleFields`** — 기본값 표시, 경고 Callout과 "적용" 버튼, 대표색 zod 검증(`aria-invalid`), 폰트 Select(ADR-005 Q4: 확인 전 Pretendard만 활성), 초안 비우기·되돌리기(S-17), 확정 버튼 `aria-disabled` + 이유(A-8), 알림 영역(A-4).
+3. **`DraftPanel`·`DraftItem`·`CustomStyleFields`** — 기본값 표시, 경고 Callout과 "적용" 버튼, 대표색 zod 검증(`aria-invalid`), 폰트 Select(ADR-005 D1-갱신: Pretendard·Noto Sans KR·Noto Serif KR **3종 모두 활성** — `domain/fonts.ts`의 비활성 플래그 해제, 테스트 갱신. 이 화면은 폰트 파일을 새로 싣지 않고 이름·견본 텍스트만 보여 준다), 초안 비우기·되돌리기(S-17), 확정 버튼 `aria-disabled` + 이유(A-8), 알림 영역(A-4).
    - D2: Footer 항목에 "확정 시 사업자정보 확장형으로 바뀝니다" 미리 표시.
 4. **`CompareBoardPage`** (`/compare`, `React.lazy`) — 상태 S-01~S-18 분기, 자동 저장 캡션(S-12), 확정 흐름(S-13~S-16, 성공 시 `/profile/:id` — 대상 화면은 현재 자리표시로 충분), 진입 시 `document.title` + `h1` 포커스(A-7).
-   - D1: 라이선스 미확인 폰트 셀은 "라이선스 확인 중" + 선택 버튼 없음.
+   - D1: 허용 목록 **밖** 폰트 셀만 "라이선스 확인 중" + 선택 버튼 없음(현재 픽스처 폰트는 모두 목록 안).
    - S-08: 카탈로그에서 뺀 열의 안내를 돌아왔을 때 한 번 보여줄지 결정하고 사유 기록(03a 넘김 사항).
 5. **반응형** — ≥1280 표 + sticky 패널, 768~1279 표 + 하단 `DraftSummaryBar`, <768 `ComparisonAccordion`(A-11, 처음엔 Hero만 펼침, 표 의미 쓰지 않음). 문서 가로 넘침 0.
 6. **진입 경로** — 비교 트레이의 "비교하기"(또는 기존 진입 버튼)가 `/compare`로 이동. "레퍼런스 추가"는 `/catalog`로만(AC-22).

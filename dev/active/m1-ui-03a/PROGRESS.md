@@ -11,7 +11,7 @@
 | 1 | 타입 `domain/compareBoard.ts` | 완료 | (1·2 커밋) |
 | 2 | 행 정의·셀 값 (섹션 라이브러리·비교 픽스처) | 완료 | (1·2 커밋) |
 | 3 | 선택 규칙 P-1~P-7 | 완료 | (3 커밋) |
-| 5 | `contrast.ts` + `derivePalette` | 대기 | |
+| 5 | `contrast.ts` + `derivePalette` | 완료 | (5 커밋) |
 | 4 | `buildProfileDraft` | 대기 | |
 | 6 | R-12 Footer 경고 데이터 | 대기 | |
 | 7 | 사용자 대표색(zod)·폰트 허용 목록 | 대기 | |
@@ -40,3 +40,10 @@
 - `domain/comparisonCells.ts#resolveComparisons`: 회수(비노출 전환)=`withdrawn`, 없음=`missing`을 상태로 반환.
 - RED: 모듈 없음으로 두 파일 실패 → GREEN 28/28 (domain 전체 48).
 - 문구: SPEC P-7/1.3은 "해제됐습니다", A-4/AC-08은 "해제" → **AC-08 문구**("B를 빼서 카드 선택 해제")를 따름.
+
+## 항목 5 — 대비·역할 팔레트
+- `domain/contrast.ts`: WCAG 상대 휘도·대비, `formatRatio`(버림 — 4.47이 "4.5:1"로 보이지 않게), `nearestCompliantColor`(명도 0.1%p 간격으로 양방향 탐색, 같은 거리면 어두운 쪽), `checkPaletteContrast`(C-1~C-3).
+- `domain/palette.ts#derivePalette`: 대표색만 교체, 역할 5개 고정 순서, 대문자 정규화.
+- 고정값: F `#D47800` 3.24 · D `#00A884` 3.03 · A `#8B5E3C` 5.58 (`toBeCloseTo(…, 2)`). 보정값은 기준 이상 + 한 단계 더 가까우면 미만.
+- RED: 모듈 없음 → GREEN 15/15.
+- 해석: C-3 색 쌍 = 카드 표면 대표색 / 카드 글자 잉크 (목업 B 다크 카드 = 검정 + 골드). 테스트 이름에 명시.

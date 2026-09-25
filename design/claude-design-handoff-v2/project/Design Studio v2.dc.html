@@ -58,11 +58,19 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 </div>
 <div style="padding:22px 32px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
 <sc-for list="{{ industries }}" as="c" hint-placeholder-count="6"><x-import component-from-global-scope="APFS.FilterChip" active="{{ c.on }}" count="{{ c.n }}" hint-size="auto,28px">{{ c.label }}</x-import></sc-for>
-<span style="width:1px;height:18px;background:var(--border-strong);margin:0 6px"></span>
-<sc-for list="{{ facets }}" as="f" hint-placeholder-count="4"><x-import component-from-global-scope="APFS.Button" variant="{{ f.variant }}" size="sm" trailing-icon="chevron-down" hint-size="auto,30px">{{ f.label }}</x-import></sc-for>
 <span style="margin-left:auto"><x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ sortOpts }}" value="score" hint-size="auto,30px"></x-import></span>
 </div>
-<div style="padding:22px 32px 100px;display:grid;grid-template-columns:{{ gridCols }};gap:24px 20px">
+<div style="display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:22px 32px 100px">
+<aside style="display:flex;flex-direction:column;gap:20px;align-self:start">
+<div style="display:flex;align-items:center;justify-content:space-between"><span class="t-h2" style="font-size:15px">필터</span><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" hint-size="auto,28px">초기화 · 4</x-import></div>
+<sc-for list="{{ filterGroups }}" as="g" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:8px"><div class="t-label">{{ g.name }}</div>
+<sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:10px;padding:5px 0"><x-import component-from-global-scope="APFS.Checkbox" checked="{{ o.on }}" hint-size="16px,16px"></x-import><span style="flex:1;font-size:13px">{{ o.label }}</span><span class="t-caption tabular">{{ o.n }}</span></div></sc-for>
+</div>
+</sc-for>
+<div style="display:flex;flex-direction:column;gap:8px"><div class="t-label">모션 강도</div><x-import component-from-global-scope="APFS.SegTabs" size="sm" options="{{ motionOpts }}" value="low" hint-size="100%,30px"></x-import></div>
+</aside>
+<div style="display:grid;grid-template-columns:{{ gridCols }};gap:24px 20px">
 <sc-for list="{{ refs }}" as="r" hint-placeholder-count="8">
 <div style="display:flex;flex-direction:column;gap:10px">
 <div class="thumb" style="aspect-ratio:4/3;position:relative">
@@ -82,11 +90,12 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 </div>
 </sc-for>
 </div>
+</div>
 <div style="position:sticky;bottom:0;display:flex;justify-content:center;margin-top:-76px;padding:0 0 20px;pointer-events:none">
 <div style="pointer-events:auto;background:var(--foreground);color:#fff;border-radius:99px;padding:8px 8px 8px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-lg)">
 <span style="font-size:13px;font-weight:600">비교 <span class="tabular">3</span><span style="opacity:.5"> / 6</span></span>
 <span style="display:flex;gap:-4px"><sc-for list="{{ trayRefs }}" as="r" hint-placeholder-count="3"><span style="width:22px;height:22px;border-radius:99px;background:{{ r.c1 }};border:2px solid var(--foreground);margin-left:-6px"></span></sc-for></span>
-<x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" trailing-icon="arrow-right" style="{{ pill }}" hint-size="auto,30px">비교 보드</x-import>
+<x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" trailing-icon="arrow-right" dc-props="{{ pill }}" hint-size="auto,30px">비교 보드</x-import>
 </div>
 </div>
 </div>
@@ -123,7 +132,7 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 <div><div class="t-label" style="margin-bottom:8px">토큰</div>
 <div style="display:flex;gap:5px"><span style="flex:1;height:26px;border-radius:6px;background:#8B5E3C"></span><span style="flex:1;height:26px;border-radius:6px;background:#F3E9DD"></span><span style="flex:1;height:26px;border-radius:6px;background:#2C2C2C"></span><span style="flex:1;height:26px;border-radius:6px;background:#fff;border:1px solid var(--border-strong)"></span></div>
 <div class="t-caption" style="margin-top:8px">Pretendard 700/400 · 스케일 1.25 · 8pt · 본문 대비 7.2:1</div></div>
-<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" style="{{ fullW }}" hint-size="100%,40px">템플릿으로 가져오기</x-import><div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" leading-icon="bookmark" style="{{ fullW }}" hint-size="100%,38px">저장</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" leading-icon="plus" style="{{ fullW }}" hint-size="100%,38px">비교 추가</x-import></div></div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" dc-props="{{ fullW }}" hint-size="100%,40px">템플릿으로 가져오기</x-import><div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" leading-icon="bookmark" dc-props="{{ fullW }}" hint-size="100%,38px">저장</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" leading-icon="plus" dc-props="{{ fullW }}" hint-size="100%,38px">비교 추가</x-import></div></div>
 </aside>
 </div>
 </div>
@@ -165,7 +174,7 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 <sc-for list="{{ draft }}" as="d" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><span style="width:10px;height:10px;border-radius:99px;background:{{ d.c }};flex:none"></span><div style="flex:1;min-width:0"><div class="t-caption">{{ d.kind }}</div><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.v }}</div></div><span class="t-caption tabular">{{ d.from }}</span></div></sc-for>
 </div>
 <div style="padding:10px 12px;border-radius:8px;background:var(--warning-soft);color:var(--warning-text);font-size:12.5px;line-height:1.5"><b>조합 lint</b> · B 카드(어두운 배경)와 배경색 대비 3.9:1. 카드 표면을 #FFFFFF로 보정 제안</div>
-<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" style="{{ fullW }}" hint-size="100%,40px">프로필 확정 (v1)</x-import><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" style="{{ fullW }}" hint-size="100%,30px">초안 비우기</x-import></div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="primary" size="lg" dc-props="{{ fullW }}" hint-size="100%,40px">프로필 확정 (v1)</x-import><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" dc-props="{{ fullW }}" hint-size="100%,30px">초안 비우기</x-import></div>
 </aside>
 </div>
 </div>
@@ -235,7 +244,7 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 <sc-if value="{{ s.warn }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:99px;background:var(--warning)"></span></sc-if>
 </div>
 </sc-for>
-<div style="margin-top:auto;padding:6px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="layers" style="{{ fullW }}" hint-size="100%,30px">테마 스왑</x-import></div>
+<div style="margin-top:auto;padding:6px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="layers" dc-props="{{ fullW }}" hint-size="100%,30px">테마 스왑</x-import></div>
 </aside>
 <main style="background:var(--muted);padding:24px;display:flex;justify-content:center;align-items:flex-start">
 <div style="width:100%;max-width:640px;background:var(--card);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden">
@@ -263,8 +272,8 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="t-h2" style="font-size:15px">품질 게이트</span><x-import component-from-global-scope="APFS.StatusBadge" tone="danger" label="차단 1 · 경고 1" size="sm" hint-size="auto,18px"></x-import></div>
 <sc-for list="{{ gates }}" as="g" hint-placeholder-count="7"><div style="display:flex;align-items:center;gap:8px;padding:6px 0"><span style="width:7px;height:7px;border-radius:99px;background:{{ g.dot }};flex:none"></span><span style="flex:1;font-size:13px">{{ g.name }}</span><span class="t-caption" style="color:{{ g.color }}">{{ g.v }}</span></div></sc-for>
 <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
-<x-import component-from-global-scope="APFS.Button" variant="primary" disabled="{{ true }}" style="{{ fullW }}" hint-size="100%,38px">cafe-ondo.hermes.site 발행</x-import>
-<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="download" disabled="{{ true }}" style="{{ fullW }}" hint-size="100%,30px">React zip</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="download" disabled="{{ true }}" style="{{ fullW }}" hint-size="100%,30px">정적 HTML</x-import></div>
+<x-import component-from-global-scope="APFS.Button" variant="primary" disabled="{{ true }}" dc-props="{{ fullW }}" hint-size="100%,38px">cafe-ondo.hermes.site 발행</x-import>
+<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="download" disabled="{{ true }}" dc-props="{{ fullW }}" hint-size="100%,30px">React zip</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="download" disabled="{{ true }}" dc-props="{{ fullW }}" hint-size="100%,30px">정적 HTML</x-import></div>
 <div class="t-caption" style="text-align:center">차단 0일 때 내보내기·발행이 열립니다</div>
 </div>
 </div>
@@ -286,7 +295,7 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 </div>
 </sc-for>
 </div>
-<div style="position:sticky;bottom:0;display:flex;justify-content:center;margin-top:-76px;padding-bottom:16px"><div style="background:var(--foreground);color:#fff;border-radius:99px;padding:6px 6px 6px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-lg)"><span style="font-size:13px;font-weight:600">비교 <span class="tabular">3</span><span style="opacity:.5"> / 6</span></span><x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" trailing-icon="arrow-right" style="{{ pill }}" hint-size="auto,30px">비교 보드</x-import></div></div>
+<div style="position:sticky;bottom:0;display:flex;justify-content:center;margin-top:-76px;padding-bottom:16px"><div style="background:var(--foreground);color:#fff;border-radius:99px;padding:6px 6px 6px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-lg)"><span style="font-size:13px;font-weight:600">비교 <span class="tabular">3</span><span style="opacity:.5"> / 6</span></span><x-import component-from-global-scope="APFS.Button" variant="primary" size="sm" trailing-icon="arrow-right" dc-props="{{ pill }}" hint-size="auto,30px">비교 보드</x-import></div></div>
 </div>
 
 <div class="dv-card" style="width:390px" data-screen-label="2a-07 모바일 편집">
@@ -302,18 +311,18 @@ a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
 <div style="padding:16px 16px 20px;display:flex;flex-direction:column;gap:12px">
 <div style="display:flex;align-items:center;justify-content:space-between"><span class="t-h2" style="font-size:15px">Hero</span><x-import component-from-global-scope="APFS.Button" variant="ghost" size="sm" trailing-icon="chevron-down" hint-size="auto,30px">fullbleed-left</x-import></div>
 <div><div class="t-label" style="margin-bottom:6px">제목</div><div class="in">한 잔의 온도로 하루를 시작하세요</div><div class="t-caption tabular" style="margin-top:4px">18 / 24자</div></div>
-<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" style="{{ fullW }}" hint-size="100%,30px">위로</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" style="{{ fullW }}" hint-size="100%,30px">아래로</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="trash" style="{{ fullW }}" hint-size="100%,30px">삭제</x-import></div>
+<div style="display:flex;gap:8px"><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" dc-props="{{ fullW }}" hint-size="100%,30px">위로</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" dc-props="{{ fullW }}" hint-size="100%,30px">아래로</x-import><x-import component-from-global-scope="APFS.Button" variant="outline" size="sm" leading-icon="trash" dc-props="{{ fullW }}" hint-size="100%,30px">삭제</x-import></div>
 </div>
 </div>
 </div>
 </div>
 </section>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;showGateBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;상태&quot;,&quot;description&quot;:&quot;SEO 메타 차단 항목 표시&quot;},&quot;gridColumns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[3,4],&quot;default&quot;:4,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;카탈로그&quot;,&quot;description&quot;:&quot;카탈로그 카드 열 수&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;showGateBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;상태&quot;,&quot;description&quot;:&quot;SEO 메타 차단 항목 표시&quot;},&quot;gridColumns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[2,3],&quot;default&quot;:3,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;카탈로그&quot;,&quot;description&quot;:&quot;카탈로그 카드 열 수&quot;}}">
 class Component extends DCLogic {
   renderVals() {
     const gateBlock = this.props.showGateBlock ?? true;
-    const cols = this.props.gridColumns ?? 4;
+    const cols = this.props.gridColumns ?? 3;
     const refs = [
       {key:"A",name:"모던 카페 브랜드",ind:"카페·F&B",c1:"#8B5E3C",c2:"#F3E9DD",c3:"#2C2C2C",layout:"풀블리드",motion:"낮음",a11y:96,perf:92,lic:"internal",licTone:"success",inTray:true},
       {key:"B",name:"프리미엄 헤어살롱",ind:"뷰티",c1:"#1F1F1F",c2:"#E8E4DF",c3:"#C9A96E",layout:"스플릿",motion:"중간",a11y:91,perf:88,lic:"licensed",licTone:"info",inTray:true},
@@ -347,10 +356,11 @@ class Component extends DCLogic {
     ].map(v => ({...v, outline: v.sel ? "2px solid var(--primary)" : "2px solid transparent"}));
     return {
       refs: refs.slice(0, cols*2), trayRefs, refsMobile: refs.slice(0,3), cmpRows, draft, gates, variants, sectionPlan,
-      fullW: {width:"100%"}, pill: {borderRadius:"99px"}, gridCols: `repeat(${cols},minmax(0,1fr))`,
+      fullW: {style:{width:"100%"}}, pill: {style:{borderRadius:"99px"}}, gridCols: `repeat(${cols},minmax(0,1fr))`,
       industries: [["전체",128],["카페·F&B",31],["뷰티",18],["의료",22],["피트니스",14],["전문서비스",19],["교육",12]].map(([l,n],i) => ({label:l, n, on:i===1})),
       industriesShort: ["카페·F&B","뷰티","의료","피트니스"].map((l,i) => ({label:l, on:i===0})),
-      facets: [["콘셉트 · 2","outline"],["목적 · 예약","outline"],["라이선스","ghost"],["모션","ghost"]].map(([label,variant]) => ({label,variant})),
+      filterGroups: [["타깃",[["20~30대",true,5],["가족",false,3],["B2B",false,1]]],["콘셉트",[["미니멀",true,4],["따뜻한",true,3],["대담한",false,3]]],["레이아웃",[["풀블리드",false,2],["스플릿",false,2],["센터",false,1]]],["목적",[["예약",true,4],["문의",false,2],["판매",false,2]]],["라이선스",[["internal",true,5],["licensed",false,3]]]].map(([name,opts]) => ({name, opts: opts.map(([label,on,n]) => ({label,on,n}))})),
+      motionOpts: [{label:"전체",value:"all"},{label:"낮음",value:"low"},{label:"중간",value:"mid"},{label:"높음",value:"high"}],
       sortOpts: [{label:"점수순",value:"score"},{label:"최신순",value:"latest"}],
       viewports: [{label:"Desktop",value:"desktop"},{label:"Tablet",value:"tablet"},{label:"Mobile",value:"mobile"}],
       selModes: [{label:"템플릿",value:"tpl"},{label:"스타일 조합",value:"mix"}],

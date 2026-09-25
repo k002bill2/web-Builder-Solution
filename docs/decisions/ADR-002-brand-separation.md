@@ -11,6 +11,7 @@
    - `app/src/styles/tokens/brand.css` — `--brand-primary`, `--brand-primary-hover`, `--brand-primary-pressed`, `--brand-primary-container`, `--brand-accent`, `--brand-gradient`, `--focus-ring`
    - 의미 토큰(`--primary` 등)은 `--brand-*`를 참조한다. 브랜드 교체 = `brand.config.ts` + `brand.css` 두 파일만 수정.
 4. **임시 브랜드(확정 전):** 제품명 `Design Studio`(목업 GNB 표기, 작업명), 로고는 중립 워드마크 플레이스홀더(텍스트 + 단색 사각 마크). 색 값은 목업의 `--primary: #3366ff` 계열을 임시 유지한다.
+   - **개정 1 (2026-09-26, 영환님 "설계 추천안 승인" — DS-V2-01 Q1·Q2):** 임시 주 색을 v2 인디고(`#5a5fe8` / 다크 `#818cf8`)로 교체한다. 브랜드 토큰에 `--brand-primary-text`(`#4147e5` / 다크 `#949ef9`, 주 색을 글자로 쓸 때 4.5:1 확보)를 1개 추가한다. 여전히 제품 브랜드 확정 전 임시값이며 교체 지점은 두 파일 그대로다. 값 근거: `docs/design/v2/SPEC.md` 2.2·3절.
 
 ## 후속 (별건)
 - 브랜드 정의: 제품명 후보, 로고, 브랜드 컬러, 톤앤매너 → Designer (명칭 상표 확인이 필요하면 Newton)

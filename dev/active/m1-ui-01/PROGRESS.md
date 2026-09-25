@@ -7,8 +7,8 @@
 |---|---|---|---|
 | 0 | 읽기(브리프 1절 순서) + `app/` 스캐폴드 | 완료 | afa7794 |
 | 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 완료 | 27fc0d0 |
-| 2 | 데이터 계층 (`referenceRepository.test.ts`) | 완료 | (이 커밋) |
-| 3 | 비교 트레이 (`compareTray.test.ts`) | 대기 | |
+| 2 | 데이터 계층 (`referenceRepository.test.ts`) | 완료 | a4cb632 |
+| 3 | 비교 트레이 (`compareTray.test.ts`) | 완료 | (이 커밋) |
 | 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 대기 | |
 | 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 대기 | |
 | 6 | 검증 4종 + 390 폭 확인 + Codex 리뷰 | 대기 | |
@@ -91,6 +91,26 @@ GREEN:
  ✓ id로 단건을 조회한다
  ✓ 입력 레코드 배열을 변경하지 않는다
       Tests  9 passed (9)
+```
+
+### 3단계 — 비교 트레이
+RED (id 기반 순수 함수, 제한 없는 스텁 `addToTray = 항상 추가`):
+```
+ × 이미 담긴 레퍼런스는 다시 담지 않는다
+ × 6개가 찬 상태에서 7번째 추가는 거부한다
+AssertionError: expected { ok: true, tray: [ 'ref-1', …(6) ] } to deeply equal { ok: false, reason: 'limit', …(1) }
+      Tests  2 failed | 5 passed (7)
+```
+GREEN:
+```
+ ✓ 최대 개수는 6개다 (FR-CMP-02)
+ ✓ 추가하면 끝에 담긴다
+ ✓ 이미 담긴 레퍼런스는 다시 담지 않는다
+ ✓ 6개가 찬 상태에서 7번째 추가는 거부한다
+ ✓ 6번째 추가까지는 허용한다
+ ✓ 해제하면 해당 레퍼런스만 빠진다
+ ✓ 추가·해제는 입력 트레이를 변경하지 않는다
+      Tests  7 passed (7)
 ```
 
 ## 목업과 다른 부분

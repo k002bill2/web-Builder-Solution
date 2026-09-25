@@ -6,8 +6,8 @@
 | # | 단계 | 상태 | 커밋 |
 |---|---|---|---|
 | 0 | 읽기(브리프 1절 순서) + `app/` 스캐폴드 | 완료 | afa7794 |
-| 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 완료 | (이 커밋) |
-| 2 | 데이터 계층 (`referenceRepository.test.ts`) | 대기 | |
+| 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 완료 | 27fc0d0 |
+| 2 | 데이터 계층 (`referenceRepository.test.ts`) | 완료 | (이 커밋) |
 | 3 | 비교 트레이 (`compareTray.test.ts`) | 대기 | |
 | 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 대기 | |
 | 5 | 카탈로그 화면 + 라우팅 (`CatalogPage.test.tsx`) | 대기 | |
@@ -66,8 +66,36 @@ GREEN (토큰 정리 + brand.css + brand.config.ts + theme.css):
 ```
 Tailwind 연결 확인(빌드 산출 CSS): `.rounded-lg{border-radius:var(--radius-lg)}` → base 레이어 `--radius-lg:16px`이 theme 레이어 기본값 `.5rem`을 이김. `.shadow-4{--tw-shadow:var(--shadow-4)}`, `.p-7{padding:calc(var(--space-100) * 7)}`, `.bg-primary{background-color:var(--primary)}`.
 
+### 2단계 — 데이터 계층
+RED ① 테스트만 작성: `Failed to resolve import "../fixtures/references"` (Test Files 1 failed)
+RED ② 타입·픽스처 + 필터 없는 스텁 저장소(`list = 전체 반환`):
+```
+ × 업종=카페·F&B 필터는 A·F 2개를 돌려준다
+AssertionError: expected [ 'A', 'B', 'C', 'D', 'E', 'F' ] to deeply equal [ 'A', 'F' ]
+ × external_observed 레코드는 목록·단건 조회 어디에도 나오지 않는다 (FR-CAT-04)
+ × 같은 그룹 안의 선택은 OR로 결합한다
+ × 서로 다른 그룹의 선택은 AND로 결합한다
+ × 타깃·레이아웃·목적·라이선스·모션 필터를 각각 적용한다
+ × 점수순은 접근성+성능 합계 내림차순, 최신순은 등록일 내림차순이다
+      Tests  6 failed | 3 passed (9)
+```
+GREEN:
+```
+ ✓ 필터 없이 목업 레퍼런스 6개를 돌려준다
+ ✓ 업종=카페·F&B 필터는 A·F 2개를 돌려준다
+ ✓ external_observed 레코드는 목록·단건 조회 어디에도 나오지 않는다 (FR-CAT-04)
+ ✓ 같은 그룹 안의 선택은 OR로 결합한다
+ ✓ 서로 다른 그룹의 선택은 AND로 결합한다
+ ✓ 타깃·레이아웃·목적·라이선스·모션 필터를 각각 적용한다
+ ✓ 점수순은 접근성+성능 합계 내림차순, 최신순은 등록일 내림차순이다
+ ✓ id로 단건을 조회한다
+ ✓ 입력 레코드 배열을 변경하지 않는다
+      Tests  9 passed (9)
+```
+
 ## 목업과 다른 부분
 (단계별로 추가)
 
 ## 질문
-(단계별로 추가)
+1. **타깃·콘텐츠 목적·등록일 데이터가 목업에 없음.** 목업 refs에는 audience·purpose·createdAt이 없어 필터·최신순이 동작하려면 값이 필요하다. `fixtures/references.ts`에 **임시값**을 넣었다(A 20~30대/예약, B 20~30대/예약, C 가족/예약·문의, D 20~30대/예약, E B2B/문의, F 가족·20~30대/판매, createdAt 2026-08-30~09-19). 실제 값 확정 필요.
+2. **모션 단계.** TRD 4.1은 L0~L3(4단계), 목업은 낮음·중간·높음(3단계). 이번엔 목업 3단계(`low|mid|high`)로 구현했다. 백엔드 연결 시 매핑 규칙 확정 필요.

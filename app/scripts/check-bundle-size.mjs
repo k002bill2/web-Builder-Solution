@@ -1,7 +1,9 @@
-// 앱 첫 화면 JS 예산 검사 (ADR-004: Design Studio 앱은 라우트별 첫 화면 JS 합계 gzip ≤ 100KB).
+// 앱 첫 화면 JS 예산 검사 (ADR-004: Design Studio 앱은 라우트별 첫 화면 JS 합계 gzip ≤ 100KB,
+// 2026-09-26 개정: 진입 직후 자동 로드 포함 합계 ≤ 125KB도 실패 조건).
 // `vite build`가 만든 dist/.vite/manifest.json을 읽는다.
 //  - 공통 JS: index.html 엔트리 청크 + 그 정적 import 전부(= <script type=module> + <link rel=modulepreload>). 참고 출력.
-//  - 라우트별 첫 화면 합계: 공통 JS + 해당 페이지 lazy 청크와 그 정적 import. **예산 판정 대상**.
+//  - 라우트별 첫 화면 합계: 공통 JS + 해당 페이지 lazy 청크와 그 정적 import. **예산 판정 대상** (≤ 100KB).
+//  - 라우트별 진입 직후 자동 로드 포함 합계: 첫 화면 합계 + 사용자 조작 없이 바로 받는 dynamic import. **예산 판정 대상** (≤ 125KB).
 // gzip 크기는 Node zlib 기본 레벨, KB = 1000 bytes (Vite 빌드 출력 표기와 같은 단위).
 // Vite 8 빌드 출력의 gzip 값은 네이티브 리포터라 이 값보다 약 1% 크게 나온다(예: 86.58 vs 87.47). 둘 다 예산 안에 두도록 여유를 둔다.
 // 생성 홈페이지(export)의 초기 JS ≤ 90KB(TRD 8절)는 이 스크립트의 대상이 아니다.
@@ -11,16 +13,25 @@ import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 const ROUTE_BUDGET_KB = 100;
+const ROUTE_EAGER_BUDGET_KB = 125;
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
 /** 라우트 → 페이지 모듈. 라우트를 추가하면 여기에도 추가한다 (src/app/routes.tsx). */
 const ROUTE_PAGES = {
   "/catalog": "src/pages/CatalogPage.tsx",
   "/references/:id": "src/pages/ReferenceDetailPage.tsx",
-  "/compare · /profile · /studio (자리표시)": "src/pages/PlaceholderPage.tsx",
+  "/compare": "src/pages/CompareBoardPage.tsx",
+  "/profile · /studio (자리표시)": "src/pages/PlaceholderPage.tsx",
 };
 
-/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처). 참고 출력에만 더한다 — ADR-004 판정은 정적 합계. */
+/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처). 진입 직후 합계(≤ 125KB)에 더한다. */
 const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
+/**
+ * 라우트별 진입 직후 자동 로드 — /compare는 보드 엔진(선택 규칙·초안·zod)을 보드 저장소·비교 픽스처와 함께 받는다
+ * (ADR-005 D3 · M1-UI-03b). 사용자가 실제로 받는 합계를 숨기지 않도록 진입 직후 합계에 더한다.
+ */
+const ROUTE_EAGER_DYNAMIC = {
+  "/compare": ["src/features/compare/boardEngine.ts", "src/data/memoryCompareBoardRepository.ts", "src/fixtures/referenceComparisons.ts"],
+};
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
 const gzipKb = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
@@ -53,9 +64,11 @@ for (const [route, page] of Object.entries(ROUTE_PAGES)) {
   }
   const routeFiles = staticClosure(page, new Set(common));
   const routeKb = sumKb(routeFiles);
-  const eagerKb = sumKb(EAGER_DYNAMIC.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
-  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB (진입 직후 자동 로드 포함 참고: ${format(eagerKb)})`);
-  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
+  const eager = [...EAGER_DYNAMIC, ...(ROUTE_EAGER_DYNAMIC[route] ?? [])];
+  const eagerKb = sumKb(eager.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
+  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
+  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
+  if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${route}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
 }
 
 if (failures.length > 0) {

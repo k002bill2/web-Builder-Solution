@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { FIXTURE_CATALOG, UNLISTED_FONT, catalogWithFont } from "../test/compareFixtures";
 import { referenceComparisonAttributes } from "../fixtures/referenceComparisons";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
-import { buildReferenceComparison, isRowUniform, type ComparisonSource } from "./comparisonCells";
+import { FONT_LICENSE_PENDING_LABEL, buildReferenceComparison, isRowUniform, resolveComparisons, type ComparisonSource } from "./comparisonCells";
 import { SECTION_LIBRARY, type SectionLibrary } from "./sectionLibrary";
 
 const sourceOf = (id: string): ComparisonSource => ({
@@ -114,5 +115,19 @@ describe("모두 같음 (SPEC 2.3)", () => {
     expect(isRowUniform("font", [a, c, f])).toBe(true);
     expect(isRowUniform("hero", [a, c, f])).toBe(false);
     expect(isRowUniform("hero", [])).toBe(false);
+  });
+});
+
+describe("D1 폰트 라이선스 (ADR-005 D1-갱신)", () => {
+  it("허용 목록 3종(Noto Serif KR 포함)은 선택할 수 있다", () => {
+    const b = resolveComparisons(["ref-b"], FIXTURE_CATALOG, SECTION_LIBRARY)[0]!.comparison!;
+    expect(b.cells.font.binding).toMatchObject({ kind: "typography", family: "Noto Serif KR" });
+  });
+
+  it("목록 밖 폰트 셀은 '라이선스 확인 중' + 선택 불가(바인딩 null)", () => {
+    const a = resolveComparisons(["ref-a"], catalogWithFont("ref-a"), SECTION_LIBRARY)[0]!.comparison!;
+    expect(a.cells.font).toMatchObject({ binding: null, unavailableReason: "license" });
+    expect(a.cells.font.label).toContain(UNLISTED_FONT);
+    expect(a.cells.font.label).toContain(FONT_LICENSE_PENDING_LABEL);
   });
 });

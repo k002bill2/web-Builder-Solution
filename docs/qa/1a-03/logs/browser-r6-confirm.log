@@ -1,0 +1,13 @@
+v1 confirmed → {"url":"/profile/profile-1","h1":"디자인 프로필"}
+back (S-15) {"url":"/compare","tag":"프로필 초안 | v1 확정됨","confirm":"새 버전으로 확정 (v2)","aria":"true","reason":"확정한 뒤 바뀐 내용이 없습니다"}
+E2 re-confirm unchanged (Enter) {"url":"/compare","tag":"프로필 초안 | v1 확정됨","confirm":"새 버전으로 확정 (v2)","aria":"true","reason":"확정한 뒤 바뀐 내용이 없습니다","status":["status|선택 알림|확정한 뒤 바뀐 내용이 없습니다"]}
+changed Hero→C (S-16) {"url":"/compare","tag":"프로필 초안 | v1 이후 변경됨","confirm":"새 버전으로 확정 (v2)","aria":null,"reason":null}
+back to A {"url":"/compare","tag":"프로필 초안 | v1 확정됨","confirm":"새 버전으로 확정 (v2)","aria":"true","reason":"확정한 뒤 바뀐 내용이 없습니다"}
+v2 confirmed → "/profile/profile-1"
+after v2 {"url":"/compare","tag":"프로필 초안 | v2 확정됨","confirm":"새 버전으로 확정 (v3)","aria":"true","reason":"확정한 뒤 바뀐 내용이 없습니다"}
+S-04 (1개) {"head":"비교 보드\n\n1 / 6개 비교 중 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다","pickBtns":0,"colheaders":1,"callouts":["비교할 레퍼런스가 1개입니다"],"makeBtn":["이 레퍼런스로 프로필 만들기"],"notices":["status|선택 알림|C를 빼서 Hero 선택 해제"]}
+network {"total":27,"external":[],"bad":[]}
+errs before reload []
+after reload (D6/S-03) {"url":"/compare","title":"비교 보드 · Design Studio","table":false,"main":"비교 보드 | 0 / 6개 비교 중 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다 | 비교할 레퍼런스가 없습니다 | 카탈로그에서 ‘비교 추가’로 2~6개를 담으면 항목별로 비교할 수 있습니다 | 카탈로그에서 고르기","links":["카탈로그에서 고르기"]}
+post-reload bad/external "[]"
+

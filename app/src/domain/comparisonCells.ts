@@ -12,6 +12,7 @@ import type {
   SectionPlanEntry,
   SurfaceTone,
 } from "./compareBoard";
+import { PENDING_LICENSE, isAllowedFontFamily } from "./fonts";
 import { EXPOSED_LICENSE_STATUSES, type DesignReference, type MotionLevel } from "./reference";
 import type { ReferenceDetail } from "./referenceDetail";
 import { resolveVariant, type SectionLibrary } from "./sectionLibrary";
@@ -37,6 +38,7 @@ export interface ComparisonSource {
 
 export const EMPTY_CELL_LABEL = "없음";
 export const LIBRARY_UNAVAILABLE_LABEL = "현재 라이브러리에 없는 변형";
+export const FONT_LICENSE_PENDING_LABEL = PENDING_LICENSE;
 export const MOTION_LABELS: Readonly<Record<MotionLevel, string>> = Object.freeze({ low: "낮음", mid: "중간", high: "높음" });
 
 const EMPTY: ComparisonCell = Object.freeze({ label: EMPTY_CELL_LABEL, binding: null });
@@ -62,6 +64,13 @@ function sectionCell(
   return sectionType === "footer" ? { ...cell, meta: { hasBusinessInfo: resolved.def.hasBusinessInfo === true } } : cell;
 }
 
+/** ADR-005 D1: 허용 목록 밖 폰트는 "라이선스 확인 중" + 선택 불가 (AC-26과 같은 처리) */
+function fontCell(t: ReferenceDetail["typography"]): ComparisonCell {
+  const label = `${t.family} ${t.headingWeight} / ${t.bodyWeight}`;
+  if (!isAllowedFontFamily(t.family)) return { label: `${label} · ${FONT_LICENSE_PENDING_LABEL}`, binding: null, unavailableReason: "license" };
+  return { label, binding: { kind: "typography", ...t } };
+}
+
 export function buildReferenceComparison(
   { reference, detail, attributes: a }: ComparisonSource,
   library: SectionLibrary,
@@ -78,7 +87,7 @@ export function buildReferenceComparison(
       label: `${primary.toUpperCase()} · ${a.paletteNote}`,
       binding: { kind: "palette", palette: detail.palette.map((p) => ({ role: p.role, hex: p.hex.toUpperCase() })) },
     },
-    font: { label: `${t.family} ${t.headingWeight} / ${t.bodyWeight}`, binding: { kind: "typography", ...t } },
+    font: fontCell(t),
     card: { label: a.card.label, binding: { kind: "card", style: a.card.style, surfaceTone: a.card.surfaceTone } },
     imageRatio: { label: a.imageRatio, binding: { kind: "choice", field: "media_ratio", value: a.imageRatio } },
     motion: { label: MOTION_LABELS[reference.motionLevel], binding: { kind: "motion", level: reference.motionLevel } },

@@ -1,0 +1,80 @@
+
+> design-studio-app@0.1.0 test
+> vitest --run
+
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/qa-1a-03/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/keyboardA11y.test.tsx (9 tests | 1 failed) 9356ms
+   ❯ 비교 트레이 칩 제거 후 포커스 (QA-1A-01 D07) (1)
+     × 다음 칩 → 이전 칩 → 트레이 영역 순으로 포커스가 이동한다 5569ms
+ ❯ src/pages/ReferenceDetailPage.test.tsx (15 tests | 1 failed) 9888ms
+   ❯ ReferenceDetailPage (1a-02, FR-CAT-03) (9)
+     × 필수 영역을 모두 보여준다: 브레드크럼·제목·라이선스·메타·태그·미리보기·탭·점수·액션·유사 레퍼런스 5964ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (1a-02, FR-CAT-03) > 필수 영역을 모두 보여준다: 브레드크럼·제목·라이선스·메타·태그·미리보기·탭·점수·액션·유사 레퍼런스
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ReferenceDetailPage.test.tsx:17:3
+     15|
+     16| describe("ReferenceDetailPage (1a-02, FR-CAT-03)", () => {
+     17|   it("필수 영역을 모두 보여준다: 브레드크럼·제목·라이선스·메타·태그·미리보기·탭·점수·액션·유사 레퍼런스", async…
+       |   ^
+     18|     renderApp("/references/ref-a");
+     19|     expect(await heading("모던 카페 브랜드")).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/keyboardA11y.test.tsx > 비교 트레이 칩 제거 후 포커스 (QA-1A-01 D07) > 다음 칩 → 이전 칩 → 트레이 영역 순으로 포커스가 이동한다
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/keyboardA11y.test.tsx:19:3
+     17|
+     18| describe("비교 트레이 칩 제거 후 포커스 (QA-1A-01 D07)", () => {
+     19|   it("다음 칩 → 이전 칩 → 트레이 영역 순으로 포커스가 이동한다", async () => {
+       |   ^
+     20|     renderApp("/catalog");
+     21|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 33 passed (35)
+      Tests  2 failed | 303 passed (305)
+   Start at  01:59:04
+   Duration  21.63s (environment 46%, tests 34%, setup 8%, transform 7%, import 5%, worker 1%)
+
+Environment  jsdom was created 35 times · 79.03s total, 46% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+exit 1

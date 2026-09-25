@@ -1,0 +1,25 @@
+ElementResolutionError: page.click timed out after 3000ms: Locator loc=role:button[name*="레퍼런스 추가"] matched 1 elements, but none can receive input; element is disabled
+    at #retryElementAction (file:////[eval1]:18884:27)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+cdp shot ok
+titles ["동네 치과 클리닉","부티크 법률사무소","모던 카페 브랜드","로컬 베이커리","프리미엄 헤어살롱","필라테스 스튜디오"]
+tray after 6 ["동네 치과 클리닉 비교에서 제거","부티크 법률사무소 비교에서 제거","모던 카페 브랜드 비교에서 제거","로컬 베이커리 비교에서 제거","프리미엄 헤어살롱 비교에서 제거","필라테스 스튜디오 비교에서 제거"]
+D07 [{"removed":"부티크 법률사무소 비교에서 제거","focus":"BUTTON:모던 카페 브랜드 비교에서 제거"},{"removed":"필라테스 스튜디오 비교에서 제거","focus":"BUTTON:프리미엄 헤어살롱 비교에서 제거"},{"removed":"동네 치과 클리닉 비교에서 제거","focus":"BUTTON:모던 카페 브랜드 비교에서 제거"},{"removed":"모던 카페 브랜드 비교에서 제거","focus":"BUTTON:로컬 베이커리 비교에서 제거"},{"removed":"로컬 베이커리 비교에서 제거","focus":"BUTTON:프리미엄 헤어살롱 비교에서 제거"},{"removed":"프리미엄 헤어살롱 비교에서 제거","focus":"SECTION:비교 트레이"}]
+tray re-added 6
+A-7 {"url":"/compare","title":"비교 보드 · Design Studio","active":"H1:비교 보드","activeIsH1":true,"h1Tab":"-1"}
+S-06 {"head":"비교 보드\n\n6 / 6개 · 가득 참 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다\n\n레퍼런스 추가","addTag":"BUTTON","ariaDisabled":"true","disabledAttr":false,"contrast":{"label":"레퍼런스 추가(가득 참)","text":"레퍼런스 추가","fg":"#ccccce","bg":"#e8e8ea","ratio":1.31,"size":"14px","weight":"600","cssColor":"rgba(55, 56, 60, 0.16)"},"confirm":{"aria":"true","desc":"Hero를 하나 고르면 확정할 수 있습니다","label":"확정 버튼(비활성)","text":"프로필 확정 (v1)","fg":"#c6c6c9","bg":"#e1e1e4","ratio":1.31,"size":"16px","weight":"600","cssColor":"rgba(55, 56, 60, 0.16)"},"statusBefore":["status|선택 알림|"]}
+
+ego's nodejs process exited with code 1.
+ElementResolutionError: page.focus timed out after 3000ms: Locator loc=role:button[name*="레퍼런스 추가"] matched 1 elements, but none can receive input; element is disabled
+    at #retryElementAction (file:////[eval1]:18884:27)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+
+ego's nodejs process exited with code 1.
+focused BUTTON:레퍼런스 추가
+S-06 Enter {"url":"/compare","status":["status|선택 알림|비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요."]}
+S-06 click {"url":"/compare","status":["status|선택 알림|비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요."]}
+layout {"overflow":{"docScrollW":1265,"innerW":1280,"offscreen":["SPAN:비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 "]},"container":{"tabIndex":0,"clientW":618,"scrollW":1280,"overflowX":"auto","visibleW":620},"colEdges":[[129,321],[321,513],[513,705],[705,897],[897,1089],[1089,1281]],"rowThPos":"sticky","caption":"레퍼런스 6개, 비교 항목 12개","colheaders":6,"rowheaders":12,"rowThLeftBefore":132,"rowThLeftAfter":132,"scrollLeft":300,"panel":{"tag":"SECTION","position":"sticky","top0":176,"topAfter":20,"bottomAfter":484,"scrollY":587,"confirmInView":true,"docH":1387},"clipped":[],"scrollHint":"none | none | none | none"}
+shot compare-1280-6.png
+

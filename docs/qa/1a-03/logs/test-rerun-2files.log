@@ -1,0 +1,17 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/qa-1a-03/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  01:59:41
+   Duration  3.04s (tests 53%, environment 25%, transform 12%, import 6%, setup 5%)
+
+exit 0

@@ -129,7 +129,8 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
     const [record] = await repo.getProfileVersions("profile-1");
     const snapshot = structuredClone(record);
     const changed = await repo.savePicks({ hero: "ref-c" }, {}, 1);
-    expect((await repo.getBoard()).board.confirmed).toEqual({ profileId: "profile-1", version: 1, revision: 1 });
+    // 확정 시점 선택 스냅샷은 그 뒤 저장으로 바뀌지 않는다 (S-15 · FIX-R1)
+    expect((await repo.getBoard()).board.confirmed).toEqual({ profileId: "profile-1", version: 1, revision: 1, picks: { hero: "ref-a" }, custom: {} });
     expect(await repo.confirmProfile(changed.revision)).toEqual({ profileId: "profile-1", version: 2 });
     const versions = await repo.getProfileVersions("profile-1");
     expect(versions.map((v) => v.version)).toEqual([1, 2]);

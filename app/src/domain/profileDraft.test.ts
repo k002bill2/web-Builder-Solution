@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
-import { boardOf, catalogWithdrawing, resultsOf } from "../test/compareFixtures";
+import { boardOf, catalogWithFont, catalogWithdrawing, resultsOf } from "../test/compareFixtures";
 import { pickAllFrom } from "./boardPicks";
 import { PICKABLE_ROW_IDS, type CompareBoard } from "./compareBoard";
 import { derivePalette } from "./palette";
@@ -159,5 +159,17 @@ describe("결정성 (AC-10)", () => {
     const board = boardOf(IDS, { hero: "ref-a" });
     const later = { ...board, revision: 9, updatedAt: "2026-09-26T00:00:00.000Z" };
     expect(ready(board).profile.seed).toBe(ready(later).profile.seed);
+  });
+});
+
+describe("기준 레퍼런스에 값이 없는 행의 초안 표시", () => {
+  it("D1: 기준 레퍼런스 폰트가 목록 밖이면 폰트 항목은 'Hero를 먼저 고르세요'가 아니라 기본 폰트다", () => {
+    const rs = resultsOf(IDS, catalogWithFont("ref-a"));
+    const draft = buildProfileDraft(boardOf(IDS, { hero: "ref-a" }), rs, LIB);
+    expect(draft.status).toBe("ready");
+    const font = draft.items.find((i) => i.rowId === "font")!;
+    expect(font.valueLabel).toBe("Pretendard 700 / 400");
+    expect(font.source).toEqual({ kind: "fallback" });
+    expect(draft.status === "ready" && draft.profile.typography_tokens.family).toBe("Pretendard");
   });
 });

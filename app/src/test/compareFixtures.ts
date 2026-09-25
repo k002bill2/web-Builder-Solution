@@ -30,3 +30,14 @@ export function catalogWithdrawing(id: string): ComparisonCatalog {
 export function resultsOf(ids: readonly string[], catalog: ComparisonCatalog = FIXTURE_CATALOG): readonly ComparisonResult[] {
   return resolveComparisons(ids, catalog, SECTION_LIBRARY);
 }
+
+/** 흰 글자 대비 4.5:1 미만 대표색 (AC-12 — SPEC 9절 예시값) */
+export const LOW_CONTRAST_PRIMARY = "#C9A96E";
+/** 허용 목록 밖 폰트 (ADR-005 D1-갱신 — "라이선스 확인 중") */
+export const UNLISTED_FONT = "Nanum Myeongjo";
+
+/** 레퍼런스 한 개의 상세 폰트를 허용 목록 밖 폰트로 바꾼 카탈로그 */
+export function catalogWithFont(id: string, family: string = UNLISTED_FONT): ComparisonCatalog {
+  const detail = FIXTURE_CATALOG.details[id]!;
+  return { ...FIXTURE_CATALOG, details: { ...FIXTURE_CATALOG.details, [id]: { ...detail, typography: { ...detail.typography, family } } } };
+}

@@ -11,7 +11,7 @@
 | C | 초기 JS ≤ 90KB gzip | 완료 | 1ffd4e8 |
 | D | 라우트 스크롤·경쟁 상태 테스트 | 완료 | d825166 |
 | B-DET-02 | 유사 레퍼런스 이름 말줄임 | 완료 | 5dcd61a |
-| E | 검증 4종·브라우저·Codex·보고서 | 진행 중 | |
+| E | 검증 4종·브라우저·Codex·보고서 | 완료 | REPORT.md |
 
 ## 0단계 — 읽기와 사전 실측
 - 읽음: CLAUDE.md, ADR-002, `docs/qa/1a-01/REPORT.md` 전체, `dev/active/m1-ui-01/PROGRESS.md`, `dev/active/m1-ui-02/REPORT.md`, 목업 55~125행.
@@ -232,3 +232,10 @@ build exit=0 — [bundle] 초기 JS (gzip): 86.90KB / 예산 90KB (Vite 표기 8
    - 수정: `components/layout/RouteErrorBoundary.tsx` — 헤더는 유지, `role="alert"` "화면을 불러오지 못했습니다" + 새로고침 버튼. `key={pathname}`이라 다른 경로로 가면 오류 상태를 벗어난다.
    - RED: `× 앱 전체가 사라지지 않고 헤더를 유지한 채 … Unable to find role="alert"` → GREEN.
 - 게이트: typecheck 0 · lint 0 · `Test Files 17 passed · Tests 113 passed` · build 0 (초기 JS 87.21KB, Vite 표기 88.10 kB).
+
+### 2라운드: P2 1건 → 반영
+- [P2] `main.tsx` — 픽스처 지연 로드(그룹 C)가 새 네트워크 실패 경로를 만들었는데 `useReferenceList`·`useReferenceDetail`·`useTrayReferences`가 거부를 처리하지 않아 카탈로그는 빈 목록, 상세는 '불러오는 중…'에 멈춘다.
+  - 수정: `data/useThrowToBoundary.ts` — effect의 비동기 실패를 `setState(() => { throw })`로 렌더 단계에 던져 `RouteErrorBoundary`가 "화면을 불러오지 못했습니다" + 새로고침을 보인다. 세 훅에 거부 처리 한 줄씩.
+  - RED: `× /catalog: …`, `× /references/ref-a: … Unable to find role="alert"` (2 failed) → GREEN.
+- 게이트: typecheck 0 · lint 0 · `Test Files 17 passed · Tests 115 passed` · build 0 (초기 JS 87.22KB, Vite 표기 88.11 kB).
+- 3라운드: 이어하기 브리프 턴 예산(55턴 후 보고서 우선) 때문에 실행하지 않았다.

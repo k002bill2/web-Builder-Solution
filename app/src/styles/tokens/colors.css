@@ -1,0 +1,201 @@
+/* source: design/claude-design-handoff/project/_ds/apfs-design-system-3aea88df-7072-4855-be04-f000a5f2fbd4/tokens/colors.css */
+/* ============================================================
+   Wanted 계열 디자인 언어 — Color tokens
+   Light theme on :root. Dark theme on [data-theme="dark"].
+   Two layers:
+   1) PRIMITIVES  — raw palette ramps (--blue-50 …)
+   2) SEMANTIC    — role aliases that components consume
+                    (--primary, --label-normal, --line-normal …)
+   Always consume the SEMANTIC layer in components.
+   ============================================================ */
+
+:root {
+  /* ---- Primitives: Common ---- */
+  --common-100: #ffffff;
+  --common-0: #000000;
+
+  /* ---- Primitives: Cool Neutral (the core grey ramp) ---- */
+  --cool-neutral-5: #0f0f10;
+  --cool-neutral-10: #171719;
+  --cool-neutral-15: #1b1c1e;
+  --cool-neutral-22: #2e2f33;
+  --cool-neutral-40: #5a5c63;
+  --cool-neutral-50: #70737c;
+  --cool-neutral-60: #878a93;
+  --cool-neutral-70: #989ba2;
+  --cool-neutral-80: #aeb0b6;
+  --cool-neutral-90: #c2c4c8;
+  --cool-neutral-95: #dbdcdf;
+  --cool-neutral-96: #e1e2e4;
+  --cool-neutral-98: #ebebec;
+  --cool-neutral-99: #f7f7f8;
+
+  /* ---- Primitives: Blue (brand primary ramp) ---- */
+  --blue-30: #003e9c;
+  --blue-40: #0054d1;
+  --blue-45: #005eeb;
+  --blue-50: #0066ff;
+  --blue-55: #1a75ff;
+  --blue-60: #3385ff;
+  --blue-70: #69a5ff;
+  --blue-80: #9ec5ff;
+  --blue-90: #c9defe;
+  --blue-95: #eaf2fe;
+  --blue-99: #f7fbff;
+
+  /* ---- Primitives: Accent ramps (categories, tags, status) ---- */
+  --green-40: #009632;
+  --green-50: #00bf40;   /* status: positive */
+  --green-95: #ebffee;
+  --red-40: #e52222;
+  --red-50: #ff4242;     /* status: negative */
+  --red-95: #ffecec;
+  --orange-40: #d47800;
+  --orange-50: #ff9200;  /* status: cautionary */
+  --orange-95: #fff3e0;
+  --violet-45: #5b37ed;
+  --violet-50: #6541f2;  /* secondary accent */
+  --violet-95: #f0ecfe;
+  --purple-40: #ad36e3;
+  --purple-50: #cb59ff;
+  --purple-95: #f9edff;
+  --pink-46: #e846cd;
+  --pink-95: #fff0fc;
+  --cyan-40: #0098b2;
+  --cyan-50: #00bdde;
+  --cyan-95: #e7fbff;
+  --lime-37: #429e00;
+  --lime-95: #e6ffd4;
+
+  /* ============================================================
+     SEMANTIC — Primary (brand action color)
+     ============================================================ */
+  /* 값은 brand.css의 --brand-* (ADR-002) */
+  --primary: var(--brand-primary);          /* Primary / Normal */
+  --primary-strong: var(--blue-45);
+  --primary-heavy: var(--blue-40);
+  --primary-hover: var(--brand-primary-hover);
+  --primary-pressed: var(--brand-primary-pressed);
+  --primary-container: var(--brand-primary-container);  /* light blue surface */
+  --on-primary: #ffffff;
+
+  /* Inverse surface (near-black CTA, footers)
+     원본 이름 --brand-inverse* → 제품 브랜드와 무관한 중립 표면이므로 개명 (ADR-002) */
+  --surface-inverse: #2c2c2c;
+  --surface-inverse-hover: #1e1e1e;
+  --on-surface-inverse: #ffffff;
+
+  /* ============================================================
+     SEMANTIC — Labels (text) — alpha over a neutral base
+     ============================================================ */
+  --label-normal: #171719;                  /* primary text */
+  --label-strong: #000000;                  /* maximum emphasis */
+  --label-neutral: rgba(46, 47, 51, 0.88);  /* slightly softened body */
+  --label-alternative: rgba(55, 56, 60, 0.61); /* secondary / captions ≈ #70737C */
+  --label-assistive: rgba(55, 56, 60, 0.28);   /* placeholder / hint */
+  --label-disable: rgba(55, 56, 60, 0.16);     /* disabled text */
+  --on-color: #ffffff;                       /* text on colored fills */
+
+  /* ============================================================
+     SEMANTIC — Backgrounds & surfaces
+     ============================================================ */
+  --background-normal: #ffffff;             /* page base */
+  --background-alternative: #f7f7f8;        /* sunken / app chrome */
+  --surface-elevated: #ffffff;              /* cards, sheets */
+  --surface-sunken: #f7f7f8;
+
+  /* ============================================================
+     SEMANTIC — Fills (subtle neutral fills on controls)
+     ============================================================ */
+  --fill-normal: rgba(112, 115, 124, 0.08);
+  --fill-strong: rgba(112, 115, 124, 0.16);
+  --fill-alternative: rgba(112, 115, 124, 0.05);
+
+  /* ============================================================
+     SEMANTIC — Lines / borders (alpha grey)
+     ============================================================ */
+  --line-normal: rgba(112, 115, 124, 0.22);
+  --line-neutral: rgba(112, 115, 124, 0.16);
+  --line-alternative: rgba(112, 115, 124, 0.08);
+  --line-strong: rgba(112, 115, 124, 0.52);
+
+  /* ============================================================
+     SEMANTIC — Status / feedback
+     ============================================================ */
+  --status-positive: var(--green-50);
+  --status-positive-bg: var(--green-95);
+  --status-negative: var(--red-50);
+  --status-negative-bg: var(--red-95);
+  --status-cautionary: var(--orange-50);
+  --status-cautionary-bg: var(--orange-95);
+  --status-informative: var(--primary);
+  --status-informative-bg: var(--blue-95);
+
+  /* ============================================================
+     SEMANTIC — Accent pairs (foreground + tint) for chips/tags
+     ============================================================ */
+  --accent-blue: var(--blue-45);          --accent-blue-bg: var(--blue-95);
+  --accent-green: var(--green-40);        --accent-green-bg: var(--green-95);
+  --accent-red: var(--red-40);            --accent-red-bg: var(--red-95);
+  --accent-orange: var(--orange-40);      --accent-orange-bg: var(--orange-95);
+  --accent-violet: var(--violet-45);      --accent-violet-bg: var(--violet-95);
+  --accent-purple: var(--purple-40);      --accent-purple-bg: var(--purple-95);
+  --accent-pink: var(--pink-46);          --accent-pink-bg: var(--pink-95);
+  --accent-cyan: var(--cyan-40);          --accent-cyan-bg: var(--cyan-95);
+  --accent-lime: var(--lime-37);          --accent-lime-bg: var(--lime-95);
+
+  /* ============================================================
+     SEMANTIC — Overlays & utilities
+     ============================================================ */
+  --overlay-dim: rgba(0, 0, 0, 0.5);     /* modal scrim */
+  --overlay-blanket: rgba(0, 0, 0, 0.7);
+  --overlay-scrim-light: rgba(255, 255, 255, 0.8);
+  --interaction-overlay: rgba(0, 0, 0, 0.05); /* hover veil on neutral surfaces */
+}
+
+/* ============================================================
+   DARK THEME
+   ============================================================ */
+[data-theme="dark"] {
+  /* 브랜드 참조를 다시 선언해야 하위 요소에 data-theme을 붙여도 다크 브랜드 값으로 재계산된다 */
+  --primary: var(--brand-primary);
+  --primary-strong: var(--blue-55);
+  --primary-hover: var(--brand-primary-hover);
+  --primary-pressed: var(--brand-primary-pressed);
+  --primary-container: var(--brand-primary-container);
+  --on-primary: #ffffff;
+  --status-informative: var(--primary);
+
+  --surface-inverse: #f7f7f8;
+  --surface-inverse-hover: #ffffff;
+  --on-surface-inverse: #1b1c1e;
+
+  --label-normal: #f7f7f7;
+  --label-strong: #ffffff;
+  --label-neutral: rgba(194, 196, 200, 0.88);
+  --label-alternative: rgba(174, 176, 182, 0.61);
+  --label-assistive: rgba(174, 176, 182, 0.28);
+  --label-disable: rgba(152, 155, 162, 0.16);
+
+  --background-normal: #1b1c1e;
+  --background-alternative: #0f0f10;
+  --surface-elevated: #26282b;
+  --surface-sunken: #141416;
+
+  --fill-normal: rgba(112, 115, 124, 0.22);
+  --fill-strong: rgba(112, 115, 124, 0.28);
+  --fill-alternative: rgba(112, 115, 124, 0.12);
+
+  --line-normal: rgba(112, 115, 124, 0.32);
+  --line-neutral: rgba(112, 115, 124, 0.28);
+  --line-alternative: rgba(112, 115, 124, 0.22);
+  --line-strong: rgba(194, 196, 200, 0.52);
+
+  --status-positive-bg: rgba(0, 191, 64, 0.16);
+  --status-negative-bg: rgba(255, 66, 66, 0.16);
+  --status-cautionary-bg: rgba(255, 146, 0, 0.16);
+  --status-informative-bg: rgba(51, 102, 255, 0.18);
+
+  --surface-elevated: #26282b;
+  --interaction-overlay: rgba(255, 255, 255, 0.08);
+}

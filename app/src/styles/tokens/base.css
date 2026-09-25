@@ -1,0 +1,34 @@
+/* source: design/claude-design-handoff/project/_ds/apfs-design-system-3aea88df-7072-4855-be04-f000a5f2fbd4/tokens/base.css */
+/* ============================================================
+   Wanted 계열 디자인 언어 — Base layer
+   Light global defaults + the mask-based icon utility.
+   ============================================================ */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--label-normal);
+  background: var(--background-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Icon utility ----
+   Renders an SVG asset recolourable via `color`. The SVG is used as a
+   mask so any single-colour glyph inherits the current text colour.
+   Usage: <i class="ds-icon" style="--icon:url(…/search.svg)"></i>
+   or set the mask inline. Size with font-size / width / height. */
+.ds-icon {
+  display: inline-block;
+  width: 1.5em;          /* 24px at 16px base */
+  height: 1.5em;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}

@@ -5,8 +5,8 @@
 ## 단계 현황
 | # | 단계 | 상태 | 커밋 |
 |---|---|---|---|
-| 0 | 읽기(브리프 1절 순서) + `app/` 스캐폴드 | 완료 | (이 커밋) |
-| 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 대기 | |
+| 0 | 읽기(브리프 1절 순서) + `app/` 스캐폴드 | 완료 | afa7794 |
+| 1 | 토큰 + 브랜드 분리 (`tokens.test.ts`, `brandIsolation.test.ts`) | 완료 | (이 커밋) |
 | 2 | 데이터 계층 (`referenceRepository.test.ts`) | 대기 | |
 | 3 | 비교 트레이 (`compareTray.test.ts`) | 대기 | |
 | 4 | DS 컴포넌트 + 카드 (`ReferenceCard.test.tsx`, `noHardcodedStyle.test.ts`) | 대기 | |
@@ -28,7 +28,43 @@
 3. `--focus-ring`, `--primary-hover/pressed/container`의 값은 brand.css의 `--brand-*`로 옮긴다. `--apfs-*`는 삭제한다. `.apfs-*` 클래스는 `ds-*`로 바꾼다.
 
 ## RED / GREEN 기록
-(단계별로 추가)
+
+### 1단계 — 토큰·브랜드 격리
+RED ① 테스트만 작성 (토큰·brand.config 없음):
+```
+ FAIL  src/styles/tokens.test.ts > 디자인 토큰 > 라이트 테마의 --primary는 #3366ff로 해석된다
+Error: ENOENT: no such file or directory, scandir '.../app/src/styles/tokens/'
+ FAIL  src/test/brandIsolation.test.ts > 브랜드 격리 (ADR-002) > brand.config.ts가 제품명과 로고 컴포넌트를 제공한다
+Error: Cannot find module '/src/brand/brand.config'
+      Tests  8 failed | 2 passed (10)
+```
+RED ② 원본 토큰을 그대로 복사(출처 주석만 추가)한 직후 — 브랜드 격리 테스트가 실제 위반을 잡음:
+```
+ × src에 apfs/APFS/농업정책 문자열이 없다 (출처 경로 주석 제외)
+AssertionError: expected [ …(30) ] to deeply equal []
++   "styles/tokens/base.css:26  .apfs-icon {",
++   "styles/tokens/colors.css:71  --apfs-blue: #1a75ff;",
++   "styles/tokens/colors.css:74  --apfs-gradient: linear-gradient(105deg, var(--apfs-blue) 0%, var(--apfs-cyan) 100%);",
++   "styles/tokens/typography.css:59  .apfs-title1   { font: ... }",
+    … (30줄)
+ × --brand-* 정의는 brand.css에만 존재한다   (colors.css의 --brand-inverse)
+      Tests  3 failed | 1 passed (4)
+```
+GREEN (토큰 정리 + brand.css + brand.config.ts + theme.css):
+```
+ ✓ 디자인 토큰 > 라이트 테마의 --primary는 #3366ff로 해석된다
+ ✓ 디자인 토큰 > 다크 테마의 --primary는 #5b84ff로 해석된다
+ ✓ 디자인 토큰 > --radius-lg는 16px이다
+ ✓ 디자인 토큰 > --font-size-body1은 16px이다
+ ✓ 디자인 토큰 > --primary는 브랜드 토큰(--brand-primary)을 참조한다 (ADR-002)
+ ✓ 디자인 토큰 > 토큰 복사본마다 원본 번들 경로를 출처 주석으로 남긴다
+ ✓ 브랜드 격리 (ADR-002) > src에 apfs/APFS/농업정책 문자열이 없다 (출처 경로 주석 제외)
+ ✓ 브랜드 격리 (ADR-002) > --brand-* 정의는 brand.css에만 존재한다
+ ✓ 브랜드 격리 (ADR-002) > --brand-* 참조는 토큰 계층(styles/tokens) 밖에 없다
+ ✓ 브랜드 격리 (ADR-002) > brand.config.ts가 제품명과 로고 컴포넌트를 제공한다
+      Tests  10 passed (10)
+```
+Tailwind 연결 확인(빌드 산출 CSS): `.rounded-lg{border-radius:var(--radius-lg)}` → base 레이어 `--radius-lg:16px`이 theme 레이어 기본값 `.5rem`을 이김. `.shadow-4{--tw-shadow:var(--shadow-4)}`, `.p-7{padding:calc(var(--space-100) * 7)}`, `.bg-primary{background-color:var(--primary)}`.
 
 ## 목업과 다른 부분
 (단계별로 추가)

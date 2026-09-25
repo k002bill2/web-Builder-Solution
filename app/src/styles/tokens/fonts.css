@@ -1,0 +1,57 @@
+/* source: design/claude-design-handoff/project/_ds/apfs-design-system-3aea88df-7072-4855-be04-f000a5f2fbd4/tokens/fonts.css */
+/* Wanted 계열 typeface — Pretendard JP (Korean + Latin), with Pretendard as
+   the Latin-leaning fallback. The open-source web binaries are loaded from
+   jsDelivr via explicit @font-face below (no local files needed).
+   SUBSTITUTION NOTE: SF Mono (used sparsely for code/measurements) is replaced
+   by the system ui-monospace stack — supply the binary if exact match matters.
+   To self-host, download the woff2 files and repoint the src URLs locally. */
+
+/* ---- Pretendard JP (primary) ---- */
+@font-face {
+  font-family: "Pretendard JP";
+  font-weight: 400; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard JP";
+  font-weight: 500; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard JP";
+  font-weight: 600; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard JP";
+  font-weight: 700; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard-jp@v1.3.9/dist/web/static/woff2/PretendardJP-Bold.woff2") format("woff2");
+}
+
+/* ---- Pretendard (fallback) ---- */
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 400; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 500; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 600; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 700; font-style: normal; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2");
+}
+
+:root {
+  --font-sans: "Pretendard JP", "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo", Arial, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+}

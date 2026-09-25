@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* 토큰은 base 레이어: Tailwind 기본 테마 값(theme 레이어)을 덮고, 유틸리티보다는 약하다. */
+@import "./styles/tokens/fonts.css" layer(base);
+@import "./styles/tokens/brand.css" layer(base);
+@import "./styles/tokens/colors.css" layer(base);
+@import "./styles/tokens/typography.css" layer(base);
+@import "./styles/tokens/spacing.css" layer(base);
+@import "./styles/tokens/shape.css" layer(base);
+@import "./styles/tokens/base.css" layer(base);
+
+@import "./styles/theme.css";

@@ -1,0 +1,29 @@
+/* source: design/claude-design-handoff/project/_ds/apfs-design-system-3aea88df-7072-4855-be04-f000a5f2fbd4/tokens/spacing.css */
+/* ============================================================
+   Wanted 계열 디자인 언어 — Spacing
+   4px base grid. Tokens mirror the Figma "Size / Space" scale
+   (2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 160).
+   ============================================================ */
+
+:root {
+  --space-0: 0px;
+  --space-50: 2px;
+  --space-100: 4px;
+  --space-150: 6px;
+  --space-200: 8px;
+  --space-300: 12px;
+  --space-400: 16px;
+  --space-500: 20px;
+  --space-600: 24px;
+  --space-800: 32px;
+  --space-1000: 40px;
+  --space-1200: 48px;
+  --space-1600: 64px;
+  --space-2400: 96px;
+  --space-4000: 160px;
+
+  /* Layout */
+  --layout-max-width: 1060px;   /* Wanted desktop content max */
+  --layout-min-width: 320px;
+  --layout-gutter: 20px;
+}

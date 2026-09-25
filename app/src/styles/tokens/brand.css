@@ -1,0 +1,25 @@
+/* ============================================================
+   제품 브랜드 레이어 (ADR-002)
+   브랜드 교체 = 이 파일 + src/brand/brand.config.ts 두 곳만 수정한다.
+   의미 토큰(--primary 등)은 colors.css에서 여기의 --brand-* 를 참조한다.
+   임시 값: 확정 전까지 목업의 primary(#3366ff) 계열을 유지한다.
+   ============================================================ */
+
+:root {
+  --brand-primary: #3366ff;
+  --brand-primary-hover: #2a5cf0;
+  --brand-primary-pressed: #005eeb;
+  --brand-primary-container: #eaf2fe;
+  --brand-accent: #6541f2;
+  --brand-gradient: linear-gradient(105deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+
+  --focus-ring: 0 0 0 3px rgba(51, 102, 255, 0.28);
+}
+
+[data-theme="dark"] {
+  --brand-primary: #5b84ff;
+  --brand-primary-hover: #6f93ff;
+  --brand-primary-pressed: #1a75ff;
+  --brand-primary-container: #18233a;
+  --brand-gradient: linear-gradient(105deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+}

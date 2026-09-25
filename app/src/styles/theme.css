@@ -1,0 +1,96 @@
+/* 디자인 토큰(styles/tokens/*.css) → Tailwind 4 테마 연결.
+   `inline`: 유틸리티가 var(--토큰)을 직접 참조하므로 하위 요소의 data-theme 전환도 반영된다.
+   토큰 이름이 Tailwind 네임스페이스와 같은 것(--radius-*, --shadow-*, --font-sans 등)은
+   토큰 파일 선언이 그대로 테마 값이 된다(아래에서 기본값만 비운다). */
+@theme inline {
+  --color-*: initial;
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-surface-inverse-hover: var(--surface-inverse-hover);
+  --color-on-surface-inverse: var(--on-surface-inverse);
+
+  --color-label-normal: var(--label-normal);
+  --color-label-strong: var(--label-strong);
+  --color-label-neutral: var(--label-neutral);
+  --color-label-alternative: var(--label-alternative);
+  --color-label-assistive: var(--label-assistive);
+  --color-label-disable: var(--label-disable);
+  --color-on-color: var(--on-color);
+
+  --color-background-normal: var(--background-normal);
+  --color-background-alternative: var(--background-alternative);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-sunken: var(--surface-sunken);
+
+  --color-fill-normal: var(--fill-normal);
+  --color-fill-strong: var(--fill-strong);
+  --color-fill-alternative: var(--fill-alternative);
+
+  --color-line-normal: var(--line-normal);
+  --color-line-neutral: var(--line-neutral);
+  --color-line-alternative: var(--line-alternative);
+  --color-line-strong: var(--line-strong);
+
+  --color-status-positive: var(--status-positive);
+  --color-status-positive-bg: var(--status-positive-bg);
+  --color-status-negative: var(--status-negative);
+  --color-status-negative-bg: var(--status-negative-bg);
+  --color-status-cautionary: var(--status-cautionary);
+  --color-status-cautionary-bg: var(--status-cautionary-bg);
+  --color-status-informative: var(--status-informative);
+  --color-status-informative-bg: var(--status-informative-bg);
+
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-bg: var(--accent-blue-bg);
+  --color-accent-green: var(--accent-green);
+  --color-accent-green-bg: var(--accent-green-bg);
+  --color-accent-red: var(--accent-red);
+  --color-accent-red-bg: var(--accent-red-bg);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-orange-bg: var(--accent-orange-bg);
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-violet-bg: var(--accent-violet-bg);
+
+  /* 목업이 직접 쓰는 원시 색 (썸네일 와이어프레임·트레이 카운트) */
+  --color-common-100: var(--common-100);
+  --color-cool-neutral-90: var(--cool-neutral-90);
+  --color-blue-70: var(--blue-70);
+
+  --spacing: var(--space-100);
+
+  /* 이름이 같은 토큰: theme 레이어의 자기참조 선언은 base 레이어 토큰 선언에 져서 계산되지 않는다 */
+  --shadow-*: initial;
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-4: var(--shadow-4);
+  --ease-*: initial;
+  --ease-standard: var(--ease-standard);
+  --ease-emphasized: var(--ease-emphasized);
+
+  --text-*: initial;
+  --text-display1: var(--font-size-display1);
+  --text-display1--line-height: var(--line-height-display1);
+  --text-title1: var(--font-size-title1);
+  --text-title1--line-height: var(--line-height-title1);
+  --text-heading1: var(--font-size-heading1);
+  --text-heading1--line-height: var(--line-height-heading1);
+  --text-heading2: var(--font-size-heading2);
+  --text-heading2--line-height: var(--line-height-heading2);
+  --text-body1: var(--font-size-body1);
+  --text-body1--line-height: var(--line-height-body1);
+  --text-body2: var(--font-size-body2);
+  --text-body2--line-height: var(--line-height-body2);
+  --text-body3: var(--font-size-body3);
+  --text-body3--line-height: var(--line-height-body3);
+  --text-label: var(--font-size-label);
+  --text-label--line-height: var(--line-height-label);
+  --text-caption1: var(--font-size-caption1);
+  --text-caption1--line-height: var(--line-height-caption1);
+  --text-caption2: var(--font-size-caption2);
+  --text-caption2--line-height: var(--line-height-caption2);
+}

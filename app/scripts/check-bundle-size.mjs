@@ -19,6 +19,9 @@ const ROUTE_PAGES = {
   "/compare · /profile · /studio (자리표시)": "src/pages/PlaceholderPage.tsx",
 };
 
+/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처). 참고 출력에만 더한다 — ADR-004 판정은 정적 합계. */
+const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
+
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
 const gzipKb = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
 
@@ -48,8 +51,10 @@ for (const [route, page] of Object.entries(ROUTE_PAGES)) {
     failures.push(`${route}: manifest에 ${page}가 없습니다 (경로 변경 시 ROUTE_PAGES를 고치세요)`);
     continue;
   }
-  const routeKb = sumKb(staticClosure(page, new Set(common)));
-  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB`);
+  const routeFiles = staticClosure(page, new Set(common));
+  const routeKb = sumKb(routeFiles);
+  const eagerKb = sumKb(EAGER_DYNAMIC.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
+  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB (진입 직후 자동 로드 포함 참고: ${format(eagerKb)})`);
   if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
 }
 

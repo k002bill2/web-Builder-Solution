@@ -63,6 +63,22 @@ describe("AC-23 저장 직렬화 (클라이언트)", () => {
     expect(saver.getState()).toMatchObject({ status: "saved", board: { picks: { hero: "ref-c" } } });
   });
 
+  it("저장 중에 바꾼 최신 선택은 앞 저장이 실패해도 버리지 않고 다시 시도에서 저장한다 (Codex R1)", async () => {
+    const gate = deferred();
+    const { repo, saver } = setup(
+      ({ method, seq, phase }) => (method === "savePicks" && seq === 1 && phase === "request" ? gate.promise : undefined),
+      ({ method, seq }) => (method === "savePicks" && seq === 1 ? new Error("네트워크") : undefined),
+    );
+    const first = saver.save({ hero: "ref-b" }, {});
+    const second = saver.save({ hero: "ref-c" }, {});
+    gate.resolve();
+    await Promise.all([first, second]);
+    expect(saver.getState().status).toBe("error");
+    await saver.retry();
+    expect(saver.getState()).toMatchObject({ status: "saved", board: { picks: { hero: "ref-c" } } });
+    expect((await repo.getBoard()).board.picks).toEqual({ hero: "ref-c" });
+  });
+
   it("STALE_BOARD면 최신 보드로 맞추고 stale 표시를 남긴다 (S-14)", async () => {
     const { repo, saver } = setup();
     await repo.savePicks({ hero: "ref-c" }, {}, 1);

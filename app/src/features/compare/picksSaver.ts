@@ -39,6 +39,8 @@ export function createPicksSaver(
   };
 
   async function fail(error: unknown, attempt: Pending): Promise<void> {
+    // 저장 중에 바뀐 최신 선택이 있으면 그것을 다시 시도 대상으로 남긴다
+    const latestIntent = pending ?? attempt;
     pending = undefined;
     if (error instanceof CompareBoardError && error.code === "STALE_BOARD") {
       // 다른 곳에서 바뀐 보드를 받아 화면을 맞춘다 (S-14)
@@ -47,7 +49,7 @@ export function createPicksSaver(
       set({ board: latest, status: "error", error: "STALE_BOARD" });
       return;
     }
-    failed = attempt;
+    failed = latestIntent;
     set({ board: state.board, status: "error", error: error instanceof CompareBoardError ? error.code : "UNKNOWN" });
   }
 

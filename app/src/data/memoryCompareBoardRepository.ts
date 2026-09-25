@@ -123,8 +123,9 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
       call("savePicks", () => {
         const parsed = parseBoardInput(picks, custom);
         if (!parsed.ok) throw new CompareBoardError("SCHEMA_INVALID", Object.values(parsed.errors).join(", "));
-        assertPicks(parsed.value.picks, resultsOf(board.columns.map((c) => c.referenceId)));
+        // 열 소속은 현재 보드 기준이라 revision이 맞을 때만 본다 — 다른 곳에서 뺀 열이면 STALE_BOARD로 최신 보드를 준다
         if (expectedRevision !== board.revision) throw new CompareBoardError("STALE_BOARD", `revision ${expectedRevision} ≠ ${board.revision}`, board);
+        assertPicks(parsed.value.picks, resultsOf(board.columns.map((c) => c.referenceId)));
         return commit({ ...board, picks: parsed.value.picks, custom: parsed.value.custom });
       }),
     getComparison: (referenceIds) => call("getComparison", () => ({ libraryVersion: library.version, results: resultsOf(referenceIds) })),

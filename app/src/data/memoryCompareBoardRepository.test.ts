@@ -68,6 +68,13 @@ describe("savePicks 검증 (SPEC 8.2)", () => {
     expect((error as CompareBoardError).board?.revision).toBe(1);
   });
 
+  it("다른 곳에서 뺀 열을 옛 revision으로 저장하면 SCHEMA_INVALID가 아니라 STALE_BOARD + 최신 보드 (Codex R1)", async () => {
+    const repo = repoWith();
+    await repo.removeReference("ref-b");
+    const error = await repo.savePicks({ hero: "ref-b" }, {}, 1).catch((e: unknown) => e);
+    expect(error).toMatchObject({ code: "STALE_BOARD", board: { revision: 2 } });
+  });
+
   it("AC-14(데이터): 잘못된 대표색·보드 밖 열은 SCHEMA_INVALID로 저장하지 않는다", async () => {
     const repo = repoWith();
     expect(await codeOf(repo.savePicks({ hero: "ref-a" }, { primaryColor: "abc" }, 1))).toBe("SCHEMA_INVALID");

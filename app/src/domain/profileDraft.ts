@@ -156,7 +156,8 @@ export function buildProfileDraft(board: CompareBoard, results: readonly Compari
   const motion = bindingOf("motion", "motion")?.level ?? "low";
   const card = bindingOf("card", "card");
 
-  const pickedIds = new Set(items.flatMap((i) => (i.source.kind === "pick" ? [i.source.referenceId] : [])));
+  // 출처는 표시용 items가 아니라 실제 해석된 선택에서 센다 — 사용자 대표색이어도 팔레트 행의 나머지 역할은 그 레퍼런스 값이다
+  const pickedIds = new Set([...resolved.values()].flatMap((r) => (r?.source.kind === "pick" ? [r.source.referenceId] : [])));
   const labelOf = (id: string) => COLUMN_LABELS.indexOf(board.columns.find((c) => c.referenceId === id)?.label ?? "F");
   const hasCustom = board.custom.primaryColor !== undefined || board.custom.fontFamily !== undefined;
   const { hero, header, footer } = chosen;

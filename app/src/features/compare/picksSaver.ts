@@ -46,7 +46,8 @@ export function createPicksSaver(
       // 다른 곳에서 바뀐 보드를 받아 화면을 맞춘다 (S-14). 재조회도 실패하면 다시 시도로 재조회·저장을 되풀이할 수 있게 남긴다
       const latest = error.board ?? (await repository.getBoard().then((load) => load.board, () => undefined));
       failed = latest ? undefined : latestIntent;
-      set({ board: latest ?? state.board, status: "error", error: "STALE_BOARD" });
+      // 최신 보드로 맞췄으면 저장할 것이 없으므로 saved + STALE 안내(확정 가능), 재조회 실패면 error
+      set({ board: latest ?? state.board, status: latest ? "saved" : "error", error: "STALE_BOARD" });
       return;
     }
     failed = latestIntent;

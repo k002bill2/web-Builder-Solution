@@ -103,7 +103,8 @@ describe("AC-23 저장 직렬화 (클라이언트)", () => {
     const { repo, saver } = setup();
     await repo.savePicks({ hero: "ref-c" }, {}, 1);
     await saver.save({ hero: "ref-b" }, {});
-    expect(saver.getState()).toMatchObject({ status: "error", error: "STALE_BOARD", board: { picks: { hero: "ref-c" }, revision: 2 } });
+    // 최신 보드로 맞췄으므로 저장할 것이 남지 않았다 — 확정을 막지 않고 STALE 안내만 남긴다 (Codex R3)
+    expect(saver.getState()).toMatchObject({ status: "saved", error: "STALE_BOARD", board: { picks: { hero: "ref-c" }, revision: 2 } });
   });
 });
 

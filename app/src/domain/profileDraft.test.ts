@@ -122,6 +122,12 @@ describe("사용자 스타일 (SPEC 3.5·8.3)", () => {
     expect(draft.profile.selection_mode).toBe("mix");
   });
 
+  it("사용자 대표색을 넣어도 나머지 역할을 가져온 팔레트 레퍼런스는 출처에 남는다 (Codex R3)", () => {
+    const draft = ready(boardOf(IDS, { hero: "ref-a", palette: "ref-b" }, { custom: { primaryColor: "#C9A96E" } }));
+    expect(draft.profile.source_reference_ids).toEqual(["ref-a", "ref-b"]);
+    expect(draft.notices.rebinding).toBe(true);
+  });
+
   it("폰트는 사용자 폰트 > 폰트 행", () => {
     const draft = ready(boardOf(IDS, { hero: "ref-a", font: "ref-b" }, { custom: { fontFamily: "pretendard" } }));
     expect(draft.profile.typography_tokens.family).toBe("Pretendard");

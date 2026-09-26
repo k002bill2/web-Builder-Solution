@@ -1,0 +1,64 @@
+== layout 1920 {"cols":3,"cardW":311,"contentL":348,"contentW":1280,"railDisplay":"flex","filterBtn":{"text":"필터","vis":false,"exp":"false"},"chipScroll":{"sw":927,"cw":927,"ox":"auto"},"headerH":52,"navRect":[14,24],"navScroll":[1526,1526],"titleClamp":"2"} {"sw":1920,"cw":1920,"over":false}
+shot screens/catalog-1920.png
+== layout 1280 {"cols":3,"cardW":311,"contentL":28,"contentW":1280,"railDisplay":"flex","filterBtn":{"text":"필터","vis":false,"exp":"false"},"chipScroll":{"sw":927,"cw":927,"ox":"auto"},"headerH":52,"navRect":[14,24],"navScroll":[886,886],"titleClamp":"2"} {"sw":1280,"cw":1280,"over":false}
+== layout 1024 {"cols":2,"cardW":346,"contentL":28,"contentW":1024,"railDisplay":"flex","filterBtn":{"text":"필터","vis":false,"exp":"false"},"chipScroll":{"sw":671,"cw":671,"ox":"auto"},"headerH":52,"navRect":[14,24],"navScroll":[630,630],"titleClamp":"2"} {"sw":1024,"cw":1024,"over":false}
+== layout 768 {"cols":2,"cardW":348,"contentL":28,"contentW":768,"railDisplay":"none","filterBtn":{"text":"필터","vis":true,"exp":"false"},"chipScroll":{"sw":692,"cw":660,"ox":"auto"},"headerH":52,"navRect":[14,24],"navScroll":[374,374],"titleClamp":"2"} {"sw":768,"cw":768,"over":false}
+shot screens/catalog-768.png
+== layout 390 {"cols":1,"cardW":358,"contentL":16,"contentW":390,"railDisplay":"none","filterBtn":{"text":"필터","vis":true,"exp":"false"},"chipScroll":{"sw":692,"cw":306,"ox":"auto"},"headerH":89,"navRect":[52,36],"navScroll":[358,358],"titleClamp":"2"} {"sw":390,"cw":390,"over":false}
+shot screens/catalog-390.png
+== 390x700 tab from top
+1 {"tag":"A","role":"","name":"본문으로 건너뛰기","rect":[12,12,100,20],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+2 {"tag":"A","role":"","name":"결과로 건너뛰기","rect":[12,12,88,20],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+3 {"tag":"A","role":"","name":"Design Studio","rect":[16,0,133,52],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","pillOv":0}
+4 {"tag":"A","role":"","name":"카탈로그","rect":[16,52,52,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4,"l":4}}],"pillOv":0}
+5 {"tag":"A","role":"","name":"보관함","rect":[90,52,39,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4}}],"pillOv":0}
+6 {"tag":"A","role":"","name":"비교 보드","rect":[151,52,56,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4}}],"pillOv":0}
+7 {"tag":"A","role":"","name":"프로젝트","rect":[228,52,52,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4}}],"pillOv":0}
+8 {"tag":"BUTTON","role":"","name":"새 프로젝트","rect":[226,10,106,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+9 {"tag":"INPUT","role":"","name":"","rect":[62,206,295,26],"inVp":true,"ring":"NONE","pillOv":0}
+10 {"tag":"BUTTON","role":"","name":"추천 받기","rect":[16,253,132,52],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+11 {"tag":"BUTTON","role":"","name":"필터","rect":[16,327,48,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+12 {"tag":"BUTTON","role":"","name":"전체 6","rect":[76,325,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+13 {"tag":"BUTTON","role":"","name":"카페·F&B 2","rect":[150,325,95,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+14 {"tag":"BUTTON","role":"","name":"뷰티 1","rect":[253,325,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+15 {"tag":"BUTTON","role":"","name":"의료 1","rect":[326,325,66,36],"inVp":false,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","clip":[{"anc":"DIV.-m-1.flex.min-w-0","ov":"auto/auto","cut":{"r":18}}],"pillOv":0}
+16 {"tag":"BUTTON","role":"","name":"피트니스 1","rect":[180,325,90,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+17 {"tag":"BUTTON","role":"","name":"전문서비스 1","rect":[278,325,102,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","clip":[{"anc":"DIV.-m-1.flex.min-w-0","ov":"auto/auto","cut":{"r":6}}],"pillOv":0}
+18 {"tag":"BUTTON","role":"","name":"교육 0","rect":[223,325,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+19 {"tag":"BUTTON","role":"","name":"리테일 0","rect":[296,325,78,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+20 {"tag":"BUTTON","role":"radio","name":"점수순","rect":[253,377,58,28],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+21 {"tag":"A","role":"","name":"동네 치과 클리닉","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+22 {"tag":"BUTTON","role":"","name":"동네 치과 클리닉 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+23 {"tag":"BUTTON","role":"","name":"동네 치과 클리닉 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+24 {"tag":"A","role":"","name":"부티크 법률사무소","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+25 {"tag":"BUTTON","role":"","name":"부티크 법률사무소 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+26 {"tag":"BUTTON","role":"","name":"부티크 법률사무소 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+27 {"tag":"A","role":"","name":"모던 카페 브랜드","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+28 {"tag":"BUTTON","role":"","name":"모던 카페 브랜드 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+29 {"tag":"BUTTON","role":"","name":"모던 카페 브랜드 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+30 {"tag":"A","role":"","name":"로컬 베이커리","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+31 {"tag":"BUTTON","role":"","name":"로컬 베이커리 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+32 {"tag":"BUTTON","role":"","name":"로컬 베이커리 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+33 {"tag":"A","role":"","name":"프리미엄 헤어살롱","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+34 {"tag":"BUTTON","role":"","name":"프리미엄 헤어살롱 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+35 {"tag":"BUTTON","role":"","name":"프리미엄 헤어살롱 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+36 {"tag":"A","role":"","name":"필라테스 스튜디오","rect":[16,484,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+37 {"tag":"BUTTON","role":"","name":"필라테스 스튜디오 저장","rect":[306,572,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+38 {"tag":"BUTTON","role":"","name":"필라테스 스튜디오 비교 추가","rect":[342,572,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+39 {"tag":"BUTTON","role":"","name":"비교 보드 0 / 6","rect":[81,642,122,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":null}
+40 {"tag":"BUTTON","role":"","name":"비교 보드 열기","rect":[215,642,95,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":null}
+41 {"el":"body"}
+== 390x700 mid-scroll start
+m1 {"tag":"A","role":"","name":"동네 치과 클리닉","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m2 {"tag":"BUTTON","role":"","name":"동네 치과 클리닉 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m3 {"tag":"BUTTON","role":"","name":"동네 치과 클리닉 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m4 {"tag":"A","role":"","name":"부티크 법률사무소","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m5 {"tag":"BUTTON","role":"","name":"부티크 법률사무소 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m6 {"tag":"BUTTON","role":"","name":"부티크 법률사무소 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m7 {"tag":"A","role":"","name":"모던 카페 브랜드","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m8 {"tag":"BUTTON","role":"","name":"모던 카페 브랜드 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m9 {"tag":"BUTTON","role":"","name":"모던 카페 브랜드 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m10 {"tag":"A","role":"","name":"로컬 베이커리","rect":[16,290,358,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m11 {"tag":"BUTTON","role":"","name":"로컬 베이커리 저장","rect":[306,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+m12 {"tag":"BUTTON","role":"","name":"로컬 베이커리 비교 추가","rect":[342,378,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+shot screens/focus-390-last-card.png

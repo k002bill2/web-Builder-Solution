@@ -1,0 +1,17 @@
+space 7
+== A 390 준비 {"pill":[0,636,390],"btn":[306,644],"preOv":1024,"scrollY":1135.5}
+   제목 링크 focus(preventScroll) scrollY 1135.5 로컬 베이커리
+   Tab →  로컬 베이커리 저장 rect [306,286,32,32] pillOv 0 scrollY 1493.5
+   Tab →  로컬 베이커리 비교 추가 rect [342,286,32,32] pillOv 0
+shot screens/focus-390-under-pill.png
+== A 1280 준비 {"pill":[0,736,1280],"btn":[531,744],"preOv":1024,"scrollY":197}
+   제목 링크 focus(preventScroll) scrollY 197 로컬 베이커리
+   Tab →  로컬 베이커리 저장 rect [531,368,32,32] pillOv 0 scrollY 573
+   Tab →  로컬 베이커리 비교 추가 rect [567,368,32,32] pillOv 0
+== B 768 펼침 {"btn":"필터","exp":"true","desc":"선택 0개","railDisplay":"flex","railTop":283,"sortBottom":246,"railBottom":1325,"articleTop":1353,"railW":712,"url":"","over":false}
+== B 768 미니멀 선택 후 {"btn":"필터 1","exp":"true","desc":"선택 1개","railDisplay":"flex","railTop":283,"sortBottom":246,"railBottom":1325,"articleTop":1353,"railW":712,"url":"?concept=minimal","over":false}
+shot screens/catalog-768-rail-open.png
+== B 768 Tab(필터부터) 전체1 → 카페·F&B1 → 뷰티0 → 의료0 → 피트니스0 → 전문서비스0 → 교육0 → 리테일0 → 점수순 → 필터 초기화 → 20~30대 → 가족 → B2B → 미니멀 → 따뜻한 → 대담한
+== B 390 펼침 {"btn":"필터","exp":"true","desc":"선택 0개","railDisplay":"flex","railTop":446,"sortBottom":409,"railBottom":1488,"articleTop":1516,"railW":358,"url":"","over":false}
+== B 390 미니멀 선택 후 {"btn":"필터 1","exp":"true","desc":"선택 1개","railDisplay":"flex","railTop":446,"sortBottom":409,"railBottom":1488,"articleTop":1516,"railW":358,"url":"?concept=minimal","over":false}
+== B 390 Tab(필터부터) 전체1 → 카페·F&B1 → 뷰티0 → 의료0 → 피트니스0 → 전문서비스0 → 교육0 → 리테일0 → 점수순 → 필터 초기화 → 20~30대 → 가족 → B2B → 미니멀 → 따뜻한 → 대담한

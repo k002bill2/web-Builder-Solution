@@ -1,0 +1,65 @@
+== 9종 선택 후 (motion 낮음 ) {"url":"?industry=cafe-fnb&device=desktop&motion=low","checked":["타깃:","콘셉트:","레이아웃:","콘텐츠 목적:","라이선스:","색상:","디바이스:데스크톱"],"chip":"카페·F&B1","sort":"점수순","reset":{"text":"초기화 · 2","disabled":false,"desc":"선택 2개"},"results":1,"h1":"레퍼런스 카탈로그"}
+== reload 복원 {"url":"?industry=cafe-fnb&device=desktop&motion=low","checked":["타깃:","콘셉트:","레이아웃:","콘텐츠 목적:","라이선스:","색상:","디바이스:데스크톱"],"chip":"카페·F&B1","sort":"점수순","reset":{"text":"초기화 · 2","disabled":false,"desc":"선택 2개"},"results":1,"h1":"레퍼런스 카탈로그"}
+== 정렬 → {"url":"?industry=cafe-fnb&device=desktop&motion=low&sort=latest","checked":["타깃:","콘셉트:","레이아웃:","콘텐츠 목적:","라이선스:","색상:","디바이스:데스크톱"],"chip":"카페·F&B1","sort":"최신순","reset":{"text":"초기화 · 2","disabled":false,"desc":"선택 2개"},"results":1,"h1":"레퍼런스 카탈로그"} 최신순
+== 모션 → ?industry=cafe-fnb&device=desktop&motion=mid&sort=latest 중간
+== 초기화 후 {"url":"?industry=cafe-fnb&sort=latest","checked":["타깃:","콘셉트:","레이아웃:","콘텐츠 목적:","라이선스:","색상:","디바이스:"],"chip":"카페·F&B2","sort":"최신순","reset":{"text":"초기화","disabled":true,"desc":"선택 0개"},"results":2,"h1":"레퍼런스 카탈로그"} focus: BODY 
+    본문으로 건너뛰기결과로 건너
+== facet: 20~30대+미니멀+따뜻한 ?audience=age-20-30&concept=minimal%2Cwarm results 1 | 콘셉트 그룹: 콘셉트 미니멀 1 따뜻한 1 대담한 1
+== 기대값 확인: 20~30대+대담한 결과 수 = 1 ?audience=age-20-30&concept=bold
+== AX tree (catalog?concept=minimal) count 54
+  link "본문으로 건너뛰기"
+  link "결과로 건너뛰기"
+  link "Design Studio"
+  button "새 프로젝트"
+  radiogroup "정렬"
+  region "레퍼런스 목록"
+  region "비교 트레이"
+  link "카탈로그"
+  link "보관함"
+  link "비교 보드"
+  link "프로젝트"
+  button "추천 받기"
+  button "전체" desc="1 개" pressed=true
+  button "카페·F&B" desc="1 개" pressed=false
+  button "뷰티" desc="0 개" pressed=false
+  button "의료" desc="0 개" pressed=false
+  button "피트니스" desc="0 개" pressed=false
+  button "전문서비스" desc="0 개" pressed=false
+  button "교육" desc="0 개" pressed=false
+  button "리테일" desc="0 개" pressed=false
+  radio "점수순" checked=true
+  radio "최신순" checked=false
+  button "필터 초기화" desc="선택 1 개"
+  radiogroup "모션 강도"
+  radio "전체" checked=true
+  radio "낮음" checked=false
+  radio "중간" checked=false
+  radio "높음" checked=false
+  button "모던 카페 브랜드 저장" pressed=false
+  button "모던 카페 브랜드 비교 추가"
+  button "비교 보드 0 / 6" expanded=false
+  button "비교 보드 열기"
+  checkbox "20~30대" desc="1 개" checked=false
+  checkbox "가족" desc="0 개" checked=false
+  checkbox "B2B" desc="0 개" checked=false
+  checkbox "미니멀" desc="1 개" checked=true
+  checkbox "따뜻한" desc="1 개" checked=false
+  checkbox "대담한" desc="1 개" checked=false
+  checkbox "풀블리드 히어로" desc="1 개" checked=false
+  checkbox "스플릿" desc="0 개" checked=false
+  checkbox "그리드" desc="0 개" checked=false
+  checkbox "예약" desc="1 개" checked=false
+  checkbox "문의" desc="0 개" checked=false
+  checkbox "판매" desc="0 개" checked=false
+  checkbox "internal" desc="1 개" checked=false
+  checkbox "licensed" desc="0 개" checked=false
+  checkbox "무채색" desc="0 개" checked=false
+  checkbox "따뜻한 계열" desc="1 개" checked=false
+  checkbox "그린 계열" desc="0 개" checked=false
+  checkbox "차가운 계열" desc="0 개" checked=false
+  checkbox "데스크톱" desc="1 개" checked=false
+  checkbox "모바일" desc="1 개" checked=false
+  checkbox "반응형" desc="1 개" checked=false
+  link "모던 카페 브랜드"
+== ?tab=saved {"h1":"보관함","sub":"저장한 레퍼런스 0개","cur":"보관함","cards":0}
+== ?tab=rec {"h1":"추천","cur":"카탈로그","cards":0,"all":"/catalog"}

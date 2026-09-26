@@ -1,0 +1,5 @@
+# r6 1회차 콘솔 출력 전사 (스크립트가 /compare 셀 선택자 중복으로 중단돼 saveLog 전에 종료 — 상세 부분만 전사, /compare는 r6b 로그)
+== 상세 {"path":"/references/ref-a","h1":"모던 카페 브랜드","h2":"섹션 구성 · 8개 | 유사 레퍼런스","btns":["섹션 구성","토큰","모바일","점수 이력","템플릿으로 가져오기","저장[p=false]","비교 추가"],"status":[],"boardLink":false} {"sw":1280,"cw":1280,"over":false}
+== 상세 비교 추가 후 {"path":"/references/ref-a","h1":"모던 카페 브랜드","h2":"섹션 구성 · 8개 | 유사 레퍼런스","btns":["섹션 구성","토큰","모바일","점수 이력","템플릿으로 가져오기","저장[p=false]","비교 중, 비교에서 빼기"],"status":[],"boardLink":false}
+{"label":"상세 알림 문구","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+shot screens/detail-1280.png

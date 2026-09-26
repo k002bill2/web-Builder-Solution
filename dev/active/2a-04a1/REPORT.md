@@ -1,7 +1,7 @@
 # 2A-04a1 REPORT — 프로필 데이터 계층 · 버전 계보 · 원자적 확정
 
 - 브리프 `docs/06-handoff/2A-04a1_DEVELOPER_BRIEF.md` · SPEC r3 6.1~6.3 · 분기점 `44f12ea` · 로컬 커밋만(push·원격 없음)
-- 결론: 범위 1~5 구현, P-AC-10(저장소)·11·40·41·42·35·36 충족. 번들은 예산 안(`/compare` 첫 화면 여유 1.47KB) — 대안(싱글턴·C8) 불필요. 설계 질문 4건.
+- 결론: 범위 1~5 구현, P-AC-10(저장소)·11·40·41·42·35·36 충족. 번들은 예산 안(`/compare` 첫 화면 여유 1.47KB) — 대안(싱글턴·C8) 불필요. 설계 질문 5건.
 
 ## 1. 변경 파일 (app/src, 18개 · +770 −92)
 | 구분 | 파일 |
@@ -52,6 +52,7 @@
 
 - 로그: `logs/baseline-build.txt` · `logs/probe1-common-contract.txt` · `logs/probe2-memory-store.txt` · `logs/verify-build.txt`
 - 공통 증가 0.03KB = `CompareBoardError.profileHead` 필드·래퍼 인자 2개·`draftStatusOf` 분기. `/compare` 진입 직후 +0.77 = 보드 메모리 구현 청크(store·멱등·계보) + 엔진 청크 STALE_PROFILE 문구. 프로필 메모리 구현은 앱에서 아직 import하지 않아 번들 0. 아이콘 추가 0, 새 의존성 0, 예산 무변경.
+- `CompareBoardError.profileHead`(필드·생성자 인자)는 P-AC-35 "공통 증가 = P-B1·B2만"의 P-B2 목록 밖이지만 SPEC 6.2가 요구하는 필드라 공통(트레이가 쓰는 `compareBoardRepository.ts`)에 들어간다 — SPEC 내부 불일치(설계 질문 5), 크기는 0.03KB 안.
 - SPEC P-B2 추정(공통 +0.3~0.5)보다 작은 이유: a1은 `AppProviders` prop·`ProfileRepositoryContext`·프로필 deferred 래퍼를 넣지 않았다(소비자 없음) → **a2에서 재측정 필요**.
 
 ## 6. 브라우저 스모크 (127.0.0.1:5299, ego-browser)
@@ -67,6 +68,8 @@
 3. **최신 버전으로의 `revertTo`**: SPEC에 금지 규칙이 없어 허용(같은 내용의 새 버전 생성). 화면(P-S07)은 이전 버전에서만 되돌리기를 보인다. 저장소도 거부(`SCHEMA_INVALID`)할지 결정 필요.
 4. **멱등 기록과 끼어든 쓰기**: 계열별 "마지막 보드 확정" 키만 기억하고 `revertTo`는 이를 지우지 않는다 → 응답 실패 뒤 다른 탭이 되돌리기를 해도 같은 키 재시도는 커밋된 결과(이전 번호)를 돌려준다(요청 자체는 커밋됐으므로). 화면은 그 결과로 이동하므로 문제는 없어 보이나, "마지막 커밋"을 계열 전체의 마지막 쓰기로 볼지 확인 필요.
 
+5. **P-AC-35 "공통 증가 = P-B1·B2만" vs SPEC 6.2 `profileHead`**: 보드 오류 클래스가 공통 청크에 있어 `profileHead`가 P-B2 목록 밖 공통 증가가 된다. P-B2 목록에 추가할지(권장, 크기 무시 가능) 확인 필요.
+
 ## 9. 남은 위험 · a2 인계
 - **앱 배선 없음**: `main.tsx`는 보드 메모리 구현만 만들고 store는 그 안에 숨어 있다(기본값 생성). a2가 `/profile/:id` 화면을 붙일 때 main의 deferred 로더에서 store 하나를 만들어 보드·프로필에 함께 넘기고 `ProfileRepositoryContext`·`AppProviders` prop·`renderApp` 주입을 더해야 한다 — 이때 **공통 청크 증가(P-B2 추정 0.3~0.5KB)를 실측**해야 하며 `/compare`·`/catalog` 첫 화면 여유는 1.47KB.
 - `/compare` 진입 직후 여유 3.26KB — 2a-04b(P-S25·`carryOverAdjustments`·`checkProfileContrast`, P-B9 추정 +0.4~0.8)도 들어간다.
@@ -75,7 +78,7 @@
 - 프로필 목록 순서 = 계열 생성 순(SPEC 미지정).
 
 ## 10. 커밋
-- `fd85a4f` feat — 공유 저장 모듈·버전 계보·expectedLatest·확정 트랜잭션/멱등
+- `fd85a4f` feat — 공유 저장 모듈·버전 계보·expectedLatest·확정 트랜잭션/멱등 (메시지의 "WIP" 표기와 달리 완성된 기능 커밋)
 - `9bca6ca` test — 보드 화면 P-AC-11·40·42 + 검증 로그
 - `564f850` docs — 브라우저 스모크 캡처
 - 이 REPORT·PROGRESS·Codex 로그 커밋(해시는 최종 응답)

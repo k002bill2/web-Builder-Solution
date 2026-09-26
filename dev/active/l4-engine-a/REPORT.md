@@ -227,3 +227,63 @@
 | Q-12 | `setSlot`은 이미지 `source` 형식을 검사하지 않는다 — 형식 오류는 저장 경계(`saveDoc` → `validatePageDoc`)에서 걸린다. 연산에서도 `LOCAL_IMAGE_ID`로 막을지 | 검사 안 함(타입 `LocalImageId`로만) |
 | Q-13 | 대문자 UUID 거부(소문자만)가 맞는지 — 서버 저장소가 생기면 정규화 규칙 필요 | 소문자만 |
 | Q-14 | `swapVariant`로 예약 목적의 유일한 `contact/booking`을 `form`으로 바꾸면 R-04를 같은 방식으로 우회한다(j1 중간 메시지 "삭제·변형 경로"). 변형 교체에도 목적 판정을 걸지 | 브리프 범위(`removeSection`) 밖이라 안 고침 |
+
+## 11. FIX-L4A-2 — Q-14 A + Codex 적대적 검토 j2 2건 (브리프 `docs/06-handoff/FIX-L4A-2_DEVELOPER_BRIEF.md`)
+
+### 11.1 커밋
+| 해시 | 내용 |
+|---|---|
+| `dd494f1` | merge: main(`8d81280`) — SPEC r3 결정 기록(`ae115b1`)·레인 표. 문서만, 충돌 0 |
+| `21ed1a9` | fix(engine): swapVariant 목적 판정·배열 사본 일관성·LocalImageId 브랜드 (코드·테스트·검증 로그·번들 기록) |
+| (이 REPORT 커밋) | docs(l4a): REPORT 11절 · PROGRESS 7행 |
+
+### 11.2 RED / GREEN (원문: `tdd-log.txt` "FIX-L4A-2" 절)
+| # | RED | GREEN |
+|---|---|---|
+| 1 Q-14 swapVariant 목적 | vitest 7 실패(`canSwapVariant` 없음 5 · 거부 안 함 · `BAD_VALUE` 안 던짐) + typecheck(인자 4개 불가 · export 없음) | engine 171 통과 · typecheck 0 |
+| 2 j2 medium 배열 사본 | vitest 4 실패(거짓 length 0 · 거짓 length 2 · length NaN·-1 → **빈 사본으로 통과**(2.5는 수정 전에도 길이 2 빈 원소로 거부 — RED 루프가 NaN에서 멈춰 이 실행으로는 관측 안 함) · 인덱스 누락은 `$.sections[2]`로만 거부되고 사본 단계 `$.sections` 없음) | engine 176 통과 |
+| 3 j2 low LocalImageId | vitest 2 파일 실패(모듈 없음) + typecheck `TS2578` 2건(`@ts-expect-error` 미사용 = 템플릿 타입이 `"a-b-c-d-e"`·평범한 문자열을 받아들임) | engine 184 통과 · typecheck 0 |
+- 변이 확인(→ 복원 GREEN, `tdd-log.txt`): ① 거짓 length 탐지 줄을 `if (false)`로 → **FAIL 2**(거짓 length 0 · 2). ② length 안전 정수·음수 검사 제거 → **FAIL 0** — NaN·-1·2.5는 뒤의 키 집합 검사(`ownKeys.length === length + 1`)·원소 없음에서도 걸린다. 방어로 남겼고 단독으로 증명하는 테스트는 없다. ③ `LOCAL_IMAGE_ID` → `/^[\s\S]+$/` → **FAIL 15**(parse 5 + validatePageDoc 10) — 저장 경계와 `parseLocalImageId`가 같은 규칙 한 곳을 쓴다(10.2의 "길이 36 규칙이 8종을 거부"는 없어졌다 — 길이 검사를 따로 두지 않고 정규식만).
+- "length보다 큰 인덱스 키" · "인덱스 키가 접근자"는 수정 전에도 거부(10절 코드) — 같은 테스트에 묶어 회귀 보호만.
+
+### 11.3 테스트 이름
+- `rules.test.ts` "canSwapVariant (8.2 r3 Q-14 …)": "목적 '예약' — 유일한 예약 변형을 다른 변형으로 바꾸면 막힘(이유 = 5.4 R-04 문장)" · "같은 목적에 예약 변형이 둘이면 하나는 바꿀 수 있다" · "예약 변형으로 바꾸기 · 예약 변형이 원래 없는 문서의 교체 · 상관없는 섹션 교체는 막지 않는다" · "목적 '문의' — 교체는 유형을 바꾸지 않아 R-03을 깨지 않는다(유일한 contact도 교체 허용)" · "목적 없음('none')·다른 목적이면 구조 규칙만 — 유일한 예약 변형도 바꾼다" · "canRemove와 같은 판정 — 예약 변형이 원래 없는 문서에서 상관없는 섹션 삭제는 허용(전 ≥1 · 후 0일 때만 거부)"
+- `sectionOps.test.ts`: "목적 필수 조건을 canSwapVariant로 강제한다 — 예약 목적의 유일한 예약 변형은 다른 변형으로 못 바꾼다 (Q-14 · R-04)" · "목적 인자는 필수 · 모르는 목적은 BAD_VALUE · 검사 순서 목적 → 없는 id → 모르는 변형 → 목적 판정"(`@ts-expect-error` 2) · 기존 swapVariant 테스트 7곳에 `"none"` 추가
+- `hostileInput.test.ts` "배열 사본 일관성 (Codex j2 medium …)": "거짓 length 0 + 실제 원소(ownKeys ['length'])" · "거짓 length 2 + ownKeys 0·1 — 뒤 원소(본문·footer)를 숨긴 사본 거부" · "length가 정수가 아님(NaN · -1 · 2.5)" · "ownKeys가 인덱스 일부 누락 · length보다 큰 인덱스 키 · 인덱스 키가 접근자"(getter 호출 0) · "정상 배열 · 빈 배열 · 모든 trap을 그대로 넘기는 Proxy는 통과(Proxy 자체를 판별하지 않는다)" — 거부는 모두 throw 0 + `SCHEMA_INVALID`
+- `localImageId.test.ts`(새): "UUID v4 소문자(crypto.randomUUID() 모양)는 같은 문자열의 LocalImageId" · "%s → null" × 6(하이픈 다섯 묶음 · v1 · 대문자 · object URL · 앞뒤 공백 · 빈 문자열) · "타입: 평범한 문자열·템플릿 문자열은 LocalImageId가 아니다(브랜드)"(`@ts-expect-error` 2)
+- `docOps.test.ts`: `LOCAL` 픽스처가 `parseLocalImageId(...)!`를 거친다
+
+### 11.4 검증 (fresh, `21ed1a9` 코드에서)
+| 항목 | 결과 |
+|---|---|
+| typecheck | exit 0 (`verify-typecheck-fix2.txt`) |
+| lint | exit 0 (`verify-lint-fix2.txt`) |
+| 전체 테스트 **1회** | 76 파일 · 893 통과 · 실패 0 (13.9초, `verify-test-full-fix2.txt`) |
+| engine 테스트 3회 | 11 파일 · 184 통과 × 3 (`verify-engine-3x-fix2.txt`) |
+| build | exit 0 (`bundle-after-fix2.txt`) |
+| 화면 `engine` import | 0 (`src/engine/` 밖 grep) |
+
+### 11.5 번들
+- 기준선은 main 병합(`dd494f1`) 뒤 수정 전에 새로 빌드(`bundle-before-fix2.txt`). 옛 `bundle-before-fix.txt`와는 main 쪽 변경(NARROW 등)으로 해시가 달라 비교에 쓰지 않았다.
+- `dist/` 자산 + `[bundle]` 줄 67줄(파일 해시 포함) diff **0** — 모든 시나리오 변화 0. 엔진은 아직 화면에서 import하지 않는다.
+
+### 11.6 계약 변경 요약 (SPEC r3 대비)
+| 항목 | 전(10절) | 후 | 근거 |
+|---|---|---|---|
+| `swapVariant` | `(doc, id, variant)` — 목적 판정 없음 | `(doc, id, variant, purpose: Purpose)` 필수 · 모르는 목적 `BAD_VALUE` · 검사 순서 목적 → `NOT_FOUND` → `UNKNOWN_VARIANT` → `canSwapVariant`(`NOT_ALLOWED` + 이유 문장) | SPEC r3 8.2 (서명 일치) |
+| `canSwapVariant(doc, id, variant, purpose)` | 없음 | 새 `can*` — 구조 규칙 없음(유형 불변), 목적 조건만 | 8.2 r3 |
+| 목적 판정 헬퍼 | `canRemove` 안에 개수 = 1 비교 | `purposeCheck(doc, id, purpose, next \| null)` 하나 — 바꾼 뒤 목록에서 조건 섹션이 **전 ≥ 1 · 후 0**이면 거부. `canRemove`(next = null)·`canSwapVariant`(next = 새 변형)가 공유. `canRemove` 동작 불변(기존 테스트 전부 통과 + 원래 없던 조건 회귀 테스트) | 브리프 "중복 규칙 금지" |
+| R-03(문의) 교체 경로 | — | **해당 없음** — 문의 판정은 유형(`contact`·`cta-band`) 기준이고 교체는 유형을 바꾸지 않는다. 변형 기준 문의 규칙은 만들지 않았다 | 5.4 표 |
+| 이유 문장 | — | 교체 거부 = 5.4 R-04 문장 그대로(`REASONS.removeBooking`: "목적이 '예약'이라 Contact(예약)가 필요합니다 (R-04)") — 행동이 아니라 목적의 요구를 말하는 문장이라 삭제·교체 공통. 새 키 없음(`reasons.test.ts` SPEC 원문 대조 유지). → Q-15 | 5.4 |
+| 경계 배열 사본 | length·ownKeys를 그대로 믿음 | length = 0 이상 안전 정수 ≤ 상한 · 원소는 `0..length-1` descriptor로 직접 읽음(없음 = "배열 원소가 없습니다" `$.x[i]`) · ownKeys = `{"length", "0".."length-1"}` 정확히(아니면 "배열 키가 원소와 맞지 않습니다" `$.x`) · `String(length)` 자리에 자기 속성이 있으면 거짓 length("배열 길이가 원소와 맞지 않습니다") → `SCHEMA_INVALID`. Proxy 판별 없음(투명 Proxy는 통과) | j2 medium · 8.3 |
+| `LocalImageId` | 템플릿 문자열 타입(`"a-b-c-d-e"` 통과) | 브랜드 `string & { readonly __brand: "LocalImageId" }` · 만드는 경로 = `parseLocalImageId(s): LocalImageId \| null`(`engine/validate/localImageId.ts`, `LOCAL_IMAGE_ID` 정규식도 이 파일로 이동) + `validatePageDoc` 결과(`readSource`가 같은 함수를 부른다). 발급은 화면 `crypto.randomUUID()` → `parseLocalImageId`. `setSlot` 형식 검사 없음(Q-12 A) | j2 low · r3 Q-12·Q-13 |
+
+### 11.7 객체 사본 확인 (브리프 1-2 끝 — 결과만, 코드 변경 없음)
+- 임시 테스트로 확인(커밋 안 함): ① `meta` Proxy가 ownKeys에서 `description`을 숨김 → **이미 거부**(`$.meta.description` "필드가 없습니다" — 필수 키). ② 섹션 `slots` Proxy가 ownKeys에서 `title`을 숨김 → **통과, 사본에서 `title` 값이 빠진다**(slots는 없는 키 = 빈 값인 map이라 숨긴 키와 없는 키를 구별할 수 없다). 객체에는 length 같은 교차 확인 값이 없다.
+- 남는 한계(배열 포함): 모든 반사 trap(`getOwnPropertyDescriptor`·`ownKeys`)이 서로 맞게 거짓말하는 Proxy는 표준 API로 빈 배열·키가 적은 객체와 구별할 수 없다 — 그 경우 사본은 Proxy가 보고한 그대로다. → Q-16
+
+### 11.8 설계 질문
+| # | 질문 | 지금 구현 |
+|---|---|---|
+| Q-15 | 변형 교체 거부 이유 문장을 5.4 R-04 삭제 문장과 같게 둬도 되는지(SPEC 5.5에 교체용 이유 문장이 없음) | 같은 문장(`REASONS.removeBooking`) |
+| Q-16 | `slots`(없는 키 = 빈 값)에서 ownKeys가 키를 숨기면 슬롯 값이 조용히 빠진다. 정의 스키마의 슬롯 키마다 descriptor로 직접 확인(숨긴 키 탐지)할지 — 모든 trap이 맞게 거짓말하면 여전히 구별 불가 | 고치지 않음(브리프: 결과만 보고) |

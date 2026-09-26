@@ -5,8 +5,10 @@
 import type { CarryOverItem, ContrastLevel, Density, ProfileAdjustments } from "../../domain/profile";
 import { PURPOSE_LABELS } from "../../fixtures/catalogFilters";
 
-const DENSITY_LABELS: Readonly<Record<Density, string>> = Object.freeze({ comfortable: "여유", compact: "촘촘" });
-const CONTRAST_LABELS: Readonly<Record<ContrastLevel, string>> = Object.freeze({ aa: "기본 AA", enhanced: "강화" });
+export const DENSITY_LABELS: Readonly<Record<Density, string>> = Object.freeze({ comfortable: "여유", compact: "촘촘" });
+export const CONTRAST_LABELS: Readonly<Record<ContrastLevel, string>> = Object.freeze({ aa: "기본 AA", enhanced: "강화" });
+/** 사이트 목적 보이는 값 — 없으면 "정하지 않음" */
+export const purposeLabel = (purpose: ProfileAdjustments["purpose"]) => (purpose === undefined || purpose === "none" ? "정하지 않음" : PURPOSE_LABELS[purpose]);
 /** 패널 줄 이유 (P-S25) */
 const REASONS: Readonly<Record<NonNullable<CarryOverItem["reason"]>, string>> = Object.freeze({
   "board-changed": "보드에서 모션을 바꿨습니다",
@@ -20,7 +22,7 @@ function itemLabel(item: CarryOverItem, adjustments: ProfileAdjustments): string
   if (item.key === "density") return `밀도 ${adjustments.density ? DENSITY_LABELS[adjustments.density] : ""}`;
   if (item.key === "contrast") return `대비 ${adjustments.contrast ? CONTRAST_LABELS[adjustments.contrast] : ""}`;
   if (item.key === "motion") return `모션 ${adjustments.motion ?? ""}`;
-  if (item.key === "purpose") return `사이트 목적 ${adjustments.purpose === "none" ? "정하지 않음" : adjustments.purpose ? PURPOSE_LABELS[adjustments.purpose] : ""}`;
+  if (item.key === "purpose") return `사이트 목적 ${adjustments.purpose ? purposeLabel(adjustments.purpose) : ""}`;
   return `${item.role ?? ""} 보정`;
 }
 

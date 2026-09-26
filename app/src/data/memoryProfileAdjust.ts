@@ -9,7 +9,7 @@
  */
 import { parseAdjustments, rangeViolations } from "../domain/adjustmentSchema";
 import type { AdjustmentRange, ProfileAdjustments, ProfileSeries, ProfileVersion } from "../domain/profile";
-import { normalizeAdjustments } from "../domain/profileAdjustments";
+import { normalizeAdjustments } from "../domain/effectiveProfile";
 import { ProfileError } from "./profileRepository";
 import type { StudioTx } from "./studioStore";
 

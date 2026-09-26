@@ -9,7 +9,7 @@ import { defaultSlotValue, defaultSlots } from "../sections/defaults";
 import { getSectionDefinition } from "../sections/registry";
 import { diffSlots } from "./diff";
 import { EngineOpError, INSTANCE_ID, indexOfSection, sectionAt } from "./errors";
-import { canAdd, canMove, canRemove, type MoveDirection, type Permission } from "./rules";
+import { canAdd, canMove, canRemove, type MoveDirection, type Permission, type Purpose } from "./rules";
 
 const MOTION_ORDER: readonly SectionMotion[] = ["L0", "L1", "L2"];
 const minMotion = (...motions: SectionMotion[]): SectionMotion =>
@@ -77,9 +77,15 @@ export interface RemovedSection {
   readonly index: number;
 }
 
-/** 구조 규칙(Header·Hero·Footer)만 막는다. 목적(R-03·R-04)은 화면이 canRemove(doc, id, purpose)로 먼저 막는다 */
-export function removeSection(doc: PageDoc, instanceId: string): { readonly doc: PageDoc; readonly undo: RemovedSection } {
-  assertAllowed(canRemove(doc, instanceId, "none"));
+const PURPOSES: readonly Purpose[] = ["booking", "inquiry", "sales", "none"];
+
+/**
+ * canRemove 전체 판정(구조 R-01·R-02 + 목적 R-03·R-04)을 강제한다 — 목적은 필수 인자(기본값 없음).
+ * 목적이 없는 문서는 부르는 쪽이 "none"을 명시한다(구조 규칙만).
+ */
+export function removeSection(doc: PageDoc, instanceId: string, purpose: Purpose): { readonly doc: PageDoc; readonly undo: RemovedSection } {
+  if (!PURPOSES.includes(purpose)) throw new EngineOpError("BAD_VALUE", `모르는 목적: ${String(purpose)}`);
+  assertAllowed(canRemove(doc, instanceId, purpose));
   const index = indexOfSection(doc, instanceId);
   return { doc: withSections(doc, doc.sections.filter((_, i) => i !== index)), undo: { section: doc.sections[index]!, index } };
 }

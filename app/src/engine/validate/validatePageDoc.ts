@@ -2,17 +2,19 @@
  * 저장 경계용 문서 검증 — 모양만 본다(SPEC 8.2 경계 검증). 게이트 몫(상한 초과·필수 빈 값·본문 개수)은 통과시킨다.
  * 통과하면 아는 필드만 담아 새로 만든 동결 사본을 돌려준다(입력 객체를 그대로 넘기지 않는다).
  */
-import type { ImageSlotValue, ImageSource, PageDoc, SectionInstance, SlotValue } from "../contracts/pageDoc";
+import type { ImageSlotValue, ImageSource, LocalImageId, PageDoc, SectionInstance, SlotValue } from "../contracts/pageDoc";
 import { SECTION_TYPES } from "../contracts/pageDoc";
 import type { SlotSchemaEntry } from "../contracts/sectionDefinition";
 import { deepFreeze } from "../freeze";
 import { getSectionDefinition } from "../sections/registry";
-import { POLLUTION_KEYS, createReader, finish, readBool, readInt, readOneOf, readString, type Reader, type ValidationResult } from "./reader";
+import { POLLUTION_KEYS, createReader, finish, neverThrow, readBool, readInt, readOneOf, readString, type Reader, type ValidationResult } from "./reader";
 
 /** 모양 상한 — 슬롯 maxLength(R-13, 게이트)와 별개인 저장 상한 */
 export const LIMITS = Object.freeze({ text: 2000, sections: 32, id: 64, version: 32 });
 
-/** 외부 참조가 될 수 없는 id(슬래시·점·콜론 없음) — 이미지 출처·instanceId */
+/** 로컬 이미지 참조 = UUID v4 소문자(`crypto.randomUUID()` 모양, SPEC r1 5.9) — blob:·data:·URL은 여기서 걸린다 */
+export const LOCAL_IMAGE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+/** 외부 참조가 될 수 없는 id(슬래시·점·콜론 없음) — 플레이스홀더 패턴·instanceId */
 const STRICT_ID = /^[A-Za-z0-9_-]+$/;
 /** 프로젝트·안 id — 공백·슬래시 없음 */
 const LOOSE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
@@ -43,15 +45,13 @@ function readTime(r: Reader, value: unknown, path: string): string | undefined {
   return time;
 }
 
+/** 문자열 = 로컬 이미지 참조(UUID v4), 객체 = 자체 플레이스홀더 */
 function readSource(r: Reader, value: unknown, path: string): ImageSource | undefined {
-  const rec = r.map(value, path);
-  const kind = rec && readOneOf(r, r.field(rec, "kind", path), `${path}.kind`, ["placeholder", "local"] as const);
-  if (!rec || !kind) return undefined;
-  const idKey = kind === "placeholder" ? "patternId" : "assetId";
-  r.extra(rec, path, ["kind", idKey]);
-  const id = strictId(r, r.field(rec, idKey, path), `${path}.${idKey}`);
-  if (id === undefined) return undefined;
-  return kind === "placeholder" ? { kind, patternId: id } : { kind, assetId: id };
+  if (typeof value === "string") return readString(r, value, path, { min: 36, max: 36, pattern: LOCAL_IMAGE_ID }) as LocalImageId | undefined;
+  const rec = r.record(value, path, ["kind", "patternId"]);
+  const kind = rec && readOneOf(r, r.field(rec, "kind", path), `${path}.kind`, ["placeholder"] as const);
+  const patternId = rec && strictId(r, r.field(rec, "patternId", path), `${path}.patternId`);
+  return kind && patternId !== undefined ? { kind, patternId } : undefined;
 }
 
 function readImage(r: Reader, value: unknown, path: string): ImageSlotValue | undefined {
@@ -77,7 +77,8 @@ function readSlots(r: Reader, value: unknown, path: string, schema: readonly Slo
       if (!POLLUTION_KEYS.has(key)) r.add(at, "스키마에 없는 슬롯입니다");
       continue;
     }
-    out[key] = entry.kind === "image" ? readImage(r, rec[key], at) : text(r, rec[key], at);
+    const value = r.field(rec, key, path);
+    out[key] = entry.kind === "image" ? readImage(r, value, at) : text(r, value, at);
   }
   return out as Record<string, SlotValue>;
 }
@@ -100,20 +101,23 @@ function readSection(r: Reader, value: unknown, path: string, seen: ReadonlySet<
 
 function readSections(r: Reader, value: unknown, path: string): SectionInstance[] {
   if (value === undefined) return [];
-  if (!Array.isArray(value) || value.length > LIMITS.sections) {
-    r.add(path, `섹션 배열(최대 ${LIMITS.sections}개)이어야 합니다`);
-    return [];
-  }
+  // list는 구멍(sparse)을 undefined로 채운다 → 객체 아님으로 거부
+  const items = r.list(value, path, LIMITS.sections);
+  if (!items) return [];
   const seen = new Set<string>();
-  // Array.from은 구멍(sparse)을 undefined로 채운다 → 객체 아님으로 거부(map은 구멍을 건너뛴다)
-  return Array.from(value, (item: unknown, i) => {
+  return items.map((item, i) => {
     const section = readSection(r, item, `${path}[${i}]`, seen);
     if (section?.instanceId !== undefined) seen.add(section.instanceId);
     return section!;
   });
 }
 
+/** 어떤 입력에도 throw하지 않는다(getter·Proxy·순환·깊이 → SCHEMA_INVALID) */
 export function validatePageDoc(input: unknown): ValidationResult<PageDoc> {
+  return neverThrow(() => readDoc(input));
+}
+
+function readDoc(input: unknown): ValidationResult<PageDoc> {
   const r = createReader();
   const rec = r.record(input, "$", DOC_KEYS);
   if (!rec) return finish(r, () => input as PageDoc);

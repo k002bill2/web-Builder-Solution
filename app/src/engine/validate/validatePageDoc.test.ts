@@ -1,6 +1,9 @@
 import { sampleDoc } from "../testing/sampleDoc";
 import { LIMITS, validatePageDoc } from "./validatePageDoc";
 
+/** crypto.randomUUID() 모양(UUID v4, 소문자) */
+const UUID = "7c9e6679-7425-40de-944b-e07fc1f90ae7";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 테스트: JSON 왕복 값을 틀린 모양으로 자유롭게 고친다
 type Loose = any;
 
@@ -41,7 +44,7 @@ describe("validatePageDoc — 통과", () => {
 
   it("로컬 이미지 참조·이미지 끔·장식 표시를 통과시킨다", () => {
     const input = raw((d) => {
-      d.sections[1].slots.image = { kind: "image", enabled: false, source: { kind: "local", assetId: "asset_01" }, alt: "", decorative: true };
+      d.sections[1].slots.image = { kind: "image", enabled: false, source: UUID, alt: "", decorative: true };
     });
     expect(validatePageDoc(input).ok).toBe(true);
   });
@@ -118,13 +121,27 @@ describe("validatePageDoc — 거부", () => {
     expect(issuesOf(raw((d) => (d.sections[3].instanceId = "")))).toContain("$.sections[3].instanceId");
   });
 
-  it.each(["https://example.test/a.png", "//cdn/a.png", "data:image/png;base64,AAAA", "../a.png"])(
-    "이미지 출처에 URL·경로 문자열 %s 거부",
-    (assetId) => {
-      const path = "$.sections[1].slots.image.source.assetId";
-      expect(issuesOf(raw((d) => (d.sections[1].slots.image.source = { kind: "local", assetId })))).toContain(path);
-    },
-  );
+  it.each([
+    ["외부 URL", "https://example.test/a.png"],
+    ["상대 경로", "../a.png"],
+    ["object URL", `blob:http://localhost:5173/${UUID}`],
+    ["data URL", "data:image/png;base64,AAAA"],
+    ["UUID 아닌 id", "asset_01"],
+    ["빈 문자열", ""],
+    ["v1 UUID", "7c9e6679-7425-10de-944b-e07fc1f90ae7"],
+    ["variant 자리 틀림", "7c9e6679-7425-40de-c44b-e07fc1f90ae7"],
+    ["대문자", UUID.toUpperCase()],
+    ["중괄호", `{${UUID}}`],
+    ["앞뒤 공백", ` ${UUID}`],
+  ])("로컬 이미지 참조 %s 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1)", (_, source) => {
+    expect(issuesOf(raw((d) => (d.sections[1].slots.image.source = source)))).toContain("$.sections[1].slots.image.source");
+  });
+
+  it("옛 모양 { kind: 'local', assetId } 거부 — 로컬 참조의 값은 id 문자열 자체", () => {
+    expect(issuesOf(raw((d) => (d.sections[1].slots.image.source = { kind: "local", assetId: UUID })))).toContain(
+      "$.sections[1].slots.image.source.kind",
+    );
+  });
 
   it("이미지 출처 kind 판별 — 모르는 kind · 다른 kind의 필드", () => {
     expect(issuesOf(raw((d) => (d.sections[1].slots.image.source = { kind: "url", href: "x" })))).toContain("$.sections[1].slots.image.source.kind");

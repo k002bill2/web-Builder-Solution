@@ -87,3 +87,63 @@ Error: Failed to resolve import "./diff" from "src/engine/ops/sectionOps.test.ts
 ## Codex 반영 GREEN
  Test Files  9 passed (9)
       Tests  132 passed (132)
+
+## FIX-L4A 1 로컬 이미지 source RED (vitest)
+     × 로컬 이미지 참조·이미지 끔·장식 표시를 통과시킨다 4ms
+     × 옛 모양 { kind: 'local', assetId } 거부 — 로컬 참조의 값은 id 문자열 자체 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/engine/validate/validatePageDoc.test.ts > validatePageDoc — 통과 > 로컬 이미지 참조·이미지 끔·장식 표시를 통과시킨다
+ FAIL  src/engine/validate/validatePageDoc.test.ts > validatePageDoc — 거부 > 옛 모양 { kind: 'local', assetId } 거부 — 로컬 참조의 값은 id 문자열 자체
+ Test Files  1 failed | 8 passed (9)
+      Tests  2 failed | 138 passed (140)
+## FIX-L4A 1 RED (typecheck)
+src/engine/ops/docOps.test.ts(11,63): error TS2322: Type 'string' is not assignable to type 'ImageSource'.
+
+## FIX-L4A 1 GREEN
+ Test Files  9 passed (9)
+      Tests  140 passed (140)
+typecheck exit 0
+
+## FIX-L4A 2 removeSection 목적 필수 RED (vitest)
+     × 목적 필수 조건을 canRemove 전체 판정으로 강제한다 — 예약 목적 마지막 예약 변형 (R-04) 2ms
+     × 문의 목적 마지막 cta-band·contact 삭제 거부 (R-03) · 둘 중 하나는 지울 수 있다 1ms
+     × 목적 없음('none')이면 구조 규칙만 — 마지막 문의·예약 섹션도 지운다 · 목적 인자는 필수 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/engine/ops/sectionOps.test.ts > removeSection · restoreSection (5.4) > 목적 필수 조건을 canRemove 전체 판정으로 강제한다 — 예약 목적 마지막 예약 변형 (R-04)
+ FAIL  src/engine/ops/sectionOps.test.ts > removeSection · restoreSection (5.4) > 문의 목적 마지막 cta-band·contact 삭제 거부 (R-03) · 둘 중 하나는 지울 수 있다
+ Test Files  1 failed | 8 passed (9)
+      Tests  3 failed | 140 passed (143)
+ FAIL  src/engine/ops/sectionOps.test.ts > removeSection · restoreSection (5.4) > 목적 없음('none')이면 구조 규칙만 — 마지막 문의·예약 섹션도 지운다 · 목적 인자는 필수
+## FIX-L4A 2 RED (typecheck)
+src/engine/ops/sectionOps.test.ts(50,69): error TS2554: Expected 2 arguments, but got 3.
+src/engine/ops/sectionOps.test.ts(59,46): error TS2554: Expected 2 arguments, but got 3.
+src/engine/ops/sectionOps.test.ts(60,47): error TS2554: Expected 2 arguments, but got 3.
+
+## FIX-L4A 2 GREEN
+ Test Files  9 passed (9)
+      Tests  143 passed (143)
+typecheck exit 0
+
+## FIX-L4A 3 검증기 throw 0 RED (순환·깊이·validateProjectName은 이미 GREEN)
+     × throw하는 getter(루트·섹션·슬롯) → SCHEMA_INVALID 6ms
+     × 값을 돌려주는 getter도 거부하고 부르지 않는다 4ms
+     × setter만 있는 필드(읽으면 undefined)를 통과시키지 않는다 1ms
+     × 값이 undefined인 데이터 속성 = 누락 1ms
+     × 배열 원소 getter · 심볼 키 1ms
+     × 모든 trap이 throw하는 Proxy — 루트 0ms
+     × 모든 trap이 throw하는 Proxy — meta 0ms
+     × 모든 trap이 throw하는 Proxy — sections 0ms
+     × 모든 trap이 throw하는 Proxy — 섹션 1ms
+     × 모든 trap이 throw하는 Proxy — slots 0ms
+     × 모든 trap이 throw하는 Proxy — 이미지 source 0ms
+     × 폐기된 Proxy — 루트 0ms
+     × 폐기된 Proxy — sections 0ms
+     × 폐기된 Proxy — slots 0ms
+     × ownKeys가 거짓말하는 Proxy — 없는 키를 보고 · 있는 키를 숨김 · get이 다른 값을 줌 1ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 9 passed (10)
+      Tests  15 failed | 148 passed (163)
+
+## FIX-L4A 3 GREEN (슬롯 값 undefined 단언은 GREEN 단계에서 추가 — 한 줄 되돌려 RED 1 확인 후 복원)
+ Test Files  10 passed (10)
+      Tests  163 passed (163)

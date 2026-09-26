@@ -3,6 +3,7 @@ import { getSectionDefinition } from "../sections/registry";
 import { ids, sampleDoc, section, withSections } from "../testing/sampleDoc";
 import { diffSlotValues, diffSlots } from "./diff";
 import { hashDoc } from "./hash";
+import { REASONS } from "./reasons";
 import { addSection, moveSection, removeSection, restoreSection, swapVariant } from "./sectionOps";
 
 const doc = sampleDoc();
@@ -46,7 +47,7 @@ describe("addSection (5.3)", () => {
 
 describe("removeSection · restoreSection (5.4)", () => {
   it("지우고 되돌리기 정보(섹션·자리)를 돌려준다 · 되돌리면 원래 해시", () => {
-    const { doc: removed, undo } = removeSection(doc, "s-services");
+    const { doc: removed, undo } = removeSection(doc, "s-services", "none");
     expect(ids(removed)).not.toContain("s-services");
     expect(undo).toEqual({ section: at(doc, "s-services"), index: 3 });
     const restored = restoreSection(removed, undo);
@@ -55,19 +56,40 @@ describe("removeSection · restoreSection (5.4)", () => {
   });
 
   it("본문 5개 부근: 6 → 5 → 4 모두 허용(게이트 몫)", () => {
-    const five = removeSection(doc, "s-faq").doc;
-    expect(ids(removeSection(five, "s-about").doc)).toHaveLength(6);
+    const five = removeSection(doc, "s-faq", "none").doc;
+    expect(ids(removeSection(five, "s-about", "none").doc)).toHaveLength(6);
   });
 
   it("Header·Hero·Footer 삭제는 오류, 없는 id도 오류", () => {
     for (const id of ["s-header", "s-hero", "s-footer"]) {
-      expect(() => removeSection(doc, id)).toThrow(expect.objectContaining({ code: "NOT_ALLOWED" }));
+      expect(() => removeSection(doc, id, "none")).toThrow(expect.objectContaining({ code: "NOT_ALLOWED" }));
     }
-    expect(() => removeSection(doc, "nope")).toThrow(expect.objectContaining({ code: "NOT_FOUND" }));
+    expect(() => removeSection(doc, "nope", "none")).toThrow(expect.objectContaining({ code: "NOT_FOUND" }));
+  });
+
+  it("목적 필수 조건을 canRemove 전체 판정으로 강제한다 — 예약 목적 마지막 예약 변형 (R-04)", () => {
+    const booking = withSections(doc, doc.sections.map((s) => (s.instanceId === "s-contact" ? section("contact", "booking", "s-book") : s)));
+    const denied = expect(() => removeSection(booking, "s-book", "booking"));
+    denied.toThrow(expect.objectContaining({ code: "NOT_ALLOWED", message: REASONS.removeBooking }));
+    expect(ids(removeSection(booking, "s-book", "inquiry").doc)).not.toContain("s-book"); // cta-band가 남아 R-03 충족
+  });
+
+  it("문의 목적 마지막 cta-band·contact 삭제 거부 (R-03) · 둘 중 하나는 지울 수 있다", () => {
+    const onlyContact = removeSection(doc, "s-cta", "inquiry").doc;
+    expect(() => removeSection(onlyContact, "s-contact", "inquiry")).toThrow(expect.objectContaining({ code: "NOT_ALLOWED", message: REASONS.removeInquiry }));
+    const onlyCta = removeSection(doc, "s-contact", "inquiry").doc;
+    expect(() => removeSection(onlyCta, "s-cta", "inquiry")).toThrow(expect.objectContaining({ code: "NOT_ALLOWED", message: REASONS.removeInquiry }));
+  });
+
+  it("목적 없음('none')이면 구조 규칙만 — 마지막 문의·예약 섹션도 지운다 · 목적 인자는 필수", () => {
+    const onlyContact = removeSection(doc, "s-cta", "none").doc;
+    expect(ids(removeSection(onlyContact, "s-contact", "none").doc)).not.toContain("s-contact");
+    // @ts-expect-error — 목적 기본값 없음(필수 인자)
+    expect(() => removeSection(doc, "s-services")).toThrow(expect.objectContaining({ code: "BAD_VALUE" }));
   });
 
   it("같은 id가 이미 있으면 되돌리기 오류", () => {
-    const { undo } = removeSection(doc, "s-services");
+    const { undo } = removeSection(doc, "s-services", "none");
     expect(() => restoreSection(doc, undo)).toThrow(expect.objectContaining({ code: "BAD_ID" }));
   });
 });

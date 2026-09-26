@@ -531,7 +531,30 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 ## 10. 번들 (ADR-004)
 
-(작성 중)
+### 10.1 기준 · 목표
+- 기준(2a-04b1 REPORT 15.4, gzip KB, 첫 화면 / 진입 직후): `/compare` 99.48 / 124.43 — **여유 0.52 / 0.57** · `/profile` 99.18 / 118.79 · `/catalog` 99.02 · `/references/:id` 96.37. 공통 청크 약 88.7(2a-04a1 실측 88.69 이후 변화 L3).
+- 목표(L3 추정): **`/studio/:projectId` 첫 화면 ≤ 100 · 진입 직후 ≤ 125**, **`/projects` 첫 화면 ≤ 100 · 진입 직후 ≤ 125**. 예산 상수 무변경(ADR-004).
+- **원칙: 공통 청크 증가 금지.** 공통 청크가 늘면 그 양이 `/compare`(여유 0.52)에 그대로 더해진다. 공통에 닿는 변경은 같은 브랜치에서 상쇄해 **순증가 ≤ 0**을 실측으로 보인다. 상쇄할 수 없으면 멈추고 보고한다(예산을 올리지 않는다).
+
+### 10.2 규칙
+
+| # | 규칙 | 효과 · 근거 |
+|---|---|---|
+| S-B1 | **공통에 닿는 변경 목록(이것만)**: `routes.tsx` lazy 라우트 2개(`/projects`·`/studio/:projectId`) + `Navigate` 2개(`/studio`·`/profile`) · `AppHeader` 목적지 2개(`/projects`·`/compare?new=1`) + "프로젝트" 현재 표시 판정(`/profile/*` 포함) · `AppLayout` 집중 모드 분기(S-B2) · 저장소 연결(S-B3) | L3 추정 +0.15~0.3KB. **상쇄 1순위**: `/studio` 자리표시 삭제로 `PlaceholderPage` lazy import가 routes에서 빠진다(L1: `PlaceholderPage` 사용처 = `routes.tsx`·`test/renderApp.tsx`뿐). 2순위: "새 프로젝트" 버튼의 `useNavigate` 호출 → 버튼 모양 `Link`(훅·핸들러 제거). 3순위: BUNDLE-01 C8·2a-04b1 FIX3 방식(보드 첫 화면 코드 일부를 조작 뒤 청크로) |
+| S-B2 | 집중 모드 = `AppLayout`이 `pathname.startsWith("/studio/")`이면 `<AppHeader/>`를 그리지 않는다. **레이아웃 컴포넌트를 새로 만들지 않는다** — 건너뛰기 링크·`main`·오류 경계·Suspense 재사용 | 공통 수십 바이트. 편집기 툴바는 studio 청크 |
+| S-B3 | **새 deferred 래퍼를 공통에 두지 않는다.** 지금은 저장소마다 메서드 위임 래퍼가 `main.tsx`(공통)에 있다(L1: `createDeferredCompareBoardRepository`·`createDeferredProfileRepository`). `ProjectRepository`(메서드 약 11개)를 같은 방식으로 더하면 공통이 는다 → 기존 `loadStudio` 공유 로더 **핸들 하나**를 컨텍스트로 넘기고, 메서드 위임은 `/projects`·`/studio` 라우트 청크 안에서 만든다 | 공통 = prop 1개(수십 바이트). Developer가 실측 후 확정 — 현행 방식이 더 싸면 그쪽을 보고 |
+| S-B4 | 청크 나눔 — **첫 화면**(`StudioPage` 청크): 툴바 · 배치 셸(3단·2단·탭) · 섹션 목록 · 캔버스 와이어프레임 그리기 · 편집 패널 필드 · 게이트 목록 **표시** · 자동 저장 훅 · 알림 영역 · 충돌·실패 문구. **진입 직후 엔진**(자동 dynamic import): L4 문서 연산 · `runGate` · 슬롯 스키마·섹션 정의 · 검증 함수 · 메모리 구현 확장분 | 목표(L3): 첫 화면 청크 ≤ 9KB → ≈ 98KB · 엔진 ≤ 20KB → ≈ 118KB. `/projects` 청크 ≤ 4KB(목록 · 이름 바꾸기) |
+| S-B5 | **조작 뒤 로드**(예산 밖, 크기만 출력 — 2a-04 Q-F4-1 분류: 사용자 조작으로만 참이 되는 조건): 섹션 추가 대화상자(유형 설명·변형 썸네일) · 스냅샷 대화상자·미리보기 · 내보내기(경고 확인 대화상자 · 잡 조회) · 변형 교체 목록(`diffSlots` 캡션) · 테마 바꾸기 대화상자(버전 요약 문장) · "더보기" 메뉴 · 이미지 파일 고르기(EQ-3) | 브리프 10의 후보 4종 + 3종. 자동으로 뜨는 상태(`STALE_DOC`·저장 실패·오프라인)는 **조작 뒤가 아니다** → 첫 화면 청크에 둔다(자동 조건부 import는 진입 직후 합계에 포함 — 2a-04 P-B9 규칙) |
+| S-B6 | 새 부품(Tabs · Switch · `dialog` 래퍼 · "더보기")은 **`components/studio/` 안, studio 청크 전용.** `components/ds`에 넣지 않는다 | 다른 라우트와 공유 청크 0 — 청크 경계당 약 +0.5KB가 `/catalog`·`/compare`로 새는 것 방지(2a-04 P-B7, BUNDLE-01 2.3). DS 승격은 별도 작업 |
+| S-B7 | **아이콘 파일 추가 0**(2a-04 P-B3). 쓰는 것: `chevron-left`(돌아가기) · `plus`(섹션 추가) · `warning`·`circle-check`(장식) · `chevron-down`(펼침). 목업 `clock`·`external`·`layers`·`trash`·`download`·`check-circle`은 쓰지 않고 글자로 | 공통 0 |
+| S-B8 | `import type` 필수(2a-04 P-B5) — 라우트·엔진이 타입만 쓰는 import | 숨은 증가 0 |
+| S-B9 | **보드 확정 대상 선택(J-S09·J-S10)은 보드 첫 화면 청크**에 든다(확정 전에 보여야 함). L1: `SegmentedControl`은 보드가 쓰지 않는다(사용처 = 카탈로그·상세) → 보드에서 import하면 공유 청크 경계가 생긴다. 그래서 **네이티브 `fieldset` + 라디오 2개**(보드 청크 안) + 문구 3개 | L3 +0.1~0.2KB → `/compare` 첫 화면 여유 0.52 안인지 **12.2 단계 첫 작업으로 실측**. 넘치면 S-B1 3순위 방식으로 상쇄 후 보고 |
+| S-B10 | `/profile` 목록 코드(P-S04·S05 목록 부분)는 `/projects`로 옮겨지고 `/profile` 청크에서 빠진다(12.1) | `/profile` 청크 감소 |
+| S-B11 | 측정 시나리오 추가: `/projects` · `/studio/:projectId`(문서 있음). 단계마다 `/compare` · `/compare (조정 있음)` · `/profile` · `/catalog` · `/references/:id` 재측정, 공통 청크 전후를 따로 보고 | ADR-004 |
+
+### 10.3 편집기 조작의 성능
+- FR-EDT-01 폭 전환 1초: 프레임 폭 CSS 변경만(재계산 없음). 게이트는 500ms 디바운스(5.12), 자동 저장 2초 디바운스(5.10) — 입력 중 동기 계산은 문서 연산 1회뿐.
+- 캔버스는 선택 섹션만 다시 그리도록 섹션 단위 메모이제이션(`instanceId` 키). 섹션 수 상한 11(header + 본문 9 + footer)이라 가상화는 필요 없다.
 
 ## 11. 수용 기준 · 목업과 다르게 한 곳
 

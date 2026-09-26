@@ -1,11 +1,11 @@
 /**
  * 보드·프로필 메모리 저장소가 함께 쓰는 저장 모듈 (DS-2A-04 SPEC 6.3). 프로필 계열(버전 레코드)과
- * 보드 확정의 멱등 기록을 둔다. 모듈 싱글턴이 아니라 팩토리다 — 렌더·테스트마다 새로 만들어 id가 늘 `profile-1`부터.
+ * 보드 확정·조정 저장의 멱등 기록(각각 따로)을 둔다. 모듈 싱글턴이 아니라 팩토리다 — 렌더·테스트마다 새로 만들어 id가 늘 `profile-1`부터.
  * 쓰기는 `transact` 한 동기 구간에서만: work가 던지면 그 안의 쓰기를 모두 버린다(커밋 전 실패 롤백, 6.3 r3).
  */
 import type { ProfileHead, ProfileVersion } from "../domain/profile";
 
-/** 보드 확정의 마지막 커밋 — 키 = (보드 id, 호출자가 본 revision, expectedLatest) */
+/** 마지막 커밋 — 보드 확정 키 = (보드 id, 호출자가 본 revision, expectedLatest) · 조정 저장 키 = (profileId, expectedLatest, 정규화한 조정) */
 export interface IdempotentCommit {
   readonly key: string;
   readonly profileId: string;
@@ -15,6 +15,8 @@ export interface IdempotentCommit {
 interface StudioState {
   readonly series: ReadonlyMap<string, readonly ProfileVersion[]>;
   readonly commits: ReadonlyMap<string, IdempotentCommit>;
+  /** 조정 저장 멱등 기록 — 보드 `commits` 슬롯과 따로 둔다(같이 쓰면 보드 확정 재시도가 조정 저장에 덮여 A-Q4가 깨진다) */
+  readonly adjustCommits: ReadonlyMap<string, IdempotentCommit>;
 }
 
 export interface StudioReader {
@@ -23,6 +25,8 @@ export interface StudioReader {
   versions(profileId: string): readonly ProfileVersion[];
   /** 계열의 마지막 보드 확정 커밋 */
   commitOf(profileId: string): IdempotentCommit | undefined;
+  /** 계열의 마지막 조정 저장 커밋 */
+  adjustCommitOf(profileId: string): IdempotentCommit | undefined;
 }
 
 export interface StudioTx extends StudioReader {
@@ -30,6 +34,7 @@ export interface StudioTx extends StudioReader {
   /** 계열 최신 + 1 번호만 받는다 — 번호 중복·건너뜀 0 */
   insert(record: ProfileVersion): void;
   remember(commit: IdempotentCommit): void;
+  rememberAdjust(commit: IdempotentCommit): void;
 }
 
 export interface StudioStore extends StudioReader {
@@ -51,11 +56,12 @@ function readerOf(read: () => StudioState): StudioReader {
     profileIds: () => [...read().series.keys()],
     versions: (profileId) => read().series.get(profileId) ?? [],
     commitOf: (profileId) => read().commits.get(profileId),
+    adjustCommitOf: (profileId) => read().adjustCommits.get(profileId),
   };
 }
 
 export function createStudioStore(): StudioStore {
-  let state: StudioState = { series: new Map(), commits: new Map() };
+  let state: StudioState = { series: new Map(), commits: new Map(), adjustCommits: new Map() };
   return {
     ...readerOf(() => state),
     transact(work) {
@@ -71,6 +77,9 @@ export function createStudioStore(): StudioStore {
         },
         remember(commit) {
           draft = { ...draft, commits: new Map(draft.commits).set(commit.profileId, commit) };
+        },
+        rememberAdjust(commit) {
+          draft = { ...draft, adjustCommits: new Map(draft.adjustCommits).set(commit.profileId, commit) };
         },
       };
       const result = work(tx);

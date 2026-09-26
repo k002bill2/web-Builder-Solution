@@ -145,6 +145,57 @@ describe("조정 저장 saveAdjustments (6.3)", () => {
   });
 });
 
+describe("Q1 조정 저장 멱등 — 키 = (profileId, expectedLatest, 정규화한 조정) 별도 기록 (6.3 r3 계약)", () => {
+  /** saveAdjustments 첫 호출의 응답 단계에서 거부 — 커밋은 끝났고 호출자만 실패를 본다 */
+  const dropFirstResponse = (call: ProfileCall) =>
+    call.method === "saveAdjustments" && call.phase === "response" && call.seq === 1 ? Promise.reject(new Error("응답 끊김")) : undefined;
+
+  it("I-1: 커밋 뒤 응답 실패 → 같은 인자로 다시 저장하면 STALE 없이 같은 버전, 새 버전 0 (정규화가 같으면 같은 키)", async () => {
+    const { board, profiles, versionsOf } = setup({ delay: dropFirstResponse });
+    await board.confirmProfile(1, 0);
+    expect(await errorOf(profiles.saveAdjustments("profile-1", 1, { motion: "L0", density: "compact" }))).toMatchObject({ message: "응답 끊김" });
+    expect((await versionsOf()).map((v) => v.version)).toEqual([1, 2]);
+    const retry = await profiles.saveAdjustments("profile-1", 1, { density: "compact", motion: "L0", corrections: [] });
+    expect(retry).toMatchObject({ profileId: "profile-1", version: 2, origin: "adjust", adjustments: { density: "compact", motion: "L0" } });
+    expect(retry).toEqual((await versionsOf())[1]);
+    expect((await versionsOf()).map((v) => v.version)).toEqual([1, 2]);
+  });
+
+  it("I-2: 같은 expectedLatest라도 다른 조정이면 멱등 결과가 아니라 기존 판정 STALE_PROFILE(최신 동봉) · 모르는 키를 붙인 재시도는 SCHEMA_INVALID", async () => {
+    const { board, profiles, versionsOf } = setup({ delay: dropFirstResponse });
+    await board.confirmProfile(1, 0);
+    await errorOf(profiles.saveAdjustments("profile-1", 1, { density: "compact" }));
+    const other = await errorOf(profiles.saveAdjustments("profile-1", 1, { motion: "L0" }));
+    expect(other?.code).toBe("STALE_PROFILE");
+    expect(other?.series?.latestVersion).toBe(2);
+    expect((await errorOf(profiles.saveAdjustments("profile-1", 1, { density: "compact", speed: "fast" } as ProfileAdjustments)))?.code).toBe("SCHEMA_INVALID");
+    expect((await errorOf(profiles.saveAdjustments("profile-1", 2, { density: "compact" })))?.code).toBe("SCHEMA_INVALID");
+    expect((await versionsOf()).map((v) => v.version)).toEqual([1, 2]);
+  });
+
+  it("I-3: 커밋 단계 실패 → 버전·멱등 기록 모두 롤백, 주입을 끄고 같은 인자로 다시 저장하면 성공(번호 건너뜀 0)", async () => {
+    let failing = true;
+    const { store, board, profiles, versionsOf } = setup({ fail: (call) => (failing && call.method === "saveAdjustments" && call.phase === "commit" ? new Error("커밋 실패") : undefined) });
+    await board.confirmProfile(1, 0);
+    expect(await errorOf(profiles.saveAdjustments("profile-1", 1, { density: "compact" }))).toMatchObject({ message: "커밋 실패" });
+    expect((await versionsOf()).map((v) => v.version)).toEqual([1]);
+    expect(store.adjustCommitOf("profile-1")).toBeUndefined();
+    failing = false;
+    expect(await profiles.saveAdjustments("profile-1", 1, { density: "compact" })).toMatchObject({ version: 2, adjustments: { density: "compact" } });
+    expect((await versionsOf()).map((v) => v.version)).toEqual([1, 2]);
+  });
+
+  it("보드 확정 commits 슬롯을 쓰지 않는다(A-Q4) — 조정 저장 뒤에도 보드 확정의 같은 키 재시도는 커밋된 결과", async () => {
+    const { store, board, profiles } = setup();
+    await board.confirmProfile(1, 0);
+    const boardCommit = store.commitOf("profile-1");
+    await profiles.saveAdjustments("profile-1", 1, { density: "compact" });
+    expect(store.commitOf("profile-1")).toBe(boardCommit);
+    expect(store.adjustCommitOf("profile-1")).toMatchObject({ profileId: "profile-1", version: 2 });
+    expect(await board.confirmProfile(1, 0)).toEqual({ profileId: "profile-1", version: 1 });
+  });
+});
+
 describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () => {
   it("P-AC-20: 조정 있는 v2 뒤 팔레트를 바꿔 재확정 → v3 base = 보드 초안, 밀도는 이어받고 팔레트가 바뀐 역할의 보정은 빠짐(dropped 기록)", async () => {
     const { board, profiles, reconfirm, versionsOf } = setup();

@@ -1,0 +1,15 @@
+# D-2A4B2-01 재현 콘솔 (ego-browser CDP Runtime, 2026-09-27, 127.0.0.1:4341 dist)
+절차: /catalog → 모던 카페 브랜드·프리미엄 헤어살롱 비교 추가 → 보드 Hero A → "프로필 확정 (v1)" → /profile 대비 "강화" → "조정 저장 (v2)"(성공)
+→ "비교 보드에서 선택 바꾸기" → 카드 스타일 B(엘리베이티드 · 다크) 선택 → "새 버전으로 확정 (v3)"
+결과: 이벤트 profile_saved v1 board · v2 adjust · v3 board-reconfirm (저장됨) → /profile/profile-1 = RouteErrorBoundary "화면을 불러오지 못했습니다"
+console.error:
+Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #8B5E3C
+    at u (assets/contrast-BrgKPfuR.js:1:933)            ← domain/contrast.ts nearestCompliantColor throw
+    at assets/profileContrast-BrX1VerU.js:1:957
+    at Array.flatMap
+    at l (assets/profileContrast-BrX1VerU.js:1:832)      ← 보정 제안(역할별 최저 배경) 계산
+    at ie (assets/profileEngine-0UE9gJ2G.js:1:9218)
+    at ce (assets/profileEngine-0UE9gJ2G.js:1:10430)
+console.error "[route] 화면 렌더 실패" + 같은 Error
+별도 경로(같은 기전): 같은 팔레트 A + 카드 B로 확정된 프로필 화면에서 대비 라디오 "강화" 클릭 즉시 같은 오류 경계 (screens/11)
+독립 계산(logs/contrast-independent-crash.txt): #8B5E3C 위 흰색 5.579 · 검정 3.764 → 어떤 색도 7.0 불가 (ink/primary C-3 강화 목표)

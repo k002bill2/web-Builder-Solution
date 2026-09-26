@@ -1,0 +1,58 @@
+{
+ "tabStops": [
+  "a:비교 보드에서 선택 바꾸기 vis=true",
+  "summary:섹션 9 · 순서 보기 vis=true",
+  "a:모던 카페 브랜드 vis=true",
+  "radio:촘촘 [group 밀도] vis=true",
+  "radio:기본 AA [group 대비] vis=true",
+  "radio:L0 없음 [group 모션] vis=true",
+  "radio:정하지 않음 [group 사이트 목적] vis=true",
+  "button:조정 저장 (v3) (aria-disabled) vis=true",
+  "button:보기 (v1) vis=true",
+  "button:현재와 비교 (v1) vis=true",
+  "body:본문으로 건너뛰기Design Studio카탈로그보관함비 vis=false",
+  "a:본문으로 건너뛰기 vis=true",
+  "a:Design Studio vis=true",
+  "a:카탈로그 vis=true",
+  "a:보관함 vis=true",
+  "a:비교 보드 vis=true",
+  "a:프로젝트 vis=true",
+  "button:새 프로젝트 vis=true",
+  "a:비교 보드에서 선택 바꾸기 vis=true",
+  "summary:섹션 9 · 순서 보기 vis=true",
+  "a:모던 카페 브랜드 vis=true",
+  "radio:촘촘 [group 밀도] vis=true",
+  "radio:기본 AA [group 대비] vis=true",
+  "radio:L0 없음 [group 모션] vis=true",
+  "radio:정하지 않음 [group 사이트 목적] vis=true",
+  "button:조정 저장 (v3) (aria-disabled) vis=true",
+  "button:보기 (v1) vis=true",
+  "button:현재와 비교 (v1) vis=true",
+  "body:본문으로 건너뛰기Design Studio카탈로그보관함비 vis=false",
+  "a:본문으로 건너뛰기 vis=true"
+ ],
+ "ax": [
+  {
+   "role": "status",
+   "name": "프로필 알림",
+   "live": "polite"
+  },
+  {
+   "role": "radiogroup",
+   "name": "밀도"
+  },
+  {
+   "role": "radiogroup",
+   "name": "대비"
+  },
+  {
+   "role": "radiogroup",
+   "name": "모션",
+   "desc": "높음(L3)은 생성 상한 밖이라 고를 수 없습니다"
+  },
+  {
+   "role": "radiogroup",
+   "name": "사이트 목적"
+  }
+ ]
+}

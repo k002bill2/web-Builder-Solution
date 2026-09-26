@@ -1,0 +1,37 @@
+{
+ "url": "/profile/profile-1",
+ "confirmClickMark_ms": 51365,
+ "beforeConfirm": [
+  "Callout-DHO2nC7D.js",
+  "CatalogPage-Df4qsuI-.js",
+  "CompareBoardPage-C0b7CX13.js",
+  "ProfilePage-4nGmtoit.js",
+  "SegmentedControl-zPrC4Due.js",
+  "TextField-ItWGioFb.js",
+  "boardEngine-B6pkSmVj.js",
+  "catalogFilters-CTS9InfW.js",
+  "compareTray-DvzB3uN-.js",
+  "contrast-BrgKPfuR.js",
+  "index-DXH0Jfcy.js",
+  "memoryStudio-flO04QmH.js",
+  "profileDraft-BjrMkv-F.js",
+  "profileEvents-BZQzo2FC.js",
+  "profileRepository-Cf1X6rgu.js",
+  "react-DB-4Zxce.js",
+  "referenceComparisons-BjFXZkfz.js",
+  "referenceDetails-C7TYk5GK.js",
+  "referenceDisplay-B78_5lyV.js",
+  "references-Dy8ZbmG9.js",
+  "rovingFocus-C627c-M6.js",
+  "sectionLibrary-50WmVJEd.js",
+  "useThrowToBoundary-e3Nrf3la.js"
+ ],
+ "fromConfirmToProfileReady": [
+  "memoryBoardConfirm-DIuILJPb.js@51365",
+  "profileEngine-0UE9gJ2G.js@51382",
+  "effectiveProfile-BPr26m_7.js@51382",
+  "profileContrast-BrX1VerU.js@51382",
+  "adjustmentText-C8m9Grsn.js@51382"
+ ],
+ "memoryProfileAdjust": 0
+}

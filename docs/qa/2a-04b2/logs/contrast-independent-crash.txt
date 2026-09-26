@@ -1,0 +1,5 @@
+ref-a primary #8B5E3C white 5.579 black 3.764 max<7? true
+ref-c primary #1F5FBF white 6.091 black 3.447 max<7? true
+ref-e primary #6541F2 white 5.847 black 3.592 max<7? true
+ref-b ink/primary #C9A96E white 2.238 black 9.384 max<7? false
+ink #2C2C2C / #8B5E3C 2.503

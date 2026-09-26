@@ -1,0 +1,11 @@
+## 1절 runGate · 2절 createDocFromCandidate RED (02:04:21)
+ FAIL  src/engine/doc/createDocFromCandidate.test.ts [ src/engine/doc/createDocFromCandidate.test.ts ]
+Error: Failed to resolve import "../gate/runGate" from "src/engine/doc/createDocFromCandidate.test.ts". Does the file exist?
+ FAIL  src/engine/gate/docRows.test.ts [ src/engine/gate/docRows.test.ts ]
+Error: Failed to resolve import "./gateText" from "src/engine/gate/docRows.test.ts". Does the file exist?
+ Test Files  4 failed (4)
+      Tests  no tests
+ FAIL  src/engine/gate/gateText.test.ts [ src/engine/gate/gateText.test.ts ]
+Error: Cannot find module './gateText' imported from /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-b/app/src/engine/gate/gateText.test.ts
+ FAIL  src/engine/gate/runGate.test.ts [ src/engine/gate/runGate.test.ts ]
+Error: Failed to resolve import "./gateText" from "src/engine/gate/runGate.test.ts". Does the file exist?

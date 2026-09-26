@@ -60,8 +60,8 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
   let carryOver: CarryOver | undefined;
   /**
    * 계열 최신에 조정이 있을 때만 규칙을 받는다 — 첫 확정·조정 없는 재확정은 기다리지 않는다(기존 확정 타이밍 유지).
-   * 받은 뒤 동기 구간에서 최신이 바뀌었으면 expectedLatest 판정(STALE_PROFILE)이 먼저 거른다 — 버전은 추가만 되므로
-   * 동기 구간의 최신이 expectedLatest와 같으면 여기서 본 최신과 같은 레코드다.
+   * 받은 뒤 동기 구간에서 최신이 바뀌었으면 대개 expectedLatest 판정(STALE_PROFILE)이 먼저 거른다. 호출자가 아직 없던
+   * 번호를 기대했다면 confirmInto가 STALE_PROFILE로 돌려보낸다.
    */
   const prepareCarryOver = async (profileId: string | undefined) => {
     if (!carryOver && profileId !== undefined && hasAdjustments(store.versions(profileId).at(-1))) carryOver = await loadCarryOver();
@@ -132,7 +132,9 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     const base = withBusinessInfoFooter(draft.profile, library);
     // 재확정 = 필드 단위 이어받기 (6.1-3). 기준 = 보드가 확정한 버전의 base, 이어받을 조정 = 계열 최신 — 보드 패널(P-S25)과 같은 함수·입력
     const confirmedBase = latest && store.versions(latest.profileId).find((v) => v.version === board.confirmed?.version)?.base;
-    if (hasAdjustments(latest) && !carryOver) throw new Error("이어받기 규칙을 불러오기 전에 재확정했습니다");
+    // 규칙 준비 뒤 요청 지연 중에 조정 버전이 생겼고 호출자가 그 번호를 기대했다 — 일반 오류가 아니라 STALE_PROFILE로 돌려
+    // 호출자가 최신을 다시 읽고 확정하게 한다(다음 호출은 규칙을 받는다, Codex P2)
+    if (hasAdjustments(latest) && !carryOver) throw new CompareBoardError("STALE_PROFILE", "이어받을 조정이 새로 생겼습니다", undefined, latest && headOf(latest));
     const plan = latest && confirmedBase && carryOver && hasAdjustments(latest) ? carryOver(confirmedBase, latest.adjustments, base) : undefined;
     const result = store.transact((tx): ConfirmResult => {
       const id = profileId ?? tx.nextProfileId();

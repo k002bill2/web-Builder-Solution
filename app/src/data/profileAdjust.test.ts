@@ -8,7 +8,8 @@ import { carryOverAdjustments, effectiveProfile } from "../domain/profileAdjustm
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
 import { deferred } from "../test/deferred";
 import type { Picks } from "../domain/compareBoard";
-import { createMemoryCompareBoardRepository } from "./memoryCompareBoardRepository";
+import { CompareBoardError } from "./compareBoardRepository";
+import { createMemoryCompareBoardRepository, type BoardCall } from "./memoryCompareBoardRepository";
 import { createMemoryProfileRepository, type ProfileCall } from "./memoryProfileRepository";
 import { ProfileError } from "./profileRepository";
 import { createStudioStore } from "./studioStore";
@@ -218,5 +219,29 @@ describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () =
     const { board: loaded } = await board.getBoard();
     const [v1] = await versionsOf();
     expect(loaded.confirmed).toMatchObject({ version: 1, latestVersion: 2, latest: { version: 2, adjustments: { density: "compact" } }, confirmedBase: v1!.base });
+  });
+
+  it("Codex P2: 규칙을 받지 않은 채 동기 구간에서 조정이 보이면(요청 지연 중 끼어든 조정 저장) STALE_PROFILE(최신 동봉) — 다시 확정하면 이어받는다", async () => {
+    const gate = deferred<void>();
+    let hold = false;
+    const store = createStudioStore();
+    const delay = (call: BoardCall) => (hold && call.method === "createProfileVersion" && call.phase === "request" ? gate.promise : undefined);
+    const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, now: NOW, initialBoard: boardOf(IDS, { hero: "ref-a" }), store, delay });
+    const profiles = createMemoryProfileRepository({ store, now: NOW });
+    await board.confirmProfile(1, 0);
+    const saved = await board.savePicks({ hero: "ref-c" }, {}, 1);
+    hold = true;
+    // 호출자가 곧 생길 v2를 기대 최신으로 보낸다 — 규칙 준비 시점엔 v1(조정 없음)이라 받지 않는다
+    const racing = board.createProfileVersion("profile-1", saved.revision, 2).catch((error: unknown) => error);
+    await profiles.saveAdjustments("profile-1", 1, { density: "compact" });
+    gate.resolve();
+    const error = await racing;
+    expect(error).toBeInstanceOf(CompareBoardError);
+    expect((error as CompareBoardError).code).toBe("STALE_PROFILE");
+    expect((error as CompareBoardError).profileHead?.version).toBe(2);
+    hold = false;
+    const retried = await board.createProfileVersion("profile-1", saved.revision, 2);
+    expect(retried.version).toBe(3);
+    expect((await profiles.getProfile("profile-1"))!.versions.at(-1)!.adjustments).toEqual({ density: "compact" });
   });
 });

@@ -147,3 +147,52 @@
 4. **범위 조회와 쓰기 본문 분리**(3절): 브리프는 "진입 때 자동 호출하면 본문 청크를 자동으로 분류"였다. 자동으로 넣으면 126.5KB로 초과라, 범위 조회가 본문을 받지 않게 바꿔 본문은 조작 뒤로 남겼다. 이 방식을 SPEC P-B9·7절에 적을지.
 5. **대비·사이트 목적만 바꾼 버전의 요약**: 적용값에 없는 두 조정을 비교·요약 행("대비"·"사이트 목적")으로 더했다. 비교 표에도 두 줄이 는다. SPEC 3.5에 반영할지.
 6. **`summarizeVersion`(기존, base 기준)**: 화면은 이제 `summarizeVersions`(적용값)를 쓰고, 기존 함수는 `profileDiff.test.ts`만 쓴다. 지울지(테스트도 옮겨야 함) 유지할지.
+
+## 12. FIX-2A04b2 — 번들 멈춤 조건으로 중단 (F1 코드 미커밋 · F2·F3 미착수)
+- 브리프 `docs/06-handoff/FIX-2A04b2_DEVELOPER_BRIEF.md` 2절: "어느 시나리오든 여유 < 0.3이면 멈추고 근거 커밋(예산 변경 없이)". F1 헬퍼만으로 **`/compare` 진입 직후 여유 0.24 · `/profile` 진입 직후 여유 0.25**가 되어 멈췄다. 예산 상수는 건드리지 않았다.
+- 근거 수준: 번들 수치 = L1(빌드 실측 `logs/fix-f1-bundle-*.txt`) · WebKit·preload 래퍼 문장 관련 = L2(추정, 실측 없음)
+
+### 12.1 커밋
+| 해시 | 내용 |
+|---|---|
+| (이 커밋) | REPORT 12절 + F1 패치·RED/GREEN 로그·번들 전/후 로그. **`app/src` 변경 0** (패치는 되돌림) |
+
+### 12.2 F1에서 한 것 (패치로만 보존: `logs/fix-f1-helper.patch`, `git apply --check` 통과)
+- `app/src/data/chunkRetry.ts` `retryableImport(chunk, load, importUrl?)`:
+  - 첫 시도는 정적 `import()` 그대로(manifest 키·분류 유지). 받은 모듈(Promise)은 기억해 다시 받지 않는다.
+  - 실패하면 오류 문장에서 `location.origin + BASE_URL + "assets/" + <청크> + "-"` 뒤의 `[\w-]+.js`만 읽어 **URL을 여기서 다시 조립**하고, 다음 호출은 `?retry=N`(매번 증가)으로 받는다. 다른 출처·`/src`·`/api`·다른 청크·경로 끼워 넣기·userinfo 속이기는 거부 → 원래 오류를 그대로 던지고 다음에도 정적 `import()`.
+- 적용: `writeBodyLoader`(`loadBoardConfirm`·`loadProfileWrites`) · `carryOverLoader` · `memoryBoardConfirm`의 `loadCarryOver`(재확정 이어받기 규칙 `profileAdjustments`, 조작 뒤 청크 안이라 추가 비용 0). 자동 로더(`boardEngine`·`profileEngine`·`memoryStudio`·픽스처)는 싸지 않음 — 실패하면 경계로 가는 기존 동작.
+- 테스트: `chunkRetry.test.ts` 12건(성공 뒤 재요청 0 · 실패 → `?retry=1` 성공 · `?retry=2` 증가 · Firefox 문장 · 거부 6종 · URL 없는 오류 · 겹친 호출) + `chunkRetryWiring.test.ts` 1건(조작 뒤 로더 4개가 싸여 있고 청크 이름 = 모듈 파일 이름).
+  - RED: `logs/fix-f1-red.txt`(헬퍼 없음 · 배선 `[]`) → GREEN: `logs/fix-f1-green.txt`(13/13). 압축판도 typecheck 0 · lint 0.
+
+### 12.3 번들 (gzip KB, 진입 직후 자동 로드 포함 / 예산 125)
+| 시나리오 | 전 (`fix-f1-bundle-before.txt`) | F1 v1 (첫 구현, 로그 없음·콘솔 실측) | F1 v2 압축 (`fix-f1-bundle-after.txt`) | v2 여유 |
+|---|---|---|---|---|
+| `/compare` · `/compare (조정 있음)` | 124.60 | 124.79 (+0.19) | 124.76 (+0.16) | **0.24** |
+| `/profile` | 124.57 | 124.77 (+0.20) | 124.75 (+0.18) | **0.25** |
+| 첫 화면(모든 라우트) | 변화 ±0.01 | ±0.01 | ±0.01 | ≥ 0.40 |
+- 헬퍼는 공유 청크 `profileDraft`(`memoryStudio`·`boardEngine`이 정적 import, 두 라우트 모두 진입 직후)로 들어간다. 진입 직후 경로 어디에 두어도 비용은 같다.
+- 지연 로드로 뺄 수 없다: 헬퍼는 실패 **시점**에 이미 받아져 있어야 한다. 재시도 때 받게 하면 오프라인 중 누른 "다시 시도"에서 헬퍼 청크 자체가 실패 캐시에 걸린다.
+- 압축(오류 분석을 `split` 한 줄로, 상태 3개) 뒤에도 +0.16 — 거부 규칙(출처·경로·청크 이름)을 빼지 않는 한 0.1 이하는 어렵다고 판단(L2).
+
+### 12.4 하지 않은 것 (멈춤으로 미실시)
+- F1 화면 테스트 2건(`WriteBodyLoad`·`CompareBoardCarryOver`에서 정적 import가 **계속** 실패하는 브라우저 흉내 → "다시 시도" → 성공)
+- 127.0.0.1:4337 브라우저 확인(차단 → 해제 → 다시 시도 · `?retry=1` 요청 200) — preview 서버는 띄우지 않았다
+- F2(없는 `?v=` 안내 해제) · F3(좁은 폭 버전 비교 `dl`) — 둘 다 `/profile` 진입 직후 여유를 F1과 나눠 쓰므로(F2 `ProfilePage`, F3 `profileEngine`) 결정 전에 쓰지 않았다. 비용 미측정
+- 검증 4종 + 전체 5회 · Codex 리뷰 — 커밋할 코드가 없어 미실시
+
+### 12.5 남은 위험 (패치를 적용할 경우)
+- WebKit(Safari) 오류 문장 "Importing a module script failed."에는 URL이 없다 → 이 수정이 적용되지 않고 지금처럼 계속 실패한다. Firefox 문장 형식은 단위 테스트로만 확인(실측 없음).
+- 실패한 것이 청크의 **정적 의존 청크**(예: `carryOverPanel` 밑의 `profileAdjustments`)면 최상위만 새 URL로 받아도 의존 청크 URL이 그대로라 복구되지 않는다.
+- 실제 Chromium에서 Vite preload 래퍼를 거친 오류 문장에 URL이 남는지는 빌드 코드 확인(래퍼가 원래 오류를 다시 던짐)과 단위 테스트 흉내뿐 — 브라우저 실측 전이다.
+
+### 12.6 설계 질문 (하나를 골라 주세요)
+1. **(a) F1에 한해 여유 0.24 / 0.25 허용** — 멈춤선(0.3)만 F1에 예외. 이후 F2·F3가 `/profile` 여유를 더 줄인다(0.25에서 시작).
+2. **(b) 다른 진입 직후 코드를 조작 뒤로 옮겨 상쇄** — 별도 과제(범위 확장이라 이번에 하지 않음).
+3. **(c) F1 보류, F2·F3 먼저** — 둘의 비용을 재고 남은 여유로 F1을 다시 판단.
+
+### 12.7 결정 뒤 재개 절차
+1. `git apply dev/active/2a-04b2/logs/fix-f1-helper.patch`
+2. 화면 테스트 2건 RED(헬퍼 없이 계속 실패) → GREEN
+3. `vite preview --host 127.0.0.1 --port 4337`에서 확정·P-S25(·되돌리기) 차단 → 해제 → 다시 시도, `?retry=1` 200 로그·캡처 → 서버 종료(`lsof`)
+4. F2·F3(결정에 따라) → 검증 4종 + 5회 → Codex `review --wait --scope branch --base fd323a6`

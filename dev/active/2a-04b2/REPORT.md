@@ -196,3 +196,66 @@
 2. 화면 테스트 2건 RED(헬퍼 없이 계속 실패) → GREEN
 3. `vite preview --host 127.0.0.1 --port 4337`에서 확정·P-S25(·되돌리기) 차단 → 해제 → 다시 시도, `?retry=1` 200 로그·캡처 → 서버 종료(`lsof`)
 4. F2·F3(결정에 따라) → 검증 4종 + 5회 → Codex `review --wait --scope branch --base fd323a6`
+
+## 13. FIX-2A04b2 재개 (영환님 A — F1 보류, F2·F3만) — F2 완료 · F3 번들 멈춤 조건으로 중단
+- 브리프 0절: F1(청크 재시도)은 보류(FIX-CHUNK-RETRY로 분리), `logs/fix-f1-helper.patch`는 적용하지 않음. 이번 범위 F2 + F3. 12절은 그대로 둠.
+- 결과: **F2 커밋 완료**(여유 0.41). **F3는 구현·테스트 GREEN까지 했으나 `/profile` 진입 직후 여유 0.14 < 0.3이라 브리프 2절대로 멈춤** — 코드는 패치로만 보존하고 되돌림(`app/src`의 F3 변경 0). 예산 상수 변경 없음.
+- 근거 수준: 번들·테스트·브라우저 수치 = L1(`logs/fix-f2-*`, `fix-f3-*`, `fix-final-*`) · "F3 dl 부분의 비용 ≈ +0.22" = L1 두 빌드의 차(전체 F3 124.86 − 클래스만 124.64) · WebKit·Firefox 동작 = 미확인
+
+### 13.1 커밋
+| 해시 | 내용 |
+|---|---|
+| `d10ca46` | fix: 유효한 버전으로 이동하면 없는 `?v=` 알림 문장을 거둔다 (D-2A4-04 · F2) — 코드 + RED/GREEN·번들·브라우저 전 로그 |
+| (이 커밋) | REPORT 13절 + F3 패치·RED/GREEN·번들 로그 + 검증 4종·5회 로그 + 스모크 캡처·F2 브라우저 후 로그 |
+
+### 13.2 F2 — 없는 `?v=` 안내 해제 (D-2A4-04 P3)
+- 브라우저 재현(수정 전, L1 `logs/fix-f2-browser-before.txt`): **보이는 Callout은 이미 유효 버전 이동 시 사라짐**("v2를 보고 있습니다 · 현재 v3"으로 바뀜). 남은 것은 sr-only "프로필 알림" 문장뿐 — QA가 "Callout"으로 적은 것은 이 알림 문장이거나 이전 버전 Callout으로 보인다(추정).
+- 수정: `useProfileDetail.withdraw(text)` — **그 문장이 아직 알림 영역에 있을 때만** 비운다(되돌리기 완료·"조정 N개를 지웠습니다" 같은 뒤의 알림은 보존). `ProfileView`의 없는 버전 effect가 cleanup에서 `withdraw(missing)` — popstate·앱 버튼·링크 모든 경로가 요청 값 변화로 수렴하므로 한 곳에서 처리. a2 N1(같은 문장 재알림, `?v=abc → ?v=0`)은 cleanup 뒤 announce가 key를 올려 그대로 유지(F-7 테스트 통과).
+- 테스트(RED → GREEN, `logs/fix-f2-red.txt` → `fix-f2-green.txt` 31/31) — `ProfilePage.test.tsx`:
+  - `D-2A4-04 ?v=99 → ?v=2&diff=1 · 뒤로 · 앞으로 · ?v=1 · 최신 → 유효 버전에서는 Callout·알림 문장 모두 없음, 없는 버전으로 돌아가면 다시 알림`
+  - `D-2A4-04 ?v=abc → 앱 버튼 '보기 (v1)' → 알림 문장 없음 · 다른 알림(되돌리기 완료)은 지우지 않음`
+- 브라우저 확인(수정 후, L1 `logs/fix-f2-browser-after.txt`): `?v=2&diff=1`·앞으로·`?v=1`·"보기 (v1)" 클릭 모두 알림 `""`, 뒤로(`?v=99`)는 재알림.
+
+### 13.3 F3 — 좁은 폭 버전 비교·버전 줄 (A-03~05) — **멈춤**
+- 구현(패치 `logs/fix-f3.patch`, `git apply --check` 통과):
+  - `VersionDiff`: `useSyncExternalStore` + `matchMedia("(min-width: 48rem)")`로 **한 배치만 그림**(matchMedia 없으면 표). 768↑ 표: `break-keep` + 항목 열·행 머리글·차이 열 `whitespace-nowrap`. <768: `figure`(`aria-labelledby` → `figcaption` = caption과 같은 제목, `tabIndex=-1`, `focusRef`) + `dl`(항목 `dt` → `v1 값` → `v3 값` → "바뀜" `dd`).
+  - `VersionList`: 요약 `basis-full md:basis-auto md:flex-1`(A-05).
+  - `useViewport`(compare)를 재사용하지 않은 이유: 프로필 쪽에서 import하면 새 공유 청크가 생겨 `/compare`(여유 0.40)에도 붙을 위험 — 실측 청크 구성 동일(`same-chunks`)을 확인한 로컬 훅으로 둠.
+  - jsdom(dom-accessibility-api 0.5.16)은 `figcaption`으로 `figure` 이름을 계산하지 않아 `aria-labelledby`를 명시.
+- 테스트(패치 안 `ProfileVersionNarrow.test.tsx` 5건, RED `logs/fix-f3-red.txt` 5 실패 → GREEN `fix-f3-green.txt` 36/36): 768 표 클래스·dl 없음 / 390·320 표 없음 · dl 정보 = 768 표 정보 · 제목·항목 1번씩(중복 낭독 없음) / 390 비교 열기 → `figcaption` 포커스 · 닫기 → 같은 버튼 / A-05 클래스.
+- 브라우저 전(수정 전, `logs/fix-f3-browser-before.json`, `screens/fix-f3-before-{768,390,320}.png`): 항목 열 768 = 44px · 390 = 32px · 320 = 30px, "레이아웃 방향" 높이 145px(390·320), 390 버전 줄 요약 폭 6px·높이 252px. 가로 넘침 0.
+- F3 브라우저 "후" 캡처는 멈춤으로 없음. 스모크 캡처 `screens/fix-smoke-{768,390,320}.png`는 F3 미적용(F2만) 상태 — 수치는 전과 같음.
+
+### 13.4 번들 (gzip KB, 진입 직후 자동 로드 포함 / 예산 125 · 첫 화면 / 100)
+| 시나리오 | 전 `fix-f23-bundle-before.txt` | F2 후 `fix-f2-bundle-after.txt` | F3 전체 `fix-f3-bundle-after.txt` | 참고: F3 클래스만(768 표·A-05) `fix-f3-subset-bundle.txt` |
+|---|---|---|---|---|
+| `/profile` 진입 직후 | 124.57 (여유 0.43) | 124.59 (**0.41**) | 124.86 (**0.14 < 0.3 → 멈춤**) | 124.64 (0.36) |
+| `/profile` 첫 화면 | 99.24 | 99.27 | 99.55 | 99.32 |
+| `/compare`·`(조정 있음)` 진입 직후 | 124.60 | 124.58 | 124.58 | 124.59 |
+| `/catalog` 진입 직후 | 101.75 | 101.74 | 101.74 | — |
+- F3 비용은 `ProfilePage` 청크(7.13 → 7.41) + CSS(8.68 → 8.71). <768 `dl` 배치(두 번째 마크업 + 훅)가 대부분(≈ +0.22).
+- 최종(F3 되돌린 뒤) 빌드 `fix-final-build.txt`: `/profile` 124.59 · `/compare` 124.58 — F2만 반영된 상태로 복귀 확인.
+
+### 13.5 검증 (F2만 있는 최종 상태)
+- typecheck 0 · lint 0 · build 0(번들 검사 통과) — `logs/fix-final-{typecheck,lint,build}.txt`
+- 전체 테스트 **5회 연속 703/703 통과** — `logs/fix-final-run{1..5}.txt`, 요약 `fix-final-runs-summary.txt`
+- 스모크: 127.0.0.1:4337 `vite preview`(F2 빌드로 재시작), ego-browser TaskSpace 25 → `finish({keep: []})`, 서버 종료 후 `lsof -iTCP:4337` 결과 없음.
+
+### 13.6 Codex
+- `review --wait --scope branch --base ce36f19` 1회 — 결과는 13.9에 적는다(`logs/fix-codex-review.txt`).
+
+### 13.7 남은 위험
+- D-2A4-01·02(F1 청크 재시도) **보류** — 확정·P-S25 "다시 시도"는 네트워크 복구 뒤에도 새로고침 전까지 계속 실패(FIX-CHUNK-RETRY).
+- D-2A4-05 / A-03~05(좁은 폭 버전 비교·버전 줄) **미해결** — 13.8 결정 대기.
+- F3 패치를 적용할 경우: 비교가 열린 채 768 경계를 넘어 창 크기를 바꾸면 포커스된 caption/figcaption이 언마운트되어 포커스를 잃는다. 스크린리더에서 `figure` + `figcaption` 낭독 확인 전(L2).
+- WebKit·Firefox 미확인(F2 포함, Chromium만 실측).
+
+### 13.8 설계 질문 (하나를 골라 주세요)
+1. **(a) F3 전체를 여유 0.14로 허용** — 멈춤선 예외. 이후 `/profile` 진입 직후에 붙는 작업 여지는 사실상 0.
+2. **(b) 768 표 줄바꿈(A-04) + 버전 줄(A-05)만 먼저** — 실측 여유 0.36(멈춤선 안). <768 `dl`(A-03)은 여유 확보 뒤. 단 <768 표는 `keep-all`·`nowrap`이면 가로 스크롤로 바뀌는지 390·320 실측이 필요.
+3. **(c) 다른 진입 직후 코드를 조작 뒤로 옮겨 상쇄** — 12.6(b)와 같은 별도 과제. F1 재개와 함께 여유를 만든다.
+4. **(d) `VersionDiff`를 비교를 연 뒤 받는 지연 청크로** — `?diff=` 직접 진입은 자동 로드가 되고, 실패 캐시 문제(D-2A4-01)가 새 경로에 생기며, 번들 스크립트 분류도 바꿔야 한다.
+
+### 13.9 Codex 결과
+- `review --wait --scope branch --base ce36f19` 1회(원문 `logs/fix-codex-review.txt`) — **지적 0건**. 요지: "유효한 버전이 되면 없는 버전 알림을 거두고, 뒤에 낸 다른 알림은 보존한다". Codex 쪽 typecheck 통과, vitest는 Codex 읽기 전용 환경에서 Vite 임시 설정 파일을 못 써 기동 실패(코드 문제 아님 — 로컬 5회 703/703은 13.5).
+- F3 패치는 커밋되지 않아 리뷰 대상이 아니다(적용 결정 뒤 따로 리뷰 필요).

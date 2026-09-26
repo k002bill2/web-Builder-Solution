@@ -72,7 +72,7 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
 
 function ProfileView({
   state: { series, range, engine, sources },
-  detail: { alert, reverting, revert, announce, saving, saveAlert, save },
+  detail: { alert, reverting, revert, announce, withdraw, saving, saveAlert, save },
 }: {
   readonly state: Extract<ProfileDetailState, { status: "ready" }>;
   readonly detail: ReturnType<typeof useProfileDetail>;
@@ -87,11 +87,14 @@ function ProfileView({
   const diffTarget = pick(series.versions, params.get("diff"));
   const diff = diffTarget && diffTarget.version !== viewed.version ? diffTarget : undefined;
   const [from, to] = ordered(diff ?? viewed, viewed);
-  // Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다. 문장은 상시 "프로필 알림" 영역으로(A-9), 요청 값이 바뀔 때 한 번(문장이 같아도)
+  // Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다. 문장은 상시 "프로필 알림" 영역으로(A-9), 요청 값이 바뀔 때 한 번(문장이 같아도).
+  // 요청 값이 바뀌면 그 문장을 거둔다 — 유효한 버전으로 가면 알림도 사라진다(D-2A4-04)
   const missing = requested !== null && !found ? missingVersionText(requested, latest.version) : null;
   useEffect(() => {
-    if (missing) announce(missing);
-  }, [requested, missing, announce]);
+    if (!missing) return;
+    announce(missing);
+    return () => withdraw(missing);
+  }, [requested, missing, announce, withdraw]);
 
   const titleOf = (id: string) => sources.get(id)?.title ?? "출처 회수됨";
   const h1 = useRef<HTMLHeadingElement>(null);

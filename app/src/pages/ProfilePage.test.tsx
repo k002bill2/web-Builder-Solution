@@ -327,6 +327,40 @@ describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버�
     await waitFor(() => expect(region.firstElementChild).not.toBe(first));
     expect(region).toHaveTextContent("요청한 버전이 없어 최신 v3을 보여 줍니다");
   });
+
+  it("D-2A4-04 ?v=99 → ?v=2&diff=1 · 뒤로 · 앞으로 · ?v=1 · 최신 → 유효 버전에서는 Callout·알림 문장 모두 없음, 없는 버전으로 돌아가면 다시 알림", async () => {
+    const { router } = await openProfile("/profile/profile-1?v=99", 3);
+    await h1();
+    await announced("요청한 v99가 없어 최신 v3을 보여 줍니다");
+    const region = screen.getByRole("status", { name: "프로필 알림" });
+    const gone = async () => {
+      await waitFor(() => expect(region).not.toHaveTextContent(/요청한/));
+      expect(missingCallout(/요청한/)).not.toBeInTheDocument();
+    };
+    await act(() => router.navigate("/profile/profile-1?v=2&diff=1"));
+    expect(await screen.findByText("v2 · 이전 버전")).toBeInTheDocument();
+    await gone();
+    await act(() => router.navigate(-1));
+    await announced("요청한 v99가 없어 최신 v3을 보여 줍니다");
+    await act(() => router.navigate(1));
+    await gone();
+    await act(() => router.navigate("/profile/profile-1?v=1"));
+    await gone();
+    await act(() => router.navigate("/profile/profile-1"));
+    expect(await screen.findByText("v3 · 현재")).toBeInTheDocument();
+    await gone();
+  });
+
+  it("D-2A4-04 ?v=abc → 앱 버튼 '보기 (v1)' → 알림 문장 없음 · 다른 알림(되돌리기 완료)은 지우지 않음", async () => {
+    await openProfile("/profile/profile-1?v=abc", 3);
+    await h1();
+    await announced("요청한 버전이 없어 최신 v3을 보여 줍니다");
+    await userEvent.click(within(versionRow(1)).getByRole("button", { name: "보기 (v1)" }));
+    expect(await screen.findByText("v1을 보고 있습니다 · 현재 v3")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("status", { name: "프로필 알림" })).not.toHaveTextContent(/요청한/));
+    await userEvent.click(screen.getByRole("button", { name: "이 버전으로 되돌리기" }));
+    await announced("v1 내용으로 v4를 만들었습니다");
+  });
 });
 
 describe("P-AC-10 되돌리기 (P-S09) · P-AC-37 계측", () => {

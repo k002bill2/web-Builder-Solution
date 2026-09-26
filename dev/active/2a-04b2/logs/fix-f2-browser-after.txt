@@ -1,0 +1,10 @@
+# F2 후(d10ca46 빌드) — 127.0.0.1:4337 vite preview 재시작, ego-browser TaskSpace 25(끝나고 finish keep []), 보드 확정 3회로 v1~v3 → pushState+popstate / back·forward / 앱 버튼
+?v=99             tag=v3 · 현재       callouts=[요청한 v99가 없어 최신 v3을 보여 줍니다]  status=요청한 v99가 없어 최신 v3을 보여 줍니다
+?v=2&diff=1       tag=v2 · 이전 버전  callouts=[v2를 보고 있습니다 · 현재 v3]              status=""   <- 해소
+back ?v=99        tag=v3 · 현재       callouts=[요청한 v99가 없어 …]                        status=요청한 v99가 없어 최신 v3을 보여 줍니다 (재알림)
+fwd ?v=2&diff=1   tag=v2 · 이전 버전  callouts=[v2를 보고 있습니다 · 현재 v3]              status=""   <- 해소
+?v=1              tag=v1 · 이전 버전  callouts=[v1을 보고 있습니다 · 현재 v3]              status=""
+?v=abc            tag=v3 · 현재       callouts=[요청한 버전이 없어 최신 v3을 보여 줍니다]  status=요청한 버전이 없어 최신 v3을 보여 줍니다
+"보기 (v1)" 클릭 → ?v=1 tag=v1 · 이전 버전 callouts=[v1을 보고 있습니다 · 현재 v3]      status=""   <- 앱 버튼 경로 해소
+# F3 미적용(멈춤) 상태의 ?v=1&diff=3: 항목 열 768=44px · 390=32px · 320=30px, 가로 넘침 0 (전과 같음). 캡처 screens/fix-smoke-{768,390,320}.png
+# 서버 종료 후 lsof -iTCP:4337 결과 없음

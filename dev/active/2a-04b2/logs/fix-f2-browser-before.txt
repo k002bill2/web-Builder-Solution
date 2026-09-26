@@ -1,0 +1,7 @@
+# F2 전(수정 전 빌드) — 127.0.0.1:4337 vite preview, ego-browser TaskSpace 25, 보드 확정으로 v1~v3 만든 뒤 pushState+popstate / history.back·forward
+# 보이는 Callout은 유효 버전 이동 시 이미 사라짐("v2를 보고 있습니다"로 바뀜). 남는 것은 sr-only "프로필 알림" 문장뿐.
+?v=99        tag=v3 · 현재       callouts=[요청한 v99가 없어 최신 v3을 보여 줍니다]  status=요청한 v99가 없어 최신 v3을 보여 줍니다
+?v=2&diff=1  tag=v2 · 이전 버전  callouts=[v2를 보고 있습니다 · 현재 v3]              status=요청한 v99가 없어 최신 v3을 보여 줍니다   <- 결함
+back ?v=99   tag=v3 · 현재       callouts=[요청한 v99가 없어 최신 v3을 보여 줍니다]  status=요청한 v99가 없어 최신 v3을 보여 줍니다
+fwd ?v=2&diff=1 tag=v2 · 이전 버전 callouts=[v2를 보고 있습니다 · 현재 v3]            status=요청한 v99가 없어 최신 v3을 보여 줍니다   <- 결함
+?v=1         tag=v1 · 이전 버전  callouts=[v1을 보고 있습니다 · 현재 v3]              status=요청한 v99가 없어 최신 v3을 보여 줍니다   <- 결함

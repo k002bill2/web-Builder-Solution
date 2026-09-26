@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve) · **r6** (Jarvis) — 2a-04b1 BUNDLE-03 멈춤(자동 조건부 청크 포함 시 `/compare` 조정 있음 진입 직후 최소 125.20KB > 125, `dev/active/2a-04b1/REPORT.md` 12.4) → 영환님 "1, 전부 A": **P-S25 = 개수 캡션 자동 + 이어받기 판정·목록은 펼칠 때 로드**(예산 무변경), P-AC-38·39 개정 + ⑦, P-B9 개정, 10.0.2 결정 표. 구현 Codex adversarial 3회(medium 2건 — 자동 조건부 청크 예산 누락·Hero 미선택 캡션 — 수정 후 approve), 10.0.2에 FIX3·Q-F2-2·Q-F3-1~3·Q-F4-1~3 추가
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve) · **r6** (Jarvis) — 2a-04b1 BUNDLE-03 멈춤(자동 조건부 청크 포함 시 `/compare` 조정 있음 진입 직후 최소 125.20KB > 125, `dev/active/2a-04b1/REPORT.md` 12.4) → 영환님 "1, 전부 A": **P-S25 = 개수 캡션 자동 + 이어받기 판정·목록은 펼칠 때 로드**(예산 무변경), P-AC-38·39 개정 + ⑦, P-B9 개정, 10.0.2 결정 표. 구현 Codex adversarial 3회(medium 2건 — 자동 조건부 청크 예산 누락·Hero 미선택 캡션 — 수정 후 approve), 10.0.2에 FIX3·Q-F2-2·Q-F3-1~3·Q-F4-1~3 추가 · **r7** (Jarvis) — 2a-04b2 결정 Q-B2-1~6 전부 A · F1 보류 · F2 반영 · F3는 E안(CSS 쌓기)으로 후속, P-S13 예문 정정, 10.0.3
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -99,7 +99,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 | P-S10 | 저장 안 된 조정 | 조정 머리 캡션 "저장하지 않은 조정 N개" + "조정 저장 (v4)"(primary) · "조정 취소" | 저장 · 취소 |
 | P-S11 | 조정 저장 중 / 저장됨 / 실패 | "저장 중…"(`aria-busy`, 중복 클릭 무시) → "v4로 저장했습니다"(`role=status`) → 실패 "저장하지 못했습니다 · 다시 시도"(`role=alert`, 조정 유지) | 다시 시도 |
 | P-S12 | 다른 곳에서 새 버전 생김(`STALE_PROFILE`) — **버전을 만드는 모든 쓰기 공통**(r1) | 쓰기 거부(새 버전 0건) → 최신을 다시 읽어 버전 라벨 갱신, 사용자 입력 유지. **조정 저장**: "다른 곳에서 v4가 만들어졌습니다. 조정은 남겨 두었습니다 — 확인 후 다시 저장하세요"(버튼 "조정 저장 (v5)"). **되돌리기**: "다른 곳에서 v4가 만들어졌습니다. 되돌리지 않았습니다 — 확인 후 다시 되돌리세요"(보기 상태 유지). **보드 확정**(보드 화면): 버튼이 "새 버전으로 확정 (v4)"로 바뀌고 P-S25 개수 다시 계산 + "다른 곳에서 v3이 만들어졌습니다. 선택은 그대로입니다 — 확인 후 다시 확정하세요"(기존 `STALE_BOARD` 안내와 같은 자리·같은 알림 역할), 이동 없음 | 다시 저장 · 다시 확정 |
-| P-S13 | 범위 밖 값 | 허용 범위 밖 옵션은 `aria-disabled` + 옆 캡션 "이 테마에서 쓸 수 없음". **이어받은 값이 범위 밖**이면 해당 그룹에 `Callout tone=cautionary` "지금 값 '촘촘'은 허용 범위 밖이라 저장할 수 없습니다 · '보통'으로 맞추기". 저장 버튼 `aria-disabled` + 이유 | 맞추기 |
+| P-S13 | 범위 밖 값 | 허용 범위 밖 옵션은 `aria-disabled` + 옆 캡션 "이 테마에서 쓸 수 없음". **이어받은 값이 범위 밖**이면 해당 그룹에 `Callout tone=cautionary` "지금 값 '촘촘'은 허용 범위 밖이라 저장할 수 없습니다 · '여유'로 맞추기"(r7: 예문의 '보통'은 밀도 옵션에 없음 → 허용 값 라벨, 10.0.3 Q-B2-3). 저장 버튼 `aria-disabled` + 이유 | 맞추기 |
 | P-S14 | 대비 미달 · 보정 제안 | 3.3 표. 원인 · 수치 · 대체안 + "보정값 쓰기"(→ 저장 안 된 조정) | 보정값 쓰기 |
 | P-S15 | 대비 보정 충돌 | 한 역할 값으로 모든 배경을 풀 수 없음 → "보정값 쓰기" 없음, 대체안 문장(3.3 ref-b) | 보드에서 카드 바꾸기 |
 | P-S16 | 출처 회수됨 | 출처 목록 해당 줄 Tag "출처 회수됨"(글자) + "프로필 값은 우리 섹션·토큰이라 계속 쓸 수 있습니다". 링크 없음 (ADR-005 Q6) | — |
@@ -728,6 +728,23 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 | Q-F4-1 | 번들 분류: 펼침 && ready effect의 로드 | **A** "조작 뒤" — 분류 규칙을 "사용자 조작으로만 참이 되는 조건의 effect 포함"으로 넓힘(`check-bundle-size.mjs` 주석) | P-B9 |
 | Q-F4-2 | Hero 안내 문구로 진입 직후 +0.07KB | **A** 수용(여유 0.57) — 문구를 패널 청크로 옮기면 미준비 상태 요청 0과 충돌 | P-S25 |
 | Q-F4-3 | 로드 실패 뒤 Hero 재선택 시 자동 1회 재요청 | **A** 유지(조작 뒤 1회, 무한 재요청 없음 — Codex j3 approve) | P-S25 |
+
+### 10.0.3 2a-04b2 구현 중 결정 (r7, 2026-09-26 영환님 "E, A, 전부 A")
+
+근거: `dev/active/2a-04b2/REPORT.md` 3·6·9·11·12·13절, FIX-2A04b2 브리프(F1·F2·F3), Codex review(b2 P2 1건 반영 · FIX F2 지적 0).
+
+| # | 질문 | 결정 | 반영 |
+|---|---|---|---|
+| Q-B2-1 | `/compare` +0.12 / +0.17KB(브리프 "늘지 않게" 미달, `rovingFocus` 공유 청크 경계 ≈ +0.04 포함) | **A** 수용 — 여유 0.41 / 0.41(병합 `b68f0ac` 실측), 멈춤선 0.3 위 | 7 |
+| Q-B2-2 | P-AC-06 단언을 ink로 좁힘(Q6 muted "보정값 쓰기"로 9절 표 밖) | **A** 승인 | P-AC-06 |
+| Q-B2-3 | P-S13 예문 '보통' | **A** "'여유'로 맞추기"(허용 값 라벨) | P-S13 |
+| Q-B2-4 | 범위 조회(`getAdjustmentRange`)가 쓰기 본문을 받지 않게 분리 | **A** 규칙으로 기록: 진입 때 자동 호출되는 조회는 조작 뒤 본문 청크를 import하지 않는다(자동으로 넣으면 `/profile` 진입 직후 126.5KB 초과). 본문은 조작 뒤 | P-B9 · 7 |
+| Q-B2-5 | 대비·사이트 목적만 바꾼 버전의 요약·비교 행 | **A** 요약·비교 표에 "대비"·"사이트 목적" 행 포함 | 3.5 |
+| Q-B2-6 | 기존 `summarizeVersion`(base 기준) | **A** 삭제(테스트는 `summarizeVersions`로 옮김) — FIX-2A04-NARROW에서 처리 | 코드 |
+| F1 | 조작 뒤 청크 실패 캐시(D-2A4-01·02) | **보류** — 진입 직후 여유 0.24/0.25 < 0.3. 패치 `dev/active/2a-04b2/logs/fix-f1-helper.patch` 보존, FIX-CHUNK-RETRY(상쇄 + WebKit)로 분리 | 남은 위험 |
+| F2 | 없는 `?v=` 알림이 유효 버전 이동 뒤 남음(D-2A4-04) | 반영(`d10ca46`) — 그 문장이 알림 영역에 있을 때만 거둠 | P-S21 계열 |
+| F3 → E | 좁은 폭 버전 비교(A-03~05·D-2A4-05): 두 번째 `dl` 마크업 + 훅은 `/profile` 여유 0.14 | **E** — <768은 **CSS만으로 표 행 쌓기**(마크업 한 벌, JS 훅 0, 셀 앞 항목 이름은 CSS, 표 의미 유지 위해 `role` 명시). 실측 여유 ≥ 0.3일 때만. FIX-2A04-NARROW. 이전 패치 `logs/fix-f3.patch`는 참고용 | 3.5 · A-03~05 |
+| 병합 | b2 병합 시점 | **A** F2까지로 main 병합(`b68f0ac`), F3는 후속 | — |
 ### 10.1 남은 쟁점 (r1)
 
 없음. 검토 중 나온 "되돌리기 뒤 재확정의 비교 기준"은 브리프 문구(지난 확정 버전의 base)대로 정했다 — 근거와 기각한 대안은 6.1-3, 검증은 P-AC-39 ⑥.

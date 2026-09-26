@@ -1,23 +1,14 @@
 /**
- * L4b 이후에 구현할 연산의 자리(타입만). 이번 L4a에서는 구현하지 않는다(브리프 3절).
+ * 게이트 테마 계약. L4a의 연산 자리 두 개는 L4b에서 구현됐다 — `gate/runGate.ts`(runGate) · `doc/createDocFromCandidate.ts`.
  */
 import type { PurposeId } from "../../domain/reference";
 import type { ProfileVersion } from "../../domain/profile";
-import type { SectionPlanEntry } from "../../domain/compareBoard";
-import type { PageDoc } from "./pageDoc";
-import type { GateReport } from "./records";
 
-/** 게이트가 읽는 테마 = 문서가 가리키는 프로필 버전(적용 값은 effectiveProfile — L4b에서 확정) */
+/**
+ * 게이트가 읽는 테마 = 문서가 가리키는 프로필 버전. 대비는 적용 값(effectiveProfile(base, adjustments))으로 본다.
+ * purpose = 부르는 쪽이 넘기는 사이트 목적(보통 profile.adjustments.purpose ?? "none" — 출처 중복은 REPORT Q-19)
+ */
 export interface GateTheme {
   readonly profile: ProfileVersion;
   readonly purpose: PurposeId | "none";
 }
-
-/** 2a-04c 편집 시작 경계 — 구조안 → 새 문서(기본 슬롯 콘텐츠) */
-export type CreateDocFromCandidate = (
-  plan: { readonly candidateId: string; readonly sections: readonly SectionPlanEntry[] },
-  profileVersion: number,
-) => PageDoc;
-
-/** 품질 게이트 R-01~R-13 (SPEC 5.12) */
-export type RunGate = (doc: PageDoc, theme: GateTheme) => GateReport;

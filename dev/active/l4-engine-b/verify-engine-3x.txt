@@ -1,0 +1,54 @@
+## run 1
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-b/app
+
+
+ Test Files  15 passed (15)
+      Tests  253 passed (253)
+   Start at  02:12:13
+   Duration  1.90s (environment 72%, setup 14%, transform 9%, import 2%, tests 2%, worker 1%)
+
+Environment  jsdom was created 15 times · 8.89s total, 72% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+exit 0
+## run 2
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-b/app
+
+
+ Test Files  15 passed (15)
+      Tests  253 passed (253)
+   Start at  02:12:15
+   Duration  2.34s (environment 77%, setup 12%, transform 7%, import 2%, tests 2%, worker 1%)
+
+Environment  jsdom was created 15 times · 12.37s total, 77% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+exit 0
+## run 3
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-b/app
+
+
+ Test Files  15 passed (15)
+      Tests  253 passed (253)
+   Start at  02:12:18
+   Duration  1.83s (environment 70%, setup 15%, transform 10%, import 2%, tests 2%, worker 1%)
+
+Environment  jsdom was created 15 times · 8.44s total, 70% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+exit 0

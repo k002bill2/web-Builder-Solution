@@ -535,3 +535,63 @@
 ### 14.10 커밋
 - `86e9dcb` 코드: 패치 적용 + 1안 + 본문 로드 실패 테스트 + history state 비우기 + 번들 스크립트
 - (이 커밋) REPORT 14절 + `logs/fix3-*`
+
+## 15. FIX4 (Hero 미선택에서도 P-S25 개수 캡션 유지)
+- 브리프 `docs/06-handoff/FIX4-2A04b1_DEVELOPER_BRIEF.md` · 기준 `13cecd9` · 작성 2026-09-26
+- 근거 수준: 번들·검증·Codex = L1(`logs/fix4-*`)
+
+### 15.0 요약
+| 항목 | 결과 |
+|---|---|
+| 결함 | `useCompareBoard` `carryOver`가 `draft.status === "ready"`일 때만 생겨 Hero를 해제하면 캡션·"이어받기 확인"이 사라졌다 (Codex adversarial j2 medium) |
+| 검증 4종 | typecheck 0 · lint 0 · test **666/666** · build 0 (`logs/fix4-{typecheck,lint,test,build}.txt`) |
+| 전체 5회 연속 | **666/666 × 5** (`logs/fix4-run1~5.txt`) |
+| `/compare` 진입 직후 | 124.36 → **124.43KB** (+0.07, 여유 0.57). 첫 화면 99.48 → 99.48 (변화 0) |
+| Codex | `review --wait --scope branch --base 13cecd9` 1회 — **지적 0건** (`logs/fix4-codex-review.txt`) |
+
+### 15.1 고친 조건
+- **캡션 표시**: `engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest` — `draft.status`와 무관 (`app/src/features/compare/useCompareBoard.ts` `carryOver`).
+- **판정 입력**: `props`(`confirmedBase`·`adjustments`·`nextBase`)는 `draft?.status === "ready"`일 때만 채우고 아니면 `null`.
+- `CarryOverCaption` (`app/src/features/compare/CarryOverCaption.tsx`):
+  - `props: CarryOverNoticeProps | null`. `ready = props !== null`.
+  - 펼침 상태를 `open` state로 둔다(`details onToggle → setOpen`). 로드는 `useEffect([open, ready])`에서 둘 다 참일 때 `load()` — 펼친 채 Hero를 고르면 그때 한 번. `requested` ref로 재요청 0. 의존성은 불리언만(렌더마다 새로 만드는 `props` 객체를 넣지 않음).
+  - `!ready`면 펼친 영역에 "Hero를 고르면 이어받을 조정을 확인할 수 있습니다"만 보이고, 로딩·오류·목록은 `ready`일 때만 그린다. 받은 청크(`panel`)는 지우지 않아 다시 `ready`가 되면 재요청 없이 목록.
+  - 확정 버튼 동작·차단 사유는 건드리지 않았다(Hero 없으면 확정 불가는 기존 규칙).
+- `app/scripts/check-bundle-size.mjs`: `COMPARE_AFTER_ACTION` 주석의 호출 지점만 갱신(낡은 `openCarryOver(:134)` → `CarryOverCaption load ← 펼침 + 초안 ready effect·"다시 시도"`). 예산 상수·목록·시나리오는 그대로.
+
+### 15.2 RED 로그
+- `logs/fix4-red.txt` — FIX4 describe 4건 모두 실패(구현 전). 전부 단언 실패다.
+  - F4-1·F4-2·F4-4: `Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다` (Hero 해제 상태로 진입하면 캡션 없음).
+  - F4-3: `Unable to find an element with the text: 이어받기 확인` at `CompareBoardCarryOver.test.tsx:360` — ready에서 목록을 받은 뒤 Hero를 해제한 직후 캡션·details가 사라짐.
+- GREEN: `logs/fix4-green.txt` (`CompareBoardCarryOver.test.tsx` 17/17).
+
+### 15.3 테스트 이름 (추가만, `app/src/pages/CompareBoardCarryOver.test.tsx`)
+describe "FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6)"
+- "F4-1: Hero 해제 상태로 진입 → 캡션 '조정 2개' + '이어받기 확인', 패널 청크 요청 0" — 확정 v1 → 조정 v2 → 저장소 `savePicks`로 hero를 뺀 보드 → `/compare` 진입.
+- "F4-2: 같은 상태에서 펼치면 Hero 안내·요청 0 → Hero를 고르면 요청 1, ①과 같은 입력으로 '2개 · 0개' → 모션 B면 '1개 · 1개'" — ①(P-AC-38)과 같은 입력 `{ density: compact, motion: L0 }`, 목록 `["밀도 촘촘 — 이어짐", "모션 L0 — 이어짐"]` → `["밀도 촘촘 — 이어짐", "모션 L0 — 지워짐 · 보드에서 모션을 바꿨습니다"]`.
+- "F4-3: ready에서 펼쳐 목록을 받은 뒤 Hero 해제 → 캡션 N 유지, 펼친 영역은 안내, 재요청 0 → 다시 고르면 목록(재요청 0)"
+- "F4-4: 재진입(보드 → 프로필 → 보드)에서도 Hero 해제 상태면 캡션 '조정 2개' + '이어받기 확인', 요청 0 · 펼치면 안내" — 떠나기 전 저장소 `picks.hero === undefined`를 기다린다.
+- 고친 기존 단언: **없음**. P-AC-38·39 ①~⑦·P-S12·`confirmThenAdjust` 헬퍼는 그대로 통과.
+
+### 15.4 번들 전/후 (node zlib gzip KB, `logs/fix4-build-before.txt` → `logs/fix4-build.txt`)
+| 시나리오 | 전 (첫 화면 / 진입 직후) | 후 | 여유 (후) |
+|---|---|---|---|
+| /compare | 99.48 / 124.36 | 99.48 / **124.43** | 0.52 / 0.57 |
+| /compare (조정 있음) | 99.48 / 124.36 | 99.48 / **124.43** | 0.52 / 0.57 |
+| /profile | 99.18 / 118.77 | 99.18 / 118.79 | 0.82 / 6.21 |
+| /catalog · /references/:id | 99.01 · 96.36 | 99.02 · 96.37 | — |
+- 늘어난 곳은 엔진 청크(`boardEngine`, Vite 표기 gzip 5.77 → 5.84): 안내 문구 1줄 + `useEffect`/`open` state. `useCompareBoard`(첫 화면 청크)는 조건 재배치뿐이라 첫 화면 합계 변화 0.
+- 브리프 "진입 직후 여유가 줄지 않게(문구 1줄 수준)": 여유 0.64 → 0.57 (−0.07). 문구 1줄 수준이며 예산 안이다. 0 증가가 요구라면 설계 질문 Q-F4-2.
+
+### 15.5 5회 · Codex
+- 5회: 666/666 × 5 (`logs/fix4-run1~5.txt`).
+- Codex `review --wait --scope branch --base 13cecd9` (codex-companion 1.0.6): "The change keeps the carry-over caption visible when the draft is not ready, defers loading the panel until it is both expanded and ready, and reuses the loaded panel when draft readiness changes. The added tests cover these transitions, and lint passes." — 지적 0건.
+
+### 15.6 설계 질문
+1. **Q-F4-1 번들 분류**: 이제 패널 청크 로드가 onToggle 핸들러가 아니라 `useEffect([open, ready])`에서 실행된다. 이 effect는 사용자가 펼친 상태(조작)에서만 참이 되므로 "조작 뒤"로 유지했고 스크립트 주석에 호출 지점을 적었다. 분류 규칙 문구("클릭·펼치기·저장 등 사용자 조작 핸들러 안에서만")를 "조작으로만 참이 되는 조건의 effect 포함"으로 넓힐지 확인 필요.
+2. **Q-F4-2 번들 +0.07**: 진입 직후 여유 0.64 → 0.57. 문구 1줄 수준으로 판단했다. 증가 0이 요구라면 안내 문구를 패널 청크로 옮기는 안이 있으나, 그러면 미준비 상태에서도 청크를 받아야 해 "요청 0"과 충돌한다.
+3. **Q-F4-3 오류 뒤 재시도**: 로드 실패(오류 표시) 상태에서 Hero를 해제했다가 다시 고르면 effect가 다시 참이 되어 자동으로 한 번 재요청한다(사용자 조작 뒤). "다시 시도" 버튼으로만 재요청해야 한다면 알려 달라.
+
+### 15.7 커밋
+- `32e11f2` 코드: 캡션 조건·`props | null`·Hero 안내·펼친 채 ready 로드 + F4-1~F4-4 + 번들 스크립트 주석 + `logs/fix4-*`(RED·GREEN·4종·빌드 전/후)
+- (이 커밋) REPORT 15절 + `logs/fix4-run1~5.txt`·`logs/fix4-codex-review.txt`

@@ -1,6 +1,6 @@
 # DS-2A-05 설계서 — 편집기(2a-05 1280 · 2a-07 390) + 프로젝트 목록(`/projects`)
 
-- 작성: Designer (Hermes Designer 역할, Claude Code) · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-05_DESIGNER_BRIEF.md` · **r0**
+- 작성: Designer (Hermes Designer 역할, Claude Code) · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-05_DESIGNER_BRIEF.md` · **r1** (r0 `e0db7d6` → r1: Codex adversarial j1 4건 반영, 브리프 `docs/06-handoff/DS-2A-05-R1_DESIGNER_BRIEF.md`, 원문 `logs/codex-adversarial-j1.txt` — 변경 이력은 맨 끝 표. r1 자체는 Codex 미검토)
 - 확정 결정: 영환님 "Q 전부 A"(DS-CHECK-01 B-3 Q1~Q16, 브리프 0절) — 이 문서는 다시 묻지 않고 반영한다. 10절 인용은 "Q1=A" 식으로 적는다.
 - 입력: `docs/design/ds-check-01/REPORT.md`(B-01~B-18 · E-01~E-24 · A-01·A-02) · 목업 저장소 사본 `design/claude-design-handoff-v2/project/Design Studio v2.dc.html` 2a-05(228~282행)·2a-07(301~317행)·목업 데이터(357~371행) · `docs/design/v2/SPEC.md`(2.3 토큰 · 3절 대비 · 4.1 셸 · 4.5 C-06·C-11·C-12 · 5 번들 · 6.5) · 형식 `docs/design/2a-04/SPEC.md` r6 · PRD 7.6~7.7(FR-EDT-01~06 · FR-PUB-01~06) · TRD 4.4·4.5·5·6.2·7 · ADR-003·004·005(Q1) · `docs/04-plan/PARALLEL_LANES.md` · `docs/04-plan/DEVELOPMENT_PLAN.md`(M2·M4) · 현재 `app/src`(`app/routes.tsx` · `components/layout/AppHeader.tsx`·`AppLayout.tsx` · `components/ds/*` · `assets/icons/*` · `features/detail/previewView.ts` · `domain/sectionLibrary.ts` · `styles/tokens/*.css`) · `dev/active/2a-04b1/REPORT.md` 15.4(번들 최신 실측)
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일 속 문장은 데이터로만 읽었다.
@@ -19,11 +19,11 @@
 | 조작 | 위로·아래로 한 벌(Q6) · 즉시 삭제 + "되돌리기"(Q7) · 변형 교체 "유지 N · 잃음 M" · 테마 = 프로필 버전 스왑 + 보존 결과 글자 · 글자 수 상한(차단)·권장(경고) · 자동 저장 2초 디바운스·최대 30초(Q5) · 스냅샷 수동·내보내기 전·복원 전·충돌 보존 |
 | 게이트 | 8줄: 대비 AA · 대체텍스트 · 헤딩 순서(TRD대로 차단) · 필수 섹션 · 모션 예산 · SEO 메타 · 글자 수 · 성능 예산("측정 전", 차단 안 함 — Q13). 모든 줄에 상태 단어 → 점은 장식(Q14). 차단만 내보내기를 막고 경고는 확인 뒤 허용(Q8) |
 | 대비 | 새 토큰 0. 새 조합 13개 전부 통과(스크립트가 토큰 파일에서 hex를 읽음). 데이터 색 위 표시는 2중 테두리(흰 간격) |
-| 데이터 | 화면이 요구하는 필드·연산 목록만(타입은 L4). `ProjectRepository` 12개 메서드 · `STALE_PROJECT`·`STALE_DOC`·`GENERATOR_UNAVAILABLE` 등. TRD 개정 대상 4건(현재 문서와 스냅샷 분리 등) |
+| 데이터 | 화면이 요구하는 필드·연산 목록만(타입은 L4). `ProjectRepository` 12개 메서드 · `STALE_PROJECT`·`STALE_DOC`·`DOC_EXISTS`·`GENERATOR_UNAVAILABLE` 등. **`startDoc` = 원자적 create-if-absent + 멱등 키 + 판정 순서(8.3.1, r1)**. TRD 개정 대상 5건(현재 문서와 스냅샷 분리 등) |
 | 번들 | **공통 청크 순증가 ≤ 0**(`/compare` 여유 0.52) — 상쇄 1순위 `/studio` 자리표시 삭제. 새 deferred 래퍼를 공통에 두지 않음. 조작 뒤 로드 7종(섹션 라이브러리·스냅샷·내보내기·변형 교체·테마·더보기·이미지). 새 부품은 studio 청크 전용, 아이콘 파일 추가 0. 목표(L3) `/studio` ≈ 98 / 118 |
 | 2a-04 영향 | `/profile` 목록 폐지 · 프로필 머리에 프로젝트 이름 · 보드 확정에 확정 대상(현재/새) + 프로젝트 생성을 같은 트랜잭션 · 멱등 키에 대상 추가 · "새 프로젝트"면 이어받기 없음 · 편집 시작 → `/studio/:projectId` · 깨질 테스트 7건(12절, 2a-04 SPEC 무수정) |
 | 단계 | **2a-05a1** 프로젝트·IA → **a2** 편집기 틀·저장 → **a3** 섹션 연산 → **a4** 게이트·내보내기·스냅샷 → QA → 2a-05b |
-| 수용 기준 | **49개** — J-AC-01~10 · E-AC-01~39 |
+| 수용 기준 | **52개** — J-AC-01~10 · E-AC-01~42 (r1: E-AC-40~42 `startDoc` 경쟁·멱등) |
 | 목업 차이 | **26건**(EM-01~EM-26) |
 | 설계 질문 | **7개**(EQ-1 내보내기 산출물 · EQ-2 문서 있을 때 편집 시작 · EQ-3 이미지 파일 · EQ-4 `/profile` 목록 폐지 · EQ-5 새로고침 손실 · EQ-6 새 프로젝트와 기존 보드 · EQ-7 확정 때 "고르기" 범위), 모두 ★추천안 |
 
@@ -147,7 +147,7 @@ GNB "프로젝트" ──▶ /projects ── 줄 "편집기 열기" ──▶ /
 |---|---|---|---|---|
 | E-S01 | 로딩 | E-15 | `LoadingState`(기존). 툴바 높이·h1 자리 고정(CLS) | — |
 | E-S02 | 프로젝트 없음(없는 id · 새로고침 · 직접 진입) | E-15 | 툴바 없이 앱 셸 모양 대신 **집중 모드 빈 상태**: h1 "프로젝트를 찾을 수 없습니다" + "새로고침하면 프로젝트와 편집 내용이 사라집니다(서버 연결 전)" + 버튼 모양 링크 "프로젝트 목록" · 링크 "비교 보드로". **빈 상태**(`role=alert` 아님, 2a-04 P-S02 선례) | 목록으로 |
-| E-S03 | 편집 문서 없음(프로젝트는 있고 3안 미선택) | E-15 | h1 프로젝트 이름 + "아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요" + 버튼 모양 링크 "프로필에서 3안 고르기"(→ `/profile/:profileId`) | 프로필로 |
+| E-S03 | 편집 문서 없음(프로젝트는 있고 3안 미선택) | E-15 | h1 프로젝트 이름 + "아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요" + 버튼 모양 링크 "프로필에서 3안 고르기"(→ `/profile/:profileId`). 이 화면은 문서를 만들지 않는다 — 문서는 2a-04c "편집 시작"(`startDoc`)만 만들고, 동시 시작·응답 실패 재시도 규칙은 8.3.1 | 프로필로 |
 | E-S04 | 불러오기 오류 | — | 기존 `RouteErrorBoundary` | 다시 시도 |
 | E-S05 | 기본 편집 | — | 선택 섹션 = 첫 본문(보통 Hero). 섹션 줄·캔버스·편집 패널이 같은 섹션을 가리킨다 | 편집 |
 | E-S06 | 저장 흐름: 바뀜 → 저장 중 → 저장됨 | E-02 | 저장 상태 글자 "저장 전 변경 있음" → "저장 중…" → **"이 탭에 저장됨 · 12초 전"**(메모리 구현. 서버 구현이면 "저장됨 · 12초 전"). 상대 시각은 알림 영역 **밖**(B-14). 알림은 단계가 바뀔 때만 | — |
@@ -514,7 +514,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | `renameProject(projectId, expectedRevision, name)` | `PATCH /projects/{id}` (`If-Match`) | 앞뒤 공백 제거 · 1~40자 → 아니면 `SCHEMA_INVALID` · 불일치 `STALE_PROJECT`(최신 동봉) |
 | `getDoc(projectId)` | `GET /projects/{id}/page`(신규) | 없으면 `undefined` → E-S03 |
 | `saveDoc(projectId, expectedRevision, doc)` | `PUT /projects/{id}/page` (`If-Match`, `Idempotency-Key` = (revision, hash)) | 판정 순서(2a-04 10.0.2 Q-F2 선례): 모양(`SCHEMA_INVALID`) → 멱등 키(같으면 이전 결과) → `NOT_FOUND` → `STALE_DOC`(최신 문서 동봉) → 저장 |
-| `startDoc(projectId, profileVersion, candidateId, mode)` | `POST /projects/{id}/page`(신규) | 2a-04c 경계. `mode` = `create` \| `restart`(EQ-2) — `restart`는 현재 문서를 `auto·restart` 스냅샷으로 남기는 것과 **같은 트랜잭션** |
+| `startDoc(projectId, profileVersion, candidateId, mode, expectedRevision?)` | `POST /projects/{id}/page`(신규, `Idempotency-Key` = 8.3.1) | 2a-04c 경계. `mode` = `create` \| `restart`(EQ-2). **`create` = 원자적 create-if-absent** — 문서가 있으면 덮지 않고 `DOC_EXISTS`(기존 문서 동봉). **`restart` = `expectedRevision` 필수**, 불일치 `STALE_DOC`(최신 동봉) — 현재 문서를 `auto·restart` 스냅샷으로 남기는 것과 **같은 트랜잭션**. 판정 순서·멱등·화면 처리는 8.3.1 |
 | `listSnapshots(projectId)` · `createSnapshot(projectId, name?)` | `GET`·`POST /projects/{id}/snapshots`(신규) | 5.11 |
 | `restoreSnapshot(projectId, snapshotId, expectedRevision)` | `POST /projects/{id}/snapshots/{sid}/restore`(신규) | "복원 전" 자동 스냅샷 + 새 revision을 **한 트랜잭션**. 불일치 `STALE_DOC` |
 | `resolveConflict(projectId, choice, myDoc)` | `saveDoc` + 스냅샷 조합 | E-S09 두 선택. 보존 스냅샷과 저장이 한 트랜잭션 |
@@ -523,8 +523,32 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 - 보드 확정의 프로젝트 만들기(J-S09~S11)는 이 저장소가 아니라 **보드 확정 트랜잭션 안**이다(12.2).
 - 메모리 구현: `createStudioStore`에 프로젝트·문서·스냅샷·내보내기 잡을 더한다. id = `project-1`…(store마다 1부터, 테스트는 `renderApp`이 렌더마다 새 store — 2a-04 6.3 원칙). 모든 레코드 `deepFreeze`. `delay`·`fail` 주입은 `phase: request | commit | response` 세 가지(2a-04 r3 선례) — 스냅샷+저장 조합 트랜잭션의 롤백 테스트에 `commit`을 쓴다.
-- 오류 코드 모음: `NOT_FOUND` · `SCHEMA_INVALID` · `STALE_PROJECT` · `STALE_DOC` · `GENERATOR_UNAVAILABLE` · `GATE_FAILED` · `JOB_TIMEOUT` · `INFRA` · `NETWORK`(오프라인 — 화면은 E-S08). 파일 형식·크기 오류는 화면 검증(EQ-3, 저장소에 가지 않음).
+- 오류 코드 모음: `NOT_FOUND` · `SCHEMA_INVALID` · `STALE_PROJECT` · `STALE_DOC` · `DOC_EXISTS`(r1 — `startDoc` create, 오류가 아니라 결정적 결과) · `GENERATOR_UNAVAILABLE` · `GATE_FAILED` · `JOB_TIMEOUT` · `INFRA` · `NETWORK`(오프라인 — 화면은 E-S08). 파일 형식·크기 오류는 화면 검증(EQ-3, 저장소에 가지 않음).
 - **TRD 개정 대상**(2a-04 Q6처럼 표시만): ① TRD 5 `PUT /projects/{id}/page`의 "→ 스냅샷"과 4.5 "현재 문서 = `current_snapshot_id`" 모델은 Q5=A(자동 저장은 스냅샷이 아님, 스냅샷 = 수동·내보내기·복원·충돌)와 맞지 않는다 → 현재 문서(`page_doc`: project_id · revision · page_doc · doc_hash · updated_at)를 스냅샷과 분리. ② `page_snapshot`에 `reason`·`name` 추가. ③ `generated_project.name` 수정 API(`PATCH`). ④ 4.4 `SlotSchema`에 권장 길이. ⑤ 7 R-11 canonical은 발행(2a-05b) 단계 검사 — 내보내기(2a-05)에서는 제목·설명만.
+
+### 8.3.1 `startDoc` 경쟁 · 멱등 (r1 — Codex j1 high)
+
+문서는 프로젝트당 1개(Q3)다. 두 탭이 동시에 "편집 시작"을 누르거나 응답 실패 뒤 재시도해도 **문서는 하나만 생기고, 먼저 생긴 문서를 덮지 않는다.**
+
+- **멱등 키** = (`projectId`, `mode`, `profileVersion`, `candidateId`[, `expectedRevision` — `restart`만]). 기록 범위 = **프로젝트마다 마지막으로 성공한 `startDoc` 1건**(2a-04 10.0.2 Q-F3 선례 — 계열마다 마지막 1건). 새 `startDoc`가 성공하면 기록을 바꾼다 → `restart` 뒤에 옛 `create` 키가 늦게 도착해도 재생되지 않고 판정 4에서 `DOC_EXISTS`가 된다.
+- **판정 순서**(2a-04 10.0.2 Q-F2 형식 — 모양 먼저):
+  1. 모양 — 인자 모양 · `mode` 값 · `restart`인데 `expectedRevision` 없음 → `SCHEMA_INVALID`
+  2. 멱등 키 — 마지막 기록과 같으면 **이전 결과 그대로**(쓰기 0)
+  3. `NOT_FOUND` — 프로젝트 없음 · 프로필 버전이 그 계열에 없음 · 안이 그 버전의 3안에 없음 · `restart`인데 문서 없음
+  4. 문서 상태 — `create`: 문서 있음 → **`DOC_EXISTS`**(기존 문서 동봉, 쓰기 0) / `restart`: `expectedRevision` ≠ 현재 → **`STALE_DOC`**(최신 문서 동봉, 쓰기 0)
+  5. 쓰기 — `create`: 문서 생성(`createDocFromCandidate`, revision 1) / `restart`: `auto·restart` 스냅샷 + 문서 교체(**revision = 현재 + 1** — 1로 되돌리지 않는다. 열려 있던 편집기 탭의 다음 `saveDoc`가 `STALE_DOC`로 걸려야 한다) + 멱등 기록 — **한 트랜잭션**(`commit` 실패 → 문서·스냅샷·기록 변화 0)
+- **원자성**: 메모리 구현은 판정 3~5를 `await` 없이 한 동기 구간에서 한다(`delay` 주입은 `request`·`commit`·`response` 지점에만 — 판정과 쓰기 사이에 다른 요청이 끼지 않는다). 서버 구현은 조건부 쓰기(create = 없을 때만 삽입 · restart = revision 조건 갱신)로 같은 결과를 낸다.
+- **화면 처리**(2a-04c "편집 시작", 12.3):
+
+| 결과 | 화면 |
+|---|---|
+| 성공(처음 · 멱등 재생) | `/studio/:projectId`로 이동. 편집기는 **`getDoc`으로 최신 문서**를 연다 — 재생 결과에 담긴 문서 사본으로 그리지 않는다(재시도 사이에 저장이 있었어도 덮지 않음) |
+| `DOC_EXISTS` | 이동 + 편집 알림 "이미 편집 중인 문서를 엽니다 (B안 · 프로필 v3)". **자동 `restart`로 넘어가지 않는다** — EQ-2 A "편집기 열기"로 수렴. 다른 안으로 새로 시작하려면 프로필에서 "C안으로 새로 시작"(EQ-2 A)을 다시 누른다 |
+| `STALE_DOC`(`restart`) | 이동하지 않는다. 프로필 알림 `role=alert` "다른 곳에서 편집 문서가 바뀌었습니다(r8). 새로 시작하지 않았습니다 — 편집기에서 확인한 뒤 다시 고르세요" + 링크 "편집기 열기". 문서·스냅샷 변화 0 |
+| `SCHEMA_INVALID` · `NOT_FOUND` · 실패 · 응답 실패 | 2a-04c 실패 문형 "편집을 시작하지 못했습니다 · 다시 시도"(`role=alert`). "다시 시도" = 같은 인자 → 멱등 |
+
+- `restart`가 이긴 뒤 열려 있던 편집기 탭은 다음 저장에서 `STALE_DOC` → E-S09(내 편집은 화면에 그대로, "내 편집으로 저장"/"다른 편집 불러오기").
+- L4 영향 없음 — 8.3은 저장소 계약이고 8.2 `createDocFromCandidate` 이름·인자는 그대로다.
 
 ## 9. 계측 (PRD 9)
 
@@ -635,8 +659,11 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-AC-37 | 공통 | 번들: `/studio/:projectId`·`/projects` 첫 화면 ≤ 100 · 진입 직후 ≤ 125 실측 · **공통 청크 순증가 ≤ 0**(S-B1 전후 표) · `/compare` 두 시나리오 예산 안 · 조작 뒤 청크 크기 출력 · 아이콘 파일 추가 0 | [B] |
 | E-AC-38 | 공통 | 검증 4종(typecheck·lint·test·build) 통과. 깨진 기존 테스트는 12.4 목록 안에서만, 테스트 수 변화 보고 | [B] |
 | E-AC-39 | 공통 | 계측: 9절 지점마다 1회 · payload 키 허용 목록 테스트(이름·글자·파일 이름·색 값 0) | [V] |
+| E-AC-40 | a2 | **`startDoc` create 경쟁**(8.3.1, r1): 같은 store에서 `delay`를 주입한 `create` 2건(서로 다른 안)을 동시에 호출 → 문서 1개 · 먼저 판정된 쪽 성공 · 다른 쪽 `DOC_EXISTS` + 기존 문서(쓰기 0, 문서 revision·해시 불변) · 그 화면은 이동 + "이미 편집 중인 문서를 엽니다", 자동 `restart` 0. 같은 인자 2건이면 둘 다 성공(멱등 재생) · 문서 1개 | [V] |
+| E-AC-41 | a2 | **`startDoc` 재시도·판정 순서**(8.3.1, r1): `fail phase:"response"` 뒤 같은 인자 재시도 → 같은 문서(문서 수 1 · revision 1) + 성공 결과. 재시도 사이 `saveDoc` 1회가 있으면 편집기는 `getDoc` 최신(r2)을 그린다. 판정 순서(모양 → 멱등 → NOT_FOUND → DOC_EXISTS·STALE_DOC → 쓰기) 단위 테스트 · `phase:"commit"` 실패 → 문서·스냅샷·멱등 기록 변화 0 | [V] |
+| E-AC-42 | a2 | **`restart` 경합**(8.3.1, r1): `expectedRevision` 없음 → `SCHEMA_INVALID` · 같은 `expectedRevision`로 2건 → 한쪽만 성공(`auto·restart` 스냅샷 +1 · revision +1) · 다른 쪽 `STALE_DOC` + 최신 동봉, 스냅샷·문서 추가 변화 0, 이동 없음 + 알림 · 열려 있던 편집기의 다음 저장 → `STALE_DOC`(E-S09, 내 편집 유지) · `restart` 성공 뒤 옛 `create` 키가 늦게 오면 재생이 아니라 `DOC_EXISTS` | [V] |
 
-**수용 기준 49개**: J-AC 10(전부 a1) · E-AC 39(a1 2 · a2 14 · a3 8 · a4 8 · 공통 7).
+**수용 기준 52개**: J-AC 10(전부 a1) · E-AC 42(a1 2 · a2 17 · a3 8 · a4 8 · 공통 7). r1 추가 = E-AC-40~ (변경 이력 표).
 
 ### 11.3 목업과 다르게 한 곳 (ADR-003)
 
@@ -705,7 +732,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 | 2a-04 위치 (r6) | 개정안 |
 |---|---|
-| 4.6 · P-S22 · P-AC-29 "B안으로 편집 시작" → `/studio` | → **`/studio/:projectId`**. 누르면 `startDoc(projectId, version, candidateId, "create")`(문서가 없을 때) 후 이동. 문서가 있으면 EQ-2 |
+| 4.6 · P-S22 · P-AC-29 "B안으로 편집 시작" → `/studio` | → **`/studio/:projectId`**. 누르면 `startDoc(projectId, version, candidateId, "create")`(문서가 없을 때) 후 이동. 문서가 있으면 EQ-2(`restart`는 보고 있던 `expectedRevision`을 넘긴다). 결과별 화면(성공·멱등 재생 → 이동 후 `getDoc` 최신 · `DOC_EXISTS` → 이동 + "이미 편집 중인 문서를 엽니다" · `STALE_DOC` → 이동 없음 + 알림)은 **8.3.1** |
 | 10 Q6 "`project_id`는 2a-05 또는 ADR-005 Q1 후속" (생성 요청 키) | **바꾸지 않는다** — 생성은 프로필 버전 단위이고 프로젝트는 계열과 1:1이라 키에서 파생된다. `GenerationJob`에 `projectId` 필드 추가도 불필요 |
 | DS-CHECK-01 A-12 (`/studio` 자리표시 "1a-05") | a1에서 자리표시 자체가 사라진다. **2a-04c가 a1보다 먼저 병합되면** 계획대로 "2a-05" 한 단어 교체 |
 
@@ -808,3 +835,9 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-24 커스텀 도메인 | P2 | — | — | **제외** |
 
 **A-01·A-02 (프로젝트 IA)**: A-01 → 2.1~2.5 · J-S01~J-S11 · J-AC-01~07·09 · 12.1·12.2 / A-02 → J-S04 "새 프로젝트 시작" · 12.1 · J-AC-03. (A-03~A-05 버전 비교 좁은 폭은 L1 FIX-2A04b2-DIFF 몫 — 이 SPEC 범위 밖)
+
+## 변경 이력
+
+| 판 | Codex j1 항목 | 고친 절 | 추가 AC (수정 AC) | 비고 |
+|---|---|---|---|---|
+| r1-1 | [high] 문서 최초 생성 경쟁·멱등 | 8.3 `startDoc` 행 · **8.3.1 신설** · 8.3 오류 코드(`DOC_EXISTS`) · 3.2 E-S03 · 12.3 편집 시작 행 · 0절 데이터·수용 기준 | E-AC-40·41·42 | `startDoc`에 `expectedRevision?` 인자 추가(8.3 저장소 — L4 영향 없음, 8.1·8.2 무변경). 0절 "TRD 개정 대상 4건" → 5건(8.3 목록 ①~⑤와 맞춤, r0 개수 오기) |

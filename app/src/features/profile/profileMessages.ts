@@ -76,7 +76,8 @@ function conflictOf(p: CorrectionProposal): ProposalView["conflict"] {
 const NONE: ReadonlySet<PaletteRole> = new Set();
 
 /**
- * 검사는 `palette`(보정을 적용한 팔레트), 제안은 `base`(보정 전 보드 팔레트)에서 계산한다 — 제안의 from은 base 값이어야 저장소가 받는다(보정 from 검사).
+ * 검사는 `palette`(보정을 적용한 팔레트)에서 한다. 제안은 `base`(보정 전 보드 팔레트)에서 역할을 고른 뒤, 그 역할만 base 값으로 둔 초안 팔레트에서
+ * 후보·충돌을 다시 계산한다 — 제안의 from은 base 값이어야 저장소가 받는다(보정 from 검사).
  * 제안은 보정 팔레트에서 아직 미달인 역할, 또는 저장 안 된 보정을 쓴 역할(`written`)만 보인다. 둘 다 생략하면 base = palette(2a-04a 동작).
  */
 export function contrastView(
@@ -93,6 +94,8 @@ export function contrastView(
     checks: checks.map((c) => ({ id: c.id, label: CHECK_LABELS[c.id], ratio: formatRatio(c.ratio), pass: c.pass })),
     proposals: proposeCorrections(base, cardTone, level)
       .filter((p) => failing.has(p.role) || written.has(p.role))
+      // 후보·충돌은 다른 역할의 보정을 적용한 초안에서, 그 역할만 base 값으로 되돌려 다시 계산한다(Codex P2) — from은 base 값
+      .map((p) => proposeCorrections(palette.map((e) => (e.role === p.role ? { ...e, hex: p.from } : e)), cardTone, level).find((q) => q.role === p.role) ?? p)
       .map((p) => {
         const conflict = conflictOf(p);
         return { role: p.role, from: p.from, to: p.to, check: p.basis, text: proposalText(p, level), ...(!failing.has(p.role) && { written: true }), ...(conflict && { conflict }) };

@@ -749,6 +749,7 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 | N-Q2 | `break-keep` 생략(body 전역 `keep-all`과 중복) | **A** 수용 | 코드 |
 | N-Q3 | <768 "차이" 열 이름 생략("바뀜" 글자가 뜻을 가짐) | **A** 수용 | 3.5 |
 | N-Q4 | `noHardcodedStyle` 가드 범위 | **A** `src/styles/`의 컴포넌트용 CSS까지 넓힘(토큰 원본 파일 제외) — BUNDLE-HEADROOM에서 처리 | 가드 |
+| QA-B2 | (QA-2A04B2 FAIL, 병합 `4af9f9a`) D-2A4B2-01 P1 대비 강화 7:1 불가 조합에서 `nearestCompliantColor` throw → `/profile` 오류 경계 · D-2A4B2-02·03 P3 · 관찰 ② 주석 · 관찰 ③ 문서 제목 | **A** BUNDLE-HEADROOM 병합 직후 L1 첫 작업 FIX-2A04B2-P1(P1 + P3 2 + 관찰 ② 한 묶음) — 7:1이 불가능하면 throw 대신 P-S15 충돌(보정값 쓰기 없음 + 대체안). 관찰 ③(라우트별 `document.title`)은 별건 | P-S15 · 5.2 · 5.3 |
 | L1 다음 | `/profile` 진입 직후 여유 0.32 · `/compare` 0.41 — 2a-04c·F1이 들어갈 자리 없음 | **A** BUNDLE-HEADROOM(자동 로드 중 조작 뒤로 미룰 수 있는 것 실측·이동, 예산 상수 불변) + F1(청크 재시도) 먼저, 그 뒤 2a-04c | 7 |
 ### 10.1 남은 쟁점 (r1)
 

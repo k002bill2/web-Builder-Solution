@@ -8,9 +8,9 @@
 ## 레인
 | 레인 | 담당 | 작업 순서 | 코드 영향 |
 |---|---|---|---|
-| L1 화면 | Developer | 2a-04b2 + FIX F2(`b68f0ac`) → NARROW(`25db457`) → **BUNDLE-HEADROOM + F1 + 스타일 가드**(작업 공간 `bundle-headroom`, 영환님 A) → 2a-04c(3안) · 2a-05a1 | `app/src` 프로필·보드, 번들 |
+| L1 화면 | Developer | 2a-04b2 + FIX F2(`b68f0ac`) → NARROW(`25db457`) → **BUNDLE-HEADROOM + F1 + 스타일 가드**(작업 공간 `bundle-headroom`, 영환님 A) → **FIX-2A04B2-P1**(QA-2A04B2 P1·P3 2·관찰 ②) → 2a-04c(3안) · 2a-05a1 · 별건: 라우트 문서 제목 | `app/src` 프로필·보드, 번들 |
 | L2 설계 | Designer | DS-CHECK-01(`fd8312e`) → DS-2A-05 SPEC r0(`bc27011`) → r1(Codex j1 반영, 병합 `c302c26`, AC 57) → Codex j2(Jarvis, 결과에 따라 r2) → 2a-05a1 착수 전 대기 | `docs/design/2a-05/`만 |
-| L3 검증 | QA | QA-2A04AB(`3b2aa0e`) → **QA-2A04B2**(b2 + FIX F2 병합분, 작업 공간 `qa-2a04b2`, 포트 4341) → 이후 병합분 | `docs/qa/`만 |
+| L3 검증 | QA | QA-2A04AB(`3b2aa0e`) → QA-2A04B2(FAIL P1 1·P3 2, `4af9f9a`) → 다음: HEADROOM+P1 FIX 병합분 회귀 | `docs/qa/`만 |
 | L4 엔진 | Developer 2번째 작업 공간 `l4-engine-a` | **L4a**(2026-09-26 시작, b2 `50712b2` 선반영 병합 위에서): 계약 타입·섹션 정의·검증 함수·문서 연산(`app/src/engine/`) → L4b composer(seed)·lint R-01~R-13·`runGate`·토큰→테마 | 순수 TS, 화면 import 0 → 번들 0. b2 병합 뒤 main에 rebase |
 
 ## 규칙

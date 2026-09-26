@@ -1,0 +1,2 @@
+$ lsof -nP -iTCP:4341 -sTCP:LISTEN  (2026-09-26 22:10:26 KST)
+exit=1

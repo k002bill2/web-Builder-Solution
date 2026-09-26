@@ -9,9 +9,9 @@
 | 레인 | 담당 | 작업 순서 | 코드 영향 |
 |---|---|---|---|
 | L1 화면 | Developer | 2a-04b2 → **FIX-2A04b2-DIFF**(DS-CHECK-01 A-03~A-05 좁은 폭 버전 비교·버전 줄, b2 브랜치에서 병합 전) → 2a-04c(3안) | `app/src` 프로필·보드, 번들 |
-| L2 설계 | Designer | DS-CHECK-01(완료 `fd8312e`) → **DS-2A-05** 편집기 2a-05·07 + `/projects` 목록 SPEC(영환님 "Q 전부 A") | `docs/design/`만 |
+| L2 설계 | Designer | DS-CHECK-01(완료 `fd8312e`) → DS-2A-05 SPEC r0(완료 `bc27011`, EQ 전부 A) → **DS-2A-05-r1**(Codex j1 반영, 작업 공간 `ds-2a-05-r1`) | `docs/design/2a-05/`만 |
 | L3 검증 | QA | QA-2A04AB(a1·a2·b1 병합분) → 이후 병합분 | `docs/qa/`만 |
-| L4 엔진(대기) | Developer 2번째 작업 공간 | b2 병합 뒤: PageDoc·SectionPlan 타입, 결정적 composer(seed), 조합 lint, 토큰→테마 | 순수 TS 도메인, 화면 import 0 → 번들 0 |
+| L4 엔진 | Developer 2번째 작업 공간 `l4-engine-a` | **L4a**(2026-09-26 시작, b2 `50712b2` 선반영 병합 위에서): 계약 타입·섹션 정의·검증 함수·문서 연산(`app/src/engine/`) → L4b composer(seed)·lint R-01~R-13·`runGate`·토큰→테마 | 순수 TS, 화면 import 0 → 번들 0. b2 병합 뒤 main에 rebase |
 
 ## 규칙
 1. `ProfilePage`·`useProfileDetail`·프로필 저장소를 고치는 작업은 동시에 1개(L1).

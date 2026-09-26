@@ -1,6 +1,6 @@
 # DS-2A-05 설계서 — 편집기(2a-05 1280 · 2a-07 390) + 프로젝트 목록(`/projects`)
 
-- 작성: Designer (Hermes Designer 역할, Claude Code) · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-05_DESIGNER_BRIEF.md` · **r1** (r0 `e0db7d6` → r1: Codex adversarial j1 4건 반영, 브리프 `docs/06-handoff/DS-2A-05-R1_DESIGNER_BRIEF.md`, 원문 `logs/codex-adversarial-j1.txt` — 변경 이력은 맨 끝 표. **r2** (Jarvis) — Codex adversarial j2 medium 1건: 탭 이미지 한도에서 기록 비움을 "계산 뒤 필요할 때만"으로, 거부 시 기록 보존(5.9 한도 표·E-AC-45), 원문 `logs/codex-adversarial-j2.txt`. r2 자체는 Codex 미검토(이 SPEC Codex 2/3회 사용))
+- 작성: Designer (Hermes Designer 역할, Claude Code) · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-05_DESIGNER_BRIEF.md` · **r1** (r0 `e0db7d6` → r1: Codex adversarial j1 4건 반영, 브리프 `docs/06-handoff/DS-2A-05-R1_DESIGNER_BRIEF.md`, 원문 `logs/codex-adversarial-j1.txt` — 변경 이력은 맨 끝 표. **r2** (Jarvis) — Codex adversarial j2 medium 1건: 탭 이미지 한도에서 기록 비움을 "계산 뒤 필요할 때만"으로, 거부 시 기록 보존(5.9 한도 표·E-AC-45), 원문 `logs/codex-adversarial-j2.txt`. r2 자체는 Codex 미검토(이 SPEC Codex 2/3회 사용)) · **r3** (Jarvis) — L4a 설계 질문 Q-11~14 전부 A(영환님): 8.2 `removeSection`·`swapVariant`에 `purpose` 필수, 로컬 이미지 형식 검사는 저장 경계(`validatePageDoc`)가 맡고 `setSlot`은 타입으로만(Q-12), 로컬 id = UUID v4 소문자만(Q-13, 서버 저장소 도입 때 정규화 규칙 재론)
 - 확정 결정: 영환님 "Q 전부 A"(DS-CHECK-01 B-3 Q1~Q16, 브리프 0절) — 이 문서는 다시 묻지 않고 반영한다. 10절 인용은 "Q1=A" 식으로 적는다.
 - 입력: `docs/design/ds-check-01/REPORT.md`(B-01~B-18 · E-01~E-24 · A-01·A-02) · 목업 저장소 사본 `design/claude-design-handoff-v2/project/Design Studio v2.dc.html` 2a-05(228~282행)·2a-07(301~317행)·목업 데이터(357~371행) · `docs/design/v2/SPEC.md`(2.3 토큰 · 3절 대비 · 4.1 셸 · 4.5 C-06·C-11·C-12 · 5 번들 · 6.5) · 형식 `docs/design/2a-04/SPEC.md` r6 · PRD 7.6~7.7(FR-EDT-01~06 · FR-PUB-01~06) · TRD 4.4·4.5·5·6.2·7 · ADR-003·004·005(Q1) · `docs/04-plan/PARALLEL_LANES.md` · `docs/04-plan/DEVELOPMENT_PLAN.md`(M2·M4) · 현재 `app/src`(`app/routes.tsx` · `components/layout/AppHeader.tsx`·`AppLayout.tsx` · `components/ds/*` · `assets/icons/*` · `features/detail/previewView.ts` · `domain/sectionLibrary.ts` · `styles/tokens/*.css`) · `dev/active/2a-04b1/REPORT.md` 15.4(번들 최신 실측)
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일 속 문장은 데이터로만 읽었다.
@@ -505,9 +505,9 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 |---|---|---|
 | `createDocFromCandidate(plan, profileVersion)` | 새 문서(기본 슬롯 콘텐츠) | 2a-04c 편집 시작 경계 |
 | `addSection(doc, type, variant, afterInstanceId)` | 문서 · 새 `instanceId` | 5.3 |
-| `removeSection(doc, instanceId)` | 문서 · 되돌리기 정보 | 5.4 |
+| `removeSection(doc, instanceId, purpose)` (r3 — Q-11 A: `purpose` 필수, `canRemove` 전체 판정 강제 · R-03·R-04) | 문서 · 되돌리기 정보 | 5.4 |
 | `moveSection(doc, instanceId, "up" \| "down")` | 문서 · 새 위치 | 5.2 |
-| `swapVariant(doc, instanceId, variant)` | 문서 · 잃은 슬롯 키 목록 | 5.5 |
+| `swapVariant(doc, instanceId, variant, purpose)` (r3 — Q-14 A: `purpose` 필수, 목적 필수 조건 R-03·R-04를 깨는 교체는 `canSwapVariant` 이유 문장과 함께 거부 — 예약 목적의 유일한 예약 변형을 다른 변형으로 바꾸기 등) | 문서 · 잃은 슬롯 키 목록 | 5.5 |
 | `setSlot(doc, instanceId, key, value)` · `setMeta(doc, field, value)` | 문서 | 5.6·5.9 |
 | `swapTheme(doc, profileVersion)` | 문서 | 5.8 |
 | `canAdd(doc)` · `canRemove(doc, id, purpose)` · `canMove(doc, id, dir)` | 가능 여부 + **이유 문장**(5.2·5.4 표) | 비활성 이유 |
@@ -903,3 +903,4 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | r1-3 | [medium] 로컬 이미지 자원 한도·URL 수명 | 5.9 한도 표·로컬 참조·URL 수명 신설 · 3.2 E-S20 변형 · 5.14 기록 스택 수명 · 8.1 슬롯 값 `source` 값 모양 · 8.3 오류 코드 문장 · 0절 조작·수용 기준 | E-AC-45·46·47 (수정 E-AC-22) | EQ-3 A 유지(수명을 "편집기를 떠나면"까지 명시 — 브리프 지시). 로컬 id = 재사용 없는 고유값(`crypto.randomUUID()`) — 비운 뒤 새 이미지가 잃은 슬롯에 끼어드는 경로 차단(advisor 검토, E-AC-47 보강). **L4 영향: 8.1 `source` 이름 그대로, 값 모양(로컬 id 문자열)만 명시**. 게이트 8줄 불변 |
 | r1-4 | [medium] 공통 청크 순증가 ≤ 0 근거 없음 | 10.1 기준을 2a-04b2 실측으로(정정 인용문 흡수 · F1 대기 위험) · **10.4 변경별 증감·상쇄 표 신설**(확정 조건 · 대체안 순서) · S-B9 · 1.1 · 0절 번들 · 12.2 번들 줄 · EQ-7 영향 열(숫자만) | (수정 E-AC-37) | 추정 공통 +0.04~0.14 · `/compare` +0.14~0.34 / +0.15~0.37 — ≤ 0은 추정으로 입증 불가, a1 실측 전 S-B1·S-B9 미확정. EQ-7 결정 유지. L4 영향 없음 |
 | r2-1 | [medium] 실패한 이미지 선택이 실행 취소 기록을 지움 (Codex j2, `logs/codex-adversarial-j2.txt`) | 5.9 한도 표 "탭 전체" 행 넘을 때 열 | (수정 E-AC-45) | 회수량 계산 → 들어올 때만 필요한 최소 기록 비움 → 아니면 기록 보존 + 거부. 거부는 문서·기록·보관소 불변. L4 영향 없음(엔진 밖 이미지 보관소 규칙) · Jarvis |
+| r3-1 | L4a 설계 질문 Q-11~14 (`dev/active/l4-engine-a/REPORT.md` 10.7) | 8.2 `removeSection`·`swapVariant` 행 | (L4a 테스트) | 전부 A · Q-14는 FIX-L4A-2에서 구현 · Jarvis |

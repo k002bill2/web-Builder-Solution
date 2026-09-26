@@ -3,18 +3,21 @@
  * 지연(`delay`: 요청 도착 전·응답 반환 전)과 실패(`fail`)를 주입할 수 있다(AC-23 경합 테스트).
  * 프로필 버전은 공유 저장 모듈(studioStore)에 쓴다 — 확정은 ① expectedLatest 비교 ② 버전 삽입 ③ 보드 확정 갱신을
  * 한 동기 구간에서 커밋하거나 함께 롤백한다. `fail`의 `phase: "commit"`은 ② 뒤 ③ 앞 (DS-2A-04 6.3 r3).
+ * 확정 본문(판정·쓰기·이어받기 준비)은 확정을 처음 부를 때 받는다(memoryBoardConfirm) — 보드 진입 직후 합계(/compare)에 싣지 않는다(FIX3 1안).
+ * 받기는 `call`의 동기 구간 밖(앞)이라 비교·삽입·보드 갱신의 원자성은 그대로다.
  */
 import { addColumn, removeColumn } from "../domain/boardColumns";
 import { parseBoardInput } from "../domain/boardInput";
 import { releaseUnavailablePicks } from "../domain/boardPicks";
-import { emptyBoard, type CompareBoard, type ComparisonResult, type DesignProfileInput, type Picks } from "../domain/compareBoard";
-import type { ProfileVersion } from "../domain/profile";
+import { emptyBoard, type CompareBoard, type ComparisonResult, type Picks } from "../domain/compareBoard";
 import { resolveComparisons, type ComparisonCatalog } from "../domain/comparisonCells";
 import { buildProfileDraft } from "../domain/profileDraft";
 import { EXPOSED_LICENSE_STATUSES } from "../domain/reference";
-import { SECTION_LIBRARY, resolveVariant, type SectionLibrary } from "../domain/sectionLibrary";
+import { SECTION_LIBRARY, type SectionLibrary } from "../domain/sectionLibrary";
 import { CompareBoardError, type CompareBoardRepository, type ConfirmResult } from "./compareBoardRepository";
+import type { BoardConfirmer } from "./memoryBoardConfirm";
 import { createStudioStore, headOf, type StudioStore } from "./studioStore";
+import { loadBoardConfirm } from "./writeBodyLoader";
 
 export type BoardMethod = keyof CompareBoardRepository;
 export interface BoardCall {
@@ -34,19 +37,6 @@ export interface MemoryCompareBoardOptions {
   readonly fail?: (call: BoardCall) => Error | undefined;
   /** 프로필 저장소와 함께 쓰는 저장 모듈 (DS-2A-04 6.3). 없으면 새로 만든다 */
   readonly store?: StudioStore;
-}
-
-/** R-12: 사업자정보 없는 Footer는 확정 시 같은 모양의 사업자정보 확장 변형으로 바꾼다. */
-function withBusinessInfoFooter(profile: DesignProfileInput, library: SectionLibrary): DesignProfileInput {
-  const footer = profile.component_choices.footer?.variant;
-  const def = footer === undefined ? undefined : resolveVariant(library, "footer", footer)?.def;
-  const variant = def?.hasBusinessInfo === false ? def.businessInfoVariant : undefined;
-  if (!variant) return profile;
-  return {
-    ...profile,
-    component_choices: { ...profile.component_choices, footer: { section: "footer", variant } },
-    section_plan: profile.section_plan.map((s) => (s.type === "footer" ? { type: "footer", variant } : s)),
-  };
 }
 
 export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOptions): CompareBoardRepository {
@@ -93,49 +83,19 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     }
   }
 
-  /**
-   * 보드 확정 (6.1-4 · 6.3 r3). 판정 순서: 멱등 키 → STALE_BOARD → STALE_PROFILE → 선택·라이브러리 검사.
-   * `profileId`가 없으면 첫 확정(새 계열). 같은 키의 재시도는 커밋된 결과를 그대로 돌려준다(새 버전 0).
-   */
-  function confirmInto(revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void): ConfirmResult {
-    const key = [board.id, revision, expectedLatest].join("\n");
-    const done = profileId === undefined ? undefined : store.commitOf(profileId);
-    if (done?.key === key) return { profileId: done.profileId, version: done.version };
-    if (revision !== board.revision) throw staleBoard(revision);
-    const latest = profileId === undefined ? undefined : store.versions(profileId).at(-1);
-    if ((latest?.version ?? 0) !== expectedLatest) {
-      throw new CompareBoardError("STALE_PROFILE", `expectedLatest ${expectedLatest} ≠ ${latest?.version ?? 0}`, undefined, latest && headOf(latest));
-    }
-    const results = resultsOf(board.columns.map((c) => c.referenceId));
-    assertPicks(board.picks, results);
-    const draft = buildProfileDraft(board, results, library.version);
-    if (draft.status !== "ready") throw new CompareBoardError("UNSUPPORTED_COMBINATION", "Hero 선택이 필요합니다");
-    // 기본값으로 들어간 섹션까지 현재 라이브러리 버전으로 다시 검사한다 (SPEC 8.2)
-    const unsupported = draft.profile.section_plan.find(
-      (s) => (s.type === "header" || s.type === "hero" || s.type === "footer") && resolveVariant(library, s.type, s.variant)?.variant !== s.variant,
-    );
-    if (unsupported) throw new CompareBoardError("UNSUPPORTED_COMBINATION", `라이브러리 ${library.version}에 없는 변형: ${unsupported.type}/${unsupported.variant}`);
-    const base = withBusinessInfoFooter(draft.profile, library);
-    const result = store.transact((tx): ConfirmResult => {
-      const id = profileId ?? tx.nextProfileId();
-      const version = expectedLatest + 1;
-      // 이어받기(carryOverAdjustments)는 2a-04b — 지금은 조정을 만드는 쓰기가 없어 재확정도 빈 조정
-      const record: ProfileVersion = {
-        profileId: id,
-        version,
-        origin: profileId ? "board-reconfirm" : "board",
-        boardRevision: revision,
-        baseReferenceId: draft.baseReferenceId,
-        base,
-        adjustments: {},
-        createdAt: now(),
-      };
-      tx.insert(record);
-      tx.remember({ key, profileId: id, version });
-      commitGate();
-      return { profileId: id, version };
-    });
-    board = { ...board, confirmed: { profileId: result.profileId, version: result.version, revision, picks: board.picks, custom: board.custom } };
+  let confirmer: BoardConfirmer | undefined;
+  /** 확정 본문을 받고(받은 모듈만 기억 — 로드 실패 뒤 다시 부르면 다시 받는다) 이어받기 규칙을 준비한다. `call` 앞, 동기 구간 밖 */
+  const confirmerFor = async (profileId: string | undefined): Promise<BoardConfirmer> => {
+    const { createBoardConfirmer } = await loadBoardConfirm();
+    confirmer ??= createBoardConfirmer({ store, library, now, resultsOf, assertPicks, staleBoard, buildProfileDraft });
+    await confirmer.prepare(profileId);
+    return confirmer;
+  };
+
+  /** 확정 판정·쓰기는 본문이, 확정 결과 보드 반영은 여기서 — 한 동기 구간 */
+  function confirmWith(body: BoardConfirmer, revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void): ConfirmResult {
+    const { result, board: next } = body.confirmInto(board, revision, expectedLatest, profileId, commitGate);
+    board = next;
     return result;
   }
 
@@ -171,13 +131,17 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
         return view(commit({ ...board, picks: parsed.value.picks, custom: parsed.value.custom }));
       }),
     getComparison: (referenceIds) => call("getComparison", () => ({ libraryVersion: library.version, results: resultsOf(referenceIds) })),
-    confirmProfile: (revision, expectedLatest) =>
-      call("confirmProfile", (commitGate) => confirmInto(revision, expectedLatest, board.confirmed?.profileId, commitGate)),
-    createProfileVersion: (profileId, revision, expectedLatest) =>
-      call("createProfileVersion", (commitGate) => {
+    confirmProfile: async (revision, expectedLatest) => {
+      const body = await confirmerFor(board.confirmed?.profileId);
+      return call("confirmProfile", (commitGate) => confirmWith(body, revision, expectedLatest, board.confirmed?.profileId, commitGate));
+    },
+    createProfileVersion: async (profileId, revision, expectedLatest) => {
+      const body = await confirmerFor(profileId);
+      return call("createProfileVersion", (commitGate) => {
         if (board.confirmed?.profileId !== profileId) throw new CompareBoardError("SCHEMA_INVALID", `이 보드의 프로필이 아님: ${profileId}`);
-        return confirmInto(revision, expectedLatest, profileId, commitGate);
-      }),
+        return confirmWith(body, revision, expectedLatest, profileId, commitGate);
+      });
+    },
     getProfileVersions: (profileId) => call("getProfileVersions", () => store.versions(profileId)),
   };
 }

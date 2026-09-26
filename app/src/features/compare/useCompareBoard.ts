@@ -11,7 +11,7 @@ import { removeColumn as removeBoardColumn, withoutReference } from "../../domai
 import type { WarningFix } from "../../domain/boardWarnings";
 import { draftStatusOf, type CompareBoard, type ComparisonRowId, type CustomStyle, type DraftStatus } from "../../domain/compareBoard";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
-import { EMPTY_ANNOUNCEMENT, intentOf, type Comparison, type Intent } from "./boardScreen";
+import { EMPTY_ANNOUNCEMENT, carryOverCount, intentOf, type Comparison, type Intent } from "./boardScreen";
 import { useCompareTray } from "./CompareTrayContext";
 import type { BoardEngine } from "./boardEngine";
 import type { PicksSaver, PicksSaverState } from "./picksSaver";
@@ -122,6 +122,22 @@ export function useCompareBoard() {
   const evaluation = useMemo(() => (board && engine ? engine.evaluate(board, comparison) : null), [board, comparison, engine]);
   const view = useMemo(() => (board && engine ? engine.buildBoardView(board, comparison.results) : null), [board, comparison.results, engine]);
   const locked = confirming || removing;
+  // P-S25 (DS-2A-04 r6) — 진입 직후 자동은 개수 캡션뿐(인라인 계산). 판정·목록은 CarryOverCaption이 펼칠 때 받는다
+  // 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 초안 상태와 무관하게 보인다. 판정 입력(nextBase)은 초안이 ready일 때만 (FIX4)
+  const confirmedRef = saved?.board.confirmed;
+  const adjustmentCount = carryOverCount(confirmedRef?.latest?.adjustments);
+  const draft = evaluation?.draft;
+  const carryOver =
+    engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest
+      ? {
+          Caption: engine.CarryOverCaption,
+          count: adjustmentCount,
+          props:
+            draft?.status === "ready"
+              ? { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile }
+              : null,
+        }
+      : null;
   // S-15 — 확정한 선택에서 바뀐 게 없으면 새 버전으로 확정하지 않는다 (태그도 "확정됨")
   const unchanged = useMemo(() => (board && engine ? engine.unchangedSinceConfirm(board) : false), [board, engine]);
 
@@ -237,8 +253,11 @@ export function useCompareBoard() {
       const result = target.confirmed
         ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version)
         : await repository.confirmProfile(target.revision, 0);
-      navigate(`/profile/${result.profileId}`);
+      engineRef.current!.reportConfirmed(result.version, target.confirmed !== undefined);
+      // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6)
+      navigate(`/profile/${result.profileId}`, result.droppedCount ? { state: { droppedCount: result.droppedCount } } : undefined);
     } catch (error) {
+      engineRef.current!.reportConfirmFailed(error);
       await onConfirmError(error);
     } finally {
       confirmLock.current = false;
@@ -262,6 +281,7 @@ export function useCompareBoard() {
     items: evaluation && engine ? engine.draftItemsView(evaluation.draft, comparison.results) : [],
     checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
     CustomStyleFields: engine?.CustomStyleFields,
+    carryOver,
     warnings: evaluation?.warnings ?? [],
     draftStatus: saved ? draftStatusOf(saved.board, unchanged) : UNCONFIRMED,
     availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status, unchanged),

@@ -1,4 +1,4 @@
-import type { ProfileVersion } from "../domain/profile";
+import type { PaletteCorrection, ProfileVersion } from "../domain/profile";
 import type { StudioStore } from "../data/studioStore";
 
 /**
@@ -23,3 +23,6 @@ export function insertOtherVersion(store: StudioStore, profileId = "profile-1", 
     return record;
   });
 }
+
+/** SPEC 3.3 ref-b ink 보정(C-4 기준 4.5) — 밝은 카드에서만 충돌 없음, 어두운 카드면 C-3 7.3 → 2.8 (P-AC-39 ③) */
+export const REF_B_INK_FIX: PaletteCorrection = { role: "ink", from: "#C9A96E", to: "#7E622F", check: "C-4" };

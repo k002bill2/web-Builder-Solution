@@ -1,0 +1,37 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+ ❯ src/data/profileAdjust.test.ts (24 tests | 1 failed) 35ms
+   ❯ Q1 조정 저장 멱등 — 키 = (profileId, expectedLatest, 정규화한 조정) 별도 기록 (6.3 r3 계약) (4)
+     × I-2: 같은 expectedLatest라도 다른 조정이면 멱등 결과가 아니라 기존 판정 STALE_PROFILE(최신 동봉) · 모르는 키를 붙인 재시도는 SCHEMA_INVALID 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/profileAdjust.test.ts > Q1 조정 저장 멱등 — 키 = (profileId, expectedLatest, 정규화한 조정) 별도 기록 (6.3 r3 계약) > I-2: 같은 expectedLatest라도 다른 조정이면 멱등 결과가 아니라 기존 판정 STALE_PROFILE(최신 동봉) · 모르는 키를 붙인 재시도는 SCHEMA_INVALID
+AssertionError: expected undefined to be 'SCHEMA_INVALID' // Object.is equality
+
+- Expected:
+"SCHEMA_INVALID"
+
++ Received:
+undefined
+
+ ❯ src/data/profileAdjust.test.ts:173:141
+    171|     expect((await errorOf(profiles.saveAdjustments("profile-1", 1, { d…
+    172|     // Codex P2: 값이 undefined인 모르는 키도 정규화에서 사라진다 — 모양 검사가 멱등 재생보다 먼저
+    173|     expect((await errorOf(profiles.saveAdjustments("profile-1", 1, { d…
+       |                                                                                                                                             ^
+    174|     expect((await errorOf(profiles.saveAdjustments("profile-1", 2, { d…
+    175|     expect((await versionsOf()).map((v) => v.version)).toEqual([1, 2]);
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 23 passed (24)
+   Start at  18:50:09
+   Duration  1.09s (environment 66%, transform 13%, setup 12%, import 5%, tests 3%, worker 1%)
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Tag } from "../components/ds/Tag";
@@ -34,6 +34,12 @@ function ProfileNotFound() {
   );
 }
 
+/** 보드 재확정이 navigate state로 넘긴 지운 조정 수(P-S25 r6). history state는 밖에서 온 값이라 모양을 확인한다 */
+function droppedCountOf(state: unknown): number {
+  const n = typeof state === "object" && state !== null && "droppedCount" in state ? state.droppedCount : undefined;
+  return typeof n === "number" && Number.isSafeInteger(n) && n > 0 ? n : 0;
+}
+
 /** `?v=`가 없거나 없는 버전이면 최신 */
 const pick = (versions: readonly ProfileVersion[], param: string | null) => versions.find((v) => String(v.version) === param);
 /** 비교 표는 작은 번호 먼저 ("v1과 v2 비교") */
@@ -41,6 +47,16 @@ const ordered = (a: ProfileVersion, b: ProfileVersion) => (a.version < b.version
 
 function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const { state, status, alert, reverting, revert, announce } = useProfileDetail(profileId);
+  // 보드 확정 뒤 지운 조정이 있으면 "프로필 알림"에 한 번 알린다 — 패널을 펼치지 않았어도 (P-S25 r6).
+  // 알린 뒤 history state를 replace로 비운다 — 뒤로·앞으로 가기로 이 항목에 돌아와도 다시 알리지 않는다(문장은 알림 state에 남는다)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dropped = droppedCountOf(location.state);
+  useEffect(() => {
+    if (dropped === 0) return;
+    announce(`조정 ${dropped}개를 지웠습니다`);
+    void navigate({ pathname: location.pathname, search: location.search, hash: location.hash }, { replace: true, state: null });
+  }, [location.key, location.pathname, location.search, location.hash, dropped, announce, navigate]);
   return (
     <>
       {state.status === "loading" && <LoadingState />}
@@ -125,7 +141,7 @@ function ProfileView({
 
   const palette = PALETTE_ROLES.map((role) => ({ role, hex: viewed.base.color_tokens[role].$value }));
   const contrast = engine.contrastView(palette, viewed.base.component_choices.card_style?.surfaceTone, viewed.adjustments.contrast ?? "aa");
-  const summaryOf = (v: ProfileVersion) => engine.summarizeVersion(series.versions.find((p) => p.version === v.version - 1)?.base, v.base, titleOf);
+  const summaryOf = (v: ProfileVersion) => engine.summarizeVersion(series.versions.find((p) => p.version === v.version - 1)?.base, v.base, titleOf, v.dropped);
 
   return (
     <div className={PAGE}>

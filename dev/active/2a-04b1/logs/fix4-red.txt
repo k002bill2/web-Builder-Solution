@@ -1,0 +1,1193 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+stderr | src/pages/CompareBoardCarryOver.test.tsx > FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6) > F4-1: Hero 해제 상태로 진입 → 캡션 '조정 2개' + '이어받기 확인', 패널 청크 요청 0
+An update to ProfileDetail inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardCarryOver.test.tsx (17 tests | 4 failed | 13 skipped) 18852ms
+   ❯ FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6) (4)
+     × F4-1: Hero 해제 상태로 진입 → 캡션 '조정 2개' + '이어받기 확인', 패널 청크 요청 0 5345ms
+     × F4-2: 같은 상태에서 펼치면 Hero 안내·요청 0 → Hero를 고르면 요청 1, ①과 같은 입력으로 '2개 · 0개' → 모션 B면 '1개 · 1개' 5128ms
+     × F4-3: ready에서 펼쳐 목록을 받은 뒤 Hero 해제 → 캡션 N 유지, 펼친 영역은 안내, 재요청 0 → 다시 고르면 목록(재요청 0) 3186ms
+     × F4-4: 재진입(보드 → 프로필 → 보드)에서도 Hero 해제 상태면 캡션 '조정 2개' + '이어받기 확인', 요청 0 · 펼치면 안내 5189ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6) > F4-1: Hero 해제 상태로 진입 → 캡션 '조정 2개' + '이어받기 확인', 패널 청크 요청 0
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_d_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_d_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_e_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_e_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_d_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_d_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_e_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_e_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ expectCaptionOnly src/pages/CompareBoardCarryOver.test.tsx:305:39
+    303|   /** 조정 2개 캡션 + "이어받기 확인" 접힘 + 패널 청크 요청 0 (F4-1·F4-4 공통) */
+    304|   const expectCaptionOnly = async () => {
+    305|     expect(await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다",…
+       |                                       ^
+    306|     expect(HERO_A()).toHaveAttribute("aria-pressed", "false");
+    307|     expect(summary()).toBeInTheDocument();
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:327:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6) > F4-2: 같은 상태에서 펼치면 Hero 안내·요청 0 → Hero를 고르면 요청 1, ①과 같은 입력으로 '2개 · 0개' → 모션 B면 '1개 · 1개'
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_t_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_t_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_u_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_u_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_t_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_t_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_u_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_u_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ expectCaptionOnly src/pages/CompareBoardCarryOver.test.tsx:305:39
+    303|   /** 조정 2개 캡션 + "이어받기 확인" 접힘 + 패널 청크 요청 0 (F4-1·F4-4 공통) */
+    304|   const expectCaptionOnly = async () => {
+    305|     expect(await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다",…
+       |                                       ^
+    306|     expect(HERO_A()).toHaveAttribute("aria-pressed", "false");
+    307|     expect(summary()).toBeInTheDocument();
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:334:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6) > F4-3: ready에서 펼쳐 목록을 받은 뒤 Hero 해제 → 캡션 N 유지, 펼친 영역은 안내, 재요청 0 → 다시 고르면 목록(재요청 0)
+TestingLibraryElementError: Unable to find an element with the text: 이어받기 확인. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_1d_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_1d_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0mHero 구성 선택 해제[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_1e_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_1e_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m비교 보드 · Design Studio[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+            [36m>[39m
+              [0mDesign Studio[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"주 메뉴"[39m
+            [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog?tab=saved"[39m
+            [36m>[39m
+              [0m보관함[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<i[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ds-icon size-4 "[39m
+                [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+              [36m/>[39m
+              [0m새 프로젝트[0m
+            [36m</button>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"강영환"[39m
+              [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [0m강영[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex flex-wrap items-start gap-x-4 gap-y-3"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m비교 보드[0m
+                [36m</h1>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+                [36m>[39m
+                  [0m3 / 6개 비교 중[0m
+                  [0m · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ds-caption1 inline-flex items-center gap-1 text-label-alternative"[39m
+                [36m>[39m
+                  [36m<i[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"ds-icon size-4 text-status-positive"[39m
+                    [33mstyle[39m=...
+ ❯ Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:360:11
+    358|     expect(panelLoads).toHaveBeenCalledTimes(1);
+    359|     await userEvent.click(HERO_A());
+    360|     await waitFor(() => expect(heroHint()).toBeInTheDocument());
+       |           ^
+    361|     expect(caption()).toHaveTextContent("이 프로필에 조정 2개가 있습니다");
+    362|     expect(checkDetails().open).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6) > F4-4: 재진입(보드 → 프로필 → 보드)에서도 Hero 해제 상태면 캡션 '조정 2개' + '이어받기 확인', 요청 0 · 펼치면 안내
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_2k_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_2k_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_2l_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_2l_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_2k_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_2k_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative"[39m
+  [36m>[39m
+    [0m항목에서 '이 요소 선택'을 누르면 여기에 담깁니다[0m
+  [36m</p>[39m
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-col gap-2.5"[39m
+  [36m>[39m
+    [36m<legend[39m
+      [33mclass[39m=[32m"ds-label mb-2 text-label-strong"[39m
+    [36m>[39m
+      [0m사용자 스타일[0m
+    [36m</legend>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<label[39m
+        [33mclass[39m=[32m"flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m대표색[0m
+        [36m</span>[39m
+        [36m<input[39m
+          [33maria-invalid[39m=[32m"false"[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"[39m
+          [33mplaceholder[39m=[32m"#RRGGBB"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"relative flex items-center"[39m
+    [36m>[39m
+      [36m<select[39m
+        [33maria-label[39m=[32m"폰트"[39m
+        [33mclass[39m=[32m"w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"[39m
+      [36m>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m""[39m
+        [36m>[39m
+          [0m선택 안 함[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"pretendard"[39m
+        [36m>[39m
+          [0mPretendard[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-sans-kr"[39m
+        [36m>[39m
+          [0mNoto Sans KR[0m
+        [36m</option>[39m
+        [36m<option[39m
+          [33mvalue[39m=[32m"noto-serif-kr"[39m
+        [36m>[39m
+          [0mNoto Serif KR[0m
+        [36m</option>[39m
+      [36m</select>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute right-4 size-4.5 text-label-alternative"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2.4"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M6 9l6 6 6-6"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</span>[39m
+  [36m</fieldset>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_2l_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m새 버전으로 확정 (v3)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+      [33mid[39m=[32m"_r_2l_"[39m
+    [36m>[39m
+      [0mHero를 하나 고르면 확정할 수 있습니다[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m초안 비우기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ expectCaptionOnly src/pages/CompareBoardCarryOver.test.tsx:305:39
+    303|   /** 조정 2개 캡션 + "이어받기 확인" 접힘 + 패널 청크 요청 0 (F4-1·F4-4 공통) */
+    304|   const expectCaptionOnly = async () => {
+    305|     expect(await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다",…
+       |                                       ^
+    306|     expect(HERO_A()).toHaveAttribute("aria-pressed", "false");
+    307|     expect(summary()).toBeInTheDocument();
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:382:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 13 skipped (17)
+   Start at  21:27:58
+   Duration  20.27s (tests 93%, environment 3%, transform 2%, import 1%, setup 1%)
+

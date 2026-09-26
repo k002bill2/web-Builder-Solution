@@ -1,0 +1,841 @@
+diff --git a/app/scripts/check-bundle-size.mjs b/app/scripts/check-bundle-size.mjs
+index 4cbfd2b..fdf114f 100644
+--- a/app/scripts/check-bundle-size.mjs
++++ b/app/scripts/check-bundle-size.mjs
+@@ -15,36 +15,49 @@ import { gzipSync } from "node:zlib";
+ const ROUTE_BUDGET_KB = 100;
+ const ROUTE_EAGER_BUDGET_KB = 125;
+ const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
+-/** 라우트 → 페이지 모듈. 라우트를 추가하면 여기에도 추가한다 (src/app/routes.tsx). */
+-const ROUTE_PAGES = {
+-  "/catalog": "src/pages/CatalogPage.tsx",
+-  "/references/:id": "src/pages/ReferenceDetailPage.tsx",
+-  "/compare": "src/pages/CompareBoardPage.tsx",
+-  "/profile": "src/pages/ProfilePage.tsx",
+-  "/studio (자리표시)": "src/pages/PlaceholderPage.tsx",
+-};
+ 
+-/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처). 진입 직후 합계(≤ 125KB)에 더한다. */
++/*
++ * dynamic import 분류 규칙 (FIX-2A04b1 BUNDLE-03 · FIX2 P-S25 r6) — 새 import()를 더하면 호출 지점을 보고 둘 중 하나로 넣는다.
++ *  - 자동: 사용자 조작 없이 렌더·effect·로더에서 실행된다 → 진입 직후 합계에 포함.
++ *    조건부여도 예산 밖이 아니다 — 그 조건이 참인 시나리오를 SCENARIOS에 따로 두고 125KB로 판정한다.
++ *  - 조작 뒤: 클릭·펼치기·저장 등 사용자 조작 핸들러 안에서만 실행된다 → 예산 밖, 크기만 출력(`afterAction`).
++ *  - 호출 지점을 확인하지 못하면 자동으로 분류한다.
++ */
++/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처) — 모든 시나리오에 자동 */
+ const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
++/** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안·zod) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
++const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"];
+ /**
+- * 라우트별 진입 직후 자동 로드 — /compare는 보드 엔진(선택 규칙·초안·zod)을 보드 저장소·비교 픽스처와 함께 받는다
+- * (ADR-005 D3 · M1-UI-03b). 사용자가 실제로 받는 합계를 숨기지 않도록 진입 직후 합계에 더한다.
++ * 조작 뒤 — /compare:
++ *  - P-S25 판정·목록(carryOverPanel): carryOverLoader ← useCompareBoard openCarryOver(:134) ← CarryOverCaption details onToggle(open일 때,
++ *    :31)·"다시 시도" onClick(:40). "이어받기 확인"을 펼치는 조작 뒤에만 실행된다(r6). 진입 직후 자동은 개수 캡션(boardScreen carryOverCount 인라인)뿐
++ *  - 재확정 이어받기 규칙(memoryCompareBoardRepository loadCarryOver ← confirmProfile·createProfileVersion ← useCompareBoard.confirm, 확정 클릭)
++ *  - 조정 저장 본문(memoryProfileRepository loadAdjust ← getAdjustmentRange·saveAdjustments, 앱 호출 0 — b2 화면이 진입 때 부르면 자동으로 옮긴다)
+  */
+-const ROUTE_EAGER_DYNAMIC = {
+-  // memoryStudio = 보드·프로필 메모리 구현 + 공유 store (main의 deferred 로더 하나, DS-2A-04 6.3)
+-  "/compare": ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
+-  // 프로필 엔진(대비·비교·문구, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처
+-  "/profile": ["src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
+-};
++const COMPARE_AFTER_ACTION = ["src/features/compare/carryOverPanel.tsx", "src/domain/profileAdjustments.ts", "src/data/memoryProfileAdjust.ts"];
+ 
+ /**
+- * 조건부 dynamic import — 조건이 맞을 때만 받는다(자동 로드 아님). 예산 판정 밖, 진입 직후 합계에 없는 파일의 크기만 따로 출력한다 (2a-04b1).
+- * /compare: P-S25 패널(확정한 프로필의 최신에 조정이 있을 때) · 재확정 이어받기 규칙(조정 있는 재확정 때) · 조정 저장 본문(saveAdjustments·getAdjustmentRange)
++ * 판정 대상 시나리오 — 라우트를 추가하면 여기에도 추가한다 (src/app/routes.tsx). 목록 키가 manifest에 없으면 실패.
++ *  - page: 라우트 페이지 모듈(첫 화면 = 공통 + 이 청크의 정적 import, ≤ 100KB)
++ *  - auto: 자동 dynamic import(진입 직후 = 첫 화면 + 이 목록의 정적 closure, ≤ 125KB)
++ *  - afterAction: 조작 뒤 dynamic import(진입 직후 합계에 없는 파일 크기만 출력)
+  */
+-const ROUTE_CONDITIONAL_DYNAMIC = {
+-  "/compare": ["src/features/compare/carryOverPanel.tsx", "src/domain/profileAdjustments.ts", "src/data/memoryProfileAdjust.ts"],
+-  "/profile": ["src/data/memoryProfileAdjust.ts"],
+-};
++const SCENARIOS = [
++  { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC },
++  { name: "/references/:id", page: "src/pages/ReferenceDetailPage.tsx", auto: EAGER_DYNAMIC },
++  { name: "/compare", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
++  // 확정한 프로필의 최신 버전에 조정이 있을 때 — 자동으로 더 받는 dynamic import가 없다(캡션은 인라인 계산, CarryOverCaption은 엔진 청크).
++  // 판정·목록은 펼칠 때(조작 뒤). 자동 조건부 import가 다시 생기면 이 시나리오의 auto에 넣는다
++  { name: "/compare (조정 있음)", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
++  // 프로필 엔진(대비·비교·문구, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처
++  {
++    name: "/profile",
++    page: "src/pages/ProfilePage.tsx",
++    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
++    afterAction: ["src/data/memoryProfileAdjust.ts"],
++  },
++  { name: "/studio (자리표시)", page: "src/pages/PlaceholderPage.tsx", auto: EAGER_DYNAMIC },
++];
+ 
+ const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
+ const gzipKb = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
+@@ -69,31 +82,24 @@ console.log(`[bundle] 공통 JS (gzip, 참고): ${format(sumKb(common))}`);
+ for (const file of common) console.log(`  - ${file} ${format(gzipKb(file))}`);
+ 
+ const failures = [];
+-for (const [route, page] of Object.entries(ROUTE_PAGES)) {
+-  // 설정한 페이지가 manifest에 없으면 검사가 조용히 빠지므로 실패로 본다
+-  if (!manifest[page]) {
+-    failures.push(`${route}: manifest에 ${page}가 없습니다 (경로 변경 시 ROUTE_PAGES를 고치세요)`);
++for (const { name, page, auto, afterAction = [] } of SCENARIOS) {
++  // 목록 키가 manifest에 없으면(경로 변경·다른 청크에 합쳐짐) 합계가 조용히 줄어든다 — 실패로 본다
++  const missing = [page, ...auto, ...afterAction].filter((key) => !manifest[key]);
++  if (missing.length > 0) {
++    failures.push(`${name}: manifest에 ${missing.join(", ")}가 없습니다 (경로 변경 시 SCENARIOS를 고치세요)`);
+     continue;
+   }
+   const routeFiles = staticClosure(page, new Set(common));
+   const routeKb = sumKb(routeFiles);
+-  const eager = [...EAGER_DYNAMIC, ...(ROUTE_EAGER_DYNAMIC[route] ?? [])];
+-  // 진입 직후 목록의 모듈이 다른 청크에 합쳐져 manifest 키가 없어지면 합계가 조용히 줄어든다 — 실패로 본다
+-  const missing = eager.filter((key) => !manifest[key]);
+-  if (missing.length > 0) failures.push(`${route}: 진입 직후 목록 ${missing.join(", ")}가 manifest에 없습니다`);
+-  const eagerKb = sumKb(eager.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
+-  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
+-  for (const key of ROUTE_CONDITIONAL_DYNAMIC[route] ?? []) {
+-    if (!manifest[key]) {
+-      failures.push(`${route}: 조건부 목록 ${key}가 manifest에 없습니다`);
+-      continue;
+-    }
+-    const eagerFiles = eager.reduce((files, k) => staticClosure(k, files), new Set(routeFiles));
++  const eagerFiles = auto.reduce((files, key) => staticClosure(key, files), new Set(routeFiles));
++  const eagerKb = sumKb(eagerFiles);
++  console.log(`[bundle] ${name} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
++  for (const key of afterAction) {
+     const extra = [...staticClosure(key)].filter((file) => !eagerFiles.has(file));
+-    console.log(`[bundle]   ${route} 조건부(자동 로드 아님) ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
++    console.log(`[bundle]   ${name} 조작 뒤 ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
+   }
+-  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
+-  if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${route}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
++  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${name}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
++  if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${name}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
+ }
+ 
+ if (failures.length > 0) {
+diff --git a/app/src/components/compare/DraftPanel.tsx b/app/src/components/compare/DraftPanel.tsx
+index 377cee3..a6c1906 100644
+--- a/app/src/components/compare/DraftPanel.tsx
++++ b/app/src/components/compare/DraftPanel.tsx
+@@ -55,7 +55,7 @@ export interface DraftPanelProps {
+   readonly onApplyFix: (fix: WarningFix) => void;
+   /** 사용자 스타일 입력 — 엔진 청크가 싣는다(첫 화면 JS에서 뺌, V2-1 · SPEC B-5). 없으면 그리지 않는다 */
+   readonly CustomStyleFields?: ComponentType<CustomStyleFieldsProps>;
+-  /** P-S25 이어받을 조정 — 확정 버튼 위. 조건부 청크가 그린다(DS-2A-04 2a-04b1) */
++  /** P-S25 이어받을 조정 — 확정 버튼 위. 개수 캡션(엔진 청크) + 펼칠 때 받는 판정·목록(DS-2A-04 r6) */
+   readonly carryOver?: ReactNode;
+   readonly headingRef?: Ref<HTMLHeadingElement>;
+   readonly className?: string;
+diff --git a/app/src/data/compareBoardRepository.ts b/app/src/data/compareBoardRepository.ts
+index c868006..28b3208 100644
+--- a/app/src/data/compareBoardRepository.ts
++++ b/app/src/data/compareBoardRepository.ts
+@@ -26,6 +26,8 @@ export interface BoardLoad {
+ export interface ConfirmResult {
+   readonly profileId: string;
+   readonly version: number;
++  /** 재확정 이어받기에서 지운 조정 수(6.1-3 개수 단위) — 1 이상일 때만. 확정 뒤 "조정 M개를 지웠습니다"(P-S25 r6) */
++  readonly droppedCount?: number;
+ }
+ 
+ export interface CompareBoardRepository {
+diff --git a/app/src/data/memoryCompareBoardRepository.ts b/app/src/data/memoryCompareBoardRepository.ts
+index 33a50f4..d1a81bb 100644
+--- a/app/src/data/memoryCompareBoardRepository.ts
++++ b/app/src/data/memoryCompareBoardRepository.ts
+@@ -53,6 +53,12 @@ type CarryOver = typeof import("../domain/profileAdjustments").carryOverAdjustme
+ /** 재확정 이어받기 규칙(대비 검사 포함)은 필요할 때 받는다 — 보드 진입 직후 합계에 싣지 않는다(2a-04b1 번들). 동기 구간 앞에서 받는다 */
+ const loadCarryOver = async (): Promise<CarryOver> => (await import("../domain/profileAdjustments")).carryOverAdjustments;
+ const hasAdjustments = (version: ProfileVersion | undefined) => version !== undefined && Object.keys(version.adjustments).length > 0;
++/** 확정 결과 — 지운 조정 수는 저장한 버전 레코드에서 읽는다(멱등 재생도 같은 값, P-S25 r6) */
++const resultOf = ({ profileId, version, dropped }: Pick<ProfileVersion, "profileId" | "version" | "dropped">): ConfirmResult => ({
++  profileId,
++  version,
++  ...(dropped && dropped.length > 0 && { droppedCount: dropped.length }),
++});
+ 
+ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOptions): CompareBoardRepository {
+   const { catalog, library = SECTION_LIBRARY, now = () => new Date().toISOString(), store = createStudioStore() } = options;
+@@ -114,7 +120,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
+   function confirmInto(revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void): ConfirmResult {
+     const key = [board.id, revision, expectedLatest].join("\n");
+     const done = profileId === undefined ? undefined : store.commitOf(profileId);
+-    if (done?.key === key) return { profileId: done.profileId, version: done.version };
++    if (done?.key === key) return resultOf(store.versions(done.profileId).find((v) => v.version === done.version) ?? done);
+     if (revision !== board.revision) throw staleBoard(revision);
+     const latest = profileId === undefined ? undefined : store.versions(profileId).at(-1);
+     if ((latest?.version ?? 0) !== expectedLatest) {
+@@ -153,7 +159,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
+       tx.insert(record);
+       tx.remember({ key, profileId: id, version });
+       commitGate();
+-      return { profileId: id, version };
++      return resultOf(record);
+     });
+     board = { ...board, confirmed: { profileId: result.profileId, version: result.version, revision, picks: board.picks, custom: board.custom } };
+     return result;
+diff --git a/app/src/data/profileAdjust.test.ts b/app/src/data/profileAdjust.test.ts
+index ab229a3..0c1e542 100644
+--- a/app/src/data/profileAdjust.test.ts
++++ b/app/src/data/profileAdjust.test.ts
+@@ -297,4 +297,25 @@ describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () =
+     expect(retried.version).toBe(3);
+     expect((await profiles.getProfile("profile-1"))!.versions.at(-1)!.adjustments).toEqual({ density: "compact" });
+   });
++
++  it("P-AC-39 ⑦(저장소, r6): 확정 결과의 droppedCount = 지운 조정 수(M>0만) — 커밋 뒤 응답 실패의 같은 인자 재시도(멱등 재생)도 같은 수", async () => {
++    let failResponse = false;
++    const store = createStudioStore();
++    const delay = (call: BoardCall) => (failResponse && call.phase === "response" ? Promise.reject(new Error("응답 유실")) : undefined);
++    const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, now: NOW, initialBoard: boardOf(IDS, { hero: "ref-a" }), store, delay });
++    const profiles = createMemoryProfileRepository({ store, now: NOW });
++    const first = await board.confirmProfile(1, 0);
++    expect(first).toEqual({ profileId: "profile-1", version: 1 });
++    await profiles.saveAdjustments("profile-1", 1, { density: "compact", motion: "L0" });
++    const saved = await board.savePicks({ hero: "ref-a", motion: "ref-b" }, {}, 1);
++    failResponse = true;
++    await expect(board.createProfileVersion("profile-1", saved.revision, 2)).rejects.toThrow("응답 유실");
++    failResponse = false;
++    expect((await profiles.getProfile("profile-1"))!.latestVersion).toBe(3);
++    const retried = await board.createProfileVersion("profile-1", saved.revision, 2);
++    expect(retried).toEqual({ profileId: "profile-1", version: 3, droppedCount: 1 });
++    // 지운 조정 0개(Hero만 변경)면 필드 없음
++    const again = await board.savePicks({ hero: "ref-c", motion: "ref-b" }, {}, saved.revision);
++    expect(await board.createProfileVersion("profile-1", again.revision, 3)).toEqual({ profileId: "profile-1", version: 4 });
++  });
+ });
+diff --git a/app/src/features/compare/CarryOverCaption.tsx b/app/src/features/compare/CarryOverCaption.tsx
+new file mode 100644
+index 0000000..d12122d
+--- /dev/null
++++ b/app/src/features/compare/CarryOverCaption.tsx
+@@ -0,0 +1,67 @@
++import { useRef, useState } from "react";
++import { Button } from "../../components/ds/Button";
++import { loadCarryOverPanel } from "./carryOverLoader";
++import type { CarryOverNoticeComponent, CarryOverNoticeProps } from "./carryOverPanel";
++
++type PanelLoad = "loading" | "error" | { readonly Notice: CarryOverNoticeComponent } | null;
++
++export interface CarryOverCaptionProps {
++  /** 최신 버전의 조정 개수(6.1-3 개수 단위, boardScreen carryOverCount) — 1 이상일 때만 그린다 */
++  readonly count: number;
++  /** 판정 입력 — 저장소 확정과 같은 입력(6.1-3) */
++  readonly props: CarryOverNoticeProps;
++}
++
++/**
++ * 보드 초안 패널 P-S25 (DS-2A-04 r6). 진입 직후 보이는 것은 개수 캡션뿐이고, "이어받기 확인"을 펼칠 때(details onToggle)·
++ * "다시 시도"에서만 판정·목록 청크를 받는다(조작 뒤, 번들 스크립트 분류 근거). 받은 청크는 두고 다시 받지 않는다.
++ * 실패해도 확정은 막지 않는다 — 저장은 저장소가 같은 함수로 계산한다. 엔진 청크에 싣는다(보드 준비 뒤에만 그려짐, 첫 화면 밖).
++ * 펼침 상태는 네이티브 details/summary가 알린다. 다시 시도 버튼이 사라져도 포커스는 summary에 둔다.
++ */
++export function CarryOverCaption({ count, props }: CarryOverCaptionProps) {
++  const [panel, setPanel] = useState<PanelLoad>(null);
++  const requested = useRef(false);
++  const summary = useRef<HTMLElement>(null);
++  const load = () => {
++    if (requested.current) return;
++    requested.current = true;
++    setPanel("loading");
++    loadCarryOverPanel().then(
++      (m) => setPanel({ Notice: m.CarryOverNotice }),
++      (error: unknown) => {
++        console.error("[compare] 이어받기 목록 불러오기 실패", error);
++        requested.current = false;
++        setPanel("error");
++      },
++    );
++  };
++  return (
++    <div className="flex flex-col gap-1">
++      <p className="ds-caption1 text-label-neutral">이 프로필에 조정 {count}개가 있습니다</p>
++      <details className="ds-caption1 text-label-alternative" onToggle={(e) => e.currentTarget.open && load()}>
++        <summary ref={summary} className="cursor-pointer">
++          이어받기 확인
++        </summary>
++        <div aria-live="polite" className="mt-1 flex flex-col items-start gap-1">
++          {panel === "loading" && <p>이어받기를 확인하는 중입니다</p>}
++          {panel === "error" && (
++            <>
++              <p>이어받기 목록을 불러오지 못했습니다</p>
++              <Button
++                variant="outline"
++                size="sm"
++                onClick={() => {
++                  summary.current?.focus();
++                  load();
++                }}
++              >
++                다시 시도
++              </Button>
++            </>
++          )}
++          {typeof panel === "object" && panel && <panel.Notice {...props} />}
++        </div>
++      </details>
++    </div>
++  );
++}
+diff --git a/app/src/features/compare/boardEngine.ts b/app/src/features/compare/boardEngine.ts
+index edd782d..5f82854 100644
+--- a/app/src/features/compare/boardEngine.ts
++++ b/app/src/features/compare/boardEngine.ts
+@@ -3,7 +3,7 @@
+  * 화면이 데이터(보드 저장소 청크)와 함께 동적으로 불러온다: 이 모듈들은 저장소 메모리 구현도 쓰는 것이라
+  * 어차피 데이터와 같이 내려온다. 첫 화면 정적 JS(ADR-004)에는 표·패널 UI만 남긴다.
+  * 사용자 스타일 입력(CustomStyleFields·Select·TextField)도 여기서 싣는다 — 보드가 준비(엔진 로드)된 뒤에만 그려지므로
+- * 첫 화면에 필요 없다(V2-1 · SPEC B-5).
++ * 첫 화면에 필요 없다(V2-1 · SPEC B-5). P-S25 개수 캡션 틀(CarryOverCaption)도 같은 이유로 여기 둔다(DS-2A-04 r6).
+  */
+ import { parseCustomStyle } from "../../domain/boardInput";
+ import { pickAllFrom, pickAnnouncement, togglePick } from "../../domain/boardPicks";
+@@ -20,6 +20,7 @@ import { emitProfileEvent } from "../profile/profileEvents";
+ import { buildBoardView } from "./boardView";
+ import { draftItemsView } from "./draftView";
+ import { createPicksSaver } from "./picksSaver";
++import { CarryOverCaption } from "./CarryOverCaption";
+ 
+ function evaluate(board: CompareBoard, comparison: Comparison): Evaluation {
+   const draft = buildProfileDraft(board, comparison.results, comparison.libraryVersion);
+@@ -58,6 +59,7 @@ export const boardEngine = Object.freeze({
+   draftItemsView,
+   checkPrimaryColor,
+   CustomStyleFields,
++  CarryOverCaption,
+ });
+ 
+ export type BoardEngine = typeof boardEngine;
+diff --git a/app/src/features/compare/boardScreen.test.ts b/app/src/features/compare/boardScreen.test.ts
+new file mode 100644
+index 0000000..c6477ca
+--- /dev/null
++++ b/app/src/features/compare/boardScreen.test.ts
+@@ -0,0 +1,29 @@
++/**
++ * DS-2A-04 r6 P-S25 — 보드 진입 직후 캡션 개수(인라인 계산)가 판정 모듈의 개수 단위(6.1-3)와 같다.
++ * 판정 모듈(profileAdjustments)은 테스트만 import한다 — 앱의 캡션 계산은 대비 계산을 받지 않는다.
++ */
++import { describe, expect, it } from "vitest";
++import type { PaletteCorrection, ProfileAdjustments } from "../../domain/profile";
++import { adjustmentCount } from "../../domain/profileAdjustments";
++import { carryOverCount } from "./boardScreen";
++
++const INK_FIX: PaletteCorrection = { role: "ink", from: "#C9A96E", to: "#7E622F", check: "C-4" };
++const MUTED_FIX: PaletteCorrection = { role: "muted", from: "#9A7B63", to: "#8E715B", check: "C-5" };
++
++describe("carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1)", () => {
++  it.each<[string, ProfileAdjustments]>([
++    ["조정 없음", {}],
++    ["빈 보정 배열", { corrections: [] }],
++    ["밀도만", { density: "compact" }],
++    ["보정 2개만", { corrections: [INK_FIX, MUTED_FIX] }],
++    ["키 4개 + 보정 2개", { density: "compact", contrast: "aa", motion: "L0", purpose: "none", corrections: [INK_FIX, MUTED_FIX] }],
++    ["undefined 키는 세지 않음", { density: undefined, motion: "L1" }],
++  ])("%s → adjustmentCount와 같다", (_, adjustments) => {
++    expect(carryOverCount(adjustments)).toBe(adjustmentCount(adjustments));
++  });
++
++  it("보정 2개는 2로 센다(키 수가 아니라 항목 수) · 최신이 없으면 0", () => {
++    expect(carryOverCount({ corrections: [INK_FIX, MUTED_FIX] })).toBe(2);
++    expect(carryOverCount(undefined)).toBe(0);
++  });
++});
+diff --git a/app/src/features/compare/boardScreen.ts b/app/src/features/compare/boardScreen.ts
+index e53758c..07033b2 100644
+--- a/app/src/features/compare/boardScreen.ts
++++ b/app/src/features/compare/boardScreen.ts
+@@ -2,6 +2,7 @@
+ import type { Announcement } from "../../components/compare/DraftPanel";
+ import type { BoardWarning } from "../../domain/boardWarnings";
+ import type { CompareBoard, ComparisonResult, CustomStyle, Picks } from "../../domain/compareBoard";
++import type { ProfileAdjustments } from "../../domain/profile";
+ import type { ProfileDraft } from "../../domain/profileDraft";
+ 
+ export interface Intent {
+@@ -22,3 +23,13 @@ export interface Evaluation {
+ export const EMPTY_ANNOUNCEMENT: Announcement = { text: "", key: 0 };
+ 
+ export const intentOf = (board: CompareBoard): Intent => ({ picks: board.picks, custom: board.custom });
++
++/**
++ * P-S25 캡션 "이 프로필에 조정 N개가 있습니다"의 N (DS-2A-04 r6). 개수 단위는 6.1-3과 같다 — 조정 키 하나 = 1, 보정은 항목 하나 = 1.
++ * 진입 직후 자동이라 판정 모듈(profileAdjustments·대비 계산)을 받지 않고 여기서 센다. 펼친 뒤 이어짐 + 지워짐과 같은 수다.
++ */
++export function carryOverCount(adjustments: ProfileAdjustments | undefined): number {
++  if (!adjustments) return 0;
++  const { corrections, ...keys } = adjustments;
++  return Object.values(keys).filter((value) => value !== undefined).length + (corrections?.length ?? 0);
++}
+diff --git a/app/src/features/compare/carryOverLoader.ts b/app/src/features/compare/carryOverLoader.ts
+new file mode 100644
+index 0000000..c872b74
+--- /dev/null
++++ b/app/src/features/compare/carryOverLoader.ts
+@@ -0,0 +1,5 @@
++/**
++ * P-S25 패널 청크 로더 (DS-2A-04 r6 · 2a-04b1 FIX2). "이어받기 확인"을 펼칠 때·"다시 시도"에서만 부른다 — 조작 뒤 청크.
++ * 한 줄짜리 모듈로 떼어 둔 것은 화면 테스트가 호출 수(펼치기 전 0)를 세고 실패를 주입하기 위해서다.
++ */
++export const loadCarryOverPanel = () => import("./carryOverPanel");
+diff --git a/app/src/features/compare/carryOverPanel.tsx b/app/src/features/compare/carryOverPanel.tsx
+index 238e952..7a42f71 100644
+--- a/app/src/features/compare/carryOverPanel.tsx
++++ b/app/src/features/compare/carryOverPanel.tsx
+@@ -1,7 +1,7 @@
+ /**
+- * 보드 초안 패널 P-S25 — 이어받을 조정 (DS-2A-04 2.2 · 6.1-3). 확정한 프로필이 있고 계열 최신에 조정이 있을 때만 불러오는
+- * 조건부 청크다(진입 직후 자동 로드 목록 밖, 2a-04b1 번들). 저장소 확정과 같은 carryOverAdjustments를 같은 입력으로 부른다 —
+- * 여기 "이어짐"으로 보인 조정 = 확정하면 저장되는 adjustments.
++ * 보드 초안 패널 P-S25 — 이어받을 조정 판정·목록 (DS-2A-04 2.2 · 6.1-3 · r6). 사용자가 "이어받기 확인"을 펼칠 때만 받는
++ * 조작 뒤 청크다(carryOverLoader, 진입 직후 합계 밖). 저장소 확정과 같은 carryOverAdjustments를 같은 입력으로 부른다 —
++ * 여기 "이어짐"으로 보인 조정 = 확정하면 저장되는 adjustments. 캡션·펼침 틀은 CarryOverCaption(엔진 청크)이 그린다.
+  */
+ import type { DesignProfileInput } from "../../domain/compareBoard";
+ import type { ProfileAdjustments } from "../../domain/profile";
+@@ -17,24 +17,21 @@ export interface CarryOverNoticeProps {
+   readonly nextBase: DesignProfileInput;
+ }
+ 
+-/** 캡션 "이어지는 조정 N개 · 지워지는 조정 M개" + 펼침 "조정 목록". 조정 0개면 없음. 상태는 글자로만 알린다(색 하나로 알리지 않음) */
++/** "이어지는 조정 N개 · 지워지는 조정 M개" + 줄 목록. 조정 0개면 없음. 상태는 글자로만 알린다(색 하나로 알리지 않음) */
+ export function CarryOverNotice({ confirmedBase, adjustments, nextBase }: CarryOverNoticeProps) {
+   const plan = carryOverAdjustments(confirmedBase, adjustments, nextBase);
+   if (plan.kept.length + plan.dropped.length === 0) return null;
+   return (
+-    <div className="flex flex-col gap-1">
+-      <p className="ds-caption1 text-label-neutral">
++    <>
++      <p className="text-label-neutral">
+         이어지는 조정 {plan.kept.length}개 · 지워지는 조정 {plan.dropped.length}개
+       </p>
+-      <details className="ds-caption1 text-label-alternative">
+-        <summary className="cursor-pointer">조정 목록</summary>
+-        <ul className="mt-1 flex flex-col gap-0.5">
+-          {carryOverLines(plan, adjustments).map((line) => (
+-            <li key={line}>{line}</li>
+-          ))}
+-        </ul>
+-      </details>
+-    </div>
++      <ul className="flex flex-col gap-0.5">
++        {carryOverLines(plan, adjustments).map((line) => (
++          <li key={line}>{line}</li>
++        ))}
++      </ul>
++    </>
+   );
+ }
+ 
+diff --git a/app/src/features/compare/useCompareBoard.ts b/app/src/features/compare/useCompareBoard.ts
+index a5b48ab..8ca73bc 100644
+--- a/app/src/features/compare/useCompareBoard.ts
++++ b/app/src/features/compare/useCompareBoard.ts
+@@ -11,10 +11,9 @@ import { removeColumn as removeBoardColumn, withoutReference } from "../../domai
+ import type { WarningFix } from "../../domain/boardWarnings";
+ import { draftStatusOf, type CompareBoard, type ComparisonRowId, type CustomStyle, type DraftStatus } from "../../domain/compareBoard";
+ import type { ConfirmAvailability } from "../../domain/confirmGate";
+-import { EMPTY_ANNOUNCEMENT, intentOf, type Comparison, type Intent } from "./boardScreen";
++import { EMPTY_ANNOUNCEMENT, carryOverCount, intentOf, type Comparison, type Intent } from "./boardScreen";
+ import { useCompareTray } from "./CompareTrayContext";
+ import type { BoardEngine } from "./boardEngine";
+-import type { CarryOverNoticeComponent } from "./carryOverPanel";
+ import type { PicksSaver, PicksSaverState } from "./picksSaver";
+ 
+ type Phase = "loading" | "error" | "ready";
+@@ -40,7 +39,6 @@ export function useCompareBoard() {
+   const [confirming, setConfirming] = useState(false);
+   const [removing, setRemoving] = useState(false);
+   const [engine, setEngine] = useState<BoardEngine | null>(null);
+-  const [CarryOverNotice, setCarryOverNotice] = useState<CarryOverNoticeComponent | null>(null);
+   const engineRef = useRef<BoardEngine | null>(null);
+   const saver = useRef<PicksSaver | null>(null);
+   const lastSave = useRef<Promise<void>>(Promise.resolve());
+@@ -124,21 +122,17 @@ export function useCompareBoard() {
+   const evaluation = useMemo(() => (board && engine ? engine.evaluate(board, comparison) : null), [board, comparison, engine]);
+   const view = useMemo(() => (board && engine ? engine.buildBoardView(board, comparison.results) : null), [board, comparison.results, engine]);
+   const locked = confirming || removing;
+-  // P-S25 — 확정한 프로필의 최신 버전에 조정이 있을 때만 패널 청크를 받는다(진입 직후 자동 로드 아님, DS-2A-04 2a-04b1).
+-  // import를 엔진 청크에 두면 첫 화면 −0.09KB · 진입 직후 +0.15KB라 진입 직후 여유(생성 메모리 구현이 붙을 곳)를 위해 여기 둔다
++  // P-S25 (DS-2A-04 r6) — 진입 직후 자동은 개수 캡션뿐(인라인 계산). 판정·목록은 CarryOverCaption이 펼칠 때 받는다
+   const confirmedRef = saved?.board.confirmed;
+-  const adjusted = Object.keys(confirmedRef?.latest?.adjustments ?? {}).length > 0;
+-  useEffect(() => {
+-    if (!adjusted || CarryOverNotice) return;
+-    import("./carryOverPanel").then(
+-      (m) => setCarryOverNotice(() => m.CarryOverNotice),
+-      (error: unknown) => console.error("[compare] 이어받기 패널 불러오기 실패", error),
+-    );
+-  }, [adjusted, CarryOverNotice]);
++  const adjustmentCount = carryOverCount(confirmedRef?.latest?.adjustments);
+   const draft = evaluation?.draft;
+   const carryOver =
+-    CarryOverNotice && adjusted && confirmedRef?.confirmedBase && confirmedRef.latest && draft?.status === "ready"
+-      ? { Component: CarryOverNotice, props: { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile } }
++    engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest && draft?.status === "ready"
++      ? {
++          Caption: engine.CarryOverCaption,
++          count: adjustmentCount,
++          props: { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile },
++        }
+       : null;
+   // S-15 — 확정한 선택에서 바뀐 게 없으면 새 버전으로 확정하지 않는다 (태그도 "확정됨")
+   const unchanged = useMemo(() => (board && engine ? engine.unchangedSinceConfirm(board) : false), [board, engine]);
+@@ -256,7 +250,8 @@ export function useCompareBoard() {
+         ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version)
+         : await repository.confirmProfile(target.revision, 0);
+       engineRef.current!.reportConfirmed(result.version, target.confirmed !== undefined);
+-      navigate(`/profile/${result.profileId}`);
++      // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6)
++      navigate(`/profile/${result.profileId}`, result.droppedCount ? { state: { droppedCount: result.droppedCount } } : undefined);
+     } catch (error) {
+       engineRef.current!.reportConfirmFailed(error);
+       await onConfirmError(error);
+diff --git a/app/src/pages/CompareBoardCarryOver.test.tsx b/app/src/pages/CompareBoardCarryOver.test.tsx
+index e16ff86..58fa7a2 100644
+--- a/app/src/pages/CompareBoardCarryOver.test.tsx
++++ b/app/src/pages/CompareBoardCarryOver.test.tsx
+@@ -1,31 +1,50 @@
+ /**
+- * DS-2A-04 2a-04b1 — 보드 초안 패널 P-S25 "이어지는 조정 N개 · 지워지는 조정 M개" (P-AC-38·39 ①~⑤ 화면 몫) ·
+- * P-S12 개수 다시 계산 · P-AC-37 보드 확정 계측 · 버전 요약의 지운 조정 한 줄(P-AC-20·38).
++ * DS-2A-04 2a-04b1 — 보드 초안 패널 P-S25 (r6: 진입 직후 개수 캡션 + "이어받기 확인"을 펼칠 때 이어짐/지워짐 목록)
++ * (P-AC-38·39 ①~⑦ 화면 몫) · P-S12 개수 다시 계산 · P-AC-37 보드 확정 계측 · 버전 요약의 지운 조정 한 줄(P-AC-20·38).
+  * 보드·프로필 메모리 저장소를 store 하나로 만들어 렌더에 함께 넘긴다 — 조정 버전은 saveAdjustments로 만든다(브리프 1절).
++ * 패널 청크 로더는 실제 import를 그대로 부르는 mock이다 — 호출 수(펼치기 전 0)를 세고 지연·실패를 주입한다.
+  */
+-import { act, screen, waitFor, within } from "@testing-library/react";
++import { act, cleanup as unmountAll, screen, waitFor, within } from "@testing-library/react";
+ import userEvent from "@testing-library/user-event";
+-import { afterEach, describe, expect, it, vi } from "vitest";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+ import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
+ import { createMemoryProfileRepository } from "../data/memoryProfileRepository";
+ import { createMemoryReferenceRepository } from "../data/referenceRepository";
+ import { createStudioStore } from "../data/studioStore";
+ import type { Picks } from "../domain/compareBoard";
+-import type { ProfileAdjustments } from "../domain/profile";
++import type { ProfileAdjustments, ProfileVersion } from "../domain/profile";
+ import { referenceDetailFixtures } from "../fixtures/referenceDetails";
+ import { referenceFixtures } from "../fixtures/references";
++import { loadCarryOverPanel } from "../features/compare/carryOverLoader";
+ import { PROFILE_EVENT, type ProfileEvent } from "../features/profile/profileEvents";
+ import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
++import { deferred } from "../test/deferred";
+ import { renderApp } from "../test/renderApp";
+ import { REF_B_INK_FIX as INK_FIX } from "../test/studioFixtures";
+ 
++vi.mock("../features/compare/carryOverLoader", async (importOriginal) => {
++  const actual = await importOriginal<typeof import("../features/compare/carryOverLoader")>();
++  return { loadCarryOverPanel: vi.fn(actual.loadCarryOverPanel) };
++});
++const panelLoads = vi.mocked(loadCarryOverPanel);
++type PanelModule = Awaited<ReturnType<typeof loadCarryOverPanel>>;
++
+ const THREE = ["ref-a", "ref-b", "ref-c"];
+ const SLOW = { timeout: 5_000 };
+ const pick = (row: string, column: string) => screen.getByRole("button", { name: `${row}: ${column}의 요소 선택` });
+ const confirmButton = () => screen.getByRole("button", { name: /확정 \(v\d\)$/ });
+ const draftPanel = () => screen.getByRole("region", { name: "프로필 초안" });
+-const caption = () => within(draftPanel()).queryByText(/^이어지는 조정/);
+-const rows = () => within(within(draftPanel()).getByText("조정 목록").closest("details")!).getAllByRole("listitem").map((li) => li.textContent);
++/** 진입 직후 자동 — 개수 캡션 (r6) */
++const caption = () => within(draftPanel()).queryByText(/^이 프로필에 조정/);
++const summary = () => within(draftPanel()).getByText("이어받기 확인");
++const checkDetails = () => summary().closest("details")!;
++/** 펼친 뒤 — "이어지는 조정 N개 · 지워지는 조정 M개" */
++const counts = () => within(draftPanel()).queryByText(/^이어지는 조정/);
++const rows = () => within(checkDetails()).getAllByRole("listitem").map((li) => li.textContent);
++const expand = () => userEvent.click(summary());
++const profileNotice = () => screen.getByRole("status", { name: "프로필 알림" });
++/** 두 번의 실행을 비교할 때 생성 시각만 뺀다 */
++const withoutTime = (version: ProfileVersion) => ({ ...version, createdAt: "" });
+ 
+ async function openStudio(picks: Picks = { hero: "ref-a" }) {
+   const store = createStudioStore();
+@@ -47,20 +66,33 @@ async function openStudio(picks: Picks = { hero: "ref-a" }) {
+     await act(() => view.router.navigate("/compare"));
+     expect(await screen.findByText("v1 확정됨", undefined, SLOW)).toBeInTheDocument();
+   };
++  /** 확정 버튼이 풀리면 눌러 프로필 화면까지 간다 */
++  const confirmNow = async (label: string) => {
++    await waitFor(() => expect(screen.getByRole("button", { name: label })).not.toHaveAttribute("aria-disabled"), SLOW);
++    await userEvent.click(confirmButton());
++    await waitFor(() => expect(view.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
++  };
+   const cleanup = () => window.removeEventListener(PROFILE_EVENT, listener);
+-  return { ...view, store, board, profiles, events, versions, confirmThenAdjust, cleanup };
++  return { ...view, store, board, profiles, events, versions, confirmThenAdjust, confirmNow, cleanup };
+ }
+ 
++beforeEach(() => {
++  panelLoads.mockReset();
++});
+ afterEach(() => vi.restoreAllMocks());
+ 
+ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", () => {
+-  it("P-AC-38: v2 = 밀도 촘촘 + 모션 덮어쓰기, 보드에서 모션을 바꾸면 '이어지는 조정 1개 · 지워지는 조정 1개' + 목록 → 재확정 v3 = 목록대로 저장, 버전 요약에 지운 조정 한 줄", async () => {
++  it("P-AC-38: v2 = 밀도 촘촘 + 모션 덮어쓰기 — 캡션 '조정 2개' → 펼치면 '이어지는 조정 2개 · 지워지는 조정 0개', 보드에서 모션을 바꾸면 '1개 · 1개' + 목록 → 재확정 v3 = 목록대로 저장, 버전 요약에 지운 조정 한 줄, 프로필 알림 '조정 1개를 지웠습니다'", async () => {
+     const studio = await openStudio();
+     await studio.confirmThenAdjust({ density: "compact", motion: "L0" });
++    expect(await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefined, SLOW)).toBeInTheDocument();
++    await expand();
+     expect(await within(draftPanel()).findByText("이어지는 조정 2개 · 지워지는 조정 0개", undefined, SLOW)).toBeInTheDocument();
+     await userEvent.click(pick("모션", "B 프리미엄 헤어살롱"));
+-    await waitFor(() => expect(caption()).toHaveTextContent("이어지는 조정 1개 · 지워지는 조정 1개"));
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 1개 · 지워지는 조정 1개"));
+     expect(rows()).toEqual(["밀도 촘촘 — 이어짐", "모션 L0 — 지워짐 · 보드에서 모션을 바꿨습니다"]);
++    // 캡션 개수는 보드 선택과 무관한 최신 조정 개수
++    expect(caption()).toHaveTextContent("이 프로필에 조정 2개가 있습니다");
+     // 캡션은 확정 버튼 앞(DOM 순서 = 보이는 순서)
+     expect(caption()!.compareDocumentPosition(confirmButton()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+     await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v3)" })).not.toHaveAttribute("aria-disabled"));
+@@ -71,6 +103,7 @@ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", ()
+     expect(v3).toMatchObject({ version: 3, origin: "board-reconfirm", adjustments: { density: "compact" }, dropped: [{ key: "motion", reason: "board-changed" }] });
+     expect(v3.adjustments.motion).toBeUndefined();
+     expect(await screen.findByText(/보드에서 모션을 바꿔 모션 조정을 지웠습니다/, undefined, SLOW)).toBeInTheDocument();
++    await waitFor(() => expect(profileNotice()).toHaveTextContent("조정 1개를 지웠습니다"), SLOW);
+     studio.cleanup();
+   }, 30_000);
+ 
+@@ -78,7 +111,9 @@ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", ()
+     const studio = await openStudio();
+     await studio.confirmThenAdjust({ density: "compact", motion: "L0", purpose: "booking" });
+     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
+-    await waitFor(() => expect(caption()).toHaveTextContent("이어지는 조정 3개 · 지워지는 조정 0개"), SLOW);
++    expect(await within(draftPanel()).findByText("이 프로필에 조정 3개가 있습니다", undefined, SLOW)).toBeInTheDocument();
++    await expand();
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 3개 · 지워지는 조정 0개"), SLOW);
+     expect(rows()).toEqual(["밀도 촘촘 — 이어짐", "모션 L0 — 이어짐", "사이트 목적 예약 — 이어짐"]);
+     studio.cleanup();
+   }, 30_000);
+@@ -87,7 +122,9 @@ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", ()
+     const studio = await openStudio({ hero: "ref-a", palette: "ref-b", card: "ref-a" });
+     await studio.confirmThenAdjust({ corrections: [INK_FIX] });
+     await userEvent.click(pick("카드 스타일", "B 프리미엄 헤어살롱"));
+-    await waitFor(() => expect(caption()).toHaveTextContent("이어지는 조정 0개 · 지워지는 조정 1개"), SLOW);
++    expect(await within(draftPanel()).findByText("이 프로필에 조정 1개가 있습니다", undefined, SLOW)).toBeInTheDocument();
++    await expand();
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 0개 · 지워지는 조정 1개"), SLOW);
+     expect(rows()).toEqual(["ink 보정 — 지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"]);
+     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
+     await userEvent.click(confirmButton());
+@@ -97,9 +134,10 @@ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", ()
+     studio.cleanup();
+   }, 30_000);
+ 
+-  it("P-AC-39 ④⑤: 조정 0개면 캡션·목록 없음(확정 전·조정 없는 v1 확정 뒤 모두)", async () => {
++  it("P-AC-39 ④⑤: 조정 0개면 캡션·'이어받기 확인'·목록 없음(확정 전·조정 없는 v1 확정 뒤 모두), 패널 청크 요청 0", async () => {
+     const studio = await openStudio();
+     expect(caption()).toBeNull();
++    expect(counts()).toBeNull();
+     await userEvent.click(confirmButton());
+     await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
+     await waitFor(() => expect(screen.queryByRole("heading", { level: 1, name: "비교 보드" })).toBeNull(), SLOW);
+@@ -108,27 +146,138 @@ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", ()
+     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
+     await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v2)" })).not.toHaveAttribute("aria-disabled"));
+     expect(caption()).toBeNull();
++    expect(counts()).toBeNull();
++    expect(within(draftPanel()).queryByText("이어받기 확인")).toBeNull();
+     expect(within(draftPanel()).queryByText("조정 목록")).toBeNull();
++    expect(panelLoads).not.toHaveBeenCalled();
+     studio.cleanup();
+   }, 30_000);
+ 
+-  it("P-S12: 패널이 보인 뒤 다른 곳에서 조정 버전이 생기면 확정 0건 + 안내, 최신 조정으로 개수를 다시 계산", async () => {
++  it("P-S12: 목록을 펼친 뒤 다른 곳에서 조정 버전이 생기면 확정 0건 + 안내, 최신 조정으로 캡션·목록 개수를 다시 계산", async () => {
+     vi.spyOn(console, "error").mockImplementation(() => {});
+     const studio = await openStudio();
+     await studio.confirmThenAdjust({ density: "compact" });
+     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
+-    await waitFor(() => expect(caption()).toHaveTextContent("이어지는 조정 1개 · 지워지는 조정 0개"), SLOW);
++    expect(await within(draftPanel()).findByText("이 프로필에 조정 1개가 있습니다", undefined, SLOW)).toBeInTheDocument();
++    await expand();
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 1개 · 지워지는 조정 0개"), SLOW);
+     await studio.profiles.saveAdjustments("profile-1", 2, { density: "compact", contrast: "enhanced" });
+     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
+     await userEvent.click(confirmButton());
+     expect(await screen.findByRole("alert", undefined, SLOW)).toHaveTextContent("다른 곳에서 v3이 만들어졌습니다");
+-    await waitFor(() => expect(caption()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"));
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"));
++    expect(caption()).toHaveTextContent("이 프로필에 조정 2개가 있습니다");
+     expect(rows()).toEqual(["밀도 촘촘 — 이어짐", "대비 강화 — 이어짐"]);
+     expect((await studio.versions()).map((v) => v.version)).toEqual([1, 2, 3]);
+     studio.cleanup();
+   }, 30_000);
+ });
+ 
++describe("P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때", () => {
++  it("펼치기 전 패널 청크 요청 0(보드 조작 뒤에도) · 캡션 N = 펼친 뒤 이어짐 + 지워짐 · '확인하는 중' → 목록 · 접었다 다시 펼쳐도 요청 1회", async () => {
++    const studio = await openStudio({ hero: "ref-a", palette: "ref-b", card: "ref-a" });
++    await studio.confirmThenAdjust({ density: "compact", motion: "L0", corrections: [INK_FIX] });
++    expect(await within(draftPanel()).findByText("이 프로필에 조정 3개가 있습니다", undefined, SLOW)).toBeInTheDocument();
++    await userEvent.click(pick("모션", "B 프리미엄 헤어살롱"));
++    await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v3)" })).not.toHaveAttribute("aria-disabled"), SLOW);
++    expect(panelLoads).not.toHaveBeenCalled();
++    expect(counts()).toBeNull();
++    expect(checkDetails().open).toBe(false);
++
++    const gate = deferred<void>();
++    const actual = await vi.importActual<PanelModule>("../features/compare/carryOverPanel");
++    panelLoads.mockImplementationOnce(() => gate.promise.then(() => actual));
++    await expand();
++    expect(checkDetails().open).toBe(true);
++    expect(await within(checkDetails()).findByText("이어받기를 확인하는 중입니다")).toBeInTheDocument();
++    expect(panelLoads).toHaveBeenCalledTimes(1);
++    await act(async () => gate.resolve());
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 1개"), SLOW);
++    expect(within(checkDetails()).queryByText("이어받기를 확인하는 중입니다")).toBeNull();
++    // 캡션 N(3) = 이어짐(2) + 지워짐(1)
++    expect(caption()).toHaveTextContent("이 프로필에 조정 3개가 있습니다");
++    expect(rows()).toEqual(["밀도 촘촘 — 이어짐", "모션 L0 — 지워짐 · 보드에서 모션을 바꿨습니다", "ink 보정 — 이어짐"]);
++    await userEvent.click(summary());
++    await waitFor(() => expect(checkDetails().open).toBe(false));
++    await expand();
++    expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 1개");
++    expect(panelLoads).toHaveBeenCalledTimes(1);
++    studio.cleanup();
++  }, 30_000);
++
++  it("청크 요청 실패 → '불러오지 못했습니다' + '다시 시도' → 성공하면 목록, 포커스는 '이어받기 확인'에 남는다", async () => {
++    vi.spyOn(console, "error").mockImplementation(() => {});
++    const studio = await openStudio();
++    await studio.confirmThenAdjust({ density: "compact", motion: "L0" });
++    await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefined, SLOW);
++    panelLoads.mockRejectedValueOnce(new Error("청크 요청 실패"));
++    await expand();
++    expect(await within(checkDetails()).findByText("이어받기 목록을 불러오지 못했습니다", undefined, SLOW)).toBeInTheDocument();
++    expect(counts()).toBeNull();
++    await userEvent.click(within(checkDetails()).getByRole("button", { name: "다시 시도" }));
++    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"), SLOW);
++    expect(within(checkDetails()).queryByText("이어받기 목록을 불러오지 못했습니다")).toBeNull();
++    expect(within(checkDetails()).queryByRole("button", { name: "다시 시도" })).toBeNull();
++    expect(document.activeElement).toBe(summary());
++    expect(checkDetails().open).toBe(true);
++    expect(panelLoads).toHaveBeenCalledTimes(2);
++    studio.cleanup();
++  }, 30_000);
++
++  it("실패 중에도 확정할 수 있다 — 저장은 저장소가 같은 함수로 계산, 프로필 알림 '조정 1개를 지웠습니다'", async () => {
++    vi.spyOn(console, "error").mockImplementation(() => {});
++    const studio = await openStudio();
++    await studio.confirmThenAdjust({ density: "compact", motion: "L0" });
++    await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefined, SLOW);
++    panelLoads.mockImplementation(() => Promise.reject(new Error("청크 요청 실패")));
++    await expand();
++    await within(checkDetails()).findByText("이어받기 목록을 불러오지 못했습니다", undefined, SLOW);
++    await userEvent.click(pick("모션", "B 프리미엄 헤어살롱"));
++    await studio.confirmNow("새 버전으로 확정 (v3)");
++    const v3 = (await studio.versions()).at(-1)!;
++    expect(v3).toMatchObject({ version: 3, adjustments: { density: "compact" }, dropped: [{ key: "motion", reason: "board-changed" }] });
++    await waitFor(() => expect(profileNotice()).toHaveTextContent("조정 1개를 지웠습니다"), SLOW);
++    studio.cleanup();
++  }, 30_000);
++
++  it("펼치지 않고 확정한 저장값 = 펼치고 확정한 저장값 (둘 다 '조정 1개를 지웠습니다'), 펼치지 않은 쪽은 청크 요청 0", async () => {
++    const run = async (open: boolean) => {
++      const studio = await openStudio();
++      await studio.confirmThenAdjust({ density: "compact", motion: "L0", purpose: "booking" });
++      await within(draftPanel()).findByText("이 프로필에 조정 3개가 있습니다", undefined, SLOW);
++      if (open) {
++        await expand();
++        await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 3개 · 지워지는 조정 0개"), SLOW);
++      }
++      await userEvent.click(pick("모션", "B 프리미엄 헤어살롱"));
++      if (open) await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 1개"));
++      await studio.confirmNow("새 버전으로 확정 (v3)");
++      await waitFor(() => expect(profileNotice()).toHaveTextContent("조정 1개를 지웠습니다"), SLOW);
++      const saved = (await studio.versions()).map(withoutTime);
++      studio.cleanup();
++      unmountAll();
++      return saved;
++    };
++    const closed = await run(false);
++    expect(panelLoads).not.toHaveBeenCalled();
++    const opened = await run(true);
++    expect(panelLoads).toHaveBeenCalledTimes(1);
++    expect(opened).toEqual(closed);
++    expect(closed.at(-1)).toMatchObject({ version: 3, adjustments: { density: "compact", purpose: "booking" } });
++  }, 45_000);
++
++  it("지운 조정이 0개(M = 0)면 확정 뒤 '지웠습니다' 알림 없음", async () => {
++    const studio = await openStudio();
++    await studio.confirmThenAdjust({ density: "compact" });
++    await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
++    await studio.confirmNow("새 버전으로 확정 (v3)");
++    expect(await screen.findByRole("heading", { level: 1, name: "디자인 프로필" }, SLOW)).toBeInTheDocument();
++    expect((await studio.versions()).at(-1)!.adjustments).toEqual({ density: "compact" });
++    expect(profileNotice()).not.toHaveTextContent(/지웠습니다/);
++    studio.cleanup();
++  }, 30_000);
++});
++
+ describe("P-AC-37 보드 확정 계측 — profile_saved(origin board · board-reconfirm)", () => {
+   it("첫 확정 = board v1, 재확정 = board-reconfirm v3 — 성공마다 1회, 색 값·입력 원문 없음", async () => {
+     const studio = await openStudio();
+diff --git a/app/src/pages/CompareBoardPage.tsx b/app/src/pages/CompareBoardPage.tsx
+index 5f3a70e..6dfb9cc 100644
+--- a/app/src/pages/CompareBoardPage.tsx
++++ b/app/src/pages/CompareBoardPage.tsx
+@@ -102,7 +102,7 @@ export function CompareBoardPage() {
+     void board.removeColumn(referenceId);
+   };
+ 
+-  const CarryOver = board.carryOver?.Component;
++  const carryOver = board.carryOver;
+   const comparisonProps = {
+     columns: board.view?.columns ?? [],
+     rows: board.view?.rows ?? [],
+@@ -194,7 +194,7 @@ export function CompareBoardPage() {
+             onCustomChange={board.changeCustom}
+             onApplyFix={board.applyFix}
+             CustomStyleFields={board.CustomStyleFields}
+-            carryOver={CarryOver && board.carryOver && <CarryOver {...board.carryOver.props} />}
++            carryOver={carryOver && <carryOver.Caption count={carryOver.count} props={carryOver.props} />}
+           />
+           {viewport !== "wide" && (
+             <DraftSummaryBar
+diff --git a/app/src/pages/ProfilePage.tsx b/app/src/pages/ProfilePage.tsx
+index 97ab049..9ccd967 100644
+--- a/app/src/pages/ProfilePage.tsx
++++ b/app/src/pages/ProfilePage.tsx
+@@ -1,5 +1,5 @@
+ import { useEffect, useRef } from "react";
+-import { Link, useParams, useSearchParams } from "react-router";
++import { Link, useLocation, useParams, useSearchParams } from "react-router";
+ import { Button } from "../components/ds/Button";
+ import { Callout } from "../components/ds/Callout";
+ import { Tag } from "../components/ds/Tag";
+@@ -34,6 +34,12 @@ function ProfileNotFound() {
+   );
+ }
+ 
++/** 보드 재확정이 navigate state로 넘긴 지운 조정 수(P-S25 r6). history state는 밖에서 온 값이라 모양을 확인한다 */
++function droppedCountOf(state: unknown): number {
++  const n = typeof state === "object" && state !== null && "droppedCount" in state ? state.droppedCount : undefined;
++  return typeof n === "number" && Number.isSafeInteger(n) && n > 0 ? n : 0;
++}
++
+ /** `?v=`가 없거나 없는 버전이면 최신 */
+ const pick = (versions: readonly ProfileVersion[], param: string | null) => versions.find((v) => String(v.version) === param);
+ /** 비교 표는 작은 번호 먼저 ("v1과 v2 비교") */
+@@ -41,6 +47,12 @@ const ordered = (a: ProfileVersion, b: ProfileVersion) => (a.version < b.version
+ 
+ function ProfileDetail({ profileId }: { readonly profileId: string }) {
+   const { state, status, alert, reverting, revert, announce } = useProfileDetail(profileId);
++  // 보드 확정 뒤 지운 조정이 있으면 "프로필 알림"에 한 번(이동마다) 알린다 — 패널을 펼치지 않았어도 (P-S25 r6)
++  const location = useLocation();
++  const dropped = droppedCountOf(location.state);
++  useEffect(() => {
++    if (dropped > 0) announce(`조정 ${dropped}개를 지웠습니다`);
++  }, [location.key, dropped, announce]);
+   return (
+     <>
+       {state.status === "loading" && <LoadingState />}

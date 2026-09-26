@@ -5,12 +5,13 @@
 import type { CompareBoardRepository } from "./compareBoardRepository";
 import { createMemoryCompareBoardRepository, type MemoryCompareBoardOptions } from "./memoryCompareBoardRepository";
 import { createMemoryProfileRepository, type MemoryProfileOptions } from "./memoryProfileRepository";
-import type { ProfileReadRepository } from "./profileRepository";
+import type { ProfileRepository } from "./profileRepository";
 import { createStudioStore } from "./studioStore";
 
 export interface MemoryStudio {
   readonly board: CompareBoardRepository;
-  readonly profiles: ProfileReadRepository;
+  /** 조정 범위·저장까지 전체 — 앱 deferred 래퍼·컨텍스트는 아직 읽기 몫(ProfileReadRepository)만 넘긴다 (b2에서 넓힘) */
+  readonly profiles: ProfileRepository;
 }
 
 export function createMemoryStudio(

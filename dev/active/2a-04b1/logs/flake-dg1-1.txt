@@ -1,0 +1,90 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/keyboardA11y.test.tsx (9 tests | 1 failed) 11507ms
+   ❯ 비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형) (1)
+     × 다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다 5175ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfilePage.test.tsx (29 tests | 1 failed) 15408ms
+   ❯ P-AC-01 보드 확정 → 프로필 화면 (1)
+     × 비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 필드가 모두 보인다 5408ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > P-AC-01 보드 확정 → 프로필 화면 > 비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 필드가 모두 보인다
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfilePage.test.tsx:72:3
+     70|
+     71| describe("P-AC-01 보드 확정 → 프로필 화면", () => {
+     72|   it("비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 …
+       |   ^
+     73|     const studio = createMemoryStudio({ catalog: FIXTURE_CATALOG, init…
+     74|     const { router } = renderApp("/compare", references(), studio.boar…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/keyboardA11y.test.tsx > 비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형) > 다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/keyboardA11y.test.tsx:19:3
+     17|
+     18| describe("비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형)", () => {
+     19|   it("다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다", async () => {
+       |   ^
+     20|     renderApp("/catalog");
+     21|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 52 passed (54)
+      Tests  2 failed | 601 passed (603)
+   Start at  17:45:21
+   Duration  43.70s (tests 48%, environment 33%, setup 8%, transform 7%, import 3%)
+
+Environment  jsdom was created 54 times · 134.57s total, 33% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

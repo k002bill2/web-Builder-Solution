@@ -1,0 +1,88 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardLineage.test.tsx (4 tests | 1 failed) 9792ms
+   ❯ P-AC-11 버전 계보 — 보드 라벨 = 계열 최신 + 1 (1)
+     × 프로필 쪽에서 v2를 만든 뒤 보드에서 선택을 바꾸면 '새 버전으로 확정 (v3)', 확정 결과도 v3 5284ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CatalogPage.test.tsx (36 tests | 1 failed) 28877ms
+   ❯ 필터 레일 r2 (SPEC 4.2) (7)
+     × 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2) 5052ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > 필터 레일 r2 (SPEC 4.2) > 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CatalogPage.test.tsx:316:3
+    314|   });
+    315|
+    316|   it("9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)", async () =…
+       |   ^
+    317|     const { router } = renderApp("/catalog");
+    318|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/CompareBoardLineage.test.tsx > P-AC-11 버전 계보 — 보드 라벨 = 계열 최신 + 1 > 프로필 쪽에서 v2를 만든 뒤 보드에서 선택을 바꾸면 '새 버전으로 확정 (v3)', 확정 결과도 v3
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CompareBoardLineage.test.tsx:47:3
+     45|
+     46| describe("P-AC-11 버전 계보 — 보드 라벨 = 계열 최신 + 1", () => {
+     47|   it("프로필 쪽에서 v2를 만든 뒤 보드에서 선택을 바꾸면 '새 버전으로 확정 (v3)', 확정 결과도 v3", asyn…
+       |   ^
+     48|     const studio = await openStudio();
+     49|     await boardSeesV2(studio);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 51 passed (53)
+      Tests  2 failed | 597 passed (599)
+   Start at  17:31:56
+   Duration  39.35s (tests 42%, environment 38%, transform 11%, setup 7%, import 3%)
+
+Environment  jsdom was created 53 times · 136.73s total, 38% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

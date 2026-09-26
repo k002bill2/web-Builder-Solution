@@ -17,7 +17,10 @@ export interface ProfileRepository {
   revertTo(profileId: string, version: number, expectedLatest: number): Promise<ProfileVersion>;
 }
 
-/** 2a-04a 몫 메서드. 조정 범위·저장은 타입만 두고 메모리 구현은 2a-04b (미구현 오류를 던지는 메서드를 두지 않는다) */
+/**
+ * 앱 화면(deferred 래퍼·컨텍스트)이 쓰는 몫. 조정 범위·저장은 메모리 구현에 있지만(2a-04b1) 화면 조정 UI가 b2라
+ * 공통 청크의 deferred 래퍼에 메서드를 더하지 않는다(번들 공통 증가 0) — b2에서 ProfileRepository로 넓힌다.
+ */
 export type ProfileReadRepository = Pick<ProfileRepository, "listProfiles" | "getProfile" | "revertTo">;
 
 export class ProfileError extends Error {

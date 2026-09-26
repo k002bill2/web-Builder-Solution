@@ -1,0 +1,9 @@
+[bundle] /catalog 첫 화면 합계: 98.94KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.33KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.30KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.68KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.49KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.46KB / 예산 125KB
+[bundle]   /compare 조건부(자동 로드 아님) src/features/compare/carryOverPanel.tsx: +2.52KB (4개 파일, 예산 판정 밖)
+[bundle]   /compare 조건부(자동 로드 아님) src/domain/profileAdjustments.ts: +1.35KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조건부(자동 로드 아님) src/data/memoryProfileAdjust.ts: +2.89KB (3개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 98.94KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.23KB / 예산 125KB
+[bundle]   /profile 조건부(자동 로드 아님) src/data/memoryProfileAdjust.ts: +2.16KB (2개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.39KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.78KB / 예산 125KB

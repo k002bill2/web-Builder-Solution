@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve)
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve) · **r6** (Jarvis) — 2a-04b1 BUNDLE-03 멈춤(자동 조건부 청크 포함 시 `/compare` 조정 있음 진입 직후 최소 125.20KB > 125, `dev/active/2a-04b1/REPORT.md` 12.4) → 영환님 "1, 전부 A": **P-S25 = 개수 캡션 자동 + 이어받기 판정·목록은 펼칠 때 로드**(예산 무변경), P-AC-38·39 개정 + ⑦, P-B9 개정, 10.0.2 결정 표. 구현 Codex adversarial 3회(medium 2건 — 자동 조건부 청크 예산 누락·Hero 미선택 캡션 — 수정 후 approve), 10.0.2에 FIX3·Q-F2-2·Q-F3-1~3·Q-F4-1~3 추가
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -111,7 +111,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 | P-S22 | 안 선택됨 | 선택 카드 "선택됨"(글자) + `aria-pressed=true`, 하단 "B안으로 편집 시작" 활성. 선택 전에는 `aria-disabled` + "안을 고르면 편집을 시작할 수 있습니다" | 편집 시작 |
 | P-S23 | lint 경고 있음 | 카드 "경고 N" + 목록(규칙 · 원인 · 대체안). 선택은 막지 않는다(차단은 발행 단계, FR-GEN-06) | — |
 | P-S24 | 긴 값 | 레퍼런스 제목·로그·섹션 이름 자르지 않고 줄바꿈(`keep-all` + `overflow-wrap:anywhere`, 기존 규칙). 카드 제목은 "A안" 고정이라 해당 없음 | — |
-| P-S25 | **보드 초안 패널 — 이어받을 조정**(보드 화면, r1 · Q4=A) | 확정한 프로필이 있고 최신 버전에 조정이 1개 이상일 때만 확정 버튼 위에 캡션 "이어지는 조정 N개 · 지워지는 조정 M개"(글자, 색 하나로 알리지 않음) + `details` "조정 목록": 줄마다 "밀도 촘촘 — 이어짐" / "모션 L2 — 지워짐 · 보드에서 모션을 바꿨습니다"(이유 문장 6.1 표). 조정 0개면 캡션 없음. **확정하면 이 목록 그대로 저장된다**(같은 함수 `carryOverAdjustments`, 6.1-3) | 확정 |
+| P-S25 | **보드 초안 패널 — 이어받을 조정**(보드 화면, r1 · Q4=A · **r6 개정**) | 확정한 프로필이 있고 최신 버전에 조정이 1개 이상일 때만 확정 버튼 위에 **개수 캡션** "이 프로필에 조정 N개가 있습니다"(N = `latest.adjustments` 개수, 6.1-3 개수 단위. 판정 함수 없이 세는 인라인 계산 — 진입 직후 청크 증가 최소) + `details` "이어받기 확인". **펼칠 때** 패널 청크를 import해 `carryOverAdjustments`로 "이어지는 조정 N개 · 지워지는 조정 M개"(글자, 색 하나로 알리지 않음)와 줄 목록: "밀도 촘촘 — 이어짐" / "모션 L2 — 지워짐 · 보드에서 모션을 바꿨습니다"(이유 문장 6.1 표). 불러오는 중 "이어받기를 확인하는 중입니다", 실패 시 "이어받기 목록을 불러오지 못했습니다" + "다시 시도"(확정은 막지 않음 — 저장은 저장소가 같은 함수로 계산). 포커스·`aria-expanded` 유지. 조정 0개면 캡션 없음. **확정하면 펼친 목록 그대로 저장된다**(같은 함수·같은 입력, 6.1-3). 펼치지 않고 확정해도 저장 결과는 같고, 확정 뒤 "프로필 알림"에 지운 조정 수(M>0일 때 "조정 M개를 지웠습니다")를 알리고 버전 요약에 한 줄(6.1-3) | 확정 |
 
 상태 **25개**(P-S01~P-S25). 1a-03 S-12(자동 저장)와 달리 조정은 **명시 저장**이다 — 저장마다 버전이 생기므로(FR-PRF-03) 자동 저장이면 버전이 조작 수만큼 쌓인다.
 - 이동 차단(저장 안 한 조정을 두고 나가기)은 두지 않는다. 선언형 라우터라 `useBlocker`(data router 전용)를 쓸 수 없고, data router는 번들 때문에 기각됐다(`routes.tsx` 주석). 조정은 4개 컨트롤이라 잃어도 다시 고르기 쉽다. 잃는 조정 수는 P-S10 캡션으로 늘 보인다.
@@ -563,7 +563,7 @@ export interface GenerationJob {
 | P-B6 | 청크 나눔: **첫 화면**(`ProfilePage` 청크) = 화면 틀·프로필 값·팔레트 견본·버전 목록·조정 컨트롤·카드 틀. **진입 직후 엔진**(`profileEngine` 동적 청크) = zod 스키마·`composeCandidates`·`lintPlan`·`proposeCorrections`·`diffProfiles` + 메모리 저장소·픽스처 | 목표(L3 추정): 첫 화면 청크 ≤ 8KB → 합계 ≈ 97KB(≤ 100) · 엔진 ≤ 15KB → 진입 직후 ≈ 115KB(≤ 125) |
 | P-B7 | `SegmentedControl`·`Callout`·`Tag`는 카탈로그·상세·보드와 **공유 청크**가 될 수 있다(rolldown 분할). 분할이 생기면 다른 라우트 합계가 청크 경계 비용만큼 늘 수 있다(BUNDLE-01 2.3: 경계당 약 +0.5KB) → **`/catalog`(여유 1.50)·`/compare`(1.49)도 단계마다 실측** | 넘치면 해당 컴포넌트를 이 라우트에 두지 않는 대안(Q 아님, Developer 판단 → 넘치면 보고) |
 | P-B8 | 데이터 청크(픽스처)는 ADR-005 D3대로 진입 직후 합계에 넣지 않는다(참고 출력) | — |
-| P-B9 | **보드 라우트 청크 증가(r1)**: `carryOverAdjustments` · `checkProfileContrast`(C-4·C-5 확장분) · P-S25 캡션·목록 문구 · `STALE_PROFILE` 처리(`useCompareBoard.ts:237~238` 확정 경로) · `draftStatusOf` `latestVersion` 분기 | L3 추정 +0.4~0.8KB → `/compare` 진입 직후 여유 1.49 안인지 **2a-04a(라벨·STALE)·2a-04b(패널·이어받기) 각각 실측**. 넘치면 판정 함수·목록 문구를 보드 엔진 쪽 동적 청크로 옮긴다(BUNDLE-01 C8 방식) — Developer 판단, 보고 |
+| P-B9 | **보드 라우트 청크 증가(r1 · r6 개정)**: 진입 직후 자동 = 개수 캡션(인라인 계산)·`STALE_PROFILE` 처리·`draftStatusOf` `latestVersion` 분기만. **조작 뒤**("이어받기 확인" 펼침) = `carryOverAdjustments`·`checkProfileContrast`(C-4·C-5 확장분)·목록 문구 — 예산 밖, 크기만 출력 | 번들 스크립트는 **자동 실행되는 조건부 dynamic import를 진입 직후 합계에 포함**(시나리오 `/compare (조정 있음)`, 2a-04b1 FIX 규칙). 기준 실측: 패널 전체를 자동으로 받으면 126.97KB, 판정 부분만 남겨도 최소 125.20KB(> 125) → r6 펼침 로드. 예산 상수 무변경(ADR-004) |
 
 ---
 
@@ -624,8 +624,8 @@ export interface GenerationJob {
 | P-AC-36 | 전 단계 | 검증 4종(typecheck·lint·test·build) 통과. 깨진 기존 테스트는 9절 목록 안에서만, 테스트 수 변화 보고 | [B] |
 | P-AC-37 | 전 단계 | 계측 호출 지점(6.5)이 저장·생성 성공/실패·선택에서 1회씩, 개인정보·색 값 없음 | [V] |
 
-| P-AC-38 | b | **보드 값 우선(Codex r0 #1)**: v2 조정 = 밀도 촘촘 + 모션 덮어쓰기. 보드에서 모션 선택을 v2 base와 다른 값으로 바꾸면 초안 패널 "이어지는 조정 1개 · 지워지는 조정 1개" + 목록 "모션 … — 지워짐 · 보드에서 모션을 바꿨습니다" / "밀도 촘촘 — 이어짐" → 재확정 → v3 적용된 모션 = 보드 값, `adjustments.motion` 없음, `adjustments.density` = 촘촘(간격 96 → 72 유지), 버전 요약에 지운 조정 한 줄 | [V] |
-| P-AC-39 | b | **패널 = 저장값**: ① 보드 패널과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) ⑥ **되돌리기 뒤 재확정**(r2 — 번호 연속): v1 보드 확정 → v2 프로필 조정 저장(모션 덮어쓰기) → v3 보드에서 모션을 바꿔 재확정(모션 조정 지워짐, 확정 = v3) → v4 프로필에서 v2로 되돌리기(모션 덮어쓰기 복원) → 보드에서 Hero만 바꿔 재확정 → 비교 기준은 **확정 버전 v3의 base**라 모션은 "바뀌지 않음" → 모션 조정 "이어짐", v5 적용된 모션 = v4와 같음(최신 v4 base 기준이었다면 모션 조정이 잘못 지워진다 — 6.1-3 근거) | [V] |
+| P-AC-38 | b | **보드 값 우선(Codex r0 #1)**: v2 조정 = 밀도 촘촘 + 모션 덮어쓰기. 보드에서 모션 선택을 v2 base와 다른 값으로 바꾸면 초안 패널 캡션 "이 프로필에 조정 2개가 있습니다" → "이어받기 확인"을 펼치면(r6) "이어지는 조정 1개 · 지워지는 조정 1개" + 목록 "모션 … — 지워짐 · 보드에서 모션을 바꿨습니다" / "밀도 촘촘 — 이어짐" → 재확정 → v3 적용된 모션 = 보드 값, `adjustments.motion` 없음, `adjustments.density` = 촘촘(간격 96 → 72 유지), 버전 요약에 지운 조정 한 줄, "프로필 알림" "조정 1개를 지웠습니다"(r6) | [V] |
+| P-AC-39 | b | **패널 = 저장값**: ① 보드 패널(펼친 뒤, r6)과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) ⑥ **되돌리기 뒤 재확정**(r2 — 번호 연속): v1 보드 확정 → v2 프로필 조정 저장(모션 덮어쓰기) → v3 보드에서 모션을 바꿔 재확정(모션 조정 지워짐, 확정 = v3) → v4 프로필에서 v2로 되돌리기(모션 덮어쓰기 복원) → 보드에서 Hero만 바꿔 재확정 → 비교 기준은 **확정 버전 v3의 base**라 모션은 "바뀌지 않음" → 모션 조정 "이어짐", v5 적용된 모션 = v4와 같음(최신 v4 base 기준이었다면 모션 조정이 잘못 지워진다 — 6.1-3 근거)  ⑦ **펼침 로드(r6)**: 펼치기 전 캡션 개수 N = 펼친 뒤 이어짐 + 지워짐, 펼치기 전 패널 청크 요청 0(단언), 로딩·실패 문구와 "다시 시도", 실패 중에도 확정 가능, 펼치지 않고 확정한 저장값 = 펼치고 확정한 저장값, 확정 뒤 "조정 M개를 지웠습니다"(M>0만) | [V] |
 | P-AC-40 | a | **보드 확정 경쟁(Codex r0 #3)**: 보드가 최신 v2를 보고 "새 버전으로 확정 (v3)" 표시 → 같은 store에서 다른 쓰기(다른 탭 = 테스트에서 `revertTo` 직접 호출)로 v3 생성 → 보드 확정 클릭 → `STALE_PROFILE` 거부, **확정 0건**(계열 버전 수 +1은 다른 쓰기의 v3뿐), 버튼 "새 버전으로 확정 (v4)"로 갱신 + P-S12 보드 안내, 선택 유지·이동 없음. 다시 확정 → v4 | [V] |
 | P-AC-41 | a | **원자성**: 같은 `expectedLatest`로 버전 생성 쓰기 2개를 동시에(`Promise.all`, 응답 `delay` 주입 — 보드 확정 + 되돌리기 조합) → 정확히 1개 성공, 1개 `STALE_PROFILE`, 버전 번호 연속·중복 0. 되돌리기가 거부되면 보기 상태 유지 + P-S12 문장. 네 쓰기 모두 `expectedLatest`가 필수 인자(빠지면 typecheck 실패) | [V] |
 | P-AC-42 | a | **보드 확정 원자성·멱등(Codex r1 #1·r2 #1)**: ① `fail`에 `phase: "commit"` 주입해 확정 → 오류 알림, **계열 버전 수 변화 0 · 보드 `confirmed`·revision 불변**, 선택 유지 → 주입을 끄고 같은 화면에서 다시 확정 → 성공, 번호 연속(건너뜀 0) ② `delay`의 `phase: "response"`에서 거부 → 오류 알림이지만 store에는 버전 1개 커밋 → 같은 화면에서 다시 확정 → `STALE_*` 없이 **같은 결과**(같은 profileId·version), 계열 버전 수 +1(두 번째 호출이 새 버전을 만들지 않음) ③ 다른 revision이나 다른 `expectedLatest`로 호출하면 멱등 결과를 돌려주지 않고 기존 판정(`STALE_BOARD`/`STALE_PROFILE`) | [V] |
@@ -703,6 +703,31 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 
 **번들 결정(영환님 "1")**: `/compare` 첫 화면 여유 0.84KB — **2a-04b 첫 작업으로 용량 확보·실측** 후 P-S25·이어받기 구현.
 
+
+### 10.0.2 2a-04b1 구현 중 결정 (r6, 2026-09-26 영환님 "1, 전부 A" ×2)
+
+근거: `dev/active/2a-04b1/REPORT.md` 11·12절, Codex adversarial `dev/active/2a-04b1/logs/codex-adversarial-j1.txt`(medium: 자동 조건부 청크가 예산 판정 밖), Developer 실측 `logs/fix-spikes-bundle.txt`.
+
+| # | 질문 | 결정 | 반영 |
+|---|---|---|---|
+| 번들 | 자동 조건부 청크의 예산 | **1** 스크립트가 자동 조건부 import를 진입 직후 합계에 포함 · 예산 무변경 | P-B9 |
+| BUNDLE-03 | 포함 시 최소 125.20KB로 초과 | **1** P-S25를 개수 캡션(자동) + 이어받기 판정·목록(펼칠 때)으로 분할. 대안(기본 진입 직후 축소 미실측·ADR-004 개정) 기각 | P-S25 · P-AC-38·39⑦ |
+| Q1 | 조정 저장 응답 실패 뒤 재시도 | **A** 멱등 키 = (profileId, expectedLatest, 정규화한 조정) 별도 기록, 보드 `commits` 슬롯과 분리(A-Q4) | 6.3 |
+| Q2 · Q-F2 | 조정 저장 판정 순서 | **A** 모양 → 멱등 키 → NOT_FOUND → STALE_PROFILE → RANGE_VIOLATION → 보정 `from` → 변경 없음(모양 먼저 — Codex P2: 정규화가 모르는 키를 버려 틀린 입력이 이전 결과를 받는 문제) | 6.3 |
+| Q3 | 보정 두 개 조합의 새 대비 미달 | **A** 보정마다 판정 유지, 조합 미달은 남은 위험 | 3.3 |
+| Q4 | 실제 앱에서 낡은 보드가 남는지 | **A** QA 브라우저 확인 | QA |
+| Q5 | 지워지는 조정만 있을 때 패널 | **A** 표시(r6에서는 조정 1개 이상이면 늘 캡션) | P-S25 |
+| Q6 | 보드 확정 실패 이벤트 | **A** `profile_save_failed(reason)` 적용 | 6.5 |
+| Q7 | 1280 미만 하단 요약 바의 조정 개수 | **A** 2a-04b2에서 추가 | 2a-04b2 |
+| Q-F3 | 조정 저장 멱등 기록 범위 | **A** 계열마다 마지막 조정 저장 1건(보드 확정과 같은 범위) | 6.3 |
+| FIX3 결과 | BUNDLE-03 해소 경로(영환님 "1(미달 시 3), A") | **1안 단독**: 보드 확정(`memoryBoardConfirm`)·되돌리기(`revertIn`) 본문을 조작 뒤 청크로 → `/compare` 진입 직후 125.08 → 124.36KB. 3안(캡션 조작 뒤) 미적용, P-S25 r6 그대로 | P-B9 · 7 |
+| Q-F2-2 | 명시 `aria-expanded` | **A** 넣지 않음 — 네이티브 `details/summary` 상태 | P-S25 |
+| Q-F3-1 | 확정 본문의 `buildProfileDraft` 주입 | **A** 저장소가 넘김(본문은 타입만 import). 직접 import 시 청크 재분할로 진입 직후 +0.24KB | 6.3 |
+| Q-F3-2 | 되돌리기 본문 청크 | **A** 조정 저장 청크(`memoryProfileAdjust`)와 함께 유지, b2에서 재검토 | 2a-04b2 |
+| Q-F3-3 | SPEC r7 | **A** 불필요(3안 미적용) — 이 표에만 기록 | — |
+| Q-F4-1 | 번들 분류: 펼침 && ready effect의 로드 | **A** "조작 뒤" — 분류 규칙을 "사용자 조작으로만 참이 되는 조건의 effect 포함"으로 넓힘(`check-bundle-size.mjs` 주석) | P-B9 |
+| Q-F4-2 | Hero 안내 문구로 진입 직후 +0.07KB | **A** 수용(여유 0.57) — 문구를 패널 청크로 옮기면 미준비 상태 요청 0과 충돌 | P-S25 |
+| Q-F4-3 | 로드 실패 뒤 Hero 재선택 시 자동 1회 재요청 | **A** 유지(조작 뒤 1회, 무한 재요청 없음 — Codex j3 approve) | P-S25 |
 ### 10.1 남은 쟁점 (r1)
 
 없음. 검토 중 나온 "되돌리기 뒤 재확정의 비교 기준"은 브리프 문구(지난 확정 버전의 base)대로 정했다 — 근거와 기각한 대안은 6.1-3, 검증은 P-AC-39 ⑥.

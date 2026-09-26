@@ -102,6 +102,7 @@ export function CompareBoardPage() {
     void board.removeColumn(referenceId);
   };
 
+  const carryOver = board.carryOver;
   const comparisonProps = {
     columns: board.view?.columns ?? [],
     rows: board.view?.rows ?? [],
@@ -193,6 +194,7 @@ export function CompareBoardPage() {
             onCustomChange={board.changeCustom}
             onApplyFix={board.applyFix}
             CustomStyleFields={board.CustomStyleFields}
+            carryOver={carryOver && <carryOver.Caption count={carryOver.count} props={carryOver.props} />}
           />
           {viewport !== "wide" && (
             <DraftSummaryBar

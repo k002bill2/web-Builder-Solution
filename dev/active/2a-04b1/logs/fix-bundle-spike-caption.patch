@@ -1,0 +1,142 @@
+diff --git a/app/src/features/compare/carryOverPanel.tsx b/app/src/features/compare/carryOverPanel.tsx
+index 238e952..6bca407 100644
+--- a/app/src/features/compare/carryOverPanel.tsx
++++ b/app/src/features/compare/carryOverPanel.tsx
+@@ -1,40 +1,20 @@
+-/**
+- * 보드 초안 패널 P-S25 — 이어받을 조정 (DS-2A-04 2.2 · 6.1-3). 확정한 프로필이 있고 계열 최신에 조정이 있을 때만 불러오는
+- * 조건부 청크다(진입 직후 자동 로드 목록 밖, 2a-04b1 번들). 저장소 확정과 같은 carryOverAdjustments를 같은 입력으로 부른다 —
+- * 여기 "이어짐"으로 보인 조정 = 확정하면 저장되는 adjustments.
+- */
+ import type { DesignProfileInput } from "../../domain/compareBoard";
+ import type { ProfileAdjustments } from "../../domain/profile";
+-import { carryOverAdjustments } from "../../domain/profileAdjustments";
+-import { carryOverLines } from "../profile/adjustmentText";
++import { carryOverAdjustments } from "../../domain/spikeCarry";
+ 
+ export interface CarryOverNoticeProps {
+-  /** 보드가 확정한 버전의 base — "보드에서 바뀐 필드" 비교 기준 */
+   readonly confirmedBase: DesignProfileInput;
+-  /** 계열 최신 버전의 조정 */
+   readonly adjustments: ProfileAdjustments;
+-  /** 지금 보드 초안 */
+   readonly nextBase: DesignProfileInput;
+ }
+ 
+-/** 캡션 "이어지는 조정 N개 · 지워지는 조정 M개" + 펼침 "조정 목록". 조정 0개면 없음. 상태는 글자로만 알린다(색 하나로 알리지 않음) */
+ export function CarryOverNotice({ confirmedBase, adjustments, nextBase }: CarryOverNoticeProps) {
+   const plan = carryOverAdjustments(confirmedBase, adjustments, nextBase);
+   if (plan.kept.length + plan.dropped.length === 0) return null;
+   return (
+-    <div className="flex flex-col gap-1">
+-      <p className="ds-caption1 text-label-neutral">
+-        이어지는 조정 {plan.kept.length}개 · 지워지는 조정 {plan.dropped.length}개
+-      </p>
+-      <details className="ds-caption1 text-label-alternative">
+-        <summary className="cursor-pointer">조정 목록</summary>
+-        <ul className="mt-1 flex flex-col gap-0.5">
+-          {carryOverLines(plan, adjustments).map((line) => (
+-            <li key={line}>{line}</li>
+-          ))}
+-        </ul>
+-      </details>
+-    </div>
++    <p className="ds-caption1 text-label-neutral">
++      이어지는 조정 {plan.kept.length}개 · 지워지는 조정 {plan.dropped.length}개
++    </p>
+   );
+ }
+ 
+
+=== 새 파일 src/domain/spikeCarry.ts (S2·S3 측정용) ===
+import { AA_BODY_RATIO, ON_PRIMARY, contrastRatio, type ContrastCheckId } from "./contrast";
+import type { DesignProfileInput, SurfaceTone } from "./compareBoard";
+import type { CarryOverItem, CarryOverPlan, ContrastLevel, PaletteCorrection, ProfileAdjustments } from "./profile";
+import type { PaletteEntry, PaletteRole } from "./referenceDetail";
+export const CONTRAST_TARGET: Readonly<Record<ContrastLevel, number>> = Object.freeze({ aa: AA_BODY_RATIO, enhanced: 7 });
+
+interface CheckDef {
+  readonly id: ContrastCheckId;
+  /** 없으면 흰 글자(on-primary) */
+  readonly foreground?: PaletteRole;
+  readonly background: PaletteRole;
+  /** 보정 대상 역할 — C-1은 면(primary), 나머지는 글자 역할 */
+  readonly role: PaletteRole;
+  readonly darkCardOnly?: boolean;
+}
+
+const CHECKS: readonly CheckDef[] = Object.freeze([
+  { id: "C-1", background: "primary", role: "primary" },
+  { id: "C-2", foreground: "ink", background: "bg", role: "ink" },
+  { id: "C-3", foreground: "ink", background: "primary", role: "ink", darkCardOnly: true },
+  { id: "C-4", foreground: "ink", background: "surface", role: "ink" },
+  { id: "C-5", foreground: "muted", background: "bg", role: "muted" },
+]);
+export interface ProfileContrastCheck {
+  readonly id: ContrastCheckId;
+  readonly role: PaletteRole;
+  readonly foreground: string;
+  readonly background: string;
+  readonly ratio: number;
+  readonly target: number;
+  readonly pass: boolean;
+}
+
+const hexOf = (palette: readonly PaletteEntry[], role: PaletteRole): string => {
+  const entry = palette.find((p) => p.role === role);
+  if (!entry) throw new Error(`팔레트에 ${role} 역할이 없습니다`);
+  return entry.hex.toUpperCase();
+};
+
+export function checkProfileContrast(palette: readonly PaletteEntry[], cardTone: SurfaceTone | undefined, level: ContrastLevel): readonly ProfileContrastCheck[] {
+  const target = CONTRAST_TARGET[level];
+  return CHECKS.filter((c) => !c.darkCardOnly || cardTone === "dark").map((c) => {
+    const foreground = c.foreground ? hexOf(palette, c.foreground) : ON_PRIMARY;
+    const background = hexOf(palette, c.background);
+    const ratio = contrastRatio(foreground, background);
+    return { id: c.id, role: c.role, foreground, background, ratio, target, pass: ratio >= target };
+  });
+}
+
+const ROLES: readonly PaletteRole[] = ["primary", "surface", "ink", "muted", "bg"];
+const KEYS = ["density", "contrast", "motion", "purpose"] as const;
+const paletteOf = (base: DesignProfileInput, correction?: PaletteCorrection): readonly PaletteEntry[] =>
+  ROLES.map((role) => ({ role, hex: role === correction?.role ? correction.to : base.color_tokens[role].$value }));
+
+/** (a) 보정 대상 역할의 새 base 값 ≠ from → 팔레트가 바뀜 · (b) 보정 없이 통과하던 검사가 보정 때문에 미달 → 새 대비 실패 */
+function correctionVerdict(correction: PaletteCorrection, nextBase: DesignProfileInput, adjustments: ProfileAdjustments): CarryOverItem["reason"] {
+  if (nextBase.color_tokens[correction.role].$value.toUpperCase() !== correction.from.toUpperCase()) return "palette-changed";
+  const tone = nextBase.component_choices.card_style?.surfaceTone;
+  const level = adjustments.contrast ?? "aa";
+  const before = checkProfileContrast(paletteOf(nextBase), tone, level);
+  const after = checkProfileContrast(paletteOf(nextBase, correction), tone, level);
+  return after.some((c, i) => before[i]!.pass && !c.pass) ? "new-contrast-failure" : undefined;
+}
+
+/**
+ * 보드 재확정 이어받기 (6.1-3, 필드 단위 우선순위). 비교 기준 = 지난 확정 버전의 base(`confirmedBase`),
+ * 이어받을 조정 = 최신 버전의 adjustments. 보드에서 바뀐 필드와 겹치는 조정은 지우고 나머지는 이어받는다.
+ * 보정 (b)는 보정마다 따로 새 base에 적용해 판정한다(다른 보정과의 조합은 보지 않는다).
+ */
+export function carryOverAdjustments(confirmedBase: DesignProfileInput, latestAdjustments: ProfileAdjustments, nextBase: DesignProfileInput): CarryOverPlan {
+  const kept: CarryOverItem[] = [];
+  const dropped: CarryOverItem[] = [];
+  const next: Record<string, unknown> = {};
+  for (const key of KEYS) {
+    const value = latestAdjustments[key];
+    if (value === undefined) continue;
+    if (key === "motion" && nextBase.motion_preset !== confirmedBase.motion_preset) {
+      dropped.push({ key, reason: "board-changed" });
+      continue;
+    }
+    kept.push({ key });
+    next[key] = value;
+  }
+  const corrections = (latestAdjustments.corrections ?? []).filter((correction) => {
+    const reason = correctionVerdict(correction, nextBase, latestAdjustments);
+    (reason ? dropped : kept).push({ key: "correction", role: correction.role, ...(reason && { reason }) });
+    return reason === undefined;
+  });
+  if (corrections.length > 0) next.corrections = corrections;
+  return { kept, dropped, adjustments: next as ProfileAdjustments };
+}

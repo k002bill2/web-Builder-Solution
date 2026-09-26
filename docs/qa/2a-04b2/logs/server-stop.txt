@@ -1,0 +1,4 @@
+종료 시각: 2026-09-27 00:09:21 KST
+대상: vite preview --host 127.0.0.1 --port 4341 --strictPort (pid 22563)
+$ lsof -nP -iTCP:4341 -sTCP:LISTEN
+exit=1

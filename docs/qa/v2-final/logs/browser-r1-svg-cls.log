@@ -1,0 +1,9 @@
+space 15
+== SVG /compare 직접 로드(빈 보드) []
+== SVG /references/ref-a 직접 로드 ["chevron-left-C1r_0PK-.svg","bookmark-CX0jx-5N.svg"]
+== SVG /catalog 직접 로드 ["search-DSSU1Eym.svg","sparkle-cqilRS3G.svg","chevron-down-UGy2Q_vR.svg","arrow-right-Do6NaTe6.svg","bookmark-CX0jx-5N.svg"]
+== CLS /catalog 캐시 끔 1회 {"cls":0.0134,"shifts":[{"v":0.0003,"src":["NAV.order-last -mx-1 -mt-1 flex w-full gap-5","DIV.ml-auto flex flex-none items-center gap-"]},{"v":0.0131,"src":["DIV.grid gap-7 pt-5 lg:grid-cols-[--spacing(","DIV.flex flex-wrap items-center gap-3 border","DIV.flex w-full max-w-120 flex-wrap items-ce","DIV."]}]}
+== CLS /catalog 캐시 끔 2회 {"cls":0.0134,"shifts":[{"v":0.0003,"src":["NAV.order-last -mx-1 -mt-1 flex w-full gap-5","DIV.ml-auto flex flex-none items-center gap-"]},{"v":0.0131,"src":["DIV.grid gap-7 pt-5 lg:grid-cols-[--spacing(","DIV.flex flex-wrap items-center gap-3 border","DIV.flex w-full max-w-120 flex-wrap items-ce","DIV."]}]}
+비교 추가 버튼 []
+필 비교 보드 0 / 6 비교 보드
+== SVG /compare SPA 진입(5열 채운 보드) [] url http://127.0.0.1:4337/compare

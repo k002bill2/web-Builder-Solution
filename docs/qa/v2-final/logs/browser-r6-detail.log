@@ -1,0 +1,27 @@
+detail 1920 (기본) {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"데스크톱","twoCol":true,"url":"","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":1905,"cw":1905,"over":false}
+detail 1920 ?view=tablet {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"태블릿","twoCol":true,"url":"?view=tablet","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":1905,"cw":1905,"over":false}
+detail 1920 ?view=mobile {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":true,"url":"?view=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":1905,"cw":1905,"over":false}
+detail 1920 ?tab=mobile {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":true,"url":"?tab=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":1905,"cw":1905,"over":false}
+detail 1280 (기본) {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"데스크톱","twoCol":true,"url":"","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":1265,"cw":1265,"over":false}
+detail 1280 ?view=tablet {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"태블릿","twoCol":true,"url":"?view=tablet","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":1265,"cw":1265,"over":false}
+detail 1280 ?view=mobile {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":true,"url":"?view=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":1265,"cw":1265,"over":false}
+detail 1280 ?tab=mobile {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":true,"url":"?tab=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":1265,"cw":1265,"over":false}
+detail 1024 (기본) {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"데스크톱","twoCol":true,"url":"","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":1009,"cw":1009,"over":false}
+detail 1024 ?view=tablet {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"태블릿","twoCol":true,"url":"?view=tablet","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":1009,"cw":1009,"over":false}
+detail 1024 ?view=mobile {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":true,"url":"?view=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":1009,"cw":1009,"over":false}
+detail 1024 ?tab=mobile {"h1Top":80,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":true,"url":"?tab=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":1009,"cw":1009,"over":false}
+detail 768 (기본) {"h1Top":576,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"데스크톱","twoCol":false,"url":"","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":753,"cw":753,"over":false}
+detail 768 ?view=tablet {"h1Top":576,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"태블릿","twoCol":false,"url":"?view=tablet","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":753,"cw":753,"over":false}
+detail 768 ?view=mobile {"h1Top":654,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":false,"url":"?view=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":753,"cw":753,"over":false}
+detail 768 ?tab=mobile {"h1Top":654,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":false,"url":"?tab=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":753,"cw":753,"over":false}
+detail 390 (기본) {"h1Top":414,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"데스크톱","twoCol":false,"url":"","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":375,"cw":375,"over":false}
+detail 390 ?view=tablet {"h1Top":414,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"태블릿","twoCol":false,"url":"?view=tablet","firstHeads":["H1:모던 카페 브랜드","H2:섹션 구성 · 8개","H2:토큰 요약"],"mobileDesc":false} {"sw":375,"cw":375,"over":false}
+detail 390 ?view=mobile {"h1Top":530,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":false,"url":"?view=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":375,"cw":375,"over":false}
+detail 390 ?tab=mobile {"h1Top":530,"h1InVp":true,"tablist":0,"rg":"미리보기 폭","checked":"모바일","twoCol":false,"url":"?tab=mobile","firstHeads":["H2:모바일 구조","H1:모던 카페 브랜드","H2:섹션 구성 · 8개"],"mobileDesc":true} {"sw":375,"cw":375,"over":false}
+390 mobile 미리보기 프레임 [[109,193]]
+detail 1280 내용 {"sim":["H2:섹션 구성 · 8개 links=0","H2:토큰 요약 links=0","H2:유사 레퍼런스 links=8","H3:유사 업종 links=8","H3:유사 콘셉트 links=8","H3:유사 레이아웃 links=8","H2:점수 이력 links=0"],"tags":["SPAN:미니멀:btn=false","SPAN:따뜻한:btn=false","SPAN:예약 유도:btn=false"],"scores":[{"v":"96","c":"rgb(6, 107, 90)","w":"700"},{"v":"92","c":"rgb(6, 107, 90)","w":"700"}],"simLinksN":8,"simLinks":[{"n":"로컬 베이커리","clamp":"none"},{"n":"필라테스 스튜디오","clamp":"none"},{"n":"프리미엄 헤어살롱","clamp":"none"}],"hasSectionsAlways":true}
+→ 후 {"url":"?view=tablet","checked":"태블릿","focus":"태블릿"}
+End 후 {"url":"?view=mobile","focus":"모바일"}
+Home 후 {"url":"","focus":"데스크톱"}
+radio 2중 링 true
+D-QA06 {"st":[{"t":"비교 보드에 담았습니다","disp":"inline"}],"link":{"href":"/compare","sibling":true},"focus":"비교 중|비교 중, 비교에서 빼기","btnCls":true}

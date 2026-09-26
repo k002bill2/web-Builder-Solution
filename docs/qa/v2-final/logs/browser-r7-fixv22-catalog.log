@@ -1,0 +1,12 @@
+D-V22-01 1280 Tab ["본문으로 건너뛰기|2중=true|clip=없음|inVp=true","결과로 건너뛰기|2중=true|clip=없음|inVp=true","Design Studio|2중=true|clip=없음|inVp=true","카탈로그|2중=true|clip=없음|inVp=true","보관함|2중=true|clip=없음|inVp=true","비교 보드|2중=true|clip=없음|inVp=true","프로젝트|2중=true|clip=없음|inVp=true","새 프로젝트|2중=true|clip=없음|inVp=true"]
+D-V22-01 390 Tab ["본문으로 건너뛰기|2중=true|clip=없음|inVp=true","결과로 건너뛰기|2중=true|clip=없음|inVp=true","Design Studio|2중=true|clip=없음|inVp=true","카탈로그|2중=true|clip=없음|inVp=true","보관함|2중=true|clip=없음|inVp=true","비교 보드|2중=true|clip=없음|inVp=true","프로젝트|2중=true|clip=없음|inVp=true","새 프로젝트|2중=true|clip=없음|inVp=true"]
+D-V22-02 키보드 초기화 초기화 · 1 {"active":"H2:필터","fv":true,"url":"?industry=cafe-fnb"}
+  다음 Tab on
+D-V22-04 AX ["checkbox \"미니멀\" desc=\"1개\"","checkbox \"대담한\" desc=\"1개\"","button \"전체\" desc=\"1개\"","button \"카페·F&B\" desc=\"1개\"","button \"필터 초기화\" desc=\"선택 1개\""]
+D-V22-03 390 칩 Tab ["카페·F&B 2|clip=없음","뷰티 1|clip=없음","의료 1|clip=없음","피트니스 1|clip=없음","전문서비스 1|clip=없음","교육 0|clip=없음","리테일 0|clip=없음","점수순|clip=없음"] {"sw":375,"cw":375,"over":false}
+D-V22-05 펼친 뒤 Tab ["동네 치과 클리닉 비교에서 제거","부티크 법률사무소 비교에서 제거","모던 카페 브랜드 비교에서 제거","비교 보드 열기"] expanded true
+  가운데 제거(D07) 후 포커스 모던 카페 브랜드 비교에서 제거
+  Esc 후 비교 보드 2 / 6 false
+{"label":"필 '/ 6'","fg":"#bfc2c1","bg":"#1a2620","ratio":8.73,"size":"14px/600"}
+스모크 필터·정렬 점수순 {"url":"?concept=minimal&sort=latest","cards":1,"focus":"최신순"}
+  새로고침 복원 {"url":"?concept=minimal&sort=latest","minimal":"미니멀\n1","sort":"최신순"}

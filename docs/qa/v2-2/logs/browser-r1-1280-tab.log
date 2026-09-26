@@ -1,0 +1,65 @@
+space 6
+docOv {"sw":1280,"cw":1280,"over":false}
+shot screens/catalog-1280.png
+1 {"tag":"A","role":"","name":"본문으로 건너뛰기","rect":[12,12,100,20],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+2 {"tag":"A","role":"","name":"결과로 건너뛰기","rect":[12,12,88,20],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+3 {"tag":"A","role":"","name":"Design Studio","rect":[28,0,133,52],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","pillOv":0}
+4 {"tag":"A","role":"","name":"카탈로그","rect":[189,14,52,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4,"b":4,"l":4}}],"pillOv":0}
+5 {"tag":"A","role":"","name":"보관함","rect":[263,14,39,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4,"b":4}}],"pillOv":0}
+6 {"tag":"A","role":"","name":"비교 보드","rect":[324,14,56,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4,"b":4}}],"pillOv":0}
+7 {"tag":"A","role":"","name":"프로젝트","rect":[402,14,52,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4,"b":4}}],"pillOv":0}
+8 {"tag":"BUTTON","role":"","name":"새 프로젝트","rect":[1104,10,106,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+9 {"tag":"INPUT","role":"","name":"","rect":[818,103,275,26],"inVp":true,"ring":"NONE","pillOv":0}
+10 {"tag":"BUTTON","role":"","name":"추천 받기","rect":[1120,90,132,52],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+11 {"tag":"BUTTON","role":"","name":"전체 6","rect":[28,162,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+12 {"tag":"BUTTON","role":"","name":"카페·F&B 2","rect":[102,162,95,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+13 {"tag":"BUTTON","role":"","name":"뷰티 1","rect":[204,162,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+14 {"tag":"BUTTON","role":"","name":"의료 1","rect":[278,162,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+15 {"tag":"BUTTON","role":"","name":"피트니스 1","rect":[352,162,90,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+16 {"tag":"BUTTON","role":"","name":"전문서비스 1","rect":[450,162,102,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+17 {"tag":"BUTTON","role":"","name":"교육 0","rect":[560,162,66,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+18 {"tag":"BUTTON","role":"","name":"리테일 0","rect":[634,162,78,36],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+19 {"tag":"BUTTON","role":"radio","name":"점수순","rect":[1131,166,58,28],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+20 {"tag":"INPUT","role":"","name":"on","rect":[28,328,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+21 {"tag":"INPUT","role":"","name":"on","rect":[28,358,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+22 {"tag":"INPUT","role":"","name":"on","rect":[28,388,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+23 {"tag":"INPUT","role":"","name":"on","rect":[28,460,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+24 {"tag":"INPUT","role":"","name":"on","rect":[28,490,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+25 {"tag":"INPUT","role":"","name":"on","rect":[28,520,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+26 {"tag":"INPUT","role":"","name":"on","rect":[28,592,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+27 {"tag":"INPUT","role":"","name":"on","rect":[28,622,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+28 {"tag":"INPUT","role":"","name":"on","rect":[28,652,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+29 {"tag":"INPUT","role":"","name":"on","rect":[28,352,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+30 {"tag":"INPUT","role":"","name":"on","rect":[28,382,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+31 {"tag":"INPUT","role":"","name":"on","rect":[28,412,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+32 {"tag":"INPUT","role":"","name":"on","rect":[28,484,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+33 {"tag":"INPUT","role":"","name":"on","rect":[28,514,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+34 {"tag":"BUTTON","role":"radio","name":"전체","rect":[32,579,55,28],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+35 {"tag":"INPUT","role":"","name":"on","rect":[28,672,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+36 {"tag":"INPUT","role":"","name":"on","rect":[28,702,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+37 {"tag":"INPUT","role":"","name":"on","rect":[28,531,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+38 {"tag":"INPUT","role":"","name":"on","rect":[28,561,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+39 {"tag":"INPUT","role":"","name":"on","rect":[28,633,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+40 {"tag":"INPUT","role":"","name":"on","rect":[28,663,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+41 {"tag":"INPUT","role":"","name":"on","rect":[28,693,0,0],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 2px","pillOv":0}
+42 {"tag":"A","role":"","name":"동네 치과 클리닉","rect":[288,340,311,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+43 {"tag":"BUTTON","role":"","name":"동네 치과 클리닉 저장","rect":[531,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+44 {"tag":"BUTTON","role":"","name":"동네 치과 클리닉 비교 추가","rect":[567,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+45 {"tag":"A","role":"","name":"부티크 법률사무소","rect":[615,340,311,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+46 {"tag":"BUTTON","role":"","name":"부티크 법률사무소 저장","rect":[857,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+47 {"tag":"BUTTON","role":"","name":"부티크 법률사무소 비교 추가","rect":[893,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+48 {"tag":"A","role":"","name":"모던 카페 브랜드","rect":[941,340,311,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+49 {"tag":"BUTTON","role":"","name":"모던 카페 브랜드 저장","rect":[1184,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+50 {"tag":"BUTTON","role":"","name":"모던 카페 브랜드 비교 추가","rect":[1220,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+51 {"tag":"A","role":"","name":"로컬 베이커리","rect":[288,340,311,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+52 {"tag":"BUTTON","role":"","name":"로컬 베이커리 저장","rect":[531,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+53 {"tag":"BUTTON","role":"","name":"로컬 베이커리 비교 추가","rect":[567,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+54 {"tag":"A","role":"","name":"프리미엄 헤어살롱","rect":[615,340,311,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+55 {"tag":"BUTTON","role":"","name":"프리미엄 헤어살롱 저장","rect":[857,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+56 {"tag":"BUTTON","role":"","name":"프리미엄 헤어살롱 비교 추가","rect":[893,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+57 {"tag":"A","role":"","name":"필라테스 스튜디오","rect":[941,340,311,24],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+58 {"tag":"BUTTON","role":"","name":"필라테스 스튜디오 저장","rect":[1184,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+59 {"tag":"BUTTON","role":"","name":"필라테스 스튜디오 비교 추가","rect":[1220,428,32,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":0}
+60 {"tag":"BUTTON","role":"","name":"비교 보드 0 / 6","rect":[526,742,122,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":null}
+61 {"tag":"BUTTON","role":"","name":"비교 보드 열기","rect":[660,742,95,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":null}
+62 {"el":"body"}

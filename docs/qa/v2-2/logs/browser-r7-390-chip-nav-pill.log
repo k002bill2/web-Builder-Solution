@@ -1,0 +1,25 @@
+scroll-behavior auto / pad-bottom 96px
+chip+wait 의료 1 [326,325,66,36] [{"anc":"DIV.-m-1.flex.min-w-0","ov":"auto/auto","cut":{"r":18}}]
+shot screens/focus-390-chip.png
+chip+wait 피트니스 1 [180,325,90,36] no clip
+chip+wait 전문서비스 1 [278,325,102,36] [{"anc":"DIV.-m-1.flex.min-w-0","ov":"auto/auto","cut":{"r":6}}]
+chip+wait 교육 0 [223,325,66,36] no clip
+nav 390 {"tag":"A","role":"","name":"보관함","rect":[90,52,39,24],"inVp":true,"ring":"outline:auto 1px rgb(0, 95, 204) off 1px","clip":[{"anc":"NAV.order-last.flex.w-full","ov":"auto/auto","cut":{"t":4}}],"pillOv":0} screens/focus-390-nav.png
+3담김 동네 치과 클리닉 저장 top=378 bottom=410 pillOv=0
+3담김 동네 치과 클리닉 비교 중, 비교에서 빼기 top=378 bottom=410 pillOv=0
+3담김 부티크 법률사무소 top=290 bottom=314 pillOv=0
+3담김 부티크 법률사무소 저장 top=378 bottom=410 pillOv=0
+3담김 부티크 법률사무소 비교 중, 비교에서 빼기 top=378 bottom=410 pillOv=0
+3담김 모던 카페 브랜드 top=290 bottom=314 pillOv=0
+3담김 모던 카페 브랜드 저장 top=378 bottom=410 pillOv=0
+3담김 모던 카페 브랜드 비교 중, 비교에서 빼기 top=378 bottom=410 pillOv=0
+3담김 로컬 베이커리 top=290 bottom=314 pillOv=0
+3담김 로컬 베이커리 저장 top=378 bottom=410 pillOv=0
+3담김 로컬 베이커리 비교 추가 top=378 bottom=410 pillOv=0
+3담김 프리미엄 헤어살롱 top=290 bottom=314 pillOv=0
+3담김 프리미엄 헤어살롱 저장 top=378 bottom=410 pillOv=0
+3담김 프리미엄 헤어살롱 비교 추가 top=378 bottom=410 pillOv=0
+3담김 필라테스 스튜디오 top=484 bottom=508 pillOv=0
+3담김 필라테스 스튜디오 저장 top=572 bottom=604 pillOv=0
+3담김 필라테스 스튜디오 비교 추가 top=572 bottom=604 pillOv=0
+pill rect [0,636,390,64]

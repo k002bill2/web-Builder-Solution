@@ -1,0 +1,4 @@
+$ kill 72577   # vite preview 127.0.0.1:4337
+$ lsof -nP -iTCP:4337 -sTCP:LISTEN
+(출력 없음, exit=1) — LISTEN 소켓 0
+ego-browser TaskSpace 6: finish({ keep: [] }) 완료

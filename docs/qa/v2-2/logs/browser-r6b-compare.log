@@ -1,0 +1,23 @@
+== pill 비교 보드 3 / 6
+== 필 펼친 상태 Tab 순서(토글 다음) ["비교 보드 열기","BODY","본문으로 건너뛰기","결과로 건너뛰기","Design Studio"]
+== 필 펼친 상태 Shift+Tab(토글에서) ["모던 카페 브랜드 비교에서 제거","부티크 법률사무소 비교에서 제거","동네 치과 클리닉 비교에서 제거","필라테스 스튜디오 비교 추가"]
+== /compare 1280 {"h1":"비교 보드","table":true,"rows":13,"picks":30,"first":"Hero 구성: A 동네 치과 클리닉의 요소 선택"} {"sw":1280,"cw":1280,"over":false}
+   셀 선택 후 pressed ["true:선택됨","false:이 요소 선택","false:이 요소 선택"] ["Hero 구성: A 선택"]
+{"label":"D-QA02 '기본값' 라벨","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+{"label":"D-QA02 열 머리글 업종","fg":"#56615a","bg":"#f0f3ee","ratio":5.77,"size":"13px/500"}
+{"label":"선택됨 셀 글자","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"13px/700"}
+{"label":"이 요소 선택 셀 글자","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"13px/500"}
+{"label":"열 문자 배지","fg":"#ffffff","bg":"#1a2620","ratio":15.65,"size":"13px/700"}
+== D-QA03 aria-invalid describedby _r_13_
+{"label":"D-QA03 대표색 오류 문구","fg":"#af2e0d","bg":"#f0f3ee","ratio":5.83,"size":"13px/500"}
+shot screens/compare-1280-error.png
+== /compare 768 {"h1":"비교 보드","table":true,"rows":13,"picks":30,"first":"Hero 구성: A 동네 치과 클리닉의 요소 선택"} {"sw":768,"cw":768,"over":false}
+{"label":"D-QA01 '초안 보기' 768","fg":"#ffffff","bg":"#35403b","ratio":10.76,"size":"13px/600"}
+{"label":"요약 바 텍스트 768","fg":"#ffffff","bg":"#1a2620","ratio":15.65,"size":"14px/600"}
+shot screens/compare-768.png
+== /compare 390 {"h1":"비교 보드","table":false,"rows":0,"picks":30} {"sw":390,"cw":390,"over":false}
+{"label":"D-QA01 '초안 보기' 390","fg":"#ffffff","bg":"#35403b","ratio":10.76,"size":"13px/600"}
+{"label":"요약 바 텍스트 390","fg":"#ffffff","bg":"#1a2620","ratio":15.65,"size":"14px/600"}
+shot screens/compare-390.png
+== 390 요약 바 '초안 보기' 포커스 {"tag":"BUTTON","role":"","name":"초안 보기","rect":[208,768,73,32],"inVp":true,"ring":"shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg","pillOv":null} rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(37, 99, 235) 0px 0px 0px 4px
+shot screens/focus-390-summarybar.png

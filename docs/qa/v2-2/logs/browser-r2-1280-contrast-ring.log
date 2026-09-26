@@ -1,0 +1,25 @@
+== contrast 1280 catalog
+{"label":"nav 링크(비활성) label-alternative","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"15px/500"}
+{"label":"nav 활성","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"15px/700"}
+{"label":"h1 부제","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"14px/400"}
+{"label":"업종 칩 개수(미선택)","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"12px/500"}
+{"label":"업종 칩 개수(선택, 전체)","fg":"#ffffff","bg":"#5a5fe8","ratio":4.96,"size":"12px/500"}
+{"label":"레일 옵션 라벨","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"16px/400"}
+{"label":"레일 옵션 개수 caption2","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"12px/500"}
+{"label":"레일 그룹 legend","fg":"#4c574e","bg":"#ffffff","ratio":7.55,"size":"14px/600"}
+{"label":"체크박스 테두리 (Q4)","fg":"#86928b","bg":"#ffffff","ratio":3.22,"size":"15px/400"}
+{"label":"검색 입력 테두리 (Q4)","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"16px/400"}
+{"label":"검색 wrapper 테두리 (Q4)","fg":"#86928b","bg":"#ffffff","ratio":3.22,"size":"16px/400"}
+{"label":"카드 캡션","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+{"label":"카드 점수 줄","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"12px/500"}
+{"label":"카드 라이선스 배지","fg":"#066b5a","bg":"#def7f0","ratio":5.73,"size":"12px/600"}
+{"label":"필 '비교 보드' 글자","fg":"#ffffff","bg":"#1a2620","ratio":15.65,"size":"14px/600"}
+{"label":"필 '/ 6'","fg":"#bfc2c1","bg":"#1a2620","ratio":8.73,"size":"14px/600"}
+{"label":"정렬 캡션 'URL로 유지'","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+{"label":"초기화(비활성)","fg":"#dbdfdd","bg":"#ffffff","ratio":1.35,"size":"13px/600"}
+accent #2563eb | ring=0 0 0 2px #fff, 0 0 0 4px #2563eb
+ring nav-보관함 {"active":"A 보관함","fv":true,"vis":{"sh":"none","ol":"auto 1px rgb(0, 95, 204)"}} screens/focus-1280-nav.png
+ring 새 프로젝트(primary) {"active":"BUTTON 새 프로젝트","fv":true,"vis":{"sh":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(37, 99, 235) 0px 0px 0px 4px","ol":"none 1px rgb(0, 95, 204)"}} screens/focus-1280-primary.png
+ring 체크박스 첫 옵션 {"active":"INPUT ","fv":true,"vis":{"sh":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(37, 99, 235) 0px 0px 0px 4px","ol":"none 3px rgb(26, 38, 32)"}} screens/focus-1280-checkbox.png
+ring 검색 {"active":"INPUT ","fv":true,"vis":{"sh":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px","ol":"none 3px rgb(26, 38, 32)"}} 
+ring 필 펼침 버튼(역상) {"active":"BUTTON 비교 보드 0 / 6","fv":true,"vis":{"sh":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(37, 99, 235) 0px 0px 0px 4px","ol":"none 1px rgb(0, 95, 204)"}} screens/focus-1280-pill.png

@@ -7,6 +7,7 @@ import type { CompareBoard, ComparisonResult, DesignProfileInput, Picks } from "
 import type { ProfileVersion } from "../domain/profile";
 import type { buildProfileDraft } from "../domain/profileDraft";
 import { resolveVariant, type SectionLibrary } from "../domain/sectionLibrary";
+import { retryableImport } from "./chunkRetry";
 import { CompareBoardError, type ConfirmResult } from "./compareBoardRepository";
 import { headOf, type StudioStore } from "./studioStore";
 
@@ -24,7 +25,8 @@ function withBusinessInfoFooter(profile: DesignProfileInput, library: SectionLib
 }
 
 type CarryOver = typeof import("../domain/profileAdjustments").carryOverAdjustments;
-const loadCarryOver = async (): Promise<CarryOver> => (await import("../domain/profileAdjustments")).carryOverAdjustments;
+/** 조작 뒤 청크 — 실패 뒤 다시 확정하면 새 URL로 받는다(F1) */
+const loadCarryOver = retryableImport(() => import("../domain/profileAdjustments"));
 const hasAdjustments = (version: ProfileVersion | undefined) => version !== undefined && Object.keys(version.adjustments).length > 0;
 /** 확정 결과 — 지운 조정 수는 저장한 버전 레코드에서 읽는다(멱등 재생도 같은 값, P-S25 r6) */
 const resultOf = ({ profileId, version, dropped }: Pick<ProfileVersion, "profileId" | "version" | "dropped">): ConfirmResult => ({
@@ -124,7 +126,7 @@ export function createBoardConfirmer(deps: BoardConfirmDeps): BoardConfirmer {
   let carryOver: CarryOver | undefined;
   return {
     prepare: async (profileId) => {
-      if (!carryOver && profileId !== undefined && hasAdjustments(deps.store.versions(profileId).at(-1))) carryOver = await loadCarryOver();
+      if (!carryOver && profileId !== undefined && hasAdjustments(deps.store.versions(profileId).at(-1))) carryOver = (await loadCarryOver()).carryOverAdjustments;
     },
     confirmInto: (board, revision, expectedLatest, profileId, commitGate) => confirmIn(deps, carryOver, board, revision, expectedLatest, profileId, commitGate),
   };

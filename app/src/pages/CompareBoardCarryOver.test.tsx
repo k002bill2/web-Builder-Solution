@@ -17,6 +17,7 @@ import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
 import { loadCarryOverPanel } from "../features/compare/carryOverLoader";
 import { PROFILE_EVENT, type ProfileEvent } from "../features/profile/profileEvents";
+import { cachedChunkFailure } from "../test/chunkFailureCache";
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
 import { deferred } from "../test/deferred";
 import { renderApp } from "../test/renderApp";
@@ -221,6 +222,22 @@ describe("P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡�
     expect(document.activeElement).toBe(summary());
     expect(checkDetails().open).toBe(true);
     expect(panelLoads).toHaveBeenCalledTimes(2);
+    studio.cleanup();
+  }, 30_000);
+
+  it("F1(D-2A4-02): 정적 import가 계속 실패(브라우저 실패 캐시) → '다시 시도'는 같은 청크를 새 URL로 받아 목록", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const studio = await openStudio();
+    await studio.confirmThenAdjust({ density: "compact", motion: "L0" });
+    await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefined, SLOW);
+    const chunk = cachedChunkFailure("carryOverPanel-W2.js", () => import("../features/compare/carryOverPanel"));
+    panelLoads.mockImplementation(chunk.loader);
+    await expand();
+    await within(checkDetails()).findByText("이어받기 목록을 불러오지 못했습니다", undefined, SLOW);
+    await userEvent.click(within(checkDetails()).getByRole("button", { name: "다시 시도" }));
+    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"), SLOW);
+    expect(chunk.staticImport).toHaveBeenCalledTimes(1);
+    expect(chunk.retries.map((url) => url.replace(/^.*\//, ""))).toEqual(["carryOverPanel-W2.js?retry=1"]);
     studio.cleanup();
   }, 30_000);
 

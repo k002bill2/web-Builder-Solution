@@ -1,0 +1,475 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/bundle-headroom/app
+
+ ❯ src/data/chunkRetryWiring.test.ts (1 test | 1 failed) 34ms
+   ❯ 조작 뒤 로더 배선 (1)
+     × 싼 로더 6개가 각각 받는 모듈 = 확정 본문·쓰기 본문·boardInput×2·P-S25 패널·이어받기 규칙 32ms
+ ❯ src/data/chunkRetry.test.ts (6 tests | 5 failed) 9ms
+   ❯ retryableImport — 실패 캐시 우회 (6)
+     × 첫 시도는 정적 import() 1회, 성공하면 모듈을 기억해 다시 받지 않는다 3ms
+     × 정적 import()가 실패하면 원래 오류 그대로 → 다음 호출은 같은 청크를 새 URL(?retry=1)로 받아 성공, 그 뒤 요청 0 — 오류에 URL이 없어도(WebKit) 2ms
+     × 새 URL도 실패하면 번호를 올린다(?retry=2) — 실패한 ?retry=1도 캐시되므로. 두 번 연속 실패는 오류 그대로 1ms
+     × 같은 청크를 받는 로더가 둘이면 상태를 나눈다 — 한쪽이 새 URL로 받은 뒤 다른 쪽 첫 호출은 캐시된 정적 import()를 부르지 않는다 1ms
+     × 같은 시점의 겹친 호출은 요청 하나를 나눠 받는다 0ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/WriteBodyLoad.test.tsx (4 tests | 1 failed) 3541ms
+   ❯ FIX3 1안 쓰기 본문 로드 실패 — 저장 0·오류 표시·다시 시도 (3)
+     × F1(D-2A4-01): 정적 import가 계속 실패(브라우저 실패 캐시·오류에 URL 없음) → '다시 시도'는 같은 청크를 새 URL로 — 두 번 연속 실패면 오류 유지, 세 번째에 v1 3140ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardCarryOver.test.tsx (18 tests | 1 failed) 8906ms
+   ❯ P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 (7)
+     × F1(D-2A4-02): 정적 import가 계속 실패(브라우저 실패 캐시) → '다시 시도'는 같은 청크를 새 URL로 받아 목록 5115ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/chunkRetry.test.ts > retryableImport — 실패 캐시 우회 > 첫 시도는 정적 import() 1회, 성공하면 모듈을 기억해 다시 받지 않는다
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+ ❯ src/data/chunkRetry.test.ts:22:18
+     20|     await expect(loader()).resolves.toBe(MODULE);
+     21|     await expect(loader()).resolves.toBe(MODULE);
+     22|     expect(load).toHaveBeenCalledTimes(1);
+       |                  ^
+     23|     expect(fresh).not.toHaveBeenCalled();
+     24|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/data/chunkRetry.test.ts > retryableImport — 실패 캐시 우회 > 정적 import()가 실패하면 원래 오류 그대로 → 다음 호출은 같은 청크를 새 URL(?retry=1)로 받아 성공, 그 뒤 요청 0 — 오류에 URL이 없어도(WebKit)
+AssertionError: promise rejected "TypeError: Importing a module script fail…" instead of resolving
+ ❯ src/data/chunkRetry.test.ts:32:27
+     30|     const loader = retryableImport(load, fresh);
+     31|     await expect(loader()).rejects.toBe(error);
+     32|     await expect(loader()).resolves.toBe(MODULE);
+       |                           ^
+     33|     await expect(loader()).resolves.toBe(MODULE);
+     34|     expect(fresh.mock.calls).toEqual([[retryUrl("memoryBoardConfirm-B2…
+
+Caused by: TypeError: Importing a module script failed.
+ ❯ WEBKIT src/data/chunkRetry.test.ts:9:22
+ ❯ src/data/chunkRetry.test.ts:27:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/data/chunkRetry.test.ts > retryableImport — 실패 캐시 우회 > 새 URL도 실패하면 번호를 올린다(?retry=2) — 실패한 ?retry=1도 캐시되므로. 두 번 연속 실패는 오류 그대로
+AssertionError: promise rejected "TypeError: Importing a module script fail…" instead of resolving
+ ❯ src/data/chunkRetry.test.ts:44:27
+     42|     await expect(loader()).rejects.toThrow("Importing a module script …
+     43|     await expect(loader()).rejects.toThrow("Importing a module script …
+     44|     await expect(loader()).resolves.toBe(MODULE);
+       |                           ^
+     45|     expect(fresh.mock.calls.map(([url]) => url)).toEqual([retryUrl("ca…
+     46|   });
+
+Caused by: TypeError: Importing a module script failed.
+ ❯ WEBKIT src/data/chunkRetry.test.ts:9:22
+ ❯ src/data/chunkRetry.test.ts:39:69
+ ❯ src/data/chunkRetry.test.ts:44:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/data/chunkRetry.test.ts > retryableImport — 실패 캐시 우회 > 같은 청크를 받는 로더가 둘이면 상태를 나눈다 — 한쪽이 새 URL로 받은 뒤 다른 쪽 첫 호출은 캐시된 정적 import()를 부르지 않는다
+AssertionError: promise rejected "TypeError: Importing a module script fail…" instead of resolving
+ ❯ src/data/chunkRetry.test.ts:55:22
+     53|     const b = retryableImport(second, fresh);
+     54|     await a().catch(() => undefined);
+     55|     await expect(a()).resolves.toBe(MODULE);
+       |                      ^
+     56|     await expect(b()).resolves.toBe(MODULE);
+     57|     expect(second).not.toHaveBeenCalled();
+
+Caused by: TypeError: Importing a module script failed.
+ ❯ WEBKIT src/data/chunkRetry.test.ts:9:22
+ ❯ src/data/chunkRetry.test.ts:49:66
+ ❯ src/data/chunkRetry.test.ts:55:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/data/chunkRetry.test.ts > retryableImport — 실패 캐시 우회 > 같은 시점의 겹친 호출은 요청 하나를 나눠 받는다
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+ ❯ src/data/chunkRetry.test.ts:77:18
+     75|     const loader = retryableImport(load, vi.fn());
+     76|     await Promise.all([loader(), loader()]);
+     77|     expect(load).toHaveBeenCalledTimes(1);
+       |                  ^
+     78|   });
+     79| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/data/chunkRetryWiring.test.ts > 조작 뒤 로더 배선 > 싼 로더 6개가 각각 받는 모듈 = 확정 본문·쓰기 본문·boardInput×2·P-S25 패널·이어받기 규칙
+AssertionError: expected [] to deeply equal [ 'CarryOverNotice', …(5) ]
+
+- Expected
++ Received
+
+- [
+-   "CarryOverNotice",
+-   "carryOverAdjustments",
+-   "createBoardConfirmer",
+-   "parseBoardInput",
+-   "parseBoardInput",
+-   "revertIn",
+- ]
++ []
+
+ ❯ src/data/chunkRetryWiring.test.ts:24:40
+     22|     const marker = (m: Record<string, unknown>) =>
+     23|       ["createBoardConfirmer", "revertIn", "parseBoardInput", "CarryOv…
+     24|     expect(modules.map(marker).sort()).toEqual(["CarryOverNotice", "ca…
+       |                                        ^
+     25|   });
+     26| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 > F1(D-2A4-02): 정적 import가 계속 실패(브라우저 실패 캐시) → '다시 시도'는 같은 청크를 새 URL로 받아 목록
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveTextContent()[22m
+
+[31mreceived[39m value must be a Node.
+Received has type:  Null
+Received has value: [31mnull[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m비교 보드 · Design Studio[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 borde
+ Test Files  4 failed (4)
+      Tests  8 failed | 21 passed (29)
+   Start at  00:23:54
+   Duration  10.08s (tests 78%, environment 13%, transform 6%, setup 2%, import 2%)
+
+r-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+            [36m>[39m
+              [0mDesign Studio[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"주 메뉴"[39m
+            [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog?tab=saved"[39m
+            [36m>[39m
+              [0m보관함[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<i[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ds-icon size-4 "[39m
+                [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+              [36m/>[39m
+              [0m새 프로젝트[0m
+            [36m</button>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"강영환"[39m
+              [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [0m강영[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex flex-wrap items-start gap-x-4 gap-y-3"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m비교 보드[0m
+                [36m</h1>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+                [36m>[39m
+                  [0m3 / 6개 비교 중[0m
+                  [0m · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-3"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--foc...
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:238:42
+    236|     await within(checkDetails()).findByText("이어받기 목록을 불러오지 못했습니다", und…
+    237|     await userEvent.click(within(checkDetails()).getByRole("button", {…
+    238|     await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개…
+       |                                          ^
+    239|     expect(chunk.staticImport).toHaveBeenCalledTimes(1);
+    240|     expect(chunk.retries.map((url) => url.replace(/^.*\//, ""))).toEqu…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/pages/WriteBodyLoad.test.tsx > FIX3 1안 쓰기 본문 로드 실패 — 저장 0·오류 표시·다시 시도 > F1(D-2A4-01): 정적 import가 계속 실패(브라우저 실패 캐시·오류에 URL 없음) → '다시 시도'는 같은 청크를 새 URL로 — 두 번 연속 실패면 오류 유지, 세 번째에 v1
+AssertionError: expected [] to have a length of 1 but got +0
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m비교 보드 · Design Studio[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+            [36m>[39m
+              [0mDesign Studio[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"주 메뉴"[39m
+            [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog?tab=saved"[39m
+            [36m>[39m
+              [0m보관함[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<i[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ds-icon size-4 "[39m
+                [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+              [36m/>[39m
+              [0m새 프로젝트[0m
+            [36m</button>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"강영환"[39m
+              [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [0m강영[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex flex-wrap items-start gap-x-4 gap-y-3"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m비교 보드[0m
+                [36m</h1>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+                [36m>[39m
+                  [0m3 / 6개 비교 중[0m
+                  [0m · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-3"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--foc...
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/pages/WriteBodyLoad.test.tsx:74:47
+     72|     expect(await screen.findByRole("alert")).toHaveTextContent("확정하지 못…
+     73|     await userEvent.click(within(screen.getByRole("alert")).getByRole(…
+     74|     await waitFor(() => expect(chunk.retries).toHaveLength(1));
+       |                                               ^
+     75|     expect(await screen.findByRole("alert")).toHaveTextContent("확정하지 못…
+     76|     expect(await versionsOf()).toEqual([]);
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+

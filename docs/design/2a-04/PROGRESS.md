@@ -44,6 +44,7 @@
 | 5 | 커밋 | 완료 | 해시는 `git log -1 -- docs/design/2a-04/SPEC.md` |
 
 - 수치 변경: r0 3.3 표의 기존 수치는 스크립트와 모두 같았다. 강화 열에 빠져 있던 값(ref-b ink 충돌 `#5B4722`·muted `#5D5853`, ref-c muted `#385893`, ref-d `#006550`·`#1E6353`, ref-e muted `#565960`, ref-f `#844B00`·`#735231`)을 스크립트 출력으로 채웠다.
-- 남은 쟁점 R1(10.1): 되돌리기 뒤 재확정의 비교 기준 — 최신 버전 base(추천·채택) vs 확정 버전 base(브리프 문구). 되돌리기가 없으면 결과 같음.
+- 되돌리기 뒤 재확정의 비교 기준: 최신 버전 base 기준을 검토했으나, 되돌리기 뒤 Hero만 바꿔도 모션 조정이 지워지고 "보드에서 모션을 바꿨습니다"라는 거짓 문장이 떠서 기각 — 브리프 문구대로 확정 버전 base(`ConfirmedRef.confirmedBase`). SPEC 6.1-3 · P-AC-39 ⑥. 남은 쟁점 없음.
+- 정합성: 8.1 2a-04a에 P-S12(보드 확정·되돌리기) 명시, `STALE_PROFILE` 동봉 = 프로필 화면 쓰기 `ProfileSeries` / 보드 쓰기 `ProfileHead`로 통일.
 - 목업 차이 추가: M-18 보드 초안 패널 이어받기 표시(1 기능, Q4=A).
 - **r1 Codex 재검토는 실행하지 않았다**(Jarvis 몫). 다음: `codex-companion adversarial-review --scope branch --base d3dfdcd`.

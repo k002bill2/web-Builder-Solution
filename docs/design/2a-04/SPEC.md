@@ -21,7 +21,7 @@
 | 번들 | 공통 변경 = `routes.tsx` lazy 교체 · 저장소 컨텍스트·deferred 래퍼(약 0.3~0.5KB, L3 — `/compare` 여유 1.49 안인지 첫 작업으로 실측) · `draftStatusOf` 한 줄 · 보드 래퍼 인자 1개씩. **보드 라우트 청크** += 이어받기 판정·P-S25 패널·`STALE_PROFILE` 처리(P-B9, L3 약 0.4~0.8KB). 메모리 구현은 동적 import, 아이콘 파일 추가 0, `import type` 필수. 목표(L3) 첫 화면 ≈ 97 / 진입 직후 ≈ 115KB. `/catalog`·`/compare`도 단계마다 재측정 |
 | 단계 | **2a-04a** 조회·버전(넘치면 a1/a2) → **2a-04b** 조정·보정 → **2a-04c** 3안 → QA |
 | 수용 기준 | **P-AC-01 ~ P-AC-41** (a 13 · b 11 · c 11 · 공통 6). r1 추가: P-AC-38·39(필드 단위 이어받기·패널 = 저장값) · P-AC-40·41(`expectedLatest` 경쟁·원자성) |
-| 설계 결정 | **9개 모두 A**(2026-09-26 영환님) — Q1 구조안 · Q2 라디오 · Q3 4.5/7.0 · Q4 필드 단위 우선순위(Jarvis 수정안) · Q5 `adjustments.purpose` · Q6 버전 기준 생성 · Q7 편집 시작 → `/studio` · Q8 시드 없음 · Q9 충돌 표시·역할 분리 M2. **남은 쟁점 1개**(10.1 R1) |
+| 설계 결정 | **9개 모두 A**(2026-09-26 영환님) — Q1 구조안 · Q2 라디오 · Q3 4.5/7.0 · Q4 필드 단위 우선순위(Jarvis 수정안) · Q5 `adjustments.purpose` · Q6 버전 기준 생성 · Q7 편집 시작 → `/studio` · Q8 시드 없음 · Q9 충돌 표시·역할 분리 M2. 남은 쟁점 없음(10.1) |
 | 목업 차이 | **18건**(11절 M-01~M-18) |
 
 ---
@@ -324,12 +324,12 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 | D-3 | 버전 경쟁(라벨 v3 · 실제 v4, 번호 중복) | 두 곳(보드·프로필 화면·다른 탭)이 같은 최신을 보고 쓰기 | 결정 4 | P-AC-17·40·41 |
 
 **결정 (Q4=A, 2026-09-26 — Jarvis 수정안)**
-1. **버전 번호는 계열에 하나.** 보드·프로필 화면 모두 저장소의 최신 버전을 읽는다. 보드: `getBoard`가 `ConfirmedRef`에 `latestVersion`과 `latest`(최신 버전의 `base`·`adjustments`, 6.2 `ProfileHead`)를 **읽을 때 채운다**(보드 레코드에 저장하지 않음). `draftStatusOf`·`confirmLabel`은 `latestVersion + 1`(`latestVersion`이 없으면 지금처럼 `version + 1` — 기존 단언 유지).
+1. **버전 번호는 계열에 하나.** 보드·프로필 화면 모두 저장소의 최신 버전을 읽는다. 보드: `getBoard`가 `ConfirmedRef`에 `latestVersion`, `latest`(최신 버전의 `base`·`adjustments`, 6.2 `ProfileHead`), `confirmedBase`(보드가 확정한 버전 `confirmed.version`의 `base`)를 **읽을 때 채운다**(보드 레코드에 저장하지 않음). `draftStatusOf`·`confirmLabel`은 `latestVersion + 1`(`latestVersion`이 없으면 지금처럼 `version + 1` — 기존 단언 유지).
 2. **필드 소유를 나눈다.** 버전 = `base`(보드 유래 `DesignProfileInput` — 선택·팔레트·폰트·섹션·모션 기본·seed·library_version) + `adjustments`(프로필 화면 소유 — 밀도·대비·모션 덮어쓰기·목적·대비 보정). 적용된 값 = `effectiveProfile(base, adjustments)`(순수 함수). 저장·생성·비교는 모두 적용된 값을 쓴다.
-3. **재확정 = 필드 단위 우선순위.** 순수 함수 `carryOverAdjustments(prev: ProfileHead, nextBase) → CarryOverPlan`(6.4).
+3. **재확정 = 필드 단위 우선순위.** 순수 함수 `carryOverAdjustments(confirmedBase, latestAdjustments, nextBase) → CarryOverPlan`(6.4).
    - **보드에서 바뀐 필드**(새 base ≠ 비교 기준 base)는 **보드 값이 이기고, 그 필드와 겹치는 조정은 지운다.** 바뀌지 않은 필드의 조정은 **이어받는다.**
-   - 비교 기준 = 이어받을 조정이 올라가 있는 **최신 버전의 `base`**. 되돌리기가 없으면 보드가 확정한 버전의 base와 같은 값이다(브리프 문구 "지난 확정의 base"). 되돌리기 뒤 재확정에서만 둘이 갈린다 → **10.1 R1**.
-   - **보드 초안 패널(P-S25)과 저장소 `confirmInto`가 같은 함수를 같은 입력(`ConfirmedRef.latest` + 보드 초안)으로 부른다** → 패널에 "이어짐"으로 보인 조정 = 저장되는 `adjustments`. 보드 AC-24 "보이는 초안 = 저장값"이 다시 성립한다: 저장 `base` = 보드 초안 그대로, 적용된 값 = 초안 + 패널에 보인 이어지는 조정.
+   - "바뀐 필드" 비교 기준 = **지난 확정 버전(`confirmed.version`)의 `base`**(`confirmedBase`). 이어받을 조정 = **최신 버전의 `adjustments`**(프로필 화면의 조정·되돌리기 결과 포함). 되돌리기가 끼어도 기준은 보드가 확정한 base 그대로다 — 보드에서 건드리지 않은 필드는 "바뀐 필드"가 되지 않으므로 패널 문장 "보드에서 모션을 바꿨습니다"가 늘 사실이고, 되돌린 모션 조정(절대값 덮어쓰기)은 사용자가 지금 보는 적용값 그대로 이어진다. 보정은 (a)가 `from`으로 판정하므로 기준과 무관하다. (검토한 대안 — 최신 버전 base 기준: 되돌리기 뒤 Hero만 바꿔도 모션 조정이 지워지고 거짓 이유 문장이 뜬다 → 기각)
+   - **보드 초안 패널(P-S25)과 저장소 `confirmInto`가 같은 함수를 같은 입력(`ConfirmedRef.confirmedBase`·`latest.adjustments` + 보드 초안)으로 부른다** → 패널에 "이어짐"으로 보인 조정 = 저장되는 `adjustments`. 보드 AC-24 "보이는 초안 = 저장값"이 다시 성립한다: 저장 `base` = 보드 초안 그대로, 적용된 값 = 초안 + 패널에 보인 이어지는 조정.
    - 개수 단위: 조정 키 하나 = 1(밀도·대비·모션·목적), 보정은 항목 하나 = 1. 이어받을 조정이 0개면 패널 캡션을 숨긴다.
    - 지운 조정은 새 버전 요약에 한 줄("보드에서 모션을 바꿔 모션 조정을 지웠습니다"). 이어받은 값이 새 범위 밖이면 P-S13.
 
@@ -347,7 +347,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
    - (b) 예: ref-b 팔레트 + 밝은 카드에서 ink를 `#7E622F`로 보정 → 보드에서 ref-b 어두운 카드로 바꿈. ink base 값은 그대로라 (a)로는 남지만 C-3이 7.3(보정 없음) → 2.8(보정)이라 (b)로 지운다. 지운 뒤 ink는 원값이라 3.3에 충돌(P-S15)이 다시 보인다 — 조용히 미달을 남기지 않는다.
 4. **버전을 만드는 모든 쓰기에 `expectedLatest`**(Codex r0 #3). 보드 `confirmProfile(revision, expectedLatest)`·`createProfileVersion(profileId, revision, expectedLatest)`(첫 확정은 0), 프로필 `saveAdjustments(profileId, expectedLatest, adjustments)`·`revertTo(profileId, version, expectedLatest)` — **필수 인자**.
    - 저장소는 **비교와 생성을 원자적으로** 한다. 메모리: 최신 비교부터 배열 추가까지 동기 구간 하나(사이에 `await` 없음, `delay` 주입은 그 앞이나 뒤에만). HTTP: `If-Match: <expectedLatest>` + `(profile_id, version)` 유일 제약 조건부 삽입.
-   - 불일치 → `STALE_PROFILE`, 새 버전 0건. 오류에 최신 `ProfileHead`를 담는다(`STALE_BOARD`가 최신 보드를 담는 방식과 같음).
+   - 불일치 → `STALE_PROFILE`, 새 버전 0건. 오류에 최신을 담는다(`STALE_BOARD`가 최신 보드를 담는 방식과 같음): **프로필 화면 쓰기(`saveAdjustments`·`revertTo`)는 최신 `ProfileSeries`, 보드 쓰기(`confirmProfile`·`createProfileVersion`)는 최신 `ProfileHead`**(`confirmedBase`는 보드 확정이 없었으니 그대로).
    - 보드 확정의 판정 순서: `SCHEMA_INVALID` → `STALE_BOARD`(보드 revision) → `STALE_PROFILE` → `UNSUPPORTED_COMBINATION`. 보드가 낡았으면 선택부터 다시 받아야 하고, `STALE_BOARD`가 담아 오는 최신 보드는 `getBoard`와 같이 `latest`를 채우므로 한 번 더 거부되지 않는다.
    - 호출자는 최신을 다시 읽어 버전 라벨과 P-S25 개수를 다시 계산하고, 사용자 입력(보드 선택·저장 안 된 조정)은 유지한다 → P-S12.
 5. 모션 소유: 보드의 모션 선택은 `base.motion_preset`, 프로필 화면 모션은 **덮어쓰기**(`adjustments.motion`). 덮어쓰기가 있으면 화면에 "조정됨 · 보드 값 L2".
@@ -442,7 +442,8 @@ export interface CarryOverPlan {
 export interface ConfirmedRef {
   // …기존 profileId · version · revision · picks · custom
   readonly latestVersion?: number;  // getBoard가 읽을 때 채움(저장 안 함). 없으면 version
-  readonly latest?: ProfileHead;    // 이어받기 판정 입력 (P-S25)
+  readonly latest?: ProfileHead;    // 이어받을 조정 = latest.adjustments (P-S25)
+  readonly confirmedBase?: DesignProfileInput; // confirmed.version의 base — "보드에서 바뀐 필드" 비교 기준
 }
 export type CompareBoardErrorCode = "STALE_BOARD" | "UNSUPPORTED_COMBINATION" | "SCHEMA_INVALID" | "LICENSE_BLOCKED" | "STALE_PROFILE";
 // CompareBoardError: STALE_PROFILE일 때 profileHead?: ProfileHead 동봉
@@ -536,7 +537,7 @@ export interface GenerationJob {
 - 메모리 생성 구현 = `composeCandidates` 호출 + 잡 상태 진행. M2에서 HTTP 구현으로 바꿔도 인터페이스는 그대로.
 
 ### 6.4 순수 함수 (엔진, 모두 Vitest)
-`effectiveProfile(base, adj)` · `carryOverAdjustments(prev, nextBase)`(r1 — **보드 청크와 프로필 저장소가 함께 import**하므로 zod 없이 `contrast.ts`·`profile.ts` 상수만 쓴다) · `checkProfileContrast(palette, cardTone, level)`(`contrast.ts` 확장, zod 없음 — 이어받기 (b) 판정에 쓰여 보드 청크에도 들어간다) · `proposeCorrections(palette, cardTone, level)`(충돌 판정 포함) · `diffProfiles(a, b)` · `composeCandidates(profile, purpose, library, generatorVersion)` · `lintPlan(plan, profile, purpose)` · `summarizeVersion(prev, next)`(버전 줄 요약) · `adjustmentSchema`(zod, 범위 인자).
+`effectiveProfile(base, adj)` · `carryOverAdjustments(confirmedBase, latestAdjustments, nextBase)`(r1 — **보드 청크와 프로필 저장소가 함께 import**하므로 zod 없이 `contrast.ts`·`profile.ts` 상수만 쓴다) · `checkProfileContrast(palette, cardTone, level)`(`contrast.ts` 확장, zod 없음 — 이어받기 (b) 판정에 쓰여 보드 청크에도 들어간다) · `proposeCorrections(palette, cardTone, level)`(충돌 판정 포함) · `diffProfiles(a, b)` · `composeCandidates(profile, purpose, library, generatorVersion)` · `lintPlan(plan, profile, purpose)` · `summarizeVersion(prev, next)`(버전 줄 요약) · `adjustmentSchema`(zod, 범위 인자).
 
 ### 6.5 계측 (PRD 9)
 `profile_saved(version, origin)` — 조정 저장·되돌리기·보드 확정 · `generation_requested(version)` · `generation_succeeded(version, count)` · `generation_failed(reason=errorCode)` · (제안) `candidate_selected(id)`. 사용자 입력 원문·색 값은 넣지 않는다.
@@ -567,7 +568,7 @@ export interface GenerationJob {
 
 | 단계 | 범위 | 선행 | 규모(추정) |
 |---|---|---|---|
-| **2a-04a** 프로필 조회·버전 | 공유 저장 모듈 · `ProfileRepository`(조회·목록·되돌리기) · 버전 계보(6.1-1: 보드 라벨 `latestVersion`) · **`expectedLatest` 원자적 생성·`STALE_PROFILE`(보드 확정·되돌리기, 6.1-4)** · `/profile` 목록·`/profile/:id` 화면(값·출처·팔레트·대비 검사 **표시**·버전 목록/보기/비교/되돌리기) · P-S01~S09·S16 · 라우트 교체 | 없음 | 가장 큼 — 턴 예산을 넘으면 **a1 데이터 계층 / a2 화면**으로 나눈다(M1-UI-03a/b 선례) |
+| **2a-04a** 프로필 조회·버전 | 공유 저장 모듈 · `ProfileRepository`(조회·목록·되돌리기) · 버전 계보(6.1-1: 보드 라벨 `latestVersion`) · **`expectedLatest` 원자적 생성·`STALE_PROFILE`(보드 확정·되돌리기, 6.1-4)** · `/profile` 목록·`/profile/:id` 화면(값·출처·팔레트·대비 검사 **표시**·버전 목록/보기/비교/되돌리기) · P-S01~S09·S12(보드 확정·되돌리기 문장)·S16 · 라우트 교체 | 없음 | 가장 큼 — 턴 예산을 넘으면 **a1 데이터 계층 / a2 화면**으로 나눈다(M1-UI-03a/b 선례) |
 | **2a-04b** 전역 조정·대비 보정 | `getAdjustmentRange`·`saveAdjustments` · 밀도·대비·모션·목적 컨트롤(`SegmentedControl` disabled 확장) · 보정 제안 적용·충돌 · **필드 단위 이어받기**(6.1-3 `carryOverAdjustments`) · 보드 P-S25 패널 · 조정 저장 `STALE_PROFILE` · P-S10~S15·S25 | 2a-04a | 중간 |
 | **2a-04c** 3안 생성·비교 | `composeCandidates`·`lintPlan` · `GenerationRepository`(잡·멱등·재시도·선택) · 카드·썸네일·비교 표·로그·결정성 표시 · 편집 시작 경계 · P-S17~S24 | 2a-04b(목적·대비 조정이 입력) | 중간~큼 |
 | QA-2A-04 | 5폭 × `/profile`·`/profile/:id` 캡처, 키보드·AX 트리, 번들, 대비 | 2a-04c | — |
@@ -619,7 +620,7 @@ export interface GenerationJob {
 | P-AC-37 | 전 단계 | 계측 호출 지점(6.5)이 저장·생성 성공/실패·선택에서 1회씩, 개인정보·색 값 없음 | [V] |
 
 | P-AC-38 | b | **보드 값 우선(Codex r0 #1)**: v2 조정 = 밀도 촘촘 + 모션 덮어쓰기. 보드에서 모션 선택을 v2 base와 다른 값으로 바꾸면 초안 패널 "이어지는 조정 1개 · 지워지는 조정 1개" + 목록 "모션 … — 지워짐 · 보드에서 모션을 바꿨습니다" / "밀도 촘촘 — 이어짐" → 재확정 → v3 적용된 모션 = 보드 값, `adjustments.motion` 없음, `adjustments.density` = 촘촘(간격 96 → 72 유지), 버전 요약에 지운 조정 한 줄 | [V] |
-| P-AC-39 | b | **패널 = 저장값**: ① 보드 패널과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) | [V] |
+| P-AC-39 | b | **패널 = 저장값**: ① 보드 패널과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) ⑥ **되돌리기 뒤 재확정**: 보드 확정 v2 → 프로필에서 모션 덮어쓰기가 있는 v1 내용으로 되돌려 v4 → 보드에서 Hero만 바꿔 재확정 → 비교 기준은 v2 base라 모션 조정은 "이어짐", v5 적용된 모션 = v4와 같음 | [V] |
 | P-AC-40 | a | **보드 확정 경쟁(Codex r0 #3)**: 보드가 최신 v2를 보고 "새 버전으로 확정 (v3)" 표시 → 같은 store에서 다른 쓰기(다른 탭 = 테스트에서 `revertTo` 직접 호출)로 v3 생성 → 보드 확정 클릭 → `STALE_PROFILE` 거부, **확정 0건**(계열 버전 수 +1은 다른 쓰기의 v3뿐), 버튼 "새 버전으로 확정 (v4)"로 갱신 + P-S12 보드 안내, 선택 유지·이동 없음. 다시 확정 → v4 | [V] |
 | P-AC-41 | a | **원자성**: 같은 `expectedLatest`로 버전 생성 쓰기 2개를 동시에(`Promise.all`, 응답 `delay` 주입 — 보드 확정 + 되돌리기 조합) → 정확히 1개 성공, 1개 `STALE_PROFILE`, 버전 번호 연속·중복 0. 되돌리기가 거부되면 보기 상태 유지 + P-S12 문장. 네 쓰기 모두 `expectedLatest`가 필수 인자(빠지면 typecheck 실패) | [V] |
 
@@ -665,9 +666,7 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 
 ### 10.1 남은 쟁점 (r1)
 
-| # | 쟁점 | 추천안 · 트레이드오프 |
-|---|---|---|
-| **R1** | **되돌리기 뒤 재확정의 비교 기준.** 브리프 문구는 "지난 확정(`confirmed` 버전)의 base 이후 보드에서 바뀐 필드"다. 되돌리기가 끼면(보드 확정 v2 → 프로필에서 v1 내용으로 되돌려 v4) 최신 버전 base(= v1 base)와 보드가 확정한 base(v2)가 다르다. 이어받을 조정은 v4 것(v1 base 위에서 만든 조정)이다 | **최신 버전 base 기준(추천, 이 SPEC 6.1-3이 채택)** — 조정이 올라가 있던 값과 비교하므로 보정 `{role, from}` 규칙과 기준이 같고, "재확정이 현재 프로필에서 실제로 바꾸는 필드"를 판정한다. 되돌리기가 없으면 두 기준은 같은 값이라 브리프 규칙과 결과가 같다. 대가: 되돌리기 뒤에는 사용자가 보드에서 건드리지 않은 필드라도 v1 base와 보드 값이 다르면 겹치는 조정이 지워질 수 있다(패널에 "지워짐"으로 먼저 보이므로 저장값 = 보인 값은 유지). 대안: 확정 버전 base 기준(브리프 문구 그대로) — 보드 조작 기준으로는 직관적이지만 조정이 겨냥한 base와 다른 값과 비교돼, 되돌린 모션 조정이 그 값을 모르는 보드 값 위에 남는다. **영환님 확인 필요** — 바꾸면 6.1-3 한 줄·P-AC-39 입력 표 1행만 바뀐다 |
+없음. 검토 중 나온 "되돌리기 뒤 재확정의 비교 기준"은 브리프 문구(지난 확정 버전의 base)대로 정했다 — 근거와 기각한 대안은 6.1-3, 검증은 P-AC-39 ⑥.
 
 ---
 

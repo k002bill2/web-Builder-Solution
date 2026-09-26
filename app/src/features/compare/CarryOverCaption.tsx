@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../../components/ds/Button";
 import { loadCarryOverPanel } from "./carryOverLoader";
 import type { CarryOverNoticeComponent, CarryOverNoticeProps } from "./carryOverPanel";
@@ -8,8 +8,8 @@ type PanelLoad = "loading" | "error" | { readonly Notice: CarryOverNoticeCompone
 export interface CarryOverCaptionProps {
   /** 최신 버전의 조정 개수(6.1-3 개수 단위, boardScreen carryOverCount) — 1 이상일 때만 그린다 */
   readonly count: number;
-  /** 판정 입력 — 저장소 확정과 같은 입력(6.1-3) */
-  readonly props: CarryOverNoticeProps;
+  /** 판정 입력 — 저장소 확정과 같은 입력(6.1-3). 초안이 준비되지 않았으면(Hero 미선택) null — 펼쳐도 안내만, 청크 요청 0 (FIX4) */
+  readonly props: CarryOverNoticeProps | null;
 }
 
 /**
@@ -17,9 +17,12 @@ export interface CarryOverCaptionProps {
  * "다시 시도"에서만 판정·목록 청크를 받는다(조작 뒤, 번들 스크립트 분류 근거). 받은 청크는 두고 다시 받지 않는다.
  * 실패해도 확정은 막지 않는다 — 저장은 저장소가 같은 함수로 계산한다. 엔진 청크에 싣는다(보드 준비 뒤에만 그려짐, 첫 화면 밖).
  * 펼침 상태는 네이티브 details/summary가 알린다. 다시 시도 버튼이 사라져도 포커스는 summary에 둔다.
+ * 초안 미준비(props null)면 펼친 영역은 Hero 안내뿐이다. 펼친 채 초안이 준비되면(Hero 선택) 그때 한 번 받는다 — 역시 조작 뒤.
  */
 export function CarryOverCaption({ count, props }: CarryOverCaptionProps) {
   const [panel, setPanel] = useState<PanelLoad>(null);
+  const [open, setOpen] = useState(false);
+  const ready = props !== null;
   const requested = useRef(false);
   const summary = useRef<HTMLElement>(null);
   const load = () => {
@@ -35,16 +38,21 @@ export function CarryOverCaption({ count, props }: CarryOverCaptionProps) {
       },
     );
   };
+  // 펼침·Hero 선택(초안 준비) 둘 다 된 뒤에만 받는다. 의존성은 불리언만 — props 객체는 렌더마다 새로 만들어진다
+  useEffect(() => {
+    if (open && ready) load();
+  }, [open, ready]);
   return (
     <div className="flex flex-col gap-1">
       <p className="ds-caption1 text-label-neutral">이 프로필에 조정 {count}개가 있습니다</p>
-      <details className="ds-caption1 text-label-alternative" onToggle={(e) => e.currentTarget.open && load()}>
+      <details className="ds-caption1 text-label-alternative" onToggle={(e) => setOpen(e.currentTarget.open)}>
         <summary ref={summary} className="cursor-pointer">
           이어받기 확인
         </summary>
         <div aria-live="polite" className="mt-1 flex flex-col items-start gap-1">
-          {panel === "loading" && <p>이어받기를 확인하는 중입니다</p>}
-          {panel === "error" && (
+          {!ready && <p>Hero를 고르면 이어받을 조정을 확인할 수 있습니다</p>}
+          {ready && panel === "loading" && <p>이어받기를 확인하는 중입니다</p>}
+          {ready && panel === "error" && (
             <>
               <p>이어받기 목록을 불러오지 못했습니다</p>
               <Button
@@ -59,7 +67,7 @@ export function CarryOverCaption({ count, props }: CarryOverCaptionProps) {
               </Button>
             </>
           )}
-          {typeof panel === "object" && panel && <panel.Notice {...props} />}
+          {ready && typeof panel === "object" && panel && <panel.Notice {...props} />}
         </div>
       </details>
     </div>

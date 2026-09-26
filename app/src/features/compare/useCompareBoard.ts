@@ -123,15 +123,19 @@ export function useCompareBoard() {
   const view = useMemo(() => (board && engine ? engine.buildBoardView(board, comparison.results) : null), [board, comparison.results, engine]);
   const locked = confirming || removing;
   // P-S25 (DS-2A-04 r6) — 진입 직후 자동은 개수 캡션뿐(인라인 계산). 판정·목록은 CarryOverCaption이 펼칠 때 받는다
+  // 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 초안 상태와 무관하게 보인다. 판정 입력(nextBase)은 초안이 ready일 때만 (FIX4)
   const confirmedRef = saved?.board.confirmed;
   const adjustmentCount = carryOverCount(confirmedRef?.latest?.adjustments);
   const draft = evaluation?.draft;
   const carryOver =
-    engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest && draft?.status === "ready"
+    engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest
       ? {
           Caption: engine.CarryOverCaption,
           count: adjustmentCount,
-          props: { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile },
+          props:
+            draft?.status === "ready"
+              ? { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile }
+              : null,
         }
       : null;
   // S-15 — 확정한 선택에서 바뀐 게 없으면 새 버전으로 확정하지 않는다 (태그도 "확정됨")

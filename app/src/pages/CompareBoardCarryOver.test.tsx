@@ -296,6 +296,97 @@ describe("P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡�
   }, 30_000);
 });
 
+describe("FIX4 Hero 미선택 — 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 항상, 판정·목록은 Hero를 고른 뒤 (P-S25 r6)", () => {
+  const HERO_A = () => pick("Hero 구성", "A 모던 카페 브랜드");
+  const heroHint = () => within(checkDetails()).queryByText("Hero를 고르면 이어받을 조정을 확인할 수 있습니다");
+  const ADJUSTED = { density: "compact", motion: "L0" } as const;
+  /** 조정 2개 캡션 + "이어받기 확인" 접힘 + 패널 청크 요청 0 (F4-1·F4-4 공통) */
+  const expectCaptionOnly = async () => {
+    expect(await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefined, SLOW)).toBeInTheDocument();
+    expect(HERO_A()).toHaveAttribute("aria-pressed", "false");
+    expect(summary()).toBeInTheDocument();
+    expect(checkDetails().open).toBe(false);
+    expect(counts()).toBeNull();
+    expect(panelLoads).not.toHaveBeenCalled();
+  };
+  /** 확정 v1 → 프로필 화면에서 조정 저장 v2 + 저장소에서 Hero를 뺀 보드 → /compare 진입 */
+  const enterWithoutHero = async (studio: Awaited<ReturnType<typeof openStudio>>) => {
+    await userEvent.click(confirmButton());
+    await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
+    await waitFor(() => expect(screen.queryByRole("heading", { level: 1, name: "비교 보드" })).toBeNull(), SLOW);
+    await studio.profiles.saveAdjustments("profile-1", 1, ADJUSTED);
+    const { board } = await studio.board.getBoard();
+    await studio.board.savePicks(Object.fromEntries(Object.entries(board.picks).filter(([row]) => row !== "hero")), board.custom, board.revision);
+    await act(() => studio.router.navigate("/compare"));
+    await screen.findByRole("heading", { level: 1, name: "비교 보드" }, SLOW);
+  };
+
+  it("F4-1: Hero 해제 상태로 진입 → 캡션 '조정 2개' + '이어받기 확인', 패널 청크 요청 0", async () => {
+    const studio = await openStudio();
+    await enterWithoutHero(studio);
+    await expectCaptionOnly();
+    studio.cleanup();
+  }, 30_000);
+
+  it("F4-2: 같은 상태에서 펼치면 Hero 안내·요청 0 → Hero를 고르면 요청 1, ①과 같은 입력으로 '2개 · 0개' → 모션 B면 '1개 · 1개'", async () => {
+    const studio = await openStudio();
+    await enterWithoutHero(studio);
+    await expectCaptionOnly();
+    await expand();
+    expect(checkDetails().open).toBe(true);
+    expect(heroHint()).toBeInTheDocument();
+    expect(counts()).toBeNull();
+    expect(panelLoads).not.toHaveBeenCalled();
+    await userEvent.click(HERO_A());
+    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"), SLOW);
+    expect(heroHint()).toBeNull();
+    expect(rows()).toEqual(["밀도 촘촘 — 이어짐", "모션 L0 — 이어짐"]);
+    expect(panelLoads).toHaveBeenCalledTimes(1);
+    await userEvent.click(pick("모션", "B 프리미엄 헤어살롱"));
+    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 1개 · 지워지는 조정 1개"));
+    expect(rows()).toEqual(["밀도 촘촘 — 이어짐", "모션 L0 — 지워짐 · 보드에서 모션을 바꿨습니다"]);
+    expect(caption()).toHaveTextContent("이 프로필에 조정 2개가 있습니다");
+    expect(panelLoads).toHaveBeenCalledTimes(1);
+    studio.cleanup();
+  }, 30_000);
+
+  it("F4-3: ready에서 펼쳐 목록을 받은 뒤 Hero 해제 → 캡션 N 유지, 펼친 영역은 안내, 재요청 0 → 다시 고르면 목록(재요청 0)", async () => {
+    const studio = await openStudio();
+    await studio.confirmThenAdjust(ADJUSTED);
+    await expand();
+    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"), SLOW);
+    expect(panelLoads).toHaveBeenCalledTimes(1);
+    await userEvent.click(HERO_A());
+    await waitFor(() => expect(heroHint()).toBeInTheDocument());
+    expect(caption()).toHaveTextContent("이 프로필에 조정 2개가 있습니다");
+    expect(checkDetails().open).toBe(true);
+    expect(counts()).toBeNull();
+    expect(within(checkDetails()).queryAllByRole("listitem")).toHaveLength(0);
+    expect(panelLoads).toHaveBeenCalledTimes(1);
+    await userEvent.click(HERO_A());
+    await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 2개 · 지워지는 조정 0개"));
+    expect(heroHint()).toBeNull();
+    expect(panelLoads).toHaveBeenCalledTimes(1);
+    studio.cleanup();
+  }, 30_000);
+
+  it("F4-4: 재진입(보드 → 프로필 → 보드)에서도 Hero 해제 상태면 캡션 '조정 2개' + '이어받기 확인', 요청 0 · 펼치면 안내", async () => {
+    const studio = await openStudio();
+    await studio.confirmThenAdjust(ADJUSTED);
+    await userEvent.click(HERO_A());
+    await waitFor(async () => expect((await studio.board.getBoard()).board.picks.hero).toBeUndefined(), SLOW);
+    await act(() => studio.router.navigate("/profile/profile-1"));
+    await waitFor(() => expect(screen.queryByRole("heading", { level: 1, name: "비교 보드" })).toBeNull(), SLOW);
+    await act(() => studio.router.navigate("/compare"));
+    await screen.findByRole("heading", { level: 1, name: "비교 보드" }, SLOW);
+    await expectCaptionOnly();
+    await expand();
+    expect(heroHint()).toBeInTheDocument();
+    expect(panelLoads).not.toHaveBeenCalled();
+    studio.cleanup();
+  }, 30_000);
+});
+
 describe("P-AC-37 보드 확정 계측 — profile_saved(origin board · board-reconfirm)", () => {
   it("첫 확정 = board v1, 재확정 = board-reconfirm v3 — 성공마다 1회, 색 값·입력 원문 없음", async () => {
     const studio = await openStudio();

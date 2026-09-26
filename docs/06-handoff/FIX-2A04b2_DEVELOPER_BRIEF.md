@@ -3,6 +3,11 @@
 - 작성: Jarvis · 2026-09-26 KST · 근거: QA `docs/qa/2a-04ab/REPORT.md`(main `3b2aa0e`, 이 브랜치엔 없음 → `git show main:docs/qa/2a-04ab/REPORT.md`) D-2A4-01·02·04·05 · Designer `git show main:docs/design/ds-check-01/REPORT.md` A-03·A-04·A-05 · 영환님 **"A"**(D-01·02·04 + 좁은 폭 비교를 이번 FIX에, D-03은 2a-04c)
 - 책임 역할: Developer / 실행 환경: Orca + Claude Code · 작업 공간 `2a-04b2`(이 브랜치 그대로) · 턴 예산 **70** · 결과 `dev/active/2a-04b2/REPORT.md` **12절** · 60턴 넘으면 새 작업 멈추고 REPORT 먼저 커밋
 
+## 0. 재개 결정 (2026-09-26, 영환님 **"A"** — REPORT 12.6 (c))
+- **F1은 보류**(별도 과제 FIX-CHUNK-RETRY로 분리: 진입 직후 코드 상쇄 + WebKit 대응과 함께 재설계). `logs/fix-f1-helper.patch`는 **적용하지 않는다**(보존만). D-2A4-01·02는 REPORT에 "남은 위험(보류)"로 기록.
+- 이번 재개 범위 = **F2 + F3만**. 결과는 REPORT **13절**(12절은 그대로 둔다). 턴 예산 70 · 55턴 넘으면 13절 먼저 커밋.
+- 멈춤선(여유 < 0.3KB)은 그대로. F2·F3 각각 전후 실측을 따로 기록.
+
 ## 1. 과제
 ### F1. 동적 import 실패 뒤 "다시 시도"가 영원히 실패 (D-2A4-01 P2 · D-2A4-02 P3)
 - 재현(QA 실측, Chromium): 확정 본문 `memoryBoardConfirm` 청크 요청을 한 번 차단 → "프로필 확정" 오류 → 차단 해제 → "다시 시도"가 **요청조차 보내지 않고** 매번 실패. 같은 URL에 `?retry=1`을 붙이면 성공 → 브라우저 모듈 맵이 실패한 URL을 기억함(기전 L2). P-S25 `carryOverPanel`(다시 시도·Hero 재선택)도 같다. 되돌리기·조정 저장 본문(`memoryProfileAdjust`)은 같은 구조라 같은 결함으로 추정.
@@ -33,7 +38,7 @@
 
 ## 3. 검증·보고
 - 검증 4종 + 전체 테스트 **5회 연속**(다른 레인과 겹치면 Jarvis가 재검증하니 5회는 이 작업 끝에 한 번).
-- 코드 커밋 뒤 Codex 리뷰 1회: `node "$SCRIPT" review --wait --scope branch --base fd323a6`.
+- 코드 커밋 뒤 Codex 리뷰 1회: `node "$SCRIPT" review --wait --scope branch --base ce36f19`(F2·F3만).
 - REPORT 12절: 커밋 · RED 로그 · 테스트 이름 · 브라우저 재시도 증거(파일 경로) · 번들 전/후 · 5회 결과 · Codex · 남은 위험(WebKit·Firefox 미확인 등) · 설계 질문.
 
 ## 4. 제약

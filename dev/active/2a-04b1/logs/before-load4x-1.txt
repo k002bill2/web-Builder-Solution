@@ -1,0 +1,106 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/keyboardA11y.test.tsx (9 tests | 1 failed) 10156ms
+   ❯ 비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형) (1)
+     × 다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다 5111ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CatalogPage.test.tsx (36 tests | 2 failed) 29801ms
+   ❯ 필터 레일 r2 (SPEC 4.2) (7)
+     × 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2) 5177ms
+   ❯ QA-V2-2 P3 수정 (FIX-V22) (4)
+     × 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02) 817ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > 필터 레일 r2 (SPEC 4.2) > 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CatalogPage.test.tsx:316:3
+    314|   });
+    315|
+    316|   it("9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)", async () =…
+       |   ^
+    317|     const { router } = renderApp("/catalog");
+    318|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)
+AssertionError: expected '?industry=cafe-fnb&device=desktop' to be '?industry=cafe-fnb' // Object.is equality
+
+Expected: "?industry=cafe-fnb"
+Received: "?industry=cafe-fnb&device=desktop"
+
+ ❯ src/pages/CatalogPage.test.tsx:420:42
+    418|     await expectCardCount(1);
+    419|     await press();
+    420|     expect(router.state.location.search).toBe("?industry=cafe-fnb");
+       |                                          ^
+    421|     expect(reset()).toBeDisabled();
+    422|     expect(railHeading()).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/pages/keyboardA11y.test.tsx > 비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형) > 다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/keyboardA11y.test.tsx:19:3
+     17|
+     18| describe("비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형)", () => {
+     19|   it("다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다", async () => {
+       |   ^
+     20|     renderApp("/catalog");
+     21|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed | 51 passed (53)
+      Tests  3 failed | 596 passed (599)
+   Start at  17:31:56
+   Duration  39.31s (tests 44%, environment 37%, transform 9%, setup 6%, import 3%)
+
+Environment  jsdom was created 53 times · 134.25s total, 37% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

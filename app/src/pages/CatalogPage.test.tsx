@@ -9,7 +9,9 @@ import { renderApp } from "../test/renderApp";
 
 const cards = () => screen.queryAllByRole("article");
 const titles = () => cards().map((c) => within(c).getByRole("heading").textContent);
-const expectCardCount = (n: number) => waitFor(() => expect(cards()).toHaveLength(n));
+const expectCardCount = (n: number, timeout?: number) => waitFor(() => expect(cards()).toHaveLength(n), { timeout });
+/** 병렬 부하에서 데이터 청크·렌더가 기본 대기(1초)를 넘는 곳에만 쓴다 (2a-04b1 플레이크) */
+const SLOW = 5_000;
 const tray = () => screen.getByRole("region", { name: "비교 트레이" });
 
 describe("CatalogPage (1a-01)", () => {
@@ -106,10 +108,11 @@ describe("CatalogPage (1a-01)", () => {
 
   it("초기화는 레일 필터만 지우고 업종은 남긴다 (Q8)", async () => {
     const { router } = renderApp("/catalog?industry=beauty&audience=b2b");
-    await expectCardCount(0);
-    expect(screen.getByText("조건에 맞는 레퍼런스가 없습니다")).toBeInTheDocument();
+    // 카드 0개는 불러오기 전에도 참이다 — 빈 결과 문장이 보일 때까지 기다린 뒤 0개를 단언한다 (2a-04b1 플레이크)
+    expect(await screen.findByText("조건에 맞는 레퍼런스가 없습니다", undefined, { timeout: SLOW })).toBeInTheDocument();
+    expect(cards()).toHaveLength(0);
     await userEvent.click(screen.getByRole("button", { name: "필터 초기화" }));
-    await expectCardCount(1);
+    await expectCardCount(1, SLOW);
     expect(titles()).toEqual(["프리미엄 헤어살롱"]);
     expect(router.state.location.search).toBe("?industry=beauty");
   });
@@ -341,7 +344,8 @@ describe("필터 레일 r2 (SPEC 4.2)", () => {
     for (const group of ALL_FILTER_GROUPS) for (const option of group.options) expect(checkbox(option.label)).toBeChecked();
     expect(screen.getByRole("radio", { name: "높음" })).toHaveAttribute("aria-checked", "true");
     expect(chip("리테일")).toHaveAttribute("aria-pressed", "true");
-  });
+    // 옵션 30여 개를 차례로 누르는 긴 흐름이라 병렬 부하에서 기본 5초를 넘는다 — 넘으면 남은 클릭이 다음 테스트 DOM을 건드린다 (2a-04b1)
+  }, 20_000);
 });
 
 describe("라우팅", () => {
@@ -417,7 +421,8 @@ describe("QA-V2-2 P3 수정 (FIX-V22)", () => {
     const { router } = renderApp("/catalog?industry=cafe-fnb&concept=minimal");
     await expectCardCount(1);
     await press();
-    expect(router.state.location.search).toBe("?industry=cafe-fnb");
+    // URL 반영을 기다린 뒤 단언한다 — 초기화 직후 같은 틱에 읽으면 부하에서 이전 쿼리가 보인다 (2a-04b1 플레이크)
+    await waitFor(() => expect(router.state.location.search).toBe("?industry=cafe-fnb"), { timeout: SLOW });
     expect(reset()).toBeDisabled();
     expect(railHeading()).toHaveFocus();
     expect(railHeading()).toHaveAttribute("tabindex", "-1");

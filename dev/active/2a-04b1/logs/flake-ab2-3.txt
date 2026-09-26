@@ -1,0 +1,167 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/OrigCatalogPage.test.tsx (36 tests | 5 failed) 28956ms
+   ❯ 필터 레일 r2 (SPEC 4.2) (7)
+     × 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2) 5065ms
+   ❯ QA-V2-2 P3 수정 (FIX-V22) (4)
+     × 개수 설명은 텍스트 노드 하나로 'N개' / '선택 N개'다 (D-V22-04) 1381ms
+     × 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02) 717ms
+     × 클릭으로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02) 691ms
+     × Tab으로 포커스한 업종 칩은 링까지 칩 줄 안으로 스크롤하고, 마우스 클릭은 스크롤하지 않는다 (D-V22-03) 1011ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > 필터 레일 r2 (SPEC 4.2) > 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/OrigCatalogPage.test.tsx:316:3
+    314|   });
+    315|
+    316|   it("9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)", async () =…
+       |   ^
+    317|     const { router } = renderApp("/catalog");
+    318|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 개수 설명은 텍스트 노드 하나로 'N개' / '선택 N개'다 (D-V22-04)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAccessibleDescription()[22m
+
+Expected element to have accessible description:
+[32m  1개[39m
+Received:
+[31m  0개[39m
+ ❯ src/pages/OrigCatalogPage.test.tsx:401:24
+    399|     await waitFor(() => expect(checkbox("대담한")).toHaveAccessibleDescri…
+    400|     expect(descriptionNodes(checkbox("대담한"))).toEqual(["1개"]);
+    401|     expect(chip("전체")).toHaveAccessibleDescription("1개");
+       |                        ^
+    402|     expect(descriptionNodes(chip("전체"))).toEqual(["1개"]);
+    403|     expect(reset()).toHaveAccessibleDescription("선택 1개");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)
+AssertionError: expected '?industry=cafe-fnb&concept=minimal&co…' to be '?industry=cafe-fnb' // Object.is equality
+
+Expected: "?industry=cafe-fnb"
+Received: "?industry=cafe-fnb&concept=minimal&color=neutral"
+
+ ❯ src/pages/OrigCatalogPage.test.tsx:420:42
+    418|     await expectCardCount(1);
+    419|     await press();
+    420|     expect(router.state.location.search).toBe("?industry=cafe-fnb");
+       |                                          ^
+    421|     expect(reset()).toBeDisabled();
+    422|     expect(railHeading()).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 클릭으로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)
+AssertionError: expected '?industry=cafe-fnb&color=green' to be '?industry=cafe-fnb' // Object.is equality
+
+Expected: "?industry=cafe-fnb"
+Received: "?industry=cafe-fnb&color=green"
+
+ ❯ src/pages/OrigCatalogPage.test.tsx:420:42
+    418|     await expectCardCount(1);
+    419|     await press();
+    420|     expect(router.state.location.search).toBe("?industry=cafe-fnb");
+       |                                          ^
+    421|     expect(reset()).toBeDisabled();
+    422|     expect(railHeading()).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > Tab으로 포커스한 업종 칩은 링까지 칩 줄 안으로 스크롤하고, 마우스 클릭은 스크롤하지 않는다 (D-V22-03)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<button
+  aria-describedby="_r_137_"
+  aria-pressed="false"
+  class="inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-full border px-3.5 text-body3 font-medium select-none cursor-pointer transition-[background-color,border-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) border-line-normal bg-background-normal text-label-normal hover:bg-fill-normal"
+  type="button"
+>
+  의료
+  <span
+    aria-hidden="true"
+    class="ds-caption2 tabular-nums text-label-alternative"
+  >
+    1
+  </span>
+</button>[39m
+Received element with focus:
+  [31m<input
+  aria-describedby="_r_13u_"
+  class="peer absolute size-0 opacity-0"
+  type="checkbox"
+/>[39m
+ ❯ src/pages/OrigCatalogPage.test.tsx:443:26
+    441|       scrollIntoView.mockClear();
+    442|       await userEvent.tab();
+    443|       expect(chip("의료")).toHaveFocus();
+       |                          ^
+    444|       expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    445|       expect(scrollIntoView.mock.contexts[0]).toBe(chip("의료"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 54 passed (55)
+      Tests  5 failed | 634 passed (639)
+   Start at  17:43:02
+   Duration  42.69s (tests 49%, environment 36%, transform 6%, setup 6%, import 3%)
+
+Environment  jsdom was created 55 times · 139.26s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

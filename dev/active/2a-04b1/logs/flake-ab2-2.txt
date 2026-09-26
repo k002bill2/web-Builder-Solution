@@ -1,0 +1,98 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/OrigCatalogPage.test.tsx (36 tests | 2 failed) 29228ms
+   ❯ 필터 레일 r2 (SPEC 4.2) (7)
+     × 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2) 5171ms
+   ❯ QA-V2-2 P3 수정 (FIX-V22) (4)
+     × 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02) 834ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > 필터 레일 r2 (SPEC 4.2) > 9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/OrigCatalogPage.test.tsx:316:3
+    314|   });
+    315|
+    316|   it("9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)", async () =…
+       |   ^
+    317|     const { router } = renderApp("/catalog");
+    318|     await expectCardCount(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/OrigCatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)
+AssertionError: expected '?industry=cafe-fnb&color=warm' to be '?industry=cafe-fnb' // Object.is equality
+
+Expected: "?industry=cafe-fnb"
+Received: "?industry=cafe-fnb&color=warm"
+
+ ❯ src/pages/OrigCatalogPage.test.tsx:420:42
+    418|     await expectCardCount(1);
+    419|     await press();
+    420|     expect(router.state.location.search).toBe("?industry=cafe-fnb");
+       |                                          ^
+    421|     expect(reset()).toBeDisabled();
+    422|     expect(railHeading()).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 54 passed (55)
+      Tests  2 failed | 637 passed (639)
+   Start at  17:43:02
+   Duration  42.49s (tests 49%, environment 36%, setup 6%, transform 6%, import 3%)
+
+Environment  jsdom was created 55 times · 139.61s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

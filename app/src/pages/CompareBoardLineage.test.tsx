@@ -18,6 +18,9 @@ import { renderApp } from "../test/renderApp";
 const THREE = ["ref-a", "ref-b", "ref-c"];
 const pick = (row: string, column: string) => screen.getByRole("button", { name: `${row}: ${column}의 요소 선택` });
 const confirmButton = () => screen.getByRole("button", { name: /확정 \(v\d\)$/ });
+/** 확정 → 프로필 → 보드로 돌아오는 긴 흐름. 병렬 부하에서 기본 대기(1초)·테스트 5초를 넘는 곳에만 쓴다 (2a-04b1 플레이크) */
+const SLOW = { timeout: 10_000 };
+const LONG_FLOW = 40_000;
 
 async function openStudio(inject: { delay?: (call: BoardCall) => Promise<void> | undefined; fail?: (call: BoardCall) => Error | undefined } = {}) {
   const store = createStudioStore();
@@ -32,13 +35,13 @@ async function openStudio(inject: { delay?: (call: BoardCall) => Promise<void> |
 /** v1 확정 → 다른 곳에서 v2 → 보드로 돌아와 Hero를 B로 바꾼다 */
 async function boardSeesV2(studio: Awaited<ReturnType<typeof openStudio>>) {
   await userEvent.click(confirmButton());
-  await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"));
+  await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
   insertOtherVersion(studio.store);
   await act(() => studio.router.navigate("/compare"));
-  expect(await screen.findByText("v1 확정됨")).toBeInTheDocument();
+  expect(await screen.findByText("v1 확정됨", undefined, SLOW)).toBeInTheDocument();
   expect(confirmButton()).toHaveAccessibleName("새 버전으로 확정 (v3)");
   await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
-  await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v3)" })).not.toHaveAttribute("aria-disabled"));
+  await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v3)" })).not.toHaveAttribute("aria-disabled"), SLOW);
 }
 
 afterEach(() => vi.restoreAllMocks());
@@ -48,10 +51,10 @@ describe("P-AC-11 버전 계보 — 보드 라벨 = 계열 최신 + 1", () => {
     const studio = await openStudio();
     await boardSeesV2(studio);
     await userEvent.click(confirmButton());
-    await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"));
+    await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
     const series = await studio.profiles.getProfile("profile-1");
     expect(series?.versions.map((v) => [v.version, v.origin])).toEqual([[1, "board"], [2, "adjust"], [3, "board-reconfirm"]]);
-  });
+  }, LONG_FLOW);
 });
 
 describe("P-AC-40 보드 확정 경쟁 — STALE_PROFILE (P-S12)", () => {
@@ -69,7 +72,7 @@ describe("P-AC-40 보드 확정 경쟁 — STALE_PROFILE (P-S12)", () => {
     await userEvent.click(confirmButton());
     await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"));
     expect(await studio.versionsOf()).toEqual([1, 2, 3, 4]);
-  });
+  }, LONG_FLOW);
 });
 
 describe("P-AC-42 보드 확정 원자성·멱등 (6.3 r3)", () => {

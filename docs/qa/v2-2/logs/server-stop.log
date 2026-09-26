@@ -2,3 +2,9 @@ $ kill 72577   # vite preview 127.0.0.1:4337
 $ lsof -nP -iTCP:4337 -sTCP:LISTEN
 (출력 없음, exit=1) — LISTEN 소켓 0
 ego-browser TaskSpace 6: finish({ keep: [] }) 완료
+
+# 보충 라운드 (browser-r8-supplement.log)
+$ vite preview 127.0.0.1:4337 재기동 PID 96803 → kill 96803
+$ lsof -nP -iTCP:4337 -sTCP:LISTEN
+(출력 없음, exit=1)
+ego-browser TaskSpace 7: finish({ keep: [] }) 완료(스크립트 끝)

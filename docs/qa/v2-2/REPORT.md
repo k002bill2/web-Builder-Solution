@@ -76,10 +76,10 @@
 
 | AC | 결과 | 증거 |
 |---|---|---|
-| V2-AC-17r2 | 업종 칩 + 레일 7개 체크박스 그룹 + 모션을 사람 속도(350ms 간격)로 선택 → URL `?industry=cafe-fnb&audience=age-20-30&concept=minimal&layout=fullbleed&purpose=booking&license=internal&color=neutral&device=desktop` → **새로고침 복원**(체크 7·칩·"초기화 · 7"). 모션 `motion=low` → 새로고침 복원, → 방향키 `mid`. 레일 한 벌(AX 트리에서 옵션 이름 중복 0). 참고: 한 틱 안에서 합성 클릭 7개를 연달아 보내면 마지막 1개만 URL에 남았다 — 사람 입력으로는 재현되지 않는 측정 부산물로 보고 결함에서 뺐다 | `logs/browser-r5-filters-pill.log` "9종", `logs/browser-r4-filters-ax.log` |
+| V2-AC-17r2 | **그룹당 1개 표본**(전체 옵션은 개발 [V]가 확인): 업종 칩 + 레일 7개 체크박스 그룹을 사람 속도(350ms 간격)로 선택 → URL `?industry=cafe-fnb&audience=age-20-30&concept=minimal&layout=fullbleed&purpose=booking&license=internal&color=neutral&device=desktop` → **새로고침 복원**(체크 7·칩·"초기화 · 7"). 모션은 별도 실행(r4): `motion=low` 선택 → 새로고침 복원, → 방향키로 `mid`. 레일 한 벌(AX 트리에서 옵션 이름 중복 0). 참고: 한 틱 안에서 합성 클릭 7개를 연달아 보내면 마지막 1개만 URL에 남았다 — 사람 입력으로는 재현되지 않는 측정 부산물로 보고 결함에서 뺐다 | `logs/browser-r5-filters-pill.log` "9종", `logs/browser-r4-filters-ax.log` |
 | V2-AC-41 | `audience=age-20-30&concept=minimal,warm`(결과 1개, 대담한 없음)에서 "대담한" = **1** = `audience=age-20-30&concept=bold` 결과 수 1 → 분리형. 현재 결과 기준이었다면 0. 개수 0인 옵션도 비활성이 아님(AX 트리에서 "0 개" 체크박스 `disabled` 없음, 결과 0건 조합에서도 추가 체크 동작) | `browser-r4` "facet" |
 | V2-AC-42 | "초기화 · 2"(device + motion) → 누름 → `?industry=cafe-fnb&sort=latest`(업종·정렬 유지), "초기화" + `disabled` + 설명 "선택 0개". 빈 결과 문구 유지. 포커스 유실은 D-V22-02 | `browser-r4`·`r5` |
-| V2-AC-19r2 | 768·390: 레일 `display:none`, "필터" 버튼 보임(`aria-expanded=false`, `aria-controls`=레일). Tab 순서 필터 → 업종 칩 → 정렬 → 결과(DOM = 보이는 순서). 칩 줄 `overflow-x:auto`(390 `scrollWidth 692 > clientWidth 306`) — Tab으로 모든 칩 도달(잘림은 D-V22-03) | `browser-r3` layout·390 tab |
+| V2-AC-19r2 | 768·390: 레일 `display:none`, "필터" 버튼 보임(`aria-expanded=false`, `aria-controls`=레일). Tab 순서 필터 → 업종 칩 → 정렬 → 결과(DOM = 보이는 순서). 칩 줄 `overflow-x:auto`(390 `scrollWidth 692 > clientWidth 306`) — Tab으로 모든 칩 도달(잘림은 D-V22-03). **보충 라운드 펼침**: 768·390에서 "필터" Enter → `aria-expanded=true`, 레일 `display:flex`, 레일 top(768: 283 / 390: 446) ≥ 정렬 bottom(246 / 409), 레일 bottom(1325 / 1488) ≤ 첫 카드 top(1353 / 1516) = 칩 줄 아래·결과 위, 폭 712 / 358, 넘침 0. "미니멀" 선택 → URL `?concept=minimal` 즉시, 버튼 "필터 1", 설명 "선택 1개", 레일 펼친 채 유지. Tab(필터부터): 업종 칩 8 → 정렬 → 필터 초기화 → 레일 체크박스 | `browser-r3` layout·390 tab · `logs/browser-r8-supplement.log` B · `screens/catalog-768-rail-open.png` |
 | V2-AC-20 | radiogroup "정렬" 1벌, 점수순에서 → 방향키 → 최신순 선택·포커스 이동, URL `sort=latest` | `browser-r4` "정렬" |
 | V2-AC-21 | 탭 없음. `?tab=saved` h1 "보관함" + "저장한 레퍼런스 0개" + GNB 보관함 `aria-current`, `?tab=rec` h1 "추천" + "전체 보기"(`/catalog`) | `browser-r4` 마지막 |
 | V2-AC-26r2 | 열 **3·3·2·2·1**(1920·1280·1024·768·390), 카드 폭 311·311·346·348·358, 1920 본문 **1280**(왼쪽 348), 5폭 문서 넘침 0, 제목 `line-clamp: 2` | `browser-r3` layout · `screens/catalog-{1920,1280,768,390}.png` |
@@ -88,7 +88,8 @@
 
 - V2-AC-22·23: 카드 보더 없음·썸네일 muted, 캡션 2줄 + "접근성 98 · 성능 95 · 09.20 측정", 대표색 점 3개. 아이콘 버튼 **32×32**(5폭), 이름 "<제목> 저장"(`aria-pressed`)·"<제목> 비교 추가" → "<제목> 비교 중, 비교에서 빼기". `screens/catalog-1280.png`.
 - V2-AC-24: 펼침 버튼 "비교 보드 3 / 6"(`aria-expanded` true/false), 목록 3항목 "<제목> 비교에서 제거", **가운데 제거 → 포커스 다음 항목**, Esc → 닫힘 + 토글로 복귀. "/ 6" 8.73:1. 7번째 한도 알림은 픽스처가 6개라 **브라우저 미재현**([V]만).
-- **V2-AC-25(2.4.11)**: 1280×800 전체 Tab 61단계, 390×700 맨 위 시작 40단계·중간 클릭 시작 12단계, 390×700 3개 담긴 상태 17단계 — **필 겹침 면적 0**(마지막 카드 버튼 bottom 604 < 필 top 636, `scroll-padding-bottom 96px`). `screens/focus-390-last-card.png`.
+- **V2-AC-25(2.4.11)**: 1280×800 전체 Tab 61단계, 390×700 맨 위 시작 40단계, 390×700 3개 담긴 상태 17단계 — **필 겹침 면적 0**(마지막 카드 버튼 bottom 604 < 필 top 636, `scroll-padding-bottom 96px`). (r3의 "중간 클릭 시작" 실행은 실제로 첫 카드에서 시작돼 증거에서 제외.)
+  - **보충 라운드 — 버튼이 필 아래에 깔린 상태에서 Tab**: "로컬 베이커리 저장"을 스크롤로 필 영역 안에 둠(Tab 전 겹침 1024px² 확인, 390: 버튼 top 644 / 필 top 636, 1280: 744 / 736) → 제목 링크 `focus({preventScroll})`(scrollY 불변 확인) → Tab → 브라우저가 스크롤해 저장 버튼 top 286(390) / 368(1280), **겹침 0**, 다음 비교 버튼도 0. `logs/browser-r8-supplement.log` A · `screens/focus-390-under-pill.png`.
 
 ## 7. 키보드·스크린리더
 
@@ -128,5 +129,5 @@
 
 ## 12. 서버 종료·변경 범위
 
-- `kill 72577` 후 `lsof -nP -iTCP:4337 -sTCP:LISTEN` → **출력 없음(exit 1)**. ego-browser TaskSpace 6 `finish({ keep: [] })`. `logs/server-stop.log`.
-- 제품 코드 변경 0: 커밋 전 `git status --porcelain` = `?? docs/qa/v2-2/`만. 커밋 뒤 `git diff --stat HEAD~1 -- app design` 출력 없음(`PROGRESS.md` 기록).
+- 본 라운드 `kill 72577`, 보충 라운드(PID 96803) `kill 96803` — 두 번 모두 `lsof -nP -iTCP:4337 -sTCP:LISTEN` → **출력 없음(exit 1)**. ego-browser TaskSpace 6·7 `finish({ keep: [] })`. `logs/server-stop.log`.
+- 제품 코드 변경 0: 커밋 전 `git status --porcelain` = `?? docs/qa/v2-2/`만. 커밋 뒤 `git diff --stat 14da219 -- app design` **출력 없음**(QA 커밋 여러 개 전체 기준). 로그는 `.gitignore`의 `*.log`에 걸려 1a-03 선례대로 `git add -f`.

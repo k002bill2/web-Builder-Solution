@@ -4,7 +4,7 @@
 - 브랜치 `k002bill2/v2-3-detail` · 분기점 `8981da3` · 로컬 커밋만
 
 ## 기준선 (`8981da3`, fresh)
-- test: 41 files · **478 passed** (`logs/baseline-test.log`)
+- test: 41 files · **478 passed** (로컬 `logs/baseline-*.log` — `*.log`는 gitignore라 수치만 여기 기록)
 - 번들(gzip KB, 첫 화면 / 진입 직후): 공통 89.58 · `/catalog` 99.07 / 101.45 · `/references/:id` 96.10 / 98.49 · `/compare` 99.30 / 121.73 · 자리표시 90.04 / 92.42
 - 청크(gzip KB): `index` 86.26 · `CatalogPage` 6.96 · `ReferenceDetailPage` 4.42 · `useThrowToBoundary`(카탈로그+상세 공유) 0.16
 - `SegmentedControl`은 `CatalogPage` 청크에만 있었다(`radiogroup` 문자열 index 0회·CatalogPage 1회). `rovingFocus`는 `referenceDisplay` 공유 청크(카탈로그·상세·비교).
@@ -28,7 +28,7 @@
 - `DetailSidebar`: `ScoreTiles`(접근성·성능 `status-*-text` + 모션, `ds-title2 font-bold`), `DetailActions`(알림 종류 `template|added|limit|removed`, `role=status` 항상 렌더·`empty:hidden` 제거, "보드 열기" 형제 링크는 added·limit에만, `text-primary-text underline`), `SimilarReferences`(md 3그룹 가로)
 - fresh: test **499 passed**(43 files, +21) · typecheck 0 · lint 0 · build 0
 
-## 번들 (`logs/green1-build.log`)
+## 번들 (1차 GREEN 빌드 — 최종 값은 `logs/final-build.txt`)
 - 공통 89.58 → **89.58**(`index` 86.26 → 86.25, 변화 없음) · `/compare` 99.30 → **99.30** / 121.73
 - `/references/:id` 96.10 → **96.74** / 98.49 → 99.13
 - `/catalog` 99.07 → **99.41** / 101.45 → 101.80 (**+0.34**) — 카탈로그 코드는 무수정. 상세가 `SegmentedControl`을 import하자 빌드가 이 모듈을 `CatalogPage` 청크(6.96 → 6.66)에서 카탈로그+상세 공유 청크 `useThrowToBoundary`(0.16 → 0.80)로 옮겼다. 파일이 나뉘며 gzip 사전을 따로 쓰는 손실이 +0.34. 공통 청크는 그대로라 브리프의 "공통 청크를 늘리지 않는다"는 지킴. `/catalog` 여유 0.93 → 0.59.

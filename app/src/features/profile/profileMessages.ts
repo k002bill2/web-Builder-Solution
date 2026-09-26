@@ -1,0 +1,87 @@
+/**
+ * 프로필 화면 문구 — 대비 검사·보정 제안·충돌(3.3) · 되돌리기 알림(P-S09·S12). 엔진 청크 전용(ADR-004).
+ * 문구 형식은 1a-03 3.4를 잇는다: 원인 · 수치 · 대체안.
+ */
+import { formatRatio, type ContrastCheckId } from "../../domain/contrast";
+import type { SurfaceTone } from "../../domain/compareBoard";
+import type { ContrastLevel } from "../../domain/profile";
+import { CONTRAST_TARGET, checkProfileContrast, proposeCorrections, type CorrectionProposal } from "../../domain/profileContrast";
+import type { PaletteEntry, PaletteRole } from "../../domain/referenceDetail";
+import { versionWith } from "./versionText";
+
+const CHECK_LABELS: Readonly<Record<ContrastCheckId, string>> = Object.freeze({
+  "C-1": "흰 글자 / 대표색(primary) — 버튼·CTA",
+  "C-2": "본문 글자(ink) / 배경(bg)",
+  "C-3": "카드 글자(ink) / 어두운 카드(primary)",
+  "C-4": "본문 글자(ink) / 면(surface) — 교차 배경·카드",
+  "C-5": "보조 글자(muted) / 배경(bg)",
+});
+/** 검사의 배경 이름 — 원인 문장 "…에서 3.8:1로" */
+const BACKGROUND_NAMES: Readonly<Record<ContrastCheckId, string>> = Object.freeze({ "C-1": "흰 글자", "C-2": "배경", "C-3": "어두운 카드", "C-4": "면", "C-5": "배경" });
+const ROLE_SUBJECTS: Readonly<Partial<Record<PaletteRole, string>>> = Object.freeze({ primary: "대표색(primary)이", ink: "본문 글자(ink)가", muted: "보조 글자(muted)가" });
+const ROLE_NAMES: Readonly<Partial<Record<PaletteRole, string>>> = Object.freeze({ primary: "대표색(primary)", ink: "본문 글자(ink)", muted: "보조 글자(muted)" });
+
+export interface CheckView {
+  readonly id: ContrastCheckId;
+  readonly label: string;
+  readonly ratio: string;
+  readonly pass: boolean;
+}
+
+export interface ProposalView {
+  readonly role: PaletteRole;
+  readonly from: string;
+  readonly to: string;
+  /** 원인 · 수치 · 대체안 */
+  readonly text: string;
+  /** 충돌(P-S15)이면 보정값 쓰기 없음 — 대체안 문장과 보드 링크 이름 */
+  readonly conflict?: { readonly text: string; readonly detail: string; readonly link: string };
+}
+
+export interface ContrastView {
+  readonly target: string;
+  readonly checks: readonly CheckView[];
+  readonly proposals: readonly ProposalView[];
+}
+
+const targetText = (level: ContrastLevel) => `${CONTRAST_TARGET[level].toFixed(1)}:1`;
+const deltaText = (delta: number) => `명도 ${delta < 0 ? "−" : "+"}${Math.abs(delta).toFixed(1)}%p`;
+
+function proposalText(p: CorrectionProposal, level: ContrastLevel): string {
+  const cause =
+    p.role === "primary"
+      ? `버튼 글자(흰색)와 대표색(primary) 대비가 ${formatRatio(p.before)}로`
+      : `${ROLE_NAMES[p.role]} 대비가 ${BACKGROUND_NAMES[p.basis]}에서 ${formatRatio(p.before)}로`;
+  return `${cause} 기준 ${targetText(level)}보다 낮습니다. 대체안: ${p.to}(${formatRatio(p.after)}, ${deltaText(p.lightnessDelta)})`;
+}
+
+function conflictOf(p: CorrectionProposal): ProposalView["conflict"] {
+  if (!p.conflict) return undefined;
+  const detail = `후보 ${p.to}를 쓰면 ${p.conflict.map((b) => `${b.id} ${formatRatio(b.before)} → ${formatRatio(b.after)}`).join(" · ")}`;
+  const darkCard = p.conflict.find((b) => b.id === "C-3");
+  if (darkCard) {
+    return {
+      text: `${ROLE_SUBJECTS[p.role]} ${BACKGROUND_NAMES[p.basis]}(${formatRatio(p.before)})과 어두운 카드(${formatRatio(darkCard.before)})에 함께 쓰여 한 값으로 둘 다 맞출 수 없습니다. 대체안: 비교 보드에서 밝은 카드를 고르면 ink를 어둡게 보정할 수 있습니다`,
+      detail,
+      link: "비교 보드에서 카드 바꾸기",
+    };
+  }
+  return { text: `${ROLE_SUBJECTS[p.role]} 한 값으로 모든 배경의 기준을 맞출 수 없습니다. 대체안: 비교 보드에서 다른 팔레트를 고르세요`, detail, link: "비교 보드에서 팔레트 바꾸기" };
+}
+
+export function contrastView(palette: readonly PaletteEntry[], cardTone: SurfaceTone | undefined, level: ContrastLevel): ContrastView {
+  return {
+    target: targetText(level),
+    checks: checkProfileContrast(palette, cardTone, level).map((c) => ({ id: c.id, label: CHECK_LABELS[c.id], ratio: formatRatio(c.ratio), pass: c.pass })),
+    proposals: proposeCorrections(palette, cardTone, level).map((p) => {
+      const conflict = conflictOf(p);
+      return { role: p.role, from: p.from, to: p.to, text: proposalText(p, level), ...(conflict && { conflict }) };
+    }),
+  };
+}
+
+export const revertMessages = Object.freeze({
+  done: (basedOn: number, created: number) => `v${basedOn} 내용으로 ${versionWith(created, ["을", "를"])} 만들었습니다`,
+  stale: (latest: number) => `다른 곳에서 ${versionWith(latest, ["이", "가"])} 만들어졌습니다. 되돌리지 않았습니다 — 확인 후 다시 되돌리세요`,
+  failed: "되돌리지 못했습니다 · 다시 시도하세요",
+});

@@ -65,7 +65,8 @@ export function nearestCompliantColor(hex: string, against: string, target = AA_
   throw new Error(`대비 ${target}:1을 만들 수 없습니다: ${hex} / ${against}`);
 }
 
-export type ContrastCheckId = "C-1" | "C-2" | "C-3";
+/** C-1~C-3 보드(1a-03 3.4) · C-4·C-5 프로필 화면 (DS-2A-04 3.3) */
+export type ContrastCheckId = "C-1" | "C-2" | "C-3" | "C-4" | "C-5";
 
 export interface ContrastCheck {
   readonly id: ContrastCheckId;

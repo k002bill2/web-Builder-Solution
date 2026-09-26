@@ -20,7 +20,8 @@ const ROUTE_PAGES = {
   "/catalog": "src/pages/CatalogPage.tsx",
   "/references/:id": "src/pages/ReferenceDetailPage.tsx",
   "/compare": "src/pages/CompareBoardPage.tsx",
-  "/profile · /studio (자리표시)": "src/pages/PlaceholderPage.tsx",
+  "/profile": "src/pages/ProfilePage.tsx",
+  "/studio (자리표시)": "src/pages/PlaceholderPage.tsx",
 };
 
 /** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처). 진입 직후 합계(≤ 125KB)에 더한다. */
@@ -32,6 +33,8 @@ const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDeta
 const ROUTE_EAGER_DYNAMIC = {
   // memoryStudio = 보드·프로필 메모리 구현 + 공유 store (main의 deferred 로더 하나, DS-2A-04 6.3)
   "/compare": ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
+  // 프로필 엔진(대비·비교·문구, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처
+  "/profile": ["src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
 };
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));

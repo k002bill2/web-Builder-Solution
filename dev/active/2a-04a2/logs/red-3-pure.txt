@@ -1,0 +1,57 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a2/app
+
+ ❯ src/features/profile/profileDiff.test.ts (0 test)
+ ❯ src/domain/profileContrast.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/profileContrast.test.ts [ src/domain/profileContrast.test.ts ]
+Error: Failed to resolve import "./profileContrast" from "src/domain/profileContrast.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a2/app/src/domain/profileContrast.test.ts:9:57
+  7  |  import { referenceDetailFixtures } from "../fixtures/referenceDetails";
+  8  |  import { formatRatio } from "./contrast";
+  9  |  import { checkProfileContrast, proposeCorrections } from "./profileContrast";
+     |                                                            ^
+  10 |  const inputOf = (id) => ({
+  11 |  	palette: referenceDetailFixtures[id].palette,
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/profile/profileDiff.test.ts [ src/features/profile/profileDiff.test.ts ]
+Error: Failed to resolve import "./profileDiff" from "src/features/profile/profileDiff.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a2/app/src/features/profile/profileDiff.test.ts:6:47
+  3  |  import { createMemoryStudio } from "../../data/memoryStudio";
+  4  |  import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
+  5  |  import { diffProfiles, summarizeVersion } from "./profileDiff";
+     |                                                  ^
+  6  |  import { profileFieldRows } from "./profileFields";
+  7  |  const titleOf = (id) => ({
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  16:19:33
+   Duration  879ms (environment 82%, setup 15%, transform 2%, worker 1%)
+

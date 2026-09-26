@@ -13,6 +13,7 @@ import { FIXTURE_CATALOG } from "./compareFixtures";
 import "../pages/CatalogPage";
 import "../pages/CompareBoardPage";
 import "../pages/PlaceholderPage";
+import "../pages/ProfilePage";
 import "../pages/ReferenceDetailPage";
 
 /** 테스트에서 읽는 라우터 상태. data router의 `router.state.location`과 같은 모양을 유지한다. */

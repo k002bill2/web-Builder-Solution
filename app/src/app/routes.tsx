@@ -8,6 +8,7 @@ const ReferenceDetailPage = lazy(() =>
   import("../pages/ReferenceDetailPage").then((m) => ({ default: m.ReferenceDetailPage })),
 );
 const CompareBoardPage = lazy(() => import("../pages/CompareBoardPage").then((m) => ({ default: m.CompareBoardPage })));
+const ProfilePage = lazy(() => import("../pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
 const PlaceholderPage = lazy(() => import("../pages/PlaceholderPage").then((m) => ({ default: m.PlaceholderPage })));
 
 /**
@@ -23,8 +24,8 @@ export function createAppRoutes(): RouteObject[] {
         { path: "catalog", element: <CatalogPage /> },
         { path: "references/:id", element: <ReferenceDetailPage /> },
         { path: "compare", element: <CompareBoardPage /> },
-        { path: "profile", element: <PlaceholderPage title="디자인 프로필 · 3안 생성" screen="1a-04" /> },
-        { path: "profile/:profileId", element: <PlaceholderPage title="디자인 프로필" screen="1a-04" /> },
+        { path: "profile", element: <ProfilePage /> },
+        { path: "profile/:profileId", element: <ProfilePage /> },
         { path: "studio", element: <PlaceholderPage title="편집기" screen="1a-05" /> },
         { path: "*", element: <Navigate to="/catalog" replace /> },
       ],

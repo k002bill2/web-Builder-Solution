@@ -9,7 +9,9 @@
 | `1ed3e5c` | test: 게이트 테스트 도우미(`testing/sampleTheme.ts`·`testing/gateKit.ts`) · 번들 기준(`bundle-before.txt`) · RED 기록 |
 | `46b20ed` | feat: `gate/`(runGate 8줄) · `doc/`(createDocFromCandidate) · `GateIssue.severity` · `pending.ts` 자리 정리 · `minMotion` export · sampleTheme 타입 오류 수정 |
 | `9363839` | REPORT 초안 |
-| (마지막) | REPORT 7·8절 · 검증 로그 — Codex 지적 0이라 코드 변경 없음 |
+| `2b5bcdd` | REPORT 7·8절 · 검증 로그 |
+
+- 주의(이분 탐색): `1ed3e5c` 단독 체크아웃은 typecheck 실패(sampleTheme `ColorTokens` 단언 오류) — 수정은 `46b20ed`에 있다. 로컬 전용이라 히스토리는 고치지 않았다.
 
 ## 2. RED / GREEN (원문 `tdd-log.txt`)
 
@@ -32,6 +34,8 @@
 - `gate/docRows.test.ts` — 대체텍스트(block 빈 alt마다 1건 · 공백도 빈 값 · pass 장식/꺼짐/있음) / 헤딩(pass · Hero 없음 = h1 없음 · 본문이 Hero보다 먼저 · h1 둘) / 필수 섹션(pass · R-01 Header 없음·Footer 없음·본문 4·5·9·10·Footer 둘 · R-01 Header/Footer 위치 · R-02 Hero 없음·첫 본문 아님·둘 · R-03 본문 6 경계(index 4 pass · 3 block) · 본문 7 경계 · 문의 섹션 없음/cta-band로 충족 · 목적이 문의 아님 · R-04 · R-12 · 모르는 변형) / 모션(L2 3 pass · L2 4 block · L3 block) / SEO(pass 60·160자 · 빈 값 block · 권장 초과 warn · block이 warn보다 앞섬) / 글자 수(상한 초과 block · 필수 빈 값·공백·키 없음 · 권장 초과 warn · 코드 포인트 · block+warn 섞임 · 대체텍스트 상한)
 - `gate/gateText.test.ts` — SPEC 따옴표 문장 5건 원문 대조 · '설명 없음' 내보내기 이유 문장 속 원인 · 숫자 틀 3개를 SPEC 예시 숫자로 대조 · 유추 문장은 SPEC에 없다 · 조사 이/가
 - `doc/createDocFromCandidate.test.ts` — 정상 구조안 → validatePageDoc 통과 · revision 1 · hash · 메타 빈 값 · 순서 / instanceId·기본 슬롯·모션·톤 / 두 번 → 같은 문서·해시·입력 불변·동결 / 해시는 updatedAt과 무관 / R-01 위반 8종 BAD_VALUE / R-02 위반 3종 BAD_VALUE / 모르는 변형·유형 UNKNOWN_VARIANT(구조 판정보다 먼저) / 프로필 버전·id·시각 모양 BAD_VALUE / 새 문서의 게이트
+
+- 줄마다 pass/warn/block 충족 범위: SPEC 5.12 표에서 경고 칸이 "—"인 5줄(대비·대체텍스트·헤딩·필수 섹션·모션)은 경고 조건이 없어 **pass·block만** 테스트했다. **warn은 SEO 메타·글자 수 두 줄**에서 테스트했다. 성능 줄은 늘 unmeasured.
 
 ## 5. 규칙별 판정 방식 (줄 순서 = `GATE_ROWS`)
 
@@ -97,6 +101,8 @@
 | 전체 테스트 1회 | `npm test -- --run` | 80 파일 · 962 통과 · exit 0 (`verify-test-full.txt`) — `engineImportGuard.test.ts` 포함 |
 | engine 3회 | `npx vitest run src/engine` × 3 | 매회 15 파일 · 253 통과 · exit 0 (`verify-engine-3x.txt`) — 기존 L4a 184 + 새 69 |
 
+- 실행 횟수(사실대로): 전체 테스트는 정확히 1회. `npx vitest run src/engine`은 최종 3회 외에 개발 중 2회 더 돌았다(코드 커밋 직전 게이트 1회 · 테스트 이름 목록용 1회). gate·doc 파일 단위 실행은 TDD 중 여러 번.
+
 ## 8. Codex 리뷰 (`review --wait --scope branch --base 9c1891a`, 1회 — `codex-review.txt`)
 
 - 대상: `46b20ed`까지 브랜치 diff(REPORT 초안 커밋 전 시작).
@@ -128,7 +134,7 @@
 
 | # | 질문 | 현재 구현(추천) |
 |---|---|---|
-| Q-17 | SPEC 8.2 `createDocFromCandidate(plan, profileVersion)` 두 인자로는 `validatePageDoc`가 요구하는 `projectId`·`libraryVersion`·`generatorVersion`·`updatedAt`을 만들 수 없다(`Date.now` 금지). 인자 모양을 어떻게 할지 | plan에 `libraryVersion`·`generatorVersion`(8.1 "만든 구조안의 것") 추가 · 세 번째 필수 인자 `DocStart { projectId, updatedAt }`(저장소 값). 해시는 updatedAt과 무관 |
+| Q-17 | **SPEC 개정 요청** — SPEC 8.3.1 끝 "8.2 `createDocFromCandidate` 이름·인자는 그대로다"와 현재 구현(세 번째 필수 인자)이 어긋난다. `(plan, profileVersion)` 두 인자로는 `validatePageDoc`가 요구하는 `projectId`·`libraryVersion`·`generatorVersion`·`updatedAt`을 만들 수 없다(`Date.now` 금지). 인자 모양을 어떻게 할지 | plan에 `libraryVersion`·`generatorVersion`(8.1 "만든 구조안의 것") 추가 · 세 번째 필수 인자 `DocStart { projectId, updatedAt }`(저장소 값). 해시는 updatedAt과 무관 |
 | Q-18 | 새 문서 섹션 모션 — 인자에 모션 프리셋이 없다. composer 배정값을 plan에 실을지 | `min(L1, 정의 상한)`(addSection 규칙에서 프리셋 ≥ L1로 본 값) |
 | Q-19 | ① `GateIssue`에 `severity`(block·warn)를 더하는 개정 — SEO 줄은 같은 R-11이 차단·경고 둘 다라 없으면 줄 상태·"차단 1 · 경고 1"을 셀 수 없다. ② 목적 출처 — `GateTheme.purpose`(L4a 계약)와 `profile.adjustments.purpose`가 겹친다. 하나로 줄일지 | ① 추가 ② `theme.purpose`만 읽음(부르는 쪽이 `adjustments.purpose ?? "none"`을 넘긴다) |
 | Q-20 | R-03 "후반 1/3" 계산 — 기준(본문 = Hero 포함, header·footer 제외)·경계(index ≥ n − ⌈n/3⌉)·"문의 섹션 중 하나라도 후반이면 충족" 해석 | 그대로 |

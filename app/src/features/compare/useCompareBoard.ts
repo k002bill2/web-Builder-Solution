@@ -22,7 +22,7 @@ interface UndoEntry extends UndoView {
 }
 
 const CONFIRMING: ConfirmAvailability = { ok: false, reason: "프로필을 확정하는 중입니다" };
-const REJECT_UNTIL_LOADED: PrimaryColorCheck = () => ({ ok: false, error: "잠시 후 다시 입력하세요" });
+const REJECT_UNTIL_LOADED: PrimaryColorCheck = async () => ({ ok: false, error: "잠시 후 다시 입력하세요" });
 const UNCONFIRMED: DraftStatus = { kind: "unconfirmed", nextVersion: 1 };
 
 export function useCompareBoard() {

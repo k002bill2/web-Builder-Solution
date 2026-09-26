@@ -1,0 +1,40 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/bundle-headroom/app
+
+ ❯ src/test/noHardcodedStyle.test.ts (3 tests | 1 failed) 29ms
+   ❯ 스타일 하드코딩 금지 (3)
+     × src/components·src/pages·src/styles 컴포넌트 CSS에 hex·px 하드코딩이 0건이다 26ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/noHardcodedStyle.test.ts > 스타일 하드코딩 금지 > src/components·src/pages·src/styles 컴포넌트 CSS에 hex·px 하드코딩이 0건이다
+AssertionError: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "styles/redProbe.css:3 [hex 색상] color: #123456;",
++   "styles/redProbe.css:4 [인라인 style px] margin-top: 12px;",
++ ]
+
+ ❯ src/test/noHardcodedStyle.test.ts:62:18
+     60|         ),
+     61|     );
+     62|     expect(hits).toEqual([]);
+       |                  ^
+     63|   });
+     64| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  00:29:02
+   Duration  257ms (setup 65%, tests 17%, transform 13%, worker 3%, import 2%)
+

@@ -5,11 +5,11 @@
  * 한 동기 구간에서 커밋하거나 함께 롤백한다. `fail`의 `phase: "commit"`은 ② 뒤 ③ 앞 (DS-2A-04 6.3 r3).
  * 확정 본문(판정·쓰기·이어받기 준비)은 확정을 처음 부를 때 받는다(memoryBoardConfirm) — 보드 진입 직후 합계(/compare)에 싣지 않는다(FIX3 1안).
  * 받기는 `call`의 동기 구간 밖(앞)이라 비교·삽입·보드 갱신의 원자성은 그대로다.
+ * 선택 저장 검증(boardInput, zod)도 같은 방식으로 `savePicks`를 처음 부를 때 받는다(BUNDLE-HEADROOM) — 로드 실패면 저장 0으로 거부.
  */
 import { addColumn, removeColumn } from "../domain/boardColumns";
-import { parseBoardInput } from "../domain/boardInput";
 import { releaseUnavailablePicks } from "../domain/boardPicks";
-import { emptyBoard, type CompareBoard, type ComparisonResult, type Picks } from "../domain/compareBoard";
+import { PICKABLE_ROW_IDS, emptyBoard, type CompareBoard, type ComparisonResult, type Picks } from "../domain/compareBoard";
 import { resolveComparisons, type ComparisonCatalog } from "../domain/comparisonCells";
 import { buildProfileDraft } from "../domain/profileDraft";
 import { EXPOSED_LICENSE_STATUSES } from "../domain/reference";
@@ -17,7 +17,7 @@ import { SECTION_LIBRARY, type SectionLibrary } from "../domain/sectionLibrary";
 import { CompareBoardError, type CompareBoardRepository, type ConfirmResult } from "./compareBoardRepository";
 import type { BoardConfirmer } from "./memoryBoardConfirm";
 import { createStudioStore, headOf, type StudioStore } from "./studioStore";
-import { loadBoardConfirm } from "./writeBodyLoader";
+import { loadBoardConfirm, loadBoardInput } from "./writeBodyLoader";
 
 export type BoardMethod = keyof CompareBoardRepository;
 export interface BoardCall {
@@ -121,15 +121,17 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
         if (next !== board) commit(next);
         return released ? { board: view(), released } : { board: view() };
       }),
-    savePicks: (picks, custom, expectedRevision) =>
-      call("savePicks", () => {
-        const parsed = parseBoardInput(picks, custom);
+    savePicks: async (picks, custom, expectedRevision) => {
+      const { parseBoardInput } = await loadBoardInput();
+      return call("savePicks", () => {
+        const parsed = parseBoardInput(picks, custom, PICKABLE_ROW_IDS);
         if (!parsed.ok) throw new CompareBoardError("SCHEMA_INVALID", Object.values(parsed.errors).join(", "));
         // 열 소속은 현재 보드 기준이라 revision이 맞을 때만 본다 — 다른 곳에서 뺀 열이면 STALE_BOARD로 최신 보드를 준다
         if (expectedRevision !== board.revision) throw staleBoard(expectedRevision);
         assertPicks(parsed.value.picks, resultsOf(board.columns.map((c) => c.referenceId)));
         return view(commit({ ...board, picks: parsed.value.picks, custom: parsed.value.custom }));
-      }),
+      });
+    },
     getComparison: (referenceIds) => call("getComparison", () => ({ libraryVersion: library.version, results: resultsOf(referenceIds) })),
     confirmProfile: async (revision, expectedLatest) => {
       const body = await confirmerFor(board.confirmed?.profileId);

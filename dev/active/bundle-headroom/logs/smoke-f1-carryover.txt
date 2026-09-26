@@ -1,0 +1,6 @@
+# F1 D-2A4-02 스모크 (Chromium ego-browser, 127.0.0.1:4337 vite preview, 1280)
+조정 저장 v2 (앞 실행에서 완료)
+차단 중 펼치기 → '이어받기 목록을 불러오지 못했습니다'
+차단 해제
+다시 시도 → 이어지는 조정 1개 · 지워지는 조정 0개
+resource: carryOverPanel-D0Oo3Sbg.js status=0 | carryOverPanel-D0Oo3Sbg.js?retry=1 status=200

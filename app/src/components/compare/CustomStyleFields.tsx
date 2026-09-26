@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { CustomStyle } from "../../domain/compareBoard";
 import type { AllowedFontId, FontOption } from "../../domain/fonts";
 import { Button } from "../ds/Button";
@@ -7,8 +7,15 @@ import { TextField } from "../ds/TextField";
 
 type FontValue = AllowedFontId | "";
 
-/** 대표색 검사 — zod 검증(`boardInput`)은 비교 보드 엔진 청크에 있어 화면이 넘겨준다 */
-export type PrimaryColorCheck = (input: string) => { readonly ok: true; readonly value: string } | { readonly ok: false; readonly error: string };
+export type PrimaryColorResult = { readonly ok: true; readonly value: string } | { readonly ok: false; readonly error: string };
+/**
+ * 대표색 검사 — zod 검증(`boardInput`)은 조작 뒤 청크라 비동기다(BUNDLE-HEADROOM). 엔진이 넘겨준다.
+ * `prepare`는 필드 포커스 때 검사 청크를 미리 받는다(blur·Enter 검사가 로드를 기다리지 않게).
+ */
+export interface PrimaryColorCheck {
+  (input: string): Promise<PrimaryColorResult>;
+  readonly prepare?: () => void;
+}
 
 function without(value: CustomStyle, key: keyof CustomStyle): CustomStyle {
   return Object.fromEntries(Object.entries(value).filter(([k]) => k !== key)) as CustomStyle;
@@ -17,6 +24,7 @@ function without(value: CustomStyle, key: keyof CustomStyle): CustomStyle {
 /**
  * 사용자 대표색·폰트 (SPEC 3.5). 대표색은 포커스를 옮기거나 Enter일 때 zod 검사(checkPrimaryColor)를 거치고,
  * 잘못된 값은 저장하지 않고 필드에 오류를 붙인다(aria-invalid · aria-describedby).
+ * 검사는 비동기라 기다리는 사이 입력이 바뀌면 옛 결과를 버리고, 저장은 그때의 최신 값·onChange로 한다(다른 조작을 덮지 않게).
  * 폰트는 허용 목록 Select만 — 이 화면은 폰트 파일을 싣지 않고 이름·견본 텍스트만 보여 준다.
  */
 export interface CustomStyleFieldsProps {
@@ -37,22 +45,27 @@ export function CustomStyleFields({ value, fonts, checkPrimaryColor, onChange }:
     setText(value.primaryColor ?? "");
     setError(null);
   }
+  const latest = useRef({ text, value, onChange });
+  useEffect(() => {
+    latest.current = { text, value, onChange };
+  });
 
-  const commit = () => {
+  const commit = async () => {
     const input = text.trim();
     if (input === "") {
       setError(null);
       if (value.primaryColor !== undefined) onChange(without(value, "primaryColor"));
       return;
     }
-    const checked = checkPrimaryColor(input);
+    const checked = await checkPrimaryColor(input);
+    if (latest.current.text.trim() !== input) return;
     if (!checked.ok) {
       setError(checked.error);
       return;
     }
     setError(null);
-    const primaryColor = checked.value;
-    if (primaryColor !== value.primaryColor) onChange({ ...value, primaryColor });
+    const { value: current, onChange: save } = latest.current;
+    if (checked.value !== current.primaryColor) save({ ...current, primaryColor: checked.value });
   };
 
   const family = fonts.find((f) => f.id === value.fontFamily)?.family;
@@ -75,9 +88,10 @@ export function CustomStyleFields({ value, fonts, checkPrimaryColor, onChange }:
           aria-invalid={error !== null}
           aria-describedby={error ? errorId : undefined}
           onChange={(event) => setText(event.target.value)}
-          onBlur={commit}
+          onFocus={() => checkPrimaryColor.prepare?.()}
+          onBlur={() => void commit()}
           onKeyDown={(event) => {
-            if (event.key === "Enter") commit();
+            if (event.key === "Enter") void commit();
           }}
         />
       </div>

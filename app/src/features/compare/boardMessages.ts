@@ -8,6 +8,8 @@ import type { CompareBoard, CustomStyle } from "../../domain/compareBoard";
 import { fontFamilyOf } from "../../domain/fonts";
 import type { Evaluation, Intent } from "./boardScreen";
 
+/** 대표색 검사 청크(boardInput)를 받지 못했을 때 필드 오류 — 저장 0, 다음 blur·Enter에서 다시 받는다 (BUNDLE-HEADROOM) */
+export const PRIMARY_COLOR_CHECK_FAILED = "대표색을 확인하지 못했습니다. 잠시 후 다시 입력하세요";
 const STALE_CONFIRM_MESSAGE = "다른 곳에서 바뀐 선택을 불러왔습니다. 확인 후 다시 확정하세요";
 /** "v3이" · "v4가" — 숫자 끝 발음(2·4·5·9는 받침 없음) */
 const versionSubject = (version: number) => `v${version}${[2, 4, 5, 9].includes(version % 10) ? "가" : "이"}`;

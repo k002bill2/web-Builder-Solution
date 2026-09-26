@@ -1,4 +1,7 @@
+// @vitest-environment node
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { PICKABLE_ROW_IDS } from "./compareBoard";
 import { FONT_OPTIONS } from "./fonts";
 import { FONT_ERROR, PRIMARY_COLOR_ERROR, parseBoardInput, parseCustomStyle } from "./boardInput";
 
@@ -38,9 +41,22 @@ describe("폰트 허용 목록 (ADR-005 Q4 · D1-갱신)", () => {
 
 describe("저장 입력 검증 (SPEC 8.2 savePicks)", () => {
   it("선택 가능한 행 id와 문자열 레퍼런스 id만 받는다", () => {
-    expect(parseBoardInput({ hero: "ref-a" }, {}).ok).toBe(true);
-    expect(parseBoardInput({ sectionCount: "ref-a" }, {}).ok).toBe(false);
-    expect(parseBoardInput({ hero: 3 }, {}).ok).toBe(false);
-    expect(parseBoardInput({ hero: "ref-a" }, { primaryColor: "abc" }).ok).toBe(false);
+    expect(parseBoardInput({ hero: "ref-a" }, {}, PICKABLE_ROW_IDS).ok).toBe(true);
+    expect(parseBoardInput({ sectionCount: "ref-a" }, {}, PICKABLE_ROW_IDS).ok).toBe(false);
+    expect(parseBoardInput({ hero: 3 }, {}, PICKABLE_ROW_IDS).ok).toBe(false);
+    expect(parseBoardInput({ hero: "ref-a" }, { primaryColor: "abc" }, PICKABLE_ROW_IDS).ok).toBe(false);
+  });
+
+  it("행 id 목록은 호출자가 넘긴다 — 목록 밖 행은 거부", () => {
+    expect(parseBoardInput({ hero: "ref-a" }, {}, ["card"]).ok).toBe(false);
+    expect(parseBoardInput({ card: "ref-a" }, {}, ["card"]).ok).toBe(true);
+  });
+});
+
+describe("BUNDLE-HEADROOM 번들 근거 — boardInput(zod)은 조작 뒤 청크", () => {
+  it("공통 청크 모듈(compareBoard)을 런타임 import하지 않는다 — 타입만(import type). 값 import가 생기면 rolldown이 compareBoard를 공통 청크에서 떼어 공통 JS가 는다", () => {
+    const source = readFileSync(new URL("./boardInput.ts", import.meta.url), "utf8");
+    const runtimeImports = source.split("\n").filter((line) => /^import (?!type )/.test(line));
+    expect(runtimeImports.filter((line) => !/from "(zod\/mini|\.\/fonts)"/.test(line))).toEqual([]);
   });
 });

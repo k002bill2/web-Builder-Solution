@@ -1,0 +1,27 @@
+# /compare 진입 직후 JS 요청 (Chromium, 127.0.0.1:4337, 1280)
+index-C57_hGK2.js 200
+react-DB-4Zxce.js 200
+TextField-CRdgkFdM.js 200
+CatalogPage-Bmk--X9L.js 200
+SegmentedControl-KJ5Oscvf.js 200
+catalogFilters-CTS9InfW.js 200
+compareTray-DXUwVa6C.js 200
+referenceDisplay-nqq64__b.js 200
+rovingFocus-C627c-M6.js 200
+useThrowToBoundary-e3Nrf3la.js 200
+references-Dy8ZbmG9.js 200
+referenceDetails-C7TYk5GK.js 200
+memoryStudio-DOr_YhQj.js 200
+sectionLibrary-50WmVJEd.js 200
+profileDraft-GUcdRy9Q.js 200
+profileRepository-Cf1X6rgu.js 200
+referenceComparisons-BjFXZkfz.js 200
+CompareBoardPage-DqxLtZHg.js 200
+Callout-DitbdHy1.js 200
+boardEngine-xSBSaO1C.js 200
+contrast-CmshizSj.js 200
+profileEvents-BZQzo2FC.js 200
+
+# Hero 선택·대표색 뒤 추가
+boardInput-CFOT3m3u.js 200
+schemas-W3dRUVzC.js 200

@@ -1,0 +1,22 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a0dc3e-2cb5-7453-9438-e2bb1e6ed74d).
+[codex] Turn started (01a0dc3e-2e1c-7d23-8382-9e82d73a6bd4).
+[codex] Running command: /bin/zsh -lc "git diff --stat a1ff8c5..HEAD && git diff --unified=80 a1ff8c5..HEAD -- docs/de...
+[codex] Command completed: /bin/zsh -lc "git diff --stat a1ff8c5..HEAD && git diff --unified=80 a1ff8c5..HEAD -- docs/de... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/2a-04/SPEC.md | sed -n '395,455p;510,535p;615,631p'; nl -ba ...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/2a-04/SPEC.md | sed -n '395,455p;510,535p;615,631p'; nl -ba ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n \"6\\.1-3|confirmedBase|확정 버전|최신.*base|보드에서 바뀐 필드\" docs/design/2a-04/SPE...
+[codex] Command completed: /bin/zsh -lc "rg -n \"6\\.1-3|confirmedBase|확정 버전|최신.*base|보드에서 바뀐 필드\" docs/design/2a-04/SPE... (exit 0)
+[codex] Assistant message captured: {"verdict":"needs-attention","summary":"출시 보류: 버전 번호와 P-AC-39 ⑥의 확정 base 기준은 맞습니다. 다만 새 트랜잭션·...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against a1ff8c5
+Verdict: needs-attention
+
+출시 보류: 버전 번호와 P-AC-39 ⑥의 확정 base 기준은 맞습니다. 다만 새 트랜잭션·재시도 계약은 현재 메모리 저장소의 실패 경로와 맞지 않아 검증할 수 없습니다.
+
+Findings:
+- [medium] 트랜잭션 뒤 응답 실패 시 재시도 계약이 깨집니다 (docs/design/2a-04/SPEC.md:519)
+  6.3은 부분 실패가 없으므로 같은 `expectedLatest`로 재시도하면 성공한다고 규정하지만, 현재 `call()`은 `work()`가 프로필과 보드를 갱신한 뒤 응답 단계 `delay`를 기다립니다. 이 단계에서 지연 콜백이 거부되면 호출은 실패로 보이지만 저장은 이미 커밋되어 있어 재시도는 최신 버전이 달라졌다는 이유로 거부됩니다. 반대로 `fail` 콜백은 요청 단계에서만 호출되어 P-AC-42가 요구하는 보드 갱신 단계 실패와 롤백을 주입해 검증할 수 없습니다. 따라서 추가된 재시도 보장과 AC는 현재 저장소 구조에서 그대로 검증되지 않습니다.
+  Recommendation: P-AC-42가 프로필 삽입 후 보드 갱신 실패를 주입하고 양쪽 상태 불변을 검증하도록 실패 주입 지점을 추가하십시오. 커밋 후 응답 실패는 롤백이 아니라 동일 요청 재시도에서 기존 결과를 돌려주도록 멱등성 계약을 별도로 정의하십시오.

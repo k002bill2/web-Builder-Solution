@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`)
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -516,7 +516,9 @@ export interface GenerationJob {
 
 **원자적 버전 생성 (r1, 6.1-4)**: 위 두 메서드와 보드 `confirmProfile`·`createProfileVersion`은 모두 `expectedLatest`를 받아 한 저장소(공유 store) 안에서 비교·생성을 한 번에 한다. 네 쓰기가 같은 계열 카운터를 쓰므로 번호가 겹치거나 건너뛰지 않는다. 보드 `getBoard`는 `ConfirmedRef.latestVersion`·`latest`를 같은 store에서 읽어 채운다(보드 래퍼 메서드 추가 0).
 
-**보드 확정의 트랜잭션 경계 (r2, Codex r1 #1)**: 보드 `confirmProfile`·`createProfileVersion`은 **① `expectedLatest` 비교 ② 프로필 버전 삽입 ③ 보드 `confirmed`(profileId·version·confirmedBase)·revision 갱신**을 하나의 작업으로 커밋하거나 함께 롤백한다. 메모리 구현은 공유 store에서 ①~③을 `await` 없이 한 동기 구간에서 처리하고, 실패 주입(`fail`)은 ① 앞 또는 ③ 뒤 어느 쪽이든 store를 바꾸지 않는다(삽입 뒤 실패 = 삽입 취소). HTTP는 보드 확정을 한 엔드포인트(`POST /boards/{id}/confirm`, `If-Match: latest` + 보드 revision)로 두고 서버 한 트랜잭션에서 ①~③을 처리한다 — 클라이언트가 프로필 삽입과 보드 갱신을 두 요청으로 나누지 않는다. 부분 실패가 없으므로 재시도는 `STALE_PROFILE`이 아니라 같은 `expectedLatest`로 성공한다(P-AC-42).
+**보드 확정의 트랜잭션 경계 (r2·r3, Codex r1 #1·r2 #1)**: 보드 `confirmProfile`·`createProfileVersion`은 **① `expectedLatest` 비교 ② 프로필 버전 삽입 ③ 보드 `confirmed`(profileId·version·confirmedBase)·revision 갱신**을 하나의 작업으로 커밋하거나 함께 롤백한다. HTTP는 보드 확정을 한 엔드포인트(`POST /boards/{id}/confirm`, `If-Match: latest` + 보드 revision)로 두고 서버 한 트랜잭션에서 ①~③을 처리한다 — 클라이언트가 프로필 삽입과 보드 갱신을 두 요청으로 나누지 않는다. 실패는 두 종류로 나눈다.
+- **커밋 전 실패**(롤백): 메모리 구현은 ①~③을 `await` 없이 한 동기 구간에서 처리하고, 실패 주입에 **`phase: "commit"`**(② 뒤 ③ 앞)을 추가한다(현행 `call()`의 `fail`은 `phase: "request"`만 있다 — `memoryCompareBoardRepository.ts` 59~68행). `commit` 실패면 ②를 되돌려 store 변화 0. 이 경우 같은 인자로 재시도하면 성공한다.
+- **커밋 뒤 응답 실패**(롤백하지 않음 — 멱등 재시도): 현행 `call()`은 `work()` 뒤 `phase: "response"` 지연을 기다리므로, 여기서 거부되면 호출자는 실패를 보지만 저장은 이미 끝났다. 그래서 확정 쓰기는 **멱등 키 = (보드 id, 호출자가 본 보드 revision, `expectedLatest`)**를 쓴다. 이 키는 기존 인자에서 나오므로 새 인자가 필요 없다. store는 계열마다 마지막 커밋의 키와 결과를 기억하고, **같은 키의 재시도는 `STALE_BOARD`·`STALE_PROFILE` 판정보다 먼저** 그 결과를 그대로 돌려준다(새 버전 0). 다른 키는 지금 규칙대로 판정한다. HTTP는 같은 키를 `Idempotency-Key`로 보낸다.
 
 비교는 API가 아니라 순수 함수 `diffProfiles(a, b)`(두 적용된 값의 필드 차이).
 
@@ -625,7 +627,7 @@ export interface GenerationJob {
 | P-AC-39 | b | **패널 = 저장값**: ① 보드 패널과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) ⑥ **되돌리기 뒤 재확정**(r2 — 번호 연속): v1 보드 확정 → v2 프로필 조정 저장(모션 덮어쓰기) → v3 보드에서 모션을 바꿔 재확정(모션 조정 지워짐, 확정 = v3) → v4 프로필에서 v2로 되돌리기(모션 덮어쓰기 복원) → 보드에서 Hero만 바꿔 재확정 → 비교 기준은 **확정 버전 v3의 base**라 모션은 "바뀌지 않음" → 모션 조정 "이어짐", v5 적용된 모션 = v4와 같음(최신 v4 base 기준이었다면 모션 조정이 잘못 지워진다 — 6.1-3 근거) | [V] |
 | P-AC-40 | a | **보드 확정 경쟁(Codex r0 #3)**: 보드가 최신 v2를 보고 "새 버전으로 확정 (v3)" 표시 → 같은 store에서 다른 쓰기(다른 탭 = 테스트에서 `revertTo` 직접 호출)로 v3 생성 → 보드 확정 클릭 → `STALE_PROFILE` 거부, **확정 0건**(계열 버전 수 +1은 다른 쓰기의 v3뿐), 버튼 "새 버전으로 확정 (v4)"로 갱신 + P-S12 보드 안내, 선택 유지·이동 없음. 다시 확정 → v4 | [V] |
 | P-AC-41 | a | **원자성**: 같은 `expectedLatest`로 버전 생성 쓰기 2개를 동시에(`Promise.all`, 응답 `delay` 주입 — 보드 확정 + 되돌리기 조합) → 정확히 1개 성공, 1개 `STALE_PROFILE`, 버전 번호 연속·중복 0. 되돌리기가 거부되면 보기 상태 유지 + P-S12 문장. 네 쓰기 모두 `expectedLatest`가 필수 인자(빠지면 typecheck 실패) | [V] |
-| P-AC-42 | a | **보드 확정 원자성(Codex r1 #1)**: 메모리 구현에 보드 갱신 단계 실패를 주입해 확정 → 오류 알림, **계열 버전 수 변화 0 · 보드 `confirmed`·revision 불변**, 선택 유지. 실패 주입을 끄고 같은 화면에서 다시 확정 → `STALE_PROFILE` 없이 성공, 버전 번호 연속(건너뜀 0) | [V] |
+| P-AC-42 | a | **보드 확정 원자성·멱등(Codex r1 #1·r2 #1)**: ① `fail`에 `phase: "commit"` 주입해 확정 → 오류 알림, **계열 버전 수 변화 0 · 보드 `confirmed`·revision 불변**, 선택 유지 → 주입을 끄고 같은 화면에서 다시 확정 → 성공, 번호 연속(건너뜀 0) ② `delay`의 `phase: "response"`에서 거부 → 오류 알림이지만 store에는 버전 1개 커밋 → 같은 화면에서 다시 확정 → `STALE_*` 없이 **같은 결과**(같은 profileId·version), 계열 버전 수 +1(두 번째 호출이 새 버전을 만들지 않음) ③ 다른 revision이나 다른 `expectedLatest`로 호출하면 멱등 결과를 돌려주지 않고 기존 판정(`STALE_BOARD`/`STALE_PROFILE`) | [V] |
 
 **42개.** 단계별: a 14 · b 11 · c 11 · 공통 6. (r1 추가: P-AC-38·39 b · P-AC-40·41 a. r2 추가: P-AC-42 a. 기존 번호 유지, P-AC-05·06·19·20은 기대값·범위만 보강)
 

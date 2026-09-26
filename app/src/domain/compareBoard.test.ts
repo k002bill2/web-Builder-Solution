@@ -66,4 +66,11 @@ describe("확정 상태 태그 (SPEC 2.4·S-15·S-16)", () => {
     expect(draftStatusOf(confirmed)).toEqual({ kind: "confirmed", version: 1 });
     expect(draftStatusOf({ ...confirmed, revision: 5 })).toEqual({ kind: "changed", version: 1, nextVersion: 2 });
   });
+
+  it("P-AC-11: 계열 최신(latestVersion)이 있으면 다음 버전 = latestVersion + 1 — 확정됨·변경됨·바뀐 게 없는 재편집 모두", () => {
+    const confirmed = { ...base, confirmed: { profileId: "p1", version: 1, revision: 4, latestVersion: 2 } };
+    expect(draftStatusOf(confirmed)).toEqual({ kind: "confirmed", version: 1, nextVersion: 3 });
+    expect(draftStatusOf({ ...confirmed, revision: 5 })).toEqual({ kind: "changed", version: 1, nextVersion: 3 });
+    expect(draftStatusOf({ ...confirmed, revision: 5 }, true)).toEqual({ kind: "confirmed", version: 1, nextVersion: 3 });
+  });
 });

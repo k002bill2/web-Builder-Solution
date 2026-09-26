@@ -3,6 +3,7 @@
  * 이 파일은 트레이(공통 청크)도 쓰므로 가벼운 타입·상수·순수 함수만 둔다 — zod·대비 계산은 넣지 않는다.
  */
 import type { AllowedFontId } from "./fonts";
+import type { ProfileHead } from "./profile";
 import type { DesignReference, MotionLevel } from "./reference";
 import type { PaletteEntry } from "./referenceDetail";
 
@@ -127,6 +128,12 @@ export interface ConfirmedRef {
   /** 확정 시점 선택 — 바뀐 내용 없는 재확정을 막는 기준 (S-15). 없으면 revision으로 판단 */
   readonly picks?: Picks;
   readonly custom?: CustomStyle;
+  /** 계열 최신 버전 — 저장소가 읽을 때 채운다(보드 레코드에 저장하지 않음). 없으면 version (DS-2A-04 6.1-1) */
+  readonly latestVersion?: number;
+  /** 계열 최신 버전의 base·adjustments — 이어받을 조정(P-S25, 2a-04b) */
+  readonly latest?: ProfileHead;
+  /** 확정한 버전(version)의 base — "보드에서 바뀐 필드" 비교 기준 (6.1-3) */
+  readonly confirmedBase?: DesignProfileInput;
 }
 
 export interface CompareBoard {
@@ -149,7 +156,7 @@ export type SaveStatus = "idle" | "saving" | "saved" | "error";
 /** 초안 상태 태그 (2.4 · S-15 · S-16) */
 export type DraftStatus =
   | { readonly kind: "unconfirmed"; readonly nextVersion: 1 }
-  | { readonly kind: "confirmed"; readonly version: number }
+  | { readonly kind: "confirmed"; readonly version: number; readonly nextVersion?: number }
   | { readonly kind: "changed"; readonly version: number; readonly nextVersion: number };
 
 /** DesignProfile.selection_mode (ADR-005 Q5) */
@@ -185,7 +192,7 @@ export interface DesignProfileInput {
   readonly selection_mode: SelectionMode;
 }
 
-export type CompareBoardErrorCode = "STALE_BOARD" | "UNSUPPORTED_COMBINATION" | "SCHEMA_INVALID" | "LICENSE_BLOCKED";
+export type CompareBoardErrorCode = "STALE_BOARD" | "UNSUPPORTED_COMBINATION" | "SCHEMA_INVALID" | "LICENSE_BLOCKED" | "STALE_PROFILE";
 
 export function emptyBoard(id: string, updatedAt: string): CompareBoard {
   return { id, columns: [], picks: {}, custom: {}, revision: 0, updatedAt };
@@ -197,9 +204,13 @@ export function nextColumnLabel(columns: readonly BoardColumn[]): ColumnLabel | 
   return COLUMN_LABELS.find((label) => !used.has(label));
 }
 
-export function draftStatusOf(board: CompareBoard): DraftStatus {
+/** 다음 버전 = 계열 최신 + 1 (DS-2A-04 6.1-1). `unchanged`: 확정한 선택과 같음(S-15) */
+export function draftStatusOf(board: CompareBoard, unchanged = false): DraftStatus {
   const confirmed = board.confirmed;
   if (!confirmed) return { kind: "unconfirmed", nextVersion: 1 };
-  if (confirmed.revision === board.revision) return { kind: "confirmed", version: confirmed.version };
-  return { kind: "changed", version: confirmed.version, nextVersion: confirmed.version + 1 };
+  const { version, latestVersion } = confirmed;
+  if (unchanged || confirmed.revision === board.revision) {
+    return latestVersion === undefined ? { kind: "confirmed", version } : { kind: "confirmed", version, nextVersion: latestVersion + 1 };
+  }
+  return { kind: "changed", version, nextVersion: (latestVersion ?? version) + 1 };
 }

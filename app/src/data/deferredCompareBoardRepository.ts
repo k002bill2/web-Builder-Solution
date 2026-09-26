@@ -25,8 +25,8 @@ export function createDeferredCompareBoardRepository(
     removeReference: async (id) => (await resolve()).removeReference(id),
     savePicks: async (picks, custom, revision) => (await resolve()).savePicks(picks, custom, revision),
     getComparison: async (ids) => (await resolve()).getComparison(ids),
-    confirmProfile: async (revision) => (await resolve()).confirmProfile(revision),
-    createProfileVersion: async (profileId, revision) => (await resolve()).createProfileVersion(profileId, revision),
+    confirmProfile: async (revision, expectedLatest) => (await resolve()).confirmProfile(revision, expectedLatest),
+    createProfileVersion: async (profileId, revision, expectedLatest) => (await resolve()).createProfileVersion(profileId, revision, expectedLatest),
     getProfileVersions: async (profileId) => (await resolve()).getProfileVersions(profileId),
   };
 }

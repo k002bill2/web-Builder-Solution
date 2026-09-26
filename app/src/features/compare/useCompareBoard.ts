@@ -212,7 +212,7 @@ export function useCompareBoard() {
 
   const onConfirmError = async (error: unknown) => {
     // 다시 시도는 그때의 최신 핸들러로 — 실패 당시 상태로 확정 가능 여부를 판단하지 않게 (Codex R1)
-    const plan = engineRef.current?.confirmErrorPlan(error, () => void latestConfirm.current());
+    const plan = engineRef.current?.confirmErrorPlan(error, () => void latestConfirm.current(), saver.current?.getState().board);
     if (!plan) return;
     if (plan.kind === "resync") {
       startSaver(plan.board);
@@ -233,9 +233,10 @@ export function useCompareBoard() {
     putNotice("confirm", null);
     try {
       const target = saver.current.getState().board;
+      // expectedLatest = 보드가 본 계열 최신 (첫 확정 0) — 다른 곳에서 버전이 생겼으면 STALE_PROFILE (DS-2A-04 6.1-4)
       const result = target.confirmed
-        ? await repository.createProfileVersion(target.confirmed.profileId, target.revision)
-        : await repository.confirmProfile(target.revision);
+        ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version)
+        : await repository.confirmProfile(target.revision, 0);
       navigate(`/profile/${result.profileId}`);
     } catch (error) {
       await onConfirmError(error);
@@ -262,7 +263,7 @@ export function useCompareBoard() {
     checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
     CustomStyleFields: engine?.CustomStyleFields,
     warnings: evaluation?.warnings ?? [],
-    draftStatus: saved?.board.confirmed && unchanged ? { kind: "confirmed" as const, version: saved.board.confirmed.version } : saved ? draftStatusOf(saved.board) : UNCONFIRMED,
+    draftStatus: saved ? draftStatusOf(saved.board, unchanged) : UNCONFIRMED,
     availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status, unchanged),
     fonts: engine?.fonts ?? [],
     saveStatus: saved?.status ?? "idle",

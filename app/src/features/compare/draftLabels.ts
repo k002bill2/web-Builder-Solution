@@ -11,6 +11,6 @@ export function statusLabel(status: DraftStatus): string {
 export function confirmLabel(status: DraftStatus, confirming: boolean): string {
   if (confirming) return "확정 중…";
   if (status.kind === "unconfirmed") return "프로필 확정 (v1)";
-  const next = status.kind === "changed" ? status.nextVersion : status.version + 1;
+  const next = status.nextVersion ?? status.version + 1;
   return `새 버전으로 확정 (v${next})`;
 }

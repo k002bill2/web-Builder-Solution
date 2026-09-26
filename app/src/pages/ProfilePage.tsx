@@ -77,11 +77,11 @@ function ProfileView({
   const diffTarget = pick(series.versions, params.get("diff"));
   const diff = diffTarget && diffTarget.version !== viewed.version ? diffTarget : undefined;
   const [from, to] = ordered(diff ?? viewed, viewed);
-  // Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다. 문장은 상시 "프로필 알림" 영역으로(A-9), 요청 값이 바뀔 때 한 번
+  // Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다. 문장은 상시 "프로필 알림" 영역으로(A-9), 요청 값이 바뀔 때 한 번(문장이 같아도)
   const missing = requested !== null && !found ? missingVersionText(requested, latest.version) : null;
   useEffect(() => {
     if (missing) announce(missing);
-  }, [missing, announce]);
+  }, [requested, missing, announce]);
 
   const titleOf = (id: string) => sources.get(id)?.title ?? "출처 회수됨";
   const h1 = useRef<HTMLHeadingElement>(null);

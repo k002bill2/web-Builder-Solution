@@ -315,6 +315,17 @@ describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버�
     expect(await screen.findByText("v1을 보고 있습니다 · 현재 v3")).toBeInTheDocument();
     expect(missingCallout(/요청한/)).not.toBeInTheDocument();
   });
+
+  it("F-7 ?v=abc → ?v=0(같은 문장) → 알림을 다시 낸다(key 갱신으로 새 문장 노드)", async () => {
+    const { router } = await openProfile("/profile/profile-1?v=abc", 3);
+    await h1();
+    await announced("요청한 버전이 없어 최신 v3을 보여 줍니다");
+    const region = screen.getByRole("status", { name: "프로필 알림" });
+    const first = region.firstElementChild;
+    await act(() => router.navigate("/profile/profile-1?v=0"));
+    await waitFor(() => expect(region.firstElementChild).not.toBe(first));
+    expect(region).toHaveTextContent("요청한 버전이 없어 최신 v3을 보여 줍니다");
+  });
 });
 
 describe("P-AC-10 되돌리기 (P-S09) · P-AC-37 계측", () => {

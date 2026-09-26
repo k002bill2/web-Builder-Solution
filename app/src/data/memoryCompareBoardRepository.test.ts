@@ -104,8 +104,8 @@ describe("AC-23 저장 경합 — 저장소 revision 조건부", () => {
 
 describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
   it("저장이 끝난 revision으로만 확정한다 — 다르면 STALE_BOARD, Hero가 없으면 UNSUPPORTED_COMBINATION", async () => {
-    expect(await codeOf(repoWith({ hero: "ref-a" }).confirmProfile(0))).toBe("STALE_BOARD");
-    expect(await codeOf(repoWith({ card: "ref-a" }).confirmProfile(1))).toBe("UNSUPPORTED_COMBINATION");
+    expect(await codeOf(repoWith({ hero: "ref-a" }).confirmProfile(0, 0))).toBe("STALE_BOARD");
+    expect(await codeOf(repoWith({ card: "ref-a" }).confirmProfile(1, 0))).toBe("UNSUPPORTED_COMBINATION");
   });
 
   it("AC-24: 확정된 color_tokens는 역할 팔레트 전체이고 보드 대비 검사가 쓴 팔레트와 같다", async () => {
@@ -113,9 +113,9 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
     const board = await repo.savePicks({ hero: "ref-a" }, { primaryColor: "#C9A96E" }, 1);
     const { libraryVersion, results } = await repo.getComparison(board.columns.map((c) => c.referenceId));
     const draft = buildProfileDraft(board, results, libraryVersion);
-    const { profileId } = await repo.confirmProfile(board.revision);
+    const { profileId } = await repo.confirmProfile(board.revision, 0);
     const [v1] = await repo.getProfileVersions(profileId);
-    const stored = v1!.profile.color_tokens;
+    const stored = v1!.base.color_tokens;
     expect(Object.keys(stored).filter((k) => !k.startsWith("$"))).toEqual(["primary", "surface", "ink", "muted", "bg"]);
     expect(draft.status === "ready" && draft.palette).toEqual(derivePalette("#C9A96E", referenceDetailFixtures["ref-a"]!.palette));
     const checked = draft.status === "ready" ? draft.palette : [];
@@ -124,29 +124,32 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
 
   it("AC-25: v1 확정 후 선택을 바꿔 다시 확정하면 같은 프로필의 v2가 생기고 v1은 바뀌지 않는다", async () => {
     const repo = repoWith({ hero: "ref-a" });
-    const v1 = await repo.confirmProfile(1);
+    const v1 = await repo.confirmProfile(1, 0);
     expect(v1).toEqual({ profileId: "profile-1", version: 1 });
     const [record] = await repo.getProfileVersions("profile-1");
     const snapshot = structuredClone(record);
     const changed = await repo.savePicks({ hero: "ref-c" }, {}, 1);
     // 확정 시점 선택 스냅샷은 그 뒤 저장으로 바뀌지 않는다 (S-15 · FIX-R1)
-    expect((await repo.getBoard()).board.confirmed).toEqual({ profileId: "profile-1", version: 1, revision: 1, picks: { hero: "ref-a" }, custom: {} });
-    expect(await repo.confirmProfile(changed.revision)).toEqual({ profileId: "profile-1", version: 2 });
+    expect((await repo.getBoard()).board.confirmed).toEqual({
+      profileId: "profile-1", version: 1, revision: 1, picks: { hero: "ref-a" }, custom: {},
+      latestVersion: 1, latest: { version: 1, base: record!.base, adjustments: {} }, confirmedBase: record!.base,
+    });
+    expect(await repo.confirmProfile(changed.revision, 1)).toEqual({ profileId: "profile-1", version: 2 });
     const versions = await repo.getProfileVersions("profile-1");
     expect(versions.map((v) => v.version)).toEqual([1, 2]);
     expect(versions[0]).toEqual(snapshot);
     expect(Object.isFrozen(versions[0])).toBe(true);
-    expect(versions[1]!.profile.component_choices.hero?.variant).toBe("center");
-    expect(await repo.createProfileVersion("profile-1", changed.revision)).toEqual({ profileId: "profile-1", version: 3 });
-    expect(await codeOf(repo.createProfileVersion("profile-9", changed.revision))).toBe("SCHEMA_INVALID");
+    expect(versions[1]!.base.component_choices.hero?.variant).toBe("center");
+    expect(await repo.createProfileVersion("profile-1", changed.revision, 2)).toEqual({ profileId: "profile-1", version: 3 });
+    expect(await codeOf(repo.createProfileVersion("profile-9", changed.revision, 3))).toBe("SCHEMA_INVALID");
   });
 
   it("R-12: 사업자정보 없는 Footer는 확정 시 같은 모양의 확장 변형으로 저장한다", async () => {
     const repo = repoWith({ hero: "ref-a", footer: "ref-b" });
-    const { profileId } = await repo.confirmProfile(1);
+    const { profileId } = await repo.confirmProfile(1, 0);
     const [v1] = await repo.getProfileVersions(profileId);
-    expect(v1!.profile.component_choices.footer).toEqual({ section: "footer", variant: "minimal-biz" });
-    expect(v1!.profile.section_plan.at(-1)).toEqual({ type: "footer", variant: "minimal-biz" });
+    expect(v1!.base.component_choices.footer).toEqual({ section: "footer", variant: "minimal-biz" });
+    expect(v1!.base.section_plan.at(-1)).toEqual({ type: "footer", variant: "minimal-biz" });
   });
 
   it("AC-26: 라이브러리에 없는 B Footer는 선택 불가 셀이고, 확정 library_version은 getComparison의 libraryVersion이다", async () => {
@@ -160,8 +163,8 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
     expect(libraryVersion).toBe("1.5");
     expect(results[1]!.comparison!.cells.footer).toMatchObject({ label: "현재 라이브러리에 없는 변형", binding: null });
     expect(await codeOf(repo.savePicks({ hero: "ref-a", footer: "ref-b" }, {}, 1))).toBe("UNSUPPORTED_COMBINATION");
-    const { profileId } = await repo.confirmProfile(1);
-    expect((await repo.getProfileVersions(profileId))[0]!.profile.library_version).toBe(libraryVersion);
+    const { profileId } = await repo.confirmProfile(1, 0);
+    expect((await repo.getProfileVersions(profileId))[0]!.base.library_version).toBe(libraryVersion);
   });
 });
 
@@ -169,7 +172,7 @@ describe("확정 시 라이브러리 재검사 (SPEC 8.2 — Codex R2)", () => {
   it("기본값으로 들어간 섹션 변형이 현재 라이브러리에 없으면 UNSUPPORTED_COMBINATION", async () => {
     const library: SectionLibrary = { ...SECTION_LIBRARY, version: "1.5", sections: { ...SECTION_LIBRARY.sections, header: {} } };
     const repo = repoWith({ hero: "ref-a" }, { catalog: FIXTURE_CATALOG, library });
-    expect(await codeOf(repo.confirmProfile(1))).toBe("UNSUPPORTED_COMBINATION");
+    expect(await codeOf(repo.confirmProfile(1, 0))).toBe("UNSUPPORTED_COMBINATION");
   });
 });
 

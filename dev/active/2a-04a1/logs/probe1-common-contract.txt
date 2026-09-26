@@ -1,0 +1,7 @@
+[bundle] 공통 JS (gzip, 참고): 88.69KB
+  - assets/index-WINUu-iS.js 85.36KB
+  - assets/jsx-runtime-Dk72oS4N.js 3.33KB
+[bundle] /catalog 첫 화면 합계: 98.51KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.90KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.85KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.23KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.52KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.14KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.15KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.53KB / 예산 125KB

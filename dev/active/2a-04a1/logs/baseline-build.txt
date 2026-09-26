@@ -1,0 +1,6 @@
+> tsc --noEmit -p tsconfig.json && vite build && node scripts/check-bundle-size.mjs
+[bundle] 공통 JS (gzip, 참고): 88.66KB
+[bundle] /catalog 첫 화면 합계: 98.50KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.88KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.21KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.50KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.97KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.12KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.51KB / 예산 125KB

@@ -1,0 +1,7 @@
+[bundle] 공통 JS (gzip, 참고): 88.69KB
+  - assets/index-A1qPVjgY.js 85.37KB
+  - assets/jsx-runtime-Dk72oS4N.js 3.33KB
+[bundle] /catalog 첫 화면 합계: 98.53KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.92KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.86KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.25KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.53KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.74KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.15KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.54KB / 예산 125KB

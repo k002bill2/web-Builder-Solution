@@ -123,7 +123,7 @@ describe("선택 (P-1·P-2·A-4)", () => {
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(confirmButton());
     const [v1] = await repo.getProfileVersions("profile-1");
-    expect(v1!.profile.section_plan).toEqual(referenceComparisonAttributes["ref-a"]!.sectionPlan);
+    expect(v1!.base.section_plan).toEqual(referenceComparisonAttributes["ref-a"]!.sectionPlan);
   });
 
   it("P-5: 다른 열 선택을 덮어쓰면 '기존 선택 N개를 A로 바꿨습니다 · 되돌리기'", async () => {
@@ -181,7 +181,7 @@ describe("경고 (R-07·R-08·R-12) · 사용자 스타일", () => {
     expect(screen.getByRole("heading", { level: 3, name: "모션 상한 적용" })).toBeInTheDocument();
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(confirmButton());
-    await waitFor(async () => expect((await repo.getProfileVersions("profile-1"))[0]?.profile.motion_preset).toBe("L2"));
+    await waitFor(async () => expect((await repo.getProfileVersions("profile-1"))[0]?.base.motion_preset).toBe("L2"));
   });
 
   it("AC-12·AC-24: 낮은 대비 대표색 → 수치·보정값 쓰기, 확정 가능, 저장된 color_tokens는 역할 팔레트 전체이고 보드가 계산한 색과 같다", async () => {
@@ -196,8 +196,8 @@ describe("경고 (R-07·R-08·R-12) · 사용자 스타일", () => {
     await userEvent.click(confirmButton());
     const [v1] = await repo.getProfileVersions("profile-1");
     const palette = derivePalette(LOW_CONTRAST_PRIMARY, referenceDetailFixtures["ref-a"]!.palette);
-    expect(Object.keys(v1!.profile.color_tokens).filter((k) => !k.startsWith("$")).sort()).toEqual(["bg", "ink", "muted", "primary", "surface"]);
-    for (const { role, hex } of palette) expect(v1!.profile.color_tokens[role].$value).toBe(hex);
+    expect(Object.keys(v1!.base.color_tokens).filter((k) => !k.startsWith("$")).sort()).toEqual(["bg", "ink", "muted", "primary", "surface"]);
+    for (const { role, hex } of palette) expect(v1!.base.color_tokens[role].$value).toBe(hex);
   });
 
   it("AC-12: '보정값 쓰기'를 누르면 대표색 입력이 보정 hex로 바뀌고 대비 경고가 사라진다", async () => {
@@ -276,7 +276,7 @@ describe("회수·한도·권리 경계", () => {
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(confirmButton());
     const { libraryVersion } = await repo.getComparison(THREE);
-    expect((await repo.getProfileVersions("profile-1"))[0]!.profile.library_version).toBe(libraryVersion);
+    expect((await repo.getProfileVersions("profile-1"))[0]!.base.library_version).toBe(libraryVersion);
   });
 
   it("D1: 허용 목록 밖 폰트 셀은 '라이선스 확인 중'이고 선택 버튼이 없다", async () => {
@@ -336,7 +336,7 @@ describe("저장·확정 (S-12~S-17)", () => {
     const saved = await savedBoard(repo);
     expect(saved.picks.hero).toBe("ref-b");
     await userEvent.click(confirmButton());
-    await waitFor(() => expect(confirm).toHaveBeenCalledWith(saved.revision));
+    await waitFor(() => expect(confirm).toHaveBeenCalledWith(saved.revision, 0));
   });
 
   it("S-12: 저장에 실패하면 '저장하지 못했습니다 · 다시 시도'(alert), 다시 시도하면 저장된다", async () => {
@@ -382,7 +382,7 @@ describe("저장·확정 (S-12~S-17)", () => {
     await waitFor(() => expect(screen.getByText("v1 이후 변경됨")).toBeInTheDocument());
     await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v2)" })).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(screen.getByRole("button", { name: "새 버전으로 확정 (v2)" }));
-    await waitFor(() => expect(createVersion).toHaveBeenCalledWith("profile-1", expect.any(Number)));
+    await waitFor(() => expect(createVersion).toHaveBeenCalledWith("profile-1", expect.any(Number), 1));
     const versions = await repo.getProfileVersions("profile-1");
     expect(versions.map((v) => v.version)).toEqual([1, 2]);
     expect(versions[0]).toEqual(v1);

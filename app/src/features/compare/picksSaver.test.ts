@@ -30,8 +30,8 @@ describe("AC-23 저장 직렬화 (클라이언트)", () => {
     const { board, status } = saver.getState();
     expect(status).toBe("saved");
     expect(board).toMatchObject({ picks: { hero: "ref-b" }, revision: 2 });
-    const { profileId } = await repo.confirmProfile(board.revision);
-    expect((await repo.getProfileVersions(profileId))[0]!.profile.component_choices.hero?.variant).toBe("split");
+    const { profileId } = await repo.confirmProfile(board.revision, 0);
+    expect((await repo.getProfileVersions(profileId))[0]!.base.component_choices.hero?.variant).toBe("split");
   });
 
   it("AC-23: 앞 저장 응답이 늦게 와도 연속 저장은 앞 요청이 끝난 뒤 최신 상태 한 번만 보내 최종 보드가 마지막 선택이다", async () => {

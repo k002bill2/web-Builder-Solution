@@ -1,0 +1,59 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a1/app
+
+ ❯ src/features/compare/draftLabels.test.ts (2 tests | 1 failed) 6ms
+   ❯ 확정 버튼 문구 — 버전 계보 (DS-2A-04 6.1-1 · P-AC-11) (2)
+     × 계열 최신이 v2면 바뀐 게 없는 확정됨 상태도 (v3) — 비활성 버튼 라벨이 어긋나지 않는다 3ms
+ ❯ src/domain/compareBoard.test.ts (10 tests | 1 failed) 9ms
+   ❯ 확정 상태 태그 (SPEC 2.4·S-15·S-16) (3)
+     × P-AC-11: 계열 최신(latestVersion)이 있으면 다음 버전 = latestVersion + 1 — 확정됨·변경됨·바뀐 게 없는 재편집 모두 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/compareBoard.test.ts > 확정 상태 태그 (SPEC 2.4·S-15·S-16) > P-AC-11: 계열 최신(latestVersion)이 있으면 다음 버전 = latestVersion + 1 — 확정됨·변경됨·바뀐 게 없는 재편집 모두
+AssertionError: expected { kind: 'confirmed', version: 1 } to deeply equal { kind: 'confirmed', version: 1, …(1) }
+
+- Expected
++ Received
+
+  {
+    "kind": "confirmed",
+-   "nextVersion": 3,
+    "version": 1,
+  }
+
+ ❯ src/domain/compareBoard.test.ts:72:38
+     70|   it("P-AC-11: 계열 최신(latestVersion)이 있으면 다음 버전 = latestVersion + 1 — 확…
+     71|     const confirmed = { ...base, confirmed: { profileId: "p1", version…
+     72|     expect(draftStatusOf(confirmed)).toEqual({ kind: "confirmed", vers…
+       |                                      ^
+     73|     expect(draftStatusOf({ ...confirmed, revision: 5 })).toEqual({ kin…
+     74|     expect(draftStatusOf({ ...confirmed, revision: 5 }, true)).toEqual…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/compare/draftLabels.test.ts > 확정 버튼 문구 — 버전 계보 (DS-2A-04 6.1-1 · P-AC-11) > 계열 최신이 v2면 바뀐 게 없는 확정됨 상태도 (v3) — 비활성 버튼 라벨이 어긋나지 않는다
+AssertionError: expected '새 버전으로 확정 (v2)' to be '새 버전으로 확정 (v3)' // Object.is equality
+
+Expected: "새 버전으로 확정 (v3)"
+Received: "새 버전으로 확정 (v2)"
+
+ ❯ src/features/compare/draftLabels.test.ts:11:84
+      9|
+     10|   it("계열 최신이 v2면 바뀐 게 없는 확정됨 상태도 (v3) — 비활성 버튼 라벨이 어긋나지 않는다", () => {
+     11|     expect(confirmLabel({ kind: "confirmed", version: 1, nextVersion: …
+       |                                                                                    ^
+     12|     expect(statusLabel({ kind: "confirmed", version: 1, nextVersion: 3…
+     13|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 10 passed (12)
+   Start at  14:56:39
+   Duration  622ms (environment 78%, setup 14%, transform 5%, tests 1%, worker 1%, import 1%)
+

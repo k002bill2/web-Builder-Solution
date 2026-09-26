@@ -1,0 +1,43 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/v2-4-compare/app
+
+ ❯ src/components/compare/compareBoardV2.test.tsx (14 tests | 1 failed) 442ms
+   ❯ 열 머리글 (V2-AC-35 · C-10) (3)
+     × D-QA04: '전부 선택' 접근 이름은 보이는 문구로 시작하고 열 문자 + 제목을 붙여 열마다 다르다 (A11Y-AC-16 · 2.5.3) 67ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 열 머리글 (V2-AC-35 · C-10) > D-QA04: '전부 선택' 접근 이름은 보이는 문구로 시작하고 열 문자 + 제목을 붙여 열마다 다르다 (A11Y-AC-16 · 2.5.3)
+AssertionError: expected [ null, null, null ] to deeply equal [ '이 레퍼런스로 전부 선택: A 모던 카페 브랜드', …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "이 레퍼런스로 전부 선택: A 모던 카페 브랜드",
+-   "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱",
+-   "이 레퍼런스로 전부 선택: C 동네 치과 클리닉",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ src/components/compare/compareBoardV2.test.tsx:126:19
+    124|     renderTable();
+    125|     const names = screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선…
+    126|     expect(names).toEqual(["이 레퍼런스로 전부 선택: A 모던 카페 브랜드", "이 레퍼런스로 전부 선…
+       |                   ^
+    127|     for (const name of names) expect(screen.getByRole("button", { name…
+    128|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  13:01:53
+   Duration  1.52s (environment 43%, tests 31%, transform 13%, setup 9%, import 4%)
+

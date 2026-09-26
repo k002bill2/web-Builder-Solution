@@ -1,0 +1,13 @@
+typecheck exit 0
+lint exit 0
+ Test Files  46 passed (46)
+      Tests  520 passed (520)
+dist/assets/boardEngine-B8GAnFaI.js                     12.39 kB │ gzip:  5.59 kB
+dist/assets/CompareBoardPage-D6DcdvFn.js                27.56 kB │ gzip:  9.07 kB
+[bundle] 공통 JS (gzip, 참고): 88.67KB
+[bundle] /catalog 첫 화면 합계: 98.50KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.88KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.21KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.51KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.97KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.12KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.51KB / 예산 125KB
+build exit 0
+[dist] JS 청크 16개 · 공통 88.67 (index 85.34 + jsx-runtime 3.33) · /catalog 98.50 / 100.88 · /references/:id 95.83 / 98.21 · /compare 98.51 / 120.97 · 자리표시 89.12 / 91.51

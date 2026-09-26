@@ -1,0 +1,35 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/v2-4-compare/app
+
+ ❯ src/pages/CompareBoardV2.test.tsx (2 tests | 1 failed) 296ms
+   ❯ 비교 보드 v2 — <768 아코디언 고른 셀 (V2-AC-34) (1)
+     × 고른 셀(li) 전체가 primary-container 면이고 안 고른 셀은 아니다 54ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CompareBoardV2.test.tsx > 비교 보드 v2 — <768 아코디언 고른 셀 (V2-AC-34) > 고른 셀(li) 전체가 primary-container 면이고 안 고른 셀은 아니다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"bg-primary-container"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  bg-primary-container[39m
+Received:
+[31m  flex flex-col gap-2 rounded-md bg-background-alternative p-3[39m
+ ❯ src/pages/CompareBoardV2.test.tsx:42:35
+     40|     const region = await screen.findByRole("region", { name: /^Hero 구성…
+     41|     const cellOf = (column: string) => within(region).getByRole("butto…
+     42|     expect(cellOf("B 프리미엄 헤어살롱")).toHaveClass("bg-primary-container");
+       |                                   ^
+     43|     expect(cellOf("A 모던 카페 브랜드")).not.toHaveClass("bg-primary-containe…
+     44|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  13:08:51
+   Duration  1.58s (environment 43%, transform 20%, tests 20%, import 8%, setup 8%, worker 1%)
+

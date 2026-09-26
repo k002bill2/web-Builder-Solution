@@ -101,7 +101,7 @@ function WarningCallout({ warning, onApplyFix }: { readonly warning: BoardWarnin
 }
 
 /**
- * 프로필 초안 패널 (SPEC 2.4 · 7.2). 초안 목록 · 사용자 스타일 · 경고 · 확정/비우기.
+ * 프로필 초안 패널 (SPEC 2.4 · 7.2 · v2 4.4 흰 면 + 넓은 화면 왼쪽 선). 초안 목록 · 사용자 스타일 · 경고 · 확정/비우기.
  * 확정할 수 없으면 disabled 대신 aria-disabled + 이유 텍스트 연결(A-8) — 누르면 화면이 이유를 다시 알린다.
  */
 export function DraftPanel({
@@ -136,7 +136,7 @@ export function DraftPanel({
   }, [undo]);
 
   return (
-    <section aria-labelledby={headingId} className={cx("flex flex-col gap-4 rounded-lg bg-background-alternative p-5", className)}>
+    <section aria-labelledby={headingId} className={cx("flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6", className)}>
       <div className="flex items-center justify-between gap-2">
         <h2 id={headingId} ref={headingRef} tabIndex={-1} className="ds-heading1 focus:outline-none">
           프로필 초안
@@ -171,7 +171,7 @@ export function DraftPanel({
         );
       })}
       {undo && (
-        <div ref={undoBox} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-surface-elevated px-3.5 py-2.5">
+        <div ref={undoBox} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-fill-normal px-3.5 py-2.5">
           <p className="ds-body3">{undo.message}</p>
           <Button variant="outline" size="sm" onClick={onUndo}>
             되돌리기
@@ -179,13 +179,13 @@ export function DraftPanel({
         </div>
       )}
       {hasPicks ? (
-        <ul aria-label="초안 항목" className="flex flex-col gap-2">
+        <ul aria-label="초안 항목" className="flex flex-col">
           {items.map((item) => (
-            <DraftItem key={item.rowId} rowLabel={item.label} valueLabel={item.valueLabel} source={item.source} note={item.note} swatch={item.swatch} />
+            <DraftItem key={item.rowId} rowLabel={item.label} valueLabel={item.valueLabel} source={item.source} note={item.note} swatch={item.swatch} dot={item.dot} />
           ))}
         </ul>
       ) : (
-        <p className="ds-body3 rounded-md bg-surface-elevated px-3.5 py-3 text-label-alternative">항목에서 '이 요소 선택'을 누르면 여기에 담깁니다</p>
+        <p className="ds-body3 rounded-md bg-fill-normal px-3.5 py-3 text-label-alternative">항목에서 '이 요소 선택'을 누르면 여기에 담깁니다</p>
       )}
       {CustomStyleFields && <CustomStyleFields value={custom} fonts={fonts} checkPrimaryColor={checkPrimaryColor} onChange={onCustomChange} />}
       {warnings.length > 0 && (
@@ -213,7 +213,7 @@ export function DraftPanel({
             {canConfirm.reason}
           </p>
         )}
-        <Button variant="outline" fullWidth onClick={onClear}>
+        <Button variant="assistive" fullWidth onClick={onClear}>
           초안 비우기
         </Button>
       </div>

@@ -1,0 +1,13 @@
+tc 0
+lint 0
+ Test Files  46 passed (46)
+      Tests  517 passed (517)
+dist/assets/boardEngine-D5UFi7-U.js                     12.39 kB │ gzip:  5.59 kB
+dist/assets/CompareBoardPage-BhYPDnJa.js                27.48 kB │ gzip:  9.06 kB
+[bundle] 공통 JS (gzip, 참고): 88.66KB
+[bundle] /catalog 첫 화면 합계: 98.49KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.88KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.21KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.48KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.95KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.12KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.50KB / 예산 125KB
+build 0
+[dist] JS 청크 16개 · 공통 88.66 (index 85.33 + jsx-runtime 3.33) · /catalog 98.49 / 100.88 · /references/:id 95.83 / 98.21 · /compare 98.48 / 120.95 · 자리표시 89.12 / 91.50

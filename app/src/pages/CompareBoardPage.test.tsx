@@ -59,7 +59,7 @@ describe("진입·빈 보드 (S-01·S-03·A-7)", () => {
     expect(screen.getAllByRole("columnheader")).toHaveLength(1);
     expect(allPicks()).toHaveLength(0);
     expect(screen.getByText(/하나 더 담으면 항목별로 골라 조합할 수 있습니다/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "이 레퍼런스로 프로필 만들기" }));
+    await userEvent.click(screen.getByRole("button", { name: /^이 레퍼런스로 프로필 만들기/ }));
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
   });
 
@@ -116,7 +116,7 @@ describe("선택 (P-1·P-2·A-4)", () => {
   it("AC-07: A 열 '전부 선택'이면 선택 가능한 10행이 모두 A이고 확정 결과 section_plan이 A의 sectionPlan과 같다", async () => {
     const repo = boardRepo();
     await openBoard(repo);
-    await userEvent.click(screen.getAllByRole("button", { name: "이 레퍼런스로 전부 선택" })[0]!);
+    await userEvent.click(screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ })[0]!);
     const pressed = allPicks().filter((b) => b.getAttribute("aria-pressed") === "true");
     expect(pressed).toHaveLength(10);
     expect(pressed.every((b) => /A 모던 카페 브랜드/.test(b.getAttribute("aria-label") ?? ""))).toBe(true);
@@ -128,7 +128,7 @@ describe("선택 (P-1·P-2·A-4)", () => {
 
   it("P-5: 다른 열 선택을 덮어쓰면 '기존 선택 N개를 A로 바꿨습니다 · 되돌리기'", async () => {
     await openBoard(boardRepo(THREE, { hero: "ref-b", card: "ref-b" }));
-    await userEvent.click(screen.getAllByRole("button", { name: "이 레퍼런스로 전부 선택" })[0]!);
+    await userEvent.click(screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ })[0]!);
     expect(screen.getByText("기존 선택 2개를 A로 바꿨습니다", { ignore: "[role=status] *" })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "되돌리기" }));
     expect(pick("Hero 구성", "B 프리미엄 헤어살롱")).toHaveAttribute("aria-pressed", "true");

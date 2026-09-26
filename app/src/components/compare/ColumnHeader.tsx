@@ -14,6 +14,7 @@ const UNAVAILABLE_REASON: Readonly<Record<Exclude<ColumnStatus, "available">, st
 /**
  * 비교 열 머리글 (SPEC 2.2 · S-08 · S-09 · S-18). 제목은 2줄 말줄임 + title에 전체.
  * 버튼 2개("전부 선택"·빼기)는 일반 Tab 순서(A-6). 회수·삭제된 열은 "사용 불가" + 사유, 전부 선택 없음.
+ * "전부 선택" 이름 = 보이는 문구 + ": <열 문자> <제목>"(D-QA04 · WCAG 2.5.3) — 열마다 다르게 읽힌다.
  */
 export function ColumnHeader({
   column,
@@ -74,7 +75,13 @@ export function ColumnHeader({
         <p className="ds-caption1 text-label-neutral">{UNAVAILABLE_REASON[column.status as keyof typeof UNAVAILABLE_REASON]}</p>
       ) : (
         canPickAll && (
-          <Button variant="outline" size="sm" aria-disabled={disabled || undefined} onClick={() => !disabled && onPickAll()}>
+          <Button
+            variant="assistive"
+            size="sm"
+            aria-label={`${pickAllLabel}: ${column.label} ${column.title}`}
+            aria-disabled={disabled || undefined}
+            onClick={() => !disabled && onPickAll()}
+          >
             {pickAllLabel}
           </Button>
         )

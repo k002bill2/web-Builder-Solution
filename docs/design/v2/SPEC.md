@@ -575,6 +575,7 @@ r2 원본은 1a-01과 같은 "왼쪽 레일 + 결과" 구조로 돌아왔다. �
 | `components/catalog/ReferenceCard.test.tsx` | "비교 중" **보이는 글자**(아이콘 버튼이 되면 사라짐), Tag로 그린 태그 | V2-2 | 접근 이름·`aria-pressed` 단언으로, 태그는 캡션 글자 |
 | `pages/ReferenceDetailPage.test.tsx` | `tablist`·`tab`·`tabpanel`, `?tab=` URL | V2-3 | 정보 패널 섹션·`view` URL·호환 |
 | `components/compare/ComparisonTable.test.tsx`·`DraftPanel.test.tsx`·`pages/CompareBoardPage.test.tsx` | 표시 방식만 바뀌므로 **깨지지 않아야 한다**("이 요소 선택"·"선택됨"·접근 이름 유지). 상태 태그 톤을 단언하는 곳이 있으면 그 줄만 | V2-4 | 깨지면 설계 위반 신호 — Designer 확인 |
+| `ComparisonTable.test.tsx`·`CompareBoardPage.test.tsx`·`CompareBoardResponsive.test.tsx` (**V2-4 사후 추가**, 영환님 승인 2026-09-26) | "이 레퍼런스로 전부 선택"을 **정확한 이름**으로 찾는 쿼리 8줄 — D-QA04 이름(`이 레퍼런스로 전부 선택: <열 문자> <제목>`, V2-AC-35·A11Y-01 7절)이 바꾸므로 깨지는 것이 설계상 필연인데 이 표에서 빠져 있었다 | V2-4 | 이름 쿼리만 교체(한 줄은 앞 고정 정규식 — 빈 통과 방지). 다른 단언 변경 0. 커밋 `e9f9df6` 단독 |
 
 ### 6.4 단계별 목업 차이 기록
 각 단계 PROGRESS에 4.5 표의 C-번호를 한 줄씩 인용한다(ADR-003 적용 규칙).

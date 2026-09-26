@@ -15,24 +15,27 @@ async function addToTray(...names: string[]) {
   for (const name of names) await userEvent.click(screen.getByRole("button", { name: `${name} 비교 추가` }));
 }
 
-describe("비교 트레이 칩 제거 후 포커스 (QA-1A-01 D07)", () => {
-  it("다음 칩 → 이전 칩 → 트레이 영역 순으로 포커스가 이동한다", async () => {
+describe("비교 필 목록 제거 후 포커스 (QA-1A-01 D07 → v2 C-05 변형)", () => {
+  it("다음 항목 → 이전 항목 → 펼침 버튼 순으로 포커스가 이동한다", async () => {
     renderApp("/catalog");
     await expectCardCount(6);
     await addToTray("동네 치과 클리닉", "부티크 법률사무소", "모던 카페 브랜드");
+    const toggle = within(tray()).getByRole("button", { name: "비교 보드 3 / 6" });
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
 
-    // 가운데 칩 제거 → 다음 칩(모던 카페 브랜드)
+    // 가운데 항목 제거 → 다음 항목(모던 카페 브랜드)
     within(tray()).getByRole("button", { name: "부티크 법률사무소 비교에서 제거" }).focus();
     await userEvent.keyboard("{Enter}");
     expect(within(tray()).getByRole("button", { name: "모던 카페 브랜드 비교에서 제거" })).toHaveFocus();
 
-    // 마지막 칩 제거 → 이전 칩(동네 치과 클리닉)
+    // 마지막 항목 제거 → 이전 항목(동네 치과 클리닉)
     await userEvent.keyboard("{Enter}");
     expect(within(tray()).getByRole("button", { name: "동네 치과 클리닉 비교에서 제거" })).toHaveFocus();
 
-    // 하나 남은 칩 제거 → 트레이 영역
+    // 하나 남은 항목 제거 → 펼침 버튼("비교 보드 0 / 6")
     await userEvent.keyboard("{Enter}");
-    expect(tray()).toHaveFocus();
+    expect(within(tray()).getByRole("button", { name: "비교 보드 0 / 6" })).toHaveFocus();
     expect(document.body).not.toHaveFocus();
   });
 });

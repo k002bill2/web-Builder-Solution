@@ -147,3 +147,12 @@ typecheck exit 0
 ## FIX-L4A 3 GREEN (슬롯 값 undefined 단언은 GREEN 단계에서 추가 — 한 줄 되돌려 RED 1 확인 후 복원)
  Test Files  10 passed (10)
       Tests  163 passed (163)
+
+## FIX-L4A 1 정규식 변이 확인 (LOCAL_IMAGE_ID → /^[\s\S]+$/ 임시)
+     × 로컬 이미지 참조 v1 UUID 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 2ms
+     × 로컬 이미지 참조 variant 자리 틀림 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 대문자 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  3 failed | 42 passed (45)
+## 복원 GREEN
+      Tests  45 passed (45)

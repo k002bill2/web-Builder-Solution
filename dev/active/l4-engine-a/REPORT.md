@@ -31,7 +31,7 @@
 - 타입 전용 파일(`contracts/`)은 테스트 대상 코드가 없어 RED 단계 대신 `tsc --noEmit` 통과로 확인했다.
 - 입력 불변: 모든 연산 테스트의 입력은 `deepFreeze` 문서(`testing/sampleDoc.ts`) — ESM strict 모드라 바꾸면 throw.
 
-## 3. 파일 (`app/src/engine/`, 31개 · engine 밖 제품 코드 변경 0)
+## 3. 파일 (`app/src/engine/`, 31개 · engine 밖 제품 코드 변경 0) — 10절에서 `validate/hostileInput.test.ts` 추가로 32개
 
 | 폴더 | 파일 | 역할 |
 |---|---|---|
@@ -80,7 +80,7 @@
 | `hashDoc` | 구현 | 동기 · `fnv1a64:<16진 16자>` · `hash`·`revision`·`updatedAt` 제외 |
 | `defaultProjectName` | 해당 없음 | 화면 레인 |
 
-- 연산 오류: `EngineOpError(code)` — `NOT_FOUND`·`NOT_ALLOWED`·`UNKNOWN_VARIANT`·`BAD_ID`·`UNKNOWN_SLOT`·`SLOT_KIND`·`BAD_VALUE`. 막힌 조작은 `rules.ts`의 같은 함수로 판정한다(규칙 한 곳). `removeSection`은 구조 규칙(Header·Hero·Footer)만 막고, 목적 규칙(R-03·R-04)은 화면이 `canRemove(doc, id, purpose)`로 먼저 막는다.
+- 연산 오류: `EngineOpError(code)` — `NOT_FOUND`·`NOT_ALLOWED`·`UNKNOWN_VARIANT`·`BAD_ID`·`UNKNOWN_SLOT`·`SLOT_KIND`·`BAD_VALUE`. 막힌 조작은 `rules.ts`의 같은 함수로 판정한다(규칙 한 곳). ~~`removeSection`은 구조 규칙(Header·Hero·Footer)만 막고, 목적 규칙(R-03·R-04)은 화면이 `canRemove(doc, id, purpose)`로 먼저 막는다.~~ → 10절에서 변경: `removeSection(doc, id, purpose)`가 `canRemove` 전체 판정을 강제한다.
 - 연산은 `revision`·`updatedAt`·`hash`를 바꾸지 않는다(저장소 몫 — `Date.now` 0).
 
 ### 이유 문장 (`ops/reasons.ts`, `reasons.test.ts`가 SPEC 원문과 따옴표 포함 대조)
@@ -189,6 +189,7 @@
 | 1 로컬 이미지 source | vitest 2 실패(UUID 문자열 통과 · 옛 `{kind:"local"}` 거부) + typecheck 1(`string` → `ImageSource` 불가) | 140 통과 · typecheck 0 |
 | 2 removeSection 목적 | vitest 3 실패(R-04 · R-03 · 목적 누락 `BAD_VALUE`) + typecheck(인자 3개 불가) | 143 통과 · typecheck 0 |
 | 3 검증기 throw 0 | vitest 15 실패(getter 5 · Proxy 9 · ownKeys 거짓말 1). **순환·깊이 초과·`validateProjectName` 3종은 RED 전부터 GREEN**(스키마를 따라 읽는 구조라 재귀가 없다 — 테스트만 추가) | 163 통과 |
+- 로컬 이미지 거부 문자열 11종은 구현 전에도 "객체 아님"으로 거부돼 RED가 아니었다. 정규식 변이(`LOCAL_IMAGE_ID` → `/^[\s\S]+$/` 임시)로 **3건 FAIL**(v1 UUID · variant 자리 틀림 · 대문자) 확인 → 복원 GREEN(`tdd-log.txt`). 나머지 8종은 길이 36 규칙에서 거부된다.
 - 슬롯 값 `undefined` 단언은 GREEN 단계에서 추가 → 해당 한 줄을 되돌려 RED 1 확인 → 복원 GREEN.
 
 ### 10.3 테스트 이름
@@ -217,7 +218,7 @@
 | 발급·비재사용 | 명시 없음 | 계약 주석: 발급 = 화면 이미지 보관소 `crypto.randomUUID()` · 엔진은 형식 검증만(id를 만들지 않음) · 보관소를 비워도 재사용 금지 · `blob:`·data·URL 저장 금지 | 5.9 |
 | 플레이스홀더 모양 | `{kind:"placeholder", patternId}` | 그대로(SPEC이 모양을 정하지 않음 — 충돌 아님) | 8.1 |
 | `removeSection` | `(doc, id)` — 목적 `"none"` 고정 | `(doc, id, purpose: Purpose)` 필수 · `canRemove` 전체 판정 강제 · 모르는 목적 → `BAD_VALUE` | 5.4 · 8.2 (8.2 표는 `removeSection(doc, instanceId)` — 인자 1개 추가, 개정 요청) |
-| 경계 검증 | `Object.keys`·`rec[key]` 직접 읽기 | 자기 데이터 속성 사본을 1회만 읽음 · 접근자·심볼 키 거부 · 반사 예외 → 문제 · `neverThrow` 안전망 · 값 `undefined` = 누락 · 배열도 사본(구멍 = undefined → 거부, P2-2 유지) · 배열에 원소 아닌 키 거부 | 8.2 경계 검증 · 8.3 `SCHEMA_INVALID` |
+| 경계 검증 | `Object.keys`·`rec[key]` 직접 읽기 | 자기 데이터 속성 사본을 1회만 읽음 · 접근자·심볼 키 거부 · 반사 예외 → 문제 · `neverThrow` 안전망 · 값 `undefined` = 누락 · 배열도 사본(구멍 = undefined → 거부, P2-2 유지) · 배열에 원소 아닌 키 거부 · 깊이 상한 상수는 두지 않음 — 스키마를 따라 읽고 재귀가 없어 최대 깊이 = 6단(`$ → sections → [i] → slots → image → source`), 그보다 깊은 값은 그 자리 모양 검사에서 거부 | 8.2 경계 검증 · 8.3 `SCHEMA_INVALID` |
 
 ### 10.7 설계 질문
 | # | 질문 | 지금 구현 |
@@ -225,3 +226,4 @@
 | Q-11 | SPEC 8.2 `removeSection(doc, instanceId)` 서명에 `purpose`를 더하는 개정 승인 | 3번째 인자 필수 |
 | Q-12 | `setSlot`은 이미지 `source` 형식을 검사하지 않는다 — 형식 오류는 저장 경계(`saveDoc` → `validatePageDoc`)에서 걸린다. 연산에서도 `LOCAL_IMAGE_ID`로 막을지 | 검사 안 함(타입 `LocalImageId`로만) |
 | Q-13 | 대문자 UUID 거부(소문자만)가 맞는지 — 서버 저장소가 생기면 정규화 규칙 필요 | 소문자만 |
+| Q-14 | `swapVariant`로 예약 목적의 유일한 `contact/booking`을 `form`으로 바꾸면 R-04를 같은 방식으로 우회한다(j1 중간 메시지 "삭제·변형 경로"). 변형 교체에도 목적 판정을 걸지 | 브리프 범위(`removeSection`) 밖이라 안 고침 |

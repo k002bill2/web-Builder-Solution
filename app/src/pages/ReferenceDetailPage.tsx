@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { LICENSE_TONE } from "../components/catalog/referenceDisplay";
-import { MobilePanel, ScoresPanel, SectionsPanel, TokensPanel } from "../components/detail/DetailPanels";
-import { ScoreActionsCard, SimilarReferences } from "../components/detail/DetailSidebar";
+import { MobileStructure, ScoreHistory, SectionsList, TokenSummary } from "../components/detail/DetailPanels";
+import { DetailActions, ScoreTiles, SimilarReferences, type DetailNotice } from "../components/detail/DetailSidebar";
 import { ReferencePreview } from "../components/detail/ReferencePreview";
 import { Icon } from "../components/ds/Icon";
+import { SegmentedControl } from "../components/ds/SegmentedControl";
 import { LoadingState } from "../components/layout/LoadingState";
-import { Tabs } from "../components/ds/Tabs";
 import { Tag, type TagTone } from "../components/ds/Tag";
 import type { DesignReference } from "../domain/reference";
 import type { ReferenceDetail } from "../domain/referenceDetail";
@@ -17,17 +17,13 @@ import {
   PURPOSE_LABELS,
   VISUAL_TAG_LABELS,
 } from "../fixtures/catalogFilters";
-import { COMPARE_LIMIT_NOTICE } from "../features/compare/compareTray";
 import { useCompareTray } from "../features/compare/CompareTrayContext";
-import { DETAIL_TABS, parseDetailTab, toDetailTabParams, type DetailTab } from "../features/detail/detailTabs";
+import { parsePreviewView, PREVIEW_VIEWS, toPreviewViewParams } from "../features/detail/previewView";
 import { useReferenceDetail } from "../features/detail/useReferenceDetail";
 import { useSavedReferences } from "../features/saved/SavedReferencesContext";
 
-const TEMPLATE_NOTICE = "템플릿으로 가져오기는 다음 단계(디자인 프로필)에서 제공됩니다.";
 /** 목업은 첫 콘셉트 태그 blue, 둘째 orange. */
 const VISUAL_TAG_TONES: readonly TagTone[] = ["blue", "orange"];
-const TAB_ITEMS = DETAIL_TABS.map((t) => ({ value: t.id, label: t.label }));
-const PANELS = { sections: SectionsPanel, tokens: TokensPanel, mobile: MobilePanel, scores: ScoresPanel } as const;
 
 function Breadcrumb() {
   return (
@@ -46,28 +42,34 @@ function Breadcrumb() {
 function DetailHeader({ reference: r, detail }: { readonly reference: DesignReference; readonly detail: ReferenceDetail }) {
   const meta = [INDUSTRY_LABELS[r.industry], LAYOUT_LABELS[r.layoutType], `${detail.audienceNote} 타깃`, detail.buildNote];
   return (
-    <>
-      <div className="flex flex-wrap items-center gap-2.5">
-        <h1 className="ds-title1">{r.title}</h1>
+    <div>
+      <div className="flex flex-wrap items-center gap-2">
+        <h1 className="ds-title2">{r.title}</h1>
         <Tag tone={LICENSE_TONE[r.licenseStatus]} size="sm">
           {r.licenseStatus}
         </Tag>
       </div>
-      <p className="ds-body2 mt-1 text-label-alternative">{meta.join(" · ")}</p>
-      <div className="mt-3.5 flex flex-wrap gap-1.5">
-        {r.visualTags.map((t, i) => (
-          <Tag key={t} tone={VISUAL_TAG_TONES[i] ?? "neutral"}>
-            {VISUAL_TAG_LABELS[t]}
-          </Tag>
-        ))}
-        {r.purpose.map((p) => (
-          <Tag key={p} variant="outline">
-            {PURPOSE_LABELS[p]} 유도
-          </Tag>
-        ))}
-        <Tag variant="outline">모션 {MOTION_LABELS[r.motionLevel]}</Tag>
-      </div>
-    </>
+      <p className="ds-caption1 mt-1 text-label-alternative">{meta.join(" · ")}</p>
+    </div>
+  );
+}
+
+/** 콘셉트·목적·모션 태그 — 목업의 FilterChip 대신 비대화형 Tag (C-11: 눌리는 것처럼 보이지 않게). */
+function DetailTags({ reference: r }: { readonly reference: DesignReference }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {r.visualTags.map((t, i) => (
+        <Tag key={t} tone={VISUAL_TAG_TONES[i] ?? "neutral"}>
+          {VISUAL_TAG_LABELS[t]}
+        </Tag>
+      ))}
+      {r.purpose.map((p) => (
+        <Tag key={p} variant="outline">
+          {PURPOSE_LABELS[p]} 유도
+        </Tag>
+      ))}
+      <Tag variant="outline">모션 {MOTION_LABELS[r.motionLevel]}</Tag>
+    </div>
   );
 }
 
@@ -84,7 +86,7 @@ function NotFound() {
   );
 }
 
-/** 1a-02 레퍼런스 상세 (목업 126~183행, FR-CAT-03). 탭 상태의 원본은 URL 쿼리 `tab`. */
+/** 2a-02 레퍼런스 상세 (v2 SPEC 4.3, FR-CAT-03). 미리보기 폭의 원본은 URL 쿼리 `view`(옛 `tab=mobile` 호환). */
 export function ReferenceDetailPage() {
   const { id = "" } = useParams();
   const state = useReferenceDetail(id);
@@ -100,55 +102,61 @@ function ReferenceDetailView({
   similar,
 }: Extract<ReturnType<typeof useReferenceDetail>, { status: "ready" }>) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const tab = parseDetailTab(searchParams.get("tab"));
+  const view = parsePreviewView(searchParams);
   const { saved, toggle: toggleSaved } = useSavedReferences();
   const { tray, add, remove } = useCompareTray();
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<DetailNotice | null>(null);
   const inTray = tray.includes(r.id);
-  const Panel = PANELS[tab];
 
   const toggleCompare = () => {
     if (inTray) {
       remove(r.id);
-      setNotice(null);
+      setNotice("removed");
       return;
     }
     const result = add(r.id);
-    setNotice(result.ok ? null : result.reason === "limit" ? COMPARE_LIMIT_NOTICE : null);
+    setNotice(result.ok ? "added" : result.reason === "limit" ? "limit" : null);
   };
 
   return (
-    <div className="px-4 pt-4 pb-12 md:px-7">
-      <Breadcrumb />
-      <div className="mt-2 grid gap-8 lg:grid-cols-[minmax(0,1fr)_--spacing(85)]">
-        <div className="min-w-0">
-          <DetailHeader reference={r} detail={detail} />
-          <ReferencePreview reference={r} />
-          <div className="mt-6">
-            <Tabs<DetailTab>
-              label="상세 보기"
-              items={TAB_ITEMS}
-              value={tab}
-              onChange={(next) => setSearchParams(toDetailTabParams(next), { replace: true })}
+    <div className="mx-auto max-w-(--layout-max-width) pb-12">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_--spacing(95)]">
+        <div className="flex min-w-0 flex-col gap-3.5 bg-background-alternative px-4 py-4 md:px-7 lg:py-7">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Breadcrumb />
+            <SegmentedControl
+              label="미리보기 폭"
+              size="sm"
+              options={PREVIEW_VIEWS}
+              value={view}
+              onChange={(next) => setSearchParams(toPreviewViewParams(next), { replace: true })}
             />
           </div>
-          <div role="tabpanel" aria-label={DETAIL_TABS.find((t) => t.id === tab)?.label} className="mt-5">
-            <Panel reference={r} detail={detail} />
-          </div>
+          <ReferencePreview reference={r} view={view} />
+          {view === "mobile" && <MobileStructure detail={detail} />}
         </div>
-        <aside aria-label="점수·유사 레퍼런스" className="flex flex-col gap-4 lg:sticky lg:top-4 lg:self-start">
-          <ScoreActionsCard
-            reference={r}
-            detail={detail}
+        <section
+          aria-label="레퍼런스 정보"
+          className="flex min-w-0 flex-col gap-5.5 px-4 py-6 md:px-7 lg:border-l lg:border-line-neutral lg:py-7"
+        >
+          <DetailHeader reference={r} detail={detail} />
+          <ScoreTiles reference={r} detail={detail} />
+          <DetailTags reference={r} />
+          <SectionsList detail={detail} />
+          <TokenSummary detail={detail} />
+          <DetailActions
             saved={saved.has(r.id)}
             inTray={inTray}
             notice={notice}
-            onImportTemplate={() => setNotice(TEMPLATE_NOTICE)}
+            onImportTemplate={() => setNotice("template")}
             onToggleSave={() => toggleSaved(r.id)}
             onToggleCompare={toggleCompare}
           />
-          <SimilarReferences groups={similar} />
-        </aside>
+        </section>
+      </div>
+      <div className="grid gap-8 border-t border-line-neutral px-4 pt-7 md:px-7">
+        <SimilarReferences groups={similar} />
+        <ScoreHistory reference={r} detail={detail} />
       </div>
     </div>
   );

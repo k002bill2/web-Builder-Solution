@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
-import type { Picks } from "../domain/compareBoard";
+import type { CompareBoard, Picks } from "../domain/compareBoard";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
@@ -29,9 +29,9 @@ function setViewport(width: number) {
   }) as typeof window.matchMedia;
 }
 
-async function openAt(width: number, picks: Picks = {}) {
+async function openAt(width: number, picks: Picks = {}, extra: Partial<CompareBoard> = {}) {
   setViewport(width);
-  const repo = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(THREE, picks) });
+  const repo = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(THREE, picks, extra) });
   renderApp("/compare", createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), repo);
   await screen.findByRole("heading", { level: 1, name: "비교 보드" });
 }
@@ -97,11 +97,23 @@ describe("768~1279 표 + 하단 요약 바 (SPEC 5.2)", () => {
   it("요약 바의 확정도 같은 조건(aria-disabled + 이유)을 따른다", async () => {
     await openAt(1024);
     const bar = await screen.findByRole("region", { name: "초안 요약" });
-    const confirm = within(bar).getByRole("button", { name: "프로필 확정" });
+    const confirm = within(bar).getByRole("button", { name: "프로필 확정 (v1)" });
     expect(confirm).toHaveAttribute("aria-disabled", "true");
     expect(confirm).toHaveAccessibleDescription("Hero를 하나 고르면 확정할 수 있습니다");
     await userEvent.click(confirm);
     await waitFor(() => expect(screen.getByRole("status", { name: "선택 알림" })).toHaveTextContent("Hero를 하나 고르면 확정할 수 있습니다"));
+  });
+});
+
+describe("요약 바 확정 문구 = 패널 문구 (D-V2F-01)", () => {
+  it.each([768, 390])("%ipx: v1 확정 뒤 바뀌면 요약 바도 패널처럼 '새 버전으로 확정 (v2)'", async (width) => {
+    await openAt(width, { hero: "ref-b" }, { revision: 2, confirmed: { profileId: "profile-1", version: 1, revision: 1, picks: { hero: "ref-a" } } });
+    const bar = await screen.findByRole("region", { name: "초안 요약" });
+    const inBar = within(bar).getByRole("button", { name: "새 버전으로 확정 (v2)" });
+    const all = screen.getAllByRole("button", { name: "새 버전으로 확정 (v2)" });
+    expect(all).toHaveLength(2);
+    expect(all).toContain(inBar);
+    expect(inBar).not.toHaveAttribute("aria-disabled");
   });
 });
 

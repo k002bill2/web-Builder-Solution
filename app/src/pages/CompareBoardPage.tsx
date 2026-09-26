@@ -199,6 +199,7 @@ export function CompareBoardPage() {
               pickedCount={board.items.filter((i) => i.source.kind === "pick" || i.source.kind === "custom").length}
               total={board.items.length}
               warningCount={board.warnings.filter((w) => w.tone === "warning").length}
+              status={board.draftStatus}
               canConfirm={board.availability}
               confirming={board.confirming}
               onShowDraft={() => draftHeading.current?.focus()}

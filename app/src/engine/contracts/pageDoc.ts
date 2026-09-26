@@ -37,12 +37,13 @@ export interface PlaceholderSource {
 }
 
 /**
- * 로컬 이미지 참조 id (SPEC r1 5.9 · 8.1) — UUID v4 문자열(소문자, `crypto.randomUUID()` 모양).
- *  - 발급: 화면의 이미지 보관소가 `crypto.randomUUID()`로 만든다. 엔진은 id를 만들지 않고 형식만 검증한다(validatePageDoc).
+ * 로컬 이미지 참조 id (SPEC r1 5.9 · 8.1 · r3 Q-13) — UUID v4 문자열(소문자, `crypto.randomUUID()` 모양). 브랜드 타입(Codex j2 low):
+ * 값은 `parseLocalImageId`(engine/validate/localImageId)와 validatePageDoc 결과로만 생긴다 — 평범한 문자열은 넣을 수 없다.
+ *  - 발급: 화면의 이미지 보관소가 `crypto.randomUUID()`로 만들고 `parseLocalImageId`로 바꾼다. 엔진은 id를 만들지 않고 형식만 검증한다.
  *  - 비재사용: 한 번 쓴 id는 다시 쓰지 않는다 — 보관소를 비워도 재사용하지 않는다(잃은 슬롯·옛 스냅샷에 새 이미지가 끼어들지 않게, 5.9).
  *  - object URL(`blob:`)·data URL·외부 URL은 문서·스냅샷·저장 요청 어디에도 넣지 않는다(5.9 · PRD 원칙 4).
  */
-export type LocalImageId = `${string}-${string}-${string}-${string}-${string}`;
+export type LocalImageId = string & { readonly __brand: "LocalImageId" };
 
 /** 이미지 출처 = SPEC 8.1 `source`: 자체 플레이스홀더 | 로컬 이미지 참조(값 = 로컬 id 문자열 자체) */
 export type ImageSource = PlaceholderSource | LocalImageId;

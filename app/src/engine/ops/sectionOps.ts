@@ -9,7 +9,7 @@ import { defaultSlotValue, defaultSlots } from "../sections/defaults";
 import { getSectionDefinition } from "../sections/registry";
 import { diffSlots } from "./diff";
 import { EngineOpError, INSTANCE_ID, indexOfSection, sectionAt } from "./errors";
-import { canAdd, canMove, canRemove, type MoveDirection, type Permission, type Purpose } from "./rules";
+import { canAdd, canMove, canRemove, canSwapVariant, type MoveDirection, type Permission, type Purpose } from "./rules";
 
 const MOTION_ORDER: readonly SectionMotion[] = ["L0", "L1", "L2"];
 const minMotion = (...motions: SectionMotion[]): SectionMotion =>
@@ -79,12 +79,14 @@ export interface RemovedSection {
 
 const PURPOSES: readonly Purpose[] = ["booking", "inquiry", "sales", "none"];
 
-/**
- * canRemove 전체 판정(구조 R-01·R-02 + 목적 R-03·R-04)을 강제한다 — 목적은 필수 인자(기본값 없음).
- * 목적이 없는 문서는 부르는 쪽이 "none"을 명시한다(구조 규칙만).
- */
-export function removeSection(doc: PageDoc, instanceId: string, purpose: Purpose): { readonly doc: PageDoc; readonly undo: RemovedSection } {
+/** 목적은 필수 인자(기본값 없음) — 목적이 없는 문서는 부르는 쪽이 "none"을 명시한다(구조 규칙만) */
+function assertPurpose(purpose: Purpose): void {
   if (!PURPOSES.includes(purpose)) throw new EngineOpError("BAD_VALUE", `모르는 목적: ${String(purpose)}`);
+}
+
+/** canRemove 전체 판정(구조 R-01·R-02 + 목적 R-03·R-04)을 강제한다 */
+export function removeSection(doc: PageDoc, instanceId: string, purpose: Purpose): { readonly doc: PageDoc; readonly undo: RemovedSection } {
+  assertPurpose(purpose);
   assertAllowed(canRemove(doc, instanceId, purpose));
   const index = indexOfSection(doc, instanceId);
   return { doc: withSections(doc, doc.sections.filter((_, i) => i !== index)), undo: { section: doc.sections[index]!, index } };
@@ -103,11 +105,16 @@ export function moveSection(doc: PageDoc, instanceId: string, direction: MoveDir
   return { doc: withSections(doc, sections), index: to };
 }
 
-/** 같은 키·같은 종류 슬롯 값은 유지, 잃은 키 목록을 돌려준다(5.5 — diffSlots와 같은 판정) */
-export function swapVariant(doc: PageDoc, instanceId: string, variant: string) {
+/**
+ * 같은 키·같은 종류 슬롯 값은 유지, 잃은 키 목록을 돌려준다(5.5 — diffSlots와 같은 판정).
+ * 목적 필수 조건은 canSwapVariant로 강제한다(8.2 r3 Q-14) — 검사 순서: 목적 → 없는 id → 모르는 변형 → 목적 판정.
+ */
+export function swapVariant(doc: PageDoc, instanceId: string, variant: string, purpose: Purpose) {
+  assertPurpose(purpose);
   const current = sectionAt(doc, instanceId);
   const from = definitionOf(current.type, current.variant);
   const to = definitionOf(current.type, variant);
+  assertAllowed(canSwapVariant(doc, instanceId, variant, purpose));
   const diff = diffSlots(from.slots, to.slots);
   const keptKeys = new Set(diff.kept.map((e) => e.key));
   const slots = Object.fromEntries(

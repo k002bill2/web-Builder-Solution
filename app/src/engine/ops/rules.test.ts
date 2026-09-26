@@ -1,6 +1,6 @@
 import { ids, sampleDoc, section, withSections } from "../testing/sampleDoc";
 import { REASONS } from "./reasons";
-import { canAdd, canMove, canRemove } from "./rules";
+import { canAdd, canMove, canRemove, canSwapVariant } from "./rules";
 
 const doc = sampleDoc();
 const denied = (reason: string) => ({ ok: false, reason });
@@ -105,5 +105,41 @@ describe("canRemove (5.4 표)", () => {
   it("header가 둘이면 여분은 지울 수 있다", () => {
     const twoHeaders = withSections(doc, [section("header", "transparent", "s-header-2"), ...doc.sections]);
     expect(canRemove(twoHeaders, "s-header-2", "none")).toEqual(ALLOWED);
+  });
+});
+
+describe("canSwapVariant (8.2 r3 Q-14 — 목적 필수 조건 R-03·R-04를 canRemove와 같은 판정으로)", () => {
+  const booking = withSections(doc, doc.sections.map((s) => (s.type === "contact" ? { ...s, variant: "booking" } : s)));
+
+  it("목적 '예약' — 유일한 예약 변형을 다른 변형으로 바꾸면 막힘(이유 = 5.4 R-04 문장)", () => {
+    expect(canSwapVariant(booking, "s-contact", "form", "booking")).toEqual(denied(REASONS.removeBooking));
+    expect(canSwapVariant(booking, "s-contact", "booking", "booking")).toEqual(ALLOWED); // 같은 변형 = 조건 유지
+  });
+
+  it("같은 목적에 예약 변형이 둘이면 하나는 바꿀 수 있다", () => {
+    const two = withSections(booking, [...booking.sections.slice(0, -1), section("contact", "booking", "s-contact-2"), booking.sections.at(-1)!]);
+    expect(canSwapVariant(two, "s-contact", "form", "booking")).toEqual(ALLOWED);
+  });
+
+  it("예약 변형으로 바꾸기 · 예약 변형이 원래 없는 문서의 교체 · 상관없는 섹션 교체는 막지 않는다", () => {
+    expect(canSwapVariant(doc, "s-contact", "booking", "booking")).toEqual(ALLOWED);
+    expect(canSwapVariant(doc, "s-hero", "split", "booking")).toEqual(ALLOWED);
+    expect(canSwapVariant(booking, "s-hero", "split", "booking")).toEqual(ALLOWED);
+  });
+
+  it("목적 '문의' — 교체는 유형을 바꾸지 않아 R-03을 깨지 않는다(유일한 contact도 교체 허용)", () => {
+    const onlyContact = withSections(doc, doc.sections.filter((s) => s.type !== "cta-band"));
+    expect(canSwapVariant(onlyContact, "s-contact", "booking", "inquiry")).toEqual(ALLOWED);
+    expect(canSwapVariant(booking, "s-contact", "form", "inquiry")).toEqual(ALLOWED);
+  });
+
+  it("목적 없음('none')·다른 목적이면 구조 규칙만 — 유일한 예약 변형도 바꾼다", () => {
+    expect(canSwapVariant(booking, "s-contact", "form", "none")).toEqual(ALLOWED);
+    expect(canSwapVariant(booking, "s-contact", "form", "sales")).toEqual(ALLOWED);
+  });
+
+  it("canRemove와 같은 판정 — 예약 변형이 원래 없는 문서에서 상관없는 섹션 삭제는 허용(전 ≥1 · 후 0일 때만 거부)", () => {
+    expect(canRemove(doc, "s-about", "booking")).toEqual(ALLOWED);
+    expect(canRemove(withSections(doc, doc.sections.filter((s) => s.type !== "contact" && s.type !== "cta-band")), "s-about", "inquiry")).toEqual(ALLOWED);
   });
 });

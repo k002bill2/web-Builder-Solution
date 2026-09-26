@@ -2,6 +2,7 @@
  * 저장 경계 검증 도구 — zod 없이(PARALLEL_LANES Q-P2=A). 문제는 모두 모아(`issues`) 한 번에 돌려준다.
  * 객체 자리는 평범한 객체만(프로토타입 = Object.prototype | null, 심볼 키 0), 오염 키·모르는 키는 거부한다.
  * 입력은 한 번만 읽어 자기 데이터 속성 사본을 만든다 — getter·setter는 부르지 않고 거부, 이후 검사는 사본만 본다(Proxy 재읽기 차단).
+ * 배열 사본은 length·인덱스 키·ownKeys가 서로 맞아야 한다(Codex j2) — Proxy를 판별하지 않고 어긋남만 거부한다.
  * 경계 함수는 throw하지 않는다: 반사·읽기 예외는 문제로 바꾸고, 그래도 새는 예외는 `neverThrow`가 SCHEMA_INVALID로 바꾼다.
  */
 export interface ValidationIssue {
@@ -46,11 +47,11 @@ function isPlainObject(value: unknown): value is object {
   return proto === Object.prototype || proto === null;
 }
 
-/** 자기 데이터 속성의 값(접근자·ownKeys가 보고만 한 키 → undefined + 문제) */
-function dataValue(value: object, key: string, at: string, add: (path: string, message: string) => void): unknown {
+/** 자기 데이터 속성의 값(접근자·없는 키 → undefined + 문제) */
+function dataValue(value: object, key: string, at: string, add: (path: string, message: string) => void, missing = UNREADABLE): unknown {
   const desc = Reflect.getOwnPropertyDescriptor(value, key);
   if (desc && "value" in desc) return desc.value;
-  add(at, desc ? "접근자 속성은 허용하지 않습니다" : UNREADABLE);
+  add(at, desc ? "접근자 속성은 허용하지 않습니다" : missing);
   return undefined;
 }
 
@@ -91,17 +92,19 @@ export function createReader(): Reader {
   const list = (value: unknown, path: string, max: number): unknown[] | undefined => {
     try {
       const length = Array.isArray(value) && Object.getPrototypeOf(value) === Array.prototype ? dataValue(value, "length", path, add) : undefined;
-      if (typeof length !== "number" || length > max) {
+      if (typeof length !== "number" || !Number.isSafeInteger(length) || length < 0 || length > max) {
         add(path, `배열(최대 ${max}개)이어야 합니다`);
         return undefined;
       }
-      const items: unknown[] = Array.from({ length });
-      for (const key of Reflect.ownKeys(value as object)) {
-        if (key === "length") continue;
-        const index = typeof key === "string" && ARRAY_INDEX.test(key) ? Number(key) : -1;
-        if (index < 0 || index >= length) add(path, "배열 원소가 아닌 키입니다");
-        else items[index] = dataValue(value as object, key as string, `${path}[${index}]`, add);
-      }
+      const array = value as object;
+      // 원소는 ownKeys가 아니라 0..length-1 descriptor로 읽는다(구멍 = 문제)
+      const items = Array.from({ length }, (_, i) => dataValue(array, String(i), `${path}[${i}]`, add, "배열 원소가 없습니다"));
+      // ownKeys = { "length", "0".."length-1" } 정확히 — 숨긴 인덱스·남는 키·심볼 키 거부(ownKeys 중복은 반사가 throw → 아래 catch)
+      const keys = Reflect.ownKeys(array);
+      const isOwnKey = (key: string | symbol) => key === "length" || (typeof key === "string" && ARRAY_INDEX.test(key) && Number(key) < length);
+      if (keys.length !== length + 1 || !keys.every(isOwnKey)) add(path, "배열 키가 원소와 맞지 않습니다");
+      // 거짓 length — length 자리에 원소가 있으면 뒤 원소를 숨긴 것이다
+      if (Reflect.getOwnPropertyDescriptor(array, String(length)) !== undefined) add(path, "배열 길이가 원소와 맞지 않습니다");
       return items;
     } catch {
       add(path, UNREADABLE);

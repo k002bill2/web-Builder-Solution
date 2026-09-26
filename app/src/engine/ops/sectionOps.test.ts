@@ -114,14 +114,14 @@ describe("moveSection (5.2)", () => {
 describe("swapVariant (5.5)", () => {
   it("같은 키·종류 슬롯 값은 유지, 없는 키는 잃음, 새 키는 기본 값", () => {
     const edited = withSections(doc, doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, title: "우리 제목" } } : s)));
-    const result = swapVariant(edited, "s-hero", "center");
+    const result = swapVariant(edited, "s-hero", "center", "none");
     const hero = at(result.doc, "s-hero");
     expect(hero.variant).toBe("center");
     expect(hero.slots.title).toBe("우리 제목");
     expect(result.lostSlotKeys).toEqual(["image"]);
     expect(hero.slots).not.toHaveProperty("image");
     expect(hero.instanceId).toBe("s-hero");
-    const back = at(swapVariant(result.doc, "s-hero", "split").doc, "s-hero");
+    const back = at(swapVariant(result.doc, "s-hero", "split", "none").doc, "s-hero");
     expect(back.slots.image).toMatchObject({ kind: "image", source: { kind: "placeholder" } });
   });
 
@@ -129,22 +129,40 @@ describe("swapVariant (5.5)", () => {
     for (const variant of ["split", "center", "grid", "text", "image"]) {
       const a = getSectionDefinition("hero", "fullbleed-left")!.slots;
       const b = getSectionDefinition("hero", variant)!.slots;
-      expect(swapVariant(doc, "s-hero", variant).lostSlotKeys).toEqual(diffSlots(a, b).lost.map((e) => e.key));
+      expect(swapVariant(doc, "s-hero", variant, "none").lostSlotKeys).toEqual(diffSlots(a, b).lost.map((e) => e.key));
     }
   });
 
   it("다른 섹션 슬롯 값은 그대로", () => {
-    const { doc: swapped } = swapVariant(doc, "s-hero", "split");
+    const { doc: swapped } = swapVariant(doc, "s-hero", "split", "none");
     expect(diffSlotValues(doc, swapped).changed.filter((c) => c.instanceId !== "s-hero")).toEqual([]);
   });
 
   it("모션은 새 변형 상한으로 낮춘다", () => {
     const l2 = withSections(doc, doc.sections.map((s) => (s.instanceId === "s-services" ? { ...s, motion: "L2" as const } : s)));
-    expect(at(swapVariant(l2, "s-services", "list").doc, "s-services").motion).toBe("L1");
+    expect(at(swapVariant(l2, "s-services", "list", "none").doc, "s-services").motion).toBe("L1");
   });
 
   it("모르는 변형 · 없는 id는 오류", () => {
-    expect(() => swapVariant(doc, "s-hero", "nope")).toThrow(expect.objectContaining({ code: "UNKNOWN_VARIANT" }));
-    expect(() => swapVariant(doc, "nope", "split")).toThrow(expect.objectContaining({ code: "NOT_FOUND" }));
+    expect(() => swapVariant(doc, "s-hero", "nope", "none")).toThrow(expect.objectContaining({ code: "UNKNOWN_VARIANT" }));
+    expect(() => swapVariant(doc, "nope", "split", "none")).toThrow(expect.objectContaining({ code: "NOT_FOUND" }));
+  });
+
+  it("목적 필수 조건을 canSwapVariant로 강제한다 — 예약 목적의 유일한 예약 변형은 다른 변형으로 못 바꾼다 (Q-14 · R-04)", () => {
+    const booking = withSections(doc, doc.sections.map((s) => (s.instanceId === "s-contact" ? section("contact", "booking", "s-book") : s)));
+    expect(() => swapVariant(booking, "s-book", "form", "booking")).toThrow(expect.objectContaining({ code: "NOT_ALLOWED", message: REASONS.removeBooking }));
+    expect(at(swapVariant(booking, "s-book", "form", "none").doc, "s-book").variant).toBe("form");
+    const two = withSections(booking, [...booking.sections.slice(0, -1), section("contact", "booking", "s-book-2"), booking.sections.at(-1)!]);
+    expect(at(swapVariant(two, "s-book", "form", "booking").doc, "s-book").variant).toBe("form");
+  });
+
+  it("목적 인자는 필수 · 모르는 목적은 BAD_VALUE · 검사 순서 목적 → 없는 id → 모르는 변형 → 목적 판정", () => {
+    // @ts-expect-error -- 목적 인자 누락(Q-14 A: 필수)
+    expect(() => swapVariant(doc, "s-hero", "split")).toThrow(expect.objectContaining({ code: "BAD_VALUE" }));
+    // @ts-expect-error -- 모르는 목적
+    expect(() => swapVariant(doc, "s-hero", "split", "shop")).toThrow(expect.objectContaining({ code: "BAD_VALUE" }));
+    const booking = withSections(doc, doc.sections.map((s) => (s.instanceId === "s-contact" ? section("contact", "booking", "s-book") : s)));
+    expect(() => swapVariant(booking, "nope", "form", "booking")).toThrow(expect.objectContaining({ code: "NOT_FOUND" }));
+    expect(() => swapVariant(booking, "s-book", "nope", "booking")).toThrow(expect.objectContaining({ code: "UNKNOWN_VARIANT" }));
   });
 });

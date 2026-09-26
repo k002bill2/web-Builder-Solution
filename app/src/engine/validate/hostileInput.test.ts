@@ -94,6 +94,42 @@ describe("validatePageDoc — Proxy", () => {
   });
 });
 
+describe("validatePageDoc — 배열 사본 일관성 (Codex j2 medium · Proxy 판별 없이 사본 단계에서)", () => {
+  /** 섹션 배열만 Proxy로 감싼 문서 — 적지 않은 trap은 실제 배열로 넘어간다 */
+  const sectionsProxy = (handler: (target: Loose[]) => ProxyHandler<Loose[]>) => raw((d) => (d.sections = new Proxy(d.sections, handler(d.sections))));
+  /** length descriptor만 거짓으로(나머지 descriptor는 실제 배열) */
+  const lyingLength = (length: number) => (target: Loose[], key: string | symbol) =>
+    key === "length" ? { value: length, writable: true, enumerable: false, configurable: false } : Reflect.getOwnPropertyDescriptor(target, key);
+
+  it("거짓 length 0 + 실제 원소(ownKeys ['length']) — 빈 사본으로 통과시키지 않는다", () => {
+    expect(rejected(sectionsProxy(() => ({ getOwnPropertyDescriptor: lyingLength(0), ownKeys: () => ["length"] })))).toContain("$.sections");
+  });
+
+  it("거짓 length 2 + ownKeys 0·1 — 뒤 원소(본문·footer)를 숨긴 사본 거부", () => {
+    rejected(sectionsProxy(() => ({ getOwnPropertyDescriptor: lyingLength(2), ownKeys: () => ["0", "1", "length"] })));
+  });
+
+  it("length가 정수가 아님(NaN · -1 · 2.5) + ownKeys ['length']", () => {
+    for (const length of [NaN, -1, 2.5]) rejected(sectionsProxy(() => ({ getOwnPropertyDescriptor: lyingLength(length), ownKeys: () => ["length"] })));
+  });
+
+  it("ownKeys가 인덱스 일부 누락 · length보다 큰 인덱스 키 · 인덱스 키가 접근자", () => {
+    expect(rejected(sectionsProxy((t) => ({ ownKeys: () => Reflect.ownKeys(t).filter((k) => k !== "2") })))).toContain("$.sections");
+    rejected(sectionsProxy((t) => ({ ownKeys: () => [...Reflect.ownKeys(t), "99"] })));
+    const get = vi.fn(() => ({}));
+    rejected(sectionsProxy((t) => ({ getOwnPropertyDescriptor: (_, key) => (key === "1" ? { get, enumerable: true, configurable: true } : Reflect.getOwnPropertyDescriptor(t, key)) })));
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it("정상 배열 · 빈 배열 · 모든 trap을 그대로 넘기는 Proxy는 통과(Proxy 자체를 판별하지 않는다)", () => {
+    expect(validatePageDoc(raw()).ok).toBe(true);
+    expect(validatePageDoc(raw((d) => (d.sections = []))).ok).toBe(true);
+    const passThrough = validatePageDoc(sectionsProxy(() => ({})));
+    expect(passThrough.ok).toBe(true);
+    if (passThrough.ok) expect(passThrough.value.sections).toHaveLength(sampleDoc().sections.length);
+  });
+});
+
 describe("validatePageDoc — 순환 · 깊이", () => {
   it("순환 참조(루트 ↔ meta · 섹션 → 자기 자신)", () => {
     rejected(raw((d) => (d.meta = d)));

@@ -156,3 +156,102 @@ typecheck exit 0
       Tests  3 failed | 42 passed (45)
 ## 복원 GREEN
       Tests  45 passed (45)
+
+## FIX-L4A-2 1 RED (Q-14 swapVariant purpose · canSwapVariant)
+     × 목적 '예약' — 유일한 예약 변형을 다른 변형으로 바꾸면 막힘(이유 = 5.4 R-04 문장) 2ms
+     × 같은 목적에 예약 변형이 둘이면 하나는 바꿀 수 있다 0ms
+     × 예약 변형으로 바꾸기 · 예약 변형이 원래 없는 문서의 교체 · 상관없는 섹션 교체는 막지 않는다 0ms
+     × 목적 '문의' — 교체는 유형을 바꾸지 않아 R-03을 깨지 않는다(유일한 contact도 교체 허용) 0ms
+     × 목적 없음('none')·다른 목적이면 구조 규칙만 — 유일한 예약 변형도 바꾼다 0ms
+     × 목적 필수 조건을 canSwapVariant로 강제한다 — 예약 목적의 유일한 예약 변형은 다른 변형으로 못 바꾼다 (Q-14 · R-04) 2ms
+     × 목적 인자는 필수 · 모르는 목적은 BAD_VALUE · 검사 순서 목적 → 없는 id → 모르는 변형 → 목적 판정 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+AssertionError: expected function to throw an error, but it didn't
+ Test Files  2 failed | 3 passed (5)
+      Tests  7 failed | 69 passed (76)
+AssertionError: expected function to throw an error, but it didn't
+src/engine/ops/rules.test.ts(3,38): error TS2305: Module '"./rules"' has no exported member 'canSwapVariant'.
+src/engine/ops/sectionOps.test.ts(117,60): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(124,64): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(132,50): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(137,66): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(143,53): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(147,53): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(148,52): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(153,57): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(154,54): error TS2554: Expected 3 arguments, but got 4.
+
+## FIX-L4A-2 1 GREEN
+ Test Files  10 passed (10)
+      Tests  171 passed (171)
+0
+
+## FIX-L4A-2 2 RED (j2 medium 배열 사본 일관성)
+     × 거짓 length 0 + 실제 원소(ownKeys ['length']) — 빈 사본으로 통과시키지 않는다 5ms
+     × 거짓 length 2 + ownKeys 0·1 — 뒤 원소(본문·footer)를 숨긴 사본 거부 1ms
+     × length가 정수가 아님(NaN · -1 · 2.5) + ownKeys ['length'] 1ms
+     × ownKeys가 인덱스 일부 누락 · length보다 큰 인덱스 키 · 인덱스 키가 접근자 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected { ok: true, value: { …(10) } } to match object { ok: false, code: 'SCHEMA_INVALID' }
+AssertionError: expected { ok: true, value: { …(10) } } to match object { ok: false, code: 'SCHEMA_INVALID' }
+AssertionError: expected { ok: true, value: { …(10) } } to match object { ok: false, code: 'SCHEMA_INVALID' }
+AssertionError: expected [ '$.sections[2]' ] to include '$.sections'
+ Test Files  1 failed | 2 passed (3)
+      Tests  4 failed | 77 passed (81)
+
+## FIX-L4A-2 2 GREEN
+ Test Files  10 passed (10)
+      Tests  176 passed (176)
+
+## FIX-L4A-2 2 변이 확인 (거짓 length 탐지 줄 → if (false) 임시)
+     × 거짓 length 0 + 실제 원소(ownKeys ['length']) — 빈 사본으로 통과시키지 않는다 5ms
+     × 거짓 length 2 + ownKeys 0·1 — 뒤 원소(본문·footer)를 숨긴 사본 거부 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 79 passed (81)
+## 변이 확인 (length 정수·음수 검사 제거 임시)
+      Tests  81 passed (81)
+## 복원 GREEN
+      Tests  81 passed (81)
+
+## FIX-L4A-2 3 RED (LocalImageId 브랜드 · parseLocalImageId)
+ FAIL  src/engine/ops/docOps.test.ts [ src/engine/ops/docOps.test.ts ]
+Error: Failed to resolve import "../validate/localImageId" from "src/engine/ops/docOps.test.ts". Does the file exist?
+ FAIL  src/engine/validate/localImageId.test.ts [ src/engine/validate/localImageId.test.ts ]
+Error: Failed to resolve import "./localImageId" from "src/engine/validate/localImageId.test.ts". Does the file exist?
+ Test Files  2 failed | 9 passed (11)
+      Tests  162 passed (162)
+src/engine/ops/docOps.test.ts(7,35): error TS2307: Cannot find module '../validate/localImageId' or its corresponding type declarations.
+src/engine/validate/localImageId.test.ts(5,35): error TS2307: Cannot find module './localImageId' or its corresponding type declarations.
+src/engine/validate/localImageId.test.ts(28,5): error TS2578: Unused '@ts-expect-error' directive.
+src/engine/validate/localImageId.test.ts(30,5): error TS2578: Unused '@ts-expect-error' directive.
+
+## FIX-L4A-2 3 GREEN
+ Test Files  11 passed (11)
+      Tests  184 passed (184)
+0
+
+## FIX-L4A-2 3 변이 확인 (LOCAL_IMAGE_ID → /^[\s\S]+$/ 임시 — validatePageDoc·parseLocalImageId가 같은 규칙을 쓰는지)
+     × 하이픈 다섯 묶음 → null 3ms
+     × v1 UUID → null 1ms
+     × 대문자 → null 0ms
+     × object URL → null 0ms
+     × 앞뒤 공백 → null 0ms
+     × 로컬 이미지 참조 외부 URL 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 3ms
+     × 로컬 이미지 참조 상대 경로 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 1ms
+     × 로컬 이미지 참조 object URL 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 data URL 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 3ms
+     × 로컬 이미지 참조 UUID 아닌 id 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 v1 UUID 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 variant 자리 틀림 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 대문자 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 중괄호 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 앞뒤 공백 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  15 failed | 74 passed (89)
+## 복원 GREEN
+      Tests  89 passed (89)

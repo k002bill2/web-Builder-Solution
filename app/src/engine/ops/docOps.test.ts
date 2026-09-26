@@ -4,11 +4,12 @@ import { ids, sampleDoc, section, withSections } from "../testing/sampleDoc";
 import { diffSlotValues, diffSlots } from "./diff";
 import { hashDoc } from "./hash";
 import { normalizeDoc } from "./normalize";
+import { parseLocalImageId } from "../validate/localImageId";
 import { setMeta, setSlot, swapTheme } from "./slotOps";
 
 const doc = sampleDoc();
 const hero = (d: typeof doc) => d.sections.find((s) => s.instanceId === "s-hero")!;
-const LOCAL: ImageSlotValue = { kind: "image", enabled: true, source: "7c9e6679-7425-40de-944b-e07fc1f90ae7", alt: "매장 사진", decorative: false };
+const LOCAL: ImageSlotValue = { kind: "image", enabled: true, source: parseLocalImageId("7c9e6679-7425-40de-944b-e07fc1f90ae7")!, alt: "매장 사진", decorative: false };
 
 describe("setSlot · setMeta (5.6 · 5.9)", () => {
   it("슬롯 값을 바꾼 새 문서 · 다른 섹션은 같은 참조", () => {

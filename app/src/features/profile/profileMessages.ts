@@ -1,5 +1,5 @@
 /**
- * 프로필 화면 문구 — 대비 검사·보정 제안·충돌(3.3) · 되돌리기 알림(P-S09·S12). 엔진 청크 전용(ADR-004).
+ * 프로필 화면 문구 — 대비 검사·보정 제안·충돌(3.3) · 되돌리기 알림(P-S09·S12) · 조정 저장 알림(P-S11·S12). 엔진 청크 전용(ADR-004).
  * 문구 형식은 1a-03 3.4를 잇는다: 원인 · 수치 · 대체안.
  */
 import { formatRatio, type ContrastCheckId } from "../../domain/contrast";
@@ -32,6 +32,10 @@ export interface ProposalView {
   readonly role: PaletteRole;
   readonly from: string;
   readonly to: string;
+  /** 보정 기준 검사 — 보정 조정의 `check` */
+  readonly check: ContrastCheckId;
+  /** 저장 안 된 조정에 이미 쓴 보정(검사 통과) — "보정값 쓰기" 대신 쓴 상태를 보인다 */
+  readonly written?: boolean;
   /** 원인 · 수치 · 대체안 */
   readonly text: string;
   /** 충돌(P-S15)이면 보정값 쓰기 없음 — 대체안 문장과 보드 링크 이름 */
@@ -69,16 +73,44 @@ function conflictOf(p: CorrectionProposal): ProposalView["conflict"] {
   return { text: `${ROLE_SUBJECTS[p.role]} 한 값으로 모든 배경의 기준을 맞출 수 없습니다. 대체안: 비교 보드에서 다른 팔레트를 고르세요`, detail, link: "비교 보드에서 팔레트 바꾸기" };
 }
 
-export function contrastView(palette: readonly PaletteEntry[], cardTone: SurfaceTone | undefined, level: ContrastLevel): ContrastView {
+const NONE: ReadonlySet<PaletteRole> = new Set();
+
+/**
+ * 검사는 `palette`(보정을 적용한 팔레트)에서 한다. 제안은 `base`(보정 전 보드 팔레트)에서 역할을 고른 뒤, 그 역할만 base 값으로 둔 초안 팔레트에서
+ * 후보·충돌을 다시 계산한다 — 제안의 from은 base 값이어야 저장소가 받는다(보정 from 검사).
+ * 제안은 보정 팔레트에서 아직 미달인 역할, 또는 저장 안 된 보정을 쓴 역할(`written`)만 보인다. 둘 다 생략하면 base = palette(2a-04a 동작).
+ */
+export function contrastView(
+  palette: readonly PaletteEntry[],
+  cardTone: SurfaceTone | undefined,
+  level: ContrastLevel,
+  base: readonly PaletteEntry[] = palette,
+  written: ReadonlySet<PaletteRole> = NONE,
+): ContrastView {
+  const checks = checkProfileContrast(palette, cardTone, level);
+  const failing = new Set(checks.filter((c) => !c.pass).map((c) => c.role));
   return {
     target: targetText(level),
-    checks: checkProfileContrast(palette, cardTone, level).map((c) => ({ id: c.id, label: CHECK_LABELS[c.id], ratio: formatRatio(c.ratio), pass: c.pass })),
-    proposals: proposeCorrections(palette, cardTone, level).map((p) => {
-      const conflict = conflictOf(p);
-      return { role: p.role, from: p.from, to: p.to, text: proposalText(p, level), ...(conflict && { conflict }) };
-    }),
+    checks: checks.map((c) => ({ id: c.id, label: CHECK_LABELS[c.id], ratio: formatRatio(c.ratio), pass: c.pass })),
+    proposals: proposeCorrections(base, cardTone, level)
+      .filter((p) => failing.has(p.role) || written.has(p.role))
+      // 후보·충돌은 다른 역할의 보정을 적용한 초안에서, 그 역할만 base 값으로 되돌려 다시 계산한다(Codex P2) — from은 base 값
+      .map((p) => proposeCorrections(palette.map((e) => (e.role === p.role ? { ...e, hex: p.from } : e)), cardTone, level).find((q) => q.role === p.role) ?? p)
+      .map((p) => {
+        const conflict = conflictOf(p);
+        return { role: p.role, from: p.from, to: p.to, check: p.basis, text: proposalText(p, level), ...(!failing.has(p.role) && { written: true }), ...(conflict && { conflict }) };
+      }),
   };
 }
+
+/** "v2로"·"v3으로" — 숫자 끝 발음에 받침이 있으면(삼·육·영/십) "으로", ㄹ 받침(일·칠·팔)과 받침 없음은 "로" */
+const versionRo = (version: number) => `v${version}${[0, 3, 6].includes(version % 10) ? "으로" : "로"}`;
+
+export const saveMessages = Object.freeze({
+  done: (created: number) => `${versionRo(created)} 저장했습니다`,
+  stale: (latest: number) => `다른 곳에서 ${versionWith(latest, ["이", "가"])} 만들어졌습니다. 조정은 남겨 두었습니다 — 확인 후 다시 저장하세요`,
+  failed: "저장하지 못했습니다 · 다시 시도하세요",
+});
 
 export const revertMessages = Object.freeze({
   done: (basedOn: number, created: number) => `v${basedOn} 내용으로 ${versionWith(created, ["을", "를"])} 만들었습니다`,

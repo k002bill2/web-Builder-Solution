@@ -36,7 +36,8 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
  *    createProfileVersion ← useCompareBoard.confirm(확정 버튼 onClick, 실패 뒤 "다시 시도" onClick — boardMessages confirmFailure)
  *  - 재확정 이어받기 규칙(memoryBoardConfirm loadCarryOver ← prepare ← 위 확정 본문, 계열 최신에 조정이 있을 때만)
  *  - 프로필 쓰기 본문(memoryProfileAdjust = 조정 저장 + 되돌리기, FIX3 1안): writeBodyLoader loadProfileWrites ← memoryProfileRepository
- *    getAdjustmentRange·saveAdjustments·revertTo. 앱 호출 0(테스트만) — b2 화면이 진입 때 부르면 자동으로 옮긴다
+ *    saveAdjustments·revertTo ← 프로필 화면 "조정 저장"·"다시 시도"(AdjustmentPanel onClick → useProfileDetail.save)·"이 버전으로 되돌리기"
+ *    (ProfilePage onRevert) onClick. 보드 화면은 부르지 않는다. getAdjustmentRange는 본문을 받지 않는다(기본 범위 상수 domain/profile, 2a-04b2)
  */
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
@@ -58,7 +59,9 @@ const SCENARIOS = [
   // 확정한 프로필의 최신 버전에 조정이 있을 때 — 자동으로 더 받는 dynamic import가 없다(캡션은 인라인 계산, CarryOverCaption은 엔진 청크).
   // 판정·목록은 펼칠 때(조작 뒤). 자동 조건부 import가 다시 생기면 이 시나리오의 auto에 넣는다
   { name: "/compare (조정 있음)", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
-  // 프로필 엔진(대비·비교·문구, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처
+  // 프로필 엔진(대비·비교·문구·조정 패널, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처.
+  // 진입 때 자동: useProfileDetail load → getProfile·getAdjustmentRange(2a-04b2). 범위 조회는 쓰기 본문을 받지 않으므로
+  // memoryProfileAdjust는 조작 뒤("조정 저장"·"다시 시도"·"이 버전으로 되돌리기" onClick) — WriteBodyLoad.test "번들 분류 근거"가 요청 0을 확인한다
   {
     name: "/profile",
     page: "src/pages/ProfilePage.tsx",

@@ -206,6 +206,7 @@ export function CompareBoardPage() {
               confirming={board.confirming}
               onShowDraft={() => draftHeading.current?.focus()}
               onConfirm={() => void board.confirm()}
+              adjustmentCount={carryOver?.count}
             />
           )}
         </div>

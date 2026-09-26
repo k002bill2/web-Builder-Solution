@@ -4,7 +4,7 @@ import { AppProviders } from "../app/AppProviders";
 import { AppRoutes } from "../app/routes";
 import type { CompareBoardRepository } from "../data/compareBoardRepository";
 import { createMemoryStudio } from "../data/memoryStudio";
-import type { ProfileReadRepository } from "../data/profileRepository";
+import type { ProfileRepository } from "../data/profileRepository";
 import { createMemoryReferenceRepository, type ReferenceRepository } from "../data/referenceRepository";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
@@ -35,7 +35,7 @@ export function renderApp(
   path: string,
   repository: ReferenceRepository = createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures),
   boardRepository?: CompareBoardRepository,
-  profileRepository?: ProfileReadRepository,
+  profileRepository?: ProfileRepository,
 ): { readonly router: TestRouter } {
   const studio = createMemoryStudio({ catalog: FIXTURE_CATALOG });
   let current: { location: Location; navigate: NavigateFunction } | null = null;

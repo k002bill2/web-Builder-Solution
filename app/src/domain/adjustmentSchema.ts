@@ -5,13 +5,7 @@
 import * as z from "zod/mini";
 import type { AdjustmentRange, PaletteCorrection, ProfileAdjustments } from "./profile";
 
-/** 기본 범위 1벌 — 모든 옵션 허용, 모션 L3는 생성 상한 밖이라 없음 (3.4). M2에서 무드별 */
-export const DEFAULT_ADJUSTMENT_RANGE: AdjustmentRange = Object.freeze({
-  density: Object.freeze(["comfortable", "compact"] as const),
-  contrast: Object.freeze(["aa", "enhanced"] as const),
-  motion: Object.freeze(["L0", "L1", "L2"] as const),
-  source: "기본 범위",
-});
+export { DEFAULT_ADJUSTMENT_RANGE } from "./profile";
 
 const HEX_RRGGBB = /^#[0-9A-F]{6}$/i;
 const hex = z.string().check(z.regex(HEX_RRGGBB));

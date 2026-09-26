@@ -159,7 +159,8 @@ describe("P-AC-05·06 대비 검사 표시 (3.3)", () => {
     expect(within(palette).getByText(`후보 ${proposalFor("ref-b", "ink")}를 쓰면 C-3 7.3:1 → 2.8:1`)).toBeInTheDocument();
     expect(within(palette).getByRole("link", { name: "비교 보드에서 카드 바꾸기" })).toHaveAttribute("href", "/compare");
     expect(within(palette).getByText(new RegExp(`대체안: ${proposalFor("ref-b", "muted")}\\(4\\.5:1`))).toBeInTheDocument();
-    expect(within(palette).queryByRole("button", { name: /보정값 쓰기/ })).not.toBeInTheDocument();
+    // 2a-04b2(Q6): muted에는 "보정값 쓰기"가 생겼다 — 충돌인 ink에만 없다
+    expect(within(palette).queryByRole("button", { name: /보정값 쓰기 \(본문 글자 ink\)/ })).not.toBeInTheDocument();
   });
 });
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { CompareBoardRepository } from "../data/compareBoardRepository";
 import { ProfileRepositoryProvider } from "../data/ProfileRepositoryContext";
-import type { ProfileReadRepository } from "../data/profileRepository";
+import type { ProfileRepository } from "../data/profileRepository";
 import { ReferenceRepositoryProvider } from "../data/ReferenceRepositoryContext";
 import type { ReferenceRepository } from "../data/referenceRepository";
 import { CompareTrayProvider } from "../features/compare/CompareTrayContext";
@@ -15,7 +15,7 @@ export function AppProviders({
 }: {
   readonly repository: ReferenceRepository;
   readonly boardRepository: CompareBoardRepository;
-  readonly profileRepository: ProfileReadRepository;
+  readonly profileRepository: ProfileRepository;
   readonly children: ReactNode;
 }) {
   return (

@@ -1,0 +1,16 @@
+[bundle] 공통 JS (gzip, 참고): 89.07KB
+[bundle] /catalog 첫 화면 합계: 99.36KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.74KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.71KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.09KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.76KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.85KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +1.51KB (1개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.72KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +2.12KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.76KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.85KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +1.51KB (1개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.72KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +2.12KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.23KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.75KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +1.74KB (1개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.50KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.89KB / 예산 125KB

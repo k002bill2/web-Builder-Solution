@@ -1,0 +1,66 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b2/app
+
+ ❯ src/data/chunkRetry.test.ts (0 test)
+ ❯ src/data/chunkRetryWiring.test.ts (1 test | 1 failed) 31ms
+   ❯ 조작 뒤 로더 배선 (1)
+     × 보드 확정 본문 · 프로필 쓰기 본문 · P-S25 패널 · 재확정 이어받기 규칙 — 청크 이름 = 모듈 파일 이름 30ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/chunkRetry.test.ts [ src/data/chunkRetry.test.ts ]
+Error: Failed to resolve import "./chunkRetry" from "src/data/chunkRetry.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b2/app/src/data/chunkRetry.test.ts:6:32
+  4  |  */
+  5  |  import { describe, expect, it, vi } from "vitest";
+  6  |  import { retryableImport } from "./chunkRetry";
+     |                                   ^
+  7  |  const ASSET = `${location.origin}/assets/memoryBoardConfirm-DCU0aP35.js`;
+  8  |  const chromium = (url) => new TypeError(`Failed to fetch dynamically imported module: ${url}`);
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/chunkRetryWiring.test.ts > 조작 뒤 로더 배선 > 보드 확정 본문 · 프로필 쓰기 본문 · P-S25 패널 · 재확정 이어받기 규칙 — 청크 이름 = 모듈 파일 이름
+AssertionError: expected [] to deeply equal [ 'carryOverPanel', …(3) ]
+
+- Expected
++ Received
+
+- [
+-   "carryOverPanel",
+-   "memoryBoardConfirm",
+-   "memoryProfileAdjust",
+-   "profileAdjustments",
+- ]
++ []
+
+ ❯ src/data/chunkRetryWiring.test.ts:21:40
+     19|     await import("../features/compare/carryOverLoader");
+     20|     await import("./memoryBoardConfirm");
+     21|     expect([...wrapped.keys()].sort()).toEqual(["carryOverPanel", "mem…
+       |                                        ^
+     22|     const exports = { memoryBoardConfirm: "createBoardConfirmer", memo…
+     23|     for (const [chunk, name] of Object.entries(exports)) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  1 failed (1)
+   Start at  22:29:41
+   Duration  935ms (environment 78%, setup 14%, transform 5%, tests 2%, worker 1%)
+

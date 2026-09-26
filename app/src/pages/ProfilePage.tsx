@@ -1,16 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Tag } from "../components/ds/Tag";
 import { LoadingState } from "../components/layout/LoadingState";
-import { PaletteContrast } from "../components/profile/PaletteContrast";
 import { ProfileList } from "../components/profile/ProfileList";
 import { ProfileValues } from "../components/profile/ProfileValues";
 import { VersionDiff } from "../components/profile/VersionDiff";
 import { VersionList } from "../components/profile/VersionList";
 import type { ProfileVersion } from "../domain/profile";
-import { PALETTE_ROLES, SELECTION_MODE_LABELS } from "../features/profile/profileFields";
+import { SELECTION_MODE_LABELS } from "../features/profile/profileFields";
 import { useProfileDetail, type ProfileDetailState } from "../features/profile/useProfileDetail";
 import { missingVersionText, versionWith } from "../features/profile/versionText";
 
@@ -46,7 +45,8 @@ const pick = (versions: readonly ProfileVersion[], param: string | null) => vers
 const ordered = (a: ProfileVersion, b: ProfileVersion) => (a.version < b.version ? ([a, b] as const) : ([b, a] as const));
 
 function ProfileDetail({ profileId }: { readonly profileId: string }) {
-  const { state, status, alert, reverting, revert, announce } = useProfileDetail(profileId);
+  const detail = useProfileDetail(profileId);
+  const { state, status, announce } = detail;
   // 보드 확정 뒤 지운 조정이 있으면 "프로필 알림"에 한 번 알린다 — 패널을 펼치지 않았어도 (P-S25 r6).
   // 알린 뒤 history state를 replace로 비운다 — 뒤로·앞으로 가기로 이 항목에 돌아와도 다시 알리지 않는다(문장은 알림 state에 남는다)
   const location = useLocation();
@@ -61,7 +61,7 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
     <>
       {state.status === "loading" && <LoadingState />}
       {state.status === "not-found" && <ProfileNotFound />}
-      {state.status === "ready" && <ProfileView state={state} alert={alert} reverting={reverting} revert={revert} announce={announce} />}
+      {state.status === "ready" && <ProfileView state={state} detail={detail} />}
       {/* 알림 영역은 늘 DOM에 둔다(display:none 금지, 5.3) */}
       <p role="status" aria-label="프로필 알림" className="sr-only">
         {status.text && <span key={status.key}>{status.text}</span>}
@@ -71,17 +71,11 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
 }
 
 function ProfileView({
-  state: { series, engine, sources },
-  alert,
-  reverting,
-  revert,
-  announce,
+  state: { series, range, engine, sources },
+  detail: { alert, reverting, revert, announce, saving, saveAlert, save },
 }: {
   readonly state: Extract<ProfileDetailState, { status: "ready" }>;
-  readonly alert: string | null;
-  readonly reverting: boolean;
-  readonly revert: (version: number) => Promise<number | undefined>;
-  readonly announce: (text: string) => void;
+  readonly detail: ReturnType<typeof useProfileDetail>;
 }) {
   const [params, setParams] = useSearchParams();
   const latest = series.versions.at(-1)!;
@@ -106,6 +100,8 @@ function ProfileView({
   const focusRow = useRef<number | null>(null);
   const returnCompare = useRef<number | null>(null);
   const firstView = useRef(true);
+  // 되돌리기 성공 → 저장 안 된 조정을 버린다(되돌린 버전이 새 저장값)
+  const [resetKey, setResetKey] = useState(0);
 
   // 버전 보기(?v=) 전환 → h1, 되돌리기 성공 → 새 버전 줄 (5.2)
   const viewKey = params.get("v");
@@ -135,13 +131,13 @@ function ProfileView({
   const onRevert = async () => {
     const created = await revert(viewed.version);
     if (created === undefined) return;
+    setResetKey((k) => k + 1);
     focusRow.current = created;
     setParams(new URLSearchParams());
   };
 
-  const palette = PALETTE_ROLES.map((role) => ({ role, hex: viewed.base.color_tokens[role].$value }));
-  const contrast = engine.contrastView(palette, viewed.base.component_choices.card_style?.surfaceTone, viewed.adjustments.contrast ?? "aa");
-  const summaryOf = (v: ProfileVersion) => engine.summarizeVersion(series.versions.find((p) => p.version === v.version - 1)?.base, v.base, titleOf, v.dropped);
+  const summaryOf = (v: ProfileVersion) => engine.summarizeVersions(series.versions.find((p) => p.version === v.version - 1), v, titleOf);
+  const { ProfilePanel } = engine;
 
   return (
     <div className={PAGE}>
@@ -181,40 +177,58 @@ function ProfileView({
           {alert}
         </div>
       )}
-      <ProfileValues profile={viewed.base} sources={sources} titleOf={titleOf} />
-      <PaletteContrast palette={palette} contrast={contrast} />
-      <section aria-labelledby="profile-versions" className="flex flex-col gap-3">
-        <h2 id="profile-versions" className="ds-heading2">버전</h2>
-        <VersionList
-          versions={series.versions}
-          latestVersion={latest.version}
-          viewedVersion={viewed.version}
-          summaryOf={summaryOf}
-          onView={(v) => withParams({ v: v === latest.version ? undefined : String(v), diff: undefined })}
-          onCompare={(v) => withParams({ diff: String(v) })}
-          rowRef={(v) => (el) => {
-            if (el) rows.current.set(v, el);
-            else rows.current.delete(v);
-          }}
+      {/* 1280 2단: 왼쪽 프로필 패널(값·팔레트·조정·버전) + 오른쪽 3안 — 1024는 패널 안 2열, 그 아래 1열 (5.1, Q5) */}
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <ProfilePanel
+          viewed={viewed}
+          latest={latest}
+          range={range}
+          saving={saving}
+          saveAlert={saveAlert}
+          onSave={save}
+          resetKey={resetKey}
+          values={<ProfileValues rows={engine.valueRows(viewed, titleOf)} profile={viewed.base} sources={sources} />}
+          versions={
+            <section aria-labelledby="profile-versions" className="flex flex-col gap-3">
+              <h2 id="profile-versions" className="ds-heading2">버전</h2>
+              <VersionList
+                versions={series.versions}
+                latestVersion={latest.version}
+                viewedVersion={viewed.version}
+                summaryOf={summaryOf}
+                onView={(v) => withParams({ v: v === latest.version ? undefined : String(v), diff: undefined })}
+                onCompare={(v) => withParams({ diff: String(v) })}
+                rowRef={(v) => (el) => {
+                  if (el) rows.current.set(v, el);
+                  else rows.current.delete(v);
+                }}
+              />
+              {diff && (
+                <VersionDiff
+                  from={from.version}
+                  to={to.version}
+                  rows={engine.diffVersions(from, to, titleOf)}
+                  focusRef={diffFocus}
+                  onClose={() => {
+                    returnCompare.current = diff.version;
+                    withParams({ diff: undefined });
+                  }}
+                />
+              )}
+            </section>
+          }
         />
-        {diff && (
-          <VersionDiff
-            from={from.version}
-            to={to.version}
-            rows={engine.diffProfiles(from.base, to.base, titleOf)}
-            focusRef={diffFocus}
-            onClose={() => {
-              returnCompare.current = diff.version;
-              withParams({ diff: undefined });
-            }}
-          />
-        )}
-      </section>
+        {/* 3안 자리 — 3안 만들기·카드는 2a-04c */}
+        <section aria-labelledby="profile-candidates" className="flex flex-col gap-3">
+          <h2 id="profile-candidates" className="ds-heading2">3안</h2>
+          <p className="ds-body3 text-label-alternative">저장한 버전으로 구조안 3개를 만드는 기능은 준비 중입니다</p>
+        </section>
+      </div>
     </div>
   );
 }
 
-/** DS-2A-04 2a-04a2 — `/profile` 목록 · `/profile/:profileId` 상세 (SPEC 3). 전역 조정(2a-04b)·3안(2a-04c)은 다음 단계 */
+/** DS-2A-04 — `/profile` 목록 · `/profile/:profileId` 상세 (SPEC 3). 전역 조정 2a-04b2, 3안(2a-04c)은 자리만 */
 export function ProfilePage() {
   const { profileId } = useParams();
   return profileId === undefined ? <ProfileList /> : <ProfileDetail key={profileId} profileId={profileId} />;

@@ -1,7 +1,9 @@
 /**
  * 프로필 값 표시 행 (DS-2A-04 3.1 표 순서). 첫 화면(값 목록)과 엔진(비교·요약)이 같은 행을 쓴다 — 비교 표 순서 = 3.1 표 순서.
- * 적용된 값(effectiveProfile)은 2a-04b — 지금은 조정이 없어 base를 그대로 보인다.
+ * 화면은 적용된 값(effectiveProfile)을 넘긴다(2a-04b2, 엔진 profileDiff.valueRows). 선택 값 이름표(Q2)는 엔진이 `labels`로 넘긴다 —
+ * 이름표 표를 첫 화면 청크에 싣지 않으려고 인자로 받는다.
  */
+import type { ElementField, ElementLabels } from "../../domain/elementLibrary";
 import type { DesignProfileInput, MotionPreset, SectionType } from "../../domain/compareBoard";
 import type { LayoutTypeId, VisualTagId } from "../../domain/reference";
 import type { PaletteRole } from "../../domain/referenceDetail";
@@ -36,13 +38,25 @@ const librarySection = (label: string, key: string, type: "hero" | "header" | "f
   return { key, label, value: resolveVariant(SECTION_LIBRARY, type, variant)?.def.label ?? variant, caption: variant };
 };
 
+/** 선택 값 — 이름표가 있으면 이름표 + 키 캡션(M-06), 없으면 저장된 값 그대로 */
+const choice = (key: string, label: string, field: ElementField, value: string | undefined, labels: ElementLabels | undefined): FieldRow => {
+  if (!value) return { key, label, value: "없음" };
+  const named = labels?.[field][value];
+  return named ? { key, label, value: named, caption: value } : { key, label, value };
+};
+
+function cardRow(card: NonNullable<DesignProfileInput["component_choices"]["card_style"]>, labels: ElementLabels | undefined): FieldRow {
+  const row = choice("card", "카드 스타일", "card_style", card.style, labels);
+  return { ...row, value: `${row.value} · ${card.surfaceTone === "dark" ? "어두운" : "밝은"} 카드` };
+}
+
 /** 섹션 한 줄 "Hero · 풀블리드 이미지 + 좌측 카피" — 라이브러리 밖 유형은 변형 키 그대로 */
 export function sectionLabel(type: SectionType, variant: string): string {
   const bound = type === "header" || type === "hero" || type === "footer" ? resolveVariant(SECTION_LIBRARY, type, variant)?.def.label : undefined;
   return `${SECTION_TYPE_LABELS[type]} · ${bound ?? variant}`;
 }
 
-export function profileFieldRows(p: DesignProfileInput, titleOf: (referenceId: string) => string): readonly FieldRow[] {
+export function profileFieldRows(p: DesignProfileInput, titleOf: (referenceId: string) => string, labels?: ElementLabels): readonly FieldRow[] {
   const c = p.component_choices;
   const t = p.typography_tokens;
   const card = c.card_style;
@@ -51,11 +65,10 @@ export function profileFieldRows(p: DesignProfileInput, titleOf: (referenceId: s
     { key: "layout", label: "레이아웃 방향", value: LAYOUT_LABELS[p.layout_direction as LayoutTypeId] ?? p.layout_direction },
     librarySection("Hero", "hero", "hero", c.hero?.variant),
     librarySection("메뉴", "header", "header", c.header?.variant),
-    // 선택 값(CTA·이미지 비율·모바일)은 라이브러리 이름표가 없어 저장된 값을 그대로 보인다 (REPORT 설계 질문)
-    { key: "cta", label: "CTA 위치", value: c.cta_placement ?? "없음" },
-    { key: "card", label: "카드 스타일", value: card ? `${card.style} · ${card.surfaceTone === "dark" ? "어두운" : "밝은"} 카드` : "없음" },
-    { key: "media", label: "이미지 비율", value: c.media_ratio ?? "없음" },
-    { key: "mobile", label: "모바일 구조", value: c.mobile_pattern ?? "없음" },
+    choice("cta", "CTA 위치", "cta_placement", c.cta_placement, labels),
+    card ? cardRow(card, labels) : { key: "card", label: "카드 스타일", value: "없음" },
+    choice("media", "이미지 비율", "media_ratio", c.media_ratio, labels),
+    choice("mobile", "모바일 구조", "mobile_pattern", c.mobile_pattern, labels),
     librarySection("Footer", "footer", "footer", c.footer?.variant),
     { key: "typography", label: "타이포그래피", value: `${t.family} · 제목 ${t.headingWeight} / 본문 ${t.bodyWeight} · 비율 ${t.scale}` },
     { key: "spacing", label: "간격", value: `그리드 ${p.spacing_tokens.grid} · 섹션 간격 ${p.spacing_tokens.sectionGap}` },

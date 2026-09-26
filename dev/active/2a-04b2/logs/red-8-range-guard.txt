@@ -1,0 +1,3 @@
+     × 진입 때 getAdjustmentRange를 자동으로 불러도 본문 요청 0 → '조정 저장' 클릭 뒤에만 1회, 본문 로드 실패면 저장 0 + 다시 시도로 v2 181ms
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+      Tests  3 passed (3)

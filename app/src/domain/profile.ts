@@ -79,6 +79,17 @@ export interface AdjustmentRange {
   readonly source: string;
 }
 
+/**
+ * 기본 범위 1벌 — 모든 옵션 허용, 모션 L3는 생성 상한 밖이라 없음 (3.4). M2에서 무드별.
+ * 가벼운 상수라 여기 둔다 — 범위 조회(getAdjustmentRange)가 쓰기 본문(zod) 청크를 받지 않게 (2a-04b2 번들)
+ */
+export const DEFAULT_ADJUSTMENT_RANGE: AdjustmentRange = Object.freeze({
+  density: Object.freeze(["comfortable", "compact"] as const),
+  contrast: Object.freeze(["aa", "enhanced"] as const),
+  motion: Object.freeze(["L0", "L1", "L2"] as const),
+  source: "기본 범위",
+});
+
 export type ProfileErrorCode = "NOT_FOUND" | "STALE_PROFILE" | "RANGE_VIOLATION" | "SCHEMA_INVALID";
 
 /** 계열 최신 — 보드 ConfirmedRef.latest · 보드 쓰기의 STALE_PROFILE 오류 동봉 */

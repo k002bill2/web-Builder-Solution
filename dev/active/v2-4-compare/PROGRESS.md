@@ -45,3 +45,14 @@
   - `CompareBoardResponsive.test.tsx` 77 (**6.3 표에 파일 자체가 없음**)
 - fresh: typecheck 0 · lint 0 · test **519 passed** · build 0 (`logs/green-dqa04.txt`)
 - 번들: `/compare` 98.51 / 120.98 · `CompareBoardPage` 9.07(+0.01 aria-label 템플릿) · 공통 88.67(index 85.34, 해시 흔들림 — 아래 정규화 비교)
+
+## 공통 청크 정규화 비교 (`e9f9df6` vs 기준선 `c64532e`)
+- 기준선을 임시 worktree(`/tmp`, node_modules 심볼릭 링크)에서 `vite build --outDir /tmp/v24-base-dist`로 다시 빌드 → measure 결과 기준선과 동일(88.66 · `/compare` 98.38 / 120.80). worktree는 제거
+- `index-*.js` raw 268,822 = 268,822 바이트. 파일명 해시(`-xxxxxxxx.js|css|svg|woff2`)를 고정 문자열로 바꾸면 **완전히 같다**(normalized identical: True, gzip 84,910 = 84,910)
+- → 공통 청크 코드 증가 0. 85.33 ↔ 85.34 흔들림은 index 안의 지연 청크 해시 문자열 gzip 차이(수 바이트)
+
+## 브라우저 실측 (ego-browser, 127.0.0.1:4318 `vite preview`, 13:05 KST 종료 · `lsof` exit 1) — `logs/browser.txt`
+- 5열 보드(카탈로그에서 5개 담기) · 1280·1024·768·390 모두 문서 가로 넘침 0, 5열은 표 영역 안 스크롤만(scrollW 1088 > clientW 823/951/695), 390은 아코디언
+- 대비(실측 합성): 열 문자 배지 **15.65** · 열 업종 **6.46**(D-QA02) · "기본값 · A" **6.46**(D-QA02) · 대표색 오류 문구 **6.52**(D-QA03) · 요약 바 "초안 보기" **10.78**(D-QA01) · 출처 글자 primary-text 6.45 · "선택됨" 14.08 · 채운 원 4.46 · 빈 원 3.23
+- 키보드: 행 roving(Tab 진입 = 선택된 버튼, ←/→·End, 다음 Tab = 다음 행) 정상, 포커스 링 2중 링
+- 캡처: `screens/compare-1280.png`·`compare-1024.png`·`compare-768.png`·`compare-390.png`·`compare-1280-scrolled-focus.png`

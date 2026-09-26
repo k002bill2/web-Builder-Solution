@@ -1,0 +1,11 @@
+# V2-4 브라우저 실측 — ego-browser(space 14), vite preview 127.0.0.1:4318, 13:05 KST 종료(lsof exit 1)
+# 준비: /catalog에서 5개 비교 추가 → "비교 보드 열기" → Hero=A·카드=B 선택 → 대표색 "abc" 입력 후 Tab(D-QA03 오류 문구)
+# 측정 함수: /tmp/v24-measure.mjs (조상 배경을 흰 면 위에 8비트 합성 → WCAG 대비)
+{"width":1280,"docOverflow":-15,"table":{"scrollW":1088,"clientW":823,"scrolls":true},"theadBg":"rgba(0, 0, 0, 0)","badge":15.65,"industry":{"text":"의료","ratio":6.46},"defaultLabel":{"text":"기본값 · A","ratio":6.46},"origin":{"text":"A · 동네 치과 클리닉","ratio":6.45},"selected":{"text":14.08,"cellBg":"rgb(242, 242, 253)"},"emptyCircle":3.23,"summaryShow":"none","summaryBar":"none","panel":{"bg":"rgba(0, 0, 0, 0)","borderLeft":"1px rgba(31, 54, 40, 0.12)","borderTop":"0px","x":877,"w":360},"colorError":{"ratio":6.52},"dots":["rgb(31, 95, 191)"]}
+{"width":1024,"docOverflow":-15,"table":{"scrollW":1088,"clientW":951,"scrolls":true},"badge":15.65,"industry":6.46,"defaultLabel":6.46,"origin":6.45,"selected":{"text":14.08,"cellBg":"rgb(242, 242, 253)"},"emptyCircle":3.23,"summaryShow":10.78,"summaryBar":{"bg":"rgb(26, 38, 32)","bottom":900},"panel":{"borderLeft":"0px","borderTop":"1px","x":28,"w":953},"colorError":6.52}
+{"width":768,"docOverflow":-15,"table":{"scrollW":1088,"clientW":695,"scrolls":true},"badge":15.65,"industry":6.46,"defaultLabel":6.46,"origin":6.45,"selected":{"text":14.08},"emptyCircle":3.23,"summaryShow":10.78,"summaryBar":{"bg":"rgb(26, 38, 32)","bottom":900},"panel":{"borderTop":"1px","x":28,"w":697},"colorError":6.52}
+{"width":390,"docOverflow":-15,"table":"accordion","badge":15.65,"industry":6.46,"defaultLabel":6.46,"origin":6.45,"selected":{"text":14.08,"cellBg":"rgb(240, 243, 238)(아코디언 li muted — 버튼 자체가 primary-container)"},"emptyCircle":3.23,"summaryShow":10.78,"summaryBar":{"bg":"rgb(26, 38, 32)","bottom":844},"panel":{"borderTop":"1px","x":16,"w":343},"colorError":6.52}
+# docOverflow -15 = 세로 스크롤바 폭(scrollWidth < innerWidth) → 문서 가로 넘침 0. 5열은 표 영역 안에서만 스크롤.
+# 채운 원(재측정, 아이콘 색 vs 버튼 면): rgb(90,95,232) on rgb(242,242,253) = 4.46 (비텍스트 3:1 이상)
+# 키보드(1280): "…전부 선택: E …" → Tab = Hero A(선택됨, aria-pressed true) · → = Hero B · End = Hero E · Tab = 메뉴 구조 A. 모두 :focus-visible, 2중 링(흰 2px + rgb(37,99,235) 4px)
+# sticky: 표 scrollLeft 200에서 행 머리글 left 29(표 left 28) 고정, 면 rgb(255,255,255) 불투명

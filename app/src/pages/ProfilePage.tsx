@@ -88,13 +88,20 @@ function ProfileView({
   const diff = diffTarget && diffTarget.version !== viewed.version ? diffTarget : undefined;
   const [from, to] = ordered(diff ?? viewed, viewed);
   // Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다. 문장은 상시 "프로필 알림" 영역으로(A-9), 요청 값이 바뀔 때 한 번(문장이 같아도).
-  // 요청 값이 바뀌면 그 문장을 거둔다 — 유효한 버전으로 가면 알림도 사라진다(D-2A4-04)
+  // 요청 값이 바뀌면 그 문장을 거둔다 — 유효한 버전으로 가면 알림도 사라진다(D-2A4-04).
+  // 같은 요청 값이면 최신 번호가 바뀌어도(조정 저장·STALE) 다시 알리지 않는다 — 저장 알림을 덮지 않게(D-2A4B2-03). 보이는 Callout은 최신 번호를 따른다
   const missing = requested !== null && !found ? missingVersionText(requested, latest.version) : null;
+  const latestVersion = useRef(latest.version);
   useEffect(() => {
-    if (!missing) return;
-    announce(missing);
-    return () => withdraw(missing);
-  }, [requested, missing, announce, withdraw]);
+    latestVersion.current = latest.version;
+  });
+  const isMissing = missing !== null;
+  useEffect(() => {
+    if (!isMissing || requested === null) return;
+    const text = missingVersionText(requested, latestVersion.current);
+    announce(text);
+    return () => withdraw(text);
+  }, [requested, isMissing, announce, withdraw]);
 
   const titleOf = (id: string) => sources.get(id)?.title ?? "출처 회수됨";
   const h1 = useRef<HTMLHeadingElement>(null);

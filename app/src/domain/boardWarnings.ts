@@ -36,9 +36,12 @@ function columnsWhere(board: CompareBoard, results: readonly ComparisonResult[],
     });
 }
 
-function correctedPrimary(primary: string, against: string): WarningFix {
-  const fix = nearestCompliantColor(primary, against);
-  return { kind: "use-corrected-primary", from: primary, hex: fix.hex, ratio: formatRatio(fix.ratio), actionLabel: "보정값 쓰기" };
+/** 보드 목표는 4.5라 늘 닿는다(흑·백 중 하나 ≥ 4.58). 못 닿으면 "보정값 쓰기"를 내지 않는다 — 보정 없는 값을 보정값으로 보이지 않게 */
+function correctedPrimary(primary: string, against: string): WarningFix[] {
+  const result = nearestCompliantColor(primary, against);
+  if (!result.reached) return [];
+  const { fix } = result;
+  return [{ kind: "use-corrected-primary", from: primary, hex: fix.hex, ratio: formatRatio(fix.ratio), actionLabel: "보정값 쓰기" }];
 }
 
 function contrastWarning(check: ContrastCheck, board: CompareBoard, results: readonly ComparisonResult[], draft: ReadyDraft): BoardWarning {
@@ -47,7 +50,7 @@ function contrastWarning(check: ContrastCheck, board: CompareBoard, results: rea
   if (check.id === "C-1") {
     const source = draft.items.find((i) => i.rowId === "palette")?.source;
     const subject = source && "columnLabel" in source ? `${source.columnLabel} 팔레트 대표색` : "사용자 대표색";
-    return { ...base, message: `${subject} 위 흰 글자 대비가 ${ratio}로 ${BELOW}(버튼·어두운 카드).`, fixes: [correctedPrimary(check.background, ON_PRIMARY)] };
+    return { ...base, message: `${subject} 위 흰 글자 대비가 ${ratio}로 ${BELOW}(버튼·어두운 카드).`, fixes: correctedPrimary(check.background, ON_PRIMARY) };
   }
   if (check.id === "C-2") {
     return { ...base, message: `본문 잉크와 배경 대비가 ${ratio}로 ${BELOW}.`, fixes: [{ kind: "defer-to-profile", message: "프로필 단계에서 보정을 제안합니다" }] };
@@ -57,7 +60,7 @@ function contrastWarning(check: ContrastCheck, board: CompareBoard, results: rea
     ...base,
     message: `어두운 카드의 글자(잉크)와 카드 표면(대표색) 대비가 ${ratio}로 ${BELOW}.`,
     // 밝은 카드 열이 없으면 카드 표면(대표색)을 잉크 대비 4.5:1로 보정 — 흰 글자 기준(C-1) 보정은 어두운 잉크와의 대비를 더 낮출 수 있다
-    fixes: lightCards.length > 0 ? lightCards : [correctedPrimary(check.background, check.foreground)],
+    fixes: lightCards.length > 0 ? lightCards : correctedPrimary(check.background, check.foreground),
   };
 }
 

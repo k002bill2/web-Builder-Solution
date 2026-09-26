@@ -59,6 +59,11 @@ export interface CorrectionProposal {
   readonly checks: readonly ContrastCheckId[];
   /** 충돌(P-S15): 보정 없이 통과하던 검사가 새로 미달, 또는 같은 역할 검사가 여전히 미달. 있으면 "보정값 쓰기" 없음 */
   readonly conflict?: readonly BrokenCheck[];
+  /**
+   * 명도 전 구간에서 목표에 못 닿음(강화 7.0 + 중간 명도 배경, D-2A4B2-01). `to`·`after`는 대비가 가장 높은 후보이고,
+   * 기준 검사가 여전히 미달이라 `conflict`가 늘 함께 온다 — 화면은 P-S15 충돌(보정값 쓰기 없음)로 보인다
+   */
+  readonly unreachable?: true;
 }
 
 const hexOf = (palette: readonly PaletteEntry[], role: PaletteRole): string => {
@@ -85,7 +90,8 @@ export function proposeCorrections(palette: readonly PaletteEntry[], cardTone: S
     if (!basis) return [];
     const target = CONTRAST_TARGET[level];
     // C-1은 흰 글자를 두고 면(primary)을 옮긴다 — 나머지는 배경을 두고 글자 역할을 옮긴다
-    const fix = nearestCompliantColor(role === "primary" ? basis.background : basis.foreground, role === "primary" ? ON_PRIMARY : basis.background, target);
+    const search = nearestCompliantColor(role === "primary" ? basis.background : basis.foreground, role === "primary" ? ON_PRIMARY : basis.background, target);
+    const fix = search.reached ? search.fix : search.best;
     const after = checkProfileContrast(palette.map((p) => (p.role === role ? { ...p, hex: fix.hex } : p)), cardTone, level);
     const broken = after.flatMap((c, i): BrokenCheck[] => {
       const was = before[i]!;
@@ -103,6 +109,7 @@ export function proposeCorrections(palette: readonly PaletteEntry[], cardTone: S
       lightnessDelta: fix.lightnessDelta,
       checks: own.map((c) => c.id),
       ...(broken.length > 0 && { conflict: broken }),
+      ...(!search.reached && { unreachable: true as const }),
     }];
   });
 }

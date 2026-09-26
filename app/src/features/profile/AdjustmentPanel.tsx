@@ -1,7 +1,7 @@
 /**
  * 전역 조정 (DS-2A-04 3.4 · P-S07·S10~S13) — 밀도·대비·모션·사이트 목적 라디오 그룹(Q2) + 조정 저장·취소. 엔진 청크 전용(첫 화면 예산).
  * 범위 밖 옵션은 aria-disabled + 그룹 설명, 이어받은 값이 범위 밖이면 그 그룹에 Callout + "맞추기"(P-S13).
- * 모든 비활성 행동은 aria-disabled + 보이는 이유(5.2). 버튼이 사라지는 조작(취소·맞추기) 뒤에는 포커스를 옮긴다.
+ * 모든 비활성 행동은 aria-disabled + 보이는 이유(5.2). 버튼이 사라지는 조작(취소·맞추기·다시 시도) 뒤에는 포커스를 옮긴다.
  */
 import { useEffect, useId, useRef } from "react";
 import { Button } from "../../components/ds/Button";
@@ -143,7 +143,15 @@ export function AdjustmentPanel(props: AdjustmentPanelProps) {
         <div role="alert" className="ds-body3 flex flex-wrap items-center gap-2 rounded-md bg-status-negative-bg p-3 text-status-negative-text">
           <span>{props.alert.text}</span>
           {props.alert.retry && (
-            <Button variant="outline" size="sm" onClick={save}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // 저장을 시작하면 알림과 함께 이 버튼이 사라진다 — 포커스를 조정 저장 버튼으로(첫 저장 경로와 같게, D-2A4B2-02)
+                if (!blocked) focusAfter.current = "save";
+                save();
+              }}
+            >
               다시 시도
             </Button>
           )}

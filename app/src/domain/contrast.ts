@@ -51,18 +51,27 @@ export interface ContrastFix {
   readonly lightnessDelta: number;
 }
 
-/** `against` 위(또는 아래)에서 target 이상이 되는 가장 가까운 명도의 색. 같은 거리면 어두운 쪽. */
-export function nearestCompliantColor(hex: string, against: string, target = AA_BODY_RATIO): ContrastFix {
+/**
+ * 보정 탐색 결과. 명도 전 구간(흑~백)에서 target에 못 닿으면 `reached: false` + 가장 대비가 높은 후보(`best`).
+ * 4.5는 늘 닿는다(흑·백 중 큰 대비의 최솟값 ≈ 4.58) — 7.0은 상대 휘도 약 0.10~0.30 배경에서 못 닿는다(D-2A4B2-01).
+ */
+export type ContrastSearch =
+  | { readonly reached: true; readonly fix: ContrastFix }
+  | { readonly reached: false; readonly best: ContrastFix };
+
+/** `against` 위(또는 아래)에서 target 이상이 되는 가장 가까운 명도의 색. 같은 거리면 어두운 쪽. 못 닿으면 throw하지 않고 값으로 알린다 */
+export function nearestCompliantColor(hex: string, against: string, target = AA_BODY_RATIO): ContrastSearch {
   const original = hex.toUpperCase();
+  let best: ContrastFix | undefined;
   for (let k = 0; k * LIGHTNESS_STEP <= 100; k += 1) {
     for (const delta of k === 0 ? [0] : [-k * LIGHTNESS_STEP, k * LIGHTNESS_STEP]) {
       const candidate = delta === 0 ? original : shiftLightness(original, delta);
       const ratio = contrastRatio(candidate, against);
-      if (ratio >= target) return { hex: candidate, ratio, lightnessDelta: delta };
+      if (ratio >= target) return { reached: true, fix: { hex: candidate, ratio, lightnessDelta: delta } };
+      if (!best || ratio > best.ratio) best = { hex: candidate, ratio, lightnessDelta: delta };
     }
   }
-  // 흑·백 중 하나는 어떤 색에도 4.5:1 이상이라 여기에 오지 않는다
-  throw new Error(`대비 ${target}:1을 만들 수 없습니다: ${hex} / ${against}`);
+  return { reached: false, best: best! };
 }
 
 /** C-1~C-3 보드(1a-03 3.4) · C-4·C-5 프로필 화면 (DS-2A-04 3.3) */

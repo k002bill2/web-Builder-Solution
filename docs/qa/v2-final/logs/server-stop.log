@@ -3,3 +3,7 @@
 67980     1 npm exec vite preview --host 127.0.0.1 --port 4337 --strictPort        
 68016 67980 node /Users/younghwankang/orca/workspaces/web-builder-solution/qa-v2-final/app/node_modules/.bin/vite preview --host 127.0.0.1 --port 4337 --strictPort
 lsof exit 1
+== 보충 라운드 2026-09-26 13:37:16 KST
+  PID  PPID COMMAND
+85124 85095 node /Users/younghwankang/orca/workspaces/web-builder-solution/qa-v2-final/app/node_modules/.bin/vite preview --host 127.0.0.1 --port 4337 --strictPort
+lsof exit 1

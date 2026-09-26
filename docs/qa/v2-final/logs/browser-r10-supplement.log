@@ -1,0 +1,9 @@
+space 16
+상세 radio 면·링 {"radioBg":"rgb(255, 255, 255)","ancestors":["radiogroup:rgba(31, 54, 40, 0.06)","null:rgb(240, 243, 238)","null:rgb(255, 255, 255)","null:rgb(255, 255, 255)"],"double":false}
+{"label":"D-QA02 '기본값' 라벨 1280(초안 패널)","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+{"label":"D-QA02 열 머리글 업종 '의료'","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+기본값 표본 ["기본값 · A","기본값 · A","기본값 · A"]
+{"label":"D-QA02 '기본값' 390","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+v1 확정 → http://127.0.0.1:4337/profile/profile-1
+v1 확정 직후(변경 없음) 확정 버튼 [{"t":"새 버전으로 확정 (v2)","dis":"true","desc":"확정한 뒤 바뀐 내용이 없습니다"},{"t":"프로필 확정","dis":"true","desc":"확정한 뒤 바뀐 내용이 없습니다"}]
+v1 이후 변경 후 확정 버튼 [{"t":"새 버전으로 확정 (v2)","dis":null,"desc":null},{"t":"프로필 확정","dis":null,"desc":null}]

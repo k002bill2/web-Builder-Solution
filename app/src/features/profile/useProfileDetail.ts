@@ -86,10 +86,13 @@ export function useProfileDetail(profileId: string) {
     [loaded, profiles, profileId],
   );
 
+  /** "프로필 알림" 영역에 문장을 낸다(같은 문장이어도 key가 바뀌어 다시 읽힌다) */
+  const announce = useCallback((text: string) => setStatus((s) => ({ text, key: s.key + 1 })), []);
+
   const state: ProfileDetailState = !loaded
     ? { status: "loading" }
     : !loaded.series
       ? { status: "not-found" }
       : { status: "ready", series: loaded.series, engine: loaded.engine, sources: loaded.sources };
-  return { state, status, alert, reverting, revert };
+  return { state, status, alert, reverting, revert, announce };
 }

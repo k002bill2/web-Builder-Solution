@@ -40,12 +40,12 @@ const pick = (versions: readonly ProfileVersion[], param: string | null) => vers
 const ordered = (a: ProfileVersion, b: ProfileVersion) => (a.version < b.version ? ([a, b] as const) : ([b, a] as const));
 
 function ProfileDetail({ profileId }: { readonly profileId: string }) {
-  const { state, status, alert, reverting, revert } = useProfileDetail(profileId);
+  const { state, status, alert, reverting, revert, announce } = useProfileDetail(profileId);
   return (
     <>
       {state.status === "loading" && <LoadingState />}
       {state.status === "not-found" && <ProfileNotFound />}
-      {state.status === "ready" && <ProfileView state={state} alert={alert} reverting={reverting} revert={revert} />}
+      {state.status === "ready" && <ProfileView state={state} alert={alert} reverting={reverting} revert={revert} announce={announce} />}
       {/* 알림 영역은 늘 DOM에 둔다(display:none 금지, 5.3) */}
       <p role="status" aria-label="프로필 알림" className="sr-only">
         {status.text && <span key={status.key}>{status.text}</span>}
@@ -59,11 +59,13 @@ function ProfileView({
   alert,
   reverting,
   revert,
+  announce,
 }: {
   readonly state: Extract<ProfileDetailState, { status: "ready" }>;
   readonly alert: string | null;
   readonly reverting: boolean;
   readonly revert: (version: number) => Promise<number | undefined>;
+  readonly announce: (text: string) => void;
 }) {
   const [params, setParams] = useSearchParams();
   const latest = series.versions.at(-1)!;
@@ -75,6 +77,11 @@ function ProfileView({
   const diffTarget = pick(series.versions, params.get("diff"));
   const diff = diffTarget && diffTarget.version !== viewed.version ? diffTarget : undefined;
   const [from, to] = ordered(diff ?? viewed, viewed);
+  // Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다. 문장은 상시 "프로필 알림" 영역으로(A-9), 요청 값이 바뀔 때 한 번
+  const missing = requested !== null && !found ? missingVersionText(requested, latest.version) : null;
+  useEffect(() => {
+    if (missing) announce(missing);
+  }, [missing, announce]);
 
   const titleOf = (id: string) => sources.get(id)?.title ?? "출처 회수됨";
   const h1 = useRef<HTMLHeadingElement>(null);
@@ -136,12 +143,7 @@ function ProfileView({
           비교 보드에서 선택 바꾸기
         </Link>
       </header>
-      {/* Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다 */}
-      {requested !== null && !found && (
-        <div role="status">
-          <Callout tone="info" title={missingVersionText(requested, latest.version)} />
-        </div>
-      )}
+      {missing && <Callout tone="info" title={missing} />}
       {!isLatest && (
         <Callout
           tone="info"

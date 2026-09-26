@@ -2,7 +2,7 @@
  * DS-2A-04 2a-04a2 프로필 화면 — `/profile` 목록 · `/profile/:id` 상세 (P-AC-01~10 화면 · 41 · 33 · 34 · 37).
  * 보드·프로필 메모리 저장소는 store 하나(createMemoryStudio). "다른 탭"의 쓰기는 보드 저장소를 직접 부른다.
  */
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createMemoryStudio } from "../data/memoryStudio";
@@ -230,7 +230,9 @@ describe("P-AC-09 버전 비교 (P-S08)", () => {
 
 describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내", () => {
   const columns = (table: HTMLElement) => within(table).getAllByRole("columnheader").map((th) => th.textContent);
-  const statusWith = (text: string) => screen.getByText(text).closest("[role=status]");
+  /** 상시 "프로필 알림" 영역에 문장이 나왔는지 + 보이는 안내 Callout 제목(h3) */
+  const announced = (text: string) => waitFor(() => expect(screen.getByRole("status", { name: "프로필 알림" })).toHaveTextContent(text));
+  const missingCallout = (name: string | RegExp) => screen.queryByRole("heading", { level: 3, name });
 
   it("F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)", async () => {
     await openProfile("/profile/profile-1?v=1&diff=2", 3);
@@ -271,20 +273,47 @@ describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버�
     await openProfile("/profile/profile-1?v=7", 3);
     await h1();
     expect(screen.getByText("v3 · 현재")).toBeInTheDocument();
-    expect(statusWith("요청한 v7이 없어 최신 v3을 보여 줍니다")).not.toBeNull();
+    await announced("요청한 v7이 없어 최신 v3을 보여 줍니다");
+    expect(missingCallout("요청한 v7이 없어 최신 v3을 보여 줍니다")).toBeInTheDocument();
     expect(screen.queryByText(/보고 있습니다/)).not.toBeInTheDocument();
   });
 
   it("F-5 ?v=abc → '요청한 버전이 없어 최신 v3을 보여 줍니다'", async () => {
     await openProfile("/profile/profile-1?v=abc", 3);
     await h1();
-    expect(statusWith("요청한 버전이 없어 최신 v3을 보여 줍니다")).not.toBeNull();
+    await announced("요청한 버전이 없어 최신 v3을 보여 줍니다");
+    expect(missingCallout("요청한 버전이 없어 최신 v3을 보여 줍니다")).toBeInTheDocument();
   });
 
   it("F-5 ?v=3·?diff=9 → 요청 버전 안내 없음", async () => {
     await openProfile("/profile/profile-1?v=3&diff=9", 3);
     await h1();
     expect(screen.queryByText(/요청한/)).not.toBeInTheDocument();
+  });
+
+  it("F-6 ?v=7 → '프로필 알림' 영역 = '요청한 v7이 없어 최신 v3을 보여 줍니다', 보이는 Callout 유지 · Callout 쪽 role=status 없음", async () => {
+    await openProfile("/profile/profile-1?v=7", 3);
+    await h1();
+    await announced("요청한 v7이 없어 최신 v3을 보여 줍니다");
+    const callout = missingCallout("요청한 v7이 없어 최신 v3을 보여 줍니다");
+    expect(callout).toBeVisible();
+    expect(callout?.closest("[role=status]")).toBeNull();
+    expect(screen.getAllByRole("status")).toEqual([screen.getByRole("status", { name: "프로필 알림" })]);
+  });
+
+  it("F-7 같은 화면에서 ?v=7 → ?v=9 알림 문장 갱신, ?v=1(있는 버전) → 안내 Callout 사라짐", async () => {
+    const { router } = await openProfile("/profile/profile-1?v=7", 3);
+    await h1();
+    await announced("요청한 v7이 없어 최신 v3을 보여 줍니다");
+    const region = screen.getByRole("status", { name: "프로필 알림" });
+    await act(() => router.navigate("/profile/profile-1?v=9"));
+    await announced("요청한 v9가 없어 최신 v3을 보여 줍니다");
+    expect(screen.getByRole("status", { name: "프로필 알림" })).toBe(region);
+    expect(missingCallout("요청한 v9가 없어 최신 v3을 보여 줍니다")).toBeInTheDocument();
+    expect(missingCallout(/요청한 v7/)).not.toBeInTheDocument();
+    await act(() => router.navigate("/profile/profile-1?v=1"));
+    expect(await screen.findByText("v1을 보고 있습니다 · 현재 v3")).toBeInTheDocument();
+    expect(missingCallout(/요청한/)).not.toBeInTheDocument();
   });
 });
 

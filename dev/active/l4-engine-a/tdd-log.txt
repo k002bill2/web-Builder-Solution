@@ -66,3 +66,11 @@ Error: Failed to resolve import "./diff" from "src/engine/ops/sectionOps.test.ts
 ## 4절 ops GREEN
  Test Files  8 passed (8)
       Tests  123 passed (123)
+
+## 5절 번들 가드 RED(탐지 끔)
+     × 탐지기 자체 검사 — 정적·동적·re-export·부작용 import를 잡고, 이름만 비슷한 경로는 잡지 않는다 4ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/engine/engineImportGuard.test.ts > 엔진 import 가드 (번들 0) > 탐지기 자체 검사 — 정적·동적·re-export·부작용 import를 잡고, 이름만 비슷한 경로는 잡지 않는다
+      Tests  1 failed | 1 passed (2)
+## 5절 번들 가드 GREEN(원복)
+      Tests  2 passed (2)

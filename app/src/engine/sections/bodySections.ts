@@ -52,7 +52,7 @@ const SPECS: readonly BodySpec[] = [
   { type: "services", variant: "cards-3", label: "카드 3개", maxMotion: "L2", slots: [heading("서비스"), intro, ...card(1), ...card(2), ...card(3)] },
   { type: "services", variant: "list", label: "목록형", maxMotion: "L1", slots: [heading("서비스"), intro, long("items", "서비스 목록", 400, { required: true, text: "서비스 1 · 서비스 2 · 서비스 3" })] },
   { type: "portfolio", variant: "grid-3", label: "이미지 그리드 3칸", maxMotion: "L2", slots: [heading("작업 사례"), intro, image("image1", "사례 이미지 1"), image("image2", "사례 이미지 2"), image("image3", "사례 이미지 3")] },
-  { type: "statistics", variant: "row-3", label: "수치 3개 한 줄", maxMotion: "L2", slots: [heading("숫자로 보기"), ...stat(1), ...stat(2), ...stat(3)] },
+  { type: "statistics", variant: "stats-3", label: "수치 3개 한 줄", maxMotion: "L2", slots: [heading("숫자로 보기"), ...stat(1), ...stat(2), ...stat(3)] },
   { type: "testimonials", variant: "quotes-2", label: "후기 2개", maxMotion: "L1", slots: [heading("고객 후기"), ...quote(1), ...quote(2)] },
   { type: "pricing", variant: "tiers-2", label: "요금제 2단", maxMotion: "L1", slots: [heading("요금 안내"), intro, ...plan(1), ...plan(2)] },
   { type: "faq", variant: "accordion", label: "펼침 목록", maxMotion: "L1", slots: [heading("자주 묻는 질문"), ...qa(1), ...qa(2), ...qa(3)] },

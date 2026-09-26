@@ -19,7 +19,7 @@ vi.mock("../data/writeBodyLoader", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../data/writeBodyLoader")>();
   loads.boardConfirm.mockImplementation(actual.loadBoardConfirm);
   loads.profileWrites.mockImplementation(actual.loadProfileWrites);
-  return { loadBoardConfirm: loads.boardConfirm, loadProfileWrites: loads.profileWrites };
+  return { ...actual, loadBoardConfirm: loads.boardConfirm, loadProfileWrites: loads.profileWrites };
 });
 
 const THREE = ["ref-a", "ref-b", "ref-c"];

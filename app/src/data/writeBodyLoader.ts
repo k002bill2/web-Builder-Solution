@@ -7,3 +7,5 @@
 export const loadBoardConfirm = () => import("./memoryBoardConfirm");
 /** 프로필 쓰기 본문(조정 저장·되돌리기) ← getAdjustmentRange·saveAdjustments·revertTo — 한 청크로 받아 로더를 늘리지 않는다 */
 export const loadProfileWrites = () => import("./memoryProfileAdjust");
+/** 보드 선택 저장 검증(boardInput, zod — BUNDLE-HEADROOM) ← savePicks(선택·비우기·되돌리기·사용자 스타일·열 빼기·다시 시도 조작 뒤) */
+export const loadBoardInput = () => import("../domain/boardInput");

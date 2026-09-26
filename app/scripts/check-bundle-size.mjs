@@ -26,7 +26,7 @@ const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
  */
 /** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처) — 모든 시나리오에 자동 */
 const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
-/** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안·zod) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
+/** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
 const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"];
 /**
  * 조작 뒤 — /compare:
@@ -38,12 +38,17 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
  *  - 프로필 쓰기 본문(memoryProfileAdjust = 조정 저장 + 되돌리기, FIX3 1안): writeBodyLoader loadProfileWrites ← memoryProfileRepository
  *    saveAdjustments·revertTo ← 프로필 화면 "조정 저장"·"다시 시도"(AdjustmentPanel onClick → useProfileDetail.save)·"이 버전으로 되돌리기"
  *    (ProfilePage onRevert) onClick. 보드 화면은 부르지 않는다. getAdjustmentRange는 본문을 받지 않는다(기본 범위 상수 domain/profile, 2a-04b2)
+ *  - 보드 입력 검증(boardInput = zod, BUNDLE-HEADROOM): ① writeBodyLoader loadBoardInput ← memoryCompareBoardRepository savePicks ←
+ *    picksSaver.save·retry ← useCompareBoard toggle·pickAll·clear·undoLast·changeCustom·applyFix·removeColumn·retrySave(모두 onClick·onChange)
+ *    ② boardInputLoader ← boardEngine checkPrimaryColor(대표색 blur·Enter)·prepare(대표색 onFocus). 진입(getBoard·getComparison·엔진·입력 틀)은
+ *    부르지 않는다 — BoardInputLoad.test "번들 분류 근거"가 요청 0을 확인한다
  */
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
   "src/data/memoryBoardConfirm.ts",
   "src/domain/profileAdjustments.ts",
   "src/data/memoryProfileAdjust.ts",
+  "src/domain/boardInput.ts",
 ];
 
 /**
@@ -61,12 +66,13 @@ const SCENARIOS = [
   { name: "/compare (조정 있음)", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
   // 프로필 엔진(대비·비교·문구·조정 패널, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처.
   // 진입 때 자동: useProfileDetail load → getProfile·getAdjustmentRange(2a-04b2). 범위 조회는 쓰기 본문을 받지 않으므로
-  // memoryProfileAdjust는 조작 뒤("조정 저장"·"다시 시도"·"이 버전으로 되돌리기" onClick) — WriteBodyLoad.test "번들 분류 근거"가 요청 0을 확인한다
+  // memoryProfileAdjust는 조작 뒤("조정 저장"·"다시 시도"·"이 버전으로 되돌리기" onClick) — WriteBodyLoad.test "번들 분류 근거"가 요청 0을 확인한다.
+  // boardInput(zod)은 보드 저장소 savePicks 뒤 — 프로필 화면은 부르지 않는다(BoardInputLoad.test "번들 분류 근거")
   {
     name: "/profile",
     page: "src/pages/ProfilePage.tsx",
     auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
-    afterAction: ["src/data/memoryProfileAdjust.ts"],
+    afterAction: ["src/data/memoryProfileAdjust.ts", "src/domain/boardInput.ts"],
   },
   { name: "/studio (자리표시)", page: "src/pages/PlaceholderPage.tsx", auto: EAGER_DYNAMIC },
 ];

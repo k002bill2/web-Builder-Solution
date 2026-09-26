@@ -1,10 +1,10 @@
 /**
- * 버전 비교·요약·값 목록 (DS-2A-04 3.1 · 3.5 · 6.4 `diffProfiles`·`summarizeVersion`). 엔진 청크 전용.
+ * 버전 비교·요약·값 목록 (DS-2A-04 3.1 · 3.5 · 6.4 `diffProfiles`). 엔진 청크 전용.
  * 화면은 적용된 값(effectiveProfile) + 조정(대비·사이트 목적)으로 비교·요약한다(`diffVersions`·`summarizeVersions`, 2a-04b2).
  */
 import type { DesignProfileInput } from "../../domain/compareBoard";
 import { ELEMENT_LABELS } from "../../domain/elementLibrary";
-import type { CarryOverItem, ProfileVersion } from "../../domain/profile";
+import type { ProfileVersion } from "../../domain/profile";
 import { effectiveProfile } from "../../domain/effectiveProfile";
 import { CONTRAST_LABELS, droppedSummary, purposeLabel } from "./adjustmentText";
 import { profileFieldRows, type FieldRow } from "./profileFields";
@@ -62,16 +62,7 @@ export function valueRows(v: ProfileVersion, titleOf: TitleOf): readonly FieldRo
   });
 }
 
-/** 버전 줄 요약: 직전 버전과의 차이 최대 2개 + "외 N". 재확정에서 지운 조정이 있으면 그 한 줄을 붙인다 (6.1-3) */
-export function summarizeVersion(prev: DesignProfileInput | undefined, next: DesignProfileInput, titleOf: TitleOf, dropped: readonly CarryOverItem[] = []): string {
-  const summary = baseSummary(prev, next, titleOf);
-  return dropped.length > 0 ? `${summary} · ${droppedSummary(dropped)}` : summary;
-}
-
-function baseSummary(prev: DesignProfileInput | undefined, next: DesignProfileInput, titleOf: TitleOf): string {
-  return prev ? changedSummary(diffProfiles(prev, next, titleOf)) : "첫 버전";
-}
-
+/** 직전 버전과의 차이 최대 2개 + "외 N" (6.1-3) */
 function changedSummary(rows: readonly DiffRow[]): string {
   const changed = rows.filter((r) => r.changed).map((r) => r.label);
   if (changed.length === 0) return "바뀐 값 없음";

@@ -15,7 +15,7 @@
 - "비교 중" 버튼은 V2-1에서 이미 `outline` + `check`(SPEC 4.3이 적은 `assistive`는 과거 상태).
 
 ## RED (`logs/red.txt`)
-- 새·수정 테스트 41건 중 **22 failed / 19 passed**.
+- RED 대상 4파일 실행 41건(무수정 기존 포함) 중 **22 failed / 19 passed**. `previewView.test.ts` 4건은 모듈 부재로 파일 단위 실패(22에 미포함). 19 passed 중 새 테스트는 'outline 유지' 1건.
   - 실패: Tabs 가드 2, 정보 패널(V2-AC-27) 2, 점수 3칸 1, 태그 1(정보 패널 region이 없어서 — 태그 자체는 기준선에서도 `span`), DOM 순서 1, 아래 영역 1, 미리보기 폭·view URL·`tab=mobile` 호환 10, 유사 이동 후 데스크톱 1, D-QA06 3(가득 참 링크·성공 알림·보드 열기 이동), 키보드 radiogroup 1. `previewView.test.ts`는 모듈이 없어 파일 단위 실패.
   - **기준선에서 이미 통과(특성화)**: "'비교 중'도 outline 유지 + check + 글자" — V2-1이 이미 outline으로 바꿨다. 억지 RED를 만들지 않고 회귀 가드로 둔다.
 

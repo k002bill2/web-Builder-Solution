@@ -26,6 +26,8 @@ export interface BoardLoad {
 export interface ConfirmResult {
   readonly profileId: string;
   readonly version: number;
+  /** 재확정 이어받기에서 지운 조정 수(6.1-3 개수 단위) — 1 이상일 때만. 확정 뒤 "조정 M개를 지웠습니다"(P-S25 r6) */
+  readonly droppedCount?: number;
 }
 
 export interface CompareBoardRepository {

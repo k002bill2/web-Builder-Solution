@@ -55,7 +55,7 @@ export interface DraftPanelProps {
   readonly onApplyFix: (fix: WarningFix) => void;
   /** 사용자 스타일 입력 — 엔진 청크가 싣는다(첫 화면 JS에서 뺌, V2-1 · SPEC B-5). 없으면 그리지 않는다 */
   readonly CustomStyleFields?: ComponentType<CustomStyleFieldsProps>;
-  /** P-S25 이어받을 조정 — 확정 버튼 위. 조건부 청크가 그린다(DS-2A-04 2a-04b1) */
+  /** P-S25 이어받을 조정 — 확정 버튼 위. 개수 캡션(엔진 청크) + 펼칠 때 받는 판정·목록(DS-2A-04 r6) */
   readonly carryOver?: ReactNode;
   readonly headingRef?: Ref<HTMLHeadingElement>;
   readonly className?: string;

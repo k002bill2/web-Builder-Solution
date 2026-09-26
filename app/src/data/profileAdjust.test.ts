@@ -297,4 +297,25 @@ describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () =
     expect(retried.version).toBe(3);
     expect((await profiles.getProfile("profile-1"))!.versions.at(-1)!.adjustments).toEqual({ density: "compact" });
   });
+
+  it("P-AC-39 ⑦(저장소, r6): 확정 결과의 droppedCount = 지운 조정 수(M>0만) — 커밋 뒤 응답 실패의 같은 인자 재시도(멱등 재생)도 같은 수", async () => {
+    let failResponse = false;
+    const store = createStudioStore();
+    const delay = (call: BoardCall) => (failResponse && call.phase === "response" ? Promise.reject(new Error("응답 유실")) : undefined);
+    const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, now: NOW, initialBoard: boardOf(IDS, { hero: "ref-a" }), store, delay });
+    const profiles = createMemoryProfileRepository({ store, now: NOW });
+    const first = await board.confirmProfile(1, 0);
+    expect(first).toEqual({ profileId: "profile-1", version: 1 });
+    await profiles.saveAdjustments("profile-1", 1, { density: "compact", motion: "L0" });
+    const saved = await board.savePicks({ hero: "ref-a", motion: "ref-b" }, {}, 1);
+    failResponse = true;
+    await expect(board.createProfileVersion("profile-1", saved.revision, 2)).rejects.toThrow("응답 유실");
+    failResponse = false;
+    expect((await profiles.getProfile("profile-1"))!.latestVersion).toBe(3);
+    const retried = await board.createProfileVersion("profile-1", saved.revision, 2);
+    expect(retried).toEqual({ profileId: "profile-1", version: 3, droppedCount: 1 });
+    // 지운 조정 0개(Hero만 변경)면 필드 없음
+    const again = await board.savePicks({ hero: "ref-c", motion: "ref-b" }, {}, saved.revision);
+    expect(await board.createProfileVersion("profile-1", again.revision, 3)).toEqual({ profileId: "profile-1", version: 4 });
+  });
 });

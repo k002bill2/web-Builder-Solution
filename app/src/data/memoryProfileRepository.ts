@@ -5,12 +5,13 @@
  * 멱등 키: 조정 저장만 둔다(보드 확정과 같은 r3 계약, 별도 기록 — memoryProfileAdjust). 되돌리기는 키 없음.
  * `delay`·`fail` 주입은 보드 구현과 같은 모양(요청 도착 전·응답 반환 전, `fail`의 `phase: "commit"`은 조정 저장 삽입 뒤 커밋 앞).
  * `range`는 테마 허용 범위 주입(P-AC-13).
- * 조정 저장 본문(zod·정규화)은 조정 메서드를 처음 부를 때 받는다 — 보드 진입 직후 합계(/compare)에 싣지 않는다(2a-04b1 번들).
- * 받기는 `call`의 동기 구간 밖(앞)이라 비교·삽입 원자성은 그대로다.
+ * 쓰기 본문(조정 저장의 zod·정규화, 되돌리기 판정·삽입)은 그 메서드를 처음 부를 때 받는다(writeBodyLoader) — 보드 진입 직후
+ * 합계(/compare)에 싣지 않는다(2a-04b1 번들 · FIX3 1안). 받기는 `call`의 동기 구간 밖(앞)이라 비교·삽입 원자성은 그대로다.
  */
-import type { AdjustmentRange, ProfileSeries, ProfileSummary, ProfileVersion } from "../domain/profile";
+import type { AdjustmentRange, ProfileSeries, ProfileSummary } from "../domain/profile";
 import { ProfileError, type ProfileRepository } from "./profileRepository";
 import type { StudioReader, StudioStore } from "./studioStore";
+import { loadProfileWrites } from "./writeBodyLoader";
 
 export type ProfileMethod = keyof ProfileRepository;
 export interface ProfileCall {
@@ -35,9 +36,6 @@ function seriesOf(reader: StudioReader, profileId: string): ProfileSeries | unde
   const latest = versions.at(-1);
   return latest && { profileId, versions, latestVersion: latest.version };
 }
-
-/** 조정 메서드 본문 — 처음 부를 때 받는다(보드 진입 직후 합계 밖, 2a-04b1 번들) */
-const loadAdjust = () => import("./memoryProfileAdjust");
 
 export function createMemoryProfileRepository(options: MemoryProfileOptions): ProfileRepository {
   const { store, now = () => new Date().toISOString() } = options;
@@ -71,41 +69,22 @@ export function createMemoryProfileRepository(options: MemoryProfileOptions): Pr
       })),
     getProfile: (profileId) => call("getProfile", () => seriesOf(store, profileId)),
     getAdjustmentRange: async (profileId, version) => {
-      const range = options.range ?? (await loadAdjust()).DEFAULT_ADJUSTMENT_RANGE;
+      const range = options.range ?? (await loadProfileWrites()).DEFAULT_ADJUSTMENT_RANGE;
       return call("getAdjustmentRange", () => {
         if (!store.versions(profileId).some((v) => v.version === version)) throw new ProfileError("NOT_FOUND", `${profileId} v${version} 없음`);
         return range;
       });
     },
     saveAdjustments: async (profileId, expectedLatest, adjustments) => {
-      const { saveAdjustmentsIn, DEFAULT_ADJUSTMENT_RANGE } = await loadAdjust();
+      const { saveAdjustmentsIn, DEFAULT_ADJUSTMENT_RANGE } = await loadProfileWrites();
       const range = options.range ?? DEFAULT_ADJUSTMENT_RANGE;
       return call("saveAdjustments", (commitGate) =>
         store.transact((tx) => saveAdjustmentsIn(tx, { profileId, expectedLatest, adjustments, range, createdAt: now(), seriesOf: (reader) => seriesOf(reader, profileId), commitGate })),
       );
     },
-    revertTo: (profileId, version, expectedLatest) =>
-      call("revertTo", () =>
-        store.transact((tx) => {
-          const series = seriesOf(tx, profileId);
-          const target = series?.versions.find((v) => v.version === version);
-          if (!series || !target) throw new ProfileError("NOT_FOUND", `${profileId} v${version} 없음`);
-          if (series.latestVersion !== expectedLatest) throw new ProfileError("STALE_PROFILE", `expectedLatest ${expectedLatest} ≠ ${series.latestVersion}`, series);
-          // 최신 버전으로는 되돌리지 않는다 — 같은 내용의 버전만 늘어난다 (SPEC 10.0 A-Q3)
-          if (version === series.latestVersion) throw new ProfileError("SCHEMA_INVALID", "이미 최신 버전입니다");
-          const record: ProfileVersion = {
-            profileId,
-            version: series.latestVersion + 1,
-            origin: "revert",
-            basedOn: version,
-            baseReferenceId: target.baseReferenceId,
-            base: target.base,
-            adjustments: target.adjustments,
-            createdAt: now(),
-          };
-          tx.insert(record);
-          return tx.versions(profileId).at(-1)!;
-        }),
-      ),
+    revertTo: async (profileId, version, expectedLatest) => {
+      const { revertIn } = await loadProfileWrites();
+      return call("revertTo", () => store.transact((tx) => revertIn(tx, { profileId, version, expectedLatest, createdAt: now(), seriesOf: (reader) => seriesOf(reader, profileId) })));
+    },
   };
 }

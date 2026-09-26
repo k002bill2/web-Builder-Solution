@@ -11,10 +11,9 @@ import { removeColumn as removeBoardColumn, withoutReference } from "../../domai
 import type { WarningFix } from "../../domain/boardWarnings";
 import { draftStatusOf, type CompareBoard, type ComparisonRowId, type CustomStyle, type DraftStatus } from "../../domain/compareBoard";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
-import { EMPTY_ANNOUNCEMENT, intentOf, type Comparison, type Intent } from "./boardScreen";
+import { EMPTY_ANNOUNCEMENT, carryOverCount, intentOf, type Comparison, type Intent } from "./boardScreen";
 import { useCompareTray } from "./CompareTrayContext";
 import type { BoardEngine } from "./boardEngine";
-import type { CarryOverNoticeComponent } from "./carryOverPanel";
 import type { PicksSaver, PicksSaverState } from "./picksSaver";
 
 type Phase = "loading" | "error" | "ready";
@@ -40,7 +39,6 @@ export function useCompareBoard() {
   const [confirming, setConfirming] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [engine, setEngine] = useState<BoardEngine | null>(null);
-  const [CarryOverNotice, setCarryOverNotice] = useState<CarryOverNoticeComponent | null>(null);
   const engineRef = useRef<BoardEngine | null>(null);
   const saver = useRef<PicksSaver | null>(null);
   const lastSave = useRef<Promise<void>>(Promise.resolve());
@@ -124,21 +122,17 @@ export function useCompareBoard() {
   const evaluation = useMemo(() => (board && engine ? engine.evaluate(board, comparison) : null), [board, comparison, engine]);
   const view = useMemo(() => (board && engine ? engine.buildBoardView(board, comparison.results) : null), [board, comparison.results, engine]);
   const locked = confirming || removing;
-  // P-S25 — 확정한 프로필의 최신 버전에 조정이 있을 때만 패널 청크를 받는다(진입 직후 자동 로드 아님, DS-2A-04 2a-04b1).
-  // import를 엔진 청크에 두면 첫 화면 −0.09KB · 진입 직후 +0.15KB라 진입 직후 여유(생성 메모리 구현이 붙을 곳)를 위해 여기 둔다
+  // P-S25 (DS-2A-04 r6) — 진입 직후 자동은 개수 캡션뿐(인라인 계산). 판정·목록은 CarryOverCaption이 펼칠 때 받는다
   const confirmedRef = saved?.board.confirmed;
-  const adjusted = Object.keys(confirmedRef?.latest?.adjustments ?? {}).length > 0;
-  useEffect(() => {
-    if (!adjusted || CarryOverNotice) return;
-    import("./carryOverPanel").then(
-      (m) => setCarryOverNotice(() => m.CarryOverNotice),
-      (error: unknown) => console.error("[compare] 이어받기 패널 불러오기 실패", error),
-    );
-  }, [adjusted, CarryOverNotice]);
+  const adjustmentCount = carryOverCount(confirmedRef?.latest?.adjustments);
   const draft = evaluation?.draft;
   const carryOver =
-    CarryOverNotice && adjusted && confirmedRef?.confirmedBase && confirmedRef.latest && draft?.status === "ready"
-      ? { Component: CarryOverNotice, props: { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile } }
+    engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest && draft?.status === "ready"
+      ? {
+          Caption: engine.CarryOverCaption,
+          count: adjustmentCount,
+          props: { confirmedBase: confirmedRef.confirmedBase, adjustments: confirmedRef.latest.adjustments, nextBase: draft.profile },
+        }
       : null;
   // S-15 — 확정한 선택에서 바뀐 게 없으면 새 버전으로 확정하지 않는다 (태그도 "확정됨")
   const unchanged = useMemo(() => (board && engine ? engine.unchangedSinceConfirm(board) : false), [board, engine]);
@@ -256,7 +250,8 @@ export function useCompareBoard() {
         ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version)
         : await repository.confirmProfile(target.revision, 0);
       engineRef.current!.reportConfirmed(result.version, target.confirmed !== undefined);
-      navigate(`/profile/${result.profileId}`);
+      // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6)
+      navigate(`/profile/${result.profileId}`, result.droppedCount ? { state: { droppedCount: result.droppedCount } } : undefined);
     } catch (error) {
       engineRef.current!.reportConfirmFailed(error);
       await onConfirmError(error);

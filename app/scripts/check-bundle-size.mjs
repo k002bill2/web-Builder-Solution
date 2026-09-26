@@ -15,36 +15,57 @@ import { gzipSync } from "node:zlib";
 const ROUTE_BUDGET_KB = 100;
 const ROUTE_EAGER_BUDGET_KB = 125;
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
-/** 라우트 → 페이지 모듈. 라우트를 추가하면 여기에도 추가한다 (src/app/routes.tsx). */
-const ROUTE_PAGES = {
-  "/catalog": "src/pages/CatalogPage.tsx",
-  "/references/:id": "src/pages/ReferenceDetailPage.tsx",
-  "/compare": "src/pages/CompareBoardPage.tsx",
-  "/profile": "src/pages/ProfilePage.tsx",
-  "/studio (자리표시)": "src/pages/PlaceholderPage.tsx",
-};
 
-/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처). 진입 직후 합계(≤ 125KB)에 더한다. */
+/*
+ * dynamic import 분류 규칙 (FIX-2A04b1 BUNDLE-03 · FIX2 P-S25 r6) — 새 import()를 더하면 호출 지점을 보고 둘 중 하나로 넣는다.
+ *  - 자동: 사용자 조작 없이 렌더·effect·로더에서 실행된다 → 진입 직후 합계에 포함.
+ *    조건부여도 예산 밖이 아니다 — 그 조건이 참인 시나리오를 SCENARIOS에 따로 두고 125KB로 판정한다.
+ *  - 조작 뒤: 클릭·펼치기·저장 등 사용자 조작 핸들러 안에서만 실행된다 → 예산 밖, 크기만 출력(`afterAction`).
+ *  - 호출 지점을 확인하지 못하면 자동으로 분류한다.
+ */
+/** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처) — 모든 시나리오에 자동 */
 const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
+/** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안·zod) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
+const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"];
 /**
- * 라우트별 진입 직후 자동 로드 — /compare는 보드 엔진(선택 규칙·초안·zod)을 보드 저장소·비교 픽스처와 함께 받는다
- * (ADR-005 D3 · M1-UI-03b). 사용자가 실제로 받는 합계를 숨기지 않도록 진입 직후 합계에 더한다.
+ * 조작 뒤 — /compare:
+ *  - P-S25 판정·목록(carryOverPanel): carryOverLoader ← useCompareBoard openCarryOver(:134) ← CarryOverCaption details onToggle(open일 때,
+ *    :31)·"다시 시도" onClick(:40). "이어받기 확인"을 펼치는 조작 뒤에만 실행된다(r6). 진입 직후 자동은 개수 캡션(boardScreen carryOverCount 인라인)뿐
+ *  - 보드 확정 본문(memoryBoardConfirm, FIX3 1안): writeBodyLoader loadBoardConfirm ← memoryCompareBoardRepository confirmerFor ← confirmProfile·
+ *    createProfileVersion ← useCompareBoard.confirm(확정 버튼 onClick, 실패 뒤 "다시 시도" onClick — boardMessages confirmFailure)
+ *  - 재확정 이어받기 규칙(memoryBoardConfirm loadCarryOver ← prepare ← 위 확정 본문, 계열 최신에 조정이 있을 때만)
+ *  - 프로필 쓰기 본문(memoryProfileAdjust = 조정 저장 + 되돌리기, FIX3 1안): writeBodyLoader loadProfileWrites ← memoryProfileRepository
+ *    getAdjustmentRange·saveAdjustments·revertTo. 앱 호출 0(테스트만) — b2 화면이 진입 때 부르면 자동으로 옮긴다
  */
-const ROUTE_EAGER_DYNAMIC = {
-  // memoryStudio = 보드·프로필 메모리 구현 + 공유 store (main의 deferred 로더 하나, DS-2A-04 6.3)
-  "/compare": ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
-  // 프로필 엔진(대비·비교·문구, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처
-  "/profile": ["src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
-};
+const COMPARE_AFTER_ACTION = [
+  "src/features/compare/carryOverPanel.tsx",
+  "src/data/memoryBoardConfirm.ts",
+  "src/domain/profileAdjustments.ts",
+  "src/data/memoryProfileAdjust.ts",
+];
 
 /**
- * 조건부 dynamic import — 조건이 맞을 때만 받는다(자동 로드 아님). 예산 판정 밖, 진입 직후 합계에 없는 파일의 크기만 따로 출력한다 (2a-04b1).
- * /compare: P-S25 패널(확정한 프로필의 최신에 조정이 있을 때) · 재확정 이어받기 규칙(조정 있는 재확정 때) · 조정 저장 본문(saveAdjustments·getAdjustmentRange)
+ * 판정 대상 시나리오 — 라우트를 추가하면 여기에도 추가한다 (src/app/routes.tsx). 목록 키가 manifest에 없으면 실패.
+ *  - page: 라우트 페이지 모듈(첫 화면 = 공통 + 이 청크의 정적 import, ≤ 100KB)
+ *  - auto: 자동 dynamic import(진입 직후 = 첫 화면 + 이 목록의 정적 closure, ≤ 125KB)
+ *  - afterAction: 조작 뒤 dynamic import(진입 직후 합계에 없는 파일 크기만 출력)
  */
-const ROUTE_CONDITIONAL_DYNAMIC = {
-  "/compare": ["src/features/compare/carryOverPanel.tsx", "src/domain/profileAdjustments.ts", "src/data/memoryProfileAdjust.ts"],
-  "/profile": ["src/data/memoryProfileAdjust.ts"],
-};
+const SCENARIOS = [
+  { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC },
+  { name: "/references/:id", page: "src/pages/ReferenceDetailPage.tsx", auto: EAGER_DYNAMIC },
+  { name: "/compare", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
+  // 확정한 프로필의 최신 버전에 조정이 있을 때 — 자동으로 더 받는 dynamic import가 없다(캡션은 인라인 계산, CarryOverCaption은 엔진 청크).
+  // 판정·목록은 펼칠 때(조작 뒤). 자동 조건부 import가 다시 생기면 이 시나리오의 auto에 넣는다
+  { name: "/compare (조정 있음)", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
+  // 프로필 엔진(대비·비교·문구, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처
+  {
+    name: "/profile",
+    page: "src/pages/ProfilePage.tsx",
+    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
+    afterAction: ["src/data/memoryProfileAdjust.ts"],
+  },
+  { name: "/studio (자리표시)", page: "src/pages/PlaceholderPage.tsx", auto: EAGER_DYNAMIC },
+];
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
 const gzipKb = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
@@ -69,31 +90,24 @@ console.log(`[bundle] 공통 JS (gzip, 참고): ${format(sumKb(common))}`);
 for (const file of common) console.log(`  - ${file} ${format(gzipKb(file))}`);
 
 const failures = [];
-for (const [route, page] of Object.entries(ROUTE_PAGES)) {
-  // 설정한 페이지가 manifest에 없으면 검사가 조용히 빠지므로 실패로 본다
-  if (!manifest[page]) {
-    failures.push(`${route}: manifest에 ${page}가 없습니다 (경로 변경 시 ROUTE_PAGES를 고치세요)`);
+for (const { name, page, auto, afterAction = [] } of SCENARIOS) {
+  // 목록 키가 manifest에 없으면(경로 변경·다른 청크에 합쳐짐) 합계가 조용히 줄어든다 — 실패로 본다
+  const missing = [page, ...auto, ...afterAction].filter((key) => !manifest[key]);
+  if (missing.length > 0) {
+    failures.push(`${name}: manifest에 ${missing.join(", ")}가 없습니다 (경로 변경 시 SCENARIOS를 고치세요)`);
     continue;
   }
   const routeFiles = staticClosure(page, new Set(common));
   const routeKb = sumKb(routeFiles);
-  const eager = [...EAGER_DYNAMIC, ...(ROUTE_EAGER_DYNAMIC[route] ?? [])];
-  // 진입 직후 목록의 모듈이 다른 청크에 합쳐져 manifest 키가 없어지면 합계가 조용히 줄어든다 — 실패로 본다
-  const missing = eager.filter((key) => !manifest[key]);
-  if (missing.length > 0) failures.push(`${route}: 진입 직후 목록 ${missing.join(", ")}가 manifest에 없습니다`);
-  const eagerKb = sumKb(eager.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
-  console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
-  for (const key of ROUTE_CONDITIONAL_DYNAMIC[route] ?? []) {
-    if (!manifest[key]) {
-      failures.push(`${route}: 조건부 목록 ${key}가 manifest에 없습니다`);
-      continue;
-    }
-    const eagerFiles = eager.reduce((files, k) => staticClosure(k, files), new Set(routeFiles));
+  const eagerFiles = auto.reduce((files, key) => staticClosure(key, files), new Set(routeFiles));
+  const eagerKb = sumKb(eagerFiles);
+  console.log(`[bundle] ${name} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
+  for (const key of afterAction) {
     const extra = [...staticClosure(key)].filter((file) => !eagerFiles.has(file));
-    console.log(`[bundle]   ${route} 조건부(자동 로드 아님) ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
+    console.log(`[bundle]   ${name} 조작 뒤 ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
   }
-  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
-  if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${route}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
+  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${name}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
+  if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${name}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
 }
 
 if (failures.length > 0) {

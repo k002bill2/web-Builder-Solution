@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0)
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -555,7 +555,7 @@ export interface GenerationJob {
 | # | 규칙 | 효과 |
 |---|---|---|
 | P-B1 | 라우트: `routes.tsx` lazy 교체(`/profile`·`/profile/:profileId` → `ProfilePage`, `/studio`는 자리표시 유지) | 공통 +수십 바이트(L3) |
-| P-B2 | 프로필·생성 **메모리 구현은 동적 import**(deferred, 기존 보드 로더와 같은 청크에서 store 공유). 공통에 들어가는 것: `main.tsx` deferred 래퍼 2개(메서드 5+5개 위임) · `AppProviders` prop 2개 · `ProfileRepositoryContext` · `draftStatusOf` 한 줄. 보드 deferred 래퍼에는 **메서드를 더하지 않는다**(`ConfirmedRef.latestVersion`·`latest`는 필드라 타입 0바이트). 단 r1에서 `confirmProfile`·`createProfileVersion`이 인자 `expectedLatest`를 하나씩 더 받는다 — 래퍼가 인자를 하나씩 넘기므로(`deferredCompareBoardRepository.ts:28~29`) 수십 바이트가 공통에 는다 | **공통 증가 ≠ 0**(L3 추정 약 0.3~0.5KB) → `/compare` 여유 1.49 안인지 2a-04a에서 먼저 실측. 넘치면 6.3 대안(싱글턴 + reset) 또는 BUNDLE-01 C8(보드 페이지 일부를 엔진 청크로)로 상쇄하고 보고 |
+| P-B2 | 프로필·생성 **메모리 구현은 동적 import**(deferred, 기존 보드 로더와 같은 청크에서 store 공유). 공통에 들어가는 것: `main.tsx` deferred 래퍼 2개(메서드 5+5개 위임) · `AppProviders` prop 2개 · `ProfileRepositoryContext` · `draftStatusOf` 한 줄. 보드 deferred 래퍼에는 **메서드를 더하지 않는다**(`ConfirmedRef.latestVersion`·`latest`는 필드라 타입 0바이트). 단 r1에서 `confirmProfile`·`createProfileVersion`이 인자 `expectedLatest`를 하나씩 더 받는다 — 래퍼가 인자를 하나씩 넘기므로(`deferredCompareBoardRepository.ts:28~29`) 수십 바이트가 공통에 는다. **r4**: `STALE_PROFILE` 오류에 동봉하는 `profileHead`도 공통 청크(보드 오류 클래스)에 든다 — 2a-04a1 실측 공통 88.66 → 88.69KB(+0.03, 영환님 A-Q5) | **공통 증가 ≠ 0**(L3 추정 약 0.3~0.5KB) → `/compare` 여유 1.49 안인지 2a-04a에서 먼저 실측. 넘치면 6.3 대안(싱글턴 + reset) 또는 BUNDLE-01 C8(보드 페이지 일부를 엔진 청크로)로 상쇄하고 보고 |
 | P-B3 | **아이콘 파일 추가 0.** `Icon`의 eager glob이 모든 아이콘 URL을 공통 청크에 넣는다(v2 B-3). 목업의 `file`·`refresh`는 쓰지 않는다(생성 로그 = 글자 펼침, 다시 생성 = 없음 4.5). 쓰는 아이콘은 이미 파일인 것만: `arrow-right`(편집 시작) · `warning`·`circle-check`(대비·lint, 장식) · `chevron-down`(펼침). 첫 방문 SVG 요청이 생기는 것은 BUNDLE-01 C1과 같은 대가 | 공통 0 |
 | P-B4 | 새 아이콘이 꼭 필요하면 `build/notInlinedIcons.ts`에 넣어 **파일로** 둔다(가드 테스트 갱신) — 인라인 금지 | 공통 URL 문자열만 |
 | P-B5 | **`import type` 필수**: 라우트 청크·엔진이 타입만 쓰는 import는 `import type`(인라인 `type` 지정자만 남은 import는 부수효과 import가 되어 모듈 사슬을 끌어온다 — BUNDLE-01 e6/e6b) | 숨은 증가 0 |
@@ -668,6 +668,18 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 | Q7 | 편집기 경계 | **A** "B안으로 편집 시작"을 두고 `/studio` 자리표시로 이동 | 4.6·P-AC-29 |
 | Q8 | QA용 시드 프로필 | **A** 심지 않음. QA는 보드 확정으로 진입, 테스트는 저장소 초기값 주입 | 1.1·P-S02 |
 | Q9 | 역할 하나로 풀 수 없는 대비 | **A** 충돌 표시 + 대체안(밝은 카드), 역할 분리는 M2 토큰 작업 | 3.3·P-S15·P-AC-06 |
+
+### 10.0 2a-04a1 구현 중 결정 (r4, 2026-09-26 영환님 "전부 A")
+
+2a-04a1 REPORT 8절(`dev/active/2a-04a1/REPORT.md`) 설계 질문 5건. **A-Q1·A-Q3은 코드 변경 — 2a-04a2 첫 작업(TDD)**, A-Q2·A-Q4·A-Q5는 현행 확인.
+
+| # | 질문 | 결정 | 반영 |
+|---|---|---|---|
+| A-Q1 | `ProfileSummary.baseReferenceId`의 출처(지금은 레코드 밖 store 메타) | **A** `ProfileVersion`에 `baseReferenceId` 필드로 올린다. 보드 확정은 초안 값, 되돌리기는 대상 버전 값 복사. HTTP도 버전 레코드 필드 | 6.2 · 2a-04a2 |
+| A-Q2 | 6.3 ③ "보드 `confirmed`·revision 갱신"의 revision | **A** `ConfirmedRef.revision`(확정한 보드 revision) 갱신이다. 보드 자체 revision은 올리지 않는다(올리면 확정 직후 "변경됨"이 되어 S-15가 깨짐) | 6.3 |
+| A-Q3 | 최신 버전으로의 `revertTo` | **A** 저장소도 거부한다(`SCHEMA_INVALID` "이미 최신 버전입니다", 새 버전 0). 화면은 이전 버전에서만 되돌리기를 보인다(P-S07) | 6.3 · P-AC-10 보강 · 2a-04a2 |
+| A-Q4 | 응답 실패 뒤 끼어든 쓰기가 있어도 같은 키 재시도는 커밋된 결과 | **A** 현행 유지 — 그 요청은 실제로 커밋됐으므로 멱등 결과가 맞다. 화면은 결과 프로필로 이동하고 최신은 다음 조회에서 반영 | 6.3 |
+| A-Q5 | `profileHead`가 P-B2 목록 밖 공통 증가 | **A** P-B2 목록에 추가(실측 +0.03KB) | 7 P-B2 |
 
 ### 10.1 남은 쟁점 (r1)
 

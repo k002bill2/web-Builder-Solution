@@ -41,6 +41,8 @@ async function openStudio(picks: Picks = { hero: "ref-a" }) {
   const confirmThenAdjust = async (adjustments: ProfileAdjustments) => {
     await userEvent.click(confirmButton());
     await waitFor(() => expect(view.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
+    // 보드 화면이 실제로 내려간 뒤 돌아간다(위치는 렌더 중 기록)
+    await waitFor(() => expect(screen.queryByRole("heading", { level: 1, name: "비교 보드" })).toBeNull(), SLOW);
     await profiles.saveAdjustments("profile-1", 1, adjustments);
     await act(() => view.router.navigate("/compare"));
     expect(await screen.findByText("v1 확정됨", undefined, SLOW)).toBeInTheDocument();
@@ -100,6 +102,7 @@ describe("P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39)", () 
     expect(caption()).toBeNull();
     await userEvent.click(confirmButton());
     await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
+    await waitFor(() => expect(screen.queryByRole("heading", { level: 1, name: "비교 보드" })).toBeNull(), SLOW);
     await act(() => studio.router.navigate("/compare"));
     expect(await screen.findByText("v1 확정됨", undefined, SLOW)).toBeInTheDocument();
     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));

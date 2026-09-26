@@ -36,6 +36,8 @@ async function openStudio(inject: { delay?: (call: BoardCall) => Promise<void> |
 async function boardSeesV2(studio: Awaited<ReturnType<typeof openStudio>>) {
   await userEvent.click(confirmButton());
   await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
+  // 위치는 렌더 중에 기록되므로 이동 전환이 끝나기 전에도 /profile로 보일 수 있다 — 보드 화면이 실제로 내려간 뒤 돌아간다 (2a-04b1)
+  await waitFor(() => expect(screen.queryByRole("heading", { level: 1, name: "비교 보드" })).toBeNull(), SLOW);
   insertOtherVersion(studio.store);
   await act(() => studio.router.navigate("/compare"));
   expect(await screen.findByText("v1 확정됨", undefined, SLOW)).toBeInTheDocument();

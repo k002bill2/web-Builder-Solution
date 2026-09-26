@@ -50,7 +50,9 @@ describe("ReferenceCard", () => {
     expect(card.className).not.toMatch(/\bborder\b/);
     expect(card.className).not.toMatch(/\bbg-/);
     expect(within(card).getByRole("img", { name: /썸네일/ })).toHaveClass("bg-background-alternative");
-    expect(within(card).getByRole("heading", { name: "모던 카페 브랜드" })).toHaveClass("line-clamp-2");
+    // clamp(overflow:hidden)는 링크 자신에 — h3에 걸면 링크 바깥 포커스 링(2중 링)이 잘린다
+    expect(within(card).getByRole("link", { name: "모던 카페 브랜드" })).toHaveClass("line-clamp-2");
+    expect(within(card).getByRole("heading", { name: "모던 카페 브랜드" }).className).not.toMatch(/line-clamp|overflow|truncate/);
   });
 
   it("상태가 바뀌면 아이콘 모양도 바뀐다 — 색 말고 모양 단서 (저장 bookmark → bookmark-fill, 비교 plus → check)", () => {

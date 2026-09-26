@@ -78,3 +78,8 @@
 - `bd85e0f` docs(v2-4): 브라우저 실측·대비 재측정 로그·캡처
 - `ffaad7d` docs(v2-4): REPORT — AC 판정·번들 전/후·브라우저 실측·Codex 결과
 - (이 커밋) fix(compare): <768 아코디언 고른 셀 전체 primary-container + REPORT 갱신
+
+## 결정 (Jarvis 기록, 2026-09-26 KST)
+- D-QA04 테스트 8줄 변경(`e9f9df6`): **영환님 승인("1")**. 설계 위반이 아니라 SPEC 6.3 표 누락으로 판정 — SPEC 6.3에 예외 행 추가.
+- Jarvis 독립 재검증: 검증 4종 exit 0, 520 passed, `/compare` 98.51 / 120.97KB. Codex 독립 리뷰(`--base c64532e`, `cad5a81` 포함) 결함 없음 — `/tmp/wbs_codex_v24_j1.txt`.
+

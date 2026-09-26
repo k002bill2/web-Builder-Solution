@@ -50,12 +50,22 @@ function withBusinessInfoFooter(profile: DesignProfileInput, library: SectionLib
 }
 
 type CarryOver = typeof import("../domain/profileAdjustments").carryOverAdjustments;
-/** 재확정 이어받기 규칙(대비 검사 포함)은 확정할 때 받는다 — 보드 진입 직후 합계에 싣지 않는다(2a-04b1 번들). 동기 구간 앞에서 받는다 */
+/** 재확정 이어받기 규칙(대비 검사 포함)은 필요할 때 받는다 — 보드 진입 직후 합계에 싣지 않는다(2a-04b1 번들). 동기 구간 앞에서 받는다 */
 const loadCarryOver = async (): Promise<CarryOver> => (await import("../domain/profileAdjustments")).carryOverAdjustments;
+const hasAdjustments = (version: ProfileVersion | undefined) => version !== undefined && Object.keys(version.adjustments).length > 0;
 
 export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOptions): CompareBoardRepository {
   const { catalog, library = SECTION_LIBRARY, now = () => new Date().toISOString(), store = createStudioStore() } = options;
   let board: CompareBoard = options.initialBoard ?? emptyBoard("board-current", now());
+  let carryOver: CarryOver | undefined;
+  /**
+   * 계열 최신에 조정이 있을 때만 규칙을 받는다 — 첫 확정·조정 없는 재확정은 기다리지 않는다(기존 확정 타이밍 유지).
+   * 받은 뒤 동기 구간에서 최신이 바뀌었으면 expectedLatest 판정(STALE_PROFILE)이 먼저 거른다 — 버전은 추가만 되므로
+   * 동기 구간의 최신이 expectedLatest와 같으면 여기서 본 최신과 같은 레코드다.
+   */
+  const prepareCarryOver = async (profileId: string | undefined) => {
+    if (!carryOver && profileId !== undefined && hasAdjustments(store.versions(profileId).at(-1))) carryOver = await loadCarryOver();
+  };
   const counts = new Map<BoardMethod, number>();
 
   /** `commitGate`는 확정 쓰기가 ② 삽입 뒤에 부른다 — 던지면 store 트랜잭션이 ②를 버린다 */
@@ -101,7 +111,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
    * 보드 확정 (6.1-4 · 6.3 r3). 판정 순서: 멱등 키 → STALE_BOARD → STALE_PROFILE → 선택·라이브러리 검사.
    * `profileId`가 없으면 첫 확정(새 계열). 같은 키의 재시도는 커밋된 결과를 그대로 돌려준다(새 버전 0).
    */
-  function confirmInto(revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void, carryOverAdjustments: CarryOver): ConfirmResult {
+  function confirmInto(revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void): ConfirmResult {
     const key = [board.id, revision, expectedLatest].join("\n");
     const done = profileId === undefined ? undefined : store.commitOf(profileId);
     if (done?.key === key) return { profileId: done.profileId, version: done.version };
@@ -122,7 +132,8 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     const base = withBusinessInfoFooter(draft.profile, library);
     // 재확정 = 필드 단위 이어받기 (6.1-3). 기준 = 보드가 확정한 버전의 base, 이어받을 조정 = 계열 최신 — 보드 패널(P-S25)과 같은 함수·입력
     const confirmedBase = latest && store.versions(latest.profileId).find((v) => v.version === board.confirmed?.version)?.base;
-    const plan = latest && confirmedBase ? carryOverAdjustments(confirmedBase, latest.adjustments, base) : undefined;
+    if (hasAdjustments(latest) && !carryOver) throw new Error("이어받기 규칙을 불러오기 전에 재확정했습니다");
+    const plan = latest && confirmedBase && carryOver && hasAdjustments(latest) ? carryOver(confirmedBase, latest.adjustments, base) : undefined;
     const result = store.transact((tx): ConfirmResult => {
       const id = profileId ?? tx.nextProfileId();
       const version = expectedLatest + 1;
@@ -179,14 +190,14 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
       }),
     getComparison: (referenceIds) => call("getComparison", () => ({ libraryVersion: library.version, results: resultsOf(referenceIds) })),
     confirmProfile: async (revision, expectedLatest) => {
-      const carryOver = await loadCarryOver();
-      return call("confirmProfile", (commitGate) => confirmInto(revision, expectedLatest, board.confirmed?.profileId, commitGate, carryOver));
+      await prepareCarryOver(board.confirmed?.profileId);
+      return call("confirmProfile", (commitGate) => confirmInto(revision, expectedLatest, board.confirmed?.profileId, commitGate));
     },
     createProfileVersion: async (profileId, revision, expectedLatest) => {
-      const carryOver = await loadCarryOver();
+      await prepareCarryOver(profileId);
       return call("createProfileVersion", (commitGate) => {
         if (board.confirmed?.profileId !== profileId) throw new CompareBoardError("SCHEMA_INVALID", `이 보드의 프로필이 아님: ${profileId}`);
-        return confirmInto(revision, expectedLatest, profileId, commitGate, carryOver);
+        return confirmInto(revision, expectedLatest, profileId, commitGate);
       });
     },
     getProfileVersions: (profileId) => call("getProfileVersions", () => store.versions(profileId)),

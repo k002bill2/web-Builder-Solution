@@ -1,0 +1,5 @@
+# F1 D-2A4-01 스모크 (Chromium ego-browser, 127.0.0.1:4337 vite preview, 1280)
+차단 중 확정 → alert: 확정하지 못했습니다확정하지 못했습니다. 선택은 저장돼 있습니다다시 시도
+차단 해제
+다시 시도 → http://127.0.0.1:4337/profile/profile-1
+resource: memoryBoardConfirm-CwERW9xQ.js status=0 | memoryBoardConfirm-CwERW9xQ.js?retry=1 status=200

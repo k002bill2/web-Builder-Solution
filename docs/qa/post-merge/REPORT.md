@@ -104,7 +104,7 @@
   - /profile(23 정지): 건너뛰기 → 헤더 7 → "비교 보드에서 선택 바꾸기" → 섹션 순서 → 출처 → muted 보정값 쓰기 → 라디오 4그룹(각 1) → 저장 → 버전 버튼.
   - /compare는 30~34 정지입니다.
   - 모든 정지의 포커스 표시(outline/box-shadow)가 있었습니다. 예외 1건은 아래 적었습니다.
-- 1280 측정의 Tab 시작점은 문서 처음이 아니라 직전 조작 위치였습니다(측정 절차 한계). 순서는 1024 측정과 같은 DOM이라 대신했습니다(L2).
+- 1280 /profile Tab 측정은 h1 다음부터 시작해 본문 16 정지(비교 보드에서 선택 바꾸기 → … → 버전 버튼)를 순서대로 모두 거쳤습니다. 건너뛰기 링크와 헤더 7개는 이 폭에서 거치지 않았지만, 헤더 DOM은 1024·320과 같고 그 폭들에서 확인했습니다. /compare 1280도 본문부터 21 정지를 셌습니다.
 - 측정 잡음 2건(결함 아님)
   - ① compare-320 Tab 중 "이 레퍼런스로 전부 선택: A"가 순간적으로 뷰포트 밖으로 기록됐습니다. 다시 포커스해 재면 left 29~right 227로 뷰포트 안이었습니다(스크롤 타이밍).
   - ② /compare 대표색 입력(INPUT)은 자기 outline이 없습니다. 링은 부모의 `focus-within:shadow-(--focus-ring)`(`TextField.tsx:19`)이 그리며, 이 파일은 이번 병합에서 바뀌지 않았습니다.
@@ -119,6 +119,13 @@
 기존 관찰(신규 아님, 결함 수에 넣지 않음)
 - `/profile/*`의 `document.title`이 "비교 보드 · Design Studio"로 남습니다(QA-2A04B2 관찰 ③).
 - 보드 재확정으로 라우트가 바뀐 뒤 `activeElement = BODY`입니다. SPEC 2a-04 281행 "앱에 라우트 포커스 규칙은 아직 없다"에 해당합니다(메모리 기록 "라우트 포커스 확인 필요"와 같은 건).
+- **primary 충돌 문장 부정합(기존, b137006 불변).** 대표색(primary)이 어두운 카드와 부딪칠 때 충돌 문장이 "…대체안: 비교 보드에서 밝은 카드를 고르면 **ink를** 어둡게 보정할 수 있습니다"로 나옵니다. 역할이 primary인데 ink를 말하는 문장입니다.
+  - 근거(L1): 이 문구는 병합 전 부모 `b137006^1:app/src/features/profile/profileMessages.ts:68`에 이미 있었습니다.
+  - `git diff b137006^1 b137006 -- profileMessages.ts`의 변경은 `unreachable` 분기 추가와 `level` 인자 전달뿐이고, C-3 문장은 건드리지 않았습니다.
+  - AA 회귀 스냅숏 `contrastAaRegression.test.ts:55·140`이 이 문장을 그대로 고정합니다.
+  - fix REPORT 11절·설계 질문 2에 적힌 사항입니다. 브라우저에서 ref-d 경로는 따로 재현하지 않았습니다.
+  - 이번 캡처 01·02의 primary 문장은 C-1 단독 제안이라 해당하지 않습니다.
+- **관찰 ①(QA-2A04B2, 기존):** 저장 실패 알림(`role=alert`)이 떠 있는 동안에도 "프로필 알림"에 직전 성공 문장이 남습니다. 이번 B-fail 상태에서도 status가 "v2로 저장했습니다"였습니다(`logs/d02-d03.txt`).
 
 ## 8. 서브에이전트
 | 레인 | 유형 · 격리 | 결과 |
@@ -136,7 +143,7 @@
   - `git status --porcelain -- app design docs/design`: 출력 없음
   - `git diff --stat 99993b9 HEAD -- app design docs/design`: 출력 없음
   - 쓰기는 `docs/qa/post-merge/`만 했습니다. `app/dist`는 build 산출물이고 git 추적 밖입니다.
-- Codex 검증: 이번 산출물은 제품 diff가 없는 QA 문서라 Codex review를 돌리지 않았습니다(검증 대상 코드 diff 0).
+- Codex 검증: 실행하지 않았습니다. Codex review는 diff를 외부 서비스로 보내는데, 브리프가 외부 발송을 금지합니다. 또 이 작업 공간의 변경은 QA 문서뿐이고 제품 코드 diff는 0입니다.
 
 ## 10. 산출물
 - `logs/`

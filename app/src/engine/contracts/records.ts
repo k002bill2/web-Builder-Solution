@@ -41,8 +41,12 @@ export type GateState = "pass" | "warn" | "block" | "unmeasured";
 
 export type GateRuleId = "R-01" | "R-02" | "R-03" | "R-04" | "R-07" | "R-08" | "R-09" | "R-10" | "R-11" | "R-12" | "R-13" | "FR-EDT-05";
 
+/** 이슈 심각도 — 줄 상태(block > warn > pass)와 "차단 1 · 경고 1" 개수의 근거. SPEC 8.1에 없는 필드(REPORT Q-19) */
+export type GateSeverity = "block" | "warn";
+
 export interface GateIssue {
   readonly ruleId: GateRuleId;
+  readonly severity: GateSeverity;
   readonly instanceId?: string;
   readonly slotKey?: string;
   /** 원인 문장 */

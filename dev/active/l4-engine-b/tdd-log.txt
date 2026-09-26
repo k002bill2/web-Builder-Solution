@@ -9,3 +9,20 @@ Error: Failed to resolve import "./gateText" from "src/engine/gate/docRows.test.
 Error: Cannot find module './gateText' imported from /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-b/app/src/engine/gate/gateText.test.ts
  FAIL  src/engine/gate/runGate.test.ts [ src/engine/gate/runGate.test.ts ]
 Error: Failed to resolve import "./gateText" from "src/engine/gate/runGate.test.ts". Does the file exist?
+
+## GREEN (02:08:23) — gate·doc 4파일
+ Test Files  4 passed (4)
+      Tests  69 passed (69)
+## 변이 1: 후반 1/3 경계 ceil→floor (기대 FAIL)
+       × 본문 7 — 후반 1/3 = 뒤 3개(index 4~6): index 4 pass · index 3 block 4ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 30 passed (31)
+## 변이 2: 게이트가 proposeCorrections(보정 제안) 호출 (기대 FAIL — 7:1 불가 조합 throw)
+     × 7:1 불가 조합(QA D-2A4B2-01: #8B5E3C primary + 어두운 카드 + 강화) — 보정 함수는 throw, 게이트는 throw 0 · 대비 줄 block 15ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to not throw an error but 'Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #…' was thrown
+"Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #8B5E3C"
+      Tests  1 failed | 11 passed (12)
+## 복원 뒤 GREEN
+ Test Files  4 passed (4)
+      Tests  69 passed (69)

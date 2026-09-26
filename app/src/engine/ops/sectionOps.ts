@@ -12,7 +12,8 @@ import { EngineOpError, INSTANCE_ID, indexOfSection, sectionAt } from "./errors"
 import { canAdd, canMove, canRemove, canSwapVariant, type MoveDirection, type Permission, type Purpose } from "./rules";
 
 const MOTION_ORDER: readonly SectionMotion[] = ["L0", "L1", "L2"];
-const minMotion = (...motions: SectionMotion[]): SectionMotion =>
+/** 가장 낮은 모션 — createDocFromCandidate도 같은 규칙을 쓴다 */
+export const minMotion = (...motions: SectionMotion[]): SectionMotion =>
   MOTION_ORDER[Math.min(...motions.map((m) => MOTION_ORDER.indexOf(m)))]!;
 
 function assertAllowed(permission: Permission): void {

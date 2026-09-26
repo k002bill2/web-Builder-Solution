@@ -14,8 +14,14 @@ export const GOOD_PALETTE: Palette = { primary: "#1F3A5F", surface: "#F2F4F7", i
 /** QA-2A04B2 D-2A4B2-01 재현 팔레트(모던 카페 — fixtures/referenceDetails ref-a) */
 export const CAFE_PALETTE: Palette = { primary: "#8B5E3C", surface: "#F3E9DD", ink: "#2C2C2C", muted: "#9A7B63", bg: "#FFFFFF" };
 
-const tokens = (palette: Palette) =>
-  Object.fromEntries(Object.entries(palette).map(([role, hex]) => [role, { $type: "color", $value: hex }])) as DesignProfileInput["color_tokens"];
+const color = (hex: string) => ({ $type: "color", $value: hex }) as const;
+const tokens = (p: Palette): DesignProfileInput["color_tokens"] => ({
+  primary: color(p.primary),
+  surface: color(p.surface),
+  ink: color(p.ink),
+  muted: color(p.muted),
+  bg: color(p.bg),
+});
 
 export function sampleBase(palette: Palette = GOOD_PALETTE, cardTone?: SurfaceTone): DesignProfileInput {
   return {

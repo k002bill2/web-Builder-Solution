@@ -5,9 +5,9 @@
 ## 1. 범위
 - [x] 번들 기준 빌드(`bundle-before.txt`, CSS·자산 목록 보관) — sampleTheme 없이 재빌드해도 CSS `index-Bz-DRn5S.css` 동일 확인
 - [x] runGate RED (`gate/*.test.ts`, tdd-log) — 모듈 없음 4파일 실패
-- [ ] runGate GREEN — 8줄(대비·대체텍스트·헤딩·필수 섹션·모션·SEO·글자 수·성능) · 결정성 · 입력 불변 · 7:1 불가 조합 throw 0
-- [ ] 문장 SPEC 대조 테스트 + 유추 문장 목록
-- [ ] createDocFromCandidate RED → GREEN (정상·해시 동일·R-01/R-02 거부·모르는 변형 거부·validatePageDoc)
+- [x] runGate GREEN — 8줄(대비·대체텍스트·헤딩·필수 섹션·모션·SEO·글자 수·성능) · 결정성 · 입력 불변 · 7:1 불가 조합 throw 0
+- [x] 문장 SPEC 대조 테스트 + 유추 문장 목록
+- [x] createDocFromCandidate RED → GREEN (정상·해시 동일·R-01/R-02 거부·모르는 변형 거부·validatePageDoc)
 - [ ] 코드 커밋 (`git commit -- <경로>`)
 
 ## 2. 검증
@@ -29,3 +29,5 @@
 - Q-21 픽스처 sectionPlan 변형(about/split 등)이 엔진 레지스트리에 없음 → createDoc UNKNOWN_VARIANT (composer 매핑 필요)
 - Q-22 모르는 변형 섹션의 게이트 판정 = 필수 섹션 줄 R-01 차단
 - Q-23 R-07 모션 = 인스턴스 motion 값 기준
+- 번들: 첫 GREEN 빌드에서 CSS 변화(`.ordinal` — createDoc 변수명이 Tailwind 유틸리티로 스캔됨, L4a Q-6 재발) → `nth`로 이름 변경 후 변화 0
+- 변이 검사 2건(후반 1/3 ceil→floor · proposeCorrections 호출) 모두 테스트가 잡음(tdd-log)

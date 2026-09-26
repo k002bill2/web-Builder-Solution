@@ -434,3 +434,104 @@
 ### 13.10 커밋
 - 코드 커밋 없음(13.0 멈춤). 작업 트리는 `0042113`으로 되돌렸다.
 - (이 커밋) REPORT 13절 + `logs/fix2-*`(RED·GREEN·build·청크 비교 A/B·하한 스파이크·검증·Codex·구현 패치)
+
+## 14. FIX3 (1안: 기본 진입 직후 축소 + 펼침 로드 패치 적용)
+- 브리프 `docs/06-handoff/FIX3-2A04b1_DEVELOPER_BRIEF.md` · 기준 `0396ba6` · 작성 2026-09-26
+- 근거 수준: 번들 수치 = L1(`logs/fix3-build*.txt`·`fix3-chunks-*.txt`) · 검증·스모크 = L1(로그·실행 출력)
+
+### 14.0 요약
+| 항목 | 결과 |
+|---|---|
+| 택한 경로 | **1안 단독**. `fix2-impl.patch`를 **그대로** 적용했다(자동 개수 캡션 유지). 3안은 하지 않았다 |
+| `/compare` 진입 직후 | 패치 B **125.08 → 124.36KB** (−0.72, 목표 ≥ 0.38). 여유 **0.64**. `/compare (조정 있음)`도 같다 |
+| 첫 화면 | `/compare` 99.43 → 99.48 (여유 0.52). 모든 시나리오 여유 ≥ 0.3 (14.3) |
+| 검증 4종 | typecheck 0 · lint 0 · test **662/662** · build 0 (고친 스크립트, `logs/fix3-{typecheck,lint,test,build}.txt`) |
+| 전체 5회 연속 | **662/662 × 5** (`logs/fix3-run1~5.txt`). 확정 관련 화면 4파일(CompareBoardPage·Lineage·CarryOver·WriteBodyLoad)은 따로 3회 55/55 |
+| 스모크 | 127.0.0.1:5199 ego-browser, 조정 있는 경로까지 통과(14.6). 임시 노출 코드는 커밋 안 함·원복, 서버 종료 |
+| Codex | `review --wait --scope branch --base 0396ba6` 1회 — P3 1건, 커밋 밖 임시 코드 대상(14.7) |
+
+### 14.1 1안 구조 (호출 지점)
+- 로더 `app/src/data/writeBodyLoader.ts` 한 곳. 테스트가 로드 실패를 주입하는 이음새다(`carryOverLoader`와 같은 `vi.mock` 방식).
+  - `loadBoardConfirm` → `memoryBoardConfirm.ts`(새 모듈): 확정 판정·쓰기(`confirmIn`)·`withBusinessInfoFooter`·`resultOf`·이어받기 규칙 준비(`prepare`, `loadCarryOver`).
+    호출 지점: `memoryCompareBoardRepository` `confirmerFor` ← `confirmProfile`·`createProfileVersion` ← `useCompareBoard.confirm`(확정 버튼 onClick, 실패 뒤 "다시 시도" onClick).
+  - `loadProfileWrites` → `memoryProfileAdjust.ts`: 기존 조정 저장 본문 + **`revertIn`(되돌리기 본문, 옮김)**. 로더를 늘리지 않으려고 한 청크로 받는다.
+    호출 지점: `memoryProfileRepository` `getAdjustmentRange`·`saveAdjustments`·`revertTo`. **앱 호출 0**(테스트만, b2 화면 몫).
+- 순서: `await load…()` → `call`(요청 지연·실패 주입) → `store.transact` 안에서 판정·쓰기. 트랜잭션 중간 await 없음.
+- 받은 모듈만 기억한다(`confirmer ??= …`). 실패한 로드는 기억하지 않아 다시 부르면 다시 받는다.
+- 이어받기 규칙(`profileAdjustments`)은 확정 본문과 **합치지 않았다**. 정적 import로 합치면 "규칙 없이 조정이 보이면 STALE_PROFILE"(0a94c68, `profileAdjust.test.ts` Codex P2 테스트) 경로에 도달할 수 없어 동작이 바뀐다. 대신 `loadCarryOver`를 확정 본문 청크 안으로 옮겨 진입 직후 청크에서 뺐다.
+- **`buildProfileDraft`는 저장소가 넘긴다**(`BoardConfirmDeps.buildProfileDraft`, 본문은 타입만 import). 본문이 직접 import하면 번들러가 보드 엔진·저장소 공유 청크를 셋으로 다시 나눠 진입 직후가 **125.32KB(+0.24)**로 오히려 늘었다(`logs/fix3-build-1an-noinject.txt`·`fix3-chunks-1an-noinject.txt`: `_boardPicks` 8.30 + `_compareBoard` 0.74(엔트리가 정적 import) + `_profileDraft` 2.08, 공통 JS 88.96 → 89.28).
+
+### 14.2 1안 절감 청크 (gzip KB, node zlib — `/compare` 진입 직후 집합)
+| 청크 | 패치 B | 1안 | 차이 |
+|---|---|---|---|
+| `memoryStudio` (보드·프로필 저장소 + store) | 3.32 | **2.57** | **−0.75** |
+| 공유 청크(보드 엔진·저장소 공용, 이름 `compareBoardRepository` → `profileDraft`) | 9.80 | 9.79 | −0.01 |
+| `boardEngine` | 5.78 | 5.76 | −0.02 |
+| `CompareBoardPage` | 9.19 | 9.18 | −0.01 |
+| `react` 공유 청크 | 3.23 | 3.28 | +0.05 |
+| 엔트리 `index` | 85.74 | 85.74 | 0 |
+| 합계 (진입 직후) | 125.08 | **124.36** | **−0.72** |
+| (조작 뒤) `memoryBoardConfirm` 새 청크 | — | 1.49 | 예산 밖 |
+| (조작 뒤) `memoryProfileAdjust` | 1.63 | 1.76 | +0.13 (revertIn), 예산 밖 |
+
+### 14.3 시나리오별 번들 전/후 (첫 화면 / 진입 직후, `logs/fix3-build-patchB.txt` → `logs/fix3-build.txt`)
+| 시나리오 | 전 = 패치 B | 후 = 1안 | 여유 (후) |
+|---|---|---|---|
+| /catalog | 98.96 / 101.34 | 99.01 / 101.40 | 0.99 / 23.60 |
+| /references/:id | 96.31 / 98.69 | 96.36 / 98.75 | 3.64 / 26.25 |
+| /compare | 99.43 / **125.08** | 99.48 / **124.36** | 0.52 / **0.64** |
+| /compare (조정 있음) | 99.43 / **125.08** | 99.48 / **124.36** | 0.52 / **0.64** |
+| /profile | 99.07 / 119.42 | 99.18 / 118.77 | 0.82 / 6.23 |
+| /studio (자리표시) | 89.40 / 91.79 | 89.46 / 91.84 | 10.54 / 33.16 |
+- 공통 JS +0.06(`react` 공유 청크 +0.05). `/profile` 첫 화면 +0.11은 ProfilePage의 history state 비우기(`useNavigate`, 14.5)다.
+- 스크립트 분류: `memoryBoardConfirm.ts`를 `COMPARE_AFTER_ACTION`(조작 뒤)에 넣고 호출 지점을 주석에 적었다. `memoryProfileAdjust` 주석에 `revertTo`를 더했다. 패치의 자동/조작 뒤 규칙·`SCENARIOS`·누락 키 가드는 그대로다.
+
+### 14.4 RED 로그
+- `logs/fix3-red-1an.txt` — `app/src/pages/WriteBodyLoad.test.tsx`를 로더 모듈만 만든 상태(저장소는 아직 로더를 안 씀)에서 실행해 2 실패. 둘 다 단언 실패다.
+  - 보드 확정: 로드 실패를 주입했는데 확정이 성공해 `Unable to find role="alert"`.
+  - 되돌리기: `promise resolved … instead of rejecting`.
+- `logs/fix3-red-history.txt` — 뒤로 가기 재알림 테스트 1 실패: `expected { droppedCount: 1 } to not have property "droppedCount"`.
+- GREEN: `logs/fix3-green.txt`(대상 2파일 15/15).
+- 저장소 계약 회귀(P-AC-42 ①②③·A-Q3·I-1~I-3·P-AC-40·41·Codex P2 STALE 경로)는 기존 테스트를 고치지 않고 그대로 통과했다.
+
+### 14.5 테스트 이름 (추가만)
+- `app/src/pages/WriteBodyLoad.test.tsx` "FIX3 1안 쓰기 본문 로드 실패 — 저장 0·오류 표시·다시 시도"
+  - "보드 확정: 본문 청크 로드 실패 → '확정하지 못했습니다' + '다시 시도', 계열·보드 확정 변화 0 → 다시 시도하면 v1(id 건너뜀 0)"
+  - "되돌리기(저장소): 본문 청크 로드 실패 → 같은 오류로 거부, 새 버전 0 → 같은 인자로 다시 부르면 v3(번호 건너뜀 0)"
+- `app/src/pages/CompareBoardCarryOver.test.tsx` ⑦ describe: "알린 뒤 history state의 droppedCount를 replace로 비운다 — 알림 문장은 남고, 같은 항목으로 돌아와도 다시 알리지 않는다(13.7)"
+  - 구현: `ProfilePage`가 알린 뒤 같은 경로·검색·해시로 `navigate(…, { replace: true, state: null })`. 알림 문장은 `useProfileDetail`의 state에 있어 남는다.
+
+### 14.6 고친 기존 단언 · 5회 · 스모크
+- 고친 기존 단언: **없음**(FIX3에서). 패치 안의 변경은 13.5 목록 그대로다. 3안을 하지 않아 ⑦ 개정도 없다.
+- 5회: 662/662 × 5.
+- 스모크(127.0.0.1:5199, ego-browser, `main.tsx`에 `window.__smokeStudio` 임시 노출 — 커밋 안 함, 끝나고 `git checkout`으로 원복):
+  1. 카탈로그에서 모던 카페·프리미엄 헤어살롱 비교 추가 → 보드 → Hero A.
+  2. 확정 클릭 전 `memoryBoardConfirm` 요청 **없음** → "프로필 확정 (v1)" 뒤에만 요청 → `/profile/profile-1`.
+  3. 임시 노출로 `saveAdjustments("profile-1", 1, { density: "compact", motion: "L0" })` → v2. GNB로 보드 복귀.
+  4. "v1 확정됨" · 캡션 "이 프로필에 조정 2개가 있습니다" · `details` "이어받기 확인" 접힘(명시 `aria-expanded` 없음). 펼치기 전 `carryOverPanel` 요청 **없음**.
+  5. 펼침 → 요청 1 → "이어지는 조정 2개 · 지워지는 조정 0개", "밀도 촘촘 — 이어짐", "모션 L0 — 이어짐".
+  6. 모션 B → "1개 · 1개", "모션 L0 — 지워짐 · 보드에서 모션을 바꿨습니다" → "새 버전으로 확정 (v3)".
+  7. 프로필 알림 "조정 1개를 지웠습니다", `history.state.usr = null`. 버전 요약에 "보드에서 모션을 바꿔 모션 조정을 지웠습니다".
+  8. 보드로 갔다가 `history.back()` → 프로필 알림 빈 문자열(재알림 없음).
+  - dev 서버라 `CarryOverCaption.tsx`가 따로 요청된다(빌드에서는 엔진 청크). 서버 종료 확인: `lsof -iTCP:5199 -sTCP:LISTEN` 결과 없음.
+
+### 14.7 Codex 결과
+- `review --wait --scope branch --base 0396ba6` 1회 (원문 `logs/fix3-codex-review.txt`). 코드 커밋(`86e9dcb`) 뒤, 스모크 중에 실행했다.
+- **[P3]** `app/src/main.tsx:56` 스모크 전용 `window.__smokeStudio`가 개발 시작마다 노출된다.
+  - 대상은 **커밋에 없는** 작업 트리의 임시 코드다(Codex가 워크트리 파일을 읽었다). `git diff 0396ba6 HEAD -- app/src/main.tsx` 0줄, 스모크 뒤 원복해 `grep __smoke` 0건.
+  - 조치할 코드 결함은 없다. 재리뷰는 하지 않았다(브리프 1회).
+- Codex 쪽 typecheck는 통과했다. 테스트는 샌드박스가 읽기 전용이라 Vite 임시 설정을 쓰지 못해 돌지 않았다(13.8과 같음, 로컬 결과는 14.0).
+
+### 14.8 남은 위험
+- 첫 확정도 이제 본문 청크를 기다린다(전에는 조정이 있을 때만). 테스트 5회·대상 3회는 통과했다. 느린 네트워크에서는 확정 버튼 뒤 대기가 늘어난다. 확정 중 표시는 기존 흐름 그대로다.
+- 13.7의 "브라우저가 실패한 동적 import를 캐시할 수 있음"이 새 로더 두 개에도 해당한다. 로더 mock 테스트로는 보지 못한다.
+- 되돌리기 본문이 조정 저장 청크(zod 포함 1.76KB)와 같이 온다. b2에서 되돌리기만 자주 쓰면 따로 나누는 편이 나을 수 있다(나누면 로더 경계 비용이 진입 직후에 약간 붙는다).
+
+### 14.9 설계 질문
+1. **Q-F3-1 `buildProfileDraft` 주입**: 번들 청크 경계 때문에 확정 본문이 초안 계산을 저장소에서 받는다(14.1, +0.24KB 실측). 코드 구조보다 번들 결과를 우선한 선택이라 확인 요청.
+2. **Q-F3-2 되돌리기 청크**: 14.8 세 번째 항목. 지금은 로더를 늘리지 않는 쪽을 택했다.
+3. **Q-F3-3 SPEC r7**: 1안으로 여유를 맞춰 P-S25 자동 개수 캡션(r6)을 그대로 두었다. r7 개정은 필요 없을 것으로 본다(3안 미적용).
+
+### 14.10 커밋
+- `86e9dcb` 코드: 패치 적용 + 1안 + 본문 로드 실패 테스트 + history state 비우기 + 번들 스크립트
+- (이 커밋) REPORT 14절 + `logs/fix3-*`

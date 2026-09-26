@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0)
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve)
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -79,7 +79,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 ```
 
 - 한 화면(`/profile/:profileId`)에 프로필과 3안을 함께 둔다(목업 구조와 같음). 3안은 **버전에 묶인다** — 보고 있는 버전의 생성 결과를 보여 준다.
-- URL 상태: `?v=<n>`(보는 버전, 없으면 최신) · `&diff=<m>`(v와 m 비교 열림). 생성 잡·선택은 저장소가 정본이라 URL에 두지 않는다.
+- URL 상태: `?v=<n>`(보는 버전, 없으면 최신) · `&diff=<m>`(v와 m 비교 열림 — v가 없으면 최신과 m. m이 v와 같거나 없는 버전이면 닫힘, r5). 없는 `?v=`는 최신을 보이고 "요청한 v7이 없어 최신 v3을 보여 줍니다"(숫자 아니거나 0 이하·앞자리 0이면 "요청한 버전이 없어…")를 보이는 Callout(role 없음) + 상시 "프로필 알림" 영역으로 알린다. URL은 정규화하지 않는다(r5 N1~N3). 생성 잡·선택은 저장소가 정본이라 URL에 두지 않는다.
 - 버전을 만드는 모든 쓰기(보드 확정·새 버전 · 조정 저장 · 되돌리기)는 호출자가 본 최신 버전(`expectedLatest`)을 함께 보낸다. 저장소가 비교·생성을 한 번에 하고, 다르면 거부한다(`STALE_PROFILE` → P-S12, 6.1-4).
 - 생성은 **저장된 버전**에만 한다. 저장 안 된 조정이 있으면 생성 버튼 `aria-disabled` + 이유 "저장하지 않은 조정이 있습니다 — 저장하면 새 버전으로 만듭니다".
 
@@ -278,7 +278,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 
 ### 5.2 키보드
 - 순서: 건너뛰기 → 헤더 → h1 → "비교 보드에서 선택 바꾸기" → 출처 링크 → 대비 "보정값 쓰기"들 → 밀도·대비·모션·목적 라디오 그룹(각 Tab 정지 1) → "조정 저장"·"조정 취소" → 버전 줄 버튼 → "3안 만들기" → 카드별 "이 안 선택"·"섹션 순서 보기"·"전체 로그" → 편집 시작.
-- 포커스 이동: 조정 저장 성공 → 이동 없음(알림만) · 되돌리기 → 새 버전 줄 · 비교 열기 → 비교 표 caption(`tabindex=-1`), 닫기 → "현재와 비교" 버튼 · 버전 보기(`?v=` 변경) → h1(`tabindex=-1`). 앱에 라우트 포커스 규칙은 아직 없다(`useRouteScroll`은 스크롤만, L1) — 이 화면 안의 버전 전환에만 적용한다 · 생성 완료 → 이동 없음.
+- 포커스 이동: 조정 저장 성공 → 이동 없음(알림만) · 되돌리기 → 새 버전 줄 · 비교 열기 → 비교 표 caption(`tabindex=-1`), 닫기 → 그 줄의 비교 버튼(최신을 볼 때 "현재와 비교", 이전 버전 vN을 볼 때 "vN과 비교" — r5) · 버전 보기(`?v=` 변경) → h1(`tabindex=-1`). 앱에 라우트 포커스 규칙은 아직 없다(`useRouteScroll`은 스크롤만, L1) — 이 화면 안의 버전 전환에만 적용한다 · 생성 완료 → 이동 없음.
 - 모든 비활성 행동은 `aria-disabled` + 보이는 이유(보드 `confirmAvailability` 방식, `disabled` 속성 아님 — 포커스로 이유를 들을 수 있게). **예외**: 라디오 그룹 안 범위 밖 옵션은 roving에서 건너뛰고 이유를 그룹 설명으로 알린다(3.4).
 
 ### 5.3 라이브 영역
@@ -545,6 +545,7 @@ export interface GenerationJob {
 
 ### 6.5 계측 (PRD 9)
 `profile_saved(version, origin)` — 조정 저장·되돌리기·보드 확정 · `generation_requested(version)` · `generation_succeeded(version, count)` · `generation_failed(reason=errorCode)` · (제안) `candidate_selected(id)`. 사용자 입력 원문·색 값은 넣지 않는다.
+- r5: 되돌리기(와 이후 버전 생성 쓰기) 실패 = `profile_save_failed(reason = 오류 코드 | UNKNOWN)`. 수집기 전에는 `window` 이벤트 `studio:profile`로 낸다(2a-04a2 Q4=A).
 
 ---
 
@@ -680,6 +681,27 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 | A-Q3 | 최신 버전으로의 `revertTo` | **A** 저장소도 거부한다(`SCHEMA_INVALID` "이미 최신 버전입니다", 새 버전 0). 화면은 이전 버전에서만 되돌리기를 보인다(P-S07) | 6.3 · P-AC-10 보강 · 2a-04a2 |
 | A-Q4 | 응답 실패 뒤 끼어든 쓰기가 있어도 같은 키 재시도는 커밋된 결과 | **A** 현행 유지 — 그 요청은 실제로 커밋됐으므로 멱등 결과가 맞다. 화면은 결과 프로필로 이동하고 최신은 다음 조회에서 반영 | 6.3 |
 | A-Q5 | `profileHead`가 P-B2 목록 밖 공통 증가 | **A** P-B2 목록에 추가(실측 +0.03KB) | 7 P-B2 |
+
+### 10.0.1 2a-04a2 구현 중 결정 (r5, 2026-09-26 영환님 "1, 전부 A" · "전부 A")
+
+근거: `dev/active/2a-04a2/REPORT.md` 9절·12.7·12.9, Codex adversarial `dev/active/2a-04a2/logs/codex-adversarial-j1~j3.txt`.
+
+| # | 질문 | 결정 | 반영 |
+|---|---|---|---|
+| Q1 | A-Q3가 깨뜨린 a1 테스트 셋업(9절 표 밖) | **A** `insertOtherVersion` 헬퍼로 교체 승인(단언 번호 유지, origin 기대 `revert`→`adjust`) | 9 |
+| Q2 | 선택 값 이름표 없음(`cta_placement`·`media_ratio`·`mobile_pattern`·`card_style.style`) | **A** 2a-04b에서 요소 라이브러리에 이름표 추가 | 2a-04b |
+| Q3 | 이전 버전 보기 중 비교 대상 | **A(수정안)** URL 계약 우선: 쌍 = (`?v=` 또는 최신, `diff`), 버튼 이름 "vN과 비교"(Codex j1 medium) | 2 · 5.2 |
+| Q4 | 되돌리기 실패 이벤트 | **A** `profile_save_failed(reason)` · `studio:profile` 이벤트 | 6.5 |
+| Q5 | 조정·3안 h2와 1280 2단 | **A** 2a-04b·c에서 기능과 함께 | P-AC-08 |
+| Q6 | "보정값 쓰기" 버튼 | **A** 조정 저장과 함께 2a-04b | P-AC-06 |
+| Q7 | "비교 보드로"를 링크로 | **A** 이동이므로 버튼 모양 링크 | P-S02·S04 |
+| Q8 | 번들 측정 목록 변경(`memoryStudio.ts`, 누락 키 가드) | **A** 승인(예산 상수 무변경) | 7 |
+| Q9 | 없는 `?v=` | **A** 최신 + 글자 안내 | 2 |
+| N1 | 안내 낭독 경로 | **A(병합 전 수정)** 상시 "프로필 알림" 영역으로, Callout은 role 없음(A-9, Codex j2 medium) | 2 · 5.3 |
+| N2 | `?v=0`·`01` 등 | **A** "요청한 버전이 없어…" 유지 | 2 |
+| N3 | 없는 `?v=` URL 정리 | **A** 정규화 안 함 | 2 |
+
+**번들 결정(영환님 "1")**: `/compare` 첫 화면 여유 0.84KB — **2a-04b 첫 작업으로 용량 확보·실측** 후 P-S25·이어받기 구현.
 
 ### 10.1 남은 쟁점 (r1)
 

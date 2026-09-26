@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve) · **r6** (Jarvis) — 2a-04b1 BUNDLE-03 멈춤(자동 조건부 청크 포함 시 `/compare` 조정 있음 진입 직후 최소 125.20KB > 125, `dev/active/2a-04b1/REPORT.md` 12.4) → 영환님 "1, 전부 A": **P-S25 = 개수 캡션 자동 + 이어받기 판정·목록은 펼칠 때 로드**(예산 무변경), P-AC-38·39 개정 + ⑦, P-B9 개정, 10.0.2 결정 표
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`) · **r3** (Jarvis) — Codex adversarial 3회차 1건 반영: 실패를 커밋 전(롤백, `phase: "commit"` 주입)과 커밋 뒤 응답 실패(멱등 키 재시도)로 분리, P-AC-42 개정 (검토 원문 `review/codex-adversarial-r2.txt`). Codex 라운드 상한(3) 도달 — r3 자체는 Codex 미검토 · **r4** (Jarvis) — 2a-04a1 설계 질문 5건 전부 A(10.0), P-B2에 `profileHead` 추가. r3 트랜잭션·멱등 계약은 2a-04a1 구현에서 Codex adversarial approve(결함 0) · **r5** (Jarvis) — 2a-04a2 설계 질문 Q1~Q9·N1~N3 전부 A(10.0.1), URL 비교 쌍·버튼 이름·없는 `?v=` 안내·실패 이벤트 반영. 구현 Codex adversarial 3회(medium 2건 수정 후 approve) · **r6** (Jarvis) — 2a-04b1 BUNDLE-03 멈춤(자동 조건부 청크 포함 시 `/compare` 조정 있음 진입 직후 최소 125.20KB > 125, `dev/active/2a-04b1/REPORT.md` 12.4) → 영환님 "1, 전부 A": **P-S25 = 개수 캡션 자동 + 이어받기 판정·목록은 펼칠 때 로드**(예산 무변경), P-AC-38·39 개정 + ⑦, P-B9 개정, 10.0.2 결정 표. 구현 Codex adversarial 3회(medium 2건 — 자동 조건부 청크 예산 누락·Hero 미선택 캡션 — 수정 후 approve), 10.0.2에 FIX3·Q-F2-2·Q-F3-1~3·Q-F4-1~3 추가
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -720,6 +720,14 @@ r0의 질문 9개는 모두 A로 결정됐다. Q4는 r0 원안(조정 전부 이
 | Q6 | 보드 확정 실패 이벤트 | **A** `profile_save_failed(reason)` 적용 | 6.5 |
 | Q7 | 1280 미만 하단 요약 바의 조정 개수 | **A** 2a-04b2에서 추가 | 2a-04b2 |
 | Q-F3 | 조정 저장 멱등 기록 범위 | **A** 계열마다 마지막 조정 저장 1건(보드 확정과 같은 범위) | 6.3 |
+| FIX3 결과 | BUNDLE-03 해소 경로(영환님 "1(미달 시 3), A") | **1안 단독**: 보드 확정(`memoryBoardConfirm`)·되돌리기(`revertIn`) 본문을 조작 뒤 청크로 → `/compare` 진입 직후 125.08 → 124.36KB. 3안(캡션 조작 뒤) 미적용, P-S25 r6 그대로 | P-B9 · 7 |
+| Q-F2-2 | 명시 `aria-expanded` | **A** 넣지 않음 — 네이티브 `details/summary` 상태 | P-S25 |
+| Q-F3-1 | 확정 본문의 `buildProfileDraft` 주입 | **A** 저장소가 넘김(본문은 타입만 import). 직접 import 시 청크 재분할로 진입 직후 +0.24KB | 6.3 |
+| Q-F3-2 | 되돌리기 본문 청크 | **A** 조정 저장 청크(`memoryProfileAdjust`)와 함께 유지, b2에서 재검토 | 2a-04b2 |
+| Q-F3-3 | SPEC r7 | **A** 불필요(3안 미적용) — 이 표에만 기록 | — |
+| Q-F4-1 | 번들 분류: 펼침 && ready effect의 로드 | **A** "조작 뒤" — 분류 규칙을 "사용자 조작으로만 참이 되는 조건의 effect 포함"으로 넓힘(`check-bundle-size.mjs` 주석) | P-B9 |
+| Q-F4-2 | Hero 안내 문구로 진입 직후 +0.07KB | **A** 수용(여유 0.57) — 문구를 패널 청크로 옮기면 미준비 상태 요청 0과 충돌 | P-S25 |
+| Q-F4-3 | 로드 실패 뒤 Hero 재선택 시 자동 1회 재요청 | **A** 유지(조작 뒤 1회, 무한 재요청 없음 — Codex j3 approve) | P-S25 |
 ### 10.1 남은 쟁점 (r1)
 
 없음. 검토 중 나온 "되돌리기 뒤 재확정의 비교 기준"은 브리프 문구(지난 확정 버전의 base)대로 정했다 — 근거와 기각한 대안은 6.1-3, 검증은 P-AC-39 ⑥.

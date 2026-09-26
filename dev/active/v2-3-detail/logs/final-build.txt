@@ -1,0 +1,47 @@
+
+> design-studio-app@0.1.0 build
+> tsc --noEmit -p tsconfig.json && vite build && node scripts/check-bundle-size.mjs
+
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 285 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/chevron-down-UGy2Q_vR.svg                    0.44 kB │ gzip:  0.26 kB
+dist/assets/check-DwDeeBet.svg                           0.45 kB │ gzip:  0.28 kB
+dist/index.html                                          0.48 kB │ gzip:  0.30 kB
+dist/assets/circle-check-Bs3I_2Hu.svg                    0.61 kB │ gzip:  0.36 kB
+dist/assets/circle-info-Dp_yL-y3.svg                     0.85 kB │ gzip:  0.36 kB
+dist/assets/warning-I8LH9TjP.svg                         1.53 kB │ gzip:  0.66 kB
+dist/assets/sparkle-cqilRS3G.svg                         4.37 kB │ gzip:  1.83 kB
+dist/.vite/manifest.json                                 6.43 kB │ gzip:  1.08 kB
+dist/assets/Pretendard-Regular.subset-BZqc2FCe.woff2   267.09 kB
+dist/assets/Pretendard-Medium.subset-D07TkZcI.woff2    268.32 kB
+dist/assets/Pretendard-SemiBold.subset-DdMYyxPR.woff2  268.75 kB
+dist/assets/Pretendard-Bold.subset-NvQkMce4.woff2      270.78 kB
+dist/assets/index-DS6W_1Bq.css                          41.40 kB │ gzip:  8.40 kB
+dist/assets/PlaceholderPage-Cu9L4UKU.js                  0.68 kB │ gzip:  0.45 kB
+dist/assets/TextField-CWVgHv0V.js                        0.76 kB │ gzip:  0.45 kB
+dist/assets/referenceDisplay-KKA74scG.js                 1.31 kB │ gzip:  0.79 kB
+dist/assets/useThrowToBoundary-B1IVeW6I.js               1.37 kB │ gzip:  0.80 kB
+dist/assets/catalogFilters-CTS9InfW.js                   2.26 kB │ gzip:  1.16 kB
+dist/assets/references-Dy8ZbmG9.js                       2.70 kB │ gzip:  0.97 kB
+dist/assets/memoryCompareBoardRepository-Bgv0WkLd.js     3.57 kB │ gzip:  1.66 kB
+dist/assets/referenceComparisons-BjFXZkfz.js             3.69 kB │ gzip:  1.01 kB
+dist/assets/referenceDetails-C7TYk5GK.js                 5.57 kB │ gzip:  1.41 kB
+dist/assets/jsx-runtime-Dk72oS4N.js                      8.77 kB │ gzip:  3.33 kB
+dist/assets/boardEngine-DHh9L1q8.js                     12.25 kB │ gzip:  5.55 kB
+dist/assets/ReferenceDetailPage-Cy9H9Ice.js             13.10 kB │ gzip:  4.40 kB
+dist/assets/CatalogPage-C9fgEVVc.js                     19.43 kB │ gzip:  6.66 kB
+dist/assets/CompareBoardPage-D1Q54ksy.js                27.14 kB │ gzip:  8.96 kB
+dist/assets/compareBoardRepository-BDRFpK2M.js          28.78 kB │ gzip: 10.31 kB
+dist/assets/index-BumcIErH.js                          272.96 kB │ gzip: 87.17 kB
+
+✓ built in 222ms
+[bundle] 공통 JS (gzip, 참고): 89.58KB
+  - assets/index-BumcIErH.js 86.25KB
+  - assets/jsx-runtime-Dk72oS4N.js 3.33KB
+[bundle] /catalog 첫 화면 합계: 99.41KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.80KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.74KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.13KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.30KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.73KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 90.04KB / 예산 100KB · 진입 직후 자동 로드 포함: 92.42KB / 예산 125KB

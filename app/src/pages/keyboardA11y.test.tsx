@@ -107,17 +107,24 @@ describe("정렬 radiogroup — roving tabindex (V2-AC-20, 카탈로그 탭 삭�
   });
 });
 
-describe("상세 탭 tablist (A02)", () => {
-  it("상세 화면(1a-02)의 탭도 같은 방식으로 동작한다", async () => {
+describe("상세 미리보기 폭 radiogroup (A02 · V2-AC-28)", () => {
+  it("Tab 정지점은 선택된 폭 하나, 방향키·Home/End로 옮기며 선택하고 URL view에 남긴다", async () => {
     const { router } = renderApp("/references/ref-a");
     await screen.findByRole("heading", { level: 1, name: "모던 카페 브랜드" });
-    const list = screen.getByRole("tablist", { name: "상세 보기" });
-    expect(tabStops(list, "tab").map((t) => t.textContent)).toEqual(["섹션 구성"]);
-    within(list).getByRole("tab", { name: "섹션 구성" }).focus();
-    await userEvent.keyboard("{ArrowRight}{Enter}");
-    expect(within(list).getByRole("tab", { name: "토큰" })).toHaveFocus();
-    expect(within(list).getByRole("tab", { name: "토큰" })).toHaveAttribute("aria-selected", "true");
-    expect(search(router).get("tab")).toBe("tokens");
+    const group = screen.getByRole("radiogroup", { name: "미리보기 폭" });
+    expect(tabStops(group, "radio").map((r) => r.textContent)).toEqual(["데스크톱"]);
+    within(group).getByRole("radio", { name: "데스크톱" }).focus();
+    await userEvent.keyboard("{ArrowRight}");
+    expect(within(group).getByRole("radio", { name: "태블릿" })).toHaveFocus();
+    expect(within(group).getByRole("radio", { name: "태블릿" })).toHaveAttribute("aria-checked", "true");
+    expect(search(router).get("view")).toBe("tablet");
+    await userEvent.keyboard("{End}");
+    expect(within(group).getByRole("radio", { name: "모바일" })).toHaveFocus();
+    expect(search(router).get("view")).toBe("mobile");
+    await userEvent.keyboard("{Home}");
+    expect(within(group).getByRole("radio", { name: "데스크톱" })).toHaveFocus();
+    expect(router.state.location.search).toBe("");
+    expect(tabStops(group, "radio").map((r) => r.textContent)).toEqual(["데스크톱"]);
   });
 });
 

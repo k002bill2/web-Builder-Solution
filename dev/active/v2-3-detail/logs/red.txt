@@ -1,0 +1,48 @@
+     × components/ds/Tabs.tsx와 상세 탭 모듈이 없다 4ms
+     × 제품 코드에 Tabs import·tablist 역할이 0건이다 13ms
+     × Tab 정지점은 선택된 폭 하나, 방향키·Home/End로 옮기며 선택하고 URL view에 남긴다 65ms
+     × 탭이 없고, 섹션 구성·토큰 요약이 정보 패널에 항상 보인다 (V2-AC-27) 30ms
+     × 미리보기 폭을 모바일로 바꿔도 섹션 구성·토큰 요약은 그대로 보인다 (V2-AC-27) 76ms
+     × 점수 3칸(접근성·성능·모션) — 숫자는 status-*-text 굵기 700 (V2-AC-30 · D-A11Y-N1) 16ms
+     × 콘셉트·목적 태그는 버튼이 아니다 — 비대화형 Tag (V2-AC-31 · C-11) 64ms
+     × DOM 순서 = 보이는 순서: 뒤로 → 미리보기 폭 → 미리보기 → 정보 패널(h1) → 아래 영역 58ms
+     × 아래 영역: 유사 레퍼런스 3그룹(각 ≤ 6)과 점수 이력이 탭 없이 보인다 (V2-AC-29 · C-07) 64ms
+     × radiogroup '미리보기 폭'(데스크톱·태블릿·모바일), 기본 데스크톱이고 URL에 view를 쓰지 않는다 57ms
+     × 폭을 바꾸면 URL view에 남기고, 모바일이면 모바일 와이어프레임과 모바일 구조 설명을 보인다 59ms
+     × 새로고침(초기 URL)하면 view를 복원하고, 모르는 값은 데스크톱으로 연다 56ms
+     × ?view=nope → 데스크톱 50ms
+     × ?tab=tokens → 데스크톱 50ms
+     × ?tab=scores → 데스크톱 56ms
+     × ?tab=nope → 데스크톱 52ms
+     × 옛 북마크 ?tab=mobile은 view=mobile로 해석한다 — 모바일 선택 + 모바일 구조 설명 48ms
+     × view가 있으면 옛 tab보다 view를 따른다 43ms
+     × 유사 레퍼런스를 누르면 해당 상세로 바뀌고 이전 레퍼런스 내용이 남지 않는다 87ms
+     × 트레이가 6개로 차 있으면 상세에서의 7번째 비교 추가를 막고 안내한다 340ms
+     × 비교 추가 성공: '비교 보드에 담았습니다' 알림 + 알림 밖 형제 링크 '보드 열기', 포커스는 버튼에 (D-QA06 · A11Y-AC-17) 11ms
+     × '보드 열기'를 누르면 비교 보드로 간다 63ms
+ FAIL  src/features/detail/previewView.test.ts [ src/features/detail/previewView.test.ts ]
+⎯⎯⎯⎯⎯⎯ Failed Tests 22 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/test/tabsRemoved.test.ts > Tabs 삭제 가드 (V2-3 · B-4) > components/ds/Tabs.tsx와 상세 탭 모듈이 없다
+ FAIL  src/test/tabsRemoved.test.ts > Tabs 삭제 가드 (V2-3 · B-4) > 제품 코드에 Tabs import·tablist 역할이 0건이다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (2a-02 v2, FR-CAT-03) > 탭이 없고, 섹션 구성·토큰 요약이 정보 패널에 항상 보인다 (V2-AC-27)
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (2a-02 v2, FR-CAT-03) > 미리보기 폭을 모바일로 바꿔도 섹션 구성·토큰 요약은 그대로 보인다 (V2-AC-27)
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (2a-02 v2, FR-CAT-03) > 점수 3칸(접근성·성능·모션) — 숫자는 status-*-text 굵기 700 (V2-AC-30 · D-A11Y-N1)
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (2a-02 v2, FR-CAT-03) > 콘셉트·목적 태그는 버튼이 아니다 — 비대화형 Tag (V2-AC-31 · C-11)
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (2a-02 v2, FR-CAT-03) > DOM 순서 = 보이는 순서: 뒤로 → 미리보기 폭 → 미리보기 → 정보 패널(h1) → 아래 영역
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage (2a-02 v2, FR-CAT-03) > 아래 영역: 유사 레퍼런스 3그룹(각 ≤ 6)과 점수 이력이 탭 없이 보인다 (V2-AC-29 · C-07)
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > radiogroup '미리보기 폭'(데스크톱·태블릿·모바일), 기본 데스크톱이고 URL에 view를 쓰지 않는다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > 폭을 바꾸면 URL view에 남기고, 모바일이면 모바일 와이어프레임과 모바일 구조 설명을 보인다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > 새로고침(초기 URL)하면 view를 복원하고, 모르는 값은 데스크톱으로 연다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > ?view=nope → 데스크톱
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > ?tab=nope → 데스크톱
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > ?tab=tokens → 데스크톱
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > ?tab=scores → 데스크톱
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > 옛 북마크 ?tab=mobile은 view=mobile로 해석한다 — 모바일 선택 + 모바일 구조 설명
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 미리보기 폭 (V2-AC-28) > view가 있으면 옛 tab보다 view를 따른다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > ReferenceDetailPage — 404·이동 > 유사 레퍼런스를 누르면 해당 상세로 바뀌고 이전 레퍼런스 내용이 남지 않는다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 상세 ↔ 카탈로그 상태 공유 > 트레이가 6개로 차 있으면 상세에서의 7번째 비교 추가를 막고 안내한다
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 상세 ↔ 카탈로그 상태 공유 > 비교 추가 성공: '비교 보드에 담았습니다' 알림 + 알림 밖 형제 링크 '보드 열기', 포커스는 버튼에 (D-QA06 · A11Y-AC-17)
+ FAIL  src/pages/ReferenceDetailPage.test.tsx > 상세 ↔ 카탈로그 상태 공유 > '보드 열기'를 누르면 비교 보드로 간다
+ FAIL  src/pages/keyboardA11y.test.tsx > 상세 미리보기 폭 radiogroup (A02 · V2-AC-28) > Tab 정지점은 선택된 폭 하나, 방향키·Home/End로 옮기며 선택하고 URL view에 남긴다
+ Test Files  4 failed (4)
+      Tests  22 failed | 19 passed (41)

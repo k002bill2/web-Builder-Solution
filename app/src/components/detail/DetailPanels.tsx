@@ -1,110 +1,99 @@
 import type { ReactNode } from "react";
 import type { DesignReference } from "../../domain/reference";
-import type { ReferenceDetail } from "../../domain/referenceDetail";
-import { MOTION_LABELS } from "../../fixtures/catalogFilters";
+import type { PaletteRole, ReferenceDetail } from "../../domain/referenceDetail";
 import { formatDate } from "../catalog/referenceDisplay";
 
-interface PanelProps {
-  readonly reference: DesignReference;
+interface DetailProps {
   readonly detail: ReferenceDetail;
 }
 
-const PanelHeading = ({ children }: { readonly children: ReactNode }) => (
-  <h2 className="ds-heading1 mb-3">{children}</h2>
+/** 정보 패널 소제목 (목업 t-label 자리). */
+const InfoHeading = ({ id, children }: { readonly id: string; readonly children: ReactNode }) => (
+  <h2 id={id} className="ds-label mb-2 text-label-neutral">
+    {children}
+  </h2>
 );
 
-/** 섹션 구성 (목업 142~145행). */
-export function SectionsPanel({ detail }: PanelProps) {
+/** 섹션 구성 — 정보 패널 목록 (목업 2a-02). 순번은 label-alternative (A11Y-01 3절 #7). */
+export function SectionsList({ detail }: DetailProps) {
   return (
-    <>
-      <PanelHeading>섹션 구성 · {detail.sections.length}개</PanelHeading>
-      <ol className="flex flex-wrap gap-2">
+    <div>
+      <InfoHeading id="detail-sections-heading">섹션 구성 · {detail.sections.length}개</InfoHeading>
+      <ol aria-label="섹션 구성" className="flex flex-col">
         {detail.sections.map((s, i) => (
-          <li
-            key={`${s.name}-${i}`}
-            className="inline-flex items-center gap-2 rounded-md border border-line-normal px-3 py-2 text-body3 font-medium"
-          >
-            <span className="ds-caption2 text-label-alternative">{String(i + 1).padStart(2, "0")}</span>
-            {s.name}
-            <span className="ds-caption2 text-label-alternative">{s.variant}</span>
+          <li key={`${s.name}-${i}`} className="flex items-center gap-2.5 border-b border-line-neutral py-1.75">
+            <span className="ds-caption1 w-4.5 flex-none tabular-nums text-label-alternative">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="min-w-0 flex-1 text-body3 font-semibold">{s.name}</span>
+            <span className="ds-caption1 text-label-alternative">{s.variant}</span>
           </li>
         ))}
       </ol>
-    </>
-  );
-}
-
-function TokenCard({ label, children }: { readonly label: string; readonly children: ReactNode }) {
-  return (
-    <div className="rounded-lg border border-line-neutral p-4">
-      <div className="ds-caption1 text-label-alternative">{label}</div>
-      {children}
     </div>
   );
 }
 
-/** 토큰 요약 — 팔레트·폰트·간격/모션 (목업 146~151행). */
-export function TokensPanel({ reference, detail }: PanelProps) {
-  const { palette, typography: t, spacing } = detail;
+/** 견본 4칸 = 목업 순서(대표·면·글자·배경). muted는 대표색과 겹쳐 견본에서 뺀다. */
+const SWATCH_ROLES: readonly PaletteRole[] = ["primary", "surface", "ink", "bg"];
+
+/** 토큰 요약 — 견본 4칸 + hex 목록 + 한 줄 요약. 기존 TokensPanel의 간격·모션 값은 한 줄에 합친다 (SPEC 4.3). */
+export function TokenSummary({ detail }: DetailProps) {
+  const { typography: t, spacing } = detail;
+  const swatches = SWATCH_ROLES.flatMap((role) => detail.palette.filter((c) => c.role === role));
+  const hexes = swatches.map((c) => c.hex).join(" · ");
+  const summary = [
+    `${t.family} ${t.headingWeight}/${t.bodyWeight}`,
+    `스케일 ${t.scale}`,
+    spacing.grid,
+    `섹션 간격 ${spacing.sectionGap}px`,
+    detail.motionNote,
+    `본문 대비 ${detail.bodyContrast}:1`,
+  ].join(" · ");
   return (
-    <>
-      <PanelHeading>토큰 요약</PanelHeading>
-      <div className="grid gap-3 sm:grid-cols-3">
-        <TokenCard label="팔레트">
-          <div role="img" aria-label={`팔레트 ${palette.map((c) => c.hex).join(" · ")}`} className="mt-2.5 flex gap-1.5">
-            {palette.map((c) => (
-              <span
-                key={c.role}
-                className={`h-8 flex-1 rounded-[--spacing(1.5)] ${c.role === "bg" ? "border border-line-normal" : ""}`}
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
-          </div>
-          <div className="ds-caption2 mt-2 text-label-alternative">
-            대표 {reference.colorPalette.primary} · 본문 대비 {detail.bodyContrast}:1
-          </div>
-        </TokenCard>
-        <TokenCard label="폰트">
-          <div className="ds-title2 mt-2 tracking-(--tracking-tight)">{t.family}</div>
-          <div className="ds-caption2 mt-1 text-label-alternative">
-            제목 {t.headingWeight} / 본문 {t.bodyWeight} · 스케일 {t.scale}
-          </div>
-        </TokenCard>
-        <TokenCard label="간격 · 모션">
-          <div className="ds-title2 mt-2 tracking-(--tracking-tight)">
-            {spacing.grid} · {MOTION_LABELS[reference.motionLevel]}
-          </div>
-          <div className="ds-caption2 mt-1 text-label-alternative">
-            섹션 간격 {spacing.sectionGap}px · {detail.motionNote}
-          </div>
-        </TokenCard>
+    <div>
+      <InfoHeading id="detail-tokens-heading">토큰 요약</InfoHeading>
+      <div role="img" aria-label={`팔레트 ${hexes}`} className="flex gap-1.25">
+        {swatches.map((c) => (
+          <span
+            key={c.role}
+            className={`h-6.5 flex-1 rounded-[--spacing(1.5)] ${c.role === "bg" ? "border border-line-strong" : ""}`}
+            style={{ backgroundColor: c.hex }}
+          />
+        ))}
       </div>
-    </>
+      <p className="ds-caption2 mt-1.5 tabular-nums text-label-alternative">{hexes}</p>
+      <p className="ds-caption1 mt-2 text-label-alternative">{summary}</p>
+    </div>
   );
 }
 
-/** 모바일 구조 (목업 152~153행). */
-export function MobilePanel({ detail }: PanelProps) {
+/** 모바일 구조 — 미리보기 폭 "모바일"일 때 와이어프레임 아래 (1a-02 모바일 탭 내용). */
+export function MobileStructure({ detail }: DetailProps) {
   return (
-    <>
-      <PanelHeading>모바일 구조</PanelHeading>
-      <ol className="flex flex-wrap gap-2.5">
+    <section aria-labelledby="detail-mobile-heading">
+      <h2 id="detail-mobile-heading" className="ds-heading2 mb-2.5">
+        모바일 구조
+      </h2>
+      <ol className="flex flex-wrap gap-2">
         {detail.mobileFlow.map((m) => (
-          <li key={m} className="rounded-full bg-fill-normal px-2.5 py-1.5 text-caption1 font-medium">
+          <li key={m} className="rounded-full bg-background-normal px-2.5 py-1.5 text-caption1 font-medium">
             {m}
           </li>
         ))}
       </ol>
-    </>
+    </section>
   );
 }
 
-/** 점수 이력 — 목업은 탭 이름만 있다. 현재 측정 1건을 보여준다 (이력 누적은 백엔드 이후). */
-export function ScoresPanel({ reference, detail }: PanelProps) {
+/** 점수 이력 — 아래 영역 (C-07). 현재 측정 1건을 보여준다 (이력 누적은 백엔드 이후). */
+export function ScoreHistory({ reference, detail }: DetailProps & { readonly reference: DesignReference }) {
   const s = reference.scores;
   return (
-    <>
-      <PanelHeading>점수 이력</PanelHeading>
+    <section aria-labelledby="detail-history-heading">
+      <h2 id="detail-history-heading" className="ds-heading2 mb-3">
+        점수 이력
+      </h2>
       <table className="w-full text-left text-body3">
         <thead className="ds-caption1 text-label-alternative">
           <tr className="border-b border-line-neutral">
@@ -124,6 +113,6 @@ export function ScoresPanel({ reference, detail }: PanelProps) {
         </tbody>
       </table>
       <p className="ds-caption1 mt-2 text-label-alternative">이전 측정 기록이 없습니다.</p>
-    </>
+    </section>
   );
 }

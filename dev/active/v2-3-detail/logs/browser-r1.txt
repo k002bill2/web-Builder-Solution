@@ -1,0 +1,18 @@
+{"w":1280,"q":"","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"829x622","infoLeft":885,"infoW":380,"checked":"데스크톱","search":""}
+{"w":1280,"q":"?view=tablet","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"466x622","infoLeft":885,"infoW":380,"checked":"태블릿","search":"?view=tablet"}
+{"w":1280,"q":"?view=mobile","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"350x622","infoLeft":885,"infoW":380,"checked":"모바일","search":"?view=mobile"}
+{"w":1280,"q":"?tab=mobile","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"350x622","infoLeft":885,"infoW":380,"checked":"모바일","search":"?tab=mobile"}
+{"w":1024,"q":"","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"573x430","infoLeft":629,"infoW":380,"checked":"데스크톱","search":""}
+{"w":1024,"q":"?view=tablet","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"322x430","infoLeft":629,"infoW":380,"checked":"태블릿","search":"?view=tablet"}
+{"w":1024,"q":"?view=mobile","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"242x430","infoLeft":629,"infoW":380,"checked":"모바일","search":"?view=mobile"}
+{"w":1024,"q":"?tab=mobile","overflowX":0,"twoCol":true,"h1Bottom":110,"innerH":900,"h1InFirstScreen":true,"preview":"242x430","infoLeft":629,"infoW":380,"checked":"모바일","search":"?tab=mobile"}
+{"w":768,"q":"","overflowX":0,"twoCol":false,"h1Bottom":606,"innerH":900,"h1InFirstScreen":true,"preview":"697x392","infoLeft":0,"infoW":753,"checked":"데스크톱","search":""}
+{"w":768,"q":"?view=tablet","overflowX":0,"twoCol":false,"h1Bottom":606,"innerH":900,"h1InFirstScreen":true,"preview":"294x392","infoLeft":0,"infoW":753,"checked":"태블릿","search":"?view=tablet"}
+{"w":768,"q":"?view=mobile","overflowX":0,"twoCol":false,"h1Bottom":684,"innerH":900,"h1InFirstScreen":true,"preview":"221x392","infoLeft":0,"infoW":753,"checked":"모바일","search":"?view=mobile"}
+{"w":768,"q":"?tab=mobile","overflowX":0,"twoCol":false,"h1Bottom":684,"innerH":900,"h1InFirstScreen":true,"preview":"221x392","infoLeft":0,"infoW":753,"checked":"모바일","search":"?tab=mobile"}
+{"w":390,"q":"","overflowX":0,"twoCol":false,"h1Bottom":444,"innerH":844,"h1InFirstScreen":true,"preview":"343x193","infoLeft":0,"infoW":375,"checked":"데스크톱","search":""}
+{"w":390,"q":"?view=tablet","overflowX":0,"twoCol":false,"h1Bottom":444,"innerH":844,"h1InFirstScreen":true,"preview":"145x193","infoLeft":0,"infoW":375,"checked":"태블릿","search":"?view=tablet"}
+{"w":390,"q":"?view=mobile","overflowX":0,"twoCol":false,"h1Bottom":560,"innerH":844,"h1InFirstScreen":true,"preview":"109x193","infoLeft":0,"infoW":375,"checked":"모바일","search":"?view=mobile"}
+{"w":390,"q":"?tab=mobile","overflowX":0,"twoCol":false,"h1Bottom":560,"innerH":844,"h1InFirstScreen":true,"preview":"109x193","infoLeft":0,"infoW":375,"checked":"모바일","search":"?tab=mobile"}
+{"k1":{"active":"태블릿","search":"?view=tablet","ring":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(37, 99, 235) 0px 0px 0px 4px","fv":true},"k2":{"active":"모바일","search":"?view=mobile","mobileStructure":true},"k3":{"active":"데스크톱","search":""}}
+

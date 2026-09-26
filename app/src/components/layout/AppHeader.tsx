@@ -18,18 +18,21 @@ function useCatalogView() {
   return { catalog: (onCatalog && !saved) || pathname.startsWith("/references/"), saved };
 }
 
-/** 상단 GNB (목업 57~64행). */
+/** 상단 GNB — 52px 한 줄, <768에서는 주 메뉴가 헤더 아래 한 줄로 내려간다 (v2 SPEC 4.1 · Q5). */
 export function AppHeader() {
   const navigate = useNavigate();
   const { Logo, name } = brand;
   const view = useCatalogView();
   return (
-    <header className="flex h-15 items-center gap-7 border-b border-line-neutral bg-background-normal px-4 md:px-7">
-      <Link to="/catalog" className="flex flex-none items-center gap-2.5">
+    <header className="flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7">
+      <Link to="/catalog" className="flex h-13 flex-none items-center gap-2.5">
         <Logo size={24} />
         <span className="text-body1 font-bold tracking-(--tracking-tight)">{name}</span>
       </Link>
-      <nav aria-label="주 메뉴" className="hidden flex-1 gap-5.5 text-body2 font-medium text-label-alternative md:flex">
+      <nav
+        aria-label="주 메뉴"
+        className="order-last flex w-full gap-5.5 overflow-x-auto whitespace-nowrap pb-3 text-body2 font-medium text-label-alternative md:order-none md:w-auto md:flex-1 md:pb-0"
+      >
         <Link to="/catalog" aria-current={view.catalog ? "page" : undefined} className={navClass({ isActive: view.catalog })}>
           카탈로그
         </Link>

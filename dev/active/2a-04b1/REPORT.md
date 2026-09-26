@@ -470,7 +470,7 @@
 | `CompareBoardPage` | 9.19 | 9.18 | −0.01 |
 | `react` 공유 청크 | 3.23 | 3.28 | +0.05 |
 | 엔트리 `index` | 85.74 | 85.74 | 0 |
-| 합계 (진입 직후) | 125.08 | **124.36** | **−0.72** |
+| 합계 (진입 직후) | 125.08 | **124.36** | **−0.72** (위 행 합 −0.74, 나머지 청크 반올림 ±0.01씩) |
 | (조작 뒤) `memoryBoardConfirm` 새 청크 | — | 1.49 | 예산 밖 |
 | (조작 뒤) `memoryProfileAdjust` | 1.63 | 1.76 | +0.13 (revertIn), 예산 밖 |
 
@@ -483,7 +483,7 @@
 | /compare (조정 있음) | 99.43 / **125.08** | 99.48 / **124.36** | 0.52 / **0.64** |
 | /profile | 99.07 / 119.42 | 99.18 / 118.77 | 0.82 / 6.23 |
 | /studio (자리표시) | 89.40 / 91.79 | 89.46 / 91.84 | 10.54 / 33.16 |
-- 공통 JS +0.06(`react` 공유 청크 +0.05). `/profile` 첫 화면 +0.11은 ProfilePage의 history state 비우기(`useNavigate`, 14.5)다.
+- 공통 JS +0.06(`react` 공유 청크 +0.05). `/profile` 첫 화면 +0.11 = 1안 자체 +0.05(주입 직후·history 수정 전 빌드 99.12) + ProfilePage history state 비우기(`useNavigate`, 14.5) +0.06.
 - 스크립트 분류: `memoryBoardConfirm.ts`를 `COMPARE_AFTER_ACTION`(조작 뒤)에 넣고 호출 지점을 주석에 적었다. `memoryProfileAdjust` 주석에 `revertTo`를 더했다. 패치의 자동/조작 뒤 규칙·`SCENARIOS`·누락 키 가드는 그대로다.
 
 ### 14.4 RED 로그

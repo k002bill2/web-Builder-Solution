@@ -1,0 +1,27 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a0dd1d-ff49-71e1-9ce8-cdd191ecd05d).
+[codex] Reviewer started: changes against '940c19f'
+[codex] Running command: /bin/zsh -lc "grep -nEi 'web-builder|review|graphify' '/Users/younghwankang/Library/Applicati...
+[codex] Command completed: /bin/zsh -lc "grep -nEi 'web-builder|review|graphify' '/Users/younghwankang/Library/Applicati... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff --no-ext-diff --unified=80 940c19fa29123177d3a1c4eefd7219fa3c772f66 --...
+[codex] Command completed: /bin/zsh -lc "git diff --no-ext-diff --unified=80 940c19fa29123177d3a1c4eefd7219fa3c772f66 --... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/domain/profileAdjustments.ts; cat app/src/domain/adjustmentSchema.t...
+[codex] Command completed: /bin/zsh -lc "cat app/src/domain/profileAdjustments.ts; cat app/src/domain/adjustmentSchema.t... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProfileAdjust.ts | sed -n '25,70p'; npm test -- --run...
+[codex] Command failed: /bin/zsh -lc "nl -ba app/src/data/memoryProfileAdjust.ts | sed -n '25,70p'; npm test -- --run... (exit 1)
+[codex] Running command: /bin/zsh -lc "nl -ba src/data/memoryProfileAdjust.ts | sed -n '25,75p'; git diff --check 940c...
+[codex] Command completed: /bin/zsh -lc "nl -ba src/data/memoryProfileAdjust.ts | sed -n '25,75p'; git diff --check 940c... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: A malformed retry may be reported as successful when it matches the normalized key of a prior...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 940c19f
+
+A malformed retry may be reported as successful when it matches the normalized key of a prior save, bypassing schema validation. The focused test command could not start because the read-only sandbox blocked Vite from writing its temporary config file.
+
+Review comment:
+
+- [P2] Validate adjustments before replaying an idempotent result — /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app/src/data/memoryProfileAdjust.ts:50-52
+  When a previous save committed, a malformed retry can normalize to the same key and return here before `parseAdjustments` runs. For example, `{ density: "compact", extra: undefined }` is treated as having no unknown keys by `idempotencyKey`, so it replays the successful result instead of returning `SCHEMA_INVALID`. Validate the input shape before accepting an idempotent replay.

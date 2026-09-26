@@ -1,0 +1,16 @@
+[bundle] 공통 JS (gzip, 참고): 88.96KB
+  - assets/index-DW9jufoG.js 85.73KB
+  - assets/react-yIOJJ3r4.js 3.23KB
+[bundle] /catalog 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.33KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.30KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.68KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.49KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.45KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +2.88KB (3개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.49KB / 예산 100KB · 진입 직후 자동 로드 포함: 126.97KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +0.00KB (0개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +1.54KB (1개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.22KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +2.15KB (2개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.39KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.78KB / 예산 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 126.97KB > 125KB
+exit 1

@@ -201,3 +201,120 @@
 
 ## 11. 커밋
 `6d7e627` 플레이크 · `1e60ad2` 저장소·순수 함수 · `b82986c` 확정 타이밍 복구 · `cdd86c5` P-S25·계측·요약 · `0a94c68` Codex P2 · `abb325a` REPORT 1차 · (이 커밋: P-AC-11 원인 수정 + REPORT 갱신)
+
+## 12. FIX (BUNDLE-03 · Q1)
+- 브리프 `docs/06-handoff/FIX-2A04b1_DEVELOPER_BRIEF.md` · 기준 `940c19f` · 작성 2026-09-26
+- 근거 수준: 번들 수치 = L1(`logs/fix-*`) · (b)(c) 효과 = L1 실측(측정용 배선, 커밋 안 함)
+
+### 12.0 요약
+| 항목 | 결과 |
+|---|---|
+| BUNDLE-03 | **멈춤(브리프 3.3)**. 규칙대로 고친 스크립트는 `/compare (조정 있음)` 126.97KB > 125로 **RED 확인**. 캡션만 자동으로 받게 분할하고 (a)(b)(c)를 모두 실측했지만, 가장 작은 조합이 **125.20KB**(> 125)였다. 여유 0.3(≤ 124.70)은 물론 예산 125도 못 맞춘다. 예산은 바꾸지 않았다. 번들 코드(스크립트·패널 분할)는 **커밋하지 않았다** — 스크립트를 넣으면 `npm run build`가 실패한다(빌드 깨진 채 커밋 금지). 패치는 `logs/`에 있다 |
+| Q1 멱등 키 | 완료(`200e92d` + Codex P2 반영 `7038c3c`). I-1~I-3 + A-Q4 가드 |
+| 검증 4종 | typecheck 0 · lint 0 · build 0(**기존 스크립트** 기준) · test **646/646** (`logs/fix-{typecheck,lint,build,test}.txt`) |
+| 전체 5회 연속 | **646/646 × 5** (`logs/fix-run1~5.txt`) |
+| Codex | review 1회 — P2 1건, 반영함(12.8) |
+
+### 12.1 분류 결과와 근거(호출 지점)
+| import | 분류 | 호출 지점 |
+|---|---|---|
+| `features/compare/carryOverPanel.tsx` | **자동(조건부)** | `useCompareBoard.ts:131-137` useEffect. 확정한 프로필의 최신에 조정이 있으면 진입 직후 조작 없이 실행된다 |
+| `domain/profileAdjustments.ts`(재확정 이어받기 규칙) | 조작 뒤 | `memoryCompareBoardRepository.ts:54` `loadCarryOver` ← `prepareCarryOver`(:66) ← `confirmProfile`·`createProfileVersion`(:194·:198) ← `useCompareBoard.confirm()`(:245, 확정 버튼). 확정 실패 뒤 재시도도 "다시 시도" 버튼 `onClick`이다(`boardMessages.ts:47`) |
+| `data/memoryProfileAdjust.ts`(조정 저장 본문) | 조작 뒤 | `memoryProfileRepository.ts` `loadAdjust` ← `getAdjustmentRange`·`saveAdjustments`. **앱 코드 호출자 0**(테스트만). b2에서 `/profile` 진입 때 `getAdjustmentRange`를 자동으로 부르게 되면 **자동으로 재분류**해야 한다(12.9) |
+| 픽스처·`boardEngine`·`memoryStudio`·`referenceComparisons`·`profileEngine` | 자동 | 기존과 같다(main 로더·보드 load effect·프로필 화면 로더) |
+
+- 고친 스크립트(`logs/fix-bundle-script.patch`)의 구조:
+  - 분류 규칙을 주석으로 적었다. 확인하지 못한 import는 자동으로 분류한다.
+  - 판정 대상은 상수 `SCENARIOS` 하나다. 각 항목 = `name`·`page`·`auto`·`afterAction`.
+  - `/compare (조정 있음)` = 기본 `/compare`의 `auto` + `carryOverPanel.tsx`.
+  - `page`·`auto`·`afterAction` 키 중 manifest에 없는 것이 있으면 실패한다(기존 가드 유지).
+  - 조작 뒤 import는 진입 직후 합계에 없는 파일 크기만 출력한다.
+
+### 12.2 RED 로그
+- `logs/fix-red-bundle.txt` — 고친 스크립트를 `940c19f` 빌드에 실행(exit 1): `/compare (조정 있음)` 진입 직후 **126.97KB > 125KB**. 나머지 시나리오는 통과.
+- `logs/fix-red-q1.txt` — Q1 테스트 추가 직후 3 실패.
+  - I-1: `STALE_PROFILE: expectedLatest 1 ≠ 2`
+  - I-3: 커밋 단계 주입 없음
+  - A-Q4: `store.adjustCommitOf is not a function`
+  - I-2는 수정 전에도 통과한다. "다른 조정 → STALE"·"모르는 키 → SCHEMA_INVALID"가 멱등 키 때문에 바뀌지 않게 지키는 회귀 가드다.
+
+### 12.3 패널 분할 구조 (시험 구현, 커밋 안 함 — `logs/fix-bundle-spike-caption.patch`)
+- 자동 청크 `carryOverPanel`에는 캡션만 남겼다. `carryOverAdjustments` 결과 개수로 "이어지는 조정 N개 · 지워지는 조정 M개"를 보인다.
+- 목록 문구(`adjustmentText`)는 뺐다. 계획은 `details` 펼칠 때 `import()`하는 것이었다.
+- 이어받기 판정 자체에 대비 계산이 필요하다: 보정 (b) "새 대비 실패" = `checkProfileContrast`(C-3·C-4·C-5). 그래서 캡션 청크에 남는다.
+  - 대비 부분 실측: `profileContrast` 청크 0.73KB. 그중 판정에 필요한 `checkProfileContrast`만 떼면 S2 합본 청크 1.06KB 안에 들어간다.
+- 목표치에 못 미쳐서 펼침 import·로딩/실패 문구·화면 테스트(B-3)는 만들지 않았다. 멈춤 조건(3.3)에 따른 것이다.
+
+### 12.4 단계별 실측 (gzip KB, `/compare` 첫 화면 / 진입 직후, `logs/fix-spikes-bundle.txt`)
+| 단계 | /compare | /compare (조정 있음) | 판정(≤125 · 여유 0.3 = ≤124.70) |
+|---|---|---|---|
+| 기준 `940c19f` (RED) | 99.49 / 124.45 | 99.49 / **126.97** | 실패 |
+| S1 패널 분할(캡션만 자동, 규칙·대비는 기존 모듈 전체) | 99.47 / 124.43 | 99.47 / **126.10** | 실패 |
+| S2 = S1 + (a) 판정에 필요한 부분만 한 모듈(`carryOverAdjustments`·`checkProfileContrast`만. `proposeCorrections`·`effectiveProfile`·`normalize` 제외) | 99.44 / 124.41 | 99.44 / **125.47** | 실패 |
+| S3 = S2 + (b) Callout 공유 청크 제거 **상한**(ProfilePage에 복제본 → 청크 경계 비용 0) | 99.17 / 124.14 | 99.17 / **125.20** | 실패 |
+| S4 = S2 + (c) BUNDLE-01 C8(DraftPanel·DraftSummaryBar·ComparisonTable·ComparisonAccordion을 엔진 청크로) | **94.98** / 124.51 | 94.98 / **125.57** | 실패 |
+| Q1 커밋 뒤(번들 코드는 기준 그대로) | 99.49 / 124.50 | (126.97 + 0.05 추정) | 기존 스크립트 통과 |
+
+- (c) C8은 첫 화면만 −4.5KB 줄인다. 진입 직후는 **+0.10**이다. `docs/perf/bundle-01/REPORT.md:156` "진입 직후 합계는 거의 그대로"가 실측으로 확인됐다. 이 시나리오에는 효과가 없다.
+- 가장 작은 조합은 (a)+(b) 상한 = **125.20**이다. 125까지 −0.20, 여유 0.3까지 −0.50이 모자란다. (b)는 복제로 잰 상한이라 실제 청크 설정 변경으로는 이보다 줄지 않는다.
+- 그래서 B-1(수정 후 통과)·B-2(시나리오 여유 ≥ 0.3)·B-3(펼침 테스트)는 **미달**이다. 브리프 3.3에 따라 멈췄다.
+- 모든 라우트 전/후 (Codex P2 반영 뒤 최종, `logs/fix-build.txt`):
+
+| 라우트 | 전 `940c19f` (첫 / 진입 직후) | 후 | 여유 (후) |
+|---|---|---|---|
+| /catalog | 98.95 / 101.33 | 98.94 / 101.32 | 1.06 / 23.68 |
+| /references/:id | 96.30 / 98.68 | 96.29 / 98.68 | 3.71 / 26.32 |
+| /compare | 99.49 / 124.45 | 99.49 / **124.50** | **0.51** / 0.50 |
+| /profile | 98.95 / 119.22 | 98.94 / 119.26 | 1.06 / 5.74 |
+| /studio | 89.39 / 91.78 | 89.39 / 91.78 | 10.61 / 33.22 |
+- Q1이 진입 직후에 더한 것은 +0.05다(`studioStore` 슬롯 + 프로필 `call`의 commit 게이트). 키 계산·비교는 조작 뒤 청크(`memoryProfileAdjust`, /compare +2.88 → +2.98)에 있다. 첫 화면 `/compare` 여유 0.51은 줄지 않았다.
+
+### 12.5 B-/I- 테스트 이름 (`app/src/data/profileAdjust.test.ts` › "Q1 조정 저장 멱등 — 키 = (profileId, expectedLatest, 정규화한 조정) 별도 기록 (6.3 r3 계약)")
+- I-1 "커밋 뒤 응답 실패 → 같은 인자로 다시 저장하면 STALE 없이 같은 버전, 새 버전 0 (정규화가 같으면 같은 키)"
+- I-2 "같은 expectedLatest라도 다른 조정이면 멱등 결과가 아니라 기존 판정 STALE_PROFILE(최신 동봉) · 모르는 키를 붙인 재시도는 SCHEMA_INVALID" — Codex P2 반영 때 `{ density: "compact", extra: undefined }` 단언 1줄 추가(RED `logs/fix-red-codex-p2.txt`)
+- I-3 "커밋 단계 실패 → 버전·멱등 기록 모두 롤백, 주입을 끄고 같은 인자로 다시 저장하면 성공(번호 건너뜀 0)"
+- A-Q4 "보드 확정 commits 슬롯을 쓰지 않는다(A-Q4) — 조정 저장 뒤에도 보드 확정의 같은 키 재시도는 커밋된 결과"
+- B-1~B-3: 없음. 멈춤 때문이며, B-1은 RED 로그만 있다.
+
+### 12.6 Q1 구현 (`200e92d`)
+- `studioStore.ts`: `adjustCommits` 슬롯 · `adjustCommitOf` · `rememberAdjust`. 보드 `commits`와 따로 두며, 같은 트랜잭션 draft에 쓰므로 롤백 시 함께 버려진다.
+- `memoryProfileAdjust.ts`:
+  - 멱등 키 = `[profileId, expectedLatest, JSON(normalizeAdjustments(검증한 값))]`
+  - 판정 순서: **모양 → 멱등 키** → NOT_FOUND → STALE_PROFILE → 범위 → 보정 from → 변경 없음. 키가 같으면 기록된 버전을 그대로 돌려준다(새 버전 0).
+  - 브리프 3.4는 "멱등 키 → 모양"이었다. 첫 구현(`200e92d`)은 그 순서였고, Codex P2(12.8)에 따라 모양을 앞으로 옮겼다(12.10 Q-F2).
+  - 삽입 뒤 `rememberAdjust` → `commitGate()` 순서다.
+- `memoryProfileRepository.ts`: `ProfileCall.phase`에 `"commit"`을 추가했다. `call`이 보드 구현과 같은 `commitGate`를 넘긴다.
+
+### 12.7 고친 기존 줄
+- 기존 테스트: 없음(Q1 describe 추가만).
+- 기존 앱 줄:
+  - `memoryProfileRepository.ts` 머리 주석의 "멱등 키는 두지 않는다"를 바꿨다.
+  - `ProfileCall.phase` 타입, `call` 시그니처, `work()` 호출, `saveAdjustments` 호출 1줄을 고쳤다.
+  - `memoryProfileAdjust.ts` 판정 순서 주석을 고쳤다.
+  - `studioStore.ts` 머리 주석·`IdempotentCommit` 주석·초기 state를 고쳤다.
+
+### 12.8 Codex 결과
+- `review --wait --scope branch --base 940c19f` 1회 (원문 `logs/fix-codex-review.txt`) 
+- **[P2]** 멱등 재생이 모양 검사보다 앞이었다. 그래서 `{ density: "compact", extra: undefined }`처럼 정규화 뒤 같은 키가 되는 잘못된 재시도가 SCHEMA_INVALID 대신 이전 결과를 받았다(`memoryProfileAdjust.ts:50-52`).
+  - 반영(`7038c3c`): `parseAdjustments`를 먼저 하고, 검증한 값으로 키를 만든다. 모르는 키 우회 함수(`idempotencyKey`)는 없앴다.
+  - RED(`logs/fix-red-codex-p2.txt`, I-2 1 실패) → GREEN. 그 뒤 검증 4종·5회 연속을 다시 실행했다(0절 수치는 반영 뒤).
+- 반영 뒤 재리뷰는 하지 않았다(브리프 1회).
+
+### 12.9 남은 위험
+- **`/compare (조정 있음)` 진입 직후 ≈ 127.0KB 초과가 그대로 남아 있다.** 기존 스크립트는 이 경로를 판정하지 않는다. 결정 전까지 현재 번들 검사는 이 초과를 숨긴다(Q-F1).
+- b2 인계: `/profile`이 진입 때 `getAdjustmentRange`를 자동으로 부르게 되면, `memoryProfileAdjust`를 **자동**으로 옮겨 `/profile` 시나리오에 넣는다. 현재 +2.25KB → 119.26 + 2.25 = 약 121.5로 예산 안(L3 추정).
+- `/compare` 기본 진입 직후 여유가 0.55 → 0.50으로 줄었다(Q1). 2a-04c 생성 메모리 구현도 같은 방식(처음 쓸 때 동적 import)이어야 한다.
+
+### 12.10 설계 질문
+1. **Q-F1 BUNDLE-03 해소 방향** (멈춤 근거 12.4). 선택지:
+   - A: 조정 있음 시나리오만 예산을 따로 정한다(ADR-004 개정, 영환님 결정). 캡션 분할 S2 기준 125.47이다.
+   - B: 캡션을 없애고, 패널 전체를 "조정 목록 보기" 같은 조작 뒤 로드로 바꾼다. P-S25 "보이는 캡션"을 SPEC에서 개정해야 한다.
+   - C: 진입 직후 기본 합계 자체를 줄인다. 브리프 (a)(b)(c) 밖이다. 예: `memoryProfileRepository`의 `revertTo` 본문·`memoryCompareBoardRepository`의 확정 본문을 조작 뒤 청크로 옮긴다. 효과는 미실측이다.
+   - 스크립트 패치(`logs/fix-bundle-script.patch`)는 결정과 함께 넣는다. 먼저 넣으면 build가 실패한다.
+2. **Q-F2 판정 순서 "모양 → 멱등 키"** (브리프 3.4는 "멱등 키 → 모양"): 정규화가 모르는 키를 버리므로, 키를 먼저 보면 틀린 입력이 이전 결과를 받는다(Codex P2). 같은 인자의 정상 재시도는 늘 모양을 통과하므로 I-1 결과는 같다. 보드 확정은 인자에 페이로드가 없어 이 문제가 없다. 이 순서로 확정할지 확인 요청.
+3. **Q-F3 멱등 기록 범위**: 보드와 같이 계열마다 **마지막 조정 저장 1건**만 기억한다. 그 뒤 같은 계열에 다른 조정 저장이 커밋되면, 앞 요청의 재시도는 STALE_PROFILE이 된다(보드 확정과 같은 범위, A-Q4 유지).
+
+### 12.11 커밋
+- `200e92d` Q1 멱등 키
+- `7038c3c` Codex P2 — 모양 검사 뒤 멱등 재생
+- (이 커밋) REPORT 12절 + `logs/fix-*`(RED·스파이크 실측·패치·검증·5회·Codex)

@@ -1,0 +1,60 @@
+## S1 패널 분할(캡션만 자동, 목록 문구 제외) — carryOverAdjustments는 profileAdjustments(전체)·profileContrast(전체)에서
+[bundle] 공통 JS (gzip, 참고): 88.96KB
+[bundle] /catalog 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.33KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.30KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.69KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.47KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.43KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +2.88KB (3개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.47KB / 예산 100KB · 진입 직후 자동 로드 포함: 126.10KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +0.00KB (0개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +1.54KB (1개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 98.92KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.70KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +2.16KB (2개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.39KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.78KB / 예산 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 126.10KB > 125KB
+exit 1
+## S2 = S1 + (a) 판정에 필요한 부분만 한 모듈(carryOver·checkProfileContrast만, proposeCorrections·effectiveProfile·normalize 제외)
+[bundle] 공통 JS (gzip, 참고): 88.96KB
+[bundle] /catalog 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.33KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.30KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.69KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.44KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.41KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.35KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +2.88KB (3개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.44KB / 예산 100KB · 진입 직후 자동 로드 포함: 125.47KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.35KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +2.88KB (3개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 98.93KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.72KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +2.15KB (2개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.78KB / 예산 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 125.47KB > 125KB
+exit 1
+## S3 = S2 + (b) Callout 공유 청크 제거 상한(ProfilePage에 복제본 — 청크 경계 비용 전부 제거)
+[bundle] 공통 JS (gzip, 참고): 88.94KB
+[bundle] /catalog 첫 화면 합계: 98.94KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.32KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.29KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.67KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.17KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.14KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +2.88KB (3개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.17KB / 예산 100KB · 진입 직후 자동 로드 포함: 125.20KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +2.88KB (3개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 98.68KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.46KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +2.15KB (2개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.38KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.76KB / 예산 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 125.20KB > 125KB
+exit 1
+## S4 = S2 + (c) BUNDLE-01 C8(DraftPanel·DraftSummaryBar·ComparisonTable·ComparisonAccordion을 엔진 청크로, 측정용 배선)
+[bundle] 공통 JS (gzip, 참고): 88.96KB
+[bundle] /catalog 첫 화면 합계: 98.92KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.30KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.27KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.65KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 94.98KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.51KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +2.87KB (3개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 94.98KB / 예산 100KB · 진입 직후 자동 로드 포함: 125.57KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +2.87KB (3개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 98.87KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.64KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +2.15KB (2개 파일, 예산 판정 밖)
+[bundle] /studio (자리표시) 첫 화면 합계: 89.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.78KB / 예산 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 125.57KB > 125KB
+exit 1

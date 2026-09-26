@@ -1,0 +1,40 @@
+## 1절 레지스트리 RED
+   Start at  23:25:18
+   Duration  834ms (environment 82%, setup 15%, transform 2%, worker 1%)
+
+ 4  |  const BOUND = [
+  5  |  	"header",
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+## 1절 레지스트리 GREEN
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-a/app
+
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  23:26:32
+   Duration  927ms (environment 74%, setup 15%, transform 8%, import 1%, tests 1%, worker 1%)
+
+
+## 2절 hash RED
+ FAIL  src/engine/ops/hash.test.ts [ src/engine/ops/hash.test.ts ]
+Error: Failed to resolve import "./hash" from "src/engine/ops/hash.test.ts". Does the file exist?
+ Test Files  1 failed (1)
+      Tests  no tests
+
+## 2절 hash GREEN
+ Test Files  2 passed (2)
+      Tests  26 passed (26)

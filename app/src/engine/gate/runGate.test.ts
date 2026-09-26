@@ -79,8 +79,10 @@ describe("대비 AA 줄 (R-08 — checkProfileContrast 판정만, throw 0)", () 
     expect(row.issues[0]!.instanceId).toBeUndefined();
   });
 
-  it("7:1 불가 조합(QA D-2A4B2-01: #8B5E3C primary + 어두운 카드 + 강화) — 보정 함수는 throw, 게이트는 throw 0 · 대비 줄 block", () => {
-    expect(() => nearestCompliantColor(CAFE_PALETTE.ink, CAFE_PALETTE.primary, 7)).toThrow();
+  // FIX-2A04B2-P1 병합 조정: 보정 함수가 throw 대신 도달 불가를 값(reached: false)으로 돌려준다.
+  // 게이트가 보정 함수를 부르지 않는다는 이 테스트의 목적은 그대로다.
+  it("7:1 불가 조합(QA D-2A4B2-01: #8B5E3C primary + 어두운 카드 + 강화) — 보정 함수는 도달 불가를 값으로, 게이트는 throw 0 · 대비 줄 block", () => {
+    expect(nearestCompliantColor(CAFE_PALETTE.ink, CAFE_PALETTE.primary, 7).reached).toBe(false);
     const theme = sampleTheme({ palette: CAFE_PALETTE, cardTone: "dark", adjustments: { contrast: "enhanced" } });
     let report: ReturnType<typeof runGate> | undefined;
     expect(() => (report = runGate(passingDoc(), theme))).not.toThrow();

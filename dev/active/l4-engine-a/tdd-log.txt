@@ -50,3 +50,19 @@ Error: Failed to resolve import "./validateProjectName" from "src/engine/validat
 ## 3절 validate GREEN(1차)
  Test Files  4 passed (4)
       Tests  67 passed (67)
+
+## 4절 ops RED
+ FAIL  src/engine/ops/docOps.test.ts [ src/engine/ops/docOps.test.ts ]
+Error: Failed to resolve import "./diff" from "src/engine/ops/docOps.test.ts". Does the file exist?
+ FAIL  src/engine/ops/reasons.test.ts [ src/engine/ops/reasons.test.ts ]
+Error: Cannot find module './reasons' imported from /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-a/app/src/engine/ops/reasons.test.ts
+ FAIL  src/engine/ops/rules.test.ts [ src/engine/ops/rules.test.ts ]
+Error: Failed to resolve import "./reasons" from "src/engine/ops/rules.test.ts". Does the file exist?
+ FAIL  src/engine/ops/sectionOps.test.ts [ src/engine/ops/sectionOps.test.ts ]
+Error: Failed to resolve import "./diff" from "src/engine/ops/sectionOps.test.ts". Does the file exist?
+ Test Files  4 failed | 1 passed (5)
+      Tests  9 passed (9)
+
+## 4절 ops GREEN
+ Test Files  8 passed (8)
+      Tests  123 passed (123)

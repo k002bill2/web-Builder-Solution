@@ -74,7 +74,8 @@ describe("P-AC-01 보드 확정 → 프로필 화면", () => {
     const { router } = renderApp("/compare", references(), studio.board, studio.profiles);
     await userEvent.click(await screen.findByRole("button", { name: "프로필 확정 (v1)" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
-    expect(await h1()).toHaveTextContent("디자인 프로필");
+    // lazy 라우트 전환 중에는 이전 화면(비교 보드) h1이 잠시 남는다 — 이름으로 새 화면 h1을 기다린다
+    expect(await screen.findByRole("heading", { level: 1, name: "디자인 프로필" })).toBeInTheDocument();
     expect(screen.getByText("v1 · 현재")).toBeInTheDocument();
     expect(screen.getByText(/^기준 레퍼런스: 모던 카페 브랜드 · /)).toBeInTheDocument();
     const values = screen.getByRole("region", { name: "프로필 값" });

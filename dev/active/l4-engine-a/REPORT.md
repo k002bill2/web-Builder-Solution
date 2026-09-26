@@ -174,3 +174,54 @@
 | Q-8 | 기본 이미지 슬롯 `alt: ""` → 섹션 추가 직후 게이트 R-09 차단. 기본을 장식(`decorative: true`)으로 둘지 | 빈 대체텍스트 · 장식 아님 |
 | Q-9 | `moveSection`·`addSection`의 `index`는 문서 전체 0부터 — 알림 "4번째"의 기준(header 포함?)은 화면 레인에서 정함 | 0부터 전체 |
 | Q-10 | `validatePageDoc`은 `hash` 형식만 보고 `hash === hashDoc(value)` 일치는 저장소(`saveDoc`) 몫으로 둠 — 맞는지 | 형식만 |
+
+## 10. FIX-L4A — Codex 적대적 검토 j1 medium 3 반영 (브리프 `docs/06-handoff/FIX-L4A_DEVELOPER_BRIEF.md`)
+
+### 10.1 커밋
+| 해시 | 내용 |
+|---|---|
+| `0572c28` | fix(engine): 로컬 이미지 id·removeSection 목적·검증기 throw 0 (코드·테스트·검증 로그·번들 기록) |
+| (이 REPORT 커밋) | docs(l4a): REPORT 10절 |
+
+### 10.2 RED / GREEN (원문: `tdd-log.txt` "FIX-L4A" 절)
+| # | RED | GREEN |
+|---|---|---|
+| 1 로컬 이미지 source | vitest 2 실패(UUID 문자열 통과 · 옛 `{kind:"local"}` 거부) + typecheck 1(`string` → `ImageSource` 불가) | 140 통과 · typecheck 0 |
+| 2 removeSection 목적 | vitest 3 실패(R-04 · R-03 · 목적 누락 `BAD_VALUE`) + typecheck(인자 3개 불가) | 143 통과 · typecheck 0 |
+| 3 검증기 throw 0 | vitest 15 실패(getter 5 · Proxy 9 · ownKeys 거짓말 1). **순환·깊이 초과·`validateProjectName` 3종은 RED 전부터 GREEN**(스키마를 따라 읽는 구조라 재귀가 없다 — 테스트만 추가) | 163 통과 |
+- 슬롯 값 `undefined` 단언은 GREEN 단계에서 추가 → 해당 한 줄을 되돌려 RED 1 확인 → 복원 GREEN.
+
+### 10.3 테스트 이름
+- `validatePageDoc.test.ts`: "로컬 이미지 참조 %s 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1)" × 11(외부 URL · 상대 경로 · object URL · data URL · UUID 아닌 id · 빈 문자열 · v1 UUID · variant 자리 틀림 · 대문자 · 중괄호 · 앞뒤 공백) · "옛 모양 { kind: 'local', assetId } 거부 — 로컬 참조의 값은 id 문자열 자체" · (고침) "로컬 이미지 참조·이미지 끔·장식 표시를 통과시킨다"
+- `sectionOps.test.ts`: "목적 필수 조건을 canRemove 전체 판정으로 강제한다 — 예약 목적 마지막 예약 변형 (R-04)" · "문의 목적 마지막 cta-band·contact 삭제 거부 (R-03) · 둘 중 하나는 지울 수 있다" · "목적 없음('none')이면 구조 규칙만 — 마지막 문의·예약 섹션도 지운다 · 목적 인자는 필수"(`@ts-expect-error` 포함)
+- `hostileInput.test.ts`(새): 접근자 5(throw하는 getter 루트·섹션·슬롯 · 값을 돌려주는 getter 거부 + 호출 0 · setter만 있는 필드 · undefined 데이터 속성 = 누락 · 배열 원소 getter·심볼 키) · Proxy(모든 trap throw × 6 자리 · 폐기된 Proxy × 3 자리 · ownKeys 거짓말 3종 + get 호출 0) · 순환 3종 · 깊이 10만 겹 · `validateProjectName` getter·Proxy·폐기 Proxy — 모두 `{ ok: false, code: "SCHEMA_INVALID" }` · throw 0
+
+### 10.4 검증 (fresh, 마지막 코드에서)
+| 항목 | 결과 |
+|---|---|
+| typecheck | exit 0 (`verify-typecheck.txt`) |
+| lint | exit 0 (`verify-lint.txt`) |
+| 전체 테스트 **1회** | 74 파일 · 866 통과 · 실패 0 (22.8초, `verify-test-full.txt`) |
+| engine 테스트 3회 | 10 파일 · 163 통과 × 3 (`verify-engine-3x.txt`) |
+| build | exit 0 (`bundle-after-fix.txt`) |
+
+### 10.5 번들
+- 기준선은 main 병합(`c391e4d`) 뒤 HEAD에서 수정 전에 새로 빌드(`bundle-before-fix.txt`) — 옛 `bundle-before/after.txt`는 병합 전 값이라 비교에 쓰지 않았다.
+- `dist/` 자산 51줄(파일 해시 포함) + `[bundle]` 줄 전부 diff **0** — 모든 시나리오 변화 0.
+
+### 10.6 계약 변경 요약 (SPEC r1 대비)
+| 항목 | 전 | 후 | 근거 |
+|---|---|---|---|
+| `ImageSlotValue.source` | `{kind:"placeholder", patternId} \| {kind:"local", assetId}` | `PlaceholderSource \| LocalImageId` — 로컬 참조는 **id 문자열 자체**(래퍼 없음), `typeof`로 구분 | SPEC 5.9 "`source` 이름 그대로, 값 = 로컬 id 문자열" · 8.1 |
+| `LocalImageId` | (없음, `assetId: string` + `STRICT_ID`) | 타입 = `crypto.randomUUID()` 반환 타입과 같은 템플릿 문자열 · 검증 = `LOCAL_IMAGE_ID` UUID v4 **소문자만**(`randomUUID()`가 소문자 · 참조 집합 5.9가 문자열 같음으로 비교) | 5.9 |
+| 발급·비재사용 | 명시 없음 | 계약 주석: 발급 = 화면 이미지 보관소 `crypto.randomUUID()` · 엔진은 형식 검증만(id를 만들지 않음) · 보관소를 비워도 재사용 금지 · `blob:`·data·URL 저장 금지 | 5.9 |
+| 플레이스홀더 모양 | `{kind:"placeholder", patternId}` | 그대로(SPEC이 모양을 정하지 않음 — 충돌 아님) | 8.1 |
+| `removeSection` | `(doc, id)` — 목적 `"none"` 고정 | `(doc, id, purpose: Purpose)` 필수 · `canRemove` 전체 판정 강제 · 모르는 목적 → `BAD_VALUE` | 5.4 · 8.2 (8.2 표는 `removeSection(doc, instanceId)` — 인자 1개 추가, 개정 요청) |
+| 경계 검증 | `Object.keys`·`rec[key]` 직접 읽기 | 자기 데이터 속성 사본을 1회만 읽음 · 접근자·심볼 키 거부 · 반사 예외 → 문제 · `neverThrow` 안전망 · 값 `undefined` = 누락 · 배열도 사본(구멍 = undefined → 거부, P2-2 유지) · 배열에 원소 아닌 키 거부 | 8.2 경계 검증 · 8.3 `SCHEMA_INVALID` |
+
+### 10.7 설계 질문
+| # | 질문 | 지금 구현 |
+|---|---|---|
+| Q-11 | SPEC 8.2 `removeSection(doc, instanceId)` 서명에 `purpose`를 더하는 개정 승인 | 3번째 인자 필수 |
+| Q-12 | `setSlot`은 이미지 `source` 형식을 검사하지 않는다 — 형식 오류는 저장 경계(`saveDoc` → `validatePageDoc`)에서 걸린다. 연산에서도 `LOCAL_IMAGE_ID`로 막을지 | 검사 안 함(타입 `LocalImageId`로만) |
+| Q-13 | 대문자 UUID 거부(소문자만)가 맞는지 — 서버 저장소가 생기면 정규화 규칙 필요 | 소문자만 |

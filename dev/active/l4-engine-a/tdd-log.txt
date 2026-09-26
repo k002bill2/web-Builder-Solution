@@ -38,3 +38,15 @@ Error: Failed to resolve import "./hash" from "src/engine/ops/hash.test.ts". Doe
 ## 2절 hash GREEN
  Test Files  2 passed (2)
       Tests  26 passed (26)
+
+## 3절 validate RED
+ FAIL  src/engine/validate/validatePageDoc.test.ts [ src/engine/validate/validatePageDoc.test.ts ]
+Error: Failed to resolve import "./validatePageDoc" from "src/engine/validate/validatePageDoc.test.ts". Does the file exist?
+ Test Files  2 failed (2)
+      Tests  no tests
+ FAIL  src/engine/validate/validateProjectName.test.ts [ src/engine/validate/validateProjectName.test.ts ]
+Error: Failed to resolve import "./validateProjectName" from "src/engine/validate/validateProjectName.test.ts". Does the file exist?
+
+## 3절 validate GREEN(1차)
+ Test Files  4 passed (4)
+      Tests  67 passed (67)

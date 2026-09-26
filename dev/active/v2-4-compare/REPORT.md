@@ -15,28 +15,28 @@
 
 | AC | 결과 | 근거(테스트 이름·실측) |
 |---|---|---|
-| V2-AC-32 (1a-03 AC-01~26 회귀) | 통과 | 기존 `ComparisonTable.test`·`DraftPanel.test`·`CompareBoardPage.test`·`CompareBoardResponsive.test`·`DraftSummaryBar.test`·`keyboardA11y.test` 전부 통과(이름 쿼리 8줄만 0절에 적은 대로 변경). 519 passed |
+| V2-AC-32 (1a-03 AC-01~26 회귀) | 통과 | 기존 `ComparisonTable.test`·`DraftPanel.test`·`CompareBoardPage.test`·`CompareBoardResponsive.test`·`DraftSummaryBar.test`·`keyboardA11y.test` 전부 통과(이름 쿼리 8줄만 0절에 적은 대로 변경). 520 passed |
 | V2-AC-33 모드 토글·조직 공유 없음, 12행 | 통과(특성화) | `pages/CompareBoardV2.test.tsx` "모드 토글('템플릿 / 스타일 조합')·조직 공유가 없고 비교 항목은 12행" — 기준선에서도 통과 |
-| V2-AC-34 선택 셀 | 통과 | `compareBoardV2.test` "고른 셀 = primary-container 면 + 채운 체크 원(주 색) + '선택됨'…", "안 고른 셀 = 빈 원 + '이 요소 선택', 셀 면 없음" + 기존 "PickButton — 접근 이름·선택 표시 (A-2 · A-3)" |
+| V2-AC-34 선택 셀 | 통과 | `compareBoardV2.test` "고른 셀 = primary-container 면 + 채운 체크 원(주 색) + '선택됨'…", "안 고른 셀 = 빈 원 + '이 요소 선택', 셀 면 없음" · `pages/CompareBoardV2.test` "<768 아코디언: 고른 셀(li) 전체가 primary-container 면이고 안 고른 셀은 아니다" + 기존 "PickButton — 접근 이름·선택 표시 (A-2 · A-3)" |
 | V2-AC-35 열 머리글 | 통과 | "역상 문자 배지 + 대표색 견본(장식) + 라이선스 Tag + 빼기(×)"(특성화), "'전부 선택'은 ghost(assistive) sm", "D-QA04: '전부 선택' 접근 이름은 보이는 문구로 시작…", "D-QA04 1열 변형", 기존 "전체 제목은 title 속성에…"(S-18). 배지 대비 실측 15.65 |
 | V2-AC-36 초안 패널·요약 바 | 통과 | "회색 면이 없고 넓은 화면에서 왼쪽 line-neutral 선", "항목 앞 출처 색 점(aria-hidden)…", "'초안 비우기'는 ghost(assistive)", 기존 `DraftSummaryBar.test` "'초안 보기'는 역상 쌍(secondary)…". "초안 보기" 실측 10.78(768·1024·390) |
 | V2-AC-37 D-QA02·03 | 통과 | 실측: "기본값 · A" 6.46 · 열 업종 6.46 · 대표색 오류 문구 6.52 (계산 기준 6.45~6.52와 일치) |
 | V2-AC-38 번들 | 통과 | 2절 |
-| V2-AC-39 검증 4종 | 통과 | typecheck 0 · lint 0 · test 519 passed(46 files) · build 0 — 최종 fresh 실행 `logs/final.txt` |
+| V2-AC-39 검증 4종 | 통과 | typecheck 0 · lint 0 · test 520 passed(46 files) · build 0 — 최종 fresh 실행 `logs/final.txt` |
 | 상태 태그 톤(4.4) | 통과(특성화) | "상태 태그 톤: … (neutral · positive · cautionary 별칭)" 3건 — V2-1에서 Tag green·orange가 이미 status 별칭 |
 
-- 테스트 수: **503 → 519 (+16)** · 파일 44 → 46. 새 파일 `components/compare/compareBoardV2.test.tsx`(15), `pages/CompareBoardV2.test.tsx`(1).
-- RED: 첫 RED 13건 중 9 실패 / 4 특성화 통과(`logs/red.txt`), D-QA04 1건 실패(`logs/red-dqa04.txt`). 특성화 5건은 억지 RED를 만들지 않았다(V2-3 선례).
+- 테스트 수: **503 → 520 (+17)** · 파일 44 → 46. 새 파일 `components/compare/compareBoardV2.test.tsx`(15), `pages/CompareBoardV2.test.tsx`(2).
+- RED: 첫 RED 13건 중 9 실패 / 4 특성화 통과(`logs/red.txt`), D-QA04 1건 실패(`logs/red-dqa04.txt`), 아코디언 고른 셀 1건 실패(`logs/red-accordion.txt`). 특성화 5건은 억지 RED를 만들지 않았다(V2-3 선례).
 
 ## 2. 번들 (gzip KB, 첫 화면 / 진입 직후)
 
 | | 기준선 `c64532e` | 최종 | 차이 |
 |---|---|---|---|
 | 공통 | 88.66 (index 85.33) | 88.66~88.67 (index 85.33~85.34) | **코드 0** — 아래 정규화 비교 |
-| `/compare` | 98.38 / 120.80 | **98.51 / 120.98** | +0.13 / +0.18 (여유 1.49 / 4.02) |
-| `/catalog` | 98.49 / 100.87 | 98.51 / 100.89 | 공통 해시 흔들림만 |
-| `/references/:id` | 95.82 / 98.20 | 95.84 / 98.22 | 공통 해시 흔들림만 |
-| 자리표시 | 89.12 / 91.50 | 89.13 / 91.51 | 공통 해시 흔들림만 |
+| `/compare` | 98.38 / 120.80 | **98.51 / 120.97** | +0.13 / +0.17 (여유 1.49 / 4.03) |
+| `/catalog` | 98.49 / 100.87 | 98.50 / 100.88 | 공통 해시 흔들림만 |
+| `/references/:id` | 95.82 / 98.20 | 95.83 / 98.21 | 공통 해시 흔들림만 |
+| 자리표시 | 89.12 / 91.50 | 89.12 / 91.51 | 공통 해시 흔들림만 |
 
 - 청크: `CompareBoardPage` 8.96 → 9.07(+0.11: 빈 원 span, 셀 면 조건, 색 점 span + 래퍼 div, aria-label 템플릿) · `boardEngine` 5.55 → 5.59(+0.04: 출처 색 계산).
 - **공통 청크 정규화 비교**: 기준선을 임시 worktree에서 다시 빌드해 `index-*.js`를 비교 — raw 268,822 = 268,822 바이트, 파일명 해시를 고정 문자열로 바꾸면 **완전히 같다**(gzip 84,910 = 84,910). 85.33 ↔ 85.34는 index 안 지연 청크 해시 문자열의 gzip 차이.
@@ -49,6 +49,7 @@
 - 1280·1024·768·390: 문서 가로 넘침 0. 5열은 표 영역 안에서만 가로 스크롤(390은 아코디언). 1280은 표 + 오른쪽 초안 패널(왼쪽 선 1px `line-neutral`), <1280은 패널이 아래로(위 선), 요약 바 역상 면 `rgb(26,38,32)` 하단 고정.
 - 행 roving: Tab 진입 = 선택된 버튼 → ←/→·End → 다음 Tab = 다음 행. 포커스 링 2중 링(흰 2px + 4px).
 - 가로 스크롤 200px에서 행 머리글 고정·흰 불투명 면.
+- 390 아코디언 고른 셀 `li` 면은 실측 당시 muted `rgb(240,243,238)`(버튼만 primary-container)였다 → Codex 뒤 수정 커밋에서 `li` 전체 `bg-primary-container`로 바꿨고 테스트로 확인. 브라우저 재캡처는 하지 않았다(클래스 1개 교체, 대비는 표 셀과 같은 조합 14.08).
 - 대비: 열 문자 배지 15.65 · 요약 바 "초안 보기" 10.78(D-QA01) · "기본값 · A" 6.46 · 열 업종 6.46(D-QA02) · 대표색 오류 문구 6.52(D-QA03) · 출처 글자 6.45 · "선택됨" 14.08 · 채운 원 4.46 · 빈 원 경계 3.23 (비텍스트 3:1 이상).
 
 ## 4. 목업과 다르게 한 곳 (ADR-003)
@@ -68,9 +69,12 @@
 
 ## 6. Codex 리뷰 (1회, `review --wait --scope branch --base c64532e`)
 - 결과: **"변경된 UI와 출처 색 계산에서 확인 가능한 결함은 없습니다."** 지적 0건 → 반영할 것 없음.
-- Codex는 TypeScript 타입 검사를 통과로 확인했고, 테스트 실행은 Codex 샌드박스가 읽기 전용이라(Vite 임시 파일 쓰기 불가) 확인하지 못했다고 적었다. 테스트는 로컬 fresh 실행으로 보강: 519 passed(`logs/final.txt`).
+- Codex는 TypeScript 타입 검사를 통과로 확인했고, 테스트 실행은 Codex 샌드박스가 읽기 전용이라(Vite 임시 파일 쓰기 불가) 확인하지 못했다고 적었다. 테스트는 로컬 fresh 실행으로 보강(`logs/final.txt`).
+- **Codex 1회 이후 들어간 수정 1건**: 아코디언(<768) 고른 셀 `li` 면을 `bg-primary-container`로(조건 클래스 1개 + 테스트 1건). 브리프가 리뷰 1회라 Codex를 다시 돌리지 않았다. 최종 520 passed.
 
 ## 7. 커밋
 - `10ea873` feat(compare): V2-4 비교 보드 v2 — 흰 표 면·선택 셀 원 표시·초안 패널 색 점·ghost 버튼
 - `e9f9df6` feat(compare): D-QA04 전부 선택 접근 이름 (단독)
 - `bd85e0f` docs(v2-4): 브라우저 실측·대비 재측정 로그·캡처
+- `ffaad7d` docs(v2-4): REPORT — AC 판정·번들 전/후·브라우저 실측·Codex 결과
+- (이 커밋) fix(compare): <768 아코디언 고른 셀 전체 primary-container + REPORT 갱신

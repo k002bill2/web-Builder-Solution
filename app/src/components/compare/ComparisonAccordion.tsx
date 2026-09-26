@@ -46,7 +46,7 @@ function AccordionItem({ row, columns, picks, expanded, disabled, onExpand, onTo
       <div id={panelId} role="region" aria-labelledby={buttonId} hidden={!expanded} className="pb-4">
         <ul className="flex flex-col gap-2">
           {row.cells.map((cell, i) => (
-            <li key={cell.referenceId} className={cx("flex flex-col gap-2 rounded-md bg-background-alternative p-3", cell.dimmed && "text-label-alternative")}>
+            <li key={cell.referenceId} className={cx("flex flex-col gap-2 rounded-md p-3", selected === cell.referenceId ? "bg-primary-container" : "bg-background-alternative", cell.dimmed && "text-label-alternative")}>
               <span className="ds-caption1 font-semibold text-label-neutral">
                 {columns[i]!.label} {columns[i]!.title}
               </span>

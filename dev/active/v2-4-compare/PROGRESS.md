@@ -62,3 +62,9 @@
 
 ## 최종 (`logs/final.txt`)
 - typecheck 0 · lint 0 · test 519 passed(46 files) · build 0 · 공통 88.67(index 85.34, 정규화 비교상 코드 0) · `/compare` 98.51 / 120.98
+
+## Codex 뒤 수정 1건 — <768 아코디언 고른 셀
+- 발견: 390 실측 `cellBg rgb(240,243,238)` — 아코디언 `li`가 muted로 남아 SPEC 4.4 "고른 셀 전체 primary-container"와 불일치(표만 검사하던 테스트가 놓침)
+- RED `logs/red-accordion.txt` 1 failed → `ComparisonAccordion` 셀 `li`: 고르면 `bg-primary-container`, 아니면 `bg-background-alternative`
+- fresh(`logs/final.txt`): typecheck 0 · lint 0 · test **520 passed** · build 0 · 공통 88.67(해시 흔들림) · `/compare` 98.51 / 120.97 · `CompareBoardPage` 9.07
+- `check` 아이콘 사용처 확인(grep): `DetailSidebar`·`ReferenceCard`뿐 → `/compare`에서 요청 안 됨(REPORT 문장 유지)

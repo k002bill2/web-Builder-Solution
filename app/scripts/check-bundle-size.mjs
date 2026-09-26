@@ -30,7 +30,8 @@ const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDeta
  * (ADR-005 D3 · M1-UI-03b). 사용자가 실제로 받는 합계를 숨기지 않도록 진입 직후 합계에 더한다.
  */
 const ROUTE_EAGER_DYNAMIC = {
-  "/compare": ["src/features/compare/boardEngine.ts", "src/data/memoryCompareBoardRepository.ts", "src/fixtures/referenceComparisons.ts"],
+  // memoryStudio = 보드·프로필 메모리 구현 + 공유 store (main의 deferred 로더 하나, DS-2A-04 6.3)
+  "/compare": ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
 };
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
@@ -65,6 +66,9 @@ for (const [route, page] of Object.entries(ROUTE_PAGES)) {
   const routeFiles = staticClosure(page, new Set(common));
   const routeKb = sumKb(routeFiles);
   const eager = [...EAGER_DYNAMIC, ...(ROUTE_EAGER_DYNAMIC[route] ?? [])];
+  // 진입 직후 목록의 모듈이 다른 청크에 합쳐져 manifest 키가 없어지면 합계가 조용히 줄어든다 — 실패로 본다
+  const missing = eager.filter((key) => !manifest[key]);
+  if (missing.length > 0) failures.push(`${route}: 진입 직후 목록 ${missing.join(", ")}가 manifest에 없습니다`);
   const eagerKb = sumKb(eager.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
   console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
   if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);

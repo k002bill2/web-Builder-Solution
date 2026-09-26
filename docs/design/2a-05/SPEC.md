@@ -511,9 +511,23 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 - 오류 코드 모음: `NOT_FOUND` · `SCHEMA_INVALID` · `STALE_PROJECT` · `STALE_DOC` · `GENERATOR_UNAVAILABLE` · `GATE_FAILED` · `JOB_TIMEOUT` · `INFRA` · `NETWORK`(오프라인 — 화면은 E-S08). 파일 형식·크기 오류는 화면 검증(EQ-3, 저장소에 가지 않음).
 - **TRD 개정 대상**(2a-04 Q6처럼 표시만): ① TRD 5 `PUT /projects/{id}/page`의 "→ 스냅샷"과 4.5 "현재 문서 = `current_snapshot_id`" 모델은 Q5=A(자동 저장은 스냅샷이 아님, 스냅샷 = 수동·내보내기·복원·충돌)와 맞지 않는다 → 현재 문서(`page_doc`: project_id · revision · page_doc · doc_hash · updated_at)를 스냅샷과 분리. ② `page_snapshot`에 `reason`·`name` 추가. ③ `generated_project.name` 수정 API(`PATCH`). ④ 4.4 `SlotSchema`에 권장 길이.
 
-## 9. 계측
+## 9. 계측 (PRD 9)
 
-(작성 중)
+수집기 전에는 `window` 이벤트로 낸다(2a-04a2 Q4 `studio:profile` 선례) — 편집기 `studio:editor`, 목록·확정 `studio:project`. **넣지 않는 것**: 프로젝트 이름·슬롯 글자·대체텍스트·SEO 문구·파일 이름·색 값·레퍼런스 제목(개인정보·사용자 콘텐츠). 넣는 값은 코드·개수·버전 번호·열거값뿐이다.
+
+| 이벤트 | 값 | 호출 지점 (1회) |
+|---|---|---|
+| `project_created(source)` | `board-first` \| `board-new` | 보드 확정 성공(J-S09·J-S11) |
+| `project_renamed()` | — | 이름 저장 성공(J-S07) |
+| `project_save_failed(reason)` | 오류 코드 \| `UNKNOWN` | 이름 저장 실패 |
+| `editor_opened(profile_version, candidate)` | 버전 번호 · `A`\|`B`\|`C` | 문서를 처음 그렸을 때(E-S05) |
+| `section_edited(op, section_type)` | `add`·`remove`·`move`·`variant`·`slot`·`image`·`meta` · 섹션 유형 | 문서 연산 1회(글자 입력은 필드를 떠날 때 1회 — 5.6) |
+| `edit_undone(op)` · `edit_redone(op)` | 연산 종류 | 실행 취소·다시 실행·알림 줄 "되돌리기" |
+| `theme_swapped(from_version, to_version, preserved)` | 버전 번호 · 슬롯 보존 여부 | 테마 바꾸기(E-S17) |
+| `autosave_failed(reason)` · `autosave_conflict()` | 오류 코드 | 실패가 시작될 때 1회(E-S07) · `STALE_DOC`(E-S09) |
+| `snapshot_created(kind, reason)` · `snapshot_restored()` | TRD `kind` · `reason` | 5.11 · E-S30 |
+| `gate_checked(block_count, warn_count)` | 개수 | "검사 · 내보내기"를 눌렀을 때만(편집 중 재계산마다 내지 않음) |
+| `export_requested(format)` · `export_succeeded(format)` · `export_failed(reason)` | `react-zip`\|`static-html` · 오류 코드 | 5.13 · E-S27(`GENERATOR_UNAVAILABLE` 포함) |
 
 ## 10. 번들 (ADR-004)
 

@@ -1,7 +1,7 @@
 # DS-2A-04 설계서 — 디자인 프로필 · 3안 생성
 
 - 작성: Designer · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-04_DESIGNER_BRIEF.md` · 근거 ADR-003·004·005·006, `docs/design/v2/SPEC.md` 6.5
-- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`)
+- 변경 이력: r0 `d0e4699` 초안 · **r1** — 영환님 Q1~Q9 전부 A(Q4는 필드 단위 우선순위안), Codex adversarial 4건 반영 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 검토 원문 `review/codex-adversarial-r0.txt`) · **r2** (Jarvis) — Codex adversarial 2회차 2건 반영: 보드 확정 트랜잭션 경계(6.3) + P-AC-42, P-AC-39 ⑥ 버전 번호 연속화 (검토 원문 `review/codex-adversarial-r1.txt`)
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
@@ -20,7 +20,7 @@
 | 대비 | 검사 C-1~C-3(보드, C-3은 어두운 카드만) + C-4 ink/surface + C-5 muted/bg, 목표 4.5 / 강화 7.0. 픽스처 6개 중 5개에 AA 보정 제안, **ref-b는 역할 하나로 풀 수 없는 충돌**(ink 후보 `#7E622F` → C-3 7.3 → 2.8, Q9=A). 3.3 표 전부 스크립트 출력(C-3 포함) · 앱 TS 대조 일치. 화면 글자는 v2 토큰만, 프로필 색은 장식에만 |
 | 번들 | 공통 변경 = `routes.tsx` lazy 교체 · 저장소 컨텍스트·deferred 래퍼(약 0.3~0.5KB, L3 — `/compare` 여유 1.49 안인지 첫 작업으로 실측) · `draftStatusOf` 한 줄 · 보드 래퍼 인자 1개씩. **보드 라우트 청크** += 이어받기 판정·P-S25 패널·`STALE_PROFILE` 처리(P-B9, L3 약 0.4~0.8KB). 메모리 구현은 동적 import, 아이콘 파일 추가 0, `import type` 필수. 목표(L3) 첫 화면 ≈ 97 / 진입 직후 ≈ 115KB. `/catalog`·`/compare`도 단계마다 재측정 |
 | 단계 | **2a-04a** 조회·버전(넘치면 a1/a2) → **2a-04b** 조정·보정 → **2a-04c** 3안 → QA |
-| 수용 기준 | **P-AC-01 ~ P-AC-41** (a 13 · b 11 · c 11 · 공통 6). r1 추가: P-AC-38·39(필드 단위 이어받기·패널 = 저장값) · P-AC-40·41(`expectedLatest` 경쟁·원자성) |
+| 수용 기준 | **P-AC-01 ~ P-AC-42** (a 14 · b 11 · c 11 · 공통 6). r1 추가: P-AC-38·39(필드 단위 이어받기·패널 = 저장값) · P-AC-40·41(`expectedLatest` 경쟁·원자성). r2 추가: P-AC-42(보드 확정 트랜잭션) |
 | 설계 결정 | **9개 모두 A**(2026-09-26 영환님) — Q1 구조안 · Q2 라디오 · Q3 4.5/7.0 · Q4 필드 단위 우선순위(Jarvis 수정안) · Q5 `adjustments.purpose` · Q6 버전 기준 생성 · Q7 편집 시작 → `/studio` · Q8 시드 없음 · Q9 충돌 표시·역할 분리 M2. 남은 쟁점 없음(10.1) |
 | 목업 차이 | **18건**(11절 M-01~M-18) |
 
@@ -516,6 +516,8 @@ export interface GenerationJob {
 
 **원자적 버전 생성 (r1, 6.1-4)**: 위 두 메서드와 보드 `confirmProfile`·`createProfileVersion`은 모두 `expectedLatest`를 받아 한 저장소(공유 store) 안에서 비교·생성을 한 번에 한다. 네 쓰기가 같은 계열 카운터를 쓰므로 번호가 겹치거나 건너뛰지 않는다. 보드 `getBoard`는 `ConfirmedRef.latestVersion`·`latest`를 같은 store에서 읽어 채운다(보드 래퍼 메서드 추가 0).
 
+**보드 확정의 트랜잭션 경계 (r2, Codex r1 #1)**: 보드 `confirmProfile`·`createProfileVersion`은 **① `expectedLatest` 비교 ② 프로필 버전 삽입 ③ 보드 `confirmed`(profileId·version·confirmedBase)·revision 갱신**을 하나의 작업으로 커밋하거나 함께 롤백한다. 메모리 구현은 공유 store에서 ①~③을 `await` 없이 한 동기 구간에서 처리하고, 실패 주입(`fail`)은 ① 앞 또는 ③ 뒤 어느 쪽이든 store를 바꾸지 않는다(삽입 뒤 실패 = 삽입 취소). HTTP는 보드 확정을 한 엔드포인트(`POST /boards/{id}/confirm`, `If-Match: latest` + 보드 revision)로 두고 서버 한 트랜잭션에서 ①~③을 처리한다 — 클라이언트가 프로필 삽입과 보드 갱신을 두 요청으로 나누지 않는다. 부분 실패가 없으므로 재시도는 `STALE_PROFILE`이 아니라 같은 `expectedLatest`로 성공한다(P-AC-42).
+
 비교는 API가 아니라 순수 함수 `diffProfiles(a, b)`(두 적용된 값의 필드 차이).
 
 **`GenerationRepository`** (`data/generationRepository.ts` — 타입만)
@@ -620,11 +622,12 @@ export interface GenerationJob {
 | P-AC-37 | 전 단계 | 계측 호출 지점(6.5)이 저장·생성 성공/실패·선택에서 1회씩, 개인정보·색 값 없음 | [V] |
 
 | P-AC-38 | b | **보드 값 우선(Codex r0 #1)**: v2 조정 = 밀도 촘촘 + 모션 덮어쓰기. 보드에서 모션 선택을 v2 base와 다른 값으로 바꾸면 초안 패널 "이어지는 조정 1개 · 지워지는 조정 1개" + 목록 "모션 … — 지워짐 · 보드에서 모션을 바꿨습니다" / "밀도 촘촘 — 이어짐" → 재확정 → v3 적용된 모션 = 보드 값, `adjustments.motion` 없음, `adjustments.density` = 촘촘(간격 96 → 72 유지), 버전 요약에 지운 조정 한 줄 | [V] |
-| P-AC-39 | b | **패널 = 저장값**: ① 보드 패널과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) ⑥ **되돌리기 뒤 재확정**: 보드 확정 v2 → 프로필에서 모션 덮어쓰기가 있는 v1 내용으로 되돌려 v4 → 보드에서 Hero만 바꿔 재확정 → 비교 기준은 v2 base라 모션 조정은 "이어짐", v5 적용된 모션 = v4와 같음 | [V] |
+| P-AC-39 | b | **패널 = 저장값**: ① 보드 패널과 저장소가 같은 `carryOverAdjustments`를 부른다 — 입력 표(모션·밀도·대비·목적·보정 a/b 각 1행) 단위 테스트 + 패널 "이어짐" 목록 = 저장된 `adjustments` ② 겹치지 않는 필드만 바꾼 재확정(예: Hero) → "지워지는 조정 0개", 조정 전부 이어받음 ③ ref-b 팔레트 + 밝은 카드에서 ink 보정 `#7E622F` 저장 → 보드에서 어두운 카드로 바꾸면 보정이 "지워짐 · 새 카드 톤에서 대비가 맞지 않습니다"(C-3 2.8), 확정 뒤 3.3 충돌 표시 ④ 조정 0개면 캡션 없음 ⑤ 개수·상태는 글자(색 하나로만 알리지 않음) ⑥ **되돌리기 뒤 재확정**(r2 — 번호 연속): v1 보드 확정 → v2 프로필 조정 저장(모션 덮어쓰기) → v3 보드에서 모션을 바꿔 재확정(모션 조정 지워짐, 확정 = v3) → v4 프로필에서 v2로 되돌리기(모션 덮어쓰기 복원) → 보드에서 Hero만 바꿔 재확정 → 비교 기준은 **확정 버전 v3의 base**라 모션은 "바뀌지 않음" → 모션 조정 "이어짐", v5 적용된 모션 = v4와 같음(최신 v4 base 기준이었다면 모션 조정이 잘못 지워진다 — 6.1-3 근거) | [V] |
 | P-AC-40 | a | **보드 확정 경쟁(Codex r0 #3)**: 보드가 최신 v2를 보고 "새 버전으로 확정 (v3)" 표시 → 같은 store에서 다른 쓰기(다른 탭 = 테스트에서 `revertTo` 직접 호출)로 v3 생성 → 보드 확정 클릭 → `STALE_PROFILE` 거부, **확정 0건**(계열 버전 수 +1은 다른 쓰기의 v3뿐), 버튼 "새 버전으로 확정 (v4)"로 갱신 + P-S12 보드 안내, 선택 유지·이동 없음. 다시 확정 → v4 | [V] |
 | P-AC-41 | a | **원자성**: 같은 `expectedLatest`로 버전 생성 쓰기 2개를 동시에(`Promise.all`, 응답 `delay` 주입 — 보드 확정 + 되돌리기 조합) → 정확히 1개 성공, 1개 `STALE_PROFILE`, 버전 번호 연속·중복 0. 되돌리기가 거부되면 보기 상태 유지 + P-S12 문장. 네 쓰기 모두 `expectedLatest`가 필수 인자(빠지면 typecheck 실패) | [V] |
+| P-AC-42 | a | **보드 확정 원자성(Codex r1 #1)**: 메모리 구현에 보드 갱신 단계 실패를 주입해 확정 → 오류 알림, **계열 버전 수 변화 0 · 보드 `confirmed`·revision 불변**, 선택 유지. 실패 주입을 끄고 같은 화면에서 다시 확정 → `STALE_PROFILE` 없이 성공, 버전 번호 연속(건너뜀 0) | [V] |
 
-**41개.** 단계별: a 13 · b 11 · c 11 · 공통 6. (r1 추가: P-AC-38·39 b · P-AC-40·41 a. 기존 번호 유지, P-AC-05·06·19·20은 기대값·범위만 보강)
+**42개.** 단계별: a 14 · b 11 · c 11 · 공통 6. (r1 추가: P-AC-38·39 b · P-AC-40·41 a. r2 추가: P-AC-42 a. 기존 번호 유지, P-AC-05·06·19·20은 기대값·범위만 보강)
 
 ---
 

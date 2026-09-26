@@ -32,3 +32,18 @@
 - 2026-09-26 SPEC 본문 완료. 픽스처 spacing grid가 "8pt"라 3.1 예시 문구 정정. 라우트 포커스 규칙이 앱에 없음을 확인(`useRouteScroll` 스크롤만) — 5.2에 반영
 - 2026-09-26 advisor 점검 반영: (1) 저장소 공유 = 팩토리 store + 컨텍스트(싱글턴이면 `profile-1` 단언 4곳이 깨짐), 공통 청크 비용을 0이 아닌 실측 대상으로 정정(P-B2) (2) Q4에 "초안 = 저장값" 대가와 보드 캡션 보완 추가, 9절에 AC-24는 `base` 비교 행 추가 (3) 대비 스크립트를 앱 TS 원본과 대조 — 12건 동일(L1) (4) 강화 목표 문구·비활성 라디오 이유 위치·범위 주입·라이브러리 버전 고정 보완
 - **Codex 검토는 실행하지 않았다.** 개발계획서 운영 규칙상 Codex 실행은 Jarvis 몫 — 다음 단계: `codex-companion review --scope branch --base 562c3a3`(설계 도전이면 adversarial-review)
+
+## r1 — DS-2A-04r 개정 (브리프 `docs/06-handoff/DS-2A-04r_DESIGNER_BRIEF.md`, 턴 예산 40 · 32턴 넘으면 SPEC 먼저 커밋)
+
+| # | 단계 | 상태 | 비고 |
+|---|---|---|---|
+| 1 | 브리프·Codex adversarial r0(`review/codex-adversarial-r0.txt`)·SPEC·스크립트 읽기, 코드 사실 확인(`compareBoard.ts:188·204`, `memoryCompareBoardRepository.ts:100~141`, `deferredCompareBoardRepository.ts:28~29`, `referenceComparisons.ts:43`) | 완료 | 원본 문장은 데이터로만 읽음 |
+| 2 | 대비 스크립트에 C-3(어두운 카드 ink / primary) + 역할별 보정·충돌 절 추가 | 완료 | ref-b C-3 7.3 · 후보 `#7E622F` → 2.8(AA) · `#5B4722` → 1.8(강화) 재현 |
+| 3 | TS 이식 대조 확장 | 완료 | 임시 디렉터리 + Node 22 타입 제거 실행. 기존 12건 + ref-b 강화 ink 1건 = **13건 일치**, 앱 `checkPaletteContrast(…, "dark")` **C-3 3건 일치**(원본 7.3 통과 · `#7E622F` 2.8 미달 · `#5B4722` 1.8 미달). `app/` 무변경 |
+| 4 | SPEC r1 반영 | 완료 | Q1~Q9 → 10절 "결정", Q4=A 필드 단위 우선순위(6.1 겹침 판정 표 · P-S25 · `carryOverAdjustments`), 6.1 현재 사실/도입 위험 분리, `expectedLatest` 원자적 생성·`STALE_PROFILE`(P-S12 확장 · 6.2 · 6.3 · P-B2 · P-B9), 3.3 표 스크립트 값으로 재작성(강화 열 역할별 전부), AC P-AC-38~41 추가(총 41), 9절 확정 인자·패널 행 추가, M-18 |
+| 5 | 커밋 | 완료 | 해시는 `git log -1 -- docs/design/2a-04/SPEC.md` |
+
+- 수치 변경: r0 3.3 표의 기존 수치는 스크립트와 모두 같았다. 강화 열에 빠져 있던 값(ref-b ink 충돌 `#5B4722`·muted `#5D5853`, ref-c muted `#385893`, ref-d `#006550`·`#1E6353`, ref-e muted `#565960`, ref-f `#844B00`·`#735231`)을 스크립트 출력으로 채웠다.
+- 남은 쟁점 R1(10.1): 되돌리기 뒤 재확정의 비교 기준 — 최신 버전 base(추천·채택) vs 확정 버전 base(브리프 문구). 되돌리기가 없으면 결과 같음.
+- 목업 차이 추가: M-18 보드 초안 패널 이어받기 표시(1 기능, Q4=A).
+- **r1 Codex 재검토는 실행하지 않았다**(Jarvis 몫). 다음: `codex-companion adversarial-review --scope branch --base d3dfdcd`.

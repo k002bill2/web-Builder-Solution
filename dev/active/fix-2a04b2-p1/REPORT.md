@@ -9,7 +9,8 @@
 | `722f65b` | docs: PROGRESS·REPORT 뼈대 · 번들 전 출력(`bundle-before.txt`) |
 | `56767bd` | fix(profile): 코드 + 테스트 (13 파일) |
 | `788eab3` | docs: tdd-log RED/GREEN · 번들 후 출력(`bundle-after.txt`) |
-| (이 커밋) | docs: REPORT · PROGRESS · Codex 출력 · 390 캡처 |
+| `3b58909` | docs: REPORT · PROGRESS · Codex 출력 · 390 캡처 |
+| (이 커밋) | docs: REPORT 보강 — 엔진 호출 0 · 금지 경로 diff 0 |
 
 ## 2. RED / GREEN (`tdd-log.txt`)
 - AA 회귀 스냅숏(`contrastAaRegression.test.ts`)은 **코드를 바꾸기 전** `f7e5e56` 코드로 떴다(인라인 스냅숏 2개, 통과 상태로 시작) — 변경 뒤에도 그대로 통과.
@@ -38,7 +39,7 @@
     | { readonly reached: false; readonly best: ContrastFix }; // best = 탐색 중 대비 최대 후보
   ```
 - 근거: 판별 유니언이라 `tsc`가 모든 호출부에서 불가 분기 처리를 강제한다(변경 직후 tsc 오류 = 호출부 목록). `best`는 충돌 계산이 기존 `broken` 로직을 그대로 쓰게 한다(기준 검사가 여전히 미달 → `conflict` 자동 생성 → 보정값 쓰기 없음).
-- 호출부(tsc·grep 전부, `app/src/engine/` 제외 · 엔진에는 호출 없음):
+- 호출부(tsc·grep 전부). `grep -rn nearestCompliantColor app/src/engine` → 0건(exit 1):
   1. `app/src/domain/boardWarnings.ts` `correctedPrimary` — 반환을 `WarningFix[]`로, 불가면 `[]`(보정값 쓰기 없음). 보드 목표는 늘 4.5라 실제로는 도달함(흑·백 중 큰 대비 최소 ≈ 4.58, 회색 스윕 테스트).
   2. `app/src/domain/profileContrast.ts` `proposeCorrections` — 불가면 `to/after = best`, `CorrectionProposal.unreachable: true` 추가(`conflict`가 늘 함께 옴).
   3. `app/src/features/profile/profileMessages.ts` `conflictOf(p, level)` — `unreachable`을 C-3 분기보다 먼저 본다(C-3 분기로 가면 "어두운 카드(2.5:1)과 어두운 카드(…)" 중복 + 링크 "카드 바꾸기"가 됨).
@@ -71,6 +72,7 @@
 
 ## 8. 검증
 - `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm test -- --run` exit 0 (80 파일 / 928 테스트) · `npm run build` exit 0 (번들 판정 포함)
+- 금지 경로: `git diff --stat f7e5e56..HEAD -- design docs/design docs/qa app/src/engine app/package.json app/package-lock.json` → 출력 없음(새 의존성·엔진·디자인·QA 문서 변경 0)
 - 전체 테스트 3회 연속: run1 928/928 (20.7s) · run2 928/928 (16.3s) · run3 928/928 (14.5s)
 
 ## 9. 스모크 · 캡처
@@ -87,6 +89,8 @@
 - 불가 충돌의 swatch 화살표(장식, aria-hidden)가 기준 미달 후보(흰색)를 가리킨다 — 기존 충돌 표시와 같은 구조라 유지. 문장·캡션이 "그 후보도 미달"을 밝힌다.
 - ref-d + 어두운 카드(AA)의 primary 충돌 문장이 "…밝은 카드를 고르면 ink를 어둡게 보정할 수 있습니다"로 나오는 기존 문구 부정합(스냅숏에 그대로 고정) — 이번 범위 밖, 설계 질문 2.
 - D-03: 같은 없는 `?v=`에서 최신이 바뀌면 알림 영역의 문장은 첫 번호로 남을 수 있다(저장 알림이 덮으면 사라짐, STALE 경로에서만) — 보이는 Callout은 최신.
+
+- 병행 `l4-engine-b`가 옛 계약(`ContrastFix` 직접 반환)으로 `nearestCompliantColor`를 새로 부르면 병합 때 tsc가 깨진다 — 병합 쪽에서 `reached`로 좁혀 `.fix`/`.best`를 쓴다.
 
 ## 12. 설계 질문
 1. 7:1 불가 충돌의 대체안을 "다른 팔레트"만으로 둘지 — 어두운 카드 기준(C-3)이면 "밝은 카드 고르기"도 유효한 대체안이다(SPEC ref-b 문형). 지금은 브리프대로 팔레트만.

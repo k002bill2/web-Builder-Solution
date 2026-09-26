@@ -1,0 +1,169 @@
+{
+ "compare@1280": {
+  "vw": 1265,
+  "docScroll": 1265,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": [
+   "TH:이미지 비율",
+   "TH:모션",
+   "TH:모바일 구조",
+   "TH:Footer",
+   "TH:접근성·성능 비교 정보",
+   "SECTION:프로필 초안 v3 확정됨 고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다. Her"
+  ]
+ },
+ "profile@1280": {
+  "vw": 1265,
+  "docScroll": 1265,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-v1-diff@1280": {
+  "vw": 1265,
+  "docScroll": 1265,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-list@1280": {
+  "vw": 1280,
+  "docScroll": 1280,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "compare@1024": {
+  "vw": 1009,
+  "docScroll": 1009,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": [
+   "TH:카드 스타일",
+   "TH:이미지 비율",
+   "TH:모션",
+   "TH:모바일 구조",
+   "TH:Footer",
+   "TH:접근성·성능 비교 정보",
+   "초안 요약:초안 2/10 초안 보기 새 버전으로 확정 (v4) 확정한 뒤 바뀐 내용이 없습니다"
+  ]
+ },
+ "profile@1024": {
+  "vw": 1009,
+  "docScroll": 1009,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-v1-diff@1024": {
+  "vw": 1009,
+  "docScroll": 1009,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-list@1024": {
+  "vw": 1024,
+  "docScroll": 1024,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "compare@768": {
+  "vw": 753,
+  "docScroll": 753,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": [
+   "TH:카드 스타일",
+   "TH:이미지 비율",
+   "TH:모션",
+   "TH:모바일 구조",
+   "TH:Footer",
+   "TH:접근성·성능 비교 정보",
+   "초안 요약:초안 2/10 초안 보기 새 버전으로 확정 (v4) 확정한 뒤 바뀐 내용이 없습니다"
+  ]
+ },
+ "profile@768": {
+  "vw": 753,
+  "docScroll": 753,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-v1-diff@768": {
+  "vw": 753,
+  "docScroll": 753,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-list@768": {
+  "vw": 768,
+  "docScroll": 768,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "compare@390": {
+  "vw": 375,
+  "docScroll": 375,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": [
+   "초안 요약:초안 2/10 초안 보기 새 버전으로 확정 (v4) 확정한 뒤 바뀐 내용이 없습니다"
+  ]
+ },
+ "profile@390": {
+  "vw": 375,
+  "docScroll": 375,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-v1-diff@390": {
+  "vw": 375,
+  "docScroll": 375,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-list@390": {
+  "vw": 390,
+  "docScroll": 390,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "compare@320": {
+  "vw": 305,
+  "docScroll": 305,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": [
+   "초안 요약:초안 2/10 초안 보기 새 버전으로 확정 (v4) 확정한 뒤 바뀐 내용이 없습니다"
+  ]
+ },
+ "profile@320": {
+  "vw": 305,
+  "docScroll": 305,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-v1-diff@320": {
+  "vw": 305,
+  "docScroll": 305,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ },
+ "profile-list@320": {
+  "vw": 320,
+  "docScroll": 320,
+  "overflowX": false,
+  "over": [],
+  "fixedBottom": []
+ }
+}

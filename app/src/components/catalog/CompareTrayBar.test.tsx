@@ -68,13 +68,31 @@ describe("플로팅 비교 필 (SPEC 4.5 C-05 · V2-AC-24)", () => {
     expect(toggle).toHaveFocus();
   });
 
+  it("펼친 뒤 Tab(앞으로)으로 목록에 들어간다 — DOM에서 목록이 토글 다음 (D-V22-05)", async () => {
+    const [a, b] = referenceFixtures;
+    const { toggle } = renderPill({ references: [a!, b!] });
+    toggle.focus();
+    await userEvent.keyboard("{Enter}");
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: `${a!.title} 비교에서 제거` })).toHaveFocus();
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: `${b!.title} 비교에서 제거` })).toHaveFocus();
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: "비교 보드 열기" })).toHaveFocus();
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+  });
+
   it("포커스가 필 밖으로 나가면 목록을 닫는다 — 펼친 목록이 뒤 카드의 포커스를 가리지 않게 (2.4.11)", async () => {
     const { toggle } = renderPill({ references: [referenceFixtures[0]!] });
     await userEvent.click(toggle);
     expect(toggle).toHaveFocus();
-    // DOM 순서 = 보이는 순서(목록이 필 위) — 필 안에서 움직이는 동안은 열려 있다
-    await userEvent.tab({ shift: true });
+    // 필 안(토글 → 목록 → 비교 보드 열기)에서 움직이는 동안은 열려 있다
+    await userEvent.tab();
     expect(screen.getByRole("button", { name: /비교에서 제거$/ })).toHaveFocus();
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await userEvent.tab({ shift: true });
+    expect(toggle).toHaveFocus();
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     await userEvent.tab({ shift: true });
     expect(screen.getByRole("button", { name: "바깥 버튼" })).toHaveFocus();

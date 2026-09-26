@@ -1,0 +1,26 @@
+== D-V22-01 헤더 링 · 레이아웃
+1280 {"headerH":52,"docOverflow":0,"navScroll":0,"navOverflow":"visible","logoTop":10,"firstLinkLeft":189.390625,"logoLeft":28}
+1280 tab 3 {"text":"Design Studio","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":6,"right":1114.61,"bottom":754,"left":24},"clipper":"viewport"}
+1280 tab 4 {"text":"카탈로그","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":10,"right":1034.75,"bottom":758,"left":185.39},"clipper":"viewport"}
+1280 tab 5 {"text":"보관함","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":10,"right":973.85,"bottom":758,"left":259.25},"clipper":"viewport"}
+1280 tab 6 {"text":"비교 보드","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":10,"right":896.33,"bottom":758,"left":320.15},"clipper":"viewport"}
+1280 tab 7 {"text":"프로젝트","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":10,"right":822.47,"bottom":758,"left":397.67},"clipper":"viewport"}
+1024 {"headerH":52,"docOverflow":0,"navScroll":0,"navOverflow":"visible","logoTop":10,"firstLinkLeft":189.390625,"logoLeft":28}
+768 {"headerH":52,"docOverflow":0,"navScroll":0,"navOverflow":"visible","logoTop":10,"firstLinkLeft":189.390625,"logoLeft":28}
+390 {"headerH":89,"docOverflow":0,"navScroll":0,"navOverflow":"auto","logoTop":10,"firstLinkLeft":16,"logoLeft":16}
+390 tab 3 {"text":"Design Studio","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":6,"right":236.61,"bottom":754,"left":12},"clipper":"viewport"}
+390 tab 4 {"text":"카탈로그","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":0,"right":298.14,"bottom":8,"left":0},"clipper":"NAV[주 메뉴]"}
+390 tab 5 {"text":"보관함","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":0,"right":237.24,"bottom":8,"left":73.86},"clipper":"NAV[주 메뉴]"}
+390 tab 6 {"text":"비교 보드","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":0,"right":159.72,"bottom":8,"left":134.76},"clipper":"NAV[주 메뉴]"}
+390 tab 7 {"text":"프로젝트","tag":"A","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":0,"right":85.86,"bottom":8,"left":212.28},"clipper":"NAV[주 메뉴]"}
+== D-V22-02 초기화 후 포커스 (1280)
+keyboard ?industry=cafe-fnb {"text":"필터","tag":"H2","fv":true,"shadow":"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0","outline":"none","ringRoom":{"top":235,"right":1218.95,"bottom":533,"left":24},"clipper":"viewport"}
+keyboard next Tab {"text":"","tag":"INPUT","fv":true,"shadow":"none","outline":"auto","ringRoom":{"top":324,"right":1248,"bottom":468,"left":24},"clipper":"viewport"}
+click ?industry=cafe-fnb {"text":"필터","tag":"H2","fv":false,"shadow":"none","outline":"none","ringRoom":{"top":235,"right":1218.95,"bottom":533,"left":24},"clipper":"viewport"}
+== D-V22-04 AX 설명 (/catalog?concept=minimal)
+button "전체" desc= "1개"
+button "카페·F&B" desc= "1개"
+button "필터 초기화" desc= "선택 1개"
+checkbox "미니멀" desc= "1개"
+checkbox "대담한" desc= "1개"
+

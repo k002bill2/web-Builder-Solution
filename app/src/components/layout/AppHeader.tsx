@@ -4,8 +4,11 @@ import { CURRENT_USER } from "../../fixtures/currentUser";
 import { Avatar } from "../ds/Avatar";
 import { Button } from "../ds/Button";
 
+/** DS 2중 링 (D-V22-01) — UA outline 대신. */
+const FOCUS_RING = "rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)";
+
 const navClass = ({ isActive }: { isActive: boolean }) =>
-  isActive ? "font-bold text-label-normal" : "hover:text-label-normal";
+  `${FOCUS_RING} ${isActive ? "font-bold text-label-normal" : "hover:text-label-normal"}`;
 
 /**
  * 보관함은 카탈로그의 저장함 탭(/catalog?tab=saved)이라 경로만으로는 구분되지 않는다.
@@ -25,13 +28,14 @@ export function AppHeader() {
   const view = useCatalogView();
   return (
     <header className="flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7">
-      <Link to="/catalog" className="flex h-13 flex-none items-center gap-2.5">
+      {/* 행 높이 52 = 32 + 세로 여백 — 링크가 행을 꽉 채우면 링 위쪽이 뷰포트 밖으로 나간다 */}
+      <Link to="/catalog" className={`my-2.5 flex h-8 flex-none items-center gap-2.5 ${FOCUS_RING}`}>
         <Logo size={24} />
         <span className="text-body1 font-bold tracking-(--tracking-tight)">{name}</span>
       </Link>
       <nav
         aria-label="주 메뉴"
-        className="order-last flex w-full gap-5.5 overflow-x-auto whitespace-nowrap pb-3 text-body2 font-medium text-label-alternative md:order-none md:w-auto md:flex-1 md:pb-0"
+        className="order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"
       >
         <Link to="/catalog" aria-current={view.catalog ? "page" : undefined} className={navClass({ isActive: view.catalog })}>
           카탈로그

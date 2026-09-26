@@ -79,44 +79,6 @@ export function CompareTrayBar({
       className="pointer-events-none sticky bottom-0 z-10 -mt-16 flex justify-center px-4 pb-5"
     >
       <div className="pointer-events-auto relative">
-        <div className="absolute bottom-full left-1/2 mb-2 flex w-80 max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col items-center gap-2">
-          <p role="status" className="ds-caption1">
-            {notice && (
-              <span className="block rounded-md bg-surface-inverse px-3 py-2 text-on-surface-inverse shadow-4">{notice}</span>
-            )}
-          </p>
-          <div
-            id={listId}
-            className={`${open ? "flex" : "hidden"} w-full flex-col rounded-lg bg-surface-inverse p-2 text-on-surface-inverse shadow-4`}
-          >
-            {references.length > 0 ? (
-              <ul className="flex flex-col">
-                {references.map((r, i) => (
-                  <li key={r.id} className="ds-caption1 flex items-center gap-2 rounded-sm py-1 pr-1 pl-2">
-                    <span aria-hidden="true" className="size-2.5 flex-none rounded-full" style={{ backgroundColor: r.colorPalette.primary }} />
-                    <span className="min-w-0 flex-1 truncate">{r.title}</span>
-                    <button
-                      ref={(el) => {
-                        if (el) removeButtons.current.set(r.id, el);
-                        else removeButtons.current.delete(r.id);
-                      }}
-                      type="button"
-                      aria-label={`${r.title} 비교에서 제거`}
-                      onClick={() => removeAt(i, r.id)}
-                      className={`inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm text-inverse-label-alternative hover:bg-inverse-fill-normal hover:text-on-surface-inverse ${INVERSE_FOCUS}`}
-                    >
-                      <Icon name="close" size={16} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="ds-caption1 px-2 py-1.5 text-inverse-label-alternative">
-                카드의 ‘비교 추가’로 최대 {COMPARE_LIMIT}개까지 담을 수 있습니다
-              </p>
-            )}
-          </div>
-        </div>
         <div className="flex items-center gap-3 rounded-full bg-surface-inverse py-1.5 pr-1.5 pl-2 text-on-surface-inverse shadow-4">
           <button
             ref={toggle}
@@ -130,6 +92,45 @@ export function CompareTrayBar({
             <span className="text-inverse-label-alternative">/ {COMPARE_LIMIT}</span>
             <Icon name="chevron-down" size={16} className={open ? "" : "rotate-180"} />
           </button>
+          {/* 펼친 목록은 DOM에서 토글 바로 다음(Tab 앞으로 도달, D-V22-05). 위치는 바깥 relative 기준 absolute라 필 위 그대로 */}
+          <div className="absolute bottom-full left-1/2 mb-2 flex w-80 max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col items-center gap-2">
+            <p role="status" className="ds-caption1">
+              {notice && (
+                <span className="block rounded-md bg-surface-inverse px-3 py-2 text-on-surface-inverse shadow-4">{notice}</span>
+              )}
+            </p>
+            <div
+              id={listId}
+              className={`${open ? "flex" : "hidden"} w-full flex-col rounded-lg bg-surface-inverse p-2 text-on-surface-inverse shadow-4`}
+            >
+              {references.length > 0 ? (
+                <ul className="flex flex-col">
+                  {references.map((r, i) => (
+                    <li key={r.id} className="ds-caption1 flex items-center gap-2 rounded-sm py-1 pr-1 pl-2">
+                      <span aria-hidden="true" className="size-2.5 flex-none rounded-full" style={{ backgroundColor: r.colorPalette.primary }} />
+                      <span className="min-w-0 flex-1 truncate">{r.title}</span>
+                      <button
+                        ref={(el) => {
+                          if (el) removeButtons.current.set(r.id, el);
+                          else removeButtons.current.delete(r.id);
+                        }}
+                        type="button"
+                        aria-label={`${r.title} 비교에서 제거`}
+                        onClick={() => removeAt(i, r.id)}
+                        className={`inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm text-inverse-label-alternative hover:bg-inverse-fill-normal hover:text-on-surface-inverse ${INVERSE_FOCUS}`}
+                      >
+                        <Icon name="close" size={16} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="ds-caption1 px-2 py-1.5 text-inverse-label-alternative">
+                  카드의 ‘비교 추가’로 최대 {COMPARE_LIMIT}개까지 담을 수 있습니다
+                </p>
+              )}
+            </div>
+          </div>
           {references.length > 0 && (
             <span aria-hidden="true" className="hidden pl-1.5 sm:flex">
               {references.map((r) => (

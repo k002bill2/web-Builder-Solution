@@ -41,4 +41,20 @@ describe("앱 셸 헤더 (v2 SPEC 4.1)", () => {
     expect(hasClass(nav, "overflow-x-auto")).toBe(true);
     expect(hasClass(nav, "whitespace-nowrap")).toBe(true);
   });
+
+  it("로고·주 메뉴 링크는 DS 2중 링(--focus-ring)을 쓰고, 링이 잘리지 않게 여백을 둔다 (D-V22-01)", async () => {
+    renderApp("/catalog");
+    await screen.findByRole("heading", { level: 1 });
+    const header = banner();
+    const logo = within(header).getByRole("link", { name: brand.name });
+    const nav = within(header).getByRole("navigation", { name: "주 메뉴" });
+    for (const link of [logo, ...within(nav).getAllByRole("link")]) {
+      expect(hasClass(link, "focus-visible:shadow-(--focus-ring)")).toBe(true);
+      expect(hasClass(link, "focus-visible:outline-none")).toBe(true);
+    }
+    // 로고가 헤더 높이 전체(h-13)면 링 위쪽이 뷰포트 밖으로 나간다 — 세로 여백으로 행 높이만 유지
+    expect(hasClass(logo, "h-13")).toBe(false);
+    // <768 스크롤 영역: 안쪽 여백(위·좌우)을 같은 음수 여백으로 상쇄 · ≥768: overflow 해제
+    for (const name of ["-mx-1", "px-1", "-mt-1", "pt-1", "md:overflow-visible"]) expect(hasClass(nav, name)).toBe(true);
+  });
 });

@@ -1,0 +1,27 @@
+TaskSpace 9
+== D-V22-03 칩 줄 (390) 재측정
+group {"paddingRight":"8px","marginRight":"-8px","paddingLeft":"4px","clientW":310,"docOverflow":0}
+start 전체6 L 0 R 236.05 DIV[업종]
+Tab 카페·F&B2 L 73.74 R 133.34 DIV[업종]
+Tab 뷰티1 L 176.45 R 59.59 DIV[업종]
+Tab 의료1 L 232.2 R 3.85 DIV[업종]
+Tab 피트니스1 L 105.94 R 105.91 DIV[업종]
+Tab 전문서비스1 L 195.88 R 3.88 DIV[업종]
+Tab 교육0 L 146.41 R 89.63 DIV[업종]
+Tab 리테일0 L 220.16 R 3.79 DIV[업종]
+Shift+Tab 교육0 L 146.41 R 89.63 DIV[업종]
+Shift+Tab 전문서비스1 L 36.38 R 163.38 DIV[업종]
+Shift+Tab 피트니스1 L 3.94 R 207.91 DIV[업종]
+Shift+Tab 의료1 L 118.2 R 117.85 DIV[업종]
+Shift+Tab 뷰티1 L 44.45 R 191.59 DIV[업종]
+Shift+Tab 카페·F&B2 L 4.24 R 202.84 DIV[업종]
+Shift+Tab 전체6 L 0 R 236.05 DIV[업종]
+최소 링 여유(좌·우) = 0
+마우스 부분 노출 칩 클릭 before {"sl":0,"x":334.40625,"y":343,"chipRight":392.1484375,"groupRight":382} after {"sl":0,"search":"?industry=medical","docOverflow":0}
+== D-V22-02 (390) 레일 펼친 뒤 키보드 초기화
+search ?industry=cafe-fnb → 포커스 H2 필터 fv true {"top":446,"right":340.95,"bottom":322,"left":12}
+== D-V22-04 (390) '필터' 버튼 AX 설명
+button "필터" desc= "선택 1개"
+button "전체" desc= "1개"
+finish
+

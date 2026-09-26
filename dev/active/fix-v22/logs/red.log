@@ -1,0 +1,219 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/fix-v22/app
+
+ ❯ src/components/catalog/CompareTrayBar.test.tsx (10 tests | 2 failed) 262ms
+   ❯ 플로팅 비교 필 (SPEC 4.5 C-05 · V2-AC-24) (10)
+     × 펼친 뒤 Tab(앞으로)으로 목록에 들어간다 — DOM에서 목록이 토글 다음 (D-V22-05) 28ms
+     × 포커스가 필 밖으로 나가면 목록을 닫는다 — 펼친 목록이 뒤 카드의 포커스를 가리지 않게 (2.4.11) 25ms
+ ❯ src/components/layout/AppHeader.test.tsx (8 tests | 1 failed) 408ms
+   ❯ 앱 셸 헤더 (v2 SPEC 4.1) (8)
+     × 로고·주 메뉴 링크는 DS 2중 링(--focus-ring)을 쓰고, 링이 잘리지 않게 여백을 둔다 (D-V22-01) 36ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CatalogPage.test.tsx (38 tests | 4 failed) 3406ms
+   ❯ QA-V2-2 P3 수정 (FIX-V22) (4)
+     × 개수 설명은 텍스트 노드 하나로 'N개' / '선택 N개'다 (D-V22-04) 51ms
+     × 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02) 63ms
+     × 클릭로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02) 61ms
+     × Tab으로 포커스한 업종 칩은 링까지 칩 줄 안으로 스크롤하고, 마우스 클릭은 스크롤하지 않는다 (D-V22-03) 35ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 개수 설명은 텍스트 노드 하나로 'N개' / '선택 N개'다 (D-V22-04)
+AssertionError: expected [ '1', '개' ] to deeply equal [ '1개' ]
+
+- Expected
++ Received
+
+  [
+-   "1개",
++   "1",
++   "개",
+  ]
+
+ ❯ src/pages/CatalogPage.test.tsx:402:47
+    400|     await expectCardCount(1);
+    401|     await waitFor(() => expect(checkbox("대담한")).toHaveAccessibleDescri…
+    402|     expect(descriptionNodes(checkbox("대담한"))).toEqual(["1개"]);
+       |                                               ^
+    403|     expect(chip("전체")).toHaveAccessibleDescription("1개");
+    404|     expect(descriptionNodes(chip("전체"))).toEqual(["1개"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 키보드 Enter로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<h2
+  class="ds-heading2"
+>
+  필터
+</h2>[39m
+Received element with focus:
+  [31m<button
+  aria-describedby="_r_12b_"
+  aria-label="필터 초기화"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+  disabled=""
+  type="button"
+>
+  초기화
+</button>[39m
+ ❯ src/pages/CatalogPage.test.tsx:424:27
+    422|     expect(router.state.location.search).toBe("?industry=cafe-fnb");
+    423|     expect(reset()).toBeDisabled();
+    424|     expect(railHeading()).toHaveFocus();
+       |                           ^
+    425|     expect(railHeading()).toHaveAttribute("tabindex", "-1");
+    426|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > 클릭로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<h2
+  class="ds-heading2"
+>
+  필터
+</h2>[39m
+Received element with focus:
+  [31m<button
+  aria-describedby="_r_13c_"
+  aria-label="필터 초기화"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+  disabled=""
+  type="button"
+>
+  초기화
+</button>[39m
+ ❯ src/pages/CatalogPage.test.tsx:424:27
+    422|     expect(router.state.location.search).toBe("?industry=cafe-fnb");
+    423|     expect(reset()).toBeDisabled();
+    424|     expect(railHeading()).toHaveFocus();
+       |                           ^
+    425|     expect(railHeading()).toHaveAttribute("tabindex", "-1");
+    426|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > QA-V2-2 P3 수정 (FIX-V22) > Tab으로 포커스한 업종 칩은 링까지 칩 줄 안으로 스크롤하고, 마우스 클릭은 스크롤하지 않는다 (D-V22-03)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"scroll-px-2"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  scroll-px-2[39m
+Received:
+[31m  -m-1 flex min-w-0 flex-1 gap-2 overflow-x-auto p-1 lg:flex-wrap[39m
+ ❯ src/pages/CatalogPage.test.tsx:434:27
+    432|       renderApp("/catalog");
+    433|       await expectCardCount(6);
+    434|       expect(chipGroup()).toHaveClass("scroll-px-2");
+       |                           ^
+    435|       chip("뷰티").focus();
+    436|       await userEvent.tab();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/components/catalog/CompareTrayBar.test.tsx > 플로팅 비교 필 (SPEC 4.5 C-05 · V2-AC-24) > 펼친 뒤 Tab(앞으로)으로 목록에 들어간다 — DOM에서 목록이 토글 다음 (D-V22-05)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<button
+  aria-label="모던 카페 브랜드 비교에서 제거"
+  class="inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm text-inverse-label-alternative hover:bg-inverse-fill-normal hover:text-on-surface-inverse focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+  type="button"
+>
+  <i
+    aria-hidden="true"
+    class="ds-icon size-4 "
+    style="--icon: url("data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e");"
+  />
+</button>[39m
+Received element with focus:
+  [31m<button
+  aria-label="비교 보드 열기"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+  type="button"
+>
+  비교 보드
+  <i
+    aria-hidden="true"
+    class="ds-icon size-4 "
+    style="--icon: url("data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M5%2012h14M13%206l6%206-6%206'%3e%3c/path%3e%3c/svg%3e");"
+  />
+</button>[39m
+ ❯ src/components/catalog/CompareTrayBar.test.tsx:78:73
+     76|     expect(toggle).toHaveAttribute("aria-expanded", "true");
+     77|     await userEvent.tab();
+     78|     expect(screen.getByRole("button", { name: `${a!.title} 비교에서 제거` })…
+       |                                                                         ^
+     79|     await userEvent.tab();
+     80|     expect(screen.getByRole("button", { name: `${b!.title} 비교에서 제거` })…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/components/catalog/CompareTrayBar.test.tsx > 플로팅 비교 필 (SPEC 4.5 C-05 · V2-AC-24) > 포커스가 필 밖으로 나가면 목록을 닫는다 — 펼친 목록이 뒤 카드의 포커스를 가리지 않게 (2.4.11)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<button
+  aria-label="모던 카페 브랜드 비교에서 제거"
+  class="inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm text-inverse-label-alternative hover:bg-inverse-fill-normal hover:text-on-surface-inverse focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+  type="button"
+>
+  <i
+    aria-hidden="true"
+    class="ds-icon size-4 "
+    style="--icon: url("data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e");"
+  />
+</button>[39m
+Received element with focus:
+  [31m<button
+  aria-label="비교 보드 열기"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+  type="button"
+>
+  비교 보드
+  <i
+    aria-hidden="true"
+    class="ds-icon size-4 "
+    style="--icon: url("data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M5%2012h14M13%206l6%206-6%206'%3e%3c/path%3e%3c/svg%3e");"
+  />
+</button>[39m
+ ❯ src/components/catalog/CompareTrayBar.test.tsx:92:62
+     90|     // 필 안(토글 → 목록 → 비교 보드 열기)에서 움직이는 동안은 열려 있다
+     91|     await userEvent.tab();
+     92|     expect(screen.getByRole("button", { name: /비교에서 제거$/ })).toHaveFoc…
+       |                                                              ^
+     93|     expect(toggle).toHaveAttribute("aria-expanded", "true");
+     94|     await userEvent.tab({ shift: true });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > 로고·주 메뉴 링크는 DS 2중 링(--focus-ring)을 쓰고, 링이 잘리지 않게 여백을 둔다 (D-V22-01)
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/layout/AppHeader.test.tsx:52:69
+     50|     const nav = within(header).getByRole("navigation", { name: "주 메뉴" …
+     51|     for (const link of [logo, ...within(nav).getAllByRole("link")]) {
+     52|       expect(hasClass(link, "focus-visible:shadow-(--focus-ring)")).to…
+       |                                                                     ^
+     53|       expect(hasClass(link, "focus-visible:outline-none")).toBe(true);
+     54|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  7 failed | 49 passed (56)
+   Start at  11:46:26
+   Duration  4.64s (tests 56%, environment 26%, transform 9%, setup 5%, import 4%)
+

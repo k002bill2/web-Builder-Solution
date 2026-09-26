@@ -1,0 +1,38 @@
+== D-V22-03 칩 (390) — 뷰티에서 Tab, 700ms 대기
+Tab 의료1 BUTTON {"top":0,"right":3.85,"bottom":0,"left":228.2} DIV[업종] scrollLeft 22
+Tab 피트니스1 BUTTON {"top":0,"right":103.91,"bottom":0,"left":103.94} DIV[업종] scrollLeft 220
+Tab 전문서비스1 BUTTON {"top":0,"right":3.88,"bottom":0,"left":191.88} DIV[업종] scrollLeft 230
+Tab 교육0 BUTTON {"top":0,"right":85.63,"bottom":0,"left":146.41} DIV[업종] scrollLeft 385.5
+Tab 리테일0 BUTTON {"top":0,"right":-0.21,"bottom":0,"left":220.16} DIV[업종] scrollLeft 385.5
+Shift+Tab 교육0 BUTTON {"top":0,"right":85.63,"bottom":0,"left":146.41} DIV[업종]
+Shift+Tab 전문서비스1 BUTTON {"top":0,"right":159.38,"bottom":0,"left":36.38} DIV[업종]
+Shift+Tab 피트니스1 BUTTON {"top":0,"right":203.91,"bottom":0,"left":3.94} DIV[업종]
+Shift+Tab 의료1 BUTTON {"top":0,"right":115.85,"bottom":0,"left":116.2} DIV[업종]
+Shift+Tab 뷰티1 BUTTON {"top":0,"right":189.59,"bottom":0,"left":42.45} DIV[업종]
+-- 마우스: 부분 노출 칩 클릭 전후 scrollLeft
+before {"sl":0,"x":336.40625,"y":343,"chipRight":392.1484375,"groupRight":378} after {"sl":0,"search":"?industry=medical","fv":false}
+== D-V22-05 필 (1280) — 카드 3개 담고 토글 Enter → Tab
+toggle 비교 보드 3 / 6 expanded true
+geometry {"listTop":592,"listBottom":728,"pillTop":736,"listAbovePill":true,"listCenterX":640,"pillCenterX":640}
+Tab 1 동네 치과 클리닉 비교에서 제거 BUTTON expanded true
+Tab 2 부티크 법률사무소 비교에서 제거 BUTTON expanded true
+Tab 3 모던 카페 브랜드 비교에서 제거 BUTTON expanded true
+Tab 4 비교 보드 열기 BUTTON expanded true
+Tab 5 undefined undefined expanded true
+D07 가운데 제거 undefined → 포커스 undefined
+Esc → 포커스 undefined expanded false
+== D-V22-05 필 (390) — 카드 3개 담고 토글 Enter → Tab
+toggle 비교 보드 3 / 6 expanded true
+geometry {"listTop":592,"listBottom":728,"pillTop":736,"listAbovePill":true,"listCenterX":195,"pillCenterX":195}
+Tab 1 동네 치과 클리닉 비교에서 제거 BUTTON expanded true
+Tab 2 부티크 법률사무소 비교에서 제거 BUTTON expanded true
+Tab 3 모던 카페 브랜드 비교에서 제거 BUTTON expanded true
+Tab 4 비교 보드 열기 BUTTON expanded true
+Tab 5 undefined undefined expanded true
+
+== D07·Esc 재측정 (1280) · 토글 비교 보드 3 / 6 expanded true
+D07 가운데 제거: 부티크 법률사무소 비교에서 제거 → 포커스: 모던 카페 브랜드 비교에서 제거 expanded true
+Esc → 포커스: 비교 보드 2 / 6 expanded false
+펼친 뒤 Shift+Tab → 포커스: 필라테스 스튜디오 비교 추가 expanded false (필 밖으로 나가면 닫힘)
+TaskSpace 8 finish
+

@@ -656,7 +656,53 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 ## 12. 2a-04 영향 (개정안 — 2a-04 SPEC은 수정하지 않음)
 
-(작성 중)
+`docs/design/2a-04/SPEC.md` r6은 이 작업에서 **바꾸지 않는다**(Developer가 2a-04b2 구현 중). 아래는 2a-04 SPEC 다음 개정(r7) 또는 2a-05a1 브리프가 옮겨 적을 **개정안**이다. 적용 시점은 13.1의 a1(2a-04b2 병합 뒤).
+
+### 12.1 IA · 라우트 · 프로필 화면
+
+| 2a-04 위치 (r6) | 지금 | 개정안 | 근거 |
+|---|---|---|---|
+| 2.1 흐름 마지막 줄 "GNB 새 프로젝트 → /profile (프로필 목록 · 없으면 시작 안내)" · 1.1 `AppHeader.tsx:58` | "새 프로젝트"·"프로젝트" 모두 `/profile` | "새 프로젝트" → `/compare?new=1`, "프로젝트" → `/projects`(현재 표시는 `/profile/*` 포함) | Q1·Q2, A-01 |
+| 2.2 P-S04·P-S05 (`/profile` 목록) · P-AC-03 | 프로필 목록 화면 | **폐지** — `/profile` → `/projects` `Navigate replace`. 빈 상태 문장은 J-S02가, 목록은 J-S04가 잇는다. P-AC-03 → J-AC-02·J-AC-03으로 대체 | 목록 중복 제거(A-02) |
+| 3.1 제목 구조 "부제 '기준 레퍼런스: 카페 온도 · 스타일 조합'" | 프로젝트 언급 없음 | 부제 앞에 **"프로젝트: <이름>"**(링크 → `/projects`). h1 "디자인 프로필"은 그대로(M-01) | 프로필 = 프로젝트의 하위 화면 |
+| P-S02 (프로필 없음) | "비교 보드로" · "카탈로그" | + 링크 "프로젝트 목록" | 되돌아갈 곳 |
+| 5.2 키보드 순서 | 헤더 → h1 → … | h1 뒤에 "프로젝트: <이름>" 링크 1개 추가 | — |
+| 7 P-B1 "`/studio`는 자리표시 유지" | 자리표시 lazy 라우트 | `/studio` 자리표시 삭제(`Navigate`), `/studio/:projectId` = 편집기 lazy 라우트 | S-B1(상쇄 1순위) |
+
+### 12.2 보드 확정 = 프로젝트 만들기/고르기 (6.1·6.3 트랜잭션)
+
+| 2a-04 위치 (r6) | 개정안 |
+|---|---|
+| 6.2 `CompareBoardRepository.confirmProfile(revision, expectedLatest)` · `createProfileVersion(profileId, revision, expectedLatest)` | 확정 대상 인자 추가: 첫 확정 = 늘 새 프로젝트(인자 불필요). 재확정 = `target: "current" \| "new"`. `"new"`면 `createProfileVersion` 대신 **새 계열 + 새 프로젝트**(`expectedLatest` = 0) |
+| 6.2 `ConfirmedRef` | `projectId`·`projectName` 필드 추가(읽을 때 채움 — `latestVersion`과 같은 방식). J-S10 라디오 이름 "<이름> 새 버전"에 쓴다 |
+| 6.3 트랜잭션 ①~③ | **④ 프로젝트 생성(첫 확정·`"new"`)을 같은 트랜잭션에 넣는다.** `commit` 실패면 프로젝트·계열·보드 모두 롤백(J-AC-07 ①) |
+| 6.3 멱등 키 (보드 id, revision, `expectedLatest`) | **키에 확정 대상(`current`/`new`)을 더한다.** 빠지면 응답 실패 뒤 대상을 바꾼 재시도가 이전 결과(다른 프로젝트)를 돌려받는다(J-AC-07 ③) |
+| 6.1-3 · P-S25 이어받기 | `target="new"`면 이어받기를 적용하지 않고(새 계열에 조정 0) P-S25 캡션을 숨긴다. `STALE_PROFILE` 판정도 새 계열에는 해당 없음(판정 순서: `SCHEMA_INVALID` → `STALE_BOARD` → (current만) `STALE_PROFILE` → `UNSUPPORTED_COMBINATION`) |
+| 6.3 확정 뒤 이동 `/profile/:id` | 그대로. 알림에 새 프로젝트 문장(J-S11) 추가 |
+| 6.5 계측 | `project_created(source)` 추가(9절) |
+
+- **번들**: 확정 대상 선택 UI는 보드 첫 화면 청크(`/compare` 여유 0.52) — S-B9(네이티브 라디오, 실측 먼저, 넘치면 상쇄 후 보고). 첫 작업 순서는 13.1 a1.
+- "현재 프로젝트 / 새 프로젝트" 두 가지로 제한하는 이유(2.1): 임의의 다른 프로젝트를 고르게 하면 그 계열에는 보드 확정 기준(`confirmedBase`)이 없어 6.1-3 이어받기가 정의되지 않는다.
+
+### 12.3 3안 · 편집 시작 (2a-04c)
+
+| 2a-04 위치 (r6) | 개정안 |
+|---|---|
+| 4.6 · P-S22 · P-AC-29 "B안으로 편집 시작" → `/studio` | → **`/studio/:projectId`**. 누르면 `startDoc(projectId, version, candidateId, "create")`(문서가 없을 때) 후 이동. 문서가 있으면 EQ-2 |
+| 10 Q6 "`project_id`는 2a-05 또는 ADR-005 Q1 후속" (생성 요청 키) | **바꾸지 않는다** — 생성은 프로필 버전 단위이고 프로젝트는 계열과 1:1이라 키에서 파생된다. `GenerationJob`에 `projectId` 필드 추가도 불필요 |
+| DS-CHECK-01 A-12 (`/studio` 자리표시 "1a-05") | a1에서 자리표시 자체가 사라진다. **2a-04c가 a1보다 먼저 병합되면** 계획대로 "2a-05" 한 단어 교체 |
+
+### 12.4 깨질 기존 테스트 (예상, L1 grep)
+
+| 파일 | 깨지는 단언 | 단계 | 처리 |
+|---|---|---|---|
+| `components/layout/AppHeader.test.tsx` 12~21행 | `/profile`에서 헤더 구성 · "새 프로젝트" 버튼(role=button) | a1 | `/profile` 줄 → `/projects`로. "새 프로젝트"가 버튼 모양 **링크**가 되면(S-B1 2순위) role 단언을 `link`로 — 보이는 글자·위치는 같다 |
+| `pages/CatalogPage.test.tsx` 359행 `["/studio", "편집기"]` | 자리표시 제목 | a1 | 줄 삭제(`/studio` → `/projects`). 편집기 진입은 새 테스트(E-AC-01·02) |
+| `pages/ProfilePage.test.tsx` 107·115행 `renderApp("/profile")`(목록) | 프로필 목록 | a1 | 목록 단언은 `/projects` 테스트로 옮긴다. `/profile` → `/projects` 리다이렉트 단언 추가(J-AC-09) |
+| `components/profile/ProfileList.tsx`·`features/profile/useProfileList.ts` 테스트 | 목록 부품 | a1 | `/projects` 목록으로 재사용하거나 대체 — 줄 모양(J-S04)이 달라 단언 갱신 |
+| `features/compare/useCompareBoard.ts:255` 호출부 · `pages/CompareBoardPage.test.tsx` 확정 인자 단언 · `data/memoryCompareBoardRepository.test.ts` 확정 호출 | 확정 인자에 대상 추가 | a1 | 첫 확정은 인자 변화 없음 → 기존 단언 유지. 재확정 단언에 `"current"` 추가. `/profile/profile-1` 경로 단언은 **깨지지 않아야 한다**(id 규칙 유지) |
+| `pages/CompareBoardCarryOver.test.tsx`·`CompareBoardLineage.test.tsx` | 이어받기·계보 | a1 | 기본 대상 = current라 **깨지지 않아야 한다**. `"new"` 경로는 새 테스트 |
+| `test/renderApp.tsx` | `PlaceholderPage` import | a1 | 제거(자리표시 삭제), 프로젝트 저장소는 기존 store 주입으로(렌더마다 새 store) |
 
 ## 13. 구현 단계 · 설계 질문 · 추적 표
 

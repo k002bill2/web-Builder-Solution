@@ -1,0 +1,1160 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a2/app
+
+ ❯ src/pages/ProfilePage.test.tsx (26 tests | 5 failed | 17 skipped) 3245ms
+   ❯ FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내 (9)
+     × F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음) 3048ms
+     × F-3 ?v=1에서 v2 줄 'v1과 비교 (v2)' → ?v=1&diff=2 · 포커스 caption · 닫기 → 같은 버튼 38ms
+     × F-4 ?v=2&diff=2 → 비교 닫힘(표·같음 문장 없음) 25ms
+     × F-5 ?v=7(v3 계열) → 최신 v3 + role=status '요청한 v7이 없어 최신 v3을 보여 줍니다' 17ms
+     × F-5 ?v=abc → '요청한 버전이 없어 최신 v3을 보여 줍니다', 있는 버전·diff만 없는 버전은 안내 없음 17ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내 > F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)
+TestingLibraryElementError: Unable to find role="table" and name "v1과 v2 비교"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 py-6 md:px-7 md:py-8"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex flex-col gap-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+            [36m>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+              [36m>[39m
+                [0m디자인 프로필[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-6 px-2 rounded-sm text-caption1"[39m
+              [36m>[39m
+                [0mv1 · 이전 버전[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+            [36m>[39m
+              [0m기준 레퍼런스: [0m
+              [0m모던 카페 브랜드[0m
+              [0m · [0m
+              [0m템플릿 그대로[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label self-start text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드에서 선택 바꾸기[0m
+            [36m</a>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-informative-bg"[39m
+            [33mdata-tone[39m=[32m"info"[39m
+          [36m>[39m
+            [36m<i[39...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 py-6 md:px-7 md:py-8"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex flex-col gap-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+            [36m>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+              [36m>[39m
+                [0m디자인 프로필[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-6 px-2 rounded-sm text-caption1"[39m
+              [36m>[39m
+                [0mv1 · 이전 버전[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+            [36m>[39m
+              [0m기준 레퍼런스: [0m
+              [0m모던 카페 브랜드[0m
+              [0m · [0m
+              [0m템플릿 그대로[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label self-start text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드에서 선택 바꾸기[0m
+            [36m</a>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-informative-bg"[39m
+            [33mdata-tone[39m=[32m"info"[39m
+          [36m>[39m
+            [36m<i[39...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfilePage.test.tsx:236:32
+    234|   it("F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)", async () =…
+    235|     await openProfile("/profile/profile-1?v=1&diff=2", 3);
+    236|     const table = await screen.findByRole("table", { name: "v1과 v2 비교"…
+       |                                ^
+    237|     expect(columns(table)).toEqual(["항목", "v1", "v2", "차이"]);
+    238|     expect(within(table).getByRole("row", { name: /대표색 \(primary\)/ })…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내 > F-3 ?v=1에서 v2 줄 'v1과 비교 (v2)' → ?v=1&diff=2 · 포커스 caption · 닫기 → 같은 버튼
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <button
+  aria-label="현재와 비교 (v1)"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"
+  data-compare="1"
+  type="button"
+>
+  현재와 비교
+</button> instead[39m
+ ❯ src/pages/ProfilePage.test.tsx:250:77
+    248|     const { router } = await openProfile("/profile/profile-1?v=1", 3);
+    249|     await h1();
+    250|     expect(within(versionRow(1)).queryByRole("button", { name: /비교/ })…
+       |                                                                             ^
+    251|     expect(within(versionRow(3)).getByRole("button", { name: "v1과 비교 (…
+    252|     await userEvent.click(within(versionRow(2)).getByRole("button", { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내 > F-4 ?v=2&diff=2 → 비교 닫힘(표·같음 문장 없음)
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <table
+  class="ds-body3 w-full border-collapse text-left"
+>
+  <caption
+    class="ds-label mb-2 text-left focus:outline-none"
+    tabindex="-1"
+  >
+    v2와 v3 비교
+  </caption>
+  <thead>
+    <tr
+      class="border-b border-line-normal"
+    >
+      <th
+        class="py-1.5 pr-3"
+        scope="col"
+      >
+        항목
+      </th>
+      <th
+        class="py-1.5 pr-3"
+        scope="col"
+      >
+        v
+        2
+      </th>
+      <th
+        class="py-1.5 pr-3"
+        scope="col"
+      >
+        v
+        3
+      </th>
+      <th
+        class="py-1.5"
+        scope="col"
+      >
+        차이
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        시각 방향
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        미니멀
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        미니멀
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        레이아웃 방향
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        풀블리드 히어로
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        풀블리드 히어로
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        Hero
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        풀블리드 이미지 + 좌측 카피
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        풀블리드 이미지 + 좌측 카피
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        메뉴
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        고정 헤더 · 우측 CTA
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        고정 헤더 · 우측 CTA
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        CTA 위치
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        hero-inline
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        hero-inline
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        카드 스타일
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        bordered-lg · 밝은 카드
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        bordered-lg · 밝은 카드
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        이미지 비율
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        16:9
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        16:9
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        모바일 구조
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        single-column-bottom-cta
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        single-column-bottom-cta
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        Footer
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        확장형 사업자정보
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        확장형 사업자정보
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        타이포그래피
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        Pretendard · 제목 700 / 본문 400 · 비율 1.25
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        Pretendard · 제목 700 / 본문 400 · 비율 1.25
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        간격
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        그리드 8pt · 섹션 간격 96
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        그리드 8pt · 섹션 간격 96
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        모션
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        L1 낮음
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        L1 낮음
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        섹션 구성
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        섹션 9 · Header · 고정 헤더 · 우측 CTA → Hero · 풀블리드 이미지 + 좌측 카피 → About · split → Services · grid-3 → Portfolio · masonry → Testimonials · carousel → FAQ · accordion → Contact · map-form → Footer · 확장형 사업자정보
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        섹션 9 · Header · 고정 헤더 · 우측 CTA → Hero · 풀블리드 이미지 + 좌측 카피 → About · split → Services · grid-3 → Portfolio · masonry → Testimonials · carousel → FAQ · accordion → Contact · map-form → Footer · 확장형 사업자정보
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral font-semibold"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        출처
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        모던 카페 브랜드 · 동네 치과 클리닉
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        모던 카페 브랜드
+      </td>
+      <td
+        class="py-1.5"
+      >
+        바뀜
+      </td>
+    </tr>
+    <tr
+      class="border-b border-line-neutral font-semibold"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        생성 정보
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        라이브러리 1.4 · seed 4fb171be · 스타일 조합
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        라이브러리 1.4 · seed 02bd5bf8 · 템플릿 그대로
+      </td>
+      <td
+        class="py-1.5"
+      >
+        바뀜
+      </td>
+    </tr>
+    <tr
+      class="border-b border-line-neutral font-semibold"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        대표색 (primary)
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #1F5FBF
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #8B5E3C
+      </td>
+      <td
+        class="py-1.5"
+      >
+        바뀜
+      </td>
+    </tr>
+    <tr
+      class="border-b border-line-neutral font-semibold"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        면 (surface)
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #EAF2FE
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #F3E9DD
+      </td>
+      <td
+        class="py-1.5"
+      >
+        바뀜
+      </td>
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        본문 글자 (ink)
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #2C2C2C
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #2C2C2C
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+    <tr
+      class="border-b border-line-neutral font-semibold"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        보조 글자 (muted)
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #6B8CC7
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #9A7B63
+      </td>
+      <td
+        class="py-1.5"
+      >
+        바뀜
+      </td>
+    </tr>
+    <tr
+      class="border-b border-line-neutral"
+    >
+      <th
+        class="py-1.5 pr-3 font-normal text-label-alternative"
+        scope="row"
+      >
+        배경 (bg)
+      </th>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #FFFFFF
+      </td>
+      <td
+        class="py-1.5 pr-3"
+      >
+        #FFFFFF
+      </td>
+      <td
+        class="py-1.5"
+      />
+    </tr>
+  </tbody>
+</table> instead[39m
+ ❯ src/pages/ProfilePage.test.tsx:264:45
+    262|     await openProfile(`/profile/profile-1${search}`, 3);
+    263|     await h1();
+    264|     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+       |                                             ^
+    265|     expect(screen.queryByText("두 버전의 값이 같습니다")).not.toBeInTheDocument(…
+    266|     expect(screen.queryByRole("button", { name: "비교 닫기" })).not.toBeIn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내 > F-5 ?v=7(v3 계열) → 최신 v3 + role=status '요청한 v7이 없어 최신 v3을 보여 줍니다'
+TestingLibraryElementError: Unable to find an element with the text: 요청한 v7이 없어 최신 v3을 보여 줍니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 py-6 md:px-7 md:py-8"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex flex-col gap-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+            [36m>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+              [36m>[39m
+                [0m디자인 프로필[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-blue bg-accent-blue-bg h-6 px-2 rounded-sm text-caption1"[39m
+              [36m>[39m
+                [0mv3 · 현재[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+            [36m>[39m
+              [0m기준 레퍼런스: [0m
+              [0m모던 카페 브랜드[0m
+              [0m · [0m
+              [0m템플릿 그대로[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label self-start text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드에서 선택 바꾸기[0m
+            [36m</a>[39m
+          [36m</header>[39m
+          [36m<section[39m
+            [33maria-labelledby[39m=[32m"profile-values"[39m
+            [33mclass[39m=[32m"flex flex-col gap-4"[39m
+          [36m>[39m
+            [36m<h2[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ statusWith src/pages/ProfilePage.test.tsx:232:47
+    230| describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내", () =>…
+    231|   const columns = (table: HTMLElement) => within(table).getAllByRole("…
+    232|   const statusWith = (text: string) => screen.getByText(text).closest(…
+       |                                               ^
+    233|
+    234|   it("F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)", async () =…
+ ❯ src/pages/ProfilePage.test.tsx:273:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내 > F-5 ?v=abc → '요청한 버전이 없어 최신 v3을 보여 줍니다', 있는 버전·diff만 없는 버전은 안내 없음
+TestingLibraryElementError: Unable to find an element with the text: 요청한 버전이 없어 최신 v3을 보여 줍니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 py-6 md:px-7 md:py-8"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex flex-col gap-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+            [36m>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+              [36m>[39m
+                [0m디자인 프로필[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-blue bg-accent-blue-bg h-6 px-2 rounded-sm text-caption1"[39m
+              [36m>[39m
+                [0mv3 · 현재[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+            [36m>[39m
+              [0m기준 레퍼런스: [0m
+              [0m모던 카페 브랜드[0m
+              [0m · [0m
+              [0m템플릿 그대로[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label self-start text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드에서 선택 바꾸기[0m
+            [36m</a>[39m
+          [36m</header>[39m
+          [36m<section[39m
+            [33maria-labelledby[39m=[32m"profile-values"[39m
+            [33mclass[39m=[32m"flex flex-col gap-4"[39m
+          [36m>[39m
+            [36m<h2[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ statusWith src/pages/ProfilePage.test.tsx:232:47
+    230| describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내", () =>…
+    231|   const columns = (table: HTMLElement) => within(table).getAllByRole("…
+    232|   const statusWith = (text: string) => screen.getByText(text).closest(…
+       |                                               ^
+    233|
+    234|   it("F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)", async () =…
+ ❯ src/pages/ProfilePage.test.tsx:280:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 4 passed | 17 skipped (26)
+   Start at  16:46:34
+   Duration  4.50s (tests 74%, environment 13%, transform 8%, import 3%, setup 2%)
+

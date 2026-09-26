@@ -351,9 +351,7 @@ describe("라우팅", () => {
   });
 
   it.each([
-    // /compare는 M1-UI-03b에서 실제 화면이 됐다 — 확정 뒤 이동하는 /profile/:id 자리표시로 바꾼다
-    ["/profile/profile-1", "디자인 프로필"],
-    ["/profile", "디자인 프로필 · 3안 생성"],
+    // /compare(M1-UI-03b)·/profile*(DS-2A-04 2a-04a2)는 실제 화면이 됐다 — /profile*는 ProfilePage.test(P-AC-02·03)가 맡는다
     ["/studio", "편집기"],
   ])("%s 는 다음 단계 자리표시 페이지다", async (path, title) => {
     renderApp(path);

@@ -1,0 +1,29 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a0dcb3-b525-7912-aa27-70654769039b).
+[codex] Turn started (01a0dcb3-b61f-77a2-9da2-95aeb227c584).
+[codex] Assistant message captured: `679deef..HEAD`의 실제 코드 diff와 관련 스펙을 읽고, 이번 수정이 새로 만든 회귀만 확인하겠습니다.
+[codex] Running command: /bin/zsh -lc "git status --short && git diff --unified=80 679deef..HEAD -- app/src/components...
+[codex] Command completed: /bin/zsh -lc "git status --short && git diff --unified=80 679deef..HEAD -- app/src/components... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files dev/active/2a-04a2 | sort && rg -n \"P-S07|P-S08|5\\.2|같은 값|두 버전의 값이...
+[codex] Command completed: /bin/zsh -lc "rg --files dev/active/2a-04a2 | sort && rg -n \"P-S07|P-S08|5\\.2|같은 값|두 버전의 값이... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files | rg 'SPEC|spec|2a-04a2' | head -100; nl -ba app/src/pages/ProfilePa...
+[codex] Command completed: /bin/zsh -lc "rg --files | rg 'SPEC|spec|2a-04a2' | head -100; nl -ba app/src/pages/ProfilePa... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n \"P-S07|P-S08|5\\.2|두 버전의 값이 같습니다|diff=<|diff=.*버전|비교 닫기\" docs/design/2a...
+[codex] Command failed: /bin/zsh -lc "rg -n \"P-S07|P-S08|5\\.2|두 버전의 값이 같습니다|diff=<|diff=.*버전|비교 닫기\" docs/design/2a... (exit 2)
+[codex] Running command: /bin/zsh -lc "sed -n '75,103p' docs/design/2a-04/SPEC.md; sed -n '188,206p' docs/design/2a-04...
+[codex] Command completed: /bin/zsh -lc "sed -n '75,103p' docs/design/2a-04/SPEC.md; sed -n '188,206p' docs/design/2a-04... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n \"Q9|role=status|안내|없는 버전\" docs/06-handoff/FIX-2A04a2_DEVELOPER_BRIEF.md...
+[codex] Command completed: /bin/zsh -lc "rg -n \"Q9|role=status|안내|없는 버전\" docs/06-handoff/FIX-2A04a2_DEVELOPER_BRIEF.md... (exit 0)
+[codex] Assistant message captured: {"verdict":"needs-attention","summary":"출시 보류: 없는 버전 안내의 새 status 영역은 표시되지만, 동적으로 삽입된 안내가 보조기...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against 679deef
+Verdict: needs-attention
+
+출시 보류: 없는 버전 안내의 새 status 영역은 표시되지만, 동적으로 삽입된 안내가 보조기술에 낭독되지 않을 수 있습니다.
+
+Findings:
+- [medium] 없는 버전 안내가 status 영역 삽입과 함께 낭독되지 않을 수 있음 (app/src/pages/ProfilePage.tsx:140-143)
+  `?v=`가 없는 버전을 요청하면 안내와 `role="status"`를 한꺼번에 DOM에 삽입합니다. 라이브 영역은 이미 존재하는 상태에서 내용이 바뀔 때 낭독되는 방식이 더 안정적이므로, 일부 보조기술에서는 이 안내를 놓칠 수 있습니다. 이는 동작 방식에 대한 추론이며 현재 테스트는 DOM의 role과 문구만 확인합니다. 사용자가 왜 최신 버전을 보는지 듣지 못할 수 있습니다.
+  Recommendation: 안내를 기존에 상시 렌더링되는 `프로필 알림` status 영역에 전달하거나, 비어 있는 안내 status 영역을 미리 렌더링하고 이후 문구를 갱신하세요.

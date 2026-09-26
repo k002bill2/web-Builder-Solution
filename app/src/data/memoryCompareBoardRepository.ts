@@ -120,8 +120,17 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
       const id = profileId ?? tx.nextProfileId();
       const version = expectedLatest + 1;
       // 이어받기(carryOverAdjustments)는 2a-04b — 지금은 조정을 만드는 쓰기가 없어 재확정도 빈 조정
-      const record: ProfileVersion = { profileId: id, version, origin: profileId ? "board-reconfirm" : "board", boardRevision: revision, base, adjustments: {}, createdAt: now() };
-      tx.insert(record, draft.baseReferenceId);
+      const record: ProfileVersion = {
+        profileId: id,
+        version,
+        origin: profileId ? "board-reconfirm" : "board",
+        boardRevision: revision,
+        baseReferenceId: draft.baseReferenceId,
+        base,
+        adjustments: {},
+        createdAt: now(),
+      };
+      tx.insert(record);
       tx.remember({ key, profileId: id, version });
       commitGate();
       return { profileId: id, version };

@@ -10,6 +10,7 @@ import { createMemoryCompareBoardRepository, type BoardCall } from "./memoryComp
 import { createMemoryProfileRepository } from "./memoryProfileRepository";
 import { ProfileError, type ProfileRepository } from "./profileRepository";
 import { createStudioStore } from "./studioStore";
+import { insertOtherVersion } from "../test/studioFixtures";
 
 const IDS = ["ref-a", "ref-b", "ref-c"];
 const NOW = () => "2026-09-26T00:00:00.000Z";
@@ -64,6 +65,17 @@ describe("P-AC-10(저장소) 되돌리기 = 새 버전, 이전 레코드 불변"
     expect(await profiles.listProfiles()).toEqual([{ profileId: "profile-1", latestVersion: 1, baseReferenceId: "ref-a", updatedAt: NOW() }]);
   });
 
+  it("A-Q3: 최신 버전으로 되돌리기는 SCHEMA_INVALID '이미 최신 버전입니다', 새 버전 0 — 최신이 낡았으면 STALE_PROFILE이 먼저", async () => {
+    const { board, profiles, versionsOf } = setup();
+    const changed = await confirmedThenChanged(board);
+    await board.createProfileVersion("profile-1", changed.revision, 1);
+    const error = await errorOf(profiles.revertTo("profile-1", 2, 2));
+    expect(error).toBeInstanceOf(ProfileError);
+    expect(error).toMatchObject({ code: "SCHEMA_INVALID", message: "SCHEMA_INVALID: 이미 최신 버전입니다" });
+    expect(await errorOf(profiles.revertTo("profile-1", 2, 1))).toMatchObject({ code: "STALE_PROFILE", series: { latestVersion: 2 } });
+    expect(await versionsOf()).toEqual([1, 2]);
+  });
+
   it("없는 프로필·버전 되돌리기는 NOT_FOUND, 새 버전 0", async () => {
     const { board, profiles, versionsOf } = setup();
     await board.confirmProfile(1, 0);
@@ -73,27 +85,41 @@ describe("P-AC-10(저장소) 되돌리기 = 새 버전, 이전 레코드 불변"
   });
 });
 
+describe("A-Q1 ProfileVersion.baseReferenceId 필드", () => {
+  it("보드 확정 = 초안의 기준 레퍼런스, 되돌리기 = 대상 버전 값 복사, 목록은 최신 버전 필드에서 읽는다", async () => {
+    const { board, profiles } = setup();
+    const changed = await confirmedThenChanged(board);
+    await board.createProfileVersion("profile-1", changed.revision, 1);
+    expect((await profiles.listProfiles())[0]?.baseReferenceId).toBe("ref-c");
+    const v3 = await profiles.revertTo("profile-1", 1, 2);
+    expect(v3.baseReferenceId).toBe("ref-a");
+    const series = (await profiles.getProfile("profile-1"))!;
+    expect(series.versions.map((v) => [v.version, v.baseReferenceId])).toEqual([[1, "ref-a"], [2, "ref-c"], [3, "ref-a"]]);
+    expect((await profiles.listProfiles())[0]?.baseReferenceId).toBe("ref-a");
+  });
+});
+
 describe("P-AC-11(저장소) 버전 계보 — 보드는 계열 최신을 읽는다", () => {
   it("프로필 쪽 v2 뒤 보드가 돌려주는 모든 보드에 latestVersion·latest·confirmedBase, 재확정 결과 v3", async () => {
-    const { board, profiles } = setup();
+    const { store, board, profiles } = setup();
     await board.confirmProfile(1, 0);
     const v1 = (await profiles.getProfile("profile-1"))!.versions[0]!;
-    await profiles.revertTo("profile-1", 1, 1);
+    insertOtherVersion(store);
     const { board: loaded } = await board.getBoard();
     expect(loaded.confirmed).toMatchObject({ profileId: "profile-1", version: 1, latestVersion: 2, latest: { version: 2, base: v1.base, adjustments: {} } });
     expect(loaded.confirmed?.confirmedBase).toBe(v1.base);
     const saved = await board.savePicks({ hero: "ref-c" }, {}, loaded.revision);
     expect(saved.confirmed?.latestVersion).toBe(2);
     expect(await board.createProfileVersion("profile-1", saved.revision, 2)).toEqual({ profileId: "profile-1", version: 3 });
-    expect((await profiles.getProfile("profile-1"))!.versions.map((v) => [v.version, v.origin])).toEqual([[1, "board"], [2, "revert"], [3, "board-reconfirm"]]);
+    expect((await profiles.getProfile("profile-1"))!.versions.map((v) => [v.version, v.origin])).toEqual([[1, "board"], [2, "adjust"], [3, "board-reconfirm"]]);
   });
 });
 
 describe("P-AC-40(저장소) 보드 확정 경쟁 — STALE_PROFILE", () => {
   it("보드가 v2를 본 뒤 다른 쓰기가 v3을 만들면 확정은 STALE_PROFILE(최신 동봉), 새 버전 0 → 최신으로 다시 확정하면 v4", async () => {
-    const { board, profiles, versionsOf } = setup();
+    const { store, board, profiles, versionsOf } = setup();
     const changed = await confirmedThenChanged(board);
-    await profiles.revertTo("profile-1", 1, 1);
+    insertOtherVersion(store);
     await profiles.revertTo("profile-1", 1, 2);
     const error = await errorOf(board.createProfileVersion("profile-1", changed.revision, 2));
     expect(error).toBeInstanceOf(CompareBoardError);
@@ -104,17 +130,17 @@ describe("P-AC-40(저장소) 보드 확정 경쟁 — STALE_PROFILE", () => {
   });
 
   it("판정 순서: 보드도 낡고 계열도 낡으면 STALE_BOARD가 먼저, 동봉한 최신 보드에는 latestVersion이 채워져 있다", async () => {
-    const { board, profiles } = setup();
+    const { store, board } = setup();
     const changed = await confirmedThenChanged(board);
-    await profiles.revertTo("profile-1", 1, 1);
+    insertOtherVersion(store);
     const error = await errorOf(board.createProfileVersion("profile-1", changed.revision - 1, 1));
     expect(error).toMatchObject({ code: "STALE_BOARD", board: { revision: changed.revision, confirmed: { latestVersion: 2 } } });
   });
 
   it("되돌리기도 expectedLatest가 다르면 STALE_PROFILE(최신 계열 동봉), 새 버전 0", async () => {
-    const { board, profiles, versionsOf } = setup();
+    const { store, board, profiles, versionsOf } = setup();
     await board.confirmProfile(1, 0);
-    await profiles.revertTo("profile-1", 1, 1);
+    insertOtherVersion(store);
     const error = await errorOf(profiles.revertTo("profile-1", 1, 1));
     expect(error).toBeInstanceOf(ProfileError);
     expect(error).toMatchObject({ code: "STALE_PROFILE", series: { profileId: "profile-1", latestVersion: 2 } });
@@ -128,16 +154,17 @@ describe("P-AC-41 동시 쓰기 원자성", () => {
     ["되돌리기가 먼저 도착", ["revert", "board"]],
   ] as const)("같은 expectedLatest로 보드 확정 + 되돌리기를 동시에(응답 지연) → 정확히 1개 성공·1개 STALE_PROFILE, 번호 연속 (%s)", async (_, order) => {
     const gate = deferred();
-    const { board, profiles, versionsOf } = setup({ delay: (call) => (call.method === "createProfileVersion" && call.phase === "response" ? gate.promise : undefined) });
+    const { store, board, profiles, versionsOf } = setup({ delay: (call) => (call.method === "createProfileVersion" && call.phase === "response" ? gate.promise : undefined) });
     const changed = await confirmedThenChanged(board);
-    const writes = { board: () => board.createProfileVersion("profile-1", changed.revision, 1), revert: () => profiles.revertTo("profile-1", 1, 1) };
+    insertOtherVersion(store);
+    const writes = { board: () => board.createProfileVersion("profile-1", changed.revision, 2), revert: () => profiles.revertTo("profile-1", 1, 2) };
     const pending = order.map((w) => writes[w]());
     gate.resolve();
     const settled = await Promise.allSettled(pending);
     expect(settled.filter((s) => s.status === "fulfilled")).toHaveLength(1);
     const rejected = settled.flatMap((s) => (s.status === "rejected" ? [s.reason as { code?: string }] : []));
     expect(rejected.map((e) => e.code)).toEqual(["STALE_PROFILE"]);
-    expect(await versionsOf()).toEqual([1, 2]);
+    expect(await versionsOf()).toEqual([1, 2, 3]);
   });
 
   it("네 쓰기 모두 expectedLatest가 필수 인자다 (빠지면 typecheck 실패)", () => {

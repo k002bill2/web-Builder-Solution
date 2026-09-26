@@ -1,0 +1,43 @@
+ElementResolutionError: page.click timed out after 3000ms: page.click failed: element is not visible in the viewport
+    at #retryElementAction (file:////[eval1]:18884:27)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+① 시작 http://127.0.0.1:5299/profile/profile-1 true
+v1 1280 {"vw":1280,"scrollW":1280,"h1":"디자인 프로필"} 가로 넘침 0
+v1 768 {"vw":768,"scrollW":768,"h1":"디자인 프로필"} 가로 넘침 0
+v1 390 {"vw":390,"scrollW":390,"h1":"디자인 프로필"} 가로 넘침 0
+
+ego's nodejs process exited with code 1.
+Error: JavaScript evaluation failed at line 0, column 0: Error: 없음: 비교 보드에서 선택 바꾸기
+    at <anonymous>:2:174
+    at __egoPageEvaluate (<anonymous>:2:211)
+    at <anonymous>:3:9; expression: (n) => { const el = [...document.querySelectorAll("a,button")].find(e => (e.getAttribute("aria-label") || e.textContent.trim()) === n); if (!el) throw new Er...
+    at runtimeValue (file:////[eval1]:9139:15)
+    at evaluateInSession (file:////[eval1]:19186:12)
+    at async file:////[eval1]:18809:24
+    at async file:////[eval1]:16691:28
+
+ego's nodejs process exited with code 1.
+Error: page.waitForFunction timed out after 10000ms on page p1; last URL was "http://127.0.0.1:5299/compare"; last title was "비교 보드 · Design Studio".
+    at waitForFunctionTimeoutError (file:////[eval1]:19235:12)
+    at file:////[eval1]:18564:19
+    at async file:////[eval1]:16691:28
+① /compare 복귀 http://127.0.0.1:5299/compare
+
+ego's nodejs process exited with code 1.
+② 재확정 http://127.0.0.1:5299/profile/profile-1 v2 · 현재
+③ 보기 http://127.0.0.1:5299/profile/profile-1?v=1 focus: H1 디자인 프로필
+v1-view 1280 {"vw":1280,"scrollW":1280} 가로 넘침 0
+v1-view 768 {"vw":768,"scrollW":768} 가로 넘침 0
+v1-view 390 {"vw":390,"scrollW":390} 가로 넘침 0
+④ 비교 http://127.0.0.1:5299/profile/profile-1?diff=1 {"caption":"v1과 v2 비교","changed":5,"focus":"CAPTION"}
+diff 1280 {"vw":1280,"scrollW":1280} 가로 넘침 0
+diff 768 {"vw":768,"scrollW":768} 가로 넘침 0
+diff 390 {"vw":390,"scrollW":390} 가로 넘침 0
+⑤ 되돌리기 http://127.0.0.1:5299/profile/profile-1 {"status":"v1 내용으로 v3을 만들었습니다","focus":"v3 되돌리기 (v1)","title":"비교 보드 · Design Studio"}
+⑥ 목록 http://127.0.0.1:5299/profile 모던 카페 브랜드 최신 v3 방금 열기
+list 1280 {"vw":1280,"scrollW":1280} 가로 넘침 0
+list 768 {"vw":768,"scrollW":768} 가로 넘침 0
+list 390 {"vw":390,"scrollW":390} 가로 넘침 0
+finish
+

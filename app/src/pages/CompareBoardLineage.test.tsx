@@ -1,6 +1,6 @@
 /**
  * DS-2A-04 2a-04a1 — 보드 화면의 버전 계보·STALE_PROFILE·확정 트랜잭션 (P-AC-11·40·42).
- * 보드·프로필 메모리 저장소가 store 하나를 쓰고, "다른 탭"의 쓰기는 프로필 저장소 revertTo를 직접 부른다.
+ * 보드·프로필 메모리 저장소가 store 하나를 쓰고, "다른 탭"의 쓰기는 store에 직접 넣거나(`insertOtherVersion`) 프로필 저장소 revertTo를 직접 부른다.
  */
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -12,6 +12,7 @@ import { createStudioStore } from "../data/studioStore";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
+import { insertOtherVersion } from "../test/studioFixtures";
 import { renderApp } from "../test/renderApp";
 
 const THREE = ["ref-a", "ref-b", "ref-c"];
@@ -25,14 +26,14 @@ async function openStudio(inject: { delay?: (call: BoardCall) => Promise<void> |
   const view = renderApp("/compare", createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board);
   await screen.findByRole("heading", { level: 1, name: "비교 보드" });
   const versionsOf = async () => (await profiles.getProfile("profile-1"))?.versions.map((v) => v.version) ?? [];
-  return { ...view, board, profiles, versionsOf };
+  return { ...view, store, board, profiles, versionsOf };
 }
 
-/** v1 확정 → 프로필 쪽 되돌리기로 v2 → 보드로 돌아와 Hero를 B로 바꾼다 */
+/** v1 확정 → 다른 곳에서 v2 → 보드로 돌아와 Hero를 B로 바꾼다 */
 async function boardSeesV2(studio: Awaited<ReturnType<typeof openStudio>>) {
   await userEvent.click(confirmButton());
   await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"));
-  await studio.profiles.revertTo("profile-1", 1, 1);
+  insertOtherVersion(studio.store);
   await act(() => studio.router.navigate("/compare"));
   expect(await screen.findByText("v1 확정됨")).toBeInTheDocument();
   expect(confirmButton()).toHaveAccessibleName("새 버전으로 확정 (v3)");
@@ -49,7 +50,7 @@ describe("P-AC-11 버전 계보 — 보드 라벨 = 계열 최신 + 1", () => {
     await userEvent.click(confirmButton());
     await waitFor(() => expect(studio.router.state.location.pathname).toBe("/profile/profile-1"));
     const series = await studio.profiles.getProfile("profile-1");
-    expect(series?.versions.map((v) => [v.version, v.origin])).toEqual([[1, "board"], [2, "revert"], [3, "board-reconfirm"]]);
+    expect(series?.versions.map((v) => [v.version, v.origin])).toEqual([[1, "board"], [2, "adjust"], [3, "board-reconfirm"]]);
   });
 });
 

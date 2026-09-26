@@ -35,7 +35,7 @@ function VersionRow({ v, props }: { readonly v: ProfileVersion; readonly props: 
       {current && <Tag tone="blue" size="sm">현재</Tag>}
       {viewed && !current && <Tag size="sm">보는 중</Tag>}
       <span className="ds-body3">{originText(v)}</span>
-      <span className="ds-caption1 min-w-0 flex-1 text-label-alternative">{props.summaryOf(v)}</span>
+      <span className="ds-caption1 min-w-0 basis-full text-label-alternative md:basis-auto md:flex-1">{props.summaryOf(v)}</span>
       <time dateTime={v.createdAt} className="ds-caption1 text-label-alternative">
         {relativeTime(v.createdAt)}
       </time>

@@ -18,7 +18,17 @@ const STRICT_ID = /^[A-Za-z0-9_-]+$/;
 const LOOSE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 const VERSION = /^[A-Za-z0-9._-]+$/;
 const HASH = /^[A-Za-z0-9:]*$/;
-const ISO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})$/;
+const ISO_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?(?:Z|[+-](\d{2}):(\d{2}))$/;
+
+/** 모양 + 실제 달력·시각 값(월 1~12, 그 달의 날짜, 시 <24, 분·초 <60, 오프셋 시 <24) */
+function isIsoTime(value: string): boolean {
+  const m = ISO_TIME.exec(value);
+  if (!m) return false;
+  const [year, month, day, hour, minute, second = 0, offH = 0, offM = 0] = m.slice(1).map((v) => (v === undefined ? undefined : Number(v)));
+  const date = new Date(Date.UTC(year!, month! - 1, day!));
+  const dayValid = date.getUTCFullYear() === year && date.getUTCMonth() === month! - 1 && date.getUTCDate() === day;
+  return dayValid && hour! < 24 && minute! < 60 && second < 60 && offH < 24 && offM < 60;
+}
 
 const DOC_KEYS = ["projectId", "revision", "hash", "profileVersion", "candidateId", "libraryVersion", "generatorVersion", "meta", "sections", "updatedAt"];
 const SECTION_KEYS = ["instanceId", "type", "variant", "motion", "tone", "slots"];
@@ -26,6 +36,12 @@ const IMAGE_KEYS = ["kind", "enabled", "source", "alt", "decorative"];
 
 const text = (r: Reader, value: unknown, path: string) => readString(r, value, path, { max: LIMITS.text });
 const strictId = (r: Reader, value: unknown, path: string) => readString(r, value, path, { min: 1, max: LIMITS.id, pattern: STRICT_ID });
+
+function readTime(r: Reader, value: unknown, path: string): string | undefined {
+  const time = readString(r, value, path, { min: 1, max: 40 });
+  if (time !== undefined && !isIsoTime(time)) r.add(path, "ISO 8601 시각이어야 합니다");
+  return time;
+}
 
 function readSource(r: Reader, value: unknown, path: string): ImageSource | undefined {
   const rec = r.map(value, path);
@@ -89,7 +105,8 @@ function readSections(r: Reader, value: unknown, path: string): SectionInstance[
     return [];
   }
   const seen = new Set<string>();
-  return value.map((item, i) => {
+  // Array.from은 구멍(sparse)을 undefined로 채운다 → 객체 아님으로 거부(map은 구멍을 건너뛴다)
+  return Array.from(value, (item: unknown, i) => {
     const section = readSection(r, item, `${path}[${i}]`, seen);
     if (section?.instanceId !== undefined) seen.add(section.instanceId);
     return section!;
@@ -115,7 +132,7 @@ export function validatePageDoc(input: unknown): ValidationResult<PageDoc> {
       description: text(r, r.field(metaRec, "description", "$.meta"), "$.meta.description"),
     },
     sections: readSections(r, get("sections"), "$.sections"),
-    updatedAt: readString(r, get("updatedAt"), "$.updatedAt", { min: 1, max: 40, pattern: ISO_TIME }),
+    updatedAt: readTime(r, get("updatedAt"), "$.updatedAt"),
   };
   return finish(r, () => deepFreeze(doc as PageDoc));
 }

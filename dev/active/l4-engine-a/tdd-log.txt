@@ -74,3 +74,16 @@ Error: Failed to resolve import "./diff" from "src/engine/ops/sectionOps.test.ts
       Tests  1 failed | 1 passed (2)
 ## 5절 번들 가드 GREEN(원복)
       Tests  2 passed (2)
+
+## Codex 반영 RED
+     × 달력·시각이 틀린 updatedAt 2026-99-99T99:99Z 거부 (Codex P2) 3ms
+     × 달력·시각이 틀린 updatedAt 2026-02-30T10:00Z 거부 (Codex P2) 1ms
+     × 달력·시각이 틀린 updatedAt 2026-09-26T24:00:00Z 거부 (Codex P2) 0ms
+     × 달력·시각이 틀린 updatedAt 2026-09-26T10:60Z 거부 (Codex P2) 0ms
+     × 달력·시각이 틀린 updatedAt 2026-09-26T10:00:61Z 거부 (Codex P2) 0ms
+     × 구멍 난(sparse) 섹션 배열 거부 (Codex P2) 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  6 failed | 42 passed (48)
+## Codex 반영 GREEN
+ Test Files  9 passed (9)
+      Tests  132 passed (132)

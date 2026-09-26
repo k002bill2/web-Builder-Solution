@@ -93,6 +93,26 @@ describe("validatePageDoc — 거부", () => {
     expect(issuesOf(raw((d) => (d.projectId = "p".repeat(LIMITS.id + 1))))).toContain("$.projectId");
   });
 
+  it.each(["2026-99-99T99:99Z", "2026-02-30T10:00Z", "2026-09-26T24:00:00Z", "2026-09-26T10:60Z", "2026-09-26T10:00:61Z"])(
+    "달력·시각이 틀린 updatedAt %s 거부 (Codex P2)",
+    (updatedAt) => {
+      expect(issuesOf(raw((d) => (d.updatedAt = updatedAt)))).toContain("$.updatedAt");
+    },
+  );
+
+  it("윤년 2월 29일·오프셋 시각은 통과", () => {
+    expect(validatePageDoc(raw((d) => (d.updatedAt = "2028-02-29T23:59:59.999+09:00"))).ok).toBe(true);
+  });
+
+  it("구멍 난(sparse) 섹션 배열 거부 (Codex P2)", () => {
+    const input = raw((d) => {
+      const sparse = new Array(d.sections.length + 1);
+      d.sections.forEach((s: unknown, i: number) => (sparse[i < 2 ? i : i + 1] = s));
+      d.sections = sparse;
+    });
+    expect(issuesOf(input)).toContain("$.sections[2]");
+  });
+
   it("instanceId 중복 · 빈 id", () => {
     expect(issuesOf(raw((d) => (d.sections[3].instanceId = d.sections[2].instanceId)))).toContain("$.sections[3].instanceId");
     expect(issuesOf(raw((d) => (d.sections[3].instanceId = "")))).toContain("$.sections[3].instanceId");

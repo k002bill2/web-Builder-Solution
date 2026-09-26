@@ -62,7 +62,7 @@ dist/assets/CompareBoardPage-CAfMaTlM.js                27.69 kB │ gzip:  9.26
 dist/assets/profileDraft-Br8J_M9G.js                    27.83 kB │ gzip:  9.87 kB
 dist/assets/index-wJLOqBWL.js                          270.38 kB │ gzip: 86.69 kB
 
-✓ built in 205ms
+✓ built in 224ms
 [bundle] 공통 JS (gzip, 참고): 89.06KB
   - assets/index-wJLOqBWL.js 85.78KB
   - assets/react-DB-4Zxce.js 3.28KB

@@ -97,6 +97,7 @@
 - 문서 제목: `CompareBoardPage`가 설정한 "비교 보드 · Design Studio"가 `/profile*`에서도 남는다(기존 동작, 다른 페이지는 제목을 안 바꿈) — 범위 밖, 별건.
 - 브라우저 캡처 이미지 부재(7절).
 - (FIX 12.4) `ProfilePage` P-AC-01 플레이크: lazy 라우트 전환 중 `h1()`이 "비교 보드" h1을 잡음(3회 중 1회). 대기 조건을 이름("디자인 프로필")으로 좁히는 수정은 별건.
+- (FIX2 12.9) `CompareBoardLineage` P-AC-11 플레이크: 전체 실행 부하 시 "v1 확정됨" `findBy` 대기 초과(3회 중 1회, 단독 통과). 같은 종류 — 수정은 별건.
 - 목록 순서 = 계열 생성 순(SPEC 미지정, a1과 같음). 시각 표기는 렌더 시점 기준이라 자동 갱신 없음.
 
 ## 11. 커밋
@@ -154,3 +155,53 @@
 ### 12.8 커밋
 - `c1fe009` fix — 비교 쌍 · 없는 버전 안내 · F-1~F-5
 - 이 REPORT 12절 · `logs/fix-*` 커밋(해시는 최종 응답)
+
+### 12.9 FIX2 (N1) — 없는 버전 안내를 상시 "프로필 알림" 영역으로 (브리프 `docs/06-handoff/FIX2-2A04a2_DEVELOPER_BRIEF.md`, base `51a56ee`)
+- 결론: 없는 `?v=` 안내 문장을 상시 DOM의 `<p role="status" aria-label="프로필 알림">`(`useProfileDetail` `status`/`key` 경로)으로 내고, 보이는 `Callout`의 `<div role="status">` 래퍼를 제거(A-9 정적 Callout). F-6·F-7 GREEN, 전체 599/599 **3회 연속** 통과, `/compare`·`/catalog` 첫 화면 증가 **0**. Codex P2 1건 반영(같은 문장 값 사이 이동도 다시 알림).
+
+#### 변경 파일 (app/)
+- `src/features/profile/useProfileDetail.ts` — `announce(text)` 추가(`useCallback`, deps 없음): `setStatus(s => ({ text, key: s.key + 1 }))`. 되돌리기와 같은 `status` 경로를 쓴다.
+- `src/pages/ProfilePage.tsx` — `missing = missingVersionText(...) | null` 계산, `useEffect([requested, missing, announce])`에서 `missing`이 있을 때만 `announce`(`requested`는 Codex P2 반영 — 문장이 같은 두 값 사이 이동도 알림). 래퍼 없는 `<Callout tone="info" title={missing} />`.
+- `src/pages/ProfilePage.test.tsx` — F-6·F-7 추가, F-5 조회 대상 변경, `act` import.
+
+#### 수용 기준 → 테스트 (`ProfilePage.test.tsx` › FIX-2A04a2 …)
+| AC | 테스트 이름 |
+|---|---|
+| F-6 | `F-6 ?v=7 → '프로필 알림' 영역 = '요청한 v7이 없어 최신 v3을 보여 줍니다', 보이는 Callout 유지 · Callout 쪽 role=status 없음` (페이지 전체 `role=status`가 "프로필 알림" 하나뿐인지도 확인) |
+| F-7 | `F-7 같은 화면에서 ?v=7 → ?v=9 알림 문장 갱신, ?v=1(있는 버전) → 안내 Callout 사라짐` (`router.navigate`로 같은 `ProfileDetail` 유지 · 알림 영역 요소 동일성 확인) · `F-7 ?v=abc → ?v=0(같은 문장) → 알림을 다시 낸다(key 갱신으로 새 문장 노드)` (Codex P2 회귀 테스트) |
+
+#### RED 로그 · 고친 기존 줄
+- RED `logs/fix2-red.txt` — **4 failed / 24 passed**. 실패 4건 모두 "프로필 알림" 영역 텍스트가 비어 있음(`Received:` 공백): F-5 `?v=7` · F-5 `?v=abc` · F-6 · F-7(첫 `announced` 단계). F-7 뒤쪽 `?v=1` → Callout 사라짐은 기존 동작이 이미 맞는 회귀 가드.
+- GREEN `logs/fix2-green-page.txt` — ProfilePage 28/28.
+- Codex P2 RED `logs/fix2-red-codex.txt` — `?v=abc → ?v=0` 1 failed(새 문장 노드 없음) → GREEN `logs/fix2-green-codex.txt` ProfilePage 29/29.
+- 고친 기존 줄(F-5, 조회 대상만 변경): `statusWith` 헬퍼(옛 233행) → `announced`·`missingCallout`(234–235행). 같은 문장이 Callout 제목과 알림 영역 두 곳에 생겨 `getByText`가 다중 일치로 실패하기 때문. F-5 `?v=7` 단언(276–277행), F-5 `?v=abc` 단언(284–285행). 테스트 이름은 그대로.
+
+#### 검증 4종 (`logs/fix2-verify-*.txt`)
+- typecheck exit 0 · lint exit 0 · build exit 0(번들 검사 포함)
+- test 전체 3회 연속(Codex 반영 후 재실행): `fix2-verify-test-1/2/3.txt` 모두 **53 files · 599/599 통과**, 실패 0. (반영 전에도 598/598 × 3회 통과)
+- 플레이크 1건(`logs/fix2-verify-test-flake.txt`): 반영 후 첫 3회 묶음의 3회차에서 `CompareBoardLineage` "프로필 쪽에서 v2를 만든 뒤 … (v3)"가 "v1 확정됨" `findBy` 대기 초과(1 failed / 598). 이번 diff가 닿지 않는 `/compare` 화면, 단독 실행 4/4 통과 → 부하 시 타이밍(5절·12.4와 같은 종류). 이후 전체 3회를 새로 돌려 **3회 연속 599/599** 확보(위 `1/2/3`). 10절 남은 위험에 같은 종류로 추가.
+
+#### 번들 전/후 (gzip KB, 첫 화면 / 진입 직후, `logs/fix2-baseline-build.txt` → `logs/fix2-verify-build.txt`)
+| 라우트 | 전 `51a56ee` | 후 | 차이 |
+|---|---|---|---|
+| 공통 | 88.93 | 88.93 | 0 |
+| `/catalog` | 98.98 / 101.36 | 98.98 / 101.36 | **0** / 0 |
+| 상세 `/references/:id` | 96.31 / 98.70 | 96.31 / 98.69 | 0 / −0.01 |
+| `/compare` | 99.16 / 123.32 | 99.16 / 123.32 | **0** / 0 (반영 전 빌드는 해시 문자열 차이로 99.17이었음 — 원본 크기 동일) |
+| `/profile` | 98.80 / 117.44 | **98.84** / 117.48 | +0.04 / +0.04 (`ProfilePage` 청크 6.84 → 6.90) · 여유 1.16 |
+| `/studio` 자리표시 | 89.39 / 91.77 | 89.38 / 91.77 | −0.01 / 0 |
+- 새 의존성 0 · 아이콘 추가 0 · `design/` 수정 0.
+
+#### Codex 리뷰 (1회, `review --wait --scope branch --base 51a56ee`, `logs/fix2-codex-review.txt`)
+- 대상 커밋 `5edaae5`. **[P2] 1건**: 알림 effect가 문장 문자열에만 묶여 `?v=abc` → `?v=0`처럼 같은 문장을 내는 값 사이 이동은 다시 알리지 않음 — 브리프 "요청 `?v=` 값이 바뀔 때마다 한 번" 위반.
+- 반영(`234ab93`): deps에 `requested` 추가 + 회귀 테스트(위 F-7 두 번째). 브리프 "Codex 리뷰 1회"에 따라 재리뷰는 하지 않음.
+
+#### 설계 메모
+1. 알림 영역은 지우지 않는다: `?v=7` → `?v=1`로 가면 Callout은 사라지지만 sr-only 영역에는 마지막 문장("요청한 v7이…")이 남는다. 되돌리기 문장이 이동 뒤에도 남는 현행 동작과 같다. 지우는 코드를 넣으면 되돌리기 문장과 순서가 얽히므로 넣지 않음.
+2. 알림 시점: effect deps가 `requested`·문장 문자열이라 같은 `?v=` 값 재렌더에서는 반복하지 않고, 값이 바뀌면(`?v=7`→`?v=9`, `?v=abc`→`?v=0`, 다녀온 뒤 다시 `?v=7`) 한 번 알린다. 되돌리기 뒤에는 URL이 비워져 `missing`이 `null`이므로 되돌리기 문장을 덮지 않는다.
+3. N2·N3 — 현행 유지, 코드 변경 없음.
+
+#### 커밋
+- `5edaae5` fix — 알림 영역 경로 · Callout 래퍼 제거 · F-6·F-7 · F-5 조회 대상
+- `234ab93` fix — Codex P2: 같은 문장 값 사이 이동도 알림 + 회귀 테스트
+- 이 REPORT 12.9 · `logs/fix2-*` 커밋(해시는 최종 응답)

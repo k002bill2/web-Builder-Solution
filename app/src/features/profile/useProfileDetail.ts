@@ -139,11 +139,13 @@ export function useProfileDetail(profileId: string) {
 
   /** "프로필 알림" 영역에 문장을 낸다(같은 문장이어도 key가 바뀌어 다시 읽힌다) */
   const announce = useCallback((text: string) => setStatus((s) => ({ text, key: s.key + 1 })), []);
+  /** 그 문장이 아직 알림 영역에 있을 때만 지운다 — 뒤에 낸 다른 알림은 두고 */
+  const withdraw = useCallback((text: string) => setStatus((s) => (s.text === text ? { text: "", key: s.key } : s)), []);
 
   const state: ProfileDetailState = !loaded
     ? { status: "loading" }
     : !loaded.series || !loaded.range
       ? { status: "not-found" }
       : { status: "ready", series: loaded.series, range: loaded.range, engine: loaded.engine, sources: loaded.sources };
-  return { state, status, alert, reverting, revert, announce, saving, saveAlert, save };
+  return { state, status, alert, reverting, revert, announce, withdraw, saving, saveAlert, save };
 }

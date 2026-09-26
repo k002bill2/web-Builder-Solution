@@ -43,3 +43,10 @@ SPEC 6.3은 `ReferenceCard.test`·`keyboardA11y.test`만 예고했지만, 6.3 �
   - 6개 담고 펼침: 360·390·1280에서 목록(320 폭)이 필 위, 가로 넘침 0
   - 스크린샷은 `Page.captureScreenshot` CDP 타임아웃으로 2회 실패 → 시각 캡처 없음(수치만)
 - 목업 차이: **C-05** 펼침 버튼 글자 "비교 보드 N / 6"(목업 "비교 N / 6" — 6.3 밖 `trayBoard.test` 계약), 빼기 목록·알림 말풍선·0개 유지·Esc/포커스 이탈 닫기 추가 · **C-12** "/ 6" opacity → `inverse-label-alternative` · 대표색 점은 <640에서 숨김(390 필 폭 확보)
+
+## 묶음 3 — 마감 점검 수정 (`cfd91f8`)
+- 발견: 제목 `h3`의 `line-clamp-2`가 `overflow: hidden`을 걸어, 링크(`h3` 왼쪽 끝과 간격 0)의 바깥 포커스 링(2중 링 box-shadow)을 잘랐다. [Q] 1280: `h3` overflow hidden, 링크 왼쪽 간격 0. 기존 D08 테스트는 클래스만 봐서 못 잡음.
+- RED: `ReferenceCard.test` "보더 없음…제목 2줄" — 링크에 `line-clamp-2`, `h3`에 clamp·overflow 클래스 없음 → 1 failed.
+- GREEN: `line-clamp-2`를 `h3` → `<Link>`로 이동(요소 자신의 바깥 shadow는 자기 overflow에 잘리지 않음).
+- [Q] 1280·390: 키보드 포커스(`:focus-visible` true) 시 `h3` overflow visible, 링크 조상 중 overflow ≠ visible 0개, 긴 제목 2줄 잘림 유지, 가로 넘침 0. 서버 종료.
+- fresh: test 472 passed · typecheck 0 · lint 0 · build 0. 번들 `/catalog` 98.91 / 101.30 · `/compare` 99.24 / 121.66 (`CatalogPage` 6828, 공통 `index` 86191 = 기준 +6, 해시 변동)

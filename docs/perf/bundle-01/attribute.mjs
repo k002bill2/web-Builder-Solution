@@ -10,7 +10,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 
-const [dist, chunk, topArg, ...flags] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const flags = args.filter((a) => a.startsWith("--"));
+const [dist, chunk, topArg] = args.filter((a) => !a.startsWith("--"));
 const top = Number(topArg ?? 20);
 const code = readFileSync(join(dist, chunk), "utf8");
 const map = JSON.parse(readFileSync(join(dist, `${chunk}.map`), "utf8"));

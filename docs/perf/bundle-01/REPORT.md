@@ -57,9 +57,11 @@
 | 16 | `src/components/ds/Button.tsx` | index | 1.53 | 0.48 | 0.44 |
 | 17 | `src/domain/compareBoard.ts` | index | 1.43 | 0.45 | 0.49 |
 | 18 | `react-router/…/lib/dom/ssr/single-fetch.js` | index | 1.43 | 0.45 | 0.50 |
-| 19 | (unmapped: rolldown 런타임·청크 래퍼·import/export 문) | index | 1.30 | 0.41 | 0.60 |
-| 20 | `src/main.tsx` | index | 1.22 | 0.39 | 0.41 |
-| — | 나머지 35개 | | 13.96 | 4.47 | |
+| 19 | `src/main.tsx` | index | 1.22 | 0.39 | 0.41 |
+| 20 | `src/app/routes.tsx` | index | 1.16 | 0.37 | 0.33 |
+| — | 나머지 모듈 33개 + unmapped 2행 | | 14.11 | 4.52 | |
+
+- unmapped(rolldown 런타임·청크 래퍼·import/export 문): `index` raw 1.30 · 비례 0.41 · 한계 0.60, `jsx-runtime` raw 0.58 · 비례 0.22 · 한계 0.25. 소스 모듈이 아니므로 순위에서 뺐다.
 
 묶음: react-dom+scheduler 66.51 · react-router 11.87(그중 `dom/ssr/*` 2.09, 한계 합 2.06) · 앱 소스 7.46 · react 3.11 · unmapped 0.63.
 재현: `node docs/perf/bundle-01/attribute.mjs <dist> assets/index-*.js 20`
@@ -144,7 +146,7 @@
 
 | # | 후보 | `/compare` 첫 화면 효과 | 다른 라우트 | 위험 | 변경 범위 | 근거 |
 |---|---|---|---|---|---|---|
-| **C1** | **`/compare` 첫 화면에 안 쓰는 인라인 아이콘 5개를 파일로** (bookmark·bookmark-fill·search·arrow-right·chevron-left) | **−0.92** (98.38) | 공통 −0.92 → 모든 라우트 −0.92 | 낮음~중: 바이트가 없어지는 게 아니라 SVG 요청으로 옮겨진다. `/catalog`는 SVG 4개 1.52KB(gzip) 요청 추가, 상세는 3개 1.27KB. `/compare`·자리표시는 추가 요청 없음(해당 아이콘을 그리지 않음 — grep L2). CSS mask라 첫 페인트 뒤 아이콘이 늦게 뜰 수 있음 | `vite.config.ts` 배열 1줄 + 주석 | e15 L1 |
+| **C1** | **`/compare` 첫 화면에 안 쓰는 인라인 아이콘 5개를 파일로** (bookmark·bookmark-fill·search·arrow-right·chevron-left) | **−0.92** (98.38) | 공통 −0.92 → 모든 라우트 −0.92 | 낮음~중: 바이트가 없어지는 게 아니라 SVG 요청으로 옮겨진다. `/catalog`는 SVG 요청 최대 4개·최대 1.52KB(gzip) 추가(bookmark·bookmark-fill은 동시에 안 그려짐), 상세는 3개 1.27KB. `/compare`·자리표시는 추가 요청 없음(해당 아이콘을 그리지 않음 — grep L2). CSS mask라 첫 페인트 뒤 아이콘이 늦게 뜰 수 있음 | `vite.config.ts` 배열 1줄 + 주석 | e15 L1 |
 | C2 | 아이콘 전부 파일로 (`assetsInlineLimit: 0` 또는 배열에 plus·close 추가) | −1.28 (98.02) | 모든 라우트 −1.28 | 중: 셸 헤더 `plus`까지 요청으로 → 모든 라우트 첫 화면 아이콘 지연. ADR-004 개정 1의 "예산 우회 방지" 취지와 충돌 소지가 C1보다 큼 | 1줄 | e10 L1 |
 | C3 | React 분리 해소 (엔진의 react 의존 제거 = `CustomStyleFields`를 페이지 청크로 되돌림) | **약 +0.8 악화**(추정 약 100.1, **예산 초과**) | 다른 라우트 −0.50 (여유 회복) | 높음(`/compare`): V2-1 이동의 총효과 약 −1.40(순효과 −0.83(99.98 → 99.15, V2-1 기록 L2) + 분리 비용 0.57)을 잃고 분리 비용 0.57만 회수 | 파일 3~4개 | e6b·e9b L1 + V2-1 기록 L2 → 순효과 L3 |
 | C4 | 청크 설정(`chunkOptimization`·`codeSplitting`·`strictExecutionOrder`·`preserveEntrySignatures`) | 0 또는 악화(+0.29~+5.6) | 같음 | — | — | e1~e5·e13·e14 L1 — **후보 아님** |
@@ -158,7 +160,7 @@
 ### 권고안 R1 — C1 (부분 아이콘 파일화)
 - 효과: `/compare` **99.30 → 98.38**, 여유 **0.70 → 1.62KB** (L1). `/catalog` 여유 0.93 → 1.85, 상세 3.90 → 4.81, 자리표시 9.96 → 10.88.
 - 이유: 설정 한 줄, 코드·테스트 동작 변경 없음, `/compare`에는 추가 요청이 없다(해당 아이콘을 그리지 않음). 기존 `NOT_INLINED_ICONS` 규칙(vite.config.ts 주석, ADR-004)의 연장이다.
-- 주의: 옮긴 바이트는 `/catalog`(4개 1.52KB)·상세(3개 1.27KB)의 SVG 요청이 된다. JS 예산 밖으로 옮기는 것이므로 REPORT/ADR 비고에 요청 수 증가를 함께 적을 것. QA에서 카탈로그 카드 북마크·검색 아이콘이 늦게 뜨는지 확인 필요(브라우저 확인은 이번에 안 함).
+- 주의: 옮긴 바이트는 `/catalog`(최대 4개·1.52KB)·상세(3개 1.27KB)의 SVG 요청이 된다. JS 예산 밖으로 옮기는 것이므로 REPORT/ADR 비고에 요청 수 증가를 함께 적을 것. QA에서 카탈로그 카드 북마크·검색 아이콘이 늦게 뜨는지 확인 필요(브라우저 확인은 이번에 안 함).
 - 작업 크기: **2~4턴** (배열 수정 + 주석 갱신 + 필요 시 가드 테스트 1개 + 검증 4종·번들 실측).
 
 ### 대안
@@ -181,6 +183,7 @@
   - `git status --porcelain -- app` → **빈 출력** (L1, 추적 안 되는 파일까지 없음)
 - 커밋: `docs/perf/bundle-01/`만 (REPORT.md · attribute.mjs · measure.mjs). push·원격 없음, `design/` 변경 없음.
 - 실험 산출물(빌드·로그)은 `/tmp/b01/`에만 있다(커밋 안 함).
+- Codex 검증(`codex-companion review --scope branch --base 8981da3`) 1라운드: REPORT 결함 없음. 스크립트 P2 2건(`attribute.mjs` `--json` 위치 인자 파싱, `measure.mjs` manifest 키 누락 시 조용한 과소 측정) 반영 — 재라운드는 하지 않음(P2, 수정 범위가 인자 파싱·가드 2곳).
 
 ## 7. 남은 위험·확인 필요
 
@@ -190,4 +193,5 @@
 | U-2 | C1의 아이콘 지연 표시(UX)는 브라우저로 확인 안 함 | 확인 필요 |
 | U-3 | C6(react-router ssr 모듈)·C8(B-5 추가) 효과는 귀속 수치 기반 추정, 실험 안 함 | L3 |
 | U-4 | e12 minify 옵션은 적용 여부부터 미확인 | 미검증 |
+| U-6 | R1의 아이콘 5개는 **현재 사용처 기준**으로 골랐다. V2-4(비교 보드 v2)가 그중 하나라도 `/compare` 첫 화면에 그리면 `/compare`에도 SVG 요청이 생긴다 — V2-4 착수 때 사용처 재확인 | 중 |
 | U-5 | 병렬 작업 `v2-3-detail`이 공통 청크를 바꾸면 이 수치는 main 병합 뒤 다시 재야 한다 | 중 |

@@ -29,6 +29,9 @@ const entryKey = Object.keys(manifest).find((key) => manifest[key].isEntry);
 const common = staticClosure(entryKey);
 const cells = [`공통 ${sumKb(common).toFixed(2)} (${[...common].map((f) => `${f.replace(/^assets\/|-[\w-]{8}\.js$/g, "")} ${gzipKb(f).toFixed(2)}`).join(" + ")})`];
 for (const [route, page] of Object.entries(ROUTE_PAGES)) {
+  // 페이지·진입 직후 키가 manifest에 없으면 합계가 조용히 작아지므로 실패로 본다 (check-bundle-size.mjs와 같은 가드)
+  const missing = [page, ...EAGER_DYNAMIC, ...(ROUTE_EAGER_DYNAMIC[route] ?? [])].filter((key) => !manifest[key]);
+  if (missing.length > 0) throw new Error(`${route}: manifest에 ${missing.join(", ")}가 없습니다`);
   const routeFiles = staticClosure(page, new Set(common));
   const eager = [...EAGER_DYNAMIC, ...(ROUTE_EAGER_DYNAMIC[route] ?? [])];
   const eagerFiles = eager.reduce((files, key) => staticClosure(key, files), new Set(routeFiles));

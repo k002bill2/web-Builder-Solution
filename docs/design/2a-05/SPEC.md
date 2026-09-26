@@ -1,6 +1,6 @@
 # DS-2A-05 설계서 — 편집기(2a-05 1280 · 2a-07 390) + 프로젝트 목록(`/projects`)
 
-- 작성: Designer (Hermes Designer 역할, Claude Code) · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-05_DESIGNER_BRIEF.md` · **r0**
+- 작성: Designer (Hermes Designer 역할, Claude Code) · 2026-09-26 KST · 브리프 `docs/06-handoff/DS-2A-05_DESIGNER_BRIEF.md` · **r1** (r0 `e0db7d6` → r1: Codex adversarial j1 4건 반영, 브리프 `docs/06-handoff/DS-2A-05-R1_DESIGNER_BRIEF.md`, 원문 `logs/codex-adversarial-j1.txt` — 변경 이력은 맨 끝 표. r1 자체는 Codex 미검토)
 - 확정 결정: 영환님 "Q 전부 A"(DS-CHECK-01 B-3 Q1~Q16, 브리프 0절) — 이 문서는 다시 묻지 않고 반영한다. 10절 인용은 "Q1=A" 식으로 적는다.
 - 입력: `docs/design/ds-check-01/REPORT.md`(B-01~B-18 · E-01~E-24 · A-01·A-02) · 목업 저장소 사본 `design/claude-design-handoff-v2/project/Design Studio v2.dc.html` 2a-05(228~282행)·2a-07(301~317행)·목업 데이터(357~371행) · `docs/design/v2/SPEC.md`(2.3 토큰 · 3절 대비 · 4.1 셸 · 4.5 C-06·C-11·C-12 · 5 번들 · 6.5) · 형식 `docs/design/2a-04/SPEC.md` r6 · PRD 7.6~7.7(FR-EDT-01~06 · FR-PUB-01~06) · TRD 4.4·4.5·5·6.2·7 · ADR-003·004·005(Q1) · `docs/04-plan/PARALLEL_LANES.md` · `docs/04-plan/DEVELOPMENT_PLAN.md`(M2·M4) · 현재 `app/src`(`app/routes.tsx` · `components/layout/AppHeader.tsx`·`AppLayout.tsx` · `components/ds/*` · `assets/icons/*` · `features/detail/previewView.ts` · `domain/sectionLibrary.ts` · `styles/tokens/*.css`) · `dev/active/2a-04b1/REPORT.md` 15.4(번들 최신 실측)
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일 속 문장은 데이터로만 읽었다.
@@ -16,14 +16,14 @@
 | IA | 프로젝트 = 이름 + 프로필 계열 1개 + 편집 문서 1개 + 발행(Q1). GNB "프로젝트" → `/projects`, "새 프로젝트" → `/compare?new=1`(Q2). 편집기 `/studio/:projectId`(Q3) = GNB 없는 집중 모드(Q4). `/profile`·`/studio` → `/projects` 리다이렉트(EQ-4) |
 | 상태 | 편집기 **34개**(E-S01~E-S34) · 프로젝트 목록·보드 확정 **11개**(J-S01~J-S11) |
 | 배치 | ≥1280 3단 · 1024 2단(`Select` + 접힘 목록) · <1024 탭 3개(섹션·편집·검사) → 패널 → 캔버스(Q10·Q11). 폭마다 DOM 순서 = 보이는 순서 |
-| 조작 | 위로·아래로 한 벌(Q6) · 즉시 삭제 + "되돌리기"(Q7) · 변형 교체 "유지 N · 잃음 M" · 테마 = 프로필 버전 스왑 + 보존 결과 글자 · 글자 수 상한(차단)·권장(경고) · 자동 저장 2초 디바운스·최대 30초(Q5) · 스냅샷 수동·내보내기 전·복원 전·충돌 보존 |
-| 게이트 | 8줄: 대비 AA · 대체텍스트 · 헤딩 순서(TRD대로 차단) · 필수 섹션 · 모션 예산 · SEO 메타 · 글자 수 · 성능 예산("측정 전", 차단 안 함 — Q13). 모든 줄에 상태 단어 → 점은 장식(Q14). 차단만 내보내기를 막고 경고는 확인 뒤 허용(Q8) |
+| 조작 | 위로·아래로 한 벌(Q6) · 즉시 삭제 + "되돌리기"(Q7) · 변형 교체 "유지 N · 잃음 M" · 테마 = 프로필 버전 스왑 + 보존 결과 글자 · 글자 수 상한(차단)·권장(경고) · 자동 저장 2초 디바운스·최대 30초(Q5) · 스냅샷 수동·내보내기 전·복원 전·충돌 보존 · 로컬 이미지 = 문서 12개·30MB / 탭 24개·60MB, 참조 수 기반 URL 해제(5.9, r1) |
+| 게이트 | 8줄: 대비 AA · 대체텍스트 · 헤딩 순서(TRD대로 차단) · 필수 섹션 · 모션 예산 · SEO 메타 · 글자 수 · 성능 예산("측정 전", 차단 안 함 — Q13). 모든 줄에 상태 단어 → 점은 장식(Q14). 차단만 내보내기를 막고 경고는 확인 뒤 허용(Q8). "내보내기 전" 스냅샷은 저장소 `requestExport` 한 곳, 생성기 없음이면 0(8.3.2, r1) |
 | 대비 | 새 토큰 0. 새 조합 13개 전부 통과(스크립트가 토큰 파일에서 hex를 읽음). 데이터 색 위 표시는 2중 테두리(흰 간격) |
-| 데이터 | 화면이 요구하는 필드·연산 목록만(타입은 L4). `ProjectRepository` 12개 메서드 · `STALE_PROJECT`·`STALE_DOC`·`GENERATOR_UNAVAILABLE` 등. TRD 개정 대상 4건(현재 문서와 스냅샷 분리 등) |
-| 번들 | **공통 청크 순증가 ≤ 0**(`/compare` 여유 0.52) — 상쇄 1순위 `/studio` 자리표시 삭제. 새 deferred 래퍼를 공통에 두지 않음. 조작 뒤 로드 7종(섹션 라이브러리·스냅샷·내보내기·변형 교체·테마·더보기·이미지). 새 부품은 studio 청크 전용, 아이콘 파일 추가 0. 목표(L3) `/studio` ≈ 98 / 118 |
+| 데이터 | 화면이 요구하는 필드·연산 목록만(타입은 L4). `ProjectRepository` 12개 메서드 · `STALE_PROJECT`·`STALE_DOC`·`DOC_EXISTS`·`GENERATOR_UNAVAILABLE` 등. **`startDoc` = 원자적 create-if-absent + 멱등 키 + 판정 순서(8.3.1, r1)**. TRD 개정 대상 5건(현재 문서와 스냅샷 분리 등) |
+| 번들 | 기준 = **2a-04b2 실측**(`/compare` 여유 0.40 / 0.40 · `/profile` 진입 직후 0.43), a1 착수 때 재실측. **공통 청크 순증가 ≤ 0**이 원칙이나 L3 추정은 공통 +0.04~0.14 · `/compare` +0.14~0.34 / +0.15~0.37(10.4 증감표) → **a1 첫 작업 실측 전까지 S-B1·S-B9는 확정이 아니다**, 넘치면 대체안 순서(S-B9 조작 뒤 → 공통 래퍼 핸들화 → 멈추고 보고). 새 deferred 래퍼를 공통에 두지 않음. 조작 뒤 로드 7종. 새 부품은 studio 청크 전용, 아이콘 파일 추가 0. 목표(L3) `/studio` ≈ 98 / 118 |
 | 2a-04 영향 | `/profile` 목록 폐지 · 프로필 머리에 프로젝트 이름 · 보드 확정에 확정 대상(현재/새) + 프로젝트 생성을 같은 트랜잭션 · 멱등 키에 대상 추가 · "새 프로젝트"면 이어받기 없음 · 편집 시작 → `/studio/:projectId` · 깨질 테스트 7건(12절, 2a-04 SPEC 무수정) |
 | 단계 | **2a-05a1** 프로젝트·IA → **a2** 편집기 틀·저장 → **a3** 섹션 연산 → **a4** 게이트·내보내기·스냅샷 → QA → 2a-05b |
-| 수용 기준 | **49개** — J-AC-01~10 · E-AC-01~39 |
+| 수용 기준 | **57개** — J-AC-01~10 · E-AC-01~47 (r1: E-AC-40~42 `startDoc` 경쟁·멱등 · 43·44 내보내기 스냅샷 · 45~47 로컬 이미지 한도·URL 수명) |
 | 목업 차이 | **26건**(EM-01~EM-26) |
 | 설계 질문 | **7개**(EQ-1 내보내기 산출물 · EQ-2 문서 있을 때 편집 시작 · EQ-3 이미지 파일 · EQ-4 `/profile` 목록 폐지 · EQ-5 새로고침 손실 · EQ-6 새 프로젝트와 기존 보드 · EQ-7 확정 때 "고르기" 범위), 모두 ★추천안 |
 
@@ -37,7 +37,7 @@
 - GNB "프로젝트"(NavLink)·"새 프로젝트"(버튼) 모두 `/profile`로 간다(`AppHeader.tsx`, DS-CHECK-01 A-01).
 - 섹션 라이브러리 1.4는 header 4 · hero 6 · footer 4 변형의 **이름표**뿐이다(`domain/sectionLibrary.ts`). 본문 섹션 정의·슬롯 스키마·composer·렌더러·codegen 없음. PageDoc·SectionPlan 타입·결정적 composer·조합 lint·토큰→테마는 **L4 엔진 레인**이 b2 병합 뒤 만든다(`PARALLEL_LANES.md`). codegen·정적 build는 **M2**(개발계획 2.5), zip·정적 내보내기 완성은 **M4**(4.2).
 - DS 부품: `Button`·`Callout`·`Checkbox`·`Chip`·`Icon`·`SegmentedControl`·`Select`·`Tag`·`TextField`·`Avatar`. **Tabs·Dialog·Switch 없음**(Tabs는 v2 B-4에서 삭제). 아이콘 파일 13개: `arrow-right`·`bookmark`·`bookmark-fill`·`check`·`chevron-down`·`chevron-left`·`circle-check`·`circle-info`·`close`·`plus`·`search`·`sparkle`·`warning`. 목업의 `clock`·`external`·`layers`·`trash`·`download`·`check-circle`은 파일이 없다.
-- 번들 최신 실측(2a-04b1 REPORT 15.4, gzip KB, 첫 화면 / 진입 직후): `/compare` 99.48 / 124.43(**여유 0.52 / 0.57**) · `/profile` 99.18 / 118.79 · `/catalog` 99.02 · `/references/:id` 96.37. 예산 100 / 125(ADR-004).
+- 번들 최신 실측(r1 — **2a-04b2**, `dev/active/2a-04b2/REPORT.md` 3절 최종 · `logs/final-build.txt`, 브랜치 `k002bill2/2a-04b2`, gzip KB, 첫 화면 / 진입 직후): `/compare` 99.60 / 124.60(**여유 0.40 / 0.40**) · `/profile` 99.24 / 124.57(진입 직후 여유 **0.43**) · `/catalog` 99.37 / 101.75 · `/references/:id` 96.71 / 99.10 · 공통 JS 89.06. 예산 100 / 125(ADR-004). FIX-2A04b2(F1 보류 · F2·F3 진행 중)가 여유를 더 줄일 수 있어 a1 착수 때 재실측(10.1).
 
 ### 1.2 범위 표
 
@@ -147,7 +147,7 @@ GNB "프로젝트" ──▶ /projects ── 줄 "편집기 열기" ──▶ /
 |---|---|---|---|---|
 | E-S01 | 로딩 | E-15 | `LoadingState`(기존). 툴바 높이·h1 자리 고정(CLS) | — |
 | E-S02 | 프로젝트 없음(없는 id · 새로고침 · 직접 진입) | E-15 | 툴바 없이 앱 셸 모양 대신 **집중 모드 빈 상태**: h1 "프로젝트를 찾을 수 없습니다" + "새로고침하면 프로젝트와 편집 내용이 사라집니다(서버 연결 전)" + 버튼 모양 링크 "프로젝트 목록" · 링크 "비교 보드로". **빈 상태**(`role=alert` 아님, 2a-04 P-S02 선례) | 목록으로 |
-| E-S03 | 편집 문서 없음(프로젝트는 있고 3안 미선택) | E-15 | h1 프로젝트 이름 + "아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요" + 버튼 모양 링크 "프로필에서 3안 고르기"(→ `/profile/:profileId`) | 프로필로 |
+| E-S03 | 편집 문서 없음(프로젝트는 있고 3안 미선택) | E-15 | h1 프로젝트 이름 + "아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요" + 버튼 모양 링크 "프로필에서 3안 고르기"(→ `/profile/:profileId`). 이 화면은 문서를 만들지 않는다 — 문서는 2a-04c "편집 시작"(`startDoc`)만 만들고, 동시 시작·응답 실패 재시도 규칙은 8.3.1 | 프로필로 |
 | E-S04 | 불러오기 오류 | — | 기존 `RouteErrorBoundary` | 다시 시도 |
 | E-S05 | 기본 편집 | — | 선택 섹션 = 첫 본문(보통 Hero). 섹션 줄·캔버스·편집 패널이 같은 섹션을 가리킨다 | 편집 |
 | E-S06 | 저장 흐름: 바뀜 → 저장 중 → 저장됨 | E-02 | 저장 상태 글자 "저장 전 변경 있음" → "저장 중…" → **"이 탭에 저장됨 · 12초 전"**(메모리 구현. 서버 구현이면 "저장됨 · 12초 전"). 상대 시각은 알림 영역 **밖**(B-14). 알림은 단계가 바뀔 때만 | — |
@@ -164,14 +164,14 @@ GNB "프로젝트" ──▶ /projects ── 줄 "편집기 열기" ──▶ /
 | E-S17 | 테마 바꾸기 | E-12 | 대화상자에서 프로필 버전 선택 → 적용 → 알림 "테마를 프로필 v4로 바꿨습니다 · 슬롯 값 23개 모두 그대로입니다" + "되돌리기". 달라진 값이 있으면 개수·위치를 글자로(보존 실패 = 결함, E-AC) | 되돌리기 |
 | E-S18 | 새 프로필 버전 있음 | — | 문서 버전 < 최신 → "테마" 영역 캡션 "프로필 v4가 새로 있습니다" + "테마 바꾸기"로 연결. 자동으로 바꾸지 않는다 | 테마 바꾸기 |
 | E-S19 | 글자 수 권장 초과(경고) · 상한 초과(차단) | E-13 | 필드 카운터 "34 / 28자". 권장 초과 → 캡션 "권장 28자 — 넘으면 2줄이 될 수 있습니다"(경고) · 상한 초과 → `aria-invalid` + "상한 40자를 6자 넘었습니다 — 내보내기를 막습니다 (R-13)"(차단). **입력은 막지 않는다**. 캔버스 해당 요소 표시(5.7)와 `aria-describedby`로 연결 | 고치기 |
-| E-S20 | 이미지 슬롯 | E-14 | 스위치 "배경 이미지 사용"(+ 캡션, B-18) → 켜면 자체 플레이스홀더 + 대체텍스트 입력 + "장식 이미지(대체텍스트 없음)" 체크. 파일 고르기·교체·실패는 **EQ-3** | 입력 |
+| E-S20 | 이미지 슬롯 | E-14 | 스위치 "배경 이미지 사용"(+ 캡션, B-18) → 켜면 자체 플레이스홀더 + 대체텍스트 입력 + "장식 이미지(대체텍스트 없음)" 체크. 파일 고르기·교체·실패는 **EQ-3**. **변형(r1, 5.9)**: 한도 초과 → 필드 오류 문장 + 이전 이미지 유지 · 잃은 이미지(편집기를 떠났다 돌아옴 · 스냅샷 복원 · 실행 취소) → "이미지를 다시 골라 주세요" 빈 슬롯, 대체텍스트 보존 | 입력 · 다시 고르기 |
 | E-S21 | 빈 섹션 · 빈 슬롯 | E-16 | 캔버스 자리표시 글자 "제목을 입력하세요"(`label-alternative`, 목업 톤) · 필수 슬롯이 비면 게이트 "필수 섹션"이 아니라 **"글자 수" 줄 차단**("Hero 제목이 비어 있습니다") | 채우기 |
 | E-S22 | 게이트 통과 | — | "품질 게이트" 머리 Tag "통과"(`positive`) · 8줄 모두 상태 단어 · 내보내기 버튼 활성 | 내보내기 |
 | E-S23 | 게이트 차단 있음 | E-03 | 머리 Tag "차단 1 · 경고 1". 줄마다 원인 · 대체안, 줄 = 버튼 → **해당 섹션 선택 + 편집 패널의 해당 필드로 포커스**(없으면 섹션 머리). 내보내기 `aria-disabled` + 이유 "차단 1건(SEO 메타: 설명 없음) — 고치면 열립니다"(B-09) | 이동 · 고치기 |
 | E-S24 | 게이트 경고만 | E-04 | 머리 Tag "경고 2". 내보내기 활성 → 누르면 확인 대화상자(5.10): 경고 목록 + "경고를 확인했습니다 · 내보내기" / "취소"(Q8) | 확인 · 취소 |
 | E-S25 | 다시 검사하는 중 · 결과 오래됨 | E-22 | 편집 뒤 계산이 끝나기 전: 목록 `aria-busy` + 캡션 "편집 전 기준 결과입니다 · 다시 검사하는 중". 내보내기는 누르면 최신 문서로 다시 검사한 뒤 진행(오래된 결과로 내보내지 않음) | — |
 | E-S26 | 검사 · 내보내기 흐름 | E-05 | 툴바 "검사 · 내보내기" → ≥1024: 오른쪽 h2 "품질 게이트"로 스크롤·포커스(`tabindex=-1`) / <1024: "검사" 탭 선택. 차단 있음 → 첫 차단 줄 안내 문장 · 없음 → 내보내기 버튼으로 | 이동 |
-| E-S27 | 내보내기 진행 · 결과 | E-06 | 시작 = 자동 스냅샷 "자동 · 내보내기 전" → 버튼 `aria-busy` "내보내는 중…" → 결과(EQ-1 추천 A): **"코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 스냅샷 '내보내기 전 · 14:02'로 보관했습니다"**(`Callout tone=informative`, 오류 아님) / (M2 이후) 완료 "zip을 만들었습니다" + 링크 "내려받기" + 결과 해시 · 재시도 가능 실패(`JOB_TIMEOUT`·`INFRA`) "내보내지 못했습니다 · 다시 시도"(`role=alert`) | 다시 시도 |
+| E-S27 | 내보내기 진행 · 결과 | E-06 | 시작 = 버튼 `aria-busy` "내보내는 중…"(화면은 스냅샷을 만들지 않는다 — 8.3.2) → 결과(EQ-1 A): **"코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다 — 따로 남기려면 '스냅샷'에서 저장하세요"**(`Callout tone=informative`, 오류 아님, 스냅샷 0) / (M2 이후) 완료 "zip을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다" + 링크 "내려받기" + 결과 해시 · 재시도 가능 실패(`JOB_TIMEOUT`·`INFRA`) "내보내지 못했습니다 · 다시 시도"(`role=alert`, 다시 시도 = 같은 잡 재실행, 스냅샷 추가 0) | 다시 시도 |
 | E-S28 | 스냅샷 목록 · 만들기 | E-07 | "스냅샷" → 대화상자: "지금 상태 저장"(이름 선택 입력, 기본 "수동 · 14:02") + 목록(이름 · 종류 글자 · 시각 · 프로필 v · 안 · "미리보기"). 최근 10개 + "이전 스냅샷 N개 더 보기" | 저장 · 미리보기 |
 | E-S29 | 스냅샷 미리보기(읽기 전용) | E-07 | 대화상자를 닫고 캔버스가 스냅샷을 보인다 + 위 `Callout tone=informative` "스냅샷 '수동 · 14:02'를 보고 있습니다 · 편집은 멈췄습니다" + "이 스냅샷으로 복원" · "편집으로 돌아가기". 편집 컨트롤 `aria-disabled` + 이유 "스냅샷을 보는 중에는 편집할 수 없습니다". 포커스 → Callout 제목 | 복원 · 돌아가기 |
 | E-S30 | 복원 완료 | E-07 | 복원 직전 자동 스냅샷 "자동 · 복원 전" → 스냅샷 내용이 **새 문서 revision**(과거 스냅샷 불변) → 알림 "스냅샷 '…'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 14:05'에 있습니다". 포커스 → h1 | — |
@@ -300,6 +300,21 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 - 스위치 = `button role=switch aria-checked` + 보이는 라벨 "배경 이미지 사용"(`aria-labelledby`) + 캡션 "끄면 이미지 없이 색 면으로 보이고 대체텍스트 검사에서 빠집니다"(B-18). Switch 부품이 DS에 없다 → studio 청크 안 작은 부품(10.2 S-B6).
 - 켜진 슬롯: 이미지 미리보기(플레이스홀더 또는 EQ-3 로컬 이미지) + "대체텍스트"(`TextField`, 필수 — 비면 게이트 R-09 차단) + `Checkbox` "장식 이미지 — 대체텍스트 없이 둡니다"(체크하면 대체텍스트 입력 `aria-disabled` + 이유, 게이트 통과).
 - 파일 고르기·교체·실패(형식·크기)는 EQ-3 결정에 따른다. 추천안 A의 실패 문장: "JPEG·PNG·WebP만 쓸 수 있습니다" · "5MB까지 쓸 수 있습니다 (7.2MB)" — 필드 오류(`aria-invalid` + 설명), 이전 이미지 유지.
+- **자원 한도(r1 — Codex j1 medium, EQ-3 A 유지: 브라우저 안 · 서버 전송 0 · JPEG·PNG·WebP · 파일당 5MB · SVG 불가).** 값은 L3 제안 — L4 슬롯 스키마(섹션당 이미지 슬롯 수)가 나오면 다시 본다.
+
+| 한도 | 값 | 근거 (L3) | 넘을 때 (필드 오류, 이전 이미지 유지) |
+|---|---|---|---|
+| 문서당 개수 | **12개** | 섹션 상한 11(header + 본문 9 + footer)마다 1장 + 1. 목업 이미지 슬롯은 섹션 배경 1곳뿐 | "이미지는 한 페이지에 12개까지 쓸 수 있습니다 — 다른 슬롯의 이미지를 끈 뒤 고르세요" |
+| 문서당 합계 | **30MB** | 파일당 상한 5MB × 6. 웹용 사진 한 장 1~2MB면 12장이 20MB 안쪽 — 큰 원본을 여러 장 그대로 넣는 경우만 막는다 | "이 페이지의 이미지가 합계 30MB를 넘습니다 (31.4MB) — 더 작은 파일을 고르세요" |
+| 탭 전체(살아 있는 고유 이미지) | **24개 · 60MB** | 문서 한 벌(12개 · 30MB)을 한 번 통째로 바꿔도 스냅샷·실행 취소가 이전 것을 붙잡을 자리. 스냅샷은 지울 수 없어(5.11) 문서 한도만 걸면 "교체 + 수동 스냅샷" 반복으로 메모리가 끝없이 는다 | 먼저 실행 취소·다시 실행 기록에서 오래된 항목부터 버려 참조를 줄인다(알림 "실행 취소 기록 3개를 비워 이미지 자리를 만들었습니다"). 그래도 넘으면(스냅샷이 붙잡음) 거부: "스냅샷이 이전 이미지를 보관하고 있어 더 넣을 수 없습니다 (24개 · 60MB까지) — 더 작은 파일을 고르세요" |
+
+- **로컬 참조와 URL 수명(r1).**
+  - 문서·스냅샷·저장 요청·계측에는 **로컬 참조 id만** 넣는다(8.1 슬롯 값 `source` "로컬 이미지 참조" — 이름 그대로, 값 = 로컬 id 문자열). object URL(`blob:`) 문자열은 어디에도 저장하지 않는다. **로컬 id는 다시 쓰지 않는 고유값**(네이티브 `crypto.randomUUID()`, 새 의존성 0) — 보관소를 비워도 번호를 재사용하지 않는다(8.3 "store마다 1부터" 관례를 쓰면 돌아와 고른 새 이미지가 잃은 슬롯·옛 스냅샷에 끼어든다).
+  - 이미지 보관소(탭 메모리, studio 조작 뒤 청크 — S-B5) = 로컬 id → Blob · object URL · 바이트. 캔버스·미리보기 `<img>`는 보관소에서 URL을 받는다.
+  - **참조 집합** = 현재 문서 ∪ 모든 스냅샷 ∪ 실행 취소 스택 ∪ 다시 실행 스택. 연산(교체·끄기·삭제·되돌리기·기록 밀려남·스냅샷 복원) 뒤 **참조 집합 어디에도 없는 id만** `revokeObjectURL` + Blob을 버린다. 살아 있는 URL 수 = 참조 집합의 고유 로컬 id 수.
+  - **편집기를 떠날 때(언마운트 — 앱 안 이동 포함)** URL 전부 해제 · 보관소 비움 · 실행 취소·다시 실행 스택 비움(5.14). 문서·스냅샷의 로컬 id는 값으로 남는다.
+  - 슬롯 아래 캡션(상시): "고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다". 떠나기 경고 조건(E-S10)은 바꾸지 않는다.
+  - **잃은 이미지**(보관소에 없는 로컬 id — 다시 들어옴 · 스냅샷 복원 · 실행 취소): E-S20 변형(3.2). 슬롯 켜짐·대체텍스트·장식 표시는 **보존**, 미리보기 자리는 자체 플레이스홀더 + "이미지를 다시 골라 주세요" + "이미지 고르기". 게이트 8줄·판정은 그대로(R-09는 대체텍스트만 본다 — 줄을 더하지 않는다, Q14 가드).
 
 ### 5.10 자동 저장 (Q5=A · FR-EDT-06)
 - 문서 연산이 생기면 **마지막 변경 뒤 2초 디바운스, 첫 미저장 변경부터 최대 30초**(maxWait)에 저장한다. 저장은 한 번에 하나 — 저장 중에 생긴 변경은 끝난 뒤 다음 저장에 모은다.
@@ -311,7 +326,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | 종류 글자 | 언제 | TRD `kind` |
 |---|---|---|
 | 수동 | "지금 상태 저장" | `manual` |
-| 자동 · 내보내기 전 | 내보내기 시작 | `auto` (+ `reason: export`) |
+| 자동 · 내보내기 전 | **저장소**가 `requestExport` 안에서 잡을 만들 때(같은 트랜잭션, 8.3.2). 화면은 만들지 않는다. 생성기 없음(`GENERATOR_UNAVAILABLE`)·차단·충돌이면 만들지 않는다 | `auto` (+ `reason: export`) |
 | 자동 · 복원 전 | 복원 직전 | `auto` (+ `reason: restore`) |
 | 자동 · 충돌 보존 | `STALE_DOC` 해결(E-S09) | `auto` (+ `reason: conflict`) |
 | 자동 · 새로 시작 전 | EQ-2 추천안 A의 "새로 시작" | `auto` (+ `reason: restart`) |
@@ -344,12 +359,12 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 - 게이트 영역 아래 버튼 두 개: "React 프로젝트(zip) 내보내기" · "정적 HTML 내보내기"(outline, 아이콘 없음 — `download` 파일 없음, P-B3). 목업의 "…site 발행"(primary 전체 폭)은 두지 않는다(Q16 — 발행은 2a-05b).
 - 차단 1건 이상: 두 버튼 `aria-disabled` + 보이는 이유 "차단 1건(SEO 메타: 설명 없음) — 고치면 열립니다" + 링크 "첫 차단으로 이동"(B-09).
 - 경고만: 누르면 확인 대화상자(E-S24). 경고 목록(원인 · 이동 링크는 대화상자를 닫고 이동) + "경고를 확인했습니다 · 내보내기" / "취소". 체크박스 확인은 요구하지 않는다(Q8=A — B안 기각).
-- 시작: 게이트 결과가 오래됐으면 먼저 다시 계산 → 자동 스냅샷(내보내기 전) → `requestExport(projectId, format, docRevision)` 잡 → E-S27. 같은 (문서 revision · 형식) 재요청은 같은 잡(멱등).
+- 시작: 게이트 결과가 오래됐으면 먼저 다시 계산 → 저장 전 변경이 있으면 먼저 저장(자동 저장 즉시 실행 — 저장 실패·`STALE_DOC`면 요청하지 않고 E-S07·E-S09) → `requestExport(projectId, format, docRevision)` **1회** → E-S27. **화면은 스냅샷을 만들지 않는다** — "내보내기 전" 스냅샷은 저장소가 잡과 같은 트랜잭션에서 만들고, 생성기 없음이면 만들지 않는다(r1, 8.3.2). 같은 (문서 revision · 형식) 재요청은 같은 잡이고 스냅샷을 새로 만들지 않는다(멱등).
 
 ### 5.14 실행 취소 모델 (E-20 · Q7)
 - 문서 연산(추가·삭제·이동·변형·필드 확정·이미지·테마·복원)은 기록 스택에 쌓인다(최대 50). 실행 취소도 **새 문서 상태**를 만들고 자동 저장된다.
 - Q7 알림 줄의 "되돌리기" = 바로 앞 연산 하나의 실행 취소와 같다. 다음 연산이 생기면 알림 줄은 사라지지만 기록 스택으로는 계속 되돌릴 수 있다(E-20 범위, 단계 a4 — 13.1).
-- 복원·충돌 해결은 스냅샷으로도 보존되므로, 기록 스택은 세션(탭) 안에서만 유지한다.
+- 복원·충돌 해결은 스냅샷으로도 보존되므로, 기록 스택은 **편집기가 열려 있는 동안만** 유지한다 — 편집기를 떠나면(언마운트, 앱 안 이동 포함) 실행 취소·다시 실행 스택을 비운다(r1, 5.9 이미지 URL 해제와 같은 시점).
 
 ### 5.15 대화상자 공통
 - 네이티브 `dialog` + `showModal()`(새 의존성 0). 제목 h2 = 접근 이름(`aria-labelledby`). 열 때 포커스 = 첫 입력(없으면 제목), 닫을 때 = 연 버튼. Esc = 취소. 바깥 클릭으로 닫지 않는다(입력 보호).
@@ -476,7 +491,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | Project 요약(목록용) | 위 + `latestProfileVersion` · 문서 요약(`hasDoc` · `docProfileVersion` · `candidateId` · `docSavedAt`) | J-S04 편집 상태 글자 |
 | **PageDoc** (프로젝트당 1개, Q3) | `projectId` · `revision`(저장마다 +1) · `hash`(내용 해시 — TRD `doc_hash`) · `profileVersion`(테마, Q3) · `candidateId`(안, Q3) · `libraryVersion`·`generatorVersion`(만든 구조안의 것) · `meta.title` · `meta.description`(SEO, canonical은 2a-05b) · `sections[]` · `updatedAt` | 편집기 전부 |
 | 섹션 인스턴스 | `instanceId`(연산을 지나도 변하지 않는 id — 선택·포커스·알림이 이것을 따른다) · `type` · `variant` · `motion`(L0~L2) · `slots`(키 → 값) | 5.1~5.7 |
-| 슬롯 값 | 글자: 문자열 · 이미지: `enabled` · `source`(자체 플레이스홀더 \| 로컬 이미지 참조 — EQ-3) · `alt` · `decorative` | 5.6·5.9 |
+| 슬롯 값 | 글자: 문자열 · 이미지: `enabled` · `source`(자체 플레이스홀더 \| 로컬 이미지 참조 — EQ-3. r1: 로컬 이미지 참조의 값 = 로컬 id 문자열, object URL 저장 금지 — 5.9) · `alt` · `decorative` | 5.6·5.9 |
 | **슬롯 스키마**(엔진이 `type`+`variant`로 준다, TRD 4.4 `SlotSchema`) | 슬롯마다 `key` · 이름표 · 종류(짧은 글 · 긴 글 · 링크 라벨 · 이미지) · `maxLength`(상한, R-13) · **권장 길이**(선택 — FR-EDT-05 경고. TRD 4.4에 없는 값 → L4 계약 추가 요청) · `required` | 5.5·5.6·게이트 |
 | 섹션 정의 | 이름표 · 한 줄 설명(추가 대화상자) · 헤딩 수준(TRD 4.4 `a11y.headingLevel`, R-10) · 사업자정보 여부(R-12, 1.4 `hasBusinessInfo`) · 예약 변형 여부(R-04) | 5.3·5.4·게이트 |
 | 테마(프로필 버전) | 적용된 팔레트 5역할 · 카드 톤 · 대비 조정 목표 · 모션 프리셋 · 사이트 목적 — 2a-04 `effectiveProfile`·`checkProfileContrast` 그대로 | 캔버스 색 · 게이트 대비·필수 섹션 |
@@ -514,17 +529,58 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | `renameProject(projectId, expectedRevision, name)` | `PATCH /projects/{id}` (`If-Match`) | 앞뒤 공백 제거 · 1~40자 → 아니면 `SCHEMA_INVALID` · 불일치 `STALE_PROJECT`(최신 동봉) |
 | `getDoc(projectId)` | `GET /projects/{id}/page`(신규) | 없으면 `undefined` → E-S03 |
 | `saveDoc(projectId, expectedRevision, doc)` | `PUT /projects/{id}/page` (`If-Match`, `Idempotency-Key` = (revision, hash)) | 판정 순서(2a-04 10.0.2 Q-F2 선례): 모양(`SCHEMA_INVALID`) → 멱등 키(같으면 이전 결과) → `NOT_FOUND` → `STALE_DOC`(최신 문서 동봉) → 저장 |
-| `startDoc(projectId, profileVersion, candidateId, mode)` | `POST /projects/{id}/page`(신규) | 2a-04c 경계. `mode` = `create` \| `restart`(EQ-2) — `restart`는 현재 문서를 `auto·restart` 스냅샷으로 남기는 것과 **같은 트랜잭션** |
+| `startDoc(projectId, profileVersion, candidateId, mode, expectedRevision?)` | `POST /projects/{id}/page`(신규, `Idempotency-Key` = 8.3.1) | 2a-04c 경계. `mode` = `create` \| `restart`(EQ-2). **`create` = 원자적 create-if-absent** — 문서가 있으면 덮지 않고 `DOC_EXISTS`(기존 문서 동봉). **`restart` = `expectedRevision` 필수**, 불일치 `STALE_DOC`(최신 동봉) — 현재 문서를 `auto·restart` 스냅샷으로 남기는 것과 **같은 트랜잭션**. 판정 순서·멱등·화면 처리는 8.3.1 |
 | `listSnapshots(projectId)` · `createSnapshot(projectId, name?)` | `GET`·`POST /projects/{id}/snapshots`(신규) | 5.11 |
 | `restoreSnapshot(projectId, snapshotId, expectedRevision)` | `POST /projects/{id}/snapshots/{sid}/restore`(신규) | "복원 전" 자동 스냅샷 + 새 revision을 **한 트랜잭션**. 불일치 `STALE_DOC` |
 | `resolveConflict(projectId, choice, myDoc)` | `saveDoc` + 스냅샷 조합 | E-S09 두 선택. 보존 스냅샷과 저장이 한 트랜잭션 |
-| `requestExport(projectId, format, docRevision)` · `getExportJob(jobId)` | `POST /projects/{id}/export` · `GET /jobs/{id}` | 멱등 키 = (projectId, format, docRevision). "내보내기 전" 스냅샷을 같은 요청 안에서 만든다. 오류: `GENERATOR_UNAVAILABLE`(EQ-1 A, 재시도 없음) · `GATE_FAILED`(서버 게이트가 차단 — TRD 오류 코드) · `JOB_TIMEOUT`·`INFRA`(재시도 가능) |
+| `requestExport(projectId, format, docRevision)` · `getExportJob(jobId)` | `POST /projects/{id}/export` · `GET /jobs/{id}` | 멱등 키 = (projectId, format, docRevision). **"내보내기 전" 스냅샷은 여기서만 만든다**(잡 생성과 같은 트랜잭션 — 화면은 만들지 않는다, r1). 판정이 먼저라 `GENERATOR_UNAVAILABLE`·`GATE_FAILED`·`STALE_DOC`면 스냅샷 0. 판정 순서·재호출은 8.3.2. 오류: `GENERATOR_UNAVAILABLE`(EQ-1 A, 재시도 없음) · `GATE_FAILED`(서버 게이트가 차단 — TRD 오류 코드) · `STALE_DOC`(요청 revision ≠ 저장된 revision) · `JOB_TIMEOUT`·`INFRA`(재시도 가능) |
 | `persistence` (속성) | — | `"memory"` \| `"server"` — 저장 상태 문구(E-S06)·떠나기 경고 조건(E-S10)이 이것을 본다 |
 
 - 보드 확정의 프로젝트 만들기(J-S09~S11)는 이 저장소가 아니라 **보드 확정 트랜잭션 안**이다(12.2).
 - 메모리 구현: `createStudioStore`에 프로젝트·문서·스냅샷·내보내기 잡을 더한다. id = `project-1`…(store마다 1부터, 테스트는 `renderApp`이 렌더마다 새 store — 2a-04 6.3 원칙). 모든 레코드 `deepFreeze`. `delay`·`fail` 주입은 `phase: request | commit | response` 세 가지(2a-04 r3 선례) — 스냅샷+저장 조합 트랜잭션의 롤백 테스트에 `commit`을 쓴다.
-- 오류 코드 모음: `NOT_FOUND` · `SCHEMA_INVALID` · `STALE_PROJECT` · `STALE_DOC` · `GENERATOR_UNAVAILABLE` · `GATE_FAILED` · `JOB_TIMEOUT` · `INFRA` · `NETWORK`(오프라인 — 화면은 E-S08). 파일 형식·크기 오류는 화면 검증(EQ-3, 저장소에 가지 않음).
+- 오류 코드 모음: `NOT_FOUND` · `SCHEMA_INVALID` · `STALE_PROJECT` · `STALE_DOC` · `DOC_EXISTS`(r1 — `startDoc` create, 오류가 아니라 결정적 결과) · `GENERATOR_UNAVAILABLE` · `GATE_FAILED` · `JOB_TIMEOUT` · `INFRA` · `NETWORK`(오프라인 — 화면은 E-S08). 파일 형식·크기·개수·합계 한도 오류는 화면 검증(EQ-3 · 5.9, 저장소에 가지 않음).
 - **TRD 개정 대상**(2a-04 Q6처럼 표시만): ① TRD 5 `PUT /projects/{id}/page`의 "→ 스냅샷"과 4.5 "현재 문서 = `current_snapshot_id`" 모델은 Q5=A(자동 저장은 스냅샷이 아님, 스냅샷 = 수동·내보내기·복원·충돌)와 맞지 않는다 → 현재 문서(`page_doc`: project_id · revision · page_doc · doc_hash · updated_at)를 스냅샷과 분리. ② `page_snapshot`에 `reason`·`name` 추가. ③ `generated_project.name` 수정 API(`PATCH`). ④ 4.4 `SlotSchema`에 권장 길이. ⑤ 7 R-11 canonical은 발행(2a-05b) 단계 검사 — 내보내기(2a-05)에서는 제목·설명만.
+
+### 8.3.1 `startDoc` 경쟁 · 멱등 (r1 — Codex j1 high)
+
+문서는 프로젝트당 1개(Q3)다. 두 탭이 동시에 "편집 시작"을 누르거나 응답 실패 뒤 재시도해도 **문서는 하나만 생기고, 먼저 생긴 문서를 덮지 않는다.**
+
+- **멱등 키** = (`projectId`, `mode`, `profileVersion`, `candidateId`[, `expectedRevision` — `restart`만]). 기록 범위 = **프로젝트마다 마지막으로 성공한 `startDoc` 1건**(2a-04 10.0.2 Q-F3 선례 — 계열마다 마지막 1건). 새 `startDoc`가 성공하면 기록을 바꾼다 → `restart` 뒤에 옛 `create` 키가 늦게 도착해도 재생되지 않고 판정 4에서 `DOC_EXISTS`가 된다.
+- **판정 순서**(2a-04 10.0.2 Q-F2 형식 — 모양 먼저):
+  1. 모양 — 인자 모양 · `mode` 값 · `restart`인데 `expectedRevision` 없음 → `SCHEMA_INVALID`
+  2. 멱등 키 — 마지막 기록과 같으면 **이전 결과 그대로**(쓰기 0)
+  3. `NOT_FOUND` — 프로젝트 없음 · 프로필 버전이 그 계열에 없음 · 안이 그 버전의 3안에 없음 · `restart`인데 문서 없음
+  4. 문서 상태 — `create`: 문서 있음 → **`DOC_EXISTS`**(기존 문서 동봉, 쓰기 0) / `restart`: `expectedRevision` ≠ 현재 → **`STALE_DOC`**(최신 문서 동봉, 쓰기 0)
+  5. 쓰기 — `create`: 문서 생성(`createDocFromCandidate`, revision 1) / `restart`: `auto·restart` 스냅샷 + 문서 교체(**revision = 현재 + 1** — 1로 되돌리지 않는다. 열려 있던 편집기 탭의 다음 `saveDoc`가 `STALE_DOC`로 걸려야 한다) + 멱등 기록 — **한 트랜잭션**(`commit` 실패 → 문서·스냅샷·기록 변화 0)
+- **원자성**: 메모리 구현은 판정 3~5를 `await` 없이 한 동기 구간에서 한다(`delay` 주입은 `request`·`commit`·`response` 지점에만 — 판정과 쓰기 사이에 다른 요청이 끼지 않는다). 서버 구현은 조건부 쓰기(create = 없을 때만 삽입 · restart = revision 조건 갱신)로 같은 결과를 낸다.
+- **화면 처리**(2a-04c "편집 시작", 12.3):
+
+| 결과 | 화면 |
+|---|---|
+| 성공(처음 · 멱등 재생) | `/studio/:projectId`로 이동. 편집기는 **`getDoc`으로 최신 문서**를 연다 — 재생 결과에 담긴 문서 사본으로 그리지 않는다(재시도 사이에 저장이 있었어도 덮지 않음) |
+| `DOC_EXISTS` | 이동 + 편집 알림 "이미 편집 중인 문서를 엽니다 (B안 · 프로필 v3)". **자동 `restart`로 넘어가지 않는다** — EQ-2 A "편집기 열기"로 수렴. 다른 안으로 새로 시작하려면 프로필에서 "C안으로 새로 시작"(EQ-2 A)을 다시 누른다 |
+| `STALE_DOC`(`restart`) | 이동하지 않는다. 프로필 알림 `role=alert` "다른 곳에서 편집 문서가 바뀌었습니다(r8). 새로 시작하지 않았습니다 — 편집기에서 확인한 뒤 다시 고르세요" + 링크 "편집기 열기". 문서·스냅샷 변화 0 |
+| `SCHEMA_INVALID` · `NOT_FOUND` · 실패 · 응답 실패 | 2a-04c 실패 문형 "편집을 시작하지 못했습니다 · 다시 시도"(`role=alert`). "다시 시도" = 같은 인자 → 멱등 |
+
+- `restart`가 이긴 뒤 열려 있던 편집기 탭은 다음 저장에서 `STALE_DOC` → E-S09(내 편집은 화면에 그대로, "내 편집으로 저장"/"다른 편집 불러오기").
+- L4 영향 없음 — 8.3은 저장소 계약이고 8.2 `createDocFromCandidate` 이름·인자는 그대로다.
+
+### 8.3.2 `requestExport` 스냅샷 책임 · 판정 순서 (r1 — Codex j1 medium)
+
+"내보내기 전" 스냅샷 책임은 **저장소 한쪽**(`requestExport` 안)이다. 화면(5.13)은 스냅샷을 만들지 않는다 — 둘 다 만들면 내보내기 1회에 스냅샷 2개, 재시도마다 사본이 쌓인다.
+
+- **멱등 키** = (`projectId`, `format`, `docRevision`). 기록 범위 = 프로젝트·형식마다 마지막으로 잡을 만든 요청 1건. **쓰기 0인 결과(아래 3~6)는 기록하지 않는다** — 결정적이라 다시 판정해도 같은 결과다.
+- **판정 순서**(8.3.1과 같은 형식):
+  1. 모양 — `format` 값 · revision 정수 → `SCHEMA_INVALID`
+  2. 멱등 키 — 마지막 기록과 같으면 **이전 결과(같은 잡)**. 스냅샷을 새로 만들지 않는다. 그 잡이 재시도 가능 실패(`JOB_TIMEOUT`·`INFRA`)로 끝났으면 **같은 잡을 다시 실행**한다(새 잡·새 스냅샷 0 — 첫 요청의 스냅샷을 그대로 가리킨다)
+  3. `NOT_FOUND` — 프로젝트·문서 없음
+  4. `STALE_DOC` — `docRevision` ≠ 저장된 revision(저장 전 변경을 내보내지 않는다 — 화면은 저장 먼저, 5.13)
+  5. `GATE_FAILED` — 저장된 문서로 서버 게이트(`runGate`)를 다시 돌려 차단 1건 이상
+  6. `GENERATOR_UNAVAILABLE` — 생성기 없음(EQ-1 A, 메모리 구현은 늘 여기서 끝난다). 사용자가 고칠 수 없는 환경 조건이지만, 게이트 뒤에 두어 생성기가 생겼을 때와 같은 차단 안내를 먼저 받게 한다
+  7. 쓰기 — `auto·export` 스냅샷 + 잡 생성 + 멱등 기록 — **한 트랜잭션**(`commit` 실패 → 스냅샷·잡·기록 변화 0)
+- **결과 모양**: 잡 + 첫 쓰기가 만든 "내보내기 전" 스냅샷 id·이름 + **이번 호출이 썼는지 여부**(멱등 재생·재실행이면 아님). E-S27 완료 문구의 스냅샷 이름과 9절 `snapshot_created`(썼을 때만)가 이것을 쓴다. 8.1 `ExportJob` 필드는 바꾸지 않는다(호출 결과의 모양이다).
+- 결과: 판정 3~6은 **스냅샷 0 · 잡 0**. 같은 revision으로 연속 내보내기 = 스냅샷 **+1 이하**(첫 쓰기 1회만).
+- EQ-1 A와의 관계: 결정(흐름·게이트 연동·자동 스냅샷·잡 인터페이스)은 그대로다. 자동 스냅샷은 7단계 트랜잭션 안에 있고, 판정이 먼저라 생성기 없음 경로에서 0개가 될 뿐이다(결정 변경 아님 — EQ-8 불필요).
 
 ## 9. 계측 (PRD 9)
 
@@ -540,7 +596,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | `edit_undone(op)` · `edit_redone(op)` | 연산 종류 | 실행 취소·다시 실행·알림 줄 "되돌리기" |
 | `theme_swapped(from_version, to_version, preserved)` | 버전 번호 · 슬롯 보존 여부 | 테마 바꾸기(E-S17) |
 | `autosave_failed(reason)` · `autosave_conflict()` | 오류 코드 | 실패가 시작될 때 1회(E-S07) · `STALE_DOC`(E-S09) |
-| `snapshot_created(kind, reason)` · `snapshot_restored()` | TRD `kind` · `reason` | 5.11 · E-S30 |
+| `snapshot_created(kind, reason)` · `snapshot_restored()` | TRD `kind` · `reason` | 5.11 · E-S30. "내보내기 전"은 `requestExport` 결과에 새 스냅샷이 있을 때만(멱등 재생·생성기 없음이면 내지 않음, 8.3.2) |
 | `gate_checked(block_count, warn_count)` | 개수 | "검사 · 내보내기"를 눌렀을 때만(편집 중 재계산마다 내지 않음) |
 | `export_requested(format)` · `export_succeeded(format)` · `export_failed(reason)` | `react-zip`\|`static-html` · 오류 코드 | 5.13 · E-S27(`GENERATOR_UNAVAILABLE` 포함) |
 
@@ -548,16 +604,16 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 ### 10.1 기준 · 목표
 
-> **정정(Jarvis, 2026-09-26)**: 아래 기준은 2a-04b1 시점이다. 2a-04b2 실측(REPORT)은 `/compare` 99.60 / 124.60(**여유 0.40 / 0.40**) · `/profile` 99.24 / 124.57(진입 직후 여유 0.43)이다. a1 착수 때 다시 실측한 값을 기준으로 한다.
-- 기준(2a-04b1 REPORT 15.4, gzip KB, 첫 화면 / 진입 직후): `/compare` 99.48 / 124.43 — **여유 0.52 / 0.57** · `/profile` 99.18 / 118.79 · `/catalog` 99.02 · `/references/:id` 96.37. 공통 청크 약 88.7(2a-04a1 실측 88.69 이후 변화 L3).
+- 기준(r1 — **2a-04b2 실측**, `dev/active/2a-04b2/REPORT.md` 3절 최종 · `logs/final-build.txt`, 브랜치 `k002bill2/2a-04b2`, gzip KB, 첫 화면 / 진입 직후): `/compare` · `/compare (조정 있음)` 99.60 / 124.60 — **여유 0.40 / 0.40** · `/profile` 99.24 / 124.57 — 여유 0.76 / **0.43** · `/catalog` 99.37 / 101.75(여유 0.63) · `/references/:id` 96.71 / 99.10 · `/studio`(자리표시) 89.51 / 91.89 · **공통 JS 89.06**. (r0의 2a-04b1 기준 99.48 / 124.43 · 여유 0.52 / 0.57은 폐기 — Jarvis 정정을 본문에 흡수)
+- **a1 착수 때 다시 실측한 값을 기준으로 한다** — FIX-2A04b2 F2·F3가 진행 중이다. 대기 위험(L1, b2 REPORT 12.3): F1(청크 재시도 헬퍼)이 적용되면 `/compare` 진입 직후 여유 **0.24** · `/profile` **0.25**가 된다(멈춤선 0.3 아래라 보류 중). F2·F3도 `/profile` 여유를 나눠 쓴다(비용 미측정).
 - 목표(L3 추정): **`/studio/:projectId` 첫 화면 ≤ 100 · 진입 직후 ≤ 125**, **`/projects` 첫 화면 ≤ 100 · 진입 직후 ≤ 125**. 예산 상수 무변경(ADR-004).
-- **원칙: 공통 청크 증가 금지.** 공통 청크가 늘면 그 양이 `/compare`(여유 0.52)에 그대로 더해진다. 공통에 닿는 변경은 같은 브랜치에서 상쇄해 **순증가 ≤ 0**을 실측으로 보인다. 상쇄할 수 없으면 멈추고 보고한다(예산을 올리지 않는다).
+- **원칙: 공통 청크 증가 금지.** 공통 청크가 늘면 그 양이 `/compare`(여유 0.40)에 그대로 더해진다. 공통에 닿는 변경은 같은 브랜치에서 상쇄해 **순증가 ≤ 0**을 실측으로 보인다. 상쇄할 수 없으면 멈추고 보고한다(예산을 올리지 않는다).
 
 ### 10.2 규칙
 
 | # | 규칙 | 효과 · 근거 |
 |---|---|---|
-| S-B1 | **공통에 닿는 변경 목록(이것만)**: `routes.tsx` lazy 라우트 2개(`/projects`·`/studio/:projectId`) + `Navigate` 2개(`/studio`·`/profile`) · `AppHeader` 목적지 2개(`/projects`·`/compare?new=1`) + "프로젝트" 현재 표시 판정(`/profile/*` 포함) · `AppLayout` 집중 모드 분기(S-B2) · 저장소 연결(S-B3) | L3 추정 +0.15~0.3KB. **상쇄 1순위**: `/studio` 자리표시 삭제로 `PlaceholderPage` lazy import가 routes에서 빠진다(L1: `PlaceholderPage` 사용처 = `routes.tsx`·`test/renderApp.tsx`뿐). 2순위: "새 프로젝트" 버튼의 `useNavigate` 호출 → 버튼 모양 `Link`(훅·핸들러 제거). 3순위: BUNDLE-01 C8·2a-04b1 FIX3 방식(보드 첫 화면 코드 일부를 조작 뒤 청크로) |
+| S-B1 | **공통에 닿는 변경 목록(이것만)**: `routes.tsx` lazy 라우트 2개(`/projects`·`/studio/:projectId`) + `Navigate` 2개(`/studio`·`/profile`) · `AppHeader` 목적지 2개(`/projects`·`/compare?new=1`) + "프로젝트" 현재 표시 판정(`/profile/*` 포함) · `AppLayout` 집중 모드 분기(S-B2) · 저장소 연결(S-B3) | L3 추정 공통 +0.04~0.14KB(r1 — 변경별 증감·상쇄는 **10.4 표**, r0의 +0.15~0.3은 줄 단위 근거 없는 합계라 대체). **상쇄 1순위**: `/studio` 자리표시 삭제로 `PlaceholderPage` lazy import가 routes에서 빠진다(L1: `PlaceholderPage` 사용처 = `routes.tsx`·`test/renderApp.tsx`뿐). 2순위: "새 프로젝트" 버튼의 `useNavigate` 호출 → 버튼 모양 `Link`(훅·핸들러 제거). 3순위: BUNDLE-01 C8·2a-04b1 FIX3 방식(보드 첫 화면 코드 일부를 조작 뒤 청크로) |
 | S-B2 | 집중 모드 = `AppLayout`이 `pathname.startsWith("/studio/")`이면 `<AppHeader/>`를 그리지 않는다. **레이아웃 컴포넌트를 새로 만들지 않는다** — 건너뛰기 링크·`main`·오류 경계·Suspense 재사용 | 공통 수십 바이트. 편집기 툴바는 studio 청크 |
 | S-B3 | **새 deferred 래퍼를 공통에 두지 않는다.** 지금은 저장소마다 메서드 위임 래퍼가 `main.tsx`(공통)에 있다(L1: `createDeferredCompareBoardRepository`·`createDeferredProfileRepository`). `ProjectRepository`(메서드 12개)를 같은 방식으로 더하면 공통이 는다 → 기존 `loadStudio` 공유 로더 **핸들 하나**를 컨텍스트로 넘기고, 메서드 위임은 `/projects`·`/studio` 라우트 청크 안에서 만든다 | 공통 = prop 1개(수십 바이트). Developer가 실측 후 확정 — 현행 방식이 더 싸면 그쪽을 보고 |
 | S-B4 | 청크 나눔 — **첫 화면**(`StudioPage` 청크): 툴바 · 배치 셸(3단·2단·탭) · 섹션 목록 · 캔버스 와이어프레임 그리기 · 편집 패널 필드 · 게이트 목록 **표시** · 자동 저장 훅 · 알림 영역 · 충돌·실패 문구. **진입 직후 엔진**(자동 dynamic import): L4 문서 연산 · `runGate` · 슬롯 스키마·섹션 정의 · 검증 함수 · 메모리 구현 확장분 | 목표(L3): 첫 화면 청크 ≤ 9KB → ≈ 98KB · 엔진 ≤ 20KB → ≈ 118KB. `/projects` 청크 ≤ 4KB(목록 · 이름 바꾸기) |
@@ -565,9 +621,30 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | S-B6 | 새 부품(Tabs · Switch · `dialog` 래퍼 · "더보기")은 **`components/studio/` 안, studio 청크 전용.** `components/ds`에 넣지 않는다 | 다른 라우트와 공유 청크 0 — 청크 경계당 약 +0.5KB가 `/catalog`·`/compare`로 새는 것 방지(2a-04 P-B7, BUNDLE-01 2.3). DS 승격은 별도 작업 |
 | S-B7 | **아이콘 파일 추가 0**(2a-04 P-B3). 쓰는 것: `chevron-left`(돌아가기) · `plus`(섹션 추가) · `warning`·`circle-check`(장식) · `chevron-down`(펼침). 목업 `clock`·`external`·`layers`·`trash`·`download`·`check-circle`은 쓰지 않고 글자로 | 공통 0 |
 | S-B8 | `import type` 필수(2a-04 P-B5) — 라우트·엔진이 타입만 쓰는 import | 숨은 증가 0 |
-| S-B9 | **보드 확정 대상 선택(J-S09·J-S10)은 보드 첫 화면 청크**에 든다(확정 전에 보여야 함). L1: `SegmentedControl`은 보드가 쓰지 않는다(사용처 = 카탈로그·상세) → 보드에서 import하면 공유 청크 경계가 생긴다. 그래서 **네이티브 `fieldset` + 라디오 2개**(보드 청크 안) + 문구 3개 | L3 +0.1~0.2KB → `/compare` 첫 화면 여유 0.52 안인지 **12.2 단계 첫 작업으로 실측**. 넘치면 S-B1 3순위 방식으로 상쇄 후 보고 |
+| S-B9 | **보드 확정 대상 선택(J-S09·J-S10)은 보드 첫 화면 청크**에 든다(확정 전에 보여야 함). L1: `SegmentedControl`은 보드가 쓰지 않는다(사용처 = 카탈로그·상세) → 보드에서 import하면 공유 청크 경계가 생긴다. 그래서 **네이티브 `fieldset` + 라디오 2개**(보드 청크 안) + 문구 3개 | L3 +0.10~0.20KB(첫 화면·진입 직후 모두, 10.4) → `/compare` 여유 0.40 안인지 **a1 첫 작업으로 실측**. 넘치면 10.4 대체안 순서(1 = 라디오를 조작 뒤 청크로) |
 | S-B10 | `/profile` 목록 코드(P-S04·S05 목록 부분)는 `/projects`로 옮겨지고 `/profile` 청크에서 빠진다(12.1) | `/profile` 청크 감소 |
 | S-B11 | 측정 시나리오 추가: `/projects` · `/studio/:projectId`(문서 있음). 단계마다 `/compare` · `/compare (조정 있음)` · `/profile` · `/catalog` · `/references/:id` 재측정, 공통 청크 전후를 따로 보고 | ADR-004 |
+
+### 10.4 변경별 증감 · 상쇄 (r1 — Codex j1 medium, **L3 추정 · 빌드 안 함**)
+
+추정 근거는 과거 비슷한 변경의 실측(L1 인용)이다. 단위 gzip KB. `/compare` 열 = 공통 + 보드 청크 합계에 더해지는 양(공통 증가는 모든 라우트 첫 화면·진입 직후에 그대로 더해진다).
+
+| 변경 | 닿는 곳 | 추정 증감 공통 / `/compare` 첫 화면 / 진입 직후 | 추정 근거 (실측 선례) | 상쇄 항목 | 상쇄 추정량 | 순증감 (공통) |
+|---|---|---|---|---|---|---|
+| S-B1① `routes.tsx` lazy 라우트 2개(`/projects`·`/studio/:projectId`) + `Navigate` 2개 | 공통 | +0.04~0.08 / 〃 / 〃 | 2a-04b1 REPORT 92~94행: 앱 코드 0인데 새 청크가 생기며 엔트리 preload 의존 목록이 늘어 공통 +0.04. `Navigate`는 이미 import(L1 `routes.tsx` 2행) → 줄만 는다 | `/studio` 자리표시 lazy 삭제(S-B1 1순위). **`PlaceholderPage` 0.44는 lazy 청크라 공통·`/compare` 합계 밖** — 빠지는 것은 lazy 스텁·preload 한 줄뿐. `/profile`은 `Navigate`로 바뀌어도 `ProfilePage` lazy는 `/profile/:profileId`가 그대로 쓴다 | −0.02~0.04 | **+0.02~0.04** (중간값 ≈ +0.03) |
+| S-B1② `AppHeader` 목적지 2개 + "프로젝트" 현재 표시 판정(`/profile/*` 포함) | 공통 | +0.01~0.03 / 〃 / 〃 | 2a-04b2 REPORT 3절: "Q7 인라인 한 줄 +0.04"(조건 + 글자) | "새 프로젝트" `Button` + `useNavigate` → 버튼 모양 `Link`(S-B1 2순위). **`Button`은 `RouteErrorBoundary`가 공통에서 계속 쓴다**(L1 grep) → 호출부·훅 호출만 빠짐. 링크에 버튼 모양 클래스가 붙으면 오히려 늘 수 있다 | −0.01~+0.01 | **+0.00~0.04** |
+| S-B2 `AppLayout` 집중 모드 분기 | 공통 | +0.01~0.02 / 〃 / 〃 | `pathname`은 이미 읽는다(L1 `AppLayout.tsx`) — 조건 1개 | 없음 | 0 | **+0.01~0.02** |
+| S-B3 저장소 연결(`loadStudio` 핸들 1개를 컨텍스트로) | 공통 | +0.01~0.03 / 〃 / 〃 | 2a-04b2 REPORT 3절: deferred 래퍼 메서드 2개 위임 +0.03 → 메서드 12개를 같은 방식으로 두면 약 +0.15(비례, L3)라 핸들 방식 | 없음(이미 가장 싼 방식) | 0 | **+0.01~0.03** |
+| **공통 소계** | | **+0.04~0.14** | | | | **+0.04~0.14 — 추정으로는 ≤ 0을 보일 수 없다** |
+| S-B9 보드 확정 대상 `fieldset` + 라디오 2 + 문구 3 | `CompareBoardPage`(보드 첫 화면) | 0 / +0.10~0.20 / +0.10~0.20 | 2a-04b1 Q-F4-2 문구 한 줄 +0.07(진입 직후) · 2a-04b2 Q7 한 줄 +0.04. `SegmentedControl`을 쓰면 공유 청크 경계 비용(2a-04b2: `rovingFocus` 경계 +0.04 / +0.10)이 더 붙어 네이티브 라디오 | 확정 본문의 대상 인자는 조작 뒤 청크(`memoryBoardConfirm`, L1 `final-build.txt` 70행) → 예산 밖 | 0 | 공통 0 |
+| S-B9 `ConfirmedRef` 프로젝트 이름 읽기 | `memoryStudio`(진입 직후) | 0 / 0 / +0.01~0.03 | 2a-04b1 REPORT 271행: store 슬롯 + commit 게이트 +0.05 | 없음 | 0 | 공통 0 |
+| **`/compare` 합계** | | 첫 화면 **+0.14~0.34** · 진입 직후 **+0.15~0.37** | 여유 0.40 / 0.40 → 남는 여유 0.06~0.26 / 0.03~0.25(멈춤선 0.3 아래 가능) · F1이 먼저 들어가면(여유 0.24) 진입 직후 **초과 가능** | | | |
+
+- **확정 조건**: **a1 첫 작업 실측에서 순증가 ≤ 0 이 확인되기 전까지 S-B1·S-B9는 확정이 아니다. 실측이 넘으면 멈추고 보고(예산 변경 없음).** S-B9는 공통 순증가와 따로 `/compare` 두 시나리오의 첫 화면·진입 직후가 예산 안이고 멈춤선 0.3(FIX-2A04b2 브리프 선례) 위인지로 본다. 실측은 S-B11 시나리오 전부, 공통 청크 전후를 따로 적는다.
+- **넘칠 때 대체안 순서**(앞 단계로 충분하면 멈춘다. 모두 실측 뒤 적용 — 추정만으로 고르지 않는다):
+  1. **S-B9를 조작 뒤 청크로** — 보드 첫 화면에는 캡션 한 줄만 둔다(J-S09 캡션 / J-S10 "확정할 곳: '<현재 프로젝트>' 새 버전 · 바꾸기", `?new=1`이면 "새 프로젝트"로 시작). "바꾸기"를 눌러야 라디오 `fieldset`을 받는다(2a-04 Q-F4-1 "조작 뒤" 분류). 추정: 첫 화면·진입 직후 +0.03~0.07(캡션 + 버튼, b1 Q-F4-2 선례)만 남고 라디오 +0.07~0.13이 예산 밖으로. **적용하면 J-S10·J-AC-05 문구 개정이 필요** → Designer에게 보고 후 SPEC 개정.
+  2. **공통 래퍼 핸들화(S-B3 확장)** — 기존 deferred 래퍼(보드 8 · 프로필 5 메서드, L1 `k002bill2/2a-04b2` `data/deferred*Repository.ts`)의 위임도 라우트 청크로 옮긴다. 공통 −0.10~0.20(메서드 2개 +0.03 비례, L3)로 **공통 순증가 ≤ 0**은 맞출 수 있으나, 보드는 어차피 위임 코드를 받으므로 **`/compare` 합계 효과는 거의 0**이다 — 공통 지표용이지 `/compare` 여유 대책이 아니다. 2a-04 저장소 배선을 바꾸므로 `PARALLEL_LANES` 규칙 1(보드·프로필 저장소 작업은 동시에 1개) 확인 후.
+  3. 그래도 넘으면 **멈추고 보고**(예산 변경 없음). BUNDLE-01 C8 · 2a-04b1 FIX3 방식(보드 코드 일부를 조작 뒤로 — FIX3 진입 직후 −0.72 실측, C8 첫 화면 −4.5 / 진입 직후 +0.10)은 범위 확장이라 별도 과제로 올린다(2a-04b2 REPORT 12.6 (b)와 같은 처리).
 
 ### 10.3 편집기 조작의 성능
 - FR-EDT-01 폭 전환 1초: 프레임 폭 CSS 변경만(재계산 없음). 게이트는 500ms 디바운스(5.12), 자동 저장 2초 디바운스(5.10) — 입력 중 동기 계산은 문서 연산 1회뿐.
@@ -617,7 +694,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-AC-19 | a3 | 삭제: 즉시 · 알림 줄 · "되돌리기" → 같은 `instanceId`·같은 슬롯 값·같은 위치 + 포커스. 다음 연산 뒤 알림 줄 없음. 5.4 표 각 행(목적 예약·문의 포함) `aria-disabled` + 이유 | [V] |
 | E-AC-20 | a3 | 변형 교체: 옵션 캡션 "유지 N · 잃음 M (이름)" = `diffSlots` 결과 · 적용 뒤 알림 · 되돌리기 → 원래 변형·값. 화면에 변형 **키**가 아니라 이름표 | [V] |
 | E-AC-21 | a3 | 테마 바꾸기: 문서 `profileVersion`만 바뀜 · `diffSlotValues` 0 + "슬롯 값 N개 모두 그대로입니다" · 캔버스 색 = 새 버전 토큰(CSS 변수) · 게이트 대비 재계산. 문서 버전 < 최신이면 E-S18 캡션 | [V] |
-| E-AC-22 | a3 | 이미지 슬롯: `role=switch` + `aria-checked` + 라벨 + 캡션. 켜면 대체텍스트 필수(비면 게이트 R-09 차단), 장식 체크 → 입력 `aria-disabled` + 이유 · R-09 통과. (EQ-3 A) 형식·크기 오류 문장 + 이전 이미지 유지 | [V] |
+| E-AC-22 | a3 | 이미지 슬롯: `role=switch` + `aria-checked` + 라벨 + 캡션. 켜면 대체텍스트 필수(비면 게이트 R-09 차단), 장식 체크 → 입력 `aria-disabled` + 이유 · R-09 통과. (EQ-3 A) 형식·크기 오류 문장 + 이전 이미지 유지 · 보관 캡션 상시(r1 수정 — 한도·URL 수명은 E-AC-45~47) | [V] |
 | E-AC-23 | a3 | 엔진 연산 불변: 동결한 입력 문서로 8.2 연산 전부 실행해 예외 0 · 입력 불변 · `instanceId` 유지 | [V] |
 | E-AC-24 | a3 | 빈 슬롯: 캔버스 자리표시 글자 · 필수 슬롯이 비면 게이트 "글자 수" 차단 "Hero 제목이 비어 있습니다" · blur 때만 필드 오류 | [V] |
 | E-AC-25 | a4 | 게이트 8줄(5.12 순서) · 상태 단어 · 표의 차단·경고 조건마다 픽스처 1건 이상 재현 · 성능 예산 "측정 전"(버튼 아님, 차단 0) · 헤딩 순서 위반 = 차단 · SEO 빈 값 차단 · 권장 초과 경고 | [V] |
@@ -625,18 +702,26 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-AC-27 | a4 | **Q14 가드**: 게이트 줄마다 상태 단어 존재 · 접미사 없는 `--status-*` 사용 요소는 모두 `aria-hidden` · 섹션 줄 문제 표시는 Tag 글자(점 없음) | [V] 가드 |
 | E-AC-28 | a4 | 재검사: 편집 직후 목록 `aria-busy` + "편집 전 기준" 캡션 → 500ms 뒤 해제. 오래된 결과 상태에서 내보내기 → 재계산 먼저(오래된 결과로 요청 0) | [V] |
 | E-AC-29 | a4 | 내보내기 게이트 연동: 차단 → 두 버튼 `aria-disabled` + 이유(첫 차단 이름) + "첫 차단으로 이동" · 경고만 → 확인 대화상자(취소 = 요청 0) · 통과 → 바로 요청 | [V] |
-| E-AC-30 | a4 | 내보내기 시작: 자동 스냅샷(auto·export) 1개 + `requestExport` 1회 · 같은 revision·형식 재요청 → 같은 잡 · `GENERATOR_UNAVAILABLE` → informative Callout(스냅샷 이름 포함), `role=alert` 아님, 재시도 없음 · `JOB_TIMEOUT` → alert + "다시 시도" | [V] |
+| E-AC-30 | a4 | 내보내기 시작(r1 수정): **화면은 스냅샷을 만들지 않고** `requestExport` 1회(저장 전 변경이 있으면 저장 먼저, 저장 실패·`STALE_DOC`면 요청 0) · 같은 revision·형식 재요청 → 같은 잡 · `GENERATOR_UNAVAILABLE` → informative Callout("이 탭에 저장돼 있습니다" — 스냅샷 이름 없음), `role=alert` 아님, 재시도 없음 · `JOB_TIMEOUT` → alert + "다시 시도"(같은 잡 재실행) | [V] |
 | E-AC-31 | a4 | 스냅샷: 수동 저장(기본 이름·30자) · 종류 글자(5.11 표) · 최근 10 + 더 보기 · 미리보기 = 편집 컨트롤 `aria-disabled` + 이유, 포커스 Callout · 복원 = "복원 전" 자동 스냅샷 + 새 revision, 기존 스냅샷 불변, 알림, 포커스 h1. 복원 트랜잭션 `commit` 실패 → 스냅샷·문서 변화 0 | [V] |
 | E-AC-32 | a4 | 실행 취소: 입력칸 밖 Ctrl/⌘+Z · Shift+Ctrl/⌘+Z · Ctrl+Y · "더보기" 같은 기능 · 입력칸 안 가로채지 않음 · 알림 "실행 취소: …" · 기록 50개 상한 | [V] |
 | E-AC-33 | 공통 | 라이브 영역: `role=status` "편집 알림" 1개(`display:none` 아님) · 연산 1회 = 1문장 · 입력 중 낭독 0(카운터·게이트는 영역 밖) | [V] |
 | E-AC-34 | 공통 | 포커스 6.4 표 · 모든 비활성 행동 `aria-disabled` + 보이는 이유 · 대화상자 포커스(열기·닫기·Esc) · 포커스 가림 0 | [V] · [Q] |
 | E-AC-35 | 공통 | 대비: 새 조합 = 7.1 표만, 스크립트 값이 토큰 테스트 기대값 · 캔버스 테두리 2중(흰 간격) 구조 · 상태를 색 하나로 알리는 곳 0(6.6 표) | [V] 가드 · [Q] |
 | E-AC-36 | 공통 | 조작 크기: 전 폭 ≥ 24 · <1024 버튼 ≥ 32 · 섹션 줄 ≥ 40 | [Q] |
-| E-AC-37 | 공통 | 번들: `/studio/:projectId`·`/projects` 첫 화면 ≤ 100 · 진입 직후 ≤ 125 실측 · **공통 청크 순증가 ≤ 0**(S-B1 전후 표) · `/compare` 두 시나리오 예산 안 · 조작 뒤 청크 크기 출력 · 아이콘 파일 추가 0 | [B] |
+| E-AC-37 | 공통 | 번들: `/studio/:projectId`·`/projects` 첫 화면 ≤ 100 · 진입 직후 ≤ 125 실측 · **공통 청크 순증가 ≤ 0**(S-B1 전후 표) · `/compare` 두 시나리오 예산 안 · 조작 뒤 청크 크기 출력 · 아이콘 파일 추가 0 · (r1 수정) 기준 = a1 착수 재실측, 10.4 표의 변경마다 실측 증감을 추정 옆에 적는다 | [B] |
 | E-AC-38 | 공통 | 검증 4종(typecheck·lint·test·build) 통과. 깨진 기존 테스트는 12.4 목록 안에서만, 테스트 수 변화 보고 | [B] |
 | E-AC-39 | 공통 | 계측: 9절 지점마다 1회 · payload 키 허용 목록 테스트(이름·글자·파일 이름·색 값 0) | [V] |
+| E-AC-40 | a2 | **`startDoc` create 경쟁**(8.3.1, r1): 같은 store에서 `delay`를 주입한 `create` 2건(서로 다른 안)을 동시에 호출 → 문서 1개 · 먼저 판정된 쪽 성공 · 다른 쪽 `DOC_EXISTS` + 기존 문서(쓰기 0, 문서 revision·해시 불변) · 그 화면은 이동 + "이미 편집 중인 문서를 엽니다", 자동 `restart` 0. 같은 인자 2건이면 둘 다 성공(멱등 재생) · 문서 1개 | [V] |
+| E-AC-41 | a2 | **`startDoc` 재시도·판정 순서**(8.3.1, r1): `fail phase:"response"` 뒤 같은 인자 재시도 → 같은 문서(문서 수 1 · revision 1) + 성공 결과. 재시도 사이 `saveDoc` 1회가 있으면 편집기는 `getDoc` 최신(r2)을 그린다. 판정 순서(모양 → 멱등 → NOT_FOUND → DOC_EXISTS·STALE_DOC → 쓰기) 단위 테스트 · `phase:"commit"` 실패 → 문서·스냅샷·멱등 기록 변화 0 | [V] |
+| E-AC-42 | a2 | **`restart` 경합**(8.3.1, r1): `expectedRevision` 없음 → `SCHEMA_INVALID` · 같은 `expectedRevision`로 2건 → 한쪽만 성공(`auto·restart` 스냅샷 +1 · revision +1) · 다른 쪽 `STALE_DOC` + 최신 동봉, 스냅샷·문서 추가 변화 0, 이동 없음 + 알림 · 열려 있던 편집기의 다음 저장 → `STALE_DOC`(E-S09, 내 편집 유지) · `restart` 성공 뒤 옛 `create` 키가 늦게 오면 재생이 아니라 `DOC_EXISTS` | [V] |
+| E-AC-43 | a4 | **내보내기 스냅샷 한 곳**(8.3.2, r1) — 생성기 가능 목 저장소: 첫 요청 = `auto·export` 스냅샷 **정확히 1** + 잡 1 · 같은 revision·형식으로 연속 2회 → 같은 잡, 스냅샷 **+1 이하**(두 번째 +0) · `fail phase:"response"` 뒤 재시도 → 같은 잡, 스냅샷 1 · `phase:"commit"` 실패 → 스냅샷·잡 0 · `JOB_TIMEOUT` 뒤 "다시 시도" → 스냅샷 추가 0 · 화면 코드에 `createSnapshot(…export…)` 호출 0 | [V] |
+| E-AC-44 | a4 | **생성기 없음 → 스냅샷 0**(8.3.2, r1) — 메모리 기본 구현: 내보내기 2회 → 스냅샷 0 · 잡 0 · `snapshot_created` 0. 판정 순서(모양 → 멱등 → NOT_FOUND → STALE_DOC → GATE_FAILED → GENERATOR_UNAVAILABLE → 쓰기) 단위 테스트 — `STALE_DOC`·`GATE_FAILED`에서도 스냅샷 0 | [V] |
+| E-AC-45 | a3 | **이미지 한도**(5.9, r1): 13번째 이미지 → 거부 + 문장 · 문서 합계 30MB 초과 → 거부 + 문장(합계 표시) · 탭 전체 24개·60MB에 닿으면 실행 취소 기록부터 비움 + 알림, 스냅샷이 붙잡아 여전히 넘으면 거부 + 문장. 모두 이전 이미지 유지 · 저장 요청·스냅샷·계측 payload에 `blob:` 문자열 0 | [V] |
+| E-AC-46 | a3 | **URL 수명**(5.9, r1): `URL.createObjectURL`·`revokeObjectURL` 감시 — 같은 슬롯 교체 10회 + 수동 스냅샷 1 + 실행 취소·다시 실행 섞기 → 연산마다 살아 있는 URL 수 = 참조 집합(문서 ∪ 스냅샷 ∪ 실행 취소 ∪ 다시 실행)의 고유 로컬 id 수 · 기록 50 상한으로 밀려난 항목만 가진 이미지 해제 · 편집기 언마운트 → 살아 있는 URL **0** · 실행 취소 스택 비어 있음 | [V] |
+| E-AC-47 | a3 | **해제 뒤 복원**(5.9, r1): 이미지 + 대체텍스트 입력 → 수동 스냅샷 → `/projects`로 나갔다 돌아옴 → 슬롯 켜짐 · "이미지를 다시 골라 주세요" · 대체텍스트 보존 · 그 스냅샷 복원도 같은 상태 · 돌아와 **다른 슬롯**에 새 이미지를 골라도 잃은 슬롯과 그 스냅샷 복원은 여전히 "다시 골라 주세요"(로컬 id 재사용 0) · 게이트 줄 8·판정 변화 0 · 다시 고르면 정상 표시 | [V] |
 
-**수용 기준 49개**: J-AC 10(전부 a1) · E-AC 39(a1 2 · a2 14 · a3 8 · a4 8 · 공통 7).
+**수용 기준 57개**: J-AC 10(전부 a1) · E-AC 47(a1 2 · a2 17 · a3 11 · a4 10 · 공통 7). r1 추가 = E-AC-40~ (변경 이력 표).
 
 ### 11.3 목업과 다르게 한 곳 (ADR-003)
 
@@ -698,14 +783,14 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | 6.3 확정 뒤 이동 `/profile/:id` | 그대로. 알림에 새 프로젝트 문장(J-S11) 추가 |
 | 6.5 계측 | `project_created(source)` 추가(9절) |
 
-- **번들**: 확정 대상 선택 UI는 보드 첫 화면 청크(`/compare` 여유 0.52) — S-B9(네이티브 라디오, 실측 먼저, 넘치면 상쇄 후 보고). 첫 작업 순서는 13.1 a1.
+- **번들**: 확정 대상 선택 UI는 보드 첫 화면 청크(`/compare` 여유 0.40, 2a-04b2) — S-B9(네이티브 라디오, 실측 먼저, 넘치면 10.4 대체안 순서). 첫 작업 순서는 13.1 a1.
 - "현재 프로젝트 / 새 프로젝트" 두 가지로 두는 이유는 2.1(보드 1개 · 다른 프로젝트로 확정하면 조정 대부분이 지워짐). 기존 프로젝트 목록에서 고르는 안은 **EQ-7 B**다 — 그 경우 확정 전에 P-S25 목록으로 지워질 조정을 미리 보여야 하고, 보드 첫 화면 청크에 목록 UI가 더해진다(S-B9).
 
 ### 12.3 3안 · 편집 시작 (2a-04c)
 
 | 2a-04 위치 (r6) | 개정안 |
 |---|---|
-| 4.6 · P-S22 · P-AC-29 "B안으로 편집 시작" → `/studio` | → **`/studio/:projectId`**. 누르면 `startDoc(projectId, version, candidateId, "create")`(문서가 없을 때) 후 이동. 문서가 있으면 EQ-2 |
+| 4.6 · P-S22 · P-AC-29 "B안으로 편집 시작" → `/studio` | → **`/studio/:projectId`**. 누르면 `startDoc(projectId, version, candidateId, "create")`(문서가 없을 때) 후 이동. 문서가 있으면 EQ-2(`restart`는 프로필 화면이 `getDoc`으로 읽은 문서 revision을 `expectedRevision`으로 넘긴다 — 8.1 Project 요약은 바꾸지 않는다). 결과별 화면(성공·멱등 재생 → 이동 후 `getDoc` 최신 · `DOC_EXISTS` → 이동 + "이미 편집 중인 문서를 엽니다" · `STALE_DOC` → 이동 없음 + 알림)은 **8.3.1** |
 | 10 Q6 "`project_id`는 2a-05 또는 ADR-005 Q1 후속" (생성 요청 키) | **바꾸지 않는다** — 생성은 프로필 버전 단위이고 프로젝트는 계열과 1:1이라 키에서 파생된다. `GenerationJob`에 `projectId` 필드 추가도 불필요 |
 | DS-CHECK-01 A-12 (`/studio` 자리표시 "1a-05") | a1에서 자리표시 자체가 사라진다. **2a-04c가 a1보다 먼저 병합되면** 계획대로 "2a-05" 한 단어 교체 |
 
@@ -751,7 +836,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | **EQ-4** | **`/profile` 목록 폐지**(2a-04 P-S04·P-S05는 승인·구현된 화면) | ★**A** `/profile` → `/projects` 리다이렉트, 목록은 `/projects` 하나(12.1) / B 둘 다 유지(`/profile` = 프로필만 보는 목록, GNB에는 없음) | 12.1 · J-AC-09 · 12.4 |
 | **EQ-5** | **새로고침하면 편집 내용이 사라지는 문제**(서버 전 메모리 저장) — 편집기는 프로필 화면보다 입력량이 많다 | ★**A** 2a-04 Q8과 같이 메모리 유지 + 늘 떠나기 경고 + "이 탭에 저장됨" 문구(E-S06·S10), 영속은 백엔드 ADR에서 / B 편집 문서만 `localStorage` 임시 보존(새 저장 경로 · 브라우저 안 사용자 콘텐츠 보관 정책 필요) | 1.1 · E-S06·S10 · E-AC-08·12 |
 | **EQ-6** | **"새 프로젝트"로 왔는데 보드에 이전 프로젝트의 선택이 남아 있을 때** — 보드는 사용자당 1개(ADR-005 Q1) | ★**A** 보드는 그대로 두고 확정 대상 기본값만 "새 프로젝트"(선택을 바꾸거나 레퍼런스를 다시 담으면 된다) / B `?new=1`이면 "보드를 비우고 시작할까요?" 확인 | 2.3 · J-S10 · S-B9(B는 보드 청크 증가) |
-| **EQ-7** | **보드 확정 때 "고르기"의 범위** — Q1=A "프로필 확정 때 프로젝트를 만들거나 고른다" | ★**A** "현재 프로젝트 새 버전 / 새 프로젝트" 두 가지(J-S10 라디오 2개). A에서는 다른 기존 프로젝트로 확정하는 길이 없다(보드를 다른 프로젝트의 선택 상태로 되돌리는 흐름이 없음 — 필요해지면 B 또는 보드 불러오기를 별도 설계) / B 확정 대상에 기존 프로젝트 목록(`Select`) — 확정 전 P-S25 목록으로 지워질 조정을 보여 주고, 멱등 키에 프로젝트 id 포함 | 2.1 · 12.2 · J-AC-05·07 · S-B9(B는 보드 첫 화면에 목록·판정 UI → `/compare` 여유 0.52 위험) |
+| **EQ-7** | **보드 확정 때 "고르기"의 범위** — Q1=A "프로필 확정 때 프로젝트를 만들거나 고른다" | ★**A** "현재 프로젝트 새 버전 / 새 프로젝트" 두 가지(J-S10 라디오 2개). A에서는 다른 기존 프로젝트로 확정하는 길이 없다(보드를 다른 프로젝트의 선택 상태로 되돌리는 흐름이 없음 — 필요해지면 B 또는 보드 불러오기를 별도 설계) / B 확정 대상에 기존 프로젝트 목록(`Select`) — 확정 전 P-S25 목록으로 지워질 조정을 보여 주고, 멱등 키에 프로젝트 id 포함 | 2.1 · 12.2 · J-AC-05·07 · S-B9(B는 보드 첫 화면에 목록·판정 UI → `/compare` 여유 0.40 위험) |
 
 ### 13.3 추적 표 (DS-CHECK-01 → 이 SPEC)
 
@@ -808,3 +893,12 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-24 커스텀 도메인 | P2 | — | — | **제외** |
 
 **A-01·A-02 (프로젝트 IA)**: A-01 → 2.1~2.5 · J-S01~J-S11 · J-AC-01~07·09 · 12.1·12.2 / A-02 → J-S04 "새 프로젝트 시작" · 12.1 · J-AC-03. (A-03~A-05 버전 비교 좁은 폭은 L1 FIX-2A04b2-DIFF 몫 — 이 SPEC 범위 밖)
+
+## 변경 이력
+
+| 판 | Codex j1 항목 | 고친 절 | 추가 AC (수정 AC) | 비고 |
+|---|---|---|---|---|
+| r1-1 | [high] 문서 최초 생성 경쟁·멱등 | 8.3 `startDoc` 행 · **8.3.1 신설** · 8.3 오류 코드(`DOC_EXISTS`) · 3.2 E-S03 · 12.3 편집 시작 행 · 0절 데이터·수용 기준 | E-AC-40·41·42 | `startDoc`에 `expectedRevision?` 인자 추가(8.3 저장소 — L4 영향 없음, 8.1·8.2 무변경). `restart`의 revision 출처 = 프로필 화면의 `getDoc`(12.3). 0절 "TRD 개정 대상 4건" → 5건(8.3 목록 ①~⑤와 맞춤, r0 개수 오기) |
+| r1-2 | [medium] 내보내기 전 스냅샷 책임 두 곳 | 5.13 시작 문장 · 5.11 표 "내보내기 전" 행 · 3.2 E-S27 문구 · 8.3 `requestExport` 행 · **8.3.2 신설** · 9절 `snapshot_created` · 0절 게이트·수용 기준 | E-AC-43·44 (수정 E-AC-30) | 저장소 한쪽으로 통일, 판정 먼저 → `GENERATOR_UNAVAILABLE`이면 스냅샷 0. EQ-1 A 결정 유지(자동 스냅샷은 쓰기 트랜잭션 안) · E-S27의 "스냅샷으로 보관했습니다" 문구 삭제 · `requestExport` 결과 모양(스냅샷 id·이번 호출 쓰기 여부) 명시 — 8.1 무변경. L4 영향 없음 |
+| r1-3 | [medium] 로컬 이미지 자원 한도·URL 수명 | 5.9 한도 표·로컬 참조·URL 수명 신설 · 3.2 E-S20 변형 · 5.14 기록 스택 수명 · 8.1 슬롯 값 `source` 값 모양 · 8.3 오류 코드 문장 · 0절 조작·수용 기준 | E-AC-45·46·47 (수정 E-AC-22) | EQ-3 A 유지(수명을 "편집기를 떠나면"까지 명시 — 브리프 지시). 로컬 id = 재사용 없는 고유값(`crypto.randomUUID()`) — 비운 뒤 새 이미지가 잃은 슬롯에 끼어드는 경로 차단(advisor 검토, E-AC-47 보강). **L4 영향: 8.1 `source` 이름 그대로, 값 모양(로컬 id 문자열)만 명시**. 게이트 8줄 불변 |
+| r1-4 | [medium] 공통 청크 순증가 ≤ 0 근거 없음 | 10.1 기준을 2a-04b2 실측으로(정정 인용문 흡수 · F1 대기 위험) · **10.4 변경별 증감·상쇄 표 신설**(확정 조건 · 대체안 순서) · S-B9 · 1.1 · 0절 번들 · 12.2 번들 줄 · EQ-7 영향 열(숫자만) | (수정 E-AC-37) | 추정 공통 +0.04~0.14 · `/compare` +0.14~0.34 / +0.15~0.37 — ≤ 0은 추정으로 입증 불가, a1 실측 전 S-B1·S-B9 미확정. EQ-7 결정 유지. L4 영향 없음 |

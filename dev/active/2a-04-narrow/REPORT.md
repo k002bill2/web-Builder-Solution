@@ -18,7 +18,7 @@
 - **폭별 배치는 `app/src/styles/versionDiff.css`**(index.css가 import, 표 클래스 `version-diff`):
   - 768↑: 항목(열·행 머리글)·차이 열 `whitespace-nowrap`. 값의 어절 단위 줄바꿈은 body 전역 `word-break: keep-all`(base.css)이 이미 하므로 `break-keep`은 넣지 않았다.
   - <768: 표·caption·tbody `block`, 행 `flex flex-col py-1.5`, 셀 여백 0, thead는 **`sr-only`**(display:none 아님 — columnheader가 AX 트리에 남는다).
-  - 값은 모두 Tailwind `@apply max-md:…`/토큰(`--space-100`·`--label-alternative`·`--font-weight-normal`). hex·px 0.
+  - 값은 모두 Tailwind `@apply max-md:…`/토큰(`--space-100`·`--label-alternative`·`--font-weight-normal`). hex·px 0 — **원문 확인 근거**다. `noHardcodedStyle` 가드는 `components`·`pages`만 검사해 `styles/versionDiff.css`는 대상 밖이다(설계 질문 4).
   - 레이어 밖 규칙: 셀의 Tailwind 여백 유틸리티(`py-1.5 pr-3`)를 <768에서 덮어야 해서 `@layer`에 넣지 않았다.
 - **A-05** `VersionList.tsx`: 요약 `basis-full md:basis-auto md:flex-1` → <768 둘째 줄 전체 폭.
 - **왜 CSS 파일인가(ADR-003 한 줄)**: 같은 규칙을 JSX Tailwind 클래스로 넣었을 때 `/profile` 진입 직후 **124.78KB(여유 0.22, +0.19)** 로 멈춤선 아래였다(콘솔 실측, 그 빌드의 로그 파일은 뒤 빌드가 덮어씀). 클래스 문자열을 전역 CSS로 옮겨 JS 증가를 +0.09로 줄였다. CSS는 번들 예산 대상 밖(8.68 → 8.86KB gzip).
@@ -33,6 +33,7 @@
   6. `<768은 요약이 줄 전체 폭 둘째 줄(basis-full), 768부터 남은 폭(md:flex-1)`
 - **RED** `logs/n1-red.txt`: 5 실패 / 1 통과(5번 = 회귀 가드, 기존 표도 만족). **GREEN** `logs/n1-green.txt` 6/6(첫 구현 시점).
 - **RED 뒤 테스트 수정(기록)**: 번들 때문에 규칙을 CSS 파일로 옮기면서 3·4번(및 2번의 content 단언)을 "JSX 클래스" 단언에서 "표 클래스 `version-diff` + `versionDiff.css` 원문 규칙 + index.css import" 단언으로 바꿨다. vitest는 `css: false`라 `textWrap.test`처럼 파일 원문을 읽는다. 최종 6/6 통과(5회 실행에 포함).
+- **최종 판 RED 재확인** `logs/n1-red-final.txt`: 커밋된 테스트 그대로, 코드 3파일(`VersionDiff.tsx`·`VersionList.tsx`·`index.css`)만 `cdfaff0`으로 되돌려 실행 → **4 실패(1·2·3·6) / 2 통과(4·5)** → HEAD로 복원. 4번은 CSS 원문과 셀 위치만 보므로 JSX를 되돌려도 통과한다(표↔CSS 연결은 3번의 `version-diff` 클래스·import 단언이 지킨다). 5번은 회귀 가드.
 - N2: `profileDiff.test.ts` "요약(적용된 값 기준) = 직전 버전과의 차이 최대 2개 + '외 N', 첫 버전·차이 없음 문장" — 기존 `summarizeVersion` 단언 3개(외 N·첫 버전·바뀐 값 없음)를 `summarizeVersions(ProfileVersion)`로 옮기고 `rest > 0`을 단언으로 고정. 삭제 리팩터링이라 RED 단계 없음(옮긴 테스트는 기존 함수로 바로 통과). 화면 동작 변화 0(`summarizeVersions`는 그대로).
 
 ## 4. 브라우저 (127.0.0.1:4337 `vite preview`, ego-browser TaskSpace 26, CDP 폭 변경)
@@ -46,7 +47,8 @@
 | 320 | 30 → 247px (쌓기) | 145 → 101px | [89,54] → [273,18] | 0 · 247≤247 |
 
 - 390·320 쌓인 표: 표 display `block`, thead 1×1(sr-only), 값 셀 `::before` 계산값 `"v1" / ""`.
-- **AX 트리(Chromium, 후)**: 세 폭 모두 `table "v1과 v3 비교" > caption · rowgroup > row > columnheader 항목/v1/v3/차이 · rowgroup > row > rowheader/cell`. 값 셀 이름은 값만(`cell "풀블리드 히어로"`) — 생성 글자 "v1"이 이름에 붙지 않음(`cell "v…"` 0건). 전에는 tbody rowgroup이 트리에서 빠져 있었고 후에는 명시 role로 나타난다.
+- **AX 트리(Chromium, 후)**: 세 폭 모두(`table "v1과 v3 비교"` 3건, 폭마다 columnheader 4개) `table "v1과 v3 비교" > caption · rowgroup > row > columnheader 항목/v1/v3/차이 · rowgroup > row > rowheader/cell`. 값 셀 이름은 값만(`cell "풀블리드 히어로"`) — 생성 글자 "v1"이 이름에 붙지 않음(`cell "v…"` 0건). 전에는 tbody rowgroup이 트리에서 빠져 있었고 후에는 명시 role로 나타난다.
+  - 셀↔열 머리글 관계: CDP AX 트리는 관계 속성을 주지 않는다. "같은 table 안 columnheader와 같은 위치 cell" 구조로 추정한 것이다(**L2**). 스크린리더 실측은 8절.
 - **포커스(P-AC-09)**: 768·390·320 각각 `?v=1` → "v1과 비교 (v3)" 클릭 → `activeElement = CAPTION "v1과 v3 비교"`, "비교 닫기" → `BUTTON "v1과 비교 (v3)"`(`browser-after.json` `focus`).
 - 종료: TaskSpace 26 `finish({keep: []})`(이후 조회 "task space not found: 26"), 서버 종료 뒤 `lsof -iTCP:4337 -sTCP:LISTEN` 결과 없음(`logs/server-stop.txt`).
 
@@ -82,4 +84,5 @@
 ## 9. 설계 질문
 1. **폭 전환 규칙을 전역 CSS 파일(`styles/versionDiff.css`, `@apply` + 토큰)로 둔 것**이 브리프 "폭 전환은 CSS(Tailwind 반응형 유틸리티/토큰)만"에 맞는지. JSX 유틸리티로 두면 여유 0.22라 멈춤선 아래였다. 컴포넌트 전용 CSS 파일이 이 저장소의 첫 사례다.
 2. **`break-keep` 생략**: body 전역 `keep-all`과 중복이라 넣지 않았다. 브리프 A-04 문구대로 명시 클래스를 원하면 +수 바이트.
+4. **`noHardcodedStyle` 가드 범위**: `src/styles/`의 컴포넌트용 CSS(`versionDiff.css`)도 검사 대상에 넣을지(토큰 파일은 원본 복사본이라 제외 필요).
 3. <768 "바뀜"만 있고 "차이" 열 이름은 붙이지 않았다(글자 자체가 뜻을 가짐). 같은 줄(바뀌지 않음)은 빈 셀이라 높이 0.

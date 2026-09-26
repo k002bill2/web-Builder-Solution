@@ -8,18 +8,18 @@
 - [x] runGate GREEN — 8줄(대비·대체텍스트·헤딩·필수 섹션·모션·SEO·글자 수·성능) · 결정성 · 입력 불변 · 7:1 불가 조합 throw 0
 - [x] 문장 SPEC 대조 테스트 + 유추 문장 목록
 - [x] createDocFromCandidate RED → GREEN (정상·해시 동일·R-01/R-02 거부·모르는 변형 거부·validatePageDoc)
-- [ ] 코드 커밋 (`git commit -- <경로>`)
+- [x] 코드 커밋 (`git commit -- <경로>`) — 1ed3e5c · 46b20ed
 
 ## 2. 검증
-- [ ] typecheck · lint · build
-- [ ] 전체 테스트 1회
-- [ ] engine 테스트 3회
-- [ ] 번들 변화 0(CSS 내용·자산 해시) · 화면 engine import 0
-- [ ] Codex 리뷰 1회 (`--scope branch --base 9c1891a`) · 반영
+- [x] typecheck · lint · build — exit 0
+- [x] 전체 테스트 1회 — 962 통과
+- [x] engine 테스트 3회 — 253 ×3
+- [x] 번들 변화 0(CSS 내용·자산 해시) · 화면 engine import 0
+- [x] Codex 리뷰 1회 (`--scope branch --base 9c1891a`) · 반영 — 지적 0
 
 ## 3. 보고
-- [ ] REPORT.md (커밋·RED/GREEN·테스트 이름·규칙별 판정 표·유추 문장·번들·Codex·위험·Q-17~)
-- [ ] REPORT 커밋
+- [x] REPORT.md (9363839 초안 + 7·8절) (커밋·RED/GREEN·테스트 이름·규칙별 판정 표·유추 문장·번들·Codex·위험·Q-17~)
+- [x] REPORT 커밋
 
 ## 결정 메모 (설계 질문 후보, REPORT 9절로)
 - Q-17 createDocFromCandidate 인자: plan에 libraryVersion·generatorVersion 추가, 세 번째 인자 DocStart{projectId, updatedAt}

@@ -8,7 +8,8 @@
 |---|---|
 | `1ed3e5c` | test: 게이트 테스트 도우미(`testing/sampleTheme.ts`·`testing/gateKit.ts`) · 번들 기준(`bundle-before.txt`) · RED 기록 |
 | `46b20ed` | feat: `gate/`(runGate 8줄) · `doc/`(createDocFromCandidate) · `GateIssue.severity` · `pending.ts` 자리 정리 · `minMotion` export · sampleTheme 타입 오류 수정 |
-| (8절) | Codex 반영 — 8절 참조 |
+| `9363839` | REPORT 초안 |
+| (마지막) | REPORT 7·8절 · 검증 로그 — Codex 지적 0이라 코드 변경 없음 |
 
 ## 2. RED / GREEN (원문 `tdd-log.txt`)
 
@@ -86,13 +87,21 @@
 | 틀 `shortenTo(n)` | 40자 이하로 줄이세요 |
 | 원인 앞머리 | 슬롯 이슈 원인 = "섹션 이름 슬롯 이름표: 문장"(예 "Hero 제목: 필수 입력입니다") · 권장 초과 = "Hero 제목이 권장 28자를 넘었습니다 (30/28자)" |
 
-## 7. 검증 (fresh — 마지막 코드에서, `verify-*.txt`)
+## 7. 검증 (fresh — 마지막 코드 `46b20ed`에서, `verify-*.txt`)
 
-(검증 뒤 채움)
+| 항목 | 명령 | 결과 |
+|---|---|---|
+| typecheck | `npm run typecheck` | exit 0 (`verify-typecheck.txt`) |
+| lint | `npm run lint` | exit 0 (`verify-lint.txt`) |
+| build + 번들 | `npm run build` → `bundle-before.txt`와 `dist/`·`[bundle]` 줄 diff | exit 0 · diff 0 (`bundle-after.txt`) |
+| 전체 테스트 1회 | `npm test -- --run` | 80 파일 · 962 통과 · exit 0 (`verify-test-full.txt`) — `engineImportGuard.test.ts` 포함 |
+| engine 3회 | `npx vitest run src/engine` × 3 | 매회 15 파일 · 253 통과 · exit 0 (`verify-engine-3x.txt`) — 기존 L4a 184 + 새 69 |
 
 ## 8. Codex 리뷰 (`review --wait --scope branch --base 9c1891a`, 1회 — `codex-review.txt`)
 
-(리뷰 뒤 채움)
+- 대상: `46b20ed`까지 브랜치 diff(REPORT 초안 커밋 전 시작).
+- 결과 원문: "변경된 게이트 규칙과 문서 생성 로직에서 확인된 결함은 없습니다. 테스트 실행은 읽기 전용 환경의 권한 오류로 중단되어 테스트 결과는 확인하지 못했습니다."
+- 반영: 지적 0 → 코드 변경 없음. Codex 쪽 테스트 미실행은 7절 로컬 fresh 실행으로 보완했다(Codex가 테스트를 돌려 확인한 것은 아니다).
 
 ## 9. 번들 (`bundle-before.txt` · `bundle-after.txt`)
 

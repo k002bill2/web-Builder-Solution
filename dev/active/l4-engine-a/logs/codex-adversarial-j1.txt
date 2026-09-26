@@ -1,0 +1,66 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a0de2d-a91d-7271-8dae-10e5b3271d66).
+[codex] Turn started (01a0de2d-ad69-7f31-8cd7-d9987bd65175).
+[codex] Assistant message captured: 비교 기준을 `main`으로 고정하고, 요청하신 저장 경계·연산·복원·이미지 계약 경로를 diff 원문에서 확인하겠습니다.
+[codex] Running command: /bin/zsh -lc 'rg -n "web-builder-solution|2a-05|L4a|L4 엔진" /Users/younghwankang/.codex/memori...
+[codex] Command completed: /bin/zsh -lc 'rg -n "web-builder-solution|2a-05|L4a|L4 엔진" /Users/younghwankang/.codex/memori... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff --unified=70 main...HEAD -- app/src/engine/ops/sectionOps.ts app/src/e...
+[codex] Running command: /bin/zsh -lc 'git diff --unified=80 main...HEAD -- app/src/engine/validate/validatePageDoc.ts...
+[codex] Command completed: /bin/zsh -lc 'git diff --unified=70 main...HEAD -- app/src/engine/ops/sectionOps.ts app/src/e... (exit 0)
+[codex] Command completed: /bin/zsh -lc 'git diff --unified=80 main...HEAD -- app/src/engine/validate/validatePageDoc.ts... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff --unified=55 main...HEAD -- app/src/engine/ops/hash.ts app/src/engine/...
+[codex] Running command: /bin/zsh -lc "rg -n \"8\\.1|8\\.2|8\\.3\\.1|5\\.9|4\\.4|7\\.\" docs/design/2a-05/SPEC.md docs...
+[codex] Command completed: /bin/zsh -lc 'git diff --unified=55 main...HEAD -- app/src/engine/ops/hash.ts app/src/engine/... (exit 0)
+[codex] Command failed: /bin/zsh -lc "rg -n \"8\\.1|8\\.2|8\\.3\\.1|5\\.9|4\\.4|7\\.\" docs/design/2a-05/SPEC.md docs... (exit 2)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/engine/ops/sectionOps.ts'
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/engine/ops/sectionOps.ts' (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/engine/ops/hash.ts && nl -ba app/src/engine/ops/diff.ts'
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/engine/ops/hash.ts && nl -ba app/src/engine/ops/diff.ts' (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/engine/ops/slotOps.ts && nl -ba app/src/engine/contracts/pageDoc...
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/engine/ops/slotOps.ts && nl -ba app/src/engine/contracts/pageDoc... (exit 0)
+[codex] Running command: /bin/zsh -lc "find docs/design/2a-05 -maxdepth 2 -iname '*trd*' -o -iname '*TRD*'; rg -n \"##...
+[codex] Command completed: /bin/zsh -lc "find docs/design/2a-05 -maxdepth 2 -iname '*trd*' -o -iname '*TRD*'; rg -n \"##... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,50p' /Users/younghwankang/.codex/memories/MEMORY.md"
+[codex] Command completed: /bin/zsh -lc "sed -n '1,50p' /Users/younghwankang/.codex/memories/MEMORY.md" (exit 0)
+[codex] Running command: /bin/zsh -lc 'rg -n "R-01|R-02|R-04|R-12" docs/design/2a-05/SPEC.md'
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/engine/ops/rules.ts && nl -ba app/src/engine/validate/reader.ts ...
+[codex] Command completed: /bin/zsh -lc 'rg -n "R-01|R-02|R-04|R-12" docs/design/2a-05/SPEC.md' (exit 0)
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/engine/ops/rules.ts && nl -ba app/src/engine/validate/reader.ts ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n \"TRD 4\\.4|SlotSchema|hasBusinessInfo|reservation\" docs/design/2a-04 do...
+[codex] Command completed: /bin/zsh -lc "rg -n \"TRD 4\\.4|SlotSchema|hasBusinessInfo|reservation\" docs/design/2a-04 do... (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/engine/sections/boundSections.ts'
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/engine/sections/boundSections.ts' (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files docs | rg 'TRD\\.md"'$|trd'"\\.md"'$'"'"
+[codex] Command completed: /bin/zsh -lc "rg --files docs | rg 'TRD\\.md"'$|trd'"\\.md"'$'"'" (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/engine/contracts/sectionDefinition.ts'
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/engine/contracts/sectionDefinition.ts' (exit 0)
+[codex] Running command: /bin/zsh -lc 'rg -n "R-12|hasBusinessInfo" docs/03-trd docs/design/2a-04 app/src/engine'
+[codex] Command completed: /bin/zsh -lc 'rg -n "R-12|hasBusinessInfo" docs/03-trd docs/design/2a-04 app/src/engine' (exit 0)
+[codex] Assistant message captured: `canRemove`가 선언한 본문 최소치와 R-12 사업자정보 조건을 실제 삭제·변형 경로에서 강제하지 않는 지점이 보입니다. 복원 위치와 로컬 이미지 id 계약도 ...
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/2a-05/SPEC.md | sed -n '252,270p;299,315p;486,515p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/2a-05/SPEC.md | sed -n '252,270p;299,315p;486,515p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/engine/sections/bodySections.ts | sed -n '1,100p'; nl -ba app/sr...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/engine/sections/bodySections.ts | sed -n '1,100p'; nl -ba app/sr... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/03-trd/TRD.md | sed -n '150,215p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/03-trd/TRD.md | sed -n '150,215p'" (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff --unified=10 main...HEAD -- app/src/engine/ops/sectionOps.ts app/src/e...
+[codex] Command completed: /bin/zsh -lc 'git diff --unified=10 main...HEAD -- app/src/engine/ops/sectionOps.ts app/src/e... (exit 0)
+[codex] Assistant message captured: {"verdict":"needs-attention","summary":"출시 보류: 로컬 이미지 참조 계약이 SPEC r1과 다르고, 삭제 연산은 목적 필수 섹션 검사...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against main
+Verdict: needs-attention
+
+출시 보류: 로컬 이미지 참조 계약이 SPEC r1과 다르고, 삭제 연산은 목적 필수 섹션 검사를 우회할 수 있습니다. 검증기가 getter·Proxy 예외를 결과로 처리하지 않습니다.
+
+Findings:
+- [medium] 로컬 이미지 참조 계약이 SPEC r1과 불일치 (app/src/engine/contracts/pageDoc.ts:38-40)
+  SPEC 5.9·8.1은 로컬 `source` 값을 재사용하지 않는 고유 로컬 id 문자열로 규정하지만, 타입과 검증기는 `{kind: "local", assetId: string}` 형태를 요구하고 `STRICT_ID`만 확인합니다. 따라서 UUID가 아닌 임의 id도 통과하며 계약 소비자가 기대하는 source 값 모양과 달라 저장 문서·이미지 보관소 간 참조 처리가 어긋날 수 있습니다. UUID 생성·비재사용은 이 구현에서 보장되지 않습니다.
+  Recommendation: SPEC에 맞게 로컬 source 값 모양을 정렬하고, 로컬 id 타입과 검증에 UUID 형식을 반영하세요. id 발급·비재사용 책임도 계약에 명시하세요.
+- [medium] 삭제 연산이 R-03·R-04 목적 필수 조건을 우회 (app/src/engine/ops/sectionOps.ts:80-84)
+  `canRemove`는 목적을 받아 문의·예약 필수 섹션 삭제를 막지만, `removeSection`은 항상 목적을 `"none"`으로 넣어 구조 규칙만 확인합니다. `removeSection`을 직접 호출하면 예약 목적의 마지막 예약 변형이나 문의 목적의 마지막 문의 섹션도 삭제됩니다. 현재 UI가 별도로 `canRemove`를 먼저 호출해야만 안전하다는 의존성이 엔진 연산 자체에는 강제되지 않습니다.
+  Recommendation: `removeSection`에 목적을 전달해 전체 `canRemove` 결과를 강제하거나, 목적 필수 조건을 보장하는 공개 연산 계약으로 바꾸세요.
+- [medium] 저장 경계 검증이 getter·Proxy 입력에서 예외를 반환값으로 정규화하지 않음 (app/src/engine/validate/reader.ts:36-39)
+  평범한 객체 확인과 필드 읽기 과정에서 `Object.getPrototypeOf`, `Object.keys`, `Object.hasOwn`, `rec[key]`를 직접 호출합니다. getter가 예외를 던지거나 Proxy trap이 예외를 던지면 `validatePageDoc`가 `SCHEMA_INVALID` 결과를 반환하지 않고 그대로 throw합니다. 이 입력 경로에서는 저장 경계 검증을 호출한 저장 처리까지 예외로 중단될 수 있습니다.
+  Recommendation: 접근자 속성을 거부하고 데이터 속성만 스냅샷하거나, 객체 반사·필드 읽기 예외를 검증 실패로 변환해 경계 함수가 항상 결과 계약을 지키게 하세요.

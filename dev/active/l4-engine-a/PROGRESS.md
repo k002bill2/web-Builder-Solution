@@ -1,0 +1,14 @@
+# L4a 엔진 계약 — PROGRESS
+
+브리프: `docs/06-handoff/L4A-ENGINE_DEVELOPER_BRIEF.md` · 브랜치 `k002bill2/l4-engine-a` · 기준 `dfd924f`
+
+| 절 | 상태 | 근거 |
+|---|---|---|
+| 0. 번들 기준(전) | 완료 | `bundle-before.txt` (build exit 0) |
+| 1. 계약 타입 `engine/contracts/` + 레지스트리 `engine/sections/` | 완료 | RED `red-registry.log`(모듈 없음) → GREEN 17/17 `green-registry.log` · tsc 0 · lint 0 |
+| 2. hashDoc `engine/ops/hash.ts` (+ 기본 슬롯 `sections/defaults.ts`, 테스트 문서 `testing/sampleDoc.ts`) | 완료 | RED(모듈 없음) → GREEN 26/26 · tsc 0 · lint 0 (`tdd-log.txt`) |
+| 3. 검증 함수 `engine/validate/` (validatePageDoc · validateProjectName, zod 없음) | 완료 | RED(모듈 없음) → GREEN 67/67(엔진 누적) · tsc 0 · lint 0 |
+| 4. 문서 연산 `engine/ops/` (add·remove·restore·move·swapVariant·setSlot·setMeta·swapTheme·can*·diffSlots·diffSlotValues·normalizeDoc) | 완료 | RED(모듈 없음) → GREEN 123/123(엔진 누적) · 이유 문장 SPEC 원문 대조 테스트 · tsc 0 · lint 0 |
+| 5. 번들 가드 · 검증 4종 | 완료 | 가드 RED(탐지 끔)→GREEN · typecheck 0 · lint 0 · 전체 테스트 1회 73 파일 826 통과 · build 0 · engine 3회 125×3 · 번들 전후 자산 해시까지 동일(statistics 변형 키 `row-3`이 Tailwind `.row-3`를 만들어 `stats-3`로 바꿈) |
+| 6. Codex 리뷰 · REPORT | 완료 | Codex P2 2건 반영(`3fb076b`) · engine 132×3 · build 번들 동일 |
+| 7. FIX-L4A-2 (Q-14 A · Codex j2 medium 1 · low 1) | 완료 | main 병합 `dd494f1` · 코드 `21ed1a9` · RED→GREEN 3건 · engine 184×3 · 전체 1회 893 · 번들 diff 0 · REPORT 11절 |

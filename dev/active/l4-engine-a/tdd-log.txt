@@ -1,0 +1,257 @@
+## 1절 레지스트리 RED
+   Start at  23:25:18
+   Duration  834ms (environment 82%, setup 15%, transform 2%, worker 1%)
+
+ 4  |  const BOUND = [
+  5  |  	"header",
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+## 1절 레지스트리 GREEN
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-a/app
+
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  23:26:32
+   Duration  927ms (environment 74%, setup 15%, transform 8%, import 1%, tests 1%, worker 1%)
+
+
+## 2절 hash RED
+ FAIL  src/engine/ops/hash.test.ts [ src/engine/ops/hash.test.ts ]
+Error: Failed to resolve import "./hash" from "src/engine/ops/hash.test.ts". Does the file exist?
+ Test Files  1 failed (1)
+      Tests  no tests
+
+## 2절 hash GREEN
+ Test Files  2 passed (2)
+      Tests  26 passed (26)
+
+## 3절 validate RED
+ FAIL  src/engine/validate/validatePageDoc.test.ts [ src/engine/validate/validatePageDoc.test.ts ]
+Error: Failed to resolve import "./validatePageDoc" from "src/engine/validate/validatePageDoc.test.ts". Does the file exist?
+ Test Files  2 failed (2)
+      Tests  no tests
+ FAIL  src/engine/validate/validateProjectName.test.ts [ src/engine/validate/validateProjectName.test.ts ]
+Error: Failed to resolve import "./validateProjectName" from "src/engine/validate/validateProjectName.test.ts". Does the file exist?
+
+## 3절 validate GREEN(1차)
+ Test Files  4 passed (4)
+      Tests  67 passed (67)
+
+## 4절 ops RED
+ FAIL  src/engine/ops/docOps.test.ts [ src/engine/ops/docOps.test.ts ]
+Error: Failed to resolve import "./diff" from "src/engine/ops/docOps.test.ts". Does the file exist?
+ FAIL  src/engine/ops/reasons.test.ts [ src/engine/ops/reasons.test.ts ]
+Error: Cannot find module './reasons' imported from /Users/younghwankang/orca/workspaces/web-builder-solution/l4-engine-a/app/src/engine/ops/reasons.test.ts
+ FAIL  src/engine/ops/rules.test.ts [ src/engine/ops/rules.test.ts ]
+Error: Failed to resolve import "./reasons" from "src/engine/ops/rules.test.ts". Does the file exist?
+ FAIL  src/engine/ops/sectionOps.test.ts [ src/engine/ops/sectionOps.test.ts ]
+Error: Failed to resolve import "./diff" from "src/engine/ops/sectionOps.test.ts". Does the file exist?
+ Test Files  4 failed | 1 passed (5)
+      Tests  9 passed (9)
+
+## 4절 ops GREEN
+ Test Files  8 passed (8)
+      Tests  123 passed (123)
+
+## 5절 번들 가드 RED(탐지 끔)
+     × 탐지기 자체 검사 — 정적·동적·re-export·부작용 import를 잡고, 이름만 비슷한 경로는 잡지 않는다 4ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/engine/engineImportGuard.test.ts > 엔진 import 가드 (번들 0) > 탐지기 자체 검사 — 정적·동적·re-export·부작용 import를 잡고, 이름만 비슷한 경로는 잡지 않는다
+      Tests  1 failed | 1 passed (2)
+## 5절 번들 가드 GREEN(원복)
+      Tests  2 passed (2)
+
+## Codex 반영 RED
+     × 달력·시각이 틀린 updatedAt 2026-99-99T99:99Z 거부 (Codex P2) 3ms
+     × 달력·시각이 틀린 updatedAt 2026-02-30T10:00Z 거부 (Codex P2) 1ms
+     × 달력·시각이 틀린 updatedAt 2026-09-26T24:00:00Z 거부 (Codex P2) 0ms
+     × 달력·시각이 틀린 updatedAt 2026-09-26T10:60Z 거부 (Codex P2) 0ms
+     × 달력·시각이 틀린 updatedAt 2026-09-26T10:00:61Z 거부 (Codex P2) 0ms
+     × 구멍 난(sparse) 섹션 배열 거부 (Codex P2) 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  6 failed | 42 passed (48)
+## Codex 반영 GREEN
+ Test Files  9 passed (9)
+      Tests  132 passed (132)
+
+## FIX-L4A 1 로컬 이미지 source RED (vitest)
+     × 로컬 이미지 참조·이미지 끔·장식 표시를 통과시킨다 4ms
+     × 옛 모양 { kind: 'local', assetId } 거부 — 로컬 참조의 값은 id 문자열 자체 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/engine/validate/validatePageDoc.test.ts > validatePageDoc — 통과 > 로컬 이미지 참조·이미지 끔·장식 표시를 통과시킨다
+ FAIL  src/engine/validate/validatePageDoc.test.ts > validatePageDoc — 거부 > 옛 모양 { kind: 'local', assetId } 거부 — 로컬 참조의 값은 id 문자열 자체
+ Test Files  1 failed | 8 passed (9)
+      Tests  2 failed | 138 passed (140)
+## FIX-L4A 1 RED (typecheck)
+src/engine/ops/docOps.test.ts(11,63): error TS2322: Type 'string' is not assignable to type 'ImageSource'.
+
+## FIX-L4A 1 GREEN
+ Test Files  9 passed (9)
+      Tests  140 passed (140)
+typecheck exit 0
+
+## FIX-L4A 2 removeSection 목적 필수 RED (vitest)
+     × 목적 필수 조건을 canRemove 전체 판정으로 강제한다 — 예약 목적 마지막 예약 변형 (R-04) 2ms
+     × 문의 목적 마지막 cta-band·contact 삭제 거부 (R-03) · 둘 중 하나는 지울 수 있다 1ms
+     × 목적 없음('none')이면 구조 규칙만 — 마지막 문의·예약 섹션도 지운다 · 목적 인자는 필수 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/engine/ops/sectionOps.test.ts > removeSection · restoreSection (5.4) > 목적 필수 조건을 canRemove 전체 판정으로 강제한다 — 예약 목적 마지막 예약 변형 (R-04)
+ FAIL  src/engine/ops/sectionOps.test.ts > removeSection · restoreSection (5.4) > 문의 목적 마지막 cta-band·contact 삭제 거부 (R-03) · 둘 중 하나는 지울 수 있다
+ Test Files  1 failed | 8 passed (9)
+      Tests  3 failed | 140 passed (143)
+ FAIL  src/engine/ops/sectionOps.test.ts > removeSection · restoreSection (5.4) > 목적 없음('none')이면 구조 규칙만 — 마지막 문의·예약 섹션도 지운다 · 목적 인자는 필수
+## FIX-L4A 2 RED (typecheck)
+src/engine/ops/sectionOps.test.ts(50,69): error TS2554: Expected 2 arguments, but got 3.
+src/engine/ops/sectionOps.test.ts(59,46): error TS2554: Expected 2 arguments, but got 3.
+src/engine/ops/sectionOps.test.ts(60,47): error TS2554: Expected 2 arguments, but got 3.
+
+## FIX-L4A 2 GREEN
+ Test Files  9 passed (9)
+      Tests  143 passed (143)
+typecheck exit 0
+
+## FIX-L4A 3 검증기 throw 0 RED (순환·깊이·validateProjectName은 이미 GREEN)
+     × throw하는 getter(루트·섹션·슬롯) → SCHEMA_INVALID 6ms
+     × 값을 돌려주는 getter도 거부하고 부르지 않는다 4ms
+     × setter만 있는 필드(읽으면 undefined)를 통과시키지 않는다 1ms
+     × 값이 undefined인 데이터 속성 = 누락 1ms
+     × 배열 원소 getter · 심볼 키 1ms
+     × 모든 trap이 throw하는 Proxy — 루트 0ms
+     × 모든 trap이 throw하는 Proxy — meta 0ms
+     × 모든 trap이 throw하는 Proxy — sections 0ms
+     × 모든 trap이 throw하는 Proxy — 섹션 1ms
+     × 모든 trap이 throw하는 Proxy — slots 0ms
+     × 모든 trap이 throw하는 Proxy — 이미지 source 0ms
+     × 폐기된 Proxy — 루트 0ms
+     × 폐기된 Proxy — sections 0ms
+     × 폐기된 Proxy — slots 0ms
+     × ownKeys가 거짓말하는 Proxy — 없는 키를 보고 · 있는 키를 숨김 · get이 다른 값을 줌 1ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 9 passed (10)
+      Tests  15 failed | 148 passed (163)
+
+## FIX-L4A 3 GREEN (슬롯 값 undefined 단언은 GREEN 단계에서 추가 — 한 줄 되돌려 RED 1 확인 후 복원)
+ Test Files  10 passed (10)
+      Tests  163 passed (163)
+
+## FIX-L4A 1 정규식 변이 확인 (LOCAL_IMAGE_ID → /^[\s\S]+$/ 임시)
+     × 로컬 이미지 참조 v1 UUID 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 2ms
+     × 로컬 이미지 참조 variant 자리 틀림 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 대문자 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  3 failed | 42 passed (45)
+## 복원 GREEN
+      Tests  45 passed (45)
+
+## FIX-L4A-2 1 RED (Q-14 swapVariant purpose · canSwapVariant)
+     × 목적 '예약' — 유일한 예약 변형을 다른 변형으로 바꾸면 막힘(이유 = 5.4 R-04 문장) 2ms
+     × 같은 목적에 예약 변형이 둘이면 하나는 바꿀 수 있다 0ms
+     × 예약 변형으로 바꾸기 · 예약 변형이 원래 없는 문서의 교체 · 상관없는 섹션 교체는 막지 않는다 0ms
+     × 목적 '문의' — 교체는 유형을 바꾸지 않아 R-03을 깨지 않는다(유일한 contact도 교체 허용) 0ms
+     × 목적 없음('none')·다른 목적이면 구조 규칙만 — 유일한 예약 변형도 바꾼다 0ms
+     × 목적 필수 조건을 canSwapVariant로 강제한다 — 예약 목적의 유일한 예약 변형은 다른 변형으로 못 바꾼다 (Q-14 · R-04) 2ms
+     × 목적 인자는 필수 · 모르는 목적은 BAD_VALUE · 검사 순서 목적 → 없는 id → 모르는 변형 → 목적 판정 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+TypeError: canSwapVariant is not a function
+AssertionError: expected function to throw an error, but it didn't
+ Test Files  2 failed | 3 passed (5)
+      Tests  7 failed | 69 passed (76)
+AssertionError: expected function to throw an error, but it didn't
+src/engine/ops/rules.test.ts(3,38): error TS2305: Module '"./rules"' has no exported member 'canSwapVariant'.
+src/engine/ops/sectionOps.test.ts(117,60): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(124,64): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(132,50): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(137,66): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(143,53): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(147,53): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(148,52): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(153,57): error TS2554: Expected 3 arguments, but got 4.
+src/engine/ops/sectionOps.test.ts(154,54): error TS2554: Expected 3 arguments, but got 4.
+
+## FIX-L4A-2 1 GREEN
+ Test Files  10 passed (10)
+      Tests  171 passed (171)
+0
+
+## FIX-L4A-2 2 RED (j2 medium 배열 사본 일관성)
+     × 거짓 length 0 + 실제 원소(ownKeys ['length']) — 빈 사본으로 통과시키지 않는다 5ms
+     × 거짓 length 2 + ownKeys 0·1 — 뒤 원소(본문·footer)를 숨긴 사본 거부 1ms
+     × length가 정수가 아님(NaN · -1 · 2.5) + ownKeys ['length'] 1ms
+     × ownKeys가 인덱스 일부 누락 · length보다 큰 인덱스 키 · 인덱스 키가 접근자 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected { ok: true, value: { …(10) } } to match object { ok: false, code: 'SCHEMA_INVALID' }
+AssertionError: expected { ok: true, value: { …(10) } } to match object { ok: false, code: 'SCHEMA_INVALID' }
+AssertionError: expected { ok: true, value: { …(10) } } to match object { ok: false, code: 'SCHEMA_INVALID' }
+AssertionError: expected [ '$.sections[2]' ] to include '$.sections'
+ Test Files  1 failed | 2 passed (3)
+      Tests  4 failed | 77 passed (81)
+
+## FIX-L4A-2 2 GREEN
+ Test Files  10 passed (10)
+      Tests  176 passed (176)
+
+## FIX-L4A-2 2 변이 확인 (거짓 length 탐지 줄 → if (false) 임시)
+     × 거짓 length 0 + 실제 원소(ownKeys ['length']) — 빈 사본으로 통과시키지 않는다 5ms
+     × 거짓 length 2 + ownKeys 0·1 — 뒤 원소(본문·footer)를 숨긴 사본 거부 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 79 passed (81)
+## 변이 확인 (length 정수·음수 검사 제거 임시)
+      Tests  81 passed (81)
+## 복원 GREEN
+      Tests  81 passed (81)
+
+## FIX-L4A-2 3 RED (LocalImageId 브랜드 · parseLocalImageId)
+ FAIL  src/engine/ops/docOps.test.ts [ src/engine/ops/docOps.test.ts ]
+Error: Failed to resolve import "../validate/localImageId" from "src/engine/ops/docOps.test.ts". Does the file exist?
+ FAIL  src/engine/validate/localImageId.test.ts [ src/engine/validate/localImageId.test.ts ]
+Error: Failed to resolve import "./localImageId" from "src/engine/validate/localImageId.test.ts". Does the file exist?
+ Test Files  2 failed | 9 passed (11)
+      Tests  162 passed (162)
+src/engine/ops/docOps.test.ts(7,35): error TS2307: Cannot find module '../validate/localImageId' or its corresponding type declarations.
+src/engine/validate/localImageId.test.ts(5,35): error TS2307: Cannot find module './localImageId' or its corresponding type declarations.
+src/engine/validate/localImageId.test.ts(28,5): error TS2578: Unused '@ts-expect-error' directive.
+src/engine/validate/localImageId.test.ts(30,5): error TS2578: Unused '@ts-expect-error' directive.
+
+## FIX-L4A-2 3 GREEN
+ Test Files  11 passed (11)
+      Tests  184 passed (184)
+0
+
+## FIX-L4A-2 3 변이 확인 (LOCAL_IMAGE_ID → /^[\s\S]+$/ 임시 — validatePageDoc·parseLocalImageId가 같은 규칙을 쓰는지)
+     × 하이픈 다섯 묶음 → null 3ms
+     × v1 UUID → null 1ms
+     × 대문자 → null 0ms
+     × object URL → null 0ms
+     × 앞뒤 공백 → null 0ms
+     × 로컬 이미지 참조 외부 URL 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 3ms
+     × 로컬 이미지 참조 상대 경로 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 1ms
+     × 로컬 이미지 참조 object URL 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 data URL 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 3ms
+     × 로컬 이미지 참조 UUID 아닌 id 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 v1 UUID 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 variant 자리 틀림 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 대문자 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 중괄호 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+     × 로컬 이미지 참조 앞뒤 공백 거부 — UUID v4 문자열만 (SPEC r1 5.9·8.1) 0ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  15 failed | 74 passed (89)
+## 복원 GREEN
+      Tests  89 passed (89)

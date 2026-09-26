@@ -1,0 +1,193 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/v2-4-compare/app
+
+ ❯ src/components/compare/compareBoardV2.test.tsx (13 tests | 9 failed) 315ms
+   ❯ 표 표면 (V2 4.4 표 · A-1 유지) (2)
+     × 머리글 회색 면이 없고, 고정 열(모서리·행 머리글)은 흰 불투명 면이다 44ms
+     × 행 구분선은 line-neutral 92ms
+   ❯ 선택 셀 (V2-AC-34 · A-2·A-3 대체) (2)
+     × 고른 셀 = primary-container 면 + 채운 체크 원(주 색) + '선택됨', 접근 이름·aria-pressed 그대로 54ms
+     × 안 고른 셀 = 빈 원 + '이 요소 선택', 셀 면 없음 41ms
+   ❯ 열 머리글 (V2-AC-35 · C-10) (2)
+     × '전부 선택'은 ghost(assistive) sm — 테두리 있는 outline이 아니다 16ms
+   ❯ 초안 패널 (V2-AC-36 · D-8·D-9·D-10 유지) (6)
+     × 회색 면이 없고 넓은 화면에서 왼쪽 line-neutral 선 5ms
+     × 항목 앞 출처 색 점(aria-hidden) — 고른 항목·'기본값 · A' 모두 출처 레퍼런스 대표색 22ms
+     × '초안 비우기'는 ghost(assistive) — outline 아님 7ms
+   ❯ draftItemsView — 출처 색 점 (엔진 청크에서 계산) (1)
+     × pick·default는 출처 레퍼런스 대표색, 출처가 없는 항목(pending)은 없음 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 표 표면 (V2 4.4 표 · A-1 유지) > 머리글 회색 면이 없고, 고정 열(모서리·행 머리글)은 흰 불투명 면이다
+AssertionError: expected 'bg-background-alternative' not to match /bg-background-alternative/
+
+- Expected:
+/bg-background-alternative/
+
++ Received:
+"bg-background-alternative"
+
+ ❯ src/components/compare/compareBoardV2.test.tsx:71:33
+     69|     const { container } = renderTable();
+     70|     const thead = container.querySelector("thead")!;
+     71|     expect(thead.className).not.toMatch(/bg-background-alternative/);
+       |                                 ^
+     72|     const corner = thead.querySelector("td")!;
+     73|     expect(corner).toHaveClass("sticky", "bg-background-normal");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 표 표면 (V2 4.4 표 · A-1 유지) > 행 구분선은 line-neutral
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"border-line-neutral"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  border-line-neutral[39m
+Received:
+[31m  border-t border-line-alternative[39m
+ ❯ src/components/compare/compareBoardV2.test.tsx:83:17
+     81|     renderTable();
+     82|     const row = screen.getByRole("rowheader", { name: /^Hero 구성/ }).cl…
+     83|     expect(row).toHaveClass("border-line-neutral");
+       |                 ^
+     84|   });
+     85| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 선택 셀 (V2-AC-34 · A-2·A-3 대체) > 고른 셀 = primary-container 면 + 채운 체크 원(주 색) + '선택됨', 접근 이름·aria-pressed 그대로
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"bg-primary-container"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  bg-primary-container[39m
+Received:
+[31m  min-w-48 p-3 align-top[39m
+ ❯ src/components/compare/compareBoardV2.test.tsx:93:29
+     91|     expect(b).toHaveAttribute("aria-pressed", "true");
+     92|     expect(b).toHaveTextContent("선택됨");
+     93|     expect(b.closest("td")).toHaveClass("bg-primary-container");
+       |                             ^
+     94|     expect(filledCircle(b)).toHaveClass("text-primary");
+     95|     expect(emptyCircle(b)).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 선택 셀 (V2-AC-34 · A-2·A-3 대체) > 안 고른 셀 = 빈 원 + '이 요소 선택', 셀 면 없음
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveClass()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/components/compare/compareBoardV2.test.tsx:106:28
+    104|     expect(filledCircle(a)).toBeNull();
+    105|     // 원 모양 단서는 3:1 경계(line-strong) — line-normal은 흰 면에서 모양이 안 보인다
+    106|     expect(emptyCircle(a)).toHaveClass("border-line-strong");
+       |                            ^
+    107|   });
+    108| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 열 머리글 (V2-AC-35 · C-10) > '전부 선택'은 ghost(assistive) sm — 테두리 있는 outline이 아니다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"bg-transparent h-8"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  bg-transparent h-8[39m
+Received:
+[31m  inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1[39m
+ ❯ src/components/compare/compareBoardV2.test.tsx:126:21
+    124|     const header = screen.getAllByRole("columnheader")[0]!;
+    125|     const pickAll = within(header).getByRole("button", { name: /^이 레퍼런…
+    126|     expect(pickAll).toHaveClass("bg-transparent", "h-8");
+       |                     ^
+    127|     expect(pickAll).not.toHaveClass("border-line-normal");
+    128|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 초안 패널 (V2-AC-36 · D-8·D-9·D-10 유지) > 회색 면이 없고 넓은 화면에서 왼쪽 line-neutral 선
+Error: [2mexpect([22m[31melement[39m[2m).not.toHaveClass([22m[32m[32m"bg-background-alternative"[32m[39m[2m)[22m
+
+Expected the element not to have class:
+[32m  bg-background-alternative[39m
+Received:
+[31m  flex flex-col gap-4 rounded-lg bg-background-alternative p-5[39m
+ ❯ src/components/compare/compareBoardV2.test.tsx:135:23
+    133|     renderPanel({});
+    134|     const panel = screen.getByRole("region", { name: "프로필 초안" });
+    135|     expect(panel).not.toHaveClass("bg-background-alternative");
+       |                       ^
+    136|     expect(panel).toHaveClass("xl:border-l", "border-line-neutral");
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 초안 패널 (V2-AC-36 · D-8·D-9·D-10 유지) > 항목 앞 출처 색 점(aria-hidden) — 고른 항목·'기본값 · A' 모두 출처 레퍼런스 대표색
+TypeError: Cannot read properties of null (reading 'style')
+ ❯ src/components/compare/compareBoardV2.test.tsx:142:28
+    140|     renderPanel({ hero: "ref-a", card: "ref-b" });
+    141|     const dotOf = (label: string) => screen.getByRole("listitem", { na…
+    142|     expect(dotOf("Hero 구성")!.style.backgroundColor).toBe(COLOR.a);
+       |                            ^
+    143|     expect(dotOf("카드 스타일")!.style.backgroundColor).toBe(COLOR.b);
+    144|     expect(screen.getByRole("listitem", { name: "메뉴 구조" })).toHaveText…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > 초안 패널 (V2-AC-36 · D-8·D-9·D-10 유지) > '초안 비우기'는 ghost(assistive) — outline 아님
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"bg-transparent"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  bg-transparent[39m
+Received:
+[31m  inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-10 px-4 rounded-md text-body3 w-full[39m
+ ❯ src/components/compare/compareBoardV2.test.tsx:151:19
+    149|     renderPanel({ hero: "ref-a" });
+    150|     const clear = screen.getByRole("button", { name: "초안 비우기" });
+    151|     expect(clear).toHaveClass("bg-transparent");
+       |                   ^
+    152|     expect(clear).not.toHaveClass("border-line-normal");
+    153|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  src/components/compare/compareBoardV2.test.tsx > draftItemsView — 출처 색 점 (엔진 청크에서 계산) > pick·default는 출처 레퍼런스 대표색, 출처가 없는 항목(pending)은 없음
+AssertionError: expected undefined to be '#8B5E3C' // Object.is equality
+
+- Expected:
+"#8B5E3C"
+
++ Received:
+undefined
+
+ ❯ src/components/compare/compareBoardV2.test.tsx:169:59
+    167|     const results = resultsOf(THREE);
+    168|     const withHero = draftItemsView(buildProfileDraft(boardOf(THREE, {…
+    169|     expect(withHero.find((i) => i.rowId === "hero")!.dot).toBe("#8B5E3…
+       |                                                           ^
+    170|     expect(withHero.find((i) => i.rowId === "card")!.dot).toBe("#1F1F1…
+    171|     expect(withHero.find((i) => i.rowId === "menu")!.dot).toBe("#8B5E3…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 4 passed (13)
+   Start at  12:58:03
+   Duration  1.36s (environment 48%, tests 26%, transform 13%, setup 8%, import 5%)
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/v2-4-compare/app
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  12:58:18
+   Duration  1.47s (environment 42%, transform 23%, tests 17%, import 9%, setup 8%)
+

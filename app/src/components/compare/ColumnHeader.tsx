@@ -74,7 +74,7 @@ export function ColumnHeader({
         <p className="ds-caption1 text-label-neutral">{UNAVAILABLE_REASON[column.status as keyof typeof UNAVAILABLE_REASON]}</p>
       ) : (
         canPickAll && (
-          <Button variant="outline" size="sm" aria-disabled={disabled || undefined} onClick={() => !disabled && onPickAll()}>
+          <Button variant="assistive" size="sm" aria-disabled={disabled || undefined} onClick={() => !disabled && onPickAll()}>
             {pickAllLabel}
           </Button>
         )

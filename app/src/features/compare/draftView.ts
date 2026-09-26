@@ -10,6 +10,8 @@ export interface DraftItemView extends DraftItemData {
   readonly note?: string;
   /** 팔레트 항목의 대표색 견본 (장식 — 값 텍스트에 hex가 함께 있다, A-12) */
   readonly swatch?: string;
+  /** 출처 색 점 = 출처 레퍼런스 대표색 (v2 4.4, 장식 — 출처는 글자로도 있다). 레퍼런스 출처(pick·default)만 */
+  readonly dot?: string;
 }
 
 function footerNote(item: DraftItemData, results: readonly ComparisonResult[]): string | undefined {
@@ -24,11 +26,14 @@ function footerNote(item: DraftItemData, results: readonly ComparisonResult[]): 
 export function draftItemsView(draft: ProfileDraft, results: readonly ComparisonResult[]): readonly DraftItemView[] {
   const primary = draft.status === "ready" ? draft.palette.find((p) => p.role === "primary")?.hex : undefined;
   return draft.items.map((item) => {
+    const { source } = item;
+    const dot = "referenceId" in source ? results.find((r) => r.referenceId === source.referenceId)?.reference?.colorPalette.primary : undefined;
+    const view: DraftItemView = dot ? { ...item, dot } : item;
     if (item.rowId === "footer") {
       const note = footerNote(item, results);
-      return note ? { ...item, note } : item;
+      return note ? { ...view, note } : view;
     }
-    return item.rowId === "palette" && primary ? { ...item, swatch: primary } : item;
+    return item.rowId === "palette" && primary ? { ...view, swatch: primary } : view;
   });
 }
 

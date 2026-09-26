@@ -1,0 +1,31 @@
+dist/assets/Pretendard-Regular.subset-BZqc2FCe.woff2   267.09 kB
+dist/assets/Pretendard-Medium.subset-D07TkZcI.woff2    268.32 kB
+dist/assets/Pretendard-SemiBold.subset-DdMYyxPR.woff2  268.75 kB
+dist/assets/Pretendard-Bold.subset-NvQkMce4.woff2      270.78 kB
+dist/assets/index-DS6W_1Bq.css                          41.40 kB │ gzip:  8.40 kB
+dist/assets/PlaceholderPage-DIe-9Xeb.js                  0.68 kB │ gzip:  0.45 kB
+dist/assets/TextField-rNbK2quC.js                        0.76 kB │ gzip:  0.45 kB
+dist/assets/referenceDisplay-b4uxcEnR.js                 1.31 kB │ gzip:  0.79 kB
+dist/assets/useThrowToBoundary-GoDdPHxl.js               1.37 kB │ gzip:  0.80 kB
+dist/assets/catalogFilters-CTS9InfW.js                   2.26 kB │ gzip:  1.16 kB
+dist/assets/references-Dy8ZbmG9.js                       2.70 kB │ gzip:  0.97 kB
+dist/assets/memoryCompareBoardRepository-C4yNe1Wu.js     3.57 kB │ gzip:  1.66 kB
+dist/assets/referenceComparisons-BjFXZkfz.js             3.69 kB │ gzip:  1.01 kB
+dist/assets/referenceDetails-C7TYk5GK.js                 5.57 kB │ gzip:  1.41 kB
+dist/assets/jsx-runtime-Dk72oS4N.js                      8.77 kB │ gzip:  3.33 kB
+dist/assets/boardEngine-CegVnCG_.js                     12.25 kB │ gzip:  5.55 kB
+dist/assets/ReferenceDetailPage-B-f5aVJE.js             13.10 kB │ gzip:  4.40 kB
+dist/assets/CatalogPage-BR85xGus.js                     19.43 kB │ gzip:  6.65 kB
+dist/assets/CompareBoardPage-BI4XiYKX.js                27.14 kB │ gzip:  8.96 kB
+dist/assets/compareBoardRepository-CtSvzwWd.js          28.78 kB │ gzip: 10.31 kB
+dist/assets/index-CbfBumVt.js                          268.82 kB │ gzip: 86.24 kB
+
+✓ built in 339ms
+[bundle] 공통 JS (gzip, 참고): 88.66KB
+  - assets/index-CbfBumVt.js 85.33KB
+  - assets/jsx-runtime-Dk72oS4N.js 3.33KB
+[bundle] /catalog 첫 화면 합계: 98.49KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.87KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.82KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.20KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.38KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.80KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.12KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.50KB / 예산 125KB
+[dist] JS 청크 16개 · 공통 88.66 (index 85.33 + jsx-runtime 3.33) · /catalog 98.49 / 100.87 · /references/:id 95.82 / 98.20 · /compare 98.38 / 120.80 · 자리표시 89.12 / 91.50

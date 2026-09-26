@@ -1,13 +1,17 @@
 /**
  * 디자인 프로필 저장소 메모리 구현 (DS-2A-04 SPEC 6.3) — 보드 메모리 구현과 같은 store를 쓴다.
- * 되돌리기는 expectedLatest 비교와 삽입을 한 동기 구간에서 한다(사이에 await 없음, 6.1-4). 판정 순서: NOT_FOUND → STALE_PROFILE → 이미 최신(SCHEMA_INVALID).
- * `delay`·`fail` 주입은 보드 구현과 같은 모양(요청 도착 전·응답 반환 전).
+ * 되돌리기·조정 저장은 expectedLatest 비교와 삽입을 한 동기 구간에서 한다(사이에 await 없음, 6.1-4).
+ * 판정 순서 — 되돌리기: NOT_FOUND → STALE_PROFILE → 이미 최신(SCHEMA_INVALID). 조정 저장은 memoryProfileAdjust.
+ * 멱등 키는 두지 않는다(되돌리기와 같음 — 보드 확정만 키가 있다, REPORT 설계 질문).
+ * `delay`·`fail` 주입은 보드 구현과 같은 모양(요청 도착 전·응답 반환 전). `range`는 테마 허용 범위 주입(P-AC-13).
+ * 조정 저장 본문(zod·정규화)은 조정 메서드를 처음 부를 때 받는다 — 보드 진입 직후 합계(/compare)에 싣지 않는다(2a-04b1 번들).
+ * 받기는 `call`의 동기 구간 밖(앞)이라 비교·삽입 원자성은 그대로다.
  */
-import type { ProfileSeries, ProfileSummary, ProfileVersion } from "../domain/profile";
-import { ProfileError, type ProfileReadRepository } from "./profileRepository";
+import type { AdjustmentRange, ProfileSeries, ProfileSummary, ProfileVersion } from "../domain/profile";
+import { ProfileError, type ProfileRepository } from "./profileRepository";
 import type { StudioReader, StudioStore } from "./studioStore";
 
-export type ProfileMethod = keyof ProfileReadRepository;
+export type ProfileMethod = keyof ProfileRepository;
 export interface ProfileCall {
   readonly method: ProfileMethod;
   /** 메서드별 1부터 */
@@ -20,6 +24,8 @@ export interface MemoryProfileOptions {
   readonly now?: () => string;
   readonly delay?: (call: ProfileCall) => Promise<void> | void | undefined;
   readonly fail?: (call: ProfileCall) => Error | undefined;
+  /** 테마 허용 범위 (3.4). 없으면 기본 범위 1벌 */
+  readonly range?: AdjustmentRange;
 }
 
 function seriesOf(reader: StudioReader, profileId: string): ProfileSeries | undefined {
@@ -28,7 +34,10 @@ function seriesOf(reader: StudioReader, profileId: string): ProfileSeries | unde
   return latest && { profileId, versions, latestVersion: latest.version };
 }
 
-export function createMemoryProfileRepository(options: MemoryProfileOptions): ProfileReadRepository {
+/** 조정 메서드 본문 — 처음 부를 때 받는다(보드 진입 직후 합계 밖, 2a-04b1 번들) */
+const loadAdjust = () => import("./memoryProfileAdjust");
+
+export function createMemoryProfileRepository(options: MemoryProfileOptions): ProfileRepository {
   const { store, now = () => new Date().toISOString() } = options;
   const counts = new Map<ProfileMethod, number>();
 
@@ -55,6 +64,20 @@ export function createMemoryProfileRepository(options: MemoryProfileOptions): Pr
         return series ? [summaryOf(series)] : [];
       })),
     getProfile: (profileId) => call("getProfile", () => seriesOf(store, profileId)),
+    getAdjustmentRange: async (profileId, version) => {
+      const range = options.range ?? (await loadAdjust()).DEFAULT_ADJUSTMENT_RANGE;
+      return call("getAdjustmentRange", () => {
+        if (!store.versions(profileId).some((v) => v.version === version)) throw new ProfileError("NOT_FOUND", `${profileId} v${version} 없음`);
+        return range;
+      });
+    },
+    saveAdjustments: async (profileId, expectedLatest, adjustments) => {
+      const { saveAdjustmentsIn, DEFAULT_ADJUSTMENT_RANGE } = await loadAdjust();
+      const range = options.range ?? DEFAULT_ADJUSTMENT_RANGE;
+      return call("saveAdjustments", () =>
+        store.transact((tx) => saveAdjustmentsIn(tx, { profileId, expectedLatest, adjustments, range, createdAt: now(), seriesOf: (reader) => seriesOf(reader, profileId) })),
+      );
+    },
     revertTo: (profileId, version, expectedLatest) =>
       call("revertTo", () =>
         store.transact((tx) => {

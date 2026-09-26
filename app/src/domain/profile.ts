@@ -47,6 +47,8 @@ export interface ProfileVersion {
   readonly basedOn?: number;
   /** board·board-reconfirm만 */
   readonly boardRevision?: number;
+  /** 기준 레퍼런스(ProfileSummary) — 보드 확정 = 초안 값, 되돌리기 = 대상 버전 값 복사 (SPEC 10.0 A-Q1) */
+  readonly baseReferenceId: string;
   readonly base: DesignProfileInput;
   readonly adjustments: ProfileAdjustments;
   /** board-reconfirm만 — 버전 요약 문장 (2a-04b) */

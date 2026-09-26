@@ -12,14 +12,8 @@ export interface IdempotentCommit {
   readonly version: number;
 }
 
-interface StoredVersion {
-  readonly record: ProfileVersion;
-  /** ProfileSummary.baseReferenceId — DesignProfileInput에 없어 레코드 밖에 둔다 (REPORT 설계 질문 1) */
-  readonly baseReferenceId: string;
-}
-
 interface StudioState {
-  readonly series: ReadonlyMap<string, readonly StoredVersion[]>;
+  readonly series: ReadonlyMap<string, readonly ProfileVersion[]>;
   readonly commits: ReadonlyMap<string, IdempotentCommit>;
 }
 
@@ -27,7 +21,6 @@ export interface StudioReader {
   profileIds(): readonly string[];
   /** 오름차순. 없으면 빈 배열 */
   versions(profileId: string): readonly ProfileVersion[];
-  baseReferenceIdOf(profileId: string, version: number): string | undefined;
   /** 계열의 마지막 보드 확정 커밋 */
   commitOf(profileId: string): IdempotentCommit | undefined;
 }
@@ -35,7 +28,7 @@ export interface StudioReader {
 export interface StudioTx extends StudioReader {
   nextProfileId(): string;
   /** 계열 최신 + 1 번호만 받는다 — 번호 중복·건너뜀 0 */
-  insert(record: ProfileVersion, baseReferenceId: string): void;
+  insert(record: ProfileVersion): void;
   remember(commit: IdempotentCommit): void;
 }
 
@@ -54,11 +47,9 @@ export function deepFreeze<T>(value: T): T {
 export const headOf = ({ version, base, adjustments }: ProfileVersion): ProfileHead => ({ version, base, adjustments });
 
 function readerOf(read: () => StudioState): StudioReader {
-  const stored = (profileId: string) => read().series.get(profileId) ?? [];
   return {
     profileIds: () => [...read().series.keys()],
-    versions: (profileId) => stored(profileId).map((s) => s.record),
-    baseReferenceIdOf: (profileId, version) => stored(profileId).find((s) => s.record.version === version)?.baseReferenceId,
+    versions: (profileId) => read().series.get(profileId) ?? [],
     commitOf: (profileId) => read().commits.get(profileId),
   };
 }
@@ -72,12 +63,11 @@ export function createStudioStore(): StudioStore {
       const tx: StudioTx = {
         ...readerOf(() => draft),
         nextProfileId: () => `profile-${draft.series.size + 1}`,
-        insert(record, baseReferenceId) {
+        insert(record) {
           const current = draft.series.get(record.profileId) ?? [];
-          const latest = current.at(-1)?.record.version ?? 0;
+          const latest = current.at(-1)?.version ?? 0;
           if (record.version !== latest + 1) throw new Error(`버전 번호 ${record.version} ≠ 최신 ${latest} + 1`);
-          const entry = deepFreeze({ record, baseReferenceId });
-          draft = { ...draft, series: new Map(draft.series).set(record.profileId, [...current, entry]) };
+          draft = { ...draft, series: new Map(draft.series).set(record.profileId, [...current, deepFreeze(record)]) };
         },
         remember(commit) {
           draft = { ...draft, commits: new Map(draft.commits).set(commit.profileId, commit) };

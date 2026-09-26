@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import type { DesignProfileInput } from "../../domain/compareBoard";
-import { profileFieldRows, sectionLabel } from "../../features/profile/profileFields";
+import { sectionLabel, type FieldRow } from "../../features/profile/profileFields";
 import type { Sources } from "../../features/profile/useProfileDetail";
 import { INDUSTRY_LABELS } from "../../fixtures/catalogFilters";
 import { LICENSE_TONE } from "../catalog/referenceDisplay";
@@ -44,9 +44,11 @@ function SourceList({ ids, sources }: { readonly ids: readonly string[]; readonl
   );
 }
 
-/** 3.1 프로필 값 — 시각·레이아웃은 비대화형 Tag(M-05), 구성 요소는 이름표 + 변형 키 캡션(M-06) */
-export function ProfileValues({ profile, sources, titleOf }: { readonly profile: DesignProfileInput; readonly sources: Sources; readonly titleOf: (id: string) => string }) {
-  const rows = profileFieldRows(profile, titleOf);
+/**
+ * 3.1 프로필 값 — 시각·레이아웃은 비대화형 Tag(M-05), 구성 요소는 이름표 + 변형 키 캡션(M-06).
+ * 행은 엔진이 적용된 값으로 만든다(`valueRows` — 이름표 Q2 · "조정됨" 캡션 5.4). `profile`은 섹션 구성·출처용
+ */
+export function ProfileValues({ rows, profile, sources }: { readonly rows: readonly FieldRow[]; readonly profile: DesignProfileInput; readonly sources: Sources }) {
   const meta = rows.find((r) => r.key === "meta");
   return (
     <section aria-labelledby="profile-values" className="flex flex-col gap-4">

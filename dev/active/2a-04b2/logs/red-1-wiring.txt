@@ -1,0 +1,16 @@
+     13|     const repo: ProfileRepository = createDeferredProfileRepository(lo…
+     14|     expect(load).not.toHaveBeenCalled();
+     15|     expect((await repo.getAdjustmentRange("profile-1", 1)).density).to…
+       |                        ^
+     16|     const saved = await repo.saveAdjustments("profile-1", 1, { density…
+     17|     expect(saved).toMatchObject({ version: 2, origin: "adjust", adjust…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:52:35
+   Duration  1.25s (environment 72%, setup 12%, transform 10%, import 5%, tests 2%)
+
+src/data/deferredProfileRepository.test.ts(13,11): error TS2739: Type 'ProfileReadRepository' is missing the following properties from type 'ProfileRepository': getAdjustmentRange, saveAdjustments

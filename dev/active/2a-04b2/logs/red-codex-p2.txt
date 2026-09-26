@@ -1,0 +1,5 @@
+     × 원본(어두운 카드 #444)에서는 ink가 충돌 → 초안에서 primary를 #000000으로 보정하면 ink 제안은 충돌 아님, from = base ink 7ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected { …(3) } to be undefined
+      Tests  1 failed (1)
+      Tests  57 passed (57)

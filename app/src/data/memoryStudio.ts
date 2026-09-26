@@ -10,7 +10,7 @@ import { createStudioStore } from "./studioStore";
 
 export interface MemoryStudio {
   readonly board: CompareBoardRepository;
-  /** 조정 범위·저장까지 전체 — 앱 deferred 래퍼·컨텍스트는 아직 읽기 몫(ProfileReadRepository)만 넘긴다 (b2에서 넓힘) */
+  /** 조회·조정 범위·조정 저장·되돌리기 전체 — 앱 deferred 래퍼·컨텍스트도 같은 인터페이스 (2a-04b2) */
   readonly profiles: ProfileRepository;
 }
 

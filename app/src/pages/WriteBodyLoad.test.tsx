@@ -68,3 +68,25 @@ describe("FIX3 1안 쓰기 본문 로드 실패 — 저장 0·오류 표시·다
     expect(await versionsOf()).toEqual([1, 2, 3]);
   });
 });
+
+describe("2a-04b2 번들 분류 근거 — /profile 진입(범위 조회)은 쓰기 본문을 받지 않는다", () => {
+  it("진입 때 getAdjustmentRange를 자동으로 불러도 본문 요청 0 → '조정 저장' 클릭 뒤에만 1회, 본문 로드 실패면 저장 0 + 다시 시도로 v2", async () => {
+    const s = studio();
+    await s.board.confirmProfile(1, 0);
+    const range = vi.spyOn(s.profiles, "getAdjustmentRange");
+    loads.profileWrites.mockClear();
+    renderApp("/profile/profile-1", createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), s.board, s.profiles);
+    await screen.findByRole("radiogroup", { name: "밀도" });
+    expect(range).toHaveBeenCalledWith("profile-1", 1);
+    expect(loads.profileWrites).not.toHaveBeenCalled();
+    loads.profileWrites.mockRejectedValueOnce(chunkError());
+    await userEvent.click(within(screen.getByRole("radiogroup", { name: "밀도" })).getByRole("radio", { name: "촘촘" }));
+    await userEvent.click(screen.getByRole("button", { name: "조정 저장 (v2)" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("저장하지 못했습니다");
+    expect(await s.versionsOf()).toEqual([1]);
+    await userEvent.click(screen.getByRole("button", { name: "다시 시도" }));
+    expect(await screen.findByRole("status", { name: "프로필 알림" })).toHaveTextContent("v2로 저장했습니다");
+    expect(loads.profileWrites).toHaveBeenCalledTimes(2);
+    expect(await s.versionsOf()).toEqual([1, 2]);
+  });
+});

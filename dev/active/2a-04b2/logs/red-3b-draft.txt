@@ -1,0 +1,3 @@
+ FAIL  src/features/profile/adjustmentDraft.test.ts [ src/features/profile/adjustmentDraft.test.ts ]
+Error: Failed to resolve import "./adjustmentDraft" from "src/features/profile/adjustmentDraft.test.ts". Does the file exist?
+      Tests  no tests

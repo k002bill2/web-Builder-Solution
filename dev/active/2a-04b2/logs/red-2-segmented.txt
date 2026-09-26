@@ -1,0 +1,18 @@
+     × 비활성 옵션은 aria-disabled(속성 disabled 아님), 누르면 값이 바뀌지 않는다 80ms
+     × 방향키·Home/End는 비활성 옵션을 건너뛴다 (APG radio group) 31ms
+     × 그룹 설명 캡션이 보이고 radiogroup의 aria-describedby가 가리킨다 6ms
+     × 선택값이 비활성(이어받은 범위 밖 값)이면 Tab 정지점은 첫 활성 옵션 11ms
+     × 모든 옵션이 비활성(이전 버전 보기)이면 선택값이 Tab 정지점, 그룹 aria-disabled, 방향키로 바뀌지 않는다 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/components/ds/SegmentedControl.test.tsx > SegmentedControl 옵션 disabled + 설명 캡션 > 비활성 옵션은 aria-disabled(속성 disabled 아님), 누르면 값이 바뀌지 않는다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-disabled"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-disabled") === "true"[22m
+ FAIL  src/components/ds/SegmentedControl.test.tsx > SegmentedControl 옵션 disabled + 설명 캡션 > 방향키·Home/End는 비활성 옵션을 건너뛴다 (APG radio group)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+      Tests  5 failed | 1 passed (6)
+ FAIL  src/components/ds/SegmentedControl.test.tsx > SegmentedControl 옵션 disabled + 설명 캡션 > 그룹 설명 캡션이 보이고 radiogroup의 aria-describedby가 가리킨다
+TestingLibraryElementError: Unable to find an element with the text: 나·라: 이 테마에서 쓸 수 없음. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ FAIL  src/components/ds/SegmentedControl.test.tsx > SegmentedControl 옵션 disabled + 설명 캡션 > 선택값이 비활성(이어받은 범위 밖 값)이면 Tab 정지점은 첫 활성 옵션
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+ FAIL  src/components/ds/SegmentedControl.test.tsx > SegmentedControl 옵션 disabled + 설명 캡션 > 모든 옵션이 비활성(이전 버전 보기)이면 선택값이 Tab 정지점, 그룹 aria-disabled, 방향키로 바뀌지 않는다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-disabled"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-disabled") === "true"[22m

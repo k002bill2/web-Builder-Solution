@@ -5,10 +5,10 @@
  * 멱등 키: 조정 저장만 둔다(보드 확정과 같은 r3 계약, 별도 기록 — memoryProfileAdjust). 되돌리기는 키 없음.
  * `delay`·`fail` 주입은 보드 구현과 같은 모양(요청 도착 전·응답 반환 전, `fail`의 `phase: "commit"`은 조정 저장 삽입 뒤 커밋 앞).
  * `range`는 테마 허용 범위 주입(P-AC-13).
- * 쓰기 본문(조정 저장의 zod·정규화, 되돌리기 판정·삽입)은 그 메서드를 처음 부를 때 받는다(writeBodyLoader) — 보드 진입 직후
+ * 쓰기 본문(조정 저장의 zod·정규화, 되돌리기 판정·삽입)은 그 메서드를 처음 부를 때 받는다(writeBodyLoader, 범위 조회는 받지 않음) — 보드 진입 직후
  * 합계(/compare)에 싣지 않는다(2a-04b1 번들 · FIX3 1안). 받기는 `call`의 동기 구간 밖(앞)이라 비교·삽입 원자성은 그대로다.
  */
-import type { AdjustmentRange, ProfileSeries, ProfileSummary } from "../domain/profile";
+import { DEFAULT_ADJUSTMENT_RANGE, type AdjustmentRange, type ProfileSeries, type ProfileSummary } from "../domain/profile";
 import { ProfileError, type ProfileRepository } from "./profileRepository";
 import type { StudioReader, StudioStore } from "./studioStore";
 import { loadProfileWrites } from "./writeBodyLoader";
@@ -68,15 +68,16 @@ export function createMemoryProfileRepository(options: MemoryProfileOptions): Pr
         return series ? [summaryOf(series)] : [];
       })),
     getProfile: (profileId) => call("getProfile", () => seriesOf(store, profileId)),
-    getAdjustmentRange: async (profileId, version) => {
-      const range = options.range ?? (await loadProfileWrites()).DEFAULT_ADJUSTMENT_RANGE;
+    // 범위 조회는 쓰기 본문을 받지 않는다 — /profile 진입 때 자동으로 부르므로(2a-04b2) 본문 청크는 저장·되돌리기 조작 뒤에만
+    getAdjustmentRange: (profileId, version) => {
+      const range = options.range ?? DEFAULT_ADJUSTMENT_RANGE;
       return call("getAdjustmentRange", () => {
         if (!store.versions(profileId).some((v) => v.version === version)) throw new ProfileError("NOT_FOUND", `${profileId} v${version} 없음`);
         return range;
       });
     },
     saveAdjustments: async (profileId, expectedLatest, adjustments) => {
-      const { saveAdjustmentsIn, DEFAULT_ADJUSTMENT_RANGE } = await loadProfileWrites();
+      const { saveAdjustmentsIn } = await loadProfileWrites();
       const range = options.range ?? DEFAULT_ADJUSTMENT_RANGE;
       return call("saveAdjustments", (commitGate) =>
         store.transact((tx) => saveAdjustmentsIn(tx, { profileId, expectedLatest, adjustments, range, createdAt: now(), seriesOf: (reader) => seriesOf(reader, profileId), commitGate })),

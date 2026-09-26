@@ -12,7 +12,7 @@ import { VersionList } from "../components/profile/VersionList";
 import type { ProfileVersion } from "../domain/profile";
 import { PALETTE_ROLES, SELECTION_MODE_LABELS } from "../features/profile/profileFields";
 import { useProfileDetail, type ProfileDetailState } from "../features/profile/useProfileDetail";
-import { versionWith } from "../features/profile/versionText";
+import { missingVersionText, versionWith } from "../features/profile/versionText";
 
 const PAGE = "mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 py-6 md:px-7 md:py-8";
 
@@ -36,6 +36,8 @@ function ProfileNotFound() {
 
 /** `?v=`가 없거나 없는 버전이면 최신 */
 const pick = (versions: readonly ProfileVersion[], param: string | null) => versions.find((v) => String(v.version) === param);
+/** 비교 표는 작은 번호 먼저 ("v1과 v2 비교") */
+const ordered = (a: ProfileVersion, b: ProfileVersion) => (a.version < b.version ? ([a, b] as const) : ([b, a] as const));
 
 function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const { state, status, alert, reverting, revert } = useProfileDetail(profileId);
@@ -65,10 +67,14 @@ function ProfileView({
 }) {
   const [params, setParams] = useSearchParams();
   const latest = series.versions.at(-1)!;
-  const viewed = pick(series.versions, params.get("v")) ?? latest;
+  const requested = params.get("v");
+  const found = pick(series.versions, requested);
+  const viewed = found ?? latest;
   const isLatest = viewed.version === latest.version;
+  // Q3 — 비교 쌍 = (보는 버전, diff). diff가 보는 버전과 같거나 없는 버전이면 닫힘
   const diffTarget = pick(series.versions, params.get("diff"));
-  const diff = diffTarget && diffTarget.version !== latest.version ? diffTarget : undefined;
+  const diff = diffTarget && diffTarget.version !== viewed.version ? diffTarget : undefined;
+  const [from, to] = ordered(diff ?? viewed, viewed);
 
   const titleOf = (id: string) => sources.get(id)?.title ?? "출처 회수됨";
   const h1 = useRef<HTMLHeadingElement>(null);
@@ -87,7 +93,7 @@ function ProfileView({
     else if (!firstView.current || viewKey !== null) h1.current?.focus();
     firstView.current = false;
   }, [viewKey]);
-  // 비교 열기 → 표 caption, 닫기 → 그 줄의 "현재와 비교" 버튼
+  // 비교 열기 → 표 caption, 닫기 → 그 줄의 비교 버튼
   const diffKey = diff?.version;
   useEffect(() => {
     if (diffKey !== undefined) diffFocus.current?.focus();
@@ -130,6 +136,12 @@ function ProfileView({
           비교 보드에서 선택 바꾸기
         </Link>
       </header>
+      {/* Q9 — 없는 ?v= 버전: 최신을 보이고 글자로 알린다 */}
+      {requested !== null && !found && (
+        <div role="status">
+          <Callout tone="info" title={missingVersionText(requested, latest.version)} />
+        </div>
+      )}
       {!isLatest && (
         <Callout
           tone="info"
@@ -169,9 +181,9 @@ function ProfileView({
         />
         {diff && (
           <VersionDiff
-            from={diff.version}
-            to={latest.version}
-            rows={engine.diffProfiles(diff.base, latest.base, titleOf)}
+            from={from.version}
+            to={to.version}
+            rows={engine.diffProfiles(from.base, to.base, titleOf)}
             focusRef={diffFocus}
             onClose={() => {
               returnCompare.current = diff.version;

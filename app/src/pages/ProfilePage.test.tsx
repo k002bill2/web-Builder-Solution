@@ -227,6 +227,66 @@ describe("P-AC-09 버전 비교 (P-S08)", () => {
   });
 });
 
+describe("FIX-2A04a2 Q3 비교 쌍 = (?v= 또는 최신, diff) · Q9 없는 버전 안내", () => {
+  const columns = (table: HTMLElement) => within(table).getAllByRole("columnheader").map((th) => th.textContent);
+  const statusWith = (text: string) => screen.getByText(text).closest("[role=status]");
+
+  it("F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)", async () => {
+    await openProfile("/profile/profile-1?v=1&diff=2", 3);
+    const table = await screen.findByRole("table", { name: "v1과 v2 비교" });
+    expect(columns(table)).toEqual(["항목", "v1", "v2", "차이"]);
+    expect(within(table).getByRole("row", { name: /대표색 \(primary\)/ })).toHaveTextContent("바뀜");
+  });
+
+  it("F-2 ?diff=2(v 없음) → v2↔최신 v3", async () => {
+    await openProfile("/profile/profile-1?diff=2", 3);
+    const table = await screen.findByRole("table", { name: "v2와 v3 비교" });
+    expect(columns(table)).toEqual(["항목", "v2", "v3", "차이"]);
+  });
+
+  it("F-3 ?v=1에서 v2 줄 'v1과 비교 (v2)' → ?v=1&diff=2 · 포커스 caption · 닫기 → 같은 버튼", async () => {
+    const { router } = await openProfile("/profile/profile-1?v=1", 3);
+    await h1();
+    expect(within(versionRow(1)).queryByRole("button", { name: /비교/ })).not.toBeInTheDocument();
+    expect(within(versionRow(3)).getByRole("button", { name: "v1과 비교 (v3)" })).toHaveTextContent("v1과 비교");
+    await userEvent.click(within(versionRow(2)).getByRole("button", { name: "v1과 비교 (v2)" }));
+    expect(router.state.location.search).toBe("?v=1&diff=2");
+    const table = await screen.findByRole("table", { name: "v1과 v2 비교" });
+    expect(table.querySelector("caption")).toHaveFocus();
+    await userEvent.click(screen.getByRole("button", { name: "비교 닫기" }));
+    expect(router.state.location.search).toBe("?v=1");
+    expect(within(versionRow(2)).getByRole("button", { name: "v1과 비교 (v2)" })).toHaveFocus();
+  });
+
+  it.each(["?v=2&diff=2", "?diff=9", "?diff=3"])("F-4 %s → 비교 닫힘(표·같음 문장 없음)", async (search) => {
+    await openProfile(`/profile/profile-1${search}`, 3);
+    await h1();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.queryByText("두 버전의 값이 같습니다")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "비교 닫기" })).not.toBeInTheDocument();
+  });
+
+  it("F-5 ?v=7(v3 계열) → 최신 v3 + role=status '요청한 v7이 없어 최신 v3을 보여 줍니다'", async () => {
+    await openProfile("/profile/profile-1?v=7", 3);
+    await h1();
+    expect(screen.getByText("v3 · 현재")).toBeInTheDocument();
+    expect(statusWith("요청한 v7이 없어 최신 v3을 보여 줍니다")).not.toBeNull();
+    expect(screen.queryByText(/보고 있습니다/)).not.toBeInTheDocument();
+  });
+
+  it("F-5 ?v=abc → '요청한 버전이 없어 최신 v3을 보여 줍니다'", async () => {
+    await openProfile("/profile/profile-1?v=abc", 3);
+    await h1();
+    expect(statusWith("요청한 버전이 없어 최신 v3을 보여 줍니다")).not.toBeNull();
+  });
+
+  it("F-5 ?v=3·?diff=9 → 요청 버전 안내 없음", async () => {
+    await openProfile("/profile/profile-1?v=3&diff=9", 3);
+    await h1();
+    expect(screen.queryByText(/요청한/)).not.toBeInTheDocument();
+  });
+});
+
 describe("P-AC-10 되돌리기 (P-S09) · P-AC-37 계측", () => {
   it("?v=1에서 되돌리기 → 새 버전 v3 · 알림 'v1 내용으로 v3을 만들었습니다' · 포커스 새 버전 줄 · 현재 보기로 · profile_saved 1회", async () => {
     window.addEventListener(PROFILE_EVENT, listen);

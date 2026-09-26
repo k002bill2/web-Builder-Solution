@@ -1,5 +1,5 @@
 import type { ProfileOrigin, ProfileVersion } from "../../domain/profile";
-import { relativeTime } from "../../features/profile/versionText";
+import { relativeTime, versionWith } from "../../features/profile/versionText";
 import { Button } from "../ds/Button";
 import { Tag } from "../ds/Tag";
 
@@ -22,6 +22,8 @@ export interface VersionListProps {
 function VersionRow({ v, props }: { readonly v: ProfileVersion; readonly props: VersionListProps }) {
   const current = v.version === props.latestVersion;
   const viewed = v.version === props.viewedVersion;
+  // Q3 — 비교는 보는 버전 기준: 최신이면 "현재와 비교", 이전 버전이면 "v1과 비교". 보는 버전 자신의 줄에는 없음
+  const compareText = props.viewedVersion === props.latestVersion ? "현재와 비교" : `${versionWith(props.viewedVersion, ["과", "와"])} 비교`;
   return (
     <li
       ref={props.rowRef(v.version)}
@@ -43,9 +45,9 @@ function VersionRow({ v, props }: { readonly v: ProfileVersion; readonly props: 
             보기
           </Button>
         )}
-        {!current && (
-          <Button data-compare={v.version} variant="outline" size="sm" aria-label={`현재와 비교 (v${v.version})`} onClick={() => props.onCompare(v.version)}>
-            현재와 비교
+        {!viewed && (
+          <Button data-compare={v.version} variant="outline" size="sm" aria-label={`${compareText} (v${v.version})`} onClick={() => props.onCompare(v.version)}>
+            {compareText}
           </Button>
         )}
       </span>

@@ -3,6 +3,13 @@ export function versionWith(version: number, [final, open]: readonly [string, st
   return `v${version}${[2, 4, 5, 9].includes(version % 10) ? open : final}`;
 }
 
+/** Q9 — `?v=`가 없는 버전일 때 안내. 양의 정수면 번호를 쓰고, 아니면 "요청한 버전" */
+export function missingVersionText(requested: string, latest: number): string {
+  const n = /^[1-9]\d*$/.test(requested) ? Number(requested) : NaN;
+  const which = Number.isSafeInteger(n) ? `요청한 ${versionWith(n, ["이", "가"])}` : "요청한 버전이";
+  return `${which} 없어 최신 ${versionWith(latest, ["을", "를"])} 보여 줍니다`;
+}
+
 /** "방금" · "12분 전" · "3시간 전" · "2일 전" — `<time datetime>`의 보이는 글자 */
 export function relativeTime(iso: string, now: number = Date.now()): string {
   const minutes = Math.floor((now - Date.parse(iso)) / 60_000);

@@ -56,3 +56,9 @@
 - 대비(실측 합성): 열 문자 배지 **15.65** · 열 업종 **6.46**(D-QA02) · "기본값 · A" **6.46**(D-QA02) · 대표색 오류 문구 **6.52**(D-QA03) · 요약 바 "초안 보기" **10.78**(D-QA01) · 출처 글자 primary-text 6.45 · "선택됨" 14.08 · 채운 원 4.46 · 빈 원 3.23
 - 키보드: 행 roving(Tab 진입 = 선택된 버튼, ←/→·End, 다음 Tab = 다음 행) 정상, 포커스 링 2중 링
 - 캡처: `screens/compare-1280.png`·`compare-1024.png`·`compare-768.png`·`compare-390.png`·`compare-1280-scrolled-focus.png`
+
+## Codex 리뷰 1회 (`--base c64532e`)
+- 지적 0건("확인 가능한 결함은 없습니다"). 샌드박스 읽기 전용이라 Codex 쪽 테스트 미실행 → 로컬 최종 fresh 실행으로 보강
+
+## 최종 (`logs/final.txt`)
+- typecheck 0 · lint 0 · test 519 passed(46 files) · build 0 · 공통 88.67(index 85.34, 정규화 비교상 코드 0) · `/compare` 98.51 / 120.98

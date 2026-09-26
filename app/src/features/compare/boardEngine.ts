@@ -15,6 +15,8 @@ import { buildProfileDraft } from "../../domain/profileDraft";
 import { CustomStyleFields, type PrimaryColorCheck } from "../../components/compare/CustomStyleFields";
 import type { Comparison, Evaluation } from "./boardScreen";
 import { STALE_SAVE_NOTICE, confirmErrorPlan, customAnnouncement, releasedNotices, sameIntent, unchangedSinceConfirm, withWarningDelta } from "./boardMessages";
+import { CompareBoardError } from "../../data/compareBoardRepository";
+import { emitProfileEvent } from "../profile/profileEvents";
 import { buildBoardView } from "./boardView";
 import { draftItemsView } from "./draftView";
 import { createPicksSaver } from "./picksSaver";
@@ -31,7 +33,13 @@ const checkPrimaryColor: PrimaryColorCheck = (input) => {
   return { ok: true, value: parsed.value.primaryColor ?? input };
 };
 
+/** P-AC-37 — 보드 확정 성공마다 profile_saved 1회(첫 확정 board · 재확정 board-reconfirm), 실패는 profile_save_failed(오류 코드) */
+const reportConfirmed = (version: number, reconfirm: boolean) => emitProfileEvent({ name: "profile_saved", version, origin: reconfirm ? "board-reconfirm" : "board" });
+const reportConfirmFailed = (error: unknown) => emitProfileEvent({ name: "profile_save_failed", reason: error instanceof CompareBoardError ? error.code : "UNKNOWN" });
+
 export const boardEngine = Object.freeze({
+  reportConfirmed,
+  reportConfirmFailed,
   createPicksSaver,
   confirmAvailability,
   fonts: FONT_OPTIONS,

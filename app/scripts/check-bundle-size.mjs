@@ -37,6 +37,15 @@ const ROUTE_EAGER_DYNAMIC = {
   "/profile": ["src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
 };
 
+/**
+ * 조건부 dynamic import — 조건이 맞을 때만 받는다(자동 로드 아님). 예산 판정 밖, 진입 직후 합계에 없는 파일의 크기만 따로 출력한다 (2a-04b1).
+ * /compare: P-S25 패널(확정한 프로필의 최신에 조정이 있을 때) · 재확정 이어받기 규칙(조정 있는 재확정 때) · 조정 저장 본문(saveAdjustments·getAdjustmentRange)
+ */
+const ROUTE_CONDITIONAL_DYNAMIC = {
+  "/compare": ["src/features/compare/carryOverPanel.tsx", "src/domain/profileAdjustments.ts", "src/data/memoryProfileAdjust.ts"],
+  "/profile": ["src/data/memoryProfileAdjust.ts"],
+};
+
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
 const gzipKb = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
 
@@ -74,6 +83,15 @@ for (const [route, page] of Object.entries(ROUTE_PAGES)) {
   if (missing.length > 0) failures.push(`${route}: 진입 직후 목록 ${missing.join(", ")}가 manifest에 없습니다`);
   const eagerKb = sumKb(eager.reduce((files, key) => staticClosure(key, files), new Set(routeFiles)));
   console.log(`[bundle] ${route} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
+  for (const key of ROUTE_CONDITIONAL_DYNAMIC[route] ?? []) {
+    if (!manifest[key]) {
+      failures.push(`${route}: 조건부 목록 ${key}가 manifest에 없습니다`);
+      continue;
+    }
+    const eagerFiles = eager.reduce((files, k) => staticClosure(k, files), new Set(routeFiles));
+    const extra = [...staticClosure(key)].filter((file) => !eagerFiles.has(file));
+    console.log(`[bundle]   ${route} 조건부(자동 로드 아님) ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
+  }
   if (routeKb > ROUTE_BUDGET_KB) failures.push(`${route}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
   if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${route}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
 }

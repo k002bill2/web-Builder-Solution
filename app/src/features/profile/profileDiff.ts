@@ -1,5 +1,7 @@
 /** 버전 비교·요약 (DS-2A-04 3.5 · 6.4 `diffProfiles`·`summarizeVersion`). 엔진 청크 전용. */
 import type { DesignProfileInput } from "../../domain/compareBoard";
+import type { CarryOverItem } from "../../domain/profile";
+import { droppedSummary } from "./adjustmentText";
 import { profileFieldRows } from "./profileFields";
 
 export interface DiffRow {
@@ -21,8 +23,13 @@ export function diffProfiles(a: DesignProfileInput, b: DesignProfileInput, title
   });
 }
 
-/** 버전 줄 요약: 직전 버전과의 차이 최대 2개 + "외 N" */
-export function summarizeVersion(prev: DesignProfileInput | undefined, next: DesignProfileInput, titleOf: TitleOf): string {
+/** 버전 줄 요약: 직전 버전과의 차이 최대 2개 + "외 N". 재확정에서 지운 조정이 있으면 그 한 줄을 붙인다 (6.1-3) */
+export function summarizeVersion(prev: DesignProfileInput | undefined, next: DesignProfileInput, titleOf: TitleOf, dropped: readonly CarryOverItem[] = []): string {
+  const summary = baseSummary(prev, next, titleOf);
+  return dropped.length > 0 ? `${summary} · ${droppedSummary(dropped)}` : summary;
+}
+
+function baseSummary(prev: DesignProfileInput | undefined, next: DesignProfileInput, titleOf: TitleOf): string {
   if (!prev) return "첫 버전";
   const changed = diffProfiles(prev, next, titleOf).filter((r) => r.changed).map((r) => r.label);
   if (changed.length === 0) return "바뀐 값 없음";

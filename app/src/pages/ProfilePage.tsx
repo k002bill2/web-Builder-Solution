@@ -125,7 +125,7 @@ function ProfileView({
 
   const palette = PALETTE_ROLES.map((role) => ({ role, hex: viewed.base.color_tokens[role].$value }));
   const contrast = engine.contrastView(palette, viewed.base.component_choices.card_style?.surfaceTone, viewed.adjustments.contrast ?? "aa");
-  const summaryOf = (v: ProfileVersion) => engine.summarizeVersion(series.versions.find((p) => p.version === v.version - 1)?.base, v.base, titleOf);
+  const summaryOf = (v: ProfileVersion) => engine.summarizeVersion(series.versions.find((p) => p.version === v.version - 1)?.base, v.base, titleOf, v.dropped);
 
   return (
     <div className={PAGE}>

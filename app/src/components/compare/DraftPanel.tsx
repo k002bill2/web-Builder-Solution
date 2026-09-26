@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ComponentType, type Ref } from "react";
+import { useEffect, useId, useRef, type ComponentType, type ReactNode, type Ref } from "react";
 import type { BoardWarning, WarningFix } from "../../domain/boardWarnings";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
 import type { CustomStyle, DraftStatus } from "../../domain/compareBoard";
@@ -55,6 +55,8 @@ export interface DraftPanelProps {
   readonly onApplyFix: (fix: WarningFix) => void;
   /** 사용자 스타일 입력 — 엔진 청크가 싣는다(첫 화면 JS에서 뺌, V2-1 · SPEC B-5). 없으면 그리지 않는다 */
   readonly CustomStyleFields?: ComponentType<CustomStyleFieldsProps>;
+  /** P-S25 이어받을 조정 — 확정 버튼 위. 조건부 청크가 그린다(DS-2A-04 2a-04b1) */
+  readonly carryOver?: ReactNode;
   readonly headingRef?: Ref<HTMLHeadingElement>;
   readonly className?: string;
 }
@@ -123,6 +125,7 @@ export function DraftPanel({
   onCustomChange,
   onApplyFix,
   CustomStyleFields,
+  carryOver,
   headingRef,
   className,
 }: DraftPanelProps) {
@@ -196,6 +199,7 @@ export function DraftPanel({
         </div>
       )}
       <div className="flex flex-col gap-2">
+        {carryOver}
         <Button
           variant="primary"
           size="lg"

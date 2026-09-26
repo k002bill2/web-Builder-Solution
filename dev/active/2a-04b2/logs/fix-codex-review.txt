@@ -1,0 +1,21 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a0de1f-dc67-7e11-8030-973d6917bd16).
+[codex] Reviewer started: changes against 'ce36f19'
+[codex] Running command: /bin/zsh -lc 'git diff --stat ce36f1934ec28419983542ee9f52e8b34527e914 && git diff --name-onl...
+[codex] Command completed: /bin/zsh -lc 'git diff --stat ce36f1934ec28419983542ee9f52e8b34527e914 && git diff --name-onl... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff --find-renames ce36f1934ec28419983542ee9f52e8b34527e914 -- app/src/fea...
+[codex] Command completed: /bin/zsh -lc "git diff --find-renames ce36f1934ec28419983542ee9f52e8b34527e914 -- app/src/fea... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,240p' app/src/pages/ProfilePage.tsx && sed -n '1,220p' app/src/featur...
+[codex] Command completed: /bin/zsh -lc "sed -n '1,240p' app/src/pages/ProfilePage.tsx && sed -n '1,220p' app/src/featur... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cd app && npm run typecheck && npx vitest run src/pages/ProfilePage.test.tsx'
+[codex] Command failed: /bin/zsh -lc 'cd app && npm run typecheck && npx vitest run src/pages/ProfilePage.test.tsx' (exit 1)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: The changes clear the missing-version notice when navigation makes the requested version vali...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against ce36f19
+
+The changes clear the missing-version notice when navigation makes the requested version valid, while preserving newer, different notices. Typechecking passed; the test runner could not start because the read-only environment blocked Vite from writing a temporary config file.
+exit 0

@@ -92,7 +92,7 @@ export function CatalogToolbar({
         role="group"
         aria-label="업종"
         onFocus={revealFocusedChip}
-        className="-m-1 flex min-w-0 flex-1 scroll-px-2 gap-2 overflow-x-auto p-1 lg:flex-wrap"
+        className="-m-1 -mr-2 flex min-w-0 flex-1 scroll-px-2 gap-2 overflow-x-auto p-1 pr-2 lg:flex-wrap"
       >
         <IndustryChip
           label="전체"

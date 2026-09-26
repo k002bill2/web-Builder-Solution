@@ -410,12 +410,12 @@ describe("QA-V2-2 P3 수정 (FIX-V22)", () => {
   });
 
   it.each([
-    ["키보드 Enter", async () => {
+    ["키보드 Enter로", async () => {
       reset().focus();
       await userEvent.keyboard("{Enter}");
     }],
-    ["클릭", () => userEvent.click(reset())],
-  ])("%s로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)", async (_how, press) => {
+    ["클릭으로", () => userEvent.click(reset())],
+  ])("%s 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)", async (_how, press) => {
     const { router } = renderApp("/catalog?industry=cafe-fnb&concept=minimal");
     await expectCardCount(1);
     await press();
@@ -437,7 +437,8 @@ describe("QA-V2-2 P3 수정 (FIX-V22)", () => {
     try {
       renderApp("/catalog");
       await expectCardCount(6);
-      expect(chipGroup()).toHaveClass("scroll-px-2");
+      // 끝 칩 링(4px)이 최대 스크롤에서도 들어가게 끝쪽 안쪽 여백 8px(음수 여백으로 상쇄)
+      expect(chipGroup()).toHaveClass("scroll-px-2", "pr-2", "-mr-2");
       chip("뷰티").focus();
       scrollIntoView.mockClear();
       await userEvent.tab();

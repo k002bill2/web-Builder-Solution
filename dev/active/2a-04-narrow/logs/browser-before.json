@@ -1,0 +1,496 @@
+{
+ "320": {
+  "docOverflowX": 0,
+  "wrapper": {
+   "scrollWidth": 247,
+   "clientWidth": 247,
+   "ok": true
+  },
+  "tableDisplay": "table",
+  "theadRect": [
+   247,
+   57
+  ],
+  "layoutRowHeight": 145,
+  "firstValueBefore": "none",
+  "cells": [
+   [
+    [
+     "항목",
+     30,
+     57,
+     "table-cell"
+    ],
+    [
+     "v1",
+     109,
+     57,
+     "table-cell"
+    ],
+    [
+     "v3",
+     95,
+     57,
+     "table-cell"
+    ],
+    [
+     "차이",
+     13,
+     57,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "시각 방향",
+     30,
+     101,
+     "table-cell"
+    ],
+    [
+     "미니멀",
+     109,
+     101,
+     "table-cell"
+    ],
+    [
+     "세련된",
+     95,
+     101,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     101,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "레이아웃 방향",
+     30,
+     145,
+     "table-cell"
+    ],
+    [
+     "풀블리드 히어로",
+     109,
+     145,
+     "table-cell"
+    ],
+    [
+     "스플릿 히어로",
+     95,
+     145,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     145,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "Hero",
+     30,
+     79,
+     "table-cell"
+    ],
+    [
+     "풀블리드 이미지 + 좌측 카피",
+     109,
+     79,
+     "table-cell"
+    ],
+    [
+     "스플릿 (카피 / 이미지)",
+     95,
+     79,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     79,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "메뉴",
+     30,
+     57,
+     "table-cell"
+    ],
+    [
+     "고정 헤더 · 우측 CTA",
+     109,
+     57,
+     "table-cell"
+    ],
+    [
+     "고정 헤더 · 햄버거 메뉴",
+     95,
+     57,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     57,
+     "table-cell"
+    ]
+   ]
+  ],
+  "summaries": [
+   [
+    "시각 방향 · 레이아웃 방향 외 17",
+    89,
+    54
+   ],
+   [
+    "시각 방향 · 레이아웃 방향 외 14",
+    134,
+    36
+   ],
+   [
+    "첫 버전",
+    78,
+    18
+   ]
+  ]
+ },
+ "390": {
+  "docOverflowX": 0,
+  "wrapper": {
+   "scrollWidth": 317,
+   "clientWidth": 317,
+   "ok": true
+  },
+  "tableDisplay": "table",
+  "theadRect": [
+   317,
+   57
+  ],
+  "layoutRowHeight": 145,
+  "firstValueBefore": "none",
+  "cells": [
+   [
+    [
+     "항목",
+     32,
+     57,
+     "table-cell"
+    ],
+    [
+     "v1",
+     146,
+     57,
+     "table-cell"
+    ],
+    [
+     "v3",
+     126,
+     57,
+     "table-cell"
+    ],
+    [
+     "차이",
+     13,
+     57,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "시각 방향",
+     32,
+     101,
+     "table-cell"
+    ],
+    [
+     "미니멀",
+     146,
+     101,
+     "table-cell"
+    ],
+    [
+     "세련된",
+     126,
+     101,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     101,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "레이아웃 방향",
+     32,
+     145,
+     "table-cell"
+    ],
+    [
+     "풀블리드 히어로",
+     146,
+     145,
+     "table-cell"
+    ],
+    [
+     "스플릿 히어로",
+     126,
+     145,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     145,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "Hero",
+     32,
+     57,
+     "table-cell"
+    ],
+    [
+     "풀블리드 이미지 + 좌측 카피",
+     146,
+     57,
+     "table-cell"
+    ],
+    [
+     "스플릿 (카피 / 이미지)",
+     126,
+     57,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     57,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "메뉴",
+     32,
+     57,
+     "table-cell"
+    ],
+    [
+     "고정 헤더 · 우측 CTA",
+     146,
+     57,
+     "table-cell"
+    ],
+    [
+     "고정 헤더 · 햄버거 메뉴",
+     126,
+     57,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     13,
+     57,
+     "table-cell"
+    ]
+   ]
+  ],
+  "summaries": [
+   [
+    "시각 방향 · 레이아웃 방향 외 17",
+    17,
+    234
+   ],
+   [
+    "시각 방향 · 레이아웃 방향 외 14",
+    62,
+    54
+   ],
+   [
+    "첫 버전",
+    148,
+    18
+   ]
+  ]
+ },
+ "768": {
+  "docOverflowX": 0,
+  "wrapper": {
+   "scrollWidth": 671,
+   "clientWidth": 671,
+   "ok": true
+  },
+  "tableDisplay": "table",
+  "theadRect": [
+   671,
+   57
+  ],
+  "layoutRowHeight": 79,
+  "firstValueBefore": "none",
+  "cells": [
+   [
+    [
+     "항목",
+     45,
+     57,
+     "table-cell"
+    ],
+    [
+     "v1",
+     331,
+     57,
+     "table-cell"
+    ],
+    [
+     "v3",
+     280,
+     57,
+     "table-cell"
+    ],
+    [
+     "차이",
+     15,
+     57,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "시각 방향",
+     45,
+     57,
+     "table-cell"
+    ],
+    [
+     "미니멀",
+     331,
+     57,
+     "table-cell"
+    ],
+    [
+     "세련된",
+     280,
+     57,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     15,
+     57,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "레이아웃 방향",
+     45,
+     79,
+     "table-cell"
+    ],
+    [
+     "풀블리드 히어로",
+     331,
+     79,
+     "table-cell"
+    ],
+    [
+     "스플릿 히어로",
+     280,
+     79,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     15,
+     79,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "Hero",
+     45,
+     57,
+     "table-cell"
+    ],
+    [
+     "풀블리드 이미지 + 좌측 카피",
+     331,
+     57,
+     "table-cell"
+    ],
+    [
+     "스플릿 (카피 / 이미지)",
+     280,
+     57,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     15,
+     57,
+     "table-cell"
+    ]
+   ],
+   [
+    [
+     "메뉴",
+     45,
+     57,
+     "table-cell"
+    ],
+    [
+     "고정 헤더 · 우측 CTA",
+     331,
+     57,
+     "table-cell"
+    ],
+    [
+     "고정 헤더 · 햄버거 메뉴",
+     280,
+     57,
+     "table-cell"
+    ],
+    [
+     "바뀜",
+     15,
+     57,
+     "table-cell"
+    ]
+   ]
+  ],
+  "summaries": [
+   [
+    "시각 방향 · 레이아웃 방향 외 17",
+    371,
+    18
+   ],
+   [
+    "시각 방향 · 레이아웃 방향 외 14",
+    416,
+    18
+   ],
+   [
+    "첫 버전",
+    502,
+    18
+   ]
+  ]
+ },
+ "phase": "before",
+ "note": "?v=1&diff=3, TaskSpace 26, CDP 폭 변경. cells=[글자,폭,높이,display] 앞 5행, summaries=버전 줄 요약 [글자,폭,높이]"
+}

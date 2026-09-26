@@ -1,20 +1,26 @@
-/** DS-2A-04 3.1 필드 표시 · 3.5 비교(diffProfiles)·버전 요약(summarizeVersion) (P-AC-01·07·09). */
+/** DS-2A-04 3.1 필드 표시 · 3.5 비교(diffProfiles)·버전 요약(summarizeVersions, 적용된 값 기준) (P-AC-01·07·09). */
 import { describe, expect, it } from "vitest";
 import { createMemoryStudio } from "../../data/memoryStudio";
 import type { DesignProfileInput } from "../../domain/compareBoard";
+import type { ProfileVersion } from "../../domain/profile";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
-import { diffProfiles, summarizeVersion } from "./profileDiff";
+import { diffProfiles, diffVersions, summarizeVersions } from "./profileDiff";
 import { profileFieldRows } from "./profileFields";
 
 const titleOf = (id: string) => ({ "ref-a": "모던 카페 브랜드", "ref-c": "동네 치과 클리닉" })[id] ?? id;
 
-async function twoBases(): Promise<readonly [DesignProfileInput, DesignProfileInput]> {
+async function twoVersions(): Promise<readonly [ProfileVersion, ProfileVersion]> {
   const { board, profiles } = createMemoryStudio({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a", "ref-c"], { hero: "ref-a" }) });
   await board.confirmProfile(1, 0);
   const changed = await board.savePicks({ hero: "ref-a", palette: "ref-c" }, {}, 1);
   await board.createProfileVersion("profile-1", changed.revision, 1);
   const [v1, v2] = (await profiles.getProfile("profile-1"))!.versions;
-  return [v1!.base, v2!.base];
+  return [v1!, v2!];
+}
+
+async function twoBases(): Promise<readonly [DesignProfileInput, DesignProfileInput]> {
+  const [v1, v2] = await twoVersions();
+  return [v1.base, v2.base];
 }
 
 describe("profileFieldRows — 3.1 표 순서·값 누락 0", () => {
@@ -37,7 +43,7 @@ describe("profileFieldRows — 3.1 표 순서·값 누락 0", () => {
   });
 });
 
-describe("diffProfiles · summarizeVersion (3.5)", () => {
+describe("diffProfiles · summarizeVersions (3.5)", () => {
   it("바뀐 줄만 changed, 순서는 3.1 표 순서 고정", async () => {
     const [v1, v2] = await twoBases();
     const rows = diffProfiles(v1, v2, titleOf);
@@ -53,12 +59,13 @@ describe("diffProfiles · summarizeVersion (3.5)", () => {
     expect(diffProfiles(v1, v1, titleOf).some((r) => r.changed)).toBe(false);
   });
 
-  it("요약 = 직전 버전과의 차이 최대 2개 + '외 N', 첫 버전·차이 없음 문장", async () => {
-    const [v1, v2] = await twoBases();
-    const changed = diffProfiles(v1, v2, titleOf).filter((r) => r.changed).map((r) => r.label);
+  it("요약(적용된 값 기준) = 직전 버전과의 차이 최대 2개 + '외 N', 첫 버전·차이 없음 문장", async () => {
+    const [v1, v2] = await twoVersions();
+    const changed = diffVersions(v1, v2, titleOf).filter((r) => r.changed).map((r) => r.label);
     const rest = changed.length - 2;
-    expect(summarizeVersion(v1, v2, titleOf)).toBe(`${changed[0]} · ${changed[1]}${rest > 0 ? ` 외 ${rest}` : ""}`);
-    expect(summarizeVersion(undefined, v1, titleOf)).toBe("첫 버전");
-    expect(summarizeVersion(v1, v1, titleOf)).toBe("바뀐 값 없음");
+    expect(rest).toBeGreaterThan(0);
+    expect(summarizeVersions(v1, v2, titleOf)).toBe(`${changed[0]} · ${changed[1]} 외 ${rest}`);
+    expect(summarizeVersions(undefined, v1, titleOf)).toBe("첫 버전");
+    expect(summarizeVersions(v1, v1, titleOf)).toBe("바뀐 값 없음");
   });
 });

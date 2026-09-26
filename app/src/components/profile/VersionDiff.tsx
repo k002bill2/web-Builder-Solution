@@ -3,7 +3,11 @@ import type { DiffRow } from "../../features/profile/profileDiff";
 import { versionWith } from "../../features/profile/versionText";
 import { Button } from "../ds/Button";
 
-/** 3.5 버전 비교 표 (P-S08). 바뀐 줄 = "바뀜" 글자 + 굵게. 차이가 없으면 빈 문장 */
+/**
+ * 3.5 버전 비교 표 (P-S08). 바뀐 줄 = "바뀜" 글자 + 굵게. 차이가 없으면 빈 문장.
+ * 마크업은 표 한 벌 — 폭별 배치는 styles/versionDiff.css(<768 행 쌓기, A-03·A-04). display를 바꾸면 표 의미가 사라지므로 role을 명시한다.
+ * 값 셀의 data-col = 열 이름(<768에서 값 앞에 CSS로만 보임, 낭독은 열 머리글 관계로)
+ */
 export function VersionDiff({
   from,
   to,
@@ -29,25 +33,25 @@ export function VersionDiff({
         </section>
       ) : (
         <div className="overflow-x-auto">
-          <table className="ds-body3 w-full border-collapse text-left">
+          <table role="table" className="version-diff ds-body3 w-full border-collapse text-left">
             <caption ref={focusRef as Ref<HTMLTableCaptionElement>} tabIndex={-1} className="ds-label mb-2 text-left focus:outline-none">
               {title}
             </caption>
-            <thead>
-              <tr className="border-b border-line-normal">
-                <th scope="col" className="py-1.5 pr-3">항목</th>
-                <th scope="col" className="py-1.5 pr-3">v{from}</th>
-                <th scope="col" className="py-1.5 pr-3">v{to}</th>
-                <th scope="col" className="py-1.5">차이</th>
+            <thead role="rowgroup">
+              <tr role="row" className="border-b border-line-normal">
+                <th scope="col" role="columnheader" className="py-1.5 pr-3">항목</th>
+                <th scope="col" role="columnheader" className="py-1.5 pr-3">v{from}</th>
+                <th scope="col" role="columnheader" className="py-1.5 pr-3">v{to}</th>
+                <th scope="col" role="columnheader" className="py-1.5">차이</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup">
               {rows.map((r) => (
-                <tr key={r.key} className={r.changed ? "border-b border-line-neutral font-semibold" : "border-b border-line-neutral"}>
-                  <th scope="row" className="py-1.5 pr-3 font-normal text-label-alternative">{r.label}</th>
-                  <td className="py-1.5 pr-3">{r.a}</td>
-                  <td className="py-1.5 pr-3">{r.b}</td>
-                  <td className="py-1.5">{r.changed ? "바뀜" : ""}</td>
+                <tr key={r.key} role="row" className={r.changed ? "border-b border-line-neutral font-semibold" : "border-b border-line-neutral"}>
+                  <th scope="row" role="rowheader" className="py-1.5 pr-3 font-normal text-label-alternative">{r.label}</th>
+                  <td role="cell" data-col={`v${from}`} className="py-1.5 pr-3">{r.a}</td>
+                  <td role="cell" data-col={`v${to}`} className="py-1.5 pr-3">{r.b}</td>
+                  <td role="cell" className="py-1.5">{r.changed ? "바뀜" : ""}</td>
                 </tr>
               ))}
             </tbody>

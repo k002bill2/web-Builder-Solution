@@ -1,0 +1,114 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04-narrow/app
+
+ ❯ src/pages/ProfileVersionNarrow.test.tsx (6 tests | 5 failed) 431ms
+   ❯ N1 버전 비교 — 표 한 벌 · role 명시 (A-03) (5)
+     × table > rowgroup > row > columnheader/rowheader/cell role이 속성으로 명시된다(display를 바꿔도 표 의미 유지) 203ms
+     × 값 셀의 열 이름(data-col) = 같은 위치의 열 머리글 — 쌓인 배치의 'v1'·'v3' 글자는 이 값을 CSS로만 보이고 낭독 대체 글자는 비운다 60ms
+     × <768 쌓기 클래스: 표·본문·행은 블록/세로 줄, 열 머리글은 숨기지 않고 sr-only(열 관계 유지) 32ms
+     × 768: 항목(열·행 머리글)·차이 열은 줄바꿈 없음, 값은 단어 단위 28ms
+   ❯ N1 버전 줄 요약 (A-05) (1)
+     × <768은 요약이 줄 전체 폭 둘째 줄(basis-full), 768부터 남은 폭(md:flex-1) 38ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileVersionNarrow.test.tsx > N1 버전 비교 — 표 한 벌 · role 명시 (A-03) > table > rowgroup > row > columnheader/rowheader/cell role이 속성으로 명시된다(display를 바꿔도 표 의미 유지)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"role"[32m[39m[2m, [22m[32m[32m"table"[32m[39m[2m) // element.getAttribute("role") === "table"[22m
+
+Expected the element to have attribute:
+[32m  role="table"[39m
+Received:
+[31m  null[39m
+ ❯ src/pages/ProfileVersionNarrow.test.tsx:36:19
+     34|     await open("/profile/profile-1?v=1&diff=3");
+     35|     const table = await diffTable();
+     36|     expect(table).toHaveAttribute("role", "table");
+       |                   ^
+     37|     for (const group of table.querySelectorAll("thead, tbody")) expect…
+     38|     for (const tr of table.querySelectorAll("tr")) expect(tr).toHaveAt…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/pages/ProfileVersionNarrow.test.tsx > N1 버전 비교 — 표 한 벌 · role 명시 (A-03) > 값 셀의 열 이름(data-col) = 같은 위치의 열 머리글 — 쌓인 배치의 'v1'·'v3' 글자는 이 값을 CSS로만 보이고 낭독 대체 글자는 비운다
+AssertionError: expected [ undefined, undefined ] to deeply equal [ 'v1', 'v3' ]
+
+- Expected
++ Received
+
+  [
+-   "v1",
+-   "v3",
++   undefined,
++   undefined,
+  ]
+
+ ❯ src/pages/ProfileVersionNarrow.test.tsx:54:48
+     52|     for (const row of bodyRows) {
+     53|       const [, a, b] = [...row.children] as HTMLElement[];
+     54|       expect([a?.dataset.col, b?.dataset.col]).toEqual([headers[1], he…
+       |                                                ^
+     55|       expect(a).toHaveClass("max-md:before:content-[attr(data-col)_/_'…
+     56|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/pages/ProfileVersionNarrow.test.tsx > N1 버전 비교 — 표 한 벌 · role 명시 (A-03) > <768 쌓기 클래스: 표·본문·행은 블록/세로 줄, 열 머리글은 숨기지 않고 sr-only(열 관계 유지)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"max-md:block"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  max-md:block[39m
+Received:
+[31m  ds-body3 w-full border-collapse text-left[39m
+ ❯ src/pages/ProfileVersionNarrow.test.tsx:62:19
+     60|     await open("/profile/profile-1?v=1&diff=3");
+     61|     const table = await diffTable();
+     62|     expect(table).toHaveClass("max-md:block");
+       |                   ^
+     63|     expect(table.tHead).toHaveClass("max-md:sr-only");
+     64|     expect(table.tHead).not.toHaveClass("max-md:hidden");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/pages/ProfileVersionNarrow.test.tsx > N1 버전 비교 — 표 한 벌 · role 명시 (A-03) > 768: 항목(열·행 머리글)·차이 열은 줄바꿈 없음, 값은 단어 단위
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"break-keep"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  break-keep[39m
+Received:
+[31m  ds-body3 w-full border-collapse text-left[39m
+ ❯ src/pages/ProfileVersionNarrow.test.tsx:72:19
+     70|     await open("/profile/profile-1?v=1&diff=3");
+     71|     const table = await diffTable();
+     72|     expect(table).toHaveClass("break-keep");
+       |                   ^
+     73|     const [item, , , change] = within(table).getAllByRole("columnheade…
+     74|     expect(item).toHaveClass("whitespace-nowrap");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/pages/ProfileVersionNarrow.test.tsx > N1 버전 줄 요약 (A-05) > <768은 요약이 줄 전체 폭 둘째 줄(basis-full), 768부터 남은 폭(md:flex-1)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"basis-full md:basis-auto md:flex-1"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  basis-full md:basis-auto md:flex-1[39m
+Received:
+[31m  ds-caption1 min-w-0 flex-1 text-label-alternative[39m
+ ❯ src/pages/ProfileVersionNarrow.test.tsx:93:21
+     91|     const row = screen.getByRole("listitem", { name: /^v2 / });
+     92|     const summary = within(row).getByText(/외 \d+$|·/, { selector: "spa…
+     93|     expect(summary).toHaveClass("basis-full", "md:basis-auto", "md:fle…
+       |                     ^
+     94|     expect(summary).not.toHaveClass("flex-1");
+     95|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  23:45:48
+   Duration  1.63s (environment 35%, tests 28%, transform 22%, import 8%, setup 7%)
+

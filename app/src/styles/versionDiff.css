@@ -1,0 +1,30 @@
+/*
+ * 버전 비교 표 (VersionDiff · FIX-2A04-NARROW E안, A-03·A-04). 마크업은 표 한 벌이고 폭 전환은 이 CSS만 한다.
+ * - 768↑: 표 유지. 항목(열·행 머리글)·차이 열은 줄바꿈 없음(값은 body의 keep-all로 어절 단위).
+ * - <768: 행을 쌓는다(항목 → vA → vB → 바뀜). 열 머리글은 sr-only로 트리에 남기고(열 관계 유지), 값 앞 열 이름은
+ *   data-col 생성 글자로만 보인다 — 대체 글자 ""로 낭독에서 뺀다. display가 바뀌어도 표 의미는 JSX의 role 명시로 지킨다.
+ * 레이어 밖 규칙: 셀의 Tailwind 여백 유틸리티(py-1.5 pr-3)를 <768에서 덮어야 한다.
+ */
+.version-diff :is(thead th:first-child, thead th:last-child, tbody th, td:last-child) {
+  @apply whitespace-nowrap;
+}
+.version-diff,
+.version-diff > caption,
+.version-diff > tbody {
+  @apply max-md:block;
+}
+.version-diff > thead {
+  @apply max-md:sr-only;
+}
+.version-diff > tbody > tr {
+  @apply max-md:flex max-md:flex-col max-md:py-1.5;
+}
+.version-diff > tbody :is(th, td) {
+  @apply max-md:p-0;
+}
+.version-diff td[data-col]::before {
+  @apply max-md:mr-2 max-md:font-normal max-md:text-label-alternative;
+  @variant max-md {
+    content: attr(data-col) / "";
+  }
+}

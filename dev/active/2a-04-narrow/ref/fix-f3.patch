@@ -1,0 +1,237 @@
+diff --git a/app/src/components/profile/VersionDiff.tsx b/app/src/components/profile/VersionDiff.tsx
+index 2e34db8..cda17d2 100644
+--- a/app/src/components/profile/VersionDiff.tsx
++++ b/app/src/components/profile/VersionDiff.tsx
+@@ -1,9 +1,21 @@
+-import type { Ref } from "react";
++import { useId, useSyncExternalStore, type Ref } from "react";
+ import type { DiffRow } from "../../features/profile/profileDiff";
+ import { versionWith } from "../../features/profile/versionText";
+ import { Button } from "../ds/Button";
+ 
+-/** 3.5 버전 비교 표 (P-S08). 바뀐 줄 = "바뀜" 글자 + 굵게. 차이가 없으면 빈 문장 */
++/** Tailwind md(48rem=768) — matchMedia가 없으면(테스트 환경) 넓은 화면 */
++const MD = "(min-width: 48rem)";
++const subscribe = (onChange: () => void) => {
++  const list = window.matchMedia?.(MD);
++  list?.addEventListener("change", onChange);
++  return () => list?.removeEventListener("change", onChange);
++};
++const isWide = () => window.matchMedia?.(MD).matches ?? true;
++
++/**
++ * 3.5 버전 비교 표 (P-S08). 바뀐 줄 = "바뀜" 글자 + 굵게. 차이가 없으면 빈 문장.
++ * <768은 표 대신 필드별 dl(항목 → vA → vB → 바뀜, A-03). 한 배치만 그린다 — 둘 다 그리면 낭독이 겹친다
++ */
+ export function VersionDiff({
+   from,
+   to,
+@@ -19,6 +31,8 @@ export function VersionDiff({
+ }) {
+   const title = `${versionWith(from, ["과", "와"])} v${to} 비교`;
+   const same = rows.every((r) => !r.changed);
++  const wide = useSyncExternalStore(subscribe, isWide, () => true);
++  const captionId = useId();
+   return (
+     <div className="flex flex-col gap-2 rounded-md border border-line-neutral p-3">
+       {same ? (
+@@ -27,32 +41,54 @@ export function VersionDiff({
+             두 버전의 값이 같습니다
+           </p>
+         </section>
+-      ) : (
++      ) : wide ? (
+         <div className="overflow-x-auto">
+-          <table className="ds-body3 w-full border-collapse text-left">
++          <table className="ds-body3 w-full border-collapse break-keep text-left">
+             <caption ref={focusRef as Ref<HTMLTableCaptionElement>} tabIndex={-1} className="ds-label mb-2 text-left focus:outline-none">
+               {title}
+             </caption>
+             <thead>
+               <tr className="border-b border-line-normal">
+-                <th scope="col" className="py-1.5 pr-3">항목</th>
++                <th scope="col" className="whitespace-nowrap py-1.5 pr-3">항목</th>
+                 <th scope="col" className="py-1.5 pr-3">v{from}</th>
+                 <th scope="col" className="py-1.5 pr-3">v{to}</th>
+-                <th scope="col" className="py-1.5">차이</th>
++                <th scope="col" className="whitespace-nowrap py-1.5">차이</th>
+               </tr>
+             </thead>
+             <tbody>
+               {rows.map((r) => (
+                 <tr key={r.key} className={r.changed ? "border-b border-line-neutral font-semibold" : "border-b border-line-neutral"}>
+-                  <th scope="row" className="py-1.5 pr-3 font-normal text-label-alternative">{r.label}</th>
++                  <th scope="row" className="whitespace-nowrap py-1.5 pr-3 font-normal text-label-alternative">{r.label}</th>
+                   <td className="py-1.5 pr-3">{r.a}</td>
+                   <td className="py-1.5 pr-3">{r.b}</td>
+-                  <td className="py-1.5">{r.changed ? "바뀜" : ""}</td>
++                  <td className="whitespace-nowrap py-1.5">{r.changed ? "바뀜" : ""}</td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
+         </div>
++      ) : (
++        <figure aria-labelledby={captionId} className="ds-body3 flex flex-col gap-2">
++          <figcaption id={captionId} ref={focusRef as Ref<HTMLElement>} tabIndex={-1} className="ds-label focus:outline-none">
++            {title}
++          </figcaption>
++          <dl>
++            {rows.map((r) => (
++              <div key={r.key} className={r.changed ? "border-b border-line-neutral py-1.5 font-semibold" : "border-b border-line-neutral py-1.5"}>
++                <dt className="font-normal text-label-alternative">{r.label}</dt>
++                <dd>
++                  <span className="mr-2 font-normal text-label-alternative">v{from}</span>
++                  {r.a}
++                </dd>
++                <dd>
++                  <span className="mr-2 font-normal text-label-alternative">v{to}</span>
++                  {r.b}
++                </dd>
++                {r.changed && <dd>바뀜</dd>}
++              </div>
++            ))}
++          </dl>
++        </figure>
+       )}
+       <Button variant="outline" size="sm" className="self-start" onClick={onClose}>
+         비교 닫기
+diff --git a/app/src/components/profile/VersionList.tsx b/app/src/components/profile/VersionList.tsx
+index 062dbf4..5d020a9 100644
+--- a/app/src/components/profile/VersionList.tsx
++++ b/app/src/components/profile/VersionList.tsx
+@@ -35,7 +35,7 @@ function VersionRow({ v, props }: { readonly v: ProfileVersion; readonly props:
+       {current && <Tag tone="blue" size="sm">현재</Tag>}
+       {viewed && !current && <Tag size="sm">보는 중</Tag>}
+       <span className="ds-body3">{originText(v)}</span>
+-      <span className="ds-caption1 min-w-0 flex-1 text-label-alternative">{props.summaryOf(v)}</span>
++      <span className="ds-caption1 min-w-0 basis-full text-label-alternative md:basis-auto md:flex-1">{props.summaryOf(v)}</span>
+       <time dateTime={v.createdAt} className="ds-caption1 text-label-alternative">
+         {relativeTime(v.createdAt)}
+       </time>
+diff --git a/app/src/pages/ProfileVersionNarrow.test.tsx b/app/src/pages/ProfileVersionNarrow.test.tsx
+new file mode 100644
+index 0000000..a5c2690
+--- /dev/null
++++ b/app/src/pages/ProfileVersionNarrow.test.tsx
+@@ -0,0 +1,120 @@
++/**
++ * FIX-2A04b2 F3 — 좁은 폭 버전 비교·버전 줄 (DS-CHECK-01 A-03·A-04·A-05 = D-2A4-05).
++ * <768은 표 대신 필드별 dl(항목 → vA → vB → "바뀜"), 768 이상은 표(항목·차이 열 줄바꿈 없음 · 단어 단위).
++ * 한 번에 한 배치만 DOM에 그린다(중복 낭독 금지) — jsdom에는 matchMedia가 없어 Tailwind 폭으로 흉내 낸다.
++ */
++import { cleanup, screen, within } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { afterEach, describe, expect, it } from "vitest";
++import { createMemoryStudio } from "../data/memoryStudio";
++import { createMemoryReferenceRepository } from "../data/referenceRepository";
++import { referenceDetailFixtures } from "../fixtures/referenceDetails";
++import { referenceFixtures } from "../fixtures/references";
++import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
++import { renderApp } from "../test/renderApp";
++
++const THREE = ["ref-a", "ref-b", "ref-c"];
++const original = window.matchMedia;
++
++function setViewport(width: number) {
++  window.matchMedia = ((query: string) => {
++    const min = Number(/min-width:\s*([\d.]+)rem/.exec(query)?.[1] ?? 0) * 16;
++    return {
++      matches: width >= min,
++      media: query,
++      onchange: null,
++      addEventListener: () => {},
++      removeEventListener: () => {},
++      addListener: () => {},
++      removeListener: () => {},
++      dispatchEvent: () => false,
++    } as MediaQueryList;
++  }) as typeof window.matchMedia;
++}
++
++/** v1 확정 → 대표색 ref-c로 v2 → 전부 ref-b로 v3 (v1↔v3에 바뀐 줄과 같은 줄이 섞인다) */
++async function openAt(width: number, path: string) {
++  setViewport(width);
++  const studio = createMemoryStudio({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(THREE, { hero: "ref-a" }) });
++  await studio.board.confirmProfile(1, 0);
++  for (const [latest, picks] of [[1, { palette: "ref-c" }], [2, { hero: "ref-b", palette: "ref-b", font: "ref-b" }]] as const) {
++    const { board } = await studio.board.getBoard();
++    const changed = await studio.board.savePicks({ ...board.picks, ...picks }, board.custom, board.revision);
++    await studio.board.createProfileVersion("profile-1", changed.revision, latest);
++  }
++  const view = renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), studio.board, studio.profiles);
++  await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
++  return view;
++}
++
++/** 어느 배치든 [항목, vA 값, vB 값, 바뀜] 목록으로 읽는다 — 두 배치의 정보가 같은지 비교 */
++function readDiff(): string[][] {
++  const table = screen.queryByRole("table");
++  if (table) {
++    return within(table)
++      .getAllByRole("row")
++      .slice(1)
++      .map((tr) => [...tr.children].map((c) => c.textContent ?? ""));
++  }
++  const figure = screen.getByRole("figure", { name: "v1과 v3 비교" });
++  return [...figure.querySelectorAll("dl > div")].map((group) => {
++    const [a, b, mark] = [...group.querySelectorAll("dd")].map((dd) => dd.lastChild?.textContent ?? "");
++    return [group.querySelector("dt")?.textContent ?? "", a ?? "", b ?? "", mark ?? ""];
++  });
++}
++
++afterEach(() => {
++  window.matchMedia = original;
++});
++
++describe("F3 버전 비교 — 폭별 배치 (A-03·A-04)", () => {
++  it("768: 표 · 항목(열·행 머리글)·차이 열은 줄바꿈 없음, 값은 단어 단위 · dl 없음", async () => {
++    await openAt(768, "/profile/profile-1?v=1&diff=3");
++    const table = await screen.findByRole("table", { name: "v1과 v3 비교" });
++    expect(table).toHaveClass("break-keep");
++    const [item, , , change] = within(table).getAllByRole("columnheader");
++    expect(item).toHaveClass("whitespace-nowrap");
++    expect(change).toHaveClass("whitespace-nowrap");
++    for (const th of within(table).getAllByRole("rowheader")) expect(th).toHaveClass("whitespace-nowrap");
++    expect(screen.queryByRole("figure")).not.toBeInTheDocument();
++    expect(table.closest(".rounded-md")?.querySelector("dl")).toBeNull();
++  });
++
++  it.each([390, 320])("%i: 표 대신 필드별 dl(항목 → v1 → v3 → 바뀜) · 정보는 768 표와 같다 · 제목 1번만", async (width) => {
++    await openAt(768, "/profile/profile-1?v=1&diff=3");
++    await screen.findByRole("table", { name: "v1과 v3 비교" });
++    const wide = readDiff();
++    cleanup();
++
++    await openAt(width, "/profile/profile-1?v=1&diff=3");
++    const figure = await screen.findByRole("figure", { name: "v1과 v3 비교" });
++    expect(screen.queryByRole("table")).not.toBeInTheDocument();
++    expect(readDiff()).toEqual(wide);
++    expect(wide.some((r) => r[3] === "바뀜") && wide.some((r) => r[3] === "")).toBe(true);
++    // 값마다 어느 버전인지 글자로 붙는다(열 머리글 대신)
++    const first = figure.querySelector("dl > div")!;
++    expect([...first.querySelectorAll("dd")].slice(0, 2).map((dd) => dd.firstChild?.textContent)).toEqual(["v1", "v3"]);
++    // 중복 낭독 없음: 제목·항목 이름이 한 번씩만 DOM에 있다
++    expect(screen.getAllByText("v1과 v3 비교")).toHaveLength(1);
++    for (const [label] of wide) expect(within(figure).getAllByText(label!)).toHaveLength(1);
++  });
++
++  it("390: ?v=1에서 'v1과 비교 (v3)' → 비교 제목(figcaption)에 포커스 · 닫기 → 같은 버튼 (P-AC-09)", async () => {
++    await openAt(390, "/profile/profile-1?v=1");
++    await userEvent.click(screen.getByRole("button", { name: "v1과 비교 (v3)" }));
++    const figure = await screen.findByRole("figure", { name: "v1과 v3 비교" });
++    expect(figure.querySelector("figcaption")).toHaveFocus();
++    await userEvent.click(screen.getByRole("button", { name: "비교 닫기" }));
++    expect(screen.getByRole("button", { name: "v1과 비교 (v3)" })).toHaveFocus();
++  });
++});
++
++describe("F3 버전 줄 요약 (A-05)", () => {
++  it("<768은 요약이 줄 전체 폭 둘째 줄(basis-full), 768부터 남은 폭(md:flex-1)", async () => {
++    await openAt(390, "/profile/profile-1");
++    const row = screen.getByRole("listitem", { name: /^v2 / });
++    const summary = within(row).getByText(/외 \d+$|·/, { selector: "span.ds-caption1" });
++    expect(summary).toHaveClass("basis-full", "md:basis-auto", "md:flex-1");
++    expect(summary).not.toHaveClass("flex-1");
++  });
++});

@@ -10,3 +10,4 @@
 @import "./styles/tokens/base.css" layer(base);
 
 @import "./styles/theme.css";
+@import "./styles/versionDiff.css";

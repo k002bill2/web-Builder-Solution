@@ -1,1 +1,43 @@
 # TDD log — FIX-2A04B2-P1
+
+## RED 2026-09-27 02:06:15 — 구현 전 (base f7e5e56 코드)
+      Tests  23 failed | 46 passed (69)
+ FAIL  src/domain/contrast.test.ts > 4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산) > 이미 기준을 넘으면 그대로
+ FAIL  src/domain/contrast.test.ts > 4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산) > 흰 글자 대비 보정은 대표색을 어둡게 한다
+ FAIL  src/domain/contrast.test.ts > 4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산) > #00A884: 보정값은 기준을 넘고, 한 단계 더 가까우면 기준 미만이다
+ FAIL  src/domain/contrast.test.ts > 4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산) > #C9A96E: 보정값은 기준을 넘고, 한 단계 더 가까우면 기준 미만이다
+ FAIL  src/domain/contrast.test.ts > 4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산) > #D47800: 보정값은 기준을 넘고, 한 단계 더 가까우면 기준 미만이다
+ FAIL  src/domain/contrast.test.ts > 4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산) > 4.5는 어떤 배경에서도 도달한다 — 흑·백 중 큰 대비의 최솟값 ≈ 4.58 (중간 명도 회색 스윕)
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > 경계 #595959 위 7:1은 가능 — 기존처럼 제안
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > 경계 #959595 위 7:1은 가능 — 기존처럼 제안
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > #1F5FBF 위 7:1: throw 0, reached=false, best = 흑·백 중 큰 대비(7 미만)
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > #5A5A5A 위 7:1: throw 0, reached=false, best = 흑·백 중 큰 대비(7 미만)
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > #777777 위 7:1: throw 0, reached=false, best = 흑·백 중 큰 대비(7 미만)
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > #8B5E3C 위 7:1: throw 0, reached=false, best = 흑·백 중 큰 대비(7 미만)
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > #8B5E3C: 흰 5.58 · 검 3.76 — best는 흰색
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > #949494 위 7:1: throw 0, reached=false, best = 흑·백 중 큰 대비(7 미만)
+ FAIL  src/domain/contrast.test.ts > 7:1 불가 조합 (D-2A4B2-01) — throw 대신 값 > 7:1 가능 조합은 기존 제안 그대로 (ref-a primary → #775033)
+ FAIL  src/domain/profileContrast.test.ts > 강화 7:1 불가 (D-2A4B2-01) — throw 대신 도달 불가 충돌 > 밝은 카드여도 면(surface)이 중간 명도(#777777)면 C-4 기준 도달 불가 충돌
+ FAIL  src/domain/profileContrast.test.ts > 강화 7:1 불가 (D-2A4B2-01) — throw 대신 도달 불가 충돌 > ref-a 팔레트 + 어두운 카드 + 강화: ink는 C-3 기준 도달 불가(unreachable) 충돌, 후보 = 최고 대비 흰색 · primary는 #775033 그대로
+ FAIL  src/features/profile/profileMessages.test.ts > contrastView — 강화 7:1 불가 (D-2A4B2-01 · SPEC 10.0.3 QA-B2) > ref-a + 어두운 카드 + 강화: C-3 미달, ink 제안 = 충돌(보정값 쓰기 없음) · 도달 불가 문장 · '비교 보드에서 팔레트 바꾸기'
+ FAIL  src/pages/ProfileAdjust.test.tsx > D-2A4B2-01 강화 7:1 불가 조합 — 오류 경계 없이 P-S15 충돌 (QA-2A04B2 경로 A·B) > 경로 A: 모던 카페(A) Hero 확정 v1 → 강화 저장 v2 → 보드에서 카드 B(헤어살롱 · 어두운 카드) 재확정 v3 → v3 화면이 열린다
+ FAIL  src/pages/ProfileAdjust.test.tsx > D-2A4B2-01 강화 7:1 불가 조합 — 오류 경계 없이 P-S15 충돌 (QA-2A04B2 경로 A·B) > 경로 B: A 팔레트 + 어두운 카드(AA, 충돌 표시 정상) 화면에서 대비 '강화' 클릭 → 오류 경계 없이 충돌 표시
+ FAIL  src/pages/ProfileAdjust.test.tsx > D-2A4B2-03 없는 ?v= 보는 중 조정 저장 (5.3 저장 알림) > ?v=abc → 목적 '판매' → 저장 → '프로필 알림' 최종 문장 = 'v2로 저장했습니다'(없는 버전 재알림 없음), 보이는 Callout은 최신 v2로 갱신
+ FAIL  src/pages/ProfileAdjust.test.tsx > P-AC-16 저장 중 연타 · 실패 (P-S11) · P-AC-37 실패 계측 > 요청 실패 → role=alert '저장하지 못했습니다 · 다시 시도하세요' + 조정 유지 · profile_save_failed 1회 → '다시 시도' → v2
+ FAIL  src/pages/ProfileAdjust.test.tsx > P-AC-16 저장 중 연타 · 실패 (P-S11) · P-AC-37 실패 계측 > 응답 실패(커밋 뒤) → 같은 인자 재시도는 멱등 결과 'v2로 저장했습니다', 버전 +1만, STALE 문장 0
+⎯⎯⎯⎯⎯⎯ Failed Tests 23 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  4 failed | 1 passed (5)
+[route] 화면 렌더 실패 Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #8B5E3C
++ Received:
+Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #1F5FBF
+Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #5A5A5A
+Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #777777
+Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #8B5E3C
+Error: 대비 7:1을 만들 수 없습니다: #2C2C2C / #949494
+Received:
+
+## GREEN 2026-09-27 02:09:11 — 구현 뒤
+대상 파일 5개(contrast·profileContrast·profileMessages·contrastAaRegression·ProfileAdjust) 전부 통과, 전체:       Tests  928 passed (928)
+- D-02 RED: toHaveFocus 실패(BODY) → AdjustmentPanel '다시 시도' focusAfter=save → GREEN
+- D-03 RED: 알림 최종 문장이 '요청한 버전이 없어 최신 v2를…'(재알림) → ProfilePage effect deps [requested,isMissing] + 최신 번호 ref → GREEN
+- D-01 RED: Error 대비 7:1을 만들 수 없습니다 (#2C2C2C / #8B5E3C) · 경로 A는 오류 경계로 h1 '디자인 프로필' 없음 → ContrastSearch 값 반환 → GREEN

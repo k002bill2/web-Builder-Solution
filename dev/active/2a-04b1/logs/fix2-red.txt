@@ -1,0 +1,3245 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+ ❯ src/features/compare/boardScreen.test.ts (7 tests | 7 failed) 5ms
+   ❯ carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) (7)
+     × 조정 없음 → adjustmentCount와 같다 2ms
+     × 빈 보정 배열 → adjustmentCount와 같다 0ms
+     × 밀도만 → adjustmentCount와 같다 0ms
+     × 보정 2개만 → adjustmentCount와 같다 0ms
+     × 키 4개 + 보정 2개 → adjustmentCount와 같다 0ms
+     × undefined 키는 세지 않음 → adjustmentCount와 같다 0ms
+     × 보정 2개는 2로 센다(키 수가 아니라 항목 수) · 최신이 없으면 0 0ms
+ ❯ src/data/profileAdjust.test.ts (25 tests | 1 failed) 39ms
+   ❯ 보드 재확정 이어받기 — 저장소 confirmInto (6.1-3) (8)
+     × P-AC-39 ⑦(저장소, r6): 확정 결과의 droppedCount = 지운 조정 수(M>0만) — 커밋 뒤 응답 실패의 같은 인자 재시도(멱등 재생)도 같은 수 6ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardCarryOver.test.tsx (12 tests | 8 failed) 42010ms
+   ❯ P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39) (5)
+     × P-AC-38: v2 = 밀도 촘촘 + 모션 덮어쓰기 — 캡션 '조정 2개' → 펼치면 '이어지는 조정 2개 · 지워지는 조정 0개', 보드에서 모션을 바꾸면 '1개 · 1개' + 목록 → 재확정 v3 = 목록대로 저장, 버전 요약에 지운 조정 한 줄, 프로필 알림 '조정 1개를 지웠습니다' 5307ms
+     × P-AC-39 ②: 겹치지 않는 필드(Hero)만 바꾸면 '지워지는 조정 0개', 전부 '이어짐' 5179ms
+     × P-AC-39 ③: ref-b 팔레트 + 밝은 카드의 ink 보정 → 어두운 카드로 바꾸면 '지워짐 · 새 카드 톤에서 대비가 맞지 않습니다', 확정 뒤 프로필 화면에 충돌(3.3) 표시 5180ms
+     × P-S12: 목록을 펼친 뒤 다른 곳에서 조정 버전이 생기면 확정 0건 + 안내, 최신 조정으로 캡션·목록 개수를 다시 계산 5151ms
+   ❯ P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 (5)
+     × 펼치기 전 패널 청크 요청 0(보드 조작 뒤에도) · 캡션 N = 펼친 뒤 이어짐 + 지워짐 · '확인하는 중' → 목록 · 접었다 다시 펼쳐도 요청 1회 5112ms
+     × 청크 요청 실패 → '불러오지 못했습니다' + '다시 시도' → 성공하면 목록, 포커스는 '이어받기 확인'에 남는다 5108ms
+     × 실패 중에도 확정할 수 있다 — 저장은 저장소가 같은 함수로 계산, 프로필 알림 '조정 1개를 지웠습니다' 5105ms
+     × 펼치지 않고 확정한 저장값 = 펼치고 확정한 저장값 (둘 다 '조정 1개를 지웠습니다'), 펼치지 않은 쪽은 청크 요청 0 5105ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/profileAdjust.test.ts > 보드 재확정 이어받기 — 저장소 confirmInto (6.1-3) > P-AC-39 ⑦(저장소, r6): 확정 결과의 droppedCount = 지운 조정 수(M>0만) — 커밋 뒤 응답 실패의 같은 인자 재시도(멱등 재생)도 같은 수
+AssertionError: promise resolved "{ profileId: 'profile-1', version: 3 }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "profileId": "profile-1",
++   "version": 3,
+  }
+
+ ❯ src/data/profileAdjust.test.ts:312:77
+    310|     const saved = await board.savePicks({ hero: "ref-a", motion: "ref-…
+    311|     failResponse = true;
+    312|     await expect(board.createProfileVersion("profile-1", saved.revisio…
+       |                                                                             ^
+    313|     failResponse = false;
+    314|     const retried = await board.createProfileVersion("profile-1", save…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39) > P-AC-38: v2 = 밀도 촘촘 + 모션 덮어쓰기 — 캡션 '조정 2개' → 펼치면 '이어지는 조정 2개 · 지워지는 조정 0개', 보드에서 모션을 바꾸면 '1개 · 1개' + 목록 → 재확정 v3 = 목록대로 저장, 버전 요약에 지운 조정 한 줄, 프로필 알림 '조정 1개를 지웠습니다'
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_d_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:to
+ Test Files  3 failed (3)
+      Tests  16 failed | 28 passed (44)
+   Start at  19:45:25
+   Duration  43.36s (tests 93%, environment 4%, transform 1%, setup 1%)
+
+p-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_d_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_f_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_f_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_g_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_g_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_h_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_h_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_i_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_i_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_d_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_d_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_f_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_f_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_g_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_g_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_h_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_h_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_i_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_i_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:85:39
+     83|     const studio = await openStudio();
+     84|     await studio.confirmThenAdjust({ density: "compact", motion: "L0" …
+     85|     expect(await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다",…
+       |                                       ^
+     86|     await expand();
+     87|     expect(await within(draftPanel()).findByText("이어지는 조정 2개 · 지워지는 조정…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39) > P-AC-39 ②: 겹치지 않는 필드(Hero)만 바꾸면 '지워지는 조정 0개', 전부 '이어짐'
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 3개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_17_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_17_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0mHero 구성: A → C[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_19_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_19_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mC · 동네 치과 클리닉[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m센터 정렬 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_1a_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_1a_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m6개 · 2단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_1b_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_1b_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 중앙[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_1c_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_1c_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F5FBF · 화이트[0m
+          [36m</span>...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_17_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_17_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0mHero 구성: A → C[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_19_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_19_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mC · 동네 치과 클리닉[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m센터 정렬 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_1a_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_1a_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m6개 · 2단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_1b_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_1b_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 중앙[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_1c_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_1c_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F5FBF · 화이트[0m
+          [36m</span>...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:111:39
+    109|     await studio.confirmThenAdjust({ density: "compact", motion: "L0",…
+    110|     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
+    111|     expect(await within(draftPanel()).findByText("이 프로필에 조정 3개가 있습니다",…
+       |                                       ^
+    112|     await expand();
+    113|     await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 3개…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39) > P-AC-39 ③: ref-b 팔레트 + 밝은 카드의 ink 보정 → 어두운 카드로 바꾸면 '지워짐 · 새 카드 톤에서 대비가 맞지 않습니다', 확정 뒤 프로필 화면에 충돌(3.3) 표시
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 1개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_21_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_21_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0m카드 스타일: A → B[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_23_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_23_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_24_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_24_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_25_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_25_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_26_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_26_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mB · 프리미엄 헤어살롱[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F1F1F · 골드[0m
+          ...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_21_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_21_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0m카드 스타일: A → B[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_23_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_23_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_24_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_24_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_25_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_25_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_26_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_26_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mB · 프리미엄 헤어살롱[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F1F1F · 골드[0m
+          ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:122:39
+    120|     await studio.confirmThenAdjust({ corrections: [INK_FIX] });
+    121|     await userEvent.click(pick("카드 스타일", "B 프리미엄 헤어살롱"));
+    122|     expect(await within(draftPanel()).findByText("이 프로필에 조정 1개가 있습니다",…
+       |                                       ^
+    123|     await expand();
+    124|     await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 0개…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-S25 보드 초안 패널 — 이어받을 조정 (P-AC-38·39) > P-S12: 목록을 펼친 뒤 다른 곳에서 조정 버전이 생기면 확정 0건 + 안내, 최신 조정으로 캡션·목록 개수를 다시 계산
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 1개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_3l_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_3l_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0mHero 구성: A → C[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3n_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3n_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mC · 동네 치과 클리닉[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m센터 정렬 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3o_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3o_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m6개 · 2단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3p_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3p_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 중앙[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3q_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3q_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F5FBF · 화이트[0m
+          [36m</span>...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_3l_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_3l_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 이후 변경됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0mHero 구성: A → C[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3n_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3n_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mC · 동네 치과 클리닉[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m센터 정렬 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3o_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3o_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m6개 · 2단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3p_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3p_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 중앙[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_3q_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_3q_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · C[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 95, 191);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F5FBF · 화이트[0m
+          [36m</span>...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:158:39
+    156|     await studio.confirmThenAdjust({ density: "compact" });
+    157|     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
+    158|     expect(await within(draftPanel()).findByText("이 프로필에 조정 1개가 있습니다",…
+       |                                       ^
+    159|     await expand();
+    160|     await waitFor(() => expect(counts()).toHaveTextContent("이어지는 조정 1개…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 > 펼치기 전 패널 청크 요청 0(보드 조작 뒤에도) · 캡션 N = 펼친 뒤 이어짐 + 지워짐 · '확인하는 중' → 목록 · 접었다 다시 펼쳐도 요청 1회
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 3개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_4f_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_4f_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4h_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4h_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4i_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4i_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4j_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4j_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4k_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4k_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mB · 프리미엄 헤어살롱[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F1F1F · 골드[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_4f_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_4f_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4h_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4h_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4i_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4i_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4j_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4j_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_4k_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_4k_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mB · 프리미엄 헤어살롱[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 31, 31);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#1F1F1F · 골드[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:177:39
+    175|     const studio = await openStudio({ hero: "ref-a", palette: "ref-b",…
+    176|     await studio.confirmThenAdjust({ density: "compact", motion: "L0",…
+    177|     expect(await within(draftPanel()).findByText("이 프로필에 조정 3개가 있습니다",…
+       |                                       ^
+    178|     await userEvent.click(pick("모션", "B 프리미엄 헤어살롱"));
+    179|     await waitFor(() => expect(screen.getByRole("button", { name: "새 버…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 > 청크 요청 실패 → '불러오지 못했습니다' + '다시 시도' → 성공하면 목록, 포커스는 '이어받기 확인'에 남는다
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_59_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_59_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5b_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5b_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5c_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5c_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5d_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5d_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5e_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5e_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m<...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_59_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_59_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5b_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5b_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5c_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5c_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5d_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5d_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_5e_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_5e_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m<...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:209:32
+    207|     const studio = await openStudio();
+    208|     await studio.confirmThenAdjust({ density: "compact", motion: "L0" …
+    209|     await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefi…
+       |                                ^
+    210|     panelLoads.mockRejectedValueOnce(new Error("청크 요청 실패"));
+    211|     await expand();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 > 실패 중에도 확정할 수 있다 — 저장은 저장소가 같은 함수로 계산, 프로필 알림 '조정 1개를 지웠습니다'
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 2개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_63_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_63_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_65_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_65_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_66_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_66_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_67_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_67_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_68_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_68_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m<...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_63_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_63_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_65_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_65_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_66_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_66_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_67_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_67_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_68_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_68_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m<...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:228:32
+    226|     const studio = await openStudio();
+    227|     await studio.confirmThenAdjust({ density: "compact", motion: "L0" …
+    228|     await within(draftPanel()).findByText("이 프로필에 조정 2개가 있습니다", undefi…
+       |                                ^
+    229|     panelLoads.mockRejectedValue(new Error("청크 요청 실패"));
+    230|     await expand();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  src/pages/CompareBoardCarryOver.test.tsx > P-AC-39 ⑦ 펼침 로드 (r6) — 진입 직후 자동은 개수 캡션만, 판정·목록은 '이어받기 확인'을 펼칠 때 > 펼치지 않고 확정한 저장값 = 펼치고 확정한 저장값 (둘 다 '조정 1개를 지웠습니다'), 펼치지 않은 쪽은 청크 요청 0
+TestingLibraryElementError: Unable to find an element with the text: 이 프로필에 조정 3개가 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_6t_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_6t_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_6v_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_6v_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_70_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_70_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_71_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_71_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_72_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_72_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m<...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_6t_"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1 focus:outline-none"[39m
+      [33mid[39m=[32m"_r_6t_"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [0m프로필 초안[0m
+    [36m</h2>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0mv1 확정됨[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33maria-label[39m=[32m"선택 알림"[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [36m<span />[39m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"초안 항목"[39m
+    [33mclass[39m=[32m"flex flex-col"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_6v_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_6v_"[39m
+          [36m>[39m
+            [0mHero 구성[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-primary-text"[39m
+          [36m>[39m
+            [0mA · 모던 카페 브랜드[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_70_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_70_"[39m
+          [36m>[39m
+            [0m메뉴 구조[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m5개 · 우측 CTA[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_71_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_71_"[39m
+          [36m>[39m
+            [0mCTA 위치[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m히어로 좌측 하단[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33maria-labelledby[39m=[32m"_r_72_"[39m
+      [33mclass[39m=[32m"flex gap-2.5 border-b border-line-neutral py-2.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"mt-1 size-2.5 flex-none rounded-full"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 font-semibold text-label-neutral"[39m
+            [33mid[39m=[32m"_r_72_"[39m
+          [36m>[39m
+            [0m팔레트[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m기본값 · A[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-body3 flex items-center gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"size-3.5 flex-none rounded-xs"[39m
+            [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0m#8B5E3C · 크림[0m
+          [36m</span>[39m
+        [36m</p>[39m
+      [36m<...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ run src/pages/CompareBoardCarryOver.test.tsx:244:34
+    242|       const studio = await openStudio();
+    243|       await studio.confirmThenAdjust({ density: "compact", motion: "L0…
+    244|       await within(draftPanel()).findByText("이 프로필에 조정 3개가 있습니다", unde…
+       |                                  ^
+    245|       if (open) {
+    246|         await expand();
+ ❯ src/pages/CompareBoardCarryOver.test.tsx:258:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > 조정 없음 → adjustmentCount와 같다
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > 빈 보정 배열 → adjustmentCount와 같다
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > 밀도만 → adjustmentCount와 같다
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > 보정 2개만 → adjustmentCount와 같다
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > 키 4개 + 보정 2개 → adjustmentCount와 같다
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > undefined 키는 세지 않음 → adjustmentCount와 같다
+TypeError: carryOverCount is not a function
+ ❯ src/features/compare/boardScreen.test.ts:22:12
+     20|     ["undefined 키는 세지 않음", { density: undefined, motion: "L1" }],
+     21|   ])("%s → adjustmentCount와 같다", (_, adjustments) => {
+     22|     expect(carryOverCount(adjustments)).toBe(adjustmentCount(adjustmen…
+       |            ^
+     23|   });
+     24|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  src/features/compare/boardScreen.test.ts > carryOverCount — P-S25 캡션 N (6.1-3 개수 단위: 조정 키 1 · 보정 항목 1) > 보정 2개는 2로 센다(키 수가 아니라 항목 수) · 최신이 없으면 0
+TypeError: carryOverCount is not a function
+ ❯ src/features/compare/boardScreen.test.ts:26:12
+     24|
+     25|   it("보정 2개는 2로 센다(키 수가 아니라 항목 수) · 최신이 없으면 0", () => {
+     26|     expect(carryOverCount({ corrections: [INK_FIX, MUTED_FIX] })).toBe…
+       |            ^
+     27|     expect(carryOverCount(undefined)).toBe(0);
+     28|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04b1/app
+
+ ❯ src/data/profileAdjust.test.ts (25 tests | 1 failed) 37ms
+   ❯ 보드 재확정 이어받기 — 저장소 confirmInto (6.1-3) (8)
+     × P-AC-39 ⑦(저장소, r6): 확정 결과의 droppedCount = 지운 조정 수(M>0만) — 커밋 뒤 응답 실패의 같은 인자 재시도(멱등 재생)도 같은 수 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/profileAdjust.test.ts > 보드 재확정 이어받기 — 저장소 confirmInto (6.1-3) > P-AC-39 ⑦(저장소, r6): 확정 결과의 droppedCount = 지운 조정 수(M>0만) — 커밋 뒤 응답 실패의 같은 인자 재시도(멱등 재생)도 같은 수
+AssertionError: expected { profileId: 'profile-1', version: 3 } to deeply equal { profileId: 'profile-1', …(2) }
+
+- Expected
++ Received
+
+  {
+-   "droppedCount": 1,
+    "profileId": "profile-1",
+    "version": 3,
+  }
+
+ ❯ src/data/profileAdjust.test.ts:316:21
+    314|     expect((await profiles.getProfile("profile-1"))!.latestVersion).to…
+    315|     const retried = await board.createProfileVersion("profile-1", save…
+    316|     expect(retried).toEqual({ profileId: "profile-1", version: 3, drop…
+       |                     ^
+    317|     // 지운 조정 0개(Hero만 변경)면 필드 없음
+    318|     const again = await board.savePicks({ hero: "ref-c", motion: "ref-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 24 passed (25)
+   Start at  19:46:29
+   Duration  949ms (environment 64%, transform 13%, setup 12%, import 5%, tests 4%, worker 1%)
+

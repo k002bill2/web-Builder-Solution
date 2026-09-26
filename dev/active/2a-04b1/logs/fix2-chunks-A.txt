@@ -1,0 +1,11 @@
+# chunk base(0042113) A(훅이 상태) gzip KB — 다른 것만
+dist/assets/boardEngine.js 5.19 5.48
+dist/assets/carryOverPanel.js 0.47 0.41
+dist/assets/CatalogPage.js 6.68 6.69
+dist/assets/CompareBoardPage.js 9.28 9.46
+dist/assets/index.js 86.63 86.64
+dist/assets/memoryStudio.js 3.30 3.33
+dist/assets/profileContrast.js 0.72 0.73
+dist/assets/ProfilePage.js 6.91 7.03
+dist/assets/SegmentedControl.js 0.74 0.75
+dist/assets/TextField.js 0.42 0.43

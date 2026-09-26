@@ -1,0 +1,19 @@
+catalog 1920 {"cols":null,"mainW":1905} {"sw":1905,"cw":1905,"over":false}
+catalog 1280 {"cols":null,"mainW":1265} {"sw":1265,"cw":1265,"over":false}
+catalog 1024 {"cols":null,"mainW":1009} {"sw":1009,"cw":1009,"over":false}
+catalog 768 {"cols":null,"mainW":753} {"sw":753,"cw":753,"over":false}
+catalog 390 {"cols":null,"mainW":375} {"sw":375,"cw":375,"over":false}
+AC-20 진입 포커스 H1:비교 보드
+compare 1920 {"table":true,"tableScroll":[1088,838],"summaryBar":false,"accordion":false} {"sw":1905,"cw":1905,"over":false}
+compare 1280 {"table":true,"tableScroll":[1088,823],"summaryBar":false,"accordion":false} {"sw":1265,"cw":1265,"over":false}
+compare 1024 {"table":true,"tableScroll":[1088,951],"summaryBar":true,"accordion":false} {"sw":1009,"cw":1009,"over":false}
+compare 768 {"table":true,"tableScroll":[1088,695],"summaryBar":true,"accordion":false} {"sw":753,"cw":753,"over":false}
+compare 390 {"table":false,"tableScroll":null,"summaryBar":true,"accordion":12} {"sw":375,"cw":375,"over":false}
+compare 1280 Tab (h1부터) ["레퍼런스 추가","비교 표 (가로로 스크롤)","동네 치과 클리닉 비교에서 빼기","이 레퍼런스로 전부 선택: A 동네 치과 클리닉","부티크 법률사무소 비교에서 빼기","이 레퍼런스로 전부 선택: B 부티크 법률사무소","모던 카페 브랜드 비교에서 빼기","이 레퍼런스로 전부 선택: C 모던 카페 브랜드","로컬 베이커리 비교에서 빼기","이 레퍼런스로 전부 선택: D 로컬 베이커리","프리미엄 헤어살롱 비교에서 빼기","이 레퍼런스로 전부 선택: E 프리미엄 헤어살롱","Hero 구성: A 동네 치과 클리닉의 요소 선택","메뉴 구조: A 동네 치과 클리닉의 요소 선택","CTA 위치: A 동네 치과 클리닉의 요소 선택","팔레트: A 동네 치과 클리닉의 요소 선택","폰트: A 동네 치과 클리닉의 요소 선택","카드 스타일: A 동네 치과 클리닉의 요소 선택","이미지 비율: A 동네 치과 클리닉의 요소 선택","모션: A 동네 치과 클리닉의 요소 선택","모바일 구조: A 동네 치과 클리닉의 요소 선택","Footer: A 동네 치과 클리닉의 요소 선택"]
+compare AX {"table":1,"columnheader":5,"rowheader":12,"status":["선택 알림"],"pick":{"name":"Hero 구성: A 동네 치과 클리닉의 요소 선택","pressed":"false"},"caption":"레퍼런스 5개, 비교 항목 12개"}
+768 바 라벨(초안, v0) ["프로필 확정 (v1)","프로필 확정"]
+  확정 v1 → http://127.0.0.1:4337/profile/profile-1
+  v1 이후 변경: 확정 버튼 라벨 ["새 버전으로 확정 (v2)(바)","프로필 확정(바)"]
+  요약 바 '프로필 확정' 클릭 → http://127.0.0.1:4337/profile/profile-1 null
+detail 1280 Tab ["본문으로 건너뛰기","Design Studio","카탈로그","보관함","비교 보드","프로젝트","새 프로젝트","카탈로그","데스크톱","템플릿으로 가져오기","저장","비교 추가","로컬 베이커리","필라테스 스튜디오","프리미엄 헤어살롱","부티크 법률사무소","동네 치과 클리닉","로컬 베이커리","필라테스 스튜디오","로컬 베이커리",null,"본문으로 건너뛰기","Design Studio","카탈로그"]
+detail AX ["radiogroup \"미리보기 폭\"","radio \"데스크톱\" checked=true","radio \"태블릿\" checked=false","radio \"모바일\" checked=false","status \"\""]

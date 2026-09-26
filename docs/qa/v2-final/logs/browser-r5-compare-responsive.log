@@ -1,0 +1,16 @@
+{"label":"상태 태그 v1 확정됨","fg":"#066b5a","bg":"#def7f0","ratio":5.73,"size":"13px/600"}
+변경 후 태그·확정 버튼 {"tags":["v1 이후 변경됨"],"btn":["새 버전으로 확정 (v2)"]}
+{"label":"상태 태그 변경됨","fg":"#825500","bg":"#fef3da","ratio":5.86,"size":"13px/600"}
+ring 선택 셀 primary-container {"name":"Hero 구성: C 모던 카페 브랜드의 요소 선택","double":true,"outline":"none"}
+ring 빈 셀 흰 면 {"name":"Hero 구성: A 동네 치과 클리닉의 요소 선택","double":true,"outline":"none"}
+ring 열 빼기 {"name":"동네 치과 클리닉 비교에서 빼기","double":true,"outline":"none"}
+ring primary 확정 버튼 {"name":"새 버전으로 확정 (v2)","double":true,"outline":"none"}
+ring 역상 필(있으면) {"name":"새 버전으로 확정 (v2)","double":true,"outline":"none"}
+768 요약 바 {"barBg":"rgb(26, 38, 32)","pos":"sticky","rect":[944,56],"text":"초안 10/10 초안 보기 프로필 확정","btnBg":"rgba(255, 255, 255, 0.12)"} {"sw":753,"cw":753,"over":false} table true
+{"label":"768 '초안 보기'","fg":"#ffffff","bg":"#35403b","ratio":10.76,"size":"13px/600"}
+ring 768 요약 바 초안 보기(역상) {"name":"초안 보기","double":true,"outline":"none"}
+768 표 내부 스크롤 {"sw":1088,"cw":695,"thLeft":29}
+768 초안 보기 후 포커스 {"tag":"H2","role":"","name":"프로필 초안","rect":[28,917,81,26],"inVp":true,"ring":"NONE","pillOv":null}
+390 아코디언 {"table":false,"details":0,"expanded":12,"selLi":[{"bg":"rgb(242, 242, 253)","btnBg":"rgb(242, 242, 253)"},{"bg":"rgb(242, 242, 253)","btnBg":"rgb(242, 242, 253)"}],"unselLi":["rgb(240, 243, 238)"]} {"sw":375,"cw":375,"over":false}
+{"label":"390 '초안 보기'","fg":"#ffffff","bg":"#3f4944","ratio":9.39,"size":"13px/600"}
+{"label":"390 선택됨","fg":"#1a2620","bg":"#f2f2fd","ratio":14.08,"size":"13px/700"}

@@ -1,0 +1,56 @@
+
+> design-studio-app@0.1.0 build
+> tsc --noEmit -p tsconfig.json && vite build && node scripts/check-bundle-size.mjs
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 285 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/arrow-right-Do6NaTe6.svg                     0.22 kB │ gzip:  0.17 kB
+dist/assets/chevron-down-UGy2Q_vR.svg                    0.44 kB │ gzip:  0.26 kB
+dist/assets/chevron-left-C1r_0PK-.svg                    0.45 kB │ gzip:  0.26 kB
+dist/assets/check-DwDeeBet.svg                           0.45 kB │ gzip:  0.28 kB
+dist/index.html                                          0.48 kB │ gzip:  0.29 kB
+dist/assets/search-DSSU1Eym.svg                          0.59 kB │ gzip:  0.31 kB
+dist/assets/circle-check-Bs3I_2Hu.svg                    0.61 kB │ gzip:  0.36 kB
+dist/assets/bookmark-fill-Di8oDBsW.svg                   0.76 kB │ gzip:  0.40 kB
+dist/assets/circle-info-Dp_yL-y3.svg                     0.85 kB │ gzip:  0.36 kB
+dist/assets/bookmark-CX0jx-5N.svg                        1.09 kB │ gzip:  0.53 kB
+dist/assets/warning-I8LH9TjP.svg                         1.53 kB │ gzip:  0.66 kB
+dist/assets/sparkle-cqilRS3G.svg                         4.37 kB │ gzip:  1.83 kB
+dist/.vite/manifest.json                                 7.31 kB │ gzip:  1.21 kB
+dist/assets/Pretendard-Regular.subset-BZqc2FCe.woff2   267.09 kB
+dist/assets/Pretendard-Medium.subset-D07TkZcI.woff2    268.32 kB
+dist/assets/Pretendard-SemiBold.subset-DdMYyxPR.woff2  268.75 kB
+dist/assets/Pretendard-Bold.subset-NvQkMce4.woff2      270.78 kB
+dist/assets/index-hc-eUGz-.css                          41.71 kB │ gzip:  8.45 kB
+dist/assets/PlaceholderPage-D-G8xU0E.js                  0.68 kB │ gzip:  0.45 kB
+dist/assets/TextField-BPcHY-9v.js                        0.76 kB │ gzip:  0.44 kB
+dist/assets/referenceDisplay-BsvnrAMF.js                 1.31 kB │ gzip:  0.79 kB
+dist/assets/useThrowToBoundary-BoV6YFQB.js               1.37 kB │ gzip:  0.80 kB
+dist/assets/catalogFilters-CTS9InfW.js                   2.26 kB │ gzip:  1.16 kB
+dist/assets/references-Dy8ZbmG9.js                       2.70 kB │ gzip:  0.97 kB
+dist/assets/memoryCompareBoardRepository-DxKOZ8JV.js     3.57 kB │ gzip:  1.66 kB
+dist/assets/referenceComparisons-BjFXZkfz.js             3.69 kB │ gzip:  1.01 kB
+dist/assets/referenceDetails-C7TYk5GK.js                 5.57 kB │ gzip:  1.41 kB
+dist/assets/jsx-runtime-Dk72oS4N.js                      8.77 kB │ gzip:  3.33 kB
+dist/assets/boardEngine-B8GAnFaI.js                     12.39 kB │ gzip:  5.59 kB
+dist/assets/ReferenceDetailPage-Z7tXGAX1.js             13.10 kB │ gzip:  4.40 kB
+dist/assets/CatalogPage-BcDwYjoH.js                     19.43 kB │ gzip:  6.65 kB
+dist/assets/CompareBoardPage-D6DcdvFn.js                27.56 kB │ gzip:  9.07 kB
+dist/assets/compareBoardRepository-BuMuGeWT.js          28.78 kB │ gzip: 10.31 kB
+dist/assets/index-Cj8x3hmt.js                          268.82 kB │ gzip: 86.25 kB
+
+✓ built in 365ms
+[bundle] 공통 JS (gzip, 참고): 88.67KB
+  - assets/index-Cj8x3hmt.js 85.34KB
+  - assets/jsx-runtime-Dk72oS4N.js 3.33KB
+[bundle] /catalog 첫 화면 합계: 98.50KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.88KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 95.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 98.21KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.51KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.97KB / 예산 125KB
+[bundle] /profile · /studio (자리표시) 첫 화면 합계: 89.12KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.51KB / 예산 125KB
+exit 0

@@ -1,0 +1,22 @@
+== 대비 1280 
+{"label":"열 문자 배지 A","fg":"#ffffff","bg":"#1a2620","ratio":15.65,"size":"13px/700"}
+{"label":"선택됨 글자","fg":"#1a2620","bg":"#f2f2fd","ratio":14.08,"size":"13px/700"}
+{"label":"이 요소 선택 글자","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"13px/500"}
+{"label":"열 머리글 업종(의료)","fg":"#56615a","bg":"#ffffff","ratio":6.46,"size":"13px/500"}
+{"label":"라이선스 Tag internal","fg":"#066b5a","bg":"#def7f0","ratio":5.73,"size":"12px/600"}
+{"label":"라이선스 Tag licensed","fg":"#4147e5","bg":"#f2f2fd","ratio":5.8,"size":"12px/600"}
+{"label":"초안 출처 'A · 동네'","fg":"#4147e5","bg":"#ffffff","ratio":6.45,"size":"13px/500"}
+{"label":"초안 종류 캡션 'Hero 구성'","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"16px/400"}
+{"label":"상태 태그(확정 전)","fg":"#4c574e","bg":"#e4e7e5","ratio":6.06,"size":"13px/600"}
+{"label":"자동 저장 캡션","err":"not found"}
+{"label":"행 머리글","fg":"#1a2620","bg":"#ffffff","ratio":15.65,"size":"16px/700"}
+원 3:1 {"filled":{"fg":"rgb(90, 95, 232)","bg":[242,242,253],"ratio":4.46},"empty":{"fg":[134,146,139],"bg":[255,255,255],"ratio":3.22}}
+5열 가로 스크롤·행 머리글 고정 {"scW":1088,"cW":823,"scrollLeft":200,"thLeftBefore":29,"thLeftAfter":29,"pos":"sticky","bg":"rgb(255, 255, 255)","z":"1","bR":"0px rgb(26, 38, 32)","shadow":"none"} {"sw":1265,"cw":1265,"over":false}
+ring 선택 셀(primary-container) Hero 구성: C 모던 카페 브랜드의 요소 선택 shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg clip 없음
+ring 빈 셀(흰 면) Hero 구성: A 동네 치과 클리닉의 요소 선택 shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg clip 없음
+ring 열 빼기(흰 면) 동네 치과 클리닉 비교에서 빼기 shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg clip 없음
+ring primary 버튼 프로필 확정 (v1) shadow:rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rg
+AC-14/D-QA03 {"invalid":"true","desc":"_r_24_","msg":"대표색은 #RRGGBB 형식의 6자리 hex로 입력하세요 (예: #8B5E3C)"}
+{"label":"D-QA03 오류 문구","fg":"#af2e0d","bg":"#ffffff","ratio":6.52,"size":"13px/500"}
+AC-17 확정 후 URL http://127.0.0.1:4337/profile/profile-1 디자인 프로필
+뒤로 →  http://127.0.0.1:4337/compare {"rows":12,"tags":["v1 확정됨"]}

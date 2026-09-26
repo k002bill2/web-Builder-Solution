@@ -1,0 +1,3 @@
+preview pid=39270
+COMMAND   PID            USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    39300 002billmac_home   14u  IPv4 0x9d6e0ec86bd57d96      0t0  TCP 127.0.0.1:4341 (LISTEN)

@@ -1,0 +1,6 @@
+$ grep -rnE "['\"][./@]*[^'\"]*/engine(/|['\"])" src (src/engine 제외)
+grep exit=0 (1=매치 없음)
+
+$ grep -c runGate/createDocFromCandidate in dist/assets
+grep exit=1
+dist R-13 grep exit=1

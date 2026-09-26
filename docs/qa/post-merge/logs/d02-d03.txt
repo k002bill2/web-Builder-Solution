@@ -1,0 +1,17 @@
+# D-2A4B2-02 · D-03 — 계측 문서 (tools/expose-studio.mjs: memoryStudio 청크 응답 치환 patched=1 → window.__qaStudio)
+# 주입: __qaStudio.profiles.saveAdjustments 감싸기. __qaMode 1회성: reqfail = 원 메서드 호출 전 throw / respfail = 원 메서드(커밋) 뒤 throw. null = 통과.
+# 문서: /profile 직접 로드(계측) → 앱 링크로 카탈로그 → 모던 카페·헤어살롱 비교 → Hero A → "프로필 확정 (v1)". 새로고침 없음.
+# 조작: 버튼은 page.focus + keyboard Enter (키보드 사용자 경로)
+
+A-fail  (촘촘 → 조정 저장 (v2), reqfail): alert "저장하지 못했습니다 · 다시 시도하세요 / 다시 시도" · focus BUTTON "조정 저장 (v2)" · versions [v1] · calls [reqfail]
+A-retry ("다시 시도" Enter): status "v2로 저장했습니다" · alert 없음 · focus BUTTON "조정 저장 (v3)" · versions [v2 현재 조정 간격, v1] · calls [reqfail, pass] · err []
+B-fail  (L0 없음 → 조정 저장 (v3), respfail — 커밋은 됨): alert 동일 · focus "조정 저장 (v3)" · calls [..., respfail]
+B-retry ("다시 시도" Enter): status "v3으로 저장했습니다" · alert 없음 · focus BUTTON "조정 저장 (v4)" · versions [v3 현재 조정 모션, v2, v1] = 3개(중복 없음) · calls [..., respfail, pass] · err []
+다음 Tab → BUTTON "보기" (버전 목록) — 문서 처음으로 돌아가지 않음
+→ D-2A4B2-02 해소 확인 (이전: 두 경로 모두 activeElement = BODY)
+
+D-03: history.pushState ?v=abc + popstate → status "요청한 버전이 없어 최신 v3을 보여 줍니다", Tag "v3 · 현재", focus H1
+      목적 "판매" → "조정 저장" → Tag "v4 · 현재", 1초 뒤 status 최종 = "v4로 저장했습니다", focus "조정 저장 (v5)"
+→ D-2A4B2-03 해소 확인 (이전: 최종 문장이 "요청한 버전이 없어 최신 v7을 보여 줍니다"로 덮임)
+캡처: screens/04-D02-reqfail-alert.png · 05-D02-respfail-retry-ok.png · 06-D03-missing-v-saved.png
+참고: D-03 조작 자체는 주입 없음(__qaMode=null, 원 메서드 통과)이지만 계측 문서 안에서 실행

@@ -1,0 +1,324 @@
+{
+ "profile-1280": {
+  "vw": 1265,
+  "scrollW": 1265,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31",
+   "P.sr-only r=0"
+  ],
+  "h1": "디자인 프로필",
+  "boundary": false,
+  "tab": {
+   "count": 16,
+   "outOfX": [],
+   "noRing": [
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "비교 보드에서 선택 바꾸기",
+    "섹션 9 · 순서 보기",
+    "모던 카페 브랜드",
+    "보정값 쓰기 (보조 글자 muted)",
+    "촘촘",
+    "기본 AA",
+    "L0 없음",
+    "판매",
+    "조정 저장 (v5)",
+    "보기 (v3)",
+    "현재와 비교 (v3)",
+    "보기 (v2)"
+   ]
+  }
+ },
+ "profile-1024": {
+  "vw": 1009,
+  "scrollW": 1009,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31",
+   "P.sr-only r=0"
+  ],
+  "h1": "디자인 프로필",
+  "boundary": false,
+  "tab": {
+   "count": 23,
+   "outOfX": [],
+   "noRing": [
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "비교 보드에서 선택 바꾸기",
+    "섹션 9 · 순서 보기",
+    "모던 카페 브랜드",
+    "보정값 쓰기 (보조 글자 muted)",
+    "촘촘"
+   ]
+  }
+ },
+ "profile-768": {
+  "vw": 753,
+  "scrollW": 753,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31",
+   "P.sr-only r=0"
+  ],
+  "h1": "디자인 프로필",
+  "boundary": false,
+  "tab": {
+   "count": 23,
+   "outOfX": [],
+   "noRing": [
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "비교 보드에서 선택 바꾸기",
+    "섹션 9 · 순서 보기",
+    "모던 카페 브랜드",
+    "보정값 쓰기 (보조 글자 muted)",
+    "촘촘"
+   ]
+  }
+ },
+ "profile-390": {
+  "vw": 375,
+  "scrollW": 375,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31",
+   "P.sr-only r=0"
+  ],
+  "h1": "디자인 프로필",
+  "boundary": false,
+  "tab": {
+   "count": 23,
+   "outOfX": [],
+   "noRing": [
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "비교 보드에서 선택 바꾸기",
+    "섹션 9 · 순서 보기",
+    "모던 카페 브랜드",
+    "보정값 쓰기 (보조 글자 muted)",
+    "촘촘"
+   ]
+  }
+ },
+ "profile-320": {
+  "vw": 305,
+  "scrollW": 305,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31",
+   "P.sr-only r=0"
+  ],
+  "h1": "디자인 프로필",
+  "boundary": false,
+  "tab": {
+   "count": 23,
+   "outOfX": [],
+   "noRing": [
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "비교 보드에서 선택 바꾸기",
+    "섹션 9 · 순서 보기",
+    "모던 카페 브랜드",
+    "보정값 쓰기 (보조 글자 muted)",
+    "촘촘"
+   ]
+  }
+ },
+ "compare-1280": {
+  "vw": 1265,
+  "scrollW": 1265,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31"
+  ],
+  "h1": "비교 보드",
+  "boundary": false,
+  "tab": {
+   "count": 21,
+   "outOfX": [],
+   "noRing": [
+    "INPUT:",
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "레퍼런스 추가",
+    "모던 카페 브랜드 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: A 모던 카페 브랜드",
+    "프리미엄 헤어살롱 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱",
+    "Hero 구성: A 모던 카페 브랜드의 요소 선택",
+    "메뉴 구조: A 모던 카페 브랜드의 요소 선택",
+    "CTA 위치: A 모던 카페 브랜드의 요소 선택",
+    "팔레트: A 모던 카페 브랜드의 요소 선택",
+    "폰트: A 모던 카페 브랜드의 요소 선택",
+    "카드 스타일: A 모던 카페 브랜드의 요소 선택",
+    "이미지 비율: A 모던 카페 브랜드의 요소 선택"
+   ]
+  }
+ },
+ "compare-1024": {
+  "vw": 1009,
+  "scrollW": 1009,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31"
+  ],
+  "h1": "비교 보드",
+  "boundary": false,
+  "tab": {
+   "count": 30,
+   "outOfX": [],
+   "noRing": [
+    "INPUT:",
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "레퍼런스 추가",
+    "모던 카페 브랜드 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: A 모던 카페 브랜드",
+    "프리미엄 헤어살롱 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱"
+   ]
+  }
+ },
+ "compare-768": {
+  "vw": 753,
+  "scrollW": 753,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31"
+  ],
+  "h1": "비교 보드",
+  "boundary": false,
+  "tab": {
+   "count": 30,
+   "outOfX": [],
+   "noRing": [
+    "INPUT:",
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "레퍼런스 추가",
+    "모던 카페 브랜드 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: A 모던 카페 브랜드",
+    "프리미엄 헤어살롱 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱"
+   ]
+  }
+ },
+ "compare-390": {
+  "vw": 375,
+  "scrollW": 375,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31"
+  ],
+  "h1": "비교 보드",
+  "boundary": false,
+  "tab": {
+   "count": 34,
+   "outOfX": [],
+   "noRing": [
+    "INPUT:",
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "레퍼런스 추가",
+    "모던 카페 브랜드 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: A 모던 카페 브랜드",
+    "프리미엄 헤어살롱 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱"
+   ]
+  }
+ },
+ "compare-320": {
+  "vw": 305,
+  "scrollW": 305,
+  "overflowX": false,
+  "over": [
+   "A.ds-label sr-only rounded-md bg-surface-i r=31"
+  ],
+  "h1": "비교 보드",
+  "boundary": false,
+  "tab": {
+   "count": 34,
+   "outOfX": [
+    "이 레퍼런스로 전부 선택: A 모던 카페 브랜드"
+   ],
+   "noRing": [
+    "INPUT:",
+    "BODY:본문으로 건너뛰기Design Studio카탈로그보관"
+   ],
+   "first12": [
+    "본문으로 건너뛰기",
+    "Design Studio",
+    "카탈로그",
+    "보관함",
+    "비교 보드",
+    "프로젝트",
+    "새 프로젝트",
+    "레퍼런스 추가",
+    "모던 카페 브랜드 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: A 모던 카페 브랜드",
+    "프리미엄 헤어살롱 비교에서 빼기",
+    "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱"
+   ]
+  }
+ }
+}

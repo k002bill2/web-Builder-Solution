@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
 import type { DesignReference } from "../domain/reference";
 import { ALL_FILTER_GROUPS, INDUSTRY_LABELS, MOTION_OPTIONS } from "../fixtures/catalogFilters";
@@ -380,5 +380,79 @@ describe("라우팅", () => {
     await expectCardCount(6);
     await userEvent.click(screen.getByRole("button", { name: "비교 보드 열기" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/compare"));
+  });
+});
+
+describe("QA-V2-2 P3 수정 (FIX-V22)", () => {
+  const checkbox = (name: string) => screen.getByRole("checkbox", { name });
+  const chipGroup = () => screen.getByRole("group", { name: "업종" });
+  const chip = (name: string) => within(chipGroup()).getByRole("button", { name });
+  const reset = () => screen.getByRole("button", { name: "필터 초기화" });
+  const railHeading = () => within(screen.getByRole("complementary", { name: "필터" })).getByRole("heading", { level: 2, name: "필터" });
+  /** 설명 노드가 텍스트 노드 하나여야 Chrome이 "N 개"로 띄우지 않는다 (D-V22-04). */
+  const descriptionNodes = (el: HTMLElement) => {
+    const node = document.getElementById(el.getAttribute("aria-describedby") ?? "");
+    return [...(node?.childNodes ?? [])].map((n) => n.textContent);
+  };
+
+  it("개수 설명은 텍스트 노드 하나로 'N개' / '선택 N개'다 (D-V22-04)", async () => {
+    renderApp("/catalog?concept=minimal");
+    await expectCardCount(1);
+    await waitFor(() => expect(checkbox("대담한")).toHaveAccessibleDescription("1개"));
+    expect(descriptionNodes(checkbox("대담한"))).toEqual(["1개"]);
+    expect(chip("전체")).toHaveAccessibleDescription("1개");
+    expect(descriptionNodes(chip("전체"))).toEqual(["1개"]);
+    expect(reset()).toHaveAccessibleDescription("선택 1개");
+    expect(descriptionNodes(reset())).toEqual(["선택 1개"]);
+    const filterToggle = screen.getByRole("button", { name: "필터" });
+    expect(filterToggle).toHaveAccessibleDescription("선택 1개");
+    expect(descriptionNodes(filterToggle)).toEqual(["선택 1개"]);
+  });
+
+  it.each([
+    ["키보드 Enter", async () => {
+      reset().focus();
+      await userEvent.keyboard("{Enter}");
+    }],
+    ["클릭", () => userEvent.click(reset())],
+  ])("%s로 초기화하면 포커스가 body가 아니라 레일 제목으로 간다 (D-V22-02)", async (_how, press) => {
+    const { router } = renderApp("/catalog?industry=cafe-fnb&concept=minimal");
+    await expectCardCount(1);
+    await press();
+    expect(router.state.location.search).toBe("?industry=cafe-fnb");
+    expect(reset()).toBeDisabled();
+    expect(railHeading()).toHaveFocus();
+    expect(railHeading()).toHaveAttribute("tabindex", "-1");
+  });
+
+  it("Tab으로 포커스한 업종 칩은 링까지 칩 줄 안으로 스크롤하고, 마우스 클릭은 스크롤하지 않는다 (D-V22-03)", async () => {
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+    // jsdom은 키보드/포인터 포커스를 가르지 않는다(:focus-visible 항상 false) — 판별 결과만 모의하고, 실제 판별은 브라우저 실측
+    let keyboard = true;
+    const matches = Element.prototype.matches;
+    const spy = vi.spyOn(Element.prototype, "matches").mockImplementation(function (this: Element, selector: string) {
+      return selector === ":focus-visible" ? keyboard : matches.call(this, selector);
+    });
+    try {
+      renderApp("/catalog");
+      await expectCardCount(6);
+      expect(chipGroup()).toHaveClass("scroll-px-2");
+      chip("뷰티").focus();
+      scrollIntoView.mockClear();
+      await userEvent.tab();
+      expect(chip("의료")).toHaveFocus();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      expect(scrollIntoView.mock.contexts[0]).toBe(chip("의료"));
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: "nearest", inline: "nearest" });
+      keyboard = false;
+      scrollIntoView.mockClear();
+      await userEvent.click(chip("피트니스"));
+      expect(chip("피트니스")).toHaveFocus();
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    }
   });
 });

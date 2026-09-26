@@ -58,7 +58,7 @@ export function Checkbox({
       </label>
       {hasCount && (
         <span id={descriptionId} hidden>
-          {count}개
+          {`${count}개`}
         </span>
       )}
     </>

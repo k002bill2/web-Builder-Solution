@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useRef } from "react";
 import type { MotionLevel } from "../../domain/reference";
 import type { FacetCounts } from "../../features/catalog/facetCounts";
 import {
@@ -74,22 +74,34 @@ export function FilterRail({
   readonly onReset: () => void;
 }) {
   const resetDescriptionId = useId();
+  const heading = useRef<HTMLHeadingElement>(null);
+  // 누른 버튼이 곧 비활성이 되어 포커스가 body로 빠진다 — 레일 제목에 둔다 (D-V22-02)
+  const reset = () => {
+    onReset();
+    heading.current?.focus();
+  };
   return (
     <aside id={id} aria-label="필터" className={`${open ? "flex" : "hidden lg:flex"} flex-col gap-5.5`}>
       <div className="flex items-center justify-between">
-        <h2 className="ds-heading2">필터</h2>
+        <h2
+          ref={heading}
+          tabIndex={-1}
+          className="ds-heading2 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+        >
+          필터
+        </h2>
         <Button
           variant="assistive"
           size="sm"
           aria-label="필터 초기화"
           aria-describedby={resetDescriptionId}
           disabled={selectionCount === 0}
-          onClick={onReset}
+          onClick={reset}
         >
           {selectionCount > 0 ? `초기화 · ${selectionCount}` : "초기화"}
         </Button>
         <span id={resetDescriptionId} hidden>
-          선택 {selectionCount}개
+          {`선택 ${selectionCount}개`}
         </span>
       </div>
       {FILTER_GROUPS.map((group) => (

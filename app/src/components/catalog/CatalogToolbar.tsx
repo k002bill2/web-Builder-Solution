@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, type FocusEvent } from "react";
 import type { IndustryId, SortKey } from "../../domain/reference";
 import type { FacetCounts } from "../../features/catalog/facetCounts";
 import { INDUSTRY_LABELS, INDUSTRY_ORDER, SORT_OPTIONS } from "../../fixtures/catalogFilters";
@@ -7,6 +7,14 @@ import { Chip } from "../ds/Chip";
 import { SegmentedControl } from "../ds/SegmentedControl";
 
 const SORT_SEGMENTS = SORT_OPTIONS.map((o) => ({ value: o.id, label: o.label }));
+
+/**
+ * 칩 줄(<1024 가로 스크롤)에서 일부만 보이는 칩은 Chrome이 포커스해도 스크롤하지 않는다.
+ * 키보드 포커스일 때만 링까지(`scroll-px-2`) 보이게 스크롤한다 — 마우스 동작은 그대로 (D-V22-03).
+ */
+function revealFocusedChip(e: FocusEvent<HTMLElement>) {
+  if (e.target.matches(":focus-visible")) e.target.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
 
 /** 업종 칩 — 보이는 개수는 aria-hidden, 스크린리더에는 설명 "N개" (이름은 업종명 그대로). */
 function IndustryChip({
@@ -30,7 +38,7 @@ function IndustryChip({
         </span>
       </Chip>
       <span id={descriptionId} hidden>
-        {count}개
+        {`${count}개`}
       </span>
     </>
   );
@@ -78,9 +86,14 @@ export function CatalogToolbar({
         {selectionCount > 0 ? `필터 ${selectionCount}` : "필터"}
       </Button>
       <span id={filterDescriptionId} hidden>
-        선택 {selectionCount}개
+        {`선택 ${selectionCount}개`}
       </span>
-      <div role="group" aria-label="업종" className="-m-1 flex min-w-0 flex-1 gap-2 overflow-x-auto p-1 lg:flex-wrap">
+      <div
+        role="group"
+        aria-label="업종"
+        onFocus={revealFocusedChip}
+        className="-m-1 flex min-w-0 flex-1 scroll-px-2 gap-2 overflow-x-auto p-1 lg:flex-wrap"
+      >
         <IndustryChip
           label="전체"
           count={counts.industryTotal}

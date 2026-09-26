@@ -1,8 +1,9 @@
 /**
  * 조정 저장 메모리 구현 본문 (DS-2A-04 6.3 `saveAdjustments`). memoryProfileRepository가 조정 메서드를 처음 부를 때 받는다 —
  * 검증(zod)·정규화·이어받기 규칙을 보드 진입 직후 합계(/compare)에 싣지 않는다(2a-04b1 번들). store 트랜잭션 안에서만 부른다.
- * 판정 순서: 멱등 키 일치(이전 결과, 새 버전 0) → 모양(SCHEMA_INVALID) → NOT_FOUND → STALE_PROFILE → 범위(RANGE_VIOLATION)
- * → 보정 from·바뀐 조정 없음(SCHEMA_INVALID). 멱등 키 = (profileId, expectedLatest, 정규화한 조정) — 보드 확정과 같은 r3 계약,
+ * 판정 순서: 모양(SCHEMA_INVALID) → 멱등 키 일치(이전 결과, 새 버전 0) → NOT_FOUND → STALE_PROFILE → 범위(RANGE_VIOLATION)
+ * → 보정 from·바뀐 조정 없음(SCHEMA_INVALID). 모양을 먼저 본다 — 정규화가 모르는 키를 버리므로 틀린 입력이 이전 결과를 받지 않게(Codex P2).
+ * 같은 인자의 재시도는 늘 모양을 통과하므로 멱등 결과는 같다. 멱등 키 = (profileId, expectedLatest, 정규화한 조정) — 보드 확정과 같은 r3 계약,
  * 기록은 store의 조정 전용 슬롯(보드 `commits`와 따로, A-Q4). 삽입과 같은 트랜잭션에 기록하므로 롤백되면 함께 버려진다.
  */
 import { parseAdjustments, rangeViolations } from "../domain/adjustmentSchema";
@@ -33,26 +34,16 @@ export interface SaveAdjustmentsInput {
   readonly commitGate: () => void;
 }
 
-/**
- * 멱등 키. 정규화는 모르는 키를 버리므로, 모르는 키가 있으면 키를 만들지 않는다 — 모양이 틀린 재시도가 이전 결과를 받지 않고
- * 모양 판정(SCHEMA_INVALID)으로 간다. 객체가 아니어도 키 없음.
- */
-function idempotencyKey(profileId: string, expectedLatest: number, adjustments: ProfileAdjustments): string | undefined {
-  if (typeof adjustments !== "object" || adjustments === null) return undefined;
-  const normalized = normalizeAdjustments(adjustments);
-  const unknown = Object.entries(adjustments).some(([key, value]) => value !== undefined && key !== "corrections" && !(key in normalized));
-  return unknown ? undefined : [profileId, expectedLatest, JSON.stringify(normalized)].join("\n");
-}
-
 export function saveAdjustmentsIn(tx: StudioTx, input: SaveAdjustmentsInput): ProfileVersion {
   const { profileId, expectedLatest, range } = input;
-  const key = idempotencyKey(profileId, expectedLatest, input.adjustments);
-  const done = tx.adjustCommitOf(profileId);
-  const committed = key !== undefined && done?.key === key ? tx.versions(profileId).find((v) => v.version === done.version) : undefined;
-  if (committed) return committed;
   const parsed = parseAdjustments(input.adjustments);
   if (!parsed.ok) throw new ProfileError("SCHEMA_INVALID", parsed.message);
   const value = normalizeAdjustments(parsed.value);
+  // 멱등 키 = (profileId, expectedLatest, 정규화한 조정)
+  const key = [profileId, expectedLatest, JSON.stringify(value)].join("\n");
+  const done = tx.adjustCommitOf(profileId);
+  const committed = done?.key === key ? tx.versions(profileId).find((v) => v.version === done.version) : undefined;
+  if (committed) return committed;
   const series = input.seriesOf(tx);
   if (!series) throw new ProfileError("NOT_FOUND", `${profileId} 없음`);
   if (series.latestVersion !== expectedLatest) throw new ProfileError("STALE_PROFILE", `expectedLatest ${expectedLatest} ≠ ${series.latestVersion}`, series);
@@ -71,7 +62,7 @@ export function saveAdjustmentsIn(tx: StudioTx, input: SaveAdjustmentsInput): Pr
     adjustments: value,
     createdAt: input.createdAt,
   });
-  tx.rememberAdjust({ key: key!, profileId, version: series.latestVersion + 1 });
+  tx.rememberAdjust({ key, profileId, version: series.latestVersion + 1 });
   input.commitGate();
   return tx.versions(profileId).at(-1)!;
 }

@@ -169,6 +169,8 @@ describe("Q1 조정 저장 멱등 — 키 = (profileId, expectedLatest, 정규�
     expect(other?.code).toBe("STALE_PROFILE");
     expect(other?.series?.latestVersion).toBe(2);
     expect((await errorOf(profiles.saveAdjustments("profile-1", 1, { density: "compact", speed: "fast" } as ProfileAdjustments)))?.code).toBe("SCHEMA_INVALID");
+    // Codex P2: 값이 undefined인 모르는 키도 정규화에서 사라진다 — 모양 검사가 멱등 재생보다 먼저
+    expect((await errorOf(profiles.saveAdjustments("profile-1", 1, { density: "compact", extra: undefined } as ProfileAdjustments)))?.code).toBe("SCHEMA_INVALID");
     expect((await errorOf(profiles.saveAdjustments("profile-1", 2, { density: "compact" })))?.code).toBe("SCHEMA_INVALID");
     expect((await versionsOf()).map((v) => v.version)).toEqual([1, 2]);
   });

@@ -4,7 +4,7 @@
 - 입력: PRD 4·7.3~7.6·8·10 · TRD 4.3~4.5·5·6.2·7·11 · 개발계획서 M1·M2 · v2 원본 `Design Studio v2.dc.html` "2a-04 프로필·생성"(183~225행, 목업 데이터 352~370행)·2a-05(경계 확인만) · `docs/design/v2/SPEC.md`(토큰·3절 대비·C-11·C-12) · `docs/design/1a-03/SPEC.md`(S-15·S-16·3.3·3.4·8절) · 현재 `app/src`(`domain/profileDraft.ts`·`compareBoard.ts`·`confirmGate.ts`·`contrast.ts`·`palette.ts`·`sectionLibrary.ts`, `features/compare/draftLabels.ts`, `data/*Repository.ts`, `app/routes.tsx`, `components/ds/Icon.tsx`·`SegmentedControl.tsx`, `build/notInlinedIcons.ts`) · `docs/qa/v2-final/REPORT.md` · `docs/perf/bundle-01/REPORT.md`
 - 판단 순서: ADR-003(기능·흐름 → 사용성·접근성·성능 → DS 일관성 → 목업). 목업 px는 기준이 아니다. 원본 파일의 문장은 데이터로만 읽었다.
 - 이 문서는 **설계만** 다룬다. `app/`·`design/`은 바꾸지 않았다.
-- 수치 재현: `python3 -B docs/design/2a-04/contrast_calc_2a04.py` — 앱 `nearestCompliantColor`(HSL 명도 0.1%p, 같은 거리면 어두운 쪽)를 그대로 옮겼다. 3.3의 대비·보정값은 이 스크립트 출력이다. 화면 UI 토큰 대비는 v2 SPEC 3절 값을 그대로 쓴다(재계산 안 함).
+- 수치 재현: `python3 -B docs/design/2a-04/contrast_calc_2a04.py` — 앱 `nearestCompliantColor`(HSL 명도 0.1%p, 같은 거리면 어두운 쪽)를 그대로 옮겼다. 3.3의 대비·보정값은 이 스크립트 출력이다. **이식 검증(L1)**: 앱 `contrast.ts`·`colorFamily.ts`를 임시 디렉터리에 복사해 Node 22 타입 제거 실행으로 같은 12개 입력(AA 8 · 강화 4)을 돌렸고 보정 hex·수치·명도 변화가 모두 스크립트와 같았다(`app/` 무변경). 화면 UI 토큰 대비는 v2 SPEC 3절 값을 그대로 쓴다(재계산 안 함).
 - 근거 수준: 코드·문서 사실 = L1(직접 읽음) · 대비 = L2(스크립트 계산) · 번들 크기 = L3 추정(재빌드 안 함, `app/` 무변경).
 
 ## 0. 요약
@@ -17,7 +17,7 @@
 | 3안 방식 | `composeCandidates` 순수 함수: Hero 변형 · 카드 그리드 · 제목 비율 **3축이 모든 쌍에서 다름**, 로그 3줄, lint 7규칙, 결과 해시. "구조 미리보기" 캡션. "다시 생성" 없음(결정성) — 재시도는 실패 때만. 잡 모양 인터페이스라 M2가 구현만 교체 |
 | 데이터 계약 | `ProfileRepository`(목록·조회·범위·조정 저장·되돌리기) + `GenerationRepository`(요청 멱등·잡 조회·재시도·선택). 버전 = 보드 유래 `base` + 프로필 `adjustments`, **버전 번호 계열 하나**(지금 보드 라벨 어긋남 수정), 재확정은 조정 이어받음. 메모리 구현은 공유 저장 모듈 |
 | 대비 | 검사 C-1~C-3(보드) + C-4 ink/surface + C-5 muted/bg, 목표 4.5 / 강화 7.0. 픽스처 6개 중 5개에 AA 보정 제안, **ref-b는 역할 하나로 풀 수 없는 충돌**(Q9). 화면 글자는 v2 토큰만, 프로필 색은 장식에만 |
-| 번들 | 공통 변경 = `routes.tsx` lazy 교체 + `draftStatusOf` 한 줄뿐, 저장소는 라우트 청크 안에서 deferred, 아이콘 파일 추가 0, `import type` 필수. 목표(L3) 첫 화면 ≈ 97 / 진입 직후 ≈ 115KB. `/catalog`·`/compare`도 단계마다 재측정 |
+| 번들 | 공통 변경 = `routes.tsx` lazy 교체 · 저장소 컨텍스트·deferred 래퍼(약 0.3~0.5KB, L3 — `/compare` 여유 1.49 안인지 첫 작업으로 실측) · `draftStatusOf` 한 줄, 메모리 구현은 동적 import, 아이콘 파일 추가 0, `import type` 필수. 목표(L3) 첫 화면 ≈ 97 / 진입 직후 ≈ 115KB. `/catalog`·`/compare`도 단계마다 재측정 |
 | 단계 | **2a-04a** 조회·버전(넘치면 a1/a2) → **2a-04b** 조정·보정 → **2a-04c** 3안 → QA |
 | 수용 기준 | **P-AC-01 ~ P-AC-37** (a 11 · b 9 · c 11 · 공통 6) |
 | 설계 질문 | **9개**(Q1~Q9) — Q1 3안 방식 · Q2 컨트롤 · Q3 대비 뜻 · Q4 버전 계보 · Q5 목적 위치 · Q6 생성 키 · Q7 편집 경계 · Q8 픽스처 시드 · Q9 역할 충돌 |
@@ -154,7 +154,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 | **C-4** | ink / surface (교차 배경·카드 본문) | ink | 신규 — 목업 "섹션 리듬 · 교차 배경" |
 | **C-5** | muted / bg (보조 글자) | muted | 신규 — 목업 "보조 텍스트 대비 … 보정 제안" |
 
-- 목표: 대비 조정 **AA = 4.5**, **강화 = 7.0**(Q3). C-1은 두 경우 모두 버튼 글자라 같은 목표를 쓴다.
+- 목표: 대비 조정 **AA = 4.5**, **강화 = 7.0**(Q3). 5종 모두 같은 목표를 쓴다 — C-1(버튼 글자)도 강화면 7.0(3.3 표 강화 열 ref-a `#775033`).
 - 보정 방법: `nearestCompliantColor(역할 값, 그 역할이 놓이는 배경 중 **가장 대비가 낮은 배경**, 목표)` — 한 역할에 검사가 여럿(ink = C-2·C-4)이면 최저 배경 기준으로 한 번. 적용 전 **모든 검사를 다시 계산**해 다른 검사가 새로 미달하면 **충돌**(P-S15).
 - 문구 형식(1a-03 3.4 이어받음): 원인 · 수치 · 대체안 + 보정 전·후 견본. 예: "보조 글자(muted) 대비가 흰 배경에서 3.8:1로 기준 4.5:1보다 낮습니다. 대체안: #8E715B(4.5:1, 명도 −3.9%p)" + "보정값 쓰기". 수치는 `formatRatio`(버림).
 - 보정값 쓰기 = 저장 안 된 조정에 `corrections` 항목 추가(P-S10) → "조정 저장"으로 새 버전.
@@ -183,8 +183,8 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 | 사이트 목적 | 예약 · 문의 · 판매 · 정하지 않음 | lint R-03·R-04 · 구조안 필수 섹션(4.2) (ADR-005 Q2 이행) | 전부 |
 
 - **컨트롤 = 라디오 그룹**(기존 `SegmentedControl`, roving · 방향키 · Home/End, 보이는 글자가 곧 값). 목업의 슬라이더는 값이 2~3단계뿐이라 끌기 조작이 이점이 없고, 현재 값이 글자로 보이지 않는다. 네이티브 `input type=range` + `aria-valuetext`도 새 의존성 없이 가능하지만, 범위 밖 구간을 막을 때 "왜 못 가는지"를 알릴 곳이 없다 → Q2(추천: 라디오 그룹).
-- `SegmentedControl` 확장 1개: 옵션별 `disabled` + `disabledReason`(보이는 캡션, `aria-describedby`). 비활성 옵션은 roving에서 건너뛴다(APG radio group). 목적은 4개라 `Select`(기존)도 가능하지만 한 벌 규칙(같은 모양 = 같은 조작)으로 라디오 그룹.
-- 범위는 저장소가 준다(`getAdjustmentRange`, 6.2). 지금은 기본 범위 1벌, M2에서 무드별로 바뀌어도 화면은 그대로다.
+- `SegmentedControl` 확장 1개: 옵션별 `disabled` + 보이는 이유 캡션. 비활성 옵션은 roving에서 건너뛰므로(APG radio group) 포커스를 받지 않는다 → **이유는 라디오 그룹의 설명**(`aria-describedby` → 그룹 아래 캡션 "촘촘: 이 테마에서 쓸 수 없음")에 둔다. 그룹에 들어가면 이유를 듣는다. 목적은 4개라 `Select`(기존)도 가능하지만 한 벌 규칙(같은 모양 = 같은 조작)으로 라디오 그룹.
+- 범위는 저장소가 준다(`getAdjustmentRange`, 6.3). 지금은 기본 범위 1벌(모든 옵션 허용)이라 **P-S13은 기본 범위에서 생기지 않는다** — 메모리 구현이 `range` 옵션을 주입받아 좁은 범위로 테스트한다. M2에서 무드별로 바뀌어도 화면은 그대로다.
 - 저장 경계에서 zod로 다시 검사: 범위 밖이면 `RANGE_VIOLATION`(화면은 이미 막지만 서버가 정본).
 
 ### 3.5 버전 (FR-PRF-03)
@@ -205,6 +205,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 생성기(M2)가 없으므로 **결정적 구조안**을 만든다. 가짜 페이지를 그리지 않는다.
 
 - 순수 함수 `composeCandidates(profile, purpose, library, generatorVersion) → CandidatePlan[3]`. 입력이 같으면 출력·해시가 같다. 무작위·시각·순서 의존 없음.
+- **라이브러리는 프로필에 고정된 `library_version`의 것**을 쓴다(현재 공개 버전이 아님). 저장소가 버전별 라이브러리를 찾지 못하면 3안 모두 결정적 실패(`UNSUPPORTED_COMBINATION`, "라이브러리 1.4를 찾을 수 없습니다", 재시도 없음). 그래야 M2가 1.5를 내도 "이전 버전으로 생성 재현"(FR-PRF-03)이 유지된다. 지금 메모리 구현은 `SECTION_LIBRARY` 1벌이므로 `libraries` 옵션(버전 → 라이브러리)으로 받는다.
 - 결과는 **SectionPlan + 축 값 + 모션 배정 + 로그 + lint**다. 썸네일은 이 SectionPlan을 **프로필 역할 팔레트로 칠한 자체 와이어프레임**(블록·막대, 글자 없음, `aria-hidden`)이다. 색은 데이터(프로필 토큰)에서 CSS 변수로 넘긴다 — 컴포넌트에 hex 없음(`noHardcodedStyle`).
 - 3안 영역 머리에 늘 보이는 캡션: **"구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다."**
 - 저장소는 **잡 모양**(`requestGeneration` → `getJob` 상태 → 결과)으로 둔다. M2에서 서버 생성기로 바꿀 때 화면·타입은 그대로이고, 결과에 미리보기 URL·artifact 해시 필드만 더한다.
@@ -274,7 +275,7 @@ GNB "새 프로젝트" ──▶ /profile  (프로필 목록 · 없으면 시작
 ### 5.2 키보드
 - 순서: 건너뛰기 → 헤더 → h1 → "비교 보드에서 선택 바꾸기" → 출처 링크 → 대비 "보정값 쓰기"들 → 밀도·대비·모션·목적 라디오 그룹(각 Tab 정지 1) → "조정 저장"·"조정 취소" → 버전 줄 버튼 → "3안 만들기" → 카드별 "이 안 선택"·"섹션 순서 보기"·"전체 로그" → 편집 시작.
 - 포커스 이동: 조정 저장 성공 → 이동 없음(알림만) · 되돌리기 → 새 버전 줄 · 비교 열기 → 비교 표 caption(`tabindex=-1`), 닫기 → "현재와 비교" 버튼 · 버전 보기(`?v=` 변경) → h1(`tabindex=-1`). 앱에 라우트 포커스 규칙은 아직 없다(`useRouteScroll`은 스크롤만, L1) — 이 화면 안의 버전 전환에만 적용한다 · 생성 완료 → 이동 없음.
-- 모든 비활성 행동은 `aria-disabled` + 보이는 이유(보드 `confirmAvailability` 방식, `disabled` 속성 아님 — 포커스로 이유를 들을 수 있게).
+- 모든 비활성 행동은 `aria-disabled` + 보이는 이유(보드 `confirmAvailability` 방식, `disabled` 속성 아님 — 포커스로 이유를 들을 수 있게). **예외**: 라디오 그룹 안 범위 밖 옵션은 roving에서 건너뛰고 이유를 그룹 설명으로 알린다(3.4).
 
 ### 5.3 라이브 영역
 - `role=status` 1개 "프로필 알림"(저장·되돌리기·생성 진행/완료). `role=alert`는 실패일 때만(저장 실패 · 생성 전체/부분 실패). 알림 영역은 `display:none` 금지(D-QA06 규칙).
@@ -449,7 +450,10 @@ export interface GenerationJob {
 | `selectCandidate(jobId, id): Promise<GenerationJob>` | (신규) `PUT /jobs/{id}/selection` | 성공한 안만 |
 
 **메모리 구현과 저장 공유**
-- 지금 프로필은 `memoryCompareBoardRepository` 클로저 배열에 있다 → **공유 저장 모듈**(`data/memoryStudioStore.ts`: 프로필 계열·잡)로 꺼내고, 보드 메모리 구현·프로필 메모리 구현·생성 메모리 구현이 같은 인스턴스를 쓴다. 보드 `confirmInto`는 이 저장소에 `origin: board | board-reconfirm` 버전을 쓰고 6.1-3 이어받기를 적용한다.
+- 지금 프로필은 `memoryCompareBoardRepository` 클로저 배열에 있고 id는 저장소 인스턴스마다 `profile-${n}`이다. 테스트는 `renderApp`이 렌더마다 보드 저장소를 새로 만들어 주입한다(`AppProviders boardRepository=`) → 그래서 `CompareBoardPage.test.tsx`의 `/profile/profile-1` 단언 4곳이 테스트마다 성립한다.
+- **저장소는 팩토리**(`createStudioStore()`: 프로필 계열·잡)로 꺼낸다. **모듈 싱글턴은 쓰지 않는다** — Vitest는 파일 단위로만 모듈을 격리해 같은 파일의 두 번째 테스트가 `profile-2`를 받고 위 4곳이 깨진다.
+- 이음새: 앱은 `main.tsx`의 deferred 로더가 store 하나를 만들어 보드·프로필·생성 메모리 구현에 함께 넘긴다. 화면은 새 컨텍스트(`ProfileRepositoryContext`: 프로필 + 생성 저장소)로 받는다 — `AppProviders`에 prop 2개가 는다(**공통 청크 비용, P-B2에서 실측**). 테스트는 `renderApp`이 렌더마다 store를 새로 만든다(id가 늘 `profile-1`부터).
+- 대안(공통 비용이 `/compare` 여유를 넘을 때만): 모듈 싱글턴 + 테스트 setup의 `resetStudioStore()` — 공통 0바이트지만 숨은 전역 상태라 우선순위가 낮다. Developer가 실측 후 고르고 보고한다. 보드 `confirmInto`는 이 저장소에 `origin: board | board-reconfirm` 버전을 쓰고 6.1-3 이어받기를 적용한다.
 - 모든 레코드 `deepFreeze`(현행과 같음). `delay`·`fail` 주입 옵션을 세 구현이 같은 모양으로 받는다(P-S11·S18·S20·S21 테스트).
 - 메모리 생성 구현 = `composeCandidates` 호출 + 잡 상태 진행. M2에서 HTTP 구현으로 바꿔도 인터페이스는 그대로.
 
@@ -467,8 +471,8 @@ export interface GenerationJob {
 
 | # | 규칙 | 효과 |
 |---|---|---|
-| P-B1 | 공통 청크 변경은 **`routes.tsx`의 lazy 교체 1곳**(`/profile`·`/profile/:profileId` → `ProfilePage`, `/studio`는 자리표시 유지)만 허용 | 공통 +수십 바이트(L3). `/compare` 여유 안 |
-| P-B2 | 저장소는 **`/profile` 라우트 청크 안에서** deferred로 만든다(`main.tsx`·`AppProviders` 무변경). 프로필·생성 메모리 구현과 공유 저장 모듈은 동적 import. 보드 쪽 deferred 래퍼(`deferredCompareBoardRepository`, 공통)에 **메서드를 더하지 않는다** — 인터페이스 필드 추가(`ConfirmedRef.latestVersion`)는 타입이라 0바이트, `draftStatusOf` 한 줄 변경만 공통 바이트 | 공통 증가 ≈ 0. 단계마다 실측 |
+| P-B1 | 라우트: `routes.tsx` lazy 교체(`/profile`·`/profile/:profileId` → `ProfilePage`, `/studio`는 자리표시 유지) | 공통 +수십 바이트(L3) |
+| P-B2 | 프로필·생성 **메모리 구현은 동적 import**(deferred, 기존 보드 로더와 같은 청크에서 store 공유). 공통에 들어가는 것: `main.tsx` deferred 래퍼 2개(메서드 5+5개 위임) · `AppProviders` prop 2개 · `ProfileRepositoryContext` · `draftStatusOf` 한 줄. 보드 deferred 래퍼에는 **메서드를 더하지 않는다**(`ConfirmedRef.latestVersion`은 필드라 타입 0바이트) | **공통 증가 ≠ 0**(L3 추정 약 0.3~0.5KB) → `/compare` 여유 1.49 안인지 2a-04a에서 먼저 실측. 넘치면 6.3 대안(싱글턴 + reset) 또는 BUNDLE-01 C8(보드 페이지 일부를 엔진 청크로)로 상쇄하고 보고 |
 | P-B3 | **아이콘 파일 추가 0.** `Icon`의 eager glob이 모든 아이콘 URL을 공통 청크에 넣는다(v2 B-3). 목업의 `file`·`refresh`는 쓰지 않는다(생성 로그 = 글자 펼침, 다시 생성 = 없음 4.5). 쓰는 아이콘은 이미 파일인 것만: `arrow-right`(편집 시작) · `warning`·`circle-check`(대비·lint, 장식) · `chevron-down`(펼침). 첫 방문 SVG 요청이 생기는 것은 BUNDLE-01 C1과 같은 대가 | 공통 0 |
 | P-B4 | 새 아이콘이 꼭 필요하면 `build/notInlinedIcons.ts`에 넣어 **파일로** 둔다(가드 테스트 갱신) — 인라인 금지 | 공통 URL 문자열만 |
 | P-B5 | **`import type` 필수**: 라우트 청크·엔진이 타입만 쓰는 import는 `import type`(인라인 `type` 지정자만 남은 import는 부수효과 import가 되어 모듈 사슬을 끌어온다 — BUNDLE-01 e6/e6b) | 숨은 증가 0 |
@@ -509,7 +513,7 @@ export interface GenerationJob {
 | P-AC-10 | a | 되돌리기 → 새 버전(origin revert, basedOn) 생성, **이전 레코드 불변**(동결·값 비교), 알림 + 포커스 새 버전 줄 | [V] |
 | P-AC-11 | a | **버전 계보**: 프로필 쪽에서 v2를 만든 뒤 보드에서 선택을 바꾸면 보드 버튼이 "새 버전으로 확정 (v3)"이고, 확정 결과도 v3 | [V] |
 | P-AC-12 | b | 조정 4그룹이 라디오 그룹(이름 "밀도"·"대비"·"모션"·"사이트 목적"), 방향키·Home/End 이동, 선택값이 보이는 글자, Tab 정지 그룹당 1 | [V] |
-| P-AC-13 | b | 범위 밖 옵션은 `aria-disabled` + 이유 캡션, roving에서 건너뜀. 모션 L3 옵션 없음. 저장소는 범위 밖 저장을 `RANGE_VIOLATION`으로 거부 | [V] |
+| P-AC-13 | b | (메모리 구현에 좁은 `range` 주입) 범위 밖 옵션은 `aria-disabled` + 이유 캡션, roving에서 건너뜀, 이어받은 범위 밖 값은 P-S13 Callout + "맞추기". 모션 L3 옵션 없음. 저장소는 범위 밖 저장을 `RANGE_VIOLATION`으로 거부 | [V] |
 | P-AC-14 | b | 조정 변경 → "저장하지 않은 조정 N개" · "조정 저장 (v2)" 활성 · 3안 만들기 `aria-disabled` + 이유. 취소 → 원래 값 | [V] |
 | P-AC-15 | b | 저장 → 새 버전 1개(origin adjust), 적용된 값 반영(밀도 촘촘 96 → 72, 모션 덮어쓰기 "조정됨 · 보드 값 L2"), 알림 "v2로 저장했습니다" | [V] |
 | P-AC-16 | b | 저장 중 연타 → 저장 1회. 실패 → `role=alert` + 조정 유지 + 다시 시도 | [V] |
@@ -529,7 +533,7 @@ export interface GenerationJob {
 | P-AC-30 | c | 썸네일: 자체 와이어프레임(`aria-hidden`), 색은 프로필 토큰 데이터, 컴포넌트 hex 0(`noHardcodedStyle`), 외부 이미지 0. "구조 미리보기" 캡션 항상 보임 | [V] |
 | P-AC-31 | c | 결정성 캡션(버전 · 라이브러리 · seed · 생성기)과 카드 해시 표시 | [V] |
 | P-AC-32 | 전 단계 | 5폭(1920·1280·1024·768·390) 가로 넘침 0, 5.1 배치(1280 2단 · 1024/768 1단 3열 · 390 1열, 비교 표 ≥768) | [Q] |
-| P-AC-33 | 전 단계 | 키보드 순서 = DOM = 보이는 순서(5.2), 모든 비활성 행동 `aria-disabled` + 보이는 이유, 포커스가 가려지지 않음 | [V] · [Q] |
+| P-AC-33 | 전 단계 | 키보드 순서 = DOM = 보이는 순서(5.2), 모든 비활성 행동 `aria-disabled` + 보이는 이유(범위 밖 라디오 옵션은 건너뛰고 그룹 설명에 이유 — 5.2 예외), 포커스가 가려지지 않음 | [V] · [Q] |
 | P-AC-34 | 전 단계 | 화면 글자 대비 ≥ 4.5 / UI ≥ 3 (v2 토큰만, 프로필 색은 장식에만). 상태를 색 하나로 알리는 곳 0(5.4 표) | [V] 가드 · [Q] |
 | P-AC-35 | 전 단계 | 번들: `/profile` 첫 화면 ≤ 100 · 진입 직후 ≤ 125 **실측 보고**, 공통 증가 내역(P-B1·B2만), `/catalog`·`/compare`·상세 재측정, 아이콘 파일 추가 0 | [B] |
 | P-AC-36 | 전 단계 | 검증 4종(typecheck·lint·test·build) 통과. 깨진 기존 테스트는 9절 목록 안에서만, 테스트 수 변화 보고 | [B] |
@@ -551,6 +555,8 @@ export interface GenerationJob {
 | `domain/profileDraft.test.ts`·`boardWarnings.test.ts`·`features/compare/picksSaver.test.ts` | grep에 걸렸지만 프로필 **초안** 대상 | — | 깨지지 않아야 한다 |
 | `components/ds/SegmentedControl` 관련(카탈로그 정렬·상세 미리보기 폭·모션 강도) | disabled 확장 | b | 옵션 `disabled` 없으면 지금과 같은 동작 — 깨지지 않아야 한다 |
 | `domain/contrast.test.ts` | `ContrastCheckId`가 C-1~C-3 | a | C-4·C-5 추가, 기존 `checkPaletteContrast`는 그대로(보드) |
+| 보드 AC-24·확정 테스트(`memoryCompareBoardRepository.test.ts`·`CompareBoardPage.test.tsx`의 초안 = 저장값 단언) | 저장 레코드가 `ProfileVersion`이 되면서 `profile` 대신 `base`·적용된 값 두 가지가 생김 | a·b | **초안과 비교하는 대상은 `base`**(보드 유래 값). 조정 이어받기(b)가 적용된 값만 바꾸므로 기존 단언은 `base`로 옮기면 유지된다. 적용된 값 단언은 P-AC-20 새 테스트가 맡는다 |
+| `test/renderApp.tsx` | 프로필·생성 저장소 주입 인자 없음 | a | 렌더마다 store 새로 만들어 두 저장소 주입(6.3) — 기존 호출부 인자 순서는 유지(뒤에 선택 인자 추가) |
 
 ---
 
@@ -561,7 +567,7 @@ export interface GenerationJob {
 | **Q1** | **생성기 없이 3안을 어떻게 보여 줄까?** | **A. 결정적 구조안(추천)** — 프로필·라이브러리·seed로 SectionPlan 3개를 계산하고 자체 와이어프레임으로 그린다. "구조 미리보기" 캡션을 늘 표시(4.1). 장점: 흐름 끝까지 검증, 결정성·축·lint·로그가 실제 계산, M2가 구현만 교체. 비용: 2a-04c 규모, "실제 페이지가 아니다"를 사용자가 놓칠 위험(캡션으로 완화). **B.** 3안 영역을 M2까지 비움(안내만) — 작지만 FR-GEN-03~06 검증과 편집 진입을 못 한다. **C.** 고정 fixtures 3안 — **기각 권고**(입력과 무관, 결정성 흉내) |
 | **Q2** | **전역 조정 컨트롤**: 목업 슬라이더 대신 라디오 그룹(기존 `SegmentedControl`)으로 할까? | **라디오 그룹(추천)** — 값이 2~3단계, 현재 값이 글자, 범위 밖 옵션에 이유를 붙일 수 있음, 새 코드는 disabled 확장뿐. 대안: 네이티브 `input type=range` + `aria-valuetext`(의존성 0, 목업 모양에 가까움) — 단계형에 끌기 조작 이점이 없고 막힌 구간 이유를 알릴 곳이 없다 |
 | **Q3** | **"대비" 조정의 뜻**: 기본 AA(4.5) / 강화(7.0) 두 단계로 두고, 대비 검사·보정·lint R-08 목표를 바꾸는 값으로 할까? | **두 단계(추천)**. AA 미만은 옵션 자체가 없다(PRD FR-PRF-02 기준 유지). 대안: 대비 컨트롤을 빼고 항상 AA — 단순하지만 목업·FR-PRF-04의 "대비" 조정이 사라진다 |
-| **Q4** | **버전 계보·필드 소유**(TRD 4.3 개정): 버전 = 보드 유래 `base` + 프로필 화면 `adjustments`, 보드 재확정은 최신 조정을 이어받고, 버전 번호는 계열 하나(보드 라벨도 최신 기준)로 할까? | **채택(추천)** — 지금 코드는 조정 뒤 보드 재확정 때 라벨이 틀리고 조정이 사라진다(6.1). 대안: 보드 재확정 시 조정을 버리고 경고 — 구현은 작지만 사용자가 한 조정을 잃는다 |
+| **Q4** | **버전 계보·필드 소유**(TRD 4.3 개정): 버전 = 보드 유래 `base` + 프로필 화면 `adjustments`, 보드 재확정은 최신 조정을 이어받고, 버전 번호는 계열 하나(보드 라벨도 최신 기준)로 할까? | **채택(추천)** — 지금 코드는 조정 뒤 보드 재확정 때 라벨이 틀리고 조정이 사라진다(6.1). **대가**: 보드의 "보이는 초안 = 저장되는 값"(1a-03 3.2·AC-24)이 깨진다 — 보드에서 모션 "낮음"을 골라도 이어받은 덮어쓰기가 L2면 L2가 된다. 보완: 보드 초안 패널에 캡션 한 줄 "프로필 조정 N개가 이어집니다 · 모션 L2 외"(보드 청크 바이트, `/compare` 여유 안에서) — 이 캡션을 넣는 조건으로 채택. 대안: 보드 재확정 시 조정을 버리고 확정 전 경고 — 초안 = 저장값이 유지되지만 사용자가 한 조정을 잃는다 |
 | **Q5** | **사이트 목적 입력**: R-03·R-04에 필요한 목적(예약·문의·판매)을 프로필 조정(`adjustments.purpose`)에 둘까? (ADR-005 Q2 이행, TRD 4.3에 필드 추가) | **프로필 조정에(추천)** — 프로젝트가 아직 없고(ADR-005 Q1), 목적이 구조안 결과를 바꾸므로 결정성 입력(버전)에 들어가야 한다. 대안: 생성 요청 인자로만 — 버전에 안 남아 "이전 버전으로 재현"(FR-PRF-03)이 깨진다 |
 | **Q6** | **생성 요청 키**: TRD 5는 `POST /projects/{id}/generate`인데 프로젝트가 없다. 프로젝트가 생길 때까지 **프로필 버전 기준**(`POST /profiles/{id}/versions/{v}/generate`)으로 둘까? | **프로필 버전 기준(추천)**, 프로젝트 연결은 편집기(2a-05) 또는 ADR-005 Q1 후속에서 `project_id`를 붙인다. TRD 5·4.5 개정 대상. 대안: 2a-04에서 프로젝트를 먼저 만든다 — GNB "프로젝트" 화면·이름 입력이 필요해 범위가 커진다 |
 | **Q7** | **편집기 경계**: "B안으로 편집 시작"을 지금 둘까? | **두기(추천)** — 선택을 저장하고 `/studio` 자리표시로 이동(자리표시는 "다음 단계에서 구현됩니다" 그대로). 흐름 연결을 QA가 확인할 수 있다. 대안: 2a-05까지 버튼 숨김 — 누를 곳이 없는 막다른 화면이 된다 |

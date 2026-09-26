@@ -451,7 +451,65 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 ## 8. 데이터 요구
 
-(작성 중)
+타입 정의는 쓰지 않는다(L4 엔진 레인 몫, 브리프 1). 아래는 **화면이 읽고 쓰는 필드와 연산 목록**이다. 백엔드는 고르지 않고 현행 패턴(인터페이스 파일은 타입만 · 메모리 구현 · deferred 로더 · `delay`/`fail` 주입)을 따른다.
+
+### 8.1 화면이 요구하는 필드
+
+| 대상 | 필드 | 쓰는 곳 |
+|---|---|---|
+| **Project** | `projectId` · `name` · `revision`(이름 바꾸기 경쟁용) · `profileId`(계열 1:1) · `baseReferenceId`(기본 이름) · `createdAt` · `updatedAt`(이름·문서 저장·프로필 새 버전 중 최신) | `/projects` 줄 · 편집기 h1 · J-S07 |
+| Project 요약(목록용) | 위 + `latestProfileVersion` · 문서 요약(`hasDoc` · `docProfileVersion` · `candidateId` · `docSavedAt`) | J-S04 편집 상태 글자 |
+| **PageDoc** (프로젝트당 1개, Q3) | `projectId` · `revision`(저장마다 +1) · `hash`(내용 해시 — TRD `doc_hash`) · `profileVersion`(테마, Q3) · `candidateId`(안, Q3) · `libraryVersion`·`generatorVersion`(만든 구조안의 것) · `meta.title` · `meta.description`(SEO, canonical은 2a-05b) · `sections[]` · `updatedAt` | 편집기 전부 |
+| 섹션 인스턴스 | `instanceId`(연산을 지나도 변하지 않는 id — 선택·포커스·알림이 이것을 따른다) · `type` · `variant` · `motion`(L0~L2) · `slots`(키 → 값) | 5.1~5.7 |
+| 슬롯 값 | 글자: 문자열 · 이미지: `enabled` · `source`(자체 플레이스홀더 \| 로컬 이미지 참조 — EQ-3) · `alt` · `decorative` | 5.6·5.9 |
+| **슬롯 스키마**(엔진이 `type`+`variant`로 준다, TRD 4.4 `SlotSchema`) | 슬롯마다 `key` · 이름표 · 종류(짧은 글 · 긴 글 · 링크 라벨 · 이미지) · `maxLength`(상한, R-13) · **권장 길이**(선택 — FR-EDT-05 경고. TRD 4.4에 없는 값 → L4 계약 추가 요청) · `required` | 5.5·5.6·게이트 |
+| 섹션 정의 | 이름표 · 한 줄 설명(추가 대화상자) · 헤딩 수준(TRD 4.4 `a11y.headingLevel`, R-10) · 사업자정보 여부(R-12, 1.4 `hasBusinessInfo`) · 예약 변형 여부(R-04) | 5.3·5.4·게이트 |
+| 테마(프로필 버전) | 적용된 팔레트 5역할 · 카드 톤 · 대비 조정 목표 · 모션 프리셋 · 사이트 목적 — 2a-04 `effectiveProfile`·`checkProfileContrast` 그대로 | 캔버스 색 · 게이트 대비·필수 섹션 |
+| **Snapshot** | `snapshotId` · `projectId` · `kind`(`manual`·`auto`·(2a-05b)`published`, TRD 4.5) · `reason`(`export`·`restore`·`conflict`·`restart` — auto만) · `name` · `createdAt` · 문서 사본(불변) · 사본의 `profileVersion`·`candidateId`·`hash` | 5.11 |
+| **GateReport** (순수 함수 결과, 저장 안 함) | `docHash` · 줄 8개(고정 순서, 5.12) × { `state`: 통과·경고·차단·측정 전 · `issues[]`: 규칙 ID · `instanceId?` · `slotKey?` · 원인 · 대체안 } | 5.12 |
+| **ExportJob** | `jobId` · `format`(`react-zip` · `static-html`) · `docRevision` · `state`(대기·진행·완료·실패) · `errorCode?` · `retryable` · (완료 시) 내려받기 참조 · 결과 해시 | 5.13 |
+
+### 8.2 엔진 연산 (L4 · 모두 순수 함수 · 입력 문서를 바꾸지 않고 새 문서를 반환)
+
+| 연산 | 결과 | 화면 |
+|---|---|---|
+| `createDocFromCandidate(plan, profileVersion)` | 새 문서(기본 슬롯 콘텐츠) | 2a-04c 편집 시작 경계 |
+| `addSection(doc, type, variant, afterInstanceId)` | 문서 · 새 `instanceId` | 5.3 |
+| `removeSection(doc, instanceId)` | 문서 · 되돌리기 정보 | 5.4 |
+| `moveSection(doc, instanceId, "up" \| "down")` | 문서 · 새 위치 | 5.2 |
+| `swapVariant(doc, instanceId, variant)` | 문서 · 잃은 슬롯 키 목록 | 5.5 |
+| `setSlot(doc, instanceId, key, value)` · `setMeta(doc, field, value)` | 문서 | 5.6·5.9 |
+| `swapTheme(doc, profileVersion)` | 문서 | 5.8 |
+| `canAdd(doc)` · `canRemove(doc, id, purpose)` · `canMove(doc, id, dir)` | 가능 여부 + **이유 문장**(5.2·5.4 표) | 비활성 이유 |
+| `diffSlots(schemaA, schemaB)` · `diffSlotValues(docA, docB)` | 유지·잃음 목록 · 달라진 값 목록 | 5.5 · 5.8 검증 |
+| `runGate(doc, theme)` | GateReport | 5.12 |
+| `normalizeDoc(doc)` | R-05 자동 보정 적용 문서 | 연산 뒤 공통 |
+| `hashDoc(doc)` | 해시(결정적) | 저장·게이트 오래됨 판정 |
+| `defaultProjectName(title, existingNames)` | 이름 | 2.1 (화면 레인, 엔진 아님) |
+
+- 실행 취소 기록 스택(5.14)은 화면 상태이고 엔진 연산이 아니다.
+- 경계 검증: 저장소가 받는 문서·이름은 L4 **검증 함수**로 검사한다(`PARALLEL_LANES` Q-P2=A — 엔진은 zod 미도입. 2a-04 `adjustmentSchema`(zod)와 섞지 않는다).
+
+### 8.3 저장소 (`ProjectRepository` · 메모리 구현 = 2a-04 `createStudioStore` 공유)
+
+| 메서드 | 대응 API (TRD 5 기준) | 설명 · 오류 |
+|---|---|---|
+| `listProjects()` | `GET /projects`(신규) | J-S04. 마지막 변경 내림차순 |
+| `getProject(projectId)` | `GET /projects/{id}` | 없으면 `undefined` → E-S02(예외 아님) |
+| `renameProject(projectId, expectedRevision, name)` | `PATCH /projects/{id}` (`If-Match`) | 앞뒤 공백 제거 · 1~40자 → 아니면 `SCHEMA_INVALID` · 불일치 `STALE_PROJECT`(최신 동봉) |
+| `getDoc(projectId)` | `GET /projects/{id}/page`(신규) | 없으면 `undefined` → E-S03 |
+| `saveDoc(projectId, expectedRevision, doc)` | `PUT /projects/{id}/page` (`If-Match`, `Idempotency-Key` = (revision, hash)) | 판정 순서(2a-04 10.0.2 Q-F2 선례): 모양(`SCHEMA_INVALID`) → 멱등 키(같으면 이전 결과) → `NOT_FOUND` → `STALE_DOC`(최신 문서 동봉) → 저장 |
+| `startDoc(projectId, profileVersion, candidateId, mode)` | `POST /projects/{id}/page`(신규) | 2a-04c 경계. `mode` = `create` \| `restart`(EQ-2) — `restart`는 현재 문서를 `auto·restart` 스냅샷으로 남기는 것과 **같은 트랜잭션** |
+| `listSnapshots(projectId)` · `createSnapshot(projectId, name?)` | `GET`·`POST /projects/{id}/snapshots`(신규) | 5.11 |
+| `restoreSnapshot(projectId, snapshotId, expectedRevision)` | `POST /projects/{id}/snapshots/{sid}/restore`(신규) | "복원 전" 자동 스냅샷 + 새 revision을 **한 트랜잭션**. 불일치 `STALE_DOC` |
+| `resolveConflict(projectId, choice, myDoc)` | `saveDoc` + 스냅샷 조합 | E-S09 두 선택. 보존 스냅샷과 저장이 한 트랜잭션 |
+| `requestExport(projectId, format, docRevision)` · `getExportJob(jobId)` | `POST /projects/{id}/export` · `GET /jobs/{id}` | 멱등 키 = (projectId, format, docRevision). "내보내기 전" 스냅샷을 같은 요청 안에서 만든다. 오류: `GENERATOR_UNAVAILABLE`(EQ-1 A, 재시도 없음) · `GATE_FAILED`(서버 게이트가 차단 — TRD 오류 코드) · `JOB_TIMEOUT`·`INFRA`(재시도 가능) |
+| `persistence` (속성) | — | `"memory"` \| `"server"` — 저장 상태 문구(E-S06)·떠나기 경고 조건(E-S10)이 이것을 본다 |
+
+- 보드 확정의 프로젝트 만들기(J-S09~S11)는 이 저장소가 아니라 **보드 확정 트랜잭션 안**이다(12.2).
+- 메모리 구현: `createStudioStore`에 프로젝트·문서·스냅샷·내보내기 잡을 더한다. id = `project-1`…(store마다 1부터, 테스트는 `renderApp`이 렌더마다 새 store — 2a-04 6.3 원칙). 모든 레코드 `deepFreeze`. `delay`·`fail` 주입은 `phase: request | commit | response` 세 가지(2a-04 r3 선례) — 스냅샷+저장 조합 트랜잭션의 롤백 테스트에 `commit`을 쓴다.
+- 오류 코드 모음: `NOT_FOUND` · `SCHEMA_INVALID` · `STALE_PROJECT` · `STALE_DOC` · `GENERATOR_UNAVAILABLE` · `GATE_FAILED` · `JOB_TIMEOUT` · `INFRA` · `NETWORK`(오프라인 — 화면은 E-S08). 파일 형식·크기 오류는 화면 검증(EQ-3, 저장소에 가지 않음).
+- **TRD 개정 대상**(2a-04 Q6처럼 표시만): ① TRD 5 `PUT /projects/{id}/page`의 "→ 스냅샷"과 4.5 "현재 문서 = `current_snapshot_id`" 모델은 Q5=A(자동 저장은 스냅샷이 아님, 스냅샷 = 수동·내보내기·복원·충돌)와 맞지 않는다 → 현재 문서(`page_doc`: project_id · revision · page_doc · doc_hash · updated_at)를 스냅샷과 분리. ② `page_snapshot`에 `reason`·`name` 추가. ③ `generated_project.name` 수정 API(`PATCH`). ④ 4.4 `SlotSchema`에 권장 길이.
 
 ## 9. 계측
 

@@ -18,15 +18,15 @@ const THREE = ["ref-a", "ref-b", "ref-c"];
 // 픽스처 대표색 (fixtures/references.ts)
 const COLOR = { a: "rgb(139, 94, 60)", b: "rgb(31, 31, 31)" } as const;
 
-function renderTable(picks: Picks = {}) {
-  const results = resultsOf(THREE);
-  const view = buildBoardView(boardOf(THREE, picks), results);
+function renderTable(picks: Picks = {}, ids: readonly string[] = THREE, pickAllLabel = "이 레퍼런스로 전부 선택") {
+  const results = resultsOf(ids);
+  const view = buildBoardView(boardOf(ids, picks), results);
   return render(
     <ComparisonTable
       columns={view.columns}
       rows={view.rows}
       picks={picks}
-      pickAllLabel="이 레퍼런스로 전부 선택"
+      pickAllLabel={pickAllLabel}
       onToggle={vi.fn()}
       onRemoveColumn={vi.fn()}
       onPickAll={vi.fn()}
@@ -118,6 +118,18 @@ describe("열 머리글 (V2-AC-35 · C-10)", () => {
     expect(swatch.style.backgroundColor).toBe(COLOR.a);
     expect(within(header).getByText("internal")).toBeInTheDocument();
     expect(within(header).getByRole("button", { name: "모던 카페 브랜드 비교에서 빼기" })).toBeInTheDocument();
+  });
+
+  it("D-QA04: '전부 선택' 접근 이름은 보이는 문구로 시작하고 열 문자 + 제목을 붙여 열마다 다르다 (A11Y-AC-16 · 2.5.3)", () => {
+    renderTable();
+    const names = screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ }).map((b) => b.getAttribute("aria-label"));
+    expect(names).toEqual(["이 레퍼런스로 전부 선택: A 모던 카페 브랜드", "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱", "이 레퍼런스로 전부 선택: C 동네 치과 클리닉"]);
+    for (const name of names) expect(screen.getByRole("button", { name: name! })).toHaveTextContent(/^이 레퍼런스로 전부 선택$/);
+  });
+
+  it("D-QA04 1열 변형: '이 레퍼런스로 프로필 만들기: A <제목>'", () => {
+    renderTable({}, ["ref-a"], "이 레퍼런스로 프로필 만들기");
+    expect(screen.getByRole("button", { name: "이 레퍼런스로 프로필 만들기: A 모던 카페 브랜드" })).toHaveTextContent(/^이 레퍼런스로 프로필 만들기$/);
   });
 
   it("'전부 선택'은 ghost(assistive) sm — 테두리 있는 outline이 아니다", () => {

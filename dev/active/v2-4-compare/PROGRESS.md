@@ -17,7 +17,7 @@
 ## RED (`logs/red.txt`)
 - 새 파일 `components/compare/compareBoardV2.test.tsx` 13건 → **9 failed / 4 passed**
   - 실패(진짜 RED): 머리글 회색 면·고정 열 흰 면, 행 선 line-neutral, 고른 셀 primary-container + 채운 원, 안 고른 셀 빈 원(line-strong), 전부 선택 ghost, 패널 흰 면 + 왼쪽 선, 출처 색 점, 초안 비우기 ghost, `draftItemsView` dot
-  - 통과(특성화 — V2-1이 이미 충족): 역상 배지 + 견본 + 라이선스 Tag + 빼기, 상태 태그 톤 3종(neutral · green=positive 별칭 · orange=cautionary 별칭)은 `it.each` 3건 중 표시 1건으로 집계(총 4 passed = 머리글 1 + 톤 3)
+  - 통과(특성화 — V2-1이 이미 충족) 4건: 역상 배지 + 견본 + 라이선스 Tag + 빼기 1건, 상태 태그 톤 `it.each` 3건(neutral · green=positive 별칭 · orange=cautionary 별칭)
 - 새 파일 `pages/CompareBoardV2.test.tsx` 1건(모드 토글·조직 공유 부재·12행) → 기준선에서 통과(특성화)
 
 ## GREEN 1 (표면·선택 셀·열 머리글·초안 패널)
@@ -35,3 +35,13 @@
 - 청크: `CompareBoardPage` 8.96 → 9.06(+0.10 — 빈 원 span·셀 면 조건·색 점 span·래퍼 div) · `boardEngine` 5.55 → 5.59(+0.04 — dot 계산)
 - 다른 라우트: `/catalog` 98.49 / 100.87 → 98.49 / 100.88 · 상세 95.82 / 98.20 → 95.83 / 98.21 (코드 무변경, 해시 문자열 차이)
 - 첫 빌드에서 index가 85.34로 한 번 보였다가 다음 빌드 85.33 — raw 268.82kB 동일, 지연 청크 파일명 해시 문자열의 gzip 차이(코드 무변경)
+
+## D-QA04 단독 커밋 (V2-AC-35 · A11Y-AC-16)
+- RED(`logs/red-dqa04.txt`): 새 테스트 "열마다 다른 이름" 1 failed(`aria-label` 없음 → null)
+- GREEN: `ColumnHeader` "전부 선택"에 `aria-label={`${pickAllLabel}: ${column.label} ${column.title}`}` — 보이는 글자는 그대로(2.5.3). 1열 변형 테스트 추가
+- **깨진 기존 테스트 7건(6.3 목록 누락 — 설계가 요구한 이름 변경이지 설계 위반이 아님)** `logs/dqa04-broken.txt`. 이름 쿼리만 고침:
+  - `ComparisonTable.test.tsx` 84·101(roving 진입점 focus) · 123(→ 정확 이름 `…: B 프리미엄 헤어살롱`) · **132**(`queryByRole … not.toBeInTheDocument` — 정확 문자열 그대로면 이름이 바뀐 뒤 **조용히 통과**해 AC-15 단언이 무의미해진다 → `/^이 레퍼런스로 전부 선택/`)
+  - `CompareBoardPage.test.tsx` 62(AC-02 `/^이 레퍼런스로 프로필 만들기/`) · 119(AC-07) · 131(P-5)
+  - `CompareBoardResponsive.test.tsx` 77 (**6.3 표에 파일 자체가 없음**)
+- fresh: typecheck 0 · lint 0 · test **519 passed** · build 0 (`logs/green-dqa04.txt`)
+- 번들: `/compare` 98.51 / 120.98 · `CompareBoardPage` 9.07(+0.01 aria-label 템플릿) · 공통 88.67(index 85.34, 해시 흔들림 — 아래 정규화 비교)

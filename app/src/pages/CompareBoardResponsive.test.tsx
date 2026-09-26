@@ -74,7 +74,7 @@ describe("<768 항목 아코디언 (SPEC 5.3 · A-11)", () => {
     expect(within(screen.getByRole("region", { name: /^섹션 수/ })).queryAllByRole("button")).toHaveLength(0);
     const list = screen.getByRole("list", { name: "비교 중인 레퍼런스" });
     expect(within(list).getAllByRole("button", { name: /비교에서 빼기$/ })).toHaveLength(3);
-    expect(within(list).getAllByRole("button", { name: "이 레퍼런스로 전부 선택" })).toHaveLength(3);
+    expect(within(list).getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ })).toHaveLength(3);
   });
 
   it("하단 요약 바가 있다", async () => {

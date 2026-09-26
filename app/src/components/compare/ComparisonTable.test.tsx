@@ -81,7 +81,7 @@ describe("행 roving 키보드 (A-5)", () => {
     const onToggle = vi.fn();
     const user = userEvent.setup();
     render(<Harness onToggle={onToggle} />);
-    screen.getAllByRole("button", { name: "이 레퍼런스로 전부 선택" }).at(-1)!.focus();
+    screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ }).at(-1)!.focus();
     await user.tab();
     expect(heroButton("A 모던 카페 브랜드")).toHaveFocus();
     await user.keyboard("{ArrowRight}");
@@ -98,7 +98,7 @@ describe("행 roving 키보드 (A-5)", () => {
   it("행에 들어오면 선택된 버튼에 포커스, ↑/↓는 열을 옮기지 않는다, Home/End는 처음·끝", async () => {
     const user = userEvent.setup();
     render(<Harness initial={{ hero: "ref-b" }} />);
-    screen.getAllByRole("button", { name: "이 레퍼런스로 전부 선택" }).at(-1)!.focus();
+    screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ }).at(-1)!.focus();
     await user.tab();
     expect(heroButton("B 프리미엄 헤어살롱")).toHaveFocus();
     await user.keyboard("{ArrowDown}");
@@ -120,7 +120,7 @@ describe("열 머리글 (2.2 · S-08 · S-18)", () => {
     const header = screen.getAllByRole("columnheader")[1]!;
     expect(within(header).getByTitle("프리미엄 헤어살롱")).toBeInTheDocument();
     expect(within(header).getByRole("button", { name: "프리미엄 헤어살롱 비교에서 빼기" })).toBeInTheDocument();
-    expect(within(header).getByRole("button", { name: "이 레퍼런스로 전부 선택" })).toBeInTheDocument();
+    expect(within(header).getByRole("button", { name: "이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱" })).toBeInTheDocument();
     expect(header).toHaveTextContent("B");
   });
 
@@ -129,7 +129,7 @@ describe("열 머리글 (2.2 · S-08 · S-18)", () => {
     const header = screen.getAllByRole("columnheader")[1]!;
     expect(header).toHaveTextContent("사용 불가");
     expect(header).toHaveTextContent("라이선스가 바뀌어 더 이상 쓸 수 없습니다");
-    expect(within(header).queryByRole("button", { name: "이 레퍼런스로 전부 선택" })).not.toBeInTheDocument();
+    expect(within(header).queryByRole("button", { name: /^이 레퍼런스로 전부 선택/ })).not.toBeInTheDocument();
     expect(within(header).getByRole("button", { name: "프리미엄 헤어살롱 비교에서 빼기" })).toBeInTheDocument();
     expect(screen.queryAllByRole("button", { name: /B 프리미엄 헤어살롱의 요소 선택$/ })).toHaveLength(0);
     expect(screen.getAllByRole("button", { name: /A 모던 카페 브랜드의 요소 선택$/ }).length).toBeGreaterThan(0);

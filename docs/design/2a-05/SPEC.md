@@ -17,13 +17,13 @@
 | 상태 | 편집기 **34개**(E-S01~E-S34) · 프로젝트 목록·보드 확정 **11개**(J-S01~J-S11) |
 | 배치 | ≥1280 3단 · 1024 2단(`Select` + 접힘 목록) · <1024 탭 3개(섹션·편집·검사) → 패널 → 캔버스(Q10·Q11). 폭마다 DOM 순서 = 보이는 순서 |
 | 조작 | 위로·아래로 한 벌(Q6) · 즉시 삭제 + "되돌리기"(Q7) · 변형 교체 "유지 N · 잃음 M" · 테마 = 프로필 버전 스왑 + 보존 결과 글자 · 글자 수 상한(차단)·권장(경고) · 자동 저장 2초 디바운스·최대 30초(Q5) · 스냅샷 수동·내보내기 전·복원 전·충돌 보존 |
-| 게이트 | 8줄: 대비 AA · 대체텍스트 · 헤딩 순서(TRD대로 차단) · 필수 섹션 · 모션 예산 · SEO 메타 · 글자 수 · 성능 예산("측정 전", 차단 안 함 — Q13). 모든 줄에 상태 단어 → 점은 장식(Q14). 차단만 내보내기를 막고 경고는 확인 뒤 허용(Q8) |
+| 게이트 | 8줄: 대비 AA · 대체텍스트 · 헤딩 순서(TRD대로 차단) · 필수 섹션 · 모션 예산 · SEO 메타 · 글자 수 · 성능 예산("측정 전", 차단 안 함 — Q13). 모든 줄에 상태 단어 → 점은 장식(Q14). 차단만 내보내기를 막고 경고는 확인 뒤 허용(Q8). "내보내기 전" 스냅샷은 저장소 `requestExport` 한 곳, 생성기 없음이면 0(8.3.2, r1) |
 | 대비 | 새 토큰 0. 새 조합 13개 전부 통과(스크립트가 토큰 파일에서 hex를 읽음). 데이터 색 위 표시는 2중 테두리(흰 간격) |
 | 데이터 | 화면이 요구하는 필드·연산 목록만(타입은 L4). `ProjectRepository` 12개 메서드 · `STALE_PROJECT`·`STALE_DOC`·`DOC_EXISTS`·`GENERATOR_UNAVAILABLE` 등. **`startDoc` = 원자적 create-if-absent + 멱등 키 + 판정 순서(8.3.1, r1)**. TRD 개정 대상 5건(현재 문서와 스냅샷 분리 등) |
 | 번들 | **공통 청크 순증가 ≤ 0**(`/compare` 여유 0.52) — 상쇄 1순위 `/studio` 자리표시 삭제. 새 deferred 래퍼를 공통에 두지 않음. 조작 뒤 로드 7종(섹션 라이브러리·스냅샷·내보내기·변형 교체·테마·더보기·이미지). 새 부품은 studio 청크 전용, 아이콘 파일 추가 0. 목표(L3) `/studio` ≈ 98 / 118 |
 | 2a-04 영향 | `/profile` 목록 폐지 · 프로필 머리에 프로젝트 이름 · 보드 확정에 확정 대상(현재/새) + 프로젝트 생성을 같은 트랜잭션 · 멱등 키에 대상 추가 · "새 프로젝트"면 이어받기 없음 · 편집 시작 → `/studio/:projectId` · 깨질 테스트 7건(12절, 2a-04 SPEC 무수정) |
 | 단계 | **2a-05a1** 프로젝트·IA → **a2** 편집기 틀·저장 → **a3** 섹션 연산 → **a4** 게이트·내보내기·스냅샷 → QA → 2a-05b |
-| 수용 기준 | **52개** — J-AC-01~10 · E-AC-01~42 (r1: E-AC-40~42 `startDoc` 경쟁·멱등) |
+| 수용 기준 | **54개** — J-AC-01~10 · E-AC-01~44 (r1: E-AC-40~42 `startDoc` 경쟁·멱등 · 43·44 내보내기 스냅샷) |
 | 목업 차이 | **26건**(EM-01~EM-26) |
 | 설계 질문 | **7개**(EQ-1 내보내기 산출물 · EQ-2 문서 있을 때 편집 시작 · EQ-3 이미지 파일 · EQ-4 `/profile` 목록 폐지 · EQ-5 새로고침 손실 · EQ-6 새 프로젝트와 기존 보드 · EQ-7 확정 때 "고르기" 범위), 모두 ★추천안 |
 
@@ -171,7 +171,7 @@ GNB "프로젝트" ──▶ /projects ── 줄 "편집기 열기" ──▶ /
 | E-S24 | 게이트 경고만 | E-04 | 머리 Tag "경고 2". 내보내기 활성 → 누르면 확인 대화상자(5.10): 경고 목록 + "경고를 확인했습니다 · 내보내기" / "취소"(Q8) | 확인 · 취소 |
 | E-S25 | 다시 검사하는 중 · 결과 오래됨 | E-22 | 편집 뒤 계산이 끝나기 전: 목록 `aria-busy` + 캡션 "편집 전 기준 결과입니다 · 다시 검사하는 중". 내보내기는 누르면 최신 문서로 다시 검사한 뒤 진행(오래된 결과로 내보내지 않음) | — |
 | E-S26 | 검사 · 내보내기 흐름 | E-05 | 툴바 "검사 · 내보내기" → ≥1024: 오른쪽 h2 "품질 게이트"로 스크롤·포커스(`tabindex=-1`) / <1024: "검사" 탭 선택. 차단 있음 → 첫 차단 줄 안내 문장 · 없음 → 내보내기 버튼으로 | 이동 |
-| E-S27 | 내보내기 진행 · 결과 | E-06 | 시작 = 자동 스냅샷 "자동 · 내보내기 전" → 버튼 `aria-busy` "내보내는 중…" → 결과(EQ-1 추천 A): **"코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 스냅샷 '내보내기 전 · 14:02'로 보관했습니다"**(`Callout tone=informative`, 오류 아님) / (M2 이후) 완료 "zip을 만들었습니다" + 링크 "내려받기" + 결과 해시 · 재시도 가능 실패(`JOB_TIMEOUT`·`INFRA`) "내보내지 못했습니다 · 다시 시도"(`role=alert`) | 다시 시도 |
+| E-S27 | 내보내기 진행 · 결과 | E-06 | 시작 = 버튼 `aria-busy` "내보내는 중…"(화면은 스냅샷을 만들지 않는다 — 8.3.2) → 결과(EQ-1 A): **"코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다 — 따로 남기려면 '스냅샷'에서 저장하세요"**(`Callout tone=informative`, 오류 아님, 스냅샷 0) / (M2 이후) 완료 "zip을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다" + 링크 "내려받기" + 결과 해시 · 재시도 가능 실패(`JOB_TIMEOUT`·`INFRA`) "내보내지 못했습니다 · 다시 시도"(`role=alert`, 다시 시도 = 같은 잡 재실행, 스냅샷 추가 0) | 다시 시도 |
 | E-S28 | 스냅샷 목록 · 만들기 | E-07 | "스냅샷" → 대화상자: "지금 상태 저장"(이름 선택 입력, 기본 "수동 · 14:02") + 목록(이름 · 종류 글자 · 시각 · 프로필 v · 안 · "미리보기"). 최근 10개 + "이전 스냅샷 N개 더 보기" | 저장 · 미리보기 |
 | E-S29 | 스냅샷 미리보기(읽기 전용) | E-07 | 대화상자를 닫고 캔버스가 스냅샷을 보인다 + 위 `Callout tone=informative` "스냅샷 '수동 · 14:02'를 보고 있습니다 · 편집은 멈췄습니다" + "이 스냅샷으로 복원" · "편집으로 돌아가기". 편집 컨트롤 `aria-disabled` + 이유 "스냅샷을 보는 중에는 편집할 수 없습니다". 포커스 → Callout 제목 | 복원 · 돌아가기 |
 | E-S30 | 복원 완료 | E-07 | 복원 직전 자동 스냅샷 "자동 · 복원 전" → 스냅샷 내용이 **새 문서 revision**(과거 스냅샷 불변) → 알림 "스냅샷 '…'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 14:05'에 있습니다". 포커스 → h1 | — |
@@ -311,7 +311,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | 종류 글자 | 언제 | TRD `kind` |
 |---|---|---|
 | 수동 | "지금 상태 저장" | `manual` |
-| 자동 · 내보내기 전 | 내보내기 시작 | `auto` (+ `reason: export`) |
+| 자동 · 내보내기 전 | **저장소**가 `requestExport` 안에서 잡을 만들 때(같은 트랜잭션, 8.3.2). 화면은 만들지 않는다. 생성기 없음(`GENERATOR_UNAVAILABLE`)·차단·충돌이면 만들지 않는다 | `auto` (+ `reason: export`) |
 | 자동 · 복원 전 | 복원 직전 | `auto` (+ `reason: restore`) |
 | 자동 · 충돌 보존 | `STALE_DOC` 해결(E-S09) | `auto` (+ `reason: conflict`) |
 | 자동 · 새로 시작 전 | EQ-2 추천안 A의 "새로 시작" | `auto` (+ `reason: restart`) |
@@ -344,7 +344,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 - 게이트 영역 아래 버튼 두 개: "React 프로젝트(zip) 내보내기" · "정적 HTML 내보내기"(outline, 아이콘 없음 — `download` 파일 없음, P-B3). 목업의 "…site 발행"(primary 전체 폭)은 두지 않는다(Q16 — 발행은 2a-05b).
 - 차단 1건 이상: 두 버튼 `aria-disabled` + 보이는 이유 "차단 1건(SEO 메타: 설명 없음) — 고치면 열립니다" + 링크 "첫 차단으로 이동"(B-09).
 - 경고만: 누르면 확인 대화상자(E-S24). 경고 목록(원인 · 이동 링크는 대화상자를 닫고 이동) + "경고를 확인했습니다 · 내보내기" / "취소". 체크박스 확인은 요구하지 않는다(Q8=A — B안 기각).
-- 시작: 게이트 결과가 오래됐으면 먼저 다시 계산 → 자동 스냅샷(내보내기 전) → `requestExport(projectId, format, docRevision)` 잡 → E-S27. 같은 (문서 revision · 형식) 재요청은 같은 잡(멱등).
+- 시작: 게이트 결과가 오래됐으면 먼저 다시 계산 → 저장 전 변경이 있으면 먼저 저장(자동 저장 즉시 실행 — 저장 실패·`STALE_DOC`면 요청하지 않고 E-S07·E-S09) → `requestExport(projectId, format, docRevision)` **1회** → E-S27. **화면은 스냅샷을 만들지 않는다** — "내보내기 전" 스냅샷은 저장소가 잡과 같은 트랜잭션에서 만들고, 생성기 없음이면 만들지 않는다(r1, 8.3.2). 같은 (문서 revision · 형식) 재요청은 같은 잡이고 스냅샷을 새로 만들지 않는다(멱등).
 
 ### 5.14 실행 취소 모델 (E-20 · Q7)
 - 문서 연산(추가·삭제·이동·변형·필드 확정·이미지·테마·복원)은 기록 스택에 쌓인다(최대 50). 실행 취소도 **새 문서 상태**를 만들고 자동 저장된다.
@@ -518,7 +518,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | `listSnapshots(projectId)` · `createSnapshot(projectId, name?)` | `GET`·`POST /projects/{id}/snapshots`(신규) | 5.11 |
 | `restoreSnapshot(projectId, snapshotId, expectedRevision)` | `POST /projects/{id}/snapshots/{sid}/restore`(신규) | "복원 전" 자동 스냅샷 + 새 revision을 **한 트랜잭션**. 불일치 `STALE_DOC` |
 | `resolveConflict(projectId, choice, myDoc)` | `saveDoc` + 스냅샷 조합 | E-S09 두 선택. 보존 스냅샷과 저장이 한 트랜잭션 |
-| `requestExport(projectId, format, docRevision)` · `getExportJob(jobId)` | `POST /projects/{id}/export` · `GET /jobs/{id}` | 멱등 키 = (projectId, format, docRevision). "내보내기 전" 스냅샷을 같은 요청 안에서 만든다. 오류: `GENERATOR_UNAVAILABLE`(EQ-1 A, 재시도 없음) · `GATE_FAILED`(서버 게이트가 차단 — TRD 오류 코드) · `JOB_TIMEOUT`·`INFRA`(재시도 가능) |
+| `requestExport(projectId, format, docRevision)` · `getExportJob(jobId)` | `POST /projects/{id}/export` · `GET /jobs/{id}` | 멱등 키 = (projectId, format, docRevision). **"내보내기 전" 스냅샷은 여기서만 만든다**(잡 생성과 같은 트랜잭션 — 화면은 만들지 않는다, r1). 판정이 먼저라 `GENERATOR_UNAVAILABLE`·`GATE_FAILED`·`STALE_DOC`면 스냅샷 0. 판정 순서·재호출은 8.3.2. 오류: `GENERATOR_UNAVAILABLE`(EQ-1 A, 재시도 없음) · `GATE_FAILED`(서버 게이트가 차단 — TRD 오류 코드) · `STALE_DOC`(요청 revision ≠ 저장된 revision) · `JOB_TIMEOUT`·`INFRA`(재시도 가능) |
 | `persistence` (속성) | — | `"memory"` \| `"server"` — 저장 상태 문구(E-S06)·떠나기 경고 조건(E-S10)이 이것을 본다 |
 
 - 보드 확정의 프로젝트 만들기(J-S09~S11)는 이 저장소가 아니라 **보드 확정 트랜잭션 안**이다(12.2).
@@ -550,6 +550,22 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 - `restart`가 이긴 뒤 열려 있던 편집기 탭은 다음 저장에서 `STALE_DOC` → E-S09(내 편집은 화면에 그대로, "내 편집으로 저장"/"다른 편집 불러오기").
 - L4 영향 없음 — 8.3은 저장소 계약이고 8.2 `createDocFromCandidate` 이름·인자는 그대로다.
 
+### 8.3.2 `requestExport` 스냅샷 책임 · 판정 순서 (r1 — Codex j1 medium)
+
+"내보내기 전" 스냅샷 책임은 **저장소 한쪽**(`requestExport` 안)이다. 화면(5.13)은 스냅샷을 만들지 않는다 — 둘 다 만들면 내보내기 1회에 스냅샷 2개, 재시도마다 사본이 쌓인다.
+
+- **멱등 키** = (`projectId`, `format`, `docRevision`). 기록 범위 = 프로젝트·형식마다 마지막으로 잡을 만든 요청 1건. **쓰기 0인 결과(아래 3~6)는 기록하지 않는다** — 결정적이라 다시 판정해도 같은 결과다.
+- **판정 순서**(8.3.1과 같은 형식):
+  1. 모양 — `format` 값 · revision 정수 → `SCHEMA_INVALID`
+  2. 멱등 키 — 마지막 기록과 같으면 **이전 결과(같은 잡)**. 스냅샷을 새로 만들지 않는다. 그 잡이 재시도 가능 실패(`JOB_TIMEOUT`·`INFRA`)로 끝났으면 **같은 잡을 다시 실행**한다(새 잡·새 스냅샷 0 — 첫 요청의 스냅샷을 그대로 가리킨다)
+  3. `NOT_FOUND` — 프로젝트·문서 없음
+  4. `STALE_DOC` — `docRevision` ≠ 저장된 revision(저장 전 변경을 내보내지 않는다 — 화면은 저장 먼저, 5.13)
+  5. `GATE_FAILED` — 저장된 문서로 서버 게이트(`runGate`)를 다시 돌려 차단 1건 이상
+  6. `GENERATOR_UNAVAILABLE` — 생성기 없음(EQ-1 A, 메모리 구현은 늘 여기서 끝난다). 사용자가 고칠 수 없는 환경 조건이지만, 게이트 뒤에 두어 생성기가 생겼을 때와 같은 차단 안내를 먼저 받게 한다
+  7. 쓰기 — `auto·export` 스냅샷 + 잡 생성 + 멱등 기록 — **한 트랜잭션**(`commit` 실패 → 스냅샷·잡·기록 변화 0)
+- 결과: 판정 3~6은 **스냅샷 0 · 잡 0**. 같은 revision으로 연속 내보내기 = 스냅샷 **+1 이하**(첫 쓰기 1회만).
+- EQ-1 A와의 관계: 결정(흐름·게이트 연동·자동 스냅샷·잡 인터페이스)은 그대로다. 자동 스냅샷은 7단계 트랜잭션 안에 있고, 판정이 먼저라 생성기 없음 경로에서 0개가 될 뿐이다(결정 변경 아님 — EQ-8 불필요).
+
 ## 9. 계측 (PRD 9)
 
 수집기 전에는 `window` 이벤트로 낸다(2a-04a2 Q4 `studio:profile` 선례) — 편집기 `studio:editor`, 목록·확정 `studio:project`. **넣지 않는 것**: 프로젝트 이름·슬롯 글자·대체텍스트·SEO 문구·파일 이름·색 값·레퍼런스 제목(개인정보·사용자 콘텐츠). 넣는 값은 코드·개수·버전 번호·열거값뿐이다.
@@ -564,7 +580,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | `edit_undone(op)` · `edit_redone(op)` | 연산 종류 | 실행 취소·다시 실행·알림 줄 "되돌리기" |
 | `theme_swapped(from_version, to_version, preserved)` | 버전 번호 · 슬롯 보존 여부 | 테마 바꾸기(E-S17) |
 | `autosave_failed(reason)` · `autosave_conflict()` | 오류 코드 | 실패가 시작될 때 1회(E-S07) · `STALE_DOC`(E-S09) |
-| `snapshot_created(kind, reason)` · `snapshot_restored()` | TRD `kind` · `reason` | 5.11 · E-S30 |
+| `snapshot_created(kind, reason)` · `snapshot_restored()` | TRD `kind` · `reason` | 5.11 · E-S30. "내보내기 전"은 `requestExport` 결과에 새 스냅샷이 있을 때만(멱등 재생·생성기 없음이면 내지 않음, 8.3.2) |
 | `gate_checked(block_count, warn_count)` | 개수 | "검사 · 내보내기"를 눌렀을 때만(편집 중 재계산마다 내지 않음) |
 | `export_requested(format)` · `export_succeeded(format)` · `export_failed(reason)` | `react-zip`\|`static-html` · 오류 코드 | 5.13 · E-S27(`GENERATOR_UNAVAILABLE` 포함) |
 
@@ -649,7 +665,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-AC-27 | a4 | **Q14 가드**: 게이트 줄마다 상태 단어 존재 · 접미사 없는 `--status-*` 사용 요소는 모두 `aria-hidden` · 섹션 줄 문제 표시는 Tag 글자(점 없음) | [V] 가드 |
 | E-AC-28 | a4 | 재검사: 편집 직후 목록 `aria-busy` + "편집 전 기준" 캡션 → 500ms 뒤 해제. 오래된 결과 상태에서 내보내기 → 재계산 먼저(오래된 결과로 요청 0) | [V] |
 | E-AC-29 | a4 | 내보내기 게이트 연동: 차단 → 두 버튼 `aria-disabled` + 이유(첫 차단 이름) + "첫 차단으로 이동" · 경고만 → 확인 대화상자(취소 = 요청 0) · 통과 → 바로 요청 | [V] |
-| E-AC-30 | a4 | 내보내기 시작: 자동 스냅샷(auto·export) 1개 + `requestExport` 1회 · 같은 revision·형식 재요청 → 같은 잡 · `GENERATOR_UNAVAILABLE` → informative Callout(스냅샷 이름 포함), `role=alert` 아님, 재시도 없음 · `JOB_TIMEOUT` → alert + "다시 시도" | [V] |
+| E-AC-30 | a4 | 내보내기 시작(r1 수정): **화면은 스냅샷을 만들지 않고** `requestExport` 1회(저장 전 변경이 있으면 저장 먼저, 저장 실패·`STALE_DOC`면 요청 0) · 같은 revision·형식 재요청 → 같은 잡 · `GENERATOR_UNAVAILABLE` → informative Callout("이 탭에 저장돼 있습니다" — 스냅샷 이름 없음), `role=alert` 아님, 재시도 없음 · `JOB_TIMEOUT` → alert + "다시 시도"(같은 잡 재실행) | [V] |
 | E-AC-31 | a4 | 스냅샷: 수동 저장(기본 이름·30자) · 종류 글자(5.11 표) · 최근 10 + 더 보기 · 미리보기 = 편집 컨트롤 `aria-disabled` + 이유, 포커스 Callout · 복원 = "복원 전" 자동 스냅샷 + 새 revision, 기존 스냅샷 불변, 알림, 포커스 h1. 복원 트랜잭션 `commit` 실패 → 스냅샷·문서 변화 0 | [V] |
 | E-AC-32 | a4 | 실행 취소: 입력칸 밖 Ctrl/⌘+Z · Shift+Ctrl/⌘+Z · Ctrl+Y · "더보기" 같은 기능 · 입력칸 안 가로채지 않음 · 알림 "실행 취소: …" · 기록 50개 상한 | [V] |
 | E-AC-33 | 공통 | 라이브 영역: `role=status` "편집 알림" 1개(`display:none` 아님) · 연산 1회 = 1문장 · 입력 중 낭독 0(카운터·게이트는 영역 밖) | [V] |
@@ -662,8 +678,10 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | E-AC-40 | a2 | **`startDoc` create 경쟁**(8.3.1, r1): 같은 store에서 `delay`를 주입한 `create` 2건(서로 다른 안)을 동시에 호출 → 문서 1개 · 먼저 판정된 쪽 성공 · 다른 쪽 `DOC_EXISTS` + 기존 문서(쓰기 0, 문서 revision·해시 불변) · 그 화면은 이동 + "이미 편집 중인 문서를 엽니다", 자동 `restart` 0. 같은 인자 2건이면 둘 다 성공(멱등 재생) · 문서 1개 | [V] |
 | E-AC-41 | a2 | **`startDoc` 재시도·판정 순서**(8.3.1, r1): `fail phase:"response"` 뒤 같은 인자 재시도 → 같은 문서(문서 수 1 · revision 1) + 성공 결과. 재시도 사이 `saveDoc` 1회가 있으면 편집기는 `getDoc` 최신(r2)을 그린다. 판정 순서(모양 → 멱등 → NOT_FOUND → DOC_EXISTS·STALE_DOC → 쓰기) 단위 테스트 · `phase:"commit"` 실패 → 문서·스냅샷·멱등 기록 변화 0 | [V] |
 | E-AC-42 | a2 | **`restart` 경합**(8.3.1, r1): `expectedRevision` 없음 → `SCHEMA_INVALID` · 같은 `expectedRevision`로 2건 → 한쪽만 성공(`auto·restart` 스냅샷 +1 · revision +1) · 다른 쪽 `STALE_DOC` + 최신 동봉, 스냅샷·문서 추가 변화 0, 이동 없음 + 알림 · 열려 있던 편집기의 다음 저장 → `STALE_DOC`(E-S09, 내 편집 유지) · `restart` 성공 뒤 옛 `create` 키가 늦게 오면 재생이 아니라 `DOC_EXISTS` | [V] |
+| E-AC-43 | a4 | **내보내기 스냅샷 한 곳**(8.3.2, r1) — 생성기 가능 목 저장소: 첫 요청 = `auto·export` 스냅샷 **정확히 1** + 잡 1 · 같은 revision·형식으로 연속 2회 → 같은 잡, 스냅샷 **+1 이하**(두 번째 +0) · `fail phase:"response"` 뒤 재시도 → 같은 잡, 스냅샷 1 · `phase:"commit"` 실패 → 스냅샷·잡 0 · `JOB_TIMEOUT` 뒤 "다시 시도" → 스냅샷 추가 0 · 화면 코드에 `createSnapshot(…export…)` 호출 0 | [V] |
+| E-AC-44 | a4 | **생성기 없음 → 스냅샷 0**(8.3.2, r1) — 메모리 기본 구현: 내보내기 2회 → 스냅샷 0 · 잡 0 · `snapshot_created` 0. 판정 순서(모양 → 멱등 → NOT_FOUND → STALE_DOC → GATE_FAILED → GENERATOR_UNAVAILABLE → 쓰기) 단위 테스트 — `STALE_DOC`·`GATE_FAILED`에서도 스냅샷 0 | [V] |
 
-**수용 기준 52개**: J-AC 10(전부 a1) · E-AC 42(a1 2 · a2 17 · a3 8 · a4 8 · 공통 7). r1 추가 = E-AC-40~ (변경 이력 표).
+**수용 기준 54개**: J-AC 10(전부 a1) · E-AC 44(a1 2 · a2 17 · a3 8 · a4 10 · 공통 7). r1 추가 = E-AC-40~ (변경 이력 표).
 
 ### 11.3 목업과 다르게 한 곳 (ADR-003)
 
@@ -841,3 +859,4 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | 판 | Codex j1 항목 | 고친 절 | 추가 AC (수정 AC) | 비고 |
 |---|---|---|---|---|
 | r1-1 | [high] 문서 최초 생성 경쟁·멱등 | 8.3 `startDoc` 행 · **8.3.1 신설** · 8.3 오류 코드(`DOC_EXISTS`) · 3.2 E-S03 · 12.3 편집 시작 행 · 0절 데이터·수용 기준 | E-AC-40·41·42 | `startDoc`에 `expectedRevision?` 인자 추가(8.3 저장소 — L4 영향 없음, 8.1·8.2 무변경). 0절 "TRD 개정 대상 4건" → 5건(8.3 목록 ①~⑤와 맞춤, r0 개수 오기) |
+| r1-2 | [medium] 내보내기 전 스냅샷 책임 두 곳 | 5.13 시작 문장 · 5.11 표 "내보내기 전" 행 · 3.2 E-S27 문구 · 8.3 `requestExport` 행 · **8.3.2 신설** · 9절 `snapshot_created` · 0절 게이트·수용 기준 | E-AC-43·44 (수정 E-AC-30) | 저장소 한쪽으로 통일, 판정 먼저 → `GENERATOR_UNAVAILABLE`이면 스냅샷 0. EQ-1 A 결정 유지(자동 스냅샷은 쓰기 트랜잭션 안) · E-S27의 "스냅샷으로 보관했습니다" 문구 삭제. L4 영향 없음 |

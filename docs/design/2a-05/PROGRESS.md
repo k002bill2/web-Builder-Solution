@@ -47,4 +47,5 @@
 
 | 항목 | 내용 | 상태 | 커밋 |
 |---|---|---|---|
-| 1 [high] | `startDoc` 원자적 create-if-absent · 멱등 키 · 판정 순서(8.3.1) · E-AC-40~42 | 완료 | (이 커밋) |
+| 1 [high] | `startDoc` 원자적 create-if-absent · 멱등 키 · 판정 순서(8.3.1) · E-AC-40~42 | 완료 | `ced9692` |
+| 2 [medium] | 내보내기 전 스냅샷 = 저장소 `requestExport` 한 곳 · 판정 순서(8.3.2) · E-AC-30 수정 · E-AC-43·44 | 완료 | (이 커밋) |

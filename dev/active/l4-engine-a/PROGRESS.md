@@ -10,4 +10,4 @@
 | 3. 검증 함수 `engine/validate/` (validatePageDoc · validateProjectName, zod 없음) | 완료 | RED(모듈 없음) → GREEN 67/67(엔진 누적) · tsc 0 · lint 0 |
 | 4. 문서 연산 `engine/ops/` (add·remove·restore·move·swapVariant·setSlot·setMeta·swapTheme·can*·diffSlots·diffSlotValues·normalizeDoc) | 완료 | RED(모듈 없음) → GREEN 123/123(엔진 누적) · 이유 문장 SPEC 원문 대조 테스트 · tsc 0 · lint 0 |
 | 5. 번들 가드 · 검증 4종 | 완료 | 가드 RED(탐지 끔)→GREEN · typecheck 0 · lint 0 · 전체 테스트 1회 73 파일 826 통과 · build 0 · engine 3회 125×3 · 번들 전후 자산 해시까지 동일(statistics 변형 키 `row-3`이 Tailwind `.row-3`를 만들어 `stats-3`로 바꿈) |
-| 6. Codex 리뷰 · REPORT | 진행 | |
+| 6. Codex 리뷰 · REPORT | 완료 | Codex P2 2건 반영(`3fb076b`) · engine 132×3 · build 번들 동일 |

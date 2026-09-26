@@ -11,7 +11,9 @@
 | `62c5d68` | 검증 `validatePageDoc` · `validateProjectName` |
 | `21a4fe4` | 문서 연산 `engine/ops/` |
 | `0211e71` | 엔진 import 가드 · statistics 변형 키 `stats-3` · 검증 기록 |
-| (이 REPORT 커밋) | REPORT · Codex 결과 |
+| `f206b3b` | REPORT 초안 |
+| `3fb076b` | Codex P2 2건 반영 (updatedAt 달력 검사 · 구멍 난 섹션 배열 거부) |
+| (이 커밋) | REPORT 최종 · Codex 결과 |
 
 로컬 커밋만. push·원격·main 병합 없음. 모든 커밋 `git commit -- <경로>`.
 
@@ -24,11 +26,12 @@
 | 3 검증 | 모듈 없음(`./validatePageDoc`·`./validateProjectName`) | 누적 67/67 |
 | 4 연산 | 모듈 없음(`./diff`·`./reasons`) — 4 파일 실패 | 누적 123/123 |
 | 5 번들 가드 | 탐지 함수를 잠시 끔(`return false`) → 탐지기 자체 검사 1 실패 | 원복 → 2/2, 누적 125/125 |
+| Codex 반영 | 새 테스트 6 실패(틀린 달력 시각 5 · sparse 배열 1) | 누적 132/132 |
 
 - 타입 전용 파일(`contracts/`)은 테스트 대상 코드가 없어 RED 단계 대신 `tsc --noEmit` 통과로 확인했다.
 - 입력 불변: 모든 연산 테스트의 입력은 `deepFreeze` 문서(`testing/sampleDoc.ts`) — ESM strict 모드라 바꾸면 throw.
 
-## 3. 파일 (`app/src/engine/`, 31개 · 1990줄 · engine 밖 제품 코드 변경 0)
+## 3. 파일 (`app/src/engine/`, 31개 · engine 밖 제품 코드 변경 0)
 
 | 폴더 | 파일 | 역할 |
 |---|---|---|
@@ -139,14 +142,23 @@
 |---|---|
 | typecheck | exit 0 |
 | lint | exit 0 |
-| 전체 테스트 **1회** | 73 파일 · 826 통과 · 실패 0 (14.1초) |
-| build | exit 0 (번들 스크립트 포함) |
-| engine 테스트 3회 | 9 파일 · 125 통과 × 3 |
+| 전체 테스트 **1회** | 73 파일 · 826 통과 · 실패 0 (14.1초) — Codex 반영 전 실행. 반영은 `validate/` 안 변경뿐이라 규칙 4(1회)에 따라 재실행하지 않고 engine 3회로 확인 |
+| build | exit 0 (번들 스크립트 포함) — Codex 반영 뒤 재실행, 번들 줄·자산 해시 전과 동일 |
+| engine 테스트 3회 | 9 파일 · 132 통과 × 3 (Codex 반영 뒤) |
+| typecheck · lint (반영 뒤) | exit 0 · exit 0 |
 | 엔진 import 가드 | engine 밖 비테스트 파일 중 engine import 0 |
 
-## 8. Codex 리뷰
+## 8. Codex 리뷰 (`review --wait --scope branch --base dfd924f`, 1회)
 
-(아래 9절 뒤에 결과 기록)
+- 첫 실행은 결과 출력 전에 셸이 종료 코드 144로 끊겼다(작업은 "running"으로 남은 고아 상태). 그 작업을 `cancel`하고 `nohup … & disown`으로 같은 명령을 한 번 더 실행해 결과를 받았다 — 결과가 나온 리뷰는 1회다.
+- 결과: 지적 2건, 둘 다 P2 · 이번 diff가 만든 `validate/validatePageDoc.ts`.
+
+| # | 지적 | 조치 |
+|---|---|---|
+| P2-1 | `updatedAt`이 모양만 맞으면 `2026-99-99T99:99Z`도 통과 | 달력·시각 값 검사(월·그 달의 날짜·시 <24·분초 <60·오프셋) — RED 5건 → GREEN, 윤년 2/29 통과 테스트 |
+| P2-2 | 구멍 난(sparse) `sections`는 `map`이 건너뛰어 검사 없이 통과 | `Array.from`으로 구멍을 `undefined`로 채워 "객체여야 합니다"로 거부 — RED → GREEN |
+
+- 반영 뒤 재리뷰는 하지 않았다(브리프 "1회"). 남은 지적 0.
 
 ## 9. 설계 질문 (추측하지 않은 결정)
 

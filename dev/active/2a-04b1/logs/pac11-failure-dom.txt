@@ -1,0 +1,3880 @@
+ FAIL  src/pages/CompareBoardLineage.test.tsx > P-AC-11 버전 계보 — 보드 라벨 = 계열 최신 + 1 > 프로필 쪽에서 v2를 만든 뒤 보드에서 선택을 바꾸면 '새 버전으로 확정 (v3)', 확정 결과도 v3
+TestingLibraryElementError: Unable to find an element with the text: v1 확정됨. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <header
+        class="flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"
+      >
+        <a
+          class="my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+          data-discover="true"
+          href="/catalog"
+        >
+          <span
+            aria-hidden="true"
+            class="inline-block flex-none rounded-sm bg-label-normal size-6"
+          />
+          <span
+            class="text-body1 font-bold tracking-(--tracking-tight)"
+          >
+            Design Studio
+          </span>
+        </a>
+        <nav
+          aria-label="주 메뉴"
+          class="order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"
+        >
+          <a
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"
+            data-discover="true"
+            href="/catalog"
+          >
+            카탈로그
+          </a>
+          <a
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"
+            data-discover="true"
+            href="/catalog?tab=saved"
+          >
+            보관함
+          </a>
+          <a
+            aria-current="page"
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"
+            data-discover="true"
+            href="/compare"
+          >
+            비교 보드
+          </a>
+          <a
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"
+            data-discover="true"
+            href="/profile"
+          >
+            프로젝트
+          </a>
+        </nav>
+        <div
+          class="ml-auto flex flex-none items-center gap-2.5"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="ds-icon size-4 "
+              style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"
+            />
+            새 프로젝트
+          </button>
+          <span
+            aria-label="강영환"
+            class="inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"
+            role="img"
+          >
+            강영
+          </span>
+        </div>
+      </header>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7"
+        >
+          <header
+            class="flex flex-wrap items-start gap-x-4 gap-y-3"
+          >
+            <div
+              class="flex min-w-0 flex-1 flex-col gap-1"
+            >
+              <h1
+                class="ds-title1 focus:outline-none"
+                tabindex="-1"
+              >
+                비교 보드
+              </h1>
+              <p
+                class="ds-body2 text-label-alternative"
+              >
+                3 / 6개 비교 중
+                 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다
+              </p>
+            </div>
+            <div
+              class="flex flex-none items-center gap-3"
+            >
+              <button
+                class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-10 px-4 rounded-md text-body3 aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
+                data-focus-fallback="true"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="ds-icon size-5 "
+                  style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"
+                />
+                레퍼런스 추가
+              </button>
+            </div>
+          </header>
+          <div
+            class="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_calc(var(--spacing)*90)] xl:items-start"
+          >
+            <div
+              class="flex min-w-0 flex-col gap-4"
+            >
+              <div
+                aria-label="비교 표 (가로로 스크롤)"
+                class="overflow-x-auto rounded-lg border border-line-neutral focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                role="region"
+                tabindex="0"
+              >
+                <table
+                  class="w-full border-collapse"
+                >
+                  <caption
+                    class="sr-only"
+                  >
+                    레퍼런스 3개, 비교 항목 12개
+                  </caption>
+                  <thead>
+                    <tr>
+                      <td
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal"
+                      />
+                      <th
+                        class="min-w-48 p-3 align-top"
+                        scope="col"
+                      >
+                        <div
+                          class="flex flex-col items-stretch gap-2 text-left font-normal"
+                        >
+                          <div
+                            class="flex items-start gap-2"
+                          >
+                            <span
+                              class="ds-caption1 inline-flex size-5.5 flex-none items-center justify-center rounded-xs bg-surface-inverse font-bold text-on-surface-inverse"
+                            >
+                              A
+                            </span>
+                            <span
+                              class="ds-label line-clamp-2 min-w-0 flex-1 text-label-strong"
+                              title="모던 카페 브랜드"
+                            >
+                              모던 카페 브랜드
+                            </span>
+                            <button
+                              aria-label="모던 카페 브랜드 비교에서 빼기"
+                              class="inline-flex flex-none cursor-pointer rounded-full p-0.5 text-label-alternative hover:text-label-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                              data-remove-column="ref-a"
+                              type="button"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="ds-icon size-4 "
+                                style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e\");"
+                              />
+                            </button>
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center gap-1.5"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-3 flex-none rounded-full"
+                              style="background-color: rgb(139, 94, 60);"
+                            />
+                            <span
+                              class="ds-caption1 text-label-alternative"
+                            >
+                              카페·F&B
+                            </span>
+                            <span
+                              class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-5 px-1.5 rounded-xs text-caption2"
+                            >
+                              internal
+                            </span>
+                          </div>
+                          <button
+                            aria-label="이 레퍼런스로 전부 선택: A 모던 카페 브랜드"
+                            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+                            type="button"
+                          >
+                            이 레퍼런스로 전부 선택
+                          </button>
+                        </div>
+                      </th>
+                      <th
+                        class="min-w-48 p-3 align-top"
+                        scope="col"
+                      >
+                        <div
+                          class="flex flex-col items-stretch gap-2 text-left font-normal"
+                        >
+                          <div
+                            class="flex items-start gap-2"
+                          >
+                            <span
+                              class="ds-caption1 inline-flex size-5.5 flex-none items-center justify-center rounded-xs bg-surface-inverse font-bold text-on-surface-inverse"
+                            >
+                              B
+                            </span>
+                            <span
+                              class="ds-label line-clamp-2 min-w-0 flex-1 text-label-strong"
+                              title="프리미엄 헤어살롱"
+                            >
+                              프리미엄 헤어살롱
+                            </span>
+                            <button
+                              aria-label="프리미엄 헤어살롱 비교에서 빼기"
+                              class="inline-flex flex-none cursor-pointer rounded-full p-0.5 text-label-alternative hover:text-label-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                              data-remove-column="ref-b"
+                              type="button"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="ds-icon size-4 "
+                                style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e\");"
+                              />
+                            </button>
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center gap-1.5"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-3 flex-none rounded-full"
+                              style="background-color: rgb(31, 31, 31);"
+                            />
+                            <span
+                              class="ds-caption1 text-label-alternative"
+                            >
+                              뷰티
+                            </span>
+                            <span
+                              class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-5 px-1.5 rounded-xs text-caption2"
+                            >
+                              licensed
+                            </span>
+                          </div>
+                          <button
+                            aria-label="이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱"
+                            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+                            type="button"
+                          >
+                            이 레퍼런스로 전부 선택
+                          </button>
+                        </div>
+                      </th>
+                      <th
+                        class="min-w-48 p-3 align-top"
+                        scope="col"
+                      >
+                        <div
+                          class="flex flex-col items-stretch gap-2 text-left font-normal"
+                        >
+                          <div
+                            class="flex items-start gap-2"
+                          >
+                            <span
+                              class="ds-caption1 inline-flex size-5.5 flex-none items-center justify-center rounded-xs bg-surface-inverse font-bold text-on-surface-inverse"
+                            >
+                              C
+                            </span>
+                            <span
+                              class="ds-label line-clamp-2 min-w-0 flex-1 text-label-strong"
+                              title="동네 치과 클리닉"
+                            >
+                              동네 치과 클리닉
+                            </span>
+                            <button
+                              aria-label="동네 치과 클리닉 비교에서 빼기"
+                              class="inline-flex flex-none cursor-pointer rounded-full p-0.5 text-label-alternative hover:text-label-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                              data-remove-column="ref-c"
+                              type="button"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="ds-icon size-4 "
+                                style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e\");"
+                              />
+                            </button>
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center gap-1.5"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-3 flex-none rounded-full"
+                              style="background-color: rgb(31, 95, 191);"
+                            />
+                            <span
+                              class="ds-caption1 text-label-alternative"
+                            >
+                              의료
+                            </span>
+                            <span
+                              class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-5 px-1.5 rounded-xs text-caption2"
+                            >
+                              internal
+                            </span>
+                          </div>
+                          <button
+                            aria-label="이 레퍼런스로 전부 선택: C 동네 치과 클리닉"
+                            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+                            type="button"
+                          >
+                            이 레퍼런스로 전부 선택
+                          </button>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            Hero 구성
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top bg-primary-container"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            풀블리드 이미지 + 좌측 카피
+                          </span>
+                          <button
+                            aria-label="Hero 구성: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="true"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-primary bg-primary-container font-bold text-label-strong"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="ds-icon size-4 text-primary"
+                              style="--icon: url(\"/src/assets/icons/circle-check.svg\");"
+                            />
+                            선택됨
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            스플릿 (카피 / 이미지)
+                          </span>
+                          <button
+                            aria-label="Hero 구성: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            센터 정렬 카피
+                          </span>
+                          <button
+                            aria-label="Hero 구성: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            메뉴 구조
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            5개 · 우측 CTA
+                          </span>
+                          <button
+                            aria-label="메뉴 구조: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            4개 · 모바일 햄버거
+                          </span>
+                          <button
+                            aria-label="메뉴 구조: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            6개 · 2단
+                          </span>
+                          <button
+                            aria-label="메뉴 구조: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            CTA 위치
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            히어로 좌측 하단
+                          </span>
+                          <button
+                            aria-label="CTA 위치: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            헤더 우측 고정
+                          </span>
+                          <button
+                            aria-label="CTA 위치: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            히어로 중앙
+                          </span>
+                          <button
+                            aria-label="CTA 위치: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            섹션 수
+                          </span>
+                          <span
+                            class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-5 px-1.5 rounded-xs text-caption2"
+                          >
+                            비교 정보
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            9개
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            7개
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            9개
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            팔레트
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            #8B5E3C · 크림
+                          </span>
+                          <button
+                            aria-label="팔레트: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            #1F1F1F · 골드
+                          </span>
+                          <button
+                            aria-label="팔레트: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            #1F5FBF · 화이트
+                          </span>
+                          <button
+                            aria-label="팔레트: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            폰트
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            Pretendard 700 / 400
+                          </span>
+                          <button
+                            aria-label="폰트: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            Noto Serif KR 700 / 400
+                          </span>
+                          <button
+                            aria-label="폰트: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            Pretendard 700 / 400
+                          </span>
+                          <button
+                            aria-label="폰트: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            카드 스타일
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            보더 · 16px
+                          </span>
+                          <button
+                            aria-label="카드 스타일: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            엘리베이티드 · 다크
+                          </span>
+                          <button
+                            aria-label="카드 스타일: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            보더 · 12px
+                          </span>
+                          <button
+                            aria-label="카드 스타일: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            이미지 비율
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            16:9
+                          </span>
+                          <button
+                            aria-label="이미지 비율: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            4:5
+                          </span>
+                          <button
+                            aria-label="이미지 비율: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            1:1
+                          </span>
+                          <button
+                            aria-label="이미지 비율: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            모션
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            낮음
+                          </span>
+                          <button
+                            aria-label="모션: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            중간
+                          </span>
+                          <button
+                            aria-label="모션: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            낮음
+                          </span>
+                          <button
+                            aria-label="모션: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            모바일 구조
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            단일 컬럼 · 하단 CTA
+                          </span>
+                          <button
+                            aria-label="모바일 구조: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            단일 컬럼 · 스티키 CTA
+                          </span>
+                          <button
+                            aria-label="모바일 구조: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            2컬럼 카드
+                          </span>
+                          <button
+                            aria-label="모바일 구조: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            Footer
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            확장형 사업자정보
+                          </span>
+                          <button
+                            aria-label="Footer: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            미니멀 · 링크만
+                          </span>
+                          <button
+                            aria-label="Footer: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            확장형 + 지도
+                          </span>
+                          <button
+                            aria-label="Footer: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            접근성·성능
+                          </span>
+                          <span
+                            class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-5 px-1.5 rounded-xs text-caption2"
+                          >
+                            비교 정보
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            접근성 96 · 성능 92 (측정일 2026-09-20)
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            접근성 91 · 성능 88 (측정일 2026-09-20)
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            접근성 98 · 성능 95 (측정일 2026-09-20)
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <section
+              aria-labelledby="_r_0_"
+              class="flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"
+            >
+              <div
+                class="flex items-center justify-between gap-2"
+              >
+                <h2
+                  class="ds-heading1 focus:outline-none"
+                  id="_r_0_"
+                  tabindex="-1"
+                >
+                  프로필 초안
+                </h2>
+                <span
+                  class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-6 px-2 rounded-sm text-caption1"
+                >
+                  확정 전
+                </span>
+              </div>
+              <p
+                class="ds-caption1 text-label-alternative"
+              >
+                고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.
+              </p>
+              <p
+                aria-label="선택 알림"
+                class="sr-only"
+                role="status"
+              >
+                <span />
+              </p>
+              <ul
+                aria-label="초안 항목"
+                class="flex flex-col"
+              >
+                <li
+                  aria-labelledby="_r_2_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_2_"
+                      >
+                        Hero 구성
+                      </span>
+                      <span
+                        class="ds-caption1 text-primary-text"
+                      >
+                        A · 모던 카페 브랜드
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        풀블리드 이미지 + 좌측 카피
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_3_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_3_"
+                      >
+                        메뉴 구조
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        5개 · 우측 CTA
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_4_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_4_"
+                      >
+                        CTA 위치
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        히어로 좌측 하단
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_5_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_5_"
+                      >
+                        팔레트
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="size-3.5 flex-none rounded-xs"
+                        style="background-color: rgb(139, 94, 60);"
+                      />
+                      <span>
+                        #8B5E3C · 크림
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_6_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_6_"
+                      >
+                        폰트
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        Pretendard 700 / 400
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_7_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_7_"
+                      >
+                        카드 스타일
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        보더 · 16px
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_8_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_8_"
+                      >
+                        이미지 비율
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        16:9
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_9_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_9_"
+                      >
+                        모션
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        낮음
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_a_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_a_"
+                      >
+                        모바일 구조
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        단일 컬럼 · 하단 CTA
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_b_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_b_"
+                      >
+                        Footer
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        확장형 사업자정보
+                      </span>
+                    </p>
+                  </div>
+                </li>
+              </ul>
+              <fieldset
+                class="flex flex-col gap-2.5"
+              >
+                <legend
+                  class="ds-label mb-2 text-label-strong"
+                >
+                  사용자 스타일
+                </legend>
+                <div
+                  class="flex items-center gap-2"
+                >
+                  <label
+                    class="flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"
+                  >
+                    <span
+                      class="sr-only"
+                    >
+                      대표색
+                    </span>
+                    <input
+                      aria-invalid="false"
+                      autocomplete="off"
+                      class="min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"
+                      placeholder="#RRGGBB"
+                      spellcheck="false"
+                      value=""
+                    />
+                  </label>
+                </div>
+                <span
+                  class="relative flex items-center"
+                >
+                  <select
+                    aria-label="폰트"
+                    class="w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"
+                  >
+                    <option
+                      value=""
+                    >
+                      선택 안 함
+                    </option>
+                    <option
+                      value="pretendard"
+                    >
+                      Pretendard
+                    </option>
+                    <option
+                      value="noto-sans-kr"
+                    >
+                      Noto Sans KR
+                    </option>
+                    <option
+                      value="noto-serif-kr"
+                    >
+                      Noto Serif KR
+                    </option>
+                  </select>
+                  <svg
+                    aria-hidden="true"
+                    class="pointer-events-none absolute right-4 size-4.5 text-label-alternative"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.4"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M6 9l6 6 6-6"
+                    />
+                  </svg>
+                </span>
+              </fieldset>
+              <div
+                class="flex flex-col gap-2"
+              >
+                <button
+                  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
+                  type="button"
+                >
+                  프로필 확정 (v1)
+                </button>
+                <button
+                  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"
+                  type="button"
+                >
+                  초안 비우기
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <header
+        class="flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"
+      >
+        <a
+          class="my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+          data-discover="true"
+          href="/catalog"
+        >
+          <span
+            aria-hidden="true"
+            class="inline-block flex-none rounded-sm bg-label-normal size-6"
+          />
+          <span
+            class="text-body1 font-bold tracking-(--tracking-tight)"
+          >
+            Design Studio
+          </span>
+        </a>
+        <nav
+          aria-label="주 메뉴"
+          class="order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body2 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"
+        >
+          <a
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"
+            data-discover="true"
+            href="/catalog"
+          >
+            카탈로그
+          </a>
+          <a
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"
+            data-discover="true"
+            href="/catalog?tab=saved"
+          >
+            보관함
+          </a>
+          <a
+            aria-current="page"
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"
+            data-discover="true"
+            href="/compare"
+          >
+            비교 보드
+          </a>
+          <a
+            class="rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"
+            data-discover="true"
+            href="/profile"
+          >
+            프로젝트
+          </a>
+        </nav>
+        <div
+          class="ml-auto flex flex-none items-center gap-2.5"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="ds-icon size-4 "
+              style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"
+            />
+            새 프로젝트
+          </button>
+          <span
+            aria-label="강영환"
+            class="inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"
+            role="img"
+          >
+            강영
+          </span>
+        </div>
+      </header>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7"
+        >
+          <header
+            class="flex flex-wrap items-start gap-x-4 gap-y-3"
+          >
+            <div
+              class="flex min-w-0 flex-1 flex-col gap-1"
+            >
+              <h1
+                class="ds-title1 focus:outline-none"
+                tabindex="-1"
+              >
+                비교 보드
+              </h1>
+              <p
+                class="ds-body2 text-label-alternative"
+              >
+                3 / 6개 비교 중
+                 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다
+              </p>
+            </div>
+            <div
+              class="flex flex-none items-center gap-3"
+            >
+              <button
+                class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-10 px-4 rounded-md text-body3 aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
+                data-focus-fallback="true"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="ds-icon size-5 "
+                  style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"
+                />
+                레퍼런스 추가
+              </button>
+            </div>
+          </header>
+          <div
+            class="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_calc(var(--spacing)*90)] xl:items-start"
+          >
+            <div
+              class="flex min-w-0 flex-col gap-4"
+            >
+              <div
+                aria-label="비교 표 (가로로 스크롤)"
+                class="overflow-x-auto rounded-lg border border-line-neutral focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                role="region"
+                tabindex="0"
+              >
+                <table
+                  class="w-full border-collapse"
+                >
+                  <caption
+                    class="sr-only"
+                  >
+                    레퍼런스 3개, 비교 항목 12개
+                  </caption>
+                  <thead>
+                    <tr>
+                      <td
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal"
+                      />
+                      <th
+                        class="min-w-48 p-3 align-top"
+                        scope="col"
+                      >
+                        <div
+                          class="flex flex-col items-stretch gap-2 text-left font-normal"
+                        >
+                          <div
+                            class="flex items-start gap-2"
+                          >
+                            <span
+                              class="ds-caption1 inline-flex size-5.5 flex-none items-center justify-center rounded-xs bg-surface-inverse font-bold text-on-surface-inverse"
+                            >
+                              A
+                            </span>
+                            <span
+                              class="ds-label line-clamp-2 min-w-0 flex-1 text-label-strong"
+                              title="모던 카페 브랜드"
+                            >
+                              모던 카페 브랜드
+                            </span>
+                            <button
+                              aria-label="모던 카페 브랜드 비교에서 빼기"
+                              class="inline-flex flex-none cursor-pointer rounded-full p-0.5 text-label-alternative hover:text-label-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                              data-remove-column="ref-a"
+                              type="button"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="ds-icon size-4 "
+                                style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e\");"
+                              />
+                            </button>
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center gap-1.5"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-3 flex-none rounded-full"
+                              style="background-color: rgb(139, 94, 60);"
+                            />
+                            <span
+                              class="ds-caption1 text-label-alternative"
+                            >
+                              카페·F&B
+                            </span>
+                            <span
+                              class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-5 px-1.5 rounded-xs text-caption2"
+                            >
+                              internal
+                            </span>
+                          </div>
+                          <button
+                            aria-label="이 레퍼런스로 전부 선택: A 모던 카페 브랜드"
+                            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+                            type="button"
+                          >
+                            이 레퍼런스로 전부 선택
+                          </button>
+                        </div>
+                      </th>
+                      <th
+                        class="min-w-48 p-3 align-top"
+                        scope="col"
+                      >
+                        <div
+                          class="flex flex-col items-stretch gap-2 text-left font-normal"
+                        >
+                          <div
+                            class="flex items-start gap-2"
+                          >
+                            <span
+                              class="ds-caption1 inline-flex size-5.5 flex-none items-center justify-center rounded-xs bg-surface-inverse font-bold text-on-surface-inverse"
+                            >
+                              B
+                            </span>
+                            <span
+                              class="ds-label line-clamp-2 min-w-0 flex-1 text-label-strong"
+                              title="프리미엄 헤어살롱"
+                            >
+                              프리미엄 헤어살롱
+                            </span>
+                            <button
+                              aria-label="프리미엄 헤어살롱 비교에서 빼기"
+                              class="inline-flex flex-none cursor-pointer rounded-full p-0.5 text-label-alternative hover:text-label-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                              data-remove-column="ref-b"
+                              type="button"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="ds-icon size-4 "
+                                style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e\");"
+                              />
+                            </button>
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center gap-1.5"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-3 flex-none rounded-full"
+                              style="background-color: rgb(31, 31, 31);"
+                            />
+                            <span
+                              class="ds-caption1 text-label-alternative"
+                            >
+                              뷰티
+                            </span>
+                            <span
+                              class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-5 px-1.5 rounded-xs text-caption2"
+                            >
+                              licensed
+                            </span>
+                          </div>
+                          <button
+                            aria-label="이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱"
+                            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+                            type="button"
+                          >
+                            이 레퍼런스로 전부 선택
+                          </button>
+                        </div>
+                      </th>
+                      <th
+                        class="min-w-48 p-3 align-top"
+                        scope="col"
+                      >
+                        <div
+                          class="flex flex-col items-stretch gap-2 text-left font-normal"
+                        >
+                          <div
+                            class="flex items-start gap-2"
+                          >
+                            <span
+                              class="ds-caption1 inline-flex size-5.5 flex-none items-center justify-center rounded-xs bg-surface-inverse font-bold text-on-surface-inverse"
+                            >
+                              C
+                            </span>
+                            <span
+                              class="ds-label line-clamp-2 min-w-0 flex-1 text-label-strong"
+                              title="동네 치과 클리닉"
+                            >
+                              동네 치과 클리닉
+                            </span>
+                            <button
+                              aria-label="동네 치과 클리닉 비교에서 빼기"
+                              class="inline-flex flex-none cursor-pointer rounded-full p-0.5 text-label-alternative hover:text-label-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+                              data-remove-column="ref-c"
+                              type="button"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="ds-icon size-4 "
+                                style="--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14.800'%20height='14.800'%20viewBox='0%200%2014.800%2014.800'%20fill='none'%3e%3cpath%20d='M%200.264%200.264%20C%200.615%20-0.088%201.185%20-0.088%201.536%200.264%20L%207.4%206.127%20L%2013.264%200.264%20C%2013.615%20-0.088%2014.185%20-0.088%2014.536%200.264%20C%2014.888%200.615%2014.888%201.185%2014.536%201.536%20L%208.673%207.4%20L%2014.536%2013.264%20C%2014.888%2013.615%2014.888%2014.185%2014.536%2014.536%20C%2014.185%2014.888%2013.615%2014.888%2013.264%2014.536%20L%207.4%208.673%20L%201.536%2014.536%20C%201.185%2014.888%200.615%2014.888%200.264%2014.536%20C%20-0.088%2014.185%20-0.088%2013.615%200.264%2013.264%20L%206.127%207.4%20L%200.264%201.536%20C%20-0.088%201.185%20-0.088%200.615%200.264%200.264%20Z'%20fill='currentColor'%20fill-rule='nonzero'%3e%3c/path%3e%3c/svg%3e\");"
+                              />
+                            </button>
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center gap-1.5"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-3 flex-none rounded-full"
+                              style="background-color: rgb(31, 95, 191);"
+                            />
+                            <span
+                              class="ds-caption1 text-label-alternative"
+                            >
+                              의료
+                            </span>
+                            <span
+                              class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-5 px-1.5 rounded-xs text-caption2"
+                            >
+                              internal
+                            </span>
+                          </div>
+                          <button
+                            aria-label="이 레퍼런스로 전부 선택: C 동네 치과 클리닉"
+                            class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"
+                            type="button"
+                          >
+                            이 레퍼런스로 전부 선택
+                          </button>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            Hero 구성
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top bg-primary-container"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            풀블리드 이미지 + 좌측 카피
+                          </span>
+                          <button
+                            aria-label="Hero 구성: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="true"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-primary bg-primary-container font-bold text-label-strong"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="ds-icon size-4 text-primary"
+                              style="--icon: url(\"/src/assets/icons/circle-check.svg\");"
+                            />
+                            선택됨
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            스플릿 (카피 / 이미지)
+                          </span>
+                          <button
+                            aria-label="Hero 구성: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            센터 정렬 카피
+                          </span>
+                          <button
+                            aria-label="Hero 구성: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            메뉴 구조
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            5개 · 우측 CTA
+                          </span>
+                          <button
+                            aria-label="메뉴 구조: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            4개 · 모바일 햄버거
+                          </span>
+                          <button
+                            aria-label="메뉴 구조: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            6개 · 2단
+                          </span>
+                          <button
+                            aria-label="메뉴 구조: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            CTA 위치
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            히어로 좌측 하단
+                          </span>
+                          <button
+                            aria-label="CTA 위치: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            헤더 우측 고정
+                          </span>
+                          <button
+                            aria-label="CTA 위치: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            히어로 중앙
+                          </span>
+                          <button
+                            aria-label="CTA 위치: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            섹션 수
+                          </span>
+                          <span
+                            class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-5 px-1.5 rounded-xs text-caption2"
+                          >
+                            비교 정보
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            9개
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            7개
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            9개
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            팔레트
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            #8B5E3C · 크림
+                          </span>
+                          <button
+                            aria-label="팔레트: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            #1F1F1F · 골드
+                          </span>
+                          <button
+                            aria-label="팔레트: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            #1F5FBF · 화이트
+                          </span>
+                          <button
+                            aria-label="팔레트: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            폰트
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            Pretendard 700 / 400
+                          </span>
+                          <button
+                            aria-label="폰트: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            Noto Serif KR 700 / 400
+                          </span>
+                          <button
+                            aria-label="폰트: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            Pretendard 700 / 400
+                          </span>
+                          <button
+                            aria-label="폰트: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            카드 스타일
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            보더 · 16px
+                          </span>
+                          <button
+                            aria-label="카드 스타일: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            엘리베이티드 · 다크
+                          </span>
+                          <button
+                            aria-label="카드 스타일: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            보더 · 12px
+                          </span>
+                          <button
+                            aria-label="카드 스타일: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            이미지 비율
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            16:9
+                          </span>
+                          <button
+                            aria-label="이미지 비율: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            4:5
+                          </span>
+                          <button
+                            aria-label="이미지 비율: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            1:1
+                          </span>
+                          <button
+                            aria-label="이미지 비율: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            모션
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            낮음
+                          </span>
+                          <button
+                            aria-label="모션: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            중간
+                          </span>
+                          <button
+                            aria-label="모션: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            낮음
+                          </span>
+                          <button
+                            aria-label="모션: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            모바일 구조
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            단일 컬럼 · 하단 CTA
+                          </span>
+                          <button
+                            aria-label="모바일 구조: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            단일 컬럼 · 스티키 CTA
+                          </span>
+                          <button
+                            aria-label="모바일 구조: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            2컬럼 카드
+                          </span>
+                          <button
+                            aria-label="모바일 구조: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            Footer
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            확장형 사업자정보
+                          </span>
+                          <button
+                            aria-label="Footer: A 모던 카페 브랜드의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            미니멀 · 링크만
+                          </span>
+                          <button
+                            aria-label="Footer: B 프리미엄 헤어살롱의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            확장형 + 지도
+                          </span>
+                          <button
+                            aria-label="Footer: C 동네 치과 클리닉의 요소 선택"
+                            aria-pressed="false"
+                            class="inline-flex h-9 w-full items-center justify-center gap-1 rounded-sm border px-3 text-caption1 select-none cursor-pointer transition-[background-color,border-color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) aria-disabled:cursor-not-allowed border-line-normal bg-background-normal font-medium text-label-normal hover:bg-fill-normal"
+                            tabindex="-1"
+                            type="button"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="size-4 rounded-full border-(length:--border-thick) border-line-strong"
+                            />
+                            이 요소 선택
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="border-t border-line-neutral"
+                    >
+                      <th
+                        class="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top"
+                        scope="row"
+                      >
+                        <span
+                          class="flex flex-col items-start gap-1"
+                        >
+                          <span
+                            class="ds-label text-label-strong"
+                          >
+                            접근성·성능
+                          </span>
+                          <span
+                            class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-5 px-1.5 rounded-xs text-caption2"
+                          >
+                            비교 정보
+                          </span>
+                        </span>
+                      </th>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            접근성 96 · 성능 92 (측정일 2026-09-20)
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            접근성 91 · 성능 88 (측정일 2026-09-20)
+                          </span>
+                        </div>
+                      </td>
+                      <td
+                        class="min-w-48 p-3 align-top"
+                      >
+                        <div
+                          class="flex flex-col gap-2"
+                        >
+                          <span
+                            class="ds-body3"
+                          >
+                            접근성 98 · 성능 95 (측정일 2026-09-20)
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <section
+              aria-labelledby="_r_0_"
+              class="flex flex-col gap-4 border-line-neutral max-xl:border-t max-xl:pt-6 xl:border-l xl:pl-6 xl:sticky xl:top-5 xl:max-h-[calc(100dvh-var(--spacing)*10)] xl:overflow-y-auto"
+            >
+              <div
+                class="flex items-center justify-between gap-2"
+              >
+                <h2
+                  class="ds-heading1 focus:outline-none"
+                  id="_r_0_"
+                  tabindex="-1"
+                >
+                  프로필 초안
+                </h2>
+                <span
+                  class="inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-6 px-2 rounded-sm text-caption1"
+                >
+                  확정 전
+                </span>
+              </div>
+              <p
+                class="ds-caption1 text-label-alternative"
+              >
+                고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다.
+              </p>
+              <p
+                aria-label="선택 알림"
+                class="sr-only"
+                role="status"
+              >
+                <span />
+              </p>
+              <ul
+                aria-label="초안 항목"
+                class="flex flex-col"
+              >
+                <li
+                  aria-labelledby="_r_2_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_2_"
+                      >
+                        Hero 구성
+                      </span>
+                      <span
+                        class="ds-caption1 text-primary-text"
+                      >
+                        A · 모던 카페 브랜드
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        풀블리드 이미지 + 좌측 카피
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_3_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_3_"
+                      >
+                        메뉴 구조
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        5개 · 우측 CTA
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_4_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_4_"
+                      >
+                        CTA 위치
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        히어로 좌측 하단
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_5_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_5_"
+                      >
+                        팔레트
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="size-3.5 flex-none rounded-xs"
+                        style="background-color: rgb(139, 94, 60);"
+                      />
+                      <span>
+                        #8B5E3C · 크림
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_6_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_6_"
+                      >
+                        폰트
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        Pretendard 700 / 400
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_7_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_7_"
+                      >
+                        카드 스타일
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        보더 · 16px
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_8_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_8_"
+                      >
+                        이미지 비율
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        16:9
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_9_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_9_"
+                      >
+                        모션
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        낮음
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_a_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_a_"
+                      >
+                        모바일 구조
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        단일 컬럼 · 하단 CTA
+                      </span>
+                    </p>
+                  </div>
+                </li>
+                <li
+                  aria-labelledby="_r_b_"
+                  class="flex gap-2.5 border-b border-line-neutral py-2.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 size-2.5 flex-none rounded-full"
+                    style="background-color: rgb(139, 94, 60);"
+                  />
+                  <div
+                    class="flex min-w-0 flex-1 flex-col gap-1"
+                  >
+                    <div
+                      class="flex items-baseline justify-between gap-2"
+                    >
+                      <span
+                        class="ds-caption1 font-semibold text-label-neutral"
+                        id="_r_b_"
+                      >
+                        Footer
+                      </span>
+                      <span
+                        class="ds-caption1 text-label-alternative"
+                      >
+                        기본값 · A
+                      </span>
+                    </div>
+                    <p
+                      class="ds-body3 flex items-center gap-1.5 text-label-normal"
+                    >
+                      <span>
+                        확장형 사업자정보
+                      </span>
+                    </p>
+                  </div>
+                </li>
+              </ul>
+              <fieldset
+                class="flex flex-col gap-2.5"
+              >
+                <legend
+                  class="ds-label mb-2 text-label-strong"
+                >
+                  사용자 스타일
+                </legend>
+                <div
+                  class="flex items-center gap-2"
+                >
+                  <label
+                    class="flex h-12 w-full items-center gap-2 rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-within:border-primary focus-within:shadow-(--focus-ring)"
+                  >
+                    <span
+                      class="sr-only"
+                    >
+                      대표색
+                    </span>
+                    <input
+                      aria-invalid="false"
+                      autocomplete="off"
+                      class="min-w-0 flex-1 bg-transparent text-body1 text-label-normal outline-none placeholder:text-label-alternative"
+                      placeholder="#RRGGBB"
+                      spellcheck="false"
+                      value=""
+                    />
+                  </label>
+                </div>
+                <span
+                  class="relative flex items-center"
+                >
+                  <select
+                    aria-label="폰트"
+                    class="w-full cursor-pointer appearance-none rounded-md border-(length:--border-thick) border-line-strong bg-background-normal text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus-visible:border-primary focus-visible:shadow-(--focus-ring) h-10 pl-3 pr-10 text-body2"
+                  >
+                    <option
+                      value=""
+                    >
+                      선택 안 함
+                    </option>
+                    <option
+                      value="pretendard"
+                    >
+                      Pretendard
+                    </option>
+                    <option
+                      value="noto-sans-kr"
+                    >
+                      Noto Sans KR
+                    </option>
+                    <option
+                      value="noto-serif-kr"
+                    >
+                      Noto Serif KR
+                    </option>
+                  </select>
+                  <svg
+                    aria-hidden="true"
+                    class="pointer-events-none absolute right-4 size-4.5 text-label-alternative"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.4"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M6 9l6 6 6-6"
+                    />
+                  </svg>
+                </span>
+              </fieldset>
+              <div
+                class="flex flex-col gap-2"
+              >
+                <button
+                  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-13 px-5.5 rounded-md text-body1 w-full aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
+                  type="button"
+                >
+                  프로필 확정 (v1)
+                </button>
+                <button
+                  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-transparent text-label-normal enabled:hover:bg-fill-normal disabled:text-label-disable h-10 px-4 rounded-md text-body3 w-full"
+                  type="button"
+                >
+                  초안 비우기
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ boardSeesV2 src/pages/CompareBoardLineage.test.tsx:41:23
+     39|   insertOtherVersion(studio.store);
+     40|   await act(() => studio.router.navigate("/compare"));
+     41|   expect(await screen.findByText("v1 확정됨", undefined, SLOW)).toBeInThe…
+       |                       ^
+     42|   expect(confirmButton()).toHaveAccessibleName("새 버전으로 확정 (v3)");
+     43|   await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
+ ❯ src/pages/CompareBoardLineage.test.tsx:52:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯

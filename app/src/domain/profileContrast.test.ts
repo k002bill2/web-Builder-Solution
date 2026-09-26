@@ -81,3 +81,29 @@ describe("proposeCorrections — 역할마다 최저 대비 기준 한 번, 재�
     expect(proposals("ref-e", "enhanced")).toEqual([{ role: "ink", to: "#4C22F0", conflict: false }, { role: "muted", to: "#565960", conflict: false }]);
   });
 });
+
+describe("강화 7:1 불가 (D-2A4B2-01) — throw 대신 도달 불가 충돌", () => {
+  it("ref-a 팔레트 + 어두운 카드 + 강화: ink는 C-3 기준 도달 불가(unreachable) 충돌, 후보 = 최고 대비 흰색 · primary는 #775033 그대로", () => {
+    const { palette } = inputOf("ref-a");
+    const out = proposeCorrections(palette, "dark", "enhanced");
+    const ink = out.find((p) => p.role === "ink")!;
+    expect(ink).toMatchObject({ role: "ink", from: "#2C2C2C", to: "#FFFFFF", basis: "C-3", unreachable: true });
+    expect(formatRatio(ink.after)).toBe("5.5:1");
+    expect(ink.conflict?.map((b) => b.id)).toContain("C-3");
+    const primary = out.find((p) => p.role === "primary")!;
+    expect(primary).toMatchObject({ to: "#775033" });
+    expect(primary.unreachable).toBeUndefined();
+  });
+
+  it("밝은 카드여도 면(surface)이 중간 명도(#777777)면 C-4 기준 도달 불가 충돌", () => {
+    const palette = inputOf("ref-a").palette.map((p) => (p.role === "surface" ? { ...p, hex: "#777777" } : p));
+    const ink = proposeCorrections(palette, "light", "enhanced").find((p) => p.role === "ink")!;
+    expect(ink).toMatchObject({ basis: "C-4", unreachable: true });
+    expect(ink.conflict).toBeDefined();
+  });
+
+  it("AA에서는 도달 불가가 생기지 않는다 (같은 조합)", () => {
+    const { palette } = inputOf("ref-a");
+    expect(proposeCorrections(palette, "dark", "aa").every((p) => p.unreachable === undefined)).toBe(true);
+  });
+});

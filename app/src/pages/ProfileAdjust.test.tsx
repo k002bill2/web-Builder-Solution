@@ -3,7 +3,7 @@
  * 보드·프로필 메모리 저장소는 store 하나. P-S13은 좁은 범위(range)를 주입한 프로필 저장소로 렌더하고,
  * 범위 밖 값은 같은 store에 붙은 기본 범위 저장소로 먼저 저장한다(좁은 범위 저장소는 그 값을 거부하므로).
  */
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
@@ -221,6 +221,8 @@ describe("P-AC-16 저장 중 연타 · 실패 (P-S11) · P-AC-37 실패 계측",
     await userEvent.click(within(alert).getByRole("button", { name: "다시 시도" }));
     expect(await screen.findByRole("status", { name: "프로필 알림" })).toHaveTextContent("v2로 저장했습니다");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    // D-2A4B2-02 — 누른 "다시 시도"가 사라져도 포커스는 BODY가 아니라 조정 저장 버튼(첫 저장 경로와 같게, 5.2 이동 없음)
+    expect(screen.getByRole("button", { name: "조정 저장 (v3)" })).toHaveFocus();
     expect(events).toEqual([{ name: "profile_save_failed", reason: "UNKNOWN" }, { name: "profile_saved", version: 2, origin: "adjust" }]);
   });
 
@@ -235,6 +237,7 @@ describe("P-AC-16 저장 중 연타 · 실패 (P-S11) · P-AC-37 실패 계측",
     await userEvent.click(screen.getByRole("button", { name: "다시 시도" }));
     expect(await screen.findByRole("status", { name: "프로필 알림" })).toHaveTextContent("v2로 저장했습니다");
     expect((await series(studio)).versions).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "조정 저장 (v3)" })).toHaveFocus();
     expect(screen.queryByText(/다른 곳에서/)).not.toBeInTheDocument();
   });
 });
@@ -310,6 +313,59 @@ describe("P-AC-19 대비 강화 → 목표 7.0 · 강화 열 제안", () => {
     await openProfile(undefined, { hero: "ref-e", columns: ["ref-e", "ref-a"] });
     await userEvent.click(radio("대비", "강화"));
     expect(screen.getByText(new RegExp(`대체안: ${enhanced("ref-e", "ink")}\\(7\\.0:1`))).toBeInTheDocument();
+  });
+});
+
+describe("D-2A4B2-01 강화 7:1 불가 조합 — 오류 경계 없이 P-S15 충돌 (QA-2A04B2 경로 A·B)", () => {
+  const cardB = async (s: Studio, basedOn: number) => {
+    const { board } = await s.board.getBoard();
+    const changed = await s.board.savePicks({ ...board.picks, card: "ref-b" }, board.custom, board.revision);
+    await s.board.createProfileVersion("profile-1", changed.revision, basedOn);
+  };
+  const expectUnreachableConflict = () => {
+    expect(screen.queryByText("화면을 불러오지 못했습니다")).not.toBeInTheDocument();
+    const palette = screen.getByRole("region", { name: "역할 팔레트와 대비" });
+    expect(within(palette).getByText("대비 검사 · 목표 7.0:1")).toBeInTheDocument();
+    expect(within(within(palette).getByRole("list", { name: "대비 검사" })).getByText(/^C-3/).closest("li")).toHaveTextContent("미달");
+    expect(within(palette).getByText("본문 글자(ink)가 어두운 카드(2.5:1)에서 어떤 명도로도 기준 7.0:1을 맞출 수 없습니다. 대체안: 비교 보드에서 다른 팔레트를 고르세요")).toBeInTheDocument();
+    expect(within(palette).getByRole("link", { name: "비교 보드에서 팔레트 바꾸기" })).toHaveAttribute("href", "/compare");
+    expect(within(palette).queryByRole("button", { name: /본문 글자 ink/ })).not.toBeInTheDocument();
+    // primary는 7:1이 가능하다 — 기존 보정 제안 그대로
+    expect(within(palette).getByRole("button", { name: "보정값 쓰기 (대표색 primary)" })).toBeInTheDocument();
+  };
+
+  it("경로 A: 모던 카페(A) Hero 확정 v1 → 강화 저장 v2 → 보드에서 카드 B(헤어살롱 · 어두운 카드) 재확정 v3 → v3 화면이 열린다", async () => {
+    await openProfile(undefined, {
+      columns: ["ref-a", "ref-b"],
+      before: async (s) => {
+        await s.wide.saveAdjustments("profile-1", 1, { contrast: "enhanced" });
+        await cardB(s, 2);
+      },
+    });
+    expect(screen.getByText("v3 · 현재")).toBeInTheDocument();
+    expect(radio("대비", "강화")).toHaveAttribute("aria-checked", "true");
+    expectUnreachableConflict();
+  });
+
+  it("경로 B: A 팔레트 + 어두운 카드(AA, 충돌 표시 정상) 화면에서 대비 '강화' 클릭 → 오류 경계 없이 충돌 표시", async () => {
+    await openProfile(undefined, { columns: ["ref-a", "ref-b"], before: (s) => cardB(s, 1) });
+    expect(screen.getByText("v2 · 현재")).toBeInTheDocument();
+    await userEvent.click(radio("대비", "강화"));
+    expectUnreachableConflict();
+  });
+});
+
+describe("D-2A4B2-03 없는 ?v= 보는 중 조정 저장 (5.3 저장 알림)", () => {
+  it("?v=abc → 목적 '판매' → 저장 → '프로필 알림' 최종 문장 = 'v2로 저장했습니다'(없는 버전 재알림 없음), 보이는 Callout은 최신 v2로 갱신", async () => {
+    await openProfile("/profile/profile-1?v=abc");
+    const region = screen.getByRole("status", { name: "프로필 알림" });
+    await waitFor(() => expect(region).toHaveTextContent("요청한 버전이 없어 최신 v1을 보여 줍니다"));
+    await userEvent.click(radio("사이트 목적", "판매"));
+    await userEvent.click(saveButton());
+    expect(await screen.findByText("v2 · 현재")).toBeInTheDocument();
+    await act(async () => {});
+    expect(region).toHaveTextContent(/^v2로 저장했습니다$/);
+    expect(screen.getByText("요청한 버전이 없어 최신 v2를 보여 줍니다")).toBeInTheDocument();
   });
 });
 

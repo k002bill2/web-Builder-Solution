@@ -44,9 +44,16 @@ describe("WCAG 상대 휘도·대비 (SPEC 3.4)", () => {
   });
 });
 
+/** 도달한 보정 — 불가면 테스트 실패 */
+const reached = (hex: string, against: string, target?: number) => {
+  const result = nearestCompliantColor(hex, against, target);
+  if (!result.reached) throw new Error(`도달 불가: ${hex} / ${against}`);
+  return result.fix;
+};
+
 describe("4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산)", () => {
   it.each(["#D47800", "#00A884", "#C9A96E"])("%s: 보정값은 기준을 넘고, 한 단계 더 가까우면 기준 미만이다", (hex) => {
-    const fix = nearestCompliantColor(hex, WHITE);
+    const fix = reached(hex, WHITE);
     expect(fix.hex).toMatch(/^#[0-9A-F]{6}$/);
     expect(fix.ratio).toBe(contrastRatio(fix.hex, WHITE));
     expect(fix.ratio).toBeGreaterThanOrEqual(AA_BODY_RATIO);
@@ -55,11 +62,48 @@ describe("4.5:1이 되는 가장 가까운 명도 보정 (AC-12 계산)", () => 
   });
 
   it("흰 글자 대비 보정은 대표색을 어둡게 한다", () => {
-    expect(nearestCompliantColor("#D47800", WHITE).lightnessDelta).toBeLessThan(0);
+    expect(reached("#D47800", WHITE).lightnessDelta).toBeLessThan(0);
   });
 
   it("이미 기준을 넘으면 그대로", () => {
-    expect(nearestCompliantColor("#8B5E3C", WHITE)).toMatchObject({ hex: "#8B5E3C", lightnessDelta: 0 });
+    expect(nearestCompliantColor("#8B5E3C", WHITE)).toEqual({ reached: true, fix: { hex: "#8B5E3C", ratio: contrastRatio("#8B5E3C", WHITE), lightnessDelta: 0 } });
+  });
+
+  it("4.5는 어떤 배경에서도 도달한다 — 흑·백 중 큰 대비의 최솟값 ≈ 4.58 (중간 명도 회색 스윕)", () => {
+    for (let g = 0; g <= 255; g += 5) {
+      const gray = `#${g.toString(16).padStart(2, "0").repeat(3)}`.toUpperCase();
+      expect(nearestCompliantColor("#2C2C2C", gray).reached, gray).toBe(true);
+    }
+  });
+});
+
+describe("7:1 불가 조합 (D-2A4B2-01) — throw 대신 값", () => {
+  const BLACK = "#000000";
+  // 상대 휘도 0.10~0.30 배경은 흰색·검정 모두 7:1 미만. 경계: #595959(흰 7.005) 가능 · #5A5A5A(흰 6.90) 불가 · #949494(검 6.92) 불가 · #959595(검 7.01) 가능
+  it.each(["#8B5E3C", "#1F5FBF", "#5A5A5A", "#777777", "#949494"])("%s 위 7:1: throw 0, reached=false, best = 흑·백 중 큰 대비(7 미만)", (against) => {
+    const result = nearestCompliantColor("#2C2C2C", against, 7);
+    expect(result.reached).toBe(false);
+    if (result.reached) return;
+    const best = Math.max(contrastRatio(WHITE, against), contrastRatio(BLACK, against));
+    expect(result.best.ratio).toBeCloseTo(best, 10);
+    expect(result.best.ratio).toBeLessThan(7);
+    expect(result.best.ratio).toBe(contrastRatio(result.best.hex, against));
+  });
+
+  it("#8B5E3C: 흰 5.58 · 검 3.76 — best는 흰색", () => {
+    const result = nearestCompliantColor("#2C2C2C", "#8B5E3C", 7);
+    expect(result).toMatchObject({ reached: false, best: { hex: WHITE } });
+    expect(formatRatio(contrastRatio(WHITE, "#8B5E3C"))).toBe("5.5:1");
+    expect(formatRatio(contrastRatio(BLACK, "#8B5E3C"))).toBe("3.7:1");
+  });
+
+  it.each(["#595959", "#959595"])("경계 %s 위 7:1은 가능 — 기존처럼 제안", (against) => {
+    const fix = reached("#2C2C2C", against, 7);
+    expect(fix.ratio).toBeGreaterThanOrEqual(7);
+  });
+
+  it("7:1 가능 조합은 기존 제안 그대로 (ref-a primary → #775033)", () => {
+    expect(reached("#8B5E3C", WHITE, 7).hex).toBe("#775033");
   });
 });
 

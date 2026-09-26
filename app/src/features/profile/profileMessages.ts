@@ -59,8 +59,16 @@ function proposalText(p: CorrectionProposal, level: ContrastLevel): string {
   return `${cause} 기준 ${targetText(level)}보다 낮습니다. 대체안: ${p.to}(${formatRatio(p.after)}, ${deltaText(p.lightnessDelta)})`;
 }
 
-function conflictOf(p: CorrectionProposal): ProposalView["conflict"] {
+function conflictOf(p: CorrectionProposal, level: ContrastLevel): ProposalView["conflict"] {
   if (!p.conflict) return undefined;
+  // 목표 불가(D-2A4B2-01)는 한 값으로 두 배경을 못 맞추는 충돌이 아니다 — 어떤 명도로도 기준 배경 하나를 못 맞춘다. 대체안은 팔레트 바꾸기
+  if (p.unreachable) {
+    return {
+      text: `${ROLE_SUBJECTS[p.role]} ${BACKGROUND_NAMES[p.basis]}(${formatRatio(p.before)})에서 어떤 명도로도 기준 ${targetText(level)}을 맞출 수 없습니다. 대체안: 비교 보드에서 다른 팔레트를 고르세요`,
+      detail: `대비가 가장 높은 후보 ${p.to}도 ${formatRatio(p.after)}`,
+      link: "비교 보드에서 팔레트 바꾸기",
+    };
+  }
   const detail = `후보 ${p.to}를 쓰면 ${p.conflict.map((b) => `${b.id} ${formatRatio(b.before)} → ${formatRatio(b.after)}`).join(" · ")}`;
   const darkCard = p.conflict.find((b) => b.id === "C-3");
   if (darkCard) {
@@ -97,7 +105,7 @@ export function contrastView(
       // 후보·충돌은 다른 역할의 보정을 적용한 초안에서, 그 역할만 base 값으로 되돌려 다시 계산한다(Codex P2) — from은 base 값
       .map((p) => proposeCorrections(palette.map((e) => (e.role === p.role ? { ...e, hex: p.from } : e)), cardTone, level).find((q) => q.role === p.role) ?? p)
       .map((p) => {
-        const conflict = conflictOf(p);
+        const conflict = conflictOf(p, level);
         return { role: p.role, from: p.from, to: p.to, check: p.basis, text: proposalText(p, level), ...(!failing.has(p.role) && { written: true }), ...(conflict && { conflict }) };
       }),
   };

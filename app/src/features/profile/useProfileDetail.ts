@@ -1,6 +1,7 @@
 /**
  * 프로필 상세 상태 (DS-2A-04 2.2 P-S01~S03·S09·S11·S12). 계열·엔진·출처 레퍼런스·조정 범위를 함께 읽고, 되돌리기·조정 저장을 한다.
- * 조정 범위(getAdjustmentRange)는 진입 때 자동으로 읽는다 — 저장소 쓰기 본문 청크가 /profile 진입 직후 합계에 든다(번들 스크립트 auto).
+ * 조정 범위(getAdjustmentRange)는 진입 때 자동으로 읽지만 저장소 쓰기 본문 청크(memoryProfileAdjust)는 받지 않는다 — 본문은 "조정 저장"·"다시 시도"·
+ * "이 버전으로 되돌리기" 조작 뒤에만 받는다(SPEC r7 Q-B2-4 · 번들 스크립트 `/profile` afterAction).
  * 버전을 만드는 쓰기는 화면이 본 최신(`expectedLatest`)을 보낸다 — 다르면 STALE_PROFILE(최신 계열 동봉)로 거부된다.
  */
 import { useCallback, useEffect, useRef, useState } from "react";

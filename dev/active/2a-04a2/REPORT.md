@@ -96,6 +96,7 @@
 - `/catalog` 첫 화면 여유 1.02KB(공유 청크 분할 영향).
 - 문서 제목: `CompareBoardPage`가 설정한 "비교 보드 · Design Studio"가 `/profile*`에서도 남는다(기존 동작, 다른 페이지는 제목을 안 바꿈) — 범위 밖, 별건.
 - 브라우저 캡처 이미지 부재(7절).
+- (FIX 12.4) `ProfilePage` P-AC-01 플레이크: lazy 라우트 전환 중 `h1()`이 "비교 보드" h1을 잡음(3회 중 1회). 대기 조건을 이름("디자인 프로필")으로 좁히는 수정은 별건.
 - 목록 순서 = 계열 생성 순(SPEC 미지정, a1과 같음). 시각 표기는 렌더 시점 기준이라 자동 갱신 없음.
 
 ## 11. 커밋
@@ -103,3 +104,53 @@
 - `ed23f67` feat — 앱 배선 (store 공유 로더·컨텍스트·renderApp) + 첫 실측
 - `a82d7d9` feat — `/profile` 목록 · `/profile/:id` 상세 화면
 - 이 REPORT·PROGRESS·검증·스모크·Codex 로그 커밋(해시는 최종 응답)
+
+## 12. FIX (Q3·Q9) — 버전 비교 URL 계약 · 없는 버전 안내 (브리프 `docs/06-handoff/FIX-2A04a2_DEVELOPER_BRIEF.md`, base `679deef`)
+- 결론: 비교 쌍 = (`?v=` 버전 또는 최신, `diff`)로 바로잡고, 이전 버전을 볼 때 버튼 "vN과 비교", 같은/없는 `diff`는 닫힘. 없는 `?v=`는 최신 + `role=status` 안내. F-1~F-5 GREEN, 기존 테스트 수정 **0줄**, `/compare`·`/catalog` 첫 화면 증가 0.
+
+### 12.1 변경 파일 (app/)
+- `src/pages/ProfilePage.tsx` — `diff` 정규화 기준 최신 → 보는 버전, 표 쌍 `ordered(diff, viewed)`(작은 번호 먼저), 없는 `?v=` 안내(`<div role="status">` + `Callout tone=info`)
+- `src/components/profile/VersionList.tsx` — 비교 버튼 조건 `!current` → `!viewed`, 이름 = 최신을 볼 때 "현재와 비교" · 이전 버전 vN을 볼 때 "vN과 비교"(`aria-label` "… (v행)")
+- `src/features/profile/versionText.ts` — `missingVersionText(requested, latest)` 문구(양의 정수면 "요청한 v7이", 아니면 "요청한 버전이")
+- `src/pages/ProfilePage.test.tsx` — describe "FIX-2A04a2 Q3 … · Q9 …" 추가(9개 케이스)
+
+### 12.2 수용 기준 → 테스트 (`ProfilePage.test.tsx` › FIX-2A04a2 …)
+| AC | 테스트 이름 |
+|---|---|
+| F-1 | `F-1 v3 계열 ?v=1&diff=2 → caption·표 = v1↔v2 (v3 열 없음)` |
+| F-2 | `F-2 ?diff=2(v 없음) → v2↔최신 v3` |
+| F-3 | `F-3 ?v=1에서 v2 줄 'v1과 비교 (v2)' → ?v=1&diff=2 · 포커스 caption · 닫기 → 같은 버튼` (v1 줄 비교 버튼 없음 · v3 줄 "v1과 비교 (v3)" 포함) |
+| F-4 | `F-4 ?v=2&diff=2 / ?diff=9 / ?diff=3 → 비교 닫힘(표·같음 문장 없음)` (`it.each`, `?diff=3`=최신 보는 중 최신 diff 추가) |
+| F-5 | `F-5 ?v=7(v3 계열) → 최신 v3 + role=status '요청한 v7이 없어 최신 v3을 보여 줍니다'` · `F-5 ?v=abc → '요청한 버전이 없어 최신 v3을 보여 줍니다'` · `F-5 ?v=3·?diff=9 → 요청 버전 안내 없음` |
+
+### 12.3 RED 로그 · 고친 기존 줄
+- RED `logs/fix-red.txt` — **5 failed / 4 passed**(단언 실패: F-1 표 "v1과 v2 비교" 없음 · F-3 v1 줄에 "현재와 비교" 있음 · F-4 `?v=2&diff=2`에 표 있음 · F-5 두 문구 없음). 통과 4건(F-2, F-4 `?diff=9`·`?diff=3`, 안내 없음)은 기존 동작이 이미 맞는 회귀 가드.
+- GREEN `logs/fix-green-page.txt` — ProfilePage 26/26.
+- 고친 기존 줄: **없음**. P-AC-07(최신 보기의 "현재와 비교 (v1)")·P-AC-09(`?diff=1` = v1↔최신)는 최신을 보는 경우라 새 규칙에서도 기대가 같다.
+
+### 12.4 검증 4종 (`logs/fix-verify-*.txt`)
+- typecheck exit 0 · lint exit 0 · build exit 0(번들 검사 포함)
+- test: **첫 전체 실행 1 failed / 595 passed**(`fix-verify-test.txt`) — `P-AC-01 보드 확정 → 프로필 화면`에서 `h1()`이 lazy 라우트 전환 중 남은 "비교 보드" h1을 잡음(기대 "디자인 프로필"). 이 테스트는 `?v`·`diff`를 쓰지 않는 기존 경쟁 조건(5절 플레이크와 같은 종류). 재실행 2회 **596/596 통과**(`fix-verify-test-rerun1.txt`·`rerun2.txt`). 브리프 범위(쌍 관련 기대만 수정) 밖이라 고치지 않음 → 10절 남은 위험에 추가.
+
+### 12.5 번들 전/후 (gzip KB, 첫 화면 / 진입 직후, `logs/fix-baseline-build.txt` → `logs/fix-verify-build.txt`)
+| 라우트 | 전 `679deef` | 후 | 차이 |
+|---|---|---|---|
+| 공통 | 88.93 | 88.93 | 0 |
+| `/catalog` | 98.98 / 101.36 | 98.98 / 101.36 | **0** / 0 |
+| 상세 `/references/:id` | 96.31 / 98.70 | 96.31 / 98.69 | 0 / −0.01 |
+| `/compare` | 99.17 / 123.33 | 99.16 / 123.32 | **−0.01** / −0.01 (청크 해시 문자열 차이) |
+| `/profile` | 98.61 / 117.25 | **98.80** / 117.44 | +0.19 / +0.19 (`ProfilePage` 청크 6.65 → 6.84) · 여유 1.20 |
+| `/studio` 자리표시 | 89.39 / 91.77 | 89.38 / 91.77 | — |
+- 새 의존성 0 · 아이콘 추가 0 · `design/` 수정 0.
+
+### 12.6 Codex 리뷰 (1회, `review --wait --scope branch --base 679deef`, `logs/fix-codex-review.txt`)
+- **지적 0건**: "비교 쌍 처리와 없는 버전 안내에 문제를 찾지 못했습니다". Codex 쪽 `npm test` 실행은 샌드박스 파일 쓰기 권한 오류(EPERM)로 시작되지 않음 → 테스트 증거는 12.3·12.4의 로컬 실행 로그.
+
+### 12.7 설계 질문
+1. **안내 영역 role**: `Callout.tsx` 주석(A-9)은 "role 없는 정적 영역, 새 경고는 알림 영역 문장으로" 규칙인데, 브리프 Q9대로 `<div role="status">`로 감쌌다. 내용을 가진 채 삽입되는 live region은 앱 안 뒤로/앞으로 이동 시 낭독되지 않을 수 있다. 기존 sr-only "프로필 알림" 영역에도 같은 문장을 낼지 결정 필요.
+2. **숫자 경계값**: `?v=0`·`-1`·`01`·`?v=`(빈 값)은 모두 "요청한 버전이 없어…". 브리프 "범위 밖 숫자 → vN"을 문자 그대로 읽으면 `0`은 "요청한 v0이…"가 맞다. `01`은 v1과 헷갈려 일부러 제외. 확정 필요.
+3. 없는 `?v=`가 URL에 남은 채 비교를 열면 `?v=7&diff=1`처럼 남는다(안내도 유지). 브리프 "URL은 건드리지 않아도 됨"에 따라 정규화하지 않음.
+
+### 12.8 커밋
+- `c1fe009` fix — 비교 쌍 · 없는 버전 안내 · F-1~F-5
+- 이 REPORT 12절 · `logs/fix-*` 커밋(해시는 최종 응답)

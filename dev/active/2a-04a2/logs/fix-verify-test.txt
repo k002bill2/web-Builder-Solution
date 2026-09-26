@@ -1,0 +1,81 @@
+
+> design-studio-app@0.1.0 test
+> vitest --run
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a2/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfilePage.test.tsx (26 tests | 1 failed) 2808ms
+   ❯ P-AC-01 보드 확정 → 프로필 화면 (1)
+     × 비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 필드가 모두 보인다 608ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > P-AC-01 보드 확정 → 프로필 화면 > 비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 필드가 모두 보인다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  디자인 프로필[39m
+Received:
+[31m  비교 보드[39m
+ ❯ src/pages/ProfilePage.test.tsx:77:24
+     75|     await userEvent.click(await screen.findByRole("button", { name: "프…
+     76|     await waitFor(() => expect(router.state.location.pathname).toBe("/…
+     77|     expect(await h1()).toHaveTextContent("디자인 프로필");
+       |                        ^
+     78|     expect(screen.getByText("v1 · 현재")).toBeInTheDocument();
+     79|     expect(screen.getByText(/^기준 레퍼런스: 모던 카페 브랜드 · /)).toBeInTheDocume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 52 passed (53)
+      Tests  1 failed | 595 passed (596)
+   Start at  16:47:48
+   Duration  10.40s (tests 46%, environment 36%, setup 8%, transform 6%, import 4%)
+
+Environment  jsdom was created 53 times · 30.80s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

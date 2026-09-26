@@ -1,0 +1,14 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/2a-04a2/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  1 passed (1)
+      Tests  26 passed (26)
+   Start at  16:47:31
+   Duration  2.43s (tests 49%, environment 24%, transform 16%, import 7%, setup 5%)
+

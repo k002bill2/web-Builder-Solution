@@ -25,7 +25,7 @@ function ProfileNotFound() {
         <Link to="/compare" className="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover">
           비교 보드로
         </Link>
-        <Link to="/catalog" className="ds-label text-primary hover:text-primary-hover">
+        <Link to="/catalog" className="ds-label text-primary-text hover:text-primary-hover">
           카탈로그
         </Link>
       </div>
@@ -157,12 +157,12 @@ function ProfileView({
           <h1 ref={h1} tabIndex={-1} className="ds-title1 focus:outline-none">
             디자인 프로필
           </h1>
-          <Tag tone={isLatest ? "blue" : "neutral"}>{isLatest ? `v${viewed.version} · 현재` : `v${viewed.version} · 이전 버전`}</Tag>
+          <Tag tone={isLatest ? "violet" : "neutral"}>{isLatest ? `v${viewed.version} · 현재` : `v${viewed.version} · 이전 버전`}</Tag>
         </div>
         <p className="ds-body3 text-label-alternative">
           기준 레퍼런스: {titleOf(viewed.baseReferenceId)} · {SELECTION_MODE_LABELS[viewed.base.selection_mode]}
         </p>
-        <Link to="/compare" className="ds-label self-start text-primary hover:text-primary-hover">
+        <Link to="/compare" className="ds-label self-start text-primary-text hover:text-primary-hover">
           비교 보드에서 선택 바꾸기
         </Link>
       </header>
@@ -173,7 +173,7 @@ function ProfileView({
           title={`${versionWith(viewed.version, ["을", "를"])} 보고 있습니다 · 현재 v${latest.version}`}
           action={
             <>
-              <Link to={{ search: "" }} className="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover">
+              <Link to={{ search: "" }} className="ds-label inline-flex h-8 items-center text-primary-text hover:text-primary-hover">
                 현재 버전 보기
               </Link>
               <Button size="sm" aria-busy={reverting || undefined} onClick={() => void onRevert()}>
@@ -188,8 +188,8 @@ function ProfileView({
           {alert}
         </div>
       )}
-      {/* 1280 2단: 왼쪽 프로필 패널(값·팔레트·조정·버전) + 오른쪽 3안 — 1024는 패널 안 2열, 그 아래 1열 (5.1, Q5) */}
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      {/* 1280 2단: 왼쪽 프로필 패널(요약 우선, 약 340) + 오른쪽 3안(나머지) — 1024는 패널 안 2열, 그 아래 1열 (5.1, Q5 · PROFILE-V2-COMPACT 1) */}
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,--spacing(85))_minmax(0,1fr)]">
         <ProfilePanel
           viewed={viewed}
           latest={latest}
@@ -202,7 +202,7 @@ function ProfileView({
           values={<ProfileValues rows={engine.valueRows(viewed, titleOf)} profile={viewed.base} sources={sources} />}
           versions={
             <section aria-labelledby="profile-versions" className="flex flex-col gap-3">
-              <h2 id="profile-versions" className="ds-heading2">버전</h2>
+              <h2 id="profile-versions" className="ds-heading1">버전</h2>
               <VersionList
                 versions={series.versions}
                 latestVersion={latest.version}

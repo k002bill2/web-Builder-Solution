@@ -33,9 +33,10 @@ export function PaletteContrast({
 }) {
   const reasonId = useId();
   const writtenId = useId();
+  const passed = contrast.checks.filter((c) => c.pass).length;
   return (
     <section aria-labelledby="profile-palette" className="flex flex-col gap-4">
-      <h2 id="profile-palette" className="ds-heading2">역할 팔레트와 대비</h2>
+      <h2 id="profile-palette" className="ds-heading1">역할 팔레트와 대비</h2>
       <ul aria-label="역할 팔레트" className="grid grid-cols-[repeat(auto-fill,minmax(--spacing(36),1fr))] gap-2">
         {palette.map((p) => (
           <li key={p.role} className="ds-body3 flex items-center gap-2">
@@ -49,20 +50,26 @@ export function PaletteContrast({
           </li>
         ))}
       </ul>
+      {/* 요약 1줄(글자) + 상세 5줄 기본 접힘 (PROFILE-V2-COMPACT 2) */}
       <h3 className="ds-label">대비 검사 · 목표 {contrast.target}</h3>
-      <ul aria-label="대비 검사" className="flex flex-col gap-1.5">
-        {contrast.checks.map((c) => (
-          <li key={c.id} className="ds-body3 flex flex-wrap items-center gap-x-2">
-            <span className="ds-mono">{c.id}</span>
-            <span className="text-label-alternative">{c.label}</span>
-            <span className="ds-mono">{c.ratio}</span>
-            <span className={c.pass ? "inline-flex items-center gap-1 text-status-positive-text" : "inline-flex items-center gap-1 font-semibold text-status-negative-text"}>
-              <Icon name={c.pass ? "circle-check" : "warning"} size={16} />
-              {c.pass ? "통과" : "미달"}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <details className="ds-body3">
+        <summary className="cursor-pointer text-primary-text">
+          통과 {passed} · 미달 {contrast.checks.length - passed} · 대비 상세
+        </summary>
+        <ul aria-label="대비 검사" className="mt-2 flex flex-col gap-1.5">
+          {contrast.checks.map((c) => (
+            <li key={c.id} className="ds-body3 flex flex-wrap items-center gap-x-2">
+              <span className="ds-mono">{c.id}</span>
+              <span className="text-label-alternative">{c.label}</span>
+              <span className="ds-mono">{c.ratio}</span>
+              <span className={c.pass ? "inline-flex items-center gap-1 text-status-positive-text" : "inline-flex items-center gap-1 font-semibold text-status-negative-text"}>
+                <Icon name={c.pass ? "circle-check" : "warning"} size={16} />
+                {c.pass ? "통과" : "미달"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </details>
       {contrast.proposals.length > 0 && (
         <ul aria-label="보정 제안" className="flex flex-col gap-3">
           {contrast.proposals.map((p) => (
@@ -76,7 +83,7 @@ export function PaletteContrast({
                 <>
                   <p>{p.conflict.text}</p>
                   <p className="ds-caption1 text-label-alternative">{p.conflict.detail}</p>
-                  <Link to="/compare" className="ds-label text-primary hover:text-primary-hover">
+                  <Link to="/compare" className="ds-label text-primary-text hover:text-primary-hover">
                     {p.conflict.link}
                   </Link>
                 </>

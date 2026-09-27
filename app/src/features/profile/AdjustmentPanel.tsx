@@ -88,7 +88,7 @@ export function AdjustmentPanel(props: AdjustmentPanelProps) {
   return (
     <section ref={section} aria-labelledby={headingId} className="flex flex-col gap-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 id={headingId} className="ds-heading2">
+        <h2 id={headingId} className="ds-heading1">
           전역 조정
         </h2>
         {pending > 0 && <p className="ds-body3 font-semibold">저장하지 않은 조정 {pending}개</p>}

@@ -12,7 +12,7 @@
 - [x] S1 문서 분기 + D1~D3 (RED→GREEN, 3회 반복) — `270bf6c` · RED `logs/s1-red.txt`(6 fail/1 pass) · GREEN 7/7 × 3회 `logs/s1-repeat.txt`
 - [x] S2 집중 모드 툴바 E-AC-03 — RED `logs/s2-red.txt`(title 1 fail) → GREEN 8/8 `logs/s2-green.txt` · build /studio 95.50/108.48 · 그 밖 ±0.01
 - [x] S3 3단 배치·제목 구조 E-AC-04 · E-AC-13 — RED `logs/s3-red.txt`(5 fail) → GREEN 14/14 `logs/s3-green.txt` · build /studio 97.28/110.25(+1.78 = 배치 3벌·패널 코드) · 그 밖 ±0.01. 가로 넘침 0은 jsdom 불가 → [Q]
-- [ ] S4 섹션 선택 E-AC-05
+- [x] S4 섹션 선택 E-AC-05 — RED `logs/s4-red.txt`(2 fail) → GREEN 18/18 `logs/s4-green.txt` · build /studio 97.45/110.43 · 그 밖 ±0.01
 - [ ] S5 탭 E-AC-14
 - [ ] S6 미리보기 폭·캔버스 E-AC-15 · E-AC-16
 - [ ] S7 A2-F 연결 (FieldEditor·PageInfoFields·SaveStatus·ConflictCallout·useDocSave) + 저장소 어댑터

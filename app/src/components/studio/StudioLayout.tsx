@@ -75,7 +75,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas doc={doc} scrollable={false} />
+        <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} scrollable={false} />
       </div>
     );
   }
@@ -102,7 +102,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas doc={doc} scrollable />
+            <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} scrollable />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -129,7 +129,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas doc={doc} scrollable />
+          <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} scrollable />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

@@ -1,7 +1,8 @@
-import { act, screen } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Project, ProjectRepository } from "../data/projectRepository";
-import { sampleDoc } from "../engine/testing/sampleDoc";
+import { SAMPLE_SECTIONS, sampleDoc } from "../engine/testing/sampleDoc";
+import { variantName } from "../features/studio/selection";
 import { renderApp } from "../test/renderApp";
 
 /** 편집기 틀 (EDITOR-A2-SHELL S2~S6 — E-AC-03·04·05·13·14·15·16) */
@@ -128,5 +129,47 @@ describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.
   it("3단에서도 편집 알림 영역은 1개(E-AC-33)", async () => {
     await open(1280);
     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
+  });
+});
+
+const canvas = () => screen.getByRole("region", { name: "구조 미리보기" });
+const row = (name: RegExp) => within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name });
+
+describe("섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4)", () => {
+  it("섹션 줄 선택 → aria-current · 편집 h2 · 캔버스 라벨 칩이 같은 섹션, 포커스는 누른 줄 그대로", async () => {
+    await open(1280);
+    expect(row(/^Hero/)).toHaveAttribute("aria-current", "true");
+    expect(within(canvas()).getByText(`Hero · ${variantName(SAMPLE_SECTIONS[1]!)}`)).toBeInTheDocument();
+    const services = row(/^Services/);
+    services.focus();
+    act(() => services.click());
+    expect(services).toHaveAttribute("aria-current", "true");
+    expect(row(/^Hero/)).not.toHaveAttribute("aria-current");
+    expect(h2("편집 · Services")).toBeInTheDocument();
+    expect(within(canvas()).getByText(/^Services · /)).toBeInTheDocument();
+    expect(within(canvas()).queryByText(/^Hero · /)).toBeNull();
+    expect(document.activeElement).toBe(services);
+  });
+
+  it("캔버스 섹션은 Tab 정지가 아니다 — 캔버스 안 포커스 가능한 요소 0(스크롤 영역 자신 제외), 포인터로 누르면 같은 선택", async () => {
+    await open(1280);
+    expect(canvas().querySelectorAll("button, a[href], input, select, textarea, [tabindex]")).toHaveLength(0);
+    act(() => void fireEvent.click(canvas().querySelector('[data-instance-id="s-about"]')!));
+    expect(row(/^About/)).toHaveAttribute("aria-current", "true");
+    expect(h2("편집 · About")).toBeInTheDocument();
+  });
+
+  it("'페이지 정보' 줄 → 편집 h2 '편집 · 페이지 정보', 캔버스 라벨 칩 없음", async () => {
+    await open(1280);
+    act(() => row(/^페이지 정보/).click());
+    expect(row(/^페이지 정보/)).toHaveAttribute("aria-current", "true");
+    expect(h2("편집 · 페이지 정보")).toBeInTheDocument();
+  });
+
+  it("1024 툴바 Select와 목록은 같은 선택 상태", async () => {
+    await open(1024);
+    act(() => void fireEvent.change(screen.getByRole("combobox", { name: "섹션" }), { target: { value: "s-faq" } }));
+    expect(row(/^FAQ/)).toHaveAttribute("aria-current", "true");
+    expect(h2("편집 · FAQ")).toBeInTheDocument();
   });
 });

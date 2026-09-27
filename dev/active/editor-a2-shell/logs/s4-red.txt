@@ -1,0 +1,323 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-shell/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/StudioShell.test.tsx (11 tests | 2 failed) 553ms
+   ❯ 섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4) (4)
+     × 섹션 줄 선택 → aria-current · 편집 h2 · 캔버스 라벨 칩이 같은 섹션, 포커스는 누른 줄 그대로 39ms
+     × 캔버스 섹션은 Tab 정지가 아니다 — 캔버스 안 포커스 가능한 요소 0(스크롤 영역 자신 제외), 포인터로 누르면 같은 선택 40ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/StudioShell.test.tsx > 섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4) > 섹션 줄 선택 → aria-current · 편집 h2 · 캔버스 라벨 칩이 같은 섹션, 포커스는 누른 줄 그대로
+TestingLibraryElementError: Unable to find an element with the text: Hero · 풀블리드 이미지 + 좌측 카피. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+  [33mtabindex[39m=[32m"0"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m>[39m
+    [0m구조 미리보기[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col overflow-hidden rounded-md border border-line-normal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-background-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-header"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m브랜드 이름[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m소개 · 서비스 · 문의[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m문의하기[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-fill-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-hero"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m한 문장으로 소개하는 제목[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m무엇을 누구에게 제공하는지 한두 문장으로 적습니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m시작하기[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-background-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-about"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m소개[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m브랜드가 하는 일을 소개합니다.[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-fill-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-services"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m서비스[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m항목 1[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m항목을 짧게 설명합니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m항목 2[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m항목을 짧게 설명합니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m항목 3[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m항목을 짧게 설명합니다.[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-background-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-faq"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m자주 묻는 질문[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m자주 묻는 질문[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m답변을 적습니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m자주 묻는 질문[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m답변을 적습니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m자주 묻는 질문[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m답변을 적습니다.[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-fill-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-contact"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m문의[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m문의하기[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m개인정보 수집·이용에 동의합니다.[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-background-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-cta"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m지금 시작하세요[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m다음 행동을 한 문장으로 권합니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m문의하기[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex flex-col gap-1.5 border-2 border-transparent px-4 py-3 bg-fill-normal"[39m
+      [33mdata-instance-id[39m=[32m"s-footer"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"h-1.5 w-12 rounded-full bg-fill-strong"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body1-strong text-label-normal"[39m
+      [36m>[39m
+        [0m상호 · 대표 · 사업자등록번호 · 주소[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m이용약관 · 개인정보처리방침[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+      [36m>[39m
+        [0m© 브랜드 이름[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/StudioShell.test.tsx:141:29
+    139|     await open(1280);
+    140|     expect(row(/^Hero/)).toHaveAttribute("aria-current", "true");
+    141|     expect(within(canvas()).getByText("Hero · 풀블리드 이미지 + 좌측 카피")).toBe…
+       |                             ^
+    142|     const services = row(/^Services/);
+    143|     services.focus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/StudioShell.test.tsx > 섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4) > 캔버스 섹션은 Tab 정지가 아니다 — 캔버스 안 포커스 가능한 요소 0(스크롤 영역 자신 제외), 포인터로 누르면 같은 선택
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-current"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-current") === "true"[22m
+
+Expected the element to have attribute:
+[32m  aria-current="true"[39m
+Received:
+[31m  null[39m
+ ❯ src/pages/StudioShell.test.tsx:157:27
+    155|     expect(canvas().querySelectorAll("button, a[href], input, select, …
+    156|     act(() => void fireEvent.click(canvas().querySelector('[data-insta…
+    157|     expect(row(/^About/)).toHaveAttribute("aria-current", "true");
+       |                           ^
+    158|     expect(h2("편집 · About")).toBeInTheDocument();
+    159|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 9 passed (11)
+   Start at  21:35:40
+   Duration  1.94s (environment 36%, tests 30%, transform 23%, setup 6%, import 6%)
+

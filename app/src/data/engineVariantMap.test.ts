@@ -30,8 +30,10 @@ describe("변형 매핑 표 가드 (SPEC 8.2.1 · VARIANT-MAP)", () => {
   it("VARIANT-MAP 1~42행(고유 43쌍) 대표 쌍 — 쌍 키(services/grid-3 ≠ portfolio/grid-3) · 표 밖 = undefined", () => {
     expect(mapVariant("services", "grid-3")).toBe("cards-3");
     expect(mapVariant("portfolio", "grid-3")).toBe("grid-3");
-    expect(mapVariant("services", "grid-2")).toBe("cards-3");
-    expect(mapVariant("portfolio", "masonry")).toBe("grid-3");
+    expect(mapVariant("services", "grid-2")).toBe("cards-2");
+    expect(mapVariant("services", "masonry")).toBe("cards-masonry");
+    expect(mapVariant("portfolio", "masonry")).toBe("masonry");
+    expect(mapVariant("portfolio", "grid-2")).toBe("grid-3");
     expect(mapVariant("contact", "order-form")).toBe("form");
     expect(mapVariant("contact", "booking")).toBe("booking");
     expect(mapVariant("footer", "minimal-biz")).toBe("minimal-biz");

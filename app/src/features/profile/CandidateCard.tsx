@@ -102,7 +102,7 @@ export function CandidateCard(props: {
                   <>
                     {" "}
                     <a href="#profile-palette" className="text-primary underline">
-                      대비 보정으로
+                      팔레트와 대비 보기
                     </a>
                   </>
                 )}

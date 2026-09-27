@@ -44,7 +44,8 @@ export function CandidatesSection({ viewed, pending, announce }: { readonly view
         <p className="ds-body3 text-label-alternative">{determinismText(viewed)}</p>
         <p className="ds-caption1 text-label-alternative">{CANDIDATE_TEXT.preview}</p>
       </div>
-      {(job === undefined || running) && (
+      {/* 잡을 찾는 중(null)에도 자리를 둔다 — 누르면 요청은 멱등이라 기존 잡을 돌려받는다 */}
+      {(!job || running) && (
         <div className="flex flex-col items-start gap-2">
           <Button
             aria-disabled={blocked || undefined}

@@ -10,7 +10,7 @@
 | CLI 도움말 | `claude --help` → `--effort <level> … (low, medium, high, xhigh, max)` — 목록에 `ultracode` 없음 |
 | 실제 실행 인자 | 부모 프로세스 `claude -p … --model opus --effort ultracode --max-turns 100 --output-format json …` — CLI가 인자를 거부하지 않고 세션이 시작됨 |
 | 세션 신호 | 이 세션 system-reminder에 "Ultracode is on" 문구가 주입됨 |
-| 판정 | 세션 신호는 **있음**(system-reminder). `--effort ultracode`가 도움말 문서 밖 값이라 "CLI 공식 지원"은 **미확인**. 설정·정책 변경 없음 |
+| 판정 | 세션 신호 **있음** — 다만 그 문구는 프롬프트의 `ultracode` 키워드로도 주입될 수 있어 `--effort ultracode`에 귀속할 수 없다. CLI 공식 지원은 **미확인**(도움말 목록 밖). 설정·정책 변경 없음 |
 
 ## 기준 실측 (시작 시 `npm run build`, 원본 `logs/baseline-build.log`, exit 0)
 - 공통 89.06 · `/compare` 99.59 / 118.99 · `/profile` 99.39 / 118.97 · `/catalog` 99.36 / 101.74 · `/references/:id` 96.71 / 99.09 · `/studio` 89.50 / 91.88 (KB gzip, 첫 화면 / 진입 직후)
@@ -23,14 +23,17 @@
 
 ## 체크리스트
 - [x] 브리프·SPEC 읽기, 수신 기록, 기준 번들 실측
-- [ ] RED: composeCandidates/lintPlan 결정성·세 축·목적 규칙·모션·해시·동결 (서브에이전트 A, worktree)
-- [ ] GenerationRepository request/find/get/retry/select + 공유 store 확장 + 테스트 (메인)
-- [ ] 3안 UI (P-S17~24 · P-AC-21~31) + ProfilePage 통합 + `/studio` 자리표시 2a-05 정정 (메인)
-- [ ] 번들 실측 (새 렌더 연결 즉시)
+- [x] RED: composeCandidates/lintPlan 결정성·세 축·목적 규칙·모션·해시·동결 (서브에이전트 A, worktree `bb9d758` → cherry-pick `81bfe9b`, RED 74 실패 → GREEN 74)
+- [x] GenerationRepository request/find/get/retry/select + 공유 store 확장 + 테스트 (메인, `4bdc68f`, Red-Green 2건 logs/)
+- [x] 3안 UI (P-S17~24 · P-AC-21~31) + ProfilePage 통합 + `/studio` 자리표시 2a-05 정정 (메인, `4bdc68f`)
+- [x] 번들 실측 (배선 직후 · UI 직후 · 컴포저 병합 직후 — 공유 청크 분리 2건 발견·해소, REPORT 3절)
 - [ ] 4게이트: typecheck · lint · vitest(전체 1회) · build — 원본 로그+exit
 - [ ] 브라우저 127.0.0.1:4337 catalog→compare→profile→3안→선택→studio, 1280/768/390/320 캡처
 - [ ] Codex review 1회(최대 3)
 - [ ] REPORT.md 커밋, 서버 PID 종료 + lsof 증거
 
 ## 서브에이전트 기록
-(진행하며 기록)
+| # | 도구 | 분담 | 격리 | 결과 |
+|---|---|---|---|---|
+| A | Workflow `wf_fcc7d984-d6a` 1 agent | composeCandidates·lintPlan + 테스트(TDD) | worktree `wf_fcc7d984-d6a-1` | `bb9d758` 4파일, RED 74 실패 → GREEN 74, 해석 3건(본문에 Hero 포함 · lint message에 ID 없음 · 없는 Footer 변형 R-12) |
+| B | Agent code-reviewer(읽기 전용) | UI 수용 기준 검토(P-S17~24·5.1~5.4) | 없음(읽기 전용) | 진행 중 |

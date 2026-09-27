@@ -33,13 +33,13 @@
 | **A2-F 필드·저장** | **새** `components/studio/{FieldEditor,PageInfoFields,SaveStatus,ConflictCallout}.tsx` · **새** `features/studio/{useDocSave,fieldCounter,leaveGuard}.ts` · a1-α `useAutosaveScheduler` 사용(수정은 필요 시 이 레인만) | E-AC-06·07·08·09·10·12 | a1-β 병합 뒤, 목 저장소로 A와 병렬. **`StudioPage.tsx`는 건드리지 않고** 부품·훅만 → S 병합 뒤 마지막 커밋 1개로 연결(또는 S 레인이 연결) | 40~50 |
 
 - **engine 런타임 import 순서**: 가드 개정(D 첫 커밋) 병합 전에는 S·F가 engine을 **테스트 파일에서만** import한다(`hashDoc`·섹션 정의·슬롯 스키마 연결은 가드 병합 뒤 커밋). 가드 없이 넣으면 각자 worktree에서 `engineImportGuard`가 실패한다.
-- **Q-18 A 엔진 변경(r4.2, Codex r1 high)**: 컴포저 `motion`을 문서에 옮기려면 엔진 계약 변경이 필요하다(`CandidatePlan.sections[].motion?` + `createDocFromCandidate.ts:46`을 `minMotion(entry.motion ?? "L1", 상한)`으로 — SPEC 8.2.1 끝). **권장**: D 레인에 범위 예외 2파일(`engine/doc/createDocFromCandidate.ts` + `createDocFromCandidate.test.ts`)을 허용하고 RED(컴포저 L2 → 문서 L2) → GREEN, 기존 엔진 테스트 불변. 대안: D 착수 전 소형 L4 수정 레인. **발행 전 Jarvis가 둘 중 하나로 확정**(이 초안은 권장만). 어댑터는 `toEngineCandidate`를 쓰지 않는다(모션을 버리고 `/profile` 청크에 있음).
+- **Q-18 A 엔진 변경(r4.2, Codex r1 high)**: 컴포저 `motion`을 문서에 옮기려면 엔진 계약 변경이 필요하다(`CandidatePlan.sections[].motion?` + `createDocFromCandidate.ts:46`을 `minMotion(entry.motion ?? "L1", 상한)`으로 — SPEC 8.2.1 끝). **권장**: D 레인에 범위 예외 2파일(`engine/doc/createDocFromCandidate.ts` + `createDocFromCandidate.test.ts`)을 허용하고 RED(컴포저 L2 → 문서 L2) → GREEN, 기존 엔진 테스트 불변. 대안: D 착수 전 소형 L4 수정 레인. **Jarvis 확정(2026-09-27): 권장안 — D 레인 범위 예외 2파일 허용**(엔진 계약 변경은 `motion?` 선택 필드 추가뿐이고 기존 엔진 테스트 불변이 조건. 별도 L4 레인은 턴·병합 1회를 더 쓰므로 채택하지 않음). 어댑터는 `toEngineCandidate`를 쓰지 않는다(모션을 버리고 `/profile` 청크에 있음).
 - 병렬 규칙: 세 레인 모두 worktree 격리 · `git commit -- <경로>`. 공유 파일은 **없게** 나눴다 — `StudioPage.tsx`는 S만, `projectRepository.ts`·가드는 D만. 겹치는 요구가 생기면 멈추고 보고.
 - 병합 순서: **D → S → F**(병합마다 `npm run build` 재실측). D가 늦으면 S·F는 목 저장소로 끝내고 기다린다.
 - 대안(레인 2개): D 단독 + (S+F) 한 레인 — 턴 80~100 예상이라 한 번에 끝나지 않을 위험(2a-04a 선례). 3개를 권장.
 
 ## 5. 파일 지도 요약 (쓰기 금지 포함)
-- 읽기만: `engine/**`(L4 소유 — `import`만, 수정 금지. **예외 후보**: 4절 Q-18 A 엔진 변경 2파일 — Jarvis 확정 시 D 레인만) · `features/profile/CandidateCard.tsx`(`Wireframe` 재사용은 import만; 모양을 바꿔야 하면 `components/studio/`에 사본이 아니라 멈추고 보고) · `features/detail/previewView.ts`(`PREVIEW_VIEWS` 라벨 상수 — E-AC-15는 같은 상수 import) · `domain/generation.ts`(`toEngineCandidate` — **표를 여기 넣지 않는다**, SPEC 8.2.1) · `domain/composeCandidates.ts`.
+- 읽기만: `engine/**`(L4 소유 — `import`만, 수정 금지. **예외(Jarvis 확정)**: 4절 Q-18 A 엔진 변경 2파일 — D 레인만) · `features/profile/CandidateCard.tsx`(`Wireframe` 재사용은 import만; 모양을 바꿔야 하면 `components/studio/`에 사본이 아니라 멈추고 보고) · `features/detail/previewView.ts`(`PREVIEW_VIEWS` 라벨 상수 — E-AC-15는 같은 상수 import) · `domain/generation.ts`(`toEngineCandidate` — **표를 여기 넣지 않는다**, SPEC 8.2.1) · `domain/composeCandidates.ts`.
 - 수정 금지: `design/` · `docs/design/` · 번들 예산·분류(`check-bundle-size.mjs` 판정) · `components/ds/*`(새 부품은 `components/studio/`, S-B6) · 아이콘 파일(S-B7) · 보드·프로필 저장소(`data/memoryBoardConfirm.ts` 등 — a1-β·profile-headroom 소유).
 
 ## 6. 번들 예산 예상 (ADR-004 100 / 125, gzip KB, **L3**)

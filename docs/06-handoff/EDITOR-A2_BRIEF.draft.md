@@ -68,5 +68,12 @@
 | Q-20 · Q-22 · Q-23 | R-03 계산식 · 모르는 변형 게이트 판정 · R-07 모션 기준 | 없음 | a4 전 결정 |
 | (목록 밖) `addSection` 5인자 | `engine/ops/sectionOps.ts:52-59` ↔ SPEC 8.2 4인자 | 없음 | a3 전 SPEC 반영 |
 
+## 9.1 결정 (영환님 ★A, 2026-09-27 — SPEC 이력 r4.1)
+- **Q-18 = A**: 어댑터가 컴포저 `motion`을 넘긴다 · 섹션 정의 상한으로 제한. D 레인 범위. 캔버스 모션 표시 없음.
+- **Q-24 = A**: `app/src/index.css`에 `@source not "./engine"` + 빌드 CSS 크기·해시 전후 비교. D 레인 **첫 커밋**(가드 개정과 같은 커밋).
+- **Q-21 후속**: 매핑·알림으로 진행. 엔진 services 변형 추가는 a3 전 별도 과제(이 브리프 범위 밖).
+- **a1-β와의 경계 정정(Jarvis)**: a1-β RESUME-2가 "편집 시작" → `/studio/:projectId` **이동**(문서 없음 E-S03)과 P-AC-29 복구를 맡는다. D 레인은 그 버튼에 `startDoc` 호출만 더한다(3절 1·4절 D 행의 P-AC-29 문구는 이 줄이 우선).
+- 3절 선행 3번(결정 2건)은 이로써 충족. 남은 선행: a1-β 병합(profile-headroom 포함).
+
 ## 10. REPORT
 - `dev/active/editor-a2-<레인>/REPORT.md`: 로컬 SHA · 파일 · 테스트 수 변화 · AC별 판정 · RED/GREEN 로그 · 번들 전후 표(6절) · CSS 전후(Q-24) · EM 인용 · Codex 라운드 · 남은 위험. 턴 상한의 75%부터 REPORT 우선.

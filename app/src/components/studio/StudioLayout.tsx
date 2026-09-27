@@ -42,12 +42,15 @@ export function StudioLayout({
   doc: initialDoc,
   repository,
   entryNotice,
+  entryChanges = 0,
   focusHeading,
 }: {
   readonly project: Project;
   readonly doc: PageDoc;
   readonly repository: ProjectRepository;
   readonly entryNotice: string | undefined;
+  /** 바뀐 쌍 수(8.2.1 (a)) — 있으면 알림을 한 줄 요약 + 펼치기로 접는다(r4.7 A3-Q7) */
+  readonly entryChanges?: number;
   readonly focusHeading: boolean;
 }) {
   const saveRepository = useMemo(() => toDocSaveRepository(repository), [repository]);
@@ -66,12 +69,13 @@ export function StudioLayout({
   const root = useRef<HTMLDivElement>(null);
   const requestFocus = useFocusRequest(root);
 
+  const entrySummary = entryChanges > 0 ? `편집 문서를 만들며 바뀐 점 ${entryChanges}개` : undefined;
   // 영역을 먼저 비운 채 그린 뒤 글자를 넣는다 — 스크린 리더가 status 변화로 읽는다
   useEffect(() => {
     if (!entryNotice) return;
-    const id = setTimeout(() => setNotice(entryNotice), 0);
+    const id = setTimeout(() => setNotice(entrySummary ?? entryNotice), 0);
     return () => clearTimeout(id);
-  }, [entryNotice]);
+  }, [entryNotice, entrySummary]);
   useEffect(() => {
     if (!focusHeading || focused.current) return;
     focused.current = true;
@@ -199,7 +203,7 @@ export function StudioLayout({
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
-  const noticeRegion = <NoticeRegion text={notice} onUndo={ops.canUndoLast ? undo : undefined} />;
+  const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : undefined} />;
   const nav = (
     <SectionNav
       doc={doc}

@@ -28,6 +28,7 @@ export function StudioPage() {
         doc={entry.doc}
         repository={entry.repository}
         entryNotice={entryState?.editNotice}
+        entryChanges={entryState?.changes?.length ?? 0}
         focusHeading={entryState !== undefined}
       />
     </Suspense>

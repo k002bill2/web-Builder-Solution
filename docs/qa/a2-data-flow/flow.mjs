@@ -247,7 +247,16 @@ function backToProfile() {
   shot("g3-studio-doc-exists");
 }
 
-// ---------- G7 콘솔·페이지 오류 ----------
+// ---------- G4 새로고침(직접 진입) — 관찰만 ----------
+{
+  ab("open", `${BASE}${studioPath ?? "/studio/project-1"}`);
+  const st = waitFor(`${H} const h1 = document.querySelector("h1"); return h1 ? { path: location.pathname, h1: nameOf(h1), body: document.body.innerText.replace(/\\s+/g, " ").slice(0, 300) } : false;`, 10000);
+  log("G4", "(관찰) 새로고침 뒤 /studio/:projectId", null, { ...st, note: "메모리 저장소 — E-S02 문구 '새로고침하면 프로젝트와 편집 내용이 사라집니다(서버 연결 전)'" });
+  shot("g4-studio-reload");
+  const errorsOut = ab("--json", "errors");
+  log("G4", "새로고침 뒤 페이지 오류 0", /"errors":\s*\[\]|"data":\s*\[\]/.test(errorsOut), { raw: errorsOut.slice(0, 300) });
+}
+// ---------- G7 콘솔·페이지 오류 (G1~G6 + G4 재진입 전체) ----------
 {
   const consoleOut = ab("--json", "console");
   const errorsOut = ab("--json", "errors");
@@ -262,13 +271,4 @@ function backToProfile() {
 }
 
 
-// ---------- G4 새로고침(직접 진입) — 관찰만 ----------
-{
-  ab("open", `${BASE}${studioPath ?? "/studio/project-1"}`);
-  const st = waitFor(`${H} const h1 = document.querySelector("h1"); return h1 ? { path: location.pathname, h1: nameOf(h1), body: document.body.innerText.replace(/\\s+/g, " ").slice(0, 300) } : false;`, 10000);
-  log("G4", "(관찰) 새로고침 뒤 /studio/:projectId", null, { ...st, note: "메모리 저장소 — E-S02 문구 '새로고침하면 프로젝트와 편집 내용이 사라집니다(서버 연결 전)'" });
-  shot("g4-studio-reload");
-  const errorsOut = ab("--json", "errors");
-  log("G4", "새로고침 뒤 페이지 오류 0", /"errors":\s*\[\]|"data":\s*\[\]/.test(errorsOut), { raw: errorsOut.slice(0, 300) });
-}
 ab("close");

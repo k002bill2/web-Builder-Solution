@@ -1,0 +1,32 @@
+# 1280×900 Tab 순서 — /profile/profile-1 (3안 생성 후 B안 선택 상태, 보정값 쓰기 전)
+# 측정: ego-browser keyboard.press("Tab"), 문서 끝(body) 1회 통과 후 처음부터 다시 body까지 전체.
+# 형식: 순번 · role · 접근 이름 · [가장 가까운 header/main 영역, pageY, x] ring=포커스 시 computed outline/box-shadow 존재 · inView=포커스 시 뷰포트 안
+# 닫힌 <details> 안 링크(원본 레퍼런스 '동네 치과 클리닉'·'모던 카페 브랜드', '섹션 9 · 순서 보기', 카드 '팔레트와 대비 보기')는 닫힘 상태라 순서에 없음(정상).
+# 라디오는 그룹당 선택된 1개만 Tab 정지(로빙, 방향키 이동). '버전' 영역(v1 · 첫 버전)은 조작 요소 없음 → Tab 정지 없음.
+# 1번 '본문으로 건너뛰기'의 y=494 는 fixed 배치 + 측정 시점 scrollY 영향 (뷰포트 안에 보임).
+  1 · link · 본문으로 건너뛰기 · [other y=494 x=12] ring=Y inView=Y
+  2 · link · Design Studio · [header y=10 x=28] ring=Y inView=Y
+  3 · link · 카탈로그 · [header y=15 x=189] ring=Y inView=Y
+  4 · link · 보관함 · [header y=15 x=260] ring=Y inView=Y
+  5 · link · 비교 보드 · [header y=15 x=318] ring=Y inView=Y
+  6 · link · 프로젝트 · [header y=15 x=392] ring=Y inView=Y
+  7 · button · 새 프로젝트 · [header y=10 x=1089] ring=Y inView=Y
+  8 · link · 비교 보드에서 선택 바꾸기 · [header y=154 x=28] ring=Y inView=Y
+  9 · button(summary) · 값 전체 보기 · [main y=408 x=28] ring=Y inView=Y open=false
+ 10 · button(summary) · 팔레트 값 보기 · [main y=582 x=28] ring=Y inView=Y open=false
+ 11 · button(summary) · 통과 3 · 미달 1 · 대비 상세 · [main y=656 x=28] ring=Y inView=Y open=false
+ 12 · button · 보정값 쓰기 (보조 글자 muted) · [main y=772 x=28] ring=Y inView=Y
+ 13 · radio · 여유 · [main y=916 x=32] ring=Y inView=Y checked=true
+ 14 · radio · 기본 AA · [main y=998 x=32] ring=Y inView=Y checked=true
+ 15 · radio · L1 낮음 · [main y=1080 x=110] ring=Y inView=Y checked=true
+ 16 · radio · 정하지 않음 · [main y=1186 x=207] ring=Y inView=Y checked=true
+ 17 · button · 조정 저장 (v2) · [main y=1238 x=28] ring=Y inView=Y
+ 18 · button · A안 선택 · [main y=568 x=413] ring=Y inView=Y pressed=false
+ 19 · button(summary) · 상세 · [main y=612 x=413] ring=Y inView=Y open=false
+ 20 · button · B안 선택 · [main y=586 x=697] ring=Y inView=Y pressed=true
+ 21 · button(summary) · 상세 · [main y=630 x=697] ring=Y inView=Y open=false
+ 22 · button · C안 선택 · [main y=586 x=982] ring=Y inView=Y pressed=false
+ 23 · button(summary) · 상세 · [main y=630 x=982] ring=Y inView=Y open=false
+ 24 · button · B안으로 편집 시작 · [main y=677 x=1078] ring=Y inView=Y
+ 25 · button(summary) · 3안 비교 표 보기 · [main y=759 x=400] ring=Y inView=Y open=false
+  — (body/문서 끝, 순환)

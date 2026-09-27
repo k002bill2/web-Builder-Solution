@@ -95,8 +95,8 @@ export function CandidateCard(props: {
             경고 {warnings.length}
           </p>
           <ul className="ds-caption1 flex flex-col gap-1 text-label-normal">
-            {warnings.map((l) => (
-              <li key={l.rule + l.message}>
+            {warnings.map((l, i) => (
+              <li key={`${l.rule}-${i}`}>
                 {l.rule} · {l.message}
                 {l.rule === "R-08" && (
                   <>
@@ -111,8 +111,8 @@ export function CandidateCard(props: {
           </ul>
         </div>
       )}
-      {infos.map((l) => (
-        <p key={l.rule + l.message} className="ds-caption1 text-label-alternative">
+      {infos.map((l, i) => (
+        <p key={`${l.rule}-${i}`} className="ds-caption1 text-label-alternative">
           {l.message}
         </p>
       ))}

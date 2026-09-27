@@ -104,3 +104,14 @@
 - 커밋 예외: `81bfe9b`는 서브에이전트 커밋 `bb9d758`의 **cherry-pick**(경로 지정 `git commit -- <paths>`가 아님). 대상 4파일(`domain/composeCandidates.ts`·`lintPlan.ts`와 두 테스트)만 담겼고 Co-Authored-By 푸터 있음. 이력은 고치지 않음
 - 서브에이전트 worktree `wf_fcc7d984-d6a-1`은 삭제 금지라 남겨 둠(추적 안 되는 `app/node_modules` 심볼릭 링크 있음)
 - 자체 발견: 늦은 응답 테스트가 지연 지점 도달 전에 화면을 옮겨 공회전 → 1차 Red-Green에서 발견·보강(4절)
+
+## 9. 추가 리뷰 (`/code-review 2804775..HEAD`, Codex 한도 대체 — Codex 아님)
+| # | 지적 | 조치 |
+|---|---|---|
+| 1 (Medium) | `select()`가 받은 잡으로 통째로 덮어써, 폴링이 먼저 끝난 뒤 늦은 선택 응답이 오면 "만드는 중"에 멈추고, 선택 전에 보낸 조회 응답이 늦으면 선택이 지워짐 | 선택 응답은 `selected`만 병합하고, 마지막 선택을 ref에 기억해 이후 조회 응답에도 덮어 씀 |
+| 2 (Low) | 조회 중 누른 멱등 요청이 이미 끝난 잡을 돌려받아도 새로 만든 것처럼 요청·완료 계측과 완료 알림, 실패 alert를 다시 냄 | 응답이 종료 상태면 요청 이벤트·단계 알림·완료 계측을 건너뛰고 표시만 함 |
+| 3 (Low) | 경고·정보 목록의 key가 `rule+message`라 같은 문구(중복 header 등)가 겹침 | key에 순번 포함 |
+| 사소 | `writeBodyLoader`의 `loadGenerate` 주석 위치 | 순서 정리 |
+- 회귀 테스트 2개를 `ProfileCandidates.test`에 추가함(선택 응답 지연, 다른 탭이 이미 끝낸 잡). 수정을 되돌리면 2개 실패, 복원하면 10/10 — `logs/red-green-4-review-fixes.log`
+- lint·build 결과: `logs/gate-lint-review-fix.log`, `logs/gate-build-review-fix.log`(exit와 번들 수치 포함). 전체 suite는 1회 원칙이라 다시 돌리지 않았고, `src/pages` 전체와 관련 data 테스트만 표적으로 재실행함
+- Codex 게이트는 계속 미실행 — 15:26 이후 `review --scope branch --base 2804775`

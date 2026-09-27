@@ -5,7 +5,8 @@ import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
 import type { SectionType } from "../../engine/contracts/pageDoc";
 import type { MoveDirection } from "../../engine/ops/rules";
-import { addedNotice, movedNotice, removedNotice, restoredNotice } from "../../features/studio/opNotice";
+import { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice, swapRevertedNotice } from "../../features/studio/opNotice";
+import type { VariantChoice } from "../../features/studio/variantChoices";
 import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
 import { docPurpose } from "../../features/studio/docPurpose";
 import { useFocusRequest } from "../../features/studio/useFocusRequest";
@@ -15,10 +16,11 @@ import { useDocSave } from "../../features/studio/useDocSave";
 import { ConflictCallout } from "./ConflictCallout";
 import { EditFields } from "./EditFields";
 import { SaveStatus } from "./SaveStatus";
-import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName } from "../../features/studio/selection";
+import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName, variantName } from "../../features/studio/selection";
 import { PreviewWidth } from "./PreviewWidth";
 import { AddSectionButton } from "./AddSectionButton";
 import { SectionOpControls } from "./SectionOpControls";
+import { VariantSwitch } from "./VariantSwitch";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
@@ -134,6 +136,18 @@ export function StudioLayout({
     },
     [run, focusRow],
   );
+  // 변형 교체(5.5) — 바로 적용 + 알림 줄 "되돌리기", 포커스는 누른 라디오 그대로(6.4)
+  const swap = useCallback(
+    async (instanceId: string, choice: VariantChoice, radio: HTMLElement) => {
+      const outcome = await run({ kind: "swap", instanceId, variant: choice.variant }, "변형 교체", true);
+      if (!outcome.ok) return setNotice(outcome.reason);
+      const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
+      setUndoTarget({ instanceId, text: swapRevertedNotice(variantName(original)) });
+      setNotice(swappedNotice(choice.label, choice.lostLabels));
+      requestFocus({ element: radio });
+    },
+    [run, requestFocus],
+  );
   const { undoLast } = ops;
   const undo = useCallback(() => {
     if (!undoTarget || !undoLast()) return;
@@ -198,8 +212,14 @@ export function StudioLayout({
       <AddSectionDialog doc={doc} onAdd={(type, variant) => void add(type, variant)} onCancel={cancelAdd} />
     </Suspense>
   );
+  const editHead = current && (
+    <>
+      {opControls}
+      <VariantSwitch key={current.instanceId} doc={doc} section={current} purpose={purpose} onSwap={(choice, radio) => void swap(current.instanceId, choice, radio)} />
+    </>
+  );
   const edit = (
-    <EditPanel name={selectionName(doc, selectedId)} head={opControls}>
+    <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
       <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
     </EditPanel>
   );

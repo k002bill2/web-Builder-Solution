@@ -35,3 +35,8 @@ export const removedNotice = (type: SectionType, name: string): string => `${obj
 export const restoredNotice = (type: SectionType, name: string): string => `${objectOf(type, name)} 되돌렸습니다`;
 /** "FAQ를 6번째에 추가했습니다"(5.3) */
 export const addedNotice = (type: SectionType, name: string, index: number): string => `${objectOf(type, name)} ${index + 1}번째에 추가했습니다`;
+/** "스플릿으로 바꿨습니다 · 잃은 슬롯 1개(부제)"(5.5 · E-S16) — 잃음 0이면 앞 문장만(유추) */
+export const swappedNotice = (label: string, lostLabels: readonly string[]): string =>
+  `${label}${toParticle(label)} 바꿨습니다${lostLabels.length > 0 ? ` · 잃은 슬롯 ${lostLabels.length}개(${lostLabels.join(", ")})` : ""}`;
+/** 변형 교체 되돌리기 — "카드 3개로 되돌렸습니다"(유추: 5.4 "…를 되돌렸습니다" 문형) */
+export const swapRevertedNotice = (label: string): string => `${label}${toParticle(label)} 되돌렸습니다`;

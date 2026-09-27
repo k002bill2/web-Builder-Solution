@@ -38,7 +38,7 @@ describe("구조 미리보기 — 변형별 모양 · 프로필 팔레트 (SPEC 
       section("footer", "biz-extended", "s-footer"),
     ],
   });
-  const palette = { primary: "#123456", surface: "#eeeeee", ink: "#111111", muted: "#999999", bg: "#ffffff" };
+  const palette = { primary: "rgb(18, 52, 86)", surface: "rgb(238, 238, 238)", ink: "rgb(17, 17, 17)", muted: "rgb(153, 153, 153)", bg: "rgb(255, 255, 255)" };
   const draw = (p?: typeof palette) => render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} palette={p} />).container;
   const blockOf = (c: HTMLElement, id: string) => c.querySelector<HTMLElement>(`[data-instance-id="${id}"]`)!;
 
@@ -57,7 +57,7 @@ describe("구조 미리보기 — 변형별 모양 · 프로필 팔레트 (SPEC 
 
   it("캔버스 루트 CSS 변수 = 팔레트 값 · 팔레트 없으면 중립 토큰 참조 · 모든 블록이 변수 색을 쓴다", () => {
     const root = (c: HTMLElement) => blockOf(c, "s-header").parentElement!;
-    expect(root(draw(palette)).style.getPropertyValue("--canvas-primary")).toBe("#123456");
+    expect(root(draw(palette)).style.getPropertyValue("--canvas-primary")).toBe("rgb(18, 52, 86)");
     const neutral = root(draw());
     expect(neutral.style.getPropertyValue("--canvas-primary")).toMatch(/^var\(--/);
     for (const block of neutral.querySelectorAll<HTMLElement>("[data-instance-id]")) expect(block.className).toMatch(/--canvas-/);

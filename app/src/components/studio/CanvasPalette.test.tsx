@@ -18,7 +18,7 @@ const seriesOf = (primary: string): ProfileSeries => ({
       version: 1,
       origin: "board",
       baseReferenceId: "ref-1",
-      base: { motion_preset: "L1", color_tokens: { primary: color(primary), surface: color("#f4f4f4"), ink: color("#1a1a1a"), muted: color("#8a8a8a"), bg: color("#ffffff") } } as unknown as DesignProfileInput,
+      base: { motion_preset: "L1", color_tokens: { primary: color(primary), surface: color("rgb(244, 244, 244)"), ink: color("rgb(26, 26, 26)"), muted: color("rgb(138, 138, 138)"), bg: color("rgb(255, 255, 255)") } } as unknown as DesignProfileInput,
       adjustments: {},
       createdAt: "2026-09-27T00:00:00.000Z",
     },
@@ -28,9 +28,9 @@ const canvasRoot = () => screen.getByRole("region", { name: "구조 미리보기
 
 describe("캔버스 팔레트 연결 (SPEC 5.7 · r4.7 A3-Q7)", () => {
   it("문서 profileVersion의 팔레트 → --canvas-* 변수", async () => {
-    await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: seriesOf("#0a5c36") });
-    await waitFor(() => expect(canvasRoot().style.getPropertyValue("--canvas-primary")).toBe("#0a5c36"));
-    expect(canvasRoot().style.getPropertyValue("--canvas-bg")).toBe("#ffffff");
+    await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: seriesOf("rgb(10, 92, 54)") });
+    await waitFor(() => expect(canvasRoot().style.getPropertyValue("--canvas-primary")).toBe("rgb(10, 92, 54)"));
+    expect(canvasRoot().style.getPropertyValue("--canvas-bg")).toBe("rgb(255, 255, 255)");
   });
 
   it("프로필 없음(조회 결과 없음) → 중립 토큰으로 그리고 편집은 계속", async () => {

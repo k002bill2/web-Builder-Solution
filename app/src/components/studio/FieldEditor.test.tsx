@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
@@ -53,6 +53,16 @@ describe("FieldEditor (E-AC-06)", () => {
     expect(input).toHaveValue("a".repeat(50));
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByText("50 / 28자")).toBeInTheDocument();
+  });
+
+  it("입력 한도는 코드 포인트 기준 — 이모지도 상한 + 10자까지 들어간다(Codex r1 P2)", () => {
+    render(<Harness spec={title} />);
+    const input = screen.getByRole("textbox", { name: /섹션 제목/ });
+    fireEvent.change(input, { target: { value: "😀".repeat(45) } });
+    expect(input).toHaveValue("😀".repeat(45));
+    fireEvent.change(input, { target: { value: "😀".repeat(55) } });
+    expect(input).toHaveValue("😀".repeat(50));
+    expect(input).not.toHaveAttribute("maxlength");
   });
 
   it("캔버스 문제 문장 id를 aria-describedby 맨 앞에 받는다", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { countField, FIELD_INPUT_SLACK } from "./fieldCounter";
+import { clampInput, countField, FIELD_INPUT_SLACK } from "./fieldCounter";
 
 const x = (n: number) => "가".repeat(n);
 
@@ -33,5 +33,11 @@ describe("fieldCounter (E-AC-06 · SPEC 5.6 · E-S19)", () => {
     expect(FIELD_INPUT_SLACK).toBe(10);
     expect(countField("", { maxLength: 40 }).inputMaxLength).toBe(50);
     expect(countField("", { recommendedLength: 60 }).inputMaxLength).toBeUndefined();
+  });
+
+  it("clampInput — 코드 포인트 기준으로 입력 가능 길이까지만", () => {
+    expect(clampInput("😀".repeat(55), 50)).toBe("😀".repeat(50));
+    expect(clampInput("abc", 50)).toBe("abc");
+    expect(clampInput("x".repeat(99), undefined)).toHaveLength(99);
   });
 });

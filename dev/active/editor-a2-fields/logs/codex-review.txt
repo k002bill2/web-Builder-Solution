@@ -17,3 +17,17 @@
 [codex] Command completed: /bin/zsh -lc "git show f22bbc844eff687025ff7f5ccebf808bfeccc329:app/src/features/studio/useAu... (exit 0)
 [codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '80,130p'; cat docs/06-...
 [codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '80,130p'; cat docs/06-... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 입력 길이 제한이 표시 카운터와 다른 기준을 사용해, 이모지를 포함한 입력에서 의도한 길이보다 일찍 입력이 차단됩니다. 테스트 실행은 읽기 전용 파일시스템으로 Vite...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against f22bbc8
+
+입력 길이 제한이 표시 카운터와 다른 기준을 사용해, 이모지를 포함한 입력에서 의도한 길이보다 일찍 입력이 차단됩니다. 테스트 실행은 읽기 전용 파일시스템으로 Vite 임시 설정 파일을 쓸 수 없어 완료하지 못했습니다.
+
+Review comment:
+
+- [P2] 입력 제한을 코드 포인트 기준으로 적용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/studio/FieldEditor.tsx:47-47
+  필드 상한은 `charCount`의 코드 포인트 기준이지만 HTML `maxLength`는 UTF-16 코드 단위로 계산합니다. 따라서 이모지처럼 코드 포인트당 두 단위인 문자를 입력하면 의도한 상한+10자보다 훨씬 일찍 입력이 막힙니다. 코드 포인트 기준의 입력 제한을 적용해야 합니다.

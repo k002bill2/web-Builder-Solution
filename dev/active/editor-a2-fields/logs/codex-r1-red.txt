@@ -1,0 +1,35 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app
+
+ ❯ src/components/studio/FieldEditor.test.tsx (8 tests | 1 failed) 259ms
+   ❯ FieldEditor (E-AC-06) (8)
+     × 입력 한도는 코드 포인트 기준 — 이모지도 상한 + 10자까지 들어간다(Codex r1 P2) 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/FieldEditor.test.tsx > FieldEditor (E-AC-06) > 입력 한도는 코드 포인트 기준 — 이모지도 상한 + 10자까지 들어간다(Codex r1 P2)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveValue([22m[32m😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀[39m[2m)[22m
+
+Expected the element to have value:
+[32m  😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀[39m
+Received:
+[31m  😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀[39m
+ ❯ src/components/studio/FieldEditor.test.tsx:64:19
+     62|     expect(input).toHaveValue("😀".repeat(45));
+     63|     fireEvent.change(input, { target: { value: "😀".repeat(55) } });
+     64|     expect(input).toHaveValue("😀".repeat(50));
+       |                   ^
+     65|     expect(input).not.toHaveAttribute("maxlength");
+     66|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  17:54:11
+   Duration  1.09s (environment 55%, tests 26%, setup 10%, transform 5%, import 4%)
+

@@ -16,7 +16,7 @@
 ## 2. AC별 판정
 | AC | 판정 | 근거(테스트) |
 |---|---|---|
-| E-AC-06 필드 | PASS | `FieldEditor.test.tsx` 7 · `fieldCounter.test.ts` 5 — 카운터 describedby·라이브 영역 밖 · 권장 경고 · 상한 `aria-invalid`+R-13 문장 · 상한+10 입력(55타 → 50) · 캔버스 문장 id 맨 앞 · 필수 blur |
+| E-AC-06 필드 | PASS | `FieldEditor.test.tsx` 8 · `fieldCounter.test.ts` 6 — 이모지 코드 포인트 한도(Codex r1) · 카운터 describedby·라이브 영역 밖 · 권장 경고 · 상한 `aria-invalid`+R-13 문장 · 상한+10 입력(55타 → 50) · 캔버스 문장 id 맨 앞 · 필수 blur |
 | E-AC-07 자동 저장 | PASS | `useDocSave.test.tsx` 타이밍 4 + 실제 메모리 저장소 연속 2회(revision 3) |
 | E-AC-08 저장 상태 | PASS | `SaveStatus.test.tsx` — 전이 3단계 · "이 탭에 저장됨 · 12초 전" · 라이브 영역 밖 · onAnnounce 0회 |
 | E-AC-09 실패·오프라인 | PASS | `SaveStatus.test.tsx` — alert 1회(같은 텍스트 노드 유지) · 입력 유지 · "다시 저장" → "다시 저장했습니다" · offline 글자 → online 저장 1회 |
@@ -52,8 +52,12 @@
 - 스케줄러 `settle()` 추가 사유: 기존 `resume()`은 미저장 변경을 즉시 저장해 "다른 편집 불러오기" 뒤 내 문서를 덮어쓰고 "내 편집으로 저장" 뒤 한 번 더 저장함.
 - 유추 문장: 페이지 정보 권장 초과 "권장 N자 — 넘으면 검색 결과에서 잘릴 수 있습니다"(SPEC 문장 없음) · canonical 라벨 "대표 주소(canonical)".
 
+## 5.1 Codex 검증 (1회 — 브리프 "턴이 남을 때만 1회")
+- `node codex-companion.mjs review --scope branch --base f22bbc8` → `logs/codex-review.txt`. 지적 1건:
+  - [P2] `FieldEditor.tsx:47` HTML `maxLength`(UTF-16)가 카운터(코드 포인트)와 기준이 달라 이모지 입력이 일찍 막힘 → **반영**: `maxLength` 속성 제거 + `clampInput`(코드 포인트로 상한+10까지 자름). RED `logs/codex-r1-red.txt`(1 실패) → GREEN 85/85 `logs/codex-r1-green.txt` · build exit 0 `logs/codex-r1-build.txt`
+- Codex는 자체 샌드박스에서 테스트를 돌리지 못했다고 적음(읽기 전용 FS) — 테스트 실행은 이 세션 로그가 근거.
+
 ## 6. 남은 위험
-- HTML `maxLength`(UTF-16 단위) vs 카운터(코드 포인트): 이모지 등은 상한+10보다 일찍 입력이 멈춘다.
 - `DocSaveRepository.resolveConflict`는 `PageDoc`을 돌려받는다고 가정 — 메모리 저장소 타입은 `ProjectRepository<DocHead>`라 연결 때 캐스트/제네릭 정리 필요(`useDocSave.test.tsx` 실제 저장소 테스트도 `as unknown as ProjectRepository<PageDoc>`).
 - 연결 전이라 엔진(`hashDoc`·`gateText`) 런타임 import가 `/studio` 진입 청크에 들 크기는 미측정(S-B4 예상 범위).
 - 브라우저 확인 없음(4339 서버 미기동 — 화면 연결 전이라 볼 화면 없음, 긴 클릭 흐름은 병합 뒤 QA 몫).

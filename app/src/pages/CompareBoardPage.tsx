@@ -160,7 +160,7 @@ export function CompareBoardPage() {
           </div>
         </section>
       ) : (
-        <div className="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_calc(var(--spacing)*90)] xl:items-start">
+        <div className="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_--spacing(75)] xl:items-start">
           <div className="flex min-w-0 flex-col gap-4">
             {columns.length === 1 && (
               <Callout tone="info" title="비교할 레퍼런스가 1개입니다">

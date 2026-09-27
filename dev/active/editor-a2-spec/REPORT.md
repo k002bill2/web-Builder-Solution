@@ -40,7 +40,8 @@
 
 ## 5.3 Codex adversarial r1 결과 (`logs/codex-r1.txt`, branch --base main, 최종 커밋 4bf1c4e 기준)
 - Verdict needs-attention · **[high] 1건**: Q-18 A(motion 전달)가 현재 엔진 API와 맞지 않고 브리프가 `engine/**`를 읽기 전용으로 둠. **L1 확인**: `CandidatePlan.sections` = `{type, variant}` · `createDocFromCandidate.ts:46` 늘 `minMotion("L1", 상한)`. → r4.2 반영: 8.2 행 `motion?` · 8.2.1 끝 구현 계약(`minMotion(motion ?? "L1", 상한)`, 없으면 현행) · 브리프 4·5절 소유 권장(D 레인 예외 2파일) — **소유 확정은 Jarvis**.
-- 그 밖 지적 0. 라운드 1/3 사용. r2는 반영분 확인용.
+- 그 밖 지적 0.
+- **r2 (`logs/codex-r2.txt`, 7d3f47b 기준): Verdict approve · No material findings** — "Q-18 A 기술 계약은 r4.2에서 해소, 레인 소유 선택은 발행 전 확정으로 남음". 라운드 2/3에서 종료.
 
 ## 6. 남은 것 · 사용자 확인
 - **Q-18 A 엔진 변경 소유 확정(Jarvis)**: D 레인 예외 2파일(권장) vs 소형 L4 레인 — 브리프 초안 4절.

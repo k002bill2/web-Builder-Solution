@@ -12,5 +12,6 @@
 - [x] 5. EDITOR-A2_BRIEF.draft.md (레인 분할 제안 포함) — D·S·F 3레인, 가드 개정 = D 첫 커밋
 - [x] 6. 검증: 매핑 변형 이름 grep 대조(logs/variant-map-check.txt exit 0), SPEC diff 범위 확인(logs/spec-diff-hunks.txt — 8.3.1 1줄 예외)
 - [x] 7. REPORT.md + 로컬 커밋 (934abaf · cbd8dd0 · advisor 반영 커밋)
-- [ ] 8. Codex adversarial-review r1 (`logs/codex-r1.txt`, branch --base main) — 1차 실행은 Codex 사용량 한도로 실패(15:26 해제), 15:29 재실행 중
+- [x] 8. Codex adversarial-review r1 (`logs/codex-r1.txt`) — high 1건(Q-18 A 엔진 계약) → r4.2 반영 7d3f47b. (1차 한도 실패 · 2차 셸 종료 중단 `logs/codex-r1-aborted.txt`)
+- [x] 9. Codex r2 (`logs/codex-r2.txt`) — **approve**, No material findings. 라운드 2/3에서 종료
 - 참고: f63de82 (Jarvis) r4.1 — Q-18 A · Q-24 A · Q-21 후속 결정 기록(영환님 ★A). 브리프 9.1에 반영됨

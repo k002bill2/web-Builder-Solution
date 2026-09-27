@@ -1,0 +1,180 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-data/app
+
+ ❯ src/data/memoryProjectRepository.test.ts (14 tests | 14 failed) 69ms
+   ❯ startDoc (8.3.1 · 8.2.1) (13)
+     × create → 문서 revision 1 · updatedAt = 주입 now · getDoc 같음 · 목록 요약 hasDoc 51ms
+     × 픽스처 ref-a × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1 2ms
+     × 픽스처 ref-b × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1 2ms
+     × 픽스처 ref-c × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1 1ms
+     × 픽스처 ref-d × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1 1ms
+     × 픽스처 ref-e × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1 1ms
+     × 픽스처 ref-f × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1 0ms
+     × 판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND → DOC_EXISTS·STALE_DOC 3ms
+     × E-AC-40 create 경쟁 — delay 2건(다른 안) → 문서 1개 · 먼저 판정된 쪽 성공 · 다른 쪽 DOC_EXISTS + 기존 문서 · 같은 인자 2건은 둘 다 성공 2ms
+     × E-AC-41 response 실패 뒤 같은 인자 재시도 → 같은 문서(1개 · revision 1) + 같은 바뀐 쌍 · 사이 saveDoc이 있어도 getDoc은 최신 2ms
+     × E-AC-41 commit 실패 → 문서·스냅샷·멱등 기록 변화 0 (재시도는 새로 쓴다) 1ms
+     × E-AC-42 restart 경합 — 같은 expectedRevision 2건 → 한쪽만(스냅샷 +1 · revision +1) · 다른 쪽 STALE_DOC + 최신 · 옛 create 키 → DOC_EXISTS · 열린 편집기 저장 → STALE_DOC 0ms
+     × 8.2.1 (b) 표 밖 쌍 → UNKNOWN_VARIANT + 알림 문장 · 문서·스냅샷·기록 0 · 다른 안은 그대로 성공 2ms
+   ❯ saveDoc (8.3 · E-AC-11) (1)
+     × 판정 순서 모양 → 멱등 → NOT_FOUND → STALE_DOC · response 실패 뒤 같은 (revision, hash) 재시도 → revision +1만 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > create → 문서 revision 1 · updatedAt = 주입 now · getDoc 같음 · 목록 요약 hasDoc
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing src/data/memoryProjectRepository.ts:16:57
+     14|
+     15| export function createMemoryProjectRepository({ store, now = () => new…
+     16|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     17|   /** 마지막 변경 = 이름·프로필 새 버전 중 최신 (8.1) */
+     18|   const summaryOf = (project: Project): ProjectSummary => {
+ ❯ src/data/memoryProjectRepository.test.ts:57:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 픽스처 ref-a × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 픽스처 ref-b × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 픽스처 ref-c × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 픽스처 ref-d × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 픽스처 ref-e × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 픽스처 ref-f × 3안(A create · B·C restart) 전부 성공 — UNKNOWN_VARIANT 0 · restart는 revision +1 · 스냅샷 +1
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing src/data/memoryProjectRepository.ts:16:57
+     14|
+     15| export function createMemoryProjectRepository({ store, now = () => new…
+     16|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     17|   /** 마지막 변경 = 이름·프로필 새 버전 중 최신 (8.1) */
+     18|   const summaryOf = (project: Project): ProjectSummary => {
+ ❯ src/data/memoryProjectRepository.test.ts:68:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND → DOC_EXISTS·STALE_DOC
+AssertionError: expected 'NOT_FOUND' to be 'SCHEMA_INVALID' // Object.is equality
+
+Expected: "SCHEMA_INVALID"
+Received: "NOT_FOUND"
+
+ ❯ src/data/memoryProjectRepository.test.ts:81:80
+     79|   it("판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND → DOC_EXISTS·STALE_DOC", …
+     80|     const { repo } = await setup();
+     81|     expect(await codeOf(repo.startDoc("project-9", 1, "B", "bogus" as …
+       |                                                                                ^
+     82|     expect(await codeOf(repo.startDoc("project-9", 1, "B", "restart"))…
+     83|     expect(await codeOf(repo.startDoc("project-9", 0, "B", "create")))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > E-AC-40 create 경쟁 — delay 2건(다른 안) → 문서 1개 · 먼저 판정된 쪽 성공 · 다른 쪽 DOC_EXISTS + 기존 문서 · 같은 인자 2건은 둘 다 성공
+AssertionError: expected 'rejected' to be 'fulfilled' // Object.is equality
+
+Expected: "fulfilled"
+Received: "rejected"
+
+ ❯ src/data/memoryProjectRepository.test.ts:97:22
+     95|     const { repo } = await setup("ref-a", { delay: ({ method, phase })…
+     96|     const [a, b] = await Promise.allSettled([repo.startDoc("project-1"…
+     97|     expect(a.status).toBe("fulfilled");
+       |                      ^
+     98|     expect(b).toMatchObject({ status: "rejected", reason: { code: "DOC…
+     99|     const doc = await repo.getDoc("project-1");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > E-AC-41 response 실패 뒤 같은 인자 재시도 → 같은 문서(1개 · revision 1) + 같은 바뀐 쌍 · 사이 saveDoc이 있어도 getDoc은 최신
+AssertionError: expected [Function] to throw error including '응답 유실' but got 'NOT_FOUND: project-1'
+
+Expected: "응답 유실"
+Received: "NOT_FOUND: project-1"
+
+ ❯ src/data/memoryProjectRepository.test.ts:108:63
+    106|   it("E-AC-41 response 실패 뒤 같은 인자 재시도 → 같은 문서(1개 · revision 1) + 같은 바뀐…
+    107|     const { repo } = await setup("ref-a", { fail: ({ method, seq, phas…
+    108|     await expect(repo.startDoc("project-1", 1, "B", "create")).rejects…
+       |                                                               ^
+    109|     const written = (await repo.getDoc("project-1"))!;
+    110|     const saved = await repo.saveDoc("project-1", 1, edit(written, "새 …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > E-AC-41 commit 실패 → 문서·스냅샷·멱등 기록 변화 0 (재시도는 새로 쓴다)
+AssertionError: expected [Function] to throw error including '커밋 실패' but got 'NOT_FOUND: project-1'
+
+Expected: "커밋 실패"
+Received: "NOT_FOUND: project-1"
+
+ ❯ src/data/memoryProjectRepository.test.ts:120:63
+    118|   it("E-AC-41 commit 실패 → 문서·스냅샷·멱등 기록 변화 0 (재시도는 새로 쓴다)", async () =>…
+    119|     const { repo } = await setup("ref-a", { fail: ({ method, seq, phas…
+    120|     await expect(repo.startDoc("project-1", 1, "B", "create")).rejects…
+       |                                                               ^
+    121|     expect(await repo.getDoc("project-1")).toBeUndefined();
+    122|     const made = await repo.startDoc("project-1", 1, "B", "create");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > E-AC-42 restart 경합 — 같은 expectedRevision 2건 → 한쪽만(스냅샷 +1 · revision +1) · 다른 쪽 STALE_DOC + 최신 · 옛 create 키 → DOC_EXISTS · 열린 편집기 저장 → STALE_DOC
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing src/data/memoryProjectRepository.ts:16:57
+     14|
+     15| export function createMemoryProjectRepository({ store, now = () => new…
+     16|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     17|   /** 마지막 변경 = 이름·프로필 새 버전 중 최신 (8.1) */
+     18|   const summaryOf = (project: Project): ProjectSummary => {
+ ❯ src/data/memoryProjectRepository.test.ts:131:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > startDoc (8.3.1 · 8.2.1) > 8.2.1 (b) 표 밖 쌍 → UNKNOWN_VARIANT + 알림 문장 · 문서·스냅샷·기록 0 · 다른 안은 그대로 성공
+AssertionError: expected ProjectRepositoryError: NOT_FOUND: projec… { …(3) } to match object { code: 'UNKNOWN_VARIANT', …(1) }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "alert": StringMatching /^이 안에는 편집기가 아직 열 수 없는 섹션이 있습니다\((About|Services) · gallery\) — 다른 안을 고르세요$/,
+-   "code": "UNKNOWN_VARIANT",
++ ProjectRepositoryError {
++   "code": "NOT_FOUND",
+  }
+
+ ❯ src/data/memoryProjectRepository.test.ts:144:19
+    142|     inject(store, "B", "gallery");
+    143|     const error = await repo.startDoc("project-1", 1, "B", "create").c…
+    144|     expect(error).toMatchObject({ code: "UNKNOWN_VARIANT", alert: expe…
+       |                   ^
+    145|     expect(await repo.getDoc("project-1")).toBeUndefined();
+    146|     expect(await repo.listSnapshots("project-1")).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > saveDoc (8.3 · E-AC-11) > 판정 순서 모양 → 멱등 → NOT_FOUND → STALE_DOC · response 실패 뒤 같은 (revision, hash) 재시도 → revision +1만
+AssertionError: expected 'NOT_FOUND' to be 'SCHEMA_INVALID' // Object.is equality
+
+Expected: "SCHEMA_INVALID"
+Received: "NOT_FOUND"
+
+ ❯ src/data/memoryProjectRepository.test.ts:154:81
+    152|   it("판정 순서 모양 → 멱등 → NOT_FOUND → STALE_DOC · response 실패 뒤 같은 (revisi…
+    153|     const { repo } = await setup("ref-a", { fail: ({ method, seq, phas…
+    154|     expect(await codeOf(repo.saveDoc("project-9", 1, { nope: true } as…
+       |                                                                                 ^
+    155|     const { doc } = await setup().then(({ repo: other }) => other.star…
+    156|     expect(await codeOf(repo.saveDoc("project-1", 1, doc))).toBe("NOT_…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed (14)
+   Start at  16:43:08
+   Duration  1.03s (environment 66%, transform 13%, setup 12%, tests 7%, import 2%)
+

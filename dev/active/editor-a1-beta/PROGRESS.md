@@ -8,6 +8,24 @@
 - 판정: 모든 라우트 첫 화면 ≤100 · 진입 직후 ≤125 · 여유 ≥0.3. 하나라도 어기면 예산·분류 변경 없이 실측·REPORT 커밋 후 중지.
 - 금지: Q-17~24 계약 결정, engine 코드 변경, 새 의존성·아이콘, `design/`·`docs/design/` 수정, push·병합·삭제.
 
+## 재개 수신 RESUME-1 (2026-09-27, HEAD `477b5c5`)
+- 브리프 `docs/06-handoff/EDITOR-A1-BETA_RESUME-1.md` · 원 브리프 · 이전 REPORT 읽음. 0단계는 Jarvis 재판정 통과(`logs/resume-base-build.txt`, `/compare` 여유 1.61).
+- 구속 조건: `/catalog` 첫 화면 99.63(여유 **0.37**) · `/profile` 진입 직후 124.62(여유 **0.38**). 공통·`memoryStudio` 변경마다 build 확인, 여유 0.3 미만이면 실측·REPORT 커밋 후 중지.
+- S-B9 = SPEC 원안(`fieldset` + 네이티브 라디오, 보드 첫 화면). 대체안 1 쓰지 않음.
+- `startDoc`: 엔진 `createDocFromCandidate`가 세 번째 인자 `DocStart`(Q-17 미승인 계약)를 요구 → startDoc 본문은 Q-17에 걸림. "편집 시작"은 `/studio/:projectId` 이동까지만 연결하고 startDoc 은 BLOCKED 로 보고.
+
+### 재개 체크리스트
+- [ ] R0 재개 수신 기록·커밋
+- [ ] R1 store 프로젝트 레코드 + 보드 확정 대상 `current|new` · 트랜잭션 ④ · 멱등 키(12.2) · `defaultProjectName`
+- [ ] R2 `ConfirmedRef` projectId·projectName · S-B9 라디오(J-S09·J-S10·J-S11) — 실측
+- [ ] R3 `/projects` 메모리 저장소(list·get·rename) 실제 구현 · `/studio/:projectId` 셸 실데이터
+- [ ] R4 프로필 "프로젝트: <이름>" 링크 · "편집 시작" → `/studio/:projectId`
+- [ ] R5 12.4 깨질 테스트 8건(의미 보존) · `ProfileList.tsx`·`useProfileList.ts` 정리
+- [ ] R6 QA D3 헤더 Tab 순서(390 DOM 순서 = 보이는 순서)
+- [ ] R7 4게이트(vitest 전체 · typecheck · lint · build) + 번들 전후 표
+- [ ] R8 127.0.0.1:4337 실제 클릭 · 1280/768/390 캡처 · 390 Tab 순서
+- [ ] R9 Codex 검증 · REPORT · 로컬 커밋
+
 ## 체크포인트
 - [x] 브리프·SPEC 2.1~2.5·8.3·10·11.1·12·13.1·a1-α REPORT 읽기
 - [x] 기준 재실측 (병합본 `567e3ea`) — `logs/baseline-build.txt`

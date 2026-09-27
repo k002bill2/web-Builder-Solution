@@ -1,0 +1,8 @@
+memoryGenerate imports: [
+  '_sectionLibrary-50WmVJEd.js',
+  '_profileDraft-BBicBxYO.js',
+  '_generation-y8_fXzx8.js',
+  '_profileContrast-PXwhUMEo.js',
+  '_effectiveProfile-CIFNkz4g.js',
+  'src/data/memoryStudio.ts'
+]

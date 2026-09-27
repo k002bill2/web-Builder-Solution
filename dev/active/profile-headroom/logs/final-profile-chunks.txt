@@ -1,0 +1,24 @@
+공통      86.06 assets/index-DlU-XU2i.js
+진입직후     9.70 assets/profileEngine-B6h0CfzK.js
+첫화면      6.97 assets/ProfilePage-CWlyram1.js
+진입직후     3.85 assets/profileDraft-BBicBxYO.js
+진입직후     3.78 assets/memoryStudio-Q7b7GboQ.js
+공통       3.28 assets/react-DB-4Zxce.js
+진입직후     1.41 assets/referenceDetails-C7TYk5GK.js
+첫화면      1.16 assets/catalogFilters-CTS9InfW.js
+진입직후     1.02 assets/SegmentedControl---0WBgbK.js
+진입직후     1.02 assets/referenceComparisons-BjFXZkfz.js
+진입직후     0.98 assets/references-Dy8ZbmG9.js
+진입직후     0.89 assets/contrast-FGhIQVC_.js
+진입직후     0.76 assets/profileContrast-PXwhUMEo.js
+진입직후     0.72 assets/adjustmentText-C8m9Grsn.js
+첫화면      0.64 assets/sectionLibrary-50WmVJEd.js
+첫화면      0.49 assets/referenceDisplay-Dffp6-6h.js
+첫화면      0.42 assets/Callout-CQUuQULa.js
+진입직후     0.38 assets/effectiveProfile-CIFNkz4g.js
+진입직후     0.19 assets/rovingFocus-C627c-M6.js
+첫화면      0.16 assets/useThrowToBoundary-e3Nrf3la.js
+첫화면      0.14 assets/profileRepository-Cf1X6rgu.js
+진입직후     0.13 assets/generation-y8_fXzx8.js
+첫화면      0.10 assets/profileEvents-BZQzo2FC.js
+합계 124.23

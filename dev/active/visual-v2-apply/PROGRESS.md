@@ -24,3 +24,4 @@
 - 12eee17 수신 → 69289b4 묶음1(RED 5→GREEN) → d1c8eed 비교(worker B 6ca4cb1) → 03714d3 카탈로그·상세(worker A bbffaf1) → 313c573 after 근거 → REPORT
 - 통합 표적 277/277 + 비교 129/129, typecheck·lint·build 0, /compare 99.57KB(여유 0.43)
 - 서브에이전트 2(쓰기, worktree 격리) 회수 완료 — 상세는 REPORT "서브에이전트 분할·회수"
+- [x] 11. 사용자 결정: Tag 넘침 → 별도 레인(기록만) · 서브에이전트 워크트리 2개/브랜치 정리(patch-id SAME 확인 후)

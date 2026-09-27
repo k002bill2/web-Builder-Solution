@@ -51,13 +51,14 @@ const ordered = (a: ProfileVersion, b: ProfileVersion) => (a.version < b.version
 function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const detail = useProfileDetail(profileId);
   const { state, status, announce } = detail;
-  // 보드 확정 뒤 지운 조정이 있으면 "프로필 알림"에 한 번 알린다 — 패널을 펼치지 않았어도 (P-S25 r6).
-  // 알린 뒤 history state를 replace로 비운다 — 뒤로·앞으로 가기로 이 항목에 돌아와도 다시 알리지 않는다(문장은 알림 state에 남는다)
+  // 보드가 넘긴 state(P-S25 r6 지운 조정 수 · J-S11 새 프로젝트)는 한 번만 알린다. 비우기 = history.replaceState(usr: null) —
+  // 라우터 이동이 아니라 경쟁이 없다(곧바로 보드로 돌아가도 화면을 되돌리지 않는다, PROFILE-HEADROOM-C6).
+  // 뒤로·앞으로 가기로 이 항목에 돌아와도 다시 알리지 않는다(문장은 알림 state에 남는다)
   const location = useLocation();
   const navigate = useNavigate();
   const dropped = droppedCountOf(location.state);
   const created = projectCreatedOf(location.state);
-  // 새 프로젝트 이름은 불러온 뒤에 안다 — 표시는 마운트 때 잡아 두고(state는 아래에서 비운다) 이름이 오면 한 번 알린다(J-S11)
+  // 새 프로젝트 이름은 불러온 뒤에 안다 — 표시는 마운트 때 ref에 잡아 두고 이름이 오면 한 번 알린다(J-S11)
   const announceCreated = useRef(created);
   const createdName = state.status === "ready" ? state.series.project?.name : undefined;
   // 탭 제목(WCAG 2.4.2) — 비교 보드와 같은 패턴. 버전 전환(?v=)은 같은 화면이라 그대로 (PROFILE-A11Y-FIX D2)
@@ -66,9 +67,12 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
   }, []);
   useEffect(() => {
     if (dropped === 0 && !created) return;
-    if (dropped > 0) announce(`조정 ${dropped}개를 지웠습니다`);
-    void navigate({ pathname: location.pathname, search: location.search, hash: location.hash }, { replace: true, state: null });
-  }, [location.key, location.pathname, location.search, location.hash, dropped, created, announce, navigate]);
+    history.replaceState({ ...history.state, usr: null }, "");
+    if (dropped === 0) return;
+    announce(`조정 ${dropped}개를 지웠습니다`);
+    // 지운 조정(재확정)만 라우터 state도 비운다 — 기존 계약(CompareBoardCarryOver 13.7). 첫 확정(C6)은 이 경로를 타지 않는다
+    void navigate(location, { replace: true, state: null });
+  }, [location, dropped, created, announce, navigate]);
   useEffect(() => {
     if (createdName === undefined || !announceCreated.current) return;
     announceCreated.current = false;

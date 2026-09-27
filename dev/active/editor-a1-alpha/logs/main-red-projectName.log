@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a1-alpha/app
+
+ ❯ src/domain/projectName.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/projectName.test.ts [ src/domain/projectName.test.ts ]
+Error: Failed to resolve import "./projectName" from "src/domain/projectName.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a1-alpha/app/src/domain/projectName.test.ts:2:108
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  ...eProjectName, PROJECT_NAME_MAX, validateProjectName } from "./projectName";
+     |                                                                 ^
+  3  |  describe("프로젝트 이름 규칙 (SPEC 2.1 · J-S06 · 8.3)", () => {
+  4  |  	it("정규화 = 앞뒤 공백 제거(가운데 공백 유지)", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  12:56:35
+   Duration  1.15s (environment 75%, setup 19%, transform 5%, worker 1%)
+
+exit=1

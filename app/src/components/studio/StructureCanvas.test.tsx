@@ -63,3 +63,14 @@ describe("구조 미리보기 — 변형별 모양 · 프로필 팔레트 (SPEC 
     for (const block of neutral.querySelectorAll<HTMLElement>("[data-instance-id]")) expect(block.className).toMatch(/--canvas-/);
   });
 });
+
+describe("문제 표시는 데이터 색과 무관 (5.7 B-03 · FIX2)", () => {
+  it("어두운 Footer 면 위 권장 초과 글자 — 흰 앱 면(background-normal) 안 · 프로필 글자색 아님", () => {
+    const footer = section("footer", "biz-extended", "s-footer");
+    const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "fullbleed-left", "s-hero"), { ...footer, slots: { ...footer.slots, links: "가".repeat(65) } }] });
+    const { container } = render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const text = within(container.querySelector<HTMLElement>('[data-instance-id="s-footer"]')!).getByText("가".repeat(65));
+    expect(text.className).not.toMatch(/--canvas-/);
+    expect(text.closest(".bg-background-normal")).not.toBeNull();
+  });
+});

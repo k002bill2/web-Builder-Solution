@@ -1,0 +1,45 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a0e18e-60e5-74e3-a5b5-4e079a378655).
+[codex] Turn started (01a0e18e-629d-7fd1-b921-224c11222285).
+[codex] Assistant message captured: SPEC의 Q-17/Q-21/Q-18 결정과 브리프 초안을 실제 `main` 대비 문서 diff 및 코드 정의에 대조해 모순·누락만 보고하겠습니다.
+[codex] Running command: /bin/zsh -lc 'git diff --no-ext-diff --unified=80 main...HEAD -- docs/design/2a-05/SPEC.md do...
+[codex] Command completed: /bin/zsh -lc 'git diff --no-ext-diff --unified=80 main...HEAD -- docs/design/2a-05/SPEC.md do... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff --no-ext-diff --unified=15 main...HEAD -- docs/design/2a-05/SPEC.md'
+[codex] Command completed: /bin/zsh -lc 'git diff --no-ext-diff --unified=15 main...HEAD -- docs/design/2a-05/SPEC.md' (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/06-handoff/EDITOR-A2_BRIEF.draft.md | sed -n '1,110p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/06-handoff/EDITOR-A2_BRIEF.draft.md | sed -n '1,110p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/2a-05/SPEC.md | sed -n '490,565p;815,855p;910,955p'"
+[codex] Running command: /bin/zsh -lc 'rg -n "DocStart|createDocFromCandidate|UNKNOWN_VARIANT|SECTION_LIBRARY|GRID_LAD...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/2a-05/SPEC.md | sed -n '490,565p;815,855p;910,955p'" (exit 0)
+[codex] Command completed: /bin/zsh -lc 'rg -n "DocStart|createDocFromCandidate|UNKNOWN_VARIANT|SECTION_LIBRARY|GRID_LAD... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git status --short && git diff --name-status main...HEAD && git merge-base main...
+[codex] Command completed: /bin/zsh -lc 'git status --short && git diff --name-status main...HEAD && git merge-base main... (exit 0)
+[codex] Assistant message captured: SPEC와 브리프 사이에 결정 상태가 엇갈리는 곳이 보입니다. 특히 r4.1이 변경 이력에만 기록됐는지, 최신 8.2.1·13.1 본문 및 실제 타입 계약과 대조 중입니다.
+[codex] Running command: /bin/zsh -lc "nl -ba docs/06-handoff/EDITOR-A2_BRIEF.draft.md | sed -n '20,80p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/06-handoff/EDITOR-A2_BRIEF.draft.md | sed -n '20,80p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/2a-05/SPEC.md | sed -n '505,560p;570,650p;825,850p;918,946p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/2a-05/SPEC.md | sed -n '505,560p;570,650p;825,850p;918,946p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/engine/doc/createDocFromCandidate.ts | sed -n '1,105p'; nl -ba a...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/projectRepository.ts | sed -n '1,125p'; nl -ba app/src/data...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/engine/doc/createDocFromCandidate.ts | sed -n '1,105p'; nl -ba a... (exit 0)
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/projectRepository.ts | sed -n '1,125p'; nl -ba app/src/data... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff --no-ext-diff --unified=5 main...HEAD -- docs/design/2a-05/SPEC.md | r...
+[codex] Command completed: /bin/zsh -lc "git diff --no-ext-diff --unified=5 main...HEAD -- docs/design/2a-05/SPEC.md | r... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/06-handoff/EDITOR-A2_BRIEF.draft.md | sed -n '27,60p'; nl -ba docs/...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/06-handoff/EDITOR-A2_BRIEF.draft.md | sed -n '27,60p'; nl -ba docs/... (exit 0)
+[codex] Assistant message captured: {"verdict":"needs-attention","summary":"출시 보류: Q-18 A가 브리프·SPEC 본문·현재 엔진 계약에 일치하게 반영되지 않았습니다....
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against main
+Verdict: needs-attention
+
+출시 보류: Q-18 A가 브리프·SPEC 본문·현재 엔진 계약에 일치하게 반영되지 않았습니다.
+
+Findings:
+- [medium] Q-18 A는 현 엔진 계약과 브리프의 수정 금지 경계에서 구현할 수 없습니다 (docs/06-handoff/EDITOR-A2_BRIEF.draft.md:72)
+  브리프는 어댑터가 컴포저의 motion을 넘기고 상한을 적용하라고 결정했지만, SPEC 8.2.1은 Q-18을 여전히 미결로 적고 13.1도 착수 전 결정 대상으로 남깁니다. 현재 `toEngineCandidate`는 motion을 제거하며(`generation.ts:95-100`), `createDocFromCandidate`는 입력에 motion이 없고 항상 `minMotion("L1", ...)`을 씁니다(`createDocFromCandidate.ts:41-48`). 한편 브리프는 `engine/**` 수정을 금지합니다. 따라서 D 레인은 결정된 동작을 구현할 수 없거나 계약을 어기게 됩니다. 이는 코드가 확인된 사실이며, 실제 구현 불가 판단은 그 사실들에 근거한 추론입니다.
+  Recommendation: SPEC 8.2.1 및 13.1을 Q-18 A로 갱신하고, motion 전달·상한 적용을 위한 API와 파일 소유 경계를 명시하세요. 엔진 수정이 불가하다면 Q-18 구현안을 현재 계약에 맞게 다시 결정해야 합니다.
+
+Next steps:
+- SPEC의 Q-18 정본과 a2 브리프의 엔진 수정 범위를 함께 맞추세요.

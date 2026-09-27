@@ -503,7 +503,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 | 연산 | 결과 | 화면 |
 |---|---|---|
-| `createDocFromCandidate(plan, profileVersion)` | 새 문서(기본 슬롯 콘텐츠) | 2a-04c 편집 시작 경계 |
+| `createDocFromCandidate(plan, profileVersion, start)` (r4 — Q-17 A: 코드 모양 채택. `plan` = `{candidateId, sections[{type, variant, motion?}], libraryVersion, generatorVersion}` — `motion?`은 r4.2 Q-18 A 구현 계약(8.2.1 끝, 엔진 변경 필요) · `start: DocStart` = `{projectId, updatedAt}` — 둘 다 **저장소가 정한 값**, 엔진은 만들지 않는다(`Date.now` 금지). 실패는 결과가 아니라 **예외**(`EngineOpError` `UNKNOWN_VARIANT`·`BAD_VALUE`) — 부르는 쪽(8.2.1 어댑터)이 먼저 걸러 예외가 쓰기에 닿지 않게 한다) | 새 문서(기본 슬롯 콘텐츠, revision 1) | 2a-04c 편집 시작 경계 — 호출은 `startDoc` 어댑터 한 곳(8.2.1) |
 | `addSection(doc, type, variant, afterInstanceId)` | 문서 · 새 `instanceId` | 5.3 |
 | `removeSection(doc, instanceId, purpose)` (r3 — Q-11 A: `purpose` 필수, `canRemove` 전체 판정 강제 · R-03·R-04) | 문서 · 되돌리기 정보 | 5.4 |
 | `moveSection(doc, instanceId, "up" \| "down")` | 문서 · 새 위치 | 5.2 |
@@ -519,6 +519,20 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 
 - 실행 취소 기록 스택(5.14)은 화면 상태이고 엔진 연산이 아니다.
 - 경계 검증: 저장소가 받는 문서·이름은 L4 **검증 함수**로 검사한다(`PARALLEL_LANES` Q-P2=A — 엔진은 zod 미도입. 2a-04 `adjustmentSchema`(zod)와 섞지 않는다).
+
+### 8.2.1 `startDoc` 어댑터 · 변형 매핑 표 (r4 — Q-17 A · Q-21 A, 이 절이 정본)
+
+생성 잡의 구조안(2a-04c 컴포저 결과)은 **픽스처·라이브러리 어휘**(`services/grid-3` 등)이고 엔진 레지스트리는 **엔진 어휘**(`services/cards-3` 등)다. 둘을 잇는 곳은 `startDoc` 쓰기 경로의 **어댑터 한 곳**이다.
+
+- **어댑터가 하는 일**(8.3.1 판정 5 `create`·`restart` 쓰기 안, 순서대로): ① 저장소가 (계열, `profileVersion`)의 생성 잡과 `candidateId` 안을 읽는다(없으면 판정 3 `NOT_FOUND` — 이미 8.3.1) → ② 섹션마다 **변형 매핑 표**로 엔진 변형을 구한다 → ③ 표 밖 쌍이 하나라도 있으면 **쓰기 0**으로 `UNKNOWN_VARIANT`(아래 (b)) → ④ `createDocFromCandidate({candidateId, sections: 매핑 결과, libraryVersion, generatorVersion}, profileVersion, {projectId, updatedAt})` → ⑤ 문서 저장. `updatedAt` = 같은 쓰기에서 저장소가 쓰는 **주입된 `now()` 한 번**의 값(프로젝트 `updatedAt`과 같은 값, 저장소마다 `now` 옵션 주입 — 현행 `memoryProfileRepository`·`memoryCompareBoardRepository` 방식). 엔진 예외(`EngineOpError`)는 어댑터가 ④에서 잡아 **쓰기 0**으로 끝낸다(`commit` 전). 멱등 기록은 성공만(8.3.1 그대로).
+- **표는 한 곳**: 표와 매핑 함수는 새 모듈 파일 1개에만 둔다. 부르는 곳은 `startDoc` 쓰기 본문 1곳. **컴포저(2a-04c)·`toEngineCandidate`(`domain/generation.ts`)에 두지 않는다** — 컴포저는 그리드 축(`grid-3`·`grid-2`·`masonry`)이 3안 차이를 만드는 어휘라 바꾸면 병합된 3안 화면·lint가 바뀌고, `domain/generation.ts`는 `/profile` 진입 직후 청크에 런타임으로 들어가 있어(2a-04c REPORT 3절 — 공유 청크 사례) 표를 거기 두면 `/profile` 진입 직후(여유 0.2대, a1-β REPORT 1절)가 는다. 표·어댑터·엔진 `createDocFromCandidate`는 **"편집 시작"을 눌렀을 때만 로드**(조작 뒤 청크, 2a-04 Q-F4-1 분류)한다.
+- **키 = `type/variant` 쌍**: 같은 변형 이름이 유형마다 뜻이 다르다(`services/grid-3` → `cards-3` · `portfolio/grid-3` → 그대로). 유형은 바꾸지 않는다(목적 필수 섹션 R-03·R-04 판정이 유형을 본다).
+- **표 내용**: 현재 픽스처(`fixtures/referenceComparisons.ts` `sectionPlan`) 49줄 · 고유 30쌍 + 컴포저가 만드는 쌍(그리드 축 · Footer 대체 · 목적 섹션) + 엔진 변형 자체(그대로) — 전체와 grep 줄번호는 **`docs/design/2a-05/VARIANT-MAP.md`**. 요약: header·hero·footer 14쌍 = 그대로(엔진 bound 변형이 라이브러리 1.4 키에서 만들어짐) · 본문은 **가장 가까운 엔진 변형**(유형 안에서): about → `story` · services 카드형 → `cards-3`, 목록·표형 → `list` · portfolio → `grid-3` · testimonials → `quotes-2` · pricing → `tiers-2` · contact 폼형 → `form`. 현재 어휘에서 **표 밖 쌍은 0**이다.
+- **변형이 바뀐 섹션 (a) — 표 안, 모양이 다름**: 정상으로 연다(E-S05). `startDoc` 성공 결과에 바뀐 쌍 목록(`{type, from, to}`)을 싣고, 화면은 이동 뒤 편집기 첫 표시 때 **편집 알림 1문장**(6.3 "편집 알림" 영역 — 8.3.1 `DOC_EXISTS` "이미 편집 중인 문서를 엽니다"와 같은 방식): **"구조안의 섹션 N개를 편집기 변형으로 바꿔 열었습니다 — Services 2열 → 카드 3개 · Portfolio 마소니 → 이미지 그리드 3칸"**(이름표로, 변형 키 아님 — E-AC-20 원칙). 0개면 알림 없음. 멱등 재생(8.3.1 판정 2 — 이전 결과 그대로라 목록도 같다)도 **성공이므로 이동 뒤 1회 알린다**(재생은 첫 응답을 잃었을 때만 생기므로 사용자는 아직 못 봤다). `DOC_EXISTS`·새로고침·다시 열기에는 알리지 않는다(목록은 `startDoc` 성공 결과에만 있고 문서에 저장하지 않는다). 그리드 축만 달랐던 두 안은 문서에서 같은 변형이 될 수 있다 — 이 알림이 그 사실을 알린다.
+- **표 밖 변형 (b) — `UNKNOWN_VARIANT`**(지금 픽스처로는 발생 0 — 픽스처·라이브러리·컴포저가 표보다 먼저 바뀐 경우의 방어): 판정 1~4 뒤, 쓰기 전에 거부 → 문서·스냅샷·멱등 기록 변화 0. **결정적 결과라 "다시 시도"를 주지 않는다**(같은 인자 재시도 = 같은 실패). 프로필 화면(2a-04c 편집 시작 자리) `role=alert` 1회: **"이 안에는 편집기가 아직 열 수 없는 섹션이 있습니다(<유형 이름표> · <변형 키>) — 다른 안을 고르세요"**. 이동 없음 · 편집 시작 버튼 상태 그대로. 엔진이 던진 다른 예외(`BAD_VALUE` — 구조 R-01·R-02·검증 실패)도 같은 경로(쓰기 0 · 재시도 없음)이되 문구는 "이 안으로 편집 문서를 만들 수 없습니다 — 다른 안을 고르세요"(원인 코드는 계측 `reason`에만). 새 E-S 번호를 주지 않는다 — 편집기 밖(프로필 화면) 결과이고 8.3.1 결과 표의 한 행으로 읽는다.
+- **저장소 오류 코드**: 8.3 오류 코드 모음에 `UNKNOWN_VARIANT`(8.2.1 (b), 결정적, 재시도 없음)를 더한다 — a2가 `ProjectErrorCode`에 추가. 8.3 표·8.3.1 결과 표 본문은 이 절을 정본으로 두고 a2 구현 때 옮겨 적는다.
+- **검증(E-AC-40·41의 하위 검증 — AC 수 불변)**: 픽스처 6개 × 3안 전부 `startDoc` 성공(`UNKNOWN_VARIANT` 0) · 표 밖 쌍 주입 → `UNKNOWN_VARIANT` + 문서·스냅샷·기록 0 + 재시도 버튼 0 · 바뀐 쌍 알림 문장 이동 뒤 1회(처음·멱등 재생 각각 1회 · `DOC_EXISTS`·다시 열기 0회) · **가드**: 표의 bound 행 = `SECTION_LIBRARY` 키 집합, 표의 모든 목적지 = 엔진 레지스트리에 있는 쌍, 표 리터럴을 가진 파일 1개 · `DocStart.updatedAt` = 주입 `now` 값.
+- **이 절이 정하지 않은 것**(a2 착수 전 결정 필요 — 영향만): **Q-18** 새 문서 모션 — `toEngineCandidate`가 컴포저의 `motion`을 버리고 엔진이 `min(L1, 정의 상한)`을 쓴다. 어댑터가 `motion`을 넘길지는 Q-18 결정에 따른다(이 절은 `type`·`variant`만 매핑). → **(r4.1) Q-18 A로 결정**: 어댑터가 컴포저 `motion`을 넘기고 섹션 정의 상한으로 제한(`min(선택 motion, 정의 상한)`, 매핑된 엔진 변형의 상한) — 이력 r4.1. **(r4.2 — Codex r1 high) 구현 계약**: 지금 엔진은 이것을 받을 수 없다(L1: `CandidatePlan.sections` = `{type, variant}`뿐 · `engine/doc/createDocFromCandidate.ts:46` 늘 `minMotion("L1", 상한)`). 그래서 **엔진 변경 1건**이 필요하다 — `CandidatePlan.sections` 항목에 **선택** `motion?: SectionMotion` · 생성 때 `minMotion(entry.motion ?? "L1", def.constraints.maxMotion)`(없으면 현행과 같아 기존 엔진 테스트 불변). 어댑터는 `toEngineCandidate`(모션을 버림, `/profile` 청크)를 쓰지 않고 생성 잡의 안에서 `type`·`variant`(매핑)·`motion`을 직접 옮긴다. 소유: L4 엔진 파일이므로 a2 D 레인의 **범위 예외 2파일**(`engine/doc/createDocFromCandidate.ts` + 그 테스트) 또는 소형 L4 수정 레인 — 브리프 초안 4절, 발행 전 Jarvis 확정. 검증: 컴포저 `L2` 섹션 → 정의 상한 `L2`면 `L2`·`L1`이면 `L1` · `motion` 없음 → `L1`.
 
 ### 8.3 저장소 (`ProjectRepository` · 메모리 구현 = 2a-04 `createStudioStore` 공유)
 
@@ -563,7 +577,7 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | `SCHEMA_INVALID` · `NOT_FOUND` · 실패 · 응답 실패 | 2a-04c 실패 문형 "편집을 시작하지 못했습니다 · 다시 시도"(`role=alert`). "다시 시도" = 같은 인자 → 멱등 |
 
 - `restart`가 이긴 뒤 열려 있던 편집기 탭은 다음 저장에서 `STALE_DOC` → E-S09(내 편집은 화면에 그대로, "내 편집으로 저장"/"다른 편집 불러오기").
-- L4 영향 없음 — 8.3은 저장소 계약이고 8.2 `createDocFromCandidate` 이름·인자는 그대로다.
+- (r4 — Q-17 A) 8.3은 저장소 계약이다. 판정 5 `create` 쓰기의 `createDocFromCandidate`는 8.2 3인자 모양이고, 생성 잡 결과 → 엔진 입력 변환·변형 매핑·`DocStart` 값은 **8.2.1 어댑터**가 맡는다(`startDoc` 인자는 그대로).
 
 ### 8.3.2 `requestExport` 스냅샷 책임 · 판정 순서 (r1 — Codex j1 medium)
 
@@ -815,13 +829,14 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | 단계 | 범위 | 선행 · 의존 | 산출물 · 수용 기준 |
 |---|---|---|---|
 | **2a-05a1** 프로젝트 · IA | 첫 작업 = **번들 실측**(S-B1 공통 · S-B9 보드). store에 프로젝트 · 보드 확정 대상·트랜잭션·멱등 키(12.2) · `/projects`(목록·이름 바꾸기) · GNB 목적지 · 라우트(`/studio`·`/profile` 리다이렉트, `/studio/:projectId` 집중 모드 셸) · E-S01~S04 · 프로필 화면 프로젝트 이름(12.1) | **2a-04b2 병합 뒤**(보드·프로필 저장소를 고치는 작업은 동시에 1개 · `/compare` 예산 브랜치 1개 — `PARALLEL_LANES` 규칙 1·2). L4 불필요 | J-AC-01~10 · E-AC-01·02 · 공통 E-AC-33~39 중 해당분 · 12.4 테스트 처리 |
-| **2a-05a2** 편집기 틀 · 저장 | 배치 3단·2단·탭 · 섹션 선택 · 필드 편집(글자 수) · 캔버스(와이어프레임 + 슬롯 글자) · 미리보기 폭 · 자동 저장·실패·오프라인·`STALE_DOC`·떠나기 경고 · "페이지 정보" | a1 + **L4 계약**(PageDoc 필드 8.1 · 슬롯 스키마 · 섹션 정의 · `hashDoc`) + **2a-04c**(와이어프레임 그리기 · 편집 시작 = `startDoc`). `PARALLEL_LANES` 규칙 3: SPEC + PageDoc 계약 + 렌더러(= 2a-04c 와이어프레임) 준비 전 시작하지 않는다. 테스트는 픽스처 문서 주입으로 2a-04c와 독립 | E-AC-03~16 |
+| **2a-05a2** 편집기 틀 · 저장 | 배치 3단·2단·탭 · 섹션 선택 · 필드 편집(글자 수) · 캔버스(와이어프레임 + 슬롯 글자) · 미리보기 폭 · 자동 저장·실패·오프라인·`STALE_DOC`·떠나기 경고 · "페이지 정보" · (r4) **`startDoc` 구현 + 어댑터·변형 매핑 표(8.2.1)** · 편집 시작 → `/studio/:projectId` 연결(12.3) | a1(**a1-β 병합** — 라우트·store. `engineImportGuard` 개정은 a1-β에 **없다**(L1 a1-β diff) → a2 첫 작업, 현재 `/profile` 진입 직후 여유 때문에 중지 → `profile-headroom` 선행) + **L4 계약**(PageDoc 필드 8.1 · 슬롯 스키마 · 섹션 정의 · `hashDoc` — 병합됨) + **2a-04c**(와이어프레임 그리기 · 구조안 — 병합됨). `PARALLEL_LANES` 규칙 3: SPEC + PageDoc 계약 + 렌더러 준비 전 시작하지 않는다. 테스트는 픽스처 문서 주입으로 2a-04c와 독립. (r4) Q-17·Q-21 결정됨(8.2 · 8.2.1). ~~착수 전 결정 필요~~ **(r4.1) 결정됨: Q-18 A**(어댑터가 `motion` 전달 · 정의 상한 제한 — 8.2.1 끝) · **Q-24 A**(`@source not "./engine"` + 빌드 CSS 전후 비교 — 가드 개정과 같은 a2 첫 커밋). Q-19·20·22·23은 a3·a4 영향(a2 무관) | E-AC-03~16 · **E-AC-40~42**(`startDoc`, 11.2 단계 열이 a2 — "a2 17개" 합계와 맞춤) · 8.2.1 검증 |
 | **2a-05a3** 섹션 연산 | 추가(대화상자) · 삭제·되돌리기(Q7) · 위로/아래로 · 변형 교체 · 테마 바꾸기 · 이미지 슬롯(EQ-3) · 빈 슬롯 | a2 + L4 연산(8.2) | E-AC-17~24 |
 | **2a-05a4** 게이트 · 내보내기 · 스냅샷 | `runGate`(L4 조합 lint R-01~R-13 재사용) · 게이트 표시·이동 · 내보내기 흐름(EQ-1) · 스냅샷 목록·미리보기·복원 · 실행 취소 일반(E-20) | a3 + L4 lint | E-AC-25~32 |
 | QA-2A-05 | 5폭 × `/projects`·`/studio/:projectId` 캡처(127.0.0.1 QA 포트 4341), 키보드·AX 트리, 번들, 대비, 1초 폭 전환 | a4 | [Q] 기준 전부 |
 | 2a-05b | 발행·상태·롤백 · 미리보기 링크(E-17·E-21) · canonical · 발행 도메인(브랜드 레이어, Q16) | a4 + 발행 인프라(백엔드 ADR) | 별도 SPEC |
 
 - 턴 예산을 넘을 것 같은 단계(a2 예상)는 2a-04a 선례처럼 데이터/화면으로 한 번 더 나눈다.
+- (r4) a2 레인 분할 제안(데이터 · 셸 · 필드·저장 3개, 파일이 겹치지 않게)은 `docs/06-handoff/EDITOR-A2_BRIEF.draft.md` 4절.
 - 각 단계 PROGRESS에 11.3 EM 번호를 한 줄씩 인용한다(ADR-003).
 
 ### 13.2 남은 설계 질문 (추측하지 않은 결정 · ★ = 추천)
@@ -905,3 +920,6 @@ URL 상태는 `projectId`뿐이다. 선택 섹션 · 미리보기 폭 · 탭 · 
 | r2-1 | [medium] 실패한 이미지 선택이 실행 취소 기록을 지움 (Codex j2, `logs/codex-adversarial-j2.txt`) | 5.9 한도 표 "탭 전체" 행 넘을 때 열 | (수정 E-AC-45) | 회수량 계산 → 들어올 때만 필요한 최소 기록 비움 → 아니면 기록 보존 + 거부. 거부는 문서·기록·보관소 불변. L4 영향 없음(엔진 밖 이미지 보관소 규칙) · Jarvis |
 | r3-1 | L4a 설계 질문 Q-11~14 (`dev/active/l4-engine-a/REPORT.md` 10.7) | 8.2 `removeSection`·`swapVariant` 행 | (L4a 테스트) | 전부 A · Q-14는 FIX-L4A-2에서 구현 · Jarvis |
 | r3-2 | L4a 설계 질문 Q-15·16 (`dev/active/l4-engine-a/REPORT.md` 11.8, 2026-09-27 영환님 "Q-15·16 A") | 5.5 (문장 변경 없음) · 8.1 검증 경계 (변경 없음) | — | **A** Q-15: 변형 교체 거부 이유 문장 = 삭제 이유 문장(R-04)과 같은 문장 유지(5.5에 교체용 문장 신설 안 함) · **A** Q-16: slots 객체의 ownKeys를 모든 trap이 일관되게 숨기는 Proxy는 표준 API로 구별 불가 — 현행 유지·한계로 기록, 2a-05a2 저장소 경계(구조적 복제 등)에서 재검토 · Jarvis |
+| r4 | Q-17·Q-21 (영환님 ★A, 2026-09-27 · 근거 `docs/06-handoff/visual-v2-input/REPORT.md` 3.2 · `docs/qa/post-merge/REPORT.md` 63·66행 · 브리프 `docs/06-handoff/EDITOR-A2-SPEC_BRIEF.md`) | 8.2 `createDocFromCandidate` 행 · **8.2.1 신설**(어댑터 · 매핑 표 위치 · 바뀐 변형 알림 (a) · 표 밖 변형 `UNKNOWN_VARIANT` (b) · 검증) · 13.1 a2 행·끝 줄 · **예외 1줄: 8.3.1 끝 "8.2 이름·인자는 그대로다"** 문장(Q-17과 모순이라 같이 고침) | (E-AC-40·41 하위 검증 — AC 수 불변) | Q-17 A: 3인자 `(plan, profileVersion, start: DocStart{projectId, updatedAt})`, `plan`에 `libraryVersion`·`generatorVersion`, `updatedAt` = 저장소 주입 `now`. Q-21 A: 표 = 새 모듈 1곳(`startDoc` 쓰기 본문만 import, 조작 뒤 청크), 키 = `type/variant`, 전체 = `VARIANT-MAP.md`(현재 어휘 표 밖 0쌍). 불가 변형은 새 E-S 없이 8.2.1 (b) + 저장소 코드 `UNKNOWN_VARIANT` 추가(8.3 목록 반영은 a2 구현 때). 0절·3.2·8.3 표·11절 **무변경**(상태 34 · AC 57 그대로). Q-18·19·20·22·23·24 결정 안 함(13.1 a2 행에 영향만) · Designer |
+| r4.1 | Q-18·Q-21 후속·Q-24 (영환님 ★A, 2026-09-27 · Jarvis 기록) | 본문 무변경 — 결정만 기록 | — | **Q-18 A**: `startDoc` 어댑터가 컴포저 `motion`을 넘기고 섹션 정의 상한으로 제한(`min(선택 motion, 정의 상한)`) — 8.2.1 끝 "Q-18 영향" 해소, a2 D 레인 구현. a2 캔버스는 모션을 표시하지 않는다(구조 미리보기). **Q-21 후속**: 매핑·편집 알림(8.2.1 (a))으로 a2 진행. 엔진 services 변형 추가(`grid-2`·`masonry` 대응)는 **a3 착수 전 후속 과제**로 등록 — 편집기에서 3안 그리드 차이 보존 목적. **Q-24 A**: `app/src/index.css`에 `@source not "./engine"` + 빌드 CSS 전후 비교 가드 — a2 D 레인 첫 커밋(가드 개정과 같은 커밋). Q-19·20·22·23 미결 유지 |
+| r4.2 | Codex adversarial r1 [high] "Q-18 A가 현재 엔진 API와 맞지 않음" (`dev/active/editor-a2-spec/logs/codex-r1.txt`) | 8.2 `createDocFromCandidate` 행(`motion?`) · 8.2.1 끝 Q-18 줄(구현 계약·소유·검증) | (8.2.1 검증에 모션 3건) | Q-18 결정(A)은 그대로 — 구현 계약만 명시: 엔진 `CandidatePlan.sections[].motion?` + `minMotion(motion ?? "L1", 상한)`, 없으면 현행. 소유(D 레인 예외 2파일 vs 소형 L4 레인)는 Jarvis 확정 대상 · Designer |

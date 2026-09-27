@@ -27,7 +27,8 @@ describe("useSectionOps", () => {
     const profiles = {
       getProfile: async () => {
         calls += 1;
-        if (calls === 1) throw new Error("네트워크");
+        // 1 = 마운트 조회 · 2 = 첫 연산의 다시 조회 — 둘 다 실패, 3 = 두 번째 연산
+        if (calls <= 2) throw new Error("네트워크");
         return undefined;
       },
     } as unknown as ProfileRepository;
@@ -45,6 +46,6 @@ describe("useSectionOps", () => {
     });
     expect(second?.ok).toBe(true);
     expect(edits).toHaveLength(1);
-    expect(calls).toBe(2);
+    expect(calls).toBe(3);
   });
 });

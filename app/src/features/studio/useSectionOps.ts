@@ -6,6 +6,8 @@ import { applyDocOp, createInstanceIds, type DocOp, type OpResult } from "./docO
 import { docMotionPreset, docPurpose } from "./docPurpose";
 import { useUndoStack } from "./undoStack";
 
+const PROFILE_UNAVAILABLE = "프로필을 불러오지 못해 목적을 확인할 수 없습니다 — 다시 시도해 주세요";
+
 export type OpOutcome = { readonly ok: true; readonly result: OpResult; readonly before: PageDoc } | { readonly ok: false; readonly reason: string };
 
 export interface SectionOps {
@@ -26,12 +28,21 @@ export interface SectionOps {
 export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc; readonly edit: (next: PageDoc) => void; readonly profileId: string }): SectionOps {
   const profiles = useProfileRepository();
   const [series, setSeries] = useState<ProfileSeries>();
+  // 조회 1회를 공유한다 — 실패하면 비워 두고 다음 연산이 다시 조회한다(편집기를 오류 경계로 보내지 않는다: 저장·필드 편집은 계속된다)
   const seriesRef = useRef<Promise<ProfileSeries | undefined>>(undefined);
+  const loadSeries = useCallback(() => {
+    const pending =
+      seriesRef.current ??
+      profiles.getProfile(profileId).catch((error: unknown) => {
+        seriesRef.current = undefined;
+        throw error;
+      });
+    seriesRef.current = pending;
+    return pending;
+  }, [profiles, profileId]);
   useEffect(() => {
     let cancelled = false;
-    const pending = profiles.getProfile(profileId);
-    seriesRef.current = pending;
-    pending.then(
+    loadSeries().then(
       (loaded) => {
         if (!cancelled) setSeries(loaded);
       },
@@ -40,7 +51,7 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
     return () => {
       cancelled = true;
     };
-  }, [profiles, profileId]);
+  }, [loadSeries]);
 
   const docRef = useRef(doc);
   useEffect(() => {
@@ -54,7 +65,13 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
   const run = useCallback(
     (op: DocOp, label: string, undoable = false) => {
       const next = chain.current.then(async (): Promise<OpOutcome> => {
-        const loaded = await (seriesRef.current ?? Promise.resolve(undefined));
+        let loaded: ProfileSeries | undefined;
+        try {
+          loaded = await loadSeries();
+        } catch {
+          // 목적을 모른 채 "none"으로 연산하지 않는다(예약·문의 필수 섹션 보호) — 유추 문장(REPORT)
+          return { ok: false, reason: PROFILE_UNAVAILABLE };
+        }
         const before = docRef.current;
         const ctx = { purpose: docPurpose(loaded, before.profileVersion), motionPreset: docMotionPreset(loaded, before.profileVersion), nextInstanceId: nextId };
         try {
@@ -72,7 +89,7 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
       chain.current = next;
       return next;
     },
-    [edit, nextId, stack],
+    [edit, nextId, stack, loadSeries],
   );
 
   const canUndoLast = last !== undefined && last.after === doc;

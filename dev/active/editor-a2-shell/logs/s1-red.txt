@@ -1,0 +1,585 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-shell/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/StudioPage.test.tsx (7 tests | 6 failed) 15302ms
+   ❯ StudioPage 문서 분기 (D1) (2)
+     × 문서 있음 → E-S03 안내가 아니라 편집 틀(h1 · 섹션 목록) 100ms
+   ❯ 편집 알림 (D2 · E-AC-33 · SPEC 8.2.1 (a) · 8.3.1) (3)
+     × 이동 state editNotice → '편집 알림' status 영역 1개에 1회, 다시 그려도 1회 3031ms
+     × 다시 열기(state 없음)에는 알리지 않는다 — 영역은 비어 있다 3024ms
+     × 알림 state를 비울 때 navigate(replace)를 쓰지 않는다 — 위치 key·state 그대로 3048ms
+   ❯ 진입 포커스 (D3) (2)
+     × 편집 시작으로 도착 → 포커스 = h1(tabIndex -1), body 아님 3041ms
+     × 바뀐 쌍 0개(알림 없음)로 도착해도 포커스 = h1 3023ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > StudioPage 문서 분기 (D1) > 문서 있음 → E-S03 안내가 아니라 편집 틀(h1 · 섹션 목록)
+AssertionError: expected <p …(1)></p> to be null
+
+- Expected:
+null
+
++ Received:
+<p
+  class="ds-body2 text-label-alternative"
+>
+  아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요
+</p>
+
+ ❯ src/pages/StudioPage.test.tsx:41:52
+     39|     open(true);
+     40|     await h1();
+     41|     expect(screen.queryByText(/아직 편집할 페이지가 없습니다/)).toBeNull();
+       |                                                    ^
+     42|     expect(screen.queryByRole("link", { name: "프로필에서 3안 고르기" })).toBeN…
+     43|     expect(await screen.findByRole("button", { name: /^Hero/ })).toBeI…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > 편집 알림 (D2 · E-AC-33 · SPEC 8.2.1 (a) · 8.3.1) > 이동 state editNotice → '편집 알림' status 영역 1개에 1회, 다시 그려도 1회
+TestingLibraryElementError: Unable to find role="status" and name "편집 알림"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"ds-title1"[39m
+          [36m>[39m
+            [0m동네 치과 클리닉 프로젝트[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+          [36m>[39m
+            [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+          [36m</p>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile/profile-1"[39m
+          [36m>[39m
+            [0m프로필에서 3안 고르기[0m
+          [36m</a>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [36m>[39m
+              [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile/profile-1"[39m
+            [36m>[39m
+              [0m프로필에서 3안 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ src/pages/StudioPage.test.tsx:59:11
+     57|     const router = open(true, { editNotice: NOTICE, changes: [] });
+     58|     await h1();
+     59|     await waitFor(() => expect(noticeRegion()).toHaveTextContent(NOTIC…
+       |           ^
+     60|     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLen…
+     61|     expect(screen.getAllByText(NOTICE)).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > 편집 알림 (D2 · E-AC-33 · SPEC 8.2.1 (a) · 8.3.1) > 다시 열기(state 없음)에는 알리지 않는다 — 영역은 비어 있다
+TestingLibraryElementError: Unable to find role="status" and name "편집 알림"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"ds-title1"[39m
+          [36m>[39m
+            [0m동네 치과 클리닉 프로젝트[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+          [36m>[39m
+            [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+          [36m</p>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile/profile-1"[39m
+          [36m>[39m
+            [0m프로필에서 3안 고르기[0m
+          [36m</a>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [36m>[39m
+              [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile/profile-1"[39m
+            [36m>[39m
+              [0m프로필에서 3안 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ src/pages/StudioPage.test.tsx:72:11
+     70|     const router = open(true, { editNotice: NOTICE, changes: [] });
+     71|     await h1();
+     72|     await waitFor(() => expect(noticeRegion()).toHaveTextContent(NOTIC…
+       |           ^
+     73|     act(() => void router.navigate("/catalog"));
+     74|     await screen.findByRole("heading", { level: 1, name: /레퍼런스/ });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > 편집 알림 (D2 · E-AC-33 · SPEC 8.2.1 (a) · 8.3.1) > 알림 state를 비울 때 navigate(replace)를 쓰지 않는다 — 위치 key·state 그대로
+TestingLibraryElementError: Unable to find role="status" and name "편집 알림"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"ds-title1"[39m
+          [36m>[39m
+            [0m동네 치과 클리닉 프로젝트[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+          [36m>[39m
+            [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+          [36m</p>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/profile/profile-1"[39m
+          [36m>[39m
+            [0m프로필에서 3안 고르기[0m
+          [36m</a>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [36m>[39m
+              [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile/profile-1"[39m
+            [36m>[39m
+              [0m프로필에서 3안 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ src/pages/StudioPage.test.tsx:85:11
+     83|     const before = router.state.location.key;
+     84|     await h1();
+     85|     await waitFor(() => expect(noticeRegion()).toHaveTextContent(NOTIC…
+       |           ^
+     86|     expect(router.state.location.key).toBe(before);
+     87|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > 진입 포커스 (D3) > 편집 시작으로 도착 → 포커스 = h1(tabIndex -1), body 아님
+AssertionError: expected <body><div>…(1)</div></body> to be <h1 class="ds-title1"></h1> // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [36m>[39m
+              [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile/profile-1"[39m
+            [36m>[39m
+              [0m프로필에서 3안 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+- Expected
++ Received
+
++ <body>
++   <div>
++     <div
++       class="min-h-dvh bg-background-normal text-label-normal"
++     >
++       <a
++         class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
++         href="#main-content"
++       >
++         본문으로 건너뛰기
++       </a>
++       <main
++         class="focus:outline-none"
++         id="main-content"
++         tabindex="-1"
++       >
++         <div
++           class="mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"
++         >
+            <h1
+              class="ds-title1"
+            >
+              동네 치과 클리닉 프로젝트
+            </h1>
++           <p
++             class="ds-body2 text-label-alternative"
++           >
++             아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요
++           </p>
++           <a
++             class="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"
++             data-discover="true"
++             href="/profile/profile-1"
++           >
++             프로필에서 3안 고르기
++           </a>
++         </div>
++       </main>
++     </div>
++   </div>
++ </body>
+
+ ❯ src/pages/StudioPage.test.tsx:94:56
+     92|     open(true, { editNotice: NOTICE, changes: [] });
+     93|     const heading = await h1();
+     94|     await waitFor(() => expect(document.activeElement).toBe(heading));
+       |                                                        ^
+     95|     expect(heading).toHaveAttribute("tabindex", "-1");
+     96|   });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > 진입 포커스 (D3) > 바뀐 쌍 0개(알림 없음)로 도착해도 포커스 = h1
+AssertionError: expected <body><div>…(1)</div></body> to be <h1 class="ds-title1"></h1> // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [36m>[39m
+              [0m아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/profile/profile-1"[39m
+            [36m>[39m
+              [0m프로필에서 3안 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+- Expected
++ Received
+
++ <body>
++   <div>
++     <div
++       class="min-h-dvh bg-background-normal text-label-normal"
++     >
++       <a
++         class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
++         href="#main-content"
++       >
++         본문으로 건너뛰기
++       </a>
++       <main
++         class="focus:outline-none"
++         id="main-content"
++         tabindex="-1"
++       >
++         <div
++           class="mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7"
++         >
+            <h1
+              class="ds-title1"
+            >
+              동네 치과 클리닉 프로젝트
+            </h1>
++           <p
++             class="ds-body2 text-label-alternative"
++           >
++             아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요
++           </p>
++           <a
++             class="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"
++             data-discover="true"
++             href="/profile/profile-1"
++           >
++             프로필에서 3안 고르기
++           </a>
++         </div>
++       </main>
++     </div>
++   </div>
++ </body>
+
+ ❯ src/pages/StudioPage.test.tsx:101:56
+     99|     open(true, { changes: [] });
+    100|     const heading = await h1();
+    101|     await waitFor(() => expect(document.activeElement).toBe(heading));
+       |                                                        ^
+    102|   });
+    103| });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 passed (7)
+   Start at  17:45:14
+   Duration  16.55s (tests 93%, environment 4%, transform 2%, setup 1%, import 1%)
+

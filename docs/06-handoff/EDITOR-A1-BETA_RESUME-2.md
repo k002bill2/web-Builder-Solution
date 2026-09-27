@@ -23,3 +23,9 @@
 - 서브에이전트 분할: 권장(S-B9 라디오 ∥ 프로필 링크·편집 시작 — 쓰기 파일 분리, worktree 격리).
 - `--max-turns` 70, 55턴부터 REPORT 우선. 단계마다 로컬 커밋. push·main 병합·삭제 금지. fable 무접촉. Q-19·20·22·23 결정 금지.
 - REPORT: 새 절 "RESUME-2" 추가(SHA, 파일, 번들 표, 테스트, 캡처, Codex, 남은 것).
+
+## 이어받기 (RESUME-2b, Jarvis 2026-09-27 15:4x)
+- 3번째 실행이 21턴에 **API rate limit**(429)으로 중단. S1 진행분을 Jarvis가 WIP 커밋으로 보존(`DraftPanel`·`DraftSummaryBar`·`draftLabels`·`useCompareBoard`·`CompareBoardPage` + 새 `CompareBoardTarget.test.tsx`, tsc 통과 · 테스트 미실행).
+- **먼저** `git show HEAD --stat`과 새 테스트를 읽고, 표적 테스트 실행으로 S1이 RED/GREEN 어디인지 판정한 뒤 이어서 S1 → S2 → S3 → S4~S7.
+- **서브에이전트 분할: 불필요**(rate limit 완화 — 이번 실행은 메인 단독). 이전 서브에이전트 worktree(`.claude/worktrees/agent-a6c8fc…`)는 쓰지 않는다.
+- Codex review는 S4 뒤 1회. 한도·실패면 BLOCKED 기록 후 진행.

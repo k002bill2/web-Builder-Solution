@@ -23,7 +23,10 @@ export function createMemoryProjectRepository({ store, now = () => new Date().to
   return {
     persistence: "memory",
     listProjects: async () => store.projects().map(summaryOf).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
-    getProject: async (projectId) => store.projects().find((p) => p.projectId === projectId),
+    getProject: async (projectId) => {
+      const project = store.projects().find((p) => p.projectId === projectId);
+      return project && Object.freeze({ ...project, updatedAt: summaryOf(project).updatedAt });
+    },
     renameProject: async (projectId, expectedRevision, name) =>
       store.transact((tx) => {
         const checked = validateProjectName(name);

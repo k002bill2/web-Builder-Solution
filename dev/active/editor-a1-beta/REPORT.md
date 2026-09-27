@@ -1,6 +1,6 @@
 # EDITOR-A1-BETA — REPORT (RESUME-1 · store 확장에서 `/profile` 진입 직후 여유 게이트 불합격 · 중지)
 
-**결론: 1단계 첫 공통 변경(store 프로젝트 레코드 + 보드 확정 대상)만으로 `/profile` 진입 직후가 124.74KB(여유 0.26)가 되어 멈춤선 0.3 아래 → 브리프대로 예산·분류를 바꾸지 않고 실측·REPORT 커밋 후 1단계 화면 연결을 중지했다.** store·트랜잭션·멱등 키·프로젝트 저장소(목록·이름 바꾸기)와 번들 0 작업(12.4 테스트 · D3 · 미사용 파일 정리)은 끝냈다.
+**결론: 1단계 첫 공통 변경(store 프로젝트 레코드 + 보드 확정 대상)만으로 `/profile` 진입 직후가 124.72~124.75KB(여유 0.25~0.28, 최종 커밋 124.72)가 되어 멈춤선 0.3 아래 → 브리프대로 예산·분류를 바꾸지 않고 실측·REPORT 커밋 후 1단계 화면 연결을 중지했다.** store·트랜잭션·멱등 키·프로젝트 저장소(목록·이름 바꾸기)와 번들 0 작업(12.4 테스트 · D3 · 미사용 파일 정리)은 끝냈다.
 
 - 기준: HEAD `90e9d89`(재개 기준 실측) + 브리프 `477b5c5` · 재개 수신 `ffb0063` · 브랜치 `k002bill2/editor-a1-beta` (push·병합·삭제 없음)
 - 로컬 커밋: `6fa96fa`(store·확정 대상 — 측정 상태, 병합 대상 아님) · `afd64c0`(12.4 헤더·/studio 단언 + 미사용 파일 삭제, 서브에이전트) · `67e5ac2`(QA D3, 서브에이전트 — **결정 필요**) · `5607c04`(12.4 P-AC-03 → /projects) · 이 REPORT 커밋
@@ -9,6 +9,8 @@
 ## 1. 번들 전후 표 (첫 화면 / 진입 직후, 예산 100 / 125, 멈춤선 여유 0.3)
 
 | 시나리오 | 재개 기준 `90e9d89` | R1 첫 구현 | R1 최소화(커밋 `5607c04`) | 여유 | 판정 |
+|---|---|---|---|---|---|
+| (리뷰 반영 최종, `logs/r2-build.txt`) | | | 공통 89.34 · `/catalog` 99.63 · `/compare` 98.40 / 121.36 · `/profile` 99.39 / **124.72** | `/profile` 진입 직후 **0.28** | **불합격** |
 |---|---|---|---|---|---|
 | 공통 JS | 89.32 | 89.35 | 89.34 (+0.02) | — | — |
 | `/catalog` | 99.63 / 102.01 | 99.65 / 102.04 | 99.65 / 102.03 | **0.35** / 22.97 | 통과 |
@@ -51,7 +53,17 @@
 | `npm run lint` | exit 0 | `r1-lint.txt` |
 | `npx vitest run` (전체 1회) | **1 failed / 1226 passed (1227)**, exit 1 — 실패 = P-AC-29(3절 마지막 줄) | `r1-vitest.txt` |
 | `npm run build` | exit 0 (예산 100/125 안 — 여유 게이트는 `/profile` 불합격) | `r1-final-build.txt` |
-| Codex `review --scope branch --base ffb0063` | 1차 실패 — Codex 사용량 한도("try again at 3:26 PM") | `codex-r1-attempt1.txt` |
+| Codex `review --scope branch --base ffb0063` | **2회 모두 실패 — Codex 사용량 한도("try again at 3:26 PM")**. 대기 루프가 외부에서 종료(exit 144)되어 한도 해제 뒤 재실행하지 못함 | `codex-r1-attempt1.txt` · `codex-r1.txt` |
+| 대체 독립 리뷰(code-reviewer 서브에이전트, 읽기 전용) | Major 1 · Minor 3 → 아래 표 | — |
+| 리뷰 반영 뒤 fresh: typecheck · lint · `npx vitest run` · build | exit 0 · exit 0 · **1 failed(P-AC-29) / 1229 passed** · exit 0 | `r2-*.txt` |
+
+리뷰 지적과 처리:
+| 등급 | 지적 | 처리 |
+|---|---|---|
+| Major | 멱등 재생이 모든 계열을 키만으로 찾아, 같은 revision의 첫 확정 결과를 "새 프로젝트" 요청·다른 계열 id에 재생 | **수정** — 키에 호출자가 넘긴 계열 id를 더함(첫 확정은 빈 값이라 재시도 재생 유지). 회귀 테스트 2건 RED → GREEN |
+| Minor | `getProject.updatedAt`이 프로필 새 버전을 반영하지 않음(목록과 다름) | **수정** — 목록과 같은 파생값, 테스트 1건 |
+| Minor | `confirmFirst`가 이미 확정된 보드에서도 호출 가능(현재는 STALE_PROFILE로 막힘) | 미수정 — 기존 `confirmProfile` 동작과 같음(이번 diff가 바꾼 동작 아님) |
+| Minor | `renameProject` 판정 순서(모양 → NOT_FOUND → STALE) SPEC 명시 없음 | 미수정 — 8.3.1 "모양 먼저" 관례. SPEC 수정 금지라 기록만 |
 
 - 127.0.0.1:4337 실제 클릭·캡처: 6절.
 

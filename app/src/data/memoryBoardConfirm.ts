@@ -73,8 +73,13 @@ export interface BoardConfirmer {
 
 type ConfirmOutcome = { readonly result: ConfirmResult; readonly board: CompareBoard };
 
-/** 멱등 키 = (보드 id, revision, expectedLatest, 확정 대상) — 대상이 빠지면 대상을 바꾼 재시도가 다른 프로젝트 결과를 돌려받는다(12.2) */
-const keyOf = (board: CompareBoard, revision: number, expectedLatest: number, target: ConfirmTarget) => [board.id, revision, expectedLatest, target].join("\n");
+/**
+ * 멱등 키 = (보드 id, revision, expectedLatest, 확정 대상, 호출자가 넘긴 계열) — 대상이 빠지면 대상을 바꾼 재시도가 다른 프로젝트 결과를
+ * 돌려받는다(12.2). 계열이 빠지면 같은 revision의 첫 확정 결과를 "새 프로젝트" 요청이나 다른 계열 id로 재생한다(리뷰 Major).
+ * 첫 확정(confirmProfile)은 호출자가 계열을 넘기지 않는다 — 재시도 때 보드가 이미 확정됐어도 같은 키
+ */
+const keyOf = (board: CompareBoard, revision: number, expectedLatest: number, target: ConfirmTarget, callerSeries = "") =>
+  [board.id, revision, expectedLatest, target, callerSeries].join("\n");
 /** 계열마다 마지막 커밋에서 같은 키를 찾는다 — 대상이 new면 재시도 때 보드는 이미 새 계열을 가리킨다 */
 function replayOf(store: StudioStore, key: string): ConfirmResult | undefined {
   const done = store.profileIds().map((id) => store.commitOf(id)).find((commit) => commit?.key === key);
@@ -88,10 +93,9 @@ function confirmIn(
   revision: number,
   expectedLatest: number,
   profileId: string | undefined,
-  target: ConfirmTarget,
+  key: string,
   commitGate: () => void,
 ): ConfirmOutcome {
-  const key = keyOf(board, revision, expectedLatest, target);
   const done = replayOf(store, key);
   if (done) return { result: done, board };
   if (revision !== board.revision) throw staleBoard(revision);
@@ -158,13 +162,14 @@ export function createBoardConfirmer(deps: BoardConfirmDeps): BoardConfirmer {
       if (!carryOver && profileId !== undefined && hasAdjustments(deps.store.versions(profileId).at(-1))) carryOver = (await loadCarryOver()).carryOverAdjustments;
     },
     confirmFirst: (board, revision, expectedLatest, commitGate) =>
-      confirmIn(deps, carryOver, board, revision, expectedLatest, board.confirmed?.profileId, expectedLatest === 0 ? "new" : "current", commitGate),
+      confirmIn(deps, carryOver, board, revision, expectedLatest, board.confirmed?.profileId, keyOf(board, revision, expectedLatest, expectedLatest === 0 ? "new" : "current"), commitGate),
     confirmVersion: (board, profileId, revision, expectedLatest, target, commitGate) => {
-      const done = replayOf(deps.store, keyOf(board, revision, expectedLatest, target));
+      const key = keyOf(board, revision, expectedLatest, target, profileId);
+      const done = replayOf(deps.store, key);
       if (done) return { result: done, board };
       if (board.confirmed?.profileId !== profileId) throw new CompareBoardError("SCHEMA_INVALID", `이 보드의 프로필이 아님: ${profileId}`);
       if (target === "new" && expectedLatest !== 0) throw new CompareBoardError("SCHEMA_INVALID", `새 프로젝트는 expectedLatest 0: ${expectedLatest}`);
-      return confirmIn(deps, carryOver, board, revision, expectedLatest, target === "new" ? undefined : profileId, target, commitGate);
+      return confirmIn(deps, carryOver, board, revision, expectedLatest, target === "new" ? undefined : profileId, key, commitGate);
     },
   };
 }

@@ -151,6 +151,23 @@ describe("J-AC-07 확정 트랜잭션 (12.2)", () => {
   });
 });
 
+describe("멱등 재생은 호출자의 계열에 묶인다 (리뷰 Major)", () => {
+  it("첫 확정과 같은 revision에서 '새 프로젝트'를 부르면 첫 확정 결과를 재생하지 않고 새 계열을 만든다", async () => {
+    const studio = studioWith();
+    await studio.board.confirmProfile(1, 0);
+    expect(await studio.board.createProfileVersion("profile-1", 1, 0, "new")).toEqual({ profileId: "profile-2", version: 1 });
+    expect(await (await studio.projects()).listProjects()).toHaveLength(2);
+  });
+
+  it("current 재생은 그 계열의 커밋만 — 다른 계열 id면 SCHEMA_INVALID", async () => {
+    const studio = studioWith();
+    await studio.board.confirmProfile(1, 0);
+    const changed = await studio.board.savePicks({ hero: "ref-c" }, {}, 1);
+    await studio.board.createProfileVersion("profile-1", changed.revision, 0, "new");
+    expect(await codeOf(studio.board.createProfileVersion("profile-9", changed.revision, 0, "new"))).toBe("SCHEMA_INVALID");
+  });
+});
+
 describe("프로젝트 메모리 저장소 (8.3 — J-S04·J-S07)", () => {
   it("renameProject: 앞뒤 공백 제거 · revision +1 · 1~40자 아니면 SCHEMA_INVALID · 불일치 STALE_PROJECT(최신 동봉) · 없으면 NOT_FOUND", async () => {
     const studio = studioWith();
@@ -167,6 +184,18 @@ describe("프로젝트 메모리 저장소 (8.3 — J-S04·J-S07)", () => {
     expect(await codeOf(repo.renameProject("project-9", 1, "이름"))).toBe("NOT_FOUND");
     expect((await studio.board.getBoard()).board.confirmed).toMatchObject({ projectName: "카페 온도 리브랜딩" });
     expect((await studio.profiles.getProfile("profile-1"))?.project?.name).toBe("카페 온도 리브랜딩");
+  });
+
+  it("getProject의 updatedAt도 프로필 새 버전을 반영한다(목록과 같은 값)", async () => {
+    let t = 0;
+    const studio = createMemoryStudio({ catalog: FIXTURE_CATALOG, now: () => `2026-09-27T00:00:0${t++}.000Z`, initialBoard: boardOf(IDS, { hero: "ref-a" }) });
+    await studio.board.confirmProfile(1, 0);
+    const changed = await studio.board.savePicks({ hero: "ref-c" }, {}, 1);
+    await studio.board.createProfileVersion("profile-1", changed.revision, 1, "current");
+    const repo = await studio.projects();
+    const [listed] = await repo.listProjects();
+    expect((await repo.getProject("project-1"))?.updatedAt).toBe(listed!.updatedAt);
+    expect(listed!.updatedAt > listed!.createdAt).toBe(true);
   });
 
   it("getProject 없으면 undefined · getDoc 문서 없음 undefined", async () => {

@@ -1,0 +1,46 @@
+diff --git a/app/src/data/boardConfirmDraft.ts b/app/src/data/boardConfirmDraft.ts
+new file mode 100644
+index 0000000..c2e6aee
+--- /dev/null
++++ b/app/src/data/boardConfirmDraft.ts
+@@ -0,0 +1,2 @@
++/** 확정 초안 계산 — 보드 확정 조작 뒤에만 받는다(writeBodyLoader loadProfileDraft). 실험 */
++export { buildProfileDraft } from "../domain/profileDraft";
+diff --git a/app/src/data/memoryCompareBoardRepository.ts b/app/src/data/memoryCompareBoardRepository.ts
+index 83a9146..1dd259a 100644
+--- a/app/src/data/memoryCompareBoardRepository.ts
++++ b/app/src/data/memoryCompareBoardRepository.ts
+@@ -11,13 +11,12 @@ import { addColumn, removeColumn } from "../domain/boardColumns";
+ import { releaseUnavailablePicks } from "../domain/boardPicks";
+ import { PICKABLE_ROW_IDS, emptyBoard, type CompareBoard, type ComparisonResult, type Picks } from "../domain/compareBoard";
+ import { resolveComparisons, type ComparisonCatalog } from "../domain/comparisonCells";
+-import { buildProfileDraft } from "../domain/profileDraft";
+ import { EXPOSED_LICENSE_STATUSES } from "../domain/reference";
+ import { SECTION_LIBRARY, type SectionLibrary } from "../domain/sectionLibrary";
+ import { CompareBoardError, type CompareBoardRepository, type ConfirmResult } from "./compareBoardRepository";
+ import type { BoardConfirmer } from "./memoryBoardConfirm";
+ import { createStudioStore, headOf, type StudioStore } from "./studioStore";
+-import { loadBoardConfirm, loadBoardInput } from "./writeBodyLoader";
++import { loadBoardConfirm, loadBoardInput, loadProfileDraft } from "./writeBodyLoader";
+ 
+ export type BoardMethod = keyof CompareBoardRepository;
+ export interface BoardCall {
+@@ -96,7 +95,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
+   let confirmer: BoardConfirmer | undefined;
+   /** 확정 본문을 받고(받은 모듈만 기억 — 로드 실패 뒤 다시 부르면 다시 받는다) 이어받기 규칙을 준비한다. `call` 앞, 동기 구간 밖 */
+   const confirmerFor = async (profileId: string | undefined): Promise<BoardConfirmer> => {
+-    const { createBoardConfirmer } = await loadBoardConfirm();
++    const [{ createBoardConfirmer }, { buildProfileDraft }] = await Promise.all([loadBoardConfirm(), loadProfileDraft()]);
+     confirmer ??= createBoardConfirmer({ store, library, now, resultsOf, assertPicks, staleBoard, buildProfileDraft });
+     await confirmer.prepare(profileId);
+     return confirmer;
+diff --git a/app/src/data/writeBodyLoader.ts b/app/src/data/writeBodyLoader.ts
+index e3d6a1c..64f6807 100644
+--- a/app/src/data/writeBodyLoader.ts
++++ b/app/src/data/writeBodyLoader.ts
+@@ -14,3 +14,5 @@ export const loadProfileWrites = retryableImport(() => import("./memoryProfileAd
+ export const loadBoardInput = retryableImport(() => import("../domain/boardInput"));
+ /** 3안 계산 본문(composeCandidates·lintPlan, 2a-04c) ← requestGeneration·retryFailed("3안 만들기"·"다시 시도" onClick). 진입 findJob·getJob 폴링은 받지 않는다 */
+ export const loadGenerate = retryableImport(() => import("./memoryGenerate"));
++/** 확정 초안 계산(buildProfileDraft) ← confirmProfile·createProfileVersion — 보드 화면은 엔진이 이미 받아 캐시, 프로필 화면 진입 직후에는 싣지 않는다 */
++export const loadProfileDraft = retryableImport(() => import("./boardConfirmDraft"));

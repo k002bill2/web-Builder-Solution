@@ -28,3 +28,8 @@ export const toParticle = (word: string): string => (finalConsonant(word) === "o
 
 /** "Services를 4번째로 옮겼습니다"(5.2) — N = 섹션 줄 번호(Header 포함, 1부터) */
 export const movedNotice = (type: SectionType, name: string, index: number): string => `${objectOf(type, name)} ${index + 1}번째로 옮겼습니다`;
+
+/** "Services를 삭제했습니다"(5.4 · E-S13) */
+export const removedNotice = (type: SectionType, name: string): string => `${objectOf(type, name)} 삭제했습니다`;
+/** "Services를 되돌렸습니다"(5.4) */
+export const restoredNotice = (type: SectionType, name: string): string => `${objectOf(type, name)} 되돌렸습니다`;

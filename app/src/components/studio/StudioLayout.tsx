@@ -4,8 +4,9 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
 import type { MoveDirection } from "../../engine/ops/rules";
-import { movedNotice } from "../../features/studio/opNotice";
-import { canMove } from "../../features/studio/opPermissions";
+import { movedNotice, removedNotice, restoredNotice } from "../../features/studio/opNotice";
+import { canMove, canRemove } from "../../features/studio/opPermissions";
+import { docPurpose } from "../../features/studio/docPurpose";
 import { useFocusRequest } from "../../features/studio/useFocusRequest";
 import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
@@ -104,20 +105,57 @@ export function StudioLayout({
     },
     [run, requestFocus],
   );
+  // 대상 줄로 포커스(6.4) — <1024는 "섹션" 탭으로 먼저 바꾼다(숨은 패널 안으로 포커스를 보내지 않는다)
+  const focusRow = useCallback(
+    (rowId: string) => {
+      if (mode === "tabs") setTab("sections");
+      requestFocus({ rowId });
+    },
+    [mode, requestFocus],
+  );
+  // 알림 줄 "되돌리기"(Q7)가 되살릴 섹션과 알림 문장 — 연산마다 새로 정한다
+  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string }>();
+  const remove = useCallback(
+    async (instanceId: string) => {
+      const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
+      if (!outcome.ok) return setNotice(outcome.reason);
+      const { before, result } = outcome;
+      const removed = before.sections[result.index]!;
+      // 포커스·선택 = 다음 섹션 줄(없으면 이전) — resolveSelection(첫 본문)에 맡기지 않는다
+      const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
+      if (next) setSelected(next.instanceId);
+      setUndoTarget({ instanceId: removed.instanceId, text: restoredNotice(removed.type, sectionName(removed)) });
+      setNotice(removedNotice(removed.type, sectionName(removed)));
+      if (next) focusRow(next.instanceId);
+    },
+    [run, focusRow],
+  );
+  const { undoLast } = ops;
+  const undo = useCallback(() => {
+    if (!undoTarget || !undoLast()) return;
+    setSelected(undoTarget.instanceId);
+    setNotice(undoTarget.text);
+    focusRow(undoTarget.instanceId);
+  }, [undoTarget, undoLast, focusRow]);
+
   const current = selectedSection(doc, selectedId);
+  const purpose = docPurpose(ops.series, doc.profileVersion);
   // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
   const opControls = current && (
     <SectionOpControls
       up={canMove(doc, current.instanceId, "up")}
       down={canMove(doc, current.instanceId, "down")}
+      remove={canRemove(doc, current.instanceId, purpose)}
       onMove={(direction, button) => void move(current.instanceId, direction, button)}
+      onRemove={() => void remove(current.instanceId)}
+      profileHref={`/profile/${project.profileId}?v=${doc.profileVersion}`}
     />
   );
 
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
-  const noticeRegion = <NoticeRegion text={notice} />;
+  const noticeRegion = <NoticeRegion text={notice} onUndo={ops.canUndoLast ? undo : undefined} />;
   const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} selectedExtra={mode === "tabs" ? opControls : undefined} />;
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={opControls}>

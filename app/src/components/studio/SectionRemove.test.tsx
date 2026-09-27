@@ -70,7 +70,8 @@ describe("삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19)", () => {
     await remove();
     await screen.findByText("Services를 삭제했습니다");
     await act(async () => void fireEvent.click(editPanel().getByRole("button", { name: "위로" })));
-    await screen.findByText("FAQ를 4번째로 옮겼습니다");
+    // Services(4번째)를 지운 뒤 FAQ가 4번째 → 위로 = 3번째
+    await screen.findByText("FAQ를 3번째로 옮겼습니다");
     expect(undoButton()).toBeNull();
 
     pick("About");

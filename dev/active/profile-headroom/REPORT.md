@@ -66,7 +66,7 @@
 - 캡처는 `Page.captureScreenshot` CDP 타임아웃으로 남기지 못했다(동작 확인은 DOM 값으로).
 
 ## 6. 리뷰
-- **Codex: BLOCKED** — `codex-companion review --scope branch --base 1a371a7` → "You've hit your usage limit … try again at 3:26 PM"(`logs/codex-r1.txt`). 한도 복구 뒤 같은 명령으로 재실행 필요.
+- **Codex: 통과(지적 0)** — 1회차는 사용량 한도로 실패(`logs/codex-r1.txt`), 한도 복구 뒤 같은 명령 `review --scope branch --base 1a371a7` 재실행(`logs/codex-r2.txt`, 리뷰 반영 `6eb5de5` 포함): "job creation and retry behavior 보존" 판정, 지적 없음. Codex 쪽 대상 테스트 실행은 샌드박스 쓰기 제한으로 못 했고 typecheck만 통과 — 테스트는 5절 메인 실행이 근거.
 - 대체: 독립 컨텍스트 code-reviewer 에이전트(읽기 전용). 판정 순서·`onCompose` 시점·attempts·원자성·동결·`import type` 방향 문제 없음 확인.
   - Major 1 → **반영**(`6eb5de5`): `newJob`이 도메인 `GENERATOR_VERSION`을 써서 멱등 키 상수와 출처가 갈렸다 → 저장소 `MEMORY_GENERATOR_VERSION`을 넘기게 했다.
   - Minor 1(미반영): 저장소 로컬 `isTerminal`과 도메인 `isTerminal`이 따로 있다 — 로컬 쪽은 기존 설계(도메인 런타임 import 회피)라 그대로 둔다.

@@ -1,0 +1,1324 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a1-beta/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/layout/AppHeader.test.tsx (9 tests | 5 failed) 493ms
+   ❯ 앱 셸 헤더 (v2 SPEC 4.1) (9)
+     × /catalog 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15) 163ms
+     × /catalog?tab=saved 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15) 56ms
+     × /references/ref-a 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15) 54ms
+     × /compare 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15) 43ms
+     × /profile 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15) 25ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfilePage.test.tsx (31 tests | 2 failed) 4846ms
+   ❯ P-AC-03 /profile 목록 (P-S04·05) (2)
+     × 프로필 0 → 시작 안내 + 비교 보드로 · 카탈로그에서 고르기 15ms
+     × 프로필이 있으면 줄마다 기준 레퍼런스 제목 · 최신 버전 · 열기 링크 3049ms
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CatalogPage.test.tsx (36 tests | 1 failed) 6884ms
+   ❯ 라우팅 (5)
+     × /studio 는 다음 단계 자리표시 페이지다 3008ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CatalogPage.test.tsx > 라우팅 > /studio 는 다음 단계 자리표시 페이지다
+TestingLibraryElementError: Unable to find role="heading" and name "편집기"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/projects"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare?new=1"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</a>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-4 px-4 py-8 md:px-7"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex w-full flex-wrap items-center justify-between gap-3"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</h1>[39m
+          [36m</header>[39m
+          [36m<p[39m
+            [33maria-label[39m=[32m"프로젝트 알림"[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2"[39m
+          [36m>[39m
+            [0m프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m새로고침하면 프로젝트가 사라집니다(서버 연결 전)[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드로[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그에서 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/projects"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare?new=1"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</a>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-4 px-4 py-8 md:px-7"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex w-full flex-wrap items-center justify-between gap-3"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</h1>[39m
+          [36m</header>[39m
+          [36m<p[39m
+            [33maria-label[39m=[32m"프로젝트 알림"[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2"[39m
+          [36m>[39m
+            [0m프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m새로고침하면 프로젝트가 사라집니다(서버 연결 전)[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드로[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그에서 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/CatalogPage.test.tsx:362:25
+    360|   ])("%s 는 다음 단계 자리표시 페이지다", async (path, title) => {
+    361|     renderApp(path);
+    362|     expect(await screen.findByRole("heading", { level: 1, name: title …
+       |                         ^
+    363|     expect(screen.getByText(/다음 단계에서 구현됩니다/)).toBeInTheDocument();
+    364|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > P-AC-03 /profile 목록 (P-S04·05) > 프로필 0 → 시작 안내 + 비교 보드로 · 카탈로그에서 고르기
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  디자인 프로필[39m
+Received:
+[31m  프로젝트[39m
+ ❯ src/pages/ProfilePage.test.tsx:108:24
+    106|   it("프로필 0 → 시작 안내 + 비교 보드로 · 카탈로그에서 고르기", async () => {
+    107|     renderApp("/profile");
+    108|     expect(await h1()).toHaveTextContent("디자인 프로필");
+       |                        ^
+    109|     expect(await screen.findByText("프로필은 비교 보드에서 요소를 골라 확정하면 만들어집니다"))…
+    110|     expect(screen.getByRole("link", { name: "비교 보드로" })).toHaveAttribu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > P-AC-03 /profile 목록 (P-S04·05) > 프로필이 있으면 줄마다 기준 레퍼런스 제목 · 최신 버전 · 열기 링크
+TestingLibraryElementError: Unable to find role="listitem" and name `/^모던 카페 브랜드/`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/projects"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare?new=1"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</a>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-4 px-4 py-8 md:px-7"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex w-full flex-wrap items-center justify-between gap-3"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</h1>[39m
+          [36m</header>[39m
+          [36m<p[39m
+            [33maria-label[39m=[32m"프로젝트 알림"[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2"[39m
+          [36m>[39m
+            [0m프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m새로고침하면 프로젝트가 사라집니다(서버 연결 전)[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드로[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그에서 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/projects"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare?new=1"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</a>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-4 px-4 py-8 md:px-7"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex w-full flex-wrap items-center justify-between gap-3"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"ds-title1"[39m
+            [36m>[39m
+              [0m프로젝트[0m
+            [36m</h1>[39m
+          [36m</header>[39m
+          [36m<p[39m
+            [33maria-label[39m=[32m"프로젝트 알림"[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2"[39m
+          [36m>[39m
+            [0m프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m새로고침하면 프로젝트가 사라집니다(서버 연결 전)[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/compare"[39m
+            [36m>[39m
+              [0m비교 보드로[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/catalog"[39m
+            [36m>[39m
+              [0m카탈로그에서 고르기[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfilePage.test.tsx:116:30
+    114|   it("프로필이 있으면 줄마다 기준 레퍼런스 제목 · 최신 버전 · 열기 링크", async () => {
+    115|     const { router } = await openProfile("/profile", 2);
+    116|     const row = await screen.findByRole("listitem", { name: /^모던 카페 브랜…
+       |                              ^
+    117|     expect(within(row).getByText("최신 v2")).toBeInTheDocument();
+    118|     expect(within(row).getByText((_, el) => el?.tagName === "TIME")).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > /catalog 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15)
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > /references/ref-a 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15)
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "새 프로젝트"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Design Studio":
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  --------------------------------------------------navigation:
+
+  Name "주 메뉴":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "카탈로그":
+  [36m<a[39m
+    [33maria-current[39m=[32m"page"[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  Name "보관함":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog?tab=saved"[39m
+  [36m/>[39m
+
+  Name "비교 보드":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare"[39m
+  [36m/>[39m
+
+  Name "프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  --------------------------------------------------link:
+
+  Name "새 프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare?new=1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "강영환":
+  [36m<span[39m
+    [33maria-label[39m=[32m"강영환"[39m
+    [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+[36m>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+    [36m>[39m
+      [0mDesign Studio[0m
+    [36m</span>[39m
+  [36m</a>[39m
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33maria-current[39m=[32m"page"[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog"[39m
+    [36m>[39m
+      [0m카탈로그[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog?tab=saved"[39m
+    [36m>[39m
+      [0m보관함[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare"[39m
+    [36m>[39m
+      [0m비교 보드[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/projects"[39m
+    [36m>[39m
+      [0m프로젝트[0m
+    [36m</a>[39m
+  [36m</nav>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare?new=1"[39m
+    [36m>[39m
+      [36m<i[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"ds-icon size-4 "[39m
+        [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+      [36m/>[39m
+      [0m새 프로젝트[0m
+    [36m</a>[39m
+    [36m<span[39m
+      [33maria-label[39m=[32m"강영환"[39m
+      [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+      [33mrole[39m=[32m"img"[39m
+    [36m>[39m
+      [0m강영[0m
+    [36m</span>[39m
+  [36m</div>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/layout/AppHeader.test.tsx:21:29
+     19|       const nav = within(header).getByRole("navigation", { name: "주 메뉴…
+     20|       expect(within(nav).getAllByRole("link").map((a) => a.textContent…
+     21|       expect(within(header).getByRole("button", { name: "새 프로젝트" })).t…
+       |                             ^
+     22|       expect(within(header).getByRole("img", { name: CURRENT_USER.name…
+     23|       expect(screen.queryByText(/조직 공유/)).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > /catalog?tab=saved 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15)
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "새 프로젝트"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Design Studio":
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  --------------------------------------------------navigation:
+
+  Name "주 메뉴":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "카탈로그":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  Name "보관함":
+  [36m<a[39m
+    [33maria-current[39m=[32m"page"[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog?tab=saved"[39m
+  [36m/>[39m
+
+  Name "비교 보드":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare"[39m
+  [36m/>[39m
+
+  Name "프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  --------------------------------------------------link:
+
+  Name "새 프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare?new=1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "강영환":
+  [36m<span[39m
+    [33maria-label[39m=[32m"강영환"[39m
+    [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+[36m>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+    [36m>[39m
+      [0mDesign Studio[0m
+    [36m</span>[39m
+  [36m</a>[39m
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog"[39m
+    [36m>[39m
+      [0m카탈로그[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33maria-current[39m=[32m"page"[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog?tab=saved"[39m
+    [36m>[39m
+      [0m보관함[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare"[39m
+    [36m>[39m
+      [0m비교 보드[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/projects"[39m
+    [36m>[39m
+      [0m프로젝트[0m
+    [36m</a>[39m
+  [36m</nav>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare?new=1"[39m
+    [36m>[39m
+      [36m<i[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"ds-icon size-4 "[39m
+        [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+      [36m/>[39m
+      [0m새 프로젝트[0m
+    [36m</a>[39m
+    [36m<span[39m
+      [33maria-label[39m=[32m"강영환"[39m
+      [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+      [33mrole[39m=[32m"img"[39m
+    [36m>[39m
+      [0m강영[0m
+    [36m</span>[39m
+  [36m</div>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/layout/AppHeader.test.tsx:21:29
+     19|       const nav = within(header).getByRole("navigation", { name: "주 메뉴…
+     20|       expect(within(nav).getAllByRole("link").map((a) => a.textContent…
+     21|       expect(within(header).getByRole("button", { name: "새 프로젝트" })).t…
+       |                             ^
+     22|       expect(within(header).getByRole("img", { name: CURRENT_USER.name…
+     23|       expect(screen.queryByText(/조직 공유/)).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > /compare 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15)
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "새 프로젝트"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Design Studio":
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  --------------------------------------------------navigation:
+
+  Name "주 메뉴":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "카탈로그":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  Name "보관함":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog?tab=saved"[39m
+  [36m/>[39m
+
+  Name "비교 보드":
+  [36m<a[39m
+    [33maria-current[39m=[32m"page"[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare"[39m
+  [36m/>[39m
+
+  Name "프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  --------------------------------------------------link:
+
+  Name "새 프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare?new=1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "강영환":
+  [36m<span[39m
+    [33maria-label[39m=[32m"강영환"[39m
+    [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+[36m>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+    [36m>[39m
+      [0mDesign Studio[0m
+    [36m</span>[39m
+  [36m</a>[39m
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog"[39m
+    [36m>[39m
+      [0m카탈로그[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog?tab=saved"[39m
+    [36m>[39m
+      [0m보관함[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33maria-current[39m=[32m"page"[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare"[39m
+    [36m>[39m
+      [0m비교 보드[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/projects"[39m
+    [36m>[39m
+      [0m프로젝트[0m
+    [36m</a>[39m
+  [36m</nav>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare?new=1"[39m
+    [36m>[39m
+      [36m<i[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"ds-icon size-4 "[39m
+        [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+      [36m/>[39m
+      [0m새 프로젝트[0m
+    [36m</a>[39m
+    [36m<span[39m
+      [33maria-label[39m=[32m"강영환"[39m
+      [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+      [33mrole[39m=[32m"img"[39m
+    [36m>[39m
+      [0m강영[0m
+    [36m</span>[39m
+  [36m</div>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/layout/AppHeader.test.tsx:21:29
+     19|       const nav = within(header).getByRole("navigation", { name: "주 메뉴…
+     20|       expect(within(nav).getAllByRole("link").map((a) => a.textContent…
+     21|       expect(within(header).getByRole("button", { name: "새 프로젝트" })).t…
+       |                             ^
+     22|       expect(within(header).getByRole("img", { name: CURRENT_USER.name…
+     23|       expect(screen.queryByText(/조직 공유/)).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > /profile 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15)
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "새 프로젝트"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Design Studio":
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  --------------------------------------------------navigation:
+
+  Name "주 메뉴":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "카탈로그":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m/>[39m
+
+  Name "보관함":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog?tab=saved"[39m
+  [36m/>[39m
+
+  Name "비교 보드":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare"[39m
+  [36m/>[39m
+
+  Name "프로젝트":
+  [36m<a[39m
+    [33maria-current[39m=[32m"page"[39m
+    [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  --------------------------------------------------link:
+
+  Name "새 프로젝트":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/compare?new=1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "강영환":
+  [36m<span[39m
+    [33maria-label[39m=[32m"강영환"[39m
+    [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+[36m>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/catalog"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+    [36m>[39m
+      [0mDesign Studio[0m
+    [36m</span>[39m
+  [36m</a>[39m
+  [36m<nav[39m
+    [33maria-label[39m=[32m"주 메뉴"[39m
+    [33mclass[39m=[32m"order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog"[39m
+    [36m>[39m
+      [0m카탈로그[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/catalog?tab=saved"[39m
+    [36m>[39m
+      [0m보관함[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare"[39m
+    [36m>[39m
+      [0m비교 보드[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33maria-current[39m=[32m"page"[39m
+      [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/projects"[39m
+    [36m>[39m
+      [0m프로젝트[0m
+    [36m</a>[39m
+  [36m</nav>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/compare?new=1"[39m
+    [36m>[39m
+      [36m<i[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"ds-icon size-4 "[39m
+        [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M12%205v14M5%2012h14'%3e%3c/path%3e%3c/svg%3e\");"[39m
+      [36m/>[39m
+      [0m새 프로젝트[0m
+    [36m</a>[39m
+    [36m<span[39m
+      [33maria-label[39m=[32m"강영환"[39m
+      [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+      [33mrole[39m=[32m"img"[39m
+    [36m>[39m
+      [0m강영[0m
+    [36m</span>[39m
+  [36m</div>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/layout/AppHeader.test.tsx:21:29
+     19|       const nav = within(header).getByRole("navigation", { name: "주 메뉴…
+     20|       expect(within(nav).getAllByRole("link").map((a) => a.textContent…
+     21|       expect(within(header).getByRole("button", { name: "새 프로젝트" })).t…
+       |                             ^
+     22|       expect(within(header).getByRole("img", { name: CURRENT_USER.name…
+     23|       expect(screen.queryByText(/조직 공유/)).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+
+ Test Files  3 failed | 6 passed (9)
+      Tests  8 failed | 142 passed (150)
+   Start at  13:27:02
+   Duration  8.41s (tests 66%, environment 17%, setup 7%, transform 7%, import 3%)
+

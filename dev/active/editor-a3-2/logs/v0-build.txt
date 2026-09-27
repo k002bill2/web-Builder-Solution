@@ -1,0 +1,24 @@
+[bundle] 공통 JS (gzip, 참고): 89.33KB
+[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.02KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.98KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.37KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.39KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.22KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.77KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.39KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.22KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.77KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.64KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.34KB (1개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 107.05KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.81KB / 예산 125KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.45KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.16KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.04KB (1개 파일, 예산 판정 밖)
+exit=0

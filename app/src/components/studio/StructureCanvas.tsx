@@ -34,13 +34,13 @@ const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionar
 
 /**
  * 문제 요소(5.7 · B-03): 2중 테두리(안쪽 흰 간격 `background-normal` + 바깥 상태 글자 토큰) + 배지 글자 "경고 1"/"차단 1" + 아래 문장(id = 필드 describedby).
- * 흰 간격 덕에 테두리는 늘 흰 면과 맞닿는다 — 대비가 사용자 색과 무관.
+ * 흰 간격 덕에 테두리는 늘 흰 면과 맞닿는다 — 대비가 사용자 색과 무관. 색 면(Footer·Hero) 위에서도 읽히게 문제 요소 전체를 흰 앱 면에 둔다(FIX2).
  */
 function IssueText({ text, issue, className }: { readonly text: string; readonly issue: SlotIssue; readonly className: string }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 rounded-sm bg-background-normal p-1">
       <div className={`relative rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`}>
-        <p className={`${className} text-(--canvas-ink)`}>{text}</p>
+        <p className={`${className} text-label-normal`}>{text}</p>
         <span className="absolute -top-2.5 right-1 rounded-sm bg-background-normal px-1 text-caption2 font-bold">{issue.level === "block" ? "차단 1" : "경고 1"}</span>
       </div>
       <p id={issue.id} className={`text-caption1 ${ISSUE_RING[issue.level]}`}>

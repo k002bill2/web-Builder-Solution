@@ -16,7 +16,7 @@
 - [x] 2. 4게이트(리뷰 반영 후 재실행): typecheck 0 · lint 0 · vitest 1233/1234(실패 1 = 기존 P-AC-29 `/studio`, 기준 코드에서도 실패 — editor-a1-beta REPORT 45행) · build 0
 - [x] 2. 번들 전후 표 → REPORT
 - [x] 3. 127.0.0.1:4339 실제 흐름 통과(REPORT 5절) · 자기 PID 종료 · lsof 비어 있음
-- [x] 4. 리뷰 — Codex BLOCKED: 사용량 한도(`logs/codex-r1.txt`) · 대체 code-reviewer 서브에이전트 Major 1 반영(`6eb5de5`)
+- [x] 4. 리뷰 — Codex r1 한도 실패 → r2 통과·지적 0(`logs/codex-r2.txt`) · code-reviewer 서브에이전트 Major 1 반영(`6eb5de5`)
 - [x] 5. REPORT.md + 커밋
 
 ## 서브에이전트 기록

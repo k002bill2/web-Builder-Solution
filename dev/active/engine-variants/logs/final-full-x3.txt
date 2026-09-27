@@ -1,0 +1,13 @@
+=== run 1 2026-09-28 00:12:00 load: { 35.13 26.33 15.07 }
+ Test Files  123 passed (123)
+      Tests  1355 passed (1355)
+   Duration  25.93s (environment 43%, tests 38%, setup 9%, transform 6%, import 4%)
+=== run 2 2026-09-28 00:12:27 load: { 54.51 31.69 17.39 }
+ Test Files  123 passed (123)
+      Tests  1355 passed (1355)
+   Duration  23.55s (environment 41%, tests 40%, setup 8%, transform 6%, import 4%)
+=== run 3 2026-09-28 00:12:51 load: { 65.81 35.73 19.17 }
+ Test Files  123 passed (123)
+      Tests  1355 passed (1355)
+   Duration  22.76s (tests 42%, environment 40%, setup 8%, transform 6%, import 4%)
+DONE

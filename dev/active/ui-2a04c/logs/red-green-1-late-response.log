@@ -1,0 +1,9 @@
+=== RED-GREEN 1 (3차): 테스트 보강 후 늦은 응답 가드(act 반환 + follow 토큰) 둘 다 제거
+     × 늦은 응답 차단: v2 요청 응답 전에 ?v=1로 옮기면 v1 화면에 v2 결과가 나타나지 않음 · 이전 버전 선택 복원 282ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected 'succeeded' to be 'queued' // Object.is equality
+Expected: "queued"
+Received: "succeeded"
+      Tests  1 failed | 6 passed (7)
+--- 복원 후
+      Tests  7 passed (7)

@@ -9,7 +9,11 @@ export const PROFILE_EVENT = "studio:profile";
 
 export type ProfileEvent =
   | { readonly name: "profile_saved"; readonly version: number; readonly origin: ProfileOrigin }
-  | { readonly name: "profile_save_failed"; readonly reason: string };
+  | { readonly name: "profile_save_failed"; readonly reason: string }
+  | { readonly name: "generation_requested"; readonly version: number }
+  | { readonly name: "generation_succeeded"; readonly version: number; readonly count: number }
+  | { readonly name: "generation_failed"; readonly reason: string }
+  | { readonly name: "candidate_selected"; readonly id: string };
 
 export function emitProfileEvent(event: ProfileEvent): void {
   window.dispatchEvent(new CustomEvent<ProfileEvent>(PROFILE_EVENT, { detail: event }));

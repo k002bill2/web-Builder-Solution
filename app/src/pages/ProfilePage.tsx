@@ -112,6 +112,7 @@ function ProfileView({
   const firstView = useRef(true);
   // 되돌리기 성공 → 저장 안 된 조정을 버린다(되돌린 버전이 새 저장값)
   const [resetKey, setResetKey] = useState(0);
+  const [pending, setPending] = useState(0);
 
   // 버전 보기(?v=) 전환 → h1, 되돌리기 성공 → 새 버전 줄 (5.2)
   const viewKey = params.get("v");
@@ -147,7 +148,7 @@ function ProfileView({
   };
 
   const summaryOf = (v: ProfileVersion) => engine.summarizeVersions(series.versions.find((p) => p.version === v.version - 1), v, titleOf);
-  const { ProfilePanel } = engine;
+  const { ProfilePanel, CandidatesSection } = engine;
 
   return (
     <div className={PAGE}>
@@ -197,6 +198,7 @@ function ProfileView({
           saveAlert={saveAlert}
           onSave={save}
           resetKey={resetKey}
+          onPending={setPending}
           values={<ProfileValues rows={engine.valueRows(viewed, titleOf)} profile={viewed.base} sources={sources} />}
           versions={
             <section aria-labelledby="profile-versions" className="flex flex-col gap-3">
@@ -228,17 +230,13 @@ function ProfileView({
             </section>
           }
         />
-        {/* 3안 자리 — 3안 만들기·카드는 2a-04c */}
-        <section aria-labelledby="profile-candidates" className="flex flex-col gap-3">
-          <h2 id="profile-candidates" className="ds-heading2">3안</h2>
-          <p className="ds-body3 text-label-alternative">저장한 버전으로 구조안 3개를 만드는 기능은 준비 중입니다</p>
-        </section>
+        <CandidatesSection key={viewed.version} viewed={viewed} pending={pending} announce={announce} />
       </div>
     </div>
   );
 }
 
-/** DS-2A-04 — `/profile` 목록 · `/profile/:profileId` 상세 (SPEC 3). 전역 조정 2a-04b2, 3안(2a-04c)은 자리만 */
+/** DS-2A-04 — `/profile` 목록 · `/profile/:profileId` 상세 (SPEC 3). 전역 조정 2a-04b2, 3안 2a-04c(엔진 청크) */
 export function ProfilePage() {
   const { profileId } = useParams();
   return profileId === undefined ? <ProfileList /> : <ProfileDetail key={profileId} profileId={profileId} />;

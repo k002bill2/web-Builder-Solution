@@ -11,7 +11,7 @@ import type { DesignProfileInput, MotionPreset, SectionPlanEntry, SectionType } 
 import { CANDIDATE_IDS, type CandidateAxes, type CandidateId, type CandidatePlan, type ComposedResult, type GridStyle, type PlannedSection } from "./generation";
 import { BODY_MAX, isBody, isInquiry, isReservation, lastInquiry, lintPlan } from "./lintPlan";
 import type { ContrastLevel } from "./profile";
-import { hash } from "./profileDraft";
+import { hash } from "./hash";
 import type { PurposeId } from "./reference";
 import { DEFAULT_FOOTER_VARIANT, resolveVariant, type SectionLibrary } from "./sectionLibrary";
 

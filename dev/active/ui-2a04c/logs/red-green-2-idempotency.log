@@ -1,0 +1,6 @@
+     × 요청 멱등: 같은 버전 재요청 → 같은 잡, 계산 0회 추가 · 처음엔 queued + 3안 모두 보류 44ms
+     × 요청 실패(request) → 잡 0 · 응답 실패(response) → 잡은 커밋됨, 다시 요청하면 같은 잡(계산 1회) 2ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/data/memoryGenerationRepository.test.ts > GenerationRepository 메모리 구현 (2a-04c) > 요청 멱등: 같은 버전 재요청 → 같은 잡, 계산 0회 추가 · 처음엔 queued + 3안 모두 보류
+ FAIL  src/data/memoryGenerationRepository.test.ts > GenerationRepository 메모리 구현 (2a-04c) > 요청 실패(request) → 잡 0 · 응답 실패(response) → 잡은 커밋됨, 다시 요청하면 같은 잡(계산 1회)
+      Tests  2 failed | 7 passed (9)

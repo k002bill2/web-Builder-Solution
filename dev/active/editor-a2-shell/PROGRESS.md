@@ -14,7 +14,7 @@
 - [x] S3 3단 배치·제목 구조 E-AC-04 · E-AC-13 — RED `logs/s3-red.txt`(5 fail) → GREEN 14/14 `logs/s3-green.txt` · build /studio 97.28/110.25(+1.78 = 배치 3벌·패널 코드) · 그 밖 ±0.01. 가로 넘침 0은 jsdom 불가 → [Q]
 - [x] S4 섹션 선택 E-AC-05 — RED `logs/s4-red.txt`(2 fail) → GREEN 18/18 `logs/s4-green.txt` · build /studio 97.45/110.43 · 그 밖 ±0.01
 - [x] S5 탭 E-AC-14 — RED `logs/s5-red.txt`(키 1 fail) → GREEN 21/21 `logs/s5-green.txt` · build /studio 97.76/110.73(rovingFocus 공유 +0.31) · 그 밖 ±0.01
-- [ ] S6 미리보기 폭·캔버스 E-AC-15 · E-AC-16
+- [x] S6 미리보기 폭·캔버스 E-AC-15 · E-AC-16 — `98a1303` · RED `logs/s6-red.txt`(5 fail + 모듈 없음) → GREEN 30/30 `logs/s6-green.txt` · build /studio 98.39/111.36 · 그 밖 base ±0.01. 1차(previewView 값 import): 공통 89.39(+0.04) · /references 97.18(+0.17) · /catalog 99.70(+0.04) → 타입만 import로 되돌림
 - [ ] S7 A2-F 연결 (FieldEditor·PageInfoFields·SaveStatus·ConflictCallout·useDocSave) + 저장소 어댑터
 - [ ] 전체 vitest 3회 → `logs/final-full-x3.txt`
 - [ ] REPORT 갱신 (RESUME-1 절)
@@ -24,6 +24,10 @@
 - [x] REPORT.md
 
 ## 결정 · 목업 차이
+- (R1) E-AC-15 "같은 상수 import" → **같은 값 + 대조 테스트**로 대체: `PREVIEW_VIEWS` 값 import 시 previewView가 공유 청크(0.26KB)로 떨어져 /references +0.17 · 공통 +0.03(±0.03 규칙 위반). `PREVIEW_WIDTH_OPTIONS`(studio) + `previewFrame.test.ts`가 `toEqual(PREVIEW_VIEWS)`. 공유 방식 결정은 사용자/Jarvis 몫(공통 규칙 완화 or 상수 공통 이동).
+- (R1) 축소 보기 = CSS `zoom`(SPEC 4.1 `transform: scale` 대신) — scale은 원래 폭을 레이아웃에 남겨 가로 넘침·빈 높이가 생긴다. 데스크톱 프레임 = 열 폭(축소 없음), 태블릿 48rem · 모바일 24.375rem.
+- (R1) 미리보기 폭 = 네이티브 라디오 `fieldset`(DS SegmentedControl 대신 — 카탈로그·상세 청크 경계 회피). ←/→는 브라우저 기본.
+- (R1) 캔버스 = 자체 블록(와이어프레임 막대 + 실제 슬롯 글자). `CandidateCard` `Wireframe`은 import하지 않음 — 글자 슬롯 없음(aria-hidden) · /profile 청크 공유 위험. 색은 앱 토큰(fill·background) — 프로필 팔레트 CSS 변수 연결은 테마 작업(a3)과 함께.
 - (R1) 품질 게이트·내보내기 = a4 → h2·h3 제목과 안내 캡션 자리만(E-AC-04 제목 구조). 툴바 "스냅샷"·"더보기"·"검사 · 내보내기"도 a4라 그리지 않는다.
 - (R1) 1024 "섹션" 선택 = 네이티브 `select`(DS Select import 시 공유 청크 위험 — 측정 없이 회피). 선택만, 순서·추가는 목록(4.1).
 - (R1) 테마 영역: "테마 바꾸기"는 a3 → "프로필 보기" 링크만.

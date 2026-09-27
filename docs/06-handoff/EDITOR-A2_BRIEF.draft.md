@@ -19,7 +19,7 @@
 - 제외(a3·a4): 섹션 추가·삭제·순서·변형 교체·테마·이미지 슬롯(E-AC-17~24·45~47) · 게이트·내보내기·스냅샷·실행 취소(E-AC-25~32·43·44). a2의 게이트 영역은 **자리만**(h2 "품질 게이트" + "검사 전" 캡션 — E-AC-04 제목 구조용), 계산 없음.
 
 ## 3. 선행 (모두 충족 전 착수 금지)
-1. **a1-β 병합** — `k002bill2/editor-a1-beta`(`8231e9b`)는 `/profile` 진입 직후 여유 0.25~0.28로 **중지** 상태(`git show k002bill2/editor-a1-beta:dev/active/editor-a1-beta/REPORT.md` 1·3절). `StudioPage.tsx`(E-S01~S04 셸) · `memoryProjectRepository.ts` · 라우트 · `engineImportGuard` 개정이 여기서 온다. 실패 1건 남음: `ProfileCandidates.test` P-AC-29(편집 시작 → `/studio`) — a2 데이터 레인이 `/studio/:projectId`로 고칠 대상.
+1. **a1-β 병합** — `k002bill2/editor-a1-beta`(`8231e9b`)는 `/profile` 진입 직후 여유 0.25~0.28로 **중지** 상태(`git show k002bill2/editor-a1-beta:dev/active/editor-a1-beta/REPORT.md` 1·3절). `StudioPage.tsx`(E-S01~S04 셸) · `memoryProjectRepository.ts` · 라우트가 여기서 온다. **`engine/engineImportGuard.test.ts` 개정은 a1-β에 없다**(L1: a1-β diff 38파일에 없음 · a1-β `memoryProjectRepository.ts` 머리 주석 "engine import 가드에 걸려 startDoc 미구현") → a2 D 레인 **첫 커밋**(4절). 실패 1건 남음: `ProfileCandidates.test` P-AC-29(편집 시작 → `/studio`) — a2 데이터 레인이 `/studio/:projectId`로 고칠 대상.
 2. **profile-headroom 병합** — 목표 `/profile` 진입 직후 ≤ 124.40(`k002bill2/profile-headroom` 브리프). 편집 시작 연결(프로필 청크)이 이 여유를 쓴다.
 3. **결정 2건** — Q-18(새 문서 모션) · Q-24(Tailwind engine 스캔 가드) — 9절.
 - 이미 준비됨(main): L4 엔진(`engine/**` — `createDocFromCandidate`·`hashDoc`·`validatePageDoc`·섹션 정의·슬롯 스키마) · 2a-04c 구조안·와이어프레임(`features/profile/CandidateCard.tsx:48` `Wireframe`) · a1-α 부품(`features/studio/{useAutosaveScheduler,saveStatusText}.ts`, `components/studio/StudioEmptyStates.tsx`, `data/projectRepository.ts` 인터페이스 — `startDoc` 선언 :105).
@@ -28,10 +28,11 @@
 
 | 레인 | 소유 파일(새 파일 위주, `app/src/`) | 수용 기준 | 의존 · 순서 | 턴 예상(L3) |
 |---|---|---|---|---|
-| **A2-D 데이터** | `data/memoryProjectRepository.ts`(getDoc·saveDoc·startDoc — a1-β 파일 이어받음) · `data/projectRepository.ts`(`UNKNOWN_VARIANT` 코드 · startDoc 결과에 바뀐 쌍 목록) · **새** `data/engineVariantMap.ts`(표 + 매핑 함수 — 표 리터럴은 이 파일에만) · **새** `data/startDocWrite.ts`(조작 뒤 본문 — 어댑터 · `createDocFromCandidate` 호출 · 엔진 예외 → 쓰기 0) · `engine/engineImportGuard.test.ts` 허용 목록(이 레인만) · `features/profile/CandidatesSection.tsx` 편집 시작 연결(마지막 커밋) | E-AC-11·40·41·42 · 8.2.1 검증 · P-AC-29 복구 | a1-β·profile-headroom 병합 뒤. B·C와 병렬 가능(다른 파일). **먼저 병합** | 35~45 |
+| **A2-D 데이터** | `data/memoryProjectRepository.ts`(getDoc·saveDoc·startDoc — a1-β 파일 이어받음) · `data/projectRepository.ts`(`UNKNOWN_VARIANT` 코드 · startDoc 결과에 바뀐 쌍 목록) · **새** `data/engineVariantMap.ts`(표 + 매핑 함수 — 표 리터럴은 이 파일에만) · **새** `data/startDocWrite.ts`(조작 뒤 본문 — 어댑터 · `createDocFromCandidate` 호출 · 엔진 예외 → 쓰기 0) · `engine/engineImportGuard.test.ts` 허용 목록(이 레인만) · `features/profile/CandidatesSection.tsx` 편집 시작 연결(마지막 커밋) | E-AC-11·40·41·42 · 8.2.1 검증 · P-AC-29 복구 | a1-β·profile-headroom 병합 뒤. **첫 커밋 = 가드 개정**(허용 목록: `pages/StudioPage.tsx` · `components/studio/**` · `features/studio/**` · `data/startDocWrite.ts` — 라우트 lazy 청크·조작 뒤 청크만) → 이 커밋을 **먼저 main에 병합**해야 S·F가 engine을 런타임 import할 수 있다. 나머지는 S·F와 병렬 | 35~45 |
 | **A2-S 셸·캔버스** | `pages/StudioPage.tsx`(a1-β 셸 이어받음 — 이 레인 소유) · **새** `components/studio/{StudioToolbar,StudioLayout,SectionList,StructureCanvas,PreviewWidth,StudioTabs}.tsx` · **새** `features/studio/{useStudioDoc,selection,layoutMode}.ts` · `components/layout/AppLayout.tsx`는 a1-β 분기 그대로(수정 금지) | E-AC-03·04·05·13·14·15·16 · E-AC-33(알림 영역 1개) | a1-β 병합 뒤. 문서는 **테스트 픽스처 주입**(`engine/testing/sampleDoc.ts` — 테스트 파일만 engine import). A 다음 병합 | 45~55 |
 | **A2-F 필드·저장** | **새** `components/studio/{FieldEditor,PageInfoFields,SaveStatus,ConflictCallout}.tsx` · **새** `features/studio/{useDocSave,fieldCounter,leaveGuard}.ts` · a1-α `useAutosaveScheduler` 사용(수정은 필요 시 이 레인만) | E-AC-06·07·08·09·10·12 | a1-β 병합 뒤, 목 저장소로 A와 병렬. **`StudioPage.tsx`는 건드리지 않고** 부품·훅만 → S 병합 뒤 마지막 커밋 1개로 연결(또는 S 레인이 연결) | 40~50 |
 
+- **engine 런타임 import 순서**: 가드 개정(D 첫 커밋) 병합 전에는 S·F가 engine을 **테스트 파일에서만** import한다(`hashDoc`·섹션 정의·슬롯 스키마 연결은 가드 병합 뒤 커밋). 가드 없이 넣으면 각자 worktree에서 `engineImportGuard`가 실패한다.
 - 병렬 규칙: 세 레인 모두 worktree 격리 · `git commit -- <경로>`. 공유 파일은 **없게** 나눴다 — `StudioPage.tsx`는 S만, `projectRepository.ts`·가드는 D만. 겹치는 요구가 생기면 멈추고 보고.
 - 병합 순서: **D → S → F**(병합마다 `npm run build` 재실측). D가 늦으면 S·F는 목 저장소로 끝내고 기다린다.
 - 대안(레인 2개): D 단독 + (S+F) 한 레인 — 턴 80~100 예상이라 한 번에 끝나지 않을 위험(2a-04a 선례). 3개를 권장.
@@ -51,7 +52,7 @@
 
 ## 8. 검증
 - TDD RED → GREEN(RED 로그 보존). 레인별: `npm run typecheck` · `npm run lint` · 표적 test · `npm run build`(원본 로그 + exit). 전체 suite는 병합 레인에서 1회.
-- 데이터: 8.3 `saveDoc` 판정 순서 · 8.3.1 `startDoc` 판정 순서·경쟁·멱등(`delay`·`fail` `phase: request|commit|response`) · 8.2.1: 픽스처 6개 × 3안 `startDoc` 성공 · 표 밖 쌍 → `UNKNOWN_VARIANT` 쓰기 0·재시도 버튼 0 · 바뀐 쌍 알림 1회(재생·`DOC_EXISTS` 0회) · 가드(표 bound 행 = `SECTION_LIBRARY` 키 · 목적지 ⊂ 엔진 레지스트리 · 표 리터럴 파일 1개) · `DocStart.updatedAt` = 주입 `now`.
+- 데이터: 8.3 `saveDoc` 판정 순서 · 8.3.1 `startDoc` 판정 순서·경쟁·멱등(`delay`·`fail` `phase: request|commit|response`) · 8.2.1: 픽스처 6개 × 3안 `startDoc` 성공 · 표 밖 쌍 → `UNKNOWN_VARIANT` 쓰기 0·재시도 버튼 0 · 바뀐 쌍 알림 이동 뒤 1회(처음·멱등 재생 각각 · `DOC_EXISTS`·다시 열기 0회) · 가드(표 bound 행 = `SECTION_LIBRARY` 키 · 목적지 ⊂ 엔진 레지스트리 · 표 리터럴 파일 1개) · `DocStart.updatedAt` = 주입 `now`.
 - 화면: 5폭(1920·1280·1024·768·390) 가로 넘침 0 · Tab 순서 = 4.3 · 탭 키보드 — 브라우저는 **ego-browser만**(Playwright 금지), 앱 안 클릭으로만 이동(메모리 store — 새로고침하면 사라짐).
 - 번들: 6절 표를 레인·병합마다 실측(S-B11 시나리오 전부 · 공통 전후 따로 · 조작 뒤 청크 크기).
 - **Q-24 대비**: 빌드 CSS 크기·해시를 착수 전·후 비교(engine 소스 문자열이 Tailwind 유틸리티로 잡히는 재발 경로, L4b REPORT 9절 `.ordinal` 사례). 결정 전이면 바뀐 CSS 규칙을 REPORT에 적고 멈춤.

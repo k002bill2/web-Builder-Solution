@@ -9,6 +9,7 @@
 - [x] 2. 서브에이전트 B: 엔진 변형·startDoc/createDocFromCandidate 계약 조사 — 읽기 전용 — 완료: createDocFromCandidate.ts:52 3인자·:37 UNKNOWN_VARIANT throw, bodySections.ts:49-62, boundSections.ts:26-47, projectRepository.ts:105 startDoc 인터페이스만(구현 없음)
 - [x] 3. SPEC.md r4 (8.2·매핑·불가 변형 상태·13.1 a2·이력만) — 8.2 행·8.2.1 신설·8.3.1 끝 1줄(예외, Q-17 모순)·13.1·이력
 - [x] 4. VARIANT-MAP.md (grep L1 대조) — logs/variant-map-check.txt exit 0
-- [ ] 5. EDITOR-A2_BRIEF.draft.md (레인 분할 제안 포함)
-- [ ] 6. 검증: 매핑 변형 이름 grep 대조, SPEC diff 범위 확인
-- [ ] 7. REPORT.md + 로컬 커밋
+- [x] 5. EDITOR-A2_BRIEF.draft.md (레인 분할 제안 포함) — D·S·F 3레인, 가드 개정 = D 첫 커밋
+- [x] 6. 검증: 매핑 변형 이름 grep 대조(logs/variant-map-check.txt exit 0), SPEC diff 범위 확인(logs/spec-diff-hunks.txt — 8.3.1 1줄 예외)
+- [x] 7. REPORT.md + 로컬 커밋 (934abaf · cbd8dd0 · advisor 반영 커밋)
+- [ ] 8. Codex adversarial-review r1 (`logs/codex-r1.txt`, branch --base main) — 실행 중

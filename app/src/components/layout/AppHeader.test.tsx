@@ -9,7 +9,8 @@ const banner = () => screen.getAllByRole("banner")[0]!;
 const hasClass = (el: HTMLElement, name: string) => el.className.split(/\s+/).includes(name);
 
 describe("앱 셸 헤더 (v2 SPEC 4.1)", () => {
-  it.each(["/catalog", "/catalog?tab=saved", "/references/ref-a", "/compare", "/profile"])(
+  // /profile 은 /projects 로 replace 된다(DS-2A-05 2.2 · 12.4) — 같은 자리에 헤더를 그리는 /projects 로 확인한다
+  it.each(["/catalog", "/catalog?tab=saved", "/references/ref-a", "/compare", "/projects"])(
     "%s 에서 헤더 구성이 같다: 브랜드·메뉴 4·새 프로젝트·아바타, 조직 공유 없음 (V2-AC-15)",
     async (path) => {
       renderApp(path);
@@ -18,12 +19,32 @@ describe("앱 셸 헤더 (v2 SPEC 4.1)", () => {
       expect(within(header).getByRole("link", { name: brand.name })).toHaveAttribute("href", "/catalog");
       const nav = within(header).getByRole("navigation", { name: "주 메뉴" });
       expect(within(nav).getAllByRole("link").map((a) => a.textContent)).toEqual(["카탈로그", "보관함", "비교 보드", "프로젝트"]);
-      expect(within(header).getByRole("button", { name: "새 프로젝트" })).toBeInTheDocument();
+      expect(within(nav).getByRole("link", { name: "프로젝트" })).toHaveAttribute("href", "/projects");
+      // 버튼 모양 링크(S-B1 2순위 · 12.4) — 보이는 글자·위치는 같고 역할만 이동(link)이다
+      expect(within(header).getByRole("link", { name: "새 프로젝트" })).toHaveAttribute("href", "/compare?new=1");
       expect(within(header).getByRole("img", { name: CURRENT_USER.name })).toBeInTheDocument();
       expect(screen.queryByText(/조직 공유/)).not.toBeInTheDocument();
       expect(screen.getAllByRole("navigation", { name: "주 메뉴" })).toHaveLength(1);
     },
   );
+
+  it.each(["/projects", "/profile/profile-1"])(
+    "%s 에서는 GNB '프로젝트'만 현재 위치로 표시한다 (J-AC-01)",
+    async (path) => {
+      renderApp(path);
+      await screen.findByRole("heading", { level: 1 });
+      const nav = screen.getByRole("navigation", { name: "주 메뉴" });
+      expect(within(nav).getByRole("link", { name: "프로젝트" })).toHaveAttribute("aria-current", "page");
+      for (const name of ["카탈로그", "보관함", "비교 보드"]) expect(within(nav).getByRole("link", { name })).not.toHaveAttribute("aria-current");
+    },
+  );
+
+  it.each(["/catalog", "/compare"])("%s 에서는 GNB '프로젝트'를 현재 위치로 표시하지 않는다 (J-AC-01)", async (path) => {
+    renderApp(path);
+    await screen.findByRole("heading", { level: 1 });
+    const nav = screen.getByRole("navigation", { name: "주 메뉴" });
+    expect(within(nav).getByRole("link", { name: "프로젝트" })).not.toHaveAttribute("aria-current");
+  });
 
   it("헤더 첫 줄 높이는 52px(h-13)이다", async () => {
     renderApp("/catalog");

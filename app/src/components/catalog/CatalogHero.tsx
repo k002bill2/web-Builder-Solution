@@ -26,7 +26,7 @@ export function CatalogHero({
             placeholder="업종, 타깃, 콘셉트로 검색 (예: 카페 · 20대 · 미니멀)"
           />
         </div>
-        <Button variant="outline" size="lg" leadingIcon="sparkle" onClick={onRecommend}>
+        <Button variant="outline" size="md" leadingIcon="sparkle" onClick={onRecommend}>
           추천 받기
         </Button>
       </div>

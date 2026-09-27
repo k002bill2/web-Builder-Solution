@@ -1,0 +1,35 @@
+[
+ {
+  "w": 1280,
+  "target": "tag",
+  "overflowX": 483,
+  "whiteSpace": "nowrap",
+  "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1",
+  "culprit": "SPAN.inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text"
+ },
+ {
+  "w": 1280,
+  "target": "h1",
+  "overflowX": 0,
+  "whiteSpace": "normal",
+  "cls": "ds-title2",
+  "culprit": null
+ },
+ {
+  "w": 320,
+  "target": "tag",
+  "overflowX": 545,
+  "whiteSpace": "nowrap",
+  "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1",
+  "culprit": "SPAN.inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text"
+ },
+ {
+  "w": 320,
+  "target": "h1",
+  "overflowX": 0,
+  "whiteSpace": "normal",
+  "cls": "ds-title2",
+  "culprit": null
+ }
+]
+

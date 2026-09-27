@@ -68,11 +68,11 @@ function PickRow({ row, columns, picks, disabled, onToggle }: {
 
   return (
     <tr className="border-t border-line-neutral">
-      <th scope="row" className="sticky left-0 z-1 min-w-32 bg-background-normal p-3 text-left align-top">
+      <th scope="row" className="sticky left-0 z-1 min-w-32 bg-background-normal px-3.5 py-2.5 text-left align-top">
         <RowLabel row={row} />
       </th>
       {row.cells.map((cell, i) => (
-        <td key={cell.referenceId} className={cx("min-w-48 p-3 align-top", selected === i && "bg-primary-container", cell.dimmed && "text-label-alternative")}>
+        <td key={cell.referenceId} className={cx("min-w-48 px-3.5 py-2.5 align-top", selected === i && "bg-primary-container", cell.dimmed && "text-label-alternative")}>
           <div className="flex flex-col gap-2">
             <span className="ds-body3">{cell.label}</span>
             {cell.pickable && (
@@ -110,7 +110,7 @@ export function ComparisonTable({ columns, rows, picks, pickAllLabel, disabled =
       role="region"
       aria-label="비교 표 (가로로 스크롤)"
       tabIndex={columns.length >= 3 ? 0 : undefined}
-      className="overflow-x-auto rounded-lg border border-line-neutral focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+      className="overflow-x-auto focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
     >
       <table className="w-full border-collapse">
         <caption className="sr-only">{`레퍼런스 ${columns.length}개, 비교 항목 ${rows.length}개`}</caption>

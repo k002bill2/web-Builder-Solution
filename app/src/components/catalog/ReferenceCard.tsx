@@ -100,7 +100,7 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
     <article aria-labelledby={titleId} className="flex flex-col gap-2">
       <Thumbnail reference={r} />
       <div className="min-w-0">
-        <h3 id={titleId} className="ds-heading2 text-label-normal">
+        <h3 id={titleId} className="ds-body2 font-semibold text-label-normal">
           <Link to={`/references/${r.id}`} className="line-clamp-2 rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none">
             {r.title}
           </Link>

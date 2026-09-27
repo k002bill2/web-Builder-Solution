@@ -1,0 +1,6 @@
+[bundle] /catalog 첫 화면 합계: 99.35KB / 예산 100KB · 진입 직후 자동 로드 포함: 101.74KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.70KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.08KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.57KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.98KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.57KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.98KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.38KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.97KB / 예산 125KB
+[bundle] /studio (자리표시) 첫 화면 합계: 89.49KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.88KB / 예산 125KB

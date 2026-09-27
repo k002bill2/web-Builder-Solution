@@ -33,6 +33,14 @@ describe("앱 셸 헤더 (v2 SPEC 4.1)", () => {
     expect(header.className).not.toMatch(/(^|\s|:)h-15(\s|$)/);
   });
 
+  it("주 메뉴 글자는 UI 기본 body3이다 (v2 SPEC 2.4 · VISUAL-V2-APPLY 3)", async () => {
+    renderApp("/catalog");
+    await screen.findByRole("heading", { level: 1 });
+    const nav = screen.getByRole("navigation", { name: "주 메뉴" });
+    expect(hasClass(nav, "text-body3")).toBe(true);
+    expect(hasClass(nav, "text-body2")).toBe(false);
+  });
+
   it("<768에서도 주 메뉴를 숨기지 않고 한 줄 가로 스크롤로 둔다 (V2-AC-16 · Q5)", async () => {
     renderApp("/catalog");
     await screen.findByRole("heading", { level: 1 });

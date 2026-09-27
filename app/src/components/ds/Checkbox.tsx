@@ -19,7 +19,7 @@ export function Checkbox({
   const hasCount = count !== undefined;
   return (
     <>
-      <label className="inline-flex cursor-pointer items-center gap-2 text-body2 leading-(--line-height-body3) text-label-normal select-none">
+      <label className="inline-flex min-h-6 cursor-pointer items-center gap-2 text-body3 leading-(--line-height-body3) text-label-normal select-none">
         <input
           type="checkbox"
           checked={checked}
@@ -30,7 +30,7 @@ export function Checkbox({
         <span
           aria-hidden="true"
           className={
-            "inline-flex size-5 flex-none items-center justify-center rounded-[--spacing(1.5)] " +
+            "inline-flex size-4 flex-none items-center justify-center rounded-[--spacing(1.5)] " +
             "border-(length:--border-thick) border-line-strong bg-background-normal " +
             "transition-[background-color,border-color] duration-(--duration-fast) ease-standard " +
             "peer-checked:border-primary peer-checked:bg-primary peer-focus-visible:shadow-(--focus-ring) " +
@@ -44,7 +44,7 @@ export function Checkbox({
             strokeWidth="3.2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="size-3.25 text-on-primary transition-[opacity,transform] duration-(--duration-fast) ease-standard"
+            className="size-3 text-on-primary transition-[opacity,transform] duration-(--duration-fast) ease-standard"
           >
             <path d="M5 12.5l4.5 4.5L19 7" />
           </svg>

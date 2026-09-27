@@ -15,7 +15,7 @@
   - BLOCKED(스냅샷 부분): 메모리 저장소 `resolveConflict`·`createSnapshot` = `missing`(NOT_FOUND, `data/memoryProjectRepository.ts:99-101`). "auto·conflict 스냅샷 1개" 검증은 저장소 구현 필요 — 스냅샷은 a4 범위(초안 2절 "제외(a3·a4): … 스냅샷", SPEC 13.1 a4 행) · 브리프 지시대로 새로 만들지 않음. 화면은 해결 거부 시 STALE 유지(테스트 있음)
 - [x] F5 떠남 가드 E-AC-12 — **재사용, 새 파일 없음**: `useAutosaveScheduler`가 이미 `needsUnloadGuard` + `beforeunload` 등록(memory 늘 · server idle/saved 미등록, 기존 `useAutosaveScheduler.hook.test.tsx:30` 2건). `leaveGuard.ts`를 따로 두면 두 번째 리스너(중복 등록) 위험 → 만들지 않음. 빠진 경우(server 목 실패·STALE 등록)는 F2 `useDocSave.test.tsx` "떠나기 경고" 2건으로 추가
 - [x] F6 페이지 정보 필드 (`PageInfoFields`) — RED `logs/f6-red.txt` → GREEN 83/83(studio 폴더+가드) `logs/f6-green.txt` · build exit 0. 권장 60/160은 로컬 상수(엔진 `SEO_FIELDS` export 없음) + `seoIssues` 경계 대조 테스트 · canonical 캡션 · 경고 문장 "…검색 결과에서 잘릴 수 있습니다"는 유추(SPEC 문장 없음)
-- [ ] 전체 vitest 1회 (`logs/full-vitest.txt`)
+- [x] 전체 vitest 1회 (`logs/full-vitest.txt`) — 117 파일 · 1308/1308 통과 · exit 0
 - [ ] Codex review 1회 (branch --base f22bbc8)
 - [ ] REPORT.md
 

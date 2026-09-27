@@ -7,23 +7,48 @@ import { SectionList } from "./SectionList";
 const H2 = "ds-heading2 focus:outline-none";
 const CAPTION = "ds-caption1 text-label-alternative";
 
-/** "편집 알림"(6.3 · E-AC-33) — 배치마다 정확히 1개. 비어 있어도 그려 둔다(`display:none` 금지) */
-export function NoticeRegion({ text }: { readonly text: string }) {
+/**
+ * "편집 알림"(6.3 · E-AC-33) — 배치마다 정확히 1개. 비어 있어도 그려 둔다(`display:none` 금지).
+ * 알림 줄(5.4 · Q7) = `role=status` 글자 + **영역 밖 형제 버튼** "되돌리기"(D-QA06 형식) — 바로 앞 연산 1개만.
+ */
+export function NoticeRegion({ text, onUndo }: { readonly text: string; readonly onUndo?: () => void }) {
   return (
-    <p role="status" aria-label="편집 알림" className="ds-body2 px-3 empty:p-0">
-      {text}
-    </p>
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <p role="status" aria-label="편집 알림" className="ds-body2 px-3 empty:p-0">
+        {text}
+      </p>
+      {onUndo && (
+        <button type="button" onClick={onUndo} className="ds-label min-h-8 rounded-sm px-3 text-primary hover:bg-fill-normal hover:text-primary-hover">
+          되돌리기
+        </button>
+      )}
+    </div>
   );
 }
 
 /** 섹션 열(6.2 `nav` "섹션") — 페이지 정보 줄 + 섹션 줄. ≥1280 왼쪽 열 · <1024 "섹션" 탭 */
-export function SectionNav({ doc, selectedId, onSelect }: { readonly doc: PageDoc; readonly selectedId: string; readonly onSelect: (id: string) => void }) {
+export function SectionNav({
+  doc,
+  selectedId,
+  onSelect,
+  selectedExtra,
+  footer,
+}: {
+  readonly doc: PageDoc;
+  readonly selectedId: string;
+  readonly onSelect: (id: string) => void;
+  /** <1024 "섹션" 탭 — 선택 줄 옆 순서 부품(5.2) */
+  readonly selectedExtra?: ReactNode;
+  /** 목록 아래 "섹션 추가"(5.3 · 4.3 순서: 섹션 줄 → 섹션 추가) */
+  readonly footer?: ReactNode;
+}) {
   return (
     <nav aria-labelledby="studio-sections-heading" className="flex flex-col gap-2">
       <h2 id="studio-sections-heading" className={H2}>
         섹션
       </h2>
-      <SectionList sections={doc.sections} selectedId={selectedId} onSelect={onSelect} />
+      <SectionList sections={doc.sections} selectedId={selectedId} onSelect={onSelect} selectedExtra={selectedExtra} />
+      {footer}
     </nav>
   );
 }
@@ -43,13 +68,14 @@ export function ThemePanel({ doc, docTag, profileId }: { readonly doc: PageDoc; 
   );
 }
 
-/** 편집 패널 "편집 · <섹션 이름>"(6.1). h2 `tabIndex=-1` = 게이트 문제 줄 이동 대상(6.4) */
-export function EditPanel({ name, children }: { readonly name: string; readonly children?: ReactNode }) {
+/** 편집 패널 "편집 · <섹션 이름>"(6.1). h2 `tabIndex=-1` = 게이트 문제 줄 이동 대상(6.4). `head` = 머리 순서·삭제 부품(5.2·5.4) */
+export function EditPanel({ name, head, children }: { readonly name: string; readonly head?: ReactNode; readonly children?: ReactNode }) {
   return (
     <section aria-labelledby="studio-edit-heading" className="flex flex-col gap-3">
       <h2 id="studio-edit-heading" tabIndex={-1} className={H2}>
         편집 · {name}
       </h2>
+      {head}
       {children}
     </section>
   );

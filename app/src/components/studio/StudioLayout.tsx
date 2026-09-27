@@ -1,21 +1,34 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import type { ConflictChoice, Project, ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
+import type { SectionType } from "../../engine/contracts/pageDoc";
+import type { MoveDirection } from "../../engine/ops/rules";
+import { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice, swapRevertedNotice } from "../../features/studio/opNotice";
+import type { VariantChoice } from "../../features/studio/variantChoices";
+import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
+import { docPurpose } from "../../features/studio/docPurpose";
+import { useFocusRequest } from "../../features/studio/useFocusRequest";
+import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
 import { useDocSave } from "../../features/studio/useDocSave";
 import { ConflictCallout } from "./ConflictCallout";
 import { EditFields } from "./EditFields";
 import { SaveStatus } from "./SaveStatus";
-import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectionName } from "../../features/studio/selection";
+import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName, variantName } from "../../features/studio/selection";
 import { PreviewWidth } from "./PreviewWidth";
+import { AddSectionButton } from "./AddSectionButton";
+import { SectionOpControls } from "./SectionOpControls";
+import { VariantSwitch } from "./VariantSwitch";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
 import { StructureCanvas } from "./StructureCanvas";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+/** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
+const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
 
 /**
  * E-S05 기본 편집 틀 (DS-2A-05 3.1 · 4절). 배치(3단 · 2단 · 탭)마다 트리를 따로 그리고(4.3) 상태(선택·알림·탭)는 여기서 공유한다(4.1).
@@ -49,6 +62,9 @@ export function StudioLayout({
   const [tab, setTab] = useState<StudioTab>("sections");
   const [view, setView] = useState<PreviewView>("desktop");
   const selectedId = resolveSelection(doc, selected);
+  const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
+  const root = useRef<HTMLDivElement>(null);
+  const requestFocus = useFocusRequest(root);
 
   // 영역을 먼저 비운 채 그린 뒤 글자를 넣는다 — 스크린 리더가 status 변화로 읽는다
   useEffect(() => {
@@ -84,13 +100,126 @@ export function StudioLayout({
     [retry],
   );
 
+  const { run } = ops;
+  const move = useCallback(
+    async (instanceId: string, direction: MoveDirection, button: HTMLElement) => {
+      const outcome = await run({ kind: "move", instanceId, direction }, "이동");
+      if (!outcome.ok) return setNotice(outcome.reason);
+      const moved = outcome.result.doc.sections[outcome.result.index]!;
+      setNotice(movedNotice(moved.type, sectionName(moved), outcome.result.index));
+      requestFocus({ element: button });
+    },
+    [run, requestFocus],
+  );
+  // 대상 줄로 포커스(6.4) — <1024는 "섹션" 탭으로 먼저 바꾼다(숨은 패널 안으로 포커스를 보내지 않는다)
+  const focusRow = useCallback(
+    (rowId: string) => {
+      if (mode === "tabs") setTab("sections");
+      requestFocus({ rowId });
+    },
+    [mode, requestFocus],
+  );
+  // 알림 줄 "되돌리기"(Q7)가 되살릴 섹션과 알림 문장 — 연산마다 새로 정한다
+  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string }>();
+  const remove = useCallback(
+    async (instanceId: string) => {
+      const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
+      if (!outcome.ok) return setNotice(outcome.reason);
+      const { before, result } = outcome;
+      const removed = before.sections[result.index]!;
+      // 포커스·선택 = 다음 섹션 줄(없으면 이전) — resolveSelection(첫 본문)에 맡기지 않는다
+      const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
+      if (next) setSelected(next.instanceId);
+      setUndoTarget({ instanceId: removed.instanceId, text: restoredNotice(removed.type, sectionName(removed)) });
+      setNotice(removedNotice(removed.type, sectionName(removed)));
+      if (next) focusRow(next.instanceId);
+    },
+    [run, focusRow],
+  );
+  // 변형 교체(5.5) — 바로 적용 + 알림 줄 "되돌리기", 포커스는 누른 라디오 그대로(6.4)
+  const swap = useCallback(
+    async (instanceId: string, choice: VariantChoice, radio: HTMLElement) => {
+      const outcome = await run({ kind: "swap", instanceId, variant: choice.variant }, "변형 교체", true);
+      if (!outcome.ok) return setNotice(outcome.reason);
+      const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
+      setUndoTarget({ instanceId, text: swapRevertedNotice(variantName(original)) });
+      setNotice(swappedNotice(choice.label, choice.lostLabels));
+      requestFocus({ element: radio });
+    },
+    [run, requestFocus],
+  );
+  const { undoLast } = ops;
+  const undo = useCallback(() => {
+    if (!undoTarget || !undoLast()) return;
+    setSelected(undoTarget.instanceId);
+    setNotice(undoTarget.text);
+    focusRow(undoTarget.instanceId);
+  }, [undoTarget, undoLast, focusRow]);
+
+  // 섹션 추가(5.3) — 대화상자를 연 버튼으로 닫힘 포커스, 추가 뒤엔 새 줄
+  const [adding, setAdding] = useState<HTMLElement>();
+  const add = useCallback(
+    async (type: SectionType, variant: string) => {
+      const opener = adding;
+      setAdding(undefined);
+      const outcome = await run({ kind: "add", type, variant, afterInstanceId: selectedId === PAGE_INFO_ID ? null : selectedId }, "추가");
+      if (!outcome.ok) {
+        setNotice(outcome.reason);
+        if (opener) requestFocus({ element: opener });
+        return;
+      }
+      const added = outcome.result.doc.sections[outcome.result.index]!;
+      setSelected(added.instanceId);
+      setNotice(addedNotice(added.type, sectionName(added), outcome.result.index));
+      focusRow(added.instanceId);
+    },
+    [adding, run, selectedId, requestFocus, focusRow],
+  );
+  const cancelAdd = useCallback(() => {
+    if (adding) requestFocus({ element: adding });
+    setAdding(undefined);
+  }, [adding, requestFocus]);
+
+  const current = selectedSection(doc, selectedId);
+  const purpose = docPurpose(ops.series, doc.profileVersion);
+  // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
+  const opControls = current && (
+    <SectionOpControls
+      up={canMove(doc, current.instanceId, "up")}
+      down={canMove(doc, current.instanceId, "down")}
+      remove={canRemove(doc, current.instanceId, purpose)}
+      onMove={(direction, button) => void move(current.instanceId, direction, button)}
+      onRemove={() => void remove(current.instanceId)}
+      profileHref={`/profile/${project.profileId}?v=${doc.profileVersion}`}
+    />
+  );
+
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
-  const noticeRegion = <NoticeRegion text={notice} />;
-  const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} />;
+  const noticeRegion = <NoticeRegion text={notice} onUndo={ops.canUndoLast ? undo : undefined} />;
+  const nav = (
+    <SectionNav
+      doc={doc}
+      selectedId={selectedId}
+      onSelect={setSelected}
+      selectedExtra={mode === "tabs" ? opControls : undefined}
+      footer={<AddSectionButton permission={canAdd(doc)} onOpen={setAdding} />}
+    />
+  );
+  const addDialog = adding && (
+    <Suspense fallback={null}>
+      <AddSectionDialog doc={doc} onAdd={(type, variant) => void add(type, variant)} onCancel={cancelAdd} />
+    </Suspense>
+  );
+  const editHead = current && (
+    <>
+      {opControls}
+      <VariantSwitch key={current.instanceId} doc={doc} section={current} purpose={purpose} onSwap={(choice, radio) => void swap(current.instanceId, choice, radio)} />
+    </>
+  );
   const edit = (
-    <EditPanel name={selectionName(doc, selectedId)}>
+    <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
       <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
     </EditPanel>
   );
@@ -99,8 +228,9 @@ export function StudioLayout({
 
   if (mode === "tabs") {
     return (
-      <div onClickCapture={flushBeforeLeave} className="flex flex-col">
+      <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} />
+        {addDialog}
         <StudioTabs
           selected={tab}
           onSelect={setTab}
@@ -127,7 +257,8 @@ export function StudioLayout({
 
   if (mode === "split") {
     return (
-      <div onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+      <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+        {addDialog}
         <StudioToolbar projectName={project.name} headingRef={heading}>
           {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">
@@ -167,7 +298,8 @@ export function StudioLayout({
   }
 
   return (
-    <div onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+    <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+      {addDialog}
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}

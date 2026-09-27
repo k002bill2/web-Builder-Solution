@@ -1,6 +1,6 @@
 import type { DesignProfileInput } from "../../domain/compareBoard";
 import type { ProfileAdjustments, ProfileSeries, ProfileVersion } from "../../domain/profile";
-import { docMotionPreset, docPurpose } from "./docPurpose";
+import { docMotionPreset, docPalette, docPurpose } from "./docPurpose";
 
 const BASE = { motion_preset: "L2" } as DesignProfileInput;
 const version = (n: number, adjustments: ProfileAdjustments): ProfileVersion => ({
@@ -36,5 +36,23 @@ describe("docMotionPreset (5.3 새 섹션 모션)", () => {
     expect(docMotionPreset(s, 1)).toBe("L2");
     expect(docMotionPreset(s, 7)).toBe("L1");
     expect(docMotionPreset(undefined, 1)).toBe("L1");
+  });
+});
+
+describe("docPalette (A3-Q7 — 캔버스 색 = 문서 프로필 버전 팔레트)", () => {
+  const tokens = (primary: string) =>
+    ({ primary: { $type: "color", $value: primary }, surface: { $type: "color", $value: "#f5f5f5" }, ink: { $type: "color", $value: "#222222" }, muted: { $type: "color", $value: "#888888" }, bg: { $type: "color", $value: "#ffffff" }, $extensions: { seed: "1" } }) as DesignProfileInput["color_tokens"];
+  const withTokens = (n: number, primary: string, adjustments: ProfileAdjustments = {}): ProfileVersion => ({ ...version(n, adjustments), base: { ...BASE, color_tokens: tokens(primary) } });
+
+  it("문서 버전의 역할 5개 · 보정(corrections) 적용 값 · 최신 버전이 아니다", () => {
+    const fix = { role: "primary", from: "#aa0000", to: "#880000", check: "primary-on-bg" } as never;
+    const s = series(withTokens(1, "#aa0000", { corrections: [fix] }), withTokens(2, "#0000aa"));
+    expect(docPalette(s, 1)).toEqual({ primary: "#880000", surface: "#f5f5f5", ink: "#222222", muted: "#888888", bg: "#ffffff" });
+    expect(docPalette(s, 2)?.primary).toBe("#0000aa");
+  });
+
+  it("버전·프로필 없음 → undefined(중립 토큰으로 그린다)", () => {
+    expect(docPalette(series(withTokens(1, "#aa0000")), 5)).toBeUndefined();
+    expect(docPalette(undefined, 1)).toBeUndefined();
   });
 });

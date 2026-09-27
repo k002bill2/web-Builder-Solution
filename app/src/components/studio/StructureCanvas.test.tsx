@@ -26,3 +26,40 @@ describe("구조 미리보기 — 그리드 축 변형(SPEC r4.6 A3-Q3 · 5.7)",
     expect(screen.getByRole("region", { name: "구조 미리보기" })).toBeInTheDocument();
   });
 });
+
+describe("구조 미리보기 — 변형별 모양 · 프로필 팔레트 (SPEC r4.7 A3-Q7 · 5.7)", () => {
+  const doc = sampleDoc({
+    sections: [
+      section("header", "sticky-right-cta", "s-header"),
+      section("hero", "split", "s-hero"),
+      section("services", "cards-3", "s-cards-3"),
+      section("portfolio", "grid-2", "s-grid-2"),
+      section("portfolio", "grid-3", "s-grid-3"),
+      section("footer", "biz-extended", "s-footer"),
+    ],
+  });
+  const palette = { primary: "#123456", surface: "#eeeeee", ink: "#111111", muted: "#999999", bg: "#ffffff" };
+  const draw = (p?: typeof palette) => render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} palette={p} />).container;
+  const blockOf = (c: HTMLElement, id: string) => c.querySelector<HTMLElement>(`[data-instance-id="${id}"]`)!;
+
+  it("섹션마다 표의 모양(data-layout) · 카드 칸 수 = 카드 수 · 이미지 슬롯 = 줄무늬 aria-hidden", () => {
+    const c = draw(palette);
+    expect(["s-header", "s-hero", "s-cards-3", "s-grid-2", "s-footer"].map((id) => blockOf(c, id).dataset.layout)).toEqual(["bar", "split", "cols3", "cols2", "dark"]);
+    expect(blockOf(c, "s-cards-3").querySelectorAll("[data-cell]")).toHaveLength(3);
+    expect(blockOf(c, "s-grid-2").querySelectorAll("[data-stripes]")).toHaveLength(2);
+    expect(blockOf(c, "s-grid-3").querySelectorAll("[data-stripes]")).toHaveLength(3);
+    expect(blockOf(c, "s-hero").querySelectorAll("[data-stripes]")).toHaveLength(1);
+    for (const el of c.querySelectorAll("[data-stripes]")) expect(el).toHaveAttribute("aria-hidden", "true");
+    // 실제 슬롯 글자 · 선택 칩은 그대로
+    expect(within(blockOf(c, "s-hero")).getByText("Hero · 스플릿 (카피 / 이미지)")).toBeInTheDocument();
+    expect(within(blockOf(c, "s-header")).getByText("브랜드 이름")).toBeInTheDocument();
+  });
+
+  it("캔버스 루트 CSS 변수 = 팔레트 값 · 팔레트 없으면 중립 토큰 참조 · 모든 블록이 변수 색을 쓴다", () => {
+    const root = (c: HTMLElement) => blockOf(c, "s-header").parentElement!;
+    expect(root(draw(palette)).style.getPropertyValue("--canvas-primary")).toBe("#123456");
+    const neutral = root(draw());
+    expect(neutral.style.getPropertyValue("--canvas-primary")).toMatch(/^var\(--/);
+    for (const block of neutral.querySelectorAll<HTMLElement>("[data-instance-id]")) expect(block.className).toMatch(/--canvas-/);
+  });
+});

@@ -12,6 +12,9 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
+  /* UI 기본 글자 = body3 (v2 SPEC 2.4 · VISUAL-V2-APPLY) */
+  font-size: var(--font-size-body3);
+  line-height: var(--line-height-body3);
   color: var(--label-normal);
   background: var(--background-normal);
   -webkit-font-smoothing: antialiased;

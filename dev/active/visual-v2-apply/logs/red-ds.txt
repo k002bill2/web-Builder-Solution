@@ -1,0 +1,26 @@
+     × Button lg는 40(h-10)·body3 글자이고 size 계층이 역전되지 않는다 (lg ≥ md ≥ sm) 88ms
+     × TextField는 40(h-10)·body3 입력 글자이고 접근 이름을 유지한다 10ms
+     × Checkbox 상자는 16(size-4), 행은 최소 24(min-h-6)·body3 글자이고 이름·설명을 유지한다 9ms
+     × base.css body가 UI 기본 글자 body3 토큰을 쓴다 1ms
+     × 주 메뉴 글자는 UI 기본 body3이다 (v2 SPEC 2.4 · VISUAL-V2-APPLY 3) 33ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/components/layout/AppHeader.test.tsx > 앱 셸 헤더 (v2 SPEC 4.1) > 주 메뉴 글자는 UI 기본 body3이다 (v2 SPEC 2.4 · VISUAL-V2-APPLY 3)
+AssertionError: expected false to be true // Object.is equality
+- Expected
++ Received
+ FAIL  src/components/ds/density.test.tsx > DS 밀도 (v2) > Button lg는 40(h-10)·body3 글자이고 size 계층이 역전되지 않는다 (lg ≥ md ≥ sm)
+AssertionError: expected 13 to be 10 // Object.is equality
+- Expected
++ Received
+ FAIL  src/components/ds/density.test.tsx > DS 밀도 (v2) > TextField는 40(h-10)·body3 입력 글자이고 접근 이름을 유지한다
+AssertionError: expected 12 to be 10 // Object.is equality
+- Expected
++ Received
+ FAIL  src/components/ds/density.test.tsx > DS 밀도 (v2) > Checkbox 상자는 16(size-4), 행은 최소 24(min-h-6)·body3 글자이고 이름·설명을 유지한다
+Expected the element to have class:
+Received:
+ FAIL  src/components/ds/density.test.tsx > DS 밀도 (v2) > base.css body가 UI 기본 글자 body3 토큰을 쓴다
+AssertionError: expected '\n  margin: 0;\n  font-family: var(--…' to match /font-size:\s*var\(--font-size-body3\)/
+- Expected:
++ Received:
+      Tests  5 failed | 8 passed (13)

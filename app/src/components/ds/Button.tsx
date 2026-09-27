@@ -28,10 +28,11 @@ const VARIANT: Record<ButtonVariant, string> = {
 const SIZE: Record<ButtonSize, string> = {
   sm: "h-8 px-3 rounded-sm text-caption1",
   md: "h-10 px-4 rounded-md text-body3",
-  lg: "h-13 px-5.5 rounded-md text-body1",
+  /** v2 밀도: lg 40 = md 높이, 여백으로만 구분 (계층 lg ≥ md ≥ sm, 목업 md38/lg40 px 미복제) */
+  lg: "h-10 px-5 rounded-md text-body3",
 };
 
-const ICON_SIZE: Record<ButtonSize, IconSize> = { sm: 16, md: 20, lg: 22 };
+const ICON_SIZE: Record<ButtonSize, IconSize> = { sm: 16, md: 20, lg: 20 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   readonly variant?: ButtonVariant;

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
+import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
 import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectionName } from "../../features/studio/selection";
+import { PreviewWidth } from "./PreviewWidth";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
@@ -32,6 +34,7 @@ export function StudioLayout({
   const [notice, setNotice] = useState("");
   const [selected, setSelected] = useState(() => initialSelection(doc));
   const [tab, setTab] = useState<StudioTab>("sections");
+  const [view, setView] = useState<PreviewView>("desktop");
   const selectedId = resolveSelection(doc, selected);
 
   // 영역을 먼저 비운 채 그린 뒤 글자를 넣는다 — 스크린 리더가 status 변화로 읽는다
@@ -51,6 +54,7 @@ export function StudioLayout({
   const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} />;
   const edit = <EditPanel name={selectionName(doc, selectedId)} />;
   const gate = <GatePanel />;
+  const widths = <PreviewWidth value={view} onChange={setView} />;
 
   if (mode === "tabs") {
     return (
@@ -75,7 +79,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} scrollable={false} />
+        <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable={false} head={widths} />
       </div>
     );
   }
@@ -99,10 +103,11 @@ export function StudioLayout({
               ))}
             </select>
           </label>
+          {widths}
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} scrollable />
+            <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -121,7 +126,9 @@ export function StudioLayout({
 
   return (
     <div className="flex h-dvh flex-col">
-      <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading} />
+      <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
+        {widths}
+      </StudioToolbar>
       <div className="flex min-h-0 flex-1">
         <div className={`${COLUMN} w-55 flex-none border-r border-line-normal`}>
           {noticeRegion}
@@ -129,7 +136,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} scrollable />
+          <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

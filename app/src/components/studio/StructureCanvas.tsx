@@ -1,6 +1,8 @@
-import { useEffect, useRef, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import type { PageDoc, SectionInstance } from "../../engine/contracts/pageDoc";
 import { getSectionDefinition } from "../../engine/sections/registry";
+import type { PreviewView } from "../../features/detail/previewView";
+import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
 
 /** 5.7 캡션 — 늘 보인다 */
@@ -25,7 +27,7 @@ function SectionBlock({ section, selected }: { readonly section: SectionInstance
     >
       {/* 선택 라벨 칩(5.7 · B-12) — 12px 700, primary 면 위 on-primary 글자 */}
       {selected && (
-        <span className="self-start rounded-sm bg-primary px-2 py-0.5 text-caption1 font-bold text-on-primary">
+        <span className="self-start rounded-sm bg-primary px-2 py-0.5 text-caption2 font-bold text-on-primary">
           {sectionName(section)} · {variantName(section)}
         </span>
       )}
@@ -45,20 +47,42 @@ function SectionBlock({ section, selected }: { readonly section: SectionInstance
  * `scrollable`(≥1024) = 열마다 따로 스크롤 → 스크롤 영역에 `tabIndex=0`(키보드 스크롤, axe scrollable-region-focusable, 4.1).
  * 섹션 블록은 Tab 정지가 아니다(5.1) — 포인터 누름만 선택으로 받는다(키보드는 목록·Select·탭이 같은 기능). 선택이 바뀌면 보이게 즉시 스크롤, 포커스는 옮기지 않는다.
  */
+/** 캔버스 안쪽 폭(px) — ResizeObserver가 없으면(jsdom) 0 = 측정 전 */
+function useWidth() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver(([entry]) => setWidth(entry?.contentRect.width ?? 0));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, width] as const;
+}
+
+const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+
 export function StructureCanvas({
   doc,
   selectedId,
   onSelect,
+  view,
   scrollable,
   head,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly onSelect: (instanceId: string) => void;
+  readonly view: PreviewView;
   readonly scrollable: boolean;
   readonly head?: ReactNode;
 }) {
   const blocks = useRef<HTMLDivElement>(null);
+  const [area, available] = useWidth();
+  const frameRem = FRAME_REM[view];
+  const scale = previewScale(frameRem === undefined ? undefined : frameRem * remPx(), available);
+  const caption = scaleCaption(scale);
   useEffect(() => {
     // 애니메이션 없이 즉시(behavior 기본 auto) — prefers-reduced-motion과 무관하게 움직임 0. jsdom에는 scrollIntoView가 없다
     blocks.current?.querySelector(`[data-instance-id="${CSS.escape(selectedId)}"]`)?.scrollIntoView?.({ block: "nearest" });
@@ -78,10 +102,19 @@ export function StructureCanvas({
       </h2>
       <p className="ds-caption1 text-label-alternative">{CANVAS_CAPTION}</p>
       {head}
-      <div ref={blocks} onClick={pick} className="flex flex-col overflow-hidden rounded-md border border-line-normal">
-        {doc.sections.map((section) => (
-          <SectionBlock key={section.instanceId} section={section} selected={section.instanceId === selectedId} />
-        ))}
+      {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
+      {/* 넓은 프레임은 축소 보기 — `zoom`은 차지하는 폭까지 줄여 가로 스크롤이 생기지 않는다(transform: scale은 원래 폭을 남긴다, REPORT 차이) */}
+      <div ref={area} className="min-w-0">
+        <div
+          ref={blocks}
+          onClick={pick}
+          style={{ width: frameRem === undefined ? undefined : `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
+          className="mx-auto flex max-w-none flex-col overflow-hidden rounded-md border border-line-normal"
+        >
+          {doc.sections.map((section) => (
+            <SectionBlock key={section.instanceId} section={section} selected={section.instanceId === selectedId} />
+          ))}
+        </div>
       </div>
     </section>
   );

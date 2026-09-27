@@ -2,6 +2,8 @@ import { act, fireEvent, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Project, ProjectRepository } from "../data/projectRepository";
 import { SAMPLE_SECTIONS, sampleDoc } from "../engine/testing/sampleDoc";
+import { CANVAS_CAPTION } from "../components/studio/StructureCanvas";
+import { PREVIEW_VIEWS } from "../features/detail/previewView";
 import { variantName } from "../features/studio/selection";
 import { renderApp } from "../test/renderApp";
 
@@ -211,5 +213,36 @@ describe("탭 (S5 · E-AC-14 · SPEC 6.2)", () => {
     expect(h2("편집 · Services")).toBeInTheDocument();
     act(() => tab("섹션").click());
     expect(row(/^Services/)).toHaveAttribute("aria-current", "true");
+  });
+});
+
+describe("미리보기 폭 · 캔버스 (S6 · E-AC-15 · E-AC-16 · SPEC 5.7 · E-S31)", () => {
+  const widths = () => screen.getByRole("group", { name: "미리보기 폭" });
+  it("라벨 = previewView.ts 상수(데스크톱·태블릿·모바일), ≥1024는 툴바 · 전환 뒤 문서·선택 유지", async () => {
+    await open(1280);
+    expect(screen.getByRole("banner")).toContainElement(widths());
+    const radios = within(widths()).getAllByRole("radio");
+    expect(radios.map((r) => r.closest("label")!.textContent)).toEqual(PREVIEW_VIEWS.map((v) => v.label));
+    expect(within(widths()).getByRole("radio", { name: "데스크톱" })).toBeChecked();
+    act(() => row(/^Services/).click());
+    const text = canvas().textContent;
+    act(() => within(widths()).getByRole("radio", { name: "태블릿" }).click());
+    expect(within(widths()).getByRole("radio", { name: "태블릿" })).toBeChecked();
+    expect(row(/^Services/)).toHaveAttribute("aria-current", "true");
+    expect(canvas().textContent).toBe(text);
+  });
+
+  it("<1024는 캔버스 머리에", async () => {
+    await open(390);
+    expect(canvas()).toContainElement(widths());
+  });
+
+  it.each([1280, 1024, 390])("%i: 캡션 늘 보임 · 이미지·외부 URL 0 · 불투명도 글자 0 · 선택 라벨 12px 토큰(caption2)", async (width) => {
+    await open(width);
+    expect(within(canvas()).getByText(CANVAS_CAPTION)).toBeVisible();
+    expect(canvas().querySelectorAll("img, iframe, [src]")).toHaveLength(0);
+    expect(canvas().innerHTML).not.toMatch(/https?:|url\(/);
+    expect(canvas().innerHTML).not.toMatch(/opacity|text-[\w-]+\/\d+/);
+    expect(within(canvas()).getByText(/^Hero · /)).toHaveClass("text-caption2", "font-bold", "text-on-primary", "bg-primary");
   });
 });

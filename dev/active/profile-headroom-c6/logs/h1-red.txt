@@ -1,0 +1,95 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/profile-headroom-c6/app
+
+ ❯ src/data/memoryDocBookStartEdit.test.ts (6 tests | 6 failed) 5ms
+   ❯ startEdit — 편집 시작 결과 { state } | { alert?, retry } (6)
+     × 성공 → state = 바뀐 쌍 + 편집 알림 1문장 2ms
+     × 성공(바뀐 쌍 0) → state.changes = [] · 알림 없음 1ms
+     × DOC_EXISTS → 이동 state = 편집 알림만 (자동 restart 없음) 0ms
+     × UNKNOWN_VARIANT → 알림 (b) 문장 · 다시 시도 없음 0ms
+     × UNKNOWN_VARIANT 문장 없음 → 일반 실패 문형(alert 없음) · 다시 시도 없음 0ms
+     × 그 밖(요청 실패·NOT_FOUND·모양 없는 값) → 일반 실패 문형 + 다시 시도 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/memoryDocBookStartEdit.test.ts > startEdit — 편집 시작 결과 { state } | { alert?, retry } > 성공 → state = 바뀐 쌍 + 편집 알림 1문장
+TypeError: startEdit is not a function
+ ❯ src/data/memoryDocBookStartEdit.test.ts:14:18
+     12|   it("성공 → state = 바뀐 쌍 + 편집 알림 1문장", async () => {
+     13|     const changes = [{ type: "about", from: "split", to: "story" }];
+     14|     await expect(startEdit(ok({ doc: {}, changes, changeNotice: "구조안의 …
+       |                  ^
+     15|       state: { changes, editNotice: "구조안의 섹션 1개를 …" },
+     16|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/data/memoryDocBookStartEdit.test.ts > startEdit — 편집 시작 결과 { state } | { alert?, retry } > 성공(바뀐 쌍 0) → state.changes = [] · 알림 없음
+TypeError: startEdit is not a function
+ ❯ src/data/memoryDocBookStartEdit.test.ts:20:27
+     18|
+     19|   it("성공(바뀐 쌍 0) → state.changes = [] · 알림 없음", async () => {
+     20|     const started = await startEdit(ok({ doc: {}, changes: [] }));
+       |                           ^
+     21|     expect(started).toEqual({ state: { changes: [], editNotice: undefi…
+     22|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/data/memoryDocBookStartEdit.test.ts > startEdit — 편집 시작 결과 { state } | { alert?, retry } > DOC_EXISTS → 이동 state = 편집 알림만 (자동 restart 없음)
+TypeError: startEdit is not a function
+ ❯ src/data/memoryDocBookStartEdit.test.ts:26:18
+     24|   it("DOC_EXISTS → 이동 state = 편집 알림만 (자동 restart 없음)", async () => {
+     25|     const error = new ProjectRepositoryError("DOC_EXISTS", "project-1"…
+     26|     await expect(startEdit(fails(error))).resolves.toEqual({ state: { …
+       |                  ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/data/memoryDocBookStartEdit.test.ts > startEdit — 편집 시작 결과 { state } | { alert?, retry } > UNKNOWN_VARIANT → 알림 (b) 문장 · 다시 시도 없음
+TypeError: startEdit is not a function
+ ❯ src/data/memoryDocBookStartEdit.test.ts:31:18
+     29|   it("UNKNOWN_VARIANT → 알림 (b) 문장 · 다시 시도 없음", async () => {
+     30|     const error = new ProjectRepositoryError("UNKNOWN_VARIANT", "servi…
+     31|     await expect(startEdit(fails(error))).resolves.toEqual({ alert: "이…
+       |                  ^
+     32|   });
+     33|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/data/memoryDocBookStartEdit.test.ts > startEdit — 편집 시작 결과 { state } | { alert?, retry } > UNKNOWN_VARIANT 문장 없음 → 일반 실패 문형(alert 없음) · 다시 시도 없음
+TypeError: startEdit is not a function
+ ❯ src/data/memoryDocBookStartEdit.test.ts:35:18
+     33|
+     34|   it("UNKNOWN_VARIANT 문장 없음 → 일반 실패 문형(alert 없음) · 다시 시도 없음", async ()…
+     35|     await expect(startEdit(fails(new ProjectRepositoryError("UNKNOWN_V…
+       |                  ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/data/memoryDocBookStartEdit.test.ts > startEdit — 편집 시작 결과 { state } | { alert?, retry } > 그 밖(요청 실패·NOT_FOUND·모양 없는 값) → 일반 실패 문형 + 다시 시도
+TypeError: startEdit is not a function
+ ❯ src/data/memoryDocBookStartEdit.test.ts:39:18
+     37|
+     38|   it("그 밖(요청 실패·NOT_FOUND·모양 없는 값) → 일반 실패 문형 + 다시 시도", async () => {
+     39|     await expect(startEdit(fails(new Error("network")))).resolves.toEq…
+       |                  ^
+     40|     await expect(startEdit(fails(new ProjectRepositoryError("NOT_FOUND…
+     41|     await expect(startEdit(fails(undefined))).resolves.toEqual({ retry…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  17:59:20
+   Duration  798ms (environment 71%, transform 13%, setup 13%, import 2%, tests 1%, worker 1%)
+

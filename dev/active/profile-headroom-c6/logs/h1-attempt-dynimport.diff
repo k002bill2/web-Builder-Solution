@@ -1,0 +1,94 @@
+diff --git a/app/src/data/memoryDocBook.ts b/app/src/data/memoryDocBook.ts
+index 9d72d2a..5e22192 100644
+--- a/app/src/data/memoryDocBook.ts
++++ b/app/src/data/memoryDocBook.ts
+@@ -5,10 +5,19 @@
+  * - start(8.3.1): 모양 → 멱등 키 → NOT_FOUND(프로젝트·버전·안·restart 문서) → DOC_EXISTS·STALE_DOC → 어댑터(8.2.1, 표 밖·엔진 거부 =
+  *   UNKNOWN_VARIANT 쓰기 0) → 문서(+ restart 스냅샷) + 멱등 기록. 동기 — `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0).
+  * - save(8.3): 모양(L4 검증) → 멱등 키 (revision, hash) → NOT_FOUND → STALE_DOC(최신 동봉) → 저장(revision +1).
++ * - startEdit: 프로필 화면 "편집 시작"의 결과 분기 — 프로필 청크가 이 청크를 함께 받아 부른다(PROFILE-HEADROOM-C6 H1, /profile 진입 직후 여유).
+  */
+ import type { CandidatePlan } from "../domain/generation";
+ import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
+-import { ProjectRepositoryError, type DocHead, type Project, type ProjectSnapshot, type StartDocMode, type StartDocResult } from "./projectRepository";
++import {
++  ProjectRepositoryError,
++  type DocHead,
++  type Project,
++  type ProjectSnapshot,
++  type StartDocMode,
++  type StartDocResult,
++  type StudioEntryState,
++} from "./projectRepository";
+ import { checkSaveDoc, writeStartDoc } from "./startDocWrite";
+ import { deepFreeze, type StudioReader } from "./studioStore";
+ 
+@@ -106,3 +115,22 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
+     },
+   };
+ }
++
++/** 편집 시작 결과 — 이동(state) 또는 알림(alert 없음 = 프로필 화면의 일반 실패 문형 · retry = "다시 시도" 버튼) */
++export type EditStart = { readonly state: StudioEntryState } | { readonly alert?: string; readonly retry: boolean };
++
++/**
++ * "편집 시작"(DS-2A-05 12.3 · 8.3.1): 성공·DOC_EXISTS = 이동(바뀐 쌍 · 편집 알림) · UNKNOWN_VARIANT = 알림(다시 시도 없음) ·
++ * 그 밖(요청·로더 실패 포함) = 일반 실패 + 다시 시도(같은 인자 → 멱등). 던지지 않는다.
++ */
++export async function startEdit(start: () => Promise<StartDocResult<unknown>>): Promise<EditStart> {
++  try {
++    const started = await start();
++    return { state: { changes: started.changes, editNotice: started.changeNotice } };
++  } catch (error: unknown) {
++    if (!(error instanceof ProjectRepositoryError)) return { retry: true };
++    if (error.code === "DOC_EXISTS") return { state: { editNotice: error.alert } };
++    if (error.code === "UNKNOWN_VARIANT") return { ...(error.alert && { alert: error.alert }), retry: false };
++    return { retry: true };
++  }
++}
+diff --git a/app/src/features/profile/CandidatesSection.tsx b/app/src/features/profile/CandidatesSection.tsx
+index 9147db1..54d8647 100644
+--- a/app/src/features/profile/CandidatesSection.tsx
++++ b/app/src/features/profile/CandidatesSection.tsx
+@@ -4,14 +4,14 @@
+  * 폭: ≥768 카드 3열 + 비교 표(접힘), <768 한 열·표 없음(카드가 같은 정보를 모두 가진다). 편집 시작은 2a-05 경계(Q7) — 편집 미구현 안내 상시.
+  * 순서(PROFILE-V2-COMPACT 5): 카드 → 편집 시작(바로 아래 오른쪽) → "3안 비교 표 보기".
+  * 편집 시작(DS-2A-05 12.3 · 8.3.1): 누를 때 프로젝트 저장소를 받아 `startDoc(create)` — 성공·DOC_EXISTS = 이동(state: 바뀐 쌍 · 편집 알림) ·
+- * UNKNOWN_VARIANT = 알림(다시 시도 없음) · 그 밖 = 실패 문형 + 다시 시도(같은 인자 → 멱등). 문장은 조작 뒤 청크(memoryDocBook)가 만든다.
++ * UNKNOWN_VARIANT = 알림(다시 시도 없음) · 그 밖 = 실패 문형 + 다시 시도(같은 인자 → 멱등). 결과 분기·문장은 조작 뒤 청크(memoryDocBook `startEdit`)가
++ * 만든다 — 누를 때 저장소와 함께 받는다(PROFILE-HEADROOM-C6 H1). 이 청크에는 청크 받기 실패용 일반 문형만 남는다.
+  */
+ import { useId, useState } from "react";
+ import { useNavigate } from "react-router";
+ import { Button } from "../../components/ds/Button";
+ import { Callout } from "../../components/ds/Callout";
+ import { useProjectLoader } from "../../data/ProfileRepositoryContext";
+-import type { StudioEntryState } from "../../data/projectRepository";
+ import { effectiveProfile } from "../../domain/effectiveProfile";
+ import { isTerminal, type CandidateFailure, type GenerationJob } from "../../domain/generation";
+ import type { ProfileVersion } from "../../domain/profile";
+@@ -58,18 +58,13 @@ export function CandidatesSection({
+     if (!projectId) return void navigate("/projects");
+     setStarting(true);
+     setStartAlert(undefined);
+-    let state: StudioEntryState | undefined;
+-    try {
+-      const started = await (await loadProjects()).startDoc(projectId, viewed.version, selected, "create");
+-      state = { changes: started.changes, editNotice: started.changeNotice };
+-    } catch (error: unknown) {
+-      // 오류 모양만 읽는다 — 오류 클래스(프로젝트 저장소 청크)를 프로필 청크로 끌어오지 않는다
+-      const { code, alert } = (error ?? {}) as { code?: string; alert?: string };
+-      if (code === "DOC_EXISTS") state = { editNotice: alert };
+-      else setStartAlert({ text: (code === "UNKNOWN_VARIANT" && alert) || CANDIDATE_TEXT.startFailed, retry: code !== "UNKNOWN_VARIANT" });
+-    }
++    const started = await import("../../data/memoryDocBook").then(
++      ({ startEdit }) => startEdit(async () => (await loadProjects()).startDoc(projectId, viewed.version, selected, "create")),
++      () => ({ retry: true }),
++    );
+     setStarting(false);
+-    if (state) void navigate(`/studio/${projectId}`, { state });
++    if ("state" in started) void navigate(`/studio/${projectId}`, { state: started.state });
++    else setStartAlert({ text: started.alert ?? CANDIDATE_TEXT.startFailed, retry: started.retry });
+   };
+   const onRequest = () => {
+     if (!blocked && !running) void gen.request();

@@ -53,6 +53,14 @@ describe("J-S09 첫 확정 — 새 프로젝트 캡션, 라디오 없음", () =>
     expect(targetGroup()).toBeNull();
     expect(screen.getByRole("button", { name: "프로필 확정 (v1)" })).toBeInTheDocument();
   });
+
+  it("첫 확정도 projectCreated 상태로 이동 → 프로필 알림 \"새 프로젝트 '…'을 만들었습니다\" (J-S11 확장 · SPEC r4.3)", async () => {
+    const { router } = await openBoard();
+    await userEvent.click(await screen.findByRole("button", { name: "프로필 확정 (v1)" }, SLOW));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"), SLOW);
+    expect(router.state.location.state).toMatchObject({ projectCreated: true });
+    await waitFor(() => expect(screen.getByRole("status", { name: "프로필 알림" })).toHaveTextContent("새 프로젝트 '모던 카페 브랜드 프로젝트'를 만들었습니다"), SLOW);
+  });
 });
 
 describe("프로필 머리 '프로젝트: <이름>' 링크 (12.1 3.1 · 5.2)", () => {

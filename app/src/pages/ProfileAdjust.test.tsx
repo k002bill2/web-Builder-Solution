@@ -425,15 +425,16 @@ describe("Q2 이름표 (M-06) · Q5 제목·배치 · P-AC-33", () => {
 
   it("1280 2단(프로필 패널 + 3안) · 1024 패널 안 2열 · DOM 순서 = 값 → 팔레트 → 조정 → 버전 → 3안, disabled 속성 0", async () => {
     await openProfile();
-    const regions = ["프로필 값", "역할 팔레트와 대비", "전역 조정", "버전", "3안"].map((name) => screen.getByRole("region", { name }));
+    const regions = ["프로필 값", "역할 팔레트와 대비", "전역 조정", "버전", "생성된 3안"].map((name) => screen.getByRole("region", { name }));
     for (let i = 1; i < regions.length; i += 1) expect(regions[i - 1]!.compareDocumentPosition(regions[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const candidates = regions[4]!;
-    expect(within(candidates).getByRole("heading", { level: 2, name: "3안" })).toBeInTheDocument();
+    expect(within(candidates).getByRole("heading", { level: 2, name: "생성된 3안" })).toBeInTheDocument();
     // 2a-04c: 3안 자리 → 실제 3안 영역(3안 만들기·편집 시작 버튼). 배치·순서 단언은 그대로
     expect(within(candidates).getByRole("button", { name: "3안 만들기 (v1)" })).toBeInTheDocument();
     const layout = candidates.parentElement!;
     expect(layout.className).toMatch(/xl:grid-cols-/);
-    const panel = layout.firstElementChild as HTMLElement;
+    // PROFILE-VISUAL-ALIGN 1: 왼쪽 열 = 페이지 머리 → 알림 → 프로필 패널(마지막 자식). 패널 안 배치 단언은 그대로
+    const panel = layout.firstElementChild!.lastElementChild as HTMLElement;
     expect(panel.className).toMatch(/lg:grid-cols-2/);
     expect(panel.className).toMatch(/xl:grid-cols-1/);
     for (const g of screen.getAllByRole("radiogroup")) expect(g.className).toMatch(/flex-wrap/);

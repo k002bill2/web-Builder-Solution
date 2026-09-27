@@ -1,19 +1,23 @@
 /**
  * 프로젝트 저장소 경계 (DS-2A-05 SPEC 8.1 · 8.3). 인터페이스 파일은 타입·오류 클래스만 — 메모리 구현은 a1-β(`createStudioStore` 공유).
- * 편집 문서·스냅샷의 문서 모양은 L4 엔진 계약(PageDoc)이라 여기서는 제네릭 `TDoc`으로 둔다 — engine을 import하지 않는다
+ * 편집 문서·스냅샷의 문서 모양은 L4 엔진 계약(PageDoc)이라 여기서는 제네릭 `TDoc`(저장소가 읽는 머리 필드 `DocHead`만 요구)으로 둔다 — engine을 import하지 않는다
  * (`import type` 포함, engineImportGuard). 문서 쓰기는 모두 `expectedRevision`이 필수 인자다(If-Match).
  */
 
 /** 저장 상태 문구(E-S06)·떠나기 경고 조건(E-S10)이 보는 저장 방식 */
 export type ProjectPersistence = "memory" | "server";
 
-/** SPEC 8.3 오류 코드 모음. `DOC_EXISTS`는 오류가 아니라 `startDoc` create의 결정적 결과(8.3.1) */
+/**
+ * SPEC 8.3 오류 코드 모음. `DOC_EXISTS`는 오류가 아니라 `startDoc` create의 결정적 결과(8.3.1).
+ * `UNKNOWN_VARIANT`(8.2.1 (b)) = 구조안을 편집 문서로 만들 수 없음 — 결정적, 재시도 없음. 엔진이 거부한 다른 구조안(BAD_VALUE)도 같은 코드·다른 문장(`alert`)
+ */
 export type ProjectErrorCode =
   | "NOT_FOUND"
   | "SCHEMA_INVALID"
   | "STALE_PROJECT"
   | "STALE_DOC"
   | "DOC_EXISTS"
+  | "UNKNOWN_VARIANT"
   | "GENERATOR_UNAVAILABLE"
   | "GATE_FAILED"
   | "JOB_TIMEOUT"
@@ -48,6 +52,39 @@ export interface ProjectSummary extends Project {
 }
 
 export type StartDocMode = "create" | "restart";
+
+/** 저장소가 문서에서 읽는 머리 필드(PageDoc의 부분 구조) — 멱등 키·충돌 판정·목록 요약 */
+export interface DocHead {
+  readonly projectId: string;
+  readonly revision: number;
+  /** 내용 해시(hashDoc) — saveDoc 멱등 키 (revision, hash) */
+  readonly hash: string;
+  readonly profileVersion: number;
+  readonly candidateId: string;
+  readonly updatedAt: string;
+}
+
+/** 구조안 변형 → 편집기 변형으로 바뀐 쌍(8.2.1 (a)) — startDoc 성공 결과에만 있고 문서에 저장하지 않는다 */
+export interface VariantChangeHead {
+  readonly type: string;
+  readonly from: string;
+  readonly to: string;
+}
+
+/** startDoc 성공(처음 · 멱등 재생 — 재생은 이전 결과 그대로) */
+export interface StartDocResult<TDoc> {
+  readonly doc: TDoc;
+  readonly changes: readonly VariantChangeHead[];
+  /** 바뀐 쌍 편집 알림 1문장(0쌍이면 없음) — 이동 뒤 편집기가 1회 알린다 */
+  readonly changeNotice?: string;
+}
+/** "편집 시작" → `/studio/:projectId` 이동 state(12.3 · 8.3.1) — 편집기가 첫 표시 때 1회 알린다. 문서에 저장하지 않는다 */
+export interface StudioEntryState {
+  /** 편집 알림 1문장 — 바뀐 쌍(8.2.1 (a)) 또는 DOC_EXISTS "이미 편집 중인 문서를 엽니다" */
+  readonly editNotice?: string;
+  /** startDoc 성공 결과의 바뀐 쌍 목록(0쌍이면 빈 배열) */
+  readonly changes?: readonly VariantChangeHead[];
+}
 export type SnapshotKind = "manual" | "auto" | "published";
 export type SnapshotReason = "export" | "restore" | "conflict" | "restart";
 export type ConflictChoice = "mine" | "theirs";
@@ -89,7 +126,7 @@ export interface ExportRequestResult {
   readonly wrote: boolean;
 }
 
-export interface ProjectRepository<TDoc = unknown> {
+export interface ProjectRepository<TDoc extends DocHead = DocHead> {
   readonly persistence: ProjectPersistence;
   /** GET /projects — 마지막 변경(`updatedAt`) 내림차순 (J-S04) */
   listProjects(): Promise<readonly ProjectSummary[]>;
@@ -102,7 +139,7 @@ export interface ProjectRepository<TDoc = unknown> {
   /** PUT /projects/{id}/page — 판정: 모양 → 멱등 키(revision, hash) → NOT_FOUND → STALE_DOC(최신 동봉) → 저장 */
   saveDoc(projectId: string, expectedRevision: number, doc: TDoc): Promise<TDoc>;
   /** POST /projects/{id}/page — create = 원자적 create-if-absent(있으면 DOC_EXISTS) · restart = expectedRevision 필수 (8.3.1) */
-  startDoc(projectId: string, profileVersion: number, candidateId: string, mode: StartDocMode, expectedRevision?: number): Promise<TDoc>;
+  startDoc(projectId: string, profileVersion: number, candidateId: string, mode: StartDocMode, expectedRevision?: number): Promise<StartDocResult<TDoc>>;
   listSnapshots(projectId: string): Promise<readonly ProjectSnapshot<TDoc>[]>;
   createSnapshot(projectId: string, name?: string): Promise<ProjectSnapshot<TDoc>>;
   /** "복원 전" 자동 스냅샷 + 새 revision을 한 트랜잭션. 불일치 STALE_DOC */
@@ -120,13 +157,16 @@ export class ProjectRepositoryError<TDoc = unknown> extends Error {
   readonly project?: Project;
   /** STALE_DOC·DOC_EXISTS일 때 최신(기존) 문서 */
   readonly doc?: TDoc;
+  /** 조작 뒤 청크가 만든 알림 문장 — UNKNOWN_VARIANT = 프로필 화면 알림(8.2.1 (b)) · DOC_EXISTS = 이동 뒤 편집 알림(8.3.1) */
+  readonly alert?: string;
 
-  constructor(code: ProjectErrorCode, message: string, latest: { readonly project?: Project; readonly doc?: TDoc } = {}) {
+  constructor(code: ProjectErrorCode, message: string, latest: { readonly project?: Project; readonly doc?: TDoc; readonly alert?: string } = {}) {
     super(`${code}: ${message}`);
     this.name = "ProjectRepositoryError";
     this.code = code;
     if (latest.project) this.project = latest.project;
     if (latest.doc !== undefined) this.doc = latest.doc;
+    if (latest.alert !== undefined) this.alert = latest.alert;
   }
 }
 

@@ -1,0 +1,46 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-data/app
+
+ ❯ src/engine/engineImportGuard.test.ts (3 tests | 1 failed) 16ms
+   ❯ 엔진 import 가드 (번들 0) (3)
+     × 허용 목록 — 편집기 라우트·startDocWrite만 통과하고, 이웃 경로(StudioPage 외 pages·data 다른 파일·접두만 같은 디렉터리)는 잡는다 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/engine/engineImportGuard.test.ts > 엔진 import 가드 (번들 0) > 허용 목록 — 편집기 라우트·startDocWrite만 통과하고, 이웃 경로(StudioPage 외 pages·data 다른 파일·접두만 같은 디렉터리)는 잡는다
+AssertionError: expected [ 'pages/StudioPage.tsx', …(8) ] to deeply equal [ 'pages/ProfilePage.tsx', …(4) ]
+
+- Expected
++ Received
+
+@@ -1,6 +1,10 @@
+  [
++   "pages/StudioPage.tsx",
++   "components/studio/StudioToolbar.tsx",
++   "features/studio/useStudioDoc.ts",
++   "data/startDocWrite.ts",
+    "pages/ProfilePage.tsx",
+    "data/memoryProjectRepository.ts",
+    "data/engineVariantMap.ts",
+    "components/studioX/Leak.tsx",
+    "features/profile/CandidatesSection.tsx",
+
+ ❯ src/engine/engineImportGuard.test.ts:85:36
+     83|       at("features/profile/CandidatesSection.tsx"),
+     84|     ];
+     85|     expect(engineImporters(files)).toEqual([
+       |                                    ^
+     86|       "pages/ProfilePage.tsx",
+     87|       "data/memoryProjectRepository.ts",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  16:32:37
+   Duration  203ms (setup 59%, transform 19%, tests 14%, import 5%, worker 3%)
+

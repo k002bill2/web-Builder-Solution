@@ -1,0 +1,37 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-shell/app
+
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/StudioShell.test.tsx (1 test | 1 failed) 122ms
+   ❯ 집중 모드 툴바 (S2 · E-AC-03) (1)
+     × 주 메뉴 nav 없음 · header 1개 · 돌아가기 → /projects · h1 = 이름 · document.title = '<이름> 편집' 120ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/StudioShell.test.tsx > 집중 모드 툴바 (S2 · E-AC-03) > 주 메뉴 nav 없음 · header 1개 · 돌아가기 → /projects · h1 = 이름 · document.title = '<이름> 편집'
+AssertionError: expected '' to be '동네 치과 클리닉 프로젝트 편집' // Object.is equality
+
+- Expected
++ Received
+
+- 동네 치과 클리닉 프로젝트 편집
+
+ ❯ src/pages/StudioShell.test.tsx:65:28
+     63|     expect(screen.getByRole("link", { name: "프로젝트로 돌아가기" })).toHaveAtt…
+     64|     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(…
+     65|     expect(document.title).toBe(`${PROJECT.name} 편집`);
+       |                            ^
+     66|   });
+     67| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:31:15
+   Duration  1.51s (environment 48%, transform 28%, tests 9%, setup 8%, import 7%)
+

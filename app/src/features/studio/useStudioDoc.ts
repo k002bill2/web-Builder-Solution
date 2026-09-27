@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import type { Project, StudioEntryState } from "../../data/projectRepository";
+import type { Project, ProjectRepository, StudioEntryState } from "../../data/projectRepository";
 import { useThrowToBoundary } from "../../data/useThrowToBoundary";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { useProjectRepository } from "../projects/useProjectRepository";
+import { isPageDoc } from "./studioRepository";
 
 export type StudioEntry =
   | { readonly status: "loading" }
   | { readonly status: "missing" }
-  | { readonly status: "ready"; readonly project: Project; readonly doc: PageDoc | undefined };
+  | { readonly status: "ready"; readonly project: Project; readonly doc: PageDoc | undefined; readonly repository: ProjectRepository };
 
 /** `/studio/:projectId` 프로젝트 + 편집 문서 조회 (E-S01~E-S05). 실패는 오류 경계로(E-S04) */
 export function useStudioDoc(projectId: string): StudioEntry {
@@ -20,8 +21,10 @@ export function useStudioDoc(projectId: string): StudioEntry {
     let cancelled = false;
     Promise.all([repository.getProject(projectId), repository.getDoc(projectId)]).then(
       ([project, doc]) => {
-        // 저장소 문서는 엔진이 만든 것만 있다(startDoc = createDocFromCandidate · saveDoc = validatePageDoc 통과) — 계약상 PageDoc
-        if (!cancelled) setEntry(project ? { status: "ready", project, doc: doc as PageDoc | undefined } : { status: "missing" });
+        // 저장소 문서는 엔진이 만든 것만 있다 — 모양 확인 한 곳(isPageDoc)에서 좁힌다. 모양이 다르면 오류 경계로(E-S04)
+        if (cancelled) return;
+        if (doc && !isPageDoc(doc)) fail(new Error("편집 문서 모양이 아닙니다"));
+        else setEntry(project ? { status: "ready", project, doc, repository } : { status: "missing" });
       },
       (error: unknown) => {
         if (!cancelled) fail(error);

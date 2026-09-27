@@ -1,0 +1,247 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-shell/app
+
+ ❯ src/components/studio/StudioLayout.test.tsx (5 tests | 5 failed) 192ms
+   ❯ 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) (3)
+     × 선택 섹션의 글자 슬롯이 FieldEditor로 — 섹션을 바꾸면 필드가 바뀐다 110ms
+     × '페이지 정보' → 제목·설명 필드(문서 meta) 43ms
+     × 권장 초과 → 캔버스 문제 문장이 생기고 필드 aria-describedby 맨 앞에 그 id 13ms
+   ❯ 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) (2)
+     × 필드 입력 → 캔버스 글자 반영 → 2초 뒤 저장 1회 → '이 탭에 저장됨', 편집 알림 글자 변화 0 12ms
+     × STALE_DOC → 캔버스 위 ConflictCallout(r7) · 내 편집 유지 · 알림 영역 1개 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) > 선택 섹션의 글자 슬롯이 FieldEditor로 — 섹션을 바꾸면 필드가 바뀐다
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name `/^제목/`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+  [33mclass[39m=[32m"flex flex-col gap-3"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m편집 · [0m
+    [0mHero[0m
+  [36m</h2>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:51:33
+     49|   it("선택 섹션의 글자 슬롯이 FieldEditor로 — 섹션을 바꾸면 필드가 바뀐다", () => {
+     50|     draw(fakeRepository().repository);
+     51|     expect(within(editRegion()).getByRole("textbox", { name: /^제목/ }))…
+       |                                 ^
+     52|     act(() => row(/^About/).click());
+     53|     expect(screen.getByRole("heading", { level: 2, name: "편집 · About" …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) > '페이지 정보' → 제목·설명 필드(문서 meta)
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name `/^제목/`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "편집 · 페이지 정보":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+  [33mclass[39m=[32m"flex flex-col gap-3"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m편집 · [0m
+    [0m페이지 정보[0m
+  [36m</h2>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:60:33
+     58|     draw(fakeRepository().repository);
+     59|     act(() => row(/^페이지 정보/).click());
+     60|     expect(within(editRegion()).getByRole("textbox", { name: /^제목/ }))…
+       |                                 ^
+     61|     expect(within(editRegion()).getByRole("textbox", { name: /^설명/ }))…
+     62|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) > 권장 초과 → 캔버스 문제 문장이 생기고 필드 aria-describedby 맨 앞에 그 id
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name `/^제목/`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+  [33mclass[39m=[32m"flex flex-col gap-3"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m편집 · [0m
+    [0mHero[0m
+  [36m</h2>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:66:40
+     64|   it("권장 초과 → 캔버스 문제 문장이 생기고 필드 aria-describedby 맨 앞에 그 id", () => {
+     65|     draw(fakeRepository().repository);
+     66|     const title = within(editRegion()).getByRole("textbox", { name: /^…
+       |                                        ^
+     67|     act(() => void fireEvent.change(title, { target: { value: "가".repe…
+     68|     const sentence = within(canvas()).getByText("제목이 권장 28자를 넘었습니다 (30…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > 필드 입력 → 캔버스 글자 반영 → 2초 뒤 저장 1회 → '이 탭에 저장됨', 편집 알림 글자 변화 0
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name `/^제목/`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+  [33mclass[39m=[32m"flex flex-col gap-3"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m편집 · [0m
+    [0mHero[0m
+  [36m</h2>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:78:40
+     76|     const { repository, save } = fakeRepository();
+     77|     draw(repository);
+     78|     const title = within(editRegion()).getByRole("textbox", { name: /^…
+       |                                        ^
+     79|     act(() => void fireEvent.change(title, { target: { value: "새 제목" }…
+     80|     expect(within(canvas()).getByText("새 제목")).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > STALE_DOC → 캔버스 위 ConflictCallout(r7) · 내 편집 유지 · 알림 영역 1개
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name `/^제목/`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+  [33mclass[39m=[32m"flex flex-col gap-3"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m편집 · [0m
+    [0mHero[0m
+  [36m</h2>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:97:58
+     95|     });
+     96|     draw(repository);
+     97|     act(() => void fireEvent.change(within(editRegion()).getByRole("te…
+       |                                                          ^
+     98|     await act(() => vi.advanceTimersByTimeAsync(2000));
+     99|     expect(within(canvas()).getByText("다른 곳에서 이 문서가 바뀌었습니다(r7)")).toBe…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/components/studio/StudioLayout.test.tsx:97:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  21:41:43
+   Duration  1.08s (environment 55%, tests 19%, setup 11%, transform 9%, import 5%)
+

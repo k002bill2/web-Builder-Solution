@@ -32,3 +32,15 @@
 - **서브에이전트 금지**(rate limit 이력). 로컬 커밋 `git commit -- <경로>`만. push·병합·삭제 금지.
 - 진행 기록 `dev/active/editor-a2-shell/PROGRESS.md`(체크포인트마다 갱신) · `REPORT.md`(SHA·파일·AC별 판정·RED/GREEN 로그·번들 전후 표·남은 위험). **전체 vitest는 마지막에 1회**(`logs/full-vitest.txt`, 실패는 목록만). Codex 검증은 턴이 남을 때만 1회(`review --scope branch --base f22bbc8`), 없으면 "이관" 기록.
 - 턴 운영: `--max-turns` 60 · **45턴부터 REPORT 우선**(부분 결과도 커밋). 한 턴에 여러 파일 쓰기·읽기를 묶어 턴을 아낀다. 체크포인트가 끝날 때마다 커밋해 끊겨도 이어받을 수 있게 한다.
+
+## RESUME-1 — S2~S6 + A2-F 부품 연결 (Jarvis, 2026-09-27 21:3x · 영환님 ★A · 하이브리드 운영 첫 적용)
+- 상태: S1(`270bf6c`)은 main에 병합(`e13f2b6`). `/profile` 여유는 profile-headroom-2로 **0.30 → 1.34** 확보(`ab63690`) — 이전 중지 사유 해소. A2-F 부품·훅(`FieldEditor`·`PageInfoFields`·`SaveStatus`·`ConflictCallout`·`useDocSave`·`fieldCounter`)도 main에 있다(`3cea1e7`, 기록 `dev/active/editor-a2-fields/REPORT.md` 6절 "연결 때 할 일").
+- **이번 범위(한 레인에서 끝까지):** S2 → S3 → S4 → S5 → S6(위 체크포인트 그대로) → **S7 A2-F 연결**:
+  - 편집 패널 자리에 선택 섹션의 `FieldEditor`들 + `PageInfoFields`, 툴바(390은 h1 아래 줄)에 `SaveStatus`, 문서 위에 `ConflictCallout`, `useDocSave`로 `saveDoc` 자동 저장. `SaveStatus.onAnnounce` → S1의 "편집 알림" `role=status` 영역(E-AC-33 영역 1개 유지). `ConflictCallout.latestRevision` = `conflict.latest?.revision`.
+  - `DocSaveRepository`/`ProjectRepository<DocHead>` 타입 불일치(A2-F REPORT 6절)는 캐스트 대신 제네릭·어댑터로 정리(데이터 계층 파일 수정이 필요하면 최소로, REPORT에 근거).
+  - 스냅샷(E-AC-10 일부)은 a4 — 만들지 않는다.
+  - 수용: 필드 입력 → 2초 뒤 저장 1회 → 상태 글자 "이 탭에 저장됨" · 필드 값이 캔버스 라벨/구조에 반영(해당 시) · 섹션 전환 시 편집 패널 필드가 바뀜 · 기존 A2-F 부품 테스트 불변.
+- **번들:** `/studio`는 lazy 라우트라 늘어도 된다(현재 첫 95.49 · 진입 108.46, 예산 100/125 — **첫 화면 ≤ 99.40 유지**, 초과 예상이면 편집 패널·저장 훅을 진입 뒤 청크로). 그 밖 화면·공통은 **±0.03 이내**(해시 요동). 멈춤선 0.3 규칙은 그대로.
+- **알려진 무관 이슈(건드리지 말 것):** `ProjectsPage.test.tsx` "J-S07 저장 중 aria-busy…"가 고부하(load 40+)에서 5회 중 1회 간헐 실패 — 이 레인 범위 밖, 별건.
+- **테스트:** 체크포인트마다 표적 test + typecheck + lint + build. 전체 vitest는 **마지막에 3회**(`logs/final-full-x3.txt`). 반복 실패가 이 레인 파일에서 나오면 고치고, 위 알려진 이슈만 나오면 기록만.
+- 턴: `--max-turns` 100 · **80턴부터 REPORT 우선**. 체크포인트마다 커밋(끊겨도 이어받을 수 있게). Codex 1회는 턴 남을 때만(`review --scope branch --base e13f2b6`), 없으면 이관. 서브에이전트 금지 · 포트 4337 · 로컬 커밋 · push·병합·삭제 금지.

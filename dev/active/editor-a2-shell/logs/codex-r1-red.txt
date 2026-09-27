@@ -1,0 +1,30 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-shell/app
+
+ ❯ src/components/studio/StudioLayout.test.tsx (7 tests | 1 failed) 332ms
+   ❯ 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) (4)
+     × 편집 직후 앱 안 링크(프로젝트로 돌아가기)로 떠나면 디바운스를 기다리지 않고 바로 저장 1회(Codex r1 P2) 33ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > 편집 직후 앱 안 링크(프로젝트로 돌아가기)로 떠나면 디바운스를 기다리지 않고 바로 저장 1회(Codex r1 P2)
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ src/components/studio/StudioLayout.test.tsx:96:18
+     94|     act(() => void fireEvent.change(within(editRegion()).getByRole("te…
+     95|     act(() => void fireEvent.click(screen.getByRole("link", { name: "프…
+     96|     expect(save).toHaveBeenCalledTimes(1);
+       |                  ^
+     97|     expect(save.mock.calls[0]![2]).toMatchObject({ sections: expect.ar…
+     98|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  21:57:53
+   Duration  1.36s (environment 48%, tests 26%, transform 13%, setup 8%, import 5%, worker 1%)
+

@@ -81,7 +81,8 @@ const SCENARIOS = [
   },
   // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(memoryStudio·비교 픽스처) → projects()(memoryProjectRepository)
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
-  { name: "/studio/:projectId", page: "src/pages/StudioPage.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
+  // 편집 틀(StudioLayout — 배치·필드·자동 저장 훅)은 문서가 있으면 렌더에서 자동 lazy(EDITOR-A2-SHELL S7) → 진입 직후 합계
+  { name: "/studio/:projectId", page: "src/pages/StudioPage.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx"] },
 ];
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));

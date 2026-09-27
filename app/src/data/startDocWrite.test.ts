@@ -1,6 +1,11 @@
 import type { PlannedSection } from "../domain/generation";
 import { hashDoc } from "../engine/ops/hash";
 import { validatePageDoc } from "../engine/validate/validatePageDoc";
+import { boardOf, resultsOf } from "../test/compareFixtures";
+import { composeCandidates } from "../domain/composeCandidates";
+import { GENERATOR_VERSION } from "../domain/generation";
+import { buildProfileDraft } from "../domain/profileDraft";
+import { SECTION_LIBRARY } from "../domain/sectionLibrary";
 import { checkSaveDoc, writeStartDoc, type StartDocInput } from "./startDocWrite";
 
 const s = (type: PlannedSection["type"], variant: string, motion: PlannedSection["motion"] = "L1"): PlannedSection => ({ type, variant, motion });
@@ -28,18 +33,17 @@ describe("startDoc 어댑터 (SPEC 8.2.1 ①~④)", () => {
       "header/sticky-right-cta/L1",
       "hero/split/L2",
       "about/story/L2",
-      "services/cards-3/L2",
-      "portfolio/grid-3/L1",
+      "services/cards-2/L2",
+      "portfolio/masonry/L1",
       "contact/form/L1",
       "footer/biz-extended/L0",
     ]);
     expect(result.changes).toEqual([
       { type: "about", from: "split", to: "story" },
-      { type: "services", from: "grid-2", to: "cards-3" },
-      { type: "portfolio", from: "masonry", to: "grid-3" },
+      { type: "services", from: "grid-2", to: "cards-2" },
     ]);
     expect(result.changeNotice).toBe(
-      "구조안의 섹션 3개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 2열 → 카드 3개 · Portfolio 마소니 → 이미지 그리드 3칸",
+      "구조안의 섹션 2개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 2열 → 카드 2열",
     );
   });
 
@@ -69,6 +73,25 @@ describe("startDoc 어댑터 (SPEC 8.2.1 ①~④)", () => {
       alert: "이 안으로 편집 문서를 만들 수 없습니다 — 다른 안을 고르세요",
     });
     expect(writeStartDoc({ ...input(), updatedAt: "어제" })).toMatchObject({ ok: false, reason: "BAD_VALUE" });
+  });
+});
+
+describe("3안 그리드 차이 보존 (Q-21 후속 · SPEC r4.6 A3-Q3)", () => {
+  it("같은 픽스처 3안(그리드 축만 다름) → startDoc 문서 3개의 services 변형이 서로 다르다", () => {
+    const ids = ["ref-a", "ref-b", "ref-c", "ref-d", "ref-e", "ref-f"];
+    const draft = buildProfileDraft(boardOf(ids, { hero: "ref-a" }), resultsOf(ids), SECTION_LIBRARY.version);
+    if (draft.status !== "ready") throw new Error("Hero 선택이 필요합니다");
+    const plans = composeCandidates({ profile: draft.profile, purpose: "none", contrast: "aa", library: SECTION_LIBRARY, generatorVersion: GENERATOR_VERSION }).map((r) => {
+      if (r.status !== "succeeded") throw new Error(`${r.id}안 실패`);
+      return r.plan;
+    });
+    expect(plans.map((p) => p.axes.grid)).toEqual(["grid-3", "grid-2", "masonry"]);
+    const services = plans.map((p) => {
+      const made = writeStartDoc(input(p.sections));
+      if (!made.ok) throw new Error(made.alert);
+      return made.doc.sections.filter((x) => x.type === "services").map((x) => x.variant);
+    });
+    expect(services).toEqual([["cards-3"], ["cards-2"], ["cards-masonry"]]);
   });
 });
 

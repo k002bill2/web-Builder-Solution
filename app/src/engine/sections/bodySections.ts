@@ -1,5 +1,5 @@
 /**
- * 본문 9 type 정의 — 변형 1~2개씩 최소 정의(L4a). 헤딩은 모두 h2(R-10), 기본 글자는 자체 문장(외부 사이트 문구 0).
+ * 본문 9 type 정의 — 변형 1~2개씩 최소 정의(L4a) + 그리드 축 변형(services cards-2·cards-masonry · portfolio masonry, r4.6). 헤딩은 모두 h2(R-10), 기본 글자는 자체 문장(외부 사이트 문구 0).
  */
 import type { SectionType } from "../contracts/pageDoc";
 import type { SectionDefinition, SlotSchema } from "../contracts/sectionDefinition";
@@ -46,12 +46,19 @@ const contactSlots = (submit: string): SlotSchema => [
   short("consent", "개인정보 수집 동의 문구", 100, { required: true, text: "개인정보 수집·이용에 동의합니다." }),
 ];
 
+/** 그리드 축 변형(SPEC r4.6 A3-Q3)은 같은 유형의 3칸 스키마를 재사용한다 */
+const cards3: SlotSchema = [heading("서비스"), intro, ...card(1), ...card(2), ...card(3)];
+const gallery3: SlotSchema = [heading("작업 사례"), intro, image("image1", "사례 이미지 1"), image("image2", "사례 이미지 2"), image("image3", "사례 이미지 3")];
+
 const SPECS: readonly BodySpec[] = [
   { type: "about", variant: "story", label: "이야기 + 이미지", maxMotion: "L2", slots: [heading("소개"), long("body", "본문", 400, { required: true, recommended: 280, text: "브랜드가 하는 일을 소개합니다." }), image("image", "소개 이미지")] },
   { type: "about", variant: "text", label: "글 중심 소개", maxMotion: "L1", slots: [heading("소개"), long("body", "본문", 400, { required: true, recommended: 280, text: "브랜드가 하는 일을 소개합니다." })] },
-  { type: "services", variant: "cards-3", label: "카드 3개", maxMotion: "L2", slots: [heading("서비스"), intro, ...card(1), ...card(2), ...card(3)] },
+  { type: "services", variant: "cards-3", label: "카드 3개", maxMotion: "L2", slots: cards3 },
   { type: "services", variant: "list", label: "목록형", maxMotion: "L1", slots: [heading("서비스"), intro, long("items", "서비스 목록", 400, { required: true, text: "서비스 1 · 서비스 2 · 서비스 3" })] },
-  { type: "portfolio", variant: "grid-3", label: "이미지 그리드 3칸", maxMotion: "L2", slots: [heading("작업 사례"), intro, image("image1", "사례 이미지 1"), image("image2", "사례 이미지 2"), image("image3", "사례 이미지 3")] },
+  { type: "services", variant: "cards-2", label: "카드 2열", maxMotion: "L2", slots: [heading("서비스"), intro, ...card(1), ...card(2)] },
+  { type: "services", variant: "cards-masonry", label: "카드 벽돌형", maxMotion: "L2", slots: cards3 },
+  { type: "portfolio", variant: "grid-3", label: "이미지 그리드 3칸", maxMotion: "L2", slots: gallery3 },
+  { type: "portfolio", variant: "masonry", label: "이미지 벽돌형", maxMotion: "L2", slots: gallery3 },
   { type: "statistics", variant: "stats-3", label: "수치 3개 한 줄", maxMotion: "L2", slots: [heading("숫자로 보기"), ...stat(1), ...stat(2), ...stat(3)] },
   { type: "testimonials", variant: "quotes-2", label: "후기 2개", maxMotion: "L1", slots: [heading("고객 후기"), ...quote(1), ...quote(2)] },
   { type: "pricing", variant: "tiers-2", label: "요금제 2단", maxMotion: "L1", slots: [heading("요금 안내"), intro, ...plan(1), ...plan(2)] },

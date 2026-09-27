@@ -1,0 +1,29 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a0e36c-67e9-72e3-a87d-9a58530aff6b).
+[codex] Reviewer started: changes against 'e9d9976'
+[codex] Running command: /bin/zsh -lc "grep -n -i 'engine-variants\\|web-builder-solution' '/Users/younghwankang/Libra...
+[codex] Command completed: /bin/zsh -lc "grep -n -i 'engine-variants\\|web-builder-solution' '/Users/younghwankang/Libra... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff e9d997616a93693ce96519165590af77c70c9c04 -- app/src/components/studio/...
+[codex] Command failed: /bin/zsh -lc "git diff e9d997616a93693ce96519165590af77c70c9c04 -- app/src/components/studio/... (exit 1)
+[codex] Running command: /bin/zsh -lc "git diff --name-only e9d997616a93693ce96519165590af77c70c9c04; sed -n '1,240p' ...
+[codex] Command completed: /bin/zsh -lc "git diff --name-only e9d997616a93693ce96519165590af77c70c9c04; sed -n '1,240p' ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg 'StructureCanvas|SectionPreview|variant.*slots|slotSchema' app/src/component...
+[codex] Command completed: /bin/zsh -lc "rg 'StructureCanvas|SectionPreview|variant.*slots|slotSchema' app/src/component... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,280p' app/src/components/studio/StructureCanvas.tsx; sed -n '1,220p' ...
+[codex] Command failed: /bin/zsh -lc "sed -n '1,280p' app/src/components/studio/StructureCanvas.tsx; sed -n '1,220p' ... (exit 2)
+[codex] Running command: /bin/zsh -lc "sed -n '1,230p' app/src/domain/composeCandidates.ts; rg 'section_plan|services....
+[codex] Command completed: /bin/zsh -lc "sed -n '1,230p' app/src/domain/composeCandidates.ts; rg 'section_plan|services.... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: The new mappings preserve grid-axis differences for services-first plans, but portfolio-first...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against e9d9976
+
+The new mappings preserve grid-axis differences for services-first plans, but portfolio-first plans can still collapse grid-2 and grid-3 into the same editor variant. This undermines the change’s stated goal of retaining distinctions between generated candidates.
+
+Review comment:
+
+- [P2] Preserve grid-2 when portfolio is the first grid section — /Users/younghwankang/orca/workspaces/web-builder-solution/engine-variants/app/src/data/engineVariantMap.ts:30-30
+  When a profile places `portfolio` before `services`, the composer applies the grid axis to `portfolio`; a `grid-2` candidate is still mapped to `portfolio/grid-3`, so it collides with the `grid-3` candidate and the editor loses that distinction. This leaves two of the three documents identical in their grid variant for valid portfolio-first plans; preserve `portfolio/grid-2` as a distinct engine variant or otherwise ensure the mapping keeps the candidates distinct.

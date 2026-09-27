@@ -3,11 +3,15 @@
  * 생성은 저장된 버전에만: 저장 안 된 조정이 있으면 "3안 만들기" aria-disabled + 이유. "다시 생성" 없음(결정성, M-02) — 재시도는 실패 안만.
  * 폭: ≥768 카드 3열 + 비교 표(접힘), <768 한 열·표 없음(카드가 같은 정보를 모두 가진다). 편집 시작은 2a-05 경계(Q7) — 편집 미구현 안내 상시.
  * 순서(PROFILE-V2-COMPACT 5): 카드 → 편집 시작(바로 아래 오른쪽) → "3안 비교 표 보기".
+ * 편집 시작(DS-2A-05 12.3 · 8.3.1): 누를 때 프로젝트 저장소를 받아 `startDoc(create)` — 성공·DOC_EXISTS = 이동(state: 바뀐 쌍 · 편집 알림) ·
+ * UNKNOWN_VARIANT = 알림(다시 시도 없음) · 그 밖 = 실패 문형 + 다시 시도(같은 인자 → 멱등). 문장은 조작 뒤 청크(memoryDocBook)가 만든다.
  */
-import { useId } from "react";
+import { useId, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
+import { useProjectLoader } from "../../data/ProfileRepositoryContext";
+import type { StudioEntryState } from "../../data/projectRepository";
 import { effectiveProfile } from "../../domain/effectiveProfile";
 import { isTerminal, type CandidateFailure, type GenerationJob } from "../../domain/generation";
 import type { ProfileVersion } from "../../domain/profile";
@@ -45,7 +49,28 @@ export function CandidatesSection({
   const retryable = failures.some((f) => f.retryable);
   const allFailed = job?.state === "failed";
   const selected = job?.selected;
+  const loadProjects = useProjectLoader();
+  const [starting, setStarting] = useState(false);
+  const [startAlert, setStartAlert] = useState<{ readonly text: string; readonly retry: boolean }>();
 
+  const onEdit = async () => {
+    if (!selected || starting) return;
+    if (!projectId) return void navigate("/projects");
+    setStarting(true);
+    setStartAlert(undefined);
+    let state: StudioEntryState | undefined;
+    try {
+      const started = await (await loadProjects()).startDoc(projectId, viewed.version, selected, "create");
+      state = { changes: started.changes, editNotice: started.changeNotice };
+    } catch (error: unknown) {
+      // 오류 모양만 읽는다 — 오류 클래스(프로젝트 저장소 청크)를 프로필 청크로 끌어오지 않는다
+      const { code, alert } = (error ?? {}) as { code?: string; alert?: string };
+      if (code === "DOC_EXISTS") state = { editNotice: alert };
+      else setStartAlert({ text: (code === "UNKNOWN_VARIANT" && alert) || CANDIDATE_TEXT.startFailed, retry: code !== "UNKNOWN_VARIANT" });
+    }
+    setStarting(false);
+    if (state) void navigate(`/studio/${projectId}`, { state });
+  };
   const onRequest = () => {
     if (!blocked && !running) void gen.request();
   };
@@ -124,14 +149,24 @@ export function CandidatesSection({
           trailingIcon="arrow-right"
           aria-disabled={!selected || undefined}
           aria-describedby={editId}
+          aria-busy={starting || undefined}
           className={DISABLED}
-          onClick={() => selected && void navigate(projectId ? `/studio/${projectId}` : "/projects")}
+          onClick={() => void onEdit()}
         >
           {selected ? `${selected}안으로 편집 시작` : "편집 시작"}
         </Button>
         <p id={editId} className="ds-caption1 text-label-alternative md:text-right">
           {selected ? CANDIDATE_TEXT.editNotice : `${CANDIDATE_TEXT.editReason} · ${CANDIDATE_TEXT.editNotice}`}
         </p>
+        {startAlert && (
+          <div role="alert">
+            <Callout
+              tone="negative"
+              title={startAlert.text}
+              action={startAlert.retry && <Button size="sm" variant="outline" onClick={() => void onEdit()}>다시 시도</Button>}
+            />
+          </div>
+        )}
       </div>
       {job && isTerminal(job.state) && !allFailed && <CandidateTable job={job} profileScale={profile.typography_tokens.scale} />}
     </section>

@@ -13,7 +13,7 @@
 - [x] C2 엔진 `motion?` (예외 2파일, RED→GREEN)
 - [x] C3 `data/engineVariantMap.ts` + `data/startDocWrite.ts` + 8.2.1 가드·픽스처 6×3
 - [x] C4 `projectRepository.ts`(UNKNOWN_VARIANT·바뀐 쌍) + `memoryProjectRepository.ts`(getDoc·saveDoc·startDoc) — 누수 수정: 본문 → 조작 뒤 청크 `memoryDocBook.ts`, 상수 → `generatorVersion.ts` (`logs/c4-fix-build.txt`)
-- [ ] C5 `CandidatesSection.tsx` 편집 시작 연결
+- [x] C5 `CandidatesSection.tsx` 편집 시작 연결 — RED 4 → GREEN 149/149(표적 11파일). ⚠ /profile 진입 +0.23(허용 +0.03~0.08 초과, 여유 0.31 — 멈춤선 안쪽) → REPORT 기록
 - [ ] C6 `useCompareBoard.ts` 첫 확정 알림 + `CompareBoardTarget.test.tsx` 케이스
 - [ ] 전체 vitest 1회
 - [ ] 4337 agent-browser 흐름 1회 + 캡처 1280
@@ -29,3 +29,4 @@
 | C3 | 99.60 / 124.44 | 99.64 / 102.02 | 98.74 / 121.36 | 90.73 / 103.73 | 89.34 | 동일 (index-5C_vcWjl) — 새 파일 미연결 |
 | C4 WIP 87a1e78 | 99.62 / 124.56 | 99.66 / 102.05 | 98.76 / 121.49 | 90.74 / 105.24 | 89.36 | 동일 — 누수(/projects 107.90) |
 | C4 fix | 99.60 / 124.46 | 99.64 / 102.02 | 98.74 / 121.38 | 90.73 / 104.33 | 89.34 | 동일 — /projects 106.99 (+0.60, 계약 표면) |
+| C5 | 99.60 / 124.69 | 99.65 / 102.03 | 98.75 / 121.39 | 90.73 / 104.33 | 89.34 | 동일 — profileEngine +0.23(startDoc 호출·분기·알림 JSX·실패 문구) |

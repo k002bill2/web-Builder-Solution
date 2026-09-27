@@ -82,7 +82,8 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
       const current = state.docs.get(projectId);
       if (mode === "restart" && !current) throw fail("NOT_FOUND", `${projectId} 문서`);
       // 4 문서 상태
-      if (mode === "create" && current) throw new ProjectRepositoryError("DOC_EXISTS", projectId, { doc: current });
+      if (mode === "create" && current)
+        throw new ProjectRepositoryError("DOC_EXISTS", projectId, { doc: current, alert: `이미 편집 중인 문서를 엽니다 (${current.candidateId}안 · 프로필 v${current.profileVersion})` });
       if (current && current.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${expectedRevision} ≠ ${current.revision}`, { doc: current });
       // 5 쓰기 — 어댑터(8.2.1) · restart = 스냅샷 + 교체(revision 현재 + 1) · 멱등 기록 — 한 번에
       const updatedAt = now();

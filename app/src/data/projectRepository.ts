@@ -78,6 +78,13 @@ export interface StartDocResult<TDoc> {
   /** 바뀐 쌍 편집 알림 1문장(0쌍이면 없음) — 이동 뒤 편집기가 1회 알린다 */
   readonly changeNotice?: string;
 }
+/** "편집 시작" → `/studio/:projectId` 이동 state(12.3 · 8.3.1) — 편집기가 첫 표시 때 1회 알린다. 문서에 저장하지 않는다 */
+export interface StudioEntryState {
+  /** 편집 알림 1문장 — 바뀐 쌍(8.2.1 (a)) 또는 DOC_EXISTS "이미 편집 중인 문서를 엽니다" */
+  readonly editNotice?: string;
+  /** startDoc 성공 결과의 바뀐 쌍 목록(0쌍이면 빈 배열) */
+  readonly changes?: readonly VariantChangeHead[];
+}
 export type SnapshotKind = "manual" | "auto" | "published";
 export type SnapshotReason = "export" | "restore" | "conflict" | "restart";
 export type ConflictChoice = "mine" | "theirs";
@@ -150,7 +157,7 @@ export class ProjectRepositoryError<TDoc = unknown> extends Error {
   readonly project?: Project;
   /** STALE_DOC·DOC_EXISTS일 때 최신(기존) 문서 */
   readonly doc?: TDoc;
-  /** UNKNOWN_VARIANT일 때 프로필 화면 알림 문장(8.2.1 (b)) — 조작 뒤 청크가 만든다 */
+  /** 조작 뒤 청크가 만든 알림 문장 — UNKNOWN_VARIANT = 프로필 화면 알림(8.2.1 (b)) · DOC_EXISTS = 이동 뒤 편집 알림(8.3.1) */
   readonly alert?: string;
 
   constructor(code: ProjectErrorCode, message: string, latest: { readonly project?: Project; readonly doc?: TDoc; readonly alert?: string } = {}) {

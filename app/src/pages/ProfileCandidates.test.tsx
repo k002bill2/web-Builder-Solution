@@ -9,7 +9,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
 import { createMemoryGenerationRepository, type MemoryGenerationOptions } from "../data/memoryGenerationRepository";
 import { createMemoryProfileRepository } from "../data/memoryProfileRepository";
-import { createMemoryProjectRepository } from "../data/memoryProjectRepository";
+import { createMemoryProjectRepository, type MemoryProjectOptions } from "../data/memoryProjectRepository";
+import { ProjectRepositoryError, type StudioEntryState } from "../data/projectRepository";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
 import { createStudioStore } from "../data/studioStore";
 import { PROFILE_EVENT, type ProfileEvent } from "../features/profile/profileEvents";
@@ -27,18 +28,24 @@ vi.mock("../data/writeBodyLoader", async (importOriginal) => {
   return { ...actual, loadGenerate: loads.generate };
 });
 
-async function open(options: Omit<MemoryGenerationOptions, "store"> = {}, path = "/profile/profile-1", before?: (s: ReturnType<typeof createStudioStore>) => void) {
+async function open(
+  options: Omit<MemoryGenerationOptions, "store"> = {},
+  path = "/profile/profile-1",
+  before?: (s: ReturnType<typeof createStudioStore>) => void,
+  projectOptions: Omit<MemoryProjectOptions, "store"> = {},
+) {
   const store = createStudioStore();
   const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a", "ref-b", "ref-c"], { hero: "ref-a" }), store });
   const profiles = createMemoryProfileRepository({ store });
   const gen = createMemoryGenerationRepository({ ...options, store });
   await board.confirmProfile(1, 0);
   before?.(store);
-  const projects = () => Promise.resolve(createMemoryProjectRepository({ store }));
+  const projectRepository = createMemoryProjectRepository({ ...projectOptions, store });
+  const projects = () => Promise.resolve(projectRepository);
   const view = renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board, profiles, gen, projects);
   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
   const region = await screen.findByRole("region", { name: "생성된 3안" });
-  return { ...view, gen, store, region };
+  return { ...view, gen, store, region, projectRepository };
 }
 
 const user = () => userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
@@ -117,7 +124,7 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     const back = await screen.findByRole("region", { name: "생성된 3안" });
     expect(await within(back).findByRole("button", { name: "B안 선택", pressed: true })).toBeInTheDocument();
     await u.click(within(back).getByRole("button", { name: "B안으로 편집 시작" }));
-    // DS-2A-05 12.3 — 프로젝트 편집기로 이동(문서는 만들지 않는다 → E-S03 셸, h1 = 프로젝트 이름)
+    // DS-2A-05 12.3 — startDoc(create)로 문서를 만든 뒤 프로젝트 편집기로 이동(h1 = 프로젝트 이름, 셸 분기 표시는 A2-S)
     await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
     expect(await screen.findByRole("heading", { level: 1, name: "모던 카페 브랜드 프로젝트" })).toBeInTheDocument();
   });
@@ -260,5 +267,70 @@ describe("번들 분류 근거 (check-bundle-size /profile afterAction memoryGen
     act(() => void router.navigate("/profile/profile-1"));
     await within(await screen.findByRole("region", { name: "생성된 3안" })).findByRole("table", { name: "3안 비교" });
     expect(loads.generate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5)", () => {
+  async function pickB() {
+    const opened = await open();
+    const u = user();
+    await generate(u, opened.region);
+    await u.click(within(opened.region).getByRole("button", { name: "B안 선택" }));
+    await within(opened.region).findByRole("button", { name: "B안 선택", pressed: true });
+    return { ...opened, u, edit: () => within(opened.region).getByRole("button", { name: "B안으로 편집 시작" }) };
+  }
+
+  it("성공 → startDoc(create) 문서 생성 · /studio/:projectId 이동 · state = 바뀐 쌍 목록(+ 알림 1문장)", async () => {
+    const { u, edit, router, projectRepository } = await pickB();
+    await u.click(edit());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
+    const doc = await projectRepository.getDoc("project-1");
+    expect(doc).toMatchObject({ candidateId: "B", profileVersion: 1, revision: 1 });
+    const state = router.state.location.state as StudioEntryState;
+    expect(Array.isArray(state.changes)).toBe(true);
+    if (state.changes!.length > 0) expect(state.editNotice).toMatch(/^구조안의 섹션 \d+개를 편집기 변형으로 바꿔 열었습니다/);
+  });
+
+  it("DOC_EXISTS → 이동 + '이미 편집 중인 문서를 엽니다 (A안 · 프로필 v1)' · 자동 restart 없음", async () => {
+    const { u, edit, router, projectRepository } = await pickB();
+    await projectRepository.startDoc("project-1", 1, "A", "create");
+    await u.click(edit());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
+    expect(router.state.location.state).toEqual({ editNotice: "이미 편집 중인 문서를 엽니다 (A안 · 프로필 v1)" });
+    expect(await projectRepository.getDoc("project-1")).toMatchObject({ candidateId: "A", revision: 1 });
+  });
+
+  it("실패(요청 실패) → role=alert '편집을 시작하지 못했습니다' · 이동 없음 → '다시 시도' = 같은 인자 → 이동", async () => {
+    let failed = false;
+    const opened = await open({}, "/profile/profile-1", undefined, {
+      fail: (call) => {
+        if (call.method !== "startDoc" || call.phase !== "request" || failed) return undefined;
+        failed = true;
+        return new Error("network");
+      },
+    });
+    const u = user();
+    await generate(u, opened.region);
+    await u.click(within(opened.region).getByRole("button", { name: "B안 선택" }));
+    await u.click(await within(opened.region).findByRole("button", { name: "B안으로 편집 시작" }));
+    const alert = await within(opened.region).findByRole("alert");
+    expect(alert).toHaveTextContent("편집을 시작하지 못했습니다");
+    expect(opened.router.state.location.pathname).toBe("/profile/profile-1");
+    await u.click(within(alert).getByRole("button", { name: "다시 시도" }));
+    await waitFor(() => expect(opened.router.state.location.pathname).toBe("/studio/project-1"));
+    expect(await opened.projectRepository.getDoc("project-1")).toMatchObject({ candidateId: "B" });
+  });
+
+  it("UNKNOWN_VARIANT → role=alert (b) 문장 · 다시 시도 없음 · 이동 없음 · 버튼 상태 그대로", async () => {
+    const { u, edit, router, region, projectRepository } = await pickB();
+    const alertText = "이 안에는 편집기가 아직 열 수 없는 섹션이 있습니다(서비스 · grid-9) — 다른 안을 고르세요";
+    const spy = vi.spyOn(projectRepository, "startDoc").mockRejectedValue(new ProjectRepositoryError("UNKNOWN_VARIANT", "services/grid-9", { alert: alertText }));
+    await u.click(edit());
+    const alert = await within(region).findByRole("alert");
+    expect(alert).toHaveTextContent(alertText);
+    expect(within(alert).queryByRole("button")).toBeNull();
+    expect(spy).toHaveBeenCalledWith("project-1", 1, "B", "create");
+    expect(router.state.location.pathname).toBe("/profile/profile-1");
+    expect(edit()).not.toHaveAttribute("aria-disabled");
   });
 });

@@ -32,12 +32,15 @@ export function SectionNav({
   selectedId,
   onSelect,
   selectedExtra,
+  footer,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly onSelect: (id: string) => void;
   /** <1024 "섹션" 탭 — 선택 줄 옆 순서 부품(5.2) */
   readonly selectedExtra?: ReactNode;
+  /** 목록 아래 "섹션 추가"(5.3 · 4.3 순서: 섹션 줄 → 섹션 추가) */
+  readonly footer?: ReactNode;
 }) {
   return (
     <nav aria-labelledby="studio-sections-heading" className="flex flex-col gap-2">
@@ -45,6 +48,7 @@ export function SectionNav({
         섹션
       </h2>
       <SectionList sections={doc.sections} selectedId={selectedId} onSelect={onSelect} selectedExtra={selectedExtra} />
+      {footer}
     </nav>
   );
 }

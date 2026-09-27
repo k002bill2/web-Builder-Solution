@@ -76,7 +76,7 @@ describe("섹션 추가 대화상자 (E-AC-18)", () => {
     await screen.findByText("Services를 10번째에 추가했습니다");
     const ids = rowIds();
     expect(ids.at(-1)).toBe("s-footer");
-    expect(nav().getByRole("button", { name: /^Services 목록형/ })).toHaveAttribute("aria-current", "true");
+    expect(nav().getByRole("button", { name: /^Services\s*목록형/ })).toHaveAttribute("aria-current", "true");
   });
 
   it("취소·Esc → 문서 그대로 · 포커스 = '섹션 추가'", async () => {

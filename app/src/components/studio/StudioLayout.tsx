@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import type { ConflictChoice, Project, ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
+import type { SectionType } from "../../engine/contracts/pageDoc";
 import type { MoveDirection } from "../../engine/ops/rules";
-import { movedNotice, removedNotice, restoredNotice } from "../../features/studio/opNotice";
-import { canMove, canRemove } from "../../features/studio/opPermissions";
+import { addedNotice, movedNotice, removedNotice, restoredNotice } from "../../features/studio/opNotice";
+import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
 import { docPurpose } from "../../features/studio/docPurpose";
 import { useFocusRequest } from "../../features/studio/useFocusRequest";
 import { useSectionOps } from "../../features/studio/useSectionOps";
@@ -16,6 +17,7 @@ import { EditFields } from "./EditFields";
 import { SaveStatus } from "./SaveStatus";
 import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName } from "../../features/studio/selection";
 import { PreviewWidth } from "./PreviewWidth";
+import { AddSectionButton } from "./AddSectionButton";
 import { SectionOpControls } from "./SectionOpControls";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
@@ -23,6 +25,8 @@ import { StudioToolbar } from "./StudioToolbar";
 import { StructureCanvas } from "./StructureCanvas";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+/** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
+const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
 
 /**
  * E-S05 기본 편집 틀 (DS-2A-05 3.1 · 4절). 배치(3단 · 2단 · 탭)마다 트리를 따로 그리고(4.3) 상태(선택·알림·탭)는 여기서 공유한다(4.1).
@@ -138,6 +142,30 @@ export function StudioLayout({
     focusRow(undoTarget.instanceId);
   }, [undoTarget, undoLast, focusRow]);
 
+  // 섹션 추가(5.3) — 대화상자를 연 버튼으로 닫힘 포커스, 추가 뒤엔 새 줄
+  const [adding, setAdding] = useState<HTMLElement>();
+  const add = useCallback(
+    async (type: SectionType, variant: string) => {
+      const opener = adding;
+      setAdding(undefined);
+      const outcome = await run({ kind: "add", type, variant, afterInstanceId: selectedId === PAGE_INFO_ID ? null : selectedId }, "추가");
+      if (!outcome.ok) {
+        setNotice(outcome.reason);
+        if (opener) requestFocus({ element: opener });
+        return;
+      }
+      const added = outcome.result.doc.sections[outcome.result.index]!;
+      setSelected(added.instanceId);
+      setNotice(addedNotice(added.type, sectionName(added), outcome.result.index));
+      focusRow(added.instanceId);
+    },
+    [adding, run, selectedId, requestFocus, focusRow],
+  );
+  const cancelAdd = useCallback(() => {
+    if (adding) requestFocus({ element: adding });
+    setAdding(undefined);
+  }, [adding, requestFocus]);
+
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
@@ -156,7 +184,20 @@ export function StudioLayout({
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
   const noticeRegion = <NoticeRegion text={notice} onUndo={ops.canUndoLast ? undo : undefined} />;
-  const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} selectedExtra={mode === "tabs" ? opControls : undefined} />;
+  const nav = (
+    <SectionNav
+      doc={doc}
+      selectedId={selectedId}
+      onSelect={setSelected}
+      selectedExtra={mode === "tabs" ? opControls : undefined}
+      footer={<AddSectionButton permission={canAdd(doc)} onOpen={setAdding} />}
+    />
+  );
+  const addDialog = adding && (
+    <Suspense fallback={null}>
+      <AddSectionDialog doc={doc} onAdd={(type, variant) => void add(type, variant)} onCancel={cancelAdd} />
+    </Suspense>
+  );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={opControls}>
       <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
@@ -169,6 +210,7 @@ export function StudioLayout({
     return (
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} />
+        {addDialog}
         <StudioTabs
           selected={tab}
           onSelect={setTab}
@@ -196,6 +238,7 @@ export function StudioLayout({
   if (mode === "split") {
     return (
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+        {addDialog}
         <StudioToolbar projectName={project.name} headingRef={heading}>
           {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">
@@ -236,6 +279,7 @@ export function StudioLayout({
 
   return (
     <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+      {addDialog}
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}

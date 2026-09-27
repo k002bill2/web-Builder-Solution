@@ -33,3 +33,5 @@ export const movedNotice = (type: SectionType, name: string, index: number): str
 export const removedNotice = (type: SectionType, name: string): string => `${objectOf(type, name)} 삭제했습니다`;
 /** "Services를 되돌렸습니다"(5.4) */
 export const restoredNotice = (type: SectionType, name: string): string => `${objectOf(type, name)} 되돌렸습니다`;
+/** "FAQ를 6번째에 추가했습니다"(5.3) */
+export const addedNotice = (type: SectionType, name: string, index: number): string => `${objectOf(type, name)} ${index + 1}번째에 추가했습니다`;

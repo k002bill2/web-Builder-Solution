@@ -46,7 +46,7 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
 /** /projects·/studio/:projectId 진입 직후 자동 — 프로젝트 저장소 로더(S-B3)가 받는 공유 store와 프로젝트 메모리 구현 */
 const PROJECT_AUTO = ["src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts", "src/data/memoryProjectRepository.ts"];
 /** 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록 */
-const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts"];
+const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts", "src/components/studio/AddSectionDialog.tsx"];
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
   "src/data/memoryBoardConfirm.ts",
@@ -85,6 +85,7 @@ const SCENARIOS = [
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
   // 편집 틀(StudioLayout — 배치·필드·자동 저장 훅)은 문서가 있으면 렌더에서 자동 lazy(EDITOR-A2-SHELL S7) → 진입 직후 합계
   // 조작 뒤(EDITOR-A3-1): 구조 연산 본문(docEngine = sectionOps·normalizeDoc) ← docOps.applyDocOp ← useSectionOps.run ← 위로·아래로·삭제·추가·변형 onClick
+  //  · 섹션 추가 대화상자(AddSectionDialog lazy) ← adding 상태 ← "섹션 추가" onClick(본문 9개 미만일 때만)
   {
     name: "/studio/:projectId",
     page: "src/pages/StudioPage.tsx",

@@ -45,9 +45,16 @@
 
 ### RESUME-2 체크리스트
 - [x] S0 재개 수신 기록
-- [ ] S1 S-B9 확정 대상 라디오(J-S09·J-S10·J-S11) — TDD · build
-- [ ] S2 프로필 "프로젝트: <이름>" 링크 → `/projects` — TDD · build
-- [ ] S3 편집 시작 → `/studio/:projectId` · P-AC-29 복구 — TDD · build
+- [x] S1 S-B9 확정 대상 라디오(J-S09·J-S10·J-S11) — WIP `0dc1ea7` 표적 5/5 GREEN, 구현 되돌려 5/5 RED 확인. J-S11 프로필 알림은 S2 커밋에 포함 · build `logs/resume2-s1-build.txt`
+- [x] S2 프로필 "프로젝트: <이름>" 링크 → `/projects` — RED→GREEN · build
+- [x] S3 편집 시작 → `/studio/:projectId` · P-AC-29 복구(단언 의미 보존) — RED→GREEN · build `logs/resume2-s3-build.txt`
+
+### RESUME-2 번들 (첫 화면 / 진입 직후, 여유)
+| 시점 | 공통 | /catalog | /compare | /profile |
+|---|---|---|---|---|
+| 기준 | 89.34 | 99.64 (0.36) | 98.41 / 120.81 | 99.40 / 124.23 |
+| S1 | 89.34 | 99.65 (0.35) | 98.72 / 121.36 | 99.41 / 124.24 |
+| S2·S3 | 89.34 | 99.65 (0.35) | 98.72 / 121.35 | 99.61 (0.39) / 124.46 (0.54) |
 - [ ] S4 4게이트(typecheck·lint·전체 vitest 1회·build)
 - [ ] S5 127.0.0.1:4337 실제 클릭 · 1280·390 캡처 · 셸 실데이터(E-S03)
 - [ ] S6 Codex review `--scope branch --base ffb0063`

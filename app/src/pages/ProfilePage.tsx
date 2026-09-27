@@ -38,6 +38,11 @@ function droppedCountOf(state: unknown): number {
   return typeof n === "number" && Number.isSafeInteger(n) && n > 0 ? n : 0;
 }
 
+/** J-S11 보드가 "새 프로젝트로 확정" 뒤 넘긴 표시 */
+const projectCreatedOf = (state: unknown) => typeof state === "object" && state !== null && "projectCreated" in state && state.projectCreated === true;
+/** 목적격 조사 — 마지막 글자 받침 있으면 "을" */
+const objectOf = (word: string) => ((word.charCodeAt(word.length - 1) - 0xac00) % 28 > 0 ? "을" : "를");
+
 /** `?v=`가 없거나 없는 버전이면 최신 */
 const pick = (versions: readonly ProfileVersion[], param: string | null) => versions.find((v) => String(v.version) === param);
 /** 비교 표는 작은 번호 먼저 ("v1과 v2 비교") */
@@ -51,15 +56,24 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const location = useLocation();
   const navigate = useNavigate();
   const dropped = droppedCountOf(location.state);
+  const created = projectCreatedOf(location.state);
+  // 새 프로젝트 이름은 불러온 뒤에 안다 — 표시는 마운트 때 잡아 두고(state는 아래에서 비운다) 이름이 오면 한 번 알린다(J-S11)
+  const announceCreated = useRef(created);
+  const createdName = state.status === "ready" ? state.series.project?.name : undefined;
   // 탭 제목(WCAG 2.4.2) — 비교 보드와 같은 패턴. 버전 전환(?v=)은 같은 화면이라 그대로 (PROFILE-A11Y-FIX D2)
   useEffect(() => {
     document.title = `디자인 프로필 · ${brand.name}`;
   }, []);
   useEffect(() => {
-    if (dropped === 0) return;
-    announce(`조정 ${dropped}개를 지웠습니다`);
+    if (dropped === 0 && !created) return;
+    if (dropped > 0) announce(`조정 ${dropped}개를 지웠습니다`);
     void navigate({ pathname: location.pathname, search: location.search, hash: location.hash }, { replace: true, state: null });
-  }, [location.key, location.pathname, location.search, location.hash, dropped, announce, navigate]);
+  }, [location.key, location.pathname, location.search, location.hash, dropped, created, announce, navigate]);
+  useEffect(() => {
+    if (createdName === undefined || !announceCreated.current) return;
+    announceCreated.current = false;
+    announce(`새 프로젝트 '${createdName}'${objectOf(createdName)} 만들었습니다`);
+  }, [createdName, announce]);
   return (
     <>
       {state.status === "loading" && <LoadingState />}
@@ -164,6 +178,12 @@ function ProfileView({
             </h1>
             <Tag tone={isLatest ? "violet" : "neutral"}>{isLatest ? `v${viewed.version} · 현재` : `v${viewed.version} · 이전 버전`}</Tag>
           </div>
+          {/* DS-2A-05 12.1 — 프로필은 프로젝트의 하위 화면. h1 뒤 링크 1개(5.2) */}
+          {series.project && (
+            <Link to="/projects" className="ds-body3 self-start text-primary-text hover:text-primary-hover">
+              프로젝트: {series.project.name}
+            </Link>
+          )}
           <p className="ds-body3 text-label-alternative">
             기준 레퍼런스: {titleOf(viewed.baseReferenceId)} · {SELECTION_MODE_LABELS[viewed.base.selection_mode]}
           </p>
@@ -235,7 +255,7 @@ function ProfileView({
             }
           />
       </div>
-      <CandidatesSection key={viewed.version} viewed={viewed} pending={pending} announce={announce} />
+      <CandidatesSection key={viewed.version} viewed={viewed} projectId={series.project?.projectId} pending={pending} announce={announce} />
     </div>
   );
 }

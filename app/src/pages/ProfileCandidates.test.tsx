@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
 import { createMemoryGenerationRepository, type MemoryGenerationOptions } from "../data/memoryGenerationRepository";
 import { createMemoryProfileRepository } from "../data/memoryProfileRepository";
+import { createMemoryProjectRepository } from "../data/memoryProjectRepository";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
 import { createStudioStore } from "../data/studioStore";
 import { PROFILE_EVENT, type ProfileEvent } from "../features/profile/profileEvents";
@@ -33,7 +34,8 @@ async function open(options: Omit<MemoryGenerationOptions, "store"> = {}, path =
   const gen = createMemoryGenerationRepository({ ...options, store });
   await board.confirmProfile(1, 0);
   before?.(store);
-  const view = renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board, profiles, gen);
+  const projects = () => Promise.resolve(createMemoryProjectRepository({ store }));
+  const view = renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board, profiles, gen, projects);
   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
   const region = await screen.findByRole("region", { name: "생성된 3안" });
   return { ...view, gen, store, region };
@@ -92,7 +94,7 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     expect(events.map((e) => e.name)).toEqual(["generation_requested", "generation_succeeded"]);
   });
 
-  it("선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio, 다시 들어와도 유지", async () => {
+  it("선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지", async () => {
     const { region, router } = await open();
     const u = user();
     await generate(u, region);
@@ -115,8 +117,9 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     const back = await screen.findByRole("region", { name: "생성된 3안" });
     expect(await within(back).findByRole("button", { name: "B안 선택", pressed: true })).toBeInTheDocument();
     await u.click(within(back).getByRole("button", { name: "B안으로 편집 시작" }));
-    await waitFor(() => expect(router.state.location.pathname).toBe("/studio"));
-    expect(await screen.findByText("시안 2a-05")).toBeInTheDocument();
+    // DS-2A-05 12.3 — 프로젝트 편집기로 이동(문서는 만들지 않는다 → E-S03 셸, h1 = 프로젝트 이름)
+    await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
+    expect(await screen.findByRole("heading", { level: 1, name: "모던 카페 브랜드 프로젝트" })).toBeInTheDocument();
   });
 
   it("저장 안 된 조정이 있으면 3안 만들기 aria-disabled + 이유, 눌러도 요청 0 · 취소하면 다시 가능", async () => {

@@ -55,6 +55,19 @@ describe("J-S09 첫 확정 — 새 프로젝트 캡션, 라디오 없음", () =>
   });
 });
 
+describe("프로필 머리 '프로젝트: <이름>' 링크 (12.1 3.1 · 5.2)", () => {
+  it("h1 뒤 링크 → /projects", async () => {
+    const { router } = await openBoard();
+    await userEvent.click(await screen.findByRole("button", { name: "프로필 확정 (v1)" }, SLOW));
+    const h1 = await screen.findByRole("heading", { level: 1, name: "디자인 프로필" }, SLOW);
+    const link = await screen.findByRole("link", { name: "프로젝트: 모던 카페 브랜드 프로젝트" }, SLOW);
+    expect(link).toHaveAttribute("href", "/projects");
+    expect(h1.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await userEvent.click(link);
+    await waitFor(() => expect(router.state.location.pathname).toBe("/projects"));
+  });
+});
+
 describe("J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오", () => {
   it("기본 = 현재 프로젝트 새 버전, 버튼 '새 버전으로 확정 (v2)' → 같은 계열 v2", async () => {
     const { board, confirmFirstThenChange, router } = await openBoard();
@@ -81,7 +94,7 @@ describe("J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오", 
     await userEvent.click(button);
     await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-2"), SLOW);
     expect(create).toHaveBeenCalledWith("profile-1", expect.any(Number), 0, "new");
-    expect(router.state.location.state).toMatchObject({ projectCreated: true });
+    await waitFor(() => expect(screen.getByRole("status", { name: "프로필 알림" })).toHaveTextContent("새 프로젝트 '프리미엄 헤어살롱 프로젝트'를 만들었습니다"), SLOW);
     expect((await board.getBoard()).board.confirmed).toMatchObject({ profileId: "profile-2", projectName: "프리미엄 헤어살롱 프로젝트" }); // 기준 레퍼런스 = 바꾼 Hero(B)
   });
 

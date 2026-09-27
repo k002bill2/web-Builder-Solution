@@ -9,6 +9,7 @@
 import type { CandidateId, CandidateResult, GenerationErrorCode, JobState } from "../domain/generation";
 import type { ProfileVersion } from "../domain/profile";
 import type { SectionLibrary } from "../domain/sectionLibrary";
+import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
 import { GenerationError, type GenerationRepository } from "./generationRepository";
 import type { StoredJob, StudioReader, StudioStore } from "./studioStore";
 import { loadGenerate } from "./writeBodyLoader";
@@ -45,7 +46,7 @@ export interface MemoryGenerationOptions {
  * (memoryGenerationRepository.test "생성기 버전·안 id·종료 상태 = generation.ts").
  * 새 잡 조립·안별 실패 주입·재시도 판정은 계산 본문(memoryGenerate `newJob`·`retryJob`)에 둔다 — `/profile` 진입 직후 합계에서 뺀다(PROFILE-HEADROOM).
  */
-export const MEMORY_GENERATOR_VERSION = "preview-1";
+export { MEMORY_GENERATOR_VERSION };
 const isTerminal = (state: JobState) => state !== "queued" && state !== "running";
 
 const keyOf = (record: ProfileVersion) => [record.profileId, record.version, record.base.library_version, MEMORY_GENERATOR_VERSION].join("|");

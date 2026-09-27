@@ -13,6 +13,7 @@
 | V4 | `a4bb188` | `d7b84bd` | `data/sampleCopy.ts` 예시 문구 표 · `startDocWrite` 채우기 (A3-Q8) |
 | V5 | — | `a9a8057` | 캡처 1280·1024·390 |
 | FIX1 | `61c30be` | `9ac7f8a` | 접힌 알림 요약 N = 원문 "섹션 N개"(Codex r1 P2) |
+| FIX2 | `984ff00` | `ab0996c` | 색 면(Footer·Hero) 위 문제 표시를 흰 앱 면 안에 — 대비가 데이터와 무관(5.7 B-03, 자체 점검) |
 | V6 | — | (이 커밋) | 전체 vitest 3회 · Codex 1회 · REPORT |
 
 RED 로그: `logs/v{1..4}-red.txt` · GREEN 게이트 로그: `logs/v{1..4}-green.txt`(표적 + `src/test` 가드 + typecheck + lint + build).
@@ -40,6 +41,10 @@ RED 로그: `logs/v{1..4}-red.txt` · GREEN 게이트 로그: `logs/v{1..4}-gree
 | /studio/:projectId | 91.64 / 122.81 | 91.65 / 122.84 | 91.65 / 124.12 | 91.66 / 124.24 | 91.66 / 124.25 | 91.72 / 124.31 |
 
 - `/studio` 진입 최종 124.31 ≤ 124.70(브리프 한도) · 예산 125 대비 여유 0.69(멈춤선 0.3 위). V2 캔버스 +1.28 · V3 +0.12 · FIX1 +0.06.
+- FIX2 뒤 `/studio` 진입 124.31
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.45KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.05KB (1개 파일, 예산 판정 밖)(`logs/fix2-green.txt`, gate exit 0 전부). Codex·전체 ×3은 FIX2 전 코드 기준(FIX2는 표적 + 가드 게이트만).
 - 그 밖 화면·공통 V0 대비 +0.02 이내(±0.03 한도 안). 예시 문구 표는 `memoryDocBook` 청크(편집 시작 조작 뒤)에만 들어감(`dist/assets/memoryDocBook-*.js` grep 확인).
 
 ## 4. SPEC·브리프 차이 · 결정 (ADR-003)
@@ -71,6 +76,7 @@ RED 로그: `logs/v{1..4}-red.txt` · GREEN 게이트 로그: `logs/v{1..4}-gree
 - Codex 1회: `node codex-companion.mjs review --scope branch --base 669a328` → `logs/codex-r1.txt` — P2 1건(알림 요약 N 과소 계산) → FIX1 반영(RED → GREEN). 그 밖 조치 필요 결함 없음. 라운드 상한상 재검토는 돌리지 않음.
 
 ## 7. 남은 위험
+- 접힌 알림: 상태 영역 안 닫힌 `details` 원문은 보조기기에서 요약 줄만 읽힐 수 있음(원문은 펼친 뒤) — 브리프 A3-Q7 접기 설계의 결과.
 - `/studio` 진입 여유 0.75 — A3-3(테마·이미지)은 대화상자·고르기를 조작 뒤 로드(S-B5)로 두어야 한다.
 - 캔버스 글자 대비는 사용자 팔레트에 따라 낮을 수 있음(설계상 게이트 대비 행 대상, a4 게이트 표시 전까지 화면 경고 없음).
 - 요약 N은 알림 문장 형식(8.2.1 (a))에서 읽는다 — 문장 형식이 바뀌면 `changes.length`로 떨어진다(테스트가 잡음).

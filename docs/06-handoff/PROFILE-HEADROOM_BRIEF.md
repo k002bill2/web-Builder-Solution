@@ -14,6 +14,7 @@
 
 ## 금지
 - 예산 상수·분류·`check-bundle-size.mjs` 판정 로직 변경. `engine` 런타임 import. 새 의존성. 단언 약화·삭제·skip. `design/`·`docs/design/`. a1-β가 이어서 만질 화면 연결(프로필 프로젝트 링크·편집 시작·S-B9 라디오)을 먼저 구현하지 않는다. fable 무접촉.
+- **병렬 레인 충돌 회피**: a1-β가 지금 `app/src/data/{memoryBoardConfirm.ts,memoryProjectRepository.ts,boardConfirmProject.test.ts}`를 고치는 중이다(Codex 리뷰 반영). 이 3파일은 수정하지 않는다. 옮겨야 하면 멈추고 REPORT에 후보로만 남긴다.
 
 ## 검증
 - TDD(옮긴 경로 로딩·실패 상태 RED→GREEN). 전체 vitest 1회 · typecheck · lint · build(로그+exit). 번들 전후 표(모든 시나리오).

@@ -19,6 +19,7 @@
 | 자체 점검 | `c7ed3f1` | `3e9acd2` | 프로필 조회 실패가 연산 사슬을 끊던 결함 → 연산 거부 + 다음 연산 재조회 |
 
 게이트 로그: `logs/k{1..7}-{red,green}.txt` · `k6-perf.txt` · `fix1-{red,green}.txt` (표적 test + `src/test` 가드 + `engineImportGuard` + typecheck + lint + build). 커밋은 모두 `git commit -- <경로>`.
+- 로그 위치 정정: K1~K3 RED/GREEN 로그(`k2-green`은 K3 RED 커밋)는 해당 커밋에 들어갔지만, **K4~K7·k6-perf·자체 점검(fix1) RED/GREEN 로그는 각 커밋이 아니라 `f4ade49`에 함께 커밋됨**(`git commit -- <디렉터리>`가 추적 전 새 파일을 담지 않음 — 이력은 다시 쓰지 않았다). RED 실패는 로그 내용과 각 RED 커밋의 테스트로 재현 가능.
 
 ## 2. AC 판정
 

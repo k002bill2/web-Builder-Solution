@@ -115,3 +115,38 @@
 - 회귀 테스트 2개를 `ProfileCandidates.test`에 추가함(선택 응답 지연, 다른 탭이 이미 끝낸 잡). 수정을 되돌리면 2개 실패, 복원하면 10/10 — `logs/red-green-4-review-fixes.log`
 - lint·build 결과: `logs/gate-lint-review-fix.log`, `logs/gate-build-review-fix.log`(exit와 번들 수치 포함). 전체 suite는 1회 원칙이라 다시 돌리지 않았고, `src/pages` 전체와 관련 data 테스트만 표적으로 재실행함
 - Codex 게이트는 계속 미실행 — 15:26 이후 `review --scope branch --base 2804775`
+
+## 10. main 병합 · 리뷰 수정 이식 (`UI-2A04C-REVIEW-PORT_BRIEF`, 병합 커밋 `30b2943`)
+**판정: 병합·이식·테스트·4게이트 통과. 번들 순증가 +0.04KB로 브리프 멈춤 조건에 걸림 — Jarvis 판단 필요.**
+
+### 충돌 해결
+- `CandidateCard.tsx`: main(`cdbad18`)의 접힘 카드(`<details>` 상세, Tag 경고, 문구·접근성)를 그대로 채택. 이 브랜치의 펼친 로그·경고 블록은 버림. 수정 3(key 순번)만 main의 `plan.lint.map`에 옮김.
+- `ProfileCandidates.test.tsx`: 대기 코드(`findAllByText`)는 양쪽 동일 — main 주석을 채택(`:76`). 회귀 테스트 2개(`:210` describe)는 자동 병합으로 남음. 단언 변경·삭제 0.
+
+### 옮긴 수정 3건 (main 대비 diff는 이 3파일뿐)
+| # | 의미 | 위치 |
+|---|---|---|
+| 1 | 선택 응답은 `selected`만 병합 + 마지막 선택을 ref로 기억해 늦은 조회 응답에도 덮어 씀 | `app/src/features/profile/useGeneration.ts:33`, `:49`, `:133-134` |
+| 2 | 멱등 요청이 끝난 잡을 돌려받으면 요청 이벤트·단계 알림·완료 계측 재발행 없음 | `app/src/features/profile/useGeneration.ts:118` |
+| 3 | 경고·정보 key = `rule-순번` | `app/src/features/profile/CandidateCard.tsx:97-98` |
+| 사소 | `loadGenerate` 주석 순서 | `app/src/data/writeBodyLoader.ts` (번들 영향 0 실측) |
+
+### 검증 (모두 `30b2943` 기준, fresh 실행)
+- RED/GREEN: `useGeneration.ts`를 main 버전으로 되돌리면 회귀 2개 실패(2 failed | 8 passed), 복원 10/10 — `logs/red-green-5-merge-port.log`
+- `ProfileCandidates.test.tsx` 단독 5회 연속 10/10 — `logs/merge-port-solo5.log`
+- 전체 vitest 1회: 105 파일 · 1212 테스트 통과, exit 0 — `logs/merge-port-full-vitest.log`
+- typecheck·lint·build exit 0 — `logs/merge-port-{typecheck,lint,build}.log`
+
+### 번들 (`/profile`, gzip KB, 첫 화면 / 진입 직후)
+| 빌드 | 첫 화면 | 진입 직후 |
+|---|---|---|
+| main 스냅샷(`git archive main`, 같은 node_modules) | 99.56 | 124.74 |
+| + `writeBodyLoader.ts` | 99.56 | 124.74 |
+| + `CandidateCard.tsx` | 99.56 | 124.74 |
+| + `useGeneration.ts` (= HEAD) | 99.56 | **124.78 (+0.04)** |
+| 시도: `current?.jobId` 축약(동작 동일) | 99.56 | 124.80 — 더 커서 버림 |
+- 증가분 전부 수정 1·2(`useGeneration.ts`)의 고유 비용. 이 브랜치 단독 이력에서도 같은 수정이 124.65 → 124.78로 늘렸음(`logs/gate-build-review-fix.log` 계열). 예산 125 이내지만 브리프 기준(순증가 ≤ 0) 위반 → 여기서 멈춤. 다른 파일에서 상쇄·수정 제외·예산 조정은 금지 범위라 하지 않음.
+- 선택지: (a) +0.04 수용(여유 0.22) (b) 수정 1·2를 조작 뒤 청크로 옮기는 별도 작업 (c) 수정 제외. 권장 (a) — 둘 다 실제 결함(선택 고착·계측 중복) 수정이고 동작 증거가 있음.
+
+### 미검증
+- Codex 게이트 미실행(이전과 같은 한도 차단, 이번 런에서 재시도 안 함). 서버 실측 안 함(선택 항목).

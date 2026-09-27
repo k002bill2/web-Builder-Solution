@@ -32,6 +32,13 @@
 - [ ] Codex review 1회(최대 3) — BLOCKED: Codex 사용량 한도("try again at 3:26 PM", `logs/codex-review-1.raw.log`). 대체 = 읽기 전용 code-reviewer 검토(Codex 아님)
 - [x] REPORT.md 커밋, 서버 PID 종료 + lsof 증거(`logs/server-stop.log`)
 
+## REVIEW-PORT (main 병합 · 리뷰 수정 이식, REPORT 10절)
+- [x] `git merge --no-ff main` + 충돌 2파일 해결 (`30b2943`)
+- [x] 수정 3건 이식 확인 (useGeneration 2건 · CandidateCard key)
+- [x] RED/GREEN (`logs/red-green-5-merge-port.log`) · 단독 5회 · 전체 vitest 1212 통과 · typecheck·lint·build exit 0
+- [ ] 번들 순증가 ≤ 0 — BLOCKED: /profile 진입 직후 +0.04KB(124.74→124.78), useGeneration 수정 1·2의 고유 비용. Jarvis가 수용 또는 수정 제외 판단
+- [ ] Codex 게이트 — BLOCKED: 이번 런 미실행(이전 한도 차단 기록 그대로)
+
 ## 서브에이전트 기록
 | # | 도구 | 분담 | 격리 | 결과 |
 |---|---|---|---|---|

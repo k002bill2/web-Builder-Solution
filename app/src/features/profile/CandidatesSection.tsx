@@ -10,7 +10,6 @@ import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
-import { LoadingState } from "../../components/layout/LoadingState";
 import { useProjectLoader } from "../../data/ProfileRepositoryContext";
 import type { StudioEntryState } from "../../data/projectRepository";
 import { effectiveProfile } from "../../domain/effectiveProfile";
@@ -23,6 +22,7 @@ import { PALETTE_ROLES } from "./profileFields";
 import { useGeneration } from "./useGeneration";
 
 const DISABLED = "aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong";
+const PLACEHOLDER = "ds-caption1 flex aspect-4/5 items-center justify-center rounded-md border border-dashed border-line-normal bg-fill-normal p-3 text-center text-label-alternative";
 const failuresOf = (job: GenerationJob) => job.candidates.filter((c): c is CandidateFailure => c.status === "failed");
 
 export function CandidatesSection({
@@ -85,7 +85,7 @@ export function CandidatesSection({
   };
   const onRequest = () => {
     if (blocked || running) return;
-    loadResults().catch(() => undefined); // 미리 받기 — 잡이 오기 전에 카드 청크를 받아 둔다(실패하면 잡이 온 뒤 다시 받는다)
+    loadResults().then(setResults, () => undefined); // 미리 받기 — 잡이 오기 전에 카드 청크를 받아 둔다(실패하면 잡이 온 뒤 다시 받는다)
     void gen.request();
   };
   return (
@@ -134,7 +134,16 @@ export function CandidatesSection({
           </Callout>
         </div>
       )}
-      {job && results === undefined && <LoadingState label={CANDIDATE_TEXT.resultsLoading} />}
+      {/* 청크 도착 전 — 카드와 같은 자리(4:5 · 3열)를 잡아 레이아웃이 튀지 않게 한다. 목록("3안")은 청크가 그린다 */}
+      {job && results === undefined && (
+        <div className="grid gap-4 md:grid-cols-3">
+          {job.candidates.map((c, i) => (
+            <div key={c.id} aria-hidden={i > 0 || undefined} className={PLACEHOLDER}>
+              {i === 0 && <p role="status">{CANDIDATE_TEXT.resultsLoading}</p>}
+            </div>
+          ))}
+        </div>
+      )}
       {job && results === "error" && (
         <div role="alert">
           <Callout

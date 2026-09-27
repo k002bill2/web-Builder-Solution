@@ -64,3 +64,11 @@
 - **재진입 로딩 깜빡임:** 잡이 이미 있는 채 들어오면 카드 자리에 로딩 한 줄 → 카드로 바뀐다(레이아웃 이동). 브라우저 확인은 병합 뒤 QA.
 - 로더 실패 테스트는 로더 모듈을 mock한다. 실제 브라우저의 `?retry=N` 경로는 빌드 출력 파싱까지만 확인했다(브라우저 흐름 검증 없음, 브리프 지시).
 - Codex 리뷰 미실행(이관).
+
+## 10. 작업자 미커밋 변경 보존 (Jarvis, 2026-09-27 21:2x — 작업자 46턴 max_turns 종료)
+- 작업자가 REPORT 9절 "재진입 로딩 깜빡임"을 고치던 중 끊겼다. 미커밋 `CandidatesSection.tsx` 변경을 Jarvis가 검토해 보존한다:
+  - 로딩 표현을 `LoadingState` 한 줄 → **카드와 같은 자리(4:5·3열) 자리표시** — 첫 칸에만 `role=status` "3안을 불러오는 중…", 나머지 `aria-hidden`. 레이아웃 이동 완화.
+  - 미리 받기 결과를 `setResults`로 바로 반영(`.then(setResults, () => undefined)`).
+- Jarvis 검증: typecheck 0 · lint 0 · profile 관련 90/90(`p2-green-final.txt` 작업자 2/2 포함) · build 0 · **전체 vitest 3회 1314/1314**(`logs/jarvis-wip-full-x3.txt`).
+- 번들(`logs/jarvis-wip-build.txt`): `/profile` 첫 99.60 · **진입 123.65**(여유 1.35, 목표 ≤123.90 충족) — 커밋 `a15a616`(123.57) 대비 +0.08은 자리표시 JSX. 다른 화면·공통 base와 같음.
+- 작업자가 덮어쓴 `final-build.txt`·`full-run*.txt` 변경은 버리고(커밋된 P3 로그 유지) 위 Jarvis 로그로 대체.

@@ -10,7 +10,7 @@
 - [x] 단독 10회 연속 (logs/solo-10x.txt)
 - [x] 전체 vitest 1회 (logs/vitest.txt)
 - [x] typecheck·lint·build(번들 변화 0)
-- [ ] Codex 검증
+- [ ] Codex 검증 — BLOCKED: Codex usage limit (reset 15:26) — 재실행: node "$SCRIPT" review --scope branch --base 5bb7247
 - [x] REPORT.md
 
 원인: 확정 청크(memoryBoardConfirm, 동적 import) 콜드 로드 중 저장소 선읽기 — 테스트 대기 누락. 상세 REPORT.md.

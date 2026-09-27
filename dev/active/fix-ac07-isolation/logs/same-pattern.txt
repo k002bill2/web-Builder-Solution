@@ -12,3 +12,7 @@ TypeError: Cannot read properties of undefined (reading 'base')
       Tests  1 failed | 35 skipped (36)
 ## AFTER fix, -t AC-26
       Tests  1 passed | 35 skipped (36)
+## AFTER fix, -t AC-11
+      Tests  1 passed | 35 skipped (36)
+## AFTER fix, -t AC-17
+      Tests  1 passed | 35 skipped (36)

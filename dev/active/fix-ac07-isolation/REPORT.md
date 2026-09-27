@@ -21,8 +21,10 @@ AC-07 단독 실패의 근본 원인은 **테스트의 대기 누락**이다(제
 ## 영향 받은 다른 테스트 (grep: 확정 뒤 저장소를 읽는 곳)
 - `CompareBoardPage.test.tsx`: 184행(이미 `waitFor` 안에서 읽음, OK), 378·386행(이동 대기 뒤, OK), AC-07·AC-12/24·AC-26(수정).
 - `CompareBoardLineage.test.tsx`: 확정 7곳 모두 이동 `waitFor` 또는 `findByRole("alert")` 대기 — OK. 단독 4/4 통과.
-- `CompareBoardSummaryAdjust`·`BoardInputLoad`·`WriteBodyLoad` 단독 통과(`logs/other-solo.txt`). profile 파일은 금지 범위라 미점검.
+- `CompareBoardSummaryAdjust`·`BoardInputLoad`: UI 확정 클릭 없음 — 저장소 `await confirmProfile` 직접 호출이라 해당 없음. `WriteBodyLoad`: 확정 클릭 2곳(51·71행) 모두 `findByRole("alert")` 대기, 저장소 읽기는 이동 `waitFor` 뒤 — OK. 세 파일 단독 통과(`logs/other-solo.txt`).
+- `CompareBoardPage` AC-11(184행)·AC-17을 `-t` 단독 실행해 통과 확인(`logs/same-pattern.txt`) — 파일 단독은 앞 테스트가 청크를 데워 결함을 가리므로 테스트 단위로 확인함.
 - 저장소 직접 호출 데이터 테스트(`src/data/*`)는 `await`로 부르므로 해당 없음.
 
 ## 미검증
+- Codex 리뷰: BLOCKED — usage limit (15:26 해제). 재실행: `node "$SCRIPT" review --scope branch --base 5bb7247` (`logs/codex-review.txt`).
 - profile 레인 테스트(`Profile*.test.tsx`)의 같은 패턴 여부 — 쓰기 금지 범위라 보지 않음.

@@ -15,16 +15,27 @@
 - `startDoc`: 엔진 `createDocFromCandidate`가 세 번째 인자 `DocStart`(Q-17 미승인 계약)를 요구 → startDoc 본문은 Q-17에 걸림. "편집 시작"은 `/studio/:projectId` 이동까지만 연결하고 startDoc 은 BLOCKED 로 보고.
 
 ### 재개 체크리스트
-- [ ] R0 재개 수신 기록·커밋
-- [ ] R1 store 프로젝트 레코드 + 보드 확정 대상 `current|new` · 트랜잭션 ④ · 멱등 키(12.2) · `defaultProjectName`
-- [ ] R2 `ConfirmedRef` projectId·projectName · S-B9 라디오(J-S09·J-S10·J-S11) — 실측
-- [ ] R3 `/projects` 메모리 저장소(list·get·rename) 실제 구현 · `/studio/:projectId` 셸 실데이터
-- [ ] R4 프로필 "프로젝트: <이름>" 링크 · "편집 시작" → `/studio/:projectId`
-- [ ] R5 12.4 깨질 테스트 8건(의미 보존) · `ProfileList.tsx`·`useProfileList.ts` 정리
-- [ ] R6 QA D3 헤더 Tab 순서(390 DOM 순서 = 보이는 순서)
-- [ ] R7 4게이트(vitest 전체 · typecheck · lint · build) + 번들 전후 표
+- [x] R0 재개 수신 기록·커밋 `ffb0063`
+- [x] R1 store 프로젝트 레코드 + 보드 확정 대상 `current|new` · 트랜잭션 ④ · 멱등 키(12.2) — `6fa96fa`. **`/profile` 진입 직후 124.74(여유 0.26) → 중지 조건**
+- [ ] R2 S-B9 라디오(J-S09·J-S10·J-S11) — BLOCKED: 중지 조건(`/profile` 여유 0.26). 저장소 쪽 `ConfirmedRef` projectId·projectName은 R1에 포함
+- [x] R3 `/projects` 메모리 저장소(list·get·rename) 실제 구현 — `6fa96fa` (`/studio/:projectId` 셸은 기존 E-S02·E-S03 그대로)
+- [ ] R4 프로필 "프로젝트: <이름>" 링크 · "편집 시작" → `/studio/:projectId` — BLOCKED: `ProfilePage` 청크 증가 = 중지 조건. `startDoc`은 Q-17 + engineImportGuard로 BLOCKED
+- [x] R5 12.4 깨질 테스트 8건(의미 보존) · 미사용 파일 정리 — `afd64c0`(서브에이전트) · `5607c04`. P-AC-29 1건은 12.4 밖(REPORT 3절)
+- [x] R6 QA D3 — `67e5ac2`(서브에이전트, <768 3행 · +44px → 결정 필요)
+- [x] R7 4게이트 — typecheck·lint·build exit 0, vitest 1 failed(P-AC-29)/1226 passed · 번들 표 REPORT 1절
 - [ ] R8 127.0.0.1:4337 실제 클릭 · 1280/768/390 캡처 · 390 Tab 순서
 - [ ] R9 Codex 검증 · REPORT · 로컬 커밋
+
+### 서브에이전트
+- worker(worktree `worktree-agent-a18bd49d7f342df94`): 12.4 AppHeader·CatalogPage 단언 + 미사용 파일 삭제 `b127a1a` → cherry-pick `afd64c0` · D3 `d0e21e0` → `67e5ac2`. 검증은 메인이 전체 게이트로 재실행.
+
+### 번들 (재개 기준 → R1 최소화, `/catalog` 첫 화면 · `/profile` 진입 직후)
+| 시점 | /catalog | /profile 진입 직후 |
+|---|---|---|
+| 재개 기준 | 99.63 (0.37) | 124.62 (0.38) |
+| R1 첫 구현 | 99.65 (0.35) | 124.86 (**0.14**) |
+| R1 최소화 | 99.65 (0.35) | 124.75 (**0.25**) |
+| 12.4·D3 반영 `5607c04` | 99.65 (0.35) | 124.74 (**0.26**) |
 
 ## 체크포인트
 - [x] 브리프·SPEC 2.1~2.5·8.3·10·11.1·12·13.1·a1-α REPORT 읽기

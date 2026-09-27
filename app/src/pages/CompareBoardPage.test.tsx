@@ -115,13 +115,14 @@ describe("선택 (P-1·P-2·A-4)", () => {
 
   it("AC-07: A 열 '전부 선택'이면 선택 가능한 10행이 모두 A이고 확정 결과 section_plan이 A의 sectionPlan과 같다", async () => {
     const repo = boardRepo();
-    await openBoard(repo);
+    const { router } = await openBoard(repo);
     await userEvent.click(screen.getAllByRole("button", { name: /^이 레퍼런스로 전부 선택/ })[0]!);
     const pressed = allPicks().filter((b) => b.getAttribute("aria-pressed") === "true");
     expect(pressed).toHaveLength(10);
     expect(pressed.every((b) => /A 모던 카페 브랜드/.test(b.getAttribute("aria-label") ?? ""))).toBe(true);
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(confirmButton());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
     const [v1] = await repo.getProfileVersions("profile-1");
     expect(v1!.base.section_plan).toEqual(referenceComparisonAttributes["ref-a"]!.sectionPlan);
   });
@@ -186,7 +187,7 @@ describe("경고 (R-07·R-08·R-12) · 사용자 스타일", () => {
 
   it("AC-12·AC-24: 낮은 대비 대표색 → 수치·보정값 쓰기, 확정 가능, 저장된 color_tokens는 역할 팔레트 전체이고 보드가 계산한 색과 같다", async () => {
     const repo = boardRepo(THREE, { hero: "ref-a" });
-    await openBoard(repo);
+    const { router } = await openBoard(repo);
     await userEvent.type(screen.getByRole("textbox", { name: "대표색" }), LOW_CONTRAST_PRIMARY);
     await userEvent.tab();
     const callout = screen.getByRole("heading", { level: 3, name: "대비 부족" }).closest("[data-tone]") as HTMLElement;
@@ -194,6 +195,7 @@ describe("경고 (R-07·R-08·R-12) · 사용자 스타일", () => {
     expect(within(callout).getByRole("button", { name: "보정값 쓰기" })).toBeInTheDocument();
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(confirmButton());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
     const [v1] = await repo.getProfileVersions("profile-1");
     const palette = derivePalette(LOW_CONTRAST_PRIMARY, referenceDetailFixtures["ref-a"]!.palette);
     expect(Object.keys(v1!.base.color_tokens).filter((k) => !k.startsWith("$")).sort()).toEqual(["bg", "ink", "muted", "primary", "surface"]);
@@ -268,13 +270,14 @@ describe("회수·한도·권리 경계", () => {
     const footers = Object.fromEntries(Object.entries(SECTION_LIBRARY.sections.footer).filter(([variant]) => variant !== "minimal"));
     const library: SectionLibrary = { ...SECTION_LIBRARY, version: "2.0", sections: { ...SECTION_LIBRARY.sections, footer: footers } };
     const repo = boardRepo(THREE, { hero: "ref-a" }, { library });
-    await openBoard(repo);
+    const { router } = await openBoard(repo);
     const footerRow = screen.getByRole("rowheader", { name: /^Footer/ }).closest("tr")!;
     const cells = within(footerRow).getAllByRole("cell");
     expect(cells[1]).toHaveTextContent("현재 라이브러리에 없는 변형");
     expect(within(cells[1]!).queryByRole("button")).not.toBeInTheDocument();
     await waitFor(() => expect(confirmButton()).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(confirmButton());
+    await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
     const { libraryVersion } = await repo.getComparison(THREE);
     expect((await repo.getProfileVersions("profile-1"))[0]!.base.library_version).toBe(libraryVersion);
   });

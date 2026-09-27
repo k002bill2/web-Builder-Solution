@@ -1,0 +1,15 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app
+
+
+ Test Files  12 passed (12)
+      Tests  83 passed (83)
+   Start at  17:52:00
+   Duration  1.79s (environment 65%, setup 13%, tests 10%, transform 9%, import 2%)
+
+    Isolate  12 workers spawned · ~763ms startup each (spawn + environment, per file)
+             at least ~254ms faster with isolate: false — reuses workers across files instead of one per file
+

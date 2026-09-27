@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app
+
+ ❯ src/components/studio/PageInfoFields.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/PageInfoFields.test.tsx [ src/components/studio/PageInfoFields.test.tsx ]
+Error: Failed to resolve import "./PageInfoFields" from "src/components/studio/PageInfoFields.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/studio/PageInfoFields.test.tsx:8:31
+  5  |  import { seoIssues } from "../../engine/gate/docRows";
+  6  |  import { sampleDoc } from "../../engine/testing/sampleDoc";
+  7  |  import { PageInfoFields } from "./PageInfoFields";
+     |                                  ^
+  8  |  var _jsxFileName = "/Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/stu...
+  9  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  17:51:47
+   Duration  561ms (environment 82%, setup 14%, transform 3%, worker 1%)
+

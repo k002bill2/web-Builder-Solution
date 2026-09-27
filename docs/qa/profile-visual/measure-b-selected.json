@@ -1,0 +1,722 @@
+{
+ "320": {
+  "vw": 320,
+  "scrollWidth": 305,
+  "clientWidth": 305,
+  "hOverflow": false,
+  "overflowers": [],
+  "gridCols": null,
+  "cols": null,
+  "headings": [
+   {
+    "tag": "H1",
+    "text": "디자인 프로필",
+    "cls": "ds-title1 focus:outline-none",
+    "w": 128
+   },
+   {
+    "tag": "H2",
+    "text": "프로필 값",
+    "cls": "ds-heading1",
+    "w": 273
+   },
+   {
+    "tag": "H3",
+    "text": "출처",
+    "cls": "ds-label",
+    "w": 273
+   },
+   {
+    "tag": "H2",
+    "text": "역할 팔레트와 대비",
+    "cls": "ds-heading1",
+    "w": 273
+   },
+   {
+    "tag": "H3",
+    "text": "대비 검사 · 목표 4.5:1",
+    "cls": "ds-label",
+    "w": 273
+   },
+   {
+    "tag": "H2",
+    "text": "전역 조정",
+    "cls": "ds-heading1",
+    "w": 65
+   },
+   {
+    "tag": "H2",
+    "text": "버전",
+    "cls": "ds-heading1",
+    "w": 273
+   },
+   {
+    "tag": "H2",
+    "text": "3안",
+    "cls": "ds-heading1",
+    "w": 273
+   },
+   {
+    "tag": "H3",
+    "text": "A안",
+    "cls": "ds-label",
+    "w": 22
+   },
+   {
+    "tag": "H3",
+    "text": "B안",
+    "cls": "ds-label",
+    "w": 21
+   },
+   {
+    "tag": "H3",
+    "text": "C안",
+    "cls": "ds-label",
+    "w": 22
+   }
+  ],
+  "expanders": [],
+  "details": [
+   {
+    "summary": "값 전체 보기",
+    "open": false
+   },
+   {
+    "summary": "섹션 9 · 순서 보기",
+    "open": false
+   },
+   {
+    "summary": "통과 3 · 미달 1 · 대비 상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "3안 비교 표 보기",
+    "open": false
+   }
+  ],
+  "badge": [
+   {
+    "text": "v1 · 현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1",
+    "parentCls": "flex flex-wrap items-center gap-2",
+    "color": "rgb(65, 71, 229)",
+    "bg": "rgb(242, 242, 253)"
+   },
+   {
+    "text": "현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-blue bg-accent-blue-bg h-5 px-1.5 rounded-xs text-caption2",
+    "parentCls": "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-line-neutral py-2.5 last:border-b-0 focus:outline-none focus-visible:shadow-(--focus-ring)",
+    "color": "rgb(27, 88, 200)",
+    "bg": "rgb(240, 247, 255)"
+   }
+  ],
+  "cards": [
+   {
+    "name": "A안 선택",
+    "pressed": "false",
+    "x": 29,
+    "y": 2279,
+    "w": 247,
+    "h": 32
+   },
+   {
+    "name": "B안 선택",
+    "pressed": "true",
+    "x": 29,
+    "y": 2770,
+    "w": 247,
+    "h": 32
+   },
+   {
+    "name": "C안 선택",
+    "pressed": "false",
+    "x": 29,
+    "y": 3279,
+    "w": 247,
+    "h": 32
+   }
+  ],
+  "editBtn": {
+   "text": "B안으로 편집 시작",
+   "disabled": null,
+   "x": 16,
+   "y": 3370,
+   "w": 159,
+   "h": 40
+  },
+  "editAfterLastCard": "a-before-b",
+  "cmpEl": {
+   "tag": "SUMMARY",
+   "text": "3안 비교 표 보기",
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "afterEdit": "a-before-b"
+  },
+  "leftCol": {
+   "profileVals": {
+    "x": 16,
+    "y": 265,
+    "w": 273
+   },
+   "variants": {
+    "x": 16,
+    "y": 1732,
+    "w": 273
+   }
+  }
+ },
+ "390": {
+  "vw": 390,
+  "scrollWidth": 375,
+  "clientWidth": 375,
+  "hOverflow": false,
+  "overflowers": [],
+  "gridCols": null,
+  "cols": null,
+  "headings": [
+   {
+    "tag": "H1",
+    "text": "디자인 프로필",
+    "cls": "ds-title1 focus:outline-none",
+    "w": 128
+   },
+   {
+    "tag": "H2",
+    "text": "프로필 값",
+    "cls": "ds-heading1",
+    "w": 343
+   },
+   {
+    "tag": "H3",
+    "text": "출처",
+    "cls": "ds-label",
+    "w": 343
+   },
+   {
+    "tag": "H2",
+    "text": "역할 팔레트와 대비",
+    "cls": "ds-heading1",
+    "w": 343
+   },
+   {
+    "tag": "H3",
+    "text": "대비 검사 · 목표 4.5:1",
+    "cls": "ds-label",
+    "w": 343
+   },
+   {
+    "tag": "H2",
+    "text": "전역 조정",
+    "cls": "ds-heading1",
+    "w": 65
+   },
+   {
+    "tag": "H2",
+    "text": "버전",
+    "cls": "ds-heading1",
+    "w": 343
+   },
+   {
+    "tag": "H2",
+    "text": "3안",
+    "cls": "ds-heading1",
+    "w": 343
+   },
+   {
+    "tag": "H3",
+    "text": "A안",
+    "cls": "ds-label",
+    "w": 22
+   },
+   {
+    "tag": "H3",
+    "text": "B안",
+    "cls": "ds-label",
+    "w": 21
+   },
+   {
+    "tag": "H3",
+    "text": "C안",
+    "cls": "ds-label",
+    "w": 22
+   }
+  ],
+  "expanders": [],
+  "details": [
+   {
+    "summary": "값 전체 보기",
+    "open": false
+   },
+   {
+    "summary": "섹션 9 · 순서 보기",
+    "open": false
+   },
+   {
+    "summary": "통과 3 · 미달 1 · 대비 상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "3안 비교 표 보기",
+    "open": false
+   }
+  ],
+  "badge": [
+   {
+    "text": "v1 · 현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1",
+    "parentCls": "flex flex-wrap items-center gap-2",
+    "color": "rgb(65, 71, 229)",
+    "bg": "rgb(242, 242, 253)"
+   },
+   {
+    "text": "현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-blue bg-accent-blue-bg h-5 px-1.5 rounded-xs text-caption2",
+    "parentCls": "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-line-neutral py-2.5 last:border-b-0 focus:outline-none focus-visible:shadow-(--focus-ring)",
+    "color": "rgb(27, 88, 200)",
+    "bg": "rgb(240, 247, 255)"
+   }
+  ],
+  "cards": [
+   {
+    "name": "A안 선택",
+    "pressed": "false",
+    "x": 29,
+    "y": 2244,
+    "w": 317,
+    "h": 32
+   },
+   {
+    "name": "B안 선택",
+    "pressed": "true",
+    "x": 29,
+    "y": 2822,
+    "w": 317,
+    "h": 32
+   },
+   {
+    "name": "C안 선택",
+    "pressed": "false",
+    "x": 29,
+    "y": 3400,
+    "w": 317,
+    "h": 32
+   }
+  ],
+  "editBtn": {
+   "text": "B안으로 편집 시작",
+   "disabled": null,
+   "x": 16,
+   "y": 3491,
+   "w": 159,
+   "h": 40
+  },
+  "editAfterLastCard": "a-before-b",
+  "cmpEl": {
+   "tag": "SUMMARY",
+   "text": "3안 비교 표 보기",
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "afterEdit": "a-before-b"
+  },
+  "leftCol": {
+   "profileVals": {
+    "x": 16,
+    "y": 233,
+    "w": 343
+   },
+   "variants": {
+    "x": 16,
+    "y": 1627,
+    "w": 343
+   }
+  }
+ },
+ "768": {
+  "vw": 768,
+  "scrollWidth": 753,
+  "clientWidth": 753,
+  "hOverflow": false,
+  "overflowers": [],
+  "gridCols": null,
+  "cols": null,
+  "headings": [
+   {
+    "tag": "H1",
+    "text": "디자인 프로필",
+    "cls": "ds-title1 focus:outline-none",
+    "w": 128
+   },
+   {
+    "tag": "H2",
+    "text": "프로필 값",
+    "cls": "ds-heading1",
+    "w": 697
+   },
+   {
+    "tag": "H3",
+    "text": "출처",
+    "cls": "ds-label",
+    "w": 697
+   },
+   {
+    "tag": "H2",
+    "text": "역할 팔레트와 대비",
+    "cls": "ds-heading1",
+    "w": 697
+   },
+   {
+    "tag": "H3",
+    "text": "대비 검사 · 목표 4.5:1",
+    "cls": "ds-label",
+    "w": 697
+   },
+   {
+    "tag": "H2",
+    "text": "전역 조정",
+    "cls": "ds-heading1",
+    "w": 65
+   },
+   {
+    "tag": "H2",
+    "text": "버전",
+    "cls": "ds-heading1",
+    "w": 697
+   },
+   {
+    "tag": "H2",
+    "text": "3안",
+    "cls": "ds-heading1",
+    "w": 697
+   },
+   {
+    "tag": "H3",
+    "text": "A안",
+    "cls": "ds-label",
+    "w": 22
+   },
+   {
+    "tag": "H3",
+    "text": "B안",
+    "cls": "ds-label",
+    "w": 21
+   },
+   {
+    "tag": "H3",
+    "text": "C안",
+    "cls": "ds-label",
+    "w": 22
+   }
+  ],
+  "expanders": [],
+  "details": [
+   {
+    "summary": "값 전체 보기",
+    "open": false
+   },
+   {
+    "summary": "섹션 9 · 순서 보기",
+    "open": false
+   },
+   {
+    "summary": "통과 3 · 미달 1 · 대비 상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "3안 비교 표 보기",
+    "open": false
+   }
+  ],
+  "badge": [
+   {
+    "text": "v1 · 현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1",
+    "parentCls": "flex flex-wrap items-center gap-2",
+    "color": "rgb(65, 71, 229)",
+    "bg": "rgb(242, 242, 253)"
+   },
+   {
+    "text": "현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-blue bg-accent-blue-bg h-5 px-1.5 rounded-xs text-caption2",
+    "parentCls": "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-line-neutral py-2.5 last:border-b-0 focus:outline-none focus-visible:shadow-(--focus-ring)",
+    "color": "rgb(27, 88, 200)",
+    "bg": "rgb(240, 247, 255)"
+   }
+  ],
+  "cards": [
+   {
+    "name": "A안 선택",
+    "pressed": "false",
+    "x": 41,
+    "y": 1877,
+    "w": 196,
+    "h": 32
+   },
+   {
+    "name": "B안 선택",
+    "pressed": "true",
+    "x": 279,
+    "y": 1877,
+    "w": 196,
+    "h": 32
+   },
+   {
+    "name": "C안 선택",
+    "pressed": "false",
+    "x": 516,
+    "y": 1877,
+    "w": 196,
+    "h": 32
+   }
+  ],
+  "editBtn": {
+   "text": "B안으로 편집 시작",
+   "disabled": null,
+   "x": 566,
+   "y": 1968,
+   "w": 159,
+   "h": 40
+  },
+  "editAfterLastCard": "a-before-b",
+  "cmpEl": {
+   "tag": "SUMMARY",
+   "text": "3안 비교 표 보기",
+   "x": 28,
+   "y": 2050,
+   "w": 697,
+   "h": 22,
+   "afterEdit": "a-before-b"
+  },
+  "leftCol": {
+   "profileVals": {
+    "x": 28,
+    "y": 206,
+    "w": 697
+   },
+   "variants": {
+    "x": 28,
+    "y": 1433,
+    "w": 697
+   }
+  }
+ },
+ "1280": {
+  "vw": 1280,
+  "scrollWidth": 1265,
+  "clientWidth": 1265,
+  "hOverflow": false,
+  "overflowers": [],
+  "gridCols": null,
+  "cols": null,
+  "headings": [
+   {
+    "tag": "H1",
+    "text": "디자인 프로필",
+    "cls": "ds-title1 focus:outline-none",
+    "w": 128
+   },
+   {
+    "tag": "H2",
+    "text": "프로필 값",
+    "cls": "ds-heading1",
+    "w": 340
+   },
+   {
+    "tag": "H3",
+    "text": "출처",
+    "cls": "ds-label",
+    "w": 340
+   },
+   {
+    "tag": "H2",
+    "text": "역할 팔레트와 대비",
+    "cls": "ds-heading1",
+    "w": 340
+   },
+   {
+    "tag": "H3",
+    "text": "대비 검사 · 목표 4.5:1",
+    "cls": "ds-label",
+    "w": 340
+   },
+   {
+    "tag": "H2",
+    "text": "전역 조정",
+    "cls": "ds-heading1",
+    "w": 65
+   },
+   {
+    "tag": "H2",
+    "text": "버전",
+    "cls": "ds-heading1",
+    "w": 340
+   },
+   {
+    "tag": "H2",
+    "text": "3안",
+    "cls": "ds-heading1",
+    "w": 837
+   },
+   {
+    "tag": "H3",
+    "text": "A안",
+    "cls": "ds-label",
+    "w": 22
+   },
+   {
+    "tag": "H3",
+    "text": "B안",
+    "cls": "ds-label",
+    "w": 21
+   },
+   {
+    "tag": "H3",
+    "text": "C안",
+    "cls": "ds-label",
+    "w": 22
+   }
+  ],
+  "expanders": [],
+  "details": [
+   {
+    "summary": "값 전체 보기",
+    "open": false
+   },
+   {
+    "summary": "섹션 9 · 순서 보기",
+    "open": false
+   },
+   {
+    "summary": "통과 3 · 미달 1 · 대비 상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "상세",
+    "open": false
+   },
+   {
+    "summary": "3안 비교 표 보기",
+    "open": false
+   }
+  ],
+  "badge": [
+   {
+    "text": "v1 · 현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1",
+    "parentCls": "flex flex-wrap items-center gap-2",
+    "color": "rgb(65, 71, 229)",
+    "bg": "rgb(242, 242, 253)"
+   },
+   {
+    "text": "현재",
+    "cls": "inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-blue bg-accent-blue-bg h-5 px-1.5 rounded-xs text-caption2",
+    "parentCls": "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-line-neutral py-2.5 last:border-b-0 focus:outline-none focus-visible:shadow-(--focus-ring)",
+    "color": "rgb(27, 88, 200)",
+    "bg": "rgb(240, 247, 255)"
+   }
+  ],
+  "cards": [
+   {
+    "name": "A안 선택",
+    "pressed": "false",
+    "x": 413,
+    "y": 708,
+    "w": 242,
+    "h": 32
+   },
+   {
+    "name": "B안 선택",
+    "pressed": "true",
+    "x": 697,
+    "y": 690,
+    "w": 242,
+    "h": 32
+   },
+   {
+    "name": "C안 선택",
+    "pressed": "false",
+    "x": 982,
+    "y": 708,
+    "w": 242,
+    "h": 32
+   }
+  ],
+  "editBtn": {
+   "text": "B안으로 편집 시작",
+   "disabled": null,
+   "x": 1078,
+   "y": 799,
+   "w": 159,
+   "h": 40
+  },
+  "editAfterLastCard": "a-before-b",
+  "cmpEl": {
+   "tag": "SUMMARY",
+   "text": "3안 비교 표 보기",
+   "x": 400,
+   "y": 881,
+   "w": 837,
+   "h": 22,
+   "afterEdit": "a-before-b"
+  },
+  "leftCol": {
+   "profileVals": {
+    "x": 28,
+    "y": 206,
+    "w": 340
+   },
+   "variants": {
+    "x": 400,
+    "y": 206,
+    "w": 837
+   }
+  }
+ }
+}

@@ -22,7 +22,10 @@ function useCatalogView() {
   return { catalog: (onCatalog && !saved) || pathname.startsWith("/references/"), saved, projects: pathname === "/projects" || pathname.startsWith("/profile/") };
 }
 
-/** 상단 GNB — 52px 한 줄, <768에서는 주 메뉴가 헤더 아래 한 줄로 내려간다 (v2 SPEC 4.1 · Q5). */
+/**
+ * 상단 GNB — 52px 한 줄, <768에서는 DOM 순서대로 줄을 바꾼다: 로고 / 주 메뉴 / 새 프로젝트·아바타(오른쪽) (v2 SPEC 4.1 · Q5).
+ * CSS order로 보이는 순서를 바꾸지 않는다 — DOM 순서 = 보이는 순서 = Tab 순서 (QA D3).
+ */
 export function AppHeader() {
   const { Logo, name } = brand;
   const view = useCatalogView();
@@ -35,7 +38,7 @@ export function AppHeader() {
       </Link>
       <nav
         aria-label="주 메뉴"
-        className="order-last -mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:order-none md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"
+        className="-mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:m-0 md:w-auto md:flex-1 md:overflow-visible md:p-0"
       >
         <Link to="/catalog" aria-current={view.catalog ? "page" : undefined} className={navClass({ isActive: view.catalog })}>
           카탈로그
@@ -54,7 +57,7 @@ export function AppHeader() {
           프로젝트
         </Link>
       </nav>
-      <div className="ml-auto flex flex-none items-center gap-2.5">
+      <div className="ml-auto flex flex-none items-center gap-2.5 pb-3 md:p-0">
         {/* 버튼 모양 링크 — 이동이라 링크다(S-B1 상쇄 2순위: 훅·핸들러 제거). 모양은 Button primary sm */}
         <Link
           to="/compare?new=1"

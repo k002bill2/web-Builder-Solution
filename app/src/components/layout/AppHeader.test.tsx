@@ -86,4 +86,17 @@ describe("앱 셸 헤더 (v2 SPEC 4.1)", () => {
     // <768 스크롤 영역: 안쪽 여백(위·좌우)을 같은 음수 여백으로 상쇄 · ≥768: overflow 해제
     for (const name of ["-mx-1", "px-1", "-mt-1", "pt-1", "md:overflow-visible"]) expect(hasClass(nav, name)).toBe(true);
   });
+
+  it("DOM 순서 = 보이는 순서 = Tab 순서: 로고 → 메뉴 4 → 새 프로젝트, CSS order로 순서를 바꾸지 않는다 (QA D3)", async () => {
+    renderApp("/catalog");
+    await screen.findByRole("heading", { level: 1 });
+    const header = banner();
+    const focusables = [...header.querySelectorAll<HTMLElement>("a[href], button, input, select, textarea, [tabindex]")];
+    expect(focusables.map((el) => el.textContent)).toEqual([brand.name, "카탈로그", "보관함", "비교 보드", "프로젝트", "새 프로젝트"]);
+    // border-b 같은 이름이 걸리지 않게 클래스 단위로 본다 — order-*·md:order-* 등 변형 포함
+    const ordered = [header, ...header.querySelectorAll<HTMLElement>("*")].filter((el) =>
+      (el.getAttribute("class") ?? "").split(/\s+/).some((name) => /^([\w-]+:)*order-/.test(name)),
+    );
+    expect(ordered).toEqual([]);
+  });
 });

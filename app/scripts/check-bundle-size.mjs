@@ -72,7 +72,10 @@ const SCENARIOS = [
     name: "/profile",
     page: "src/pages/ProfilePage.tsx",
     auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
-    afterAction: ["src/data/memoryProfileAdjust.ts"],
+    // 3안 계산 본문(memoryGenerate = composeCandidates·lintPlan, 2a-04c): writeBodyLoader loadGenerate ← memoryGenerationRepository requestGeneration·
+    // retryFailed ← useGeneration request·retry ← CandidatesSection "3안 만들기"·"다시 시도" onClick. 진입 findJob·getJob 폴링·selectCandidate는 받지 않는다
+    // (store 조회만 — GenerationLoad.test "번들 분류 근거"가 요청 0을 확인한다). 기존 잡 표시·폴링 코드는 profileEngine·memoryStudio(자동)에 든다
+    afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts"],
   },
   { name: "/studio (자리표시)", page: "src/pages/PlaceholderPage.tsx", auto: EAGER_DYNAMIC },
 ];

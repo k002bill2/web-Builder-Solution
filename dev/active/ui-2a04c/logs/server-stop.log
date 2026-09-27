@@ -1,0 +1,7 @@
+== before
+COMMAND   PID            USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    19862 002billmac_home   26u  IPv4 0x7f100c50620589a5      0t0  TCP 127.0.0.1:4337 (LISTEN)
+npx pid=19843
+19862
+== after (빈 출력 = LISTEN 없음)
+lsof exit=1

@@ -423,13 +423,14 @@ describe("Q2 이름표 (M-06) · Q5 제목·배치 · P-AC-33", () => {
     expect(within(dd("모바일 구조")).getByText("single-column-bottom-cta")).toBeInTheDocument();
   });
 
-  it("1280 2단(프로필 패널 + 3안 자리) · 1024 패널 안 2열 · DOM 순서 = 값 → 팔레트 → 조정 → 버전 → 3안, disabled 속성 0", async () => {
+  it("1280 2단(프로필 패널 + 3안) · 1024 패널 안 2열 · DOM 순서 = 값 → 팔레트 → 조정 → 버전 → 3안, disabled 속성 0", async () => {
     await openProfile();
     const regions = ["프로필 값", "역할 팔레트와 대비", "전역 조정", "버전", "3안"].map((name) => screen.getByRole("region", { name }));
     for (let i = 1; i < regions.length; i += 1) expect(regions[i - 1]!.compareDocumentPosition(regions[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const candidates = regions[4]!;
     expect(within(candidates).getByRole("heading", { level: 2, name: "3안" })).toBeInTheDocument();
-    expect(within(candidates).queryByRole("button")).not.toBeInTheDocument();
+    // 2a-04c: 3안 자리 → 실제 3안 영역(3안 만들기·편집 시작 버튼). 배치·순서 단언은 그대로
+    expect(within(candidates).getByRole("button", { name: "3안 만들기 (v1)" })).toBeInTheDocument();
     const layout = candidates.parentElement!;
     expect(layout.className).toMatch(/xl:grid-cols-/);
     const panel = layout.firstElementChild as HTMLElement;

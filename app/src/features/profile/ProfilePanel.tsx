@@ -4,7 +4,7 @@
  * 견본·값은 보는 버전의 적용된 값, 대비 검사·제안은 초안(대비 수준·쓴 보정)을 따른다 — 강화를 고르고 바로 보정값을 쓸 수 있게(P-AC-19).
  * 초안은 저장 성공에서 비우고, 되돌리기 성공(`resetKey` 변경)에서 버린다. STALE_PROFILE에서는 남긴다(P-S12).
  */
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { PaletteContrast, type SwatchEntry } from "../../components/profile/PaletteContrast";
 import type { AdjustmentRange, ProfileAdjustments, ProfileVersion } from "../../domain/profile";
 import type { PaletteEntry } from "../../domain/referenceDetail";
@@ -25,6 +25,8 @@ export interface ProfilePanelProps {
   readonly onSave: (adjustments: ProfileAdjustments) => Promise<boolean>;
   /** 바뀌면 초안을 버린다(되돌리기 성공) */
   readonly resetKey: number;
+  /** 저장 안 된 조정 수 — 3안 만들기 차단(2a-04c, 2.1). 이전 버전을 볼 때는 0 */
+  readonly onPending: (count: number) => void;
 }
 
 const paletteOf = (v: ProfileVersion, adjustments: ProfileAdjustments): readonly PaletteEntry[] =>
@@ -42,6 +44,8 @@ export function ProfilePanel(props: ProfilePanelProps) {
   const values = valuesOf(draft, viewed.base);
   const pending = editable ? pendingCount(saved, draft, latest.base) : 0;
   const blockedRange = editable ? outOfRange(values, range) : [];
+  const { onPending } = props;
+  useEffect(() => onPending(pending), [onPending, pending]);
 
   const board = paletteOf(viewed, {});
   const swatches: readonly SwatchEntry[] = paletteOf(viewed, viewed.adjustments).map((p, i) =>

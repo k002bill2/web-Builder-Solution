@@ -26,7 +26,7 @@ export function createAppRoutes(): RouteObject[] {
         { path: "compare", element: <CompareBoardPage /> },
         { path: "profile", element: <ProfilePage /> },
         { path: "profile/:profileId", element: <ProfilePage /> },
-        { path: "studio", element: <PlaceholderPage title="편집기" screen="1a-05" /> },
+        { path: "studio", element: <PlaceholderPage title="편집기" screen="2a-05" /> },
         { path: "*", element: <Navigate to="/catalog" replace /> },
       ],
     },

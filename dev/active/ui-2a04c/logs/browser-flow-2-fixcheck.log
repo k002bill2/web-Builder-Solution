@@ -1,0 +1,17 @@
+{ spaceId: 11 }
+catalog: 3개 비교 추가
+compare: 보드 열림
+profile: v1 확정 → /profile/profile-1, '3안 만들기 (v1)' 보임
+{ during: { busy: 'true', slots: [ 'A안 만드는 중 · 0/3 완료A안', 'B안 만드는 중 · 0/3 완료B안', 'C안 만드는 중 · 0/3 완료C안' ], status: '3안을 만드는 중입니다' } }
+{ done: '3안을 만들었습니다' }
+B안 선택 → aria-pressed=true
+1280 {"width":1280,"overflowX":0,"layoutColumns":2,"cardColumns":3,"tableShown":true,"tableOverflow":0,"clipped":0,"focusables":["팔레트와 대비 보기","A안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","B안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","C안 선택","섹션 순서 보기","전체 로그","B안으로 편집 시작"],"pressed":"B안 선택","editButton":"B안으로 편집 시작","editDisabled":null,"previewCaption":true,"editNotice":true}
+1024 {"width":1024,"overflowX":0,"layoutColumns":1,"cardColumns":3,"tableShown":true,"tableOverflow":0,"clipped":0,"focusables":["팔레트와 대비 보기","A안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","B안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","C안 선택","섹션 순서 보기","전체 로그","B안으로 편집 시작"],"pressed":"B안 선택","editButton":"B안으로 편집 시작","editDisabled":null,"previewCaption":true,"editNotice":true}
+768 {"width":768,"overflowX":0,"layoutColumns":1,"cardColumns":3,"tableShown":true,"tableOverflow":0,"clipped":0,"focusables":["팔레트와 대비 보기","A안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","B안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","C안 선택","섹션 순서 보기","전체 로그","B안으로 편집 시작"],"pressed":"B안 선택","editButton":"B안으로 편집 시작","editDisabled":null,"previewCaption":true,"editNotice":true}
+390 {"width":390,"overflowX":0,"layoutColumns":1,"cardColumns":1,"tableShown":false,"tableOverflow":0,"clipped":0,"focusables":["팔레트와 대비 보기","A안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","B안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","C안 선택","섹션 순서 보기","전체 로그","B안으로 편집 시작"],"pressed":"B안 선택","editButton":"B안으로 편집 시작","editDisabled":null,"previewCaption":true,"editNotice":true}
+320 {"width":320,"overflowX":0,"layoutColumns":1,"cardColumns":1,"tableShown":false,"tableOverflow":0,"clipped":0,"focusables":["팔레트와 대비 보기","A안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","B안 선택","섹션 순서 보기","전체 로그","팔레트와 대비 보기","C안 선택","섹션 순서 보기","전체 로그","B안으로 편집 시작"],"pressed":"B안 선택","editButton":"B안으로 편집 시작","editDisabled":null,"previewCaption":true,"editNotice":true}
+{ tabs: [ '섹션 순서 보기 [ring]', '전체 로그 [ring]', '팔레트와 대비 보기 [ring]', 'B안 선택 [ring]', '섹션 순서 보기 [ring]', '전체 로그 [ring]', '팔레트와 대비 보기 [ring]', 'C안 선택 [ring]', '섹션 순서 보기 [ring]', '전체 로그 [ring]', 'B안으로 편집 시작 [ring]', '본문으로 건너뛰기Design Studio카탈' ] }
+{ studio: { path: '/studio', h1: '편집기', screen: true } }
+done
+
+exit=0

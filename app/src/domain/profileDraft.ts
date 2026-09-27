@@ -24,6 +24,7 @@ import { fontFamilyOf } from "./fonts";
 import { derivePalette } from "./palette";
 import type { MotionLevel } from "./reference";
 import type { PaletteEntry } from "./referenceDetail";
+import { hash } from "./hash";
 import { DEFAULT_FOOTER_VARIANT, SECTION_LIBRARY } from "./sectionLibrary";
 
 export type DraftSource =
@@ -113,12 +114,6 @@ function itemOf(row: PickableRowId, resolved: Resolved | undefined, board: Compa
   return { rowId: row, label, valueLabel: resolved.cell.label, source: resolved.source };
 }
 
-/** FNV-1a 32비트 */
-function hash(text: string): string {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < text.length; i += 1) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193);
-  return (h >>> 0).toString(16).padStart(8, "0");
-}
 
 const sortedEntries = (record: object) => Object.entries(record).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b));
 

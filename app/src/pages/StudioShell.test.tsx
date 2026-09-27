@@ -173,3 +173,43 @@ describe("섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4)", () => {
     expect(h2("편집 · FAQ")).toBeInTheDocument();
   });
 });
+
+describe("탭 (S5 · E-AC-14 · SPEC 6.2)", () => {
+  const tab = (name: string) => screen.getByRole("tab", { name });
+  it("tablist/tab/tabpanel 속성 — 선택 탭만 aria-selected·tabIndex 0, 패널은 aria-labelledby·tabIndex 0", async () => {
+    await open(390);
+    expect(tab("섹션")).toHaveAttribute("aria-selected", "true");
+    expect(tab("섹션")).toHaveAttribute("tabindex", "0");
+    expect(tab("편집")).toHaveAttribute("aria-selected", "false");
+    expect(tab("편집")).toHaveAttribute("tabindex", "-1");
+    const panel = screen.getByRole("tabpanel", { name: "섹션" });
+    expect(tab("섹션")).toHaveAttribute("aria-controls", panel.id);
+    expect(panel).toHaveAttribute("tabindex", "0");
+  });
+
+  it("←/→ · Home/End = 포커스 이동과 동시에 활성(자동 활성), 양 끝 순환", async () => {
+    await open(390);
+    tab("섹션").focus();
+    act(() => void fireEvent.keyDown(tab("섹션"), { key: "ArrowRight" }));
+    expect(tab("편집")).toHaveAttribute("aria-selected", "true");
+    expect(document.activeElement).toBe(tab("편집"));
+    expect(screen.getByRole("tabpanel", { name: "편집" })).toBeVisible();
+    act(() => void fireEvent.keyDown(tab("편집"), { key: "End" }));
+    expect(document.activeElement).toBe(tab("검사"));
+    act(() => void fireEvent.keyDown(tab("검사"), { key: "ArrowRight" }));
+    expect(document.activeElement).toBe(tab("섹션"));
+    act(() => void fireEvent.keyDown(tab("섹션"), { key: "ArrowLeft" }));
+    expect(document.activeElement).toBe(tab("검사"));
+    act(() => void fireEvent.keyDown(tab("검사"), { key: "Home" }));
+    expect(tab("섹션")).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("탭을 바꿔도 선택 섹션 유지", async () => {
+    await open(390);
+    act(() => row(/^Services/).click());
+    act(() => tab("편집").click());
+    expect(h2("편집 · Services")).toBeInTheDocument();
+    act(() => tab("섹션").click());
+    expect(row(/^Services/)).toHaveAttribute("aria-current", "true");
+  });
+});

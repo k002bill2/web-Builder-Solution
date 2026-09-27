@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useRef, type KeyboardEvent, type ReactNode } from "react";
+import { rovingRowTargetIndex } from "../ds/rovingFocus";
 
 export type StudioTab = "sections" | "edit" | "gate";
 
@@ -11,6 +12,7 @@ export interface StudioTabItem {
 /**
  * <1024 탭(DS-2A-05 4.1 · 6.2 · E-AC-14) — `tablist` "편집 도구" + `tab` + `tabpanel`. DS에 Tabs가 없어 studio 청크 안 작은 부품(S-B6).
  * 패널은 모두 그려 두고 `hidden`으로 바꾼다 — 탭을 바꿔도 입력·스크롤이 남는다. `between` = 탭 목록 아래(편집 알림, 6.3).
+ * 키: ←/→ · Home/End(양 끝 순환, `rovingFocus.ts` 재사용 — ↑/↓는 쓰지 않는다) = 포커스 이동 + **자동 활성**(6.2).
  */
 export function StudioTabs({
   tabs,
@@ -23,9 +25,17 @@ export function StudioTabs({
   readonly onSelect: (tab: StudioTab) => void;
   readonly between?: ReactNode;
 }) {
+  const list = useRef<HTMLDivElement>(null);
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const next = rovingRowTargetIndex(event.key, tabs.findIndex((t) => t.id === selected), tabs.length);
+    if (next === null) return;
+    event.preventDefault();
+    onSelect(tabs[next]!.id);
+    list.current?.querySelectorAll<HTMLElement>('[role="tab"]')[next]?.focus();
+  };
   return (
     <div className="flex flex-col gap-2">
-      <div role="tablist" aria-label="편집 도구" className="flex border-b border-line-normal px-3">
+      <div ref={list} role="tablist" aria-label="편집 도구" onKeyDown={onKeyDown} className="flex border-b border-line-normal px-3">
         {tabs.map((tab) => {
           const active = tab.id === selected;
           return (

@@ -1,0 +1,49 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-shell/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/StudioShell.test.tsx (14 tests | 1 failed) 721ms
+   ❯ 탭 (S5 · E-AC-14 · SPEC 6.2) (3)
+     × ←/→ · Home/End = 포커스 이동과 동시에 활성(자동 활성), 양 끝 순환 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/StudioShell.test.tsx > 탭 (S5 · E-AC-14 · SPEC 6.2) > ←/→ · Home/End = 포커스 이동과 동시에 활성(자동 활성), 양 끝 순환
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-selected"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-selected") === "true"[22m
+
+Expected the element to have attribute:
+[32m  aria-selected="true"[39m
+Received:
+[31m  aria-selected="false"[39m
+ ❯ src/pages/StudioShell.test.tsx:194:23
+    192|     tab("섹션").focus();
+    193|     act(() => void fireEvent.keyDown(tab("섹션"), { key: "ArrowRight" })…
+    194|     expect(tab("편집")).toHaveAttribute("aria-selected", "true");
+       |                       ^
+    195|     expect(document.activeElement).toBe(tab("편집"));
+    196|     expect(screen.getByRole("tabpanel", { name: "편집" })).toBeVisible();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  21:36:55
+   Duration  2.22s (tests 34%, environment 28%, transform 24%, setup 8%, import 6%)
+

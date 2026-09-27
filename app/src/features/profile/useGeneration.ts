@@ -29,6 +29,8 @@ export function useGeneration(profileId: string, version: number, announce: (tex
   /** 이 마운트에서 요청·재시도로 잡을 따라가기 시작함 — 늦게 온 진입 findJob 결과는 버린다(폴러 1개) */
   const started = useRef(false);
   const stage = useRef("");
+  /** 이 화면에서 마지막으로 고른 안 — 선택 전에 떠난 조회 응답이 늦게 와도 선택을 지우지 않게 덮어 쓴다 */
+  const chosen = useRef<CandidateId | undefined>(undefined);
 
   const settle = useCallback((next: GenerationJob) => {
     watching.current = false;
@@ -44,7 +46,7 @@ export function useGeneration(profileId: string, version: number, announce: (tex
   const follow = useCallback(
     function follow(next: GenerationJob, owner: object) {
       if (token.current !== owner) return;
-      setJob(next);
+      setJob(chosen.current ? { ...next, selected: chosen.current } : next);
       const text = stageText(next);
       if ((watching.current || !isTerminal(next.state)) && text !== stage.current) {
         stage.current = text;
@@ -112,10 +114,13 @@ export function useGeneration(profileId: string, version: number, announce: (tex
     const done = await act(kind, work);
     if (!done) return;
     started.current = true;
-    if (kind === "request") emitProfileEvent({ name: "generation_requested", version });
-    setFresh(false);
-    watching.current = true;
-    stage.current = "";
+    // 멱등 요청이 이미 끝난 잡을 돌려주면 새로 만든 것이 아니다 — 요청 이벤트·단계 알림·완료 계측을 다시 내지 않는다
+    if (!isTerminal(done.next.state)) {
+      if (kind === "request") emitProfileEvent({ name: "generation_requested", version });
+      setFresh(false);
+      watching.current = true;
+      stage.current = "";
+    }
     follow(done.next, done.owner);
   };
 
@@ -124,7 +129,9 @@ export function useGeneration(profileId: string, version: number, announce: (tex
   const select = async (jobId: string, id: CandidateId) => {
     const done = await act("select", (r) => r.selectCandidate(jobId, id));
     if (!done) return;
-    setJob(done.next);
+    // 선택 응답은 선택만 반영한다 — 그 사이 조회가 진행·종료한 안 상태를 오래된 응답으로 되돌리지 않는다(폴러가 멈춘 뒤 "만드는 중" 고착 방지)
+    chosen.current = id;
+    setJob((current) => (current && current.jobId === done.next.jobId ? { ...current, selected: id } : done.next));
     announce(`${id}안을 선택했습니다`);
     emitProfileEvent({ name: "candidate_selected", id });
   };

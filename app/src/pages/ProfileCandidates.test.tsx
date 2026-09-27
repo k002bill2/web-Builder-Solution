@@ -207,6 +207,43 @@ describe("잡 조회 중 클릭 (findJob 지연 — HTTP 대비)", () => {
   });
 });
 
+describe("리뷰 회귀 (선택·조회 순서 · 멱등 요청)", () => {
+  it("선택 응답이 폴링 종료 뒤에 와도 안 상태를 되돌리지 않음 — 3안 유지 + 선택 유지", async () => {
+    const gate: { release?: () => void } = {};
+    const { region } = await open({ delay: (call) => (call.method === "selectCandidate" && call.phase === "response" ? new Promise<void>((r) => (gate.release = r)) : undefined) });
+    const u = user();
+    await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
+    await tick();
+    await u.click(await within(region).findByRole("button", { name: "A안 선택" }));
+    await waitFor(() => expect(gate.release).toBeDefined());
+    for (let i = 0; i < 2; i += 1) await tick();
+    await within(region).findByRole("table", { name: "3안 비교" });
+    await act(async () => gate.release!());
+    expect(await within(region).findByRole("button", { name: "A안 선택", pressed: true })).toBeInTheDocument();
+    for (let i = 0; i < 2; i += 1) await tick();
+    expect(within(region).getByRole("table", { name: "3안 비교" })).toBeInTheDocument();
+    expect(within(region).queryByText(/만드는 중/)).not.toBeInTheDocument();
+    expect(within(region).getByRole("button", { name: "A안으로 편집 시작" })).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("잡 조회 중 누른 요청이 이미 끝난 잡을 돌려받으면 요청·완료 계측과 완료 알림을 다시 내지 않음", async () => {
+    const gate: { release?: () => void } = {};
+    const { region, gen } = await open({ delay: (call) => (call.method === "findJob" && call.phase === "request" && call.seq === 1 ? new Promise<void>((r) => (gate.release = r)) : undefined) });
+    await waitFor(() => expect(gate.release).toBeDefined());
+    // 다른 탭이 같은 버전 잡을 끝까지 만든 상태
+    const { jobId } = await gen.requestGeneration("profile-1", 1);
+    for (let i = 0; i < 3; i += 1) await gen.getJob(jobId);
+    events.length = 0;
+    const u = user();
+    await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
+    await within(region).findByRole("table", { name: "3안 비교" });
+    await act(async () => gate.release!());
+    await tick();
+    expect(events).toEqual([]);
+    expect(status()).not.toHaveTextContent("3안을 만들었습니다");
+  });
+});
+
 describe("번들 분류 근거 (check-bundle-size /profile afterAction memoryGenerate)", () => {
   it("진입 findJob·폴링·선택은 계산 청크 요청 0 — '3안 만들기' 클릭에서만 1회, 기존 잡 재진입도 0", async () => {
     const { region, router } = await open();

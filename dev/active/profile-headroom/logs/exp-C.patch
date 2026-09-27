@@ -1,0 +1,36 @@
+diff --git a/app/scripts/check-bundle-size.mjs b/app/scripts/check-bundle-size.mjs
+index 452557d..61c1368 100644
+--- a/app/scripts/check-bundle-size.mjs
++++ b/app/scripts/check-bundle-size.mjs
+@@ -27,7 +27,7 @@ const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
+ /** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처) — 모든 시나리오에 자동 */
+ const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
+ /** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
+-const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"];
++const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/data/memoryCompareBoardRepository.ts", "src/fixtures/referenceComparisons.ts"];
+ /**
+  * 조작 뒤 — /compare:
+  *  - P-S25 판정·목록(carryOverPanel): carryOverLoader ← CarryOverCaption load ← 펼침(details onToggle → open) + 초안 ready(Hero 선택) 둘 다일 때
+diff --git a/app/src/data/memoryStudio.ts b/app/src/data/memoryStudio.ts
+index bb23059..c8abedf 100644
+--- a/app/src/data/memoryStudio.ts
++++ b/app/src/data/memoryStudio.ts
+@@ -3,7 +3,8 @@
+  * 테스트는 renderApp이 렌더마다 부른다 — 모듈 싱글턴이 아니라서 id가 늘 `profile-1`부터다.
+  */
+ import type { CompareBoardRepository } from "./compareBoardRepository";
+-import { createMemoryCompareBoardRepository, type MemoryCompareBoardOptions } from "./memoryCompareBoardRepository";
++import type { MemoryCompareBoardOptions } from "./memoryCompareBoardRepository";
++import { createDeferredCompareBoardRepository } from "./deferredCompareBoardRepository";
+ import { createMemoryGenerationRepository, type MemoryGenerationOptions } from "./memoryGenerationRepository";
+ import { createMemoryProfileRepository, type MemoryProfileOptions } from "./memoryProfileRepository";
+ import type { GenerationRepository } from "./generationRepository";
+@@ -32,7 +33,7 @@ export function createMemoryStudio(
+ ): MemoryStudio {
+   const store = createStudioStore();
+   return {
+-    board: createMemoryCompareBoardRepository({ ...board, store }),
++    board: createDeferredCompareBoardRepository(async () => (await import("./memoryCompareBoardRepository")).createMemoryCompareBoardRepository({ ...board, store })),
+     profiles: createMemoryProfileRepository({ ...profiles, store }),
+     generations: createMemoryGenerationRepository({ ...generations, store }),
+     projects: createSharedLoader(async () => (await import("./memoryProjectRepository")).createMemoryProjectRepository({ store, ...(board.now && { now: board.now }) })),

@@ -93,6 +93,29 @@ describe("3안 그리드 차이 보존 (Q-21 후속 · SPEC r4.6 A3-Q3)", () => 
     });
     expect(services).toEqual([["cards-3"], ["cards-2"], ["cards-masonry"]]);
   });
+
+  it("masonryFirst 구조안(portfolio가 첫 그리드 섹션) → 3안 portfolio 변형이 서로 다르다 (r4.7 A3-Q6 · composeCandidates.test 134-135행)", () => {
+    const ids = ["ref-a", "ref-b", "ref-c", "ref-d", "ref-e", "ref-f"];
+    const draft = buildProfileDraft(boardOf(ids, { hero: "ref-a" }), resultsOf(ids), SECTION_LIBRARY.version);
+    if (draft.status !== "ready") throw new Error("Hero 선택이 필요합니다");
+    const e = (type: PlannedSection["type"], variant: string) => ({ type, variant });
+    const profile = {
+      ...draft.profile,
+      seed: "00000002",
+      section_plan: [e("header", "transparent"), e("hero", "fullbleed-left"), e("portfolio", "masonry"), e("services", "grid-3"), e("about", "split"), e("contact", "form"), e("footer", "biz-extended")],
+    };
+    const plans = composeCandidates({ profile, purpose: "none", contrast: "aa", library: SECTION_LIBRARY, generatorVersion: GENERATOR_VERSION }).map((r) => {
+      if (r.status !== "succeeded") throw new Error(`${r.id}안 실패`);
+      return r.plan;
+    });
+    expect(plans.map((p) => p.axes.grid)).toEqual(["masonry", "grid-3", "grid-2"]);
+    const portfolio = plans.map((p) => {
+      const made = writeStartDoc(input(p.sections));
+      if (!made.ok) throw new Error(made.alert);
+      return made.doc.sections.filter((x) => x.type === "portfolio").map((x) => x.variant);
+    });
+    expect(portfolio).toEqual([["masonry"], ["grid-3"], ["grid-2"]]);
+  });
 });
 
 describe("saveDoc 모양 검사 (8.3 판정 1 — L4 검증 함수)", () => {

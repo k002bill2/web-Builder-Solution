@@ -33,7 +33,7 @@ describe("변형 매핑 표 가드 (SPEC 8.2.1 · VARIANT-MAP)", () => {
     expect(mapVariant("services", "grid-2")).toBe("cards-2");
     expect(mapVariant("services", "masonry")).toBe("cards-masonry");
     expect(mapVariant("portfolio", "masonry")).toBe("masonry");
-    expect(mapVariant("portfolio", "grid-2")).toBe("grid-3");
+    expect(mapVariant("portfolio", "grid-2")).toBe("grid-2"); // r4.7 A3-Q6 — 엔진 변형 추가로 그대로(이전 grid-3)
     expect(mapVariant("contact", "order-form")).toBe("form");
     expect(mapVariant("contact", "booking")).toBe("booking");
     expect(mapVariant("footer", "minimal-biz")).toBe("minimal-biz");

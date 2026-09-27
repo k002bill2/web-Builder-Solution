@@ -24,12 +24,12 @@ describe("섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1)", () => {
     }
   });
 
-  it("본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2)", () => {
+  it("본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2) + r4.7 A3-Q6 portfolio/grid-2", () => {
     expect(BODY).toHaveLength(9);
     expect(Object.fromEntries(BODY.map((type) => [type, SECTION_TYPE_INFO[type].variants]))).toEqual({
       about: ["story", "text"],
       services: ["cards-3", "list", "cards-2", "cards-masonry"],
-      portfolio: ["grid-3", "masonry"],
+      portfolio: ["grid-3", "masonry", "grid-2"],
       statistics: ["stats-3"],
       testimonials: ["quotes-2"],
       pricing: ["tiers-2"],
@@ -48,7 +48,10 @@ describe("섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1)", () => {
     expect(keys("services", "cards-2")).toEqual(cards3.filter((k) => !k.startsWith("card3")));
     expect(keys("services", "cards-masonry")).toEqual(cards3);
     expect(keys("portfolio", "masonry")).toEqual(keys("portfolio", "grid-3"));
-    for (const [type, variant, from] of [["services", "cards-2", "cards-3"], ["services", "cards-masonry", "cards-3"], ["portfolio", "masonry", "grid-3"]] as const) {
+    // r4.7 A3-Q6 — 이미지 2열 = grid-3 스키마에서 3번째 이미지를 뺀 것(cards-2 선례)
+    expect(getSectionDefinition("portfolio", "grid-2")?.label).toBe("이미지 2열");
+    expect(keys("portfolio", "grid-2")).toEqual(keys("portfolio", "grid-3")!.filter((k) => k !== "image3"));
+    for (const [type, variant, from] of [["services", "cards-2", "cards-3"], ["services", "cards-masonry", "cards-3"], ["portfolio", "masonry", "grid-3"], ["portfolio", "grid-2", "grid-3"]] as const) {
       expect(getSectionDefinition(type, variant)?.constraints.maxMotion, variant).toBe(getSectionDefinition(type, from)?.constraints.maxMotion);
     }
   });

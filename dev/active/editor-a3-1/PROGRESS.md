@@ -7,7 +7,7 @@
 ## 체크리스트
 - [x] K0 기준 build (`logs/k0-build.txt`) · 수신 기록
 - [x] K1 목적 파생 `features/studio/docPurpose.ts` (RED d16b7bb · GREEN)
-- [ ] K2 연산 어댑터 `docOps.ts` + `undoStack.ts`
+- [x] K2 연산 어댑터 `docOps.ts` + `undoStack.ts` (RED 88c6193 · GREEN)
 - [ ] K3 위로·아래로 (E-AC-17)
 - [ ] K4 삭제·되돌리기 (E-AC-19)
 - [ ] K5 섹션 추가 대화상자 (E-AC-18)

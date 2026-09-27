@@ -21,7 +21,21 @@ export interface UndoStack {
 }
 
 export function createUndoStack(limit = UNDO_LIMIT): UndoStack {
-  throw new Error(`K2 RED ${limit}`);
+  let entries: readonly UndoEntry[] = [];
+  return {
+    size: () => entries.length,
+    push: (entry) => {
+      entries = [...entries, entry].slice(-limit);
+    },
+    pop: () => {
+      const last = entries.at(-1);
+      entries = entries.slice(0, -1);
+      return last;
+    },
+    clear: () => {
+      entries = [];
+    },
+  };
 }
 
 /** 편집기가 열려 있는 동안만 유지 — 언마운트(앱 안 이동 포함) 때 비운다(5.14 r1) */

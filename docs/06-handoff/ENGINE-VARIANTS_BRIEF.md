@@ -1,4 +1,4 @@
-# ENGINE-VARIANTS — 엔진 services·portfolio 변형 추가 (a3 선행, Q-21 후속) · 초안
+# ENGINE-VARIANTS — 엔진 services·portfolio 변형 추가 (a3 선행, Q-21 후속)
 
 - 책임 Developer / 실행 Orca + Claude Code · 보고 Jarvis · 포트 4339 · `--max-turns` 45 · 32턴부터 REPORT 우선
 - 서브에이전트 분할: 불필요
@@ -6,7 +6,7 @@
 ## 목적
 SPEC r4.1 Q-21 후속: 3안(2a-04c)이 그리드 축(`GRID_LADDER = grid-3 · grid-2 · masonry`, `domain/composeCandidates.ts:30`)만 다를 때 문서에서 셋 다 `services/cards-3`이 되어 차이가 사라진다(VARIANT-MAP 94행). 엔진에 변형을 더해 **편집기에서도 3안 차이를 보존**한다.
 
-## 범위 (결정 A3-Q3 결과에 따름 — 추천안 기준)
+## 범위 (SPEC r4.6 A3-Q3 A 확정)
 1. `engine/sections/bodySections.ts`에 변형 3개: `services/cards-2`("카드 2열") · `services/cards-masonry`("카드 벽돌형") · `portfolio/masonry`("이미지 벽돌형"). 슬롯은 기존 `cards-3`·`grid-3` 스키마 재사용 규칙(카드 2개면 card(1..2)), `maxMotion` 기존 값 준용. 레지스트리 테스트(키 고유·기본 글자 ≤ 상한) 통과.
 2. `data/engineVariantMap.ts` 매핑 갱신: VARIANT-MAP 31·32행(`services/grid-2`→`cards-2`, `services/masonry`→`cards-masonry`), 19행(`portfolio/masonry`→`portfolio/masonry` 같음), 33행 `portfolio/grid-2`는 현행 유지(도달 0). 바뀐 쌍 알림(8.2.1 (a))은 표에서 자동 파생 — 알림 문구 테스트 기대값 갱신.
 3. 캔버스(`components/studio/StructureCanvas.tsx`)가 새 변형을 슬롯 목록대로 그리는지 테스트 1건(그리기 로직 변경이 필요하면 최소).
@@ -26,3 +26,6 @@ SPEC r4.1 Q-21 후속: 3안(2a-04c)이 그리드 축(`GRID_LADDER = grid-3 · gr
 - 마지막에 전체 vitest 3회(`logs/final-full-x3.txt`, load 기록). Codex `review --scope branch --base <시작 커밋>` 1회(턴 남을 때만).
 - 서브에이전트 금지(429 이력). 로컬 커밋만. push·병합·삭제 금지. 서버는 127.0.0.1·지정 포트·자기 PID만 종료.
 - REPORT(`dev/active/<레인>/REPORT.md`): 커밋 표 · AC 판정(E-AC 번호별 PASS/PARTIAL/BLOCKED + 근거 테스트) · 번들 표(체크포인트별) · SPEC 차이(ADR-003) · 남은 위험.
+
+## 확정
+- SPEC r4.6(영환님 "★A 전부", 2026-09-27). 시작 커밋 = 이 브리프가 들어 있는 main.

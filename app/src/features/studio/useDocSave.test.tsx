@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryCompareBoardRepository } from "../../data/memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "../../data/memoryGenerationRepository";
 import { createMemoryProjectRepository } from "../../data/memoryProjectRepository";
-import { ProjectRepositoryError, type ProjectPersistence, type ProjectRepository } from "../../data/projectRepository";
+import { ProjectRepositoryError, type ConflictChoice, type ProjectPersistence, type ProjectRepository } from "../../data/projectRepository";
 import { createStudioStore } from "../../data/studioStore";
 import { isTerminal } from "../../domain/generation";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
@@ -40,6 +40,10 @@ function mockRepo(initial: PageDoc, persistence: ProjectPersistence = "memory") 
       }
       if (expectedRevision !== stored.revision) throw new ProjectRepositoryError("STALE_DOC", "stale", { doc: stored });
       stored = { ...doc, revision: stored.revision + 1 };
+      return stored;
+    }),
+    resolveConflict: vi.fn(async (_projectId: string, choice: ConflictChoice, myDoc: PageDoc) => {
+      stored = choice === "mine" ? { ...myDoc, revision: stored.revision + 1 } : stored;
       return stored;
     }),
   };
@@ -186,5 +190,75 @@ describe("useDocSave — 떠나기 경고 (E-AC-12 · server 목)", () => {
     const mem = renderDocSave(mockRepo(doc, "memory").repo, doc);
     expect(unloadBlocked()).toBe(true);
     mem.unmount();
+  });
+});
+
+describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
+  async function staleSetup() {
+    const doc = sampleDoc();
+    const m = mockRepo(doc);
+    const hook = renderDocSave(m.repo, doc);
+    const theirs = m.bumpElsewhere("다른 탭 편집");
+    act(() => hook.result.current.edit(titled(doc, "내 편집")));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    return { doc, m, hook, theirs };
+  }
+
+  it("화면 문서 = 내 편집 · conflict.latest = 최신 · 고르기 전 자동 저장 0회", async () => {
+    const { m, hook, theirs } = await staleSetup();
+    const { result } = hook;
+    expect(result.current.state.phase).toBe("stale");
+    expect(result.current.doc.meta.title).toBe("내 편집");
+    expect(result.current.conflict?.latest).toEqual(theirs);
+    act(() => result.current.edit(titled(result.current.doc, "내 편집 2")));
+    act(() => result.current.retry());
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
+  });
+
+  it("\"내 편집으로 저장\" → resolveConflict(mine, 내 최신 문서) 1회 · 추가 saveDoc 0 · 다음 편집은 새 revision으로 저장", async () => {
+    const { m, hook } = await staleSetup();
+    const { result } = hook;
+    act(() => result.current.edit(titled(result.current.doc, "내 편집 2")));
+    await act(() => result.current.resolve("mine"));
+    expect(m.repo.resolveConflict).toHaveBeenCalledTimes(1);
+    const [, choice, mine] = vi.mocked(m.repo.resolveConflict).mock.calls[0]!;
+    expect(choice).toBe("mine");
+    expect(mine.meta.title).toBe("내 편집 2");
+    expect(mine.hash).toBe(hashDoc(mine));
+    expect(result.current.state.phase).toBe("saved");
+    expect(result.current.conflict).toBeUndefined();
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
+    act(() => result.current.edit(titled(result.current.doc, "해결 뒤")));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    expect(m.calls.at(-1)!.expectedRevision).toBe(5);
+    expect(result.current.state.phase).toBe("saved");
+  });
+
+  it("\"다른 편집 불러오기\" → 화면 문서 = 최신 · 내 문서 저장 0회", async () => {
+    const { m, hook, theirs } = await staleSetup();
+    const { result } = hook;
+    await act(() => result.current.resolve("theirs"));
+    expect(result.current.doc).toEqual(theirs);
+    expect(result.current.state.phase).toBe("saved");
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
+    act(() => result.current.edit(titled(result.current.doc, "최신 위에 편집")));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    expect(m.calls.at(-1)!.expectedRevision).toBe(theirs.revision);
+    expect(result.current.state.phase).toBe("saved");
+  });
+
+  it("해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 STALE 그대로(자동 저장 0)", async () => {
+    const { m, hook } = await staleSetup();
+    const { result } = hook;
+    vi.mocked(m.repo.resolveConflict).mockRejectedValueOnce(new ProjectRepositoryError("NOT_FOUND", "project-1"));
+    await act(async () => {
+      await expect(result.current.resolve("mine")).rejects.toMatchObject({ code: "NOT_FOUND" });
+    });
+    expect(result.current.state.phase).toBe("stale");
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
   });
 });

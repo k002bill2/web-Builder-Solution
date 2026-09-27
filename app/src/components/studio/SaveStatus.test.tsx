@@ -98,7 +98,7 @@ describe("SaveStatus + useDocSave (E-AC-09 흐름)", () => {
       return { ...next, revision };
     });
     const onAnnounce = vi.fn();
-    render(<Harness repo={{ persistence: "memory", saveDoc }} initialDoc={doc} onAnnounce={onAnnounce} />);
+    render(<Harness repo={{ persistence: "memory", saveDoc, resolveConflict: vi.fn() }} initialDoc={doc} onAnnounce={onAnnounce} />);
     const input = screen.getByRole("textbox", { name: "제목" });
     const type = (value: string) => fireEvent.change(input, { target: { value } });
     type("하나");

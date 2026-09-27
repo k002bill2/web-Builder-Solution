@@ -11,7 +11,8 @@
 - [x] F1 필드 카운터 E-AC-06 (`fieldCounter` + `FieldEditor`) — RED `logs/f1-red.txt`(모듈 없음) → GREEN 18/18 `logs/f1-green.txt` · build exit 0. 결정: 상한·권장 동시 초과 = block 문장 하나만 · HTML `maxLength`=상한+10(UTF-16 단위라 이모지는 코드 포인트보다 일찍 멈춤 — 위험 목록)
 - [x] F2 자동 저장 훅 E-AC-07 (`useDocSave`) — `useAutosaveScheduler` 그대로 사용(수정 0). RED `logs/f2-red.txt` → GREEN 7/7 `logs/f2-green.txt`(2초·maxWait·저장 중 3변경 → 1회·반환 revision 사용·실제 메모리 저장소 연속 2회·E-AC-12 server 실패/STALE 등록) · build exit 0
 - [x] F3 저장 상태 E-AC-08·09 (`SaveStatus`) — `saveStatusText`·`saveAnnouncement` 재사용(수정 0). RED `logs/f3-red.txt` → GREEN 5/5 `logs/f3-green.txt` · build exit 0. 결정: 자체 `role=status` 없음(편집 알림 영역 1개 = S 소유, E-AC-33) → status 문장은 `onAnnounce` 콜백 · `role=alert`는 SaveStatus가 가진다(6.3 "저장 실패" 행, STALE 문장 포함)
-- [ ] F4 충돌 E-AC-10 (`ConflictCallout`)
+- [x] F4 충돌 E-AC-10 (`ConflictCallout` + `useDocSave.resolve`) — RED `logs/f4-red.txt`(5 실패) → GREEN 73/73(studio 폴더) `logs/f4-green.txt` · build exit 0. `useAutosaveScheduler`에 `settle()` 추가(기존 테스트 단언 불변 — 필요 사유: `resume()`은 미저장 변경을 즉시 flush해 "불러오기" 뒤 내 문서를 저장하고 "내 편집" 뒤 한 번 더 저장함). 목 저장소 검증: 고르기 전 saveDoc 0 · mine = resolveConflict 1회·추가 저장 0 · theirs = 최신 표시·내 문서 저장 0
+  - BLOCKED(스냅샷 부분): 메모리 저장소 `resolveConflict`·`createSnapshot` = `missing`(NOT_FOUND, `data/memoryProjectRepository.ts:99-101`). "auto·conflict 스냅샷 1개" 검증은 저장소 구현 필요 — 스냅샷은 a4 범위(초안 2절 "제외(a3·a4): … 스냅샷", SPEC 13.1 a4 행) · 브리프 지시대로 새로 만들지 않음. 화면은 해결 거부 시 STALE 유지(테스트 있음)
 - [ ] F5 떠남 가드 E-AC-12
 - [ ] F6 페이지 정보 필드 (`PageInfoFields`)
 - [ ] 전체 vitest 1회 (`logs/full-vitest.txt`)
@@ -25,3 +26,4 @@
 | F1 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 새 파일 미연결 — ±0.01은 CSS 해시(새 유틸리티 클래스) 파일명 변화. /profile 여유 0.30 |
 | F2 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 미연결 — 변화 0 |
 | F3 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 미연결 — 변화 0 |
+| F4 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 스케줄러 수정(settle) — 변화 0 |

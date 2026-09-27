@@ -6,10 +6,10 @@
 ## 0. 판정 요약
 | 영역 | 판정 | 근거 |
 |---|---|---|
-| 렌더(실제 작동) | **통과** | 브라우저 127.0.0.1:4337 catalog → compare → v1 확정 → 3안 만들기(생성 중 자리·알림) → 3안 + 비교 표 → B안 선택 → "B안으로 편집 시작" → `/studio`(시안 2a-05) — `logs/browser-flow-*.log`, `shots/` |
-| 번들 | **통과(여유 얇음)** | `/compare` 99.67 / 120.58 · `/profile` 99.46 / 124.56 (예산 100 / 125, 최소 여유 0.3 충족 — 3절) |
+| 렌더(실제 작동) | **통과** | 브라우저 127.0.0.1:4337 catalog → compare → v1 확정 → 3안 만들기(생성 중 자리·알림) → 3안 + 비교 표 → B안 선택 → "B안으로 편집 시작" → `/studio`(시안 2a-05) — 1차 `logs/browser-flow-1.log` · 수정 확인 `logs/browser-flow-2-fixcheck.log`(둘 다 exit 0), `shots/`(수정 확인 회차 캡처로 덮어씀) |
+| 번들 | **통과(여유 얇음)** | 최종 `logs/gate-build.log`: `/compare` 99.67 / 120.59 · `/profile` 99.47 / 124.58 (예산 100 / 125, 최소 여유 0.3 충족: 0.33 / 0.42 — 3절) |
 | 비주얼 | **통과(자체 판정)** | 1280 2단 · 1024/768 한 열 + 3카드 + 비교 표 · 390/320 한 열·표 없음, 가로 넘침 0(5폭) — 5절 차이 표 |
-| 4게이트 | 4절 참고 | typecheck · lint · vitest 전체 1회 · build 원본 로그 + exit |
+| 4게이트 | **통과(1건 표적 재현 후)** | typecheck exit 0 · lint exit 0 · build exit 0 · vitest 전체 1회 89파일/1089개 중 1 실패(`chunkRetryWiring` 로더 6개 고정 단언 — 새 조작 뒤 로더 추가) → 단언 갱신 후 표적 재실행 1/1 통과 (4절) |
 | Codex review | **BLOCKED** | 사용량 한도(“try again at 3:26 PM”) — `logs/codex-review-1.raw.log`. 대체로 읽기 전용 code-reviewer 서브에이전트 검토(Codex 아님) |
 
 ## 1. 완성한 실제 화면 (`/profile/:id` 3안 영역, 자리표시 교체)
@@ -34,8 +34,9 @@
 | 시점 | 공통 | `/compare` | `/profile` | `/catalog` | `/references/:id` | `/studio` |
 |---|---|---|---|---|---|---|
 | 기준(`logs/baseline-build.log`) | 89.06 | 99.59 / 118.99 | 99.39 / 118.97 | 99.36 / 101.74 | 96.71 / 99.09 | 89.50 / 91.88 |
-| 최종(4절 build 로그) | 89.14 | 99.67 / 120.58 | 99.46 / 124.56 | 99.45 / 101.83 | 96.80 / 99.18 | 89.60 / 91.98 |
-- 조작 뒤(예산 밖): `/profile` `memoryGenerate`(composeCandidates·lintPlan) **+4.63KB** — "3안 만들기"·"다시 시도" onClick에서만 로드. 번들 분류 근거 테스트(`ProfileCandidates.test` "번들 분류 근거")가 진입 findJob·폴링·선택·재진입에서 요청 0을 확인
+| 최종(`logs/gate-build.log`) | 89.14 | 99.67 / 120.59 | 99.47 / 124.58 | 99.43 / 101.81 | 96.77 / 99.16 | 89.57 / 91.96 |
+| 증감 | +0.08 | +0.08 / +1.60 | +0.08 / +5.61 | +0.07 / +0.07 | +0.06 / +0.07 | +0.07 / +0.08 |
+- 조작 뒤(예산 밖): `/profile` `memoryGenerate`(composeCandidates·lintPlan·결과 모양 검증) **+4.74KB** — "3안 만들기"·"다시 시도" onClick에서만 로드. 번들 분류 근거 테스트(`ProfileCandidates.test` "번들 분류 근거")가 진입 findJob·폴링·선택·재진입에서 요청 0을 확인
 - 자동(진입 직후 합계 포함): 3안 UI(카드·표·와이어프레임·폴링 훅)는 `profileEngine` 청크, 잡 조회·선택은 `memoryStudio`의 `memoryGenerationRepository`(store 조회만)
 - 공통 증가 +0.08: 생성 저장소 **로더 핸들 1개**(컨텍스트 필드 + `main.tsx` 화살표 함수) — 위임 래퍼를 공통에 두지 않음(2a-05 S-B3 방식)
 - 실측으로 막은 숨은 증가 2건:
@@ -44,7 +45,12 @@
 - 예산 상수·분류 규칙 무변경. `check-bundle-size.mjs`는 `/profile` afterAction에 `memoryGenerate` 1줄 + 호출 지점 주석만 추가
 
 ## 4. 검증
-- 4게이트(전체 suite는 이 레인 1회): 아래 "최종 게이트" 참고
+- 4게이트(전체 suite는 이 레인 1회, 원본 로그 + 마지막 줄 exit):
+  - `npm run typecheck` → `logs/gate-typecheck.log` exit 0 (단언 갱신 뒤 `logs/gate-typecheck-final.log` exit 0)
+  - `npm run lint` → `logs/gate-lint.log` exit 0
+  - `npx vitest --run` → `logs/gate-vitest.log` exit 1 — **89파일 / 1089개 중 1 실패**: `src/data/chunkRetryWiring.test.ts` "싼 로더 6개…"(조작 뒤 로더 목록을 6개로 고정). 새 `loadGenerate`도 `retryableImport`로 싸여 있어 가드 의도(조작 뒤 로더는 모두 재시도 래퍼)는 지켜짐 → 기대 목록에 `composeFor` 추가(7개) → 표적 재실행 `logs/gate-vitest-rerun-chunkRetryWiring.log` 1/1 exit 0. 나머지 1088개 통과
+  - `npm run build`(tsc + vite build + 번들 검사) → `logs/gate-build.log` exit 0
+  - 테스트 수: 기준 84파일/997개 → 89파일/1089개(+5파일 · +92개 = 컴포저 74 · 저장소 10 · 화면 7 · 결과 모양 1)
 - Red-Green: `logs/red-green-2-idempotency.log`(멱등 제거 → 2 실패), `logs/red-green-1-late-response.log`(늦은 응답 가드 제거 → 1 실패, 1차는 테스트가 공회전해 통과 → 테스트 보강 후 실패 확인), 복원 후 통과. 컴포저 RED 74 실패 → GREEN 74(서브에이전트 A)
 - 브라우저: `logs/flow.mjs`(ego-browser, TaskSpace 1개, 새로고침 없음) → `logs/browser-flow-*.log`, `shots/flow.json`, 캡처 `shots/{1280,1024,768,390,320}-04-selected.png`·`1280-01-before`·`1280-02-generating`·`1280-03-generated`·`1280-05-studio`
   - 기능: 생성 중 `aria-busy=true` · 자리 3칸 "n/3 완료" · 알림 "3안을 만드는 중입니다" → "3안을 만들었습니다" · B안 `aria-pressed=true` · `/studio` h1 "편집기" + "시안 2a-05"
@@ -75,8 +81,15 @@
 
 ## 7. 변경된 기존 단언 · 테스트 수
 - `pages/ProfileAdjust.test.tsx` "1280 2단…": `within(3안).queryByRole("button")` 없음 → "3안 만들기 (v1)" 버튼 있음(자리표시가 실제 영역이 됨). 배치·순서 단언은 그대로
-- 추가: `domain/composeCandidates.test.ts`·`domain/lintPlan.test.ts`(74) · `data/memoryGenerationRepository.test.ts`(10) · `pages/ProfileCandidates.test.tsx`(7)
+- `data/chunkRetryWiring.test.ts` "싼 로더 6개…" → "7개…": 기대 목록에 `composeFor`(3안 계산 본문) 추가 — 새 조작 뒤 로더도 재시도 래퍼로 싼다는 가드 의도 유지
+- 추가: `domain/composeCandidates.test.ts`·`domain/lintPlan.test.ts`(74) · `data/memoryGenerationRepository.test.ts`(10) · `pages/ProfileCandidates.test.tsx`(7) · `data/memoryGenerate.test.ts`(1)
 
 ## 8. 서브에이전트 · ultracode
 - ultracode: 세션 신호("Ultracode is on" system-reminder) 있음 — 프롬프트 키워드로도 주입될 수 있어 `--effort ultracode`에 귀속 불가. `claude --help`의 `--effort` 목록(low~max)에 없음 → CLI 공식 지원 미확인. 실행 인자에는 `--effort ultracode`가 있었고 거부되지 않음
-- spawn 2개(동시 최대 2): A = Workflow 1 agent(worktree, 컴포저 TDD) · B = code-reviewer(읽기 전용, UI 수용 기준 검토). 공유 store·ProfilePage 통합·저장소·UI는 메인
+- spawn 2개(동시 최대 2): 공유 store·ProfilePage 통합·저장소·UI는 메인
+  - A = Workflow `wf_fcc7d984-d6a` 1 agent(worktree `wf_fcc7d984-d6a-1`, 삭제 금지라 남겨 둠) — composeCandidates·lintPlan TDD, `bb9d758` → cherry-pick `81bfe9b`. RED 74 실패 → GREEN 74, 해석 3건(5절 U-3·U-4, 없는 Footer 변형 = R-12)
+  - B = code-reviewer(읽기 전용) — UI 수용 기준 검토, Major 1 · Minor 2:
+    1. [Major] 생성기 결과 개수·순서 미검증 시 잡이 "만드는 중"에 고착 → **반영**: `memoryGenerate`에서 A·B·C 검증, 어긋나면 `SCHEMA_INVALID`·잡 0(`memoryGenerate.test`)
+    2. [Minor] 잡 조회 중(null) 빈 구간 → **반영**: "3안 만들기" 자리 유지(요청은 멱등)
+    3. [Minor] 재시도 버튼이 안별이 아니라 통합("B·C안 다시 시도") → **유지**: `retryFailed`가 재시도 가능한 실패 안만 다시 계산하므로 결과 동일, 버튼 이름이 대상 안을 모두 밝힌다
+- 자체 발견: 늦은 응답 테스트가 지연 지점 도달 전에 화면을 옮겨 공회전 → 1차 Red-Green에서 발견·보강(4절)

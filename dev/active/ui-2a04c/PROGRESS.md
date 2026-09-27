@@ -27,13 +27,13 @@
 - [x] GenerationRepository request/find/get/retry/select + 공유 store 확장 + 테스트 (메인, `4bdc68f`, Red-Green 2건 logs/)
 - [x] 3안 UI (P-S17~24 · P-AC-21~31) + ProfilePage 통합 + `/studio` 자리표시 2a-05 정정 (메인, `4bdc68f`)
 - [x] 번들 실측 (배선 직후 · UI 직후 · 컴포저 병합 직후 — 공유 청크 분리 2건 발견·해소, REPORT 3절)
-- [ ] 4게이트: typecheck · lint · vitest(전체 1회) · build — 원본 로그+exit
-- [ ] 브라우저 127.0.0.1:4337 catalog→compare→profile→3안→선택→studio, 1280/768/390/320 캡처
-- [ ] Codex review 1회(최대 3)
-- [ ] REPORT.md 커밋, 서버 PID 종료 + lsof 증거
+- [x] 4게이트: typecheck 0 · lint 0 · vitest 전체 1회(1089 중 1 실패 → 단언 갱신 → 표적 1/1) · build 0 — `logs/gate-*.log`
+- [x] 브라우저 127.0.0.1:4337 catalog→compare→profile→3안→선택→studio, 1280/1024/768/390/320 캡처 + 수정 확인 1회(`logs/browser-flow-*.log`, `shots/`)
+- [ ] Codex review 1회(최대 3) — BLOCKED: Codex 사용량 한도("try again at 3:26 PM", `logs/codex-review-1.raw.log`). 대체 = 읽기 전용 code-reviewer 검토(Codex 아님)
+- [x] REPORT.md 커밋, 서버 PID 종료 + lsof 증거(`logs/server-stop.log`)
 
 ## 서브에이전트 기록
 | # | 도구 | 분담 | 격리 | 결과 |
 |---|---|---|---|---|
 | A | Workflow `wf_fcc7d984-d6a` 1 agent | composeCandidates·lintPlan + 테스트(TDD) | worktree `wf_fcc7d984-d6a-1` | `bb9d758` 4파일, RED 74 실패 → GREEN 74, 해석 3건(본문에 Hero 포함 · lint message에 ID 없음 · 없는 Footer 변형 R-12) |
-| B | Agent code-reviewer(읽기 전용) | UI 수용 기준 검토(P-S17~24·5.1~5.4) | 없음(읽기 전용) | 진행 중 |
+| B | Agent code-reviewer(읽기 전용) | UI 수용 기준 검토(P-S17~24·5.1~5.4) | 없음(읽기 전용) | Major 1·Minor 2 → 2건 반영(`ea7f461`), 1건 유지(REPORT 8절) |

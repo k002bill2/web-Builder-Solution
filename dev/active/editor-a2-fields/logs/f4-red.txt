@@ -1,0 +1,120 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app
+
+ ❯ src/components/studio/ConflictCallout.test.tsx (0 test)
+ ❯ src/features/studio/useAutosaveScheduler.test.ts (22 tests | 2 failed) 21ms
+   ❯ createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4) (2)
+     × STALE 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장 3ms
+     × dispose 뒤 settle은 아무것도 하지 않는다 1ms
+ ❯ src/features/studio/useDocSave.test.tsx (11 tests | 3 failed) 226ms
+   ❯ useDocSave — STALE_DOC 충돌 (E-AC-10) (4)
+     × "내 편집으로 저장" → resolveConflict(mine, 내 최신 문서) 1회 · 추가 saveDoc 0 · 다음 편집은 새 revision으로 저장 4ms
+     × "다른 편집 불러오기" → 화면 문서 = 최신 · 내 문서 저장 0회 2ms
+     × 해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 STALE 그대로(자동 저장 0) 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ConflictCallout.test.tsx [ src/components/studio/ConflictCallout.test.tsx ]
+Error: Failed to resolve import "./ConflictCallout" from "src/components/studio/ConflictCallout.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/studio/ConflictCallout.test.tsx:4:32
+  2  |  import userEvent from "@testing-library/user-event";
+  3  |  import { describe, expect, it, vi } from "vitest";
+  4  |  import { ConflictCallout } from "./ConflictCallout";
+     |                                   ^
+  5  |  var _jsxFileName = "/Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/stu...
+  6  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useAutosaveScheduler.test.ts > createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4) > STALE 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장
+TypeError: scheduler.settle is not a function
+ ❯ src/features/studio/useAutosaveScheduler.test.ts:357:15
+    355|     scheduler.change("b");
+    356|     expect(last().phase).toBe("stale");
+    357|     scheduler.settle();
+       |               ^
+    358|     expect(last()).toMatchObject({ phase: "saved" });
+    359|     expect(last().lastSavedAt).toBe(Date.now());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/features/studio/useAutosaveScheduler.test.ts > createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4) > dispose 뒤 settle은 아무것도 하지 않는다
+TypeError: scheduler.settle is not a function
+ ❯ src/features/studio/useAutosaveScheduler.test.ts:372:15
+    370|     const { scheduler, states } = setup(() => Promise.resolve());
+    371|     scheduler.dispose();
+    372|     scheduler.settle();
+       |               ^
+    373|     expect(states).toHaveLength(0);
+    374|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > "내 편집으로 저장" → resolveConflict(mine, 내 최신 문서) 1회 · 추가 saveDoc 0 · 다음 편집은 새 revision으로 저장
+TypeError: result.current.resolve is not a function
+ ❯ src/features/studio/useDocSave.test.tsx:223:36
+    221|     const { result } = hook;
+    222|     act(() => result.current.edit(titled(result.current.doc, "내 편집 2")…
+    223|     await act(() => result.current.resolve("mine"));
+       |                                    ^
+    224|     expect(m.repo.resolveConflict).toHaveBeenCalledTimes(1);
+    225|     const [, choice, mine] = vi.mocked(m.repo.resolveConflict).mock.ca…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSave.test.tsx:223:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > "다른 편집 불러오기" → 화면 문서 = 최신 · 내 문서 저장 0회
+TypeError: result.current.resolve is not a function
+ ❯ src/features/studio/useDocSave.test.tsx:242:36
+    240|     const { m, hook, theirs } = await staleSetup();
+    241|     const { result } = hook;
+    242|     await act(() => result.current.resolve("theirs"));
+       |                                    ^
+    243|     expect(result.current.doc).toEqual(theirs);
+    244|     expect(result.current.state.phase).toBe("saved");
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSave.test.tsx:242:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > 해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 STALE 그대로(자동 저장 0)
+TypeError: result.current.resolve is not a function
+ ❯ src/features/studio/useDocSave.test.tsx:258:35
+    256|     vi.mocked(m.repo.resolveConflict).mockRejectedValueOnce(new Projec…
+    257|     await act(async () => {
+    258|       await expect(result.current.resolve("mine")).rejects.toMatchObje…
+       |                                   ^
+    259|     });
+    260|     expect(result.current.state.phase).toBe("stale");
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSave.test.tsx:257:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  5 failed | 28 passed (33)
+   Start at  17:50:27
+   Duration  1.31s (environment 69%, setup 12%, transform 10%, tests 8%, import 1%)
+

@@ -343,3 +343,33 @@ describe("needsUnloadGuard (E-S10)", () => {
     }
   });
 });
+
+describe("createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4)", () => {
+  it("STALE 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장", async () => {
+    const save = vi.fn<(doc: string) => Promise<unknown>>()
+      .mockRejectedValueOnce(new ProjectRepositoryError("STALE_DOC", "stale"))
+      .mockResolvedValue(undefined);
+    const { scheduler, states, last } = setup(save);
+    scheduler.change("a");
+    await vi.advanceTimersByTimeAsync(2000);
+    scheduler.change("b");
+    expect(last().phase).toBe("stale");
+    scheduler.settle();
+    expect(last()).toMatchObject({ phase: "saved" });
+    expect(last().lastSavedAt).toBe(Date.now());
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(announcementsOf(states).filter((a) => a.kind === "alert")).toHaveLength(1);
+    scheduler.change("c");
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(save).toHaveBeenCalledTimes(2);
+    expect(save).toHaveBeenLastCalledWith("c");
+  });
+
+  it("dispose 뒤 settle은 아무것도 하지 않는다", () => {
+    const { scheduler, states } = setup(() => Promise.resolve());
+    scheduler.dispose();
+    scheduler.settle();
+    expect(states).toHaveLength(0);
+  });
+});

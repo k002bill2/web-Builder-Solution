@@ -17,6 +17,7 @@
  * - 그 밖의 예외(저장소 오류 아님 포함) → `failed`.
  * - `failure`는 해결되지 않은 실패 종류로, 성공한 저장만 지운다(saving·dirty 동안 유지) — 연속 실패 알림 1회의 근거.
  *   실패를 지운 성공 상태에는 `recovered: true`.
+ * - `settle()` = 충돌 해결(E-S09)로 저장소가 이미 정리한 뒤 — 미저장 변경을 저장된 것으로 보고 `saved`(STALE 해제, 저장 0회).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectErrorCode, type ProjectPersistence } from "../../data/projectRepository";
@@ -48,6 +49,7 @@ export interface AutosaveScheduler<T> {
   retry(): void;
   setOnline(online: boolean): void;
   resume(): void;
+  settle(): void;
   dispose(): void;
 }
 
@@ -117,6 +119,15 @@ class Scheduler<T> implements AutosaveScheduler<T> {
     }
     const { lastSavedAt, failure } = this.state;
     this.emit({ phase: lastSavedAt === undefined ? "idle" : "saved", lastSavedAt, failure });
+  }
+
+  settle(): void {
+    if (this.disposed) return;
+    this.stale = false;
+    this.flushAfterSave = false;
+    this.clearTimers();
+    this.savedVersion = this.version;
+    this.emit({ phase: "saved", lastSavedAt: (this.options.now ?? Date.now)() });
   }
 
   dispose(): void {
@@ -234,6 +245,7 @@ export interface UseAutosave<T> {
   readonly change: (doc: T) => void;
   readonly retry: () => void;
   readonly resume: () => void;
+  readonly settle: () => void;
 }
 
 /** 얇은 훅 — window online/offline 연결, 떠나기 경고(needsUnloadGuard일 때만 등록), unmount 정리 */
@@ -281,5 +293,6 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
   const change = useCallback((doc: T) => schedulerRef.current?.change(doc), []);
   const retry = useCallback(() => schedulerRef.current?.retry(), []);
   const resume = useCallback(() => schedulerRef.current?.resume(), []);
-  return { state, change, retry, resume };
+  const settle = useCallback(() => schedulerRef.current?.settle(), []);
+  return { state, change, retry, resume, settle };
 }

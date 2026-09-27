@@ -41,3 +41,12 @@
 - ⚠️ **C4 번들 누수 — 먼저 고칠 것**: C4 build(`logs/c4-build.txt`)에서 base 대비 **공통 +0.02** · **`/projects` 진입 직후 +1.51**(106.39→107.90) · `/profile` 진입 직후 +0.12(124.44→124.56, 여유 0.44) · `/studio` 진입 직후 +1.51. 추정 원인(Jarvis, 확인 필요): `memoryProjectRepository.ts`가 `import { MEMORY_GENERATOR_VERSION } from "./memoryGenerationRepository"`를 **정적 import** → 생성 저장소 모듈 전체가 프로젝트 저장소 청크로 끌려옴. 상수만 필요하면 작은 공유 모듈(예: `data/generatorVersion.ts`)로 빼거나 `startDocWrite`(조작 뒤 청크) 안으로 옮긴다. 목표: **공통 +0 · `/projects`·`/profile`·`/catalog`·`/compare` 증가 0**(C5 `/profile` +0.03~0.08만 허용). 고친 뒤 build 전후 표를 `logs/c4-fix-build.txt`에.
 - 남은 순서: C4 누수 수정·lint·커밋 → C5 → C6 → 전체 vitest 1회 → 4337 흐름 1회 → Codex 1회 → REPORT.
 - 이번 실행 `--max-turns` 45 · **32턴부터 REPORT 우선**. 4337 흐름·Codex가 턴을 못 받으면 건너뛰고 REPORT에 BLOCKED로 — **C4~C6 + 전체 vitest + REPORT가 우선**. 서브에이전트 금지 유지.
+
+## 8. 마무리 (RESUME-2, Jarvis 2026-09-27 17:0x · 영환님 A)
+- 2차 실행 46턴 한도 중단. **C0~C5 완료**(`19511bd` C4 누수 수정 · `857234a` C5 연결). Jarvis 재확인: typecheck 0 · lint 0.
+- **이번 범위는 C6 + 전체 vitest + REPORT뿐.** 4337 흐름·Codex는 하지 않는다(병합 뒤 QA·Jarvis 몫 — REPORT에 "이관"으로 적기).
+- C6: `app/src/features/compare/useCompareBoard.ts`의 `projectCreated` state를 **첫 확정(confirmed === undefined)에도** 넘긴다(SPEC r4.3). 알림 문장은 기존 J-S11과 같은 것(프로필 화면이 이미 처리) — 새 문구·새 파일 없음. 테스트는 `app/src/pages/CompareBoardTarget.test.tsx`에 케이스 1개(RED 로그 → GREEN). 이 2파일 외 앱 코드 수정 금지.
+- C6 뒤 `npm run build` 1회 → `/compare` 첫 화면·진입 직후 변화와 `/profile` 여유(현재 0.31)를 `logs/c6-build.txt`에. 0.3 미만이면 커밋 남기고 중지.
+- 전체 `npx vitest run` 1회 → `logs/full-vitest.txt`. 실패가 있으면 고치지 말고 REPORT에 목록.
+- REPORT `dev/active/editor-a2-data/REPORT.md`: C0~C6 SHA·파일 · AC별(E-AC-11·40·41·42·8.2.1·J-S11 확장) · RED/GREEN 로그 경로 · 번들 표(base → c4 → c4-fix → c5 → c6) · CSS 전후 · **/profile +0.25(허용 초과) 원인 분석 한 단락**(어느 모듈이 프로필 청크로 들어왔는지 — 청크 목록 전후) · 남은 위험.
+- `--max-turns` 25 · **15턴부터 REPORT 우선** · 서브에이전트 금지 · 로컬 커밋 · push·병합·삭제 금지.

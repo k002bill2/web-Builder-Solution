@@ -1,0 +1,6 @@
+# C1 CSS 전후 (Q-24 A)
+before: index-5C_vcWjl.css    45808B gzip     9020B sha256 4e999d6125c0d32ec1470d87509f8184f7450c20f1f1e7be63bb5767696df111
+after:  index-5C_vcWjl.css    45808B gzip     9024B sha256 4e999d6125c0d32ec1470d87509f8184f7450c20f1f1e7be63bb5767696df111
+diff:
+(동일 — 바뀐 규칙 0)
+(gzip 바이트 4B 차이는 gzip 헤더의 파일명·시각 — 원본 sha256 동일)

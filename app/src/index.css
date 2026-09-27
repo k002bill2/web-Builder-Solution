@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* engine/ 소스 문자열이 유틸리티로 잡혀 CSS가 바뀌지 않게 스캔에서 뺀다 (DS-2A-05 Q-24 A). engine은 클래스 이름을 쓰지 않는다 */
+@source not "./engine";
+
 /* 토큰은 base 레이어: Tailwind 기본 테마 값(theme 레이어)을 덮고, 유틸리티보다는 약하다. */
 @import "./styles/tokens/fonts.css" layer(base);
 @import "./styles/tokens/brand.css" layer(base);

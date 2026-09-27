@@ -1,0 +1,13 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app
+
+
+ Test Files  6 passed (6)
+      Tests  46 passed (46)
+   Start at  13:05:17
+   Duration  1.82s (environment 67%, setup 18%, tests 7%, transform 6%, import 2%, worker 1%)
+
+exit=0

@@ -26,6 +26,8 @@ export function useGeneration(profileId: string, version: number, announce: (tex
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const busyNow = useRef(false);
   const watching = useRef(false);
+  /** 이 마운트에서 요청·재시도로 잡을 따라가기 시작함 — 늦게 온 진입 findJob 결과는 버린다(폴러 1개) */
+  const started = useRef(false);
   const stage = useRef("");
 
   const settle = useCallback((next: GenerationJob) => {
@@ -53,6 +55,7 @@ export function useGeneration(profileId: string, version: number, announce: (tex
         return;
       }
       watching.current = true;
+      clearTimeout(timer.current);
       timer.current = setTimeout(() => {
         load()
           .then((r) => r.getJob(next.jobId))
@@ -68,7 +71,11 @@ export function useGeneration(profileId: string, version: number, announce: (tex
     load()
       .then((r) => r.findJob(profileId, version))
       .then(
-        (found) => (found ? follow(found, owner) : token.current === owner && setJob(undefined)),
+        (found) => {
+          if (token.current !== owner || started.current) return;
+          if (found) follow(found, owner);
+          else setJob(undefined);
+        },
         () => {
           if (token.current !== owner) return;
           setJob(undefined);
@@ -104,6 +111,7 @@ export function useGeneration(profileId: string, version: number, announce: (tex
   const start = async (kind: "request" | "retry", work: (r: GenerationRepository) => Promise<GenerationJob>) => {
     const done = await act(kind, work);
     if (!done) return;
+    started.current = true;
     if (kind === "request") emitProfileEvent({ name: "generation_requested", version });
     setFresh(false);
     watching.current = true;

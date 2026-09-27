@@ -7,7 +7,7 @@
 | 영역 | 판정 | 근거 |
 |---|---|---|
 | 렌더(실제 작동) | **통과** | 브라우저 127.0.0.1:4337 catalog → compare → v1 확정 → 3안 만들기(생성 중 자리·알림) → 3안 + 비교 표 → B안 선택 → "B안으로 편집 시작" → `/studio`(시안 2a-05) — 1차 `logs/browser-flow-1.log` · 수정 확인 `logs/browser-flow-2-fixcheck.log`(둘 다 exit 0), `shots/`(수정 확인 회차 캡처로 덮어씀) |
-| 번들 | **통과(여유 얇음)** | 최종 `logs/gate-build.log`: `/compare` 99.67 / 120.59 · `/profile` 99.47 / 124.58 (예산 100 / 125, 최소 여유 0.3 충족: 0.33 / 0.42 — 3절) |
+| 번들 | **통과(여유 얇음)** | 최종 `logs/gate-build-final.log`: `/compare` 99.68 / 120.59 · `/profile` 99.47 / 124.59 (예산 100 / 125, 최소 여유 0.3 충족: `/compare` 0.32 · `/profile` 0.53 / 0.41 — 3절) |
 | 비주얼 | **통과(자체 판정)** | 1280 2단 · 1024/768 한 열 + 3카드 + 비교 표 · 390/320 한 열·표 없음, 가로 넘침 0(5폭) — 5절 차이 표 |
 | 4게이트 | **통과(1건 표적 재현 후)** | typecheck exit 0 · lint exit 0 · build exit 0 · vitest 전체 1회 89파일/1089개 중 1 실패(`chunkRetryWiring` 로더 6개 고정 단언 — 새 조작 뒤 로더 추가) → 단언 갱신 후 표적 재실행 1/1 통과 (4절) |
 | Codex review | **BLOCKED** | 사용량 한도(“try again at 3:26 PM”) — `logs/codex-review-1.raw.log`. 대체로 읽기 전용 code-reviewer 서브에이전트 검토(Codex 아님) |
@@ -34,8 +34,8 @@
 | 시점 | 공통 | `/compare` | `/profile` | `/catalog` | `/references/:id` | `/studio` |
 |---|---|---|---|---|---|---|
 | 기준(`logs/baseline-build.log`) | 89.06 | 99.59 / 118.99 | 99.39 / 118.97 | 99.36 / 101.74 | 96.71 / 99.09 | 89.50 / 91.88 |
-| 최종(`logs/gate-build.log`) | 89.14 | 99.67 / 120.59 | 99.47 / 124.58 | 99.43 / 101.81 | 96.77 / 99.16 | 89.57 / 91.96 |
-| 증감 | +0.08 | +0.08 / +1.60 | +0.08 / +5.61 | +0.07 / +0.07 | +0.06 / +0.07 | +0.07 / +0.08 |
+| 최종(`logs/gate-build-final.log`) | 89.14 | 99.68 / 120.59 | 99.47 / 124.59 | 99.43 / 101.81 | 96.78 / 99.16 | 89.57 / 91.96 |
+| 증감 | +0.08 | +0.09 / +1.60 | +0.08 / +5.62 | +0.07 / +0.07 | +0.07 / +0.07 | +0.07 / +0.08 |
 - 조작 뒤(예산 밖): `/profile` `memoryGenerate`(composeCandidates·lintPlan·결과 모양 검증) **+4.74KB** — "3안 만들기"·"다시 시도" onClick에서만 로드. 번들 분류 근거 테스트(`ProfileCandidates.test` "번들 분류 근거")가 진입 findJob·폴링·선택·재진입에서 요청 0을 확인
 - 자동(진입 직후 합계 포함): 3안 UI(카드·표·와이어프레임·폴링 훅)는 `profileEngine` 청크, 잡 조회·선택은 `memoryStudio`의 `memoryGenerationRepository`(store 조회만)
 - 공통 증가 +0.08: 생성 저장소 **로더 핸들 1개**(컨텍스트 필드 + `main.tsx` 화살표 함수) — 위임 래퍼를 공통에 두지 않음(2a-05 S-B3 방식)
@@ -50,12 +50,21 @@
   - `npm run lint` → `logs/gate-lint.log` exit 0
   - `npx vitest --run` → `logs/gate-vitest.log` exit 1 — **89파일 / 1089개 중 1 실패**: `src/data/chunkRetryWiring.test.ts` "싼 로더 6개…"(조작 뒤 로더 목록을 6개로 고정). 새 `loadGenerate`도 `retryableImport`로 싸여 있어 가드 의도(조작 뒤 로더는 모두 재시도 래퍼)는 지켜짐 → 기대 목록에 `composeFor` 추가(7개) → 표적 재실행 `logs/gate-vitest-rerun-chunkRetryWiring.log` 1/1 exit 0. 나머지 1088개 통과
   - `npm run build`(tsc + vite build + 번들 검사) → `logs/gate-build.log` exit 0
+  - 이중 폴링 수정(아래) 뒤 재확인: `npm run lint` → `logs/gate-lint-final.log` exit 0 · `npm run build` → `logs/gate-build-final.log` exit 0 · 표적 `ProfileCandidates`·`ProfileAdjust`·`memoryGenerationRepository` 40/40(`logs/red-green-3-single-poller.log`). 전체 suite는 1회 원칙으로 다시 돌리지 않음 — 수정은 `useGeneration.ts`(엔진 청크) 한 파일 + 테스트 1개
   - 테스트 수: 기준 84파일/997개 → 89파일/1089개(+5파일 · +92개 = 컴포저 74 · 저장소 10 · 화면 7 · 결과 모양 1)
+- **TDD 순서(있는 그대로)**: 컴포저(composeCandidates·lintPlan)는 RED 먼저(서브에이전트 A, 74 실패 → GREEN). **저장소·화면 테스트는 구현 뒤에 작성**했고, 대신 핵심 가드 3개를 일부러 지워 실패하는지 확인(Red-Green)했다 — 프로젝트 규칙 2(RED 먼저)와 다른 부분
+- 이중 폴링 경쟁(advisor 지적, 검토 Minor-2 수정이 연 경로): 잡 조회(findJob) 응답 전에 "3안 만들기"를 누르면 늦은 findJob 결과가 폴러를 하나 더 만들 수 있었다(메모리 저장소에서는 findJob이 먼저 끝나 재현 안 됨, HTTP 지연 시 발생) → `follow`가 이전 타이머를 지우고, 요청·재시도로 시작한 뒤 온 진입 findJob 결과는 버림. 회귀 테스트 "잡 조회 중 클릭"(findJob 요청 지연) — `logs/red-green-3-single-poller.log`(가드 제거 → 1 실패, 복원 → 통과)
 - Red-Green: `logs/red-green-2-idempotency.log`(멱등 제거 → 2 실패), `logs/red-green-1-late-response.log`(늦은 응답 가드 제거 → 1 실패, 1차는 테스트가 공회전해 통과 → 테스트 보강 후 실패 확인), 복원 후 통과. 컴포저 RED 74 실패 → GREEN 74(서브에이전트 A)
 - 브라우저: `logs/flow.mjs`(ego-browser, TaskSpace 1개, 새로고침 없음) → `logs/browser-flow-*.log`, `shots/flow.json`, 캡처 `shots/{1280,1024,768,390,320}-04-selected.png`·`1280-01-before`·`1280-02-generating`·`1280-03-generated`·`1280-05-studio`
+  - 클릭 방식: 카탈로그 "비교 추가"·"비교 보드 열기"·Hero 선택·"3안 만들기"·"B안 선택"·"B안으로 편집 시작"은 `page.click`(실제 포인터 입력). **보드 "프로필 확정"만** 이전 레인 스크립트를 이어받아 DOM `.click()`(`page.evaluate`)으로 눌렀다 — 브리프 "브라우저 클릭"과 다른 1곳
   - 기능: 생성 중 `aria-busy=true` · 자리 3칸 "n/3 완료" · 알림 "3안을 만드는 중입니다" → "3안을 만들었습니다" · B안 `aria-pressed=true` · `/studio` h1 "편집기" + "시안 2a-05"
   - 폭: 1280 레이아웃 2열·카드 3열·표 보임 · 1024/768 레이아웃 1열·카드 3열·표 보임(표 가로 넘침 0) · 390/320 카드 1열·표 숨김 · 5폭 문서 가로 넘침 0 · 잘린 글자 요소 0
   - 키보드: A안 선택 → 섹션 순서 보기 → 전체 로그 → (R-08 앵커) → B안 선택 … → B안으로 편집 시작, 모두 `:focus-visible` 링
+
+## 5-0. Jarvis·Designer 판단이 필요한 질문 (막는 것 없음, 현재 구현값)
+1. **본문 수에 Hero 포함**(U-3) — SPEC 4.2 문구("본문 9개 초과")와 엔진 `BODY_MIN/MAX`·TRD "본문 5~9"가 Hero를 포함. 지금 구현 = 엔진 기준(2a-05 `createDocFromCandidate` 거부 방지). SPEC 문구 정정 여부
+2. **엔진 변형 이름 대응**(6절) — 축 적용 `services/grid-2`·`masonry`, 픽스처 `about/split`·`services/grid-3`이 엔진 레지스트리에 없음. 레지스트리 확장 vs 대응표 — 2a-05 a1 전에 결정
+3. **재시도 버튼 통합**("B·C안 다시 시도") vs 안별 버튼 — 지금은 통합(결과 동일)
 
 ## 5. 원본(v2 목업·SPEC) 대비 의도된 차이
 | # | 내용 | 근거 |
@@ -90,6 +99,8 @@
   - A = Workflow `wf_fcc7d984-d6a` 1 agent(worktree `wf_fcc7d984-d6a-1`, 삭제 금지라 남겨 둠) — composeCandidates·lintPlan TDD, `bb9d758` → cherry-pick `81bfe9b`. RED 74 실패 → GREEN 74, 해석 3건(5절 U-3·U-4, 없는 Footer 변형 = R-12)
   - B = code-reviewer(읽기 전용) — UI 수용 기준 검토, Major 1 · Minor 2:
     1. [Major] 생성기 결과 개수·순서 미검증 시 잡이 "만드는 중"에 고착 → **반영**: `memoryGenerate`에서 A·B·C 검증, 어긋나면 `SCHEMA_INVALID`·잡 0(`memoryGenerate.test`)
-    2. [Minor] 잡 조회 중(null) 빈 구간 → **반영**: "3안 만들기" 자리 유지(요청은 멱등)
+    2. [Minor] 잡 조회 중(null) 빈 구간 → **반영**: "3안 만들기" 자리 유지(요청은 멱등). 이 수정이 연 이중 폴링 경로는 advisor 검토로 찾아 막음(4절)
     3. [Minor] 재시도 버튼이 안별이 아니라 통합("B·C안 다시 시도") → **유지**: `retryFailed`가 재시도 가능한 실패 안만 다시 계산하므로 결과 동일, 버튼 이름이 대상 안을 모두 밝힌다
+- 커밋 예외: `81bfe9b`는 서브에이전트 커밋 `bb9d758`의 **cherry-pick**(경로 지정 `git commit -- <paths>`가 아님). 대상 4파일(`domain/composeCandidates.ts`·`lintPlan.ts`와 두 테스트)만 담겼고 Co-Authored-By 푸터 있음. 이력은 고치지 않음
+- 서브에이전트 worktree `wf_fcc7d984-d6a-1`은 삭제 금지라 남겨 둠(추적 안 되는 `app/node_modules` 심볼릭 링크 있음)
 - 자체 발견: 늦은 응답 테스트가 지연 지점 도달 전에 화면을 옮겨 공회전 → 1차 Red-Green에서 발견·보강(4절)

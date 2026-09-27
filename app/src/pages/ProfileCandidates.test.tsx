@@ -188,6 +188,24 @@ describe("실패 · 경쟁 (P-S20 · S21)", () => {
   });
 });
 
+describe("잡 조회 중 클릭 (findJob 지연 — HTTP 대비)", () => {
+  it("진입 findJob 응답 전에 3안 만들기 → 늦은 findJob 결과를 버려 폴러 1개: 조회마다 한 안씩, 1/3·2/3 알림 유지", async () => {
+    const gate: { release?: () => void } = {};
+    const { region } = await open({ delay: (call) => (call.method === "findJob" && call.phase === "request" && call.seq === 1 ? new Promise<void>((r) => (gate.release = r)) : undefined) });
+    const u = user();
+    await waitFor(() => expect(gate.release).toBeDefined());
+    await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
+    await within(region).findByText("A안 만드는 중 · 0/3 완료");
+    await act(async () => gate.release!());
+    const seen = [status().textContent ?? ""];
+    for (let i = 0; i < 3; i += 1) {
+      await tick();
+      seen.push(status().textContent ?? "");
+    }
+    expect(seen).toEqual(["3안을 만드는 중입니다", "3안을 만드는 중입니다 · 1/3 완료", "3안을 만드는 중입니다 · 2/3 완료", "3안을 만들었습니다"]);
+  });
+});
+
 describe("번들 분류 근거 (check-bundle-size /profile afterAction memoryGenerate)", () => {
   it("진입 findJob·폴링·선택은 계산 청크 요청 0 — '3안 만들기' 클릭에서만 1회, 기존 잡 재진입도 0", async () => {
     const { region, router } = await open();

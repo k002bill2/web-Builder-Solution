@@ -1,5 +1,5 @@
-// 사용: PHASE=before|after ego-browser nodejs < capture.mjs  (4345 서버 필요, 외부 접근 없음)
-const phase = process.env.PHASE || "before";
+// 사용: phase 줄을 before/after로 바꿔 ego-browser nodejs < capture.mjs  (4345 서버 필요, 외부 접근 없음)
+const phase = "after";
 const root = "/Users/younghwankang/orca/workspaces/web-builder-solution/visual-v2-apply/dev/active/visual-v2-apply";
 const fs = await import("node:fs/promises");
 const task = await taskSpace(`visual-v2-apply ${phase}`);

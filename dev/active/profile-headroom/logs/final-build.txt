@@ -32,65 +32,65 @@ dist/assets/profileEvents-BZQzo2FC.js                    0.09 kB │ gzip:  0.10
 dist/assets/generation-y8_fXzx8.js                       0.12 kB │ gzip:  0.12 kB
 dist/assets/profileRepository-Cf1X6rgu.js                0.15 kB │ gzip:  0.13 kB
 dist/assets/useThrowToBoundary-e3Nrf3la.js               0.16 kB │ gzip:  0.15 kB
-dist/assets/compareTray-DDwU_iKY.js                      0.17 kB │ gzip:  0.19 kB
+dist/assets/compareTray-Dox23i5c.js                      0.17 kB │ gzip:  0.19 kB
 dist/assets/projectRepository-Br92Dl8s.js                0.21 kB │ gzip:  0.17 kB
 dist/assets/rovingFocus-C627c-M6.js                      0.26 kB │ gzip:  0.19 kB
-dist/assets/useProjectRepository-bOzxpyCS.js             0.32 kB │ gzip:  0.24 kB
+dist/assets/useProjectRepository-d1HJRnLh.js             0.32 kB │ gzip:  0.24 kB
 dist/assets/projectName-DWJvWhhu.js                      0.53 kB │ gzip:  0.38 kB
-dist/assets/carryOverPanel-C0xMgLW_.js                   0.61 kB │ gzip:  0.40 kB
+dist/assets/carryOverPanel-BHStFLuW.js                   0.61 kB │ gzip:  0.40 kB
 dist/assets/effectiveProfile-CIFNkz4g.js                 0.67 kB │ gzip:  0.37 kB
-dist/assets/TextField-DQdL0AqK.js                        0.72 kB │ gzip:  0.42 kB
-dist/assets/Callout-CQUuQULa.js                          0.85 kB │ gzip:  0.42 kB
-dist/assets/referenceDisplay-Dffp6-6h.js                 0.87 kB │ gzip:  0.48 kB
-dist/assets/boardInput-SihhLQJZ.js                       1.01 kB │ gzip:  0.70 kB
-dist/assets/profileAdjustments-Dhw-Sui7.js               1.06 kB │ gzip:  0.62 kB
+dist/assets/TextField-DesF5ZZ2.js                        0.72 kB │ gzip:  0.43 kB
+dist/assets/Callout-DkaVYPCB.js                          0.85 kB │ gzip:  0.42 kB
+dist/assets/referenceDisplay-DtPS5IZD.js                 0.87 kB │ gzip:  0.48 kB
+dist/assets/boardInput-By2WqcI5.js                       1.01 kB │ gzip:  0.70 kB
+dist/assets/profileAdjustments-CHVWOoOi.js               1.06 kB │ gzip:  0.63 kB
 dist/assets/sectionLibrary-50WmVJEd.js                   1.10 kB │ gzip:  0.63 kB
 dist/assets/memoryProjectRepository-B7fZyQ8M.js          1.11 kB │ gzip:  0.62 kB
 dist/assets/adjustmentText-C8m9Grsn.js                   1.34 kB │ gzip:  0.72 kB
-dist/assets/contrast-FGhIQVC_.js                         1.41 kB │ gzip:  0.88 kB
-dist/assets/profileContrast-PXwhUMEo.js                  1.47 kB │ gzip:  0.76 kB
-dist/assets/StudioPage-CCDhHu9Z.js                       1.89 kB │ gzip:  0.99 kB
-dist/assets/SegmentedControl---0WBgbK.js                 1.93 kB │ gzip:  1.02 kB
+dist/assets/contrast-Itv9sH_H.js                         1.41 kB │ gzip:  0.89 kB
+dist/assets/profileContrast-DyVUu661.js                  1.47 kB │ gzip:  0.76 kB
+dist/assets/StudioPage-DhT-GuCl.js                       1.89 kB │ gzip:  0.99 kB
+dist/assets/SegmentedControl-C1gSz3bB.js                 1.93 kB │ gzip:  1.02 kB
 dist/assets/catalogFilters-CTS9InfW.js                   2.26 kB │ gzip:  1.16 kB
 dist/assets/references-Dy8ZbmG9.js                       2.70 kB │ gzip:  0.97 kB
-dist/assets/memoryBoardConfirm-3ktzKli7.js               3.65 kB │ gzip:  1.82 kB
-dist/assets/memoryProfileAdjust-DK3xAPqz.js              3.65 kB │ gzip:  1.76 kB
+dist/assets/memoryBoardConfirm-DKIarCkF.js               3.65 kB │ gzip:  1.82 kB
+dist/assets/memoryProfileAdjust-COW28BNi.js              3.65 kB │ gzip:  1.76 kB
 dist/assets/referenceComparisons-BjFXZkfz.js             3.69 kB │ gzip:  1.01 kB
 dist/assets/referenceDetails-C7TYk5GK.js                 5.57 kB │ gzip:  1.41 kB
-dist/assets/ProjectsRoute-CeAOYNEx.js                    8.01 kB │ gzip:  3.22 kB
+dist/assets/ProjectsRoute-CKLccY6H.js                    8.01 kB │ gzip:  3.22 kB
 dist/assets/react-DB-4Zxce.js                            8.52 kB │ gzip:  3.28 kB
-dist/assets/profileDraft-BBicBxYO.js                     9.09 kB │ gzip:  3.86 kB
-dist/assets/memoryStudio-Q7b7GboQ.js                     9.64 kB │ gzip:  3.80 kB
-dist/assets/memoryGenerate-Cf6hgN3e.js                  12.66 kB │ gzip:  5.35 kB
-dist/assets/ReferenceDetailPage-C9eLKBJC.js             13.19 kB │ gzip:  4.44 kB
+dist/assets/profileDraft-qAB5zlTv.js                     9.09 kB │ gzip:  3.86 kB
+dist/assets/memoryStudio-Bd8kYOOs.js                     9.64 kB │ gzip:  3.80 kB
+dist/assets/memoryGenerate-BRijrFbX.js                  12.66 kB │ gzip:  5.35 kB
+dist/assets/ReferenceDetailPage-4eD2DTSj.js             13.19 kB │ gzip:  4.44 kB
 dist/assets/schemas-W3dRUVzC.js                         18.15 kB │ gzip:  5.95 kB
-dist/assets/ProfilePage-CWlyram1.js                     19.19 kB │ gzip:  6.98 kB
-dist/assets/CatalogPage-DcC3ITWk.js                     19.51 kB │ gzip:  6.69 kB
-dist/assets/boardEngine-Bg8ybK5P.js                     20.93 kB │ gzip:  8.04 kB
-dist/assets/CompareBoardPage-Cvk1tNYe.js                21.80 kB │ gzip:  7.80 kB
-dist/assets/profileEngine-B6h0CfzK.js                   27.82 kB │ gzip:  9.72 kB
-dist/assets/index-DlU-XU2i.js                          271.43 kB │ gzip: 86.97 kB
+dist/assets/ProfilePage-CrsX5Sc_.js                     19.19 kB │ gzip:  6.98 kB
+dist/assets/CatalogPage-DL0RtDBS.js                     19.51 kB │ gzip:  6.69 kB
+dist/assets/boardEngine-BBoyh8jh.js                     20.93 kB │ gzip:  8.04 kB
+dist/assets/CompareBoardPage-B9lJN6SF.js                21.80 kB │ gzip:  7.80 kB
+dist/assets/profileEngine-B-vncRSz.js                   27.82 kB │ gzip:  9.72 kB
+dist/assets/index-YIwJ7PiB.js                          271.43 kB │ gzip: 86.97 kB
 
-✓ built in 274ms
+✓ built in 250ms
 [bundle] 공통 JS (gzip, 참고): 89.34KB
-  - assets/index-DlU-XU2i.js 86.06KB
+  - assets/index-YIwJ7PiB.js 86.06KB
   - assets/react-DB-4Zxce.js 3.28KB
-[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.02KB / 예산 125KB
-[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.37KB / 예산 125KB
-[bundle] /compare 첫 화면 합계: 98.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.80KB / 예산 125KB
+[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.03KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.38KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.41KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.82KB / 예산 125KB
 [bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
 [bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
 [bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.77KB (3개 파일, 예산 판정 밖)
 [bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
-[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.62KB (2개 파일, 예산 판정 밖)
-[bundle] /compare (조정 있음) 첫 화면 합계: 98.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.80KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.41KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.82KB / 예산 125KB
 [bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
 [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
 [bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.77KB (3개 파일, 예산 판정 밖)
 [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
-[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.62KB (2개 파일, 예산 판정 밖)
-[bundle] /profile 첫 화면 합계: 99.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.23KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.41KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.24KB / 예산 125KB
 [bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
 [bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.34KB (1개 파일, 예산 판정 밖)
-[bundle] /projects 첫 화면 합계: 93.94KB / 예산 100KB · 진입 직후 자동 로드 포함: 106.37KB / 예산 125KB
-[bundle] /studio/:projectId 첫 화면 합계: 90.73KB / 예산 100KB · 진입 직후 자동 로드 포함: 103.71KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 93.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 106.38KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.73KB / 예산 100KB · 진입 직후 자동 로드 포함: 103.72KB / 예산 125KB

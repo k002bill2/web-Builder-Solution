@@ -50,14 +50,15 @@ function injected(result: ComposedResult, call: CandidateCall, outcome: JobOptio
 }
 
 /** 새 잡 — 세 안을 한 번에 계산해 숨겨 둔다(저장소 트랜잭션 안에서 부른다) */
-export function newJob(record: ProfileVersion, jobId: string, key: string, { outcome, libraries }: JobOptions): StoredJob {
+/** `generatorVersion`은 저장소가 넘긴다 — 멱등 키(keyOf)와 같은 값 하나를 쓴다 */
+export function newJob(record: ProfileVersion, jobId: string, key: string, generatorVersion: string, { outcome, libraries }: JobOptions): StoredJob {
   const results = composeFor(record, libraries);
   const job: GenerationJob = {
     jobId,
     profileId: record.profileId,
     version: record.version,
     libraryVersion: record.base.library_version,
-    generatorVersion: GENERATOR_VERSION,
+    generatorVersion,
     seed: record.base.seed,
     state: "queued",
     candidates: CANDIDATE_IDS.map((id) => ({ id, status: "pending" as const })),

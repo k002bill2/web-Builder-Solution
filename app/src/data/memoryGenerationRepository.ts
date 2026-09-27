@@ -94,7 +94,7 @@ export function createMemoryGenerationRepository(options: MemoryGenerationOption
           if (prior) return prior.job;
           if (!generate) throw new GenerationError("INFRA", "계산 본문을 받지 못했습니다");
           options.onCompose?.();
-          const stored = generate.newJob(current, `job-${tx.jobCount() + 1}`, keyOf(current), options);
+          const stored = generate.newJob(current, `job-${tx.jobCount() + 1}`, keyOf(current), MEMORY_GENERATOR_VERSION, options);
           tx.putJob(stored);
           return stored.job;
         }),

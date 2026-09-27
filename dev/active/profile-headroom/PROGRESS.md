@@ -11,10 +11,10 @@
 ## 체크포인트
 - [x] 0. 기준 빌드 재현 + `/profile` 진입 직후 청크 표
 - [x] 0. 후보 3개 이상 L2 실측(하나씩 적용 → build) → PROGRESS 커밋
-- [ ] 1. 채택 후보 TDD(로딩·실패 상태 RED→GREEN)
-- [ ] 1. 구현 + 커밋
-- [ ] 2. 4게이트(typecheck·lint·vitest 전체·build) 로그
-- [ ] 2. 번들 전후 표(모든 시나리오)
+- [x] 1. 채택 후보 TDD — `ProfileGenerateLoad.test.tsx` RED(소스 가드 2 실패 · 특성 3 통과, `logs/red.txt`) → GREEN 5/5
+- [x] 1. 구현 + 커밋 `48e474c`
+- [x] 2. 4게이트: typecheck 0 · lint 0 · vitest 1233/1234(실패 1 = 기존 P-AC-29 `/studio`, 기준 코드에서도 실패 — editor-a1-beta REPORT 45행) · build 0
+- [x] 2. 번들 전후 표 → REPORT
 - [ ] 3. 127.0.0.1:4339 실제 흐름(catalog→비교→확정→profile 보정·조정 저장·3안 생성) + 자기 PID 종료·lsof
 - [ ] 4. Codex 리뷰(companion)
 - [ ] 5. REPORT.md + 커밋

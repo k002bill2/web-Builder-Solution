@@ -128,6 +128,9 @@ export interface ConfirmedRef {
   /** 확정 시점 선택 — 바뀐 내용 없는 재확정을 막는 기준 (S-15). 없으면 revision으로 판단 */
   readonly picks?: Picks;
   readonly custom?: CustomStyle;
+  /** 계열의 프로젝트(DS-2A-05 12.2) — 저장소가 읽을 때 채운다. J-S10 "<이름> 새 버전" */
+  readonly projectId?: string;
+  readonly projectName?: string;
   /** 계열 최신 버전 — 저장소가 읽을 때 채운다(보드 레코드에 저장하지 않음). 없으면 version (DS-2A-04 6.1-1) */
   readonly latestVersion?: number;
   /** 계열 최신 버전의 base·adjustments — 이어받을 조정(P-S25, 2a-04b) */

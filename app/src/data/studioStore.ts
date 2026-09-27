@@ -5,6 +5,7 @@
  */
 import type { CandidateId, ComposedResult, GenerationJob } from "../domain/generation";
 import type { ProfileHead, ProfileVersion } from "../domain/profile";
+import type { Project } from "./projectRepository";
 
 /** 마지막 커밋 — 보드 확정 키 = (보드 id, 호출자가 본 revision, expectedLatest) · 조정 저장 키 = (profileId, expectedLatest, 정규화한 조정) */
 export interface IdempotentCommit {
@@ -32,6 +33,8 @@ interface StudioState {
   readonly adjustCommits: ReadonlyMap<string, IdempotentCommit>;
   /** jobId → 잡 */
   readonly jobs: ReadonlyMap<string, StoredJob>;
+  /** projectId → 프로젝트(DS-2A-05 8.3). 보드 확정 트랜잭션이 만들고(12.2 ④) 이름 바꾸기가 바꾼다 */
+  readonly projects: ReadonlyMap<string, Project>;
 }
 
 export interface StudioReader {
@@ -45,6 +48,10 @@ export interface StudioReader {
   job(jobId: string): StoredJob | undefined;
   jobByKey(key: string): StoredJob | undefined;
   jobCount(): number;
+  /** 만든 순서 */
+  projects(): readonly Project[];
+  /** 계열과 1:1 (2.1) */
+  projectOf(profileId: string): Project | undefined;
 }
 
 export interface StudioTx extends StudioReader {
@@ -55,6 +62,8 @@ export interface StudioTx extends StudioReader {
   rememberAdjust(commit: IdempotentCommit): void;
   /** 새 잡 또는 같은 jobId 갱신 — 레코드는 동결한다 */
   putJob(stored: StoredJob): void;
+  /** 새 프로젝트 또는 같은 projectId 갱신 — 동결한다 */
+  putProject(project: Project): void;
 }
 
 export interface StudioStore extends StudioReader {
@@ -80,11 +89,13 @@ function readerOf(read: () => StudioState): StudioReader {
     job: (jobId) => read().jobs.get(jobId),
     jobByKey: (key) => [...read().jobs.values()].find((stored) => stored.key === key),
     jobCount: () => read().jobs.size,
+    projects: () => [...read().projects.values()],
+    projectOf: (profileId) => [...read().projects.values()].find((p) => p.profileId === profileId),
   };
 }
 
 export function createStudioStore(): StudioStore {
-  let state: StudioState = { series: new Map(), commits: new Map(), adjustCommits: new Map(), jobs: new Map() };
+  let state: StudioState = { series: new Map(), commits: new Map(), adjustCommits: new Map(), jobs: new Map(), projects: new Map() };
   return {
     ...readerOf(() => state),
     transact(work) {
@@ -106,6 +117,9 @@ export function createStudioStore(): StudioStore {
         },
         putJob(stored) {
           draft = { ...draft, jobs: new Map(draft.jobs).set(stored.job.jobId, deepFreeze(stored)) };
+        },
+        putProject(project) {
+          draft = { ...draft, projects: new Map(draft.projects).set(project.projectId, deepFreeze(project)) };
         },
       };
       const result = work(tx);

@@ -85,7 +85,7 @@ describe("FIX3 1안 쓰기 본문 로드 실패 — 저장 0·오류 표시·다
     const { board, profiles, versionsOf } = studio();
     await board.confirmProfile(1, 0);
     const changed = await board.savePicks({ hero: "ref-c" }, {}, 1);
-    await board.createProfileVersion("profile-1", changed.revision, 1);
+    await board.createProfileVersion("profile-1", changed.revision, 1, "current");
     loads.profileWrites.mockRejectedValueOnce(chunkError());
     await expect(profiles.revertTo("profile-1", 1, 2)).rejects.toThrow("Failed to fetch dynamically imported module");
     expect(await versionsOf()).toEqual([1, 2]);

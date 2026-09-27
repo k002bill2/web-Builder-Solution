@@ -50,7 +50,7 @@ async function openProfile(path: string, versions = 1, options: Options = {}) {
 async function reconfirm(studio: ReturnType<typeof createMemoryStudio>, latest: number, palette: string) {
   const { board } = await studio.board.getBoard();
   const changed = await studio.board.savePicks({ ...board.picks, palette }, board.custom, board.revision);
-  await studio.board.createProfileVersion("profile-1", changed.revision, latest);
+  await studio.board.createProfileVersion("profile-1", changed.revision, latest, "current");
 }
 
 /** 보정 제안 hex — 수치 자체는 domain/profileContrast.test.ts가 스크립트 값으로 고정한다(화면 테스트에 hex 글자를 두지 않는다) */

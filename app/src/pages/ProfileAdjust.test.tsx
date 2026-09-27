@@ -321,7 +321,7 @@ describe("D-2A4B2-01 강화 7:1 불가 조합 — 오류 경계 없이 P-S15 충
   const cardB = async (s: Studio, basedOn: number) => {
     const { board } = await s.board.getBoard();
     const changed = await s.board.savePicks({ ...board.picks, card: "ref-b" }, board.custom, board.revision);
-    await s.board.createProfileVersion("profile-1", changed.revision, basedOn);
+    await s.board.createProfileVersion("profile-1", changed.revision, basedOn, "current");
   };
   const expectUnreachableConflict = () => {
     expect(screen.queryByText("화면을 불러오지 못했습니다")).not.toBeInTheDocument();
@@ -378,7 +378,7 @@ describe("P-AC-20 (화면) 이어받은 조정 · P-S13 · 버전 요약", () =>
         await s.wide.saveAdjustments("profile-1", 1, { density: "compact" });
         const { board } = await s.board.getBoard();
         const changed = await s.board.savePicks({ ...board.picks, hero: "ref-b" }, board.custom, board.revision);
-        await s.board.createProfileVersion("profile-1", changed.revision, 2);
+        await s.board.createProfileVersion("profile-1", changed.revision, 2, "current");
       },
     });
     expect(screen.getByText("v3 · 현재")).toBeInTheDocument();

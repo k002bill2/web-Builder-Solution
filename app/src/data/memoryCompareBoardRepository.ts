@@ -66,7 +66,17 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     const latest = versions.at(-1);
     if (!confirmed || !latest) return current;
     const confirmedBase = versions.find((v) => v.version === confirmed.version)?.base;
-    return { ...current, confirmed: { ...confirmed, latestVersion: latest.version, latest: headOf(latest), ...(confirmedBase && { confirmedBase }) } };
+    const project = store.projectOf(confirmed.profileId);
+    return {
+      ...current,
+      confirmed: {
+        ...confirmed,
+        ...(project && { projectId: project.projectId, projectName: project.name }),
+        latestVersion: latest.version,
+        latest: headOf(latest),
+        ...(confirmedBase && { confirmedBase }),
+      },
+    };
   }
   const staleBoard = (revision: number) => new CompareBoardError("STALE_BOARD", `revision ${revision} ≠ ${board.revision}`, view());
 
@@ -93,8 +103,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
   };
 
   /** 확정 판정·쓰기는 본문이, 확정 결과 보드 반영은 여기서 — 한 동기 구간 */
-  function confirmWith(body: BoardConfirmer, revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void): ConfirmResult {
-    const { result, board: next } = body.confirmInto(board, revision, expectedLatest, profileId, commitGate);
+  function confirmWith({ result, board: next }: ReturnType<BoardConfirmer["confirmFirst"]>): ConfirmResult {
     board = next;
     return result;
   }
@@ -135,14 +144,11 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     getComparison: (referenceIds) => call("getComparison", () => ({ libraryVersion: library.version, results: resultsOf(referenceIds) })),
     confirmProfile: async (revision, expectedLatest) => {
       const body = await confirmerFor(board.confirmed?.profileId);
-      return call("confirmProfile", (commitGate) => confirmWith(body, revision, expectedLatest, board.confirmed?.profileId, commitGate));
+      return call("confirmProfile", (commitGate) => confirmWith(body.confirmFirst(board, revision, expectedLatest, commitGate)));
     },
-    createProfileVersion: async (profileId, revision, expectedLatest) => {
+    createProfileVersion: async (profileId, revision, expectedLatest, target) => {
       const body = await confirmerFor(profileId);
-      return call("createProfileVersion", (commitGate) => {
-        if (board.confirmed?.profileId !== profileId) throw new CompareBoardError("SCHEMA_INVALID", `이 보드의 프로필이 아님: ${profileId}`);
-        return confirmWith(body, revision, expectedLatest, profileId, commitGate);
-      });
+      return call("createProfileVersion", (commitGate) => confirmWith(body.confirmVersion(board, profileId, revision, expectedLatest, target, commitGate)));
     },
     getProfileVersions: (profileId) => call("getProfileVersions", () => store.versions(profileId)),
   };

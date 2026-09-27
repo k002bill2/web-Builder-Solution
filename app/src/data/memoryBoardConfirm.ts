@@ -1,14 +1,15 @@
 /**
  * 보드 확정 본문 (6.1-4 · 6.3 r3) — memoryCompareBoardRepository가 확정을 처음 부를 때 받는다(writeBodyLoader, FIX3 1안).
- * 보드 진입 직후 합계(/compare)에 싣지 않는다. 판정·쓰기(`confirmInto`)는 저장소 `call`의 동기 구간 안에서만 부른다.
+ * 보드 진입 직후 합계(/compare)에 싣지 않는다. 판정·쓰기(`confirmFirst`·`confirmVersion`)는 저장소 `call`의 동기 구간 안에서만 부른다.
  * 재확정 이어받기 규칙(대비 검사 포함)은 이 청크에서 한 번 더 필요할 때만 받는다 — 계열 최신에 조정이 있을 때(`prepare`, 동기 구간 앞).
  */
 import type { CompareBoard, ComparisonResult, DesignProfileInput, Picks } from "../domain/compareBoard";
 import type { ProfileVersion } from "../domain/profile";
 import type { buildProfileDraft } from "../domain/profileDraft";
+import { defaultProjectName } from "../domain/projectName";
 import { resolveVariant, type SectionLibrary } from "../domain/sectionLibrary";
 import { retryableImport } from "./chunkRetry";
-import { CompareBoardError, type ConfirmResult } from "./compareBoardRepository";
+import { CompareBoardError, type ConfirmResult, type ConfirmTarget } from "./compareBoardRepository";
 import { headOf, type StudioStore } from "./studioStore";
 
 /** R-12: 사업자정보 없는 Footer는 확정 시 같은 모양의 사업자정보 확장 변형으로 바꾼다. */
@@ -55,17 +56,30 @@ export interface BoardConfirmer {
   /**
    * 계열 최신에 조정이 있을 때만 규칙을 받는다 — 첫 확정·조정 없는 재확정은 더 기다리지 않는다.
    * 받은 뒤 동기 구간에서 최신이 바뀌었으면 대개 expectedLatest 판정(STALE_PROFILE)이 먼저 거른다. 호출자가 아직 없던
-   * 번호를 기대했다면 confirmInto가 STALE_PROFILE로 돌려보낸다.
+   * 번호를 기대했다면 확정 본문이 STALE_PROFILE로 돌려보낸다.
    */
   prepare(profileId: string | undefined): Promise<void>;
   /**
-   * 보드 확정 (6.1-4 · 6.3 r3). 판정 순서: 멱등 키 → STALE_BOARD → STALE_PROFILE → 선택·라이브러리 검사.
-   * `profileId`가 없으면 첫 확정(새 계열). 같은 키의 재시도는 커밋된 결과를 그대로 돌려준다(새 버전 0, 보드 그대로).
+   * 확정 (6.1-4 · 6.3 r3 · DS-2A-05 12.2) — confirmProfile. 보드가 확정한 계열의 새 버전, 없으면 새 계열 + 새 프로젝트(트랜잭션 ④).
+   * 멱등 키의 대상 = 호출자가 본 최신이 0이면 new(첫 확정은 늘 새 프로젝트 — 응답 실패 뒤 재시도는 보드가 이미 확정됐어도 재생된다)
    */
-  confirmInto(board: CompareBoard, revision: number, expectedLatest: number, profileId: string | undefined, commitGate: () => void): { readonly result: ConfirmResult; readonly board: CompareBoard };
+  confirmFirst(board: CompareBoard, revision: number, expectedLatest: number, commitGate: () => void): ConfirmOutcome;
+  /**
+   * 재확정 — createProfileVersion. 판정 순서: 멱등 키(대상 포함) → 보드의 계열인지 · new면 expectedLatest 0(SCHEMA_INVALID) → 확정.
+   * 멱등 재생이 계열 검사보다 먼저다 — "new" 응답 실패 뒤에는 보드가 이미 새 계열을 가리킨다(J-AC-07 ②)
+   */
+  confirmVersion(board: CompareBoard, profileId: string, revision: number, expectedLatest: number, target: ConfirmTarget, commitGate: () => void): ConfirmOutcome;
 }
 
-type ConfirmOutcome = ReturnType<BoardConfirmer["confirmInto"]>;
+type ConfirmOutcome = { readonly result: ConfirmResult; readonly board: CompareBoard };
+
+/** 멱등 키 = (보드 id, revision, expectedLatest, 확정 대상) — 대상이 빠지면 대상을 바꾼 재시도가 다른 프로젝트 결과를 돌려받는다(12.2) */
+const keyOf = (board: CompareBoard, revision: number, expectedLatest: number, target: ConfirmTarget) => [board.id, revision, expectedLatest, target].join("\n");
+/** 계열마다 마지막 커밋에서 같은 키를 찾는다 — 대상이 new면 재시도 때 보드는 이미 새 계열을 가리킨다 */
+function replayOf(store: StudioStore, key: string): ConfirmResult | undefined {
+  const done = store.profileIds().map((id) => store.commitOf(id)).find((commit) => commit?.key === key);
+  return done && resultOf(store.versions(done.profileId).find((v) => v.version === done.version) ?? done);
+}
 
 function confirmIn(
   { store, library, now, resultsOf, assertPicks, staleBoard, buildProfileDraft }: BoardConfirmDeps,
@@ -74,11 +88,12 @@ function confirmIn(
   revision: number,
   expectedLatest: number,
   profileId: string | undefined,
+  target: ConfirmTarget,
   commitGate: () => void,
 ): ConfirmOutcome {
-  const key = [board.id, revision, expectedLatest].join("\n");
-  const done = profileId === undefined ? undefined : store.commitOf(profileId);
-  if (done?.key === key) return { result: resultOf(store.versions(done.profileId).find((v) => v.version === done.version) ?? done), board };
+  const key = keyOf(board, revision, expectedLatest, target);
+  const done = replayOf(store, key);
+  if (done) return { result: done, board };
   if (revision !== board.revision) throw staleBoard(revision);
   const latest = profileId === undefined ? undefined : store.versions(profileId).at(-1);
   if ((latest?.version ?? 0) !== expectedLatest) {
@@ -115,6 +130,20 @@ function confirmIn(
       createdAt: now(),
     };
     tx.insert(record);
+    // ④ 프로젝트 생성 — 새 계열이면 같은 트랜잭션(commit 실패면 계열·프로젝트·보드 모두 롤백, J-AC-07 ①)
+    if (!profileId) {
+      const title = results.find((r) => r.referenceId === draft.baseReferenceId)?.reference?.title ?? draft.baseReferenceId;
+      const createdAt = now();
+      tx.putProject({
+        projectId: `project-${tx.projects().length + 1}`,
+        name: defaultProjectName(title, tx.projects().map((p) => p.name)),
+        revision: 1,
+        profileId: id,
+        baseReferenceId: draft.baseReferenceId,
+        createdAt,
+        updatedAt: createdAt,
+      });
+    }
     tx.remember({ key, profileId: id, version });
     commitGate();
     return resultOf(record);
@@ -128,6 +157,14 @@ export function createBoardConfirmer(deps: BoardConfirmDeps): BoardConfirmer {
     prepare: async (profileId) => {
       if (!carryOver && profileId !== undefined && hasAdjustments(deps.store.versions(profileId).at(-1))) carryOver = (await loadCarryOver()).carryOverAdjustments;
     },
-    confirmInto: (board, revision, expectedLatest, profileId, commitGate) => confirmIn(deps, carryOver, board, revision, expectedLatest, profileId, commitGate),
+    confirmFirst: (board, revision, expectedLatest, commitGate) =>
+      confirmIn(deps, carryOver, board, revision, expectedLatest, board.confirmed?.profileId, expectedLatest === 0 ? "new" : "current", commitGate),
+    confirmVersion: (board, profileId, revision, expectedLatest, target, commitGate) => {
+      const done = replayOf(deps.store, keyOf(board, revision, expectedLatest, target));
+      if (done) return { result: done, board };
+      if (board.confirmed?.profileId !== profileId) throw new CompareBoardError("SCHEMA_INVALID", `이 보드의 프로필이 아님: ${profileId}`);
+      if (target === "new" && expectedLatest !== 0) throw new CompareBoardError("SCHEMA_INVALID", `새 프로젝트는 expectedLatest 0: ${expectedLatest}`);
+      return confirmIn(deps, carryOver, board, revision, expectedLatest, target === "new" ? undefined : profileId, target, commitGate);
+    },
   };
 }

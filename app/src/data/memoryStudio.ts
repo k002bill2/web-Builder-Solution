@@ -35,6 +35,6 @@ export function createMemoryStudio(
     board: createMemoryCompareBoardRepository({ ...board, store }),
     profiles: createMemoryProfileRepository({ ...profiles, store }),
     generations: createMemoryGenerationRepository({ ...generations, store }),
-    projects: createSharedLoader(async () => (await import("./memoryProjectRepository")).createMemoryProjectRepository()),
+    projects: createSharedLoader(async () => (await import("./memoryProjectRepository")).createMemoryProjectRepository({ store, ...(board.now && { now: board.now }) })),
   };
 }

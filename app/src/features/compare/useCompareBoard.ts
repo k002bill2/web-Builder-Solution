@@ -251,7 +251,7 @@ export function useCompareBoard() {
       const target = saver.current.getState().board;
       // expectedLatest = 보드가 본 계열 최신 (첫 확정 0) — 다른 곳에서 버전이 생겼으면 STALE_PROFILE (DS-2A-04 6.1-4)
       const result = target.confirmed
-        ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version)
+        ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version, "current")
         : await repository.confirmProfile(target.revision, 0);
       engineRef.current!.reportConfirmed(result.version, target.confirmed !== undefined);
       // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6)

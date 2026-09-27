@@ -38,6 +38,21 @@
 | 12.4·D3 반영 `5607c04` | 99.65 (0.35) | 124.74 (**0.26**) |
 | 리뷰 반영 최종 | 99.63 (0.37) | 124.72 (**0.28**) |
 
+## 재개 수신 RESUME-2 (2026-09-27, HEAD `cfe3720`)
+- 브리프 `docs/06-handoff/EDITOR-A1-BETA_RESUME-2.md` · REPORT 7·8절 읽음. profile-headroom 병합(`770648b`)으로 `/profile` 진입 직후 124.23(여유 0.77). 가장 빠듯 = `/catalog` 첫 화면 99.64(0.36).
+- 범위: S-B9 라디오 · 프로필 "프로젝트: 이름" 링크 · 편집 시작 → `/studio/:projectId`(startDoc·engine 호출 금지) · P-AC-29 복구(의미 보존) · 셸 실데이터 확인.
+- 게이트: 변경마다 build, 여유 <0.3이면 실측·REPORT 커밋 후 중지. 공통 JS 순증가 0 목표.
+
+### RESUME-2 체크리스트
+- [x] S0 재개 수신 기록
+- [ ] S1 S-B9 확정 대상 라디오(J-S09·J-S10·J-S11) — TDD · build
+- [ ] S2 프로필 "프로젝트: <이름>" 링크 → `/projects` — TDD · build
+- [ ] S3 편집 시작 → `/studio/:projectId` · P-AC-29 복구 — TDD · build
+- [ ] S4 4게이트(typecheck·lint·전체 vitest 1회·build)
+- [ ] S5 127.0.0.1:4337 실제 클릭 · 1280·390 캡처 · 셸 실데이터(E-S03)
+- [ ] S6 Codex review `--scope branch --base ffb0063`
+- [ ] S7 REPORT "RESUME-2" 절 · 로컬 커밋
+
 ## 체크포인트
 - [x] 브리프·SPEC 2.1~2.5·8.3·10·11.1·12·13.1·a1-α REPORT 읽기
 - [x] 기준 재실측 (병합본 `567e3ea`) — `logs/baseline-build.txt`

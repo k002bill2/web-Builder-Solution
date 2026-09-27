@@ -1,0 +1,4 @@
+     × 바뀐 쌍이 있으면 한 줄 요약 '편집 문서를 만들며 바뀐 점 N개' + 닫힌 details 안에 원문 · 영역 1개 · 1회 3057ms
+     × 원문은 접힌 details 안에 DOM으로 남는다(펼치면 보임 · 문장 불변) 3055ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 7 passed (9)

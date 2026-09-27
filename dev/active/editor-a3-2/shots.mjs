@@ -1,8 +1,11 @@
-// EDITOR-A3-2 캔버스 캡처 — `SHOT_PREFIX=v0 SHOT_WIDTHS=1280 ego-browser nodejs < shots.mjs`. 127.0.0.1:4337(vite dev). 메모리 저장소라 첫 goto 뒤 클릭으로만 이동.
+// EDITOR-A3-2 캔버스 캡처 — shots.json 작성 뒤 `ego-browser nodejs < shots.mjs`. 127.0.0.1:4337(vite dev). 메모리 저장소라 첫 goto 뒤 클릭으로만 이동.
 // catalog → compare(Hero A) → 프로필 확정 v1 → 3안 만들기 → B안 편집 시작 → /studio → 폭별 캡처(캔버스 영역 + 전체)
 const OUT = "/Users/younghwankang/orca/workspaces/web-builder-solution/editor-a3-2/dev/active/editor-a3-2/shots";
-const PREFIX = process.env.SHOT_PREFIX ?? "v0";
-const WIDTHS = (process.env.SHOT_WIDTHS ?? "1280").split(",").map(Number);
+// ego-browser nodejs는 셸 환경변수를 넘기지 않는다 — 설정 파일 shots.json({prefix, widths})로 받는다
+const { readFile } = await import("node:fs/promises");
+const conf = JSON.parse(await readFile(`${OUT}/../shots.json`, "utf8"));
+const PREFIX = conf.prefix;
+const WIDTHS = conf.widths;
 const { mkdir } = await import("node:fs/promises");
 await mkdir(OUT, { recursive: true });
 const task = await taskSpace(`editor-a3-2 ${PREFIX}`);

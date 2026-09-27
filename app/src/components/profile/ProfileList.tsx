@@ -17,7 +17,7 @@ export function ProfileList() {
             <Link to="/compare" className="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover">
               비교 보드로
             </Link>
-            <Link to="/catalog" className="ds-label text-primary hover:text-primary-hover">
+            <Link to="/catalog" className="ds-label text-primary-text hover:text-primary-hover">
               카탈로그에서 고르기
             </Link>
           </div>
@@ -33,7 +33,7 @@ export function ProfileList() {
                 <time dateTime={summary.updatedAt} className="ds-caption1 text-label-alternative">
                   {relativeTime(summary.updatedAt)}
                 </time>
-                <Link to={`/profile/${summary.profileId}`} aria-label={`${title} 열기`} className="ds-label text-primary hover:text-primary-hover">
+                <Link to={`/profile/${summary.profileId}`} aria-label={`${title} 열기`} className="ds-label text-primary-text hover:text-primary-hover">
                   열기
                 </Link>
               </li>

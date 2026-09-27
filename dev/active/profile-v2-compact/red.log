@@ -1,0 +1,443 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/profile-v2-compact/app
+
+ ❯ src/components/profile/profileLinkColor.test.ts (1 test | 1 failed) 14ms
+   ❯ 프로필 영역 링크 색 가드 (1)
+     × 접미사 없는 text-primary를 쓰지 않는다 (text-primary-text만) 12ms
+ ❯ src/features/profile/CandidateCard.test.tsx (3 tests | 1 failed) 104ms
+   ❯ 3안 카드 간결화 (PROFILE-V2-COMPACT 4) (3)
+     × 디스클로저는 '상세' 1개, 기본 접힘 — 로그 3줄·경고 상세·정보·해시·섹션 순서·전체 로그가 그 안 8ms
+ ❯ src/pages/ProfileCompact.test.tsx (4 tests | 4 failed) 445ms
+   ❯ 왼쪽 패널 요약 우선 (PROFILE-V2-COMPACT 2·3) (3)
+     × 프로필 값: 요약(시각·레이아웃 Tag)은 보이고, 13줄 전체는 '값 전체 보기'(기본 접힘) 안 — 클릭하면 열림 214ms
+     × 대비 검사: 요약 1줄(통과 N · 미달 M, 글자)은 보이고 5줄 상세는 '대비 상세'(기본 접힘) 안, 보정 제안은 밖 49ms
+     × 패널 제목 h2 = ds-heading1 · 현재 버전 배지 violet(글자 '현재') 47ms
+   ❯ 편집 시작 위치 · 비교 표 디스클로저 (PROFILE-V2-COMPACT 5) (1)
+     × DOM 순서: 카드 목록 → 편집 시작 → '3안 비교 표 보기'(기본 접힘, <768 숨김) 134ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompact.test.tsx > 왼쪽 패널 요약 우선 (PROFILE-V2-COMPACT 2·3) > 프로필 값: 요약(시각·레이아웃 Tag)은 보이고, 13줄 전체는 '값 전체 보기'(기본 접힘) 안 — 클릭하면 열림
+AssertionError: expected undefined to be defined
+ ❯ src/pages/ProfileCompact.test.tsx:39:17
+     37|     const values = screen.getByRole("region", { name: "프로필 값" });
+     38|     const all = detailsOf(values, "값 전체 보기")!;
+     39|     expect(all).toBeDefined();
+       |                 ^
+     40|     expect(all).not.toHaveAttribute("open");
+     41|     for (const label of ["Hero", "메뉴", "CTA 위치", "카드 스타일", "Footer", "…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/pages/ProfileCompact.test.tsx > 왼쪽 패널 요약 우선 (PROFILE-V2-COMPACT 2·3) > 대비 검사: 요약 1줄(통과 N · 미달 M, 글자)은 보이고 5줄 상세는 '대비 상세'(기본 접힘) 안, 보정 제안은 밖
+TestingLibraryElementError: Unable to find an element with the text: /^대비 검사 · 목표 AA · 통과 \d+ · 미달 \d+$/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-palette"[39m
+  [33mclass[39m=[32m"flex flex-col gap-4"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"profile-palette"[39m
+  [36m>[39m
+    [0m역할 팔레트와 대비[0m
+  [36m</h2>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"역할 팔레트"[39m
+    [33mclass[39m=[32m"grid grid-cols-[repeat(auto-fill,minmax(--spacing(36),1fr))] gap-2"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+        [33mstyle[39m=[32m"background-color: rgb(139, 94, 60);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex flex-col"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [0m대표색[0m
+          [0m ([0m
+          [0mprimary[0m
+          [0m) [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-mono text-label-alternative"[39m
+          [36m>[39m
+            [0m#8B5E3C[0m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+        [33mstyle[39m=[32m"background-color: rgb(243, 233, 221);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex flex-col"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [0m면[0m
+          [0m ([0m
+          [0msurface[0m
+          [0m) [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-mono text-label-alternative"[39m
+          [36m>[39m
+            [0m#F3E9DD[0m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+        [33mstyle[39m=[32m"background-color: rgb(44, 44, 44);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex flex-col"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [0m본문 글자[0m
+          [0m ([0m
+          [0mink[0m
+          [0m) [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-mono text-label-alternative"[39m
+          [36m>[39m
+            [0m#2C2C2C[0m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+        [33mstyle[39m=[32m"background-color: rgb(154, 123, 99);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex flex-col"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [0m보조 글자[0m
+          [0m ([0m
+          [0mmuted[0m
+          [0m) [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-mono text-label-alternative"[39m
+          [36m>[39m
+            [0m#9A7B63[0m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+        [33mstyle[39m=[32m"background-color: rgb(255, 255, 255);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex flex-col"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [0m배경[0m
+          [0m ([0m
+          [0mbg[0m
+          [0m) [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"ds-mono text-label-alternative"[39m
+          [36m>[39m
+            [0m#FFFFFF[0m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m>[39m
+    [0m대비 검사 · 목표 [0m
+    [0m4.5:1[0m
+  [36m</h3>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"대비 검사"[39m
+    [33mclass[39m=[32m"flex flex-col gap-1.5"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex flex-wrap items-center gap-x-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0mC-1[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-label-alternative"[39m
+      [36m>[39m
+        [0m흰 글자 / 대표색(primary) — 버튼·CTA[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0m5.5:1[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"inline-flex items-center gap-1 text-status-positive-text"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-4 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/circle-check.svg\");"[39m
+        [36m/>[39m
+        [0m통과[0m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex flex-wrap items-center gap-x-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0mC-2[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-label-alternative"[39m
+      [36m>[39m
+        [0m본문 글자(ink) / 배경(bg)[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0m13.9:1[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"inline-flex items-center gap-1 text-status-positive-text"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-4 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/circle-check.svg\");"[39m
+        [36m/>[39m
+        [0m통과[0m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex flex-wrap items-center gap-x-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0mC-4[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-label-alternative"[39m
+      [36m>[39m
+        [0m본문 글자(ink) / 면(surface) — 교차 배경·카드[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0m11.6:1[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"inline-flex items-center gap-1 text-status-positive-text"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-4 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/circle-check.svg\");"[39m
+        [36m/>[39m
+        [0m통과[0m
+      [36m</span>[39m
+    [36m</li>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex flex-wrap items-center gap-x-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0mC-5[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-label-alternative"[39m
+      [36m>[39m
+        [0m보조 글자(muted) / 배경(bg)[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-mono"[39m
+      [36m>[39m
+        [0m3.8:1[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"inline-flex items-center gap-1 font-semibold text-status-negative-text"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-4 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/warning.svg\");"[39m
+        [36m/>[39m
+        [0m미달[0m
+      [36m</span>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"보정 제안"[39m
+    [33mclass[39m=[32m"flex flex-col gap-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"ds-body3 flex flex-col gap-1.5 rounded-md border border-line-neutral p-3"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex items-center gap-1.5"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+          [33mstyle[39m=[32m"background-color: rgb(154, 123, 99);"[39m
+        [36m/>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-4 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/arrow-right.svg\");"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"inline-block size-5 flex-none rounded-xs border border-line-normal"[39m
+          [33mstyle[39m=[32m"background-color: rgb(142, 113, 91);"[39m
+        [36m/>[39m
+      [36m</span>[39m
+      [36m<p>[39m
+        [0m보조 글자(muted) 대비가 배경에서 3.8:1로 기준 4.5:1보다 낮습니다. 대체안: #8E715B(4.5:1, 명도 −3.9%p)[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"보정값 쓰기 (보조 글자 muted)"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 self-start aria-disabled:cursor-not-allowed aria-disabled:text-label-alternative"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m보정값 쓰기[0m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/ProfileCompact.test.tsx:50:34
+     48|     await open();
+     49|     const palette = screen.getByRole("region", { name: "역할 팔레트와 대비" });
+     50|     const line = within(palette).getByText(/^대비 검사 · 목표 AA · 통과 \d+ · …
+       |                                  ^
+     51|     expect(line.closest("details")).toBeNull();
+     52|     const detail = detailsOf(palette, "대비 상세")!;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/pages/ProfileCompact.test.tsx > 왼쪽 패널 요약 우선 (PROFILE-V2-COMPACT 2·3) > 패널 제목 h2 = ds-heading1 · 현재 버전 배지 violet(글자 '현재')
+Error: [2mexpect([22m[31melement[39m[2m).toHaveClass([22m[32m[32m"ds-heading1"[32m[39m[2m)[22m
+
+Expected the element to have class:
+[32m  ds-heading1[39m
+Received:
+[31m  ds-heading2[39m
+ ❯ src/pages/ProfileCompact.test.tsx:60:117
+     58|   it("패널 제목 h2 = ds-heading1 · 현재 버전 배지 violet(글자 '현재')", async () => {
+     59|     const region = await open();
+     60|     for (const name of ["프로필 값", "역할 팔레트와 대비", "버전", "3안"]) expect(scr…
+       |                                                                                                                     ^
+     61|     expect(within(region).getByRole("heading", { level: 2, name: "3안" …
+     62|     expect(screen.getByText("v1 · 현재")).toHaveClass("text-accent-viole…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/pages/ProfileCompact.test.tsx > 편집 시작 위치 · 비교 표 디스클로저 (PROFILE-V2-COMPACT 5) > DOM 순서: 카드 목록 → 편집 시작 → '3안 비교 표 보기'(기본 접힘, <768 숨김)
+Error: [2mexpect([22m[31mreceived[39m[2m).not.toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Undefined
+Received has value: [31mundefined[39m
+ ❯ src/pages/ProfileCompact.test.tsx:75:24
+     73|     const table = await within(region).findByRole("table", { name: "3안…
+     74|     const detail = detailsOf(region, "3안 비교 표 보기")!;
+     75|     expect(detail).not.toHaveAttribute("open");
+       |                        ^
+     76|     expect(detail).toHaveClass("hidden", "md:block");
+     77|     expect(table.closest("details")).toBe(detail);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/components/profile/profileLinkColor.test.ts > 프로필 영역 링크 색 가드 > 접미사 없는 text-primary를 쓰지 않는다 (text-primary-text만)
+AssertionError: expected [ 'pages/ProfilePage.tsx:28', …(9) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "pages/ProfilePage.tsx:28",
++   "pages/ProfilePage.tsx:165",
++   "pages/ProfilePage.tsx:176",
++   "components/profile/PaletteContrast.tsx:79",
++   "components/profile/ProfileList.tsx:20",
++   "components/profile/ProfileList.tsx:36",
++   "components/profile/ProfileValues.tsx:24",
++   "features/profile/CandidateCard.tsx:104",
++   "features/profile/CandidateCard.tsx:126",
++   "features/profile/CandidateCard.tsx:136",
++ ]
+
+ ❯ src/components/profile/profileLinkColor.test.ts:25:18
+     23|     );
+     24|     expect(FILES.length).toBeGreaterThan(8);
+     25|     expect(hits).toEqual([]);
+       |                  ^
+     26|   });
+     27| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/features/profile/CandidateCard.test.tsx > 3안 카드 간결화 (PROFILE-V2-COMPACT 4) > 디스클로저는 '상세' 1개, 기본 접힘 — 로그 3줄·경고 상세·정보·해시·섹션 순서·전체 로그가 그 안
+AssertionError: expected …(2) to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/features/profile/CandidateCard.test.tsx:53:21
+     51|     const card = renderCard();
+     52|     const details = card.querySelectorAll("details");
+     53|     expect(details).toHaveLength(1);
+       |                     ^
+     54|     const detail = details[0]!;
+     55|     expect(detail).not.toHaveAttribute("open");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  6 failed | 2 passed (8)
+   Start at  13:01:28
+   Duration  1.45s (environment 39%, tests 25%, transform 19%, setup 11%, import 6%, worker 1%)
+
+exit 1

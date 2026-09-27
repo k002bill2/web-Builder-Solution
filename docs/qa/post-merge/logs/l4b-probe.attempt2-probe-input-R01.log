@@ -1,0 +1,45 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (../docs/qa/post-merge/tools/vitest.qa.config.ts:2:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/qa-post-merge/app
+
+ ❯ ../docs/qa/post-merge/tools/l4b-probe.test.ts (8 tests | 2 failed) 27ms
+   ❯ QA L4b createDocFromCandidate (2)
+     × 유효 문서 · hash = hashDoc · 입력 불변(비동결 입력) · 결과 깊은 동결 3ms
+     × 결정성: 독립 객체 입력 두 번 → 깊은 동등 · 같은 hash · 다른 profileVersion은 다른 문서 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../docs/qa/post-merge/tools/l4b-probe.test.ts > QA L4b createDocFromCandidate > 유효 문서 · hash = hashDoc · 입력 불변(비동결 입력) · 결과 깊은 동결
+EngineOpError: 본문 섹션이 4개입니다 — 5개 이상이어야 합니다 (R-01)
+ ❯ createDocFromCandidate src/engine/doc/createDocFromCandidate.ts:58:21
+     56|   const defs = plan.sections.map(definitionOf);
+     57|   const broken = structureIssues(defs)[0];
+     58|   if (broken) throw new EngineOpError("BAD_VALUE", broken.cause);
+       |                     ^
+     59|   const sections = defs.map((def, i) => instanceOf(def, defs.slice(0, …
+     60|   const draft = normalizeDoc({
+ ❯ ../docs/qa/post-merge/tools/l4b-probe.test.ts:29:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  ../docs/qa/post-merge/tools/l4b-probe.test.ts > QA L4b createDocFromCandidate > 결정성: 독립 객체 입력 두 번 → 깊은 동등 · 같은 hash · 다른 profileVersion은 다른 문서
+EngineOpError: 본문 섹션이 4개입니다 — 5개 이상이어야 합니다 (R-01)
+ ❯ createDocFromCandidate src/engine/doc/createDocFromCandidate.ts:58:21
+     56|   const defs = plan.sections.map(definitionOf);
+     57|   const broken = structureIssues(defs)[0];
+     58|   if (broken) throw new EngineOpError("BAD_VALUE", broken.cause);
+       |                     ^
+     59|   const sections = defs.map((def, i) => instanceOf(def, defs.slice(0, …
+     60|   const draft = normalizeDoc({
+ ❯ ../docs/qa/post-merge/tools/l4b-probe.test.ts:36:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 passed (8)
+   Start at  03:13:33
+   Duration  254ms (transform 68%, tests 16%, import 13%, worker 3%)
+

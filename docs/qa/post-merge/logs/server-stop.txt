@@ -1,0 +1,11 @@
+## 2026-09-27 03:14:02 KST 종료 전
+  PID  PPID COMMAND
+39270     1 npm exec vite preview --host 127.0.0.1 --port 4341 --strictPort        
+39300 39270 node /Users/younghwankang/orca/workspaces/web-builder-solution/qa-post-merge/app/node_modules/.bin/vite preview --host 127.0.0.1 --port 4341 --strictPort
+COMMAND   PID            USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    39300 002billmac_home   14u  IPv4 0x9d6e0ec86bd57d96      0t0  TCP 127.0.0.1:4341 (LISTEN)
+## 종료 후
+  PID COMMAND
+ps exit=1
+lsof exit=1 (1 = LISTEN 없음)
+2026-09-27 03:14:04 KST

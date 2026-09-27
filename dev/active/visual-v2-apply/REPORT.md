@@ -1,0 +1,124 @@
+# REPORT — VISUAL-V2-APPLY (기존 화면 v2 밀도·타이포 적용)
+
+- 보고 대상 Jarvis · run_3e572deefb13 · task_001d97efc671(상태는 Jarvis 회수) · 브랜치 `k002bill2/visual-v2-apply` · 기준 main 9bcf0d2 + 브리프 78e745c
+- 근거 수준: L1 = 메인이 이번 실행에서 직접 실행·측정·캡처 / L2 = 서브에이전트 보고(메인이 통합 후 테스트 재실행으로 확인한 부분은 L1로 표기)
+
+## 요약
+1. 브리프 쓰기 범위 1~6을 실제 코드에 적용했다. 본문·메뉴 16/15 → 14, Button lg·TextField 52/48 → 40, 체크박스 20 → 16(행 최소 24), 카드 제목 17 → 15/600, 비교 선택 버튼 36 → 32. 수치는 4345 실측(L1)이다.
+2. 게이트: typecheck 0 · lint 0 · 표적 테스트 21파일 277/277 · build 0. 번들 /compare 99.57KB(여유 0.43), /profile 99.38KB(여유 0.62). 예산은 올리지 않았다.
+3. 전체 test suite는 실행하지 않았다(브리프: ui-2a04c 전담). 통합 회수 때 전체 게이트를 기다린다. 독립 QA(VoiceOver·Safari)는 하지 않았다.
+
+## 커밋 (로컬, push 없음)
+| SHA | 내용 |
+|---|---|
+| 12eee17 | 수신·범위 체크포인트 |
+| 69289b4 | 묶음1: base.css body3, Button·TextField·Checkbox 밀도, AppHeader 메뉴 body3 + before 캡처·RED/GREEN 로그 |
+| d1c8eed | 묶음4 비교: 서브에이전트 6ca4cb1을 cherry-pick |
+| 03714d3 | 묶음2·3 카탈로그·상세: 서브에이전트 bbffaf1을 cherry-pick |
+| 313c573 | after 캡처·지표·통합 빌드·서버 종료 근거 |
+| (이 커밋) | REPORT·PROGRESS |
+
+## 변경 파일 (app/src, 코드 10 + 테스트 9)
+- 토큰·DS
+  - `styles/tokens/base.css`: body `font-size: var(--font-size-body3)`, `line-height: var(--line-height-body3)`. 토큰 이름·브랜드는 바꾸지 않았다.
+  - `components/ds/Button.tsx`: lg `h-13 px-5.5 text-body1` → `h-10 px-5 text-body3`, lg 아이콘 22 → 20. md(h-10)·sm(h-8)은 그대로다.
+  - `components/ds/TextField.tsx`: `h-12` → `h-10`, 입력 글자 `text-body1` → `text-body3`.
+  - `components/ds/Checkbox.tsx`: 상자 `size-5` → `size-4`, 체크 svg `size-3.25` → `size-3`, 행 `min-h-6 text-body3`.
+- 셸: `components/layout/AppHeader.tsx`는 nav `text-body2` → `text-body3` 한 곳만 바꿨다. 링크·라우트·구조는 그대로다.
+- 카탈로그
+  - `components/catalog/ReferenceCard.tsx`: 제목 `ds-heading2` → `ds-body2 font-semibold`. `line-clamp-2`·hover·URL은 그대로다.
+  - `components/catalog/CatalogHero.tsx`: 추천 받기 `lg` → `md`.
+- 상세
+  - `pages/ReferenceDetailPage.tsx`: 태그 톤 blue/orange → 앞 둘 violet, 나머지 neutral. 404 링크 `text-primary` → `text-primary-text`.
+  - `components/detail/DetailSidebar.tsx`: 행동 묶음에 `lg:mt-auto`를 붙였다. 모바일은 흐름 그대로다.
+- 비교
+  - `components/compare/ComparisonTable.tsx`: 표 외곽 `rounded-lg border`를 제거했다. 포커스 링과 tabIndex는 유지한다. 행 머리글·값 셀 `p-3` → `px-3.5 py-2.5`.
+  - `components/compare/PickButton.tsx`: 테두리를 제거하고 `h-9` → `h-8`. aria-pressed·접근 이름·"선택됨" 글자·원 표시·포커스는 유지한다.
+  - `pages/CompareBoardPage.tsx`: xl 패널 `calc(var(--spacing)*90)`(360) → `--spacing(75)`(300). 한 줄만 바꿨다.
+- 테스트
+  - 신규: `ds/density.test.tsx`(4), `catalog/CatalogHero.test.tsx`(1), `compare/compareBoardV2.test.tsx`(3), `pages/CompareBoardV2.test.tsx`(1)
+  - 추가: `AppHeader.test.tsx`(+1), `ReferenceCard.test.tsx`(+1), `ReferenceDetailPage.test.tsx`(+2, 404 단언 강화 1)
+
+## 테스트 증감 (L1: 통합 후 메인이 재실행)
+- 새 회귀 테스트 +14건(파일 4개 신규). 삭제 0, 완화 0. 기존 단언을 새 디자인에 맞춰 바꾼 곳 0(모두 추가·강화).
+- RED 확인
+  - 메인 묶음1: 5 failed(`logs/red-ds.txt`).
+  - 카탈로그·상세 서브에이전트: 5 failed / 44(L2).
+  - 비교 서브에이전트: 4 failed / 21(L2).
+- GREEN
+  - `npx vitest run src/components/{catalog,detail,ds,layout} src/pages/{ReferenceDetailPage,CatalogPage,keyboardA11y}.test.tsx src/styles src/test/{noHardcodedStyle,tokenUsage,brandIsolation,tokenContrast}.test.ts` → 21 files, 277 passed(`logs/green-integrated.txt`).
+  - `npx vitest run src/components/compare src/pages/CompareBoard src/test/noHardcodedStyle.test.ts src/test/tokenUsage.test.ts` → 12 files, 129 passed.
+- 가드(noHardcodedStyle·tokenUsage·brandIsolation·tokenContrast)는 수정하지 않았고 통과했다.
+
+## 빌드 수치 (`npm run build` exit 0, 첫 화면 gzip / 예산 100KB)
+| 시점 | /catalog | /references/:id | /compare | /profile |
+|---|---|---|---|---|
+| baseline(브리프) | — | — | 99.59 / 자동 118.99 | 99.39 / 118.97 |
+| 묶음1 뒤 (`build-1-ds.txt`) | 99.36 | 96.70 | 99.60 / 119.00 | 99.40 / 118.98 |
+| +비교 (`build-2-compare.txt`) | 99.35 | 96.70 | 99.57 / 118.98 | 99.38 / 118.97 |
+| 통합 (`build-3-integrated.txt`) | 99.36 | 96.71 | **99.57 / 118.97** | **99.38 / 118.96** |
+- 최소 여유는 /compare 0.43KB(≥0.3 충족)다. 예산·분류는 바꾸지 않았다.
+
+## 캡처·실측 (127.0.0.1:4345 strictPort, ego-browser, 외부 접근 0)
+- 캡처 `shots/{before,after}-{catalog,detail,compare,profile}-{1280,390}.png`, 지표 `logs/metrics-{before,after}.json`, 스크립트 `logs/capture.mjs`(before)·`logs/capture-after.mjs`
+- 실측 before → after(L1)
+  - body·메뉴 글자: 16/15 → 14/14
+  - 검색 필드: 48 → 40
+  - 버튼 최대 높이(1280): 52 → 40
+  - 체크 상자 16, 체크 행 24
+  - 카드 제목: 17px/600 → 15px/600
+  - 비교 선택 버튼: 36 → 32(선택 뒤 aria-pressed=true, 글자 "선택됨")
+- 가로 넘침(scrollWidth−clientWidth): catalog·detail·compare(3개 채움 + 선택 1회)·profile × 1280/768/390/320 전부 0이다.
+- 이동: 카탈로그 → 상세(카드 링크) → 뒤로 → 비교 3개 담기 → 비교 보드 → 선택 → 프로필. 4폭 모두 성공했다.
+- 시각 검토 1회 결과는 결함 0이다. 그래서 수정 확인 라운드는 쓰지 않았다.
+  - 1280 상세: 행동 버튼이 패널 바닥에 있다.
+  - 태그: 앞 둘은 보라, 나머지는 중립 외곽형이다.
+  - 비교표: 외곽선이 없고 행 윗선만 남았다. 패널이 좁아진 만큼 열이 넓어졌다.
+  - 390 비교: 아코디언과 하단 초안 바가 정상이다.
+- 캡처 주의
+  - 1280 비교 캡처에서 초안 패널 아래가 잘린 것은 before에도 똑같이 있다. 스티키 패널을 전체 페이지로 캡처해서 생긴 것이라 결함으로 보지 않는다.
+  - 390 전체 캡처 중간의 고정 바도 캡처 합성 탓이다.
+  - `minButtonH` 20은 before에도 있던 기존 요소다(이번 변경 무관).
+- profile spot-check: 빈 상태만 확인했다. 넘침 0, 버튼 32. 프로필 채움 상태는 재현하지 않았다.
+- 픽셀 완전 일치는 주장하지 않는다. 목업 React 렌더는 외부 자산이 필요해 하지 않았고, 대조는 Designer REPORT의 마크업·토큰 수치 기준이다.
+
+## 의도된 목업 차이 (한 줄씩)
+- Button md 40 = lg 40: 목업은 md 38 / lg 40이다. 필드 40 기준으로 추천 받기(md)와 검색창 높이를 맞췄고, md는 기본값이라 전역 파급을 막으려고 바꾸지 않았다. lg와 md는 여백으로만 구분하며 계층은 역전되지 않는다(lg ≥ md ≥ sm, 테스트로 고정).
+- TextField 40: 목업은 38이다. 브리프 기준 40을 따랐다.
+- 카드 hover는 `hover:text-primary`를 그대로 뒀다. Designer 표에는 primary-hover로 적혀 있지만 브리프는 "기능 불변"이고 링크 색 일괄 교체는 묶음5(프로필 레인) 소관이다.
+- PickButton 원은 16px 그대로다. 목업은 18인데 브리프 최소수정 범위 밖이다.
+- 상세 패널 최소 높이는 추가하지 않았다. lg 그리드 행 높이로 늘어나므로 `lg:mt-auto`만으로 바닥에 붙는다(1280 캡처로 확인).
+- Chip(B-4)·비교 필 문구(C-05)·툴바 캡션은 브리프대로 그대로 뒀다.
+
+## DS 변경의 파급 (의도, 목록)
+- `size="lg"` 사용처 3곳: CatalogHero(이제 md), DetailSidebar 가져오기, DraftPanel 확정 버튼. 뒤의 둘은 52 → 40이 됐다.
+- TextField: FilterRail 없음, CatalogHero 검색, CustomStyleFields. Checkbox: FilterRail.
+- body 14 영향: 클래스 없는 글자만. `Icon`은 항상 크기 클래스를 가져 `.ds-icon` 1.5em 파급이 없다.
+
+## 서브에이전트 분할·회수
+| 에이전트 | 범위 | 격리 | 결과 |
+|---|---|---|---|
+| worker A | 카탈로그·상세(범위 4·5) | worktree `worktree-agent-aced0264f65624049` | bbffaf1 → cherry-pick 03714d3. RED 5 → GREEN 44/44(L2), 통합 후 메인 재실행 통과(L1) |
+| worker B | 비교(범위 6) | worktree `worktree-agent-a030de691dc38c74f` | 6ca4cb1 → cherry-pick d1c8eed. RED 4 → GREEN 119/119(L2), 통합 후 메인 재실행 129/129(L1) |
+- 메인이 한 것: DS·토큰·AppHeader(묶음1), 통합, 빌드 측정, 캡처·실측, 서버 관리, Codex 리뷰.
+- 동시 실행 최대는 2다. 워크트리·브랜치는 삭제 금지라 남겨 뒀다(각 워크트리에 untracked `app/node_modules` 심볼릭 링크가 있다).
+
+## 서버
+- `npx vite --host 127.0.0.1 --port 4345 --strictPort`: npx PID 84721, listener node PID 84738.
+- 자기 PID 2개만 kill했다. 종료 뒤 `lsof -iTCP:4345 -sTCP:LISTEN` exit 1(listener 없음)을 확인했다(`logs/server-shutdown.txt`).
+
+## 실행상 사고 (기록)
+- 첫 after 캡처에서 `PHASE` 환경변수가 ego-browser 런타임에 전달되지 않았다. 그래서 스크립트가 before 파일을 after 상태로 덮어썼다.
+- 커밋 69289b4의 before 원본으로 복원했다(`metrics-before.json` 16px 16건 확인). after는 phase를 고정한 `capture-after.mjs`로 다시 찍었다.
+
+## Codex 검증
+- `codex-companion review --scope branch --base 12eee17` 1라운드를 실행했다. 결과는 아래 "Codex 결과" 절에 적는다.
+
+## 미완료 / 대기
+- 전체 test suite는 ui-2a04c 전담이다. 통합 회수 때 전체 게이트를 기다린다.
+- 독립 QA 대기: VoiceOver·Safari, 터치 실기기, 프로필 채움 상태 DS 회귀.
+- 묶음5(프로필·링크 가드)는 ui-2a04c 병합 뒤 별도 레인에서 한다. 이번 범위가 아니다.
+
+## Codex 결과 (1라운드, `logs/codex-review-r1.txt`)
+- 판정: "변경된 동작에서 확인된 버그는 없습니다." 지적 0건이므로 추가 라운드는 하지 않는다.
+- 한계: Codex 샌드박스에서는 파일 쓰기 제한(EPERM)으로 테스트를 시작하지 못했다. 테스트 근거는 메인 실행 로그다(위 GREEN 절).

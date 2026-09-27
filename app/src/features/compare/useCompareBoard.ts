@@ -34,8 +34,10 @@ export function useCompareBoard() {
   const navigate = useNavigate();
   // 확정 대상 기본값 — GNB "새 프로젝트"(?new=1)면 새 프로젝트, 아니면 현재 프로젝트 새 버전 (DS-2A-05 2.2 · J-S10)
   const startsNew = useSearchParams()[0].get("new") === "1";
-  const [target, setTarget] = useState<ConfirmTarget>(startsNew ? "new" : "current");
-  useEffect(() => setTarget(startsNew ? "new" : "current"), [startsNew]);
+  // 사용자가 고른 값은 고른 때의 ?new 와 함께 둔다 — ?new 가 바뀌면 기본값으로 돌아간다(effect 없이 파생)
+  const [choice, setChoice] = useState<{ readonly startsNew: boolean; readonly value: ConfirmTarget } | null>(null);
+  const target: ConfirmTarget = choice?.startsNew === startsNew ? choice.value : startsNew ? "new" : "current";
+  const setTarget = useCallback((value: ConfirmTarget) => setChoice({ startsNew, value }), [startsNew]);
   const [phase, setPhase] = useState<Phase>("loading");
   const [attempt, setAttempt] = useState(0);
   const [saved, setSaved] = useState<PicksSaverState | null>(null);

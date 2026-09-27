@@ -55,7 +55,7 @@
 | 기준 | 89.34 | 99.64 (0.36) | 98.41 / 120.81 | 99.40 / 124.23 |
 | S1 | 89.34 | 99.65 (0.35) | 98.72 / 121.36 | 99.41 / 124.24 |
 | S2·S3 | 89.34 | 99.65 (0.35) | 98.72 / 121.35 | 99.61 (0.39) / 124.46 (0.54) |
-- [ ] S4 4게이트(typecheck·lint·전체 vitest 1회·build)
+- [x] S4 4게이트 — typecheck exit 0 · lint exit 0(set-state-in-effect 1건 → 파생 state로 수정) · vitest 108 files / 1243 passed · build exit 0 (`logs/resume2-*.txt`). 최종: /catalog 99.64(0.36) · /compare 98.74/121.36 · /profile 99.60(0.40)/124.44(0.56) · 공통 89.34(+0)
 - [ ] S5 127.0.0.1:4337 실제 클릭 · 1280·390 캡처 · 셸 실데이터(E-S03)
 - [ ] S6 Codex review `--scope branch --base ffb0063`
 - [ ] S7 REPORT "RESUME-2" 절 · 로컬 커밋

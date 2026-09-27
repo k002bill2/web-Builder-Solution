@@ -5,8 +5,8 @@
 ## 체크포인트
 - [x] H0 base build 실측 → `logs/base-build.txt` — /profile 첫 99.60 · 진입 124.69(여유 0.31), /catalog 첫 99.65, /compare 진입 121.39, /projects 진입 106.99, 공통 89.34
 - [x] H1 여유 확보 — 달성치 0(목표 미달, 근거 REPORT 3절). 1순위 실측 역효과(+0.15), 2순위 후보 없음
-- [ ] H2 C6 재시도(ProfilePage ref + history.replaceState · useCompareBoard 한 줄 · CompareBoardTarget 테스트 복원 · 전체 vitest 3회 실패 0)
-- [ ] H3 최종 build · REPORT
+- [x] H2 C6 재시도 `ca179d1` — projectCreated는 history.replaceState로 비움(droppedCount 경로만 기존 navigate replace 유지: CarryOver 13.7 단언, REPORT 4절) · 전체 vitest 3/3 실패 0 · /profile 124.69
+- [x] H3 최종 build(`logs/final-build.txt` exit 0) · REPORT · Codex 이관
 
 ## 메모
 - H1 1순위(`memoryDocBook.startEdit` + CandidatesSection `import()`): profileEngine 9.98 → **10.13**(+0.15). profileEngine에 기존 `import()` 지점이 없어 `__vitePreload`+`mapDeps`(파일명 4개) 비용이 옮긴 코드보다 크다. 시도 diff `logs/h1-attempt-dynimport.diff` · RED `logs/h1-red.txt`. 되돌림.

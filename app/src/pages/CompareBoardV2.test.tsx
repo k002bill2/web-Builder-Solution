@@ -43,3 +43,17 @@ describe("비교 보드 v2 — <768 아코디언 고른 셀 (V2-AC-34)", () => {
     expect(cellOf("A 모던 카페 브랜드")).not.toHaveClass("bg-primary-container");
   });
 });
+
+describe("비교 보드 v2 — ≥1280 초안 패널 폭 (REPORT 1.4)", () => {
+  it("데스크톱 그리드의 패널 열은 spacing 토큰 75(300) — 90(360)이 아니다", async () => {
+    renderApp(
+      "/compare",
+      createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures),
+      createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a", "ref-b", "ref-c"]) }),
+    );
+    await screen.findByRole("region", { name: "프로필 초안" });
+    const grid = document.querySelector<HTMLElement>('[class*="xl:grid-cols-"]')!;
+    expect(grid).toHaveClass("xl:grid-cols-[minmax(0,1fr)_--spacing(75)]");
+    expect(grid.className).not.toMatch(/\*90|spacing\(90\)/);
+  });
+});

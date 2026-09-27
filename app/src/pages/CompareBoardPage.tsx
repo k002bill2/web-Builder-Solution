@@ -1,15 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { brand } from "../brand/brand.config";
 import { ComparisonAccordion } from "../components/compare/ComparisonAccordion";
 import { ComparisonTable } from "../components/compare/ComparisonTable";
-import { DraftPanel } from "../components/compare/DraftPanel";
-import { DraftSummaryBar } from "../components/compare/DraftSummaryBar";
 import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Icon } from "../components/ds/Icon";
 import { LoadingState } from "../components/layout/LoadingState";
 import type { SaveStatus } from "../domain/compareBoard";
+import type { BoardEngine } from "../features/compare/boardEngine";
 import { COMPARE_LIMIT, COMPARE_LIMIT_NOTICE } from "../features/compare/compareTray";
 import { useCompareBoard } from "../features/compare/useCompareBoard";
 import { useViewport } from "../features/compare/useViewport";
@@ -19,6 +18,8 @@ import { useSavedReferences } from "../features/saved/SavedReferencesContext";
 const PAGE = "mx-auto flex max-w-(--layout-max-width) flex-col gap-6 px-4 py-8 md:px-7";
 /** 열을 뺀 뒤 포커스 대상이 없을 때 — "레퍼런스 추가"(또는 빈 상태의 "카탈로그에서 고르기") (A-6) */
 const FALLBACK = "[data-focus-fallback]";
+/** 보드 준비(엔진 로드) 뒤에만 그리는 초안 패널·요약 바 — 엔진 청크에서 받는다(BUNDLE-01 C8, 첫 화면 정적 JS 밖) */
+type BoardUi = Pick<BoardEngine, "DraftPanel" | "DraftSummaryBar">;
 
 /** S-12 자동 저장 상태 — 실패일 때만 alert */
 function SaveCaption({ status, onRetry }: { readonly status: SaveStatus; readonly onRetry: () => void }) {
@@ -53,16 +54,36 @@ export function CompareBoardPage() {
   const root = useRef<HTMLDivElement>(null);
   const pendingFocus = useRef<string | null>(null);
   const focused = useRef(false);
+  const [ui, setUi] = useState<BoardUi | null>(null);
+  const [uiFailed, setUiFailed] = useState(false);
 
   useEffect(() => {
     document.title = `비교 보드 · ${brand.name}`;
   }, []);
 
+  // 훅이 엔진을 받은 뒤(ready)라 같은 모듈이 이미 내려와 있다 — 추가 요청 없이 바로 끝난다
   useEffect(() => {
-    if (board.phase !== "ready" || focused.current) return;
+    if (board.phase !== "ready" || ui || uiFailed) return;
+    let cancelled = false;
+    import("../features/compare/boardEngine").then(
+      ({ boardEngine }) => !cancelled && setUi(boardEngine),
+      (error: unknown) => {
+        if (cancelled) return;
+        console.error("[compare] 비교 보드 화면 불러오기 실패", error);
+        setUiFailed(true);
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [board.phase, ui, uiFailed]);
+
+  const ready = board.phase === "ready" && ui !== null && !uiFailed;
+  useEffect(() => {
+    if (!ready || focused.current) return;
     focused.current = true;
     heading.current?.focus();
-  }, [board.phase]);
+  }, [ready]);
 
   const columns = board.board?.columns ?? [];
   const columnKey = columns.map((c) => c.referenceId).join("\n");
@@ -75,14 +96,20 @@ export function CompareBoardPage() {
     element.focus();
   }, [columnKey]);
 
-  if (board.phase === "loading") return <LoadingState label="비교 보드를 불러오는 중…" />;
-  if (board.phase === "error") {
+  if (board.phase === "error" || uiFailed) {
     return (
       <div role="alert" className={PAGE}>
         <h1 className="ds-title1">비교 보드를 불러오지 못했습니다</h1>
         <p className="ds-body2 text-label-alternative">네트워크 연결을 확인한 뒤 다시 시도해 주세요.</p>
         <div className="flex gap-2">
-          <Button onClick={board.reload}>다시 시도</Button>
+          <Button
+            onClick={() => {
+              setUiFailed(false);
+              board.reload();
+            }}
+          >
+            다시 시도
+          </Button>
           <Button variant="outline" onClick={() => navigate("/catalog")}>
             카탈로그로
           </Button>
@@ -90,6 +117,7 @@ export function CompareBoardPage() {
       </div>
     );
   }
+  if (board.phase === "loading" || ui === null) return <LoadingState label="비교 보드를 불러오는 중…" />;
 
   const full = columns.length >= COMPARE_LIMIT;
   const addReference = () => {
@@ -103,6 +131,7 @@ export function CompareBoardPage() {
   };
 
   const carryOver = board.carryOver;
+  const { DraftPanel, DraftSummaryBar } = ui;
   const comparisonProps = {
     columns: board.view?.columns ?? [],
     rows: board.view?.rows ?? [],
@@ -160,7 +189,7 @@ export function CompareBoardPage() {
           </div>
         </section>
       ) : (
-        <div className="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_calc(var(--spacing)*90)] xl:items-start">
+        <div className="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_--spacing(75)] xl:items-start">
           <div className="flex min-w-0 flex-col gap-4">
             {columns.length === 1 && (
               <Callout tone="info" title="비교할 레퍼런스가 1개입니다">

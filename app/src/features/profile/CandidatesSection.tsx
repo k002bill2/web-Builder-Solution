@@ -1,7 +1,8 @@
 /**
  * 3안 영역 (DS-2A-04 4 · 5.1 · P-S17~S24 · P-AC-21~31). 엔진 청크 전용 — 보는 버전마다 새로 마운트한다(key = 버전, useGeneration).
  * 생성은 저장된 버전에만: 저장 안 된 조정이 있으면 "3안 만들기" aria-disabled + 이유. "다시 생성" 없음(결정성, M-02) — 재시도는 실패 안만.
- * 폭: ≥768 카드 3열 + 비교 표, <768 한 열·표 없음(카드가 같은 정보를 모두 가진다). 편집 시작은 2a-05 경계(Q7) — 편집 미구현 안내 상시.
+ * 폭: ≥768 카드 3열 + 비교 표(접힘), <768 한 열·표 없음(카드가 같은 정보를 모두 가진다). 편집 시작은 2a-05 경계(Q7) — 편집 미구현 안내 상시.
+ * 순서(PROFILE-V2-COMPACT 5): 카드 → 편집 시작(바로 아래 오른쪽) → "3안 비교 표 보기".
  */
 import { useId } from "react";
 import { useNavigate } from "react-router";
@@ -40,7 +41,7 @@ export function CandidatesSection({ viewed, pending, announce }: { readonly view
   return (
     <section aria-labelledby="profile-candidates" className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <h2 id="profile-candidates" className="ds-heading2">3안</h2>
+        <h2 id="profile-candidates" className="ds-heading1">생성된 3안</h2>
         <p className="ds-body3 text-label-alternative">{determinismText(viewed)}</p>
         <p className="ds-caption1 text-label-alternative">{CANDIDATE_TEXT.preview}</p>
       </div>
@@ -107,7 +108,6 @@ export function CandidatesSection({ viewed, pending, announce }: { readonly view
           )}
         </ul>
       )}
-      {job && isTerminal(job.state) && !allFailed && <CandidateTable job={job} profileScale={profile.typography_tokens.scale} />}
       <div className="flex flex-col items-start gap-2 md:items-end">
         <Button
           trailingIcon="arrow-right"
@@ -122,6 +122,7 @@ export function CandidatesSection({ viewed, pending, announce }: { readonly view
           {selected ? CANDIDATE_TEXT.editNotice : `${CANDIDATE_TEXT.editReason} · ${CANDIDATE_TEXT.editNotice}`}
         </p>
       </div>
+      {job && isTerminal(job.state) && !allFailed && <CandidateTable job={job} profileScale={profile.typography_tokens.scale} />}
     </section>
   );
 }

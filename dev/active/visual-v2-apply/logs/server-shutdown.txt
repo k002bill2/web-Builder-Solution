@@ -1,0 +1,14 @@
+# before
+COMMAND   PID            USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    84738 002billmac_home   26u  IPv4 0x6bd97c7fd522d852      0t0  TCP 127.0.0.1:4345 (LISTEN)
+  PID  PPID COMMAND
+84721     1 npm exec vite --host 127.0.0.1 --port 4345 --strictPort       
+84738 84721 node /Users/younghwankang/orca/workspaces/web-builder-solution/visual-v2-apply/app/node_modules/.bin/vite --host 127.0.0.1 --port 4345 --strictPort
+# after kill 84738(listener) 84721(npx) — 자기 PID만
+lsof exit=1
+
+# longtext 서버
+  PID  PPID COMMAND
+ 8890     1 npm exec vite --host 127.0.0.1 --port 4345 --strictPort       
+ 8922  8890 node /Users/younghwankang/orca/workspaces/web-builder-solution/visual-v2-apply/app/node_modules/.bin/vite --host 127.0.0.1 --port 4345 --strictPort
+lsof exit=1 (listener 없음)

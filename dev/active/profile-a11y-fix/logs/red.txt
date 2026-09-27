@@ -1,0 +1,70 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/profile-a11y-fix/app
+
+ ❯ src/pages/ProfileAdjust.test.tsx (25 tests | 3 failed | 22 skipped) 372ms
+   ❯ PROFILE-A11Y-FIX D1·D2·D4 (QA profile-visual-align) (3)
+     × D1: '보정값 쓰기' Enter → '프로필 알림'에 쓴 결과, 포커스는 같은 버튼, 확인 단계 없음 256ms
+     × D4: 쓴 뒤(저장 전) 배너 = 쓴 상태 문구, 미달 문구 없음 · 조정 취소하면 미달 문구로 돌아간다 56ms
+     × D2: /profile/:id 진입·버전 전환 → document.title '디자인 프로필 · 브랜드' 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileAdjust.test.tsx > PROFILE-A11Y-FIX D1·D2·D4 (QA profile-visual-align) > D1: '보정값 쓰기' Enter → '프로필 알림'에 쓴 결과, 포커스는 같은 버튼, 확인 단계 없음
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다[39m
+Received:
+[31m[39m
+ ❯ src/pages/ProfileAdjust.test.tsx:457:60
+    455|     write.focus();
+    456|     await userEvent.keyboard("{Enter}");
+    457|     expect(screen.getByRole("status", { name: "프로필 알림" })).toHaveTextC…
+       |                                                            ^
+    458|     expect(write).toHaveFocus();
+    459|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/pages/ProfileAdjust.test.tsx > PROFILE-A11Y-FIX D1·D2·D4 (QA profile-visual-align) > D4: 쓴 뒤(저장 전) 배너 = 쓴 상태 문구, 미달 문구 없음 · 조정 취소하면 미달 문구로 돌아간다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다[39m
+Received:
+[31m  보조 글자(muted) 대비가 배경에서 3.8:1로 기준 4.5:1보다 낮습니다. 대체안: #8E715B(4.5:1, 명도 −3.9%p)보정값을 썼습니다[39m
+ ❯ src/pages/ProfileAdjust.test.tsx:470:23
+    468|     expect(before).toMatch(/보조 글자\(muted\) 대비가 .*낮습니다/);
+    469|     await userEvent.click(within(palette).getByRole("button", { name: …
+    470|     expect(proposals).toHaveTextContent(WRITTEN);
+       |                       ^
+    471|     expect(proposals).not.toHaveTextContent(/낮습니다/);
+    472|     await userEvent.click(screen.getByRole("button", { name: "조정 취소" }…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/pages/ProfileAdjust.test.tsx > PROFILE-A11Y-FIX D1·D2·D4 (QA profile-visual-align) > D2: /profile/:id 진입·버전 전환 → document.title '디자인 프로필 · 브랜드'
+AssertionError: expected '비교 보드 · 이전 화면' to be '디자인 프로필 · Design Studio' // Object.is equality
+
+Expected: "디자인 프로필 · Design Studio"
+Received: "비교 보드 · 이전 화면"
+
+ ❯ src/pages/ProfileAdjust.test.tsx:479:28
+    477|     document.title = "비교 보드 · 이전 화면";
+    478|     await openProfile(undefined, { before: (s) => s.wide.saveAdjustmen…
+    479|     expect(document.title).toBe(`디자인 프로필 · ${brand.name}`);
+       |                            ^
+    480|     await userEvent.click(screen.getByRole("button", { name: "보기 (v1)"…
+    481|     await screen.findByText(/v1을 보고 있습니다/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 22 skipped (25)
+   Start at  14:11:05
+   Duration  1.39s (environment 31%, tests 29%, transform 27%, import 8%, setup 5%)
+

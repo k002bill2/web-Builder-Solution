@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
+import { brand } from "../brand/brand.config";
 import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Tag } from "../components/ds/Tag";
@@ -13,7 +14,6 @@ import { SELECTION_MODE_LABELS } from "../features/profile/profileFields";
 import { useProfileDetail, type ProfileDetailState } from "../features/profile/useProfileDetail";
 import { missingVersionText, versionWith } from "../features/profile/versionText";
 
-const PAGE = "mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 py-6 md:px-7 md:py-8";
 
 /** P-S02 — 오류가 아니라 빈 상태(role=alert 아님) */
 function ProfileNotFound() {
@@ -25,7 +25,7 @@ function ProfileNotFound() {
         <Link to="/compare" className="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover">
           비교 보드로
         </Link>
-        <Link to="/catalog" className="ds-label text-primary hover:text-primary-hover">
+        <Link to="/catalog" className="ds-label text-primary-text hover:text-primary-hover">
           카탈로그
         </Link>
       </div>
@@ -52,6 +52,10 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const location = useLocation();
   const navigate = useNavigate();
   const dropped = droppedCountOf(location.state);
+  // 탭 제목(WCAG 2.4.2) — 비교 보드와 같은 패턴. 버전 전환(?v=)은 같은 화면이라 그대로 (PROFILE-A11Y-FIX D2)
+  useEffect(() => {
+    document.title = `디자인 프로필 · ${brand.name}`;
+  }, []);
   useEffect(() => {
     if (dropped === 0) return;
     announce(`조정 ${dropped}개를 지웠습니다`);
@@ -151,87 +155,88 @@ function ProfileView({
   const { ProfilePanel, CandidatesSection } = engine;
 
   return (
-    <div className={PAGE}>
-      <header className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 ref={h1} tabIndex={-1} className="ds-title1 focus:outline-none">
-            디자인 프로필
-          </h1>
-          <Tag tone={isLatest ? "blue" : "neutral"}>{isLatest ? `v${viewed.version} · 현재` : `v${viewed.version} · 이전 버전`}</Tag>
-        </div>
-        <p className="ds-body3 text-label-alternative">
-          기준 레퍼런스: {titleOf(viewed.baseReferenceId)} · {SELECTION_MODE_LABELS[viewed.base.selection_mode]}
-        </p>
-        <Link to="/compare" className="ds-label self-start text-primary hover:text-primary-hover">
-          비교 보드에서 선택 바꾸기
-        </Link>
-      </header>
-      {missing && <Callout tone="info" title={missing} />}
-      {!isLatest && (
-        <Callout
-          tone="info"
-          title={`${versionWith(viewed.version, ["을", "를"])} 보고 있습니다 · 현재 v${latest.version}`}
-          action={
-            <>
-              <Link to={{ search: "" }} className="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover">
-                현재 버전 보기
-              </Link>
-              <Button size="sm" aria-busy={reverting || undefined} onClick={() => void onRevert()}>
-                {reverting ? "되돌리는 중…" : "이 버전으로 되돌리기"}
-              </Button>
-            </>
-          }
-        />
-      )}
-      {alert && (
-        <div role="alert" className="ds-body3 rounded-md bg-status-negative-bg p-3 text-status-negative-text">
-          {alert}
-        </div>
-      )}
-      {/* 1280 2단: 왼쪽 프로필 패널(값·팔레트·조정·버전) + 오른쪽 3안 — 1024는 패널 안 2열, 그 아래 1열 (5.1, Q5) */}
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <ProfilePanel
-          viewed={viewed}
-          latest={latest}
-          range={range}
-          saving={saving}
-          saveAlert={saveAlert}
-          onSave={save}
-          resetKey={resetKey}
-          onPending={setPending}
-          values={<ProfileValues rows={engine.valueRows(viewed, titleOf)} profile={viewed.base} sources={sources} />}
-          versions={
-            <section aria-labelledby="profile-versions" className="flex flex-col gap-3">
-              <h2 id="profile-versions" className="ds-heading2">버전</h2>
-              <VersionList
-                versions={series.versions}
-                latestVersion={latest.version}
-                viewedVersion={viewed.version}
-                summaryOf={summaryOf}
-                onView={(v) => withParams({ v: v === latest.version ? undefined : String(v), diff: undefined })}
-                onCompare={(v) => withParams({ diff: String(v) })}
-                rowRef={(v) => (el) => {
-                  if (el) rows.current.set(v, el);
-                  else rows.current.delete(v);
-                }}
-              />
-              {diff && (
-                <VersionDiff
-                  from={from.version}
-                  to={to.version}
-                  rows={engine.diffVersions(from, to, titleOf)}
-                  focusRef={diffFocus}
-                  onClose={() => {
-                    returnCompare.current = diff.version;
-                    withParams({ diff: undefined });
+    // 1280 2단: 왼쪽 열 = 페이지 머리 → 알림 → 프로필 패널(요약 우선, 약 340), 오른쪽 = 3안 — 1024는 패널 안 2열, 그 아래 1열 (5.1, Q5 · PROFILE-V2-COMPACT 1 · PROFILE-VISUAL-ALIGN 1)
+    <div className="mx-auto grid max-w-(--layout-max-width) gap-8 px-4 py-6 md:px-7 md:py-8 xl:grid-cols-[minmax(0,--spacing(85))_minmax(0,1fr)]">
+      <div className="flex min-w-0 flex-col gap-8">
+        <header className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 ref={h1} tabIndex={-1} className="ds-title1 focus:outline-none">
+              디자인 프로필
+            </h1>
+            <Tag tone={isLatest ? "violet" : "neutral"}>{isLatest ? `v${viewed.version} · 현재` : `v${viewed.version} · 이전 버전`}</Tag>
+          </div>
+          <p className="ds-body3 text-label-alternative">
+            기준 레퍼런스: {titleOf(viewed.baseReferenceId)} · {SELECTION_MODE_LABELS[viewed.base.selection_mode]}
+          </p>
+          <Link to="/compare" className="ds-label self-start text-primary-text hover:text-primary-hover">
+            비교 보드에서 선택 바꾸기
+          </Link>
+        </header>
+        {missing && <Callout tone="info" title={missing} />}
+        {!isLatest && (
+          <Callout
+            tone="info"
+            title={`${versionWith(viewed.version, ["을", "를"])} 보고 있습니다 · 현재 v${latest.version}`}
+            action={
+              <>
+                <Link to={{ search: "" }} className="ds-label inline-flex h-8 items-center text-primary-text hover:text-primary-hover">
+                  현재 버전 보기
+                </Link>
+                <Button size="sm" aria-busy={reverting || undefined} onClick={() => void onRevert()}>
+                  {reverting ? "되돌리는 중…" : "이 버전으로 되돌리기"}
+                </Button>
+              </>
+            }
+          />
+        )}
+        {alert && (
+          <div role="alert" className="ds-body3 rounded-md bg-status-negative-bg p-3 text-status-negative-text">
+            {alert}
+          </div>
+        )}
+          <ProfilePanel
+            viewed={viewed}
+            latest={latest}
+            range={range}
+            saving={saving}
+            saveAlert={saveAlert}
+            onSave={save}
+            resetKey={resetKey}
+            onPending={setPending}
+            announce={announce}
+            values={<ProfileValues rows={engine.valueRows(viewed, titleOf)} profile={viewed.base} sources={sources} />}
+            versions={
+              <section aria-labelledby="profile-versions" className="flex flex-col gap-3">
+                <h2 id="profile-versions" className="ds-heading1">버전</h2>
+                <VersionList
+                  versions={series.versions}
+                  latestVersion={latest.version}
+                  viewedVersion={viewed.version}
+                  summaryOf={summaryOf}
+                  onView={(v) => withParams({ v: v === latest.version ? undefined : String(v), diff: undefined })}
+                  onCompare={(v) => withParams({ diff: String(v) })}
+                  rowRef={(v) => (el) => {
+                    if (el) rows.current.set(v, el);
+                    else rows.current.delete(v);
                   }}
                 />
-              )}
-            </section>
-          }
-        />
-        <CandidatesSection key={viewed.version} viewed={viewed} pending={pending} announce={announce} />
+                {diff && (
+                  <VersionDiff
+                    from={from.version}
+                    to={to.version}
+                    rows={engine.diffVersions(from, to, titleOf)}
+                    focusRef={diffFocus}
+                    onClose={() => {
+                      returnCompare.current = diff.version;
+                      withParams({ diff: undefined });
+                    }}
+                  />
+                )}
+              </section>
+            }
+          />
       </div>
+      <CandidatesSection key={viewed.version} viewed={viewed} pending={pending} announce={announce} />
     </div>
   );
 }

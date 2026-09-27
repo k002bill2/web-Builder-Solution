@@ -1,0 +1,234 @@
+[
+ {
+  "w": 1280,
+  "name": "catalog",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": 20,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": "17px/600",
+  "overflowX": 0
+ },
+ {
+  "w": 1280,
+  "name": "detail",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 1280,
+  "name": "compare",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": null,
+  "minButtonH": 20,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0,
+  "picked": {
+   "name": "Hero 구성: A 동네 치과 클리닉의 요소 선택",
+   "pressed": "false"
+  },
+  "pickState": {
+   "pressed": "true",
+   "text": "선택됨",
+   "h": 36,
+   "w": 208
+  }
+ },
+ {
+  "w": 1280,
+  "name": "profile",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 32,
+  "maxButtonH": 32,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 390,
+  "name": "catalog",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": 0,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": "17px/600",
+  "overflowX": 0
+ },
+ {
+  "w": 390,
+  "name": "detail",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 390,
+  "name": "compare",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": null,
+  "minButtonH": 20,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0,
+  "picked": {
+   "name": "Hero 구성: A 동네 치과 클리닉의 요소 선택",
+   "pressed": "false"
+  },
+  "pickState": {
+   "pressed": "true",
+   "text": "선택됨",
+   "h": 36,
+   "w": 319
+  }
+ },
+ {
+  "w": 390,
+  "name": "profile",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 32,
+  "maxButtonH": 32,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 768,
+  "name": "catalog",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": 0,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": "17px/600",
+  "overflowX": 0
+ },
+ {
+  "w": 768,
+  "name": "detail",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 768,
+  "name": "compare",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": null,
+  "minButtonH": 20,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0,
+  "picked": {
+   "name": "Hero 구성: A 동네 치과 클리닉의 요소 선택",
+   "pressed": "false"
+  },
+  "pickState": {
+   "pressed": "true",
+   "text": "선택됨",
+   "h": 36,
+   "w": 168
+  }
+ },
+ {
+  "w": 768,
+  "name": "profile",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 32,
+  "maxButtonH": 32,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 320,
+  "name": "catalog",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": 0,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": "17px/600",
+  "overflowX": 0
+ },
+ {
+  "w": 320,
+  "name": "detail",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 28,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0
+ },
+ {
+  "w": 320,
+  "name": "compare",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": 48,
+  "checkbox": null,
+  "minButtonH": 20,
+  "maxButtonH": 52,
+  "cardTitle": null,
+  "overflowX": 0,
+  "picked": {
+   "name": "Hero 구성: A 동네 치과 클리닉의 요소 선택",
+   "pressed": "false"
+  },
+  "pickState": {
+   "pressed": "true",
+   "text": "선택됨",
+   "h": 36,
+   "w": 249
+  }
+ },
+ {
+  "w": 320,
+  "name": "profile",
+  "bodyFont": "16px",
+  "navFont": "15px",
+  "searchH": null,
+  "checkbox": null,
+  "minButtonH": 32,
+  "maxButtonH": 32,
+  "cardTitle": null,
+  "overflowX": 0
+ }
+]

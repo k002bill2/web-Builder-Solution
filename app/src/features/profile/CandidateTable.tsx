@@ -1,5 +1,5 @@
 /**
- * 3안 비교 표 (DS-2A-04 4.6) — ≥768만(<768은 카드가 같은 정보를 모두 가진다). 행 머리글 고정 + 가로 스크롤(보드 표 규칙).
+ * 3안 비교 표 (DS-2A-04 4.6) — 기본 접힘 "3안 비교 표 보기"(PROFILE-V2-COMPACT 5), ≥768만(<768은 카드가 같은 정보를 모두 가진다). 행 머리글 고정 + 가로 스크롤(보드 표 규칙).
  * A와 다른 값 칸에 캡션 "A와 다름"(색 외 단서, 5.4). 엔진 청크 전용.
  */
 import type { CandidatePlan, GenerationJob } from "../../domain/generation";
@@ -21,42 +21,45 @@ const CELL = "border-b border-line-alternative px-3 py-2 text-left align-top";
 export function CandidateTable({ job, profileScale }: { readonly job: GenerationJob; readonly profileScale: number }) {
   const a = job.candidates[0]?.status === "succeeded" ? job.candidates[0].plan : undefined;
   return (
-    <div className="hidden overflow-x-auto md:block">
-      <table className="ds-body3 w-full border-collapse">
-        <caption className="ds-label pb-2 text-left">3안 비교</caption>
-        <thead>
-          <tr>
-            <th scope="col" className={`${CELL} sticky left-0 bg-background-normal`}>
-              항목
-            </th>
-            {job.candidates.map((c) => (
-              <th key={c.id} scope="col" className={CELL}>
-                {c.id}안
+    <details className="ds-body3 hidden md:block">
+      <summary className="cursor-pointer text-primary-text">3안 비교 표 보기</summary>
+      <div className="mt-2 overflow-x-auto">
+        <table className="ds-body3 w-full border-collapse">
+          <caption className="ds-label pb-2 text-left">3안 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col" className={`${CELL} sticky left-0 bg-background-normal`}>
+                항목
               </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {ROWS.map(([label, value]) => (
-            <tr key={label}>
-              <th scope="row" className={`${CELL} sticky left-0 bg-background-normal font-semibold`}>
-                {label}
-              </th>
-              {job.candidates.map((c) => {
-                if (c.status !== "succeeded") return <td key={c.id} className={CELL}>{c.status === "failed" ? "만들지 못함" : "만드는 중"}</td>;
-                const text = value(c.plan, profileScale);
-                const differs = a !== undefined && c.id !== "A" && text !== value(a, profileScale);
-                return (
-                  <td key={c.id} className={`${CELL} ${label === "결과 해시" ? "ds-mono" : ""}`}>
-                    {text}
-                    {differs && <span className="ds-caption2 block text-label-alternative">A와 다름</span>}
-                  </td>
-                );
-              })}
+              {job.candidates.map((c) => (
+                <th key={c.id} scope="col" className={CELL}>
+                  {c.id}안
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {ROWS.map(([label, value]) => (
+              <tr key={label}>
+                <th scope="row" className={`${CELL} sticky left-0 bg-background-normal font-semibold`}>
+                  {label}
+                </th>
+                {job.candidates.map((c) => {
+                  if (c.status !== "succeeded") return <td key={c.id} className={CELL}>{c.status === "failed" ? "만들지 못함" : "만드는 중"}</td>;
+                  const text = value(c.plan, profileScale);
+                  const differs = a !== undefined && c.id !== "A" && text !== value(a, profileScale);
+                  return (
+                    <td key={c.id} className={`${CELL} ${label === "결과 해시" ? "ds-mono" : ""}`}>
+                      {text}
+                      {differs && <span className="ds-caption2 block text-label-alternative">A와 다름</span>}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
   );
 }

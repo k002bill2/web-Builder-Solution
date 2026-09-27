@@ -1,0 +1,78 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app
+
+ ❯ src/features/studio/saveStatusText.test.ts (0 test)
+ ❯ src/features/studio/useAutosaveScheduler.test.tsx (0 test)
+ ❯ src/components/studio/StudioEmptyStates.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioEmptyStates.test.tsx [ src/components/studio/StudioEmptyStates.test.tsx ]
+Error: Failed to resolve import "./StudioEmptyStates" from "src/components/studio/StudioEmptyStates.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app/src/components/studio/StudioEmptyStates.test.tsx:4:51
+  2  |  import { MemoryRouter } from "react-router";
+  3  |  import { describe, expect, it } from "vitest";
+  4  |  import { StudioNoDoc, StudioProjectNotFound } from "./StudioEmptyStates";
+     |                                                      ^
+  5  |  var _jsxFileName = "/Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app/src/...
+  6  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/studio/saveStatusText.test.ts [ src/features/studio/saveStatusText.test.ts ]
+Error: Failed to resolve import "./saveStatusText" from "src/features/studio/saveStatusText.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app/src/features/studio/saveStatusText.test.ts:2:67
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  import { relativeTimeText, saveAnnouncement, saveStatusText } from "./saveStatusText";
+     |                                                                      ^
+  3  |  const NOW = 1e6;
+  4  |  describe("relativeTimeText — 상대 시각 규칙", () => {
+ ❯ TransformPluginContext._formatLog ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/useAutosaveScheduler.test.tsx [ src/features/studio/useAutosaveScheduler.test.tsx ]
+Error: Failed to resolve import "./useAutosaveScheduler" from "src/features/studio/useAutosaveScheduler.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app/src/features/studio/useAutosaveScheduler.test.tsx:11:7
+  4  |  import { ProjectRepositoryError } from "../../data/projectRepository";
+  5  |  import { saveAnnouncement, saveStatusText } from "./saveStatusText";
+  6  |  import { createAutosaveScheduler, needsUnloadGuard, useAutosaveScheduler } from "./useAutosaveScheduler";
+     |                                                                                   ^
+  7  |  var _jsxFileName = "/Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ac79521307c93bbaa/app/src/...
+  8  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform ../../../../../../orca/workspaces/web-builder-solution/editor-a1-alpha/app/node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  no tests
+   Start at  13:01:42
+   Duration  1.00s (environment 82%, setup 16%, transform 2%, worker 1%)
+
+exit=1

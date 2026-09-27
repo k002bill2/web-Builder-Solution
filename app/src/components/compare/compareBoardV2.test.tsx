@@ -83,6 +83,26 @@ describe("표 표면 (V2 4.4 표 · A-1 유지)", () => {
     const row = screen.getByRole("rowheader", { name: /^Hero 구성/ }).closest("tr")!;
     expect(row).toHaveClass("border-line-neutral");
   });
+
+  it("표 바깥 테두리·반경이 없고(행 윗선만), 스크롤 영역의 포커스 링은 남는다 (REPORT 1.4)", () => {
+    renderTable();
+    const region = screen.getByRole("region", { name: "비교 표 (가로로 스크롤)" });
+    expect(region).not.toHaveClass("border");
+    expect(region).not.toHaveClass("rounded-lg");
+    expect(region).not.toHaveClass("border-line-neutral");
+    expect(region).toHaveAttribute("tabindex", "0");
+    expect(region).toHaveClass("focus-visible:shadow-(--focus-ring)");
+  });
+
+  it("값 셀과 행 머리글 여백은 py-2.5 px-3.5 (REPORT 1.4 선택 셀 밀도)", () => {
+    renderTable({ hero: "ref-b" });
+    const row = screen.getByRole("rowheader", { name: /^Hero 구성/ }).closest("tr")!;
+    expect(screen.getByRole("rowheader", { name: /^Hero 구성/ })).toHaveClass("px-3.5", "py-2.5");
+    for (const cell of row.querySelectorAll("td")) {
+      expect(cell).toHaveClass("px-3.5", "py-2.5");
+      expect(cell).not.toHaveClass("p-3");
+    }
+  });
 });
 
 describe("선택 셀 (V2-AC-34 · A-2·A-3 대체)", () => {
@@ -105,6 +125,19 @@ describe("선택 셀 (V2-AC-34 · A-2·A-3 대체)", () => {
     expect(filledCircle(a)).toBeNull();
     // 원 모양 단서는 3:1 경계(line-strong) — line-normal은 흰 면에서 모양이 안 보인다
     expect(emptyCircle(a)).toHaveClass("border-line-strong");
+  });
+
+  it("선택 버튼은 테두리 없는 h-8 — aria-pressed·접근 이름·'선택됨' 글자·포커스 링 유지 (REPORT 1.4)", () => {
+    renderTable({ hero: "ref-b" });
+    const hasBorder = (el: HTMLElement) => [...el.classList].some((c) => c.startsWith("border"));
+    for (const [column, pressed] of [["B 프리미엄 헤어살롱", "true"], ["A 모던 카페 브랜드", "false"]] as const) {
+      const button = heroButton(column);
+      expect(button).toHaveAttribute("aria-pressed", pressed);
+      expect(button).toHaveClass("h-8", "focus-visible:shadow-(--focus-ring)");
+      expect(button).not.toHaveClass("h-9");
+      expect(hasBorder(button)).toBe(false);
+    }
+    expect(heroButton("B 프리미엄 헤어살롱")).toHaveTextContent("선택됨");
   });
 });
 

@@ -11,7 +11,7 @@ import type { PaletteEntry } from "../../domain/referenceDetail";
 import { NO_EDITS, applyEdits, fitValue, outOfRange, pendingCount, pickValue, valuesOf, writeCorrection, type AdjustKey, type AdjustValues, type Edits } from "./adjustmentDraft";
 import { AdjustmentPanel, OLD_VERSION_REASON, type SaveAlert } from "./AdjustmentPanel";
 import { PALETTE_ROLES } from "./profileFields";
-import { contrastView } from "./profileMessages";
+import { contrastView, writtenText } from "./profileMessages";
 
 export interface ProfilePanelProps {
   readonly values: ReactNode;
@@ -27,6 +27,8 @@ export interface ProfilePanelProps {
   readonly resetKey: number;
   /** 저장 안 된 조정 수 — 3안 만들기 차단(2a-04c, 2.1). 이전 버전을 볼 때는 0 */
   readonly onPending: (count: number) => void;
+  /** "프로필 알림" — 보정값 쓰기 결과(PROFILE-A11Y-FIX D1) */
+  readonly announce: (text: string) => void;
 }
 
 const paletteOf = (v: ProfileVersion, adjustments: ProfileAdjustments): readonly PaletteEntry[] =>
@@ -65,7 +67,10 @@ export function ProfilePanel(props: ProfilePanelProps) {
         <PaletteContrast
           palette={swatches}
           contrast={contrast}
-          onWrite={(p) => setEdits(writeCorrection(edits, saved, { role: p.role, from: p.from, to: p.to, check: p.check }))}
+          onWrite={(p) => {
+            setEdits(writeCorrection(edits, saved, { role: p.role, from: p.from, to: p.to, check: p.check }));
+            props.announce(writtenText(p.role));
+          }}
           {...(!editable && { blockedReason: OLD_VERSION_REASON })}
         />
       </div>

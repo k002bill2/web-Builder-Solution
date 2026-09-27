@@ -35,7 +35,7 @@ async function open(options: Omit<MemoryGenerationOptions, "store"> = {}, path =
   before?.(store);
   const view = renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board, profiles, gen);
   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
-  const region = await screen.findByRole("region", { name: "3안" });
+  const region = await screen.findByRole("region", { name: "생성된 3안" });
   return { ...view, gen, store, region };
 }
 
@@ -72,7 +72,7 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
     const busy = await within(region).findByRole("button", { name: "만드는 중…" });
     expect(busy).toHaveAttribute("aria-busy", "true");
-    // 버튼 busy는 요청 전, 자리 3칸은 계산 청크 첫 로드 뒤 — 부하에서 간격이 벌어지므로 기다린다
+    // busy 는 생성 청크 로드·요청 응답(잡) 전에 먼저 렌더된다 — 자리 카드는 잡이 도착한 뒤라 비동기로 기다린다(첫 조회 전 0/3 단계 그대로)
     expect(await within(region).findAllByText("A안 만드는 중 · 0/3 완료")).toHaveLength(1);
     expect(within(within(region).getByRole("list", { name: "3안" })).getAllByRole("listitem", { name: undefined }).length).toBeGreaterThanOrEqual(3);
     expect(status()).toHaveTextContent("3안을 만드는 중입니다");
@@ -112,7 +112,7 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     act(() => void router.navigate("/compare"));
     await screen.findByRole("heading", { level: 1, name: "비교 보드" });
     act(() => void router.navigate("/profile/profile-1"));
-    const back = await screen.findByRole("region", { name: "3안" });
+    const back = await screen.findByRole("region", { name: "생성된 3안" });
     expect(await within(back).findByRole("button", { name: "B안 선택", pressed: true })).toBeInTheDocument();
     await u.click(within(back).getByRole("button", { name: "B안으로 편집 시작" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/studio"));
@@ -178,12 +178,12 @@ describe("실패 · 경쟁 (P-S20 · S21)", () => {
     // v2 요청이 저장소에서 커밋되고 응답만 지연된 시점까지 기다린다(그 전에 옮기면 공회전 — 1차 Red-Green에서 확인)
     await waitFor(() => expect(gate.release).toBeDefined());
     act(() => void router.navigate("/profile/profile-1?v=1"));
-    const v1 = await screen.findByRole("region", { name: "3안" });
+    const v1 = await screen.findByRole("region", { name: "생성된 3안" });
     expect(await within(v1).findByRole("button", { name: "A안 선택", pressed: true })).toBeInTheDocument();
     await act(async () => gate.release!());
     for (let i = 0; i < 3; i += 1) await tick();
     expect((await gen.findJob("profile-1", 2))?.state).toBe("queued");
-    expect(within(screen.getByRole("region", { name: "3안" })).getByText(/^프로필 v1 · /)).toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "생성된 3안" })).getByText(/^프로필 v1 · /)).toBeInTheDocument();
     expect(screen.queryByText("A안 만드는 중 · 0/3 완료")).not.toBeInTheDocument();
     expect(status()).not.toHaveTextContent("3안을 만드는 중입니다");
   });
@@ -255,7 +255,7 @@ describe("번들 분류 근거 (check-bundle-size /profile afterAction memoryGen
     act(() => void router.navigate("/compare"));
     await screen.findByRole("heading", { level: 1, name: "비교 보드" });
     act(() => void router.navigate("/profile/profile-1"));
-    await within(await screen.findByRole("region", { name: "3안" })).findByRole("table", { name: "3안 비교" });
+    await within(await screen.findByRole("region", { name: "생성된 3안" })).findByRole("table", { name: "3안 비교" });
     expect(loads.generate).toHaveBeenCalledTimes(1);
   });
 });

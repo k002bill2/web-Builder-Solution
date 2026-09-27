@@ -26,8 +26,8 @@ grep -n 'BY_KEY' engine/sections/registry.ts                         # :54 키 =
 | hero | `fullbleed-left` · `split` · `center` · `grid` · `text` · `image` | `boundSections.ts:34-39` |
 | footer | `biz-extended` · `biz-extended-map` · `minimal` · `minimal-biz` | `boundSections.ts:42-45` |
 | about | `story`(이야기 + 이미지) :50 · `text`(글 중심 소개) :51 | `engine/sections/bodySections.ts` |
-| services | `cards-3`(카드 3개) :52 · `list`(목록형) :53 | 〃 |
-| portfolio | `grid-3`(이미지 그리드 3칸) :54 | 〃 |
+| services | `cards-3`(카드 3개) · `list`(목록형) · `cards-2`(카드 2열, r4.6) · `cards-masonry`(카드 벽돌형, r4.6) | 〃 |
+| portfolio | `grid-3`(이미지 그리드 3칸) · `masonry`(이미지 벽돌형, r4.6) | 〃 |
 | statistics | `stats-3`(수치 3개 한 줄) :55 | 〃 |
 | testimonials | `quotes-2`(후기 2개) :56 | 〃 |
 | pricing | `tiers-2`(요금제 2단) :57 | 〃 |
@@ -61,7 +61,7 @@ grep -n 'BY_KEY' engine/sections/registry.ts                         # :54 키 =
 | 16 | services/notice-list | 56(c) | services/list | 근접 | 목록형 |
 | 17 | services/schedule-table | 72(d) | services/list | 근접 | 표 = 줄 목록(엔진에 표 변형 없음) |
 | 18 | services/list | 89(e) | services/list | 같음 | — |
-| 19 | portfolio/masonry | 18(a) · 36(b) · 109(f) | portfolio/grid-3 | 근접 | 엔진 portfolio 변형은 1개 |
+| 19 | portfolio/masonry | 18(a) · 36(b) · 109(f) | portfolio/masonry | 같음 | (r4.6 A3-Q3) 엔진 변형 추가로 같음 |
 | 20 | portfolio/case-list | 91(e) | portfolio/grid-3 | 근접 | 〃 |
 | 21 | portfolio/insights-grid-3 | 92(e) | portfolio/grid-3 | 근접 | 〃 |
 | 22 | testimonials/carousel | 19(a) · 37(b) | testimonials/quotes-2 | 근접 | 엔진 후기 변형은 1개 · 자동 넘김 없음(모션 예산 R-07에도 맞음) |
@@ -81,9 +81,9 @@ grep -n 'BY_KEY' engine/sections/registry.ts                         # :54 키 =
 
 | # | 만드는 곳 | 쌍 | 엔진 쌍 | 구분 |
 |---|---|---|---|---|
-| 31 | 그리드 축 `GRID_LADDER = ["grid-3","grid-2","masonry"]`(`domain/composeCandidates.ts:30`) → `entry(target.type, grid)`(:119, 첫 services/portfolio가 사다리 값일 때만) | services/grid-2 | services/cards-3 | 근접 |
-| 32 | 〃 | services/masonry | services/cards-3 | 근접 |
-| 33 | 〃 (첫 그리드 섹션이 portfolio일 때 — 현재 픽스처에선 services가 늘 먼저라 도달 0) | portfolio/grid-2 | portfolio/grid-3 | 근접 |
+| 31 | 그리드 축 `GRID_LADDER = ["grid-3","grid-2","masonry"]`(`domain/composeCandidates.ts:30`) → `entry(target.type, grid)`(:119, 첫 services/portfolio가 사다리 값일 때만) | services/grid-2 | services/cards-2 | 근접 (r4.6) |
+| 32 | 〃 | services/masonry | services/cards-masonry | 근접 (r4.6) |
+| 33 | 〃 (첫 그리드 섹션이 portfolio일 때 — 픽스처에선 services가 먼저라 도달 0이지만, `composeCandidates.test.ts:134-135` "masonryFirst"처럼 portfolio가 앞선 구조안이면 **도달한다** — Codex P2, 결정 대기) | portfolio/grid-2 | portfolio/grid-3 | 근접 |
 | — | 〃 | services/grid-3 · portfolio/grid-3 · portfolio/masonry | 2절 15 · 1절 · 2절 19 | — |
 | 34 | Footer 없음 → `entry("footer", DEFAULT_FOOTER_VARIANT)`(:127, `sectionLibrary.ts:25` = `biz-extended`) | footer/biz-extended | footer/biz-extended | 같음 |
 | 35 | Footer R-12 대체 `entry("footer", alt.variant)`(:135, `sectionLibrary.ts:47` `minimal` → `minimal-biz`) · 보드 확정 같은 규칙(`data/memoryBoardConfirm.ts`) | footer/minimal-biz | footer/minimal-biz | 같음 |
@@ -91,7 +91,7 @@ grep -n 'BY_KEY' engine/sections/registry.ts                         # :54 키 =
 | 37 | 목적 '문의' → `entry("cta-band","banner")`(:152) | cta-band/banner | cta-band/banner | 같음 |
 | — | Hero 축(:62-70) — B·C안은 `SECTION_LIBRARY.sections.hero` 키에서 고른다 | hero/* 6개 | 그대로(2절 5~10) | 같음 |
 
-- **그리드 축 주의**: 한 픽스처의 3안이 그리드 축만 다르면(services `grid-3`·`grid-2`·`masonry`) 문서에서는 셋 다 `services/cards-3`이 된다. SPEC 8.2.1 (a) 편집 알림("Services 2열 → 카드 3개")이 이것을 알린다. 3안 화면(2a-04c)의 축 표시는 바꾸지 않는다.
+- **그리드 축 (r4.6 A3-Q3 이후)**: services 그리드 축 3안(`grid-3`·`grid-2`·`masonry`)은 문서에서 `cards-3`·`cards-2`·`cards-masonry`로 **서로 다르게** 남는다(`startDocWrite.test.ts` "3안 그리드 차이 보존"). 변형 이름이 바뀐 쌍은 SPEC 8.2.1 (a) 편집 알림으로 알린다(예: "Services 2열 → 카드 2열"). 남은 예외: portfolio가 앞선 구조안의 `portfolio/grid-2`는 여전히 `grid-3`으로 합쳐진다(33행).
 
 ## 4. 엔진 어휘 그대로 들어오는 쌍 (표를 전체 함수로 두기 위한 행)
 

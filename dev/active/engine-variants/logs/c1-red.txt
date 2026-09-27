@@ -1,0 +1,76 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/engine-variants/app
+
+ ❯ src/engine/sections/registry.test.ts (18 tests | 2 failed) 14ms
+   ❯ 섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1) (18)
+     × 본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2) 5ms
+     × 그리드 축 변형 3개(A3-Q3) — 이름표 · 슬롯은 cards-3·grid-3 스키마 재사용(카드 2개면 card1..2) · maxMotion 준용 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/engine/sections/registry.test.ts > 섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1) > 본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2)
+AssertionError: expected { about: [ 'story', 'text' ], …(8) } to deeply equal { about: [ 'story', 'text' ], …(8) }
+
+- Expected
++ Received
+
+@@ -13,20 +13,17 @@
+    "faq": [
+      "accordion",
+    ],
+    "portfolio": [
+      "grid-3",
+-     "masonry",
+    ],
+    "pricing": [
+      "tiers-2",
+    ],
+    "services": [
+      "cards-3",
+      "list",
+-     "cards-2",
+-     "cards-masonry",
+    ],
+    "statistics": [
+      "stats-3",
+    ],
+    "testimonials": [
+
+ ❯ src/engine/sections/registry.test.ts:29:94
+     27|   it("본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services…
+     28|     expect(BODY).toHaveLength(9);
+     29|     expect(Object.fromEntries(BODY.map((type) => [type, SECTION_TYPE_I…
+       |                                                                                              ^
+     30|       about: ["story", "text"],
+     31|       services: ["cards-3", "list", "cards-2", "cards-masonry"],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/engine/sections/registry.test.ts > 섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1) > 그리드 축 변형 3개(A3-Q3) — 이름표 · 슬롯은 cards-3·grid-3 스키마 재사용(카드 2개면 card1..2) · maxMotion 준용
+AssertionError: expected undefined to be '카드 2열' // Object.is equality
+
+- Expected:
+"카드 2열"
+
++ Received:
+undefined
+
+ ❯ src/engine/sections/registry.test.ts:45:64
+     43|     const keys = (type: "services" | "portfolio", variant: string) => …
+     44|     const cards3 = keys("services", "cards-3")!;
+     45|     expect(getSectionDefinition("services", "cards-2")?.label).toBe("카…
+       |                                                                ^
+     46|     expect(getSectionDefinition("services", "cards-masonry")?.label).t…
+     47|     expect(getSectionDefinition("portfolio", "masonry")?.label).toBe("…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 16 passed (18)
+   Start at  00:09:14
+   Duration  823ms (environment 76%, setup 14%, transform 7%, tests 2%, import 1%, worker 1%)
+

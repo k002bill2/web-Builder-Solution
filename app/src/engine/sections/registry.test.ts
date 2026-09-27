@@ -24,11 +24,32 @@ describe("섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1)", () => {
     }
   });
 
-  it("본문 9 type은 변형 1~2개씩", () => {
+  it("본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2)", () => {
     expect(BODY).toHaveLength(9);
-    for (const type of BODY) {
-      const n = SECTION_TYPE_INFO[type].variants.length;
-      expect(n >= 1 && n <= 2).toBe(true);
+    expect(Object.fromEntries(BODY.map((type) => [type, SECTION_TYPE_INFO[type].variants]))).toEqual({
+      about: ["story", "text"],
+      services: ["cards-3", "list", "cards-2", "cards-masonry"],
+      portfolio: ["grid-3", "masonry"],
+      statistics: ["stats-3"],
+      testimonials: ["quotes-2"],
+      pricing: ["tiers-2"],
+      faq: ["accordion"],
+      contact: ["form", "booking"],
+      "cta-band": ["banner"],
+    });
+  });
+
+  it("그리드 축 변형 3개(A3-Q3) — 이름표 · 슬롯은 cards-3·grid-3 스키마 재사용(카드 2개면 card1..2) · maxMotion 준용", () => {
+    const keys = (type: "services" | "portfolio", variant: string) => getSectionDefinition(type, variant)?.slots.map((s) => s.key);
+    const cards3 = keys("services", "cards-3")!;
+    expect(getSectionDefinition("services", "cards-2")?.label).toBe("카드 2열");
+    expect(getSectionDefinition("services", "cards-masonry")?.label).toBe("카드 벽돌형");
+    expect(getSectionDefinition("portfolio", "masonry")?.label).toBe("이미지 벽돌형");
+    expect(keys("services", "cards-2")).toEqual(cards3.filter((k) => !k.startsWith("card3")));
+    expect(keys("services", "cards-masonry")).toEqual(cards3);
+    expect(keys("portfolio", "masonry")).toEqual(keys("portfolio", "grid-3"));
+    for (const [type, variant, from] of [["services", "cards-2", "cards-3"], ["services", "cards-masonry", "cards-3"], ["portfolio", "masonry", "grid-3"]] as const) {
+      expect(getSectionDefinition(type, variant)?.constraints.maxMotion, variant).toBe(getSectionDefinition(type, from)?.constraints.maxMotion);
     }
   });
 

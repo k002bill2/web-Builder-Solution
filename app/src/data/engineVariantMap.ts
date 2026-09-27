@@ -1,5 +1,5 @@
 /**
- * 구조안 변형 → 엔진 변형 대응표 (DS-2A-05 SPEC 8.2.1 · `docs/design/2a-05/VARIANT-MAP.md` 1~42행 · Q-21 A).
+ * 구조안 변형 → 엔진 변형 대응표 (DS-2A-05 SPEC 8.2.1 · `docs/design/2a-05/VARIANT-MAP.md` 1~42행 · Q-21 A · r4.6 A3-Q3: 19·31·32행 그리드 축 변형).
  * 표 리터럴은 이 파일에만 둔다 — 부르는 곳은 `startDocWrite`(조작 뒤 청크) 1곳. 키 = `type/variant` 쌍, 유형은 바꾸지 않는다.
  * 값 = [엔진 변형, 구조안 변형 이름표(바뀐 쌍 알림용 — 그대로인 행은 빈 값)]. engine을 import하지 않는다(engineImportGuard).
  */
@@ -19,16 +19,15 @@ export const ENGINE_VARIANT_MAP: Readonly<Record<string, Row>> = Object.freeze(
     ["about/team-grid-2", ["story", "팀 카드 2열"]],
     ...same("about", "story", "text"),
     ["services/grid-3", ["cards-3", "3열"]],
-    ["services/grid-2", ["cards-3", "2열"]],
-    ["services/masonry", ["cards-3", "마소니"]],
+    ["services/grid-2", ["cards-2", "2열"]],
+    ["services/masonry", ["cards-masonry", "마소니"]],
     ["services/notice-list", ["list", "공지 목록"]],
     ["services/schedule-table", ["list", "일정 표"]],
     ...same("services", "list", "cards-3"),
-    ["portfolio/masonry", ["grid-3", "마소니"]],
     ["portfolio/case-list", ["grid-3", "사례 목록"]],
     ["portfolio/insights-grid-3", ["grid-3", "인사이트 3열"]],
     ["portfolio/grid-2", ["grid-3", "2열"]],
-    ...same("portfolio", "grid-3"),
+    ...same("portfolio", "grid-3", "masonry"),
     ...same("statistics", "stats-3"),
     ["testimonials/carousel", ["quotes-2", "캐러셀"]],
     ...same("testimonials", "quotes-2"),

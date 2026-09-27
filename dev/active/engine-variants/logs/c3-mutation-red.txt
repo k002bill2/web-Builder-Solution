@@ -1,0 +1,44 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/engine-variants/app
+
+ ❯ src/components/studio/StructureCanvas.test.tsx (1 test | 1 failed) 32ms
+   ❯ 구조 미리보기 — 그리드 축 변형(SPEC r4.6 A3-Q3 · 5.7) (1)
+     × 새 변형 3개를 슬롯 목록대로 그린다 — cards-2 카드 2개 · cards-masonry 카드 3개 · portfolio/masonry 글자 슬롯만 31ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 구조 미리보기 — 그리드 축 변형(SPEC r4.6 A3-Q3 · 5.7) > 새 변형 3개를 슬롯 목록대로 그린다 — cards-2 카드 2개 · cards-masonry 카드 3개 · portfolio/masonry 글자 슬롯만
+AssertionError: expected [ '서비스', …(7) ] to deeply equal [ '서비스', …(5) ]
+
+- Expected
++ Received
+
+@@ -3,6 +3,8 @@
+    "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
+    "항목 1",
+    "항목을 짧게 설명합니다.",
+    "항목 2",
+    "항목을 짧게 설명합니다.",
++   "항목 3",
++   "항목을 짧게 설명합니다.",
+  ]
+
+ ❯ src/components/studio/StructureCanvas.test.tsx:22:32
+     20|     const texts = (id: string) => block(id).queryAllByText(/.+/, { sel…
+     21|
+     22|     expect(texts("s-cards-2")).toEqual(["서비스", "이 섹션에서 전하려는 내용을 한두 문장으…
+       |                                ^
+     23|     expect(block("s-cards-2").getByText("Services · 카드 2열")).toBeInThe…
+     24|     expect(texts("s-cards-masonry")).toEqual([...texts("s-cards-2"), "…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  00:11:33
+   Duration  651ms (environment 68%, transform 12%, setup 11%, tests 6%, import 2%, worker 1%)
+

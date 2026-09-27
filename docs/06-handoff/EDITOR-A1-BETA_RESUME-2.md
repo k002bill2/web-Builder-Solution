@@ -29,3 +29,10 @@
 - **먼저** `git show HEAD --stat`과 새 테스트를 읽고, 표적 테스트 실행으로 S1이 RED/GREEN 어디인지 판정한 뒤 이어서 S1 → S2 → S3 → S4~S7.
 - **서브에이전트 분할: 불필요**(rate limit 완화 — 이번 실행은 메인 단독). 이전 서브에이전트 worktree(`.claude/worktrees/agent-a6c8fc…`)는 쓰지 않는다.
 - Codex review는 S4 뒤 1회. 한도·실패면 BLOCKED 기록 후 진행.
+
+## 마무리 (RESUME-2c, Jarvis 2026-09-27 15:5x · 영환님 ★A)
+- 4번째 실행이 61턴 한도로 중단. S1~S4·S6 완료(`5a17c7c`·`f5fd3fb`, Codex 로그 `fb35ad0`). 4337 잔존 vite(pid 87977)는 Jarvis가 종료함.
+- **이번 범위는 S5·S7만.** 앱 코드·테스트 수정 금지(결함을 찾으면 고치지 말고 REPORT에 재현 절차로 기록 후 중지).
+- S5: `cd app && npx vite --host 127.0.0.1 --port 4337 --strictPort` → `/catalog` → 비교 → 확정(첫 확정 캡션 · 재확정 시 "확정할 곳" 라디오 2개) → `/profile/:id` "프로젝트: 이름" 링크 → `/projects` → 복귀 → 3안 → 선택 → "편집 시작" → `/studio/:projectId`(E-S03 셸, 프로젝트 이름 실데이터) → 돌아가기. 1280·390 캡처를 `dev/active/editor-a1-beta/captures/resume2/`에. 끝나면 **자기 PID만 종료 + lsof로 4337 비었음 기록**.
+- S7: REPORT에 "RESUME-2" 절(SHA · 파일 · 번들 표 `logs/resume2-final-build.txt` · 테스트 1,243/1,243 · Codex `logs/codex-resume2.txt` · 캡처 · 남은 것). PROGRESS S5·S7 체크. 로컬 커밋.
+- 서브에이전트 금지 · 전체 vitest 재실행 불필요 · 15턴부터 REPORT 우선. push·병합·삭제 금지.

@@ -43,6 +43,8 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
  *    ② boardInputLoader ← boardEngine checkPrimaryColor(대표색 blur·Enter)·prepare(대표색 onFocus). 진입(getBoard·getComparison·엔진·입력 틀)은
  *    부르지 않는다 — BoardInputLoad.test "번들 분류 근거"가 요청 0을 확인한다
  */
+/** /projects·/studio/:projectId 진입 직후 자동 — 프로젝트 저장소 로더(S-B3)가 받는 공유 store와 프로젝트 메모리 구현 */
+const PROJECT_AUTO = ["src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts", "src/data/memoryProjectRepository.ts"];
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
   "src/data/memoryBoardConfirm.ts",
@@ -77,7 +79,9 @@ const SCENARIOS = [
     // (store 조회만 — GenerationLoad.test "번들 분류 근거"가 요청 0을 확인한다). 기존 잡 표시·폴링 코드는 profileEngine·memoryStudio(자동)에 든다
     afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts"],
   },
-  { name: "/studio (자리표시)", page: "src/pages/PlaceholderPage.tsx", auto: EAGER_DYNAMIC },
+  // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(memoryStudio·비교 픽스처) → projects()(memoryProjectRepository)
+  { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
+  { name: "/studio/:projectId", page: "src/pages/StudioPage.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
 ];
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));

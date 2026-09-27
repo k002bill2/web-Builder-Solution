@@ -20,7 +20,18 @@ import { useGeneration } from "./useGeneration";
 const DISABLED = "aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong";
 const failuresOf = (job: GenerationJob) => job.candidates.filter((c): c is CandidateFailure => c.status === "failed");
 
-export function CandidatesSection({ viewed, pending, announce }: { readonly viewed: ProfileVersion; readonly pending: number; readonly announce: (text: string) => void }) {
+export function CandidatesSection({
+  viewed,
+  projectId,
+  pending,
+  announce,
+}: {
+  readonly viewed: ProfileVersion;
+  /** 편집 시작 → `/studio/:projectId`(DS-2A-05 12.3). 문서 만들기(startDoc)는 a2 몫 — 여기서는 이동만 */
+  readonly projectId?: string;
+  readonly pending: number;
+  readonly announce: (text: string) => void;
+}) {
   const gen = useGeneration(viewed.profileId, viewed.version, announce);
   const { job } = gen;
   const navigate = useNavigate();
@@ -114,7 +125,7 @@ export function CandidatesSection({ viewed, pending, announce }: { readonly view
           aria-disabled={!selected || undefined}
           aria-describedby={editId}
           className={DISABLED}
-          onClick={() => selected && void navigate("/studio")}
+          onClick={() => selected && void navigate(projectId ? `/studio/${projectId}` : "/projects")}
         >
           {selected ? `${selected}안으로 편집 시작` : "편집 시작"}
         </Button>

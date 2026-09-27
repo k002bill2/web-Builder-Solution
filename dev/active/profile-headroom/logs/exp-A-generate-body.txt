@@ -1,0 +1,22 @@
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+  - assets/index-DlU-XU2i.js 86.06KB
+  - assets/react-DB-4Zxce.js 3.28KB
+[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.02KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.37KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.80KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.77KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.62KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.80KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.77KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.62KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.40KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.23KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.34KB (1개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 93.94KB / 예산 100KB · 진입 직후 자동 로드 포함: 106.37KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.73KB / 예산 100KB · 진입 직후 자동 로드 포함: 103.71KB / 예산 125KB

@@ -1,23 +1,28 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { GenerationRepository } from "./generationRepository";
 import type { ProfileRepository } from "./profileRepository";
+import type { ProjectRepository } from "./projectRepository";
 
 /** 생성 저장소는 로더 핸들로만 넘긴다 — 메서드 위임 래퍼를 공통 청크에 두지 않는다(2a-04c 번들, 2a-05 S-B3 방식) */
 export type GenerationLoader = () => Promise<GenerationRepository>;
+/** 프로젝트 저장소도 같은 방식 — 새 Provider·위임 래퍼를 공통에 두지 않는다(2a-05 S-B3). 같은 인스턴스를 돌려줘야 한다 */
+export type ProjectLoader = () => Promise<ProjectRepository>;
 
-const ProfileContext = createContext<{ readonly repository: ProfileRepository; readonly generations: GenerationLoader } | null>(null);
+const ProfileContext = createContext<{ readonly repository: ProfileRepository; readonly generations: GenerationLoader; readonly projects: ProjectLoader } | null>(null);
 
-/** 프로필 저장소 + 3안 생성 저장소 로더 (DS-2A-04 6.3) */
+/** 프로필 저장소 + 3안 생성·프로젝트 저장소 로더 (DS-2A-04 6.3 · DS-2A-05 S-B3) */
 export function ProfileRepositoryProvider({
   repository,
   generations,
+  projects,
   children,
 }: {
   readonly repository: ProfileRepository;
   readonly generations: GenerationLoader;
+  readonly projects: ProjectLoader;
   readonly children: ReactNode;
 }) {
-  return <ProfileContext.Provider value={{ repository, generations }}>{children}</ProfileContext.Provider>;
+  return <ProfileContext.Provider value={{ repository, generations, projects }}>{children}</ProfileContext.Provider>;
 }
 
 function useProfileContext() {
@@ -30,3 +35,5 @@ function useProfileContext() {
 export const useProfileRepository = (): ProfileRepository => useProfileContext().repository;
 /** 3안 생성 저장소 로더 — 화면(엔진 청크)이 처음 쓸 때 받는다 */
 export const useGenerationLoader = (): GenerationLoader => useProfileContext().generations;
+/** 프로젝트 저장소 로더 — `/projects`·`/studio/:projectId` 청크가 처음 쓸 때 받는다 */
+export const useProjectLoader = (): ProjectLoader => useProfileContext().projects;

@@ -6,7 +6,7 @@
  * 멱등: 키 = (profileId, version, libraryVersion, generatorVersion) — 있으면 그 잡을 그대로(계산 0). 요청 응답이 사라져도 다시 요청하면 같은 잡.
  * `delay`·`fail` 주입은 보드·프로필 구현과 같은 모양(요청 도착 전 · 응답 반환 전). `outcome`은 안별 실패 주입(부분 실패·재시도, P-S20·S21).
  */
-import type { CandidateId, CandidateResult, ComposedResult, GenerationErrorCode, GenerationJob, JobState } from "../domain/generation";
+import type { CandidateId, CandidateResult, GenerationErrorCode, JobState } from "../domain/generation";
 import type { ProfileVersion } from "../domain/profile";
 import type { SectionLibrary } from "../domain/sectionLibrary";
 import { GenerationError, type GenerationRepository } from "./generationRepository";
@@ -41,21 +41,12 @@ export interface MemoryGenerationOptions {
 
 /**
  * 번들(2a-04c): 이 모듈은 memoryStudio(보드·프로필 진입 때 자동) 청크에 든다. generation.ts 런타임을 import하면 공유 청크가 생겨
- * 공통 엔트리의 preload 목록이 늘어난다(`/compare` 첫 화면 여유 0.300KB) — 값 3개만 여기 둔다. 같은 값인지는 테스트가 확인한다
+ * 공통 엔트리의 preload 목록이 늘어난다(`/compare` 첫 화면 여유 0.300KB) — 멱등 키·종료 판정 값만 여기 둔다. 같은 값인지는 테스트가 확인한다
  * (memoryGenerationRepository.test "생성기 버전·안 id·종료 상태 = generation.ts").
+ * 새 잡 조립·안별 실패 주입·재시도 판정은 계산 본문(memoryGenerate `newJob`·`retryJob`)에 둔다 — `/profile` 진입 직후 합계에서 뺀다(PROFILE-HEADROOM).
  */
 export const MEMORY_GENERATOR_VERSION = "preview-1";
-const CANDIDATE_IDS: readonly CandidateId[] = ["A", "B", "C"];
 const isTerminal = (state: JobState) => state !== "queued" && state !== "running";
-
-const RETRYABLE: ReadonlySet<GenerationErrorCode> = new Set(["JOB_TIMEOUT", "INFRA"]);
-const FAILURE_TEXT: Readonly<Record<GenerationErrorCode, string>> = {
-  JOB_TIMEOUT: "제한 시간 안에 만들지 못했습니다",
-  INFRA: "생성 서버에 연결하지 못했습니다",
-  UNSUPPORTED_COMBINATION: "이 조합으로는 만들 수 없습니다",
-  SCHEMA_INVALID: "입력 모양이 맞지 않습니다",
-  NOT_FOUND: "프로필 버전을 찾을 수 없습니다",
-};
 
 const keyOf = (record: ProfileVersion) => [record.profileId, record.version, record.base.library_version, MEMORY_GENERATOR_VERSION].join("|");
 const recordOf = (reader: StudioReader, profileId: string, version: number) => reader.versions(profileId).find((v) => v.version === version);
@@ -84,12 +75,6 @@ export function createMemoryGenerationRepository(options: MemoryGenerationOption
     return result;
   }
 
-  /** 계산 결과에 안별 실패 주입을 입힌다 */
-  const injected = (result: ComposedResult, jobId: string, attempt: number): ComposedResult => {
-    const code = options.outcome?.({ jobId, id: result.id, attempt });
-    return code ? { id: result.id, status: "failed", errorCode: code, retryable: RETRYABLE.has(code), message: FAILURE_TEXT[code] } : result;
-  };
-
   const storedOf = (reader: StudioReader, jobId: string): StoredJob => {
     const stored = reader.job(jobId);
     if (!stored) throw new GenerationError("NOT_FOUND", `잡 ${jobId} 없음`);
@@ -109,20 +94,9 @@ export function createMemoryGenerationRepository(options: MemoryGenerationOption
           if (prior) return prior.job;
           if (!generate) throw new GenerationError("INFRA", "계산 본문을 받지 못했습니다");
           options.onCompose?.();
-          const jobId = `job-${tx.jobCount() + 1}`;
-          const results = generate.composeFor(current, options.libraries);
-          const job: GenerationJob = {
-            jobId,
-            profileId,
-            version,
-            libraryVersion: current.base.library_version,
-            generatorVersion: MEMORY_GENERATOR_VERSION,
-            seed: current.base.seed,
-            state: "queued",
-            candidates: CANDIDATE_IDS.map((id) => ({ id, status: "pending" as const })),
-          };
-          tx.putJob({ key: keyOf(current), job, hidden: results.map((r) => injected(r, jobId, 1)), attempts: { A: 1, B: 1, C: 1 } });
-          return job;
+          const stored = generate.newJob(current, `job-${tx.jobCount() + 1}`, keyOf(current), MEMORY_GENERATOR_VERSION, options);
+          tx.putJob(stored);
+          return stored.job;
         }),
       );
     },
@@ -147,21 +121,9 @@ export function createMemoryGenerationRepository(options: MemoryGenerationOption
       const generate = await loadGenerate();
       return call("retryFailed", () =>
         store.transact((tx) => {
-          const stored = storedOf(tx, jobId);
-          if (!isTerminal(stored.job.state)) throw new GenerationError("SCHEMA_INVALID", "아직 만드는 중입니다");
-          const retry = new Set(stored.job.candidates.filter((c) => c.status === "failed" && c.retryable).map((c) => c.id));
-          if (retry.size === 0) throw new GenerationError("SCHEMA_INVALID", "다시 시도할 수 있는 안이 없습니다");
-          const record = recordOf(tx, stored.job.profileId, stored.job.version);
-          if (!record) throw new GenerationError("NOT_FOUND", `${stored.job.profileId} v${stored.job.version} 없음`);
-          options.onCompose?.();
-          const results = generate.composeFor(record, options.libraries);
-          const attempts = { ...stored.attempts };
-          for (const id of retry) attempts[id] += 1;
-          const candidates = stored.job.candidates.map((c) => (retry.has(c.id) ? { id: c.id, status: "pending" as const } : c));
-          const hidden = results.map((r, i) => (retry.has(r.id) ? injected(r, jobId, attempts[r.id]) : stored.hidden[i]));
-          const job = { ...stored.job, candidates, state: "running" as const };
-          tx.putJob({ ...stored, job, hidden, attempts });
-          return job;
+          const stored = generate.retryJob(storedOf(tx, jobId), (profileId, version) => recordOf(tx, profileId, version), options);
+          tx.putJob(stored);
+          return stored.job;
         }),
       );
     },

@@ -7,10 +7,11 @@ export function statusLabel(status: DraftStatus): string {
   return `v${status.version} 이후 변경됨`;
 }
 
-/** 확정 이후에는 같은 프로필 계열의 새 버전 */
-export function confirmLabel(status: DraftStatus, confirming: boolean): string {
+/** 확정 이후에는 같은 프로필 계열의 새 버전 — 확정 대상이 "새 프로젝트"면 버튼 이름이 선택을 따른다(DS-2A-05 J-S10) */
+export function confirmLabel(status: DraftStatus, confirming: boolean, toNewProject = false): string {
   if (confirming) return "확정 중…";
   if (status.kind === "unconfirmed") return "프로필 확정 (v1)";
+  if (toNewProject) return "새 프로젝트로 확정";
   const next = status.nextVersion ?? status.version + 1;
   return `새 버전으로 확정 (v${next})`;
 }

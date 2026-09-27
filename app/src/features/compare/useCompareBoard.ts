@@ -4,7 +4,8 @@
  * 화면에 보이는 선택(intent)은 저장 요청 전에 바로 반영하고, 저장소가 확인한 보드(revision)는 saver 상태로 따로 둔다.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
+import type { ConfirmTarget } from "../../data/compareBoardRepository";
 import type { PrimaryColorCheck } from "../../components/compare/CustomStyleFields";
 import type { Announcement, PanelNotice, UndoView } from "../../components/compare/DraftPanel";
 import { removeColumn as removeBoardColumn, withoutReference } from "../../domain/boardColumns";
@@ -25,9 +26,18 @@ const CONFIRMING: ConfirmAvailability = { ok: false, reason: "프로필을 확�
 const REJECT_UNTIL_LOADED: PrimaryColorCheck = async () => ({ ok: false, error: "잠시 후 다시 입력하세요" });
 const UNCONFIRMED: DraftStatus = { kind: "unconfirmed", nextVersion: 1 };
 
+const firstCaptionOf = (title: string | undefined) =>
+  title === undefined ? undefined : `새 프로젝트 '${title} 프로젝트'를 만듭니다 · 이름은 프로젝트 목록에서 바꿀 수 있습니다`;
+
 export function useCompareBoard() {
   const { repository, loaded, sync, takeReleasedNotices, whenIdle } = useCompareTray();
   const navigate = useNavigate();
+  // 확정 대상 기본값 — GNB "새 프로젝트"(?new=1)면 새 프로젝트, 아니면 현재 프로젝트 새 버전 (DS-2A-05 2.2 · J-S10)
+  const startsNew = useSearchParams()[0].get("new") === "1";
+  // 사용자가 고른 값은 고른 때의 ?new 와 함께 둔다 — ?new 가 바뀌면 기본값으로 돌아간다(effect 없이 파생)
+  const [choice, setChoice] = useState<{ readonly startsNew: boolean; readonly value: ConfirmTarget } | null>(null);
+  const target: ConfirmTarget = choice?.startsNew === startsNew ? choice.value : startsNew ? "new" : "current";
+  const setTarget = useCallback((value: ConfirmTarget) => setChoice({ startsNew, value }), [startsNew]);
   const [phase, setPhase] = useState<Phase>("loading");
   const [attempt, setAttempt] = useState(0);
   const [saved, setSaved] = useState<PicksSaverState | null>(null);
@@ -125,10 +135,11 @@ export function useCompareBoard() {
   // P-S25 (DS-2A-04 r6) — 진입 직후 자동은 개수 캡션뿐(인라인 계산). 판정·목록은 CarryOverCaption이 펼칠 때 받는다
   // 캡션은 확정 프로필 + 최신 조정 ≥ 1이면 초안 상태와 무관하게 보인다. 판정 입력(nextBase)은 초안이 ready일 때만 (FIX4)
   const confirmedRef = saved?.board.confirmed;
+  const toNewProject = confirmedRef?.projectName !== undefined && target === "new";
   const adjustmentCount = carryOverCount(confirmedRef?.latest?.adjustments);
   const draft = evaluation?.draft;
   const carryOver =
-    engine && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest
+    engine && !toNewProject && adjustmentCount > 0 && confirmedRef?.confirmedBase && confirmedRef.latest
       ? {
           Caption: engine.CarryOverCaption,
           count: adjustmentCount,
@@ -248,14 +259,19 @@ export function useCompareBoard() {
     setConfirming(true);
     putNotice("confirm", null);
     try {
-      const target = saver.current.getState().board;
-      // expectedLatest = 보드가 본 계열 최신 (첫 확정 0) — 다른 곳에서 버전이 생겼으면 STALE_PROFILE (DS-2A-04 6.1-4)
-      const result = target.confirmed
-        ? await repository.createProfileVersion(target.confirmed.profileId, target.revision, target.confirmed.latestVersion ?? target.confirmed.version)
-        : await repository.confirmProfile(target.revision, 0);
-      engineRef.current!.reportConfirmed(result.version, target.confirmed !== undefined);
-      // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6)
-      navigate(`/profile/${result.profileId}`, result.droppedCount ? { state: { droppedCount: result.droppedCount } } : undefined);
+        // expectedLatest = 보드가 본 계열 최신 (첫 확정 0) — 다른 곳에서 버전이 생겼으면 STALE_PROFILE (DS-2A-04 6.1-4)
+      const seen = saver.current.getState().board;
+      const confirmed = seen.confirmed;
+      // 새 프로젝트 = 새 계열 v1(expectedLatest 0, 이어받기 없음 — DS-2A-05 12.2)
+      const toNew = toNewProject && confirmed !== undefined;
+      const result = confirmed
+        ? await repository.createProfileVersion(confirmed.profileId, seen.revision, toNew ? 0 : (confirmed.latestVersion ?? confirmed.version), toNew ? "new" : "current")
+        : await repository.confirmProfile(seen.revision, 0);
+      engineRef.current!.reportConfirmed(result.version, confirmed !== undefined);
+      // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6).
+      // 새 프로젝트면 프로필 화면이 "새 프로젝트 '…'을 만들었습니다"를 알린다(J-S11)
+      const state = { ...(result.droppedCount && { droppedCount: result.droppedCount }), ...(toNew && { projectCreated: true }) };
+      navigate(`/profile/${result.profileId}`, Object.keys(state).length > 0 ? { state } : undefined);
     } catch (error) {
       engineRef.current!.reportConfirmFailed(error);
       await onConfirmError(error);
@@ -282,6 +298,11 @@ export function useCompareBoard() {
     checkPrimaryColor: engine?.checkPrimaryColor ?? REJECT_UNTIL_LOADED,
     CustomStyleFields: engine?.CustomStyleFields,
     carryOver,
+    toNewProject,
+    // J-S10 확정할 곳 — 확정된 프로젝트가 있을 때만
+    target: confirmedRef?.projectName !== undefined ? { currentName: confirmedRef.projectName, value: target, onChange: setTarget } : undefined,
+    // J-S09 첫 확정 캡션 — 기준 레퍼런스 제목 + " 프로젝트"(확정된 프로젝트가 없으면 같은 이름도 없다 — 번호 붙임 불필요)
+    firstConfirmCaption: firstCaptionOf(confirmedRef === undefined && draft?.status === "ready" ? comparison.results.find((r) => r.referenceId === draft.baseReferenceId)?.reference?.title : undefined),
     warnings: evaluation?.warnings ?? [],
     draftStatus: saved ? draftStatusOf(saved.board, unchanged) : UNCONFIRMED,
     availability: confirming || !engine || !evaluation || !saved ? CONFIRMING : engine.confirmAvailability(evaluation.draft, saved.status, unchanged),

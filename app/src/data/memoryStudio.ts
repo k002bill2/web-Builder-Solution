@@ -8,6 +8,8 @@ import { createMemoryGenerationRepository, type MemoryGenerationOptions } from "
 import { createMemoryProfileRepository, type MemoryProfileOptions } from "./memoryProfileRepository";
 import type { GenerationRepository } from "./generationRepository";
 import type { ProfileRepository } from "./profileRepository";
+import type { ProjectRepository } from "./projectRepository";
+import { createSharedLoader } from "./sharedLoader";
 import { createStudioStore } from "./studioStore";
 
 export interface MemoryStudio {
@@ -16,6 +18,11 @@ export interface MemoryStudio {
   readonly profiles: ProfileRepository;
   /** 3안 생성 잡(2a-04c) — 같은 store에서 저장된 버전을 읽는다 */
   readonly generations: GenerationRepository;
+  /**
+   * 프로젝트 저장소(2a-05) — 보드·프로필 진입 직후 합계에 싣지 않게 `/projects`·`/studio`가 처음 부를 때 받는다.
+   * 부를 때마다 같은 인스턴스(목록 화면이 식별자로 다시 조회한다)
+   */
+  readonly projects: () => Promise<ProjectRepository>;
 }
 
 export function createMemoryStudio(
@@ -28,5 +35,6 @@ export function createMemoryStudio(
     board: createMemoryCompareBoardRepository({ ...board, store }),
     profiles: createMemoryProfileRepository({ ...profiles, store }),
     generations: createMemoryGenerationRepository({ ...generations, store }),
+    projects: createSharedLoader(async () => (await import("./memoryProjectRepository")).createMemoryProjectRepository({ store, ...(board.now && { now: board.now }) })),
   };
 }

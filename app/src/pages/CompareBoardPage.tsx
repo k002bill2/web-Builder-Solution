@@ -224,6 +224,8 @@ export function CompareBoardPage() {
             onApplyFix={board.applyFix}
             CustomStyleFields={board.CustomStyleFields}
             carryOver={carryOver && <carryOver.Caption count={carryOver.count} props={carryOver.props} />}
+            firstConfirmCaption={board.firstConfirmCaption}
+            target={board.target}
           />
           {viewport !== "wide" && (
             <DraftSummaryBar
@@ -236,6 +238,7 @@ export function CompareBoardPage() {
               onShowDraft={() => draftHeading.current?.focus()}
               onConfirm={() => void board.confirm()}
               adjustmentCount={carryOver?.count}
+              toNewProject={board.toNewProject}
             />
           )}
         </div>

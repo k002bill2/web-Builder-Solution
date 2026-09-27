@@ -18,6 +18,7 @@ export function DraftSummaryBar({
   onShowDraft,
   onConfirm,
   adjustmentCount = 0,
+  toNewProject = false,
 }: {
   readonly pickedCount: number;
   readonly total: number;
@@ -28,6 +29,8 @@ export function DraftSummaryBar({
   readonly onShowDraft: () => void;
   readonly onConfirm: () => void;
   readonly adjustmentCount?: number;
+  /** 확정 대상 "새 프로젝트"(DS-2A-05 J-S10) — 패널과 같은 버튼 이름 */
+  readonly toNewProject?: boolean;
 }) {
   const reasonId = useId();
   const blocked = confirming || !canConfirm.ok;
@@ -53,7 +56,7 @@ export function DraftSummaryBar({
         onClick={onConfirm}
         className="aria-disabled:cursor-not-allowed aria-disabled:bg-inverse-fill-normal aria-disabled:text-inverse-label-disable"
       >
-        {confirmLabel(status, confirming)}
+        {confirmLabel(status, confirming, toNewProject)}
       </Button>
       {!canConfirm.ok && (
         <span id={reasonId} className="sr-only">

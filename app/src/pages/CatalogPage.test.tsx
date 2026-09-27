@@ -354,13 +354,17 @@ describe("라우팅", () => {
     await waitFor(() => expect(router.state.location.pathname).toBe("/catalog"));
   });
 
-  it.each([
-    // /compare(M1-UI-03b)·/profile*(DS-2A-04 2a-04a2)는 실제 화면이 됐다 — /profile*는 ProfilePage.test(P-AC-02·03)가 맡는다
-    ["/studio", "편집기"],
-  ])("%s 는 다음 단계 자리표시 페이지다", async (path, title) => {
-    renderApp(path);
-    expect(await screen.findByRole("heading", { level: 1, name: title })).toBeInTheDocument();
-    expect(screen.getByText(/다음 단계에서 구현됩니다/)).toBeInTheDocument();
+  // 자리표시 페이지는 없어졌다(DS-2A-05 2.2 · 12.4) — /studio 는 /projects 로 replace 한다(J-AC-09).
+  // 편집기 진입(/studio/:projectId)은 E-AC-01·02 테스트가 맡는다
+  it("/studio 는 /projects 로 replace 이동해 프로젝트 목록을 보여준다 (J-AC-09)", async () => {
+    const { router } = renderApp("/catalog");
+    await screen.findByRole("heading", { level: 1 });
+    router.navigate("/studio");
+    await waitFor(() => expect(router.state.location.pathname).toBe("/projects"));
+    expect(await screen.findByRole("heading", { level: 1, name: "프로젝트" })).toBeInTheDocument();
+    // replace 면 /studio 기록이 남지 않아 뒤로 가기가 /catalog 로 돌아간다(push 면 /studio → 다시 /projects)
+    router.navigate(-1);
+    await waitFor(() => expect(router.state.location.pathname).toBe("/catalog"));
   });
 
   it("보관함(/catalog?tab=saved)에서는 GNB의 보관함만 현재 위치로 표시한다", async () => {

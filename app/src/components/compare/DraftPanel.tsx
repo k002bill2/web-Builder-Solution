@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, type ComponentType, type ReactNode, type Ref 
 import type { BoardWarning, WarningFix } from "../../domain/boardWarnings";
 import type { ConfirmAvailability } from "../../domain/confirmGate";
 import type { CustomStyle, DraftStatus } from "../../domain/compareBoard";
+import type { ConfirmTarget } from "../../data/compareBoardRepository";
 import type { FontOption } from "../../domain/fonts";
 import { confirmLabel, statusLabel } from "../../features/compare/draftLabels";
 import type { DraftItemView } from "../../features/compare/draftView";
@@ -57,6 +58,10 @@ export interface DraftPanelProps {
   readonly CustomStyleFields?: ComponentType<CustomStyleFieldsProps>;
   /** P-S25 이어받을 조정 — 확정 버튼 위. 개수 캡션(엔진 청크) + 펼칠 때 받는 판정·목록(DS-2A-04 r6) */
   readonly carryOver?: ReactNode;
+  /** J-S09 첫 확정 캡션(새 프로젝트 이름) — 확정된 프로젝트가 없을 때 */
+  readonly firstConfirmCaption?: string;
+  /** J-S10 "확정할 곳" — 확정된 프로젝트가 있을 때 */
+  readonly target?: { readonly currentName: string; readonly value: ConfirmTarget; readonly onChange: (value: ConfirmTarget) => void };
   readonly headingRef?: Ref<HTMLHeadingElement>;
   readonly className?: string;
 }
@@ -102,6 +107,32 @@ function WarningCallout({ warning, onApplyFix }: { readonly warning: BoardWarnin
   );
 }
 
+/** J-S10 확정할 곳 — 네이티브 fieldset + 라디오 2개(보드 청크 안, S-B9 · SegmentedControl 공유 청크 경계 없음) */
+function ConfirmTargetField({ currentName, value, onChange }: NonNullable<DraftPanelProps["target"]>) {
+  const name = useId();
+  const options: readonly [ConfirmTarget, string][] = [
+    ["current", `${currentName} 새 버전`],
+    ["new", "새 프로젝트"],
+  ];
+  return (
+    <fieldset className="flex flex-col gap-1.5">
+      <legend className="ds-label mb-1.5">확정할 곳</legend>
+      {options.map(([option, label]) => (
+        <label key={option} className="ds-body3 flex items-center gap-2 [overflow-wrap:anywhere]">
+          <input
+            type="radio"
+            name={name}
+            checked={value === option}
+            onChange={() => onChange(option)}
+            className="size-4 flex-none accent-primary focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
+          />
+          {label}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
 /**
  * 프로필 초안 패널 (SPEC 2.4 · 7.2 · v2 4.4 흰 면 + 넓은 화면 왼쪽 선). 초안 목록 · 사용자 스타일 · 경고 · 확정/비우기.
  * 확정할 수 없으면 disabled 대신 aria-disabled + 이유 텍스트 연결(A-8) — 누르면 화면이 이유를 다시 알린다.
@@ -126,6 +157,8 @@ export function DraftPanel({
   onApplyFix,
   CustomStyleFields,
   carryOver,
+  firstConfirmCaption,
+  target,
   headingRef,
   className,
 }: DraftPanelProps) {
@@ -199,6 +232,8 @@ export function DraftPanel({
         </div>
       )}
       <div className="flex flex-col gap-2">
+        {target && <ConfirmTargetField {...target} />}
+        {firstConfirmCaption && <p className="ds-caption1 text-label-neutral">{firstConfirmCaption}</p>}
         {carryOver}
         <Button
           variant="primary"
@@ -210,7 +245,7 @@ export function DraftPanel({
           onClick={onConfirm}
           className="aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable"
         >
-          {confirmLabel(status, confirming)}
+          {confirmLabel(status, confirming, target?.value === "new")}
         </Button>
         {!confirming && !canConfirm.ok && (
           <p id={reasonId} className="ds-caption1 text-label-neutral">

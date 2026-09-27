@@ -32,7 +32,7 @@ function setup(
     const { board: current } = await board.getBoard();
     const saved = await board.savePicks(next, {}, current.revision);
     const latest = (await profiles.getProfile("profile-1"))!.latestVersion;
-    const result = await board.createProfileVersion("profile-1", saved.revision, latest);
+    const result = await board.createProfileVersion("profile-1", saved.revision, latest, "current");
     return (await versionsOf()).find((v) => v.version === result.version)!;
   };
   return { store, board, profiles, versionsOf, reconfirm };
@@ -285,7 +285,7 @@ describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () =
     const saved = await board.savePicks({ hero: "ref-c" }, {}, 1);
     hold = true;
     // 호출자가 곧 생길 v2를 기대 최신으로 보낸다 — 규칙 준비 시점엔 v1(조정 없음)이라 받지 않는다
-    const racing = board.createProfileVersion("profile-1", saved.revision, 2).catch((error: unknown) => error);
+    const racing = board.createProfileVersion("profile-1", saved.revision, 2, "current").catch((error: unknown) => error);
     await profiles.saveAdjustments("profile-1", 1, { density: "compact" });
     gate.resolve();
     const error = await racing;
@@ -293,7 +293,7 @@ describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () =
     expect((error as CompareBoardError).code).toBe("STALE_PROFILE");
     expect((error as CompareBoardError).profileHead?.version).toBe(2);
     hold = false;
-    const retried = await board.createProfileVersion("profile-1", saved.revision, 2);
+    const retried = await board.createProfileVersion("profile-1", saved.revision, 2, "current");
     expect(retried.version).toBe(3);
     expect((await profiles.getProfile("profile-1"))!.versions.at(-1)!.adjustments).toEqual({ density: "compact" });
   });
@@ -309,13 +309,13 @@ describe("보드 재확정 이어받기 — 저장소 confirmInto (6.1-3)", () =
     await profiles.saveAdjustments("profile-1", 1, { density: "compact", motion: "L0" });
     const saved = await board.savePicks({ hero: "ref-a", motion: "ref-b" }, {}, 1);
     failResponse = true;
-    await expect(board.createProfileVersion("profile-1", saved.revision, 2)).rejects.toThrow("응답 유실");
+    await expect(board.createProfileVersion("profile-1", saved.revision, 2, "current")).rejects.toThrow("응답 유실");
     failResponse = false;
     expect((await profiles.getProfile("profile-1"))!.latestVersion).toBe(3);
-    const retried = await board.createProfileVersion("profile-1", saved.revision, 2);
+    const retried = await board.createProfileVersion("profile-1", saved.revision, 2, "current");
     expect(retried).toEqual({ profileId: "profile-1", version: 3, droppedCount: 1 });
     // 지운 조정 0개(Hero만 변경)면 필드 없음
     const again = await board.savePicks({ hero: "ref-c", motion: "ref-b" }, {}, saved.revision);
-    expect(await board.createProfileVersion("profile-1", again.revision, 3)).toEqual({ profileId: "profile-1", version: 4 });
+    expect(await board.createProfileVersion("profile-1", again.revision, 3, "current")).toEqual({ profileId: "profile-1", version: 4 });
   });
 });

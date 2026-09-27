@@ -13,7 +13,7 @@ async function twoVersions(): Promise<readonly [ProfileVersion, ProfileVersion]>
   const { board, profiles } = createMemoryStudio({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a", "ref-c"], { hero: "ref-a" }) });
   await board.confirmProfile(1, 0);
   const changed = await board.savePicks({ hero: "ref-a", palette: "ref-c" }, {}, 1);
-  await board.createProfileVersion("profile-1", changed.revision, 1);
+  await board.createProfileVersion("profile-1", changed.revision, 1, "current");
   const [v1, v2] = (await profiles.getProfile("profile-1"))!.versions;
   return [v1!, v2!];
 }

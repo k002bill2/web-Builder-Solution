@@ -385,7 +385,7 @@ describe("저장·확정 (S-12~S-17)", () => {
     await waitFor(() => expect(screen.getByText("v1 이후 변경됨")).toBeInTheDocument());
     await waitFor(() => expect(screen.getByRole("button", { name: "새 버전으로 확정 (v2)" })).not.toHaveAttribute("aria-disabled"));
     await userEvent.click(screen.getByRole("button", { name: "새 버전으로 확정 (v2)" }));
-    await waitFor(() => expect(createVersion).toHaveBeenCalledWith("profile-1", expect.any(Number), 1));
+    await waitFor(() => expect(createVersion).toHaveBeenCalledWith("profile-1", expect.any(Number), 1, "current"));
     const versions = await repo.getProfileVersions("profile-1");
     expect(versions.map((v) => v.version)).toEqual([1, 2]);
     expect(versions[0]).toEqual(v1);

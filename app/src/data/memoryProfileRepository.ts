@@ -67,7 +67,12 @@ export function createMemoryProfileRepository(options: MemoryProfileOptions): Pr
         const series = seriesOf(store, id);
         return series ? [summaryOf(series)] : [];
       })),
-    getProfile: (profileId) => call("getProfile", () => seriesOf(store, profileId)),
+    getProfile: (profileId) =>
+      call("getProfile", () => {
+        const series = seriesOf(store, profileId);
+        const project = store.projectOf(profileId);
+        return series && project ? { ...series, project: { projectId: project.projectId, name: project.name } } : series;
+      }),
     // 범위 조회는 쓰기 본문을 받지 않는다 — /profile 진입 때 자동으로 부르므로(2a-04b2) 본문 청크는 저장·되돌리기 조작 뒤에만
     getAdjustmentRange: (profileId, version) => {
       const range = options.range ?? DEFAULT_ADJUSTMENT_RANGE;

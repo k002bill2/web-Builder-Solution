@@ -132,6 +132,8 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
     // 확정 시점 선택 스냅샷은 그 뒤 저장으로 바뀌지 않는다 (S-15 · FIX-R1)
     expect((await repo.getBoard()).board.confirmed).toEqual({
       profileId: "profile-1", version: 1, revision: 1, picks: { hero: "ref-a" }, custom: {},
+      // 계열의 프로젝트(DS-2A-05 12.2) — 첫 확정이 만든다
+      projectId: "project-1", projectName: "모던 카페 브랜드 프로젝트",
       latestVersion: 1, latest: { version: 1, base: record!.base, adjustments: {} }, confirmedBase: record!.base,
     });
     expect(await repo.confirmProfile(changed.revision, 1)).toEqual({ profileId: "profile-1", version: 2 });
@@ -140,8 +142,8 @@ describe("확정 (SPEC 8.2 · AC-24·25·26)", () => {
     expect(versions[0]).toEqual(snapshot);
     expect(Object.isFrozen(versions[0])).toBe(true);
     expect(versions[1]!.base.component_choices.hero?.variant).toBe("center");
-    expect(await repo.createProfileVersion("profile-1", changed.revision, 2)).toEqual({ profileId: "profile-1", version: 3 });
-    expect(await codeOf(repo.createProfileVersion("profile-9", changed.revision, 3))).toBe("SCHEMA_INVALID");
+    expect(await repo.createProfileVersion("profile-1", changed.revision, 2, "current")).toEqual({ profileId: "profile-1", version: 3 });
+    expect(await codeOf(repo.createProfileVersion("profile-9", changed.revision, 3, "current"))).toBe("SCHEMA_INVALID");
   });
 
   it("R-12: 사업자정보 없는 Footer는 확정 시 같은 모양의 확장 변형으로 저장한다", async () => {

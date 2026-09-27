@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { CompareBoardRepository } from "../data/compareBoardRepository";
-import { ProfileRepositoryProvider, type GenerationLoader } from "../data/ProfileRepositoryContext";
+import { ProfileRepositoryProvider, type GenerationLoader, type ProjectLoader } from "../data/ProfileRepositoryContext";
 import type { ProfileRepository } from "../data/profileRepository";
 import { ReferenceRepositoryProvider } from "../data/ReferenceRepositoryContext";
 import type { ReferenceRepository } from "../data/referenceRepository";
@@ -12,19 +12,21 @@ export function AppProviders({
   boardRepository,
   profileRepository,
   generations,
+  projects,
   children,
 }: {
   readonly repository: ReferenceRepository;
   readonly boardRepository: CompareBoardRepository;
   readonly profileRepository: ProfileRepository;
   readonly generations: GenerationLoader;
+  readonly projects: ProjectLoader;
   readonly children: ReactNode;
 }) {
   return (
     <ReferenceRepositoryProvider repository={repository}>
       <SavedReferencesProvider>
         <CompareTrayProvider repository={boardRepository}>
-          <ProfileRepositoryProvider repository={profileRepository} generations={generations}>{children}</ProfileRepositoryProvider>
+          <ProfileRepositoryProvider repository={profileRepository} generations={generations} projects={projects}>{children}</ProfileRepositoryProvider>
         </CompareTrayProvider>
       </SavedReferencesProvider>
     </ReferenceRepositoryProvider>

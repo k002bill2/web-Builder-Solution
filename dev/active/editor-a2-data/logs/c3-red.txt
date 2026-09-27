@@ -1,0 +1,49 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-data/app
+
+ ❯ src/data/engineVariantMap.test.ts (0 test)
+ ❯ src/data/startDocWrite.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/engineVariantMap.test.ts [ src/data/engineVariantMap.test.ts ]
+Error: Cannot find module './engineVariantMap' imported from /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-data/app/src/data/engineVariantMap.test.ts
+ ❯ src/data/engineVariantMap.test.ts:7:1
+      5| import { SECTION_LIBRARY } from "../domain/sectionLibrary";
+      6| import { getSectionDefinition, isSectionType } from "../engine/section…
+      7| import { ENGINE_VARIANT_MAP, mapVariant } from "./engineVariantMap";
+       | ^
+      8|
+      9| const BOUND = ["header", "hero", "footer"] as const;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/data/startDocWrite.test.ts [ src/data/startDocWrite.test.ts ]
+Error: Failed to resolve import "./startDocWrite" from "src/data/startDocWrite.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-data/app/src/data/startDocWrite.test.ts:4:64
+  1  |  import { hashDoc } from "../engine/ops/hash";
+  2  |  import { validatePageDoc } from "../engine/validate/validatePageDoc";
+  3  |  import { checkSaveDoc, writeStartDoc } from "./startDocWrite";
+     |                                               ^
+  4  |  const s = (type, variant, motion = "L1") => ({
+  5  |  	type,
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  16:40:29
+   Duration  815ms (environment 74%, setup 23%, transform 2%, worker 1%)
+

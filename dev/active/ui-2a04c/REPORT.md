@@ -104,3 +104,49 @@
 - 커밋 예외: `81bfe9b`는 서브에이전트 커밋 `bb9d758`의 **cherry-pick**(경로 지정 `git commit -- <paths>`가 아님). 대상 4파일(`domain/composeCandidates.ts`·`lintPlan.ts`와 두 테스트)만 담겼고 Co-Authored-By 푸터 있음. 이력은 고치지 않음
 - 서브에이전트 worktree `wf_fcc7d984-d6a-1`은 삭제 금지라 남겨 둠(추적 안 되는 `app/node_modules` 심볼릭 링크 있음)
 - 자체 발견: 늦은 응답 테스트가 지연 지점 도달 전에 화면을 옮겨 공회전 → 1차 Red-Green에서 발견·보강(4절)
+
+## 9. 추가 리뷰 (`/code-review 2804775..HEAD`, Codex 한도 대체 — Codex 아님)
+| # | 지적 | 조치 |
+|---|---|---|
+| 1 (Medium) | `select()`가 받은 잡으로 통째로 덮어써, 폴링이 먼저 끝난 뒤 늦은 선택 응답이 오면 "만드는 중"에 멈추고, 선택 전에 보낸 조회 응답이 늦으면 선택이 지워짐 | 선택 응답은 `selected`만 병합하고, 마지막 선택을 ref에 기억해 이후 조회 응답에도 덮어 씀 |
+| 2 (Low) | 조회 중 누른 멱등 요청이 이미 끝난 잡을 돌려받아도 새로 만든 것처럼 요청·완료 계측과 완료 알림, 실패 alert를 다시 냄 | 응답이 종료 상태면 요청 이벤트·단계 알림·완료 계측을 건너뛰고 표시만 함 |
+| 3 (Low) | 경고·정보 목록의 key가 `rule+message`라 같은 문구(중복 header 등)가 겹침 | key에 순번 포함 |
+| 사소 | `writeBodyLoader`의 `loadGenerate` 주석 위치 | 순서 정리 |
+- 회귀 테스트 2개를 `ProfileCandidates.test`에 추가함(선택 응답 지연, 다른 탭이 이미 끝낸 잡). 수정을 되돌리면 2개 실패, 복원하면 10/10 — `logs/red-green-4-review-fixes.log`
+- lint·build 결과: `logs/gate-lint-review-fix.log`, `logs/gate-build-review-fix.log`(exit와 번들 수치 포함). 전체 suite는 1회 원칙이라 다시 돌리지 않았고, `src/pages` 전체와 관련 data 테스트만 표적으로 재실행함
+- Codex 게이트는 계속 미실행 — 15:26 이후 `review --scope branch --base 2804775`
+
+## 10. main 병합 · 리뷰 수정 이식 (`UI-2A04C-REVIEW-PORT_BRIEF`, 병합 커밋 `30b2943`)
+**판정: 병합·이식·테스트·4게이트 통과. 번들 순증가 +0.04KB로 브리프 멈춤 조건에 걸림 — Jarvis 판단 필요.**
+
+### 충돌 해결
+- `CandidateCard.tsx`: main(`cdbad18`)의 접힘 카드(`<details>` 상세, Tag 경고, 문구·접근성)를 그대로 채택. 이 브랜치의 펼친 로그·경고 블록은 버림. 수정 3(key 순번)만 main의 `plan.lint.map`에 옮김.
+- `ProfileCandidates.test.tsx`: 대기 코드(`findAllByText`)는 양쪽 동일 — main 주석을 채택(`:76`). 회귀 테스트 2개(`:210` describe)는 자동 병합으로 남음. 단언 변경·삭제 0.
+
+### 옮긴 수정 3건 (main 대비 diff는 이 3파일뿐)
+| # | 의미 | 위치 |
+|---|---|---|
+| 1 | 선택 응답은 `selected`만 병합 + 마지막 선택을 ref로 기억해 늦은 조회 응답에도 덮어 씀 | `app/src/features/profile/useGeneration.ts:33`, `:49`, `:133-134` |
+| 2 | 멱등 요청이 끝난 잡을 돌려받으면 요청 이벤트·단계 알림·완료 계측 재발행 없음 | `app/src/features/profile/useGeneration.ts:118` |
+| 3 | 경고·정보 key = `rule-순번` | `app/src/features/profile/CandidateCard.tsx:97-98` |
+| 사소 | `loadGenerate` 주석 순서 | `app/src/data/writeBodyLoader.ts` (번들 영향 0 실측) |
+
+### 검증 (모두 `30b2943` 기준, fresh 실행)
+- RED/GREEN: `useGeneration.ts`를 main 버전으로 되돌리면 회귀 2개 실패(2 failed | 8 passed), 복원 10/10 — `logs/red-green-5-merge-port.log`
+- `ProfileCandidates.test.tsx` 단독 5회 연속 10/10 — `logs/merge-port-solo5.log`
+- 전체 vitest 1회: 105 파일 · 1212 테스트 통과, exit 0 — `logs/merge-port-full-vitest.log`
+- typecheck·lint·build exit 0 — `logs/merge-port-{typecheck,lint,build}.log`
+
+### 번들 (`/profile`, gzip KB, 첫 화면 / 진입 직후)
+| 빌드 | 첫 화면 | 진입 직후 |
+|---|---|---|
+| main 스냅샷(`git archive main`, 같은 node_modules) | 99.56 | 124.74 |
+| + `writeBodyLoader.ts` | 99.56 | 124.74 |
+| + `CandidateCard.tsx` | 99.56 | 124.74 |
+| + `useGeneration.ts` (= HEAD) | 99.56 | **124.78 (+0.04)** |
+| 시도: `current?.jobId` 축약(동작 동일) | 99.56 | 124.80 — 더 커서 버림 |
+- 증가분 전부 수정 1·2(`useGeneration.ts`)의 고유 비용. 병합 전 이 브랜치 단독에서도 같은 수정(`d459813`)이 진입 직후를 124.59 → 124.65(+0.06)로 늘렸음(`logs/gate-build-final.log` → `logs/gate-build-review-fix.log`) — 병합이 만든 비용이 아님. 예산 125 이내지만 브리프 기준(순증가 ≤ 0) 위반 → 여기서 멈춤. 다른 파일에서 상쇄·수정 제외·예산 조정은 금지 범위라 하지 않음.
+- 선택지: (a) +0.04 수용(여유 0.22) (b) 수정 1·2를 조작 뒤 청크로 옮기는 별도 작업 (c) 수정 제외. 권장 (a) — 둘 다 실제 결함(선택 고착·계측 중복) 수정이고 동작 증거가 있음.
+
+### 미검증
+- Codex 게이트 미실행(이전과 같은 한도 차단, 이번 런에서 재시도 안 함). 서버 실측 안 함(선택 항목).

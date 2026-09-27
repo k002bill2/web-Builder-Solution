@@ -8,7 +8,7 @@
 
 ## 체크포인트
 - [x] F0 base build 실측 (`logs/base-build.txt`, exit 0)
-- [ ] F1 필드 카운터 E-AC-06 (`fieldCounter` + `FieldEditor`)
+- [x] F1 필드 카운터 E-AC-06 (`fieldCounter` + `FieldEditor`) — RED `logs/f1-red.txt`(모듈 없음) → GREEN 18/18 `logs/f1-green.txt` · build exit 0. 결정: 상한·권장 동시 초과 = block 문장 하나만 · HTML `maxLength`=상한+10(UTF-16 단위라 이모지는 코드 포인트보다 일찍 멈춤 — 위험 목록)
 - [ ] F2 자동 저장 훅 E-AC-07 (`useDocSave`)
 - [ ] F3 저장 상태 E-AC-08·09 (`SaveStatus`)
 - [ ] F4 충돌 E-AC-10 (`ConflictCallout`)
@@ -22,3 +22,4 @@
 | 시점 | /catalog 첫/진입 | /references 첫/진입 | /compare 첫/진입 | /profile 첫/진입 | /projects 첫/진입 | /studio 첫/진입 | 공통 |
 |---|---|---|---|---|---|---|---|
 | base f22bbc8 | 99.65 / 102.03 | 96.99 / 99.38 | 98.75 / 121.39 | 99.60 / 124.69 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 |
+| F1 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 새 파일 미연결 — ±0.01은 CSS 해시(새 유틸리티 클래스) 파일명 변화. /profile 여유 0.30 |

@@ -1,0 +1,56 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app
+
+ ❯ src/features/studio/fieldCounter.test.ts (0 test)
+ ❯ src/components/studio/FieldEditor.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/FieldEditor.test.tsx [ src/components/studio/FieldEditor.test.tsx ]
+Error: Failed to resolve import "./FieldEditor" from "src/components/studio/FieldEditor.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/studio/FieldEditor.test.tsx:6:44
+  4  |  import { describe, expect, it } from "vitest";
+  5  |  import { heading, long } from "../../engine/sections/slots";
+  6  |  import { FieldEditor } from "./FieldEditor";
+     |                               ^
+  7  |  var _jsxFileName = "/Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/components/stu...
+  8  |  import { jsxDEV as _jsxDEV, Fragment as _Fragment } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/studio/fieldCounter.test.ts [ src/features/studio/fieldCounter.test.ts ]
+Error: Failed to resolve import "./fieldCounter" from "src/features/studio/fieldCounter.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-fields/app/src/features/studio/fieldCounter.test.ts:2:46
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  import { countField, FIELD_INPUT_SLACK } from "./fieldCounter";
+     |                                                 ^
+  3  |  const x = (n) => "가".repeat(n);
+  4  |  describe("fieldCounter (E-AC-06 · SPEC 5.6 · E-S19)", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  17:44:58
+   Duration  974ms (environment 82%, setup 15%, transform 2%, worker 1%)
+

@@ -206,6 +206,16 @@ describe("탭 (S5 · E-AC-14 · SPEC 6.2)", () => {
     expect(tab("섹션")).toHaveAttribute("aria-selected", "true");
   });
 
+  it("탭을 바꿔도 입력 값 유지(패널을 그려 둔 채 hidden)", async () => {
+    await open(390);
+    act(() => tab("편집").click());
+    const title = within(screen.getByRole("tabpanel", { name: "편집" })).getByRole("textbox", { name: /^제목/ });
+    act(() => void fireEvent.change(title, { target: { value: "탭 전환 전 입력" } }));
+    act(() => tab("섹션").click());
+    act(() => tab("편집").click());
+    expect(within(screen.getByRole("tabpanel", { name: "편집" })).getByRole("textbox", { name: /^제목/ })).toHaveValue("탭 전환 전 입력");
+  });
+
   it("탭을 바꿔도 선택 섹션 유지", async () => {
     await open(390);
     act(() => row(/^Services/).click());

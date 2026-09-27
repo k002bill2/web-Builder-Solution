@@ -1,8 +1,8 @@
-import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import { brand } from "../../brand/brand.config";
 import { CURRENT_USER } from "../../fixtures/currentUser";
 import { Avatar } from "../ds/Avatar";
-import { Button } from "../ds/Button";
+import { Icon } from "../ds/Icon";
 
 /** DS 2중 링 (D-V22-01) — UA outline 대신. */
 const FOCUS_RING = "rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)";
@@ -18,12 +18,12 @@ function useCatalogView() {
   const { pathname, search } = useLocation();
   const onCatalog = pathname === "/catalog";
   const saved = onCatalog && new URLSearchParams(search).get("tab") === "saved";
-  return { catalog: (onCatalog && !saved) || pathname.startsWith("/references/"), saved };
+  // 프로필은 프로젝트의 하위 화면이다 (DS-2A-05 2.2 · 12.1)
+  return { catalog: (onCatalog && !saved) || pathname.startsWith("/references/"), saved, projects: pathname === "/projects" || pathname.startsWith("/profile/") };
 }
 
 /** 상단 GNB — 52px 한 줄, <768에서는 주 메뉴가 헤더 아래 한 줄로 내려간다 (v2 SPEC 4.1 · Q5). */
 export function AppHeader() {
-  const navigate = useNavigate();
   const { Logo, name } = brand;
   const view = useCatalogView();
   return (
@@ -50,14 +50,19 @@ export function AppHeader() {
         <NavLink to="/compare" className={navClass}>
           비교 보드
         </NavLink>
-        <NavLink to="/profile" className={navClass}>
+        <Link to="/projects" aria-current={view.projects ? "page" : undefined} className={navClass({ isActive: view.projects })}>
           프로젝트
-        </NavLink>
+        </Link>
       </nav>
       <div className="ml-auto flex flex-none items-center gap-2.5">
-        <Button variant="primary" size="sm" leadingIcon="plus" onClick={() => navigate("/profile")}>
+        {/* 버튼 모양 링크 — 이동이라 링크다(S-B1 상쇄 2순위: 훅·핸들러 제거). 모양은 Button primary sm */}
+        <Link
+          to="/compare?new=1"
+          className={`inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary hover:bg-primary-hover ${FOCUS_RING}`}
+        >
+          <Icon name="plus" size={16} />
           새 프로젝트
-        </Button>
+        </Link>
         <Avatar name={CURRENT_USER.name} size="sm" />
       </div>
     </header>

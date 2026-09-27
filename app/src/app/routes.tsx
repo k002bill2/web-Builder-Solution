@@ -9,7 +9,8 @@ const ReferenceDetailPage = lazy(() =>
 );
 const CompareBoardPage = lazy(() => import("../pages/CompareBoardPage").then((m) => ({ default: m.CompareBoardPage })));
 const ProfilePage = lazy(() => import("../pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
-const PlaceholderPage = lazy(() => import("../pages/PlaceholderPage").then((m) => ({ default: m.PlaceholderPage })));
+const ProjectsRoute = lazy(() => import("../pages/ProjectsRoute").then((m) => ({ default: m.ProjectsRoute })));
+const StudioPage = lazy(() => import("../pages/StudioPage").then((m) => ({ default: m.StudioPage })));
 
 /**
  * 선언형 라우트(`useRoutes`). data router(`createBrowserRouter`)는 react-router 번들만 gzip 약 32KB라
@@ -24,9 +25,12 @@ export function createAppRoutes(): RouteObject[] {
         { path: "catalog", element: <CatalogPage /> },
         { path: "references/:id", element: <ReferenceDetailPage /> },
         { path: "compare", element: <CompareBoardPage /> },
-        { path: "profile", element: <ProfilePage /> },
+        // 프로필 목록은 /projects가 잇는다(DS-2A-05 12.1 · EQ-4) — 자리표시 편집기도 목록으로
+        { path: "profile", element: <Navigate to="/projects" replace /> },
         { path: "profile/:profileId", element: <ProfilePage /> },
-        { path: "studio", element: <PlaceholderPage title="편집기" screen="2a-05" /> },
+        { path: "projects", element: <ProjectsRoute /> },
+        { path: "studio", element: <Navigate to="/projects" replace /> },
+        { path: "studio/:projectId", element: <StudioPage /> },
         { path: "*", element: <Navigate to="/catalog" replace /> },
       ],
     },

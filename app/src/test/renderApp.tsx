@@ -13,9 +13,11 @@ import { FIXTURE_CATALOG } from "./compareFixtures";
 // lazy 라우트 모듈을 미리 로드해 둔다 — 첫 테스트의 콜드 변환이 findBy 대기 시간(1초)을 넘지 않게 한다
 import "../pages/CatalogPage";
 import "../pages/CompareBoardPage";
-import "../pages/PlaceholderPage";
 import "../pages/ProfilePage";
+import "../pages/ProjectsRoute";
 import "../pages/ReferenceDetailPage";
+import "../pages/StudioPage";
+import "../data/memoryProjectRepository";
 
 /** 테스트에서 읽는 라우터 상태. data router의 `router.state.location`과 같은 모양을 유지한다. */
 export interface TestRouter {
@@ -50,7 +52,7 @@ export function renderApp(
   };
   render(
     <AppProviders repository={repository} boardRepository={boardRepository ?? studio.board} profileRepository={profileRepository ?? studio.profiles}
-      generations={() => Promise.resolve(generationRepository ?? studio.generations)}
+      generations={() => Promise.resolve(generationRepository ?? studio.generations)} projects={studio.projects}
     >
       <MemoryRouter initialEntries={[path]}>
         <RouterProbe onRender={probe} />

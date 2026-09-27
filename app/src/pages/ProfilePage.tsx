@@ -4,7 +4,6 @@ import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Tag } from "../components/ds/Tag";
 import { LoadingState } from "../components/layout/LoadingState";
-import { ProfileList } from "../components/profile/ProfileList";
 import { ProfileValues } from "../components/profile/ProfileValues";
 import { VersionDiff } from "../components/profile/VersionDiff";
 import { VersionList } from "../components/profile/VersionList";
@@ -236,8 +235,8 @@ function ProfileView({
   );
 }
 
-/** DS-2A-04 — `/profile` 목록 · `/profile/:profileId` 상세 (SPEC 3). 전역 조정 2a-04b2, 3안 2a-04c(엔진 청크) */
+/** DS-2A-04 — `/profile/:profileId` 상세 (SPEC 3). 목록은 `/projects`가 잇는다(DS-2A-05 12.1 · S-B10). 전역 조정 2a-04b2, 3안 2a-04c(엔진 청크) */
 export function ProfilePage() {
-  const { profileId } = useParams();
-  return profileId === undefined ? <ProfileList /> : <ProfileDetail key={profileId} profileId={profileId} />;
+  const { profileId = "" } = useParams();
+  return <ProfileDetail key={profileId} profileId={profileId} />;
 }

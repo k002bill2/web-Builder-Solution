@@ -66,3 +66,8 @@ base 124.44 → C6 124.70 중 C4 fix가 +0.02, **C5가 +0.23**, C6가 +0.01(반�
 - `/profile` 진입 직후 여유 0.30 — 다음 기능은 `/profile` 청크 증가 0이어야 한다(6절 방안 참고).
 - 위 전체 vitest 타이밍 실패(CompareBoardPage AC-25) — 재현 시 해당 `findByText`에 SLOW 타임아웃 부여 검토.
 - `/projects` 진입 +0.59(C4 계약 표면) — 멈춤선 아님, 기록만.
+
+## 9. C6 되돌림 (Jarvis, 2026-09-27 17:1x · 영환님 ★A)
+- `f50aaba`(C6)를 `b9e9597`로 revert. 근거: C6 포함 전체 vitest 3회 중 2회 실패(`CompareBoardPage.test.tsx` "v1 확정 후 돌아오기" 계열 1~2건 교대) · C6 제외(C5 `857234a`) 3/3 · main 3/3 · revert 뒤 3/3(1,272/1,272).
+- 원인(코드 확인): `ProfilePage.tsx` 67~71행이 `projectCreated` state를 받으면 state를 비우려 **비동기 `navigate(현재 경로, {replace})`** 를 한다. C6로 모든 첫 확정이 이 경로를 타면서, 사용자가 곧바로 보드로 돌아가면 늦은 replace가 화면을 프로필로 되돌리는 경쟁이 생긴다(실사용 결함 가능, 추정).
+- C6(SPEC r4.3 J-S11 확장)는 별건으로 재시도: state 비우기를 경쟁 없이(예: `history.replaceState`) 바꾸고, 반복 실행 테스트(`--repeat` 또는 3회 전체 실행)를 수용 기준에 넣는다. C6 로그(`logs/c6-*.txt`)는 `f50aaba`에 남아 있다.

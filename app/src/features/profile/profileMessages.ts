@@ -83,6 +83,9 @@ function conflictOf(p: CorrectionProposal, level: ContrastLevel): ProposalView["
 
 const NONE: ReadonlySet<PaletteRole> = new Set();
 
+/** 쓴 보정(저장 전) — 제안 배너 문구이자 "프로필 알림" 문장 (PROFILE-A11Y-FIX D1·D4) */
+export const writtenText = (role: PaletteRole) => `${ROLE_NAMES[role]} 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다`;
+
 /**
  * 검사는 `palette`(보정을 적용한 팔레트)에서 한다. 제안은 `base`(보정 전 보드 팔레트)에서 역할을 고른 뒤, 그 역할만 base 값으로 둔 초안 팔레트에서
  * 후보·충돌을 다시 계산한다 — 제안의 from은 base 값이어야 저장소가 받는다(보정 from 검사).
@@ -106,7 +109,8 @@ export function contrastView(
       .map((p) => proposeCorrections(palette.map((e) => (e.role === p.role ? { ...e, hex: p.from } : e)), cardTone, level).find((q) => q.role === p.role) ?? p)
       .map((p) => {
         const conflict = conflictOf(p, level);
-        return { role: p.role, from: p.from, to: p.to, check: p.basis, text: proposalText(p, level), ...(!failing.has(p.role) && { written: true }), ...(conflict && { conflict }) };
+        const written = !failing.has(p.role);
+        return { role: p.role, from: p.from, to: p.to, check: p.basis, text: written ? writtenText(p.role) : proposalText(p, level), ...(written && { written }), ...(conflict && { conflict }) };
       }),
   };
 }

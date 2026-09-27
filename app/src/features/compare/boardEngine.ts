@@ -5,6 +5,7 @@
  * 어차피 데이터와 같이 내려온다. 첫 화면 정적 JS(ADR-004)에는 표·패널 UI만 남긴다.
  * 사용자 스타일 입력(CustomStyleFields·Select·TextField)도 여기서 싣는다 — 보드가 준비(엔진 로드)된 뒤에만 그려지므로
  * 첫 화면에 필요 없다(V2-1 · SPEC B-5). P-S25 개수 캡션 틀(CarryOverCaption)도 같은 이유로 여기 둔다(DS-2A-04 r6).
+ * 초안 패널(DraftPanel·DraftItem)·요약 바(DraftSummaryBar)도 보드 준비 뒤에만 그려지므로 여기 싣는다(BUNDLE-01 C8).
  */
 import { pickAllFrom, pickAnnouncement, togglePick } from "../../domain/boardPicks";
 import { evaluateBoardWarnings } from "../../domain/boardWarnings";
@@ -22,6 +23,8 @@ import { draftItemsView } from "./draftView";
 import { createPicksSaver } from "./picksSaver";
 import { CarryOverCaption } from "./CarryOverCaption";
 import { loadBoardInput } from "./boardInputLoader";
+import { DraftPanel } from "../../components/compare/DraftPanel";
+import { DraftSummaryBar } from "../../components/compare/DraftSummaryBar";
 
 function evaluate(board: CompareBoard, comparison: Comparison): Evaluation {
   const draft = buildProfileDraft(board, comparison.results, comparison.libraryVersion);
@@ -75,6 +78,8 @@ export const boardEngine = Object.freeze({
   checkPrimaryColor,
   CustomStyleFields,
   CarryOverCaption,
+  DraftPanel,
+  DraftSummaryBar,
 });
 
 export type BoardEngine = typeof boardEngine;

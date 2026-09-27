@@ -1,0 +1,20 @@
+== run 1
+      Tests  36 passed (36)
+== run 2
+      Tests  36 passed (36)
+== run 3
+      Tests  36 passed (36)
+== run 4
+      Tests  36 passed (36)
+== run 5
+      Tests  36 passed (36)
+== run 6
+      Tests  36 passed (36)
+== run 7
+      Tests  36 passed (36)
+== run 8
+      Tests  36 passed (36)
+== run 9
+      Tests  36 passed (36)
+== run 10
+      Tests  36 passed (36)

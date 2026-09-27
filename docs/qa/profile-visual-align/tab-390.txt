@@ -1,0 +1,17 @@
+# 390×844 Tab 앞 15개 — /profile/profile-1 (B안 선택 + 보정값 쓴 뒤 상태). innerWidth=390 확인. 형식은 tab-1280.txt 와 같음.
+# 주의: 7번 '새 프로젝트'는 1행(y=10, 로고와 같은 줄)인데 2행 메뉴(y=52) 뒤에 옴 → REPORT D3.
+  1 · link · 본문으로 건너뛰기 · [other y=2720 x=12] ring=Y inView=Y
+  2 · link · Design Studio · [header y=10 x=16] ring=Y inView=Y
+  3 · link · 카탈로그 · [header y=52 x=16] ring=Y inView=Y
+  4 · link · 보관함 · [header y=52 x=86] ring=Y inView=Y
+  5 · link · 비교 보드 · [header y=52 x=145] ring=Y inView=Y
+  6 · link · 프로젝트 · [header y=52 x=219] ring=Y inView=Y
+  7 · button · 새 프로젝트 · [header y=10 x=211] ring=Y inView=Y
+  8 · link · 비교 보드에서 선택 바꾸기 · [header y=181 x=16] ring=Y inView=Y
+  9 · button(summary) · 값 전체 보기 · [main y=435 x=16] ring=Y inView=Y open=false
+ 10 · button(summary) · 팔레트 값 보기 · [main y=609 x=16] ring=Y inView=Y open=false
+ 11 · button(summary) · 통과 4 · 미달 0 · 대비 상세 · [main y=683 x=16] ring=Y inView=Y open=false
+ 12 · button · 보정값을 썼습니다 (보조 글자 muted) · [main y=799 x=16] ring=Y inView=Y
+ 13 · radio · 여유 · [main y=977 x=20] ring=Y inView=Y checked=true
+ 14 · radio · 기본 AA · [main y=1059 x=20] ring=Y inView=Y checked=true
+ 15 · radio · L1 낮음 · [main y=1141 x=98] ring=Y inView=Y checked=true

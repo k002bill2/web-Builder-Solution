@@ -22,7 +22,7 @@ async function open() {
   await board.confirmProfile(1, 0);
   renderApp("/profile/profile-1", createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board, createMemoryProfileRepository({ store }), createMemoryGenerationRepository({ store }));
   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
-  return screen.findByRole("region", { name: "3안" });
+  return screen.findByRole("region", { name: "생성된 3안" });
 }
 const user = () => userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 const detailsOf = (region: HTMLElement, summary: string) => [...region.querySelectorAll("details")].find((d) => d.querySelector(":scope > summary")?.textContent === summary);
@@ -57,8 +57,8 @@ describe("왼쪽 패널 요약 우선 (PROFILE-V2-COMPACT 2·3)", () => {
 
   it("패널 제목 h2 = ds-heading1 · 현재 버전 배지 violet(글자 '현재')", async () => {
     const region = await open();
-    for (const name of ["프로필 값", "역할 팔레트와 대비", "버전", "3안"]) expect(screen.getByRole("heading", { level: 2, name })).toHaveClass("ds-heading1");
-    expect(within(region).getByRole("heading", { level: 2, name: "3안" })).toHaveClass("ds-heading1");
+    for (const name of ["프로필 값", "역할 팔레트와 대비", "버전", "생성된 3안"]) expect(screen.getByRole("heading", { level: 2, name })).toHaveClass("ds-heading1");
+    expect(within(region).getByRole("heading", { level: 2, name: "생성된 3안" })).toHaveClass("ds-heading1");
     expect(screen.getByText("v1 · 현재")).toHaveClass("text-accent-violet");
   });
 });

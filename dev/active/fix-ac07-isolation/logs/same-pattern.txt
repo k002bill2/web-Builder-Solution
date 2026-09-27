@@ -1,0 +1,18 @@
+## BEFORE fix, -t AC-12
+     × AC-12·AC-24: 낮은 대비 대표색 → 수치·보정값 쓰기, 확정 가능, 저장된 color_tokens는 역할 팔레트 전체이고 보드가 계산한 색과 같다 899ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'base')
+      Tests  1 failed | 1 passed | 34 skipped (36)
+## AFTER fix, -t AC-12
+      Tests  2 passed | 34 skipped (36)
+## BEFORE fix, -t AC-26
+     × AC-26: B Footer 변형이 현재 라이브러리에 없으면 '현재 라이브러리에 없는 변형', 선택 버튼 없음, library_version은 getComparison 값 788ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'base')
+      Tests  1 failed | 35 skipped (36)
+## AFTER fix, -t AC-26
+      Tests  1 passed | 35 skipped (36)
+## AFTER fix, -t AC-11
+      Tests  1 passed | 35 skipped (36)
+## AFTER fix, -t AC-17
+      Tests  1 passed | 35 skipped (36)

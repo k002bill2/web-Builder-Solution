@@ -16,9 +16,10 @@
 | d1c8eed | 묶음4 비교: 서브에이전트 6ca4cb1을 cherry-pick |
 | 03714d3 | 묶음2·3 카탈로그·상세: 서브에이전트 bbffaf1을 cherry-pick |
 | 313c573 | after 캡처·지표·통합 빌드·서버 종료 근거 |
-| (이 커밋) | REPORT·PROGRESS |
+| b2a0a9f | REPORT·PROGRESS·Codex 1라운드 |
+| (이 커밋) | 긴 문자열 검증·REPORT 수치 정정 |
 
-## 변경 파일 (app/src, 코드 10 + 테스트 9)
+## 변경 파일 (app/src, `git diff --name-only 12eee17 HEAD -- app` 19개 = 코드 12 + 테스트 7)
 - 토큰·DS
   - `styles/tokens/base.css`: body `font-size: var(--font-size-body3)`, `line-height: var(--line-height-body3)`. 토큰 이름·브랜드는 바꾸지 않았다.
   - `components/ds/Button.tsx`: lg `h-13 px-5.5 text-body1` → `h-10 px-5 text-body3`, lg 아이콘 22 → 20. md(h-10)·sm(h-8)은 그대로다.
@@ -40,7 +41,7 @@
   - 추가: `AppHeader.test.tsx`(+1), `ReferenceCard.test.tsx`(+1), `ReferenceDetailPage.test.tsx`(+2, 404 단언 강화 1)
 
 ## 테스트 증감 (L1: 통합 후 메인이 재실행)
-- 새 회귀 테스트 +14건(파일 4개 신규). 삭제 0, 완화 0. 기존 단언을 새 디자인에 맞춰 바꾼 곳 0(모두 추가·강화).
+- 새 회귀 테스트 +13건(density 4 · CatalogHero 1 · compareBoardV2 3 · CompareBoardV2 1 · AppHeader 1 · ReferenceCard 1 · ReferenceDetailPage 2) + 기존 404 테스트 강화 1. 삭제 0, 완화 0. 기존 단언을 새 디자인에 맞춰 바꾼 곳 0(모두 추가·강화).
 - RED 확인
   - 메인 묶음1: 5 failed(`logs/red-ds.txt`).
   - 카탈로그·상세 서브에이전트: 5 failed / 44(L2).
@@ -71,7 +72,7 @@
 - 가로 넘침(scrollWidth−clientWidth): catalog·detail·compare(3개 채움 + 선택 1회)·profile × 1280/768/390/320 전부 0이다.
 - 이동: 카탈로그 → 상세(카드 링크) → 뒤로 → 비교 3개 담기 → 비교 보드 → 선택 → 프로필. 4폭 모두 성공했다.
 - 시각 검토 1회 결과는 결함 0이다. 그래서 수정 확인 라운드는 쓰지 않았다.
-  - 1280 상세: 행동 버튼이 패널 바닥에 있다.
+  - 1280 상세: 행동 버튼이 패널 바닥에 있다. 단 before에서도 같은 위치다. 이 fixture는 패널이 미리보기보다 길어 행 높이를 패널이 정하므로, `lg:mt-auto`는 이 데이터에선 시각 변화가 없고 미리보기가 더 길 때만 효과가 있다(단위 테스트로 클래스만 고정).
   - 태그: 앞 둘은 보라, 나머지는 중립 외곽형이다.
   - 비교표: 외곽선이 없고 행 윗선만 남았다. 패널이 좁아진 만큼 열이 넓어졌다.
   - 390 비교: 아코디언과 하단 초안 바가 정상이다.
@@ -79,6 +80,12 @@
   - 1280 비교 캡처에서 초안 패널 아래가 잘린 것은 before에도 똑같이 있다. 스티키 패널을 전체 페이지로 캡처해서 생긴 것이라 결함으로 보지 않는다.
   - 390 전체 캡처 중간의 고정 바도 캡처 합성 탓이다.
   - `minButtonH` 20은 before에도 있던 기존 요소다(이번 변경 무관).
+- `metrics-after.json`의 `detailActionGap`은 무효 지표다. catalog 페이지의 필터 레일 aside를 잡았고(1280 312), detail에서는 null이다.
+- 긴 문자열(L1, `logs/longtext*.mjs`·`longtext*-result.json`): 공백 없는 90자를 주입했다.
+  - 카드 제목: 4폭 모두 넘침 0, 2줄에서 잘림(`line-clamp` 2).
+  - 체크 행(1280, 필터 레일이 보이는 폭): 줄바꿈되어 높이 110, 행 넘침 0.
+  - 상세 h1: 넘침 0.
+  - **상세 태그: 넘침 발생**(1280 +483, 320 +545). 원인은 `components/ds/Tag.tsx`의 `whitespace-nowrap`이다. 기준 12eee17부터 있던 코드이고 이번 변경(톤만)과 무관하다. Tag.tsx는 쓰기 범위 밖이라 고치지 않고 보고한다. 실데이터 태그는 짧은 콘셉트 단어라 현재 발현은 0이다.
 - profile spot-check: 빈 상태만 확인했다. 넘침 0, 버튼 32. 프로필 채움 상태는 재현하지 않았다.
 - 픽셀 완전 일치는 주장하지 않는다. 목업 React 렌더는 외부 자산이 필요해 하지 않았고, 대조는 Designer REPORT의 마크업·토큰 수치 기준이다.
 
@@ -87,7 +94,7 @@
 - TextField 40: 목업은 38이다. 브리프 기준 40을 따랐다.
 - 카드 hover는 `hover:text-primary`를 그대로 뒀다. Designer 표에는 primary-hover로 적혀 있지만 브리프는 "기능 불변"이고 링크 색 일괄 교체는 묶음5(프로필 레인) 소관이다.
 - PickButton 원은 16px 그대로다. 목업은 18인데 브리프 최소수정 범위 밖이다.
-- 상세 패널 최소 높이는 추가하지 않았다. lg 그리드 행 높이로 늘어나므로 `lg:mt-auto`만으로 바닥에 붙는다(1280 캡처로 확인).
+- 상세 패널 최소 높이는 추가하지 않았다. lg 그리드 행 높이로 늘어나므로 `lg:mt-auto`만으로 바닥에 붙는다(CSS 판단 · 테스트 고정. 1280 캡처는 before/after 모두 바닥이라 이 변경의 효과 증거가 아니다).
 - Chip(B-4)·비교 필 문구(C-05)·툴바 캡션은 브리프대로 그대로 뒀다.
 
 ## DS 변경의 파급 (의도, 목록)
@@ -115,6 +122,7 @@
 - `codex-companion review --scope branch --base 12eee17` 1라운드를 실행했다. 결과는 아래 "Codex 결과" 절에 적는다.
 
 ## 미완료 / 대기
+- 범위 밖 발견 1건: `ds/Tag.tsx` `whitespace-nowrap`로 긴 태그가 가로로 넘친다(기존 결함). 수정하려면 DS Tag 쓰기 승인이 필요하다.
 - 전체 test suite는 ui-2a04c 전담이다. 통합 회수 때 전체 게이트를 기다린다.
 - 독립 QA 대기: VoiceOver·Safari, 터치 실기기, 프로필 채움 상태 DS 회귀.
 - 묶음5(프로필·링크 가드)는 ui-2a04c 병합 뒤 별도 레인에서 한다. 이번 범위가 아니다.

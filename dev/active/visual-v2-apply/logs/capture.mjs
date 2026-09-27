@@ -1,5 +1,6 @@
-// 사용: PHASE=before|after ego-browser nodejs < capture.mjs  (4345 서버 필요, 외부 접근 없음)
-const phase = process.env.PHASE || "before";
+// 사용: ego-browser nodejs < capture.mjs  (4345 서버 필요, 외부 접근 없음). before 전용 —
+// ego-browser 런타임은 셸 env를 받지 않는다. after는 capture-after.mjs를 쓴다.
+const phase = "before";
 const root = "/Users/younghwankang/orca/workspaces/web-builder-solution/visual-v2-apply/dev/active/visual-v2-apply";
 const fs = await import("node:fs/promises");
 const task = await taskSpace(`visual-v2-apply ${phase}`);

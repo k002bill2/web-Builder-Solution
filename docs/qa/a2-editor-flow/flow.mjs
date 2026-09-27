@@ -403,7 +403,20 @@ log("E7", "(관찰) 충돌 STALE_DOC — 브라우저 재현 불가(같은 탭 �
   ab("press", "Escape");
   log("E10", "(관찰) 1024 select 키보드 ArrowDown → 선택 변경", k.editH2 === `편집 · ${k.value}` ? (k.value !== r.target ? true : null) : false, { before: r.target, ...k, note: "닫힌 select의 ArrowDown은 OS·브라우저 기본 동작" });
   setWidth(768);
-  const after = ev(`return { tablist: !!document.querySelector('[role="tablist"]'), select: !!document.querySelector("header select") };`);
+  const probe = `return { innerWidth: window.innerWidth, mq64: matchMedia("(min-width: 64rem)").matches, mq80: matchMedia("(min-width: 80rem)").matches, tablist: !!document.querySelector('[role="tablist"]'), select: !!document.querySelector("header select"), active: document.activeElement?.tagName };`;
+  const after = ev(probe);
+  // 원인 가르기: 포커스를 select 밖으로 옮기고 폭을 한 번 더 바꾼다
+  ev(`document.querySelector("h1")?.focus(); return true;`);
+  setWidth(1024); setWidth(768);
+  const after2 = ev(probe);
+  const deeper = ev(`${H} const raf = await Promise.race([new Promise((r) => requestAnimationFrame(() => r(true))), new Promise((r) => setTimeout(() => r(false), 800))]);
+    const mqlEvent = await new Promise((r) => { const m = matchMedia("(min-width: 64rem)"); let hit = false; m.addEventListener("change", () => { hit = true; }); setTimeout(() => r(hit), 50); });
+    const bs = [...document.querySelectorAll('nav[aria-labelledby="studio-sections-heading"] ol button')]; const before = editH2(); const sel = document.querySelector("header select"); if (sel) setVal(sel, sel.options[1].value);
+    await new Promise((r) => setTimeout(r, 300)); return { rafFires: raf, reactRerenders: editH2() !== before, editH2Before: before, editH2After: editH2(), visibility: document.visibilityState, hasFocus: document.hasFocus() };`);
+  log("E10", "(관찰) 원인 가르기 — h1로 포커스 옮긴 뒤 1024 → 768 다시 + rAF·React 재렌더", null, { ...after2, ...deeper });
+  // 새 문서 레벨 이동 없이 1280으로 한 번 더 — 배치가 3단으로 돌아오는지
+  setWidth(1280);
+  log("E10", "(관찰) 그 뒤 1280", null, ev(probe));
   log("E10", "(관찰) select 팝업(ArrowDown) 뒤 768로 폭 변경 → 탭 배치로 바뀌는지", null, { ...after, note: "2차 실행에서 이 순서일 때 768 탭 배치가 나타나지 않았다 — 하네스 부작용인지 기록" });
 }
 

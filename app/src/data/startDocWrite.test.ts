@@ -1,6 +1,10 @@
 import type { PlannedSection } from "../domain/generation";
 import { hashDoc } from "../engine/ops/hash";
 import { validatePageDoc } from "../engine/validate/validatePageDoc";
+import { slotRowIssues } from "../engine/gate/slotRows";
+import { defaultSlots } from "../engine/sections/defaults";
+import { getSectionDefinition } from "../engine/sections/registry";
+import { sampleCopyOf } from "./sampleCopy";
 import { boardOf, resultsOf } from "../test/compareFixtures";
 import { composeCandidates } from "../domain/composeCandidates";
 import { GENERATOR_VERSION } from "../domain/generation";
@@ -93,6 +97,29 @@ describe("3안 그리드 차이 보존 (Q-21 후속 · SPEC r4.6 A3-Q3)", () => 
     });
     expect(services).toEqual([["cards-3"], ["cards-2"], ["cards-masonry"]]);
   });
+
+  it("masonryFirst 구조안(portfolio가 첫 그리드 섹션) → 3안 portfolio 변형이 서로 다르다 (r4.7 A3-Q6 · composeCandidates.test 134-135행)", () => {
+    const ids = ["ref-a", "ref-b", "ref-c", "ref-d", "ref-e", "ref-f"];
+    const draft = buildProfileDraft(boardOf(ids, { hero: "ref-a" }), resultsOf(ids), SECTION_LIBRARY.version);
+    if (draft.status !== "ready") throw new Error("Hero 선택이 필요합니다");
+    const e = (type: PlannedSection["type"], variant: string) => ({ type, variant });
+    const profile = {
+      ...draft.profile,
+      seed: "00000002",
+      section_plan: [e("header", "transparent"), e("hero", "fullbleed-left"), e("portfolio", "masonry"), e("services", "grid-3"), e("about", "split"), e("contact", "form"), e("footer", "biz-extended")],
+    };
+    const plans = composeCandidates({ profile, purpose: "none", contrast: "aa", library: SECTION_LIBRARY, generatorVersion: GENERATOR_VERSION }).map((r) => {
+      if (r.status !== "succeeded") throw new Error(`${r.id}안 실패`);
+      return r.plan;
+    });
+    expect(plans.map((p) => p.axes.grid)).toEqual(["masonry", "grid-3", "grid-2"]);
+    const portfolio = plans.map((p) => {
+      const made = writeStartDoc(input(p.sections));
+      if (!made.ok) throw new Error(made.alert);
+      return made.doc.sections.filter((x) => x.type === "portfolio").map((x) => x.variant);
+    });
+    expect(portfolio).toEqual([["masonry"], ["grid-3"], ["grid-2"]]);
+  });
 });
 
 describe("saveDoc 모양 검사 (8.3 판정 1 — L4 검증 함수)", () => {
@@ -104,5 +131,50 @@ describe("saveDoc 모양 검사 (8.3 판정 1 — L4 검증 함수)", () => {
     expect(checkSaveDoc("project-1", { ...doc, meta: { title: "바뀜", description: "" } })).toMatchObject({ ok: false, message: expect.stringContaining("hash") });
     expect(checkSaveDoc("project-1", { ...doc, sections: "x" })).toMatchObject({ ok: false });
     expect(checkSaveDoc("project-1", null)).toMatchObject({ ok: false });
+  });
+});
+
+describe("예시 문구 채우기 (SPEC r4.7 A3-Q8 · V4)", () => {
+  const ids = ["ref-a", "ref-b", "ref-c", "ref-d", "ref-e", "ref-f"];
+  const docs = ids.flatMap((hero) => {
+    const draft = buildProfileDraft(boardOf(ids, { hero }), resultsOf(ids), SECTION_LIBRARY.version);
+    if (draft.status !== "ready") throw new Error("Hero 선택이 필요합니다");
+    return composeCandidates({ profile: draft.profile, purpose: "none", contrast: "aa", library: SECTION_LIBRARY, generatorVersion: GENERATOR_VERSION }).map((r) => {
+      if (r.status !== "succeeded") throw new Error(`${r.id}안 실패`);
+      const made = writeStartDoc(input(r.plan.sections));
+      if (!made.ok) throw new Error(made.alert);
+      return made.doc;
+    });
+  });
+
+  it("픽스처 6 × 3안 새 문서 — 텍스트 슬롯 빈 값 0 · 예시 문구가 들어감 · 게이트 글자 수 문제 0 · 모양·해시 유효", () => {
+    expect(docs).toHaveLength(18);
+    for (const doc of docs) {
+      expect(validatePageDoc(doc).ok).toBe(true);
+      expect(doc.hash).toBe(hashDoc(doc));
+      expect(checkSaveDoc("project-1", doc).ok).toBe(true);
+      expect(slotRowIssues(doc).textLength).toEqual([]);
+      for (const section of doc.sections) {
+        for (const slot of getSectionDefinition(section.type, section.variant)!.slots.filter((x) => x.kind !== "image")) {
+          const value = section.slots[slot.key];
+          expect(typeof value === "string" && value.trim() !== "", `${section.instanceId}.${slot.key}`).toBe(true);
+          const sample = sampleCopyOf(section.type, slot.key);
+          if (sample !== undefined) expect(value, `${section.instanceId}.${slot.key}`).toBe(sample);
+        }
+      }
+    }
+    expect(docs[0]!.sections.find((x) => x.type === "hero")!.slots.title).toBe(sampleCopyOf("hero", "title"));
+  });
+
+  it("재진입 멱등 — 같은 입력 두 번 → 같은 문서·해시 (E-AC-40~42 전제)", () => {
+    const a = writeStartDoc(input());
+    const b = writeStartDoc(input());
+    expect(a.ok && b.ok && a.doc).toEqual(b.ok && b.doc);
+  });
+
+  it("섹션 추가·변형 교체 기본값(엔진 defaultText)은 그대로 — E-AC-24 불변", () => {
+    const hero = getSectionDefinition("hero", "split")!;
+    expect(defaultSlots(hero).title).toBe("한 문장으로 소개하는 제목");
+    expect(sampleCopyOf("hero", "title")).not.toBe("한 문장으로 소개하는 제목");
   });
 });

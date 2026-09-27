@@ -87,6 +87,36 @@ describe("편집 알림 (D2 · E-AC-33 · SPEC 8.2.1 (a) · 8.3.1)", () => {
   });
 });
 
+describe("편집 알림 접기 (SPEC r4.7 A3-Q7 — 8.2.1 (a) 한 줄 요약 + 펼치기)", () => {
+  const CHANGED = "구조안의 섹션 3개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 2열 → 카드 2열";
+  const CHANGES = [
+    { type: "about", from: "split", to: "story" },
+    { type: "services", from: "grid-2", to: "cards-2" },
+  ] as const;
+
+  it("바뀐 쌍이 있으면 한 줄 요약 '편집 문서를 만들며 바뀐 점 N개'(N = 원문의 바뀐 섹션 수 — 같은 쌍 여러 섹션 포함, Codex r1 P2) + 닫힌 details 안에 원문 · 영역 1개 · 1회", async () => {
+    const router = open(true, { editNotice: CHANGED, changes: CHANGES });
+    const before = router.state.location.key;
+    await h1();
+    await waitFor(() => expect(noticeRegion()).toHaveTextContent("편집 문서를 만들며 바뀐 점 3개"));
+    const details = noticeRegion().querySelector("details")!;
+    expect(details).not.toHaveAttribute("open");
+    expect(details.querySelector("summary")).toHaveTextContent("편집 문서를 만들며 바뀐 점 3개");
+    expect(details).toHaveTextContent(CHANGED);
+    expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
+    expect(screen.getAllByText(CHANGED)).toHaveLength(1);
+    expect(router.state.location.key).toBe(before);
+  });
+
+  it("원문은 접힌 details 안에 DOM으로 남는다(펼치면 보임 · 문장 불변)", async () => {
+    open(true, { editNotice: CHANGED, changes: CHANGES });
+    await h1();
+    await waitFor(() => expect(noticeRegion().querySelector("details")).not.toBeNull());
+    expect(screen.getByText(CHANGED)).toBeInTheDocument();
+    // DOC_EXISTS 같은 바뀐 쌍 없는 알림은 접지 않는다 — 위 D2 테스트(changes: [])가 원문 그대로를 본다
+  });
+});
+
 describe("진입 포커스 (D3)", () => {
   it("편집 시작으로 도착 → 포커스 = h1(tabIndex -1), body 아님", async () => {
     open(true, { editNotice: NOTICE, changes: [] });

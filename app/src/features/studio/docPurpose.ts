@@ -1,6 +1,8 @@
 import type { MotionPreset } from "../../domain/compareBoard";
 import type { ProfileSeries } from "../../domain/profile";
+import type { ColorTokens as CanvasTokens } from "../../domain/compareBoard";
 import type { Purpose } from "../../engine/ops/rules";
+import type { CanvasPalette } from "./canvasLayouts";
 
 const versionOf = (series: ProfileSeries | undefined, profileVersion: number) => series?.versions.find((v) => v.version === profileVersion);
 
@@ -16,4 +18,14 @@ export function docPurpose(series: ProfileSeries | undefined, profileVersion: nu
 export function docMotionPreset(series: ProfileSeries | undefined, profileVersion: number): MotionPreset {
   const version = versionOf(series, profileVersion);
   return version ? (version.adjustments.motion ?? version.base.motion_preset) : "L1";
+}
+
+/** 캔버스 색(A3-Q7 · 5.7) — 같은 버전의 팔레트 역할 5개, 보정(corrections)은 나중 것이 이긴다. 버전이 없으면 undefined(중립 토큰) */
+export function docPalette(series: ProfileSeries | undefined, profileVersion: number): CanvasPalette | undefined {
+  const version = versionOf(series, profileVersion);
+  // 팔레트가 없는 버전(부분 레코드)도 편집은 계속 — 중립 토큰
+  const tokens = version?.base.color_tokens as Partial<CanvasTokens> | undefined;
+  if (!version || !tokens?.primary) return undefined;
+  const fixed = (role: keyof CanvasPalette) => version.adjustments.corrections?.findLast((c) => c.role === role)?.to ?? tokens[role]?.$value ?? "";
+  return { primary: fixed("primary"), surface: fixed("surface"), ink: fixed("ink"), muted: fixed("muted"), bg: fixed("bg") };
 }

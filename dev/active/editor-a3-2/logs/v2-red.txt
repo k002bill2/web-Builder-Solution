@@ -1,0 +1,15 @@
+     × 문서 버전의 역할 5개 · 보정(corrections) 적용 값 · 최신 버전이 아니다 2ms
+     × 버전·프로필 없음 → undefined(중립 토큰으로 그린다) 0ms
+     × 섹션마다 표의 모양(data-layout) · 카드 칸 수 = 카드 수 · 이미지 슬롯 = 줄무늬 aria-hidden 9ms
+     × 캔버스 루트 CSS 변수 = 팔레트 값 · 팔레트 없으면 중립 토큰 참조 · 모든 블록이 변수 색을 쓴다 4ms
+     × 문서 profileVersion의 팔레트 → --canvas-* 변수 3446ms
+     × 프로필 없음(조회 결과 없음) → 중립 토큰으로 그리고 편집은 계속 39ms
+Error: Failed to resolve import "./canvasLayouts" from "src/features/studio/canvasLayouts.test.ts". Does the file exist?
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected '' to be '#0a5c36' // Object.is equality
+AssertionError: expected '' to match /^var\(--/
+AssertionError: expected [ undefined, undefined, …(3) ] to deeply equal [ 'bar', 'split', 'cols3', …(2) ]
+AssertionError: expected '' to be '#123456' // Object.is equality
+TypeError: docPalette is not a function
+TypeError: docPalette is not a function
+      Tests  6 failed | 4 passed (10)

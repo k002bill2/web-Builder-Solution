@@ -11,12 +11,20 @@ const CAPTION = "ds-caption1 text-label-alternative";
  * "편집 알림"(6.3 · E-AC-33) — 배치마다 정확히 1개. 비어 있어도 그려 둔다(`display:none` 금지).
  * 알림 줄(5.4 · Q7) = `role=status` 글자 + **영역 밖 형제 버튼** "되돌리기"(D-QA06 형식) — 바로 앞 연산 1개만.
  */
-export function NoticeRegion({ text, onUndo }: { readonly text: string; readonly onUndo?: () => void }) {
+export function NoticeRegion({ text, detail, onUndo }: { readonly text: string; readonly detail?: string; readonly onUndo?: () => void }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-      <p role="status" aria-label="편집 알림" className="ds-body2 px-3 empty:p-0">
-        {text}
-      </p>
+      {/* detail = 접힌 원문(진입 알림 8.2.1 (a), r4.7 A3-Q7) — 요약 줄이 summary, 원문은 펼치면 보인다 */}
+      <div role="status" aria-label="편집 알림" className="ds-body2 px-3 empty:p-0">
+        {detail ? (
+          <details>
+            <summary className="cursor-pointer">{text}</summary>
+            <p className="ds-body3 mt-1">{detail}</p>
+          </details>
+        ) : (
+          text
+        )}
+      </div>
       {onUndo && (
         <button type="button" onClick={onUndo} className="ds-label min-h-8 rounded-sm px-3 text-primary hover:bg-fill-normal hover:text-primary-hover">
           되돌리기

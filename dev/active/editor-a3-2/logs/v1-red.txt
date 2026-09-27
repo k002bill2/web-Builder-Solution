@@ -1,0 +1,14 @@
+     × VARIANT-MAP 1~42행(고유 43쌍) 대표 쌍 — 쌍 키(services/grid-3 ≠ portfolio/grid-3) · 표 밖 = undefined 3ms
+     × 본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2) + r4.7 A3-Q6 portfolio/grid-2 5ms
+     × 그리드 축 변형 3개(A3-Q3) — 이름표 · 슬롯은 cards-3·grid-3 스키마 재사용(카드 2개면 card1..2) · maxMotion 준용 1ms
+     × masonryFirst 구조안(portfolio가 첫 그리드 섹션) → 3안 portfolio 변형이 서로 다르다 (r4.7 A3-Q6 · composeCandidates.test 134-135행) 6ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/data/engineVariantMap.test.ts > 변형 매핑 표 가드 (SPEC 8.2.1 · VARIANT-MAP) > VARIANT-MAP 1~42행(고유 43쌍) 대표 쌍 — 쌍 키(services/grid-3 ≠ portfolio/grid-3) · 표 밖 = undefined
+AssertionError: expected 'grid-3' to be 'grid-2' // Object.is equality
+ FAIL  src/data/startDocWrite.test.ts > 3안 그리드 차이 보존 (Q-21 후속 · SPEC r4.6 A3-Q3) > masonryFirst 구조안(portfolio가 첫 그리드 섹션) → 3안 portfolio 변형이 서로 다르다 (r4.7 A3-Q6 · composeCandidates.test 134-135행)
+AssertionError: expected [ [ 'masonry' ], [ 'grid-3' ], …(1) ] to deeply equal [ [ 'masonry' ], [ 'grid-3' ], …(1) ]
+ FAIL  src/engine/sections/registry.test.ts > 섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1) > 본문 9 type 변형 목록 — L4a 최소 정의 + 그리드 축 변형(SPEC r4.6 A3-Q3: services 4 · portfolio 2) + r4.7 A3-Q6 portfolio/grid-2
+AssertionError: expected { about: [ 'story', 'text' ], …(8) } to deeply equal { about: [ 'story', 'text' ], …(8) }
+ FAIL  src/engine/sections/registry.test.ts > 섹션 정의 레지스트리 (TRD 4.4 · SPEC 8.1) > 그리드 축 변형 3개(A3-Q3) — 이름표 · 슬롯은 cards-3·grid-3 스키마 재사용(카드 2개면 card1..2) · maxMotion 준용
+AssertionError: expected undefined to be '이미지 2열' // Object.is equality
+      Tests  4 failed | 25 passed (29)

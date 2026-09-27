@@ -1,5 +1,5 @@
 /**
- * 본문 9 type 정의 — 변형 1~2개씩 최소 정의(L4a) + 그리드 축 변형(services cards-2·cards-masonry · portfolio masonry, r4.6). 헤딩은 모두 h2(R-10), 기본 글자는 자체 문장(외부 사이트 문구 0).
+ * 본문 9 type 정의 — 변형 1~2개씩 최소 정의(L4a) + 그리드 축 변형(services cards-2·cards-masonry · portfolio masonry, r4.6 · portfolio grid-2, r4.7 A3-Q6). 헤딩은 모두 h2(R-10), 기본 글자는 자체 문장(외부 사이트 문구 0).
  */
 import type { SectionType } from "../contracts/pageDoc";
 import type { SectionDefinition, SlotSchema } from "../contracts/sectionDefinition";
@@ -59,6 +59,7 @@ const SPECS: readonly BodySpec[] = [
   { type: "services", variant: "cards-masonry", label: "카드 벽돌형", maxMotion: "L2", slots: cards3 },
   { type: "portfolio", variant: "grid-3", label: "이미지 그리드 3칸", maxMotion: "L2", slots: gallery3 },
   { type: "portfolio", variant: "masonry", label: "이미지 벽돌형", maxMotion: "L2", slots: gallery3 },
+  { type: "portfolio", variant: "grid-2", label: "이미지 2열", maxMotion: "L2", slots: gallery3.filter((slot) => slot.key !== "image3") },
   { type: "statistics", variant: "stats-3", label: "수치 3개 한 줄", maxMotion: "L2", slots: [heading("숫자로 보기"), ...stat(1), ...stat(2), ...stat(3)] },
   { type: "testimonials", variant: "quotes-2", label: "후기 2개", maxMotion: "L1", slots: [heading("고객 후기"), ...quote(1), ...quote(2)] },
   { type: "pricing", variant: "tiers-2", label: "요금제 2단", maxMotion: "L1", slots: [heading("요금 안내"), intro, ...plan(1), ...plan(2)] },

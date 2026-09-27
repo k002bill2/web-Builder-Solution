@@ -66,7 +66,7 @@ dist/assets/CompareBoardPage-drxbHvto.js                21.79 kB │ gzip:  7.79
 dist/assets/profileEngine-BXgkG5FV.js                   27.41 kB │ gzip:  9.62 kB
 dist/assets/index-BuRIQp-N.js                          270.54 kB │ gzip: 86.76 kB
 
-✓ built in 238ms
+✓ built in 249ms
 [bundle] 공통 JS (gzip, 참고): 89.13KB
   - assets/index-BuRIQp-N.js 85.85KB
   - assets/react-DB-4Zxce.js 3.28KB
@@ -88,3 +88,4 @@ dist/assets/index-BuRIQp-N.js                          270.54 kB │ gzip: 86.76
 [bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
 [bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +4.74KB (1개 파일, 예산 판정 밖)
 [bundle] /studio (자리표시) 첫 화면 합계: 89.57KB / 예산 100KB · 진입 직후 자동 로드 포함: 91.95KB / 예산 125KB
+build 0

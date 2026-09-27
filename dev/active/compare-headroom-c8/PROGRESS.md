@@ -16,5 +16,8 @@
 - [x] 4게이트 — typecheck 0 · lint 0 · vitest 103/1203 pass · build 0
 - [x] 127.0.0.1:4339 실제 클릭 1280/390 캡처 (`shots/`), 서버 종료·lsof 확인
 - [x] 2순위 routes 스파이크 — 목표 달성으로 불필요(브리프 규칙상 미실행)
-- [ ] Codex 검증 — BLOCKED: Codex usage limit(15:26 이후 재시도, `logs/codex-r1.txt`). 대체: code-reviewer 에이전트 점검
+- [ ] Codex 검증 — BLOCKED: Codex usage limit(15:26 이후 재시도, `logs/codex-r1.txt`). 대체: code-reviewer 에이전트 점검 완료(Minor 1, 결함 없음 — REPORT 6절)
 - [x] REPORT.md + 로컬 커밋
+
+## 서브에이전트
+- code-reviewer(읽기 전용, C8 diff 점검): Minor 1건, 정확성 결함 없음. AC-07 단독 실행 실패 제보 → 기준 커밋에서도 재현, 기존 문제로 기록.

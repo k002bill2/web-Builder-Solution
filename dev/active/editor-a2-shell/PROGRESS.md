@@ -16,9 +16,9 @@
 - [x] S5 탭 E-AC-14 — RED `logs/s5-red.txt`(키 1 fail) → GREEN 21/21 `logs/s5-green.txt` · build /studio 97.76/110.73(rovingFocus 공유 +0.31) · 그 밖 ±0.01
 - [x] S6 미리보기 폭·캔버스 E-AC-15 · E-AC-16 — `98a1303` · RED `logs/s6-red.txt`(5 fail + 모듈 없음) → GREEN 30/30 `logs/s6-green.txt` · build /studio 98.39/111.36 · 그 밖 base ±0.01. 1차(previewView 값 import): 공통 89.39(+0.04) · /references 97.18(+0.17) · /catalog 99.70(+0.04) → 타입만 import로 되돌림
 - [x] S7 A2-F 연결 (FieldEditor·PageInfoFields·SaveStatus·ConflictCallout·useDocSave) + 저장소 어댑터 — RED `logs/s7-red.txt`(5 fail) → GREEN 31/31 `logs/s7-green.txt` · 표적(studio·guards) 176/176 `logs/s7-targeted.txt` · build /studio 첫 91.65 · 진입 118.83(편집 틀 lazy) · 그 밖 ±0.02
-- [ ] 전체 vitest 3회 → `logs/final-full-x3.txt`
-- [ ] REPORT 갱신 (RESUME-1 절)
-- [ ] Codex 1회(`review --scope branch --base e13f2b6`) 또는 이관
+- [x] 전체 vitest 3회 → `logs/final-full-x3.txt` — 3회 × 122 파일 1351 passed · 실패 0 (Codex 반영 뒤)
+- [x] REPORT 갱신 (RESUME-1 절 R1-1~R1-9)
+- [x] Codex 1회(`review --scope branch --base e13f2b6`) — P2 1건(앱 안 링크 이탈 시 미저장 편집 유실) 반영, RED→GREEN
 - [x] 전체 vitest 1회 → `logs/full-vitest.txt` (112 files · 1279 passed · 실패 0)
 - [x] Codex — 이관(중지 규칙 발동으로 S1에서 멈춤 · 병합 전 `review --scope branch --base f22bbc8` 1회 권장)
 - [x] REPORT.md

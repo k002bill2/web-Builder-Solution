@@ -88,6 +88,22 @@ describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () =
     expect(screen.getByRole("status", { name: "편집 알림" }).textContent).toBe("");
   });
 
+  it("편집 직후 앱 안 링크(프로젝트로 돌아가기)로 떠나면 디바운스를 기다리지 않고 바로 저장 1회(Codex r1 P2)", () => {
+    const { repository, save } = fakeRepository();
+    draw(repository);
+    act(() => void fireEvent.change(within(editRegion()).getByRole("textbox", { name: /^제목/ }), { target: { value: "떠나기 전 편집" } }));
+    act(() => void fireEvent.click(screen.getByRole("link", { name: "프로젝트로 돌아가기" })));
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save.mock.calls[0]![2]).toMatchObject({ sections: expect.arrayContaining([expect.objectContaining({ slots: expect.objectContaining({ title: "떠나기 전 편집" }) })]) });
+  });
+
+  it("바뀐 것이 없으면 링크를 눌러도 저장 0", () => {
+    const { repository, save } = fakeRepository();
+    draw(repository);
+    act(() => void fireEvent.click(screen.getByRole("link", { name: "프로젝트로 돌아가기" })));
+    expect(save).not.toHaveBeenCalled();
+  });
+
   it("STALE_DOC → 캔버스 위 ConflictCallout(r7) · 내 편집 유지 · 알림 영역 1개", async () => {
     const latest = sampleDoc({ revision: 7 });
     const { repository } = fakeRepository(async () => {

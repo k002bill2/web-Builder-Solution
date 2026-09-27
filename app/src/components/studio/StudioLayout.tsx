@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import type { ConflictChoice, Project, ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
@@ -74,6 +74,16 @@ export function StudioLayout({
     [resolve],
   );
 
+  // 앱 안 링크(돌아가기 · 프로필 보기)는 막지 않는다(E-S10) — 대신 떠나기 전에 저장 전 변경을 바로 저장한다.
+  // 틀이 사라지면 스케줄러가 디바운스 타이머를 버려 편집을 잃는다(Codex r1 P2). 변경이 없거나 저장 중·충돌이면 retry는 아무것도 하지 않는다
+  const { retry } = save;
+  const flushBeforeLeave = useCallback(
+    (event: MouseEvent) => {
+      if (event.target instanceof Element && event.target.closest("a[href]")) retry();
+    },
+    [retry],
+  );
+
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
@@ -89,7 +99,7 @@ export function StudioLayout({
 
   if (mode === "tabs") {
     return (
-      <div className="flex flex-col">
+      <div onClickCapture={flushBeforeLeave} className="flex flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} />
         <StudioTabs
           selected={tab}
@@ -117,7 +127,7 @@ export function StudioLayout({
 
   if (mode === "split") {
     return (
-      <div className="flex h-dvh flex-col">
+      <div onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading}>
           {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">
@@ -157,7 +167,7 @@ export function StudioLayout({
   }
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}

@@ -1,0 +1,58 @@
+## targets: src/features/studio/slotPlaceholder.test.ts src/components/studio/EmptySlot.test.tsx src/features/studio/engineInvariance.test.ts
+      2| export function slotPlaceholder(label: string): string {
+      3|   throw new Error(`K7 RED ${label}`);
+       |         ^
+      4| }
+      5|
+ ❯ src/features/studio/slotPlaceholder.test.ts:5:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  3 failed | 1 passed (4)
+   Start at  00:32:06
+   Duration  1.47s (environment 48%, tests 21%, transform 18%, setup 9%, import 4%)
+
+targets exit=1
+## guards
+
+ Test Files  6 passed (6)
+      Tests  61 passed (61)
+   Start at  00:32:08
+   Duration  368ms (setup 52%, tests 20%, transform 18%, import 8%, worker 2%)
+
+guards exit=0
+## typecheck
+typecheck exit=0
+## lint
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+lint exit=0
+## build
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /catalog 첫 화면 합계: 99.65KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.03KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.38KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.76KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.41KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.76KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.41KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.65KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.34KB (1개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 107.08KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.65KB / 예산 125KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.57KB (3개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.13KB (2개 파일, 예산 판정 밖)
+build exit=0

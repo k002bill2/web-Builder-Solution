@@ -13,7 +13,7 @@
 - [x] K5 섹션 추가 대화상자 (E-AC-18) (RED 6c9fcb4 · GREEN)
 - [x] K6 변형 교체 (E-AC-20) (RED f93e38f · GREEN)
 - [x] K7 빈 슬롯 (E-AC-24) · 엔진 불변 (E-AC-23) (RED 53f36df · GREEN)
-- [ ] K8 전체 vitest 3회 · Codex 1회 · REPORT
+- [x] K8 전체 vitest 3회(1395 ×3, `logs/final-full-x3.txt`) · Codex 1회(`logs/codex-r1.txt`, 조치 필요 버그 없음) · REPORT
 
 ## 번들 기준 (K0, gzip KB 첫 / 진입)
 | 화면 | K0 | K3 | K4 | K5 | K6 | K7 |

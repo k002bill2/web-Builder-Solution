@@ -1,0 +1,25 @@
+## run 1 · 00:35:23 · load: { 9.96 7.28 11.30 }
+ Test Files  133 passed (133)
+      Tests  1394 passed (1394)
+   Duration  21.02s (environment 41%, tests 39%, setup 9%, transform 7%, import 5%)
+## run 2 · 00:35:45 · load: { 37.11 13.53 13.44 }
+ Test Files  133 passed (133)
+      Tests  1394 passed (1394)
+   Duration  20.51s (environment 42%, tests 38%, setup 8%, transform 7%, import 4%)
+## run 3 · 00:36:06 · load: { 43.10 16.25 14.41 }
+ Test Files  133 passed (133)
+      Tests  1394 passed (1394)
+   Duration  20.66s (environment 42%, tests 39%, setup 9%, transform 6%, import 4%)
+# HEAD 3e9acd2 (자체 점검 수정 뒤 재실행 — 앞 3회는 b480fa9 기준, 모두 1394 passed)
+## run 1 · 00:39:10 · load: { 11.29 16.62 15.25 }
+ Test Files  134 passed (134)
+      Tests  1395 passed (1395)
+   Duration  20.38s (environment 41%, tests 38%, setup 9%, transform 7%, import 4%)
+## run 2 · 00:39:31 · load: { 30.84 20.58 16.70 }
+ Test Files  134 passed (134)
+      Tests  1395 passed (1395)
+   Duration  20.13s (environment 42%, tests 39%, setup 8%, transform 7%, import 4%, worker 1%)
+## run 3 · 00:39:52 · load: { 47.22 25.14 18.45 }
+ Test Files  134 passed (134)
+      Tests  1395 passed (1395)
+   Duration  20.42s (environment 42%, tests 39%, setup 9%, transform 6%, import 4%)

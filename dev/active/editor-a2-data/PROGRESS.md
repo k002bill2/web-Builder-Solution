@@ -7,7 +7,7 @@
 ## 체크포인트
 - [x] C0 base-build 실측 커밋 (`logs/base-build.txt`)
 - [x] C1 가드 허용 목록 + `@source not "./engine"` + CSS 전후 (`logs/c1-css.txt`)
-- [ ] C2 엔진 `motion?` (예외 2파일, RED→GREEN)
+- [x] C2 엔진 `motion?` (예외 2파일, RED→GREEN)
 - [ ] C3 `data/engineVariantMap.ts` + `data/startDocWrite.ts` + 8.2.1 가드·픽스처 6×3
 - [ ] C4 `projectRepository.ts`(UNKNOWN_VARIANT·바뀐 쌍) + `memoryProjectRepository.ts`(getDoc·saveDoc·startDoc)
 - [ ] C5 `CandidatesSection.tsx` 편집 시작 연결
@@ -22,3 +22,4 @@
 |---|---|---|---|---|---|---|
 | base 2c30862 | 99.60 / 124.44 | 99.64 / 102.02 | 98.74 / 121.36 | 90.73 / 103.73 | 89.34 | index-5C_vcWjl.css 45808B |
 | C1 | 99.60 / 124.44 | 99.64 / 102.02 | 98.74 / 121.36 | 90.73 / 103.73 | 89.34 | 동일 sha 4e999d61 (바뀐 규칙 0) |
+| C2 | 99.60 / 124.44 | 99.64 / 102.02 | 98.74 / 121.36 | 90.73 / 103.73 | 89.34 | 동일 (index-5C_vcWjl) |

@@ -1,0 +1,49 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/editor-a2-data/app
+
+ ❯ src/engine/doc/createDocFromCandidate.test.ts (19 tests | 1 failed) 18ms
+   ❯ createDocFromCandidate (SPEC 8.2 · 8.3.1 — 구조안 → 새 문서) (19)
+     × 구조안 motion?(Q-18 A · r4.2) — 있으면 min(선택 motion, 정의 상한), 없으면 L1과 같다(현행) 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/engine/doc/createDocFromCandidate.test.ts > createDocFromCandidate (SPEC 8.2 · 8.3.1 — 구조안 → 새 문서) > 구조안 motion?(Q-18 A · r4.2) — 있으면 min(선택 motion, 정의 상한), 없으면 L1과 같다(현행)
+AssertionError: expected [ 'L1', 'L1', 'L1', 'L1', 'L1', …(3) ] to deeply equal [ 'L0', 'L1', 'L2', 'L2', 'L1', …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "L0",
+    "L1",
+-   "L2",
+-   "L2",
+    "L1",
+    "L1",
+-   "L0",
++   "L1",
++   "L1",
++   "L1",
++   "L1",
+    "L0",
+  ]
+
+ ❯ src/engine/doc/createDocFromCandidate.test.ts:127:47
+    125|     const doc = createDocFromCandidate(plan(withMotion), 3, START);
+    126|     // about/story·services/cards-3 상한 L2 → L2 · services/list 상한 L1 →…
+    127|     expect(doc.sections.map((s) => s.motion)).toEqual(["L0", "L1", "L2…
+       |                                               ^
+    128|     expect(validatePageDoc(doc).ok).toBe(true);
+    129|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 18 passed (19)
+   Start at  16:33:33
+   Duration  913ms (environment 68%, transform 14%, setup 12%, import 3%, tests 2%, worker 1%)
+

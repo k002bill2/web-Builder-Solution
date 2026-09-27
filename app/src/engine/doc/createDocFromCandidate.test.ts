@@ -110,4 +110,21 @@ describe("createDocFromCandidate (SPEC 8.2 · 8.3.1 — 구조안 → 새 문서
     expect(rowOf(report, "seo-meta").state).toBe("block");
     expect(rowOf(report, "text-length").state).toBe("pass");
   });
+
+  it("구조안 motion?(Q-18 A · r4.2) — 있으면 min(선택 motion, 정의 상한), 없으면 L1과 같다(현행)", () => {
+    const withMotion = [
+      { ...HEADER, motion: "L0" as const },
+      HERO,
+      { ...e("about", "story"), motion: "L2" as const },
+      { ...e("services", "cards-3"), motion: "L2" as const },
+      { ...e("services", "list"), motion: "L2" as const },
+      e("faq", "accordion"),
+      { ...e("contact", "form"), motion: "L0" as const },
+      { ...FOOTER, motion: "L2" as const },
+    ];
+    const doc = createDocFromCandidate(plan(withMotion), 3, START);
+    // about/story·services/cards-3 상한 L2 → L2 · services/list 상한 L1 → L1 · footer 상한 L0 → L0 · 없음 → L1 · L0 → L0
+    expect(doc.sections.map((s) => s.motion)).toEqual(["L0", "L1", "L2", "L2", "L1", "L1", "L0", "L0"]);
+    expect(validatePageDoc(doc).ok).toBe(true);
+  });
 });

@@ -10,7 +10,7 @@
 - [x] F0 base build 실측 (`logs/base-build.txt`, exit 0)
 - [x] F1 필드 카운터 E-AC-06 (`fieldCounter` + `FieldEditor`) — RED `logs/f1-red.txt`(모듈 없음) → GREEN 18/18 `logs/f1-green.txt` · build exit 0. 결정: 상한·권장 동시 초과 = block 문장 하나만 · HTML `maxLength`=상한+10(UTF-16 단위라 이모지는 코드 포인트보다 일찍 멈춤 — 위험 목록)
 - [x] F2 자동 저장 훅 E-AC-07 (`useDocSave`) — `useAutosaveScheduler` 그대로 사용(수정 0). RED `logs/f2-red.txt` → GREEN 7/7 `logs/f2-green.txt`(2초·maxWait·저장 중 3변경 → 1회·반환 revision 사용·실제 메모리 저장소 연속 2회·E-AC-12 server 실패/STALE 등록) · build exit 0
-- [ ] F3 저장 상태 E-AC-08·09 (`SaveStatus`)
+- [x] F3 저장 상태 E-AC-08·09 (`SaveStatus`) — `saveStatusText`·`saveAnnouncement` 재사용(수정 0). RED `logs/f3-red.txt` → GREEN 5/5 `logs/f3-green.txt` · build exit 0. 결정: 자체 `role=status` 없음(편집 알림 영역 1개 = S 소유, E-AC-33) → status 문장은 `onAnnounce` 콜백 · `role=alert`는 SaveStatus가 가진다(6.3 "저장 실패" 행, STALE 문장 포함)
 - [ ] F4 충돌 E-AC-10 (`ConflictCallout`)
 - [ ] F5 떠남 가드 E-AC-12
 - [ ] F6 페이지 정보 필드 (`PageInfoFields`)
@@ -24,3 +24,4 @@
 | base f22bbc8 | 99.65 / 102.03 | 96.99 / 99.38 | 98.75 / 121.39 | 99.60 / 124.69 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 |
 | F1 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 새 파일 미연결 — ±0.01은 CSS 해시(새 유틸리티 클래스) 파일명 변화. /profile 여유 0.30 |
 | F2 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 미연결 — 변화 0 |
+| F3 | 99.64 / 102.03 | 96.99 / 99.38 | 98.74 / 121.38 | 99.60 / 124.70 | 93.97 / 106.99 | 90.73 / 104.33 | 89.34 | 미연결 — 변화 0 |

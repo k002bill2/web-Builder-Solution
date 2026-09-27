@@ -1,0 +1,62 @@
+{"width":1280,"step":"F1","check":"catalog 렌더 · '비교 추가' 버튼 ≥3","pass":true,"count":6,"path":"/catalog"}
+{"width":1280,"step":"F1","check":"레퍼런스 3개 담기","pass":true,"added":["동네 치과 클리닉 비교 추가","부티크 법률사무소 비교 추가","모던 카페 브랜드 비교 추가"],"inTray":3,"tray":"비교 트레이"}
+{"width":1280,"step":"F1","check":"'비교 보드 열기' → /compare","pass":true,"open":{"clicked":true,"name":"비교 보드 열기","count":1},"path":"/compare"}
+{"width":1280,"step":"F2","check":"요소 선택(Hero 포함)","pass":true,"rows":["Hero 구성","메뉴 구조","CTA 위치","팔레트","폰트","카드 스타일","이미지 비율","모션","모바일 구조","Footer"],"picked":["Hero 구성: A 동네 치과 클리닉의 요소 선택","메뉴 구조: B 부티크 법률사무소의 요소 선택","CTA 위치: B 부티크 법률사무소의 요소 선택"]}
+{"width":1280,"step":"F2","check":"J-S09 첫 확정 캡션(새 프로젝트 이름)","pass":true,"caption":"새 프로젝트 '동네 치과 클리닉 프로젝트'를 만듭니다 · 이름은 프로젝트 목록에서 바꿀 수 있습니다","parsedName":"동네 치과 클리닉 프로젝트"}
+{"width":1280,"step":"F2","check":"'확정할 곳' 라디오 없음","pass":true,"radios":[]}
+{"width":1280,"step":"F2","check":"확정 버튼 활성","pass":true,"confirms":[{"name":"프로필 확정 (v1)","disabled":false,"inBar":false}]}
+{"width":1280,"step":"F2","check":"확정 → /profile/:id","pass":true,"confirm":{"clicked":true,"name":"프로필 확정 (v1)"},"path":"/profile/profile-1"}
+{"width":1280,"step":"F2","check":"J-S11 새 프로젝트 알림","pass":false,"status":[]}
+{"width":1280,"step":"F3","check":"프로필 머리 '프로젝트: <이름>' 링크","pass":true,"link":{"text":"프로젝트: 동네 치과 클리닉 프로젝트","href":"/projects"},"firstName":"동네 치과 클리닉 프로젝트"}
+{"width":1280,"step":"F3","check":"/projects 목록에 그 프로젝트 존재","pass":true,"path":"/projects","list":["동네 치과 클리닉 프로젝트프로필 v1편집 전 — 프로필에서 3안을 고르면 시작합니다방금 전프로필 보기이름 바꾸기"],"firstName":"동네 치과 클리닉 프로젝트"}
+{"width":1280,"step":"F3","check":"뒤로 → 프로필","pass":true,"path":"/profile/profile-1"}
+{"width":1280,"step":"F4","check":"보드 복귀(GNB '비교 보드') · 선택 변경","pass":true,"path":"/compare","change":{"clicked":true,"label":"Hero 구성: B 부티크 법률사무소의 요소 선택"}}
+{"width":1280,"step":"F4","check":"라디오 2개 · '<이름> 새 버전' 기본 선택 · '새 프로젝트'","pass":true,"radios":[{"label":"동네 치과 클리닉 프로젝트 새 버전","checked":true,"visible":true},{"label":"새 프로젝트","checked":false,"visible":true}],"firstName":"동네 치과 클리닉 프로젝트"}
+{"width":1280,"step":"F4","check":"키보드(Tab·화살표)로 라디오 선택","pass":true,"afterArrowDown":{"focusIdx":1,"checked":[false,true]},"afterShiftTabTab":{"focusIdx":1,"checked":[false,true]},"afterArrowUp":{"focusIdx":0,"checked":[true,false]}}
+{"width":1280,"step":"F4","check":"확정 버튼 이름이 대상에 맞게 바뀜","pass":true,"current":["새 버전으로 확정 (v2)"],"new":["새 프로젝트로 확정"],"radios":[{"label":"동네 치과 클리닉 프로젝트 새 버전","checked":false,"visible":true},{"label":"새 프로젝트","checked":true,"visible":true}]}
+{"width":1280,"step":"F4","check":"'새 프로젝트'로 확정 → 새 프로필 · 알림","pass":true,"confirm":{"clicked":true,"name":"새 프로젝트로 확정"},"path":"/profile/profile-2","note":"새 프로젝트 '부티크 법률사무소 프로젝트'를 만들었습니다"}
+{"width":1280,"step":"F4","check":"프로젝트 2개","pass":true,"list":["부티크 법률사무소 프로젝트프로필 v1편집 전 — 프로필에서 3안을 고르면 시작합니다방금 전프로필 보기이름 바꾸기","동네 치과 클리닉 프로젝트프로필 v1편집 전 — 프로필에서 3안을 고르면 시작합니다방금 전프로필 보기이름 바꾸기"]}
+{"width":1280,"step":"F5","check":"3안 만들기 → 카드 3개","pass":true,"gen":{"clicked":true,"name":"3안 만들기 (v1)","count":1},"cards":["A안 선택","B안 선택","C안 선택"],"project":"부티크 법률사무소 프로젝트"}
+{"width":1280,"step":"F5","check":"안 선택 → '편집 시작' 활성","pass":true,"sel":{"clicked":true,"name":"B안 선택","count":3},"edit":"B안으로 편집 시작"}
+{"width":1280,"step":"F5","check":"/studio/:projectId 이동","pass":true,"path":"/studio/project-2"}
+{"width":1280,"step":"F5","check":"셸이 프로젝트 이름(실데이터) 표시","pass":true,"h1":"부티크 법률사무소 프로젝트","expected":"부티크 법률사무소 프로젝트"}
+{"width":1280,"step":"F5","check":"E-S03 문서 없음 상태","pass":true,"body":"본문으로 건너뛰기\n부티크 법률사무소 프로젝트\n\n아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요\n\n프로필에서 3안 고르기"}
+{"width":1280,"step":"F5","check":"'프로젝트로 돌아가기' → /projects","pass":false,"back":null,"note":"E-S03 화면에 해당 이름의 링크/버튼 없음","links":[{"name":"본문으로 건너뛰기","href":"#main-content"},{"name":"프로필에서 3안 고르기","href":"/profile/profile-2"}]}
+{"width":1280,"step":"F5","check":"(대체) '프로필에서 3안 고르기' → /profile/:profileId","pass":true,"path":"/profile/profile-2"}
+{"width":1280,"step":"F6","check":"GNB '새 프로젝트'(→/compare?new=1) · '프로젝트'(→/projects)","pass":true,"gnb":[{"name":"Design Studio","href":"/catalog","current":null},{"name":"카탈로그","href":"/catalog","current":null},{"name":"보관함","href":"/catalog?tab=saved","current":null},{"name":"비교 보드","href":"/compare","current":null},{"name":"프로젝트","href":"/projects","current":"page"},{"name":"새 프로젝트","href":"/compare?new=1","current":null}],"path":"/profile/profile-2"}
+{"width":1280,"step":"F6","check":"헤더 Tab 순서 = 보이는 순서","pass":true,"tabOrder":[{"name":"Design Studio","top":10,"left":28},{"name":"카탈로그","top":15,"left":189},{"name":"보관함","top":15,"left":260},{"name":"비교 보드","top":15,"left":318},{"name":"프로젝트","top":15,"left":392},{"name":"새 프로젝트","top":10,"left":1106}],"visualOrder":["Design Studio","카탈로그","보관함","비교 보드","프로젝트","새 프로젝트"]}
+{"width":1280,"step":"F6","check":"헤더 높이(참고 — D3: 390 3행 수용)","pass":true,"headerHeight":52}
+{"width":1280,"step":"F6","check":"GNB '새 프로젝트' 클릭 → /compare","pass":true,"path":"/compare?new=1"}
+{"width":1280,"step":"F7","check":"콘솔 error 0","pass":true,"consoleErrors":[],"total":1,"sentinelCaptured":true}
+{"width":1280,"step":"F7","check":"페이지 오류 0","pass":true,"errors":[]}
+{"width":390,"step":"F1","check":"catalog 렌더 · '비교 추가' 버튼 ≥3","pass":true,"count":6,"path":"/catalog"}
+{"width":390,"step":"F1","check":"레퍼런스 3개 담기","pass":true,"added":["동네 치과 클리닉 비교 추가","부티크 법률사무소 비교 추가","모던 카페 브랜드 비교 추가"],"inTray":3,"tray":"비교 트레이"}
+{"width":390,"step":"F1","check":"'비교 보드 열기' → /compare","pass":true,"open":{"clicked":true,"name":"비교 보드 열기","count":1},"path":"/compare"}
+{"width":390,"step":"F2","check":"요소 선택(Hero 포함)","pass":true,"rows":["Hero 구성"],"picked":["Hero 구성: A 동네 치과 클리닉의 요소 선택"]}
+{"width":390,"step":"F2","check":"J-S09 첫 확정 캡션(새 프로젝트 이름)","pass":true,"caption":"새 프로젝트 '동네 치과 클리닉 프로젝트'를 만듭니다 · 이름은 프로젝트 목록에서 바꿀 수 있습니다","parsedName":"동네 치과 클리닉 프로젝트"}
+{"width":390,"step":"F2","check":"'확정할 곳' 라디오 없음","pass":true,"radios":[]}
+{"width":390,"step":"F2","check":"확정 버튼 활성","pass":true,"confirms":[{"name":"프로필 확정 (v1)","disabled":false,"inBar":false},{"name":"프로필 확정 (v1)","disabled":false,"inBar":true}]}
+{"width":390,"step":"F2","check":"확정 → /profile/:id","pass":true,"confirm":{"clicked":true,"name":"프로필 확정 (v1)"},"path":"/profile/profile-1"}
+{"width":390,"step":"F2","check":"J-S11 새 프로젝트 알림","pass":false,"status":[]}
+{"width":390,"step":"F3","check":"프로필 머리 '프로젝트: <이름>' 링크","pass":true,"link":{"text":"프로젝트: 동네 치과 클리닉 프로젝트","href":"/projects"},"firstName":"동네 치과 클리닉 프로젝트"}
+{"width":390,"step":"F3","check":"/projects 목록에 그 프로젝트 존재","pass":true,"path":"/projects","list":["동네 치과 클리닉 프로젝트프로필 v1편집 전 — 프로필에서 3안을 고르면 시작합니다방금 전프로필 보기이름 바꾸기"],"firstName":"동네 치과 클리닉 프로젝트"}
+{"width":390,"step":"F3","check":"뒤로 → 프로필","pass":true,"path":"/profile/profile-1"}
+{"width":390,"step":"F4","check":"보드 복귀(GNB '비교 보드') · 선택 변경","pass":true,"path":"/compare","change":{"clicked":true,"label":"Hero 구성: B 부티크 법률사무소의 요소 선택"}}
+{"width":390,"step":"F4","check":"라디오 2개 · '<이름> 새 버전' 기본 선택 · '새 프로젝트'","pass":true,"radios":[{"label":"동네 치과 클리닉 프로젝트 새 버전","checked":true,"visible":true},{"label":"새 프로젝트","checked":false,"visible":true}],"firstName":"동네 치과 클리닉 프로젝트"}
+{"width":390,"step":"F4","check":"키보드(Tab·화살표)로 라디오 선택","pass":true,"afterArrowDown":{"focusIdx":1,"checked":[false,true]},"afterShiftTabTab":{"focusIdx":1,"checked":[false,true]},"afterArrowUp":{"focusIdx":0,"checked":[true,false]}}
+{"width":390,"step":"F4","check":"확정 버튼 이름이 대상에 맞게 바뀜","pass":true,"current":["새 버전으로 확정 (v2)","새 버전으로 확정 (v2)"],"new":["새 프로젝트로 확정","새 프로젝트로 확정"],"radios":[{"label":"동네 치과 클리닉 프로젝트 새 버전","checked":false,"visible":true},{"label":"새 프로젝트","checked":true,"visible":true}]}
+{"width":390,"step":"F4","check":"'새 프로젝트'로 확정 → 새 프로필 · 알림","pass":true,"confirm":{"clicked":true,"name":"새 프로젝트로 확정"},"path":"/profile/profile-2","note":"새 프로젝트 '부티크 법률사무소 프로젝트'를 만들었습니다"}
+{"width":390,"step":"F4","check":"프로젝트 2개","pass":true,"list":["부티크 법률사무소 프로젝트프로필 v1편집 전 — 프로필에서 3안을 고르면 시작합니다방금 전프로필 보기이름 바꾸기","동네 치과 클리닉 프로젝트프로필 v1편집 전 — 프로필에서 3안을 고르면 시작합니다방금 전프로필 보기이름 바꾸기"]}
+{"width":390,"step":"F5","check":"3안 만들기 → 카드 3개","pass":true,"gen":{"clicked":true,"name":"3안 만들기 (v1)","count":1},"cards":["A안 선택","B안 선택","C안 선택"],"project":"부티크 법률사무소 프로젝트"}
+{"width":390,"step":"F5","check":"안 선택 → '편집 시작' 활성","pass":true,"sel":{"clicked":true,"name":"B안 선택","count":3},"edit":"B안으로 편집 시작"}
+{"width":390,"step":"F5","check":"/studio/:projectId 이동","pass":true,"path":"/studio/project-2"}
+{"width":390,"step":"F5","check":"셸이 프로젝트 이름(실데이터) 표시","pass":true,"h1":"부티크 법률사무소 프로젝트","expected":"부티크 법률사무소 프로젝트"}
+{"width":390,"step":"F5","check":"E-S03 문서 없음 상태","pass":true,"body":"본문으로 건너뛰기\n부티크 법률사무소 프로젝트\n\n아직 편집할 페이지가 없습니다 — 프로필에서 3안을 만들고 하나를 고르세요\n\n프로필에서 3안 고르기"}
+{"width":390,"step":"F5","check":"'프로젝트로 돌아가기' → /projects","pass":false,"back":null,"note":"E-S03 화면에 해당 이름의 링크/버튼 없음","links":[{"name":"본문으로 건너뛰기","href":"#main-content"},{"name":"프로필에서 3안 고르기","href":"/profile/profile-2"}]}
+{"width":390,"step":"F5","check":"(대체) '프로필에서 3안 고르기' → /profile/:profileId","pass":true,"path":"/profile/profile-2"}
+{"width":390,"step":"F6","check":"GNB '새 프로젝트'(→/compare?new=1) · '프로젝트'(→/projects)","pass":true,"gnb":[{"name":"Design Studio","href":"/catalog","current":null},{"name":"카탈로그","href":"/catalog","current":null},{"name":"보관함","href":"/catalog?tab=saved","current":null},{"name":"비교 보드","href":"/compare","current":null},{"name":"프로젝트","href":"/projects","current":"page"},{"name":"새 프로젝트","href":"/compare?new=1","current":null}],"path":"/profile/profile-2"}
+{"width":390,"step":"F6","check":"헤더 Tab 순서 = 보이는 순서","pass":true,"tabOrder":[{"name":"Design Studio","top":10,"left":16},{"name":"카탈로그","top":52,"left":16},{"name":"보관함","top":52,"left":86},{"name":"비교 보드","top":52,"left":145},{"name":"프로젝트","top":52,"left":219},{"name":"새 프로젝트","top":86,"left":228}],"visualOrder":["Design Studio","카탈로그","보관함","비교 보드","프로젝트","새 프로젝트"]}
+{"width":390,"step":"F6","check":"헤더 높이(참고 — D3: 390 3행 수용)","pass":true,"headerHeight":131}
+{"width":390,"step":"F6","check":"GNB '새 프로젝트' 클릭 → /compare","pass":true,"path":"/compare?new=1"}
+{"width":390,"step":"F7","check":"콘솔 error 0","pass":true,"consoleErrors":[],"total":1,"sentinelCaptured":true}
+{"width":390,"step":"F7","check":"페이지 오류 0","pass":true,"errors":[]}

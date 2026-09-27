@@ -15,7 +15,7 @@
 - [x] S4 섹션 선택 E-AC-05 — RED `logs/s4-red.txt`(2 fail) → GREEN 18/18 `logs/s4-green.txt` · build /studio 97.45/110.43 · 그 밖 ±0.01
 - [x] S5 탭 E-AC-14 — RED `logs/s5-red.txt`(키 1 fail) → GREEN 21/21 `logs/s5-green.txt` · build /studio 97.76/110.73(rovingFocus 공유 +0.31) · 그 밖 ±0.01
 - [x] S6 미리보기 폭·캔버스 E-AC-15 · E-AC-16 — `98a1303` · RED `logs/s6-red.txt`(5 fail + 모듈 없음) → GREEN 30/30 `logs/s6-green.txt` · build /studio 98.39/111.36 · 그 밖 base ±0.01. 1차(previewView 값 import): 공통 89.39(+0.04) · /references 97.18(+0.17) · /catalog 99.70(+0.04) → 타입만 import로 되돌림
-- [ ] S7 A2-F 연결 (FieldEditor·PageInfoFields·SaveStatus·ConflictCallout·useDocSave) + 저장소 어댑터
+- [x] S7 A2-F 연결 (FieldEditor·PageInfoFields·SaveStatus·ConflictCallout·useDocSave) + 저장소 어댑터 — RED `logs/s7-red.txt`(5 fail) → GREEN 31/31 `logs/s7-green.txt` · 표적(studio·guards) 176/176 `logs/s7-targeted.txt` · build /studio 첫 91.65 · 진입 118.83(편집 틀 lazy) · 그 밖 ±0.02
 - [ ] 전체 vitest 3회 → `logs/final-full-x3.txt`
 - [ ] REPORT 갱신 (RESUME-1 절)
 - [ ] Codex 1회(`review --scope branch --base e13f2b6`) 또는 이관
@@ -24,6 +24,10 @@
 - [x] REPORT.md
 
 ## 결정 · 목업 차이
+- (R1·S7) `/studio` 첫 화면 98.39 + 연결분이 99.40을 넘을 것이라 **편집 틀 전체(StudioLayout)를 문서가 있을 때 자동 lazy**로 옮김 → 첫 화면 = 조회·빈 상태만(91.65), 진입 직후 118.83(≤125). `scripts/check-bundle-size.mjs` studio auto에 `StudioLayout.tsx` 추가(분류만, 예산 불변).
+- (R1·S7) 타입 정리: `features/studio/studioRepository.ts` — `isPageDoc` 모양 확인 + `toDocSaveRepository` 어댑터(충돌 해결 결과 모양 확인). `useStudioDoc`의 `as PageDoc` 제거. 데이터 계층 파일 수정 0.
+- (R1·S7) 가드 `src/test/tabsRemoved.test.ts`(V2-3 "제품 코드 role=tab* 0건")가 SPEC 6.2·S-B6 편집기 탭과 충돌 → `components/studio/StudioTabs.tsx` 1개만 명시 허용(카탈로그·상세 0건 단언 유지, 파일 존재 확인 추가). **S3~S6 커밋 시점에는 이 가드가 빨간색이었다**(체크포인트 게이트가 표적 테스트만 돌림) — S7에서 발견·정리. 확인 필요: 가드 범위 조정 승인.
+- (R1·S7) 유추 문장: 충돌 해결 거부 알림 "충돌을 해결하지 못했습니다 — 다시 골라 주세요" · 캔버스 차단 문장 "<라벨> — 상한 N자를 M자 넘었습니다 …(R-13)" · 이미지 슬롯 안내 "이미지 슬롯 N개는 다음 단계에서 편집할 수 있습니다."(a3).
 - (R1) E-AC-15 "같은 상수 import" → **같은 값 + 대조 테스트**로 대체: `PREVIEW_VIEWS` 값 import 시 previewView가 공유 청크(0.26KB)로 떨어져 /references +0.17 · 공통 +0.03(±0.03 규칙 위반). `PREVIEW_WIDTH_OPTIONS`(studio) + `previewFrame.test.ts`가 `toEqual(PREVIEW_VIEWS)`. 공유 방식 결정은 사용자/Jarvis 몫(공통 규칙 완화 or 상수 공통 이동).
 - (R1) 축소 보기 = CSS `zoom`(SPEC 4.1 `transform: scale` 대신) — scale은 원래 폭을 레이아웃에 남겨 가로 넘침·빈 높이가 생긴다. 데스크톱 프레임 = 열 폭(축소 없음), 태블릿 48rem · 모바일 24.375rem.
 - (R1) 미리보기 폭 = 네이티브 라디오 `fieldset`(DS SegmentedControl 대신 — 카탈로그·상세 청크 경계 회피). ←/→는 브라우저 기본.

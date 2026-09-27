@@ -2,19 +2,42 @@ import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "re
 import type { PageDoc, SectionInstance } from "../../engine/contracts/pageDoc";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import type { PreviewView } from "../../features/detail/previewView";
+import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
 import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
 
 /** 5.7 캡션 — 늘 보인다 */
 export const CANVAS_CAPTION = "구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.";
 
-/** 글자 슬롯 값(빈 값·이미지 제외) — 스키마 순서 */
-function slotTexts(section: SectionInstance): readonly { readonly key: string; readonly text: string }[] {
+/** 글자 슬롯 값(빈 값·이미지 제외) + 글자 수 문제 — 스키마 순서 */
+function slotTexts(section: SectionInstance): readonly { readonly key: string; readonly text: string; readonly issue?: SlotIssue }[] {
   const def = getSectionDefinition(section.type, section.variant);
   return (def?.slots ?? []).flatMap((entry) => {
     const value = section.slots[entry.key];
-    return entry.kind !== "image" && typeof value === "string" && value.trim() !== "" ? [{ key: entry.key, text: value }] : [];
+    if (entry.kind === "image" || typeof value !== "string" || value.trim() === "") return [];
+    const issue = slotIssue(section, entry);
+    return [{ key: entry.key, text: value, ...(issue && { issue }) }];
   });
+}
+
+const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionary-text", block: "outline-status-negative-text text-status-negative-text" } as const;
+
+/**
+ * 문제 요소(5.7 · B-03): 2중 테두리(안쪽 흰 간격 `background-normal` + 바깥 상태 글자 토큰) + 배지 글자 "경고 1"/"차단 1" + 아래 문장(id = 필드 describedby).
+ * 흰 간격 덕에 테두리는 늘 흰 면과 맞닿는다 — 대비가 사용자 색과 무관.
+ */
+function IssueText({ text, issue, strong }: { readonly text: string; readonly issue: SlotIssue; readonly strong: boolean }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className={`relative rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`}>
+        <p className={strong ? "ds-body1-strong text-label-normal" : "ds-body3 text-label-neutral"}>{text}</p>
+        <span className="absolute -top-2.5 right-1 rounded-sm bg-background-normal px-1 text-caption2 font-bold">{issue.level === "block" ? "차단 1" : "경고 1"}</span>
+      </div>
+      <p id={issue.id} className={`text-caption1 ${ISSUE_RING[issue.level]}`}>
+        {issue.text}
+      </p>
+    </div>
+  );
 }
 
 /** 섹션 블록 = 와이어프레임 막대 + 실제 슬롯 글자(5.7). 제목 요소를 쓰지 않는다 — 편집기 제목 구조(6.1)와 섞이지 않게 */
@@ -32,11 +55,15 @@ function SectionBlock({ section, selected }: { readonly section: SectionInstance
         </span>
       )}
       <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-fill-strong" />
-      {texts.map(({ key, text }, i) => (
-        <p key={key} className={i === 0 ? "ds-body1-strong text-label-normal" : "ds-body3 text-label-neutral"}>
-          {text}
-        </p>
-      ))}
+      {texts.map(({ key, text, issue }, i) =>
+        issue ? (
+          <IssueText key={key} text={text} issue={issue} strong={i === 0} />
+        ) : (
+          <p key={key} className={i === 0 ? "ds-body1-strong text-label-normal" : "ds-body3 text-label-neutral"}>
+            {text}
+          </p>
+        ),
+      )}
       {texts.length === 0 && <p className="ds-caption1 text-label-alternative">{sectionName(section)}</p>}
     </div>
   );

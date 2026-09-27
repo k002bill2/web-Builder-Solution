@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import type { Project } from "../../data/projectRepository";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ConflictChoice, Project, ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
+import { toDocSaveRepository } from "../../features/studio/studioRepository";
+import { useDocSave } from "../../features/studio/useDocSave";
+import { ConflictCallout } from "./ConflictCallout";
+import { EditFields } from "./EditFields";
+import { SaveStatus } from "./SaveStatus";
 import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectionName } from "../../features/studio/selection";
 import { PreviewWidth } from "./PreviewWidth";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
@@ -16,18 +21,26 @@ const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
  * E-S05 기본 편집 틀 (DS-2A-05 3.1 · 4절). 배치(3단 · 2단 · 탭)마다 트리를 따로 그리고(4.3) 상태(선택·알림·탭)는 여기서 공유한다(4.1).
  * 편집 알림(6.3)은 `role=status` 1개 — 늘 그려 두고(비어 있어도) 이동 알림은 첫 표시 뒤 1회 넣는다.
  * `focusHeading` = "편집 시작"으로 도착(이동 state 있음) → h1로 포커스(QA D3).
+ * 저장(S7 · 5.10): 화면 문서 = `useDocSave` 문서(내 편집). 저장 상태는 툴바(<1024 h1 아래 줄), 충돌 Callout은 캔버스 위, 오프라인·회복 문장은 편집 알림으로.
+ * 이 모듈은 `StudioPage`가 문서가 있을 때 lazy로 받는다(진입 직후 청크 — `/studio` 첫 화면 ≤ 99.40, 번들 규칙).
  */
 export function StudioLayout({
   project,
-  doc,
+  doc: initialDoc,
+  repository,
   entryNotice,
   focusHeading,
 }: {
   readonly project: Project;
   readonly doc: PageDoc;
+  readonly repository: ProjectRepository;
   readonly entryNotice: string | undefined;
   readonly focusHeading: boolean;
 }) {
+  const saveRepository = useMemo(() => toDocSaveRepository(repository), [repository]);
+  const save = useDocSave({ repository: saveRepository, projectId: project.projectId, initialDoc });
+  const doc = save.doc;
+  const [resolving, setResolving] = useState(false);
   const mode = useLayoutMode();
   const heading = useRef<HTMLHeadingElement>(null);
   const focused = useRef(false);
@@ -49,17 +62,35 @@ export function StudioLayout({
     heading.current?.focus();
   }, [focusHeading]);
 
+  const { resolve } = save;
+  const choose = useCallback(
+    (choice: ConflictChoice) => {
+      setResolving(true);
+      // 해결 거부 → STALE 유지(훅) + 알림 1문장(유추 문장, REPORT)
+      resolve(choice)
+        .catch(() => setNotice("충돌을 해결하지 못했습니다 — 다시 골라 주세요"))
+        .finally(() => setResolving(false));
+    },
+    [resolve],
+  );
+
   const docTag = docTagText(doc);
+  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
+  const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
   const noticeRegion = <NoticeRegion text={notice} />;
   const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} />;
-  const edit = <EditPanel name={selectionName(doc, selectedId)} />;
+  const edit = (
+    <EditPanel name={selectionName(doc, selectedId)}>
+      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
+    </EditPanel>
+  );
   const gate = <GatePanel />;
   const widths = <PreviewWidth value={view} onChange={setView} />;
 
   if (mode === "tabs") {
     return (
       <div className="flex flex-col">
-        <StudioToolbar projectName={project.name} headingRef={heading} />
+        <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} />
         <StudioTabs
           selected={tab}
           onSelect={setTab}
@@ -79,7 +110,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable={false} head={widths} />
+        <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -88,6 +119,7 @@ export function StudioLayout({
     return (
       <div className="flex h-dvh flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading}>
+          {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">
             섹션
             <select
@@ -107,7 +139,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable />
+            <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -127,6 +159,7 @@ export function StudioLayout({
   return (
     <div className="flex h-dvh flex-col">
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
+        {saveStatus}
         {widths}
       </StudioToolbar>
       <div className="flex min-h-0 flex-1">
@@ -136,7 +169,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable />
+          <StructureCanvas doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

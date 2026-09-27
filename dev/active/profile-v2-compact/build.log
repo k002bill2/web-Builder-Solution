@@ -66,7 +66,7 @@ dist/assets/profileEngine-BHshu0X4.js                   27.41 kB │ gzip:  9.62
 dist/assets/CompareBoardPage-yFGm9eX7.js                27.62 kB │ gzip:  9.25 kB
 dist/assets/index-DOHMikwB.js                          270.54 kB │ gzip: 86.76 kB
 
-✓ built in 216ms
+✓ built in 242ms
 [bundle] 공통 JS (gzip, 참고): 89.13KB
   - assets/index-DOHMikwB.js 85.85KB
   - assets/react-DB-4Zxce.js 3.28KB

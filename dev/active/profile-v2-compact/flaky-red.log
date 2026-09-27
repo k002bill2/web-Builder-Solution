@@ -1,0 +1,6 @@
+# RED 재현 (결정적): 해당 테스트에서 loadGenerate 를 30ms 지연(mockImplementationOnce)시켜 실행
+# 결과: × 캡션 상시 ... — TestingLibraryElementError: Unable to find an element with the text: A안 만드는 중 · 0/3 완료
+#       Tests 1 failed | 7 skipped (8), exit 1
+# 원인: useGeneration.act 가 setBusy("request") 후 await load()(생성 청크 동적 import)+requestGeneration 을 기다려서야 follow→setJob.
+#       findByRole("만드는 중…") 은 busy 렌더 직후 풀리고, 자리 카드 캡션은 잡 도착 뒤 렌더 → 동기 getAllByText 경쟁.
+# 수정 후 같은 지연 주입 상태: Tests 1 passed | 7 skipped (8), exit 0. 지연 주입은 되돌림(최종 diff 에 없음).

@@ -5,6 +5,7 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { useDocSave, type DocSaveRepository } from "../../features/studio/useDocSave";
+import { SAVE_STALE_ALERT } from "../../features/studio/saveStatusText";
 import { SaveStatus } from "./SaveStatus";
 
 beforeEach(() => {
@@ -74,6 +75,30 @@ describe("SaveStatus — 실패·오프라인 (E-AC-09)", () => {
     expect(screen.getByText("오프라인 — 연결되면 저장합니다")).toBeInTheDocument();
     expect(onAnnounce).toHaveBeenCalledTimes(1);
     expect(onAnnounce).toHaveBeenCalledWith("오프라인 — 연결되면 저장합니다");
+  });
+});
+
+describe("SaveStatus — STALE_DOC (E-S09 · 6.3 alert 1회)", () => {
+  it("saving → stale alert · 재렌더에 같은 노드 · failed → stale 문장 교체 · settle(saved) → alert 비움·status 0", () => {
+    const onAnnounce = vi.fn();
+    const at = (state: AutosaveState) => <SaveStatus state={state} persistence="memory" onRetry={() => undefined} onAnnounce={onAnnounce} />;
+    const { rerender } = render(at({ phase: "saving" }));
+    rerender(at({ phase: "stale" }));
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent(SAVE_STALE_ALERT);
+    expect(screen.getByText("다른 곳에서 이 문서가 바뀌었습니다")).toBeInTheDocument();
+    const node = alert.firstChild;
+    rerender(at({ phase: "stale" }));
+    expect(alert.firstChild).toBe(node);
+    rerender(at({ phase: "failed", failure: "error" }));
+    expect(alert).toHaveTextContent("저장하지 못했습니다");
+    rerender(at({ phase: "stale", failure: "error" }));
+    expect(alert).toHaveTextContent(SAVE_STALE_ALERT);
+    rerender(at({ phase: "saved", lastSavedAt: Date.now() }));
+    expect(alert).toHaveTextContent("");
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+    expect(onAnnounce).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "다시 저장" })).toBeNull();
   });
 });
 

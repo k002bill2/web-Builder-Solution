@@ -1,0 +1,18 @@
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  21:14:45
+   Duration  1.39s (tests 36%, environment 28%, transform 24%, import 7%, setup 5%)
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  21:14:46
+   Duration  1.39s (tests 36%, environment 28%, transform 24%, import 7%, setup 5%)
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  21:14:48
+   Duration  1.40s (tests 36%, environment 27%, transform 25%, import 7%, setup 5%)
+

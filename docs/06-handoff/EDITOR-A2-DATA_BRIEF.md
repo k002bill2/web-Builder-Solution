@@ -34,3 +34,10 @@
 - `--max-turns` 50 · **38턴부터 REPORT 우선**. 커밋마다 `dev/active/editor-a2-data/PROGRESS.md` 체크.
 - 금지: `docs/design/`·`design/` 수정 · 새 의존성 · 단언 약화 · 위 예외 밖 engine·보드 파일 수정 · push·병합·삭제 · fable 무접촉.
 - REPORT `dev/active/editor-a2-data/REPORT.md`: SHA · 파일 · AC별 판정 · RED/GREEN · 번들 전후 표 · CSS 전후 · Codex · 남은 위험.
+
+## 7. 이어받기 (RESUME-1, Jarvis 2026-09-27 16:4x)
+- 1차 실행이 51턴 한도로 중단. **C0~C3 완료**(`3422cf5`·`984aa04`·`3be907f`·`056e0dd`) — C1 CSS sha256 동일(바뀐 규칙 0), C1~C3 번들 변화 0.
+- **C4 진행분은 Jarvis WIP 커밋**(HEAD, `memoryProjectRepository.ts`·`projectRepository.ts`·새 `memoryProjectRepository.test.ts`, tsc 통과 · 표적 431/431 GREEN · lint 로그 빈 파일 = 미확인).
+- ⚠️ **C4 번들 누수 — 먼저 고칠 것**: C4 build(`logs/c4-build.txt`)에서 base 대비 **공통 +0.02** · **`/projects` 진입 직후 +1.51**(106.39→107.90) · `/profile` 진입 직후 +0.12(124.44→124.56, 여유 0.44) · `/studio` 진입 직후 +1.51. 추정 원인(Jarvis, 확인 필요): `memoryProjectRepository.ts`가 `import { MEMORY_GENERATOR_VERSION } from "./memoryGenerationRepository"`를 **정적 import** → 생성 저장소 모듈 전체가 프로젝트 저장소 청크로 끌려옴. 상수만 필요하면 작은 공유 모듈(예: `data/generatorVersion.ts`)로 빼거나 `startDocWrite`(조작 뒤 청크) 안으로 옮긴다. 목표: **공통 +0 · `/projects`·`/profile`·`/catalog`·`/compare` 증가 0**(C5 `/profile` +0.03~0.08만 허용). 고친 뒤 build 전후 표를 `logs/c4-fix-build.txt`에.
+- 남은 순서: C4 누수 수정·lint·커밋 → C5 → C6 → 전체 vitest 1회 → 4337 흐름 1회 → Codex 1회 → REPORT.
+- 이번 실행 `--max-turns` 45 · **32턴부터 REPORT 우선**. 4337 흐름·Codex가 턴을 못 받으면 건너뛰고 REPORT에 BLOCKED로 — **C4~C6 + 전체 vitest + REPORT가 우선**. 서브에이전트 금지 유지.

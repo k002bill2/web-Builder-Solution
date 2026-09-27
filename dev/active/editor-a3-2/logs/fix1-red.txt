@@ -1,0 +1,3 @@
+     × 바뀐 쌍이 있으면 한 줄 요약 '편집 문서를 만들며 바뀐 점 N개'(N = 원문의 바뀐 섹션 수 — 같은 쌍 여러 섹션 포함, Codex r1 P2) + 닫힌 details 안에 원문 · 영역 1개 · 1회 3037ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 8 passed (9)

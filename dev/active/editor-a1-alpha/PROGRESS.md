@@ -22,4 +22,5 @@
 - 레인 A: 커밋 `0761fa6` → cherry-pick `fd32484`. 새 파일 10개, 50 tests(가드 포함) GREEN. 로그는 .gitignore라 메인에서 복사·강제 추가
 - 레인 B: 커밋 `a345d6e` → cherry-pick `88ab7a3`. 새 파일 7개, 46 tests(가드 포함) GREEN
 - 통합 검증(메인): 표적 105 passed · typecheck·lint·build exit 0 · 번들 줄·dist sha diff 0 → REPORT.md
+- 레인 A·B 최종 보고 수신, 추가 커밋 없음(워크트리 확인)
 - Codex: BLOCKED — 브리프 "외부 접근 금지"

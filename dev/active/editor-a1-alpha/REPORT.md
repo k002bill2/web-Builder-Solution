@@ -11,7 +11,7 @@
 | (이 커밋) | REPORT · PROGRESS · 로그 |
 
 ## 파일 (`app/src/`, 전부 신규)
-- `data/projectRepository.ts` — SPEC 8.3 `ProjectRepository<TDoc = unknown>`(메서드 13 + `persistence`), 8.1 `Project`·`ProjectSummary`·`ProjectSnapshot<TDoc>`·`ExportJob`·`ExportRequestResult`, 오류 코드 10종, `ProjectRepositoryError`(STALE_PROJECT → `project`, STALE_DOC·DOC_EXISTS → `doc`), `projectErrorCode()`
+- `data/projectRepository.ts` — SPEC 8.3 `ProjectRepository<TDoc = unknown>`(메서드 12 + `persistence`), 8.1 `Project`·`ProjectSummary`·`ProjectSnapshot<TDoc>`·`ExportJob`·`ExportRequestResult`, 오류 코드 10종, `ProjectRepositoryError`(STALE_PROJECT → `project`, STALE_DOC·DOC_EXISTS → `doc`), `projectErrorCode()`
 - `domain/projectName.ts` — `normalizeProjectName`(trim) · `nameLength`(코드포인트) · `validateProjectName`(1~40자, J-S06 문장) · `defaultProjectName(title, existingNames)`(2.1, " 2"·" 3"…)
 - `features/projects/{projectListView,renameDraft,useProjectList}.ts` · `components/projects/{ProjectList,ProjectRow,RenameField}.tsx` · `pages/ProjectsPage.tsx`
 - `features/studio/{saveStatusText,useAutosaveScheduler}.ts` · `components/studio/StudioEmptyStates.tsx`
@@ -42,7 +42,7 @@
 | E-AC-01 프로젝트 없음 | 충족(컴포넌트) | `StudioProjectNotFound`: h1·문장·"프로젝트 목록"(/projects)·"비교 보드로", alert·nav·header 없음 |
 | E-AC-02 문서 없음 | 충족(컴포넌트) | `StudioNoDoc`: h1=프로젝트 이름·안내·"프로필에서 3안 고르기"→`/profile/:profileId` |
 | E-AC-07 자동 저장 타이밍 | 충족 | 가짜 타이머: 1999ms 0회/2000ms 1회 · 1초 간격 30초 → maxWait로 ≤30초 저장 · 저장 중 변경 3개 → 끝난 뒤 최신 문서로 1회 |
-| E-AC-09 실패·오프라인 | 충족(스케줄러+훅) | 연속 2회 실패에도 alert 1회 · 입력 유지 · "다시 저장" 성공 → "다시 저장했습니다" · offline → 저장 0 + "오프라인 — 연결되면 저장합니다" · online → 저장 1회 · `NETWORK` 거부 = offline |
+| E-AC-09 실패·오프라인 | 충족(조건부 — 아래 편차) | 연속 2회 실패에도 alert 1회 · 입력 유지 · "다시 저장" 성공 → "다시 저장했습니다" · offline → 저장 0 + "오프라인 — 연결되면 저장합니다" · online → 저장 1회 · `NETWORK` 거부 = offline |
 | E-AC-12 beforeunload | 충족 | memory = 늘 등록 · server = 변경 없음 미등록, 변경·실패·STALE 등록 · unmount 해제 |
 | (참고) E-AC-08 | 부분 | `saveStatusText` 문구 전이·평상시 저장 status 변화 0은 훅 테스트로 확인. 편집기 화면 배치는 a2 |
 
@@ -54,6 +54,9 @@
 - 상대 시각: 목록 "방금 전·N분·N시간·N일 전"(렌더 시 계산), 저장 상태 "방금(<5초)·N초·N분·N시간 전".
 - 스케줄러: 저장 중 타이머가 끝나면 저장 끝나는 즉시 1회 더 · 실패 중 변경은 "저장하지 못했습니다" 유지 · `STALE_DOC` → 자동 저장 정지, `resume()`으로 재개(해결 UI는 a2).
 - 계측 `project_renamed` 미구현(범위 밖).
+- **편차(E-S08)**: 스케줄러는 `offline` 이벤트 때 **미저장 변경이 있을 때만** "오프라인" 상태가 된다(저장 시점에 오프라인이면 항상 offline). SPEC을 글자대로 읽으면 `navigator.onLine=false`만으로 문구를 보여야 한다 — 저장할 것이 없을 때 표시 여부는 a2에서 결정(바꾸려면 `setOnline`의 pending 조건 제거 + 복귀 시 saved/idle 되돌림 + 테스트 1개).
+- 브리프 "이름 변경 … 중복" 해석: SPEC 8.3 `renameProject` 오류는 `SCHEMA_INVALID`·`STALE_PROJECT`뿐이고 이름 중복 금지 규칙이 없다 → "연타로 인한 중복 요청 1회로 막기"로 해석. 중복 이름 검사는 넣지 않음(SPEC 재설계 금지). 같은 이름 구별은 생성 시 `defaultProjectName`의 " 2" 규칙.
+- ADR-003: 로딩 때 `LoadingState`를 페이지 래퍼 안에 넣어 h1 자리를 고정 — 그 결과 가로 여백이 이중으로 들어간다(시각 다듬기는 a1-β 라우트 연결 시).
 
 ## a1-β로 넘길 연결 지점
 1. `app/routes.tsx`: `/projects` lazy 라우트(`ProjectsPage`) · `/studio/:projectId` · `/studio`·`/profile` → `/projects` `Navigate replace` · 문서 제목 "프로젝트".
@@ -62,6 +65,16 @@
 4. GNB "프로젝트"·"새 프로젝트"(`components/layout/AppHeader`), `aria-current` 규칙(12.1).
 5. `test/renderApp.tsx`에 프로젝트 저장소 인자·lazy 모듈 선로드 추가, 가드 개정(`noHardcodedStyle` 대상 자동 포함 확인, 12.4 깨질 테스트 목록).
 6. 편집기(a2): `useAutosaveScheduler({ save, persistence })`·`saveStatusText`·`saveAnnouncement` 연결, `StudioProjectNotFound`/`StudioNoDoc`를 E-S02/E-S03에 사용.
+
+## 알려진 한계 (P2, 미수정)
+- 훅의 `debounceMs`·`maxWaitMs`가 바뀌면 스케줄러를 새로 만들어 미저장 문서를 잃는다(실사용은 상수).
+- 저장 상태 상대 시각은 스스로 갱신하지 않는다 — a2 툴바가 타이머로 `now`를 넘겨야 한다. 스케줄러는 revision을 모른다(`save` 콜백이 `saveDoc`·revision 관리).
+- E-AC-01 "GNB 없음"은 컴포넌트 수준 증명 — 라우트에서 앱 셸 헤더 밖에 마운트해야 실제 충족.
+
+## 사용자에게 필요한 것
+1. 서브에이전트 worktree 2개 정리 승인 — `/Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-abbf7b6e74e6209d5`, `…/agent-ac79521307c93bbaa`(locked, 브랜치 `worktree-agent-*`). 삭제는 브리프 금지라 남겨 둠.
+2. Codex 리뷰 실행 여부(아래 BLOCKED).
+3. 병합 시 전체 test suite 실행.
 
 ## 차단 · 미실행
 - **Codex 검증: BLOCKED** — 브리프 "외부 접근 금지"가 전역 지침(Codex 필수)보다 우선이라 실행하지 않음. 대신 메인이 diff 직접 검토(스케줄러 stale/offline/연속 실패 경로, 이름 바꾸기 포커스·연타·STALE 경로). 병합 전 `/codex:review --scope branch --base c39c265` 권장.

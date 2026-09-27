@@ -1,0 +1,66 @@
+# PROFILE-A11Y-FIX 실제 흐름 — http://127.0.0.1:4345, 1280×900, ego-browser, 앱 안 링크·버튼만(focus()+Enter)
+# /catalog → 동네 치과 클리닉·부티크 법률사무소·모던 카페 브랜드 비교 추가 → 비교 보드 열기 → A 전부 선택 + 팔레트 C → 프로필 확정 (v1) → /profile/profile-1 → 3안 만들기 (v1) → B안 선택
+비교 보드 title: 비교 보드 · Design Studio → /profile/profile-1 진입 직후 title: 디자인 프로필 · Design Studio
+B안 선택 뒤(보정값 쓰기 전): {
+ "title": "디자인 프로필 · Design Studio",
+ "status": "B안을 선택했습니다",
+ "banner": "보조 글자(muted) 대비가 배경에서 3.8:1로 기준 4.5:1보다 낮습니다. 대체안: #8E715B(4.5:1, 명도 −3.9%p) /  / 보정값 쓰기",
+ "summary": "통과 3 · 미달 1 · 대비 상세",
+ "button": {
+  "name": "보정값 쓰기 (보조 글자 muted)",
+  "ariaDisabled": null,
+  "focused": false
+ },
+ "dialogs": 0,
+ "alerts": 0
+}
+보정값 쓰기 Enter 400ms 뒤 (캡처 profile-1280-after-write.png): {
+ "title": "디자인 프로필 · Design Studio",
+ "status": "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다",
+ "banner": "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다 /  / 보정값을 썼습니다",
+ "summary": "통과 4 · 미달 0 · 대비 상세",
+ "button": {
+  "name": "보정값을 썼습니다 (보조 글자 muted)",
+  "ariaDisabled": "true",
+  "focused": true
+ },
+ "dialogs": 0,
+ "alerts": 0
+}
+1.5s 뒤: {
+ "title": "디자인 프로필 · Design Studio",
+ "status": "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다",
+ "banner": "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다 /  / 보정값을 썼습니다",
+ "summary": "통과 4 · 미달 0 · 대비 상세",
+ "button": {
+  "name": "보정값을 썼습니다 (보조 글자 muted)",
+  "ariaDisabled": "true",
+  "focused": true
+ },
+ "dialogs": 0,
+ "alerts": 0
+}
+다시 Enter(aria-disabled) 뒤: {
+ "title": "디자인 프로필 · Design Studio",
+ "status": "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다",
+ "banner": "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다 /  / 보정값을 썼습니다",
+ "summary": "통과 4 · 미달 0 · 대비 상세",
+ "button": {
+  "name": "보정값을 썼습니다 (보조 글자 muted)",
+  "ariaDisabled": "true",
+  "focused": true
+ },
+ "dialogs": 0,
+ "alerts": 0
+}
+조정 저장 (v2) 뒤: {
+ "title": "디자인 프로필 · Design Studio",
+ "status": "v2로 저장했습니다",
+ "summary": "통과 4 · 미달 0 · 대비 상세",
+ "dialogs": 0,
+ "alerts": 0
+}
+보기 (v1) 버전 전환 뒤: {
+ "url": "http://127.0.0.1:4345/profile/profile-1?v=1",
+ "title": "디자인 프로필 · Design Studio"
+}

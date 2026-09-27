@@ -1,0 +1,7 @@
+     × 진입만으로는 받지 않음 · '3안 만들기' 클릭에 미리 받기 · 청크 도착 전 로딩 표현(카드 목록 없음) → 도착 뒤 카드 3 + 비교 표 243ms
+     × 청크 실패 → role=alert '3안 결과를 불러오지 못했습니다' + 다시 시도 → 다시 받아 카드 3 + 비교 표 3277ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected "vi.fn()" to be called at least once
+TestingLibraryElementError: Unable to find role="alert"
+ Test Files  1 failed (1)
+      Tests  2 failed (2)

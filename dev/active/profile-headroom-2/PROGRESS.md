@@ -9,7 +9,9 @@
   - 변형 2(a)(plain import): 123.42·부작용 0이지만 Chromium 실패 캐시로 다시 시도 불가 → 기각
   - 변형 2(b)(2안 자리 `writeBodyLoader`에 로더): 청크 재배치로 /profile 첫 100.24·진입 125.51 예산 초과 → 기각(writeBodyLoader 원복)
   - 변형 3(c) 채택: `features/profile/candidateResultsLoader.ts` — retryableImport와 같은 새 URL 재시도를 chunkRetry import 없이(빌드 출력 파싱 확인: `CandidateResults-<해시>.js`)
-- [ ] P2 테스트 기다림 조정(필요 시) · 새 테스트 RED→GREEN(로딩 표현·카드 3개·실패 다시 시도) → 커밋
+- [x] P2 기존 테스트 기다림 조정 **0건**(src/pages + features/profile 27파일 288/288 그대로 통과) · 새 `app/src/pages/ProfileCandidateResults.test.tsx` 2건
+  - RED(`logs/p2-red.txt`, CandidatesSection을 58a1d64로 되돌림): 2/2 실패 — 미리 받기 호출 0 · role=alert 없음
+  - GREEN(`logs/p2-green.txt`): 3회 연속 2/2 통과
 - [ ] P3 전체 vitest 3회(`logs/full-x3.txt`) · final build · REPORT
 
 ## 메모

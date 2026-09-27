@@ -70,8 +70,9 @@ export function DetailActions({
   readonly onToggleSave: () => void;
   readonly onToggleCompare: () => void;
 }) {
+  // lg 2단에서 정보 패널(flex-col, 그리드 행 높이로 늘어남) 바닥에 붙인다. 모바일은 흐름 그대로.
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 lg:mt-auto">
       <Button variant="primary" size="lg" fullWidth onClick={onImportTemplate}>
         템플릿으로 가져오기
       </Button>

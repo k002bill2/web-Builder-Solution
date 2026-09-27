@@ -106,6 +106,31 @@ describe("ReferenceDetailPage (2a-02 v2, FR-CAT-03)", () => {
     }
   });
 
+  it("콘셉트 태그 톤: 앞 둘만 violet, 나머지 중립, blue/orange 없음 — 의미는 글자로 (VISUAL-V2-APPLY 5, REPORT 1.3)", async () => {
+    const threeTags: DesignReference = { ...refA, id: "ref-t", key: "T", title: "태그 셋 카페", visualTags: ["minimal", "warm", "bold"] };
+    renderApp(
+      "/references/ref-t",
+      createMemoryReferenceRepository([...referenceFixtures, threeTags], { ...referenceDetailFixtures, "ref-t": detailA }),
+    );
+    await heading("태그 셋 카페");
+    const panel = within(infoPanel());
+    const tags = ["미니멀", "따뜻한", "대담한"].map((label) => panel.getByText(label));
+    for (const tag of tags) expect(tag.className).not.toMatch(/accent-(blue|orange)/);
+    expect(tags[0]).toHaveClass("text-accent-violet", "bg-accent-violet-bg");
+    expect(tags[1]).toHaveClass("text-accent-violet", "bg-accent-violet-bg");
+    expect(tags[2]).toHaveClass("text-label-neutral", "bg-fill-strong");
+  });
+
+  it("데스크톱(lg 2단)에서 주요 행동 묶음은 패널 바닥(lg:mt-auto), 모바일 흐름은 그대로 (VISUAL-V2-APPLY 5, REPORT 1.3)", async () => {
+    renderApp("/references/ref-a");
+    await heading("모던 카페 브랜드");
+    expect(infoPanel()).toHaveClass("flex", "flex-col");
+    const group = within(infoPanel()).getByRole("button", { name: "템플릿으로 가져오기" }).parentElement!;
+    expect(group).toHaveClass("lg:mt-auto");
+    expect(group).not.toHaveClass("mt-auto");
+    expect(infoPanel().lastElementChild).toBe(group);
+  });
+
   it("DOM 순서 = 보이는 순서: 뒤로 → 미리보기 폭 → 미리보기 → 정보 패널(h1) → 아래 영역", async () => {
     renderApp("/references/ref-a");
     await heading("모던 카페 브랜드");
@@ -205,7 +230,11 @@ describe("ReferenceDetailPage — 404·이동", () => {
   it("없는 id는 404 안내와 카탈로그 링크를 보여준다", async () => {
     renderApp("/references/ref-zz");
     expect(await heading("레퍼런스를 찾을 수 없습니다")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "카탈로그로 돌아가기" })).toHaveAttribute("href", "/catalog");
+    const back = screen.getByRole("link", { name: "카탈로그로 돌아가기" });
+    expect(back).toHaveAttribute("href", "/catalog");
+    // 링크 글자는 대비용 primary-text (Q2), hover 유지
+    expect(back).toHaveClass("text-primary-text", "hover:text-primary-hover");
+    expect(back).not.toHaveClass("text-primary");
   });
 
   it("비노출(external_observed) 레퍼런스도 404로 처리한다 (FR-CAT-04)", async () => {

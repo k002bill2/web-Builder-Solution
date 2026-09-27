@@ -55,6 +55,16 @@ describe("ReferenceCard", () => {
     expect(within(card).getByRole("heading", { name: "모던 카페 브랜드" }).className).not.toMatch(/line-clamp|overflow|truncate/);
   });
 
+  it("v2 카드 제목: ds-body2 + semibold, 2줄 clamp는 링크에 유지, 링크 hover·URL 불변 (VISUAL-V2-APPLY 4, REPORT 1.2)", () => {
+    const { card } = renderCard();
+    const title = within(card).getByRole("heading", { name: "모던 카페 브랜드" });
+    expect(title).toHaveClass("ds-body2", "font-semibold");
+    expect(title).not.toHaveClass("ds-heading2");
+    const link = within(card).getByRole("link", { name: "모던 카페 브랜드" });
+    expect(link).toHaveClass("line-clamp-2", "hover:text-primary");
+    expect(link).toHaveAttribute("href", "/references/ref-a");
+  });
+
   it("상태가 바뀌면 아이콘 모양도 바뀐다 — 색 말고 모양 단서 (저장 bookmark → bookmark-fill, 비교 plus → check)", () => {
     const iconOf = (button: HTMLElement) => button.querySelector("i")?.getAttribute("style");
     const off = within(renderCard().card);

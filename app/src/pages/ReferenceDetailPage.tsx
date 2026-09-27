@@ -22,8 +22,8 @@ import { parsePreviewView, PREVIEW_VIEWS, toPreviewViewParams } from "../feature
 import { useReferenceDetail } from "../features/detail/useReferenceDetail";
 import { useSavedReferences } from "../features/saved/SavedReferencesContext";
 
-/** 목업은 첫 콘셉트 태그 blue, 둘째 orange. */
-const VISUAL_TAG_TONES: readonly TagTone[] = ["blue", "orange"];
+/** v2 적용(REPORT 1.3): 앞 두 콘셉트 태그만 violet, 나머지 neutral. 의미는 태그 글자가 전한다(색 단독 아님). */
+const VISUAL_TAG_TONES: readonly TagTone[] = ["violet", "violet"];
 
 function Breadcrumb() {
   return (
@@ -79,7 +79,7 @@ function NotFound() {
       <span className="ds-caption1 text-label-alternative">404</span>
       <h1 className="ds-title1">레퍼런스를 찾을 수 없습니다</h1>
       <p className="ds-body2 text-label-alternative">삭제되었거나 카탈로그에 공개되지 않은 레퍼런스입니다.</p>
-      <Link to="/catalog" className="ds-label text-primary hover:text-primary-hover">
+      <Link to="/catalog" className="ds-label text-primary-text hover:text-primary-hover">
         카탈로그로 돌아가기
       </Link>
     </div>

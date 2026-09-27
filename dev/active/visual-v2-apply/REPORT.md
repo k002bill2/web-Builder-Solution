@@ -130,3 +130,11 @@
 ## Codex 결과 (1라운드, `logs/codex-review-r1.txt`)
 - 판정: "변경된 동작에서 확인된 버그는 없습니다." 지적 0건이므로 추가 라운드는 하지 않는다.
 - 한계: Codex 샌드박스에서는 파일 쓰기 제한(EPERM)으로 테스트를 시작하지 못했다. 테스트 근거는 메인 실행 로그다(위 GREEN 절).
+
+## 사용자 결정 반영 (2026-09-27)
+1. `ds/Tag.tsx` 긴 문자열 넘침은 이 레인이 아니라 **별도 레인에서 진행**한다. 이 브랜치에서는 Tag.tsx를 바꾸지 않았다.
+   - 후속 레인 입력: 재현 스크립트 `logs/longtext-detail.mjs`, 결과 `logs/longtext-detail-result.json`(1280 +483 / 320 +545). 원인은 `whitespace-nowrap`이다. 수정 시 비교 필·라이선스 Tag 등 Tag 사용처 전체에서 회귀를 확인해야 한다.
+2. 서브에이전트 워크트리 2개와 브랜치를 **정리**했다.
+   - 정리 전 patch-id로 대조했다: bbffaf1 = 03714d3, 6ca4cb1 = d1c8eed(SAME). 내용은 이 브랜치에 보존돼 있다.
+   - 심볼릭 링크 `app/node_modules`만 `rm`으로 지우고 `git worktree remove`, `git branch -D worktree-agent-{aced0264f65624049,a030de691dc38c74f}`를 실행했다.
+   - 메인 `app/node_modules`는 그대로다.

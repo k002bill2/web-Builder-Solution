@@ -1,0 +1,57 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/compare-headroom-c8/app
+
+ ❯ src/pages/CompareBoardEngineUi.test.tsx (3 tests | 2 failed) 110ms
+   ❯ C8 번들 분류 근거 — 초안 패널·요약 바는 엔진 청크 (2)
+     × CompareBoardPage는 DraftPanel·DraftSummaryBar를 값으로 정적 import하지 않는다 5ms
+     × boardEngine이 DraftPanel·DraftSummaryBar를 싣는다 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CompareBoardEngineUi.test.tsx > C8 번들 분류 근거 — 초안 패널·요약 바는 엔진 청크 > CompareBoardPage는 DraftPanel·DraftSummaryBar를 값으로 정적 import하지 않는다
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/pages/CompareBoardEngineUi.test.tsx:27:47
+     25|   it("CompareBoardPage는 DraftPanel·DraftSummaryBar를 값으로 정적 import하지 않는…
+     26|     const page = source("./CompareBoardPage.tsx");
+     27|     expect(valueImportOf(page, "DraftPanel")).toBe(false);
+       |                                               ^
+     28|     expect(valueImportOf(page, "DraftSummaryBar")).toBe(false);
+     29|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/CompareBoardEngineUi.test.tsx > C8 번들 분류 근거 — 초안 패널·요약 바는 엔진 청크 > boardEngine이 DraftPanel·DraftSummaryBar를 싣는다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/pages/CompareBoardEngineUi.test.tsx:33:49
+     31|   it("boardEngine이 DraftPanel·DraftSummaryBar를 싣는다", () => {
+     32|     const engine = source("../features/compare/boardEngine.ts");
+     33|     expect(valueImportOf(engine, "DraftPanel")).toBe(true);
+       |                                                 ^
+     34|     expect(valueImportOf(engine, "DraftSummaryBar")).toBe(true);
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  13:34:44
+   Duration  1.85s (environment 55%, transform 22%, setup 11%, tests 6%, import 6%)
+

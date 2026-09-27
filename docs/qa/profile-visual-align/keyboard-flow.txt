@@ -1,0 +1,35 @@
+# 디스클로저 Enter/Space — 1280×900, focus() 후 실제 키 입력(ego-browser keyboard.press)
+# AX expanded = CDP Accessibility.getFullAXTree 의 expanded 속성 (네이티브 <details>/<summary> 이므로 aria-expanded 속성은 없음 = 정상)
+값 전체 보기 · Enter → open=true · role=DisclosureTriangle expanded=true · 포커스 유지=true
+값 전체 보기 · Enter → open=false · expanded=false · 포커스 유지=true
+값 전체 보기 · Space → open=true · expanded=true · 포커스 유지=true
+값 전체 보기 · Space → open=false · expanded=false · 포커스 유지=true
+팔레트 값 보기 · Enter → open=true · expanded=true · 포커스 유지=true
+팔레트 값 보기 · Enter → open=false · expanded=false · 포커스 유지=true
+팔레트 값 보기 · Space → open=true · expanded=true · 포커스 유지=true
+팔레트 값 보기 · Space → open=false · expanded=false · 포커스 유지=true
+대비 상세 · Enter → open=true · expanded=true · 포커스 유지=true
+대비 상세 · Enter → open=false · expanded=false · 포커스 유지=true
+대비 상세 · Space → open=true · expanded=true · 포커스 유지=true
+대비 상세 · Space → open=false · expanded=false · 포커스 유지=true
+상세(B안 카드) · Enter → open=true · expanded=true · 포커스 유지=true
+상세(B안 카드) · Enter → open=false · expanded=false · 포커스 유지=true
+상세(B안 카드) · Space → open=true · expanded=true · 포커스 유지=true
+상세(B안 카드) · Space → open=false · expanded=false · 포커스 유지=true
+
+# 보정값 쓰기 — 버튼 focus() 후 Enter
+실행 전: button "보정값 쓰기 (보조 글자 muted)", 대비 요약 "통과 3 · 미달 1 · 대비 상세"
+Enter 직후(400ms): 확인 단계 없음(dialog/alertdialog 없음). 즉시 적용.
+  activeElement = 같은 버튼, 이름 "보정값을 썼습니다 (보조 글자 muted)", aria-disabled=true (disabled 속성 아님 → 포커스 유지)
+  role=status "프로필 알림" = "B안을 선택했습니다" (이전 문구 그대로, 갱신 없음). role=alert 없음. 그 밖 aria-live 영역 없음.
+  대비 요약 → "통과 4 · 미달 0 · 대비 상세"
+  배너 문구는 그대로: "보조 글자(muted) 대비가 배경에서 3.8:1로 기준 4.5:1보다 낮습니다. 대체안: #8E715B(4.5:1, 명도 −3.9%p)"
+  추가 안내 문구(비라이브): "쓴 보정값은 조정을 저장하면 새 버전에 적용됩니다"
+  muted 스와치 색은 rgb(154,123,99) 그대로(저장 전이라 예상대로)
+1.5s 뒤 같은 상태. 다시 Enter → 변화 없음(aria-disabled), 알림 없음.
+Tab 순서: '조정 저장 (v2)' 뒤에 '조정 취소' 버튼이 새로 생김 (tab-1280-after-fix.txt 17~18번)
+
+# 팔레트 칩 5개 (역할 팔레트와 대비 영역)
+<ul aria-label="역할 스와치"> 안 <li> 5개. 각 li = 색 span(aria-hidden="true") + 보이는 캡션 span(primary/surface/ink/muted/bg).
+AX 트리: StaticText primary · surface · ink · muted · bg 노출. 색 단독 전달 아님.
+캡션 truncate 여부(scrollWidth>clientWidth): 1280·390 모두 5개 잘림 없음.

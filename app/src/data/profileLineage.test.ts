@@ -42,7 +42,7 @@ describe("P-AC-10(저장소) 되돌리기 = 새 버전, 이전 레코드 불변"
   it("v1(ref-a)·v2(ref-c) 뒤 v1로 되돌리면 v3(origin revert, basedOn 1) = v1 내용, v1·v2는 그대로·동결", async () => {
     const { board, profiles } = setup();
     const changed = await confirmedThenChanged(board);
-    await board.createProfileVersion("profile-1", changed.revision, 1);
+    await board.createProfileVersion("profile-1", changed.revision, 1, "current");
     const before = (await profiles.getProfile("profile-1"))!.versions;
     const snapshot = structuredClone(before);
     const v3 = await profiles.revertTo("profile-1", 1, 2);
@@ -68,7 +68,7 @@ describe("P-AC-10(저장소) 되돌리기 = 새 버전, 이전 레코드 불변"
   it("A-Q3: 최신 버전으로 되돌리기는 SCHEMA_INVALID '이미 최신 버전입니다', 새 버전 0 — 최신이 낡았으면 STALE_PROFILE이 먼저", async () => {
     const { board, profiles, versionsOf } = setup();
     const changed = await confirmedThenChanged(board);
-    await board.createProfileVersion("profile-1", changed.revision, 1);
+    await board.createProfileVersion("profile-1", changed.revision, 1, "current");
     const error = await errorOf(profiles.revertTo("profile-1", 2, 2));
     expect(error).toBeInstanceOf(ProfileError);
     expect(error).toMatchObject({ code: "SCHEMA_INVALID", message: "SCHEMA_INVALID: 이미 최신 버전입니다" });
@@ -89,7 +89,7 @@ describe("A-Q1 ProfileVersion.baseReferenceId 필드", () => {
   it("보드 확정 = 초안의 기준 레퍼런스, 되돌리기 = 대상 버전 값 복사, 목록은 최신 버전 필드에서 읽는다", async () => {
     const { board, profiles } = setup();
     const changed = await confirmedThenChanged(board);
-    await board.createProfileVersion("profile-1", changed.revision, 1);
+    await board.createProfileVersion("profile-1", changed.revision, 1, "current");
     expect((await profiles.listProfiles())[0]?.baseReferenceId).toBe("ref-c");
     const v3 = await profiles.revertTo("profile-1", 1, 2);
     expect(v3.baseReferenceId).toBe("ref-a");
@@ -110,7 +110,7 @@ describe("P-AC-11(저장소) 버전 계보 — 보드는 계열 최신을 읽는
     expect(loaded.confirmed?.confirmedBase).toBe(v1.base);
     const saved = await board.savePicks({ hero: "ref-c" }, {}, loaded.revision);
     expect(saved.confirmed?.latestVersion).toBe(2);
-    expect(await board.createProfileVersion("profile-1", saved.revision, 2)).toEqual({ profileId: "profile-1", version: 3 });
+    expect(await board.createProfileVersion("profile-1", saved.revision, 2, "current")).toEqual({ profileId: "profile-1", version: 3 });
     expect((await profiles.getProfile("profile-1"))!.versions.map((v) => [v.version, v.origin])).toEqual([[1, "board"], [2, "adjust"], [3, "board-reconfirm"]]);
   });
 });
@@ -121,7 +121,7 @@ describe("P-AC-40(저장소) 보드 확정 경쟁 — STALE_PROFILE", () => {
     const changed = await confirmedThenChanged(board);
     insertOtherVersion(store);
     await profiles.revertTo("profile-1", 1, 2);
-    const error = await errorOf(board.createProfileVersion("profile-1", changed.revision, 2));
+    const error = await errorOf(board.createProfileVersion("profile-1", changed.revision, 2, "current"));
     expect(error).toBeInstanceOf(CompareBoardError);
     expect(error).toMatchObject({ code: "STALE_PROFILE", profileHead: { version: 3 } });
     expect(await versionsOf()).toEqual([1, 2, 3]);
@@ -133,7 +133,7 @@ describe("P-AC-40(저장소) 보드 확정 경쟁 — STALE_PROFILE", () => {
     const { store, board } = setup();
     const changed = await confirmedThenChanged(board);
     insertOtherVersion(store);
-    const error = await errorOf(board.createProfileVersion("profile-1", changed.revision - 1, 1));
+    const error = await errorOf(board.createProfileVersion("profile-1", changed.revision - 1, 1, "current"));
     expect(error).toMatchObject({ code: "STALE_BOARD", board: { revision: changed.revision, confirmed: { latestVersion: 2 } } });
   });
 
@@ -157,7 +157,7 @@ describe("P-AC-41 동시 쓰기 원자성", () => {
     const { store, board, profiles, versionsOf } = setup({ delay: (call) => (call.method === "createProfileVersion" && call.phase === "response" ? gate.promise : undefined) });
     const changed = await confirmedThenChanged(board);
     insertOtherVersion(store);
-    const writes = { board: () => board.createProfileVersion("profile-1", changed.revision, 2), revert: () => profiles.revertTo("profile-1", 1, 2) };
+    const writes = { board: () => board.createProfileVersion("profile-1", changed.revision, 2, "current"), revert: () => profiles.revertTo("profile-1", 1, 2) };
     const pending = order.map((w) => writes[w]());
     gate.resolve();
     const settled = await Promise.allSettled(pending);
@@ -195,11 +195,11 @@ describe("P-AC-42 보드 확정 원자성·멱등 (6.3 r3)", () => {
     expect(await board.confirmProfile(1, 0)).toEqual({ profileId: "profile-1", version: 1 });
     const changed = await board.savePicks({ hero: "ref-c" }, {}, 1);
     failing = true;
-    expect(await errorOf(board.createProfileVersion("profile-1", changed.revision, 1))).toMatchObject({ message: "커밋 실패" });
+    expect(await errorOf(board.createProfileVersion("profile-1", changed.revision, 1, "current"))).toMatchObject({ message: "커밋 실패" });
     expect(await versionsOf()).toEqual([1]);
     expect((await board.getBoard()).board.confirmed).toMatchObject({ version: 1, revision: 1, latestVersion: 1 });
     failing = false;
-    expect(await board.createProfileVersion("profile-1", changed.revision, 1)).toEqual({ profileId: "profile-1", version: 2 });
+    expect(await board.createProfileVersion("profile-1", changed.revision, 1, "current")).toEqual({ profileId: "profile-1", version: 2 });
   });
 
   it("② 커밋 뒤 응답 실패 → 저장은 끝남, 같은 키로 다시 부르면 STALE 없이 같은 결과·새 버전 0 (첫 확정 재시도는 confirmProfile 그대로)", async () => {
@@ -211,8 +211,8 @@ describe("P-AC-42 보드 확정 원자성·멱등 (6.3 r3)", () => {
     expect(await board.confirmProfile(1, 0)).toEqual({ profileId: "profile-1", version: 1 });
     expect(await versionsOf()).toEqual([1]);
     const changed = await board.savePicks({ hero: "ref-c" }, {}, 1);
-    expect(await errorOf(board.createProfileVersion("profile-1", changed.revision, 1))).toMatchObject({ message: "응답 끊김" });
-    expect(await board.createProfileVersion("profile-1", changed.revision, 1)).toEqual({ profileId: "profile-1", version: 2 });
+    expect(await errorOf(board.createProfileVersion("profile-1", changed.revision, 1, "current"))).toMatchObject({ message: "응답 끊김" });
+    expect(await board.createProfileVersion("profile-1", changed.revision, 1, "current")).toEqual({ profileId: "profile-1", version: 2 });
     expect(await versionsOf()).toEqual([1, 2]);
   });
 

@@ -61,6 +61,8 @@ export interface ProfileSeries {
   /** 오름차순 */
   readonly versions: readonly ProfileVersion[];
   readonly latestVersion: number;
+  /** 계열의 프로젝트(DS-2A-05 12.1 "프로젝트: <이름>") — 저장소가 읽을 때 채운다 */
+  readonly project?: { readonly projectId: string; readonly name: string };
 }
 
 export interface ProfileSummary {

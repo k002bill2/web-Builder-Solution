@@ -94,8 +94,8 @@ export function CandidateCard(props: {
               <li key={line}>{line}</li>
             ))}
           </ol>
-          {plan.lint.map((l) => (
-            <p key={l.rule + l.message}>
+          {plan.lint.map((l, i) => (
+            <p key={`${l.rule}-${i}`}>
               {l.rule} · {l.message}
               {l.rule === "R-08" && (
                 <>

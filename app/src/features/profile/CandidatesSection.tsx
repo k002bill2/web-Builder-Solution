@@ -41,7 +41,7 @@ export function CandidatesSection({ viewed, pending, announce }: { readonly view
   return (
     <section aria-labelledby="profile-candidates" className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <h2 id="profile-candidates" className="ds-heading1">3안</h2>
+        <h2 id="profile-candidates" className="ds-heading1">생성된 3안</h2>
         <p className="ds-body3 text-label-alternative">{determinismText(viewed)}</p>
         <p className="ds-caption1 text-label-alternative">{CANDIDATE_TEXT.preview}</p>
       </div>

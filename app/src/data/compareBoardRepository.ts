@@ -23,6 +23,9 @@ export interface BoardLoad {
   readonly released: readonly ReleasedByStatus[];
 }
 
+/** 재확정 대상 (DS-2A-05 12.2) — 현재 프로젝트 새 버전 / 새 프로젝트(새 계열 v1) */
+export type ConfirmTarget = "current" | "new";
+
 export interface ConfirmResult {
   readonly profileId: string;
   readonly version: number;
@@ -47,8 +50,11 @@ export interface CompareBoardRepository {
    * 멱등 키 = (보드 id, revision, expectedLatest): 커밋된 요청의 재시도는 같은 결과 (6.3 r3)
    */
   confirmProfile(revision: number, expectedLatest: number): Promise<ConfirmResult>;
-  /** POST /profiles/{profileId}/versions — 이전 버전 불변. `expectedLatest`·멱등은 confirmProfile과 같다 */
-  createProfileVersion(profileId: string, revision: number, expectedLatest: number): Promise<ConfirmResult>;
+  /**
+   * POST /profiles/{profileId}/versions — 이전 버전 불변. `expectedLatest`·멱등은 confirmProfile과 같다.
+   * `target` = "new"면 새 계열 + 새 프로젝트(`expectedLatest` = 0, 이어받기·STALE_PROFILE 없음). 멱등 키에 대상을 더한다(DS-2A-05 12.2)
+   */
+  createProfileVersion(profileId: string, revision: number, expectedLatest: number, target: ConfirmTarget): Promise<ConfirmResult>;
   getProfileVersions(profileId: string): Promise<readonly ProfileVersion[]>;
 }
 

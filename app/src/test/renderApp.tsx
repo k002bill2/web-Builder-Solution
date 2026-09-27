@@ -6,6 +6,7 @@ import type { CompareBoardRepository } from "../data/compareBoardRepository";
 import type { GenerationRepository } from "../data/generationRepository";
 import { createMemoryStudio } from "../data/memoryStudio";
 import type { ProfileRepository } from "../data/profileRepository";
+import type { ProjectRepository } from "../data/projectRepository";
 import { createMemoryReferenceRepository, type ReferenceRepository } from "../data/referenceRepository";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import { referenceFixtures } from "../fixtures/references";
@@ -13,9 +14,11 @@ import { FIXTURE_CATALOG } from "./compareFixtures";
 // lazy 라우트 모듈을 미리 로드해 둔다 — 첫 테스트의 콜드 변환이 findBy 대기 시간(1초)을 넘지 않게 한다
 import "../pages/CatalogPage";
 import "../pages/CompareBoardPage";
-import "../pages/PlaceholderPage";
 import "../pages/ProfilePage";
+import "../pages/ProjectsRoute";
 import "../pages/ReferenceDetailPage";
+import "../pages/StudioPage";
+import "../data/memoryProjectRepository";
 
 /** 테스트에서 읽는 라우터 상태. data router의 `router.state.location`과 같은 모양을 유지한다. */
 export interface TestRouter {
@@ -38,6 +41,8 @@ export function renderApp(
   boardRepository?: CompareBoardRepository,
   profileRepository?: ProfileRepository,
   generationRepository?: GenerationRepository,
+  /** 보드·프로필과 같은 store의 프로젝트 저장소(DS-2A-05 12.4) — 넘기지 않으면 렌더마다 새 store의 것 */
+  projects?: () => Promise<ProjectRepository>,
 ): { readonly router: TestRouter } {
   const studio = createMemoryStudio({ catalog: FIXTURE_CATALOG });
   let current: { location: Location; navigate: NavigateFunction } | null = null;
@@ -50,7 +55,7 @@ export function renderApp(
   };
   render(
     <AppProviders repository={repository} boardRepository={boardRepository ?? studio.board} profileRepository={profileRepository ?? studio.profiles}
-      generations={() => Promise.resolve(generationRepository ?? studio.generations)}
+      generations={() => Promise.resolve(generationRepository ?? studio.generations)} projects={projects ?? studio.projects}
     >
       <MemoryRouter initialEntries={[path]}>
         <RouterProbe onRender={probe} />

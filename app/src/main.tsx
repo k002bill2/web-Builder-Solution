@@ -44,10 +44,11 @@ const boardRepository = createDeferredCompareBoardRepository(async () => (await 
 const profileRepository = createDeferredProfileRepository(async () => (await loadStudio()).profiles);
 // 3안 생성 저장소는 로더 핸들만 — 위임 래퍼는 공통 청크에 두지 않는다(2a-04c)
 const generations = async () => (await loadStudio()).generations;
+const projects = async () => (await loadStudio()).projects();
 
 createRoot(root).render(
   <StrictMode>
-    <AppProviders repository={repository} boardRepository={boardRepository} profileRepository={profileRepository} generations={generations}>
+    <AppProviders repository={repository} boardRepository={boardRepository} profileRepository={profileRepository} generations={generations} projects={projects}>
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>

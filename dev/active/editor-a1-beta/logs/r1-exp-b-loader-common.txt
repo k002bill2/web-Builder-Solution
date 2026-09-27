@@ -1,0 +1,10 @@
+[bundle] 공통 JS (gzip, 참고): 89.41KB
+  - assets/index-CJxObofj.js 86.13KB
+  - assets/react-DB-4Zxce.js 3.28KB
+[bundle] /catalog 첫 화면 합계: 99.70KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.09KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.06KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.44KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.48KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.38KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.48KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.38KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.47KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.74KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94.01KB / 예산 100KB · 진입 직후 자동 로드 포함: 106.94KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.80KB / 예산 100KB · 진입 직후 자동 로드 포함: 104.28KB / 예산 125KB

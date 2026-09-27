@@ -42,7 +42,7 @@ async function openProfile(path: string, versions = 1, options: Options = {}) {
   await studio.board.confirmProfile(1, 0);
   for (let v = 2; v <= versions; v += 1) await reconfirm(studio, v - 1, v % 2 === 0 ? "ref-c" : "ref-a");
   await options.before?.(studio);
-  const view = renderApp(path, references(options.withdrawn), studio.board, studio.profiles);
+  const view = renderApp(path, references(options.withdrawn), studio.board, studio.profiles, undefined, studio.projects);
   return { ...view, studio };
 }
 
@@ -50,7 +50,7 @@ async function openProfile(path: string, versions = 1, options: Options = {}) {
 async function reconfirm(studio: ReturnType<typeof createMemoryStudio>, latest: number, palette: string) {
   const { board } = await studio.board.getBoard();
   const changed = await studio.board.savePicks({ ...board.picks, palette }, board.custom, board.revision);
-  await studio.board.createProfileVersion("profile-1", changed.revision, latest);
+  await studio.board.createProfileVersion("profile-1", changed.revision, latest, "current");
 }
 
 /** 보정 제안 hex — 수치 자체는 domain/profileContrast.test.ts가 스크립트 값으로 고정한다(화면 테스트에 hex 글자를 두지 않는다) */
@@ -102,21 +102,30 @@ describe("P-AC-02 없는 프로필 (P-S02)", () => {
   });
 });
 
-describe("P-AC-03 /profile 목록 (P-S04·05)", () => {
-  it("프로필 0 → 시작 안내 + 비교 보드로 · 카탈로그에서 고르기", async () => {
-    renderApp("/profile");
-    expect(await h1()).toHaveTextContent("디자인 프로필");
-    expect(await screen.findByText("프로필은 비교 보드에서 요소를 골라 확정하면 만들어집니다")).toBeInTheDocument();
+// P-AC-03(/profile 목록)은 DS-2A-05 12.1·EQ-4 A로 폐지 — /profile은 /projects로 replace(J-AC-09), 빈 상태는 J-S02·목록은 J-S04가 잇는다(12.4)
+describe("P-AC-03 → J-AC-02·03·09 /profile은 /projects 목록으로", () => {
+  it("프로필 0 → /projects(replace) 시작 안내 + 비교 보드로 · 카탈로그에서 고르기", async () => {
+    const { router } = renderApp("/catalog");
+    act(() => void router.navigate("/profile"));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/projects"));
+    expect(await h1()).toHaveTextContent("프로젝트");
+    expect(await screen.findByText("프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "비교 보드로" })).toHaveAttribute("href", "/compare");
     expect(screen.getByRole("link", { name: "카탈로그에서 고르기" })).toHaveAttribute("href", "/catalog");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    // replace — 뒤로 가면 /profile이 아니라 그 전 화면
+    act(() => void router.navigate(-1));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/catalog"));
   });
 
-  it("프로필이 있으면 줄마다 기준 레퍼런스 제목 · 최신 버전 · 열기 링크", async () => {
+  it("프로필이 있으면 줄마다 프로젝트 이름(기준 레퍼런스 제목) · 최신 버전 · 마지막 변경 · 프로필 보기 링크", async () => {
     const { router } = await openProfile("/profile", 2);
-    const row = await screen.findByRole("listitem", { name: /^모던 카페 브랜드/ });
-    expect(within(row).getByText("최신 v2")).toBeInTheDocument();
+    await waitFor(() => expect(router.state.location.pathname).toBe("/projects"));
+    const name = await screen.findByRole("heading", { level: 2, name: "모던 카페 브랜드 프로젝트" });
+    const row = name.closest("li")!;
+    expect(within(row).getByText("프로필 v2")).toBeInTheDocument();
     expect(within(row).getByText((_, el) => el?.tagName === "TIME")).toHaveAttribute("datetime");
-    await userEvent.click(within(row).getByRole("link", { name: "모던 카페 브랜드 열기" }));
+    await userEvent.click(within(row).getByRole("link", { name: "모던 카페 브랜드 프로젝트 프로필 보기" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/profile/profile-1"));
   });
 });

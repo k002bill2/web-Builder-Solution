@@ -35,7 +35,7 @@ async function open(options: Omit<MemoryGenerationOptions, "store"> = {}, path =
   before?.(store);
   const view = renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), board, profiles, gen);
   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
-  const region = await screen.findByRole("region", { name: "3안" });
+  const region = await screen.findByRole("region", { name: "생성된 3안" });
   return { ...view, gen, store, region };
 }
 
@@ -112,7 +112,7 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     act(() => void router.navigate("/compare"));
     await screen.findByRole("heading", { level: 1, name: "비교 보드" });
     act(() => void router.navigate("/profile/profile-1"));
-    const back = await screen.findByRole("region", { name: "3안" });
+    const back = await screen.findByRole("region", { name: "생성된 3안" });
     expect(await within(back).findByRole("button", { name: "B안 선택", pressed: true })).toBeInTheDocument();
     await u.click(within(back).getByRole("button", { name: "B안으로 편집 시작" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/studio"));
@@ -178,12 +178,12 @@ describe("실패 · 경쟁 (P-S20 · S21)", () => {
     // v2 요청이 저장소에서 커밋되고 응답만 지연된 시점까지 기다린다(그 전에 옮기면 공회전 — 1차 Red-Green에서 확인)
     await waitFor(() => expect(gate.release).toBeDefined());
     act(() => void router.navigate("/profile/profile-1?v=1"));
-    const v1 = await screen.findByRole("region", { name: "3안" });
+    const v1 = await screen.findByRole("region", { name: "생성된 3안" });
     expect(await within(v1).findByRole("button", { name: "A안 선택", pressed: true })).toBeInTheDocument();
     await act(async () => gate.release!());
     for (let i = 0; i < 3; i += 1) await tick();
     expect((await gen.findJob("profile-1", 2))?.state).toBe("queued");
-    expect(within(screen.getByRole("region", { name: "3안" })).getByText(/^프로필 v1 · /)).toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "생성된 3안" })).getByText(/^프로필 v1 · /)).toBeInTheDocument();
     expect(screen.queryByText("A안 만드는 중 · 0/3 완료")).not.toBeInTheDocument();
     expect(status()).not.toHaveTextContent("3안을 만드는 중입니다");
   });
@@ -207,6 +207,43 @@ describe("잡 조회 중 클릭 (findJob 지연 — HTTP 대비)", () => {
   });
 });
 
+describe("리뷰 회귀 (선택·조회 순서 · 멱등 요청)", () => {
+  it("선택 응답이 폴링 종료 뒤에 와도 안 상태를 되돌리지 않음 — 3안 유지 + 선택 유지", async () => {
+    const gate: { release?: () => void } = {};
+    const { region } = await open({ delay: (call) => (call.method === "selectCandidate" && call.phase === "response" ? new Promise<void>((r) => (gate.release = r)) : undefined) });
+    const u = user();
+    await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
+    await tick();
+    await u.click(await within(region).findByRole("button", { name: "A안 선택" }));
+    await waitFor(() => expect(gate.release).toBeDefined());
+    for (let i = 0; i < 2; i += 1) await tick();
+    await within(region).findByRole("table", { name: "3안 비교" });
+    await act(async () => gate.release!());
+    expect(await within(region).findByRole("button", { name: "A안 선택", pressed: true })).toBeInTheDocument();
+    for (let i = 0; i < 2; i += 1) await tick();
+    expect(within(region).getByRole("table", { name: "3안 비교" })).toBeInTheDocument();
+    expect(within(region).queryByText(/만드는 중/)).not.toBeInTheDocument();
+    expect(within(region).getByRole("button", { name: "A안으로 편집 시작" })).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("잡 조회 중 누른 요청이 이미 끝난 잡을 돌려받으면 요청·완료 계측과 완료 알림을 다시 내지 않음", async () => {
+    const gate: { release?: () => void } = {};
+    const { region, gen } = await open({ delay: (call) => (call.method === "findJob" && call.phase === "request" && call.seq === 1 ? new Promise<void>((r) => (gate.release = r)) : undefined) });
+    await waitFor(() => expect(gate.release).toBeDefined());
+    // 다른 탭이 같은 버전 잡을 끝까지 만든 상태
+    const { jobId } = await gen.requestGeneration("profile-1", 1);
+    for (let i = 0; i < 3; i += 1) await gen.getJob(jobId);
+    events.length = 0;
+    const u = user();
+    await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
+    await within(region).findByRole("table", { name: "3안 비교" });
+    await act(async () => gate.release!());
+    await tick();
+    expect(events).toEqual([]);
+    expect(status()).not.toHaveTextContent("3안을 만들었습니다");
+  });
+});
+
 describe("번들 분류 근거 (check-bundle-size /profile afterAction memoryGenerate)", () => {
   it("진입 findJob·폴링·선택은 계산 청크 요청 0 — '3안 만들기' 클릭에서만 1회, 기존 잡 재진입도 0", async () => {
     const { region, router } = await open();
@@ -218,7 +255,7 @@ describe("번들 분류 근거 (check-bundle-size /profile afterAction memoryGen
     act(() => void router.navigate("/compare"));
     await screen.findByRole("heading", { level: 1, name: "비교 보드" });
     act(() => void router.navigate("/profile/profile-1"));
-    await within(await screen.findByRole("region", { name: "3안" })).findByRole("table", { name: "3안 비교" });
+    await within(await screen.findByRole("region", { name: "생성된 3안" })).findByRole("table", { name: "3안 비교" });
     expect(loads.generate).toHaveBeenCalledTimes(1);
   });
 });

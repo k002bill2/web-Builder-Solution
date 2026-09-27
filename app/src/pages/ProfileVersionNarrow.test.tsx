@@ -26,7 +26,7 @@ async function open(path: string) {
   for (const [latest, picks] of [[1, { palette: "ref-c" }], [2, { hero: "ref-b", palette: "ref-b", font: "ref-b" }]] as const) {
     const { board } = await studio.board.getBoard();
     const changed = await studio.board.savePicks({ ...board.picks, ...picks }, board.custom, board.revision);
-    await studio.board.createProfileVersion("profile-1", changed.revision, latest);
+    await studio.board.createProfileVersion("profile-1", changed.revision, latest, "current");
   }
   renderApp(path, createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures), studio.board, studio.profiles);
   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });

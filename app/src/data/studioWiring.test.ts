@@ -16,7 +16,7 @@ describe("createMemoryStudio — 보드·프로필이 store 하나를 쓴다", (
     expect(await board.confirmProfile(1, 0)).toEqual({ profileId: "profile-1", version: 1 });
     expect(await profiles.listProfiles()).toEqual([{ profileId: "profile-1", latestVersion: 1, baseReferenceId: "ref-a", updatedAt: NOW() }]);
     const changed = await board.savePicks({ hero: "ref-c" }, {}, 1);
-    await board.createProfileVersion("profile-1", changed.revision, 1);
+    await board.createProfileVersion("profile-1", changed.revision, 1, "current");
     await profiles.revertTo("profile-1", 1, 2);
     expect((await board.getBoard()).board.confirmed?.latestVersion).toBe(3);
   });
@@ -57,7 +57,7 @@ describe("createDeferredProfileRepository — 첫 호출 때 구현을 불러온
     expect(await repo.listProfiles()).toEqual([]);
     await studio.board.confirmProfile(1, 0);
     const changed = await studio.board.savePicks({ hero: "ref-c" }, {}, 1);
-    await studio.board.createProfileVersion("profile-1", changed.revision, 1);
+    await studio.board.createProfileVersion("profile-1", changed.revision, 1, "current");
     expect((await repo.getProfile("profile-1"))?.latestVersion).toBe(2);
     expect(await repo.revertTo("profile-1", 1, 2)).toMatchObject({ version: 3, origin: "revert" });
     expect(load).toHaveBeenCalledTimes(1);

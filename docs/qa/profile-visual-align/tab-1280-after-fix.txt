@@ -1,0 +1,29 @@
+# 1280×900 Tab 순서 — '보정값 쓰기' 실행 뒤 (보조 증거). 형식은 tab-1280.txt 와 같음.
+# 차이: 11번 요약 문구 '통과 4 · 미달 0', 12번 이름 '보정값을 썼습니다', 18번 '조정 취소' 새로 생김.
+  1 · link · 본문으로 건너뛰기 · [other y=528 x=12] ring=Y inView=Y
+  2 · link · Design Studio · [header y=10 x=28] ring=Y inView=Y
+  3 · link · 카탈로그 · [header y=15 x=189] ring=Y inView=Y
+  4 · link · 보관함 · [header y=15 x=260] ring=Y inView=Y
+  5 · link · 비교 보드 · [header y=15 x=318] ring=Y inView=Y
+  6 · link · 프로젝트 · [header y=15 x=392] ring=Y inView=Y
+  7 · button · 새 프로젝트 · [header y=10 x=1089] ring=Y inView=Y
+  8 · link · 비교 보드에서 선택 바꾸기 · [header y=154 x=28] ring=Y inView=Y
+  9 · button(summary) · 값 전체 보기 · [main y=408 x=28] ring=Y inView=Y open=false
+ 10 · button(summary) · 팔레트 값 보기 · [main y=582 x=28] ring=Y inView=Y open=false
+ 11 · button(summary) · 통과 4 · 미달 0 · 대비 상세 · [main y=656 x=28] ring=Y inView=Y open=false
+ 12 · button · 보정값을 썼습니다 (보조 글자 muted) · [main y=772 x=28] ring=Y inView=Y
+ 13 · radio · 여유 · [main y=950 x=32] ring=Y inView=Y checked=true
+ 14 · radio · 기본 AA · [main y=1032 x=32] ring=Y inView=Y checked=true
+ 15 · radio · L1 낮음 · [main y=1114 x=110] ring=Y inView=Y checked=true
+ 16 · radio · 정하지 않음 · [main y=1220 x=207] ring=Y inView=Y checked=true
+ 17 · button · 조정 저장 (v2) · [main y=1272 x=28] ring=Y inView=Y
+ 18 · button · 조정 취소 · [main y=1272 x=150] ring=Y inView=Y
+ 19 · button · A안 선택 · [main y=568 x=413] ring=Y inView=Y pressed=false
+ 20 · button(summary) · 상세 · [main y=612 x=413] ring=Y inView=Y open=false
+ 21 · button · B안 선택 · [main y=586 x=697] ring=Y inView=Y pressed=true
+ 22 · button(summary) · 상세 · [main y=630 x=697] ring=Y inView=Y open=false
+ 23 · button · C안 선택 · [main y=586 x=982] ring=Y inView=Y pressed=false
+ 24 · button(summary) · 상세 · [main y=630 x=982] ring=Y inView=Y open=false
+ 25 · button · B안으로 편집 시작 · [main y=677 x=1078] ring=Y inView=Y
+ 26 · button(summary) · 3안 비교 표 보기 · [main y=759 x=400] ring=Y inView=Y open=false
+  — (body/문서 끝, 순환)

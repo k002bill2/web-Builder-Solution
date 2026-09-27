@@ -12,4 +12,5 @@
 - [x] 5. EDITOR-A2_BRIEF.draft.md (레인 분할 제안 포함) — D·S·F 3레인, 가드 개정 = D 첫 커밋
 - [x] 6. 검증: 매핑 변형 이름 grep 대조(logs/variant-map-check.txt exit 0), SPEC diff 범위 확인(logs/spec-diff-hunks.txt — 8.3.1 1줄 예외)
 - [x] 7. REPORT.md + 로컬 커밋 (934abaf · cbd8dd0 · advisor 반영 커밋)
-- [ ] 8. Codex adversarial-review r1 (`logs/codex-r1.txt`, branch --base main) — 실행 중
+- [ ] 8. Codex adversarial-review r1 (`logs/codex-r1.txt`, branch --base main) — 1차 실행은 Codex 사용량 한도로 실패(15:26 해제), 15:29 재실행 중
+- 참고: f63de82 (Jarvis) r4.1 — Q-18 A · Q-24 A · Q-21 후속 결정 기록(영환님 ★A). 브리프 9.1에 반영됨

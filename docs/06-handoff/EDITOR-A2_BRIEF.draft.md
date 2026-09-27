@@ -1,6 +1,6 @@
 # EDITOR-A2 — 편집기 틀 · 저장 (2a-05a2) Developer 브리프 **초안**
 
-> 초안(Designer, 2026-09-27, 레인 `editor-a2-spec`). **발행 전 확인**: 3절 선행 3건이 끝났는지, 9절 "a2 착수 전 결정 필요" 2건(Q-18·Q-24)이 결정됐는지. 수치는 L3 추정이며 착수 때 재실측한다.
+> 초안(Designer, 2026-09-27, 레인 `editor-a2-spec`). **발행 전 확인**: 3절 선행 3건이 끝났는지, 9절 "a2 착수 전 결정 필요" 2건(Q-18·Q-24) — **r4.1에서 둘 다 A로 결정됨(9.1)**. 수치는 L3 추정이며 착수 때 재실측한다.
 
 ## 1. 책임/목표
 - 책임 Developer / 실행 Orca + Claude Code. 보고 대상 Jarvis. 기준 = **a1-β 병합 뒤 main**(착수 때 SHA 기입).
@@ -21,7 +21,7 @@
 ## 3. 선행 (모두 충족 전 착수 금지)
 1. **a1-β 병합** — `k002bill2/editor-a1-beta`(`8231e9b`)는 `/profile` 진입 직후 여유 0.25~0.28로 **중지** 상태(`git show k002bill2/editor-a1-beta:dev/active/editor-a1-beta/REPORT.md` 1·3절). `StudioPage.tsx`(E-S01~S04 셸) · `memoryProjectRepository.ts` · 라우트가 여기서 온다. **`engine/engineImportGuard.test.ts` 개정은 a1-β에 없다**(L1: a1-β diff 38파일에 없음 · a1-β `memoryProjectRepository.ts` 머리 주석 "engine import 가드에 걸려 startDoc 미구현") → a2 D 레인 **첫 커밋**(4절). 실패 1건 남음: `ProfileCandidates.test` P-AC-29(편집 시작 → `/studio`) — a2 데이터 레인이 `/studio/:projectId`로 고칠 대상.
 2. **profile-headroom 병합** — 목표 `/profile` 진입 직후 ≤ 124.40(`k002bill2/profile-headroom` 브리프). 편집 시작 연결(프로필 청크)이 이 여유를 쓴다.
-3. **결정 2건** — Q-18(새 문서 모션) · Q-24(Tailwind engine 스캔 가드) — 9절.
+3. ~~결정 2건~~ **충족(r4.1)** — Q-18 A · Q-24 A(9.1).
 - 이미 준비됨(main): L4 엔진(`engine/**` — `createDocFromCandidate`·`hashDoc`·`validatePageDoc`·섹션 정의·슬롯 스키마) · 2a-04c 구조안·와이어프레임(`features/profile/CandidateCard.tsx:48` `Wireframe`) · a1-α 부품(`features/studio/{useAutosaveScheduler,saveStatusText}.ts`, `components/studio/StudioEmptyStates.tsx`, `data/projectRepository.ts` 인터페이스 — `startDoc` 선언 :105).
 
 ## 4. 레인 분할 제안 (3개 · 파일이 겹치지 않게)
@@ -55,15 +55,15 @@
 - 데이터: 8.3 `saveDoc` 판정 순서 · 8.3.1 `startDoc` 판정 순서·경쟁·멱등(`delay`·`fail` `phase: request|commit|response`) · 8.2.1: 픽스처 6개 × 3안 `startDoc` 성공 · 표 밖 쌍 → `UNKNOWN_VARIANT` 쓰기 0·재시도 버튼 0 · 바뀐 쌍 알림 이동 뒤 1회(처음·멱등 재생 각각 · `DOC_EXISTS`·다시 열기 0회) · 가드(표 bound 행 = `SECTION_LIBRARY` 키 · 목적지 ⊂ 엔진 레지스트리 · 표 리터럴 파일 1개) · `DocStart.updatedAt` = 주입 `now`.
 - 화면: 5폭(1920·1280·1024·768·390) 가로 넘침 0 · Tab 순서 = 4.3 · 탭 키보드 — 브라우저는 **ego-browser만**(Playwright 금지), 앱 안 클릭으로만 이동(메모리 store — 새로고침하면 사라짐).
 - 번들: 6절 표를 레인·병합마다 실측(S-B11 시나리오 전부 · 공통 전후 따로 · 조작 뒤 청크 크기).
-- **Q-24 대비**: 빌드 CSS 크기·해시를 착수 전·후 비교(engine 소스 문자열이 Tailwind 유틸리티로 잡히는 재발 경로, L4b REPORT 9절 `.ordinal` 사례). 결정 전이면 바뀐 CSS 규칙을 REPORT에 적고 멈춤.
+- **Q-24 대비**: 빌드 CSS 크기·해시를 착수 전·후 비교(engine 소스 문자열이 Tailwind 유틸리티로 잡히는 재발 경로, L4b REPORT 9절 `.ordinal` 사례). Q-24 A(9.1): `@source not "./engine"`을 D 첫 커밋에 넣고, 그 뒤에도 CSS가 바뀌면 바뀐 규칙을 REPORT에 적고 멈춤.
 - Codex 검증: 레인마다 `review --scope working-tree`(커밋 전) 또는 `branch --base <분기점>`, 최대 3라운드.
 
 ## 9. 설계 질문 — 영향 (결정하지 않음)
 
 | Q | 내용(근거 `dev/active/l4-engine-b/REPORT.md` 12절) | a2 영향 | 표시 |
 |---|---|---|---|
-| Q-18 | 새 문서 섹션 모션 — `toEngineCandidate`(`domain/generation.ts:95-102`)가 컴포저 `motion`을 버리고 엔진이 `min(L1, 정의 상한)` | D 레인 어댑터가 `motion`을 넘길지 · 캔버스 모션 표시 | **a2 착수 전 결정 필요** |
-| Q-24 | Tailwind가 `engine` 소스를 스캔해 CSS가 바뀌는 경로(가드 없음) | a2가 engine을 런타임으로 처음 부르는 단계 — 빌드 CSS 변동 위험 | **a2 착수 전 결정 필요**(최소: 8절 CSS 전후 비교) |
+| Q-18 | 새 문서 섹션 모션 — `toEngineCandidate`(`domain/generation.ts:95-102`)가 컴포저 `motion`을 버리고 엔진이 `min(L1, 정의 상한)` | D 레인 어댑터가 `motion`을 넘길지 · 캔버스 모션 표시 | ~~a2 착수 전 결정 필요~~ **A로 결정(9.1)** |
+| Q-24 | Tailwind가 `engine` 소스를 스캔해 CSS가 바뀌는 경로(가드 없음) | a2가 engine을 런타임으로 처음 부르는 단계 — 빌드 CSS 변동 위험 | ~~a2 착수 전 결정 필요~~ **A로 결정(9.1)** |
 | Q-19 | `GateIssue.severity` · 목적 출처(`theme.purpose`) | 없음(게이트 자리만) | a3·a4 전 결정 |
 | Q-20 · Q-22 · Q-23 | R-03 계산식 · 모르는 변형 게이트 판정 · R-07 모션 기준 | 없음 | a4 전 결정 |
 | (목록 밖) `addSection` 5인자 | `engine/ops/sectionOps.ts:52-59` ↔ SPEC 8.2 4인자 | 없음 | a3 전 SPEC 반영 |

@@ -65,3 +65,68 @@ describe("집중 모드 툴바 (S2 · E-AC-03)", () => {
     expect(document.title).toBe(`${PROJECT.name} 편집`);
   });
 });
+
+/** a가 문서 순서상 b보다 앞 */
+const before = (a: Element, b: Element) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+const inOrder = (...els: Element[]) => els.every((el, i) => i === 0 || before(els[i - 1]!, el));
+const h2 = (name: string | RegExp) => screen.getByRole("heading", { level: 2, name });
+
+describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.1)", () => {
+  it.each([1280, 1920])("%i = 3단: h1 1 + h2 섹션·테마·구조 미리보기·편집 · Hero·품질 게이트 + h3 내보내기, 탭·Select 없음", async (width) => {
+    await open(width);
+    for (const name of ["섹션", "테마", "구조 미리보기", "편집 · Hero", "품질 게이트"]) expect(h2(name)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "내보내기" })).toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).toBeNull();
+    expect(screen.queryByRole("combobox", { name: "섹션" })).toBeNull();
+    // 4.3 ≥1280: 툴바 → 섹션 열 → 캔버스 → 편집 → 게이트
+    expect(
+      inOrder(
+        screen.getByRole("banner"),
+        screen.getByRole("navigation", { name: "섹션" }),
+        screen.getByRole("region", { name: "구조 미리보기" }),
+        screen.getByRole("region", { name: "편집 · Hero" }),
+        screen.getByRole("region", { name: "품질 게이트" }),
+      ),
+    ).toBe(true);
+    // 문서 Tag는 ≥1280 툴바에
+    expect(screen.getByRole("banner")).toHaveTextContent("candidate-a안 · 프로필 v2");
+  });
+
+  it("1024 = 2단: 툴바 Select '섹션' + 오른쪽 details '섹션 목록 · 순서'(기본 접힘), 순서 = 툴바 → 캔버스 → 목록 → 편집 → 테마 → 게이트", async () => {
+    await open(1024);
+    const select = screen.getByRole("combobox", { name: "섹션" });
+    expect(screen.getByRole("banner")).toContainElement(select);
+    const details = screen.getByText("섹션 목록 · 순서").closest("details")!;
+    expect(details).not.toHaveAttribute("open");
+    expect(screen.queryByRole("tablist")).toBeNull();
+    expect(
+      inOrder(
+        screen.getByRole("banner"),
+        screen.getByRole("region", { name: "구조 미리보기" }),
+        details,
+        screen.getByRole("region", { name: "편집 · Hero" }),
+        h2("테마"),
+        screen.getByRole("region", { name: "품질 게이트" }),
+      ),
+    ).toBe(true);
+    // 문서 Tag는 "테마" 영역으로
+    expect(screen.getByRole("banner")).not.toHaveTextContent("프로필 v2");
+  });
+
+  it.each([768, 390])("%i = 탭 3개(섹션·편집·검사), 순서 = 툴바 → 탭 목록 → 탭 패널 → 캔버스", async (width) => {
+    await open(width);
+    const tablist = screen.getByRole("tablist", { name: "편집 도구" });
+    expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["섹션", "편집", "검사"]);
+    expect(screen.queryByRole("combobox", { name: "섹션" })).toBeNull();
+    expect(inOrder(screen.getByRole("banner"), tablist, screen.getByRole("tabpanel"), screen.getByRole("region", { name: "구조 미리보기" }))).toBe(true);
+    // 편집 알림은 탭 목록 아래 1개
+    const notice = screen.getByRole("status", { name: "편집 알림" });
+    expect(before(tablist, notice)).toBe(true);
+    expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
+  });
+
+  it("3단에서도 편집 알림 영역은 1개(E-AC-33)", async () => {
+    await open(1280);
+    expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
+  });
+});

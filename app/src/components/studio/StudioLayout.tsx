@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
-import { docTagText, initialSelection, resolveSelection } from "../../features/studio/selection";
-import { SectionList } from "./SectionList";
+import { useLayoutMode } from "../../features/studio/layoutMode";
+import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectionName } from "../../features/studio/selection";
+import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
+import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
+import { StructureCanvas } from "./StructureCanvas";
+
+const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 
 /**
- * E-S05 기본 편집 틀 (DS-2A-05 3.1 · 4절). 편집 알림(6.3)은 `role=status` 1개 — 늘 그려 두고(비어 있어도) 이동 알림은 첫 표시 뒤 1회 넣는다.
+ * E-S05 기본 편집 틀 (DS-2A-05 3.1 · 4절). 배치(3단 · 2단 · 탭)마다 트리를 따로 그리고(4.3) 상태(선택·알림·탭)는 여기서 공유한다(4.1).
+ * 편집 알림(6.3)은 `role=status` 1개 — 늘 그려 두고(비어 있어도) 이동 알림은 첫 표시 뒤 1회 넣는다.
  * `focusHeading` = "편집 시작"으로 도착(이동 state 있음) → h1로 포커스(QA D3).
  */
 export function StudioLayout({
@@ -20,10 +26,12 @@ export function StudioLayout({
   readonly entryNotice: string | undefined;
   readonly focusHeading: boolean;
 }) {
+  const mode = useLayoutMode();
   const heading = useRef<HTMLHeadingElement>(null);
   const focused = useRef(false);
   const [notice, setNotice] = useState("");
   const [selected, setSelected] = useState(() => initialSelection(doc));
+  const [tab, setTab] = useState<StudioTab>("sections");
   const selectedId = resolveSelection(doc, selected);
 
   // 영역을 먼저 비운 채 그린 뒤 글자를 넣는다 — 스크린 리더가 status 변화로 읽는다
@@ -38,18 +46,96 @@ export function StudioLayout({
     heading.current?.focus();
   }, [focusHeading]);
 
+  const docTag = docTagText(doc);
+  const noticeRegion = <NoticeRegion text={notice} />;
+  const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} />;
+  const edit = <EditPanel name={selectionName(doc, selectedId)} />;
+  const gate = <GatePanel />;
+
+  if (mode === "tabs") {
+    return (
+      <div className="flex flex-col">
+        <StudioToolbar projectName={project.name} headingRef={heading} />
+        <StudioTabs
+          selected={tab}
+          onSelect={setTab}
+          between={noticeRegion}
+          tabs={[
+            {
+              id: "sections",
+              label: "섹션",
+              panel: (
+                <div className="flex flex-col gap-6">
+                  {nav}
+                  <ThemePanel doc={doc} docTag={docTag} profileId={project.profileId} />
+                </div>
+              ),
+            },
+            { id: "edit", label: "편집", panel: edit },
+            { id: "gate", label: "검사", panel: gate },
+          ]}
+        />
+        <StructureCanvas doc={doc} scrollable={false} />
+      </div>
+    );
+  }
+
+  if (mode === "split") {
+    return (
+      <div className="flex h-dvh flex-col">
+        <StudioToolbar projectName={project.name} headingRef={heading}>
+          <label className="ds-label flex flex-none items-center gap-2">
+            섹션
+            <select
+              value={selectedId}
+              onChange={(e) => setSelected(e.target.value)}
+              className="ds-body3 h-8 rounded-md border border-line-strong bg-background-normal px-2 text-label-normal"
+            >
+              <option value={PAGE_INFO_ID}>페이지 정보</option>
+              {doc.sections.map((s) => (
+                <option key={s.instanceId} value={s.instanceId}>
+                  {sectionName(s)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </StudioToolbar>
+        <div className="flex min-h-0 flex-1">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <StructureCanvas doc={doc} scrollable />
+          </div>
+          <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+            {noticeRegion}
+            <details className="rounded-md border border-line-normal">
+              <summary className="ds-label min-h-10 cursor-pointer px-3 py-2">섹션 목록 · 순서</summary>
+              <div className="px-2 pb-2">{nav}</div>
+            </details>
+            {edit}
+            <ThemePanel doc={doc} docTag={docTag} profileId={project.profileId} />
+            {gate}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col">
-      <StudioToolbar projectName={project.name} docTag={docTagText(doc)} headingRef={heading} />
-      <p role="status" aria-label="편집 알림" className="ds-body2 px-3 empty:p-0">
-        {notice}
-      </p>
-      <nav aria-labelledby="studio-sections-heading" className="flex flex-col gap-2 p-3">
-        <h2 id="studio-sections-heading" className="ds-heading2">
-          섹션
-        </h2>
-        <SectionList sections={doc.sections} selectedId={selectedId} onSelect={setSelected} />
-      </nav>
+    <div className="flex h-dvh flex-col">
+      <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading} />
+      <div className="flex min-h-0 flex-1">
+        <div className={`${COLUMN} w-55 flex-none border-r border-line-normal`}>
+          {noticeRegion}
+          {nav}
+          <ThemePanel doc={doc} profileId={project.profileId} />
+        </div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <StructureCanvas doc={doc} scrollable />
+        </div>
+        <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+          {edit}
+          {gate}
+        </div>
+      </div>
     </div>
   );
 }

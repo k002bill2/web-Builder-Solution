@@ -11,7 +11,7 @@
 - [x] S0 base build 실측 → `logs/base-build.txt` (exit 0 · /studio 90.73/104.33 · /profile 99.60/124.69 · /catalog 99.65 · 공통 89.34)
 - [x] S1 문서 분기 + D1~D3 (RED→GREEN, 3회 반복) — `270bf6c` · RED `logs/s1-red.txt`(6 fail/1 pass) · GREEN 7/7 × 3회 `logs/s1-repeat.txt`
 - [x] S2 집중 모드 툴바 E-AC-03 — RED `logs/s2-red.txt`(title 1 fail) → GREEN 8/8 `logs/s2-green.txt` · build /studio 95.50/108.48 · 그 밖 ±0.01
-- [ ] S3 3단 배치·제목 구조 E-AC-04 · E-AC-13
+- [x] S3 3단 배치·제목 구조 E-AC-04 · E-AC-13 — RED `logs/s3-red.txt`(5 fail) → GREEN 14/14 `logs/s3-green.txt` · build /studio 97.28/110.25(+1.78 = 배치 3벌·패널 코드) · 그 밖 ±0.01. 가로 넘침 0은 jsdom 불가 → [Q]
 - [ ] S4 섹션 선택 E-AC-05
 - [ ] S5 탭 E-AC-14
 - [ ] S6 미리보기 폭·캔버스 E-AC-15 · E-AC-16
@@ -24,6 +24,10 @@
 - [x] REPORT.md
 
 ## 결정 · 목업 차이
+- (R1) 품질 게이트·내보내기 = a4 → h2·h3 제목과 안내 캡션 자리만(E-AC-04 제목 구조). 툴바 "스냅샷"·"더보기"·"검사 · 내보내기"도 a4라 그리지 않는다.
+- (R1) 1024 "섹션" 선택 = 네이티브 `select`(DS Select import 시 공유 청크 위험 — 측정 없이 회피). 선택만, 순서·추가는 목록(4.1).
+- (R1) 테마 영역: "테마 바꾸기"는 a3 → "프로필 보기" 링크만.
+- (R1) `document.title` = "<이름> 편집"(E-AC-03 문자 그대로 — 다른 화면의 " · 브랜드" 접미사 없음).
 - 돌아가기 버튼: `chevron-left` Icon 대신 CSS 테두리 chevron(EM 추가 후보) — `ds/Icon` import 시 공통 +0.39KB, SVG `?url` 직접 import 시 공통 +0.08KB(실측). 접근 이름 "프로젝트로 돌아가기" 그대로.
 - 문서 Tag: `ds/Tag` 대신 토큰 span — Tag(+cx) import가 공통 청크를 흔듦(실측, 작은 증가).
 - `Wireframe` 재사용: S6 미착수라 판단 보류(`CandidatePlan`·`aria-hidden`·글자 없음 → PageDoc 슬롯 글자와 모양 불일치 가능성, import 시 profile 청크 공유 위험).

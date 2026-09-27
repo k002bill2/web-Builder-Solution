@@ -37,3 +37,4 @@
 - K5: jsdom 30에 `showModal`·`close` 없음(실측) → `src/test/setup.ts`에 테스트 전용 대체(열림 속성만). RED 테스트 이름 매처 1건 정정(줄 버튼 접근 이름 = 'Services목록형', 공백 없음).
 - K6: /projects 진입 +0.03(K0 대비, 한도 ±0.03 경계) — memoryProjectRepository 청크 +0.032 = memoryDocBook 동적 import preload 목록(__vite__mapDeps)에 새 공유 청크 이름이 늘어난 몫(앱 코드 변화 0). diff를 docEngine으로 묶는 시도는 /projects 첫 +0.26으로 악화 → 되돌림.
 - 변형 라디오 접근 이름 = 이름표(`aria-labelledby`), 캡션 = 설명 — 이름에 캡션이 섞이지 않게.
+- K6-perf: 변형 캡션 diffSlots를 docEngine(동적)에서 받도록 → diff가 연산 청크에 묶여 공유 청크 1개 감소 · /projects 진입 107.08→107.06. 빌드마다 청크 해시 이름 차이로 ±0.01 흔들림 관측.

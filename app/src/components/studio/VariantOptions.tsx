@@ -1,6 +1,7 @@
-import { useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { PageDoc, SectionInstance } from "../../engine/contracts/pageDoc";
 import type { Purpose } from "../../engine/ops/rules";
+import { loadDocEngine, type DocEngine } from "../../features/studio/docOps";
 import { variantChoices, type VariantChoice } from "../../features/studio/variantChoices";
 
 /**
@@ -20,8 +21,23 @@ export default function VariantOptions({
   readonly onSwap: (choice: VariantChoice, radio: HTMLElement) => void;
 }) {
   const id = useId();
-  const choices = useMemo(() => variantChoices(doc, section, purpose), [doc, section, purpose]);
+  // 캡션 비교(diffSlots)는 연산 청크에서 — 펼친 뒤 받는다(실패하면 목록 없이 남는다: 연산도 같은 청크라 어차피 못 한다)
+  const [engine, setEngine] = useState<DocEngine>();
+  useEffect(() => {
+    let cancelled = false;
+    loadDocEngine().then(
+      (loaded) => {
+        if (!cancelled) setEngine(loaded);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const choices = useMemo(() => (engine ? variantChoices(engine.diffSlots, doc, section, purpose) : []), [engine, doc, section, purpose]);
   const reasons = [...new Set(choices.flatMap((c) => (c.permission.ok ? [] : [c.permission.reason])))];
+  if (!engine) return null;
   return (
     <div
       role="radiogroup"

@@ -1,5 +1,5 @@
 import type { PageDoc, SectionInstance } from "../../engine/contracts/pageDoc";
-import { diffSlots } from "../../engine/ops/diff";
+import type { DocEngine } from "./docOps";
 import { canSwapVariant, type Permission, type Purpose } from "../../engine/ops/rules";
 import { getSectionDefinition, SECTION_TYPE_INFO } from "../../engine/sections/registry";
 
@@ -17,8 +17,8 @@ export interface VariantChoice {
 
 const ALLOWED: Permission = { ok: true };
 
-/** 변형 교체 목록(5.5) — 조작 뒤 청크(펼칠 때만). 유형의 변형은 레지스트리 순서 그대로(엔진 레인이 더한 변형 포함) */
-export function variantChoices(doc: PageDoc, section: SectionInstance, purpose: Purpose): readonly VariantChoice[] {
+/** 변형 교체 목록(5.5) — 조작 뒤 청크(펼칠 때만). 유형의 변형은 레지스트리 순서 그대로(엔진 레인이 더한 변형 포함). `diffSlots`는 연산 청크(docEngine)에서 받아 넘긴다 */
+export function variantChoices(diffSlots: DocEngine["diffSlots"], doc: PageDoc, section: SectionInstance, purpose: Purpose): readonly VariantChoice[] {
   const from = getSectionDefinition(section.type, section.variant)?.slots ?? [];
   return SECTION_TYPE_INFO[section.type].variants.flatMap((variant) => {
     const def = getSectionDefinition(section.type, variant);

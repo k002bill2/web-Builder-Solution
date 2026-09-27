@@ -13,11 +13,14 @@
 - [x] 0. 후보 3개 이상 L2 실측(하나씩 적용 → build) → PROGRESS 커밋
 - [x] 1. 채택 후보 TDD — `ProfileGenerateLoad.test.tsx` RED(소스 가드 2 실패 · 특성 3 통과, `logs/red.txt`) → GREEN 5/5
 - [x] 1. 구현 + 커밋 `48e474c`
-- [x] 2. 4게이트: typecheck 0 · lint 0 · vitest 1233/1234(실패 1 = 기존 P-AC-29 `/studio`, 기준 코드에서도 실패 — editor-a1-beta REPORT 45행) · build 0
+- [x] 2. 4게이트(리뷰 반영 후 재실행): typecheck 0 · lint 0 · vitest 1233/1234(실패 1 = 기존 P-AC-29 `/studio`, 기준 코드에서도 실패 — editor-a1-beta REPORT 45행) · build 0
 - [x] 2. 번들 전후 표 → REPORT
-- [ ] 3. 127.0.0.1:4339 실제 흐름(catalog→비교→확정→profile 보정·조정 저장·3안 생성) + 자기 PID 종료·lsof
-- [ ] 4. Codex 리뷰(companion)
-- [ ] 5. REPORT.md + 커밋
+- [x] 3. 127.0.0.1:4339 실제 흐름 통과(REPORT 5절) · 자기 PID 종료 · lsof 비어 있음
+- [x] 4. 리뷰 — Codex BLOCKED: 사용량 한도(`logs/codex-r1.txt`) · 대체 code-reviewer 서브에이전트 Major 1 반영(`6eb5de5`)
+- [x] 5. REPORT.md + 커밋
+
+## 서브에이전트 기록
+- code-reviewer(읽기 전용, 1회): Major 1(생성기 버전 출처) 반영 · Minor 1(`isTerminal` 중복) 미반영(기존 설계). 후보 실측은 빌드가 수 초라 메인에서 순차 실행(분할 안 함).
 
 ## 0단계 — 기준 `/profile` 진입 직후 구성 (gzip KB, node zlib, `logs/base-rebuild.txt` = 기준 124.80 재현, L1)
 

@@ -6,18 +6,19 @@
  * 편집 시작(DS-2A-05 12.3 · 8.3.1): 누를 때 프로젝트 저장소를 받아 `startDoc(create)` — 성공·DOC_EXISTS = 이동(state: 바뀐 쌍 · 편집 알림) ·
  * UNKNOWN_VARIANT = 알림(다시 시도 없음) · 그 밖 = 실패 문형 + 다시 시도(같은 인자 → 멱등). 문장은 조작 뒤 청크(memoryDocBook)가 만든다.
  */
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
+import { LoadingState } from "../../components/layout/LoadingState";
 import { useProjectLoader } from "../../data/ProfileRepositoryContext";
 import type { StudioEntryState } from "../../data/projectRepository";
 import { effectiveProfile } from "../../domain/effectiveProfile";
 import { isTerminal, type CandidateFailure, type GenerationJob } from "../../domain/generation";
 import type { ProfileVersion } from "../../domain/profile";
-import { CandidateCard, type WirePalette } from "./CandidateCard";
-import { CandidateTable } from "./CandidateTable";
-import { CANDIDATE_TEXT, determinismText, doneCount, failureText } from "./generationText";
+import type { WirePalette } from "./CandidateCard";
+import { loadCandidateResults as loadResults } from "./candidateResultsLoader";
+import { CANDIDATE_TEXT, determinismText, failureText } from "./generationText";
 import { PALETTE_ROLES } from "./profileFields";
 import { useGeneration } from "./useGeneration";
 
@@ -52,6 +53,17 @@ export function CandidatesSection({
   const loadProjects = useProjectLoader();
   const [starting, setStarting] = useState(false);
   const [startAlert, setStartAlert] = useState<{ readonly text: string; readonly retry: boolean }>();
+  /** 카드·표 청크(PROFILE-HEADROOM-2) — 잡이 생긴 뒤에만 쓰여 따로 받는다. 다시 시도 = attempt 증가 → 새 URL로 다시 받기 */
+  const [results, setResults] = useState<Awaited<ReturnType<typeof loadResults>> | "error">();
+  const [attempt, setAttempt] = useState(0);
+  const hasJob = Boolean(job);
+  useEffect(() => {
+    if (!hasJob) return;
+    loadResults().then(setResults, (error: unknown) => {
+      console.error("[profile] 3안 결과 청크 불러오기 실패", error);
+      setResults("error");
+    });
+  }, [hasJob, attempt]);
 
   const onEdit = async () => {
     if (!selected || starting) return;
@@ -72,7 +84,9 @@ export function CandidatesSection({
     if (state) void navigate(`/studio/${projectId}`, { state });
   };
   const onRequest = () => {
-    if (!blocked && !running) void gen.request();
+    if (blocked || running) return;
+    loadResults().catch(() => undefined); // 미리 받기 — 잡이 오기 전에 카드 청크를 받아 둔다(실패하면 잡이 온 뒤 다시 받는다)
+    void gen.request();
   };
   return (
     <section aria-labelledby="profile-candidates" className="flex min-w-0 flex-col gap-4">
@@ -120,29 +134,35 @@ export function CandidatesSection({
           </Callout>
         </div>
       )}
-      {job && (
-        <ul aria-label="3안" className="grid gap-4 md:grid-cols-3">
-          {job.candidates.map((c) =>
-            c.status === "succeeded" ? (
-              <CandidateCard
-                key={c.id}
-                plan={c.plan}
-                palette={palette}
-                profileScale={profile.typography_tokens.scale}
-                selected={selected === c.id}
-                busy={gen.busy === "select"}
-                onSelect={() => void gen.select(job.jobId, c.id)}
-              />
-            ) : (
-              <li key={c.id} className="flex min-w-0 flex-col gap-3">
-                <div className="ds-caption1 flex aspect-4/5 items-center justify-center rounded-md border border-dashed border-line-normal bg-fill-normal p-3 text-center text-label-alternative">
-                  {c.status === "pending" ? `${c.id}안 만드는 중 · ${doneCount(job)}/3 완료` : failureText(c)}
-                </div>
-                <h3 className="ds-label">{c.id}안</h3>
-              </li>
-            ),
-          )}
-        </ul>
+      {job && results === undefined && <LoadingState label={CANDIDATE_TEXT.resultsLoading} />}
+      {job && results === "error" && (
+        <div role="alert">
+          <Callout
+            tone="negative"
+            title={CANDIDATE_TEXT.resultsFailed}
+            action={
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setResults(undefined);
+                  setAttempt((n) => n + 1);
+                }}
+              >
+                다시 시도
+              </Button>
+            }
+          />
+        </div>
+      )}
+      {job && typeof results === "object" && (
+        <results.CandidateList
+          job={job}
+          palette={palette}
+          profileScale={profile.typography_tokens.scale}
+          busy={gen.busy === "select"}
+          onSelect={(id) => void gen.select(job.jobId, id)}
+        />
       )}
       <div className="flex flex-col items-start gap-2 md:items-end">
         <Button
@@ -168,7 +188,9 @@ export function CandidatesSection({
           </div>
         )}
       </div>
-      {job && isTerminal(job.state) && !allFailed && <CandidateTable job={job} profileScale={profile.typography_tokens.scale} />}
+      {job && isTerminal(job.state) && !allFailed && typeof results === "object" && (
+        <results.CandidateTable job={job} profileScale={profile.typography_tokens.scale} />
+      )}
     </section>
   );
 }

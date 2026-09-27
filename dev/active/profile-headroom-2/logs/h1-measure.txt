@@ -1,0 +1,154 @@
+# H1 임시 실측 (vite build + check-bundle-size, gzip KB) — 2026-09-27
+## 변형 1: CandidateResults + retryableImport(profileEngine에서 chunkRetry 정적 import) + LoadingState
+3c3
+< dist/assets/boardEngine.js 8.28
+---
+> dist/assets/boardEngine.js 8.30
+7a8
+> dist/assets/CandidateResults.js 2.43
+13a15
+> dist/assets/chunkRetry.js 0.28
+16c18
+< dist/assets/CompareBoardPage.js 8.14
+---
+> dist/assets/CompareBoardPage.js 8.16
+22,23c24,25
+< dist/assets/index.js 86.97
+< dist/assets/memoryBoardConfirm.js 1.82
+---
+> dist/assets/index.js 87.00
+> dist/assets/memoryBoardConfirm.js 1.84
+27,28c29,30
+< dist/assets/memoryProjectRepository.js 1.21
+< dist/assets/memoryStudio.js 3.81
+---
+> dist/assets/memoryProjectRepository.js 1.23
+> dist/assets/memoryStudio.js 3.83
+35,36c37,38
+< dist/assets/profileDraft.js 3.86
+< dist/assets/profileEngine.js 9.98
+---
+> dist/assets/profileDraft.js 3.68
+> dist/assets/profileEngine.js 8.74
+38c40
+< dist/assets/ProfilePage.js 7.18
+---
+> dist/assets/ProfilePage.js 7.21
+[bundle] 공통 JS (gzip, 참고): 89.36KB
+[bundle] /catalog 첫 화면 합계: 99.66KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.04KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.01KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.39KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.79KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.58KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.79KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.58KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.61KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 93.98KB / 예산 100KB · 진입 직후 자동 로드 포함: 107.15KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 104.49KB / 예산 125KB
+## 변형 2(a): 같은 구조, 로더만 plain import() (retryableImport 없음)
+7a8
+> dist/assets/CandidateResults.js 2.43
+36c37
+< dist/assets/profileEngine.js 9.98
+---
+> dist/assets/profileEngine.js 8.71
+56c57
+< dist/assets/TextField.js 0.42
+---
+> dist/assets/TextField.js 0.43
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.03KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.37KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.39KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.39KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.42KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 93.96KB / 예산 100KB · 진입 직후 자동 로드 포함: 106.99KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.73KB / 예산 100KB · 진입 직후 자동 로드 포함: 104.33KB / 예산 125KB
+## 변형 2(b): 로더를 data/writeBodyLoader.ts(loadCandidateResults, retryableImport)에 둠
+3c3
+< dist/assets/boardEngine.js 8.28
+---
+> dist/assets/boardEngine.js 8.32
+7a8
+> dist/assets/CandidateResults.js 2.43
+10c11
+< dist/assets/CatalogPage.js 6.70
+---
+> dist/assets/CatalogPage.js 6.71
+13a15
+> dist/assets/chunkRetry.js 0.28
+16c18,19
+< dist/assets/CompareBoardPage.js 8.14
+---
+> dist/assets/CompareBoardPage.js 8.23
+> dist/assets/compareBoardRepository.js 0.15
+19a23
+> dist/assets/fonts.js 0.23
+20a25,27
+> dist/assets/generationRepository.js 0.12
+> dist/assets/generationText.js 1.00
+> dist/assets/hash.js 0.15
+22,28c29,35
+< dist/assets/index.js 86.97
+< dist/assets/memoryBoardConfirm.js 1.82
+< dist/assets/memoryDocBook.js 10.05
+< dist/assets/memoryGenerate.js 5.35
+< dist/assets/memoryProfileAdjust.js 1.76
+< dist/assets/memoryProjectRepository.js 1.21
+< dist/assets/memoryStudio.js 3.81
+---
+> dist/assets/index.js 87.15
+> dist/assets/memoryBoardConfirm.js 1.84
+> dist/assets/memoryDocBook.js 10.06
+> dist/assets/memoryGenerate.js 5.33
+> dist/assets/memoryProfileAdjust.js 1.75
+> dist/assets/memoryProjectRepository.js 1.35
+> dist/assets/memoryStudio.js 3.08
+32a40
+> dist/assets/profile.js 0.16
+35,36c43,44
+< dist/assets/profileDraft.js 3.86
+< dist/assets/profileEngine.js 9.98
+---
+> dist/assets/profileDraft.js 3.40
+> dist/assets/profileEngine.js 7.90
+38c46,47
+< dist/assets/ProfilePage.js 7.18
+---
+> dist/assets/profileFields.js 1.42
+> dist/assets/ProfilePage.js 6.14
+45c54
+< dist/assets/ReferenceDetailPage.js 4.44
+---
+> dist/assets/ReferenceDetailPage.js 4.45
+47c56
+< dist/assets/referenceDisplay.js 0.48
+---
+> dist/assets/referenceDisplay.js 0.13
+55a65,66
+> dist/assets/studioStore.js 0.61
+> dist/assets/Tag.js 0.41
+59a71
+> dist/assets/writeBodyLoader.js 0.70
+[bundle] 공통 JS (gzip, 참고): 89.52KB
+[bundle] /catalog 첫 화면 합계: 99.89KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.27KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.24KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.62KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.07KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.01KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.07KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.01KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 100.24KB / 예산 100KB · 진입 직후 자동 로드 포함: 125.51KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94.14KB / 예산 100KB · 진입 직후 자동 로드 포함: 108.57KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.90KB / 예산 100KB · 진입 직후 자동 로드 포함: 105.90KB / 예산 125KB
+[bundle] 예산 검사 실패 — /profile: 첫 화면 100.24KB > 100KB
+[bundle] 예산 검사 실패 — /profile: 진입 직후 자동 로드 포함 125.51KB > 125KB
+## 변형 3(c): 프로필 전용 로더 candidateResultsLoader.ts(새 URL 재시도, chunkRetry import 없음)
+7a8
+> dist/assets/CandidateResults.js 2.43
+36c37
+< dist/assets/profileEngine.js 9.98
+---
+> dist/assets/profileEngine.js 8.84
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.03KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.38KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.39KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.39KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.55KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 93.96KB / 예산 100KB · 진입 직후 자동 로드 포함: 106.99KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 90.73KB / 예산 100KB · 진입 직후 자동 로드 포함: 104.33KB / 예산 125KB

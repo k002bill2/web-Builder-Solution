@@ -23,6 +23,9 @@ function finalConsonant(word: string): "none" | "rieul" | "other" {
   return DIGIT_JONG[last] ?? "none";
 }
 
+/** "을"/"를" — 받침이 있으면 "을" */
+export const objectParticle = (word: string): string => (finalConsonant(word) === "none" ? "를" : "을");
+
 /** "으로"/"로" — 받침이 있으면 "으로"(ㄹ 받침은 "로") */
 export const toParticle = (word: string): string => (finalConsonant(word) === "other" ? "으로" : "로");
 

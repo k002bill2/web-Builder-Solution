@@ -5,18 +5,27 @@ import type { PreviewView } from "../../features/detail/previewView";
 import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
 import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
+import { slotPlaceholder } from "../../features/studio/slotPlaceholder";
 
 /** 5.7 캡션 — 늘 보인다 */
 export const CANVAS_CAPTION = "구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.";
 
-/** 글자 슬롯 값(빈 값·이미지 제외) + 글자 수 문제 — 스키마 순서 */
-function slotTexts(section: SectionInstance): readonly { readonly key: string; readonly text: string; readonly issue?: SlotIssue }[] {
+/** 글자 슬롯 값(이미지 제외) + 글자 수 문제 — 스키마 순서. 빈 값은 자리표시(E-S21 "제목을 입력하세요") */
+interface SlotText {
+  readonly key: string;
+  readonly text: string;
+  readonly empty: boolean;
+  readonly issue?: SlotIssue;
+}
+
+function slotTexts(section: SectionInstance): readonly SlotText[] {
   const def = getSectionDefinition(section.type, section.variant);
-  return (def?.slots ?? []).flatMap((entry) => {
+  return (def?.slots ?? []).flatMap((entry): SlotText[] => {
     const value = section.slots[entry.key];
-    if (entry.kind === "image" || typeof value !== "string" || value.trim() === "") return [];
+    if (entry.kind === "image") return [];
+    if (typeof value !== "string" || value.trim() === "") return [{ key: entry.key, text: slotPlaceholder(entry.label), empty: true }];
     const issue = slotIssue(section, entry);
-    return [{ key: entry.key, text: value, ...(issue && { issue }) }];
+    return [{ key: entry.key, text: value, empty: false, ...(issue && { issue }) }];
   });
 }
 
@@ -55,8 +64,12 @@ function SectionBlock({ section, selected }: { readonly section: SectionInstance
         </span>
       )}
       <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-fill-strong" />
-      {texts.map(({ key, text, issue }, i) =>
-        issue ? (
+      {texts.map(({ key, text, empty, issue }, i) =>
+        empty ? (
+          <p key={key} className="ds-body3 text-label-alternative">
+            {text}
+          </p>
+        ) : issue ? (
           <IssueText key={key} text={text} issue={issue} strong={i === 0} />
         ) : (
           <p key={key} className={i === 0 ? "ds-body1-strong text-label-normal" : "ds-body3 text-label-neutral"}>

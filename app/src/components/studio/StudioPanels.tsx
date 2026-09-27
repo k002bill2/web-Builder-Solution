@@ -17,13 +17,24 @@ export function NoticeRegion({ text }: { readonly text: string }) {
 }
 
 /** 섹션 열(6.2 `nav` "섹션") — 페이지 정보 줄 + 섹션 줄. ≥1280 왼쪽 열 · <1024 "섹션" 탭 */
-export function SectionNav({ doc, selectedId, onSelect }: { readonly doc: PageDoc; readonly selectedId: string; readonly onSelect: (id: string) => void }) {
+export function SectionNav({
+  doc,
+  selectedId,
+  onSelect,
+  selectedExtra,
+}: {
+  readonly doc: PageDoc;
+  readonly selectedId: string;
+  readonly onSelect: (id: string) => void;
+  /** <1024 "섹션" 탭 — 선택 줄 옆 순서 부품(5.2) */
+  readonly selectedExtra?: ReactNode;
+}) {
   return (
     <nav aria-labelledby="studio-sections-heading" className="flex flex-col gap-2">
       <h2 id="studio-sections-heading" className={H2}>
         섹션
       </h2>
-      <SectionList sections={doc.sections} selectedId={selectedId} onSelect={onSelect} />
+      <SectionList sections={doc.sections} selectedId={selectedId} onSelect={onSelect} selectedExtra={selectedExtra} />
     </nav>
   );
 }
@@ -43,13 +54,14 @@ export function ThemePanel({ doc, docTag, profileId }: { readonly doc: PageDoc; 
   );
 }
 
-/** 편집 패널 "편집 · <섹션 이름>"(6.1). h2 `tabIndex=-1` = 게이트 문제 줄 이동 대상(6.4) */
-export function EditPanel({ name, children }: { readonly name: string; readonly children?: ReactNode }) {
+/** 편집 패널 "편집 · <섹션 이름>"(6.1). h2 `tabIndex=-1` = 게이트 문제 줄 이동 대상(6.4). `head` = 머리 순서·삭제 부품(5.2·5.4) */
+export function EditPanel({ name, head, children }: { readonly name: string; readonly head?: ReactNode; readonly children?: ReactNode }) {
   return (
     <section aria-labelledby="studio-edit-heading" className="flex flex-col gap-3">
       <h2 id="studio-edit-heading" tabIndex={-1} className={H2}>
         편집 · {name}
       </h2>
+      {head}
       {children}
     </section>
   );

@@ -73,7 +73,7 @@ describe("위로·아래로 — <1024 '섹션' 탭·'편집' 탭 같은 부품 (
     const sectionsPanel = within(screen.getByRole("tabpanel", { name: "섹션" }));
     const editTab = within(document.getElementById("studio-panel-edit")!);
     expect(sectionsPanel.getByRole("button", { name: "위로" })).toBeInTheDocument();
-    expect(editTab.getByRole("button", { name: "위로" })).toBeInTheDocument();
+    expect(editTab.getByRole("button", { name: "위로", hidden: true })).toBeInTheDocument();
     const up = sectionsPanel.getByRole("button", { name: "위로" });
     up.focus();
     await act(async () => void fireEvent.click(up));

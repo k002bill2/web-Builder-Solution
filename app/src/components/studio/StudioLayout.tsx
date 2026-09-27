@@ -3,13 +3,19 @@ import type { ConflictChoice, Project, ProjectRepository } from "../../data/proj
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
+import type { MoveDirection } from "../../engine/ops/rules";
+import { movedNotice } from "../../features/studio/opNotice";
+import { canMove } from "../../features/studio/opPermissions";
+import { useFocusRequest } from "../../features/studio/useFocusRequest";
+import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
 import { useDocSave } from "../../features/studio/useDocSave";
 import { ConflictCallout } from "./ConflictCallout";
 import { EditFields } from "./EditFields";
 import { SaveStatus } from "./SaveStatus";
-import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectionName } from "../../features/studio/selection";
+import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName } from "../../features/studio/selection";
 import { PreviewWidth } from "./PreviewWidth";
+import { SectionOpControls } from "./SectionOpControls";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
@@ -49,6 +55,9 @@ export function StudioLayout({
   const [tab, setTab] = useState<StudioTab>("sections");
   const [view, setView] = useState<PreviewView>("desktop");
   const selectedId = resolveSelection(doc, selected);
+  const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
+  const root = useRef<HTMLDivElement>(null);
+  const requestFocus = useFocusRequest(root);
 
   // 영역을 먼저 비운 채 그린 뒤 글자를 넣는다 — 스크린 리더가 status 변화로 읽는다
   useEffect(() => {
@@ -84,13 +93,34 @@ export function StudioLayout({
     [retry],
   );
 
+  const { run } = ops;
+  const move = useCallback(
+    async (instanceId: string, direction: MoveDirection, button: HTMLElement) => {
+      const outcome = await run({ kind: "move", instanceId, direction }, "이동");
+      if (!outcome.ok) return setNotice(outcome.reason);
+      const moved = outcome.result.doc.sections[outcome.result.index]!;
+      setNotice(movedNotice(moved.type, sectionName(moved), outcome.result.index));
+      requestFocus({ element: button });
+    },
+    [run, requestFocus],
+  );
+  const current = selectedSection(doc, selectedId);
+  // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
+  const opControls = current && (
+    <SectionOpControls
+      up={canMove(doc, current.instanceId, "up")}
+      down={canMove(doc, current.instanceId, "down")}
+      onMove={(direction, button) => void move(current.instanceId, direction, button)}
+    />
+  );
+
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
   const noticeRegion = <NoticeRegion text={notice} />;
-  const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} />;
+  const nav = <SectionNav doc={doc} selectedId={selectedId} onSelect={setSelected} selectedExtra={mode === "tabs" ? opControls : undefined} />;
   const edit = (
-    <EditPanel name={selectionName(doc, selectedId)}>
+    <EditPanel name={selectionName(doc, selectedId)} head={opControls}>
       <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
     </EditPanel>
   );
@@ -99,7 +129,7 @@ export function StudioLayout({
 
   if (mode === "tabs") {
     return (
-      <div onClickCapture={flushBeforeLeave} className="flex flex-col">
+      <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} />
         <StudioTabs
           selected={tab}
@@ -127,7 +157,7 @@ export function StudioLayout({
 
   if (mode === "split") {
     return (
-      <div onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+      <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading}>
           {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">
@@ -167,7 +197,7 @@ export function StudioLayout({
   }
 
   return (
-    <div onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+    <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}

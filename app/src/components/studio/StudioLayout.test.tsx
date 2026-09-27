@@ -1,6 +1,9 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ProfileRepositoryProvider } from "../../data/ProfileRepositoryContext";
+import type { GenerationRepository } from "../../data/generationRepository";
+import type { ProfileRepository } from "../../data/profileRepository";
 import { ProjectRepositoryError, type Project, type ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
@@ -26,11 +29,17 @@ function fakeRepository(saveDoc: ProjectRepository["saveDoc"] = async (_id, revi
   return { repository, save };
 }
 
+/** 편집 틀은 문서 목적(프로필 버전 조정, a3 K1)을 프로필 저장소에서 읽는다 — 프로필 없음 = 목적 "none" */
+const NO_PROFILE = { getProfile: async () => undefined } as unknown as ProfileRepository;
+const UNUSED = () => Promise.reject(new Error("이 테스트는 쓰지 않는다"));
+
 function draw(repository: ProjectRepository, doc: PageDoc = sampleDoc()) {
   return render(
-    <MemoryRouter>
-      <StudioLayout project={PROJECT} doc={doc} repository={repository} entryNotice={undefined} focusHeading={false} />
-    </MemoryRouter>,
+    <ProfileRepositoryProvider repository={NO_PROFILE} generations={UNUSED as () => Promise<GenerationRepository>} projects={UNUSED as () => Promise<ProjectRepository>}>
+      <MemoryRouter>
+        <StudioLayout project={PROJECT} doc={doc} repository={repository} entryNotice={undefined} focusHeading={false} />
+      </MemoryRouter>
+    </ProfileRepositoryProvider>,
   );
 }
 

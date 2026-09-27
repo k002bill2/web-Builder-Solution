@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
+import { brand } from "../brand/brand.config";
 import { Button } from "../components/ds/Button";
 import { Callout } from "../components/ds/Callout";
 import { Tag } from "../components/ds/Tag";
@@ -51,6 +52,10 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const location = useLocation();
   const navigate = useNavigate();
   const dropped = droppedCountOf(location.state);
+  // 탭 제목(WCAG 2.4.2) — 비교 보드와 같은 패턴. 버전 전환(?v=)은 같은 화면이라 그대로 (PROFILE-A11Y-FIX D2)
+  useEffect(() => {
+    document.title = `디자인 프로필 · ${brand.name}`;
+  }, []);
   useEffect(() => {
     if (dropped === 0) return;
     announce(`조정 ${dropped}개를 지웠습니다`);
@@ -198,6 +203,7 @@ function ProfileView({
             onSave={save}
             resetKey={resetKey}
             onPending={setPending}
+            announce={announce}
             values={<ProfileValues rows={engine.valueRows(viewed, titleOf)} profile={viewed.base} sources={sources} />}
             versions={
               <section aria-labelledby="profile-versions" className="flex flex-col gap-3">

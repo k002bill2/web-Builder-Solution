@@ -6,6 +6,7 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
+import { brand } from "../brand/brand.config";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
 import { createMemoryProfileRepository, type ProfileCall } from "../data/memoryProfileRepository";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
@@ -441,5 +442,43 @@ describe("Q2 이름표 (M-06) · Q5 제목·배치 · P-AC-33", () => {
     const main = document.querySelector("main")!;
     expect(main.querySelectorAll("[disabled]")).toHaveLength(0);
     await waitFor(() => expect(screen.getByRole("heading", { level: 2, name: "전역 조정" })).toBeInTheDocument());
+  });
+});
+
+describe("PROFILE-A11Y-FIX D1·D2·D4 (QA profile-visual-align)", () => {
+  const WRITTEN = "보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다";
+
+  it("D1: '보정값 쓰기' Enter → '프로필 알림'에 쓴 결과, 포커스는 같은 버튼, 확인 단계 없음", async () => {
+    await openProfile();
+    const palette = screen.getByRole("region", { name: "역할 팔레트와 대비" });
+    const write = within(palette).getByRole("button", { name: "보정값 쓰기 (보조 글자 muted)" });
+    write.focus();
+    await userEvent.keyboard("{Enter}");
+    expect(screen.getByRole("status", { name: "프로필 알림" })).toHaveTextContent(WRITTEN);
+    expect(write).toHaveFocus();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  it("D4: 쓴 뒤(저장 전) 배너 = 쓴 상태 문구, 미달 문구 없음 · 조정 취소하면 미달 문구로 돌아간다", async () => {
+    await openProfile();
+    const palette = screen.getByRole("region", { name: "역할 팔레트와 대비" });
+    const proposals = within(palette).getByRole("list", { name: "보정 제안" });
+    const before = proposals.textContent;
+    expect(before).toMatch(/보조 글자\(muted\) 대비가 .*낮습니다/);
+    await userEvent.click(within(palette).getByRole("button", { name: "보정값 쓰기 (보조 글자 muted)" }));
+    expect(proposals).toHaveTextContent(WRITTEN);
+    expect(proposals).not.toHaveTextContent(/낮습니다/);
+    await userEvent.click(screen.getByRole("button", { name: "조정 취소" }));
+    expect(within(palette).getByRole("list", { name: "보정 제안" }).textContent).toBe(before);
+  });
+
+  it("D2: /profile/:id 진입·버전 전환 → document.title '디자인 프로필 · 브랜드'", async () => {
+    document.title = "비교 보드 · 이전 화면";
+    await openProfile(undefined, { before: (s) => s.wide.saveAdjustments("profile-1", 1, { density: "compact" }) });
+    expect(document.title).toBe(`디자인 프로필 · ${brand.name}`);
+    await userEvent.click(screen.getByRole("button", { name: "보기 (v1)" }));
+    await screen.findByText(/v1을 보고 있습니다/);
+    expect(document.title).toBe(`디자인 프로필 · ${brand.name}`);
   });
 });

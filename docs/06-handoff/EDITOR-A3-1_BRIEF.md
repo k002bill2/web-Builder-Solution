@@ -1,4 +1,4 @@
-# EDITOR-A3-1 — 섹션 구조 연산 (하이브리드 기능 단위) · 초안
+# EDITOR-A3-1 — 섹션 구조 연산 (하이브리드 기능 단위)
 
 - 책임 Developer / 실행 Orca + Claude Code · 보고 Jarvis · 포트 4337 · `--max-turns` 110 · **85턴부터 REPORT 우선**
 - 서브에이전트 분할: 불필요(금지)
@@ -6,7 +6,7 @@
 
 ## 범위 (SPEC 5.2~5.5 · E-S11~S16 · E-S21 · 5.14 일부)
 - **K0** 기준 build · PROGRESS 수신 기록.
-- **K1 목적 파생(Q-19 A)**: `features/studio/docPurpose.ts` 하나 — 문서 `profileVersion` 버전의 `adjustments.purpose ?? "none"`. 연산(`canRemove`·`swapVariant`)과 게이트가 같은 함수를 쓴다. 엔진 계약 변경 없음.
+- **K1 목적 파생(SPEC r4.6 A3-Q2 A = Q-19 A)**: `features/studio/docPurpose.ts` 하나 — 문서 `profileVersion` 버전의 `adjustments.purpose ?? "none"`. 연산(`canRemove`·`swapVariant`)과 게이트가 같은 함수를 쓴다. 엔진 계약 변경 없음.
 - **K2 연산 어댑터 + 실행 취소 스택**: `features/studio/docOps.ts`(엔진 동적 import, instanceId 카운터 주입 — `addSection` 5인자 `{instanceId, motionPreset}`, 연산 뒤 `normalizeDoc`), `undoStack.ts`(최대 50, 편집기 언마운트 때 비움 — 5.14). 알림 줄 "되돌리기" = 바로 앞 연산 1개(Q7). **일반 실행 취소 UI(E-20)는 a4.**
 - **K3 위로·아래로(E-AC-17)**: 같은 부품(≥1024 편집 패널 머리 · <1024 탭) · 5.2 경계 표 4행 `aria-disabled` + 이유 문장 · 알림 "…N번째로 옮겼습니다" · 포커스 그대로.
 - **K4 삭제·되돌리기(E-AC-19)**: 즉시 삭제 · 알림 줄(`role=status` 글자 + 형제 버튼) · 되돌리기 → 같은 instanceId·값·위치 + 포커스 · 다음 연산 뒤 알림 줄 없음 · 5.4 표(목적 예약·문의 포함) · "프로필에서 목적 바꾸기" 링크.
@@ -25,3 +25,6 @@
 - 마지막에 전체 vitest 3회(`logs/final-full-x3.txt`, load 기록). Codex `review --scope branch --base <시작 커밋>` 1회(턴 남을 때만).
 - 서브에이전트 금지(429 이력). 로컬 커밋만. push·병합·삭제 금지. 서버는 127.0.0.1·지정 포트·자기 PID만 종료.
 - REPORT(`dev/active/<레인>/REPORT.md`): 커밋 표 · AC 판정(E-AC 번호별 PASS/PARTIAL/BLOCKED + 근거 테스트) · 번들 표(체크포인트별) · SPEC 차이(ADR-003) · 남은 위험.
+
+## 확정
+- SPEC r4.6(영환님 "★A 전부", 2026-09-27). 시작 커밋 = 이 브리프가 들어 있는 main.

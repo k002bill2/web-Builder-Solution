@@ -1,0 +1,40 @@
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardPage.test.tsx (36 tests | 1 failed) 3954ms
+   ❯ 선택 (P-1·P-2·A-4) (6)
+     × AC-07: A 열 '전부 선택'이면 선택 가능한 10행이 모두 A이고 확정 결과 section_plan이 A의 sectionPlan과 같다 158ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CompareBoardPage.test.tsx > 선택 (P-1·P-2·A-4) > AC-07: A 열 '전부 선택'이면 선택 가능한 10행이 모두 A이고 확정 결과 section_plan이 A의 sectionPlan과 같다
+TypeError: Cannot read properties of undefined (reading 'base')
+ ❯ src/pages/CompareBoardPage.test.tsx:126:16
+    124|     await userEvent.click(confirmButton());
+    125|     const [v1] = await repo.getProfileVersions("profile-1");
+    126|     expect(v1!.base.section_plan).toEqual(referenceComparisonAttribute…
+       |                ^
+    127|   });
+    128|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 35 passed (36)
+   Start at  14:09:42
+   Duration  5.27s (tests 76%, environment 12%, transform 7%, import 2%, setup 2%)
+

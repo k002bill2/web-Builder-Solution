@@ -1,0 +1,8 @@
+== src/pages/CompareBoardLineage.test.tsx
+      Tests  4 passed (4)
+== src/pages/CompareBoardSummaryAdjust.test.tsx
+      Tests  3 passed (3)
+== src/pages/BoardInputLoad.test.tsx
+      Tests  4 passed (4)
+== src/pages/WriteBodyLoad.test.tsx
+      Tests  4 passed (4)

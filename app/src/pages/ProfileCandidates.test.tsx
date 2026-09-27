@@ -72,7 +72,8 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
     const busy = await within(region).findByRole("button", { name: "만드는 중…" });
     expect(busy).toHaveAttribute("aria-busy", "true");
-    expect(within(region).getAllByText("A안 만드는 중 · 0/3 완료")).toHaveLength(1);
+    // 버튼 busy는 요청 전, 자리 3칸은 계산 청크 첫 로드 뒤 — 부하에서 간격이 벌어지므로 기다린다
+    expect(await within(region).findAllByText("A안 만드는 중 · 0/3 완료")).toHaveLength(1);
     expect(within(within(region).getByRole("list", { name: "3안" })).getAllByRole("listitem", { name: undefined }).length).toBeGreaterThanOrEqual(3);
     expect(status()).toHaveTextContent("3안을 만드는 중입니다");
     const seen: string[] = [status().textContent ?? ""];

@@ -269,9 +269,8 @@ export function useCompareBoard() {
         : await repository.confirmProfile(seen.revision, 0);
       engineRef.current!.reportConfirmed(result.version, confirmed !== undefined);
       // 지운 조정 수는 저장소 결과로 — 패널을 펼치지 않았어도 프로필 화면이 "조정 M개를 지웠습니다"를 알린다(P-S25 r6).
-      // 새 프로젝트(첫 확정 포함)면 프로필 화면이 "새 프로젝트 '…'을 만들었습니다"를 알린다(J-S11 · r4.3)
-      const created = toNew || confirmed === undefined;
-      const state = { ...(result.droppedCount && { droppedCount: result.droppedCount }), ...(created && { projectCreated: true }) };
+      // 새 프로젝트면 프로필 화면이 "새 프로젝트 '…'을 만들었습니다"를 알린다(J-S11)
+      const state = { ...(result.droppedCount && { droppedCount: result.droppedCount }), ...(toNew && { projectCreated: true }) };
       navigate(`/profile/${result.profileId}`, Object.keys(state).length > 0 ? { state } : undefined);
     } catch (error) {
       engineRef.current!.reportConfirmFailed(error);

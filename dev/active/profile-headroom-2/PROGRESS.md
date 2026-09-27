@@ -12,7 +12,7 @@
 - [x] P2 기존 테스트 기다림 조정 **0건**(src/pages + features/profile 27파일 288/288 그대로 통과) · 새 `app/src/pages/ProfileCandidateResults.test.tsx` 2건
   - RED(`logs/p2-red.txt`, CandidatesSection을 58a1d64로 되돌림): 2/2 실패 — 미리 받기 호출 0 · role=alert 없음
   - GREEN(`logs/p2-green.txt`): 3회 연속 2/2 통과
-- [ ] P3 전체 vitest 3회(`logs/full-x3.txt`) · final build · REPORT
+- [x] P3 전체 vitest 3회(`logs/full-x3.txt`) 118/118·1314/1314 ×3 실패 0 · final build exit 0 `/profile` 123.57 · lint 0 · REPORT
 
 ## 메모
 - `grep CandidateCard`: CandidateCard export(heroText·scaleText)는 CandidateTable·CandidateCard.test만 사용. studio·profileEngine 외부 사용 0 → 지연 로드 가능.

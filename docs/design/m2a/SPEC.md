@@ -120,11 +120,12 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 - footer 하단 링크 조각: 대상 슬롯이 없으므로 **VS-1은 전부 글자 항목**(약관 페이지가 아직 없다). [MQ-2]
 
 ### 0.11 킷 상호작용 (B-1-9)
-- 킷 파일에 `useState`·`useReducer`·`useEffect`·이벤트 핸들러 prop(`onClick` 등) 0. 상호작용은 **네이티브 HTML만**: `details/summary`(faq) · `popover` 속성 + `popovertarget`(header 모바일 메뉴) · `fieldset disabled`(contact). 공용 바닐라 스크립트도 VS-1에는 필요 없다(0바이트).
+- 킷 파일에 `useState`·`useReducer`·`useEffect`·이벤트 핸들러 prop(`onClick` 등) 0. 상호작용은 **네이티브 HTML만**: `details/summary`(faq) · `popover` 속성 + `popovertarget`(header 모바일 메뉴) · `fieldset disabled`(contact). 공용 바닐라 스크립트는 VS-1에서 **조작 1개**만 둔다 — header 메뉴 시트 안 앵커를 누르면 시트를 닫는다(K1-1 6). 스크립트가 없어도 기능은 유지된다.
 - 정적 HTML에서 같은 동작이 나야 한다(FR-PUB-03): 위 셋은 스크립트 없이 동작한다.
 - 캡처·내보내기 때 상태: `details` = 닫힘(마크업에 `open` 0), `popover` = 닫힘. 캔버스에서 사용자가 연 상태는 PNG·HTML 결과를 바꾸지 않는다 — 캡처·직렬화는 렌더 문서를 **새로 그린 마크업**에서 뜬다(M2A-3 구현 조건, K-AC-06).
 
 ### 0.12 섹션 루트 공통
+- 문서 뼈대: `<body>` 바로 아래 `<header>`(banner) · `<main>`(hero·본문 섹션·폴백 섹션 전부) · `<footer>`(contentinfo) — 랜드마크가 `main`·`section` 안에 들어가지 않게.
 - 루트 요소: header → `<header>`, footer → `<footer>`, 본문·hero → `<section aria-labelledby="<제목 id>">`. 루트에 `id="s-<instanceId>"`, `data-section="<type>/<variant>"`(검사·QA용 — 편집기 UI 아님).
 - 내용 폭: 루트는 전체 폭(면 색), 안쪽 래퍼가 `content-max` + 좌우 `gutter`.
 - 헤딩 수준은 섹션 정의(`a11y.headingLevel`)를 따른다: hero `h1` · 본문 `h2` · header/footer 헤딩 없음. 카드 제목은 `h3`(섹션 정의 밖 하위 제목 — R-10 대상 아님, 건너뛰기 없음).
@@ -194,6 +195,59 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 - 편집기 캔버스: 렌더 문서 안 링크 누름의 기본 이동은 렌더 문서 다리(킷 밖)가 막고 `click{instanceId}`로 바꾼다(M2A-1 R3) — 킷은 관여하지 않는다.
 
 **7. 모션** — 없음. 시트 열림·닫힘 전환 효과 0, `scroll-behavior` 기본(즉시). 정적 상태 = 바 + 닫힌 시트.
+
+### K1-2. `hero/fullbleed-left` — 풀블리드 이미지 + 왼쪽 카피
+슬롯(L1): `title`(short 40, 필수, 권장 28) · `subtitle`(long 120, 권장 80) · `cta`(link 16, 필수, 권장 10) · `image`(이미지, 대체텍스트 120). `fullBleed: true` · 헤딩 `h1`.
+
+**1. 구조**
+```
+<section id="s-<id>" data-section="hero/fullbleed-left" aria-labelledby="h-<id>">   ← 전체 폭, 한 칸 그리드(층 2개)
+  <div 카피 래퍼>                                 ← content-max + gutter, 층 위
+    <div 카피 패널>                               ← 단색 primary 면
+      <h1 id="h-<id>">{title}</h1>
+      <p 부제>{subtitle}</p>
+      <a CTA href="#s-<첫 contact>">{cta}</a>
+    </div>
+  </div>
+  <img | div 그라디언트 aria-hidden>             ← 미디어 층(섹션 전체를 덮음), DOM은 카피 뒤
+</section>
+```
+- **글자는 늘 단색 패널 위에 있다** — 이미지·그라디언트 위에 글자를 직접 올리지 않는다. 사진 위 글자 대비는 게이트가 판정할 수 없기 때문이다(0.3). 목업(2a-05 캔버스 240~244행)은 색 면 위에 카피를 바로 올렸지만, 그 면이 이미지가 되면 판정이 불가능해진다 → 패널로 바꿈(REPORT "다르게 한 곳").
+- DOM 순서 = 카피 → 미디어(제목이 먼저 읽힌다). 미디어는 포커스 요소가 없어 좁은 폭에서 위로 올려 보여도 Tab 순서가 바뀌지 않는다.
+- 높이 단위에 `vh`·`dvh`·`svh` 0 — PNG 전체 길이 캡처 때 렌더 문서 높이를 콘텐츠 높이로 늘리면(Opus B-4) 뷰포트 단위 높이가 함께 커진다(K-AC-07). 높이는 비율(`aspect-ratio`)과 내용으로만 정한다.
+
+**2. 반응형**
+| 폭 | 배치 |
+|---|---|
+| `lg` 이상 (1280·1024) | 섹션 = 비율 16:9의 최소 높이(내용이 더 길면 늘어남). 미디어가 섹션 전체를 덮고, 카피 패널은 왼쪽 아래(목업 위계: 아래 정렬) · 폭 = 내용 폭의 절반 단계(12칸 중 6칸) · 섹션 위아래 `section-gap` 안쪽 |
+| `md`~`lg` (768) | 같은 층 배치, 패널 폭 = 12칸 중 8칸 |
+| `md` 미만 (390) | **두 단 쌓기**: 미디어 띠(비율 4:3, 전체 폭) 위 → 카피 패널(전체 폭, 가장자리까지 — 좌우 `gutter`는 패널 안쪽 여백) 아래 |
+
+**3. 토큰 대응**
+| 요소 | 면 | 글자 | 경계 | 단계 | 대비 검사 |
+|---|---|---|---|---|---|
+| 카피 패널 | `primary` | — | 없음 | 안쪽 `s5`(넓은 폭) · `s4`(좁은 폭) · radius `r0`(좁은 폭) / 0.5 버튼 radius와 같은 단계(넓은 폭) | — |
+| 제목 `h1` | `primary` | `on-primary` · 제목 굵기 · `leading-tight` | — | `display` | C-1 |
+| 부제 | `primary` | `on-primary` · 본문 굵기 | — | `lead` | C-1 |
+| CTA | `on-primary` | `primary` · 제목 굵기 | 없음 | `body` · 안쪽 `s2`×`s4` | C-1 뒤집기 |
+| 미디어(그라디언트) | `primary` → `ink` | — | — | — | 글자 없음 |
+| 포커스 링(CTA) | 간격 `primary` | — | 바깥 `on-primary` `stroke-2` | — | C-1 |
+- 섹션 톤(`base`/`alt`)은 hero 모양에 영향 없음(패널·미디어가 면을 다 덮는다).
+
+**4. 빈 슬롯 · 긴 글자**
+- `subtitle` 빈 값 → 부제 `<p>` 생략, 제목 ↔ CTA 간격 = `s4`.
+- `image` 꺼짐(`enabled: false`) → 미디어 층 생략, 섹션 면 = `primary` 단색(패널과 같은 면 — 목업 모양과 같아진다). 좁은 폭의 미디어 띠도 생략.
+- `title`·`cta` 빈 값 → 0.8 생략(게이트 R-13 차단).
+- 상한 글자: `title` 40자 = `display`에서 넓은 폭 패널 3줄 안팎 · 좁은 폭 4줄 안팎 [L3] · `subtitle` 120자 = 줄바꿈. 말줄임 금지(0.7). 패널은 내용만큼 늘고, 섹션 최소 비율보다 길어지면 섹션이 늘어난다.
+
+**5. 이미지 슬롯**
+- 사용자 로컬 이미지 → `<img alt="{alt}">`(장식이면 `alt=""`) · `object-fit: cover` · 가운데 기준 자르기 · `fetchpriority="high"`, `loading` 기본(즉시 — 첫 화면 요소).
+- 없음(플레이스홀더 출처) → 토큰 그라디언트(0.9), `aria-hidden="true"`.
+- 비율: 넓은 폭 = 섹션 비율 16:9(이미지는 섹션을 덮도록 잘림) · 좁은 폭 = 4:3 띠. 프로필 `media_ratio`는 hero에 쓰지 않는다(풀블리드는 섹션 모양이 비율을 정한다).
+
+**6. 상호작용** — CTA 앵커 링크 1개(0.10). 그 밖 없음. React 상태 0.
+
+**7. 모션** — 없음(엔진 상한 L2지만 VS-1은 M2b 전 정적). 패럴랙스·확대 효과 0.
 
 ## 2. K2 — `contact/form` 정적 내보내기 동작
 

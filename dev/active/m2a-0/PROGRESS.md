@@ -7,7 +7,7 @@
 
 ## 체크리스트
 - [x] 브리프 수신 기록
-- [ ] 근거 읽기 (REF-LLM D4·D6 · fable A-1·A-4 · opus B-1-9·B-3·D-2 · SPEC r4.8 5.7·5.13·8.3.2 · ADR-004 r2 · TRD 8절·4.4 · 데이터 계약)
+- [x] 근거 읽기 (REF-LLM D4·D6 · fable A-1·A-4 · opus B-1-9·B-3·D-2 · SPEC r4.8 5.7·5.13·8.3.2 · ADR-004 r2 · TRD 8절·4.4 · 데이터 계약)
 - [ ] K1-1 header/sticky-right-cta
 - [ ] K1-2 hero/fullbleed-left
 - [ ] K1-3 about/story
@@ -21,3 +21,6 @@
 - [ ] 대비 계산 근거 (L2)
 - [ ] Codex 적대적 검토 1회 (logs/)
 - [ ] REPORT.md
+
+## 진행 기록
+- SPEC r0: 골격 + 0절 공통 규약(킷 토큰 입력 · 색 허용 조합 = 게이트 C-1~C-5만 · 글자/간격/radius 단계 · 폭 `md`/`lg` · 넘침·빈 슬롯·이미지·링크·상호작용 공통). advisor 검토 반영(on-primary 고정 흰색 · alt 톤 = surface 조합 표 · 표식 고정색 · nav 이중 목록).

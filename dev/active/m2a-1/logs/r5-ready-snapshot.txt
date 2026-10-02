@@ -1,0 +1,239 @@
+[p1 "모던 카페 브랜드 프로젝트 편집" | space "m2a-1 r5"(10): 1 managed, 0 untracked — p1* "모던 카페 브랜드 프로젝트 편집"]
+root
+  anchor [ref=1, loc=href:/studio/project-1#main-content, url=http://127.0.0.1:4337/studio/project-1#main-content]
+    text "본문으로 건너뛰기"
+  container [ref=2]
+    container
+      anchor "프로젝트로 돌아가기" [ref=3, loc=css:a[aria-label="프로젝트로 돌아가기"], url=http://127.0.0.1:4337/projects]
+      heading [ref=4]
+        text "모던 카페 브랜드 프로젝트"
+      text "B안 · 프로필 v1"
+      paragraph
+      alert
+      group [ref=5]
+        text "미리보기 폭"
+        container
+          container
+            radio [ref=6]
+            text "데스크톱"
+          container
+            radio [ref=7]
+            text "태블릿"
+          container
+            radio [ref=8]
+            text "모바일"
+    container
+      container
+        status "편집 알림"
+          container [ref=9]
+            text "편집 문서를 만들며 바뀐 점 4개"
+          paragraph
+            text "구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 2열 → 카드 2열 · Testimonials 캐러셀 → 후기 2개 · ..."
+        container "섹션"
+          heading
+            text "섹션"
+          container
+            button [ref=10]
+              text "페이지 정보"
+              text "검색 제목 · 설명"
+            ordered_list
+              list_item
+                button [ref=11]
+                  text "Header"
+                  text "고정 헤더 · 우측 CTA"
+              list_item
+                button [ref=12]
+                  text "Hero"
+                  text "텍스트 중심 카피"
+              list_item
+                button [ref=13]
+                  text "About"
+                  text "이야기 + 이미지"
+              list_item
+                button [ref=14]
+                  text "Services"
+                  text "카드 2열"
+              list_item
+                button [ref=15]
+                  text "Portfolio"
+                  text "이미지 벽돌형"
+              list_item
+                button [ref=16]
+                  text "Testimonials"
+                  text "후기 2개"
+              list_item
+                button [ref=17]
+                  text "FAQ"
+                  text "펼침 목록"
+              list_item
+                button [ref=18]
+                  text "Contact"
+                  text "문의 폼"
+              list_item
+                button [ref=19]
+                  text "Footer"
+                  text "확장형 사업자정보"
+          button [ref=20]
+            text "섹션 추가"
+        container "테마"
+          heading
+            text "테마"
+          text "프로필 v1"
+          anchor [ref=21, loc=href:/profile/profile-1, url=http://127.0.0.1:4337/profile/profile-1]
+            text "프로필 보기"
+      container "구조 미리보기" [ref=22]
+        heading
+          text "구조 미리보기"
+        paragraph
+          text "구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다."
+        container
+          iframe [ref=23]
+            root
+              container
+                text "구조 미리보기"
+                container
+                  paragraph
+                    text "우리 브랜드"
+                  paragraph
+                    text "소개 · 서비스 · 사례 · 문의"
+                  paragraph
+                    text "상담 신청"
+              container
+                text "구조 미리보기"
+                container
+                  paragraph
+                    text "일상에 꼭 맞는 서비스를 만듭니다"
+                  paragraph
+                    text "처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다."
+                  paragraph
+                    text "자세히 보기"
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "우리를 소개합니다"
+                paragraph
+                  text "작은 팀으로 시작해 한 분 한 분의 이야기를 듣는 일을 가장 먼저 해 왔습니다. 필요한 것만 정확하게, 약속한 날짜에 전하는 것이 우리가 지키는 기준�..."
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "제공하는 서비스"
+                paragraph
+                  text "필요에 맞춰 고를 수 있도록 서비스를 세 가지로 나눴습니다."
+                paragraph
+                  text "맞춤 상담"
+                paragraph
+                  text "현재 상황을 듣고 알맞은 방법을 함께 정합니다."
+                paragraph
+                  text "진행 관리"
+                paragraph
+                  text "일정과 진행 상황을 한눈에 볼 수 있게 정리해 드립니다."
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "최근 작업"
+                paragraph
+                  text "최근에 함께한 작업 가운데 몇 가지를 골라 소개합니다."
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "이용하신 분들의 이야기"
+                paragraph
+                  text "처음부터 끝까지 설명이 친절해서 믿고 맡길 수 있었습니다."
+                paragraph
+                  text "김○○ 님"
+                paragraph
+                  text "일정을 꼼꼼히 챙겨 주셔서 걱정 없이 기다렸습니다."
+                paragraph
+                  text "이○○ 님"
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "궁금한 점을 모았습니다"
+                paragraph
+                  text "상담은 어떻게 신청하나요?"
+                paragraph
+                  text "아래 문의 양식에 연락처를 남겨 주시면 영업일 기준 하루 안에 연락드립니다."
+                paragraph
+                  text "진행 기간은 얼마나 걸리나요?"
+                paragraph
+                  text "범위에 따라 다르며, 상담 때 예상 일정을 먼저 안내해 드립니다."
+                paragraph
+                  text "중간에 내용을 바꿀 수 있나요?"
+                paragraph
+                  text "진행 단계마다 확인 절차가 있어 필요한 부분을 조정할 수 있습니다."
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "문의"
+                paragraph
+                  text "궁금한 점을 남겨 주시면 확인 후 빠르게 답변드립니다."
+                paragraph
+                  text "문의하기"
+                paragraph
+                  text "문의 답변을 위해 이름과 연락처를 수집·이용하는 데 동의합니다."
+              container
+                text "구조 미리보기"
+                paragraph
+                  text "상호 우리 브랜드 · 대표 홍길동 · 사업자등록번호 000-00-00000"
+                paragraph
+                  text "이용약관 · 개인정보처리방침 · 고객센터"
+                paragraph
+                  text "© 우리 브랜드. All rights reserved."
+          text "Hero"
+          text "·"
+          text "텍스트 중심 카피"
+      container
+        container "편집 · Hero"
+          heading [ref=24]
+            text "편집 ·"
+            text "Hero"
+          container
+            container
+              button [ref=25]
+                text "위로"
+              button [ref=26]
+                text "아래로"
+              button [ref=27]
+                text "삭제"
+            paragraph
+              text "Hero는 첫 본문 자리에 고정됩니다 (R-02)"
+            paragraph
+              text "Hero는 첫 본문으로 꼭 있어야 합니다 (R-02)"
+          container
+            paragraph
+              text "변형:"
+              text "텍스트 중심 카피"
+            container [ref=28]
+              text "변형 바꾸기"
+          container
+            container
+              container
+                text "제목"
+                text "(필수)"
+              textbox [ref=29]
+                text "일상에 꼭 맞는 서비스를 만듭니다"
+              paragraph
+                text "18 / 28자"
+            container
+              text "부제"
+              textbox [ref=30]
+                text "처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다."
+              paragraph
+                text "45 / 80자"
+            container
+              container
+                text "버튼 문구"
+                text "(필수)"
+              textbox [ref=31]
+                text "자세히 보기"
+              paragraph
+                text "6 / 10자"
+        container "품질 게이트"
+          heading [ref=32]
+            text "품질 게이트"
+          paragraph
+            text "검사 항목은 준비 중입니다."
+          heading
+            text "내보내기"
+          paragraph
+            text "코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다."

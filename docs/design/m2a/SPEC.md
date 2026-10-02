@@ -43,7 +43,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 - `bg` 글자 on `primary` 면 — 지금 와이어프레임 `ON_PRIMARY = "bg-(--canvas-primary) text-(--canvas-bg)"`(`canvasLayouts.ts`)는 C-1 밖이다. 킷은 따르지 않는다(REPORT "다르게 한 곳").
 - `muted` 글자 on `surface`·`primary`·`ink` 면 — `alt` 섹션·카드·footer의 보조 글자는 `ink`(또는 footer는 `bg`)로 두고 위계는 **크기·굵기 단계**로 만든다.
 - `primary` 글자 on `bg`·`surface` 면 — 링크·강조 글자 색으로 `primary`를 쓰지 않는다(검사 밖). 링크는 글자색 `ink` + 밑줄(색 하나로 알리지 않기).
-- 불투명도 글자(`opacity`·반투명 색) 0 (2a-05 7.2 · C-12 이어받음). 목업 footer `rgba(255,255,255,.6)`는 쓰지 않는다.
+- 불투명도 글자(`opacity`·반투명 색) 0 (2a-05 7.2 · C-12 이어받음). 목업 footer의 반투명 흰 글자는 쓰지 않는다.
 
 **섹션 면 (톤)** — `SectionInstance.tone`은 R-05로 엔진이 정한다(`pageDoc.ts:31`). `base` = `bg` 면, `alt` = `surface` 면(지금 캔버스와 같음, `StructureCanvas.tsx:79` L1). 본문 4변형(about·services·faq·contact)은 **두 톤 모두**의 조합 표를 가진다(각 절 3).
 
@@ -476,7 +476,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | 하단 링크 항목 | `ink` | `bg` | `small` · 제목 굵기 | C-2 뒤집기 |
 | 저작권 | `ink` | `bg` | `small` | C-2 뒤집기 |
 | 구분선 | — | — | `bg` `stroke-1` | (장식) |
-- 위계는 굵기·간격으로만 만든다. 목업의 반투명 흰 글자(`rgba(255,255,255,.6)`)와 `muted` 글자는 쓰지 않는다(0.3 — `muted`/`ink`는 검사 밖).
+- 위계는 굵기·간격으로만 만든다. 목업의 반투명 흰 글자와 `muted` 글자는 쓰지 않는다(0.3 — `muted`/`ink`는 검사 밖).
 - 링크가 생기면(MQ-2) 글자 `bg` + 밑줄, 포커스 링 = 간격 `ink` · 바깥 `bg` `stroke-2`.
 
 **4. 빈 슬롯 · 긴 글자**

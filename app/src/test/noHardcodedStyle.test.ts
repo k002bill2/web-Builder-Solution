@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 const SRC = fileURLToPath(new URL("../", import.meta.url));
 /** 검사 대상: 화면·컴포넌트 디렉터리 전체(테스트 포함). fixtures(데이터)는 대상 밖. */
-const SCANNED_DIRS = ["components", "pages"].map((d) => join(SRC, d));
+const SCANNED_DIRS = ["components", "pages", "render"].map((d) => join(SRC, d));
 /**
  * src/styles/의 컴포넌트용 CSS(예: versionDiff.css)도 검사한다 (DS-2A-04 N-Q4 A). 새 CSS 파일은 자동으로 대상이 된다.
  * 명시 제외 — 값의 정본이거나 전역 기반이라 원래 값을 담는 파일(src/styles 기준 경로, 끝이 `/`면 폴더 전체):
@@ -49,7 +49,7 @@ describe("스타일 하드코딩 금지", () => {
     expect(componentStyles.some((f) => relative(STYLES, f).startsWith("tokens/") || relative(STYLES, f) === "theme.css")).toBe(false);
   });
 
-  it("src/components·src/pages·src/styles 컴포넌트 CSS에 hex·px 하드코딩이 0건이다", () => {
+  it("src/components·src/pages·src/render·src/styles 컴포넌트 CSS에 hex·px 하드코딩이 0건이다", () => {
     const hits = scanned.flatMap((file) =>
       readFileSync(file, "utf8")
         .split("\n")

@@ -1,6 +1,6 @@
 // 번들 예산 검사 — 판정은 bundleBudget.mjs(부작용 없음, bundleBudget.test.mjs), 이 파일은 dist를 읽어 넘기고 출력·종료 코드만 맡는다.
 // ADR-004: Design Studio 앱은 라우트별 첫 화면 JS 합계 gzip ≤ 100KB, 2026-09-26 개정 1: 진입 직후 자동 로드 포함 합계 ≤ 125KB도 실패 조건.
-// `vite build`가 만든 dist/.vite/manifest.json을 읽는다. 엔트리는 이름으로 고정한다: 앱 = index.html · 렌더 문서 = render.html, 그 밖 엔트리 = 실패(개정 2 결정 5).
+// `vite build`가 만든 dist/.vite/manifest.json + `vite build --mode render`가 만든 dist/.vite/render-manifest.json을 합쳐 읽는다. 엔트리는 이름으로 고정한다: 앱 = index.html · 렌더 문서 = render.html, 그 밖 엔트리 = 실패(개정 2 결정 5).
 //  - 공통 JS: index.html 엔트리 청크 + 그 정적 import 전부(= <script type=module> + <link rel=modulepreload>). 참고 출력.
 //  - 라우트별 첫 화면 합계: 공통 JS + 해당 페이지 lazy 청크와 그 정적 import. **예산 판정 대상** (≤ 100KB).
 //  - 라우트별 진입 직후 자동 로드 포함 합계: 첫 화면 합계 + 사용자 조작 없이 바로 받는 dynamic import. **예산 판정 대상** (≤ 125KB).
@@ -9,7 +9,7 @@
 //    render.html이 manifest에 없으면 실패. 실제 내보낸 사이트(정적 HTML·zip)의 예산은 내보내기 단계에서 따로 판정한다(결정 4 — 이 스크립트 밖).
 // gzip 크기는 Node zlib 기본 레벨, KB = 1000 bytes (Vite 빌드 출력 표기와 같은 단위).
 // Vite 8 빌드 출력의 gzip 값은 네이티브 리포터라 이 값보다 약 1% 크게 나온다(예: 86.58 vs 87.47). 둘 다 예산 안에 두도록 여유를 둔다.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
@@ -98,7 +98,9 @@ const SCENARIOS = [
   },
 ];
 
-const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
+// 앱 manifest + 렌더 문서 manifest(`vite build --mode render`) — 합친 뒤 엔트리 이름으로 판정한다. 렌더 manifest가 없으면 render.html 없음 = 실패
+const readManifest = (name) => (existsSync(join(DIST, name)) ? JSON.parse(readFileSync(join(DIST, name), "utf8")) : {});
+const manifest = { ...readManifest(".vite/manifest.json"), ...readManifest(".vite/render-manifest.json") };
 const sizeOf = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
 
 const { lines, failures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO });

@@ -1,0 +1,13 @@
+/* 렌더 문서 CSS (ADR-004 개정 2 — CSS ≤ 30KB 별도 판정). 유틸리티는 src/render 소스만 스캔한다(앱 전체 스캔 금지) */
+@import "tailwindcss" source(none);
+@source "./";
+
+@import "../styles/tokens/fonts.css" layer(base);
+@import "../styles/tokens/brand.css" layer(base);
+@import "../styles/tokens/colors.css" layer(base);
+@import "../styles/tokens/typography.css" layer(base);
+@import "../styles/tokens/spacing.css" layer(base);
+@import "../styles/tokens/shape.css" layer(base);
+@import "../styles/tokens/base.css" layer(base);
+
+@import "../styles/theme.css";

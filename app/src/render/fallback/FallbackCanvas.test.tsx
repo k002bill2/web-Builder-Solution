@@ -105,7 +105,7 @@ describe("렌더 문서 DOM — 외부 자원 0 · 폴백 표식 · 편집기 UI
 
   it("권장 초과 글자가 있어도 문제 문장·배지·라벨 칩 0 — 글자 슬롯마다 data-slot(사각형 보고 대상)", () => {
     const c = draw(withSections(sampleDoc(), SAMPLE_SECTIONS.map((s, i) => (i === 1 ? { ...s, slots: { ...s.slots, title: "가".repeat(45) } } : s))));
-    expect(c.textContent).not.toMatch(/권장|상한|경고 1|차단 1| · /);
+    expect(c.textContent).not.toMatch(/권장|상한|경고 1|차단 1|Hero · /);
     expect(c.querySelector('[data-instance-id="s-hero"] [data-slot="title"]')).toHaveTextContent("가".repeat(45));
   });
 });

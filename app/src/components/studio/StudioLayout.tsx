@@ -188,11 +188,14 @@ export function StudioLayout({
   const pendingIssue = useRef<string>(undefined);
   const focusIssue = useCallback(
     (instanceId: string, issueId: string) => {
+      // 이미 보이는 필드(같은 섹션 · 편집 패널 보임)면 바로 — 선택·탭이 그대로면 다시 그리지 않아 대기 포커스가 돌지 않는다(R5 회귀)
+      const field = root.current?.querySelector<HTMLElement>(`[aria-describedby~="${CSS.escape(issueId)}"]`);
+      if (field && (mode !== "tabs" || tab === "edit")) return field.focus();
       setSelected(instanceId);
       if (mode === "tabs") setTab("edit");
       pendingIssue.current = issueId;
     },
-    [mode],
+    [mode, tab],
   );
   useEffect(() => {
     const id = pendingIssue.current;

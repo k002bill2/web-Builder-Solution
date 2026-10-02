@@ -82,6 +82,15 @@ describe("편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6)", () => {
     expect(within(canvas()).getByText("경고 1")).toBeInTheDocument();
   });
 
+  it("이미 선택한 섹션의 배지를 눌러도 문제 필드로 포커스(R5 브라우저 확인에서 찾은 회귀 — 선택이 그대로면 다시 그리지 않음)", () => {
+    draw(fakeRepository().repository);
+    const title = within(editRegion()).getByRole("textbox", { name: /^제목/ });
+    act(() => void fireEvent.change(title, { target: { value: "가".repeat(30) } }));
+    act(() => void screen.getByRole("banner").querySelector("h1")!.focus());
+    act(() => void fireEvent.click(within(canvas()).getByText("경고 1")));
+    expect(document.activeElement).toBe(title);
+  });
+
   it("캔버스 배지(부모 오버레이)를 누르면 그 섹션이 선택되고 문제 필드로 포커스(5.7 · E-AC-49)", () => {
     const doc = sampleDoc();
     draw(fakeRepository().repository, { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-about" ? { ...s, slots: { ...s.slots, heading: "가".repeat(30) } } : s)) });

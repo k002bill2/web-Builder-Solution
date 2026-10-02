@@ -204,7 +204,7 @@ export function StructureCanvas({
       <div ref={area} className="min-w-0">
         <div
           style={{ width: frameRem === undefined ? undefined : `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
-          className="relative mx-auto max-w-none overflow-hidden rounded-md border border-line-normal bg-background-normal"
+          className="relative mx-auto max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"
         >
           <iframe
             ref={frame}

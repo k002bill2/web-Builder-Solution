@@ -19,8 +19,8 @@
 - [x] K3 폴백 표식·차단 문구·PNG 버튼·캔버스 캡션
 - [x] K4 K-AC·시각 QA 기준
 - [x] 대비 계산 근거 (L2)
-- [ ] Codex 적대적 검토 1회 (logs/)
-- [ ] REPORT.md
+- [x] Codex 적대적 검토 1회 (logs/)
+- [x] REPORT.md
 
 ## 진행 기록
 - SPEC r0: 골격 + 0절 공통 규약(킷 토큰 입력 · 색 허용 조합 = 게이트 C-1~C-5만 · 글자/간격/radius 단계 · 폭 `md`/`lg` · 넘침·빈 슬롯·이미지·링크·상호작용 공통). advisor 검토 반영(on-primary 고정 흰색 · alt 톤 = surface 조합 표 · 표식 고정색 · nav 이중 목록).
@@ -33,3 +33,5 @@
 - K1-7 footer/biz-extended: ink 면 + bg 글자(C-2 뒤집기) · address · 링크 조각 = 글자 항목 · 반투명 글자 0.
 - K2: A안(비활성 폼 + 안내) 권장 · 방문자용/주인용 문구 분리. K3: 표식(위·오른쪽, 고정색, data-kit-marker) · 차단 문구(게이트 먼저) · PNG(이미지로 저장 묶음, 파일 이름 정리 규칙, 상태 4) · 캡션 3상태 + 캔버스 이름 '페이지 미리보기'.
 - K4: K-AC-01~34 · 시각 QA Q-1~12. 부록 A: contrast_calc_m2a.py(픽스처 읽기) — 금지 조합 X-2 6/6 미달 등 근거, 표식 M-1 17.40.
+- REPORT 초안 커밋. Codex adversarial-review(branch, base 72fe57f) 실행 중 — PID 48032, 원문 logs/codex-adversarial-review.raw.txt.
+- Codex 적대적 검토 완료(needs-attention, medium 3) → 3건 반영(SPEC r2, K-AC-35·36). REPORT 확정.

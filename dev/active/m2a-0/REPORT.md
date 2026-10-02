@@ -1,12 +1,12 @@
 # M2A-0 REPORT — VS-1 섹션 킷 명세 (Designer)
 
 - 브리프 `docs/06-handoff/M2A-0_KIT-SPEC_DESIGNER_BRIEF.md` · 브랜치 `k002bill2/m2a-0` · 시작 커밋 `72fe57f` · 2026-10-03
-- 결론: 7변형 명세(K1)와 문의 폼 권장안(K2), r4.8이 넘긴 4항목(K3), 수용 기준 34개·시각 QA 12항목(K4)을 `docs/design/m2a/SPEC.md`에 확정했다. Codex 적대적 검토 1회를 돌렸고 결과는 아래 "Codex 검토"에 있다.
+- 결론: 7변형 명세(K1)와 문의 폼 권장안(K2), r4.8이 넘긴 4항목(K3), 수용 기준 36개·시각 QA 12항목(K4)을 `docs/design/m2a/SPEC.md`에 확정했다. Codex 적대적 검토 1회(needs-attention, medium 3건)를 받아 3건 모두 반영했다(SPEC r2).
 
 ## 1. 산출물
 | 파일 | 내용 |
 |---|---|
-| `docs/design/m2a/SPEC.md` | 0 공통 규약 · K1-1~7 · K2 · K3 3.1~3.4 · K4 4.1(K-AC-01~34)·4.2(Q-1~12) · 부록 A |
+| `docs/design/m2a/SPEC.md` | 0 공통 규약 · K1-1~7 · K2 · K3 3.1~3.4 · K4 4.1(K-AC-01~36)·4.2(Q-1~12) · 부록 A |
 | `docs/design/m2a/contrast_calc_m2a.py` | 대비 근거 스크립트(L2) — 픽스처 팔레트를 읽기 전용으로 읽음 |
 | `docs/design/m2a/logs/contrast_calc_m2a.out.txt` | 위 스크립트 출력 원문 |
 | `docs/design/m2a/logs/codex-adversarial-review.raw.txt` | Codex 적대적 검토 원문 |
@@ -58,5 +58,11 @@
 - **카드 톤 dark**: C-3이 `ink`/`primary`를 검사하지만, `flat` 모양과 섞일 때는 섹션 면 규칙으로 돌린다(K1-4). 실제 프로필 조합에서 시각 QA로 확인해야 한다.
 - 이 명세는 브라우저로 그려 보지 않은 문서다. 브리프 포트 4339 서버는 띄우지 않았다(코드 작성이 범위 밖이라 그릴 킷이 없다). 시각 검증은 M2a 시각 QA(4.2)에서 한다.
 
-## 7. Codex 검토
-(아래 갱신)
+## 7. Codex 검토 (1회 · 브리프 지시)
+- 명령: `node codex-companion.mjs adversarial-review --scope branch --base 72fe57f "<focus>"` · 원문 `docs/design/m2a/logs/codex-adversarial-review.raw.txt` · 판정 **needs-attention**
+| # | 지적 (medium) | 처리 |
+|---|---|---|
+| 1 | 열린 popover 시트 상태에서 `lg` 폭으로 바꿀 때의 규칙이 없다(nav 2개 노출 가능) | 반영: `lg` 이상에서는 열림 상태와 무관하게 시트·버튼을 `display:none`으로 둔다(K1-1 6). K-AC-35 추가 |
+| 2 | F1 캡션 "이미지는 기본값"이 사용자 이미지가 있을 때 틀린 문장이 된다 | 반영: "이미지는 고른 이미지 또는 자체 그래픽"(3.4) |
+| 3 | K-AC-11은 쌍 소속만 보고 실제 대비를 검증하지 않는다 | 반영: K-AC-36(통과 프로필 확인 + 렌더 글자 실측 대비 ≥ 기준) |
+- 라운드 상한: 브리프가 1회로 정했다. 반영 후 재검토는 돌리지 않았다. 반영분은 문장·수용 기준 추가뿐이다.

@@ -13,7 +13,7 @@
 - [x] K1-3 about/story
 - [x] K1-4 services/cards-3
 - [x] K1-5 faq/accordion
-- [ ] K1-6 contact/form
+- [x] K1-6 contact/form
 - [ ] K1-7 footer/biz-extended
 - [ ] K2 contact/form 정적 동작 권장안
 - [ ] K3 폴백 표식·차단 문구·PNG 버튼·캔버스 캡션
@@ -29,3 +29,4 @@
 - K1-3 about/story: 2단(글·이미지) → 390 1단 · 본문 ink(톤 두 가지 C-2/C-4) · 이미지 비율 = 프로필 media_ratio(없으면 4:5).
 - K1-4 services/cards-3: 3열(md 이상) → 1열 · 카드 면 = 카드 톤(light/dark) × 섹션 톤 표(C-2/C-3/C-4) · 카드 설명 muted 금지 · ul role=list.
 - K1-5 faq/accordion: details/summary · 기본 모두 닫힘 · 질문은 헤딩 아님 · 답변 base=muted(C-5)/alt=ink(C-4) · 펼침 표시 = 브라우저 기본.
+- K1-6 contact/form: 고정 필드 3 + 동의 · fieldset disabled · action 0 · 비활성은 흐림 아닌 글자로 알림 · 2단(lg 이상) → 1단.

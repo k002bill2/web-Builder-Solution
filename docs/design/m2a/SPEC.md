@@ -381,6 +381,66 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 
 **7. 모션** — 없음. 열림 전환 효과 0(`::details-content` 전환·높이 애니메이션 0).
 
+### K1-6. `contact/form` — 문의 폼
+슬롯(L1 `contactSlots("문의하기")`): `heading`(40, 필수, 기본 "문의", `h2`) · `intro`(long 160, 권장 100) · `submit`(link 16, 필수, 권장 10) · `consent`(short 100, 필수). **입력칸 이름표 슬롯은 없다** → 아래 킷 고정 문구.
+
+**1. 구조** (보내기 동작 = K2 권장안 "비활성 폼 + 안내 문구")
+```
+<section id="s-<id>" data-section="contact/form" aria-labelledby="h-<id>">
+  <div 래퍼 2단>
+    <div 글>  <h2 id="h-<id>">{heading}</h2>  <p 소개>{intro}</p>  </div>
+    <form aria-labelledby="h-<id>">                       ← action·method 속성 0
+      <p id="n-<id>" 안내>{K2 방문자 안내 문구}</p>
+      <fieldset disabled aria-describedby="n-<id>">
+        <legend 시각적으로 숨김>문의 양식</legend>
+        <label for="f-<id>-name">이름</label>      <input id type="text"  name="name"    autocomplete="name"  required>
+        <label for="f-<id>-email">이메일</label>   <input id type="email" name="email"   autocomplete="email" required>
+        <label for="f-<id>-message">문의 내용</label> <textarea id name="message" rows="5" required></textarea>
+        <label 동의>  <input type="checkbox" name="consent" required> {consent}  </label>
+        <button type="submit">{submit}</button>
+      </fieldset>
+    </form>
+  </div>
+</section>
+```
+- **킷 고정 문구**(슬롯 아님, 사용자 편집 불가 — 새 슬롯 금지 규칙): 입력칸 이름표 "이름" · "이메일" · "문의 내용", 숨긴 `legend` "문의 양식", 방문자 안내 문구(K2). 필드 구성은 VS-1 고정 3개 + 동의 1개.
+- 자리표시 글자(`placeholder`) 0 — 이름표가 늘 보인다.
+- 필수 표시: 이름표 뒤 글자 "(필수)"는 붙이지 않는다 — 모든 칸이 필수이고 폼이 비활성이라 안내 가치가 없다 [L3, 보내기 연결 시 다시 정함 → K2].
+- `id`는 `instanceId` 접두 — 한 문서에 contact 섹션이 둘이어도 충돌 0.
+
+**2. 반응형**
+| 폭 | 배치 |
+|---|---|
+| `lg` 이상 | 2단: 글(12칸 중 5) · 폼(7), 위 정렬, 열 사이 `s6` |
+| `lg` 미만 (768·390) | 1단: 글 → 폼. 입력칸 전체 폭 |
+- 입력칸·버튼 높이 ≥ `hit-min`. 버튼 = 넓은 폭은 내용 폭(왼쪽 정렬), 좁은 폭은 전체 폭.
+- 필드 사이 `s4`, 이름표 ↔ 입력칸 `s3`(이름표는 입력칸 위 — 옆 배치 0).
+
+**3. 토큰 대응**
+| 요소 | `base` 톤 (면 `bg`) | `alt` 톤 (면 `surface`) | 단계 |
+|---|---|---|---|
+| 제목 `h2` | `ink` C-2 | `ink` C-4 | `title` |
+| 소개 | `muted` C-5 | `ink` C-4 | `lead` |
+| 방문자 안내 | `ink` C-2 | `ink` C-4 | `small` · 제목 굵기 |
+| 이름표 · 동의 문구 | `ink` C-2 | `ink` C-4 | `body` · 동의 `small` |
+| 입력칸 면 / 글자 | 면 `bg` · 글자 `ink` C-2 | 면 `bg` · 글자 `ink` C-2 | `body` |
+| 입력칸 경계 | `ink` `stroke-1` (C-2 ≥ 3:1) | `ink` `stroke-1` (`bg` 칸 면 C-2 · `surface` 섹션 면 C-4) | radius 0.5 |
+| 체크박스 | 브라우저 기본 + `accent-color: primary` | 같음 | `hit-min` 누름 영역(이름표 포함) |
+| 보내기 버튼 | 면 `primary` · 글자 `on-primary` C-1 | 같음 | `body` · 제목 굵기 |
+| 포커스 링 | (비활성이라 포커스 안 됨 — 연결 뒤를 위해 0.3 규칙만 둔다) | | |
+- **비활성 모양**: 회색·불투명도로 흐리게 하지 않는다(0.3 불투명도 글자 0 · 흐린 글자는 대비 검사 밖이 된다). 연결되었을 때와 **같은 모양**을 보이고, 비활성 사실은 **안내 문구(글자)**와 `disabled` 의미로 알린다(색 하나로만 알리지 않기). 커서 `not-allowed`.
+
+**4. 빈 슬롯 · 긴 글자**
+- `intro` 빈 값 → 소개 생략.
+- `heading`·`submit`·`consent` 빈 값(필수) → 0.8. `consent`가 비면 체크박스도 함께 생략(이름 없는 체크박스 0). `submit`이 비면 버튼 생략.
+- 상한: `consent` 100자 = 체크박스 옆에서 줄바꿈(체크박스는 첫 줄에 맞춤) · `submit` 16자 = 버튼 안 줄바꿈 허용 · `intro` 160자. 말줄임 금지.
+
+**5. 이미지 슬롯** — 해당 없음(스키마에 이미지 없음).
+
+**6. 상호작용 (네이티브)** — `fieldset disabled`로 모든 칸·버튼이 비활성(포커스·입력·보내기 0, 스크립트 0). `form`에 `action` 없음 + 비활성이라 Enter 보내기도 0. 캔버스 iframe은 샌드박스에 `allow-forms`가 없어 보내기가 이중으로 막히지만, **정적 HTML에는 샌드박스가 없으므로 마크업의 `disabled`가 유일한 차단**이다(K-AC-08). 브라우저 기본 검증(`required`·`type=email`)은 연결 뒤를 위해 마크업에 남긴다(B-1-9 "폼 기본 검증").
+
+**7. 모션** — 없음.
+
 ## 2. K2 — `contact/form` 정적 내보내기 동작
 
 ## 3. K3 — SPEC r4.8이 넘긴 항목

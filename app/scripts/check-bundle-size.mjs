@@ -1,19 +1,20 @@
-// 앱 첫 화면 JS 예산 검사 (ADR-004: Design Studio 앱은 라우트별 첫 화면 JS 합계 gzip ≤ 100KB,
-// 2026-09-26 개정: 진입 직후 자동 로드 포함 합계 ≤ 125KB도 실패 조건).
-// `vite build`가 만든 dist/.vite/manifest.json을 읽는다.
+// 번들 예산 검사 — 판정은 bundleBudget.mjs(부작용 없음, bundleBudget.test.mjs), 이 파일은 dist를 읽어 넘기고 출력·종료 코드만 맡는다.
+// ADR-004: Design Studio 앱은 라우트별 첫 화면 JS 합계 gzip ≤ 100KB, 2026-09-26 개정 1: 진입 직후 자동 로드 포함 합계 ≤ 125KB도 실패 조건.
+// `vite build`가 만든 dist/.vite/manifest.json을 읽는다. 엔트리는 이름으로 고정한다: 앱 = index.html · 렌더 문서 = render.html, 그 밖 엔트리 = 실패(개정 2 결정 5).
 //  - 공통 JS: index.html 엔트리 청크 + 그 정적 import 전부(= <script type=module> + <link rel=modulepreload>). 참고 출력.
 //  - 라우트별 첫 화면 합계: 공통 JS + 해당 페이지 lazy 청크와 그 정적 import. **예산 판정 대상** (≤ 100KB).
 //  - 라우트별 진입 직후 자동 로드 포함 합계: 첫 화면 합계 + 사용자 조작 없이 바로 받는 dynamic import. **예산 판정 대상** (≤ 125KB).
+//  - 렌더 문서(render.html, 편집기 캔버스 iframe — 2026-10-03 개정 2): 렌더 엔트리 정적 닫힘 + RENDER_AUTO의 JS 합계 ≤ 90KB · 같은 범위 CSS 합계 ≤ 30KB.
+//    생성 홈페이지 예산(TRD 8절)으로 앱과 **별도 판정**한다. 앱과 공유하는 청크(react 등)는 양쪽에 다 세고 목록을 참고 출력한다(결정 3).
+//    render.html이 manifest에 없으면 실패. 실제 내보낸 사이트(정적 HTML·zip)의 예산은 내보내기 단계에서 따로 판정한다(결정 4 — 이 스크립트 밖).
 // gzip 크기는 Node zlib 기본 레벨, KB = 1000 bytes (Vite 빌드 출력 표기와 같은 단위).
 // Vite 8 빌드 출력의 gzip 값은 네이티브 리포터라 이 값보다 약 1% 크게 나온다(예: 86.58 vs 87.47). 둘 다 예산 안에 두도록 여유를 둔다.
-// 생성 홈페이지(export)의 초기 JS ≤ 90KB(TRD 8절)는 이 스크립트의 대상이 아니다.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
+import { checkBundle } from "./bundleBudget.mjs";
 
-const ROUTE_BUDGET_KB = 100;
-const ROUTE_EAGER_BUDGET_KB = 125;
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
 
 /*
@@ -47,6 +48,8 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
 const PROJECT_AUTO = ["src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts", "src/data/memoryProjectRepository.ts"];
 /** 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록 */
 const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts", "src/components/studio/AddSectionDialog.tsx", "src/components/studio/VariantOptions.tsx"];
+/** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
+const RENDER_AUTO = [];
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
   "src/data/memoryBoardConfirm.ts",
@@ -96,48 +99,10 @@ const SCENARIOS = [
 ];
 
 const manifest = JSON.parse(readFileSync(join(DIST, ".vite/manifest.json"), "utf8"));
-const gzipKb = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
+const sizeOf = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
 
-/** 청크 키에서 정적 import를 따라간 JS 파일 집합. */
-function staticClosure(key, seen = new Set()) {
-  const chunk = manifest[key];
-  if (!chunk || seen.has(chunk.file)) return seen;
-  seen.add(chunk.file);
-  for (const dep of chunk.imports ?? []) staticClosure(dep, seen);
-  return seen;
-}
-
-const sumKb = (files) => [...files].reduce((total, file) => total + gzipKb(file), 0);
-const format = (kb) => `${kb.toFixed(2)}KB`;
-
-const entryKey = Object.keys(manifest).find((key) => manifest[key].isEntry);
-if (!entryKey) throw new Error("manifest에 엔트리 청크가 없습니다. vite build --manifest 설정을 확인하세요.");
-
-const common = staticClosure(entryKey);
-console.log(`[bundle] 공통 JS (gzip, 참고): ${format(sumKb(common))}`);
-for (const file of common) console.log(`  - ${file} ${format(gzipKb(file))}`);
-
-const failures = [];
-for (const { name, page, auto, afterAction = [] } of SCENARIOS) {
-  // 목록 키가 manifest에 없으면(경로 변경·다른 청크에 합쳐짐) 합계가 조용히 줄어든다 — 실패로 본다
-  const missing = [page, ...auto, ...afterAction].filter((key) => !manifest[key]);
-  if (missing.length > 0) {
-    failures.push(`${name}: manifest에 ${missing.join(", ")}가 없습니다 (경로 변경 시 SCENARIOS를 고치세요)`);
-    continue;
-  }
-  const routeFiles = staticClosure(page, new Set(common));
-  const routeKb = sumKb(routeFiles);
-  const eagerFiles = auto.reduce((files, key) => staticClosure(key, files), new Set(routeFiles));
-  const eagerKb = sumKb(eagerFiles);
-  console.log(`[bundle] ${name} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
-  for (const key of afterAction) {
-    const extra = [...staticClosure(key)].filter((file) => !eagerFiles.has(file));
-    console.log(`[bundle]   ${name} 조작 뒤 ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
-  }
-  if (routeKb > ROUTE_BUDGET_KB) failures.push(`${name}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
-  if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${name}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
-}
-
+const { lines, failures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO });
+for (const line of lines) console.log(line);
 if (failures.length > 0) {
   for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
   process.exit(1);

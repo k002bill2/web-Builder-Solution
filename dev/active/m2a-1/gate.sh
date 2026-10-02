@@ -14,4 +14,4 @@ cd $ROOT/app
   echo "## lint"; npm run lint 2>&1 | tail -15; echo "lint exit=${pipestatus[1]}"
   echo "## build"; npm run build 2>&1 | grep -E "\[bundle\]|error|Error" | grep -v "조작 뒤 src/(features/compare|data/memory|domain)" ; echo "build exit=${pipestatus[1]}"
 } > $LOG 2>&1
-grep -E "exit=|Tests |\[bundle\] (공통|/)" $LOG
+grep -E "exit=|Tests |\[bundle\] (공통|/|렌더)|앱과 공유" $LOG; exit 0

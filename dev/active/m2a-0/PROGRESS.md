@@ -15,8 +15,8 @@
 - [x] K1-5 faq/accordion
 - [x] K1-6 contact/form
 - [x] K1-7 footer/biz-extended
-- [ ] K2 contact/form 정적 동작 권장안
-- [ ] K3 폴백 표식·차단 문구·PNG 버튼·캔버스 캡션
+- [x] K2 contact/form 정적 동작 권장안
+- [x] K3 폴백 표식·차단 문구·PNG 버튼·캔버스 캡션
 - [ ] K4 K-AC·시각 QA 기준
 - [ ] 대비 계산 근거 (L2)
 - [ ] Codex 적대적 검토 1회 (logs/)
@@ -31,3 +31,4 @@
 - K1-5 faq/accordion: details/summary · 기본 모두 닫힘 · 질문은 헤딩 아님 · 답변 base=muted(C-5)/alt=ink(C-4) · 펼침 표시 = 브라우저 기본.
 - K1-6 contact/form: 고정 필드 3 + 동의 · fieldset disabled · action 0 · 비활성은 흐림 아닌 글자로 알림 · 2단(lg 이상) → 1단.
 - K1-7 footer/biz-extended: ink 면 + bg 글자(C-2 뒤집기) · address · 링크 조각 = 글자 항목 · 반투명 글자 0.
+- K2: A안(비활성 폼 + 안내) 권장 · 방문자용/주인용 문구 분리. K3: 표식(위·오른쪽, 고정색, data-kit-marker) · 차단 문구(게이트 먼저) · PNG(이미지로 저장 묶음, 파일 이름 정리 규칙, 상태 4) · 캡션 3상태 + 캔버스 이름 '페이지 미리보기'.

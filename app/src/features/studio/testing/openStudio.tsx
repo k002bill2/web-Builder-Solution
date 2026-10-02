@@ -5,6 +5,7 @@ import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import type { ProfileSeries } from "../../../domain/profile";
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
 import { renderApp } from "../../../test/renderApp";
+import { connectRenderFrame } from "./renderFrame";
 
 /** 테스트 전용(제품 코드가 import하지 않는다) — 편집기 연산 테스트 공용 (EDITOR-A3-1) — StudioShell.test와 같은 셋업을 문서·프로필 주입으로 */
 export const STUDIO_PROJECT: Project = {
@@ -62,5 +63,7 @@ export async function openStudio({ width = 1280, doc = sampleDoc(), series }: { 
   const { router } = renderApp("/catalog", undefined, undefined, stubProfiles(series), undefined, () => Promise.resolve(projects.repository));
   act(() => void router.navigate("/studio/project-1"));
   await screen.findByRole("heading", { level: 1, name: STUDIO_PROJECT.name });
-  return { router, saved: projects.saved };
+  // 캔버스 = 렌더 문서 iframe(M2A-1) — jsdom은 render.html을 싣지 않으므로 흉내를 붙인다(ready + render마다 rects)
+  const frame = connectRenderFrame();
+  return { router, saved: projects.saved, frame };
 }

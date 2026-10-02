@@ -6,6 +6,7 @@ import { CANVAS_CAPTION } from "../components/studio/StructureCanvas";
 import { PREVIEW_VIEWS } from "../features/detail/previewView";
 import { variantName } from "../features/studio/selection";
 import { renderApp } from "../test/renderApp";
+import { connectRenderFrame, frameSays } from "../features/studio/testing/renderFrame";
 
 /** 편집기 틀 (EDITOR-A2-SHELL S2~S6 — E-AC-03·04·05·13·14·15·16) */
 const PROJECT: Project = {
@@ -55,6 +56,8 @@ async function open(width?: number) {
   const { router } = renderApp("/catalog", undefined, undefined, undefined, undefined, stubProjects());
   act(() => void router.navigate("/studio/project-1"));
   await screen.findByRole("heading", { level: 1, name: PROJECT.name });
+  // 캔버스 = 렌더 문서 iframe(M2A-1) — 흉내를 붙인다(ready + render마다 rects)
+  connectRenderFrame();
   return router;
 }
 
@@ -156,7 +159,8 @@ describe("섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4)", () => {
   it("캔버스 섹션은 Tab 정지가 아니다 — 캔버스 안 포커스 가능한 요소 0(스크롤 영역 자신 제외), 포인터로 누르면 같은 선택", async () => {
     await open(1280);
     expect(canvas().querySelectorAll("button, a[href], input, select, textarea, [tabindex]")).toHaveLength(0);
-    act(() => void fireEvent.click(canvas().querySelector('[data-instance-id="s-about"]')!));
+    // 섹션 누름은 렌더 문서가 click{instanceId}로 보낸다(5.7 r4.8) — 렌더 쪽 단언은 render/RenderApp.test.tsx "섹션 누름 → click"
+    act(() => frameSays({ type: "click", instanceId: "s-about" }));
     expect(row(/^About/)).toHaveAttribute("aria-current", "true");
     expect(h2("편집 · About")).toBeInTheDocument();
   });
@@ -250,7 +254,10 @@ describe("미리보기 폭 · 캔버스 (S6 · E-AC-15 · E-AC-16 · SPEC 5.7 ·
   it.each([1280, 1024, 390])("%i: 캡션 늘 보임 · 이미지·외부 URL 0 · 불투명도 글자 0 · 선택 라벨 12px 토큰(caption2)", async (width) => {
     await open(width);
     expect(within(canvas()).getByText(CANVAS_CAPTION)).toBeVisible();
-    expect(canvas().querySelectorAll("img, iframe, [src]")).toHaveLength(0);
+    // 이미지·외부 자원 0 — 렌더 문서 DOM 쪽은 render/fallback/FallbackCanvas.test.tsx "이미지·iframe·src 0"으로 옮김.
+    // 부모에는 렌더 문서 iframe 1개만(같은 출처 경로 · allow-scripts만 — SPEC 5.7 r4.8)
+    expect(canvas().querySelectorAll("img")).toHaveLength(0);
+    expect([...canvas().querySelectorAll("iframe, [src]")].map((el) => [el.tagName, el.getAttribute("src"), el.getAttribute("sandbox")])).toEqual([["IFRAME", "/render.html", "allow-scripts"]]);
     expect(canvas().innerHTML).not.toMatch(/https?:|url\(/);
     expect(canvas().innerHTML).not.toMatch(/opacity|text-[\w-]+\/\d+/);
     expect(within(canvas()).getByText(/^Hero · /)).toHaveClass("text-caption2", "font-bold", "text-on-primary", "bg-primary");

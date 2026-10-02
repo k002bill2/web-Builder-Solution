@@ -24,18 +24,19 @@ const seriesOf = (primary: string): ProfileSeries => ({
     },
   ],
 });
-const canvasRoot = () => screen.getByRole("region", { name: "구조 미리보기" }).querySelector<HTMLElement>("[data-instance-id]")!.parentElement!;
 
 describe("캔버스 팔레트 연결 (SPEC 5.7 · r4.7 A3-Q7)", () => {
   it("문서 profileVersion의 팔레트 → --canvas-* 변수", async () => {
-    await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: seriesOf("rgb(10, 92, 54)") });
-    await waitFor(() => expect(canvasRoot().style.getPropertyValue("--canvas-primary")).toBe("rgb(10, 92, 54)"));
-    expect(canvasRoot().style.getPropertyValue("--canvas-bg")).toBe("rgb(255, 255, 255)");
+    const { frame } = await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: seriesOf("rgb(10, 92, 54)") });
+    // 팔레트 → --canvas-* 변수는 렌더 문서(render/fallback/FallbackCanvas.test.tsx). 부모는 문서 버전 팔레트를 render로 보낸다
+    await waitFor(() => expect(frame.lastPalette()?.primary).toBe("rgb(10, 92, 54)"));
+    expect(frame.lastPalette()?.bg).toBe("rgb(255, 255, 255)");
   });
 
   it("프로필 없음(조회 결과 없음) → 중립 토큰으로 그리고 편집은 계속", async () => {
-    await openStudio({ series: undefined });
-    expect(canvasRoot().style.getPropertyValue("--canvas-primary")).toMatch(/^var\(--/);
+    const { frame } = await openStudio({ series: undefined });
+    // 팔레트 없음 → 렌더 문서가 중립 토큰(FallbackCanvas.test "팔레트 없으면 중립 토큰 참조")
+    expect(frame.lastPalette()).toBeUndefined();
     expect(screen.getByRole("region", { name: /^편집 · / })).toBeInTheDocument();
   });
 });

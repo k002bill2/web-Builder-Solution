@@ -14,7 +14,7 @@
 - [x] K1-4 services/cards-3
 - [x] K1-5 faq/accordion
 - [x] K1-6 contact/form
-- [ ] K1-7 footer/biz-extended
+- [x] K1-7 footer/biz-extended
 - [ ] K2 contact/form 정적 동작 권장안
 - [ ] K3 폴백 표식·차단 문구·PNG 버튼·캔버스 캡션
 - [ ] K4 K-AC·시각 QA 기준
@@ -30,3 +30,4 @@
 - K1-4 services/cards-3: 3열(md 이상) → 1열 · 카드 면 = 카드 톤(light/dark) × 섹션 톤 표(C-2/C-3/C-4) · 카드 설명 muted 금지 · ul role=list.
 - K1-5 faq/accordion: details/summary · 기본 모두 닫힘 · 질문은 헤딩 아님 · 답변 base=muted(C-5)/alt=ink(C-4) · 펼침 표시 = 브라우저 기본.
 - K1-6 contact/form: 고정 필드 3 + 동의 · fieldset disabled · action 0 · 비활성은 흐림 아닌 글자로 알림 · 2단(lg 이상) → 1단.
+- K1-7 footer/biz-extended: ink 면 + bg 글자(C-2 뒤집기) · address · 링크 조각 = 글자 항목 · 반투명 글자 0.

@@ -22,8 +22,8 @@ describe("캔버스 변형별 모양 표 (SPEC r4.7 A3-Q7 · 5.7)", () => {
   });
 
   it("CSS 변수 --canvas-* — 팔레트 값 그대로, 없으면(조회 전·실패) 중립 토큰 참조", () => {
-    const palette = { primary: "#123456", surface: "#eeeeee", ink: "#111111", muted: "#999999", bg: "#ffffff" };
-    expect(canvasVars(palette)).toEqual({ "--canvas-primary": "#123456", "--canvas-surface": "#eeeeee", "--canvas-ink": "#111111", "--canvas-muted": "#999999", "--canvas-bg": "#ffffff" });
+    const palette = { primary: "rgb(18, 52, 86)", surface: "rgb(238, 238, 238)", ink: "rgb(17, 17, 17)", muted: "rgb(153, 153, 153)", bg: "rgb(255, 255, 255)" };
+    expect(canvasVars(palette)).toEqual({ "--canvas-primary": "rgb(18, 52, 86)", "--canvas-surface": "rgb(238, 238, 238)", "--canvas-ink": "rgb(17, 17, 17)", "--canvas-muted": "rgb(153, 153, 153)", "--canvas-bg": "rgb(255, 255, 255)" });
     const neutral = canvasVars(undefined);
     expect(Object.keys(neutral)).toEqual(["--canvas-primary", "--canvas-surface", "--canvas-ink", "--canvas-muted", "--canvas-bg"]);
     for (const value of Object.values(neutral)) expect(value).toMatch(/^var\(--[a-z-]+\)$/);

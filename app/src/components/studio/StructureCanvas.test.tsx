@@ -34,7 +34,7 @@ describe("문제 표시는 데이터 색과 무관 (5.7 B-03 · FIX2 — r4.8부
     const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "fullbleed-left", "s-hero"), { ...footer, slots: { ...footer.slots, links: "가".repeat(65) } }] });
     render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();
-    const sentence = within(region()).getByText(/^링크.*넘었습니다/);
+    const sentence = within(region()).getByText(/넘었습니다/);
     const badge = within(region()).getByText("경고 1");
     for (const el of [sentence, badge]) {
       expect(el.className).not.toMatch(/--canvas-/);

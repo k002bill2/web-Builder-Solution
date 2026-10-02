@@ -84,12 +84,12 @@ describe("편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6)", () => {
 
   it("캔버스 배지(부모 오버레이)를 누르면 그 섹션이 선택되고 문제 필드로 포커스(5.7 · E-AC-49)", () => {
     const doc = sampleDoc();
-    draw(fakeRepository().repository, { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-about" ? { ...s, slots: { ...s.slots, title: "가".repeat(30) } } : s)) });
+    draw(fakeRepository().repository, { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-about" ? { ...s, slots: { ...s.slots, heading: "가".repeat(30) } } : s)) });
     act(() => void fireEvent.click(within(canvas()).getByText("경고 1")));
     expect(screen.getByRole("heading", { level: 2, name: "편집 · About" })).toBeInTheDocument();
-    const title = within(editRegion()).getByRole("textbox", { name: /^제목/ });
-    expect(document.activeElement).toBe(title);
-    expect(title.getAttribute("aria-describedby")!.split(" ")[0]).toBe("canvas-issue-s-about-title");
+    const heading = within(editRegion()).getByRole("textbox", { name: /^섹션 제목/ });
+    expect(document.activeElement).toBe(heading);
+    expect(heading.getAttribute("aria-describedby")!.split(" ")[0]).toBe("canvas-issue-s-about-heading");
   });
 });
 

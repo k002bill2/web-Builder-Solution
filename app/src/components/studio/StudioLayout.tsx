@@ -184,6 +184,24 @@ export function StudioLayout({
     setAdding(undefined);
   }, [adding, requestFocus]);
 
+  // 캔버스 문제 배지(부모 오버레이, 5.7) → 그 섹션 선택 + 문제 필드 포커스(<1024는 "편집" 탭 먼저). 필드는 다음 커밋 뒤에 생기므로 대기
+  const pendingIssue = useRef<string>(undefined);
+  const focusIssue = useCallback(
+    (instanceId: string, issueId: string) => {
+      setSelected(instanceId);
+      if (mode === "tabs") setTab("edit");
+      pendingIssue.current = issueId;
+    },
+    [mode],
+  );
+  useEffect(() => {
+    const id = pendingIssue.current;
+    const field = id && root.current?.querySelector<HTMLElement>(`[aria-describedby~="${CSS.escape(id)}"]`);
+    if (!field) return;
+    pendingIssue.current = undefined;
+    field.focus();
+  });
+
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 캔버스 색 = 목적과 같은 조회 결과(ops.series)의 문서 버전 팔레트 — 두 번 부르지 않는다
@@ -256,7 +274,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -286,7 +304,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable head={conflict} />
+            <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -317,7 +335,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} view={view} scrollable head={conflict} />
+          <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

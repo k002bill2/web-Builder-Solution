@@ -1,0 +1,43 @@
+## targets: 
+## guards
+
+ Test Files  6 passed (6)
+      Tests  61 passed (61)
+   Start at  03:24:33
+   Duration  554ms (setup 61%, transform 16%, tests 13%, import 8%, worker 2%)
+
+guards exit=0
+## typecheck
+typecheck exit=0
+## lint
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+lint exit=0
+## build
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /catalog 첫 화면 합계: 99.65KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.03KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.38KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.76KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.40KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.76KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.40KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.21KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.64KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.34KB (1개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94.01KB / 예산 100KB · 진입 직후 자동 로드 포함: 107.07KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.72KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.31KB / 예산 125KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.45KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.05KB (1개 파일, 예산 판정 밖)
+build exit=0
+

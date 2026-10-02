@@ -11,7 +11,7 @@
 - [x] K1-1 header/sticky-right-cta
 - [x] K1-2 hero/fullbleed-left
 - [x] K1-3 about/story
-- [ ] K1-4 services/cards-3
+- [x] K1-4 services/cards-3
 - [ ] K1-5 faq/accordion
 - [ ] K1-6 contact/form
 - [ ] K1-7 footer/biz-extended
@@ -27,3 +27,4 @@
 - K1-1 header/sticky-right-cta: popover 시트 + 메뉴 두 벌(폭마다 1벌 노출) · CTA = primary/on-primary(C-1) · 시트 링크 닫기용 공용 스크립트 1조작.
 - K1-2 hero/fullbleed-left: 글자는 단색 primary 패널 위(C-1) · 미디어 층 분리 · vh 단위 금지(전체 길이 캡처) · 390 두 단 쌓기. 0.11 공용 스크립트 1조작 · 0.12 문서 뼈대(main) 보강.
 - K1-3 about/story: 2단(글·이미지) → 390 1단 · 본문 ink(톤 두 가지 C-2/C-4) · 이미지 비율 = 프로필 media_ratio(없으면 4:5).
+- K1-4 services/cards-3: 3열(md 이상) → 1열 · 카드 면 = 카드 톤(light/dark) × 섹션 톤 표(C-2/C-3/C-4) · 카드 설명 muted 금지 · ul role=list.

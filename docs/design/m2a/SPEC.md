@@ -291,6 +291,52 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 
 **6. 상호작용** — 없음. **7. 모션** — 없음(엔진 상한 L2, VS-1 정적).
 
+### K1-4. `services/cards-3` — 카드 3개
+슬롯(L1, `cards3` 스키마): `heading`(40, 필수, `h2`) · `intro`(long 160, 권장 100) · `card1Title`·`card2Title`·`card3Title`(short 30, 필수, 권장 20) · `card1Body`·`card2Body`·`card3Body`(long 120, 권장 80).
+
+**1. 구조**
+```
+<section id="s-<id>" data-section="services/cards-3" aria-labelledby="h-<id>">
+  <div 래퍼>
+    <div 머리>  <h2 id="h-<id>">{heading}</h2>  <p 소개>{intro}</p>  </div>
+    <ul role="list" 카드 목록>
+      <li 카드>  <h3>{cardNTitle}</h3>  <p>{cardNBody}</p>  </li>   × 3 (번호 순서)
+    </ul>
+  </div>
+</section>
+```
+- `ul`에 `role="list"` — 목록 표시(`list-style: none`)를 끄면 Safari·VoiceOver가 목록 의미를 버리는 문제 회피.
+- 카드는 링크·버튼이 아니다(대상 슬롯 없음) → 포커스 요소 0, 카드 전체 hover 효과 0.
+
+**2. 반응형**
+| 폭 | 배치 |
+|---|---|
+| `md` 이상 (1280·1024·768) | 3열 같은 폭 · 같은 높이(행 늘이기) · 카드 사이 `s5` |
+| `md` 미만 (390) | 1열, 번호 순서대로 · 카드 사이 `s4` |
+- 머리(제목+소개)는 카드 목록 위, 왼쪽 정렬 · 소개 폭 = `prose-max`.
+
+**3. 토큰 대응 — 카드 면은 프로필 카드 면 톤 × 섹션 톤으로 정한다**
+| 경우 | 카드 면 | 카드 제목 · 설명 글자 | 대비 검사 |
+|---|---|---|---|
+| 카드 톤 `light` · 섹션 `base`(면 `bg`) | `surface` | `ink` · `ink` | C-4 |
+| 카드 톤 `light` · 섹션 `alt`(면 `surface`) | `bg` (섹션 면과 구분되게 뒤집음) | `ink` · `ink` | C-2 |
+| 카드 톤 `dark` (두 톤 모두) | `primary` | `ink` · `ink` | C-3 (어두운 카드일 때만 도는 검사) |
+| 카드 모양 `flat` | 카드 면 없음(섹션 면 그대로) · 카드 위 구분선 `muted` `stroke-1` | 섹션 면 규칙(`base` `ink` C-2 · `alt` `ink` C-4) | C-2 · C-4 |
+| 머리 제목 `h2` | 섹션 면 | `ink` | C-2 · C-4 |
+| 머리 소개 | 섹션 면 | `base` = `muted`(C-5) · `alt` = `ink`(C-4 — `muted`/`surface`는 검사 밖) | C-5 · C-4 |
+- 카드 설명은 `muted`로 낮추지 않는다 — 카드 면이 `bg`가 아닌 경우가 대부분이라 C-5 밖이 된다. 위계는 단계로: 제목 `subtitle`·제목 굵기 / 설명 `body`·본문 굵기.
+- 카드 모양(0.5): `bordered-lg`·`bordered-md` = 경계 `muted` `stroke-1`(장식) + radius · `elevated` = `shadow-1` · `flat` = 위 표. 안쪽 여백 `s5`(넓은 폭) · `s4`(좁은 폭), 밀도 `compact`면 한 단계 아래.
+
+**4. 빈 슬롯 · 긴 글자**
+- `intro` 빈 값 → 소개 생략, 제목 ↔ 카드 간격 그대로(`s5`).
+- `cardNBody` 빈 값 → 그 카드의 설명만 생략(제목만 남은 카드). 같은 높이 행이라 카드 높이는 이웃과 같다.
+- `cardNTitle` 빈 값(필수) → 0.8: 그 카드의 제목 요소 생략 — 카드 자체는 남긴다(3칸 배치 유지, 게이트 R-13 차단).
+- 상한: 카드 제목 30자 = 3열(1024 폭 기준)에서 2~3줄 [L3], 설명 120자 = 줄바꿈. 말줄임 금지. 가장 긴 카드에 맞춰 행 높이가 늘어난다.
+
+**5. 이미지 슬롯** — 해당 없음: `cards3` 스키마에 이미지 슬롯이 없다. 카드 아이콘·그림도 슬롯이 없어 그리지 않는다(장식 그래픽 0 — 자체 그래픽 생성기 본편은 M2b·M2c).
+
+**6. 상호작용** — 없음. **7. 모션** — 없음(엔진 상한 L2, VS-1 정적 — 카드 hover 들림 0).
+
 ## 2. K2 — `contact/form` 정적 내보내기 동작
 
 ## 3. K3 — SPEC r4.8이 넘긴 항목

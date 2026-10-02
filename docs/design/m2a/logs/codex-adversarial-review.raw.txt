@@ -1,0 +1,34 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a0fde8-874d-7472-8c14-42f6f2356199).
+[codex] Turn started (01a0fde8-8e07-7231-9462-d5eb3f8267d7).
+[codex] Assistant message captured: `72fe57f` 기준 diff와 브리프를 읽고, 지정된 명세 위험을 우선 검토하겠습니다.
+[codex] Running command: /bin/zsh -lc 'git diff --unified=4 72fe57f -- docs/design/m2a/SPEC.md docs/design/m2a/contras...
+[codex] Command completed: /bin/zsh -lc 'git diff --unified=4 72fe57f -- docs/design/m2a/SPEC.md docs/design/m2a/contras... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/m2a/SPEC.md | sed -n '45,150p;175,310p;350,495p;565,653p' &&...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/m2a/SPEC.md | sed -n '45,150p;175,310p;350,495p;565,653p' &&... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/m2a/SPEC.md | sed -n '139,200p;220,290p;300,390p;420,535p;54...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/m2a/SPEC.md | sed -n '139,200p;220,290p;300,390p;420,535p;54... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/m2a/SPEC.md | sed -n '386,455p;455,560p;560,630p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/m2a/SPEC.md | sed -n '386,455p;455,560p;560,630p'" (exit 0)
+[codex] Assistant message captured: {"verdict":"needs-attention","summary":"출시 보류 권고: 열린 모바일 메뉴의 폭 전환 동작과 대비 보증 테스트가 명세에서 빠졌고, F1...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against 72fe57f
+Verdict: needs-attention
+
+출시 보류 권고: 열린 모바일 메뉴의 폭 전환 동작과 대비 보증 테스트가 명세에서 빠졌고, F1 캡션은 실제 이미지 사용 여부를 잘못 안내합니다.
+
+Findings:
+- [medium] 브레이크포인트 변경 시 열린 popover와 중복 nav를 다루지 않습니다 (docs/design/m2a/SPEC.md:158-169)
+  모바일에서 시트를 연 채 미리보기 폭을 `lg` 이상으로 바꾸면, 명세는 넓은 화면 nav 표시와 좁은 화면 popover를 각각 규정하지만 열린 popover를 닫거나 숨기는 동작은 정하지 않았습니다. 이 상태에서 두 nav가 동시에 접근성 트리에 노출되거나 시트가 데스크톱 nav 위에 남을 수 있습니다. K-AC-10은 폭별 초기 상태만 확인해 이 전이를 놓칩니다.
+  Recommendation: `lg` 경계 전환 때 열린 시트를 닫거나 넓은 화면에서 비노출하는 규칙을 추가하고, 시트를 연 상태로 390↔1024 폭을 바꾸는 브라우저 수용 기준을 추가하세요.
+- [medium] F1 캡션이 실제 이미지가 있어도 이미지가 기본값이라고 안내합니다 (docs/design/m2a/SPEC.md:565)
+  F1 전체 렌더 캡션은 이미지가 기본값이라고 말하지만, 명세는 사용자 로컬 이미지가 있으면 실제 이미지를 렌더하도록 합니다(0.9, K1-2·K1-3). 사용자는 캔버스와 PNG에 실제 이미지가 반영됐는데도 기본 이미지로 오해할 수 있어 미리보기와 내보내기 신뢰가 떨어집니다.
+  Recommendation: 캡션을 이미지 슬롯 상태와 일치하게 고치거나, 실제 이미지가 사용된 경우와 플레이스홀더만 사용된 경우를 구분하세요.
+- [medium] K-AC-11은 허용 색 쌍만 확인해 AA 대비 보증을 검증하지 않습니다 (docs/design/m2a/SPEC.md:586)
+  0.3절은 게이트 C-1~C-5 통과가 모든 킷 글자의 AA를 보장한다고 주장하지만, K-AC-11은 시험 팔레트에서 색 역할 쌍이 허용 목록에 있는지만 확인합니다. 시험 팔레트의 해당 C 검사 통과 여부나 렌더된 쌍의 실제 대비율을 검사하지 않아, 게이트와 킷의 연결이 끊겨도 수용 기준을 통과할 수 있습니다.
+  Recommendation: 시험 프로필이 적용 가능한 C-1~C-5 검사를 통과하는지 확인하고, 렌더된 각 허용 쌍의 대비율이 선택된 기준(AA 또는 강화 기준)을 충족하는지 브라우저 테스트에 포함하세요.
+
+Next steps:
+- 세 항목을 명세와 K-AC에 반영한 뒤 해당 브라우저 전이 및 대비 수용 기준을 재검토하세요.

@@ -569,9 +569,85 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 
 ## 4. K4 — 수용 기준 · 시각 QA
 
+### 4.1 수용 기준 `K-AC` (Developer 테스트로 옮길 수 있는 관찰 문장)
+표기: [U] 단위·컴포넌트 테스트(jsdom) · [B] 실제 브라우저(1280·390 iframe 폭) · [G] 가드 테스트(파일 검사) · [V] 시각 QA.
+
+**공통 (0절)**
+| ID | 수용 기준 | 방법 |
+|---|---|---|
+| K-AC-01 | 킷 7변형 파일에 `useState`·`useReducer`·`useEffect`·`on[A-Z]` prop 0 · `transition`·`animation`·`scroll-behavior` CSS 0 · hex·px 리터럴 0 · 앱 DS 토큰(`--label-`·`--fill-`·`--background-`·`ds-`) 참조 0 | [G] |
+| K-AC-02 | 7변형 × 필수 슬롯을 **상한 글자**로 채운 문서 + 브라우저 글자 200% → 1280·390 모두 `scrollWidth − clientWidth = 0`, 말줄임 계산 스타일(`text-overflow: ellipsis`·`-webkit-line-clamp`) 0 | [B] |
+| K-AC-03 | 상한 글자 문서에서 모든 슬롯 글자가 DOM `textContent`에 **잘리지 않고** 있다(입력 = 출력) | [U] |
+| K-AC-04 | 선택 슬롯 빈 값(hero `subtitle`·about `image` 끔·services `intro`·`card2Body`·contact `intro`·footer `links`·`copyright`) → 해당 요소 DOM 0, 빈 `<p>`·빈 `<li>`·빈 `<ul>` 0 | [U] |
+| K-AC-05 | 킷 출력 전체에서 `a[href="#"]`·`a[href=""]`·`a:not([href])`·`href^="javascript:"` 0. 모든 `a[href^="#s-"]`의 대상 id가 문서 안에 있다 | [U] |
+| K-AC-06 | 캔버스에서 `details`를 열고 메뉴 시트를 연 뒤 PNG·정적 HTML을 만들면 결과 마크업에 `details[open]` 0 · `:popover-open` 0 | [B] |
+| K-AC-07 | 킷 CSS에 `vh`·`dvh`·`svh`·`lvh` 단위 0. 렌더 문서 높이를 콘텐츠 높이로 늘려도 hero 높이가 변하지 않는다 | [G]·[B] |
+| K-AC-09 | 문서 뼈대: `body > header`(1) · `body > main`(1) · `body > footer`(1), hero·본문·폴백 섹션은 모두 `main` 안. `h1` = 1개(hero) · 본문 `h2` · 카드 `h3`, 건너뛰기 0 | [U] |
+| K-AC-11 | 색 조합: 렌더 문서의 모든 글자 요소에 대해 (계산된 글자색, 가장 가까운 불투명 배경색) 쌍이 **허용 5쌍(C-1~C-5와 뒤집기)** 중 하나 — 팔레트 5역할을 서로 다른 값으로 둔 시험 팔레트로 역할을 역추적해 판정. 불투명도 < 1 글자 0 | [B] |
+
+**변형별**
+| ID | 변형 | 수용 기준 | 방법 |
+|---|---|---|---|
+| K-AC-10 | header | 1280: 보이는 `nav` 1 · "메뉴" 버튼 `display:none` / 390: 바의 `nav` `display:none` · 버튼 보임 · 시트 닫힘. 어느 폭이든 접근성 트리 `navigation` 랜드마크 ≤ 1 | [B] |
+| K-AC-12 | header | 390: "메뉴" 누름 → 시트 열림(`:popover-open`) · Tab 다음 = "닫기" · Esc → 닫힘 + 포커스 = "메뉴" 버튼 · 시트 안 앵커 누름 → 시트 닫힘 + 대상 섹션 이동(그 섹션 제목이 header에 가려지지 않음) | [B] |
+| K-AC-13 | header | 390: CTA는 바에 없고 시트 맨 아래에 있다 / 1280: CTA는 바 오른쪽 끝. CTA `href` = 첫 contact 섹션 앵커(없으면 footer 앵커) | [U]·[B] |
+| K-AC-14 | header | `nav` 슬롯 " 소개 ·· 서비스 · " → 항목 2개("소개"·"서비스"). 본문 섹션 제목과 같은 항목만 `a`, 나머지 `span` | [U] |
+| K-AC-20 | hero | 글자 3요소(`h1`·부제·CTA)의 가장 가까운 불투명 조상 배경 = 카피 패널(`primary`) — 미디어 층 위에 글자 0. 이미지 끔 → 미디어 요소 0, 섹션 면 = `primary` | [U]·[B] |
+| K-AC-21 | hero | 390: 미디어 띠가 카피 패널 **위**에 보이고(박스 y 비교), DOM 순서는 `h1`이 미디어보다 앞 | [B] |
+| K-AC-22 | hero·about | 로컬 이미지 → `img[alt=슬롯 alt]`(장식 = `alt=""`) + `width`·`height` 속성 / 플레이스홀더 → 그라디언트 요소 `aria-hidden="true"`, `img` 0 | [U] |
+| K-AC-23 | about | 1280: 글·이미지 2단(같은 행) / 390: 1단, 글이 이미지보다 위. 이미지 끔 → 1단 | [B] |
+| K-AC-24 | about | 이미지 비율 = 프로필 `media_ratio`(없으면 4:5) — 상자 폭/높이 비가 ±1% 안 | [B] |
+| K-AC-25 | services | 1280·1024·768: 카드 3개 같은 행·같은 높이 / 390: 3행. `ul[role=list] > li` 3개, 각 `h3` | [U]·[B] |
+| K-AC-26 | services | 카드 톤 `dark` → 카드 면 `primary`·글자 `ink` / `light`+`base` → 면 `surface` / `light`+`alt` → 면 `bg`. 카드 안 `muted` 글자 0 | [U] |
+| K-AC-27 | faq | `details` 3개 · 모두 `open` 없음 · `summary` 안 헤딩 0 · `name` 속성 0. Enter/Space로 열고 닫힘(스크립트 0) | [U]·[B] |
+| K-AC-28 | faq | `qN` 빈 값 → 그 `details` 0 / `aN` 빈 값 → `summary`만 있는 `details` | [U] |
+| K-AC-08 | contact | 정적 HTML 결과에서 `form`에 `action` 속성 0 · 모든 `input`·`textarea`·`button`이 `fieldset[disabled]` 안 · 방문자 안내 문구가 `fieldset`의 `aria-describedby` 대상 · `placeholder` 0 | [U] |
+| K-AC-29 | contact | 각 입력칸이 보이는 `label`과 `for`/`id`로 연결("이름"·"이메일"·"문의 내용") · 동의 체크박스 이름 = `consent` 슬롯 글자 · 요소에 `opacity` < 1 0 | [U] |
+| K-AC-30 | contact | 1280: 글·폼 2단 / 390: 1단. 정적 HTML을 브라우저로 열어 Enter·버튼 누름 → 페이지 이동·요청 0 | [B] |
+| K-AC-31 | footer | 면 `ink` · 모든 글자 `bg` · `address` 1 · 하단 링크 = `li` 글자(`a` 0, VS-1) · `copyright` 빈 값 → 저작권 줄·구분선 0 | [U] |
+
+**K3 항목**
+| ID | 수용 기준 | 방법 |
+|---|---|---|
+| K-AC-15 | 선택된 폴백 섹션에서 부모 오버레이 라벨 칩 사각형과 렌더 문서 표식 사각형이 겹치지 않는다(교차 넓이 0) | [B] |
+| K-AC-16 | 폴백 섹션마다 `[data-kit-marker="fallback"]` 1개, 글자 "구조 미리보기" · 킷 섹션에는 0. E-AC-49의 "렌더 문서에 라벨 칩 0" 검사는 오버레이 속성 기준이라 표식이 있어도 통과 | [U] |
+| K-AC-17 | 폴백 2개 문서의 PNG(1280·390)에 표식 2개가 원래 크기로 보인다(축소 보기 비율 무관) | [B]·[V] |
+| K-AC-18 | 폴백 ≥1: 두 내보내기 버튼 `aria-disabled` + 이유 문장(개수·이름 목록 ≤3 + "외 k개") + "첫 구조 미리보기 섹션으로 이동"(누르면 그 섹션 선택) · 게이트 차단 동시 → 이유 목록 순서 = 게이트 → 구조 미리보기, `aria-describedby` 순서 같음 | [U] |
+| K-AC-19 | PNG 버튼: 게이트 차단·폴백이 있어도 활성 · `requestExport` 호출 0 · 진행 중 `aria-busy` · 성공 `role=status` 문구 · 실패 `role=alert` 문구 · 렌더 문서 준비 전 `aria-disabled` + 이유 | [U] |
+| K-AC-32 | 파일 이름 정리: `"  강남 카페/리브랜딩:2호점  "`·1280·r12 → `강남-카페-리브랜딩-2호점_1280_r12.png` · 폴백 있음 → `…_구조포함.png` · `"???"` → `page_…` · `"con"` → `page-con_…` · 41자 이상 → 40자 · 서로게이트 쌍 안 잘림 | [U] |
+| K-AC-33 | 캔버스 캡션 3상태 문구가 3.4 표와 같고 "시안" 단어 0 · 캔버스 스크롤 영역 접근 이름과 390 `h2` = "페이지 미리보기" | [U] |
+| K-AC-34 | 계측 `png_*` 이벤트 값에 프로젝트 이름·파일 이름·슬롯 글자 0 | [U] |
+
+(K-AC 번호는 이 명세 안에서만 쓰는 식별자다. 빈 번호 없음: 01~34.)
+
+### 4.2 M2a 시각 QA 대조 항목 (Designer, 1280·390 스크린샷)
+기준 문서: E2E 고정 조건(REF-LLM D6-3) — **A안 · 목적 inquiry**, ref-a 보드에서 시작, `portfolio`·`testimonials` 2개 지운 상태(본문 5: hero·about·services·faq·contact) + 지우기 전 상태(폴백 2개) 두 벌.
+| # | 볼 것 | 1280 | 390 |
+|---|---|---|---|
+| Q-1 | header: 브랜드·메뉴·CTA 한 줄 · 아래 구분선 장식 | 한 줄 | 브랜드 + "메뉴" · 시트 열린 장면 1장 추가 |
+| Q-2 | hero: 글자가 단색 패널 위 · 패널이 왼쪽 아래 · 그라디언트 방향 | 층 배치 | 미디어 띠 위 · 패널 아래 |
+| Q-3 | about: 2단 정렬(세로 가운데) · 이미지 비율 | 2단 | 1단(글→이미지) |
+| Q-4 | services: 카드 3열 같은 높이 · 카드 면이 섹션 면과 구분 | 3열 | 1열 |
+| Q-5 | faq: 닫힌 질문 3줄 · 펼침 표시 · 구분선 | 읽기 폭 | 전체 폭 |
+| Q-6 | contact: 방문자 안내가 폼 위에서 읽힘 · 비활성인데 흐리지 않음 | 2단 | 1단 |
+| Q-7 | footer: 어두운 띠 · 반투명 글자 없음 · 저작권 구분선 | 2단 | 1단 |
+| Q-8 | 섹션 톤 교대(`base`/`alt`)가 R-05대로 보이고 alt 섹션에 `muted` 글자 없음 | ✓ | ✓ |
+| Q-9 | 폴백 2개 상태: 표식 위치(위·오른쪽) · 캡션 "F1 · 일부" · 내보내기 이유 문장 · PNG 캡션 2문장 | ✓ | ✓("검사" 탭) |
+| Q-10 | PNG 파일 2장(1280·390)이 캔버스와 같은 모양 · 표식 보임 · 오버레이 없음 | ✓ | ✓ |
+| Q-11 | 정적 HTML을 로컬에서 열어 캔버스와 나란히 비교(FR-PUB-03) · 메뉴 시트·FAQ가 스크립트 없이 동작 | ✓ | ✓ |
+| Q-12 | 다른 프로필(ref-b처럼 `ink`가 밝은 팔레트)에서도 위 1~7이 성립 — 게이트 "대비 AA" 통과 버전으로 | ✓ | ✓ |
+- 스크린샷 저장 위치(제안): `docs/design/m2a/shots/qa-<번호>-<폭>.png`. 목업 대비 차이는 REPORT "다르게 한 곳" 표에 한 줄씩.
+
 ## 부록 A. 대비 계산 근거 (L2)
+재현: `python3 -B docs/design/m2a/contrast_calc_m2a.py` (출력 원문 `docs/design/m2a/logs/contrast_calc_m2a.out.txt`). 픽스처 팔레트는 `app/src/fixtures/referenceDetails.ts`에서 **읽는다**(읽기 전용) · 식 = `app/src/domain/contrast.ts` · 버림 2자리. 이 부록에만 hex가 있다.
+
+- **A-1 허용 조합 = 게이트 C-1~C-5와 같은 쌍.** 픽스처 원 팔레트 값에는 4.5 미만이 있다(예: ref-a C-5 3.89 · ref-d C-1 3.02). 이것은 **게이트가 막는다**(R-08 차단 → 프로필 대비 조정으로 보정한 버전을 쓰게 됨, 2a-04). 킷이 이 쌍만 쓰면 "게이트 통과 = 킷 글자 AA"가 성립한다.
+- **A-2 금지 조합이 실제로 미달하는 증거.** 같은 픽스처에서 X-1(`bg` 글자/`primary` 면 — 지금 와이어프레임 방식) ref-d 3.02 · ref-f 3.23, X-2(`muted`/`surface`) 6개 팔레트 **모두** 미달(1.80~4.42), X-4(`muted`/`ink` — 목업 footer 흐린 글자 계열) 5개 미달. 이 쌍들은 게이트가 보지 않으므로 킷이 쓰면 게이트 통과 뒤에도 미달 글자가 남는다 → 0.3 금지 규칙의 근거.
+- **M-1 폴백 표식**: `marker-text` #FFFFFF / `marker-face` #1A1A1A = **17.40**(기준 4.5 통과). 사용자 팔레트와 무관한 고정값.
+- C-3은 카드 톤 `dark`에서만 도는 검사다. 킷이 `ink`/`primary` 조합을 쓰는 곳은 어두운 카드 하나뿐이다(K1-4 3).
 
 ## 변경 이력
 | 판 | 내용 |
 |---|---|
 | r0 | 골격 + 0절 공통 규약 |
+| r1 | K1 7변형(변형마다 커밋) · K2 · K3 · K4 · 부록 A (Codex 적대적 검토 전) |

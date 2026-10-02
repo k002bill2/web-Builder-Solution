@@ -17,8 +17,8 @@
 - [x] K1-7 footer/biz-extended
 - [x] K2 contact/form 정적 동작 권장안
 - [x] K3 폴백 표식·차단 문구·PNG 버튼·캔버스 캡션
-- [ ] K4 K-AC·시각 QA 기준
-- [ ] 대비 계산 근거 (L2)
+- [x] K4 K-AC·시각 QA 기준
+- [x] 대비 계산 근거 (L2)
 - [ ] Codex 적대적 검토 1회 (logs/)
 - [ ] REPORT.md
 
@@ -32,3 +32,4 @@
 - K1-6 contact/form: 고정 필드 3 + 동의 · fieldset disabled · action 0 · 비활성은 흐림 아닌 글자로 알림 · 2단(lg 이상) → 1단.
 - K1-7 footer/biz-extended: ink 면 + bg 글자(C-2 뒤집기) · address · 링크 조각 = 글자 항목 · 반투명 글자 0.
 - K2: A안(비활성 폼 + 안내) 권장 · 방문자용/주인용 문구 분리. K3: 표식(위·오른쪽, 고정색, data-kit-marker) · 차단 문구(게이트 먼저) · PNG(이미지로 저장 묶음, 파일 이름 정리 규칙, 상태 4) · 캡션 3상태 + 캔버스 이름 '페이지 미리보기'.
+- K4: K-AC-01~34 · 시각 QA Q-1~12. 부록 A: contrast_calc_m2a.py(픽스처 읽기) — 금지 조합 X-2 6/6 미달 등 근거, 표식 M-1 17.40.

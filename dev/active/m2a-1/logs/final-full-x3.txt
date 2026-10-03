@@ -1,0 +1,61 @@
+# HEAD 415867f · npx vitest run ×3 (1차 시도는 2회차 중 외부 신호 144로 끊겨 처음부터 다시)
+## run 1 2026-10-03 03:58:16 load: { 74.66 43.93 30.59 }
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-1/app
+ Test Files  142 passed (142)
+      Tests  1447 passed (1447)
+   Start at  03:58:00
+   Duration  35.35s (environment 49%, tests 32%, setup 10%, transform 6%, import 4%)
+Environment  jsdom was created 142 times · 142.24s total, 49% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-1/app
+ Test Files  142 passed (142)
+      Tests  1447 passed (1447)
+   Start at  03:58:17
+   Duration  37.46s (tests 46%, environment 34%, transform 10%, setup 7%, import 3%)
+Environment  jsdom was created 142 times · 108.16s total, 34% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+run 1 exit=0 load-after: { 115.25 57.41 36.03 }
+## run 2 2026-10-03 03:58:55 load: { 115.25 57.41 36.03 }
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-1/app
+ Test Files  142 passed (142)
+      Tests  1447 passed (1447)
+   Start at  03:58:55
+   Duration  25.53s (environment 43%, tests 39%, setup 9%, transform 6%, import 4%)
+Environment  jsdom was created 142 times · 89.91s total, 43% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+run 2 exit=0 load-after: { 137.17 68.28 40.71 }
+## run 3 2026-10-03 03:59:21 load: { 137.17 68.28 40.71 }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+ Test Files  1 failed | 141 passed (142)
+      Tests  1 failed | 1446 passed (1447)
+   Start at  03:59:22
+   Duration  27.64s (environment 42%, tests 39%, setup 8%, transform 6%, import 4%)
+Environment  jsdom was created 142 times · 97.02s total, 42% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+run 3 exit=1 load-after: { 161.28 79.21 45.44 }
+DONE
+
+# 재실행 (위 3회차 1건 실패는 이름 미기록 — load 137→161, ego-browser 동시 실행 중. 실패 줄까지 남기도록 다시 ×3)
+## rerun 1 2026-10-03 04:01:50 load: { 104.29 79.08 49.40 }
+     × 섹션 줄 선택 → aria-current · 편집 h2 · 캔버스 라벨 칩이 같은 섹션, 포커스는 누른 줄 그대로 121ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/pages/StudioShell.test.tsx > 섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4) > 섹션 줄 선택 → aria-current · 편집 h2 · 캔버스 라벨 칩이 같은 섹션, 포커스는 누른 줄 그대로
+ Test Files  1 failed | 141 passed (142)
+      Tests  1 failed | 1446 passed (1447)
+   Duration  32.19s (tests 43%, environment 39%, setup 8%, transform 6%, import 4%)
+rerun 1 exit=1 load-after: { 115.53 84.15 52.41 }
+## rerun 2 2026-10-03 04:02:23 load: { 115.53 84.15 52.41 }
+ Test Files  142 passed (142)
+      Tests  1447 passed (1447)
+   Duration  25.99s (environment 42%, tests 38%, setup 8%, transform 6%, import 4%)
+rerun 2 exit=0 load-after: { 128.23 89.52 55.26 }
+## rerun 3 2026-10-03 04:02:50 load: { 128.23 89.52 55.26 }
+ Test Files  142 passed (142)
+      Tests  1447 passed (1447)
+   Duration  26.58s (environment 43%, tests 38%, setup 9%, transform 6%, import 4%)
+rerun 3 exit=0 load-after: { 146.47 97.40 59.28 }
+DONE2

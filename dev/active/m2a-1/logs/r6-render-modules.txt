@@ -1,0 +1,14 @@
+# vite build --mode render --outDir /tmp/m2a1-render --sourcemap (HEAD 415867f) · 소스맵 생성 바이트를 모듈 묶음별로 gzip · KB=1000B(check-bundle-size와 같은 단위) · '비례' = 단독 gzip 합을 전체 gzip에 맞춰 나눈 값(추정)
+전체 gzip 76.24 KB · 원본 239.61 KB
+react-dom                                  207.01 KB raw   63.69 KB gzip(단독)   62.03 KB 비례
+react                                        8.18 KB raw    3.06 KB gzip(단독)    2.98 KB 비례
+src/engine/sections/                         6.55 KB raw    2.90 KB gzip(단독)    2.82 KB 비례
+src/engine/validate/                         6.08 KB raw    2.78 KB gzip(단독)    2.70 KB 비례
+src/render/fallback/                         4.22 KB raw    1.85 KB gzip(단독)    1.81 KB 비례
+scheduler                                    3.54 KB raw    1.51 KB gzip(단독)    1.47 KB 비례
+src/render/                                  2.02 KB raw    1.05 KB gzip(단독)    1.02 KB 비례
+src/domain/                                  0.69 KB raw    0.52 KB gzip(단독)    0.51 KB 비례
+(런타임·기타)                                     0.75 KB raw    0.44 KB gzip(단독)    0.42 KB 비례
+src/features/studio/                         0.33 KB raw    0.26 KB gzip(단독)    0.25 KB 비례
+src/engine/                                  0.11 KB raw    0.12 KB gzip(단독)    0.11 KB 비례
+src/engine/contracts/                        0.13 KB raw    0.11 KB gzip(단독)    0.11 KB 비례

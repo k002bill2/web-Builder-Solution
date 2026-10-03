@@ -1,0 +1,7 @@
+Error: page.waitForFunction timed out after 15000ms on page p1; last URL was "http://127.0.0.1:4337/studio/project-1"; last title was "모던 카페 브랜드 프로젝트 편집".
+    at waitForFunctionTimeoutError (file:////[eval1]:19235:12)
+    at file:////[eval1]:18564:19
+    at async file:////[eval1]:16691:28
+{ spaceId: 11 }
+
+ego's nodejs process exited with code 1.

@@ -8,8 +8,19 @@
  */
 import type { CandidatePlan } from "../domain/generation";
 import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
-import { ProjectRepositoryError, type DocHead, type Project, type ProjectSnapshot, type StartDocMode, type StartDocResult } from "./projectRepository";
-import { checkSaveDoc, writeStartDoc } from "./startDocWrite";
+import {
+  ProjectRepositoryError,
+  type DocHead,
+  type ExportFormat,
+  type ExportGenerator,
+  type ExportJob,
+  type ExportRequestResult,
+  type Project,
+  type ProjectSnapshot,
+  type StartDocMode,
+  type StartDocResult,
+} from "./projectRepository";
+import { checkSaveDoc, judgeExport, writeStartDoc } from "./startDocWrite";
 import { deepFreeze, type StudioReader } from "./studioStore";
 
 interface DocState {
@@ -19,6 +30,15 @@ interface DocState {
   readonly starts: ReadonlyMap<string, { readonly key: string; readonly result: StartDocResult<DocHead> }>;
   /** 프로젝트마다 마지막으로 성공한 saveDoc 1건 — 키 (revision, hash) */
   readonly saves: ReadonlyMap<string, { readonly key: string; readonly doc: DocHead }>;
+  /** 프로젝트·형식마다 마지막으로 잡을 만든 requestExport 1건(8.3.2 멱등 기록) — 키 (format, docRevision) */
+  readonly exports: ReadonlyMap<string, { readonly key: string; readonly result: ExportRequestResult }>;
+  readonly jobs: ReadonlyMap<string, ExportJob>;
+}
+
+/** requestExport 판정 결과 — `run` = 이번 호출이 (다시) 실행할 잡(새 잡 · 재시도 가능 실패의 재실행) */
+export interface ExportOutcome {
+  readonly result: ExportRequestResult;
+  readonly run?: { readonly job: ExportJob; readonly doc: DocHead };
 }
 
 export interface DocBook {
@@ -29,11 +49,24 @@ export interface DocBook {
     args: { projectId: string; profileVersion: number; candidateId: string; mode: StartDocMode; expectedRevision?: number },
     commit: () => void,
   ) => StartDocResult<DocHead>;
+  /**
+   * 8.3.2 판정 1~8(동기, `via` = 저장소의 call — delay·fail 주입) → 새 잡·재실행이면 커밋 뒤 생성기를 돌린다(응답을 기다리지 않는다 — jobOf로 본다).
+   * `generate` = 요청 형식의 생성기(없으면 6단계 GENERATOR_UNAVAILABLE)
+   */
+  readonly requestExport: (
+    args: { projectId: string; format: ExportFormat; docRevision: number },
+    generate: ExportGenerator | undefined,
+    via: (work: (commit: () => void) => ExportOutcome) => Promise<ExportOutcome>,
+  ) => Promise<ExportRequestResult>;
+  readonly jobOf: (jobId: string) => ExportJob | undefined;
 }
 
 const fail = (code: "NOT_FOUND" | "SCHEMA_INVALID", message: string) => new ProjectRepositoryError(code, message);
 const isMode = (mode: unknown): mode is StartDocMode => mode === "create" || mode === "restart";
 const isVersion = (n: unknown): n is number => typeof n === "number" && Number.isSafeInteger(n) && n >= 1;
+const isFormat = (f: unknown): f is ExportFormat => f === "react-zip" || f === "static-html";
+/** "내보내기 전 · 14:02"(E-S27) — 주입 시각(ISO)의 시:분 */
+const exportSnapshotName = (iso: string) => `내보내기 전 · ${iso.slice(11, 16)}`;
 
 /** 판정 3 — (계열, 버전)의 생성 잡과 그 안의 구조안. 잡 키는 생성 저장소와 같다(profileId|version|library|generator) */
 function planOf(store: StudioReader, project: Project, profileVersion: number, candidateId: string) {
@@ -46,12 +79,92 @@ function planOf(store: StudioReader, project: Project, profileVersion: number, c
 }
 
 export function createDocBook(store: StudioReader, now: () => string): DocBook {
-  let state: DocState = { docs: new Map(), snapshots: new Map(), starts: new Map(), saves: new Map() };
+  let state: DocState = { docs: new Map(), snapshots: new Map(), starts: new Map(), saves: new Map(), exports: new Map(), jobs: new Map() };
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
+
+  /** 8.3.2 판정 1~8 — 동기. `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0) */
+  function judgeAndWrite({ projectId, format, docRevision, hasGenerator }: { projectId: string; format: ExportFormat; docRevision: number; hasGenerator: boolean }, commit: () => void): ExportOutcome {
+      // 1 모양
+      if (typeof projectId !== "string" || !isFormat(format) || !Number.isSafeInteger(docRevision)) throw fail("SCHEMA_INVALID", "requestExport 인자");
+      // 2 멱등 키 — 같으면 이전 결과(같은 잡). 재시도 가능 실패로 끝난 잡은 같은 잡을 다시 실행(새 잡·스냅샷 0)
+      const key = `${format}|${docRevision}`;
+      const last = state.exports.get(`${projectId}|${format}`);
+      if (last?.key === key) {
+        const job = state.jobs.get(last.result.job.jobId) ?? last.result.job;
+        const doc = state.docs.get(projectId);
+        if (job.state === "failed" && job.retryable && doc) {
+          const again = deepFreeze({ jobId: job.jobId, format: job.format, docRevision: job.docRevision, state: "queued" as const, retryable: false });
+          commit();
+          state = { ...state, jobs: new Map(state.jobs).set(job.jobId, again) };
+          return { result: deepFreeze({ ...last.result, job: again, wrote: false }), run: { job: again, doc } };
+        }
+        return { result: deepFreeze({ ...last.result, job, wrote: false }) };
+      }
+      // 3 NOT_FOUND — 프로젝트·문서(·문서가 가리키는 프로필 버전)
+      const project = projectOf(projectId);
+      const doc = state.docs.get(projectId);
+      if (!project || !doc) throw fail("NOT_FOUND", projectId);
+      const profile = store.versions(project.profileId).find((v) => v.version === doc.profileVersion);
+      if (!profile) throw fail("NOT_FOUND", `프로필 v${doc.profileVersion}`);
+      // 4 STALE_DOC — 저장 전 변경을 내보내지 않는다
+      if (doc.revision !== docRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${docRevision} ≠ ${doc.revision}`, { doc });
+      // 5 GATE_FAILED — 저장된 문서로 서버 게이트 · 7은 같은 판정에서 함께 고른다(순서는 아래 분기)
+      const judged = judgeExport(doc, profile);
+      if (judged.gateBlocked) throw new ProjectRepositoryError("GATE_FAILED", "게이트 차단");
+      // 6 GENERATOR_UNAVAILABLE — 요청 형식의 생성기 없음
+      if (!hasGenerator) throw new ProjectRepositoryError("GENERATOR_UNAVAILABLE", format);
+      // 7 UNRENDERED_SECTIONS — 렌더러 없는 섹션(개수 · instanceId 문서 순서)
+      if (judged.unrendered.length > 0) throw new ProjectRepositoryError("UNRENDERED_SECTIONS", `${judged.unrendered.length}`, { sections: judged.unrendered });
+      // 8 쓰기 — auto·export 스냅샷 + 잡 + 멱등 기록, 한 번에(commit 실패 → 변화 0)
+      const createdAt = now();
+      const snapshots = state.snapshots.get(projectId) ?? [];
+      const snapshot: ProjectSnapshot<DocHead> = deepFreeze({
+        snapshotId: `snapshot-${snapshots.length + 1}`,
+        projectId,
+        kind: "auto",
+        reason: "export",
+        name: exportSnapshotName(createdAt),
+        createdAt,
+        doc,
+        profileVersion: doc.profileVersion,
+        candidateId: doc.candidateId,
+        hash: doc.hash,
+      });
+      const job: ExportJob = deepFreeze({ jobId: `export-${state.jobs.size + 1}`, format, docRevision, state: "queued", retryable: false });
+      const result: ExportRequestResult = deepFreeze({ job, snapshotId: snapshot.snapshotId, snapshotName: snapshot.name, wrote: true });
+      commit();
+      state = {
+        ...state,
+        snapshots: new Map(state.snapshots).set(projectId, [...snapshots, snapshot]),
+        jobs: new Map(state.jobs).set(job.jobId, job),
+        exports: new Map(state.exports).set(`${projectId}|${format}`, { key, result }),
+      };
+      return { result, run: { job, doc } };
+  }
+  function updateJob(job: ExportJob) {
+    state = { ...state, jobs: new Map(state.jobs).set(job.jobId, deepFreeze(job)) };
+  }
+  /** 잡 실행 — running → succeeded(내려받기 참조·해시) / failed(JOB_TIMEOUT은 그대로, 그 밖 예외 = INFRA — 둘 다 재시도 가능) */
+  async function runJob(job: ExportJob, generate: () => ReturnType<ExportGenerator>) {
+    updateJob({ ...job, state: "running" });
+    try {
+      const made = await generate();
+      updateJob({ ...job, state: "succeeded", retryable: false, downloadRef: made.downloadRef, resultHash: made.resultHash });
+    } catch (error) {
+      updateJob({ ...job, state: "failed", errorCode: error instanceof ProjectRepositoryError && error.code === "JOB_TIMEOUT" ? "JOB_TIMEOUT" : "INFRA", retryable: true });
+    }
+  }
 
   return {
     docOf: (projectId) => state.docs.get(projectId),
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
+    jobOf: (jobId) => state.jobs.get(jobId),
+    requestExport: async (args, generate, via) => {
+      const outcome = await via((commit) => judgeAndWrite({ ...args, hasGenerator: !!generate }, commit));
+      const run = outcome.run;
+      if (run && generate) void runJob(run.job, () => generate({ projectId: args.projectId, format: args.format, doc: run.doc }));
+      return outcome.result;
+    },
     save: (projectId, expectedRevision, doc, commit) => {
       if (!Number.isSafeInteger(expectedRevision)) throw fail("SCHEMA_INVALID", `revision ${expectedRevision}`);
       const checked = checkSaveDoc(projectId, doc);

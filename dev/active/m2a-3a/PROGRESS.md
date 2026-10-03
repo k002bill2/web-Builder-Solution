@@ -16,7 +16,7 @@
 - [x] E0 기준선 · 공간 확보 — **정지 보고**: 기준 124.70 · 시제품 130.97(+6.27) · 옵션 A 125.57(+0.87) → 경로 없음. REPORT 2절 선택지 A+B/B/C (logs/e0-*)
 - [x] E1 게이트 8줄 표시(5.12 · E-S22~25 · E-AC-25·27·28) — GatePanel.test 11/11 · /studio 124.98/127
 - [x] E2 줄 → 이동(E-AC-26 · E-S26) — E1과 같은 커밋
-- [ ] E3 저장소 requestExport 8.3.2 8단계(생성기 주입 · 기본 둘 다 없음 · UNRENDERED_SECTIONS · 한 트랜잭션)
+- [x] E3 저장소 requestExport 8.3.2 8단계(생성기 주입 · 기본 둘 다 없음 · UNRENDERED_SECTIONS · 한 트랜잭션) — memoryExport.test 10/10
 - [ ] E4 버튼 사전 차단 · 이유 목록(5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18)
 - [ ] E5 내보내기 시작 · 결과 문구(E-S27 · E-AC-30 · 계측)
 - [ ] E6 브라우저 1280·390 캡처(shots/e6-*)

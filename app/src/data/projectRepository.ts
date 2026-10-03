@@ -19,6 +19,7 @@ export type ProjectErrorCode =
   | "DOC_EXISTS"
   | "UNKNOWN_VARIANT"
   | "GENERATOR_UNAVAILABLE"
+  | "UNRENDERED_SECTIONS"
   | "GATE_FAILED"
   | "JOB_TIMEOUT"
   | "INFRA"
@@ -117,6 +118,17 @@ export interface ExportJob {
   readonly resultHash?: string;
 }
 
+/**
+ * 형식별 생성기(8.3.2 6단계 — 주입식). 저장된 문서로 산출물을 만들고 내려받기 참조·결과 해시를 돌려준다.
+ * 재시도 가능 실패는 `ProjectRepositoryError`(`JOB_TIMEOUT`·`INFRA`)로 던진다 — 그 밖 예외도 `INFRA`로 기록한다.
+ * M2A-3a 메모리 기본값 = 둘 다 없음(→ `GENERATOR_UNAVAILABLE`). 3b가 `static-html`을 등록한다.
+ */
+export type ExportGenerator<TDoc = DocHead> = (input: { readonly projectId: string; readonly format: ExportFormat; readonly doc: TDoc }) => Promise<{
+  readonly downloadRef: string;
+  readonly resultHash: string;
+}>;
+export type ExportGenerators<TDoc = DocHead> = Partial<Readonly<Record<ExportFormat, ExportGenerator<TDoc>>>>;
+
 /** `requestExport` 호출 결과(8.3.2 "결과 모양") — `ExportJob` 필드는 바꾸지 않는다 */
 export interface ExportRequestResult {
   readonly job: ExportJob;
@@ -157,16 +169,23 @@ export class ProjectRepositoryError<TDoc = unknown> extends Error {
   readonly project?: Project;
   /** STALE_DOC·DOC_EXISTS일 때 최신(기존) 문서 */
   readonly doc?: TDoc;
+  /** UNRENDERED_SECTIONS(8.3.2 7단계)일 때 렌더러 없는 섹션 `instanceId` 목록(문서 순서) — 개수 = 길이 */
+  readonly sections?: readonly string[];
   /** 조작 뒤 청크가 만든 알림 문장 — UNKNOWN_VARIANT = 프로필 화면 알림(8.2.1 (b)) · DOC_EXISTS = 이동 뒤 편집 알림(8.3.1) */
   readonly alert?: string;
 
-  constructor(code: ProjectErrorCode, message: string, latest: { readonly project?: Project; readonly doc?: TDoc; readonly alert?: string } = {}) {
+  constructor(
+    code: ProjectErrorCode,
+    message: string,
+    latest: { readonly project?: Project; readonly doc?: TDoc; readonly alert?: string; readonly sections?: readonly string[] } = {},
+  ) {
     super(`${code}: ${message}`);
     this.name = "ProjectRepositoryError";
     this.code = code;
     if (latest.project) this.project = latest.project;
     if (latest.doc !== undefined) this.doc = latest.doc;
     if (latest.alert !== undefined) this.alert = latest.alert;
+    if (latest.sections) this.sections = latest.sections;
   }
 }
 

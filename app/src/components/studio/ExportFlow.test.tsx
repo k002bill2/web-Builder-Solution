@@ -98,6 +98,25 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     await waitFor(() => expect(requestExport).toHaveBeenCalledTimes(1));
   });
 
+  // M2A-3a-fix F2 (Codex P2 1): `open` 속성이 있으면 showModal()이 돌지 않아 비모달 — 배경 조작·Esc 0
+  it("경고 확인 대화상자 = showModal()(모달) · Esc(cancel) = 취소 · 요청 0 · 닫히면 여는 버튼으로 포커스 복귀", async () => {
+    const showModal = vi.spyOn(HTMLDialogElement.prototype, "showModal");
+    try {
+      const { requestExport } = await open(clean({ meta: { title: "가".repeat(80), description: "브랜드를 소개하는 페이지입니다." } }));
+      act(() => html().focus());
+      act(() => void fireEvent.click(html()));
+      const dialog = await screen.findByRole("dialog", { name: "경고 1건이 있습니다" });
+      expect(showModal).toHaveBeenCalledTimes(1);
+      expect(document.activeElement).toBe(within(dialog).getByRole("button", { name: "경고를 확인했습니다 · 내보내기" }));
+      act(() => void fireEvent(dialog, new Event("cancel", { cancelable: true })));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(requestExport).not.toHaveBeenCalled();
+      expect(document.activeElement).toBe(html());
+    } finally {
+      showModal.mockRestore();
+    }
+  });
+
   it("편집 직후(결과 오래됨 · 저장 전 변경) → 다시 검사 → 저장 먼저 → 저장된 revision으로 요청 1회 (E-AC-28·30)", async () => {
     const { requestExport, saved } = await open(clean());
     act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));

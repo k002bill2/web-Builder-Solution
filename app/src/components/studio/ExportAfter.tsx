@@ -10,20 +10,22 @@ import { Callout } from "../ds/Callout";
  * 내보내기 조작 뒤 부품 (DS-2A-05 S-B5 — 내보내기 버튼을 눌렀을 때만 받는다): 경고 확인 대화상자(E-S24) · 결과(E-S27 · m2a 3.2 B).
  */
 
-/** E-S24 · Q8=A — 경고 목록 + "경고를 확인했습니다 · 내보내기" / "취소". 체크박스 확인 없음. Esc = 취소 */
+/** E-S24 · Q8=A — 경고 목록 + "경고를 확인했습니다 · 내보내기" / "취소". 체크박스 확인 없음. 모달(`showModal`) · Esc = 취소 · 닫히면 연 버튼으로 포커스 */
 export function ExportConfirmDialog({ report, onConfirm, onCancel }: { readonly report: GateReport; readonly onConfirm: () => void; readonly onCancel: () => void }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
+    // 연 버튼 — 닫히면(언마운트) 포커스를 돌려준다(모달을 DOM에서 빼면 브라우저가 돌려주지 않는다)
+    const opener = document.activeElement as HTMLElement | null;
     const el = dialog.current;
-    if (el && !el.open) el.showModal?.();
+    if (el && !el.open) el.showModal();
     el?.querySelector<HTMLButtonElement>("[data-confirm]")?.focus();
+    return () => opener?.focus();
   }, []);
   const warnings = report.rows.flatMap((row) => row.issues.filter((i) => i.severity === "warn").map((issue) => ({ row: GATE_ROW_NAMES[row.id], issue })));
   return (
     <dialog
       ref={dialog}
-      open
       aria-labelledby={`${id}-title`}
       onCancel={(event) => {
         event.preventDefault();

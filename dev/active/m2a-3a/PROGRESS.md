@@ -35,7 +35,7 @@
 ## fix (브리프 `docs/06-handoff/M2A-3A-FIX_BRIEF.md` · 시작 c2d6a7a · 2026-10-03)
 - [x] REPORT 10절 골격
 - [x] F1 처리되지 않은 오류 3건(contrastRow ← useGateReport) — 전체 vitest exit 0 · 1590 (logs/f1-full.txt) · /studio 126.62
-- [ ] F2 확인 대화상자 showModal · Esc · 포커스 복귀
+- [x] F2 확인 대화상자 showModal · Esc · 포커스 복귀 — ExportFlow.test 9/9 · /studio 126.64
 - [ ] F3 잡 실행 응답 분리 · 재실행 = 잡 스냅샷 문서
 - [ ] F4 다시 시도 = 같은 revision이면 같은 잡, 다르면 일반 시작 흐름
 - [ ] F5 r4.11 대체텍스트(실제 이미지 슬롯만) · 이관 표

@@ -159,7 +159,8 @@
 | 단계 | 커밋 | 내용 |
 |---|---|---|
 | 골격 | e839b15 | 10절 골격 · PROGRESS fix 체크리스트 |
-| F1 | (이 커밋) | 대비 줄 color_tokens 없음 = unreadable 경로 · useGateReport 실패 상태 · GateList "검사하지 못했습니다" |
+| F1 | 04a1edb | 대비 줄 color_tokens 없음 = unreadable 경로 · useGateReport 실패 상태 · GateList "검사하지 못했습니다" |
+| F2 | (이 커밋) | 경고 확인 대화상자 showModal · Esc 취소 · 포커스 복귀 |
 
 ### 10.2 F1 처리되지 않은 오류 3건
 - **원인**: `SectionRemove.test.tsx`의 프로필 픽스처 `base: { motion_preset: "L1" }`(color_tokens 없음) → `contrastRow.ts` `applied.color_tokens[role]`에서 TypeError → `useGateReport.ts` `compute` 안 `void compute(doc).then(...)`이 거부를 받지 않아 Unhandled Rejection(그 파일의 진입 직후 계산 3회). 앱의 정상 경로에서는 프로필 버전이 늘 참조의 `base`(color_tokens 포함)를 이어받아(`memoryProfileAdjust` `base: latest.base`) 재현 경로를 찾지 못했다 — 다만 저장 데이터가 잘못되면 같은 거부가 나므로 둘 다 막는다.
@@ -169,7 +170,9 @@
 - **판정: 전체 vitest exit 0 · Errors 0** — 168 files · 1590 tests (`logs/f1-full.txt`). 번들 `/studio` 진입 126.62(≤126.70).
 
 ### 10.3 F2 확인 대화상자 모달
-- (진행 중)
+- `ExportAfter.tsx` — `open` 속성 제거 → 마운트 때 `showModal()`(모달: 배경 inert · Esc = cancel 이벤트 → `onCancel` = 요청 0) · `showModal?.()`의 `?.` 제거(테스트 setup shim이 있음) · 연 버튼(마운트 시점 `document.activeElement`)을 기억해 언마운트 때 포커스 복귀(모달을 DOM에서 빼는 경로는 브라우저가 포커스를 돌려주지 않음).
+- 테스트(RED `logs/f2-red.txt` "showModal 0회"): ExportFlow.test "경고 확인 대화상자 = showModal()(모달) · Esc(cancel) = 취소 · 요청 0 · 닫히면 여는 버튼으로 포커스 복귀". 배경 inert는 jsdom shim이 흉내 내지 않아(setup.ts 주석) 브라우저 F6에서 본다.
+- 번들: `/studio` 진입 126.64(조작 뒤 청크만 바뀜, 진입 +0.02는 청크 해시 변동) (`logs/f2.txt`).
 
 ### 10.4 F3 저장소 잡 (Codex P2 2·3)
 - (진행 중)

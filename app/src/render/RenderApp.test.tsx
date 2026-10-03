@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sampleDoc } from "../engine/testing/sampleDoc";
 import { RenderApp } from "./RenderApp";
+import { SAMPLE_KIT_TOKENS } from "./testing/sampleKitTokens";
 
 /**
  * 렌더 문서 메시지 수신기 (M2A-1 R3 · Opus R2 B-1-6). 단위 테스트에서는 최상위 창이라 `window.parent === window` —
@@ -68,5 +69,24 @@ describe("렌더 문서 수신기", () => {
     fromParent({ type: "select", instanceId: "s-about" });
     expect(sent("rects").length).toBeGreaterThan(before);
     expect(screen.queryByText(/^About · /)).toBeNull();
+  });
+
+  it("킷 토큰 없음 → error{NO_KIT_TOKENS} · 킷 섹션은 그리지 않고 폴백 섹션(중립 토큰)은 계속 그린다 · rects 보고 (MQ-1)", () => {
+    const { container } = render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc() });
+    expect(sent("error")).toEqual([{ type: "error", code: "NO_KIT_TOKENS" }]);
+    expect(container.querySelectorAll("[data-kit]")).toHaveLength(0);
+    expect(container.querySelectorAll('[data-fallback="true"]').length).toBeGreaterThan(0);
+    expect(sent("rects").length).toBeGreaterThan(0);
+  });
+
+  it("킷 토큰 있음 → error 0 · 폴백 팔레트 = kitTokens.palette · 사이트 변수 --site-* 적용", () => {
+    const { container } = render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    expect(sent("error")).toEqual([]);
+    const fallback = container.querySelector<HTMLElement>("[data-fallback-root]")!;
+    expect(fallback.style.getPropertyValue("--canvas-primary")).toBe(SAMPLE_KIT_TOKENS.palette.primary);
+    const site = container.querySelector<HTMLElement>("[data-site-root]")!;
+    expect(site.style.getPropertyValue("--site-primary")).toBe(SAMPLE_KIT_TOKENS.palette.primary);
   });
 });

@@ -38,8 +38,8 @@ export function connectRenderFrame() {
   const renders = () => sent.filter((m): m is Extract<ParentMessage, { type: "render" }> => m.type === "render");
   return {
     sent,
-    /** 마지막으로 보낸 render 메시지의 문서·팔레트 */
+    /** 마지막으로 보낸 render 메시지의 문서·킷 토큰 입력(팔레트 포함, MQ-1) */
     lastDoc: () => renders().at(-1)!.doc as PageDoc,
-    lastPalette: () => renders().at(-1)!.palette,
+    lastKitTokens: () => renders().at(-1)!.kitTokens,
   };
 }

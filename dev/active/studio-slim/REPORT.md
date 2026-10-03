@@ -26,7 +26,9 @@
 
 - 근거: `logs/s1-protoA-bundle.txt` · `logs/s1-protoA.patch` + `logs/s1-protoA-deferredStudio.ts.txt` · `logs/s1-protoA-chunk-diff.txt`(청크별 gzip 바이트 전후) · `logs/s1-protoB-bundle.txt` · `logs/s1-protoB-vite.patch`.
 - **A의 `/compare` 증가 원인(청크 비교)**: store·프로필을 보드와 다른 청크로 떼면 Rolldown이 예전 `profileDraft` 청크에 있던 작은 모듈을 따로 쪼갠다 — `chunkRetry` 0.31 · `compareBoardRepository` 0.19 · `fonts` 0.26 · `hash` 0.17 · `generationRepository` 0.16 · `generatorVersion` 0.08(새 청크) — 청크마다 머리·import 문이 붙고, `CompareBoardPage`의 preload 목록(`__vite__mapDeps`)에 경로 4개가 늘어 **첫 화면** +0.07, 보드 구현이 별도 청크가 되며 +0.36. `/compare`가 생성 구현을 안 받아 −0.88이지만 이 오버헤드가 더 크다.
-- 브리프 예시 (b) "store·팩토리만 두고 구현은 화면별 청크가" 는 A와 같은 분할 지점이라(store·프로필 ≠ 보드 청크) 같은 쪼개짐이 생긴다 → 따로 시제품하지 않았다(B가 그 쪼개짐을 막는 시도).
+- 브리프 예시 (b) "store·팩토리만 두고 구현은 화면별 청크가" 는 A와 같은 분할 지점(store·프로필 ≠ 보드 청크)이라 같은 쪼개짐이 생길 것으로 **추정(L3, 미실측)** → 따로 시제품하지 않았다(B가 그 쪼개짐을 막는 시도).
+- **쪼개짐 원인 확인(빌드 없이 manifest, `logs/s1-split-importers.txt`)**: 기준선에서는 이 작은 모듈들이 `profileDraft` 청크 하나에 들어 있었고 그 청크를 `memoryStudio`·`memoryProjectRepository`·`memoryBoardConfirm`·`memoryGenerate`·`boardInput`·`boardEngine`이 함께 import했다(memoryStudio가 모두에 닿아 묶였다). 안 A에서는 core가 `profileDraft`에 닿지 않아 모듈마다 import 주체 집합이 갈린다 — `chunkRetry`(core·memoryBoardConfirm·memoryProjectRepository·boardEngine) · `compareBoardRepository`(memoryBoardConfirm·보드 구현·boardEngine) · `fonts`(profileDraft·boardInput·boardEngine) · `hash`(profileDraft·memoryGenerate) · `generationRepository`·`generatorVersion`(memoryGenerate·memoryDocBook·생성 구현). **원인이 import 경로 하나가 아니라 6곳**이라 경로 하나 조정하는 시제품 C는 하지 않았다(`chunkRetry`는 `/studio`의 프로젝트 저장소도 써서 보드 쪽으로 되돌릴 수 없다).
+- 안 A 시제품에서 확인한 것은 빌드(typecheck 포함)·번들 판정뿐 — vitest·lint는 돌리지 않았다.
 
 ## 4. 번들 전후 표
 | 체크포인트 | 공통 | `/catalog` 첫/진입 | `/references/:id` 첫/진입 | `/compare` 첫/진입 | `/profile` 첫/진입 | `/projects` 첫/진입 | `/studio` 첫/진입 | 렌더 JS / CSS |
@@ -44,7 +46,7 @@
 - 막힌 이유: 안 A는 `/compare` 첫 화면 +0.09 · 진입 +0.31로 브리프 "다른 화면 ±0.03 이내 또는 감소, 늘면 버린다"에 걸린다(절대값은 98.84/100 · 121.71/125로 예산 안). `/profile` 진입 −4.96 · `/projects` −6.91은 감소.
 - 선택지(추천 순):
   1. **A 채택 + `/compare` 증가 허용(추천)** — `/compare` +0.31(진입 여유 3.29 유지)을 받아들이면 `/studio` 여유 6.56KB(멈춤선 124.70 기준 6.26). M2A-3a +6.27과는 0.01 차이라 S3 후보(아래) 하나와 함께 가야 한다.
-  2. **A + 청크 정리 추가 레인** — 작은 청크 쪼개짐(`chunkRetry`·`fonts`·`hash`·`compareBoardRepository`)을 import 경로 조정으로 되돌려 `/compare`를 ±0.03에 넣는 시도(L3 추정, 미실측: 쪼개짐 오버헤드 ≈ 0.5 중 일부). `advancedChunks` 묶기는 B에서 공통 +4로 실패.
+  2. **A + 청크 정리 추가 레인** — 작은 청크 쪼개짐을 import 구조 조정으로 되돌려 `/compare`를 ±0.03에 넣는 시도. 원인이 6곳(3절)이고 `advancedChunks` 묶기는 B에서 공통 +4로 실패 → 성공 여부 L3(낮음), 미실측.
   3. 이 레인 종료 — M2A-3a는 m2a-3a REPORT 2절 선택지(A 게이트 접힘 SPEC 개정 / C 예산 개정)로.
 - S3 후보(SPEC 분류 변경 필요 여부 미확인, 이동하지 않음): `useAutosaveScheduler` 1.48(진입 자동 — 자동 저장 S-B4 근거 행 확인 필요) · `/studio` 진입의 `sectionLibrary` 0.68은 안 A에서 이미 빠짐.
 - 4337 서버: 띄우지 않음.

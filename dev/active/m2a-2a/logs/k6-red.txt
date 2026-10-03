@@ -1,0 +1,8 @@
+     × 구조: section aria-labelledby = h1 id · 제목·부제·CTA(첫 contact 앵커) · DOM 순서 h1 → 미디어 (K-AC-21 DOM) 28ms
+     × K-AC-20: 글자 3요소의 가장 가까운 면 = 카피 패널(primary) — 미디어 층 안 글자 0 7ms
+     × K-AC-20: 이미지 끔 → 미디어 요소 0, 섹션 면 = primary 10ms
+     × K-AC-22: 로컬 이미지(URL 있음) → img[alt=슬롯 alt] + width·height · 즉시 로드 · 장식이면 alt='' 6ms
+     × K-AC-22 · MQ-5: 플레이스홀더(또는 Blob 미도착) → 그라디언트 요소 aria-hidden, img 0 6ms
+     × 0.8 · K-AC-04: 부제 빈 값 → 부제 요소 0 · 빈 p 0 / K-AC-03 상한(제목 40 · 부제 120 · CTA 16) 그대로 9ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  6 failed (6)

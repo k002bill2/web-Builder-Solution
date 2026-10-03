@@ -1,6 +1,7 @@
-/* 렌더 문서 CSS (ADR-004 개정 2 — CSS ≤ 30KB 별도 판정). 유틸리티는 src/render 소스만 스캔한다(앱 전체 스캔 금지) */
+/* 렌더 문서 CSS (ADR-004 개정 2 — CSS ≤ 30KB 별도 판정). 유틸리티는 src/render + src/kit 소스만 스캔한다(앱 전체 스캔 금지, M2A-2a K3) */
 @import "tailwindcss" source(none);
 @source "./";
+@source "../kit/";
 
 @import "../styles/tokens/fonts.css" layer(base);
 @import "../styles/tokens/brand.css" layer(base);
@@ -11,3 +12,10 @@
 @import "../styles/tokens/base.css" layer(base);
 
 @import "../styles/theme.css";
+@import "../kit/kit.css";
+
+/* 폴백 표식 고정 색 (m2a 3.1 · 부록 A M-1 17.40) — 사용자 팔레트·앱 DS 토큰 둘 다 아님 */
+[data-kit-marker="fallback"] {
+  --marker-face: rgb(26 26 26);
+  --marker-text: rgb(255 255 255);
+}

@@ -23,7 +23,8 @@ function pointsToEngine(fromFile: string, spec: string): boolean {
 
 /** SRC 기준 경로 — 정확히 같은 파일 또는 `/**` 접두 디렉터리 */
 // render/** = 렌더 문서(render.html 엔트리, 앱 번들 밖 — ADR-004 개정 2): validatePageDoc·섹션 레지스트리만. ops·gate 금지는 render/renderImportGuard.test.ts
-const ENGINE_IMPORT_ALLOWED: readonly string[] = ["pages/StudioPage.tsx", "components/studio/**", "features/studio/**", "data/startDocWrite.ts", "render/**"];
+// kit/** = 렌더 문서 킷(M2A-2a K3): 엔진은 `import type`(문서 계약)만 — 값 import는 test/kitGuard.test.ts가 react·킷 내부로 막는다
+const ENGINE_IMPORT_ALLOWED: readonly string[] = ["pages/StudioPage.tsx", "components/studio/**", "features/studio/**", "data/startDocWrite.ts", "render/**", "kit/**"];
 
 function isAllowed(relPath: string): boolean {
   return ENGINE_IMPORT_ALLOWED.some((rule) => (rule.endsWith("/**") ? relPath.startsWith(rule.slice(0, -2)) : relPath === rule));

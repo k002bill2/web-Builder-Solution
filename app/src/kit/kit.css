@@ -1,0 +1,25 @@
+/* 킷 공통 CSS (M2A-2a K3 · m2a 0.3·0.4·0.7·0.10) — 킷 섹션 루트 [data-kit] 아래만. 값은 --site-* 변수만(hex·px·vh·모션 0, 가드 kitGuard) */
+@layer components {
+  [data-kit] {
+    font-family: var(--site-font);
+    font-weight: var(--site-weight-body);
+    line-height: 1.5;
+    color: var(--site-ink);
+    /* 앵커 이동한 제목이 sticky header(두 줄 높이)에 가려지지 않게 (K1-1 1) */
+    scroll-margin-top: var(--site-header-offset);
+  }
+  /* 0.7 넘침 — 말줄임 금지, 긴 영문·URL은 줄바꿈, 한글은 어절 단위 */
+  [data-kit] :where(h1, h2, h3, p, li, a, span, address, button) {
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+  }
+  [data-kit] :where(h1, h2, h3) {
+    font-weight: var(--site-weight-heading);
+    line-height: 1.25;
+  }
+  /* 0.3 포커스 링 — 안쪽 간격(면 색이 비침) + 바깥 = 그 면의 알아보는 경계 역할(--kit-ring) */
+  [data-kit] :where(a, button):focus-visible {
+    outline: var(--site-stroke-2) solid var(--kit-ring, var(--site-ink));
+    outline-offset: var(--site-stroke-2);
+  }
+}

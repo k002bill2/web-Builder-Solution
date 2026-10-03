@@ -9,7 +9,7 @@
     scroll-margin-top: var(--site-header-offset);
   }
   /* 0.7 넘침 — 말줄임 금지, 긴 영문·URL은 줄바꿈, 한글은 어절 단위 */
-  [data-kit] :where(h1, h2, h3, p, li, a, span, address, button) {
+  [data-kit] :where(h1, h2, h3, p, li, a, span, address, button, summary, label, legend) {
     overflow-wrap: anywhere;
     word-break: keep-all;
   }
@@ -18,7 +18,7 @@
     line-height: 1.25;
   }
   /* 0.3 포커스 링 — 안쪽 간격(면 색이 비침) + 바깥 = 그 면의 알아보는 경계 역할(--kit-ring) */
-  [data-kit] :where(a, button):focus-visible {
+  [data-kit] :where(a, button, summary):focus-visible {
     outline: var(--site-stroke-2) solid var(--kit-ring, var(--site-ink));
     outline-offset: var(--site-stroke-2);
   }
@@ -476,6 +476,43 @@
     }
     .kit-card {
       padding: var(--site-card-pad);
+    }
+  }
+}
+
+/* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
+@layer components {
+  .kit-faq-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s5);
+  }
+  .kit-faq-list {
+    max-width: var(--site-prose-max);
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-faq-item {
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-faq-q {
+    min-height: var(--site-hit-min);
+    padding-block: var(--site-s3);
+    font-size: var(--site-t0);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+    cursor: pointer;
+  }
+  .kit-faq-a {
+    padding-block: var(--site-s2) var(--site-s4);
+  }
+  .kit-faq-answer {
+    margin: 0;
+    white-space: pre-line;
+    color: var(--kit-soft);
+  }
+  @media (width >= 48rem) {
+    .kit-faq-q {
+      font-size: var(--site-t1);
     }
   }
 }

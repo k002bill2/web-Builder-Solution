@@ -1,5 +1,6 @@
 import type { SectionInstance } from "../engine/contracts/pageDoc";
 import { AboutStory } from "./AboutStory";
+import { FaqAccordion } from "./FaqAccordion";
 import { FooterBizExtended } from "./FooterBizExtended";
 import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
@@ -15,6 +16,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "hero/fullbleed-left": HeroFullbleedLeft,
   "about/story": AboutStory,
   "services/cards-3": ServicesCards3,
+  "faq/accordion": FaqAccordion,
   "footer/biz-extended": FooterBizExtended,
 });
 

@@ -137,6 +137,46 @@ describe("내보내기 전 스냅샷 한 곳 · 멱등 (8.3.2 8단계 · E-AC-43
     expect(await exportSnapshots(repo)).toHaveLength(1);
   });
 
+  // M2A-3a-fix F3 (Codex P2 2): 커밋 뒤 잡 실행은 응답 전달 성공과 분리 — 응답이 끊겨도 잡은 돈다
+  it("fail phase:'response' → 커밋된 잡은 그대로 실행 · 같은 요청 재시도 → 같은 잡 succeeded · 생성기 1회", async () => {
+    let lose = true;
+    const fail = (c: ProjectCall) => (lose && c.method === "requestExport" && c.phase === "response" ? new Error("response 실패") : undefined);
+    const generate = vi.fn(fake);
+    const { repo, save } = await setup({ generators: { "static-html": generate }, fail });
+    const doc = await save(RENDERED);
+    await expect(repo.requestExport("project-1", "static-html", doc.revision)).rejects.toThrow("response 실패");
+    lose = false;
+    const retried = await repo.requestExport("project-1", "static-html", doc.revision);
+    expect(retried).toMatchObject({ wrote: false, job: { jobId: "export-1" } });
+    await vi.waitFor(async () => expect(await repo.getExportJob("export-1")).toMatchObject({ state: "succeeded", downloadRef: "blob:static-html" }));
+    expect(generate).toHaveBeenCalledTimes(1);
+    expect(await exportSnapshots(repo)).toHaveLength(1);
+  });
+
+  // M2A-3a-fix F3 (Codex P2 3): 실패 잡 재실행은 지금 문서가 아니라 그 잡의 auto·export 스냅샷 문서로
+  it("revision N 잡 실패 → N+1 저장 → N 재시도 → 생성기가 받은 문서 = N(스냅샷 문서) · 같은 잡 · 스냅샷 추가 0", async () => {
+    const docs: PageDoc[] = [];
+    let calls = 0;
+    const flaky: ExportGenerator = async (input) => {
+      calls += 1;
+      docs.push(input.doc as PageDoc);
+      if (calls === 1) throw new ProjectRepositoryError("JOB_TIMEOUT", "시간 초과");
+      return fake(input);
+    };
+    const { repo, save } = await setup({ generators: { "static-html": flaky } });
+    const n = await save(RENDERED);
+    const first = await repo.requestExport("project-1", "static-html", n.revision);
+    await vi.waitFor(async () => expect(await repo.getExportJob(first.job.jobId)).toMatchObject({ state: "failed", retryable: true }));
+    const next = await save(RENDERED, { title: "바뀐 제목", description: "동네 치과를 소개합니다." });
+    expect(next.revision).toBe(n.revision + 1);
+    const again = await repo.requestExport("project-1", "static-html", n.revision);
+    expect(again).toMatchObject({ wrote: false, job: { jobId: first.job.jobId, docRevision: n.revision }, snapshotId: first.snapshotId });
+    await vi.waitFor(async () => expect(await repo.getExportJob(first.job.jobId)).toMatchObject({ state: "succeeded" }));
+    expect(docs).toHaveLength(2);
+    expect(docs[1]).toMatchObject({ revision: n.revision, hash: n.hash, meta: { title: "동네 치과" } });
+    expect(await exportSnapshots(repo)).toHaveLength(1);
+  });
+
   it("JOB_TIMEOUT 뒤 '다시 시도' = 같은 잡 재실행 · 스냅샷 추가 0", async () => {
     let calls = 0;
     const flaky: ExportGenerator = async (input) => {

@@ -160,7 +160,8 @@
 |---|---|---|
 | 골격 | e839b15 | 10절 골격 · PROGRESS fix 체크리스트 |
 | F1 | 04a1edb | 대비 줄 color_tokens 없음 = unreadable 경로 · useGateReport 실패 상태 · GateList "검사하지 못했습니다" |
-| F2 | (이 커밋) | 경고 확인 대화상자 showModal · Esc 취소 · 포커스 복귀 |
+| F2 | d8dfdf6 | 경고 확인 대화상자 showModal · Esc 취소 · 포커스 복귀 |
+| F3 | (이 커밋) | 잡 실행을 응답 전달과 분리 · 재실행 = 잡의 스냅샷 문서 |
 
 ### 10.2 F1 처리되지 않은 오류 3건
 - **원인**: `SectionRemove.test.tsx`의 프로필 픽스처 `base: { motion_preset: "L1" }`(color_tokens 없음) → `contrastRow.ts` `applied.color_tokens[role]`에서 TypeError → `useGateReport.ts` `compute` 안 `void compute(doc).then(...)`이 거부를 받지 않아 Unhandled Rejection(그 파일의 진입 직후 계산 3회). 앱의 정상 경로에서는 프로필 버전이 늘 참조의 `base`(color_tokens 포함)를 이어받아(`memoryProfileAdjust` `base: latest.base`) 재현 경로를 찾지 못했다 — 다만 저장 데이터가 잘못되면 같은 거부가 나므로 둘 다 막는다.
@@ -175,7 +176,10 @@
 - 번들: `/studio` 진입 126.64(조작 뒤 청크만 바뀜, 진입 +0.02는 청크 해시 변동) (`logs/f2.txt`).
 
 ### 10.4 F3 저장소 잡 (Codex P2 2·3)
-- (진행 중)
+- `memoryDocBook.ts` `requestExport` — 판정·쓰기(`judgeAndWrite`) 안에서 `run`을 바깥 변수로 받아 `finally`에서 실행: 커밋됐으면 응답 단계 실패(`phase:"response"`)로 `via`가 던져도 잡이 돈다. 커밋 전 실패(request·commit)는 `run`이 설정되지 않아 실행 0. 8.3.2 순서·한 트랜잭션(`commit()` 뒤에만 state 변경)은 그대로.
+- 재실행 문서 = 멱등 기록의 `snapshotId`로 찾은 **그 잡의 auto·export 스냅샷 문서**(revision = 잡 `docRevision`). 지금 문서(`state.docs`)를 넘기던 것을 고침. 엔진·저장소 계약(`ExportJob`·`ExportRequestResult`) 변경 0.
+- 테스트(RED `logs/f3-red.txt` 2건): memoryExport.test "fail phase:'response' → 커밋된 잡 실행 · 재시도 → 같은 잡 succeeded · 생성기 1회" · "N 실패 → N+1 저장 → N 재시도 → 생성기가 받은 문서 = N · 같은 잡 · 스냅샷 추가 0". 기존 12건 중 원래 10건 단언 변경 0 (`logs/f3.txt` src/data 162/162).
+- 번들 `/studio` 진입 126.65.
 
 ### 10.5 F4 다시 시도 (Codex P2 4)
 - (진행 중)

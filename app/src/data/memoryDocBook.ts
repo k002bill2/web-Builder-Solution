@@ -91,7 +91,8 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
       const last = state.exports.get(`${projectId}|${format}`);
       if (last?.key === key) {
         const job = state.jobs.get(last.result.job.jobId) ?? last.result.job;
-        const doc = state.docs.get(projectId);
+        // 재실행 문서 = 그 잡을 만들 때의 auto·export 스냅샷 문서(revision = 잡 docRevision) — 지금 문서가 아니다
+        const doc = state.snapshots.get(projectId)?.find((s) => s.snapshotId === last.result.snapshotId)?.doc;
         if (job.state === "failed" && job.retryable && doc) {
           const again = deepFreeze({ jobId: job.jobId, format: job.format, docRevision: job.docRevision, state: "queued" as const, retryable: false });
           commit();
@@ -160,10 +161,19 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
     jobOf: (jobId) => state.jobs.get(jobId),
     requestExport: async (args, generate, via) => {
-      const outcome = await via((commit) => judgeAndWrite({ ...args, hasGenerator: !!generate }, commit));
-      const run = outcome.run;
-      if (run && generate) void runJob(run.job, () => generate({ projectId: args.projectId, format: args.format, doc: run.doc }));
-      return outcome.result;
+      // 잡 실행은 응답 전달과 분리 — 커밋됐으면 응답이 끊겨도(phase "response" 실패) 돈다
+      let run: ExportOutcome["run"];
+      try {
+        const outcome = await via((commit) => {
+          const judged = judgeAndWrite({ ...args, hasGenerator: !!generate }, commit);
+          run = judged.run;
+          return judged;
+        });
+        return outcome.result;
+      } finally {
+        const queued = run;
+        if (queued && generate) void runJob(queued.job, () => generate({ projectId: args.projectId, format: args.format, doc: queued.doc }));
+      }
     },
     save: (projectId, expectedRevision, doc, commit) => {
       if (!Number.isSafeInteger(expectedRevision)) throw fail("SCHEMA_INVALID", `revision ${expectedRevision}`);

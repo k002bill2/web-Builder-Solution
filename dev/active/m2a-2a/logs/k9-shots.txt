@@ -1,0 +1,7 @@
+STATE 1280 {"url":"/studio/project-1","iframe":{"x":232,"y":52,"w":721,"h":2275.3984375},"chip":"Hero · 풀블리드 이미지 + 좌측 카피","chipRect":{"x":0,"y":61,"w":184.9921875,"h":20},"messages":[{"type":"rects","n":44},{"type":"rects","n":44},{"type":"rects","n":44},{"type":"rects","n":44},{"type":"rects","n":44},{"type":"rects","n":44}],"errors":[]}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-1280-top.png
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-1280-bottom.png
+STATE 390 {"url":"/studio/project-1","iframe":{"x":12,"y":1092,"w":351,"h":2348.15625},"chip":"Hero · 풀블리드 이미지 + 좌측 카피","chipRect":{"x":0,"y":61,"w":184.9921875,"h":20},"messages":[{"type":"rects","n":44},{"type":"rects","n":44},{"type":"ready","n":0},{"type":"ready","n":0},{"type":"rects","n":44},{"type":"rects","n":44}],"errors":[]}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-390-top.png
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-390-bottom.png
+

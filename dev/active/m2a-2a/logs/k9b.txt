@@ -1,0 +1,16 @@
+K9 gate-profiles {"light":[["C-1",8.09,true],["C-2",16.82,true],["C-4",15.31,true],["C-5",4.93,true]],"dark":[["C-1",4.61,true],["C-2",20.08,true],["C-3",4.56,true],["C-4",17.62,true],["C-5",6.06,true]]}
+K9 colors-light-1280 {"n":12,"pairs":["ink/bg","on-primary/primary","primary/on-primary","bg/ink"],"minRatio":8.09,"bad":[]}
+K9 colors-light-390 {"n":9,"pairs":["ink/bg","on-primary/primary","primary/on-primary","bg/ink"],"minRatio":8.09,"bad":[]}
+K9 colors-dark-1280 {"n":12,"pairs":["ink/bg","on-primary/primary","primary/on-primary","bg/ink"],"minRatio":4.61,"bad":[]}
+K9 colors-dark-390 {"n":9,"pairs":["ink/bg","on-primary/primary","primary/on-primary","bg/ink"],"minRatio":4.61,"bad":[]}
+K9 layout-1280 {"width":1280,"overflowX":0,"visibleNavs":1,"menuButton":"none","sheetOpen":false,"sheetDisplay":"none","barCta":{"display":"flex","rightGap":32},"sheetCtaLast":true,"hero":{"rect":[0,61,1265,712],"media":[0,61,1265,712],"panel":[89,409,544,268],"h1BeforeMedia":true},"markers":[["s-about",1168,12,81,20],["s-services",1168,12,81,20],["s-faq",1168,12,81,20],["s-contact",1168,12,81,20],["s-cta",1168,12,81,20]]}
+K9 layout-1024 {"width":1024,"overflowX":0,"visibleNavs":1,"menuButton":"none","sheetOpen":false,"sheetDisplay":"none","barCta":{"display":"flex","rightGap":32},"sheetCtaLast":true,"hero":{"rect":[0,61,1009,568],"media":[0,61,1009,568],"panel":[32,265,473,268],"h1BeforeMedia":true},"markers":[["s-about",912,12,81,20],["s-services",912,12,81,20],["s-faq",912,12,81,20],["s-contact",912,12,81,20],["s-cta",912,12,81,20]]}
+K9 layout-721 {"width":721,"overflowX":0,"visibleNavs":0,"menuButton":"flex","sheetOpen":false,"sheetDisplay":"none","barCta":{"display":"none","rightGap":706},"sheetCtaLast":true,"hero":{"rect":[0,61,706,693],"media":[0,61,706,530],"panel":[0,591,706,163],"h1BeforeMedia":true},"markers":[["s-about",609,12,81,20],["s-services",609,12,81,20],["s-faq",609,12,81,20],["s-contact",609,12,81,20],["s-cta",609,12,81,20]]}
+K9 layout-390 {"width":390,"overflowX":0,"visibleNavs":0,"menuButton":"flex","sheetOpen":false,"sheetDisplay":"none","barCta":{"display":"none","rightGap":375},"sheetCtaLast":true,"hero":{"rect":[0,61,375,444],"media":[0,61,375,281],"panel":[0,342,375,163],"h1BeforeMedia":true},"markers":[["s-about",278,12,81,20],["s-services",278,12,81,20],["s-faq",278,12,81,20],["s-contact",278,12,81,20],["s-cta",278,12,81,20]]}
+K9 layout-351 {"width":351,"overflowX":0,"visibleNavs":0,"menuButton":"flex","sheetOpen":false,"sheetDisplay":"none","barCta":{"display":"none","rightGap":336},"sheetCtaLast":true,"hero":{"rect":[0,61,336,478],"media":[0,61,336,252],"panel":[0,313,336,226],"h1BeforeMedia":true},"markers":[["s-about",239,12,81,20],["s-services",239,12,81,20],["s-faq",239,12,81,20],["s-contact",239,12,81,20],["s-cta",239,12,81,20]]}
+K9 K-AC-07 hero [w, h, h/w] 900→2400 [[1265,711.5625,0.5625],[1280,720,0.5625]]
+K9 K-AC-12 {"opened":{"open":true,"active":"메뉴"},"afterTab":{"open":true,"active":"닫기"},"afterEsc":{"open":false,"active":"메뉴"},"afterAnchor":{"open":false,"hash":""}}
+K9 K-AC-35 open sheet 390→1024→390 {"at1024":{"visibleNavs":1,"sheetOpen":true,"sheetDisplay":"none","menuButton":"none"},"at390":{"visibleNavs":1,"sheetOpen":true,"sheetDisplay":"flex"}}
+K9 K-AC-02 long+200% @1280 {"overflowX":0,"ellipsis":0}
+K9 K-AC-02 long+200% @390 {"overflowX":0,"ellipsis":0}
+

@@ -15,5 +15,5 @@
 - [x] K6 hero/fullbleed-left — kit/HeroFullbleedLeft + kit/Media(img·그라디언트) + kit.css
 - [x] K7 footer/biz-extended — kit/FooterBizExtended + kit.css
 - [x] K8 공통 K-AC [U] — kit/kitCommon.test.tsx(09·05·16·03·04·11·36 정적) · 폴백 섹션 앵커 id 결함 수정
-- [ ] K9 브라우저 1280·390 뷰포트 캡처
+- [x] K9 브라우저 — 앱 흐름 A안 shots/k9-* (error 0) · [B] 판정 k9b.mjs → logs/k9b.txt·k9b.json · shots/k9b-*
 - [ ] K10 vitest 3회 · Codex 1회 · REPORT · 서버 종료

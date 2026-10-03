@@ -16,4 +16,10 @@
 - [x] K7 footer/biz-extended — kit/FooterBizExtended + kit.css
 - [x] K8 공통 K-AC [U] — kit/kitCommon.test.tsx(09·05·16·03·04·11·36 정적) · 폴백 섹션 앵커 id 결함 수정
 - [x] K9 브라우저 — 앱 흐름 A안 shots/k9-* (error 0) · [B] 판정 k9b.mjs → logs/k9b.txt·k9b.json · shots/k9b-*
-- [ ] K10 vitest 3회 · Codex 1회 · REPORT · 서버 종료
+- [x] K10 — 전체 vitest ×3 1513/1513 ×3 · Codex 1회(P1 0 · P2 1 명세상 반영 안 함) · REPORT.md · vite 4337 PID 28707 종료 확인(포트 응답 000, LISTEN 0)
+
+## 서브에이전트
+- 사용 0 (브리프 "서브에이전트 분할: 불필요 — 금지 유지")
+
+## 메모
+- 앱 데스크톱 미리보기(1280 창) 캔버스 폭 721 < md → 렌더 문서가 좁은 배치로 그림(REPORT 8절 1)

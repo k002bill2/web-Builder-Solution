@@ -1,0 +1,7 @@
+STATE 1280 {"url":"/studio/project-1","iframe":{"x":232,"y":52,"w":721,"h":1233.3125},"chip":"Hero · 풀블리드 이미지 + 좌측 카피","chipRect":{"x":0,"y":34.28125,"w":184.9921875,"h":20},"messages":[{"type":"ready","n":0},{"type":"ready","n":0},{"type":"rects","n":46},{"type":"rects","n":46},{"type":"rects","n":46}],"errors":[],"align":{"frameCssW":1280,"shownW":721,"scale":0.5633,"caption":"축소 보기 · 56%","headerRectW":1253.370361328125,"navSlot":true,"ctaSlots":[[1087,84],[107,96]],"box":[232,86.3,706,397.1],"expected":[232,86.3,706,397.1],"hScroll":0}}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b1-1280-top.png
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b1-1280-bottom.png
+STATE 1024 {"url":"/studio/project-1","iframe":{"x":12,"y":52,"w":685,"h":1171.8359375},"chip":"Hero · 풀블리드 이미지 + 좌측 카피","chipRect":{"x":0,"y":32.609375,"w":184.9921875,"h":20},"messages":[{"type":"rects","n":46},{"type":"ready","n":0},{"type":"ready","n":0},{"type":"rects","n":46},{"type":"rects","n":46},{"type":"rects","n":46}],"errors":[],"align":{"frameCssW":1280,"shownW":685,"scale":0.5352,"caption":"축소 보기 · 53%","headerRectW":1251.9708251953125,"navSlot":true,"ctaSlots":[[1086,84],[106,96]],"box":[12,84.6,670,376.9],"expected":[12,84.6,670,376.9],"hScroll":0}}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b1-1024-top.png
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b1-1024-bottom.png
+

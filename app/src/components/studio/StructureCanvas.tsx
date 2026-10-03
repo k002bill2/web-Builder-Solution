@@ -29,8 +29,16 @@ function docIssues(doc: PageDoc): readonly CanvasIssue[] {
 }
 
 const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionary-text", block: "outline-status-negative-text text-status-negative-text" } as const;
-/** 렌더 문서 좌표(CSS px) → 오버레이 위치. 오버레이 층은 iframe과 같은 원점·같은 zoom이라 그대로 쓴다 */
-const place = (r: FrameRect, grow = 0) => ({ left: `${r[2] - grow}px`, top: `${r[3] - grow}px`, width: `${r[4] + grow * 2}px`, height: `${r[5] + grow * 2}px` });
+/**
+ * 렌더 문서 좌표(CSS px) → 오버레이 위치. 오버레이 층은 iframe과 원점은 같지만 축소(zoom) 층 밖에 있다 — 칩·배지·문장 글자가 원래 크기로 읽히게(r4.10 축소 보기).
+ * 그래서 사각형에 축소 비율을 곱하고, 바깥 여백(grow)은 곱하지 않는다.
+ */
+const place = (r: FrameRect, scale: number, grow = 0) => ({
+  left: `${r[2] * scale - grow}px`,
+  top: `${r[3] * scale - grow}px`,
+  width: `${r[4] * scale + grow * 2}px`,
+  height: `${r[5] * scale + grow * 2}px`,
+});
 
 /** 캔버스 안쪽 폭(px) — ResizeObserver가 없으면(jsdom) 0 = 측정 전 */
 function useWidth() {
@@ -113,12 +121,14 @@ function useRenderFrame({
  */
 function Overlay({
   rects,
+  scale,
   doc,
   selectedId,
   issues,
   onIssue,
 }: {
   readonly rects: readonly FrameRect[] | undefined;
+  readonly scale: number;
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly issues: readonly CanvasIssue[];
@@ -135,7 +145,7 @@ function Overlay({
   return (
     <div data-canvas-overlay className="pointer-events-none absolute inset-0">
       {selected && selectedRect && (
-        <div ref={selectedBox} className="absolute" style={place(selectedRect)}>
+        <div ref={selectedBox} className="absolute" style={place(selectedRect, scale)}>
           <div aria-hidden="true" className="absolute inset-0 border-2 border-primary" />
           {/* 선택 라벨 칩(5.7 · B-12) — 12px 700, primary 면 위 on-primary 글자 */}
           <span className="absolute top-0 left-0 rounded-sm bg-primary px-2 py-0.5 text-caption2 font-bold text-on-primary">
@@ -146,7 +156,7 @@ function Overlay({
       {issues.map((issue) => {
         const r = rectOf(issue.instanceId, issue.slotKey);
         return (
-          <div key={issue.id} className={r ? "absolute" : "sr-only"} style={r && place(r, 4)}>
+          <div key={issue.id} className={r ? "absolute" : "sr-only"} style={r && place(r, scale, 4)}>
             {r && <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />}
             {r && (
               <span
@@ -170,7 +180,7 @@ function Overlay({
 /**
  * 가운데 "구조 미리보기"(DS-2A-05 3.1 · 5.7 · E-AC-16). `section aria-labelledby` h2(6.2).
  * 문서는 렌더 문서(iframe, `sandbox="allow-scripts"`)가 그리고, 이 컴포넌트는 호스트(프레임 · 다리 · 오버레이)만 맡는다(M2A-1 · SPEC 5.7 r4.8).
- * 미리보기 폭 = iframe 폭(렌더 문서의 미디어 쿼리가 실제 뷰포트로 동작). 넓은 프레임은 `zoom`으로 축소 보기(가로 스크롤 0).
+ * 미리보기 폭 = iframe 폭(렌더 문서의 미디어 쿼리가 실제 뷰포트로 동작) — 데스크톱 1280 · 태블릿 768 · 모바일 390(r4.10). 넓은 프레임은 `zoom`으로 축소 보기(가로 스크롤 0).
  * `scrollable`(≥1024) = 열마다 따로 스크롤 → 스크롤 영역에 `tabIndex=0`(4.1). 섹션 선택은 렌더 문서 click 메시지로 받는다(5.1 — 포인터만).
  */
 export function StructureCanvas({
@@ -199,8 +209,8 @@ export function StructureCanvas({
 }) {
   const [area, available] = useWidth();
   const frameRem = FRAME_REM[view];
-  const framePx = frameRem === undefined ? available : frameRem * remPx();
-  const scale = previewScale(frameRem === undefined ? undefined : framePx, available);
+  const framePx = frameRem * remPx();
+  const scale = previewScale(framePx, available);
   const caption = scaleCaption(scale);
   const { frame, rects } = useRenderFrame({ doc, kitTokens, images, selectedId, width: framePx, onSelect });
   // 프레임 높이 = 섹션 사각형 맨 아래(렌더 문서 자체 스크롤 없음). 다시 그리는 동안은 마지막 높이 유지
@@ -221,19 +231,22 @@ export function StructureCanvas({
       {head}
       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
       <div ref={area} className="min-w-0">
-        <div
-          style={{ width: frameRem === undefined ? undefined : `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
-          className="relative mx-auto max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"
-        >
-          <iframe
-            ref={frame}
-            src={RENDER_DOC_SRC}
-            sandbox="allow-scripts"
-            title={RENDER_FRAME_TITLE}
-            style={{ height: height === undefined ? undefined : `${height}px` }}
-            className="block min-h-40 w-full border-0"
-          />
-          <Overlay rects={rects} doc={doc} selectedId={selectedId} issues={issues} onIssue={(issue) => onIssue?.(issue.instanceId, issue.id)} />
+        {/* 축소 층(zoom) = 프레임 + iframe만. 오버레이는 그 밖 같은 원점(relative 감싸개)에서 사각형 × 비율로 맞춘다 */}
+        <div className="relative mx-auto w-fit max-w-none">
+          <div
+            style={{ width: `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
+            className="max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"
+          >
+            <iframe
+              ref={frame}
+              src={RENDER_DOC_SRC}
+              sandbox="allow-scripts"
+              title={RENDER_FRAME_TITLE}
+              style={{ height: height === undefined ? undefined : `${height}px` }}
+              className="block min-h-40 w-full border-0"
+            />
+          </div>
+          <Overlay rects={rects} scale={scale} doc={doc} selectedId={selectedId} issues={issues} onIssue={(issue) => onIssue?.(issue.instanceId, issue.id)} />
         </div>
       </div>
     </section>

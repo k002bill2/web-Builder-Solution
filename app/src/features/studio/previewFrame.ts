@@ -13,9 +13,9 @@ export const PREVIEW_WIDTH_OPTIONS: readonly { readonly value: PreviewView; read
 
 /**
  * 미리보기 폭 프레임 (DS-2A-05 E-S31 · 4.1 · E-AC-15).
- * 폭은 rem(태블릿 768 · 모바일 390 기준) — 데스크톱은 캔버스 열 폭 그대로(4.1 "데스크톱 프레임 = 열 폭").
+ * 폭은 rem(데스크톱 1280 · 태블릿 768 · 모바일 390 기준) — SPEC r4.10: 데스크톱도 실제 1280 폭(80rem). 열보다 넓으면 축소 보기.
  */
-export const FRAME_REM: Readonly<Record<PreviewView, number | undefined>> = Object.freeze({ desktop: undefined, tablet: 48, mobile: 24.375 });
+export const FRAME_REM: Readonly<Record<PreviewView, number>> = Object.freeze({ desktop: 80, tablet: 48, mobile: 24.375 });
 
 /** 프레임(px)이 캔버스(px)보다 넓으면 축소 비율, 아니면 1. 측정 전(0)·열 폭 프레임은 1 */
 export function previewScale(framePx: number | undefined, availablePx: number): number {

@@ -8,7 +8,7 @@
 
 ## 단계
 - [x] B0 기준선 — `B0-BASELINE.md` · shots/b0-* (iframe 1280 창 721 · error 0)
-- [ ] B1 데스크톱 프레임 1280(축소 보기 · 오버레이 정렬 테스트 RED 먼저)
+- [x] B1 데스크톱 프레임 1280 — FRAME_REM.desktop 80 · 오버레이를 축소 층 밖으로(사각형 × 비율) · RED b13159f · 브라우저 1280(56%)·1024(53%) 선택 상자 = iframe 원점 + 사각형×비율 일치, 렌더 header 폭 1253(스크롤바 축소분) · bar nav 보고 · 가로 스크롤 0 (logs/b1-shots.txt · shots/b1-*)
 - [ ] B2 about/story (K-AC-22·23·24)
 - [ ] B3 services/cards-3 · 카드 톤 변수 (K-AC-25·26)
 - [ ] B4 faq/accordion (K-AC-27·28)
@@ -24,3 +24,5 @@
 - 사용 0 (브리프 금지)
 
 ## 메모
+- /studio 진입 누계: B0 124.23 → B1 124.24
+- 렌더 JS 누계: B0 78.86 → B1 78.86

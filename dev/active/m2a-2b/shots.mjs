@@ -28,6 +28,7 @@ await page.evaluate(() => {
     if (!f || e.source !== f.contentWindow) return;
     const d = e.data ?? {};
     window.__m.push({ type: d.type, code: d.code, n: Array.isArray(d.rects) ? d.rects.length : 0 });
+    if (d.type === "rects") window.__r = d.rects;
   });
 });
 await page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => (b.getAttribute("aria-label") || b.textContent).trim().endsWith("비교 추가")), undefined, { timeout: 15000 });
@@ -57,6 +58,23 @@ const state = () =>
       chipRect: (() => { const c = document.querySelector("[data-canvas-overlay] span.bg-primary"); if (!c) return null; const b = c.getBoundingClientRect(); return { x: b.x - r.x, y: b.y - r.y, w: b.width, h: b.height }; })(),
       messages: window.__m.slice(-6),
       errors: window.__m.filter((m) => m.type === "error").map((m) => m.code),
+      // B1: 렌더 문서 폭(헤더 섹션 사각형 폭 ≈ 1280이면 zoom이 OOPIF까지 닿아 lg 배치) · 바 nav 슬롯 보고 여부 · 오버레이 선택 상자 = iframe 원점 + 사각형 × 비율
+      align: (() => {
+        const rs = window.__r ?? [];
+        const scale = r.width / (Number.parseFloat(f.style.width) || f.offsetWidth || r.width);
+        const head = rs.find((x) => x[1] === null);
+        const box = document.querySelector("[data-canvas-overlay] span.bg-primary")?.parentElement;
+        const chipId = box && rs.filter((x) => x[1] === null).find((x) => Math.abs(r.x + x[2] * (r.width / f.offsetWidth) - box.getBoundingClientRect().x) < 2 && Math.abs(r.y + x[3] * (r.width / f.offsetWidth) - box.getBoundingClientRect().y) < 2);
+        const b = box?.getBoundingClientRect();
+        const k = r.width / f.offsetWidth;
+        return {
+          frameCssW: f.offsetWidth, shownW: r.width, scale: Number(k.toFixed(4)), caption: [...document.querySelectorAll("p")].map((p) => p.textContent).find((t) => /^축소 보기/.test(t)) ?? null,
+          headerRectW: head && head[4], navSlot: rs.some((x) => x[1] === "nav"), ctaSlots: rs.filter((x) => x[1] === "cta").map((x) => [Math.round(x[2]), Math.round(x[4])]),
+          box: b && [b.x, b.y, b.width, b.height].map((v) => Number(v.toFixed(1))),
+          expected: chipId && [r.x + chipId[2] * k, r.y + chipId[3] * k, chipId[4] * k, chipId[5] * k].map((v) => Number(v.toFixed(1))),
+          hScroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      })(),
     };
   });
 

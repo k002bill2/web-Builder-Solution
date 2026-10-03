@@ -167,3 +167,104 @@
     }
   }
 }
+
+/* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
+@layer components {
+  .kit-gradient {
+    background: linear-gradient(135deg, var(--site-primary), var(--site-ink));
+  }
+  .kit-img {
+    display: block;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+/* hero/fullbleed-left (K1-2) — md 미만 = 미디어 띠(4:3) 위 · 패널 아래 / md 이상 = 한 칸 두 층, 섹션 최소 16:9, 패널 왼쪽 아래 */
+@layer components {
+  .kit-hero {
+    display: grid;
+    grid-template-areas: "media" "copy";
+    background: var(--site-primary);
+  }
+  .kit-hero--plain {
+    grid-template-areas: "copy";
+  }
+  .kit-hero-media {
+    grid-area: media;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  .kit-hero-copy {
+    grid-area: copy;
+    position: relative;
+    z-index: 1;
+  }
+  .kit-hero-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    padding: var(--site-s4);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+  }
+  .kit-hero-title {
+    margin: 0;
+    font-size: var(--site-t3);
+    color: var(--site-on-primary);
+  }
+  .kit-hero-lead {
+    margin: 0;
+    font-size: var(--site-t0);
+  }
+  .kit-hero-cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--site-hit-min);
+    margin-top: var(--site-s2);
+    padding: var(--site-s2) var(--site-s4);
+    border-radius: var(--site-radius-control);
+    background: var(--site-on-primary);
+    color: var(--site-primary);
+    font-weight: var(--site-weight-heading);
+    text-decoration: none;
+    --kit-ring: var(--site-on-primary);
+  }
+  @media (width >= 48rem) {
+    .kit-hero {
+      grid-template-areas: "stack";
+      aspect-ratio: 16 / 9;
+    }
+    .kit-hero-media {
+      grid-area: stack;
+      height: 100%;
+      aspect-ratio: auto;
+    }
+    .kit-hero-copy {
+      grid-area: stack;
+      align-self: end;
+      width: 100%;
+      max-width: var(--site-content-max);
+      margin-inline: auto;
+      padding: var(--site-section-gap) var(--site-s6);
+    }
+    .kit-hero-panel {
+      width: calc(100% * 8 / 12);
+      padding: var(--site-s5);
+      border-radius: var(--site-radius-control);
+    }
+    .kit-hero-title {
+      font-size: var(--site-t5);
+    }
+    .kit-hero-lead {
+      font-size: var(--site-t1);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hero-panel {
+      width: 50%;
+    }
+  }
+}

@@ -38,3 +38,5 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 12:28:55 PM [vite] (client) hmr update /src/index.css
 12:28:55 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/render/RenderApp.tsx
 12:28:55 PM [vite] (client) hmr update /src/index.css, /src/render/render.css
+12:30:19 PM [vite] (client) hmr update /src/index.css
+12:30:19 PM [vite] (client) hmr update /src/index.css

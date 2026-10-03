@@ -338,14 +338,19 @@
 
 /* 본문 섹션 공통 (m2a 0.3 섹션 면 · 0.5 간격 · 0.12 내용 폭) — 톤 base = bg 면 · alt = surface 면. 좁은 폭 gutter s4 · section-gap 절반 / md 이상 s6 · section-gap */
 @layer components {
+  /* --kit-soft = 보조 글자: base(bg 면) = muted(C-5) · alt(surface 면) = ink(C-4 — muted/surface는 검사 밖) */
   .kit-body {
     background: var(--site-bg);
     color: var(--site-ink);
     --kit-ring-gap: var(--site-bg);
+    --kit-soft: var(--site-muted);
+    --kit-card-face: var(--site-card-face-base);
   }
   .kit-body[data-tone="alt"] {
     background: var(--site-surface);
     --kit-ring-gap: var(--site-surface);
+    --kit-soft: var(--site-ink);
+    --kit-card-face: var(--site-card-face-alt);
   }
   .kit-wrap {
     max-width: var(--site-content-max);
@@ -412,6 +417,65 @@
   @media (width >= 64rem) {
     .kit-about[data-layout="split"] .kit-about-grid {
       grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+/* services/cards-3 (K1-4) — 머리(제목 + 소개 prose-max) → 카드 목록. md 이상 3열 같은 폭·같은 높이(행 늘이기) · md 미만 1열.
+   카드 면 = 섹션 톤별 카드 톤 변수(--kit-card-face) · 카드 글자 ink(C-2·C-3·C-4) · 모양 = radius·경계·그림자·위 구분선 변수 */
+@layer components {
+  .kit-services-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s5);
+  }
+  .kit-services-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+  }
+  .kit-services-intro {
+    max-width: var(--site-prose-max);
+    margin: 0;
+    font-size: var(--site-t0);
+    color: var(--kit-soft);
+  }
+  .kit-cards {
+    display: grid;
+    gap: var(--site-s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .kit-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s3);
+    min-width: 0;
+    padding: var(--site-card-pad-narrow);
+    border: var(--site-card-stroke) solid var(--site-muted);
+    border-top-width: var(--site-card-top);
+    border-radius: var(--site-radius-card);
+    background: var(--kit-card-face);
+    box-shadow: var(--site-card-shadow);
+    color: var(--site-ink);
+  }
+  .kit-card-title {
+    margin: 0;
+    font-size: var(--site-t1);
+    color: var(--site-ink);
+  }
+  .kit-card-body {
+    margin: 0;
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--site-s5);
+    }
+    .kit-card {
+      padding: var(--site-card-pad);
     }
   }
 }

@@ -3,6 +3,7 @@ import { AboutStory } from "./AboutStory";
 import { FooterBizExtended } from "./FooterBizExtended";
 import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
+import { ServicesCards3 } from "./ServicesCards3";
 import type { KitSection } from "./types";
 
 /**
@@ -13,6 +14,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "header/sticky-right-cta": HeaderStickyRightCta,
   "hero/fullbleed-left": HeroFullbleedLeft,
   "about/story": AboutStory,
+  "services/cards-3": ServicesCards3,
   "footer/biz-extended": FooterBizExtended,
 });
 

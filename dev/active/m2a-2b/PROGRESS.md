@@ -10,7 +10,7 @@
 - [x] B0 기준선 — `B0-BASELINE.md` · shots/b0-* (iframe 1280 창 721 · error 0)
 - [x] B1 데스크톱 프레임 1280 — FRAME_REM.desktop 80 · 오버레이를 축소 층 밖으로(사각형 × 비율) · RED b13159f · 브라우저 1280(56%)·1024(53%) 선택 상자 = iframe 원점 + 사각형×비율 일치, 렌더 header 폭 1253(스크롤바 축소분) · bar nav 보고 · 가로 스크롤 0 (logs/b1-shots.txt · shots/b1-*)
 - [x] B2 about/story — kit/AboutStory · kit/body(면·제목 id) · KitSectionProps.mediaRatio · RED e1a0213 (레지스트리·kitCommon 개수는 레지스트리 증가 반영)
-- [ ] B3 services/cards-3 · 카드 톤 변수 (K-AC-25·26)
+- [x] B3 services/cards-3 — kit/ServicesCards3 · 카드 톤 변수 --site-card-face-base/alt·--site-card-top · --kit-soft(base muted/alt ink) · RED 커밋 · 이관: kitCommon K-AC-09 h3(카드)·K-AC-11 색 집합(+--kit-soft, muted는 base만)
 - [ ] B4 faq/accordion (K-AC-27·28)
 - [ ] B5 contact/form · K2 A안 · 주인용 안내 (K-AC-08 마크업·29·30 배치)
 - [ ] B6 캔버스 캡션 3상태 · "페이지 미리보기"(이관 표)
@@ -24,5 +24,5 @@
 - 사용 0 (브리프 금지)
 
 ## 메모
-- /studio 진입 누계: B0 124.23 → B1 124.24 → B2 124.24
-- 렌더 JS/CSS 누계: B0 78.86/5.76 → B1 78.86/5.76 → B2 79.07/5.97
+- /studio 진입 누계: B0 124.23 → B1 124.24 → B2 124.24 → B3 124.24
+- 렌더 JS/CSS 누계: B0 78.86/5.76 → B1 78.86/5.76 → B2 79.07/5.97 → B3 79.30/6.14

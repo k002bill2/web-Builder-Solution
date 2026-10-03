@@ -42,7 +42,9 @@ describe("services/cards-3 (K1-4)", () => {
     const card = block(".kit-card");
     expect(card).toContain("background: var(--kit-card-face)");
     expect(card).toContain("color: var(--site-ink)");
-    expect(css().match(/\.kit-card[^{]*\{[^}]*\}/g)!.join("\n")).not.toContain("--site-muted");
+    // 카드 안 글자색은 ink만(muted 경계는 장식 — 0.3 비글자 경계)
+    const cardColors = [...css().matchAll(/\.kit-card[\w-]*\s*\{([^}]*)\}/g)].flatMap(([, body]) => [...body!.matchAll(/(?:^|[;\s])color:\s*([^;]+);/g)].map(([, v]) => v));
+    expect(new Set(cardColors)).toEqual(new Set(["var(--site-ink)"]));
     expect(block(".kit-body")).toContain("--kit-soft: var(--site-muted)");
     expect(block('.kit-body[data-tone="alt"]')).toContain("--kit-soft: var(--site-ink)");
     expect(block(".kit-services-intro")).toContain("color: var(--kit-soft)");

@@ -89,4 +89,18 @@ describe("렌더 문서 수신기", () => {
     const site = container.querySelector<HTMLElement>("[data-site-root]")!;
     expect(site.style.getPropertyValue("--site-primary")).toBe(SAMPLE_KIT_TOKENS.palette.primary);
   });
+
+  it("render{images} → 문서가 쓰는 이미지에 object URL · 다음 문서에서 빠지면 해제 (K4)", () => {
+    const create = vi.fn(() => "blob:null/1");
+    const revoke = vi.fn();
+    Object.assign(URL, { createObjectURL: create, revokeObjectURL: revoke });
+    const id = "11111111-1111-4111-8111-111111111111";
+    const hero = sampleDoc().sections[1]!;
+    const withImage = { ...sampleDoc(), sections: sampleDoc().sections.map((s) => (s === hero ? { ...s, slots: { ...s.slots, image: { kind: "image", enabled: true, source: id, alt: "가게", decorative: false } } } : s)) };
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: new Blob(["x"]) } });
+    expect(create).toHaveBeenCalledTimes(1);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: new Blob(["x"]) } });
+    expect(revoke).toHaveBeenCalledWith("blob:null/1");
+  });
 });

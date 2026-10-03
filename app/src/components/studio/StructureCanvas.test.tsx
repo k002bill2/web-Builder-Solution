@@ -84,6 +84,14 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     expect(Object.keys(withTokens).sort()).toEqual(["doc", "kitTokens", "type"]);
   });
 
+  it("로컬 이미지 Blob → render 메시지 images로 Blob 자체를 보낸다(부모 blob: URL 아님, K4) · 없으면 키 없음", () => {
+    const blob = new Blob(["x"], { type: "image/png" });
+    const id = "11111111-1111-4111-8111-111111111111";
+    render(<StructureCanvas doc={over()} kitTokens={SAMPLE_KIT_TOKENS} images={{ [id]: blob }} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const msg = connectRenderFrame().sent.find((m) => m.type === "render") as { images?: Record<string, Blob> };
+    expect(msg.images?.[id]).toBe(blob);
+  });
+
   it("렌더 문서 error{NO_KIT_TOKENS}(폴백은 그림)는 오버레이 사각형을 지우지 않는다 · INVALID_DOC은 지운다 (MQ-1)", () => {
     render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();

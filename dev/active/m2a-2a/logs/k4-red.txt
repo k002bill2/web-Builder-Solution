@@ -1,0 +1,5 @@
+     × render{doc, images} — 로컬 이미지 id → Blob 자체(K4) · Blob 아닌 값·id 형식 틀림은 메시지 전체를 버린다 4ms
+     × render{images} → 문서가 쓰는 이미지에 object URL · 다음 문서에서 빠지면 해제 (K4) 9ms
+     × 로컬 이미지 Blob → render 메시지 images로 Blob 자체를 보낸다(부모 blob: URL 아님, K4) · 없으면 키 없음 15ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  3 failed | 45 passed (48)

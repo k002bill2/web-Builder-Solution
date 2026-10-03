@@ -29,4 +29,12 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readRenderMessage({ type: "error", code: "INVALID_DOC" })).toEqual({ type: "error", code: "INVALID_DOC" });
     expect(readRenderMessage({ type: "error", code: "OTHER" })).toBeUndefined();
   });
+
+  it("render{doc, images} — 로컬 이미지 id → Blob 자체(K4) · Blob 아닌 값·id 형식 틀림은 메시지 전체를 버린다", () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    const blob = new Blob(["x"], { type: "image/png" });
+    expect(readParentMessage({ type: "render", doc, images: { [id]: blob } })).toEqual({ type: "render", doc, images: { [id]: blob } });
+    expect(readParentMessage({ type: "render", doc, images: { [id]: "blob:http://x/1" } })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc, images: { "blob:x": blob } })).toBeUndefined();
+  });
 });

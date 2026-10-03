@@ -52,7 +52,21 @@ const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement)
  * 렌더 문서 다리 (M2A-1 R4 · 프로토콜 render/protocol.ts). iframe에서 온 메시지만 받는다(`event.source` + 모양 검사).
  * ready 뒤 문서·킷 토큰 입력이 바뀔 때마다 render를 통째로 보내고(섹션 ≤ 11), 그 사이 사각형은 비운다 — 다시 그리는 중에는 오버레이를 그리지 않는다(5.7 r4.8).
  */
-function useRenderFrame({ doc, kitTokens, selectedId, width, onSelect }: { readonly doc: PageDoc; readonly kitTokens?: KitTokenInput; readonly selectedId: string; readonly width: number; readonly onSelect: (instanceId: string) => void }) {
+function useRenderFrame({
+  doc,
+  kitTokens,
+  images,
+  selectedId,
+  width,
+  onSelect,
+}: {
+  readonly doc: PageDoc;
+  readonly kitTokens?: KitTokenInput;
+  readonly images?: Readonly<Record<string, Blob>>;
+  readonly selectedId: string;
+  readonly width: number;
+  readonly onSelect: (instanceId: string) => void;
+}) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
   // 사각형은 잰 문서와 함께 둔다 — 화면 문서와 다르면(다시 그리는 중) 오버레이를 그리지 않는다(5.7 r4.8)
@@ -80,8 +94,9 @@ function useRenderFrame({ doc, kitTokens, selectedId, width, onSelect }: { reado
   useEffect(() => {
     if (!ready) return;
     sentDoc.current = doc;
-    send(kitTokens ? { type: "render", doc, kitTokens } : { type: "render", doc });
-  }, [ready, doc, kitTokens]);
+    // 로컬 이미지는 Blob 자체(불투명 출처 렌더 문서는 부모 blob: URL을 못 연다 — K4)
+    send({ type: "render", doc, ...(kitTokens && { kitTokens }), ...(images && { images }) });
+  }, [ready, doc, kitTokens, images]);
   useEffect(() => {
     if (ready && width > 0) send({ type: "viewport", width });
   }, [ready, width]);
@@ -167,6 +182,7 @@ export function StructureCanvas({
   scrollable,
   head,
   kitTokens,
+  images,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
@@ -178,13 +194,15 @@ export function StructureCanvas({
   readonly head?: ReactNode;
   /** 문서 프로필 버전 킷 토큰 입력(docKitTokens, 팔레트 포함) — 없으면 렌더 문서가 킷 대신 error, 폴백은 중립 토큰 */
   readonly kitTokens?: KitTokenInput;
+  /** 로컬 이미지 id → Blob(이미지 보관소 — 아직 호출처 없음, 2a-05 5.9 보관소가 생기면 넘긴다) */
+  readonly images?: Readonly<Record<string, Blob>>;
 }) {
   const [area, available] = useWidth();
   const frameRem = FRAME_REM[view];
   const framePx = frameRem === undefined ? available : frameRem * remPx();
   const scale = previewScale(frameRem === undefined ? undefined : framePx, available);
   const caption = scaleCaption(scale);
-  const { frame, rects } = useRenderFrame({ doc, kitTokens, selectedId, width: framePx, onSelect });
+  const { frame, rects } = useRenderFrame({ doc, kitTokens, images, selectedId, width: framePx, onSelect });
   // 프레임 높이 = 섹션 사각형 맨 아래(렌더 문서 자체 스크롤 없음). 다시 그리는 동안은 마지막 높이 유지
   const [height, setHeight] = useState<number>();
   const bottom = rects?.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0);

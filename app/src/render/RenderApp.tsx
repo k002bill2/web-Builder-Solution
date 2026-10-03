@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import type { PageDoc } from "../engine/contracts/pageDoc";
 import { validatePageDoc } from "../engine/validate/validatePageDoc";
+import { createObjectUrlCache, docImageIds } from "./objectUrls";
 import { PageDocument } from "./PageDocument";
 import { readParentMessage, type FrameRect, type KitTokenInput, type RenderMessage } from "./protocol";
 
@@ -23,11 +24,13 @@ function measure(root: HTMLElement, host: Window): readonly FrameRect[] {
  */
 export function RenderApp({ host }: { readonly host: Window }) {
   const root = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<{ readonly doc: PageDoc; readonly kitTokens?: KitTokenInput }>();
+  const [view, setView] = useState<{ readonly doc: PageDoc; readonly kitTokens?: KitTokenInput; readonly images: Readonly<Record<string, string>> }>();
   const [measureTick, setMeasureTick] = useState(0);
   const post = useCallback((message: RenderMessage) => host.parent.postMessage(message, "*"), [host]);
 
   useEffect(() => {
+    // 로컬 이미지 object URL — 렌더 문서가 만들고 문서에서 빠지면 해제, 내릴 때 전부 해제(K4)
+    const urls = createObjectUrlCache();
     const receive = (event: MessageEvent) => {
       if (event.source !== host.parent) return;
       const message = readParentMessage(event.data);
@@ -41,14 +44,18 @@ export function RenderApp({ host }: { readonly host: Window }) {
         }
         // 킷 토큰 없음(조회 전·실패) = 킷은 그리지 않고 error — 폴백 섹션은 중립 토큰으로 계속 그린다(MQ-1)
         if (!message.kitTokens) post({ type: "error", code: "NO_KIT_TOKENS" });
-        setView({ doc: checked.value, ...(message.kitTokens && { kitTokens: message.kitTokens }) });
+        const images = urls.sync(message.images ?? {}, docImageIds(checked.value));
+        setView({ doc: checked.value, images, ...(message.kitTokens && { kitTokens: message.kitTokens }) });
       }
       // viewport·select: 폭이 바뀌었거나 선택이 바뀐 뒤 부모가 최신 사각형을 쓰게 다시 잰다
       setMeasureTick((n) => n + 1);
     };
     host.addEventListener("message", receive);
     post({ type: "ready" });
-    return () => host.removeEventListener("message", receive);
+    return () => {
+      host.removeEventListener("message", receive);
+      urls.clear();
+    };
   }, [host, post]);
 
   // 그린 직후 사각형 보고 + 크기 변화(글꼴 로드·폭 변경) 때 다시
@@ -69,7 +76,7 @@ export function RenderApp({ host }: { readonly host: Window }) {
   };
   return (
     <div ref={root} onClick={click}>
-      {view && <PageDocument doc={view.doc} kitTokens={view.kitTokens} />}
+      {view && <PageDocument doc={view.doc} kitTokens={view.kitTokens} images={view.images} />}
     </div>
   );
 }

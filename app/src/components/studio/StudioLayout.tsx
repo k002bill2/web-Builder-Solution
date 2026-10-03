@@ -5,7 +5,8 @@ import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
 import type { SectionType } from "../../engine/contracts/pageDoc";
 import type { MoveDirection } from "../../engine/ops/rules";
-import { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice, swapRevertedNotice } from "../../features/studio/opNotice";
+// 편집 알림 문장은 연산 청크(docEngine)에서 받는다 — 연산이 끝났으면 이미 받은 청크라 바로 풀린다(S-B5)
+import { loadDocEngine } from "../../features/studio/docOps";
 import type { VariantChoice } from "../../features/studio/variantChoices";
 import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
 import { docKitTokens, docPurpose } from "../../features/studio/docPurpose";
@@ -32,6 +33,7 @@ import { useGateReport } from "../../features/studio/useGateReport";
 import { fallbackReason, fallbackSections, firstBlockRow, gateBlockReason, gateCounts, gateSummaryNotice } from "../../features/studio/gateView";
 import { useExportFlow } from "../../features/studio/useExportFlow";
 import { ExportButtons, type ExportReason } from "./ExportButtons";
+import { ExportRetryAlert } from "./ExportRetryAlert";
 import { emitEditorEvent } from "../../features/studio/editorEvents";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
@@ -120,8 +122,9 @@ export function StudioLayout({
     async (instanceId: string, direction: MoveDirection, button: HTMLElement) => {
       const outcome = await run({ kind: "move", instanceId, direction }, "이동");
       if (!outcome.ok) return setNotice(outcome.reason);
+      const notices = await loadDocEngine();
       const moved = outcome.result.doc.sections[outcome.result.index]!;
-      setNotice(movedNotice(moved.type, sectionName(moved), outcome.result.index));
+      setNotice(notices.movedNotice(moved.type, sectionName(moved), outcome.result.index));
       requestFocus({ element: button });
     },
     [run, requestFocus],
@@ -140,13 +143,14 @@ export function StudioLayout({
     async (instanceId: string) => {
       const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
       if (!outcome.ok) return setNotice(outcome.reason);
+      const notices = await loadDocEngine();
       const { before, result } = outcome;
       const removed = before.sections[result.index]!;
       // 포커스·선택 = 다음 섹션 줄(없으면 이전) — resolveSelection(첫 본문)에 맡기지 않는다
       const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
       if (next) setSelected(next.instanceId);
-      setUndoTarget({ instanceId: removed.instanceId, text: restoredNotice(removed.type, sectionName(removed)) });
-      setNotice(removedNotice(removed.type, sectionName(removed)));
+      setUndoTarget({ instanceId: removed.instanceId, text: notices.restoredNotice(removed.type, sectionName(removed)) });
+      setNotice(notices.removedNotice(removed.type, sectionName(removed)));
       if (next) focusRow(next.instanceId);
     },
     [run, focusRow],
@@ -156,9 +160,10 @@ export function StudioLayout({
     async (instanceId: string, choice: VariantChoice, radio: HTMLElement) => {
       const outcome = await run({ kind: "swap", instanceId, variant: choice.variant }, "변형 교체", true);
       if (!outcome.ok) return setNotice(outcome.reason);
+      const notices = await loadDocEngine();
       const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
-      setUndoTarget({ instanceId, text: swapRevertedNotice(variantName(original)) });
-      setNotice(swappedNotice(choice.label, choice.lostLabels));
+      setUndoTarget({ instanceId, text: notices.swapRevertedNotice(variantName(original)) });
+      setNotice(notices.swappedNotice(choice.label, choice.lostLabels));
       requestFocus({ element: radio });
     },
     [run, requestFocus],
@@ -183,9 +188,10 @@ export function StudioLayout({
         if (opener) requestFocus({ element: opener });
         return;
       }
+      const notices = await loadDocEngine();
       const added = outcome.result.doc.sections[outcome.result.index]!;
       setSelected(added.instanceId);
-      setNotice(addedNotice(added.type, sectionName(added), outcome.result.index));
+      setNotice(notices.addedNotice(added.type, sectionName(added), outcome.result.index));
       focusRow(added.instanceId);
     },
     [adding, run, selectedId, requestFocus, focusRow],
@@ -232,7 +238,10 @@ export function StudioLayout({
     const id = pendingGate.current;
     if (!id) return;
     pendingGate.current = undefined;
-    (document.getElementById(id) ?? document.getElementById("studio-edit-heading"))?.focus();
+    const target = document.getElementById(id) ?? document.getElementById("studio-edit-heading");
+    // 2단 배치의 "섹션 추가"는 접힌 '섹션 목록 · 순서' 안 — 닫힌 details 안은 포커스가 가지 않으므로 먼저 펼친다(M2A-3a Codex P2-3)
+    target?.closest("details")?.setAttribute("open", "");
+    target?.focus();
   }, [gateMoves]);
   const gateState = useGateReport(doc, ops.series);
   const goToRow = useCallback(
@@ -309,6 +318,7 @@ export function StudioLayout({
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
   const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState });
+  const exportResult = exportFlow.result;
   const blockRow = gateReport && firstBlockRow(gateReport);
   const blockText = gateReport && gateBlockReason(gateReport);
   const fallbacks = fallbackSections(doc);
@@ -323,9 +333,10 @@ export function StudioLayout({
       exports={
         <>
           <ExportButtons reasons={reasons} busy={exportFlow.busy} onExport={(format) => void exportFlow.start(format)} />
-          {(exportFlow.result || exportFlow.confirming) && (
+          {exportResult?.kind === "retryable" && <ExportRetryAlert onRetry={exportFlow.retry} />}
+          {((exportResult && exportResult.kind !== "retryable") || exportFlow.confirming) && (
             <Suspense fallback={null}>
-              {exportFlow.result && <ExportResultView result={exportFlow.result} onRetry={exportFlow.retry} onFirstFallback={goToSection} />}
+              {exportResult && exportResult.kind !== "retryable" && <ExportResultView result={exportResult} onFirstFallback={goToSection} />}
               {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
             </Suspense>
           )}

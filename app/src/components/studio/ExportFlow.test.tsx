@@ -11,6 +11,16 @@ import { openStudio, restoreViewport } from "../../features/studio/testing/openS
 
 afterEach(restoreViewport);
 
+/** 내보내기 청크 로더를 감싸 실패를 주입한다(기본 = 실제 import) — M2A-3a Codex P2-1 */
+const flowLoad = vi.hoisted(() => ({ failures: 0 }));
+vi.mock("../../features/studio/exportFlowLoader", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../features/studio/exportFlowLoader")>();
+  return {
+    loadExportFlow: () => (flowLoad.failures-- > 0 ? Promise.reject(new Error("Failed to fetch dynamically imported module")) : actual.loadExportFlow()),
+  };
+});
+afterEach(() => void (flowLoad.failures = 0));
+
 const SERIES = { profileId: "profile-1", latestVersion: 2, versions: [sampleTheme().profile] } as unknown as ProfileSeries;
 /** 게이트 통과 + 렌더러 있는 섹션만(샘플에서 CTA Band 폴백을 뺀 본문 5개) */
 const clean = (over: Partial<PageDoc> = {}) => {
@@ -162,6 +172,44 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     stop();
     const succeeded = events.filter((e) => e.name === "export_succeeded");
     expect(succeeded).toEqual([{ name: "export_succeeded", format: "static-html" }]);
+  });
+
+  // M2A-3a Codex P2-1: 청크 로드가 실패해도 실행 상태를 풀고 재시도 안내를 낸다
+  it("내보내기 청크 로드 실패 → 두 버튼 busy 해제 · alert '내보내지 못했습니다' · 요청 0 → '다시 시도' = 청크 다시 받고 요청 1회", async () => {
+    flowLoad.failures = 1;
+    const { requestExport } = await open(clean());
+    act(() => void fireEvent.click(html()));
+    const alert = await within(gateRegion()).findByRole("alert");
+    expect(alert.textContent).toContain("내보내지 못했습니다");
+    expect(requestExport).not.toHaveBeenCalled();
+    for (const button of [zip(), html()]) {
+      expect(button).not.toHaveAttribute("aria-disabled");
+      expect(button).not.toHaveAttribute("aria-busy");
+    }
+    act(() => void fireEvent.click(within(alert).getByRole("button", { name: "다시 시도" })));
+    await waitFor(() => expect(requestExport).toHaveBeenCalledTimes(1));
+  });
+
+  // M2A-3a Codex P2-2: 검사·확인한 문서와 최종 저장 문서가 다르면 다시 검사 → 새 경고는 확인 대화상자를 거친다
+  it("저장 대기 중 편집이 새 경고(SEO 제목 권장 초과)를 만들면 → 저장 뒤 다시 검사 · 확인 대화상자 · 확인 전 요청 0", async () => {
+    let release = () => {};
+    const saveDoc = vi.fn(async (_id: string, revision: number, next: PageDoc) => {
+      if (saveDoc.mock.calls.length === 1) await new Promise<void>((resolve) => (release = resolve));
+      return { ...next, revision: revision + 1 };
+    });
+    const { requestExport } = await open(clean(), { saveDoc } as Partial<ProjectRepository>);
+    act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));
+    const title = () => screen.getByRole("textbox", { name: /^제목/ });
+    act(() => void fireEvent.change(title(), { target: { value: "새 제목" } }));
+    act(() => void fireEvent.click(html()));
+    await waitFor(() => expect(saveDoc).toHaveBeenCalledTimes(1));
+    act(() => void fireEvent.change(title(), { target: { value: "가".repeat(80) } }));
+    await act(async () => release());
+    const dialog = await screen.findByRole("dialog", { name: "경고 1건이 있습니다" });
+    expect(requestExport).not.toHaveBeenCalled();
+    act(() => void fireEvent.click(within(dialog).getByRole("button", { name: "경고를 확인했습니다 · 내보내기" })));
+    await waitFor(() => expect(requestExport).toHaveBeenCalledTimes(1));
+    expect(saveDoc.mock.calls.at(-1)![2].meta.title).toBe("가".repeat(80));
   });
 
   // M2A-3a-fix F4 (Codex P2 4): "다시 시도"는 실패 요청의 revision이 지금 문서와 같을 때만 같은 잡 — 다르면 일반 시작 흐름

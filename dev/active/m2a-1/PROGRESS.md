@@ -13,9 +13,9 @@
 - [x] R3 렌더 문서 본체 — import 가드 RED(be70e29) → 수신기 · 재검증 · 폴백(복사, 앱 캔버스는 R4까지 유지 = 이전 '전' 실측) · 표식
 - [x] R4 부모 호스트 · 오버레이 — RED 88b5b69 → GREEN ff06fb5 · 옮긴 단언 표 = REPORT 4절
 - [x] R5 번들 실측(전후) · 브라우저 확인(E-AC-49) · r5 스크린샷 — 회귀 수정 415867f · 산출물 96e400c · 번들 표 REPORT 6절 · E-AC-49 통과 REPORT 5절
-- [ ] R6 전체 vitest ×3 · Codex 1회 · REPORT
+- [x] R6 전체 vitest ×3 · Codex 1회 · REPORT
   - [x] Codex review --scope branch --base 72fe57f 1회 — P2 1건(manifest 합치기 키 충돌), P1+ 0 → 미수정·REPORT 8·9절 기록
-  - [ ] 전체 vitest ×3 (logs/final-full-x3.txt)
+  - [x] 전체 vitest ×3 (logs/final-full-x3.txt) — 요약 REPORT 9절(고부하 2회 StudioShell 1건 flaky · Jarvis 전체 3회 1447/1447)
   - [x] REPORT 6(번들)·7(SPEC 차이)·8(남은 위험 · 렌더 모듈별 크기 logs/r6-render-modules.txt) 작성
 
 ## 로그
@@ -32,8 +32,8 @@
 - 2026-10-03 수신: `docs/06-handoff/M2A-1B_FIX_BRIEF.md` 전체 읽음 · HEAD `b3a7a28` · 브랜치 `k002bill2/m2a-1`
 - 목적: 390 폭 캔버스 빈 화면(r5-390.png) 진단·수정 + M2A-1 마무리 커밋. M2A-1 재실행 아님
 - 규칙: 서브에이전트 금지 · 새 의존성 0 · design/·docs/design/·docs/decisions/ 수정 금지 · 단언 약화·skip 금지 · 포트 4337(127.0.0.1), 끝날 때 자기 서버 PID 종료 · 매 코드 커밋 gate.sh · 로컬 커밋만
-- [ ] F0 미커밋 산출물 커밋(내용 수정 없이)
-- [ ] F1 실제 브라우저 390·1024·1280 진단 → `logs/f1-diagnosis.txt` 판정 a/b/c
-- [ ] F2 (a·b일 때) RED→GREEN 수정 + 세 폭 섹션 보이는 스크린샷
-- [ ] F3 REPORT 자리표시(R5_390_NOTE·VITEST_SUMMARY) 채우기 · 진단 절 추가
-- [ ] 4337 서버 종료
+- [x] F0 미커밋 산출물 커밋(내용 수정 없이) — 68546ca
+- [x] F1 실제 브라우저 390·1024·1280 진단 → `logs/f1-diagnosis.txt` **판정 (c) 도구 한계** — fullPage 캡처가 첫 뷰포트 밖 OOPIF를 못 찍음. 뷰포트 캡처 shots/f1-{1280,1024,390}.png 섹션 보임 · 대조군 f1-390-fullpage.png
+- [x] F2 해당 없음(판정 c, 회귀 없음 → 코드 수정·RED 없음). 대체 증거 = 세 폭 뷰포트 캡처
+- [x] F3 REPORT 자리표시 0 · 10절 진단 추가 · gate `logs/f1-gate.txt` 전부 exit 0(/studio 91.72/123.88 · 렌더 76.24/4.60)
+- [x] 4337 서버 종료(자기 PID 8695 npx · 8713 node, LISTEN 0 확인)

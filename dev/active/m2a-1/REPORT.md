@@ -82,7 +82,7 @@
 | 렌더 문서 DOM에 문제 문장·배지·라벨 칩 0 | 위 iframe 하위 트리 0건 | FallbackCanvas.test |
 | (추가) 미리보기 폭 = iframe 폭 | 1280 뷰포트에서 "모바일" → `iframeWidth: 390, clientWidth: 390, wrapper: 24.375rem` | StructureCanvas.test "미리보기 폭 = iframe 폭" |
 
-R5_390_NOTE
+**390 폭 확인(M2A-1b F1, 10절)**: `shots/r5-390.png`의 빈 캔버스는 회귀가 아니라 캡처 도구 한계(판정 c) — 렌더 문서(불투명 출처 OOPIF)가 첫 뷰포트(900px) 밖(iframe y=1092)에 있을 때 fullPage 캡처가 iframe 안을 합성하지 못한다. 같은 상태를 뷰포트 캡처하면 섹션이 그려진다(`shots/f1-390.png` · 대조군 `shots/f1-390-fullpage.png`). `logs/r5-viewport.txt`의 15초 시간 초과는 재실행 2회에서 재현되지 않았다(고부하 중 준비 지연 추정).
 
 ## 6. 번들 표 (gzip KB, KB = 1000B, 첫 화면 / 진입 직후)
 R0 = 시작 커밋 72fe57f(`logs/r0-baseline.txt`) · R3 = 폴백 이전 **전**(렌더 문서는 생겼고 앱 캔버스는 아직 앱에 있음, 10d0cdd `logs/r3-green.txt`) · R4 = 이전 직후(ff06fb5 `logs/r4-green.txt`) · **HEAD = 415867f**(`logs/r5-fix.txt`, Jarvis 실측과 같음).
@@ -145,4 +145,13 @@ R0 = 시작 커밋 72fe57f(`logs/r0-baseline.txt`) · R3 = 폴백 이전 **전**
 - **Codex** `node codex-companion.mjs review --scope branch --base 72fe57f` 1회 — 원문 `logs/r6-codex-review.txt`. 지적 1건:
   - [P2] `app/scripts/check-bundle-size.mjs:103` — 두 manifest를 spread로 합쳐 같은 소스 키가 있으면 렌더 manifest가 앱 항목을 덮어써 앱 라우트 합계가 틀릴 수 있다. → **고치지 않음**(브리프: P1 이상만 수정). HEAD에서 겹치는 키는 폰트 4개(같은 파일·imports 없음)뿐이라 현재 수치 영향 0 — 8절 4번에 위험으로 기록. 렌더 빌드가 청크를 나누는 레인(M2A-2 이후)에서 manifest 분리 계산으로 고칠 것.
   - P1 이상 0건.
-- **전체 vitest ×3** — `logs/final-full-x3.txt`(load 기록 포함). VITEST_SUMMARY
+- **전체 vitest ×3** — `logs/final-full-x3.txt`(load 기록 포함). 레인 실행 6회(1차 ×3 + 재실행 ×3) 중 고부하(load 137~161, ego-browser 동시 실행) 2회에서 `StudioShell.test.tsx` "섹션 줄 선택 → aria-current · 편집 h2 · 캔버스 라벨 칩 …" 1건 실패(1446/1447, 1차 3회차는 이름 미기록), 나머지 4회 1447/1447. Jarvis 회수: 해당 테스트 단독 10/10 통과 · 전체 3회 1447/1447 → 부하 의존 타이밍 불안정(flaky)으로 분류, 단언 변경 없음. 8절 위험 목록 대상.
+
+## 10. M2A-1b — 390 폭 캔버스 빈 화면 진단 (`docs/06-handoff/M2A-1B_FIX_BRIEF.md`)
+- **판정 (c) 도구 한계 — 회귀 아님.** 원문 `logs/f1-diagnosis.txt` · `logs/f1-raw.txt` · 스크립트 `f1.mjs`(+`f1.json`).
+- 방법: vite dev 127.0.0.1:4337, 실제 뷰포트 1280·1024·390(CDP `Emulation.setDeviceMetricsOverride`, 미리보기 토글은 데스크톱 그대로). 부모 `message` 리스너로 iframe 발 ready/rects 수 집계.
+- 측정: 세 폭 모두 iframe zoom 1 · transform none · visible · block · 높이 = 섹션 사각형 맨 아래(1648 / 1648 / 1942px) · rects 44개 정상 · error 0 · 라벨 칩 표시. 시맨틱 스냅샷 iframe 하위 트리에 섹션 글자 있음.
+- 원인: 렌더 문서는 `sandbox="allow-scripts"` 불투명 출처 → 별도 프로세스 프레임(OOPIF). `fullPage` 캡처는 첫 뷰포트 밖을 찍으려 뷰포트를 늘려 다시 그리며 이때 OOPIF 내용이 합성되지 않는다. 390은 iframe이 첫 뷰포트 밖(y=1092)이라 비고, 1280은 페이지 스크롤이 없고 iframe이 y=52라 정상으로 찍혔다.
+- 증거: 뷰포트 캡처 `shots/f1-1280.png` · `shots/f1-1024.png` · `shots/f1-390.png`(섹션 보임) · 대조군 `shots/f1-390-fullpage.png`(같은 상태 fullPage — r5-390과 같은 빈 모양) · R0 `shots/r0-390.png`(앱 안 캔버스라 fullPage에도 찍힘).
+- 수정: 없음(회귀 없음 → RED→GREEN 대상 없음). 이후 캔버스 캡처는 fullPage 대신 iframe `scrollIntoView` + 뷰포트 캡처(f1.mjs 방식).
+- 게이트: `dev/active/m2a-1/gate.sh f1-gate` → `logs/f1-gate.txt`.

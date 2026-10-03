@@ -13,7 +13,7 @@
 - [x] K4 이미지 Blob 전달 — protocol images · render/objectUrls(생성·교체·빠짐 해제·clear) · StructureCanvas images prop(호출처 없음: 앱에 이미지 보관소·업로드 UI 없음)
 - [x] K5 header/sticky-right-cta — kit/HeaderStickyRightCta + kit.css · RenderApp 링크 이동 막기·시트 hidePopover · measure 숨은 슬롯 제외
 - [x] K6 hero/fullbleed-left — kit/HeroFullbleedLeft + kit/Media(img·그라디언트) + kit.css
-- [ ] K7 footer/biz-extended
+- [x] K7 footer/biz-extended — kit/FooterBizExtended + kit.css
 - [ ] K8 공통 K-AC
 - [ ] K9 브라우저 1280·390 뷰포트 캡처
 - [ ] K10 vitest 3회 · Codex 1회 · REPORT · 서버 종료

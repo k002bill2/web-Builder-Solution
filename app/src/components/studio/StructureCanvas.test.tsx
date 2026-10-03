@@ -110,3 +110,52 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     expect(canvasFrame().parentElement!.style.width).toBe("24.375rem");
   });
 });
+
+describe("데스크톱 프레임 1280 · 축소 보기 오버레이 정렬 (r4.10 · E-AC-15)", () => {
+  /** 캔버스 안쪽 폭을 정해 주는 ResizeObserver 흉내(jsdom에는 없다) */
+  const observeWidth = (width: number) =>
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(private readonly callback: (entries: { contentRect: { width: number } }[]) => void) {}
+        observe() {
+          this.callback([{ contentRect: { width } }]);
+        }
+        disconnect() {}
+      },
+    );
+
+  it("데스크톱 = 80rem 프레임 → 열 640px이면 50% 축소 · 캡션 '축소 보기 · 50%' · viewport 1280 · 가로 스크롤 0(열 폭 안)", () => {
+    observeWidth(640);
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const { sent } = connectRenderFrame();
+    const zoomed = canvasFrame().parentElement!;
+    expect(zoomed.style.width).toBe("80rem");
+    expect(zoomed.style.zoom).toBe("0.5");
+    expect(within(region()).getByText("축소 보기 · 50%")).toBeInTheDocument();
+    expect(sent).toContainEqual({ type: "viewport", width: 1280 });
+    vi.unstubAllGlobals();
+  });
+
+  it("오버레이는 축소 층 밖(글자 원래 크기) · 선택 테두리·문제 테두리 = 렌더 사각형 × 축소 비율", () => {
+    observeWidth(640);
+    const doc = sampleDoc();
+    const over = { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, title: "가".repeat(30) } } : s)) };
+    render(<StructureCanvas doc={over} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    const i = over.sections.findIndex((s) => s.instanceId === "s-hero");
+    const overlay = region().querySelector<HTMLElement>("[data-canvas-overlay]")!;
+    const zoomed = canvasFrame().parentElement!;
+    expect(zoomed).not.toContainElement(overlay);
+    const chip = within(region()).getByText(/^Hero · /);
+    const box = chip.parentElement!;
+    // fakeRects: 섹션 i = (0, i×100, 800, 96) → × 0.5
+    expect([box.style.left, box.style.top, box.style.width, box.style.height]).toEqual(["0px", `${i * 50}px`, "400px", "48px"]);
+    // 글자 슬롯 사각형(문제 테두리, 바깥 여백 4px은 축소하지 않는다)
+    const sentence = document.getElementById("canvas-issue-s-hero-title")!;
+    const slotIndex = Object.entries(over.sections[i]!.slots).filter(([, v]) => typeof v === "string").findIndex(([k]) => k === "title");
+    const ring = sentence.parentElement!;
+    expect([ring.style.left, ring.style.top, ring.style.width, ring.style.height]).toEqual(["0px", `${(i * 100 + 8 + slotIndex * 12) * 0.5 - 4}px`, `${400 * 0.5 + 8}px`, `${10 * 0.5 + 8}px`]);
+    vi.unstubAllGlobals();
+  });
+});

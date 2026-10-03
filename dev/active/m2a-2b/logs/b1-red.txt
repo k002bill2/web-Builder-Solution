@@ -1,0 +1,14 @@
+     × 프레임 폭 = 데스크톱 1280 · 태블릿 768 · 모바일 390(rem) — r4.10 데스크톱 프레임 = 실제 1280(열 폭 규칙 폐기) 3ms
+     × 데스크톱 = 80rem 프레임 → 열 640px이면 50% 축소 · 캡션 '축소 보기 · 50%' · viewport 1280 · 가로 스크롤 0(열 폭 안) 12ms
+     × 오버레이는 축소 층 밖(글자 원래 크기) · 선택 테두리·문제 테두리 = 렌더 사각형 × 축소 비율 18ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 데스크톱 프레임 1280 · 축소 보기 오버레이 정렬 (r4.10 · E-AC-15) > 데스크톱 = 80rem 프레임 → 열 640px이면 50% 축소 · 캡션 '축소 보기 · 50%' · viewport 1280 · 가로 스크롤 0(열 폭 안)
+AssertionError: expected '' to be '80rem' // Object.is equality
+- Expected
++ Received
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 데스크톱 프레임 1280 · 축소 보기 오버레이 정렬 (r4.10 · E-AC-15) > 오버레이는 축소 층 밖(글자 원래 크기) · 선택 테두리·문제 테두리 = 렌더 사각형 × 축소 비율
+ FAIL  src/features/studio/previewFrame.test.ts > previewFrame > 프레임 폭 = 데스크톱 1280 · 태블릿 768 · 모바일 390(rem) — r4.10 데스크톱 프레임 = 실제 1280(열 폭 규칙 폐기)
+AssertionError: expected NaN to be 1280 // Object.is equality
+- Expected
++ Received
+      Tests  3 failed | 12 passed (15)

@@ -9,9 +9,9 @@
 - 게이트: `dev/active/m2a-3b/gate.sh` — 3a 판과 같되 실패 시 exit 1. exit 0 확인 후에만 커밋.
 
 ## 단계
-- [ ] 수신 · REPORT 골격(1~9절) 커밋
-- [ ] G0 (1) Codex `review --scope branch --base bec1b38` → `logs/g0-codex-3a.txt` · P1 수정(RED→GREEN) · P2 이하 REPORT 2절
-- [ ] G0 (2) 브라우저 A안 → 폴백 2개 삭제 → 차단 해소 → `GENERATOR_UNAVAILABLE` `shots/g0-1280-unavailable.png` · 대화상자 `shots/g0-1280-dialog.png`
+- [x] 수신 · REPORT 골격(1~9절) 커밋 — 08640e5
+- [x] G0 (1) Codex `review --scope branch --base bec1b38` → `logs/g0-codex-3a.txt` · P1 수정(RED→GREEN) · P2 이하 REPORT 2절 — P1 0 · P2 3(3c로)
+- [x] G0 (2) 브라우저 A안 → 폴백 2개 삭제 → 차단 해소 → `GENERATOR_UNAVAILABLE` `shots/g0-1280-unavailable.png` · 대화상자 `shots/g0-1280-dialog.png` — 통과 가능 확인, 캡처는 aside 1440(ego 캡처 시간 초과)
 - [ ] G1 생성 방식 PoC 비교표(REPORT 3절)
 - [ ] G2 serialize/html 프로토콜(RED 먼저 · REPORT 4절)
 - [ ] G3 static-html 생성기 · 지연 import 래퍼 · 진입 실측(REPORT 5·7절)
@@ -24,3 +24,5 @@
 - 사용 0 (브리프 금지)
 
 ## 메모
+- 4337: vite dev PID 14810(이 레인이 띄움) — 끝에 종료.
+- 브라우저: ego 캡처 불가 → aside repl(호출마다 탭 닫힘 → /tmp/m2a3b/prefix.js 흐름 재실행).

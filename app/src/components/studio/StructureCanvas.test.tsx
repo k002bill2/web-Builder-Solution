@@ -1,76 +1,89 @@
-import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { section, sampleDoc } from "../../engine/testing/sampleDoc";
+import { canvasFrame, connectRenderFrame } from "../../features/studio/testing/renderFrame";
 import { StructureCanvas } from "./StructureCanvas";
 
-describe("구조 미리보기 — 그리드 축 변형(SPEC r4.6 A3-Q3 · 5.7)", () => {
-  it("새 변형 3개를 슬롯 목록대로 그린다 — cards-2 카드 2개 · cards-masonry 카드 3개 · portfolio/masonry 글자 슬롯만", () => {
-    const doc = sampleDoc({
-      sections: [
-        section("header", "sticky-right-cta", "s-header"),
-        section("hero", "fullbleed-left", "s-hero"),
-        section("services", "cards-2", "s-cards-2"),
-        section("services", "cards-masonry", "s-cards-masonry"),
-        section("portfolio", "masonry", "s-masonry"),
-        section("footer", "biz-extended", "s-footer"),
-      ],
-    });
-    const { container } = render(<StructureCanvas doc={doc} selectedId="s-cards-2" onSelect={() => {}} view="desktop" scrollable={false} />);
-    const block = (id: string) => within(container.querySelector<HTMLElement>(`[data-instance-id="${id}"]`)!);
-    const texts = (id: string) => block(id).queryAllByText(/.+/, { selector: "p" }).map((p) => p.textContent);
+/**
+ * 캔버스 호스트 · 부모 오버레이 (M2A-1 R4 · SPEC 5.7 r4.8 · E-AC-49). 블록 그리기 단언은 렌더 문서로 옮겼다(render/fallback/FallbackCanvas.test.tsx).
+ * 이 파일에 남은 것: 선택 라벨 칩(부모 오버레이) · 문제 표시(부모) · iframe.
+ */
+const region = () => screen.getByRole("region", { name: "구조 미리보기" });
 
-    expect(texts("s-cards-2")).toEqual(["서비스", "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.", "항목 1", "항목을 짧게 설명합니다.", "항목 2", "항목을 짧게 설명합니다."]);
-    expect(block("s-cards-2").getByText("Services · 카드 2열")).toBeInTheDocument();
-    expect(texts("s-cards-masonry")).toEqual([...texts("s-cards-2"), "항목 3", "항목을 짧게 설명합니다."]);
-    expect(texts("s-masonry")).toEqual(["작업 사례", "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다."]);
-    expect(screen.getByRole("region", { name: "구조 미리보기" })).toBeInTheDocument();
+describe("구조 미리보기 — 선택 라벨 칩은 부모 오버레이 (5.7 · B-12)", () => {
+  it("cards-2 선택 → 칩 'Services · 카드 2열' · region '구조 미리보기'", () => {
+    const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "fullbleed-left", "s-hero"), section("services", "cards-2", "s-cards-2"), section("footer", "biz-extended", "s-footer")] });
+    render(<StructureCanvas doc={doc} selectedId="s-cards-2" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    expect(within(region()).getByText("Services · 카드 2열")).toBeInTheDocument();
+  });
+
+  it("split 선택 → 칩 'Hero · 스플릿 (카피 / 이미지)' · 테두리 aria-hidden", () => {
+    const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "split", "s-hero"), section("footer", "biz-extended", "s-footer")] });
+    render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    const chip = within(region()).getByText("Hero · 스플릿 (카피 / 이미지)");
+    expect(chip.previousElementSibling).toHaveAttribute("aria-hidden", "true");
+    expect(chip.previousElementSibling).toHaveClass("border-primary");
   });
 });
 
-describe("구조 미리보기 — 변형별 모양 · 프로필 팔레트 (SPEC r4.7 A3-Q7 · 5.7)", () => {
-  const doc = sampleDoc({
-    sections: [
-      section("header", "sticky-right-cta", "s-header"),
-      section("hero", "split", "s-hero"),
-      section("services", "cards-3", "s-cards-3"),
-      section("portfolio", "grid-2", "s-grid-2"),
-      section("portfolio", "grid-3", "s-grid-3"),
-      section("footer", "biz-extended", "s-footer"),
-    ],
-  });
-  const palette = { primary: "rgb(18, 52, 86)", surface: "rgb(238, 238, 238)", ink: "rgb(17, 17, 17)", muted: "rgb(153, 153, 153)", bg: "rgb(255, 255, 255)" };
-  const draw = (p?: typeof palette) => render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} palette={p} />).container;
-  const blockOf = (c: HTMLElement, id: string) => c.querySelector<HTMLElement>(`[data-instance-id="${id}"]`)!;
-
-  it("섹션마다 표의 모양(data-layout) · 카드 칸 수 = 카드 수 · 이미지 슬롯 = 줄무늬 aria-hidden", () => {
-    const c = draw(palette);
-    expect(["s-header", "s-hero", "s-cards-3", "s-grid-2", "s-footer"].map((id) => blockOf(c, id).dataset.layout)).toEqual(["bar", "split", "cols3", "cols2", "dark"]);
-    expect(blockOf(c, "s-cards-3").querySelectorAll("[data-cell]")).toHaveLength(3);
-    expect(blockOf(c, "s-grid-2").querySelectorAll("[data-stripes]")).toHaveLength(2);
-    expect(blockOf(c, "s-grid-3").querySelectorAll("[data-stripes]")).toHaveLength(3);
-    expect(blockOf(c, "s-hero").querySelectorAll("[data-stripes]")).toHaveLength(1);
-    for (const el of c.querySelectorAll("[data-stripes]")) expect(el).toHaveAttribute("aria-hidden", "true");
-    // 실제 슬롯 글자 · 선택 칩은 그대로
-    expect(within(blockOf(c, "s-hero")).getByText("Hero · 스플릿 (카피 / 이미지)")).toBeInTheDocument();
-    expect(within(blockOf(c, "s-header")).getByText("브랜드 이름")).toBeInTheDocument();
-  });
-
-  it("캔버스 루트 CSS 변수 = 팔레트 값 · 팔레트 없으면 중립 토큰 참조 · 모든 블록이 변수 색을 쓴다", () => {
-    const root = (c: HTMLElement) => blockOf(c, "s-header").parentElement!;
-    expect(root(draw(palette)).style.getPropertyValue("--canvas-primary")).toBe("rgb(18, 52, 86)");
-    const neutral = root(draw());
-    expect(neutral.style.getPropertyValue("--canvas-primary")).toMatch(/^var\(--/);
-    for (const block of neutral.querySelectorAll<HTMLElement>("[data-instance-id]")) expect(block.className).toMatch(/--canvas-/);
-  });
-});
-
-describe("문제 표시는 데이터 색과 무관 (5.7 B-03 · FIX2)", () => {
-  it("어두운 Footer 면 위 권장 초과 글자 — 흰 앱 면(background-normal) 안 · 프로필 글자색 아님", () => {
+describe("문제 표시는 데이터 색과 무관 (5.7 B-03 · FIX2 — r4.8부터 부모 오버레이)", () => {
+  it("어두운 Footer 권장 초과 — 문장·배지는 흰 앱 면(background-normal) 위 · 프로필 색 변수 아님 · 2중 테두리 = 흰 간격 + 상태 글자 토큰", () => {
     const footer = section("footer", "biz-extended", "s-footer");
     const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "fullbleed-left", "s-hero"), { ...footer, slots: { ...footer.slots, links: "가".repeat(65) } }] });
-    const { container } = render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
-    const text = within(container.querySelector<HTMLElement>('[data-instance-id="s-footer"]')!).getByText("가".repeat(65));
-    expect(text.className).not.toMatch(/--canvas-/);
-    expect(text.closest(".bg-background-normal")).not.toBeNull();
+    render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    const sentence = within(region()).getByText(/넘었습니다/);
+    const badge = within(region()).getByText("경고 1");
+    for (const el of [sentence, badge]) {
+      expect(el.className).not.toMatch(/--canvas-/);
+      expect(el).toHaveClass("bg-background-normal");
+    }
+    const ring = sentence.parentElement!.querySelector('[aria-hidden="true"]')!;
+    expect(ring).toHaveClass("border-2", "border-background-normal", "outline-2", "outline-status-cautionary-text");
+  });
+});
+
+describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
+  const over = () => {
+    const doc = sampleDoc();
+    return { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, title: "가".repeat(30) } } : s)) };
+  };
+
+  it("렌더 문서 준비 전에도 문제 문장은 부모 DOM에 있다 · 사각형 전에는 테두리·배지·칩 0", () => {
+    render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const sentence = document.getElementById("canvas-issue-s-hero-title")!;
+    expect(sentence).toHaveTextContent("제목이 권장 28자를 넘었습니다 (30/28자)");
+    expect(region()).toContainElement(sentence);
+    expect(within(region()).queryByText("경고 1")).toBeNull();
+    expect(within(region()).queryByText(/^Hero · /)).toBeNull();
+    expect(region().querySelectorAll('[aria-hidden="true"]')).toHaveLength(0);
+  });
+
+  it("사각형 뒤 배지를 누르면 onIssue(섹션, 문장 id) — 테두리는 포인터 통과 · iframe은 allow-scripts만", () => {
+    const onIssue = vi.fn();
+    render(<StructureCanvas doc={over()} selectedId="s-about" onSelect={() => {}} onIssue={onIssue} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    act(() => void fireEvent.click(within(region()).getByText("경고 1")));
+    expect(onIssue).toHaveBeenCalledWith("s-hero", "canvas-issue-s-hero-title");
+    expect(region().querySelector("[data-canvas-overlay]")).toHaveClass("pointer-events-none");
+    expect(canvasFrame()).toHaveAttribute("sandbox", "allow-scripts");
+  });
+
+  it("render 메시지에는 문서·팔레트만 — 문제 문장·선택은 보내지 않는다(렌더 문서 편집기 UI 0)", () => {
+    render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const { sent } = connectRenderFrame();
+    const render0 = sent.find((m) => m.type === "render")!;
+    expect(Object.keys(render0).sort()).toEqual(["doc", "type"]);
+    expect(sent).toContainEqual({ type: "select", instanceId: "s-hero" });
+  });
+
+  it("미리보기 폭 = iframe 폭 — 태블릿 48rem · 모바일 24.375rem 프레임 안 iframe 100%", () => {
+    const { rerender } = render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="tablet" scrollable={false} />);
+    expect(canvasFrame().parentElement!.style.width).toBe("48rem");
+    expect(canvasFrame()).toHaveClass("w-full");
+    rerender(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="mobile" scrollable={false} />);
+    expect(canvasFrame().parentElement!.style.width).toBe("24.375rem");
   });
 });

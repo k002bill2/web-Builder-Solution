@@ -7,6 +7,7 @@ import type { ProfileRepository } from "../../data/profileRepository";
 import { ProjectRepositoryError, type Project, type ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
+import { connectRenderFrame } from "../../features/studio/testing/renderFrame";
 import { StudioLayout } from "./StudioLayout";
 
 /**
@@ -34,13 +35,15 @@ const NO_PROFILE = { getProfile: async () => undefined } as unknown as ProfileRe
 const UNUSED = () => Promise.reject(new Error("이 테스트는 쓰지 않는다"));
 
 function draw(repository: ProjectRepository, doc: PageDoc = sampleDoc()) {
-  return render(
+  const view = render(
     <ProfileRepositoryProvider repository={NO_PROFILE} generations={UNUSED as () => Promise<GenerationRepository>} projects={UNUSED as () => Promise<ProjectRepository>}>
       <MemoryRouter>
         <StudioLayout project={PROJECT} doc={doc} repository={repository} entryNotice={undefined} focusHeading={false} />
       </MemoryRouter>
     </ProfileRepositoryProvider>,
   );
+  // 캔버스 = 렌더 문서 iframe(M2A-1) — 흉내를 붙인다(ready + render마다 rects)
+  return { ...view, frame: connectRenderFrame() };
 }
 
 const editRegion = () => screen.getByRole("region", { name: /^편집 · / });
@@ -78,15 +81,35 @@ describe("편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6)", () => {
     expect(title.getAttribute("aria-describedby")!.split(" ")[0]).toBe(sentence.id);
     expect(within(canvas()).getByText("경고 1")).toBeInTheDocument();
   });
+
+  it("이미 선택한 섹션의 배지를 눌러도 문제 필드로 포커스(R5 브라우저 확인에서 찾은 회귀 — 선택이 그대로면 다시 그리지 않음)", () => {
+    draw(fakeRepository().repository);
+    const title = within(editRegion()).getByRole("textbox", { name: /^제목/ });
+    act(() => void fireEvent.change(title, { target: { value: "가".repeat(30) } }));
+    act(() => void screen.getByRole("banner").querySelector("h1")!.focus());
+    act(() => void fireEvent.click(within(canvas()).getByText("경고 1")));
+    expect(document.activeElement).toBe(title);
+  });
+
+  it("캔버스 배지(부모 오버레이)를 누르면 그 섹션이 선택되고 문제 필드로 포커스(5.7 · E-AC-49)", () => {
+    const doc = sampleDoc();
+    draw(fakeRepository().repository, { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-about" ? { ...s, slots: { ...s.slots, heading: "가".repeat(30) } } : s)) });
+    act(() => void fireEvent.click(within(canvas()).getByText("경고 1")));
+    expect(screen.getByRole("heading", { level: 2, name: "편집 · About" })).toBeInTheDocument();
+    const heading = within(editRegion()).getByRole("textbox", { name: /^섹션 제목/ });
+    expect(document.activeElement).toBe(heading);
+    expect(heading.getAttribute("aria-describedby")!.split(" ")[0]).toBe("canvas-issue-s-about-heading");
+  });
 });
 
 describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () => {
   it("필드 입력 → 캔버스 글자 반영 → 2초 뒤 저장 1회 → '이 탭에 저장됨', 편집 알림 글자 변화 0", async () => {
     const { repository, save } = fakeRepository();
-    draw(repository);
+    const { frame } = draw(repository);
     const title = within(editRegion()).getByRole("textbox", { name: /^제목/ });
     act(() => void fireEvent.change(title, { target: { value: "새 제목" } }));
-    expect(within(canvas()).getByText("새 제목")).toBeInTheDocument();
+    // 캔버스 글자는 렌더 문서가 그린다 — 부모는 바뀐 문서를 render로 보낸다(그리기 단언은 render/fallback/FallbackCanvas.test.tsx로 옮김)
+    expect(frame.lastDoc().sections[1]!.slots.title).toBe("새 제목");
     expect(screen.getByRole("banner")).toHaveTextContent("저장 전 변경 있음");
     await act(() => vi.advanceTimersByTimeAsync(1999));
     expect(save).not.toHaveBeenCalled();

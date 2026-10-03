@@ -2,7 +2,7 @@ import type { MotionPreset } from "../../domain/compareBoard";
 import type { ProfileSeries } from "../../domain/profile";
 import type { ColorTokens as CanvasTokens } from "../../domain/compareBoard";
 import type { Purpose } from "../../engine/ops/rules";
-import type { CanvasPalette } from "./canvasLayouts";
+import type { CanvasPalette } from "../../render/protocol";
 
 const versionOf = (series: ProfileSeries | undefined, profileVersion: number) => series?.versions.find((v) => v.version === profileVersion);
 

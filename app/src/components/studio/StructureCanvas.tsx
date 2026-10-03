@@ -1,130 +1,37 @@
-import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
-import type { PageDoc, SectionInstance } from "../../engine/contracts/pageDoc";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import type { PreviewView } from "../../features/detail/previewView";
 import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
 import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
-import { slotPlaceholder } from "../../features/studio/slotPlaceholder";
-import { CANVAS_LOOKS, canvasLayout, canvasVars, groupSlots, type CanvasPalette } from "../../features/studio/canvasLayouts";
+import { readRenderMessage, type CanvasPalette, type FrameRect, type ParentMessage } from "../../render/protocol";
 
 /** 5.7 캡션 — 늘 보인다 */
 export const CANVAS_CAPTION = "구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.";
+/** 렌더 문서(별도 빌드 엔트리 render.html — ADR-004 개정 2). 같은 출처 경로지만 sandbox="allow-scripts"라 불투명 출처로 뜬다 */
+export const RENDER_DOC_SRC = "/render.html";
+export const RENDER_FRAME_TITLE = "구조 미리보기 화면";
 
-/** 슬롯 값 + 글자 수 문제 — 스키마 순서. 빈 글자는 자리표시(E-S21 "제목을 입력하세요"), 이미지 = 줄무늬(끈 이미지는 빼고) */
-interface SlotView {
-  readonly key: string;
-  readonly text?: string;
-  readonly empty?: boolean;
-  readonly issue?: SlotIssue;
+interface CanvasIssue extends SlotIssue {
+  readonly instanceId: string;
+  readonly slotKey: string;
 }
 
-function slotViews(section: SectionInstance): readonly SlotView[] {
-  const def = getSectionDefinition(section.type, section.variant);
-  return (def?.slots ?? []).flatMap((entry): SlotView[] => {
-    const value = section.slots[entry.key];
-    if (entry.kind === "image") return typeof value === "object" && !value.enabled ? [] : [{ key: entry.key }];
-    if (typeof value !== "string" || value.trim() === "") return [{ key: entry.key, text: slotPlaceholder(entry.label), empty: true }];
-    const issue = slotIssue(section, entry);
-    return [{ key: entry.key, text: value, ...(issue && { issue }) }];
-  });
+/** 문서 전체의 글자 수 문제(편집 중 표시, 5.7) — 문장은 부모 문서에 늘 있다(필드 aria-describedby 대상, E-AC-49) */
+function docIssues(doc: PageDoc): readonly CanvasIssue[] {
+  return doc.sections.flatMap((section) =>
+    (getSectionDefinition(section.type, section.variant)?.slots ?? []).flatMap((entry) => {
+      const issue = slotIssue(section, entry);
+      return issue ? [{ ...issue, instanceId: section.instanceId, slotKey: entry.key }] : [];
+    }),
+  );
 }
 
 const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionary-text", block: "outline-status-negative-text text-status-negative-text" } as const;
+/** 렌더 문서 좌표(CSS px) → 오버레이 위치. 오버레이 층은 iframe과 같은 원점·같은 zoom이라 그대로 쓴다 */
+const place = (r: FrameRect, grow = 0) => ({ left: `${r[2] - grow}px`, top: `${r[3] - grow}px`, width: `${r[4] + grow * 2}px`, height: `${r[5] + grow * 2}px` });
 
-/**
- * 문제 요소(5.7 · B-03): 2중 테두리(안쪽 흰 간격 `background-normal` + 바깥 상태 글자 토큰) + 배지 글자 "경고 1"/"차단 1" + 아래 문장(id = 필드 describedby).
- * 흰 간격 덕에 테두리는 늘 흰 면과 맞닿는다 — 대비가 사용자 색과 무관. 색 면(Footer·Hero) 위에서도 읽히게 문제 요소 전체를 흰 앱 면에 둔다(FIX2).
- */
-function IssueText({ text, issue, className }: { readonly text: string; readonly issue: SlotIssue; readonly className: string }) {
-  return (
-    <div className="flex flex-col gap-1 rounded-sm bg-background-normal p-1">
-      <div className={`relative rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`}>
-        <p className={`${className} text-label-normal`}>{text}</p>
-        <span className="absolute -top-2.5 right-1 rounded-sm bg-background-normal px-1 text-caption2 font-bold">{issue.level === "block" ? "차단 1" : "경고 1"}</span>
-      </div>
-      <p id={issue.id} className={`text-caption1 ${ISSUE_RING[issue.level]}`}>
-        {issue.text}
-      </p>
-    </div>
-  );
-}
-
-/** 이미지 슬롯 = 자체 대각 줄무늬(5.7 · PRD 원칙 4 — 외부 이미지 0) */
-const Stripes = ({ className = "" }: { readonly className?: string }) => (
-  <span
-    data-stripes
-    aria-hidden="true"
-    className={`block min-h-16 rounded-sm bg-[repeating-linear-gradient(45deg,var(--canvas-muted)_0_0.375rem,var(--canvas-surface)_0.375rem_0.75rem)] ${className}`}
-  />
-);
-
-/** 글자 1개 — 첫 글자는 굵게(Hero는 크게), 빈 값은 자리표시, 문제는 2중 테두리 */
-function SlotLine({ view, strong, big }: { readonly view: SlotView; readonly strong: boolean; readonly big?: boolean }) {
-  const className = strong ? (big ? "ds-heading1" : "ds-body1-strong") : "ds-body3";
-  if (view.issue) return <IssueText text={view.text!} issue={view.issue} className={className} />;
-  return <p className={view.empty ? "ds-body3 text-label-alternative" : className}>{view.text}</p>;
-}
-
-/**
- * 섹션 블록 = 변형별 모양(canvasLayouts 표) + 실제 슬롯 글자(5.7). 제목 요소를 쓰지 않는다 — 편집기 제목 구조(6.1)와 섞이지 않게.
- * 머리(번호 없는 슬롯) · 칸(번호 슬롯 묶음) 순서라 글자 순서 = 스키마 순서.
- */
-function SectionBlock({ section, selected }: { readonly section: SectionInstance; readonly selected: boolean }) {
-  const layout = canvasLayout(section.type, section.variant);
-  const look = CANVAS_LOOKS[layout];
-  const { head, cells } = groupSlots(slotViews(section));
-  const texts = head.filter((v) => v.text !== undefined);
-  const media = look.media !== false && head.some((v) => v.text === undefined);
-  const face = look.face ?? (section.tone === "alt" ? "bg-(--canvas-surface) text-(--canvas-ink)" : "bg-(--canvas-bg) text-(--canvas-ink)");
-  return (
-    <div
-      data-instance-id={section.instanceId}
-      data-layout={layout}
-      className={`relative flex cursor-pointer flex-col gap-3 border-2 px-4 py-3 ${selected ? "border-primary" : "border-transparent"} ${face}`}
-    >
-      {/* 선택 라벨 칩(5.7 · B-12) — 12px 700, primary 면 위 on-primary 글자 */}
-      {selected && (
-        <span className="self-start rounded-sm bg-primary px-2 py-0.5 text-caption2 font-bold text-on-primary">
-          {sectionName(section)} · {variantName(section)}
-        </span>
-      )}
-      <div className={`flex gap-4 ${look.row ?? "flex-col"}`}>
-        {texts.length > 0 && (
-          <div className={`flex min-w-0 flex-1 flex-col gap-1.5 ${look.head ?? ""}`}>
-            {texts.map((view, i) => (
-              <SlotLine key={view.key} view={view} strong={i === 0} big={look.big} />
-            ))}
-          </div>
-        )}
-        {media && <Stripes className={layout === "image" ? "min-h-32" : "min-h-24 flex-1"} />}
-      </div>
-      {layout === "form" && <span aria-hidden="true" className="block h-8 rounded-sm border border-(--canvas-muted) bg-(--canvas-bg)" />}
-      {cells.length > 0 && (
-        <div className={look.items ?? "flex flex-col gap-2"}>
-          {cells.map((cell, n) => (
-            <div key={cell[0]!.key} data-cell className="flex flex-col gap-1 rounded-sm border border-(--canvas-muted) p-2">
-              {cell.map((view, i) =>
-                view.text === undefined ? (
-                  <Stripes key={view.key} className={layout === "masonry" && n % 2 === 0 ? "min-h-24" : ""} />
-                ) : (
-                  <SlotLine key={view.key} view={view} strong={i === 0} />
-                ),
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-      {texts.length + cells.length === 0 && <p className="ds-caption1">{sectionName(section)}</p>}
-    </div>
-  );
-}
-
-/**
- * 가운데 "구조 미리보기"(DS-2A-05 3.1 · 5.7 · E-AC-16). `section aria-labelledby` h2(6.2).
- * `scrollable`(≥1024) = 열마다 따로 스크롤 → 스크롤 영역에 `tabIndex=0`(키보드 스크롤, axe scrollable-region-focusable, 4.1).
- * 섹션 블록은 Tab 정지가 아니다(5.1) — 포인터 누름만 선택으로 받는다(키보드는 목록·Select·탭이 같은 기능). 선택이 바뀌면 보이게 즉시 스크롤, 포커스는 옮기지 않는다.
- */
 /** 캔버스 안쪽 폭(px) — ResizeObserver가 없으면(jsdom) 0 = 측정 전 */
 function useWidth() {
   const ref = useRef<HTMLDivElement>(null);
@@ -141,10 +48,120 @@ function useWidth() {
 
 const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
 
+/**
+ * 렌더 문서 다리 (M2A-1 R4 · 프로토콜 render/protocol.ts). iframe에서 온 메시지만 받는다(`event.source` + 모양 검사).
+ * ready 뒤 문서·팔레트가 바뀔 때마다 render를 통째로 보내고(섹션 ≤ 11), 그 사이 사각형은 비운다 — 다시 그리는 중에는 오버레이를 그리지 않는다(5.7 r4.8).
+ */
+function useRenderFrame({ doc, palette, selectedId, width, onSelect }: { readonly doc: PageDoc; readonly palette?: CanvasPalette; readonly selectedId: string; readonly width: number; readonly onSelect: (instanceId: string) => void }) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [ready, setReady] = useState(false);
+  // 사각형은 잰 문서와 함께 둔다 — 화면 문서와 다르면(다시 그리는 중) 오버레이를 그리지 않는다(5.7 r4.8)
+  const [measured, setMeasured] = useState<{ readonly doc: PageDoc; readonly rects: readonly FrameRect[] }>();
+  const sentDoc = useRef<PageDoc>(undefined);
+  const select = useRef(onSelect);
+  useEffect(() => {
+    select.current = onSelect;
+  }, [onSelect]);
+  useEffect(() => {
+    const receive = (event: MessageEvent) => {
+      if (!frame.current || event.source !== frame.current.contentWindow) return;
+      const message = readRenderMessage(event.data);
+      if (!message) return;
+      if (message.type === "ready") setReady(true);
+      else if (message.type === "rects") setMeasured(sentDoc.current && { doc: sentDoc.current, rects: message.rects });
+      else if (message.type === "click") select.current(message.instanceId);
+      else setMeasured(undefined);
+    };
+    window.addEventListener("message", receive);
+    return () => window.removeEventListener("message", receive);
+  }, []);
+  const send = (message: ParentMessage) => frame.current?.contentWindow?.postMessage(message, "*");
+  useEffect(() => {
+    if (!ready) return;
+    sentDoc.current = doc;
+    send(palette ? { type: "render", doc, palette } : { type: "render", doc });
+  }, [ready, doc, palette]);
+  useEffect(() => {
+    if (ready && width > 0) send({ type: "viewport", width });
+  }, [ready, width]);
+  useEffect(() => {
+    if (ready) send({ type: "select", instanceId: selectedId });
+  }, [ready, selectedId]);
+  const rects = measured?.doc === doc ? measured.rects : undefined;
+  return { frame, rects };
+}
+
+/**
+ * 부모 오버레이(SPEC 5.7 r4.8) — 선택 테두리·라벨 칩 · 문제 2중 테두리(안쪽 흰 간격 + 바깥 상태 글자 토큰)·배지 · 문제 문장.
+ * 테두리는 `aria-hidden` · 포인터 통과, 배지만 누름 → 그 필드 포커스(onIssue). 사각형이 없으면 테두리·칩·배지는 그리지 않고 문장만 남긴다(aria-describedby 대상).
+ */
+function Overlay({
+  rects,
+  doc,
+  selectedId,
+  issues,
+  onIssue,
+}: {
+  readonly rects: readonly FrameRect[] | undefined;
+  readonly doc: PageDoc;
+  readonly selectedId: string;
+  readonly issues: readonly CanvasIssue[];
+  readonly onIssue: (issue: CanvasIssue) => void;
+}) {
+  const selectedBox = useRef<HTMLDivElement>(null);
+  const rectOf = (instanceId: string, slotKey: string | null) => rects?.find((r) => r[0] === instanceId && r[1] === slotKey);
+  const selected = doc.sections.find((s) => s.instanceId === selectedId);
+  const selectedRect = selected && rectOf(selected.instanceId, null);
+  useEffect(() => {
+    // 애니메이션 없이 즉시 — jsdom에는 scrollIntoView가 없다
+    selectedBox.current?.scrollIntoView?.({ block: "nearest" });
+  }, [selectedId, selectedRect]);
+  return (
+    <div data-canvas-overlay className="pointer-events-none absolute inset-0">
+      {selected && selectedRect && (
+        <div ref={selectedBox} className="absolute" style={place(selectedRect)}>
+          <div aria-hidden="true" className="absolute inset-0 border-2 border-primary" />
+          {/* 선택 라벨 칩(5.7 · B-12) — 12px 700, primary 면 위 on-primary 글자 */}
+          <span className="absolute top-0 left-0 rounded-sm bg-primary px-2 py-0.5 text-caption2 font-bold text-on-primary">
+            {sectionName(selected)} · {variantName(selected)}
+          </span>
+        </div>
+      )}
+      {issues.map((issue) => {
+        const r = rectOf(issue.instanceId, issue.slotKey);
+        return (
+          <div key={issue.id} className={r ? "absolute" : "sr-only"} style={r && place(r, 4)}>
+            {r && <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />}
+            {r && (
+              <span
+                data-issue-badge
+                onClick={() => onIssue(issue)}
+                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+              >
+                {issue.level === "block" ? "차단 1" : "경고 1"}
+              </span>
+            )}
+            <p id={issue.id} className={`absolute top-full left-0 mt-1 rounded-sm bg-background-normal px-1 text-caption1 ${ISSUE_RING[issue.level]}`}>
+              {issue.text}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * 가운데 "구조 미리보기"(DS-2A-05 3.1 · 5.7 · E-AC-16). `section aria-labelledby` h2(6.2).
+ * 문서는 렌더 문서(iframe, `sandbox="allow-scripts"`)가 그리고, 이 컴포넌트는 호스트(프레임 · 다리 · 오버레이)만 맡는다(M2A-1 · SPEC 5.7 r4.8).
+ * 미리보기 폭 = iframe 폭(렌더 문서의 미디어 쿼리가 실제 뷰포트로 동작). 넓은 프레임은 `zoom`으로 축소 보기(가로 스크롤 0).
+ * `scrollable`(≥1024) = 열마다 따로 스크롤 → 스크롤 영역에 `tabIndex=0`(4.1). 섹션 선택은 렌더 문서 click 메시지로 받는다(5.1 — 포인터만).
+ */
 export function StructureCanvas({
   doc,
   selectedId,
   onSelect,
+  onIssue,
   view,
   scrollable,
   head,
@@ -153,25 +170,25 @@ export function StructureCanvas({
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly onSelect: (instanceId: string) => void;
+  /** 문제 배지 누름 → 그 섹션 선택 + 필드 포커스(5.7) — 문장 id = 필드 aria-describedby 맨 앞 */
+  readonly onIssue?: (instanceId: string, issueId: string) => void;
   readonly view: PreviewView;
   readonly scrollable: boolean;
   readonly head?: ReactNode;
-  /** 문서 프로필 버전 팔레트(docPalette) — 없으면 중립 토큰 */
+  /** 문서 프로필 버전 팔레트(docPalette) — 없으면 렌더 문서가 중립 토큰 */
   readonly palette?: CanvasPalette;
 }) {
-  const blocks = useRef<HTMLDivElement>(null);
   const [area, available] = useWidth();
   const frameRem = FRAME_REM[view];
-  const scale = previewScale(frameRem === undefined ? undefined : frameRem * remPx(), available);
+  const framePx = frameRem === undefined ? available : frameRem * remPx();
+  const scale = previewScale(frameRem === undefined ? undefined : framePx, available);
   const caption = scaleCaption(scale);
-  useEffect(() => {
-    // 애니메이션 없이 즉시(behavior 기본 auto) — prefers-reduced-motion과 무관하게 움직임 0. jsdom에는 scrollIntoView가 없다
-    blocks.current?.querySelector(`[data-instance-id="${CSS.escape(selectedId)}"]`)?.scrollIntoView?.({ block: "nearest" });
-  }, [selectedId]);
-  const pick = (event: MouseEvent<HTMLDivElement>) => {
-    const id = (event.target as Element).closest("[data-instance-id]")?.getAttribute("data-instance-id");
-    if (id) onSelect(id);
-  };
+  const { frame, rects } = useRenderFrame({ doc, palette, selectedId, width: framePx, onSelect });
+  // 프레임 높이 = 섹션 사각형 맨 아래(렌더 문서 자체 스크롤 없음). 다시 그리는 동안은 마지막 높이 유지
+  const [height, setHeight] = useState<number>();
+  const bottom = rects?.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0);
+  if (bottom !== undefined && bottom > 0 && bottom !== height) setHeight(bottom);
+  const issues = docIssues(doc);
   return (
     <section
       aria-labelledby="studio-canvas-heading"
@@ -184,17 +201,20 @@ export function StructureCanvas({
       <p className="ds-caption1 text-label-alternative">{CANVAS_CAPTION}</p>
       {head}
       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
-      {/* 넓은 프레임은 축소 보기 — `zoom`은 차지하는 폭까지 줄여 가로 스크롤이 생기지 않는다(transform: scale은 원래 폭을 남긴다, REPORT 차이) */}
       <div ref={area} className="min-w-0">
         <div
-          ref={blocks}
-          onClick={pick}
-          style={{ ...canvasVars(palette), width: frameRem === undefined ? undefined : `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
-          className="mx-auto flex max-w-none flex-col overflow-hidden rounded-md border border-line-normal"
+          style={{ width: frameRem === undefined ? undefined : `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
+          className="relative mx-auto max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"
         >
-          {doc.sections.map((section) => (
-            <SectionBlock key={section.instanceId} section={section} selected={section.instanceId === selectedId} />
-          ))}
+          <iframe
+            ref={frame}
+            src={RENDER_DOC_SRC}
+            sandbox="allow-scripts"
+            title={RENDER_FRAME_TITLE}
+            style={{ height: height === undefined ? undefined : `${height}px` }}
+            className="block min-h-40 w-full border-0"
+          />
+          <Overlay rects={rects} doc={doc} selectedId={selectedId} issues={issues} onIssue={(issue) => onIssue?.(issue.instanceId, issue.id)} />
         </div>
       </div>
     </section>

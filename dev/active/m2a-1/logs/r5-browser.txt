@@ -1,0 +1,10 @@
+{ spaceId: 10 }
+targets [{"type":"iframe","url":"http://127.0.0.1:4337/render.html"}]
+frame {"hasIframe":true,"marks":9,"length":7593}
+parent {"describedby":["canvas-issue-hero-1-title","field-hero-1-title-count","field-hero-1-title-note"],"resolved":[true,true,true],"sentence":"제목이 권장 28자를 넘었습니다 (34/28자)","sentenceInCanvas":true,"rings":["select","ring"],"badge":"경고 1","iframes":[["/render.html","allow-scripts",true]]}
+frame after issue {"hasIframe":true,"marks":9,"length":8082}
+badge focus {"active":"INPUT","describedby":"canvas-issue-hero-1-title field-hero-1-title-count field-hero-1-title-note"}
+{ w: 1280, path: '/Users/younghwankang/orca/workspaces/web-builder-solution/m2a-1/dev/active/m2a-1/shots/r5-1280.png' }
+{ w: 390, path: '/Users/younghwankang/orca/workspaces/web-builder-solution/m2a-1/dev/active/m2a-1/shots/r5-390.png' }
+mobile view {"iframeWidth":390,"clientWidth":390,"wrapper":"24.375rem"}
+

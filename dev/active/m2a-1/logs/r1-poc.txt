@@ -1,0 +1,11 @@
+# R1 PoC — ego-browser, parent http://127.0.0.1:4337/catalog 에 <iframe sandbox=allow-scripts src=/render.html> 삽입 후 message 대기(8s)
+## dev, CORS 설정 전 (vite 기본 cors = 로컬 호스트 출처만, Origin: null 불허)
+{"ready":false} — 8초 안에 프레임 메시지 0 (react-devtools 메시지만) · shots/r1-dev-nocors.png
+## dev, server.cors origin ["null", 로컬 호스트] 뒤
+- 첫 시도 ready:false — 설정 전 실행에서 브라우저 캐시에 남은 deps 응답(immutable, ACAO 없음) 때문. Network.clearBrowserCache 뒤:
+{"ready":true,"log":[{"origin":"null","fromFrame":true,"data":{"type":"ready"}}],"sandbox":"allow-scripts"}
+- 캐시 켠 채 재실행(부모가 같은 deps를 먼저 받은 흐름): 같은 결과 ready:true — Vite cors 미들웨어가 Vary: Origin을 붙여 출처별 캐시
+## preview (vite build && vite preview, preview.cors 같은 값)
+
+- curl -H 'Origin: null' /assets/render-*.js → Access-Control-Allow-Origin: null · Vary: Origin
+- shots/r1-dev.png · shots/r1-preview.png (오른쪽 아래 빨간 테두리 = 렌더 문서 iframe)

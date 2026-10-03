@@ -1,7 +1,8 @@
 import type { SectionType } from "../../engine/contracts/pageDoc";
+import type { CanvasPalette } from "../protocol";
 
 /**
- * 캔버스 변형별 모양 표 (SPEC r4.7 A3-Q7 · 5.7) — 표는 이 파일 하나. 키 = `type/variant`, 모르는 쌍 = 기본 블록(예외 0).
+ * 캔버스 변형별 모양 표 (SPEC r4.7 A3-Q7 · 5.7) — 렌더 문서 와이어프레임 폴백(ADR-004 개정 2 결정 3, M2A-1에서 features/studio에서 옮김). 표는 이 파일 하나. 키 = `type/variant`, 모르는 쌍 = 기본 블록(예외 0).
  * 색은 캔버스 루트의 `--canvas-*` 변수(문서 프로필 버전 팔레트)만 쓴다 — 컴포넌트 hex 0, 불투명도 글자 0.
  */
 export type CanvasLayout = "bar" | "cover" | "center" | "split" | "tiles" | "text" | "image" | "cols3" | "cols2" | "masonry" | "list" | "form" | "band" | "dark" | "block";
@@ -58,7 +59,7 @@ export const CANVAS_LOOKS: Readonly<Record<CanvasLayout, CanvasLook>> = {
   block: {},
 };
 
-export type CanvasPalette = Readonly<Record<"primary" | "surface" | "ink" | "muted" | "bg", string>>;
+export type { CanvasPalette };
 /** 조회 전·실패 = 중립 토큰(앱 색) */
 const NEUTRAL: CanvasPalette = { primary: "var(--label-neutral)", surface: "var(--fill-normal)", ink: "var(--label-normal)", muted: "var(--fill-strong)", bg: "var(--background-normal)" };
 

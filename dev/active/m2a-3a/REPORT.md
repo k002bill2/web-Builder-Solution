@@ -11,7 +11,8 @@
 | 재개 E-pre | b8506d7 | `openStudio.tsx` ready 경쟁 수정(STUDIO-SLIM S5 이관) — 단언 변경 0 · 사용 파일 6개 묶음 x10 10/10 |
 | 재개 E0 | a04865a | **ADR-004 개정 3** — `/studio` 진입 한도만 127(시나리오별 `eagerBudgetKb`) · 시제품 실측 124.71 |
 | E1·E2 | 80aee13 | 게이트 8줄 표시 · 진입 직후 자동 계산 · 오래됨 · 줄 → 이동 · 툴바 "검사 · 내보내기" · gate_checked |
-| E3 | (이 커밋) | `requestExport` 8.3.2 8단계 · 생성기 주입(기본 없음) · UNRENDERED_SECTIONS · 한 트랜잭션 |
+| E3 | cfa76a2 | `requestExport` 8.3.2 8단계 · 생성기 주입(기본 없음) · UNRENDERED_SECTIONS · 한 트랜잭션 |
+| E4·E5 | (이 커밋) | 버튼 사전 차단 · 이유 목록 · 내보내기 시작(재검사 → 확인 → 저장 먼저 → 요청 1회) · 결과 문구 · 계측 |
 
 ## 2. E0 공간 확보 (전후 실측 · 옮긴 코드)
 **결론: 정지 조건 충족 — 진입 ≤ 124.70 경로가 실측으로 보이지 않아 E1 이전에 멈춘다.** 예산 상수·멈춤선 변경 0, 코드 변경 0.
@@ -59,7 +60,23 @@
 - 범위 밖 그대로: `createSnapshot`(수동)·`restoreSnapshot`·`resolveConflict` = `missing`.
 
 ## 5. 버튼 · 이유 · 결과 문구 (E4 · E5, 바꾼 문구)
-E0 정지로 미진행 — 영환님 결정(2절 선택지) 대기.
+- **버튼(E4)**: `components/studio/ExportButtons.tsx` — "React 프로젝트(zip) 내보내기" · "정적 HTML 내보내기"(outline 모양 글자 버튼, 아이콘 0). 이유 ≥ 1 → 두 버튼 `aria-disabled` + `aria-describedby` = 이유 id(`export-reason-gate` → `export-reason-fallback`, 8.3.2 5 → 7 순서), 눌러도 요청 0. 이유 `ul` "내보낼 수 없는 이유".
+  - 게이트 이유 = "차단 {n}건({첫 차단 줄 이름}: {그 줄 첫 차단 원인}) — 고치면 열립니다" + "첫 차단으로 이동"(= 첫 차단 줄 이동과 같은 곳). n = 차단 이슈 전체 개수.
+  - 구조 미리보기 이유 = m2a 3.2 A 문장 그대로 — 이름 = 편집기 섹션 목록의 유형 이름표(예: "Portfolio · Testimonials"; m2a 예시의 한국어 이름은 편집기 이름표가 영문이라 그대로 영문) · 3개 + "외 k개" + "첫 구조 미리보기 섹션으로 이동"(그 섹션 선택 + 편집 패널 머리 포커스).
+- **시작(E5 · `features/studio/useExportFlow.ts`, 진입)**: 결과 오래됨·없음 → `recheck()`(지금 문서로 재계산) → 차단이면 멈춤 → 경고만이면 확인 대화상자 → 저장 전 변경(phase ≠ idle·saved)이면 자동 저장 즉시(`retry`) 뒤 `saved`에서만 진행(failed·stale·offline = 요청 0, 표시는 기존 저장 흐름 E-S07·E-S09) → `requestExport(projectId, format, savedRevision())` **1회**. 버튼 `aria-busy` + "내보내는 중…". `useDocSave`에 `savedRevision()` 추가(저장소에 저장된 revision).
+- **조작 뒤 청크(S-B5)**: `features/studio/exportFlow.ts`(requestExport 호출 · 잡 조회 250ms × 40 · 결과 분류 · 계측) + `components/studio/ExportAfter.tsx`(경고 확인 `dialog` · 결과 Callout) — 둘 다 `STUDIO_AFTER_ACTION` 등록(+0.60 · +1.57, 판정 밖).
+- **결과 문구(바꾼 문구 — E-S27 informative 문장을 형식별로)**:
+  - `GENERATOR_UNAVAILABLE` zip: "React 프로젝트(zip)는 코드 생성기 연결 후(M4) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다 — 따로 남기려면 '스냅샷'에서 저장하세요"
+  - `GENERATOR_UNAVAILABLE` 정적 HTML: "정적 HTML은 생성기 연결 후(다음 단계) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다 — …" (SPEC 원문 "코드 생성기 연결 후(M2)"의 M2를 형식별 단계로 — 브리프 지시)
+  - 둘 다 `Callout tone=info`, `role=alert` 아님, 다시 시도 없음, 스냅샷 이름 없음.
+  - `UNRENDERED_SECTIONS`: m2a 3.2 B 그대로(`Callout tone=warning` + `role=status` + "첫 구조 미리보기 섹션으로 이동" = 결과 `sections[0]`) · 다시 시도 없음.
+  - 재시도 가능 실패(잡 `failed` + retryable · 요청 `JOB_TIMEOUT`·`INFRA`·`NETWORK`): `role=alert` "내보내지 못했습니다" + "다시 시도"(같은 요청 다시 → 저장소 2단계가 같은 잡 재실행).
+  - 완료(3b 생성기 뒤): "{zip|정적 HTML}을 만들었습니다 · 내보내기 전 상태는 스냅샷 '{이름}'에 있습니다" — 내려받기 링크·결과 해시는 3b.
+  - `GATE_FAILED`·`STALE_DOC`(경쟁 경로, SPEC 문구 없음 — 유추): `role=alert` "품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요" / "다른 곳에서 문서가 바뀌어 내보내지 않았습니다".
+- **경고 확인 대화상자(E-S24)**: 제목 "경고 {n}건이 있습니다" · 목록 "{줄 이름} · {원인}" · "취소"(요청 0) / "경고를 확인했습니다 · 내보내기"(열 때 포커스). Esc = 취소. 목록 줄 이동 링크는 넣지 않았다(9절 남은 위험).
+- **계측(9절)**: `export_requested(format)` · `export_failed(reason)` · `export_succeeded(format)` · `snapshot_created(auto, export)`(결과 `wrote`일 때만). 사용자 글자 0.
+- 테스트: `components/studio/ExportFlow.test.tsx` 8건(RED = E3 StudioLayout 8 failed `logs/e4e5-red.txt` → GREEN 8/8) · `features/studio/gateView.test.ts` 2건.
+- 번들: `/studio` 진입 124.91 → **126.59 / 127**(멈춤선 126.70 안, 여유 0.11) · 그 밖 화면 E3와 같음(`logs/e4e5-gate.txt`).
 
 ## 6. E-AC · K-AC 판정 (번호별)
 | AC | 판정 |
@@ -76,6 +93,7 @@ E0 정지로 미진행 — 영환님 결정(2절 선택지) 대기.
 | 재개 E0 시제품(a04865a 트리) | 89.34 | 91.72 / 124.71 (예산 127) | 98.84 / 121.72 | 99.61 / 118.67 | 79.89 / 6.32 |
 | E1·E2 | 89.34 | 91.72 / 124.98 | 98.83 / 121.71 | 99.61 / 118.66 | 79.89 / 6.32 |
 | E3 (`/projects` 94.02 / **100.29**) | 89.35 | 91.74 / 124.91 | 98.83 / 121.70 | 99.62 / 118.67 | 79.89 / 6.32 |
+| E4·E5 (`/projects` 94.02 / 100.29) | 89.35 | 91.76 / **126.59** | 98.84 / 121.70 | 99.61 / 118.66 | 79.89 / 6.32 |
 
 ## 8. SPEC 차이
 - (E0 기록) **브리프 전제 차이**: 브리프 E0-2 "계산(`runGate`)은 이미 진입 직후 엔진 청크(S-B4) 쪽에 둔다" — 실측으로 `runGate`·대비 판정은 그때 어느 `/studio` 청크에도 없었다. 재개 E1에서 S-B4대로 진입 직후 엔진 청크(`gateCheck`)를 새로 만들었다.

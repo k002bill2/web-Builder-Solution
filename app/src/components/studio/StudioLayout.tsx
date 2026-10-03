@@ -29,12 +29,17 @@ import { GateList } from "./GateList";
 import { Button } from "../ds/Button";
 import type { GateRow } from "../../engine/contracts/records";
 import { useGateReport } from "../../features/studio/useGateReport";
-import { gateCounts, gateSummaryNotice } from "../../features/studio/gateView";
+import { fallbackReason, fallbackSections, firstBlockRow, gateBlockReason, gateCounts, gateSummaryNotice } from "../../features/studio/gateView";
+import { useExportFlow } from "../../features/studio/useExportFlow";
+import { ExportButtons, type ExportReason } from "./ExportButtons";
 import { emitEditorEvent } from "../../features/studio/editorEvents";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 /** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
 const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
+/** 내보내기 경고 확인 대화상자 · 결과(조작 뒤, S-B5) — 내보내기 버튼을 누른 뒤에만 받는다 */
+const ExportConfirmDialog = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportConfirmDialog })));
+const ExportResultView = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportResultView })));
 
 /**
  * E-S05 기본 편집 틀 (DS-2A-05 3.1 · 4절). 배치(3단 · 2단 · 탭)마다 트리를 따로 그리고(4.3) 상태(선택·알림·탭)는 여기서 공유한다(4.1).
@@ -302,8 +307,31 @@ export function StudioLayout({
       <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
     </EditPanel>
   );
+  // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
+  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState });
+  const blockRow = gateReport && firstBlockRow(gateReport);
+  const blockText = gateReport && gateBlockReason(gateReport);
+  const fallbacks = fallbackSections(doc);
+  const fallbackText = fallbackReason(fallbacks);
+  const goToSection = (instanceId: string) => goTo("studio-edit-heading", { select: instanceId, tab: "edit" });
+  const reasons: readonly ExportReason[] = [
+    ...(blockRow && blockText ? [{ id: "export-reason-gate", text: blockText, link: "첫 차단으로 이동", onLink: () => goToRow(blockRow) }] : []),
+    ...(fallbackText ? [{ id: "export-reason-fallback", text: fallbackText, link: "첫 구조 미리보기 섹션으로 이동", onLink: () => goToSection(fallbacks[0]!.instanceId) }] : []),
+  ];
   const gate = (
-    <GatePanel>
+    <GatePanel
+      exports={
+        <>
+          <ExportButtons reasons={reasons} busy={exportFlow.busy} onExport={(format) => void exportFlow.start(format)} />
+          {(exportFlow.result || exportFlow.confirming) && (
+            <Suspense fallback={null}>
+              {exportFlow.result && <ExportResultView result={exportFlow.result} onRetry={exportFlow.retry} onFirstFallback={goToSection} />}
+              {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
+            </Suspense>
+          )}
+        </>
+      }
+    >
       <GateList report={gateState.report} stale={gateState.stale} onRow={goToRow} />
     </GatePanel>
   );

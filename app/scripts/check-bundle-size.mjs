@@ -49,8 +49,17 @@ const PROJECT_AUTO = ["src/data/deferredStudio.ts", "src/data/memoryProjectRepos
 /**
  * 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록
  *  + 문의 폼 주인용 안내(M2A-2b B6): EditFields lazy ← contact/form 섹션 선택(섹션 줄·캔버스 누름 onClick — 첫 선택은 Hero)
+ *  + 내보내기(M2A-3a S-B5): exportFlow(requestExport 호출 · 잡 조회 · 결과 처리) ← useExportFlow.request ← 내보내기 버튼 onClick(·확인 대화상자 "내보내기"·"다시 시도")
+ *    · ExportAfter(경고 확인 대화상자 · 결과 Callout) lazy ← confirming·result 상태 ← 같은 onClick
  */
-const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts", "src/components/studio/AddSectionDialog.tsx", "src/components/studio/VariantOptions.tsx", "src/components/studio/ContactOwnerNote.tsx"];
+const STUDIO_AFTER_ACTION = [
+  "src/features/studio/docEngine.ts",
+  "src/components/studio/AddSectionDialog.tsx",
+  "src/components/studio/VariantOptions.tsx",
+  "src/components/studio/ContactOwnerNote.tsx",
+  "src/features/studio/exportFlow.ts",
+  "src/components/studio/ExportAfter.tsx",
+];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];
 const COMPARE_AFTER_ACTION = [

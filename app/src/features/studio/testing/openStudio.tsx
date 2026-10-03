@@ -20,7 +20,7 @@ export const STUDIO_PROJECT: Project = {
 };
 
 /** 화면이 쓰는 조회·저장만 — 저장은 받은 문서를 기록한다 */
-export function stubProjectRepository(doc: PageDoc) {
+export function stubProjectRepository(doc: PageDoc, extra: Partial<ProjectRepository> = {}) {
   const saved: PageDoc[] = [];
   const repository = {
     persistence: "memory",
@@ -30,6 +30,7 @@ export function stubProjectRepository(doc: PageDoc) {
       saved.push(next);
       return { ...next, revision: revision + 1 };
     },
+    ...extra,
   } as unknown as ProjectRepository;
   return { repository, saved };
 }
@@ -58,9 +59,14 @@ export const restoreViewport = () => {
   window.matchMedia = original;
 };
 
-export async function openStudio({ width = 1280, doc = sampleDoc(), series }: { width?: number; doc?: PageDoc; series?: ProfileSeries } = {}) {
+export async function openStudio({
+  width = 1280,
+  doc = sampleDoc(),
+  series,
+  repository,
+}: { width?: number; doc?: PageDoc; series?: ProfileSeries; /** 저장소 메서드 덮어쓰기(내보내기 등) */ repository?: Partial<ProjectRepository> } = {}) {
   setViewport(width);
-  const projects = stubProjectRepository(doc);
+  const projects = stubProjectRepository(doc, repository);
   const { router } = renderApp("/catalog", undefined, undefined, stubProfiles(series), undefined, () => Promise.resolve(projects.repository));
   // 이전 테스트의 제목을 아래 기다림이 "effect 끝남"으로 잘못 읽지 않게 비운다(STUDIO-SLIM S5 — StudioShell.test는 afterEach에서)
   document.title = "";

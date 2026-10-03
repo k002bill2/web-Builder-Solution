@@ -1,0 +1,10 @@
+     × 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0 453ms
+     × 폴백만 → 구조 미리보기 이유 1개 · '첫 구조 미리보기 섹션으로 이동' → 그 섹션 선택 + 편집 패널 머리 포커스 78ms
+     × '첫 차단으로 이동' → 첫 차단 줄 이동과 같은 곳(대체텍스트 → 그 섹션 편집 패널 머리) 69ms
+     × 통과 → 바로 requestExport 1회(저장된 revision) · GENERATOR_UNAVAILABLE = 형식별 informative 문구(alert 아님) · 계측 · 스냅샷 이벤트 0 55ms
+     × 경고만 → 확인 대화상자(경고 목록) · 취소 = 요청 0 · '경고를 확인했습니다 · 내보내기' = 요청 1 59ms
+     × 편집 직후(결과 오래됨 · 저장 전 변경) → 다시 검사 → 저장 먼저 → 저장된 revision으로 요청 1회 (E-AC-28·30) 83ms
+     × 재시도 가능 실패(JOB_TIMEOUT) → alert '내보내지 못했습니다' + '다시 시도'(같은 요청 다시) · 새 스냅샷이면 snapshot_created 1회 60ms
+     × UNRENDERED_SECTIONS(경쟁 방어 경로) → cautionary role=status 문구 + 결과 첫 instanceId로 이동 · 다시 시도 없음 56ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  8 failed (8)

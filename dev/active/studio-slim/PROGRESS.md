@@ -7,12 +7,12 @@
 - 읽은 근거: m2a-3a REPORT 2절·`logs/e0-attr-optionA.txt`(브랜치 `k002bill2/m2a-3a`), `app/src/data/memoryStudio.ts`, `app/src/main.tsx`, `app/scripts/check-bundle-size.mjs`.
 
 ## 단계
-- [ ] 수신 · REPORT 골격 커밋
-- [ ] S0 기준선 — 번들 표 전체 + /studio 진입 모듈별 기여 (logs/s0-*.txt)
-- [ ] S1 구조안 2개 이상 실측 시제품 비교 → 택1 (REPORT 3절)
-- [ ] S2 RED(지연 로드 테스트 · 같은 store 흐름) → GREEN · SCENARIOS 갱신
-- [ ] S3 (S2 감소 < 6.27일 때만) 후보 기록
-- [ ] S4 브라우저 흐름 1회 · 전체 vitest 3회 · Codex 1회 · REPORT 마감
+- [x] 수신 · REPORT 골격 커밋 (b8d83b5)
+- [x] S0 기준선 — logs/s0-bundle(-full).txt · logs/s0-attr-studio.txt (attr.mjs)
+- [x] S1 시제품 A(지연 로더 /studio −6.26)·B(advancedChunks) 실측 — 둘 다 다른 화면 규칙 위반 → 채택 0, 정지 (REPORT 3·6절)
+- [ ] S2 — BLOCKED: 채택 가능한 구조안 없음(A는 /compare 첫 +0.09·진입 +0.31) → 영환님 결정 대기(REPORT 6절)
+- [x] S3 후보 기록만 (REPORT 6절)
+- [x] REPORT 마감 · S4 브라우저·vitest 3회·Codex — BLOCKED: 코드 변경 0이라 검증 대상 없음
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

@@ -1,0 +1,4 @@
+     × K-AC-31: footer 루트 · 면 ink(data-surface) · address 1(사업자정보) · 하단 링크 = li 글자(a 0) · 저작권 p 31ms
+     × K-AC-03: 사업자정보 200자(줄바꿈 포함) · 링크 80 · 저작권 60자가 그대로 6ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 1 passed (3)

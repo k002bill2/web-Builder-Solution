@@ -1,0 +1,199 @@
+{
+ "gate-profiles": {
+  "light": [
+   [
+    "C-1",
+    8.09,
+    true
+   ],
+   [
+    "C-2",
+    16.82,
+    true
+   ],
+   [
+    "C-4",
+    15.31,
+    true
+   ],
+   [
+    "C-5",
+    4.93,
+    true
+   ]
+  ],
+  "dark": [
+   [
+    "C-1",
+    4.61,
+    true
+   ],
+   [
+    "C-2",
+    20.08,
+    true
+   ],
+   [
+    "C-3",
+    4.56,
+    true
+   ],
+   [
+    "C-4",
+    17.62,
+    true
+   ],
+   [
+    "C-5",
+    6.06,
+    true
+   ]
+  ]
+ },
+ "K-AC-23 image off @1280": {
+  "layout": "single",
+  "figures": 0,
+  "textW": 500,
+  "proseMaxPx": 500
+ },
+ "K-AC-24 16:9 @1280": {
+  "got": 1.7778,
+  "want": 1.7778,
+  "within1pct": true
+ },
+ "K-AC-24 16:9 @390": {
+  "got": 1.7778,
+  "want": 1.7778,
+  "within1pct": true
+ },
+ "K-AC-24 4:5 @1280": {
+  "got": 0.8,
+  "want": 0.8,
+  "within1pct": true
+ },
+ "K-AC-24 4:5 @390": {
+  "got": 0.8,
+  "want": 0.8,
+  "within1pct": true
+ },
+ "K-AC-24 1:1 @1280": {
+  "got": 1,
+  "want": 1,
+  "within1pct": true
+ },
+ "K-AC-24 1:1 @390": {
+  "got": 1,
+  "want": 1,
+  "within1pct": true
+ },
+ "K-AC-25 style bordered-lg": {
+  "sameRow": true,
+  "sameH": true,
+  "radius": "16px",
+  "borderTop": "1px",
+  "borderLeft": "1px",
+  "shadow": false,
+  "bg": "rgb(252, 251, 248)"
+ },
+ "K-AC-25 style bordered-md": {
+  "sameRow": true,
+  "sameH": true,
+  "radius": "8px",
+  "borderTop": "1px",
+  "borderLeft": "1px",
+  "shadow": false,
+  "bg": "rgb(252, 251, 248)"
+ },
+ "K-AC-25 style elevated": {
+  "sameRow": true,
+  "sameH": true,
+  "radius": "8px",
+  "borderTop": "0px",
+  "borderLeft": "0px",
+  "shadow": true,
+  "bg": "rgb(252, 251, 248)"
+ },
+ "K-AC-25 style flat": {
+  "sameRow": true,
+  "sameH": true,
+  "radius": "0px",
+  "borderTop": "1px",
+  "borderLeft": "0px",
+  "shadow": false,
+  "bg": "rgba(0, 0, 0, 0)"
+ },
+ "K-AC-27 keyboard": {
+  "initial": [
+   false,
+   false,
+   false
+  ],
+  "afterEnter": [
+   true,
+   false,
+   false
+  ],
+  "afterSpace": [
+   false,
+   false,
+   false
+  ],
+  "afterSpace2": [
+   true,
+   false,
+   false
+  ],
+  "focused": "SUMMARY"
+ },
+ "K-AC-29 disabled look": {
+  "input": {
+   "color": "rgb(26, 26, 26)",
+   "bg": "rgb(252, 251, 248)",
+   "border": "rgb(26, 26, 26)",
+   "opacity": "1",
+   "cursor": "not-allowed"
+  },
+  "textarea": {
+   "color": "rgb(26, 26, 26)",
+   "bg": "rgb(252, 251, 248)",
+   "border": "rgb(26, 26, 26)",
+   "opacity": "1",
+   "cursor": "not-allowed"
+  },
+  "submit": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(10, 92, 54)",
+   "border": "rgb(255, 255, 255)",
+   "opacity": "1",
+   "cursor": "not-allowed"
+  },
+  "disabledFieldset": true,
+  "palette": {
+   "primary": "rgb(10, 92, 54)",
+   "surface": "rgb(244, 240, 232)",
+   "ink": "rgb(26, 26, 26)",
+   "muted": "rgb(110, 110, 110)",
+   "bg": "rgb(252, 251, 248)"
+  }
+ },
+ "marker@1280": [
+  [
+   "s-cta",
+   1168,
+   12,
+   81,
+   20,
+   1265
+  ]
+ ],
+ "K-AC-02 long+200% @1280": {
+  "overflowX": 0,
+  "ellipsis": 0,
+  "wider": []
+ },
+ "K-AC-02 long+200% @390": {
+  "overflowX": 0,
+  "ellipsis": 0,
+  "wider": []
+ }
+}

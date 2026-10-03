@@ -16,7 +16,7 @@
 - [x] B6 캡션 3상태(features/studio/canvasCaption) · "페이지 미리보기"(h2·region·iframe 이름) · RENDERED_VARIANTS + 가드(src/test/renderedVariants) · 주인용 안내 → 조작 뒤 청크 ContactOwnerNote(Callout은 prop — DS import 시 125.10 실측) · /studio 진입 124.81 → 124.69
 - [x] B7 변형 목록 ' · 구조 미리보기'(VariantOptions 이름표 span — 접근 이름 포함) · 같은 RENDERED_VARIANTS · 가드는 B6 커밋(src/test/renderedVariants) · /studio 진입 124.71 → 오버레이 style 숫자화·감싸개 max-w-none 제거로 124.70(한도, 여유 0)
 - [x] B8 렌더 문서 웹폰트 제거 — render.css fonts.css import 삭제 · :root/[data-site-root] --font-sans = 시스템/--site-font · 폰트 요청 3 → 0(logs/b8-fonts-before/after) · 렌더 CSS 6.48 → 6.32 · dist render CSS @font-face 0
-- [ ] B9 공통 K-AC
+- [x] B9 공통 K-AC — [U] kitCommon 7변형(03·04·05·09) · [B] b9b.mjs(render.html 최상위): 11·36 프로필 2벌 × 톤 orig/flip × 1280·390 bad 0 · 최소 대비 4.56(dark)/4.93(light) · 26 카드 면 4조합 · 23·25·30 배치(1280·1024·768·390) · 24 비율 3종 ±0% · 카드 모양 4종 · 27 Enter/Space · 29 비활성 색 · 02 상한+200% 넘침 0 (logs/b9b-head.txt · b9b-tail.txt) · 렌더 최상위 스크린샷은 CDP 타임아웃(일부 SHOT-FAIL) — 앱 흐름 캡처는 B10
 - [ ] B10 브라우저 1280·390 캡처 · [B] 수치
 - [ ] B11 전체 vitest ×3 · Codex 1회 · REPORT · 4337 서버 종료
 
@@ -29,3 +29,4 @@
 - B5 중 CanvasPalette.test '프로필 없음 → 중립 토큰' 1회 실패(동시 실행 부하) → 단독 재실행 2회 통과. 전체 3회(B11)에서 다시 본다
 - B6 게이트 1차에서 src/pages 쪽 1건 부하 실패(StudioShell 'Tab 정지' 단독 2회 통과) — 재게이트 467/467
 - B7 실측: prop으로 목록 넘기기·목록 문자열 split 둘 다 이득 없음(124.71·124.72) → 원복
+- B9 [U] 첫 커밋 d3966a7은 typecheck exit 2인 채 커밋(체인 판정 실수) → 다음 커밋에서 수정, 게이트 b9-u 전부 exit 0

@@ -49,7 +49,8 @@ describe("변형 교체 (E-AC-20)", () => {
     const list = await openVariants();
     expect(list.getByRole("radio", { name: "카드 3개" })).toBeInTheDocument();
     for (const name of ["목록형", "카드 2열", "카드 벽돌형"]) expect(list.getByRole("radio", { name: `${name} · 구조 미리보기` })).toBeInTheDocument();
-    expect(list.getAllByRole("radio").filter((r) => /구조 미리보기$/.test(r.getAttribute("aria-labelledby") && document.getElementById(r.getAttribute("aria-labelledby")!)!.textContent!))).toHaveLength(3);
+    const labels = list.getAllByRole("radio").map((r) => document.getElementById(r.getAttribute("aria-labelledby")!)!.textContent!);
+    expect(labels.filter((label) => label.endsWith(" · 구조 미리보기"))).toHaveLength(3);
     expect(editPanel().getByText("변형: 카드 3개")).toBeInTheDocument();
   });
 

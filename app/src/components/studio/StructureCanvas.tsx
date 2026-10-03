@@ -30,14 +30,9 @@ function docIssues(doc: PageDoc): readonly CanvasIssue[] {
 const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionary-text", block: "outline-status-negative-text text-status-negative-text" } as const;
 /**
  * 렌더 문서 좌표(CSS px) → 오버레이 위치. 오버레이 층은 iframe과 원점은 같지만 축소(zoom) 층 밖에 있다 — 칩·배지·문장 글자가 원래 크기로 읽히게(r4.10 축소 보기).
- * 그래서 사각형에 축소 비율을 곱하고, 바깥 여백(grow)은 곱하지 않는다.
+ * 그래서 사각형에 축소 비율을 곱하고, 바깥 여백(grow)은 곱하지 않는다. 숫자 = px(React style).
  */
-const place = (r: FrameRect, scale: number, grow = 0) => ({
-  left: `${r[2] * scale - grow}px`,
-  top: `${r[3] * scale - grow}px`,
-  width: `${r[4] * scale + grow * 2}px`,
-  height: `${r[5] * scale + grow * 2}px`,
-});
+const place = (r: FrameRect, scale: number, grow = 0) => ({ left: r[2] * scale - grow, top: r[3] * scale - grow, width: r[4] * scale + grow * 2, height: r[5] * scale + grow * 2 });
 
 /** 캔버스 안쪽 폭(px) — ResizeObserver가 없으면(jsdom) 0 = 측정 전 */
 function useWidth() {
@@ -232,7 +227,7 @@ export function StructureCanvas({
       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
       <div ref={area} className="min-w-0">
         {/* 축소 층(zoom) = 프레임 + iframe만. 오버레이는 그 밖 같은 원점(relative 감싸개)에서 사각형 × 비율로 맞춘다 */}
-        <div className="relative mx-auto w-fit max-w-none">
+        <div className="relative mx-auto w-fit">
           <div
             style={{ width: `${frameRem}rem`, zoom: scale < 1 ? scale : undefined }}
             className="max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"

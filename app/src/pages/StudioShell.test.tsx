@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Project, ProjectRepository } from "../data/projectRepository";
 import { SAMPLE_SECTIONS, sampleDoc } from "../engine/testing/sampleDoc";
@@ -51,6 +51,8 @@ function setViewport(width: number) {
 }
 afterEach(() => {
   window.matchMedia = original;
+  // 다음 테스트의 open()이 이전 테스트의 제목을 "effect 끝남"으로 잘못 읽지 않게 비운다
+  document.title = "";
 });
 
 async function open(width?: number) {
@@ -58,6 +60,9 @@ async function open(width?: number) {
   const { router } = renderApp("/catalog", undefined, undefined, undefined, undefined, stubProjects());
   act(() => void router.navigate("/studio/project-1"));
   await screen.findByRole("heading", { level: 1, name: PROJECT.name });
+  // h1은 act 밖 커밋으로 나타난다 — 그 커밋의 effect(문서 제목 · 캔버스 message 수신 등록)가 돌기 전에 ready를 보내면 ready를 잃는다(STUDIO-SLIM S5).
+  // 같은 커밋의 effect는 함께 돌므로 문서 제목이 바뀔 때까지 기다린 뒤 붙인다
+  await waitFor(() => expect(document.title).toBe(`${PROJECT.name} 편집`));
   // 캔버스 = 렌더 문서 iframe(M2A-1) — 흉내를 붙인다(ready + render마다 rects)
   connectRenderFrame();
   return router;

@@ -27,8 +27,8 @@ const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
  */
 /** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처) — 모든 시나리오에 자동 */
 const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
-/** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
-const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"];
+/** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안) + main의 deferred 로더가 받는 공유 store·프로필(deferredStudio)과 그 보드 로더가 받는 보드 메모리 구현·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3 · STUDIO-SLIM) */
+const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/deferredStudio.ts", "src/data/memoryCompareBoardRepository.ts", "src/fixtures/referenceComparisons.ts"];
 /**
  * 조작 뒤 — /compare:
  *  - P-S25 판정·목록(carryOverPanel): carryOverLoader ← CarryOverCaption load ← 펼침(details onToggle → open) + 초안 ready(Hero 선택) 둘 다일 때
@@ -44,8 +44,8 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
  *    ② boardInputLoader ← boardEngine checkPrimaryColor(대표색 blur·Enter)·prepare(대표색 onFocus). 진입(getBoard·getComparison·엔진·입력 틀)은
  *    부르지 않는다 — BoardInputLoad.test "번들 분류 근거"가 요청 0을 확인한다
  */
-/** /projects·/studio/:projectId 진입 직후 자동 — 프로젝트 저장소 로더(S-B3)가 받는 공유 store와 프로젝트 메모리 구현 */
-const PROJECT_AUTO = ["src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts", "src/data/memoryProjectRepository.ts"];
+/** /projects·/studio/:projectId 진입 직후 자동 — 프로젝트 저장소 로더(S-B3)가 받는 공유 store·프로필(deferredStudio)과 프로젝트 메모리 구현. 보드·생성 구현은 받지 않는다(STUDIO-SLIM — deferredStudio.test) */
+const PROJECT_AUTO = ["src/data/deferredStudio.ts", "src/data/memoryProjectRepository.ts"];
 /**
  * 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록
  *  + 문의 폼 주인용 안내(M2A-2b B6): EditFields lazy ← contact/form 섹션 선택(섹션 줄·캔버스 누름 onClick — 첫 선택은 Hero)
@@ -74,20 +74,21 @@ const SCENARIOS = [
   // 확정한 프로필의 최신 버전에 조정이 있을 때 — 자동으로 더 받는 dynamic import가 없다(캡션은 인라인 계산, CarryOverCaption은 엔진 청크).
   // 판정·목록은 펼칠 때(조작 뒤). 자동 조건부 import가 다시 생기면 이 시나리오의 auto에 넣는다
   { name: "/compare (조정 있음)", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
-  // 프로필 엔진(대비·비교·문구·조정 패널, P-B6) + 같은 로더가 받는 보드·프로필 메모리 구현·비교 픽스처.
+  // 프로필 엔진(대비·비교·문구·조정 패널, P-B6) + 같은 로더가 받는 공유 store·프로필(deferredStudio)·생성 메모리 구현(useGeneration 진입 findJob). 보드 구현·비교 픽스처는 받지 않는다(STUDIO-SLIM).
   // 진입 때 자동: useProfileDetail load → getProfile·getAdjustmentRange(2a-04b2). 범위 조회는 쓰기 본문을 받지 않으므로
   // memoryProfileAdjust는 조작 뒤("조정 저장"·"다시 시도"·"이 버전으로 되돌리기" onClick) — WriteBodyLoad.test "번들 분류 근거"가 요청 0을 확인한다.
   // boardInput(zod)은 보드 저장소 savePicks 뒤 — 프로필 화면은 부르지 않으므로 조작 뒤 목록에도 넣지 않는다(BoardInputLoad.test "번들 분류 근거")
   {
     name: "/profile",
     page: "src/pages/ProfilePage.tsx",
-    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
+    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/deferredStudio.ts", "src/data/memoryGenerationRepository.ts"],
     // 3안 계산 본문(memoryGenerate = composeCandidates·lintPlan, 2a-04c): writeBodyLoader loadGenerate ← memoryGenerationRepository requestGeneration·
     // retryFailed ← useGeneration request·retry ← CandidatesSection "3안 만들기"·"다시 시도" onClick. 진입 findJob·getJob 폴링·selectCandidate는 받지 않는다
-    // (store 조회만 — GenerationLoad.test "번들 분류 근거"가 요청 0을 확인한다). 기존 잡 표시·폴링 코드는 profileEngine·memoryStudio(자동)에 든다
-    afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts"],
+    // (store 조회만 — GenerationLoad.test "번들 분류 근거"가 요청 0을 확인한다). 기존 잡 표시·폴링 코드는 profileEngine·memoryGenerationRepository(자동 — useGeneration 로더)에 든다.
+    // 프로젝트 메모리 구현: CandidatesSection loadProjects().startDoc ← "편집 시작" onClick(STUDIO-SLIM — 진입은 받지 않는다)
+    afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts"],
   },
-  // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(memoryStudio·비교 픽스처) → projects()(memoryProjectRepository)
+  // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(deferredStudio) → projects()(memoryProjectRepository)
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
   // 편집 틀(StudioLayout — 배치·필드·자동 저장 훅)은 문서가 있으면 렌더에서 자동 lazy(EDITOR-A2-SHELL S7) → 진입 직후 합계
   // 조작 뒤(EDITOR-A3-1): 구조 연산 본문(docEngine = sectionOps·normalizeDoc) ← docOps.applyDocOp ← useSectionOps.run ← 위로·아래로·삭제·추가·변형 onClick

@@ -1,0 +1,10 @@
+## 안 A
+chunkRetry <- src/data/deferredStudio.ts, src/data/memoryBoardConfirm.ts, src/data/memoryProjectRepository.ts, src/features/compare/boardEngine.ts
+compareBoardRepository <- src/data/memoryBoardConfirm.ts, src/data/memoryCompareBoardRepository.ts, src/features/compare/boardEngine.ts
+fonts <- profileDraft, src/domain/boardInput.ts, src/features/compare/boardEngine.ts
+hash <- profileDraft, src/data/memoryGenerate.ts
+generationRepository <- src/data/memoryGenerate.ts, src/data/memoryGenerationRepository.ts
+generatorVersion <- src/data/memoryDocBook.ts, src/data/memoryGenerationRepository.ts
+profileDraft <- src/data/memoryCompareBoardRepository.ts, src/features/compare/boardEngine.ts
+## 기준선
+profileDraft <- src/data/memoryBoardConfirm.ts, src/data/memoryGenerate.ts, src/data/memoryProjectRepository.ts, src/data/memoryStudio.ts, src/domain/boardInput.ts, src/features/compare/boardEngine.ts

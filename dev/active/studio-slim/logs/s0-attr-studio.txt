@@ -1,0 +1,86 @@
+== assets/references-Dy8ZbmG9.js raw 2661 gz 1.02
+  1.02 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/fixtures/references.ts
+== assets/referenceDetails-C7TYk5GK.js raw 5158 gz 1.45
+  1.45 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/fixtures/referenceDetails.ts
+== assets/memoryStudio-DDoGmmWK.js raw 9585 gz 3.83
+  1.20 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/memoryCompareBoardRepository.ts
+  0.88 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/memoryGenerationRepository.ts
+  0.66 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/memoryProfileRepository.ts
+  0.58 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/studioStore.ts
+  0.21 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/memoryStudio.ts
+  0.16 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/writeBodyLoader.ts
+  0.07 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/profile.ts
+  0.05 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/generationRepository.ts
+  0.01 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/generatorVersion.ts
+== assets/sectionLibrary-50WmVJEd.js raw 937 gz 0.68
+  0.68 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/sectionLibrary.ts
+== assets/profileDraft-dHZuRXZ9.js raw 8979 gz 3.89
+  1.73 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/profileDraft.ts
+  0.96 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/comparisonCells.ts
+  0.67 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/boardPicks.ts
+  0.14 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/chunkRetry.ts
+  0.13 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/fonts.ts
+  0.12 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/palette.ts
+  0.08 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/compareBoardRepository.ts
+  0.06 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/hash.ts
+== assets/profileRepository-Cf1X6rgu.js raw 205 gz 0.18
+  0.18 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/profileRepository.ts
+== assets/referenceComparisons-BjFXZkfz.js raw 3433 gz 1.06
+  1.06 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/fixtures/referenceComparisons.ts
+== assets/memoryProjectRepository-BE9jSr0K.js raw 2706 gz 1.28
+  1.28 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/data/memoryProjectRepository.ts
+== assets/projectName-DWJvWhhu.js raw 543 gz 0.43
+  0.43 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/domain/projectName.ts
+== assets/StudioLayout-CITBTLFO.js raw 37388 gz 13.09
+  2.31 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/StudioLayout.tsx
+  1.60 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/StructureCanvas.tsx
+  1.48 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/useAutosaveScheduler.ts
+  0.76 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/StudioPanels.tsx
+  0.52 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/FieldEditor.tsx
+  0.42 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/useSectionOps.ts
+  0.41 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/SectionList.tsx
+  0.40 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/docPurpose.ts
+  0.34 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/StudioTabs.tsx
+  0.33 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/docOps.ts
+  0.33 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/SectionOpControls.tsx
+  0.33 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/StudioToolbar.tsx
+  0.32 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/saveStatusText.ts
+  0.31 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/EditFields.tsx
+  0.30 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/useDocSave.ts
+  0.30 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/SaveStatus.tsx
+  0.27 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/PageInfoFields.tsx
+  0.24 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/PreviewWidth.tsx
+  0.22 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/render/protocol.ts
+  0.22 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/opNotice.ts
+  0.21 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/VariantSwitch.tsx
+  0.18 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/AddSectionButton.tsx
+  0.17 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/fieldCounter.ts
+  0.16 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/layoutMode.ts
+  0.16 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/selection.ts
+  0.15 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/canvasCaption.ts
+  0.14 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/studio/ConflictCallout.tsx
+  0.13 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/canvasIssues.ts
+  0.13 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/useFocusRequest.ts
+  0.10 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/previewFrame.ts
+  0.09 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/undoStack.ts
+  0.06 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/renderedVariants.ts
+  0.02 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/features/studio/opPermissions.ts
+== assets/issue-t3kSC6pX.js raw 12431 gz 5.91
+  1.53 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/sections/bodySections.ts
+  0.94 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/gate/gateText.ts
+  0.84 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/sections/boundSections.ts
+  0.62 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/ops/rules.ts
+  0.57 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/sections/registry.ts
+  0.32 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/ops/reasons.ts
+  0.29 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/ops/hash.ts
+  0.20 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/sections/slots.ts
+  0.18 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/gate/issue.ts
+  0.17 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/ops/slotOps.ts
+  0.14 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/ops/errors.ts
+  0.06 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/contracts/pageDoc.ts
+  0.05 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/engine/freeze.ts
+== assets/Callout-C0ahfIRn.js raw 901 gz 0.46
+  0.46 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/ds/Callout.tsx
+== assets/rovingFocus-C627c-M6.js raw 317 gz 0.24
+  0.24 Users/younghwankang/orca/workspaces/web-builder-solution/studio-slim/app/src/components/ds/rovingFocus.ts
+== 진입 직후 - 첫 화면 = 33.52 (첫 화면 91.96 · 진입 125.48)

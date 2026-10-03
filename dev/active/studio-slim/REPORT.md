@@ -1,0 +1,66 @@
+# STUDIO-SLIM — REPORT
+
+- 브리프 `docs/06-handoff/STUDIO-SLIM_BRIEF.md` · 시작 커밋 `c855719` · 브랜치 `k002bill2/studio-slim`
+- 재개 지시 `docs/06-handoff/STUDIO-SLIM_RESUME.md`(영환님 ★A, 2026-10-03): **안 A 채택 · `/compare` 첫 +0.09·진입 +0.31 허용**(ADR-004 개정 3 결정 1). 판정: `/studio` 진입 ≤ 118.60 · `/projects` 진입 ≤ 100.30 · `/compare` 첫 ≤ 98.87·진입 ≤ 121.74 · 그 밖 ±0.03 이내 또는 감소 · 렌더 변화 0.
+- **결론(재개 S2): 안 A 구현 — `/studio/:projectId` 진입 124.70 → 118.44(−6.26), `/projects` 107.07 → 100.16(−6.91), `/profile` 진입 −4.96. 판정 전부 통과.**
+- (이전 실행) S1에서 정지 — 두 안 모두 "다른 화면 ±0.03" 규칙에 걸려 결정 요청(3·6절).
+
+## 1. 커밋 표
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| 수신 | b8d83b5 | 수신 기록 · REPORT 골격 · `gate.sh` |
+| S0·S1 | 2ccee88 · 68acad7 | 기준선 · 모듈별 기여 · 시제품 2안 실측 · **정지 보고** (코드 변경 0) |
+
+## 2. 원인 (S0 — 브리프 원인 확인 + 추가 사실)
+- 확인: `createMemoryStudio`가 store 하나로 보드·프로필·생성 저장소를 즉시 만든다 → `memoryStudio` 청크(3.83: 보드 1.20 · 생성 0.88 · 프로필 0.66 · store 0.58 …)와
+  정적 의존 `profileDraft` 청크(3.89: profileDraft 1.73 · comparisonCells 0.96 · boardPicks 0.67 …) · `sectionLibrary` 0.68 · `profileRepository` 0.18 · 비교 픽스처 1.06이 `/studio`·`/projects` 진입 직후에 실린다(`logs/s0-attr-studio.txt`).
+- **브리프 전제 보정**: `/studio`는 진입 때 프로필 저장소를 **부른다** — `useSectionOps` effect가 `profiles.getProfile(profileId)`(`app/src/features/studio/useSectionOps.ts:43`). 그래서 프로필 구현·store는 진입에 남아야 하고, 뺄 수 있는 것은 보드·생성(+초안 계산·비교 픽스처)뿐이다.
+- 보드 저장소 생성은 store에 쓰지 않는다(보드 상태는 인스턴스 안 `let board`) → 지연 생성해도 프로필·프로젝트가 보는 상태는 같다. 트레이 진입 조회는 deferred 래퍼 `initial`이라 로드를 일으키지 않는다.
+- 모듈별 기여는 sourcemap 빌드(`attr.mjs`, 청크 gzip × 모듈 생성 바이트 비율)라 합계가 게이트와 다르다(91.96/125.48 vs 91.72/124.70) — **비율 근거로만** 쓰고 표 숫자는 게이트 값.
+
+## 3. 바꾼 구조 (S1 — 시제품 비교, 채택 0)
+| 안 | 내용 | `/studio` 진입 | `/projects` 진입 | `/profile` 첫/진입 | `/compare` 첫/진입 | 공통 · `/catalog` 첫 | 판정 |
+|---|---|---|---|---|---|---|---|
+| 기준선 | — | 124.70 | 107.07 | 99.60 / 123.64 | 98.75 / 121.40 | 89.34 · 99.64 | — |
+| **A** 지연 로더 | 새 `data/deferredStudio.ts`: store + 프로필 즉시, 보드·생성·프로젝트는 같은 store를 쓰는 `createSharedLoader` 지연 로더(비교 픽스처는 보드 로더 안). main은 이 모듈만 받음. `createMemoryStudio`(테스트 동기 경로)·저장소 인터페이스 그대로 | **118.44 (−6.26)** | 100.16 (−6.91) | 99.62 (+0.02) / 118.68 (−4.96) | **98.84 (+0.09) / 121.71 (+0.31)** | 89.35 (+0.01) · 99.66 (+0.02) | ✗ `/compare` 첫 +0.09·진입 +0.31 |
+| **B** A + 청크 묶기 | A에 `advancedChunks`로 초안 계산 계열(profileDraft·comparisonCells·boardPicks·fonts·hash·palette·compareBoardRepository)을 한 청크로 | 121.73 | 104.08 | 102.99 / 121.97 | 102.78 / 120.89 | **93.35 (+4.01)** · 103.66 | ✗ 공통이 그 그룹을 끌어옴 → 첫 화면 100 초과 5건 |
+
+- 근거: `logs/s1-protoA-bundle.txt` · `logs/s1-protoA.patch` + `logs/s1-protoA-deferredStudio.ts.txt` · `logs/s1-protoA-chunk-diff.txt`(청크별 gzip 바이트 전후) · `logs/s1-protoB-bundle.txt` · `logs/s1-protoB-vite.patch`.
+- **A의 `/compare` 증가 원인(청크 비교)**: store·프로필을 보드와 다른 청크로 떼면 Rolldown이 예전 `profileDraft` 청크에 있던 작은 모듈을 따로 쪼갠다 — `chunkRetry` 0.31 · `compareBoardRepository` 0.19 · `fonts` 0.26 · `hash` 0.17 · `generationRepository` 0.16 · `generatorVersion` 0.08(새 청크) — 청크마다 머리·import 문이 붙고, `CompareBoardPage`의 preload 목록(`__vite__mapDeps`)에 경로 4개가 늘어 **첫 화면** +0.07, 보드 구현이 별도 청크가 되며 +0.36. `/compare`가 생성 구현을 안 받아 −0.88이지만 이 오버헤드가 더 크다.
+- 브리프 예시 (b) "store·팩토리만 두고 구현은 화면별 청크가" 는 A와 같은 분할 지점(store·프로필 ≠ 보드 청크)이라 같은 쪼개짐이 생길 것으로 **추정(L3, 미실측)** → 따로 시제품하지 않았다(B가 그 쪼개짐을 막는 시도).
+- **쪼개짐 원인 확인(빌드 없이 manifest, `logs/s1-split-importers.txt`)**: 기준선에서는 이 작은 모듈들이 `profileDraft` 청크 하나에 들어 있었고 그 청크를 `memoryStudio`·`memoryProjectRepository`·`memoryBoardConfirm`·`memoryGenerate`·`boardInput`·`boardEngine`이 함께 import했다(memoryStudio가 모두에 닿아 묶였다). 안 A에서는 core가 `profileDraft`에 닿지 않아 모듈마다 import 주체 집합이 갈린다 — `chunkRetry`(core·memoryBoardConfirm·memoryProjectRepository·boardEngine) · `compareBoardRepository`(memoryBoardConfirm·보드 구현·boardEngine) · `fonts`(profileDraft·boardInput·boardEngine) · `hash`(profileDraft·memoryGenerate) · `generationRepository`·`generatorVersion`(memoryGenerate·memoryDocBook·생성 구현). **원인이 import 경로 하나가 아니라 6곳**이라 경로 하나 조정하는 시제품 C는 하지 않았다(`chunkRetry`는 `/studio`의 프로젝트 저장소도 써서 보드 쪽으로 되돌릴 수 없다).
+- 안 A 시제품에서 확인한 것은 빌드(typecheck 포함)·번들 판정뿐 — vitest·lint는 돌리지 않았다.
+- **재개 S2 채택 = 안 A 그대로**(시제품 패치 + `deferredStudio.ts`, 코드 차이 0). 바뀐 파일: 새 `app/src/data/deferredStudio.ts`(+ test) · `app/src/main.tsx`(로더가 `createDeferredStudio`만 받음, `board()`·`generations()`는 지연 로더 호출) · `app/scripts/check-bundle-size.mjs`(SCENARIOS 목록·주석만 — 예산 상수·멈춤선 0). `createMemoryStudio`(테스트 동기 경로)·저장소 인터페이스 시그니처 변경 0.
+- SCENARIOS 갱신 근거: `COMPARE_AUTO` = boardEngine · deferredStudio · memoryCompareBoardRepository(보드 로더 = 진입 getBoard) · 비교 픽스처(보드 로더 안) / `PROJECT_AUTO` = deferredStudio · memoryProjectRepository / `/profile` auto = profileEngine · deferredStudio · memoryGenerationRepository(useGeneration 진입 findJob) · afterAction에 memoryProjectRepository 추가(CandidatesSection `loadProjects().startDoc` ← "편집 시작" onClick).
+
+## 4. 번들 전후 표
+| 체크포인트 | 공통 | `/catalog` 첫/진입 | `/references/:id` 첫/진입 | `/compare` 첫/진입 | `/profile` 첫/진입 | `/projects` 첫/진입 | `/studio` 첫/진입 | 렌더 JS / CSS |
+|---|---|---|---|---|---|---|---|---|
+| S0 기준선(= 정지 후, 코드 변경 0) | 89.34 | 99.64 / 102.03 | 96.99 / 99.38 | 98.75 / 121.40 | 99.60 / 123.64 | 94.00 / 107.07 | 91.72 / 124.70 | 79.89 / 6.32 |
+| S1 시제품 A(참고, 커밋 안 함) | 89.35 | 99.66 / 102.05 | 97.01 / 99.39 | 98.84 / 121.71 | 99.62 / 118.68 | 94.01 / 100.16 | 91.73 / 118.44 | 79.89 / 6.32 |
+| **S2 안 A 구현**(`logs/s2-gate.txt`) | 89.35 (+0.01) | 99.66 / 102.05 (+0.02/+0.02) | 97.01 / 99.39 (+0.02/+0.01) | 98.84 / 121.71 (≤98.87 / ≤121.74 ✓) | 99.62 / 118.68 (+0.02/−4.96) | 94.01 / 100.16 (≤100.30 ✓) | 91.73 / **118.44** (≤118.60 ✓) | 79.89 / 6.32 (0) |
+- 조작 뒤 목록 포함 전체: `logs/s0-bundle-full.txt` · 게이트: `logs/g0-receive.txt` = `logs/s0-bundle.txt`, `logs/s1-gate.txt`.
+
+## 5. 테스트
+- **S2 RED**(`logs/s2-red.txt`): `app/src/data/deferredStudio.test.ts` — 모듈 없음으로 실패(3 테스트 수집 전). **GREEN**: 3/3 — (1) `profiles.getProfile` + `projects().listProjects()`만 부른 뒤 `imports.board`·`imports.generations` 호출 0 · 카탈로그 로드 0 (2) 보드·생성·프로젝트 로더는 같은 인스턴스·import 1회 (3) 같은 팩토리로 확정 → 프로필(project 연결) → 3안 succeeded → `startDoc(B)` → 목록 hasDoc. 게이트 `logs/s2-gate.txt`: 표적 31/31 · 가드 76/76 · typecheck · lint · build exit 0.
+- 코드 변경 0 → S2(RED·GREEN)·S4(브라우저 흐름·전체 vitest 3회·Codex) 미진행. 게이트(가드 76/76 · typecheck · lint · build) exit 0 — `logs/s1-gate.txt`.
+- S2를 재개할 때 RED 설계(시제품 A 기준): `createDeferredStudio(loadCatalog, imports)`가 import 함수를 주입받으므로 (1) `profiles.getProfile` + `projects()`만 부른 뒤 `imports.board`·`imports.generations` 호출 0 (2) 같은 팩토리로 확정 → 프로필 → 3안 → `startDoc`이 store 하나로 이어짐을 단언.
+
+## 6. 남은 차이 · M2A-3a에 넘길 것 (영환님 결정 필요)
+- 목표 감소 ≥ 6.27 대비 **안 A 실측 −6.26 → 부족 0.01**(M2A-3a 시제품 +6.27을 넣으면 124.71, 멈춤선 124.70 대비 +0.01 · 실한도 125 안).
+- 막힌 이유: 안 A는 `/compare` 첫 화면 +0.09 · 진입 +0.31로 브리프 "다른 화면 ±0.03 이내 또는 감소, 늘면 버린다"에 걸린다(절대값은 98.84/100 · 121.71/125로 예산 안). `/profile` 진입 −4.96 · `/projects` −6.91은 감소.
+- 선택지(추천 순):
+  1. **A 채택 + `/compare` 증가 허용(추천)** — `/compare` +0.31(진입 여유 3.29 유지)을 받아들이면 `/studio` 여유 6.56KB(멈춤선 124.70 기준 6.26). M2A-3a +6.27과는 0.01 차이라 S3 후보(아래) 하나와 함께 가야 한다.
+  2. **A + 청크 정리 추가 레인** — 작은 청크 쪼개짐을 import 구조 조정으로 되돌려 `/compare`를 ±0.03에 넣는 시도. 원인이 6곳(3절)이고 `advancedChunks` 묶기는 B에서 공통 +4로 실패 → 성공 여부 L3(낮음), 미실측.
+  3. 이 레인 종료 — M2A-3a는 m2a-3a REPORT 2절 선택지(A 게이트 접힘 SPEC 개정 / C 예산 개정)로.
+- S3 후보(SPEC 분류 변경 필요 여부 미확인, 이동하지 않음): `useAutosaveScheduler` 1.48(진입 자동 — 자동 저장 S-B4 근거 행 확인 필요) · `/studio` 진입의 `sectionLibrary` 0.68은 안 A에서 이미 빠짐.
+- 4337 서버: 띄우지 않음.
+
+
+## S5 간헐 실패 수정 (축소 재개 — Developer 작성 · **Jarvis 커밋**, 레인 26/25턴 한도로 커밋 전 중단 · 영환님 ★A 2026-10-03)
+- 증상: 안 A 뒤 `StudioShell.test.tsx` 단독 x10 = 8/10(main 10/10, Jarvis) — "캡션 늘 보임 … 선택 라벨" 265행 `getByText(/^Hero · /)` 못 찾음.
+- 원인(레인): 테스트 `open()`이 h1이 보이자마자 렌더 문서 흉내(`connectRenderFrame`)를 붙여 `ready`를 보낸다. h1은 act 밖 커밋으로 나타나고, 같은 커밋의 effect(문서 제목 · 캔버스 message 수신 등록)가 돌기 전에 `ready`가 오면 잃는다. 지연 로드로 이 간격이 늘었다 — **테스트 쪽 경쟁**(실브라우저 iframe은 훨씬 늦게 ready, 사용자 영향 없음으로 추정).
+- 수정: `open()`이 `document.title === "<이름> 편집"`(같은 커밋 effect 완료 표시)까지 기다린 뒤 붙인다 · `afterEach`에서 제목 비움. 단언 변경 0.
+- 판정: 레인 `logs/s5-x20.txt` 20/20 · `logs/s5-stress.txt` 동시 14개 x 3라운드 전부 통과 · `logs/s5-vitest3.txt` run 1·2 1555/1555, run 3(load 69) 무관 7건 실패(고부하 시간 초과 계열).
+- Jarvis: typecheck·lint 0 · StudioShell 단독 **20/20**(load 47~66) · 전체 vitest x3 = 1555 · 1555 · 1554(EmptySlot 1건 — 그 파일 단독 x10 브랜치·main 모두 10/10).
+- 남은 것(M2A-3a 첫 단계로 이관): 같은 패턴의 공용 도우미 `app/src/features/studio/testing/openStudio.tsx`(EmptySlot 등 사용)에도 같은 기다림 적용. 브라우저 흐름 1회도 M2A-3a E6로 이관.

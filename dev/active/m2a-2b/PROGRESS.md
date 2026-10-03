@@ -18,7 +18,7 @@
 - [x] B8 렌더 문서 웹폰트 제거 — render.css fonts.css import 삭제 · :root/[data-site-root] --font-sans = 시스템/--site-font · 폰트 요청 3 → 0(logs/b8-fonts-before/after) · 렌더 CSS 6.48 → 6.32 · dist render CSS @font-face 0
 - [x] B9 공통 K-AC — [U] kitCommon 7변형(03·04·05·09) · [B] b9b.mjs(render.html 최상위): 11·36 프로필 2벌 × 톤 orig/flip × 1280·390 bad 0 · 최소 대비 4.56(dark)/4.93(light) · 26 카드 면 4조합 · 23·25·30 배치(1280·1024·768·390) · 24 비율 3종 ±0% · 카드 모양 4종 · 27 Enter/Space · 29 비활성 색 · 02 상한+200% 넘침 0 (logs/b9b-head.txt · b9b-tail.txt) · 렌더 최상위 스크린샷은 CDP 타임아웃(일부 SHOT-FAIL) — 앱 흐름 캡처는 B10
 - [x] B10 브라우저 1280·390 캡처 · [B] 수치 — 재개 실행(2026-10-03). ego-browser `Page.captureScreenshot`가 단순 /catalog에서도 타임아웃(창 normal·visible, logs/b10-shots.txt) → DOM 수치는 ego-browser(shots.mjs, 1280·390 창 CDP 폭), 화면은 aside repl `shots-aside.js`(같은 출처 래퍼 iframe 폭 1280/390 · 같은 앱 흐름 클릭 · 캔버스 스크롤 영역 scrollTop · 뷰포트 clip, fullPage 0) → shots/b10-1280-01~04 · b10-390-01~03 · b10-390-caption (logs/b10-aside.txt). 결과: 섹션 9 = header·hero·about·services·faq·contact·footer 킷, portfolio·testimonials만 '구조 미리보기' 표식 · 캡션 "섹션 9개 중 2개" · 1280 축소 56%(390 27%) · 메뉴 펼침·CTA 바 오른쪽·about/contact 2단·카드 3열 · 선택 상자 = 기대값(1280 [232,86.3,706,397.1]) · 가로 스크롤 0 · error 0 · 오버레이 문제 문장 겹침 미관찰(Hero 선택 상태). [B] 수치는 B9 b9b(render.html 최상위)로 대체
-- [ ] B11 전체 vitest ×3 · Codex 1회 · REPORT · 4337 서버 종료
+- [x] B11 (Jarvis 마감, 영환님 ★A) — 전체 vitest ×3 1552/1552 × 3 · Codex 미완(M2a QA로) · REPORT Jarvis 작성 · 4337 서버 Jarvis 종료(PID 70232·28642)
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

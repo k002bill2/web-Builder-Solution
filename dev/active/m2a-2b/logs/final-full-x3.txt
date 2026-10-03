@@ -1,0 +1,14 @@
+## run 1 15:26:47 load: { 13.60 11.91 16.84 }
+     × 390: 캡션 늘 보임 · 이미지·외부 URL 0 · 불투명도 글자 0 · 선택 라벨 12px 토큰(caption2) 60ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/pages/StudioShell.test.tsx > 미리보기 폭 · 캔버스 (S6 · E-AC-15 · E-AC-16 · SPEC 5.7 · E-S31) > 390: 캡션 늘 보임 · 이미지·외부 URL 0 · 불투명도 글자 0 · 선택 라벨 12px 토큰(caption2)
+ Test Files  1 failed | 160 passed (161)
+      Tests  1 failed | 1551 passed (1552)
+   Duration  31.36s (environment 47%, tests 34%, setup 9%, transform 6%, import 4%)
+run 1 exit=1 load-after: { 76.25 26.87 22.04 }
+## run 2 15:27:19 load: { 76.25 26.87 22.04 }
+ Test Files  161 passed (161)
+      Tests  1552 passed (1552)
+   Duration  29.97s (environment 43%, tests 39%, setup 8%, transform 6%, import 4%)
+run 2 exit=0 load-after: { 118.19 41.63 27.55 }
+## run 3 15:27:50 load: { 118.19 41.63 27.55 }

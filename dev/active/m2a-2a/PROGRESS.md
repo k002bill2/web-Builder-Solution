@@ -7,7 +7,7 @@
 
 ## 단계
 - [x] K0 기준선 — `K0-BASELINE.md` · shots/k0-* (A안 hero fullbleed-left 확인)
-- [ ] K1 킷 토큰 (순수 함수 + 결정적 생성기)
+- [x] K1 킷 토큰 — `docKitTokens`(features/studio/docPurpose.ts) · `kitVars`·`kitCssText`(kit/tokens.ts) · logs/k1-red·k1-green
 - [ ] K2 메시지 render{doc, kitTokens} (값 없음 = error, 폴백 계속)
 - [ ] K3 킷 골격 app/src/kit (가드 RED 먼저)
 - [ ] K4 이미지 Blob 전달

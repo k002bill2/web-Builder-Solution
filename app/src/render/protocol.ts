@@ -8,6 +8,19 @@
 
 /** 캔버스 팔레트 5역할(문서 프로필 버전 색) — 값은 CSS 색 문자열 */
 export type CanvasPalette = Readonly<Record<"primary" | "surface" | "ink" | "muted" | "bg", string>>;
+/** 카드 모양(m2a 0.5 — `elementLibrary.ts` card_style 키) */
+export type KitCardStyle = "bordered-lg" | "bordered-md" | "elevated" | "flat";
+/**
+ * 킷 토큰 입력 (M2A-2a K1 · m2a 0.2 · MQ-1) — 문서 프로필 버전의 적용값(base + 조정). 부모가 모으고, `--site-*` 변수는 렌더 문서의 생성기(kit/tokens)가 만든다.
+ * sectionGap = 적용값(촘촘이면 이미 줄어든 값, effectiveProfile) · grid = "8pt"의 숫자.
+ */
+export interface KitTokenInput {
+  readonly palette: CanvasPalette;
+  readonly card: { readonly tone: "light" | "dark"; readonly style: KitCardStyle };
+  readonly type: { readonly family: string; readonly headingWeight: number; readonly bodyWeight: number; readonly scale: number };
+  readonly space: { readonly grid: number; readonly sectionGap: number; readonly density: "comfortable" | "compact" };
+  readonly mediaRatio: "16:9" | "4:5" | "1:1";
+}
 /** 섹션(slotKey null) 또는 글자 슬롯의 사각형 — 렌더 문서 좌표(CSS px, 문서 맨 위 기준) */
 export type FrameRect = readonly [instanceId: string, slotKey: string | null, x: number, y: number, w: number, h: number];
 export type RenderErrorCode = "INVALID_DOC";

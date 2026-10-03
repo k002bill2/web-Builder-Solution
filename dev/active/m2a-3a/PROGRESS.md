@@ -31,3 +31,13 @@
 - 첫 커밋 c357938이 `app/dev/active/`에 들어감(백그라운드 npm 명령의 cd가 셸 작업 디렉터리를 바꿈) → 5d1af48에서 정정.
 - 시제품 코드는 `logs/e0-proto.patch`로 보존, 작업 트리 원복 후 빌드 124.70 재확인.
 - 4337 서버: 이전 실행 잔여 PID 26823은 Jarvis가 종료. 이번 E6에서 vite dev PID 39465를 띄워 캡처 뒤 종료.
+
+## fix (브리프 `docs/06-handoff/M2A-3A-FIX_BRIEF.md` · 시작 c2d6a7a · 2026-10-03)
+- [x] REPORT 10절 골격
+- [ ] F1 처리되지 않은 오류 3건(contrastRow ← useGateReport) — 전체 vitest exit 0
+- [ ] F2 확인 대화상자 showModal · Esc · 포커스 복귀
+- [ ] F3 잡 실행 응답 분리 · 재실행 = 잡 스냅샷 문서
+- [ ] F4 다시 시도 = 같은 revision이면 같은 잡, 다르면 일반 시작 흐름
+- [ ] F5 r4.11 대체텍스트(실제 이미지 슬롯만) · 이관 표
+- [ ] F6 A안 브라우저 GENERATOR_UNAVAILABLE 결과 캡처
+- [ ] F7 전체 vitest x3 · Codex 1회 · REPORT 마감 · 4337 종료

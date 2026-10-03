@@ -8,7 +8,7 @@ import type { FrameRect, ParentMessage, RenderMessage } from "../../../render/pr
  * 캔버스 iframe의 `contentWindow.postMessage`를 감시해 부모가 보낸 메시지를 모으고, render마다 가짜 사각형(rects)으로 바로 답한다.
  * 렌더 문서 쪽 그리기 단언은 `src/render/**` 단위 테스트에 있다(REPORT "옮긴 단언 표").
  */
-export const canvasFrame = () => screen.getByTitle<HTMLIFrameElement>("구조 미리보기 화면");
+export const canvasFrame = () => screen.getByTitle<HTMLIFrameElement>("페이지 미리보기 화면");
 
 /** 렌더 문서 → 부모 메시지(출처 = 캔버스 iframe) */
 export function frameSays(data: RenderMessage, frame: HTMLIFrameElement = canvasFrame()) {

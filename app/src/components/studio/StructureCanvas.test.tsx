@@ -9,10 +9,10 @@ import { StructureCanvas } from "./StructureCanvas";
  * 캔버스 호스트 · 부모 오버레이 (M2A-1 R4 · SPEC 5.7 r4.8 · E-AC-49). 블록 그리기 단언은 렌더 문서로 옮겼다(render/fallback/FallbackCanvas.test.tsx).
  * 이 파일에 남은 것: 선택 라벨 칩(부모 오버레이) · 문제 표시(부모) · iframe.
  */
-const region = () => screen.getByRole("region", { name: "구조 미리보기" });
+const region = () => screen.getByRole("region", { name: "페이지 미리보기" });
 
-describe("구조 미리보기 — 선택 라벨 칩은 부모 오버레이 (5.7 · B-12)", () => {
-  it("cards-2 선택 → 칩 'Services · 카드 2열' · region '구조 미리보기'", () => {
+describe("페이지 미리보기 — 선택 라벨 칩은 부모 오버레이 (5.7 · B-12)", () => {
+  it("cards-2 선택 → 칩 'Services · 카드 2열' · region '페이지 미리보기'", () => {
     const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "fullbleed-left", "s-hero"), section("services", "cards-2", "s-cards-2"), section("footer", "biz-extended", "s-footer")] });
     render(<StructureCanvas doc={doc} selectedId="s-cards-2" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();
@@ -157,5 +157,23 @@ describe("데스크톱 프레임 1280 · 축소 보기 오버레이 정렬 (r4.1
     const ring = sentence.parentElement!;
     expect([ring.style.left, ring.style.top, ring.style.width, ring.style.height]).toEqual(["0px", `${(i * 100 + 8 + slotIndex * 12) * 0.5 - 4}px`, `${400 * 0.5 + 8}px`, `${10 * 0.5 + 8}px`]);
     vi.unstubAllGlobals();
+  });
+});
+
+describe("캔버스 이름 · 캡션 3상태 (m2a 3.4 · K-AC-33 · r4.9)", () => {
+  it("스크롤 영역 접근 이름 = h2 '페이지 미리보기'(등급과 무관 고정) · iframe 이름 '페이지 미리보기 화면'", () => {
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable />);
+    expect(screen.getByRole("heading", { level: 2, name: "페이지 미리보기" })).toBeInTheDocument();
+    expect(region()).toHaveAttribute("tabindex", "0");
+    expect(canvasFrame()).toHaveAttribute("title", "페이지 미리보기 화면");
+  });
+
+  it("캡션 = 문서 상태: 킷 토큰 있음 + cta-band 폴백 → '일부' · 킷 토큰 없음 → F0 · 라이브 영역 아님", () => {
+    const { unmount } = render(<StructureCanvas doc={sampleDoc()} kitTokens={SAMPLE_KIT_TOKENS} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const partial = within(region()).getByText(/^실제 렌더 \(F1 · 일부\) — 섹션 8개 중 1개는/);
+    expect(partial.closest("[aria-live], [role=status]")).toBeNull();
+    unmount();
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    expect(within(region()).getByText(/^구조 미리보기 \(F0\)/)).toBeInTheDocument();
   });
 });

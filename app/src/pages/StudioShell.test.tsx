@@ -2,11 +2,13 @@ import { act, fireEvent, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Project, ProjectRepository } from "../data/projectRepository";
 import { SAMPLE_SECTIONS, sampleDoc } from "../engine/testing/sampleDoc";
-import { CANVAS_CAPTION } from "../components/studio/StructureCanvas";
 import { PREVIEW_VIEWS } from "../features/detail/previewView";
 import { variantName } from "../features/studio/selection";
 import { renderApp } from "../test/renderApp";
 import { connectRenderFrame, frameSays } from "../features/studio/testing/renderFrame";
+
+/** 캔버스 캡션 3상태 중 하나(m2a 3.4 — 문구 자체는 canvasCaption.test가 본다) */
+const CANVAS_CAPTION_PATTERN = /^(구조 미리보기 \(F0\)|실제 렌더 \(F1( · 일부)?\)) — /;
 
 /** 편집기 틀 (EDITOR-A2-SHELL S2~S6 — E-AC-03·04·05·13·14·15·16) */
 const PROJECT: Project = {
@@ -78,9 +80,9 @@ const inOrder = (...els: Element[]) => els.every((el, i) => i === 0 || before(el
 const h2 = (name: string | RegExp) => screen.getByRole("heading", { level: 2, name });
 
 describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.1)", () => {
-  it.each([1280, 1920])("%i = 3단: h1 1 + h2 섹션·테마·구조 미리보기·편집 · Hero·품질 게이트 + h3 내보내기, 탭·Select 없음", async (width) => {
+  it.each([1280, 1920])("%i = 3단: h1 1 + h2 섹션·테마·페이지 미리보기·편집 · Hero·품질 게이트 + h3 내보내기, 탭·Select 없음", async (width) => {
     await open(width);
-    for (const name of ["섹션", "테마", "구조 미리보기", "편집 · Hero", "품질 게이트"]) expect(h2(name)).toBeInTheDocument();
+    for (const name of ["섹션", "테마", "페이지 미리보기", "편집 · Hero", "품질 게이트"]) expect(h2(name)).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3, name: "내보내기" })).toBeInTheDocument();
     expect(screen.queryByRole("tablist")).toBeNull();
     expect(screen.queryByRole("combobox", { name: "섹션" })).toBeNull();
@@ -89,7 +91,7 @@ describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.
       inOrder(
         screen.getByRole("banner"),
         screen.getByRole("navigation", { name: "섹션" }),
-        screen.getByRole("region", { name: "구조 미리보기" }),
+        screen.getByRole("region", { name: "페이지 미리보기" }),
         screen.getByRole("region", { name: "편집 · Hero" }),
         screen.getByRole("region", { name: "품질 게이트" }),
       ),
@@ -108,7 +110,7 @@ describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.
     expect(
       inOrder(
         screen.getByRole("banner"),
-        screen.getByRole("region", { name: "구조 미리보기" }),
+        screen.getByRole("region", { name: "페이지 미리보기" }),
         details,
         screen.getByRole("region", { name: "편집 · Hero" }),
         h2("테마"),
@@ -124,7 +126,7 @@ describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.
     const tablist = screen.getByRole("tablist", { name: "편집 도구" });
     expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["섹션", "편집", "검사"]);
     expect(screen.queryByRole("combobox", { name: "섹션" })).toBeNull();
-    expect(inOrder(screen.getByRole("banner"), tablist, screen.getByRole("tabpanel"), screen.getByRole("region", { name: "구조 미리보기" }))).toBe(true);
+    expect(inOrder(screen.getByRole("banner"), tablist, screen.getByRole("tabpanel"), screen.getByRole("region", { name: "페이지 미리보기" }))).toBe(true);
     // 편집 알림은 탭 목록 아래 1개
     const notice = screen.getByRole("status", { name: "편집 알림" });
     expect(before(tablist, notice)).toBe(true);
@@ -137,7 +139,7 @@ describe("배치 · 제목 구조 (S3 · E-AC-04 · E-AC-13 · SPEC 4.1·4.3·6.
   });
 });
 
-const canvas = () => screen.getByRole("region", { name: "구조 미리보기" });
+const canvas = () => screen.getByRole("region", { name: "페이지 미리보기" });
 const row = (name: RegExp) => within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name });
 
 describe("섹션 선택 (S4 · E-AC-05 · SPEC 5.1·6.4)", () => {
@@ -253,7 +255,7 @@ describe("미리보기 폭 · 캔버스 (S6 · E-AC-15 · E-AC-16 · SPEC 5.7 ·
 
   it.each([1280, 1024, 390])("%i: 캡션 늘 보임 · 이미지·외부 URL 0 · 불투명도 글자 0 · 선택 라벨 12px 토큰(caption2)", async (width) => {
     await open(width);
-    expect(within(canvas()).getByText(CANVAS_CAPTION)).toBeVisible();
+    expect(within(canvas()).getByText(CANVAS_CAPTION_PATTERN)).toBeVisible();
     // 이미지·외부 자원 0 — 렌더 문서 DOM 쪽은 render/fallback/FallbackCanvas.test.tsx "이미지·iframe·src 0"으로 옮김.
     // 부모에는 렌더 문서 iframe 1개만(같은 출처 경로 · allow-scripts만 — SPEC 5.7 r4.8)
     expect(canvas().querySelectorAll("img")).toHaveLength(0);

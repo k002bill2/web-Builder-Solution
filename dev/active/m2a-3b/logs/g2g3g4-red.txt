@@ -1,0 +1,25 @@
+     49|     expect(readHtmlMessage({ type: "html", markup: "<div data-site-roo…
+       |            ^
+     50|     expect(readHtmlMessage({ type: "html", markup: "" })).toBeUndefine…
+     51|     expect(readHtmlMessage({ type: "html", markup: 1 })).toBeUndefined…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) > 완료(E-S27 · M2A-3b G4) → '정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 …' + 부모 문서 '내려받기'(a download = K-AC-32 HTML 이름) + 결과 해시 · export_succeeded(format만)
+AssertionError: expected null not to be null
+ ❯ src/components/studio/ExportFlow.test.tsx:157:21
+    155|     const done = await within(gateRegion()).findByText("정적 HTML을 만들었습니…
+    156|     const box = done.closest("[role=status]")!;
+    157|     expect(box).not.toBeNull();
+       |                     ^
+    158|     const link = within(box as HTMLElement).getByRole("link", { name: …
+    159|     expect(link).toHaveAttribute("href", "blob:http://127.0.0.1/abc");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  7 failed (7)
+      Tests  4 failed | 34 passed (38)
+   Start at  01:20:49
+   Duration  5.36s (environment 53%, tests 26%, transform 9%, setup 9%, import 2%)
+

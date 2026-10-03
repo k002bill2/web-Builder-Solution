@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { ExportFormat } from "../../data/projectRepository";
 import type { GateReport } from "../../engine/contracts/records";
-import type { ExportResult } from "../../features/studio/exportFlow";
+import { releaseDownloads, type ExportResult } from "../../features/studio/exportFlow";
 import { GATE_ROW_NAMES } from "../../features/studio/gateView";
 import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
@@ -64,6 +64,22 @@ const NEXT: Readonly<Record<ExportFormat, string>> = {
 const KEEP = "지금 문서는 이 탭에 저장돼 있습니다 — 따로 남기려면 '스냅샷'에서 저장하세요";
 const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip", "static-html": "정적 HTML" };
 
+/**
+ * 내려받기 링크(E-S27 · M2A-3b G4) — 부모 문서의 a download(렌더 iframe은 내려받기 권한 없음).
+ * 편집기를 떠나 내려지면(경로가 바뀜) 이 탭의 내려받기 object URL을 해제한다. 새 요청·탭 전환으로 내려질 때는 같은 경로라 두고 쓴다(같은 잡 = 같은 URL).
+ */
+function DownloadLink({ href, fileName }: { readonly href: string; readonly fileName: string }) {
+  useEffect(() => {
+    const here = location.pathname;
+    return () => void setTimeout(() => location.pathname !== here && releaseDownloads());
+  }, []);
+  return (
+    <a href={href} download={fileName} className="ds-label inline-flex min-h-8 items-center text-primary hover:text-primary-hover">
+      내려받기
+    </a>
+  );
+}
+
 /** E-S27 결과 — 생성기 없음 = informative(오류 아님, alert 아님) · 구조 미리보기 = cautionary `role=status` + 이동 · 재시도 가능 실패 = alert + 다시 시도 */
 export function ExportResultView({ result, onRetry, onFirstFallback }: { readonly result: ExportResult; readonly onRetry: () => void; readonly onFirstFallback: (instanceId: string) => void }) {
   if (result.kind === "unavailable") return <Callout tone="info" title={`${NEXT[result.format]}. ${KEEP}`} />;
@@ -85,7 +101,20 @@ export function ExportResultView({ result, onRetry, onFirstFallback }: { readonl
       </div>
     );
   }
-  if (result.kind === "done") return <Callout tone="info" title={`${NAME[result.format]}을 만들었습니다 · 내보내기 전 상태는 스냅샷 '${result.snapshotName}'에 있습니다`} />;
+  if (result.kind === "done") {
+    const { download } = result;
+    return (
+      <div role="status">
+        <Callout
+          tone="info"
+          title={`${NAME[result.format]}을 만들었습니다 · 내보내기 전 상태는 스냅샷 '${result.snapshotName}'에 있습니다`}
+          action={download && <DownloadLink href={download.href} fileName={download.fileName} />}
+        >
+          {download && <span className="text-label-alternative">결과 해시 {download.hash}</span>}
+        </Callout>
+      </div>
+    );
+  }
   if (result.kind === "retryable")
     return (
       <div role="alert">

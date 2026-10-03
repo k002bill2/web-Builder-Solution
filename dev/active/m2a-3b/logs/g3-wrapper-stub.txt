@@ -1,0 +1,9 @@
+[bundle] 공통 JS (gzip, 참고): 89.35KB
+[bundle] /catalog 첫 화면 합계: 99.66KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.04KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.39KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.77KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.77KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.61KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.74KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94.02KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.37KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.75KB / 예산 100KB · 진입 직후 자동 로드 포함: 126.75KB / 예산 127KB
+[bundle] 렌더 문서(render.html) JS 합계: 79.89KB / 예산 90KB · CSS 합계: 6.32KB / 예산 30KB

@@ -4,15 +4,34 @@
  */
 import { projectErrorCode, type ExportFormat, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
 import { emitEditorEvent } from "./editorEvents";
+import { staticHtmlFileName } from "./staticHtml/exportFileName";
 
 export type ExportResult =
   | { readonly kind: "unavailable"; readonly format: ExportFormat }
   | { readonly kind: "unrendered"; readonly format: ExportFormat; readonly sections: readonly string[] }
   | { readonly kind: "retryable"; readonly format: ExportFormat }
-  | { readonly kind: "done"; readonly format: ExportFormat; readonly snapshotName: string }
+  | {
+      readonly kind: "done";
+      readonly format: ExportFormat;
+      readonly snapshotName: string;
+      /** 내려받기(부모 문서 a download — M2A-3b G4) · 파일 이름(K-AC-32 HTML판) · 결과 해시 */
+      readonly download?: { readonly href: string; readonly fileName: string; readonly hash: string };
+    }
   | { readonly kind: "refused"; readonly format: ExportFormat; readonly code: string };
 
+// 앱 경로 정적 HTML 생성기 등록(M2A-3b) — 이 청크(내보내기 버튼을 누른 뒤)가 생성기 청크를 import해야 편집기 청크와 코드를 나눠 쓴다.
+// 저장소 쪽은 모듈이 아니라 전역 심볼 슬롯으로 받는다(memoryDocBook STATIC_HTML_SLOT — 같은 키, 청크 분리 0)
+(globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => (await import("./staticHtml/staticHtml")).createStaticHtmlGenerator;
+
 const POLL_MS = 250;
+/** 이 탭에서 화면에 낸 내려받기 object URL — 편집기 이탈 때 해제(releaseDownloads) */
+const made = new Set<string>();
+
+/** 편집기 이탈(M2A-3b G3 · ExportAfter DownloadLink) — 내려받기 object URL 해제. 돌아와 같은 revision을 다시 요청하면 같은 잡(멱등)이라 링크가 죽는다(REPORT 9절) */
+export function releaseDownloads() {
+  for (const href of made) URL.revokeObjectURL(href);
+  made.clear();
+}
 const POLL_MAX = 40;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -34,7 +53,10 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
     const job = await settle(repository, result.job);
     if (job.state === "succeeded") {
       emitEditorEvent({ name: "export_succeeded", format });
-      return { kind: "done", format, snapshotName: result.snapshotName };
+      const name = (await repository.getProject(projectId))?.name ?? "";
+      const download = job.downloadRef && { href: job.downloadRef, fileName: staticHtmlFileName(name, job.docRevision), hash: job.resultHash ?? "" };
+      if (download) made.add(download.href);
+      return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }) };
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });
     return job.retryable || job.state !== "failed" ? { kind: "retryable", format } : { kind: "refused", format, code: job.errorCode ?? "UNKNOWN" };

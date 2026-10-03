@@ -1,0 +1,19 @@
+# G0 F6 이관 흐름 — vite dev 127.0.0.1:4337(PID 14810) · 앱 안 클릭만
+## 캡처 도구
+- ego-browser(space 32): 흐름·DOM 조회는 됐으나 Page.captureScreenshot가 매번 CDP 시간 초과(창 innerWidth 160×113 · 새 page도 같은 결과 · bringToFront·raw 재시도 실패) → 캡처 불가.
+- aside repl로 전환(규칙상 허용 도구). aside에는 뷰포트 조절이 없어 앱 캡처는 창 기본 1440×900 — 파일 이름을 g0-1440-*로 둔다(브리프 1280과 다름, REPORT 2절·8절).
+- aside 탭은 repl 호출이 끝나면 닫힌다(메모리 store 초기화) → 매 호출이 같은 접두 흐름(/tmp/m2a3b/prefix.js)을 다시 밟는다.
+## 흐름 (prefix)
+/catalog → 비교 추가(모던 카페 브랜드·부티크 법률사무소·동네 치과 클리닉) → "비교 보드 열기" → "이 레퍼런스로 전부 선택: A 모던 카페 브랜드" → "프로필 확정 (v1)"
+→ /profile/profile-1 "보정값 쓰기 (보조 글자 muted)" → "조정 저장 (v2)" → "3안 만들기 (v2)" → "A안 선택" → "A안으로 편집 시작" → /studio/project-1
+진입 상태(ego 실측): SEO 메타 차단 2 · 이유 2개("차단 2건(SEO 메타: 제목 없음)" · "구조 미리보기 섹션 2개(Portfolio · Testimonials)") — r4.11로 대체텍스트 차단 0 확인
+→ "첫 구조 미리보기 섹션으로 이동" → "삭제" ×2(Portfolio·Testimonials) → "페이지 정보" → 제목 "모던 카페 브랜드" · 설명 입력 → "저장됨"
+→ 게이트 7줄 통과 + 성능 예산 측정 전 · 이유 0 · 두 버튼 aria-disabled 없음
+## 결과 1 — GENERATOR_UNAVAILABLE
+"정적 HTML 내보내기" → Callout "정적 HTML은 생성기 연결 후(다음 단계) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다 — 따로 남기려면 '스냅샷'에서 저장하세요"
+role=alert 아님 · role=status 아님(info) · 콘솔 오류(console.error·error·unhandledrejection) [] → shots/g0-1440-unavailable.png
+## 결과 2 — 경고만 상태 확인 대화상자
+제목을 63자로(권장 60 초과 = R-11 warn) → 저장됨 → 게이트 "경고 1" → "정적 HTML 내보내기"
+dialog open=true · :modal=true · 포커스 = "경고를 확인했습니다 · 내보내기" · (40,300) 지점 최상위 = dialog(배경 조작 불가)
+본문: "경고 1건이 있습니다 / SEO 메타 · 제목이 권장 60자를 넘었습니다 (63/60자) / 취소 / 경고를 확인했습니다 · 내보내기" → shots/g0-1440-dialog.png
+Esc → dialog 사라짐. 포커스 = body(연 버튼 아님 — aside의 click이 버튼에 포커스를 주지 않아 opener가 body였던 것으로 추정, G6에서 키보드로 재확인) · 콘솔 오류 []

@@ -1,0 +1,132 @@
+/**
+ * 정적 HTML 생성기 (M2A-3b G3 · 2a-05 8.3.2 6단계 r4.8 "static-html = 브라우저 생성기") — 조작 뒤 청크(memoryDocBook이 처음 쓸 때 import).
+ * 잡의 스냅샷 문서를 화면 밖 숨은 렌더 iframe(`sandbox="allow-scripts"` 그대로)에 그리고 serialize → 사이트 루트 마크업.
+ * 킷 CSS = 같은 출처 `/render.html`의 스타일시트 텍스트(불투명 출처 iframe 안 cssRules는 못 읽는다 — 부모가 읽는다) → 인라인 `<style>`.
+ * 결과 = Blob(text/html;charset=utf-8) object URL + 결과 바이트 SHA-256 앞 12자리. 시간 초과 = JOB_TIMEOUT, 그 밖 = INFRA(저장소가 기록).
+ */
+import { ProjectRepositoryError, type DocHead, type ExportGenerator } from "../../../data/projectRepository";
+import type { StudioReader } from "../../../data/studioStore";
+import type { PageDoc } from "../../../engine/contracts/pageDoc";
+import { readHtmlMessage } from "../../../render/htmlMessage";
+import { readRenderMessage, type KitTokenInput, type ParentMessage } from "../../../render/protocol";
+import { docKitTokens } from "../docPurpose";
+import { buildStaticHtml } from "./staticMarkup";
+
+const RENDER_DOC_SRC = "/render.html";
+/** 숨은 iframe 준비·그리기·직렬화 전체 상한 — exportFlow 조회 상한(10초)보다 짧게 */
+const TIMEOUT_MS = 8000;
+
+/** 부모 ↔ 숨은 렌더 문서 통로 — 받는 쪽은 그 iframe에서 온 메시지만 */
+export interface RenderChannel {
+  send(message: ParentMessage): void;
+  listen(receive: (data: unknown) => void): void;
+  close(): void;
+}
+
+/** 화면 밖 숨은 렌더 iframe(폭 1280 = 데스크톱 프레임). 캔버스와 같은 sandbox · 출처 검사(`event.source === iframe.contentWindow`) */
+export function openRenderFrame(): RenderChannel {
+  const frame = document.createElement("iframe");
+  frame.setAttribute("sandbox", "allow-scripts");
+  frame.setAttribute("aria-hidden", "true");
+  frame.setAttribute("data-export-frame", "");
+  frame.tabIndex = -1;
+  frame.title = "내보내기용 렌더 문서";
+  Object.assign(frame.style, { position: "fixed", left: "-200vw", top: "0", width: "80rem", height: "50rem", border: "0", visibility: "hidden" });
+  frame.src = RENDER_DOC_SRC;
+  document.body.append(frame);
+  let handler: ((event: MessageEvent) => void) | undefined;
+  return {
+    send: (message) => frame.contentWindow?.postMessage(message, "*"),
+    listen: (receive) => {
+      handler = (event) => {
+        if (event.source === frame.contentWindow) receive(event.data);
+      };
+      window.addEventListener("message", handler);
+    },
+    close: () => {
+      if (handler) window.removeEventListener("message", handler);
+      frame.remove();
+    },
+  };
+}
+
+/** ready → render → (첫 rects) → serialize → html. error 코드 = 실패, 상한 넘김 = JOB_TIMEOUT. 어느 쪽이든 iframe을 닫는다 */
+function renderAndSerialize(channel: RenderChannel, doc: PageDoc, kitTokens: KitTokenInput, timeoutMs: number): Promise<string> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return new Promise<string>((resolve, reject) => {
+    let stage: "wait" | "render" | "serialize" = "wait";
+    timer = setTimeout(() => reject(new ProjectRepositoryError("JOB_TIMEOUT", "정적 HTML 렌더 문서 시간 초과")), timeoutMs);
+    channel.listen((data) => {
+      const html = readHtmlMessage(data);
+      if (html && stage === "serialize") return resolve(html.markup);
+      const message = readRenderMessage(data);
+      if (message?.type === "ready" && stage === "wait") {
+        stage = "render";
+        channel.send({ type: "render", doc, kitTokens });
+      } else if (message?.type === "rects" && stage === "render") {
+        stage = "serialize";
+        channel.send({ type: "serialize" });
+      } else if (message?.type === "error") {
+        reject(new Error(`렌더 문서 오류 ${message.code}`));
+      }
+    });
+  }).finally(() => {
+    clearTimeout(timer);
+    channel.close();
+  });
+}
+
+/** `/render.html`의 스타일시트 텍스트 — 빌드 산출물 기준(dev 서버는 CSS를 JS로 넣어 링크가 없다 → 실패) */
+async function kitCss(fetchText: (url: string) => Promise<string>): Promise<string> {
+  const page = new DOMParser().parseFromString(await fetchText(RENDER_DOC_SRC), "text/html");
+  const hrefs = [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") ?? "").filter(Boolean);
+  if (hrefs.length === 0) throw new Error("render.html에 스타일시트가 없습니다");
+  return (await Promise.all(hrefs.map(fetchText))).join("\n");
+}
+
+const hex12 = async (bytes: Uint8Array<ArrayBuffer>) =>
+  [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 12);
+
+const defaultFetchText = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${url} ${response.status}`);
+  return response.text();
+};
+
+export interface StaticHtmlDeps {
+  readonly open: () => RenderChannel;
+  readonly fetchText: (url: string) => Promise<string>;
+  readonly urls: Pick<typeof URL, "createObjectURL" | "revokeObjectURL">;
+  readonly timeoutMs: number;
+}
+export type StaticHtmlGenerator = ExportGenerator & {
+  /** 편집기 이탈 — 그 프로젝트의 내려받기 object URL 해제 */
+  readonly release: (projectId: string) => void;
+};
+
+/** 저장소(store)당 1개 — 프로젝트별 마지막 object URL을 들고, 같은 프로젝트를 다시 만들면 이전 것을 해제한다 */
+export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<StaticHtmlDeps> = {}): StaticHtmlGenerator {
+  const { open = openRenderFrame, fetchText = defaultFetchText, urls = URL, timeoutMs = TIMEOUT_MS } = deps;
+  const held = new Map<string, string>();
+  const release = (projectId: string) => {
+    const url = held.get(projectId);
+    if (url) urls.revokeObjectURL(url);
+    held.delete(projectId);
+  };
+  const generate = async ({ projectId, doc: head }: { readonly projectId: string; readonly doc: DocHead }) => {
+    const doc = head as PageDoc;
+    const project = store.projects().find((p) => p.projectId === projectId);
+    const versions = project ? store.versions(project.profileId) : [];
+    const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion);
+    if (!kitTokens) throw new Error("킷 토큰을 만들 수 없는 문서입니다");
+    const css = await kitCss(fetchText);
+    const markup = await renderAndSerialize(open(), doc, kitTokens, timeoutMs);
+    const bytes = new TextEncoder().encode(buildStaticHtml({ markup, css, title: doc.meta.title, description: doc.meta.description }));
+    const resultHash = await hex12(bytes);
+    release(projectId);
+    const downloadRef = urls.createObjectURL(new Blob([bytes], { type: "text/html;charset=utf-8" }));
+    held.set(projectId, downloadRef);
+    return { downloadRef, resultHash };
+  };
+  return Object.assign(generate, { release });
+}

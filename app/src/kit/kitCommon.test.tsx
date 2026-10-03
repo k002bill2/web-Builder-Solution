@@ -1,5 +1,6 @@
 // 킷 3변형 + 폴백이 섞인 문서의 공통 K-AC (M2A-2a K8 · m2a 4.1) — 브라우저 판정([B])은 K9
 import { readFileSync } from "node:fs";
+import type { ImageSlotValue } from "../engine/contracts/pageDoc";
 import { sampleDoc } from "../engine/testing/sampleDoc";
 import { drawDoc, patch } from "../render/testing/drawKit";
 
@@ -90,7 +91,8 @@ describe("공통 K-AC — 7변형 문서 (M2A-2b B9 · 본문 4변형 포함)", 
 
   it("K-AC-04: 선택 슬롯 빈 값(hero subtitle · about image 끔 · services intro·card2Body · contact intro · footer links·copyright) → 해당 요소 0 · 빈 p·li·ul 0", () => {
     let doc = patch(sampleDoc(), "s-hero", { subtitle: "" });
-    doc = patch(doc, "s-about", { image: { kind: "image", enabled: false, source: "placeholder", alt: "", decorative: false } });
+    const image = sampleDoc().sections.find((x) => x.instanceId === "s-about")!.slots.image as ImageSlotValue;
+    doc = patch(doc, "s-about", { image: { ...image, enabled: false } });
     doc = patch(doc, "s-services", { intro: "", card2Body: "" });
     doc = patch(doc, "s-contact", { intro: "" });
     doc = patch(doc, "s-footer", { links: "", copyright: "" });

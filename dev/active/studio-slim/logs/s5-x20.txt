@@ -1,0 +1,22 @@
+## StudioShell.test.tsx 단독 x20 (수정 후) — 2026-10-03 16:51:42
+1: Tests  20 passed (20) | load averages: 72.65 63.99 54.20
+2: Tests  20 passed (20) | load averages: 72.65 63.99 54.20
+3: Tests  20 passed (20) | load averages: 69.47 63.47 54.07
+4: Tests  20 passed (20) | load averages: 65.99 62.85 53.91
+5: Tests  20 passed (20) | load averages: 65.99 62.85 53.91
+6: Tests  20 passed (20) | load averages: 62.87 62.26 53.75
+7: Tests  20 passed (20) | load averages: 60.23 61.72 53.61
+8: Tests  20 passed (20) | load averages: 60.23 61.72 53.61
+9: Tests  20 passed (20) | load averages: 58.61 61.36 53.53
+10: Tests  20 passed (20) | load averages: 55.68 60.71 53.35
+11: Tests  20 passed (20) | load averages: 55.68 60.71 53.35
+12: Tests  20 passed (20) | load averages: 54.10 60.30 53.24
+13: Tests  20 passed (20) | load averages: 54.10 60.30 53.24
+14: Tests  20 passed (20) | load averages: 52.01 59.76 53.10
+15: Tests  20 passed (20) | load averages: 50.73 59.36 53.00
+16: Tests  20 passed (20) | load averages: 50.73 59.36 53.00
+17: Tests  20 passed (20) | load averages: 49.31 58.93 52.88
+18: Tests  20 passed (20) | load averages: 49.31 58.93 52.88
+19: Tests  20 passed (20) | load averages: 48.33 58.56 52.79
+20: Tests  20 passed (20) | load averages: 46.46 58.00 52.62
+합계 20/20

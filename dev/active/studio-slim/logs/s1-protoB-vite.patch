@@ -1,0 +1,12 @@
+diff --git a/app/vite.config.ts b/app/vite.config.ts
+index a2373f6..ae7dfd5 100644
+--- a/app/vite.config.ts
++++ b/app/vite.config.ts
+@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
+           manifest: true,
+           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
+           assetsInlineLimit: notInlinedIconLimit,
++          rollupOptions: { output: { advancedChunks: { groups: [{ name: "profileDraft", test: /src\/(domain\/(profileDraft|comparisonCells|boardPicks|fonts|hash|palette)|data\/compareBoardRepository)\.ts/ }] } } },
+         },
+   test: {
+     environment: "jsdom",

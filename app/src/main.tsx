@@ -23,27 +23,26 @@ const repository = createDeferredReferenceRepository(async () => {
   return createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures);
 });
 
-// 비교 보드·프로필 저장소(zod·초안 계산·비교 픽스처·공유 store)는 공통 청크 밖에서 처음 쓸 때 받는다 (ADR-004).
-// 두 저장소는 store 하나를 쓴다 — 보드 확정한 버전을 프로필 화면이 읽는다 (DS-2A-04 6.3).
-// 그 전의 보드 조회(트레이 진입)는 빈 보드 — 메모리 구현은 새로고침하면 비어 있다.
-const loadStudio = createSharedLoader(async () => {
-  const [{ createMemoryStudio }, { referenceFixtures }, { referenceDetailFixtures }, { referenceComparisonAttributes }] = await Promise.all([
-    import("./data/memoryStudio"),
-    import("./fixtures/references"),
-    import("./fixtures/referenceDetails"),
-    import("./fixtures/referenceComparisons"),
-  ]);
-  return createMemoryStudio({
-    catalog: { references: referenceFixtures, details: referenceDetailFixtures, attributes: referenceComparisonAttributes },
-  });
-});
-const boardRepository = createDeferredCompareBoardRepository(async () => (await loadStudio()).board, {
+// 보드·프로필·생성·프로젝트 저장소(공유 store)는 공통 청크 밖에서 처음 쓸 때 받는다 (ADR-004). store 하나 — 보드 확정한 버전을
+// 프로필 화면이 읽는다 (DS-2A-04 6.3). 보드·생성·프로젝트 구현은 그 안에서 다시 처음 부를 때 받는다(STUDIO-SLIM, deferredStudio).
+// 보드 로드 전의 보드 조회(트레이 진입)는 빈 보드 — 메모리 구현은 새로고침하면 비어 있다.
+const loadStudio = createSharedLoader(async () =>
+  (await import("./data/deferredStudio")).createDeferredStudio(async () => {
+    const [{ referenceFixtures }, { referenceDetailFixtures }, { referenceComparisonAttributes }] = await Promise.all([
+      import("./fixtures/references"),
+      import("./fixtures/referenceDetails"),
+      import("./fixtures/referenceComparisons"),
+    ]);
+    return { references: referenceFixtures, details: referenceDetailFixtures, attributes: referenceComparisonAttributes };
+  }),
+);
+const boardRepository = createDeferredCompareBoardRepository(async () => (await loadStudio()).board(), {
   board: emptyBoard("board-current", ""),
   released: [],
 });
 const profileRepository = createDeferredProfileRepository(async () => (await loadStudio()).profiles);
-// 3안 생성 저장소는 로더 핸들만 — 위임 래퍼는 공통 청크에 두지 않는다(2a-04c)
-const generations = async () => (await loadStudio()).generations;
+// 3안 생성·프로젝트 저장소는 로더 핸들만 — 위임 래퍼는 공통 청크에 두지 않는다(2a-04c)
+const generations = async () => (await loadStudio()).generations();
 const projects = async () => (await loadStudio()).projects();
 
 createRoot(root).render(

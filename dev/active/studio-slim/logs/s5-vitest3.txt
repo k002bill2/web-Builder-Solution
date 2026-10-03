@@ -1,0 +1,23 @@
+## run 1 — 16:52:49 load averages: 45.22 57.56 52.50
+ Test Files  162 passed (162)
+      Tests  1555 passed (1555)
+   Duration  36.24s (environment 44%, tests 38%, setup 9%, transform 5%, import 3%)
+exit=0
+## run 2 — 16:53:26 load averages: 55.68 58.42 52.99
+ Test Files  162 passed (162)
+      Tests  1555 passed (1555)
+   Duration  34.16s (environment 45%, tests 37%, setup 9%, transform 5%, import 3%)
+exit=0
+## run 3 — 16:54:01 load averages: 69.56 61.55 54.35
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/app/routeScroll.test.tsx > 라우트 이동 시 스크롤 제어 (그룹 D) > 상세에서 유사 레퍼런스로 옮겨 가도 맨 위에서 시작한다
+ FAIL  src/pages/CompareBoardPage.test.tsx > 저장·확정 (S-12~S-17) > AC-23: 저장이 끝나기 전 확정은 막히고(이유 '선택을 저장하는 중입니다'), 저장 뒤 확정은 B가 반영된 revision으로 호출된다
+ FAIL  src/pages/CompareBoardResponsive.test.tsx > <768 항목 아코디언 (SPEC 5.3 · A-11) > 접힌 머리글에 현재 선택을 보여 주고, 펼치면 모든 값과 선택 버튼이 보인다
+ FAIL  src/pages/keyboardA11y.test.tsx > 카드 이름 링크 포커스 표시 (QA-1A-01 D08) > 다른 컨트롤과 같은 --focus-ring을 쓴다
+ FAIL  src/components/studio/SectionAdd.test.tsx > 섹션 추가 대화상자 (E-AC-18) > 넣는 자리 3규칙 — 페이지 정보·Header 선택 → Hero 뒤 · Footer 선택 → Footer 앞 · 변형 고르기
+ FAIL  src/components/studio/SectionRemove.test.tsx > 삭제할 수 없는 섹션 — 5.4 표 (E-AC-19) > Header · Footer · Hero — aria-disabled + 이유, 눌러도 그대로
+ FAIL  src/components/studio/SectionRemove.test.tsx > 삭제할 수 없는 섹션 — 5.4 표 (E-AC-19) > 목적 '예약'(문서 v2 조정) · 유일한 예약 Contact → R-04 이유 + '프로필에서 목적 바꾸기' 링크
+ Test Files  6 failed | 156 passed (162)
+      Tests  7 failed | 1548 passed (1555)
+   Duration  60.70s (tests 47%, environment 39%, setup 7%, transform 4%, import 3%)
+exit=1

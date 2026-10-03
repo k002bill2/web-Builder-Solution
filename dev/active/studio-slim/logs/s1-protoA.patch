@@ -1,0 +1,79 @@
+diff --git a/app/scripts/check-bundle-size.mjs b/app/scripts/check-bundle-size.mjs
+index c211687..b6fc750 100644
+--- a/app/scripts/check-bundle-size.mjs
++++ b/app/scripts/check-bundle-size.mjs
+@@ -28,7 +28,7 @@ const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
+ /** 진입 직후 사용자 조작 없이 불러오는 dynamic import (main.tsx 레퍼런스 픽스처) — 모든 시나리오에 자동 */
+ const EAGER_DYNAMIC = ["src/fixtures/references.ts", "src/fixtures/referenceDetails.ts"];
+ /** /compare 진입 직후 자동 — 보드 엔진(선택 규칙·초안) + main의 deferred 로더가 받는 보드·프로필 메모리 구현(memoryStudio)·비교 픽스처 (ADR-005 D3 · DS-2A-04 6.3) */
+-const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"];
++const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/deferredStudio.ts", "src/data/memoryCompareBoardRepository.ts", "src/fixtures/referenceComparisons.ts"];
+ /**
+  * 조작 뒤 — /compare:
+  *  - P-S25 판정·목록(carryOverPanel): carryOverLoader ← CarryOverCaption load ← 펼침(details onToggle → open) + 초안 ready(Hero 선택) 둘 다일 때
+@@ -45,7 +45,7 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
+  *    부르지 않는다 — BoardInputLoad.test "번들 분류 근거"가 요청 0을 확인한다
+  */
+ /** /projects·/studio/:projectId 진입 직후 자동 — 프로젝트 저장소 로더(S-B3)가 받는 공유 store와 프로젝트 메모리 구현 */
+-const PROJECT_AUTO = ["src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts", "src/data/memoryProjectRepository.ts"];
++const PROJECT_AUTO = ["src/data/deferredStudio.ts", "src/data/memoryProjectRepository.ts"];
+ /**
+  * 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록
+  *  + 문의 폼 주인용 안내(M2A-2b B6): EditFields lazy ← contact/form 섹션 선택(섹션 줄·캔버스 누름 onClick — 첫 선택은 Hero)
+@@ -81,7 +81,7 @@ const SCENARIOS = [
+   {
+     name: "/profile",
+     page: "src/pages/ProfilePage.tsx",
+-    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts"],
++    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/deferredStudio.ts", "src/data/memoryGenerationRepository.ts"],
+     // 3안 계산 본문(memoryGenerate = composeCandidates·lintPlan, 2a-04c): writeBodyLoader loadGenerate ← memoryGenerationRepository requestGeneration·
+     // retryFailed ← useGeneration request·retry ← CandidatesSection "3안 만들기"·"다시 시도" onClick. 진입 findJob·getJob 폴링·selectCandidate는 받지 않는다
+     // (store 조회만 — GenerationLoad.test "번들 분류 근거"가 요청 0을 확인한다). 기존 잡 표시·폴링 코드는 profileEngine·memoryStudio(자동)에 든다
+diff --git a/app/src/main.tsx b/app/src/main.tsx
+index 9504e3a..1aa804a 100644
+--- a/app/src/main.tsx
++++ b/app/src/main.tsx
+@@ -23,27 +23,26 @@ const repository = createDeferredReferenceRepository(async () => {
+   return createMemoryReferenceRepository(referenceFixtures, referenceDetailFixtures);
+ });
+ 
+-// 비교 보드·프로필 저장소(zod·초안 계산·비교 픽스처·공유 store)는 공통 청크 밖에서 처음 쓸 때 받는다 (ADR-004).
+-// 두 저장소는 store 하나를 쓴다 — 보드 확정한 버전을 프로필 화면이 읽는다 (DS-2A-04 6.3).
+-// 그 전의 보드 조회(트레이 진입)는 빈 보드 — 메모리 구현은 새로고침하면 비어 있다.
+-const loadStudio = createSharedLoader(async () => {
+-  const [{ createMemoryStudio }, { referenceFixtures }, { referenceDetailFixtures }, { referenceComparisonAttributes }] = await Promise.all([
+-    import("./data/memoryStudio"),
+-    import("./fixtures/references"),
+-    import("./fixtures/referenceDetails"),
+-    import("./fixtures/referenceComparisons"),
+-  ]);
+-  return createMemoryStudio({
+-    catalog: { references: referenceFixtures, details: referenceDetailFixtures, attributes: referenceComparisonAttributes },
+-  });
+-});
+-const boardRepository = createDeferredCompareBoardRepository(async () => (await loadStudio()).board, {
++// 보드·프로필·생성·프로젝트 저장소(공유 store)는 공통 청크 밖에서 처음 쓸 때 받는다 (ADR-004). store 하나 — 보드 확정한 버전을
++// 프로필 화면이 읽는다 (DS-2A-04 6.3). 보드·생성·프로젝트 구현은 그 안에서 다시 처음 부를 때 받는다(STUDIO-SLIM, deferredStudio).
++// 보드 로드 전의 보드 조회(트레이 진입)는 빈 보드 — 메모리 구현은 새로고침하면 비어 있다.
++const loadStudio = createSharedLoader(async () =>
++  (await import("./data/deferredStudio")).createDeferredStudio(async () => {
++    const [{ referenceFixtures }, { referenceDetailFixtures }, { referenceComparisonAttributes }] = await Promise.all([
++      import("./fixtures/references"),
++      import("./fixtures/referenceDetails"),
++      import("./fixtures/referenceComparisons"),
++    ]);
++    return { references: referenceFixtures, details: referenceDetailFixtures, attributes: referenceComparisonAttributes };
++  }),
++);
++const boardRepository = createDeferredCompareBoardRepository(async () => (await loadStudio()).board(), {
+   board: emptyBoard("board-current", ""),
+   released: [],
+ });
+ const profileRepository = createDeferredProfileRepository(async () => (await loadStudio()).profiles);
+-// 3안 생성 저장소는 로더 핸들만 — 위임 래퍼는 공통 청크에 두지 않는다(2a-04c)
+-const generations = async () => (await loadStudio()).generations;
++// 3안 생성·프로젝트 저장소는 로더 핸들만 — 위임 래퍼는 공통 청크에 두지 않는다(2a-04c)
++const generations = async () => (await loadStudio()).generations();
+ const projects = async () => (await loadStudio()).projects();
+ 
+ createRoot(root).render(

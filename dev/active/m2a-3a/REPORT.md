@@ -158,10 +158,15 @@
 ### 10.1 커밋 표
 | 단계 | 커밋 | 내용 |
 |---|---|---|
-| 골격 | (이 커밋) | 10절 골격 · PROGRESS fix 체크리스트 |
+| 골격 | e839b15 | 10절 골격 · PROGRESS fix 체크리스트 |
+| F1 | (이 커밋) | 대비 줄 color_tokens 없음 = unreadable 경로 · useGateReport 실패 상태 · GateList "검사하지 못했습니다" |
 
 ### 10.2 F1 처리되지 않은 오류 3건
-- (진행 중)
+- **원인**: `SectionRemove.test.tsx`의 프로필 픽스처 `base: { motion_preset: "L1" }`(color_tokens 없음) → `contrastRow.ts` `applied.color_tokens[role]`에서 TypeError → `useGateReport.ts` `compute` 안 `void compute(doc).then(...)`이 거부를 받지 않아 Unhandled Rejection(그 파일의 진입 직후 계산 3회). 앱의 정상 경로에서는 프로필 버전이 늘 참조의 `base`(color_tokens 포함)를 이어받아(`memoryProfileAdjust` `base: latest.base`) 재현 경로를 찾지 못했다 — 다만 저장 데이터가 잘못되면 같은 거부가 나므로 둘 다 막는다.
+- **엔진(계약 변경 0 — 구현 방어)**: `contrastRow.ts` — `base.color_tokens`가 없으면 `effectiveProfile`(보정 reduce가 undefined를 읽어 던짐)을 건너뛰고 **기존 unreadable 경로**로 → 대비 줄 차단, 역할 5개 각각 "`{role}: 색 값을 읽을 수 없습니다`"(기존 `GATE_TEXT.contrastUnreadable`). 새 문구 "테마 색을 읽을 수 없습니다"는 시도했으나 엔진 문구가 공통 청크에 들어가 `/studio` 진입 126.72(멈춤선 126.70 초과)·다른 화면 +0.03이 되어 기존 문구 재사용으로 바꿨다(`logs/f1.txt` 최종).
+- **화면**: `useGateReport` `compute`가 try/catch로 실패를 `failed` 상태로 받는다(거부 0, `recheck` → undefined → 내보내기 시작은 요청 0). `GateList`는 결과 없음 + failed면 "검사하지 못했습니다"(새 문구 — 기존 "검사하는 중입니다" 자리).
+- 테스트(RED `logs/f1-red.txt`): runGate.test "color_tokens 없는 프로필 → throw 0 · block 5건"(조정 없음·보정 있음) · useGateReport.test(runGate 목이 던짐 → failed · recheck undefined · 거부 0) · GateList.test(failed 문구).
+- **판정: 전체 vitest exit 0 · Errors 0** — 168 files · 1590 tests (`logs/f1-full.txt`). 번들 `/studio` 진입 126.62(≤126.70).
 
 ### 10.3 F2 확인 대화상자 모달
 - (진행 중)

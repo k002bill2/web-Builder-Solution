@@ -19,8 +19,18 @@ const rowCause = (row: GateRow) => row.issues[0]?.cause ?? (row.state === "unmea
  * 품질 게이트 8줄 (DS-2A-05 5.12 · E-S22~E-S25). 순서 = 결과 순서(GATE_ROWS 고정). 문제 줄은 `button` → 이동(E-S23), 통과·측정 전 줄은 글자만.
  * 펼치면(`details`) 건별 규칙 ID · 원인 · 대체안. 결과가 지금 문서 것이 아니면 목록 `aria-busy` + "편집 전 기준" 캡션(E-S25).
  */
-export function GateList({ report, stale, onRow }: { readonly report: GateReport | undefined; readonly stale: boolean; readonly onRow: (row: GateRow) => void }) {
-  if (!report) return <p className={CAPTION}>검사하는 중입니다</p>;
+export function GateList({
+  report,
+  stale,
+  failed,
+  onRow,
+}: {
+  readonly report: GateReport | undefined;
+  readonly stale: boolean;
+  readonly failed?: boolean;
+  readonly onRow: (row: GateRow) => void;
+}) {
+  if (!report) return <p className={CAPTION}>{failed ? "검사하지 못했습니다" : "검사하는 중입니다"}</p>;
   const counts = gateCounts(report);
   const tone = HEAD_TONE[counts.block > 0 ? "block" : counts.warn > 0 ? "warn" : "pass"];
   return (

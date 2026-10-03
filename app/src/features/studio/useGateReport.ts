@@ -14,6 +14,8 @@ export interface GateState {
   readonly stale: boolean;
   /** 지금 문서로 바로 다시 계산(내보내기 시작 — 오래된 결과로 요청하지 않는다, E-AC-28). 테마(프로필 버전)가 없으면 undefined */
   readonly recheck: () => Promise<GateReport | undefined>;
+  /** 마지막 계산이 던졌음 — 처리되지 않은 거부 대신 상태로 받는다(M2A-3a-fix F1) */
+  readonly failed: boolean;
 }
 
 /**
@@ -25,13 +27,20 @@ export function useGateReport(doc: PageDoc, series: ProfileSeries | undefined): 
   const purpose = docPurpose(series, doc.profileVersion);
   const [checked, setChecked] = useState<{ readonly doc: PageDoc; readonly report: GateReport }>();
   const hasReport = useRef(false);
+  const [failed, setFailed] = useState(false);
 
   const compute = useCallback(
     async (target: PageDoc) => {
       if (!version) return undefined;
-      const report = (await loadGate()).runGate(target, { profile: version, purpose });
-      hasReport.current = true;
-      return { doc: target, report };
+      try {
+        const report = (await loadGate()).runGate(target, { profile: version, purpose });
+        hasReport.current = true;
+        setFailed(false);
+        return { doc: target, report };
+      } catch {
+        setFailed(true);
+        return undefined;
+      }
     },
     [version, purpose],
   );
@@ -58,5 +67,5 @@ export function useGateReport(doc: PageDoc, series: ProfileSeries | undefined): 
     return next?.report;
   }, [compute, doc]);
 
-  return { report: checked?.report, stale: !!checked && checked.doc !== doc, recheck };
+  return { report: checked?.report, stale: !!checked && checked.doc !== doc, recheck, failed };
 }

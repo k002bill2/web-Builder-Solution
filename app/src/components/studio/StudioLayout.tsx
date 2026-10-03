@@ -332,7 +332,7 @@ export function StudioLayout({
         </>
       }
     >
-      <GateList report={gateState.report} stale={gateState.stale} onRow={goToRow} />
+      <GateList report={gateState.report} stale={gateState.stale} failed={gateState.failed} onRow={goToRow} />
     </GatePanel>
   );
   const widths = <PreviewWidth value={view} onChange={setView} />;

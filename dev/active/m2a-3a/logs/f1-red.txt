@@ -1,0 +1,30 @@
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: 계산 실패
+ ❯ Proxy.runGate src/features/studio/useGateReport.test.ts:11:11
+      9| vi.mock("./gateCheck", () => ({
+     10|   runGate: () => {
+     11|     throw new TypeError("계산 실패");
+       |           ^
+     12|   },
+     13| }));
+ ❯ src/features/studio/useGateReport.ts:32:41
+ ❯ processTicksAndRejections node:internal/process/task_queues:103:5
+
+This error originated in "src/features/studio/useGateReport.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "runGate가 던지면 report 없음 · failed true · recheck는 undefined로 끝난다(거부 0)". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 12 passed (14)
+     Errors  1 error
+   Start at  23:03:43
+   Duration  4.11s (tests 60%, environment 27%, transform 7%, setup 5%, import 2%)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/components/studio/GateList.test.tsx > GateList — 계산 실패 (M2A-3a-fix F1) > 결과 없음 + failed → '검사하지 못했습니다' 문구('검사하는 중' 아님)
+TestingLibraryElementError: Unable to find an element with the text: 검사하지 못했습니다 — 편집하면 다시 검사합니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+      Tests  1 failed (1)

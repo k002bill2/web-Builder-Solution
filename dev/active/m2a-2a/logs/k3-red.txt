@@ -1,0 +1,4 @@
+     × app/src/kit 이 있고 레지스트리·3변형 파일이 있다 5ms
+     × 렌더 CSS가 킷을 Tailwind 스캔 범위에 넣는다(src/render + src/kit만) 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 3 passed (5)

@@ -1,0 +1,6 @@
+     × K-AC-05: a[href='#'] · 빈 href · href 없음 · javascript: 0 · 모든 #s- 앵커의 대상 id가 문서 안에 있다 14ms
+     × K-AC-11·36 [U 정적]: 킷 CSS 글자색은 ink·bg·on-primary·primary만 · muted 글자 0 · 불투명도 0 (조합 실측은 K9 브라우저) 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected null not to be null
+TypeError: The URL must be of scheme file
+      Tests  2 failed | 3 passed (5)

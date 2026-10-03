@@ -1,0 +1,337 @@
+/* 킷 공통 CSS (M2A-2a K3 · m2a 0.3·0.4·0.7·0.10) — 킷 섹션 루트 [data-kit] 아래만. 값은 --site-* 변수만(hex·px·vh·모션 0, 가드 kitGuard) */
+@layer components {
+  [data-kit] {
+    font-family: var(--site-font);
+    font-weight: var(--site-weight-body);
+    line-height: 1.5;
+    color: var(--site-ink);
+    /* 앵커 이동한 제목이 sticky header(두 줄 높이)에 가려지지 않게 (K1-1 1) */
+    scroll-margin-top: var(--site-header-offset);
+  }
+  /* 0.7 넘침 — 말줄임 금지, 긴 영문·URL은 줄바꿈, 한글은 어절 단위 */
+  [data-kit] :where(h1, h2, h3, p, li, a, span, address, button) {
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+  }
+  [data-kit] :where(h1, h2, h3) {
+    font-weight: var(--site-weight-heading);
+    line-height: 1.25;
+  }
+  /* 0.3 포커스 링 — 안쪽 간격(면 색이 비침) + 바깥 = 그 면의 알아보는 경계 역할(--kit-ring) */
+  [data-kit] :where(a, button):focus-visible {
+    outline: var(--site-stroke-2) solid var(--kit-ring, var(--site-ink));
+    outline-offset: var(--site-stroke-2);
+  }
+}
+
+/* header/sticky-right-cta (K1-1) — lg 이상 = 바 한 줄 · md~lg = 브랜드·CTA·메뉴 버튼 · md 미만 = 브랜드·메뉴 버튼(CTA는 시트 맨 아래) */
+@layer components {
+  .kit-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--site-bg);
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--site-s2) var(--site-s4);
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-s2) var(--site-s4);
+  }
+  .kit-brand {
+    margin: 0;
+    min-width: 0;
+    font-size: var(--site-t1);
+    font-weight: var(--site-weight-heading);
+    line-height: 1.25;
+  }
+  .kit-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--site-s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .kit-menu :where(a, span) {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--site-hit-min);
+    color: var(--site-ink);
+  }
+  .kit-menu a {
+    text-decoration: underline;
+  }
+  .kit-nav-bar {
+    display: none;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .kit-nav-bar .kit-menu {
+    justify-content: flex-end;
+  }
+  .kit-cta {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s4);
+    border-radius: var(--site-radius-control);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+    font-weight: var(--site-weight-heading);
+    text-align: center;
+    text-decoration: none;
+    --kit-ring: var(--site-ink);
+  }
+  .kit-cta--bar {
+    display: none;
+    margin-inline-start: auto;
+  }
+  .kit-cta--bar[data-always] {
+    display: inline-flex;
+  }
+  .kit-menu-button {
+    display: none;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: var(--site-hit-min);
+    margin-inline-start: auto;
+    padding: 0 var(--site-s4);
+    border: var(--site-stroke-1) solid var(--site-ink);
+    border-radius: var(--site-radius-control);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    font: inherit;
+    cursor: pointer;
+  }
+  /* popover 미지원이면 버튼을 숨기고 시트를 바 아래 일반 흐름 목록으로 둔다(기능 유지) */
+  @supports selector(:popover-open) {
+    .kit-menu-button {
+      display: inline-flex;
+    }
+  }
+  /* 시트 — 위치·모양은 열린 상태(:popover-open) 안에만. 닫힘 숨김은 UA popover 규칙 */
+  .kit-sheet:popover-open {
+    position: fixed;
+    inset: 0 0 auto 0;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: var(--site-s4);
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    box-shadow: var(--site-shadow-1);
+  }
+  .kit-close {
+    align-self: flex-end;
+  }
+  .kit-nav-sheet .kit-menu {
+    flex-direction: column;
+  }
+  .kit-cta--sheet {
+    width: 100%;
+  }
+  @media (width >= 48rem) {
+    .kit-cta--bar {
+      display: inline-flex;
+    }
+    .kit-cta--bar ~ .kit-menu-button {
+      margin-inline-start: 0;
+    }
+    .kit-cta--sheet {
+      display: none;
+    }
+  }
+  /* lg 이상: 바 메뉴만 — 시트·메뉴 버튼은 열림과 무관하게 숨김(K-AC-35) */
+  @media (width >= 64rem) {
+    .kit-bar {
+      padding-inline: var(--site-s6);
+    }
+    .kit-nav-bar {
+      display: block;
+    }
+    .kit-menu-button,
+    .kit-sheet,
+    .kit-sheet:popover-open {
+      display: none;
+    }
+  }
+}
+
+/* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
+@layer components {
+  .kit-gradient {
+    background: linear-gradient(135deg, var(--site-primary), var(--site-ink));
+  }
+  .kit-img {
+    display: block;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+/* hero/fullbleed-left (K1-2) — md 미만 = 미디어 띠(4:3) 위 · 패널 아래 / md 이상 = 한 칸 두 층, 섹션 최소 16:9, 패널 왼쪽 아래 */
+@layer components {
+  .kit-hero {
+    display: grid;
+    grid-template-areas: "media" "copy";
+    background: var(--site-primary);
+  }
+  .kit-hero--plain {
+    grid-template-areas: "copy";
+  }
+  .kit-hero-media {
+    grid-area: media;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  .kit-hero-copy {
+    grid-area: copy;
+    position: relative;
+    z-index: 1;
+  }
+  .kit-hero-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    padding: var(--site-s4);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+  }
+  .kit-hero-title {
+    margin: 0;
+    font-size: var(--site-t3);
+    color: var(--site-on-primary);
+  }
+  .kit-hero-lead {
+    margin: 0;
+    font-size: var(--site-t0);
+  }
+  .kit-hero-cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--site-hit-min);
+    margin-top: var(--site-s2);
+    padding: var(--site-s2) var(--site-s4);
+    border-radius: var(--site-radius-control);
+    background: var(--site-on-primary);
+    color: var(--site-primary);
+    font-weight: var(--site-weight-heading);
+    text-decoration: none;
+    --kit-ring: var(--site-on-primary);
+  }
+  @media (width >= 48rem) {
+    .kit-hero {
+      grid-template-areas: "stack";
+      aspect-ratio: 16 / 9;
+    }
+    .kit-hero-media {
+      grid-area: stack;
+      height: 100%;
+      aspect-ratio: auto;
+    }
+    .kit-hero-copy {
+      grid-area: stack;
+      align-self: end;
+      width: 100%;
+      max-width: var(--site-content-max);
+      margin-inline: auto;
+      padding: var(--site-section-gap) var(--site-s6);
+    }
+    .kit-hero-panel {
+      width: calc(100% * 8 / 12);
+      padding: var(--site-s5);
+      border-radius: var(--site-radius-control);
+    }
+    .kit-hero-title {
+      font-size: var(--site-t5);
+    }
+    .kit-hero-lead {
+      font-size: var(--site-t1);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hero-panel {
+      width: 50%;
+    }
+  }
+}
+
+/* footer/biz-extended (K1-7) — ink 면 · bg 글자 · md 이상 위 줄 2단(사업자정보 | 하단 링크) */
+@layer components {
+  .kit-footer {
+    background: var(--site-ink);
+    color: var(--site-bg);
+    font-size: var(--site-t-1);
+    --kit-ring: var(--site-bg);
+  }
+  .kit-footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-section-gap-narrow) var(--site-s4);
+  }
+  .kit-footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+  }
+  .kit-footer-info {
+    max-width: var(--site-prose-max);
+    font-style: normal;
+    white-space: pre-line;
+    color: var(--site-bg);
+  }
+  .kit-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--site-s1) var(--site-s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: var(--site-weight-heading);
+    color: var(--site-bg);
+  }
+  .kit-footer-divider {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: var(--site-stroke-1) solid var(--site-bg);
+  }
+  .kit-footer-copy {
+    margin: 0;
+    color: var(--site-bg);
+  }
+  @media (width >= 48rem) {
+    .kit-footer-top {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .kit-footer-info {
+      flex: 1 1 auto;
+    }
+    .kit-footer-links {
+      justify-content: flex-end;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-footer-inner {
+      padding-inline: var(--site-s6);
+    }
+  }
+}

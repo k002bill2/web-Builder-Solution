@@ -1,0 +1,7 @@
+     × 구조: header 루트(id s-…) · 브랜드 p · 바 nav '주 메뉴' + 시트 nav '주 메뉴'(두 벌) · '메뉴' 버튼 popovertarget = 시트 · 시트 '닫기' hide 27ms
+     × K-AC-14: nav ' 소개 ·· 서비스 · ' → 항목 2개 — 본문 섹션 제목과 같은 항목만 a(앵커), 나머지 span 9ms
+     × K-AC-13: CTA = 바(md 이상) + 시트 맨 아래(md 미만) — href = 첫 contact 앵커 → 없으면 footer → 둘 다 없으면 링크 아닌 글자 8ms
+     × 0.8 빈 슬롯: nav 빈 값 → nav·'메뉴' 버튼·시트 0, CTA는 바에 늘 보임 · cta 빈 값 → CTA 0 6ms
+     × K-AC-03 상한 글자: brand 24 · nav 80 · cta 16자가 잘리지 않고 그대로 · 링크에 '#'·빈 href 0 6ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  5 failed (5)

@@ -9,7 +9,7 @@ import { CANVAS_LOOKS, canvasLayout, canvasVars, groupSlots, type CanvasPalette 
  * 선택 테두리·라벨 칩·문제 표시는 그리지 않는다 — 부모 오버레이(5.7 r4.8, 내보내기·PNG에 섞이지 않게). 글자 슬롯은 `data-slot`(사각형 보고 대상).
  */
 
-/** 섹션 머리 표식 글자(SPEC 5.7 r4.8 — 시각 명세는 M2A-0 Designer, 이 레인은 글자·위치 최소안) */
+/** 섹션 머리 표식 글자(SPEC 5.7 r4.8 · m2a 3.1) — 위·오른쪽 끝, 문서 흐름 안, 고정 색 자기 면(--marker-face/--marker-text, render.css) */
 export const FALLBACK_MARK = "구조 미리보기";
 
 /** 슬롯 값 — 스키마 순서. 빈 글자는 자리표시(E-S21 "제목을 입력하세요"), 이미지 = 줄무늬(끈 이미지는 빼고) */
@@ -52,7 +52,7 @@ function SlotLine({ view, strong, big }: { readonly view: SlotView; readonly str
  * 섹션 블록 = 변형별 모양(canvasLayouts 표) + 실제 슬롯 글자(5.7). 제목 요소를 쓰지 않는다.
  * 머리(번호 없는 슬롯) · 칸(번호 슬롯 묶음) 순서라 글자 순서 = 스키마 순서.
  */
-function SectionBlock({ section }: { readonly section: SectionInstance }) {
+export function FallbackSection({ section }: { readonly section: SectionInstance }) {
   const layout = canvasLayout(section.type, section.variant);
   const look = CANVAS_LOOKS[layout];
   const { head, cells } = groupSlots(slotViews(section));
@@ -60,8 +60,8 @@ function SectionBlock({ section }: { readonly section: SectionInstance }) {
   const media = look.media !== false && head.some((v) => v.text === undefined);
   const face = look.face ?? (section.tone === "alt" ? "bg-(--canvas-surface) text-(--canvas-ink)" : "bg-(--canvas-bg) text-(--canvas-ink)");
   return (
-    <div data-instance-id={section.instanceId} data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
-      <span data-fallback-mark className="self-end text-caption2 font-bold">
+    <div id={`s-${section.instanceId}`} data-instance-id={section.instanceId} data-fallback="true" data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
+      <span data-kit-marker="fallback" className="self-end rounded-sm bg-(--marker-face) px-2 py-0.5 text-caption2 font-bold text-(--marker-text)">
         {FALLBACK_MARK}
       </span>
       <div className={`flex gap-4 ${look.row ?? "flex-col"}`}>
@@ -98,9 +98,9 @@ function SectionBlock({ section }: { readonly section: SectionInstance }) {
 /** 문서 전체 — 루트에 `--canvas-*` 변수(문서 프로필 버전 팔레트, 없으면 중립 토큰) */
 export function FallbackCanvas({ doc, palette }: { readonly doc: PageDoc; readonly palette?: CanvasPalette }) {
   return (
-    <div style={canvasVars(palette)} className="flex flex-col">
+    <div data-fallback-root style={canvasVars(palette)} className="flex flex-col">
       {doc.sections.map((section) => (
-        <SectionBlock key={section.instanceId} section={section} />
+        <FallbackSection key={section.instanceId} section={section} />
       ))}
     </div>
   );

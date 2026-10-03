@@ -1,0 +1,9 @@
+## run 1 12:36:24 load={ 17.31 17.27 20.24 }
+ Test Files  153 passed (153)
+      Tests  1513 passed (1513)
+## run 2 12:36:52 load={ 69.46 29.92 24.72 }
+ Test Files  153 passed (153)
+      Tests  1513 passed (1513)
+## run 3 12:37:16 load={ 116.69 43.38 29.67 }
+ Test Files  153 passed (153)
+      Tests  1513 passed (1513)

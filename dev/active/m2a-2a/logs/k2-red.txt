@@ -1,0 +1,30 @@
+     × render{doc, kitTokens} — 킷 토큰 입력을 그대로 넘긴다 · 없으면 doc만 5ms
+     × palette 단독 필드는 더 읽지 않는다(팔레트는 kitTokens 안) 1ms
+     × kitTokens 모양이 틀리면(팔레트 역할 누락) 메시지 전체를 버린다 1ms
+     × kitTokens 모양이 틀리면(글꼴 이름에 따옴표·세미콜론(CSS 주입)) 메시지 전체를 버린다 0ms
+     × kitTokens 모양이 틀리면(팔레트 값에 세미콜론) 메시지 전체를 버린다 0ms
+     × kitTokens 모양이 틀리면(scale 숫자 아님) 메시지 전체를 버린다 0ms
+     × kitTokens 모양이 틀리면(카드 모양 모름) 메시지 전체를 버린다 0ms
+     × kitTokens 모양이 틀리면(비율 모름) 메시지 전체를 버린다 0ms
+     × kitTokens 모양이 틀리면(sectionGap 음수) 메시지 전체를 버린다 1ms
+     × 렌더 → 부모 error 코드: INVALID_DOC · NO_KIT_TOKENS만 0ms
+     × 킷 토큰 없음 → error{NO_KIT_TOKENS} · 킷 섹션은 그리지 않고 폴백 섹션(중립 토큰)은 계속 그린다 · rects 보고 (MQ-1) 10ms
+     × 킷 토큰 있음 → error 0 · 폴백 팔레트 = kitTokens.palette · 사이트 변수 --site-* 적용 6ms
+     × render 메시지에는 문서·킷 토큰만 — 문제 문장·선택은 보내지 않는다(렌더 문서 편집기 UI 0) 19ms
+     × 문서 profileVersion의 팔레트 → --canvas-* 변수 3426ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 킷 토큰 없음 → error{NO_KIT_TOKENS} · 킷 섹션은 그리지 않고 폴백 섹션(중립 토큰)은 계속 그린다 · rects 보고 (MQ-1)
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 킷 토큰 있음 → error 0 · 폴백 팔레트 = kitTokens.palette · 사이트 변수 --site-* 적용
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > render{doc, kitTokens} — 킷 토큰 입력을 그대로 넘긴다 · 없으면 doc만
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > palette 단독 필드는 더 읽지 않는다(팔레트는 kitTokens 안)
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(팔레트 역할 누락) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(글꼴 이름에 따옴표·세미콜론(CSS 주입)) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(팔레트 값에 세미콜론) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(scale 숫자 아님) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(카드 모양 모름) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(비율 모름) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > kitTokens 모양이 틀리면(sectionGap 음수) 메시지 전체를 버린다
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > 렌더 → 부모 error 코드: INVALID_DOC · NO_KIT_TOKENS만
+ FAIL  src/components/studio/CanvasPalette.test.tsx > 캔버스 팔레트 연결 (SPEC 5.7 · r4.7 A3-Q7) > 문서 profileVersion의 팔레트 → --canvas-* 변수
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8) > render 메시지에는 문서·킷 토큰만 — 문제 문장·선택은 보내지 않는다(렌더 문서 편집기 UI 0)
+      Tests  14 failed | 28 passed (42)

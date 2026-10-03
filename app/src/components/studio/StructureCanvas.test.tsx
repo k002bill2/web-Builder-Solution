@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { section, sampleDoc } from "../../engine/testing/sampleDoc";
-import { canvasFrame, connectRenderFrame } from "../../features/studio/testing/renderFrame";
+import { canvasFrame, connectRenderFrame, frameSays } from "../../features/studio/testing/renderFrame";
+import { SAMPLE_KIT_TOKENS } from "../../render/testing/sampleKitTokens";
 import { StructureCanvas } from "./StructureCanvas";
 
 /**
@@ -71,12 +72,34 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     expect(canvasFrame()).toHaveAttribute("sandbox", "allow-scripts");
   });
 
-  it("render 메시지에는 문서·팔레트만 — 문제 문장·선택은 보내지 않는다(렌더 문서 편집기 UI 0)", () => {
-    render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+  it("render 메시지에는 문서·킷 토큰만 — 문제 문장·선택은 보내지 않는다(렌더 문서 편집기 UI 0)", () => {
+    const { unmount } = render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     const { sent } = connectRenderFrame();
     const render0 = sent.find((m) => m.type === "render")!;
     expect(Object.keys(render0).sort()).toEqual(["doc", "type"]);
     expect(sent).toContainEqual({ type: "select", instanceId: "s-hero" });
+    unmount();
+    render(<StructureCanvas doc={over()} kitTokens={SAMPLE_KIT_TOKENS} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const withTokens = connectRenderFrame().sent.find((m) => m.type === "render")!;
+    expect(Object.keys(withTokens).sort()).toEqual(["doc", "kitTokens", "type"]);
+  });
+
+  it("로컬 이미지 Blob → render 메시지 images로 Blob 자체를 보낸다(부모 blob: URL 아님, K4) · 없으면 키 없음", () => {
+    const blob = new Blob(["x"], { type: "image/png" });
+    const id = "11111111-1111-4111-8111-111111111111";
+    render(<StructureCanvas doc={over()} kitTokens={SAMPLE_KIT_TOKENS} images={{ [id]: blob }} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const msg = connectRenderFrame().sent.find((m) => m.type === "render") as { images?: Record<string, Blob> };
+    expect(msg.images?.[id]).toBe(blob);
+  });
+
+  it("렌더 문서 error{NO_KIT_TOKENS}(폴백은 그림)는 오버레이 사각형을 지우지 않는다 · INVALID_DOC은 지운다 (MQ-1)", () => {
+    render(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    expect(within(region()).getByText(/^Hero · /)).toBeInTheDocument();
+    act(() => frameSays({ type: "error", code: "NO_KIT_TOKENS" }));
+    expect(within(region()).getByText(/^Hero · /)).toBeInTheDocument();
+    act(() => frameSays({ type: "error", code: "INVALID_DOC" }));
+    expect(within(region()).queryByText(/^Hero · /)).toBeNull();
   });
 
   it("미리보기 폭 = iframe 폭 — 태블릿 48rem · 모바일 24.375rem 프레임 안 iframe 100%", () => {

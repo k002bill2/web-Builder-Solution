@@ -13,7 +13,9 @@ function measure(root: HTMLElement, host: Window): readonly FrameRect[] {
   };
   return [...root.querySelectorAll<HTMLElement>("[data-instance-id]")].flatMap((section) => {
     const id = section.dataset.instanceId!;
-    return [rect(section, id, null), ...[...section.querySelectorAll<HTMLElement>("[data-slot]")].map((slot) => rect(slot, id, slot.dataset.slot!))];
+    // 보이지 않는 슬롯(폭에 따라 숨는 메뉴 두 벌 중 하나 등 — checkVisibility false)은 보고하지 않는다
+    const slots = [...section.querySelectorAll<HTMLElement>("[data-slot]")].filter((slot) => slot.checkVisibility?.() !== false);
+    return [rect(section, id, null), ...slots.map((slot) => rect(slot, id, slot.dataset.slot!))];
   });
 }
 
@@ -71,7 +73,14 @@ export function RenderApp({ host }: { readonly host: Window }) {
   }, [view, measureTick, host, post]);
 
   const click = (event: MouseEvent<HTMLDivElement>) => {
-    const id = (event.target as Element).closest("[data-instance-id]")?.getAttribute("data-instance-id");
+    const target = event.target as Element;
+    // 편집 캔버스에서는 킷 링크 이동을 막고 섹션 선택으로 바꾼다(K1-1 6) · 메뉴 시트 안 앵커 → 시트 닫기(킷 공용 조작 1개)
+    const anchor = target.closest("a[href]");
+    if (anchor) {
+      event.preventDefault();
+      anchor.closest<HTMLElement>("[popover]")?.hidePopover?.();
+    }
+    const id = target.closest("[data-instance-id]")?.getAttribute("data-instance-id");
     if (id) post({ type: "click", instanceId: id });
   };
   return (

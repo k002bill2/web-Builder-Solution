@@ -23,3 +23,147 @@
     outline-offset: var(--site-stroke-2);
   }
 }
+
+/* header/sticky-right-cta (K1-1) — lg 이상 = 바 한 줄 · md~lg = 브랜드·CTA·메뉴 버튼 · md 미만 = 브랜드·메뉴 버튼(CTA는 시트 맨 아래) */
+@layer components {
+  .kit-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--site-bg);
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--site-s2) var(--site-s4);
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-s2) var(--site-s4);
+  }
+  .kit-brand {
+    margin: 0;
+    min-width: 0;
+    font-size: var(--site-t1);
+    font-weight: var(--site-weight-heading);
+    line-height: 1.25;
+  }
+  .kit-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--site-s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .kit-menu :where(a, span) {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--site-hit-min);
+    color: var(--site-ink);
+  }
+  .kit-menu a {
+    text-decoration: underline;
+  }
+  .kit-nav-bar {
+    display: none;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .kit-nav-bar .kit-menu {
+    justify-content: flex-end;
+  }
+  .kit-cta {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s4);
+    border-radius: var(--site-radius-control);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+    font-weight: var(--site-weight-heading);
+    text-align: center;
+    text-decoration: none;
+    --kit-ring: var(--site-ink);
+  }
+  .kit-cta--bar {
+    display: none;
+    margin-inline-start: auto;
+  }
+  .kit-cta--bar[data-always] {
+    display: inline-flex;
+  }
+  .kit-menu-button {
+    display: none;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: var(--site-hit-min);
+    margin-inline-start: auto;
+    padding: 0 var(--site-s4);
+    border: var(--site-stroke-1) solid var(--site-ink);
+    border-radius: var(--site-radius-control);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    font: inherit;
+    cursor: pointer;
+  }
+  /* popover 미지원이면 버튼을 숨기고 시트를 바 아래 일반 흐름 목록으로 둔다(기능 유지) */
+  @supports selector(:popover-open) {
+    .kit-menu-button {
+      display: inline-flex;
+    }
+  }
+  /* 시트 — 위치·모양은 열린 상태(:popover-open) 안에만. 닫힘 숨김은 UA popover 규칙 */
+  .kit-sheet:popover-open {
+    position: fixed;
+    inset: 0 0 auto 0;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: var(--site-s4);
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    box-shadow: var(--site-shadow-1);
+  }
+  .kit-close {
+    align-self: flex-end;
+  }
+  .kit-nav-sheet .kit-menu {
+    flex-direction: column;
+  }
+  .kit-cta--sheet {
+    width: 100%;
+  }
+  @media (width >= 48rem) {
+    .kit-cta--bar {
+      display: inline-flex;
+    }
+    .kit-cta--bar ~ .kit-menu-button {
+      margin-inline-start: 0;
+    }
+    .kit-cta--sheet {
+      display: none;
+    }
+  }
+  /* lg 이상: 바 메뉴만 — 시트·메뉴 버튼은 열림과 무관하게 숨김(K-AC-35) */
+  @media (width >= 64rem) {
+    .kit-bar {
+      padding-inline: var(--site-s6);
+    }
+    .kit-nav-bar {
+      display: block;
+    }
+    .kit-menu-button,
+    .kit-sheet,
+    .kit-sheet:popover-open {
+      display: none;
+    }
+  }
+}

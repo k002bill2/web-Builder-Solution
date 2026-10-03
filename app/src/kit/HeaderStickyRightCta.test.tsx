@@ -1,5 +1,5 @@
 import { sampleDoc } from "../engine/testing/sampleDoc";
-import { drawDoc, patch, without } from "./testing";
+import { drawDoc, patch, without } from "../render/testing/drawKit";
 
 /** header/sticky-right-cta (M2A-2a K5 · m2a K1-1) — [U] 마크업. 폭 전환·popover 동작은 K9 브라우저 */
 const header = (c: HTMLElement) => c.querySelector<HTMLElement>('[data-section="header/sticky-right-cta"]')!;

@@ -103,4 +103,18 @@ describe("렌더 문서 수신기", () => {
     fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: new Blob(["x"]) } });
     expect(revoke).toHaveBeenCalledWith("blob:null/1");
   });
+
+  it("킷 링크 누름 → 이동 막음(편집 캔버스) + click{header} · 메뉴 시트 안 앵커면 시트 hidePopover (K1-1 6)", () => {
+    const { container } = render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    const sheet = container.querySelector<HTMLElement>("[popover]")!;
+    const hide = vi.fn();
+    Object.assign(sheet, { hidePopover: hide });
+    const link = sheet.querySelector<HTMLAnchorElement>('a[href="#s-s-about"]')!;
+    const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+    act(() => void link.dispatchEvent(event));
+    expect(event.defaultPrevented).toBe(true);
+    expect(hide).toHaveBeenCalledTimes(1);
+    expect(sent("click")).toEqual([{ type: "click", instanceId: "s-header" }]);
+  });
 });

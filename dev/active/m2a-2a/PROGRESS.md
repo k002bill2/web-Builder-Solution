@@ -11,7 +11,7 @@
 - [x] K2 render{doc, kitTokens} · error NO_KIT_TOKENS(폴백 계속, 오버레이 유지) · /studio 진입 124.20 · 렌더 JS 77.26 (logs/k2-red·k2-green)
 - [x] K3 킷 골격 — kit/{registry,types,text,tokens,kit.css} · PageDocument 분기·뼈대 · kitGuard(src/test) · 표식 data-kit-marker · 렌더 JS 77.61 / CSS 4.81
 - [x] K4 이미지 Blob 전달 — protocol images · render/objectUrls(생성·교체·빠짐 해제·clear) · StructureCanvas images prop(호출처 없음: 앱에 이미지 보관소·업로드 UI 없음)
-- [ ] K5 header/sticky-right-cta
+- [x] K5 header/sticky-right-cta — kit/HeaderStickyRightCta + kit.css · RenderApp 링크 이동 막기·시트 hidePopover · measure 숨은 슬롯 제외
 - [ ] K6 hero/fullbleed-left
 - [ ] K7 footer/biz-extended
 - [ ] K8 공통 K-AC

@@ -7,7 +7,7 @@
 - 읽은 근거: m2a SPEC 0절·K1-3~6·K2·3.2 C·3.4·4.1 · 2a-05 SPEC r4.9·r4.10 · m2a-2a REPORT 2·3·7·8절.
 
 ## 단계
-- [ ] B0 기준선 — 번들 표 · shots/b0-*
+- [x] B0 기준선 — `B0-BASELINE.md` · shots/b0-* (iframe 1280 창 721 · error 0)
 - [ ] B1 데스크톱 프레임 1280(축소 보기 · 오버레이 정렬 테스트 RED 먼저)
 - [ ] B2 about/story (K-AC-22·23·24)
 - [ ] B3 services/cards-3 · 카드 톤 변수 (K-AC-25·26)

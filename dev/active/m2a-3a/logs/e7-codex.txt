@@ -1,0 +1,40 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a101a8-3ef1-7061-834a-691503aea56e).
+[codex] Reviewer started: changes against '308ca14'
+[codex] Running command: /bin/zsh -lc 'git diff 308ca1477ee2543dd2f91695da054b3cd24a3600 --stat; pwd; find .. -name AG...
+[codex] Command completed: /bin/zsh -lc 'git diff 308ca1477ee2543dd2f91695da054b3cd24a3600 --stat; pwd; find .. -name AG... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|m2a-3a' '/Users/younghwankang/Library/Application Support/or...
+[codex] Command failed: /bin/zsh -lc "rg -n 'web-builder|m2a-3a' '/Users/younghwankang/Library/Application Support/or... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan...
+[codex] Command completed: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff 308ca1477ee2543dd2f91695da054b3cd24a3600 -- app/src/data app/src/compo...
+[codex] Command completed: /bin/zsh -lc "git diff 308ca1477ee2543dd2f91695da054b3cd24a3600 -- app/src/data app/src/compo... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/components/studio/ExportFlow.test.tsx; cat app/src/data/memoryExpor...
+[codex] Command failed: /bin/zsh -lc 'cat app/src/components/studio/ExportFlow.test.tsx; cat app/src/data/memoryExpor... (exit 1)
+[codex] Running command: /bin/zsh -lc "sed -n '35,95p' app/src/data/memoryProjectRepository.ts; cat app/src/components...
+[codex] Command completed: /bin/zsh -lc "sed -n '35,95p' app/src/data/memoryProjectRepository.ts; cat app/src/components... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '88,176p'; nl -ba app/src/compone...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '88,176p'; nl -ba app/src/compone... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 경고 확인 창이 모달로 열리지 않으며, 응답 실패와 문서 변경 후 재시도에서 잡 실행 및 문서 일관성이 깨집니다. diff와 관련 호출 경로를 검토했으며 테스트는 실행...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 308ca14
+
+경고 확인 창이 모달로 열리지 않으며, 응답 실패와 문서 변경 후 재시도에서 잡 실행 및 문서 일관성이 깨집니다. diff와 관련 호출 경로를 검토했으며 테스트는 실행하지 않았습니다.
+
+Full review comments:
+
+- [P2] open 속성을 제거하고 showModal로 확인 창을 여세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3a/app/src/components/studio/ExportAfter.tsx:26-26
+  경고 확인 창은 `open` 속성 때문에 처음부터 `el.open === true`이므로 effect의 `showModal()`이 실행되지 않습니다. 실제 브라우저에서는 비모달 창으로 표시되어 배경 편집과 포커스 이동이 허용되고, Esc 취소도 동작하지 않습니다. `open` 속성을 제거하고 `showModal()`로 열어 경고 확인 중 문서가 변경되지 않도록 해야 합니다.
+
+- [P2] 응답 전달 성공 여부와 독립적으로 커밋된 잡을 실행하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3a/app/src/data/memoryDocBook.ts:163-165
+  `requestExport`에 `phase: "response"` 실패를 주입하면 `via()`는 스냅샷과 queued 잡을 커밋한 뒤 예외를 던집니다. 따라서 `runJob()`이 실행되지 않으며, 같은 요청을 재시도해도 멱등 분기는 queued 잡만 반환하므로 생성기가 영구적으로 실행되지 않습니다. 잡 실행을 커밋 이후 응답 전달과 분리하고, 응답 실패 후 재시도 테스트에서도 최종 성공을 확인해야 합니다.
+
+- [P2] 실패한 잡을 원래 요청의 문서로 재실행하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3a/app/src/data/memoryDocBook.ts:94-99
+  revision N의 내보내기가 실패한 뒤 문서를 N+1로 저장하고 N의 요청을 재시도하면, 이 분기는 현재 문서를 생성기에 전달하면서 잡의 `docRevision`과 스냅샷은 N으로 유지합니다. 멱등 분기가 게이트 검사보다 먼저 실행되므로 N+1에 차단이나 미렌더링 섹션이 있어도 그대로 생성됩니다. 재실행에는 해당 잡을 만들 때 보존한 문서 또는 연결된 스냅샷 문서를 사용해야 합니다.
+
+- [P2] 다시 시도에서도 문서 변경과 저장 상태를 처리하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3a/app/src/features/studio/useExportFlow.ts:76-76
+  내보내기 실패 후 사용자가 문서를 편집하고 결과의 '다시 시도'를 누르면 `request()`를 직접 호출하여 게이트 재검사·경고 확인·저장 먼저 단계를 모두 건너뜁니다. 미저장 상태에서는 이전 문서를 내보내고, 자동 저장이 완료됐다면 원래 실패한 잡 대신 새 revision의 잡과 스냅샷을 생성할 수 있습니다. 실패 요청의 revision을 보존해 같은 잡을 재시도하거나, 문서가 달라졌다면 일반 시작 흐름으로 처리해야 합니다.

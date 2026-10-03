@@ -12,10 +12,11 @@
 | 재개 E0 | a04865a | **ADR-004 개정 3** — `/studio` 진입 한도만 127(시나리오별 `eagerBudgetKb`) · 시제품 실측 124.71 |
 | E1·E2 | 80aee13 | 게이트 8줄 표시 · 진입 직후 자동 계산 · 오래됨 · 줄 → 이동 · 툴바 "검사 · 내보내기" · gate_checked |
 | E3 | cfa76a2 | `requestExport` 8.3.2 8단계 · 생성기 주입(기본 없음) · UNRENDERED_SECTIONS · 한 트랜잭션 |
-| E4·E5 | (이 커밋) | 버튼 사전 차단 · 이유 목록 · 내보내기 시작(재검사 → 확인 → 저장 먼저 → 요청 1회) · 결과 문구 · 계측 |
+| E4·E5 | 542bc47 | 버튼 사전 차단 · 이유 목록 · 내보내기 시작(재검사 → 확인 → 저장 먼저 → 요청 1회) · 결과 문구 · 계측 |
+| E6·E7 | (이 커밋) | 브라우저 캡처 4장(`shots/e6-*`) · 흐름 로그 · Codex 1회(P1 이상 0 → 코드 변경 0) · REPORT·PROGRESS 마감 |
 
 ## 2. E0 공간 확보 (전후 실측 · 옮긴 코드)
-**결론: 정지 조건 충족 — 진입 ≤ 124.70 경로가 실측으로 보이지 않아 E1 이전에 멈춘다.** 예산 상수·멈춤선 변경 0, 코드 변경 0.
+**(원 E0 기록 — 재개 결과는 2.1·2.2) 결론: 정지 조건 충족 — 진입 ≤ 124.70 경로가 실측으로 보이지 않아 E1 이전에 멈춘다.** 예산 상수·멈춤선 변경 0, 코드 변경 0.
 
 | 측정 | `/studio` 첫 화면 | 진입 직후 | 근거 |
 |---|---|---|---|
@@ -42,6 +43,17 @@
 - 바꾼 것: `scripts/bundleBudget.mjs` 시나리오별 `eagerBudgetKb`(기본 `ROUTE_EAGER_BUDGET_KB` 125 그대로) + `check-bundle-size.mjs` `/studio/:projectId`만 `eagerBudgetKb: 127`(멈춤선 126.70). 첫 화면·다른 라우트·렌더 예산 변경 0. RED `logs/e0r-red.txt`(1 failed) → GREEN 8/8.
 - 전후 실측: 바꾸기 전 = `/studio` 진입 118.44 / 예산 125(`logs/epre-gate.txt`) · 바꾼 뒤(시제품 얹은 트리) = **124.71 / 예산 127** · 그 밖 /compare 98.84/121.72 · /projects 94.01/100.19 · /profile 99.61/118.67 · 렌더 79.89 (`logs/e0r-gate.txt`). 남은 여유 = 126.70 − 실측 — E1~E5 진입분은 이 안에서, 조작 뒤 코드는 `STUDIO_AFTER_ACTION`.
 
+### 2.2 개정 3 적용 전후 · 최종 여유
+| 시점 | `/studio` 진입 / 한도 | 멈춤선 | 여유(멈춤선 − 실측) | 근거 |
+|---|---|---|---|---|
+| 개정 3 전(merge 뒤 b8506d7) | 118.44 / 125 | 124.70 | 6.26 | `logs/epre-gate.txt` |
+| 개정 3 뒤 · E0 시제품 트리 | 124.71 / 127 | 126.70 | 1.99 | `logs/e0r-gate.txt` |
+| E1·E2(80aee13) | 124.98 / 127 | 126.70 | 1.72 | `logs/e1-gate.txt` |
+| E3(cfa76a2) | 124.91 / 127 | 126.70 | 1.79 | `logs/e3-gate.txt` |
+| **E4·E5(542bc47) = 최종** | **126.59 / 127** | **126.70** | **0.11** | `logs/e4e5-gate.txt` |
+- 첫 화면 91.76(한도 그대로) · 렌더 JS 79.89 / 멈춤선 89.70 · 다른 라우트 ±0.03 안(예외 `/projects` +0.13, 8절). 예산 상수는 개정 3이 정한 `/studio` 진입 127 하나만.
+- E6·E7은 코드 변경 0이라 번들 그대로(126.59).
+
 ## 3. 게이트 표시 (E1 · E2)
 - **계산**: `features/studio/useGateReport.ts` — 진입 직후 1회 **바로**(지연 없음), 편집 뒤엔 500ms 디바운스로 `runGate(doc, { profile: 문서 버전, purpose: docPurpose })`. 엔진은 진입 직후 엔진 청크 `features/studio/gateCheck.ts`(SCENARIOS `/studio` auto 등록). 테마(프로필 버전)가 없으면 계산하지 않고 "검사하는 중입니다".
 - **오래됨(E-S25)**: 결과를 계산한 **문서 객체**와 지금 문서를 비교(편집은 저장 전까지 revision을 올리지 않아 revision 비교로는 편집 직후를 못 잡는다 — 시제품의 결함). 오래됨 = 목록 `aria-busy` + "편집 전 기준 결과입니다 · 다시 검사하는 중". `recheck()` = 지금 문서로 바로 재계산(E5 내보내기 시작이 쓴다).
@@ -58,6 +70,7 @@
 - **data 계약 추가(엔진 계약 변경 0)**: `ProjectErrorCode`에 `UNRENDERED_SECTIONS` · `ProjectRepositoryError.sections` · `ExportGenerator(s)` 타입 · `ProjectMethod`에 `requestExport`(`delay`·`fail` 주입 — E-AC-43 commit/response 시험용).
 - 테스트: `src/data/memoryExport.test.ts` 10건 — RED(HEAD data) 9 failed `logs/e3-red.txt` → GREEN 10/10. E-AC-43(첫 요청 스냅샷 1 + 잡 1 · 연속 2회 같은 잡 +0 · commit 실패 변화 0 · response 실패 뒤 재시도 같은 잡 · JOB_TIMEOUT 재실행 스냅샷 +0 · 화면 코드 `createSnapshot(` 0) · E-AC-44(기본 구현 3회 → 스냅샷 0 · 잡 0 · STALE_DOC·GATE_FAILED 스냅샷 0) · E-AC-48(폴백 2개 → 개수 2·문서 순서 · 기록 0 → 폴백 없앤 새 revision 쓰기 · 게이트 차단+폴백 → GATE_FAILED · react-zip+폴백 → GENERATOR_UNAVAILABLE).
 - 범위 밖 그대로: `createSnapshot`(수동)·`restoreSnapshot`·`resolveConflict` = `missing`.
+- **3b가 `static-html`을 등록하는 방법**: 생성기 함수 `ExportGenerator`(위 모양)를 만들고, 저장소를 만드는 두 곳 — `src/data/deferredStudio.ts:38`(앱 실제 경로) · `src/data/memoryStudio.ts:38` — 의 `createMemoryProjectRepository({ store, … })`에 `generators: { "static-html": staticHtmlGenerator }`를 넘긴다. 판정·스냅샷·잡·멱등은 이미 있으므로 3b는 생성기 본문과 결과(`downloadRef`·`resultHash`) 표시만 더한다. 주의: 생성기 모듈을 정적 import하면 PROJECT_AUTO 청크(`/projects`·`/studio` 진입)에 들어간다 — 생성기 안에서 동적 import하거나 `requestExport` 조작 뒤 청크로 두어야 진입 여유 0.11을 지킨다.
 
 ## 5. 버튼 · 이유 · 결과 문구 (E4 · E5, 바꾼 문구)
 - **버튼(E4)**: `components/studio/ExportButtons.tsx` — "React 프로젝트(zip) 내보내기" · "정적 HTML 내보내기"(outline 모양 글자 버튼, 아이콘 0). 이유 ≥ 1 → 두 버튼 `aria-disabled` + `aria-describedby` = 이유 id(`export-reason-gate` → `export-reason-fallback`, 8.3.2 5 → 7 순서), 눌러도 요청 0. 이유 `ul` "내보낼 수 없는 이유".
@@ -78,10 +91,31 @@
 - 테스트: `components/studio/ExportFlow.test.tsx` 8건(RED = E3 StudioLayout 8 failed `logs/e4e5-red.txt` → GREEN 8/8) · `features/studio/gateView.test.ts` 2건.
 - 번들: `/studio` 진입 124.91 → **126.59 / 127**(멈춤선 126.70 안, 여유 0.11) · 그 밖 화면 E3와 같음(`logs/e4e5-gate.txt`).
 
-## 6. E-AC · K-AC 판정 (번호별)
-| AC | 판정 |
+### 5.1 E6 브라우저 (vite dev 127.0.0.1:4337 · ego-browser · 앱 안 클릭만 · `logs/e6-flow.txt`)
+| 캡처 | 확인한 것 |
 |---|---|
-| E-AC-25~30 · 43 · 44 · 48 · 50 · K-AC-18 | 미판정 — E0 정지 |
+| `shots/e6-1280-entry.png` | 편집 시작 흐름(/catalog → … → A안 → /studio/project-1) · 콘솔 오류 0 · 보드·생성 구현 요청 0 · exportFlow/ExportAfter 요청 0 |
+| `shots/e6-1280-blocked.png` | 1280 게이트 "차단 7" + 8줄 · 두 버튼 차단 · 이유 2개(게이트 → 구조 미리보기 2개 Portfolio · Testimonials) |
+| `shots/e6-1280-result.png` | "첫 구조 미리보기 섹션으로 이동" → Portfolio 선택·H2 포커스 → 폴백 2개 삭제(본문 5개) → 구조 미리보기 이유 사라짐 → "정적 HTML 내보내기" 포인터 클릭 = 게이트 차단(차단 4)으로 요청 0 · 결과 Callout 0 |
+| `shots/e6-390-gate.png` | 390 "검사" 탭 선택 · 게이트 목록 · 두 버튼 차단 · 가로 넘침 0(scrollWidth 375) |
+- **브리프와 다름**: GENERATOR_UNAVAILABLE 결과 문구 캡처 대신 차단 상태 결과를 찍었다. A안 문서의 남은 차단(Hero·About 이미지 대체텍스트)은 편집기에 입력칸이 없고, 이미지 없는 Hero 변형은 모두 구조 미리보기라 앱 안 조작으로 게이트 통과 + 폴백 0을 만들 수 없다. 문구는 ExportFlow.test(형식별 · info · alert 아님)가 근거.
+- 390 재캡처 1회(탭 막대부터) 실패 → 첫 캡처 유지 + DOM 수치(탭 aria-selected "검사" · li 13 · aria-disabled 2 · scrollWidth 375).
+
+## 6. E-AC · K-AC 판정 (번호별)
+| AC | 판정 | 근거 |
+|---|---|---|
+| E-AC-25 게이트 8줄 · 차단/경고 조건 | PASS | GatePanel.test "진입 직후 자동 계산" · "E-AC-25 조건 재현" · 브라우저 1280 8줄(`shots/e6-1280-blocked.png`) |
+| E-AC-26 줄 → 이동 · 툴바 | PASS | GatePanel.test 이동 4건 · 툴바 2건(≥1024 · <1024) · 브라우저 "첫 구조 미리보기 섹션으로 이동" → Portfolio 선택 + H2 "편집 · Portfolio" 포커스 |
+| E-AC-27 Q14 점 aria-hidden · 이름표 | PASS | GatePanel.test "E-AC-27 Q14" |
+| E-AC-28 편집 직후 오래됨 · 재검사 | PASS | GatePanel.test "E-AC-28 재검사" · ExportFlow.test "편집 직후 … 다시 검사 → 저장 먼저" |
+| E-AC-29 버튼 사전 차단 · 이유 순서 | PASS | ExportFlow.test 사전 차단 3건 · 브라우저 1280(두 버튼 aria-disabled · 이유 2개 · 포인터 클릭 요청 0) · 390 "검사" 탭(`shots/e6-390-gate.png`) |
+| E-AC-30 시작 · 결과 문구 · 화면 스냅샷 0 | PASS(단위) · 브라우저 부분 | ExportFlow.test 시작·결과 5건 · memoryExport.test "createSnapshot 호출 0". GENERATOR_UNAVAILABLE 문구는 브라우저로 도달 불가(A안 Hero 이미지 대체텍스트 편집 불가 — `logs/e6-flow.txt` 5) |
+| E-AC-43 내보내기 전 스냅샷 1곳 · 멱등 | PASS | memoryExport.test 멱등 3건(Codex P2 2건은 9절 — 응답 실패 뒤 잡 미실행 · 재실행 문서) |
+| E-AC-44 기본 구현 생성기 없음 → 0 쓰기 | PASS | memoryExport.test "기본 구현 … 스냅샷 0 · 잡 0" · "3 → 4 스냅샷 0" |
+| E-AC-48 UNRENDERED_SECTIONS 순서 · 개수 | PASS | memoryExport.test 5·6·7 순서 3건 · ExportFlow.test UNRENDERED_SECTIONS 결과 |
+| E-AC-50 구조 미리보기 이유 · 이동 | PASS | ExportFlow.test "폴백만 → …" · gateView.test 이름 3개 + 외 k개 · 브라우저 폴백 2개 삭제 → 이유 사라짐(본문 5개) |
+| K-AC-18 폴백 있으면 내보내기 막힘 | PASS | ExportFlow.test 사전 차단 · 브라우저 1280 |
+- 전체 vitest 3회는 Jarvis 몫(이 실행에서 돌리지 않음 — 브리프 지시).
 
 ## 7. 번들 표 (체크포인트별)
 | 체크포인트 | 공통 | `/studio` 첫 / 진입 | `/compare` 첫 / 진입 | `/profile` 첫 / 진입 | 렌더 JS / CSS |
@@ -94,6 +128,7 @@
 | E1·E2 | 89.34 | 91.72 / 124.98 | 98.83 / 121.71 | 99.61 / 118.66 | 79.89 / 6.32 |
 | E3 (`/projects` 94.02 / **100.29**) | 89.35 | 91.74 / 124.91 | 98.83 / 121.70 | 99.62 / 118.67 | 79.89 / 6.32 |
 | E4·E5 (`/projects` 94.02 / 100.29) | 89.35 | 91.76 / **126.59** | 98.84 / 121.70 | 99.61 / 118.66 | 79.89 / 6.32 |
+| E6·E7(코드 변경 0 — E4·E5와 같음) | 89.35 | 91.76 / 126.59 (한도 127 · 멈춤선 126.70 · 여유 0.11) | 98.84 / 121.70 | 99.61 / 118.66 | 79.89 / 6.32 |
 
 ## 8. SPEC 차이
 - (E0 기록) **브리프 전제 차이**: 브리프 E0-2 "계산(`runGate`)은 이미 진입 직후 엔진 청크(S-B4) 쪽에 둔다" — 실측으로 `runGate`·대비 판정은 그때 어느 `/studio` 청크에도 없었다. 재개 E1에서 S-B4대로 진입 직후 엔진 청크(`gateCheck`)를 새로 만들었다.
@@ -101,9 +136,18 @@
 - 머리 Tag는 ds `Tag` 대신 같은 모양 글자 span(공통 청크 재분할 회피, 3절).
 - 툴바 "검사 · 내보내기" 요약 알림 문장(E-S26 "첫 차단 줄 안내 문장")은 SPEC에 문구가 없어 "품질 게이트 {머리 Tag} — 첫 차단: {줄 이름}" / "… — 내보내기 버튼으로 이동합니다"로 정했다.
 - E-pre 제목 비움은 각 파일 `afterEach` 대신 공용 도우미 안(이동 직전).
+- E6 결과 캡처는 GENERATOR_UNAVAILABLE 문구 대신 차단 상태(5.1절 — 앱 안 조작으로 게이트 통과 불가).
+- E7 Codex P2 4건 미반영(브리프: P1 이상만 고침) — 9절 3.
 
 ## 9. 남은 위험 (3b에 넘길 것)
-1. `/studio` 진입 여유 0이 M2A-3 전체(3a·3b·3c)의 선결 조건 — 2절 선택지 결정 없이는 게이트 표시·버튼 사전 차단·`requestExport` 배선 모두 진입을 늘린다.
-2. 옵션 A를 고르면 SPEC 5.12·5.13·E-S22·E-S23·E-AC-25·29 개정(Designer) 필요.
-3. 옵션 B는 2a-04 저장소 배선 변경 — 다른 화면 ±0.03 규칙과 함께 판정해야 한다.
-4. 4337 서버: 이 실행에서 띄우지 않음(`lsof -i :4337` 결과 없음).
+1. **`/studio` 진입 여유 0.11**(126.59 / 멈춤선 126.70, 한도 127). 3b의 생성기·다운로드 표시는 전부 조작 뒤 청크(`STUDIO_AFTER_ACTION`)나 생성기 안 동적 import로 — 진입에 0.12 이상 더하면 멈춤선 초과. 진입을 늘려야 하면 옵션 B(보드·생성 저장소 코드를 공유 로더 밖으로, 추정 −4.5~5.5, 2절)를 먼저.
+2. **static-html 등록**: 4절 끝 — `generators: { "static-html": … }`를 `deferredStudio.ts`·`memoryStudio.ts` 두 생성 지점에.
+3. **Codex(E7, `logs/e7-codex.txt`) P2 4건 — 이 레인 P1 이상만 고침 규칙으로 미반영**:
+   - `ExportAfter.tsx:26` 경고 확인 `dialog`에 `open` 속성이 있어 `showModal()`이 실행되지 않음 → 비모달(배경 편집·Esc 취소 안 됨). jsdom은 차이를 못 잡는다.
+   - `memoryDocBook.ts:163-165` `fail phase:"response"`면 잡을 커밋한 뒤 `runJob()`이 실행되지 않아 재시도해도 queued에 머문다(생성기 없는 3a에선 6단계에서 끝나 드러나지 않음 — 3b 생성기 등록 시 실제 결함).
+   - `memoryDocBook.ts:94-99` 실패 잡 재실행이 그 잡의 revision 문서가 아니라 지금 문서를 생성기에 넘긴다(멱등 분기가 게이트 앞이라 새 revision의 차단도 건너뜀) — 잡에 문서(또는 스냅샷 id) 보존 필요.
+   - `useExportFlow.ts:76` 결과의 "다시 시도"가 재검사·경고 확인·저장 먼저를 건너뛴다 — 실패 요청의 revision을 보존하거나, 문서가 달라졌으면 일반 시작 흐름으로.
+4. 브라우저에서 GENERATOR_UNAVAILABLE 결과 문구를 볼 수 없다 — A안 Hero·About 이미지 대체텍스트를 편집할 입력칸이 없고(이미지 슬롯 "다음 단계"), 이미지 없는 Hero 변형은 모두 구조 미리보기. 3b 브라우저 확인은 이미지 슬롯 편집(또는 게이트 통과 픽스처) 뒤에.
+5. 경고 확인 대화상자 목록에 줄 이동 링크 없음(5절).
+6. `/projects` 진입 +0.13(8절) — 다른 라우트 ±0.03 규칙의 의도된 예외로 Jarvis 판정 필요.
+7. 4337 서버: E6에서 vite dev(PID 39465)를 띄워 캡처 뒤 종료(`lsof -ti :4337 -sTCP:LISTEN` 결과 없음). preview는 띄우지 않음.

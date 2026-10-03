@@ -1,0 +1,23 @@
+# E6 이관 흐름 (STUDIO-SLIM → M2A-3a) — vite dev 127.0.0.1:4337, ego-browser 1280x900, 앱 안 클릭으로만 이동
+흐름: /catalog → 비교 추가(모던 카페·부티크 법률·동네 치과) → /compare "이 레퍼런스로 전부 선택: A" → "프로필 확정 (v1)" → /profile/profile-1
+      → "보정값 쓰기(muted)" + "조정 저장 (v2)" → "3안 만들기 (v2)" → A안 "이 안 선택" → "A안으로 편집 시작" → /studio/project-1
+      (B안 대신 A안 — 브리프 E6 본 흐름이 A안(폴백 2개)이라 같은 프로젝트 문서 1개로 이어서 확인. 편집 시작 경로·청크는 안과 무관)
+콘솔 오류(console.error · window error · unhandledrejection, /catalog 첫 로드 직후 훅): [] — 0건
+"편집 시작" 클릭 뒤 요청 목록(performance resource, dev 서버라 모듈 단위):
+- 보드·생성 구현(memoryCompareBoardRepository · memoryGenerationRepository · memoryGenerate · memoryBoardConfirm) 요청 없음
+- 게이트 엔진 gateCheck.ts는 문서를 그린 뒤 자동 요청(맨 끝) · exportFlow.ts · ExportAfter.tsx 요청 없음(조작 뒤)
+- 전체 목록:
+
+## 재개 실행(2026-10-03 21:0x) — vite dev 127.0.0.1:4337(PID 39465, 끝에 kill · `lsof -ti :4337` 없음), ego-browser 공간 30, 앱 안 클릭으로 같은 흐름 다시(→ /studio/project-1, A안)
+1. 1280 진입: 게이트 머리 "차단 7" · 8줄(대비 AA 통과 · 대체텍스트 차단 5 · 헤딩 순서 통과 · 필수 섹션 통과 · 모션 예산 통과 · SEO 메타 차단 2 · 글자 수 통과 · 성능 예산 측정 전)
+   두 버튼 aria-disabled=true · 이유 2개: "차단 7건(대체텍스트: Hero 대표 이미지: 대체텍스트가 없습니다) — 고치면 열립니다" + "구조 미리보기 섹션 2개(Portfolio · Testimonials)가 있어 내보낼 수 없습니다 — …" → shots/e6-1280-blocked.png
+2. "첫 구조 미리보기 섹션으로 이동" → aria-current = "Portfolio 이미지 벽돌형" · 포커스 = H2 "편집 · Portfolio"
+3. "삭제"(Portfolio) → 선택 Testimonials로 · 이유 "구조 미리보기 섹션 1개(Testimonials)" · 차단 7→4
+4. "삭제"(Testimonials) → 구조 미리보기 이유 사라짐 · 본문 섹션 5개(Hero·About·Services·FAQ·Contact) · 남은 이유 = 게이트 1줄("차단 4건 …")
+5. "정적 HTML 내보내기" 실제 포인터 클릭(mouse.click — 요소가 aria-disabled라 도구의 click은 거부) → aria-disabled=true · aria-describedby=export-reason-gate · aria-busy 없음 · 결과 Callout 없음 · exportFlow/ExportAfter 청크 요청 0 = 요청 0
+   → shots/e6-1280-result.png (= 차단 상태 결과)
+   **GENERATOR_UNAVAILABLE 결과 문구는 브라우저로 도달 불가**: 남은 차단 = Hero·About 이미지 대체텍스트(R-09, 이미지 슬롯은 "다음 단계에서 편집" — 편집기 입력칸 없음) + SEO 메타 2.
+   Hero의 이미지 없는 변형(센터·텍스트)은 모두 "구조 미리보기"라 바꾸면 구조 미리보기 이유가 다시 생긴다. A안 문서로는 게이트 통과 + 폴백 0을 앱 안에서 만들 수 없다.
+   대신 근거 = ExportFlow.test.tsx(GENERATOR_UNAVAILABLE zip·정적 HTML 문구 · Callout info · role=alert 아님) · memoryExport.test.ts(6단계).
+6. 390(CDP Emulation 390x844): 탭 [섹션 · 편집 · 검사] 중 "검사" aria-selected · 게이트 목록 li 13(8줄 + 원인 상세) · 내보내기 버튼 aria-disabled 2 · scrollWidth 375(가로 넘침 0) → shots/e6-390-gate.png
+   (재시도 1회: 탭 막대부터 다시 찍으려 했으나 탭 요소 조회 실패 — 첫 캡처 유지, 위 DOM 수치로 보강)

@@ -1,0 +1,10 @@
+STATE 1280 {"url":"/studio/project-1","iframe":{"x":232,"y":52,"w":721,"h":2275.3984375},"chip":"Hero · 풀블리드 이미지 + 좌측 카피","chipRect":{"x":0,"y":61,"w":184.9921875,"h":20},"messages":[{"type":"ready","n":0},{"type":"ready","n":0},{"type":"rects","n":44},{"type":"rects","n":44},{"type":"rects","n":44},{"type":"rects","n":44}],"errors":[]}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-chip-1280-top.png
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-chip-1280-bottom.png
+CHIP 1280 Testimonials {"iframeW":721,"chip":"Testimonials · 후기 2개","chipInSection":[0,0,138,20]}
+CHIP 1280 Portfolio {"iframeW":721,"chip":"Portfolio · 이미지 벽돌형","chipInSection":[0,0,138,20]}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-chip-1280.png
+CHIP 390 Testimonials {"iframeW":351,"chip":"Testimonials · 후기 2개","chipInSection":[0,0,138,20]}
+CHIP 390 Portfolio {"iframeW":351,"chip":"Portfolio · 이미지 벽돌형","chipInSection":[0,0,138,20]}
+SHOT /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2a/dev/active/m2a-2a/shots/k9-chip-390.png
+

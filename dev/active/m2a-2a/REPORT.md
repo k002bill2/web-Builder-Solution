@@ -18,7 +18,7 @@
 | K7 | edd5ca3 | 98e5348 | footer/biz-extended |
 | K8 | c35fb65 | 0c30361 | 공통 K-AC [U] — **폴백 섹션 앵커 id 결함 발견·수정** |
 | K9 | — | c60edd3 | 앱 흐름 캡처 `shots/k9-*` · [B] 실측 `k9b.mjs` → `logs/k9b.txt` |
-| K10 | — | (이 커밋) | 전체 vitest ×3 · Codex 1회 · REPORT |
+| K10 | — | 4e5e4cb (+ REPORT 보정 커밋) | 전체 vitest ×3 · Codex 1회 · REPORT · K-AC-15 폴백 칩 실측 `logs/k9-chip.txt` |
 
 RED 로그: `logs/k1-red.txt` … `k8-red.txt`. 게이트 로그: `logs/k*-green.txt`(표적 test + `src/test` + engineImportGuard + renderImportGuard + typecheck + lint + build).
 
@@ -56,7 +56,7 @@ RED 로그: `logs/k1-red.txt` … `k8-red.txt`. 게이트 로그: `logs/k*-green
 ## 4. K-AC 판정
 표기: [U] 단위 · [G] 가드 · [B] 브라우저(`logs/k9b.txt`) · 캡처 `shots/`.
 
-**[B] 방법**: 편집기 안 렌더 문서는 불투명 출처 OOPIF라 `contentDocument`로 잴 수 없다. 그래서 `k9b.mjs`가 **render.html을 최상위 페이지로 열고**(같은 출처라 평가 가능) 페이지 스스로 `render{doc, kitTokens}`를 보내 실제 뷰포트 1280·1024·721·390·351에서 쟀다. 문서 = `sampleDoc`(header sticky-right-cta · hero fullbleed-left · 본문 폴백 5 · footer biz-extended, A안과 같은 구성). 앱 흐름 A안은 `shots/k9-*`로 따로 확인(error 0, 킷 3 + 폴백 섹션).
+**[B] 방법**: 편집기 안 렌더 문서는 불투명 출처 OOPIF라 `contentDocument`로 잴 수 없다. 그래서 `k9b.mjs`가 **render.html을 최상위 페이지로 열고**(같은 출처라 평가 가능) 페이지 스스로 `render{doc, kitTokens}`를 보내 실제 뷰포트 1280·1024·721·390·351에서 쟀다. 문서 = `sampleDoc`(header sticky-right-cta · hero fullbleed-left · 본문 폴백 5 · footer biz-extended). **킷 3변형 + 폴백 혼합은 A안과 같고 본문 구성은 다르다**(A안 = about·services·portfolio·testimonials·faq·contact, sampleDoc = about·services·faq·contact·cta-band). 앱 흐름 A안은 `shots/k9-*`로 따로 확인(error 0, 킷 3 + 폴백 섹션).
 
 | K-AC | 판정 | 근거 |
 |---|---|---|
@@ -68,18 +68,18 @@ RED 로그: `logs/k1-red.txt` … `k8-red.txt`. 게이트 로그: `logs/k*-green
 | 05 | **PASS** | [U] kitCommon — `#`·빈·없는 href·`javascript:` 0, 모든 `#s-` 대상 존재. **K8에서 폴백 섹션에 앵커 id가 없던 결함을 찾아 고침**(0c30361) |
 | 09 | **PASS (명세 차이 1)** | [U] 사이트 루트 아래 header·main·footer 형제, main 안 header·footer·nav 0, h1 = 1. `body >` 직계는 아님 — 아래 7절 |
 | 10 | **PASS** | [B] 1280: 보이는 nav 1 · 메뉴 버튼 none / 390: 보이는 nav 0(시트 닫힘) · 버튼 flex |
-| 11 | **PASS** | [B] 킷 글자 전 요소 쌍 = `ink/bg` · `on-primary/primary` · `primary/on-primary` · `bg/ink`(허용 5쌍 안), 불투명도 1 · [U] kit.css 글자색 4역할만·muted 0 |
+| 11 | **PASS (킷 섹션 범위)** | 측정 범위 = `[data-kit]` 안 글자 전부(폴백은 0.3상 킷 밖 — 와이어프레임 `ON_PRIMARY`(bg 글자/primary 면 = X-1)와 표식 고정 색이 섞여 명세 문장 "렌더 문서의 모든 글자"를 그대로 돌리면 폴백에서 실패한다, 8절 8). [B] 킷 글자 전 요소 쌍 = `ink/bg` · `on-primary/primary` · `primary/on-primary` · `bg/ink`(허용 5쌍 안), 불투명도 1 · [U] kit.css 글자색 4역할만·muted 0 |
 | 12 | **PARTIAL** | [B] 390 "메뉴" → `:popover-open` · Tab → "닫기" · Esc → 닫힘 + 포커스 "메뉴" · 시트 안 앵커 → 닫힘. **"대상 섹션 이동"은 편집 캔버스에서 렌더 다리가 링크 이동을 막아(명세 K1-1 6 마지막 줄) 판정 불가** — 정적 HTML(M2A-3)에서 판정 |
 | 13 | **PASS** | [U] href = 첫 contact → footer → 글자 · [B] 390 바 CTA none + 시트 맨 아래 / 1280 바 오른쪽 끝(바 오른쪽 여백 32 = s6) |
 | 14 | **PASS** | [U] `" 소개 ·· 서비스 · 회사 "` → 3항목, 제목 일치만 a |
-| 15 | **PASS** | [B] 표식 사각형(섹션 기준) 351 폭: x 239~320, y 12~32 · 721 폭: x 609~690 · 앱 흐름 라벨 칩(섹션 기준) x 0~185, y 0~20(`logs/k9-shots.txt` chipRect) → x 구간이 겹치지 않아 교차 넓이 0 |
+| 15 | **PASS** | [B] **선택된 폴백 섹션**(앱 흐름 A안에서 Testimonials·Portfolio 선택, `logs/k9-chip.txt`) 라벨 칩(섹션 기준) x 0~138, y 0~20 (iframe 721·351 모두) · 표식 사각형(섹션 기준, `logs/k9b.txt`) 721 폭 x 609~690 · 351 폭 x 239~320, y 12~32 → x 구간이 겹치지 않아 교차 넓이 0 · 캡처 `shots/k9-chip-390.png`(Portfolio 선택, 칩 왼쪽 위 · 표식 오른쪽 위) |
 | 16 | **PASS** | [U] 폴백 섹션마다 표식 1개 "구조 미리보기" · 킷 섹션 0 · 오버레이 칩과 속성 공유 없음 |
 | 20 | **PASS** | [U] 글자 3요소의 가장 가까운 면 = 패널(primary) · 이미지 끔 → 미디어 0, 섹션 면 primary · [B] 색 쌍 on-primary/primary |
 | 21 | **PASS** | [B] 390: 미디어 y 61 < 패널 y 342 · h1이 DOM에서 미디어 앞 |
 | 22 (hero) | **PASS** | [U] 로컬 URL → `img[alt]`·width·height·fetchpriority high · 장식 alt="" · 플레이스홀더/Blob 미도착 → 그라디언트 aria-hidden, img 0 |
 | 31 | **PASS** | [U] ink 면 · address 1 · 링크 = li 글자(a 0) · copyright 빈 값 → 저작권·구분선 0 · [B] footer 글자 쌍 bg/ink |
 | 35 | **PASS** | [B] 시트 연 채 390 → 1024: 보이는 nav 1 · 시트 display none(열림 유지) · 버튼 none / 다시 390: 시트 flex · 보이는 nav 1 |
-| 36 | **PASS** | [B] 시험 프로필 2벌 게이트 통과 먼저 확인(light: C-1 8.09·C-2 16.82·C-4 15.31·C-5 4.93 / dark 카드: C-1 4.61·C-2 20.08·C-3 4.56·C-4 17.62·C-5 6.06) → 킷 글자 실측 최소 대비 8.09 / 4.61 ≥ 4.5. 3변형은 섹션 톤(base/alt)과 무관한 면(header bg · hero primary · footer ink)이라 톤 축은 해당 없음 |
+| 36 | **PASS (킷 섹션 범위 — 11과 같음)** | [B] 시험 프로필 2벌 게이트 통과 먼저 확인(light: C-1 8.09·C-2 16.82·C-4 15.31·C-5 4.93 / dark 카드: C-1 4.61·C-2 20.08·C-3 4.56·C-4 17.62·C-5 6.06) → 킷 글자 실측 최소 대비 8.09 / 4.61 ≥ 4.5. 3변형은 섹션 톤(base/alt)과 무관한 면(header bg · hero primary · footer ink)이라 톤 축은 해당 없음 |
 
 수용 기준 1(A안 문서 header·hero·footer 킷, 나머지 폴백 + 표식): `shots/k9-1280-top.png` · `k9-390-top.png` · `k9-390-bottom.png` — K0(`k0-*`)과 나란히.
 
@@ -112,16 +112,18 @@ RED 로그: `logs/k1-red.txt` … `k8-red.txt`. 게이트 로그: `logs/k*-green
 5. **사각형 보고**: 메뉴 두 벌 중 숨은 벌의 `data-slot`은 보고하지 않음(`checkVisibility()` false 제외) — 오버레이 문제 테두리가 (0,0)에 그려지지 않게.
 6. **폴백 표식 시각**: 3.1대로 위·오른쪽 · 고정 색 자기 면(`rgb(26 26 26)`/`rgb(255 255 255)`, render.css `--marker-*`) · `data-kit-marker="fallback"`(기존 `data-fallback-mark` 대체, FallbackCanvas.test 선택자 이동) · 폴백 루트 `data-fallback="true"` · 앵커 id.
 7. **테스트 대상 이동(약화 아님)**: CanvasPalette.test `lastPalette()` → `lastKitTokens().palette`(+ 글꼴 단언 추가, 시험 시리즈에 글꼴·간격 추가) · StructureCanvas.test "render 메시지에는 문서·팔레트만" → "문서·킷 토큰만"(토큰 있을 때 키 `doc·kitTokens·type` 단언 추가) · RenderApp.test INVALID_DOC 테스트 첫 render에 kitTokens 포함(error 목록 단언 그대로) · engineImportGuard 허용 목록 `kit/**`(엔진은 `import type`만, 값 import는 kitGuard가 막음).
-8. **웹폰트**: 명세 0.4 "킷은 @font-face를 싣지 않는다" — render.css는 M2A-1부터 앱 `fonts.css`를 import한다. 이 레인은 바꾸지 않음(남은 위험 4).
+8. **[B] 판정 장소**: 브리프 K9는 "A안 문서를 앱 흐름으로 만들고 [B] 판정"이지만, 편집기 캔버스의 렌더 문서는 불투명 출처 OOPIF라 `contentDocument`·계산 스타일을 잴 수 없다. 그래서 [B] 수치는 render.html 최상위 + sampleDoc(`k9b.mjs`)에서 쟀고, 앱 흐름 A안은 캡처(`shots/k9-*`)·메시지(error 0)·라벨 칩 사각형(K-AC-15)만 잰다.
+9. **웹폰트**: 명세 0.4 "킷은 @font-face를 싣지 않는다" — render.css는 M2A-1부터 앱 `fonts.css`를 import한다. 이 레인은 바꾸지 않음(남은 위험 4).
 
 ## 8. 남은 위험 · M2A-2b에 넘길 것
 1. **편집기 데스크톱 미리보기 폭 721 < md(48rem)**: 1280 창에서 캔버스 열 폭이 721이라 렌더 문서는 **md 미만 배치**(메뉴 버튼만 · CTA 시트 · hero 두 단)로 그린다(`shots/k9-1280-top.png`). 명세 0.6은 "1280 = lg 이상"을 전제. 캔버스가 실제 1280을 보이려면 미리보기 폭 프레임(축소 보기) 결정이 필요 — Designer 시각 QA·2b 판단.
 2. **이미지 보관소 없음**: Blob 전달 경로(프로토콜·렌더 URL 생성·해제·부모 prop)는 있으나 앱에 로컬 이미지 업로드·보관소가 없어 호출처 0(편집 패널 "이미지 슬롯 1개는 다음 단계에서"). 보관소가 생기면 `StructureCanvas images`로 넘기면 된다.
 3. **오버레이 문제 문장 겹침**(M2A-1 8절 3): 바꾸지 않음. K9 캡처는 문제 없는 문서라 이번에는 보이지 않음.
-4. **웹폰트·CORS**: 렌더 문서가 앱 폰트 4종을 계속 싣는다(7절 8) — 명세 0.4와 다름, M2A-3 정적 HTML 전에 정리 필요.
+4. **웹폰트·CORS**: 렌더 문서가 앱 폰트 4종을 계속 싣는다(7절 9) — 명세 0.4와 다름, M2A-3 정적 HTML 전에 정리 필요.
 5. **K-AC-12 이동 판정**: 편집 캔버스는 이동을 막으므로 정적 HTML(M2A-3)에서 "앵커 이동 + header에 가려지지 않음"을 판정.
 6. **카드 톤 변수 미생성**: 카드 톤(light/dark)은 입력에만 있고 `--site-*` 변수는 2b services가 섹션 톤과 함께 정할 것(K-AC-26).
-7. 렌더 문서 JS 78.86 / 89.70 — 남은 여유 10.84KB로 본문 4변형(2b) 예상 +2~3KB. 30변형(M2b)은 M2A-1 8절 1 대책 필요.
+8. **폴백 섹션 글자 색 조합**: 와이어프레임 폴백은 M2A-1 그대로 `ON_PRIMARY = bg 글자/primary 면`(0.3 금지 조합 X-1, 예: cta-band)을 쓴다. 편집 캔버스에서는 "구조 미리보기" 표식이 붙은 비실렌더 섹션이지만, PNG·정적 HTML(M2A-3)에 폴백이 섞여 나가면 X-1 글자가 그대로 나간다 — M2A-3 내보내기 차단(`UNRENDERED_SECTIONS`)이 막는지 확인 필요.
+9. 렌더 문서 JS 78.86 / 89.70 — 남은 여유 10.84KB로 본문 4변형(2b) 예상 +2~3KB. 30변형(M2b)은 M2A-1 8절 1 대책 필요.
 
 ## 9. K10 검증 결과
 - **전체 vitest ×3** (`logs/final-full-x3.txt`): 1회 153 files · **1513/1513** (load 17) · 2회 **1513/1513** (load 69) · 3회 **1513/1513** (load 117). 실패 0.

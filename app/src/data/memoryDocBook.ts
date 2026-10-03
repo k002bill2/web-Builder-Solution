@@ -51,7 +51,7 @@ export interface DocBook {
   ) => StartDocResult<DocHead>;
   /**
    * 8.3.2 판정 1~8(동기, `via` = 저장소의 call — delay·fail 주입) → 새 잡·재실행이면 커밋 뒤 생성기를 돌린다(응답을 기다리지 않는다 — jobOf로 본다).
-   * `generate` = 요청 형식의 생성기(없으면 6단계 GENERATOR_UNAVAILABLE)
+   * `generate` = 요청 형식의 주입 생성기 — 없으면 앱 경로 슬롯(STATIC_HTML_SLOT), 그것도 없으면 6단계 GENERATOR_UNAVAILABLE
    */
   readonly requestExport: (
     args: { projectId: string; format: ExportFormat; docRevision: number },
@@ -60,6 +60,16 @@ export interface DocBook {
   ) => Promise<ExportRequestResult>;
   readonly jobOf: (jobId: string) => ExportJob | undefined;
 }
+
+/**
+ * 앱 경로 정적 HTML 생성기 자리 (M2A-3b G3 · 2a-05 8.3.2 r4.8 "static-html = 브라우저 생성기") — 편집기 조작 뒤 청크(exportFlow)가 처음 받힐 때 채운다.
+ * 모듈이 아니라 전역 심볼 슬롯인 이유: data 청크와 편집기 청크가 모듈을 하나라도 함께 import하면 청크가 다시 나뉘어 `/studio`·`/compare`·`/profile`·`/projects`
+ * 진입이 0.05~0.33KB 는다(REPORT 7절 실측 4안). 생성기 청크 import는 편집기 쪽에 있어야 렌더 프로토콜·킷 토큰 코드를 편집기 청크와 나눠 쓴다.
+ * 채우기 전(내보내기를 누르기 전)·테스트 기본 = 비어 있음 → 주입 생성기가 없으면 6단계 GENERATOR_UNAVAILABLE(3a 기본값 그대로).
+ */
+export const STATIC_HTML_SLOT = Symbol.for("design-studio/static-html-generator");
+export type StaticHtmlFactory = (store: StudioReader) => ExportGenerator;
+type Slot = { [STATIC_HTML_SLOT]?: () => Promise<StaticHtmlFactory> };
 
 const fail = (code: "NOT_FOUND" | "SCHEMA_INVALID", message: string) => new ProjectRepositoryError(code, message);
 const isMode = (mode: unknown): mode is StartDocMode => mode === "create" || mode === "restart";
@@ -79,6 +89,15 @@ function planOf(store: StudioReader, project: Project, profileVersion: number, c
 }
 
 export function createDocBook(store: StudioReader, now: () => string): DocBook {
+  /**
+   * 앱 경로 생성기 — 주입 생성기가 없고 슬롯(STATIC_HTML_SLOT)이 채워졌을 때만, 처음 쓸 때 생성기 청크를 받는다.
+   * react-zip은 M4까지 없음(GENERATOR_UNAVAILABLE). 생성기는 store당 1개(object URL 보관·해제).
+   */
+  let browser: Promise<ExportGenerator> | undefined;
+  const appGenerator = (format: ExportFormat): ExportGenerator | undefined => {
+    const load = (globalThis as Slot)[STATIC_HTML_SLOT];
+    return format === "static-html" && load ? async (input) => (await (browser ??= load().then((factory) => factory(store))))(input) : undefined;
+  };
   let state: DocState = { docs: new Map(), snapshots: new Map(), starts: new Map(), saves: new Map(), exports: new Map(), jobs: new Map() };
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
 
@@ -160,7 +179,8 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
     docOf: (projectId) => state.docs.get(projectId),
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
     jobOf: (jobId) => state.jobs.get(jobId),
-    requestExport: async (args, generate, via) => {
+    requestExport: async (args, injected, via) => {
+      const generate = injected ?? appGenerator(args.format);
       // 잡 실행은 응답 전달과 분리 — 커밋됐으면 응답이 끊겨도(phase "response" 실패) 돈다
       let run: ExportOutcome["run"];
       try {

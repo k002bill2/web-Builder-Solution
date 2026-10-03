@@ -145,6 +145,25 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(events.filter((e) => e.name === "snapshot_created")).toHaveLength(1);
   });
 
+  it("완료(E-S27 · M2A-3b G4) → '정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 …' + 부모 문서 '내려받기'(a download = K-AC-32 HTML 이름) + 결과 해시 · export_succeeded(format만)", async () => {
+    const job: ExportJob = { jobId: "export-1", format: "static-html", docRevision: 3, state: "queued", retryable: false };
+    const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: true }));
+    const getExportJob = async () => ({ ...job, state: "succeeded" as const, downloadRef: "blob:http://127.0.0.1/abc", resultHash: "0123456789ab" });
+    const { events, stop } = listen();
+    await open(clean(), { requestExport, getExportJob });
+    act(() => void fireEvent.click(html()));
+    const done = await within(gateRegion()).findByText("정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다", undefined, { timeout: 3000 });
+    const box = done.closest("[role=status]")!;
+    expect(box).not.toBeNull();
+    const link = within(box as HTMLElement).getByRole("link", { name: "내려받기" });
+    expect(link).toHaveAttribute("href", "blob:http://127.0.0.1/abc");
+    expect(link).toHaveAttribute("download", "동네-치과-클리닉-프로젝트_r3.html");
+    expect(box.textContent).toContain("결과 해시 0123456789ab");
+    stop();
+    const succeeded = events.filter((e) => e.name === "export_succeeded");
+    expect(succeeded).toEqual([{ name: "export_succeeded", format: "static-html" }]);
+  });
+
   // M2A-3a-fix F4 (Codex P2 4): "다시 시도"는 실패 요청의 revision이 지금 문서와 같을 때만 같은 잡 — 다르면 일반 시작 흐름
   const failingExport = () => {
     const job: ExportJob = { jobId: "export-1", format: "static-html", docRevision: 3, state: "queued", retryable: false };

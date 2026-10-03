@@ -11,11 +11,19 @@ import { section } from "../engine/testing/sampleDoc";
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
 import { createMemoryCompareBoardRepository } from "./memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "./memoryGenerationRepository";
+import { STATIC_HTML_SLOT } from "./memoryDocBook";
 import { createMemoryProjectRepository, type ProjectCall } from "./memoryProjectRepository";
 import { ProjectRepositoryError, type ExportGenerator, type ExportGenerators, type ProjectRepository } from "./projectRepository";
 import { createStudioStore } from "./studioStore";
 
 type Hooks = { readonly fail?: (c: ProjectCall) => Error | undefined; readonly generators?: ExportGenerators };
+
+/** 앱 경로 정적 HTML 생성기 — 편집기 조작 뒤 청크(exportFlow)가 전역 슬롯(STATIC_HTML_SLOT)을 채운다. 여기서는 가짜 공장으로 채워 호출만 본다 */
+const browser = { made: 0, inputs: [] as unknown[] };
+const fakeFactory = () => {
+  browser.made++;
+  return async (input: unknown) => (browser.inputs.push(input), { downloadRef: "blob:browser", resultHash: "b-1" });
+};
 
 const RENDERED: readonly SectionInstance[] = [
   section("header", "sticky-right-cta", "s-header"),
@@ -205,5 +213,37 @@ describe("화면은 스냅샷을 만들지 않는다 (E-AC-30 · E-AC-43)", () =
     const screens = ["components", "features", "pages"].flatMap((d) => walk(join(root, d))).filter((f) => /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !f.includes("/testing/"));
     expect(screens.length).toBeGreaterThan(20);
     expect(screens.filter((f) => readFileSync(f, "utf8").includes("createSnapshot("))).toEqual([]);
+  });
+});
+
+describe("앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT)", () => {
+  const slot = globalThis as { [STATIC_HTML_SLOT]?: unknown };
+  afterEach(() => void delete slot[STATIC_HTML_SLOT]);
+
+  it("exportFlow 청크가 받히면 슬롯이 채워진다(같은 키)", async () => {
+    expect(slot[STATIC_HTML_SLOT]).toBeUndefined();
+    await import("../features/studio/exportFlow");
+    expect(typeof slot[STATIC_HTML_SLOT]).toBe("function");
+  });
+
+  it("슬롯이 비면(기본) static-html도 GENERATOR_UNAVAILABLE · 채우면 브라우저 생성기(처음 쓸 때 공장 1회) → 잡 succeeded · 받은 문서 = 잡의 스냅샷 문서 · react-zip은 계속 GENERATOR_UNAVAILABLE · 주입 생성기가 있으면 그것이 먼저", async () => {
+    const { repo, save } = await setup();
+    const doc = await save(RENDERED);
+    expect(await codeOf(repo.requestExport("project-1", "static-html", doc.revision))).toBe("GENERATOR_UNAVAILABLE");
+    slot[STATIC_HTML_SLOT] = async () => fakeFactory;
+    expect(await codeOf(repo.requestExport("project-1", "react-zip", doc.revision))).toBe("GENERATOR_UNAVAILABLE");
+    const { job } = await repo.requestExport("project-1", "static-html", doc.revision);
+    let current = job;
+    for (let i = 0; i < 20 && current.state !== "succeeded"; i++) current = (await new Promise((r) => setTimeout(r, 0)), (await repo.getExportJob(job.jobId))!);
+    expect(current).toMatchObject({ state: "succeeded", downloadRef: "blob:browser", resultHash: "b-1" });
+    expect(browser.made).toBe(1);
+    expect(browser.inputs).toEqual([{ projectId: "project-1", format: "static-html", doc }]);
+    // 주입 생성기가 있으면 슬롯보다 먼저
+    const injected = await setup({ generators: { "static-html": fake } });
+    const other = await injected.save(RENDERED);
+    const { job: first } = await injected.repo.requestExport("project-1", "static-html", other.revision);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(await injected.repo.getExportJob(first.jobId)).toMatchObject({ state: "succeeded", downloadRef: "blob:static-html" });
+    expect(browser.made).toBe(1);
   });
 });

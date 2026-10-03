@@ -12,10 +12,10 @@
 - [x] 수신 · REPORT 골격(1~9절) 커밋 — 08640e5
 - [x] G0 (1) Codex `review --scope branch --base bec1b38` → `logs/g0-codex-3a.txt` · P1 수정(RED→GREEN) · P2 이하 REPORT 2절 — P1 0 · P2 3(3c로)
 - [x] G0 (2) 브라우저 A안 → 폴백 2개 삭제 → 차단 해소 → `GENERATOR_UNAVAILABLE` `shots/g0-1280-unavailable.png` · 대화상자 `shots/g0-1280-dialog.png` — 통과 가능 확인, 캡처는 aside 1440(ego 캡처 시간 초과)
-- [ ] G1 생성 방식 PoC 비교표(REPORT 3절)
-- [ ] G2 serialize/html 프로토콜(RED 먼저 · REPORT 4절)
-- [ ] G3 static-html 생성기 · 지연 import 래퍼 · 진입 실측(REPORT 5·7절)
-- [ ] G4 E-S27 완료 문구 · 내려받기 · 파일 이름(REPORT 5·8절)
+- [x] G1 생성 방식 PoC 비교표(REPORT 3절) — 기본안 채택 · react-dom/server 140.55 기각
+- [x] G2 serialize/html 프로토콜(RED 먼저 · REPORT 4절)
+- [x] G3 static-html 생성기 · 등록(전역 슬롯 — 래퍼는 진입 초과) · 진입 실측 126.70(REPORT 5·7절)
+- [x] G4 E-S27 완료 문구 · 내려받기 · 파일 이름(REPORT 5·8절) — gate g4 exit 0
 - [ ] G5 K-AC-06·08·30·12·32 · 127.0.0.1 1280·390 캡처(REPORT 6절)
 - [ ] G6 브라우저 끝까지 · 같은 revision 재요청 = 같은 잡(`shots/g6-*` · `logs/g6-flow.txt`)
 - [ ] G7 전체 vitest 3회 · Codex 1회(base a51de92) · REPORT 마감 · 4337 종료 · lsof 0

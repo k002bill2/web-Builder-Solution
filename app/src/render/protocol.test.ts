@@ -1,3 +1,4 @@
+import { HTML_MAX, readHtmlMessage } from "./htmlMessage";
 import { readParentMessage, readRenderMessage } from "./protocol";
 import { SAMPLE_KIT_TOKENS } from "./testing/sampleKitTokens";
 
@@ -36,5 +37,21 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readParentMessage({ type: "render", doc, images: { [id]: blob } })).toEqual({ type: "render", doc, images: { [id]: blob } });
     expect(readParentMessage({ type: "render", doc, images: { [id]: "blob:http://x/1" } })).toBeUndefined();
     expect(readParentMessage({ type: "render", doc, images: { "blob:x": blob } })).toBeUndefined();
+  });
+});
+
+describe("직렬화 메시지 (M2A-3b G2 — serialize 부모→렌더 · html 렌더→부모)", () => {
+  it("serialize — 다른 필드는 버린다", () => {
+    expect(readParentMessage({ type: "serialize" })).toEqual({ type: "serialize" });
+    expect(readParentMessage({ type: "serialize", extra: 1 })).toEqual({ type: "serialize" });
+  });
+
+  it("html{markup} — 글자만 · 빈 글자·상한(HTML_MAX) 초과·글자 아님은 버린다 · 편집기 다리(readRenderMessage)는 html을 읽지 않는다", () => {
+    expect(readHtmlMessage({ type: "html", markup: "<div data-site-root></div>" })).toEqual({ type: "html", markup: "<div data-site-root></div>" });
+    expect(readHtmlMessage({ type: "html", markup: "" })).toBeUndefined();
+    expect(readHtmlMessage({ type: "html", markup: 1 })).toBeUndefined();
+    expect(readHtmlMessage({ type: "html", markup: "x".repeat(HTML_MAX + 1) })).toBeUndefined();
+    expect(readHtmlMessage({ type: "ready" })).toBeUndefined();
+    expect(readRenderMessage({ type: "html", markup: "<div></div>" })).toBeUndefined();
   });
 });

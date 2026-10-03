@@ -3,7 +3,8 @@ import type { PageDoc } from "../engine/contracts/pageDoc";
 import { validatePageDoc } from "../engine/validate/validatePageDoc";
 import { createObjectUrlCache, docImageIds } from "./objectUrls";
 import { PageDocument } from "./PageDocument";
-import { readParentMessage, type FrameRect, type KitTokenInput, type RenderMessage } from "./protocol";
+import { readParentMessage, type FrameRect, type HtmlMessage, type KitTokenInput, type RenderMessage } from "./protocol";
+import { serializeSite } from "./serializeSite";
 
 /** 섹션·글자 슬롯 사각형 — 문서 좌표(스크롤 포함). 섹션 줄(slotKey null) 다음에 그 섹션의 글자 슬롯 */
 function measure(root: HTMLElement, host: Window): readonly FrameRect[] {
@@ -28,7 +29,7 @@ export function RenderApp({ host }: { readonly host: Window }) {
   const root = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<{ readonly doc: PageDoc; readonly kitTokens?: KitTokenInput; readonly images: Readonly<Record<string, string>> }>();
   const [measureTick, setMeasureTick] = useState(0);
-  const post = useCallback((message: RenderMessage) => host.parent.postMessage(message, "*"), [host]);
+  const post = useCallback((message: RenderMessage | HtmlMessage) => host.parent.postMessage(message, "*"), [host]);
 
   useEffect(() => {
     // 로컬 이미지 object URL — 렌더 문서가 만들고 문서에서 빠지면 해제, 내릴 때 전부 해제(K4)
@@ -37,6 +38,11 @@ export function RenderApp({ host }: { readonly host: Window }) {
       if (event.source !== host.parent) return;
       const message = readParentMessage(event.data);
       if (!message) return;
+      // 내보내기(M2A-3b) — 지금 그린 사이트 루트를 돌려준다. 그리기 전이면 답하지 않는다(부모 시간 초과)
+      if (message.type === "serialize") {
+        if (root.current) void serializeSite(root.current).then((markup) => markup && post({ type: "html", markup }));
+        return;
+      }
       if (message.type === "render") {
         const checked = validatePageDoc(message.doc);
         if (!checked.ok) {

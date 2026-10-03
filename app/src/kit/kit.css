@@ -335,3 +335,83 @@
     }
   }
 }
+
+/* 본문 섹션 공통 (m2a 0.3 섹션 면 · 0.5 간격 · 0.12 내용 폭) — 톤 base = bg 면 · alt = surface 면. 좁은 폭 gutter s4 · section-gap 절반 / md 이상 s6 · section-gap */
+@layer components {
+  .kit-body {
+    background: var(--site-bg);
+    color: var(--site-ink);
+    --kit-ring-gap: var(--site-bg);
+  }
+  .kit-body[data-tone="alt"] {
+    background: var(--site-surface);
+    --kit-ring-gap: var(--site-surface);
+  }
+  .kit-wrap {
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-section-gap-narrow) var(--site-s4);
+  }
+  .kit-title {
+    margin: 0;
+    font-size: var(--site-t2);
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-wrap {
+      padding: var(--site-section-gap) var(--site-s6);
+    }
+    .kit-title {
+      font-size: var(--site-t3);
+    }
+  }
+}
+
+/* about/story (K1-3) — md 미만 1단(글 → 이미지) · md~lg 2단 7:5 · lg 이상 2단 같은 폭, 세로 가운데. 이미지 끔 = 1단 · 글 폭 prose-max */
+@layer components {
+  .kit-about-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: center;
+  }
+  .kit-about-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-about[data-layout="single"] .kit-about-text {
+    max-width: var(--site-prose-max);
+  }
+  .kit-about-body {
+    margin: 0;
+    font-size: var(--site-t0);
+    white-space: pre-line;
+  }
+  .kit-about-media {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--site-r1);
+  }
+  .kit-about-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--site-media-ratio);
+  }
+  @media (width >= 48rem) {
+    .kit-about[data-layout="split"] .kit-about-grid {
+      grid-template-columns: 7fr 5fr;
+      column-gap: var(--site-s6);
+    }
+    .kit-about-body {
+      font-size: var(--site-t1);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-about[data-layout="split"] .kit-about-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}

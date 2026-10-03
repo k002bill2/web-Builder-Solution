@@ -24,12 +24,14 @@ export function PageDocument({
   readonly registry?: Readonly<Record<string, KitSection>>;
 }) {
   const links = kitLinks(doc);
+  const [w = 4, h = 5] = (kitTokens?.mediaRatio ?? "4:5").split(":").map(Number);
+  const mediaRatio = [w, h] as const;
   const kit = (section: SectionInstance) => (kitTokens ? kitFor(section, registry) : undefined);
   const draw = (section: SectionInstance) => {
     const Kit = kit(section);
     if (!Kit) return <FallbackSection key={section.instanceId} section={section} />;
     const root = { id: `s-${section.instanceId}`, "data-section": `${section.type}/${section.variant}`, "data-instance-id": section.instanceId, "data-kit": "" } as const;
-    return <Kit key={section.instanceId} section={section} links={links} images={images} root={root} />;
+    return <Kit key={section.instanceId} section={section} links={links} images={images} mediaRatio={mediaRatio} root={root} />;
   };
   const outside = (type: "header" | "footer") => doc.sections.filter((s) => s.type === type && kit(s));
   const head = outside("header");

@@ -18,6 +18,8 @@ export interface KitSectionProps {
   readonly links: KitLinks;
   /** 로컬 이미지 id → 렌더 문서가 만든 object URL (0.9 · K4) */
   readonly images: Readonly<Record<string, string>>;
+  /** 프로필 이미지 비율(`media_ratio`, 없으면 4:5) — img width·height 속성값(about, K1-3 5) */
+  readonly mediaRatio: readonly [number, number];
   readonly root: KitRootProps;
 }
 export type KitSection = (props: KitSectionProps) => ReactElement;

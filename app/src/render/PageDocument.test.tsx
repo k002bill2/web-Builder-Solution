@@ -54,8 +54,8 @@ describe("렌더 문서 뼈대 (K-AC-09 · 0.12)", () => {
     expect([...c.querySelector("[data-site-root]")!.children].map((el) => el.tagName)).toEqual(["MAIN"]);
   });
 
-  it("레지스트리 = header/sticky-right-cta · hero/fullbleed-left · footer/biz-extended 3변형 · 모르는 쌍 undefined", () => {
-    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["footer/biz-extended", "header/sticky-right-cta", "hero/fullbleed-left"]);
+  it("레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) · 모르는 쌍 undefined", () => {
+    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "footer/biz-extended", "header/sticky-right-cta", "hero/fullbleed-left"]);
     expect(kitFor({ type: "hero", variant: "split" } as SectionInstance)).toBeUndefined();
   });
 });

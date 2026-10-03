@@ -162,7 +162,7 @@
 | F1 | 04a1edb | 대비 줄 color_tokens 없음 = unreadable 경로 · useGateReport 실패 상태 · GateList "검사하지 못했습니다" |
 | F2 | d8dfdf6 | 경고 확인 대화상자 showModal · Esc 취소 · 포커스 복귀 |
 | F3 | 030bce6 | 잡 실행을 응답 전달과 분리 · 재실행 = 잡의 스냅샷 문서 |
-| F4 | (이 커밋) | 다시 시도 = 같은 revision·변경 없음이면 같은 잡, 아니면 일반 시작 흐름 |
+| F4 | 8096e62 | 다시 시도 = 같은 revision·변경 없음이면 같은 잡, 아니면 일반 시작 흐름 |
 
 ### 10.2 F1 처리되지 않은 오류 3건
 - **원인**: `SectionRemove.test.tsx`의 프로필 픽스처 `base: { motion_preset: "L1" }`(color_tokens 없음) → `contrastRow.ts` `applied.color_tokens[role]`에서 TypeError → `useGateReport.ts` `compute` 안 `void compute(doc).then(...)`이 거부를 받지 않아 Unhandled Rejection(그 파일의 진입 직후 계산 3회). 앱의 정상 경로에서는 프로필 버전이 늘 참조의 `base`(color_tokens 포함)를 이어받아(`memoryProfileAdjust` `base: latest.base`) 재현 경로를 찾지 못했다 — 다만 저장 데이터가 잘못되면 같은 거부가 나므로 둘 다 막는다.
@@ -188,7 +188,26 @@
 - 번들: `useExportFlow`는 진입 직후 청크라 `/studio` 진입 126.67(+0.02, 멈춤선 126.70 여유 0.03) (`logs/f4.txt`).
 
 ### 10.6 F5 r4.11 대체텍스트 판정 · 이관 표
-- (진행 중)
+- `engine/gate/slotRows.ts` `imageIssues` — 켜진 · 장식 아님에 더해 **`source`가 문자열(로컬 이미지 id)** 인 슬롯만 R-09·R-13(대체텍스트 길이)을 본다. 이미지 없음(`{kind:"placeholder"}` — 프로필 색 그라디언트 · aria-hidden 장식)은 차단·경고 0. 엔진 계약(타입·슬롯·섹션 정의) 변경 0 — 규칙 구현만.
+- 테스트 도우미: `engine/testing/gateKit.ts`에 `LOCAL_IMAGE`·`withPhoto`·`withPhotos`(Hero·About 이미지 슬롯에 로컬 이미지 id, 샘플 기본 alt '' 유지) 추가.
+- RED(`logs/f5-red.txt`): docRows.test "r4.11 — 이미지 없음(플레이스홀더) 슬롯은 대체텍스트가 비어도 차단·경고 0" 실패 → GREEN.
+- 새 단언: 이미지 없음 = alt-text 줄 `pass`·issues 0 · text-length의 image 이슈 0 / 이미지 있음 + alt 없음 = 차단(Hero·About 2건, 문구 동일) / 이미지 있음 + 장식·꺼짐·alt 있음 = 통과(같은 테스트에 "이미지 있음 + alt '' = block" 대조 단언 추가).
+- **이관 표 (r4.11로 바뀌는 기존 단언 — 약화가 아니라 SPEC 개정 반영. 단언 내용은 그대로 두고 픽스처를 "실제 이미지가 든 슬롯"으로 옮긴 것이 7건, 기대값이 바뀐 것은 2건)**:
+
+| 파일 · 테스트 | 바뀐 것 | 근거 |
+|---|---|---|
+| docRows.test "block — 켜진 이미지 슬롯의 대체텍스트 빈 값마다 1건" | 픽스처: Hero·About에 `withPhoto` · 기대(R-09 block 2건·문구) 그대로 | r4.11 R-09 대상 = 실제 이미지 슬롯 |
+| docRows.test "공백만 있는 대체텍스트도 빈 값" | 픽스처: `withPhoto(hero)` · 기대 1건 그대로 | 같음 |
+| docRows.test "pass — 장식 표시 · 꺼진 슬롯 · 대체텍스트 있음" | 픽스처: 실제 이미지 슬롯 + 대조 단언(같은 슬롯 alt '' = block) 추가 | 통과가 "이미지 없음" 때문이 아님을 보장(강화) |
+| docRows.test "이미지 대체텍스트 상한(120자) 초과 = block · 장식이면 보지 않는다" | 픽스처: `withPhoto(hero)` · 기대 그대로 | R-13 대체텍스트 길이도 같은 함수(실제 이미지만) |
+| createDocFromCandidate.test "새 문서의 게이트 … R-09 차단" | **기대 변경**: alt-text `["hero-1","about-1"]` → `{state:"pass", issues:[]}` · 제목에 "이미지 없음(플레이스홀더)이라 R-09 0(SPEC r4.11)" | 새 문서 이미지는 전부 플레이스홀더 — r4.11 판정 자체가 바뀜 |
+| GatePanel.test "E-AC-25 조건 재현 — 대체텍스트 없음…" | 픽스처: `withPhotos(sampleDoc(...))` · 기대 그대로 | E-AC-25의 "대체텍스트 없음" 조건은 실제 이미지에서만 성립 |
+| GatePanel.test "대체텍스트 줄 → 그 섹션 선택 + 편집 패널 머리 포커스" | 픽스처: `withPhotos` · 기대 그대로 | 같음 |
+| GatePanel.test "툴바 '검사 · 내보내기'(≥1024) … 첫 차단: 대체텍스트" | 픽스처: `withPhotos` · 기대 그대로 | 같음 |
+| ExportFlow.test "게이트 차단 + 폴백 …" · "'첫 차단으로 이동' …" (2건) | 픽스처: 교체 Hero에 `withPhoto` · 기대 그대로 | 같음 |
+| (신규) docRows.test "r4.11 — 이미지 없음 슬롯은 대체텍스트가 비어도 차단·경고 0" | 새 단언 | — |
+
+- 판정: 전체 vitest 168 files · 1596 tests 통과. `gate.sh f5` 전부 exit 0(`logs/f5.txt`) · 번들 `/studio` 진입 126.67(≤126.70, 변화 0 — 엔진 한 조건) · `/compare` 98.83/121.69 · 렌더 79.89/6.32.
 
 ### 10.7 F6 브라우저 결과 캡처
 - (진행 중)

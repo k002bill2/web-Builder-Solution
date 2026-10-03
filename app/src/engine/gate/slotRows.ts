@@ -31,9 +31,12 @@ function overMaxIssue(ctx: SlotContext, length: number): GateIssue {
   return issue("R-13", "block", `${ctx.where}: ${overMax(ctx.entry.maxLength, length)}`, GATE_TEXT.shortenTo(ctx.entry.maxLength), at(ctx));
 }
 
-/** 켜진 · 장식 아닌 이미지만 본다(B-18: 끄면 검사에서 빠진다) */
+/**
+ * 켜진 · 장식 아닌 · **실제 이미지(로컬 이미지 id — 문자열 source)가 든** 이미지만 본다(B-18: 끄면 검사에서 빠진다).
+ * 2a-05 SPEC r4.11: 이미지 없이 색 그라디언트로 그려지는 플레이스홀더(aria-hidden 장식)는 R-09 대상이 아니다(차단·경고 0)
+ */
 function imageIssues(ctx: SlotContext, value: SlotValue | undefined): SlotRowIssues {
-  if (!isImage(value) || value.enabled !== true || value.decorative === true) return { altText: [], textLength: [] };
+  if (!isImage(value) || value.enabled !== true || value.decorative === true || typeof value.source !== "string") return { altText: [], textLength: [] };
   const alt = typeof value.alt === "string" ? value.alt : "";
   if (isBlank(alt)) return { altText: [issue("R-09", "block", `${ctx.where}: ${GATE_TEXT.altMissing}`, GATE_TEXT.altAlternative, at(ctx))], textLength: [] };
   const length = charCount(alt);

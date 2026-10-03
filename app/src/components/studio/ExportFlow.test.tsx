@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProjectRepositoryError, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
 import type { ProfileSeries } from "../../domain/profile";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
-import { passingDoc } from "../../engine/testing/gateKit";
+import { passingDoc, withPhoto } from "../../engine/testing/gateKit";
 import { section, withSections } from "../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../engine/testing/sampleTheme";
 import { EDITOR_EVENT, type EditorEvent } from "../../features/studio/editorEvents";
@@ -36,7 +36,7 @@ function listen() {
 
 describe("버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18)", () => {
   it("게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0", async () => {
-    const { requestExport } = await open(withSections(passingDoc(), passingDoc().sections.map((s) => (s.type === "hero" ? section("hero", "fullbleed-left", "s-hero") : s))));
+    const { requestExport } = await open(withSections(passingDoc(), passingDoc().sections.map((s) => (s.type === "hero" ? withPhoto(section("hero", "fullbleed-left", "s-hero")) : s))));
     for (const button of [zip(), html()]) {
       expect(button).toHaveAttribute("aria-disabled", "true");
       expect(button).toHaveAttribute("aria-describedby", "export-reason-gate export-reason-fallback");
@@ -59,7 +59,7 @@ describe("버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 
   });
 
   it("'첫 차단으로 이동' → 첫 차단 줄 이동과 같은 곳(대체텍스트 → 그 섹션 편집 패널 머리)", async () => {
-    await open(withSections(clean(), clean().sections.map((s) => (s.type === "hero" ? section("hero", "fullbleed-left", "s-hero") : s))));
+    await open(withSections(clean(), clean().sections.map((s) => (s.type === "hero" ? withPhoto(section("hero", "fullbleed-left", "s-hero")) : s))));
     expect(html()).toHaveAttribute("aria-describedby", "export-reason-gate");
     act(() => void fireEvent.click(within(gateRegion()).getByRole("button", { name: "첫 차단으로 이동" })));
     const head = await screen.findByRole("heading", { level: 2, name: "편집 · Hero" });

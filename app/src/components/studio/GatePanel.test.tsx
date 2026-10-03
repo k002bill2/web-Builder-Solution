@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { ProfileSeries } from "../../domain/profile";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { GATE_ROWS } from "../../engine/contracts/records";
-import { passingDoc } from "../../engine/testing/gateKit";
+import { passingDoc, withPhotos } from "../../engine/testing/gateKit";
 import { sampleDoc, withSections } from "../../engine/testing/sampleDoc";
 import { CAFE_PALETTE, sampleTheme } from "../../engine/testing/sampleTheme";
 import { EDITOR_EVENT, type EditorEvent } from "../../features/studio/editorEvents";
@@ -46,7 +46,7 @@ describe("게이트 8줄 표시 (SPEC 5.12 · E-S22~E-S25 · E-AC-25·27)", () =
   });
 
   it("E-AC-25 조건 재현 — 대체텍스트 없음·SEO 설명 빈 값 = 차단 · SEO 제목 권장 초과 = 경고 · 대비 미달 = 차단 · 머리 Tag 개수", async () => {
-    const doc = sampleDoc({ meta: { title: "가".repeat(80), description: "" } });
+    const doc = withPhotos(sampleDoc({ meta: { title: "가".repeat(80), description: "" } }));
     await openGate(doc, 1280, seriesOf(sampleTheme({ palette: CAFE_PALETTE }).profile.base.color_tokens));
     expect(rowItem("alt-text").textContent).toMatch(/대체텍스트차단 \d+/);
     expect(rowItem("seo-meta").textContent).toMatch(/SEO 메타차단 1/);
@@ -95,7 +95,7 @@ describe("줄 → 이동 · 툴바 '검사 · 내보내기' (E-AC-26 · E-S23 ·
   });
 
   it("대체텍스트 줄(이미지 슬롯 — 입력칸 없음) → 그 섹션 선택 + 편집 패널 머리 포커스", async () => {
-    await openGate(sampleDoc());
+    await openGate(withPhotos(sampleDoc()));
     act(() => void fireEvent.click(rowButton("대체텍스트")));
     const head = await screen.findByRole("heading", { level: 2, name: "편집 · Hero" });
     await waitFor(() => expect(document.activeElement).toBe(head));
@@ -120,7 +120,7 @@ describe("줄 → 이동 · 툴바 '검사 · 내보내기' (E-AC-26 · E-S23 ·
   });
 
   it("툴바 '검사 · 내보내기'(≥1024) → h2 '품질 게이트' 포커스 + 요약 알림 1회 + gate_checked(개수만)", async () => {
-    await openGate(sampleDoc({ meta: { title: "브랜드 홈", description: "" } }));
+    await openGate(withPhotos(sampleDoc({ meta: { title: "브랜드 홈", description: "" } })));
     const events: EditorEvent[] = [];
     const listen = (e: Event) => events.push((e as CustomEvent<EditorEvent>).detail);
     window.addEventListener(EDITOR_EVENT, listen);

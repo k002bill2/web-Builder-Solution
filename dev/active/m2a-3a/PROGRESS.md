@@ -38,6 +38,6 @@
 - [x] F2 확인 대화상자 showModal · Esc · 포커스 복귀 — ExportFlow.test 9/9 · /studio 126.64
 - [x] F3 잡 실행 응답 분리 · 재실행 = 잡 스냅샷 문서 — memoryExport.test 12/12
 - [x] F4 다시 시도 = 같은 revision이면 같은 잡, 다르면 일반 시작 흐름 — ExportFlow.test 11/11 · /studio 126.67
-- [ ] F5 r4.11 대체텍스트(실제 이미지 슬롯만) · 이관 표
+- [x] F5 r4.11 대체텍스트(실제 이미지 슬롯만) · 이관 표 — 전체 1596 통과 · gate.sh f5 exit 0 · /studio 126.67
 - [ ] F6 A안 브라우저 GENERATOR_UNAVAILABLE 결과 캡처
 - [ ] F7 전체 vitest x3 · Codex 1회 · REPORT 마감 · 4337 종료

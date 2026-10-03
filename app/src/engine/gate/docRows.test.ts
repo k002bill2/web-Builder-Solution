@@ -1,7 +1,7 @@
 import type { ImageSlotValue, SectionInstance, SectionMotion } from "../contracts/pageDoc";
 import type { GateRowId } from "../contracts/records";
 import { REASONS } from "../ops/reasons";
-import { passingDoc, rowOf, withAlt, withSlot } from "../testing/gateKit";
+import { passingDoc, rowOf, withAlt, withPhoto, withSlot } from "../testing/gateKit";
 import { SAMPLE_SECTIONS, section, withSections } from "../testing/sampleDoc";
 import { sampleTheme } from "../testing/sampleTheme";
 import type { GateTheme } from "../contracts/pending";
@@ -25,8 +25,15 @@ const replace = (id: string, next: SectionInstance) => passingDoc().sections.map
 const image = (s: SectionInstance, key = "image") => s.slots[key] as ImageSlotValue;
 
 describe("대체텍스트 줄 (R-09)", () => {
-  it("block — 켜진 이미지 슬롯의 대체텍스트 빈 값(샘플 기본 alt '')마다 1건", () => {
+  // r4.11: 이미지 없이 프로필 색 그라디언트로 그려지는 슬롯(플레이스홀더 · aria-hidden 장식)은 R-09 대상이 아니다
+  it("r4.11 — 이미지 없음(플레이스홀더) 슬롯은 대체텍스트가 비어도 차단·경고 0 (샘플 기본 alt '' 그대로)", () => {
     const row = gateRow(SAMPLE_SECTIONS, "alt-text");
+    expect(row).toEqual({ id: "alt-text", state: "pass", issues: [] });
+    expect(rowOf(runGate(withSections(passingDoc(), SAMPLE_SECTIONS), NONE), "text-length").issues.filter((i) => i.slotKey === "image")).toEqual([]);
+  });
+
+  it("block — 실제 이미지가 든 켜진 슬롯의 대체텍스트 빈 값(샘플 기본 alt '')마다 1건 (r4.11 — 이미지 id를 넣은 슬롯)", () => {
+    const row = gateRow(SAMPLE_SECTIONS.map((s) => (s.instanceId === "s-hero" || s.instanceId === "s-about" ? withPhoto(s) : s)), "alt-text");
     expect(row.state).toBe("block");
     expect(row.issues.map((i) => [i.ruleId, i.severity, i.instanceId, i.slotKey])).toEqual([
       ["R-09", "block", "s-hero", "image"],
@@ -36,15 +43,16 @@ describe("대체텍스트 줄 (R-09)", () => {
   });
 
   it("공백만 있는 대체텍스트도 빈 값", () => {
-    const blank = withSlot(hero, "image", { ...image(hero), alt: "  " });
+    const blank = withSlot(withPhoto(hero), "image", { ...image(withPhoto(hero)), alt: "  " });
     expect(gateRow(replace("s-hero", blank), "alt-text").issues).toHaveLength(1);
   });
 
-  it("pass — 장식 표시 · 꺼진 슬롯 · 대체텍스트 있음", () => {
-    const raw = SAMPLE_SECTIONS.find((s) => s.instanceId === "s-hero")!;
+  it("pass — 장식 표시 · 꺼진 슬롯 · 대체텍스트 있음 (r4.11 — 실제 이미지가 든 슬롯으로)", () => {
+    const raw = withPhoto(SAMPLE_SECTIONS.find((s) => s.instanceId === "s-hero")!);
     const decorative = withSlot(raw, "image", { ...image(raw), decorative: true });
     const off = withSlot(raw, "image", { ...image(raw), enabled: false });
-    for (const next of [decorative, off, hero]) expect(gateRow(replace("s-hero", next), "alt-text").state).toBe("pass");
+    expect(gateRow(replace("s-hero", raw), "alt-text").state).toBe("block");
+    for (const next of [decorative, off, withPhoto(hero)]) expect(gateRow(replace("s-hero", next), "alt-text").state).toBe("pass");
   });
 });
 
@@ -241,9 +249,10 @@ describe("글자 수 줄 (R-13 상한·필수 빈 값 + FR-EDT-05 권장 경고)
   });
 
   it("이미지 대체텍스트 상한(120자) 초과 = block · 장식이면 보지 않는다", () => {
-    const long = withSlot(hero, "image", { ...image(hero), alt: "가".repeat(121) });
+    const photo = withPhoto(hero);
+    const long = withSlot(photo, "image", { ...image(photo), alt: "가".repeat(121) });
     expect(gateRow(replace("s-hero", long), "text-length").issues.map((i) => [i.slotKey, i.ruleId])).toEqual([["image", "R-13"]]);
-    const deco = withSlot(hero, "image", { ...image(hero), alt: "가".repeat(121), decorative: true });
+    const deco = withSlot(photo, "image", { ...image(photo), alt: "가".repeat(121), decorative: true });
     expect(gateRow(replace("s-hero", deco), "text-length").state).toBe("pass");
   });
 });

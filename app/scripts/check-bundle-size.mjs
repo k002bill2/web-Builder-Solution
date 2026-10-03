@@ -46,8 +46,11 @@ const COMPARE_AUTO = ["src/features/compare/boardEngine.ts", "src/data/memoryStu
  */
 /** /projects·/studio/:projectId 진입 직후 자동 — 프로젝트 저장소 로더(S-B3)가 받는 공유 store와 프로젝트 메모리 구현 */
 const PROJECT_AUTO = ["src/data/memoryStudio.ts", "src/fixtures/referenceComparisons.ts", "src/data/memoryProjectRepository.ts"];
-/** 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록 */
-const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts", "src/components/studio/AddSectionDialog.tsx", "src/components/studio/VariantOptions.tsx"];
+/**
+ * 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록
+ *  + 문의 폼 주인용 안내(M2A-2b B6): EditFields lazy ← contact/form 섹션 선택(섹션 줄·캔버스 누름 onClick — 첫 선택은 Hero)
+ */
+const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts", "src/components/studio/AddSectionDialog.tsx", "src/components/studio/VariantOptions.tsx", "src/components/studio/ContactOwnerNote.tsx"];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];
 const COMPARE_AFTER_ACTION = [

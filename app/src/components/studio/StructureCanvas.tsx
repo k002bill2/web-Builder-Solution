@@ -3,15 +3,14 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import type { PreviewView } from "../../features/detail/previewView";
 import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
+import { canvasCaption } from "../../features/studio/canvasCaption";
 import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
 import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage } from "../../render/protocol";
 
-/** 5.7 캡션 — 늘 보인다 */
-export const CANVAS_CAPTION = "구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.";
 /** 렌더 문서(별도 빌드 엔트리 render.html — ADR-004 개정 2). 같은 출처 경로지만 sandbox="allow-scripts"라 불투명 출처로 뜬다 */
 export const RENDER_DOC_SRC = "/render.html";
-export const RENDER_FRAME_TITLE = "구조 미리보기 화면";
+export const RENDER_FRAME_TITLE = "페이지 미리보기 화면";
 
 interface CanvasIssue extends SlotIssue {
   readonly instanceId: string;
@@ -178,7 +177,8 @@ function Overlay({
 }
 
 /**
- * 가운데 "구조 미리보기"(DS-2A-05 3.1 · 5.7 · E-AC-16). `section aria-labelledby` h2(6.2).
+ * 가운데 "페이지 미리보기"(DS-2A-05 3.1 · 5.7 · E-AC-16 · r4.9 — 섹션 표식 "구조 미리보기"와 구분, 등급과 무관 고정). `section aria-labelledby` h2(6.2).
+ * 캡션 = 문서 상태 3문구(m2a 3.4, 늘 보임 · 라이브 영역 아님).
  * 문서는 렌더 문서(iframe, `sandbox="allow-scripts"`)가 그리고, 이 컴포넌트는 호스트(프레임 · 다리 · 오버레이)만 맡는다(M2A-1 · SPEC 5.7 r4.8).
  * 미리보기 폭 = iframe 폭(렌더 문서의 미디어 쿼리가 실제 뷰포트로 동작) — 데스크톱 1280 · 태블릿 768 · 모바일 390(r4.10). 넓은 프레임은 `zoom`으로 축소 보기(가로 스크롤 0).
  * `scrollable`(≥1024) = 열마다 따로 스크롤 → 스크롤 영역에 `tabIndex=0`(4.1). 섹션 선택은 렌더 문서 click 메시지로 받는다(5.1 — 포인터만).
@@ -225,9 +225,9 @@ export function StructureCanvas({
       className={`flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 ${scrollable ? "min-h-0 overflow-y-auto" : ""}`}
     >
       <h2 id="studio-canvas-heading" className="ds-heading2">
-        구조 미리보기
+        페이지 미리보기
       </h2>
-      <p className="ds-caption1 text-label-alternative">{CANVAS_CAPTION}</p>
+      <p className="ds-caption1 text-label-alternative">{canvasCaption(doc, kitTokens !== undefined)}</p>
       {head}
       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
       <div ref={area} className="min-w-0">

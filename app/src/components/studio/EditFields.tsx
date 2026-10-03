@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { setSlot } from "../../engine/ops/slotOps";
 import { getSectionDefinition } from "../../engine/sections/registry";
@@ -7,8 +8,8 @@ import { Callout } from "../ds/Callout";
 import { FieldEditor } from "./FieldEditor";
 import { PageInfoFields } from "./PageInfoFields";
 
-/** 사이트 주인용 안내 (m2a K2 문구 2) — 문의 폼은 보내기가 꺼진 채 나간다(A안). 렌더 문서에는 넣지 않는다(편집기 UI 0, 5.7 r4.8) */
-const CONTACT_OWNER_NOTE = "내보낸 페이지에서 이 문의 양식은 보내기가 꺼진 채로 나갑니다. 방문자에게는 '온라인 문의는 준비 중입니다' 안내가 보입니다. 받는 곳 연결은 다음 단계에서 다룹니다.";
+/** 사이트 주인용 안내(m2a K2) — contact/form 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
+const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
 
 /**
  * 편집 패널 필드 (SPEC 5.6 · E-AC-06) — 선택 섹션의 글자 슬롯(`FieldEditor`) 또는 "페이지 정보"(`PageInfoFields`).
@@ -22,9 +23,9 @@ export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc;
   return (
     <div className="flex flex-col gap-4">
       {section.type === "contact" && section.variant === "form" && (
-        <Callout tone="info" title="내보낸 페이지의 문의 양식">
-          {CONTACT_OWNER_NOTE}
-        </Callout>
+        <Suspense fallback={null}>
+          <ContactOwnerNote Callout={Callout} />
+        </Suspense>
       )}
       {slots.map((entry) => {
         if (entry.kind === "image") return null;

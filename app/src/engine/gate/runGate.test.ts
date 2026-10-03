@@ -114,4 +114,18 @@ describe("대비 AA 줄 (R-08 — checkProfileContrast 판정만, throw 0)", () 
     expect(row.issues).toHaveLength(1);
     expect(row.issues[0]!.cause).toContain("muted");
   });
+
+  // M2A-3a-fix F1: 처리되지 않은 거부 3건(SectionRemove.test 픽스처 base = { motion_preset } — color_tokens 없음)
+  it("color_tokens 없는 프로필 → throw 0 · 대비 줄 block — 역할 5개 모두 '색 값을 읽을 수 없습니다' (조정 없음 · 보정 있음 둘 다)", () => {
+    const bare = sampleTheme();
+    const noTokens = (adjustments: object) => ({ ...bare, profile: { ...bare.profile, base: { motion_preset: "L1" } as never, adjustments } });
+    for (const theme of [noTokens({}), noTokens({ corrections: [{ role: "muted", from: "#9A7B63", to: "#8E715B", check: "C-5" }] })]) {
+      let report: ReturnType<typeof runGate> | undefined;
+      expect(() => (report = runGate(passingDoc(), theme))).not.toThrow();
+      const row = rowOf(report!, "contrast");
+      expect(row.state).toBe("block");
+      expect(row.issues.map((i) => i.cause)).toEqual(["primary", "surface", "ink", "muted", "bg"].map((role) => `${role}: ${GATE_TEXT.contrastUnreadable}`));
+      for (const i of row.issues) expect(i).toMatchObject({ ruleId: "R-08", severity: "block", alternative: GATE_TEXT.contrastAlternative });
+    }
+  });
 });

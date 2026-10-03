@@ -1,0 +1,4 @@
+     × 경고 확인 대화상자 = showModal()(모달) · Esc(cancel) = 취소 · 요청 0 · 닫히면 여는 버튼으로 포커스 복귀 780ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected "showModal" to be called 1 times, but got 0 times
+      Tests  1 failed | 8 skipped (9)

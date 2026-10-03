@@ -61,11 +61,11 @@ export function SectionNav({
   );
 }
 
-/** 테마(3.1 · 4.2) — ≥1280은 "프로필 v3", 그 밖은 문서 Tag가 여기로 온다. 테마 바꾸기는 a3 */
+/** 테마(3.1 · 4.2) — ≥1280은 "프로필 v3", 그 밖은 문서 Tag가 여기로 온다. 테마 바꾸기는 a3. h2 `tabIndex=-1` = 게이트 "대비 AA" 줄 이동 대상(5.12) */
 export function ThemePanel({ doc, docTag, profileId }: { readonly doc: PageDoc; readonly docTag?: string; readonly profileId: string }) {
   return (
     <section aria-labelledby="studio-theme-heading" className="flex flex-col items-start gap-2">
-      <h2 id="studio-theme-heading" className={H2}>
+      <h2 id="studio-theme-heading" tabIndex={-1} className={H2}>
         테마
       </h2>
       <span className="ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral">{docTag ?? `프로필 v${doc.profileVersion}`}</span>
@@ -89,16 +89,19 @@ export function EditPanel({ name, head, children }: { readonly name: string; rea
   );
 }
 
-/** 품질 게이트 · 내보내기 자리(6.1 h2 · h3). 검사 목록·내보내기 흐름은 a4(SPEC 13.1) — 제목 구조만 먼저 둔다 */
-export function GatePanel() {
+/**
+ * 품질 게이트 · 내보내기(6.1 h2 · h3 · 5.12 · 5.13). h2 `tabIndex=-1` = 툴바 "검사 · 내보내기" 이동 대상(E-S26).
+ * `children` = 게이트 8줄(GateList) · `exports` = 내보내기 묶음(없으면 생성기 안내 문장)
+ */
+export function GatePanel({ children, exports }: { readonly children?: ReactNode; readonly exports?: ReactNode }) {
   return (
     <section aria-labelledby="studio-gate-heading" className="flex flex-col gap-2">
       <h2 id="studio-gate-heading" tabIndex={-1} className={H2}>
         품질 게이트
       </h2>
-      <p className={CAPTION}>검사 항목은 준비 중입니다.</p>
+      {children}
       <h3 className="ds-label">내보내기</h3>
-      <p className={CAPTION}>코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다.</p>
+      {exports ?? <p className={CAPTION}>코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다.</p>}
     </section>
   );
 }

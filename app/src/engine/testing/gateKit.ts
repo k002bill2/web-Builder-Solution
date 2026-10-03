@@ -1,9 +1,10 @@
 /**
  * 게이트 테스트 도우미 — 통과 문서 · 줄 찾기 · 키 순서 뒤집기(결정성 검사).
  */
-import type { PageDoc, SectionInstance, SlotValue } from "../contracts/pageDoc";
+import type { ImageSlotValue, PageDoc, SectionInstance, SlotValue } from "../contracts/pageDoc";
 import type { GateReport, GateRow, GateRowId } from "../contracts/records";
 import { deepFreeze } from "../freeze";
+import { parseLocalImageId } from "../validate/localImageId";
 import { sampleDoc, withSections } from "./sampleDoc";
 
 /** 이미지 슬롯에 대체텍스트를 채운 섹션 */
@@ -42,3 +43,14 @@ export const withSlot = (section: SectionInstance, key: string, value: SlotValue
 });
 
 export const frozen = <T>(value: T): T => deepFreeze(value);
+
+/** 테스트용 로컬 이미지 id — 2a-05 SPEC r4.11: R-09(대체텍스트)는 실제 이미지 id가 든 슬롯만 본다 */
+export const LOCAL_IMAGE = parseLocalImageId("7c9e6679-7425-40de-944b-e07fc1f90ae7")!;
+
+/** 이미지 슬롯에 실제 이미지(로컬 이미지 id)를 넣은 섹션 */
+export const withPhoto = (section: SectionInstance, key = "image"): SectionInstance =>
+  withSlot(section, key, { ...(section.slots[key] as ImageSlotValue), source: LOCAL_IMAGE });
+
+/** 문서의 Hero·About 이미지 슬롯에 실제 이미지를 넣는다(샘플 기본 alt '' 유지 → R-09 차단 2건) */
+export const withPhotos = (doc: PageDoc, ids: readonly string[] = ["s-hero", "s-about"]): PageDoc =>
+  withSections(doc, doc.sections.map((s) => (ids.includes(s.instanceId) ? withPhoto(s) : s)));

@@ -29,11 +29,12 @@ const fail = (cause: string) => issue("R-08", "block", cause, GATE_TEXT.contrast
 
 export function contrastIssues(theme: GateTheme): readonly GateIssue[] {
   const { base, adjustments } = theme.profile;
-  const applied = effectiveProfile(base, adjustments);
-  const palette = ROLES.map((role) => ({ role, hex: applied.color_tokens[role]?.$value as unknown }));
+  // 색 토큰 없는 프로필(M2A-3a-fix F1)은 보정 적용 전에 막고 기존 unreadable 경로로 — 계약이 아닌 구현 방어(throw 0)
+  const applied = base.color_tokens ? effectiveProfile(base, adjustments) : undefined;
+  const palette = ROLES.map((role) => ({ role, hex: applied?.color_tokens[role]?.$value as unknown }));
   const unreadable = palette.filter((p) => typeof p.hex !== "string" || !HEX.test(p.hex));
   if (unreadable.length > 0) return unreadable.map((p) => fail(`${p.role}: ${GATE_TEXT.contrastUnreadable}`));
   const level = adjustments.contrast === "enhanced" ? "enhanced" : "aa";
-  const checks = checkProfileContrast(palette as PaletteEntry[], applied.component_choices.card_style?.surfaceTone, level);
+  const checks = checkProfileContrast(palette as PaletteEntry[], applied?.component_choices.card_style?.surfaceTone, level);
   return checks.filter((c) => !c.pass).map((c) => fail(GATE_TEXT.contrastFail(c.id, PAIR[c.id], formatRatio(c.ratio), formatRatio(c.target))));
 }

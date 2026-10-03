@@ -11,10 +11,10 @@ import { validateProjectName } from "../domain/projectName";
 import { retryableImport } from "./chunkRetry";
 import type { DocBook } from "./memoryDocBook";
 import { createSharedLoader } from "./sharedLoader";
-import { ProjectRepositoryError, type Project, type ProjectRepository, type ProjectSummary } from "./projectRepository";
+import { ProjectRepositoryError, type ExportGenerators, type Project, type ProjectRepository, type ProjectSummary } from "./projectRepository";
 import type { StudioStore } from "./studioStore";
 
-export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc";
+export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport";
 export interface ProjectCall {
   readonly method: ProjectMethod;
   /** 메서드별 1부터 */
@@ -28,13 +28,15 @@ export interface MemoryProjectOptions {
   readonly now?: () => string;
   readonly delay?: (call: ProjectCall) => Promise<void> | void | undefined;
   readonly fail?: (call: ProjectCall) => Error | undefined;
+  /** 형식별 생성기(8.3.2 6단계) — 기본 = 둘 다 없음(M2A-3a → `GENERATOR_UNAVAILABLE`). 3b가 `static-html`을 등록한다 */
+  readonly generators?: ExportGenerators;
 }
 
 /** 조작 뒤 청크 — 판정·상태·어댑터·엔진. "편집 시작"·저장 때만 받는다(진입 직후 청크 크기 유지) */
 const loadDocBook = retryableImport(() => import("./memoryDocBook"));
 
 export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository {
-  const { store, now = () => new Date().toISOString() } = options;
+  const { store, now = () => new Date().toISOString(), generators = {} } = options;
   const counts = new Map<ProjectMethod, number>();
   /** 문서 쓰기 본문 — 청크를 받은 뒤 1개. 받기 전에는 문서가 있을 수 없다 */
   let book: DocBook | undefined;
@@ -99,7 +101,9 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     createSnapshot: missing,
     restoreSnapshot: missing,
     resolveConflict: missing,
-    requestExport: missing,
-    getExportJob: async () => undefined,
+    // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
+    requestExport: async (projectId, format, docRevision) =>
+      (await bookOf()).requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)),
+    getExportJob: async (jobId) => book?.jobOf(jobId),
   };
 }

@@ -49,8 +49,17 @@ const PROJECT_AUTO = ["src/data/deferredStudio.ts", "src/data/memoryProjectRepos
 /**
  * 조작 뒤 — /studio/:projectId (EDITOR-A3-1 S-B5): 연산 본문 · 섹션 추가 대화상자 · 변형 교체 목록
  *  + 문의 폼 주인용 안내(M2A-2b B6): EditFields lazy ← contact/form 섹션 선택(섹션 줄·캔버스 누름 onClick — 첫 선택은 Hero)
+ *  + 내보내기(M2A-3a S-B5): exportFlow(requestExport 호출 · 잡 조회 · 결과 처리) ← useExportFlow.request ← 내보내기 버튼 onClick(·확인 대화상자 "내보내기"·"다시 시도")
+ *    · ExportAfter(경고 확인 대화상자 · 결과 Callout) lazy ← confirming·result 상태 ← 같은 onClick
  */
-const STUDIO_AFTER_ACTION = ["src/features/studio/docEngine.ts", "src/components/studio/AddSectionDialog.tsx", "src/components/studio/VariantOptions.tsx", "src/components/studio/ContactOwnerNote.tsx"];
+const STUDIO_AFTER_ACTION = [
+  "src/features/studio/docEngine.ts",
+  "src/components/studio/AddSectionDialog.tsx",
+  "src/components/studio/VariantOptions.tsx",
+  "src/components/studio/ContactOwnerNote.tsx",
+  "src/features/studio/exportFlow.ts",
+  "src/components/studio/ExportAfter.tsx",
+];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];
 const COMPARE_AFTER_ACTION = [
@@ -66,6 +75,7 @@ const COMPARE_AFTER_ACTION = [
  *  - page: 라우트 페이지 모듈(첫 화면 = 공통 + 이 청크의 정적 import, ≤ 100KB)
  *  - auto: 자동 dynamic import(진입 직후 = 첫 화면 + 이 목록의 정적 closure, ≤ 125KB)
  *  - afterAction: 조작 뒤 dynamic import(진입 직후 합계에 없는 파일 크기만 출력)
+ *  - eagerBudgetKb: 진입 직후 한도(없으면 125 — ADR-004 개정 1). 지금은 /studio/:projectId만 127(개정 3)
  */
 const SCENARIOS = [
   { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC },
@@ -91,14 +101,17 @@ const SCENARIOS = [
   // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(deferredStudio) → projects()(memoryProjectRepository)
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
   // 편집 틀(StudioLayout — 배치·필드·자동 저장 훅)은 문서가 있으면 렌더에서 자동 lazy(EDITOR-A2-SHELL S7) → 진입 직후 합계
+  // 게이트 엔진(gateCheck = runGate·대비 판정, M2A-3a S-B4): useGateReport effect가 문서를 그린 직후 조작 없이 받는다 → 자동
   // 조작 뒤(EDITOR-A3-1): 구조 연산 본문(docEngine = sectionOps·normalizeDoc) ← docOps.applyDocOp ← useSectionOps.run ← 위로·아래로·삭제·추가·변형 onClick
   //  · 섹션 추가 대화상자(AddSectionDialog lazy) ← adding 상태 ← "섹션 추가" onClick(본문 9개 미만일 때만)
   //  · 변형 교체 목록(VariantOptions lazy = diffSlots 캡션) ← VariantSwitch open 상태 ← "변형 바꾸기" details 펼침(onToggle)
   {
     name: "/studio/:projectId",
     page: "src/pages/StudioPage.tsx",
-    auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx"],
+    auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx", "src/features/studio/gateCheck.ts"],
     afterAction: STUDIO_AFTER_ACTION,
+    // ADR-004 개정 3 결정 2 — M2A-3a가 SPEC대로(게이트 펼침 · runGate 진입 자동) 넣고 125를 넘어 이 라우트 진입 한도만 127(멈춤선 126.70). 다른 라우트는 125
+    eagerBudgetKb: 127,
   },
 ];
 

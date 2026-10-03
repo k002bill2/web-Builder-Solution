@@ -1,0 +1,6 @@
+     × fail phase:'response' → 커밋된 잡은 그대로 실행 · 같은 요청 재시도 → 같은 잡 succeeded · 생성기 1회 1011ms
+     × revision N 잡 실패 → N+1 저장 → N 재시도 → 생성기가 받은 문서 = N(스냅샷 문서) · 같은 잡 · 스냅샷 추가 0 57ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected { jobId: 'export-1', …(4) } to match object { state: 'succeeded', …(1) }
+AssertionError: expected { projectId: 'project-1', …(9) } to match object { revision: 2, …(2) }
+      Tests  2 failed | 10 passed (12)

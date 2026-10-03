@@ -13,8 +13,12 @@ import { hashDoc } from "../engine/ops/hash";
 import { setSlot } from "../engine/ops/slotOps";
 import { getSectionDefinition, isSectionType, SECTION_TYPE_INFO } from "../engine/sections/registry";
 import { validatePageDoc } from "../engine/validate/validatePageDoc";
+import { runGate } from "../engine/gate/runGate";
+import type { ProfileVersion } from "../domain/profile";
+import { RENDERED_VARIANTS } from "../features/studio/renderedVariants";
 import { fromLabelOf, mapVariant } from "./engineVariantMap";
 import { sampleCopyOf } from "./sampleCopy";
+import type { DocHead } from "./projectRepository";
 
 /** 바뀐 쌍(8.2.1 (a)) — 문서에 저장하지 않는다 */
 export interface VariantChange {
@@ -90,4 +94,18 @@ export function checkSaveDoc(projectId: string, input: unknown): { readonly ok: 
   if (checked.value.projectId !== projectId) return { ok: false, message: `projectId ${checked.value.projectId} ≠ ${projectId}` };
   if (checked.value.hash !== hashDoc(checked.value)) return { ok: false, message: "hash ≠ hashDoc(내용)" };
   return { ok: true, doc: input as PageDoc };
+}
+
+/**
+ * 내보내기 판정 5·7단계 (DS-2A-05 8.3.2) — 저장된 문서로 서버 게이트(`runGate`)를 다시 돌리고(화면 판정을 믿지 않는다) 렌더러 없는 섹션을 고른다.
+ * engine을 부를 수 있는 data 파일이 이것 하나라(engineImportGuard) 여기 둔다 — 같은 조작 뒤 청크(memoryDocBook). 렌더러 목록은 부모 데이터 상수(RENDERED_VARIANTS).
+ */
+/** 저장소 문서(DocHead)는 엔진이 만든 편집 문서뿐이다(start = createDocFromCandidate · save = validatePageDoc) — 여기서 한 번 좁힌다 */
+export function judgeExport(head: DocHead, profile: ProfileVersion): { readonly gateBlocked: boolean; readonly unrendered: readonly string[] } {
+  const doc = head as PageDoc;
+  const report = runGate(doc, { profile, purpose: profile.adjustments.purpose ?? "none" });
+  return {
+    gateBlocked: report.rows.some((row) => row.state === "block"),
+    unrendered: doc.sections.filter((s) => !RENDERED_VARIANTS.includes(`${s.type}/${s.variant}`)).map((s) => s.instanceId),
+  };
 }

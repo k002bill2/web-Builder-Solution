@@ -102,11 +102,11 @@ describe("createDocFromCandidate (SPEC 8.2 · 8.3.1 — 구조안 → 새 문서
     expect(codeOf(() => createDocFromCandidate({ ...plan(), candidateId: "" }, 3, START))).toMatch(/^BAD_VALUE/);
   });
 
-  it("새 문서의 게이트 — 구조(R-01·R-02) 이슈 0 · 기본 이미지 alt 빈 값(L4a Q-8)이라 R-09 차단 · 메타 빈 값이라 R-11 차단", () => {
+  it("새 문서의 게이트 — 구조(R-01·R-02) 이슈 0 · 기본 이미지 alt 빈 값(L4a Q-8)이지만 이미지 없음(플레이스홀더)이라 R-09 0(SPEC r4.11) · 메타 빈 값이라 R-11 차단", () => {
     const report = runGate(createDocFromCandidate(plan(), 3, START), sampleTheme());
     const required = rowOf(report, "required-sections");
     expect(required.issues.filter((i) => i.ruleId === "R-01" || i.ruleId === "R-02")).toEqual([]);
-    expect(rowOf(report, "alt-text").issues.map((i) => i.instanceId)).toEqual(["hero-1", "about-1"]);
+    expect(rowOf(report, "alt-text")).toEqual({ id: "alt-text", state: "pass", issues: [] });
     expect(rowOf(report, "seo-meta").state).toBe("block");
     expect(rowOf(report, "text-length").state).toBe("pass");
   });

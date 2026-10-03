@@ -73,4 +73,17 @@ describe("checkBundle — 엔트리 이름 고정 · 렌더 문서 판정 (ADR-0
     const { failures } = checkBundle({ manifest: manifest(), sizeOf: (f) => (f === "assets/page.js" ? 25 : sizeOf(f)), scenarios, renderAuto: [] });
     expect(failures).toEqual(["/page: 첫 화면 108.00KB > 100KB", "/page: 진입 직후 자동 로드 포함 138.00KB > 125KB"]);
   });
+
+  it("시나리오별 진입 직후 한도(ADR-004 개정 3 — /studio 127) — 그 시나리오만 바뀌고 다른 시나리오는 125 그대로", () => {
+    const bigger = (f) => (f === "assets/lazy.js" ? 33 : sizeOf(f));
+    const both = [
+      { name: "/page", page: "src/pages/Page.tsx", auto: ["src/Lazy.ts"], eagerBudgetKb: 127 },
+      { name: "/other", page: "src/pages/Page.tsx", auto: ["src/Lazy.ts"] },
+    ];
+    const { lines, failures } = checkBundle({ manifest: manifest(), sizeOf: bigger, scenarios: both, renderAuto: [] });
+    expect(lines).toContain("[bundle] /page 첫 화면 합계: 93.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 126.00KB / 예산 127KB");
+    expect(failures).toEqual(["/other: 진입 직후 자동 로드 포함 126.00KB > 125KB"]);
+    const over = checkBundle({ manifest: manifest(), sizeOf: (f) => (f === "assets/lazy.js" ? 35 : sizeOf(f)), scenarios: both.slice(0, 1), renderAuto: [] });
+    expect(over.failures).toEqual(["/page: 진입 직후 자동 로드 포함 128.00KB > 127KB"]);
+  });
 });

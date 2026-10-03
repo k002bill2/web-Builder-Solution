@@ -1,0 +1,4 @@
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /compare 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.72KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.72KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.72KB / 예산 100KB · 진입 직후 자동 로드 포함: 124.71KB / 예산 125KB

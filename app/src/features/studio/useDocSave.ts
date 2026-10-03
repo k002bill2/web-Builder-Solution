@@ -40,6 +40,8 @@ export interface UseDocSave {
   readonly conflict?: DocConflict;
   readonly edit: (next: PageDoc) => void;
   readonly retry: () => void;
+  /** 저장소에 저장된 마지막 revision(내보내기 요청 revision — 5.13 "저장 먼저" 뒤에 읽는다) */
+  readonly savedRevision: () => number;
   readonly resolve: (choice: ConflictChoice) => Promise<void>;
 }
 
@@ -92,5 +94,6 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   );
 
   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry: autosave.retry, resolve };
+  const savedRevision = useCallback(() => revisionRef.current, []);
+  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry: autosave.retry, savedRevision, resolve };
 }

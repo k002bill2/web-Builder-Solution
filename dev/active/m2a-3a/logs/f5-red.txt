@@ -1,0 +1,4 @@
+     × r4.11 — 이미지 없음(플레이스홀더) 슬롯은 대체텍스트가 비어도 차단·경고 0 (샘플 기본 alt '' 그대로) 8ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected { Object (id, state, ...) } to deeply equal { id: 'alt-text', state: 'pass', …(1) }
+      Tests  1 failed | 31 passed (32)

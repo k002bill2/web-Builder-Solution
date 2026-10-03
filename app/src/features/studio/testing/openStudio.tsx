@@ -1,4 +1,5 @@
-import { act, screen } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
+import { expect } from "vitest";
 import type { ProfileRepository } from "../../../data/profileRepository";
 import type { Project, ProjectRepository } from "../../../data/projectRepository";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
@@ -19,7 +20,7 @@ export const STUDIO_PROJECT: Project = {
 };
 
 /** 화면이 쓰는 조회·저장만 — 저장은 받은 문서를 기록한다 */
-export function stubProjectRepository(doc: PageDoc) {
+export function stubProjectRepository(doc: PageDoc, extra: Partial<ProjectRepository> = {}) {
   const saved: PageDoc[] = [];
   const repository = {
     persistence: "memory",
@@ -29,6 +30,7 @@ export function stubProjectRepository(doc: PageDoc) {
       saved.push(next);
       return { ...next, revision: revision + 1 };
     },
+    ...extra,
   } as unknown as ProjectRepository;
   return { repository, saved };
 }
@@ -57,12 +59,22 @@ export const restoreViewport = () => {
   window.matchMedia = original;
 };
 
-export async function openStudio({ width = 1280, doc = sampleDoc(), series }: { width?: number; doc?: PageDoc; series?: ProfileSeries } = {}) {
+export async function openStudio({
+  width = 1280,
+  doc = sampleDoc(),
+  series,
+  repository,
+}: { width?: number; doc?: PageDoc; series?: ProfileSeries; /** 저장소 메서드 덮어쓰기(내보내기 등) */ repository?: Partial<ProjectRepository> } = {}) {
   setViewport(width);
-  const projects = stubProjectRepository(doc);
+  const projects = stubProjectRepository(doc, repository);
   const { router } = renderApp("/catalog", undefined, undefined, stubProfiles(series), undefined, () => Promise.resolve(projects.repository));
+  // 이전 테스트의 제목을 아래 기다림이 "effect 끝남"으로 잘못 읽지 않게 비운다(STUDIO-SLIM S5 — StudioShell.test는 afterEach에서)
+  document.title = "";
   act(() => void router.navigate("/studio/project-1"));
   await screen.findByRole("heading", { level: 1, name: STUDIO_PROJECT.name });
+  // h1은 act 밖 커밋으로 나타난다 — 그 커밋의 effect(문서 제목 · 캔버스 message 수신 등록)가 돌기 전에 ready를 보내면 ready를 잃는다(STUDIO-SLIM S5).
+  // 같은 커밋의 effect는 함께 돌므로 문서 제목이 바뀔 때까지 기다린 뒤 붙인다
+  await waitFor(() => expect(document.title).toBe(`${STUDIO_PROJECT.name} 편집`));
   // 캔버스 = 렌더 문서 iframe(M2A-1) — jsdom은 render.html을 싣지 않으므로 흉내를 붙인다(ready + render마다 rects)
   const frame = connectRenderFrame();
   return { router, saved: projects.saved, frame };

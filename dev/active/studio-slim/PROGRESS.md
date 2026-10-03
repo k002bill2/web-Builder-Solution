@@ -10,10 +10,10 @@
 - [x] 수신 · REPORT 골격 커밋 (b8d83b5)
 - [x] S0 기준선 — logs/s0-bundle(-full).txt · logs/s0-attr-studio.txt (attr.mjs)
 - [x] S1 시제품 A(지연 로더 /studio −6.26)·B(advancedChunks) 실측 — 둘 다 다른 화면 규칙 위반 → 채택 0, 정지 (REPORT 3·6절)
-- [ ] S2 — BLOCKED: 채택 가능한 구조안 없음(A는 /compare 첫 +0.09·진입 +0.31) → 영환님 결정 대기(REPORT 6절)
+- [x] S2 RED(logs/s2-red.txt) → GREEN(안 A) · SCENARIOS 갱신 · gate logs/s2-gate.txt exit 0 (재개 ★A)
 - [x] S3 후보 기록만 (REPORT 6절)
 - [x] REPORT 마감
-- [ ] S4 브라우저 흐름·전체 vitest 3회·Codex — BLOCKED: 코드 변경 0(S2 미착수)이라 검증 대상 없음
+- [ ] S4 브라우저 흐름 1회 · 전체 vitest 3회 · Codex 1회 (재개 진행 중)
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

@@ -1,14 +1,15 @@
 # STUDIO-SLIM — REPORT
 
 - 브리프 `docs/06-handoff/STUDIO-SLIM_BRIEF.md` · 시작 커밋 `c855719` · 브랜치 `k002bill2/studio-slim`
-- **결론: S1에서 정지 — 실측한 두 구조안 모두 "다른 화면 ±0.03 이내 또는 감소" 규칙을 어겨 채택 불가. 코드 변경 0**(시제품은 `logs/s1-*.patch`로 보존 후 원복).
-  `/studio` 감소 자체는 실측으로 확인됨(안 A **124.70 → 118.44, −6.26**). 채택 여부는 영환님 결정(6절).
+- 재개 지시 `docs/06-handoff/STUDIO-SLIM_RESUME.md`(영환님 ★A, 2026-10-03): **안 A 채택 · `/compare` 첫 +0.09·진입 +0.31 허용**(ADR-004 개정 3 결정 1). 판정: `/studio` 진입 ≤ 118.60 · `/projects` 진입 ≤ 100.30 · `/compare` 첫 ≤ 98.87·진입 ≤ 121.74 · 그 밖 ±0.03 이내 또는 감소 · 렌더 변화 0.
+- **결론(재개 S2): 안 A 구현 — `/studio/:projectId` 진입 124.70 → 118.44(−6.26), `/projects` 107.07 → 100.16(−6.91), `/profile` 진입 −4.96. 판정 전부 통과.**
+- (이전 실행) S1에서 정지 — 두 안 모두 "다른 화면 ±0.03" 규칙에 걸려 결정 요청(3·6절).
 
 ## 1. 커밋 표
 | 단계 | 커밋 | 내용 |
 |---|---|---|
 | 수신 | b8d83b5 | 수신 기록 · REPORT 골격 · `gate.sh` |
-| S0·S1 | (이 커밋) | 기준선 · 모듈별 기여 · 시제품 2안 실측 · **정지 보고** (코드 변경 0) |
+| S0·S1 | 2ccee88 · 68acad7 | 기준선 · 모듈별 기여 · 시제품 2안 실측 · **정지 보고** (코드 변경 0) |
 
 ## 2. 원인 (S0 — 브리프 원인 확인 + 추가 사실)
 - 확인: `createMemoryStudio`가 store 하나로 보드·프로필·생성 저장소를 즉시 만든다 → `memoryStudio` 청크(3.83: 보드 1.20 · 생성 0.88 · 프로필 0.66 · store 0.58 …)와
@@ -29,15 +30,19 @@
 - 브리프 예시 (b) "store·팩토리만 두고 구현은 화면별 청크가" 는 A와 같은 분할 지점(store·프로필 ≠ 보드 청크)이라 같은 쪼개짐이 생길 것으로 **추정(L3, 미실측)** → 따로 시제품하지 않았다(B가 그 쪼개짐을 막는 시도).
 - **쪼개짐 원인 확인(빌드 없이 manifest, `logs/s1-split-importers.txt`)**: 기준선에서는 이 작은 모듈들이 `profileDraft` 청크 하나에 들어 있었고 그 청크를 `memoryStudio`·`memoryProjectRepository`·`memoryBoardConfirm`·`memoryGenerate`·`boardInput`·`boardEngine`이 함께 import했다(memoryStudio가 모두에 닿아 묶였다). 안 A에서는 core가 `profileDraft`에 닿지 않아 모듈마다 import 주체 집합이 갈린다 — `chunkRetry`(core·memoryBoardConfirm·memoryProjectRepository·boardEngine) · `compareBoardRepository`(memoryBoardConfirm·보드 구현·boardEngine) · `fonts`(profileDraft·boardInput·boardEngine) · `hash`(profileDraft·memoryGenerate) · `generationRepository`·`generatorVersion`(memoryGenerate·memoryDocBook·생성 구현). **원인이 import 경로 하나가 아니라 6곳**이라 경로 하나 조정하는 시제품 C는 하지 않았다(`chunkRetry`는 `/studio`의 프로젝트 저장소도 써서 보드 쪽으로 되돌릴 수 없다).
 - 안 A 시제품에서 확인한 것은 빌드(typecheck 포함)·번들 판정뿐 — vitest·lint는 돌리지 않았다.
+- **재개 S2 채택 = 안 A 그대로**(시제품 패치 + `deferredStudio.ts`, 코드 차이 0). 바뀐 파일: 새 `app/src/data/deferredStudio.ts`(+ test) · `app/src/main.tsx`(로더가 `createDeferredStudio`만 받음, `board()`·`generations()`는 지연 로더 호출) · `app/scripts/check-bundle-size.mjs`(SCENARIOS 목록·주석만 — 예산 상수·멈춤선 0). `createMemoryStudio`(테스트 동기 경로)·저장소 인터페이스 시그니처 변경 0.
+- SCENARIOS 갱신 근거: `COMPARE_AUTO` = boardEngine · deferredStudio · memoryCompareBoardRepository(보드 로더 = 진입 getBoard) · 비교 픽스처(보드 로더 안) / `PROJECT_AUTO` = deferredStudio · memoryProjectRepository / `/profile` auto = profileEngine · deferredStudio · memoryGenerationRepository(useGeneration 진입 findJob) · afterAction에 memoryProjectRepository 추가(CandidatesSection `loadProjects().startDoc` ← "편집 시작" onClick).
 
 ## 4. 번들 전후 표
 | 체크포인트 | 공통 | `/catalog` 첫/진입 | `/references/:id` 첫/진입 | `/compare` 첫/진입 | `/profile` 첫/진입 | `/projects` 첫/진입 | `/studio` 첫/진입 | 렌더 JS / CSS |
 |---|---|---|---|---|---|---|---|---|
 | S0 기준선(= 정지 후, 코드 변경 0) | 89.34 | 99.64 / 102.03 | 96.99 / 99.38 | 98.75 / 121.40 | 99.60 / 123.64 | 94.00 / 107.07 | 91.72 / 124.70 | 79.89 / 6.32 |
 | S1 시제품 A(참고, 커밋 안 함) | 89.35 | 99.66 / 102.05 | 97.01 / 99.39 | 98.84 / 121.71 | 99.62 / 118.68 | 94.01 / 100.16 | 91.73 / 118.44 | 79.89 / 6.32 |
+| **S2 안 A 구현**(`logs/s2-gate.txt`) | 89.35 (+0.01) | 99.66 / 102.05 (+0.02/+0.02) | 97.01 / 99.39 (+0.02/+0.01) | 98.84 / 121.71 (≤98.87 / ≤121.74 ✓) | 99.62 / 118.68 (+0.02/−4.96) | 94.01 / 100.16 (≤100.30 ✓) | 91.73 / **118.44** (≤118.60 ✓) | 79.89 / 6.32 (0) |
 - 조작 뒤 목록 포함 전체: `logs/s0-bundle-full.txt` · 게이트: `logs/g0-receive.txt` = `logs/s0-bundle.txt`, `logs/s1-gate.txt`.
 
 ## 5. 테스트
+- **S2 RED**(`logs/s2-red.txt`): `app/src/data/deferredStudio.test.ts` — 모듈 없음으로 실패(3 테스트 수집 전). **GREEN**: 3/3 — (1) `profiles.getProfile` + `projects().listProjects()`만 부른 뒤 `imports.board`·`imports.generations` 호출 0 · 카탈로그 로드 0 (2) 보드·생성·프로젝트 로더는 같은 인스턴스·import 1회 (3) 같은 팩토리로 확정 → 프로필(project 연결) → 3안 succeeded → `startDoc(B)` → 목록 hasDoc. 게이트 `logs/s2-gate.txt`: 표적 31/31 · 가드 76/76 · typecheck · lint · build exit 0.
 - 코드 변경 0 → S2(RED·GREEN)·S4(브라우저 흐름·전체 vitest 3회·Codex) 미진행. 게이트(가드 76/76 · typecheck · lint · build) exit 0 — `logs/s1-gate.txt`.
 - S2를 재개할 때 RED 설계(시제품 A 기준): `createDeferredStudio(loadCatalog, imports)`가 import 함수를 주입받으므로 (1) `profiles.getProfile` + `projects()`만 부른 뒤 `imports.board`·`imports.generations` 호출 0 (2) 같은 팩토리로 확정 → 프로필 → 3안 → `startDoc`이 store 하나로 이어짐을 단언.
 

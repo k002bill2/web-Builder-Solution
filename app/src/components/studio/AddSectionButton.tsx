@@ -11,6 +11,7 @@ export function AddSectionButton({ permission, onOpen }: { readonly permission: 
   return (
     <div className="flex flex-col gap-1">
       <Button
+        id="studio-add-section"
         variant="outline"
         size="sm"
         leadingIcon="plus"

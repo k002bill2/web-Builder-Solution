@@ -25,6 +25,12 @@ import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./St
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
 import { StructureCanvas } from "./StructureCanvas";
+import { GateList } from "./GateList";
+import { Button } from "../ds/Button";
+import type { GateRow } from "../../engine/contracts/records";
+import { useGateReport } from "../../features/studio/useGateReport";
+import { gateCounts, gateSummaryNotice } from "../../features/studio/gateView";
+import { emitEditorEvent } from "../../features/studio/editorEvents";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 /** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
@@ -205,6 +211,52 @@ export function StudioLayout({
     field.focus();
   });
 
+  // 게이트 줄·툴바 → 이동(E-S23 · E-S26 · 5.12 표 "이동 대상"). 선택·탭을 바꾼 뒤 다음 커밋에서 요소 id로 포커스(없으면 편집 패널 머리)
+  const pendingGate = useRef<string>(undefined);
+  const [gateMoves, setGateMoves] = useState(0);
+  const goTo = useCallback(
+    (elementId: string, target: { readonly select?: string; readonly tab: StudioTab }) => {
+      if (target.select) setSelected(target.select);
+      if (mode === "tabs") setTab(target.tab);
+      pendingGate.current = elementId;
+      setGateMoves((n) => n + 1);
+    },
+    [mode],
+  );
+  useEffect(() => {
+    const id = pendingGate.current;
+    if (!id) return;
+    pendingGate.current = undefined;
+    (document.getElementById(id) ?? document.getElementById("studio-edit-heading"))?.focus();
+  }, [gateMoves]);
+  const gateState = useGateReport(doc, ops.series);
+  const goToRow = useCallback(
+    (row: GateRow) => {
+      const issue = row.issues[0];
+      if (row.id === "contrast") return goTo("studio-theme-heading", { tab: "sections" });
+      if (row.id === "seo-meta") return goTo(`page-info-${issue?.slotKey ?? "title"}`, { select: PAGE_INFO_ID, tab: "edit" });
+      if (issue?.instanceId) return goTo(issue.slotKey ? `field-${issue.instanceId}-${issue.slotKey}` : "studio-edit-heading", { select: issue.instanceId, tab: "edit" });
+      // 없는 섹션(필수 섹션) → "섹션 추가" · 그 밖 문서 전체 문제(h1 없음) → 편집 패널 머리
+      if (row.id === "required-sections") return goTo("studio-add-section", { tab: "sections" });
+      goTo("studio-edit-heading", { tab: "edit" });
+    },
+    [goTo],
+  );
+  // 툴바 "검사 · 내보내기"(E-S26) — h2 "품질 게이트"로(<1024 "검사" 탭) + 요약 알림 1회 · gate_checked(9절, 누를 때만)
+  const { report: gateReport } = gateState;
+  const openGate = useCallback(() => {
+    goTo("studio-gate-heading", { tab: "gate" });
+    if (!gateReport) return;
+    const counts = gateCounts(gateReport);
+    emitEditorEvent({ name: "gate_checked", block_count: counts.block, warn_count: counts.warn });
+    setNotice(gateSummaryNotice(gateReport));
+  }, [goTo, gateReport]);
+  const gateButton = (
+    <Button variant="primary" size="sm" onClick={openGate} aria-label={mode === "tabs" ? "검사 · 내보내기" : undefined} className="flex-none">
+      {mode === "tabs" ? "검사" : "검사 · 내보내기"}
+    </Button>
+  );
+
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
@@ -250,13 +302,19 @@ export function StudioLayout({
       <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
     </EditPanel>
   );
-  const gate = <GatePanel />;
+  const gate = (
+    <GatePanel>
+      <GateList report={gateState.report} stale={gateState.stale} onRow={goToRow} />
+    </GatePanel>
+  );
   const widths = <PreviewWidth value={view} onChange={setView} />;
 
   if (mode === "tabs") {
     return (
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
-        <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} />
+        <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus}>
+          {gateButton}
+        </StudioToolbar>
         {addDialog}
         <StudioTabs
           selected={tab}
@@ -304,6 +362,7 @@ export function StudioLayout({
             </select>
           </label>
           {widths}
+          {gateButton}
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -330,6 +389,7 @@ export function StudioLayout({
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}
+        {gateButton}
       </StudioToolbar>
       <div className="flex min-h-0 flex-1">
         <div className={`${COLUMN} w-55 flex-none border-r border-line-normal`}>

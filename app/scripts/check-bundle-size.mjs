@@ -92,13 +92,14 @@ const SCENARIOS = [
   // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(deferredStudio) → projects()(memoryProjectRepository)
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
   // 편집 틀(StudioLayout — 배치·필드·자동 저장 훅)은 문서가 있으면 렌더에서 자동 lazy(EDITOR-A2-SHELL S7) → 진입 직후 합계
+  // 게이트 엔진(gateCheck = runGate·대비 판정, M2A-3a S-B4): useGateReport effect가 문서를 그린 직후 조작 없이 받는다 → 자동
   // 조작 뒤(EDITOR-A3-1): 구조 연산 본문(docEngine = sectionOps·normalizeDoc) ← docOps.applyDocOp ← useSectionOps.run ← 위로·아래로·삭제·추가·변형 onClick
   //  · 섹션 추가 대화상자(AddSectionDialog lazy) ← adding 상태 ← "섹션 추가" onClick(본문 9개 미만일 때만)
   //  · 변형 교체 목록(VariantOptions lazy = diffSlots 캡션) ← VariantSwitch open 상태 ← "변형 바꾸기" details 펼침(onToggle)
   {
     name: "/studio/:projectId",
     page: "src/pages/StudioPage.tsx",
-    auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx"],
+    auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx", "src/features/studio/gateCheck.ts"],
     afterAction: STUDIO_AFTER_ACTION,
     // ADR-004 개정 3 결정 2 — M2A-3a가 SPEC대로(게이트 펼침 · runGate 진입 자동) 넣고 125를 넘어 이 라우트 진입 한도만 127(멈춤선 126.70). 다른 라우트는 125
     eagerBudgetKb: 127,

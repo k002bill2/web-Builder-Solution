@@ -1,0 +1,4 @@
+     × render.css는 앱 fonts.css를 싣지 않는다 · @font-face·woff 0 (render.css · kit.css) 4ms
+     × 폴백 글자 스택 = 킷 스택: 사이트 루트에서 --font-sans = --site-font(없으면 시스템 sans) · 루트 기본도 시스템 sans(웹폰트 이름 없음) 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed (2)

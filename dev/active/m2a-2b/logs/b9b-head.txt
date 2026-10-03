@@ -1,0 +1,43 @@
+Error: JavaScript evaluation failed at line 0, column 0: TypeError: Cannot read properties of null (reading 'querySelector')
+    at <anonymous>:2:109
+    at __egoPageEvaluate (<anonymous>:2:379)
+    at <anonymous>:3:9; expression: () => { const a = document.querySelector('[data-section="about/story"]'); const t = a.querySelector(".kit-about-text").getBoundingClientRect(); return { layo...
+    at runtimeValue (file:////[eval1]:9139:15)
+    at evaluateInSession (file:////[eval1]:19186:12)
+    at async file:////[eval1]:18809:24
+    at async file:////[eval1]:16691:28
+B9 gate-profiles {"light":[["C-1",8.09,true],["C-2",16.82,true],["C-4",15.31,true],["C-5",4.93,true]],"dark":[["C-1",4.61,true],["C-2",20.08,true],["C-3",4.56,true],["C-4",17.62,true],["C-5",6.06,true]]}
+B9 colors-light-orig-1280 {"n":35,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","bg/ink"],"minRatio":8.09,"bodyTones":["about:base","contact:alt","faq:base","services:alt"],"bad":[]}
+B9 colors-light-orig-390 {"n":32,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","bg/ink"],"minRatio":8.09,"bodyTones":["about:base","contact:alt","faq:base","services:alt"],"bad":[]}
+B9 colors-light-flip-1280 {"n":35,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","muted/bg","bg/ink"],"minRatio":4.93,"bodyTones":["about:alt","contact:base","faq:alt","services:base"],"bad":[]}
+B9 colors-light-flip-390 {"n":32,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","muted/bg","bg/ink"],"minRatio":4.93,"bodyTones":["about:alt","contact:base","faq:alt","services:base"],"bad":[]}
+B9 colors-dark-orig-1280 {"n":35,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","ink/primary","bg/ink"],"minRatio":4.56,"bodyTones":["about:base","contact:alt","faq:base","services:alt"],"bad":[]}
+B9 colors-dark-orig-390 {"n":32,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","ink/primary","bg/ink"],"minRatio":4.56,"bodyTones":["about:base","contact:alt","faq:base","services:alt"],"bad":[]}
+B9 colors-dark-flip-1280 {"n":35,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","muted/bg","ink/primary","bg/ink"],"minRatio":4.56,"bodyTones":["about:alt","contact:base","faq:alt","services:base"],"bad":[]}
+B9 colors-dark-flip-390 {"n":32,"pairs":["ink/bg","on-primary/primary","primary/on-primary","ink/surface","muted/bg","ink/primary","bg/ink"],"minRatio":4.56,"bodyTones":["about:alt","contact:base","faq:alt","services:base"],"bad":[]}
+B9 K-AC-26 card face light orig {"sectionTone":"alt","sectionFace":"surface","cardFace":"bg","cardText":"ink"}
+B9 K-AC-26 card face light flip {"sectionTone":"base","sectionFace":"bg","cardFace":"surface","cardText":"ink"}
+B9 K-AC-26 card face dark orig {"sectionTone":"alt","sectionFace":"surface","cardFace":"primary","cardText":"ink"}
+B9 K-AC-26 card face dark flip {"sectionTone":"base","sectionFace":"bg","cardFace":"primary","cardText":"ink"}
+B9 layout-1280 {"width":1280,"overflowX":0,"visibleNavs":1,"about":{"text":[89,1160,528,77],"figure":[649,869,528,660],"mediaRatio":0.8},"cards":[[89,1816,347,108],[459,1816,347,108],[830,1816,347,108]],"contact":{"text":[89,2537,440,77],"form":[561,2537,616,497]},"verdict":{"aboutTwoCol":true,"aboutTextAbove":false,"cardsSameRow":true,"cardsSameHeight":true,"cardsStacked":false,"contactTwoCol":true,"contactStacked":false}}
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-about.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-about.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-services.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-services.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-faq.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-faq.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-contact.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-1280-contact.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+B9 layout-1024 {"width":1024,"overflowX":0,"visibleNavs":1,"about":{"text":[32,971,457,77],"figure":[521,725,457,571],"mediaRatio":0.8},"cards":[[32,1582,299,108],[355,1582,299,108],[678,1582,299,108]],"contact":{"text":[32,2303,380,107],"form":[444,2303,533,497]},"verdict":{"aboutTwoCol":true,"aboutTextAbove":false,"cardsSameRow":true,"cardsSameHeight":true,"cardsStacked":false,"contactTwoCol":true,"contactStacked":false}}
+B9 layout-768 {"width":768,"overflowX":0,"visibleNavs":0,"about":{"text":[32,750,383,77],"figure":[447,617,274,342],"mediaRatio":0.8},"cards":[[32,1246,214,108],[270,1246,214,108],[507,1246,214,108]],"contact":{"text":[32,1967,689,77],"form":[32,2068,689,497]},"verdict":{"aboutTwoCol":true,"aboutTextAbove":false,"cardsSameRow":true,"cardsSameHeight":true,"cardsStacked":false,"contactTwoCol":false,"contactStacked":true}}
+B9 layout-390 {"width":390,"overflowX":0,"visibleNavs":0,"about":{"text":[16,553,343,63],"figure":[16,641,343,429],"mediaRatio":0.8},"cards":[[16,1253,343,92],[16,1361,343,92],[16,1469,343,92]],"contact":{"text":[16,1956,343,99],"form":[16,2079,343,497]},"verdict":{"aboutTwoCol":false,"aboutTextAbove":true,"cardsSameRow":false,"cardsSameHeight":true,"cardsStacked":true,"contactTwoCol":false,"contactStacked":true}}
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-about.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-about.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-services.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-services.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-faq.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-faq.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-contact.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+SHOT-FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-2b/dev/active/m2a-2b/shots/b9b-390-contact.png CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot
+
+ego's nodejs process exited with code 1.

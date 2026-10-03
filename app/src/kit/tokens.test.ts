@@ -66,4 +66,18 @@ describe("킷 토큰 생성기 (M2A-2a K1 · m2a 0.3~0.5)", () => {
   it("값에 px·hex·vh 0 (K-AC-01·07 — 생성 결과도 단위는 rem·ch·비율)", () => {
     expect(kitCssText(INPUT)).not.toMatch(/\d(px|vh|dvh|svh|lvh)\b|#[0-9a-f]{3,8}\b/i);
   });
+
+  it("카드 톤 변수 (M2A-2b B3 · K1-4 3 · K-AC-26): light = base 섹션 surface 면 / alt 섹션 bg 면 · dark = 두 톤 primary · flat = 면 없음(섹션 면) + 위 구분선", () => {
+    const light = kitVars(INPUT);
+    expect([light["--site-card-face-base"], light["--site-card-face-alt"]]).toEqual(["var(--site-surface)", "var(--site-bg)"]);
+    const dark = kitVars({ ...INPUT, card: { tone: "dark", style: "bordered-lg" } });
+    expect([dark["--site-card-face-base"], dark["--site-card-face-alt"]]).toEqual(["var(--site-primary)", "var(--site-primary)"]);
+    for (const tone of ["light", "dark"] as const) {
+      const flat = kitVars({ ...INPUT, card: { tone, style: "flat" } });
+      expect([flat["--site-card-face-base"], flat["--site-card-face-alt"]]).toEqual(["transparent", "transparent"]);
+      expect(flat["--site-card-top"]).toBe("var(--site-stroke-1)");
+    }
+    expect(kitVars({ ...INPUT, card: { tone: "light", style: "elevated" } })["--site-card-top"]).toBe("0");
+    expect(light["--site-card-top"]).toBe("var(--site-stroke-1)");
+  });
 });

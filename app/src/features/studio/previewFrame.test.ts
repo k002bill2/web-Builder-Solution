@@ -8,10 +8,10 @@ describe("previewFrame", () => {
     expect(PREVIEW_WIDTH_OPTIONS).toEqual(PREVIEW_VIEWS);
   });
 
-  it("프레임 폭 = 태블릿 768 · 모바일 390(rem), 데스크톱은 열 폭(값 없음)", () => {
-    expect(FRAME_REM.desktop).toBeUndefined();
-    expect(FRAME_REM.tablet! * 16).toBe(768);
-    expect(FRAME_REM.mobile! * 16).toBe(390);
+  it("프레임 폭 = 데스크톱 1280 · 태블릿 768 · 모바일 390(rem) — r4.10 데스크톱 프레임 = 실제 1280(열 폭 규칙 폐기)", () => {
+    expect(FRAME_REM.desktop * 16).toBe(1280);
+    expect(FRAME_REM.tablet * 16).toBe(768);
+    expect(FRAME_REM.mobile * 16).toBe(390);
   });
 
   it("프레임이 캔버스보다 넓으면 축소 비율(내림 %) · 좁거나 같으면 1 · 측정 전(0)이면 1", () => {

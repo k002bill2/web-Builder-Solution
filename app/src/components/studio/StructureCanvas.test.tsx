@@ -9,10 +9,10 @@ import { StructureCanvas } from "./StructureCanvas";
  * 캔버스 호스트 · 부모 오버레이 (M2A-1 R4 · SPEC 5.7 r4.8 · E-AC-49). 블록 그리기 단언은 렌더 문서로 옮겼다(render/fallback/FallbackCanvas.test.tsx).
  * 이 파일에 남은 것: 선택 라벨 칩(부모 오버레이) · 문제 표시(부모) · iframe.
  */
-const region = () => screen.getByRole("region", { name: "구조 미리보기" });
+const region = () => screen.getByRole("region", { name: "페이지 미리보기" });
 
-describe("구조 미리보기 — 선택 라벨 칩은 부모 오버레이 (5.7 · B-12)", () => {
-  it("cards-2 선택 → 칩 'Services · 카드 2열' · region '구조 미리보기'", () => {
+describe("페이지 미리보기 — 선택 라벨 칩은 부모 오버레이 (5.7 · B-12)", () => {
+  it("cards-2 선택 → 칩 'Services · 카드 2열' · region '페이지 미리보기'", () => {
     const doc = sampleDoc({ sections: [section("header", "sticky-right-cta", "s-header"), section("hero", "fullbleed-left", "s-hero"), section("services", "cards-2", "s-cards-2"), section("footer", "biz-extended", "s-footer")] });
     render(<StructureCanvas doc={doc} selectedId="s-cards-2" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();
@@ -108,5 +108,72 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     expect(canvasFrame()).toHaveClass("w-full");
     rerender(<StructureCanvas doc={over()} selectedId="s-hero" onSelect={() => {}} view="mobile" scrollable={false} />);
     expect(canvasFrame().parentElement!.style.width).toBe("24.375rem");
+  });
+});
+
+describe("데스크톱 프레임 1280 · 축소 보기 오버레이 정렬 (r4.10 · E-AC-15)", () => {
+  /** 캔버스 안쪽 폭을 정해 주는 ResizeObserver 흉내(jsdom에는 없다) */
+  const observeWidth = (width: number) =>
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(private readonly callback: (entries: { contentRect: { width: number } }[]) => void) {}
+        observe() {
+          this.callback([{ contentRect: { width } }]);
+        }
+        disconnect() {}
+      },
+    );
+
+  it("데스크톱 = 80rem 프레임 → 열 640px이면 50% 축소 · 캡션 '축소 보기 · 50%' · viewport 1280 · 가로 스크롤 0(열 폭 안)", () => {
+    observeWidth(640);
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const { sent } = connectRenderFrame();
+    const zoomed = canvasFrame().parentElement!;
+    expect(zoomed.style.width).toBe("80rem");
+    expect(zoomed.style.zoom).toBe("0.5");
+    expect(within(region()).getByText("축소 보기 · 50%")).toBeInTheDocument();
+    expect(sent).toContainEqual({ type: "viewport", width: 1280 });
+    vi.unstubAllGlobals();
+  });
+
+  it("오버레이는 축소 층 밖(글자 원래 크기) · 선택 테두리·문제 테두리 = 렌더 사각형 × 축소 비율", () => {
+    observeWidth(640);
+    const doc = sampleDoc();
+    const over = { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, title: "가".repeat(30) } } : s)) };
+    render(<StructureCanvas doc={over} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    const i = over.sections.findIndex((s) => s.instanceId === "s-hero");
+    const overlay = region().querySelector<HTMLElement>("[data-canvas-overlay]")!;
+    const zoomed = canvasFrame().parentElement!;
+    expect(zoomed).not.toContainElement(overlay);
+    const chip = within(region()).getByText(/^Hero · /);
+    const box = chip.parentElement!;
+    // fakeRects: 섹션 i = (0, i×100, 800, 96) → × 0.5
+    expect([box.style.left, box.style.top, box.style.width, box.style.height]).toEqual(["0px", `${i * 50}px`, "400px", "48px"]);
+    // 글자 슬롯 사각형(문제 테두리, 바깥 여백 4px은 축소하지 않는다)
+    const sentence = document.getElementById("canvas-issue-s-hero-title")!;
+    const slotIndex = Object.entries(over.sections[i]!.slots).filter(([, v]) => typeof v === "string").findIndex(([k]) => k === "title");
+    const ring = sentence.parentElement!;
+    expect([ring.style.left, ring.style.top, ring.style.width, ring.style.height]).toEqual(["0px", `${(i * 100 + 8 + slotIndex * 12) * 0.5 - 4}px`, `${400 * 0.5 + 8}px`, `${10 * 0.5 + 8}px`]);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe("캔버스 이름 · 캡션 3상태 (m2a 3.4 · K-AC-33 · r4.9)", () => {
+  it("스크롤 영역 접근 이름 = h2 '페이지 미리보기'(등급과 무관 고정) · iframe 이름 '페이지 미리보기 화면'", () => {
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable />);
+    expect(screen.getByRole("heading", { level: 2, name: "페이지 미리보기" })).toBeInTheDocument();
+    expect(region()).toHaveAttribute("tabindex", "0");
+    expect(canvasFrame()).toHaveAttribute("title", "페이지 미리보기 화면");
+  });
+
+  it("캡션 = 문서 상태: 킷 토큰 있음 + cta-band 폴백 → '일부' · 킷 토큰 없음 → F0 · 라이브 영역 아님", () => {
+    const { unmount } = render(<StructureCanvas doc={sampleDoc()} kitTokens={SAMPLE_KIT_TOKENS} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const partial = within(region()).getByText(/^실제 렌더 \(F1 · 일부\) — 섹션 8개 중 1개는/);
+    expect(partial.closest("[aria-live], [role=status]")).toBeNull();
+    unmount();
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    expect(within(region()).getByText(/^구조 미리보기 \(F0\)/)).toBeInTheDocument();
   });
 });

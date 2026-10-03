@@ -1,0 +1,9 @@
+     × 구조: section·form aria-labelledby = h2 · 글(제목·소개) → 폼 · form에 action·method 0 36ms
+     × K-AC-08 (마크업): 모든 input·textarea·button이 fieldset[disabled] 안 · 방문자 안내 = fieldset aria-describedby 대상 · placeholder 0 · 숨긴 legend '문의 양식' 8ms
+     × K-AC-29: 입력칸 3개 = 보이는 label for/id('이름'·'이메일'·'문의 내용') · 타입·name·autocomplete·required · 동의 체크박스 이름 = consent 글자 · 보내기 = submit 글자 · 인라인 opacity 0 7ms
+     × 비활성 모양 = 연결됐을 때와 같은 모양: 입력칸·버튼 글자·면·경계 색을 직접 정한다(UA 비활성 회색·반투명 0) · 커서 not-allowed 1ms
+     × K-AC-04: 소개 빈 값 → 소개 0 · 동의 빈 값 → 체크박스도 0 · 보내기 빈 값 → 버튼 0 · 빈 p 0 6ms
+     × K-AC-03: 상한 글자(제목 40 · 소개 160 · 보내기 16 · 동의 100) 그대로 7ms
+     × contact 선택 → 필드 위 Callout(info) 문구 · 첫 필드보다 앞 3022ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  7 failed | 1 passed (8)

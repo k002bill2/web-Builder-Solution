@@ -1,0 +1,6 @@
+✔︎ Opened a new tab and set it active: tabs[0], page → Design Studio (http://127.0.0.1:4337/catalog)
+PWD /Users/younghwankang/.aside/u/0/sessions/2026-10-03_27UKz10feljgJb0z
+STATE 1280 {"w":1280,"frameCssW":1280,"shownW":721,"scale":0.5633,"scaleCaption":"축소 보기 · 56%","caption":"실제 렌더 (F1 · 일부) — 섹션 9개 중 2개는 아직 구조 미리보기입니다. 이 섹션이 있으면 HTML·zip으로 내보낼 수 없습니다.","iframeTitle":"페이지 미리보기 화면","box":[232,86.3,706,397.1],"expected":[232,86.3,706,397.1],"hScroll":0,"errors":[],"sections":["header-1","hero-1","about-1","services-1","portfolio-1","testimonials-1","faq-1","contact-1","footer-1"]}
+STATE 390 {"w":390,"frameCssW":1280,"shownW":351,"scale":0.2742,"scaleCaption":"축소 보기 · 27%","caption":"실제 렌더 (F1 · 일부) — 섹션 9개 중 2개는 아직 구조 미리보기입니다. 이 섹션이 있으면 HTML·zip으로 내보낼 수 없습니다.","iframeTitle":"페이지 미리보기 화면","box":[12,16.9,336,189],"expected":[12,16.9,336,189],"hScroll":0,"errors":[],"sections":["header-1","hero-1","about-1","services-1","portfolio-1","testimonials-1","faq-1","contact-1","footer-1"]}
+SHOTS 8
+[2m[ok | 19900ms][0m

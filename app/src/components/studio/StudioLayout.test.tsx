@@ -47,7 +47,7 @@ function draw(repository: ProjectRepository, doc: PageDoc = sampleDoc()) {
 }
 
 const editRegion = () => screen.getByRole("region", { name: /^편집 · / });
-const canvas = () => screen.getByRole("region", { name: "구조 미리보기" });
+const canvas = () => screen.getByRole("region", { name: "페이지 미리보기" });
 const row = (name: RegExp) => within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name });
 
 beforeEach(() => {

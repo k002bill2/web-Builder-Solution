@@ -2,12 +2,14 @@ import { useEffect, useId, useMemo, useState } from "react";
 import type { PageDoc, SectionInstance } from "../../engine/contracts/pageDoc";
 import type { Purpose } from "../../engine/ops/rules";
 import { loadDocEngine, type DocEngine } from "../../features/studio/docOps";
+import { RENDERED_VARIANTS } from "../../features/studio/renderedVariants";
 import { variantChoices, type VariantChoice } from "../../features/studio/variantChoices";
 
 /**
  * 변형 교체 라디오 목록(5.5 · E-AC-20) — 조작 뒤 청크(S-B5, "변형 바꾸기"를 펼칠 때만 받는다).
  * 옵션마다 접근 이름 = 이름표(`aria-labelledby`) · 캡션 "유지 N · 잃음 M (이름)" = 설명(`aria-describedby`). 목적 조건으로 막힌 변형은 `disabled`(방향키가 건너뜀) + `aria-disabled`,
  * 이유는 그룹 설명(6.5). 고르면 바로 적용(확인 없음) — 포커스는 라디오 그대로.
+ * 렌더러(킷)가 없는 변형은 이름 뒤 " · 구조 미리보기"(m2a 3.2 C · MQ-3 — 이름표 span 안이라 접근 이름에도 들어간다).
  */
 export default function VariantOptions({
   doc,
@@ -62,6 +64,7 @@ export default function VariantOptions({
           <span className="flex flex-col">
             <span id={`${id}-${choice.variant}-label`} className="ds-body3">
               {choice.label}
+              {!RENDERED_VARIANTS.includes(`${section.type}/${choice.variant}`) && " · 구조 미리보기"}
             </span>
             <span id={`${id}-${choice.variant}`} className="ds-caption1 text-label-alternative">
               {choice.caption}

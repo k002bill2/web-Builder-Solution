@@ -1,0 +1,8 @@
+     × 킷 섹션: section aria-labelledby = h2 id · 제목·본문 data-slot · DOM 순서 글 → 이미지(figure) · figcaption 0 31ms
+     × 섹션 톤: base → 면 bg · alt → 면 surface (data-tone · data-surface) 9ms
+     × K-AC-22: 로컬 이미지 → img[alt] + width·height = 프로필 비율 · lazy · 장식이면 alt='' 6ms
+     × K-AC-22 · MQ-5: 플레이스홀더 → 그라디언트 aria-hidden, img 0 5ms
+     × K-AC-23 [U]·K-AC-04: 이미지 끔 → figure·미디어 0 · 1단 표시(data-layout single) · 빈 요소 0 6ms
+     × K-AC-03: 상한 글자(제목 40 · 본문 400, 줄바꿈 포함) 그대로 5ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  6 failed (6)

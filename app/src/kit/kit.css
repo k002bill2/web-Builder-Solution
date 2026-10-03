@@ -9,7 +9,7 @@
     scroll-margin-top: var(--site-header-offset);
   }
   /* 0.7 넘침 — 말줄임 금지, 긴 영문·URL은 줄바꿈, 한글은 어절 단위 */
-  [data-kit] :where(h1, h2, h3, p, li, a, span, address, button) {
+  [data-kit] :where(h1, h2, h3, p, li, a, span, address, button, summary, label, legend) {
     overflow-wrap: anywhere;
     word-break: keep-all;
   }
@@ -18,7 +18,7 @@
     line-height: 1.25;
   }
   /* 0.3 포커스 링 — 안쪽 간격(면 색이 비침) + 바깥 = 그 면의 알아보는 경계 역할(--kit-ring) */
-  [data-kit] :where(a, button):focus-visible {
+  [data-kit] :where(a, button, summary):focus-visible {
     outline: var(--site-stroke-2) solid var(--kit-ring, var(--site-ink));
     outline-offset: var(--site-stroke-2);
   }
@@ -332,6 +332,298 @@
   @media (width >= 64rem) {
     .kit-footer-inner {
       padding-inline: var(--site-s6);
+    }
+  }
+}
+
+/* 본문 섹션 공통 (m2a 0.3 섹션 면 · 0.5 간격 · 0.12 내용 폭) — 톤 base = bg 면 · alt = surface 면. 좁은 폭 gutter s4 · section-gap 절반 / md 이상 s6 · section-gap */
+@layer components {
+  /* --kit-soft = 보조 글자: base(bg 면) = muted(C-5) · alt(surface 면) = ink(C-4 — muted/surface는 검사 밖) */
+  .kit-body {
+    background: var(--site-bg);
+    color: var(--site-ink);
+    --kit-ring-gap: var(--site-bg);
+    --kit-soft: var(--site-muted);
+    --kit-card-face: var(--site-card-face-base);
+  }
+  .kit-body[data-tone="alt"] {
+    background: var(--site-surface);
+    --kit-ring-gap: var(--site-surface);
+    --kit-soft: var(--site-ink);
+    --kit-card-face: var(--site-card-face-alt);
+  }
+  .kit-wrap {
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-section-gap-narrow) var(--site-s4);
+  }
+  .kit-title {
+    margin: 0;
+    font-size: var(--site-t2);
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-wrap {
+      padding: var(--site-section-gap) var(--site-s6);
+    }
+    .kit-title {
+      font-size: var(--site-t3);
+    }
+  }
+}
+
+/* about/story (K1-3) — md 미만 1단(글 → 이미지) · md~lg 2단 7:5 · lg 이상 2단 같은 폭, 세로 가운데. 이미지 끔 = 1단 · 글 폭 prose-max */
+@layer components {
+  .kit-about-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: center;
+  }
+  .kit-about-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-about[data-layout="single"] .kit-about-text {
+    max-width: var(--site-prose-max);
+  }
+  .kit-about-body {
+    margin: 0;
+    font-size: var(--site-t0);
+    white-space: pre-line;
+  }
+  .kit-about-media {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--site-r1);
+  }
+  .kit-about-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--site-media-ratio);
+  }
+  @media (width >= 48rem) {
+    .kit-about[data-layout="split"] .kit-about-grid {
+      grid-template-columns: 7fr 5fr;
+      column-gap: var(--site-s6);
+    }
+    .kit-about-body {
+      font-size: var(--site-t1);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-about[data-layout="split"] .kit-about-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+/* services/cards-3 (K1-4) — 머리(제목 + 소개 prose-max) → 카드 목록. md 이상 3열 같은 폭·같은 높이(행 늘이기) · md 미만 1열.
+   카드 면 = 섹션 톤별 카드 톤 변수(--kit-card-face) · 카드 글자 ink(C-2·C-3·C-4) · 모양 = radius·경계·그림자·위 구분선 변수 */
+@layer components {
+  .kit-services-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s5);
+  }
+  .kit-services-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+  }
+  .kit-services-intro {
+    max-width: var(--site-prose-max);
+    margin: 0;
+    font-size: var(--site-t0);
+    color: var(--kit-soft);
+  }
+  .kit-cards {
+    display: grid;
+    gap: var(--site-s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .kit-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s3);
+    min-width: 0;
+    padding: var(--site-card-pad-narrow);
+    border: var(--site-card-stroke) solid var(--site-muted);
+    border-top-width: var(--site-card-top);
+    border-radius: var(--site-radius-card);
+    background: var(--kit-card-face);
+    box-shadow: var(--site-card-shadow);
+    color: var(--site-ink);
+  }
+  .kit-card-title {
+    margin: 0;
+    font-size: var(--site-t1);
+    color: var(--site-ink);
+  }
+  .kit-card-body {
+    margin: 0;
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--site-s5);
+    }
+    .kit-card {
+      padding: var(--site-card-pad);
+    }
+  }
+}
+
+/* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
+@layer components {
+  .kit-faq-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s5);
+  }
+  .kit-faq-list {
+    max-width: var(--site-prose-max);
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-faq-item {
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-faq-q {
+    min-height: var(--site-hit-min);
+    padding-block: var(--site-s3);
+    font-size: var(--site-t0);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+    cursor: pointer;
+  }
+  .kit-faq-a {
+    padding-block: var(--site-s2) var(--site-s4);
+  }
+  .kit-faq-answer {
+    margin: 0;
+    white-space: pre-line;
+    color: var(--kit-soft);
+  }
+  @media (width >= 48rem) {
+    .kit-faq-q {
+      font-size: var(--site-t1);
+    }
+  }
+}
+
+/* contact/form (K1-6 · K2 A안) — lg 미만 1단(글 → 폼, 입력칸 전체 폭) · lg 이상 2단(글 5 : 폼 7, 위 정렬).
+   비활성 모양 = 연결됐을 때와 같은 모양: 입력칸·버튼 색을 직접 정해 UA 비활성 회색·반투명을 덮는다(0.3 흐린 글자 0). 비활성 사실은 안내 문구 + disabled 의미로 알린다 */
+@layer components {
+  .kit-contact-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: start;
+  }
+  .kit-contact-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-contact-intro {
+    max-width: var(--site-prose-max);
+    margin: 0;
+    font-size: var(--site-t1);
+    color: var(--kit-soft);
+  }
+  .kit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+    margin: 0;
+  }
+  .kit-notice {
+    margin: 0;
+    font-size: var(--site-t-1);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+  }
+  .kit-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .kit-visually-hidden {
+    position: absolute;
+    width: 0.0625rem;
+    height: 0.0625rem;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .kit-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s3);
+  }
+  .kit-label {
+    color: var(--site-ink);
+  }
+  .kit-field {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s3);
+    border: var(--site-stroke-1) solid var(--site-ink);
+    border-radius: var(--site-radius-control);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    font: inherit;
+    resize: vertical;
+    cursor: not-allowed;
+  }
+  .kit-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    min-height: var(--site-hit-min);
+    font-size: var(--site-t-1);
+    color: var(--site-ink);
+    cursor: not-allowed;
+  }
+  .kit-check {
+    flex: none;
+    margin: 0;
+    width: var(--site-t1);
+    height: var(--site-t1);
+    accent-color: var(--site-primary);
+  }
+  .kit-submit {
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s4);
+    border: 0;
+    border-radius: var(--site-radius-control);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+    font: inherit;
+    font-weight: var(--site-weight-heading);
+    cursor: not-allowed;
+  }
+  @media (width >= 48rem) {
+    .kit-submit {
+      align-self: flex-start;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-contact-grid {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--site-s6);
     }
   }
 }

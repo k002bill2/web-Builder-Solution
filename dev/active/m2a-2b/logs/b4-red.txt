@@ -1,0 +1,5 @@
+     × K-AC-27 [U]: section aria-labelledby = h2 · details 3개 모두 닫힘(open 0) · name 속성 0 · summary 안 헤딩 0 · 질문·답 data-slot 29ms
+     × K-AC-28: q2 빈 값 → 그 details 0 · a3 빈 값 → summary만 있는 details 8ms
+     × K-AC-03: 상한 글자(질문 80 · 답 300, 줄바꿈 포함) 그대로 · 답 글자 = --kit-soft(base muted / alt ink) · 열림 모션 0 6ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  3 failed (3)

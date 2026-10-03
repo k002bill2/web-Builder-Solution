@@ -2,11 +2,12 @@ import { render } from "@testing-library/react";
 import type { PageDoc, SectionInstance, SlotValue } from "../../engine/contracts/pageDoc";
 import { sampleDoc, withSections } from "../../engine/testing/sampleDoc";
 import { PageDocument } from "../PageDocument";
+import type { KitTokenInput } from "../protocol";
 import { SAMPLE_KIT_TOKENS } from "./sampleKitTokens";
 
 /** 테스트 전용 — 킷 섹션을 실제 렌더 문서 본문(PageDocument + 레지스트리)으로 그린다 */
-export const drawDoc = (doc: PageDoc = sampleDoc(), images: Readonly<Record<string, string>> = {}) =>
-  render(<PageDocument doc={doc} kitTokens={SAMPLE_KIT_TOKENS} images={images} />).container;
+export const drawDoc = (doc: PageDoc = sampleDoc(), images: Readonly<Record<string, string>> = {}, kitTokens: KitTokenInput = SAMPLE_KIT_TOKENS) =>
+  render(<PageDocument doc={doc} kitTokens={kitTokens} images={images} />).container;
 
 /** 섹션 하나의 슬롯 바꾸기 */
 export const patch = (doc: PageDoc, instanceId: string, slots: Readonly<Record<string, SlotValue>>): PageDoc =>

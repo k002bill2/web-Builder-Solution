@@ -52,6 +52,10 @@ export function kitVars(input: KitTokenInput): Readonly<Record<string, string>> 
     "--site-stroke-1": "0.0625rem",
     "--site-stroke-2": "0.125rem",
     "--site-card-stroke": stroke,
+    // 카드 톤 변수 (K1-4 3 · K-AC-26) — 섹션 톤별 카드 면: light = base 섹션 surface · alt 섹션 bg(섹션 면과 구분되게 뒤집음) / dark = primary(C-3) / flat = 면 없음 + 위 구분선
+    "--site-card-face-base": card.style === "flat" ? "transparent" : card.tone === "dark" ? "var(--site-primary)" : "var(--site-surface)",
+    "--site-card-face-alt": card.style === "flat" ? "transparent" : card.tone === "dark" ? "var(--site-primary)" : "var(--site-bg)",
+    "--site-card-top": card.style === "elevated" ? "0" : "var(--site-stroke-1)",
     "--site-shadow-1": "0 0.125rem 0.5rem color-mix(in srgb, var(--site-ink) 16%, transparent)",
     "--site-card-shadow": shadow,
     "--site-hit-min": "2.75rem",

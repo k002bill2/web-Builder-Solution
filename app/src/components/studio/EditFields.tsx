@@ -1,10 +1,15 @@
+import { lazy, Suspense } from "react";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { setSlot } from "../../engine/ops/slotOps";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import { slotIssue } from "../../features/studio/canvasIssues";
 import { selectedSection } from "../../features/studio/selection";
+import { Callout } from "../ds/Callout";
 import { FieldEditor } from "./FieldEditor";
 import { PageInfoFields } from "./PageInfoFields";
+
+/** 사이트 주인용 안내(m2a K2) — contact/form 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
+const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
 
 /**
  * 편집 패널 필드 (SPEC 5.6 · E-AC-06) — 선택 섹션의 글자 슬롯(`FieldEditor`) 또는 "페이지 정보"(`PageInfoFields`).
@@ -17,6 +22,11 @@ export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc;
   const images = slots.filter((entry) => entry.kind === "image").length;
   return (
     <div className="flex flex-col gap-4">
+      {section.type === "contact" && section.variant === "form" && (
+        <Suspense fallback={null}>
+          <ContactOwnerNote Callout={Callout} />
+        </Suspense>
+      )}
       {slots.map((entry) => {
         if (entry.kind === "image") return null;
         const value = section.slots[entry.key];

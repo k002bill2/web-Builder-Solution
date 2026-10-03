@@ -29,10 +29,10 @@ describe("공통 K-AC — 3변형 + 폴백 혼합 문서", () => {
   it("K-AC-16: 폴백 섹션마다 표식 1개 '구조 미리보기' · 킷 섹션 0 · 표식은 자기 고정 색 면", () => {
     const s = site();
     const fallbacks = [...s.querySelectorAll('[data-fallback="true"]')];
-    expect(fallbacks).toHaveLength(2);
-    expect(s.querySelectorAll('[data-kit-marker="fallback"]')).toHaveLength(2);
+    expect(fallbacks).toHaveLength(1);
+    expect(s.querySelectorAll('[data-kit-marker="fallback"]')).toHaveLength(1);
     for (const kit of s.querySelectorAll("[data-kit]")) expect(kit.querySelector("[data-kit-marker]")).toBeNull();
-    expect(s.querySelectorAll("[data-kit]")).toHaveLength(6);
+    expect(s.querySelectorAll("[data-kit]")).toHaveLength(7);
   });
 
   it("K-AC-03 · K-AC-04: 3변형 상한 글자 그대로 · 선택 슬롯 빈 값(hero subtitle · footer links·copyright) → 빈 p·li·ul 0", () => {

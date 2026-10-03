@@ -12,7 +12,7 @@
 - [x] B2 about/story — kit/AboutStory · kit/body(면·제목 id) · KitSectionProps.mediaRatio · RED e1a0213 (레지스트리·kitCommon 개수는 레지스트리 증가 반영)
 - [x] B3 services/cards-3 — kit/ServicesCards3 · 카드 톤 변수 --site-card-face-base/alt·--site-card-top · --kit-soft(base muted/alt ink) · RED 커밋 · 이관: kitCommon K-AC-09 h3(카드)·K-AC-11 색 집합(+--kit-soft, muted는 base만)
 - [x] B4 faq/accordion — kit/FaqAccordion(details/summary · open·name 0 · 빈 질문 생략) · summary 포커스 링 공통 규칙 포함
-- [ ] B5 contact/form · K2 A안 · 주인용 안내 (K-AC-08 마크업·29·30 배치)
+- [x] B5 contact/form — kit/ContactForm(fieldset disabled · 안내 aria-describedby · action·placeholder 0 · label for/id · 동의 · 비활성 색 직접 지정) · 주인용 안내 = EditFields contact/form 선택 시 Callout info(eager, /studio +0.16)
 - [ ] B6 캔버스 캡션 3상태 · "페이지 미리보기"(이관 표)
 - [ ] B7 변형 목록 표시 · 키 목록 = 킷 레지스트리 가드
 - [ ] B8 렌더 문서 웹폰트 제거
@@ -24,5 +24,6 @@
 - 사용 0 (브리프 금지)
 
 ## 메모
-- /studio 진입 누계: B0 124.23 → B1 124.24 → B2 124.24 → B3 124.24 → B4 124.24
-- 렌더 JS/CSS 누계: B0 78.86/5.76 → B1 78.86/5.76 → B2 79.07/5.97 → B3 79.30/6.14 → B4 79.43/6.23
+- /studio 진입 누계: B0 124.23 → B1 124.24 → B2 124.24 → B3 124.24 → B4 124.24 → B5 124.40
+- 렌더 JS/CSS 누계: B0 78.86/5.76 → B1 78.86/5.76 → B2 79.07/5.97 → B3 79.30/6.14 → B4 79.43/6.23 → B5 79.89/6.48
+- B5 중 CanvasPalette.test '프로필 없음 → 중립 토큰' 1회 실패(동시 실행 부하) → 단독 재실행 2회 통과. 전체 3회(B11)에서 다시 본다

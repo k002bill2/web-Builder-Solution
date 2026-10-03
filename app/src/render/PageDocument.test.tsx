@@ -55,7 +55,7 @@ describe("렌더 문서 뼈대 (K-AC-09 · 0.12)", () => {
   });
 
   it("레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) · 모르는 쌍 undefined", () => {
-    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "faq/accordion", "footer/biz-extended", "header/sticky-right-cta", "hero/fullbleed-left", "services/cards-3"]);
+    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "contact/form", "faq/accordion", "footer/biz-extended", "header/sticky-right-cta", "hero/fullbleed-left", "services/cards-3"]);
     expect(kitFor({ type: "hero", variant: "split" } as SectionInstance)).toBeUndefined();
   });
 });

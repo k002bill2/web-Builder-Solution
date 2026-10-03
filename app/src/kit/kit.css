@@ -516,3 +516,114 @@
     }
   }
 }
+
+/* contact/form (K1-6 · K2 A안) — lg 미만 1단(글 → 폼, 입력칸 전체 폭) · lg 이상 2단(글 5 : 폼 7, 위 정렬).
+   비활성 모양 = 연결됐을 때와 같은 모양: 입력칸·버튼 색을 직접 정해 UA 비활성 회색·반투명을 덮는다(0.3 흐린 글자 0). 비활성 사실은 안내 문구 + disabled 의미로 알린다 */
+@layer components {
+  .kit-contact-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: start;
+  }
+  .kit-contact-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-contact-intro {
+    max-width: var(--site-prose-max);
+    margin: 0;
+    font-size: var(--site-t1);
+    color: var(--kit-soft);
+  }
+  .kit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+    margin: 0;
+  }
+  .kit-notice {
+    margin: 0;
+    font-size: var(--site-t-1);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+  }
+  .kit-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .kit-visually-hidden {
+    position: absolute;
+    width: 0.0625rem;
+    height: 0.0625rem;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .kit-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s3);
+  }
+  .kit-label {
+    color: var(--site-ink);
+  }
+  .kit-field {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s3);
+    border: var(--site-stroke-1) solid var(--site-ink);
+    border-radius: var(--site-radius-control);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    font: inherit;
+    resize: vertical;
+    cursor: not-allowed;
+  }
+  .kit-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    min-height: var(--site-hit-min);
+    font-size: var(--site-t-1);
+    color: var(--site-ink);
+    cursor: not-allowed;
+  }
+  .kit-check {
+    flex: none;
+    margin: 0;
+    width: var(--site-t1);
+    height: var(--site-t1);
+    accent-color: var(--site-primary);
+  }
+  .kit-submit {
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s4);
+    border: 0;
+    border-radius: var(--site-radius-control);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+    font: inherit;
+    font-weight: var(--site-weight-heading);
+    cursor: not-allowed;
+  }
+  @media (width >= 48rem) {
+    .kit-submit {
+      align-self: flex-start;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-contact-grid {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--site-s6);
+    }
+  }
+}

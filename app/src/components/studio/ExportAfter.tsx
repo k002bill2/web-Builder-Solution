@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef } from "react";
 import type { ExportFormat } from "../../data/projectRepository";
 import type { GateReport } from "../../engine/contracts/records";
-import { releaseDownloads, type ExportResult } from "../../features/studio/exportFlow";
+import { releaseDownloads } from "../../features/studio/exportDownloads";
+import type { ExportResult } from "../../features/studio/exportFlow";
 import { GATE_ROW_NAMES } from "../../features/studio/gateView";
 import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
@@ -80,8 +81,11 @@ function DownloadLink({ href, fileName }: { readonly href: string; readonly file
   );
 }
 
-/** E-S27 결과 — 생성기 없음 = informative(오류 아님, alert 아님) · 구조 미리보기 = cautionary `role=status` + 이동 · 재시도 가능 실패 = alert + 다시 시도 */
-export function ExportResultView({ result, onRetry, onFirstFallback }: { readonly result: ExportResult; readonly onRetry: () => void; readonly onFirstFallback: (instanceId: string) => void }) {
+/**
+ * E-S27 결과 — 생성기 없음 = informative(오류 아님, alert 아님) · 구조 미리보기 = cautionary `role=status` + 이동.
+ * 재시도 가능 실패(alert + 다시 시도)는 편집기 청크의 ExportRetryAlert가 그린다 — 이 청크를 받지 못해도 떠야 한다(M2A-3a Codex P2-1 r2)
+ */
+export function ExportResultView({ result, onFirstFallback }: { readonly result: Exclude<ExportResult, { readonly kind: "retryable" }>; readonly onFirstFallback: (instanceId: string) => void }) {
   if (result.kind === "unavailable") return <Callout tone="info" title={`${NEXT[result.format]}. ${KEEP}`} />;
   if (result.kind === "unrendered") {
     const first = result.sections[0];
@@ -115,20 +119,6 @@ export function ExportResultView({ result, onRetry, onFirstFallback }: { readonl
       </div>
     );
   }
-  if (result.kind === "retryable")
-    return (
-      <div role="alert">
-        <Callout
-          tone="negative"
-          title="내보내지 못했습니다"
-          action={
-            <Button variant="outline" size="sm" onClick={onRetry}>
-              다시 시도
-            </Button>
-          }
-        />
-      </div>
-    );
   return (
     <div role="alert">
       <Callout tone="negative" title={result.code === "STALE_DOC" ? "다른 곳에서 문서가 바뀌어 내보내지 않았습니다" : "품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요"} />

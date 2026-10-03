@@ -111,6 +111,16 @@ describe("줄 → 이동 · 툴바 '검사 · 내보내기' (E-AC-26 · E-S23 ·
     expect(screen.getByRole("heading", { level: 2, name: /^편집 · / }).textContent).not.toBe("편집 · Hero");
   });
 
+  // M2A-3a Codex P2-3: 2단 배치의 "섹션 추가"는 접힌 '섹션 목록 · 순서' 안 — 펼치지 않으면 브라우저에서 포커스가 가지 않는다(jsdom은 가시성 모형이 없어 open으로 판정)
+  it("1024~1279(2단) — 필수 섹션 줄 → 접힌 '섹션 목록 · 순서'를 펼친 뒤 '섹션 추가' 포커스", async () => {
+    await openGate(withSections(passingDoc(), passingDoc().sections.slice(1)), 1100);
+    const list = screen.getByText("섹션 목록 · 순서").closest("details")!;
+    expect(list.open).toBe(false);
+    act(() => void fireEvent.click(rowButton("필수 섹션")));
+    await waitFor(() => expect(document.activeElement?.id).toBe("studio-add-section"));
+    expect(list.open).toBe(true);
+  });
+
   it("<1024 — 문제 줄 → '편집' 탭으로 바꾼 뒤 포커스", async () => {
     await openGate(sampleDoc({ meta: { title: "브랜드 홈", description: "" } }), 390);
     act(() => void fireEvent.click(screen.getByRole("tab", { name: "검사" })));

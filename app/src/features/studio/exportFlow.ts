@@ -4,6 +4,7 @@
  */
 import { projectErrorCode, type ExportFormat, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
 import { emitEditorEvent } from "./editorEvents";
+import { rememberDownload } from "./exportDownloads";
 import { staticHtmlFileName } from "./staticHtml/exportFileName";
 
 export type ExportResult =
@@ -24,14 +25,6 @@ export type ExportResult =
 (globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => (await import("./staticHtml/staticHtml")).createStaticHtmlGenerator;
 
 const POLL_MS = 250;
-/** 이 탭에서 화면에 낸 내려받기 object URL — 편집기 이탈 때 해제(releaseDownloads) */
-const made = new Set<string>();
-
-/** 편집기 이탈(M2A-3b G3 · ExportAfter DownloadLink) — 내려받기 object URL 해제. 돌아와 같은 revision을 다시 요청하면 같은 잡(멱등)이라 링크가 죽는다(REPORT 9절) */
-export function releaseDownloads() {
-  for (const href of made) URL.revokeObjectURL(href);
-  made.clear();
-}
 const POLL_MAX = 40;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -55,7 +48,7 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
       emitEditorEvent({ name: "export_succeeded", format });
       const name = (await repository.getProject(projectId))?.name ?? "";
       const download = job.downloadRef && { href: job.downloadRef, fileName: staticHtmlFileName(name, job.docRevision), hash: job.resultHash ?? "" };
-      if (download) made.add(download.href);
+      if (download) rememberDownload(download.href);
       return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }) };
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });

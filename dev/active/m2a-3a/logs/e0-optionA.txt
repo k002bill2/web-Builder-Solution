@@ -1,0 +1,9 @@
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.72KB / 예산 100KB · 진입 직후 자동 로드 포함: 125.57KB / 예산 125KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.45KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.10KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.37KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/gateCheck.ts: +4.74KB (5개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/GateList.tsx: +1.21KB (1개 파일, 예산 판정 밖)
+[bundle] 예산 검사 실패 — /studio/:projectId: 진입 직후 자동 로드 포함 125.57KB > 125KB

@@ -1,0 +1,56 @@
+== StudioLayout-CjS9XctH.js raw 39647 gz 13.87
+  2.84 src/components/studio/StudioLayout.tsx
+  1.60 src/components/studio/StructureCanvas.tsx
+  1.48 src/features/studio/useAutosaveScheduler.ts
+  0.70 src/components/studio/StudioPanels.tsx
+  0.52 src/components/studio/FieldEditor.tsx
+  0.42 src/features/studio/useSectionOps.ts
+  0.41 src/components/studio/SectionList.tsx
+  0.40 src/features/studio/docPurpose.ts
+  0.35 src/components/studio/StudioTabs.tsx
+  0.33 src/features/studio/docOps.ts
+  0.33 src/components/studio/SectionOpControls.tsx
+  0.33 src/components/studio/StudioToolbar.tsx
+  0.32 src/features/studio/saveStatusText.ts
+  0.31 src/components/studio/EditFields.tsx
+  0.31 src/features/studio/useDocSave.ts
+  0.30 src/components/studio/SaveStatus.tsx
+  0.29 src/components/studio/ExportButtons.tsx
+  0.27 src/components/studio/PageInfoFields.tsx
+  0.24 src/components/studio/PreviewWidth.tsx
+  0.22 src/render/protocol.ts
+  0.22 src/features/studio/opNotice.ts
+  0.21 src/components/studio/VariantSwitch.tsx
+  0.18 src/components/studio/AddSectionButton.tsx
+  0.17 src/features/studio/fieldCounter.ts
+  0.16 src/features/studio/layoutMode.ts
+  0.16 src/features/studio/selection.ts
+  0.15 src/features/studio/canvasCaption.ts
+  0.14 src/components/studio/ConflictCallout.tsx
+  0.13 src/features/studio/canvasIssues.ts
+  0.13 src/features/studio/useFocusRequest.ts
+  0.10 src/features/studio/previewFrame.ts
+  0.09 src/features/studio/undoStack.ts
+  0.06 src/features/studio/renderedVariants.ts
+  0.02 src/features/studio/opPermissions.ts
+== memoryProjectRepository-H-Ol0dKK.js raw 2747 gz 1.30
+  1.30 src/data/memoryProjectRepository.ts
+== memoryStudio-Cf24knX8.js raw 9585 gz 3.83
+  1.20 src/data/memoryCompareBoardRepository.ts
+  0.88 src/data/memoryGenerationRepository.ts
+  0.66 src/data/memoryProfileRepository.ts
+  0.58 src/data/studioStore.ts
+  0.21 src/data/memoryStudio.ts
+  0.16 src/data/writeBodyLoader.ts
+  0.07 src/domain/profile.ts
+  0.05 src/data/generationRepository.ts
+  0.01 src/data/generatorVersion.ts
+== profileDraft-BIHX0oiV.js raw 8979 gz 3.89
+  1.73 src/domain/profileDraft.ts
+  0.96 src/domain/comparisonCells.ts
+  0.67 src/domain/boardPicks.ts
+  0.14 src/data/chunkRetry.ts
+  0.13 src/domain/fonts.ts
+  0.12 src/domain/palette.ts
+  0.08 src/data/compareBoardRepository.ts
+  0.06 src/domain/hash.ts

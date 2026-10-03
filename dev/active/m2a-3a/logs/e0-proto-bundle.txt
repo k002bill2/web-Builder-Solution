@@ -1,0 +1,13 @@
+## 시제품(전체) — logs/e0-proto.patch 적용 상태, gateCheck = 진입 직후 자동(S-B4)
+[bundle] /studio/:projectId 첫 화면 합계: 91.71KB / 예산 100KB · 진입 직후 자동 로드 포함: 130.97KB / 예산 125KB
+[bundle] 예산 검사 실패 — /studio/:projectId: 진입 직후 자동 로드 포함 130.97KB > 125KB
+## 진입 직후 closure 증가분 (node /tmp/closure.mjs src/features/studio/gateCheck.ts)
+1.92 gateCheck(runGate · contrastRow · docRows · slotRows)
+0.80 requiredSections (공유 청크로 분리)
+0.89 contrast (domain/contrast)
+0.76 profileContrast (domain/profileContrast)
+0.38 effectiveProfile (domain/effectiveProfile)
+= runGate 계열 4.75
+StudioLayout 13.05 → 14.49 (+1.44: GateList 1.11 · 이유·버튼·배선)
+issue 5.87 → 5.94
+합계 124.70 → 130.97 (+6.27)

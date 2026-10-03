@@ -1,0 +1,26 @@
+# M2A-3b PROGRESS — 정적 HTML 생성기(숨은 렌더 iframe 직렬화) · 내려받기 · 3a 이관
+
+## 수신 기록
+- 2026-10-04 수신. 브리프 `docs/06-handoff/M2A-3B_STATIC-HTML_BRIEF.md` 전체 읽음(56행).
+- 시작 커밋: `a51de92` (브랜치 `k002bill2/m2a-3b`, worktree `orca/workspaces/web-builder-solution/m2a-3b`)
+- 서브에이전트: 금지(브리프). 포트 4337(필요 시 4339만, 127.0.0.1). 로컬 커밋만(`git commit -- <경로>`), push·병합·삭제 없음. 90턴부터 REPORT 마감 우선.
+- 번들: `/studio` 진입 ≤ 126.70(지금 126.67 · 127 이상 상향 금지 · 넘으면 S-B5 이동 먼저, 그래도 넘으면 멈춤) · 렌더 JS ≤ 89.70 · CSS ≤ 30 · 그 밖 ±0.03.
+- 금지: `ExportJob`·`ExportGenerator` 타입 변경 · `allow-same-origin` · 단언 약화·skip · 새 의존성·아이콘 · 엔진 계약 변경 · `design/`·`docs/design/`·`docs/decisions/` 수정.
+- 게이트: `dev/active/m2a-3b/gate.sh` — 3a 판과 같되 실패 시 exit 1. exit 0 확인 후에만 커밋.
+
+## 단계
+- [ ] 수신 · REPORT 골격(1~9절) 커밋
+- [ ] G0 (1) Codex `review --scope branch --base bec1b38` → `logs/g0-codex-3a.txt` · P1 수정(RED→GREEN) · P2 이하 REPORT 2절
+- [ ] G0 (2) 브라우저 A안 → 폴백 2개 삭제 → 차단 해소 → `GENERATOR_UNAVAILABLE` `shots/g0-1280-unavailable.png` · 대화상자 `shots/g0-1280-dialog.png`
+- [ ] G1 생성 방식 PoC 비교표(REPORT 3절)
+- [ ] G2 serialize/html 프로토콜(RED 먼저 · REPORT 4절)
+- [ ] G3 static-html 생성기 · 지연 import 래퍼 · 진입 실측(REPORT 5·7절)
+- [ ] G4 E-S27 완료 문구 · 내려받기 · 파일 이름(REPORT 5·8절)
+- [ ] G5 K-AC-06·08·30·12·32 · 127.0.0.1 1280·390 캡처(REPORT 6절)
+- [ ] G6 브라우저 끝까지 · 같은 revision 재요청 = 같은 잡(`shots/g6-*` · `logs/g6-flow.txt`)
+- [ ] G7 전체 vitest 3회 · Codex 1회(base a51de92) · REPORT 마감 · 4337 종료 · lsof 0
+
+## 서브에이전트
+- 사용 0 (브리프 금지)
+
+## 메모

@@ -17,13 +17,17 @@ export function useExportFlow({ repository, projectId, save, gate }: { readonly 
   const [waitingSave, setWaitingSave] = useState<ExportFormat>();
   const [confirming, setConfirming] = useState<{ readonly format: ExportFormat; readonly report: GateReport }>();
   const [result, setResult] = useState<ExportResult>();
+  /** 마지막 요청의 revision — "다시 시도"가 같은 잡일지(같은 revision · 저장 전 변경 없음) 가른다 */
+  const [requested, setRequested] = useState<number>();
 
   const { savedRevision, retry: flushSave } = save;
   const request = useCallback(
     async (format: ExportFormat) => {
       setRunning(format);
       setResult(undefined);
-      const next = await (await loadFlow()).requestExportOnce(repository, projectId, format, savedRevision());
+      const revision = savedRevision();
+      setRequested(revision);
+      const next = await (await loadFlow()).requestExportOnce(repository, projectId, format, revision);
       setResult(next);
       setRunning(undefined);
     },
@@ -73,7 +77,12 @@ export function useExportFlow({ repository, projectId, save, gate }: { readonly 
     proceed(confirming.format);
   }, [confirming, proceed]);
   const cancel = useCallback(() => setConfirming(undefined), []);
-  const retryExport = useCallback(() => void (result && request(result.format)), [result, request]);
+  // 같은 revision · 저장 전 변경 없음 = 같은 잡 다시(멱등). 문서가 달라졌으면 일반 시작 흐름(다시 검사 → 경고 확인 → 저장 먼저)
+  const retryExport = useCallback(() => {
+    if (!result) return;
+    const same = requested === savedRevision() && (phase === "idle" || phase === "saved");
+    void (same ? request(result.format) : start(result.format));
+  }, [result, requested, savedRevision, phase, request, start]);
 
   return { busy: running ?? waitingSave, confirming, result, start, confirm, cancel, retry: retryExport };
 }

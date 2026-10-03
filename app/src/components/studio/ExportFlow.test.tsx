@@ -145,6 +145,43 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(events.filter((e) => e.name === "snapshot_created")).toHaveLength(1);
   });
 
+  // M2A-3a-fix F4 (Codex P2 4): "다시 시도"는 실패 요청의 revision이 지금 문서와 같을 때만 같은 잡 — 다르면 일반 시작 흐름
+  const failingExport = () => {
+    const job: ExportJob = { jobId: "export-1", format: "static-html", docRevision: 3, state: "queued", retryable: false };
+    const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: true }));
+    const getExportJob = async () => ({ ...job, state: "failed" as const, errorCode: "JOB_TIMEOUT" as const, retryable: true });
+    return { requestExport, getExportJob };
+  };
+  async function failOnce(repository: ReturnType<typeof failingExport>) {
+    const studio = await open(clean(), repository);
+    act(() => void fireEvent.click(html()));
+    await within(gateRegion()).findByRole("alert");
+    act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));
+    return studio;
+  }
+
+  it("실패 뒤 미저장 편집 → '다시 시도' = 일반 시작 흐름: 다시 검사 → 저장 먼저 → 새 revision으로 요청", async () => {
+    const repository = failingExport();
+    const { saved } = await failOnce(repository);
+    act(() => void fireEvent.change(screen.getByRole("textbox", { name: /^제목/ }), { target: { value: "새 제목" } }));
+    act(() => void fireEvent.click(within(within(gateRegion()).getByRole("alert")).getByRole("button", { name: "다시 시도" })));
+    await waitFor(() => expect(repository.requestExport).toHaveBeenCalledTimes(2));
+    expect(saved).toHaveLength(1);
+    expect(saved[0]!.meta.title).toBe("새 제목");
+    expect(repository.requestExport).toHaveBeenLastCalledWith("project-1", "static-html", 4);
+  });
+
+  it("실패 뒤 차단이 생기는 미저장 편집(SEO 제목 비움) → '다시 시도' = 다시 검사 → 차단이라 요청 0", async () => {
+    const repository = failingExport();
+    await failOnce(repository);
+    act(() => void fireEvent.change(screen.getByRole("textbox", { name: /^제목/ }), { target: { value: "" } }));
+    act(() => void fireEvent.click(within(within(gateRegion()).getByRole("alert")).getByRole("button", { name: "다시 시도" })));
+    await waitFor(() => expect(within(gateRegion()).getByRole("list", { name: "검사 항목" })).not.toHaveAttribute("aria-busy"));
+    await act(async () => void (await new Promise((resolve) => setTimeout(resolve, 50))));
+    expect(within(gateRegion()).getAllByText(/^차단/).length).toBeGreaterThan(0);
+    expect(repository.requestExport).toHaveBeenCalledTimes(1);
+  });
+
   it("UNRENDERED_SECTIONS(경쟁 방어 경로) → cautionary role=status 문구 + 결과 첫 instanceId로 이동 · 다시 시도 없음", async () => {
     const requestExport = async () => Promise.reject(new ProjectRepositoryError("UNRENDERED_SECTIONS", "1", { sections: ["s-about"] }));
     await open(clean(), { requestExport });

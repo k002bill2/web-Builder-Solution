@@ -161,7 +161,8 @@
 | 골격 | e839b15 | 10절 골격 · PROGRESS fix 체크리스트 |
 | F1 | 04a1edb | 대비 줄 color_tokens 없음 = unreadable 경로 · useGateReport 실패 상태 · GateList "검사하지 못했습니다" |
 | F2 | d8dfdf6 | 경고 확인 대화상자 showModal · Esc 취소 · 포커스 복귀 |
-| F3 | (이 커밋) | 잡 실행을 응답 전달과 분리 · 재실행 = 잡의 스냅샷 문서 |
+| F3 | 030bce6 | 잡 실행을 응답 전달과 분리 · 재실행 = 잡의 스냅샷 문서 |
+| F4 | (이 커밋) | 다시 시도 = 같은 revision·변경 없음이면 같은 잡, 아니면 일반 시작 흐름 |
 
 ### 10.2 F1 처리되지 않은 오류 3건
 - **원인**: `SectionRemove.test.tsx`의 프로필 픽스처 `base: { motion_preset: "L1" }`(color_tokens 없음) → `contrastRow.ts` `applied.color_tokens[role]`에서 TypeError → `useGateReport.ts` `compute` 안 `void compute(doc).then(...)`이 거부를 받지 않아 Unhandled Rejection(그 파일의 진입 직후 계산 3회). 앱의 정상 경로에서는 프로필 버전이 늘 참조의 `base`(color_tokens 포함)를 이어받아(`memoryProfileAdjust` `base: latest.base`) 재현 경로를 찾지 못했다 — 다만 저장 데이터가 잘못되면 같은 거부가 나므로 둘 다 막는다.
@@ -182,7 +183,9 @@
 - 번들 `/studio` 진입 126.65.
 
 ### 10.5 F4 다시 시도 (Codex P2 4)
-- (진행 중)
+- `useExportFlow.ts` — 요청할 때 쓴 revision을 `requested`로 기억. "다시 시도" = `requested === savedRevision()`이고 저장 전 변경 없음(phase idle·saved)이면 같은 요청(저장소 멱등 → 같은 잡 재실행), 아니면 **일반 시작 흐름 `start()`**(오래됐으면 다시 검사 → 차단이면 멈춤 → 경고면 확인 대화상자 → 저장 먼저 → 새 revision 요청).
+- 테스트(RED `logs/f4-red.txt` 2건): ExportFlow.test "실패 뒤 미저장 편집 → 다시 시도 = 다시 검사 → 저장 먼저 → revision 4 요청" · "실패 뒤 SEO 제목 비움 → 다시 시도 = 다시 검사 → 차단이라 요청 0". 기존 "재시도 가능 실패 → 다시 시도(같은 요청 다시)" 단언 그대로 통과.
+- 번들: `useExportFlow`는 진입 직후 청크라 `/studio` 진입 126.67(+0.02, 멈춤선 126.70 여유 0.03) (`logs/f4.txt`).
 
 ### 10.6 F5 r4.11 대체텍스트 판정 · 이관 표
 - (진행 중)

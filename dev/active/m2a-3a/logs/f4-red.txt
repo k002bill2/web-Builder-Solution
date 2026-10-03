@@ -1,0 +1,6 @@
+     × 실패 뒤 미저장 편집 → '다시 시도' = 일반 시작 흐름: 다시 검사 → 저장 먼저 → 새 revision으로 요청 403ms
+     × 실패 뒤 차단이 생기는 미저장 편집(SEO 제목 비움) → '다시 시도' = 다시 검사 → 차단이라 요청 0 904ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected [] to have a length of 1 but got +0
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+      Tests  2 failed | 9 passed (11)

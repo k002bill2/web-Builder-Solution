@@ -42,7 +42,8 @@ export function checkBundle({ manifest, sizeOf, scenarios, renderAuto = [] }) {
     const common = staticClosure(APP_ENTRY);
     lines.push(`[bundle] 공통 JS (gzip, 참고): ${format(sumKb(common))}`);
     for (const file of common) lines.push(`  - ${file} ${format(sizeOf(file))}`);
-    for (const { name, page, auto, afterAction = [] } of scenarios) {
+    // eagerBudgetKb = 시나리오별 진입 직후 한도(ADR-004 개정 3 — /studio만 127). 없으면 ROUTE_EAGER_BUDGET_KB
+    for (const { name, page, auto, afterAction = [], eagerBudgetKb = ROUTE_EAGER_BUDGET_KB } of scenarios) {
       // 목록 키가 manifest에 없으면(경로 변경·다른 청크에 합쳐짐) 합계가 조용히 줄어든다 — 실패로 본다
       const missing = [page, ...auto, ...afterAction].filter((key) => !manifest[key]);
       if (missing.length > 0) {
@@ -53,13 +54,13 @@ export function checkBundle({ manifest, sizeOf, scenarios, renderAuto = [] }) {
       const routeKb = sumKb(routeFiles);
       const eagerFiles = auto.reduce((files, key) => staticClosure(key, files), new Set(routeFiles));
       const eagerKb = sumKb(eagerFiles);
-      lines.push(`[bundle] ${name} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${ROUTE_EAGER_BUDGET_KB}KB`);
+      lines.push(`[bundle] ${name} 첫 화면 합계: ${format(routeKb)} / 예산 ${ROUTE_BUDGET_KB}KB · 진입 직후 자동 로드 포함: ${format(eagerKb)} / 예산 ${eagerBudgetKb}KB`);
       for (const key of afterAction) {
         const extra = [...staticClosure(key)].filter((file) => !eagerFiles.has(file));
         lines.push(`[bundle]   ${name} 조작 뒤 ${key}: +${format(sumKb(extra))} (${extra.length}개 파일, 예산 판정 밖)`);
       }
       if (routeKb > ROUTE_BUDGET_KB) failures.push(`${name}: 첫 화면 ${format(routeKb)} > ${ROUTE_BUDGET_KB}KB`);
-      if (eagerKb > ROUTE_EAGER_BUDGET_KB) failures.push(`${name}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${ROUTE_EAGER_BUDGET_KB}KB`);
+      if (eagerKb > eagerBudgetKb) failures.push(`${name}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${eagerBudgetKb}KB`);
     }
   }
 

@@ -9,7 +9,7 @@
 ## 재개 (영환님 ★A 2026-10-03 · `docs/06-handoff/M2A-3A_RESUME.md`)
 - 기반: merge `60c9db9`(main a061040 — STUDIO-SLIM 안 A · ADR-004 개정 3). E0 기준 118.44, 넘으면 /studio 진입 한도만 127(멈춤선 126.70).
 - [x] E-pre openStudio.tsx ready 경쟁 수정(단언 변경 0) — 사용 파일 6개 묶음 단독 x10 10/10 (`logs/epre-x10.txt`)
-- [ ] E0 재측정(SPEC대로 게이트 펼침 · runGate 진입 자동) — 124.70 넘으면 개정 3(127)
+- [x] E0 재측정 — 시제품 124.71 > 124.70 → ADR-004 개정 3: /studio 진입 한도만 127 (`logs/e0r-*`)
 - 아래 E1~E7은 재개 뒤 진행
 
 ## 단계 (원 브리프)

@@ -8,7 +8,8 @@
 | 수신 | c357938 | 수신 기록 · REPORT 골격 (경로 실수: `app/dev/active/`에 들어감) |
 | 수신 | 5d1af48 | 경로 정정 `app/dev → dev` · `gate.sh` |
 | E0 | bb53e01 | E0 실측 · **정지 보고** — 코드 변경 0(시제품은 `logs/e0-proto.patch`로 보존 후 원복) |
-| 재개 E-pre | (이 커밋) | `openStudio.tsx` ready 경쟁 수정(STUDIO-SLIM S5 이관) — 단언 변경 0 · 사용 파일 6개 묶음 x10 10/10 |
+| 재개 E-pre | b8506d7 | `openStudio.tsx` ready 경쟁 수정(STUDIO-SLIM S5 이관) — 단언 변경 0 · 사용 파일 6개 묶음 x10 10/10 |
+| 재개 E0 | (이 커밋) | **ADR-004 개정 3** — `/studio` 진입 한도만 127(시나리오별 `eagerBudgetKb`) · 시제품 실측 124.71 |
 
 ## 2. E0 공간 확보 (전후 실측 · 옮긴 코드)
 **결론: 정지 조건 충족 — 진입 ≤ 124.70 경로가 실측으로 보이지 않아 E1 이전에 멈춘다.** 예산 상수·멈춤선 변경 0, 코드 변경 0.
@@ -34,6 +35,9 @@
 
 ### 2.1 재개(★A) — E-pre · E0 재측정
 - **E-pre**: 공용 도우미 `features/studio/testing/openStudio.tsx`가 h1 뒤 `document.title === "<이름> 편집"`까지 기다린 뒤 `connectRenderFrame()`(StudioShell.test `open()`과 같은 기다림). 제목 비움은 각 파일 `afterEach` 대신 **도우미 안에서 이동 직전**에 한다 — 사용 파일 6개 모두에 같은 줄을 넣는 것과 같은 효과(이전 테스트 제목을 "effect 끝남"으로 잘못 읽지 않음)이고 사용 파일 변경 0. 판정: CanvasPalette·EmptySlot·SectionAdd·SectionMove·SectionRemove·SectionVariant 묶음 단독 **x10 = 10/10**(27 tests, load 18~25) `logs/epre-x10.txt`.
+- **E0 재측정(118.44 기준)**: E0 시제품(`logs/e0-proto.patch` — S-B4대로 `runGate` 진입 직후 자동 · 게이트 8줄 펼침 · 버튼·이유)을 merge 뒤 트리에 다시 얹어 빌드 → `/studio` 진입 **118.44 → 124.71(+6.27)** · 첫 화면 91.72 (`logs/e0r-proto.txt`). 시제품은 하한이라(2절 분해) 실구현은 더 크다 → **124.70 초과 → ADR-004 개정 3 결정 2 적용**.
+- 바꾼 것: `scripts/bundleBudget.mjs` 시나리오별 `eagerBudgetKb`(기본 `ROUTE_EAGER_BUDGET_KB` 125 그대로) + `check-bundle-size.mjs` `/studio/:projectId`만 `eagerBudgetKb: 127`(멈춤선 126.70). 첫 화면·다른 라우트·렌더 예산 변경 0. RED `logs/e0r-red.txt`(1 failed) → GREEN 8/8.
+- 전후 실측: 바꾸기 전 = `/studio` 진입 118.44 / 예산 125(`logs/epre-gate.txt`) · 바꾼 뒤(시제품 얹은 트리) = **124.71 / 예산 127** · 그 밖 /compare 98.84/121.72 · /projects 94.01/100.19 · /profile 99.61/118.67 · 렌더 79.89 (`logs/e0r-gate.txt`). 남은 여유 = 126.70 − 실측 — E1~E5 진입분은 이 안에서, 조작 뒤 코드는 `STUDIO_AFTER_ACTION`.
 
 ## 3. 게이트 표시 (E1 · E2)
 E0 정지로 미진행 — 영환님 결정(2절 선택지) 대기.

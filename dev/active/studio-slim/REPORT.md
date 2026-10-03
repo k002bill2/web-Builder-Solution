@@ -55,3 +55,12 @@
   3. 이 레인 종료 — M2A-3a는 m2a-3a REPORT 2절 선택지(A 게이트 접힘 SPEC 개정 / C 예산 개정)로.
 - S3 후보(SPEC 분류 변경 필요 여부 미확인, 이동하지 않음): `useAutosaveScheduler` 1.48(진입 자동 — 자동 저장 S-B4 근거 행 확인 필요) · `/studio` 진입의 `sectionLibrary` 0.68은 안 A에서 이미 빠짐.
 - 4337 서버: 띄우지 않음.
+
+
+## S5 간헐 실패 수정 (축소 재개 — Developer 작성 · **Jarvis 커밋**, 레인 26/25턴 한도로 커밋 전 중단 · 영환님 ★A 2026-10-03)
+- 증상: 안 A 뒤 `StudioShell.test.tsx` 단독 x10 = 8/10(main 10/10, Jarvis) — "캡션 늘 보임 … 선택 라벨" 265행 `getByText(/^Hero · /)` 못 찾음.
+- 원인(레인): 테스트 `open()`이 h1이 보이자마자 렌더 문서 흉내(`connectRenderFrame`)를 붙여 `ready`를 보낸다. h1은 act 밖 커밋으로 나타나고, 같은 커밋의 effect(문서 제목 · 캔버스 message 수신 등록)가 돌기 전에 `ready`가 오면 잃는다. 지연 로드로 이 간격이 늘었다 — **테스트 쪽 경쟁**(실브라우저 iframe은 훨씬 늦게 ready, 사용자 영향 없음으로 추정).
+- 수정: `open()`이 `document.title === "<이름> 편집"`(같은 커밋 effect 완료 표시)까지 기다린 뒤 붙인다 · `afterEach`에서 제목 비움. 단언 변경 0.
+- 판정: 레인 `logs/s5-x20.txt` 20/20 · `logs/s5-stress.txt` 동시 14개 x 3라운드 전부 통과 · `logs/s5-vitest3.txt` run 1·2 1555/1555, run 3(load 69) 무관 7건 실패(고부하 시간 초과 계열).
+- Jarvis: typecheck·lint 0 · StudioShell 단독 **20/20**(load 47~66) · 전체 vitest x3 = 1555 · 1555 · 1554(EmptySlot 1건 — 그 파일 단독 x10 브랜치·main 모두 10/10).
+- 남은 것(M2A-3a 첫 단계로 이관): 같은 패턴의 공용 도우미 `app/src/features/studio/testing/openStudio.tsx`(EmptySlot 등 사용)에도 같은 기다림 적용. 브라우저 흐름 1회도 M2A-3a E6로 이관.

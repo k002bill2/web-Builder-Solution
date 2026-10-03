@@ -13,7 +13,8 @@
 - [x] S2 RED(logs/s2-red.txt) → GREEN(안 A) · SCENARIOS 갱신 · gate logs/s2-gate.txt exit 0 (재개 ★A)
 - [x] S3 후보 기록만 (REPORT 6절)
 - [x] REPORT 마감
-- [ ] S4 브라우저 흐름 1회 · 전체 vitest 3회 · Codex 1회 (재개 진행 중)
+- [x] S4 전체 vitest 3회 · Codex 1회(결함 0) — 브라우저 흐름은 M2A-3a E6로 이관
+- [x] S5 StudioShell 경쟁 수정(Developer 작성 · Jarvis 커밋, REPORT S5)
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

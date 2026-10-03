@@ -1,0 +1,8 @@
+     × 카드 톤 변수 (M2A-2b B3 · K1-4 3 · K-AC-26): light = base 섹션 surface 면 / alt 섹션 bg 면 · dark = 두 톤 primary · flat = 면 없음(섹션 면) + 위 구분선 4ms
+     × K-AC-25 [U]: section aria-labelledby = h2 · 머리(제목·소개) → ul[role=list] > li 3개, 각 h3 + 설명 (번호 순서) 33ms
+     × 섹션 톤 표시: base → data-surface bg · alt → surface (카드 면 변수가 갈리는 기준) 10ms
+     × K-AC-26 [U]: 카드 면 = 섹션 톤별 카드 면 변수(base → card-face-base · alt → card-face-alt) · 카드 글자 ink · 카드 안 muted 0 · 소개 글자 base muted / alt ink 4ms
+     × K-AC-04: 소개 빈 값 → 소개 0 · card2Body 빈 값 → 카드 2는 제목만 · 카드 제목 빈 값 → 카드는 남고 h3 0 · 빈 p·li 0 6ms
+     × K-AC-03: 상한 글자(제목 40 · 소개 160 · 카드 제목 30 · 설명 120) 그대로 6ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  6 failed | 6 passed (12)

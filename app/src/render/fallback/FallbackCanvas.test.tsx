@@ -98,8 +98,8 @@ describe("렌더 문서 DOM — 외부 자원 0 · 폴백 표식 · 편집기 UI
   it("모든 섹션 머리에 '구조 미리보기' 표식(span — 글자 슬롯 p와 섞이지 않는다)", () => {
     const c = draw(sampleDoc());
     for (const block of c.querySelectorAll<HTMLElement>("[data-instance-id]")) {
-      expect(block.querySelector("[data-fallback-mark]")).toHaveTextContent("구조 미리보기");
-      expect(block.querySelector("[data-fallback-mark]")!.tagName).toBe("SPAN");
+      expect(block.querySelector('[data-kit-marker="fallback"]')).toHaveTextContent("구조 미리보기");
+      expect(block.querySelector('[data-kit-marker="fallback"]')!.tagName).toBe("SPAN");
     }
   });
 

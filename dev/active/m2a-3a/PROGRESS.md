@@ -21,7 +21,7 @@
 - [x] E5 내보내기 시작 · 결과 문구(E-S27 · E-AC-30 · 계측) — ExportFlow.test 8/8 · /studio 126.59/127
 - [x] E6 브라우저 1280·390 캡처(shots/e6-* 4장 · logs/e6-flow.txt) — GENERATOR_UNAVAILABLE 문구는 앱 안 도달 불가로 차단 상태 결과 캡처(REPORT 5.1)
 - [x] E7 Codex 1회(`review --scope branch --base 308ca14`, logs/e7-codex.txt) — P1 이상 0 · P2 4건 → REPORT 9절(코드 변경 0)
-- [ ] E7 전체 vitest 3회 — BLOCKED: Jarvis 몫(재개 지시로 이 실행에서 하지 않음)
+- [x] E7 전체 vitest 3회 — Jarvis(REPORT 10.8)
 - [x] REPORT 1~9절 마감 · 4337 서버 종료(vite dev PID 39465 kill · LISTEN 없음)
 
 ## 서브에이전트
@@ -39,5 +39,5 @@
 - [x] F3 잡 실행 응답 분리 · 재실행 = 잡 스냅샷 문서 — memoryExport.test 12/12
 - [x] F4 다시 시도 = 같은 revision이면 같은 잡, 다르면 일반 시작 흐름 — ExportFlow.test 11/11 · /studio 126.67
 - [x] F5 r4.11 대체텍스트(실제 이미지 슬롯만) · 이관 표 — 전체 1596 통과 · gate.sh f5 exit 0 · /studio 126.67
-- [ ] F6 A안 브라우저 GENERATOR_UNAVAILABLE 결과 캡처
-- [ ] F7 전체 vitest x3 · Codex 1회 · REPORT 마감 · 4337 종료
+- [x] F6 — 미실행, M2A-3b 첫 단계로 이관(영환님 ★A · REPORT 10.7)
+- [x] F7 — Jarvis 검증 vitest x3 exit 0 · Codex는 3b로 이관 · REPORT 마감 · 4337 Jarvis 종료

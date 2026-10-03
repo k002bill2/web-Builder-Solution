@@ -7,7 +7,8 @@
 |---|---|---|
 | 수신 | c357938 | 수신 기록 · REPORT 골격 (경로 실수: `app/dev/active/`에 들어감) |
 | 수신 | 5d1af48 | 경로 정정 `app/dev → dev` · `gate.sh` |
-| E0 | (이 커밋) | E0 실측 · **정지 보고** — 코드 변경 0(시제품은 `logs/e0-proto.patch`로 보존 후 원복) |
+| E0 | bb53e01 | E0 실측 · **정지 보고** — 코드 변경 0(시제품은 `logs/e0-proto.patch`로 보존 후 원복) |
+| 재개 E-pre | (이 커밋) | `openStudio.tsx` ready 경쟁 수정(STUDIO-SLIM S5 이관) — 단언 변경 0 · 사용 파일 6개 묶음 x10 10/10 |
 
 ## 2. E0 공간 확보 (전후 실측 · 옮긴 코드)
 **결론: 정지 조건 충족 — 진입 ≤ 124.70 경로가 실측으로 보이지 않아 E1 이전에 멈춘다.** 예산 상수·멈춤선 변경 0, 코드 변경 0.
@@ -30,6 +31,9 @@
    - A 비용: E-S22·E-S23 "진입 즉시 게이트 차단 → 버튼 사전 차단"이 첫 검사(펼침·"검사 · 내보내기") 뒤로 밀린다 → 5.12·5.13·E-AC-25·29 문장 개정 필요. 폴백 이유(K-AC-18·E-AC-50)는 `RENDERED_VARIANTS`만 써서 진입에서 그대로 가능.
 2. **B 단독(L3 추정 — 빌드 안 함)**: `/studio`가 진입 직후 받지만 부르지 않는 보드·생성 저장소 코드를 공유 store 로더 밖으로(memoryCompareBoardRepository 1.20 · memoryGenerationRepository 0.88 · profileDraft 청크 3.89 중 보드 몫 ≈ 3.4) → 추정 **−4.5~5.5**. +6.27을 다 덮지 못할 가능성이 높고, 2a-04 store 배선 변경(PARALLEL_LANES 규칙 1) · `/compare`·`/profile` ±0.03 규칙과 충돌 위험 → 별도 레인.
 3. **C 예산 개정(ADR-004)**: `/studio` 진입 직후 한도 상향 — 이 레인 권한 밖.
+
+### 2.1 재개(★A) — E-pre · E0 재측정
+- **E-pre**: 공용 도우미 `features/studio/testing/openStudio.tsx`가 h1 뒤 `document.title === "<이름> 편집"`까지 기다린 뒤 `connectRenderFrame()`(StudioShell.test `open()`과 같은 기다림). 제목 비움은 각 파일 `afterEach` 대신 **도우미 안에서 이동 직전**에 한다 — 사용 파일 6개 모두에 같은 줄을 넣는 것과 같은 효과(이전 테스트 제목을 "effect 끝남"으로 잘못 읽지 않음)이고 사용 파일 변경 0. 판정: CanvasPalette·EmptySlot·SectionAdd·SectionMove·SectionRemove·SectionVariant 묶음 단독 **x10 = 10/10**(27 tests, load 18~25) `logs/epre-x10.txt`.
 
 ## 3. 게이트 표시 (E1 · E2)
 E0 정지로 미진행 — 영환님 결정(2절 선택지) 대기.

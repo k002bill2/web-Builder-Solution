@@ -32,8 +32,12 @@ await page.evaluate(() => {
   });
 });
 await page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => (b.getAttribute("aria-label") || b.textContent).trim().endsWith("비교 추가")), undefined, { timeout: 15000 });
-for (const n of ["모던 카페 브랜드", "프리미엄 헤어살롱", "동네 치과 클리닉"]) await page.click(`loc=role:button[name='${n} 비교 추가']`);
-await page.click("loc=role:button[name='비교 보드 열기']");
+// B10: page.click이 #catalog-results 포인터 가로채기로 실패 → DOM click(같은 버튼)
+for (const n of ["모던 카페 브랜드", "프리미엄 헤어살롱", "동네 치과 클리닉"]) {
+  await page.evaluate((name) => [...document.querySelectorAll("button")].find((b) => (b.getAttribute("aria-label") || b.textContent).trim() === `${name} 비교 추가`).click(), n);
+  await page.waitForTimeout(300);
+}
+await page.evaluate(() => [...document.querySelectorAll("button,a")].find((b) => (b.getAttribute("aria-label") || b.textContent).trim() === "비교 보드 열기").click());
 await page.waitForFunction(() => location.pathname === "/compare" && [...document.querySelectorAll("button")].some((b) => /이 요소 선택/.test(b.textContent)), undefined, { timeout: 15000 });
 await page.click("loc=css:button[aria-label='Hero 구성: A 모던 카페 브랜드의 요소 선택']");
 await page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => /^프로필 확정/.test(b.textContent.trim()) && b.getAttribute("aria-disabled") !== "true" && !b.disabled), undefined, { timeout: 15000 });
@@ -46,6 +50,20 @@ await page.waitForFunction(() => document.querySelector("button[aria-label='A안
 await page.evaluate(() => [...document.querySelectorAll("button")].find((b) => /편집 시작/.test(b.textContent)).click());
 await page.waitForFunction(() => /^\/studio\//.test(location.pathname) && !!document.querySelector("#studio-canvas-heading"), undefined, { timeout: 15000 });
 await soft("overlay chip @start", () => !!document.querySelector("[data-canvas-overlay] span.bg-primary"));
+
+// B10: Page.captureScreenshot 간헐 CDP 타임아웃 → clip(뷰포트) 지정 재시도 2회
+const shot = async (path) => {
+  const vw = await page.evaluate(() => [window.innerWidth, window.innerHeight]);
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await page.screenshot(i === 0 ? { path } : { path, clip: { x: 0, y: 0, width: vw[0], height: vw[1] } });
+    } catch (e) {
+      console.log("SHOT-RETRY", path, i, String(e).slice(0, 80));
+      await page.waitForTimeout(1500);
+    }
+  }
+  return "SHOT-FAIL " + path;
+};
 
 const state = () =>
   page.evaluate(() => {
@@ -85,15 +103,15 @@ for (const w of conf.widths) {
   await page.evaluate(() => document.querySelector("iframe")?.scrollIntoView({ block: "start" }));
   await page.waitForTimeout(800);
   console.log("STATE", w, JSON.stringify(await state()));
-  console.log("SHOT", await page.screenshot({ path: `${OUT}/${PREFIX}-${w}-top.png` }));
+  console.log("SHOT", await shot(`${OUT}/${PREFIX}-${w}-top.png`));
   // 아래쪽(footer) — iframe 끝을 뷰포트 아래에 맞춘다
   await page.evaluate(() => document.querySelector("iframe")?.scrollIntoView({ block: "end" }));
   await page.waitForTimeout(600);
-  console.log("SHOT", await page.screenshot({ path: `${OUT}/${PREFIX}-${w}-bottom.png` }));
+  console.log("SHOT", await shot(`${OUT}/${PREFIX}-${w}-bottom.png`));
 }
 if (conf.extra) {
-  const extra = new Function("page", "OUT", "PREFIX", "task", `return (async () => { ${conf.extra} })()`);
-  await extra(page, OUT, PREFIX, task);
+  const extra = new Function("page", "OUT", "PREFIX", "task", "shot", `return (async () => { ${conf.extra} })()`);
+  await extra(page, OUT, PREFIX, task, shot);
 }
 await page.cdp("Emulation.clearDeviceMetricsOverride", {});
 await task.finish({ keep: [] });

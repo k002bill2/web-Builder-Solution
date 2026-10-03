@@ -8,7 +8,7 @@
 ## 단계
 - [x] K0 기준선 — `K0-BASELINE.md` · shots/k0-* (A안 hero fullbleed-left 확인)
 - [x] K1 킷 토큰 — `docKitTokens`(features/studio/docPurpose.ts) · `kitVars`·`kitCssText`(kit/tokens.ts) · logs/k1-red·k1-green
-- [ ] K2 메시지 render{doc, kitTokens} (값 없음 = error, 폴백 계속)
+- [x] K2 render{doc, kitTokens} · error NO_KIT_TOKENS(폴백 계속, 오버레이 유지) · /studio 진입 124.20 · 렌더 JS 77.26 (logs/k2-red·k2-green)
 - [ ] K3 킷 골격 app/src/kit (가드 RED 먼저)
 - [ ] K4 이미지 Blob 전달
 - [ ] K5 header/sticky-right-cta

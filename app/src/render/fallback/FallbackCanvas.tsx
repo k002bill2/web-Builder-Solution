@@ -60,7 +60,7 @@ function SectionBlock({ section }: { readonly section: SectionInstance }) {
   const media = look.media !== false && head.some((v) => v.text === undefined);
   const face = look.face ?? (section.tone === "alt" ? "bg-(--canvas-surface) text-(--canvas-ink)" : "bg-(--canvas-bg) text-(--canvas-ink)");
   return (
-    <div data-instance-id={section.instanceId} data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
+    <div data-instance-id={section.instanceId} data-fallback="true" data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
       <span data-fallback-mark className="self-end text-caption2 font-bold">
         {FALLBACK_MARK}
       </span>
@@ -98,7 +98,7 @@ function SectionBlock({ section }: { readonly section: SectionInstance }) {
 /** 문서 전체 — 루트에 `--canvas-*` 변수(문서 프로필 버전 팔레트, 없으면 중립 토큰) */
 export function FallbackCanvas({ doc, palette }: { readonly doc: PageDoc; readonly palette?: CanvasPalette }) {
   return (
-    <div style={canvasVars(palette)} className="flex flex-col">
+    <div data-fallback-root style={canvasVars(palette)} className="flex flex-col">
       {doc.sections.map((section) => (
         <SectionBlock key={section.instanceId} section={section} />
       ))}

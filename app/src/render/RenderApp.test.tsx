@@ -35,8 +35,8 @@ describe("렌더 문서 수신기", () => {
 
   it("검증 실패 문서 → error{INVALID_DOC} · 그리지 않는다(이전 그림도 지운다)", () => {
     const { container } = render(<RenderApp host={window} />);
-    fromParent({ type: "render", doc: sampleDoc() });
-    fromParent({ type: "render", doc: { ...sampleDoc(), sections: "x" } });
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    fromParent({ type: "render", doc: { ...sampleDoc(), sections: "x" }, kitTokens: SAMPLE_KIT_TOKENS });
     expect(sent("error")).toEqual([{ type: "error", code: "INVALID_DOC" }]);
     expect(container.querySelectorAll("[data-instance-id]")).toHaveLength(0);
   });

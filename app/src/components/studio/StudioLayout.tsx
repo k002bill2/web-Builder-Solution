@@ -8,7 +8,7 @@ import type { MoveDirection } from "../../engine/ops/rules";
 import { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice, swapRevertedNotice } from "../../features/studio/opNotice";
 import type { VariantChoice } from "../../features/studio/variantChoices";
 import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
-import { docPalette, docPurpose } from "../../features/studio/docPurpose";
+import { docKitTokens, docPurpose } from "../../features/studio/docPurpose";
 import { useFocusRequest } from "../../features/studio/useFocusRequest";
 import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
@@ -207,8 +207,8 @@ export function StudioLayout({
 
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
-  // 캔버스 색 = 목적과 같은 조회 결과(ops.series)의 문서 버전 팔레트 — 두 번 부르지 않는다
-  const palette = docPalette(ops.series, doc.profileVersion);
+  // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
+  const kitTokens = useMemo(() => docKitTokens(ops.series, doc.profileVersion), [ops.series, doc.profileVersion]);
   // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
   const opControls = current && (
     <SectionOpControls
@@ -277,7 +277,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -307,7 +307,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
+            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -338,7 +338,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas palette={palette} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
+          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

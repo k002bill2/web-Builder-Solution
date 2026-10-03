@@ -5,3 +5,20 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
   VITE v8.3.1  ready in 886 ms
 
   ➜  Local:   http://127.0.0.1:4337/
+12:18:15 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/components/studio/StructureCanvas.tsx, /src/render/RenderApp.tsx
+12:18:15 PM [vite] (client) hmr update /src/index.css, /src/components/studio/StudioLayout.tsx
+12:19:43 PM [vite] (client) hmr update /src/index.css, /src/render/render.css
+12:19:43 PM [vite] (client) hmr update /src/index.css
+12:19:43 PM [vite] (client) hmr update /src/index.css
+12:19:43 PM [vite] (client) hmr update /src/index.css
+12:20:12 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/components/studio/StructureCanvas.tsx, /src/render/RenderApp.tsx
+12:20:35 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/render/fallback/FallbackCanvas.tsx
+12:20:35 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/render/RenderApp.tsx
+12:20:35 PM [vite] (client) hmr update /src/index.css, /src/components/studio/StructureCanvas.tsx
+12:20:35 PM [vite] (client) hmr update /src/index.css, /src/components/studio/StudioLayout.tsx
+12:20:52 PM [vite] (client) hmr update /src/index.css, /src/render/render.css
+12:21:38 PM [vite] (client) hmr update /src/index.css, /src/components/studio/StudioLayout.tsx
+12:21:38 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/components/studio/StructureCanvas.tsx, /src/render/RenderApp.tsx
+12:21:38 PM [vite] (client) hmr update /src/index.css
+12:21:38 PM [vite] (client) hmr update /src/index.css
+12:21:38 PM [vite] (client) hmr update /src/index.css

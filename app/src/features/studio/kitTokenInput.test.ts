@@ -22,7 +22,7 @@ const version = (n: number, adjustments: ProfileAdjustments, base: DesignProfile
 const series = (...versions: ProfileVersion[]): ProfileSeries => ({ profileId: "p", versions, latestVersion: versions.at(-1)!.version });
 
 describe("docKitTokens — 킷 토큰 입력 (M2A-2a K1 · m2a 0.2 · MQ-1)", () => {
-  it("문서 버전의 적용값(base + 조정)에서 팔레트 5역할 · 카드 · 글꼴 · 간격 · 이미지 비율을 모은다", () => {
+  it("문서 버전의 값 + 조정에서 팔레트 5역할 · 카드 · 글꼴 · 간격 · 이미지 비율을 모은다", () => {
     const s = series(version(1, {}), version(2, { density: "compact", corrections: [{ role: "ink", from: "rgb(3 3 3)", to: "rgb(9 9 9)", check: "C-2" }] }));
     expect(docKitTokens(s, 1)).toEqual({
       palette: { primary: "rgb(1 1 1)", surface: "rgb(2 2 2)", ink: "rgb(3 3 3)", muted: "rgb(4 4 4)", bg: "rgb(5 5 5)" },
@@ -31,10 +31,10 @@ describe("docKitTokens — 킷 토큰 입력 (M2A-2a K1 · m2a 0.2 · MQ-1)", ()
       space: { grid: 8, sectionGap: 96, density: "comfortable" },
       mediaRatio: "16:9",
     });
-    // v2: 보정이 팔레트에 · 촘촘 = 적용값 sectionGap(96 → 72, effectiveProfile 규칙) + density
+    // v2: 보정이 팔레트에 · 촘촘 = base sectionGap + density(환산 96 → 72는 렌더 문서 생성기 — kit/tokens.test · src/test/kitTokens.test)
     const v2 = docKitTokens(s, 2)!;
     expect(v2.palette.ink).toBe("rgb(9 9 9)");
-    expect(v2.space).toEqual({ grid: 8, sectionGap: 72, density: "compact" });
+    expect(v2.space).toEqual({ grid: 8, sectionGap: 96, density: "compact" });
   });
 
   it("선택 값이 없으면 기본(카드 light·bordered-md · 비율 4:5 · grid 8) — 모르는 값도 기본", () => {

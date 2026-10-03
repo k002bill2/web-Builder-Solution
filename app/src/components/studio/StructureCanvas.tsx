@@ -5,7 +5,7 @@ import type { PreviewView } from "../../features/detail/previewView";
 import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
 import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
-import { readRenderMessage, type CanvasPalette, type FrameRect, type ParentMessage } from "../../render/protocol";
+import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage } from "../../render/protocol";
 
 /** 5.7 캡션 — 늘 보인다 */
 export const CANVAS_CAPTION = "구조 미리보기 — 섹션 구성과 실제 문구입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.";
@@ -50,9 +50,9 @@ const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement)
 
 /**
  * 렌더 문서 다리 (M2A-1 R4 · 프로토콜 render/protocol.ts). iframe에서 온 메시지만 받는다(`event.source` + 모양 검사).
- * ready 뒤 문서·팔레트가 바뀔 때마다 render를 통째로 보내고(섹션 ≤ 11), 그 사이 사각형은 비운다 — 다시 그리는 중에는 오버레이를 그리지 않는다(5.7 r4.8).
+ * ready 뒤 문서·킷 토큰 입력이 바뀔 때마다 render를 통째로 보내고(섹션 ≤ 11), 그 사이 사각형은 비운다 — 다시 그리는 중에는 오버레이를 그리지 않는다(5.7 r4.8).
  */
-function useRenderFrame({ doc, palette, selectedId, width, onSelect }: { readonly doc: PageDoc; readonly palette?: CanvasPalette; readonly selectedId: string; readonly width: number; readonly onSelect: (instanceId: string) => void }) {
+function useRenderFrame({ doc, kitTokens, selectedId, width, onSelect }: { readonly doc: PageDoc; readonly kitTokens?: KitTokenInput; readonly selectedId: string; readonly width: number; readonly onSelect: (instanceId: string) => void }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
   // 사각형은 잰 문서와 함께 둔다 — 화면 문서와 다르면(다시 그리는 중) 오버레이를 그리지 않는다(5.7 r4.8)
@@ -70,7 +70,8 @@ function useRenderFrame({ doc, palette, selectedId, width, onSelect }: { readonl
       if (message.type === "ready") setReady(true);
       else if (message.type === "rects") setMeasured(sentDoc.current && { doc: sentDoc.current, rects: message.rects });
       else if (message.type === "click") select.current(message.instanceId);
-      else setMeasured(undefined);
+      // NO_KIT_TOKENS = 폴백은 그렸다(사각형 보고 계속) — INVALID_DOC만 사각형을 지운다
+      else if (message.code === "INVALID_DOC") setMeasured(undefined);
     };
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
@@ -79,8 +80,8 @@ function useRenderFrame({ doc, palette, selectedId, width, onSelect }: { readonl
   useEffect(() => {
     if (!ready) return;
     sentDoc.current = doc;
-    send(palette ? { type: "render", doc, palette } : { type: "render", doc });
-  }, [ready, doc, palette]);
+    send(kitTokens ? { type: "render", doc, kitTokens } : { type: "render", doc });
+  }, [ready, doc, kitTokens]);
   useEffect(() => {
     if (ready && width > 0) send({ type: "viewport", width });
   }, [ready, width]);
@@ -165,7 +166,7 @@ export function StructureCanvas({
   view,
   scrollable,
   head,
-  palette,
+  kitTokens,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
@@ -175,15 +176,15 @@ export function StructureCanvas({
   readonly view: PreviewView;
   readonly scrollable: boolean;
   readonly head?: ReactNode;
-  /** 문서 프로필 버전 팔레트(docPalette) — 없으면 렌더 문서가 중립 토큰 */
-  readonly palette?: CanvasPalette;
+  /** 문서 프로필 버전 킷 토큰 입력(docKitTokens, 팔레트 포함) — 없으면 렌더 문서가 킷 대신 error, 폴백은 중립 토큰 */
+  readonly kitTokens?: KitTokenInput;
 }) {
   const [area, available] = useWidth();
   const frameRem = FRAME_REM[view];
   const framePx = frameRem === undefined ? available : frameRem * remPx();
   const scale = previewScale(frameRem === undefined ? undefined : framePx, available);
   const caption = scaleCaption(scale);
-  const { frame, rects } = useRenderFrame({ doc, palette, selectedId, width: framePx, onSelect });
+  const { frame, rects } = useRenderFrame({ doc, kitTokens, selectedId, width: framePx, onSelect });
   // 프레임 높이 = 섹션 사각형 맨 아래(렌더 문서 자체 스크롤 없음). 다시 그리는 동안은 마지막 높이 유지
   const [height, setHeight] = useState<number>();
   const bottom = rects?.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0);

@@ -42,7 +42,9 @@ describe("킷 토큰 생성기 (M2A-2a K1 · m2a 0.3~0.5)", () => {
     expect(v["--site-section-gap"]).toBe("6rem");
     expect(v["--site-section-gap-narrow"]).toBe("3rem");
     expect(v["--site-card-pad"]).toBe("var(--site-s5)");
-    expect(kitVars({ ...INPUT, space: { ...INPUT.space, density: "compact" } })["--site-card-pad"]).toBe("var(--site-s4)");
+    const compact = kitVars({ ...INPUT, space: { ...INPUT.space, density: "compact" } });
+    expect(compact["--site-card-pad"]).toBe("var(--site-s4)");
+    expect(compact["--site-section-gap"]).toBe("4.5rem"); // 96 → 72(촘촘 환산)
   });
 
   it("카드 모양 → radius·경계·그림자 · 버튼 radius(bordered-lg = r2, 그 밖 r1) · 이미지 비율", () => {

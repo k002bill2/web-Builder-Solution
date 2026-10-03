@@ -18,6 +18,9 @@ const CARD: Readonly<Record<KitTokenInput["card"]["style"], readonly [radius: st
   flat: ["0", "0", "none"],
 };
 
+/** 촘촘 = sectionGap × 0.75를 grid 8의 배수로 내림(effectiveProfile `compactGap`과 같은 규칙 — src/test/kitTokens.test.ts가 대조) */
+export const compactSectionGap = (gap: number) => Math.floor((gap * 0.75) / 8) * 8;
+
 const fontStack = (family: string) => (/serif/i.test(family) && !/sans/i.test(family) ? `"${family}", serif` : `"${family}", system-ui, sans-serif`);
 
 export function kitVars(input: KitTokenInput): Readonly<Record<string, string>> {
@@ -25,6 +28,7 @@ export function kitVars(input: KitTokenInput): Readonly<Record<string, string>> 
   const g = space.grid / 16;
   const [radius, stroke, shadow] = CARD[card.style];
   const compact = space.density === "compact";
+  const gap = compact ? compactSectionGap(space.sectionGap) : space.sectionGap;
   return {
     "--site-primary": palette.primary,
     "--site-surface": palette.surface,
@@ -37,8 +41,8 @@ export function kitVars(input: KitTokenInput): Readonly<Record<string, string>> 
     "--site-weight-body": String(type.bodyWeight),
     ...Object.fromEntries(TYPE_STEPS.map((n) => [`--site-t${n}`, rem(type.scale ** n)])),
     ...Object.fromEntries(STEPS.map((m, i) => [`--site-s${i + 1}`, rem(g * m)])),
-    "--site-section-gap": rem(space.sectionGap / 16),
-    "--site-section-gap-narrow": rem(space.sectionGap / 32),
+    "--site-section-gap": rem(gap / 16),
+    "--site-section-gap-narrow": rem(gap / 32),
     "--site-card-pad": compact ? "var(--site-s4)" : "var(--site-s5)",
     "--site-card-pad-narrow": compact ? "var(--site-s3)" : "var(--site-s4)",
     "--site-r1": rem(g),

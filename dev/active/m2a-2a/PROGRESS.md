@@ -14,6 +14,6 @@
 - [x] K5 header/sticky-right-cta — kit/HeaderStickyRightCta + kit.css · RenderApp 링크 이동 막기·시트 hidePopover · measure 숨은 슬롯 제외
 - [x] K6 hero/fullbleed-left — kit/HeroFullbleedLeft + kit/Media(img·그라디언트) + kit.css
 - [x] K7 footer/biz-extended — kit/FooterBizExtended + kit.css
-- [ ] K8 공통 K-AC
+- [x] K8 공통 K-AC [U] — kit/kitCommon.test.tsx(09·05·16·03·04·11·36 정적) · 폴백 섹션 앵커 id 결함 수정
 - [ ] K9 브라우저 1280·390 뷰포트 캡처
 - [ ] K10 vitest 3회 · Codex 1회 · REPORT · 서버 종료

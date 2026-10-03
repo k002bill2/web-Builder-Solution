@@ -42,3 +42,4 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 12:30:19 PM [vite] (client) hmr update /src/index.css
 12:31:11 PM [vite] (client) hmr update /src/index.css
 12:31:11 PM [vite] (client) hmr update /src/index.css
+12:32:14 PM [vite] (client) hmr update /src/index.css, /src/render/render.css, /src/render/fallback/FallbackCanvas.tsx

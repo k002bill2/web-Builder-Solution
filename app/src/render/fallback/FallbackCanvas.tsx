@@ -60,7 +60,7 @@ export function FallbackSection({ section }: { readonly section: SectionInstance
   const media = look.media !== false && head.some((v) => v.text === undefined);
   const face = look.face ?? (section.tone === "alt" ? "bg-(--canvas-surface) text-(--canvas-ink)" : "bg-(--canvas-bg) text-(--canvas-ink)");
   return (
-    <div data-instance-id={section.instanceId} data-fallback="true" data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
+    <div id={`s-${section.instanceId}`} data-instance-id={section.instanceId} data-fallback="true" data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
       <span data-kit-marker="fallback" className="self-end rounded-sm bg-(--marker-face) px-2 py-0.5 text-caption2 font-bold text-(--marker-text)">
         {FALLBACK_MARK}
       </span>

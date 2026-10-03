@@ -16,9 +16,9 @@
 - [x] G2 serialize/html 프로토콜(RED 먼저 · REPORT 4절)
 - [x] G3 static-html 생성기 · 등록(전역 슬롯 — 래퍼는 진입 초과) · 진입 실측 126.70(REPORT 5·7절)
 - [x] G4 E-S27 완료 문구 · 내려받기 · 파일 이름(REPORT 5·8절) — gate g4 exit 0
-- [ ] G5 K-AC-06·08·30·12·32 · 127.0.0.1 1280·390 캡처(REPORT 6절)
-- [ ] G6 브라우저 끝까지 · 같은 revision 재요청 = 같은 잡(`shots/g6-*` · `logs/g6-flow.txt`)
-- [ ] G7 전체 vitest 3회 · Codex 1회(base a51de92) · REPORT 마감 · 4337 종료 · lsof 0
+- [x] G5 — Jarvis 판정(REPORT 6절 · shots/j-html-*) · K-AC-12·30 상호작용은 3c로
+- [x] G6 — 레인 캡처 g6-1440-done/again · 로그 없음(REPORT 6절)
+- [x] G7 — Jarvis vitest x3 exit 0 · Codex는 3c로 · REPORT 마감(Jarvis) · 서버 Jarvis 종료
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

@@ -1,0 +1,23 @@
+const T = await openTab('http://127.0.0.1:4337/catalog');
+await page.evaluate(([w, h]) => { document.open(); document.write('<!doctype html><body style="margin:0;background:#fff"><iframe id="w" src="/catalog" style="width:' + w + 'px;height:' + h + 'px;border:0;display:block"></iframe></body>'); document.close(); }, [typeof W0 === 'undefined' ? 1280 : W0, typeof H0 === 'undefined' ? 900 : H0]);
+const inner = async (fn, arg) => page.evaluate(([src, a]) => { const w = document.getElementById('w').contentWindow; return w.eval(`(${src})`)(a); }, [fn.toString(), arg]);
+const waitIn = async (label, fn, ms = 20000, arg) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (await inner(fn, arg)) return true; } catch {} await sleep(250); } console.log('TIMEOUT', label); return false; };
+const clickText = (re) => inner((s) => { const rx = new RegExp(s); const b = [...document.querySelectorAll('button,a,summary,[role=tab]')].find((b) => rx.test((b.getAttribute('aria-label') || b.textContent).trim())); if (!b) return 'NOTFOUND ' + s; b.click(); return 'ok'; }, re.source);
+const setW = async (w, h = 900) => { await page.evaluate(([w, h]) => { const f = document.getElementById('w'); f.style.width = w + 'px'; f.style.height = h + 'px'; }, [w, h]); await sleep(1500); };
+const shot = async (name, w, h = 900) => String(await page.screenshot({ path: `./artifacts/${name}`, clip: { x: 0, y: 0, width: w, height: h } }));
+await fs.mkdir('./artifacts', { recursive: true });
+await waitIn('catalog', () => [...document.querySelectorAll('button')].some((b) => (b.getAttribute('aria-label') || b.textContent).trim().endsWith('비교 추가')));
+for (const n of ['모던 카페 브랜드', '프리미엄 헤어살롱', '동네 치과 클리닉']) { await inner((name) => [...document.querySelectorAll('button')].find((b) => (b.getAttribute('aria-label') || b.textContent).trim() === `${name} 비교 추가`).click(), n); await sleep(250); }
+await clickText(/^비교 보드 열기$/);
+await waitIn('compare', () => location.pathname === '/compare' && !!document.querySelector("button[aria-label='Hero 구성: A 모던 카페 브랜드의 요소 선택']"));
+await inner(() => document.querySelector("button[aria-label='Hero 구성: A 모던 카페 브랜드의 요소 선택']").click());
+await waitIn('confirm', () => [...document.querySelectorAll('button')].some((b) => /^프로필 확정/.test(b.textContent.trim()) && b.getAttribute('aria-disabled') !== 'true' && !b.disabled));
+await clickText(/^프로필 확정/);
+await waitIn('profile', () => /^\/profile\//.test(location.pathname) && [...document.querySelectorAll('button')].some((b) => /^3안 만들기/.test(b.textContent.trim())));
+await clickText(/^3안 만들기/);
+await waitIn('3안', () => document.querySelector('table caption')?.textContent === '3안 비교');
+await inner(() => document.querySelector("button[aria-label='A안 선택']").click());
+await waitIn('A선택', () => document.querySelector("button[aria-label='A안 선택']")?.getAttribute('aria-pressed') === 'true');
+await clickText(/편집 시작/);
+await waitIn('studio', () => /^\/studio\//.test(location.pathname) && !!document.querySelector('#studio-canvas-heading'));
+await waitIn("chip", () => !!document.querySelector("[data-canvas-overlay] span.bg-primary"), 6000);

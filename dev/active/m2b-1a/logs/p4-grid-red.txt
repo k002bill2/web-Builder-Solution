@@ -1,0 +1,25 @@
+  }
+  @media (width >= 64rem) {
+    .kit-hx-center {
+      padding-block: calc(var(--site-section-gap) + var(--site-s6));
+    }
+  }
+}
+"
+
+ ❯ src/kit/HeroGrid.test.tsx:50:17
+     48|   it("KB-AC-16 규칙: md 미만 B·C display none · md 이상 B·C 보임 · A 2행 · lg 이…
+     49|     const css = readFileSync("src/kit/kit.css", "utf8");
+     50|     expect(css).toMatch(/\.kit-hx-tile--b \{[^}]*display: none/);
+       |                 ^
+     51|     expect(css).toMatch(/\.kit-hx-tile--a \{[^}]*grid-row: span 2/);
+     52|     expect(css).toMatch(/grid-template-columns: 5fr 7fr/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  21:26:36
+   Duration  669ms (environment 60%, transform 17%, setup 11%, tests 9%, import 3%, worker 1%)
+

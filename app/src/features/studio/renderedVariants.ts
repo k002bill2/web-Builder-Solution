@@ -10,6 +10,7 @@ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
   "header/sticky-right-cta",
   "hero/center",
   "hero/fullbleed-left",
+  "hero/grid",
   "hero/split",
   "services/cards-3",
 ]);

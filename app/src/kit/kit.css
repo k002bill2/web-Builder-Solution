@@ -718,3 +718,51 @@
     }
   }
 }
+
+/* hero/grid (B-6) — 타일 A(이미지·그라디언트) + B primary · C ink 장식. md 미만 A만 4:3 · md 이상 A 왼쪽 2행(4:5) · B·C 오른쪽 위·아래 · lg 이상 카피 5 : 타일 7 */
+@layer components {
+  .kit-hx--grid .kit-hx-copy {
+    max-width: var(--site-prose-max);
+  }
+  .kit-hx-tiles {
+    display: grid;
+    gap: var(--site-s3);
+    min-width: 0;
+  }
+  .kit-hx-tile {
+    border-radius: var(--site-radius-card);
+  }
+  .kit-hx-tile--a {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  .kit-hx-tile--b {
+    display: none;
+    background: var(--site-primary);
+  }
+  .kit-hx-tile--c {
+    display: none;
+    background: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-hx-tiles {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+    .kit-hx-tile--a {
+      grid-row: span 2;
+      aspect-ratio: 4 / 5;
+    }
+    .kit-hx-tile--b,
+    .kit-hx-tile--c {
+      display: block;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hx--grid:not(.kit-hx--solo) .kit-hx-grid {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--site-s6);
+    }
+  }
+}

@@ -6,6 +6,7 @@ import { FooterBizExtended } from "./FooterBizExtended";
 import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
 import { HeroCenter } from "./HeroCenter";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
+import { HeroGrid } from "./HeroGrid";
 import { HeroSplit } from "./HeroSplit";
 import { ServicesCards3 } from "./ServicesCards3";
 import type { KitSection } from "./types";
@@ -19,6 +20,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "hero/fullbleed-left": HeroFullbleedLeft,
   "hero/split": HeroSplit,
   "hero/center": HeroCenter,
+  "hero/grid": HeroGrid,
   "about/story": AboutStory,
   "services/cards-3": ServicesCards3,
   "faq/accordion": FaqAccordion,

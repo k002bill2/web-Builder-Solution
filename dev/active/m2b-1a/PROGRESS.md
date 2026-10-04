@@ -11,7 +11,7 @@
 ## 단계
 - [x] P0 수신 · REPORT 골격 · gate.sh 커밋 (56f0083)
 - [x] P1 예산 선행 실측(grid 시제품) — 렌더 JS +0.17 · CSS +0.18 · /studio +0.01 → 끝 예상 렌더 JS 80.97 · /studio +0.03(문자열 5개 알파벳순 직접 실측 127.41 · 정밀 +35바이트, 경계 — 정정 기록 logs/p1-budget.txt 끝) → 멈춤 조건 아님 (logs/p1-budget.txt)
-- [ ] P2 hero/split (KB-AC-10~12)
+- [x] P2 hero/split (KB-AC-10~12 [U]) — kit/heroCopy(공유 카피 블록, HeroFullbleedLeft도 사용) · HeroSplit · kit.css 톤 공통 + split · RENDERED_VARIANTS 알파벳순 · RED logs/p2-split-red.txt(5 실패: 킷 미등록) → gate OK(렌더 JS 80.29 · CSS 6.45 · /studio 127.40)
 - [ ] P3 hero/center (KB-AC-13~14)
 - [ ] P4 hero/grid (KB-AC-15~17)
 - [ ] P5 hero/text (KB-AC-18~19)

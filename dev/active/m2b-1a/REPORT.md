@@ -6,7 +6,8 @@
 | 단계 | RED | GREEN | 내용 |
 |---|---|---|---|
 | P0 | — | 56f0083 | 수신 · REPORT 골격 · gate.sh |
-| P1 | — | (이 커밋) | 예산 선행 실측 — grid 시제품 diff `logs/p1-grid-prototype.diff` · `logs/p1-budget.txt` |
+| P1 | — | 1c61468 · bf42e17(정정) | 예산 선행 실측 — grid 시제품 diff `logs/p1-grid-prototype.diff` · `logs/p1-budget.txt` |
+| P2 split | `logs/p2-split-red.txt` (같은 커밋) | (아래 split 커밋) | hero/split + 공유 카피 블록 `kit/heroCopy.tsx` · 톤 공통 CSS |
 
 ## 2. 변형별 판정 (KB-AC)
 (작성 중)

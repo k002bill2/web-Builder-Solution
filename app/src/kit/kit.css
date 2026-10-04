@@ -627,3 +627,73 @@
     }
   }
 }
+
+/* hero 섹션 톤 4변형 공통 (SPEC-BOUND 2절 · split·grid·text·image) — 면·보조 글자 = .kit-body(data-tone: base bg·muted / alt surface·ink) · 제목 ink · CTA = .kit-cta(C-1, 링 ink)
+   카피 1단(이미지 끔 = kit-hx--solo)은 prose-max. 선택자 = class·data-tone만(정적 HTML 보존, 0.2) */
+@layer components {
+  .kit-hx-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: center;
+  }
+  .kit-hx-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-hx--solo .kit-hx-copy {
+    max-width: var(--site-prose-max);
+  }
+  .kit-hx-title {
+    margin: 0;
+    font-size: var(--site-t3);
+    color: var(--site-ink);
+  }
+  .kit-hx-lead {
+    margin: 0;
+    font-size: var(--site-t0);
+    color: var(--kit-soft);
+  }
+  .kit-hx-cta {
+    margin-top: var(--site-s2);
+  }
+  @media (width >= 48rem) {
+    .kit-hx-title {
+      font-size: var(--site-t5);
+    }
+    .kit-hx-lead {
+      font-size: var(--site-t1);
+    }
+  }
+}
+
+/* hero/split (B-4) — md 미만 1단(카피 → 이미지 4:3 띠) · md~lg 2단 7 : 5 · lg 이상 6 : 6 · 이미지 칸 radius = 카드 radius(flat이면 0) · 비율 = media_ratio */
+@layer components {
+  .kit-hx-figure {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--site-radius-card);
+  }
+  .kit-hx-split-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 48rem) {
+    .kit-hx--split:not(.kit-hx--solo) .kit-hx-grid {
+      grid-template-columns: 7fr 5fr;
+      column-gap: var(--site-s6);
+    }
+    .kit-hx-split-img {
+      aspect-ratio: var(--site-media-ratio);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hx--split:not(.kit-hx--solo) .kit-hx-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}

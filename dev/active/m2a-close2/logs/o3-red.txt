@@ -1,0 +1,152 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close2/app
+
+ ❯ src/features/studio/canvasIssues.test.ts (2 tests | 1 failed) 6ms
+   ❯ slotIssue — 빈 필수 칸 (r4.13 (3) · MQ-4) (2)
+     × 빈 값 · 공백만 · 없는 키 → block · 문장 = 이름표 + 게이트 빈 필수 문장 · 섹션 사각형 · id 규칙 그대로 4ms
+ ❯ src/components/studio/StructureCanvas.test.tsx (17 tests | 1 failed) 256ms
+   ❯ 문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8) (10)
+     × 빈 필수 칸(r4.13 (3)) — 목록 '차단 N' 줄 + 그 섹션 사각형에 2중 테두리 1개 · 배지 나란히(같은 섹션 2건도 번호 구분) · 렌더 문서에는 보내지 않는다 9ms
+stderr | src/components/studio/StudioLayout.test.tsx > 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) > 필수 칸을 비우면 캔버스 문제 목록에 '차단' 문장이 생기고 필드 aria-describedby 맨 앞에 그 id (r4.13 (3))
+An update to StudioLayout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/components/studio/StudioLayout.test.tsx (14 tests | 1 failed) 715ms
+   ❯ 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) (6)
+     × 필수 칸을 비우면 캔버스 문제 목록에 '차단' 문장이 생기고 필드 aria-describedby 맨 앞에 그 id (r4.13 (3)) 39ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8) > 빈 필수 칸(r4.13 (3)) — 목록 '차단 N' 줄 + 그 섹션 사각형에 2중 테두리 1개 · 배지 나란히(같은 섹션 2건도 번호 구분) · 렌더 문서에는 보내지 않는다
+TypeError: Expected container to be an Element, a Document or a DocumentFragment but got null.
+ ❯ checkContainerType node_modules/@testing-library/dom/dist/helpers.js:61:11
+ ❯ queryAllByRole node_modules/@testing-library/dom/dist/queries/role.js:34:35
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:74:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ src/components/studio/StructureCanvas.test.tsx:104:25
+    102|     render(<StructureCanvas doc={empty} selectedId="s-about" onSelect=…
+    103|     const list = region().querySelector<HTMLElement>("[data-canvas-iss…
+    104|     expect(within(list).getAllByRole("listitem").map((li) => li.textCo…
+       |                         ^
+    105|     const { sent } = connectRenderFrame();
+    106|     expect(JSON.stringify(sent)).not.toContain("필수 입력입니다");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6) > 필수 칸을 비우면 캔버스 문제 목록에 '차단' 문장이 생기고 필드 aria-describedby 맨 앞에 그 id (r4.13 (3))
+TestingLibraryElementError: Unable to find an element with the text: 버튼 문구 — 필수 입력입니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+  [33mtabindex[39m=[32m"0"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m>[39m
+    [0m페이지 미리보기[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m구조 미리보기 (F0) — 섹션 구성과 실제 문구만 보여 줍니다. 실제 모양으로 그린 섹션은 아직 없습니다.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+        [33mstyle[39m=[32m"width: 80rem;"[39m
+      [36m>[39m
+        [36m<iframe[39m
+          [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+          [33msandbox[39m=[32m"allow-scripts"[39m
+          [33msrc[39m=[32m"/render.html"[39m
+          [33mstyle[39m=[32m"height: 796px;"[39m
+          [33mtitle[39m=[32m"페이지 미리보기 화면"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"pointer-events-none absolute inset-0"[39m
+        [33mdata-canvas-overlay[39m=[32m"true"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"absolute"[39m
+          [33mstyle[39m=[32m"left: 0px; top: 100px; width: 800px; height: 96px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"absolute inset-0 border-2 border-primary"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"absolute top-0 left-0 rounded-sm bg-primary px-2 py-0.5 text-caption2 font-bold text-on-primary"[39m
+          [36m>[39m
+            [0mHero[0m
+            [0m · [0m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:89:39
+     87|     const cta = within(editRegion()).getByRole("textbox", { name: /^버튼…
+     88|     act(() => void fireEvent.change(cta, { target: { value: "" } }));
+     89|     const sentence = within(canvas()).getByText("버튼 문구 — 필수 입력입니다");
+       |                                       ^
+     90|     expect(sentence.id).toBe("canvas-issue-s-hero-cta");
+     91|     expect(cta.getAttribute("aria-describedby")!.split(" ")[0]).toBe(s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/canvasIssues.test.ts > slotIssue — 빈 필수 칸 (r4.13 (3) · MQ-4) > 빈 값 · 공백만 · 없는 키 → block · 문장 = 이름표 + 게이트 빈 필수 문장 · 섹션 사각형 · id 규칙 그대로
+AssertionError: expected undefined to deeply equal { id: 'canvas-issue-s-hero-cta', …(3) }
+
+- Expected:
+{
+  "id": "canvas-issue-s-hero-cta",
+  "level": "block",
+  "onSection": true,
+  "text": "버튼 문구 — 필수 입력입니다",
+}
+
++ Received:
+undefined
+
+ ❯ src/features/studio/canvasIssues.test.ts:14:59
+     12|     const { cta: _cta, ...withoutCta } = hero.slots;
+     13|     for (const slots of [{ ...hero.slots, cta: "" }, { ...hero.slots, …
+     14|       expect(slotIssue({ ...hero, slots }, entry("cta"))).toEqual({ id…
+       |                                                           ^
+     15|     }
+     16|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  3 failed | 30 passed (33)
+   Start at  17:47:37
+   Duration  1.96s (environment 53%, tests 24%, transform 11%, setup 9%, import 3%)
+

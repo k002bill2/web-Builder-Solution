@@ -82,6 +82,17 @@ describe("편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6)", () => {
     expect(canvas().querySelector("[data-issue-badge]")).toHaveTextContent("경고 1");
   });
 
+  it("필수 칸을 비우면 캔버스 문제 목록에 '차단' 문장이 생기고 필드 aria-describedby 맨 앞에 그 id (r4.13 (3))", () => {
+    draw(fakeRepository().repository);
+    const cta = within(editRegion()).getByRole("textbox", { name: /^버튼 문구/ });
+    act(() => void fireEvent.change(cta, { target: { value: "" } }));
+    const sentence = within(canvas()).getByText("버튼 문구 — 필수 입력입니다");
+    expect(sentence.id).toBe("canvas-issue-s-hero-cta");
+    expect(cta.getAttribute("aria-describedby")!.split(" ")[0]).toBe(sentence.id);
+    act(() => void fireEvent.click(canvas().querySelector("[data-issue-badge]")!));
+    expect(document.activeElement).toBe(cta);
+  });
+
   it("이미 선택한 섹션의 배지를 눌러도 문제 필드로 포커스(R5 브라우저 확인에서 찾은 회귀 — 선택이 그대로면 다시 그리지 않음)", () => {
     draw(fakeRepository().repository);
     const title = within(editRegion()).getByRole("textbox", { name: /^제목/ });

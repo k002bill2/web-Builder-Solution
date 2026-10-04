@@ -96,6 +96,24 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     expect(onIssue).toHaveBeenCalledWith("s-hero", "canvas-issue-s-hero-subtitle");
   });
 
+  it("빈 필수 칸(r4.13 (3)) — 목록 '차단 N' 줄 + 그 섹션 사각형에 2중 테두리 1개 · 배지 나란히(같은 섹션 2건도 번호 구분) · 렌더 문서에는 보내지 않는다", () => {
+    const doc = sampleDoc();
+    const empty = { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, title: "", cta: "" } } : s)) };
+    render(<StructureCanvas doc={empty} selectedId="s-about" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const list = region().querySelector<HTMLElement>("[data-canvas-issues]")!;
+    expect(within(list).getAllByRole("listitem").map((li) => li.textContent)).toEqual(["차단 1제목 — 필수 입력입니다", "차단 2버튼 문구 — 필수 입력입니다"]);
+    const { sent } = connectRenderFrame();
+    expect(JSON.stringify(sent)).not.toContain("필수 입력입니다");
+    const badges = [...region().querySelectorAll<HTMLElement>("[data-issue-badge]")];
+    expect(badges.map((b) => b.textContent)).toEqual(["차단 1", "차단 2"]);
+    const ring = badges[0]!.parentElement!;
+    expect(badges[1]!.parentElement).toBe(ring);
+    const i = empty.sections.findIndex((s) => s.instanceId === "s-hero");
+    // 섹션 사각형 (0, i×100, 800, 96) + 바깥 여백 4px — 렌더 문서는 빈 필수 슬롯을 그리지 않으므로(MQ-4) 슬롯 사각형이 아니라 섹션
+    expect([ring.style.left, ring.style.top, ring.style.width, ring.style.height]).toEqual(["-4px", `${i * 100 - 4}px`, "808px", "104px"]);
+    expect(ring.querySelectorAll('[aria-hidden="true"].outline-status-negative-text:not([data-issue-badge])')).toHaveLength(1);
+  });
+
   it("문제 0이면 문제 목록을 그리지 않는다(r4.13 (1))", () => {
     render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();

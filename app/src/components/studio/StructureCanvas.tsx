@@ -14,7 +14,8 @@ export const RENDER_FRAME_TITLE = "페이지 미리보기 화면";
 
 interface CanvasIssue extends SlotIssue {
   readonly instanceId: string;
-  readonly slotKey: string;
+  /** 표시할 사각형 — 슬롯 key, 빈 필수 칸은 null(섹션 사각형, r4.13 (3)) */
+  readonly slotKey: string | null;
 }
 
 /** 문서 전체의 글자 수 문제(편집 중 표시, 5.7) — 문장은 부모 문서에 늘 있다(필드 aria-describedby 대상, E-AC-49) */
@@ -22,7 +23,7 @@ function docIssues(doc: PageDoc): readonly CanvasIssue[] {
   return doc.sections.flatMap((section) =>
     (getSectionDefinition(section.type, section.variant)?.slots ?? []).flatMap((entry) => {
       const issue = slotIssue(section, entry);
-      return issue ? [{ ...issue, instanceId: section.instanceId, slotKey: entry.key }] : [];
+      return issue ? [{ ...issue, instanceId: section.instanceId, slotKey: issue.onSection ? null : entry.key }] : [];
     }),
   );
 }
@@ -147,20 +148,25 @@ function Overlay({
           </span>
         </div>
       )}
-      {issues.map((issue, i) => {
-        const r = rectOf(issue.instanceId, issue.slotKey);
+      {[...new Set(issues.map((issue) => `${issue.instanceId} ${issue.slotKey}`))].map((key) => {
+        // 같은 사각형(빈 필수 칸 여러 개 = 같은 섹션)의 문제는 테두리 1개 + 배지 나란히 — 번호가 겹치지 않게
+        const group = issues.filter((issue) => `${issue.instanceId} ${issue.slotKey}` === key);
+        const r = rectOf(group[0]!.instanceId, group[0]!.slotKey);
         return (
           r && (
-            <div key={issue.id} className="absolute" style={place(r, scale, 4)}>
-              <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />
-              <span
-                data-issue-badge
-                aria-hidden="true"
-                onClick={() => onIssue(issue)}
-                className={`pointer-events-auto absolute top-1 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
-              >
-                {issueLabel(issue, i)}
-              </span>
+            <div key={key} className="absolute flex items-start justify-end gap-1 p-1" style={place(r, scale, 4)}>
+              <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[group.some((issue) => issue.level === "block") ? "block" : "warn"]}`} />
+              {group.map((issue) => (
+                <span
+                  key={issue.id}
+                  data-issue-badge
+                  aria-hidden="true"
+                  onClick={() => onIssue(issue)}
+                  className={`pointer-events-auto relative cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+                >
+                  {issueLabel(issue, issues.indexOf(issue))}
+                </span>
+              ))}
             </div>
           )
         );

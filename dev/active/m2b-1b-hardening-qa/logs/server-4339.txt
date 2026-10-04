@@ -1,0 +1,12 @@
+127.0.0.1 - - [05/Oct/2026 03:31:31] "GET /fb-qa-sticky-right-cta.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:33] "GET /fb-qa-sticky-right-cta-mock.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:35] "GET /fb-qa-sticky-hamburger.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:37] "GET /fb-qa-sticky-hamburger-mock.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:38] "GET /fb-qa-sticky-two-tier.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:41] "GET /fb-qa-sticky-two-tier-mock.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:42] "GET /fb-qa-transparent.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:31:44] "GET /fb-qa-transparent-mock.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:34:41] "GET /_w390.html?d=p3-two-tier-nonav&h=844 HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:34:41] "GET /p3-two-tier-nonav.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 03:34:41] code 404, message File not found
+127.0.0.1 - - [05/Oct/2026 03:34:41] "GET /favicon.ico HTTP/1.1" 404 -

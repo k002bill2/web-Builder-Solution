@@ -1,0 +1,7 @@
+## 서버 종료 2026-10-05 03:36:34
+kill 22007(vite node, cwd …-qa/app) 21987(npm exec 부모) 21988(python http.server, cwd …-qa/dev/active/m2b-1b-hardening-qa/static)
+lsof 4337/4339 LISTEN:
+(위 공백 = 0건) exit=1
+5480(main, 무접촉):
+node    82062 002billmac_home   15u  IPv4 0xefbc5b6a30df9167      0t0  TCP 127.0.0.1:5480 (LISTEN)
+남은 PID 수        0

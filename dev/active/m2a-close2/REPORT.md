@@ -7,13 +7,15 @@
 |---|---|---|
 | 골격 | `0d2670f` | PROGRESS · REPORT 골격 · gate.sh |
 | O0 | `ad9a52d` | 번들 선행 실측 기록(앱 코드 변경 0) |
-| O1 | (이 커밋) | 문제 목록 `ol[data-canvas-issues]` · 오버레이 문장 제거 · 테스트 이관 |
+| O1 | `df38e0e` | 문제 목록 `ol[data-canvas-issues]` · 오버레이 문장 제거 · 테스트 이관 |
+| O2 | (이 커밋) | 배지 번호 `{경고|차단} {N}` · `aria-hidden` · 안쪽 모서리 |
 
 ## 2. 단계별 판정
 | 단계 | 판정 | 근거 |
 |---|---|---|
 | O0 번들 선행 실측 | **통과** — 최소 시제품(O1 목록 + 배지 번호 `{경고|차단} {N}`)으로 `/studio` 진입 127.24 → **127.29**(+0.05, 멈춤선 127.70 대비 여유 0.41). Designer 상한 추정 +0.18보다 작다. B안(`sr-only`) 실측은 불필요(멈춤 조건 미발생). 시제품은 `logs/o0-proto.patch`로 보존하고 코드에서 되돌린 뒤 O1부터 RED → GREEN으로 다시 넣는다 | `logs/o0-proto-build.txt` · `logs/o0.txt`(시작 코드 gate exit 0) |
 | O1 문제 목록 | **통과** — `StructureCanvas`의 캡션 다음 · `<div ref={area}>` 앞에 `<ol data-canvas-issues aria-label="문제 목록">`. 줄 = `<span>경고 N</span>` + `<p id="canvas-issue-…">문장</p>`(목록 바탕 `background-normal` · 상태 글자 토큰). 문제 0이면 목록 없음. 오버레이 issues.map은 사각형 있을 때 테두리·배지만(문장 0, sr-only 분기 삭제). RED: 새 테스트 "문제 목록(r4.13 (1))" 실패(`logs/o1-red.txt`) → GREEN | `logs/o1.txt` gate exit 0 · 표적 260 통과 |
+| O2 배지 번호 · 위치 | **통과(단위)** — 배지 글자 = 목록과 같은 `issueLabel(issue, i)`("경고 N"/"차단 N", N = 목록 순번 = 문서 순서) · `aria-hidden="true"` · 위치 `-top-2.5 right-1`(위 슬롯 테두리에 걸림, Q6) → `top-1 right-1`(사각형 안쪽 오른쪽 위). 1280·390 시각 판정은 O5. RED `logs/o2-red.txt` → GREEN | `logs/o2.txt` gate exit 0 · 표적 261 |
 
 ## 3. 번들 표
 | 시점 | `/studio` 첫 화면 | `/studio` 진입 직후 (≤127.70) | 렌더 JS (≤89.70) | 렌더 CSS | 근거 |
@@ -21,6 +23,7 @@
 | 시작 `5b6d396` | 91.78 | 127.24 | 80.12 | 6.32 | `logs/o0-base-build.txt` |
 | O0 시제품(목록 + 배지 번호, 미커밋) | 91.78 | 127.29 (+0.05) | 80.12 | 6.32 | `logs/o0-proto-build.txt` · `logs/o0-proto.patch` |
 | O1 | 91.78 | 127.29 | 80.12 | 6.32 | `logs/o1.txt` |
+| O2 | 91.78 | 127.29 | 80.12 | 6.32 | `logs/o2.txt` |
 
 ## 4. SPEC 차이
 (작성 중)

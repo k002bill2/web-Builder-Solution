@@ -80,6 +80,22 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     expect(document.querySelectorAll("[id^=canvas-issue-]")).toHaveLength(2);
   });
 
+  it("배지(r4.13 (2)) — 글자 = 목록과 같은 '경고 N' · aria-hidden(문장이 읽힘) · 슬롯 사각형 안쪽 모서리(위 슬롯을 덮지 않음, Q6) · 누르면 그 문장 id", () => {
+    const onIssue = vi.fn();
+    const doc = over();
+    const two = { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, subtitle: "나".repeat(96) } } : s)) };
+    render(<StructureCanvas doc={two} selectedId="s-about" onSelect={() => {}} onIssue={onIssue} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    const badges = [...region().querySelectorAll<HTMLElement>("[data-issue-badge]")];
+    expect(badges.map((b) => b.textContent)).toEqual(["경고 1", "경고 2"]);
+    for (const b of badges) {
+      expect(b).toHaveAttribute("aria-hidden", "true");
+      expect(b.className).not.toMatch(/(^|\s)-(top|bottom|left|right)-/);
+    }
+    act(() => void fireEvent.click(badges[1]!));
+    expect(onIssue).toHaveBeenCalledWith("s-hero", "canvas-issue-s-hero-subtitle");
+  });
+
   it("문제 0이면 문제 목록을 그리지 않는다(r4.13 (1))", () => {
     render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();

@@ -111,7 +111,7 @@ function useRenderFrame({
 
 /**
  * 부모 오버레이(SPEC 5.7 r4.8) — 선택 테두리·라벨 칩 · 문제 2중 테두리(안쪽 흰 간격 + 바깥 상태 글자 토큰)·배지.
- * 테두리는 `aria-hidden` · 포인터 통과, 배지만 누름 → 그 필드 포커스(onIssue). 사각형이 없으면 그리지 않는다. 문제 문장은 캔버스 머리의 문제 목록에 있다(r4.13 — 축소 보기 위 원래 크기 문장이 렌더 글자를 가렸다)
+ * 테두리는 `aria-hidden` · 포인터 통과, 배지만 누름 → 그 필드 포커스(onIssue). 배지 = 목록과 같은 번호 · `aria-hidden`(문장이 읽힘) · 사각형 안쪽 모서리(위 슬롯을 덮지 않게, r4.13 Q6). 사각형이 없으면 그리지 않는다. 문제 문장은 캔버스 머리의 문제 목록에 있다(r4.13 — 축소 보기 위 원래 크기 문장이 렌더 글자를 가렸다)
  */
 function Overlay({
   rects,
@@ -147,7 +147,7 @@ function Overlay({
           </span>
         </div>
       )}
-      {issues.map((issue) => {
+      {issues.map((issue, i) => {
         const r = rectOf(issue.instanceId, issue.slotKey);
         return (
           r && (
@@ -155,10 +155,11 @@ function Overlay({
               <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />
               <span
                 data-issue-badge
+                aria-hidden="true"
                 onClick={() => onIssue(issue)}
-                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+                className={`pointer-events-auto absolute top-1 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
               >
-                {issue.level === "block" ? "차단 1" : "경고 1"}
+                {issueLabel(issue, i)}
               </span>
             </div>
           )

@@ -7,7 +7,8 @@
 |---|---|---|
 | 수신 | 7fac872 | 수신 기록 · REPORT 골격 · `gate.sh` |
 | C0(1)·C1 | 5c92add | 3b Codex(P1 0 · P2 3 → M2a 마감) · 전역 슬롯 판단(유지) · C1 공간 실측 → 진입 ≤126.70 경로 없음, 정지 — 코드 변경 0 |
-| C0(2)·C5 | (이 커밋) | K-AC-12·30 브라우저 판정 · vitest ×3 · REPORT 마감 · 서버 0 — 코드 변경 0 |
+| C0(2)·C5 | a9c59fb | K-AC-12·30 브라우저 판정 · vitest ×3 · REPORT 마감 · 서버 0 — 코드 변경 0 |
+| C1 보강 | (이 커밋) | 후보안 2 실측(126.79 / 126.74 — 둘 다 초과) · K-AC-12 원인 정정(렌더 문서 스크립트) · 게이트 순서 공개 |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -32,16 +33,16 @@
 - 번들 영향 요약: 슬롯을 없애는 모든 진입 쪽 대안은 3b 실측상 +0.07 이상이라 **지금 여유(0.06)로는 불가**. 대체는 M4(D) 또는 진입 여유가 생긴 뒤(C).
 
 ### 2.3 K-AC-12 · K-AC-30 브라우저 판정 (`logs/c0-kac12-30.txt`)
-- 대상: 3b 결과 HTML `dev/active/m2a-3b/logs/j-export-sample_r2.html`(앱 새 내보내기는 C1 정지로 생략 — 3b 이후 생성기·킷 코드 변경 0이라 같은 결과). python `http.server` 127.0.0.1:4339 · ego-browser · 뷰포트 390×844(CDP) · 입력은 CDP 실제 마우스·키 이벤트.
+- 대상: 3b 결과 HTML `dev/active/m2a-3b/logs/j-export-sample_r2.html`(앱 새 내보내기는 C1 정지로 생략 — `git diff --stat 3fb670a eaa3d5e -- app/src/kit app/src/features/studio/staticHtml app/src/render` 결과 빈 출력, 즉 3b 이후 킷·생성기·렌더 코드 변경 0이라 같은 결과). python `http.server` 127.0.0.1:4339 · ego-browser · 뷰포트 390×844(CDP) · 입력은 CDP 실제 마우스·키 이벤트.
 | AC | 항목 | 결과 |
 |---|---|---|
 | K-AC-12 | "메뉴" 누름 → 시트 열림(`:popover-open`) | **PASS** |
 | | Tab 다음 = "닫기" | **PASS** |
 | | Esc → 닫힘 + 포커스 = "메뉴" 버튼 | **PASS** |
 | | 시트 안 앵커("문의" → `#s-contact-1`) → 대상 섹션 이동 · 제목이 header에 안 가려짐 | **PASS**(hash 바뀜 · 제목 top 168 > sticky header bottom 61) |
-| | 시트 안 앵커 → **시트 닫힘** | **FAIL** — `:popover-open` 그대로. 킷 `HeaderStickyRightCta`는 스크립트 0(네이티브 popover)이고 `<a>`는 `popovertarget`을 가질 수 없어 앵커 누름이 시트를 닫지 않는다. 캔버스 렌더 문서도 같은 킷이라 같은 동작(추정, 미측정) |
+| | 시트 안 앵커 → **시트 닫힘** | **FAIL** — `:popover-open` 그대로. 킷 `HeaderStickyRightCta`는 스크립트 0(네이티브 popover)이고 `<a>`는 `popovertarget`을 가질 수 없어 앵커 누름이 시트를 닫지 않는다. 캔버스에서는 렌더 문서 스크립트(`render/RenderApp.tsx:87` `anchor.closest("[popover]")?.hidePopover()`)가 닫아 주지만, 정적 HTML은 생성기가 스크립트를 지우므로(3b 4절) 이 동작이 빠진다 |
 | K-AC-30 | 입력칸 누름 + Enter · 버튼 누름 + Enter → 페이지 이동·요청 0 | **PASS** — URL 불변 · resource 항목 0→0 · 입력 `:disabled`(fieldset disabled)라 포커스도 안 들어감 · `form action` 없음 |
-- **K-AC-12 FAIL 1항은 킷 변경 사안**(스크립트 0 규칙 K-AC-01 안에서 닫는 방법 — 예: 앵커를 `popovertarget` 가진 버튼으로 감싸기는 이동이 안 됨, 정적 HTML에만 작은 인라인 스크립트는 K-AC-06·3b "script 제거"와 충돌) → 3c 범위 밖, **M2a 마감 판단으로**(9절). 이 레인 코드 변경 0.
+- **K-AC-12 FAIL 1항은 정적 HTML 생성기 쪽 사안**(캔버스 동작은 렌더 문서 스크립트가 담당 — 정적 결과에 같은 닫기를 넣으려면 생성기가 작은 인라인 스크립트를 넣거나(3b "script 0" 규칙 개정) 스크립트 없는 대안을 SPEC이 정해야 함) → 3c 범위 밖, **M2a 마감 판단으로**(9절). 이 레인 코드 변경 0.
 - 캡처: `Page.captureScreenshot` CDP 시간 초과 2회(3b 2.2와 같은 증상). 열린 시트 상태는 Chrome headless `--screenshot`으로 재현할 수 없어 판정은 DOM 조회로만 했다(캡처 0).
 
 ## 3. C1 공간 실측 — **결론: 진입 ≤ 126.70 경로가 실측으로 보이지 않음 → C2 전에 정지(브리프 C1)**
@@ -53,7 +54,9 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 | 시제품 전체(PngSave 4상태·캡션·계측 진입 · 캔버스 `onDrawn` · 캡처 청크는 자리만) | 127.16 | **+0.46 초과** | (빌드 출력, 이 표) |
 | + `ConflictCallout` 지연(lazy) | 127.07 | +0.37 | **기각** — 충돌 회복 UI를 지연 청크에 두면 3a P2-1 r2 원칙("회복 안내는 지연 청크에 기대지 않는다")과 충돌 · 스크립트 `afterAction` 목록에 없는 동적 import라 진입 합계에서 조용히 빠진 숫자 |
 | **최소 시제품**(진입 = 이름표·버튼·캡션 2문장·준비 전 이유·실패 alert 문장 · 성공 문장·계측·오류 코드·인자 조립은 캡처 청크로 · ConflictCallout 원복) | **127.10** | **+0.40 초과** | `logs/c1-proto-min.txt` · 패치 `logs/c1-proto.patch` |
-| 원복 뒤 | 126.64 | 여유 0.06 | `logs/c1.txt` |
+| 후보안 2: PNG 묶음을 "검사 · 내보내기" 누른 뒤 lazy로(+ 준비 전 `onDrawn` 진입) | 126.79 | +0.09 초과 | `logs/c1-option2.txt` (조작 뒤 PngSave +1.29) |
+| 후보안 2b: 위에서 `onDrawn` 배선도 뺌(준비 전 상태 없음) | 126.74 | +0.04 초과 | `logs/c1-option2b.txt` |
+| 원복 뒤 | 126.64 | 여유 0.06 | `logs/c1.txt` · `logs/c5.txt` |
 
 - **필요 절감량 = 127.10 − 126.70 = 0.40KB.** 시제품은 하한이다(실구현은 상태 정리·테스트 훅·폭 라벨 연결로 더 붙는다 — 3a 2절과 같은 성격).
 - 모듈별 분해(StudioLayout 청크 16.40KB, `logs/c1-attr.txt` — 비례 추정): PngSave **0.59** · StudioLayout 2.34 · StructureCanvas 1.31 · useAutosaveScheduler 0.85 · GateList 0.64 · StudioPanels 0.60 · gateView 0.58 · FieldEditor 0.50 · useSectionOps 0.46 · **useExportFlow 0.42** · ConflictCallout 0.22 · ExportRetryAlert 0.14.
@@ -63,8 +66,8 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 
 **후보안 (영환님 결정 — 추천 순, 이 레인은 C2~C4를 진행하지 않음)**
 1. **3a 옵션 B — `/studio`가 진입 때 받지만 부르지 않는 보드·생성 저장소 코드를 공유 store 로더 밖으로(별도 레인)**: 3a 추정 −4.5~5.5(L3, 3a 2절). 큰 여유를 만드는 유일한 안. 위험 = 2a-04 store 배선 변경 · `/compare`·`/profile` ±0.03 규칙. 이 레인 범위 밖(브리프 "중복·미사용 정리"를 넘는 구조 변경).
-2. **SPEC 3.3 개정 — PNG 묶음을 내보내기 묶음과 같은 조작 뒤 청크로 늦게 그림**(예: "검사 · 내보내기"를 누르거나 "검사" 탭을 연 뒤 그림): 진입 증가 ≈ 0(lazy 래퍼 + 조건 몇 바이트 — 빌드 안 함, L3). 비용 = K-AC-19 "준비 전" 문장·3.3 "진입 때부터"·1280 오른쪽 열 상시 표시가 바뀐다. 3c 나머지(C2~C4)를 바로 진행할 수 있는 안.
-3. **ADR-004 개정 — `/studio` 진입 멈춤선 +0.40 이상(실구현 여유 포함 +0.5 권장)**: ADR-004 개정 3이 "추가 상향 금지"라 영환님 결정 사안.
+2. **SPEC 3.3 개정 — PNG 묶음을 조작 뒤 청크로 늦게 그림**("검사 · 내보내기"를 누른 뒤 `lazy` PngSave를 그림 · `STUDIO_AFTER_ACTION`에 PngSave 등록해 조작 뒤 크기 출력): **실측 진입 126.79(+0.09 초과)** · 조작 뒤 +1.29 (`logs/c1-option2.txt`). "준비 전" 배선(캔버스 `onDrawn`)까지 빼면 **126.74(+0.04 초과)** (`logs/c1-option2b.txt`). **이 안만으로도 멈춤선 안에 들지 않는다** — 남는 진입분 = lazy 래퍼·표시 상태·캡처 인자 조립 클로저. 1과 묶거나 3과 묶어야 성립. 비용 = K-AC-19 "준비 전"·3.3 "진입 때부터"·1280 오른쪽 열 상시 표시 문장 개정.
+3. **ADR-004 개정 — `/studio` 진입 멈춤선 +0.40 이상(실구현 여유 포함 +0.5 권장; 2와 묶으면 +0.1 이상)**: ADR-004 개정 3이 "추가 상향 금지"라 영환님 결정 사안.
 
 ## 4. 캡처 방식 PoC
 **미진행 — BLOCKED(C1 정지).** 진입 ≤126.70 경로가 없어 브리프대로 C2 전에 멈췄다. 브라우저별 오염 표 없음. 재개 시 기본안(숨은 렌더 iframe `serialize` + SVG `foreignObject` → canvas → `toBlob`)부터 — C1 시제품의 캡처 청크 자리(`logs/c1-proto.patch`의 `features/studio/png/pngCapture.ts`)는 조작 뒤 청크라 진입 영향 없음.
@@ -88,12 +91,13 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 
 ## 8. SPEC 차이
 - 코드 변경 0이라 SPEC과 다르게 만든 곳 없음.
+- 게이트 순서: 골격 커밋 `7fac872`는 `gate.sh` 실행 전에 커밋했다(문서만). 직후 기준선 gate `c1-baseline` exit 0(GATE OK). 그 뒤 커밋은 모두 gate exit 0 확인 뒤.
 - 브리프 C0 Codex 범위: `--scope branch --base a51de92`가 HEAD 기준이라 p2fix·브리프 문서 커밋도 포함됐다(지적 3건은 모두 3b 파일 — 2.1절).
 - K-AC-12·30 대상: 앱에서 새로 내보낸 HTML 대신 3b 결과 파일(브리프가 허용한 대안).
 
 ## 9. 남은 위험 · M2a 마감에 넘길 것
 1. **[결정 필요 · 영환님] PNG 진입 공간** — 3절 후보안 1(보드·생성 저장소 분리, 별도 레인) / 2(SPEC 3.3 개정: PNG 묶음을 조작 뒤에 그림) / 3(ADR-004 멈춤선 +0.5). 결정 전 C2~C4 진행 불가.
-2. **K-AC-12 "시트 안 앵커 → 시트 닫힘" FAIL**(2.3절) — 킷 스크립트 0 규칙과 맞물린 설계 판단(SPEC 문장 개정 또는 킷 변경).
+2. **K-AC-12 "시트 안 앵커 → 시트 닫힘" FAIL — 정적 HTML만**(2.3절). 캔버스는 렌더 문서 스크립트가 닫는다. 생성기의 "script 0" 규칙과 맞물린 판단(작은 인라인 닫기 스크립트 허용 / SPEC 문장 개정).
 3. 3b Codex P2 3건(2.1절): 이탈 후 같은 잡 재요청 시 죽은 내려받기 링크 · 생성기 청크 실패 기억 · `blob:` 글자 오탐.
 4. 전역 심볼 슬롯 — M2a 유지, M4 실서버 저장소 때 제거(2.2절). P2-2를 고칠 때 슬롯 로더를 `retryableImport`로.
 5. 캡처 도구: ego-browser `Page.captureScreenshot` 시간 초과가 계속된다(3b·3c). 상호작용 상태 캡처가 필요한 판정은 DOM 조회로만 가능.

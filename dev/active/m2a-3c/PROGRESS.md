@@ -12,7 +12,7 @@
 - [x] 수신 · REPORT 골격(1~9절) 커밋
 - [x] C0 (1) Codex `review --scope branch --base a51de92` → `logs/c0-codex-3b.txt` — P1 0 · P2 3(M2a 마감으로) · 전역 슬롯 = M2a 유지/M4 대체(REPORT 2.1·2.2)
 - [x] C0 (2) K-AC-12 · K-AC-30 결과 HTML 브라우저 판정 — K-AC-30 PASS · K-AC-12 4항 PASS / "앵커 → 시트 닫힘" FAIL(킷 사안, M2a 마감으로 · REPORT 2.3)
-- [x] C1 공간 실측 — 최소 시제품 127.10(+0.40), 경로 없음 → 정지·후보안 3개(REPORT 3절)
+- [x] C1 공간 실측 — 최소 시제품 127.10(+0.40) · 후보안 2(조작 뒤 그림) 126.79/126.74도 초과 → 정지·후보안 3개(REPORT 3절)
 - [ ] C2 캡처 방식 PoC — BLOCKED: C1 진입 ≤126.70 경로 없음 — 영환님 결정 필요(REPORT 3절 후보안)
 - [ ] C3 PNG 버튼 · 4상태 · 캡션 · 파일 이름 · 계측 — BLOCKED: C1과 같음
 - [ ] C4 K-AC-17·19·32·34 · E-AC-49·50 · 실제 PNG 1280·390 나란히 — BLOCKED: C1과 같음

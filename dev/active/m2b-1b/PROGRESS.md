@@ -21,9 +21,9 @@
 - [x] P8 footer/minimal-biz (KB-AC-28 [U]/[G] · 구조) + RENDERED_VARIANTS 라이브러리 파생 전환 — RED logs/p8-minimal-biz-red.txt(3 실패) → gate OK(렌더 JS 81.13 · CSS 7.12 · /studio 127.40 = 127,404 B, −10 B · 그 밖 ±0.01) · 전체 vitest 189/1733 · 이관 1건(정확 목록 +1)
 - [x] P9 공통 [U]/[G] (KB-AC-30·32·33·35 · K-AC-04) — kit/boundVariants.test.tsx 5건. 구현 뒤 판정 테스트라 RED 대신 변이 검사 2건(클래스 바꿈 → KB-AC-35 실패, 되돌림 → 통과, logs/p9-mutation.txt) · gate OK
 - [x] P10 브라우저 [B]/[V] — 판정 14 + QB-14 전부 PASS (logs/qb-judge.txt). KB-AC-34 1회차 FAIL = 판정 스크립트 결함 2(링 변수만 읽음 · 쉼표 선택자) → qb.mjs 고쳐 재판정 PASS, 코드 수정 0 · 캡처 45장 shots.sh(Chrome headless, ego 스크린샷 CDP 시간 초과) · QB-14 qb14.mjs
-- [ ] P11 전체 `npx vitest run` 1회 exit 0 · Errors 0 (logs/full-vitest.txt) · 이관 표
-- [ ] P12 Codex review --scope branch --base 5970721 1회 (P1만 수정)
-- [ ] P13 REPORT 마감 · 서버 종료 · lsof 4337·4339 = 0
+- [x] P11 Jarvis 전체 vitest 3회 1738/1738 · exit 0( logs/jarvis-vitest-{1,2,3}.txt ) · REPORT 이관 표 유지
+- [ ] P12 **M2B-2 선행 C0로 이관** — Codex 미완료, 승인 만료 후 재시도 없음(REPORT 6절)
+- [x] P13 Jarvis REPORT 마감 · 남은 서버 PID 573·18647 종료 · 4337·4339 LISTEN 0
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

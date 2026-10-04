@@ -5,6 +5,7 @@ import { sampleTheme } from "../../../engine/testing/sampleTheme";
 import type { ParentMessage } from "../../../render/protocol";
 import { drawDoc, without } from "../../../render/testing/drawKit";
 import { createStaticHtmlGenerator, openRenderFrame, type RenderChannel } from "./staticHtml";
+import { STATIC_MENU_SCRIPT } from "./staticMarkup";
 
 /** M2A-3b G3 — 정적 HTML 생성기: 잡의 스냅샷 문서를 숨은 렌더 iframe에 그려 직렬화 · 킷 CSS 인라인 · Blob object URL · SHA-256 앞 12자리 */
 const PROFILE = sampleTheme().profile;
@@ -70,7 +71,9 @@ describe("정적 HTML 생성기 (G3)", () => {
     expect(html.startsWith("<!doctype html>")).toBe(true);
     expect(html).toContain("<title>모던 카페</title>");
     expect(html).toContain("[data-site-root]{color:var(--site-ink)}");
-    expect(html).not.toMatch(/<script|<link/);
+    // 2a-05 r4.12 — 스크립트는 생성기 고정 인라인 1개뿐(src 0) · link 0
+    expect(html).not.toMatch(/<link|<script\s+[^>]*src/);
+    expect([...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[0])).toEqual([`<script>${STATIC_MENU_SCRIPT}</script>`]);
   });
 
   it("같은 문서 두 번 → 같은 해시(결정적) · 같은 프로젝트 재생성이면 이전 object URL 해제 · release(projectId) = 편집기 이탈 해제", async () => {

@@ -1,8 +1,15 @@
 /**
  * 정적 HTML 문서 조립 (M2A-3b G2·G3 · m2a 0.11·K2 · K-AC-06·08) — 렌더 문서가 돌려준 사이트 루트 마크업 + 킷 CSS → 완전한 문서 1개.
  * 사용자 글자는 DOM으로만 넣는다(title·meta content = 속성/글자 대입, 마크업 = 불활성 문서의 innerHTML — 문자열 이어 붙이기 0).
- * 결과 규칙: script 0 · on* 0 · details[open] 0 · 편집기 흔적(CSS가 안 쓰는 data-*) 0 · 폴백 섹션 = 실패 · blob: = 실패 · CSS 외부 요청 = 실패.
+ * 결과 규칙: 고정 스크립트(STATIC_MENU_SCRIPT) 외 script 0 · on* 0 · details[open] 0 · 편집기 흔적(CSS가 안 쓰는 data-*) 0 · 폴백 섹션 = 실패 · blob: = 실패 · CSS 외부 요청 = 실패.
  */
+
+/**
+ * 생성기 고정 인라인 스크립트 (2a-05 SPEC r4.12 · K-AC-12) — 메뉴 시트(`[popover]`) 안 같은 문서 앵커를 누르면 그 시트를 닫는다.
+ * 캔버스는 렌더 문서(RenderApp click)가 같은 일을 한다. 사용자 글자·URL·문서 값 0(문서마다 바이트 동일) · 앵커 이동은 막지 않는다 · hidePopover 없으면 아무것도 안 함.
+ */
+export const STATIC_MENU_SCRIPT =
+  'document.addEventListener("click",function(e){var t=e.target,a=t&&t.closest?t.closest(\'a[href^="#"]\'):null,p=a?a.closest("[popover]"):null;if(p&&typeof p.hidePopover=="function")p.hidePopover()});';
 
 /** 킷·렌더 CSS가 선택자로 쓰는 data-* (kit.css · render.css) — 나머지 data-*는 편집기 흔적이라 지운다 */
 const KEPT_DATA = new Set(["data-site-root", "data-kit", "data-layout", "data-tone", "data-always"]);
@@ -59,5 +66,8 @@ export function buildStaticHtml({ markup, css, title, description }: StaticHtmlP
   const style = page.createElement("style");
   style.textContent = css;
   head.append(style);
+  const script = page.createElement("script");
+  script.textContent = STATIC_MENU_SCRIPT;
+  head.append(script);
   return `<!doctype html>\n${page.documentElement.outerHTML}`;
 }

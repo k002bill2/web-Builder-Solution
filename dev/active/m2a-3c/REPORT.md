@@ -9,7 +9,8 @@
 | C0(1)·C1 | 5c92add | 3b Codex(P1 0 · P2 3 → M2a 마감) · 전역 슬롯 판단(유지) · C1 공간 실측 → 진입 ≤126.70 경로 없음, 정지 — 코드 변경 0 |
 | C0(2)·C5 | a9c59fb | K-AC-12·30 브라우저 판정 · vitest ×3 · REPORT 마감 · 서버 0 — 코드 변경 0 |
 | C1 보강 | 3a64e22 | 후보안 2 실측(126.79 / 126.74 — 둘 다 초과) · K-AC-12 원인 정정(렌더 문서 스크립트) · 게이트 순서 공개 |
-| R1 | (이 커밋) | `/studio` 진입 한도 128 — ADR-004 개정 4(3.R절) |
+| R1 | c068b5a | `/studio` 진입 한도 128 — ADR-004 개정 4(3.R절) |
+| R2 | (이 커밋) | 정적 HTML 고정 인라인 스크립트(r4.12) · RED→GREEN · 이관 표(2.4절) — 브라우저 판정은 다음 커밋 |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -45,6 +46,19 @@
 | K-AC-30 | 입력칸 누름 + Enter · 버튼 누름 + Enter → 페이지 이동·요청 0 | **PASS** — URL 불변 · resource 항목 0→0 · 입력 `:disabled`(fieldset disabled)라 포커스도 안 들어감 · `form action` 없음 |
 - **K-AC-12 FAIL 1항은 정적 HTML 생성기 쪽 사안**(캔버스 동작은 렌더 문서 스크립트가 담당 — 정적 결과에 같은 닫기를 넣으려면 생성기가 작은 인라인 스크립트를 넣거나(3b "script 0" 규칙 개정) 스크립트 없는 대안을 SPEC이 정해야 함) → 3c 범위 밖, **M2a 마감 판단으로**(9절). 이 레인 코드 변경 0.
 - 캡처: `Page.captureScreenshot` CDP 시간 초과 2회(3b 2.2와 같은 증상). 열린 시트 상태는 Chrome headless `--screenshot`으로 재현할 수 없어 판정은 DOM 조회로만 했다(캡처 0).
+
+### 2.4 재개 R2 — 정적 HTML 고정 인라인 스크립트 (2a-05 SPEC r4.12 · K-AC-12)
+- 구현: `staticMarkup.ts` `STATIC_MENU_SCRIPT`(생성기 상수) — `document` 위임 `click` 리스너 1개 → `a[href^="#"]`가 `[popover]` 안이면 그 popover `hidePopover()` · `hidePopover`가 함수가 아니면 아무것도 안 함 · `preventDefault` 0(앵커 이동은 기본 동작 그대로 — 스크립트가 꺼져도 이동은 됨). `buildStaticHtml`이 `<head>` 끝(`style` 다음)에 `script` 요소 1개로 넣는다(`textContent` = 상수, 속성 0). 사용자 글자·URL·문서 값 0 · `on*` 속성 0 · 외부 요청 0.
+- RED: `logs/r2-red.txt`(6 실패 — 상수 없음) → GREEN: `src/features/studio/staticHtml` 26/26 · gate `logs/r2.txt` exit 0.
+- 새 테스트(`staticMarkup.test.ts` "고정 인라인 스크립트" 3개): ① 서로 다른 문서 2개에서 결과에 `<script>{상수}</script>` 정확히 1개(바이트 일치) · 상수에 fetch·import·URL·innerHTML·eval 0 ② 제목·설명·슬롯 마크업에 `</script><script>…`가 있어도 파서 기준 script 1개 = 상수 · 고정 블록 문자열 1회 ③ 동작: 시트 안 앵커 → `hidePopover` 1회 · 시트 밖 앵커·외부 링크 → 0 · `hidePopover` 없는 시트 → 오류 0 · 기본 동작 안 막음.
+- 판정 [B] K-AC-12 5항(390, 새로 내보낸 HTML): `logs/r2-kac12.txt` — 아래 표.
+
+**이관 표 — "script 0"을 보던 3b 단언 중 r4.12로 바뀐 것만** (그 밖 단언 변경 0)
+| 파일 · 테스트 | 3b 단언 | 바뀐 단언 | 근거 |
+|---|---|---|---|
+| `staticMarkup.test.ts` "사용자 글자는 DOM으로만…" | `querySelectorAll("script")` 길이 0 | script 목록 = `[STATIC_MENU_SCRIPT]`(제목·설명의 `<script>`는 여전히 글자 — `doc.title`·`content` 단언 그대로) | r4.12 "고정 스크립트 1개만 허용" — 사용자 글자가 요소가 되지 않는다는 원래 뜻은 유지 |
+| `staticMarkup.test.ts` "script 0 · on* 속성 0 …" → "고정 스크립트(바이트 일치) 외 script 0 · on* 속성 0 …" | 더러운 마크업(`<script>alert(1)</script>` 삽입) 뒤 script 0 | script 목록 = `[STATIC_MENU_SCRIPT]` — 삽입된 스크립트는 여전히 지워짐(on*·data-*·details 단언 그대로) | r4.12 생성기 검사 = "그 고정 스크립트(바이트 일치) 외 `script` 0" |
+| `staticHtml.test.ts` "ready → render … iframe 닫음" | `html` 에 `/<script\|<link/` 0 | `<link` 0 · `src` 있는 script 0 · script 블록 전체 = `[<script>{상수}</script>]` | 같음 — 외부 자원 0 뜻은 유지 |
 
 ## 3. C1 공간 실측 — **결론: 진입 ≤ 126.70 경로가 실측으로 보이지 않음 → C2 전에 정지(브리프 C1)**
 SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진입 때부터** 보이길 요구한다 → 이 묶음은 `/studio` 진입 청크(StudioLayout)에 있어야 한다. 예산 상수·멈춤선은 바꾸지 않았다.

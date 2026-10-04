@@ -12,8 +12,8 @@ const CAPTION = "ds-caption1 text-label-alternative";
 /** 머리 Tag 톤(상태 글자 별칭, B-17) — ds `Tag`를 import하면 공통 청크가 다시 나뉘어 다른 화면 첫 화면이 +0.09KB(실측) → 같은 모양 글자 */
 const HEAD_TONE = { block: "bg-accent-red-bg text-accent-red", warn: "bg-accent-orange-bg text-accent-orange", pass: "bg-accent-green-bg text-accent-green" } as const;
 
-/** 줄 한 줄 원인 — 문제 줄은 첫 이슈 원인, 성능 예산은 "생성기 연결 후 측정합니다"(5.12 표) */
-const rowCause = (row: GateRow) => row.issues[0]?.cause ?? (row.state === "unmeasured" ? "생성기 연결 후 측정합니다" : undefined);
+/** 줄 한 줄 원인 — 문제 줄은 첫 차단 원인(없으면 첫 이슈, r4.13 (4)), 성능 예산은 "생성기 연결 후 측정합니다"(5.12 표) */
+const rowCause = (row: GateRow) => (row.issues.find((i) => i.severity === "block") ?? row.issues[0])?.cause ?? (row.state === "unmeasured" ? "생성기 연결 후 측정합니다" : undefined);
 
 /**
  * 품질 게이트 8줄 (DS-2A-05 5.12 · E-S22~E-S25). 순서 = 결과 순서(GATE_ROWS 고정). 문제 줄은 `button` → 이동(E-S23), 통과·측정 전 줄은 글자만.

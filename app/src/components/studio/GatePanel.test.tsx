@@ -31,6 +31,16 @@ async function openGate(doc: PageDoc, width = 1280, series = SERIES) {
 }
 
 describe("게이트 8줄 표시 (SPEC 5.12 · E-S22~E-S25 · E-AC-25·27)", () => {
+  it("줄 대표 문장(r4.13 (4)) — 경고가 먼저 와도 그 줄에 차단이 있으면 차단 원인을 대표로", async () => {
+    const doc = passingDoc();
+    await openGate({ ...doc, sections: doc.sections.map((s) => (s.type === "hero" ? { ...s, slots: { ...s.slots, title: "가".repeat(30), cta: "" } } : s)) });
+    const row = rowItem("text-length");
+    expect(row.textContent).toMatch(/글자 수차단 1/);
+    const cause = row.querySelector(":scope > p")!;
+    expect(cause).toHaveTextContent(/^Hero 버튼 문구: 필수 입력입니다$/);
+    expect(within(row).getByText(/원인 · 대체안 2건/)).toBeInTheDocument();
+  });
+
   it("진입 직후 자동 계산 — 8줄 GATE_ROWS 순서 · 줄마다 상태 단어 · 성능 예산 '측정 전'은 버튼 아님 + '생성기 연결 후 측정합니다'", async () => {
     await openGate(passingDoc());
     const items = within(gateList()).getAllByRole("listitem").filter((li) => li.hasAttribute("data-gate-row"));

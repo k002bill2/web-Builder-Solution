@@ -9,7 +9,8 @@
 | O0 | `ad9a52d` | 번들 선행 실측 기록(앱 코드 변경 0) |
 | O1 | `df38e0e` | 문제 목록 `ol[data-canvas-issues]` · 오버레이 문장 제거 · 테스트 이관 |
 | O2 | `95fcd28` | 배지 번호 `{경고|차단} {N}` · `aria-hidden` · 안쪽 모서리 |
-| O3 | (이 커밋) | 빈 필수 칸 → 차단 문제(섹션 사각형) · 같은 사각형 배지 나란히 |
+| O3 | `dde831e` | 빈 필수 칸 → 차단 문제(섹션 사각형) · 같은 사각형 배지 나란히 |
+| O4 | (이 커밋) | 게이트 줄 대표 문장 차단 우선 · "바뀐 점 N개" |
 
 ## 2. 단계별 판정
 | 단계 | 판정 | 근거 |
@@ -18,6 +19,7 @@
 | O1 문제 목록 | **통과** — `StructureCanvas`의 캡션 다음 · `<div ref={area}>` 앞에 `<ol data-canvas-issues aria-label="문제 목록">`. 줄 = `<span>경고 N</span>` + `<p id="canvas-issue-…">문장</p>`(목록 바탕 `background-normal` · 상태 글자 토큰). 문제 0이면 목록 없음. 오버레이 issues.map은 사각형 있을 때 테두리·배지만(문장 0, sr-only 분기 삭제). RED: 새 테스트 "문제 목록(r4.13 (1))" 실패(`logs/o1-red.txt`) → GREEN | `logs/o1.txt` gate exit 0 · 표적 260 통과 |
 | O2 배지 번호 · 위치 | **통과(단위)** — 배지 글자 = 목록과 같은 `issueLabel(issue, i)`("경고 N"/"차단 N", N = 목록 순번 = 문서 순서) · `aria-hidden="true"` · 위치 `-top-2.5 right-1`(위 슬롯 테두리에 걸림, Q6) → `top-1 right-1`(사각형 안쪽 오른쪽 위). 1280·390 시각 판정은 O5. RED `logs/o2-red.txt` → GREEN | `logs/o2.txt` gate exit 0 · 표적 261 |
 | O3 빈 필수 칸 | **통과(단위)** — `canvasIssues.ts` `slotIssue`: 이미지 아닌 슬롯에서 필수 + 빈 값(없는 키·공백만 포함, 엔진 `isBlank` — 게이트 R-13 `slotRows.ts`와 같은 판정)이면 `block` + `onSection: true`. 캔버스는 그 문제를 **섹션 사각형**(slotKey `null`)에 표시. 같은 사각형 문제는 테두리 1개(차단 있으면 차단 색) + 배지 가로 나란히(flex, 감싸개 = 배지 부모 유지) — 같은 섹션 빈 칸 2건도 번호가 겹치지 않는다. 필드 `aria-describedby` 맨 앞 = 그 문장 id(`EditFields`가 같은 `slotIssue` 사용 — 새 테스트로 확인). 게이트 코드 변경 0(R-13 불변). RED `logs/o3-red.txt`(3건 실패) → GREEN | `logs/o3.txt` gate exit 0 · 표적(`src/components/studio` · `src/pages` · `src/features/studio`) 560 |
+| O4 게이트 요약 · 진입 요약 | **통과** — (4) `GateList.tsx` `rowCause` = 그 줄 첫 **차단** 이슈 원인(없으면 첫 이슈). RED: 글자 수 줄 대표가 경고 "Hero 제목이 권장 28자를 넘었습니다 (30/28자)" → GREEN "Hero 버튼 문구: 필수 입력입니다". (5) `StudioLayout.tsx` 진입 요약 = "바뀐 점 N개"(편집 알림 영역 접근 이름 `aria-label="편집 알림"` · 펼친 원문 그대로). RED `logs/o4-red.txt`(2건) → GREEN | `logs/o4.txt` gate exit 0 · 표적 561 |
 
 ## 3. 번들 표
 | 시점 | `/studio` 첫 화면 | `/studio` 진입 직후 (≤127.70) | 렌더 JS (≤89.70) | 렌더 CSS | 근거 |
@@ -27,6 +29,7 @@
 | O1 | 91.78 | 127.29 | 80.12 | 6.32 | `logs/o1.txt` |
 | O2 | 91.78 | 127.29 | 80.12 | 6.32 | `logs/o2.txt` |
 | O3 | 91.77 | 127.38 | 80.12 | 6.32 | `logs/o3.txt` |
+| O4 | 91.78 | 127.38 | 80.12 | 6.32 | `logs/o4.txt` |
 
 ## 4. SPEC 차이
 | # | 항목 | 구현 | 사유 |
@@ -47,6 +50,7 @@
 | `StructureCanvas.test.tsx:155~157` | `sentence.parentElement` = 테두리 감싸개 좌표 | `badge.parentElement` 좌표(값 그대로) | 브리프 지정 |
 | `StudioLayout.test.tsx:82` | `within(canvas()).getByText("경고 1")` 있음 | `[data-issue-badge]` 글자 "경고 1" | 39행과 같은 이유 |
 | `StudioLayout.test.tsx:90 · 97` | `getByText("경고 1")` 클릭 | `[data-issue-badge]` 클릭 | 39행과 같은 이유 |
+| `StudioPage.test.tsx:97 · 101 · 104` | 요약 "편집 문서를 만들며 바뀐 점 3개" | 요약 "바뀐 점 3개"(summary는 정확히 일치 `/^바뀐 점 3개$/` — 더 엄격) | r4.13 (5) 문구 변경 |
 
 
 ## 6. 브라우저 캡처

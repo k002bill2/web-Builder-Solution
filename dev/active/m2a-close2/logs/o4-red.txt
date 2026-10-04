@@ -1,0 +1,79 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close2/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/StudioPage.test.tsx (9 tests | 1 failed) 768ms
+   ❯ 편집 알림 접기 (SPEC r4.7 A3-Q7 — 8.2.1 (a) 한 줄 요약 + 펼치기) (2)
+     × 바뀐 쌍이 있으면 한 줄 요약 '바뀐 점 N개'(r4.13 (5) — 240 열에서 꺾이지 않게 · N = 원문의 바뀐 섹션 수 — 같은 쌍 여러 섹션 포함, Codex r1 P2) + 닫힌 details 안에 원문 · 영역 1개 · 1회 42ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/GatePanel.test.tsx (13 tests | 1 failed) 1749ms
+   ❯ 게이트 8줄 표시 (SPEC 5.12 · E-S22~E-S25 · E-AC-25·27) (6)
+     × 줄 대표 문장(r4.13 (4)) — 경고가 먼저 와도 그 줄에 차단이 있으면 차단 원인을 대표로 439ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/StudioPage.test.tsx > 편집 알림 접기 (SPEC r4.7 A3-Q7 — 8.2.1 (a) 한 줄 요약 + 펼치기) > 바뀐 쌍이 있으면 한 줄 요약 '바뀐 점 N개'(r4.13 (5) — 240 열에서 꺾이지 않게 · N = 원문의 바뀐 섹션 수 — 같은 쌍 여러 섹션 포함, Codex r1 P2) + 닫힌 details 안에 원문 · 영역 1개 · 1회
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^바뀐 점 3개$/[39m
+Received:
+[31m  편집 문서를 만들며 바뀐 점 3개[39m
+ ❯ src/pages/StudioPage.test.tsx:104:46
+    102|     const details = noticeRegion().querySelector("details")!;
+    103|     expect(details).not.toHaveAttribute("open");
+    104|     expect(details.querySelector("summary")).toHaveTextContent(/^바뀐 점 …
+       |                                              ^
+    105|     expect(details).toHaveTextContent(CHANGED);
+    106|     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/studio/GatePanel.test.tsx > 게이트 8줄 표시 (SPEC 5.12 · E-S22~E-S25 · E-AC-25·27) > 줄 대표 문장(r4.13 (4)) — 경고가 먼저 와도 그 줄에 차단이 있으면 차단 원인을 대표로
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^Hero 버튼 문구: 필수 입력입니다$/[39m
+Received:
+[31m  Hero 제목이 권장 28자를 넘었습니다 (30/28자)[39m
+ ❯ src/components/studio/GatePanel.test.tsx:40:19
+     38|     expect(row.textContent).toMatch(/글자 수차단 1/);
+     39|     const cause = row.querySelector(":scope > p")!;
+     40|     expect(cause).toHaveTextContent(/^Hero 버튼 문구: 필수 입력입니다$/);
+       |                   ^
+     41|     expect(within(row).getByText(/원인 · 대체안 2건/)).toBeInTheDocument();
+     42|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 20 passed (22)
+   Start at  17:49:57
+   Duration  3.13s (tests 49%, environment 26%, transform 16%, setup 5%, import 4%)
+

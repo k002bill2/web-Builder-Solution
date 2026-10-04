@@ -11,7 +11,8 @@
 | P3 center | `logs/p3-center-red.txt` | 5bfb773 | hero/center — primary 면 · fullbleed 패널 글자·CTA 클래스 재사용 |
 | P4 grid | `logs/p4-grid-red.txt` | a2af634 | hero/grid — 타일 A 이미지 1회 + 색 타일 B·C |
 | P5 text | `logs/p5-text-red.txt` | f1a5595 | hero/text — 강조선 · 제목 9/12 |
-| P6 image | `logs/p6-image-red.txt` | (image 커밋) | hero/image — 미디어 위 · 카피 아래(영역 이름) |
+| P6 image | `logs/p6-image-red.txt` | 726392c | hero/image — 미디어 위 · 카피 아래(영역 이름) |
+| P7 공통 | 변이 검사 `logs/p7-mutation.txt` | (공통 커밋) | `kit/heroVariants.test.tsx` — KB-AC-30·32·33·35 [U]/[G] |
 
 ## 2. 변형별 판정 (KB-AC)
 (작성 중)

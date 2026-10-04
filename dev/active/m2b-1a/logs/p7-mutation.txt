@@ -1,0 +1,4 @@
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
++   ".kit-hx-tile--b",
++   ".kit-hx-tile--b",
+      Tests  5 passed (5)

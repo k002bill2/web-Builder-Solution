@@ -16,7 +16,7 @@
 - [x] P4 hero/grid (KB-AC-15·17 [U] · 16 규칙) — HeroGrid(타일 A = Media 1회 · B·C 장식 div aria-hidden) · RED logs/p4-grid-red.txt(5 실패) → gate OK(렌더 JS 80.41 · CSS 6.59 · /studio 127.42 ← 문자열 3개인데 127.42: 끝(5개)에서 다시 재고 넘으면 순서 조정)
 - [x] P5 hero/text (KB-AC-18 [U] · 19 규칙) — HeroText(강조선 = 빈 div aria-hidden) · RED logs/p5-text-red.txt(4 실패) → gate OK(렌더 JS 80.45 · CSS 6.63 · /studio 127.42)
 - [x] P6 hero/image (KB-AC-20·22 [U] · 21 규칙) — HeroImage(카피 띠 → 미디어, 영역 이름 media/copy) · RED logs/p6-image-red.txt(6 실패) → gate OK(렌더 JS 80.50 · CSS 6.72 · /studio 127.41)
-- [ ] P7 공통 [U]/[G] (KB-AC-30 · 33 · 35 정적 HTML 몫)
+- [x] P7 공통 [U]/[G] (KB-AC-30 · 32 · 33 · 35 정적 HTML 몫 · K-AC-04) — kit/heroVariants.test.tsx 5건. 구현 뒤 판정 테스트라 RED 없음 → 변이 검사(HeroGrid 타일 B 클래스 바꿈 → 선택자 매칭 실패 1, 되돌림 → 통과, logs/p7-mutation.txt) · gate OK
 - [ ] P8 REPORT 갱신(브라우저 전) → 브라우저 [B]/[V] 4337: QB-5~9·12·13 1280·768·390 · KB-AC-31·34·35
 - [ ] P9 Codex review --scope branch --base f113f2c 1회 · P1만 수정
 - [ ] P10 REPORT 마감 · 서버 종료 · lsof 4337·4339 = 0

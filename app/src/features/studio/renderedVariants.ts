@@ -8,6 +8,7 @@ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
   "faq/accordion",
   "footer/biz-extended",
   "footer/biz-extended-map",
+  "footer/minimal",
   "header/sticky-hamburger",
   "header/sticky-right-cta",
   "header/sticky-two-tier",

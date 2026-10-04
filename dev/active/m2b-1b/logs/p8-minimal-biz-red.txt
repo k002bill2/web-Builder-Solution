@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/FooterMinimalBiz.test.tsx (3 tests | 3 failed) 39ms
+   ❯ footer/minimal-biz (B-11) (3)
+     × KB-AC-28: address 1 · 저작권 요소 0 · 면 표시 bg · minimal과 같은 루트 클래스(같은 면·위 경계 규칙) 29ms
+     × KB-AC-28 [G]: 사업자정보 글자 ink(muted로 낮추지 않음) · 줄바꿈 기본(pre-line 안 씀) 2ms
+     × 빈 슬롯: links 빈 값 → 사업자정보만 · businessInfo 빈 값 → address 0 · footer 면 남음 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/FooterMinimalBiz.test.tsx > footer/minimal-biz (B-11) > KB-AC-28: address 1 · 저작권 요소 0 · 면 표시 bg · minimal과 같은 루트 클래스(같은 면·위 경계 규칙)
+TypeError: Cannot read properties of null (reading 'tagName')
+ ❯ src/kit/FooterMinimalBiz.test.tsx:12:14
+     10|   it("KB-AC-28: address 1 · 저작권 요소 0 · 면 표시 bg · minimal과 같은 루트 클래스(같은…
+     11|     const f = footer(drawDoc(doc()));
+     12|     expect(f.tagName).toBe("FOOTER");
+       |              ^
+     13|     expect(f.id).toBe("s-s-footer");
+     14|     expect(f.dataset.surface).toBe("bg");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/kit/FooterMinimalBiz.test.tsx > footer/minimal-biz (B-11) > KB-AC-28 [G]: 사업자정보 글자 ink(muted로 낮추지 않음) · 줄바꿈 기본(pre-line 안 씀)
+AssertionError: expected '' to match /color:\s*var\(--site-ink\)/
+
+- Expected:
+/color:\s*var\(--site-ink\)/
+
++ Received:
+""
+
+ ❯ src/kit/FooterMinimalBiz.test.tsx:26:18
+     24|   it("KB-AC-28 [G]: 사업자정보 글자 ink(muted로 낮추지 않음) · 줄바꿈 기본(pre-line 안 씀)…
+     25|     const rule = css.match(/\n\s*\.kit-footer-min \.kit-footer-info\s*…
+     26|     expect(rule).toMatch(/color:\s*var\(--site-ink\)/);
+       |                  ^
+     27|     expect(rule).toMatch(/white-space:\s*normal/);
+     28|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/kit/FooterMinimalBiz.test.tsx > footer/minimal-biz (B-11) > 빈 슬롯: links 빈 값 → 사업자정보만 · businessInfo 빈 값 → address 0 · footer 면 남음
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/FooterMinimalBiz.test.tsx:31:72
+     29|
+     30|   it("빈 슬롯: links 빈 값 → 사업자정보만 · businessInfo 빈 값 → address 0 · footer…
+     31|     expect([...footer(drawDoc(patch(doc(), "s-footer", { links: "" }))…
+       |                                                                        ^
+     32|     const noInfo = footer(drawDoc(patch(doc(), "s-footer", { businessI…
+     33|     expect(noInfo.querySelectorAll("address")).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  23:13:45
+   Duration  712ms (environment 58%, transform 21%, setup 10%, tests 6%, import 3%, worker 1%)
+

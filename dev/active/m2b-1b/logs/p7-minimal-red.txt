@@ -1,0 +1,83 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/FooterMinimal.test.tsx (4 tests | 4 failed) 159ms
+   ❯ footer/minimal (B-10) (4)
+     × 구조: footer 루트(id) · bg 면 표시 · 한 줄 래퍼 = 저작권 p → 하단 링크 ul(DOM = 보이는 순서) · 링크 = 글자 항목 82ms
+     × KB-AC-26 [G]: 면 bg + 위 구분선 muted · 링크 글자 ink · 저작권 muted · 포커스 링 ink — ink 면 0 3ms
+     × 빈 슬롯: links 빈 값 → 저작권만 · copyright 빈 값 → 링크만 21ms
+     × KB-AC-27: links·copyright 둘 다 빈 값 → footer#s-s-footer 1 · 자식 글자 요소 0 · CTA 폴백 href(#s-s-footer)의 대상 존재 51ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/FooterMinimal.test.tsx > footer/minimal (B-10) > 구조: footer 루트(id) · bg 면 표시 · 한 줄 래퍼 = 저작권 p → 하단 링크 ul(DOM = 보이는 순서) · 링크 = 글자 항목
+TypeError: Cannot read properties of null (reading 'tagName')
+ ❯ src/kit/FooterMinimal.test.tsx:14:14
+     12|   it("구조: footer 루트(id) · bg 면 표시 · 한 줄 래퍼 = 저작권 p → 하단 링크 ul(DOM = 보이…
+     13|     const f = footer(drawDoc(doc()));
+     14|     expect(f.tagName).toBe("FOOTER");
+       |              ^
+     15|     expect(f.id).toBe("s-s-footer");
+     16|     expect(f.dataset.surface).toBe("bg");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/kit/FooterMinimal.test.tsx > footer/minimal (B-10) > KB-AC-26 [G]: 면 bg + 위 구분선 muted · 링크 글자 ink · 저작권 muted · 포커스 링 ink — ink 면 0
+AssertionError: expected '' to match /background:\s*var\(--site-bg\)/
+
+- Expected:
+/background:\s*var\(--site-bg\)/
+
++ Received:
+""
+
+ ❯ src/kit/FooterMinimal.test.tsx:27:37
+     25|
+     26|   it("KB-AC-26 [G]: 면 bg + 위 구분선 muted · 링크 글자 ink · 저작권 muted · 포커스 링…
+     27|     expect(rule(".kit-footer-min")).toMatch(/background:\s*var\(--site…
+       |                                     ^
+     28|     expect(rule(".kit-footer-min")).toMatch(/border-top:\s*var\(--site…
+     29|     expect(rule(".kit-footer-min")).toMatch(/--kit-ring:\s*var\(--site…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/kit/FooterMinimal.test.tsx > footer/minimal (B-10) > 빈 슬롯: links 빈 값 → 저작권만 · copyright 빈 값 → 링크만
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/FooterMinimal.test.tsx:36:75
+     34|
+     35|   it("빈 슬롯: links 빈 값 → 저작권만 · copyright 빈 값 → 링크만", () => {
+     36|     expect([...footer(drawDoc(patch(doc(), "s-footer", { links: " · " …
+       |                                                                           ^
+     37|     expect([...footer(drawDoc(patch(doc(), "s-footer", { copyright: ""…
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/kit/FooterMinimal.test.tsx > footer/minimal (B-10) > KB-AC-27: links·copyright 둘 다 빈 값 → footer#s-s-footer 1 · 자식 글자 요소 0 · CTA 폴백 href(#s-s-footer)의 대상 존재
+AssertionError: expected  to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/kit/FooterMinimal.test.tsx:42:53
+     40|   it("KB-AC-27: links·copyright 둘 다 빈 값 → footer#s-s-footer 1 · 자식 글자 …
+     41|     const c = drawDoc(patch(doc(without(sampleDoc(), "contact")), "s-f…
+     42|     expect(c.querySelectorAll("footer#s-s-footer")).toHaveLength(1);
+       |                                                     ^
+     43|     expect(footer(c).querySelectorAll("p, ul, li, address, span, a")).…
+     44|     expect(footer(c).textContent).toBe("");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  23:08:19
+   Duration  4.23s (environment 57%, setup 18%, transform 17%, tests 4%, import 2%, worker 1%)
+

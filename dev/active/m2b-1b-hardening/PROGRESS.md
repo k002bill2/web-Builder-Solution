@@ -15,7 +15,8 @@
 - [x] P3 two-tier nav 빈 값 + utility 1280·768·390 PASS(시트·버튼 0 · tier 0~23.2 ≤ bar 23.2 · DOM 순서 일치 · 넘침 0) · 캡처 shots/p3-two-tier-nonav-390.png(ego screenshot 2회 CDP 시간 초과 → shot-p3.sh Chrome headless 390 래퍼)
 - [x] P4 gate OK logs/p4-gate.txt(표적 src/kit+PageDocument 126 · 가드 76 · typecheck·lint·build 0) · 전체 vitest 1회 `--maxWorkers=4` 191 파일 / **1744 통과 exit 0**, Errors·Unhandled 0 (예측 tests 1744 일치 · 파일 예측 190은 오기, 1b 190 + 1 = 191) · 번들 렌더 JS 81.13 · CSS 7.12→7.13 · /studio 127.40(±0) · 그 밖 ±0 (logs/bundle-diff.txt)
 - [x] P4 Codex review --scope branch --base c79bb65 1회 exit 0 · P1 0 · P2 0 (정적 — Codex 샌드박스 vitest 쓰기 차단) logs/codex.txt
-- [ ] P4 REPORT 1~8절 · 서버 종료 LISTEN 0 증거
+- [x] P4 REPORT 1~8절 · 서버 3 PID 종료 · 4337·4339 LISTEN 0 · 5480 무접촉(PID 82062)
 
 ## 메모
 - 4337 vite PID 80410(cwd app) · 4339 python PID 80390(cwd dev/active/m2b-1b-hardening/static) — 03:09 기동
+- 수용 기준 중 footer **실제** 링크 링만 BLOCKED(MQ-2 SPEC: 하단 링크 = 글자 항목). 결정 필요: footer 링크 실제 링크화 여부(별도 레인)

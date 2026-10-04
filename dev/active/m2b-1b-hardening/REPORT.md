@@ -3,7 +3,7 @@
 - 책임 Developer / 실행 Orca managed Claude Code(Opus) 단일 레인 · 서브에이전트 0
 - worker 시작 HEAD `c79bb65` (브리프·명세 결정 커밋) · 코드 baseline `9e87308` · 브랜치 `k002bill2/m2b-1b-hardening`
 - 상태 표기
-  - **기동완료**: 예
+  - **기동완료**: 예 — 이 레인 기동, 로컬 서버 4337·4339 기동, 브라우저 판정 실행을 뜻한다. 2a 기동이 아니다.
   - **수정완료**: 예 — `kit.css` 최소 수정 1건 + 구조 가드 1파일
   - **검토완료**: Codex 1회 — 6절
   - **실제UA검증**: **아니오** — 미지원 실제 UA를 확보하지 못했다. 폴백은 모의 환경에서만 확인했다.
@@ -14,10 +14,12 @@
    - 원래 Codex 주장("burger lg 메뉴 링크 0")은 모의 미지원 환경에서 **재현되지 않았다**(링크 3/3 보임).
    - 2R 관찰("K1-1 계열 lg에서 nav 2벌")은 **재현됐다** — right-cta·two-tier·transparent, 1280.
    - 수정 뒤 폴백은 명시적인 `@supports` 블록과 구조 가드로 보호된다. 모의 판정 12/12 PASS, 지원 경로 회귀 0.
-2. **링**
+2. **링** — 수용 기준 2는 **부분 미충족**이다.
    - header 4변형(+transparent 면 3) 링 332건을 쟀다. 역할 허용 쌍 위반 0, 바깥 면 대비 최소 4.61(≥3).
    - 부정 표본 3종은 판정기가 FAIL로 잡았다.
    - **footer 실제 링크 링은 미판정(BLOCKED)이다.** footer 하단 링크는 SPEC상 글자 항목이라 실제 `a`가 0이다(아래 3.2).
+   - 그래서 수용 기준 "footer 실제 링크 링 측정 0이 아님"은 **이 항목만 미충족(BLOCKED)**이다.
+   - 브리프 전제였던 2R의 "제목 불일치 → span" 추정은 틀렸다.
 3. **390 예외 상태** PASS — 보조 줄이 바 위에 있고, DOM 순서와 시각 순서가 같으며, 넘침 0. 위치 변경 0.
 4. **전체 suite / 예산**
    - 전체 suite 1744/1744 통과, exit 0, Errors 0.
@@ -38,6 +40,7 @@
 - `git diff c79bb65 --stat -- app`: `kit.css` +13/−4, `popoverFallback.test.ts` +79. 두 파일뿐이다.
 - 다음 경로는 모두 변경 0이다: `drawKit.tsx`, `staticHtml`(script 바이트), docs/, design/, package*.json.
 - 다음은 모두 0이다: 킷 TSX, React state/event, 새 script, 새 의존성, 새 변형.
+- 1b 증거 보존: `git diff c79bb65 --stat -- dev/active/m2b-1b` → 출력 없음(변경 0).
 
 ## 2. 폴백 증거 — 원본 구조 · 모의 미지원 · 실제 UA 구분
 
@@ -92,6 +95,7 @@
 - **지원 경로 회귀** — 원본 정적 HTML, Chromium 네이티브 popover:
   - base와 fix 모두, 메뉴 버튼이 보이는 9건에서 다음이 전부 PASS였다: 열기 → `Escape` 키로 닫힘 → 포커스가 "메뉴" 버튼으로 복귀 → 다시 열기 → 시트 안 앵커 누름 → r4.12 고정 스크립트가 닫음.
   - lg(burger 제외): 버튼·시트 숨김, nav 1 PASS. 넘침 0.
+  - 참고: `open1`은 `:popover-open` 일치만 본다. 열린 시트가 실제로 보인다는 근거는 다음 단계다. 시트 안에서 `checkVisibility()`가 참인 앵커를 찾아 클릭했고, 9건 모두 성공했다(`anchor.opened/closed`, href `#s-s-about`). burger 1280 포함이다. 이번 수정이 lg `:popover-open` 숨김을 건드렸으므로 이 근거를 명시해 둔다.
 
 ### 2.5 실제 UA
 **미확보.** popover 미지원 실제 브라우저(예: Chrome < 114 · Safari < 17 · Firefox < 125)에서 실측하지 않았다. 위 2.4를 실제 구형 UA 검증이라고 하지 않는다.
@@ -154,6 +158,8 @@
   - 사전 예측: tests 1738 + 6 = **1744 → 일치**.
   - 파일 수 예측: 로그 머리에 적은 "190"은 내 오기다. 1b 기준 190 + 1 = 191이 맞다.
   - 기존 테스트 변경 0(skip/단언 약화 0). 추가는 `popoverFallback.test.ts` 6 it뿐이다.
+  - P0 전체 suite 기준은 도출값이다. 앱 변경은 두 파일이고 추가 테스트는 6개이므로 1744 − 6 = **1738**이다. 이는 1b Jarvis 로그(`dev/active/m2b-1b/logs/jarvis-vitest-1.txt`, 190 파일 / 1738)와 일치한다. 전체 suite 1회 제약 때문에 baseline 전체는 따로 재실행하지 않았다.
+  - 로그의 `Not implemented: Window's scrollTo()` 줄(212회)은 jsdom 알림이며 Errors가 아니다. 1b Jarvis 로그에도 210회 있다.
 - gate:
   - `logs/p4-gate.txt` — 표적 src/kit + PageDocument 126, 가드 76, typecheck·lint·build 모두 exit 0.
   - P0 baseline `logs/p0-gate.txt`, P1 `logs/p1-gate.txt`.
@@ -188,10 +194,20 @@
      - burger 시트 미숨김 = 게이트 밖 규칙에 burger 숨김 없음
 2. **footer 실제 링크 링은 미판정(BLOCKED)**이다(3.2). footer에 실제 링크를 둘지는 MQ-2 SPEC 결정과 킷 변경이 필요하다. 이는 Jarvis/영환님 몫이다.
 3. 이번 판정은 Chromium(ego-browser) 한 엔진에서만 했다. WebKit·Gecko는 측정하지 않았다.
-4. 2a gate:
+4. 브리프는 "각 커밋에 PROGRESS·REPORT 동기화"를 요구했다. 실제로는 `86e5e79`·`f6836e4`·`f269053`에서 PROGRESS만 갱신했고, 그동안 REPORT는 골격 상태였다. REPORT 본문은 `8913296`과 마감 커밋에서 채웠다. 이력은 재작성하지 않았다.
+5. 2a gate:
    - 이 레인의 코드 변경은 `kit.css` 폴백 블록뿐이다.
    - 2a 자동 기동 0. 2a 기동 여부는 Jarvis 회수 판정 뒤 영환님이 결정한다.
    - 2a가 `kit.css`를 수정할 때 `popoverFallback.test.ts`가 폴백 구조를 지킨다.
 
 ## 8. 서버
-(마감 시 기록)
+- 기동(03:09):
+  - 4337: `npx vite --host 127.0.0.1 --port 4337 --strictPort` — npm exec PID 80388, vite PID 80410, cwd `…/m2b-1b-hardening/app`
+  - 4339: `python3 -m http.server 4339 --bind 127.0.0.1` — PID 80390, cwd `…/m2b-1b-hardening/dev/active/m2b-1b-hardening/static`
+- 종료(03:26): 직전에 `lsof -a -p <PID> -d cwd`로 세 PID의 cwd를 다시 확인했고, 위와 같았다. 그 세 PID만 `kill`했다.
+  - `ps -p 80410,80388,80390` → 출력 없음
+  - `lsof -nP -iTCP:4337 -iTCP:4339 -sTCP:LISTEN` → **출력 없음(0줄)**
+- main 5480: `lsof -nP -iTCP:5480 -sTCP:LISTEN` → `node 82062 127.0.0.1:5480 (LISTEN)`. 무접촉이며 종료·재시작하지 않았다.
+- `pgrep`에 걸린 오케스트레이터 PID 53974(hermes-claude-orca, 인자에 포트 문자열 포함)는 이 레인이 띄운 서버가 아니므로 무접촉이다.
+- ego-browser 작업 공간은 실행마다 `task.finish({ keep: [] })`로 닫았다. Chrome headless(`shot-p3.sh`)는 저장 뒤 자기 PID를 종료했다.
+- push·merge·삭제 0. 2a 자동 기동 0.

@@ -1,0 +1,15 @@
+# V2 — aside repl · 래퍼 iframe · 4339 (스크립트 prefix.js + helpers.js + a.js / b.js)
+## a.js (1280 진입 → 390 전환)
+S1280 {"w":1280,"frame":[232,136,721,1892],"frameCssW":1280,"scaleCaption":"축소 보기 · 56%","caption":"실제 렌더 (F1 · 일부) — 섹션 9개 중 2개는 아직 구조 미리보기입니다. 이 섹션이 있으면 HTML·zip으로 내보낼 수 없습니다.","issues":[],"badges":[],"hScroll":0}
+S390(1280→390 전환, 약 4.2초 뒤) {"w":390,"frame":[12,788,351,44],"frameCssW":1280,"scaleCaption":"축소 보기 · 27%","issues":[],"badges":[],"hScroll":0}
+## b.js (처음부터 390×844 진입) — iframe [y, 폭, 높이, style.height] · rects 수 (0.7초 간격)
+T 0 [1136,351,44,null] rects 0
+T 1 [1136,351,44,null] rects 0
+T 2 [1136,351,44,null] rects 0
+T 3 [1136,351,44,null] rects 0
+T 4 [1136,351,44,null] rects 0
+T 5 [638,351,924,"3368.83px"] rects 43
+T 6 [638,351,924,"3368.83px"] rects 43
+T 7 [638,351,924,"3368.83px"] rects 43
+S390 {"w":390,"frame":[12,638,351,924],"frameCssW":1280,"scaleCaption":"축소 보기 · 27%","hScroll":0}
+(참고: b.js의 "모바일" 클릭은 라디오 label 텍스트 매칭 실패로 폭 전환이 일어나지 않았다 — frameCssW 1280 유지. 모바일 프레임 캡처는 V4에서 따로)

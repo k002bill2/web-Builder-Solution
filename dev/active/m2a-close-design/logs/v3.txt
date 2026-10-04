@@ -1,0 +1,14 @@
+# V3 — 문제 표시 겹침 재현 (c.js 1280×900 · c390.js 390×844)
+조작: Hero 제목 30자(권장 28) · Hero 부제 96자(권장 80) · Hero 버튼 문구 비움(필수) · Services 카드 1 제목 29자(권장 20) · 카드 2 제목 비움(필수)
+covers = 문장 상자와 겹치는 렌더 슬롯(렌더 문서 rects × 비율)
+## 1280 (축소 56%)
+OV [{"id":"canvas-issue-hero-1-title","text":"제목이 권장 28자를 넘었습니다 (30/28자)","rect":[288,369,227,18],"font":"13px","lines":1,"covers":["hero-1.subtitle"]},{"id":"canvas-issue-hero-1-subtitle","text":"부제가 권장 80자를 넘었습니다 (96/80자)","rect":[288,424,228,18],"font":"13px","lines":1,"covers":[]}]
+badges [["경고 1",534,244],["경고 1",534,352]]
+OV2 + {"id":"canvas-issue-services-1-card1Title","text":"카드 1 제목이 권장 20자를 넘었습니다 (29/20자)","rect":[289,458,174,36],"font":"13px","lines":2,"covers":["services-1.card1Body"]}
+## 390 (축소 27%)
+OV [{"id":"canvas-issue-hero-1-title","rect":[33,155,144,36],"lines":2,"covers":["hero-1.subtitle"]},{"id":"canvas-issue-hero-1-subtitle","rect":[33,182,144,36],"lines":2,"covers":[]}]   ← 두 문장 상자 y 155~191 / 182~218 서로 9px 겹침
+badges [["경고 1",136,83],["경고 1",136,135]]
+OV2 + {"id":"canvas-issue-services-1-card1Title","rect":[34,386,88,72],"font":"13px","lines":4,"covers":["services-1.card1Body","portfolio-1.heading","portfolio-1.intro"]}
+## 빈 필수 칸 — 캔버스 표시 0
+GATE "… 글자 수 차단 2 Hero 제목이 권장 28자를 넘었습니다 (30/28자) 원인 · 대체안 5건 … R-13 · Hero 버튼 문구: 필수 입력입니다 … R-13 · Services 카드 2 제목: 필수 입력입니다 …"
+오버레이 p 목록에 hero-1-cta · services-1-card2Title 없음(사각형 없음 → sr-only 문장만, 위 OV 목록은 absolute인 것만 잡힘) · CTA 버튼·카드 2 제목은 렌더에서 생략

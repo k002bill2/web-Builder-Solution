@@ -13,7 +13,9 @@
 | R2 | ff525ff | 정적 HTML 고정 인라인 스크립트(r4.12) · RED→GREEN · 이관 표(2.4절) |
 | R2 [B] | 262b396 | K-AC-12 5항 PASS(새로 내보낸 HTML · 390) |
 | C2 | 1d5103a | 캡처 방식 PoC — data: SVG foreignObject 채택 · 브라우저별 오염 표(4절) |
-| C3 | (이 커밋) | PNG 묶음 진입 · 캡처 청크 · 4상태 · 파일 이름 · 계측(5절) — 진입 127.20 |
+| C3 | a6dc714 | PNG 묶음 진입 · 캡처 청크 · 4상태 · 파일 이름 · 계측(5절) — 진입 127.20 |
+| C4 수정 | d84f31a | 캡처 iframe 화면 안·투명(`openCaptureFrame`) · 바닥 > 0 rects 대기(`settled`) — RED `logs/c4-fix-red.txt`·`c4-frame-red.txt` · gate `logs/c4-fix.txt` exit 0(5.1절) |
+| C4 판정 · C5 | 마감 커밋(브랜치 HEAD) | K-AC·E-AC 판정(6절) · PNG 1280·390(`shots/c4-png-*.png`) · Codex(10절) · REPORT 마감 |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -70,7 +72,7 @@
 | `staticMarkup.test.ts` "script 0 · on* 속성 0 …" → "고정 스크립트(바이트 일치) 외 script 0 · on* 속성 0 …" | 더러운 마크업(`<script>alert(1)</script>` 삽입) 뒤 script 0 | script 목록 = `[STATIC_MENU_SCRIPT]` — 삽입된 스크립트는 여전히 지워짐(on*·data-*·details 단언 그대로) | r4.12 생성기 검사 = "그 고정 스크립트(바이트 일치) 외 `script` 0" |
 | `staticHtml.test.ts` "ready → render … iframe 닫음" | `html` 에 `/<script\|<link/` 0 | `<link` 0 · `src` 있는 script 0 · script 블록 전체 = `[<script>{상수}</script>]` | 같음 — 외부 자원 0 뜻은 유지 |
 
-## 3. C1 공간 실측 — **결론: 진입 ≤ 126.70 경로가 실측으로 보이지 않음 → C2 전에 정지(브리프 C1)**
+## 3. C1 공간 실측 — **결론: 진입 ≤ 126.70 경로가 실측으로 보이지 않음 → C2 전에 정지(브리프 C1)** → **재개에서 해소**(ADR-004 개정 4 · 3.R절 · 진입 127.20 ≤ 127.70)
 SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진입 때부터** 보이길 요구한다 → 이 묶음은 `/studio` 진입 청크(StudioLayout)에 있어야 한다. 예산 상수·멈춤선은 바꾸지 않았다.
 
 | 측정 (`/studio/:projectId` 진입 직후, gzip KB) | 진입 | 멈춤선 126.70 대비 | 근거 |
@@ -121,44 +123,75 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 - **진입 청크(`StudioLayout`)** — `components/studio/PngSave.tsx`: 내보내기 묶음(두 버튼 · 이유 목록 · 결과) 다음, 위 구분선 + 이름표 `h3` "이미지로 저장" · outline "PNG 내려받기"(아이콘 0) · 캡션 상시 "지금 미리보기 폭({폭 이름} · {폭})의 페이지 전체를 한 장으로 저장합니다." + 폴백 N>0이면 "구조 미리보기 섹션 N개는 표식과 함께 담깁니다." · `aria-describedby` = `png-caption`(준비 전엔 `png-wait png-caption`) — 내보내기 이유 id와 분리 · 4상태: 준비 전 `aria-disabled` + "미리보기를 그리는 중입니다" / 진행 `aria-busy` "PNG 만드는 중…"(두 번 누름 무시) / 성공 `role=status` "PNG를 내려받았습니다 · {파일 이름}" / 실패 `role=alert` "PNG를 만들지 못했습니다 — 다시 눌러 주세요"(같은 버튼 재시도 · 캡처 청크를 못 받아도 뜸). 준비 = 캔버스 `onDrawn`(렌더 문서 rects 받음) + 저장 대기 아님. 1280·1024 오른쪽 열 / 390·768 "검사" 탭 = 같은 `GatePanel exports` 자리(배치별 코드 없음).
 - **조작 뒤 청크** `features/studio/png/pngCapture.ts`(+4.55KB, `STUDIO_AFTER_ACTION` 등록): `savePng` → `png_requested(view)` → 숨은 렌더 iframe(폭 = `FRAME_REM[view]` — 축소 비율 무시) render → rects → serialize → 마크업 + `kitCss` → `buildCaptureSvg`(폴백 허용 · data-* 유지 · script/iframe/on*/details[open] 제거 · XHTML) → **`data:` URL** → `Image.decode` → canvas(높이 = 섹션 rects 바닥) → `toBlob("image/png")` → 부모 `<a download>` 클릭 · 1초 뒤 object URL 해제 → `png_succeeded(view, fallback_count)`. 실패 = `png_failed(reason = RENDER_TIMEOUT | CANVAS_TOO_TALL | CANVAS_TAINTED | INFRA)`. 상한: 높이 16384 · 넓이 16,777,216px.
 - 파일 이름 `pngFileName` = 3b `exportFileStem` 재사용 + `_{폭}_r{revision}` + 폴백 있으면 `_구조포함`(K-AC-32 6사례 테스트).
-- 공유 변경(조작 뒤 청크만): `staticHtml.ts` — `openRenderFrame(widthRem = 80)` · `renderAndSerialize`가 `{markup, rects}`를 돌려줌·export · `kitCss`/`defaultFetchText` export · kitTokens 없으면 render에서 뺌. 정적 HTML 생성기 동작·`ExportGenerator`/`ExportJob`/엔진 계약 변경 0 · `requestExport` 경로 0(PngSave는 저장소를 모른다 — 통합 테스트로 `requestExport` 0 확인). sandbox `allow-scripts` 그대로.
+- 공유 변경(조작 뒤 청크만): `staticHtml.ts` — (C3 때 `openRenderFrame(widthRem = 80)` → C4 수정에서 3b 원형 `openRenderFrame()`으로 되돌리고 PNG는 `openCaptureFrame` — 5.1절) · `renderAndSerialize`가 `{markup, rects}`를 돌려줌·export · `kitCss`/`defaultFetchText` export · kitTokens 없으면 render에서 뺌. 정적 HTML 생성기 동작·`ExportGenerator`/`ExportJob`/엔진 계약 변경 0 · `requestExport` 경로 0(PngSave는 저장소를 모른다 — 통합 테스트로 `requestExport` 0 확인). sandbox `allow-scripts` 그대로.
 - `tEXt` 메타데이터: 하지 않음(브리프 제외 — SPEC 선택 항목).
 - 스냅샷 미리보기 중 캡처(E-S29): 스냅샷 미리보기 UI가 아직 없어 해당 없음(9절).
 
+### 5.1 C4 중 발견한 수정 (`d84f31a`)
+- 증상(브라우저 실측): 앱에서 "PNG 내려받기" → rects가 모두 0 → 높이 0. 원인 = Chrome은 화면 밖(`left:-200vw`)·`visibility:hidden` 교차 출처 iframe을 배치하지 않는다. 또 렌더 문서는 레이아웃 전 0 크기 rects를 먼저 보낼 수 있다.
+- 수정: `openCaptureFrame(widthRem, heightRem)` — 화면 안(`left/top 0`) · `opacity 0` · `pointer-events none` · `z-index -1` · 높이 = 캔버스 상한 1024rem(내용보다 낮으면 세로 스크롤바만큼 폭이 줄어 배치가 달라짐) · `sandbox="allow-scripts"`·`aria-hidden`·`tabIndex -1` 그대로. `renderAndSerialize(…, settled)` — PNG는 `pageBottom(rects) > 0`인 보고까지 기다림.
+- RED: `logs/c4-fix-red.txt`(0 크기 rects 먼저 → 2 실패) · `logs/c4-frame-red.txt`(`openCaptureFrame` 없음 → 1 실패) → GREEN gate `logs/c4-fix.txt`(표적 `src/components/studio`·`src/features/studio` 238/238 · 가드 76/76 · typecheck·lint·build exit 0).
+- **3b 정적 HTML 경로 영향 0**: `openRenderFrame()`은 3b 원형(−200vw · 80rem · hidden — `git show a6dc714`의 − 줄과 같음)으로 되돌아갔고 `settled` 기본값 = 항상 true라 생성기 흐름은 그대로. `staticHtml.test.ts`·`staticMarkup.test.ts`(3b·R2 단언)는 같은 gate 표적에서 변경 없이 통과 → 8절 항목 없음.
+
 ## 6. K-AC · E-AC 판정
+- [B] 근거 = 앱(서버 4337)에서 실제로 내려받은 PNG를 `shots/`에 복사한 것: `shots/c4-png-1280.png`(1280×3364) · `shots/c4-png-390.png`(390×3198). 수정 뒤 결과인 근거: 캡처 12:39:19·12:40:00 > 소스 마지막 수정 12:38:43, 그리고 수정 전 코드는 rects 0 → 높이 0이라 이 크기의 PNG가 나올 수 없다 → 다시 캡처하지 않음.
+- 이전 실행은 버튼 상태·status 문장·계측(`__ev`)을 로그로 남기지 않았다 → 아래 K-AC-19·32·34·E-AC-49·50은 **[U]로 판정**(근거 = `logs/c4-fix.txt` 이번 fresh 실행 238/238). 실제 내려받기 파일 이름도 `~/Downloads`에 남아 있지 않아 [B] 확인 불가.
+
 | AC | 판정 | 근거 |
 |---|---|---|
 | K-AC-12 | **PASS**(5항 — 재개 R2, 고정 스크립트) · C0 때 부분 FAIL | 2.4절 · 2.3절 |
 | K-AC-30 | **PASS** | 2.3절 |
-| K-AC-17 · 19 · 32(PNG판) · 34 · E-AC-49 · 50 | **미판정 — BLOCKED(C1 정지)** | 3절 |
+| K-AC-17 | **PASS [B]·[U]** | PNG 1280·390 모두 "구조 미리보기" 표식 2개(최근 작업 · 이용하신 분들의 이야기)가 원래 크기(1:1 폭 PNG)로 담김 · 빗금 플레이스홀더 그대로. 캡처 규칙: sticky header 맨 위 · details(FAQ) 닫힘 · 390 메뉴 시트 닫힘 · 오버레이·편집기 UI 0 · 390 = "메뉴" 1단 / 1280 = 바 nav·CTA. [U] `pngCapture.test.ts` "폴백 섹션이 있어도 실패하지 않는다 · 표식…" |
+| K-AC-19 | **PASS [U]** | `PngSave.test.tsx` "PNG 버튼 4상태" 4개(이름표·캡션·describedby / 준비 전 aria-disabled + 이유 / 진행 aria-busy · 두 번 누름 무시 → 성공 role=status / 실패 role=alert · 같은 버튼 재시도) |
+| K-AC-32(PNG판) | **PASS [U]** | `pngCapture.test.ts` "파일 이름 (K-AC-32 PNG판)" — `{이름}_{폭}_r{revision}.png` · `_구조포함` · `???`→page · con→page-con · 40자 · 서로게이트 쌍 + "캡처 흐름" 파일 이름 = 폭·revision·_구조포함 |
+| K-AC-34 | **PASS [U]** | `pngCapture.test.ts` "내려받기 · 계측" — `png_requested(view)` · `png_succeeded(view, fallback_count)` · `png_failed(reason)` · 이름·파일 이름·슬롯 글자 0 |
+| E-AC-49 | **PASS [U]** | PNG = `requestExport` 밖 — "캡처 흐름 … requestExport 경로 0" · PngSave는 저장소를 모름 |
+| E-AC-50 | **PASS [U]** | `PngSave.test.tsx` "게이트 차단 + 폴백 → 내보내기 두 버튼은 막혀도 PNG는 열림 · … requestExport 0" |
+
+- **캔버스 캡처와 나란히: 하지 않음.** 편집기 캔버스는 앱 안 클릭으로만 도달하는 메모리 store 상태라 Chrome headless `--screenshot`으로 재현할 수 없고, ego-browser `Page.captureScreenshot`은 3b·3c 내내 시간 초과(2.3절 · 9절 5번). 대신 C2 PoC(4절 · `shots/c2-poc-*.png` — 캔버스와 같은 배치 확인)와 같은 배치임을 이 PNG로 확인했다.
 
 ## 7. 번들 표
 | 시점 | 공통 | `/studio` 첫/진입 | `/compare` 진입 | `/profile` 진입 | `/projects` 진입 | `/catalog` 진입 | `/references/:id` 진입 | 렌더 JS/CSS | 근거 |
 |---|---|---|---|---|---|---|---|---|---|
 | 기준선 eaa3d5e | 89.35 | 91.78 / **126.64** | 121.71 | 118.67 | 100.30 | 102.03 | 99.38 | 80.12 / 6.32 | `logs/c1-baseline.txt` |
 | C1 최소 시제품(원복됨) | 89.35 | 91.78 / **127.10 ✗** | 121.71 | 118.66 | 100.29 | — | — | — | `logs/c1-proto-min.txt` |
-| C1 원복 뒤(이 커밋) | 89.35 | 91.78 / 126.64 | 121.71 | 118.67 | 100.30 | 102.03 | 99.38 | 80.12 / 6.32 | `logs/c1.txt` |
+| C1 원복 뒤 | 89.35 | 91.78 / 126.64 | 121.71 | 118.67 | 100.30 | 102.03 | 99.38 | 80.12 / 6.32 | `logs/c1.txt` |
 | C3 PNG 묶음 | 89.35 | 91.78 / **127.20** ≤127.70 | 121.71 | 118.66 | 100.29 | 102.04 | 99.39 | 80.12 / 6.32 | `logs/c3.txt` · 조작 뒤 pngCapture +4.55 |
+| C4 수정 뒤(마감) | 89.35 | 91.78 / **127.20** / 한도 128 · 멈춤선 127.70 | 121.69 | 118.66 | 100.30 | 102.03 | 99.38 | **80.12** ≤89.70 / 6.32 | `logs/c4-fix.txt` · 조작 뒤 pngCapture +4.64 |
 
 ## 8. SPEC 차이
 - (재개 C3) **"준비 전"에 저장 대기(`dirty`·`saving`)도 포함** — 파일 이름 `{revision}`이 캡처한 문서의 revision이 되게(저장 전 편집이 있으면 `savedRevision`과 문서가 어긋남). 이유 문장은 SPEC 그대로 "미리보기를 그리는 중입니다"(편집 직후 캔버스도 다시 그림).
 - (재개 C3) 이름표는 `h3`(GatePanel `h2` 아래 위계) · object URL 해제는 클릭 1초 뒤(즉시 해제하면 일부 브라우저가 내려받기를 끊음).
 - (재개 C3) SPEC "다시 그리는 중" 준비 전: 캔버스는 첫 rects 뒤 `drawn` 유지(문서 교체마다 끄지 않음) — 캡처는 숨은 iframe에 지금 문서를 새로 그리므로 결과는 항상 지금 문서.
-- 코드 변경 0이라 SPEC과 다르게 만든 곳 없음.
+- (C4 수정) SPEC·브리프의 "숨은 렌더 iframe"을 PNG 캡처에서는 **화면 안 · 투명 · 누름 통과 · 맨 뒤** iframe으로 — Chrome이 화면 밖·hidden 교차 출처 iframe을 배치하지 않아 rects 0(5.1절). 사용자에게는 보이지 않고 누름·포커스·접근성 트리 밖이라 뜻(숨김)은 유지, sandbox 그대로.
+- (C4) 실제 PNG와 캔버스 캡처 나란히는 하지 않음 — 캡처 도구 시간 초과(6절 끝).
 - 게이트 순서: 골격 커밋 `7fac872`는 `gate.sh` 실행 전에 커밋했다(문서만). 직후 기준선 gate `c1-baseline` exit 0(GATE OK). 그 뒤 커밋은 모두 gate exit 0 확인 뒤.
 - 브리프 C0 Codex 범위: `--scope branch --base a51de92`가 HEAD 기준이라 p2fix·브리프 문서 커밋도 포함됐다(지적 3건은 모두 3b 파일 — 2.1절).
 - K-AC-12·30 대상: 앱에서 새로 내보낸 HTML 대신 3b 결과 파일(브리프가 허용한 대안).
 
 ## 9. 남은 위험 · M2a 마감에 넘길 것
-1. **[결정 필요 · 영환님] PNG 진입 공간** — 3절 후보안 1(보드·생성 저장소 분리, 별도 레인) / 2(SPEC 3.3 개정: PNG 묶음을 조작 뒤에 그림) / 3(ADR-004 멈춤선 +0.5). 결정 전 C2~C4 진행 불가.
+1. ~~[결정 필요] PNG 진입 공간~~ → ADR-004 개정 4(영환님 1-★A)로 해소 · 진입 127.20(멈춤선 127.70 대비 여유 0.50). 다음 `/studio` 진입 증가분은 이 여유 안에서만.
 2. ~~K-AC-12 "시트 안 앵커 → 시트 닫힘" FAIL~~ → 재개 R2(r4.12 고정 스크립트)로 해소(2.4절).
 3. 3b Codex P2 3건(2.1절): 이탈 후 같은 잡 재요청 시 죽은 내려받기 링크 · 생성기 청크 실패 기억 · `blob:` 글자 오탐.
 4. 전역 심볼 슬롯 — M2a 유지, M4 실서버 저장소 때 제거(2.2절). P2-2를 고칠 때 슬롯 로더를 `retryableImport`로.
 5. 캡처 도구: ego-browser `Page.captureScreenshot` 시간 초과가 계속된다(3b·3c). 상호작용 상태 캡처가 필요한 판정은 DOM 조회로만 가능.
 6. 스냅샷 미리보기 중 캡처(E-S29) — 스냅샷 미리보기 UI가 아직 없음(브리프 제외).
+7. **3c Codex P2 3건(10절 · `logs/c5-codex.txt`) — 이 레인 미반영(P1만 수정 규칙) → M2a 마감으로:**
+   - P2-a `StudioLayout.tsx:347-350` 자동 저장 `failed`·`offline`·`stale`이면 미저장 편집이 남아도 PNG가 열려 파일 이름 `r{savedRevision}`과 내용이 어긋남(8절 "준비 전 = dirty·saving"이 이 세 상태를 덮지 않음). 고치기 = 준비 조건을 `idle`·`saved`로 좁히거나 미저장 표기.
+   - P2-b `pngCapture.ts:82-84` `kitTokens` 없음(프로필 조회 실패) → 렌더 문서의 `NO_KIT_TOKENS`를 `renderAndSerialize`가 즉시 실패로 처리 → 캔버스엔 중립 폴백이 보이는데 PNG는 실패. 고치기 = PNG 경로만 이 메시지를 무시하고 폴백 rects를 기다림(정적 HTML 실패 정책 유지).
+   - P2-c `pngCapture.ts:78-79` 브라우저 기본 글꼴 ≠ 16px이면 iframe rem 폭과 SVG `rem*16` 폭이 달라 배치·높이 불일치. 고치기 = `StructureCanvas`처럼 실제 rem px로 좌표계 통일.
+8. 캔버스와 실제 PNG 나란히 비교 — 캡처 도구 문제로 미실시(6절 끝). 도구가 고쳐지면 1회 확인 권장.
+9. Firefox 캡처 오염 여부 미실측(4절 — 미설치).
 
 ## 10. C5 마감 검증
 - 전체 vitest ×3(`app`, `npx vitest run`, HEAD 코드 = `eaa3d5e`와 같음): **run1·2·3 exit 0 · 173 파일 · 1632/1632 · Errors 줄 0** (`logs/c5-vitest-x3.txt`).
 - gate(`gate.sh c5`): 아래 커밋 직전 실행 — typecheck·lint·build·가드 exit 0, 번들 = 7절 기준선과 같음(`logs/c5.txt`).
 - Codex `review --scope branch --base eaa3d5e`: **해당 없음** — 이 레인 코드 변경 0(문서·로그만). C0 Codex는 2.1절.
 - 서버: 이 레인이 띄운 것은 python `http.server` 127.0.0.1:4339(PID 58386) 하나 — K-AC 판정 뒤 종료. vite dev·preview 0. `lsof -nP -iTCP:4337 -sTCP:LISTEN` → 결과 0(rc=1) · `:4339` → 결과 0(rc=1).
+
+### 10.R 재개 C5 마감 (축소 재개 · 2026-10-04)
+- Codex `review --scope branch --base 38852bf`(재개 전체 = R1·R2·C2·C3·C4 수정, 원문 `logs/c5-codex.txt`): **P1 0 · P2 3**(9절 7번) → 코드 변경 0. Codex 메모: typecheck 통과 · 읽기 전용 샌드박스라 vitest는 EPERM으로 못 돌림.
+- gate(`gate.sh c5r`): 마감 커밋 직전 실행 — **GATE OK**(표적 238/238 · 가드 76/76 · typecheck·lint·build exit 0 · `/studio` 진입 127.20/128 ≤127.70 · 렌더 JS 80.12 ≤89.70) `logs/c5r.txt`.
+- 전체 vitest ×3: **Jarvis 담당 — 이 레인은 실행하지 않음**(축소 재개 지시). 이 레인의 vitest 근거는 gate 표적·가드뿐.
+- 서버: 축소 재개 실행은 서버를 띄우지 않음(앞 실행이 남긴 4337 vite PID 64375 · 4339 python PID 80528은 Jarvis가 종료). 마감 확인: `lsof -nP -iTCP:4337 -sTCP:LISTEN` → 결과 0 · `:4339` → 결과 0.
+

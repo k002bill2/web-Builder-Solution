@@ -1,0 +1,47 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10504-77df-7612-a752-33ea0526d0c0).
+[codex] Reviewer started: changes against '38852bf'
+[codex] Running command: /bin/zsh -lc 'pwd; git status --short; git diff --stat 38852bf8c71d39aa3edc403cabbdefe761ba22...
+[codex] Command completed: /bin/zsh -lc 'pwd; git status --short; git diff --stat 38852bf8c71d39aa3edc403cabbdefe761ba22... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|m2a-3c' '/Users/younghwankang/Library/Application Support/or...
+[codex] Command failed: /bin/zsh -lc "rg -n 'web-builder|m2a-3c' '/Users/younghwankang/Library/Application Support/or... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw...
+[codex] Command completed: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/png/pngCapture.ts; cat app/src/features/studio/png/...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/png/pngCapture.ts; cat app/src/features/studio/png/... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/render/RenderApp.tsx; cat app/src/render/render.css; cat app/src/fe...
+[codex] Command completed: /bin/zsh -lc "cat app/src/render/RenderApp.tsx; cat app/src/render/render.css; cat app/src/fe... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/styles/tokens/base.css; cat app/src/kit/kit.css; cat app/src/featur...
+[codex] Command completed: /bin/zsh -lc "cat app/src/styles/tokens/base.css; cat app/src/kit/kit.css; cat app/src/featur... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'kitTokens|useStudioSave|savedRevision' app/src/components/studio/StudioL...
+[codex] Command failed: /bin/zsh -lc "rg -n 'kitTokens|useStudioSave|savedRevision' app/src/components/studio/StudioL... (exit 2)
+[codex] Running command: /bin/zsh -lc "rg -n 'savedRevision|useDocSave|use.*Save' app/src/features/studio app/src/comp...
+[codex] Command completed: /bin/zsh -lc "rg -n 'savedRevision|useDocSave|use.*Save' app/src/features/studio app/src/comp... (exit 0)
+[codex] Running command: /bin/zsh -lc './node_modules/.bin/tsc --noEmit -p tsconfig.json'
+[codex] Command completed: /bin/zsh -lc './node_modules/.bin/tsc --noEmit -p tsconfig.json' (exit 0)
+[codex] Running command: /bin/zsh -lc './node_modules/.bin/vitest run src/features/studio/png/pngCapture.test.ts src/c...
+[codex] Command failed: /bin/zsh -lc './node_modules/.bin/vitest run src/features/studio/png/pngCapture.test.ts src/c... (exit 1)
+[codex] Running command: /bin/zsh -lc "sed -n '48,100p' app/src/features/studio/useDocSave.ts; cat app/vitest.config.*...
+[codex] Command completed: /bin/zsh -lc "sed -n '48,100p' app/src/features/studio/useDocSave.ts; cat app/vitest.config.*... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; find app/src app/scripts -name CLAUDE.md; git config --get core....
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; find app/src app/scripts -name CLAUDE.md; git config --get core.... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: PNG 캡처에 저장 revision 불일치, 토큰 없는 폴백 캡처 실패, 기본 글꼴 크기에 따른 크기 불일치가 있습니다. TypeScript 검사는 통과했지만 표적 테...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 38852bf
+
+PNG 캡처에 저장 revision 불일치, 토큰 없는 폴백 캡처 실패, 기본 글꼴 크기에 따른 크기 불일치가 있습니다. TypeScript 검사는 통과했지만 표적 테스트는 읽기 전용 샌드박스의 임시 디렉터리 생성 제한(EPERM)으로 실행되지 못했습니다.
+
+Full review comments:
+
+- [P2] 저장 실패 상태에서도 문서와 파일 revision을 일치시키세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3c/app/src/components/studio/StudioLayout.tsx:347-350
+  자동 저장이 `failed`, `offline`, `stale` 상태가 되면 미저장 편집이 남아 있어도 PNG 버튼이 활성화됩니다. 캡처에는 편집된 `doc`가 들어가지만 파일 이름에는 마지막 저장의 `savedRevision()`이 사용되어, 다른 내용의 PNG가 같은 저장 revision으로 표시됩니다. 저장된 문서와 revision의 일치를 보장하려면 `idle`·`saved` 상태에서만 활성화하거나 미저장 캡처의 식별 방식을 별도로 처리해야 합니다.
+
+- [P2] 킷 토큰이 없는 폴백 문서도 캡처하도록 처리하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3c/app/src/features/studio/png/pngCapture.ts:82-84
+  프로필 조회 실패나 부분 레코드로 `kitTokens`가 없으면 기존 캔버스는 중립 토큰으로 전체 폴백을 그리고 PNG 버튼도 활성화됩니다. 그러나 이 호출은 `RenderApp`이 폴백을 그리기 전에 보내는 `NO_KIT_TOKENS` 메시지를 `renderAndSerialize`에서 즉시 실패 처리하므로, 보이는 구조 미리보기를 PNG로 저장할 수 없습니다. PNG 경로에서는 이 복구 가능한 메시지를 무시하고 폴백의 rects·직렬화 결과를 기다리되, 정적 HTML 경로의 실패 정책은 유지해야 합니다.
+
+- [P2] 캡처 프레임과 SVG의 실제 픽셀 폭을 일치시키세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-3c/app/src/features/studio/png/pngCapture.ts:78-79
+  브라우저 기본 글꼴 크기가 16px이 아닌 환경에서는 캡처 iframe의 rem 폭과 `rem * 16`으로 고정된 SVG 폭이 달라집니다. 예를 들어 기본 크기가 20px이면 모바일 iframe은 487.5px에서 배치되지만 PNG는 390px에서 다시 배치되고, 높이는 여전히 iframe의 rects를 사용하여 페이지 하단이 잘리거나 여백이 생깁니다. `StructureCanvas`처럼 실제 rem 크기를 반영하여 프레임·SVG·높이 측정의 좌표계를 일치시켜야 합니다.

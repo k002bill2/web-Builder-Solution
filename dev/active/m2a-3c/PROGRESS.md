@@ -13,10 +13,10 @@
 - [x] C0 (1) Codex `review --scope branch --base a51de92` → `logs/c0-codex-3b.txt` — P1 0 · P2 3(M2a 마감으로) · 전역 슬롯 = M2a 유지/M4 대체(REPORT 2.1·2.2)
 - [x] C0 (2) K-AC-12 · K-AC-30 결과 HTML 브라우저 판정 — K-AC-30 PASS · K-AC-12 4항 PASS / "앵커 → 시트 닫힘" FAIL(킷 사안, M2a 마감으로 · REPORT 2.3)
 - [x] C1 공간 실측 — 최소 시제품 127.10(+0.40) · 후보안 2(조작 뒤 그림) 126.79/126.74도 초과 → 정지·후보안 3개(REPORT 3절)
-- [ ] C2 캡처 방식 PoC — BLOCKED: C1 진입 ≤126.70 경로 없음 — 영환님 결정 필요(REPORT 3절 후보안)
-- [ ] C3 PNG 버튼 · 4상태 · 캡션 · 파일 이름 · 계측 — BLOCKED: C1과 같음
-- [ ] C4 K-AC-17·19·32·34 · E-AC-49·50 · 실제 PNG 1280·390 나란히 — BLOCKED: C1과 같음
-- [x] C5 전체 vitest ×3(exit 0 ×3 · 1632) · Codex = 코드 변경 0이라 해당 없음 · REPORT 마감 · 서버 0
+- [x] C2 캡처 방식 PoC — (첫 실행 BLOCKED: C1) → 재개에서 해소, 아래 재개 절
+- [x] C3 PNG 버튼 · 4상태 · 캡션 · 파일 이름 · 계측 — (첫 실행 BLOCKED) → 재개에서 해소
+- [x] C4 K-AC-17·19·32·34 · E-AC-49·50 — (첫 실행 BLOCKED) → 재개에서 해소
+- [x] (첫 실행, `eaa3d5e` 기준) C5 전체 vitest ×3(exit 0 ×3 · 1632) · Codex = 코드 변경 0이라 해당 없음 · REPORT 마감 · 서버 0
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)
@@ -32,6 +32,7 @@
 - [x] R2 정적 HTML 고정 인라인 스크립트(SPEC r4.12) · RED 먼저 · 바이트 일치 · 이관 표 · 390 K-AC-12 5항 [B]
 - [x] C2 캡처 방식 PoC(serialize + foreignObject → canvas → toBlob) · 브라우저별 오염 표
 - [x] C3 PNG 묶음(진입 때부터 · 4상태 · 캡션 · 파일 이름 · 계측)
-- [ ] C4 K-AC-17·19·32·34 · E-AC-49·50 · 실제 PNG 1280·390 + 캔버스 나란히
-- [ ] C5 vitest ×3 · Codex 1회(base 38852bf) · REPORT 마감 · 서버 0
-- 서버(재개): vite dev 4337(PID 19745/19926 — 종료함) · vite preview 4337(PID 파일 /tmp/m2a3c-preview.pid) · python 4339(/tmp/m2a3c-py.pid, cwd /tmp/m2a3c/site) · ego TaskSpace 34
+- [x] C4 중 수정(캡처 iframe 화면 안·투명 · 바닥 > 0 rects 대기) · RED 로그 · gate `c4-fix` exit 0 · 커밋 d84f31a · 3b 정적 HTML 영향 0
+- [x] C4 K-AC-17 [B]·[U] · 19·32·34·E-AC-49·50 [U] · 실제 PNG 1280·390(`shots/c4-png-*`) — 캔버스 나란히는 캡처 도구 시간 초과로 생략(REPORT 6절)
+- [x] C5 Codex 1회(base 38852bf, `logs/c5-codex.txt`) · REPORT 1~10절 마감 · 서버 0(lsof 4337·4339 0) — 전체 vitest ×3은 Jarvis 담당(이 레인 미실행)
+- 서버(재개): vite dev 4337(PID 19745/19926 — 종료함) · 남은 4337 vite(PID 64375)·4339 python(PID 80528)은 Jarvis가 종료 · 축소 재개 실행은 서버를 띄우지 않음

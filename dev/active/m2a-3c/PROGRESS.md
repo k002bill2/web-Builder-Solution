@@ -10,15 +10,16 @@
 
 ## 단계
 - [x] 수신 · REPORT 골격(1~9절) 커밋
-- [ ] C0 (1) Codex `review --scope branch --base a51de92` → `logs/c0-codex-3b.txt` · P1 수정 · P2 판정 · 전역 슬롯 판단
+- [x] C0 (1) Codex `review --scope branch --base a51de92` → `logs/c0-codex-3b.txt` — P1 0 · P2 3(M2a 마감으로) · 전역 슬롯 = M2a 유지/M4 대체(REPORT 2.1·2.2)
 - [ ] C0 (2) K-AC-12 · K-AC-30 결과 HTML 브라우저 판정
-- [ ] C1 공간 실측 — 진입 ≤ 126.70 경로(없으면 정지·보고)
-- [ ] C2 캡처 방식 PoC — 브라우저별 오염 표
-- [ ] C3 PNG 버튼 · 4상태 · 캡션 · 파일 이름 · 계측
-- [ ] C4 K-AC-17·19·32·34 · E-AC-49·50 · 실제 PNG 1280·390 나란히
+- [x] C1 공간 실측 — 최소 시제품 127.10(+0.40), 경로 없음 → 정지·후보안 3개(REPORT 3절)
+- [ ] C2 캡처 방식 PoC — BLOCKED: C1 진입 ≤126.70 경로 없음 — 영환님 결정 필요(REPORT 3절 후보안)
+- [ ] C3 PNG 버튼 · 4상태 · 캡션 · 파일 이름 · 계측 — BLOCKED: C1과 같음
+- [ ] C4 K-AC-17·19·32·34 · E-AC-49·50 · 실제 PNG 1280·390 나란히 — BLOCKED: C1과 같음
 - [ ] C5 전체 vitest ×3 · Codex 1회 · REPORT 마감 · 서버 종료
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)
 
 ## 메모
+- C1 시제품은 패치(`logs/c1-proto.patch`)로만 남기고 원복. 코드 변경 0 상태에서 gate `c1` exit 0.

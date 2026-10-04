@@ -1,0 +1,37 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close-dev/app
+
+ ❯ src/features/studio/png/pngCapture.test.ts (15 tests | 1 failed) 197ms
+   ❯ 캡처 흐름 (m2a 3.3 캡처 규칙) (6)
+     × P2-c 루트 글꼴 20px에서 390 프레임 → iframe 폭(rem × 실제 rem px) = SVG·캔버스 폭 · 높이 = iframe 사각형 바닥 · 파일 이름 폭 = 프레임 이름(390) 16ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/png/pngCapture.test.ts > 캡처 흐름 (m2a 3.3 캡처 규칙) > P2-c 루트 글꼴 20px에서 390 프레임 → iframe 폭(rem × 실제 rem px) = SVG·캔버스 폭 · 높이 = iframe 사각형 바닥 · 파일 이름 폭 = 프레임 이름(390)
+AssertionError: expected 487.5 to be 488 // Object.is equality
+
+- Expected
++ Received
+
+- 488
++ 487.5
+
+ ❯ src/features/studio/png/pngCapture.test.ts:161:24
+    159|       const iframePx = channel.opened[0]! * 20;
+    160|       const [url, w, h] = draw.mock.calls[0]!;
+    161|       expect(iframePx).toBe(488); // 24.375rem × 20 = 487.5 → 정수 px(캔버…
+       |                        ^
+    162|       expect([w, h]).toEqual([iframePx, 2400]);
+    163|       const svg = parseSvg(decodeURIComponent(url.slice(url.indexOf(",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  13:18:50
+   Duration  1.07s (environment 54%, tests 20%, transform 13%, setup 10%, import 2%)
+

@@ -10,7 +10,8 @@
 | D2 | 6910c33 | P2-3 `blob:` 검사를 URL 자리로 |
 | D3 | 19891a1 | P2-1 이탈 해제 제거 — 잡 수명 동안 URL 유지 |
 | D4 | 832ba3b | P2-a PNG 준비 = 저장 idle·saved |
-| D5 | (D5 커밋) | P2-b 토큰 없는 PNG = 폴백으로 성공 |
+| D5 | 1da91cb | P2-b 토큰 없는 PNG = 폴백으로 성공 |
+| D6 | (D6 커밋) | P2-c PNG 좌표계 = 실제 rem px |
 
 ## 2. P2 6건
 | # | 원인 | 수정 | 테스트(RED → GREEN) | 커밋 |
@@ -19,8 +20,8 @@
 | D2 P2-3 | `staticMarkup.ts` `blob:` 검사가 `site.outerHTML` 전체 정규식 → 본문·대체텍스트의 글자 "blob:"도 영구 INFRA 실패 | `hasBlobUrl` — `src`·`href`·`srcset`·`poster` 값(목록 항목 머리)과 `style` 속성·`<style>` 글자의 `url(blob:`만 검사 | RED `logs/d2-red.txt`(1 실패) → GREEN: `staticMarkup.test.ts` "P2-3 — 본문·alt·title 글자 성공 · src·href(공백·대문자)·srcset·poster·style url( 6종 실패" + 기존 `img src="blob:"` 단언 그대로 · gate `logs/d2.txt` exit 0 | 6910c33 |
 | D3 P2-1 | `ExportAfter.tsx` `DownloadLink`가 편집기 이탈(경로 변경) 때 `releaseDownloads()`로 이 탭의 object URL을 모두 해제 → 돌아와 같은 revision을 요청하면 멱등(8.3.2)이 같은 잡의 해제된 `downloadRef`를 돌려줘 링크가 죽음 | **Jarvis 기본안 그대로**: 이탈 해제 제거(`DownloadLink` effect · `exportDownloads.ts` 장부 · `exportFlow`의 `rememberDownload` 삭제) → URL은 잡(=메모리 저장소)이 살아 있는 동안 유지. 해제는 생성기(`createStaticHtmlGenerator`)가 이미 하던 대로 같은 프로젝트의 **새 결과가 나올 때** 이전 URL 1회(프로젝트당 살아 있는 URL ≤ 1). 멱등 규칙 변경 0 | RED `logs/d3-red.txt`(revokeObjectURL 1회) → GREEN: `ExportFlow.test.tsx` "P2-1 내보내기 → 이탈 → 돌아와 같은 revision → 같은 href 링크 · revoke 0" · `staticHtml.test.ts` "P2-1 새 revision 결과 → 이전 URL 해제 1회 · 새 revision 생성 실패면 이전 URL 유지"(기존 동작 고정 — 처음부터 GREEN) · gate `logs/d3.txt` exit 0 | 19891a1 |
 | D4 P2-a | `StudioLayout.tsx` PNG 준비 조건이 "dirty·saving 아님"이라 자동 저장 `failed`·`offline`·`stale`(미저장 편집이 남음)에서도 열림 → 파일 이름 `r{savedRevision}`과 내용 불일치 | 준비 = 캔버스 그림 + 저장 `idle`·`saved`. `failed`·`offline`·`stale`이면 `PngSave` 새 선택 prop `reason` = 기존 저장 상태 문장(`saveStatusText` — "저장하지 못했습니다" · "오프라인 — 연결되면 저장합니다" · "다른 곳에서 이 문서가 바뀌었습니다"). 그 밖 준비 전 문장은 그대로 | RED `logs/d4-red.txt`(3 실패) → GREEN: `StudioLayout.test.tsx` "저장 failed·offline·stale → aria-disabled + 이유(describedby 첫 id) · 캡션 그대로"(it.each 3) + "saved → 열림" · gate `logs/d4.txt` exit 0 | 832ba3b |
-| D5 P2-b | `pngCapture.ts` 킷 토큰 없음(프로필 조회 실패)이면 렌더 문서가 `error{NO_KIT_TOKENS}`를 보내고 `renderAndSerialize`가 이를 즉시 실패로 처리 → 캔버스엔 중립 폴백이 보이는데 PNG는 실패 | `renderAndSerialize`에 선택 인자 `tolerated`(기본 빈 목록) — PNG만 `["NO_KIT_TOKENS"]`를 넘겨 폴백 rects(바닥 > 0)·직렬화를 기다림. 정적 HTML은 인자 없음 = 모든 렌더 오류가 실패(정책 그대로) | RED `logs/d5-red.txt`(1 실패: "렌더 문서 오류 NO_KIT_TOKENS") → GREEN: `pngCapture.test.ts` "토큰 없음 → 성공 · `png_succeeded.fallback_count` = 섹션 수 · `_구조포함`" + "PNG도 INVALID_DOC는 실패" · `staticHtml.test.ts` it.each "렌더 오류 NO_KIT_TOKENS → 실패"(정적 HTML 정책 고정) · gate `logs/d5.txt` exit 0(첫 실행은 내 테스트의 미사용 변수로 lint 1 → 고친 뒤 exit 0) | (D5 커밋) |
-| D6 P2-c | (진행 중) | | | |
+| D5 P2-b | `pngCapture.ts` 킷 토큰 없음(프로필 조회 실패)이면 렌더 문서가 `error{NO_KIT_TOKENS}`를 보내고 `renderAndSerialize`가 이를 즉시 실패로 처리 → 캔버스엔 중립 폴백이 보이는데 PNG는 실패 | `renderAndSerialize`에 선택 인자 `tolerated`(기본 빈 목록) — PNG만 `["NO_KIT_TOKENS"]`를 넘겨 폴백 rects(바닥 > 0)·직렬화를 기다림. 정적 HTML은 인자 없음 = 모든 렌더 오류가 실패(정책 그대로) | RED `logs/d5-red.txt`(1 실패: "렌더 문서 오류 NO_KIT_TOKENS") → GREEN: `pngCapture.test.ts` "토큰 없음 → 성공 · `png_succeeded.fallback_count` = 섹션 수 · `_구조포함`" + "PNG도 INVALID_DOC는 실패" · `staticHtml.test.ts` it.each "렌더 오류 NO_KIT_TOKENS → 실패"(정적 HTML 정책 고정) · gate `logs/d5.txt` exit 0(첫 실행은 내 테스트의 미사용 변수로 lint 1 → 고친 뒤 exit 0) | 1da91cb |
+| D6 P2-c | `pngCapture.ts` SVG 폭 = `rem × 16` 고정인데 숨은 iframe 폭은 `${rem}rem`(부모 루트 글꼴 기준) → 기본 글꼴 ≠ 16px이면 iframe 배치 폭·rects 높이와 SVG 폭이 어긋남 | `remPx()`(StructureCanvas의 같은 함수를 `previewFrame.ts`로 옮겨 둘이 공유) — 폭 px = `round(FRAME_REM × remPx)` 하나로 iframe(`width/remPx` rem)·SVG·캔버스 폭을 맞추고 높이 = 그 iframe rects 바닥. iframe 높이 상한도 `MAX_CANVAS_HEIGHT / remPx`. 파일 이름 폭은 프레임 이름(390 등 — 캡션 값) 유지 | RED `logs/d6-red.txt`(iframe 487.5px ≠ SVG 390) → GREEN: `pngCapture.test.ts` "루트 20px · 390 프레임 → iframe 488px = SVG·캔버스 폭 · foreignObject 루트 width 488px · 높이 = 바닥 · 파일 이름 `_390_`" · 기존 16px 단언(iframe 24.375rem · 390×2400) 그대로 · gate `logs/d6.txt` exit 0 | (D6 커밋) |
 
 ## 3. 번들
 | 시점 | `/studio` 진입(≤127.70) | 렌더 JS(≤89.70) | 그 밖 | 로그 |
@@ -31,9 +32,12 @@
 | D3 | 127.20 | 80.12 | 공통 89.35 · 102.04 · 99.39 · 121.72 · 118.68 · 100.30 | `logs/d3.txt` |
 | D4 | 127.23 | 80.12 | 공통 89.35 · 102.04 · 99.39 · 121.70 · 118.67 · 100.30 | `logs/d4.txt` |
 | D5 | 127.22 | 80.12 | 공통 89.34 · 102.03 · 99.38 · 121.69 · 118.66 · 100.28 | `logs/d5.txt` |
+| D6 | 127.24 | 80.12 | 공통 89.35 · 102.04 · 99.39 · 121.71 · 118.67 · 100.30 | `logs/d6.txt` |
 
 ## 4. SPEC 차이
-(진행 중)
+- D3: 브리프 기본안 그대로 — 잡·멱등 규칙(8.3.2)과 충돌 없음(같은 revision = 같은 잡 = 같은 URL, 생성기가 같은 프로젝트의 새 결과 때 이전 URL 1회 해제). 대안(해제된 결과 재생성) 미채택. 메모리 저장소라 탭이 살아 있는 동안 프로젝트당 URL ≤ 1개가 남는다(누수 상한 = 프로젝트 수).
+- D4: 새 문구 0 — 이유 문장은 저장 상태 문장(`saveStatusText`) 재사용. 캔버스 미그림·dirty·saving은 기존 "미리보기를 그리는 중입니다" 그대로.
+- D6: 루트 글꼴 ≠ 16px이면 PNG 픽셀 폭 = `round(프레임 rem × rem px)`(예: 20px → 488, 487.5를 정수로 맞춤 — 캔버스 폭은 정수, 편집기 캔버스 프레임과 ≤0.5px 차이). 파일 이름 `{폭}`은 캡션과 같은 프레임 이름 값(390)을 유지 — 픽셀 폭을 쓰면 같은 "모바일 · 390" 캡션에 다른 파일 이름이 나온다.
 
 ## 5. Codex
 (D7)

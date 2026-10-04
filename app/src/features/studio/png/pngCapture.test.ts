@@ -151,6 +151,24 @@ describe("캡처 흐름 (m2a 3.3 캡처 규칙)", () => {
     expect(draw).not.toHaveBeenCalled();
   });
 
+  it("P2-c 루트 글꼴 20px에서 390 프레임 → iframe 폭(rem × 실제 rem px) = SVG·캔버스 폭 · 높이 = iframe 사각형 바닥 · 파일 이름 폭 = 프레임 이름(390)", async () => {
+    document.documentElement.style.fontSize = "20px";
+    try {
+      const { d, channel, draw } = deps(noFallback(), 2400);
+      const made = await capturePng(REQUEST, d);
+      const iframePx = channel.opened[0]! * 20;
+      const [url, w, h] = draw.mock.calls[0]!;
+      expect(iframePx).toBe(488); // 24.375rem × 20 = 487.5 → 정수 px(캔버스 폭)로 맞춘 iframe
+      expect([w, h]).toEqual([iframePx, 2400]);
+      const svg = parseSvg(decodeURIComponent(url.slice(url.indexOf(",") + 1))).documentElement;
+      expect([svg.getAttribute("width"), svg.getAttribute("height")]).toEqual([String(iframePx), "2400"]);
+      expect(svg.querySelector("foreignObject")!.firstElementChild!.getAttribute("style")).toBe(`width:${iframePx}px`);
+      expect(made.fileName).toBe("강남-카페-리브랜딩-2호점_390_r12.png");
+    } finally {
+      document.documentElement.style.fontSize = "";
+    }
+  });
+
   it("높이가 상한을 넘으면 CANVAS_TOO_TALL 실패(그리지 않음)", async () => {
     const { d, draw } = deps(noFallback(), MAX_CANVAS_HEIGHT + 1);
     await expect(capturePng({ ...REQUEST, view: "desktop" }, d)).rejects.toMatchObject({ code: "CANVAS_TOO_TALL" });

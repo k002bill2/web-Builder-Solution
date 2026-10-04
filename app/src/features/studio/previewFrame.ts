@@ -17,6 +17,9 @@ export const PREVIEW_WIDTH_OPTIONS: readonly { readonly value: PreviewView; read
  */
 export const FRAME_REM: Readonly<Record<PreviewView, number>> = Object.freeze({ desktop: 80, tablet: 48, mobile: 24.375 });
 
+/** 지금 루트 글꼴 px(1rem) — 프레임 rem을 실제 px로 바꿀 때(캔버스 축소 · PNG 캡처 좌표계, M2A-CLOSE P2-c) */
+export const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+
 /** 프레임(px)이 캔버스(px)보다 넓으면 축소 비율, 아니면 1. 측정 전(0)·열 폭 프레임은 1 */
 export function previewScale(framePx: number | undefined, availablePx: number): number {
   if (framePx === undefined || availablePx <= 0 || framePx <= availablePx) return 1;

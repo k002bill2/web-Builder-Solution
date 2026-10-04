@@ -19,10 +19,10 @@
 - [x] hero `grid`
 - [x] hero `text`
 - [x] hero `image` → (변형 8개) 커밋
-- [ ] footer `biz-extended-map`
-- [ ] footer `minimal`
-- [ ] footer `minimal-biz` → (11개) 커밋
-- [ ] KB-AC 목록 · 3폭 시각 QA · 예산 추정 표 · MQ · 대비 근거
+- [x] footer `biz-extended-map`
+- [x] footer `minimal`
+- [x] footer `minimal-biz` → (11개) 커밋
+- [x] KB-AC 목록 · 3폭 시각 QA · 예산 추정 표 · MQ · 대비 근거
 - [ ] 시안 HTML + 4339 3폭 캡처(선택)
 - [ ] Codex 적대적 검토 1회(턴 남으면) · 반영
 - [ ] REPORT 마감 · 서버 0(lsof 4339)

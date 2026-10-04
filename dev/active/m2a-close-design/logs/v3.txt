@@ -11,4 +11,4 @@ badges [["경고 1",136,83],["경고 1",136,135]]
 OV2 + {"id":"canvas-issue-services-1-card1Title","rect":[34,386,88,72],"font":"13px","lines":4,"covers":["services-1.card1Body","portfolio-1.heading","portfolio-1.intro"]}
 ## 빈 필수 칸 — 캔버스 표시 0
 GATE "… 글자 수 차단 2 Hero 제목이 권장 28자를 넘었습니다 (30/28자) 원인 · 대체안 5건 … R-13 · Hero 버튼 문구: 필수 입력입니다 … R-13 · Services 카드 2 제목: 필수 입력입니다 …"
-오버레이 p 목록에 hero-1-cta · services-1-card2Title 없음(사각형 없음 → sr-only 문장만, 위 OV 목록은 absolute인 것만 잡힘) · CTA 버튼·카드 2 제목은 렌더에서 생략
+오버레이 p 목록(sr-only 포함 전부)에 hero-1-cta · services-1-card2Title 없음 — canvasIssues.ts slotIssue는 글자 수만 문제로 만든다 · CTA 버튼·카드 2 제목은 렌더에서 생략

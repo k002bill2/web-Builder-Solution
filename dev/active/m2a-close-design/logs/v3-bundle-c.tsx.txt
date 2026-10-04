@@ -1,0 +1,21 @@
+            {r && (
+              <span
+                data-issue-badge
+                tabIndex={-1}
+                onClick={() => onIssue(issue)}
+                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+              >
+                {issue.level === "block" ? "차단 1" : "경고 1"}
+              </span>
+            )}
+            <p id={issue.id} className={`absolute top-full left-0 z-10 mt-1 hidden w-max max-w-80 rounded-sm bg-background-normal px-1 text-caption1 shadow-sm group-hover:block group-focus-within:block ${ISSUE_RING[issue.level]}`}>
+              {issue.text}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**

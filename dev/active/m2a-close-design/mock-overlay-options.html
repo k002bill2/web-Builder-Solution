@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>M2A-CLOSE-DESIGN · 오버레이 문제 문장 결정안 시안</title>
+<!-- 시안 전용(앱 코드 아님). 색은 SPEC 7.1 토큰 값을 그대로 옮겼다: 경고 #825500 · 차단 #af2e0d · 흰 면 #ffffff · 캔버스 바탕 #f0f3ee · primary 계열은 중립 남색으로 대체. 렌더 문서는 회색 상자로 단순화. -->
+<style>
+  body { margin: 0; padding: 24px; font: 14px/1.5 system-ui, sans-serif; color: #1b1f1d; background: #fff; }
+  h1 { font-size: 18px; margin: 0 0 4px; } h2 { font-size: 15px; margin: 0 0 8px; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; }
+  .opt { width: 400px; } .opt p.note { font-size: 12px; color: #4a524e; margin: 8px 0 0; }
+  .canvas { background: #f0f3ee; padding: 12px; }
+  .cap { font-size: 12px; color: #4a524e; margin: 0 0 6px; }
+  .frame { position: relative; background: #fff; outline: 1px solid #d5dad7; }
+  .hero { position: relative; height: 200px; background: linear-gradient(135deg, #7a5537, #2f2b28); }
+  .card { position: absolute; left: 24px; top: 48px; width: 190px; padding: 10px; background: #8a5c3e; border-radius: 6px; color: #fff; }
+  .t { font-size: 17px; font-weight: 700; line-height: 1.2; } .s { font-size: 8px; margin-top: 6px; line-height: 1.4; }
+  .ring { position: absolute; border: 2px solid #fff; outline: 2px solid #825500; border-radius: 2px; }
+  .badge { position: absolute; top: -10px; right: 4px; background: #fff; color: #825500; font: 700 12px/1 system-ui; padding: 2px 4px; border-radius: 2px; }
+  .sent { position: absolute; left: 0; top: 100%; margin-top: 4px; background: #fff; color: #825500; font-size: 13px; padding: 0 4px; border-radius: 2px; }
+  .chip { position: absolute; top: 0; left: 0; background: #3b4bd8; color: #fff; font: 700 12px/1.6 system-ui; padding: 0 8px; border-radius: 2px; }
+  ol.list { list-style: none; margin: 0 0 8px; padding: 6px 8px; background: #fff; border-radius: 4px; display: flex; flex-direction: column; gap: 2px; }
+  ol.list li { display: flex; gap: 8px; font-size: 13px; color: #825500; } ol.list b { white-space: nowrap; }
+  .tip { position: absolute; right: -4px; top: 18px; width: max-content; max-width: 260px; background: #fff; color: #825500; font-size: 13px; padding: 2px 6px; border-radius: 2px; box-shadow: 0 1px 4px rgba(0,0,0,.25); z-index: 2; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .bad { outline: 2px dashed #af2e0d; }
+</style>
+</head>
+<body>
+<h1>오버레이 문제 문장 겹침 — 결정안 시안 (1280 · 축소 56% 기준 단순화)</h1>
+<p class="cap">상황: Hero 제목 30/28자 · 부제 96/80자(경고 2건). 실제 재현 캡처는 shots/v3-1280-hero-issues.png · v3-390-*.png</p>
+<div class="row">
+
+<div class="opt"><h2>현재 (r4.8) — 문장이 슬롯 바로 아래</h2>
+<div class="canvas"><div class="frame"><div class="hero"><span class="chip">Hero · 풀블리드 이미지 + 좌측 카피</span>
+  <div class="card"><div class="t">일상에 꼭 맞는 서비스를 정성껏 만들어 드리는 작은 팀</div><div class="s">처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다. 상담부터 사후 지원까지 한 팀이 끝까지 책임지고 함께합니다.</div></div>
+  <div class="ring" style="left:30px;top:52px;width:186px;height:66px"><span class="badge">경고 1</span><span class="sent bad">제목이 권장 28자를 넘었습니다 (30/28자)</span></div>
+  <div class="ring" style="left:30px;top:122px;width:186px;height:40px"><span class="badge">경고 1</span><span class="sent">부제가 권장 80자를 넘었습니다 (96/80자)</span></div>
+</div></div></div>
+<p class="note">빨간 점선 = 렌더된 부제 글자를 덮는 문장. 배지는 둘 다 "경고 1"(번호 역할 없음).</p></div>
+
+<div class="opt"><h2>A (추천) — 문장은 캔버스 머리 "문제 목록", 슬롯엔 번호 배지</h2>
+<div class="canvas"><ol class="list"><li><b>경고 1</b><span>제목이 권장 28자를 넘었습니다 (30/28자)</span></li><li><b>경고 2</b><span>부제가 권장 80자를 넘었습니다 (96/80자)</span></li></ol>
+<div class="frame"><div class="hero"><span class="chip">Hero · 풀블리드 이미지 + 좌측 카피</span>
+  <div class="card"><div class="t">일상에 꼭 맞는 서비스를 정성껏 만들어 드리는 작은 팀</div><div class="s">처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다. 상담부터 사후 지원까지 한 팀이 끝까지 책임지고 함께합니다.</div></div>
+  <div class="ring" style="left:30px;top:52px;width:186px;height:66px"><span class="badge">경고 1</span></div>
+  <div class="ring" style="left:30px;top:122px;width:186px;height:40px"><span class="badge">경고 2</span></div>
+</div></div></div>
+<p class="note">렌더 글자 위 문장 0. 배지 번호 = 목록 번호. 문장 &lt;p id&gt;는 목록 안(부모 DOM) — aria-describedby 그대로.</p></div>
+
+<div class="opt"><h2>B — 문장을 캔버스에서 숨김(기준선 · 번들 0)</h2>
+<div class="canvas"><div class="frame"><div class="hero"><span class="chip">Hero · 풀블리드 이미지 + 좌측 카피</span>
+  <div class="card"><div class="t">일상에 꼭 맞는 서비스를 정성껏 만들어 드리는 작은 팀</div><div class="s">처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다. 상담부터 사후 지원까지 한 팀이 끝까지 책임지고 함께합니다.</div></div>
+  <div class="ring" style="left:30px;top:52px;width:186px;height:66px"><span class="badge">경고 1</span><span class="sr">제목이 권장 28자를 넘었습니다 (30/28자)</span></div>
+  <div class="ring" style="left:30px;top:122px;width:186px;height:40px"><span class="badge">경고 1</span><span class="sr">부제가 권장 80자를 넘었습니다 (96/80자)</span></div>
+</div></div></div>
+<p class="note">문장은 sr-only로 남아 연결 유지. 무엇이 문제인지는 배지를 눌러 편집 패널·게이트에서 읽어야 한다.</p></div>
+
+<div class="opt"><h2>C — 배지에 포인터·포커스가 갈 때만 문장 펼침</h2>
+<div class="canvas"><div class="frame"><div class="hero"><span class="chip">Hero · 풀블리드 이미지 + 좌측 카피</span>
+  <div class="card"><div class="t">일상에 꼭 맞는 서비스를 정성껏 만들어 드리는 작은 팀</div><div class="s">처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다. 상담부터 사후 지원까지 한 팀이 끝까지 책임지고 함께합니다.</div></div>
+  <div class="ring" style="left:30px;top:52px;width:186px;height:66px"><span class="badge">경고 1</span><span class="tip">제목이 권장 28자를 넘었습니다 (30/28자)</span></div>
+  <div class="ring" style="left:30px;top:122px;width:186px;height:40px"><span class="badge">경고 1</span></div>
+</div></div></div>
+<p class="note">평소엔 B와 같고, 배지 위에서만 한 문장이 떠서 덮는다(그림은 첫 배지 hover 상태). 터치·390에서는 hover가 없다.</p></div>
+
+</div>
+</body>
+</html>

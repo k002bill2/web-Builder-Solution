@@ -16,7 +16,7 @@
 - [x] P3 header/sticky-hamburger (KB-AC-03 [U] · 구조) + D-2 변형 클래스 — kit/headerParts(MenuList·MenuButton·Sheet, K1-1도 사용) · RED logs/p3-hamburger-red.txt(4 실패) → gate OK(렌더 JS 80.70 · CSS 6.80 · /studio 127.42 중간값) · 전체 vitest 184/1711 · 이관 1건(PageDocument 정확 목록 +1)
 - [x] P4 header/sticky-two-tier (KB-AC-05 [U] · 구조 · D-3 [G]) + D-3 `:has()` 1줄 — RED logs/p4-two-tier-red.txt(6 실패) → gate OK(렌더 JS 80.79 · CSS 6.92 · /studio 127.44 중간값) · 전체 vitest 185/1717 · 이관 1건(정확 목록 +1). 테스트 자체 수정 2건(정규식·주석 제외 — 구현 전 RED와 같은 단언)
 - [x] P5 header/transparent (KB-AC-07 [U] · 구조) — K1-1 마크업 재사용(면 클래스·data-surface만) · RED logs/p5-transparent-red.txt(3 실패) → gate OK · 전체 vitest 186/1720 · 이관 1건(정확 목록 +1)
-- [ ] P6 footer/biz-extended-map (KB-AC-23~25)
+- [x] P6 footer/biz-extended-map (KB-AC-23·25 [U] · 구조) — FooterBizExtended에 map 칸 인자(출력 불변) · RED logs/p6-map-red.txt(6 실패) → gate OK · 전체 vitest 187/1726(1회차 SectionRemove 1건 흔들림 → 단독 2회·전체 재실행 통과, 메모) · 이관 1건(정확 목록 +1)
 - [ ] P7 footer/minimal (KB-AC-26·27)
 - [ ] P8 footer/minimal-biz (KB-AC-28·29)
 - [ ] P9 공통 [U]/[G] (KB-AC-30·32·33·35)
@@ -29,3 +29,4 @@
 - 사용 0 (브리프 금지)
 
 ## 메모
+- P6 전체 vitest 1회차: `components/studio/SectionRemove.test.tsx` E-AC-19 1건 실패 → 단독 2회 통과 · 전체 재실행 통과. 이 레인 변경과 무관(킷·렌더 문서 밖 편집기 테스트) — 부하 시 타이밍 흔들림으로 보고 REPORT 7절에 기록.

@@ -443,6 +443,43 @@
   }
 }
 
+/* footer/biz-extended-map (B-9) — 글 칸(사업자정보 → 링크) + 지도 칸(4:3 · 경계 bg 장식 · r1). md 6 : 6 · lg 7 : 5, 위 정렬 · 열 사이 s6 */
+@layer components {
+  .kit-footer-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+  }
+  .kit-footer-map {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border: var(--site-stroke-1) solid var(--site-bg);
+    border-radius: var(--site-r1);
+  }
+  .kit-footer-map-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 48rem) {
+    .kit-footer--map .kit-footer-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--site-s6);
+    }
+    .kit-footer--map .kit-footer-links {
+      justify-content: flex-start;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-footer--map .kit-footer-top {
+      grid-template-columns: 7fr 5fr;
+    }
+  }
+}
+
 /* 본문 섹션 공통 (m2a 0.3 섹션 면 · 0.5 간격 · 0.12 내용 폭) — 톤 base = bg 면 · alt = surface 면. 좁은 폭 gutter s4 · section-gap 절반 / md 이상 s6 · section-gap */
 @layer components {
   /* --kit-soft = 보조 글자: base(bg 면) = muted(C-5) · alt(surface 면) = ink(C-4 — muted/surface는 검사 밖) */

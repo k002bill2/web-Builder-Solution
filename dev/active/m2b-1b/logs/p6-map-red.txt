@@ -1,0 +1,95 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/FooterBizExtendedMap.test.tsx (6 tests | 6 failed) 58ms
+   ❯ footer/biz-extended-map (B-9) (6)
+     × 구조: footer 루트(id) · ink 면 · 위 줄 = 글 칸(사업자정보 address → 하단 링크) + 지도 칸(figure) · 구분선 → 저작권 29ms
+     × KB-AC-23: 플레이스홀더 → 지도 칸 그라디언트 aria-hidden · img 0 · iframe·script 0 7ms
+     × KB-AC-23: 사용자 이미지 → 렌더 문서 img[src] = blob:만 · lazy · alt = 슬롯 대체텍스트(장식이면 '') · 정적 HTML 직렬화 = data:만 · http(s) 0 8ms
+     × KB-AC-25: map 꺼짐 → figure 0 · 위 줄 = biz-extended와 같은 2단(사업자정보 · 링크가 위 줄 직계 형제) 5ms
+     × 빈 슬롯: links 빈 값 → 글 칸에 사업자정보만 · copyright 빈 값 → 구분선·저작권 0 6ms
+     × KB-AC-30 [G]: 파일·지도 CSS에 iframe·외부 URL 0 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > 구조: footer 루트(id) · ink 면 · 위 줄 = 글 칸(사업자정보 address → 하단 링크) + 지도 칸(figure) · 구분선 → 저작권
+TypeError: Cannot read properties of null (reading 'tagName')
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:15:14
+     13|   it("구조: footer 루트(id) · ink 면 · 위 줄 = 글 칸(사업자정보 address → 하단 링크) + 지…
+     14|     const f = footer(drawDoc(doc()));
+     15|     expect(f.tagName).toBe("FOOTER");
+       |              ^
+     16|     expect(f.id).toBe("s-s-footer");
+     17|     expect(f.dataset.surface).toBe("ink");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > KB-AC-23: 플레이스홀더 → 지도 칸 그라디언트 aria-hidden · img 0 · iframe·script 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:27:19
+     25|   it("KB-AC-23: 플레이스홀더 → 지도 칸 그라디언트 aria-hidden · img 0 · iframe·scrip…
+     26|     const f = footer(drawDoc(doc()));
+     27|     const fig = f.querySelector("figure")!;
+       |                   ^
+     28|     expect(fig.querySelectorAll("img")).toHaveLength(0);
+     29|     expect(fig.querySelector('[data-media="gradient"]')).toHaveAttribu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > KB-AC-23: 사용자 이미지 → 렌더 문서 img[src] = blob:만 · lazy · alt = 슬롯 대체텍스트(장식이면 '') · 정적 HTML 직렬화 = data:만 · http(s) 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:36:29
+     34|     const d: PageDoc = patch(doc(), "s-footer", { map: img() });
+     35|     const site = drawDoc(d, { [ID]: "blob:null/map" }).querySelector<H…
+     36|     const map = footer(site).querySelector("figure img")!;
+       |                             ^
+     37|     expect(map.getAttribute("src")).toBe("blob:null/map");
+     38|     expect(map).toHaveAttribute("loading", "lazy");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > KB-AC-25: map 꺼짐 → figure 0 · 위 줄 = biz-extended와 같은 2단(사업자정보 · 링크가 위 줄 직계 형제)
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:53:16
+     51|   it("KB-AC-25: map 꺼짐 → figure 0 · 위 줄 = biz-extended와 같은 2단(사업자정보 · …
+     52|     const off = footer(drawDoc(patch(doc(), "s-footer", { map: { ...im…
+     53|     expect(off.querySelectorAll("figure")).toHaveLength(0);
+       |                ^
+     54|     expect([...off.querySelector(".kit-footer-top")!.children].map((el…
+     55|     expect(off).not.toHaveClass("kit-footer--map");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > 빈 슬롯: links 빈 값 → 글 칸에 사업자정보만 · copyright 빈 값 → 구분선·저작권 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:60:18
+     58|   it("빈 슬롯: links 빈 값 → 글 칸에 사업자정보만 · copyright 빈 값 → 구분선·저작권 0", () =…
+     59|     const f = footer(drawDoc(patch(doc(), "s-footer", { links: "", cop…
+     60|     expect([...f.querySelector(".kit-footer-top > div")!.children].map…
+       |                  ^
+     61|     expect(f.querySelectorAll("hr, p")).toHaveLength(0);
+     62|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > KB-AC-30 [G]: 파일·지도 CSS에 iframe·외부 URL 0
+Error: ENOENT: no such file or directory, open 'src/kit/FooterBizExtendedMap.tsx'
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:65:12
+     63|
+     64|   it("KB-AC-30 [G]: 파일·지도 CSS에 iframe·외부 URL 0", () => {
+     65|     expect(readFileSync("src/kit/FooterBizExtendedMap.tsx", "utf8")).n…
+       |            ^
+     66|   });
+     67| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  23:05:32
+   Duration  974ms (environment 63%, transform 15%, setup 12%, tests 7%, import 3%, worker 1%)
+

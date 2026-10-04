@@ -1,4 +1,7 @@
+import { render } from "@testing-library/react";
+import { createElement } from "react";
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
+import { PageDocument } from "../../../render/PageDocument";
 import type { ParentMessage } from "../../../render/protocol";
 import { drawDoc, without } from "../../../render/testing/drawKit";
 import { EDITOR_EVENT, type EditorEvent } from "../editorEvents";
@@ -14,7 +17,7 @@ const parseSvg = (svg: string) => new DOMParser().parseFromString(svg, "image/sv
 const REQUEST: PngRequest = { doc: sampleDoc(), kitTokens: KIT, view: "mobile", name: "  강남 카페/리브랜딩:2호점  ", revision: 12 };
 
 /** 숨은 렌더 iframe 흉내 — ready → render → rects(바닥 = bottom) → serialize → html */
-function fakeChannel(markup: string, bottom = 2400) {
+function fakeChannel(markup: string, bottom = 2400, renderError?: "NO_KIT_TOKENS" | "INVALID_DOC") {
   const opened: number[] = [];
   const sent: ParentMessage[] = [];
   let closed = 0;
@@ -31,6 +34,7 @@ function fakeChannel(markup: string, bottom = 2400) {
         // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다(M2A-3c C4 실측) → 그다음 실제 크기
         if (message.type === "render")
           queueMicrotask(() => {
+            if (renderError) receive({ type: "error", code: renderError });
             receive({ type: "rects", rects: [["s-header", null, 0, 0, 0, 0], ["s-hero", null, 0, 0, 0, 0]] });
             receive({ type: "rects", rects: [["s-header", null, 0, 0, 390, 60], ["s-hero", null, 0, 60, 390, bottom - 60], ["s-hero", "title", 8, 80, 300, 40]] });
           });
@@ -121,6 +125,30 @@ describe("캡처 흐름 (m2a 3.3 캡처 규칙)", () => {
     expect([w, h]).toEqual([390, 2400]);
     expect(made).toMatchObject({ fileName: "강남-카페-리브랜딩-2호점_390_r12_구조포함.png", fallbackCount: 1 });
     expect(download).not.toHaveBeenCalled();
+  });
+
+  it("P2-b 킷 토큰 없음(프로필 조회 실패) → 렌더 문서 NO_KIT_TOKENS를 실패로 보지 않고 폴백 rects·직렬화를 기다림 → PNG 성공 · fallback_count = 섹션 수 · 파일 이름 _구조포함", async () => {
+    const doc = sampleDoc();
+    const markup = render(createElement(PageDocument, { doc, images: {} })).container.querySelector("[data-site-root]")!.outerHTML;
+    const channel = fakeChannel(markup, 2400, "NO_KIT_TOKENS");
+    const { d, draw } = deps(markup, 2400, { open: channel.open });
+    const request: PngRequest = { doc, view: REQUEST.view, name: REQUEST.name, revision: REQUEST.revision };
+    const { events, stop } = listen();
+    const done = await savePng(request, d);
+    stop();
+    const sent = channel.sent.find((m) => m.type === "render") as Extract<ParentMessage, { type: "render" }>;
+    expect(sent.kitTokens).toBeUndefined();
+    expect(channel.sent.map((m) => m.type)).toEqual(["render", "serialize"]);
+    expect(draw).toHaveBeenCalledTimes(1);
+    expect(done).toBe("PNG를 내려받았습니다 · 강남-카페-리브랜딩-2호점_390_r12_구조포함.png");
+    expect(events.find((e) => e.name === "png_succeeded")).toEqual({ name: "png_succeeded", view: "mobile", fallback_count: doc.sections.length });
+  });
+
+  it("P2-b PNG도 INVALID_DOC는 그대로 실패(그리지 않음)", async () => {
+    const channel = fakeChannel(noFallback(), 2400, "INVALID_DOC");
+    const { d, draw } = deps(noFallback(), 2400, { open: channel.open });
+    await expect(capturePng(REQUEST, d)).rejects.toThrow(/INVALID_DOC/);
+    expect(draw).not.toHaveBeenCalled();
   });
 
   it("높이가 상한을 넘으면 CANVAS_TOO_TALL 실패(그리지 않음)", async () => {

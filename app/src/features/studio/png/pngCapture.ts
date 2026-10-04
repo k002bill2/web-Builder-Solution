@@ -78,8 +78,9 @@ export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ 
   const rem = FRAME_REM[request.view];
   const width = rem * 16;
   const css = await kitCss(deps.fetchText);
-  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측)
-  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0).catch((error: unknown) => {
+  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측).
+  // 킷 토큰 없음(NO_KIT_TOKENS)은 실패가 아니다 — 캔버스처럼 중립 폴백으로 그린 rects·직렬화를 기다린다(P2-b · 정적 HTML은 실패 그대로)
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0, ["NO_KIT_TOKENS"]).catch((error: unknown) => {
     throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
   });
   const height = pageBottom(rects);

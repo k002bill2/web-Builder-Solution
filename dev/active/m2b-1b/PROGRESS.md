@@ -19,7 +19,7 @@
 - [x] P6 footer/biz-extended-map (KB-AC-23·25 [U] · 구조) — FooterBizExtended에 map 칸 인자(출력 불변) · RED logs/p6-map-red.txt(6 실패) → gate OK · 전체 vitest 187/1726(1회차 SectionRemove 1건 흔들림 → 단독 2회·전체 재실행 통과, 메모) · 이관 1건(정확 목록 +1)
 - [x] P7 footer/minimal (KB-AC-26 [G] · 27 [U] · 구조) — FooterLinks 공유 · 면 = .kit-body(톤 없음 → bg · --kit-soft muted, 가드 K-AC-11·36 "muted 직접 글자 0" 유지) · RED logs/p7-minimal-red.txt(4 실패) → gate OK(렌더 JS 81.11 · CSS 7.10 · /studio 127.47 중간값) · 전체 vitest --maxWorkers=4 188/1730 (기본 병렬 1회차는 부하 84로 페이지 테스트 시간 초과 165건 + kitCommon 실제 실패 1건 → 위처럼 고침)
 - [x] P8 footer/minimal-biz (KB-AC-28 [U]/[G] · 구조) + RENDERED_VARIANTS 라이브러리 파생 전환 — RED logs/p8-minimal-biz-red.txt(3 실패) → gate OK(렌더 JS 81.13 · CSS 7.12 · /studio 127.40 = 127,404 B, −10 B · 그 밖 ±0.01) · 전체 vitest 189/1733 · 이관 1건(정확 목록 +1)
-- [ ] P9 공통 [U]/[G] (KB-AC-30·32·33·35)
+- [x] P9 공통 [U]/[G] (KB-AC-30·32·33·35 · K-AC-04) — kit/boundVariants.test.tsx 5건. 구현 뒤 판정 테스트라 RED 대신 변이 검사 2건(클래스 바꿈 → KB-AC-35 실패, 되돌림 → 통과, logs/p9-mutation.txt) · gate OK
 - [ ] P10 REPORT 갱신 → 브라우저 [B]/[V] 4337 (QB-1~4·10·11·13·14 · KB-AC-31·34·35)
 - [ ] P11 전체 `npx vitest run` 1회 exit 0 · Errors 0 (logs/full-vitest.txt) · 이관 표
 - [ ] P12 Codex review --scope branch --base 5970721 1회 (P1만 수정)

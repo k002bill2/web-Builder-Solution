@@ -4,7 +4,7 @@ import { ContactForm } from "./ContactForm";
 import { FaqAccordion } from "./FaqAccordion";
 import { FooterBizExtended } from "./FooterBizExtended";
 import { FooterBizExtendedMap } from "./FooterBizExtendedMap";
-import { FooterMinimal } from "./FooterMinimal";
+import { FooterMinimal, FooterMinimalBiz } from "./FooterMinimal";
 import { HeaderStickyHamburger } from "./HeaderStickyHamburger";
 import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
 import { HeaderStickyTwoTier } from "./HeaderStickyTwoTier";
@@ -40,6 +40,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "footer/biz-extended": FooterBizExtended,
   "footer/biz-extended-map": FooterBizExtendedMap,
   "footer/minimal": FooterMinimal,
+  "footer/minimal-biz": FooterMinimalBiz,
 });
 
 export const kitFor = (section: Pick<SectionInstance, "type" | "variant">, registry: Readonly<Record<string, KitSection>> = KIT_REGISTRY): KitSection | undefined =>

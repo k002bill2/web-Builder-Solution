@@ -35,3 +35,21 @@ export function FooterMinimal({ section, root }: KitSectionProps) {
     />
   );
 }
+
+/** footer/minimal-biz (B-11) — minimal과 같은 면·모양, 저작권 자리에 사업자정보 한 줄(`address`, ink — 법정 표시라 muted로 낮추지 않음) */
+export function FooterMinimalBiz({ section, root }: KitSectionProps) {
+  const info = slotText(section, "businessInfo");
+  return (
+    <FooterLine
+      section={section}
+      root={root}
+      lead={
+        info && (
+          <address data-slot="businessInfo" className="kit-footer-info">
+            {info}
+          </address>
+        )
+      }
+    />
+  );
+}

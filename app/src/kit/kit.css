@@ -496,6 +496,11 @@
   .kit-footer-min .kit-footer-copy {
     color: var(--kit-soft);
   }
+  .kit-footer-min .kit-footer-info {
+    max-width: none;
+    white-space: normal;
+    color: var(--site-ink);
+  }
   @media (width >= 48rem) {
     .kit-footer-line {
       flex-direction: row;

@@ -7,10 +7,13 @@
 - 경계: 쓰기 `dev/active/m2b-2r/`만 · app/·design/·docs/·CLAUDE.md·package-lock 수정 0 · 서버 기동 0 · 서브에이전트 0 · 자동 코드 수정 0 · 로컬 `git commit -- <경로>`만.
 
 ## 단계
-- [ ] R0 수신·범위 고정 — PROGRESS·REPORT 골격 커밋, 1b REPORT 4·6·7·9절·SPEC-BOUND B-2/KB-AC 읽기
-- [ ] R1 Codex `review --scope branch --base 5970721` 1회 — 실제 종료까지 회수, logs/codex.txt
-- [ ] R1b 명시 쟁점 5건 검토(390 보조 줄 위치 · focus-visible 실측/쉼표 선택자 · 6변형 공유 · script 바이트 불변 · RENDERED_VARIANTS 파생·단언 이관)
-- [ ] R2 회수 — P1/P2 파일·재현·영향·최소 수정안, 2a 기동 판정, REPORT 자리표시 0
+- [x] R0 수신·범위 고정 — 골격 커밋 `dd8a284`, 1b REPORT 4·6·7·9절·PROGRESS·SPEC-BOUND B-1/B-2·4.1 읽음
+- [x] R1 Codex `review --scope branch --base 5970721` 1회 — 01:47:15→01:49:18 KST exit=0, 검토 HEAD `dd8a284`, 최종 본문 회수(P1 0 · P2 1), logs/codex.txt
+- [x] R1b 명시 쟁점 5건 Developer 검토(네이티브 review는 focus 텍스트 불가) — P1 0 · P2 2 · SPEC 차이 1 (REPORT 4절)
+- [x] R2 회수 — P1/P2 파일·재현·영향·최소 수정안 기록, **2a 기동 가능**(Jarvis 결정 대기 3건, REPORT 5절), 자리표시 0
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)
+
+## 메모
+- Codex P2(popover 폴백)는 선택자 목록 무효화로 현행 UA에서 재현 안 될 가능성 높음(L2) — 폴백이 암묵적이라 P2 유지, 자동 수정 없음.

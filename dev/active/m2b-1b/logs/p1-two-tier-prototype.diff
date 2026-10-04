@@ -1,0 +1,225 @@
+diff --git a/app/src/kit/HeaderStickyRightCta.tsx b/app/src/kit/HeaderStickyRightCta.tsx
+index 54c62e6..12e9251 100644
+--- a/app/src/kit/HeaderStickyRightCta.tsx
++++ b/app/src/kit/HeaderStickyRightCta.tsx
+@@ -1,17 +1,6 @@
++import { MenuButton, MenuList, Sheet } from "./headerParts";
+ import { slotText, splitItems } from "./text";
+-import type { KitLinks, KitSectionProps } from "./types";
+-
+-/** 메뉴 목록 — 본문 섹션 제목과 같은 항목만 앵커, 나머지 글자(0.10 · MQ-2). data-slot = 사각형 보고(보이는 벌만 — RenderApp measure) */
+-function MenuList({ items, links }: { readonly items: readonly string[]; readonly links: KitLinks }) {
+-  return (
+-    <ul data-slot="nav" className="kit-menu" role="list">
+-      {items.map((item, i) => {
+-        const href = links.headings.get(item);
+-        return <li key={`${i}-${item}`}>{href ? <a href={href}>{item}</a> : <span>{item}</span>}</li>;
+-      })}
+-    </ul>
+-  );
+-}
++import type { KitSectionProps } from "./types";
+ 
+ /** CTA — 대상 없으면 링크 아닌 버튼 모양 글자(0.10) */
+ function Cta({ text, href, place, always }: { readonly text: string; readonly href?: string; readonly place: "bar" | "sheet"; readonly always?: boolean }) {
+@@ -50,22 +39,15 @@ export function HeaderStickyRightCta({ section, links, root }: KitSectionProps)
+           </nav>
+         )}
+         {cta && <Cta text={cta} href={links.cta} place="bar" always={!menu} />}
+-        {menu && (
+-          <button type="button" popoverTarget={sheet} className="kit-menu-button">
+-            메뉴
+-          </button>
+-        )}
++        {menu && <MenuButton sheet={sheet} />}
+       </div>
+       {menu && (
+-        <div id={sheet} popover="auto" className="kit-sheet">
+-          <button type="button" popoverTarget={sheet} popoverTargetAction="hide" className="kit-menu-button kit-close">
+-            닫기
+-          </button>
++        <Sheet id={sheet}>
+           <nav aria-label="주 메뉴" className="kit-nav-sheet">
+             <MenuList items={items} links={links} />
+           </nav>
+           {cta && <Cta text={cta} href={links.cta} place="sheet" />}
+-        </div>
++        </Sheet>
+       )}
+     </header>
+   );
+diff --git a/app/src/kit/HeaderStickyTwoTier.tsx b/app/src/kit/HeaderStickyTwoTier.tsx
+new file mode 100644
+index 0000000..0e3e806
+--- /dev/null
++++ b/app/src/kit/HeaderStickyTwoTier.tsx
+@@ -0,0 +1,52 @@
++import { MenuButton, MenuList, Sheet } from "./headerParts";
++import { slotText, splitItems } from "./text";
++import type { KitSectionProps } from "./types";
++
++/**
++ * header/sticky-two-tier (SPEC-BOUND B-2) — 보조 줄(utility, md 이상) 위 · 바(브랜드 · lg 이상 인라인 메뉴 · lg 미만 "메뉴" 버튼) · 시트(주 메뉴 → md 미만 구분선 + 보조 목록).
++ * 보조 목록은 랜드마크 아님(div 안 ul, MQ-B2) · 주 메뉴·보조 목록 모두 폭마다 한 벌만 보인다(kit.css). nav 빈 값이면 보조 줄이 모든 폭에서 보인다(data-always).
++ * 앵커 여백 확대 = kit.css 문서 수준 `:has()` 1줄(D-3 · MQ-B5).
++ */
++export function HeaderStickyTwoTier({ section, links, root }: KitSectionProps) {
++  const brand = slotText(section, "brand");
++  const items = splitItems(slotText(section, "nav"));
++  const utility = splitItems(slotText(section, "utility"));
++  const sheet = `m-${section.instanceId}`;
++  const menu = items.length > 0;
++  const aux = utility.length > 0 && <MenuList items={utility} links={links} slot="utility" className="kit-menu kit-utility" />;
++  return (
++    <header {...root} className="kit-header kit-header--two-tier">
++      {aux && (
++        <div className="kit-tier" {...(!menu && { "data-always": "" })}>
++          {aux}
++        </div>
++      )}
++      <div className="kit-bar">
++        {brand && (
++          <p data-slot="brand" className="kit-brand">
++            {brand}
++          </p>
++        )}
++        {menu && (
++          <nav aria-label="주 메뉴" className="kit-nav-bar">
++            <MenuList items={items} links={links} />
++          </nav>
++        )}
++        {menu && <MenuButton sheet={sheet} />}
++      </div>
++      {menu && (
++        <Sheet id={sheet}>
++          <nav aria-label="주 메뉴" className="kit-nav-sheet">
++            <MenuList items={items} links={links} />
++          </nav>
++          {aux && (
++            <>
++              <hr className="kit-sheet-rule" />
++              {aux}
++            </>
++          )}
++        </Sheet>
++      )}
++    </header>
++  );
++}
+diff --git a/app/src/kit/headerParts.tsx b/app/src/kit/headerParts.tsx
+new file mode 100644
+index 0000000..21f0450
+--- /dev/null
++++ b/app/src/kit/headerParts.tsx
+@@ -0,0 +1,31 @@
++import type { ReactNode } from "react";
++import type { KitLinks } from "./types";
++
++/** 메뉴 목록 — 본문 섹션 제목과 같은 항목만 앵커, 나머지 글자(0.10 · MQ-2). data-slot = 사각형 보고(보이는 벌만 — RenderApp measure) */
++export function MenuList({ items, links, slot = "nav", className = "kit-menu" }: { readonly items: readonly string[]; readonly links: KitLinks; readonly slot?: string; readonly className?: string }) {
++  return (
++    <ul data-slot={slot} className={className} role="list">
++      {items.map((item, i) => {
++        const href = links.headings.get(item);
++        return <li key={`${i}-${item}`}>{href ? <a href={href}>{item}</a> : <span>{item}</span>}</li>;
++      })}
++    </ul>
++  );
++}
++
++/** "메뉴" 버튼 — 시트(`popover`)를 연다. React 상태 0 */
++export const MenuButton = ({ sheet }: { readonly sheet: string }) => (
++  <button type="button" popoverTarget={sheet} className="kit-menu-button">
++    메뉴
++  </button>
++);
++
++/** 메뉴 시트 — 네이티브 `popover`(Esc·바깥 닫힘) · 맨 위 "닫기" · 시트 안 앵커는 r4.12 고정 스크립트가 닫는다 */
++export const Sheet = ({ id, children }: { readonly id: string; readonly children: ReactNode }) => (
++  <div id={id} popover="auto" className="kit-sheet">
++    <button type="button" popoverTarget={id} popoverTargetAction="hide" className="kit-menu-button kit-close">
++      닫기
++    </button>
++    {children}
++  </div>
++);
+diff --git a/app/src/kit/kit.css b/app/src/kit/kit.css
+index 98d6762..5d34180 100644
+--- a/app/src/kit/kit.css
++++ b/app/src/kit/kit.css
+@@ -168,6 +168,55 @@
+   }
+ }
+ 
++/* header/sticky-two-tier (B-2) — 보조 줄(small · 오른쪽 · 위아래 s1) md 이상만 · 시트 안 보조 구역(구분선 muted + 보조 목록) md 미만만. 보조 글자 항목은 조작 대상 아님(hit-min = 링크만) */
++@layer components {
++  .kit-tier {
++    display: none;
++    max-width: var(--site-content-max);
++    margin-inline: auto;
++    padding: var(--site-s1) var(--site-s4) 0;
++  }
++  .kit-tier[data-always] {
++    display: block;
++  }
++  .kit-tier .kit-menu {
++    justify-content: flex-end;
++  }
++  .kit-utility {
++    font-size: var(--site-t-1);
++  }
++  .kit-utility span {
++    min-height: 0;
++  }
++  .kit-sheet-rule {
++    width: 100%;
++    margin: 0;
++    border: 0;
++    border-top: var(--site-stroke-1) solid var(--site-muted);
++  }
++  .kit-sheet .kit-utility {
++    flex-direction: column;
++  }
++  /* D-3 (MQ-B5) — 이 변형이 있는 문서는 섹션 루트 앵커 여백을 hit-min 한 단계 키운다. :has() 미지원이면 기존 두 줄 여백 */
++  [data-site-root]:has(> .kit-header--two-tier) [data-kit] {
++    scroll-margin-top: calc(var(--site-header-offset) + var(--site-hit-min));
++  }
++  @media (width >= 48rem) {
++    .kit-tier {
++      display: block;
++    }
++    .kit-sheet-rule,
++    .kit-sheet .kit-utility {
++      display: none;
++    }
++  }
++  @media (width >= 64rem) {
++    .kit-tier {
++      padding-inline: var(--site-s6);
++    }
++  }
++}
++
+ /* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
+ @layer components {
+   .kit-gradient {
+diff --git a/app/src/kit/registry.ts b/app/src/kit/registry.ts
+index 4eb672c..396e15f 100644
+--- a/app/src/kit/registry.ts
++++ b/app/src/kit/registry.ts
+@@ -4,6 +4,7 @@ import { ContactForm } from "./ContactForm";
+ import { FaqAccordion } from "./FaqAccordion";
+ import { FooterBizExtended } from "./FooterBizExtended";
+ import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
++import { HeaderStickyTwoTier } from "./HeaderStickyTwoTier";
+ import { HeroCenter } from "./HeroCenter";
+ import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
+ import { HeroGrid } from "./HeroGrid";
+@@ -19,6 +20,7 @@ import type { KitSection } from "./types";
+  */
+ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze({
+   "header/sticky-right-cta": HeaderStickyRightCta,
++  "header/sticky-two-tier": HeaderStickyTwoTier,
+   "hero/fullbleed-left": HeroFullbleedLeft,
+   "hero/split": HeroSplit,
+   "hero/center": HeroCenter,

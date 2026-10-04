@@ -1,0 +1,25 @@
+      {issues.map((issue, i) => {
+        const r = rectOf(issue.instanceId, issue.slotKey);
+        return (
+          r && (
+          <div key={issue.id} className="absolute" style={place(r, scale, 4)}>
+            <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />
+              <span
+                data-issue-badge
+                onClick={() => onIssue(issue)}
+                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+              >
+                {issue.level === "block" ? "차단" : "경고"} {i + 1}
+              </span>
+          </div>)
+        );
+      })}
+    </div>
+    <ol data-canvas-issues className="flex flex-col gap-1">
+      {issues.map((issue, i) => (
+        <li key={issue.id} className={`flex gap-2 text-caption1 ${ISSUE_RING[issue.level]}`}>
+          <span aria-hidden="true" className="font-bold">{issue.level === "block" ? "차단" : "경고"} {i + 1}</span>
+          <p id={issue.id}>{issue.text}</p>
+        </li>
+      ))}
+    </ol>

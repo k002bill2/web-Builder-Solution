@@ -1,0 +1,20 @@
+            {r && (
+              <span
+                data-issue-badge
+                onClick={() => onIssue(issue)}
+                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+              >
+                {issue.level === "block" ? "차단 1" : "경고 1"}
+              </span>
+            )}
+            <p id={issue.id} className={`absolute top-full left-0 mt-1 rounded-sm bg-background-normal px-1 text-caption1 ${ISSUE_RING[issue.level]}`}>
+              {issue.text}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**

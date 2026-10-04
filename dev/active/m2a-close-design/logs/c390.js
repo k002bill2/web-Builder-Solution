@@ -1,0 +1,26 @@
+console.log('PWD', String(pwd));
+const WN = typeof W0 === 'undefined' ? 1280 : W0, HN = typeof H0 === 'undefined' ? 900 : H0;
+await waitIn('rects', () => (window.parent.__r || []).length > 0, 10000);
+console.log('fill title', await fillField('field-hero-1-title', '일상에 꼭 맞는 서비스를 정성껏 만들어 드리는 작은 팀')); await sleep(400);
+console.log('fill cta', await fillField('field-hero-1-cta', '')); await sleep(400);
+console.log('fill sub', await fillField('field-hero-1-subtitle', '처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다. 상담부터 사후 지원까지 한 팀이 끝까지 책임지고 함께합니다. 언제든 편하게 문의해 주세요.')); await sleep(1500);
+const overlap = () => inner(() => { const f = document.querySelector('iframe'); const R = f.getBoundingClientRect(); const k = R.width / f.offsetWidth; const rs = (window.parent.__r || []).filter((x) => x[1] !== null).map((x) => ({ id: x[0] + '.' + x[1], x: R.x + x[2] * k, y: R.y + x[3] * k, w: x[4] * k, h: x[5] * k })); return [...document.querySelectorAll('[data-canvas-overlay] p')].map((p) => { const b = p.getBoundingClientRect(); const cs = getComputedStyle(p); const hits = rs.filter((s) => s.x < b.right && s.x + s.w > b.left && s.y < b.bottom && s.y + s.h > b.top).map((s) => s.id); return { id: p.id, text: p.textContent, rect: [b.x, b.y, b.width, b.height].map(Math.round), font: cs.fontSize, lines: Math.round(b.height / parseFloat(cs.lineHeight || 16)), covers: hits }; }); });
+await inner(() => document.querySelector('iframe').scrollIntoView({ block: 'start' })); await sleep(1500);
+console.log('OV', WN, JSON.stringify(await overlap()));
+console.log('ST', JSON.stringify(await state()));
+await shot(`v3-${WN}-hero-issues.png`, WN, HN);
+// Services 카드 제목 길게
+await clickText(/^Services/); await sleep(800);
+const ids = await inner(() => [...document.querySelectorAll('input,textarea')].map((i) => i.id).filter((i) => i.startsWith('field-services')));
+console.log('IDS', JSON.stringify(ids));
+const c1 = ids.find((i) => /card1Title$/.test(i)) ; const c2 = ids.find((i) => /card2Title$/.test(i));
+if (c1) await fillField(c1, '처음 상담부터 끝까지 함께하는 맞춤 상담 서비스 안내');
+if (c2) await fillField(c2, '');
+await sleep(1800);
+await inner(() => { const ps = [...document.querySelectorAll('[data-canvas-overlay] p')]; (ps[ps.length - 1] || document.querySelector('iframe')).scrollIntoView({ block: 'center' }); }); await sleep(1500);
+console.log('OV2', WN, JSON.stringify(await overlap()));
+await shot(`v3-${WN}-services-issues.png`, WN, HN);
+
+console.log('GATE', JSON.stringify(await inner(() => [...document.querySelectorAll('h2')].find((h) => h.textContent.trim() === '품질 게이트')?.parentElement?.innerText.slice(0, 900))));
+console.log('CTA field', JSON.stringify(await inner(() => { const e = document.getElementById('field-hero-1-cta'); return e ? [e.getAttribute('aria-invalid'), e.getAttribute('aria-describedby')] : 'not in DOM'; })));
+await closeTab(T);

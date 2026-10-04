@@ -1,0 +1,30 @@
+[base] 모의 적용 OK — 규칙 356→351(엔진이 버린 규칙 5) · 변환 {"popoverOpenTokens":7,"supportsSelector":2,"popoverAttr":1,"popoverTargetAttr":3}
+[base] mock sticky-right-cta 1280: FAIL nav 2 (nav 2 · 항목 3/3 · 링크 7/7 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock sticky-right-cta 768: PASS (nav 1 · 항목 3/3 · 링크 4/4 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock sticky-right-cta 390: PASS (nav 1 · 항목 3/3 · 링크 4/4 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock sticky-hamburger 1280: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock sticky-hamburger 768: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock sticky-hamburger 390: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock sticky-two-tier 1280: FAIL nav 2 (nav 2 · 항목 3/3 · 링크 6/6 · 시트 static · utility 1/2 · 넘침 0)
+[base] mock sticky-two-tier 768: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 1/2 · 넘침 0)
+[base] mock sticky-two-tier 390: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 1/2 · 넘침 0)
+[base] mock transparent 1280: FAIL nav 2 (nav 2 · 항목 3/3 · 링크 6/6 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock transparent 768: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[base] mock transparent 390: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[base] 지원 경로: 메뉴 버튼 9건 열기·Esc 닫힘·포커스 복귀·시트 앵커 닫힘 PASS · lg(burger 제외) 버튼·시트 숨김·nav 1 PASS · 넘침 최대 0
+[base] 모의 미지원 종합: FAIL 3건 sticky-right-cta-1280, sticky-two-tier-1280, transparent-1280
+[fix] 모의 적용 OK — 규칙 360→355(엔진이 버린 규칙 5) · 변환 {"popoverOpenTokens":9,"supportsSelector":4,"popoverAttr":1,"popoverTargetAttr":3}
+[fix] mock sticky-right-cta 1280: PASS (nav 1 · 항목 3/3 · 링크 4/4 · 시트 숨김 · utility 0/0 · 넘침 0)
+[fix] mock sticky-right-cta 768: PASS (nav 1 · 항목 3/3 · 링크 4/4 · 시트 static · utility 0/0 · 넘침 0)
+[fix] mock sticky-right-cta 390: PASS (nav 1 · 항목 3/3 · 링크 4/4 · 시트 static · utility 0/0 · 넘침 0)
+[fix] mock sticky-hamburger 1280: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[fix] mock sticky-hamburger 768: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[fix] mock sticky-hamburger 390: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[fix] mock sticky-two-tier 1280: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 숨김 · utility 1/2 · 넘침 0)
+[fix] mock sticky-two-tier 768: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 1/2 · 넘침 0)
+[fix] mock sticky-two-tier 390: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 1/2 · 넘침 0)
+[fix] mock transparent 1280: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 숨김 · utility 0/0 · 넘침 0)
+[fix] mock transparent 768: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[fix] mock transparent 390: PASS (nav 1 · 항목 3/3 · 링크 3/3 · 시트 static · utility 0/0 · 넘침 0)
+[fix] 지원 경로: 메뉴 버튼 9건 열기·Esc 닫힘·포커스 복귀·시트 앵커 닫힘 PASS · lg(burger 제외) 버튼·시트 숨김·nav 1 PASS · 넘침 최대 0
+[fix] 모의 미지원 종합: PASS 12/12

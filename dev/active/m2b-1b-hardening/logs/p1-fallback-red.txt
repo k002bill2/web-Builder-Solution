@@ -1,0 +1,107 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b-hardening/app
+
+ ❯ src/kit/popoverFallback.test.ts (6 tests | 4 failed) 9ms
+   ❯ popover 미지원 폴백 — 명시 @supports 계약 (6)
+     × 게이트 밖 선택자 목록에 :popover-open과 일반 선택자가 섞이지 않는다(목록 통째 무효화 의존 0) 4ms
+     × :popover-open 시트를 숨기는(display:none) 규칙은 @supports selector(:popover-open) 안에만 1ms
+     × 미지원 블록: @supports not selector(:popover-open) 안에 .kit-sheet { display: block } (시트 목록 = 일반 흐름) 1ms
+     × lg 시트 숨김(K1-1)은 게이트 밖 · burger 제외(:not) — 미지원에서도 바 메뉴와 시트 nav 중복 0, burger 메뉴는 남는다 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/popoverFallback.test.ts > popover 미지원 폴백 — 명시 @supports 계약 > 게이트 밖 선택자 목록에 :popover-open과 일반 선택자가 섞이지 않는다(목록 통째 무효화 의존 0)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   ".kit-menu-button,
++     .kit-sheet,
++     .kit-sheet:popover-open",
++ ]
+
+ ❯ src/kit/popoverFallback.test.ts:49:42
+     47|   it("게이트 밖 선택자 목록에 :popover-open과 일반 선택자가 섞이지 않는다(목록 통째 무효화 의존 0)", (…
+     48|     const mixed = rules.filter((r) => !supported(r) && r.parts.some((p…
+     49|     expect(mixed.map((r) => r.selector)).toEqual([]);
+       |                                          ^
+     50|   });
+     51|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/kit/popoverFallback.test.ts > popover 미지원 폴백 — 명시 @supports 계약 > :popover-open 시트를 숨기는(display:none) 규칙은 @supports selector(:popover-open) 안에만
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   ".kit-menu-button,
++     .kit-sheet,
++     .kit-sheet:popover-open",
++ ]
+
+ ❯ src/kit/popoverFallback.test.ts:55:70
+     53|     const hide = rules.filter((r) => display(r) === "none" && r.parts.…
+     54|     expect(hide.length).toBeGreaterThan(0);
+     55|     expect(hide.filter((r) => !supported(r)).map((r) => r.selector)).t…
+       |                                                                      ^
+     56|   });
+     57|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/kit/popoverFallback.test.ts > popover 미지원 폴백 — 명시 @supports 계약 > 미지원 블록: @supports not selector(:popover-open) 안에 .kit-sheet { display: block } (시트 목록 = 일반 흐름)
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/kit/popoverFallback.test.ts:60:92
+     58|   it("미지원 블록: @supports not selector(:popover-open) 안에 .kit-sheet { di…
+     59|     const fallback = rules.filter(unsupported);
+     60|     expect(fallback.some((r) => r.parts.includes(".kit-sheet") && disp…
+       |                                                                                            ^
+     61|     // 미지원 블록에서 메뉴 버튼(닫기 포함)을 보이게 하는 규칙 0
+     62|     expect(fallback.filter((r) => r.selector.includes("kit-menu-button…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/kit/popoverFallback.test.ts > popover 미지원 폴백 — 명시 @supports 계약 > lg 시트 숨김(K1-1)은 게이트 밖 · burger 제외(:not) — 미지원에서도 바 메뉴와 시트 nav 중복 0, burger 메뉴는 남는다
+AssertionError: expected [ '.kit-sheet' ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
+-   ".kit-header:not(.kit-header--burger) .kit-sheet",
++   ".kit-sheet",
+  ]
+
+ ❯ src/kit/popoverFallback.test.ts:67:74
+     65|   it("lg 시트 숨김(K1-1)은 게이트 밖 · burger 제외(:not) — 미지원에서도 바 메뉴와 시트 nav 중복…
+     66|     const hide = rules.filter((r) => lg(r) && !supported(r) && display…
+     67|     expect(hide.map((r) => r.parts.find((p) => /\.kit-sheet$/.test(p))…
+       |                                                                          ^
+     68|     // 게이트 밖 어디에서도 burger 시트를 숨기지 않는다
+     69|     const burgerHidden = rules.filter((r) => !supported(r) && display(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  03:08:53
+   Duration  571ms (environment 78%, setup 14%, transform 5%, tests 2%, worker 1%, import 1%)
+

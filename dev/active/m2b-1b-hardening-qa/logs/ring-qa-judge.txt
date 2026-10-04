@@ -1,0 +1,12 @@
+PASS header 링(3변형 바·시트 + transparent 면 3, light·dark × base·alt × 3폭) 문서 72 · 링 332건 · 바깥(부모) 면 대비 최소 4.61 @ ring-dark-base-transparent-primary-1280:bar:소개 · QA 재판정 위반 0 · 구현 판정 badRings 0 · 링 0 문서 0
+N/A footer 실제 링 — 설계상 포커스 대상 0(m2a SPEC 0.10 122행 · K1-7 463/468행 = 하단 링크는 전부 글자 항목). 매트릭스 48대상 실제 a 0 · 링 0 · 감사 12건(4변형×3폭) 포커스 가능 요소(a/button/input/summary/[tabindex]/[href] 등) 0 · Tab 순회 footer 진입 0 · 본문 제목과 정확히 같은 글자 3개 포함해도 li = TEXT true. → N/A(실제 링 PASS 아님) · 숨은 링크/결함 0
+PASS (참고·운영 마크업 아님) footer 탐침 복제본 a 링 48건 · 위반 0 · 최소 16.82 · 쌍 bg/ink,ink/bg
+PASS 부정 N1 같은 색 header(링 bg / 면 bg) → FAIL 검출: badRings 3/4 · ["소개:bg/bg:1 — 역할 밖 bg/bg·대비 1","서비스:bg/bg:1 — 역할 밖 bg/bg·대비 1","문의:bg/bg:1 — 역할 밖 bg/bg·대비 1"]
+PASS 부정 N1f 같은 색 footer 탐침(ink/ink) → FAIL 검출: badRings 1/1 · ["소개:ink/ink:1 — 역할 밖 ink/ink·대비 1"]
+PASS 부정 N2 저대비(역할 허용 ink/bg · 1.45) → FAIL 검출: badRings 4/4 · ["소개:ink/bg:1.45 — 대비 1.45","서비스:ink/bg:1.45 — 대비 1.45","문의:ink/bg:1.45 — 대비 1.45","문의하기:ink/bg:1.45 — 대비 1.45"]
+PASS 부정 QA N4 outline:none 주입 → '링 없음' FAIL 검출: badRings 4/4 · ["소개:ink/bg:16.82 — 링 없음(none 3)","서비스:ink/bg:16.82 — 링 없음(none 3)","문의:ink/bg:16.82 — 링 없음(none 3)","문의하기:on-primary/bg:1.03 — 링 없음(none 3)·역할 밖 on-primary/bg·
+PASS 부정 QA N5 href 제거(focus 불가) → focused false · fv false (ringBad 규칙상 'focus 실패')
+PASS CTA 자기 fill(primary)을 면으로 오인 안 함 — 판정 면 bg · own primary
+PASS P3 two-tier nav 빈 값 + utility 1280: utility 로그인·고객센터 · 시트 0 · 버튼 0 · nav 0 · tier 0~23.2 / bar 23.2~64.2 · DOM tier→bar true · 넘침 0 · 밖 0
+PASS P3 two-tier nav 빈 값 + utility 768: utility 로그인·고객센터 · 시트 0 · 버튼 0 · nav 0 · tier 0~23.2 / bar 23.2~64.2 · DOM tier→bar true · 넘침 0 · 밖 0
+PASS P3 two-tier nav 빈 값 + utility 390: utility 로그인·고객센터 · 시트 0 · 버튼 0 · nav 0 · tier 0~23.2 / bar 23.2~64.2 · DOM tier→bar true · 넘침 0 · 밖 0

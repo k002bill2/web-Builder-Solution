@@ -305,4 +305,204 @@
 | ⑤ 토큰 준수 | PASS | `primary` 글자 0 · C-2·C-4·C-5 |
 | ⑥ 예산 감각 | PASS | 새 컴포넌트 1(작음) — JS ≈ 0.20 · CSS ≈ 0.12 (L3) |
 | ⑦ 독자성 | PASS | 기본 수치 "100+"는 엔진 기본값(자체 문장) · 외부 수치 0 · 시안 수치도 자체 예시 |
-| ⑧ 근거 3 | PASS | 일반 패턴: 통계 띠(stat band) · WCAG 1.3.2·1.4.1 · 내부: 엔진 섹션 정의 `statistics/stats-3`(`bodySections.ts`) · ref-d(`layoutType: grid`) |
+| ⑧ 근거 3 | 주의 | 일반 패턴: 통계 띠(stat band) · WCAG 1.3.2·1.4.1 · 내부: 픽스처 6건에 statistics 섹션 태그 **없음** — 엔진 섹션 정의 `statistics/stats-3`(`bodySections.ts`)와 ref-d(`layoutType: grid`)만. 레퍼런스 태그 근거가 약하다(카탈로그 보강 때 다시 봄) |
+
+### B1-9. `testimonials/quotes-2` — 후기 2개
+슬롯(L1): `heading`(40, 필수, 기본 "고객 후기") · `quote1`·`quote2`(long 200, 필수, 권장 140) · `author1`·`author2`(short 30, 필수, 기본 "고객"). 형제: 카드 면 = K1-4 카드 · 열 = B1-3 cards-2.
+
+1. **구조**
+```
+<section id="s-<id>" data-section="testimonials/quotes-2" aria-labelledby="h-<id>">
+  <div 래퍼>
+    <h2 id="h-<id>">{heading}</h2>
+    <ul role="list" 후기 목록>
+      <li 카드>
+        <figure>
+          <blockquote>  <p>{quoteN}</p>  </blockquote>
+          <figcaption>{authorN}</figcaption>
+        </figure>
+      </li>   × 2 (번호 순서)
+    </ul>
+  </div>
+</section>
+```
+   - **의미 구조 = `figure > blockquote + figcaption`**(WHATWG HTML 명세의 인용 출처 표기 예와 같은 짜임). 작성자 이름은 `blockquote` **밖** `figcaption`에 둔다 — 인용문 안에 넣으면 작성자 이름이 인용의 일부가 된다.
+   - **`<cite>`를 쓰지 않는다(브리프 문구와 다르게 한 곳)**: WHATWG HTML 명세에서 `cite`는 **작품의 제목**을 나타내며 사람 이름은 작품 제목이 아니라고 적는다. `author` 슬롯은 사람(또는 "고객" 같은 호칭)이다 → `figcaption` 평문. `blockquote`의 `cite` 속성(출처 URL)도 0(외부 URL 0 · 슬롯 없음).
+   - 인용 부호 장식(큰 따옴표 그림·CSS `content`) 0 — 생성 글자는 보조기술이 읽을 수 있고, 인용 의미는 `blockquote`가 전한다.
+   - 별점·사진·날짜 0(슬롯 없음, 지어내지 않는다). 후기 줄바꿈 = `white-space: pre-line`.
+2. **반응형**
+   | 폭 | 배치 |
+   |---|---|
+   | `lg` 이상 (1280) | 2열 같은 폭·같은 높이(행 늘이기), 카드 사이 `s5` · 작성자는 카드 아래쪽에 붙음(`figure` 세로 flex, `figcaption` 위 여백 auto) |
+   | `md`~`lg` (768) | 2열 유지 |
+   | `md` 미만 (390) | 1열 |
+3. **토큰 대응** — 카드 면은 0.2-4(K1-4 3 표). 
+   | 요소 | 글자 | 단계 |
+   |---|---|---|
+   | 제목 `h2` | `ink` (C-2 · C-4) | `title` |
+   | 후기 | `ink` (카드 면 기준 C-4·C-2·C-3) | `lead`(`md` 이상) · `body` |
+   | 작성자 | `ink` · 제목 굵기 | `body` |
+   - 작성자를 `muted`로 낮추지 않는다 — 카드 면이 `bg`가 아닌 경우가 대부분이라 C-5 밖(m2a 0.3). 위계는 크기(후기 `lead` > 작성자 `body`)와 굵기로.
+   - `blockquote` 기본 바깥 여백 0으로 초기화, 기울임 0.
+4. **빈 슬롯·긴 글자** (모두 필수)
+   - `quoteN` 빈 값 → 그 `li` 전체 생략(작성자만 남은 카드는 뜻이 없다 — `qN` 규칙과 같음).
+   - `authorN` 빈 값 → `figcaption` 생략.
+   - 상한: 후기 200자 = 카드 안 줄바꿈 · 작성자 30자 = 줄바꿈. 말줄임 0. 긴 후기 카드에 맞춰 행 높이가 늘어난다.
+5. **이미지 슬롯** — 해당 없음(작성자 사진 슬롯 없음).
+6. **상호작용** — 없음(넘김·자동 회전 0 — 목업 레퍼런스의 carousel은 이 변형이 아니다).
+7. **모션** — 정적. 모션 후보(상한 **L1**): 카드 등장(투명도만).
+
+| 루브릭 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 후기 2건을 넘김 없이 동시에 보인다(자동 회전 carousel보다 읽기 쉬움) |
+| ② 정보 위계 | PASS | 제목 → 후기(`lead`) → 작성자(굵기) |
+| ③ 3폭 반응형 | PASS | 2열 / 2열 / 1열 |
+| ④ 접근성 | PASS | `blockquote`(인용 의미) · 작성자 `figcaption`(출처 연결) · 자동 움직임 0(WCAG 2.2.2) |
+| ⑤ 토큰 준수 | PASS | 카드 글자 `ink`만 · `muted` 0 |
+| ⑥ 예산 감각 | PASS | 새 컴포넌트 1(카드 면 CSS 재사용) — JS ≈ 0.22 · CSS ≈ 0.08 (L3) |
+| ⑦ 독자성 | PASS | 후기 글·작성자는 사용자 글자 · 기본값 "이용 후기를 적습니다."는 엔진 자체 문장 · 지어낸 후기·별점 0 |
+| ⑧ 근거 3 | PASS | 일반 패턴: 후기 카드 · WCAG 2.2.2·1.3.1 + WHATWG `blockquote`/`figcaption` · 내부: ref-a·ref-b "Testimonials carousel"(정적 2열로 대체) |
+
+### B1-10. `pricing/tiers-2` — 요금제 2단
+슬롯(L1): `heading`(40, 필수, 기본 "요금 안내") · `intro`(long 160) · `plan1Name`·`plan2Name`(short 20, 필수) · `plan1Price`·`plan2Price`(short 20, 필수, **기본 "문의"**) · `plan1Body`·`plan2Body`(long 120, 권장 80). 형제: B1-3 cards-2(머리·카드 면·2열 같음 · 카드 안에 가격 줄 추가).
+
+1. **구조**
+```
+<section id="s-<id>" data-section="pricing/tiers-2" aria-labelledby="h-<id>">
+  <div 래퍼>
+    <div 머리>  <h2 id="h-<id>">{heading}</h2>  <p 소개>{intro}</p>  </div>
+    <ul role="list" 요금제 목록>
+      <li 카드>  <h3>{planNName}</h3>  <p 가격>{planNPrice}</p>  <p 설명>{planNBody}</p>  </li>   × 2
+    </ul>
+  </div>
+</section>
+```
+   - **가격은 글자 그대로** — 킷은 통화 기호·"원"·"/월"·"부터"를 붙이지 않고 숫자로 해석하지 않는다. 기본값 **"문의"**(글자)도 숫자 가격과 **같은 모양**(같은 단계·굵기·색)으로 그린다 — "문의"를 흐리게·작게 하면 요금제 둘의 모양이 값에 따라 달라진다.
+   - **강조 요금제 없음 = 동등**: 두 카드는 같은 면·같은 경계·같은 크기. "추천"·"인기" 표식·한쪽만 `primary` 면·크기 키우기 0(슬롯이 없고 지어내지 않는다).
+   - 요금제마다 버튼 0(대상·글자 슬롯 없음 — 새 슬롯 금지). 문의 경로는 header·hero·cta-band의 CTA가 맡는다.
+   - 문서 순서 = 이름(`h3`) → 가격 → 설명 = 보이는 순서.
+2. **반응형**
+   | 폭 | 배치 |
+   |---|---|
+   | `lg` 이상 (1280) | 2열 같은 폭·같은 높이, 카드 사이 `s5` |
+   | `md`~`lg` (768) | 2열 유지 |
+   | `md` 미만 (390) | 1열 |
+3. **토큰 대응** — 카드 면 0.2-4.
+   | 요소 | 글자 | 단계 |
+   |---|---|---|
+   | 제목 `h2` · 소개 | B1-3과 같음(소개 `--kit-soft`) | `title` · `lead` |
+   | 요금제 이름 `h3` | `ink` | `subtitle` · 제목 굵기 |
+   | 가격 | `ink` · 제목 굵기 · `tabular-nums` | `title`(넓은 폭 `t3` · 768·390 `t2`) |
+   | 설명 | `ink` | `body` |
+   - 가격을 `primary` 글자로 칠하지 않는다(m2a 0.3 금지 조합). 가격 ↔ 이름 간격 `s2`, 가격 ↔ 설명 `s3`.
+4. **빈 슬롯·긴 글자**
+   - `intro`·`planNBody` 빈 값 → 생략. `planNName`·`planNPrice` 빈 값(필수) → 그 요소만 생략, 카드는 남김(2칸 배치 유지 — K1-4 카드 제목 규칙과 같음).
+   - 상한: 이름 20자 · 가격 20자(예: 긴 "월 정액 문의 바랍니다")는 카드 안 줄바꿈 · 설명 120자. 말줄임 0.
+5. **이미지 슬롯** — 해당 없음. **6. 상호작용** — 없음(월/연 전환 토글 0).
+7. **모션** — 정적. 모션 후보(상한 **L1**): 카드 등장(투명도만).
+
+| 루브릭 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 요금제 2개를 나란히 — 가격을 정하지 않은 업종도 기본 "문의"로 깨지지 않음 |
+| ② 정보 위계 | PASS | 이름 → 가격(가장 큼) → 설명 |
+| ③ 3폭 반응형 | PASS | 2열 / 2열 / 1열 |
+| ④ 접근성 | PASS | 카드 `h3` · 강조를 색에만 두지 않음(1.4.1) · 동등한 두 카드 |
+| ⑤ 토큰 준수 | PASS | 카드 글자 `ink` · `primary` 글자 0 |
+| ⑥ 예산 감각 | PASS | cards 컴포넌트를 "가격 줄" 선택 칸으로 넓히거나 새 컴포넌트 1 — JS ≈ 0.20 · CSS ≈ 0.06 (L3) |
+| ⑦ 독자성 | PASS | 가격·이름은 사용자 글자 · 외부 수치 0 · 추천 표식 지어내기 0 |
+| ⑧ 근거 3 | PASS | 일반 패턴: 요금제 비교 카드 · WCAG 1.4.1 · 내부: ref-d "Pricing cards" |
+
+### B1-11. `contact/booking` — 예약 폼
+슬롯(L1, `contactSlots("예약하기")`): `heading`(40, 필수, 기본 **"예약"**) · `intro`(long 160) · `submit`(link 16, 필수, 기본 **"예약하기"**) · `consent`(short 100, 필수). 섹션 정의 `reservation: true`(목적 "예약"의 필수 섹션 — R-04, 2a-05 5.4). 형제: **K1-6 `contact/form` + K2 A안 상속** — 다른 것은 입력칸 구성과 고정 문구뿐.
+
+1. **구조** = K1-6 1(같은 2단 · `form` `action`·`method` 0 · 안내 `p` · `fieldset disabled aria-describedby` · 숨긴 `legend` · 동의 체크박스 · 보내기 버튼). 입력칸만 다르다:
+```
+<fieldset disabled aria-describedby="n-<id>">
+  <legend 숨김>예약 양식</legend>
+  <label for="f-<id>-name">이름</label>          <input type="text" name="name"  autocomplete="name" required>
+  <label for="f-<id>-tel">연락처</label>         <input type="tel"  name="tel"   autocomplete="tel"  required>
+  <div 날짜·시간 묶음>
+    <label for="f-<id>-date">희망 날짜</label>   <input type="text" name="date" required>
+    <label for="f-<id>-time">희망 시간</label>   <input type="text" name="time" required>
+  </div>
+  <label for="f-<id>-request">요청 사항 (선택)</label> <textarea name="request" rows="3"></textarea>
+  <label 동의><input type="checkbox" name="consent" required> {consent}</label>
+  <button type="submit">{submit}</button>
+</fieldset>
+```
+   - **킷 고정 문구 전부**(슬롯 아님, 사용자 편집 불가): 이름표 **"이름" · "연락처" · "희망 날짜" · "희망 시간" · "요청 사항 (선택)"** · 숨긴 `legend` **"예약 양식"** · 방문자 안내 **"온라인 예약은 준비 중입니다. 지금은 이 양식으로 예약할 수 없습니다."**
+   - 방문자 안내는 K2 문구의 "문의"를 "예약"으로 바꾼 같은 짜임(K2 원칙 — 제작 용어 0 · 다른 연락 경로를 지어내지 않음). K2 문구를 그대로 쓰면 예약 폼에 "온라인 문의"라고 적혀 틀린다.
+   - **날짜·시간 칸 = `type="text"`(날짜 선택기 0)**: ① `type=date/time`의 안쪽 표시(연·월·일 자리 글자)는 브라우저·OS 언어마다 모양이 달라 캔버스·PNG·정적 HTML이 기기마다 달라진다(결정성 FR-GEN-03 · FR-PUB-03) ② 비활성일 때 그 안쪽 글자를 브라우저가 흐린 회색으로 그려 "흐린 글자 0"(m2a 0.3 · K1-6 3)을 킷 CSS로 보장할 수 없다 ③ 보낼 곳이 없는 비활성 폼이라 선택기 가치가 0. 받는 곳을 연결할 때(K2 B안 · MQ-6) `date`/`time`으로 바꾸는 것을 그 결정에 넘긴다. `placeholder` 0(형식 예시 글자도 넣지 않음 — 이름표가 늘 보임).
+   - "요청 사항"만 선택 칸이라 이름표에 "(선택)"을 붙인다 — K1-6은 모든 칸이 필수라 표시를 뺐지만, 여기는 필수·선택이 섞여 표시가 정보다(필수 칸에 "(필수)"를 붙이지 않는 방식은 K1-6과 같음).
+   - 인원 칸 0: 업종(미용·진료·식음)에 따라 뜻이 달라 고정 문구로 두면 맞지 않는 업종이 생긴다. 필요하면 "요청 사항"에 적는다.
+   - `id` = `instanceId` 접두(K1-6과 같음 — 한 문서에 contact 2개여도 충돌 0).
+2. **반응형**
+   | 폭 | 배치 |
+   |---|---|
+   | `lg` 이상 (1280) | K1-6과 같은 2단(글 5 : 폼 7). 폼 안 날짜·시간 = **한 줄 2칸**(같은 폭, 칸 사이 `s4`) |
+   | `md`~`lg` (768) | 1단(글 → 폼). 날짜·시간 한 줄 2칸 유지 |
+   | `md` 미만 (390) | 1단. 날짜·시간도 세로로(각각 전체 폭) |
+3. **토큰 대응** = K1-6 3 그대로(안내 `ink` `small` 제목 굵기 · 이름표 `ink` · 입력칸 면 `bg`·경계 `ink` · 버튼 C-1 · 비활성도 흐리지 않음 · 커서 `not-allowed`). "(선택)"은 이름표 글자의 일부(같은 색·단계).
+4. **빈 슬롯·긴 글자** = K1-6 4(`consent` 비면 체크박스도 생략 · `submit` 비면 버튼 생략).
+5. **이미지 슬롯** — 해당 없음.
+6. **상호작용** = K1-6 6(`fieldset disabled` = 정적 HTML의 유일한 차단 · 스크립트 0 · 기본 검증 속성은 연결 뒤를 위해 남김).
+7. **모션** — 정적. 모션 후보(상한 L1): 없음 권장(폼은 움직이지 않는 편이 읽기 쉽다 — M2B-3 판단).
+- **사이트 주인용 안내(앱 화면 쪽, 킷 밖)**: K2 문구 2의 "문의 양식"을 예약 섹션에서는 **"내보낸 페이지에서 이 예약 양식은 보내기가 꺼진 채로 나갑니다. 방문자에게는 '온라인 예약은 준비 중입니다' 안내가 보입니다. 받는 곳 연결은 다음 단계에서 다룹니다."**로 — 편집기 편집 패널 문구라 이 레인 범위 밖 → MQ-B4.
+
+| 루브릭 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | 주의 | 예약 목적(R-04)의 필수 섹션 모양은 갖췄지만 보낼 수 없다(K2 A안 — 미리보기 = 내보내기). 방문자 안내로 알린다 |
+| ② 정보 위계 | PASS | 안내 → 연락 칸 → 날짜·시간 → 요청 → 동의 → 버튼 |
+| ③ 3폭 반응형 | PASS | 2단 / 1단(날짜·시간 2칸) / 1단 세로 |
+| ④ 접근성 | PASS | 보이는 `label for` · `legend` · 안내 `aria-describedby` · `autocomplete`(1.3.5) · 선택 칸 표시(3.3.2) · `placeholder` 0 |
+| ⑤ 토큰 준수 | PASS | K1-6과 같은 변수 · 흐린 글자 0 |
+| ⑥ 예산 감각 | PASS | `ContactForm`을 필드 설정 배열·고정 문구 매개변수로 공유 — JS ≈ 0.15 · CSS ≈ 0.04(날짜·시간 묶음) (L3) |
+| ⑦ 독자성 | PASS | 고정 문구 전부 자체 문장 · 외부 예약 서비스 모양 0 |
+| ⑧ 근거 3 | PASS | 일반 패턴: 예약 요청 폼(이름·연락처·희망 일시) · WCAG 1.3.5·3.3.2 · 내부: 목적 태그 `purpose: booking`(ref-a·b·c·d, `references.ts`) |
+
+### B1-12. `cta-band/banner` — 가로 띠 배너
+슬롯(L1): `heading`(40, 필수, 기본 "지금 시작하세요") · `body`(long 120, 권장 80) · `cta`(link 16, 필수, 권장 10, 기본 "문의하기"). 형제: 색 = K1-2 hero 카피 패널(`primary` 면 · `on-primary` 글자 · 뒤집은 CTA) · 링크 대상 = m2a 0.10 CTA 규칙.
+
+1. **구조**
+```
+<section id="s-<id>" data-section="cta-band/banner" data-surface="primary" aria-labelledby="h-<id>">   ← 전체 폭 primary 면
+  <div 래퍼 띠>
+    <div 글>  <h2 id="h-<id>">{heading}</h2>  <p>{body}</p>  </div>
+    <a CTA href="#s-<첫 contact>">{cta}</a>          ← 대상 없으면 <span 버튼 모양>
+  </div>
+</section>
+```
+   - **CTA 대상 = m2a 0.10 그대로**: 문서의 첫 `contact` 섹션(`form`·`booking` 모두 — 유형 기준) 앵커 → 없으면 footer 앵커 → footer도 없으면 링크 아닌 버튼 모양 글자(`span`, 포커스 0). `href="#"` 0.
+   - 섹션 톤(`base`/`alt`)은 모양에 영향 없음 — 띠가 면을 다 덮는다(hero와 같은 예외). 띠는 본문 섹션이라 `h2`(R-10).
+   - 띠는 전체 폭 면 · 안쪽 래퍼 `content-max` + `gutter`(0.12). 둥근 모서리 0(가장자리까지 닿는 띠).
+2. **반응형**
+   | 폭 | 배치 |
+   |---|---|
+   | `lg` 이상 (1280) | 한 줄: 글(남는 폭, 최대 `prose-max`) · CTA(오른쪽, 세로 가운데), 사이 `s6` |
+   | `md`~`lg` (768) | 한 줄 유지(글 남는 폭 · CTA 오른쪽), 사이 `s5`. CTA는 줄지 않음 |
+   | `md` 미만 (390) | 세로: 글 → CTA(전체 폭) |
+   - 위아래 안쪽 여백 = `section-gap`의 한 단계 아래(K1-7 footer와 같은 규칙 — 띠는 본문 섹션보다 얇은 위계).
+3. **토큰 대응**
+   | 요소 | 면 | 글자 | 단계 | 대비 |
+   |---|---|---|---|---|
+   | 띠 | `primary` | — | — | — |
+   | 제목 `h2` | `primary` | `on-primary` · 제목 굵기 | `title` | C-1 |
+   | 본문 | `primary` | `on-primary` | `lead`(`md` 이상) · `body` | C-1 |
+   | CTA | `on-primary` | `primary` · 제목 굵기 · 높이 ≥ `hit-min` · 안쪽 `s2`×`s4` · radius = 버튼 radius(m2a 0.5) | `body` | C-1 뒤집기 |
+   | 포커스 링(CTA) | 간격 `primary` | 바깥 `on-primary` `stroke-2`(`--kit-ring: on-primary`, hero CTA와 같음) | — | C-1 |
+   - `primary` 면 위에 `ink`·`bg`·`muted` 글자 0(C-1 밖 — m2a 0.3 금지 조합 "bg 글자 on primary"). 
+4. **빈 슬롯·긴 글자** — `body` 빈 값 → 생략. `cta` 빈 값(필수) → CTA 생략, 글만 남은 띠. `heading` 빈 값 → 0.8. 상한: 제목 40자 = 2줄 안팎(1280) · 본문 120자 · CTA 16자 = 버튼 안 줄바꿈 허용(390 전체 폭이면 한 줄). 말줄임 0.
+5. **이미지 슬롯** — 해당 없음(배경 이미지·그라디언트 0 — 글자가 늘 단색 면 위, m2a 0.3).
+6. **상호작용** — CTA 앵커 링크 1개(0.10). React 상태 0.
+7. **모션** — 정적. 모션 후보(상한 L2): 띠 등장(투명도) · CTA는 움직이지 않음(조작 요소가 움직이면 누르기 어렵다).
+
+| 루브릭 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 페이지 중간·끝에서 다음 행동(문의·예약)으로 바로 보낸다 — 대상 규칙 m2a 0.10 |
+| ② 정보 위계 | PASS | 제목 → 본문 → CTA(면 뒤집기로 가장 두드러짐) |
+| ③ 3폭 반응형 | PASS | 한 줄 / 한 줄 / 세로 |
+| ④ 접근성 | PASS | 링크 이름 = CTA 글자(2.4.4) · `hit-min`(2.5.8) · 빈 링크 0 · 포커스 링 C-1 |
+| ⑤ 토큰 준수 | PASS | C-1·C-1 뒤집기만 |
+| ⑥ 예산 감각 | PASS | 새 컴포넌트 1(작음, `kitLinks` 재사용) — JS ≈ 0.20 · CSS ≈ 0.10 (L3) |
+| ⑦ 독자성 | PASS | 단색 띠 + 버튼은 일반 패턴 · 기본 문구는 엔진 자체 문장 |
+| ⑧ 근거 3 | 주의 | 일반 패턴: CTA band · WCAG 2.4.4·2.5.8 · 내부: 픽스처에 cta-band 태그 **없음** — hero CTA(K1-2)의 색 규칙과 엔진 정의만. 레퍼런스 태그 근거가 약하다 |

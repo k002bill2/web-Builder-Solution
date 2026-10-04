@@ -38,6 +38,19 @@ function clean(site: Element) {
   for (const el of site.querySelectorAll("details[open]")) el.removeAttribute("open");
 }
 
+/** blob: 검사는 URL 자리만 본다(P2-3) — 본문·대체텍스트의 글자 "blob:"은 문서 내용이다 */
+const URL_ATTRS = ["src", "href", "srcset", "poster"] as const;
+const BLOB_IN_LIST = /(^|[\s,])blob:/i;
+const BLOB_IN_CSS = /url\(\s*['"]?\s*blob:/i;
+function hasBlobUrl(site: Element): boolean {
+  return [site, ...site.querySelectorAll("*")].some(
+    (el) =>
+      URL_ATTRS.some((name) => BLOB_IN_LIST.test(el.getAttribute(name)?.trim() ?? "")) ||
+      BLOB_IN_CSS.test(el.getAttribute("style") ?? "") ||
+      (el.localName === "style" && BLOB_IN_CSS.test(el.textContent ?? "")),
+  );
+}
+
 export function buildStaticHtml({ markup, css, title, description }: StaticHtmlParts): string {
   assertNoExternalCss(css);
   const page = document.implementation.createHTMLDocument("");
@@ -48,7 +61,7 @@ export function buildStaticHtml({ markup, css, title, description }: StaticHtmlP
   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw new Error("구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다");
   clean(site);
-  if (/blob:/i.test(site.outerHTML)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+  if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
 
   const head = page.head;
   head.replaceChildren();

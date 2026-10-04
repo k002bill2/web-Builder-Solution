@@ -77,6 +77,22 @@ describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
     expect(() => build({ css: ".a{background:url(data:image/png;base64,AA)}" })).not.toThrow();
   });
 
+  it("P2-3 blob: 검사는 URL 속성만 — 본문·대체텍스트·title의 글자 \"blob:\"은 성공 · src·href·srcset·poster·style url(의 blob:은 실패", () => {
+    const withText = siteMarkup().replace("</header>", '<p>blob: 글자</p><img src="data:image/png;base64,AA" alt="blob:은 글자" title="BLOB: x"></header>');
+    const html = build({ markup: withText });
+    expect(html).toContain("<p>blob: 글자</p>");
+    expect(html).toContain('alt="blob:은 글자"');
+    for (const bad of [
+      '<img src="blob:null/1" alt="">',
+      '<a href=" BLOB:null/1">x</a>',
+      '<img srcset="a.png 1x, blob:null/1 2x" alt="">',
+      '<video poster="blob:null/1"></video>',
+      '<div style="background:url(&quot;blob:null/1&quot;)"></div>',
+      '<div style="background: URL( blob:null/1 )"></div>',
+    ])
+      expect(() => build({ markup: siteMarkup().replace("</header>", `${bad}</header>`) }), bad).toThrow(/blob:/);
+  });
+
   it("사이트 루트가 없는 마크업은 실패", () => {
     expect(() => build({ markup: "<p>x</p>" })).toThrow(/사이트 루트/);
   });

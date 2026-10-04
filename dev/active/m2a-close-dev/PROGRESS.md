@@ -11,7 +11,7 @@
 ## 단계
 - [x] 수신 · REPORT 골격(1~7절) · gate.sh
 - [x] D1 P2-2 생성기 청크 실패 기억
-- [ ] D2 P2-3 `blob:` 오탐
+- [x] D2 P2-3 `blob:` 오탐
 - [ ] D3 P2-1 이탈 후 죽은 내려받기 링크
 - [ ] D4 P2-a PNG 준비 조건 idle·saved
 - [ ] D5 P2-b 토큰 없는 폴백 PNG

@@ -6,13 +6,14 @@
 | 단계 | 커밋 | 내용 |
 |---|---|---|
 | 수신 | b0066a8 | 수신 기록 · REPORT 골격 · `gate.sh` |
-| D1 | (D1 커밋) | P2-2 생성기 청크 실패 기억 |
+| D1 | 73b4aad | P2-2 생성기 청크 실패 기억 |
+| D2 | (D2 커밋) | P2-3 `blob:` 검사를 URL 자리로 |
 
 ## 2. P2 6건
 | # | 원인 | 수정 | 테스트(RED → GREEN) | 커밋 |
 |---|---|---|---|---|
-| D1 P2-2 | `memoryDocBook.ts` `browser ??= load().then(...)`가 rejected Promise를 그대로 기억 → 다시 시도해도 즉시 실패. 슬롯 로더(`exportFlow.ts`)가 `retryableImport`가 아니라 브라우저가 실패한 동적 import URL을 기억 | 실패 시 `browser = undefined`(다음 실행이 슬롯 로더를 다시 부름) · 슬롯 로더 = `retryableImport(() => import("./staticHtml/staticHtml"))` | RED `logs/d1-red.txt`(2 실패) → GREEN: `memoryExport.test.ts` "P2-2 첫 로드 실패 → INFRA → 같은 요청 재시도 → 성공 · 로더 2회" · `chunkRetryWiring.test.ts` "슬롯 로더도 retryableImport" · gate `logs/d1.txt` exit 0 | (D1 커밋) |
-| D2 P2-3 | (진행 중) | | | |
+| D1 P2-2 | `memoryDocBook.ts` `browser ??= load().then(...)`가 rejected Promise를 그대로 기억 → 다시 시도해도 즉시 실패. 슬롯 로더(`exportFlow.ts`)가 `retryableImport`가 아니라 브라우저가 실패한 동적 import URL을 기억 | 실패 시 `browser = undefined`(다음 실행이 슬롯 로더를 다시 부름) · 슬롯 로더 = `retryableImport(() => import("./staticHtml/staticHtml"))` | RED `logs/d1-red.txt`(2 실패) → GREEN: `memoryExport.test.ts` "P2-2 첫 로드 실패 → INFRA → 같은 요청 재시도 → 성공 · 로더 2회" · `chunkRetryWiring.test.ts` "슬롯 로더도 retryableImport" · gate `logs/d1.txt` exit 0 | 73b4aad |
+| D2 P2-3 | `staticMarkup.ts` `blob:` 검사가 `site.outerHTML` 전체 정규식 → 본문·대체텍스트의 글자 "blob:"도 영구 INFRA 실패 | `hasBlobUrl` — `src`·`href`·`srcset`·`poster` 값(목록 항목 머리)과 `style` 속성·`<style>` 글자의 `url(blob:`만 검사 | RED `logs/d2-red.txt`(1 실패) → GREEN: `staticMarkup.test.ts` "P2-3 — 본문·alt·title 글자 성공 · src·href(공백·대문자)·srcset·poster·style url( 6종 실패" + 기존 `img src="blob:"` 단언 그대로 · gate `logs/d2.txt` exit 0 | (D2 커밋) |
 | D3 P2-1 | (진행 중) | | | |
 | D4 P2-a | (진행 중) | | | |
 | D5 P2-b | (진행 중) | | | |
@@ -23,6 +24,7 @@
 |---|---|---|---|---|
 | 기준(3c 마감 `logs/c4-fix.txt`) | 127.20 | 80.12 | 공통 89.35 · catalog 102.03 · references 99.38 · compare 121.69 · profile 118.66 · projects 100.30 | `dev/active/m2a-3c/logs/c4-fix.txt` |
 | D1 | 127.19 | 80.12 | 공통 89.34 · 102.03 · 99.38 · 121.69 · 118.65 · 100.28 (모두 ±0.03 안) | `logs/d1.txt` |
+| D2 | 127.22 | 80.12 | 공통 89.35 · 102.04 · 99.39 · 121.71 · 118.67 · 100.30 (기준 대비 +0.02 이하) | `logs/d2.txt` |
 
 ## 4. SPEC 차이
 (진행 중)

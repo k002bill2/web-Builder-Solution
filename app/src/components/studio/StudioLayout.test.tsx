@@ -79,7 +79,7 @@ describe("편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6)", () => {
     act(() => void fireEvent.change(title, { target: { value: "가".repeat(30) } }));
     const sentence = within(canvas()).getByText("제목이 권장 28자를 넘었습니다 (30/28자)");
     expect(title.getAttribute("aria-describedby")!.split(" ")[0]).toBe(sentence.id);
-    expect(within(canvas()).getByText("경고 1")).toBeInTheDocument();
+    expect(canvas().querySelector("[data-issue-badge]")).toHaveTextContent("경고 1");
   });
 
   it("이미 선택한 섹션의 배지를 눌러도 문제 필드로 포커스(R5 브라우저 확인에서 찾은 회귀 — 선택이 그대로면 다시 그리지 않음)", () => {
@@ -87,14 +87,14 @@ describe("편집 패널 필드 (S7 · E-AC-06 · SPEC 5.6)", () => {
     const title = within(editRegion()).getByRole("textbox", { name: /^제목/ });
     act(() => void fireEvent.change(title, { target: { value: "가".repeat(30) } }));
     act(() => void screen.getByRole("banner").querySelector("h1")!.focus());
-    act(() => void fireEvent.click(within(canvas()).getByText("경고 1")));
+    act(() => void fireEvent.click(canvas().querySelector("[data-issue-badge]")!));
     expect(document.activeElement).toBe(title);
   });
 
   it("캔버스 배지(부모 오버레이)를 누르면 그 섹션이 선택되고 문제 필드로 포커스(5.7 · E-AC-49)", () => {
     const doc = sampleDoc();
     draw(fakeRepository().repository, { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-about" ? { ...s, slots: { ...s.slots, heading: "가".repeat(30) } } : s)) });
-    act(() => void fireEvent.click(within(canvas()).getByText("경고 1")));
+    act(() => void fireEvent.click(canvas().querySelector("[data-issue-badge]")!));
     expect(screen.getByRole("heading", { level: 2, name: "편집 · About" })).toBeInTheDocument();
     const heading = within(editRegion()).getByRole("textbox", { name: /^섹션 제목/ });
     expect(document.activeElement).toBe(heading);

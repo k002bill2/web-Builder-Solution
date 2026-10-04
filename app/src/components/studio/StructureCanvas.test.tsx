@@ -36,12 +36,13 @@ describe("문제 표시는 데이터 색과 무관 (5.7 B-03 · FIX2 — r4.8부
     render(<StructureCanvas doc={doc} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     connectRenderFrame();
     const sentence = within(region()).getByText(/넘었습니다/);
-    const badge = within(region()).getByText("경고 1");
+    const badge = region().querySelector<HTMLElement>("[data-issue-badge]")!;
+    expect(badge).toHaveTextContent("경고 1");
     for (const el of [sentence, badge]) {
       expect(el.className).not.toMatch(/--canvas-/);
       expect(el).toHaveClass("bg-background-normal");
     }
-    const ring = sentence.parentElement!.querySelector('[aria-hidden="true"]')!;
+    const ring = badge.parentElement!.querySelector('[aria-hidden="true"]')!;
     expect(ring).toHaveClass("border-2", "border-background-normal", "outline-2", "outline-status-cautionary-text");
   });
 });
@@ -57,16 +58,39 @@ describe("문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8)", () => {
     const sentence = document.getElementById("canvas-issue-s-hero-title")!;
     expect(sentence).toHaveTextContent("제목이 권장 28자를 넘었습니다 (30/28자)");
     expect(region()).toContainElement(sentence);
-    expect(within(region()).queryByText("경고 1")).toBeNull();
+    expect(region().querySelector("[data-issue-badge]")).toBeNull();
     expect(within(region()).queryByText(/^Hero · /)).toBeNull();
     expect(region().querySelectorAll('[aria-hidden="true"]')).toHaveLength(0);
+  });
+
+  it("문제 목록(r4.13 (1)) — 캔버스 머리(제목·캡션 뒤 · 프레임 앞) `ol` 한 줄 = '경고 N' + 문장 · 문장 id는 목록 안 · 오버레이에 문장 0 · 사각형 전에도 있다", () => {
+    const doc = over();
+    const two = { ...doc, sections: doc.sections.map((s) => (s.instanceId === "s-hero" ? { ...s, slots: { ...s.slots, subtitle: "나".repeat(96) } } : s)) };
+    render(<StructureCanvas doc={two} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    const list = region().querySelector("ol[data-canvas-issues]")!;
+    expect(list).toHaveAccessibleName("문제 목록");
+    const items = within(list as HTMLElement).getAllByRole("listitem");
+    expect(items.map((li) => li.textContent)).toEqual(["경고 1제목이 권장 28자를 넘었습니다 (30/28자)", "경고 2부제가 권장 80자를 넘었습니다 (96/80자)"]);
+    expect(list).toContainElement(document.getElementById("canvas-issue-s-hero-title"));
+    expect(list).toContainElement(document.getElementById("canvas-issue-s-hero-subtitle"));
+    expect(screen.getByRole("heading", { name: "페이지 미리보기" }).compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(list.compareDocumentPosition(canvasFrame()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    connectRenderFrame();
+    expect(region().querySelector("[data-canvas-overlay]")!.querySelectorAll("p")).toHaveLength(0);
+    expect(document.querySelectorAll("[id^=canvas-issue-]")).toHaveLength(2);
+  });
+
+  it("문제 0이면 문제 목록을 그리지 않는다(r4.13 (1))", () => {
+    render(<StructureCanvas doc={sampleDoc()} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
+    connectRenderFrame();
+    expect(region().querySelector("[data-canvas-issues]")).toBeNull();
   });
 
   it("사각형 뒤 배지를 누르면 onIssue(섹션, 문장 id) — 테두리는 포인터 통과 · iframe은 allow-scripts만", () => {
     const onIssue = vi.fn();
     render(<StructureCanvas doc={over()} selectedId="s-about" onSelect={() => {}} onIssue={onIssue} view="desktop" scrollable={false} />);
     connectRenderFrame();
-    act(() => void fireEvent.click(within(region()).getByText("경고 1")));
+    act(() => void fireEvent.click(region().querySelector("[data-issue-badge]")!));
     expect(onIssue).toHaveBeenCalledWith("s-hero", "canvas-issue-s-hero-title");
     expect(region().querySelector("[data-canvas-overlay]")).toHaveClass("pointer-events-none");
     expect(canvasFrame()).toHaveAttribute("sandbox", "allow-scripts");
@@ -152,9 +176,9 @@ describe("데스크톱 프레임 1280 · 축소 보기 오버레이 정렬 (r4.1
     // fakeRects: 섹션 i = (0, i×100, 800, 96) → × 0.5
     expect([box.style.left, box.style.top, box.style.width, box.style.height]).toEqual(["0px", `${i * 50}px`, "400px", "48px"]);
     // 글자 슬롯 사각형(문제 테두리, 바깥 여백 4px은 축소하지 않는다)
-    const sentence = document.getElementById("canvas-issue-s-hero-title")!;
+    const badge = region().querySelector("[data-issue-badge]")!;
     const slotIndex = Object.entries(over.sections[i]!.slots).filter(([, v]) => typeof v === "string").findIndex(([k]) => k === "title");
-    const ring = sentence.parentElement!;
+    const ring = badge.parentElement!;
     expect([ring.style.left, ring.style.top, ring.style.width, ring.style.height]).toEqual(["0px", `${(i * 100 + 8 + slotIndex * 12) * 0.5 - 4}px`, `${400 * 0.5 + 8}px`, `${10 * 0.5 + 8}px`]);
     vi.unstubAllGlobals();
   });

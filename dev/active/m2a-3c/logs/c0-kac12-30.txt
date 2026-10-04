@@ -1,0 +1,16 @@
+# K-AC-12 · K-AC-30 — 3b 결과 HTML(dev/active/m2a-3b/logs/j-export-sample_r2.html) · python http.server 127.0.0.1:4339 · ego-browser(TaskSpace 33)
+# 뷰포트 390×844(CDP Emulation.setDeviceMetricsOverride) · 입력은 CDP Input.dispatchMouseEvent / Input.dispatchKeyEvent(실제 입력 — el.click()·합성 KeyboardEvent 아님)
+## 1회차: 메뉴 → Tab → Esc
+{ w: 390, btn: [329.9, 30], vis: 'flex', sheetLinks: ['#s-contact-1', '#s-contact-1'] }
+s1(메뉴 누름 뒤): { open: true, active: 'kit-menu-button' }
+s2(Tab 뒤):      { active: '닫기', cls: 'kit-menu-button kit-close' }
+s3(Esc 뒤):      { open: false, active: '메뉴', cls: 'kit-menu-button' }
+## 2회차: 새로 연 페이지 → 메뉴 → 시트 안 앵커 "문의"(#s-contact-1) 누름
+sheet links: 문의(#s-contact-1) · 상담 신청(#s-contact-1, CTA)
+after anchor: {"open":true,"hash":"#s-contact-1","scrollY":1687,"headerBottom":61,"headerPos":"sticky","headingTop":168.06,"heading":"문의"}
+→ 이동 O · 제목이 header 아래(168 > 61) O · **시트 닫힘 X(:popover-open 그대로)**
+## K-AC-30: 입력칸 누름 + Enter · 버튼 누름 + Enter
+before: {"url":"…/s.html#s-contact-1","res":0,"fs":true,"action":false}  input :disabled = true
+after:  {"url":"…/s.html#s-contact-1","res":0,"active":"BODY"}
+→ URL 불변 · resource 항목 0 → 0(요청 0) · 포커스가 들어가지 않음(fieldset disabled)
+## 캡처: Page.captureScreenshot CDP 시간 초과 2회(3b와 같은 증상) — 판정은 DOM 조회로 함

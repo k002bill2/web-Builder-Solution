@@ -6,7 +6,8 @@
 | 단계 | 커밋 | 내용 |
 |---|---|---|
 | 수신 | 7fac872 | 수신 기록 · REPORT 골격 · `gate.sh` |
-| C0(1)·C1 | (이 커밋) | 3b Codex(P1 0 · P2 3 → M2a 마감) · 전역 슬롯 판단(유지) · C1 공간 실측 → 진입 ≤126.70 경로 없음, 정지 — 코드 변경 0 |
+| C0(1)·C1 | 5c92add | 3b Codex(P1 0 · P2 3 → M2a 마감) · 전역 슬롯 판단(유지) · C1 공간 실측 → 진입 ≤126.70 경로 없음, 정지 — 코드 변경 0 |
+| C0(2)·C5 | (이 커밋) | K-AC-12·30 브라우저 판정 · vitest ×3 · REPORT 마감 · 서버 0 — 코드 변경 0 |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -30,8 +31,18 @@
 | D. M4 실서버 저장소 | 생성은 서버(또는 서버가 지정한 생성기) → 브라우저 슬롯 불필요 | 0 | M4 범위 | **대체 시점** |
 - 번들 영향 요약: 슬롯을 없애는 모든 진입 쪽 대안은 3b 실측상 +0.07 이상이라 **지금 여유(0.06)로는 불가**. 대체는 M4(D) 또는 진입 여유가 생긴 뒤(C).
 
-### 2.3 K-AC-12 · K-AC-30 브라우저 판정
-(진행 중)
+### 2.3 K-AC-12 · K-AC-30 브라우저 판정 (`logs/c0-kac12-30.txt`)
+- 대상: 3b 결과 HTML `dev/active/m2a-3b/logs/j-export-sample_r2.html`(앱 새 내보내기는 C1 정지로 생략 — 3b 이후 생성기·킷 코드 변경 0이라 같은 결과). python `http.server` 127.0.0.1:4339 · ego-browser · 뷰포트 390×844(CDP) · 입력은 CDP 실제 마우스·키 이벤트.
+| AC | 항목 | 결과 |
+|---|---|---|
+| K-AC-12 | "메뉴" 누름 → 시트 열림(`:popover-open`) | **PASS** |
+| | Tab 다음 = "닫기" | **PASS** |
+| | Esc → 닫힘 + 포커스 = "메뉴" 버튼 | **PASS** |
+| | 시트 안 앵커("문의" → `#s-contact-1`) → 대상 섹션 이동 · 제목이 header에 안 가려짐 | **PASS**(hash 바뀜 · 제목 top 168 > sticky header bottom 61) |
+| | 시트 안 앵커 → **시트 닫힘** | **FAIL** — `:popover-open` 그대로. 킷 `HeaderStickyRightCta`는 스크립트 0(네이티브 popover)이고 `<a>`는 `popovertarget`을 가질 수 없어 앵커 누름이 시트를 닫지 않는다. 캔버스 렌더 문서도 같은 킷이라 같은 동작(추정, 미측정) |
+| K-AC-30 | 입력칸 누름 + Enter · 버튼 누름 + Enter → 페이지 이동·요청 0 | **PASS** — URL 불변 · resource 항목 0→0 · 입력 `:disabled`(fieldset disabled)라 포커스도 안 들어감 · `form action` 없음 |
+- **K-AC-12 FAIL 1항은 킷 변경 사안**(스크립트 0 규칙 K-AC-01 안에서 닫는 방법 — 예: 앵커를 `popovertarget` 가진 버튼으로 감싸기는 이동이 안 됨, 정적 HTML에만 작은 인라인 스크립트는 K-AC-06·3b "script 제거"와 충돌) → 3c 범위 밖, **M2a 마감 판단으로**(9절). 이 레인 코드 변경 0.
+- 캡처: `Page.captureScreenshot` CDP 시간 초과 2회(3b 2.2와 같은 증상). 열린 시트 상태는 Chrome headless `--screenshot`으로 재현할 수 없어 판정은 DOM 조회로만 했다(캡처 0).
 
 ## 3. C1 공간 실측 — **결론: 진입 ≤ 126.70 경로가 실측으로 보이지 않음 → C2 전에 정지(브리프 C1)**
 SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진입 때부터** 보이길 요구한다 → 이 묶음은 `/studio` 진입 청크(StudioLayout)에 있어야 한다. 예산 상수·멈춤선은 바꾸지 않았다.
@@ -56,13 +67,17 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 3. **ADR-004 개정 — `/studio` 진입 멈춤선 +0.40 이상(실구현 여유 포함 +0.5 권장)**: ADR-004 개정 3이 "추가 상향 금지"라 영환님 결정 사안.
 
 ## 4. 캡처 방식 PoC
-(진행 중)
+**미진행 — BLOCKED(C1 정지).** 진입 ≤126.70 경로가 없어 브리프대로 C2 전에 멈췄다. 브라우저별 오염 표 없음. 재개 시 기본안(숨은 렌더 iframe `serialize` + SVG `foreignObject` → canvas → `toBlob`)부터 — C1 시제품의 캡처 청크 자리(`logs/c1-proto.patch`의 `features/studio/png/pngCapture.ts`)는 조작 뒤 청크라 진입 영향 없음.
 
 ## 5. PNG 흐름 (버튼 · 4상태 · 파일 이름 · 계측)
-(진행 중)
+**미진행 — BLOCKED(C1 정지).** C1 최소 시제품의 진입 부품 구성(이름표 · outline 버튼 · 캡션 2문장 · 준비 전 `aria-disabled` + 이유 · 실패 `role=alert` 문장은 진입, 성공 문장·계측 `png_*`·오류 코드는 캡처 청크)은 `logs/c1-proto.patch`에 있다 — 재개 때 출발점. `tEXt` 메타데이터는 하지 않는다(브리프 제외).
 
 ## 6. K-AC · E-AC 판정
-(진행 중)
+| AC | 판정 | 근거 |
+|---|---|---|
+| K-AC-12 | **부분 FAIL**(4항 PASS · "앵커 → 시트 닫힘" FAIL) | 2.3절 |
+| K-AC-30 | **PASS** | 2.3절 |
+| K-AC-17 · 19 · 32(PNG판) · 34 · E-AC-49 · 50 | **미판정 — BLOCKED(C1 정지)** | 3절 |
 
 ## 7. 번들 표
 | 시점 | 공통 | `/studio` 첫/진입 | `/compare` 진입 | `/profile` 진입 | `/projects` 진입 | `/catalog` 진입 | `/references/:id` 진입 | 렌더 JS/CSS | 근거 |
@@ -72,7 +87,20 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 | C1 원복 뒤(이 커밋) | 89.35 | 91.78 / 126.64 | 121.71 | 118.67 | 100.30 | 102.03 | 99.38 | 80.12 / 6.32 | `logs/c1.txt` |
 
 ## 8. SPEC 차이
-(진행 중)
+- 코드 변경 0이라 SPEC과 다르게 만든 곳 없음.
+- 브리프 C0 Codex 범위: `--scope branch --base a51de92`가 HEAD 기준이라 p2fix·브리프 문서 커밋도 포함됐다(지적 3건은 모두 3b 파일 — 2.1절).
+- K-AC-12·30 대상: 앱에서 새로 내보낸 HTML 대신 3b 결과 파일(브리프가 허용한 대안).
 
 ## 9. 남은 위험 · M2a 마감에 넘길 것
-(진행 중)
+1. **[결정 필요 · 영환님] PNG 진입 공간** — 3절 후보안 1(보드·생성 저장소 분리, 별도 레인) / 2(SPEC 3.3 개정: PNG 묶음을 조작 뒤에 그림) / 3(ADR-004 멈춤선 +0.5). 결정 전 C2~C4 진행 불가.
+2. **K-AC-12 "시트 안 앵커 → 시트 닫힘" FAIL**(2.3절) — 킷 스크립트 0 규칙과 맞물린 설계 판단(SPEC 문장 개정 또는 킷 변경).
+3. 3b Codex P2 3건(2.1절): 이탈 후 같은 잡 재요청 시 죽은 내려받기 링크 · 생성기 청크 실패 기억 · `blob:` 글자 오탐.
+4. 전역 심볼 슬롯 — M2a 유지, M4 실서버 저장소 때 제거(2.2절). P2-2를 고칠 때 슬롯 로더를 `retryableImport`로.
+5. 캡처 도구: ego-browser `Page.captureScreenshot` 시간 초과가 계속된다(3b·3c). 상호작용 상태 캡처가 필요한 판정은 DOM 조회로만 가능.
+6. 스냅샷 미리보기 중 캡처(E-S29) — 스냅샷 미리보기 UI가 아직 없음(브리프 제외).
+
+## 10. C5 마감 검증
+- 전체 vitest ×3(`app`, `npx vitest run`, HEAD 코드 = `eaa3d5e`와 같음): **run1·2·3 exit 0 · 173 파일 · 1632/1632 · Errors 줄 0** (`logs/c5-vitest-x3.txt`).
+- gate(`gate.sh c5`): 아래 커밋 직전 실행 — typecheck·lint·build·가드 exit 0, 번들 = 7절 기준선과 같음(`logs/c5.txt`).
+- Codex `review --scope branch --base eaa3d5e`: **해당 없음** — 이 레인 코드 변경 0(문서·로그만). C0 Codex는 2.1절.
+- 서버: 이 레인이 띄운 것은 python `http.server` 127.0.0.1:4339(PID 58386) 하나 — K-AC 판정 뒤 종료. vite dev·preview 0. `lsof -nP -iTCP:4337 -sTCP:LISTEN` → 결과 0(rc=1) · `:4339` → 결과 0(rc=1).

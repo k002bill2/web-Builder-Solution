@@ -1,0 +1,40 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close2/app
+
+ ❯ src/components/studio/StructureCanvas.test.tsx (16 tests | 1 failed) 296ms
+   ❯ 문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8) (9)
+     × 배지(r4.13 (2)) — 글자 = 목록과 같은 '경고 N' · aria-hidden(문장이 읽힘) · 슬롯 사각형 안쪽 모서리(위 슬롯을 덮지 않음, Q6) · 누르면 그 문장 id 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 문제 표시 문서 위치 (E-AC-49 · 5.7 r4.8) > 배지(r4.13 (2)) — 글자 = 목록과 같은 '경고 N' · aria-hidden(문장이 읽힘) · 슬롯 사각형 안쪽 모서리(위 슬롯을 덮지 않음, Q6) · 누르면 그 문장 id
+AssertionError: expected [ '경고 1', '경고 1' ] to deeply equal [ '경고 1', '경고 2' ]
+
+- Expected
++ Received
+
+  [
+    "경고 1",
+-   "경고 2",
++   "경고 1",
+  ]
+
+ ❯ src/components/studio/StructureCanvas.test.tsx:90:46
+     88|     connectRenderFrame();
+     89|     const badges = [...region().querySelectorAll<HTMLElement>("[data-i…
+     90|     expect(badges.map((b) => b.textContent)).toEqual(["경고 1", "경고 2"]);
+       |                                              ^
+     91|     for (const b of badges) {
+     92|       expect(b).toHaveAttribute("aria-hidden", "true");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  17:46:03
+   Duration  1.90s (environment 58%, tests 17%, transform 14%, setup 10%, import 1%)
+

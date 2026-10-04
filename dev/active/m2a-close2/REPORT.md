@@ -1,0 +1,94 @@
+# M2A-CLOSE2 — 오버레이 문제 목록 · 빈 필수 칸 표시 (SPEC r4.13) — REPORT
+
+- 브리프 `docs/06-handoff/M2A-CLOSE2_OVERLAY_BRIEF.md` · 정본 `docs/design/2a-05/SPEC.md` r4.13 · 시작 커밋 `5b6d396` · 브랜치 `k002bill2/m2a-close2` · 포트 4337
+
+## 1. 커밋 표
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| 골격 | `0d2670f` | PROGRESS · REPORT 골격 · gate.sh |
+| O0 | `ad9a52d` | 번들 선행 실측 기록(앱 코드 변경 0) |
+| O1 | `df38e0e` | 문제 목록 `ol[data-canvas-issues]` · 오버레이 문장 제거 · 테스트 이관 |
+| O2 | `95fcd28` | 배지 번호 `{경고|차단} {N}` · `aria-hidden` · 안쪽 모서리 |
+| O3 | `dde831e` | 빈 필수 칸 → 차단 문제(섹션 사각형) · 같은 사각형 배지 나란히 |
+| O4 | `210695d` | 게이트 줄 대표 문장 차단 우선 · "바뀐 점 N개" |
+| O5 | `4359919` | 4337 브라우저 판정 1280 · 390 캡처 · 로그 |
+| O6 | 브랜치 끝 커밋(이 REPORT를 마감한 커밋) | Codex 1회(지적 0) · 전체 vitest 1회 · REPORT 마감 |
+
+## 2. 단계별 판정
+| 단계 | 판정 | 근거 |
+|---|---|---|
+| O0 번들 선행 실측 | **통과** — 최소 시제품(O1 목록 + 배지 번호 `{경고|차단} {N}`)으로 `/studio` 진입 127.24 → **127.29**(+0.05, 멈춤선 127.70 대비 여유 0.41). Designer 상한 추정 +0.18보다 작다. B안(`sr-only`) 실측은 불필요(멈춤 조건 미발생). 시제품은 `logs/o0-proto.patch`로 보존하고 코드에서 되돌린 뒤 O1부터 RED → GREEN으로 다시 넣는다 | `logs/o0-proto-build.txt` · `logs/o0.txt`(시작 코드 gate exit 0) |
+| O1 문제 목록 | **통과** — `StructureCanvas`의 캡션 다음 · `<div ref={area}>` 앞에 `<ol data-canvas-issues aria-label="문제 목록">`. 줄 = `<span>경고 N</span>` + `<p id="canvas-issue-…">문장</p>`(목록 바탕 `background-normal` · 상태 글자 토큰). 문제 0이면 목록 없음. 오버레이 issues.map은 사각형 있을 때 테두리·배지만(문장 0, sr-only 분기 삭제). RED: 새 테스트 "문제 목록(r4.13 (1))" 실패(`logs/o1-red.txt`) → GREEN | `logs/o1.txt` gate exit 0 · 표적 260 통과 |
+| O2 배지 번호 · 위치 | **통과(단위)** — 배지 글자 = 목록과 같은 `issueLabel(issue, i)`("경고 N"/"차단 N", N = 목록 순번 = 문서 순서) · `aria-hidden="true"` · 위치 `-top-2.5 right-1`(위 슬롯 테두리에 걸림, Q6) → `top-1 right-1`(사각형 안쪽 오른쪽 위). 1280·390 시각 판정은 O5. RED `logs/o2-red.txt` → GREEN | `logs/o2.txt` gate exit 0 · 표적 261 |
+| O3 빈 필수 칸 | **통과(단위)** — `canvasIssues.ts` `slotIssue`: 이미지 아닌 슬롯에서 필수 + 빈 값(없는 키·공백만 포함, 엔진 `isBlank` — 게이트 R-13 `slotRows.ts`와 같은 판정)이면 `block` + `onSection: true`. 캔버스는 그 문제를 **섹션 사각형**(slotKey `null`)에 표시. 같은 사각형 문제는 테두리 1개(차단 있으면 차단 색) + 배지 가로 나란히(flex, 감싸개 = 배지 부모 유지) — 같은 섹션 빈 칸 2건도 번호가 겹치지 않는다. 필드 `aria-describedby` 맨 앞 = 그 문장 id(`EditFields`가 같은 `slotIssue` 사용 — 새 테스트로 확인). 게이트 코드 변경 0(R-13 불변). RED `logs/o3-red.txt`(3건 실패) → GREEN | `logs/o3.txt` gate exit 0 · 표적(`src/components/studio` · `src/pages` · `src/features/studio`) 560 |
+| O4 게이트 요약 · 진입 요약 | **통과** — (4) `GateList.tsx` `rowCause` = 그 줄 첫 **차단** 이슈 원인(없으면 첫 이슈). RED: 글자 수 줄 대표가 경고 "Hero 제목이 권장 28자를 넘었습니다 (30/28자)" → GREEN "Hero 버튼 문구: 필수 입력입니다". (5) `StudioLayout.tsx` 진입 요약 = "바뀐 점 N개"(편집 알림 영역 접근 이름 `aria-label="편집 알림"` · 펼친 원문 그대로). RED `logs/o4-red.txt`(2건) → GREEN | `logs/o4.txt` gate exit 0 · 표적 561 |
+| O5 판정 [B] | **통과** — 1280 · 390 모두: 오버레이 안 문장 `p` **0** · 문제 목록 4줄("경고 1 제목…(30/28자)" · "경고 2 부제…(96/80자)" · "차단 3 버튼 문구 — 필수 입력입니다" · "경고 4 카드 1 제목…(29/20자)")이 프레임 위(목록 아래 끝 ≤ iframe 위 끝) · 배지 4개 글자 "경고 1/경고 2/차단 3/경고 4"(번호 구분) · 전부 `aria-hidden` · 전부 자기 테두리 안 · 배지가 겹치는 렌더 슬롯 = **자기 슬롯뿐**(위 슬롯 0, Q6 해소) · 빈 버튼 칸 = Hero 섹션 사각형 빨간 2중 테두리 + "차단 3" · 배지 "차단 3" 클릭 → 포커스 `field-hero-1-cta`(`aria-describedby` 맨 앞 `canvas-issue-hero-1-cta`) · 게이트 글자 수 줄 "차단 1" 대표 문장 "Hero 버튼 문구: 필수 입력입니다"(O4) · 진입 요약 "바뀐 점 4개" 한 줄 · 가로 스크롤 0 | `logs/o5-1280.txt` · `logs/o5-390.txt` · `shots/o5-{1280,390}-{hero,services}.png` |
+| O6 마감 | **통과** — Codex `review --scope branch --base 5b6d396` 1회: 수정 필요 결함 0(P1 0). 참고로 전체 vitest 1회 직접 실행 176 파일 · 1673 테스트 통과(exit 0) — Jarvis 3회와 별개. 서버 0 | `logs/o6-codex.txt` · `logs/o6-vitest-full.txt` · 9절 |
+
+## 3. 번들 표
+| 시점 | `/studio` 첫 화면 | `/studio` 진입 직후 (≤127.70) | 렌더 JS (≤89.70) | 렌더 CSS | 근거 |
+|---|---|---|---|---|---|
+| 시작 `5b6d396` | 91.78 | 127.24 | 80.12 | 6.32 | `logs/o0-base-build.txt` |
+| O0 시제품(목록 + 배지 번호, 미커밋) | 91.78 | 127.29 (+0.05) | 80.12 | 6.32 | `logs/o0-proto-build.txt` · `logs/o0-proto.patch` |
+| O1 | 91.78 | 127.29 | 80.12 | 6.32 | `logs/o1.txt` |
+| O2 | 91.78 | 127.29 | 80.12 | 6.32 | `logs/o2.txt` |
+| O3 | 91.77 | 127.38 | 80.12 | 6.32 | `logs/o3.txt` |
+| O4 | 91.78 | 127.38 | 80.12 | 6.32 | `logs/o4.txt` |
+| **최종(O4 = 마지막 앱 코드)** | 91.78 (±0) | **127.38** (+0.14 · 멈춤선 대비 여유 0.32) | 80.12 (±0) | 6.32 | 그 밖 경로 첫 화면·진입 각 −0.01 또는 ±0(±0.03 안, `logs/o4.txt` 대 `logs/o0-base-build.txt`) |
+
+## 4. SPEC 차이
+| # | 항목 | 구현 | 사유 |
+|---|---|---|---|
+| S1 | r4.13 (3) 빈 필수 칸 문장 | `{슬롯 이름표} — 필수 입력입니다`(예: "버튼 문구 — 필수 입력입니다") | 새 문구 0 — 상수는 필드·게이트의 `GATE_TEXT.requiredEmpty` 그대로, 조합은 캔버스 상한 초과 문장(`제목 — 상한 40자를 …`)과 같은 "이름표 — 문장" 꼴. 게이트 줄 문장(`Hero 버튼 문구: 필수 입력입니다`)과 구분자만 다르다(캔버스 목록은 섹션 이름 없이 이름표만 — 기존 글자 수 문장과 같은 규칙) |
+| S2 | r4.13 (2) 같은 사각형의 문제 여러 개 | 테두리 1개 + 배지 나란히(오른쪽 위 안쪽부터) | SPEC은 슬롯 1개 = 배지 1개만 말한다. 빈 필수 칸은 섹션 사각형을 공유하므로 배지가 한 자리에 겹치지 않게 묶었다 |
+
+
+## 5. 테스트 이관 표
+단언 약화·skip 0. 같은 의도를 r4.13 구조(문장 = 목록 · 배지 = 오버레이)로 옮긴 것만.
+
+| 파일:행(시작 커밋 기준) | 옛 단언 | 새 단언 | 근거 |
+|---|---|---|---|
+| `StructureCanvas.test.tsx:39` | `getByText("경고 1")` = 배지 | `[data-issue-badge]` + `toHaveTextContent("경고 1")` | r4.13 (1) 목록 줄 라벨도 "경고 1"이라 글자 검색이 2개를 찾는다 — 배지 의도 그대로 |
+| `StructureCanvas.test.tsx:44` | `sentence.parentElement` 안 테두리 | `badge.parentElement` 안 테두리(같은 클래스 단언) | 문장은 목록 줄로 옮겼다 — 테두리 감싸개 = 배지 부모 |
+| `StructureCanvas.test.tsx:60` | 사각형 전 `queryByText("경고 1")` null | 사각형 전 `[data-issue-badge]` null | 목록 라벨은 사각형 전에도 보인다(E-AC-49) — "배지 0" 의도 그대로(브리프 지정) |
+| `StructureCanvas.test.tsx:69` | `getByText("경고 1")` 클릭 | `[data-issue-badge]` 클릭 | 39행과 같은 이유 |
+| `StructureCanvas.test.tsx:155~157` | `sentence.parentElement` = 테두리 감싸개 좌표 | `badge.parentElement` 좌표(값 그대로) | 브리프 지정 |
+| `StudioLayout.test.tsx:82` | `within(canvas()).getByText("경고 1")` 있음 | `[data-issue-badge]` 글자 "경고 1" | 39행과 같은 이유 |
+| `StudioLayout.test.tsx:90 · 97` | `getByText("경고 1")` 클릭 | `[data-issue-badge]` 클릭 | 39행과 같은 이유 |
+| `StudioPage.test.tsx:97 · 101 · 104` | 요약 "편집 문서를 만들며 바뀐 점 3개" | 요약 "바뀐 점 3개"(summary는 정확히 일치 `/^바뀐 점 3개$/` — 더 엄격) | r4.13 (5) 문구 변경 |
+
+
+## 6. 브라우저 캡처
+- 서버: `npx vite preview --host 127.0.0.1 --port 4337 --strictPort`(O4 커밋 `210695d`의 gate 빌드 산출물) — 9절.
+- 도구: aside repl + 같은 출처 래퍼 iframe(1280×900 · 390×844, Designer 레인 `prefix.js`를 이 레인 `logs/prefix.js`로 복사 · 포트만 4337). 앱 안 클릭·필드 입력만(메모리 store). 캡처 시간 초과 0 → Chrome headless 대체 불필요. 판정 스크립트 `logs/helpers.js`(judge) · `logs/o5.js`.
+- 조작(Designer 재현): Hero 제목 30자 · 부제 96자 · Hero 버튼 문구 비움 · Services 카드 1 제목 29자.
+
+| 캡처 | 폭 · 축소 | 보이는 것 |
+|---|---|---|
+| `shots/o5-1280-hero.png` | 1280 · 56% | 캡션 아래 문제 목록 4줄 → 프레임. Hero 섹션 빨간 2중 테두리 + 오른쪽 위 "차단 3"(CTA 버튼 없음 = MQ-4 생략) · 제목 "경고 1" · 부제 "경고 2" 배지가 각 슬롯 안쪽 오른쪽 위. 부제 글자 위 문장 0 |
+| `shots/o5-1280-services.png` | 1280 · 56% | 카드 1 제목 "경고 4" 배지 — 카드 본문·다음 섹션 위 문장 0 |
+| `shots/o5-390-hero.png` | 390 · 27% | 목록 4줄(줄바꿈 없음) → 프레임. Hero "차단 3" · "경고 1" · "경고 2", Services "경고 4" 한 화면 |
+| `shots/o5-390-services.png` | 390 · 27% | 카드 1 제목 배지 — 문장 겹침 0 |
+
+
+## 7. Codex
+- 명령: `node ~/.claude/plugins/cache/openai-codex/codex/1.0.6/scripts/codex-companion.mjs review --scope branch --base 5b6d396`(nohup 백그라운드, 1회) → `logs/o6-codex.txt`.
+- 결과: "지정된 기준 커밋 대비 변경사항에서 수정이 필요한 구체적인 결함을 발견하지 못했습니다." — **P1 0 · P2 0**. 반영할 수정 없음.
+- Codex 쪽 표적 테스트 실행은 읽기 전용 샌드박스에서 Vite 임시 파일 생성이 막혀 끝나지 못했다(Codex 메모). 같은 테스트는 이 레인 gate(`logs/o4.txt`)와 전체 vitest(`logs/o6-vitest-full.txt`)에서 통과.
+
+
+## 8. 남은 위험
+1. **배지가 자기 슬롯 글자 끝을 덮는다**(1280 `shots/o5-1280-hero.png` — "경고 1"이 제목 끝 글자 1자 · "경고 2"가 부제 첫 줄 끝 일부). r4.13 (2) "위 슬롯을 덮지 않는 자리(슬롯 사각형 안쪽 모서리 등)"는 지켰고 위 슬롯·다른 슬롯 겹침은 0(`judge.coversSlots` = 자기 슬롯뿐). 자기 글자 일부 가림이 거슬리면 Designer 판단(예: 테두리 바깥 오른쪽) — 이 레인은 SPEC 문면대로 안쪽 모서리.
+2. **문제 목록이 길어지면 프레임이 아래로 밀린다**(문제 1건 ≈ 22px). 390에서 4건 = 약 92px. Designer 4절 A안 예상 그대로. 건수 상한·접기는 SPEC에 없어 넣지 않았다.
+3. 목록 줄은 클릭 대상이 아니다 — 필드 이동은 배지 클릭(포인터)과 필드 `aria-describedby` 연결로만. 키보드 사용자의 목록 → 필드 이동은 SPEC 범위 밖(기존 5.7과 같음).
+4. 빈 필수 칸 문장은 상수 재사용 조합(4절 S1) — Jarvis가 다른 문형을 원하면 `canvasIssues.ts` 한 줄.
+5. 빈 필수 칸 차단 표시는 폴백("구조 미리보기") 섹션에도 같은 규칙으로 붙는다 — 폴백은 자리표시 글자가 보이는 채 테두리·배지가 함께 뜬다. r4.13 (3) 괄호는 실렌더 생략(MQ-4)을 전제로 쓰였지만 게이트 R-13이 섹션 구분 없이 막으므로 캔버스 알림도 같게 두었다(해석 — Jarvis 확인 대상).
+6. aside repl 래퍼 진입 직후 첫 `rects`를 놓쳐 `TIMEOUT rects` 로그 1줄(리스너를 진입 뒤에 붙임 — 판정 스크립트 순서 문제). 필드 입력 뒤 다시 받은 사각형으로 판정했으므로 결과 영향 없음.
+
+
+## 9. 서버
+- 띄운 서버: `npx vite preview --host 127.0.0.1 --port 4337 --strictPort`(O5) — npx PID **53115** · node(LISTEN) PID **53144**(`logs/o5-preview.txt`). 그 밖에 띄운 서버 0.
+- 종료: `kill 53144 53115` → `ps -p 53115,53144` 출력 머리줄만, **exit 1**(둘 다 없음).
+- `lsof -nP -iTCP:4337 -sTCP:LISTEN` → **출력 없음, exit 1**(LISTEN 0).
+- aside repl 탭: 실행마다 `closeTab(T)`("last tab closed").
+

@@ -1,0 +1,22 @@
+console.log('PWD', String(pwd));
+const WN = typeof W0 === 'undefined' ? 1280 : W0, HN = typeof H0 === 'undefined' ? 900 : H0;
+await waitIn('rects', () => (window.parent.__r || []).length > 0, 10000);
+console.log('ENTRY summary', JSON.stringify(await inner(() => document.querySelector('[role=status] summary')?.textContent ?? null)));
+await fillField('field-hero-1-title', '일상에 꼭 맞는 서비스를 정성껏 만들어 드리는 작은 팀'); await sleep(300);
+await fillField('field-hero-1-subtitle', '처음 만나는 분도 쉽게 이해하도록, 무엇을 어떻게 돕는지 분명하게 보여 드립니다. 상담부터 사후 지원까지 한 팀이 끝까지 책임지고 함께합니다. 언제든 편하게 문의해 주세요.'); await sleep(300);
+await fillField('field-hero-1-cta', ''); await sleep(300);
+await clickText(/^Services/); await sleep(800);
+const sid = await inner(() => [...document.querySelectorAll('input,textarea')].map((i) => i.id).find((i) => /^field-services.*card1Title$/.test(i)));
+console.log('services field', sid, await fillField(sid, '처음 상담부터 끝까지 함께하는 맞춤 상담 서비스 안내'));
+await sleep(2000);
+await inner(() => document.querySelector('#studio-canvas-heading').scrollIntoView({ block: 'start' })); await sleep(1500);
+console.log('J1', WN, JSON.stringify(await judge()));
+await shot(`o5-${WN}-hero.png`, WN, HN);
+await inner(() => { const b = [...document.querySelectorAll('[data-issue-badge]')].at(-1); b?.scrollIntoView({ block: 'center' }); }); await sleep(1500);
+console.log('J2', WN, JSON.stringify(await judge()));
+await shot(`o5-${WN}-services.png`, WN, HN);
+// 배지 클릭 → 필드 포커스(빈 버튼 문구 = 차단 배지)
+const clicked = await inner(() => { const b = [...document.querySelectorAll('[data-issue-badge]')].find((x) => x.textContent.startsWith('차단')); b.click(); return b.textContent; }); await sleep(800);
+console.log('CLICK', clicked, JSON.stringify(await inner(() => { const a = document.activeElement; return { id: a?.id, describedby: a?.getAttribute('aria-describedby'), invalid: a?.getAttribute('aria-invalid') }; })));
+console.log('GATE', JSON.stringify(await inner(() => document.querySelector('[data-gate-row="text-length"]')?.innerText.slice(0, 300))));
+await closeTab(T);

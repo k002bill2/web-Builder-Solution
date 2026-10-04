@@ -94,14 +94,14 @@ describe("편집 알림 접기 (SPEC r4.7 A3-Q7 — 8.2.1 (a) 한 줄 요약 + �
     { type: "services", from: "grid-2", to: "cards-2" },
   ] as const;
 
-  it("바뀐 쌍이 있으면 한 줄 요약 '편집 문서를 만들며 바뀐 점 N개'(N = 원문의 바뀐 섹션 수 — 같은 쌍 여러 섹션 포함, Codex r1 P2) + 닫힌 details 안에 원문 · 영역 1개 · 1회", async () => {
+  it("바뀐 쌍이 있으면 한 줄 요약 '바뀐 점 N개'(r4.13 (5) — 240 열에서 꺾이지 않게 · N = 원문의 바뀐 섹션 수 — 같은 쌍 여러 섹션 포함, Codex r1 P2) + 닫힌 details 안에 원문 · 영역 1개 · 1회", async () => {
     const router = open(true, { editNotice: CHANGED, changes: CHANGES });
     const before = router.state.location.key;
     await h1();
-    await waitFor(() => expect(noticeRegion()).toHaveTextContent("편집 문서를 만들며 바뀐 점 3개"));
+    await waitFor(() => expect(noticeRegion()).toHaveTextContent("바뀐 점 3개"));
     const details = noticeRegion().querySelector("details")!;
     expect(details).not.toHaveAttribute("open");
-    expect(details.querySelector("summary")).toHaveTextContent("편집 문서를 만들며 바뀐 점 3개");
+    expect(details.querySelector("summary")).toHaveTextContent(/^바뀐 점 3개$/);
     expect(details).toHaveTextContent(CHANGED);
     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
     expect(screen.getAllByText(CHANGED)).toHaveLength(1);

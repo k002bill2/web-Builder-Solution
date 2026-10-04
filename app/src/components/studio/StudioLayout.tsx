@@ -88,7 +88,7 @@ export function StudioLayout({
   const root = useRef<HTMLDivElement>(null);
   const requestFocus = useFocusRequest(root);
 
-  const entrySummary = entryChanges > 0 ? `편집 문서를 만들며 바뀐 점 ${entryChanges}개` : undefined;
+  const entrySummary = entryChanges > 0 ? `바뀐 점 ${entryChanges}개` : undefined;
   // 영역을 먼저 비운 채 그린 뒤 글자를 넣는다 — 스크린 리더가 status 변화로 읽는다
   useEffect(() => {
     if (!entryNotice) return;

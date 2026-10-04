@@ -14,7 +14,8 @@ export const RENDER_FRAME_TITLE = "페이지 미리보기 화면";
 
 interface CanvasIssue extends SlotIssue {
   readonly instanceId: string;
-  readonly slotKey: string;
+  /** 표시할 사각형 — 슬롯 key, 빈 필수 칸은 null(섹션 사각형, r4.13 (3)) */
+  readonly slotKey: string | null;
 }
 
 /** 문서 전체의 글자 수 문제(편집 중 표시, 5.7) — 문장은 부모 문서에 늘 있다(필드 aria-describedby 대상, E-AC-49) */
@@ -22,11 +23,13 @@ function docIssues(doc: PageDoc): readonly CanvasIssue[] {
   return doc.sections.flatMap((section) =>
     (getSectionDefinition(section.type, section.variant)?.slots ?? []).flatMap((entry) => {
       const issue = slotIssue(section, entry);
-      return issue ? [{ ...issue, instanceId: section.instanceId, slotKey: entry.key }] : [];
+      return issue ? [{ ...issue, instanceId: section.instanceId, slotKey: issue.onSection ? null : entry.key }] : [];
     }),
   );
 }
 
+/** "경고 N" / "차단 N" — N = 캔버스 문제 목록 순번(문서 순서, r4.13) */
+const issueLabel = (issue: CanvasIssue, i: number) => `${issue.level === "block" ? "차단" : "경고"} ${i + 1}`;
 const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionary-text", block: "outline-status-negative-text text-status-negative-text" } as const;
 /**
  * 렌더 문서 좌표(CSS px) → 오버레이 위치. 오버레이 층은 iframe과 원점은 같지만 축소(zoom) 층 밖에 있다 — 칩·배지·문장 글자가 원래 크기로 읽히게(r4.10 축소 보기).
@@ -108,8 +111,8 @@ function useRenderFrame({
 }
 
 /**
- * 부모 오버레이(SPEC 5.7 r4.8) — 선택 테두리·라벨 칩 · 문제 2중 테두리(안쪽 흰 간격 + 바깥 상태 글자 토큰)·배지 · 문제 문장.
- * 테두리는 `aria-hidden` · 포인터 통과, 배지만 누름 → 그 필드 포커스(onIssue). 사각형이 없으면 테두리·칩·배지는 그리지 않고 문장만 남긴다(aria-describedby 대상).
+ * 부모 오버레이(SPEC 5.7 r4.8) — 선택 테두리·라벨 칩 · 문제 2중 테두리(안쪽 흰 간격 + 바깥 상태 글자 토큰)·배지.
+ * 테두리는 `aria-hidden` · 포인터 통과, 배지만 누름 → 그 필드 포커스(onIssue). 배지 = 목록과 같은 번호 · `aria-hidden`(문장이 읽힘) · 사각형 안쪽 모서리(위 슬롯을 덮지 않게, r4.13 Q6). 사각형이 없으면 그리지 않는다. 문제 문장은 캔버스 머리의 문제 목록에 있다(r4.13 — 축소 보기 위 원래 크기 문장이 렌더 글자를 가렸다)
  */
 function Overlay({
   rects,
@@ -145,24 +148,27 @@ function Overlay({
           </span>
         </div>
       )}
-      {issues.map((issue) => {
-        const r = rectOf(issue.instanceId, issue.slotKey);
+      {[...new Set(issues.map((issue) => `${issue.instanceId} ${issue.slotKey}`))].map((key) => {
+        // 같은 사각형(빈 필수 칸 여러 개 = 같은 섹션)의 문제는 테두리 1개 + 배지 나란히 — 번호가 겹치지 않게
+        const group = issues.filter((issue) => `${issue.instanceId} ${issue.slotKey}` === key);
+        const r = rectOf(group[0]!.instanceId, group[0]!.slotKey);
         return (
-          <div key={issue.id} className={r ? "absolute" : "sr-only"} style={r && place(r, scale, 4)}>
-            {r && <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />}
-            {r && (
-              <span
-                data-issue-badge
-                onClick={() => onIssue(issue)}
-                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
-              >
-                {issue.level === "block" ? "차단 1" : "경고 1"}
-              </span>
-            )}
-            <p id={issue.id} className={`absolute top-full left-0 mt-1 rounded-sm bg-background-normal px-1 text-caption1 ${ISSUE_RING[issue.level]}`}>
-              {issue.text}
-            </p>
-          </div>
+          r && (
+            <div key={key} className="absolute flex items-start justify-end gap-1 p-1" style={place(r, scale, 4)}>
+              <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[group.some((issue) => issue.level === "block") ? "block" : "warn"]}`} />
+              {group.map((issue) => (
+                <span
+                  key={issue.id}
+                  data-issue-badge
+                  aria-hidden="true"
+                  onClick={() => onIssue(issue)}
+                  className={`pointer-events-auto relative cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+                >
+                  {issueLabel(issue, issues.indexOf(issue))}
+                </span>
+              ))}
+            </div>
+          )
         );
       })}
     </div>
@@ -228,6 +234,19 @@ export function StructureCanvas({
       <p className="ds-caption1 text-label-alternative">{canvasCaption(doc, kitTokens !== undefined)}</p>
       {head}
       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
+      {/* 문제 목록(r4.13) — 사각형 유무와 무관하게 부모 DOM에 늘 있다(필드 aria-describedby 대상, E-AC-49). 문제 0이면 없음 */}
+      {issues.length > 0 && (
+        <ol data-canvas-issues aria-label="문제 목록" className="flex flex-col gap-1 rounded-md bg-background-normal px-2 py-1 text-caption1">
+          {issues.map((issue, i) => (
+            <li key={issue.id} className={`flex gap-2 ${ISSUE_RING[issue.level]}`}>
+              <span className="flex-none font-bold">{issueLabel(issue, i)}</span>
+              <p id={issue.id} className="bg-background-normal">
+                {issue.text}
+              </p>
+            </li>
+          ))}
+        </ol>
+      )}
       <div ref={area} className="min-w-0">
         {/* 축소 층(zoom) = 프레임 + iframe만. 오버레이는 그 밖 같은 원점(relative 감싸개)에서 사각형 × 비율로 맞춘다 */}
         <div className="relative mx-auto w-fit">

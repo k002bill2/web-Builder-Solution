@@ -1,0 +1,12 @@
+✔︎ Opened a new tab and set it active: tabs[0], page → Design Studio (http://127.0.0.1:4337/catalog)
+PWD /Users/younghwankang/.aside/u/0/sessions/2026-10-04_XpnghSU7uXjHEWGi
+TIMEOUT rects
+ENTRY summary "바뀐 점 4개"
+services field field-services-1-card1Title 29
+J1 1280 {"scale":"0.563","overlayP":0,"list":[232,136,721,92],"listAboveFrame":true,"frameTop":236,"issues":["경고 1제목이 권장 28자를 넘었습니다 (30/28자)","경고 2부제가 권장 80자를 넘었습니다 (96/80자)","차단 3버튼 문구 — 필수 입력입니다","경고 4카드 1 제목이 권장 20자를 넘었습니다 (29/20자)"],"badges":[{"text":"경고 1","aria":"true","rect":[534,442,37,16],"ring":[288,438,287,111],"insideRing":true,"coversSlots":["hero-1.title"]},{"text":"경고 2","aria":"true","rect":[533,550,39,16],"ring":[288,546,287,59],"insideRing":true,"coversSlots":["hero-1.subtitle"]},{"text":"차단 3","aria":"true","rect":[899,271,39,16],"ring":[228,267,714,405],"insideRing":true,"coversSlots":[]},{"text":"경고 4","aria":"true","rect":[420,1065,39,16],"ring":[289,1061,174,36],"insideRing":true,"coversSlots":["services-1.card1Title"]}],"sectionRects":[["hero-1",232,271,706,397]],"hScroll":0}
+J2 1280 {"scale":"0.563","overlayP":0,"list":[232,-461,721,92],"listAboveFrame":true,"frameTop":-361,"issues":["경고 1제목이 권장 28자를 넘었습니다 (30/28자)","경고 2부제가 권장 80자를 넘었습니다 (96/80자)","차단 3버튼 문구 — 필수 입력입니다","경고 4카드 1 제목이 권장 20자를 넘었습니다 (29/20자)"],"badges":[{"text":"경고 1","aria":"true","rect":[534,-155,37,16],"ring":[288,-159,287,111],"insideRing":true,"coversSlots":["hero-1.title"]},{"text":"경고 2","aria":"true","rect":[533,-47,39,16],"ring":[288,-51,287,59],"insideRing":true,"coversSlots":["hero-1.subtitle"]},{"text":"차단 3","aria":"true","rect":[899,-326,39,16],"ring":[228,-330,714,405],"insideRing":true,"coversSlots":[]},{"text":"경고 4","aria":"true","rect":[420,468,39,16],"ring":[289,464,174,36],"insideRing":true,"coversSlots":["services-1.card1Title"]}],"sectionRects":[["hero-1",232,-326,706,397]],"hScroll":0}
+CLICK 차단 3 {"id":"field-hero-1-cta","describedby":"canvas-issue-hero-1-cta field-hero-1-cta-count","invalid":null}
+GATE "글자 수\n차단 1\n\nHero 버튼 문구: 필수 입력입니다\n\n원인 · 대체안 4건"
+[system] last tab closed. `page` is now null. call openTab(url) to open a new one.
+[system] no current open tabs in this session.
+[2m[ok | 26031ms][0m

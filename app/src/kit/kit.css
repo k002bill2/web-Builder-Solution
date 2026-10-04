@@ -196,6 +196,55 @@
   }
 }
 
+/* header/sticky-two-tier (B-2) — 보조 줄(small · 오른쪽 · 위아래 s1) md 이상만 · 시트 안 보조 구역(구분선 muted + 보조 목록) md 미만만. 보조 글자 항목은 조작 대상 아님(hit-min = 링크만) */
+@layer components {
+  .kit-tier {
+    display: none;
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-s1) var(--site-s4) 0;
+  }
+  .kit-tier[data-always] {
+    display: block;
+  }
+  .kit-tier .kit-menu {
+    justify-content: flex-end;
+  }
+  .kit-utility {
+    font-size: var(--site-t-1);
+  }
+  .kit-utility span {
+    min-height: 0;
+  }
+  .kit-sheet-rule {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-sheet .kit-utility {
+    flex-direction: column;
+  }
+  /* D-3 (MQ-B5) — 이 변형이 있는 문서는 섹션 루트 앵커 여백을 hit-min 한 단계 키운다. :has() 미지원이면 기존 두 줄 여백 */
+  [data-site-root]:has(> .kit-header--two-tier) [data-kit] {
+    scroll-margin-top: calc(var(--site-header-offset) + var(--site-hit-min));
+  }
+  @media (width >= 48rem) {
+    .kit-tier {
+      display: block;
+    }
+    .kit-sheet-rule,
+    .kit-sheet .kit-utility {
+      display: none;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-tier {
+      padding-inline: var(--site-s6);
+    }
+  }
+}
+
 /* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
 @layer components {
   .kit-gradient {

@@ -5,6 +5,7 @@ import { FaqAccordion } from "./FaqAccordion";
 import { FooterBizExtended } from "./FooterBizExtended";
 import { HeaderStickyHamburger } from "./HeaderStickyHamburger";
 import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
+import { HeaderStickyTwoTier } from "./HeaderStickyTwoTier";
 import { HeroCenter } from "./HeroCenter";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
 import { HeroGrid } from "./HeroGrid";
@@ -21,6 +22,7 @@ import type { KitSection } from "./types";
 export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze({
   "header/sticky-right-cta": HeaderStickyRightCta,
   "header/sticky-hamburger": HeaderStickyHamburger,
+  "header/sticky-two-tier": HeaderStickyTwoTier,
   "hero/fullbleed-left": HeroFullbleedLeft,
   "hero/split": HeroSplit,
   "hero/center": HeroCenter,

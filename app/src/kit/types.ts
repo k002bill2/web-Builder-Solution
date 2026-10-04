@@ -8,10 +8,13 @@ export interface KitRootProps {
   readonly "data-instance-id": string;
   readonly "data-kit": "";
 }
-/** 문서에서 정한 링크 대상 (0.10) — CTA 앵커 · 본문 섹션 heading 글자 → 앵커 */
+/** hero 맨 위 면 (SPEC-BOUND D-1 · B-3 표) — header/transparent가 이어 칠할 면. media = 이미지(플레이스홀더 포함)가 맨 위 */
+export type HeroTop = "primary" | "bg" | "surface" | "media";
+/** 문서에서 정한 링크 대상 (0.10) — CTA 앵커 · 본문 섹션 heading 글자 → 앵커 · 첫 본문 hero의 맨 위 면(D-1) */
 export interface KitLinks {
   readonly cta?: string;
   readonly headings: ReadonlyMap<string, string>;
+  readonly heroTop?: HeroTop;
 }
 export interface KitSectionProps {
   readonly section: SectionInstance;

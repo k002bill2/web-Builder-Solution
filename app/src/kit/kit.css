@@ -168,6 +168,113 @@
   }
 }
 
+/* header/sticky-hamburger (B-1 · D-2) — 모든 폭 "메뉴" 버튼 + 시트(K1-1의 lg 숨김을 변형 클래스로 덮어씀). 시트 판 = md 미만 전체 폭(K1-1) · md 오른쪽 위 6/12 · lg 4/12 · 높이 상한 = 화면(inset + max-block-size, 넘치면 시트 안 스크롤) */
+@layer components {
+  .kit-header--burger .kit-bar {
+    flex-wrap: nowrap;
+  }
+  .kit-header--burger .kit-sheet:popover-open {
+    max-block-size: 100%;
+    overflow-y: auto;
+  }
+  @media (width >= 48rem) {
+    .kit-header--burger .kit-sheet:popover-open {
+      inset: 0 0 auto auto;
+      width: calc(100% * 6 / 12);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-header--burger .kit-sheet:popover-open {
+      display: flex;
+      width: calc(100% * 4 / 12);
+    }
+    @supports selector(:popover-open) {
+      .kit-header--burger .kit-menu-button {
+        display: inline-flex;
+      }
+    }
+  }
+}
+
+/* header/sticky-two-tier (B-2) — 보조 줄(small · 오른쪽 · 위아래 s1) md 이상만 · 시트 안 보조 구역(구분선 muted + 보조 목록) md 미만만. 보조 글자 항목은 조작 대상 아님(hit-min = 링크만) */
+@layer components {
+  .kit-tier {
+    display: none;
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-s1) var(--site-s4) 0;
+  }
+  .kit-tier[data-always] {
+    display: block;
+  }
+  .kit-tier .kit-menu {
+    justify-content: flex-end;
+  }
+  .kit-utility {
+    font-size: var(--site-t-1);
+  }
+  .kit-utility span {
+    min-height: 0;
+  }
+  .kit-sheet-rule {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-sheet .kit-utility {
+    flex-direction: column;
+  }
+  /* D-3 (MQ-B5) — 이 변형이 있는 문서는 섹션 루트 앵커 여백을 hit-min 한 단계 키운다. :has() 미지원이면 기존 두 줄 여백 */
+  [data-site-root]:has(> .kit-header--two-tier) [data-kit] {
+    scroll-margin-top: calc(var(--site-header-offset) + var(--site-hit-min));
+  }
+  @media (width >= 48rem) {
+    .kit-tier {
+      display: block;
+    }
+    .kit-sheet-rule,
+    .kit-sheet .kit-utility {
+      display: none;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-tier {
+      padding-inline: var(--site-s6);
+    }
+  }
+}
+
+/* header/transparent (B-3 · MQ-B1) — 일반 흐름(비고정) · 면 = heroTop(면 클래스) · 경계 없음(heroTop 없음일 때만 아래 구분선). 면 primary = 바 글자·버튼·링 on-primary(C-1) · 시트는 K1-1 그대로 bg·ink */
+@layer components {
+  .kit-header--clear {
+    position: static;
+    border-bottom: 0;
+  }
+  .kit-header--edge {
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-header--face-surface,
+  .kit-header--face-surface .kit-bar .kit-menu-button {
+    background: var(--site-surface);
+  }
+  .kit-header--face-primary {
+    background: var(--site-primary);
+  }
+  .kit-header--face-primary .kit-bar {
+    color: var(--site-on-primary);
+    --kit-ring: var(--site-on-primary);
+  }
+  .kit-header--face-primary .kit-bar .kit-menu :where(a, span) {
+    color: var(--site-on-primary);
+  }
+  .kit-header--face-primary .kit-bar .kit-menu-button {
+    border-color: var(--site-on-primary);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+  }
+}
+
 /* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
 @layer components {
   .kit-gradient {
@@ -332,6 +439,75 @@
   @media (width >= 64rem) {
     .kit-footer-inner {
       padding-inline: var(--site-s6);
+    }
+  }
+}
+
+/* footer/biz-extended-map (B-9) — 글 칸(사업자정보 → 링크) + 지도 칸(4:3 · 경계 bg 장식 · r1). md 6 : 6 · lg 7 : 5, 위 정렬 · 열 사이 s6 */
+@layer components {
+  .kit-footer-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+  }
+  .kit-footer-map {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border: var(--site-stroke-1) solid var(--site-bg);
+    border-radius: var(--site-r1);
+  }
+  .kit-footer-map-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 48rem) {
+    .kit-footer--map .kit-footer-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--site-s6);
+    }
+    .kit-footer--map .kit-footer-links {
+      justify-content: flex-start;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-footer--map .kit-footer-top {
+      grid-template-columns: 7fr 5fr;
+    }
+  }
+}
+
+/* footer/minimal · minimal-biz (B-10·B-11) — 같은 면·모양: bg 면(.kit-body 톤 없음 = bg · --kit-soft muted) + 위 구분선 muted(장식) · 글자 small · 링크 ink 제목 굵기 · 저작권 muted(C-5) · 사업자정보 ink(C-2, 한 줄 슬롯 — pre-line 안 씀) · 위아래 s5 */
+@layer components {
+  .kit-footer-min {
+    font-size: var(--site-t-1);
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+    --kit-ring: var(--site-ink);
+  }
+  .kit-footer-line {
+    padding-block: var(--site-s5);
+  }
+  .kit-footer-min .kit-footer-links {
+    color: var(--site-ink);
+  }
+  .kit-footer-min .kit-footer-copy {
+    color: var(--kit-soft);
+  }
+  .kit-footer-min .kit-footer-info {
+    max-width: none;
+    white-space: normal;
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-footer-line {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      column-gap: var(--site-s5);
     }
   }
 }

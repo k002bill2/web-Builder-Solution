@@ -1,0 +1,57 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/HeaderTransparent.test.tsx (3 tests | 3 failed) 42ms
+   ❯ header/transparent (B-3) (3)
+     × KB-AC-07: heroTop 표 7행 → header data-surface · 면 클래스(정적 HTML 보존) · 구분선은 값 없음일 때만 27ms
+     × 구조: 비고정 변형 클래스 · 바(브랜드 · 바 nav · '메뉴' 버튼) · 시트(닫기 · nav) · CTA 0 · nav '주 메뉴' 두 벌(폭마다 한 벌 — K1-1 방식) 7ms
+     × nav 빈 값 → 버튼·시트·바 nav 0 · 바에 브랜드만 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/HeaderTransparent.test.tsx > header/transparent (B-3) > KB-AC-07: heroTop 표 7행 → header data-surface · 면 클래스(정적 HTML 보존) · 구분선은 값 없음일 때만
+TypeError: Cannot read properties of null (reading 'classList')
+ ❯ face src/kit/HeaderTransparent.test.tsx:15:21
+     13| const face = (doc: PageDoc) => {
+     14|   const h = header(clear(doc));
+     15|   const cls = [...h.classList].find((c) => c.startsWith("kit-header--f…
+       |                     ^
+     16|   return [h.dataset.surface, cls, h.classList.contains("kit-header--ed…
+     17| };
+ ❯ src/kit/HeaderTransparent.test.tsx:21:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/kit/HeaderTransparent.test.tsx > header/transparent (B-3) > 구조: 비고정 변형 클래스 · 바(브랜드 · 바 nav · '메뉴' 버튼) · 시트(닫기 · nav) · CTA 0 · nav '주 메뉴' 두 벌(폭마다 한 벌 — K1-1 방식)
+TypeError: Cannot read properties of null (reading 'tagName')
+ ❯ src/kit/HeaderTransparent.test.tsx:35:14
+     33|   it("구조: 비고정 변형 클래스 · 바(브랜드 · 바 nav · '메뉴' 버튼) · 시트(닫기 · nav) · CTA 0…
+     34|     const h = header(clear(sampleDoc()));
+     35|     expect(h.tagName).toBe("HEADER");
+       |              ^
+     36|     expect(h.id).toBe("s-s-header");
+     37|     expect(h).toHaveClass("kit-header", "kit-header--clear");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/kit/HeaderTransparent.test.tsx > header/transparent (B-3) > nav 빈 값 → 버튼·시트·바 nav 0 · 바에 브랜드만
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/HeaderTransparent.test.tsx:48:14
+     46|   it("nav 빈 값 → 버튼·시트·바 nav 0 · 바에 브랜드만", () => {
+     47|     const h = header(patch(clear(sampleDoc()), "s-header", { nav: "" }…
+     48|     expect(h.querySelectorAll("nav, button, [popover]")).toHaveLength(…
+       |              ^
+     49|     expect(h.querySelector(".kit-bar")!.textContent).toBe("브랜드 이름");
+     50|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  23:03:31
+   Duration  695ms (environment 61%, transform 18%, setup 10%, tests 7%, import 3%, worker 1%)
+

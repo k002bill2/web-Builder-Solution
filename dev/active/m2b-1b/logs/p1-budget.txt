@@ -1,0 +1,26 @@
+# P1 예산 선행 실측 — header/sticky-two-tier 시제품 (2026-10-04 23:0x KST)
+시제품 = kit/headerParts.tsx(MenuList·MenuButton·Sheet — K1-1에서 꺼낸 공유 부품, HeaderStickyRightCta도 사용) + kit/HeaderStickyTwoTier.tsx + kit.css(two-tier 블록 + D-3 :has() 1줄) + registry 1쌍. RENDERED_VARIANTS 변경 0 (diff: logs/p1-two-tier-prototype.diff)
+측정 = npx vite build && npx vite build --mode render → check-bundle-size.mjs 사본(sizeOf만 바이트로 — /tmp/m2b1b-bytes.mjs, 저장소 밖) · KB = 1000 B (check-bundle-size 정의)
+
+| 항목 | 기준 5970721 | 시제품 | 증가 |
+|---|---|---|---|
+| 렌더 문서 JS | 80,502 B (80.50) | 80,654 B (80.65) | +152 B (+0.15) |
+| 렌더 문서 CSS | 6,723 B (6.72) | 6,840 B (6.84) | +117 B (+0.12) |
+| /studio 진입 직후 | 127,414 B (127.41) | 127,414 B | 0 (킷은 렌더 문서에만) |
+
+## 끝 예상 (6변형)
+- 렌더 JS: +0.15 × 6 = +0.91 → 약 81.41 (멈춤선 89.70 안). 시제품 증가에 공유 부품(headerParts) 꺼내기가 들어 있어 보수적. SPEC-BOUND 4.3 header+footer 추정 +1.15와 같은 크기.
+- 렌더 CSS: +0.12 × 6 = +0.70 → 약 7.42 / 30 (SPEC 4.3 +0.70).
+- /studio 진입: 앱 쪽 증가 = RENDERED_VARIANTS 표현뿐 → 끝 상태(18쌍)를 앱 쪽만 바꿔 직접 실측(아래).
+
+## /studio 진입 — RENDERED_VARIANTS 끝 상태 표현 2안 직접 실측 (렌더 쪽 무관)
+| 안 | 정밀 | 표기 | 증가 |
+|---|---|---|---|
+| 기준 5970721 (12쌍 알파벳순 나열) | 127,414 B | 127.41 | — |
+| o1 18쌍 알파벳순 나열(문자열 6개 추가) | 127,462 B | 127.46 | **+48 B (+0.05) → 멈춤 조건 해당** |
+| o2 header·hero·footer = SECTION_LIBRARY.sections에서 파생(14쌍) + 본문 4쌍 나열 | 127,404 B | 127.40 | −10 B |
+- o2의 그 밖 화면: 공통 89,345 · /catalog 99,652/102,036 · /references 97,000/99,384 · /compare 98,837/121,715 · /profile 99,618/118,673 · /projects 94,020/100,301 → 기준 대비 ±0.01 이내.
+- 판정: **멈춤 조건 아님** — 렌더 JS 끝 예상 81.41 ≤ 89.70 · /studio 끝 = o2로 −0.01(≤ +0.03).
+- o2 근거: M2B-1b가 끝나면 바깥 3유형(header 4 · hero 6 · footer 4)이 라이브러리 변형 전부를 렌더한다 → "라이브러리 바깥 변형 전부 + 본문 4"가 같은 집합. 가드(src/test/renderedVariants.test.ts, KIT_REGISTRY 키와 sort 비교)는 그대로 — 라이브러리에 킷 없는 바깥 변형이 늘면 가드가 실패한다.
+- 순서: 파생은 6변형이 모두 등록돼야 가드를 통과 → P3~P7은 알파벳순 나열로 하나씩 추가(중간 /studio 127.42~127.46 = 중간값), 마지막 등록 커밋(P8 minimal-biz)에서 o2로 바꾼다. 판정은 끝값.
+- 주의(REPORT 4·7절): 나열 방식(1a 방식)이었다면 멈춤 조건에 걸린다. o2는 1a REPORT 7.1이 "Jarvis가 정할 것"으로 남긴 표현 변경이다 — 가드·한도는 바꾸지 않았고, 거부하면 o1(+0.05)로 돌아가 한도 결정이 필요하다.

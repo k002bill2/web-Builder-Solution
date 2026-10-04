@@ -1,0 +1,97 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/heroTop.test.ts (5 tests | 4 failed) 6ms
+   ❯ kitLinks.heroTop (D-1) (5)
+     × fullbleed-left: 이미지 켬(플레이스홀더 포함) = media · 끔 = primary 4ms
+     × split·grid·text = 섹션 톤 면(base → bg · alt → surface) — 이미지 켬·끔 무관 1ms
+     × center = primary(톤 무관) · image 켬 = media · image 끔 = 섹션 톤 면 0ms
+     × 첫 본문 = header 다음 첫 섹션 — hero가 두 번째 본문이면 값 없음 · header가 없어도 첫 섹션이 hero면 계산 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/heroTop.test.ts > kitLinks.heroTop (D-1) > fullbleed-left: 이미지 켬(플레이스홀더 포함) = media · 끔 = primary
+AssertionError: expected undefined to be 'media' // Object.is equality
+
+- Expected:
+"media"
+
++ Received:
+undefined
+
+ ❯ src/kit/heroTop.test.ts:15:30
+     13| describe("kitLinks.heroTop (D-1)", () => {
+     14|   it("fullbleed-left: 이미지 켬(플레이스홀더 포함) = media · 끔 = primary", () => {
+     15|     expect(top(sampleDoc())).toBe("media");
+       |                              ^
+     16|     expect(top(imageOff(sampleDoc()))).toBe("primary");
+     17|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/kit/heroTop.test.ts > kitLinks.heroTop (D-1) > split·grid·text = 섹션 톤 면(base → bg · alt → surface) — 이미지 켬·끔 무관
+AssertionError: split: expected undefined to be 'surface' // Object.is equality
+
+- Expected:
+"surface"
+
++ Received:
+undefined
+
+ ❯ src/kit/heroTop.test.ts:21:51
+     19|   it("split·grid·text = 섹션 톤 면(base → bg · alt → surface) — 이미지 켬·끔 무관…
+     20|     for (const v of ["split", "grid", "text"]) {
+     21|       expect(top(heroDoc(v, { tone: "alt" })), v).toBe("surface");
+       |                                                   ^
+     22|       expect(top(heroDoc(v, { tone: "base" })), v).toBe("bg");
+     23|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/kit/heroTop.test.ts > kitLinks.heroTop (D-1) > center = primary(톤 무관) · image 켬 = media · image 끔 = 섹션 톤 면
+AssertionError: expected undefined to be 'primary' // Object.is equality
+
+- Expected:
+"primary"
+
++ Received:
+undefined
+
+ ❯ src/kit/heroTop.test.ts:28:54
+     26|
+     27|   it("center = primary(톤 무관) · image 켬 = media · image 끔 = 섹션 톤 면", ()…
+     28|     expect(top(heroDoc("center", { tone: "base" }))).toBe("primary");
+       |                                                      ^
+     29|     expect(top(heroDoc("center", { tone: "alt" }))).toBe("primary");
+     30|     expect(top(heroDoc("image", { tone: "alt" }))).toBe("media");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/kit/heroTop.test.ts > kitLinks.heroTop (D-1) > 첫 본문 = header 다음 첫 섹션 — hero가 두 번째 본문이면 값 없음 · header가 없어도 첫 섹션이 hero면 계산
+AssertionError: expected undefined to be 'media' // Object.is equality
+
+- Expected:
+"media"
+
++ Received:
+undefined
+
+ ❯ src/kit/heroTop.test.ts:45:70
+     43|     const [header, hero, about, ...rest] = sampleDoc().sections;
+     44|     expect(top(withSections(sampleDoc(), [header!, about!, hero!, ...r…
+     45|     expect(top(withSections(sampleDoc(), [hero!, about!, ...rest]))).t…
+       |                                                                      ^
+     46|   });
+     47| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  22:55:48
+   Duration  859ms (environment 69%, transform 14%, setup 13%, import 3%, tests 1%, worker 1%)
+

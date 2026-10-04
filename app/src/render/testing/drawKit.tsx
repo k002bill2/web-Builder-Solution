@@ -23,3 +23,10 @@ export const heroDoc = (variant: string, over: Partial<SectionInstance> = {}): P
     sampleDoc(),
     sampleDoc().sections.map((s) => (s.instanceId === "s-hero" ? section("hero", variant, "s-hero", { tone: "alt", ...over }) : s)),
   );
+
+/** header·footer 자리(s-header · s-footer)를 다른 변형으로 바꾼 문서 — 슬롯 = 그 변형 기본값 (M2B-1b) */
+export const boundDoc = (type: "header" | "footer", variant: string, base: PageDoc = sampleDoc()): PageDoc =>
+  withSections(
+    base,
+    base.sections.map((s) => (s.instanceId === `s-${type}` ? section(type, variant, s.instanceId, { tone: s.tone }) : s)),
+  );

@@ -1,0 +1,10 @@
+## 변이 1: HeaderTransparent 구분선 클래스 kit-header--edge → kit-header--edgeX
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/kit/boundVariants.test.tsx > header 3 + footer 3 공통 > KB-AC-35 [U]: 정적 HTML 결과 — header·footer 새 규칙의 선택자가 남은 마크업(class·data-site-root·data-kit·data-always)에 전부 매칭 · :has() 1줄 대상 존재
+      Tests  1 failed | 4 passed (5)
+## 변이 2: FooterBizExtendedMap figure 클래스 kit-footer-map → kit-footer-mapX
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/kit/boundVariants.test.tsx > header 3 + footer 3 공통 > KB-AC-35 [U]: 정적 HTML 결과 — header·footer 새 규칙의 선택자가 남은 마크업(class·data-site-root·data-kit·data-always)에 전부 매칭 · :has() 1줄 대상 존재
+      Tests  1 failed | 4 passed (5)
+## 되돌림
+      Tests  5 passed (5)

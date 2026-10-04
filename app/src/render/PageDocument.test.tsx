@@ -54,8 +54,8 @@ describe("렌더 문서 뼈대 (K-AC-09 · 0.12)", () => {
     expect([...c.querySelector("[data-site-root]")!.children].map((el) => el.tagName)).toEqual(["MAIN"]);
   });
 
-  it("레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) · 모르는 쌍 undefined", () => {
-    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "contact/form", "faq/accordion", "footer/biz-extended", "header/sticky-right-cta", "hero/center", "hero/fullbleed-left", "hero/grid", "hero/image", "hero/split", "hero/text", "services/cards-3"]);
+  it("레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) · 모르는 쌍 undefined", () => {
+    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "contact/form", "faq/accordion", "footer/biz-extended", "footer/biz-extended-map", "footer/minimal", "footer/minimal-biz", "header/sticky-hamburger", "header/sticky-right-cta", "header/sticky-two-tier", "header/transparent", "hero/center", "hero/fullbleed-left", "hero/grid", "hero/image", "hero/split", "hero/text", "services/cards-3"]);
     expect(kitFor({ type: "hero", variant: "no-such-variant" } as SectionInstance)).toBeUndefined();
   });
 });

@@ -1,0 +1,98 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx (6 tests | 6 failed) 59ms
+   ❯ header/sticky-two-tier (B-2) (6)
+     × 구조: 보조 줄(div, 랜드마크 아님) → 바(브랜드 · 바 nav · '메뉴' 버튼) → 시트(닫기 · nav → 구분선 → 보조 목록) · nav '주 메뉴' 두 벌 · 보조 목록 두 벌 28ms
+     × KB-AC-05: utility 기본 '로그인 · 고객센터'(대상 섹션 없음) → 목록마다 li > span 2 · a 0 6ms
+     × KB-AC-05: utility 빈 값 → 보조 목록 ul 0(두 벌) · 보조 줄 0 · 시트 구분선 0 5ms
+     × 0.10: 보조 항목이 본문 섹션 제목과 같으면 앵커(시트 안 a[href^='#'] — r4.12 스크립트 대상) 10ms
+     × nav 빈 값 → 주 메뉴·버튼·시트 0 · utility 있으면 보조 줄이 모든 폭에서 보임(data-always) 5ms
+     × D-3 (MQ-B5): kit.css 문서 수준 1줄 — 선택자 = data-site-root · 변형 클래스 · data-kit(정적 HTML 보존)만 · 마크업이 header를 사이트 루트 바로 아래에 둔다 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/HeaderStickyTwoTier.test.tsx > header/sticky-two-tier (B-2) > 구조: 보조 줄(div, 랜드마크 아님) → 바(브랜드 · 바 nav · '메뉴' 버튼) → 시트(닫기 · nav → 구분선 → 보조 목록) · nav '주 메뉴' 두 벌 · 보조 목록 두 벌
+TypeError: Cannot read properties of null (reading 'tagName')
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx:12:14
+     10|   it("구조: 보조 줄(div, 랜드마크 아님) → 바(브랜드 · 바 nav · '메뉴' 버튼) → 시트(닫기 · nav …
+     11|     const h = header(drawDoc(doc()));
+     12|     expect(h.tagName).toBe("HEADER");
+       |              ^
+     13|     expect(h).toHaveClass("kit-header", "kit-header--two-tier");
+     14|     expect([...h.children].map((el) => el.className)).toEqual(["kit-ti…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/kit/HeaderStickyTwoTier.test.tsx > header/sticky-two-tier (B-2) > KB-AC-05: utility 기본 '로그인 · 고객센터'(대상 섹션 없음) → 목록마다 li > span 2 · a 0
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ utilities src/kit/HeaderStickyTwoTier.test.tsx:7:45
+      5| const doc = () => boundDoc("header", "sticky-two-tier");
+      6| const header = (c: HTMLElement) => c.querySelector<HTMLElement>('[data…
+      7| const utilities = (h: HTMLElement) => [...h.querySelectorAll<HTMLEleme…
+       |                                             ^
+      8|
+      9| describe("header/sticky-two-tier (B-2)", () => {
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx:31:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/kit/HeaderStickyTwoTier.test.tsx > header/sticky-two-tier (B-2) > KB-AC-05: utility 빈 값 → 보조 목록 ul 0(두 벌) · 보조 줄 0 · 시트 구분선 0
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ utilities src/kit/HeaderStickyTwoTier.test.tsx:7:45
+      5| const doc = () => boundDoc("header", "sticky-two-tier");
+      6| const header = (c: HTMLElement) => c.querySelector<HTMLElement>('[data…
+      7| const utilities = (h: HTMLElement) => [...h.querySelectorAll<HTMLEleme…
+       |                                             ^
+      8|
+      9| describe("header/sticky-two-tier (B-2)", () => {
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx:40:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/kit/HeaderStickyTwoTier.test.tsx > header/sticky-two-tier (B-2) > 0.10: 보조 항목이 본문 섹션 제목과 같으면 앵커(시트 안 a[href^='#'] — r4.12 스크립트 대상)
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ utilities src/kit/HeaderStickyTwoTier.test.tsx:7:45
+      5| const doc = () => boundDoc("header", "sticky-two-tier");
+      6| const header = (c: HTMLElement) => c.querySelector<HTMLElement>('[data…
+      7| const utilities = (h: HTMLElement) => [...h.querySelectorAll<HTMLEleme…
+       |                                             ^
+      8|
+      9| describe("header/sticky-two-tier (B-2)", () => {
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx:48:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/kit/HeaderStickyTwoTier.test.tsx > header/sticky-two-tier (B-2) > nav 빈 값 → 주 메뉴·버튼·시트 0 · utility 있으면 보조 줄이 모든 폭에서 보임(data-always)
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx:54:14
+     52|   it("nav 빈 값 → 주 메뉴·버튼·시트 0 · utility 있으면 보조 줄이 모든 폭에서 보임(data-always…
+     53|     const h = header(drawDoc(patch(doc(), "s-header", { nav: "  " })));
+     54|     expect(h.querySelectorAll("nav, button, [popover]")).toHaveLength(…
+       |              ^
+     55|     expect(h.querySelector(".kit-tier")).toHaveAttribute("data-always"…
+     56|     expect(utilities(h)).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/kit/HeaderStickyTwoTier.test.tsx > header/sticky-two-tier (B-2) > D-3 (MQ-B5): kit.css 문서 수준 1줄 — 선택자 = data-site-root · 변형 클래스 · data-kit(정적 HTML 보존)만 · 마크업이 header를 사이트 루트 바로 아래에 둔다
+TypeError: Cannot read properties of null (reading '1')
+ ❯ src/kit/HeaderStickyTwoTier.test.tsx:62:12
+     60|     const css = readFileSync("src/kit/kit.css", "utf8");
+     61|     const rule = css.match(/([^{}\n]*:has\([^{}]*\))\s*\{([^}]*)\}/)!;
+     62|     expect(rule[1]!.trim()).toBe("[data-site-root]:has(> .kit-header--…
+       |            ^
+     63|     expect(rule[2]).toMatch(/scroll-margin-top:\s*calc\(var\(--site-he…
+     64|     expect(css.match(/:has\(/g)).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  22:59:56
+   Duration  737ms (environment 57%, transform 20%, setup 10%, tests 9%, import 4%, worker 1%)
+

@@ -14,7 +14,7 @@
 | P6 image | `logs/p6-image-red.txt` | 726392c | hero/image — 미디어 위 · 카피 아래(영역 이름) |
 | P7 공통 | 변이 검사 `logs/p7-mutation.txt` | a2e013a | `kit/heroVariants.test.tsx` — KB-AC-30·32·33·35 [U]/[G] |
 | — | — | 9306662 | REPORT 2·3·4·7절(브라우저 전 갱신) |
-| P8~P10 | — | (마감 커밋) | 브라우저 판정 `qb.mjs`·`shots.sh`·logs·shots · Codex · REPORT 마감 |
+| P8~P10 | — | 2c4d616 | 브라우저 판정 `qb.mjs`·`shots.sh`·logs·shots · Codex · REPORT 마감 |
 
 ## 2. 변형별 판정 (KB-AC)
 표기: [U] jsdom · [G] 파일 검사 · [B] 브라우저(127.0.0.1:4337 렌더 문서, 1280·768·390). [B] 근거 `logs/qb-b.json`(원자료) · `logs/qb-judge.txt`(판정). 13건 PASS / FAIL 0 / 미판정 0 (header 3변형 KB-AC-32 몫은 1b).
@@ -67,7 +67,7 @@
 - split 이미지 칸: `img` width·height 속성 = 프로필 media_ratio, md 미만 실제 비율은 CSS 4:3(SPEC B-4 5와 같음 — 속성은 자리 이동 방지용).
 
 ## 5. 시각 QA 캡처
-- 경로 `shots/`, 28장 = QB-5~9 각 1280·768·390(15) · QB-12 3폭(3, 한 문서에 split base·grid alt·text base·image alt) · QB-13 5변형 × 1280·390(10, 밝은 ink 팔레트 bright — 게이트 통과 확인 `gate-profiles`).
+- 경로 `shots/` (이름에 변형 포함 — QB-13이 5변형 × 폭이라 번호·폭만으로는 겹침), 28장 = QB-5~9 각 1280·768·390(15) · QB-12 3폭(3, 한 문서에 split base·grid alt·text base·image alt) · QB-13 5변형 × 1280·390(10, 밝은 ink 팔레트 bright — 게이트 통과 확인 `gate-profiles`).
 - **도구 변경**: ego-browser `Page.captureScreenshot`가 시간 초과(`logs/qb-probe.txt`, 재시도 무의미) → 브리프 대안대로 Chrome headless `--screenshot`(`shots.sh`, 390·768 = 해당 폭 iframe 감싸기, 뷰포트만). 찍는 대상 = 같은 문서의 정적 HTML(`static/*.html`, buildStaticHtml) — KB-AC-35 [B]로 캔버스와 계산 스타일 같음을 확인한 결과물. 수치 판정은 ego-browser(render.html 최상위, CDP 폭).
 - QB-5 split 6:6/7:5/1단 ✓ · QB-6 center 가운데 축·prose-max ✓ · QB-7 grid A+B·C / 768 카피 위 3칸 / 390 A만 ✓ · QB-8 text 강조선·왼쪽 정렬 ✓ · QB-9 image 21:9/16:9/4:3, 1280 h1 위 끝 699 · 아래 끝 760 (첫 화면 800 안 — ⑪ 여백 조정 불필요) ✓ · QB-12 부제 base muted / alt ink 3폭 ✓ · QB-13 bright 대비 허용 밖 0 ✓ (육안: 캡처 3장 직접 확인 — grid 1280 · image 1280 · image 390)
 

@@ -9,8 +9,8 @@
 - 기준선(HEAD f113f2c `npm run build`): 렌더 JS 80.12 / CSS 6.32 · `/studio` 진입 127.38 · 첫 화면 91.78 · 공통 89.35 · /catalog 99.65/102.04 · /references 97.00/99.38 · /compare 98.83/121.70 · /profile 99.61/118.66 · /projects 94.02/100.29.
 
 ## 단계
-- [ ] P0 수신 · REPORT 골격 · gate.sh 커밋
-- [ ] P1 예산 선행 실측(grid 시제품) — 멈춤 조건: 렌더 JS 끝 예상 > 89.70 또는 /studio 진입 증가 > 0.03
+- [x] P0 수신 · REPORT 골격 · gate.sh 커밋 (56f0083)
+- [x] P1 예산 선행 실측(grid 시제품) — 렌더 JS +0.17 · CSS +0.18 · /studio +0.01 → 끝 예상 렌더 JS 80.97 · /studio +0.03(문자열 5개 직접 실측 127.41, 경계) → 멈춤 조건 아님 (logs/p1-budget.txt)
 - [ ] P2 hero/split (KB-AC-10~12)
 - [ ] P3 hero/center (KB-AC-13~14)
 - [ ] P4 hero/grid (KB-AC-15~17)

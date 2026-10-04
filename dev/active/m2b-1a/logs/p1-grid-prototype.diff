@@ -1,0 +1,266 @@
+diff --git a/app/src/features/studio/renderedVariants.ts b/app/src/features/studio/renderedVariants.ts
+index 183ba57..21183c2 100644
+--- a/app/src/features/studio/renderedVariants.ts
++++ b/app/src/features/studio/renderedVariants.ts
+@@ -5,6 +5,7 @@
+ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
+   "header/sticky-right-cta",
+   "hero/fullbleed-left",
++  "hero/grid",
+   "about/story",
+   "services/cards-3",
+   "faq/accordion",
+diff --git a/app/src/kit/HeroFullbleedLeft.tsx b/app/src/kit/HeroFullbleedLeft.tsx
+index 5422870..ae49ee1 100644
+--- a/app/src/kit/HeroFullbleedLeft.tsx
++++ b/app/src/kit/HeroFullbleedLeft.tsx
+@@ -1,5 +1,6 @@
++import { HeroCopy, PRIMARY_COPY } from "./heroCopy";
+ import { Media } from "./Media";
+-import { slotImage, slotText } from "./text";
++import { slotImage } from "./text";
+ import type { KitSectionProps } from "./types";
+ 
+ /**
+@@ -7,35 +8,13 @@ import type { KitSectionProps } from "./types";
+  * DOM = 카피 → 미디어. md 미만은 미디어 띠(4:3) 위 · 패널 아래 두 단(kit.css). 이미지 끔 = 미디어 0, 섹션 면 primary. 높이는 비율·내용만(vh 0).
+  */
+ export function HeroFullbleedLeft({ section, links, images, root }: KitSectionProps) {
+-  const title = slotText(section, "title");
+-  const subtitle = slotText(section, "subtitle");
+-  const cta = slotText(section, "cta");
+   const image = slotImage(section, "image");
+   const heading = `h-${section.instanceId}`;
+   return (
+     <section {...root} aria-labelledby={heading} data-surface="primary" className={`kit-hero${image ? "" : " kit-hero--plain"}`}>
+       <div className="kit-hero-copy">
+         <div data-surface="primary" className="kit-hero-panel">
+-          {title && (
+-            <h1 id={heading} data-slot="title" className="kit-hero-title">
+-              {title}
+-            </h1>
+-          )}
+-          {subtitle && (
+-            <p data-slot="subtitle" className="kit-hero-lead">
+-              {subtitle}
+-            </p>
+-          )}
+-          {cta &&
+-            (links.cta ? (
+-              <a href={links.cta} data-slot="cta" className="kit-hero-cta">
+-                {cta}
+-              </a>
+-            ) : (
+-              <span data-slot="cta" className="kit-hero-cta">
+-                {cta}
+-              </span>
+-            ))}
++          <HeroCopy section={section} links={links} heading={heading} cls={PRIMARY_COPY} />
+         </div>
+       </div>
+       {image && <Media image={image} images={images} ratio={[16, 9]} first className="kit-hero-media" />}
+diff --git a/app/src/kit/HeroGrid.tsx b/app/src/kit/HeroGrid.tsx
+new file mode 100644
+index 0000000..6309c6f
+--- /dev/null
++++ b/app/src/kit/HeroGrid.tsx
+@@ -0,0 +1,30 @@
++import { bodySurface, headingId } from "./body";
++import { HeroCopy, TONE_COPY } from "./heroCopy";
++import { Media } from "./Media";
++import { slotImage } from "./text";
++import type { KitSectionProps } from "./types";
++
++/**
++ * hero/grid (SPEC-BOUND B-6) — 카피(섹션 톤 면) + 타일 격자: A = 사용자 이미지 1회(없으면 그라디언트) · B = primary · C = ink 장식 타일(aria-hidden, 글자 0).
++ * lg 이상 2단 5 : 7 · md~lg 1단(카피 위 · 3칸) · md 미만 A만(4:3). 이미지 끔 = 타일 격자 전체 생략 · 카피 1단 prose-max.
++ */
++export function HeroGrid({ section, links, images, root }: KitSectionProps) {
++  const image = slotImage(section, "image");
++  const heading = headingId(section);
++  return (
++    <section {...root} {...bodySurface(section)} aria-labelledby={heading} className={`kit-body kit-hx kit-hx--grid${image ? "" : " kit-hx--solo"}`}>
++      <div className="kit-wrap kit-hx-grid">
++        <div className="kit-hx-copy">
++          <HeroCopy section={section} links={links} heading={heading} cls={TONE_COPY} />
++        </div>
++        {image && (
++          <div className="kit-hx-tiles">
++            <Media image={image} images={images} ratio={[4, 5]} first className="kit-hx-tile kit-hx-tile--a" />
++            <div aria-hidden="true" className="kit-hx-tile kit-hx-tile--b" />
++            <div aria-hidden="true" className="kit-hx-tile kit-hx-tile--c" />
++          </div>
++        )}
++      </div>
++    </section>
++  );
++}
+diff --git a/app/src/kit/heroCopy.tsx b/app/src/kit/heroCopy.tsx
+new file mode 100644
+index 0000000..61dc4f7
+--- /dev/null
++++ b/app/src/kit/heroCopy.tsx
+@@ -0,0 +1,45 @@
++import { slotText } from "./text";
++import type { KitSectionProps } from "./types";
++
++/** 카피 클래스 묶음 — 면 primary(fullbleed-left 패널 · center) = `kit-hero-*` / 섹션 톤 면(split·grid·text·image) = `kit-hx-*` */
++export const PRIMARY_COPY = { title: "kit-hero-title", lead: "kit-hero-lead", cta: "kit-hero-cta" } as const;
++export const TONE_COPY = { title: "kit-hx-title", lead: "kit-hx-lead", cta: "kit-cta kit-hx-cta" } as const;
++
++/**
++ * hero 카피 블록 (m2a K1-2 · SPEC-BOUND 2절 공통) — h1(id = aria-labelledby 대상) → 부제 → CTA(대상 0.10, 없으면 버튼 모양 글자). 빈 슬롯 생략(0.8).
++ * hero 6변형이 같은 마크업을 쓰고 면에 맞는 클래스 묶음만 바꾼다.
++ */
++export function HeroCopy({
++  section,
++  links,
++  heading,
++  cls,
++}: Pick<KitSectionProps, "section" | "links"> & { readonly heading: string; readonly cls: { readonly title: string; readonly lead: string; readonly cta: string } }) {
++  const title = slotText(section, "title");
++  const subtitle = slotText(section, "subtitle");
++  const cta = slotText(section, "cta");
++  return (
++    <>
++      {title && (
++        <h1 id={heading} data-slot="title" className={cls.title}>
++          {title}
++        </h1>
++      )}
++      {subtitle && (
++        <p data-slot="subtitle" className={cls.lead}>
++          {subtitle}
++        </p>
++      )}
++      {cta &&
++        (links.cta ? (
++          <a href={links.cta} data-slot="cta" className={cls.cta}>
++            {cta}
++          </a>
++        ) : (
++          <span data-slot="cta" className={cls.cta}>
++            {cta}
++          </span>
++        ))}
++    </>
++  );
++}
+diff --git a/app/src/kit/kit.css b/app/src/kit/kit.css
+index 361f310..31143db 100644
+--- a/app/src/kit/kit.css
++++ b/app/src/kit/kit.css
+@@ -627,3 +627,93 @@
+     }
+   }
+ }
++
++/* hero 섹션 톤 4변형 공통 (SPEC-BOUND 2절 · split·grid·text·image) — 면·보조 글자 = .kit-body(data-tone: base bg·muted / alt surface·ink) · 제목 ink · CTA = .kit-cta(C-1, 링 ink)
++   카피 1단(이미지 끔 = kit-hx--solo)은 prose-max. 선택자 = class·data-tone만(정적 HTML 보존, 0.2) */
++@layer components {
++  .kit-hx-grid {
++    display: grid;
++    gap: var(--site-s5);
++    align-items: center;
++  }
++  .kit-hx-copy {
++    display: flex;
++    flex-direction: column;
++    align-items: flex-start;
++    gap: var(--site-s2);
++    min-width: 0;
++  }
++  .kit-hx--solo .kit-hx-copy {
++    max-width: var(--site-prose-max);
++  }
++  .kit-hx-title {
++    margin: 0;
++    font-size: var(--site-t3);
++    line-height: 1.15;
++    color: var(--site-ink);
++  }
++  .kit-hx-lead {
++    margin: 0;
++    font-size: var(--site-t0);
++    color: var(--kit-soft);
++  }
++  .kit-hx-cta {
++    margin-top: var(--site-s2);
++  }
++  @media (width >= 48rem) {
++    .kit-hx-title {
++      font-size: var(--site-t5);
++    }
++    .kit-hx-lead {
++      font-size: var(--site-t1);
++    }
++  }
++}
++
++/* hero/grid (B-6) — 타일 A(이미지·그라디언트) + B primary · C ink 장식. md 미만 A만 4:3 · md 이상 A 왼쪽 2행(4:5) · B·C 오른쪽 위·아래 · lg 이상 카피 5 : 타일 7 */
++@layer components {
++  .kit-hx--grid .kit-hx-copy {
++    max-width: var(--site-prose-max);
++  }
++  .kit-hx-tiles {
++    display: grid;
++    gap: var(--site-s3);
++    min-width: 0;
++  }
++  .kit-hx-tile {
++    border-radius: var(--site-radius-card);
++  }
++  .kit-hx-tile--a {
++    width: 100%;
++    height: auto;
++    aspect-ratio: 4 / 3;
++  }
++  .kit-hx-tile--b {
++    display: none;
++    background: var(--site-primary);
++  }
++  .kit-hx-tile--c {
++    display: none;
++    background: var(--site-ink);
++  }
++  @media (width >= 48rem) {
++    .kit-hx-tiles {
++      grid-template-columns: 1fr 1fr;
++      grid-template-rows: 1fr 1fr;
++    }
++    .kit-hx-tile--a {
++      grid-row: span 2;
++      aspect-ratio: 4 / 5;
++    }
++    .kit-hx-tile--b,
++    .kit-hx-tile--c {
++      display: block;
++    }
++  }
++  @media (width >= 64rem) {
++    .kit-hx--grid:not(.kit-hx--solo) .kit-hx-grid {
++      grid-template-columns: 5fr 7fr;
++      column-gap: var(--site-s6);
++    }
++  }
++}
+diff --git a/app/src/kit/registry.ts b/app/src/kit/registry.ts
+index 989b0e2..33842bb 100644
+--- a/app/src/kit/registry.ts
++++ b/app/src/kit/registry.ts
+@@ -5,6 +5,7 @@ import { FaqAccordion } from "./FaqAccordion";
+ import { FooterBizExtended } from "./FooterBizExtended";
+ import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
+ import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
++import { HeroGrid } from "./HeroGrid";
+ import { ServicesCards3 } from "./ServicesCards3";
+ import type { KitSection } from "./types";
+ 
+@@ -15,6 +16,7 @@ import type { KitSection } from "./types";
+ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze({
+   "header/sticky-right-cta": HeaderStickyRightCta,
+   "hero/fullbleed-left": HeroFullbleedLeft,
++  "hero/grid": HeroGrid,
+   "about/story": AboutStory,
+   "services/cards-3": ServicesCards3,
+   "faq/accordion": FaqAccordion,

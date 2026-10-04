@@ -46,6 +46,8 @@
 - 결정 1 = **★A**(영환님 "★A, M2B-0 기동" 2026-10-04): React zip M4 · internal 조합 생성기 M2b 뒤.
 - MQ 13건(SPEC-BOUND MQ-B1~6 · SPEC-BODY MQ-B1~7) = 잠정안 일괄 승인(영환님 "★A, M2B-1 브리프" 2026-10-04) — 각 SPEC 끝 "Jarvis 결정 기록".
 - M2B-1은 킷 공유 파일(`kit/registry.ts`·`kit.css`·`types.ts`) 때문에 **1a(hero 5) → 1b(header 3 + footer 3)** 순차로 나눈다(`header/transparent`의 `heroTop`이 hero 변형을 읽음).
+- M2B-2 브리프 분할: **2R(1b Codex 검토 종결) → 2a(about/text·services 3) → 2b(portfolio 3·statistics) → 2c(testimonials·pricing·booking·cta-band)**. 각 구현 4변형, registry·CSS·실렌더 목록 공유라 순차. 브리프 `docs/06-handoff/M2B-2_BODY-VARIANTS_BRIEF.md`.
+- 현재 baseline main `470cb2f`: 실렌더 18/30, 렌더 JS 81.13KB/CSS 7.12KB, `/studio` 진입 127.40KB. M2B-1b Codex는 미완료이고 2R 선행 검토로 이관; 2a는 검토 차단 이슈 종결 후 기동. 이번 변경은 브리프 작성만, 구현 미기동.
 
 ## 5. 기록
 - v1 2026-10-04 작성(Jarvis). 단계 브리프: `docs/06-handoff/M2B-0A_KIT-SPEC-BOUND_DESIGNER_BRIEF.md` · `M2B-0B_KIT-SPEC-BODY_DESIGNER_BRIEF.md`.

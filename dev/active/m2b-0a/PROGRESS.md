@@ -23,9 +23,9 @@
 - [x] footer `minimal`
 - [x] footer `minimal-biz` → (11개) 커밋
 - [x] KB-AC 목록 · 3폭 시각 QA · 예산 추정 표 · MQ · 대비 근거
-- [ ] 시안 HTML + 4339 3폭 캡처(선택)
-- [ ] Codex 적대적 검토 1회(턴 남으면) · 반영
-- [ ] REPORT 마감 · 서버 0(lsof 4339)
+- [x] 시안 HTML + 4339 3폭 DOM 실측 (스크린샷은 captureScreenshot 시간 초과 — REPORT 6)
+- [x] Codex 적대적 검토 1회 · 2건 반영(r3)
+- [x] REPORT 마감 · 서버 0(lsof 4339)
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

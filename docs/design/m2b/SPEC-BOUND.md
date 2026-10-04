@@ -19,8 +19,8 @@
 | # | 바꿀 곳 | 내용 | 쓰는 변형 |
 |---|---|---|---|
 | D-1 | `kit/types.ts` `KitLinks` · `kit/text.ts` `kitLinks(doc)` | **`heroTop` 추가** — 문서의 첫 본문 섹션이 hero이면 그 변형·이미지 켜짐·톤에서 "hero 맨 위 면"(`primary` · `bg` · `surface` · `media`)을 계산해 넘긴다(B-3 표). hero가 아니거나 폴백이면 값 없음. 문서 데이터만 읽는다(DOM 탐색·`:has()` 0 → [U] 검증 가능, 캔버스·정적 HTML 같은 결과) | header `transparent` |
-| D-2 | `kit.css` header 규칙 | 기존 `.kit-menu-button`·`.kit-sheet` 의 `lg` 이상 숨김(K-AC-35)은 `sticky-right-cta` 전용으로 남기고, 새 변형은 **변형 범위 선택자**(`[data-section="header/…"]` 또는 변형 클래스)로 덮어쓴다 | header 3 |
-| D-3 | `kit.css` 문서 수준 1줄 | `sticky-two-tier`가 있을 때 섹션 루트 `scroll-margin-top`을 한 단계 키운다(B-2 1) | header `sticky-two-tier` |
+| D-2 | `kit.css` header 규칙 | 기존 `.kit-menu-button`·`.kit-sheet` 의 `lg` 이상 숨김(K-AC-35)은 `sticky-right-cta` 전용으로 남기고, 새 변형은 **변형 클래스**(예: `kit-header--burger`)로 덮어쓴다. `data-section`·`data-surface`는 정적 HTML 생성기가 지우는 속성이라(L1 `features/studio/staticHtml/staticMarkup.ts` `KEPT_DATA` = `data-site-root`·`data-kit`·`data-layout`·`data-tone`·`data-always`만 보존) **스타일 선택자에 쓰지 않는다** — 검사 표시 전용 | header 3 |
+| D-3 | `kit.css` 문서 수준 1줄 | `sticky-two-tier`가 있을 때 섹션 루트 `scroll-margin-top`을 한 단계 키운다(B-2 1). 선택자는 **변형 클래스 기준**(`[data-site-root]:has(> .kit-header--two-tier) [data-kit]`) — 정적 HTML에서도 남는 것(`class`·`data-site-root`·`data-kit`)만 쓴다 | header `sticky-two-tier` |
 | D-4 | `kit/registry.ts` | 11쌍 등록. 등록 전 쌍은 지금처럼 폴백 + 표식 | 전부 |
 - D-1은 킷 내부 props 확장이라 m2a 0절 위반이 아니다. M2B-1 REPORT 변경 목록에 한 줄 남긴다.
 
@@ -121,7 +121,7 @@
 - 보조 목록(`utility`)은 0.10 나누기 규칙 + 메뉴 항목 대상 규칙(본문 섹션 제목과 같으면 앵커, 아니면 글자) 그대로. 기본 글자("로그인"·"고객센터")는 대상 섹션이 없어 **글자 항목**이 된다(m2a MQ-2 — 페이지 링크 슬롯 없음).
 - **보조 목록은 랜드마크가 아니다**(`nav` 아님, `div` 안 `ul`). 이유: VS-1에서 항목 대부분이 링크가 아닌 글자라 빈 탐색 랜드마크가 되고, K-AC-10 "`navigation` ≤ 1" 규칙을 header 전체에서 지킨다. 보조 링크가 대상 슬롯을 갖게 되면 `nav aria-label="보조 메뉴"`로 올린다(MQ-B2).
 - 주 메뉴 두 벌·보조 목록 두 벌 모두 **폭마다 한 벌만 보인다**(K1-1과 같은 방식).
-- **앵커 여백(0.2 D-3)**: header가 보조 줄만큼 높으므로, 문서에 이 변형이 있을 때 모든 섹션 루트의 `scroll-margin-top` = 기존 header 여백 + `hit-min` 한 단계. 방식 = 사이트 루트 기준 문서 수준 선택자 1줄(`[data-site-root]:has(> [data-section="header/sticky-two-tier"]) [data-kit]`) — `:has()` 미지원 브라우저에서는 기존 두 줄 여백으로 떨어진다(제목 위 일부가 가려질 수 있음, 기능 손실 없음). 대안 = D-1처럼 `KitLinks`에 header 높이 단계를 넣어 섹션 루트 속성으로 내기(M2B-1 선택, REPORT 기록).
+- **앵커 여백(0.2 D-3)**: header가 보조 줄만큼 높으므로, 문서에 이 변형이 있을 때 모든 섹션 루트의 `scroll-margin-top` = 기존 header 여백 + `hit-min` 한 단계. 방식 = 사이트 루트 기준 문서 수준 선택자 1줄(`[data-site-root]:has(> .kit-header--two-tier) [data-kit]` — `data-section`은 정적 HTML에서 지워지므로 쓰지 않는다, 0.2 D-2) — `:has()` 미지원 브라우저에서는 기존 두 줄 여백으로 떨어진다(제목 위 일부가 가려질 수 있음, 기능 손실 없음). 대안 = D-1처럼 `KitLinks`에 header 높이 단계를 넣어 섹션 루트 속성으로 내기(M2B-1 선택, REPORT 기록).
 
 **2. 반응형** (특이점: 2단 메뉴 390 접힘)
 | 폭 | 보조 줄 | 바 | 시트 |
@@ -203,7 +203,7 @@
   <div id="m-<id>" popover> 닫기 · <nav aria-label="주 메뉴"> … </nav> </div>   ← 시트는 늘 bg 면
 </header>
 ```
-- `data-surface` = 위 표의 header 면(m2a [B] 대비 판정이 면을 찾는 표시와 같은 속성).
+- `data-surface` = 위 표의 header 면(m2a [B] 대비 판정이 면을 찾는 표시와 같은 속성 — **캔버스 검사 전용**, 정적 HTML에서 지워짐). **면 스타일은 변형 클래스**(`kit-header--face-primary` · `--face-bg` · `--face-surface`)로 건다 — 클래스는 정적 HTML에 남는다(0.2 D-2).
 
 **2. 반응형** — 바·시트 규칙은 K1-1 2에서 CTA를 뺀 것과 같다: `lg` 이상 = 브랜드 + 인라인 메뉴 · `lg` 미만 = 브랜드 + "메뉴" 버튼 + 시트(390 전체 폭 판, 768도 전체 폭 판). header 면은 폭과 무관하게 `heroTop`이 정한다 — 단, `fullbleed-left`·`image`는 모든 폭에서 이미지가 맨 위라 폭별 차이 없음.
 
@@ -246,7 +246,7 @@
 |---|---|---|
 | KB-AC-07 | `heroTop` 표 7행 각각의 문서 → header `data-surface`가 표와 같다(`hero/center` → `primary` · `hero/split` `alt` → `surface` · `hero/image` 이미지 켬 → `bg` · 첫 본문이 about → `bg` + 구분선) | [U] |
 | KB-AC-08 | header 계산 스타일 `position` ≠ `sticky`·`fixed`·`absolute` · header 아래쪽 끝 y ≤ hero 위쪽 끝 y(겹침 넓이 0) — 1280·768·390 | [B] |
-| KB-AC-09 | header 면 `primary`일 때 브랜드·메뉴 항목·버튼 글자색 = `on-primary`, 면 `surface`일 때 `ink` — 계산 색이 허용 쌍(K-AC-11 방식) | [B] |
+| KB-AC-09 | **바 안**(시트 제외) 브랜드·메뉴 항목·"메뉴" 버튼 글자색 = header 면 `primary`일 때 `on-primary` · `surface`·`bg`일 때 `ink` / **열린 시트**(768·390) 안 메뉴 항목·"닫기" 버튼·포커스 링 = header 면과 무관하게 `bg` 면 위 `ink` — 계산 색이 허용 쌍(K-AC-11 방식) | [B] |
 
 ---
 
@@ -771,9 +771,10 @@
 | KB-AC-31 | 11변형 × 필수 슬롯 상한 글자 + 글자 200% → **1280·768·390** 모두 가로 넘침 0 · 말줄임 계산 스타일 0 (K-AC-02를 768까지) | [B] |
 | KB-AC-32 | 정적 HTML 결과의 `script` = r4.12 고정 스크립트(바이트 일치) 1개 이하 — header 3변형 각각으로 생성해 확인 | [U] |
 | KB-AC-33 | 11변형 각각 `data-section="<type>/<variant>"` 루트 1 · `KIT_REGISTRY`에 11쌍 등록 · 등록된 쌍은 폴백 표식 0 | [U] |
-| KB-AC-34 | 대비(K-AC-36 확장): 통과 프로필 2벌(카드 톤 `light`·`dark`) × 섹션 톤 `base`·`alt` × 11변형 — 모든 글자 요소 실측 대비 ≥ 기준. header `transparent`는 `heroTop` 3면(`primary`·`bg`·`surface`) 문서를 각각 | [B] |
+| KB-AC-34 | 대비(K-AC-36 확장): 통과 프로필 2벌(카드 톤 `light`·`dark`) × 섹션 톤 `base`·`alt` × 11변형 — 모든 글자 요소 실측 대비 ≥ 기준. header `transparent`는 `heroTop` 3면(`primary`·`bg`·`surface`) 문서를 각각, 바(닫힘)와 열린 시트(768·390)를 따로 판정 | [B] |
+| KB-AC-35 | **정적 HTML 결과(`buildStaticHtml`)에서** 변형 스타일이 그대로 걸린다: header 3변형·`transparent` 면 3종·`sticky-two-tier` 앵커 여백 규칙의 선택자가 남은 마크업(`class`·`data-site-root`·`data-kit`)에 매칭 — 캔버스와 계산 스타일 같음(`background-color`·`scroll-margin-top`) · 정적 HTML을 열어 앵커 이동 뒤 제목이 header에 가려지지 않음 | [B] |
 
-**변형별** — 각 절 B3: header KB-AC-01~09 · hero KB-AC-10~22 · footer KB-AC-23~29. (빈 번호 없음: 01~34.)
+**변형별** — 각 절 B3: header KB-AC-01~09 · hero KB-AC-10~22 · footer KB-AC-23~29. (빈 번호 없음: 01~35.)
 
 ### 4.2 M2B-1 시각 QA 대조 항목 (1280 · 768 · 390)
 기준 문서: m2a 4.2 E2E 고정 조건(A안 · 목적 inquiry · 본문 5) 위에 **header·hero·footer 변형만 바꾼 문서**. 캡처 위치 제안 `dev/active/m2b-1/shots/qb-<번호>-<폭>.png`.
@@ -826,7 +827,7 @@
 | MQ-B2 | header 보조 메뉴(`utility`)·footer 하단 링크에 **대상 슬롯**이 생기면 `nav aria-label="보조 메뉴"` 랜드마크로 올리는가 | 지금은 랜드마크 아님(글자 항목 위주, m2a MQ-2와 함께 결정) |
 | MQ-B3 | `hero/grid`에 이미지 슬롯을 더 둘 것인가(새 슬롯 = 엔진 계약 변경) | 지금은 슬롯 1 + 색 타일 2. 여러 장은 M2c(이미지 업로드 변환) 뒤 검토 |
 | MQ-B4 | `footer/biz-extended-map` 지도 이미지 권리 안내(사용자가 지도 캡처를 올릴 때)를 편집기에 둘 것인가 | 2a-05 편집기 소관 — 이미지 슬롯 도움말 한 줄 제안 |
-| MQ-B5 | 문서 수준 앵커 여백(`sticky-two-tier`, D-3)을 `:has()` 1줄로 둘지, `KitLinks`로 header 높이 단계를 넘길지 | `:has()` 1줄(미지원 시 기존 두 줄 여백으로 떨어짐 — 기능 손실 0). M2B-1이 택일 후 REPORT |
+| MQ-B5 | 문서 수준 앵커 여백(`sticky-two-tier`, D-3)을 `:has()` 1줄로 둘지, `KitLinks`로 header 높이 단계를 넘길지 | 변형 클래스 기준 `:has()` 1줄(미지원 시 기존 두 줄 여백으로 떨어짐 — 기능 손실 0). 정적 HTML 생성기 `KEPT_DATA` 변경은 하지 않는다. M2B-1이 택일 후 REPORT |
 | MQ-B6 | 메뉴 시트 열림·`two-tier` 보조 줄 접힘·`image` 패럴랙스처럼 **스크롤 연동 모션**은 r4.12 밖 스크립트가 필요 — 허용할 것인가 | M2B-3에서 CSS만으로 되는 것만(스크립트 추가 0 권장) |
 
 ## 부록 A. 대비 근거 (L2)
@@ -840,3 +841,4 @@
 | r0 | 상속 선언 · 0.2 킷 내부 변경 D-1~D-4 · header 3 · hero `split` |
 | r1 | hero `center`·`grid`·`text`·`image` |
 | r2 | footer 3 · 4절(KB-AC 01~34 · QB-1~14 · 예산 추정 · MQ-B1~6) · 부록 A |
+| r3 | Codex 적대적 검토 반영 2건: 스타일 선택자를 정적 HTML에 남는 변형 클래스로(D-2·D-3·B-2·B-3, `KEPT_DATA` 근거) + KB-AC-35 · KB-AC-09/34 바·시트 대비 분리 |

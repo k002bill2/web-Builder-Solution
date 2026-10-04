@@ -13,7 +13,7 @@
 - [x] D1 P2-2 생성기 청크 실패 기억
 - [x] D2 P2-3 `blob:` 오탐
 - [x] D3 P2-1 이탈 후 죽은 내려받기 링크
-- [ ] D4 P2-a PNG 준비 조건 idle·saved
+- [x] D4 P2-a PNG 준비 조건 idle·saved
 - [ ] D5 P2-b 토큰 없는 폴백 PNG
 - [ ] D6 P2-c rem px 좌표계
 - [ ] D7 Codex 1회 · REPORT 마감 · 서버 0

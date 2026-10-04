@@ -14,6 +14,8 @@ import { useFocusRequest } from "../../features/studio/useFocusRequest";
 import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
 import { useDocSave } from "../../features/studio/useDocSave";
+import { saveStatusText } from "../../features/studio/saveStatusText";
+import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { ConflictCallout } from "./ConflictCallout";
 import { EditFields } from "./EditFields";
 import { SaveStatus } from "./SaveStatus";
@@ -38,6 +40,8 @@ import { PngSave } from "./PngSave";
 import { emitEditorEvent } from "../../features/studio/editorEvents";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+/** 미저장 편집이 남은 채 멈춘 저장 상태 — PNG 준비 전 이유로 저장 상태 문장을 보인다(P2-a) */
+const UNSAVED: ReadonlySet<AutosaveState["phase"]> = new Set(["failed", "offline", "stale"]);
 /** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
 const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
 /** 내보내기 경고 확인 대화상자 · 결과(조작 뒤, S-B5) — 내보내기 버튼을 누른 뒤에만 받는다 */
@@ -342,9 +346,11 @@ export function StudioLayout({
               {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
             </Suspense>
           )}
-          {/* 준비 전 = 캔버스를 아직 안 그림 또는 저장 대기(파일 이름 revision = 캡처한 문서 — REPORT 8절) */}
+          {/* 준비 = 캔버스를 그림 + 자동 저장 idle·saved(파일 이름 revision = 캡처한 문서 — 3c REPORT 8절 · M2A-CLOSE P2-a).
+              저장 실패·오프라인·충돌이면 이유 = 저장 상태 문장 */}
           <PngSave
-            ready={drawn && save.state.phase !== "dirty" && save.state.phase !== "saving"}
+            ready={drawn && (save.state.phase === "idle" || save.state.phase === "saved")}
+            reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0) : undefined}
             view={view}
             fallbackCount={fallbacks.length}
             capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }) })}

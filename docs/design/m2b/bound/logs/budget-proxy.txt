@@ -1,0 +1,8 @@
+# M2B-0A 예산 대리값 (L2) — 재현: 아래 스크립트 · 대상 app/src/kit/kit.css @ a3bd614
+# 문맥 안 증가분 = gzip(kit.css 전체) - gzip(해당 구간 뺀 kit.css), level 9
+header incremental gzip KB(in-context)= 0.62
+hero incremental gzip KB(in-context)= 0.34
+footer incremental gzip KB(in-context)= 0.24
+kit.css total gzip 3.96
+# 구현 파일 원본 gzip(KB): Header 1.32 · HeroFullbleedLeft 0.79 · FooterBizExtended 0.73 · AboutStory 0.69 · ServicesCards3 0.81 · FaqAccordion 0.79 · ContactForm 1.38
+# 본문 4종 평균 0.92 ↔ M2a 실측 +1.03/4 = 0.26/변형 → 비율 약 0.28

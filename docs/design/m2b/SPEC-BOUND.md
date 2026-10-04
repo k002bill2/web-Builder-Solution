@@ -836,6 +836,16 @@
 - 재실행 기록: `python3 -B docs/design/m2a/contrast_calc_m2a.py` 출력 → `docs/design/m2b/bound/logs/contrast_calc_m2a.rerun.txt`(이 문서는 hex를 적지 않는다).
 - 비글자: `hero/grid` 색 타일 · `hero/text` 강조선 · footer 구분선 · 지도 칸 경계 = 장식(정보 없음 — 1.4.11 대상 아님). 알아보는 경계(메뉴 버튼·포커스 링)는 그 면 위 글자 역할(m2a 0.3 비글자 규칙).
 
+## Jarvis 결정 기록 (영환님 "★A, M2B-1 브리프" 2026-10-04 — MQ 잠정안 일괄 승인)
+| ID | 결정 |
+|---|---|
+| MQ-B1 | 승인 — `header/transparent` = 겹침 없는 면 이음 · 비고정. 이미지 hero 앞에서는 `bg` 바 |
+| MQ-B2 | 승인 — 보조 메뉴·하단 링크는 지금 랜드마크 아님(m2a MQ-2와 함께 재검토) |
+| MQ-B3 | 승인 — `hero/grid` 이미지 슬롯 1 + 색 타일 2. 여러 장은 M2c 뒤 |
+| MQ-B4 | 승인 — 지도 이미지 권리 안내는 편집기 도움말 한 줄(백로그 B-M2B-01) |
+| MQ-B5 | 승인 — 변형 클래스 기준 `:has()` 1줄. `KEPT_DATA` 변경 0 |
+| MQ-B6 | 승인 — 스크롤 연동 모션은 CSS만(r4.12 밖 스크립트 추가 0), M2B-3에서 확정 |
+
 ## 변경 이력
 | 판 | 내용 |
 |---|---|

@@ -8,8 +8,8 @@
 - [x] V1 환경(build · preview 4339)
 - [x] V2 캔버스 시각 QA 1280 · 390
 - [x] V3 오버레이 겹침 재현 · 원인 · 결정안
-- [ ] V4 정적 HTML · PNG ↔ 캔버스 대조
-- [ ] V5 REPORT 마감 · 서버 종료
+- [x] V4 정적 HTML · PNG ↔ 캔버스 대조
+- [x] V5 REPORT 마감 · 서버 종료
 
 ## 1. 점검 환경
 - 빌드: 이 worktree `app/`에서 `npm ci`(lockfile 그대로 — 새 의존성 0) → `npm run build` exit 0(`logs/v1-build.txt`). `/studio/:projectId` 첫 화면 91.78 · 진입 직후 **127.20 / 128**(멈춤선 127.70 대비 여유 0.50) · 렌더 JS 80.12 / CSS 6.32.
@@ -82,13 +82,40 @@
 - 진입 청크 판정은 Developer가 빌드 실측으로(멈춤선 127.70).
 
 ## 5. 결과물(HTML·PNG) 대조
-(V4에서 채움)
+- 문서 만들기(앱 안 조작, `logs/prefix2.js` + `logs/v4.js`): 3b g0 흐름 — 프로필 "보정값 쓰기 (보조 글자 muted)" → "조정 저장 (v2)" → "3안 만들기 (v2)" → A안 → 편집 시작 → "첫 구조 미리보기 섹션으로 이동" → 삭제 ×2(Portfolio · Testimonials) → 페이지 정보 제목 "모던 카페 브랜드" · 설명 입력 → 게이트 전부 통과(성능 예산 "측정 전").
+- 같은 순간: 한 실행 안에서 캔버스 캡처 → "PNG 내려받기" → "정적 HTML 내보내기" 순서. 내려받기는 래퍼 안쪽 window에서 `URL.createObjectURL` 감싸기 + `a[download].click` 무효로 가로채 Blob을 저장했다(앱 코드 변경 0).
+  - 1회차(데스크톱): PNG "PNG를 내려받았습니다 · 모던-카페-브랜드-프로젝트_1280_r2.png" → `shots/v4-png-desktop.png`(1280×2964). 이 회차의 HTML은 12~20초 안에 내려받기 링크가 뜨지 않아 놓쳤다(도구 대기 한도 — 앱 오류 문구 없음).
+  - 2회차(모바일 — **캔버스 390 = 1280 창의 "모바일" 프레임(축소 100%)**): PNG `_390_r2.png` → `shots/v4-png-mobile.png`(390×2746) · HTML "정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 04:28'에 있습니다 · 결과 해시 b05cb680ab81" → `logs/v4-export_r2.html`(34,781B, 파일 이름 `모던-카페-브랜드-프로젝트_r2.html`). 두 회차는 같은 결정적 흐름으로 만든 같은 문서(r2)다.
+  - HTML 화면: Chrome headless `--screenshot` 1280 → `shots/v4-html-1280.png`, 390은 390 폭 iframe 감싸기 → `shots/v4-html-390.png`.
+- 나란히: `shots/v4-side-by-side.png`(조립 `logs/v4-compare.html`). 캔버스 원본 `shots/v4-canvas-{desktop,mobile}-0{1,2,3}.png`.
+
+| # | 폭 | 대조 결과 | 판정 |
+|---|---|---|---|
+| D1 | 1280 | 캔버스 · PNG · HTML 배치 일치 — 헤더 가로 메뉴 + "상담 신청" 바, Hero 왼쪽 카피 카드, About 2단(글 왼쪽·이미지 오른쪽), Services 카드 3개 한 행, FAQ 펼침 목록, 문의 2단 | 일치 |
+| D2 | 390 | 캔버스(모바일 프레임) · PNG · HTML 일치 — "메뉴" 버튼, Hero 이미지 위 · 카피 아래 1단, About 1단(글 → 이미지), Services 카드 세로 | 일치 |
+| D3 | 1280 | 크기: 캔버스는 축소 57%, PNG·HTML은 100% — 설계대로(r4.10). 글자·여백 비율 차이 없음 | 의도된 차이 |
+| D4 | 1280 · 390 | 편집기 UI(선택 칩·테두리·문제 표시)는 PNG·HTML에 0(부모 오버레이라 섞이지 않음 — 5.7 r4.8) | 일치 |
+| D5 | — | HTML `script` 1개(r4.12 고정 스크립트) · 외부 요청 URL 0. `https://tailwindcss.com` 문자열 1개는 CSS 라이선스 주석 안(요청 아님) | 일치(기록) |
+| D6 | 1280 | 나란히 그림의 캔버스 잘라내기가 헤더를 빠뜨렸다(잘라내기 오프셋 문제 — 원본 `v4-canvas-desktop-01.png`에는 있음). 결과물 차이 아님 | 기록 |
 
 ## 6. 접근성
-(V2~V4에서 채움)
+- 문제 문장 연결: 오늘 구조에서 문장 `<p id="canvas-issue-…">`는 부모 DOM · 필드 `aria-describedby` = `field-hero-1-title-count` 등 카운터 id 확인(V2 `inputs`). 4절 모든 안이 문장 id를 부모 DOM에 남긴다(E-AC-49).
+- 대비: 문장·배지 = 흰 면 위 상태 글자 N-9 6.46 · N-10 6.52(SPEC 7.1, ≥ 4.5). 추천 A는 목록 바탕을 `background-normal`(흰 면)로 두어 같은 행을 쓴다. 캔버스 바탕(`fill-alternative` · muted) 위에 직접 글자를 올리면 N-3/N-4(5.77/5.82)라 그것도 4.5 이상이지만 시안은 흰 면 기준.
+- 겹침 자체가 접근성 문제: 문장 흰 면이 렌더 글자를 완전히 가려(3.2-4) 저시력 사용자는 가려진 부제·카드 본문을 캔버스에서 읽을 수 없다.
+- Q2: 빈 필수 칸은 캔버스에 시각 표시 0 — 화면 판독기는 필드 `aria-invalid`/게이트에서 알 수 있으나 보는 사용자는 "사라진 버튼"만 본다.
+- Q10: 배지 번호가 전부 1이라 "경고 1"이 무엇을 가리키는지 글자로 구분할 수 없다(색·위치에만 의존 — 6.6 "색 하나로만 알리지 않기"와 같은 결).
+- 비활성 내보내기 버튼(Q8)은 1.4.3 예외.
 
 ## 7. 남은 위험
-(V5에서 채움)
+1. **결정 필요(영환님 · Jarvis)**: 오버레이 문장 배치 — 추천 A(+0.18KB 상한 추정, 진입 여유 0.50) / 대안 B(−0.02KB, 문장 시각 표시 포기). 번들은 L3 추정이라 Developer 빌드 실측으로 확정.
+2. **Q2 명세 충돌**: r4.9 MQ-4("부모 오버레이 문제 표시가 가리킨다")와 코드 주석("빈 필수 값은 게이트 몫") 중 하나로 정리 필요. A안을 택하면 빈 필수 칸도 "문제 목록" 한 줄 + 섹션 테두리로 가리키는 확장이 자연스럽다(번들 별도 추정 필요 — 이 레인은 재지 않음).
+3. Q5(390 캔버스 약 3.5초 빈 상자)는 aside 백그라운드 탭 지연일 수 있어 **확인 필요** — 실제 Chrome 전경 탭에서 한 번 재측정 권장. 데스크톱 v2 흐름 1회차에서도 캔버스가 8초 넘게 그려지지 않아 미리보기 폭 전환(태블릿 → 데스크톱)으로 다시 그렸다(`logs/v4.js` redraw 분기). 같은 계열.
+4. 캡처 도구: ego-browser `Page.captureScreenshot` 시간 초과가 이번에도 재현(3b·3c·이번). aside 래퍼 방식이 대체 경로로 안정적이었다.
+5. 이 레인 변경은 `dev/active/m2a-close-design/`뿐. `git status --porcelain -- app design docs` 출력 빈 값(아래 8절) — `npm ci`·build 산출물(`node_modules`·`dist`)은 ignore 대상.
 
 ## 8. 서버
-(V5에서 채움)
+- 띄운 서버: `npx vite preview --host 127.0.0.1 --port 4339 --strictPort` — npx PID 49877 · node PID 49894. 4337은 손대지 않음.
+- 종료: `kill 49894 49877` → `ps -p 49877,49894` exit 1(둘 다 없음).
+- `lsof -nP -iTCP:4339 -sTCP:LISTEN` → **출력 없음, exit 1**(LISTEN 0).
+- `git status --porcelain -- app design docs` → 출력 없음(앱·디자인·문서 변경 0).
+- ego-browser TaskSpace 35: `finish({ keep: [] })` 호출(출력 없이 종료 — 닫힘 여부 표시는 받지 못함). aside 탭은 실행마다 `closeTab`.

@@ -7,7 +7,8 @@
 |---|---|---|---|
 | P0 | — | 56f0083 | 수신 · REPORT 골격 · gate.sh |
 | P1 | — | 1c61468 · bf42e17(정정) | 예산 선행 실측 — grid 시제품 diff `logs/p1-grid-prototype.diff` · `logs/p1-budget.txt` |
-| P2 split | `logs/p2-split-red.txt` (같은 커밋) | (아래 split 커밋) | hero/split + 공유 카피 블록 `kit/heroCopy.tsx` · 톤 공통 CSS |
+| P2 split | `logs/p2-split-red.txt` | 9b6f894 | hero/split + 공유 카피 블록 `kit/heroCopy.tsx` · 톤 공통 CSS |
+| P3 center | `logs/p3-center-red.txt` | (center 커밋) | hero/center — primary 면 · fullbleed 패널 글자·CTA 클래스 재사용 |
 
 ## 2. 변형별 판정 (KB-AC)
 (작성 중)

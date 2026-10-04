@@ -4,6 +4,7 @@ import { ContactForm } from "./ContactForm";
 import { FaqAccordion } from "./FaqAccordion";
 import { FooterBizExtended } from "./FooterBizExtended";
 import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
+import { HeroCenter } from "./HeroCenter";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
 import { HeroSplit } from "./HeroSplit";
 import { ServicesCards3 } from "./ServicesCards3";
@@ -17,6 +18,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "header/sticky-right-cta": HeaderStickyRightCta,
   "hero/fullbleed-left": HeroFullbleedLeft,
   "hero/split": HeroSplit,
+  "hero/center": HeroCenter,
   "about/story": AboutStory,
   "services/cards-3": ServicesCards3,
   "faq/accordion": FaqAccordion,

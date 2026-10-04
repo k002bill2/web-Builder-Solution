@@ -1,0 +1,137 @@
+/**
+ * PNG 캡처 (m2a 3.3 · 2a-05 5.13 r4.8 — `requestExport` 밖: 잡·스냅샷·멱등 0) — 조작 뒤 청크(PngSave가 누른 뒤 import).
+ * 지금 문서를 지금 미리보기 폭의 숨은 렌더 iframe(`sandbox="allow-scripts"` 그대로)에 새로 그려 serialize → 킷 CSS와 함께 XHTML →
+ * SVG `foreignObject` → **`data:` URL** Image → canvas → PNG. `blob:` URL로 그리면 Chrome·Edge·Safari 모두 캔버스가 오염된다(M2A-3c REPORT 4절).
+ * 폴백 섹션은 표식과 함께 담는다 — 정적 HTML 생성기의 "폴백 = 실패"는 HTML 전용. 새로 그리므로 선택·문제 오버레이·열린 details·시트 0(0.11).
+ */
+import type { PageDoc } from "../../../engine/contracts/pageDoc";
+import type { PreviewView } from "../../detail/previewView";
+import type { FrameRect, KitTokenInput } from "../../../render/protocol";
+import { emitEditorEvent } from "../editorEvents";
+import { FRAME_REM } from "../previewFrame";
+import { exportFileStem } from "../staticHtml/exportFileName";
+import { defaultFetchText, kitCss, openCaptureFrame, renderAndSerialize, type RenderChannel } from "../staticHtml/staticHtml";
+
+/** 캔버스 상한 — 높이 16384px · 넓이 16,777,216px(가장 좁은 브라우저 상한 기준). 넘으면 실패 상태 */
+export const MAX_CANVAS_HEIGHT = 16384;
+const MAX_CANVAS_AREA = 16_777_216;
+/** 숨은 iframe 준비·그리기·직렬화 상한 */
+const TIMEOUT_MS = 8000;
+
+export type PngErrorCode = "RENDER_TIMEOUT" | "CANVAS_TOO_TALL" | "CANVAS_TAINTED" | "INFRA";
+export class PngError extends Error {
+  constructor(
+    readonly code: PngErrorCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = "PngError";
+  }
+}
+
+export interface PngRequest {
+  readonly doc: PageDoc;
+  readonly kitTokens?: KitTokenInput;
+  readonly view: PreviewView;
+  readonly name: string;
+  readonly revision: number;
+}
+export interface PngDeps {
+  readonly open: (widthRem: number) => RenderChannel;
+  readonly fetchText: (url: string) => Promise<string>;
+  /** data: URL SVG → PNG Blob (canvas) */
+  readonly draw: (url: string, width: number, height: number) => Promise<Blob>;
+  readonly download: (blob: Blob, fileName: string) => void;
+  readonly timeoutMs: number;
+}
+
+/** `{이름}_{폭}_r{revision}.png` · 폴백이 있으면 `…_구조포함.png` (3.3 · K-AC-32) */
+export const pngFileName = (name: string, width: number, revision: number, fallbackCount: number) =>
+  `${exportFileStem(name)}_${width}_r${revision}${fallbackCount > 0 ? "_구조포함" : ""}.png`;
+
+export const svgDataUrl = (svg: string) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+
+/** 사이트 루트 마크업 + 킷 CSS → SVG(원래 폭 × 전체 길이). 실행 코드·on*·열린 details는 지운다(불활성 문서 안에서) */
+export function buildCaptureSvg({ markup, css, width, height }: { readonly markup: string; readonly css: string; readonly width: number; readonly height: number }): string {
+  const page = document.implementation.createHTMLDocument("");
+  page.body.innerHTML = markup;
+  const site = page.body.firstElementChild;
+  if (!site?.hasAttribute("data-site-root") || page.body.childElementCount !== 1) throw new PngError("INFRA", "사이트 루트가 없는 마크업입니다");
+  for (const el of site.querySelectorAll("script, iframe, object, embed")) el.remove();
+  for (const el of [site, ...site.querySelectorAll("*")]) {
+    for (const { name } of [...el.attributes]) if (name.startsWith("on")) el.removeAttribute(name);
+  }
+  for (const el of site.querySelectorAll("details[open]")) el.removeAttribute("open");
+  const style = page.createElement("style");
+  style.textContent = css;
+  page.head.replaceChildren(style);
+  page.documentElement.setAttribute("style", `width:${width}px`);
+  page.body.setAttribute("style", "margin:0");
+  const xhtml = new XMLSerializer().serializeToString(page.documentElement);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><foreignObject x="0" y="0" width="${width}" height="${height}">${xhtml}</foreignObject></svg>`;
+}
+
+/** 문서 바닥 = 섹션 사각형(slotKey null)의 가장 아래 */
+const pageBottom = (rects: readonly FrameRect[]) => Math.ceil(rects.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0));
+
+export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ readonly fileName: string; readonly fallbackCount: number; readonly blob: Blob }> {
+  const rem = FRAME_REM[request.view];
+  const width = rem * 16;
+  const css = await kitCss(deps.fetchText);
+  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측)
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0).catch((error: unknown) => {
+    throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
+  });
+  const height = pageBottom(rects);
+  if (height <= 0 || height > MAX_CANVAS_HEIGHT || width * height > MAX_CANVAS_AREA) throw new PngError("CANVAS_TOO_TALL", "페이지가 PNG 한 장 상한을 넘습니다");
+  const fallbackCount = (markup.match(/data-fallback="true"/g) ?? []).length;
+  const blob = await deps.draw(svgDataUrl(buildCaptureSvg({ markup, css, width, height })), width, height);
+  return { fileName: pngFileName(request.name, width, request.revision, fallbackCount), fallbackCount, blob };
+}
+
+async function drawPng(url: string, width: number, height: number): Promise<Blob> {
+  const image = new Image();
+  image.src = url;
+  await image.decode();
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) throw new PngError("INFRA", "캔버스를 만들 수 없습니다");
+  context.drawImage(image, 0, 0);
+  return new Promise<Blob>((resolve, reject) => {
+    try {
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new PngError("CANVAS_TOO_TALL", "PNG를 만들 수 없는 크기입니다"))), "image/png");
+    } catch {
+      reject(new PngError("CANVAS_TAINTED", "캔버스가 오염됐습니다"));
+    }
+  });
+}
+
+/** 부모 문서 `<a download>` 클릭 → 제거 · object URL은 내려받기 시작 뒤 해제 */
+export function downloadBlob(blob: Blob, fileName: string): void {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.hidden = true;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, MAX_CANVAS_HEIGHT / 16), fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
+
+/** 누름 → 캡처 → 내려받기 · 계측(코드·개수·열거값만 — 이름·파일 이름 0). 성공 문장을 돌려준다 */
+export async function savePng(request: PngRequest, deps: PngDeps = DEFAULT_DEPS): Promise<string> {
+  emitEditorEvent({ name: "png_requested", view: request.view });
+  const { fileName, fallbackCount, blob } = await capturePng(request, deps);
+  deps.download(blob, fileName);
+  emitEditorEvent({ name: "png_succeeded", view: request.view, fallback_count: fallbackCount });
+  return `PNG를 내려받았습니다 · ${fileName}`;
+}
+
+export function reportFailure(error: unknown): void {
+  emitEditorEvent({ name: "png_failed", reason: error instanceof PngError ? error.code : "INFRA" });
+}

@@ -1,6 +1,6 @@
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
 import { drawDoc, without } from "../../../render/testing/drawKit";
-import { buildStaticHtml } from "./staticMarkup";
+import { STATIC_MENU_SCRIPT, buildStaticHtml } from "./staticMarkup";
 
 /** 실제 렌더 문서 본문(PageDocument + 킷)을 그린 사이트 루트 마크업 — 렌더 문서 serializeSite가 보내는 것과 같은 모양 */
 const siteMarkup = () => drawDoc(without(sampleDoc(), "cta-band")).querySelector("[data-site-root]")!.outerHTML;
@@ -26,19 +26,19 @@ describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
     expect(doc.querySelectorAll("header, main, footer").length).toBeGreaterThanOrEqual(3);
   });
 
-  it("사용자 글자는 DOM으로만 — 제목·설명의 <script>·따옴표는 글자로 남고 요소가 되지 않는다", () => {
+  it("사용자 글자는 DOM으로만 — 제목·설명의 <script>·따옴표는 글자로 남고 요소가 되지 않는다(스크립트 = 고정 1개 그대로)", () => {
     const doc = parse(build({ title: '</title><script>alert(1)</script>', description: '"><script>x</script>' }));
-    expect(doc.querySelectorAll("script")).toHaveLength(0);
+    expect([...doc.querySelectorAll("script")].map((s) => s.textContent)).toEqual([STATIC_MENU_SCRIPT]);
     expect(doc.title).toBe("</title><script>alert(1)</script>");
     expect(doc.querySelector('meta[name="description"]')!.getAttribute("content")).toBe('"><script>x</script>');
   });
 
-  it("script 0 · on* 속성 0 · details[open] 0 · 편집기 흔적(data-instance-id·data-slot·data-section·data-cta) 0 — CSS가 쓰는 data-kit·data-layout·data-tone·data-always·data-site-root는 남긴다", () => {
+  it("고정 스크립트(바이트 일치) 외 script 0 · on* 속성 0 · details[open] 0 · 편집기 흔적(data-instance-id·data-slot·data-section·data-cta) 0 — CSS가 쓰는 data-kit·data-layout·data-tone·data-always·data-site-root는 남긴다", () => {
     const dirty = siteMarkup()
       .replace("<details", '<details open ontoggle="x()"')
       .replace("</header>", '<script>alert(1)</script><img src="data:," onerror="x()" alt=""></header>');
     const doc = parse(build({ markup: dirty }));
-    expect(doc.querySelectorAll("script")).toHaveLength(0);
+    expect([...doc.querySelectorAll("script")].map((s) => s.textContent)).toEqual([STATIC_MENU_SCRIPT]);
     expect(doc.querySelectorAll("details[open]")).toHaveLength(0);
     expect(doc.querySelectorAll("details").length).toBeGreaterThan(0);
     const attrs = [...doc.querySelectorAll("*")].flatMap((el) => [...el.attributes].map((a) => a.name));
@@ -79,5 +79,47 @@ describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
 
   it("사이트 루트가 없는 마크업은 실패", () => {
     expect(() => build({ markup: "<p>x</p>" })).toThrow(/사이트 루트/);
+  });
+});
+
+describe("고정 인라인 스크립트 — 메뉴 시트 안 앵커 → 시트 닫기 (2a-05 SPEC r4.12 · K-AC-12)", () => {
+  const scripts = (html: string) => [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+
+  it("문서마다 바이트 동일 — 결과 HTML에 `<script>{생성기 상수}</script>` 정확히 1개 · 속성 0(src·type·on* 없음) · 외부 요청 0", () => {
+    const a = build();
+    const b = build({ title: "다른 가게", description: "다른 설명", markup: drawDoc(without(without(sampleDoc(), "cta-band"), "about")).querySelector("[data-site-root]")!.outerHTML });
+    expect(a).not.toBe(b);
+    for (const html of [a, b]) {
+      const found = scripts(html);
+      expect(found).toHaveLength(1);
+      expect(found[0]![0]).toBe(`<script>${STATIC_MENU_SCRIPT}</script>`);
+    }
+    expect(STATIC_MENU_SCRIPT).not.toMatch(/fetch|XMLHttpRequest|import|src=|https?:|location|innerHTML|eval/);
+  });
+
+  it("사용자 글자(제목·설명·슬롯 마크업)에 </script>·<script>가 있어도 스크립트는 1개 그대로 · 사용자 글자가 스크립트에 들어가지 않는다", () => {
+    const evil = "</script><script>alert(1)</script>";
+    const markup = siteMarkup().replace("</h1>", `${evil.replace(/</g, "&lt;")}</h1>`);
+    const html = build({ title: evil, description: evil, markup });
+    // 문자열 검색은 속성값 안의 글자 "<script>"도 잡으므로 파서로 센다(속성값·제목은 글자일 뿐 요소가 아니다)
+    expect([...parse(html).querySelectorAll("script")].map((el) => el.textContent)).toEqual([STATIC_MENU_SCRIPT]);
+    expect(html.split(`<script>${STATIC_MENU_SCRIPT}</script>`)).toHaveLength(2);
+  });
+
+  it("동작 — [popover] 안 a[href^=\"#\"] 누름 → 그 시트 hidePopover() · 시트 밖 앵커·외부 링크 → 아무것도 안 함 · hidePopover 없으면 아무것도 안 함(오류 0)", () => {
+    const page = document.implementation.createHTMLDocument("");
+    page.body.innerHTML =
+      '<div popover id="sheet"><a href="#s-contact-1" id="in">문의</a><a href="https://x.test" id="ext">밖</a></div><a href="#s-hero-1" id="out">처음</a><div popover id="bare"><a href="#s-a" id="bare-a"><span id="deep">글</span></a></div>';
+    const hide = vi.fn();
+    Object.defineProperty(page.getElementById("sheet")!, "hidePopover", { value: hide });
+    Object.defineProperty(page.getElementById("bare")!, "hidePopover", { value: undefined }); // 기능 감지 — 없는 브라우저
+    new Function("document", STATIC_MENU_SCRIPT)(page);
+    const click = (id: string) => page.getElementById(id)!.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    expect(click("out")).toBe(true);
+    expect(click("ext")).toBe(true);
+    expect(hide).not.toHaveBeenCalled();
+    expect(click("in")).toBe(true); // 기본 동작(앵커 이동)을 막지 않는다
+    expect(hide).toHaveBeenCalledTimes(1);
+    expect(() => click("deep")).not.toThrow();
   });
 });

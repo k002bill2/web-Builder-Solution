@@ -59,6 +59,8 @@ const STUDIO_AFTER_ACTION = [
   "src/components/studio/ContactOwnerNote.tsx",
   "src/features/studio/exportFlow.ts",
   "src/components/studio/ExportAfter.tsx",
+  // PNG 캡처(m2a 3.3 — M2A-3c): PngSave "PNG 내려받기" onClick → loadPng
+  "src/features/studio/png/pngCapture.ts",
 ];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];
@@ -75,7 +77,7 @@ const COMPARE_AFTER_ACTION = [
  *  - page: 라우트 페이지 모듈(첫 화면 = 공통 + 이 청크의 정적 import, ≤ 100KB)
  *  - auto: 자동 dynamic import(진입 직후 = 첫 화면 + 이 목록의 정적 closure, ≤ 125KB)
  *  - afterAction: 조작 뒤 dynamic import(진입 직후 합계에 없는 파일 크기만 출력)
- *  - eagerBudgetKb: 진입 직후 한도(없으면 125 — ADR-004 개정 1). 지금은 /studio/:projectId만 127(개정 3)
+ *  - eagerBudgetKb: 진입 직후 한도(없으면 125 — ADR-004 개정 1). 지금은 /studio/:projectId만 128(개정 4)
  */
 const SCENARIOS = [
   { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC },
@@ -111,7 +113,8 @@ const SCENARIOS = [
     auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx", "src/features/studio/gateCheck.ts"],
     afterAction: STUDIO_AFTER_ACTION,
     // ADR-004 개정 3 결정 2 — M2A-3a가 SPEC대로(게이트 펼침 · runGate 진입 자동) 넣고 125를 넘어 이 라우트 진입 한도만 127(멈춤선 126.70). 다른 라우트는 125
-    eagerBudgetKb: 127,
+    // ADR-004 개정 4 결정 1 — m2a SPEC 3.3 PNG 묶음(진입 때부터 보임)으로 127 → 128(멈춤선 127.70). 다음 상향 전 진입 청크 구조 점검 필수(결정 3)
+    eagerBudgetKb: 128,
   },
 ];
 

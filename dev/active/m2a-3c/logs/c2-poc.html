@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><title>png poc</title></head><body>
+<pre id="out">running</pre>
+<script type="module">
+const q = new URLSearchParams(location.search);
+const W = Number(q.get("w") || 1280), MODE = q.get("mode") || "data", B = q.get("b") || "unknown";
+const out = {};
+try {
+  const html = await (await fetch("r2.html")).text();
+  // 높이: 같은 출처 iframe에 폭 W로 그려 문서 높이를 잰다(앱에서는 렌더 문서 rects 바닥)
+  const frame = Object.assign(document.createElement("iframe"), { srcdoc: html.replace(/<script>[\s\S]*?<\/script>/, "") });
+  Object.assign(frame.style, { width: W + "px", height: "800px", position: "fixed", left: "-300vw", border: "0" });
+  document.body.append(frame);
+  await new Promise((r) => (frame.onload = r));
+  const H = frame.contentDocument.documentElement.scrollHeight;
+  frame.remove();
+  const src = new DOMParser().parseFromString(html, "text/html");
+  const page = document.implementation.createHTMLDocument("");
+  const style = page.createElement("style");
+  style.textContent = src.querySelector("style").textContent;
+  page.head.replaceChildren(style);
+  page.body.replaceChildren(page.importNode(src.querySelector("[data-site-root]"), true));
+  page.body.setAttribute("style", "margin:0");
+  page.documentElement.setAttribute("style", `width:${W}px`);
+  const xhtml = new XMLSerializer().serializeToString(page.documentElement);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><foreignObject x="0" y="0" width="${W}" height="${H}">${xhtml}</foreignObject></svg>`;
+  const url = MODE === "blob" ? URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" })) : "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  const img = new Image(); img.src = url; await img.decode();
+  const canvas = Object.assign(document.createElement("canvas"), { width: W, height: H });
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  Object.assign(out, { W, H, svgBytes: svg.length });
+  try {
+    const px = ctx.getImageData(Math.floor(W / 2), 20, 1, 1).data; out.pxHeader = [...px];
+    const px2 = ctx.getImageData(Math.floor(W / 2), Math.floor(H / 2), 1, 1).data; out.pxMid = [...px2];
+    const all = ctx.getImageData(0, 0, W, H).data; let n = 0; for (let i = 0; i < all.length; i += 4 * 97) if (all[i] < 240 || all[i + 1] < 240 || all[i + 2] < 240) n++;
+    out.nonWhitePct = Math.round((n / (all.length / (4 * 97))) * 1000) / 10;
+    const hero = ctx.getImageData(Math.floor(W * 0.8), Math.floor(H * 0.05), 1, 1).data; out.pxHero = [...hero];
+  } catch (e) { out.getImageData = e.name; }
+  out.ua = navigator.userAgent.match(/(Version|Chrome|Edg)\/[\d.]+/g)?.join(" ");
+  const blob = await new Promise((res, rej) => { try { canvas.toBlob(res, "image/png"); } catch (e) { rej(e); } });
+  out.toBlob = blob ? blob.size : null;
+  out.tainted = false;
+  if (blob) window.__png = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+} catch (e) { out.error = `${e.name}: ${e.message}`; out.tainted = e.name === "SecurityError"; }
+document.getElementById("out").textContent = JSON.stringify(out);
+window.__out = out;
+new Image().src = `/log?b=${B}&w=${W}&mode=${MODE}&r=${encodeURIComponent(JSON.stringify(out))}`;
+</script></body></html>

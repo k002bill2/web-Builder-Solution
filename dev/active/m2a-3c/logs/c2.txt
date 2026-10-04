@@ -1,0 +1,21 @@
+# C2 캡처 방식 PoC — SVG foreignObject → Image → canvas → toBlob("image/png") (새 의존성 0)
+# 입력: R2에서 앱이 새로 내보낸 HTML(logs/r2-export_r2.html)의 사이트 루트 마크업 + 인라인 CSS — serialize 결과 + kitCss와 같은 재료
+# PoC 페이지: logs/c2-poc.html (python 127.0.0.1:4339) — 결과를 /log?… GET 으로 서버 접근 로그에 남김(브라우저 자동화 없이 Safari·Edge·Chrome을 `open -a`로 열어 측정)
+# 높이 = 같은 출처 iframe(폭 W) scrollHeight(PoC 전용 — 앱은 렌더 문서 rects 바닥)
+ego Chromium 152 (TaskSpace 34):
+  1280 data: {"W":1280,"H":2955,"toBlob":1091148,"tainted":false}
+  1280 blob: SecurityError: Failed to execute 'toBlob' on 'HTMLCanvasElement': Tainted canvases may not be exported.
+  390  data: {"W":390,"H":2726,"toBlob":353268,"tainted":false}
+Safari 27.0.1:
+  1280 data: {"H":2954,"nonWhitePct":65.6,"pxHero":[95,71,52,255],"toBlob":1703227,"tainted":false}
+  1280 blob: SecurityError: The operation is insecure.
+  390  data: {"H":2723,"nonWhitePct":63.6,"pxHero":[84,66,50,255],"toBlob":314819,"tainted":false}
+Chrome 154:
+  1280 data: {"H":2955,"nonWhitePct":65.1,"pxHero":[86,66,51,255],"toBlob":1091129,"tainted":false}
+Edge 151:
+  1280 data: {"H":2955,"toBlob":1091148,"tainted":false}
+  1280 blob: SecurityError: Tainted canvases may not be exported.
+  390  data: {"H":2726,"nonWhitePct":63.6,"pxHero":[85,65,50,255],"toBlob":353268,"tainted":false}
+Firefox: 이 기기에 설치돼 있지 않음 — 미실측
+결과 PNG(ego Chromium): shots/c2-poc-1280.png · shots/c2-poc-390.png — 1280 = 데스크톱 배치(nav·CTA 바 오른쪽), 390 = 모바일 배치("메뉴" 버튼 · 1단) → 미디어 쿼리가 SVG 이미지 폭으로 판정됨
+결정: SVG는 data: URL로만 그린다(blob: URL은 세 엔진 모두 캔버스 오염)

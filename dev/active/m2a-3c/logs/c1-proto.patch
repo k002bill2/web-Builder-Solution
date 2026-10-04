@@ -1,0 +1,193 @@
+diff --git a/app/src/components/studio/PngSave.tsx b/app/src/components/studio/PngSave.tsx
+new file mode 100644
+index 0000000..a58bf6b
+--- /dev/null
++++ b/app/src/components/studio/PngSave.tsx
+@@ -0,0 +1,58 @@
++import { useState } from "react";
++import { retryableImport } from "../../data/chunkRetry";
++import type { PreviewView } from "../../features/detail/previewView";
++import type { PngRequest } from "../../features/studio/png/pngCapture";
++import { FRAME_REM, PREVIEW_WIDTH_OPTIONS } from "../../features/studio/previewFrame";
++
++/** 캡처 청크(조작 뒤 — m2a 3.3 "캡처 라이브러리는 누른 뒤에만") */
++const loadPng = retryableImport(() => import("../../features/studio/png/pngCapture"));
++
++/**
++ * PNG 내려받기 (m2a 3.3 · K-AC-19) — 내보내기 묶음 다음. `requestExport` 밖, 게이트·폴백 차단과 무관하게 열림.
++ * 성공 문장·계측은 캡처 청크가 만든다. 실패 문장은 여기 — 캡처 청크를 받지 못해도 떠야 한다(M2A-3a Codex P2-1 r2).
++ */
++export function PngSave({ drawn, view, fallbackCount, capture }: { readonly drawn: boolean; readonly view: PreviewView; readonly fallbackCount: number; readonly capture: () => PngRequest }) {
++  const [state, setState] = useState<{ readonly busy?: true; readonly done?: string; readonly failed?: true }>({});
++  const press = () => {
++    if (!drawn || state.busy) return;
++    setState({ busy: true });
++    loadPng()
++      .then((png) => png.savePng(capture()))
++      .then(
++        (done) => setState({ done }),
++        (error: unknown) => (loadPng().then((png) => png.reportFailure(error), () => undefined), setState({ failed: true })),
++      );
++  };
++  return (
++    <div className="flex flex-col items-start gap-2 border-t border-line-normal pt-3">
++      <h4 className="ds-caption1 text-label-alternative">이미지로 저장</h4>
++      <button
++        type="button"
++        aria-disabled={!drawn || state.busy}
++        aria-busy={state.busy}
++        aria-describedby="png-wait png-caption"
++        onClick={press}
++        className="ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"
++      >
++        {state.busy ? "PNG 만드는 중…" : "PNG 내려받기"}
++      </button>
++      {!drawn && (
++        <p id="png-wait" className="ds-caption1 text-label-neutral">
++          미리보기를 그리는 중입니다
++        </p>
++      )}
++      <p id="png-caption" className="ds-caption1 text-label-alternative">
++        지금 미리보기 폭({PREVIEW_WIDTH_OPTIONS.find((o) => o.value === view)?.label} · {FRAME_REM[view] * 16})의 페이지 전체를 한 장으로 저장합니다.
++        {fallbackCount > 0 && ` 구조 미리보기 섹션 ${fallbackCount}개는 표식과 함께 담깁니다.`}
++      </p>
++      <p role="status" className="ds-caption1">
++        {state.done}
++      </p>
++      {state.failed && (
++        <p role="alert" className="ds-caption1 text-status-negative">
++          PNG를 만들지 못했습니다 — 다시 눌러 주세요
++        </p>
++      )}
++    </div>
++  );
++}
+diff --git a/app/src/components/studio/StructureCanvas.tsx b/app/src/components/studio/StructureCanvas.tsx
+index d8e3d80..62a79a3 100644
+--- a/app/src/components/studio/StructureCanvas.tsx
++++ b/app/src/components/studio/StructureCanvas.tsx
+@@ -188,6 +188,7 @@ export function StructureCanvas({
+   head,
+   kitTokens,
+   images,
++  onDrawn,
+ }: {
+   readonly doc: PageDoc;
+   readonly selectedId: string;
+@@ -201,6 +202,8 @@ export function StructureCanvas({
+   readonly kitTokens?: KitTokenInput;
+   /** 로컬 이미지 id → Blob(이미지 보관소 — 아직 호출처 없음, 2a-05 5.9 보관소가 생기면 넘긴다) */
+   readonly images?: Readonly<Record<string, Blob>>;
++  /** 지금 문서를 다 그렸는지(사각형 있음) — PNG 버튼 "준비 전"(m2a 3.3) */
++  readonly onDrawn?: (drawn: boolean) => void;
+ }) {
+   const [area, available] = useWidth();
+   const frameRem = FRAME_REM[view];
+@@ -212,6 +215,8 @@ export function StructureCanvas({
+   const [height, setHeight] = useState<number>();
+   const bottom = rects?.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0);
+   if (bottom !== undefined && bottom > 0 && bottom !== height) setHeight(bottom);
++  const drawn = rects !== undefined;
++  useEffect(() => onDrawn?.(drawn), [onDrawn, drawn]);
+   const issues = docIssues(doc);
+   return (
+     <section
+diff --git a/app/src/components/studio/StudioLayout.tsx b/app/src/components/studio/StudioLayout.tsx
+index 4f18fb6..1d773de 100644
+--- a/app/src/components/studio/StudioLayout.tsx
++++ b/app/src/components/studio/StudioLayout.tsx
+@@ -34,6 +34,7 @@ import { fallbackReason, fallbackSections, firstBlockRow, gateBlockReason, gateC
+ import { useExportFlow } from "../../features/studio/useExportFlow";
+ import { ExportButtons, type ExportReason } from "./ExportButtons";
+ import { ExportRetryAlert } from "./ExportRetryAlert";
++import { PngSave } from "./PngSave";
+ import { emitEditorEvent } from "../../features/studio/editorEvents";
+ 
+ const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+@@ -77,6 +78,7 @@ export function StudioLayout({
+   const [selected, setSelected] = useState(() => initialSelection(doc));
+   const [tab, setTab] = useState<StudioTab>("sections");
+   const [view, setView] = useState<PreviewView>("desktop");
++  const [drawn, setDrawn] = useState(false);
+   const selectedId = resolveSelection(doc, selected);
+   const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
+   const root = useRef<HTMLDivElement>(null);
+@@ -340,6 +342,7 @@ export function StudioLayout({
+               {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
+             </Suspense>
+           )}
++          <PngSave drawn={drawn} view={view} fallbackCount={fallbacks.length} capture={() => ({ doc, kitTokens, view, name: project.name, revision: save.savedRevision() })} />
+         </>
+       }
+     >
+@@ -374,7 +377,7 @@ export function StudioLayout({
+             { id: "gate", label: "검사", panel: gate },
+           ]}
+         />
+-        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
++        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+       </div>
+     );
+   }
+@@ -405,7 +408,7 @@ export function StudioLayout({
+         </StudioToolbar>
+         <div className="flex min-h-0 flex-1">
+           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+-            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
++            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+           </div>
+           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+             {noticeRegion}
+@@ -437,7 +440,7 @@ export function StudioLayout({
+           <ThemePanel doc={doc} profileId={project.profileId} />
+         </div>
+         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+-          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
++          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+         </div>
+         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+           {edit}
+diff --git a/app/src/features/studio/editorEvents.ts b/app/src/features/studio/editorEvents.ts
+index cf28309..50d249e 100644
+--- a/app/src/features/studio/editorEvents.ts
++++ b/app/src/features/studio/editorEvents.ts
+@@ -9,7 +9,10 @@ export type EditorEvent =
+   | { readonly name: "export_requested"; readonly format: "react-zip" | "static-html" }
+   | { readonly name: "export_succeeded"; readonly format: "react-zip" | "static-html" }
+   | { readonly name: "export_failed"; readonly reason: string }
+-  | { readonly name: "snapshot_created"; readonly kind: "auto"; readonly reason: "export" };
++  | { readonly name: "snapshot_created"; readonly kind: "auto"; readonly reason: "export" }
++  | { readonly name: "png_requested"; readonly view: "desktop" | "tablet" | "mobile" }
++  | { readonly name: "png_succeeded"; readonly view: "desktop" | "tablet" | "mobile"; readonly fallback_count: number }
++  | { readonly name: "png_failed"; readonly reason: string };
+ 
+ export function emitEditorEvent(event: EditorEvent): void {
+   window.dispatchEvent(new CustomEvent<EditorEvent>(EDITOR_EVENT, { detail: event }));
+diff --git a/app/src/features/studio/png/pngCapture.ts b/app/src/features/studio/png/pngCapture.ts
+new file mode 100644
+index 0000000..b0378a0
+--- /dev/null
++++ b/app/src/features/studio/png/pngCapture.ts
+@@ -0,0 +1,22 @@
++/** PNG 캡처 (m2a 3.3) — 조작 뒤 청크. (C1 시제품 자리) */
++import type { PageDoc } from "../../../engine/contracts/pageDoc";
++import type { PreviewView } from "../../detail/previewView";
++import type { KitTokenInput } from "../../../render/protocol";
++import { emitEditorEvent } from "../editorEvents";
++
++export interface PngRequest {
++  readonly doc: PageDoc;
++  readonly kitTokens?: KitTokenInput;
++  readonly view: PreviewView;
++  readonly name: string;
++  readonly revision: number;
++}
++
++export async function savePng(request: PngRequest): Promise<string> {
++  emitEditorEvent({ name: "png_requested", view: request.view });
++  return `PNG를 내려받았습니다 · ${request.name}_r${request.revision}.png`;
++}
++
++export function reportFailure(error: unknown): void {
++  emitEditorEvent({ name: "png_failed", reason: (error as { readonly code?: string } | undefined)?.code ?? "UNKNOWN" });
++}

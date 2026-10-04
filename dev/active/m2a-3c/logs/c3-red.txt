@@ -1,0 +1,30 @@
+     × 폴백 섹션이 있어도 실패하지 않는다 · 표식(data-kit-marker)·data-fallback 그대로 — 정적 HTML 생성기의 '폴백 = 실패'와 분리 30ms
+     × SVG = 원래 폭 × 전체 길이 · foreignObject 안 XHTML(사이트 루트 1개 + 킷 CSS 인라인) · script·iframe·on* 0 · details[open] 0 7ms
+     × 그리는 URL = data:image/svg+xml (blob: URL은 Chrome·Edge·Safari 모두 캔버스 오염 — REPORT 4절) 0ms
+     × {이름}_{폭}_r{revision}.png · 폴백 있으면 _구조포함 · ??? → page · con → page-con · 40자 · 서로게이트 쌍 0ms
+     × 숨은 iframe 폭 = 지금 미리보기 폭(축소 비율 무시) · 높이 = 렌더 문서 사각형 바닥 · 그리기 = data: URL · 파일 이름 = 폭·revision·_구조포함 · iframe 닫음 · requestExport 경로 0 8ms
+     × 높이가 상한을 넘으면 CANVAS_TOO_TALL 실패(그리지 않음) 5ms
+     × 렌더 문서가 답하지 않으면 RENDER_TIMEOUT · iframe 닫음 5ms
+     × 성공 → 부모 <a download>로 내려받기 · 문장 'PNG를 내려받았습니다 · {파일 이름}' · png_requested(view) · png_succeeded(view, fallback_count) — 이름·파일 이름·슬롯 글자 0 7ms
+     × 실패 → png_failed(reason = 오류 코드) · 알 수 없는 오류 = INFRA · 사용자 글자 0 0ms
+     × 기본 내려받기 = 부모 문서 <a download> 클릭 뒤 제거 · object URL 해제 2ms
+     × 이름표 '이미지로 저장' · outline 버튼 'PNG 내려받기' · 캡션(폭 이름 · 폭) · 폴백 있으면 두 번째 문장 · aria-describedby = 캡션 68ms
+     × 진행 → aria-busy + 'PNG 만드는 중…' · 두 번 누름 무시 → 성공 role=status 문장 · 버튼 원래 글자 3009ms
+     × 실패 → role=alert 'PNG를 만들지 못했습니다 — 다시 눌러 주세요' · png_failed 보고 · 같은 버튼으로 다시 시도 3007ms
+     × 게이트 차단 + 폴백 → 내보내기 두 버튼은 막혀도 PNG는 열림 · aria-describedby에 내보내기 이유 id 0 · 누르면 지금 문서·폭·이름·revision으로 캡처 · requestExport 0 414ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+Error: [2mexpect([22m[31melement[39m[2m).not.toHaveAttribute([22m[32m[32m"aria-disabled"[32m[39m[2m) // element.hasAttribute("aria-disabled")[22m
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-busy"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-busy") === "true"[22m
+TestingLibraryElementError: Unable to find role="alert"
+AssertionError: expected 3 to be 1 // Object.is equality
+TypeError: buildCaptureSvg is not a function
+ FAIL  src/features/studio/png/pngCapture.test.ts > PNG 캡처 문서 (m2a 3.3 · 2a-05 r4.8 — PNG 경로는 폴백 허용) > SVG = 원래 폭 × 전체 길이 · foreignObject 안 XHTML(사이트 루트 1개 + 킷 CSS 인라인) · script·iframe·on* 0 · details[open] 0
+TypeError: buildCaptureSvg is not a function
+     63|   it("SVG = 원래 폭 × 전체 길이 · foreignObject 안 XHTML(사이트 루트 1개 + 킷 CSS 인라인…
+TypeError: svgDataUrl is not a function
+TypeError: pngFileName is not a function
+TypeError: capturePng is not a function
+TypeError: capturePng is not a function
+TypeError: capturePng is not a function
+AssertionError: expected 'PNG를 내려받았습니다 ·   강남 카페/리브랜딩:2호점  _r12…' to be 'PNG를 내려받았습니다 · 강남-카페-리브랜딩-2호점_390_r12…' // Object.is equality
+TypeError: PngError is not a constructor

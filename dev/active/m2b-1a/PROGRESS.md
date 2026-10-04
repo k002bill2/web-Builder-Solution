@@ -17,9 +17,9 @@
 - [x] P5 hero/text (KB-AC-18 [U] · 19 규칙) — HeroText(강조선 = 빈 div aria-hidden) · RED logs/p5-text-red.txt(4 실패) → gate OK(렌더 JS 80.45 · CSS 6.63 · /studio 127.42)
 - [x] P6 hero/image (KB-AC-20·22 [U] · 21 규칙) — HeroImage(카피 띠 → 미디어, 영역 이름 media/copy) · RED logs/p6-image-red.txt(6 실패) → gate OK(렌더 JS 80.50 · CSS 6.72 · /studio 127.41)
 - [x] P7 공통 [U]/[G] (KB-AC-30 · 32 · 33 · 35 정적 HTML 몫 · K-AC-04) — kit/heroVariants.test.tsx 5건. 구현 뒤 판정 테스트라 RED 없음 → 변이 검사(HeroGrid 타일 B 클래스 바꿈 → 선택자 매칭 실패 1, 되돌림 → 통과, logs/p7-mutation.txt) · gate OK
-- [ ] P8 REPORT 갱신(브라우저 전) → 브라우저 [B]/[V] 4337: QB-5~9·12·13 1280·768·390 · KB-AC-31·34·35
-- [ ] P9 Codex review --scope branch --base f113f2c 1회 · P1만 수정
-- [ ] P10 REPORT 마감 · 서버 종료 · lsof 4337·4339 = 0
+- [x] P8 REPORT 갱신(9306662) → 브라우저 [B]/[V] 4337: [B] 13건 PASS(logs/qb-judge.txt · qb-b.json) · 캡처 28장(ego 캡처 시간 초과 → Chrome headless, shots.sh)
+- [x] P9 Codex review --scope branch --base f113f2c 1회 — 지적 0 (logs/codex.txt)
+- [x] P10 REPORT 마감 · 서버 종료(PID 16316·16343) · lsof 4337·4339 = 0
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

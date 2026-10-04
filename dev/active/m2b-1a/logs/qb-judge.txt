@@ -1,0 +1,21 @@
+10@1280 PASS copy.w=528 fig.w=528 ratio=1.00
+10@768 PASS copy.w=383.3 fig.w=273.8 ratio=1.40
+10@390 PASS copy.bottom=240.1 fig.y=264.1 fig 343x257.3
+12@1280 PASS copy.w=500.4 60ch=500.4
+12@390 PASS copy.w=343 60ch=500.4
+14@1280 PASS delta=0 copy.w=500.4 60ch=500.4
+14@390 PASS delta=0 copy.w=375 60ch=500.4
+16@1280 PASS A.h=377.5 B.h=182.8 C.h=182.8 gap=12.0
+16@768 PASS A.h=423.1 B.h=205.6 C.h=205.6 gap=12.0
+16@390 PASS tiles=1 A=343x257.3
+18@1280 PASS h1.x=88.5 inner=88.5
+18@768 PASS h1.x=32 inner=32
+18@390 PASS h1.x=16 inner=16
+19@1280 PASS h1.w=497.9 9/12=816.0
+20@1280 PASS media.bottom=603.1 h1.y=699.1
+21@1280 PASS ratio=2.334 want=2.333 media.w=1265 sec.w=1265
+20@768 PASS media.bottom=484.6 h1.y=580.6
+21@768 PASS ratio=1.778 want=1.778 media.w=753 sec.w=753
+20@390 PASS media.bottom=342.3 h1.y=390.3
+21@390 PASS ratio=1.333 want=1.333 media.w=375 sec.w=375
+QB9 h1 first screen(<=800) PASS h1.y=699.1 h1.bottom=760.2

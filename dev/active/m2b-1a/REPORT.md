@@ -12,32 +12,34 @@
 | P4 grid | `logs/p4-grid-red.txt` | a2af634 | hero/grid — 타일 A 이미지 1회 + 색 타일 B·C |
 | P5 text | `logs/p5-text-red.txt` | f1a5595 | hero/text — 강조선 · 제목 9/12 |
 | P6 image | `logs/p6-image-red.txt` | 726392c | hero/image — 미디어 위 · 카피 아래(영역 이름) |
-| P7 공통 | 변이 검사 `logs/p7-mutation.txt` | (공통 커밋) | `kit/heroVariants.test.tsx` — KB-AC-30·32·33·35 [U]/[G] |
+| P7 공통 | 변이 검사 `logs/p7-mutation.txt` | a2e013a | `kit/heroVariants.test.tsx` — KB-AC-30·32·33·35 [U]/[G] |
+| — | — | 9306662 | REPORT 2·3·4·7절(브라우저 전 갱신) |
+| P8~P10 | — | (마감 커밋) | 브라우저 판정 `qb.mjs`·`shots.sh`·logs·shots · Codex · REPORT 마감 |
 
 ## 2. 변형별 판정 (KB-AC)
-표기: [U] jsdom · [G] 파일 검사 · [B] 브라우저(127.0.0.1:4337 렌더 문서, 1280·768·390). [B] 칸은 브라우저 단계(P8)에서 채운다.
+표기: [U] jsdom · [G] 파일 검사 · [B] 브라우저(127.0.0.1:4337 렌더 문서, 1280·768·390). [B] 근거 `logs/qb-b.json`(원자료) · `logs/qb-judge.txt`(판정). 13건 PASS / FAIL 0 / 미판정 0 (header 3변형 KB-AC-32 몫은 1b).
 
 | KB-AC | 변형 | [U]/[G] | [B] | 판정 | 근거 |
 |---|---|---|---|---|---|
-| 10 | split | — | (P8) | (P8) | 같은 행 · 카피 왼쪽 / 390 카피 → 이미지 |
-| 11 | split | PASS | (P8) | (P8) | `HeroSplit.test` 톤 면·부제 --kit-soft · [B] 계산 색 |
-| 12 | split | PASS | (P8) | (P8) | 이미지 끔 figure 0 · kit-hx--solo |
-| 13 | center | PASS | (P8) | (P8) | `HeroCenter.test` 두 톤 같은 클래스·primary 면 |
-| 14 | center | 규칙 PASS | (P8) | (P8) | 가운데 축 ≤ 1 · prose-max |
+| 10 | split | PASS | PASS | PASS | 1280 카피·이미지 같은 행 6:6(528/528) · 768 7:5(383/274) · 390 카피 아래 끝 240 ≤ 이미지 위 264 (`logs/qb-judge.txt`) |
+| 11 | split | PASS | PASS | PASS | [U] 톤 면·--kit-soft · [B] 부제 base=muted · alt=ink 3폭(QB-12) · 쌍 muted/bg·ink/surface만 |
+| 12 | split | PASS | PASS | PASS | [B] 이미지 끔 figure 0 · 카피 폭 1280 500.4 = 60ch · 390 343 |
+| 13 | center | PASS | PASS | PASS | [B] 두 톤 대비 쌍 on-primary/primary·primary/on-primary만 · 정적 = 캔버스 |
+| 14 | center | 규칙 PASS | PASS | PASS | [B] h1 가운데 차이 1280·390 0 · 카피 폭 ≤ 60ch |
 | 15 | grid | PASS | — | PASS | `HeroGrid.test` img 1 · B·C aria-hidden · 글자 0 / 플레이스홀더 그라디언트 1 |
-| 16 | grid | 규칙 PASS | (P8) | (P8) | 1280·768 타일 3 · A ≈ B + C + 간격 / 390 1 |
+| 16 | grid | 규칙 PASS | PASS | PASS | [B] 1280 A 377.5 = B 182.8 + C 182.8 + 간격 12 · 768 423.1 = 205.6+205.6+12 · 390 보이는 타일 1 |
 | 17 | grid | PASS | — | PASS | 이미지 끔 타일 격자 0 · solo |
-| 18 | text | PASS | (P8) | (P8) | 톤 면 · 강조선 aria-hidden · h1 왼쪽 끝 |
-| 19 | text | 규칙 PASS | (P8) | (P8) | h1 폭 ≤ 9/12 · 390 200% 넘침 0 |
-| 20 | image | PASS(DOM) | (P8) | (P8) | 미디어 아래 끝 ≤ h1 위 끝 |
-| 21 | image | 규칙 PASS | (P8) | (P8) | 21:9 · 16:9 · 4:3 ±1% · 폭 = 섹션 |
+| 18 | text | PASS | PASS | PASS | [B] h1 왼쪽 = 래퍼 안쪽 왼쪽(88.5 · 32 · 16) |
+| 19 | text | 규칙 PASS | PASS | PASS | [B] 1280 h1 폭 497.9 ≤ 9/12 816 · 390 상한+200% 넘침 0 |
+| 20 | image | PASS(DOM) | PASS | PASS | [B] 미디어 아래 끝 ≤ h1 위 끝(1280 603<699 · 768 485<581 · 390 342<390) |
+| 21 | image | 규칙 PASS | PASS | PASS | [B] 2.334/2.333 · 1.778/1.778 · 1.333/1.333 · 미디어 폭 = 섹션 폭 |
 | 22 | image | PASS | — | PASS | 이미지 끔 미디어 0 · solo |
 | 30 | 5 | PASS [G] | — | PASS | kitGuard(kit/ 전체) + `heroVariants.test` iframe·외부 URL 0 |
-| 31 | 5 | — | (P8) | (P8) | 상한 글자 + 200% 1280·768·390 넘침 0 · 말줄임 0 |
+| 31 | 5 | — | PASS | PASS | [B] 5변형 상한 글자 + 200% × 1280·768·390 가로 넘침 0 · 밖으로 나간 요소 0 · 말줄임 0 |
 | 32 | 5 | PASS [U] | — | PASS | 정적 HTML script = 고정 1개(바이트 일치) — hero 몫. header 3변형 몫은 1b |
 | 33 | 5 | PASS [U] | — | PASS | 5쌍 등록 · 루트 1 · 폴백 표식 0 |
-| 34 | 5 | — | (P8) | (P8) | 프로필 2벌 × 톤 base·alt 대비 |
-| 35 | 5 | PASS [U]/[G] | (P8) | (P8) | 정적 HTML에서 hero 선택자 전부 매칭(변이 검사 포함) · [B] 캔버스 = 정적 계산 스타일 |
+| 34 | 5 | — | PASS | PASS | [B] 프로필 light·dark(카드) × base·alt × 5변형 × 1280·390 허용 밖 쌍 0 · 최소 대비 4.61 (+QB-13 bright 0) |
+| 35 | 5 | PASS [U]/[G] | PASS | PASS | [B] 5변형 × (alt 이미지 켬 · base 이미지 끔) × 3폭 = 30건 정적 HTML 계산 스타일 = 캔버스(배경·글자색·scroll-margin-top·격자) · 앵커 이동 뒤 contact h2가 header 아래 · script 1 |
 
 ## 3. 번들 표 (gzip KB)
 | 시점 | 렌더 JS | 렌더 CSS | `/studio` 진입 | 첫 화면 | 그 밖 |
@@ -48,6 +50,8 @@
 | P6 = 5변형 끝 (726392c) | **80.50 (+0.38)** | **6.72 (+0.40)** | **127.41 (+0.03)** | 91.78 | 공통 89.35 · /catalog 99.65/102.04 · /references 97.00/99.39 · /compare 98.83/121.71 · /profile 99.61/118.67 · /projects 94.02/100.30 (±0.01) |
 
 - P1 판정: 멈춤 조건 아님(렌더 JS 끝 예상 ≤ 89.70 · /studio 끝 예상 +0.03 ≤ 0.03). RENDERED_VARIANTS 표현 실측(나열·알파벳순 127.41 · 나열·기존 순서 127.42 · 라이브러리 파생 127.43 · map 127.44) → 알파벳순 나열 채택. 첫 기록의 127.41은 목록 중복(grid 2회)으로 잘못 잰 값 — 같은 파일 끝에 정정. 근거 `logs/p1-budget.txt`
+
+- 마감 gate(`logs/final.txt`, HEAD 코드 = 726392c·a2e013a): 표적 src/kit + staticHtml 108/108 · 가드 76/76 · typecheck 0 · lint 0 · build 0 · 렌더 JS 80.50 / CSS 6.72 · /studio 127.41. 전체 vitest 3회는 브리프대로 Jarvis 몫(레인 미실행).
 
 ## 4. SPEC과 다르게 한 곳 · HeroFullbleedLeft 공유 근거
 **공유 (브리프 "카피 블록 · CTA 대상 · Media")**
@@ -63,10 +67,13 @@
 - split 이미지 칸: `img` width·height 속성 = 프로필 media_ratio, md 미만 실제 비율은 CSS 4:3(SPEC B-4 5와 같음 — 속성은 자리 이동 방지용).
 
 ## 5. 시각 QA 캡처
-(작성 중)
+- 경로 `shots/`, 28장 = QB-5~9 각 1280·768·390(15) · QB-12 3폭(3, 한 문서에 split base·grid alt·text base·image alt) · QB-13 5변형 × 1280·390(10, 밝은 ink 팔레트 bright — 게이트 통과 확인 `gate-profiles`).
+- **도구 변경**: ego-browser `Page.captureScreenshot`가 시간 초과(`logs/qb-probe.txt`, 재시도 무의미) → 브리프 대안대로 Chrome headless `--screenshot`(`shots.sh`, 390·768 = 해당 폭 iframe 감싸기, 뷰포트만). 찍는 대상 = 같은 문서의 정적 HTML(`static/*.html`, buildStaticHtml) — KB-AC-35 [B]로 캔버스와 계산 스타일 같음을 확인한 결과물. 수치 판정은 ego-browser(render.html 최상위, CDP 폭).
+- QB-5 split 6:6/7:5/1단 ✓ · QB-6 center 가운데 축·prose-max ✓ · QB-7 grid A+B·C / 768 카피 위 3칸 / 390 A만 ✓ · QB-8 text 강조선·왼쪽 정렬 ✓ · QB-9 image 21:9/16:9/4:3, 1280 h1 위 끝 699 · 아래 끝 760 (첫 화면 800 안 — ⑪ 여백 조정 불필요) ✓ · QB-12 부제 base muted / alt ink 3폭 ✓ · QB-13 bright 대비 허용 밖 0 ✓ (육안: 캡처 3장 직접 확인 — grid 1280 · image 1280 · image 390)
 
 ## 6. Codex
-(작성 중)
+- `node codex-companion.mjs review --scope branch --base f113f2c` 1회 (`logs/codex.txt`) — **지적 0건(P1 0)**: "기준 커밋 대비 변경에서 수정이 필요한 구체적인 결함을 발견하지 못했습니다". Codex 쪽 테스트 실행은 읽기 전용 샌드박스 EPERM으로 막혔다 — 테스트 증거는 레인 gate 로그(`logs/p*-green.txt`, `p7-common.txt`).
+- 검토 시점 = 브라우저 판정 전 커밋(a2e013a, 코드 동일 — 이후 커밋은 기록·스크립트만).
 
 ## 7. 남은 위험 · 1b 메모
 1. **`/studio` 진입 여유 0** — 127.41(+0.03, 정밀 +35 B). 브리프 한도(±0.03) 안이지만 경계. 앱 쪽 증가는 `RENDERED_VARIANTS` 문자열뿐이라 **1b(header 3 + footer 3 = 문자열 6개 더)는 같은 방식이면 +0.03을 넘을 가능성이 높다** — 1b 시작 전 표현 방식(예: 가드 유지한 채 앱 청크 밖으로 옮기기)이나 한도를 Jarvis가 정해야 한다(이 레인은 바꾸지 않음).
@@ -74,4 +81,5 @@
 3. SPEC 공백 — 보수적 해석: (가) hero 제목 줄 높이는 기존 `[data-kit] h1` 1.25 그대로(새 값 0) (나) image 변형 lg 2단에서 부제가 비면 CTA가 오른쪽 칸 맨 위(SPEC 4 "위 정렬")로 간다.
 
 ## 8. 서버
-(작성 중)
+- 띄운 것: vite 4337 — npx PID 16316 · node PID 16343 (`logs/vite.pid`). 4339는 쓰지 않았다(정적 HTML은 srcdoc iframe · file://).
+- 종료: `kill 16316 16343` → `ps` 없음 · `lsof -nP -iTCP:4337 -sTCP:LISTEN` = 0줄 · `lsof -nP -iTCP:4339 -sTCP:LISTEN` = 0줄 (2026-10-04 22:0x KST). ego-browser·Chrome headless 프로세스 남음 0.

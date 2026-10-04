@@ -8,6 +8,7 @@ import { HeroCenter } from "./HeroCenter";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
 import { HeroGrid } from "./HeroGrid";
 import { HeroSplit } from "./HeroSplit";
+import { HeroText } from "./HeroText";
 import { ServicesCards3 } from "./ServicesCards3";
 import type { KitSection } from "./types";
 
@@ -21,6 +22,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "hero/split": HeroSplit,
   "hero/center": HeroCenter,
   "hero/grid": HeroGrid,
+  "hero/text": HeroText,
   "about/story": AboutStory,
   "services/cards-3": ServicesCards3,
   "faq/accordion": FaqAccordion,

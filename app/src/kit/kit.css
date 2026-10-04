@@ -766,3 +766,23 @@
     }
   }
 }
+
+/* hero/text (B-7) — 왼쪽 정렬 한 열 · 강조선(stroke-2 × s6, primary 장식) · 부제 prose-max · lg 이상 제목 9/12 · 위아래 section-gap + s6 */
+@layer components {
+  .kit-hx-rule {
+    width: var(--site-s6);
+    height: var(--site-stroke-2);
+    background: var(--site-primary);
+  }
+  .kit-hx--text .kit-hx-lead {
+    max-width: var(--site-prose-max);
+  }
+  @media (width >= 64rem) {
+    .kit-hx--text .kit-hx-copy {
+      padding-block: calc(var(--site-section-gap) + var(--site-s6));
+    }
+    .kit-hx--text .kit-hx-title {
+      max-width: calc(100% * 9 / 12);
+    }
+  }
+}

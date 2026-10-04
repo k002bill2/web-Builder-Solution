@@ -1,0 +1,25 @@
+     36|     expect(css()).toMatch(/\.kit-hx--text \.kit-hx-title \{[^}]*max-wi…
+       |                   ^
+     37|     expect(css()).toMatch(/\.kit-hx--text \.kit-hx-lead \{[^}]*max-wid…
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/kit/HeroText.test.tsx > hero/text (B-7) > 0.8 · 상한: 부제 빈 값 → 부제 0 · 빈 p 0 / 제목 40 · 부제 120 · CTA 16 그대로
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/HeroText.test.tsx:42:14
+     40|   it("0.8 · 상한: 부제 빈 값 → 부제 0 · 빈 p 0 / 제목 40 · 부제 120 · CTA 16 그대로", …
+     41|     const e = hero(drawDoc(patch(heroDoc("text"), "s-hero", { subtitle…
+     42|     expect(e.querySelector('[data-slot="subtitle"]')).toBeNull();
+       |              ^
+     43|     const [title, subtitle, cta] = ["가".repeat(40), "나".repeat(120), "…
+     44|     const f = hero(drawDoc(patch(heroDoc("text"), "s-hero", { title, s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  21:28:02
+   Duration  692ms (environment 61%, transform 16%, setup 10%, tests 8%, import 3%, worker 1%)
+

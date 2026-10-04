@@ -8,7 +8,7 @@ import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../detail/previewView";
 import type { FrameRect, KitTokenInput } from "../../../render/protocol";
 import { emitEditorEvent } from "../editorEvents";
-import { FRAME_REM } from "../previewFrame";
+import { FRAME_REM, remPx } from "../previewFrame";
 import { exportFileStem } from "../staticHtml/exportFileName";
 import { defaultFetchText, kitCss, openCaptureFrame, renderAndSerialize, type RenderChannel } from "../staticHtml/staticHtml";
 
@@ -75,18 +75,22 @@ export function buildCaptureSvg({ markup, css, width, height }: { readonly marku
 const pageBottom = (rects: readonly FrameRect[]) => Math.ceil(rects.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0));
 
 export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ readonly fileName: string; readonly fallbackCount: number; readonly blob: Blob }> {
-  const rem = FRAME_REM[request.view];
-  const width = rem * 16;
+  // 좌표계 하나(P2-c): iframe 폭 = SVG·캔버스 폭 = 프레임 rem × 지금 rem px(정수로 맞춤 — 캔버스 폭은 정수). 높이는 그 iframe의 사각형 바닥.
+  // 파일 이름 폭은 프레임 이름(1280·768·390 — 캡션과 같은 값)
+  const unit = remPx();
+  const width = Math.round(FRAME_REM[request.view] * unit);
+  const rem = width / unit;
   const css = await kitCss(deps.fetchText);
-  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측)
-  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0).catch((error: unknown) => {
+  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측).
+  // 킷 토큰 없음(NO_KIT_TOKENS)은 실패가 아니다 — 캔버스처럼 중립 폴백으로 그린 rects·직렬화를 기다린다(P2-b · 정적 HTML은 실패 그대로)
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0, ["NO_KIT_TOKENS"]).catch((error: unknown) => {
     throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
   });
   const height = pageBottom(rects);
   if (height <= 0 || height > MAX_CANVAS_HEIGHT || width * height > MAX_CANVAS_AREA) throw new PngError("CANVAS_TOO_TALL", "페이지가 PNG 한 장 상한을 넘습니다");
   const fallbackCount = (markup.match(/data-fallback="true"/g) ?? []).length;
   const blob = await deps.draw(svgDataUrl(buildCaptureSvg({ markup, css, width, height })), width, height);
-  return { fileName: pngFileName(request.name, width, request.revision, fallbackCount), fallbackCount, blob };
+  return { fileName: pngFileName(request.name, FRAME_REM[request.view] * 16, request.revision, fallbackCount), fallbackCount, blob };
 }
 
 async function drawPng(url: string, width: number, height: number): Promise<Blob> {
@@ -121,7 +125,7 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, MAX_CANVAS_HEIGHT / 16), fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
+const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, MAX_CANVAS_HEIGHT / remPx()), fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
 
 /** 누름 → 캡처 → 내려받기 · 계측(코드·개수·열거값만 — 이름·파일 이름 0). 성공 문장을 돌려준다 */
 export async function savePng(request: PngRequest, deps: PngDeps = DEFAULT_DEPS): Promise<string> {

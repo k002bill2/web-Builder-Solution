@@ -11,7 +11,20 @@ const loadPng = retryableImport(() => import("../../features/studio/png/pngCaptu
  * PNG 내려받기 (m2a 3.3 · K-AC-19) — 내보내기 묶음 다음. `requestExport` 밖, 게이트·폴백 차단과 무관하게 열림(이유 목록과 describedby 분리).
  * 성공 문장·계측은 캡처 청크가 만든다. 실패 문장은 여기 — 캡처 청크를 받지 못해도 떠야 한다(M2A-3a Codex P2-1 r2).
  */
-export function PngSave({ ready, view, fallbackCount, capture }: { readonly ready: boolean; readonly view: PreviewView; readonly fallbackCount: number; readonly capture: () => PngRequest }) {
+export function PngSave({
+  ready,
+  reason = "미리보기를 그리는 중입니다",
+  view,
+  fallbackCount,
+  capture,
+}: {
+  readonly ready: boolean;
+  /** 준비 전 이유 — 기본 = 캔버스·저장 대기 문장 */
+  readonly reason?: string;
+  readonly view: PreviewView;
+  readonly fallbackCount: number;
+  readonly capture: () => PngRequest;
+}) {
   const [state, setState] = useState<{ readonly busy?: true; readonly done?: string; readonly failed?: true }>({});
   const press = () => {
     if (!ready || state.busy) return;
@@ -41,7 +54,7 @@ export function PngSave({ ready, view, fallbackCount, capture }: { readonly read
       </button>
       {!ready && (
         <p id="png-wait" className="ds-caption1 text-label-neutral">
-          미리보기를 그리는 중입니다
+          {reason}
         </p>
       )}
       <p id="png-caption" className="ds-caption1 text-label-alternative">

@@ -87,6 +87,22 @@ describe("정적 HTML 생성기 (G3)", () => {
     expect(urls.revoked).toEqual([first.downloadRef, second.downloadRef]);
   });
 
+  it("P2-1 새 revision 결과 → 같은 프로젝트의 이전 URL 해제 정확히 1회 · 새 revision 생성이 실패하면 이전 URL 유지", async () => {
+    const urls = fakeUrls();
+    let fail = false;
+    const frame = fakeFrame((m, post) => (fail ? undefined : post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: MARKUP })));
+    const generate = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: urls.api, timeoutMs: 30 });
+    const first = await generate(input);
+    expect(urls.revoked).toEqual([]);
+    fail = true;
+    await expect(generate({ ...input, doc: { ...DOC, revision: DOC.revision + 1 } })).rejects.toMatchObject({ code: "JOB_TIMEOUT" });
+    expect(urls.revoked).toEqual([]);
+    fail = false;
+    const next = await generate({ ...input, doc: { ...DOC, revision: DOC.revision + 1 } });
+    expect(urls.revoked).toEqual([first.downloadRef]);
+    expect(next.downloadRef).not.toBe(first.downloadRef);
+  });
+
   it("렌더 문서가 답하지 않으면 JOB_TIMEOUT(재시도 가능) · iframe 닫음", async () => {
     const frame = fakeFrame(() => {});
     const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: fakeUrls().api, timeoutMs: 30 })(input);
@@ -96,6 +112,8 @@ describe("정적 HTML 생성기 (G3)", () => {
 
   it.each([
     ["렌더 오류 INVALID_DOC", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "error", code: "INVALID_DOC" } : {})],
+    // P2-b — PNG 경로만 NO_KIT_TOKENS를 넘긴다. 정적 HTML은 그대로 실패(킷 없이 그린 폴백 문서를 내보내지 않는다)
+    ["렌더 오류 NO_KIT_TOKENS", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "error", code: "NO_KIT_TOKENS" } : { type: "html", markup: MARKUP })],
     ["폴백이 섞인 마크업", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: drawDoc(sampleDoc()).querySelector("[data-site-root]")!.outerHTML })],
   ])("%s → INFRA로 기록될 실패(JOB_TIMEOUT 아님) · iframe 닫음", async (_name, reply) => {
     const frame = fakeFrame(reply);

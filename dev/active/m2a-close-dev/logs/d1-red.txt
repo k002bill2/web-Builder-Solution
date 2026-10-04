@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close-dev/app
+
+ ❯ src/data/chunkRetryWiring.test.ts (2 tests | 1 failed) 153ms
+   ❯ 조작 뒤 로더 배선 (2)
+     × P2-2 정적 HTML 생성기 슬롯 로더(exportFlow)도 retryableImport로 싼다 — 받는 모듈 = 생성기 청크 24ms
+ ❯ src/data/memoryExport.test.ts (15 tests | 1 failed) 188ms
+   ❯ 앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT) (3)
+     × P2-2 생성기 청크 첫 로드 실패 → 잡 INFRA(재시도 가능) → 같은 요청 다시 시도 → 슬롯 로더를 다시 불러 성공(실패를 기억하지 않는다) 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/chunkRetryWiring.test.ts > 조작 뒤 로더 배선 > P2-2 정적 HTML 생성기 슬롯 로더(exportFlow)도 retryableImport로 싼다 — 받는 모듈 = 생성기 청크
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/data/chunkRetryWiring.test.ts:31:19
+     29|     await import("../features/studio/exportFlow");
+     30|     const added = wrapped.slice(before);
+     31|     expect(added).toHaveLength(1);
+       |                   ^
+     32|     expect("createStaticHtmlGenerator" in (await added[0]!())).toBe(tr…
+     33|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/data/memoryExport.test.ts > 앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT) > P2-2 생성기 청크 첫 로드 실패 → 잡 INFRA(재시도 가능) → 같은 요청 다시 시도 → 슬롯 로더를 다시 불러 성공(실패를 기억하지 않는다)
+AssertionError: expected { jobId: 'export-1', …(5) } to match object { state: 'succeeded', …(1) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "downloadRef": "blob:browser",
+-   "state": "succeeded",
++   "state": "failed",
+  }
+
+ ❯ src/data/memoryExport.test.ts:268:37
+    266|     const again = await repo.requestExport("project-1", "static-html",…
+    267|     expect(again.job.jobId).toBe(job.jobId);
+    268|     expect(await settle(job.jobId)).toMatchObject({ state: "succeeded"…
+       |                                     ^
+    269|     expect(loads).toBe(2);
+    270|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 15 passed (17)
+   Start at  13:10:35
+   Duration  1.44s (environment 60%, tests 14%, transform 12%, setup 11%, import 2%, worker 1%)
+

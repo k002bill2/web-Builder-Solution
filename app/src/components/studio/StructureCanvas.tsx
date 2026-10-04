@@ -4,7 +4,7 @@ import { getSectionDefinition } from "../../engine/sections/registry";
 import type { PreviewView } from "../../features/detail/previewView";
 import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
 import { canvasCaption } from "../../features/studio/canvasCaption";
-import { FRAME_REM, previewScale, scaleCaption } from "../../features/studio/previewFrame";
+import { FRAME_REM, previewScale, remPx, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
 import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage } from "../../render/protocol";
 
@@ -47,8 +47,6 @@ function useWidth() {
   }, []);
   return [ref, width] as const;
 }
-
-const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
 
 /**
  * 렌더 문서 다리 (M2A-1 R4 · 프로토콜 render/protocol.ts). iframe에서 온 메시지만 받는다(`event.source` + 모양 검사).

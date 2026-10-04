@@ -23,4 +23,12 @@ describe("조작 뒤 로더 배선", () => {
       ["createBoardConfirmer", "revertIn", "parseBoardInput", "CarryOverNotice", "carryOverAdjustments", "composeFor"].find((name) => name in m);
     expect(modules.map(marker).sort()).toEqual(["CarryOverNotice", "carryOverAdjustments", "composeFor", "createBoardConfirmer", "parseBoardInput", "parseBoardInput", "revertIn"]);
   });
+
+  it("P2-2 정적 HTML 생성기 슬롯 로더(exportFlow)도 retryableImport로 싼다 — 받는 모듈 = 생성기 청크", async () => {
+    const before = wrapped.length;
+    await import("../features/studio/exportFlow");
+    const added = wrapped.slice(before);
+    expect(added).toHaveLength(1);
+    expect("createStaticHtmlGenerator" in (await added[0]!())).toBe(true);
+  });
 });

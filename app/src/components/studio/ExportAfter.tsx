@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import type { ExportFormat } from "../../data/projectRepository";
 import type { GateReport } from "../../engine/contracts/records";
-import { releaseDownloads } from "../../features/studio/exportDownloads";
 import type { ExportResult } from "../../features/studio/exportFlow";
 import { GATE_ROW_NAMES } from "../../features/studio/gateView";
 import { Button } from "../ds/Button";
@@ -67,13 +66,10 @@ const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip", "stat
 
 /**
  * 내려받기 링크(E-S27 · M2A-3b G4) — 부모 문서의 a download(렌더 iframe은 내려받기 권한 없음).
- * 편집기를 떠나 내려지면(경로가 바뀜) 이 탭의 내려받기 object URL을 해제한다. 새 요청·탭 전환으로 내려질 때는 같은 경로라 두고 쓴다(같은 잡 = 같은 URL).
+ * object URL은 그 잡이 살아 있는 동안 유지한다 — 편집기를 떠났다 돌아와 같은 revision을 다시 요청하면 같은 잡(8.3.2 멱등)의 같은 URL이다.
+ * 해제는 같은 프로젝트의 새 결과가 나올 때 생성기가 한다(프로젝트당 살아 있는 URL ≤ 1 — M2A-CLOSE P2-1)
  */
 function DownloadLink({ href, fileName }: { readonly href: string; readonly fileName: string }) {
-  useEffect(() => {
-    const here = location.pathname;
-    return () => void setTimeout(() => location.pathname !== here && releaseDownloads());
-  }, []);
   return (
     <a href={href} download={fileName} className="ds-label inline-flex min-h-8 items-center text-primary hover:text-primary-hover">
       내려받기

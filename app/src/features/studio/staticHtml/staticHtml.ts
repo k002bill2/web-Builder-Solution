@@ -8,7 +8,7 @@ import { ProjectRepositoryError, type DocHead, type ExportGenerator } from "../.
 import type { StudioReader } from "../../../data/studioStore";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { readHtmlMessage } from "../../../render/htmlMessage";
-import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage } from "../../../render/protocol";
+import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage, type RenderErrorCode } from "../../../render/protocol";
 import { docKitTokens } from "../docPurpose";
 import { buildStaticHtml } from "./staticMarkup";
 
@@ -70,6 +70,8 @@ export function renderAndSerialize(
   timeoutMs: number,
   /** 이 사각형으로 serialize해도 되는지(PNG = 레이아웃 뒤 바닥 > 0). 아니면 다음 rects를 기다린다 */
   settled: (rects: readonly FrameRect[]) => boolean = () => true,
+  /** 실패로 보지 않을 렌더 문서 오류(PNG = NO_KIT_TOKENS — 폴백은 계속 그린다). 정적 HTML은 비움 = 모든 오류가 실패 */
+  tolerated: readonly RenderErrorCode[] = [],
 ): Promise<{ readonly markup: string; readonly rects: readonly FrameRect[] }> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let rects: readonly FrameRect[] = [];
@@ -87,7 +89,7 @@ export function renderAndSerialize(
         stage = "serialize";
         rects = message.rects;
         channel.send({ type: "serialize" });
-      } else if (message?.type === "error") {
+      } else if (message?.type === "error" && !tolerated.includes(message.code)) {
         reject(new Error(`렌더 문서 오류 ${message.code}`));
       }
     });

@@ -1,0 +1,44 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close-dev/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (15 tests | 1 failed | 14 skipped) 1060ms
+   ❯ 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) (12)
+     × P2-1 내보내기 → 편집기 이탈 → 돌아와 같은 revision 재요청 → 같은 잡의 '내려받기' 링크가 살아 있다(revokeObjectURL 0) 1058ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) > P2-1 내보내기 → 편집기 이탈 → 돌아와 같은 revision 재요청 → 같은 잡의 '내려받기' 링크가 살아 있다(revokeObjectURL 0)
+AssertionError: expected "revokeObjectURL" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st revokeObjectURL call:
+
+    Array [
+      "blob:http://127.0.0.1/kept",
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/studio/ExportFlow.test.tsx:196:26
+    194|       await go(router, "/catalog");
+    195|       await act(async () => void (await new Promise((r) => setTimeout(…
+    196|       expect(revoke).not.toHaveBeenCalled();
+       |                          ^
+    197|       await go(router, "/studio/project-1");
+    198|       await waitFor(() => expect(within(gateRegion()).queryByText("검사하…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 skipped (15)
+   Start at  13:13:26
+   Duration  2.07s (tests 53%, environment 20%, transform 19%, import 4%, setup 3%)
+

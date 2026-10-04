@@ -150,3 +150,34 @@ describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () =
     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
   });
 });
+
+describe("PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서)", () => {
+  const pngButton = () => screen.getByRole("button", { name: /PNG 내려받기|PNG 만드는 중…/ });
+  const reasons = () => pngButton().getAttribute("aria-describedby")!.split(" ").map((id) => document.getElementById(id)!.textContent);
+  const cases: ReadonlyArray<readonly [string, () => Error, string]> = [
+    ["failed", () => new Error("boom"), "저장하지 못했습니다"],
+    ["offline", () => new ProjectRepositoryError("NETWORK", "offline"), "오프라인 — 연결되면 저장합니다"],
+    ["stale", () => new ProjectRepositoryError("STALE_DOC", "stale", { doc: sampleDoc({ revision: 7 }) }), "다른 곳에서 이 문서가 바뀌었습니다"],
+  ];
+  it.each(cases)("저장 %s → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로", async (_phase, error, reason) => {
+    const { repository } = fakeRepository(async () => {
+      throw error();
+    });
+    draw(repository);
+    await act(() => vi.advanceTimersByTimeAsync(50));
+    expect(pngButton()).not.toHaveAttribute("aria-disabled");
+    act(() => void fireEvent.change(within(editRegion()).getByRole("textbox", { name: /^제목/ }), { target: { value: "내 편집" } }));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    expect(pngButton()).toHaveAttribute("aria-disabled", "true");
+    expect(reasons()[0]).toBe(reason);
+    expect(reasons()[1]).toMatch(/^지금 미리보기 폭.+의 페이지 전체를 한 장으로 저장합니다\./);
+  });
+
+  it("저장 saved → PNG 열림", async () => {
+    draw(fakeRepository().repository);
+    act(() => void fireEvent.change(within(editRegion()).getByRole("textbox", { name: /^제목/ }), { target: { value: "내 편집" } }));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    expect(screen.getByText(/^이 탭에 저장됨/)).toBeInTheDocument();
+    expect(pngButton()).not.toHaveAttribute("aria-disabled");
+  });
+});

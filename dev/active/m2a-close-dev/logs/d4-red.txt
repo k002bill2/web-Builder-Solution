@@ -1,0 +1,39 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2a-close-dev/app
+
+ ❯ src/components/studio/StudioLayout.test.tsx (13 tests | 3 failed | 9 skipped) 387ms
+   ❯ PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) (4)
+     × 저장 failed → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로 184ms
+     × 저장 offline → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로 80ms
+     × 저장 stale → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로 67ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) > 저장 failed → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로
+ FAIL  src/components/studio/StudioLayout.test.tsx > PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) > 저장 offline → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로
+ FAIL  src/components/studio/StudioLayout.test.tsx > PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) > 저장 stale → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-disabled"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-disabled") === "true"[22m
+
+Expected the element to have attribute:
+[32m  aria-disabled="true"[39m
+Received:
+[31m  null[39m
+ ❯ src/components/studio/StudioLayout.test.tsx:171:25
+    169|     act(() => void fireEvent.change(within(editRegion()).getByRole("te…
+    170|     await act(() => vi.advanceTimersByTimeAsync(2000));
+    171|     expect(pngButton()).toHaveAttribute("aria-disabled", "true");
+       |                         ^
+    172|     expect(reasons()[0]).toBe(reason);
+    173|     expect(reasons()[1]).toMatch(/의 페이지 전체를 한 장으로 저장합니다\.$/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed | 9 skipped (13)
+   Start at  13:15:22
+   Duration  1.51s (environment 41%, tests 27%, transform 18%, setup 7%, import 6%)
+

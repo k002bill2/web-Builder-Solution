@@ -15,10 +15,10 @@
 - [x] header `sticky-two-tier`
 - [x] header `transparent`
 - [x] hero `split` → (변형 4개) 커밋
-- [ ] hero `center`
-- [ ] hero `grid`
-- [ ] hero `text`
-- [ ] hero `image` → (변형 8개) 커밋
+- [x] hero `center`
+- [x] hero `grid`
+- [x] hero `text`
+- [x] hero `image` → (변형 8개) 커밋
 - [ ] footer `biz-extended-map`
 - [ ] footer `minimal`
 - [ ] footer `minimal-biz` → (11개) 커밋

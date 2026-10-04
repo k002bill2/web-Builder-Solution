@@ -1,0 +1,25 @@
+     51|     expect(h.querySelectorAll("[data-media], img, figure")).toHaveLeng…
+       |              ^
+     52|     expect(h).toHaveClass("kit-hx--solo");
+     53|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/kit/HeroImage.test.tsx > hero/image (B-8) > 0.8 · 상한: 부제 빈 값 → 부제 0 / 제목 40 · 부제 120 · CTA 16 그대로
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/HeroImage.test.tsx:56:78
+     54|
+     55|   it("0.8 · 상한: 부제 빈 값 → 부제 0 / 제목 40 · 부제 120 · CTA 16 그대로", () => {
+     56|     expect(hero(drawDoc(patch(heroDoc("image"), "s-hero", { subtitle: …
+       |                                                                              ^
+     57|     const [title, subtitle, cta] = ["가".repeat(40), "나".repeat(120), "…
+     58|     const f = hero(drawDoc(patch(heroDoc("image"), "s-hero", { title, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  21:29:04
+   Duration  689ms (environment 58%, transform 17%, tests 10%, setup 10%, import 4%, worker 1%)
+

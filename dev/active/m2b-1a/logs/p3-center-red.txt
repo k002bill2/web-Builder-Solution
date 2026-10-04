@@ -1,0 +1,25 @@
+     37|     expect(css()).toMatch(/\.kit-hx-center \{[^}]*max-width: var\(--si…
+       |                   ^
+     38|   });
+     39|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/kit/HeroCenter.test.tsx > hero/center (B-5) > 0.8 · 상한: 부제 빈 값 → 부제 0 / 제목 40 · 부제 120 · CTA 16 그대로
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/HeroCenter.test.tsx:41:79
+     39|
+     40|   it("0.8 · 상한: 부제 빈 값 → 부제 0 / 제목 40 · 부제 120 · CTA 16 그대로", () => {
+     41|     expect(hero(drawDoc(patch(heroDoc("center"), "s-hero", { subtitle:…
+       |                                                                               ^
+     42|     const [title, subtitle, cta] = ["가".repeat(40), "나".repeat(120), "…
+     43|     const f = hero(drawDoc(patch(heroDoc("center"), "s-hero", { title,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  21:25:40
+   Duration  633ms (environment 62%, transform 16%, setup 10%, tests 8%, import 3%, worker 1%)
+

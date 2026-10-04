@@ -1,0 +1,12 @@
+const t0=Date.now(); const T=()=>((Date.now()-t0)/1000).toFixed(1);
+const task = await taskSpace("m2b-1a probe");
+const page = task.page("p1");
+console.log("task", T());
+await page.cdp("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+console.log("cdp", T());
+await page.goto("http://127.0.0.1:4337/render.html");
+console.log("goto", T());
+console.log(await page.evaluate(() => document.title), T());
+await page.screenshot({ path: "/tmp/probe.png" });
+console.log("shot", T());
+await task.finish({ keep: [] });

@@ -1,0 +1,25 @@
+     49|     const el = h.querySelector("figure img")!;
+       |                  ^
+     50|     expect(el).toHaveAttribute("alt", "가게 전경");
+     51|     expect(el).toHaveAttribute("fetchpriority", "high");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/kit/HeroSplit.test.tsx > hero/split (B-4) > 0.8 · 상한: 부제 빈 값 → 부제 0 · 빈 p 0 / 제목 40 · 부제 120 · CTA 16 그대로
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/HeroSplit.test.tsx:60:14
+     58|   it("0.8 · 상한: 부제 빈 값 → 부제 0 · 빈 p 0 / 제목 40 · 부제 120 · CTA 16 그대로", …
+     59|     const e = hero(drawDoc(patch(heroDoc("split"), "s-hero", { subtitl…
+     60|     expect(e.querySelector('[data-slot="subtitle"]')).toBeNull();
+       |              ^
+     61|     expect([...e.querySelectorAll("p")].filter((x) => x.textContent ==…
+     62|     const [title, subtitle, cta] = ["가".repeat(40), "나".repeat(120), "…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  21:23:49
+   Duration  853ms (environment 66%, transform 13%, setup 11%, tests 8%, import 3%)
+

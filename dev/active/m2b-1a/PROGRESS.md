@@ -1,0 +1,27 @@
+# M2B-1a PROGRESS — hero 5변형 실렌더 (split · center · grid · text · image)
+
+## 수신 기록
+- 2026-10-04 21:15 KST 수신. 브리프 `docs/06-handoff/M2B-1_BOUND-VARIANTS_BRIEF.md` 전체(49행) — 레인 **M2B-1a (hero 5)**.
+- 정본 `docs/design/m2b/SPEC-BOUND.md` 0절 · B-4~B-8 · KB-AC-10~22 · 30~35(hero 몫) · QB-5~9·12·13 · Jarvis 결정 기록 읽음.
+- 시작 커밋 `f113f2c` (브랜치 `k002bill2/m2b-1a`, worktree `orca/workspaces/web-builder-solution/m2b-1a`).
+- 서브에이전트 금지 · 포트 4337(보조 4339) · 로컬 커밋만(`git commit -- <경로>`) · push·병합·삭제 없음.
+- 범위 밖: header·footer · D-1 `heroTop`(1b).
+- 기준선(HEAD f113f2c `npm run build`): 렌더 JS 80.12 / CSS 6.32 · `/studio` 진입 127.38 · 첫 화면 91.78 · 공통 89.35 · /catalog 99.65/102.04 · /references 97.00/99.38 · /compare 98.83/121.70 · /profile 99.61/118.66 · /projects 94.02/100.29.
+
+## 단계
+- [x] P0 수신 · REPORT 골격 · gate.sh 커밋 (56f0083)
+- [x] P1 예산 선행 실측(grid 시제품) — 렌더 JS +0.17 · CSS +0.18 · /studio +0.01 → 끝 예상 렌더 JS 80.97 · /studio +0.03(문자열 5개 알파벳순 직접 실측 127.41 · 정밀 +35바이트, 경계 — 정정 기록 logs/p1-budget.txt 끝) → 멈춤 조건 아님 (logs/p1-budget.txt)
+- [x] P2 hero/split (KB-AC-10~12 [U]) — kit/heroCopy(공유 카피 블록, HeroFullbleedLeft도 사용) · HeroSplit · kit.css 톤 공통 + split · RENDERED_VARIANTS 알파벳순 · RED logs/p2-split-red.txt(5 실패: 킷 미등록) → gate OK(렌더 JS 80.29 · CSS 6.45 · /studio 127.40)
+- [x] P3 hero/center (KB-AC-13 [U] · 14 규칙) — HeroCenter(카피 클래스 = fullbleed 패널 묶음 PRIMARY_COPY 재사용) · RED logs/p3-center-red.txt(4 실패) → gate OK(렌더 JS 80.33 · CSS 6.49 · /studio 127.41)
+- [x] P4 hero/grid (KB-AC-15·17 [U] · 16 규칙) — HeroGrid(타일 A = Media 1회 · B·C 장식 div aria-hidden) · RED logs/p4-grid-red.txt(5 실패) → gate OK(렌더 JS 80.41 · CSS 6.59 · /studio 127.42 ← 문자열 3개인데 127.42: 끝(5개)에서 다시 재고 넘으면 순서 조정)
+- [x] P5 hero/text (KB-AC-18 [U] · 19 규칙) — HeroText(강조선 = 빈 div aria-hidden) · RED logs/p5-text-red.txt(4 실패) → gate OK(렌더 JS 80.45 · CSS 6.63 · /studio 127.42)
+- [x] P6 hero/image (KB-AC-20·22 [U] · 21 규칙) — HeroImage(카피 띠 → 미디어, 영역 이름 media/copy) · RED logs/p6-image-red.txt(6 실패) → gate OK(렌더 JS 80.50 · CSS 6.72 · /studio 127.41)
+- [x] P7 공통 [U]/[G] (KB-AC-30 · 32 · 33 · 35 정적 HTML 몫 · K-AC-04) — kit/heroVariants.test.tsx 5건. 구현 뒤 판정 테스트라 RED 없음 → 변이 검사(HeroGrid 타일 B 클래스 바꿈 → 선택자 매칭 실패 1, 되돌림 → 통과, logs/p7-mutation.txt) · gate OK
+- [x] P8 REPORT 갱신(9306662) → 브라우저 [B]/[V] 4337: [B] 13건 PASS(logs/qb-judge.txt · qb-b.json) · 캡처 28장(ego 캡처 시간 초과 → Chrome headless, shots.sh)
+- [x] P9 Codex review --scope branch --base f113f2c 1회 — 지적 0 (logs/codex.txt)
+- [x] P10 REPORT 마감 · 서버 종료(PID 16316·16343) · lsof 4337·4339 = 0
+
+## 서브에이전트
+- 사용 0 (브리프 금지)
+
+## 메모

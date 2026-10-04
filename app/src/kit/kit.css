@@ -627,3 +627,203 @@
     }
   }
 }
+
+/* hero 섹션 톤 4변형 공통 (SPEC-BOUND 2절 · split·grid·text·image) — 면·보조 글자 = .kit-body(data-tone: base bg·muted / alt surface·ink) · 제목 ink · CTA = .kit-cta(C-1, 링 ink)
+   카피 1단(이미지 끔 = kit-hx--solo)은 prose-max. 선택자 = class·data-tone만(정적 HTML 보존, 0.2) */
+@layer components {
+  .kit-hx-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: center;
+  }
+  .kit-hx-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-hx--solo .kit-hx-copy {
+    max-width: var(--site-prose-max);
+  }
+  .kit-hx-title {
+    margin: 0;
+    font-size: var(--site-t3);
+    color: var(--site-ink);
+  }
+  .kit-hx-lead {
+    margin: 0;
+    font-size: var(--site-t0);
+    color: var(--kit-soft);
+  }
+  .kit-hx-cta {
+    margin-top: var(--site-s2);
+  }
+  @media (width >= 48rem) {
+    .kit-hx-title {
+      font-size: var(--site-t5);
+    }
+    .kit-hx-lead {
+      font-size: var(--site-t1);
+    }
+  }
+}
+
+/* hero/split (B-4) — md 미만 1단(카피 → 이미지 4:3 띠) · md~lg 2단 7 : 5 · lg 이상 6 : 6 · 이미지 칸 radius = 카드 radius(flat이면 0) · 비율 = media_ratio */
+@layer components {
+  .kit-hx-figure {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--site-radius-card);
+  }
+  .kit-hx-split-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 48rem) {
+    .kit-hx--split:not(.kit-hx--solo) .kit-hx-grid {
+      grid-template-columns: 7fr 5fr;
+      column-gap: var(--site-s6);
+    }
+    .kit-hx-split-img {
+      aspect-ratio: var(--site-media-ratio);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hx--split:not(.kit-hx--solo) .kit-hx-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+/* hero/center (B-5) — 섹션 면 primary · 글자 on-primary(C-1) · CTA 뒤집기(.kit-hero-cta) · 가운데 한 묶음(prose-max) · lg 이상 위아래 section-gap + s6 */
+@layer components {
+  .kit-hx--center {
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+  }
+  .kit-hx-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--site-s2);
+    max-width: var(--site-prose-max);
+    text-align: center;
+  }
+  @media (width >= 64rem) {
+    .kit-hx-center {
+      padding-block: calc(var(--site-section-gap) + var(--site-s6));
+    }
+  }
+}
+
+/* hero/grid (B-6) — 타일 A(이미지·그라디언트) + B primary · C ink 장식. md 미만 A만 4:3 · md 이상 A 왼쪽 2행(4:5) · B·C 오른쪽 위·아래 · lg 이상 카피 5 : 타일 7 */
+@layer components {
+  .kit-hx--grid .kit-hx-copy {
+    max-width: var(--site-prose-max);
+  }
+  .kit-hx-tiles {
+    display: grid;
+    gap: var(--site-s3);
+    min-width: 0;
+  }
+  .kit-hx-tile {
+    border-radius: var(--site-radius-card);
+  }
+  .kit-hx-tile--a {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  .kit-hx-tile--b {
+    display: none;
+    background: var(--site-primary);
+  }
+  .kit-hx-tile--c {
+    display: none;
+    background: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-hx-tiles {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+    .kit-hx-tile--a {
+      grid-row: span 2;
+      aspect-ratio: 4 / 5;
+    }
+    .kit-hx-tile--b,
+    .kit-hx-tile--c {
+      display: block;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hx--grid:not(.kit-hx--solo) .kit-hx-grid {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--site-s6);
+    }
+  }
+}
+
+/* hero/text (B-7) — 왼쪽 정렬 한 열 · 강조선(stroke-2 × s6, primary 장식) · 부제 prose-max · lg 이상 제목 9/12 · 위아래 section-gap + s6 */
+@layer components {
+  .kit-hx-rule {
+    width: var(--site-s6);
+    height: var(--site-stroke-2);
+    background: var(--site-primary);
+  }
+  .kit-hx--text .kit-hx-lead {
+    max-width: var(--site-prose-max);
+  }
+  @media (width >= 64rem) {
+    .kit-hx--text .kit-hx-copy {
+      padding-block: calc(var(--site-section-gap) + var(--site-s6));
+    }
+    .kit-hx--text .kit-hx-title {
+      max-width: calc(100% * 9 / 12);
+    }
+  }
+}
+
+/* hero/image (B-8) — 미디어 띠(영역 media, 위) · 카피 띠(영역 copy, 아래) · 비율 4:3 → md 16:9 → lg 21:9 · lg 이상 카피 2단(제목 7 : 부제 + CTA 5, 위 정렬) */
+@layer components {
+  .kit-hx--image {
+    display: grid;
+    grid-template-areas: "media" "copy";
+  }
+  .kit-hx-band {
+    grid-area: copy;
+    width: 100%;
+  }
+  .kit-hx-wide {
+    grid-area: media;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 48rem) {
+    .kit-hx-wide {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hx-wide {
+      aspect-ratio: 21 / 9;
+    }
+    .kit-hx--image:not(.kit-hx--solo) .kit-hx-band {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      grid-template-rows: auto 1fr;
+      column-gap: var(--site-s6);
+      align-items: start;
+    }
+    .kit-hx--image:not(.kit-hx--solo) .kit-hx-band .kit-hx-title {
+      grid-row: 1 / span 2;
+    }
+    .kit-hx--image:not(.kit-hx--solo) .kit-hx-band .kit-hx-cta {
+      justify-self: start;
+    }
+  }
+}

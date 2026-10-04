@@ -2,7 +2,7 @@
 
 - 책임 역할: **Developer** / 실행 환경: **Orca managed worktree `m2b-2r`(브랜치 `k002bill2/m2b-2r`) + Claude Code(Opus) + Orca 범위 Codex**(CODEX_HOME = `/Users/younghwankang/Library/Application Support/orca/codex-accounts/1aae10b5-ca52-427c-9407-a4f3a693f7fa/home`, 부모 HOME·독립 CLI 대체 없음)
 - 시작 HEAD `2e24440` · 검토 base `5970721` · M2B-1b 구현 종점 `62fa708`
-- **결론: Codex 검토 완료(1회, exit 0, 최종 본문 회수). Codex 지적은 P1 0건, P2 1건. Developer 명시 쟁점 검토에서는 P1 0건, P2 4건, SPEC 차이 1건. → 2a 기동 가능(차단 조건 없음). 단, 아래 P2와 SPEC 차이는 Jarvis 결정 대기.**
+- **결론: Codex 검토 완료(1회, exit 0, 최종 본문 회수). Codex 지적은 P1 0건, P2 1건. Developer 명시 쟁점 검토에서는 P1 0건, P2 2건, SPEC 차이 1건. → 2a 기동 가능(차단 조건 없음). 단, 아래 P2와 SPEC 차이는 Jarvis 결정 대기.**
 
 ## 1. 검토 범위
 | 구분 | 범위 | 비고 |
@@ -25,7 +25,7 @@
 **C-P2-1. popover 미지원 환경에서 `sticky-hamburger` lg 메뉴 접근 불가 (Codex P2)**
 - 파일: `app/src/kit/kit.css:186-190`(burger lg 재정의), 연관 `kit.css:159-167`(K1-1 lg 숨김)
 - Codex 주장: 미지원 브라우저 ≥64rem에서 K1-1의 `.kit-sheet { display:none }`가 적용된다. burger 재정의는 `:popover-open`에만 걸리고 버튼도 숨겨진다. 결과적으로 메뉴 링크 접근이 0이 되며, SPEC-BOUND B-1 6(`SPEC-BOUND.md:78`, "미지원 = 버튼 숨김 + 시트 목록 일반 흐름")에 위배된다.
-- Developer 확인(L2, 실제 미지원 브라우저 실측 아님 — 서버·브라우저 기동 0 경계):
+- Developer 확인(정적 코드 확인과 추정, 실제 미지원 브라우저 실측 아님 — 서버·브라우저 기동 0 경계):
   - `kit.css:163-165`의 숨김은 `.kit-menu-button, .kit-sheet, .kit-sheet:popover-open` **한 선택자 목록**이다.
   - `:popover-open`을 모르는 브라우저에서는 비관용(non-forgiving) 목록 전체가 무효가 된다. 따라서 `.kit-sheet` 숨김도 함께 빠진다. 시트는 일반 흐름으로 보이고 버튼은 기본 `display:none`(`kit.css:99-100`)이다. 즉 Codex가 말한 "링크 0"은 현재 브라우저에서는 **재현되지 않을 가능성이 높다**.
   - 그러나 폴백이 명시 규칙이 아니라 우연한 선택자 무효화에 기대고 있다. 그래서 다음 경우에 그대로 깨진다: 누군가 목록을 쪼개거나 `:is()`/`:where()`로 감쌀 때, 또는 `:popover-open`은 알고 `popover` 동작은 없는 환경(폴리필 등)일 때.
@@ -110,3 +110,11 @@
 - 이 REPORT 자체에 대한 추가 Codex 검토는 하지 않았다(브리프 1회 상한).
 - 쓰기: `dev/active/m2b-2r/`(PROGRESS.md·REPORT.md·logs/codex.txt)만. app/·design/·docs/·CLAUDE.md·package-lock 변경 0.
 - 커밋: 로컬 `git commit -- dev/active/m2b-2r`만. push·병합·삭제 0. 다른 서버(main 5480 등) 무접촉.
+
+## 7. Jarvis 회수 판정
+- 실제 worker meta: subtype success, num_turns 28, is_error false. Codex 완료 본문·exit 0를 직접 확인했다.
+- 전체 변경은 dev/active/m2b-2r/ 기록 3파일뿐, 앱/명세 변경 0. 새 테스트·브라우저 검증은 실행하지 않았다.
+- 지적 개수 교정: Codex P2 1 + Developer P2 2 + SPEC 차이 1(Developer 보고 머리의 P2 4를 2로 교정). 이들은 원인·성격이 다르므로 합쳐 하나의 PASS로 표현하지 않는다.
+- 폴백 문제는 Codex 주장과 Developer 반론이 충돌하고 미지원 UA 실측이 없다. P2라는 라벨이나 KD-AC 항목 부재만으로 SPEC 계약 검증을 통과시키지 않는다. **권고: 2a 전에 별도 단일 보완 레인으로 폴백 검증·필요 최소 수정 및 링 판정 2공백을 종결. 기동은 영환님 결정 대기.**
+- 390 보조 줄 위치는 별도 SPEC 차이로 현행 유지 권고(읽기/시각 순서 일치), 실제 SPEC 변경은 아직 승인·실행하지 않았다.
+- 이번 레인은 검토 산출물 회수 완료. 본문 2a 자동 기동 없음. QA 생략 사유: 이 레인은 읽기 전용 정적 검토·문서만 변경; 독립 runtime 검증 완료를 주장하지 않는다.

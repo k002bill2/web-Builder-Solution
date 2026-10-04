@@ -2,6 +2,7 @@
  * 내보내기 요청 · 결과 처리 (DS-2A-05 5.13 · E-S27 · 9절) — 조작 뒤 청크(S-B5: 잡 조회 · 결과 처리 · requestExport 호출 경로).
  * 내보내기 버튼을 눌렀을 때만 받는다. `requestExport` **1회** → 새 잡이면 끝날 때까지 조회. 화면은 스냅샷을 만들지 않는다(8.3.2).
  */
+import { retryableImport } from "../../data/chunkRetry";
 import { projectErrorCode, type ExportFormat, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
 import { emitEditorEvent } from "./editorEvents";
 import { rememberDownload } from "./exportDownloads";
@@ -22,7 +23,9 @@ export type ExportResult =
 
 // 앱 경로 정적 HTML 생성기 등록(M2A-3b) — 이 청크(내보내기 버튼을 누른 뒤)가 생성기 청크를 import해야 편집기 청크와 코드를 나눠 쓴다.
 // 저장소 쪽은 모듈이 아니라 전역 심볼 슬롯으로 받는다(memoryDocBook STATIC_HTML_SLOT — 같은 키, 청크 분리 0)
-(globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => (await import("./staticHtml/staticHtml")).createStaticHtmlGenerator;
+// 생성기 청크는 retryableImport로 받는다(P2-2 — 첫 로드 실패 뒤 다시 시도하면 새 URL로 다시 받는다)
+const loadGenerator = retryableImport(() => import("./staticHtml/staticHtml"));
+(globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => (await loadGenerator()).createStaticHtmlGenerator;
 
 const POLL_MS = 250;
 const POLL_MAX = 40;

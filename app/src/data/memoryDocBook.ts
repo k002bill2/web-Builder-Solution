@@ -96,7 +96,16 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
   let browser: Promise<ExportGenerator> | undefined;
   const appGenerator = (format: ExportFormat): ExportGenerator | undefined => {
     const load = (globalThis as Slot)[STATIC_HTML_SLOT];
-    return format === "static-html" && load ? async (input) => (await (browser ??= load().then((factory) => factory(store))))(input) : undefined;
+    // 청크 로드 실패는 기억하지 않는다(P2-2) — 다음 실행(재시도)이 슬롯 로더를 다시 부른다
+    const generator = (from: () => Promise<StaticHtmlFactory>) =>
+      (browser ??= from().then(
+        (factory) => factory(store),
+        (error: unknown) => {
+          browser = undefined;
+          throw error;
+        },
+      ));
+    return format === "static-html" && load ? async (input) => (await generator(load))(input) : undefined;
   };
   let state: DocState = { docs: new Map(), snapshots: new Map(), starts: new Map(), saves: new Map(), exports: new Map(), jobs: new Map() };
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);

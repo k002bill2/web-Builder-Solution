@@ -246,4 +246,26 @@ describe("앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT)", () => {
     expect(await injected.repo.getExportJob(first.jobId)).toMatchObject({ state: "succeeded", downloadRef: "blob:static-html" });
     expect(browser.made).toBe(1);
   });
+
+  it("P2-2 생성기 청크 첫 로드 실패 → 잡 INFRA(재시도 가능) → 같은 요청 다시 시도 → 슬롯 로더를 다시 불러 성공(실패를 기억하지 않는다)", async () => {
+    const { repo, save } = await setup();
+    const doc = await save(RENDERED);
+    let loads = 0;
+    slot[STATIC_HTML_SLOT] = async () => {
+      loads++;
+      if (loads === 1) throw new TypeError("Failed to fetch dynamically imported module");
+      return fakeFactory;
+    };
+    const settle = async (jobId: string) => {
+      let current = (await repo.getExportJob(jobId))!;
+      for (let i = 0; i < 20 && (current.state === "queued" || current.state === "running"); i++) current = (await new Promise((r) => setTimeout(r, 0)), (await repo.getExportJob(jobId))!);
+      return current;
+    };
+    const { job } = await repo.requestExport("project-1", "static-html", doc.revision);
+    expect(await settle(job.jobId)).toMatchObject({ state: "failed", errorCode: "INFRA", retryable: true });
+    const again = await repo.requestExport("project-1", "static-html", doc.revision);
+    expect(again.job.jobId).toBe(job.jobId);
+    expect(await settle(job.jobId)).toMatchObject({ state: "succeeded", downloadRef: "blob:browser" });
+    expect(loads).toBe(2);
+  });
 });

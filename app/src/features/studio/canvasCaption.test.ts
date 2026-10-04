@@ -1,4 +1,5 @@
 import { sampleDoc, section, withSections } from "../../engine/testing/sampleDoc";
+import { kitFor } from "../../kit/registry";
 import { CANVAS_CAPTIONS, canvasCaption } from "./canvasCaption";
 
 /** 캔버스 캡션 등급 3상태 (m2a 3.4 · K-AC-33) — 실렌더 판정 = 렌더러 있는 변형 키 목록(RENDERED_VARIANTS, 킷 레지스트리 가드 대조) */
@@ -17,7 +18,9 @@ describe("canvasCaption (3.4)", () => {
   it("모두 실렌더: 렌더러 있는 변형만 → F1 · 모두 폴백: 렌더러 없는 변형만 → F0", () => {
     const doc = sampleDoc();
     expect(canvasCaption(withSections(doc, doc.sections.filter((s) => s.type !== "cta-band")), true)).toBe(CANVAS_CAPTIONS.f1);
-    expect(canvasCaption(withSections(doc, [section("hero", "split", "s-hero"), section("cta-band", "banner", "s-cta")]), true)).toBe(CANVAS_CAPTIONS.f0);
+    const unrendered = [{ ...section("hero", "split", "s-hero"), variant: "no-such-variant" }, { ...section("cta-band", "banner", "s-cta"), variant: "no-such-variant" }];
+    for (const s of unrendered) expect(kitFor(s)).toBeUndefined(); // 예시 전제 — M2b가 변형을 늘려도 렌더러 없는 쌍이어야 F0 판정이 뜻을 가짐
+    expect(canvasCaption(withSections(doc, unrendered), true)).toBe(CANVAS_CAPTIONS.f0);
   });
 
   it("킷 토큰 없음(프로필 조회 전·실패) → 렌더 문서가 전부 폴백으로 그리므로 F0", () => {

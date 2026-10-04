@@ -80,6 +80,13 @@
 2. **1b `heroTop`(D-1)이 읽을 hero 맨 위 면 — hero 쪽 사실(SPEC B-3 표와 대조)**: split·grid·text = 섹션 톤 면(루트 `data-surface` bg/surface, 맨 위 = kit-wrap 위 여백의 섹션 면) ✓ · center = primary 면(루트 전체) ✓ · image 이미지 켬 = 미디어 띠가 맨 위(그리드 영역 media 먼저, 플레이스홀더면 그라디언트) ✓ · image 이미지 끔 = 카피 띠(섹션 톤 면)가 맨 위 ✓. 표와 다른 점 없음.
 3. SPEC 공백 — 보수적 해석: (가) hero 제목 줄 높이는 기존 `[data-kit] h1` 1.25 그대로(새 값 0) (나) image 변형 lg 2단에서 부제가 비면 CTA가 오른쪽 칸 맨 위(SPEC 4 "위 정렬")로 간다.
 
+4. **이전 단언 이관 (Jarvis 전체 vitest x3 결정적 실패 2건)** — 레인 gate가 표적 테스트만 돌려 놓쳤다. 원인 = hero 5변형 등록으로 "렌더러 없는 변형" 예시(hero/split)가 성립하지 않음. 구현 변경 0 · 단언 약화·skip 0(같은 의도, 예시만 교체). 전체 `npx vitest run` exit 0 (182 파일 · 1702 테스트, `logs/fix-vitest.txt`).
+
+| 테스트 | 전 | 후 | 근거 |
+|---|---|---|---|
+| `render/PageDocument.test.tsx` 레지스트리 정확 목록 | 7쌍 · 모르는 쌍 예시 `hero/split` | 12쌍(+hero center·grid·image·split·text, 이름표에 M2B-1a) · 모르는 쌍 `hero/no-such-variant` | M2B-1a가 hero 5변형을 KIT_REGISTRY에 등록 — 정확 목록 의도 유지, undefined 예시는 엔진에 없는 쌍으로 |
+| `features/studio/canvasCaption.test.ts` F0 예시 | `hero/split` + `cta-band/banner` | 두 섹션 variant = `no-such-variant`(sampleDoc `section()` 뒤 덮어씀) + 테스트 안에서 `kitFor(s)` undefined 전제 단언 | M2b가 변형을 계속 등록해도 다시 깨지지 않게 — 전제가 깨지면 원인이 바로 보임 |
+
 ## 8. 서버
 - 띄운 것: vite 4337 — npx PID 16316 · node PID 16343 (`logs/vite.pid`). 4339는 쓰지 않았다(정적 HTML은 srcdoc iframe · file://).
 - 종료: `kill 16316 16343` → `ps` 없음 · `lsof -nP -iTCP:4337 -sTCP:LISTEN` = 0줄 · `lsof -nP -iTCP:4339 -sTCP:LISTEN` = 0줄 (2026-10-04 22:0x KST). ego-browser·Chrome headless 프로세스 남음 0.

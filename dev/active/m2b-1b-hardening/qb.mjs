@@ -1,8 +1,9 @@
-// M2B-1b 브라우저 판정 [B]·[V] — `ego-browser nodejs < qb.mjs`. m2b-1a qb.mjs 방식: render.html을 최상위 페이지로 열고 페이지가 render{doc, kitTokens}를 스스로 보낸다.
+// M2B-1b-hardening P2·P3 판정 — 1b qb.mjs 복사(8c60a4b 원문) 개선. `ego-browser nodejs < qb.mjs`. render.html을 최상위 페이지로 열고 페이지가 render{doc, kitTokens}를 스스로 보낸다.
+// 1b 판정 ①~⑦은 이번 범위 밖이라 뺐다(1b 증거 = dev/active/m2b-1b/logs 보존). 남긴 것: 설정·draw·snap·COLORS(링 판정 개선)·judge + 링 매트릭스·부정 표본·P3.
 // 문서 = sampleDoc의 s-header · s-hero · s-footer 자리만 바꾼 것. 캡처는 같은 문서의 정적 HTML(static/*.html) → shots.sh(Chrome headless, 뷰포트만).
-const DIR = "/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/dev/active/m2b-1b";
+const DIR = "/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b-hardening/dev/active/m2b-1b-hardening";
 const { writeFile } = await import("node:fs/promises");
-const task = await taskSpace("m2b-1b qb");
+const task = await taskSpace("m2b-1b-hardening qb");
 const page = task.page("p1");
 const H = { 1280: 900, 768: 1024, 390: 844 };
 const setSize = (width) => page.cdp("Emulation.setDeviceMetricsOverride", { width, height: H[width], deviceScaleFactor: 1, mobile: false });
@@ -24,6 +25,7 @@ log("gate-profiles", await page.evaluate(async () => {
     light: { primary: "#0A5C36", surface: "#F4F0E8", ink: "#1A1A1A", muted: "#6E6E6E", bg: "#FCFBF8" },
     dark: { primary: "#757575", surface: "#EFE9F3", ink: "#000000", muted: "#5F5F66", bg: "#FAFAF7" },
     bright: { primary: "#2F5FC4", surface: "#1F232A", ink: "#F3F4F6", muted: "#A3A9B3", bg: "#14161A" },
+    low: { primary: "#0A5C36", surface: "#F4F0E8", ink: "#8A8A8A", muted: "#6E6E6E", bg: "#A8A8A8" }, // 부정 표본 전용 — 링 역할 ink/bg(허용)인데 대비 < 3
   };
   const rgb = (h) => `rgb(${parseInt(h.slice(1, 3), 16)}, ${parseInt(h.slice(3, 5), 16)}, ${parseInt(h.slice(5, 7), 16)})`;
   const toks = Object.fromEntries(Object.entries(P).map(([k, p]) => [k, { ...base, card: { tone: k === "dark" ? "dark" : "light", style: "bordered-md" }, palette: Object.fromEntries(Object.entries(p).map(([r, h]) => [r, rgb(h)])) }]));
@@ -83,85 +85,60 @@ const COLORS = (sel) => {
   const under = (suf) => sel.split(",").map((x) => `${x.trim()} ${suf}`).join(", "); // 쉼표 선택자 각 부분에 붙인다(".kit-bar, .kit-tier" + " *")
   const texts = [...document.querySelectorAll(under("*"))].filter((el) => el.checkVisibility() && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
   const rows = texts.map((el) => { const fg = getComputedStyle(el).color; const bg = bgOf(el); return { slot: el.dataset.slot ?? el.tagName, pair: `${roleOf(fg)}/${roleOf(bg)}`, ratio: Math.round(ratio(parse(fg), parse(bg)) * 100) / 100 }; });
-  // 링 = 실제로 포커스해 :focus-visible 계산 outline-color를 읽는다(--kit-ring 미지정 시 CSS 폴백 --site-ink까지 반영). 링이 안 그려지면 "?none"으로 실패 처리
-  const ringOf = (el) => { el.focus(); const s = getComputedStyle(el); const c = el.matches(":focus-visible") && s.outlineStyle !== "none" ? roleOf(s.outlineColor) : "?none"; el.blur(); return c; };
-  const rings = [...document.querySelectorAll(`${under("button")}, ${under("a")}`)].filter((el) => el.checkVisibility()).map((el) => `${el.textContent.trim().slice(0, 4)}:${ringOf(el)}/${roleOf(bgOf(el))}`);
-  return { rows, rings };
+  // 링(개선, 2R D-P2-1·2) = 실제 focus() 뒤 :focus-visible · outlineStyle · outlineWidth > 0 확인 + 계산 outline-color.
+  // 바깥 면 = outline이 그려지는 곳 = outline-offset(> 0) 바깥 = 부모의 실제 불투명 면(요소 자신의 fill 아님). 안쪽 간격도 같은 부모 면이 비친다.
+  // offset ≤ 0이면 링이 요소 fill과도 맞닿으므로 그 쌍도 따로 판정한다. 면을 못 찾거나 색 파싱 실패·반투명 = 실패(fail-closed).
+  const faceOf = (el) => { for (let e = el; e; e = e.parentElement) { const s = getComputedStyle(e); const c = parse(s.backgroundColor); if (c.length >= 3 && (c[3] === undefined || c[3] === 1)) return s.backgroundColor; } return null; };
+  const ringOf = (el) => {
+    el.focus();
+    const s = getComputedStyle(el);
+    const r = { t: el.textContent.trim().slice(0, 6), tag: el.tagName, focused: document.activeElement === el, fv: el.matches(":focus-visible"), style: s.outlineStyle, width: parseFloat(s.outlineWidth), offset: parseFloat(s.outlineOffset), color: s.outlineColor };
+    el.blur();
+    const rc = parse(r.color), face = faceOf(el.parentElement), own = faceOf(el);
+    const okColor = rc.length >= 3 && (rc[3] === undefined || rc[3] === 1);
+    r.ring = okColor ? roleOf(r.color) : `?parse(${r.color})`;
+    r.face = face ? roleOf(face) : "?noface";
+    r.ratio = okColor && face ? Math.round(ratio(rc, parse(face)) * 100) / 100 : null;
+    r.own = own ? roleOf(own) : "?noface";
+    r.ownRatio = okColor && own ? Math.round(ratio(rc, parse(own)) * 100) / 100 : null;
+    r.pair = `${r.ring}/${r.face}`;
+    return r;
+  };
+  const rings = [...document.querySelectorAll(`${under("button")}, ${under("a")}`)].filter((el) => el.checkVisibility()).map(ringOf);
+  const anchors = [...document.querySelectorAll(under("a[href]"))].length;
+  return { rows, rings, anchors };
 };
 const ALLOWED = new Set(["on-primary/primary", "primary/on-primary", "ink/bg", "ink/surface", "muted/bg", "bg/ink"]);
-const RING_OK = new Set(["on-primary/primary", "ink/bg", "ink/surface", "bg/ink", "ink/primary"]); // 링 = 그 면의 알아보는 경계(바깥 on-primary · 안쪽 간격 면). ink/primary = K1-1 CTA(primary 버튼) 링 — 면은 bar의 bg
-const judge = (c) => ({ n: c.rows.length, bad: c.rows.filter((x) => !ALLOWED.has(x.pair) || x.ratio < 4.5), min: Math.min(...c.rows.map((x) => x.ratio)), pairs: [...new Set(c.rows.map((x) => x.pair))], rings: c.rings, badRings: c.rings.filter((r) => !RING_OK.has(r.split(":")[1])) });
+const RING_OK = new Set(["on-primary/primary", "ink/bg", "ink/surface", "bg/ink"]); // 링 색/바깥 면 역할 허용 쌍. 1b의 ink/primary(CTA 자기 fill을 면으로 오인)는 부모 면 판정으로 바뀌어 뺐다
+const RING_MIN = 3; // 비텍스트 대비(WCAG 1.4.11) — 역할 허용 + 수치 둘 다
+const ringBad = (r) => {
+  const why = [];
+  if (!r.focused) why.push("focus 실패");
+  if (!r.fv) why.push(":focus-visible 아님");
+  if (r.style === "none" || !(r.width > 0)) why.push(`링 없음(${r.style} ${r.width})`);
+  if (!RING_OK.has(r.pair)) why.push(`역할 밖 ${r.pair}`);
+  if (r.ratio === null || r.ratio < RING_MIN) why.push(`대비 ${r.ratio}`);
+  if (!(r.offset > 0) && (r.ownRatio === null || r.ownRatio < RING_MIN)) why.push(`offset ${r.offset} · 자기 면 대비 ${r.ownRatio}`);
+  return why;
+};
+const judge = (c) => ({ n: c.rows.length, bad: c.rows.filter((x) => !ALLOWED.has(x.pair) || x.ratio < 4.5), min: Math.min(...c.rows.map((x) => x.ratio)), pairs: [...new Set(c.rows.map((x) => x.pair))], anchors: c.anchors, ringN: c.rings.length, ringMin: c.rings.length ? Math.min(...c.rings.map((r) => r.ratio ?? 0)) : null, ringPairs: [...new Set(c.rings.map((r) => r.pair))], rings: c.rings.map((r) => `${r.t}:${r.pair}:${r.ratio}`), badRings: c.rings.map((r) => [r, ringBad(r)]).filter(([, w]) => w.length).map(([r, w]) => `${r.t}:${r.pair}:${r.ratio} — ${w.join("·")}`) });
 
-// header 폭별 상태 (KB-AC-01·02·04)
-const HSTATE = (v) => {
-  const h = document.querySelector(`[data-section="header/${v}"]`);
-  const vis = (el) => !!el && el.checkVisibility();
-  const navVis = () => [...document.querySelectorAll("nav")].filter(vis).length;
-  const rect = (el) => { const r = el.getBoundingClientRect(); return { x: +r.x.toFixed(1), right: +r.right.toFixed(1), w: +r.width.toFixed(1), top: +r.top.toFixed(1), bottom: +r.bottom.toFixed(1) }; };
-  const btn = h.querySelector(".kit-bar > button");
-  const sheet = h.querySelector("[popover]");
-  const tier = h.querySelector(".kit-tier");
-  const closed = { btnVisible: vis(btn), btnDisplay: btn && getComputedStyle(btn).display, barNavVisible: vis(h.querySelector(".kit-bar nav")), barNav: h.querySelectorAll(".kit-bar nav").length, tierVisible: vis(tier), navVisible: navVis(), sheetOpen: sheet?.matches(":popover-open") ?? null };
-  let open = null;
-  if (vis(btn)) {
-    btn.click();
-    const kids = [...sheet.children].filter(vis).map((el) => el.tagName + (el.dataset.slot ? `[${el.dataset.slot}]` : el.querySelector("[data-slot]") ? `>${el.querySelector("[data-slot]").dataset.slot}` : ""));
-    open = { isOpen: sheet.matches(":popover-open"), navVisible: navVis(), visibleChildren: kids, rect: rect(sheet), vw: document.documentElement.clientWidth };
-    sheet.hidePopover();
-  }
-  return { closed, open, header: rect(h), position: getComputedStyle(h).position };
+// footer 탐침 — 복제본의 첫 하단 링크 항목을 a[href]로 바꿔 COLORS로 잰 뒤 복제본 제거. ring = 복제본에만 줄 --kit-ring(부정 표본용, 없으면 null)
+const PROBE = ([sel, ring, COLORS_SRC]) => {
+  const COLORS = eval(COLORS_SRC);
+  const f = document.querySelector(sel);
+  const c = f.cloneNode(true);
+  c.removeAttribute("data-section"); c.removeAttribute("id"); c.setAttribute("data-probe-root", "");
+  if (ring) c.style.setProperty("--kit-ring", ring);
+  const li = c.querySelector('[data-slot="links"] li');
+  const a = document.createElement("a"); a.href = "#s-s-about"; a.textContent = li.textContent; li.textContent = ""; li.appendChild(a);
+  f.after(c);
+  const r = COLORS("[data-probe-root]");
+  c.remove();
+  return r;
 };
 
-// 앵커 이동 뒤 본문 제목 위 끝 ≥ header 아래 끝 (KB-AC-06) — scrollIntoView = scroll-margin-top 적용
-const ANCHORS = (doc) => {
-  const d = doc ?? document;
-  const header = d.querySelector("header");
-  return ["s-s-about", "s-s-services", "s-s-faq", "s-s-contact"].map((id) => {
-    const s = d.getElementById(id);
-    if (!s) return null;
-    s.scrollIntoView({ block: "start" });
-    const hb = header.getBoundingClientRect().bottom;
-    const t = s.querySelector("h2").getBoundingClientRect().top;
-    return { id, h2Top: +t.toFixed(1), headerBottom: +hb.toFixed(1), ok: t >= hb - 0.5, smt: d.defaultView.getComputedStyle(s).scrollMarginTop };
-  });
-};
-
-// ① QB-1·2 · KB-AC-01·02·04 · KB-AC-06 (light, 기본 슬롯)
-for (const v of ["sticky-hamburger", "sticky-two-tier"]) {
-  await draw("light", { header: v, dropFallback: true });
-  if (v === "sticky-hamburger") { await snap("qb-1-hamburger", { open: true }); } else { await snap("qb-2-two-tier", { open: true }); }
-  for (const w of W3) {
-    await setSize(w); await settle();
-    await page.evaluate(() => scrollTo(0, 0));
-    log(`hstate-${v}-${w}`, await page.evaluate(HSTATE, v));
-    log(`anchors-${v}-${w}`, await page.evaluate(ANCHORS));
-    await page.evaluate(() => scrollTo(0, 0));
-  }
-}
-// two-tier 여백 확대 대조: 같은 문서의 sticky-right-cta 여백
-await draw("light", { dropFallback: true });
-log("smt-right-cta", await page.evaluate(() => getComputedStyle(document.getElementById("s-s-about")).scrollMarginTop));
-
-// ② QB-3·4 · KB-AC-08 transparent 위치·겹침 (hero center · fullbleed-left 이미지 · split alt · 첫 본문 about)
-const CLEAR = [["center", { hero: { v: "center" } }], ["fullbleed", { hero: { v: "fullbleed-left" } }], ["split-alt", { hero: { v: "split", tone: "alt" } }], ["split-base", { hero: { v: "split", tone: "base" } }], ["none", { noHero: true }]];
-for (const [k, spec] of CLEAR) {
-  await draw("light", { header: "transparent", dropFallback: true, ...spec });
-  if (k === "center") await snap("qb-3-transparent-center");
-  if (k === "fullbleed") await snap("qb-4-transparent-fullbleed");
-  for (const w of W3) {
-    await setSize(w); await settle();
-    await page.evaluate(() => scrollTo(0, 0));
-    log(`clear-${k}-${w}`, await page.evaluate(() => {
-      const h = document.querySelector('[data-section="header/transparent"]');
-      const next = h.parentElement.querySelector("main > :first-child");
-      const s = getComputedStyle(h);
-      const hb = h.getBoundingClientRect().bottom, nt = next.getBoundingClientRect().top;
-      return { position: s.position, surface: h.dataset.surface, bg: s.backgroundColor, nextBg: getComputedStyle(next).backgroundColor, borderBottom: `${s.borderBottomWidth} ${s.borderBottomStyle}`, headerBottom: +hb.toFixed(1), nextTop: +nt.toFixed(1), overlap: Math.max(0, hb - nt) };
-    }));
-  }
-}
-
-// ③ KB-AC-09 · 34 대비: 프로필 light·dark × 톤 base·alt × 6변형 × 1280·390 (+ transparent 면 3종 × 바/열린 시트 768·390)
+// 열린 시트 판정 — 1b ③ sheetColors 그대로
 const sheetColors = async (v) => page.evaluate(([v, COLORS_SRC]) => {
   const COLORS = eval(COLORS_SRC);
   const h = document.querySelector(`[data-section="header/${v}"]`);
@@ -172,149 +149,104 @@ const sheetColors = async (v) => page.evaluate(([v, COLORS_SRC]) => {
   h.querySelector("[popover]").hidePopover();
   return r;
 }, [v, `(${COLORS.toString()})`]);
+
+// ⓪ footer links에 넣을 실제 본문 제목(같은 글자 = a[href], 0.10) + 맞지 않는 글자 1개(span 대조)
+await draw("light", {});
+const titles = await page.evaluate(() => [...document.querySelectorAll("main h2")].map((h) => h.textContent.trim()));
+const FOOT_LINKS = [...titles.slice(0, 3), "개인정보처리방침"].join(" · ");
+log("footer-links-sample", { titles, FOOT_LINKS });
+
+// ① P2 링 매트릭스: light·dark × 톤 base·alt × header 4(바 + 열린 시트) · transparent 면 3 · footer 4 × 1280·768·390
+const HEADERS = ["sticky-right-cta", "sticky-hamburger", "sticky-two-tier"];
+const FOOTERS = ["biz-extended", "biz-extended-map", "minimal", "minimal-biz"];
 for (const profile of ["light", "dark"]) for (const tone of ["base", "alt"]) {
-  for (const v of ["sticky-hamburger", "sticky-two-tier"]) {
+  for (const v of HEADERS) {
     await draw(profile, { header: v, hero: { v: "split", tone } });
-    for (const w of [1280, 768, 390]) {
+    for (const w of W3) {
       await setSize(w); await settle();
       const sheet = await sheetColors(v);
-      log(`colors-${profile}-${tone}-${v}-${w}`, { bar: judge(await page.evaluate(COLORS, `[data-section="header/${v}"] .kit-bar, [data-section="header/${v}"] .kit-tier`)), sheet: sheet && judge(sheet) });
+      log(`ring-${profile}-${tone}-${v}-${w}`, { bar: judge(await page.evaluate(COLORS, `[data-section="header/${v}"] .kit-bar, [data-section="header/${v}"] .kit-tier`)), sheet: sheet && judge(sheet) });
     }
   }
   for (const [k, hero] of [["primary", { v: "center", tone }], ["surface", { v: "split", tone: "alt" }], ["bg", { v: "split", tone: "base" }]]) {
     await draw(profile, { header: "transparent", hero });
-    for (const w of [1280, 768, 390]) {
+    for (const w of W3) {
       await setSize(w); await settle();
       const sheet = await sheetColors("transparent");
-      log(`colors-${profile}-${tone}-transparent-${k}-${w}`, { surface: await page.evaluate(() => document.querySelector('[data-section="header/transparent"]').dataset.surface), bar: judge(await page.evaluate(COLORS, '[data-section="header/transparent"] .kit-bar')), sheet: sheet && judge(sheet) });
+      log(`ring-${profile}-${tone}-transparent-${k}-${w}`, { surface: await page.evaluate(() => document.querySelector('[data-section="header/transparent"]').dataset.surface), bar: judge(await page.evaluate(COLORS, '[data-section="header/transparent"] .kit-bar')), sheet: sheet && judge(sheet) });
     }
   }
-  for (const v of ["biz-extended-map", "minimal", "minimal-biz"]) {
-    await draw(profile, { footer: v, footerTone: tone });
-    for (const w of [1280, 390]) {
+  for (const v of FOOTERS) {
+    await draw(profile, { footer: v, footerTone: tone, footerSlots: { links: FOOT_LINKS } });
+    for (const w of W3) {
       await setSize(w); await settle();
-      log(`colors-${profile}-${tone}-${v}-${w}`, judge(await page.evaluate(COLORS, `[data-section="footer/${v}"]`)));
+      const sel = `[data-section="footer/${v}"]`;
+      const tags = await page.evaluate((sel) => [...document.querySelectorAll(`${sel} [data-slot="links"] li`)].map((li) => li.firstElementChild?.tagName ?? "TEXT"), sel);
+      const foot = judge(await page.evaluate(COLORS, sel));
+      // 탐침(probe) — footer 하단 링크는 SPEC상 글자 항목(m2a SPEC 122·463 MQ-2)이라 실제 a가 0이다. 판정 페이지 안에서만 첫 항목 글자를 a[href]로 감싸
+      // "링크가 생기면"(SPEC 481)의 링 CSS 계약(면 위 --kit-ring)을 잰다. 운영 마크업에 없는 요소 = 실제 링크 측정 대체 아님.
+      // React가 관리하는 DOM은 건드리지 않는다 — footer 복제본(같은 class·같은 부모 면)을 바로 뒤에 붙여 재고 지운다(다음 draw 오염 0)
+      const probe = judge(await page.evaluate(PROBE, [sel, null, `(${COLORS.toString()})`]));
+      log(`ring-${profile}-${tone}-${v}-${w}`, { linkTags: tags, foot, probe });
     }
   }
 }
 
-// ④ QB-10 · KB-AC-24·25 지도 footer 배치 · QB-11 · KB-AC-26·29 미니멀 계산 스타일
-const FBOX = (v) => {
-  const f = document.querySelector(`[data-section="footer/${v}"]`);
-  const r = (el) => { if (!el) return null; const b = el.getBoundingClientRect(); return { x: +b.x.toFixed(1), y: +(b.y + scrollY).toFixed(1), w: +b.width.toFixed(1), h: +b.height.toFixed(1), bottom: +(b.bottom + scrollY).toFixed(1) }; };
-  const s = (el, props) => el ? Object.fromEntries(props.map((p) => [p, getComputedStyle(el)[p]])) : null;
-  return {
-    address: r(f.querySelector("address")), links: r(f.querySelector("ul")), figure: r(f.querySelector("figure")), copy: r(f.querySelector('[data-slot="copyright"]')),
-    mapBorder: s(f.querySelector("figure"), ["borderTopColor", "borderTopWidth", "borderRadius"]),
-    root: s(f, ["backgroundColor", "borderTopWidth", "borderTopStyle", "borderTopColor", "paddingTop"]),
-    line: s(f.firstElementChild, ["display", "flexDirection", "justifyContent", "paddingTop", "paddingBottom"]),
-    ul: s(f.querySelector("ul"), ["color", "fontWeight", "fontSize", "display", "justifyContent", "columnGap"]),
-    lead: s(f.querySelector('[data-slot="copyright"], [data-slot="businessInfo"]'), ["color", "fontSize", "whiteSpace", "fontStyle"]),
-    overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  };
-};
-await draw("light", { footer: "biz-extended-map", dropFallback: true });
-await snap("qb-10-map", { foot: true });
-for (const w of W3) { await setSize(w); await settle(); log(`map-${w}`, await page.evaluate(FBOX, "biz-extended-map")); }
-await draw("light", { footer: "biz-extended-map", mapOff: true });
-for (const w of [1280, 390]) { await setSize(w); await settle(); log(`map-off-${w}`, await page.evaluate(FBOX, "biz-extended-map")); }
-for (const v of ["minimal", "minimal-biz"]) {
-  await draw("light", { footer: v, dropFallback: true });
-  await snap(`qb-11-${v}`, { foot: true });
-  for (const w of W3) { await setSize(w); await settle(); log(`min-${v}-${w}`, await page.evaluate(FBOX, v)); }
-}
+// ② 부정 표본(판정기가 FAIL을 내는지 — 기대 = FAIL). 렌더 코드 수정 없이 판정 페이지 안에서만 덮어쓴다
+// N1 같은 색: header 바(면 bg)에 --kit-ring = bg → 링 bg/bg, 대비 1 (CTA는 자기 --kit-ring ink를 가져 정상 쌍으로 남는 것이 기대) — 잰 뒤 인라인 값 원복
+await draw("light", { header: "sticky-right-cta" });
+await setSize(1280); await settle();
+await page.evaluate(() => document.querySelector('[data-section="header/sticky-right-cta"]').style.setProperty("--kit-ring", "var(--site-bg)"));
+log("neg-same-color", judge(await page.evaluate(COLORS, '[data-section="header/sticky-right-cta"] .kit-bar')));
+await page.evaluate(() => document.querySelector('[data-section="header/sticky-right-cta"]').style.removeProperty("--kit-ring"));
+// N1f footer/biz-extended(면 ink) 복제본 탐침 + --kit-ring = ink → ink/ink
+await draw("light", { footer: "biz-extended", footerSlots: { links: FOOT_LINKS } });
+await setSize(1280); await settle();
+log("neg-same-color-footer-probe", judge(await page.evaluate(PROBE, ['[data-section="footer/biz-extended"]', "var(--site-ink)", `(${COLORS.toString()})`])));
+// N2 역할은 허용(ink/bg)인데 수치 < 3: 저대비 프로필 low의 header 바
+await draw("low", { header: "sticky-right-cta" });
+await setSize(1280); await settle();
+log("neg-low-ratio", judge(await page.evaluate(COLORS, '[data-section="header/sticky-right-cta"] .kit-bar')));
+// N3 1b 방식(자기 fill = 면)이었다면: CTA 링 ink를 자기 면 primary와 짝지었다 — 개선 판정이 부모 면을 쓰는지 대조 기록
+await draw("light", { header: "sticky-right-cta" });
+await setSize(1280); await settle();
+log("cta-face-check", (await page.evaluate(COLORS, '[data-section="header/sticky-right-cta"] .kit-bar')).rings.filter((r) => r.tag === "A" && r.own === "primary"));
 
-// ⑤ KB-AC-31 상한 글자 + 글자 200% → 1280·768·390 가로 넘침 0 · 밖으로 나간 요소 0 · 말줄임 0 (header는 열린 시트도)
-const LONG = {
-  header: { brand: "가나다라마바사아자차카타파하거너더러머버서어저처", nav: Array.from({ length: 10 }, (_, i) => `메뉴항목${i}번`).join(" · ").slice(0, 80), utility: "로그인하기와회원가입 · 고객센터문의하기안내 · 주문배송조회".slice(0, 40) },
-  "biz-extended-map": { businessInfo: "상호명이아주긴회사이름입니다 · 대표자 홍길동 · 사업자등록번호 123-45-67890 · 주소 서울특별시 어느구 어느로 123 어느빌딩 4층 · 통신판매업신고 2026-서울어느-0000 · 전화 02-000-0000 · 이메일 contact@example.invalid · 개인정보관리책임자 홍길동 · 호스팅 제공자".slice(0, 200), links: Array.from({ length: 8 }, (_, i) => `하단링크항목${i}`).join(" · ").slice(0, 80), copyright: "© 상호명이아주긴회사이름입니다 All rights reserved 2026 어느 회사의 저작권 문구입니다".slice(0, 60) },
-  minimal: { links: Array.from({ length: 8 }, (_, i) => `하단링크항목${i}`).join(" · ").slice(0, 80), copyright: "© 상호명이아주긴회사이름입니다 All rights reserved 2026 어느 회사의 저작권 문구입니다".slice(0, 60) },
-  "minimal-biz": { links: Array.from({ length: 8 }, (_, i) => `하단링크항목${i}`).join(" · ").slice(0, 80), businessInfo: "상호명이아주긴회사이름입니다 · 대표자 홍길동 · 사업자등록번호 123-45-67890 · 주소 서울특별시 어느구 어느로 123 어느빌딩 4층 · 전화번호".slice(0, 100) },
-};
-const OVER = (sel) => {
-  const root = document.querySelector(sel);
-  const vw = document.documentElement.clientWidth;
-  const all = [...root.querySelectorAll("*")].filter((el) => el.checkVisibility());
-  return { overflowX: document.documentElement.scrollWidth - vw, wider: all.filter((el) => el.getBoundingClientRect().right > vw + 0.5 || el.getBoundingClientRect().left < -0.5).map((el) => el.className || el.tagName), ellipsis: all.filter((el) => { const s = getComputedStyle(el); return s.textOverflow === "ellipsis" || s.webkitLineClamp !== "none"; }).length };
-};
-for (const [type, v] of [["header", "sticky-hamburger"], ["header", "sticky-two-tier"], ["header", "transparent"], ["footer", "biz-extended-map"], ["footer", "minimal"], ["footer", "minimal-biz"]]) {
-  const spec = type === "header" ? { header: v, headerSlots: Object.fromEntries(Object.entries(LONG.header).filter(([k]) => v === "sticky-two-tier" || k !== "utility")) } : { footer: v, footerSlots: LONG[v] };
-  await draw("light", spec);
-  await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
-  const res = {};
-  for (const w of W3) {
-    await setSize(w); await settle();
-    const sel = `[data-section="${type}/${v}"]`;
-    const closed = await page.evaluate(OVER, sel);
-    const open = type === "header" ? await page.evaluate((sel) => { const b = document.querySelector(`${sel} .kit-bar > button`); if (!b || !b.checkVisibility()) return null; b.click(); const p = document.querySelector(`${sel} [popover]`); const vw = document.documentElement.clientWidth; const r = [...p.querySelectorAll("*")].filter((el) => el.checkVisibility() && el.getBoundingClientRect().right > vw + 0.5).length; const sr = p.getBoundingClientRect(); p.hidePopover(); return { widerInSheet: r, sheetRight: +sr.right.toFixed(1), vw }; }, sel) : null;
-    res[w] = { closed, open };
-  }
-  await page.evaluate(() => { document.documentElement.style.fontSize = ""; });
-  log(`long200-${v}`, res);
+// ③ P3 two-tier nav 빈 값 + utility 있음 — 메뉴 버튼·시트 없음 · 보조 줄이 바 위 · DOM 순서 = 시각 순서 · 넘침 0 (승인 정본 = 바 위)
+await draw("light", { header: "sticky-two-tier", headerSlots: { nav: "" }, dropFallback: true });
+await snap("p3-two-tier-nonav");
+for (const w of W3) {
+  await setSize(w); await settle();
+  await page.evaluate(() => scrollTo(0, 0));
+  log(`p3-${w}`, await page.evaluate(() => {
+    const h = document.querySelector('[data-section="header/sticky-two-tier"]');
+    const vis = (el) => !!el && el.checkVisibility();
+    const rect = (el) => { const r = el.getBoundingClientRect(); return { x: +r.x.toFixed(1), y: +r.y.toFixed(1), w: +r.width.toFixed(1), h: +r.height.toFixed(1), bottom: +r.bottom.toFixed(1), right: +r.right.toFixed(1) }; };
+    const tier = h.querySelector(".kit-tier"), bar = h.querySelector(".kit-bar"), brand = h.querySelector(".kit-brand");
+    const vw = document.documentElement.clientWidth;
+    return {
+      utilityItems: [...h.querySelectorAll('[data-slot="utility"] li')].map((li) => li.textContent.trim()),
+      navSlotEmpty: h.querySelectorAll('[data-slot="nav"]').length === 0, sheets: h.querySelectorAll(".kit-sheet, [popover]").length, buttons: h.querySelectorAll("button").length, navs: h.querySelectorAll("nav").length,
+      tierVisible: vis(tier), dataAlways: tier?.hasAttribute("data-always"), brandVisible: vis(brand),
+      tier: rect(tier), bar: rect(bar), header: rect(h),
+      tierAboveBar: tier.getBoundingClientRect().bottom <= bar.getBoundingClientRect().top + 0.5,
+      domOrderTierFirst: !!(tier.compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING),
+      overflowX: document.documentElement.scrollWidth - vw,
+      outside: [...h.querySelectorAll("*")].filter((el) => vis(el) && (el.getBoundingClientRect().right > vw + 0.5 || el.getBoundingClientRect().left < -0.5)).length,
+      vw,
+    };
+  }));
 }
-
-// ⑥ QB-13 다른 프로필(ink가 밝은 팔레트) 1280·390 — 6변형 성립 + 대비
-for (const [type, v] of [["header", "sticky-hamburger"], ["header", "sticky-two-tier"], ["header", "transparent"], ["footer", "biz-extended-map"], ["footer", "minimal"], ["footer", "minimal-biz"]]) {
-  await draw("bright", type === "header" ? { header: v, hero: v === "transparent" ? { v: "center" } : undefined, dropFallback: true } : { footer: v, dropFallback: true });
-  await snap(`qb-13-${v}`, { foot: type === "footer" });
-  for (const w of [1280, 390]) {
-    await setSize(w); await settle();
-    const sel = `[data-section="${type}/${v}"]`;
-    const bar = judge(await page.evaluate(COLORS, sel));
-    const sheet = type === "header" ? await sheetColors(v) : null;
-    log(`qb13-${v}-${w}`, { bar, sheet: sheet && judge(sheet), overflowX: await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth) });
-  }
+// 캡처 1장(390 viewport) — ego screenshot 2회 시도(각 20초), 실패면 shots.sh(Chrome headless _w390 래퍼)로 대체
+await setSize(390); await settle();
+await page.evaluate(() => scrollTo(0, 0));
+let shot = null;
+for (let i = 1; i <= 2 && !shot; i++) {
+  try { shot = await Promise.race([page.screenshot({ path: `${DIR}/shots/p3-two-tier-nonav-390-ego.png` }), new Promise((_, no) => setTimeout(() => no(new Error("timeout 20s")), 20000))]); }
+  catch (e) { log(`p3-shot-try${i}`, String(e.message ?? e)); }
 }
-
-// ⑦ KB-AC-35 [B] 정적 HTML — 같은 폭 iframe(srcdoc, 검사용)에서 계산 스타일 = 캔버스 · 앵커 이동 뒤 제목이 header에 안 가림 · script 1
-const STYLE = (doc) => {
-  const g = (el, props) => el ? Object.fromEntries(props.map((p) => [p, doc.defaultView.getComputedStyle(el)[p]])) : null;
-  const h = doc.querySelector("header"), f = doc.querySelector("footer");
-  return {
-    header: g(h, ["position", "backgroundColor", "color", "borderBottomWidth", "borderBottomColor"]),
-    tier: g(h.querySelector(".kit-tier"), ["display", "fontSize"]),
-    barNav: g(h.querySelector(".kit-bar nav"), ["display"]),
-    button: g(h.querySelector(".kit-bar > button"), ["display", "color", "backgroundColor", "borderTopColor"]),
-    brand: g(h.querySelector(".kit-brand"), ["color"]),
-    menuItem: g(h.querySelector(".kit-bar .kit-menu :is(a, span)"), ["color"]),
-    about: g(doc.getElementById("s-s-about"), ["scrollMarginTop"]),
-    footer: g(f, ["backgroundColor", "color", "borderTopWidth", "borderTopColor", "fontSize"]),
-    footerTop: g(f.querySelector(".kit-footer-top, .kit-footer-line"), ["display", "gridTemplateColumns", "flexDirection"]),
-    footerLead: g(f.querySelector(".kit-footer-copy, .kit-footer-info"), ["color", "whiteSpace"]),
-    map: g(f.querySelector("figure"), ["borderTopColor", "borderRadius"]),
-  };
-};
-const STATIC_DOCS = [
-  ["hamburger", { header: "sticky-hamburger" }], ["two-tier", { header: "sticky-two-tier" }], ["two-tier-nonav", { header: "sticky-two-tier", headerSlots: { nav: "" } }],
-  ["clear-primary", { header: "transparent", hero: { v: "center" } }], ["clear-surface", { header: "transparent", hero: { v: "split", tone: "alt" } }], ["clear-media", { header: "transparent" }], ["clear-edge", { header: "transparent", noHero: true }],
-  ["map", { footer: "biz-extended-map" }], ["minimal", { footer: "minimal" }], ["minimal-biz", { footer: "minimal-biz" }],
-];
-for (const [k, spec] of STATIC_DOCS) {
-  await draw("light", { ...spec, dropFallback: true });
-  for (const w of W3) {
-    await setSize(w); await settle();
-    await page.evaluate(() => scrollTo(0, 0));
-    const res = await page.evaluate(async ([w, STYLE_SRC, ANCHORS_SRC]) => {
-      const STYLE = eval(STYLE_SRC), ANCHORS = eval(ANCHORS_SRC);
-      const canvas = STYLE(document);
-      const css = [...document.styleSheets].map((s) => [...s.cssRules].map((r) => r.cssText).join("\n")).join("\n");
-      const html = window.__q.buildStaticHtml({ markup: document.querySelector("[data-site-root]").outerHTML, css, title: "t", description: "d" });
-      const f = document.createElement("iframe");
-      f.style.cssText = `position:absolute;left:0;top:0;width:${w}px;height:900px;border:0`;
-      document.body.appendChild(f);
-      await new Promise((ok) => { f.onload = ok; f.srcdoc = html; });
-      const d = f.contentDocument;
-      const stat = STYLE(d);
-      const anchors = ANCHORS(d);
-      const scripts = d.querySelectorAll("script").length;
-      f.remove();
-      const same = JSON.stringify(canvas) === JSON.stringify(stat);
-      return { same, diff: same ? null : { canvas, stat }, anchorsOk: anchors.every((a) => !a || a.ok), anchors, scripts };
-    }, [w, `(${STYLE.toString()})`, `(${ANCHORS.toString()})`]);
-    log(`static-${k}-${w}`, res);
-  }
-}
+log("p3-shot", shot ? "ego ok" : "ego 실패 → shots.sh 대체");
 
 await page.cdp("Emulation.clearDeviceMetricsOverride", {});
-await writeFile(`${DIR}/logs/qb-b.json`, JSON.stringify(out, null, 1));
+await writeFile(`${DIR}/logs/qb-h.json`, JSON.stringify(out, null, 1));
 await task.finish({ keep: [] });

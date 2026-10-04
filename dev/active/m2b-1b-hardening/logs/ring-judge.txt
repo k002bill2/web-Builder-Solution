@@ -1,0 +1,15 @@
+링 매트릭스: 키 120(header 72 · footer 48) · 측정 부분 172 · 링 측정 332건 · 최소 대비 4.61 (ring-dark-base-transparent-primary-1280:bar) · 역할 쌍 {"ink/bg":100,"on-primary/primary":12,"ink/surface":12}
+미판정(BLOCKED) footer 실제 링크 링 — 48개 대상(footer 4 × 3폭 × light·dark × base·alt) 실제 a 합 0 · 링 측정 합 0 · links 항목 태그 ["TEXT","TEXT","TEXT","TEXT"] (본문 제목과 같은 글자를 넣어도 글자 항목 — m2a SPEC 122·463 MQ-2)
+PASS footer 탐침(판정 페이지 주입 a, 운영 마크업 아님) 링 — 48개 대상 링 48건 · 최소 대비 16.82 · 쌍 ["bg/ink","ink/bg"]
+header 링 0 문서: 0 
+측정 0 부분(참고 — 링크 없는 바 등): 48 ring-light-base-biz-extended-1280:foot, ring-light-base-biz-extended-768:foot, ring-light-base-biz-extended-390:foot, ring-light-base-biz-extended-map-1280:foot, ring-light-base-biz-extended-map-768:foot, ring-light-base-biz-extended-map-390:foot, ring-light-base-minimal-1280:foot, ring-light-base-minimal-768:foot
+PASS P2 링(header 4 바·시트 · transparent 면 3) — 허용 밖·대비<3·focus/링 실패 0건
+PASS (참고) 글자 대비 4.5·역할 — 위반 0건
+PASS 부정 표본 N1 같은 색(header 면 bg + 링 bg) → 판정기 FAIL 3/4 (남은 문의하기:ink/bg:16.82 = 자기 --kit-ring ink를 가진 CTA, 정상): 소개:bg/bg:1 — 역할 밖 bg/bg·대비 1 | 서비스:bg/bg:1 — 역할 밖 bg/bg·대비 1
+PASS 부정 표본 N1f 같은 색(footer 면 ink + 탐침 링 ink) → 판정기 FAIL 1/1: 소개:ink/ink:1 — 역할 밖 ink/ink·대비 1
+PASS 부정 표본 N2 역할 허용(ink/bg)·수치<3 → 판정기 FAIL 4/4: 소개:ink/bg:1.45 — 대비 1.45 | 서비스:ink/bg:1.45 — 대비 1.45
+CTA 면 대조(N3): 자기 fill primary인 링크 1건 → 판정 면 bg (1b 방식이면 ink/primary로 기록)
+PASS P3 1280 — utility 2(로그인·고객센터) · 시트 0 · 버튼 0 · nav 0 · 보조 줄 보임 true(data-always true) · tier y0~23.2 ≤ bar y23.2 true · DOM tier→bar true · 넘침 0 · 밖 요소 0
+PASS P3 768 — utility 2(로그인·고객센터) · 시트 0 · 버튼 0 · nav 0 · 보조 줄 보임 true(data-always true) · tier y0~23.2 ≤ bar y23.2 true · DOM tier→bar true · 넘침 0 · 밖 요소 0
+PASS P3 390 — utility 2(로그인·고객센터) · 시트 0 · 버튼 0 · nav 0 · 보조 줄 보임 true(data-always true) · tier y0~23.2 ≤ bar y23.2 true · DOM tier→bar true · 넘침 0 · 밖 요소 0
+P3 캡처: ego 실패 → shots.sh 대체 (try1 CDP request timed out: Page.captureScreenshot · try2 CDP request timed out: Page.captureScreenshot)

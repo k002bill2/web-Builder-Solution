@@ -1,0 +1,69 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-1b/app
+
+ ❯ src/kit/HeaderStickyHamburger.test.tsx (4 tests | 4 failed) 49ms
+   ❯ header/sticky-hamburger (B-1) (4)
+     × 구조: header 루트(id s-…) · 변형 클래스 · 바 = 브랜드 + '메뉴' 버튼만(바 안 nav 0) · 메뉴 한 벌 = 시트 안 nav '주 메뉴' · '닫기' hide 30ms
+     × 0.10 메뉴 항목: 본문 섹션 제목과 같은 항목만 앵커(시트 안 a[href^='#'] — r4.12 스크립트 대상), 나머지 글자 7ms
+     × KB-AC-03: nav 빈 값 → button[popovertarget] 0 · [popover] 0 · nav 0 · 바에 브랜드만 6ms
+     × 0.8 brand 빈 값 → 브랜드 p 0 · 버튼은 그대로 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/HeaderStickyHamburger.test.tsx > header/sticky-hamburger (B-1) > 구조: header 루트(id s-…) · 변형 클래스 · 바 = 브랜드 + '메뉴' 버튼만(바 안 nav 0) · 메뉴 한 벌 = 시트 안 nav '주 메뉴' · '닫기' hide
+TypeError: Cannot read properties of null (reading 'tagName')
+ ❯ src/kit/HeaderStickyHamburger.test.tsx:10:14
+      8|   it("구조: header 루트(id s-…) · 변형 클래스 · 바 = 브랜드 + '메뉴' 버튼만(바 안 nav 0) ·…
+      9|     const h = header(drawDoc(doc()));
+     10|     expect(h.tagName).toBe("HEADER");
+       |              ^
+     11|     expect(h.id).toBe("s-s-header");
+     12|     expect(h).toHaveClass("kit-header", "kit-header--burger");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/kit/HeaderStickyHamburger.test.tsx > header/sticky-hamburger (B-1) > 0.10 메뉴 항목: 본문 섹션 제목과 같은 항목만 앵커(시트 안 a[href^='#'] — r4.12 스크립트 대상), 나머지 글자
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/HeaderStickyHamburger.test.tsx:30:25
+     28|   it("0.10 메뉴 항목: 본문 섹션 제목과 같은 항목만 앵커(시트 안 a[href^='#'] — r4.12 스크립트 대…
+     29|     const h = header(drawDoc(patch(doc(), "s-header", { nav: "소개 · 회사"…
+     30|     const items = [...h.querySelectorAll("[popover] nav li")];
+       |                         ^
+     31|     expect(items.map((li) => li.firstElementChild!.tagName)).toEqual([…
+     32|     expect(items[0]!.firstElementChild).toHaveAttribute("href", "#s-s-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/kit/HeaderStickyHamburger.test.tsx > header/sticky-hamburger (B-1) > KB-AC-03: nav 빈 값 → button[popovertarget] 0 · [popover] 0 · nav 0 · 바에 브랜드만
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/HeaderStickyHamburger.test.tsx:37:14
+     35|   it("KB-AC-03: nav 빈 값 → button[popovertarget] 0 · [popover] 0 · nav …
+     36|     const h = header(drawDoc(patch(doc(), "s-header", { nav: " · " }))…
+     37|     expect(h.querySelectorAll("button[popovertarget]")).toHaveLength(0…
+       |              ^
+     38|     expect(h.querySelectorAll("[popover]")).toHaveLength(0);
+     39|     expect(h.querySelectorAll("nav")).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/kit/HeaderStickyHamburger.test.tsx > header/sticky-hamburger (B-1) > 0.8 brand 빈 값 → 브랜드 p 0 · 버튼은 그대로
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/HeaderStickyHamburger.test.tsx:45:14
+     43|   it("0.8 brand 빈 값 → 브랜드 p 0 · 버튼은 그대로", () => {
+     44|     const h = header(drawDoc(patch(doc(), "s-header", { brand: "  " })…
+     45|     expect(h.querySelectorAll("p")).toHaveLength(0);
+       |              ^
+     46|     expect(h.querySelector(".kit-bar button")).toHaveTextContent("메뉴");
+     47|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  22:57:26
+   Duration  687ms (environment 59%, transform 19%, setup 10%, tests 8%, import 3%, worker 1%)
+

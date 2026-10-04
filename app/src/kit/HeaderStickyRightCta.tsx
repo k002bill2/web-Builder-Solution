@@ -1,17 +1,6 @@
+import { MenuButton, MenuList, Sheet } from "./headerParts";
 import { slotText, splitItems } from "./text";
-import type { KitLinks, KitSectionProps } from "./types";
-
-/** 메뉴 목록 — 본문 섹션 제목과 같은 항목만 앵커, 나머지 글자(0.10 · MQ-2). data-slot = 사각형 보고(보이는 벌만 — RenderApp measure) */
-function MenuList({ items, links }: { readonly items: readonly string[]; readonly links: KitLinks }) {
-  return (
-    <ul data-slot="nav" className="kit-menu" role="list">
-      {items.map((item, i) => {
-        const href = links.headings.get(item);
-        return <li key={`${i}-${item}`}>{href ? <a href={href}>{item}</a> : <span>{item}</span>}</li>;
-      })}
-    </ul>
-  );
-}
+import type { KitSectionProps } from "./types";
 
 /** CTA — 대상 없으면 링크 아닌 버튼 모양 글자(0.10) */
 function Cta({ text, href, place, always }: { readonly text: string; readonly href?: string; readonly place: "bar" | "sheet"; readonly always?: boolean }) {
@@ -50,22 +39,15 @@ export function HeaderStickyRightCta({ section, links, root }: KitSectionProps) 
           </nav>
         )}
         {cta && <Cta text={cta} href={links.cta} place="bar" always={!menu} />}
-        {menu && (
-          <button type="button" popoverTarget={sheet} className="kit-menu-button">
-            메뉴
-          </button>
-        )}
+        {menu && <MenuButton sheet={sheet} />}
       </div>
       {menu && (
-        <div id={sheet} popover="auto" className="kit-sheet">
-          <button type="button" popoverTarget={sheet} popoverTargetAction="hide" className="kit-menu-button kit-close">
-            닫기
-          </button>
+        <Sheet id={sheet}>
           <nav aria-label="주 메뉴" className="kit-nav-sheet">
             <MenuList items={items} links={links} />
           </nav>
           {cta && <Cta text={cta} href={links.cta} place="sheet" />}
-        </div>
+        </Sheet>
       )}
     </header>
   );

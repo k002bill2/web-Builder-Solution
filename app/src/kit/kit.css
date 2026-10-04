@@ -168,6 +168,34 @@
   }
 }
 
+/* header/sticky-hamburger (B-1 · D-2) — 모든 폭 "메뉴" 버튼 + 시트(K1-1의 lg 숨김을 변형 클래스로 덮어씀). 시트 판 = md 미만 전체 폭(K1-1) · md 오른쪽 위 6/12 · lg 4/12 · 높이 상한 = 화면(inset + max-block-size, 넘치면 시트 안 스크롤) */
+@layer components {
+  .kit-header--burger .kit-bar {
+    flex-wrap: nowrap;
+  }
+  .kit-header--burger .kit-sheet:popover-open {
+    max-block-size: 100%;
+    overflow-y: auto;
+  }
+  @media (width >= 48rem) {
+    .kit-header--burger .kit-sheet:popover-open {
+      inset: 0 0 auto auto;
+      width: calc(100% * 6 / 12);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-header--burger .kit-sheet:popover-open {
+      display: flex;
+      width: calc(100% * 4 / 12);
+    }
+    @supports selector(:popover-open) {
+      .kit-header--burger .kit-menu-button {
+        display: inline-flex;
+      }
+    }
+  }
+}
+
 /* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
 @layer components {
   .kit-gradient {

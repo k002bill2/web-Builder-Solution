@@ -8,7 +8,7 @@ import { ProjectRepositoryError, type DocHead, type ExportGenerator } from "../.
 import type { StudioReader } from "../../../data/studioStore";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { readHtmlMessage } from "../../../render/htmlMessage";
-import { readRenderMessage, type KitTokenInput, type ParentMessage } from "../../../render/protocol";
+import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage } from "../../../render/protocol";
 import { docKitTokens } from "../docPurpose";
 import { buildStaticHtml } from "./staticMarkup";
 
@@ -23,15 +23,15 @@ export interface RenderChannel {
   close(): void;
 }
 
-/** 화면 밖 숨은 렌더 iframe(폭 1280 = 데스크톱 프레임). 캔버스와 같은 sandbox · 출처 검사(`event.source === iframe.contentWindow`) */
-export function openRenderFrame(): RenderChannel {
+/** 화면 밖 숨은 렌더 iframe(기본 폭 80rem = 데스크톱 프레임 · PNG는 지금 미리보기 폭). 캔버스와 같은 sandbox · 출처 검사(`event.source === iframe.contentWindow`) */
+export function openRenderFrame(widthRem = 80): RenderChannel {
   const frame = document.createElement("iframe");
   frame.setAttribute("sandbox", "allow-scripts");
   frame.setAttribute("aria-hidden", "true");
   frame.setAttribute("data-export-frame", "");
   frame.tabIndex = -1;
   frame.title = "내보내기용 렌더 문서";
-  Object.assign(frame.style, { position: "fixed", left: "-200vw", top: "0", width: "80rem", height: "50rem", border: "0", visibility: "hidden" });
+  Object.assign(frame.style, { position: "fixed", left: "-200vw", top: "0", width: `${widthRem}rem`, height: "50rem", border: "0", visibility: "hidden" });
   frame.src = RENDER_DOC_SRC;
   document.body.append(frame);
   let handler: ((event: MessageEvent) => void) | undefined;
@@ -50,21 +50,28 @@ export function openRenderFrame(): RenderChannel {
   };
 }
 
-/** ready → render → (첫 rects) → serialize → html. error 코드 = 실패, 상한 넘김 = JOB_TIMEOUT. 어느 쪽이든 iframe을 닫는다 */
-function renderAndSerialize(channel: RenderChannel, doc: PageDoc, kitTokens: KitTokenInput, timeoutMs: number): Promise<string> {
+/** ready → render → (첫 rects) → serialize → html{markup} + 그 rects. error 코드 = 실패, 상한 넘김 = JOB_TIMEOUT. 어느 쪽이든 iframe을 닫는다 */
+export function renderAndSerialize(
+  channel: RenderChannel,
+  doc: PageDoc,
+  kitTokens: KitTokenInput | undefined,
+  timeoutMs: number,
+): Promise<{ readonly markup: string; readonly rects: readonly FrameRect[] }> {
   let timer: ReturnType<typeof setTimeout> | undefined;
-  return new Promise<string>((resolve, reject) => {
+  let rects: readonly FrameRect[] = [];
+  return new Promise<{ readonly markup: string; readonly rects: readonly FrameRect[] }>((resolve, reject) => {
     let stage: "wait" | "render" | "serialize" = "wait";
     timer = setTimeout(() => reject(new ProjectRepositoryError("JOB_TIMEOUT", "정적 HTML 렌더 문서 시간 초과")), timeoutMs);
     channel.listen((data) => {
       const html = readHtmlMessage(data);
-      if (html && stage === "serialize") return resolve(html.markup);
+      if (html && stage === "serialize") return resolve({ markup: html.markup, rects });
       const message = readRenderMessage(data);
       if (message?.type === "ready" && stage === "wait") {
         stage = "render";
-        channel.send({ type: "render", doc, kitTokens });
+        channel.send({ type: "render", doc, ...(kitTokens && { kitTokens }) });
       } else if (message?.type === "rects" && stage === "render") {
         stage = "serialize";
+        rects = message.rects;
         channel.send({ type: "serialize" });
       } else if (message?.type === "error") {
         reject(new Error(`렌더 문서 오류 ${message.code}`));
@@ -77,7 +84,7 @@ function renderAndSerialize(channel: RenderChannel, doc: PageDoc, kitTokens: Kit
 }
 
 /** `/render.html`의 스타일시트 텍스트 — 빌드 산출물 기준(dev 서버는 CSS를 JS로 넣어 링크가 없다 → 실패) */
-async function kitCss(fetchText: (url: string) => Promise<string>): Promise<string> {
+export async function kitCss(fetchText: (url: string) => Promise<string>): Promise<string> {
   const page = new DOMParser().parseFromString(await fetchText(RENDER_DOC_SRC), "text/html");
   const hrefs = [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") ?? "").filter(Boolean);
   if (hrefs.length === 0) throw new Error("render.html에 스타일시트가 없습니다");
@@ -87,7 +94,7 @@ async function kitCss(fetchText: (url: string) => Promise<string>): Promise<stri
 const hex12 = async (bytes: Uint8Array<ArrayBuffer>) =>
   [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 12);
 
-const defaultFetchText = async (url: string) => {
+export const defaultFetchText = async (url: string) => {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${url} ${response.status}`);
   return response.text();
@@ -120,7 +127,7 @@ export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<Sta
     const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion);
     if (!kitTokens) throw new Error("킷 토큰을 만들 수 없는 문서입니다");
     const css = await kitCss(fetchText);
-    const markup = await renderAndSerialize(open(), doc, kitTokens, timeoutMs);
+    const { markup } = await renderAndSerialize(open(), doc, kitTokens, timeoutMs);
     const bytes = new TextEncoder().encode(buildStaticHtml({ markup, css, title: doc.meta.title, description: doc.meta.description }));
     const resultHash = await hex12(bytes);
     release(projectId);

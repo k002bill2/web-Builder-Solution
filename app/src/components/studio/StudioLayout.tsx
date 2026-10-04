@@ -34,6 +34,7 @@ import { fallbackReason, fallbackSections, firstBlockRow, gateBlockReason, gateC
 import { useExportFlow } from "../../features/studio/useExportFlow";
 import { ExportButtons, type ExportReason } from "./ExportButtons";
 import { ExportRetryAlert } from "./ExportRetryAlert";
+import { PngSave } from "./PngSave";
 import { emitEditorEvent } from "../../features/studio/editorEvents";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
@@ -77,6 +78,7 @@ export function StudioLayout({
   const [selected, setSelected] = useState(() => initialSelection(doc));
   const [tab, setTab] = useState<StudioTab>("sections");
   const [view, setView] = useState<PreviewView>("desktop");
+  const [drawn, setDrawn] = useState(false);
   const selectedId = resolveSelection(doc, selected);
   const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
   const root = useRef<HTMLDivElement>(null);
@@ -340,6 +342,13 @@ export function StudioLayout({
               {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
             </Suspense>
           )}
+          {/* 준비 전 = 캔버스를 아직 안 그림 또는 저장 대기(파일 이름 revision = 캡처한 문서 — REPORT 8절) */}
+          <PngSave
+            ready={drawn && save.state.phase !== "dirty" && save.state.phase !== "saving"}
+            view={view}
+            fallbackCount={fallbacks.length}
+            capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }) })}
+          />
         </>
       }
     >
@@ -374,7 +383,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -405,7 +414,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
+            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -437,7 +446,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} view={view} scrollable head={conflict} />
+          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

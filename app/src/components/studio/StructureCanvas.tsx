@@ -188,6 +188,7 @@ export function StructureCanvas({
   head,
   kitTokens,
   images,
+  onDrawn,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
@@ -201,6 +202,8 @@ export function StructureCanvas({
   readonly kitTokens?: KitTokenInput;
   /** 로컬 이미지 id → Blob(이미지 보관소 — 아직 호출처 없음, 2a-05 5.9 보관소가 생기면 넘긴다) */
   readonly images?: Readonly<Record<string, Blob>>;
+  /** 지금 문서를 다 그렸는지(사각형 있음) — PNG 버튼 "준비 전"(m2a 3.3) */
+  readonly onDrawn?: (drawn: boolean) => void;
 }) {
   const [area, available] = useWidth();
   const frameRem = FRAME_REM[view];
@@ -212,6 +215,8 @@ export function StructureCanvas({
   const [height, setHeight] = useState<number>();
   const bottom = rects?.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0);
   if (bottom !== undefined && bottom > 0 && bottom !== height) setHeight(bottom);
+  const drawn = rects !== undefined;
+  useEffect(() => onDrawn?.(drawn), [onDrawn, drawn]);
   const issues = docIssues(doc);
   return (
     <section

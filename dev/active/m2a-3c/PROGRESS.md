@@ -31,7 +31,7 @@
 - [x] R1 `/studio` 진입 한도 128(ADR-004 개정 4) · 전후 빌드 출력 REPORT 3.R
 - [x] R2 정적 HTML 고정 인라인 스크립트(SPEC r4.12) · RED 먼저 · 바이트 일치 · 이관 표 · 390 K-AC-12 5항 [B]
 - [x] C2 캡처 방식 PoC(serialize + foreignObject → canvas → toBlob) · 브라우저별 오염 표
-- [ ] C3 PNG 묶음(진입 때부터 · 4상태 · 캡션 · 파일 이름 · 계측)
+- [x] C3 PNG 묶음(진입 때부터 · 4상태 · 캡션 · 파일 이름 · 계측)
 - [ ] C4 K-AC-17·19·32·34 · E-AC-49·50 · 실제 PNG 1280·390 + 캔버스 나란히
 - [ ] C5 vitest ×3 · Codex 1회(base 38852bf) · REPORT 마감 · 서버 0
 - 서버(재개): vite dev 4337(PID 19745/19926 — 종료함) · vite preview 4337(PID 파일 /tmp/m2a3c-preview.pid) · python 4339(/tmp/m2a3c-py.pid, cwd /tmp/m2a3c/site) · ego TaskSpace 34

@@ -9,7 +9,10 @@ export type EditorEvent =
   | { readonly name: "export_requested"; readonly format: "react-zip" | "static-html" }
   | { readonly name: "export_succeeded"; readonly format: "react-zip" | "static-html" }
   | { readonly name: "export_failed"; readonly reason: string }
-  | { readonly name: "snapshot_created"; readonly kind: "auto"; readonly reason: "export" };
+  | { readonly name: "snapshot_created"; readonly kind: "auto"; readonly reason: "export" }
+  | { readonly name: "png_requested"; readonly view: "desktop" | "tablet" | "mobile" }
+  | { readonly name: "png_succeeded"; readonly view: "desktop" | "tablet" | "mobile"; readonly fallback_count: number }
+  | { readonly name: "png_failed"; readonly reason: string };
 
 export function emitEditorEvent(event: EditorEvent): void {
   window.dispatchEvent(new CustomEvent<EditorEvent>(EDITOR_EVENT, { detail: event }));

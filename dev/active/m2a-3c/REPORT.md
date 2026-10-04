@@ -12,7 +12,8 @@
 | R1 | c068b5a | `/studio` 진입 한도 128 — ADR-004 개정 4(3.R절) |
 | R2 | ff525ff | 정적 HTML 고정 인라인 스크립트(r4.12) · RED→GREEN · 이관 표(2.4절) |
 | R2 [B] | 262b396 | K-AC-12 5항 PASS(새로 내보낸 HTML · 390) |
-| C2 | (이 커밋) | 캡처 방식 PoC — data: SVG foreignObject 채택 · 브라우저별 오염 표(4절) |
+| C2 | 1d5103a | 캡처 방식 PoC — data: SVG foreignObject 채택 · 브라우저별 오염 표(4절) |
+| C3 | (이 커밋) | PNG 묶음 진입 · 캡처 청크 · 4상태 · 파일 이름 · 계측(5절) — 진입 127.20 |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -115,8 +116,14 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 - 미디어 쿼리는 SVG 이미지 폭으로 판정된다(390 결과가 모바일 배치) → 원래 폭 캡처 = SVG `width` = 프레임 폭.
 - 실제 경로가 PoC와 다른 점(C3에서 처리): ① 폴백 섹션 허용(정적 HTML 생성기는 폴백 = 실패 — PNG 빌더는 따로) · `data-kit-marker` 등 data-* 유지(표식 색 CSS 선택자) ② 숨은 iframe 폭 = 미리보기 폭 · 높이 = 렌더 문서 rects 바닥(부모는 불투명 출처라 문서 높이를 직접 못 잼) ③ 캔버스 높이 상한 초과 = 실패 상태.
 
-## 5. PNG 흐름 (버튼 · 4상태 · 파일 이름 · 계측)
-**미진행 — BLOCKED(C1 정지).** C1 최소 시제품의 진입 부품 구성(이름표 · outline 버튼 · 캡션 2문장 · 준비 전 `aria-disabled` + 이유 · 실패 `role=alert` 문장은 진입, 성공 문장·계측 `png_*`·오류 코드는 캡처 청크)은 `logs/c1-proto.patch`에 있다 — 재개 때 출발점. `tEXt` 메타데이터는 하지 않는다(브리프 제외).
+## 5. PNG 흐름 (재개 C3 — 버튼 · 4상태 · 캡션 · 파일 이름 · 계측)
+- RED `logs/c3-red.txt`(14 실패 — 모듈·함수 없음) → GREEN: `src/features/studio/png` + `PngSave.test.tsx` 16/16 · gate `logs/c3.txt` exit 0(표적 = `src/components/studio`·`src/features/studio` 237/237).
+- **진입 청크(`StudioLayout`)** — `components/studio/PngSave.tsx`: 내보내기 묶음(두 버튼 · 이유 목록 · 결과) 다음, 위 구분선 + 이름표 `h3` "이미지로 저장" · outline "PNG 내려받기"(아이콘 0) · 캡션 상시 "지금 미리보기 폭({폭 이름} · {폭})의 페이지 전체를 한 장으로 저장합니다." + 폴백 N>0이면 "구조 미리보기 섹션 N개는 표식과 함께 담깁니다." · `aria-describedby` = `png-caption`(준비 전엔 `png-wait png-caption`) — 내보내기 이유 id와 분리 · 4상태: 준비 전 `aria-disabled` + "미리보기를 그리는 중입니다" / 진행 `aria-busy` "PNG 만드는 중…"(두 번 누름 무시) / 성공 `role=status` "PNG를 내려받았습니다 · {파일 이름}" / 실패 `role=alert` "PNG를 만들지 못했습니다 — 다시 눌러 주세요"(같은 버튼 재시도 · 캡처 청크를 못 받아도 뜸). 준비 = 캔버스 `onDrawn`(렌더 문서 rects 받음) + 저장 대기 아님. 1280·1024 오른쪽 열 / 390·768 "검사" 탭 = 같은 `GatePanel exports` 자리(배치별 코드 없음).
+- **조작 뒤 청크** `features/studio/png/pngCapture.ts`(+4.55KB, `STUDIO_AFTER_ACTION` 등록): `savePng` → `png_requested(view)` → 숨은 렌더 iframe(폭 = `FRAME_REM[view]` — 축소 비율 무시) render → rects → serialize → 마크업 + `kitCss` → `buildCaptureSvg`(폴백 허용 · data-* 유지 · script/iframe/on*/details[open] 제거 · XHTML) → **`data:` URL** → `Image.decode` → canvas(높이 = 섹션 rects 바닥) → `toBlob("image/png")` → 부모 `<a download>` 클릭 · 1초 뒤 object URL 해제 → `png_succeeded(view, fallback_count)`. 실패 = `png_failed(reason = RENDER_TIMEOUT | CANVAS_TOO_TALL | CANVAS_TAINTED | INFRA)`. 상한: 높이 16384 · 넓이 16,777,216px.
+- 파일 이름 `pngFileName` = 3b `exportFileStem` 재사용 + `_{폭}_r{revision}` + 폴백 있으면 `_구조포함`(K-AC-32 6사례 테스트).
+- 공유 변경(조작 뒤 청크만): `staticHtml.ts` — `openRenderFrame(widthRem = 80)` · `renderAndSerialize`가 `{markup, rects}`를 돌려줌·export · `kitCss`/`defaultFetchText` export · kitTokens 없으면 render에서 뺌. 정적 HTML 생성기 동작·`ExportGenerator`/`ExportJob`/엔진 계약 변경 0 · `requestExport` 경로 0(PngSave는 저장소를 모른다 — 통합 테스트로 `requestExport` 0 확인). sandbox `allow-scripts` 그대로.
+- `tEXt` 메타데이터: 하지 않음(브리프 제외 — SPEC 선택 항목).
+- 스냅샷 미리보기 중 캡처(E-S29): 스냅샷 미리보기 UI가 아직 없어 해당 없음(9절).
 
 ## 6. K-AC · E-AC 판정
 | AC | 판정 | 근거 |
@@ -131,8 +138,12 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 | 기준선 eaa3d5e | 89.35 | 91.78 / **126.64** | 121.71 | 118.67 | 100.30 | 102.03 | 99.38 | 80.12 / 6.32 | `logs/c1-baseline.txt` |
 | C1 최소 시제품(원복됨) | 89.35 | 91.78 / **127.10 ✗** | 121.71 | 118.66 | 100.29 | — | — | — | `logs/c1-proto-min.txt` |
 | C1 원복 뒤(이 커밋) | 89.35 | 91.78 / 126.64 | 121.71 | 118.67 | 100.30 | 102.03 | 99.38 | 80.12 / 6.32 | `logs/c1.txt` |
+| C3 PNG 묶음 | 89.35 | 91.78 / **127.20** ≤127.70 | 121.71 | 118.66 | 100.29 | 102.04 | 99.39 | 80.12 / 6.32 | `logs/c3.txt` · 조작 뒤 pngCapture +4.55 |
 
 ## 8. SPEC 차이
+- (재개 C3) **"준비 전"에 저장 대기(`dirty`·`saving`)도 포함** — 파일 이름 `{revision}`이 캡처한 문서의 revision이 되게(저장 전 편집이 있으면 `savedRevision`과 문서가 어긋남). 이유 문장은 SPEC 그대로 "미리보기를 그리는 중입니다"(편집 직후 캔버스도 다시 그림).
+- (재개 C3) 이름표는 `h3`(GatePanel `h2` 아래 위계) · object URL 해제는 클릭 1초 뒤(즉시 해제하면 일부 브라우저가 내려받기를 끊음).
+- (재개 C3) SPEC "다시 그리는 중" 준비 전: 캔버스는 첫 rects 뒤 `drawn` 유지(문서 교체마다 끄지 않음) — 캡처는 숨은 iframe에 지금 문서를 새로 그리므로 결과는 항상 지금 문서.
 - 코드 변경 0이라 SPEC과 다르게 만든 곳 없음.
 - 게이트 순서: 골격 커밋 `7fac872`는 `gate.sh` 실행 전에 커밋했다(문서만). 직후 기준선 gate `c1-baseline` exit 0(GATE OK). 그 뒤 커밋은 모두 gate exit 0 확인 뒤.
 - 브리프 C0 Codex 범위: `--scope branch --base a51de92`가 HEAD 기준이라 p2fix·브리프 문서 커밋도 포함됐다(지적 3건은 모두 3b 파일 — 2.1절).

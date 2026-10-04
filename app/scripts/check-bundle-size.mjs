@@ -59,6 +59,8 @@ const STUDIO_AFTER_ACTION = [
   "src/components/studio/ContactOwnerNote.tsx",
   "src/features/studio/exportFlow.ts",
   "src/components/studio/ExportAfter.tsx",
+  // PNG 캡처(m2a 3.3 — M2A-3c): PngSave "PNG 내려받기" onClick → loadPng
+  "src/features/studio/png/pngCapture.ts",
 ];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];

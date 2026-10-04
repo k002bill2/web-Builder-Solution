@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M2B-0B 시안 — 본문 12변형 (구조·위계 기준, 값 기준 아님)</title>
+<!-- 외부 자원 0 · 스크립트 0 · 단위 rem/ch/비율 · 색은 시안 자체 팔레트(부록 A, contrast_mock.py) · 카드 톤 light · 카드 모양 bordered-md -->
+<style>
+:root{
+  --site-primary:rgb(36 84 72);--site-surface:rgb(236 231 222);--site-ink:rgb(28 32 36);--site-muted:rgb(92 96 102);--site-bg:rgb(250 248 244);--site-on-primary:rgb(255 255 255);
+  --site-font:system-ui,sans-serif;--site-weight-heading:700;--site-weight-body:400;
+  --site-t-1:0.8rem;--site-t0:1rem;--site-t1:1.25rem;--site-t2:1.5625rem;--site-t3:1.9531rem;
+  --site-s1:0.25rem;--site-s2:0.5rem;--site-s3:0.75rem;--site-s4:1rem;--site-s5:1.5rem;--site-s6:2rem;
+  --site-section-gap:6rem;--site-section-gap-narrow:3rem;--site-card-pad:var(--site-s5);--site-card-pad-narrow:var(--site-s4);
+  --site-r1:0.5rem;--site-radius-card:var(--site-r1);--site-radius-control:var(--site-r1);--site-stroke-1:0.0625rem;--site-stroke-2:0.125rem;
+  --site-hit-min:2.75rem;--site-prose-max:60ch;--site-content-max:72rem;--site-media-ratio:4 / 5;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--site-font);color:var(--site-ink);background:var(--site-bg);line-height:1.5}
+:where(h1,h2,h3,p,li,a,span,label,legend,button,figcaption,blockquote){overflow-wrap:anywhere;word-break:keep-all}
+h2,h3{font-weight:var(--site-weight-heading);line-height:1.25;margin:0}
+p{margin:0}
+:where(a,button):focus-visible{outline:var(--site-stroke-2) solid var(--kit-ring,var(--site-ink));outline-offset:var(--site-stroke-2)}
+.tag{display:block;font-size:var(--site-t-1);font-family:ui-monospace,monospace;color:var(--kit-soft);margin-bottom:var(--site-s2)}
+/* 본문 공통 */
+.kit-body{background:var(--site-bg);--kit-soft:var(--site-muted);--kit-card-face:var(--site-surface)}
+.kit-body[data-tone=alt]{background:var(--site-surface);--kit-soft:var(--site-ink);--kit-card-face:var(--site-bg)}
+.kit-wrap{max-width:var(--site-content-max);margin-inline:auto;padding:var(--site-section-gap-narrow) var(--site-s4);display:flex;flex-direction:column;gap:var(--site-s5)}
+.kit-title{font-size:var(--site-t2)}
+.head{display:flex;flex-direction:column;gap:var(--site-s2)}
+.intro{max-width:var(--site-prose-max);color:var(--kit-soft)}
+ul.plain{list-style:none;margin:0;padding:0}
+.card{display:flex;flex-direction:column;gap:var(--site-s3);min-width:0;padding:var(--site-card-pad-narrow);border:var(--site-stroke-1) solid var(--site-muted);border-radius:var(--site-radius-card);background:var(--kit-card-face);color:var(--site-ink)}
+.card h3{font-size:var(--site-t1)}
+.cards{display:grid;gap:var(--site-s4)}
+/* B1-1 about/text */
+.about-text{display:flex;flex-direction:column;gap:var(--site-s2);max-width:var(--site-prose-max)}
+.about-text p{white-space:pre-line}
+/* B1-2 list */
+.list-grid{display:grid;gap:var(--site-s5)}
+.svc-list{border-bottom:var(--site-stroke-1) solid var(--site-muted)}
+.svc-list li{padding-block:var(--site-s3);border-top:var(--site-stroke-1) solid var(--site-muted);font-weight:var(--site-weight-heading);break-inside:avoid}
+/* B1-4 / B1-6 masonry (CSS만) */
+.masonry>*{break-inside:avoid;margin-bottom:var(--site-s5)}
+.masonry{display:block}
+/* 갤러리 */
+.gallery{display:grid;gap:var(--site-s4)}
+.gallery figure{margin:0;overflow:hidden;border-radius:var(--site-r1);min-width:0}
+.grad{display:block;width:100%;aspect-ratio:var(--site-media-ratio);background:linear-gradient(135deg,var(--site-primary),var(--site-ink))}
+.r11 .grad{aspect-ratio:1/1}.r169 .grad{aspect-ratio:16/9}.r45 .grad{aspect-ratio:4/5}
+/* B1-8 stats */
+.stats{display:grid;gap:0}
+.stats li{display:flex;flex-direction:column;gap:var(--site-s1);padding-block:var(--site-s4);border-top:var(--site-stroke-1) solid var(--site-muted)}
+.stat-v{font-size:var(--site-t2);font-weight:var(--site-weight-heading);line-height:1.25;font-variant-numeric:tabular-nums}
+.stat-l{color:var(--kit-soft)}
+/* B1-9 quotes */
+.quote figure{margin:0;display:flex;flex-direction:column;gap:var(--site-s4);height:100%}
+.quote blockquote{margin:0;font-style:normal}
+.quote blockquote p{white-space:pre-line}
+.quote figcaption{margin-top:auto;font-weight:var(--site-weight-heading)}
+/* B1-10 pricing */
+.price{font-size:var(--site-t2);font-weight:var(--site-weight-heading);line-height:1.25;font-variant-numeric:tabular-nums}
+/* B1-11 booking (K1-6 상속) */
+.contact-grid{display:grid;gap:var(--site-s5);align-items:start}
+.form{display:flex;flex-direction:column;gap:var(--site-s4)}
+.notice{font-size:var(--site-t-1);font-weight:var(--site-weight-heading)}
+fieldset{display:flex;flex-direction:column;gap:var(--site-s4);margin:0;padding:0;border:0;min-width:0}
+.vh{position:absolute;width:0.0625rem;height:0.0625rem;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.control{display:flex;flex-direction:column;gap:var(--site-s3);min-width:0}
+.field{width:100%;min-height:var(--site-hit-min);padding:var(--site-s2) var(--site-s3);border:var(--site-stroke-1) solid var(--site-ink);border-radius:var(--site-radius-control);background:var(--site-bg);color:var(--site-ink);font:inherit;cursor:not-allowed;opacity:1}
+.pair{display:grid;gap:var(--site-s4)}
+.consent{display:flex;gap:var(--site-s2);align-items:flex-start;font-size:var(--site-t-1);min-height:var(--site-hit-min)}
+.consent input{accent-color:var(--site-primary);width:var(--site-t1);height:var(--site-t1);margin:0;flex:none}
+.submit{min-height:var(--site-hit-min);padding:var(--site-s2) var(--site-s4);border:0;border-radius:var(--site-radius-control);background:var(--site-primary);color:var(--site-on-primary);font:inherit;font-weight:var(--site-weight-heading);cursor:not-allowed}
+/* B1-12 cta-band */
+.band{background:var(--site-primary);color:var(--site-on-primary)}
+.band .kit-wrap{padding-block:var(--site-section-gap-narrow);flex-direction:column;gap:var(--site-s4)}
+.band h2{font-size:var(--site-t2);color:var(--site-on-primary)}
+.band-text{display:flex;flex-direction:column;gap:var(--site-s2);max-width:var(--site-prose-max)}
+.band-cta{display:inline-flex;align-items:center;justify-content:center;min-height:var(--site-hit-min);padding:var(--site-s2) var(--site-s4);border-radius:var(--site-radius-control);background:var(--site-on-primary);color:var(--site-primary);font-weight:var(--site-weight-heading);text-decoration:none;--kit-ring:var(--site-on-primary);width:100%;flex:none}
+.band .tag{color:var(--site-on-primary)}
+@media (width>=48rem){
+  .kit-wrap{padding:var(--site-section-gap) var(--site-s6)}
+  .kit-title,.band h2{font-size:var(--site-t3)}
+  .intro{font-size:var(--site-t1)}
+  .card{padding:var(--site-card-pad)}
+  .cards.c2,.quotes,.tiers{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--site-s5)}
+  .cards.masonry{display:block;columns:2;column-gap:var(--site-s5)}
+  .about-text p{font-size:var(--site-t1)}
+  .svc-list{columns:2;column-gap:var(--site-s5)}
+  .gallery.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .gallery.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gallery.masonry{display:block;columns:2;column-gap:var(--site-s4)}
+  .gallery.masonry figure{margin-bottom:var(--site-s4)}
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--site-s5)}
+  .stats li{border-top:0;border-inline-start:var(--site-stroke-1) solid var(--site-muted);padding:0 0 0 var(--site-s5)}
+  .stats li:first-child{border-inline-start:0;padding-inline-start:0}
+  .quote blockquote p{font-size:var(--site-t1)}
+  .pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .submit{align-self:flex-start}
+  .band .kit-wrap{flex-direction:row;align-items:center;justify-content:space-between;gap:var(--site-s5)}
+  .band-text p{font-size:var(--site-t1)}
+  .band-cta{width:auto}
+}
+@media (width>=64rem){
+  .list-grid{grid-template-columns:5fr 7fr;column-gap:var(--site-s6);align-items:start}
+  .svc-list{columns:1}
+  .gallery.g3,.gallery.g2{gap:var(--site-s5)}
+  .gallery.masonry{column-gap:var(--site-s5)}
+  .gallery.masonry figure{margin-bottom:var(--site-s5)}
+  .stat-v,.price{font-size:var(--site-t3)}
+  .contact-grid{grid-template-columns:5fr 7fr;column-gap:var(--site-s6)}
+  .band .kit-wrap{gap:var(--site-s6)}
+}
+</style>
+</head>
+<body>
+<main>
+<section id="s-b1" class="kit-body" data-tone="base" data-section="about/text" aria-labelledby="h-b1">
+  <div class="kit-wrap"><div class="about-text"><span class="tag">B1-1 about/text</span>
+    <h2 id="h-b1" class="kit-title">작은 작업실의 이야기</h2>
+    <p>우리는 동네에서 오래 머물 수 있는 공간을 만듭니다. 손님 한 분 한 분의 시간을 존중하고, 서두르지 않는 방식으로 일합니다.
+처음 문을 연 뒤로 같은 자리에서 같은 마음으로 이어 왔습니다. 필요한 것을 먼저 묻고, 할 수 있는 것만 약속합니다.</p>
+  </div></div>
+</section>
+<section id="s-b2" class="kit-body" data-tone="alt" data-section="services/list" aria-labelledby="h-b2">
+  <div class="kit-wrap list-grid">
+    <div class="head"><span class="tag">B1-2 services/list</span><h2 id="h-b2" class="kit-title">하는 일</h2><p class="intro">이름만으로 충분한 일들을 한눈에 봅니다.</p></div>
+    <ul role="list" class="plain svc-list"><li>첫 상담</li><li>맞춤 설계</li><li>정기 점검</li><li>교체와 수리</li><li>사후 관리</li><li>방문 견적</li></ul>
+  </div>
+</section>
+<section id="s-b3" class="kit-body" data-tone="base" data-section="services/cards-2" aria-labelledby="h-b3">
+  <div class="kit-wrap">
+    <div class="head"><span class="tag">B1-3 services/cards-2</span><h2 id="h-b3" class="kit-title">두 가지 방식</h2><p class="intro">필요에 맞는 방식을 고릅니다.</p></div>
+    <ul role="list" class="plain cards c2">
+      <li class="card"><h3>한 번에</h3><p>하루 안에 끝내는 짧은 방식입니다.</p></li>
+      <li class="card"><h3>나눠서</h3><p>몇 주에 걸쳐 단계마다 확인하며 진행합니다. 일정이 넉넉할 때 맞습니다.</p></li>
+    </ul>
+  </div>
+</section>
+<section id="s-b4" class="kit-body" data-tone="alt" data-section="services/cards-masonry" aria-labelledby="h-b4">
+  <div class="kit-wrap">
+    <div class="head"><span class="tag">B1-4 services/cards-masonry</span><h2 id="h-b4" class="kit-title">서비스</h2></div>
+    <ul role="list" class="plain cards masonry" data-layout="masonry">
+      <li class="card"><h3>1 기본 관리</h3><p>짧은 설명.</p></li>
+      <li class="card"><h3>2 집중 관리</h3><p>설명이 조금 더 긴 카드입니다. 내용 길이가 그대로 높이가 되어 이웃 카드와 높이를 맞추지 않습니다. 벽돌형의 엇갈린 모양이 여기서 나옵니다.</p></li>
+      <li class="card"><h3>3 맞춤 관리</h3><p>중간 길이의 설명이 들어간 세 번째 카드입니다. 순서는 늘 1, 2, 3입니다.</p></li>
+    </ul>
+  </div>
+</section>
+<section id="s-b5" class="kit-body" data-tone="base" data-section="portfolio/grid-3" aria-labelledby="h-b5">
+  <div class="kit-wrap">
+    <div class="head"><span class="tag">B1-5 portfolio/grid-3</span><h2 id="h-b5" class="kit-title">작업 사례</h2><p class="intro">최근 작업 세 가지입니다.</p></div>
+    <div class="gallery g3" data-layout="grid"><figure aria-hidden="true"><div class="grad"></div></figure><figure aria-hidden="true"><div class="grad"></div></figure><figure aria-hidden="true"><div class="grad"></div></figure></div>
+  </div>
+</section>
+<section id="s-b6" class="kit-body" data-tone="alt" data-section="portfolio/masonry" aria-labelledby="h-b6">
+  <div class="kit-wrap">
+    <div class="head"><span class="tag">B1-6 portfolio/masonry</span><h2 id="h-b6" class="kit-title">작업 모음</h2></div>
+    <div class="gallery masonry" data-layout="masonry"><figure class="r11" aria-hidden="true"><div class="grad"></div></figure><figure class="r169" aria-hidden="true"><div class="grad"></div></figure><figure class="r45" aria-hidden="true"><div class="grad"></div></figure></div>
+  </div>
+</section>
+<section id="s-b7" class="kit-body" data-tone="base" data-section="portfolio/grid-2" aria-labelledby="h-b7">
+  <div class="kit-wrap">
+    <div class="head"><span class="tag">B1-7 portfolio/grid-2</span><h2 id="h-b7" class="kit-title">대표 작업</h2></div>
+    <div class="gallery g2" data-layout="grid"><figure aria-hidden="true"><div class="grad"></div></figure><figure aria-hidden="true"><div class="grad"></div></figure></div>
+  </div>
+</section>
+<section id="s-b8" class="kit-body" data-tone="alt" data-section="statistics/stats-3" aria-labelledby="h-b8">
+  <div class="kit-wrap"><span class="tag">B1-8 statistics/stats-3</span>
+    <h2 id="h-b8" class="kit-title">숫자로 보기</h2>
+    <ul role="list" class="plain stats">
+      <li><p class="stat-v">12년</p><p class="stat-l">같은 자리에서</p></li>
+      <li><p class="stat-v">1,234,567,89</p><p class="stat-l">12자 수치 한 줄 검사용 예시</p></li>
+      <li><p class="stat-v">100+</p><p class="stat-l">설명</p></li>
+    </ul>
+  </div>
+</section>
+<section id="s-b9" class="kit-body" data-tone="base" data-section="testimonials/quotes-2" aria-labelledby="h-b9">
+  <div class="kit-wrap"><span class="tag">B1-9 testimonials/quotes-2</span>
+    <h2 id="h-b9" class="kit-title">고객 후기</h2>
+    <ul role="list" class="plain cards quotes">
+      <li class="card quote"><figure><blockquote><p>처음부터 끝까지 차분하게 설명해 주셔서 편했습니다.</p></blockquote><figcaption>고객 1</figcaption></figure></li>
+      <li class="card quote"><figure><blockquote><p>약속한 날짜에 맞춰 마무리됐고, 이후 점검도 꼼꼼했습니다. 다음에도 같은 곳에 맡기려 합니다.</p></blockquote><figcaption>고객 2</figcaption></figure></li>
+    </ul>
+  </div>
+</section>
+<section id="s-b10" class="kit-body" data-tone="alt" data-section="pricing/tiers-2" aria-labelledby="h-b10">
+  <div class="kit-wrap">
+    <div class="head"><span class="tag">B1-10 pricing/tiers-2</span><h2 id="h-b10" class="kit-title">요금 안내</h2><p class="intro">두 요금제는 동등하게 보입니다.</p></div>
+    <ul role="list" class="plain cards tiers">
+      <li class="card"><h3>요금제 1</h3><p class="price">문의</p><p>포함 내용을 적습니다.</p></li>
+      <li class="card"><h3>요금제 2</h3><p class="price">99,000</p><p>포함 내용을 적습니다. 숫자 가격과 "문의"가 같은 모양입니다.</p></li>
+    </ul>
+  </div>
+</section>
+<section id="s-b11" class="kit-body" data-tone="base" data-section="contact/booking" aria-labelledby="h-b11">
+  <div class="kit-wrap contact-grid">
+    <div class="head"><span class="tag">B1-11 contact/booking</span><h2 id="h-b11" class="kit-title">예약</h2><p class="intro">원하는 날짜와 시간을 남겨 주세요.</p></div>
+    <form class="form" aria-labelledby="h-b11">
+      <p id="n-b11" class="notice">온라인 예약은 준비 중입니다. 지금은 이 양식으로 예약할 수 없습니다.</p>
+      <fieldset disabled aria-describedby="n-b11"><legend class="vh">예약 양식</legend>
+        <div class="control"><label for="f-b11-name">이름</label><input id="f-b11-name" class="field" type="text" name="name" autocomplete="name" required></div>
+        <div class="control"><label for="f-b11-tel">연락처</label><input id="f-b11-tel" class="field" type="tel" name="tel" autocomplete="tel" required></div>
+        <div class="pair">
+          <div class="control"><label for="f-b11-date">희망 날짜</label><input id="f-b11-date" class="field" type="text" name="date" required></div>
+          <div class="control"><label for="f-b11-time">희망 시간</label><input id="f-b11-time" class="field" type="text" name="time" required></div>
+        </div>
+        <div class="control"><label for="f-b11-request">요청 사항 (선택)</label><textarea id="f-b11-request" class="field" name="request" rows="3"></textarea></div>
+        <label class="consent"><input type="checkbox" name="consent" required><span>개인정보 수집·이용에 동의합니다.</span></label>
+        <button type="submit" class="submit">예약하기</button>
+      </fieldset>
+    </form>
+  </div>
+</section>
+<section id="s-b12" class="band" data-surface="primary" data-section="cta-band/banner" aria-labelledby="h-b12">
+  <div class="kit-wrap">
+    <div class="band-text"><span class="tag">B1-12 cta-band/banner</span><h2 id="h-b12">지금 시작하세요</h2><p>다음 행동을 한 문장으로 권합니다.</p></div>
+    <a class="band-cta" href="#s-b11">예약하기</a>
+  </div>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,377 @@
+{
+ "note": "ego-browser · Emulation.setDeviceMetricsOverride 폭별 · 2026-10-04 · mock-body.html · 박스 = [left, top, width, height] CSS px(실측값, 명세 값 아님)",
+ "widths": {
+  "390": {
+   "overflowX": 0,
+   "stat12": {
+    "text": "1,234,567,89",
+    "lineHeight": 31.25,
+    "height": 31
+   },
+   "statsBoxes": [
+    [
+     16,
+     5850,
+     343,
+     92
+    ],
+    [
+     16,
+     5942,
+     343,
+     92
+    ],
+    [
+     16,
+     6035,
+     343,
+     92
+    ]
+   ],
+   "columnCount": {
+    "cardsMasonry": "auto",
+    "galleryMasonry": "auto",
+    "serviceList": "auto"
+   },
+   "gridCols": {
+    "grid3": 1,
+    "grid2": 1,
+    "cards2": 1
+   },
+   "cardsMasonryBoxesDomOrder": [
+    [
+     16,
+     1415,
+     343,
+     95
+    ],
+    [
+     16,
+     1534,
+     343,
+     167
+    ],
+    [
+     16,
+     1725,
+     343,
+     119
+    ]
+   ],
+   "galleryMasonryBoxesDomOrder": [
+    [
+     16,
+     3591,
+     343,
+     343
+    ],
+    [
+     16,
+     3950,
+     343,
+     193
+    ],
+    [
+     16,
+     4159,
+     343,
+     429
+    ]
+   ],
+   "tiersBoxes": [
+    [
+     16,
+     6808,
+     343,
+     138
+    ],
+    [
+     16,
+     6962,
+     343,
+     162
+    ]
+   ],
+   "bookingDateTime": [
+    [
+     16,
+     7625,
+     343,
+     44
+    ],
+    [
+     16,
+     7721,
+     343,
+     44
+    ]
+   ],
+   "bookingFieldColor": "rgb(28, 32, 36)",
+   "bookingFieldOpacity": "1",
+   "band": {
+    "text": [
+     16,
+     8123,
+     343,
+     98
+    ],
+    "cta": [
+     16,
+     8237,
+     343,
+     44
+    ]
+   },
+   "scripts": 0,
+   "externalRequests": 0
+  },
+  "768": {
+   "overflowX": 0,
+   "stat12": {
+    "text": "1,234,567,89",
+    "lineHeight": 31.25,
+    "height": 31
+   },
+   "statsBoxes": [
+    [
+     32,
+     4297,
+     214,
+     59
+    ],
+    [
+     270,
+     4297,
+     214,
+     59
+    ],
+    [
+     507,
+     4297,
+     214,
+     59
+    ]
+   ],
+   "columnCount": {
+    "cardsMasonry": "2",
+    "galleryMasonry": "2",
+    "serviceList": "2"
+   },
+   "gridCols": {
+    "grid3": 3,
+    "grid2": 2,
+    "cards2": 2
+   },
+   "cardsMasonryBoxesDomOrder": [
+    [
+     32,
+     1528,
+     333,
+     111
+    ],
+    [
+     32,
+     1663,
+     333,
+     183
+    ],
+    [
+     389,
+     1528,
+     333,
+     135
+    ]
+   ],
+   "galleryMasonryBoxesDomOrder": [
+    [
+     32,
+     2738,
+     337,
+     337
+    ],
+    [
+     32,
+     3091,
+     337,
+     189
+    ],
+    [
+     385,
+     2738,
+     337,
+     421
+    ]
+   ],
+   "tiersBoxes": [
+    [
+     32,
+     5171,
+     333,
+     178
+    ],
+    [
+     389,
+     5171,
+     333,
+     178
+    ]
+   ],
+   "bookingDateTime": [
+    [
+     32,
+     5941,
+     337,
+     44
+    ],
+    [
+     385,
+     5941,
+     337,
+     44
+    ]
+   ],
+   "bookingFieldColor": "rgb(28, 32, 36)",
+   "bookingFieldOpacity": "1",
+   "band": {
+    "text": [
+     32,
+     6391,
+     267,
+     112
+    ],
+    "cta": [
+     634,
+     6425,
+     87,
+     44
+    ]
+   },
+   "scripts": 0,
+   "externalRequests": 0
+  },
+  "1280": {
+   "overflowX": 0,
+   "stat12": {
+    "text": "1,234,567,89",
+    "lineHeight": 39.062,
+    "height": 39
+   },
+   "statsBoxes": [
+    [
+     89,
+     4953,
+     347,
+     67
+    ],
+    [
+     459,
+     4953,
+     347,
+     67
+    ],
+    [
+     830,
+     4953,
+     347,
+     67
+    ]
+   ],
+   "columnCount": {
+    "cardsMasonry": "2",
+    "galleryMasonry": "2",
+    "serviceList": "1"
+   },
+   "gridCols": {
+    "grid3": 3,
+    "grid2": 2,
+    "cards2": 2
+   },
+   "cardsMasonryBoxesDomOrder": [
+    [
+     89,
+     1515,
+     532,
+     111
+    ],
+    [
+     89,
+     1650,
+     532,
+     135
+    ],
+    [
+     645,
+     1515,
+     532,
+     111
+    ]
+   ],
+   "galleryMasonryBoxesDomOrder": [
+    [
+     89,
+     2837,
+     532,
+     532
+    ],
+    [
+     89,
+     3393,
+     532,
+     299
+    ],
+    [
+     645,
+     2837,
+     532,
+     665
+    ]
+   ],
+   "tiersBoxes": [
+    [
+     89,
+     5805,
+     532,
+     162
+    ],
+    [
+     645,
+     5805,
+     532,
+     162
+    ]
+   ],
+   "bookingDateTime": [
+    [
+     561,
+     6422,
+     300,
+     44
+    ],
+    [
+     877,
+     6422,
+     300,
+     44
+    ]
+   ],
+   "bookingFieldColor": "rgb(28, 32, 36)",
+   "bookingFieldOpacity": "1",
+   "band": {
+    "text": [
+     89,
+     6872,
+     267,
+     112
+    ],
+    "cta": [
+     1089,
+     6906,
+     87,
+     44
+    ]
+   },
+   "scripts": 0,
+   "externalRequests": 0
+  }
+ }
+}

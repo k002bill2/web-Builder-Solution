@@ -10,11 +10,11 @@
 
 ## 단계
 - [x] 수신 · PROGRESS · REPORT 골격 커밋
-- [ ] SPEC-BOUND 골격(상속 선언 · 공통 차이)
-- [ ] header `sticky-hamburger`
-- [ ] header `sticky-two-tier`
-- [ ] header `transparent`
-- [ ] hero `split` → (변형 4개) 커밋
+- [x] SPEC-BOUND 골격(상속 선언 · 공통 차이)
+- [x] header `sticky-hamburger`
+- [x] header `sticky-two-tier`
+- [x] header `transparent`
+- [x] hero `split` → (변형 4개) 커밋
 - [ ] hero `center`
 - [ ] hero `grid`
 - [ ] hero `text`

@@ -42,5 +42,10 @@
 1. **범위 기본안**(★A): React zip M4 유지 · internal 조합 생성기는 M2b 뒤. (대안: React zip을 M2b에 — Opus B-7-7 "고정 템플릿 + 킷 소스 복사" 설계 검증 필요)
 2. **폰트 파일 취득**(M2B-3 전에 결정 — 지금은 아님): OFL 폰트 파일을 저장소에 넣는 방식(패키지 의존성 추가 vs 원본 파일 서브셋 커밋). 새 의존성 · 바이너리 자산이라 승인 대상.
 
+### 결정 결과
+- 결정 1 = **★A**(영환님 "★A, M2B-0 기동" 2026-10-04): React zip M4 · internal 조합 생성기 M2b 뒤.
+- MQ 13건(SPEC-BOUND MQ-B1~6 · SPEC-BODY MQ-B1~7) = 잠정안 일괄 승인(영환님 "★A, M2B-1 브리프" 2026-10-04) — 각 SPEC 끝 "Jarvis 결정 기록".
+- M2B-1은 킷 공유 파일(`kit/registry.ts`·`kit.css`·`types.ts`) 때문에 **1a(hero 5) → 1b(header 3 + footer 3)** 순차로 나눈다(`header/transparent`의 `heroTop`이 hero 변형을 읽음).
+
 ## 5. 기록
 - v1 2026-10-04 작성(Jarvis). 단계 브리프: `docs/06-handoff/M2B-0A_KIT-SPEC-BOUND_DESIGNER_BRIEF.md` · `M2B-0B_KIT-SPEC-BODY_DESIGNER_BRIEF.md`.

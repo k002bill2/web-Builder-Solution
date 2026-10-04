@@ -8,7 +8,8 @@
 | 수신 | 7fac872 | 수신 기록 · REPORT 골격 · `gate.sh` |
 | C0(1)·C1 | 5c92add | 3b Codex(P1 0 · P2 3 → M2a 마감) · 전역 슬롯 판단(유지) · C1 공간 실측 → 진입 ≤126.70 경로 없음, 정지 — 코드 변경 0 |
 | C0(2)·C5 | a9c59fb | K-AC-12·30 브라우저 판정 · vitest ×3 · REPORT 마감 · 서버 0 — 코드 변경 0 |
-| C1 보강 | (이 커밋) | 후보안 2 실측(126.79 / 126.74 — 둘 다 초과) · K-AC-12 원인 정정(렌더 문서 스크립트) · 게이트 순서 공개 |
+| C1 보강 | 3a64e22 | 후보안 2 실측(126.79 / 126.74 — 둘 다 초과) · K-AC-12 원인 정정(렌더 문서 스크립트) · 게이트 순서 공개 |
+| R1 | (이 커밋) | `/studio` 진입 한도 128 — ADR-004 개정 4(3.R절) |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -68,6 +69,14 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 1. **3a 옵션 B — `/studio`가 진입 때 받지만 부르지 않는 보드·생성 저장소 코드를 공유 store 로더 밖으로(별도 레인)**: 3a 추정 −4.5~5.5(L3, 3a 2절). 큰 여유를 만드는 유일한 안. 위험 = 2a-04 store 배선 변경 · `/compare`·`/profile` ±0.03 규칙. 이 레인 범위 밖(브리프 "중복·미사용 정리"를 넘는 구조 변경).
 2. **SPEC 3.3 개정 — PNG 묶음을 조작 뒤 청크로 늦게 그림**("검사 · 내보내기"를 누른 뒤 `lazy` PngSave를 그림 · `STUDIO_AFTER_ACTION`에 PngSave 등록해 조작 뒤 크기 출력): **실측 진입 126.79(+0.09 초과)** · 조작 뒤 +1.29 (`logs/c1-option2.txt`). "준비 전" 배선(캔버스 `onDrawn`)까지 빼면 **126.74(+0.04 초과)** (`logs/c1-option2b.txt`). **이 안만으로도 멈춤선 안에 들지 않는다** — 남는 진입분 = lazy 래퍼·표시 상태·캡처 인자 조립 클로저. 1과 묶거나 3과 묶어야 성립. 비용 = K-AC-19 "준비 전"·3.3 "진입 때부터"·1280 오른쪽 열 상시 표시 문장 개정.
 3. **ADR-004 개정 — `/studio` 진입 멈춤선 +0.40 이상(실구현 여유 포함 +0.5 권장; 2와 묶으면 +0.1 이상)**: ADR-004 개정 3이 "추가 상향 금지"라 영환님 결정 사안.
+
+### 3.R 재개 — R1 `/studio` 진입 한도 128 (ADR-004 개정 4 · 영환님 1-★A)
+- 변경: `app/scripts/check-bundle-size.mjs` `/studio/:projectId` `eagerBudgetKb` 127 → **128**(주석 "ADR-004 개정 4"). 다른 라우트·첫 화면·렌더 예산 변경 0. `scripts/bundleBudget.test.mjs`의 127은 가짜 시나리오(`/page`) 고정값이라 그대로.
+- 판정선: 진입 ≤ **127.70**(멈춤선, 상향 금지 — 개정 4 결정 3·4).
+| 빌드 출력 `/studio/:projectId` | 진입 | 한도 | 근거 |
+|---|---|---|---|
+| 바꾸기 전(HEAD `1c4e389`) | 126.64 | 127KB | `logs/r1-before.txt` |
+| 바꾼 뒤 | 126.64 | **128KB** | `logs/r1-after.txt` · gate `logs/r1.txt` exit 0 |
 
 ## 4. 캡처 방식 PoC
 **미진행 — BLOCKED(C1 정지).** 진입 ≤126.70 경로가 없어 브리프대로 C2 전에 멈췄다. 브라우저별 오염 표 없음. 재개 시 기본안(숨은 렌더 iframe `serialize` + SVG `foreignObject` → canvas → `toBlob`)부터 — C1 시제품의 캡처 청크 자리(`logs/c1-proto.patch`의 `features/studio/png/pngCapture.ts`)는 조작 뒤 청크라 진입 영향 없음.

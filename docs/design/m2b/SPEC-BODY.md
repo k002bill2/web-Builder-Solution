@@ -526,7 +526,7 @@
 | ID | 변형 | 수용 기준 | 방법 |
 |---|---|---|---|
 | KD-AC-09 | about/text | `figure` 0 · 글 묶음 최대 폭 = `prose-max` · 3폭 1단 · `about/story` 이미지 꺼짐 문서와 `data-section`만 다르고 마크업 같음 | [U]·[B] |
-| KD-AC-10 | services/list | `items` = `" 상담 ·· 진료 · \n 검사 "` → `li` 2개("상담"·"진료 검사"로 공백 접힘 — 줄바꿈은 구분자 아님) · 조각 0 → `ul` 0 · `ul[role=list]` · 1280 = 머리·목록 같은 행(2단) / 768 = 목록 `column-count` 2 / 390 = 1열 | [U]·[B] |
+| KD-AC-10 | services/list | `items` = `" 상담 ·· 진료 · \n 검사 "` → `li` 3개("상담"·"진료"·"검사") / `" 상담 ·· 진료 \n 검사 "` → `li` 2개("상담"·"진료 검사"로 공백 접힘 — 줄바꿈은 구분자 아님) · 조각 0 → `ul` 0 · `ul[role=list]` · 1280 = 머리·목록 같은 행(2단) / 768 = 목록 `column-count` 2 / 390 = 1열 | [U]·[B] |
 | KD-AC-11 | services/cards-2 | `li` 2 · 1280·768 = 두 카드 같은 행·같은 높이 / 390 = 2행 · 카드 면 규칙 = K-AC-26 | [U]·[B] |
 | KD-AC-12 | services/cards-masonry | 목록 계산 스타일 `column-count` = 2(1280·768) · 1열(390) · 카드 `break-inside: avoid` · 내용 길이가 다른 카드는 높이가 다르다(행 늘이기 0) · `li` DOM 순서 1·2·3 — **어느 단에 놓이는지는 단언하지 않는다** | [B] |
 | KD-AC-13 | portfolio 공통 | `figure` 수 = 켜진 이미지 수 · 그라디언트 칸 `figure[aria-hidden=true]` + `img` 0 · 로컬 이미지 칸 `img[alt=슬롯 alt]`(장식 = `alt=""`) + `width`·`height` · `ul`·`figcaption` 0 · 셋 다 꺼짐 → 갤러리 요소 0 | [U] |
@@ -625,3 +625,4 @@
 | r1 | B1-5~8 · B1-9~12 |
 | r2 | 2 KD-AC · 3 시각 QA · 4 예산 · 5 MQ · 부록 A |
 | r3 | 부록 B 시안 3폭 실측(L2) |
+| r4 | Codex 적대적 검토 반영 1건(P2): KD-AC-10 나누기 예시 기대값을 `splitItems` 규칙과 일치 |

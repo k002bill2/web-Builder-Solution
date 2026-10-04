@@ -1,6 +1,6 @@
 # M2B-0B REPORT — 본문 12변형 킷 명세 (Designer)
 
-- 시작 커밋 `a3bd614` · 브랜치 `k002bill2/m2b-0b` · 로컬 커밋만(push·병합·삭제 0) · 서브에이전트 0
+- 상태: **완료** · 시작 커밋 `a3bd614` · 브랜치 `k002bill2/m2b-0b` · 로컬 커밋만(push·병합·삭제 0) · 서브에이전트 0
 - 영환님 결정 ★A(React zip M4 · internal 조합 생성기 M2b 뒤) — 이 레인은 명세만이라 범위 영향 없음
 
 ## 1. 산출물
@@ -54,7 +54,10 @@
 - 1280 grid-2 + `media_ratio 4:5`면 칸이 세로로 큼(QB-6에서 판정).
 
 ## 6. 서버
-(마감 때 기록)
+- 띄운 것: `python3 -m http.server 4341 --bind 127.0.0.1`(cwd `docs/design/m2b/body`) PID 66545 1개 — 시안 실측용. ego-browser TaskSpace 36·새 space 모두 `finish({keep: []})`.
+- 종료: `kill 66545` → `lsof -nP -iTCP:4341 -sTCP:LISTEN` 결과 줄 수 **0**. 포트 4339(0A)·0A 경로 접근 0.
 
-## 7. Codex 적대적 검토
-(결과 반영 후 기록)
+## 7. Codex 적대적 검토 (1회 — 브리프 상한)
+- 명령: `codex-companion.mjs adversarial-review --scope branch --base a3bd614` · 원문 `docs/design/m2b/body/logs/codex-adversarial-review.raw.txt` · 판정 needs-attention, 지적 1건.
+- [P2] KD-AC-10 예시 `" 상담 ·· 진료 · \n 검사 "`의 기대값이 `li` 2개였으나 `splitItems`·0.10 규칙으로는 3개 → **반영**(3개로 고치고, 줄바꿈 비구분자 검증은 `" 상담 ·· 진료 \n 검사 "` → 2개 예시로 분리, SPEC r4).
+- 2회차 검토는 하지 않음(브리프 "Codex 1회").

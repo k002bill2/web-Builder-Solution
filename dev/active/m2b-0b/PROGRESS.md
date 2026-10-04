@@ -16,8 +16,8 @@
 - [x] 5. C3 KD-AC 목록 · 3폭 시각 QA · 예산 추정 표 · MQ
 - [x] 6. 시안 HTML(외부 자원 0) + 4341 3폭 실측(`logs/mock-measure.out.json`) — PNG 캡처는 BLOCKED: ego-browser `Page.captureScreenshot` CDP 타임아웃 4회(뷰포트·전체·raw CDP·bringToFront 모두) → DOM 실측으로 대체
 - [x] 7. 검사: hex·px 0 · APFS 0 · 외부 URL 0 · 대비 L2
-- [ ] 8. Codex 적대적 검토 1회(턴 남으면) → logs/
-- [ ] 9. REPORT 마감 · 서버 PID 종료 · lsof 4341 = 0
+- [x] 8. Codex 적대적 검토 1회 → logs/ (P2 1건 반영)
+- [x] 9. REPORT 마감 · 서버 PID 66545 종료 · lsof 4341 = 0
 
 ## 커밋
 - ab9f50f 수신·골격 · 2b671c8 B1-1~4 · ce08e41 B1-5~8 · e16fb91 B1-9~12 · 6fd1307 KD-AC·QA·예산·MQ·대비 · c7aa1c3 시안·실측

@@ -1,5 +1,5 @@
 import type { ImageSlotValue, PageDoc, SectionInstance } from "../engine/contracts/pageDoc";
-import type { KitLinks } from "./types";
+import type { HeroTop, KitLinks } from "./types";
 
 /** 글자 슬롯 값 — 공백뿐이면 undefined(0.8 빈 요소 0). 값은 바꾸지 않고 그대로 낸다(K-AC-03 입력 = 출력) */
 export function slotText(section: SectionInstance, key: string): string | undefined {
@@ -33,5 +33,19 @@ export function kitLinks(doc: PageDoc): KitLinks {
     const heading = slotText(section, "heading")?.trim();
     if (heading && !headings.has(heading)) headings.set(heading, anchorOf(section.instanceId));
   }
-  return { ...(target && { cta: anchorOf(target.instanceId) }), headings };
+  const top = heroTop(doc);
+  return { ...(target && { cta: anchorOf(target.instanceId) }), headings, ...(top && { heroTop: top }) };
+}
+
+/**
+ * hero 맨 위 면 (D-1 · B-3 표) — 첫 본문 섹션(header 아닌 첫 섹션)이 hero일 때만. 섹션 톤 면 = base bg · alt surface.
+ * 문서 데이터만 읽는다(DOM·:has() 0 → 캔버스·정적 HTML 같은 결과). 모르는 변형(킷 없음) = 값 없음.
+ */
+function heroTop(doc: PageDoc): HeroTop | undefined {
+  const hero = doc.sections.find((s) => s.type !== "header");
+  if (hero?.type !== "hero") return undefined;
+  const tone = hero.tone === "alt" ? "surface" : "bg";
+  const image = slotImage(hero, "image") ? "media" : undefined;
+  const faces: Readonly<Record<string, HeroTop | undefined>> = { "fullbleed-left": image ?? "primary", center: "primary", image: image ?? tone, split: tone, grid: tone, text: tone };
+  return faces[hero.variant];
 }

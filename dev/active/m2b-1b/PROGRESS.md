@@ -12,7 +12,7 @@
 ## 단계
 - [x] P0 수신 · REPORT 골격 · gate.sh 커밋 (gate OK logs/p0-gate.txt)
 - [x] P1 예산 선행 실측(sticky-two-tier 시제품) — 렌더 JS +0.15 · CSS +0.12 · /studio 0 → 끝 예상 렌더 JS 81.41 · /studio: 나열이면 +0.05(멈춤) / SECTION_LIBRARY 파생이면 −0.01 → 파생 채택(P8에서 전환), 멈춤 조건 아님 (logs/p1-budget.txt)
-- [ ] P2 D-1 heroTop (kitLinks) [U]
+- [x] P2 D-1 heroTop (kitLinks) [U] — RED logs/p2-herotop-red.txt(4 실패) → gate OK(렌더 JS 80.59 · CSS 6.72 · /studio 127.41) · 전체 vitest 183 파일 1707 통과
 - [ ] P3 header/sticky-hamburger (KB-AC-01~03) + D-2 변형 클래스
 - [ ] P4 header/sticky-two-tier (KB-AC-04~06) + D-3 `:has()` 1줄
 - [ ] P5 header/transparent (KB-AC-07~09)

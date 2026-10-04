@@ -1,0 +1,4 @@
+     × 숨은 iframe 폭 = 지금 미리보기 폭(축소 비율 무시) · 높이 = 렌더 문서 사각형 바닥 · 그리기 = data: URL · 파일 이름 = 폭·revision·_구조포함 · iframe 닫음 · requestExport 경로 0 12ms
+     × 성공 → 부모 <a download>로 내려받기 · 문장 'PNG를 내려받았습니다 · {파일 이름}' · png_requested(view) · png_succeeded(view, fallback_count) — 이름·파일 이름·슬롯 글자 0 8ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 9 passed (11)

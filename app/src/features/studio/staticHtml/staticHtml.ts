@@ -23,15 +23,27 @@ export interface RenderChannel {
   close(): void;
 }
 
-/** 화면 밖 숨은 렌더 iframe(기본 폭 80rem = 데스크톱 프레임 · PNG는 지금 미리보기 폭). 캔버스와 같은 sandbox · 출처 검사(`event.source === iframe.contentWindow`) */
-export function openRenderFrame(widthRem = 80): RenderChannel {
+/** 화면 밖 숨은 렌더 iframe(폭 80rem = 데스크톱 프레임). 캔버스와 같은 sandbox · 출처 검사(`event.source === iframe.contentWindow`) */
+export function openRenderFrame(): RenderChannel {
+  return openFrame({ position: "fixed", left: "-200vw", top: "0", width: "80rem", height: "50rem", border: "0", visibility: "hidden" });
+}
+
+/**
+ * PNG 캡처용 렌더 iframe — Chrome은 화면 밖·`visibility:hidden` 교차 출처 iframe을 배치하지 않아 사각형이 0이다(M2A-3c C4 실측).
+ * 화면 안 · 투명 · 누름 통과 · 맨 뒤. 높이 = 캔버스 높이 상한(1024rem = 16384px) — 내용보다 낮으면 세로 스크롤바만큼 폭이 줄어 배치가 달라진다.
+ */
+export function openCaptureFrame(widthRem: number, heightRem = 1024): RenderChannel {
+  return openFrame({ position: "fixed", left: "0", top: "0", width: `${widthRem}rem`, height: `${heightRem}rem`, border: "0", opacity: "0", pointerEvents: "none", zIndex: "-1" });
+}
+
+function openFrame(style: Partial<CSSStyleDeclaration>): RenderChannel {
   const frame = document.createElement("iframe");
   frame.setAttribute("sandbox", "allow-scripts");
   frame.setAttribute("aria-hidden", "true");
   frame.setAttribute("data-export-frame", "");
   frame.tabIndex = -1;
   frame.title = "내보내기용 렌더 문서";
-  Object.assign(frame.style, { position: "fixed", left: "-200vw", top: "0", width: `${widthRem}rem`, height: "50rem", border: "0", visibility: "hidden" });
+  Object.assign(frame.style, style);
   frame.src = RENDER_DOC_SRC;
   document.body.append(frame);
   let handler: ((event: MessageEvent) => void) | undefined;
@@ -56,6 +68,8 @@ export function renderAndSerialize(
   doc: PageDoc,
   kitTokens: KitTokenInput | undefined,
   timeoutMs: number,
+  /** 이 사각형으로 serialize해도 되는지(PNG = 레이아웃 뒤 바닥 > 0). 아니면 다음 rects를 기다린다 */
+  settled: (rects: readonly FrameRect[]) => boolean = () => true,
 ): Promise<{ readonly markup: string; readonly rects: readonly FrameRect[] }> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let rects: readonly FrameRect[] = [];
@@ -69,7 +83,7 @@ export function renderAndSerialize(
       if (message?.type === "ready" && stage === "wait") {
         stage = "render";
         channel.send({ type: "render", doc, ...(kitTokens && { kitTokens }) });
-      } else if (message?.type === "rects" && stage === "render") {
+      } else if (message?.type === "rects" && stage === "render" && settled(message.rects)) {
         stage = "serialize";
         rects = message.rects;
         channel.send({ type: "serialize" });

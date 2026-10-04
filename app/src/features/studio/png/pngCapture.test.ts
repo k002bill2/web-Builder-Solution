@@ -28,7 +28,12 @@ function fakeChannel(markup: string, bottom = 2400) {
       },
       send: (message) => {
         sent.push(message);
-        if (message.type === "render") queueMicrotask(() => receive({ type: "rects", rects: [["s-header", null, 0, 0, 390, 60], ["s-hero", null, 0, 60, 390, bottom - 60], ["s-hero", "title", 8, 80, 300, 40]] }));
+        // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다(M2A-3c C4 실측) → 그다음 실제 크기
+        if (message.type === "render")
+          queueMicrotask(() => {
+            receive({ type: "rects", rects: [["s-header", null, 0, 0, 0, 0], ["s-hero", null, 0, 0, 0, 0]] });
+            receive({ type: "rects", rects: [["s-header", null, 0, 0, 390, 60], ["s-hero", null, 0, 60, 390, bottom - 60], ["s-hero", "title", 8, 80, 300, 40]] });
+          });
         if (message.type === "serialize") queueMicrotask(() => receive({ type: "html", markup }));
       },
       close: () => void closed++,
@@ -179,5 +184,21 @@ describe("내려받기 · 계측 (K-AC-34 · 3.3 계측 — 코드·개수·열�
     revoked.mockRestore();
     click.mockRestore();
     vi.useRealTimers();
+  });
+});
+
+describe("캡처용 렌더 iframe (openCaptureFrame — M2A-3c C4 실측)", () => {
+  it("Chrome은 화면 밖·visibility:hidden 교차 출처 iframe을 배치하지 않는다(사각형 0) → 화면 안 · 투명 · 누름 통과 · 높이 = 캔버스 상한(스크롤바로 폭이 줄지 않게) · sandbox allow-scripts 그대로 · 접근성 트리 밖", async () => {
+    const { openCaptureFrame } = await import("../staticHtml/staticHtml");
+    const channel = openCaptureFrame(24.375);
+    const frame = document.querySelector<HTMLIFrameElement>("iframe[data-export-frame]")!;
+    expect(frame.getAttribute("sandbox")).toBe("allow-scripts");
+    expect(frame.getAttribute("aria-hidden")).toBe("true");
+    expect(frame.tabIndex).toBe(-1);
+    expect(frame.style.width).toBe("24.375rem");
+    expect(frame.style.height).toBe(`${MAX_CANVAS_HEIGHT / 16}rem`);
+    expect([frame.style.left, frame.style.top, frame.style.opacity, frame.style.pointerEvents, frame.style.visibility]).toEqual(["0px", "0px", "0", "none", ""]);
+    channel.close();
+    expect(document.querySelector("iframe[data-export-frame]")).toBeNull();
   });
 });

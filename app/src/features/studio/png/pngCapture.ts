@@ -10,7 +10,7 @@ import type { FrameRect, KitTokenInput } from "../../../render/protocol";
 import { emitEditorEvent } from "../editorEvents";
 import { FRAME_REM } from "../previewFrame";
 import { exportFileStem } from "../staticHtml/exportFileName";
-import { defaultFetchText, kitCss, openRenderFrame, renderAndSerialize, type RenderChannel } from "../staticHtml/staticHtml";
+import { defaultFetchText, kitCss, openCaptureFrame, renderAndSerialize, type RenderChannel } from "../staticHtml/staticHtml";
 
 /** 캔버스 상한 — 높이 16384px · 넓이 16,777,216px(가장 좁은 브라우저 상한 기준). 넘으면 실패 상태 */
 export const MAX_CANVAS_HEIGHT = 16384;
@@ -78,7 +78,8 @@ export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ 
   const rem = FRAME_REM[request.view];
   const width = rem * 16;
   const css = await kitCss(deps.fetchText);
-  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs).catch((error: unknown) => {
+  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측)
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0).catch((error: unknown) => {
     throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
   });
   const height = pageBottom(rects);
@@ -120,7 +121,7 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-const DEFAULT_DEPS: PngDeps = { open: openRenderFrame, fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
+const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, MAX_CANVAS_HEIGHT / 16), fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
 
 /** 누름 → 캡처 → 내려받기 · 계측(코드·개수·열거값만 — 이름·파일 이름 0). 성공 문장을 돌려준다 */
 export async function savePng(request: PngRequest, deps: PngDeps = DEFAULT_DEPS): Promise<string> {

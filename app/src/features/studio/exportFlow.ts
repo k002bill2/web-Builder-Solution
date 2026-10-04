@@ -5,7 +5,6 @@
 import { retryableImport } from "../../data/chunkRetry";
 import { projectErrorCode, type ExportFormat, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
 import { emitEditorEvent } from "./editorEvents";
-import { rememberDownload } from "./exportDownloads";
 import { staticHtmlFileName } from "./staticHtml/exportFileName";
 
 export type ExportResult =
@@ -51,7 +50,6 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
       emitEditorEvent({ name: "export_succeeded", format });
       const name = (await repository.getProject(projectId))?.name ?? "";
       const download = job.downloadRef && { href: job.downloadRef, fileName: staticHtmlFileName(name, job.docRevision), hash: job.resultHash ?? "" };
-      if (download) rememberDownload(download.href);
       return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }) };
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });

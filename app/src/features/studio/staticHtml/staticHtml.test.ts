@@ -87,6 +87,22 @@ describe("정적 HTML 생성기 (G3)", () => {
     expect(urls.revoked).toEqual([first.downloadRef, second.downloadRef]);
   });
 
+  it("P2-1 새 revision 결과 → 같은 프로젝트의 이전 URL 해제 정확히 1회 · 새 revision 생성이 실패하면 이전 URL 유지", async () => {
+    const urls = fakeUrls();
+    let fail = false;
+    const frame = fakeFrame((m, post) => (fail ? undefined : post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: MARKUP })));
+    const generate = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: urls.api, timeoutMs: 30 });
+    const first = await generate(input);
+    expect(urls.revoked).toEqual([]);
+    fail = true;
+    await expect(generate({ ...input, doc: { ...DOC, revision: DOC.revision + 1 } })).rejects.toMatchObject({ code: "JOB_TIMEOUT" });
+    expect(urls.revoked).toEqual([]);
+    fail = false;
+    const next = await generate({ ...input, doc: { ...DOC, revision: DOC.revision + 1 } });
+    expect(urls.revoked).toEqual([first.downloadRef]);
+    expect(next.downloadRef).not.toBe(first.downloadRef);
+  });
+
   it("렌더 문서가 답하지 않으면 JOB_TIMEOUT(재시도 가능) · iframe 닫음", async () => {
     const frame = fakeFrame(() => {});
     const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: fakeUrls().api, timeoutMs: 30 })(input);

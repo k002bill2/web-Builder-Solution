@@ -174,6 +174,39 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(succeeded).toEqual([{ name: "export_succeeded", format: "static-html" }]);
   });
 
+  // M2A-CLOSE P2-1: 결과 URL은 잡이 살아 있는 동안 유지 — 편집기 이탈만으로 해제하지 않는다(해제는 같은 프로젝트의 새 결과 때 생성기가 1회)
+  it("P2-1 내보내기 → 편집기 이탈 → 돌아와 같은 revision 재요청 → 같은 잡의 '내려받기' 링크가 살아 있다(revokeObjectURL 0)", async () => {
+    const href = "blob:http://127.0.0.1/kept";
+    const job: ExportJob = { jobId: "export-1", format: "static-html", docRevision: 3, state: "queued", retryable: false };
+    const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: requestExport.mock.calls.length === 1 }));
+    const getExportJob = async () => ({ ...job, state: "succeeded" as const, downloadRef: href, resultHash: "0123456789ab" });
+    const revoke = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    // 테스트 라우터는 MemoryRouter라 주소창(location)을 앱 브라우저 라우터처럼 함께 옮긴다
+    const go = async (router: { navigate: (to: string) => unknown }, to: string) => {
+      window.history.pushState(null, "", to);
+      await act(async () => void (await router.navigate(to)));
+    };
+    window.history.replaceState(null, "", "/studio/project-1");
+    try {
+      const { router } = await open(clean(), { requestExport, getExportJob });
+      act(() => void fireEvent.click(html()));
+      await within(gateRegion()).findByRole("link", { name: "내려받기" }, { timeout: 3000 });
+      await go(router, "/catalog");
+      await act(async () => void (await new Promise((r) => setTimeout(r, 10))));
+      expect(revoke).not.toHaveBeenCalled();
+      await go(router, "/studio/project-1");
+      await waitFor(() => expect(within(gateRegion()).queryByText("검사하는 중입니다")).not.toBeInTheDocument());
+      act(() => void fireEvent.click(html()));
+      const link = await within(gateRegion()).findByRole("link", { name: "내려받기" }, { timeout: 3000 });
+      expect(requestExport).toHaveBeenCalledTimes(2);
+      expect(link).toHaveAttribute("href", href);
+      expect(revoke).not.toHaveBeenCalled();
+    } finally {
+      revoke.mockRestore();
+      window.history.replaceState(null, "", "/");
+    }
+  });
+
   // M2A-3a Codex P2-1: 청크 로드가 실패해도 실행 상태를 풀고 재시도 안내를 낸다
   it("내보내기 청크 로드 실패 → 두 버튼 busy 해제 · alert '내보내지 못했습니다' · 요청 0 → '다시 시도' = 청크 다시 받고 요청 1회", async () => {
     flowLoad.failures = 1;

@@ -110,10 +110,15 @@
     font: inherit;
     cursor: pointer;
   }
-  /* popover 미지원이면 버튼을 숨기고 시트를 바 아래 일반 흐름 목록으로 둔다(기능 유지) */
+  /* popover 미지원이면 버튼을 숨기고 시트를 바 아래 일반 흐름 목록으로 둔다(기능 유지) — 지원/미지원 모두 명시 블록 */
   @supports selector(:popover-open) {
     .kit-menu-button {
       display: inline-flex;
+    }
+  }
+  @supports not selector(:popover-open) {
+    .kit-sheet {
+      display: block;
     }
   }
   /* 시트 — 위치·모양은 열린 상태(:popover-open) 안에만. 닫힘 숨김은 UA popover 규칙 */
@@ -152,7 +157,7 @@
       display: none;
     }
   }
-  /* lg 이상: 바 메뉴만 — 시트·메뉴 버튼은 열림과 무관하게 숨김(K-AC-35) */
+  /* lg 이상: 바 메뉴만 — 시트·메뉴 버튼은 열림과 무관하게 숨김(K-AC-35). 시트 숨김은 바 메뉴가 없는 burger를 빼고(미지원에서도 메뉴 유지), :popover-open 숨김은 지원 블록 안에만 */
   @media (width >= 64rem) {
     .kit-bar {
       padding-inline: var(--site-s6);
@@ -161,9 +166,13 @@
       display: block;
     }
     .kit-menu-button,
-    .kit-sheet,
-    .kit-sheet:popover-open {
+    .kit-header:not(.kit-header--burger) .kit-sheet {
       display: none;
+    }
+    @supports selector(:popover-open) {
+      .kit-sheet:popover-open {
+        display: none;
+      }
     }
   }
 }

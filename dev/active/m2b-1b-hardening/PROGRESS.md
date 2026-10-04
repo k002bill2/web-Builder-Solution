@@ -6,10 +6,10 @@
 - 쓰기: app/src/kit/kit.css · 표적 테스트 · (필요 최소) app/src/render/testing/drawKit.tsx · dev/active/m2b-1b-hardening/ 만. docs/·design/ 수정 0
 
 ## 체크리스트
-- [ ] P0 PROGRESS·REPORT 골격·gate.sh 커밋
-- [ ] P0 npm ci(잠금 불변) · baseline gate(typecheck·lint·가드·build) · 전체 suite 기준 개수 재확인
-- [ ] P1 폴백 구조 RED 테스트 → 최소 CSS 수정 → GREEN
-- [ ] P1 브라우저: 지원 상태(4변형×3폭) 회귀 0 + 모의 미지원(강제 분기) 상태 판정 — 원본/모의 차이 기록
+- [x] P0 PROGRESS·REPORT 골격·gate.sh 커밋 (`17eef79`) · 1b qb/judge 원문 복사 (`8c60a4b`)
+- [x] P0 npm ci exit 0(잠금 불변) · baseline gate OK logs/p0-gate.txt(표적 src/kit 115 · 가드 76 · 렌더 JS 81.13 / CSS 7.12 · /studio 127.40). 1회차 표적 3 실패 = 부하(load 54) 흔들림 → 단독 재실행 115/115 · 재게이트 OK (logs/p0-gate-run1-flaky.txt). 전체 suite 기준 1738은 P4 전체 1회에서 대조
+- [x] P1 폴백 구조 RED(logs/p1-fallback-red.txt 4 실패/6) → kit.css 최소 수정 → GREEN 6/6 · gate OK logs/p1-gate.txt(표적 121 · CSS 7.13)
+- [x] P1 브라우저 fb.mjs·fbjudge.mjs → logs/fb-judge.txt: base 모의 FAIL 3(1280 nav 2 — right-cta·two-tier·transparent) · burger 링크 0 재현 안 됨 / fix 모의 PASS 12/12 · 지원 경로 열기·Esc·포커스 복귀·앵커 닫힘 9건 PASS (모의 = 실제 구형 UA 아님)
 - [ ] P2 qb 복사·링 판정 개선(footer 실제 a · 부모 바깥 면 · ratio≥3 · 부정 표본 RED)
 - [ ] P3 390 two-tier nav 빈 값 + utility 상태 rect·캡처 1
 - [ ] P4 gate · 전체 vitest 1회 · 번들 예산
@@ -17,3 +17,4 @@
 - [ ] P4 REPORT 1~8절 · 서버 종료 LISTEN 0 증거
 
 ## 메모
+- 4337 vite PID 80410(cwd app) · 4339 python PID 80390(cwd dev/active/m2b-1b-hardening/static) — 03:09 기동

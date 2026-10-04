@@ -15,7 +15,7 @@
 | P7 minimal | `logs/p7-minimal-red.txt` | f1a17ae | 공유 `FooterLinks` · 미니멀 띠 `FooterLine` |
 | P8 minimal-biz | `logs/p8-minimal-biz-red.txt` | 3d37710 | + RENDERED_VARIANTS 바깥 3유형 라이브러리 파생 |
 | P9 공통 | 변이 검사 `logs/p9-mutation.txt` | c726ce7 | `kit/boundVariants.test.tsx` — KB-AC-30·32·33·35 [U]/[G] · K-AC-04 |
-| P10 | — | (이 커밋) | 브라우저 판정 15건 PASS · KB-AC-34 판정 스크립트 수정 · 캡처 45장 |
+| P10 | — | 62fa708 | 브라우저 판정 15건 PASS · KB-AC-34 판정 스크립트 수정 · 캡처 45장 |
 
 ## 2. 변형별 판정 (KB-AC)
 표기: [U] jsdom · [G] 파일 검사 · [B] 브라우저(127.0.0.1:4337 렌더 문서, 1280·768·390). [B] 근거 = `logs/qb-judge.txt`(`node judge.mjs` ← `logs/qb-b.json` ← `ego-browser nodejs < qb.mjs`) · QB-14 = `qb14.mjs` → `logs/qb14.json`. **판정 14 + QB-14 = 15건 전부 PASS.**
@@ -95,18 +95,30 @@
 - 육안 확인: `qb-1-hamburger-cap-1280` · `qb-2-two-tier-cap-390` · `qb-3-transparent-center-768` · `qb-10-map-full-1280` · `qb-11-minimal-full-390` 열어 위 내용과 같음.
 
 
-## 6. Codex
-(마감 단계)
+## 6. Codex — Jarvis 작성
+- 미실행/미완료: 레인이 남긴 `logs/codex.txt`는 시작 로그뿐이다. 검토 완료·지적 0으로 판정하지 않는다.
+- Jarvis의 추가 검토 명령은 승인 창 만료로 실행되지 않았다. 우회·재시도하지 않았다.
+- 영환님 "계속해"에 따라 추천안 A로 마감·로컬 병합하고, **M2B-2 선행 C0**로 M2B-1b 전체 검토(`--base 5970721`, 대상 구현 HEAD `62fa708`)를 이관한다. 검토 전에는 P1/P2 유무 미확인.
+
 
 ## 7. 남은 위험
 1. `/studio` 진입: 끝값 127.40은 RENDERED_VARIANTS 파생 표현 덕분이다(4절). 거부 시 +0.05.
 2. 전체 vitest 흔들림: 시스템 부하(load average 84, 다른 세션) 때 기본 병렬 실행에서 페이지 테스트 시간 초과가 대량 발생 — 이 레인 전체 실행은 `--maxWorkers=4`로 했다. P6 1회차 `SectionRemove.test` 1건 실패는 단독 2회·재실행 통과(킷 밖 편집기 테스트).
-3. (브라우저 단계에서 추가)
+3. Codex 검토 미완료 — 6절처럼 M2B-2 선행 C0로 이관.
 
 **이전 단언 이관** — 구현 변경 0 · 단언 약화·skip 0(같은 의도, 목록만)
 | 테스트 | 전 | 후 | 근거 |
 |---|---|---|---|
 | `render/PageDocument.test.tsx` 레지스트리 정확 목록 | 12쌍 | 18쌍(+header sticky-hamburger·sticky-two-tier·transparent · footer biz-extended-map·minimal·minimal-biz, 이름표에 M2B-1b) — 변형 등록 커밋마다 1쌍씩 | 정확 목록 의도 유지. 모르는 쌍 예시는 1a가 이미 `hero/no-such-variant`로 옮겨 그대로 |
 
-## 8. 서버
-(마감 단계)
+## 8. 서버 — Jarvis 작성
+- 레인이 남긴 4337 vite PID 573(cwd 이 worktree/app), 4339 python PID 18647(cwd 이 worktree/dev/active/m2b-1b)는 실행 위치를 확인하고 종료했다.
+- 회수 당시 4337·4339 LISTEN 0. 영환님 세션의 main 5480 서버는 무접촉.
+
+## 9. Jarvis 회수 검증 및 마감
+- 구현 HEAD `62fa708`: typecheck·lint·build exit 0.
+- 전체 vitest 3회 모두 **1738/1738, exit 0**, 처리되지 않은 오류 보고 없음. 근거 `logs/jarvis-vitest-{1,2,3}.txt`.
+- 번들: `/studio` 127.40KB, 렌더 JS 81.13KB/CSS 7.12KB. `logs/jarvis-build.txt`.
+- 두 번의 턴 한도 종료(101/100, 41/40) 후 추가 worker 재실행 없음. REPORT·PROGRESS 마감은 Jarvis 작성, 코드 수정 없음.
+- SPEC·ADR·package-lock 변경 없음. 브라우저 판정 15건 및 캡처는 레인 증거; Jarvis는 투명 헤더·지도 푸터 대표 캡처를 직접 확인했다.
+- 완료 범위: 구현·자동검증·기록 마감. 미완료 범위: Codex 독립 검토(6절 이관). QA 최종 게이트는 M2B-6에서 별도 실행.

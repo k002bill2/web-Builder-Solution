@@ -50,10 +50,12 @@
 2. D3: 결과 URL은 탭이 살아 있는 동안 프로젝트당 1개 남는다(편집기 이탈로 해제하지 않음 — 의도). 실서버 저장소(M4)에서는 서버 결과 URL로 바뀌어 이 장부가 사라진다. `StaticHtmlGenerator.release(projectId)`는 앱에서 부르는 곳이 원래 없었고 그대로 둠(테스트만 사용).
 3. D3 테스트는 MemoryRouter라 주소창(`location.pathname`)을 테스트가 `history.pushState`로 함께 옮겨 흉내 낸다 — 실제 브라우저 이탈 실측은 안 함(브리프 범위 밖, 서버 0).
 4. D5: 토큰 없는 PNG는 모든 섹션이 중립 폴백(구조 미리보기 표식)으로 담긴다 — 캔버스와 같은 화면. 브라우저 실측은 안 함(단위 테스트만).
-5. D6: 루트 글꼴 ≠ 16px 브라우저 실측 안 함(jsdom 루트 20px 단위 테스트). 487.5처럼 소수 px 폭은 정수로 맞춰 편집기 캔버스와 ≤0.5px 차이.
+5. D6: 루트 글꼴 ≠ 16px 브라우저 실측 안 함(jsdom 루트 20px 단위 테스트). 487.5처럼 소수 px 폭은 정수로 맞춰 편집기 캔버스와 ≤0.5px 차이. **Jarvis 실측 대상**: foreignObject 이미지 문서 안의 `rem`이 iframe과 같은 기준(사용자 글꼴)으로 풀리는지 — 이미지 문서가 16px로 풀면 폭은 맞아도 글자·여백 rem이 달라 높이가 어긋날 수 있다.
 6. 번들: `/studio` 진입 127.20 → 127.24(+0.04, 멈춤선 127.70 안). 그 밖 화면 기준 대비 ±0.02 이하 · 렌더 JS 80.12 그대로.
 
 ## 7. 서버
 - 이 레인은 서버를 띄우지 않았다(vite dev·preview·python 0 — 브라우저 실측 없음). 종료할 PID 0.
 - `lsof -nP -iTCP:4337 -sTCP:LISTEN` → 출력 0줄(exit 1) — D7에서 실행.
 - 4339(Designer 레인) 무접촉.
+- 마감 직전 다시 실행: `lsof … 4337` 0줄 · Codex 프로세스(PID 88320) 종료 확인.
+- 계약 고정 확인: `git diff b8a270b --stat -- app/src/engine/contracts app/src/data/projectRepository.ts app/src/render/protocol.ts` 빈 출력 · 새 아이콘 import 0 · `STATIC_MENU_SCRIPT` 바이트 b8a270b와 같음(diff 0) · `allow-same-origin` 0 · package 파일·`design/`·`docs/design/`·`docs/decisions/`·`dev/active/m2a-close-design/` 변경 0.

@@ -1,0 +1,66 @@
+diff --git a/app/src/components/studio/StructureCanvas.tsx b/app/src/components/studio/StructureCanvas.tsx
+index 2f52777..49d6926 100644
+--- a/app/src/components/studio/StructureCanvas.tsx
++++ b/app/src/components/studio/StructureCanvas.tsx
+@@ -27,6 +27,8 @@ function docIssues(doc: PageDoc): readonly CanvasIssue[] {
+   );
+ }
+ 
++/** "경고 N" / "차단 N" — N = 캔버스 문제 목록 순번(문서 순서, r4.13) */
++const issueLabel = (issue: CanvasIssue, i: number) => `${issue.level === "block" ? "차단" : "경고"} ${i + 1}`;
+ const ISSUE_RING = { warn: "outline-status-cautionary-text text-status-cautionary-text", block: "outline-status-negative-text text-status-negative-text" } as const;
+ /**
+  * 렌더 문서 좌표(CSS px) → 오버레이 위치. 오버레이 층은 iframe과 원점은 같지만 축소(zoom) 층 밖에 있다 — 칩·배지·문장 글자가 원래 크기로 읽히게(r4.10 축소 보기).
+@@ -145,24 +147,22 @@ function Overlay({
+           </span>
+         </div>
+       )}
+-      {issues.map((issue) => {
++      {issues.map((issue, i) => {
+         const r = rectOf(issue.instanceId, issue.slotKey);
+         return (
+-          <div key={issue.id} className={r ? "absolute" : "sr-only"} style={r && place(r, scale, 4)}>
+-            {r && <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />}
+-            {r && (
++          r && (
++            <div key={issue.id} className="absolute" style={place(r, scale, 4)}>
++              <div aria-hidden="true" className={`absolute inset-0 rounded-sm border-2 border-background-normal outline-2 ${ISSUE_RING[issue.level]}`} />
+               <span
+                 data-issue-badge
++                aria-hidden="true"
+                 onClick={() => onIssue(issue)}
+-                className={`pointer-events-auto absolute -top-2.5 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
++                className={`pointer-events-auto absolute top-1 right-1 cursor-pointer rounded-sm bg-background-normal px-1 text-caption2 font-bold ${ISSUE_RING[issue.level]}`}
+               >
+-                {issue.level === "block" ? "차단 1" : "경고 1"}
++                {issueLabel(issue, i)}
+               </span>
+-            )}
+-            <p id={issue.id} className={`absolute top-full left-0 mt-1 rounded-sm bg-background-normal px-1 text-caption1 ${ISSUE_RING[issue.level]}`}>
+-              {issue.text}
+-            </p>
+-          </div>
++            </div>
++          )
+         );
+       })}
+     </div>
+@@ -228,6 +228,18 @@ export function StructureCanvas({
+       <p className="ds-caption1 text-label-alternative">{canvasCaption(doc, kitTokens !== undefined)}</p>
+       {head}
+       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
++      {issues.length > 0 && (
++        <ol data-canvas-issues aria-label="문제 목록" className="flex flex-col gap-1 rounded-md bg-background-normal px-2 py-1 text-caption1">
++          {issues.map((issue, i) => (
++            <li key={issue.id} className={`flex gap-2 ${ISSUE_RING[issue.level]}`}>
++              <span className="flex-none font-bold">{issueLabel(issue, i)}</span>
++              <p id={issue.id} className="bg-background-normal">
++                {issue.text}
++              </p>
++            </li>
++          ))}
++        </ol>
++      )}
+       <div ref={area} className="min-w-0">
+         {/* 축소 층(zoom) = 프레임 + iframe만. 오버레이는 그 밖 같은 원점(relative 감싸개)에서 사각형 × 비율로 맞춘다 */}
+         <div className="relative mx-auto w-fit">

@@ -22,6 +22,7 @@
 | D-2 | `kit.css` header 규칙 | 기존 `.kit-menu-button`·`.kit-sheet` 의 `lg` 이상 숨김(K-AC-35)은 `sticky-right-cta` 전용으로 남기고, 새 변형은 **변형 클래스**(예: `kit-header--burger`)로 덮어쓴다. `data-section`·`data-surface`는 정적 HTML 생성기가 지우는 속성이라(L1 `features/studio/staticHtml/staticMarkup.ts` `KEPT_DATA` = `data-site-root`·`data-kit`·`data-layout`·`data-tone`·`data-always`만 보존) **스타일 선택자에 쓰지 않는다** — 검사 표시 전용 | header 3 |
 | D-3 | `kit.css` 문서 수준 1줄 | `sticky-two-tier`가 있을 때 섹션 루트 `scroll-margin-top`을 한 단계 키운다(B-2 1). 선택자는 **변형 클래스 기준**(`[data-site-root]:has(> .kit-header--two-tier) [data-kit]`) — 정적 HTML에서도 남는 것(`class`·`data-site-root`·`data-kit`)만 쓴다 | header `sticky-two-tier` |
 | D-4 | `kit/registry.ts` | 11쌍 등록. 등록 전 쌍은 지금처럼 폴백 + 표식 | 전부 |
+- **공통 선택자 규칙(11변형)**: 스타일 선택자는 정적 HTML에 남는 것만 쓴다 — `class` · `data-tone` · `data-kit` · `data-always` · `data-site-root`. `data-section`·`data-surface`·`data-slot`은 **검사 표시 전용**(생성기 `KEPT_DATA` 밖이라 지워짐). 톤별 색(hero 부제 `muted`/`ink` 등)은 `data-tone` 또는 변형 클래스로, footer `bg` 면은 변형 클래스로 건다.
 - D-1은 킷 내부 props 확장이라 m2a 0절 위반이 아니다. M2B-1 REPORT 변경 목록에 한 줄 남긴다.
 
 ### 0.3 루브릭(B2) 형식 — TR-POL-04
@@ -254,7 +255,7 @@
 공통 차이(5변형):
 - 헤딩 `h1`(섹션 정의) · `aria-labelledby` · DOM 순서 = 카피(제목 → 부제 → CTA) → 미디어 · CTA 대상 = 0.10 · 높이에 뷰포트 단위 0(K-AC-07) — K1-2와 같음.
 - **루트에 `data-surface`** = 카피가 놓인 면(대비 판정용) · 첫 본문일 때 header `transparent`가 쓸 "맨 위 면"은 `KitLinks.heroTop`이 데이터로 계산한다(DOM 속성에 기대지 않음, D-1).
-- 섹션 톤을 따르는 변형(split·grid·text·image)의 글자: 제목·CTA는 두 톤 공통, **부제는 `base` = `muted`(C-5) · `alt` = `ink`(C-4)** — m2a K1-4 머리 소개와 같은 규칙(`muted`/`surface` 검사 밖).
+- 섹션 톤을 따르는 변형(split·grid·text·image)의 글자: 제목·CTA는 두 톤 공통, **부제는 `base` = `muted`(C-5) · `alt` = `ink`(C-4)** — 선택자는 루트 `data-tone`(정적 HTML 보존) 기준, `data-surface` 아님(0.2 공통 선택자 규칙) — m2a K1-4 머리 소개와 같은 규칙(`muted`/`surface` 검사 밖).
 - CTA(섹션 톤 면 위): 면 `primary` · 글자 `on-primary` · 제목 굵기(C-1) — K1-1 CTA 모양과 같음. 포커스 링 바깥 `ink`(링이 `bg`·`surface`와 맞닿음 — C-2·C-4).
 
 ### B-4. `hero/split` — 스플릿 (카피 / 이미지)
@@ -630,7 +631,7 @@
 **B3 수용 기준**
 | ID | 수용 기준 | 방법 |
 |---|---|---|
-| KB-AC-23 | 출력에 `iframe` 0 · `script` 0(킷 섹션 안) · 지도 칸의 `img[src]`는 렌더 문서가 만든 로컬 object URL만(외부 스킴 `http`·`https` 0) · 플레이스홀더 → 그라디언트 `aria-hidden` · `img` 0 | [U] |
+| KB-AC-23 | 출력에 `iframe` 0 · `script` 0(킷 섹션 안) · 지도 칸의 `img[src]` = 렌더 문서에서는 `blob:`만 · 정적 HTML에서는 `data:`만(`serializeSite.ts`가 바꿈) · 외부 스킴 `http`·`https` 0 · 플레이스홀더 → 그라디언트 `aria-hidden` · `img` 0 | [U] |
 | KB-AC-24 | 1280: 글 칸과 지도 칸 같은 행 / 390: 순서 = 사업자정보 → 링크 → 지도 → 저작권(박스 y 증가) | [B] |
 | KB-AC-25 | `map` 꺼짐 → `figure` 0 · 위 줄이 `biz-extended`와 같은 2단(사업자정보 · 링크 같은 행, 1280) | [U]·[B] |
 
@@ -772,7 +773,7 @@
 | KB-AC-32 | 정적 HTML 결과의 `script` = r4.12 고정 스크립트(바이트 일치) 1개 이하 — header 3변형 각각으로 생성해 확인 | [U] |
 | KB-AC-33 | 11변형 각각 `data-section="<type>/<variant>"` 루트 1 · `KIT_REGISTRY`에 11쌍 등록 · 등록된 쌍은 폴백 표식 0 | [U] |
 | KB-AC-34 | 대비(K-AC-36 확장): 통과 프로필 2벌(카드 톤 `light`·`dark`) × 섹션 톤 `base`·`alt` × 11변형 — 모든 글자 요소 실측 대비 ≥ 기준. header `transparent`는 `heroTop` 3면(`primary`·`bg`·`surface`) 문서를 각각, 바(닫힘)와 열린 시트(768·390)를 따로 판정 | [B] |
-| KB-AC-35 | **정적 HTML 결과(`buildStaticHtml`)에서** 변형 스타일이 그대로 걸린다: header 3변형·`transparent` 면 3종·`sticky-two-tier` 앵커 여백 규칙의 선택자가 남은 마크업(`class`·`data-site-root`·`data-kit`)에 매칭 — 캔버스와 계산 스타일 같음(`background-color`·`scroll-margin-top`) · 정적 HTML을 열어 앵커 이동 뒤 제목이 header에 가려지지 않음 | [B] |
+| KB-AC-35 | **정적 HTML 결과(`buildStaticHtml`)에서** **11변형** 스타일이 그대로 걸린다: header 3변형·`transparent` 면 3종·`sticky-two-tier` 앵커 여백·hero 톤별 부제 색·footer `bg` 면 규칙의 선택자가 남은 마크업(`class`·`data-site-root`·`data-kit`)에 매칭 — 캔버스와 계산 스타일 같음(`background-color`·`scroll-margin-top`) · 정적 HTML을 열어 앵커 이동 뒤 제목이 header에 가려지지 않음 | [B] |
 
 **변형별** — 각 절 B3: header KB-AC-01~09 · hero KB-AC-10~22 · footer KB-AC-23~29. (빈 번호 없음: 01~35.)
 
@@ -842,3 +843,4 @@
 | r1 | hero `center`·`grid`·`text`·`image` |
 | r2 | footer 3 · 4절(KB-AC 01~34 · QB-1~14 · 예산 추정 · MQ-B1~6) · 부록 A |
 | r3 | Codex 적대적 검토 반영 2건: 스타일 선택자를 정적 HTML에 남는 변형 클래스로(D-2·D-3·B-2·B-3, `KEPT_DATA` 근거) + KB-AC-35 · KB-AC-09/34 바·시트 대비 분리 |
+| r4 | 같은 원인 확장: 0.2 공통 선택자 규칙(11변형 · `data-tone`·`class`만) · hero 부제 톤 선택자 · KB-AC-23 이미지 스킴(`blob:`/`data:`) · KB-AC-35 11변형 |

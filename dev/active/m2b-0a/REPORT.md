@@ -5,7 +5,7 @@
 ## 1. 산출물
 | 파일 | 내용 |
 |---|---|
-| `docs/design/m2b/SPEC-BOUND.md` | 0절 상속 선언 · 킷 내부 변경 D-1~D-4 · 11변형(B-1~B-11) 각 B1 1~7 + B2 루브릭 표(10~11항) + B3 KB-AC · 4절(KB-AC 01~35 · QB-1~14 · 예산 추정 · MQ-B1~6) · 부록 A · 변경 이력 r0~r3 |
+| `docs/design/m2b/SPEC-BOUND.md` | 0절 상속 선언 · 킷 내부 변경 D-1~D-4 · 11변형(B-1~B-11) 각 B1 1~7 + B2 루브릭 표(10~11항) + B3 KB-AC · 4절(KB-AC 01~35 · QB-1~14 · 예산 추정 · MQ-B1~6) · 부록 A · 변경 이력 r0~r4 |
 | `docs/design/m2b/bound/mock-bound.html` | 특이점 시안(transparent×center · two-tier · grid · image · map footer · minimal-biz). 킷 토큰 역할만, 시험 팔레트 1블록, 외부 자원 0 |
 | `docs/design/m2b/bound/logs/` | `budget-proxy.txt`(CSS 문맥 증가분 L2) · `contrast_calc_m2a.rerun.txt`(m2a 대비 스크립트 재실행) · `mock-dom-measure.txt`(시안 3폭 DOM 실측) · `codex-adversarial.raw.txt`(Codex 원문) · `server-4339.log` |
 
@@ -54,7 +54,7 @@
 | `grep -nE '#[0-9a-fA-F]{3,6}\b\|[0-9]px\|apfs' docs/design/m2b/SPEC-BOUND.md` | 0줄 (hex·px·apfs 0). `http`는 KB-AC-23의 "외부 스킴 0" 문구 1곳뿐 |
 | `python3 -B docs/design/m2a/contrast_calc_m2a.py` | exit 0, 22줄 → `bound/logs/contrast_calc_m2a.rerun.txt` |
 | ego-browser 시안 3폭 DOM 실측 | 1280·768·390 가로 넘침 0 · transparent header = hero 면 같은 색 · 겹침 0 · `position: static` · two-tier 보조 줄 flex/flex/none · 390 시트 순서 주→보조 · grid 타일 3/3/1 · image 비율 2.333/1.778/1.333 · 미디어가 `h1` 위 |
-| Codex 적대적 검토 1회 (`adversarial-review --scope branch --base a3bd614`) | needs-attention 2건 → **둘 다 반영**(r3): [P1] 스타일 선택자가 정적 HTML에서 지워지는 `data-section`에 의존 → 변형 클래스로 + KB-AC-35 (L1 `staticMarkup.ts:15` `KEPT_DATA` 확인) · [P2] KB-AC-09 바·시트 대비 분리 |
+| Codex 적대적 검토 1회 (`adversarial-review --scope branch --base a3bd614`) | needs-attention 2건 → **둘 다 반영**(r3): [P1] 스타일 선택자가 정적 HTML에서 지워지는 `data-section`에 의존 → 변형 클래스로 + KB-AC-35 (L1 `staticMarkup.ts:15` `KEPT_DATA` 확인) · [P2] KB-AC-09 바·시트 대비 분리 · 같은 원인을 hero·footer 선택자·KB-AC-23 이미지 스킴까지 확장 반영(r4) |
 | `git diff --stat a3bd614 -- app design` | 0 (앱·디자인 원본 수정 0) |
 - typecheck·lint·test·build: 코드 변경 0이라 실행하지 않음(문서 레인).
 

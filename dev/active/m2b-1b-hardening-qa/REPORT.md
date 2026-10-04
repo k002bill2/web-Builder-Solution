@@ -48,7 +48,7 @@
   - lg(burger 제외): 바 메뉴 nav 1 · 버튼 0 · 닫힌 시트 숨김.
   - 메뉴 버튼이 있는 9건: 아래가 모두 정상이었다.
     - 열기 → 시트 실제 보임(390: 375×268 등)
-    - Esc → 닫힘(`:popover-open` 아님 + checkVisibility false)
+    - Esc → 닫힘(`:popover-open` 거짓). Esc 직후 checkVisibility는 따로 재지 않았다 — `escVis`는 `vis2` 블록의 `hidePopover()` 뒤 값이라 `qa-fbjudge.mjs`의 `!n.escVis` 조건은 공허하다(사후 검토에서 확인). 실제 visibility는 "앵커로 닫힌 뒤 숨음 → 열면 보임(크기 > 0) → hidePopover 뒤 숨음"으로 측정했다
     - 포커스가 메뉴 버튼으로 돌아옴
     - 다시 열기 → 시트 안 `#s-s-about` 앵커 → 닫힘
   - 넘침 0.
@@ -83,7 +83,7 @@
   - 명세: m2a SPEC 0.10 122행 "footer 하단 링크 조각 … VS-1은 전부 글자 항목". K1-7 마크업 463행 "VS-1은 글자 항목(0.10)", 468행 "하단 링크 조각은 … 링크가 아닌 글자다". 481행의 링 규약은 "링크가 생기면(MQ-2)"이라는 조건부 규약이다.
   - 코드: `FooterBizExtended.tsx:6-13` `FooterLinks` = `<li>{item}</li>`만 있다. Footer*.tsx 전체에 `<a`·`href`·`button`·`tabIndex`가 0이다.
   - 실제 DOM: footer 4변형 × 3폭 × light·dark × base·alt 48대상에서 실제 `a` 0, 링 측정 0.
-  - QA 감사 12건: 포커스 가능 요소(a/area/button/input/select/textarea/summary/iframe/[tabindex]/[contenteditable]/[href]) 0. Tab 키 전체 순회에서 footer 진입 0.
+  - QA 감사 12건: 포커스 가능 요소(a/area/button/input/select/textarea/summary/iframe/[tabindex]/[contenteditable]/[href]) 0. 이것이 핵심 증거다. Tab 순회(보조 증거)에서 footer 진입 0 — 단 반복 감지 휴리스틱이라 BODY 복귀로 문서 끝 도달이 확인된 것은 11/12건이다(biz-extended-1280은 2걸음에서 끊겨 미확인).
   - 본문 제목과 정확히 같은 글자("소개 · 서비스 · 자주 묻는 질문")를 넣어도 li는 TEXT다. 제목 일치 링크화 규칙은 header nav에만 있다.
   - → **숨은 링크 · 결함 0.** "실제 링 PASS"가 아니라 **측정 대상이 설계상 없는 N/A**다.
   - 탐침 복제본(판정 페이지에서만 a 주입, 운영 마크업 아님): 48건 위반 0, 최소 16.82. 참고값일 뿐 실제 링 대체가 아니다.
@@ -105,7 +105,7 @@
 | 다른 화면 | — | 모든 줄이 baseline과 같다 | ±0.03 | PASS |
 
 - 다른 화면은 `diff` 결과 렌더 CSS 한 줄만 달랐다. `kit.css`는 `render.css`만 import한다.
-- 전체 suite 1744 = baseline 1738 + 새 6. 변경 테스트 diff에서 `.skip/.only/.todo` 추가 0, 삭제된 `expect` 0.
+- 전체 suite 1744(새 실행) = baseline 1738(**인용**, base에서 새로 돌리지 않음) + 새 6(`grep -c "^\s*it(" popoverFallback.test.ts` = 6). Errors 0 = `full-vitest.txt`에 Errors 줄 0. 변경 테스트 diff에서 `.skip/.only/.todo` 추가 0, 삭제된 `expect` 0.
 - `KEPT_DATA`(`staticMarkup.ts:15`)와 SCRIPT 관련 diff 0. 앱 변경은 2파일뿐이다.
 - `npm ci` exit 0, package-lock 변경 0.
 

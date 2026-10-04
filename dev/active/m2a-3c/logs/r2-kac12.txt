@@ -1,0 +1,14 @@
+# R2 K-AC-12 [B] — 앱에서 새로 내보낸 정적 HTML(logs/r2-export_r2.html · "모던-카페-브랜드-프로젝트_r2.html")
+# 내보내기: vite preview 127.0.0.1:4337(dist = gate r2 빌드, ff525ff 코드) · ego-browser TaskSpace 34 · 앱 안 클릭만
+#   catalog → 비교 3 → 보드 "전부 선택: A" → 확정 → 보정값(muted) → 조정 저장 v2 → A안 선택 → 편집 시작 → Portfolio·Testimonials 삭제 → 페이지 정보(제목·설명) → 게이트 통과 → "정적 HTML 내보내기" → a[download] blob 받기
+#   (vite dev 4337에서는 "내보내지 못했습니다" — dev 서버는 render.html에 CSS link가 없어 생성기가 설계대로 실패(staticHtml.ts kitCss 주석). preview로 바꿈)
+# 결과 HTML: <script> 1개 = STATIC_MENU_SCRIPT 바이트 그대로
+# 판정: python http.server 127.0.0.1:4339 · 뷰포트 390×844(CDP Emulation.setDeviceMetricsOverride) · 입력 = CDP Input.dispatchMouseEvent / dispatchKeyEvent(실제 입력)
+w=390 · document.scripts=1 · "메뉴" display:flex
+1. "메뉴" 누름 → :popover-open = true                                       PASS
+2. Tab → activeElement = "닫기"                                              PASS
+3. Esc → :popover-open = false · 포커스 = "메뉴"                             PASS
+4. 다시 "메뉴" → 시트 링크: 문의→#s-contact-1 · 상담 신청→#s-contact-1
+5. 시트 안 앵커 "문의"(#s-contact-1) 누름 → :popover-open = false(시트 닫힘)   PASS (C0 때 FAIL → r4.12로 해소)
+   + 대상 섹션 이동: hash #s-contact-1 · scrollY 1687                         PASS
+   + 제목 "문의" top 168 > sticky header bottom 61(가려지지 않음)             PASS

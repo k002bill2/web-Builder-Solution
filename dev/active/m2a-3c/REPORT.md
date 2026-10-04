@@ -10,7 +10,8 @@
 | C0(2)·C5 | a9c59fb | K-AC-12·30 브라우저 판정 · vitest ×3 · REPORT 마감 · 서버 0 — 코드 변경 0 |
 | C1 보강 | 3a64e22 | 후보안 2 실측(126.79 / 126.74 — 둘 다 초과) · K-AC-12 원인 정정(렌더 문서 스크립트) · 게이트 순서 공개 |
 | R1 | c068b5a | `/studio` 진입 한도 128 — ADR-004 개정 4(3.R절) |
-| R2 | (이 커밋) | 정적 HTML 고정 인라인 스크립트(r4.12) · RED→GREEN · 이관 표(2.4절) — 브라우저 판정은 다음 커밋 |
+| R2 | ff525ff | 정적 HTML 고정 인라인 스크립트(r4.12) · RED→GREEN · 이관 표(2.4절) |
+| R2 [B] | (이 커밋) | K-AC-12 5항 PASS(새로 내보낸 HTML · 390) |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -51,7 +52,14 @@
 - 구현: `staticMarkup.ts` `STATIC_MENU_SCRIPT`(생성기 상수) — `document` 위임 `click` 리스너 1개 → `a[href^="#"]`가 `[popover]` 안이면 그 popover `hidePopover()` · `hidePopover`가 함수가 아니면 아무것도 안 함 · `preventDefault` 0(앵커 이동은 기본 동작 그대로 — 스크립트가 꺼져도 이동은 됨). `buildStaticHtml`이 `<head>` 끝(`style` 다음)에 `script` 요소 1개로 넣는다(`textContent` = 상수, 속성 0). 사용자 글자·URL·문서 값 0 · `on*` 속성 0 · 외부 요청 0.
 - RED: `logs/r2-red.txt`(6 실패 — 상수 없음) → GREEN: `src/features/studio/staticHtml` 26/26 · gate `logs/r2.txt` exit 0.
 - 새 테스트(`staticMarkup.test.ts` "고정 인라인 스크립트" 3개): ① 서로 다른 문서 2개에서 결과에 `<script>{상수}</script>` 정확히 1개(바이트 일치) · 상수에 fetch·import·URL·innerHTML·eval 0 ② 제목·설명·슬롯 마크업에 `</script><script>…`가 있어도 파서 기준 script 1개 = 상수 · 고정 블록 문자열 1회 ③ 동작: 시트 안 앵커 → `hidePopover` 1회 · 시트 밖 앵커·외부 링크 → 0 · `hidePopover` 없는 시트 → 오류 0 · 기본 동작 안 막음.
-- 판정 [B] K-AC-12 5항(390, 새로 내보낸 HTML): `logs/r2-kac12.txt` — 아래 표.
+- 판정 [B] K-AC-12 5항(390, **앱에서 새로 내보낸 HTML** `logs/r2-export_r2.html` — script 1개 = 상수 바이트 그대로): `logs/r2-kac12.txt` · vite preview 4337에서 내보냄(dev 서버는 render.html CSS link가 없어 생성기가 설계대로 실패 — `staticHtml.ts` kitCss) · python 4339 · 390×844 CDP · 실제 입력(CDP 마우스·키).
+| K-AC-12 항목 | 결과 |
+|---|---|
+| "메뉴" 누름 → 시트 열림(`:popover-open`) | **PASS** |
+| Tab 다음 = "닫기" | **PASS** |
+| Esc → 닫힘 + 포커스 = "메뉴" | **PASS** |
+| 시트 안 앵커("문의" → `#s-contact-1`) → **시트 닫힘** | **PASS**(C0 FAIL → r4.12 고정 스크립트로 해소) |
+| → 대상 섹션 이동 · 제목이 header에 안 가려짐 | **PASS**(hash 바뀜 · 제목 top 168 > sticky header bottom 61) |
 
 **이관 표 — "script 0"을 보던 3b 단언 중 r4.12로 바뀐 것만** (그 밖 단언 변경 0)
 | 파일 · 테스트 | 3b 단언 | 바뀐 단언 | 근거 |
@@ -101,7 +109,7 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 ## 6. K-AC · E-AC 판정
 | AC | 판정 | 근거 |
 |---|---|---|
-| K-AC-12 | **부분 FAIL**(4항 PASS · "앵커 → 시트 닫힘" FAIL) | 2.3절 |
+| K-AC-12 | **PASS**(5항 — 재개 R2, 고정 스크립트) · C0 때 부분 FAIL | 2.4절 · 2.3절 |
 | K-AC-30 | **PASS** | 2.3절 |
 | K-AC-17 · 19 · 32(PNG판) · 34 · E-AC-49 · 50 | **미판정 — BLOCKED(C1 정지)** | 3절 |
 
@@ -120,7 +128,7 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 
 ## 9. 남은 위험 · M2a 마감에 넘길 것
 1. **[결정 필요 · 영환님] PNG 진입 공간** — 3절 후보안 1(보드·생성 저장소 분리, 별도 레인) / 2(SPEC 3.3 개정: PNG 묶음을 조작 뒤에 그림) / 3(ADR-004 멈춤선 +0.5). 결정 전 C2~C4 진행 불가.
-2. **K-AC-12 "시트 안 앵커 → 시트 닫힘" FAIL — 정적 HTML만**(2.3절). 캔버스는 렌더 문서 스크립트가 닫는다. 생성기의 "script 0" 규칙과 맞물린 판단(작은 인라인 닫기 스크립트 허용 / SPEC 문장 개정).
+2. ~~K-AC-12 "시트 안 앵커 → 시트 닫힘" FAIL~~ → 재개 R2(r4.12 고정 스크립트)로 해소(2.4절).
 3. 3b Codex P2 3건(2.1절): 이탈 후 같은 잡 재요청 시 죽은 내려받기 링크 · 생성기 청크 실패 기억 · `blob:` 글자 오탐.
 4. 전역 심볼 슬롯 — M2a 유지, M4 실서버 저장소 때 제거(2.2절). P2-2를 고칠 때 슬롯 로더를 `retryableImport`로.
 5. 캡처 도구: ego-browser `Page.captureScreenshot` 시간 초과가 계속된다(3b·3c). 상호작용 상태 캡처가 필요한 판정은 DOM 조회로만 가능.

@@ -11,7 +11,8 @@
 | C1 보강 | 3a64e22 | 후보안 2 실측(126.79 / 126.74 — 둘 다 초과) · K-AC-12 원인 정정(렌더 문서 스크립트) · 게이트 순서 공개 |
 | R1 | c068b5a | `/studio` 진입 한도 128 — ADR-004 개정 4(3.R절) |
 | R2 | ff525ff | 정적 HTML 고정 인라인 스크립트(r4.12) · RED→GREEN · 이관 표(2.4절) |
-| R2 [B] | (이 커밋) | K-AC-12 5항 PASS(새로 내보낸 HTML · 390) |
+| R2 [B] | 262b396 | K-AC-12 5항 PASS(새로 내보낸 HTML · 390) |
+| C2 | (이 커밋) | 캡처 방식 PoC — data: SVG foreignObject 채택 · 브라우저별 오염 표(4절) |
 
 ## 2. C0 이관 (3b Codex · 전역 슬롯 · K-AC-12·30)
 ### 2.1 Codex `review --scope branch --base a51de92` (원문 `logs/c0-codex-3b.txt` · 진행 로그 `logs/c0-codex-3b.raw.txt`)
@@ -100,8 +101,19 @@ SPEC 3.3·K-AC-19는 PNG 이름표·버튼·캡션·"준비 전" 이유가 **진
 | 바꾸기 전(HEAD `1c4e389`) | 126.64 | 127KB | `logs/r1-before.txt` |
 | 바꾼 뒤 | 126.64 | **128KB** | `logs/r1-after.txt` · gate `logs/r1.txt` exit 0 |
 
-## 4. 캡처 방식 PoC
-**미진행 — BLOCKED(C1 정지).** 진입 ≤126.70 경로가 없어 브리프대로 C2 전에 멈췄다. 브라우저별 오염 표 없음. 재개 시 기본안(숨은 렌더 iframe `serialize` + SVG `foreignObject` → canvas → `toBlob`)부터 — C1 시제품의 캡처 청크 자리(`logs/c1-proto.patch`의 `features/studio/png/pngCapture.ts`)는 조작 뒤 청크라 진입 영향 없음.
+## 4. 캡처 방식 PoC (재개 C2 — `logs/c2.txt` · `logs/c2-poc.html`)
+**결론: 기본안 채택 — 숨은 렌더 iframe `serialize` 마크업 + 킷 CSS → XHTML → SVG `foreignObject` → **`data:` URL** `Image` → `canvas` → `toBlob("image/png")`.** 새 의존성 0. `blob:` URL로 SVG를 그리면 세 엔진 모두 캔버스가 오염된다 → `data:` 고정(테스트로 고정).
+- 재료: R2에서 앱이 새로 내보낸 HTML의 사이트 루트 + 인라인 CSS(= serialize + kitCss와 같은 재료). PoC는 브라우저 자동화 없이 각 브라우저를 `open -a`로 열고 결과를 python 서버 접근 로그(`/log?…`)로 받았다.
+
+| 브라우저 | `data:` 1280 | `data:` 390 | `blob:` 1280 | 그려짐 확인 |
+|---|---|---|---|---|
+| Chromium 152(ego) | 오염 0 · PNG 1.09MB | 오염 0 · 0.35MB | **오염**(toBlob SecurityError) | `shots/c2-poc-{1280,390}.png` — 캔버스와 같은 배치(1280 = 바 nav·CTA, 390 = "메뉴" · 1단) |
+| Chrome 154 | 오염 0 · 1.09MB | — | — | 흰색 아닌 픽셀 65.1% · hero 픽셀 갈색 |
+| Edge 151 | 오염 0 · 1.09MB | 오염 0 · 0.35MB | **오염** | 63.6%(390) |
+| Safari 27.0.1(WebKit) | 오염 0 · 1.70MB | 오염 0 · 0.31MB | **오염**("The operation is insecure.") | 65.6% / 63.6% · hero 픽셀 갈색 |
+| Firefox | **미실측 — 이 기기에 설치돼 있지 않음** | | | 9절 위험 |
+- 미디어 쿼리는 SVG 이미지 폭으로 판정된다(390 결과가 모바일 배치) → 원래 폭 캡처 = SVG `width` = 프레임 폭.
+- 실제 경로가 PoC와 다른 점(C3에서 처리): ① 폴백 섹션 허용(정적 HTML 생성기는 폴백 = 실패 — PNG 빌더는 따로) · `data-kit-marker` 등 data-* 유지(표식 색 CSS 선택자) ② 숨은 iframe 폭 = 미리보기 폭 · 높이 = 렌더 문서 rects 바닥(부모는 불투명 출처라 문서 높이를 직접 못 잼) ③ 캔버스 높이 상한 초과 = 실패 상태.
 
 ## 5. PNG 흐름 (버튼 · 4상태 · 파일 이름 · 계측)
 **미진행 — BLOCKED(C1 정지).** C1 최소 시제품의 진입 부품 구성(이름표 · outline 버튼 · 캡션 2문장 · 준비 전 `aria-disabled` + 이유 · 실패 `role=alert` 문장은 진입, 성공 문장·계측 `png_*`·오류 코드는 캡처 청크)은 `logs/c1-proto.patch`에 있다 — 재개 때 출발점. `tEXt` 메타데이터는 하지 않는다(브리프 제외).

@@ -245,6 +245,36 @@
   }
 }
 
+/* header/transparent (B-3 · MQ-B1) — 일반 흐름(비고정) · 면 = heroTop(면 클래스) · 경계 없음(heroTop 없음일 때만 아래 구분선). 면 primary = 바 글자·버튼·링 on-primary(C-1) · 시트는 K1-1 그대로 bg·ink */
+@layer components {
+  .kit-header--clear {
+    position: static;
+    border-bottom: 0;
+  }
+  .kit-header--edge {
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-header--face-surface,
+  .kit-header--face-surface .kit-bar .kit-menu-button {
+    background: var(--site-surface);
+  }
+  .kit-header--face-primary {
+    background: var(--site-primary);
+  }
+  .kit-header--face-primary .kit-bar {
+    color: var(--site-on-primary);
+    --kit-ring: var(--site-on-primary);
+  }
+  .kit-header--face-primary .kit-bar .kit-menu :where(a, span) {
+    color: var(--site-on-primary);
+  }
+  .kit-header--face-primary .kit-bar .kit-menu-button {
+    border-color: var(--site-on-primary);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+  }
+}
+
 /* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
 @layer components {
   .kit-gradient {

@@ -15,7 +15,7 @@
 - [x] P2 D-1 heroTop (kitLinks) [U] — RED logs/p2-herotop-red.txt(4 실패) → gate OK(렌더 JS 80.59 · CSS 6.72 · /studio 127.41) · 전체 vitest 183 파일 1707 통과
 - [x] P3 header/sticky-hamburger (KB-AC-03 [U] · 구조) + D-2 변형 클래스 — kit/headerParts(MenuList·MenuButton·Sheet, K1-1도 사용) · RED logs/p3-hamburger-red.txt(4 실패) → gate OK(렌더 JS 80.70 · CSS 6.80 · /studio 127.42 중간값) · 전체 vitest 184/1711 · 이관 1건(PageDocument 정확 목록 +1)
 - [x] P4 header/sticky-two-tier (KB-AC-05 [U] · 구조 · D-3 [G]) + D-3 `:has()` 1줄 — RED logs/p4-two-tier-red.txt(6 실패) → gate OK(렌더 JS 80.79 · CSS 6.92 · /studio 127.44 중간값) · 전체 vitest 185/1717 · 이관 1건(정확 목록 +1). 테스트 자체 수정 2건(정규식·주석 제외 — 구현 전 RED와 같은 단언)
-- [ ] P5 header/transparent (KB-AC-07~09)
+- [x] P5 header/transparent (KB-AC-07 [U] · 구조) — K1-1 마크업 재사용(면 클래스·data-surface만) · RED logs/p5-transparent-red.txt(3 실패) → gate OK · 전체 vitest 186/1720 · 이관 1건(정확 목록 +1)
 - [ ] P6 footer/biz-extended-map (KB-AC-23~25)
 - [ ] P7 footer/minimal (KB-AC-26·27)
 - [ ] P8 footer/minimal-biz (KB-AC-28·29)

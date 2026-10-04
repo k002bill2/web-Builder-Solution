@@ -16,7 +16,7 @@
 - [x] D4 P2-a PNG 준비 조건 idle·saved
 - [x] D5 P2-b 토큰 없는 폴백 PNG
 - [x] D6 P2-c rem px 좌표계
-- [ ] D7 Codex 1회 · REPORT 마감 · 서버 0
+- [x] D7 Codex 1회(지적 0) · REPORT 마감 · 서버 0(띄운 서버 없음 · lsof 4337 0)
 
 ## 서브에이전트
 - 사용 0 (브리프 금지)

@@ -15,35 +15,42 @@
 | P7 minimal | `logs/p7-minimal-red.txt` | f1a17ae | 공유 `FooterLinks` · 미니멀 띠 `FooterLine` |
 | P8 minimal-biz | `logs/p8-minimal-biz-red.txt` | 3d37710 | + RENDERED_VARIANTS 바깥 3유형 라이브러리 파생 |
 | P9 공통 | 변이 검사 `logs/p9-mutation.txt` | c726ce7 | `kit/boundVariants.test.tsx` — KB-AC-30·32·33·35 [U]/[G] · K-AC-04 |
-| P10 | — | (작성 중) | REPORT 갱신(브라우저 전) |
+| P10 | — | (이 커밋) | 브라우저 판정 15건 PASS · KB-AC-34 판정 스크립트 수정 · 캡처 45장 |
 
 ## 2. 변형별 판정 (KB-AC)
-표기: [U] jsdom · [G] 파일 검사 · [B] 브라우저(127.0.0.1:4337 렌더 문서, 1280·768·390). [B]는 브라우저 단계에서 채운다.
+표기: [U] jsdom · [G] 파일 검사 · [B] 브라우저(127.0.0.1:4337 렌더 문서, 1280·768·390). [B] 근거 = `logs/qb-judge.txt`(`node judge.mjs` ← `logs/qb-b.json` ← `ego-browser nodejs < qb.mjs`) · QB-14 = `qb14.mjs` → `logs/qb14.json`. **판정 14 + QB-14 = 15건 전부 PASS.**
 
 | KB-AC | 변형 | [U]/[G] | [B] | 판정 | 근거 |
 |---|---|---|---|---|---|
-| 01 | sticky-hamburger | 구조 PASS(바 nav 0 · nav 1벌 = 시트 안) | (브라우저) | (브라우저) | `HeaderStickyHamburger.test` |
-| 02 | sticky-hamburger | — | (브라우저) | (브라우저) | |
+| 01 | sticky-hamburger | 구조 PASS(바 nav 0 · nav 1벌 = 시트 안) | PASS | PASS | `HeaderStickyHamburger.test` · [B] 3폭 버튼 보임 · 바 nav 0 · 닫힘 nav 보임 0 → 열림 nav 1 |
+| 02 | sticky-hamburger | — | PASS | PASS | [B] 1280 오른쪽 판 폭 426.7(=4/12) · 768 384(=6/12) · 390 전체 폭 390 |
 | 03 | sticky-hamburger | PASS | — | PASS | nav 빈 값 → button[popovertarget]·[popover]·nav 0 |
-| 04 | sticky-two-tier | 구조 PASS(nav 두 벌 · 보조 목록 두 벌 · 랜드마크 아님) | (브라우저) | (브라우저) | `HeaderStickyTwoTier.test` |
+| 04 | sticky-two-tier | 구조 PASS(nav 두 벌 · 보조 목록 두 벌 · 랜드마크 아님) | PASS | PASS | `HeaderStickyTwoTier.test` · [B] 1280 보조 줄+바 nav·버튼 none / 768 보조 줄+버튼 · 시트 nav / 390 보조 줄 숨김 · 시트 nav+hr+utility · nav 보임 최대 1 |
 | 05 | sticky-two-tier | PASS | — | PASS | 기본 utility → 목록마다 li > span 2 · a 0 / 빈 값 → ul 0 · 보조 줄 0 · hr 0 |
-| 06 | sticky-two-tier | D-3 선택자 [G] PASS | (브라우저) | (브라우저) | |
+| 06 | sticky-two-tier | D-3 선택자 [G] PASS | PASS | PASS | [B] 390·1280 앵커 4개 제목 위 끝 ≥ header 아래 끝(최소 여유 150.8) · scroll-margin-top 164px(K1-1 120px) |
 | 07 | transparent | PASS | — | PASS | heroTop 7행(+split·grid·text 두 톤) → data-surface·면 클래스·구분선 (`HeaderTransparent.test` · `heroTop.test`) |
-| 08 | transparent | — | (브라우저) | (브라우저) | |
-| 09 | transparent | — | (브라우저) | (브라우저) | |
+| 08 | transparent | — | PASS | PASS | [B] 5문서 × 3폭 position static · 겹침 0 · 면 이음 true · 구분선은 none 면만 |
+| 09 | transparent | — | PASS | PASS | [B] 면 3종 × 프로필 2 × 톤 2 × 3폭 바 쌍 = on-primary/primary · ink/surface · ink/bg · 열린 시트 ink/bg만 · 링(실측 :focus-visible) on-primary/primary·ink/bg·ink/surface |
 | 23 | biz-extended-map | PASS | — | PASS | 플레이스홀더 → 그라디언트 aria-hidden · img 0 / 사용자 이미지 → 렌더 blob:만 · serializeSite 결과 data:만 · http(s) 0 · iframe·script 0 |
-| 24 | biz-extended-map | — | (브라우저) | (브라우저) | |
-| 25 | biz-extended-map | PASS [U] | (브라우저) | (브라우저) | map 꺼짐 → figure 0 · 위 줄 직계 = address·ul(biz-extended와 같음) |
-| 26 | minimal | PASS [G] | (브라우저) | (브라우저) | 면 = .kit-body(톤 없음 → bg) · 위 구분선 muted · 링크 ink · 저작권 --kit-soft(= muted) · ink 면 0 |
+| 24 | biz-extended-map | — | PASS | PASS | [B] 1280 글 칸·지도 칸 같은 행(지도 폭 440) · 768 지도 352 · 390 사업자정보→링크→지도→저작권 · 지도 경계 1px bg색(ink 면에서 보임) |
+| 25 | biz-extended-map | PASS [U] | PASS | PASS | map 꺼짐 → figure 0 · 위 줄 직계 = address·ul(biz-extended와 같음) · [B] 1280 map 꺼짐 figure 0 · 사업자정보·링크 같은 행 |
+| 26 | minimal | PASS [G] | PASS | PASS | 면 = .kit-body(톤 없음 → bg) · 위 구분선 muted · 링크 ink · 저작권 --kit-soft(= muted) · ink 면 0 · [B] 3폭 면 bg · 위 경계 1px solid muted · 링크 ink · 저작권 muted |
 | 27 | minimal | PASS | — | PASS | 둘 다 빈 값 → footer#s-s-footer 1 · 글자 요소 0 · CTA 폴백 href 대상 = 이 footer |
 | 28 | minimal-biz | PASS [U]/[G] | — | PASS | address 1 · 저작권 0 · 사업자정보 규칙 ink · white-space normal |
-| 29 | minimal-biz | 클래스 같음 [U] | (브라우저) | (브라우저) | |
+| 29 | minimal-biz | 클래스 같음 [U] | PASS | PASS | [B] 3폭 루트 background·border-top · 링크 목록·래퍼 계산 스타일 같음 · 사업자정보 ink |
 | 30 | 6 | PASS [G] | — | PASS | kitGuard(kit/ 전체) + `boundVariants.test` iframe·외부 URL 0 |
-| 31 | 6 | — | (브라우저) | (브라우저) | |
+| 31 | 6 | — | PASS | PASS | [B] 6변형 상한 글자+200% × 3폭(열린 시트 포함) 가로 넘침 0 · 밖 요소 0 · 말줄임 0 |
 | 32 | 6 | PASS [U] | — | PASS | 판정 문서 10벌(header 3변형 · transparent 면 4상태 · two-tier nav 없음 · footer 3) 정적 HTML script = 고정 1개(바이트 일치) |
 | 33 | 6 | PASS [U] | — | PASS | 6쌍 등록 · 루트 1 · 폴백 표식 0 · header·footer 사이트 루트 직계 |
-| 34 | 6 | — | (브라우저) | (브라우저) | |
-| 35 | 6 | PASS [U]/[G] | (브라우저) | (브라우저) | 새 CSS 선택자 전부 정적 결과에 매칭 · `:has()` 1줄 대상 존재 · 변이 검사 2건 |
+| 34 | 6 | — | PASS | PASS | [B] 84측정 · 글자 488개 허용 밖 쌍 0 · 최소 4.61 · 링 허용 밖 0 (아래 KB-AC-34 판정 기록) |
+| 35 | 6 | PASS [U]/[G] | PASS | PASS | 새 CSS 선택자 전부 정적 결과에 매칭 · `:has()` 1줄 대상 존재 · 변이 검사 2건 · [B] 30건(10문서 × 3폭) 정적 HTML 계산 스타일 = 캔버스 · 앵커 뒤 제목 header 아래 · script 1 |
+
+**KB-AC-34 판정 기록 (P10 1회차 FAIL → 원인 = 판정 스크립트 (a), 코드 수정 0)**
+- 1회차: 글자 쌍 허용 밖 0 · 최소 4.61인데 sticky-hamburger(light·base, 1280·768·390) 포커스 링이 `?0,0,0`.
+- 원인 1 — 링을 계산 결과가 아니라 `getPropertyValue("--kit-ring")`로 읽고 비면 `rgb(0,0,0)`으로 채웠다. `kit.css` 0.3 규칙은 `outline: … var(--kit-ring, var(--site-ink))` — 변수 미지정 면(sticky-hamburger·two-tier 바·시트 = bg 면)에서는 CSS 폴백 `ink`로 그려진다. SPEC B-1 3 "포커스 링 `ink`"와 같다 → (b) SPEC 위반 아님.
+- 원인 2 — 바 선택자가 쉼표 목록(`… .kit-bar, … .kit-tier`)인데 뒤에 `" button"`·`" *"`을 이어 붙여 앞 부분이 `.kit-bar` div 자체를 잡았다(링 대상에 div "브랜드 …" · 바 글자는 대비 측정에서 빠짐).
+- 고침(`qb.mjs`): 각 a·button을 실제로 `focus()`해 `:focus-visible` 계산 `outline-color`를 읽는다(배경 탭이라 `Emulation.setFocusEmulationEnabled`, 안 그려지면 `?none` = 실패) · 쉼표 선택자 각 부분에 접미어를 붙인다. 재판정: 링 sticky-hamburger·two-tier 전부 `ink/bg` · 측정 글자 432 → 488개(바 글자 포함) · 허용 밖 0 · 최소 4.61 → PASS. 단언·허용 쌍 집합은 그대로(약화 0).
+- 판정 스크립트만 바뀌어 RED→GREEN 코드 단계 없음.
 
 ## 3. 번들 표 (gzip KB)
 | 시점 | 렌더 JS | 렌더 CSS | `/studio` 진입 | 첫 화면 | 그 밖 |
@@ -73,7 +80,20 @@
 - D-3 = SPEC 그대로 `:has()` 1줄(MQ-B5) — `KitLinks` 대안 안 씀.
 
 ## 5. 시각 QA 캡처
-(브라우저 단계)
+`shots/` 45장 = `shots.sh`(Chrome headless — ego `page.screenshot`이 CDP `Page.captureScreenshot` 시간 초과라 브리프대로 대체) · 정적 HTML `static/*.html`(127.0.0.1:4339 python http.server)을 1280×900 · 768×1024 · 390×844로.
+- 390은 headless 창 최소 폭(≈500) 때문에 뷰포트가 넓어져 오른쪽이 잘림 → 390폭 iframe 래퍼(`static/_w390.html`, 실행 중에만 생성)로 찍고 가운데 크롭. footer 문서는 스크롤 사본이 빈 화면이라 높이 5000 전체 페이지(`*-full-*`).
+| QB | 캡처 (×1280·768·390) | 확인 |
+|---|---|---|
+| QB-1 | `qb-1-hamburger` · `qb-1-hamburger-cap`(열린 판) | 바 = 브랜드+"메뉴" · 1280 오른쪽 판 · 768 6칸 판 · 390 전체 폭 판 |
+| QB-2 | `qb-2-two-tier` · `qb-2-two-tier-cap` | 1280 2단 · 768 보조 줄+버튼 · 390 열린 시트 2구역(nav · 구분선 · 보조 목록) |
+| QB-3 | `qb-3-transparent-center` | header·hero 한 primary 면 · 경계선 0 |
+| QB-4 | `qb-4-transparent-fullbleed` | header bg 바 · 이미지 위 header 글자 0 |
+| QB-10 | `qb-10-map-full` | 지도 칸 경계 ink 면에서 보임 · 그라디언트 폴백 · 7:5 / 6:6 / 1단 |
+| QB-11 | `qb-11-minimal-full` · `qb-11-minimal-biz-full` | 같은 띠 모양 · 앞 글자만 다름 |
+| QB-13 | `qb-13-{sticky-hamburger,sticky-two-tier,transparent}` · `qb-13-{biz-extended-map,minimal,minimal-biz}-full` | bright 프로필(ink 밝음) — 판정 QB-13 PASS |
+| QB-14 | (캡처 아님) `logs/qb14.json` | 정적 HTML 3 header × 버튼 보이는 7건: 실제 클릭 열림 · Esc 닫힘 · 시트 안 앵커 닫힘·hash · script 1 — PASS |
+- 육안 확인: `qb-1-hamburger-cap-1280` · `qb-2-two-tier-cap-390` · `qb-3-transparent-center-768` · `qb-10-map-full-1280` · `qb-11-minimal-full-390` 열어 위 내용과 같음.
+
 
 ## 6. Codex
 (마감 단계)

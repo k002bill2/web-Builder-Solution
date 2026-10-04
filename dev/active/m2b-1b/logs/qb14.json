@@ -1,0 +1,82 @@
+{
+ "qb-1-hamburger-1280": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ },
+ "qb-1-hamburger-768": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ },
+ "qb-1-hamburger-390": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ },
+ "qb-2-two-tier-1280": {
+  "scripts": 1,
+  "button": false,
+  "note": "버튼 숨김(이 폭은 바에 nav)"
+ },
+ "qb-2-two-tier-768": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ },
+ "qb-2-two-tier-390": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ },
+ "qb-13-transparent-1280": {
+  "scripts": 1,
+  "button": false,
+  "note": "버튼 숨김(이 폭은 바에 nav)"
+ },
+ "qb-13-transparent-768": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ },
+ "qb-13-transparent-390": {
+  "scripts": 1,
+  "button": true,
+  "openByClick": true,
+  "closedByEsc": true,
+  "reopened": true,
+  "closedByAnchor": true,
+  "hash": "#s-s-about",
+  "ok": true
+ }
+}

@@ -1,0 +1,4529 @@
+{
+ "gate-profiles": {
+  "light": [
+   [
+    "C-1",
+    8.09,
+    true
+   ],
+   [
+    "C-2",
+    16.82,
+    true
+   ],
+   [
+    "C-4",
+    15.31,
+    true
+   ],
+   [
+    "C-5",
+    4.93,
+    true
+   ]
+  ],
+  "dark": [
+   [
+    "C-1",
+    4.61,
+    true
+   ],
+   [
+    "C-2",
+    20.08,
+    true
+   ],
+   [
+    "C-3",
+    4.56,
+    true
+   ],
+   [
+    "C-4",
+    17.62,
+    true
+   ],
+   [
+    "C-5",
+    6.06,
+    true
+   ]
+  ],
+  "bright": [
+   [
+    "C-1",
+    5.91,
+    true
+   ],
+   [
+    "C-2",
+    16.46,
+    true
+   ],
+   [
+    "C-4",
+    14.32,
+    true
+   ],
+   [
+    "C-5",
+    7.66,
+    true
+   ]
+  ]
+ },
+ "hstate-sticky-hamburger-1280": {
+  "closed": {
+   "btnVisible": true,
+   "btnDisplay": "flex",
+   "barNavVisible": false,
+   "barNav": 0,
+   "tierVisible": false,
+   "navVisible": 0,
+   "sheetOpen": false
+  },
+  "open": {
+   "isOpen": true,
+   "navVisible": 1,
+   "visibleChildren": [
+    "BUTTON",
+    "NAV>nav"
+   ],
+   "rect": {
+    "x": 853.3,
+    "right": 1280,
+    "w": 426.7,
+    "top": 0,
+    "bottom": 216
+   },
+   "vw": 1280
+  },
+  "header": {
+   "x": 0,
+   "right": 1280,
+   "w": 1280,
+   "top": 0,
+   "bottom": 61
+  },
+  "position": "sticky"
+ },
+ "anchors-sticky-hamburger-1280": [
+  {
+   "id": "s-s-about",
+   "h2Top": 507.5,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-services",
+   "h2Top": 216,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-faq",
+   "h2Top": 216.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-contact",
+   "h2Top": 216.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  }
+ ],
+ "hstate-sticky-hamburger-768": {
+  "closed": {
+   "btnVisible": true,
+   "btnDisplay": "flex",
+   "barNavVisible": false,
+   "barNav": 0,
+   "tierVisible": false,
+   "navVisible": 0,
+   "sheetOpen": false
+  },
+  "open": {
+   "isOpen": true,
+   "navVisible": 1,
+   "visibleChildren": [
+    "BUTTON",
+    "NAV>nav"
+   ],
+   "rect": {
+    "x": 384,
+    "right": 768,
+    "w": 384,
+    "top": 0,
+    "bottom": 216
+   },
+   "vw": 768
+  },
+  "header": {
+   "x": 0,
+   "right": 768,
+   "w": 768,
+   "top": 0,
+   "bottom": 61
+  },
+  "position": "sticky"
+ },
+ "anchors-sticky-hamburger-768": [
+  {
+   "id": "s-s-about",
+   "h2Top": 352.5,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-services",
+   "h2Top": 216.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-faq",
+   "h2Top": 216.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-contact",
+   "h2Top": 216.2,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  }
+ ],
+ "hstate-sticky-hamburger-390": {
+  "closed": {
+   "btnVisible": true,
+   "btnDisplay": "flex",
+   "barNavVisible": false,
+   "barNav": 0,
+   "tierVisible": false,
+   "navVisible": 0,
+   "sheetOpen": false
+  },
+  "open": {
+   "isOpen": true,
+   "navVisible": 1,
+   "visibleChildren": [
+    "BUTTON",
+    "NAV>nav"
+   ],
+   "rect": {
+    "x": 0,
+    "right": 390,
+    "w": 390,
+    "top": 0,
+    "bottom": 216
+   },
+   "vw": 390
+  },
+  "header": {
+   "x": 0,
+   "right": 390,
+   "w": 390,
+   "top": 0,
+   "bottom": 61
+  },
+  "position": "sticky"
+ },
+ "anchors-sticky-hamburger-390": [
+  {
+   "id": "s-s-about",
+   "h2Top": 168.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-services",
+   "h2Top": 167.8,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-faq",
+   "h2Top": 168.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  },
+  {
+   "id": "s-s-contact",
+   "h2Top": 167.8,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "120px"
+  }
+ ],
+ "hstate-sticky-two-tier-1280": {
+  "closed": {
+   "btnVisible": false,
+   "btnDisplay": "none",
+   "barNavVisible": true,
+   "barNav": 1,
+   "tierVisible": true,
+   "navVisible": 1,
+   "sheetOpen": false
+  },
+  "open": null,
+  "header": {
+   "x": 0,
+   "right": 1280,
+   "w": 1280,
+   "top": 0,
+   "bottom": 84.2
+  },
+  "position": "sticky"
+ },
+ "anchors-sticky-two-tier-1280": [
+  {
+   "id": "s-s-about",
+   "h2Top": 551.7,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-services",
+   "h2Top": 260.2,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-faq",
+   "h2Top": 259.8,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-contact",
+   "h2Top": 259.8,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  }
+ ],
+ "hstate-sticky-two-tier-768": {
+  "closed": {
+   "btnVisible": true,
+   "btnDisplay": "flex",
+   "barNavVisible": false,
+   "barNav": 1,
+   "tierVisible": true,
+   "navVisible": 0,
+   "sheetOpen": false
+  },
+  "open": {
+   "isOpen": true,
+   "navVisible": 1,
+   "visibleChildren": [
+    "BUTTON",
+    "NAV>nav"
+   ],
+   "rect": {
+    "x": 0,
+    "right": 768,
+    "w": 768,
+    "top": 0,
+    "bottom": 216
+   },
+   "vw": 768
+  },
+  "header": {
+   "x": 0,
+   "right": 768,
+   "w": 768,
+   "top": 0,
+   "bottom": 84.2
+  },
+  "position": "sticky"
+ },
+ "anchors-sticky-two-tier-768": [
+  {
+   "id": "s-s-about",
+   "h2Top": 396.2,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-services",
+   "h2Top": 259.8,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-faq",
+   "h2Top": 259.8,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-contact",
+   "h2Top": 259.9,
+   "headerBottom": 84.2,
+   "ok": true,
+   "smt": "164px"
+  }
+ ],
+ "hstate-sticky-two-tier-390": {
+  "closed": {
+   "btnVisible": true,
+   "btnDisplay": "flex",
+   "barNavVisible": false,
+   "barNav": 1,
+   "tierVisible": false,
+   "navVisible": 0,
+   "sheetOpen": false
+  },
+  "open": {
+   "isOpen": true,
+   "navVisible": 1,
+   "visibleChildren": [
+    "BUTTON",
+    "NAV>nav",
+    "HR",
+    "UL[utility]"
+   ],
+   "rect": {
+    "x": 0,
+    "right": 390,
+    "w": 390,
+    "top": 0,
+    "bottom": 271.4
+   },
+   "vw": 390
+  },
+  "header": {
+   "x": 0,
+   "right": 390,
+   "w": 390,
+   "top": 0,
+   "bottom": 61
+  },
+  "position": "sticky"
+ },
+ "anchors-sticky-two-tier-390": [
+  {
+   "id": "s-s-about",
+   "h2Top": 212.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-services",
+   "h2Top": 211.8,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-faq",
+   "h2Top": 212.1,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "164px"
+  },
+  {
+   "id": "s-s-contact",
+   "h2Top": 211.8,
+   "headerBottom": 61,
+   "ok": true,
+   "smt": "164px"
+  }
+ ],
+ "smt-right-cta": "120px",
+ "clear-center-1280": {
+  "position": "static",
+  "surface": "primary",
+  "bg": "rgb(10, 92, 54)",
+  "nextBg": "rgb(10, 92, 54)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-center-768": {
+  "position": "static",
+  "surface": "primary",
+  "bg": "rgb(10, 92, 54)",
+  "nextBg": "rgb(10, 92, 54)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-center-390": {
+  "position": "static",
+  "surface": "primary",
+  "bg": "rgb(10, 92, 54)",
+  "nextBg": "rgb(10, 92, 54)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-fullbleed-1280": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(10, 92, 54)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-fullbleed-768": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(10, 92, 54)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-fullbleed-390": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(10, 92, 54)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-split-alt-1280": {
+  "position": "static",
+  "surface": "surface",
+  "bg": "rgb(244, 240, 232)",
+  "nextBg": "rgb(244, 240, 232)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-split-alt-768": {
+  "position": "static",
+  "surface": "surface",
+  "bg": "rgb(244, 240, 232)",
+  "nextBg": "rgb(244, 240, 232)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-split-alt-390": {
+  "position": "static",
+  "surface": "surface",
+  "bg": "rgb(244, 240, 232)",
+  "nextBg": "rgb(244, 240, 232)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-split-base-1280": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(252, 251, 248)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-split-base-768": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(252, 251, 248)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-split-base-390": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(252, 251, 248)",
+  "borderBottom": "0px none",
+  "headerBottom": 60,
+  "nextTop": 60,
+  "overlap": 0
+ },
+ "clear-none-1280": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(252, 251, 248)",
+  "borderBottom": "1px solid",
+  "headerBottom": 61,
+  "nextTop": 61,
+  "overlap": 0
+ },
+ "clear-none-768": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(252, 251, 248)",
+  "borderBottom": "1px solid",
+  "headerBottom": 61,
+  "nextTop": 61,
+  "overlap": 0
+ },
+ "clear-none-390": {
+  "position": "static",
+  "surface": "bg",
+  "bg": "rgb(252, 251, 248)",
+  "nextBg": "rgb(252, 251, 248)",
+  "borderBottom": "1px solid",
+  "headerBottom": 61,
+  "nextTop": 61,
+  "overlap": 0
+ },
+ "colors-light-base-sticky-hamburger-1280": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-sticky-hamburger-768": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-sticky-hamburger-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-sticky-two-tier-1280": {
+  "bar": {
+   "n": 6,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-base-sticky-two-tier-768": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-sticky-two-tier-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 6,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-transparent-primary-1280": {
+  "surface": "primary",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 8.09,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "소개:on-primary/primary",
+    "서비스:on-primary/primary",
+    "문의:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-base-transparent-primary-768": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 8.09,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-transparent-primary-390": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 8.09,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-transparent-surface-1280": {
+  "surface": "surface",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "소개:ink/surface",
+    "서비스:ink/surface",
+    "문의:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-base-transparent-surface-768": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-transparent-surface-390": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-transparent-bg-1280": {
+  "surface": "bg",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-base-transparent-bg-768": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-transparent-bg-390": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-base-biz-extended-map-1280": {
+  "n": 4,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-base-biz-extended-map-390": {
+  "n": 4,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-base-minimal-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 4.93,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-base-minimal-390": {
+  "n": 3,
+  "bad": [],
+  "min": 4.93,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-base-minimal-biz-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-base-minimal-biz-390": {
+  "n": 3,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-alt-sticky-hamburger-1280": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-sticky-hamburger-768": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-sticky-hamburger-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-sticky-two-tier-1280": {
+  "bar": {
+   "n": 6,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-alt-sticky-two-tier-768": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-sticky-two-tier-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 6,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-transparent-primary-1280": {
+  "surface": "primary",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 8.09,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "소개:on-primary/primary",
+    "서비스:on-primary/primary",
+    "문의:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-alt-transparent-primary-768": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 8.09,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-transparent-primary-390": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 8.09,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-transparent-surface-1280": {
+  "surface": "surface",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "소개:ink/surface",
+    "서비스:ink/surface",
+    "문의:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-alt-transparent-surface-768": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-transparent-surface-390": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-transparent-bg-1280": {
+  "surface": "bg",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-light-alt-transparent-bg-768": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-transparent-bg-390": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-light-alt-biz-extended-map-1280": {
+  "n": 4,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-alt-biz-extended-map-390": {
+  "n": 4,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-alt-minimal-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 4.93,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-alt-minimal-390": {
+  "n": 3,
+  "bad": [],
+  "min": 4.93,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-alt-minimal-biz-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-light-alt-minimal-biz-390": {
+  "n": 3,
+  "bad": [],
+  "min": 16.82,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-base-sticky-hamburger-1280": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-sticky-hamburger-768": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-sticky-hamburger-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-sticky-two-tier-1280": {
+  "bar": {
+   "n": 6,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-base-sticky-two-tier-768": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-sticky-two-tier-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 6,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-transparent-primary-1280": {
+  "surface": "primary",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 4.61,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "소개:on-primary/primary",
+    "서비스:on-primary/primary",
+    "문의:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-base-transparent-primary-768": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 4.61,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-transparent-primary-390": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 4.61,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-transparent-surface-1280": {
+  "surface": "surface",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "소개:ink/surface",
+    "서비스:ink/surface",
+    "문의:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-base-transparent-surface-768": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-transparent-surface-390": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-transparent-bg-1280": {
+  "surface": "bg",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-base-transparent-bg-768": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-transparent-bg-390": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-base-biz-extended-map-1280": {
+  "n": 4,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-base-biz-extended-map-390": {
+  "n": 4,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-base-minimal-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 6.06,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-base-minimal-390": {
+  "n": 3,
+  "bad": [],
+  "min": 6.06,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-base-minimal-biz-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-base-minimal-biz-390": {
+  "n": 3,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-alt-sticky-hamburger-1280": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-sticky-hamburger-768": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-sticky-hamburger-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-sticky-two-tier-1280": {
+  "bar": {
+   "n": 6,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-alt-sticky-two-tier-768": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-sticky-two-tier-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 6,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-transparent-primary-1280": {
+  "surface": "primary",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 4.61,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "소개:on-primary/primary",
+    "서비스:on-primary/primary",
+    "문의:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-alt-transparent-primary-768": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 4.61,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-transparent-primary-390": {
+  "surface": "primary",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 4.61,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-transparent-surface-1280": {
+  "surface": "surface",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "소개:ink/surface",
+    "서비스:ink/surface",
+    "문의:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-alt-transparent-surface-768": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-transparent-surface-390": {
+  "surface": "surface",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "rings": [
+    "메뉴:ink/surface"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-transparent-bg-1280": {
+  "surface": "bg",
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null
+ },
+ "colors-dark-alt-transparent-bg-768": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-transparent-bg-390": {
+  "surface": "bg",
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  }
+ },
+ "colors-dark-alt-biz-extended-map-1280": {
+  "n": 4,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-alt-biz-extended-map-390": {
+  "n": 4,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "bg/ink"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-alt-minimal-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 6.06,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-alt-minimal-390": {
+  "n": 3,
+  "bad": [],
+  "min": 6.06,
+  "pairs": [
+   "muted/bg",
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-alt-minimal-biz-1280": {
+  "n": 3,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "colors-dark-alt-minimal-biz-390": {
+  "n": 3,
+  "bad": [],
+  "min": 20.08,
+  "pairs": [
+   "ink/bg"
+  ],
+  "rings": [],
+  "badRings": []
+ },
+ "map-1280": {
+  "address": {
+   "x": 96,
+   "y": 3186.3,
+   "w": 457.5,
+   "h": 19.2,
+   "bottom": 3205.5
+  },
+  "links": {
+   "x": 96,
+   "y": 3221.5,
+   "w": 616,
+   "h": 19.2,
+   "bottom": 3240.7
+  },
+  "figure": {
+   "x": 744,
+   "y": 3186.3,
+   "w": 440,
+   "h": 330.5,
+   "bottom": 3516.8
+  },
+  "copy": {
+   "x": 96,
+   "y": 3549.8,
+   "w": 1088,
+   "h": 19.2,
+   "bottom": 3569
+  },
+  "mapBorder": {
+   "borderTopColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderRadius": "8px"
+  },
+  "root": {
+   "backgroundColor": "rgb(26, 26, 26)",
+   "borderTopWidth": "0px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(252, 251, 248)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "48px",
+   "paddingBottom": "48px"
+  },
+  "ul": {
+   "color": "rgb(252, 251, 248)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-start",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(252, 251, 248)",
+   "fontSize": "12.8px",
+   "whiteSpace": "pre-line",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "map-768": {
+  "address": {
+   "x": 16,
+   "y": 2717.4,
+   "w": 352,
+   "h": 19.2,
+   "bottom": 2736.6
+  },
+  "links": {
+   "x": 16,
+   "y": 2752.6,
+   "w": 352,
+   "h": 19.2,
+   "bottom": 2771.8
+  },
+  "figure": {
+   "x": 400,
+   "y": 2717.4,
+   "w": 352,
+   "h": 264.5,
+   "bottom": 2981.9
+  },
+  "copy": {
+   "x": 16,
+   "y": 3014.9,
+   "w": 736,
+   "h": 19.2,
+   "bottom": 3034.1
+  },
+  "mapBorder": {
+   "borderTopColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderRadius": "8px"
+  },
+  "root": {
+   "backgroundColor": "rgb(26, 26, 26)",
+   "borderTopWidth": "0px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(252, 251, 248)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "48px",
+   "paddingBottom": "48px"
+  },
+  "ul": {
+   "color": "rgb(252, 251, 248)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-start",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(252, 251, 248)",
+   "fontSize": "12.8px",
+   "whiteSpace": "pre-line",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "map-390": {
+  "address": {
+   "x": 16,
+   "y": 2702.3,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2721.5
+  },
+  "links": {
+   "x": 16,
+   "y": 2737.5,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2756.6
+  },
+  "figure": {
+   "x": 16,
+   "y": 2772.6,
+   "w": 358,
+   "h": 269,
+   "bottom": 3041.6
+  },
+  "copy": {
+   "x": 16,
+   "y": 3074.6,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 3093.8
+  },
+  "mapBorder": {
+   "borderTopColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderRadius": "8px"
+  },
+  "root": {
+   "backgroundColor": "rgb(26, 26, 26)",
+   "borderTopWidth": "0px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(252, 251, 248)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "48px",
+   "paddingBottom": "48px"
+  },
+  "ul": {
+   "color": "rgb(252, 251, 248)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "normal",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(252, 251, 248)",
+   "fontSize": "12.8px",
+   "whiteSpace": "pre-line",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "map-off-1280": {
+  "address": {
+   "x": 96,
+   "y": 3268.3,
+   "w": 457.5,
+   "h": 19.2,
+   "bottom": 3287.5
+  },
+  "links": {
+   "x": 1035.3,
+   "y": 3268.3,
+   "w": 148.8,
+   "h": 19.2,
+   "bottom": 3287.5
+  },
+  "figure": null,
+  "copy": {
+   "x": 96,
+   "y": 3320.5,
+   "w": 1088,
+   "h": 19.2,
+   "bottom": 3339.7
+  },
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(26, 26, 26)",
+   "borderTopWidth": "0px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(252, 251, 248)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "48px",
+   "paddingBottom": "48px"
+  },
+  "ul": {
+   "color": "rgb(252, 251, 248)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-end",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(252, 251, 248)",
+   "fontSize": "12.8px",
+   "whiteSpace": "pre-line",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "map-off-390": {
+  "address": {
+   "x": 16,
+   "y": 2812.3,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2831.5
+  },
+  "links": {
+   "x": 16,
+   "y": 2847.5,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2866.6
+  },
+  "figure": null,
+  "copy": {
+   "x": 16,
+   "y": 2899.6,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2918.8
+  },
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(26, 26, 26)",
+   "borderTopWidth": "0px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(252, 251, 248)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "48px",
+   "paddingBottom": "48px"
+  },
+  "ul": {
+   "color": "rgb(252, 251, 248)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "normal",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(252, 251, 248)",
+   "fontSize": "12.8px",
+   "whiteSpace": "pre-line",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "min-minimal-1280": {
+  "address": null,
+  "links": {
+   "x": 1035.3,
+   "y": 3163.3,
+   "w": 148.8,
+   "h": 19.2,
+   "bottom": 3182.5
+  },
+  "figure": null,
+  "copy": {
+   "x": 96,
+   "y": 3163.3,
+   "w": 72.4,
+   "h": 19.2,
+   "bottom": 3182.5
+  },
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(110, 110, 110)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "row",
+   "justifyContent": "space-between",
+   "paddingTop": "24px",
+   "paddingBottom": "24px"
+  },
+  "ul": {
+   "color": "rgb(26, 26, 26)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-end",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(110, 110, 110)",
+   "fontSize": "12.8px",
+   "whiteSpace": "normal",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "min-minimal-768": {
+  "address": null,
+  "links": {
+   "x": 603.3,
+   "y": 2694.4,
+   "w": 148.8,
+   "h": 19.2,
+   "bottom": 2713.6
+  },
+  "figure": null,
+  "copy": {
+   "x": 16,
+   "y": 2694.4,
+   "w": 72.4,
+   "h": 19.2,
+   "bottom": 2713.6
+  },
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(110, 110, 110)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "row",
+   "justifyContent": "space-between",
+   "paddingTop": "24px",
+   "paddingBottom": "24px"
+  },
+  "ul": {
+   "color": "rgb(26, 26, 26)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-end",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(110, 110, 110)",
+   "fontSize": "12.8px",
+   "whiteSpace": "normal",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "min-minimal-390": {
+  "address": null,
+  "links": {
+   "x": 16,
+   "y": 2714.5,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2733.6
+  },
+  "figure": null,
+  "copy": {
+   "x": 16,
+   "y": 2679.3,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2698.5
+  },
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(110, 110, 110)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "24px",
+   "paddingBottom": "24px"
+  },
+  "ul": {
+   "color": "rgb(26, 26, 26)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "normal",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(110, 110, 110)",
+   "fontSize": "12.8px",
+   "whiteSpace": "normal",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "min-minimal-biz-1280": {
+  "address": {
+   "x": 96,
+   "y": 3163.3,
+   "w": 915.3,
+   "h": 19.2,
+   "bottom": 3182.5
+  },
+  "links": {
+   "x": 1035.3,
+   "y": 3163.3,
+   "w": 148.8,
+   "h": 19.2,
+   "bottom": 3182.5
+  },
+  "figure": null,
+  "copy": null,
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(110, 110, 110)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "row",
+   "justifyContent": "space-between",
+   "paddingTop": "24px",
+   "paddingBottom": "24px"
+  },
+  "ul": {
+   "color": "rgb(26, 26, 26)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-end",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(26, 26, 26)",
+   "fontSize": "12.8px",
+   "whiteSpace": "normal",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "min-minimal-biz-768": {
+  "address": {
+   "x": 16,
+   "y": 2694.4,
+   "w": 563.3,
+   "h": 19.2,
+   "bottom": 2713.6
+  },
+  "links": {
+   "x": 603.3,
+   "y": 2694.4,
+   "w": 148.8,
+   "h": 19.2,
+   "bottom": 2713.6
+  },
+  "figure": null,
+  "copy": null,
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(110, 110, 110)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "row",
+   "justifyContent": "space-between",
+   "paddingTop": "24px",
+   "paddingBottom": "24px"
+  },
+  "ul": {
+   "color": "rgb(26, 26, 26)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "flex-end",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(26, 26, 26)",
+   "fontSize": "12.8px",
+   "whiteSpace": "normal",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "min-minimal-biz-390": {
+  "address": {
+   "x": 16,
+   "y": 2679.3,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2698.5
+  },
+  "links": {
+   "x": 16,
+   "y": 2714.5,
+   "w": 358,
+   "h": 19.2,
+   "bottom": 2733.6
+  },
+  "figure": null,
+  "copy": null,
+  "mapBorder": null,
+  "root": {
+   "backgroundColor": "rgb(252, 251, 248)",
+   "borderTopWidth": "1px",
+   "borderTopStyle": "solid",
+   "borderTopColor": "rgb(110, 110, 110)",
+   "paddingTop": "0px"
+  },
+  "line": {
+   "display": "flex",
+   "flexDirection": "column",
+   "justifyContent": "normal",
+   "paddingTop": "24px",
+   "paddingBottom": "24px"
+  },
+  "ul": {
+   "color": "rgb(26, 26, 26)",
+   "fontWeight": "700",
+   "fontSize": "12.8px",
+   "display": "flex",
+   "justifyContent": "normal",
+   "columnGap": "16px"
+  },
+  "lead": {
+   "color": "rgb(26, 26, 26)",
+   "fontSize": "12.8px",
+   "whiteSpace": "normal",
+   "fontStyle": "normal"
+  },
+  "overflowX": 0
+ },
+ "long200-sticky-hamburger": {
+  "390": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 390,
+    "vw": 390
+   }
+  },
+  "768": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 768,
+    "vw": 768
+   }
+  },
+  "1280": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 1280,
+    "vw": 1280
+   }
+  }
+ },
+ "long200-sticky-two-tier": {
+  "390": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 390,
+    "vw": 390
+   }
+  },
+  "768": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 768,
+    "vw": 768
+   }
+  },
+  "1280": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  }
+ },
+ "long200-transparent": {
+  "390": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 390,
+    "vw": 390
+   }
+  },
+  "768": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": {
+    "widerInSheet": 0,
+    "sheetRight": 768,
+    "vw": 768
+   }
+  },
+  "1280": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  }
+ },
+ "long200-biz-extended-map": {
+  "390": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  },
+  "768": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  },
+  "1280": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  }
+ },
+ "long200-minimal": {
+  "390": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  },
+  "768": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  },
+  "1280": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  }
+ },
+ "long200-minimal-biz": {
+  "390": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  },
+  "768": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  },
+  "1280": {
+   "closed": {
+    "overflowX": 0,
+    "wider": [],
+    "ellipsis": 0
+   },
+   "open": null
+  }
+ },
+ "qb13-sticky-hamburger-1280": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "overflowX": 0
+ },
+ "qb13-sticky-hamburger-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "overflowX": 0
+ },
+ "qb13-sticky-two-tier-1280": {
+  "bar": {
+   "n": 6,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-sticky-two-tier-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "메뉴:ink/bg"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 6,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "overflowX": 0
+ },
+ "qb13-transparent-1280": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 5.91,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "소개:on-primary/primary",
+    "서비스:on-primary/primary",
+    "문의:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-transparent-390": {
+  "bar": {
+   "n": 2,
+   "bad": [],
+   "min": 5.91,
+   "pairs": [
+    "on-primary/primary"
+   ],
+   "rings": [
+    "메뉴:on-primary/primary"
+   ],
+   "badRings": []
+  },
+  "sheet": {
+   "n": 4,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [
+    "닫기:ink/bg",
+    "소개:ink/bg",
+    "서비스:ink/bg",
+    "문의:ink/bg"
+   ],
+   "badRings": []
+  },
+  "overflowX": 0
+ },
+ "qb13-biz-extended-map-1280": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "bg/ink"
+   ],
+   "rings": [],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-biz-extended-map-390": {
+  "bar": {
+   "n": 4,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "bg/ink"
+   ],
+   "rings": [],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-minimal-1280": {
+  "bar": {
+   "n": 3,
+   "bad": [],
+   "min": 7.66,
+   "pairs": [
+    "muted/bg",
+    "ink/bg"
+   ],
+   "rings": [],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-minimal-390": {
+  "bar": {
+   "n": 3,
+   "bad": [],
+   "min": 7.66,
+   "pairs": [
+    "muted/bg",
+    "ink/bg"
+   ],
+   "rings": [],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-minimal-biz-1280": {
+  "bar": {
+   "n": 3,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "qb13-minimal-biz-390": {
+  "bar": {
+   "n": 3,
+   "bad": [],
+   "min": 16.46,
+   "pairs": [
+    "ink/bg"
+   ],
+   "rings": [],
+   "badRings": []
+  },
+  "sheet": null,
+  "overflowX": 0
+ },
+ "static-hamburger-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-hamburger-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-hamburger-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-two-tier-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 551.7,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 260.2,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 259.8,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 259.8,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-two-tier-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 396.2,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 259.8,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 259.8,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 259.9,
+    "headerBottom": 84.2,
+    "ok": true,
+    "smt": "164px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-two-tier-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 212.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 211.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 212.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 211.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "164px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-two-tier-nonav-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 551.7,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 260.2,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 259.8,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 259.8,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-two-tier-nonav-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 396.2,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 259.8,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 259.8,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 259.9,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-two-tier-nonav-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 211.8,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 212,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 211.8,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 212,
+    "headerBottom": 65.2,
+    "ok": true,
+    "smt": "164px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-primary-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": -356,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": -1208,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1602,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": -2023,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-primary-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": -292,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": -834,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1228,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": -1649,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-primary-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": -107,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": -738,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": -1226,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": -1525.5,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-surface-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": -732,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": -1584,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1978,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": -2399,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-surface-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": -422,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": -964,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1358,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": -1779,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-surface-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": -399.5,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": -1030.5,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": -1518.5,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": -1818,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-media-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": -600,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": -1452,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1846,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": -2267,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-media-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": -340,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": -882,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1276,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": -1697,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-media-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": -335.5,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": -966.5,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": -1454.5,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": -1754,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-edge-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 448.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": -732,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -1126,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": -1547,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-edge-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 293.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": -422,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": -816,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": -1237,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-clear-edge-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 109,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": -511,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168,
+    "headerBottom": -999,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": -1298.5,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-map-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-map-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-map-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-minimal-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 238.6,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-minimal-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-minimal-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-minimal-biz-1280": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 507.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 238.6,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-minimal-biz-768": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 352.5,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 216.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 216.2,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ },
+ "static-minimal-biz-390": {
+  "same": true,
+  "diff": null,
+  "anchorsOk": true,
+  "anchors": [
+   {
+    "id": "s-s-about",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-services",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-faq",
+    "h2Top": 168.1,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   },
+   {
+    "id": "s-s-contact",
+    "h2Top": 167.8,
+    "headerBottom": 61,
+    "ok": true,
+    "smt": "120px"
+   }
+  ],
+  "scripts": 1
+ }
+}

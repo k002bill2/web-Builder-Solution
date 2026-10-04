@@ -1,0 +1,15 @@
+PASS KB-AC-01 — 1280 버튼 true · 바 nav 0 · 닫힘 nav 0 → 열림 true nav 1 / 768 버튼 true · 바 nav 0 · 닫힘 nav 0 → 열림 true nav 1 / 390 버튼 true · 바 nav 0 · 닫힘 nav 0 → 열림 true nav 1
+PASS KB-AC-02 — 1280 right 1280/1280 · 폭 426.7(4/12=426.7) · 768 폭 384(6/12=384.0) right 768 · 390 폭 390/390
+PASS KB-AC-04 — 1280 보조 줄 true · 바 nav true · 버튼 none / 768 보조 줄 true · 버튼 true · 시트 BUTTON,NAV>nav / 390 보조 줄 false · 시트 BUTTON,NAV>nav,HR,UL[utility] · nav 보임 최대 1
+PASS KB-AC-06 — two-tier 390·1280 × 본문 4 제목 위 끝 ≥ header 아래 끝 — 최소 여유 150.8 · scroll-margin-top 164px (sticky-right-cta 120px) · hamburger도 true
+PASS KB-AC-08 — position static · 겹침 최대 0 (5문서 × 3폭) · 면 이음(header 배경 = 다음 섹션 배경): true · 구분선 none만 none
+PASS KB-AC-09 — transparent 면 3종 × 프로필 2 × 톤 2 × 3폭: 바 글자 쌍 = 면 primary → on-primary/primary · surface → ink/surface · bg → ink/bg / 열린 시트(768·390) = ink/bg만 · 링 on-primary/primary,ink/bg,ink/surface
+PASS KB-AC-34 — 84개 측정(프로필 light·dark × 톤 base·alt × header 3(transparent 면 3) × 폭 · footer 3 × 1280·390) 글자 488개 허용 밖 쌍 0 · 최소 대비 4.61
+PASS KB-AC-24 — 1280 글 칸 x 96 · 지도 칸 x 744 폭 440 같은 행 · 768 지도 폭 352 · 390 y 사업자정보 2702.3 → 링크 2737.5 → 지도 2772.6 → 저작권 3074.6 · 지도 경계 1px rgb(252, 251, 248)
+PASS KB-AC-25 — map 꺼짐 1280 figure 0 · 사업자정보 y 3268.3 · 링크 y 3268.3 같은 행(x 96 / 1035.3)
+PASS KB-AC-26 — 3폭 면 bg · 위 경계 1px solid muted · 링크 ink · 저작권 muted
+PASS KB-AC-29 — minimal ↔ minimal-biz 3폭 루트 background·border-top · 링크 목록 계산 스타일 · 래퍼 배치 같음 · 사업자정보 ink
+PASS KB-AC-31 — 6변형 상한 글자 + 200% × 3폭(header는 열린 시트 포함) 가로 넘침 0 · 밖 요소 0 · 말줄임 0
+PASS KB-AC-35 — 30건(10문서 × 3폭) 정적 HTML 계산 스타일 = 캔버스(header position·면·글자·버튼·보조 줄·scroll-margin-top · footer 면·경계·배치·지도 칸) · 앵커 이동 뒤 제목이 header 아래 · script 1
+PASS QB-13 — bright 프로필 6변형 × 1280·390 허용 밖 쌍 0 · 넘침 0 (게이트 통과: true)
+PASS QB-14 — 정적 HTML 3 header × 3폭(버튼 보이는 7건): 실제 클릭 → 시트 열림(popovertarget) · Esc → 닫힘 · 시트 안 앵커 → 닫힘·hash 이동 · script 1 / 버튼 숨김 qb-2-two-tier-1280,qb-13-transparent-1280

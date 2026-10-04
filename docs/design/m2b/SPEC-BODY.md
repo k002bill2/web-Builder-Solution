@@ -506,3 +506,104 @@
 | ⑥ 예산 감각 | PASS | 새 컴포넌트 1(작음, `kitLinks` 재사용) — JS ≈ 0.20 · CSS ≈ 0.10 (L3) |
 | ⑦ 독자성 | PASS | 단색 띠 + 버튼은 일반 패턴 · 기본 문구는 엔진 자체 문장 |
 | ⑧ 근거 3 | 주의 | 일반 패턴: CTA band · WCAG 2.4.4·2.5.8 · 내부: 픽스처에 cta-band 태그 **없음** — hero CTA(K1-2)의 색 규칙과 엔진 정의만. 레퍼런스 태그 근거가 약하다 |
+
+## 2. 수용 기준 `KD-AC` (M2B-2 테스트로 옮길 관찰 문장)
+표기: [U] 단위·컴포넌트(jsdom) · [B] 실제 브라우저(1280·768·390 iframe 폭) · [G] 가드(파일 검사) · [V] 시각 QA. m2a K-AC-01~36은 기존 7변형에 그대로 유지되고, 아래는 본문 12변형에 더한다.
+
+**공통**
+| ID | 수용 기준 | 방법 |
+|---|---|---|
+| KD-AC-01 | 12변형 킷 파일에 `useState`·`useReducer`·`useEffect`·`useRef`·`on[A-Z]` prop 0 · 킷 CSS에 `transition`·`animation`·`scroll-behavior`·`vh`류 단위 0 · hex·px 리터럴 0 · 앱 DS 토큰 참조 0 (K-AC-01·07 확장) | [G] |
+| KD-AC-02 | 12변형 × 모든 글자 슬롯을 **상한 글자**로 채운 문서 + 글자 200% → **1280·768·390** 모두 `scrollWidth − clientWidth = 0` · 말줄임 계산 스타일 0 | [B] |
+| KD-AC-03 | 상한 글자 문서에서 모든 슬롯 글자가 `textContent`에 잘리지 않고 있다(입력 = 출력) · `items`는 나눈 조각의 합이 원문 조각과 같다 | [U] |
+| KD-AC-04 | 선택 슬롯 빈 값(services `intro`·portfolio `intro`·pricing `intro`·`planNBody`·cta-band `body`·contact/booking `intro`) → 해당 요소 0 · 빈 `p`·`li`·`ul`·`figure` 0 | [U] |
+| KD-AC-05 | 색 조합: 12변형 × 섹션 톤 `base`·`alt` × 카드 톤 `light`·`dark` 문서에서 모든 글자 요소의 (글자색, 가장 가까운 불투명 배경) 쌍이 C-1~C-5와 뒤집기 중 하나 · 불투명도 < 1 글자 0 · `primary` 글자는 `on-primary` 면 위(CTA 뒤집기)에만 (K-AC-11 확장) | [B] |
+| KD-AC-06 | **스크립트 0 추가**: 12변형이 든 문서의 정적 HTML에서 `script` = r4.12 고정 인라인 1개뿐(바이트 일치) · `on*` 속성 0 | [U] |
+| KD-AC-07 | **순서 = 문서 순서**: 12변형 킷 CSS에 `order`·`*-reverse`·`grid-area`/`grid-row`로 항목 재배치 0 · 항목 DOM 순서 = 슬롯 번호 순서 | [G]·[U] |
+| KD-AC-08 | 헤딩: 섹션마다 `h2` 1 · `h3`는 cards-2·cards-masonry(카드 제목)·pricing(요금제 이름)에만 · list·stats·testimonials·portfolio·cta-band·booking 안 `h3` 0 · 건너뛰기 0 | [U] |
+
+**변형별**
+| ID | 변형 | 수용 기준 | 방법 |
+|---|---|---|---|
+| KD-AC-09 | about/text | `figure` 0 · 글 묶음 최대 폭 = `prose-max` · 3폭 1단 · `about/story` 이미지 꺼짐 문서와 `data-section`만 다르고 마크업 같음 | [U]·[B] |
+| KD-AC-10 | services/list | `items` = `" 상담 ·· 진료 · \n 검사 "` → `li` 2개("상담"·"진료 검사"로 공백 접힘 — 줄바꿈은 구분자 아님) · 조각 0 → `ul` 0 · `ul[role=list]` · 1280 = 머리·목록 같은 행(2단) / 768 = 목록 `column-count` 2 / 390 = 1열 | [U]·[B] |
+| KD-AC-11 | services/cards-2 | `li` 2 · 1280·768 = 두 카드 같은 행·같은 높이 / 390 = 2행 · 카드 면 규칙 = K-AC-26 | [U]·[B] |
+| KD-AC-12 | services/cards-masonry | 목록 계산 스타일 `column-count` = 2(1280·768) · 1열(390) · 카드 `break-inside: avoid` · 내용 길이가 다른 카드는 높이가 다르다(행 늘이기 0) · `li` DOM 순서 1·2·3 — **어느 단에 놓이는지는 단언하지 않는다** | [B] |
+| KD-AC-13 | portfolio 공통 | `figure` 수 = 켜진 이미지 수 · 그라디언트 칸 `figure[aria-hidden=true]` + `img` 0 · 로컬 이미지 칸 `img[alt=슬롯 alt]`(장식 = `alt=""`) + `width`·`height` · `ul`·`figcaption` 0 · 셋 다 꺼짐 → 갤러리 요소 0 | [U] |
+| KD-AC-14 | portfolio/grid-3 · grid-2 | 칸 열 수 3 · 2(1280·768) / 1(390) · 칸 비율 = `media_ratio`(없으면 4:5) ±1% · 칸 하나 꺼짐 → 남은 칸 크기 그대로(열 트랙 유지) | [B] |
+| KD-AC-15 | portfolio/masonry | `column-count` 2(1280·768) / 1열(390) · 칸 비율 `image1` 1:1 · `image2` 16:9 · `image3` 4:5 ±1%(프로필 `media_ratio`와 무관) · DOM 순서 1·2·3 | [B] |
+| KD-AC-16 | statistics/stats-3 | `li` 안 순서 수치 → 설명 · `dl`·`h3` 0 · 수치 글자 = 슬롯 그대로(서식 0) · 시험 프로필(픽스처 scale)에서 수치 `"1,234,567,89"`가 **1280·768·390 모두 한 줄**(요소 높이 ≤ 계산된 줄 높이 × 1.1) · 1280·768 = 세 칸 같은 행 / 390 = 세로 3행 · `statNValue` 빈 값 → 그 `li` 0 | [U]·[B] |
+| KD-AC-17 | testimonials/quotes-2 | `li > figure > blockquote + figcaption` · `cite` 요소 0 · `blockquote[cite]` 0 · 작성자 글자가 `blockquote` 밖 · `quoteN` 빈 값 → 그 `li` 0 · `authorN` 빈 값 → `figcaption` 0 · 1280·768 2열 / 390 1열 · 카드 안 `muted` 글자 0 | [U]·[B] |
+| KD-AC-18 | pricing/tiers-2 | 가격 `"문의"`(1번)와 `"99,000"`(2번) 문서에서 두 카드의 면·경계·안쪽 여백·가격 글자 크기·굵기·색 계산값이 같다 · 추천 표식·카드별 버튼 0 · 가격 글자색 = `ink` · 킷이 붙인 글자(통화·단위) 0 | [U]·[B] |
+| KD-AC-19 | contact/booking | 보이는 `label`이 `for`/`id`로 "이름"·"연락처"·"희망 날짜"·"희망 시간"·"요청 사항 (선택)"에 연결 · `legend` "예약 양식" · 안내 문구가 `fieldset` `aria-describedby` 대상이고 글자 = 1절 고정 문구 · 입력 `type` = text·tel·text·text + `textarea` · `type=date`·`time` 0 · `placeholder` 0 · `form[action]` 0 · 모든 칸·버튼이 `fieldset[disabled]` 안 (K-AC-08·29 확장) | [U] |
+| KD-AC-20 | contact/booking | 1280 = 글·폼 2단 · 날짜·시간 같은 행 / 768 = 1단 · 날짜·시간 같은 행 / 390 = 모두 세로 · 비활성 칸 글자색 = `ink`·불투명도 1 · 정적 HTML에서 Enter·버튼 → 이동·요청 0 | [B] |
+| KD-AC-21 | cta-band/banner | 섹션 면 = `primary`(톤 `base`·`alt` 둘 다) · 제목·본문 `on-primary` · CTA 면 `on-primary`·글자 `primary` · CTA `href` = 첫 contact 앵커(`form`·`booking` 무관) → 없으면 footer 앵커 → 없으면 `a` 0 + 버튼 모양 `span` · `href="#"` 0 · 1280·768 = 글·CTA 같은 행 / 390 = CTA 전체 폭, 글 아래 | [U]·[B] |
+
+(KD-AC 번호는 이 명세 안에서만 쓰는 식별자. 빈 번호 없음: 01~21.)
+
+## 3. M2B-2 시각 QA 대조 항목 (1280 · 768 · 390)
+기준 문서: 12변형을 모두 넣은 시험 문서 1벌(톤 `base`/`alt` 교대, R-05) + 카드 톤 `dark` 프로필 1벌. 비교 기준 = 이 명세 + 시안 캡처 `docs/design/m2b/body/shots/mock-{1280,768,390}.png`(시안은 구조·위계 기준, px 값 기준 아님 — ADR-003).
+| # | 볼 것 | 1280 | 768 | 390 |
+|---|---|---|---|---|
+| QB-1 | about/text: 글이 `prose-max`에서 끊기고 왼쪽 정렬 · 이미지 자리 빈칸 없음 | 1단 | 1단 | 1단 |
+| QB-2 | services/list: 구분선 목록 · 항목 굵기 · 머리와의 배치 | 2단 | 목록 2열 | 1열 |
+| QB-3 | services/cards-2: 두 카드 같은 높이 · 카드 면이 섹션 면과 구분 | 2열 | 2열 | 1열 |
+| QB-4 | services/cards-masonry: 엇갈린 높이(행 늘이기 없음) · 단 사이 간격 · 카드가 단 경계에서 잘리지 않음 | 2단 | 2단 | 1열 |
+| QB-5 | portfolio/grid-3: 세 칸 같은 비율 · 그라디언트 방향 · 칸 하나 끈 상태 1장 | 3열 | 3열 | 1열 |
+| QB-6 | portfolio/grid-2: 큰 두 칸 — `4:5`일 때 세로 길이가 과하지 않은지(과하면 MQ) | 2열 | 2열 | 1열 |
+| QB-7 | portfolio/masonry: 1:1·16:9·4:5 칸이 엇갈림 · 칸이 단 경계에서 잘리지 않음 | 2단 | 2단 | 1열 |
+| QB-8 | statistics/stats-3: 수치가 가장 먼저 보임 · 12자 수치 한 줄 · 세로 구분선(장식) | 3칸 | 3칸(작은 수치) | 세로 |
+| QB-9 | testimonials/quotes-2: 인용 카드 · 작성자 위치(카드 아래) · 별점·사진 없음 | 2열 | 2열 | 1열 |
+| QB-10 | pricing/tiers-2: 두 요금제가 동등(강조 없음) · "문의" 가격이 숫자 가격과 같은 모양 | 2열 | 2열 | 1열 |
+| QB-11 | contact/booking: 안내가 폼 위에서 읽힘 · 비활성인데 흐리지 않음 · 날짜·시간 묶음 | 2단 | 1단(날짜·시간 2칸) | 1단 |
+| QB-12 | cta-band/banner: 전체 폭 `primary` 띠 · CTA 뒤집기 · 포커스 링 보임 | 한 줄 | 한 줄 | 세로 |
+| QB-13 | 톤 교대 시 alt 섹션에 `muted` 글자 없음 · cta-band는 톤 무관 | ✓ | ✓ | ✓ |
+| QB-14 | 카드 톤 `dark` 프로필에서 cards-2·masonry·quotes·pricing 카드가 `primary` 면 + `ink` 글자(C-3 통과 버전) | ✓ | ✓ | ✓ |
+| QB-15 | 상한 글자 + 글자 200% 문서에서 넘침·겹침 없음 | ✓ | ✓ | ✓ |
+- 스크린샷 위치(제안): `dev/active/<M2B-2 레인>/shots/qb-<번호>-<폭>.png`. 시안·명세와 다르게 한 곳은 REPORT 한 줄씩(ADR-003).
+
+## 4. 예산 추정 (렌더 문서 · gzip KB)
+기준(L1): 렌더 문서 JS **80.12 / 90**(멈춤선 **89.70**, 여유 **9.58**) · CSS **6.32 / 30**(`docs/04-plan/M2B_PLAN.md`). M2a 본문 4변형 실측 **JS +1.03 · CSS +0.72**(78.86 → 79.89 / 5.76 → 6.48, 폰트 제거 전 — `dev/active/m2a-2b/REPORT.md` 6절) = 변형당 JS ≈ 0.26 · CSS ≈ 0.18. 아래 변형별 값은 **L3 추정**(공유 구조 반영). M2B-2는 시작 때 변형 1개 시제품으로 실측해 이 표를 고친다(계획 3절).
+
+| 변형 | 공유 | JS 증가 | CSS 증가 |
+|---|---|---|---|
+| about/text | `AboutStory` 그대로(이미지 슬롯 없음 = 1단) — 레지스트리 1줄 | 0.02 | 0 |
+| services/list | 새 컴포넌트(작음) · `splitItems` 재사용 | 0.20 | 0.12 |
+| services/cards-2 | `ServicesCards3`를 카드 번호 목록 매개변수로 일반화 | 0.03 | 0.03 |
+| services/cards-masonry | 같은 컴포넌트 + `data-layout` CSS | 0.02 | 0.05 |
+| portfolio grid-3 · masonry · grid-2 | **갤러리 컴포넌트 1개** 공유(열 수·배치·칸 비율만 다름) · `Media` 재사용 | 0.30(3변형 합) | 0.15(3변형 합) |
+| statistics/stats-3 | 새 컴포넌트(작음) | 0.20 | 0.12 |
+| testimonials/quotes-2 | 새 컴포넌트 · 카드 면 CSS 재사용 | 0.22 | 0.08 |
+| pricing/tiers-2 | cards 컴포넌트에 "가격 줄" 선택 칸 추가 또는 새 컴포넌트 | 0.20 | 0.06 |
+| contact/booking | `ContactForm`을 필드 설정 배열 + 고정 문구 매개변수로 공유 | 0.15 | 0.04 |
+| cta-band/banner | 새 컴포넌트(작음) · `kitLinks` 재사용 | 0.20 | 0.10 |
+| **본문 12 합계** | | **≈ 1.54** | **≈ 0.75** |
+| (참고) 공유 없이 단순 곱 | 12 × 0.26 / 12 × 0.18 | 3.12 | 2.16 |
+
+- 본문 몫 예상: JS 80.12 → **약 81.7**(공유) ~ 83.2(공유 없음) · CSS 6.32 → 약 7.1 ~ 8.5. **같은 여유 9.58을 M2B-0A(바깥 11변형)·M2B-4(모션 — CSS 우선, JS 0 목표)가 함께 쓴다.** 바깥 11이 같은 단순 곱(11 × 0.26 ≈ 2.9)이면 합 ≈ 86.1 — 멈춤선 아래, 여유 ≈ 3.6(L3).
+- 멈춤 조건(계획 3절 그대로): M2B-2 시제품 실측으로 본문 12의 끝 예상치가 0A 실측을 더해 89.70을 넘으면 구현 전에 멈춘다. 공유 구조(위 "공유" 열)가 첫 절감 수단이다.
+- 앱 `/studio` 진입 증가 0(킷 코드는 렌더 문서에만 — 섹션 정의 데이터는 이미 있음).
+
+## 5. MQ (Jarvis 기록 요청)
+| ID | 내용 | 권장 | 막는가 |
+|---|---|---|---|
+| MQ-B1 | services/list `items`의 줄바꿈을 구분자로도 쓸지(사용자가 줄마다 적을 수 있음) | **A: 지금처럼 `·`만**(m2a 0.10과 한 규칙·한 함수) + 편집기 필드 도움말 "가운뎃점(·)으로 나눕니다"(앱 화면 쪽) | 아니오 |
+| MQ-B2 | 이 문서 0.2의 공통 규칙 5개(3폭 표 · 벽돌형 CSS만 · 갤러리 `figure` · 카드 면 공통 · 고정 문구 목록)를 m2a 0절에 올릴지 | 0A와 겹치는 것(3폭 표)만 m2a 0.6에 올리고 나머지는 이 문서에 둠 | 아니오 |
+| MQ-B3 | 로컬 이미지의 원본 가로세로 크기 메타데이터(벽돌형에서 원본 비율 보존 · `width`·`height` 실제값) | M2c(이미지 업로드 변환)와 함께. 지금은 칸 비율 고정 배열 | 아니오 |
+| MQ-B4 | 예약 섹션의 사이트 주인용 안내 문구(편집 패널 `Callout`) — K2 문구 2의 "문의"를 "예약"으로(B1-11 끝) | 앱 화면 쪽 별건(M2B-2 또는 편집기 레인) | 아니오 |
+| MQ-B5 | testimonials에서 브리프의 "`cite`"를 쓰지 않고 `figure > blockquote + figcaption`(WHATWG: `cite`는 작품 제목, 사람 이름 아님) | 이 명세대로 | 아니오 |
+| MQ-B6 | contact/booking 날짜·시간 칸 `type=text` — 받는 곳 연결(K2 B안 · 기존 MQ-6) 때 `date`/`time`으로 바꿀지 그 결정에 포함 | MQ-6에 합침 | 아니오 |
+| MQ-B7 | statistics·cta-band는 내부 레퍼런스 태그 근거가 없다(픽스처 6건에 해당 섹션 0 — 루브릭 ⑧ 주의) | 카탈로그 보강(M3′) 때 태그 추가 · 지금은 일반 패턴·WCAG 근거로 진행 | 아니오 |
+- 킷 고정 문구 새로 추가(전부 B1-11): "이름" · "연락처" · "희망 날짜" · "희망 시간" · "요청 사항 (선택)" · "예약 양식" · "온라인 예약은 준비 중입니다. 지금은 이 양식으로 예약할 수 없습니다." — 나머지 11변형은 고정 문구 0.
+- 킷 토큰(`--site-*`) 새 변수 0 — 12변형 모두 기존 단계(0.4·0.5)와 `--kit-soft`·`--kit-card-face`로 그린다. 열 수·다단은 변형 CSS 안의 값이다.
+
+## 부록 A. 대비 근거 (L2)
+- **킷 글자 조합**: 12변형 모두 C-1~C-5와 뒤집기 안(각 절 3) — 새 조합 0. 따라서 m2a 부록 A(`docs/design/m2a/logs/contrast_calc_m2a.out.txt`)의 결론 "게이트 통과 = 킷 글자 AA"가 그대로 성립한다. 금지 조합(`primary` 글자 on `bg`/`surface` · `muted` on `surface`/`primary`/`ink`)을 쓰지 않은 곳: stats 수치 · pricing 가격 · testimonials 작성자 · cta-band 글자.
+- **시안 팔레트**(자체 값 — 어느 사이트도 아님): `python3 -B docs/design/m2b/body/contrast_mock.py` → `docs/design/m2b/body/logs/contrast_mock.out.txt`. 식 = `app/src/domain/contrast.ts`(상대 휘도 · 문턱 0.04045) · 버림 2자리. **C-1 8.61 · C-2 15.44 · C-4 13.30 · C-5 5.96 = 통과** · C-3 1.90은 카드 톤 `dark` 전용 검사라 시안(카드 `light`)에서 쓰지 않음(어두운 카드 시각 확인은 QB-14, 게이트 통과 프로필로).
+
+## 변경 이력
+| 판 | 내용 |
+|---|---|
+| r0 | 0절 상속 · B1-1~4 |
+| r1 | B1-5~8 · B1-9~12 |
+| r2 | 2 KD-AC · 3 시각 QA · 4 예산 · 5 MQ · 부록 A |

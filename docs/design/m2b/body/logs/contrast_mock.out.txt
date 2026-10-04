@@ -1,0 +1,5 @@
+C-1 on-primary/primary = 8.61 PASS
+C-2 ink/bg = 15.44 PASS
+C-3 ink/primary = 1.90 FAIL (카드 dark 전용 — 시안 미사용)
+C-4 ink/surface = 13.30 PASS
+C-5 muted/bg = 5.96 PASS

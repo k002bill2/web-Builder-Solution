@@ -3,7 +3,7 @@
 - 책임 Designer · 브리프 `docs/06-handoff/M2B-0B_KIT-SPEC-BODY_DESIGNER_BRIEF.md` · 계획 `docs/04-plan/M2B_PLAN.md` · 시작 커밋 `a3bd614` · 2026-10-04
 - 입력이 되는 다음 단계: **M2B-2**(Developer 본문 12변형 구현) · M2B-3(모션 프리셋 — 각 절 7의 "모션 후보") · M2B-6(QA 30/30 · 3폭 시각 회귀)
 - 근거 수준: L1 = 코드·문서 직접 확인 · L2 = 스크립트 계산·브라우저 실측 · L3 = 추정·제안
-- 시안: `docs/design/m2b/body/mock-body.html`(외부 자원 0) · 캡처 `docs/design/m2b/body/shots/` · 로그 `docs/design/m2b/body/logs/`
+- 시안: `docs/design/m2b/body/mock-body.html`(외부 자원 0 · 스크립트 0) · 3폭 실측 로그 `docs/design/m2b/body/logs/mock-measure.out.json` · 캡처 PNG는 이 환경에서 BLOCKED(REPORT 5절)
 
 ## 0. 상속 · 이 문서의 규약
 
@@ -542,7 +542,7 @@
 (KD-AC 번호는 이 명세 안에서만 쓰는 식별자. 빈 번호 없음: 01~21.)
 
 ## 3. M2B-2 시각 QA 대조 항목 (1280 · 768 · 390)
-기준 문서: 12변형을 모두 넣은 시험 문서 1벌(톤 `base`/`alt` 교대, R-05) + 카드 톤 `dark` 프로필 1벌. 비교 기준 = 이 명세 + 시안 캡처 `docs/design/m2b/body/shots/mock-{1280,768,390}.png`(시안은 구조·위계 기준, px 값 기준 아님 — ADR-003).
+기준 문서: 12변형을 모두 넣은 시험 문서 1벌(톤 `base`/`alt` 교대, R-05) + 카드 톤 `dark` 프로필 1벌. 비교 기준 = 이 명세 + 시안 `docs/design/m2b/body/mock-body.html`(127.0.0.1에서 열어 3폭으로 볼 것 — 시안은 구조·위계 기준, 값 기준 아님 — ADR-003).
 | # | 볼 것 | 1280 | 768 | 390 |
 |---|---|---|---|---|
 | QB-1 | about/text: 글이 `prose-max`에서 끊기고 왼쪽 정렬 · 이미지 자리 빈칸 없음 | 1단 | 1단 | 1단 |
@@ -601,9 +601,27 @@
 - **킷 글자 조합**: 12변형 모두 C-1~C-5와 뒤집기 안(각 절 3) — 새 조합 0. 따라서 m2a 부록 A(`docs/design/m2a/logs/contrast_calc_m2a.out.txt`)의 결론 "게이트 통과 = 킷 글자 AA"가 그대로 성립한다. 금지 조합(`primary` 글자 on `bg`/`surface` · `muted` on `surface`/`primary`/`ink`)을 쓰지 않은 곳: stats 수치 · pricing 가격 · testimonials 작성자 · cta-band 글자.
 - **시안 팔레트**(자체 값 — 어느 사이트도 아님): `python3 -B docs/design/m2b/body/contrast_mock.py` → `docs/design/m2b/body/logs/contrast_mock.out.txt`. 식 = `app/src/domain/contrast.ts`(상대 휘도 · 문턱 0.04045) · 버림 2자리. **C-1 8.61 · C-2 15.44 · C-4 13.30 · C-5 5.96 = 통과** · C-3 1.90은 카드 톤 `dark` 전용 검사라 시안(카드 `light`)에서 쓰지 않음(어두운 카드 시각 확인은 QB-14, 게이트 통과 프로필로).
 
+## 부록 B. 시안 3폭 실측 (L2)
+`docs/design/m2b/body/mock-body.html`을 127.0.0.1:4341에서 ego-browser로 열고 폭을 `Emulation.setDeviceMetricsOverride`로 1280·768·390에 맞춰 계산 스타일·박스를 읽음(원문 `docs/design/m2b/body/logs/mock-measure.out.json`). 시안은 명세 규칙을 손으로 옮긴 것이라 **명세 규칙이 성립할 수 있다는 증거**이지 구현 검증이 아니다.
+| 확인 | 1280 | 768 | 390 |
+|---|---|---|---|
+| 가로 넘침 `scrollWidth − clientWidth` | 0 | 0 | 0 |
+| stats 12자 수치 "1,234,567,89" 한 줄(높이 = 줄 높이) | 39 = 39.06 | 31 = 31.25 | 31 = 31.25 |
+| stats 배치 | 3칸 같은 행 | 3칸 같은 행 | 세로 3행 |
+| services/list 목록 `column-count` | 1(2단 배치의 목록 칸) | 2 | auto(1열) |
+| cards-masonry · portfolio/masonry `column-count` | 2 · 2 | 2 · 2 | auto · auto |
+| 벽돌형 단 배정(Chromium, 참고 — 단언하지 않음) | 1·2 왼쪽 단 · 3 오른쪽 단 | 같음 | 1열 1→2→3 |
+| grid-3 · grid-2 · cards-2 열 수 | 3 · 2 · 2 | 3 · 2 · 2 | 1 · 1 · 1 |
+| pricing 두 카드(가격 "문의" vs "99,000") | 같은 폭·높이 | 같은 폭·높이 | 1열 |
+| booking 날짜·시간 | 같은 행 | 같은 행 | 세로 |
+| booking 비활성 칸 글자색 · 불투명도 | `ink` · 1 | 같음 | 같음 |
+| cta-band 글 · CTA | 같은 행(CTA 오른쪽) | 같은 행 | 세로(CTA 전체 폭) |
+| `script` 수 · 외부 요청 | 0 · 0 | 0 · 0 | 0 · 0 |
+
 ## 변경 이력
 | 판 | 내용 |
 |---|---|
 | r0 | 0절 상속 · B1-1~4 |
 | r1 | B1-5~8 · B1-9~12 |
 | r2 | 2 KD-AC · 3 시각 QA · 4 예산 · 5 MQ · 부록 A |
+| r3 | 부록 B 시안 3폭 실측(L2) |

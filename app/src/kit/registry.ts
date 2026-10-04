@@ -7,6 +7,7 @@ import { HeaderStickyRightCta } from "./HeaderStickyRightCta";
 import { HeroCenter } from "./HeroCenter";
 import { HeroFullbleedLeft } from "./HeroFullbleedLeft";
 import { HeroGrid } from "./HeroGrid";
+import { HeroImage } from "./HeroImage";
 import { HeroSplit } from "./HeroSplit";
 import { HeroText } from "./HeroText";
 import { ServicesCards3 } from "./ServicesCards3";
@@ -23,6 +24,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "hero/center": HeroCenter,
   "hero/grid": HeroGrid,
   "hero/text": HeroText,
+  "hero/image": HeroImage,
   "about/story": AboutStory,
   "services/cards-3": ServicesCards3,
   "faq/accordion": FaqAccordion,

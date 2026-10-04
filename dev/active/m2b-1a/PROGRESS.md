@@ -15,7 +15,7 @@
 - [x] P3 hero/center (KB-AC-13 [U] · 14 규칙) — HeroCenter(카피 클래스 = fullbleed 패널 묶음 PRIMARY_COPY 재사용) · RED logs/p3-center-red.txt(4 실패) → gate OK(렌더 JS 80.33 · CSS 6.49 · /studio 127.41)
 - [x] P4 hero/grid (KB-AC-15·17 [U] · 16 규칙) — HeroGrid(타일 A = Media 1회 · B·C 장식 div aria-hidden) · RED logs/p4-grid-red.txt(5 실패) → gate OK(렌더 JS 80.41 · CSS 6.59 · /studio 127.42 ← 문자열 3개인데 127.42: 끝(5개)에서 다시 재고 넘으면 순서 조정)
 - [x] P5 hero/text (KB-AC-18 [U] · 19 규칙) — HeroText(강조선 = 빈 div aria-hidden) · RED logs/p5-text-red.txt(4 실패) → gate OK(렌더 JS 80.45 · CSS 6.63 · /studio 127.42)
-- [ ] P6 hero/image (KB-AC-20~22)
+- [x] P6 hero/image (KB-AC-20·22 [U] · 21 규칙) — HeroImage(카피 띠 → 미디어, 영역 이름 media/copy) · RED logs/p6-image-red.txt(6 실패) → gate OK(렌더 JS 80.50 · CSS 6.72 · /studio 127.41)
 - [ ] P7 공통 [U]/[G] (KB-AC-30 · 33 · 35 정적 HTML 몫)
 - [ ] P8 REPORT 갱신(브라우저 전) → 브라우저 [B]/[V] 4337: QB-5~9·12·13 1280·768·390 · KB-AC-31·34·35
 - [ ] P9 Codex review --scope branch --base f113f2c 1회 · P1만 수정

@@ -786,3 +786,44 @@
     }
   }
 }
+
+/* hero/image (B-8) — 미디어 띠(영역 media, 위) · 카피 띠(영역 copy, 아래) · 비율 4:3 → md 16:9 → lg 21:9 · lg 이상 카피 2단(제목 7 : 부제 + CTA 5, 위 정렬) */
+@layer components {
+  .kit-hx--image {
+    display: grid;
+    grid-template-areas: "media" "copy";
+  }
+  .kit-hx-band {
+    grid-area: copy;
+    width: 100%;
+  }
+  .kit-hx-wide {
+    grid-area: media;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 48rem) {
+    .kit-hx-wide {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-hx-wide {
+      aspect-ratio: 21 / 9;
+    }
+    .kit-hx--image:not(.kit-hx--solo) .kit-hx-band {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      grid-template-rows: auto 1fr;
+      column-gap: var(--site-s6);
+      align-items: start;
+    }
+    .kit-hx--image:not(.kit-hx--solo) .kit-hx-band .kit-hx-title {
+      grid-row: 1 / span 2;
+    }
+    .kit-hx--image:not(.kit-hx--solo) .kit-hx-band .kit-hx-cta {
+      justify-self: start;
+    }
+  }
+}

@@ -1,0 +1,581 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app
+
+ ❯ src/features/studio/png/pngCapture.test.ts (18 tests | 1 failed) 318ms
+   ❯ PNG 캡처 문서 (m2a 3.3 · 2a-05 r4.8 — PNG 경로는 폴백 허용) (5)
+     × U5 모션: 캡처 style 끝 = 모션 정지 방어 규칙 · data-motion-play 0(마크업에 있어도 지움) · data-motion은 남음 21ms
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (14 tests | 2 failed) 415ms
+   ❯ 정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08) (10)
+     × U4 모션: 사이트 루트에만 data-motion-play 1개 · 섹션 data-motion = 렌더 문서 값 그대로 · 스크립트 = STATIC_MENU_SCRIPT 1개(바이트 동일) 75ms
+     × U4 모션: 마크업 안쪽에 들어온 data-motion-play는 지운다 — 재생 스위치는 생성기가 사이트 루트에만 붙인다 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/png/pngCapture.test.ts > PNG 캡처 문서 (m2a 3.3 · 2a-05 r4.8 — PNG 경로는 폴백 허용) > U5 모션: 캡처 style 끝 = 모션 정지 방어 규칙 · data-motion-play 0(마크업에 있어도 지움) · data-motion은 남음
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/studio/png/pngCapture.test.ts:99:176
+     97|     const style = page.getElementsByTagName("style")[0]!.textContent!;
+     98|     expect(style.startsWith(CSS)).toBe(true);
+     99|     expect(style.trimEnd().endsWith("[data-site-root] *, [data-site-ro…
+       |                                                                                                                                                                                ^
+    100|     expect(svg).not.toContain("data-motion-play");
+    101|     expect(svg).toContain('data-motion="L1"');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > 정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08) > U4 모션: 사이트 루트에만 data-motion-play 1개 · 섹션 data-motion = 렌더 문서 값 그대로 · 스크립트 = STATIC_MENU_SCRIPT 1개(바이트 동일)
+AssertionError: expected [] to deeply equal [ <div …(2)>…(3)</div> ]
+
+- Expected
++ Received
+
+- [
+-   <div
+-     data-site-root="true"
+-     style="--site-primary: rgb(10, 92, 54); --site-surface: rgb(244, 240, 232); --site-ink: rgb(26, 26, 26); --site-muted: rgb(110, 110, 110); --site-bg: rgb(255, 255, 255); --site-on-primary: rgb(255 255 255); --site-font: \"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif; --site-weight-heading: 700; --site-weight-body: 400; --site-t-1: 0.8rem; --site-t0: 1rem; --site-t1: 1.25rem; --site-t2: 1.5625rem; --site-t3: 1.9531rem; --site-t4: 2.4414rem; --site-t5: 3.0518rem; --site-s1: 0.25rem; --site-s2: 0.5rem; --site-s3: 0.75rem; --site-s4: 1rem; --site-s5: 1.5rem; --site-s6: 2rem; --site-section-gap: 6rem; --site-section-gap-narrow: 3rem; --site-card-pad: var(--site-s5); --site-card-pad-narrow: var(--site-s4); --site-r1: 0.5rem; --site-r2: 1rem; --site-radius-card: var(--site-r1); --site-radius-control: var(--site-r1); --site-stroke-1: 0.0625rem; --site-stroke-2: 0.125rem; --site-card-stroke: var(--site-stroke-1); --site-card-face-base: var(--site-surface); --site-card-face-alt: var(--site-bg); --site-card-top: var(--site-stroke-1); --site-shadow-1: 0 0.125rem 0.5rem color-mix(in srgb, var(--site-ink) 16%, transparent); --site-card-shadow: none; --site-hit-min: 2.75rem; --site-prose-max: 60ch; --site-content-max: 72rem; --site-header-offset: calc(2 * (var(--site-hit-min) + 2 * var(--site-s2))); --site-media-ratio: 4 / 5;"
+-   >
+-     <header
+-       class="kit-header"
+-       data-kit=""
+-       id="s-s-header"
+-     >
+-       <div
+-         class="kit-bar"
+-       >
+-         <p
+-           class="kit-brand"
+-         >
+-           브랜드 이름
+-         </p>
+-         <nav
+-           aria-label="주 메뉴"
+-           class="kit-nav-bar"
+-         >
+-           <ul
+-             class="kit-menu"
+-             role="list"
+-           >
+-             <li>
+-               <a
+-                 href="#s-s-about"
+-               >
+-                 소개
+-               </a>
+-             </li>
+-             <li>
+-               <a
+-                 href="#s-s-services"
+-               >
+-                 서비스
+-               </a>
+-             </li>
+-             <li>
+-               <a
+-                 href="#s-s-contact"
+-               >
+-                 문의
+-               </a>
+-             </li>
+-           </ul>
+-         </nav>
+-         <a
+-           class="kit-cta kit-cta--bar"
+-           href="#s-s-contact"
+-         >
+-           문의하기
+-         </a>
+-         <button
+-           class="kit-menu-button"
+-           popovertarget="m-s-header"
+-           type="button"
+-         >
+-           메뉴
+-         </button>
+-       </div>
+-       <div
+-         class="kit-sheet"
+-         id="m-s-header"
+-         popover="auto"
+-       >
+-         <button
+-           class="kit-menu-button kit-close"
+-           popovertarget="m-s-header"
+-           popovertargetaction="hide"
+-           type="button"
+-         >
+-           닫기
+-         </button>
+-         <nav
+-           aria-label="주 메뉴"
+-           class="kit-nav-sheet"
+-         >
+-           <ul
+-             class="kit-menu"
+-             role="list"
+-           >
+-             <li>
+-               <a
+-                 href="#s-s-about"
+-               >
+-                 소개
+-               </a>
+-             </li>
+-             <li>
+-               <a
+-                 href="#s-s-services"
+-               >
+-                 서비스
+-               </a>
+-             </li>
+-             <li>
+-               <a
+-                 href="#s-s-contact"
+-               >
+-                 문의
+-               </a>
+-             </li>
+-           </ul>
+-         </nav>
+-         <a
+-           class="kit-cta kit-cta--sheet"
+-           href="#s-s-contact"
+-         >
+-           문의하기
+-         </a>
+-       </div>
+-     </header>
+-     <main
+-       class="flex flex-col"
+-       style="--canvas-primary: rgb(10, 92, 54); --canvas-surface: rgb(244, 240, 232); --canvas-ink: rgb(26, 26, 26); --canvas-muted: rgb(110, 110, 110); --canvas-bg: rgb(255, 255, 255);"
+-     >
+-       <section
+-         aria-labelledby="h-s-hero"
+-         class="kit-hero"
+-         data-kit=""
+-         id="s-s-hero"
+-       >
+-         <div
+-           class="kit-hero-copy"
+-         >
+-           <div
+-             class="kit-hero-panel"
+-           >
+-             <h1
+-               class="kit-hero-title"
+-               id="h-s-hero"
+-             >
+-               한 문장으로 소개하는 제목
+-             </h1>
+-             <p
+-               class="kit-hero-lead"
+-             >
+-               무엇을 누구에게 제공하는지 한두 문장으로 적습니다.
+-             </p>
+-             <a
+-               class="kit-hero-cta"
+-               href="#s-s-contact"
+-             >
+-               시작하기
+-             </a>
+-           </div>
+-         </div>
+-         <div
+-           aria-hidden="true"
+-           class="kit-gradient kit-hero-media"
+-         />
+-       </section>
+-       <section
+-         aria-labelledby="h-s-about"
+-         class="kit-body kit-about"
+-         data-kit=""
+-         data-layout="split"
+-         data-tone="base"
+-         id="s-s-about"
+-       >
+-         <div
+-           class="kit-wrap kit-about-grid"
+-         >
+-           <div
+-             class="kit-about-text"
+-           >
+-             <h2
+-               class="kit-title"
+-               id="h-s-about"
+-             >
+-               소개
+-             </h2>
+-             <p
+-               class="kit-about-body"
+-             >
+-               브랜드가 하는 일을 소개합니다.
+-             </p>
+-           </div>
+-           <figure
+-             class="kit-about-media"
+-           >
+-             <div
+-               aria-hidden="true"
+-               class="kit-gradient kit-about-img"
+-             />
+-           </figure>
+-         </div>
+-       </section>
+-       <section
+-         aria-labelledby="h-s-services"
+-         class="kit-body kit-services"
+-         data-kit=""
+-         data-tone="alt"
+-         id="s-s-services"
+-       >
+-         <div
+-           class="kit-wrap kit-services-inner"
+-         >
+-           <div
+-             class="kit-services-head"
+-           >
+-             <h2
+-               class="kit-title"
+-               id="h-s-services"
+-             >
+-               서비스
+-             </h2>
+-             <p
+-               class="kit-services-intro"
+-             >
+-               이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.
+-             </p>
+-           </div>
+-           <ul
+-             class="kit-cards"
+-             role="list"
+-           >
+-             <li
+-               class="kit-card"
+-             >
+-               <h3
+-                 class="kit-card-title"
+-               >
+-                 항목 1
+-               </h3>
+-               <p
+-                 class="kit-card-body"
+-               >
+-                 항목을 짧게 설명합니다.
+-               </p>
+-             </li>
+-             <li
+-               class="kit-card"
+-             >
+-               <h3
+-                 class="kit-card-title"
+-               >
+-                 항목 2
+-               </h3>
+-               <p
+-                 class="kit-card-body"
+-               >
+-                 항목을 짧게 설명합니다.
+-               </p>
+-             </li>
+-             <li
+-               class="kit-card"
+-             >
+-               <h3
+-                 class="kit-card-title"
+-               >
+-                 항목 3
+-               </h3>
+-               <p
+-                 class="kit-card-body"
+-               >
+-                 항목을 짧게 설명합니다.
+-               </p>
+-             </li>
+-           </ul>
+-         </div>
+-       </section>
+-       <section
+-         aria-labelledby="h-s-faq"
+-         class="kit-body kit-faq"
+-         data-kit=""
+-         data-tone="base"
+-         id="s-s-faq"
+-       >
+-         <div
+-           class="kit-wrap kit-faq-inner"
+-         >
+-           <h2
+-             class="kit-title"
+-             id="h-s-faq"
+-           >
+-             자주 묻는 질문
+-           </h2>
+-           <div
+-             class="kit-faq-list"
+-           >
+-             <details
+-               class="kit-faq-item"
+-             >
+-               <summary
+-                 class="kit-faq-q"
+-               >
+-                 자주 묻는 질문
+-               </summary>
+-               <div
+-                 class="kit-faq-a"
+-               >
+-                 <p
+-                   class="kit-faq-answer"
+-                 >
+-                   답변을 적습니다.
+-                 </p>
+-               </div>
+-             </details>
+-             <details
+-               class="kit-faq-item"
+-             >
+-               <summary
+-                 class="kit-faq-q"
+-               >
+-                 자주 묻는 질문
+-               </summary>
+-               <div
+-                 class="kit-faq-a"
+-               >
+-                 <p
+-                   class="kit-faq-answer"
+-                 >
+-                   답변을 적습니다.
+-                 </p>
+-               </div>
+-             </details>
+-             <details
+-               class="kit-faq-item"
+-             >
+-               <summary
+-                 class="kit-faq-q"
+-               >
+-                 자주 묻는 질문
+-               </summary>
+-               <div
+-                 class="kit-faq-a"
+-               >
+-                 <p
+-                   class="kit-faq-answer"
+-                 >
+-                   답변을 적습니다.
+-                 </p>
+-               </div>
+-             </details>
+-           </div>
+-         </div>
+-       </section>
+-       <section
+-         aria-labelledby="h-s-contact"
+-         class="kit-body kit-contact"
+-         data-kit=""
+-         data-tone="alt"
+-         id="s-s-contact"
+-       >
+-         <div
+-           class="kit-wrap kit-contact-grid"
+-         >
+-           <div
+-             class="kit-contact-text"
+-           >
+-             <h2
+-               class="kit-title"
+-               id="h-s-contact"
+-             >
+-               문의
+-             </h2>
+-             <p
+-               class="kit-contact-intro"
+-             >
+-               이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.
+-             </p>
+-           </div>
+-           <form
+-             aria-labelledby="h-s-contact"
+-             class="kit-form"
+-           >
+-             <p
+-               class="kit-notice"
+-               id="n-s-contact"
+-             >
+-               온라인 문의는 준비 중입니다. 지금은 이 양식으로 보낼 수 없습니다.
+-             </p>
+-             <fieldset
+-               aria-describedby="n-s-contact"
+-               class="kit-fieldset"
+-               disabled=""
+-             >
+-               <legend
+-                 class="kit-visually-hidden"
+-               >
+-                 문의 양식
+-               </legend>
+-               <div
+-                 class="kit-control"
+-               >
+-                 <label
+-                   class="kit-label"
+-                   for="f-s-contact-name"
+-                 >
+-                   이름
+-                 </label>
+-                 <input
+-                   autocomplete="name"
+-                   class="kit-field"
+-                   id="f-s-contact-name"
+-                   name="name"
+-                   required=""
+-                   type="text"
+-                 />
+-               </div>
+-               <div
+-                 class="kit-control"
+-               >
+-                 <label
+-                   class="kit-label"
+-                   for="f-s-contact-email"
+-                 >
+-                   이메일
+-                 </label>
+-                 <input
+-                   autocomplete="email"
+-                   class="kit-field"
+-                   id="f-s-contact-email"
+-                   name="email"
+-                   required=""
+-                   type="email"
+-                 />
+-               </div>
+-               <div
+-                 class="kit-control"
+-               >
+-                 <label
+-                   class="kit-label"
+-                   for="f-s-contact-message"
+-                 >
+-                   문의 내용
+-                 </label>
+-                 <textarea
+-                   class="kit-field"
+-                   id="f-s-contact-message"
+-                   name="message"
+-                   required=""
+-                   rows="5"
+-                 />
+-               </div>
+-               <label
+-                 class="kit-consent"
+-               >
+-                 <input
+-                   class="kit-check"
+-                   name="consent"
+-                   required=""
+-                   type="checkbox"
+-                 />
+-                 <span>
+-                   개인정보 수집·이용에 동의합니다.
+-                 </span>
+-               </label>
+-               <button
+-                 class="kit-submit"
+-                 type="submit"
+-               >
+-                 문의하기
+-               </button>
+-             </fieldset>
+-           </form>
+-         </div>
+-       </section>
+-     </main>
+-     <footer
+-       class="kit-footer"
+-       data-kit=""
+-       id="s-s-footer"
+-     >
+-       <div
+-         class="kit-footer-inner"
+-       >
+-         <div
+-           class="kit-footer-top"
+-         >
+-           <address
+-             class="kit-footer-info"
+-           >
+-             상호 · 대표 · 사업자등록번호 · 주소
+-           </address>
+-           <ul
+-             class="kit-footer-links"
+-             role="list"
+-           >
+-             <li>
+-               이용약관
+-             </li>
+-             <li>
+-               개인정보처리방침
+-             </li>
+-           </ul>
+-         </div>
+-         <hr
+-           class="kit-footer-divider"
+-         />
+-         <p
+-           class="kit-footer-copy"
+-         >
+-           © 브랜드 이름
+-         </p>
+-       </div>
+-     </footer>
+-   </div>,
+- ]
++ []
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:19:61
+     17|     expect(rendered.querySelectorAll("[data-motion-play]")).toHaveLeng…
+     18|     const doc = parse(build());
+     19|     expect([...doc.querySelectorAll("[data-motion-play]")]).toEqual([d…
+       |                                                             ^
+     20|     expect([...doc.querySelectorAll("[data-kit]")].map((el) => [el.id,…
+     21|     expect([...doc.querySelectorAll("script")].map((el) => el.textCont…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > 정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08) > U4 모션: 마크업 안쪽에 들어온 data-motion-play는 지운다 — 재생 스위치는 생성기가 사이트 루트에만 붙인다
+AssertionError: expected  to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:28:56
+     26|     expect(dirty.split("data-motion-play").length).toBe(3);
+     27|     const doc = parse(build({ markup: dirty }));
+     28|     expect(doc.querySelectorAll("[data-motion-play]")).toHaveLength(1);
+       |                                                        ^
+     29|     expect(doc.querySelector("[data-site-root]")!.hasAttribute("data-m…
+     30|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 29 passed (32)
+   Start at  18:57:24
+   Duration  1.51s (environment 46%, tests 26%, transform 15%, setup 9%, import 3%)
+

@@ -12,6 +12,7 @@
 
 @import "../styles/theme.css";
 @import "../kit/kit.css";
+@import "../kit/motion.css";
 @import "../kit/fonts.css";
 
 /* 폴백 표식 고정 색 (m2a 3.1 · 부록 A M-1 17.40) — 사용자 팔레트·앱 DS 토큰 둘 다 아님 */

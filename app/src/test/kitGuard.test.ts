@@ -35,10 +35,13 @@ const RULES: readonly { readonly name: string; readonly pattern: RegExp }[] = [
   { name: "앱 테마 글자 크기", pattern: /\btext-(display|title|heading|body|label|caption)\d?(?![\w-])/ },
   { name: "앱 간격·radius 단계(--spacing·--radius-*)", pattern: /(^|[\s"'`])-?(p|px|py|pt|pb|pl|pr|ps|pe|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|inset|top|left|right|bottom|w|h|min-w|min-h|max-w|space-x|space-y)-\d|\brounded-(xs|sm|md|lg|xl|2xl|3xl)\b/ },
 ];
+/** 모션 CSS 예외 = kit/motion.css 하나만(MF-AC-G1 · SPEC C-7) — 그 파일의 계약은 kit/motion.test.ts(U2·U3)가 검사한다 */
+const MOTION_FILE = join(KIT, "motion.css");
 export function lineViolations(file: string, text: string): string[] {
+  const rules = file === MOTION_FILE ? RULES.filter((r) => r.name !== "모션 CSS") : RULES;
   return text.split("\n").flatMap((line, i) => {
     if (/^\s*(\/\/|\*|\/\*)/.test(line)) return [];
-    return RULES.filter((r) => r.pattern.test(line)).map((r) => `${relative(SRC, file)}:${i + 1} [${r.name}] ${line.trim()}`);
+    return rules.filter((r) => r.pattern.test(line)).map((r) => `${relative(SRC, file)}:${i + 1} [${r.name}] ${line.trim()}`);
   });
 }
 
@@ -79,6 +82,14 @@ describe("킷 가드 (K-AC-01 · K-AC-07)", () => {
     ];
     for (const line of bad) expect(lineViolations(f, line)).toHaveLength(1);
     expect(lineViolations(f, '// useState 금지 — 설명\nclassName="bg-(--site-primary) p-(--site-s4) text-(length:--site-t1)"')).toEqual([]);
+  });
+
+  it("G1: 모션 CSS 예외는 kit/motion.css 경로 하나만 — 다른 킷 파일(motion.css 이름 흉내 포함)의 animation·transition은 계속 위반", () => {
+    const line = "animation: kit-fade var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;";
+    expect(lineViolations(join(KIT, "motion.css"), line)).toEqual([]);
+    expect(lineViolations(join(KIT, "motion.css"), "color: #fff;")).toHaveLength(1);
+    for (const other of ["kit.css", "fonts.css", "sub/motion.css", "motion.css.ts", "HeroText.tsx"]) expect(lineViolations(join(KIT, other), line), other).toHaveLength(1);
+    expect(kitFiles().map((f) => relative(KIT, f))).toContain("motion.css");
   });
 
   it("렌더 CSS가 킷을 Tailwind 스캔 범위에 넣는다(src/render + src/kit만)", () => {

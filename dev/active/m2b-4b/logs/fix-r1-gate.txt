@@ -1,0 +1,65 @@
+## targets: src/kit src/render src/features/studio
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app
+
+
+ Test Files  71 passed (71)
+      Tests  398 passed (398)
+   Start at  19:07:38
+   Duration  8.77s (environment 64%, setup 12%, transform 10%, tests 10%, import 4%, worker 1%)
+
+Environment  jsdom was created 71 times · 43.67s total, 64% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+targets exit=0
+## guards
+
+ Test Files  12 passed (12)
+      Tests  82 passed (82)
+   Start at  19:07:48
+   Duration  928ms (setup 34%, environment 33%, transform 13%, tests 13%, import 6%, worker 1%)
+
+guards exit=0
+## typecheck
+typecheck exit=0
+## lint
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+lint exit=0
+## build
+[bundle] 공통 JS (gzip, 참고): 89.35KB
+[bundle] /catalog 첫 화면 합계: 99.66KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.05KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.39KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.72KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.24KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.72KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.90KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.24KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.61KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.67KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.49KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryProjectRepository.ts: +2.02KB (3개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94.02KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.30KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.78KB / 예산 100KB · 진입 직후 자동 로드 포함: 127.34KB / 예산 128KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.94KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.19KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.13KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.37KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ExportAfter.tsx: +1.68KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +8.17KB (3개 파일, 예산 판정 밖)
+[bundle] 렌더 문서(render.html) JS 합계: 83.03KB / 예산 90KB · CSS 합계: 8.75KB / 예산 30KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)
+build exit=0

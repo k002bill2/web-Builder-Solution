@@ -8,13 +8,13 @@
 - [x] 시작 build 실측 — `/studio` 진입 127.36 · 첫 화면 91.79 (`logs/build-start.txt`, exit 0)
 - [x] 후보별 시제품 build 실측·기록 (아래 표) — 코드 변경 전
 - [x] base 전체 vitest — 221파일 1978 통과 exit 0 (`logs/vitest-base.txt`)
-- [ ] 테스트 수 예측 커밋
-- [ ] 동작 고정·구조 가드 테스트 작성 → RED 확인
-- [ ] 구현(runDocOp → docEngine 청크) → GREEN
-- [ ] typecheck · lint · build(번들 표 전 행) · 전체 vitest exit0
-- [ ] Ego Lite 4337 앱 안 클릭 확인 · 1280/390 캡처 · 연 창/탭 닫기·재확인
-- [ ] Codex review --scope branch --base d25fe49 (≤2라운드)
-- [ ] REPORT.md
+- [x] 테스트 수 예측 커밋 (`25ee335`)
+- [x] 동작 고정·구조 가드 테스트 작성 → RED 확인 (`1d4372a` — 1 failed | 7 passed, 예측대로, `logs/vitest-red.txt`)
+- [x] 구현(runDocOp → docEngine 청크) → GREEN (`86c9484`)
+- [x] typecheck exit0 · lint exit0 · build exit0 진입 127.14(`logs/build-after.txt`) · 전체 vitest 221파일 1980 통과 exit0(`logs/vitest-after.txt`)
+- [x] Ego Lite 4337 앱 안 클릭 확인 · 1280/390 캡처(`shots/`) · space 71 finish → listTaskSpaces() = [] 재확인 · 자기 서버 종료
+- [x] Codex review --scope branch --base d25fe49 — 1라운드 지적 0(`logs/codex-r1.txt`)
+- [x] REPORT.md
 
 ## 후보 실측 (모두 base `d25fe49` 위 시제품, 되돌림)
 

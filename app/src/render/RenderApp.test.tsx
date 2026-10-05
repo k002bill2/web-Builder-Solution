@@ -161,6 +161,30 @@ describe("렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7)", () => {
     expect(sent("rects").length).toBeGreaterThan(atFallback);
   });
 
+  it("편집 캔버스: 한 굵기 실패 = 바로 폴백 rects · 다른 굵기가 늦게 로드되면 rects 다시 보냄 (Codex P2)", async () => {
+    const gate = deferred();
+    let call = 0;
+    fakeFonts(() => (call++ === 0 ? Promise.reject(new Error("700 실패")) : gate.promise));
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    await act(async () => {});
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => gate.resolve());
+    expect(sent("rects").length).toBeGreaterThan(atFallback);
+  });
+
+  it("편집 캔버스: 모든 굵기 실패 = 바로 폴백 rects · 다시 보내지 않음", async () => {
+    fakeFonts(() => Promise.reject(new Error("실패")));
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    await act(async () => {});
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => {});
+    expect(sent("rects")).toHaveLength(atFallback);
+  });
+
   it("내보내기: 부모가 준 글꼴 바이트를 FontFace로 등록·로드한 뒤 첫 rects (네트워크 로드 0)", async () => {
     const gate = deferred();
     const fonts = fakeFonts(() => Promise.resolve([]));

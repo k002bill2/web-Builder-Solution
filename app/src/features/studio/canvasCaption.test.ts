@@ -1,5 +1,6 @@
 import { sampleDoc, section, withSections } from "../../engine/testing/sampleDoc";
 import { kitFor } from "../../kit/registry";
+import { withUnknownCta } from "../../render/testing/drawKit";
 import { CANVAS_CAPTIONS, canvasCaption } from "./canvasCaption";
 
 /** 캔버스 캡션 등급 3상태 (m2a 3.4 · K-AC-33) — 실렌더 판정 = 렌더러 있는 변형 키 목록(RENDERED_VARIANTS, 킷 레지스트리 가드 대조) */
@@ -11,8 +12,11 @@ describe("canvasCaption (3.4)", () => {
     for (const text of [CANVAS_CAPTIONS.f0, CANVAS_CAPTIONS.partial(9, 2), CANVAS_CAPTIONS.f1]) expect(text).not.toContain("시안");
   });
 
-  it("일부 실렌더: sampleDoc(cta-band만 렌더러 없음) → 섹션 8개 중 1개", () => {
-    expect(canvasCaption(sampleDoc(), true)).toBe(CANVAS_CAPTIONS.partial(8, 1));
+  // M2B-2c 이관: cta-band/banner가 실렌더(30/30) → 렌더러 없는 예시를 같은 자리의 no-such-variant로 옮긴다 — 단언 그대로
+  it("일부 실렌더: sampleDoc(cta-band 자리만 렌더러 없음 — no-such-variant) → 섹션 8개 중 1개", () => {
+    const doc = withUnknownCta(sampleDoc());
+    expect(kitFor(doc.sections.find((s) => s.type === "cta-band")!)).toBeUndefined(); // 예시 전제
+    expect(canvasCaption(doc, true)).toBe(CANVAS_CAPTIONS.partial(8, 1));
   });
 
   it("모두 실렌더: 렌더러 있는 변형만 → F1 · 모두 폴백: 렌더러 없는 변형만 → F0", () => {

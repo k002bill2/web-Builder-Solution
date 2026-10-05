@@ -16,6 +16,15 @@ export const patch = (doc: PageDoc, instanceId: string, slots: Readonly<Record<s
     doc.sections.map((s): SectionInstance => (s.instanceId === instanceId ? { ...s, slots: { ...s.slots, ...slots } } : s)),
   );
 export const without = (doc: PageDoc, type: string): PageDoc => withSections(doc, doc.sections.filter((s) => s.type !== type));
+/**
+ * 폴백(구조 미리보기) 예시 문서 — cta-band 자리(s-cta)를 엔진에 없는 변형(no-such-variant)으로 바꾼다 (M2B-2c 이관).
+ * 30/30 전에는 sampleDoc의 cta-band/banner(미구현)가 폴백 예시였다 — 같은 자리·같은 섹션 수로 폴백 1개를 유지한다. 렌더 경로 전용(저장 검증은 이 변형을 거부)
+ */
+export const withUnknownCta = (doc: PageDoc = sampleDoc()): PageDoc =>
+  withSections(
+    doc,
+    doc.sections.map((s): SectionInstance => (s.type === "cta-band" ? { ...s, variant: "no-such-variant" } : s)),
+  );
 
 /** hero 자리(s-hero)를 다른 변형으로 바꾼 문서 — 슬롯 = 그 변형 기본값 (M2B-1a) */
 export const heroDoc = (variant: string, over: Partial<SectionInstance> = {}): PageDoc =>

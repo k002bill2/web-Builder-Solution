@@ -3,7 +3,7 @@ import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../../engine/testing/sampleTheme";
 import type { ParentMessage } from "../../../render/protocol";
-import { drawDoc, without } from "../../../render/testing/drawKit";
+import { drawDoc, withUnknownCta, without } from "../../../render/testing/drawKit";
 import { createStaticHtmlGenerator, openRenderFrame, type RenderChannel } from "./staticHtml";
 import { STATIC_MENU_SCRIPT } from "./staticMarkup";
 
@@ -114,7 +114,7 @@ describe("정적 HTML 생성기 (G3)", () => {
     ["렌더 오류 INVALID_DOC", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "error", code: "INVALID_DOC" } : {})],
     // P2-b — PNG 경로만 NO_KIT_TOKENS를 넘긴다. 정적 HTML은 그대로 실패(킷 없이 그린 폴백 문서를 내보내지 않는다)
     ["렌더 오류 NO_KIT_TOKENS", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "error", code: "NO_KIT_TOKENS" } : { type: "html", markup: MARKUP })],
-    ["폴백이 섞인 마크업", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: drawDoc(sampleDoc()).querySelector("[data-site-root]")!.outerHTML })],
+    ["폴백이 섞인 마크업", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: drawDoc(withUnknownCta()).querySelector("[data-site-root]")!.outerHTML })], // M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant
   ])("%s → INFRA로 기록될 실패(JOB_TIMEOUT 아님) · iframe 닫음", async (_name, reply) => {
     const frame = fakeFrame(reply);
     const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: fakeUrls().api })(input);

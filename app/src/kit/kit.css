@@ -901,6 +901,81 @@
   }
 }
 
+/* cta-band/banner (B1-12) — 전체 폭 primary 띠(톤 무관 · 둥근 모서리 0) · 글자 on-primary(C-1) · CTA 뒤집기(on-primary 면 · primary 글자 · hit-min · 버튼 radius) · 링 on-primary + 간격 primary.
+   위아래 = section-gap-narrow(모든 폭 — 본문보다 얇은 띠) · md 미만 세로(글 → CTA 전체 폭) · md 이상 한 줄(글 남는 폭 최대 prose-max · CTA 오른쪽 세로 가운데, 줄지 않음) 사이 s5 · lg s6 */
+@layer components {
+  .kit-band {
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+    --kit-ring: var(--site-on-primary);
+    --kit-ring-gap: var(--site-primary);
+  }
+  .kit-band-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    max-width: var(--site-content-max);
+    margin-inline: auto;
+    padding: var(--site-section-gap-narrow) var(--site-s4);
+  }
+  .kit-band-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+    max-width: var(--site-prose-max);
+  }
+  .kit-band-title {
+    margin: 0;
+    font-size: var(--site-t2);
+    color: var(--site-on-primary);
+  }
+  .kit-band-body {
+    margin: 0;
+    font-size: var(--site-t0);
+  }
+  .kit-band-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s4);
+    border-radius: var(--site-radius-control);
+    background: var(--site-on-primary);
+    color: var(--site-primary);
+    font-weight: var(--site-weight-heading);
+    text-align: center;
+    text-decoration: none;
+  }
+  @media (width >= 48rem) {
+    .kit-band-wrap {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--site-s5);
+      padding: var(--site-section-gap-narrow) var(--site-s6);
+    }
+    .kit-band-text {
+      flex: 1;
+    }
+    .kit-band-title {
+      font-size: var(--site-t3);
+    }
+    .kit-band-body {
+      font-size: var(--site-t1);
+    }
+    .kit-band-cta {
+      flex-shrink: 0;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-band-wrap {
+      gap: var(--site-s6);
+    }
+  }
+}
+
 /* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
 @layer components {
   .kit-faq-inner {

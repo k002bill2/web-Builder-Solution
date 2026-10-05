@@ -1,5 +1,5 @@
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
-import { drawDoc, without } from "../../../render/testing/drawKit";
+import { drawDoc, withUnknownCta, without } from "../../../render/testing/drawKit";
 import { STATIC_MENU_SCRIPT, buildStaticHtml } from "./staticMarkup";
 
 /** 실제 렌더 문서 본문(PageDocument + 킷)을 그린 사이트 루트 마크업 — 렌더 문서 serializeSite가 보내는 것과 같은 모양 */
@@ -66,7 +66,7 @@ describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
   });
 
   it("폴백 섹션(구조 미리보기)이 있으면 실패 — 7단계가 막지만 생성기도 방어", () => {
-    const withFallback = drawDoc(sampleDoc()).querySelector("[data-site-root]")!.outerHTML;
+    const withFallback = drawDoc(withUnknownCta()).querySelector("[data-site-root]")!.outerHTML; // M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant
     expect(() => build({ markup: withFallback })).toThrow(/구조 미리보기/);
   });
 

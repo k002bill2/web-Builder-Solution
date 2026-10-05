@@ -6,6 +6,22 @@ import { SAMPLE_KIT_TOKENS } from "../../render/testing/sampleKitTokens";
 import { StructureCanvas } from "./StructureCanvas";
 
 /**
+ * M2B-2c 이관: 이 파일의 폴백 예시 = 샘플의 cta-band/banner(30/30 전 미구현). 실렌더가 된 뒤에도 같은 문서·같은 단언을 유지하려고
+ * 부모 렌더러 목록에서 그 키만 뺀 목록을 주입한다(편집기 폴백 판정 = RENDERED_VARIANTS). 저장·편집 경로는 엔진에 없는 변형을 쓸 수 없다
+ */
+const UNRENDERED = vi.hoisted(() => "cta-band/banner");
+vi.mock("../../features/studio/renderedVariants", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../features/studio/renderedVariants")>();
+  return { RENDERED_VARIANTS: Object.freeze(actual.RENDERED_VARIANTS.filter((key) => key !== UNRENDERED)) };
+});
+/** 이관 전제 — 주입 목록에만 없고 실제 목록에는 있다 */
+const expectInjected = async () => {
+  const actual = (await vi.importActual<typeof import("../../features/studio/renderedVariants")>("../../features/studio/renderedVariants")).RENDERED_VARIANTS;
+  expect(actual).toContain(UNRENDERED);
+  expect((await import("../../features/studio/renderedVariants")).RENDERED_VARIANTS).not.toContain(UNRENDERED);
+};
+
+/**
  * 캔버스 호스트 · 부모 오버레이 (M2A-1 R4 · SPEC 5.7 r4.8 · E-AC-49). 블록 그리기 단언은 렌더 문서로 옮겼다(render/fallback/FallbackCanvas.test.tsx).
  * 이 파일에 남은 것: 선택 라벨 칩(부모 오버레이) · 문제 표시(부모) · iframe.
  */
@@ -226,7 +242,8 @@ describe("캔버스 이름 · 캡션 3상태 (m2a 3.4 · K-AC-33 · r4.9)", () =
     expect(canvasFrame()).toHaveAttribute("title", "페이지 미리보기 화면");
   });
 
-  it("캡션 = 문서 상태: 킷 토큰 있음 + cta-band 폴백 → '일부' · 킷 토큰 없음 → F0 · 라이브 영역 아님", () => {
+  it("캡션 = 문서 상태: 킷 토큰 있음 + cta-band 폴백 → '일부' · 킷 토큰 없음 → F0 · 라이브 영역 아님", async () => {
+    await expectInjected();
     const { unmount } = render(<StructureCanvas doc={sampleDoc()} kitTokens={SAMPLE_KIT_TOKENS} selectedId="s-hero" onSelect={() => {}} view="desktop" scrollable={false} />);
     const partial = within(region()).getByText(/^실제 렌더 \(F1 · 일부\) — 섹션 8개 중 1개는/);
     expect(partial.closest("[aria-live], [role=status]")).toBeNull();

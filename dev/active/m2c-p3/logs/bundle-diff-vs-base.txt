@@ -1,0 +1,47 @@
+2,4c2,4
+< [bundle] /catalog 첫 화면 합계: 99.66KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.04KB / 예산 125KB
+< [bundle] /references/:id 첫 화면 합계: 97.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.39KB / 예산 125KB
+< [bundle] /compare 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.70KB / 예산 125KB
+---
+> [bundle] /catalog 첫 화면 합계: 99.65KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.04KB / 예산 125KB
+> [bundle] /references/:id 첫 화면 합계: 97.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.38KB / 예산 125KB
+> [bundle] /compare 첫 화면 합계: 98.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.71KB / 예산 125KB
+6c6
+< [bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.24KB (2개 파일, 예산 판정 밖)
+---
+> [bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.23KB (2개 파일, 예산 판정 밖)
+8c8
+< [bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+---
+> [bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.03KB (3개 파일, 예산 판정 밖)
+10c10
+< [bundle] /compare (조정 있음) 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.70KB / 예산 125KB
+---
+> [bundle] /compare (조정 있음) 첫 화면 합계: 98.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.71KB / 예산 125KB
+12c12
+< [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.24KB (2개 파일, 예산 판정 밖)
+---
+> [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.23KB (2개 파일, 예산 판정 밖)
+14c14
+< [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+---
+> [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.03KB (3개 파일, 예산 판정 밖)
+16c16
+< [bundle] /profile 첫 화면 합계: 99.62KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.12KB / 예산 125KB
+---
+> [bundle] /profile 첫 화면 합계: 99.61KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.11KB / 예산 125KB
+21c21
+< [bundle] /profile (3안 있음) 첫 화면 합계: 99.62KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.58KB / 예산 125KB
+---
+> [bundle] /profile (3안 있음) 첫 화면 합계: 99.61KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.58KB / 예산 125KB
+27c27
+< [bundle] /studio/:projectId 첫 화면 합계: 91.77KB / 예산 100KB · 진입 직후 자동 로드 포함: 127.04KB / 예산 128KB
+---
+> [bundle] /studio/:projectId 첫 화면 합계: 91.76KB / 예산 100KB · 진입 직후 자동 로드 포함: 127.07KB / 예산 128KB
+31c31
+< [bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.36KB (1개 파일, 예산 판정 밖)
+---
+> [bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.37KB (1개 파일, 예산 판정 밖)
+34a35,36
+> [bundle]   /studio/:projectId 조작 뒤 src/components/studio/ImageSlotPanel.tsx: +4.31KB (2개 파일, 예산 판정 밖)
+> [bundle]   /studio/:projectId 조작 뒤 src/features/studio/images/ingest/index.ts: +2.65KB (1개 파일, 예산 판정 밖)

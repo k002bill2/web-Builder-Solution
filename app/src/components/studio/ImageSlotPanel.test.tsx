@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImageSlotValue, LocalImageId, PageDoc } from "../../engine/contracts/pageDoc";
@@ -306,5 +307,26 @@ describe("ImageSlotPanel — Codex r2", () => {
     expect(typeof b).toBe("string");
     expect(state.images?.[a]?.width).toBe(1000);
     expect(state.images?.[b]?.width).toBe(2000);
+  });
+});
+
+describe("ImageSlotPanel — M2C-P3 지운 뒤 (B-M2C-06)", () => {
+  it("키보드 Enter로 '이미지 지우기' → 포커스가 같은 슬롯 '이미지 고르기'로(BODY 유실 0)", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    setup();
+    pick(file());
+    await settle();
+    const user = userEvent.setup();
+    screen.getByRole("button", { name: "이미지 지우기" }).focus();
+    await user.keyboard("{Enter}");
+    expect(screen.queryByRole("button", { name: "이미지 지우기" })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "이미지 고르기" }));
+  });
+
+  it("잃은 이미지에서 마우스로 '이미지 지우기' → 포커스가 '이미지 고르기'로", async () => {
+    const doc = setSlot(sampleDoc(), "s-hero", "image", { kind: "image", enabled: true, source: uuid(7), alt: "", decorative: false });
+    setup({ doc });
+    await userEvent.setup().click(screen.getByRole("button", { name: "이미지 지우기" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "이미지 고르기" }));
   });
 });

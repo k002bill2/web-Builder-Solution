@@ -1,0 +1,321 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app
+
+ ❯ src/kit/ContactBooking.test.tsx (4 tests | 4 failed) 77ms
+   ❯ contact/booking (B1-11) (4)
+     × KD-AC-19 · KD-AC-08 [U]: 킷 · h2 1 · h3 0 · form action·method 0 · 안내 = fieldset aria-describedby 대상(고정 문구) · legend '예약 양식' · 모든 칸·버튼 fieldset[disabled] 안 · placeholder 0 48ms
+     × KD-AC-19 [U]: 보이는 label for/id = '이름'·'연락처'·'희망 날짜'·'희망 시간'·'요청 사항 (선택)' · type text·tel·text·text + textarea · date·time 0 · required(요청 사항만 선택) · autocomplete name·tel · 날짜·시간은 한 묶음 14ms
+     × KD-AC-04 · K1-6 4 [U]: intro 빈 값 → 소개 0 · consent 빈 값 → 체크박스도 0 · submit 빈 값 → 버튼 0 · 안내·legend·칸은 남음 · 빈 p 0 9ms
+     × KD-AC-20 · 07 [G]: 날짜·시간 묶음 = md 미만 세로(그리드 1열) · md 이상 한 줄 2칸 같은 폭(칸 사이 s4) · 재배치·opacity 0 4ms
+ ❯ src/components/studio/SectionVariantPreview.test.tsx (1 test | 1 failed) 9ms
+   ❯ 변형 교체 — 렌더러 없는 변형 접미어 (이관) (1)
+     × 렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(문의 폼 · services 4변형)은 없음 · 머리 '변형:'은 그대로 · 전제: 주입 목록에만 없음 8ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/SectionVariant.test.tsx (4 tests | 1 failed) 1138ms
+   ❯ 변형 교체 (E-AC-20) (4)
+     × 모든 변형이 렌더러를 가짐(30/30) — services 4변형 · 문의 폼 · 예약 폼 모두 ' · 구조 미리보기' 접미어 0 · 머리 '변형:'은 그대로 129ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/ContactBooking.test.tsx > contact/booking (B1-11) > KD-AC-19 · KD-AC-08 [U]: 킷 · h2 1 · h3 0 · form action·method 0 · 안내 = fieldset aria-describedby 대상(고정 문구) · legend '예약 양식' · 모든 칸·버튼 fieldset[disabled] 안 · placeholder 0
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/ContactBooking.test.tsx:27:15
+     25|   it("KD-AC-19 · KD-AC-08 [U]: 킷 · h2 1 · h3 0 · form action·method 0 …
+     26|     const s = booking(drawDoc(bookingDoc()));
+     27|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     28|     expect(s.getAttribute("aria-labelledby")).toBe("h-s-booking");
+     29|     expect(s.querySelector("h2")).toHaveTextContent("예약");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/kit/ContactBooking.test.tsx > contact/booking (B1-11) > KD-AC-19 [U]: 보이는 label for/id = '이름'·'연락처'·'희망 날짜'·'희망 시간'·'요청 사항 (선택)' · type text·tel·text·text + textarea · date·time 0 · required(요청 사항만 선택) · autocomplete name·tel · 날짜·시간은 한 묶음
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/ContactBooking.test.tsx:53:26
+     51|   it("KD-AC-19 [U]: 보이는 label for/id = '이름'·'연락처'·'희망 날짜'·'희망 시간'·'요청 …
+     52|     const s = booking(drawDoc(bookingDoc()));
+     53|     const labels = [...s.querySelectorAll<HTMLLabelElement>("label.kit…
+       |                          ^
+     54|     expect(labels.map((l) => l.textContent)).toEqual(["이름", "연락처", "희망…
+     55|     const fields = labels.map((l) => s.querySelector<HTMLInputElement>…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/kit/ContactBooking.test.tsx > contact/booking (B1-11) > KD-AC-04 · K1-6 4 [U]: intro 빈 값 → 소개 0 · consent 빈 값 → 체크박스도 0 · submit 빈 값 → 버튼 0 · 안내·legend·칸은 남음 · 빈 p 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/ContactBooking.test.tsx:74:14
+     72|   it("KD-AC-04 · K1-6 4 [U]: intro 빈 값 → 소개 0 · consent 빈 값 → 체크박스도 0 …
+     73|     const s = booking(drawDoc(bookingDoc({ intro: "", consent: " ", su…
+     74|     expect(s.querySelector('[data-slot="intro"]')).toBeNull();
+       |              ^
+     75|     expect(s.querySelectorAll('input[type="checkbox"], button')).toHav…
+     76|     expect(s.querySelectorAll("label.kit-label")).toHaveLength(5);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/kit/ContactBooking.test.tsx > contact/booking (B1-11) > KD-AC-20 · 07 [G]: 날짜·시간 묶음 = md 미만 세로(그리드 1열) · md 이상 한 줄 2칸 같은 폭(칸 사이 s4) · 재배치·opacity 0
+AssertionError: expected '/* contact/form (K1-6 · K2 A안) — lg 미…' to match /\.kit-control-row \{\s*display: grid;…/
+
+- Expected:
+/\.kit-control-row \{\s*display: grid;\s*gap: var\(--site-s4\);\s*\}/
+
++ Received:
+"/* contact/form (K1-6 · K2 A안) — lg 미만 1단(글 → 폼, 입력칸 전체 폭) · lg 이상 2단(글 5 : 폼 7, 위 정렬).
+   비활성 모양 = 연결됐을 때와 같은 모양: 입력칸·버튼 색을 직접 정해 UA 비활성 회색·반투명을 덮는다(0.3 흐린 글자 0). 비활성 사실은 안내 문구 + disabled 의미로 알린다 */
+@layer components {
+  .kit-contact-grid {
+    display: grid;
+    gap: var(--site-s5);
+    align-items: start;
+  }
+  .kit-contact-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+  }
+  .kit-contact-intro {
+    max-width: var(--site-prose-max);
+    margin: 0;
+    font-size: var(--site-t1);
+    color: var(--kit-soft);
+  }
+  .kit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+    margin: 0;
+  }
+  .kit-notice {
+    margin: 0;
+    font-size: var(--site-t-1);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+  }
+  .kit-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s4);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .kit-visually-hidden {
+    position: absolute;
+    width: 0.0625rem;
+    height: 0.0625rem;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .kit-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s3);
+  }
+  .kit-label {
+    color: var(--site-ink);
+  }
+  .kit-field {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s3);
+    border: var(--site-stroke-1) solid var(--site-ink);
+    border-radius: var(--site-radius-control);
+    background: var(--site-bg);
+    color: var(--site-ink);
+    font: inherit;
+    resize: vertical;
+    cursor: not-allowed;
+  }
+  .kit-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--site-s2);
+    min-height: var(--site-hit-min);
+    font-size: var(--site-t-1);
+    color: var(--site-ink);
+    cursor: not-allowed;
+  }
+  .kit-check {
+    flex: none;
+    margin: 0;
+    width: var(--site-t1);
+    height: var(--site-t1);
+    accent-color: var(--site-primary);
+  }
+  .kit-submit {
+    min-height: var(--site-hit-min);
+    padding: var(--site-s2) var(--site-s4);
+    border: 0;
+    border-radius: var(--site-radius-control);
+    background: var(--site-primary);
+    color: var(--site-on-primary);
+    font: inherit;
+    font-weight: var(--site-weight-heading);
+    cursor: not-allowed;
+  }
+  @media (width >= 48rem) {
+    .kit-submit {
+      align-self: flex-start;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-contact-grid {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--site-s6);
+    }
+  }"
+
+ ❯ src/kit/ContactBooking.test.tsx:83:19
+     81|   it("KD-AC-20 · 07 [G]: 날짜·시간 묶음 = md 미만 세로(그리드 1열) · md 이상 한 줄 2칸 같은…
+     82|     const block = cssSection("/* contact/form (K1-6");
+     83|     expect(block).toMatch(/\.kit-control-row \{\s*display: grid;\s*gap…
+       |                   ^
+     84|     expect(block).toMatch(/@media \(width >= 48rem\) \{[^@]*\.kit-cont…
+     85|     expect(block).not.toMatch(/\border\s*:|-reverse|grid-area|grid-row…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/components/studio/SectionVariant.test.tsx > 변형 교체 (E-AC-20) > 모든 변형이 렌더러를 가짐(30/30) — services 4변형 · 문의 폼 · 예약 폼 모두 ' · 구조 미리보기' 접미어 0 · 머리 '변형:'은 그대로
+TestingLibraryElementError: Unable to find an accessible element with the role "radio" and name "예약 폼"
+
+Here are the accessible roles:
+
+  radio:
+
+  Name "문의 폼":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"_r_19_-form"[39m
+    [33maria-labelledby[39m=[32m"_r_19_-form-label"[39m
+    [33mchecked[39m=[32m""[39m
+    [33mclass[39m=[32m"mt-1 accent-primary"[39m
+    [33mname[39m=[32m"_r_19_-variant"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"form"[39m
+  [36m/>[39m
+
+  --------------------------------------------------radio:
+
+  Name "예약 폼 · 구조 미리보기":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"_r_19_-booking"[39m
+    [33maria-labelledby[39m=[32m"_r_19_-booking-label"[39m
+    [33mclass[39m=[32m"mt-1 accent-primary"[39m
+    [33mname[39m=[32m"_r_19_-variant"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"booking"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-label[39m=[32m"변형"[39m
+  [33mclass[39m=[32m"flex flex-col gap-1 pt-2"[39m
+  [33mrole[39m=[32m"radiogroup"[39m
+[36m>[39m
+  [36m<label[39m
+    [33mclass[39m=[32m"flex min-h-10 cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 hover:bg-fill-normal has-disabled:cursor-not-allowed has-disabled:text-label-disable"[39m
+  [36m>[39m
+    [36m<input[39m
+      [33maria-describedby[39m=[32m"_r_19_-form"[39m
+      [33maria-labelledby[39m=[32m"_r_19_-form-label"[39m
+      [33mchecked[39m=[32m""[39m
+      [33mclass[39m=[32m"mt-1 accent-primary"[39m
+      [33mname[39m=[32m"_r_19_-variant"[39m
+      [33mtype[39m=[32m"radio"[39m
+      [33mvalue[39m=[32m"form"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"flex flex-col"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-body3"[39m
+        [33mid[39m=[32m"_r_19_-form-label"[39m
+      [36m>[39m
+        [0m문의 폼[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [33mid[39m=[32m"_r_19_-form"[39m
+      [36m>[39m
+        [0m슬롯 모두 유지[0m
+      [36m</span>[39m
+    [36m</span>[39m
+  [36m</label>[39m
+  [36m<label[39m
+    [33mclass[39m=[32m"flex min-h-10 cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 hover:bg-fill-normal has-disabled:cursor-not-allowed has-disabled:text-label-disable"[39m
+  [36m>[39m
+    [36m<input[39m
+      [33maria-describedby[39m=[32m"_r_19_-booking"[39m
+      [33maria-labelledby[39m=[32m"_r_19_-booking-label"[39m
+      [33mclass[39m=[32m"mt-1 accent-primary"[39m
+      [33mname[39m=[32m"_r_19_-variant"[39m
+      [33mtype[39m=[32m"radio"[39m
+      [33mvalue[39m=[32m"booking"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"flex flex-col"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-body3"[39m
+        [33mid[39m=[32m"_r_19_-booking-label"[39m
+      [36m>[39m
+        [0m예약 폼[0m
+        [0m · 구조 미리보기[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [33mid[39m=[32m"_r_19_-booking"[39m
+      [36m>[39m
+        [0m슬롯 모두 유지[0m
+      [36m</span>[39m
+    [36m</span>[39m
+  [36m</label>[39m
+[36m</div>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/SectionVariant.test.tsx:56:17
+     54|     const list = await openVariants();
+     55|     expect(list.getByRole("radio", { name: "문의 폼" })).toBeInTheDocumen…
+     56|     expect(list.getByRole("radio", { name: "예약 폼" })).toBeInTheDocumen…
+       |                 ^
+     57|     const labels = list.getAllByRole("radio").map((r) => document.getE…
+     58|     expect(labels.filter((label) => label.endsWith(" · 구조 미리보기"))).toH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/components/studio/SectionVariantPreview.test.tsx > 변형 교체 — 렌더러 없는 변형 접미어 (이관) > 렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(문의 폼 · services 4변형)은 없음 · 머리 '변형:'은 그대로 · 전제: 주입 목록에만 없음
+AssertionError: expected [ 'header/sticky-right-cta', …(27) ] to include 'contact/booking'
+ ❯ src/components/studio/SectionVariantPreview.test.tsx:21:20
+     19|   it("렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(…
+     20|     const actual = (await vi.importActual<typeof import("../../feature…
+     21|     expect(actual).toContain(UNRENDERED);
+       |                    ^
+     22|     expect((await import("../../features/studio/renderedVariants")).RE…
+     23|     await openStudio();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  6 failed | 3 passed (9)
+   Start at  16:25:30
+   Duration  3.32s (environment 41%, transform 28%, tests 18%, setup 7%, import 6%)
+

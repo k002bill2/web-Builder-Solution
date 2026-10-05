@@ -1,0 +1,7 @@
+# contact/form 마크업 회귀 (P4 실제 추출 후) — 임시 테스트(커밋 안 함): renderToStaticMarkup(ContactForm, s-c · tone alt · 기본 슬롯) === logs/contact-form-markup-before.txt (1609 B) 단언 {afterBytes, beforeBytes, equal: true}
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app
+ ✓ src/kit/tmpMarkup.test.tsx > contact/form 마크업 = 추출 전 기준 8ms
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  16:26:04
+   Duration  1.59s (environment 75%, setup 11%, transform 10%, import 3%, tests 1%)

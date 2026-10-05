@@ -1,5 +1,6 @@
 import type { SectionInstance } from "../engine/contracts/pageDoc";
 import { AboutStory } from "./AboutStory";
+import { ContactBooking } from "./ContactBooking";
 import { ContactForm } from "./ContactForm";
 import { FaqAccordion } from "./FaqAccordion";
 import { FooterBizExtended } from "./FooterBizExtended";
@@ -27,7 +28,7 @@ import type { KitSection } from "./types";
 /**
  * 킷 레지스트리 (M2A-2a K3 · m2a 0.1 · Opus B-1-8) — `type/variant` → 킷 컴포넌트. 없는 쌍은 렌더 문서가 와이어프레임 폴백 + 표식으로 그린다.
  * M2A-2a = 바깥 3변형 · M2A-2b = 본문 4변형(about·services·faq·contact) · M2B-1a = hero 5변형(split·center·grid·text·image) · M2B-1b = header 3 · footer 3 ·
- * M2B-2a = about/text(AboutStory 재사용 — 이미지 슬롯 없음 = 1단) · services list·cards-2·cards-masonry · M2B-2b = portfolio grid-3·masonry·grid-2(공유 PortfolioGallery) · statistics/stats-3 · M2B-2c = testimonials/quotes-2 · pricing/tiers-2. 나머지는 M2b.
+ * M2B-2a = about/text(AboutStory 재사용 — 이미지 슬롯 없음 = 1단) · services list·cards-2·cards-masonry · M2B-2b = portfolio grid-3·masonry·grid-2(공유 PortfolioGallery) · statistics/stats-3 · M2B-2c = testimonials/quotes-2 · pricing/tiers-2 · contact/booking(ContactForm 공유 ContactKit). 나머지는 M2b.
  */
 export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze({
   "header/sticky-right-cta": HeaderStickyRightCta,
@@ -54,6 +55,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "pricing/tiers-2": PricingTiers2,
   "faq/accordion": FaqAccordion,
   "contact/form": ContactForm,
+  "contact/booking": ContactBooking,
   "footer/biz-extended": FooterBizExtended,
   "footer/biz-extended-map": FooterBizExtendedMap,
   "footer/minimal": FooterMinimal,

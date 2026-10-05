@@ -9,6 +9,7 @@ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
   ...Object.entries(SECTION_LIBRARY.sections).flatMap(([type, variants]) => Object.keys(variants).map((variant) => `${type}/${variant}`)),
   "about/story",
   "about/text",
+  "contact/booking",
   "contact/form",
   "faq/accordion",
   "portfolio/grid-2",

@@ -1036,9 +1036,17 @@
     font-weight: var(--site-weight-heading);
     cursor: not-allowed;
   }
+  /* contact/booking 날짜·시간 묶음 (B1-11 2) — md 미만 세로 · md 이상 한 줄 2칸 같은 폭 */
+  .kit-control-row {
+    display: grid;
+    gap: var(--site-s4);
+  }
   @media (width >= 48rem) {
     .kit-submit {
       align-self: flex-start;
+    }
+    .kit-control-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (width >= 64rem) {

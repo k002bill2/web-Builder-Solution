@@ -149,3 +149,23 @@ describe("3안 영역 캡션 (SPEC 2.4 · CMP-AC-U11)", () => {
     expect(within(region).getByText("구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다.")).toBeInTheDocument();
   });
 });
+
+describe("대화상자 안 선택 통합 (SPEC 2.5 · CMP-AC-U8)", () => {
+  it("대화상자 'B안 선택' = 카드와 같은 상태 · 성공 = 대화상자 status · 실패 = 대화상자 alert · 다시 누름 = 재시도", async () => {
+    let failSelect = true;
+    const { region } = await open({ fail: (call) => (call.method === "selectCandidate" && call.phase === "request" && failSelect ? new Error("down") : undefined) });
+    const u = user();
+    await generate(u, region);
+    await u.click(await within(region).findByRole("button", { name: COMPARE }));
+    const dialog = await screen.findByRole("dialog", { name: "3안 실제 화면 비교" });
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    await u.click(within(dialog).getByRole("button", { name: "B안 선택" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("안을 선택하지 못했습니다 · 다시 시도하세요");
+    failSelect = false;
+    await u.click(within(dialog).getByRole("button", { name: "B안 선택" }));
+    await vi.waitFor(() => expect(within(dialog).getByRole("status")).toHaveTextContent(/^B안을 선택했습니다$/));
+    expect(within(dialog).getByRole("button", { name: "B안 선택" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(within(region).getByRole("list", { name: "3안" })).getByRole("button", { name: "B안 선택" })).toHaveAttribute("aria-pressed", "true");
+    spy.mockRestore();
+  });
+});

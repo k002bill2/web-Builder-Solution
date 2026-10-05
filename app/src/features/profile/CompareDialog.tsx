@@ -147,6 +147,11 @@ export default function CompareDialog(props: CompareDialogProps) {
           </Button>
         </div>
       </div>
+      {props.failure && (
+        <p role="alert" className="ds-body3 rounded-md bg-status-negative-bg p-3 text-status-negative-text">
+          {props.failure}
+        </p>
+      )}
       <p role="status" className="ds-caption1 text-label-alternative">
         {announcement.text}
       </p>
@@ -163,6 +168,9 @@ export default function CompareDialog(props: CompareDialogProps) {
                 parts={props.parts}
                 palette={props.palette}
                 profileScale={props.profileScale}
+                selected={job.selected === p.id}
+                busy={props.busy}
+                onSelect={props.onSelect}
                 onCategory={announcement.report}
               />
             ))}

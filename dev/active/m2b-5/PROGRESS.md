@@ -10,7 +10,7 @@
 - [x] S1 시제품 예산 실측(버튼·onClick 동적 import·변환 3건, iframe 0) · 6.2 표 — 커밋 66d2f0c · RED logs/s1-red.txt(3 failed + 2파일 import 실패) → GREEN 표적 10 passed · **멈춤선 초과로 중단**(아래)
 - [x] S2 대화상자 + 비교 전용 프레임 다리(U3·U4·U9·U10, G2·G3) — `CompareDialog.tsx`(dialog·3열/1안씩·폭) · `CompareColumn.tsx` · `PreviewFrame.tsx`(다리, `CompareFrame.tsx`는 macOS 대소문자 무시 파일시스템에서 `compareFrame.ts`와 충돌해 이름 변경) · `compareFrame.ts` 로컬 상수 · 카드 부품은 CandidateResults 모듈을 부모가 넘김 · RED logs/s2-red.txt(7 failed) → GREEN 11 passed · typecheck·lint exit 0(s2-gate) · build exit 0(s2-build) · StructureCanvas·/studio·render 소스 변경 0
 - [x] S3 상태·알림·폴백·캡션(U6·U7·U11·U12) — `compareText.ts`(문구·범주·총계) · CompareColumn 상태 줄 7종·Wireframe 폴백·다시 그리기 · 대화상자 role=status(`useAnnouncement` — 열 보고 콜백에서 판정, effect 안 setState lint 회피) · 캡션 2문장 · `CANDIDATE_TEXT.preview` 교체 · RED logs/s3-red.txt(8 failed) → GREEN 표적 56 passed(s3-green) · typecheck·lint exit 0 · build exit 0(s3-build) · 내 새 테스트 1건 조정: 시간 초과 경계 7999/1ms → 7800/200ms(`shouldAdvanceTime` 실시간 경과 흡수, 단언 동일)
-- [ ] S4 선택 연동·접근성(U8·포커스·스크롤 영역) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
+- [x] S4 선택 연동·접근성(U8·포커스·스크롤 영역) — 열마다 "이 안 선택"(카드와 같은 `gen.select`·busy·aria-pressed·선택됨·Tag 선택) · `gen.failure` → 대화상자 role=alert · 선택 성공 = relay announce → 대화상자 status · RED logs/s4-red.txt(3 failed — 포커스 it는 S2 구현으로 이미 통과) → GREEN 21 passed · typecheck·lint exit 0 · build exit 0(s4-build) · 목업 대비: 키보드 순서에서 본문 스크롤 영역이 열 버튼 **앞**(영역이 열을 감싸 DOM 순서상 먼저 — SPEC 4절은 뒤)
 - [ ] S5 브라우저 B1~B6 4폭(1280·1024·768·390) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
 - [x] S6 전체 vitest exit0 · Codex review --scope branch --base 48487d5 · REPORT — vitest 213 files · 1850 passed · exit 0 · Errors 0(logs/final-full-vitest.txt) · Codex 1라운드 실제 완료 지적 0(logs/codex-review.txt) · REPORT.md(중단 보고 + 결정 요청 A/B/C)
 
@@ -18,17 +18,17 @@
 - [x] A 적용 — compareFrame에 readRenderMessage·모양 검사 로컬 사본 + 대조 가드 `compareFrameGuard.test.ts` it 2 · RED logs/a-red.txt(2 failed — it 2도 사본 export 없음으로 실패, 예측과 다름) → GREEN logs/a-green.txt · 음성 검증 1회 logs/a-negative.txt(protocol.ts `<= 1024`→`1025` 임시 변경 → 2 failed → 복원 `git diff` 0 → 2 passed) · build exit 0 logs/a-build.txt · typecheck·lint exit 0 · **6.2 전 행 멈춤선 안**(/studio 127.33)
 
 ## 6.2 예산 표 (gzip KB)
-| 대상 | baseline | S0 | S1 | A | S2 | S3 | S1 커밋(이전 최종) | 멈춤선 |
-|---|---|---|---|---|---|---|---|---|
-| /profile 첫 | 99.61 | 99.61 | 99.61 (1회차 99.61) | 99.61 | 99.62 | 99.61 | 99.61 | >99.64 |
-| /catalog 첫 | 99.66 | 99.66 | 99.65 (99.66) | 99.65 | 99.66 | 99.64 | 99.66 | >99.69 |
-| /references/:id 첫 | 97.00 | 97.00 | 97.00 (97.01) | 97.00 | 97.01 | 96.99 | 97.01 | >97.03 |
-| /compare 첫 · 진입 | 98.84 · 121.72 | 98.84 · 121.72 | 98.83 · 121.69 (98.84 · 121.70) | 98.83 · 121.69 | 98.84 · 121.72 | 98.82 · 121.69 | 98.84 · 121.70 | >98.87 |
-| /profile 진입(잡 없음) | 118.67 | 118.67 | 119.00 (119.02) | 119.00 | 119.15 | 119.13 | 119.02 (+0.35, SPEC 추정 +0.25 초과·멈춤선 안) | >119.50 |
-| /profile (3안 있음) 진입 | ≈121.11 | 121.11 | 121.45 (121.46) | 121.44 | 121.62 | 121.60 | 121.46 (+0.35) | >122.00 |
-| /studio 진입 | 127.34 | 127.34 | **127.56 (127.50)** | 127.33 | 127.36 (A 대비 +0.03 — 내 코드가 든 /studio 청크 0, 청크 해시 변화 추정) | 127.34 | **127.50 (+0.16) 초과** | >127.37 |
-| 렌더 JS · CSS | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 변화 시 멈춤 |
-| 비교 조작 뒤 청크 | — | — | 17.92 (17.78) | 17.67 | 19.47 | 21.01 | 17.78(S1 시제품 = 변환만) | >25 |
+| 대상 | baseline | S0 | S1 | A | S2 | S3 | S4 | S1 커밋(이전 최종) | 멈춤선 |
+|---|---|---|---|---|---|---|---|---|---|
+| /profile 첫 | 99.61 | 99.61 | 99.61 (1회차 99.61) | 99.61 | 99.62 | 99.61 | 99.61 | 99.61 | >99.64 |
+| /catalog 첫 | 99.66 | 99.66 | 99.65 (99.66) | 99.65 | 99.66 | 99.64 | 99.65 | 99.66 | >99.69 |
+| /references/:id 첫 | 97.00 | 97.00 | 97.00 (97.01) | 97.00 | 97.01 | 96.99 | 97.00 | 97.01 | >97.03 |
+| /compare 첫 · 진입 | 98.84 · 121.72 | 98.84 · 121.72 | 98.83 · 121.69 (98.84 · 121.70) | 98.83 · 121.69 | 98.84 · 121.72 | 98.82 · 121.69 | 98.83 · 121.70 | 98.84 · 121.70 | >98.87 |
+| /profile 진입(잡 없음) | 118.67 | 118.67 | 119.00 (119.02) | 119.00 | 119.15 | 119.13 | 119.13 | 119.02 (+0.35, SPEC 추정 +0.25 초과·멈춤선 안) | >119.50 |
+| /profile (3안 있음) 진입 | ≈121.11 | 121.11 | 121.45 (121.46) | 121.44 | 121.62 | 121.60 | 121.60 | 121.46 (+0.35) | >122.00 |
+| /studio 진입 | 127.34 | 127.34 | **127.56 (127.50)** | 127.33 | 127.36 (A 대비 +0.03 — 내 코드가 든 /studio 청크 0, 청크 해시 변화 추정) | 127.34 | 127.34 | **127.50 (+0.16) 초과** | >127.37 |
+| 렌더 JS · CSS | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 83.03 · 8.75 | 변화 시 멈춤 |
+| 비교 조작 뒤 청크 | — | — | 17.92 (17.78) | 17.67 | 19.47 | 21.01 | 21.18 | 17.78(S1 시제품 = 변환만) | >25 |
 
 - 청크 해시 잡음(실측): S2→S3 사이 코드 변경 0인 청크들이 ±1~11B 변동(StudioLayout 16602→16613 · index 85856→85852 등, logs/s2·s3-chunkbytes.json) — 다른 청크·CSS 파일 해시가 바뀌면 import 경로 문자열이 바뀌어 gzip이 흔들린다. `/studio` 127.33↔127.36은 이 잡음 범위
 
@@ -56,6 +56,7 @@
 - S4 (기준 = S3 216 · 1867): 새 파일 0 · it +4 → **216 files · 1871**
   - `CompareDialog.test.tsx` it +3 — U8 열마다 "이 안 선택"(aria-pressed·"선택됨"·Tag 선택·aria-busy·만들지 못한 안 버튼 0) → onSelect · gen.failure → 대화상자 role=alert · listen 문장 → status · 열 때 포커스 = 첫 라디오 · 본문 스크롤 영역 tabIndex 0
   - `ProfileCompare.test.tsx` it +1 — U8 통합: 대화상자 선택 = 카드와 같은 상태 · 성공 status 1회 · 선택 실패 → 대화상자 alert · 다시 누름 = 재시도
+- S4 실제: +4 → 216 files · 1871(예측 일치)
 
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)

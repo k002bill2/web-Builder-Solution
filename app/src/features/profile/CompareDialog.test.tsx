@@ -252,3 +252,37 @@ describe("캡션 · 요약 (SPEC 2.4 · 2.5 · CMP-AC-U11·U12)", () => {
     expect(column(dialog, "A")).toHaveTextContent(`${parts.scaleText(a.plan, props.profileScale)} (구조안)`);
   });
 });
+
+describe("대화상자 안 선택 · 접근성 (SPEC 2.5 · 4 · CMP-AC-U8)", () => {
+  it("열마다 '이 안 선택'(접근 이름 'X안 선택') = onSelect · 선택한 안 = aria-pressed + '선택됨' + Tag 선택 · busy = aria-busy · 만들지 못한 안 = 버튼 0", async () => {
+    const { dialog, onSelect, rerender, props } = await mountDialog({ selected: "A", options: { outcome: ({ id }) => (id === "C" ? "INFRA" : undefined) } });
+    const a = within(column(dialog, "A")).getByRole("button", { name: "A안 선택" });
+    expect(a).toHaveAttribute("aria-pressed", "true");
+    expect(a).toHaveTextContent("선택됨");
+    expect(within(column(dialog, "A")).getByText("선택")).toBeInTheDocument();
+    const b = within(column(dialog, "B")).getByRole("button", { name: "B안 선택" });
+    expect(b).toHaveAttribute("aria-pressed", "false");
+    expect(b).toHaveTextContent("이 안 선택");
+    expect(within(column(dialog, "B")).queryByText("선택")).not.toBeInTheDocument();
+    expect(within(column(dialog, "C")).queryByRole("button", { name: "C안 선택" })).not.toBeInTheDocument();
+    await userEvent.click(b);
+    expect(onSelect).toHaveBeenCalledWith("B");
+    rerender(<CompareDialog {...props} busy />);
+    expect(within(column(dialog, "B")).getByRole("button", { name: "B안 선택" })).toHaveAttribute("aria-busy", "true");
+  });
+
+  it("gen.failure → 머리 아래 role=alert(같은 문장) · 바깥 announce(listen) → 대화상자 status", async () => {
+    const { dialog, rerender, props, receivers } = await mountDialog();
+    expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument();
+    rerender(<CompareDialog {...props} failure="안을 선택하지 못했습니다 · 다시 시도하세요" />);
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("안을 선택하지 못했습니다 · 다시 시도하세요");
+    act(() => receivers.at(-1)!("B안을 선택했습니다"));
+    expect(status(dialog)).toHaveTextContent(/^B안을 선택했습니다$/);
+  });
+
+  it("열 때 포커스 = 첫 라디오(데스크톱) · 본문 스크롤 영역 tabIndex 0 · 접근 이름 '3안 미리보기 영역'", async () => {
+    const { dialog } = await mountDialog();
+    expect(within(dialog).getByRole("radio", { name: "데스크톱" })).toHaveFocus();
+    expect(within(dialog).getByRole("region", { name: "3안 미리보기 영역" })).toHaveAttribute("tabindex", "0");
+  });
+});

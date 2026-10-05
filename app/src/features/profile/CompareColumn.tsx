@@ -1,5 +1,6 @@
 /**
- * 비교 대화상자의 안 열 하나 (M2B-5 SPEC 2.1 3 · 2.5 · 2.6 · 3.3) — 머리(h3 · Tag) → 차이 요약 → 바뀐 쌍 → 상태 줄 → 미리보기 프레임.
+ * 비교 대화상자의 안 열 하나 (M2B-5 SPEC 2.1 3 · 2.5 · 2.6 · 3.3) — 머리(h3 · Tag) → 차이 요약 → 바뀐 쌍 → "이 안 선택" → 상태 줄 → 미리보기 프레임.
+ * 선택 버튼은 프레임 위 — 프레임 높이가 수천 px라 아래에 두면 화면 밖으로 밀린다(SPEC 2.1). 카드와 같은 핸들러·상태·문구(★MQ-M2B5-4 A).
  * 프레임 폭 = 데스크톱 1280 · 모바일 390 rem, 열보다 넓으면 `zoom` 축소(캔버스와 같은 계산, 로컬 사본).
  * 그리지 못함·변환 불가 = 프레임 자리에 그 안의 Wireframe(이미 받은 결과 청크 부품) · 만들지 못한 안 = 문장만. 시간 초과 = "다시 그리기"(이 열 프레임만 재마운트).
  */
@@ -39,6 +40,9 @@ export function CompareColumn({
   parts,
   palette,
   profileScale,
+  selected,
+  busy,
+  onSelect,
   onCategory,
 }: {
   readonly preview: ComparePreview;
@@ -47,6 +51,9 @@ export function CompareColumn({
   readonly parts: CandidateParts;
   readonly palette: WirePalette;
   readonly profileScale: number;
+  readonly selected: boolean;
+  readonly busy: boolean;
+  readonly onSelect: (id: CandidateId) => void;
   readonly onCategory: (id: CandidateId, category: FrameCategory | undefined) => void;
 }) {
   const headingId = useId();
@@ -78,6 +85,7 @@ export function CompareColumn({
         <h3 id={headingId} className="ds-label">
           {preview.id}안
         </h3>
+        {selected && <Tag tone="blue">선택</Tag>}
         {warnings > 0 && <Tag tone="orange">경고 {warnings}</Tag>}
       </div>
       {plan && (
@@ -86,6 +94,19 @@ export function CompareColumn({
         </p>
       )}
       {write?.ok && write.changeNotice && <p className="ds-caption1 text-label-alternative">{write.changeNotice}</p>}
+      {plan && (
+        <Button
+          size="sm"
+          variant={selected ? "primary" : "outline"}
+          className="self-start"
+          aria-pressed={selected}
+          aria-label={`${preview.id}안 선택`}
+          aria-busy={busy || undefined}
+          onClick={() => onSelect(preview.id)}
+        >
+          {selected ? "선택됨" : "이 안 선택"}
+        </Button>
+      )}
       {line && <p className="ds-caption1 text-label-alternative">{line}</p>}
       {state === "timeout" && (
         <Button

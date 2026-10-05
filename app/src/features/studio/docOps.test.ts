@@ -1,8 +1,9 @@
 import { addSection, moveSection, removeSection, swapVariant } from "../../engine/ops/sectionOps";
 import { normalizeDoc } from "../../engine/ops/normalize";
 import { ids, sampleDoc, section, withSections } from "../../engine/testing/sampleDoc";
-import { applyDocOp, createInstanceIds, runDocOp, type OpContext } from "./docOps";
+import { applyDocOp, createInstanceIds, type OpContext } from "./docOps";
 import * as engine from "./docEngine";
+import { runDocOp } from "./docEngine";
 
 const doc = sampleDoc();
 const ctx = (over: Partial<OpContext> = {}): OpContext => ({ purpose: "none", motionPreset: "L2", nextInstanceId: () => "s-new-1", ...over });
@@ -43,6 +44,16 @@ describe("docOps 연산 어댑터 (K2 · 8.2)", () => {
   it("applyDocOp: 엔진 청크를 동적 import해 같은 결과", async () => {
     const op = { kind: "move", instanceId: "s-faq", direction: "down" } as const;
     expect(await applyDocOp(doc, op, ctx())).toEqual(runDocOp(engine, doc, op, ctx()));
+  });
+
+  it("applyDocOp: 엔진이 거부하면 같은 오류로 reject — useSectionOps가 그 문장을 알린다", async () => {
+    const booking = withSections(doc, doc.sections.map((s) => (s.type === "contact" ? section("contact", "booking", "s-contact") : s)));
+    await expect(applyDocOp(booking, { kind: "remove", instanceId: "s-contact" }, ctx({ purpose: "booking" }))).rejects.toMatchObject({ code: "NOT_ALLOWED" });
+  });
+
+  it("연산 본문(runDocOp)은 조작 뒤 청크(docEngine)에만 — docOps는 내보내지 않는다(/studio 진입 예산, M2C-3S)", async () => {
+    expect(Object.keys(await import("./docOps"))).not.toContain("runDocOp");
+    expect(typeof (engine as Record<string, unknown>).runDocOp).toBe("function");
   });
 });
 

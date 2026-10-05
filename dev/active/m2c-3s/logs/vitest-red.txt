@@ -1,0 +1,30 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3s/app
+
+ ❯ src/features/studio/docOps.test.ts (8 tests | 1 failed) 8ms
+   ❯ docOps 연산 어댑터 (K2 · 8.2) (7)
+     × 연산 본문(runDocOp)은 조작 뒤 청크(docEngine)에만 — docOps는 내보내지 않는다(/studio 진입 예산, M2C-3S) 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/docOps.test.ts > docOps 연산 어댑터 (K2 · 8.2) > 연산 본문(runDocOp)은 조작 뒤 청크(docEngine)에만 — docOps는 내보내지 않는다(/studio 진입 예산, M2C-3S)
+AssertionError: expected [ 'loadDocEngine', 'runDocOp', …(2) ] to not include 'runDocOp'
+ ❯ src/features/studio/docOps.test.ts:54:75
+     52|
+     53|   it("연산 본문(runDocOp)은 조작 뒤 청크(docEngine)에만 — docOps는 내보내지 않는다(/studio…
+     54|     expect(Object.keys(await import("./docOps"))).not.toContain("runDo…
+       |                                                                           ^
+     55|     expect(typeof (engine as Record<string, unknown>).runDocOp).toBe("…
+     56|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  01:57:14
+   Duration  603ms (environment 69%, transform 15%, setup 12%, import 2%, tests 2%, worker 1%)
+

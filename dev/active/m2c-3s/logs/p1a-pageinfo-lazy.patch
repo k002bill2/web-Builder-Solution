@@ -1,0 +1,25 @@
+diff --git a/app/src/components/studio/EditFields.tsx b/app/src/components/studio/EditFields.tsx
+index e359cda..94951ad 100644
+--- a/app/src/components/studio/EditFields.tsx
++++ b/app/src/components/studio/EditFields.tsx
+@@ -6,10 +6,10 @@ import { slotIssue } from "../../features/studio/canvasIssues";
+ import { selectedSection } from "../../features/studio/selection";
+ import { Callout } from "../ds/Callout";
+ import { FieldEditor } from "./FieldEditor";
+-import { PageInfoFields } from "./PageInfoFields";
+ 
+ /** 사이트 주인용 안내(m2a K2) — contact/form 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
+ const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
++const PageInfoFields = lazy(() => import("./PageInfoFields").then((m) => ({ default: m.PageInfoFields })));
+ 
+ /**
+  * 편집 패널 필드 (SPEC 5.6 · E-AC-06) — 선택 섹션의 글자 슬롯(`FieldEditor`) 또는 "페이지 정보"(`PageInfoFields`).
+@@ -17,7 +17,7 @@ const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
+  */
+ export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc; readonly selectedId: string; readonly onEdit: (next: PageDoc) => void }) {
+   const section = selectedSection(doc, selectedId);
+-  if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;
++  if (!section) return <Suspense fallback={null}><PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} /></Suspense>;
+   const slots = getSectionDefinition(section.type, section.variant)?.slots ?? [];
+   const images = slots.filter((entry) => entry.kind === "image").length;
+   return (

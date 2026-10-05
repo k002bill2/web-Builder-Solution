@@ -1,0 +1,97 @@
+/*
+ * 사이트 모션 (M2B-4b · SPEC-MOTION-FONT 1절 · MQ-M2B3-1·5 ★A) — CSS만 · JS 0 · 반복 1 · transform·opacity만 · 가로 이동 0.
+ * 기본 스타일 = 최종 상태. keyframes는 출발(from)만 정의하고 backwards로 지연 동안 출발을 유지한다.
+ * 재생 조건 = 사이트 루트 data-motion-play(정적 HTML 생성기만 붙인다 — 렌더 문서·PNG 0) + 섹션 루트 data-motion(렌더가 첫 화면 판정 후 쓴다).
+ * 감소 설정·인쇄 = 이 media 밖이라 규칙 0. 킷 모션 0 가드(kitGuard)의 예외는 이 파일 하나(MF-AC-G1) — 계약 검사는 motion.test.ts.
+ */
+@media screen and (prefers-reduced-motion: no-preference) {
+  @layer components {
+    /* 1.2 토큰 — 프로필과 무관한 고정값 */
+    [data-site-root][data-motion-play] {
+      --site-motion-dur-sheet: 200ms;
+      --site-motion-dur-enter: 420ms;
+      --site-motion-dur-zoom: 720ms;
+      --site-motion-stagger: 80ms;
+      --site-motion-ease-out: cubic-bezier(0.2, 0, 0, 1);
+      --site-motion-ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+      --site-motion-rise: 0.75rem;
+      --site-motion-drop: -0.5rem;
+      --site-motion-zoom: 1.04;
+    }
+    @keyframes kit-fade {
+      from {
+        opacity: 0;
+      }
+    }
+    @keyframes kit-rise {
+      from {
+        opacity: 0;
+        transform: translateY(var(--site-motion-rise));
+      }
+    }
+    @keyframes kit-zoom {
+      from {
+        transform: scale(var(--site-motion-zoom));
+      }
+    }
+    @keyframes kit-grow {
+      from {
+        transform: scaleX(0);
+      }
+    }
+
+    /* header L1 — 메뉴 시트 열림만(투명도 + 위에서 내려옴). 전환은 열린 상태 안에만 → 닫힘 즉시. @starting-style 미지원 = 즉시 열림(R-4) */
+    [data-site-root][data-motion-play] [data-kit][data-motion] .kit-sheet:popover-open {
+      transition:
+        opacity var(--site-motion-dur-sheet) var(--site-motion-ease-std),
+        transform var(--site-motion-dur-sheet) var(--site-motion-ease-std),
+        overlay var(--site-motion-dur-sheet) allow-discrete,
+        display var(--site-motion-dur-sheet) allow-discrete;
+    }
+    @starting-style {
+      [data-site-root][data-motion-play] [data-kit][data-motion] .kit-sheet:popover-open {
+        opacity: 0;
+        transform: translateY(var(--site-motion-drop));
+      }
+    }
+
+    /* L1 — 첫 화면 섹션의 묶음 1개 투명도만(1.4 L1 열) */
+    [data-site-root][data-motion-play] [data-kit][data-motion="L1"] :is(.kit-hero-panel, .kit-hx-copy, .kit-hx-center, .kit-about-text, .kit-cards, .kit-list, .kit-gallery, .kit-stats, .kit-band-text) {
+      animation: kit-fade var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
+    }
+
+    /* L2 — 묶음 이동(rise) · center는 제목·부제·CTA를 순서대로 · 목록은 항목 순차(벽돌형 = 투명도만, 이동 0) · cta-band CTA는 움직이지 않음 */
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hero-panel, .kit-hx-copy, .kit-about-text, .kit-band-text, .kit-about-media, .kit-hx-tile--b, .kit-hx-tile--c),
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hx-center, .kit-cards, .kit-gallery, .kit-stats) > * {
+      animation: kit-rise var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] [data-layout="masonry"] > * {
+      animation: kit-fade var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
+    }
+    /* L2 hero 이미지 — 칸 안쪽 약한 확대 → 원래 크기(1회). 칸 = split figure(기존 overflow hidden) · grid 타일 묶음 · fullbleed-left·image 섹션(이미지가 섹션 직속).
+       아래 변 고정(transform-origin) — 확대가 카피 쪽(아래)으로 넘지 않고 위·옆은 칸에서 잘린다 */
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"]:is(.kit-hero, .kit-hx--image),
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] .kit-hx-tiles {
+      overflow: clip;
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hero-media, .kit-hx-split-img, .kit-hx-tile--a, .kit-hx-wide) {
+      transform-origin: 50% 100%;
+      animation: kit-zoom var(--site-motion-dur-zoom) var(--site-motion-ease-out) 1 backwards;
+    }
+    /* L2 hero/text 강조선 — 글 시작 쪽에서 길이가 늘어남 */
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] .kit-hx-rule {
+      transform-origin: 0 50%;
+      animation: kit-grow var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
+    }
+    /* 순차 상한(위 shorthand 뒤에 둔다 — 지연이 0으로 덮이지 않게): 2번째 = 1단 · 3번째 이후 = 2단 공유(항목 수 가변에도 규칙 수 고정) · split 이미지·about 이미지 칸·grid 타일 B·text 강조선 = 1단 · 타일 C = 2단 */
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hx-center, .kit-cards, .kit-gallery, .kit-stats) > :nth-child(2),
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hx-split-img, .kit-about-media, .kit-hx-tile--b, .kit-hx-rule) {
+      animation-delay: var(--site-motion-stagger);
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hx-center, .kit-cards, .kit-gallery, .kit-stats) > :nth-child(n + 3),
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] .kit-hx-tile--c {
+      animation-delay: calc(2 * var(--site-motion-stagger));
+    }
+
+  }
+}

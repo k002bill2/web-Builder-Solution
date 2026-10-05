@@ -1,0 +1,90 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app
+
+ ❯ src/kit/motion.test.ts (4 tests | 4 failed) 6ms
+   ❯ 사이트 모션 CSS (MF-AC-U2·U3) (4)
+     × U2: 모든 내용이 감소 설정 옵트인 media 블록 1개 안 · 애니메이션·전환 규칙마다 재생 조건(사이트 루트 data-motion-play → 섹션 data-motion) 3ms
+     × U2: 반복 1 · infinite 0 · 스크롤 연동 0 · 전환 = opacity·transform(+시트 overlay·display allow-discrete) · keyframes = opacity·transform · translateX 0 0ms
+     × U3: 토큰 9개 = SPEC 1.2 값 · 3 × stagger + dur-zoom ≤ 1초 · 각 dur ≤ 720ms · 이동 거리 rem 0ms
+     × 렌더 CSS가 kit.css 뒤에 motion.css를 싣는다(같은 렌더 CSS → 정적 HTML·PNG) 1ms
+ ❯ src/test/kitGuard.test.ts (6 tests | 1 failed) 17ms
+   ❯ 킷 가드 (K-AC-01 · K-AC-07) (6)
+     × G1: 모션 CSS 예외는 kit/motion.css 경로 하나만 — 다른 킷 파일(motion.css 이름 흉내 포함)의 animation·transition은 계속 위반 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/motion.test.ts > 사이트 모션 CSS (MF-AC-U2·U3) > U2: 모든 내용이 감소 설정 옵트인 media 블록 1개 안 · 애니메이션·전환 규칙마다 재생 조건(사이트 루트 data-motion-play → 섹션 data-motion)
+Error: ENOENT: no such file or directory, open '/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app/src/kit/motion.css'
+ ❯ read src/kit/motion.test.ts:9:32
+      7|  * 모든 규칙 = `@media screen and (prefers-reduced-motion: no-preference)`…
+      8|  */
+      9| const read = (path: string) => readFileSync(fileURLToPath(new URL(path…
+       |                                ^
+     10| const MEDIA = "@media screen and (prefers-reduced-motion: no-preferenc…
+     11| const source = () => read("./motion.css").replace(/\/\*[\s\S]*?\*\//g,…
+ ❯ source src/kit/motion.test.ts:11:22
+ ❯ src/kit/motion.test.ts:31:44
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/kit/motion.test.ts > 사이트 모션 CSS (MF-AC-U2·U3) > U2: 반복 1 · infinite 0 · 스크롤 연동 0 · 전환 = opacity·transform(+시트 overlay·display allow-discrete) · keyframes = opacity·transform · translateX 0
+Error: ENOENT: no such file or directory, open '/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app/src/kit/motion.css'
+ ❯ read src/kit/motion.test.ts:9:32
+      7|  * 모든 규칙 = `@media screen and (prefers-reduced-motion: no-preference)`…
+      8|  */
+      9| const read = (path: string) => readFileSync(fileURLToPath(new URL(path…
+       |                                ^
+     10| const MEDIA = "@media screen and (prefers-reduced-motion: no-preferenc…
+     11| const source = () => read("./motion.css").replace(/\/\*[\s\S]*?\*\//g,…
+ ❯ source src/kit/motion.test.ts:11:22
+ ❯ src/kit/motion.test.ts:46:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/kit/motion.test.ts > 사이트 모션 CSS (MF-AC-U2·U3) > U3: 토큰 9개 = SPEC 1.2 값 · 3 × stagger + dur-zoom ≤ 1초 · 각 dur ≤ 720ms · 이동 거리 rem
+Error: ENOENT: no such file or directory, open '/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app/src/kit/motion.css'
+ ❯ read src/kit/motion.test.ts:9:32
+      7|  * 모든 규칙 = `@media screen and (prefers-reduced-motion: no-preference)`…
+      8|  */
+      9| const read = (path: string) => readFileSync(fileURLToPath(new URL(path…
+       |                                ^
+     10| const MEDIA = "@media screen and (prefers-reduced-motion: no-preferenc…
+     11| const source = () => read("./motion.css").replace(/\/\*[\s\S]*?\*\//g,…
+ ❯ source src/kit/motion.test.ts:11:22
+ ❯ src/kit/motion.test.ts:66:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/kit/motion.test.ts > 사이트 모션 CSS (MF-AC-U2·U3) > 렌더 CSS가 kit.css 뒤에 motion.css를 싣는다(같은 렌더 CSS → 정적 HTML·PNG)
+AssertionError: expected -1 to be greater than 519
+ ❯ src/kit/motion.test.ts:92:20
+     90|     const motion = render.indexOf('@import "../kit/motion.css";');
+     91|     expect(kit).toBeGreaterThan(-1);
+     92|     expect(motion).toBeGreaterThan(kit);
+       |                    ^
+     93|   });
+     94| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/test/kitGuard.test.ts > 킷 가드 (K-AC-01 · K-AC-07) > G1: 모션 CSS 예외는 kit/motion.css 경로 하나만 — 다른 킷 파일(motion.css 이름 흉내 포함)의 animation·transition은 계속 위반
+AssertionError: expected [ 'AboutStory.tsx', …(36) ] to include 'motion.css'
+ ❯ src/test/kitGuard.test.ts:92:53
+     90|     expect(lineViolations(join(KIT, "motion.css"), "color: #fff;")).to…
+     91|     for (const other of ["kit.css", "fonts.css", "sub/motion.css", "mo…
+     92|     expect(kitFiles().map((f) => relative(KIT, f))).toContain("motion.…
+       |                                                     ^
+     93|   });
+     94|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 5 passed (10)
+   Start at  18:53:28
+   Duration  228ms (setup 63%, transform 21%, tests 9%, import 4%, worker 4%)
+

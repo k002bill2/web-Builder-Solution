@@ -8,7 +8,7 @@
 - [x] P0 npm ci exit 0 · lock 불변(logs/p0-npm-ci.txt: `lock diff exit=0`) · baseline 전체 suite 208·1827·exit 0 · 바이트(logs/p0-baseline-bytes-B.txt): 렌더 JS 82,871 · CSS 8,034 · /studio 첫 91,784 · 진입 127,330 · /compare 진입 121,695 B · 골격 커밋
 - [x] E0-1 R-4 실측(logs/e0-r4.txt, Ego Lite Chrome 152): 지원 = 열림 직후 opacity 0·translateY(-8px) → 400ms 뒤 1·none · 미지원 대용(알 수 없는 at-rule로 블록 무시) = 처음부터 최종 · reduce·print = 처음부터 최종. Safari·Firefox 실측 환경 없음(한계)
 - [x] E0-2 시제품(hero/fullbleed-left + 토큰·keyframes·시트) CSS 8,034 → 8,391(+357 B) · JS +0 · 빌드 산출 원형 유지 → 외삽 +0.9~1.2KB, SPEC 1.7 이내·멈춤 아님(logs/e0-budget.txt)
-- [ ] P1 `kit/motion.css` 토큰·선택자 계약 · 가드 U2·U3·G1
+- [x] P1 `kit/motion.css`(토큰 9·keyframes 4·시트·L1 묶음·L2 rise/순차/확대/강조선) · render.css import(kit.css 뒤) · RED 5 failed(logs/p1-red.txt, motion.css·import 없이) = 예측 +5 → GREEN 10 · gate OK(logs/p1-gate.txt) · 바이트 logs/p1-bytes.txt
 - [ ] P2 렌더 `data-motion`(U1)
 - [ ] P3 정적 HTML `data-motion-play`·KEPT_DATA·스크립트 바이트 동일(U4) · PNG 방어 규칙(U5)
 - [ ] P4 브라우저 B1~B5 3폭·reduced-motion·200%·인쇄 · 계산 스타일 동등성

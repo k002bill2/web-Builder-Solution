@@ -21,3 +21,4 @@ base `7125138` · 기준선: vitest 227파일 2034 · /studio 진입 127.04 · �
 - 06: ImageSlotPanel.test +2 (Enter로 지우기 → 포커스 '이미지 고르기' · 잃은 이미지 마우스 지우기 → 같음) → 2034→2036
 - 07: ImageSlotPanel.test +1 (지운 뒤 status = '이미지를 지웠습니다', 넣었습니다 문구 잔류 0) → 2037
 - 04: StudioLayoutImages.test +1 (펼친 채 1280→1024→768→390→1280 — 매 폭 details open·패널 스위치 유지) → 2038
+- 05: ImageSlotPanel.test +1 (스위치 도움말 = SPEC r2 4절 '섹션 배경' · '색 면' 0) → 2039

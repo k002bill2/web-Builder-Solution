@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import type { ImageSlotValue, SlotValue } from "../engine/contracts/pageDoc";
 import { sampleDoc, section, withSections } from "../engine/testing/sampleDoc";
+import { render } from "@testing-library/react";
+import { PageDocument } from "../render/PageDocument";
 import { drawDoc } from "../render/testing/drawKit";
 import { SAMPLE_KIT_TOKENS } from "../render/testing/sampleKitTokens";
 
@@ -99,7 +101,20 @@ describe("portfolio/masonry (B1-6)", () => {
     const gap = portfolio(drawDoc(galleryDoc("masonry", { image1: img(), image2: off, image3: img() }), urls, tokens), "masonry");
     expect(sizes(gap)).toEqual(["1:1", "4:5"]);
     const grad = portfolio(drawDoc(galleryDoc("masonry")), "masonry");
-    expect([...grad.querySelectorAll('[data-media="gradient"]')].map((el) => [...el.classList].find((c) => c.startsWith("kit-r")))).toEqual(["kit-r1x1", "kit-r16x9", "kit-r4x5"]);
+    expect([...grad.querySelectorAll('[data-media="art"]')].map((el) => [...el.classList].find((c) => c.startsWith("kit-r")))).toEqual(["kit-r1x1", "kit-r16x9", "kit-r4x5"]);
+  });
+
+  it("IMG-AC-17 [U]: 실제 이미지 칸 = 원본 비율(1:2~2:1로 자름 — 인라인 aspect-ratio) · img width·height = 메타 · 메타 없는 이미지·이미지 없는 칸 = 고정 배열 · grid는 메타 무시", () => {
+    const [A, B, C] = ["44444444-4444-4444-8444-444444444441", "44444444-4444-4444-8444-444444444442", "44444444-4444-4444-8444-444444444443"] as const;
+    const src = (id: string) => img({ source: id as ImageSlotValue["source"] });
+    const urls = { [A]: "blob:null/a", [B]: "blob:null/b", [C]: "blob:null/c" };
+    const sizes = { [A]: { width: 3000, height: 1000 }, [B]: { width: 900, height: 1600 }, [C]: { width: 500, height: 2000 } };
+    const draw = (variant: string, slots: Readonly<Record<string, SlotValue>>, imageSizes = sizes) =>
+      portfolio(render(<PageDocument doc={galleryDoc(variant, slots)} kitTokens={SAMPLE_KIT_TOKENS} images={urls} imageSizes={imageSizes} />).container, variant);
+    const cells = (s: HTMLElement) => [...s.querySelectorAll<HTMLElement>("[data-media]")].map((el) => [el.style.aspectRatio, el.getAttribute("width"), el.getAttribute("height"), [...el.classList].find((c) => c.startsWith("kit-r")) ?? ""].join("|"));
+    expect(cells(draw("masonry", { image1: src(A), image2: src(B), image3: src(C) }))).toEqual(["2 / 1|3000|1000|", "900 / 1600|900|1600|", "1 / 2|500|2000|"]);
+    expect(cells(draw("masonry", { image1: src(A), image2: img({ source: { kind: "placeholder", patternId: "diagonal" } }), image3: src(C) }, { [A]: sizes[A] }))).toEqual(["2 / 1|3000|1000|", "|||kit-r16x9", "|4|5|kit-r4x5"]);
+    expect(cells(draw("grid-3", { image1: src(A), image2: src(B), image3: src(C) }))).toEqual(["|4|5|", "|4|5|", "|4|5|"]);
   });
 
   it("KD-AC-14 · 15 · 07 [U]: grid md 이상 3·2열 고정 트랙(auto-fit 0) · masonry md 이상 CSS 다단 2 · 칸 break-inside avoid · 고정 비율 class · 선택자 = class(data-layout·nth-child 0) · 재배치 0", () => {

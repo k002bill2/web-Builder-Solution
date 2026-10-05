@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sampleDoc } from "../engine/testing/sampleDoc";
 import { RenderApp } from "./RenderApp";
+import { deferred as manual } from "../test/deferred";
 import { SAMPLE_KIT_TOKENS } from "./testing/sampleKitTokens";
 
 /**
@@ -102,6 +103,59 @@ describe("렌더 문서 수신기", () => {
     expect(create).toHaveBeenCalledTimes(1);
     fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: { blob: new Blob(["x"]), width: 4, height: 3 } } });
     expect(revoke).toHaveBeenCalledWith("blob:null/1");
+  });
+
+  describe("내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4)", () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    const hero = sampleDoc().sections[1]!;
+    const withImage = { ...sampleDoc(), sections: sampleDoc().sections.map((s) => (s === hero ? { ...s, slots: { ...s.slots, image: { kind: "image", enabled: true, source: id, alt: "가게", decorative: false } } } : s)) };
+    const images = { [id]: { blob: new Blob(["x"]), width: 4, height: 3 } };
+    const stubDecode = (impl: () => Promise<void>) => {
+      const decode = vi.fn(impl);
+      Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
+      return decode;
+    };
+    beforeEach(() => Object.assign(URL, { createObjectURL: vi.fn(() => "blob:null/1"), revokeObjectURL: vi.fn() }));
+    afterEach(() => Reflect.deleteProperty(HTMLImageElement.prototype, "decode"));
+
+    it('loading "eager" → 모든 img decode 뒤 첫 rects (decode 전 0) · 미리보기(loading 없음)는 decode를 기다리지 않는다', async () => {
+      const gate = manual();
+      const decode = stubDecode(() => gate.promise);
+      render(<RenderApp host={window} />);
+      fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images, loading: "eager" });
+      expect(decode).toHaveBeenCalledTimes(1);
+      expect(sent("rects")).toHaveLength(0);
+      await act(async () => gate.resolve());
+      expect(sent("rects").length).toBeGreaterThan(0);
+      decode.mockClear();
+      fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images });
+      expect(decode).not.toHaveBeenCalled();
+    });
+
+    it("decode 실패 1장 이상 = error{IMAGE_DECODE_FAILED} · rects 0", async () => {
+      stubDecode(() => Promise.reject(new Error("broken")));
+      render(<RenderApp host={window} />);
+      await act(async () => fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images, loading: "eager" }));
+      await act(async () => {});
+      expect(sent("error")).toEqual([{ type: "error", code: "IMAGE_DECODE_FAILED" }]);
+      expect(sent("rects")).toHaveLength(0);
+    });
+
+    it("대기 중 새 render = 앞 대기 결과 버림(앞 decode 실패도 보고하지 않음) · 마지막 render만 rects", async () => {
+      const first = manual();
+      const decode = stubDecode(() => first.promise);
+      render(<RenderApp host={window} />);
+      fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images, loading: "eager" });
+      const second = manual();
+      decode.mockImplementation(() => second.promise);
+      fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images, loading: "eager" });
+      await act(async () => first.reject(new Error("old")));
+      expect(sent("error")).toHaveLength(0);
+      expect(sent("rects")).toHaveLength(0);
+      await act(async () => second.resolve());
+      expect(sent("rects").length).toBeGreaterThan(0);
+      expect(sent("error")).toHaveLength(0);
+    });
   });
 
   it("킷 링크 누름 → 이동 막음(편집 캔버스) + click{header} · 메뉴 시트 안 앵커면 시트 hidePopover (K1-1 6)", () => {

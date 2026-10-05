@@ -12,9 +12,9 @@
 - [x] SPEC-COMPARE3.md 1~7절 작성
 - [x] MQ-M2B5.md 작성
 - [x] SPEC·MQ 커밋
-- [ ] Codex adversarial-review(branch, base 292e7b6) — 실제 완료 결과만 기록
-- [ ] Codex 지적 반영(필요 시) + 커밋
-- [ ] REPORT.md 마감 + 커밋
+- [x] Codex adversarial-review R1·R2(branch, base 292e7b6) — 둘 다 실제 완료, needs-attention(R1 P1 1·P2 2 / R2 P2 1)
+- [x] Codex 지적 반영 — `9b0481c`(R1) · `0d111fe`(R2). R3 미실행(1~2라운드 권장, 마지막 P2 반영 완료)
+- [x] REPORT.md 마감 + 커밋
 
 ## 실측 기록 (2026-10-05, 이 worktree, `npm run build` exit 0)
 - 공통 89.35 · `/catalog` 99.66/100 · `/profile` 첫 화면 99.61/100 · 진입 118.67/125 · `/compare` 98.84 / 121.72 · `/studio/:projectId` 91.78 / 127.34(한도 128, 멈춤선 127.70) · 렌더 JS 83.03/90(멈춤선 89.70) · CSS 8.75/30

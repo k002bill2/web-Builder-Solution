@@ -28,3 +28,4 @@ base `2fc32ba` · 시작 build: `/studio` 진입 126.89(멈춤 >127.39) · 첫 9
 - ③ 새 테스트 9개 (2023 → 2032): exportFlow.test 5(크기 줄·이미지 0 괄호 생략 / 3MB 경계 / 잃은 문장 / 슬롯 생성기 readImage+onBuilt→done notes / IMAGE_FAILED→retryable reason) · ExportResultNotes.test 2(결과 notes 표시 / 재시도 alert 사유) · PngSave.test 1(decode 실패 문구) · canvasCaption.test 1(잃은 이미지 문장 조건) + 기존 canvasCaption 문구 단언 F2로 개정(10절 목록). RED 예상: exportFlow 5 + UI 3 + caption 2(개정 1 포함).
 - ③ RED 10(새 9 + 개정 1, logs/red-3.txt) → GREEN(61파일 542) · tsc·eslint 통과
 - Codex r1 반영 RED 예측: exportFlow.test 새 1개(프로젝트별 맵 · 다른 프로젝트 요청이 덮어쓰지 않음 · 끝나면 해제) (2032 → 2033). RED 예상 1 실패.
+- Codex r2 반영 RED 예측: exportFlow.test 새 1개(커밋 뒤 응답 유실에도 생성기가 이미지를 읽고, 생성이 끝나면 놓음) (2033 → 2034). RED 예상 1 실패.

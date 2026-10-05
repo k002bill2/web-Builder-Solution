@@ -161,3 +161,201 @@
 | `/studio` 진입(128 · 여유 0.50) | **+0**(앱 쪽 변경은 조작 뒤 청크인 정적 HTML·PNG 생성기만) | 생성기는 이미 조작 뒤 청크 |
 
 - M2B-4는 시작 때 hero 1변형 시제품으로 CSS 증가량을 실측하고, 30변형 합 예상이 CSS 30 · JS 89.70을 넘으면 구현 전에 멈춘다(M2B_PLAN 3절 규칙).
+
+---
+
+## 2. 폰트 — 결정 요약
+
+1. **사이트 1개 = 프로필 계열 1개만 싣는다**(C-10). TRD "≤ 2계열"은 상한이고, 지금 데이터 모델(계열 1개)로는 1계열이다. 제목/본문 계열 분리 필드는 **만들지 않는다**(YAGNI — 두 번째 계열 자리는 상한으로만 남김).
+2. **프로필이 고르지 않은 계열은 절대 싣지 않는다** — 허용 3종 파일이 저장소에 다 있어도 그 사이트가 쓰는 계열·굵기의 파일만 내려받거나 인라인한다. 폴백 와이어프레임 글자·고정 표식 글자 = 같은 `--site-font` 스택(웹폰트 추가 0).
+3. **굵기 파일 = 최대 2개**(`headingWeight`·`bodyWeight`). 커밋하는 굵기는 **400 · 700 두 개**뿐이고, 프로필 값은 가장 가까운 쪽으로 맞춘다(2.2).
+4. **서브셋 = KS X 1001 한글 2,350자 + 기본 라틴·숫자 + 고정 기호 목록**(2.3, MQ-M2B3-2 ★A). 목록 밖 글자는 같은 스택의 시스템 글꼴로 글자 단위 대체.
+5. **woff2 · `font-display: swap` · `local()` 0**(로컬 설치 폰트가 파일 누락을 가리지 않게 — 앱 `fonts.css`와 같은 규칙).
+6. **RFN**: 우리가 서브셋한 파일(Noto 2종)은 **새 이름**(`Kit Sans KR` · `Kit Serif KR`), Pretendard는 **업스트림 공식 서브셋을 무수정**으로 써서 원래 이름 유지(MQ-M2B3-4 ★A). OFL 1.1 전문·저작권 고지를 파일 옆과 내보낸 HTML 안에 동봉.
+
+### 2.1 허용 3종 → 사이트 파일 대응표
+
+| 프로필 `family`(fonts.ts) | 사이트 CSS 별칭(`@font-face` family) | 파일 출처 | 수정 여부 | 커밋 위치(제안) |
+|---|---|---|---|---|
+| `Pretendard` | `"Pretendard"` | 업스트림 Pretendard v1.3.9 공식 `woff2-subset`(KS X 1001 + 라틴 — 저장소 `app/src/styles/tokens/fonts.css` 머리말 [L1]) | **무수정 = Original Version** → RFN 이름 유지 가능 | **새 파일 0** — 이미 커밋된 `app/src/assets/fonts/Pretendard-{Regular,Bold}.subset.woff2`를 그대로 참조(Vite가 같은 해시 자산 1개로 합친다 [추정]) |
+| `Noto Sans KR` | `"Kit Sans KR"` | google/fonts `ofl/notosanskr/` 변수 폰트(`NotoSansKR[wght].ttf` [확인 필요 — 파일명은 고정 커밋에서 확인]) → 굵기 고정 → 서브셋 | **수정본** → RFN `Source` 사용 금지 · "Noto"도 보수적으로 쓰지 않음 | `app/src/assets/site-fonts/kit-sans-kr/KitSansKR-{400,700}.woff2` |
+| `Noto Serif KR` | `"Kit Serif KR"` | google/fonts `ofl/notoserifkr/NotoSerifKR[wght].ttf`(FONT-01 3.3 METADATA 기록 [L2]) → 굵기 고정 → 서브셋 | **수정본** → RFN은 확인되지 않았지만 일관성 위해 새 이름 | `app/src/assets/site-fonts/kit-serif-kr/KitSerifKR-{400,700}.woff2` |
+
+- 별칭 이름 규칙: RFN 문자열(`Pretendard`·`Source`·`Inter`·`M PLUS 1`)·`Noto`·제품 브랜드명·`apfs` 포함 0(ADR-002). `Kit`은 내부 섹션 킷 용어라 브랜드 아님. 대소문자 무시 검사(MF-AC-G5).
+- 렌더가 쓰는 스택(`kit/tokens.ts` `fontStack`)은 **프로필 계열 이름 대신 별칭**을 맨 앞에 둔다. 지금처럼 `"Noto Sans KR"`을 그대로 쓰면 사용자 컴퓨터에 설치된 원본이 잡히거나(미리보기마다 다름) 아무것도 안 잡힌다.
+  - sans: `"<별칭>", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`
+  - serif: `"Kit Serif KR", "AppleMyungjo", "Batang", serif`
+  - 시스템 글꼴 이름은 폴백 이름일 뿐 파일을 싣지 않는다(라이선스 대상 아님).
+- 각 계열 폴더에 `OFL.txt`(업스트림 원문 그대로) + `SOURCE.md`(2.6 형식). Pretendard는 이미 저장소 루트 `LICENSES.md`에 원문이 있다 [L1] — `SOURCE.md`만 `app/src/assets/fonts/`에 추가하거나 `LICENSES.md` 표에 업스트림 체크섬 열을 더한다(M2B-4 판단, 둘 중 하나).
+
+### 2.2 굵기
+
+- 커밋 = **400 · 700**(계열당 2파일, Noto 2종 → 새 바이너리 4개). 픽스처·레퍼런스 값이 700/400뿐이다 [L1 — `headingWeight: 700` 8건 · `bodyWeight: 400` 8건].
+- 프로필 값 대응(프로토콜은 100~900 허용 — `render/protocol.ts:62`): `≤ 550 → 400` · `> 550 → 700`. 대응 결과로 `--site-weight-*`도 같은 값을 쓴다(파일 없는 굵기를 브라우저가 가짜 굵게 만드는 것 방지 · `font-synthesis: none`을 사이트 루트에).
+- 제목·본문이 같은 굵기로 대응되면 파일 1개만 싣는다.
+- 가변(variable) woff2를 그대로 쓰지 않는 이유: 한글 가변 폰트는 굵기 축 데이터 때문에 정적 1굵기보다 크다 [추정] · 우리는 2굵기만 쓴다.
+
+### 2.3 서브셋 문자 범위 (MQ-M2B3-2)
+
+| 후보 | 한글 | 그 밖 | 굵기당 woff2 크기 | 근거 |
+|---|---|---|---|---|
+| **A ★ KS X 1001** | 2,350자(EUC-KR 0xB0A1~0xC8FE — 로컬 계산으로 2,350 확인 [L1]) | 아래 고정 목록 | Pretendard **267~271KB**(저장소 파일 실측 [L1] `ls -l app/src/assets/fonts`) · Noto Sans KR **약 250~300KB** [추정 — Pretendard 한글이 Source Han Sans = Noto Sans CJK 계열이라 비슷하다고 봄] · Noto Serif KR **약 330~450KB** [추정 — 명조 윤곽 점이 더 많음] | 일상 한국어 문장의 대부분을 덮는다 [추정 — 상용 한글 2,350자 통념, 공식 통계 미확인] |
+| B 완성형 전체 | 11,172자(U+AC00~D7A3) | 같은 목록 | A의 약 3~4배 → 굵기당 **약 0.8~1.2MB** [추정] | 드문 음절(이름·의성어 예: 똠·햏·뷁)도 같은 글꼴 |
+| C 사이트 글자만 동적 서브셋 | 사용된 글자만 | — | 수십 KB [추정] | 내보내기 때 서브셋 도구가 필요 → 새 의존성·런타임 — **이번 범위 밖**(M4 이후 후보) |
+
+- **추천 A 근거**: (1) 단일 정적 HTML은 base64 인라인(C-1)이라 크기가 ×1.33으로 부풀어 B는 HTML 1개가 2~3MB대 [추정] (2) 목록 밖 글자는 같은 스택의 시스템 고딕/명조로 대체되어 **글자가 사라지지 않는다**(두부 □ 0) — 모양만 섞인다 (3) Pretendard는 업스트림 공식 서브셋이 정확히 A라 무수정으로 쓸 수 있다.
+- A의 위험: 상호·인명에 2,350자 밖 음절이 있으면 그 글자만 다른 글꼴로 보인다. 감지 기능(문제 목록 안내)은 이번 범위에 넣지 않는다 — 앱 쪽 검사 코드가 `/studio` 진입(여유 0.50)이나 조작 뒤 청크를 늘린다. M2B-6 QA가 샘플로 확인(QB-MF-07).
+- **고정 기호 목록**(Noto 2종 서브셋에 넣을 것 — Pretendard 업스트림 서브셋의 실제 cmap과는 M2B-4가 비교해 차이를 REPORT에 기록 [확인 필요]):
+  - U+0020–007E(기본 라틴·숫자·ASCII 기호) · U+00A0 · U+00A9 © · U+00AE ® · U+00B0 ° · U+00B7 · · U+00D7 ×
+  - U+2013 – · U+2014 — · U+2018 ‘ · U+2019 ’ · U+201C “ · U+201D ” · U+2022 • · U+2026 … · U+203B ※
+  - U+20A9 ₩ · U+2192 → · U+2122 ™
+  - U+3001–3003 · U+3008–3011(〈〉《》「」『』【】) · U+301C 〜
+  - U+3131–318E 한글 호환 자모(ㄱ~ㅣ 94자 — "ㅋㅋ", "ㅇㅇ" 같은 입력)
+  - U+FF5E ～(전각 물결)
+
+### 2.4 로드 방식 — 앱 미리보기(렌더 문서) · 정적 HTML · PNG
+
+| 경로 | 방식 | 이유·조건 |
+|---|---|---|
+| **렌더 문서**(편집 캔버스 · 숨은 내보내기 iframe) | **1안**: `kit/fonts.css`(새 파일)의 `@font-face` 6규칙(3계열 × 400·700)이 같은 서버 woff2 `url()` 참조. 브라우저는 실제로 쓰는 계열·굵기만 받는다(`@font-face` 지연 로드) → CSS 증가 ≈ 0.4KB gzip [추정], 폰트 바이트는 예산 밖. **2안**(1안이 CORS로 막힐 때): 부모가 같은 출처에서 woff2 바이트를 받아 `postMessage`로 `ArrayBuffer` 전달 → 렌더 문서가 `new FontFace(별칭, buffer, {weight})` + `document.fonts.add` — 렌더 JS +0.1~0.2KB [추정] | C-5: 불투명 출처 iframe의 폰트 요청은 `Origin: null` CORS. Vite dev 서버·운영 정적 호스팅이 이를 허용하는지 [확인 필요 — M2B-4 E0 첫 실측]. 1안 통과 시 1안 |
+| 렌더 문서 사각형·serialize 시점 | 그 사이트의 폰트 로드가 끝난 뒤(`document.fonts.ready` 또는 해당 `FontFace.load()`) 첫 `rects`를 보낸다. 실패·3초 초과 시 폴백 글꼴로 계속(오류 아님) + 콘솔 0 | 폰트가 늦게 바뀌면 줄바꿈이 달라져 사각형·PNG 높이가 어긋난다 |
+| **정적 HTML** | 그 사이트가 쓰는 1계열 × ≤2굵기만 `@font-face { src: url(data:font/woff2;base64,…) format("woff2"); font-display: swap; }`로 `<style>` 안에 인라인. 렌더 문서의 `url()` 6규칙은 빼고 이것으로 바꾼다 | C-1(외부 요청 0 유지) · MQ-M2B3-3 ★A |
+| 정적 HTML 라이선스 고지 | `<head>`에 고정 주석 1개: 사용 계열의 저작권 줄 + "Modified from …"(Noto 2종) + **OFL 1.1 전문**. 사용자 글자 0(문서마다 계열별로 바이트 동일) | OFL 조건 2 "each copy contains the above copyright notice and this license". 전문 약 4.4KB[추정] — 폰트 수백 KB 대비 무시. 이름 테이블 13·14만으로는 전문이 아님 |
+| **PNG** | 캡처 CSS(`buildCaptureSvg`의 `<style>`)에 정적 HTML과 **같은** `data:` `@font-face`를 넣는다. 그린 뒤 캔버스 전에 `img.decode()` | C-4. SVG 이미지 안 `data:` 폰트가 첫 그리기에 반영되는지 브라우저별 [확인 필요 — 위험 R-3]. PNG는 글자를 그림으로 바꾼 결과라 폰트 재배포가 아니다 → 라이선스 고지 불필요 [L2 — OFL FAQ 문서·이미지 항목, 법률 자문 아님] |
+| 앱 UI(`/studio` 등) | 변경 0. 앱 `fonts.css`(Pretendard 4굵기)는 그대로 | 앱 예산 영향 0 |
+
+### 2.5 RFN 준수 방법 (Noto 2종 수정본)
+
+1. **이름 테이블 교체**(fontTools, 저장소 밖에서): nameID **1·4·6·16**(계열·전체 이름·PostScript·타이포 계열) = 새 이름(`Kit Sans KR` · `Kit Sans KR Regular`/`Bold` · `KitSansKR-Regular`/`-Bold`), nameID **2·17** = `Regular`/`Bold`, nameID **3**(고유 ID) = `KitSansKR-Regular;subset-ksx1001;<원본 sha256 앞 12자>`. nameID **5**(버전) = 원본 값 + `; subset KS X 1001 (Design Studio M2B-4)`.
+2. **보존**: nameID **0**(저작권) · **13**(라이선스 설명) · **14**(라이선스 URL) 원문 그대로. `pyftsubset`은 기본값이 일부 name ID만 남기므로(기본 `--name-IDs`가 13·14를 빼는지 [확인 필요 — fontTools 문서]) **`--name-IDs='*'`로 전부 남긴 뒤** 1번 교체를 스크립트로 한다.
+3. **사후 검사**(재현 명령에 포함 · 결과를 `SOURCE.md`에 붙임): 모든 name 레코드(플랫폼 전부)에서 `source`·`pretendard`·`inter`·`m plus 1`·`noto`를 대소문자 무시로 찾아 **0건** — 단 nameID 0·13·14(원문 고지)와 nameID 5의 "Modified from" 설명은 검사 제외 목록으로 명시.
+4. **OFL 동봉**: 각 계열 폴더 `OFL.txt` = google/fonts 고정 커밋의 원문 그대로(바이트 동일, sha256 기록).
+5. **고지 문구**(`SOURCE.md`·정적 HTML 주석 공통): `Kit Sans KR is a Modified Version of Noto Sans KR (Copyright 2014-2021 Adobe, with Reserved Font Name 'Source'), subset and renamed. Licensed under the SIL Open Font License 1.1.`
+6. 순수 woff2 압축 예외(FONT-01 2절 FAQ 2.2.1)는 **쓰지 않는다** — 서브셋은 무조건 수정본으로 다룬다(보수적 기본값, FONT-01 9절 1).
+
+### 2.6 원본 출처 · 버전 고정 · 체크섬 · 재현 명령
+
+- **출처**(FONT-01 3절 공식 URL만):
+  - Pretendard: `https://github.com/orioncactus/pretendard/releases/tag/v1.3.9` — 저장소에 이미 있는 2파일을 업스트림 릴리스 ZIP 안 같은 이름 파일과 **sha256 대조만** 한다(바이트가 다르면 멈춤 보고 — 출처가 npm 복사본이라 [L1 `LICENSES.md`] 공식 ZIP과 같은지 미확인).
+  - Noto Sans KR / Serif KR: `https://github.com/google/fonts` **고정 커밋 해시**의 `ofl/notosanskr/` · `ofl/notoserifkr/`(시맨틱 버전 없음 — FONT-01 3.2) + `METADATA.pb`의 upstream 버전(Sans 2.004 · Serif 2.003)을 함께 기록.
+  - 내려받기 URL 형식: `https://raw.githubusercontent.com/google/fonts/<commit>/ofl/notosanskr/<파일>` — `main` 같은 움직이는 참조 금지.
+- **`SOURCE.md` 형식**(계열 폴더마다):
+
+```
+| 항목 | 값 |
+| 원본 URL | <commit 고정 URL> |
+| 원본 sha256 | <64자> |
+| upstream 버전 | Noto Sans CJK 2.004 (METADATA.pb) |
+| 도구 | Python <x.y.z> · fonttools==<pin> · brotli==<pin> (저장소 밖 임시 venv) |
+| 결과 파일 sha256 | KitSansKR-400.woff2 <64자> · KitSansKR-700.woff2 <64자> |
+| 글자 수 | cmap 항목 수 <n> (한글 2,350 + 기호 <m>) |
+| RFN 사후 검사 | 0건 (명령 출력 붙임) |
+| 재현 명령 | 아래 블록 |
+```
+
+- **재현 명령**(M2B-4가 저장소 밖 `/tmp`에서 실행 · 신규 의존성 0 · 결과물만 커밋 — 아래는 형식이며 실제 플래그는 실행 결과로 확정 [확인 필요]):
+
+```bash
+python3 -m venv /tmp/m2b4-fonts && . /tmp/m2b4-fonts/bin/activate
+pip install 'fonttools==<pin>' 'brotli==<pin>'
+# 1) 문자 목록 — KS X 1001 한글 2,350 + 2.3 고정 기호
+python3 - > /tmp/m2b4-fonts/chars.txt <<'PY'
+print(''.join(bytes([h, l]).decode('euc-kr') for h in range(0xB0, 0xC9) for l in range(0xA1, 0xFF)))
+PY
+# 기호는 --unicodes 로 따로 준다 (2.3 목록)
+# 2) 굵기 고정 (변수 → 정적)
+fonttools varLib.instancer 'NotoSansKR[wght].ttf' wght=400 -o /tmp/m2b4-fonts/s400.ttf
+# 3) 서브셋 + woff2 (name 전부 보존 후 4에서 교체)
+pyftsubset /tmp/m2b4-fonts/s400.ttf --text-file=/tmp/m2b4-fonts/chars.txt \
+  --unicodes='U+0020-007E,U+00A0,U+00A9,U+00AE,U+00B0,U+00B7,U+00D7,U+2013,U+2014,U+2018,U+2019,U+201C,U+201D,U+2022,U+2026,U+203B,U+20A9,U+2122,U+2192,U+3001-3003,U+3008-3011,U+301C,U+3131-318E,U+FF5E' \
+  --name-IDs='*' --layout-features='*' --flavor=woff2 --output-file=/tmp/m2b4-fonts/tmp400.woff2
+# 4) 이름 교체 + 5) RFN 사후 검사 — fontTools TTFont로 2.5의 1·3을 수행하는 짧은 스크립트(저장소 밖)
+sha256sum <원본> <결과>   # macOS: shasum -a 256
+```
+
+- 커밋 대상: 결과 `.woff2` · `OFL.txt` · `SOURCE.md`만. venv·중간 파일·스크립트 파일은 커밋 0(재현 명령은 `SOURCE.md` 안 텍스트로만).
+
+---
+
+## 3. 예산
+
+### 3.1 렌더 문서 (ADR-004 개정 2 — JS 멈춤선 89.70 · CSS 30)
+
+| 항목 | 지금 [L1] | M2B-4 증가 [추정] | 끝 예상 [추정] |
+|---|---|---|---|
+| JS | 82.28 | 모션 속성 +0~0.15 · 폰트 1안 +0 / 2안 +0.1~0.2 · 폰트 대기(`fonts.ready`) +0.05 | **약 82.3 ~ 82.7** (여유 ≥ 7) |
+| CSS | 7.82 | 모션 +1.2~2.0 · `@font-face` 6규칙 +0.4 | **약 9.4 ~ 10.2** / 30 |
+
+- 폰트 woff2 바이트는 JS·CSS 판정 밖(M2B_PLAN 3절) — 크기만 출력.
+- `/studio` 진입(127.20 / 128): 증가 0이 원칙. 정적 HTML·PNG 생성기 변경은 조작 뒤 청크(판정 밖, 크기만 출력). 폰트 `data:` 인라인 코드도 그 청크 안.
+
+### 3.2 내보낸 사이트 폰트 예산 (제안 — TRD 8절 "폰트 ≤ 2계열 서브셋"을 수치로)
+
+| 기준 | 값 | 근거 |
+|---|---|---|
+| 계열 수 | **≤ 1**(현 모델) · 절대 상한 2 | C-10 · TRD |
+| 파일 수 | **≤ 2**(굵기 2) | 2.2 |
+| woff2 합계(정적 HTML 인라인 전 바이트) | **≤ 900KB** [추정 기반 — M2B-4 실측 후 재확정] | Pretendard 2굵기 = 538KB 실측 [L1] · Noto Serif KR 2굵기 = 약 660~900KB [추정]. 900을 넘는 계열이 나오면 M2B-4가 멈춰 보고(굵기 1개로 줄이기 vs 예산 조정은 영환님 결정) |
+| 정적 HTML 1개 크기(참고 출력) | base64 = woff2 × 약 1.33 → Pretendard 사이트 약 0.72MB + 마크업·CSS [추정] | 판정 아님 — 참고 출력 |
+
+---
+
+## 4. 수용 기준 (MF-AC) — [U] 단위·컴포넌트 · [G] 가드(정적 검사) · [B] 실제 브라우저
+
+| ID | 기준 | 형식 |
+|---|---|---|
+| MF-AC-U1 | 렌더 문서가 그린 사이트 루트에 `data-motion-play` 0 · 섹션 `data-motion` = `min(section.motion, maxMotion)`이고 L0이면 속성 없음 · footer·`faq`·`contact` 3종 = 속성 없음 · hero 뒤 3번째 이후 본문 = 속성 없음 · header = `L1`(L0 프리셋이면 없음) | [U] |
+| MF-AC-U2 | `kit/motion.css`의 모든 모션 규칙이 `@media screen and (prefers-reduced-motion: no-preference)` 안 · `[data-motion-play]` 조상 조건 포함 · `animation-iteration-count` 1 · `infinite` 0 · 애니메이션·전환 속성이 `transform`·`opacity`(+ 시트의 `overlay`·`display` allow-discrete)뿐 · `translateX` 0 | [G] |
+| MF-AC-U3 | 토큰 합 `3 × stagger + dur-zoom` ≤ 1초 · 각 `dur` ≤ 720ms | [U] |
+| MF-AC-U4 | 정적 HTML: 사이트 루트 `data-motion-play` 1 · `data-motion` 남음(KEPT_DATA) · 스크립트 = `STATIC_MENU_SCRIPT` 1개 **바이트 동일** · CSS `url()` 전부 `data:` | [U]·[G] |
+| MF-AC-U5 | PNG 캡처 SVG `<style>` 끝에 모션 정지 방어 규칙 · `data-motion-play` 0 | [U] |
+| MF-AC-U6 | 굵기 대응: 300→400 · 550→400 · 551→700 · 900→700 · 제목=본문 대응이면 `@font-face` 1개 | [U] |
+| MF-AC-U7 | 정적 HTML·PNG의 `@font-face`는 프로필 계열 1개 · ≤ 2규칙 · 다른 2계열 0 · `font-display: swap` · `local(` 0 | [U] |
+| MF-AC-U8 | `fontStack` 맨 앞 = 별칭(`Pretendard`·`Kit Sans KR`·`Kit Serif KR`) · `"Noto Sans KR"`·`"Noto Serif KR"` 문자열 0 · 사이트 루트 `font-synthesis: none` | [U] |
+| MF-AC-G1 | `kitGuard` 모션 0 가드가 `kit/motion.css` **하나만** 예외로 두고 나머지 킷 파일은 그대로 0 | [G] |
+| MF-AC-G2 | `renderFonts.test.ts`(B8) 개정: render.css·kit.css의 `@font-face` 출처 = `kit/fonts.css` 1곳 · `url()` 대상 = 허용 6파일만 · 외부 URL 0 · 앱 `fonts.css` 미포함 유지 | [G] |
+| MF-AC-G3 | 라이선스 파일 존재: `site-fonts/kit-sans-kr/{OFL.txt,SOURCE.md}` · `site-fonts/kit-serif-kr/{OFL.txt,SOURCE.md}` · Pretendard 출처·체크섬 기록 · 각 `SOURCE.md`에 원본 URL(커밋 해시 고정 — `/main/` 0)·sha256 64자 2개 이상 | [G] |
+| MF-AC-G4 | 정적 HTML 고지 주석: 사용 계열 저작권 줄 + OFL 1.1 전문(`SIL OPEN FONT LICENSE Version 1.1` 머리 문구 포함) · 사용자 글자 0 | [U]·[G] |
+| MF-AC-G5 | RFN: 커밋된 Noto 서브셋 woff2의 name 레코드(0·13·14·5 설명 제외)에 `source`·`pretendard`·`inter`·`m plus 1`·`noto` 0건(대소문자 무시) · nameID 0·13·14 존재 — M2B-4가 fontTools로 검사한 출력을 `SOURCE.md`에 붙이고, 저장소 테스트는 `SOURCE.md`의 "RFN 사후 검사 0건" 행 존재를 본다(바이너리 파서 의존성 0) | [G] |
+| MF-AC-G6 | `package.json`·`package-lock.json` 폰트 관련 의존성 추가 0 · 저장소에 venv·서브셋 스크립트 파일 0 | [G] |
+| MF-AC-B1 | 편집 캔버스(1280): L2 프로필 문서를 연 직후·슬롯 편집 직후 모두 첫 화면 섹션의 계산 `opacity` = 1 · `transform` = none(등장 출발 상태 0) | [B] |
+| MF-AC-B2 | PNG(1280·768·390): L2 문서 캡처에서 hero 카피·첫 본문 카드가 보인다(L0 문서 캡처와 픽셀 비교 — 차이 0 또는 폰트 렌더 차이 범위) | [B] |
+| MF-AC-B3 | 정적 HTML을 연 뒤 1.0초 시점: 첫 화면 섹션 대상 `opacity` = 1 · `transform` = 항등 / 감소 설정(`prefers-reduced-motion: reduce` 에뮬레이션) 시 0초 시점부터 같음 / 인쇄 미리보기 = 같음 | [B] |
+| MF-AC-B4 | 3폭(1280·768·390): 모션 재생 중·후 모두 `document.scrollingElement.scrollWidth` ≤ 뷰포트 폭(가로 넘침 0) · hero 이미지 확대가 칸 밖으로 0 | [B] |
+| MF-AC-B5 | 200% 글자(루트 글자 크기 2배): 모션 이동 거리가 rem이라 비례 · 넘침 0 · 시트 열림 후 메뉴 전부 보이고 키보드로 닫힘(Esc) | [B] |
+| MF-AC-B6 | 폰트: 렌더 문서·정적 HTML·PNG에서 각 계열 문서의 `h1` 계산 글꼴이 별칭과 일치(`document.fonts.check('700 1em "<별칭>"')` true · 정적 HTML 네트워크 폰트 요청 0) | [B] |
+| MF-AC-B7 | 렌더 문서 사각형: 폰트 로드 전후 첫 `rects`의 섹션 높이 변화 0(로드 뒤에 보냄) · 폰트 로드 실패 시에도 그리기 계속 | [B] |
+| MF-AC-B8 | 예산: 렌더 JS ≤ 89.70 · CSS ≤ 30 · `/studio` 진입 증가 0 · 내보낸 사이트 woff2 합계 ≤ 3.2 기준(계열별 실측 표) | [G](check-bundle-size)·[B] |
+
+### 4.1 QB 목록 (M2B-6 QA 시각·수동 검수)
+
+| ID | 확인 | 폭 |
+|---|---|---|
+| QB-MF-01 | L0 · L1 · L2 같은 문서 정적 HTML 3벌 — 최종 화면이 픽셀 수준으로 같다(모션은 과정만 다름) | 1280·768·390 |
+| QB-MF-02 | L2 정적 HTML 첫 0.96초 녹화(또는 0·200·500·1000ms 캡처 4장): 등장이 hero + 본문 2개에만 · 3번째 본문 이후 정지 | 1280·390 |
+| QB-MF-03 | 감소 설정 OS/에뮬레이션에서 정적 HTML·시트 열림 즉시 | 1280·390 |
+| QB-MF-04 | 시트 열림 모션: 열림 0.2초 · 닫힘 즉시 · 앵커 누르면 고정 스크립트로 닫히고 이동 정상 | 768·390 |
+| QB-MF-05 | 3계열 × 프로필 문서: 미리보기(캔버스) · 정적 HTML · PNG 세 경로의 글자 모양이 같다(같은 별칭) | 1280 |
+| QB-MF-06 | 200% 글자 + L2: 겹침·잘림 0 · 이동 중에도 글자 읽힘 | 390 |
+| QB-MF-07 | 서브셋 밖 글자 샘플("똠방각하 햏 뷁")이 □ 없이 시스템 글꼴로 보인다 · 같은 줄 다른 글자는 웹폰트 | 1280 |
+| QB-MF-08 | 정적 HTML 소스: 고지 주석 · OFL 전문 · `data:` 폰트 ≤ 2 · 외부 요청 0(네트워크 탭) | — |
+
+---
+
+## 5. 위험
+
+| ID | 위험 | 영향 | 대응 | 근거 수준 |
+|---|---|---|---|---|
+| R-1 | 불투명 출처 렌더 iframe의 `@font-face` CORS 거부(C-5) | 캔버스에 웹폰트 안 보임 | M2B-4 E0 첫 실측 → 막히면 2.4 2안(ArrayBuffer `FontFace`) | [확인 필요] |
+| R-2 | Noto 2,350자 서브셋 크기가 추정(250~450KB)보다 큼 | 3.2 예산 초과 · 정적 HTML 비대 | 실측 후 멈춤 보고 — 굵기 1개(400) + 제목도 400 대안 vs 예산 상향은 영환님 | [추정] |
+| R-3 | SVG `foreignObject` 이미지 안 `data:` 폰트가 첫 그리기에 미반영(브라우저별) | PNG만 폴백 글꼴 | `img.decode()` 후 그리기 · 그래도 다르면 부모 문서에 같은 `FontFace` 선등록 후 재시도 · 실측 기록 | [확인 필요] |
+| R-4 | `@starting-style`·`transition-behavior: allow-discrete` 미지원 브라우저 | 시트가 즉시 열림(기능 영향 0) | 의도된 점진 향상 — 문제 아님 | [L2 사양 · 지원판 확인 필요] |
+| R-5 | 저장소 Pretendard 파일(npm 복사본)이 공식 릴리스 ZIP과 바이트가 다름 | "무수정 Original" 전제 흔들림 | sha256 대조 · 다르면 공식 ZIP 파일로 교체(같은 이름·같은 경로) 후 앱 영향 실측, 또는 MQ-4 B안 | [확인 필요] |
+| R-6 | 2,350자 밖 음절(상호·인명) | 글자 모양 섞임 | QB-MF-07 · 감지 안내는 후속 후보(앱 예산 영향 실측 필요) | [추정] |
+| R-7 | 정적 HTML 단일 파일이 0.7~1.2MB [추정] | 메일 첨부·업로드 제한에 걸릴 수 있음 | 참고 출력 · zip 내보내기는 M4 | [추정] |
+
+## 6. 이 문서가 결정하지 않는 것 (MQ-M2B3.md)
+- MQ-M2B3-1 등장 모션 정책 · MQ-M2B3-2 서브셋 범위 · MQ-M2B3-3 정적 HTML 폰트 탑재 · MQ-M2B3-4 Pretendard 원본 사용 방식 · MQ-M2B3-5 캔버스 모션 미리보기. 각 ★안을 기준으로 위 본문을 썼으므로 ★ 승인 시 본문 수정 0.
+
+## 7. 기록
+- v1 2026-10-05 Designer(M2B-3). 코드·바이너리·`docs/decisions/` 변경 0, 다운로드·서브셋 실행 0(KS X 1001 2,350자 수는 로컬 Python 계산).

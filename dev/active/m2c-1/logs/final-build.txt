@@ -98,7 +98,7 @@ dist/assets/profileEngine-CJk8c_gK.js                   26.23 kB │ gzip:  9.40
 dist/assets/StudioLayout-BQ9fTkZB.js                    50.68 kB │ gzip: 16.77 kB
 dist/assets/index-VLz-8-Ld.js                          271.50 kB │ gzip: 86.99 kB
 
-✓ built in 276ms
+✓ built in 274ms
 (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
   - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
 Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
@@ -118,7 +118,7 @@ dist/assets/KitSerifKR-700-B3ikZB6l.woff2             362.68 kB
 dist/assets/render-BZVnPKWZ.css                        43.17 kB │ gzip:  8.76 kB
 dist/assets/render-DgtSWqZU.js                        268.12 kB │ gzip: 83.87 kB
 
-✓ built in 125ms
+✓ built in 132ms
 [bundle] 공통 JS (gzip, 참고): 89.36KB
   - assets/index-VLz-8-Ld.js 86.08KB
   - assets/react-DB-4Zxce.js 3.28KB

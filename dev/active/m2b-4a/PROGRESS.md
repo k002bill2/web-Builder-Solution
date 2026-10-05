@@ -56,8 +56,8 @@
 - 범위: `render/siteFontLoad.ts` 편집 캔버스 — 폴백(실패/3초) 뒤 한 면 성공 + 다른 면 계속 대기 시 `late`가 `allSettled` 종료까지 늦어짐 → 폴백 뒤 면별 성공마다 `late`(같은 tick 중복은 1회로 묶음). 폴백 전 성공 = 기존대로 `ready` 1회 · 전부 실패 = 폴백만 · 내보내기 경로 diff 0. P2-b 미수정(열린 항목 유지)
 - **새 테스트 사전 예측**: `render/RenderApp.test.tsx` +1 it(3초 폴백 rects → 400만 resolve·700 미해결 → rects 재전송 = **RED 1** → 이어서 700 resolve → 또 재전송) → **208 files · 1827**
 - [x] G1 예측 커밋
-- [ ] G2 RED 실측(logs/fix2-p2a-red.txt)
-- [ ] G3 최소 수정 GREEN · 내보내기 경로 diff 0
-- [ ] G4 gate(표적·가드·typecheck·lint·build) · 전체 vitest 1회 exit 0 Errors 0
-- [ ] G5 Codex review --scope branch --base 254e322 3라운드(마지막) 실제 완료 · 새 지적 기록만
-- [ ] G6 REPORT 7.2·8절 · PROGRESS 갱신 · 커밋
+- [x] G2 RED 실측(logs/fix2-p2a-red.txt): 16 중 **1 failed**(:190 `expected 1 to be greater than 1`) = 예측대로
+- [x] G3 최소 수정 GREEN 16 passed · 커밋 f234a02 · 내보내기 경로 diff 0
+- [x] G4 gate OK(logs/fix2-p2a-gate.txt) · 전체 vitest 1회 **208 files · 1827 passed · exit 0 · Errors 0**(logs/fix2-full-vitest.txt) = 예측 일치
+- [x] G5 Codex 3라운드 실제 완료(logs/codex-review-fix2-p2a.txt) — 새 지적 0 · 기존 P2-b 재지적만(미수정·열림)
+- [x] G6 REPORT 2·7.2·8절 · PROGRESS 갱신 · 커밋

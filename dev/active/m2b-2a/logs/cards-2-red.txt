@@ -1,0 +1,61 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/app
+
+ ❯ src/kit/ServicesCards.test.tsx (3 tests | 3 failed) 45ms
+   ❯ services/cards-2 (B1-3) (3)
+     × KD-AC-11 · KD-AC-08 [U]: 킷 · 머리 → ul[role=list] > li 2개(번호 순서) · 각 h3 + 설명 · h2 1 · 포커스 0 · cards-3과 같은 카드 class 34ms
+     × KD-AC-11 [U]: md 이상 2열 같은 폭(행 늘이기 = grid 기본 stretch) · md 미만 1열(.kit-cards 기본) · 재배치 0 1ms
+     × KD-AC-03 · KD-AC-04 [U]: 상한 글자 그대로 · 소개·card2Body 빈 값 → 요소 0 · 카드 제목 빈 값 → 카드 남고 h3 0 · 빈 p·h 0 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/ServicesCards.test.tsx > services/cards-2 (B1-3) > KD-AC-11 · KD-AC-08 [U]: 킷 · 머리 → ul[role=list] > li 2개(번호 순서) · 각 h3 + 설명 · h2 1 · 포커스 0 · cards-3과 같은 카드 class
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/ServicesCards.test.tsx:26:15
+     24|   it("KD-AC-11 · KD-AC-08 [U]: 킷 · 머리 → ul[role=list] > li 2개(번호 순서) ·…
+     25|     const s = services(drawDoc(cardsDoc("cards-2")), "cards-2");
+     26|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     27|     expect(s.getAttribute("aria-labelledby")).toBe("h-s-services");
+     28|     expect(s.querySelectorAll("h2")).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/kit/ServicesCards.test.tsx > services/cards-2 (B1-3) > KD-AC-11 [U]: md 이상 2열 같은 폭(행 늘이기 = grid 기본 stretch) · md 미만 1열(.kit-cards 기본) · 재배치 0
+AssertionError: /* services/cards-2: expected -1 to be greater than -1
+ ❯ cssSection src/kit/ServicesCards.test.tsx:19:22
+     17| const cssSection = (marker: string) => {
+     18|   const at = css().indexOf(marker);
+     19|   expect(at, marker).toBeGreaterThan(-1);
+       |                      ^
+     20|   return css().slice(at, css().indexOf("\n}\n", at));
+     21| };
+ ❯ src/kit/ServicesCards.test.tsx:42:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/kit/ServicesCards.test.tsx > services/cards-2 (B1-3) > KD-AC-03 · KD-AC-04 [U]: 상한 글자 그대로 · 소개·card2Body 빈 값 → 요소 0 · 카드 제목 빈 값 → 카드 남고 h3 0 · 빈 p·h 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/ServicesCards.test.tsx:50:66
+     48|     const texts = { heading: "가".repeat(40), intro: "나".repeat(160), c…
+     49|     const full = services(drawDoc(cardsDoc("cards-2", texts)), "cards-…
+     50|     for (const [key, text] of Object.entries(texts)) expect(full.query…
+       |                                                                  ^
+     51|     const s = services(drawDoc(cardsDoc("cards-2", { intro: "", card2B…
+     52|     expect(s.querySelector('[data-slot="intro"]')).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  14:15:08
+   Duration  1.41s (environment 59%, transform 26%, setup 6%, import 5%, tests 3%)
+

@@ -10,7 +10,7 @@
 - [x] P1 cards-masonry 시제품 실측 — 렌더 JS +93 B · CSS +47 B · /studio 진입 +5 B(부모 목록 끝 상태 포함) → 멈춤 아님(logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림
 - [x] P2 about/text — RED 2 fail(폴백, logs/about-text-red.txt) → GREEN · gate OK(logs/about-text-gate.txt) · AboutStory 재사용(레지스트리 1줄)
 - [x] P3 services/list — RED 6 fail(logs/services-list-red.txt) → GREEN · 첫 gate FAIL(SectionVariant.test 3건: services/list를 미구현 예시로 씀) → 이관(REPORT 4절 표) → gate OK(logs/services-list-gate.txt)
-- [ ] P4 services/cards-2 (공유 카드 구조) RED → GREEN → gate → 커밋
+- [x] P4 services/cards-2 — RED 3 fail(logs/cards-2-red.txt) → 공유 ServicesCards(카드 번호 목록) + ServicesCards3 wrapper · cards-3 마크업 cmp SAME(logs/cards3-markup-same.txt) · gate OK(logs/cards-2-gate.txt, /studio 중간값 127.42)
 - [ ] P5 services/cards-masonry RED → GREEN → gate → 커밋
 - [ ] P-B 브라우저 전 REPORT 구현·번들 채움 → 1280/768/390 QB 캡처 · KD-AC [B] 판정 · 정적 HTML 동등성
 - [ ] P-F 전체 vitest 1회 exit 0 Errors 0 (logs/full-vitest.txt)

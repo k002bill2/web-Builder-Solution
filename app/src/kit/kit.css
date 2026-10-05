@@ -665,6 +665,15 @@
   }
 }
 
+/* services/cards-2 (B1-3) — cards-3의 열 수 2: md 이상 2열 같은 폭·같은 높이(그리드 행 늘이기) · md 미만 1열(.kit-cards 기본) */
+@layer components {
+  @media (width >= 48rem) {
+    .kit-cards--2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
 /* services/list (B1-2) — 머리 → 이름 목록(항목 위 구분선 muted 장식 + 목록 아래 한 줄) · 항목 ink 제목 굵기, lead(넓은 폭) · body(md 미만) · 항목 안쪽 위아래 s3.
    lg 이상 2단(머리 5 : 목록 7, 위 정렬, 열 사이 s6) · md~lg 1단 + 목록 2열(다단, 순서 = 문서 순서) · md 미만 1열. 조각 안 줄바꿈 = 공백 접힘(white-space 기본) */
 @layer components {

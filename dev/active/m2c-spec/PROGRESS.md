@@ -8,8 +8,8 @@
 - [x] P2 `docs/design/m2c/SPEC.md`
 - [x] P3 `docs/design/m2c/MQ-M2C.md`
 - [x] P4 `docs/04-plan/M2C_PLAN.md`
-- [ ] P5 Codex review/adversarial 1~2라운드(실제 완료만 기록)
-- [ ] P6 REPORT 마감 · 커밋
+- [x] P5 Codex adversarial r1 needs-attention 4건 → SPEC r1 반영(`2322dc4`) → r2 approve 지적 0
+- [x] P6 REPORT 마감 · 커밋
 
 ## L1 메모 (P1)
 - 업로드 경로 없음: `EditFields.tsx:44` "이미지 슬롯 N개는 다음 단계에서 편집" · 이미지 보관소 코드 0 · `StudioLayout`·`StructureCanvas` 호출부에 images 미전달 → 제품에서 images 맵은 항상 빈 값.

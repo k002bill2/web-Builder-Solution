@@ -53,6 +53,10 @@
   - `ProfileCompare.test.tsx` it +1 — U11 `CANDIDATE_TEXT.preview` 새 문장
 - S3 실제: +8 → 216 files · 1867(예측 일치)
 
+- S4 (기준 = S3 216 · 1867): 새 파일 0 · it +4 → **216 files · 1871**
+  - `CompareDialog.test.tsx` it +3 — U8 열마다 "이 안 선택"(aria-pressed·"선택됨"·Tag 선택·aria-busy·만들지 못한 안 버튼 0) → onSelect · gen.failure → 대화상자 role=alert · listen 문장 → status · 열 때 포커스 = 첫 라디오 · 본문 스크롤 영역 tabIndex 0
+  - `ProfileCompare.test.tsx` it +1 — U8 통합: 대화상자 선택 = 카드와 같은 상태 · 성공 status 1회 · 선택 실패 → 대화상자 alert · 다시 누름 = 재시도
+
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)
 - 배치 변경 1회차(SPEC 3.2 허용 — docKitTokens 복제 + 대조 it): `protocol` 0.34KB(readRenderMessage만), StudioLayout 16.57 → `/studio` 127.50(+0.16) — 여전히 > 127.37

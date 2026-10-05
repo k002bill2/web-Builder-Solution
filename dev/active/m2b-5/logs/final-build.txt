@@ -7,7 +7,7 @@
 Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 vite v8.3.1 building client environment for production...
 transforming...
-✓ 447 modules transformed.
+✓ 450 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/assets/arrow-right-Do6NaTe6.svg                     0.22 kB │ gzip:  0.17 kB
@@ -22,84 +22,83 @@ dist/assets/circle-info-Dp_yL-y3.svg                     0.85 kB │ gzip:  0.36
 dist/assets/bookmark-CX0jx-5N.svg                        1.09 kB │ gzip:  0.53 kB
 dist/assets/warning-I8LH9TjP.svg                         1.53 kB │ gzip:  0.66 kB
 dist/assets/sparkle-cqilRS3G.svg                         4.37 kB │ gzip:  1.83 kB
-dist/.vite/manifest.json                                22.93 kB │ gzip:  3.19 kB
+dist/.vite/manifest.json                                22.86 kB │ gzip:  3.16 kB
 dist/assets/Pretendard-Regular.subset-BZqc2FCe.woff2   267.09 kB
 dist/assets/Pretendard-Medium.subset-D07TkZcI.woff2    268.32 kB
 dist/assets/Pretendard-SemiBold.subset-DdMYyxPR.woff2  268.75 kB
 dist/assets/Pretendard-Bold.subset-NvQkMce4.woff2      270.78 kB
-dist/assets/index-Bat9MYmX.css                          52.19 kB │ gzip: 10.18 kB
+dist/assets/index-BP17iNX7.css                          52.47 kB │ gzip: 10.29 kB
 dist/assets/generatorVersion-BkzK_ix0.js                 0.03 kB │ gzip:  0.05 kB
-dist/assets/gateCheck-D_E__41a.js                        0.06 kB │ gzip:  0.07 kB
+dist/assets/gateCheck-DOvzFx8e.js                        0.06 kB │ gzip:  0.07 kB
 dist/assets/profileEvents-BZQzo2FC.js                    0.09 kB │ gzip:  0.10 kB
 dist/assets/generationRepository-ByGeX2L0.js             0.12 kB │ gzip:  0.12 kB
 dist/assets/generation-y8_fXzx8.js                       0.12 kB │ gzip:  0.12 kB
 dist/assets/profileRepository-Cf1X6rgu.js                0.15 kB │ gzip:  0.13 kB
 dist/assets/hash-C-Eih0Ed.js                             0.15 kB │ gzip:  0.15 kB
 dist/assets/useThrowToBoundary-e3Nrf3la.js               0.16 kB │ gzip:  0.15 kB
-dist/assets/compareTray-w4NKoWkC.js                      0.17 kB │ gzip:  0.19 kB
+dist/assets/compareTray-DKFq9P-s.js                      0.17 kB │ gzip:  0.19 kB
 dist/assets/compareBoardRepository-DUuzZhQi.js           0.19 kB │ gzip:  0.15 kB
 dist/assets/rovingFocus-C627c-M6.js                      0.26 kB │ gzip:  0.19 kB
-dist/assets/useProjectRepository-XN9617Be.js             0.32 kB │ gzip:  0.24 kB
+dist/assets/useProjectRepository-6IfY9gRC.js             0.32 kB │ gzip:  0.24 kB
 dist/assets/exportFileName-GV8bFc2b.js                   0.33 kB │ gzip:  0.24 kB
 dist/assets/fonts-CILJDWcG.js                            0.34 kB │ gzip:  0.23 kB
-dist/assets/chunkRetry-_AiZrZIG.js                       0.36 kB │ gzip:  0.28 kB
+dist/assets/chunkRetry-DHE249uN.js                       0.36 kB │ gzip:  0.28 kB
 dist/assets/projectRepository-Bp8fCprM.js                0.36 kB │ gzip:  0.23 kB
-dist/assets/ContactOwnerNote-BMQRDqfM.js                 0.44 kB │ gzip:  0.36 kB
+dist/assets/ContactOwnerNote-DGISMA3H.js                 0.44 kB │ gzip:  0.36 kB
 dist/assets/projectName-DWJvWhhu.js                      0.53 kB │ gzip:  0.38 kB
-dist/assets/carryOverPanel-DRX0EGPL.js                   0.61 kB │ gzip:  0.40 kB
-dist/assets/protocol-Bd-2Owe-.js                         0.62 kB │ gzip:  0.34 kB
+dist/assets/carryOverPanel-bd6jcVQU.js                   0.61 kB │ gzip:  0.40 kB
 dist/assets/effectiveProfile-CIFNkz4g.js                 0.67 kB │ gzip:  0.37 kB
-dist/assets/TextField-0qbGyJyf.js                        0.72 kB │ gzip:  0.43 kB
-dist/assets/Callout-4dC24Nsu.js                          0.85 kB │ gzip:  0.42 kB
-dist/assets/referenceDisplay-CJUZvF4w.js                 0.87 kB │ gzip:  0.48 kB
+dist/assets/TextField-B60dMvMs.js                        0.72 kB │ gzip:  0.43 kB
+dist/assets/Callout-CW4zIgNJ.js                          0.85 kB │ gzip:  0.42 kB
+dist/assets/referenceDisplay-w1HM0Vcv.js                 0.87 kB │ gzip:  0.48 kB
 dist/assets/boardInput-B3D4Dj-6.js                       1.01 kB │ gzip:  0.70 kB
 dist/assets/docEngine-Cbsoy15L.js                        1.01 kB │ gzip:  0.61 kB
-dist/assets/profileAdjustments-BTX64_AC.js               1.06 kB │ gzip:  0.62 kB
+dist/assets/profileAdjustments-b2kPs6df.js               1.06 kB │ gzip:  0.62 kB
 dist/assets/sectionLibrary-50WmVJEd.js                   1.10 kB │ gzip:  0.63 kB
 dist/assets/adjustmentText-C8m9Grsn.js                   1.34 kB │ gzip:  0.72 kB
-dist/assets/contrast-B36Q6na2.js                         1.41 kB │ gzip:  0.88 kB
-dist/assets/profileContrast-CKHV5nqD.js                  1.47 kB │ gzip:  0.76 kB
-dist/assets/CompareDialog-D0o34fiZ.js                    1.80 kB │ gzip:  0.97 kB
-dist/assets/SegmentedControl-DDByUWIB.js                 1.93 kB │ gzip:  1.02 kB
-dist/assets/VariantOptions-D1_ib4SQ.js                   2.13 kB │ gzip:  1.12 kB
-dist/assets/exportFlow-BxZLwMWW.js                       2.25 kB │ gzip:  1.10 kB
-dist/assets/memoryGenerationRepository-BtsiURyX.js       2.25 kB │ gzip:  1.13 kB
+dist/assets/contrast-CnEbuaoT.js                         1.41 kB │ gzip:  0.88 kB
+dist/assets/profileContrast-DzZPi1iq.js                  1.47 kB │ gzip:  0.75 kB
+dist/assets/SegmentedControl-LkQJOXMk.js                 1.93 kB │ gzip:  1.02 kB
+dist/assets/VariantOptions-BEY8WOtG.js                   2.13 kB │ gzip:  1.12 kB
+dist/assets/exportFlow-k0_aCZ_M.js                       2.22 kB │ gzip:  1.09 kB
+dist/assets/memoryGenerationRepository-CmQn1JxK.js       2.25 kB │ gzip:  1.13 kB
 dist/assets/catalogFilters-CTS9InfW.js                   2.26 kB │ gzip:  1.16 kB
 dist/assets/sectionOps-D0RzJ6aD.js                       2.68 kB │ gzip:  1.32 kB
 dist/assets/references-Dy8ZbmG9.js                       2.70 kB │ gzip:  0.97 kB
-dist/assets/AddSectionDialog-CBIYbFIx.js                 2.82 kB │ gzip:  1.18 kB
-dist/assets/memoryProjectRepository-Cip04-VX.js          3.02 kB │ gzip:  1.42 kB
-dist/assets/memoryCompareBoardRepository-D0dPII4X.js     3.08 kB │ gzip:  1.51 kB
-dist/assets/ExportAfter-Bl9H8hiu.js                      3.26 kB │ gzip:  1.67 kB
-dist/assets/StudioPage-DkmTBgdW.js                       3.64 kB │ gzip:  1.82 kB
-dist/assets/memoryProfileAdjust-B7F9AaKq.js              3.67 kB │ gzip:  1.76 kB
+dist/assets/AddSectionDialog-BuQseL0l.js                 2.82 kB │ gzip:  1.18 kB
+dist/assets/memoryProjectRepository-u0ZZq7qs.js          3.02 kB │ gzip:  1.41 kB
+dist/assets/memoryCompareBoardRepository-M0cGsm5s.js     3.08 kB │ gzip:  1.52 kB
+dist/assets/ExportAfter-Dc34okj1.js                      3.26 kB │ gzip:  1.67 kB
+dist/assets/StudioPage-DZozKZDA.js                       3.61 kB │ gzip:  1.80 kB
+dist/assets/memoryProfileAdjust-Db23ykDj.js              3.67 kB │ gzip:  1.76 kB
 dist/assets/referenceComparisons-BjFXZkfz.js             3.69 kB │ gzip:  1.01 kB
-dist/assets/memoryBoardConfirm-VVOWChFl.js               3.71 kB │ gzip:  1.85 kB
-dist/assets/pngCapture-DiDctqCt.js                       3.72 kB │ gzip:  2.08 kB
-dist/assets/deferredStudio-mfHmDlON.js                   5.20 kB │ gzip:  2.08 kB
-dist/assets/memoryDocBook-CoDgv10G.js                    5.53 kB │ gzip:  2.41 kB
+dist/assets/memoryBoardConfirm-k5IWJ8Ja.js               3.71 kB │ gzip:  1.85 kB
+dist/assets/pngCapture-C0iCnRBq.js                       3.72 kB │ gzip:  2.08 kB
+dist/assets/deferredStudio-B8zRdhXy.js                   5.20 kB │ gzip:  2.08 kB
+dist/assets/memoryDocBook-D1i-zaX6.js                    5.53 kB │ gzip:  2.41 kB
 dist/assets/referenceDetails-C7TYk5GK.js                 5.57 kB │ gzip:  1.41 kB
-dist/assets/runGate-i1l-R1fW.js                          6.01 kB │ gzip:  2.51 kB
-dist/assets/CandidateResults-D-Pq16Q6.js                 6.38 kB │ gzip:  2.44 kB
+dist/assets/runGate-C2BlueqA.js                          6.01 kB │ gzip:  2.51 kB
+dist/assets/CandidateResults-CcrlSbGu.js                 6.43 kB │ gzip:  2.46 kB
 dist/assets/issue-DWTzr2xQ.js                            7.14 kB │ gzip:  3.24 kB
-dist/assets/ProjectsRoute-BYu-b3r7.js                    8.01 kB │ gzip:  3.22 kB
+dist/assets/ProjectsRoute-CQby8i7A.js                    8.01 kB │ gzip:  3.22 kB
 dist/assets/registry-DJRRIZ46.js                         8.16 kB │ gzip:  3.10 kB
-dist/assets/profileDraft-CcVyC9Ax.js                     8.19 kB │ gzip:  3.40 kB
+dist/assets/profileDraft-C_bWjvNu.js                     8.19 kB │ gzip:  3.41 kB
 dist/assets/react-DB-4Zxce.js                            8.52 kB │ gzip:  3.28 kB
-dist/assets/staticHtml-DzYwwsOR.js                      12.39 kB │ gzip:  5.87 kB
-dist/assets/memoryGenerate-iyVLzmC9.js                  12.66 kB │ gzip:  5.34 kB
-dist/assets/ReferenceDetailPage-BxFJ0pet.js             13.19 kB │ gzip:  4.44 kB
-dist/assets/startDocWrite-BzYykVkJ.js                   14.53 kB │ gzip:  6.29 kB
+dist/assets/CompareDialog-2G6ndOr6.js                   10.97 kB │ gzip:  4.69 kB
+dist/assets/staticHtml-Cf0Sq42z.js                      12.36 kB │ gzip:  5.86 kB
+dist/assets/memoryGenerate-BMGDpQL3.js                  12.66 kB │ gzip:  5.34 kB
+dist/assets/ReferenceDetailPage-8yTIDjM3.js             13.19 kB │ gzip:  4.44 kB
+dist/assets/startDocWrite-CaMe9yNU.js                   14.53 kB │ gzip:  6.29 kB
 dist/assets/schemas-W3dRUVzC.js                         18.15 kB │ gzip:  5.95 kB
-dist/assets/CatalogPage-D62UUefH.js                     19.51 kB │ gzip:  6.70 kB
-dist/assets/ProfilePage-Bsg33MkY.js                     19.68 kB │ gzip:  7.18 kB
-dist/assets/boardEngine-dK-WFicn.js                     21.79 kB │ gzip:  8.32 kB
-dist/assets/CompareBoardPage-ClDnqt4h.js                22.72 kB │ gzip:  8.21 kB
-dist/assets/profileEngine-C5NDPfjt.js                   25.75 kB │ gzip:  9.29 kB
-dist/assets/StudioLayout-iJ5Buir5.js                    50.12 kB │ gzip: 16.57 kB
-dist/assets/index-B_RnsVlB.js                          271.50 kB │ gzip: 86.98 kB
+dist/assets/CatalogPage-D6Ayi1pd.js                     19.51 kB │ gzip:  6.70 kB
+dist/assets/ProfilePage-DVnkrQYK.js                     19.68 kB │ gzip:  7.19 kB
+dist/assets/boardEngine-Db-sDIH-.js                     21.79 kB │ gzip:  8.32 kB
+dist/assets/CompareBoardPage-Cg5pgYMl.js                22.72 kB │ gzip:  8.22 kB
+dist/assets/profileEngine-BDGawzpI.js                   26.23 kB │ gzip:  9.40 kB
+dist/assets/StudioLayout-7f-N6269.js                    50.68 kB │ gzip: 16.77 kB
+dist/assets/index-B98_07cQ.js                          271.50 kB │ gzip: 86.99 kB
 
-✓ built in 277ms
+✓ built in 264ms
 (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
   - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
 Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
@@ -119,43 +118,43 @@ dist/assets/KitSerifKR-700-B3ikZB6l.woff2             362.68 kB
 dist/assets/render-BZVnPKWZ.css                        43.17 kB │ gzip:  8.76 kB
 dist/assets/render-DgtSWqZU.js                        268.12 kB │ gzip: 83.87 kB
 
-✓ built in 123ms
+✓ built in 115ms
 [bundle] 공통 JS (gzip, 참고): 89.35KB
-  - assets/index-B_RnsVlB.js 86.07KB
+  - assets/index-B98_07cQ.js 86.07KB
   - assets/react-DB-4Zxce.js 3.28KB
 [bundle] /catalog 첫 화면 합계: 99.66KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.04KB / 예산 125KB
 [bundle] /references/:id 첫 화면 합계: 97.01KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.39KB / 예산 125KB
-[bundle] /compare 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.70KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.71KB / 예산 125KB
 [bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.89KB (5개 파일, 예산 판정 밖)
 [bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.23KB (2개 파일, 예산 판정 밖)
-[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.75KB (3개 파일, 예산 판정 밖)
 [bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
 [bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
-[bundle] /compare (조정 있음) 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.70KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.84KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.71KB / 예산 125KB
 [bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.89KB (5개 파일, 예산 판정 밖)
 [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.23KB (2개 파일, 예산 판정 밖)
-[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.75KB (3개 파일, 예산 판정 밖)
 [bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
 [bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
-[bundle] /profile 첫 화면 합계: 99.61KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.02KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.62KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.13KB / 예산 125KB
 [bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
 [bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.49KB (2개 파일, 예산 판정 밖)
-[bundle]   /profile 조작 뒤 src/data/memoryProjectRepository.ts: +2.03KB (3개 파일, 예산 판정 밖)
-[bundle]   /profile 조작 뒤 src/features/profile/CompareDialog.tsx: +17.78KB (7개 파일, 예산 판정 밖)
-[bundle] /profile (3안 있음) 첫 화면 합계: 99.61KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.46KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProjectRepository.ts: +2.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/features/profile/CompareDialog.tsx: +21.15KB (6개 파일, 예산 판정 밖)
+[bundle] /profile (3안 있음) 첫 화면 합계: 99.62KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.60KB / 예산 125KB
 [bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
 [bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryGenerate.ts: +5.49KB (2개 파일, 예산 판정 밖)
-[bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryProjectRepository.ts: +2.03KB (3개 파일, 예산 판정 밖)
-[bundle]   /profile (3안 있음) 조작 뒤 src/features/profile/CompareDialog.tsx: +17.78KB (7개 파일, 예산 판정 밖)
-[bundle] /projects 첫 화면 합계: 94.02KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.31KB / 예산 125KB
-[bundle] /studio/:projectId 첫 화면 합계: 91.79KB / 예산 100KB · 진입 직후 자동 로드 포함: 127.50KB / 예산 128KB
+[bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryProjectRepository.ts: +2.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /profile (3안 있음) 조작 뒤 src/features/profile/CompareDialog.tsx: +21.15KB (6개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94.02KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.32KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.78KB / 예산 100KB · 진입 직후 자동 로드 포함: 127.35KB / 예산 128KB
 [bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.94KB (2개 파일, 예산 판정 밖)
-[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.18KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.19KB (1개 파일, 예산 판정 밖)
 [bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.12KB (1개 파일, 예산 판정 밖)
-[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.36KB (1개 파일, 예산 판정 밖)
-[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +1.35KB (2개 파일, 예산 판정 밖)
-[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ExportAfter.tsx: +1.67KB (1개 파일, 예산 판정 밖)
-[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +8.19KB (3개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.37KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ExportAfter.tsx: +1.68KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +8.18KB (3개 파일, 예산 판정 밖)
 [bundle] 렌더 문서(render.html) JS 합계: 83.03KB / 예산 90KB · CSS 합계: 8.75KB / 예산 30KB
   - assets/render-DgtSWqZU.js 83.03KB
   - assets/render-BZVnPKWZ.css 8.75KB

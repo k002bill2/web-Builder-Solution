@@ -286,3 +286,14 @@ describe("대화상자 안 선택 · 접근성 (SPEC 2.5 · 4 · CMP-AC-U8)", ()
     expect(within(dialog).getByRole("region", { name: "3안 미리보기 영역" })).toHaveAttribute("tabindex", "0");
   });
 });
+
+describe("1안씩 전환 뒤 알림 (Codex R1 P2)", () => {
+  it("부분 실패 잡에서 만들지 못한 안으로 전환 = 그 안 문장 1회(전환 직후 보고가 이전 보이는 안 목록을 보지 않는다)", async () => {
+    viewport(768);
+    const { dialog } = await mountDialog({ options: { outcome: ({ id }) => (id === "C" ? "INFRA" : undefined) } });
+    await send(framesOf(dialog)[0]!, { type: "rects", rects: [sectionRect(900)] });
+    expect(status(dialog)).toHaveTextContent(/^A안을 그렸습니다$/);
+    await userEvent.click(within(dialog).getByRole("radio", { name: "C안" }));
+    expect(status(dialog)).toHaveTextContent(/^C안은 만들지 못했습니다$/);
+  });
+});

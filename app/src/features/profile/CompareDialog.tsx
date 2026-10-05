@@ -54,29 +54,28 @@ function useAnnouncement(visible: readonly CandidateId[], wide: boolean) {
   const categories = useRef<Partial<Record<CandidateId, FrameCategory>>>({});
   const announced = useRef<Partial<Record<CandidateId, FrameCategory>>>({});
   const totalled = useRef(false);
-  const view = useRef({ visible, wide });
-  useEffect(() => {
-    view.current = { visible, wide };
-  }, [visible, wide]);
-  const report = useCallback((id: CandidateId, category: FrameCategory | undefined) => {
-    categories.current = { ...categories.current, [id]: category };
-    if (category === undefined) {
-      announced.current = { ...announced.current, [id]: undefined };
-      return;
-    }
-    const { visible: ids, wide: three } = view.current;
-    if (!ids.includes(id) || announced.current[id] === category) return;
-    if (three && !totalled.current) {
-      const all = ids.map((i) => categories.current[i]);
-      if (!all.every(Boolean)) return;
-      totalled.current = true;
-      announced.current = { ...categories.current };
-      say(totalText(all as FrameCategory[]));
-      return;
-    }
-    announced.current = { ...announced.current, [id]: category };
-    say(categoryText(id, category));
-  }, []);
+  // 보이는 안·배치는 렌더 시점 값으로 닫는다 — 바뀌면 콜백이 새로 생기고, 새로 마운트된 열은 같은 커밋의 새 콜백으로 보고한다(Codex R1 P2: 부모 effect보다 자식 effect가 먼저 돈다)
+  const report = useCallback(
+    (id: CandidateId, category: FrameCategory | undefined) => {
+      categories.current = { ...categories.current, [id]: category };
+      if (category === undefined) {
+        announced.current = { ...announced.current, [id]: undefined };
+        return;
+      }
+      if (!visible.includes(id) || announced.current[id] === category) return;
+      if (wide && !totalled.current) {
+        const all = visible.map((i) => categories.current[i]);
+        if (!all.every(Boolean)) return;
+        totalled.current = true;
+        announced.current = { ...categories.current };
+        say(totalText(all as FrameCategory[]));
+        return;
+      }
+      announced.current = { ...announced.current, [id]: category };
+      say(categoryText(id, category));
+    },
+    [visible, wide],
+  );
   return { text, say, report };
 }
 

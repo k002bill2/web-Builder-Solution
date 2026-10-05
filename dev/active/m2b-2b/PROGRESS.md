@@ -16,6 +16,6 @@
 - [x] P-F REPORT 마감 · 서버 종료 증거(4337·4339 LISTEN 0, logs/server-stop.txt)
 
 ## 새 테스트 delta 사전 예측 (RED 전)
-- (P2 RED 직전 기록) PortfolioGallery.test.tsx = 6 (공통 3 · grid-2 1 · masonry 2) · PageDocument 정확 목록 +0(기존 it 수정) → 실측 1769 = +6 일치
+- (P2 예측 RED 전 기록 누락 — 사후 기록) PortfolioGallery.test.tsx 6 (공통 3 · grid-2 1 · masonry 2) · PageDocument 정확 목록 +0(기존 it 수정) · 실측 1769 = +6
 - (P3 RED 전 기록) StatisticsStats3.test.tsx ≈ 5 · 4변형 공통 bodyVariants2b.test.tsx ≈ 4(킷·폴백 0 / KD-AC-06 / 08 / 07) · PageDocument +0 · renderedVariants.test 무변경
 - 예상 합계 ≈ +15 (±3) → 전체 ≈ 1778

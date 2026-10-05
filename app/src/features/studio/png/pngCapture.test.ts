@@ -80,13 +80,26 @@ describe("PNG 캡처 문서 (m2a 3.3 · 2a-05 r4.8 — PNG 경로는 폴백 허�
     const fo = root.querySelector("foreignObject")!;
     expect([fo.getAttribute("width"), fo.getAttribute("height")]).toEqual(["390", "2400"]);
     expect(fo.firstElementChild!.namespaceURI).toBe("http://www.w3.org/1999/xhtml");
-    expect(doc.getElementsByTagName("style")[0]!.textContent).toBe(CSS);
+    // M2B-4b 이관: 킷 CSS 원문 + 줄바꿈 + 모션 정지 방어 규칙(SPEC 1.3 · MF-AC-U5) — 정확 일치 유지
+    expect(doc.getElementsByTagName("style")[0]!.textContent).toBe(`${CSS}\n[data-site-root] *, [data-site-root] *::before, [data-site-root] *::after { animation: none !important; transition: none !important; }`);
     expect(doc.querySelectorAll("[data-site-root]")).toHaveLength(1);
     expect(doc.getElementsByTagName("script")).toHaveLength(0);
     expect(doc.getElementsByTagName("iframe")).toHaveLength(0);
     expect(doc.querySelectorAll("details[open]")).toHaveLength(0);
     const attrs = [...doc.querySelectorAll("*")].flatMap((el) => [...el.attributes].map((a) => a.name));
     expect(attrs.filter((a) => a.startsWith("on"))).toEqual([]);
+  });
+
+  it("U5 모션: 캡처 style 끝 = 모션 정지 방어 규칙 · data-motion-play 0(마크업에 있어도 지움) · data-motion은 남음", () => {
+    const markup = drawDoc(sampleDoc()).querySelector("[data-site-root]")!.outerHTML.replace("<div data-site-root", '<div data-motion-play="" data-site-root');
+    expect(markup).toContain("data-motion-play");
+    const svg = buildCaptureSvg({ markup, css: CSS, width: 1280, height: 3000 });
+    const page = new DOMParser().parseFromString(svg, "image/svg+xml");
+    const style = page.getElementsByTagName("style")[0]!.textContent!;
+    expect(style.startsWith(CSS)).toBe(true);
+    expect(style.trimEnd().endsWith("[data-site-root] *, [data-site-root] *::before, [data-site-root] *::after { animation: none !important; transition: none !important; }")).toBe(true);
+    expect(svg).not.toContain("data-motion-play");
+    expect(svg).toContain('data-motion="L1"');
   });
 
   it("사이트 루트가 없는 마크업은 실패", () => {

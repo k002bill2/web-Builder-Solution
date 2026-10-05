@@ -12,7 +12,7 @@ export const STATIC_MENU_SCRIPT =
   'document.addEventListener("click",function(e){var t=e.target,a=t&&t.closest?t.closest(\'a[href^="#"]\'):null,p=a?a.closest("[popover]"):null;if(p&&typeof p.hidePopover=="function")p.hidePopover()});';
 
 /** 킷·렌더 CSS가 선택자로 쓰는 data-* (kit.css · render.css) — 나머지 data-*는 편집기 흔적이라 지운다 */
-const KEPT_DATA = new Set(["data-site-root", "data-kit", "data-layout", "data-tone", "data-always"]);
+const KEPT_DATA = new Set(["data-site-root", "data-kit", "data-layout", "data-tone", "data-always", "data-motion", "data-motion-play"]);
 
 export interface StaticHtmlParts {
   readonly markup: string;
@@ -63,6 +63,9 @@ export function buildStaticHtml({ markup, css, title, description, notice }: Sta
   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw new Error("구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다");
   clean(site);
+  // 모션 재생 스위치(M2B-4b · SPEC 1.3 · MF-AC-U4) — 정적 HTML만, 사이트 루트에만. 안쪽에 들어온 것은 지운다
+  for (const el of site.querySelectorAll("[data-motion-play]")) el.removeAttribute("data-motion-play");
+  site.setAttribute("data-motion-play", "");
   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
 
   const head = page.head;

@@ -56,6 +56,8 @@ export const pngFileName = (name: string, width: number, revision: number, fallb
 export const svgDataUrl = (svg: string) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 
 /** 사이트 루트 마크업 + 킷 CSS → SVG(원래 폭 × 전체 길이). 실행 코드·on*·열린 details는 지운다(불활성 문서 안에서) */
+const MOTION_STOP = "[data-site-root] *, [data-site-root] *::before, [data-site-root] *::after { animation: none !important; transition: none !important; }";
+
 export function buildCaptureSvg({ markup, css, width, height }: { readonly markup: string; readonly css: string; readonly width: number; readonly height: number }): string {
   const page = document.implementation.createHTMLDocument("");
   page.body.innerHTML = markup;
@@ -66,8 +68,10 @@ export function buildCaptureSvg({ markup, css, width, height }: { readonly marku
     for (const { name } of [...el.attributes]) if (name.startsWith("on")) el.removeAttribute(name);
   }
   for (const el of site.querySelectorAll("details[open]")) el.removeAttribute("open");
+  // 모션 = 최종 상태(M2B-4b · SPEC 1.3·C-4 · MF-AC-U5) — 재생 스위치 0 + style 끝 방어 규칙(t≈0 프레임이 찍혀도 최종)
+  for (const el of [site, ...site.querySelectorAll("[data-motion-play]")]) el.removeAttribute("data-motion-play");
   const style = page.createElement("style");
-  style.textContent = css;
+  style.textContent = `${css}\n${MOTION_STOP}`;
   page.head.replaceChildren(style);
   page.documentElement.setAttribute("style", `width:${width}px`);
   page.body.setAttribute("style", "margin:0");

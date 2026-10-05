@@ -11,7 +11,8 @@
 - [x] P1 `kit/motion.css`(토큰 9·keyframes 4·시트·L1 묶음·L2 rise/순차/확대/강조선) · render.css import(kit.css 뒤) · RED 5 failed(logs/p1-red.txt, motion.css·import 없이) = 예측 +5 → GREEN 10 · gate OK(logs/p1-gate.txt) · 바이트 logs/p1-bytes.txt
 - [x] P2 `render/sectionMotion.ts`(firstScreenIds·motionOf) → PageDocument root `data-motion` · KitRootProps 선택 속성(킷 30개 수정 0) · RED 5 failed(logs/p2-red.txt) = 예측 → GREEN 5 · gate OK 표적 render·kit·studio 395(logs/p2-gate.txt) · 바이트(logs/p2-bytes.txt, 축약 뒤 재빌드): 렌더 JS 83,029(+158 — SPEC 1.7 추정 0~150 대비 +8 B 초과, 멈춤선 89,700 여유 6.6KB) · CSS 8,753 · /studio 첫 ±0 · 진입 127,340(+10) · /compare 진입 121,722(+27, 앱 코드 변경 0 — 청크 해시 변화) · 테스트 파일은 .tsx(예측 표기 .ts → JSX 도우미 사용)
   - 첫 화면 경계 규칙: main 문서 순서 첫 hero + 뒤 2자리 · hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · faq·contact·폴백 = 자리 차지·속성 0 · header = 위치 무관 min(motion,L1)
-- [ ] P3 정적 HTML `data-motion-play`·KEPT_DATA·스크립트 바이트 동일(U4) · PNG 방어 규칙(U5)
+- [x] P3 정적 HTML KEPT_DATA +data-motion·data-motion-play · clean 뒤 안쪽 play 제거·사이트 루트에만 부착 · STATIC_MENU_SCRIPT 변경 0(diff 0줄) · PNG buildCaptureSvg play 제거 + style 끝 방어 규칙 · RED 3 failed(logs/p3-red.txt) = 예측 → GREEN · gate OK 표적 398(logs/p3-gate.txt) · 바이트 logs/p3-bytes.txt(렌더 JS 83,029 · CSS 8,753 · /studio 첫 91,775(−9) · 진입 127,336(+6) · /compare 진입 121,724(+29))
+  - 이관(전→후): ① `staticMarkup.test.ts` data-* 허용 목록 5개 → +data-motion·data-motion-play 7개(SPEC C-2) ② `pngCapture.test.ts` style 텍스트 `toBe(CSS)` → `toBe(CSS + "\\n" + 방어 규칙)` 정확 일치 유지(SPEC 1.3·U5) — 약화 0
 - [ ] P4 브라우저 B1~B5 3폭·reduced-motion·200%·인쇄 · 계산 스타일 동등성
 - [ ] P5 전체 vitest exit 0 · Codex branch review base 8236a2c · REPORT
 

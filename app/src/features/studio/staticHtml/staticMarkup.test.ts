@@ -10,6 +10,25 @@ const build = (over: Partial<Parameters<typeof buildStaticHtml>[0]> = {}) =>
 const parse = (html: string) => new DOMParser().parseFromString(html, "text/html");
 
 describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
+  it("U4 모션: 사이트 루트에만 data-motion-play 1개 · 섹션 data-motion = 렌더 문서 값 그대로 · 스크립트 = STATIC_MENU_SCRIPT 1개(바이트 동일)", () => {
+    const rendered = new DOMParser().parseFromString(siteMarkup(), "text/html");
+    const expected = [...rendered.querySelectorAll("[data-kit]")].map((el) => [el.id, el.getAttribute("data-motion")]);
+    expect(expected.some(([, m]) => m !== null)).toBe(true);
+    expect(rendered.querySelectorAll("[data-motion-play]")).toHaveLength(0);
+    const doc = parse(build());
+    expect([...doc.querySelectorAll("[data-motion-play]")]).toEqual([doc.querySelector("[data-site-root]")]);
+    expect([...doc.querySelectorAll("[data-kit]")].map((el) => [el.id, el.getAttribute("data-motion")])).toEqual(expected);
+    expect([...doc.querySelectorAll("script")].map((el) => el.textContent)).toEqual([STATIC_MENU_SCRIPT]);
+  });
+
+  it("U4 모션: 마크업 안쪽에 들어온 data-motion-play는 지운다 — 재생 스위치는 생성기가 사이트 루트에만 붙인다", () => {
+    const dirty = siteMarkup().replace("<header", '<header data-motion-play=""').replace("<main", '<main data-motion-play=""');
+    expect(dirty.split("data-motion-play").length).toBe(3);
+    const doc = parse(build({ markup: dirty }));
+    expect(doc.querySelectorAll("[data-motion-play]")).toHaveLength(1);
+    expect(doc.querySelector("[data-site-root]")!.hasAttribute("data-motion-play")).toBe(true);
+  });
+
   it("완전한 문서 1개 — doctype · lang=ko · charset · viewport · title·description = 문서 SEO 메타 · 인라인 style(킷 CSS) · 사이트 루트(--site-* 변수)", () => {
     const html = build();
     expect(html.startsWith("<!doctype html>\n<html lang=\"ko\">")).toBe(true);
@@ -43,7 +62,8 @@ describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
     expect(doc.querySelectorAll("details").length).toBeGreaterThan(0);
     const attrs = [...doc.querySelectorAll("*")].flatMap((el) => [...el.attributes].map((a) => a.name));
     expect(attrs.filter((a) => a.startsWith("on"))).toEqual([]);
-    expect(attrs.filter((a) => a.startsWith("data-")).filter((a) => !["data-kit", "data-layout", "data-tone", "data-always", "data-site-root"].includes(a))).toEqual([]);
+    // M2B-4b 이관: 모션 선택자 data-motion·data-motion-play 추가(SPEC C-2 · 1.3 — motion.css가 쓴다)
+    expect(attrs.filter((a) => a.startsWith("data-")).filter((a) => !["data-kit", "data-layout", "data-tone", "data-always", "data-site-root", "data-motion", "data-motion-play"].includes(a))).toEqual([]);
     expect(doc.querySelectorAll("[data-kit]").length).toBeGreaterThan(0);
     // 앵커 대상(id="s-…")·메뉴 시트(popover · popovertarget)는 남는다 — 정적 HTML의 앵커 이동·시트(K-AC-12)
     expect(doc.querySelectorAll('[id^="s-"]').length).toBeGreaterThan(0);

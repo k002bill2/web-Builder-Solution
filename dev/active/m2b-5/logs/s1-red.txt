@@ -1,0 +1,1170 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app
+
+ ❯ src/features/profile/compareFrame.test.ts (0 test)
+ ❯ src/features/profile/comparePreviews.test.ts (0 test)
+ ❯ src/pages/ProfileCompare.test.tsx (4 tests | 3 failed) 10222ms
+   ❯ 비교 버튼 보이는 조건 (CMP-AC-U1) (2)
+     × 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위 3529ms
+   ❯ 비교 청크는 누른 뒤에만 (CMP-AC-U2 · 번들 분류 근거) (2)
+     × 3안이 있어도 누르기 전 요청 0 → 누르면 받는 동안 aria-busy '불러오는 중…' → 받은 뒤 원래 이름 · 저장소 startDoc 0 3317ms
+     × 청크 실패 → 버튼 아래 role=alert '실제 화면 비교를 불러오지 못했습니다' + 다시 시도 → 새 요청 3273ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/profile/compareFrame.test.ts [ src/features/profile/compareFrame.test.ts ]
+Error: Failed to resolve import "./compareFrame" from "src/features/profile/compareFrame.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app/src/features/profile/compareFrame.test.ts:5:29
+  3  |  */
+  4  |  import { describe, expect, it } from "vitest";
+  5  |  import { frameMessage } from "./compareFrame";
+     |                                ^
+  6  |  describe("비교 프레임 수신 판정 (CMP-AC-U3)", () => {
+  7  |  	it("다른 프레임·창에서 온 메시지 = 무시 · 모양 틀림 = 무시 · 그 프레임 + 올바른 모양만 읽는다", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/features/profile/comparePreviews.test.ts [ src/features/profile/comparePreviews.test.ts ]
+Error: Failed to resolve import "./comparePreviews" from "src/features/profile/comparePreviews.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app/src/features/profile/comparePreviews.test.ts:13:50
+  11 |  import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
+  12 |  import { docKitTokens } from "../studio/docPurpose";
+  13 |  import { compareKitTokens, comparePreviews } from "./comparePreviews";
+     |                                                     ^
+  14 |  async function fixture(options = {}) {
+  15 |  	const store = createStudioStore();
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m프로필 값 그대로[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m제외한 섹션 없음[0m
+            [36m</li>[39m
+          [36m</ol>[39m
+          [36m<p>[39m
+            [0mR-03[0m
+            [0m · [0m
+            [0m목적을 고르면 필수 섹션을 검사합니다[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mR-08[0m
+            [0m · [0m
+            [0m대비 미달 1 — 프로필에서 보정[0m
+            [0m [0m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-primary-text underline"[39m
+              [33mhref[39m=[32m"#profile-palette"[39m
+            [36m>[39m
+              [0m팔레트와 대비 보기[0m
+            [36m</a>[39m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-label-alternative"[39m
+          [36m>[39m
+            [0m결과 해시 [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-mono"[39m
+            [36m>[39m
+              [0mdf820dd7[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"flex list-decimal flex-col gap-1 pl-5"[39m
+          [36m>[3...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m프로필 값 그대로[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m제외한 섹션 없음[0m
+            [36m</li>[39m
+          [36m</ol>[39m
+          [36m<p>[39m
+            [0mR-03[0m
+            [0m · [0m
+            [0m목적을 고르면 필수 섹션을 검사합니다[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mR-08[0m
+            [0m · [0m
+            [0m대비 미달 1 — 프로필에서 보정[0m
+            [0m [0m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-primary-text underline"[39m
+              [33mhref[39m=[32m"#profile-palette"[39m
+            [36m>[39m
+              [0m팔레트와 대비 보기[0m
+            [36m</a>[39m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-label-alternative"[39m
+          [36m>[39m
+            [0m결과 해시 [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-mono"[39m
+            [36m>[39m
+              [0mdf820dd7[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"flex list-decimal flex-col gap-1 pl-5"[39m
+          [36m>[3...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfileCompare.test.tsx:71:41
+     69|     expect(within(region).queryByRole("button", { name: COMPARE })).no…
+     70|     for (let i = 0; i < 3; i += 1) await tick();
+     71|     const button = await within(region).findByRole("button", { name: C…
+       |                                         ^
+     72|     const list = within(region).getByRole("list", { name: "3안" });
+     73|     const edit = within(region).getByRole("button", { name: "편집 시작" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 비교 청크는 누른 뒤에만 (CMP-AC-U2 · 번들 분류 근거) > 3안이 있어도 누르기 전 요청 0 → 누르면 받는 동안 aria-busy '불러오는 중…' → 받은 뒤 원래 이름 · 저장소 startDoc 0
+TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m프로필 값 그대로[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m제외한 섹션 없음[0m
+            [36m</li>[39m
+          [36m</ol>[39m
+          [36m<p>[39m
+            [0mR-03[0m
+            [0m · [0m
+            [0m목적을 고르면 필수 섹션을 검사합니다[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mR-08[0m
+            [0m · [0m
+            [0m대비 미달 1 — 프로필에서 보정[0m
+            [0m [0m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-primary-text underline"[39m
+              [33mhref[39m=[32m"#profile-palette"[39m
+            [36m>[39m
+              [0m팔레트와 대비 보기[0m
+            [36m</a>[39m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-label-alternative"[39m
+          [36m>[39m
+            [0m결과 해시 [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-mono"[39m
+            [36m>[39m
+              [0mdf820dd7[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"flex list-decimal flex-col gap-1 pl-5"[39m
+          [36m>[3...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m프로필 값 그대로[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m제외한 섹션 없음[0m
+            [36m</li>[39m
+          [36m</ol>[39m
+          [36m<p>[39m
+            [0mR-03[0m
+            [0m · [0m
+            [0m목적을 고르면 필수 섹션을 검사합니다[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mR-08[0m
+            [0m · [0m
+            [0m대비 미달 1 — 프로필에서 보정[0m
+            [0m [0m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-primary-text underline"[39m
+              [33mhref[39m=[32m"#profile-palette"[39m
+            [36m>[39m
+              [0m팔레트와 대비 보기[0m
+            [36m</a>[39m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-label-alternative"[39m
+          [36m>[39m
+            [0m결과 해시 [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-mono"[39m
+            [36m>[39m
+              [0mdf820dd7[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"flex list-decimal flex-col gap-1 pl-5"[39m
+          [36m>[3...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfileCompare.test.tsx:92:26
+     90|     const u = user();
+     91|     await generate(u, region);
+     92|     await within(region).findByRole("button", { name: COMPARE });
+       |                          ^
+     93|     expect(compare.load).not.toHaveBeenCalled();
+     94|     let resolve!: (m: Compare) => void;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 비교 청크는 누른 뒤에만 (CMP-AC-U2 · 번들 분류 근거) > 청크 실패 → 버튼 아래 role=alert '실제 화면 비교를 불러오지 못했습니다' + 다시 시도 → 새 요청
+TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m프로필 값 그대로[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m제외한 섹션 없음[0m
+            [36m</li>[39m
+          [36m</ol>[39m
+          [36m<p>[39m
+            [0mR-03[0m
+            [0m · [0m
+            [0m목적을 고르면 필수 섹션을 검사합니다[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mR-08[0m
+            [0m · [0m
+            [0m대비 미달 1 — 프로필에서 보정[0m
+            [0m [0m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-primary-text underline"[39m
+              [33mhref[39m=[32m"#profile-palette"[39m
+            [36m>[39m
+              [0m팔레트와 대비 보기[0m
+            [36m</a>[39m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-label-alternative"[39m
+          [36m>[39m
+            [0m결과 해시 [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-mono"[39m
+            [36m>[39m
+              [0mdf820dd7[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"flex list-decimal flex-col gap-1 pl-5"[39m
+          [36m>[3...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m프로필 값 그대로[0m
+            [36m</li>[39m
+            [36m<li>[39m
+              [0m제외한 섹션 없음[0m
+            [36m</li>[39m
+          [36m</ol>[39m
+          [36m<p>[39m
+            [0mR-03[0m
+            [0m · [0m
+            [0m목적을 고르면 필수 섹션을 검사합니다[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mR-08[0m
+            [0m · [0m
+            [0m대비 미달 1 — 프로필에서 보정[0m
+            [0m [0m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-primary-text underline"[39m
+              [33mhref[39m=[32m"#profile-palette"[39m
+            [36m>[39m
+              [0m팔레트와 대비 보기[0m
+            [36m</a>[39m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-label-alternative"[39m
+          [36m>[39m
+            [0m결과 해시 [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-mono"[39m
+            [36m>[39m
+              [0mdf820dd7[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"flex list-decimal flex-col gap-1 pl-5"[39m
+          [36m>[3...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfileCompare.test.tsx:112:40
+    110|     compare.load.mockImplementation(() => Promise.reject(new Error("Fa…
+    111|     const spy = vi.spyOn(console, "error").mockImplementation(() => un…
+    112|     await u.click(await within(region).findByRole("button", { name: CO…
+       |                                        ^
+    113|     const alert = await within(region).findByRole("alert");
+    114|     expect(alert).toHaveTextContent("실제 화면 비교를 불러오지 못했습니다");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  3 failed | 1 passed (4)
+   Start at  20:41:04
+   Duration  11.67s (tests 77%, environment 15%, transform 4%, setup 3%, import 1%)
+

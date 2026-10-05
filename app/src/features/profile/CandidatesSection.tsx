@@ -17,6 +17,7 @@ import { isTerminal, type CandidateFailure, type GenerationJob } from "../../dom
 import type { ProfileVersion } from "../../domain/profile";
 import type { WirePalette } from "./CandidateCard";
 import { loadCandidateResults as loadResults } from "./candidateResultsLoader";
+import { loadCompare } from "./compareLoader";
 import { CANDIDATE_TEXT, determinismText, failureText } from "./generationText";
 import { PALETTE_ROLES } from "./profileFields";
 import { useGeneration } from "./useGeneration";
@@ -56,6 +57,8 @@ export function CandidatesSection({
   /** 카드·표 청크(PROFILE-HEADROOM-2) — 잡이 생긴 뒤에만 쓰여 따로 받는다. 다시 시도 = attempt 증가 → 새 URL로 다시 받기 */
   const [results, setResults] = useState<Awaited<ReturnType<typeof loadResults>> | "error">();
   const [attempt, setAttempt] = useState(0);
+  /** 비교 청크(M2B-5 SPEC 1.1) — 누를 때만 받는다. "loading" = 받는 중(aria-busy) · "error" = 실패 Callout */
+  const [compare, setCompare] = useState<Awaited<ReturnType<typeof loadCompare>> | "loading" | "error">();
   const hasJob = Boolean(job);
   useEffect(() => {
     if (!hasJob) return;
@@ -82,6 +85,14 @@ export function CandidatesSection({
     }
     setStarting(false);
     if (state) void navigate(`/studio/${projectId}`, { state });
+  };
+  const onCompare = () => {
+    if (compare === "loading") return;
+    setCompare("loading");
+    loadCompare().then(setCompare, (error: unknown) => {
+      console.error("[profile] 3안 비교 청크 불러오기 실패", error);
+      setCompare("error");
+    });
   };
   const onRequest = () => {
     if (blocked || running) return;
@@ -172,6 +183,19 @@ export function CandidatesSection({
           busy={gen.busy === "select"}
           onSelect={(id) => void gen.select(job.jobId, id)}
         />
+      )}
+      {job && isTerminal(job.state) && !allFailed && typeof results === "object" && (
+        <div className="flex flex-col items-start gap-2">
+          <Button variant="outline" aria-busy={compare === "loading" || undefined} onClick={onCompare}>
+            {compare === "loading" ? CANDIDATE_TEXT.compareLoading : CANDIDATE_TEXT.compare}
+          </Button>
+          {compare === "error" && (
+            <div role="alert">
+              <Callout tone="negative" title={CANDIDATE_TEXT.compareFailed} action={<Button size="sm" variant="outline" onClick={onCompare}>다시 시도</Button>} />
+            </div>
+          )}
+          {typeof compare === "object" && <compare.default job={job} viewed={viewed} />}
+        </div>
       )}
       <div className="flex flex-col items-start gap-2 md:items-end">
         <Button

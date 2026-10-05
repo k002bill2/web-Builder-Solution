@@ -19,6 +19,9 @@ export const CANDIDATE_TEXT = Object.freeze({
   load: "저장된 3안을 불러오지 못했습니다 · 화면을 다시 열어 확인하세요",
   resultsLoading: "3안을 불러오는 중…",
   resultsFailed: "3안 결과를 불러오지 못했습니다",
+  compare: "3안 실제 화면으로 비교",
+  compareLoading: "불러오는 중…",
+  compareFailed: "실제 화면 비교를 불러오지 못했습니다",
 });
 
 export const GRID_LABELS: Readonly<Record<GridStyle, string>> = Object.freeze({ "grid-3": "카드 3열", "grid-2": "카드 2열", masonry: "카드 마소니" });

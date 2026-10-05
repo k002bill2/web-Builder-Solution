@@ -28,3 +28,7 @@
 | 비교 조작 뒤 청크 | — | — | | | >25 |
 
 ## 새 테스트 delta 사전 예측 (각 단계 RED 전 기록)
+- S1 (기준 = baseline fresh 실행값, 브리프 210 files · 1840): 새 파일 3개 · it +9 → **213 files · 1849**
+  - `pages/ProfileCompare.test.tsx` it 4 — U1 잡 없음·진행 중 → 버튼 0, 종료+성공 → 있음 · U1 전부 실패 → 0 · U2 클릭 전 로더 0 → 클릭 aria-busy "불러오는 중…" · 저장소 startDoc 0 · U2 청크 실패 → alert + 다시 시도 → 새 요청
+  - `features/profile/comparePreviews.test.ts` it 4 — U5 같은 안 2회 같은 hash·projectId "preview" · 프로젝트 없는 프로필도 문서 · 실패 안 = 미생성(failureText) · 표 밖 변형 = UNKNOWN_VARIANT · 킷 토큰 = docKitTokens(전체 계열)과 같음
+  - `features/profile/compareFrame.test.ts` it 1 — 프레임별 source 대조 · 모양 틀림 무시

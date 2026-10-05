@@ -1,4 +1,4 @@
-# M2c 이미지 — 명세 (SPEC r1)
+# M2c 이미지 — 명세 (SPEC r2)
 
 - 작성: Designer (Orca managed Claude Code · worktree `m2c-spec` · base `92f8e2f`) · 2026-10-05 · 브리프 `dev/active/m2c-spec/BRIEF.md`
 - 상위: `docs/04-plan/DEVELOPMENT_PLAN.md` 19행(M2c = 토큰 기반 자체 그래픽 · 업로드 변환 · 산출물 동봉 · 종료 게이트 "F2 시안 등급") · TRD TR-SEC-04 · TR-POL-01 · R-09 · 8절 · ADR-004 개정 4 · 2a-05 SPEC 5.9(이미지 슬롯·보관소 — 이 SPEC이 이어받는다)
@@ -123,10 +123,10 @@
 
 ## 4. 자체 그래픽 — 토큰 기반 결정적 SVG (MQ-C6 ★A)
 
-- **범위**: 이미지가 없는 모든 이미지 슬롯(플레이스홀더 · 잃은 이미지 · 스위치 꺼짐에서 색 면을 쓰던 자리 제외 — 아래)의 `.kit-gradient`를 SVG로 바꾼다. **스위치 꺼짐 = 지금 색 면 그대로**(B-18 "끄면 색 면" 약속 유지 [L1 `pageDoc.ts:53`]).
+- **범위**: 켜진 이미지 슬롯 중 이미지가 없는 자리(플레이스홀더 · 잃은 이미지)의 `.kit-gradient`를 SVG로 바꾼다. **스위치 꺼짐 = 지금처럼 미디어 요소 자체가 없음**(`slotImage`가 꺼짐에 `undefined` → 변형이 `--plain`·`--solo` 배치로 그림 [L1 `kit/text.ts:10-13` · `HeroFullbleedLeft.tsx:14,20` · `HeroImage.tsx:15,19`]) — 변경 0. (r2 정정: r0·r1은 "꺼짐 = 색 면"이라 썼으나 실제 코드는 요소 없음 · 섹션 배경 토큰 면이 보인다.)
 - **결정성**: 입력 = `(patternId, section.type, section.variant, slotKey)` 문자열 → FNV-1a 32비트 해시 → mulberry32 PRNG 시드. **같은 입력 → 같은 마크업 바이트.** `instanceId`·시각·`Math.random`·뷰포트 폭을 입력에 넣지 않는다(3안 비교에서 같은 변형은 같은 그림 — 차이는 토큰 색만).
 - **모양**: 고정 `viewBox="0 0 100 100"` + `preserveAspectRatio="xMidYMid slice"` · 도형 3계열 중 해시로 1개 [L3]: ① 대각 띠(지금 `patternId:"diagonal"`과 이름 일치) ② 겹친 원 2~3개 ③ 점 격자 + 큰 원호. 도형 수 ≤ 12 · 좌표는 소수 1자리로 반올림(직렬화 바이트 고정).
-- **색**: 속성에 색 값을 쓰지 않는다. 도형마다 class `kit-art-1`~`kit-art-3`, 배경 `kit-art-bg` → `kit.css`에서 `fill: var(--site-primary | --site-accent | --site-ink | --site-surface)` 계열 토큰만 [L1 `.kit-gradient`가 `--site-primary`·`--site-ink` 사용]. hex 0 → `noHardcodedStyle` 가드 통과(hex·px 정규식 [L1 `test/noHardcodedStyle.test.ts:24-29`] — viewBox·좌표 숫자는 px가 아니라 걸리지 않음). 대비: 그래픽은 정보가 아니라 R-08 대상 아님. 단 hero 글자가 그래픽 위에 오는 변형(`fullbleed-left`·`image`)은 **지금 그라디언트 위 글자 대비 처리(오버레이)를 그대로 유지**해야 함 — 오버레이 CSS 변경 0.
+- **색**: 속성에 색 값을 쓰지 않는다. 도형마다 class `kit-art-1`~`kit-art-3`, 배경 `kit-art-bg` → `kit.css`에서 `fill: var(--site-primary | --site-accent | --site-ink | --site-surface)` 계열 토큰만 [L1 `.kit-gradient`가 `--site-primary`·`--site-ink` 사용]. hex 0 → `noHardcodedStyle` 가드 통과(hex·px 정규식 [L1 `test/noHardcodedStyle.test.ts:24-29`] — viewBox·좌표 숫자는 px가 아니라 걸리지 않음). 대비: 그래픽은 정보가 아니라 R-08 대상 아님. 글자는 미디어와 다른 격자 칸(`kit-hx-band` · `grid-template-areas: "media" "copy"`)이거나 **단색 패널 위**(`kit-hero-panel` 배경 `--site-primary` · 글자 `--site-on-primary`)에 있어 그래픽·사용자 사진의 밝기와 무관하다 [L1 `kit/kit.css:301-329` · `HeroImage.tsx:16`] (r2 정정: r0·r1의 "오버레이 유지" 문장은 존재하지 않는 오버레이를 가정 — 삭제). 규칙: M2c는 글자를 미디어 위에 겹치는 배치를 새로 만들지 않는다.
 - **접근성**: `<svg aria-hidden="true" focusable="false">` · 글자·`<title>` 0 · 외부 참조(`href`·`url(#)`의 외부 문서·`<image>`·`<use href="외부">`) 0. 그라디언트 정의가 필요하면 문서 안 `id`는 해시 접두어로 충돌 방지(같은 페이지에 여러 장) — 단 **정의 없이 단색 도형만**을 기본으로 한다 [L3 — id 충돌·직렬화 문제 회피].
 - **위치**: 렌더 문서 킷 코드(`kit/`)에만 — 앱 진입 청크 증가 0. 예상 렌더 JS +0.6~1.2KB · CSS +0.2KB [추정] (멈춤선까지 6.67KB 여유).
 - **정적 HTML·PNG**: 인라인 SVG라 data: 변환·외부 요청 없음 — 지금 경로 그대로 실린다.
@@ -239,7 +239,7 @@
 | IMG-AC-18 | hero·grid·about = 고정 비율 cover · map = contain | [U] |
 | IMG-AC-19 | 자체 그래픽 결정성: 같은 입력 2회 렌더 → 마크업 바이트 동일 · `instanceId`만 다른 두 섹션 → 동일 · slotKey 다르면 다를 수 있음 | [U] |
 | IMG-AC-20 | 자체 그래픽: `aria-hidden="true"` · `focusable="false"` · 글자 0 · `href`/`<image>`/외부 url 0 · 색 속성 0(class만) | [U]+[G] |
-| IMG-AC-21 | 스위치 꺼짐 = 색 면(SVG 아님) 유지 | [U] |
+| IMG-AC-21 | 스위치 꺼짐 = 미디어 요소 0(SVG·img·그라디언트 모두 없음) · `--plain`/`--solo` 배치 유지 | [U] |
 | IMG-AC-22 | 프로토콜 `images` 새 모양 검증(`{blob,width,height}` · 잘못된 값 거부) · 렌더 문서 URL 해제 규칙 유지 | [U] |
 
 ### 8.4 산출물
@@ -301,4 +301,5 @@
 | 판 | 내용 |
 |---|---|
 | r0 | 초안 (M2C-0) |
+| r2 | Designer 정정(**Codex 미검토**): 4절 스위치 꺼짐 = 요소 없음(색 면 아님) · 4절 대비 문장(존재하지 않는 오버레이 가정 삭제 — 글자는 별도 칸·단색 패널) · IMG-AC-21 |
 | r1 | Codex adversarial 1라운드 4건 반영: 내보내기 이미지 eager + decode 대기(5.3 · IMG-AC-26b) · `readImage` = 파생본 전부 + `pickVariant` 규칙 · 원본 폭 단계 추가(2.4 · IMG-AC-04) · 예산 가드 자동화(IMG-AC-29) — 원문 `dev/active/m2c-spec/logs/codex-adv-r1.txt` |

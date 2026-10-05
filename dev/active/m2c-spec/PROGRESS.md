@@ -10,6 +10,7 @@
 - [x] P4 `docs/04-plan/M2C_PLAN.md`
 - [x] P5 Codex adversarial r1 needs-attention 4건 → SPEC r1 반영(`2322dc4`) → r2 approve 지적 0
 - [x] P6 REPORT 마감 · 커밋
+- [x] P7 SPEC r2 정정(Codex 미검토) — 스위치 꺼짐 = 요소 없음 · 오버레이 가정 삭제(L1 대조)
 
 ## L1 메모 (P1)
 - 업로드 경로 없음: `EditFields.tsx:44` "이미지 슬롯 N개는 다음 단계에서 편집" · 이미지 보관소 코드 0 · `StudioLayout`·`StructureCanvas` 호출부에 images 미전달 → 제품에서 images 맵은 항상 빈 값.

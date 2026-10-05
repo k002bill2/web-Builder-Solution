@@ -1,7 +1,7 @@
 # M2C-0 REPORT — M2c 이미지 명세·계획 (Designer)
 
 - worktree `m2c-spec` · 브랜치 `k002bill2/m2c-spec` · base `92f8e2f` · 코드 변경 0 · push/merge/삭제 0 · 서브에이전트 0
-- 상태: **완료** — SPEC r1 · Codex adversarial 2라운드(r1 needs-attention 4건 → 반영 → r2 approve)
+- 상태: **완료** — SPEC r2(r1 + Codex 미검토 정정 2문장) · Codex adversarial 2라운드(r1 needs-attention 4건 → 반영 → r2 approve)
 
 ## 1. 산출물
 | 파일 | 내용 |
@@ -22,6 +22,7 @@
 | r1 | `codex-companion.mjs adversarial-review --scope branch --base 92f8e2f` | **needs-attention** — P1 2(내보내기 lazy 이미지 decode 교착 · 프로토콜 반쪽 이전으로 M2C-2 typecheck 실패) · P2 2(`readImage` 파생본 선택 계약 · 검사기가 +0.03/89.70을 강제 안 함) | `logs/codex-adv-r1.txt` |
 | 반영 | SPEC r1 · PLAN | eager + decode 대기(5.3 · IMG-AC-26b) · `readImage` 파생본 전부 + `pickVariant` · 원본 폭 단계 추가(IMG-AC-04) · M2C-2에 `StructureCanvas` 송신부 타입·`app/scripts/` 가드 개정 편입(+0.5일) | 커밋 `2322dc4` |
 | r2 | 같음 | **approve — No material findings** | `logs/codex-adv-r2.txt` |
+| (SPEC r2) | Designer 정정 — **Codex 미검토** | 4절 스위치 꺼짐 = 미디어 요소 없음(L1 `kit/text.ts:10-13`) · 대비 문장의 "오버레이" 가정 삭제(글자는 별도 칸·단색 패널, L1 `kit.css:301-329`) · IMG-AC-21 | 이 커밋 |
 
 ## 4. 목업·브리프와 다르게 한 것 (ADR-003 한 줄 사유)
 - 이미지 슬롯 UI를 패널 안에 바로 펼치지 않고 "[이미지 편집]" 버튼 뒤 lazy 청크로 — `/studio` 진입 여유 0.34KB·감지선 +0.03 때문(SPEC 2.1).

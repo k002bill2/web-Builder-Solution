@@ -4,6 +4,7 @@ import { setSlot } from "../../engine/ops/slotOps";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import { slotIssue } from "../../features/studio/canvasIssues";
 import { selectedSection } from "../../features/studio/selection";
+import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
 import type { ImageHost } from "../../features/studio/images/store/types";
 import { FieldEditor } from "./FieldEditor";
@@ -62,7 +63,7 @@ export function EditFields({
           <summary className="ds-label min-h-8 cursor-pointer py-1.5">이미지 편집 ({images})</summary>
           {open && (
             <Suspense fallback={null}>
-              <ImageSlotPanel key={section.instanceId} doc={doc} instanceId={section.instanceId} onEdit={onEdit} host={host} />
+              <ImageSlotPanel key={section.instanceId} doc={doc} instanceId={section.instanceId} onEdit={onEdit} slots={slots} host={host} Button={Button} />
             </Suspense>
           )}
         </details>

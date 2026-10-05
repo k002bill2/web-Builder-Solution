@@ -3,6 +3,7 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImageSlotValue, LocalImageId, PageDoc } from "../../engine/contracts/pageDoc";
 import { setSlot } from "../../engine/ops/slotOps";
+import { getSectionDefinition } from "../../engine/sections/registry";
 import { section, sampleDoc, withSections } from "../../engine/testing/sampleDoc";
 import type { IngestResult } from "../../features/studio/images/ingest";
 import type { ImageHost, RenderImages } from "../../features/studio/images/store/types";
@@ -10,13 +11,14 @@ import { addImage } from "../../features/studio/images/store/imageStore";
 import { Button } from "../ds/Button";
 import ImageSlotPanel from "./ImageSlotPanel";
 
-/** 이미지 슬롯 패널 (SPEC m2c 2.2·2.5·6절 · 2a-05 5.9 · IMG-AC-08·09·11·13~16) — 변환기는 모의(jsdom은 디코드 불가) */
+/** 이미지 슬롯 패널 (SPEC m2c 2.2·2.5·6절 · 2a-05 5.9 · IMG-AC-08·09·11·13~16) — 변환기는 모의(jsdom은 디코드 불가).
+ * 공개 진입점(index)이 아니라 안쪽 모듈을 모의한다 — 진입점 모의는 같은 테스트의 두 번째 동적 import에서 원본이 잡혔다(실측). */
 const ingest = vi.hoisted(() => ({ fn: vi.fn<(file: File) => Promise<IngestResult>>() }));
-vi.mock("../../features/studio/images/ingest", async (original) => ({ ...(await original<object>()), ingestImage: ingest.fn }));
+vi.mock("../../features/studio/images/ingest/ingestImage", () => ({ ingestImage: ingest.fn }));
 
 const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}` as LocalImageId;
 const webp = (bytes = 10) => new Blob([new Uint8Array(bytes)], { type: "image/webp" });
-const ok = (width = 1500): IngestResult => ({ ok: true, image: { variants: { 640: webp(), 1280: webp(), [width]: webp(184 * 1024) }, width, height: width / 2, format: "webp", bytes: 3 }) });
+const ok = (width = 1500): IngestResult => ({ ok: true, image: { variants: { 640: webp(), 1280: webp(), [width]: webp(184 * 1024) }, width, height: width / 2, format: "webp", bytes: 3 } });
 const file = (name = "IMG_20261006_secret-phone.jpg") => new File([new Uint8Array([0xff, 0xd8, 0xff])], name, { type: "image/jpeg" });
 const hero = (doc: PageDoc) => doc.sections.find((s) => s.instanceId === "s-hero")!.slots.image as ImageSlotValue;
 
@@ -38,11 +40,19 @@ function setup({ doc = sampleDoc(), images, undoDoc, instanceId = "s-hero" }: { 
     state.doc = current;
     state.images = map;
     const host: ImageHost = [map, setMap, undoDoc];
-    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={setDoc} host={host} Button={Button} />;
+    const target = current.sections.find((s) => s.instanceId === instanceId)!;
+    const slots = getSectionDefinition(target.type, target.variant)!.slots;
+    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={setDoc} slots={slots} host={host} Button={Button} />;
   }
   const view = render(<Host />);
   return { state, view };
 }
+/** 동적 import(변환기 청크)와 변환 promise가 풀릴 때까지 */
+const settle = () =>
+  act(async () => {
+    await vi.dynamicImportSettled();
+    await new Promise<void>((r) => setTimeout(r, 0));
+  });
 const pick = (chosen: File) => fireEvent.change(screen.getByTestId("image-file-image"), { target: { files: [chosen] } });
 
 describe("ImageSlotPanel — 필드·안내", () => {
@@ -90,7 +100,7 @@ describe("ImageSlotPanel — 파일 고르기·상태", () => {
     pick(file());
     expect(status).toHaveTextContent("이미지를 준비하고 있습니다");
     expect(screen.getByRole("button", { name: "이미지 고르기" })).toHaveAttribute("aria-disabled", "true");
-    await act(async () => {});
+    await settle();
     const id = hero(state.doc).source as string;
     expect(id).toMatch(/^[0-9a-f-]{36}$/);
     expect(state.images?.[id]).toMatchObject({ width: 1500, height: 750 });
@@ -106,7 +116,7 @@ describe("ImageSlotPanel — 파일 고르기·상태", () => {
     ingest.fn.mockResolvedValue({ ok: false, code: "TOO_LARGE", detail: "12.4MB" });
     const { state } = setup({ doc, images });
     pick(file());
-    await act(async () => {});
+    await settle();
     const button = screen.getByRole("button", { name: "다른 이미지로 바꾸기" });
     expect(button).toHaveAttribute("aria-invalid", "true");
     expect(button).toHaveAccessibleDescription(/10MB까지 쓸 수 있습니다 \(12\.4MB\)/);
@@ -121,7 +131,7 @@ describe("ImageSlotPanel — 파일 고르기·상태", () => {
     const { state } = setup();
     pick(file("a.jpg"));
     pick(file("b.jpg"));
-    await act(async () => {});
+    await settle();
     const id = hero(state.doc).source as string;
     expect(state.images?.[id]?.width).toBe(900);
     await act(async () => first(ok(3000)));
@@ -134,12 +144,12 @@ describe("ImageSlotPanel — 파일 고르기·상태", () => {
     const image = (ok() as Extract<IngestResult, { ok: true }>).image;
     const images = twelve.reduce<RenderImages>((acc, id) => addImage(acc, id, image, 640), {});
     const head = sampleDoc().sections[0]!;
-    const crowded = { ...head, slots: { ...head.slots, ...Object.fromEntries(twelve.map((id, i) => [`x${i}`, { kind: "image", enabled: true, source: id, alt: "", decorative: true }])) } };
+    const crowded = { ...head, slots: { ...head.slots, ...Object.fromEntries(twelve.map((id, i) => [`x${i}`, { kind: "image", enabled: true, source: id, alt: "", decorative: true } as ImageSlotValue])) } };
     const doc = withSections(sampleDoc(), [crowded, ...sampleDoc().sections.slice(1)]);
     ingest.fn.mockResolvedValue(ok());
     const { state } = setup({ doc, images });
     pick(file());
-    await act(async () => {});
+    await settle();
     expect(screen.getByRole("button", { name: "이미지 고르기" })).toHaveAccessibleDescription(/이미지는 한 페이지에 12개까지 쓸 수 있습니다/);
     expect(state.doc).toBe(doc);
     expect(state.images).toBe(images);
@@ -169,13 +179,13 @@ describe("ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이
     ingest.fn.mockResolvedValue(ok());
     const { state, view } = setup();
     pick(file());
-    await act(async () => {});
+    await settle();
     expect(urls.created).toBe(1);
     const html = view.container.innerHTML + JSON.stringify(state.doc) + JSON.stringify(Object.keys(state.images ?? {}));
     expect(html).not.toContain("secret-phone");
     fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
     expect(hero(state.doc).source).toEqual({ kind: "placeholder", patternId: "diagonal" });
-    await act(async () => {});
+    await settle();
     expect(state.images).toEqual({});
     expect(urls.revoked).toEqual(["blob:test/1"]);
     view.unmount();

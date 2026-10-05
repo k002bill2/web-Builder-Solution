@@ -1,0 +1,320 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx (10 tests | 10 failed) 87ms
+   ❯ ImageSlotPanel — 필드·안내 (3)
+     × 스위치 라벨 = 슬롯 라벨 · role=switch · 권리 안내는 모든 슬롯 · 지도 안내는 map만 67ms
+     × 스위치 끄기 → enabled false · 파일·대체텍스트 칸 숨김 · 다시 켜면 값 그대로 4ms
+     × 대체텍스트 필수 표시 · 입력 → 문서 · 장식 체크 → 입력 aria-disabled + 이유 3ms
+   ❯ ImageSlotPanel — 파일 고르기·상태 (5)
+     × 완료 → 문서 source = 새 로컬 id · images = {Blob, 폭, 높이} · 미리보기 + 결과 메타 · 낭독 시작 1회·완료 1회 3ms
+     × 실패 → 필드 오류(aria-invalid + 설명) · 문구 그대로 · 이전 이미지·문서·보관소 불변 · alert 0 2ms
+     × 변환 중 다른 파일을 고르면 마지막 선택만 반영 1ms
+     × 한도 초과(13번째) → 한도 문구 필드 오류 · 문서·보관소 불변 1ms
+     × 2초 넘김 → '큰 이미지라 시간이 걸리고 있습니다' 1회 1ms
+   ❯ ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이름 (2)
+     × 보관소에 없는 로컬 id = 잃은 이미지: 자체 플레이스홀더 + '이미지를 다시 골라 주세요' · 대체텍스트·켜짐 보존 1ms
+     × 지우기 → 플레이스홀더로 · 참조 밖 Blob 해제 · 미리보기 URL은 패널만 소유 — 언마운트 뒤 살아 있는 URL 0 · 파일 이름 DOM·문서·보관소 0 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 필드·안내 > 스위치 라벨 = 슬롯 라벨 · role=switch · 권리 안내는 모든 슬롯 · 지도 안내는 map만
+TestingLibraryElementError: Unable to find an accessible element with the role "switch" and name "대표 이미지 사용"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:51:27
+     49|   it("스위치 라벨 = 슬롯 라벨 · role=switch · 권리 안내는 모든 슬롯 · 지도 안내는 map만", () =…
+     50|     setup();
+     51|     const toggle = screen.getByRole("switch", { name: "대표 이미지 사용" });
+       |                           ^
+     52|     expect(toggle).toHaveAttribute("aria-checked", "true");
+     53|     expect(screen.getByText("직접 찍었거나 사용 권리가 있는 이미지만 넣어 주세요.")).toBeInT…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 필드·안내 > 스위치 끄기 → enabled false · 파일·대체텍스트 칸 숨김 · 다시 켜면 값 그대로
+TestingLibraryElementError: Unable to find an accessible element with the role "switch" and name "대표 이미지 사용"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:63:28
+     61|   it("스위치 끄기 → enabled false · 파일·대체텍스트 칸 숨김 · 다시 켜면 값 그대로", () => {
+     62|     const { state } = setup();
+     63|     fireEvent.click(screen.getByRole("switch", { name: "대표 이미지 사용" }));
+       |                            ^
+     64|     expect(hero(state.doc).enabled).toBe(false);
+     65|     expect(screen.queryByRole("textbox")).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 필드·안내 > 대체텍스트 필수 표시 · 입력 → 문서 · 장식 체크 → 입력 aria-disabled + 이유
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name `/대체텍스트/`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:73:24
+     71|   it("대체텍스트 필수 표시 · 입력 → 문서 · 장식 체크 → 입력 aria-disabled + 이유", () => {
+     72|     const { state } = setup();
+     73|     const alt = screen.getByRole("textbox", { name: /대체텍스트/ });
+       |                        ^
+     74|     expect(alt.closest("div")!.textContent).toContain("(필수)");
+     75|     fireEvent.change(alt, { target: { value: "가게 앞 사진" } });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 파일 고르기·상태 > 완료 → 문서 source = 새 로컬 id · images = {Blob, 폭, 높이} · 미리보기 + 결과 메타 · 낭독 시작 1회·완료 1회
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:89:27
+     87|     ingest.fn.mockResolvedValue(ok());
+     88|     const { state } = setup();
+     89|     const status = screen.getByRole("status");
+       |                           ^
+     90|     pick(file());
+     91|     expect(status).toHaveTextContent("이미지를 준비하고 있습니다");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 파일 고르기·상태 > 실패 → 필드 오류(aria-invalid + 설명) · 문구 그대로 · 이전 이미지·문서·보관소 불변 · alert 0
+TestingLibraryElementError: Unable to find an element by: [data-testid="image-file-image"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ pick src/components/studio/ImageSlotPanel.test.tsx:46:56
+     44|   return { state, view };
+     45| }
+     46| const pick = (chosen: File) => fireEvent.change(screen.getByTestId("im…
+       |                                                        ^
+     47|
+     48| describe("ImageSlotPanel — 필드·안내", () => {
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:108:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 파일 고르기·상태 > 변환 중 다른 파일을 고르면 마지막 선택만 반영
+TestingLibraryElementError: Unable to find an element by: [data-testid="image-file-image"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ pick src/components/studio/ImageSlotPanel.test.tsx:46:56
+     44|   return { state, view };
+     45| }
+     46| const pick = (chosen: File) => fireEvent.change(screen.getByTestId("im…
+       |                                                        ^
+     47|
+     48| describe("ImageSlotPanel — 필드·안내", () => {
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:122:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 파일 고르기·상태 > 한도 초과(13번째) → 한도 문구 필드 오류 · 문서·보관소 불변
+TestingLibraryElementError: Unable to find an element by: [data-testid="image-file-image"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ pick src/components/studio/ImageSlotPanel.test.tsx:46:56
+     44|   return { state, view };
+     45| }
+     46| const pick = (chosen: File) => fireEvent.change(screen.getByTestId("im…
+       |                                                        ^
+     47|
+     48| describe("ImageSlotPanel — 필드·안내", () => {
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:141:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 파일 고르기·상태 > 2초 넘김 → '큰 이미지라 시간이 걸리고 있습니다' 1회
+TestingLibraryElementError: Unable to find an element by: [data-testid="image-file-image"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ pick src/components/studio/ImageSlotPanel.test.tsx:46:56
+     44|   return { state, view };
+     45| }
+     46| const pick = (chosen: File) => fireEvent.change(screen.getByTestId("im…
+       |                                                        ^
+     47|
+     48| describe("ImageSlotPanel — 필드·안내", () => {
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:152:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이름 > 보관소에 없는 로컬 id = 잃은 이미지: 자체 플레이스홀더 + '이미지를 다시 골라 주세요' · 대체텍스트·켜짐 보존
+TestingLibraryElementError: Unable to find an element with the text: 이미지를 다시 골라 주세요. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:162:19
+    160|     const doc = setSlot(sampleDoc(), "s-hero", "image", { kind: "image…
+    161|     setup({ doc });
+    162|     expect(screen.getByText("이미지를 다시 골라 주세요")).toBeInTheDocument();
+       |                   ^
+    163|     expect(screen.getByRole("textbox", { name: /대체텍스트/ })).toHaveValue…
+    164|     expect(screen.getByRole("button", { name: "이미지 고르기" })).toBeInTheD…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이름 > 지우기 → 플레이스홀더로 · 참조 밖 Blob 해제 · 미리보기 URL은 패널만 소유 — 언마운트 뒤 살아 있는 URL 0 · 파일 이름 DOM·문서·보관소 0
+TestingLibraryElementError: Unable to find an element by: [data-testid="image-file-image"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0ms-hero[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ pick src/components/studio/ImageSlotPanel.test.tsx:46:56
+     44|   return { state, view };
+     45| }
+     46| const pick = (chosen: File) => fireEvent.change(screen.getByTestId("im…
+       |                                                        ^
+     47|
+     48| describe("ImageSlotPanel — 필드·안내", () => {
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:171:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed (10)
+   Start at  02:11:57
+   Duration  748ms (environment 55%, transform 14%, setup 14%, tests 13%, import 2%, worker 1%)
+

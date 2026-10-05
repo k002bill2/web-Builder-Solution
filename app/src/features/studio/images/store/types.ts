@@ -9,5 +9,9 @@ import type { RenderImage } from "../../../../render/protocol";
 
 export type RenderImages = Readonly<Record<string, RenderImage>>;
 
-/** [images 맵, 맵 갱신(함수형), "되돌리기"가 되살릴 이전 문서] — 순서 고정(진입 바이트 절약) */
-export type ImageHost = readonly [images: RenderImages | undefined, publish: (update: (prev: RenderImages | undefined) => RenderImages) => void, undoDoc: PageDoc | undefined];
+/** [images 맵, 맵 갱신(함수형 — React state setter), "되돌리기"가 되살릴 이전 문서] — 순서 고정(진입 바이트 절약) */
+export type ImageHost = readonly [
+  images: RenderImages | undefined,
+  publish: (update: (prev: RenderImages | undefined) => RenderImages | undefined) => void,
+  undoDoc: PageDoc | undefined,
+];

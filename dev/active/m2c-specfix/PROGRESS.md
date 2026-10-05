@@ -10,9 +10,9 @@
 - [x] 4. B-M2C-03 QB-10 전제 정정 vs IndexedDB 재론 (MQ)
 - [x] 5. B-M2C-08 지운 뒤 대체텍스트 결정
 - [x] MQ.md · IMPL-TODO.md 작성
-- [ ] Codex review (실제 완료만 기록)
-- [ ] REPORT.md 마감 · 커밋
-- [ ] Ego Lite 사용 여부 / 서버 리슨 0 확인
+- [x] Codex r1 adversarial(P2 2건 반영 `9309ee5`) · r2 review 결함 0
+- [x] REPORT.md 마감 · 커밋
+- [x] Ego Lite 미사용 · 4337 리슨 0(lsof 빈 출력)
 
 ## 기록
 - P0 `1a7d28e` · 1 `4050942` SPEC-COMPARE3 r3(구현 0) · 2 `5c7cc37` m2a K1-6 3·K-AC-37·SPEC-BODY r5(단서 추가 결정) · 3 `dfd841c` m2a 5절 루브릭 · 4·5 `eb29458` m2c SPEC r3 · MQ(MQ-S1 1건)·IMPL-TODO(T-1~6)

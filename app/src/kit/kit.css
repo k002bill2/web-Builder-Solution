@@ -793,6 +793,57 @@
   }
 }
 
+/* statistics/stats-3 (B1-8) — 제목 → 수치 목록(li = 수치 → 설명, 왼쪽 정렬). 수치 ink · 제목 굵기 · 줄 높이 1.25 · tabular-nums(글자는 그대로) — primary 글자 0, 강조 = 크기·굵기.
+   md 미만 1열 세로(칸마다 위 구분선 muted 장식) · 수치 t2 / md 이상 3칸 같은 폭(트랙 고정) + 칸 사이 세로 구분선 · 수치 t2 / lg 이상 수치 t3. 줄바꿈 허용(넘침 0 우선 — 한 줄 강제 0) */
+@layer components {
+  .kit-stats {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .kit-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-s2);
+    min-width: 0;
+    padding-block: var(--site-s4);
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-stat-value {
+    margin: 0;
+    font-size: var(--site-t2);
+    font-weight: var(--site-weight-heading);
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-ink);
+  }
+  .kit-stat-label {
+    margin: 0;
+    font-size: var(--site-t0);
+    color: var(--kit-soft);
+  }
+  @media (width >= 48rem) {
+    .kit-stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--site-s5);
+    }
+    .kit-stat {
+      padding-block: 0;
+      border-top: 0;
+    }
+    .kit-stat + .kit-stat {
+      padding-inline-start: var(--site-s5);
+      border-inline-start: var(--site-stroke-1) solid var(--site-muted);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-stat-value {
+      font-size: var(--site-t3);
+    }
+  }
+}
+
 /* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
 @layer components {
   .kit-faq-inner {

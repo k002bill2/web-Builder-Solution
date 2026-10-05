@@ -166,9 +166,6 @@ index 95080d7..131a2ed 100644
          </div>
          <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
            {edit}
-diff --git a/app/src/components/studio/imageSlotPanelLoader.ts b/app/src/components/studio/imageSlotPanelLoader.ts
-deleted file mode 100644
-index e69de29..0000000
 diff --git a/app/src/features/studio/images/store/types.ts b/app/src/features/studio/images/store/types.ts
 new file mode 100644
 index 0000000..dc804c2

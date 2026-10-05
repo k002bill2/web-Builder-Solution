@@ -1,0 +1,8 @@
+# 서버 종료 2026-10-05 15:08:17
+port 4337 pid 41390 cwd n/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2b/app ppid 41365 cmd node /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2b/app/node_modules/.bin/vite --host 127.0.0.1 --port
+port 4339 pid 41366 cwd n/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2b/dev/active/m2b-2b/static ppid     1 cmd /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Conten
+parent 41365: npm exec vite --host 127.0.0.1 --port 4337 --strictPort          cwd n/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2b/app
+kill 41390(vite) 41365(npm exec 부모) 41366(http.server)
+LISTEN 4337·4339: 0
+남은 PID: 0
+main 5480(무접촉): node    82062 002billmac_home   15u  IPv4 0xefbc5b6a30df9167      0t0  TCP 127.0.0.1:5480 (LISTEN)

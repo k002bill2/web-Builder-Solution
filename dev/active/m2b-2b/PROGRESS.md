@@ -10,7 +10,7 @@
 - [x] P1 공유 gallery 시제품(portfolio/masonry) 예산 실측 — 렌더 JS +213 B · CSS +124 B · /studio 진입 +26 B(부모 끝 상태 포함, ≤30 B) → 멈춤 아님(logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림
 - [x] P2 portfolio 3변형 공유 PortfolioGallery — RED 7 fail(PortfolioGallery 6 + PageDocument 목록 1, 폴백, logs/portfolio-red.txt) → 시제품 diff git apply 후 GREEN · 조기 전체 vitest 1 fail(memoryExport 폴백 예시 portfolio/masonry) → pricing/tiers-2로 이관(REPORT 4.3) · gate OK(logs/portfolio-gate.txt, 렌더 JS 81.55 · CSS 7.37 · /studio 127.44)
 - [x] P3 statistics/stats-3 — RED 9 fail(stats 4 + 4변형 공통 4 + PageDocument 1, logs/stats-red.txt) → GREEN · 전체 vitest 198 files 1777 passed(+14, 예측 +15±3 — stats 4개로 예측보다 1 적음) · gate OK(logs/stats-gate.txt) · 최종 바이트 logs/final-bytes.txt(렌더 JS +361 B · CSS +342 B · /studio 진입 +26 B)
-- [ ] P-B REPORT 선기록 → 브라우저 3폭 판정(KD-AC [B]) · 정적 HTML 동등성 · 캡처 · 서버 종료
+- [x] P-B REPORT 1·3·4 선기록(6841d99) → qb.mjs [B] 전부 PASS · 정적 동등성 3폭 일치 · 캡처 24장(grid-3 하나 끔 포함) · 판정 스크립트 nonce 제목 결함 1건 수정·재실행 · 서버 종료 LISTEN 0
 - [ ] P-F 전체 vitest 1회 exit 0 · Errors 0
 - [ ] P-F Codex review --scope branch --base 425dfff 1회
 - [ ] P-F REPORT 마감 · 서버 종료 증거

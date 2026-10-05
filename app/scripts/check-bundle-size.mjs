@@ -61,6 +61,10 @@ const STUDIO_AFTER_ACTION = [
   "src/components/studio/ExportAfter.tsx",
   // PNG 캡처(m2a 3.3 — M2A-3c): PngSave "PNG 내려받기" onClick → loadPng
   "src/features/studio/png/pngCapture.ts",
+  // 이미지 슬롯 패널(SPEC m2c 2.1 — B-M2C-02, 보고용): ImageSlotPanel lazy ← "이미지 편집" details 펼침(onToggle) · 정적 import로 imageStore 공유 청크
+  //  · 변환기(ingest) ← 패널 "이미지 고르기" 파일 onChange. exportImages(+imageStore) 공유 청크는 위 exportFlow 닫힘에 집계된다(소스 키 없음)
+  "src/components/studio/ImageSlotPanel.tsx",
+  "src/features/studio/images/ingest/index.ts",
 ];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];

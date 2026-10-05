@@ -134,3 +134,24 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId"]);
   });
 });
+
+describe("조작 뒤 보고 목록 (B-M2C-02 · IMG-AC-29) — 보고용 키 추가만, 판정 불변", () => {
+  it("/studio 조작 뒤 목록에 이미지 패널·변환기 키 — imageStore·exportImages는 이름 없는 공유 청크라 이 두 키·exportFlow 닫힘에 집계된다", () => {
+    const source = readFileSync(new URL("./check-bundle-size.mjs", import.meta.url), "utf8");
+    const list = /const STUDIO_AFTER_ACTION = \[([\s\S]*?)\];/.exec(source)?.[1] ?? "";
+    expect(list).toContain('"src/components/studio/ImageSlotPanel.tsx"');
+    expect(list).toContain('"src/features/studio/images/ingest/index.ts"');
+  });
+
+  it("afterAction 키를 더해도 failures·합계 줄은 같고 '조작 뒤' 줄만 늘어난다", () => {
+    const m = manifest({ "src/After.ts": { file: "assets/after.js", isDynamicEntry: true, imports: ["_client.js"] } });
+    const sizes = (f) => (f === "assets/after.js" ? 7 : f === "assets/page.js" ? 25 : sizeOf(f));
+    const judge = (afterAction) => checkBundle({ manifest: m, sizeOf: sizes, scenarios: [{ ...scenarios[0], afterAction }], renderAuto: [] });
+    const before = judge([]);
+    const after = judge(["src/After.ts"]);
+    expect(after.failures).toEqual(before.failures);
+    expect(before.failures.length).toBeGreaterThan(0);
+    expect(after.lines.filter((line) => !line.includes("조작 뒤"))).toEqual(before.lines);
+    expect(after.lines.filter((line) => line.includes("조작 뒤"))).toEqual(["[bundle]   /page 조작 뒤 src/After.ts: +7.00KB (1개 파일, 예산 판정 밖)"]);
+  });
+});

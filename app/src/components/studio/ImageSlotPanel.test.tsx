@@ -226,3 +226,85 @@ describe("ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이
     expect(within(document.body).queryByRole("img")).toBeNull();
   });
 });
+
+describe("ImageSlotPanel — Codex r2", () => {
+  it("변환 중 스위치를 끄면 진행 작업을 버린다 — 늦게 끝나도 다시 켜지 않음", async () => {
+    let finish!: (r: IngestResult) => void;
+    ingest.fn.mockImplementation(() => new Promise((r) => (finish = r)));
+    const { state } = setup();
+    pick(file());
+    await settle();
+    fireEvent.click(screen.getByRole("switch", { name: "대표 이미지 사용" }));
+    const off = state.doc;
+    await act(async () => finish(ok()));
+    expect(state.doc).toBe(off);
+    expect(hero(state.doc).enabled).toBe(false);
+    expect(state.images).toBeUndefined();
+  });
+
+  it("변환 중 '이미지 지우기'를 누르면 진행 작업을 버린다 — 플레이스홀더 유지", async () => {
+    const images = addImage({}, uuid(1), (ok() as Extract<IngestResult, { ok: true }>).image, 1920);
+    const doc = setSlot(sampleDoc(), "s-hero", "image", { ...hero(sampleDoc()), source: uuid(1) });
+    let finish!: (r: IngestResult) => void;
+    ingest.fn.mockImplementation(() => new Promise((r) => (finish = r)));
+    const { state } = setup({ doc, images });
+    pick(file());
+    await settle();
+    fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    await act(async () => finish(ok()));
+    expect(hero(state.doc).source).toEqual({ kind: "placeholder", patternId: "diagonal" });
+    expect(screen.queryByText("이미지를 준비하고 있습니다…")).toBeNull();
+  });
+
+  it("변환기 실패(거부) → 진행 해제 · 필드 오류 · 다시 고를 수 있음 · 문서 불변", async () => {
+    ingest.fn.mockRejectedValueOnce(new Error("chunk load failed")).mockResolvedValueOnce(ok());
+    const { state } = setup();
+    const before = state.doc;
+    pick(file());
+    await settle();
+    const button = screen.getByRole("button", { name: "이미지 고르기" });
+    expect(button).not.toHaveAttribute("aria-disabled");
+    expect(button).toHaveAttribute("aria-invalid", "true");
+    expect(button).toHaveAccessibleDescription(/이미지를 준비하지 못했습니다/);
+    expect(state.doc).toBe(before);
+    pick(file());
+    await settle();
+    expect(typeof hero(state.doc).source).toBe("string");
+  });
+
+  it("변환 중에도 파일 버튼은 파일 선택 창을 연다(IMG-AC-09) — aria-disabled 표시는 SPEC 그대로", async () => {
+    ingest.fn.mockImplementation(() => new Promise(() => {}));
+    setup();
+    pick(file());
+    await settle();
+    const input = screen.getByTestId("image-file-image");
+    const opened = vi.spyOn(input, "click");
+    const button = screen.getByRole("button", { name: "이미지 고르기" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    fireEvent.click(button);
+    expect(opened).toHaveBeenCalledTimes(1);
+  });
+
+  it("두 슬롯 변환이 같은 틱에 끝나도 두 결과 모두 반영(원자적 병합)", async () => {
+    const gallery = section("portfolio", "grid-3", "s-gallery");
+    const doc = withSections(sampleDoc(), [...sampleDoc().sections.slice(0, 2), gallery, ...sampleDoc().sections.slice(2)]);
+    const done: ((r: IngestResult) => void)[] = [];
+    ingest.fn.mockImplementation(() => new Promise((r) => void done.push(r)));
+    const { state } = setup({ doc, instanceId: "s-gallery" });
+    fireEvent.change(screen.getByTestId("image-file-image1"), { target: { files: [file("a.jpg")] } });
+    fireEvent.change(screen.getByTestId("image-file-image2"), { target: { files: [file("b.jpg")] } });
+    await settle();
+    expect(done).toHaveLength(2);
+    await act(async () => {
+      done[0]!(ok(1000));
+      done[1]!(ok(2000));
+    });
+    const slots = state.doc.sections.find((s) => s.instanceId === "s-gallery")!.slots;
+    const a = (slots.image1 as ImageSlotValue).source as string;
+    const b = (slots.image2 as ImageSlotValue).source as string;
+    expect(typeof a).toBe("string");
+    expect(typeof b).toBe("string");
+    expect(state.images?.[a]?.width).toBe(1000);
+    expect(state.images?.[b]?.width).toBe(2000);
+  });
+});

@@ -1,6 +1,7 @@
 # M2B-6 QA REPORT — M2b 최종 독립 QA
 
 ## 판정 의견: **조건부 Go**
+- 열린 항목: D-1 원인 판정 · 모션 L2 문서 실제 내보내기 · 대조표의 미검증 항목(QB-13·14, BODY QB-14·15, MF-AC-B5 등) · 사양 결정 2건(키보드 순서·비활성 예약 외형).
 - 근거: 30/30 실렌더·폴백 0, 3폭 기준선 결정성(90/90 픽셀 차 0), 비교→편집→내보내기 E2E 통과, vitest 1873/1873·build·번들 예산 통과.
 - 조건: **D-1(PNG 하단 검은 빈 영역, P1 잠정)** 원인 판정 1건. 실제 Chrome(포그라운드)에서 재현되면 수정 후 Go, Ego Lite 프레임 정지에서만 나면 환경 한계로 닫고 Go.
 
@@ -16,7 +17,7 @@
 | 1 | 실렌더 30/30 | **PASS** — 엔진 `SECTION_DEFINITIONS` 30쌍 모두 `[data-kit]` · `[data-fallback]` 0 · 표식 0 · error 0. 음성 대조(킷 토큰 없음)에서 표식 3/3 검출 → 검출기 유효 | `s1-render30.mjs`, `logs/s1-render30.json`, `logs/s1-run.txt` |
 | 2 | 3폭 기준선 | **PASS** — 90장(30×1280·768·390), 2회 캡처 픽셀 차 **0/90**. 3폭 가로 넘침 0(정적 사본 실측), 글꼴 loaded 2면 전부 | `baseline/`, `shots.sh`, `pdiff.mjs`, `logs/s2-determinism.txt`, `logs/s2-heights.json`, `sheets/` |
 | 3 | 루브릭 TR-POL-04 | 통과 18 · 주의 12(시각·근거 5 + m2a K1 루브릭 원기록 없음 7) · 실패 0 | 아래 표 |
-| 4 | E2E 앱 안 클릭 | **PASS(D-1 제외)** — 카탈로그 → 비교 추가 3 → 보드 B 전부 선택 → 프로필 확정 v1 → 3안 만들기(4.1초) → 비교 대화상자(1280 3열·축소율 29.58%, 1024/768/390 1안씩 71.25/51.25/21.72%, 4폭 넘침 0, 모바일 폭 0.971) → B안 선택 status "B안을 선택했습니다" → Esc 닫힘·포커스 = 트리거 버튼 → "B안으로 편집 시작" → /studio(캔버스 iframe sandbox=allow-scripts, 변경 안내 3건) → SEO 차단 2 해소 → 정적 HTML(1,009,614B, Kit Serif KR 400/700 data:, OFL 고지, script 1 = 고정 메뉴) · PNG 3회 | `logs/s4-*.json`, `logs/s4-*-run*.txt`, `exports/` |
+| 4 | E2E 앱 안 클릭 | **PASS(D-1 제외, 모션 L2 문서 내보내기 미수행 — 결과 HTML은 data-motion L1×4. L2 재생은 합성 사본 `static/_motion-L2.html`로 대체)** — 카탈로그 → 비교 추가 3 → 보드 B 전부 선택 → 프로필 확정 v1 → 3안 만들기(4.1초) → 비교 대화상자(1280 3열·축소율 29.58%, 1024/768/390 1안씩 71.25/51.25/21.72%, 4폭 넘침 0, 모바일 폭 0.971) → B안 선택 status "B안을 선택했습니다" → Esc 닫힘·포커스 = 트리거 버튼 → "B안으로 편집 시작" → /studio(캔버스 iframe sandbox=allow-scripts, 변경 안내 3건) → SEO 차단 2 해소 → 정적 HTML(1,009,614B, Kit Serif KR 400/700 data:, OFL 고지, script 1 = 고정 메뉴) · PNG 3회 | `logs/s4-*.json`, `logs/s4-*-run*.txt`, `exports/` |
 | 5 | 이관 항목 | 아래 분류표 | `logs/s5-carry.json` |
 | 6 | 회귀 게이트 | **PASS** — `npm test -- --run` 216파일 1873/1873 exit0(Errors 0) · `npm run build` exit0 | `logs/vitest.txt`, `logs/build.txt` |
 
@@ -50,8 +51,8 @@
 | M2B-4b | 정적 HTML 등장 모션 재생·1초 내·감소 | **PASS** | L2 사본: 실행 직후 애니메이션 9개(1280)/7개(390) 재생, endTime 최대 580ms ≤ 1000, 감소 설정 시 0개(0초부터 최종). 표본 시각은 rAF 정지로 ~1.1초 단위 |
 | M2B-4b | grid 타일 A 확대 제외 시각 영향 | **PASS(경미)** | 등장 대상 = 카피 + 타일 B·C(rise)만, A 정지. 최종 상태 동일·390은 A만 |
 | M2B-4b | 시트 열림 0.2초 | **환경 한계** | 열린 시트 opacity 0이 1.5초 유지 후 3초에 1 — 전환 currentTime 0 고정(프레임 정지). 감소 설정 시 +50ms에 1 |
-| M2B-4a | 정적 HTML·PNG 폰트 | **PASS(HTML)** | 결과 HTML에 Kit Serif KR 400/700 data: 2면·고지. 기준선 사본 Pretendard 2면 loaded. PNG 글자 육안: 명조 계열 보임(축소 판독) |
-| M2B-4a | B9 PNG 4.9초 경계 | **측정 여유 문제로 판정(미확정)** | 이번 PNG 3회 7.0·8.1·16.9초(캡처 포함 전체, 프레임 정지 환경) — 글꼴 단계만의 시간은 분리 측정 못 함. 환경 속도 편차가 커서 4.9초 경계 측정은 여유 없음 |
+| M2B-4a | 정적 HTML·PNG 폰트 | **부분 PASS** | 결과 HTML: Kit Serif KR 400/700 data: 2면·OFL 고지 존재 — 브라우저 `document.fonts` loaded는 **미확인**(기준선 사본에서만 Pretendard 2면 loaded 실측). PNG: 1:1 크롭에서 제목·본문 명조 글자 확인(`logs/png-run3-top-1to1.png`) |
+| M2B-4a | B9 PNG 4.9초 경계 | **미검증(환경 한계)** | 이번 PNG 3회 7.0·8.1·16.9초는 캡처 포함 전체 시간이라 글꼴 단계(5초 상한)를 분리하지 못함. 지연 주입 측정은 하지 않음 |
 | M2B-4a | 정적 HTML 크기 | 기록 | Serif 결과 1,009,614B(≈1.01MB) — 4a 기록 1.00MB와 일치 |
 | M2B-2c | 비활성 예약 폼이 활성처럼 보임 | **사양 결정 필요(P3 UX)** | booking·form 둘 다 fieldset disabled, 입력·버튼 opacity 1·ink 글자·primary 버튼, cursor not-allowed, 안내 문구 존재. 사양(QB-11 "흐리지 않음")대로 |
 | M2B-2c | CTA Tab 링 | **PASS** | 실제 Tab 2회: header CTA 링 2px ink, band CTA 링 2px 흰색 offset 2px, `:focus-visible` true. 이미지 캡처는 CDP 2회 실패(환경) |
@@ -63,7 +64,32 @@
 | 이전 | 390 첫 그리기 빈 상자 | **관찰(관련 위험)** | 모션 켠 정적 HTML을 4병렬 headless로 찍으면 6/90장이 등장 시작 프레임(빈 칸)으로 찍힘(`logs/motion-nondeterm/`). 제품 결함 아님(캡처 도구 타이밍) |
 | 이전 | 자기 슬롯 배지 끝 1자 덮음 | **미검증** | 편집기 배지 캡처 불가(CDP 실패) |
 
+
+## QB / [B] 수용 기준 대조표
+| ID | 상태 | 증거·사유 |
+|---|---|---|
+| BOUND QB-1~12 | 확인(정적 최종 상태 육안) | `sheets/`, QB-3 transparent×center 한 면 1:1 확인. 시트 "열린" 장면 캡처는 없음(환경) |
+| BOUND QB-13 밝은 ink 프로필 | 미검증 | 프로필 1종만 사용 |
+| BOUND QB-14 시트 스크립트 없이 열림·Esc | Esc 닫힘 PASS · **앵커 → 닫힘 미검증** | `logs/s5-carry.json` |
+| BODY QB-1~13 | 확인(육안·넘침 0) | `sheets/` · QB-11 비활성 외형은 사양 결정 필요 · QB-12 링 계산값 |
+| BODY QB-14 dark 카드 · QB-15 상한+200% | 미검증 | 측정 안 함 |
+| MF-AC-B1·B2·B7·B9 | 미검증 | 캔버스 계산값·PNG L0/L2 비교·글꼴 차단/지연 주입 안 함 |
+| MF-AC-B3 | PASS | endTime ≤ 580ms · 감소 = 0개 (인쇄 미검증) |
+| MF-AC-B4 | PASS | L2 사본 1280·390 넘침 0 · 기준선 90장 넘침 0 |
+| MF-AC-B5 200% | 미검증 | |
+| MF-AC-B6 | 부분 | 사본 loaded 2면 · 결과 HTML loaded 미확인 |
+| MF-AC-B8 | PASS | 번들 표 · 결과 Serif 1.01MB |
+| QB-MF-01/02/05/06/07 | 미검증(01은 감소 최종만) · 03 PASS(감소 즉시) · 04 환경 한계 | |
+| CMP-AC-B1 | 수치 PASS · 이미지 환경 한계 | 3열 iframe 3, 열 머리 A/B/C |
+| CMP-AC-B2 | PASS(순서는 사양 결정 필요) | Tab 기록 |
+| CMP-AC-B3 | PASS | 1280 29.58% · 4폭 넘침 0 |
+| CMP-AC-B4 | 부분 | status DOM 텍스트만 읽음(접근성 트리 미확인) |
+| CMP-AC-B5 · B6 | 환경 한계 · 미검증 | |
+| COMPARE QB1·2 | 환경 한계 | 캡처 불가 |
+| COMPARE QB3~6 | 미검증 | 체감 속도·메모리·글꼴 늦은 로드·편집 동일성 육안 안 함 (QB5 일부: 편집 시작 → 변경 안내 3건 표시) |
+
 ## 루브릭 TR-POL-04 (30행 · O = 실렌더 통과)
+- 범위: 18 "통과"는 ①~⑧ 기준. SPEC-BOUND ⑨ 데이터 계약·⑩ 내보내기 동일성(캔버스 = PNG = 정적)은 **변형별 미검증** — ⑩은 E2E 문서 1건에서만 보았고 거기서 D-1이 PNG 동일성과 충돌.
 - 판정 근거: ① 기능·② 위계·③ 3폭 = 기준선 3장 육안 + 넘침 0 실측 · ④ 접근성 = 이번 실측(Tab 링·Esc·inert)과 vitest 가드 · ⑤ 토큰 = `noHardcodedStyle` 가드 통과 · ⑥ 예산 = 번들 표 · ⑦ 독자성 = 자체 그라디언트·고정 문구만 · ⑧ 근거 = SPEC 원기록.
 | 변형 | 렌더 | 루브릭 원기록 | 판정 | 근거 캡처 |
 |---|---|---|---|---|

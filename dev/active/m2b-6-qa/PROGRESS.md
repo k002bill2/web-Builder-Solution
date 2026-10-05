@@ -12,5 +12,5 @@
 - [x] 4. E2E 앱 안 클릭 (비교·선택·Esc·편집·HTML·PNG) — D-1 PNG 높이 결함 P1 잠정
 - [x] 5. 이관 항목 분류 (REPORT 표)
 - [x] 6. vitest 216/1873 exit0 · build exit0 · 번들 표
-- [x] 서버 종료·lsof 0 확인 · ego space 68 finish
+- [x] 서버 종료·lsof 0 확인 · ego space 68 finish (listTaskSpaces에 68 없음 확인)
 - [x] REPORT.md 마감·커밋 (판정: 조건부 Go)

@@ -1,0 +1,137 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2b/app
+
+ ❯ src/render/PageDocument.test.tsx (5 tests | 1 failed) 48ms
+   ❯ 렌더 문서 뼈대 (K-AC-09 · 0.12) (5)
+     × 레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) + M2B-2a 본문 4(about/text · services list·cards-2·cards-masonry) + M2B-2b portfolio 3(grid-3·masonry·grid-2) = 25쌍 · 모르는 쌍 undefined 4ms
+ ❯ src/kit/PortfolioGallery.test.tsx (6 tests | 6 failed) 65ms
+   ❯ portfolio 공통 (KD-AC-13) (3)
+     × KD-AC-13 · KD-AC-08 [U]: grid-3 킷 · h2 1 · h3 0 · 그라디언트 칸 3 = figure[aria-hidden=true] 번호 순서 · img 0 · ul·figcaption 0 · 포커스 0 33ms
+     × KD-AC-13 [U]: 로컬 이미지 칸 = img[alt=슬롯 alt] + width·height(프로필 media_ratio, 없으면 4:5) · lazy · figure 트리 안 · 장식 = alt='' · 그라디언트 칸만 aria-hidden 9ms
+     × KD-AC-13 · KD-AC-04 · KD-AC-03 [U]: figure 수 = 켜진 이미지 수(꺼진 칸 생략, 순서 유지) · 셋 다 꺼짐 → 갤러리 요소 0(머리만) · 소개 빈 값 → 0 · 상한 글자 그대로 7ms
+   ❯ portfolio/grid-2 (B1-7) (1)
+     × KD-AC-13 · KD-AC-14 [U]: figure 최대 2(image1·image2) · data-layout grid · 변형 class kit-gallery--2 · 하나 꺼짐 → 1칸 7ms
+   ❯ portfolio/masonry (B1-6) (2)
+     × KD-AC-15 · KD-AC-07 [U]: data-layout masonry · class kit-gallery--masonry · DOM 1·2·3 · 칸 비율 슬롯 번호 고정 1:1·16:9·4:5(프로필 media_ratio 무관) · 꺼진 칸 뒤도 자기 비율 7ms
+     × KD-AC-14 · 15 · 07 [U]: grid md 이상 3·2열 고정 트랙(auto-fit 0) · masonry md 이상 CSS 다단 2 · 칸 break-inside avoid · 고정 비율 class · 선택자 = class(data-layout·nth-child 0) · 재배치 0 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/PageDocument.test.tsx > 렌더 문서 뼈대 (K-AC-09 · 0.12) > 레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) + M2B-2a 본문 4(about/text · services list·cards-2·cards-masonry) + M2B-2b portfolio 3(grid-3·masonry·grid-2) = 25쌍 · 모르는 쌍 undefined
+AssertionError: expected [ 'about/story', 'about/text', …(20) ] to deeply equal [ 'about/story', 'about/text', …(23) ]
+
+- Expected
++ Received
+
+@@ -15,13 +15,10 @@
+    "hero/fullbleed-left",
+    "hero/grid",
+    "hero/image",
+    "hero/split",
+    "hero/text",
+-   "portfolio/grid-2",
+-   "portfolio/grid-3",
+-   "portfolio/masonry",
+    "services/cards-2",
+    "services/cards-3",
+    "services/cards-masonry",
+    "services/list",
+  ]
+
+ ❯ src/render/PageDocument.test.tsx:58:46
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio 공통 (KD-AC-13) > KD-AC-13 · KD-AC-08 [U]: grid-3 킷 · h2 1 · h3 0 · 그라디언트 칸 3 = figure[aria-hidden=true] 번호 순서 · img 0 · ul·figcaption 0 · 포커스 0
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/PortfolioGallery.test.tsx:32:15
+     30|   it("KD-AC-13 · KD-AC-08 [U]: grid-3 킷 · h2 1 · h3 0 · 그라디언트 칸 3 = fi…
+     31|     const s = portfolio(drawDoc(galleryDoc("grid-3")), "grid-3");
+     32|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     33|     expect(s.getAttribute("aria-labelledby")).toBe("h-s-portfolio");
+     34|     expect(s.querySelector("h2")).toHaveAttribute("id", "h-s-portfolio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio 공통 (KD-AC-13) > KD-AC-13 [U]: 로컬 이미지 칸 = img[alt=슬롯 alt] + width·height(프로필 media_ratio, 없으면 4:5) · lazy · figure 트리 안 · 장식 = alt='' · 그라디언트 칸만 aria-hidden
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ figures src/kit/PortfolioGallery.test.tsx:21:43
+     19|   );
+     20| const portfolio = (c: HTMLElement, variant: string) => c.querySelector…
+     21| const figures = (s: HTMLElement) => [...s.querySelectorAll("figure")];
+       |                                           ^
+     22| const css = () => readFileSync("src/kit/kit.css", "utf8");
+     23| const cssSection = (marker: string) => {
+ ❯ src/kit/PortfolioGallery.test.tsx:51:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio 공통 (KD-AC-13) > KD-AC-13 · KD-AC-04 · KD-AC-03 [U]: figure 수 = 켜진 이미지 수(꺼진 칸 생략, 순서 유지) · 셋 다 꺼짐 → 갤러리 요소 0(머리만) · 소개 빈 값 → 0 · 상한 글자 그대로
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ figures src/kit/PortfolioGallery.test.tsx:21:43
+     19|   );
+     20| const portfolio = (c: HTMLElement, variant: string) => c.querySelector…
+     21| const figures = (s: HTMLElement) => [...s.querySelectorAll("figure")];
+       |                                           ^
+     22| const css = () => readFileSync("src/kit/kit.css", "utf8");
+     23| const cssSection = (marker: string) => {
+ ❯ src/kit/PortfolioGallery.test.tsx:67:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio/grid-2 (B1-7) > KD-AC-13 · KD-AC-14 [U]: figure 최대 2(image1·image2) · data-layout grid · 변형 class kit-gallery--2 · 하나 꺼짐 → 1칸
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/PortfolioGallery.test.tsx:82:15
+     80|   it("KD-AC-13 · KD-AC-14 [U]: figure 최대 2(image1·image2) · data-layou…
+     81|     const s = portfolio(drawDoc(galleryDoc("grid-2")), "grid-2");
+     82|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     83|     expect(s.querySelector('[data-layout="grid"]')).toHaveClass("kit-g…
+     84|     expect(figures(s).map((f) => f.dataset.slot)).toEqual(["image1", "…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio/masonry (B1-6) > KD-AC-15 · KD-AC-07 [U]: data-layout masonry · class kit-gallery--masonry · DOM 1·2·3 · 칸 비율 슬롯 번호 고정 1:1·16:9·4:5(프로필 media_ratio 무관) · 꺼진 칸 뒤도 자기 비율
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/PortfolioGallery.test.tsx:94:14
+     92|     const tokens = { ...SAMPLE_KIT_TOKENS, mediaRatio: "16:9" as const…
+     93|     const s = portfolio(drawDoc(galleryDoc("masonry", { image1: img(),…
+     94|     expect(s.querySelector('[data-layout="masonry"]')).toHaveClass("ki…
+       |              ^
+     95|     expect(figures(s).map((f) => f.dataset.slot)).toEqual(["image1", "…
+     96|     const sizes = (c: HTMLElement) => [...c.querySelectorAll("img")].m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio/masonry (B1-6) > KD-AC-14 · 15 · 07 [U]: grid md 이상 3·2열 고정 트랙(auto-fit 0) · masonry md 이상 CSS 다단 2 · 칸 break-inside avoid · 고정 비율 class · 선택자 = class(data-layout·nth-child 0) · 재배치 0
+AssertionError: /* portfolio/grid-3 · grid-2 · masonry: expected -1 to be greater than -1
+ ❯ cssSection src/kit/PortfolioGallery.test.tsx:25:22
+     23| const cssSection = (marker: string) => {
+     24|   const at = css().indexOf(marker);
+     25|   expect(at, marker).toBeGreaterThan(-1);
+       |                      ^
+     26|   return css().slice(at, css().indexOf("\n}\n", at));
+     27| };
+ ❯ src/kit/PortfolioGallery.test.tsx:106:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  7 failed | 4 passed (11)
+   Start at  14:59:19
+   Duration  1.22s (environment 65%, transform 15%, setup 12%, tests 5%, import 3%, worker 1%)
+

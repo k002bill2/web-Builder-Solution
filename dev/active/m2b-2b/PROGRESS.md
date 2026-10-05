@@ -8,7 +8,7 @@
 ## 체크리스트
 - [x] P0 BRIEF·PROGRESS·REPORT 골격·gate.sh 커밋 / npm ci exit 0(lock 불변, git status = dev/active/m2b-2b/만, logs/npm-ci.txt) / baseline gate OK(logs/baseline-gate.txt: 렌더 JS 81.31 · CSS 7.25 · /studio 91.77/127.41) · 전체 vitest 195 files · 1763 passed · exit 0(logs/baseline-full-vitest.txt) · 바이트 baseline(logs/p1-baseline-bytes.txt)
 - [x] P1 공유 gallery 시제품(portfolio/masonry) 예산 실측 — 렌더 JS +213 B · CSS +124 B · /studio 진입 +26 B(부모 끝 상태 포함, ≤30 B) → 멈춤 아님(logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림
-- [ ] P2 portfolio 3변형 공유 PortfolioGallery — RED → GREEN → gate → 커밋
+- [x] P2 portfolio 3변형 공유 PortfolioGallery — RED 7 fail(PortfolioGallery 6 + PageDocument 목록 1, 폴백, logs/portfolio-red.txt) → 시제품 diff git apply 후 GREEN · 조기 전체 vitest 1 fail(memoryExport 폴백 예시 portfolio/masonry) → pricing/tiers-2로 이관(REPORT 4.3) · gate OK(logs/portfolio-gate.txt, 렌더 JS 81.55 · CSS 7.37 · /studio 127.44)
 - [ ] P3 statistics/stats-3 — RED → GREEN → gate → 커밋
 - [ ] P-B REPORT 선기록 → 브라우저 3폭 판정(KD-AC [B]) · 정적 HTML 동등성 · 캡처 · 서버 종료
 - [ ] P-F 전체 vitest 1회 exit 0 · Errors 0
@@ -16,4 +16,6 @@
 - [ ] P-F REPORT 마감 · 서버 종료 증거
 
 ## 새 테스트 delta 사전 예측 (RED 전)
-- (P2 전에 기록)
+- (P2 RED 직전 기록) PortfolioGallery.test.tsx = 6 (공통 3 · grid-2 1 · masonry 2) · PageDocument 정확 목록 +0(기존 it 수정) → 실측 1769 = +6 일치
+- (P3 RED 전 기록) StatisticsStats3.test.tsx ≈ 5 · 4변형 공통 bodyVariants2b.test.tsx ≈ 4(킷·폴백 0 / KD-AC-06 / 08 / 07) · PageDocument +0 · renderedVariants.test 무변경
+- 예상 합계 ≈ +15 (±3) → 전체 ≈ 1778

@@ -54,8 +54,8 @@ describe("렌더 문서 뼈대 (K-AC-09 · 0.12)", () => {
     expect([...c.querySelector("[data-site-root]")!.children].map((el) => el.tagName)).toEqual(["MAIN"]);
   });
 
-  it("레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) + M2B-2a 본문 4(about/text · services list·cards-2·cards-masonry) = 22쌍 · 모르는 쌍 undefined", () => {
-    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "about/text", "contact/form", "faq/accordion", "footer/biz-extended", "footer/biz-extended-map", "footer/minimal", "footer/minimal-biz", "header/sticky-hamburger", "header/sticky-right-cta", "header/sticky-two-tier", "header/transparent", "hero/center", "hero/fullbleed-left", "hero/grid", "hero/image", "hero/split", "hero/text", "services/cards-2", "services/cards-3", "services/cards-masonry", "services/list"]);
+  it("레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) + M2B-2a 본문 4(about/text · services list·cards-2·cards-masonry) + M2B-2b portfolio 3(grid-3·masonry·grid-2) = 25쌍 · 모르는 쌍 undefined", () => {
+    expect(Object.keys(KIT_REGISTRY).sort()).toEqual(["about/story", "about/text", "contact/form", "faq/accordion", "footer/biz-extended", "footer/biz-extended-map", "footer/minimal", "footer/minimal-biz", "header/sticky-hamburger", "header/sticky-right-cta", "header/sticky-two-tier", "header/transparent", "hero/center", "hero/fullbleed-left", "hero/grid", "hero/image", "hero/split", "hero/text", "portfolio/grid-2", "portfolio/grid-3", "portfolio/masonry", "services/cards-2", "services/cards-3", "services/cards-masonry", "services/list"]);
     expect(kitFor({ type: "hero", variant: "no-such-variant" } as SectionInstance)).toBeUndefined();
   });
 });

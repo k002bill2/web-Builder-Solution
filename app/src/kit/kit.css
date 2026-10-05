@@ -731,6 +731,68 @@
   }
 }
 
+/* portfolio/grid-3 · grid-2 · masonry (B1-5~7 · 0.2-3) — 머리 → 갤러리(figure 칸, 번호 순서). 칸 radius r1 · 경계 0 · 미디어 = 칸 전체(cover).
+   grid = md 이상 3·2열 같은 폭(트랙 고정 — 칸이 꺼져도 남은 칸 크기 그대로) · md 미만 1열 · 칸 비율 media_ratio.
+   masonry = md 이상 CSS 2단 다단(단 배정 = 브라우저 균형, 순서 = 문서 순서) · 칸 비율 슬롯 번호 고정(kit-r1x1 · kit-r16x9 · kit-r4x5) */
+@layer components {
+  .kit-gallery {
+    display: grid;
+    gap: var(--site-s4);
+  }
+  .kit-gallery-cell {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--site-r1);
+  }
+  .kit-gallery-media {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--site-media-ratio);
+  }
+  .kit-r1x1 {
+    aspect-ratio: 1;
+  }
+  .kit-r16x9 {
+    aspect-ratio: 16 / 9;
+  }
+  .kit-r4x5 {
+    aspect-ratio: 4 / 5;
+  }
+  @media (width >= 48rem) {
+    .kit-portfolio .kit-services-intro {
+      font-size: var(--site-t1);
+    }
+    .kit-gallery--3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .kit-gallery--2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .kit-gallery--masonry {
+      display: block;
+      columns: 2;
+      column-gap: var(--site-s4);
+    }
+    .kit-gallery--masonry > .kit-gallery-cell {
+      break-inside: avoid;
+      margin-block-end: var(--site-s5);
+    }
+    .kit-gallery--masonry > .kit-gallery-cell:last-child {
+      margin-block-end: 0;
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-gallery {
+      gap: var(--site-s5);
+    }
+    .kit-gallery--masonry {
+      column-gap: var(--site-s5);
+    }
+  }
+}
+
 /* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
 @layer components {
   .kit-faq-inner {

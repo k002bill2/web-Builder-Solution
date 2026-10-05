@@ -66,6 +66,8 @@
 - S4 실제: +4 → 216 files · 1871(예측 일치)
 
 - Codex R1 P2 수정 (기준 = S4 216 · 1871): `CompareDialog.test.tsx` it +1 — 1안씩 부분 실패 잡에서 C안으로 전환 → status "C안은 만들지 못했습니다" → **216 files · 1872**
+- Codex R1 수정 실제: +1 → 216 · 1872(예측 일치) · 전체 vitest 216 · 1872 exit 0
+- Codex R2 P2 수정 (기준 216 · 1872): `CompareDialog.test.tsx` it +1 — 1안씩 C(만들지 못함) → A → C 재방문 시 C 문장 다시 1회 → **216 files · 1873**
 
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)

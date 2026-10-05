@@ -297,3 +297,17 @@ describe("1안씩 전환 뒤 알림 (Codex R1 P2)", () => {
     expect(status(dialog)).toHaveTextContent(/^C안은 만들지 못했습니다$/);
   });
 });
+
+describe("1안씩 재방문 알림 (Codex R2 P2)", () => {
+  it("만들지 못한 C안 → A안 그림 → C안 재방문 = C안 문장을 다시 1회(중복 방지는 방문 단위)", async () => {
+    viewport(768);
+    const { dialog } = await mountDialog({ options: { outcome: ({ id }) => (id === "C" ? "INFRA" : undefined) } });
+    await userEvent.click(within(dialog).getByRole("radio", { name: "C안" }));
+    expect(status(dialog)).toHaveTextContent(/^C안은 만들지 못했습니다$/);
+    await userEvent.click(within(dialog).getByRole("radio", { name: "A안" }));
+    await send(framesOf(dialog)[0]!, { type: "rects", rects: [sectionRect(900)] });
+    expect(status(dialog)).toHaveTextContent(/^A안을 그렸습니다$/);
+    await userEvent.click(within(dialog).getByRole("radio", { name: "C안" }));
+    expect(status(dialog)).toHaveTextContent(/^C안은 만들지 못했습니다$/);
+  });
+});

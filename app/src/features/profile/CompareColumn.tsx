@@ -68,6 +68,12 @@ export function CompareColumn({
   const category: FrameCategory | undefined =
     preview.kind === "failed" ? "failed" : preview.kind === "pending" ? undefined : write?.ok === false ? "structure" : CATEGORY[state];
   useEffect(() => onCategory(preview.id, category), [onCategory, preview.id, category]);
+  // 열이 사라지면(1안씩 전환·닫기) 그 안의 범주를 미정으로 — 다시 보일 때 같은 범주도 다시 알린다(중복 방지는 방문 단위, Codex R2 P2)
+  const latest = useRef(onCategory);
+  useEffect(() => {
+    latest.current = onCategory;
+  }, [onCategory]);
+  useEffect(() => () => latest.current(preview.id, undefined), [preview.id]);
 
   const line =
     preview.kind === "failed"

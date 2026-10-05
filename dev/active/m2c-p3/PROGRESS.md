@@ -22,3 +22,4 @@ base `7125138` · 기준선: vitest 227파일 2034 · /studio 진입 127.04 · �
 - 07: ImageSlotPanel.test +1 (지운 뒤 status = '이미지를 지웠습니다', 넣었습니다 문구 잔류 0) → 2037
 - 04: StudioLayoutImages.test +1 (펼친 채 1280→1024→768→390→1280 — 매 폭 details open·패널 스위치 유지) → 2038
 - 05: ImageSlotPanel.test +1 (스위치 도움말 = SPEC r2 4절 '섹션 배경' · '색 면' 0) → 2039
+- 02: bundleBudget.test +2 (check-bundle-size STUDIO_AFTER_ACTION에 ImageSlotPanel·ingest 키 = RED 대상 · afterAction 키 추가 전후 failures·합계 줄 동일 = 판정 불변 가드, 변경 전에도 통과) → 2041

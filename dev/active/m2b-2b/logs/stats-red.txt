@@ -1,0 +1,156 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2b/app
+
+ ❯ src/render/PageDocument.test.tsx (5 tests | 1 failed) 49ms
+   ❯ 렌더 문서 뼈대 (K-AC-09 · 0.12) (5)
+     × 레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) + M2B-2a 본문 4(about/text · services list·cards-2·cards-masonry) + M2B-2b portfolio 3(grid-3·masonry·grid-2) · statistics/stats-3 = 26쌍 · 모르는 쌍 undefined 4ms
+ ❯ src/kit/StatisticsStats3.test.tsx (4 tests | 4 failed) 51ms
+   ❯ statistics/stats-3 (B1-8) (4)
+     × KD-AC-16 · KD-AC-08 [U]: 킷 · h2 1 · ul[role=list] > li 3(번호 순서) · li 안 순서 수치 → 설명(p) · dl·dt·dd·h3 0 · 포커스 0 32ms
+     × KD-AC-16 · KD-AC-03 [U]: 수치 글자 = 슬롯 그대로(서식·변환 0) — 12자 시험 문자열 '1,234,567,89' · '24시간' · ' 100+ ' · 설명 상한 30자 8ms
+     × KD-AC-16 · KD-AC-04 [U]: statNValue 빈 값 → 그 li 0(남은 칸 순서 유지) · statNLabel 빈 값 → 설명만 0 · 수치 전부 빈 값 → ul 0 · 빈 p·li 0 8ms
+     × KD-AC-16 · 05 · 07 [U]: 1열 기본(칸 위 구분선) · md 이상 3칸 고정 트랙 + 칸 사이 세로 구분선 · 수치 t2(lg t3) 제목 굵기 · 줄 높이 명시 · tabular-nums · ink · 설명 --kit-soft · primary 글자 0 · nowrap·재배치 0 1ms
+ ❯ src/kit/bodyVariants2b.test.tsx (4 tests | 4 failed) 73ms
+   ❯ M2B-2b 4변형 공통 (4)
+     × 4변형 모두 킷으로 그린다(폴백 표식 0) 35ms
+     × KD-AC-06 [U]: 4변형이 든 문서의 정적 HTML — script = r4.12 고정 인라인 1개(바이트 일치) · on* 속성 0 25ms
+     × KD-AC-08 [U]: 섹션마다 h2 1 · portfolio 3변형·stats h3 0 11ms
+     × KD-AC-07 [G]: 이번 변형 CSS 블록에 order·*-reverse·grid-area·grid-row 재배치 0 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/PageDocument.test.tsx > 렌더 문서 뼈대 (K-AC-09 · 0.12) > 레지스트리 = M2A-2a 3변형 + M2A-2b 본문(about/story …) + M2B-1a hero 5변형(split·center·grid·text·image) + M2B-1b header 3 · footer 3(sticky-hamburger …) + M2B-2a 본문 4(about/text · services list·cards-2·cards-masonry) + M2B-2b portfolio 3(grid-3·masonry·grid-2) · statistics/stats-3 = 26쌍 · 모르는 쌍 undefined
+AssertionError: expected [ 'about/story', 'about/text', …(23) ] to deeply equal [ 'about/story', 'about/text', …(24) ]
+
+- Expected
++ Received
+
+@@ -22,7 +22,6 @@
+    "portfolio/masonry",
+    "services/cards-2",
+    "services/cards-3",
+    "services/cards-masonry",
+    "services/list",
+-   "statistics/stats-3",
+  ]
+
+ ❯ src/render/PageDocument.test.tsx:58:46
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/kit/StatisticsStats3.test.tsx > statistics/stats-3 (B1-8) > KD-AC-16 · KD-AC-08 [U]: 킷 · h2 1 · ul[role=list] > li 3(번호 순서) · li 안 순서 수치 → 설명(p) · dl·dt·dd·h3 0 · 포커스 0
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/StatisticsStats3.test.tsx:26:15
+     24|   it("KD-AC-16 · KD-AC-08 [U]: 킷 · h2 1 · ul[role=list] > li 3(번호 순서) …
+     25|     const s = stats(drawDoc(statsDoc()));
+     26|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     27|     expect(s.getAttribute("aria-labelledby")).toBe("h-s-stats");
+     28|     expect(s.querySelector("h2")).toHaveAttribute("id", "h-s-stats");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/kit/StatisticsStats3.test.tsx > statistics/stats-3 (B1-8) > KD-AC-16 · KD-AC-03 [U]: 수치 글자 = 슬롯 그대로(서식·변환 0) — 12자 시험 문자열 '1,234,567,89' · '24시간' · ' 100+ ' · 설명 상한 30자
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/StatisticsStats3.test.tsx:47:63
+     45|     const texts = { heading: "가".repeat(40), stat1Value: "1,234,567,89…
+     46|     const s = stats(drawDoc(statsDoc(texts)));
+     47|     for (const [key, text] of Object.entries(texts)) expect(s.querySel…
+       |                                                               ^
+     48|   });
+     49|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/kit/StatisticsStats3.test.tsx > statistics/stats-3 (B1-8) > KD-AC-16 · KD-AC-04 [U]: statNValue 빈 값 → 그 li 0(남은 칸 순서 유지) · statNLabel 빈 값 → 설명만 0 · 수치 전부 빈 값 → ul 0 · 빈 p·li 0
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/StatisticsStats3.test.tsx:52:25
+     50|   it("KD-AC-16 · KD-AC-04 [U]: statNValue 빈 값 → 그 li 0(남은 칸 순서 유지) · s…
+     51|     const s = stats(drawDoc(statsDoc({ stat2Value: " ", stat3Label: ""…
+     52|     const items = [...s.querySelectorAll("li")];
+       |                         ^
+     53|     expect(items.map((li) => li.firstElementChild!.getAttribute("data-…
+     54|     expect(items[1]!.querySelector('[data-slot="stat3Label"]')).toBeNu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/kit/StatisticsStats3.test.tsx > statistics/stats-3 (B1-8) > KD-AC-16 · 05 · 07 [U]: 1열 기본(칸 위 구분선) · md 이상 3칸 고정 트랙 + 칸 사이 세로 구분선 · 수치 t2(lg t3) 제목 굵기 · 줄 높이 명시 · tabular-nums · ink · 설명 --kit-soft · primary 글자 0 · nowrap·재배치 0
+AssertionError: /* statistics/stats-3: expected -1 to be greater than -1
+ ❯ cssSection src/kit/StatisticsStats3.test.tsx:19:22
+     17| const cssSection = (marker: string) => {
+     18|   const at = css().indexOf(marker);
+     19|   expect(at, marker).toBeGreaterThan(-1);
+       |                      ^
+     20|   return css().slice(at, css().indexOf("\n}\n", at));
+     21| };
+ ❯ src/kit/StatisticsStats3.test.tsx:63:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/kit/bodyVariants2b.test.tsx > M2B-2b 4변형 공통 > 4변형 모두 킷으로 그린다(폴백 표식 0)
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/bodyVariants2b.test.tsx:24:42
+     22|   it("4변형 모두 킷으로 그린다(폴백 표식 0)", () => {
+     23|     const c = drawDoc(doc2b());
+     24|     for (const s of ofPair(c)) expect(s).toHaveAttribute("data-kit");
+       |                                          ^
+     25|     expect(c.querySelectorAll("[data-fallback], [data-kit-marker]")).t…
+     26|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  src/kit/bodyVariants2b.test.tsx > M2B-2b 4변형 공통 > KD-AC-06 [U]: 4변형이 든 문서의 정적 HTML — script = r4.12 고정 인라인 1개(바이트 일치) · on* 속성 0
+Error: 구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:62:71
+     60|   if (!site?.hasAttribute("data-site-root") || page.body.childElementC…
+     61|   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
+     62|   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw …
+       |                                                                       ^
+     63|   clean(site);
+     64|   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+ ❯ src/kit/bodyVariants2b.test.tsx:30:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  src/kit/bodyVariants2b.test.tsx > M2B-2b 4변형 공통 > KD-AC-08 [U]: 섹션마다 h2 1 · portfolio 3변형·stats h3 0
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/bodyVariants2b.test.tsx:38:16
+     36|   it("KD-AC-08 [U]: 섹션마다 h2 1 · portfolio 3변형·stats h3 0", () => {
+     37|     for (const s of ofPair(drawDoc(doc2b()))) {
+     38|       expect(s.querySelectorAll("h2")).toHaveLength(1);
+       |                ^
+     39|       expect(s.querySelectorAll("h3")).toHaveLength(0);
+     40|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  src/kit/bodyVariants2b.test.tsx > M2B-2b 4변형 공통 > KD-AC-07 [G]: 이번 변형 CSS 블록에 order·*-reverse·grid-area·grid-row 재배치 0
+AssertionError: /* statistics/stats-3: expected -1 to be greater than -1
+ ❯ src/kit/bodyVariants2b.test.tsx:47:26
+     45|     for (const marker of ["/* portfolio/grid-3 · grid-2 · masonry", "/…
+     46|       const at = css.indexOf(marker);
+     47|       expect(at, marker).toBeGreaterThan(-1);
+       |                          ^
+     48|       expect(css.slice(at, css.indexOf("\n}\n", at))).not.toMatch(/\bo…
+     49|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  9 failed | 4 passed (13)
+   Start at  15:01:32
+   Duration  1.27s (environment 63%, transform 17%, setup 11%, tests 5%, import 4%)
+

@@ -1,0 +1,49 @@
+## targets: 
+## guards
+
+ Test Files  10 passed (10)
+      Tests  76 passed (76)
+   Start at  14:54:03
+   Duration  1.00s (setup 41%, environment 28%, transform 12%, tests 12%, import 6%, worker 1%)
+
+guards exit=0
+## typecheck
+typecheck exit=0
+## lint
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+lint exit=0
+## build
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /catalog 첫 화면 합계: 99.64KB / 예산 100KB · 진입 직후 자동 로드 포함: 102.03KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96.99KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.38KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.82KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.70KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.89KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.24KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.82KB / 예산 100KB · 진입 직후 자동 로드 포함: 121.70KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.89KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.24KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.76KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8.04KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6.61KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.60KB / 예산 100KB · 진입 직후 자동 로드 포함: 118.66KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7.66KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.49KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryProjectRepository.ts: +2.02KB (3개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94.01KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.29KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.77KB / 예산 100KB · 진입 직후 자동 로드 포함: 127.41KB / 예산 128KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1.94KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.18KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.12KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.37KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +1.34KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ExportAfter.tsx: +1.67KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +4.81KB (3개 파일, 예산 판정 밖)
+[bundle] 렌더 문서(render.html) JS 합계: 81.31KB / 예산 90KB · CSS 합계: 7.25KB / 예산 30KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)
+build exit=0

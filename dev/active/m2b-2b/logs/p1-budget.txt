@@ -1,0 +1,25 @@
+# P1 예산 선행 실측 — 공유 gallery 시제품 portfolio/masonry (2026-10-05)
+시제품 = kit/PortfolioGallery.tsx(PortfolioGallery 공유 + Grid3·Grid2·Masonry wrapper, ServicesHead 재사용, Media 무변경) + kit.css portfolio 블록(grid·masonry·고정 비율 class)
+       + registry 1쌍(portfolio/masonry) + 부모 RENDERED_VARIANTS 끝 상태(본문 8쌍 → 12쌍: portfolio/grid-2·grid-3·masonry · statistics/stats-3 알파벳순 나열)
+diff: logs/p1-gallery-prototype.diff (측정 뒤 git checkout으로 되돌림 — 최종 구현 아님, RED 전)
+측정 = npx vite build && npx vite build --mode render → /tmp/m2b2b-bytes.mjs(check-bundle-size.mjs 사본, sizeOf만 바이트) · KB = 1000 B
+
+| 항목 | 기준 425dfff | 시제품 | 증가 |
+|---|---|---|---|
+| 렌더 문서 JS | 81,310 B | 81,523 B | +213 B (+0.21) |
+| 렌더 문서 CSS | 7,247 B | 7,371 B | +124 B (+0.12) |
+| /studio 첫 화면 | 91,766 B | 91,774 B | +8 B |
+| /studio 진입 직후 | 127,409 B | 127,435 B | **+26 B (+0.026)** — 부모 목록 끝 상태(문자열 4개) 포함 · ≤ 127,700 |
+| 공통 JS | 89,340 | 89,347 | +7 |
+| /catalog 첫/진입 | 99,643 / 102,027 | 99,643 / 102,027 | 0 / 0 |
+| /references 첫/진입 | 96,993 / 99,377 | 96,994 / 99,378 | +1 / +1 |
+| /compare 첫/진입 | 98,824 / 121,704 | 98,827 / 121,689 | +3 / −15 |
+| /profile 첫/진입 | 99,603 / 118,662 | 99,604 / 118,656 | +1 / −6 |
+| /projects 첫/진입 | 94,011 / 100,292 | 94,015 / 100,288 | +4 / −4 |
+
+## 끝 예상
+- 이 레인: 시제품 +213 B에 공유 갤러리 전체(3 wrapper 포함)가 들어 있음. 남은 registry 2쌍(≈ +0.03) + statistics(SPEC 4절 새 컴포넌트 ≈ +0.20 JS · +0.12 CSS) → 렌더 JS 끝 ≈ 81.52 + 0.23 ≈ 81.76 · CSS ≈ 7.37 + 0.12 ≈ 7.49.
+- 남은 본문 2c 4변형(SPEC 4절): quotes 0.22 + pricing 0.20 + booking 0.15 + cta 0.20 = +0.77 JS · CSS 0.08+0.06+0.04+0.10 = +0.28 → 렌더 JS 끝 ≈ 82.5 (보수적 단순 곱 4 × 0.26 = 1.04 → ≈ 82.8) · CSS ≈ 7.8 (≤ 30).
+- /studio 진입: 부모 목록 끝 상태가 이미 시제품에 포함 → +26 B (≤ +30 B · 127,435 ≤ 127,700). 부모는 이후 변경 0 예정(statistics 추가는 렌더 문서 쪽만). 다른 화면 −15 ~ +4 B (±30 B 안).
+- 판정: **멈춤 조건 아님** (렌더 JS 끝 예상 ≈ 82.5~82.8 ≤ 89.70 · CSS ≤ 30 · /studio 증가 +26 B ≤ 30 B · 다른 화면 ±30 B). 엔진 registry import 0 · 부모 킷 import 0 · 예산 상향 0 · 가드 변경 0.
+- 주의: /studio 여유가 4 B뿐 — 2c에서 부모 목록에 본문 4쌍이 더 붙으면 별도 실측·절감 검토 필요(REPORT 7절 기록).

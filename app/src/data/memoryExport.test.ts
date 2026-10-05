@@ -34,7 +34,7 @@ const RENDERED: readonly SectionInstance[] = [
   section("contact", "form", "s-contact"),
   section("footer", "biz-extended", "s-footer"),
 ].map((s) => withAlt(s));
-const FALLBACKS = [withAlt(section("portfolio", "masonry", "s-portfolio")), withAlt(section("testimonials", "quotes-2", "s-quotes"))];
+const FALLBACKS = [withAlt(section("pricing", "tiers-2", "s-pricing")), withAlt(section("testimonials", "quotes-2", "s-quotes"))];
 
 async function setup(hooks: Hooks = {}) {
   const store = createStudioStore();
@@ -96,7 +96,7 @@ describe("requestExport 판정 순서 (8.3.2 · E-AC-44 · E-AC-48)", () => {
     const error = await repo.requestExport("project-1", "static-html", doc.revision).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(ProjectRepositoryError);
     expect((error as ProjectRepositoryError).code).toBe("UNRENDERED_SECTIONS");
-    expect((error as ProjectRepositoryError).sections).toEqual(["s-portfolio", "s-quotes"]);
+    expect((error as ProjectRepositoryError).sections).toEqual(["s-pricing", "s-quotes"]);
     // 멱등 기록 0 — 같은 요청을 다시 해도 다시 판정(같은 오류)
     expect(await codeOf(repo.requestExport("project-1", "static-html", doc.revision))).toBe("UNRENDERED_SECTIONS");
     expect(await exportSnapshots(repo)).toEqual([]);

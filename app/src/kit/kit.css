@@ -665,6 +665,45 @@
   }
 }
 
+/* services/list (B1-2) — 머리 → 이름 목록(항목 위 구분선 muted 장식 + 목록 아래 한 줄) · 항목 ink 제목 굵기, lead(넓은 폭) · body(md 미만) · 항목 안쪽 위아래 s3.
+   lg 이상 2단(머리 5 : 목록 7, 위 정렬, 열 사이 s6) · md~lg 1단 + 목록 2열(다단, 순서 = 문서 순서) · md 미만 1열. 조각 안 줄바꿈 = 공백 접힘(white-space 기본) */
+@layer components {
+  .kit-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: var(--site-stroke-1) solid var(--site-muted);
+  }
+  .kit-list-item {
+    min-width: 0;
+    padding-block: var(--site-s3);
+    border-top: var(--site-stroke-1) solid var(--site-muted);
+    break-inside: avoid;
+    font-size: var(--site-t0);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-list-item {
+      font-size: var(--site-t1);
+    }
+  }
+  @media (48rem <= width < 64rem) {
+    .kit-list {
+      columns: 2;
+      column-gap: var(--site-s5);
+    }
+  }
+  @media (width >= 64rem) {
+    .kit-list-grid {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--site-s6);
+      align-items: start;
+    }
+  }
+}
+
 /* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
 @layer components {
   .kit-faq-inner {

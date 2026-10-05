@@ -1,0 +1,47 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/app
+
+ ❯ src/kit/AboutText.test.tsx (3 tests | 2 failed) 42ms
+   ❯ about/text (B1-1) (3)
+     × KD-AC-09 [U]: 킷으로 그린다 · figure·img 0 · data-layout single · about/story 이미지 꺼짐 문서와 data-section만 다르고 마크업 같음 31ms
+     × KD-AC-03 · KD-AC-08 [U]: 상한 글자(제목 40 · 본문 400) 그대로 · h2 1 · h3 0 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/AboutText.test.tsx > about/text (B1-1) > KD-AC-09 [U]: 킷으로 그린다 · figure·img 0 · data-layout single · about/story 이미지 꺼짐 문서와 data-section만 다르고 마크업 같음
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/AboutText.test.tsx:17:18
+     15|   it("KD-AC-09 [U]: 킷으로 그린다 · figure·img 0 · data-layout single · abou…
+     16|     const text = about(drawDoc(textDoc()));
+     17|     expect(text).toHaveAttribute("data-kit");
+       |                  ^
+     18|     expect(text.dataset.section).toBe("about/text");
+     19|     expect(text.querySelectorAll("figure, img")).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/kit/AboutText.test.tsx > about/text (B1-1) > KD-AC-03 · KD-AC-08 [U]: 상한 글자(제목 40 · 본문 400) 그대로 · h2 1 · h3 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/AboutText.test.tsx:37:64
+     35|     const texts = { heading: "가".repeat(40), body: "나".repeat(200) + "…
+     36|     const s = about(drawDoc(textDoc({ slots: texts })));
+     37|     for (const [key, value] of Object.entries(texts)) expect(s.querySe…
+       |                                                                ^
+     38|     expect(s.querySelectorAll("h2")).toHaveLength(1);
+     39|     expect(s.querySelectorAll("h3")).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  14:10:48
+   Duration  1.19s (environment 71%, transform 13%, setup 10%, tests 4%, import 2%)
+

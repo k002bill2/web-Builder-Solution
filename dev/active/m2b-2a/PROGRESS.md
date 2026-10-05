@@ -9,7 +9,7 @@
 - [x] P0 PROGRESS · REPORT 골격 · gate.sh 커밋(7f3da38) / npm ci exit 0(lock 불변, git status clean) / baseline gate OK(logs/baseline-gate.txt) · 전체 vitest 191 files · 1744 passed exit 0(logs/baseline-full-vitest.txt)
 - [x] P1 cards-masonry 시제품 실측 — 렌더 JS +93 B · CSS +47 B · /studio 진입 +5 B(부모 목록 끝 상태 포함) → 멈춤 아님(logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림
 - [x] P2 about/text — RED 2 fail(폴백, logs/about-text-red.txt) → GREEN · gate OK(logs/about-text-gate.txt) · AboutStory 재사용(레지스트리 1줄)
-- [ ] P3 services/list RED → GREEN → gate → 커밋
+- [x] P3 services/list — RED 6 fail(logs/services-list-red.txt) → GREEN · 첫 gate FAIL(SectionVariant.test 3건: services/list를 미구현 예시로 씀) → 이관(REPORT 4절 표) → gate OK(logs/services-list-gate.txt)
 - [ ] P4 services/cards-2 (공유 카드 구조) RED → GREEN → gate → 커밋
 - [ ] P5 services/cards-masonry RED → GREEN → gate → 커밋
 - [ ] P-B 브라우저 전 REPORT 구현·번들 채움 → 1280/768/390 QB 캡처 · KD-AC [B] 판정 · 정적 HTML 동등성

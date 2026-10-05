@@ -16,6 +16,7 @@ import { HeroImage } from "./HeroImage";
 import { HeroSplit } from "./HeroSplit";
 import { HeroText } from "./HeroText";
 import { ServicesCards3 } from "./ServicesCards3";
+import { ServicesList } from "./ServicesList";
 import type { KitSection } from "./types";
 
 /**
@@ -37,6 +38,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
   "about/story": AboutStory,
   "about/text": AboutStory,
   "services/cards-3": ServicesCards3,
+  "services/list": ServicesList,
   "faq/accordion": FaqAccordion,
   "contact/form": ContactForm,
   "footer/biz-extended": FooterBizExtended,

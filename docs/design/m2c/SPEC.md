@@ -1,4 +1,4 @@
-# M2c 이미지 — 명세 (SPEC r0)
+# M2c 이미지 — 명세 (SPEC r1)
 
 - 작성: Designer (Orca managed Claude Code · worktree `m2c-spec` · base `92f8e2f`) · 2026-10-05 · 브리프 `dev/active/m2c-spec/BRIEF.md`
 - 상위: `docs/04-plan/DEVELOPMENT_PLAN.md` 19행(M2c = 토큰 기반 자체 그래픽 · 업로드 변환 · 산출물 동봉 · 종료 게이트 "F2 시안 등급") · TRD TR-SEC-04 · TR-POL-01 · R-09 · 8절 · ADR-004 개정 4 · 2a-05 SPEC 5.9(이미지 슬롯·보관소 — 이 SPEC이 이어받는다)
@@ -71,7 +71,7 @@
 - 문서·탭 한도(2a-05 5.9: 문서 12개·30MB · 탭 24개·60MB)는 **보관 바이트(변환 결과 합계)**로 잰다 — 입력 파일 크기는 V4만 본다(원본은 보관하지 않으므로 2.6).
 
 ### 2.4 재인코딩 — 폭 단계·포맷
-- **폭 사다리: 640 · 1280 · 1920** (긴 변이 아니라 **가로 폭**) [L3 · Opus r2 174행 "3~4단" 중 3단 — 2048은 1280 프레임 × DPR 1.5까지 1920으로 덮인다 [추정]]. 원본 폭보다 큰 단계는 만들지 않는다(업스케일 0) — 원본 폭 < 640이면 원본 폭 1단만.
+- **폭 사다리: 640 · 1280 · 1920** (긴 변이 아니라 **가로 폭**) [L3 · Opus r2 174행 "3~4단" 중 3단 — 2048은 1280 프레임 × DPR 1.5까지 1920으로 덮인다 [추정]]. 원본 폭보다 큰 단계는 만들지 않는다(업스케일 0). 원본 폭이 1920 미만이고 단계와 다르면 **원본 폭 1단을 맨 위에 더한다**(예: 1500 → 640·1280·1500 · 500 → 500) — hero가 1280으로 깎이지 않게(r1 · Codex P2).
 - 축소: `OffscreenCanvas`(없으면 `HTMLCanvasElement`)에 `drawImage` + `imageSmoothingQuality = "high"`. 큰 원본은 **반씩 단계 축소**(1/2씩 내려가며 마지막에 목표 폭) — 한 번에 1/4 이하로 줄이면 계단 현상 [추정].
 - 캔버스 면적 한도: 모바일 Safari 캔버스 면적 상한이 40MP보다 낮을 수 있다 [확인 필요 — 공개 자료 수치 편차, 실기기 없음]. 대응: 디코드한 `ImageBitmap`을 `createImageBitmap(bitmap, {resizeWidth})`로 먼저 1920 이하로 줄인 뒤 캔버스에 올린다(큰 캔버스를 만들지 않는다). 그래도 실패하면 V6 문구.
 - **포맷 결정(원본별 1회):**
@@ -137,7 +137,7 @@
 
 ### 5.1 이미지 전달 경로 (sandbox 유지)
 - 미리보기 캔버스: `StudioLayout` → `StructureCanvas images` → render 메시지 `images`(3절의 넓힌 모양). 경로는 이미 있다 [L1] — 보관소 연결만 새로.
-- 정적 HTML·PNG 생성기: **`ExportGenerator` 계약(`{projectId, format, doc}`)은 바꾸지 않는다.** 생성기를 만드는 팩토리에 의존성 `readImage(id) → {blob,width,height} | undefined`를 주입하고, `renderAndSerialize`가 render 메시지에 **그 문서가 쓰는 id만**(`docImageIds` 재사용 [L1 `render/objectUrls.ts:10`]) 실어 보낸다 [L3 — 저장소 계약 변경 회피. 팩토리 위치는 Developer가 L1 확인].
+- 정적 HTML·PNG 생성기: **`ExportGenerator` 계약(`{projectId, format, doc}`)은 바꾸지 않는다.** 생성기를 만드는 팩토리에 의존성 `readImage(id) → { variants: Record<폭, Blob>; width; height } | undefined`(**파생본 전부** — r1 · Codex P2)를 주입하고, 부모가 아래 선택 규칙으로 id마다 Blob 1장을 골라 `renderAndSerialize`가 render 메시지에 **그 문서가 쓰는 id만**(`docImageIds` 재사용 [L1 `render/objectUrls.ts:10`]) 실어 보낸다 [L3 — 저장소 계약 변경 회피. 팩토리 위치는 Developer가 L1 확인].
 - iframe은 **`sandbox="allow-scripts"`만** — `allow-same-origin` 추가 금지(지금 가드 유지). Blob은 postMessage 구조화 복제로 넘어가고, 렌더 문서가 자기 object URL을 만든다(지금 방식).
 - 어떤 파생본을 싣나(**동봉 폭**): 슬롯별 최대 표시 폭 × 2(DPR) 이상인 가장 작은 단계, 원본 폭 상한 [L3]:
 | 슬롯 | 최대 CSS 폭(1280 프레임 기준) [추정 — Developer 실측] | 동봉 단계 |
@@ -145,7 +145,8 @@
 | hero `fullbleed-left`·`image` | 1280 | 1920 |
 | hero `split`·`grid` · about `story` | ≤ 640 | 1280 |
 | portfolio 칸 · footer `map` | ≤ 420 | 640 → 실측 640 미만이면 640, 넘으면 1280 |
-- 미리보기 캔버스도 같은 단계 1장만 보낸다(렌더 문서 메모리 절약 · 산출물과 같은 픽셀).
+- **선택 규칙(`pickVariant(variants, target)` — 순수 함수, r1):** 목표 폭 = 그 id를 쓰는 슬롯들의 동봉 단계 중 **가장 큰 값**(같은 이미지를 hero와 갤러리에 같이 쓰면 hero 기준). 있는 후보 중 목표 이상인 가장 작은 폭, 없으면 **가장 큰 후보**. 후보가 하나도 없으면 잃은 이미지(5.2). 테스트: 500폭 원본 → hero·갤러리 모두 500 · 1500폭 → hero 1500 · 갤러리 640 · 같은 id 두 슬롯 → 큰 쪽.
+- 미리보기 캔버스도 같은 규칙으로 id당 1장만 보낸다(렌더 문서 메모리 절약 · 산출물과 같은 픽셀).
 
 ### 5.2 정적 HTML (단일 파일)
 - `serializeSite`가 이미 `blob:` → data URL로 바꾼다 [L1]. 결과 규칙(blob: 0 · 외부 요청 0 · script 고정 1개)은 그대로 — 새 규칙: **`<img src>`는 `data:image/(webp|jpeg|png);base64,`만 허용**(그 밖 스킴 = 실패).
@@ -157,7 +158,14 @@
 ### 5.3 PNG
 - 같은 `renderAndSerialize` → 같은 data: 마크업 → SVG foreignObject 안 `<img src="data:…">`. data: 이미지는 SVG-as-image 안에서도 로드된다고 알려짐(외부 자원만 차단) [확인 필요 — IMG-AC-B4 실측]. 캔버스 오염 0 유지(`blob:` 0).
 - PNG 파일 메타·이름의 `fallbackCount` 규칙에 **잃은 이미지 수를 더하지 않는다**(폴백 = 렌더러 없는 섹션 뜻 유지) — 결과 캡션에만 5.2와 같은 문장 [L3].
-- 결정성: 같은 문서·같은 보관소 Blob → 같은 PNG 높이(M2B-D1 높이 결정성 수정 유지). 이미지 `decode()` 완료 전 rects를 보내지 않는다 — 렌더 문서가 `img.decode()`를 기다린 뒤 rects(지금 `settled` 경로에 이미지 대기 추가) [L3 — 높이 결정성 회귀 방지].
+- 결정성: 같은 문서·같은 보관소 Blob → 같은 PNG 높이(M2B-D1 높이 결정성 수정 유지).
+- **내보내기 렌더의 이미지 대기 (r1 · Codex P1)** — 정적 HTML·PNG 공통. 숨은 iframe은 화면 밖이라 `loading="lazy"` 이미지는 요청이 시작되지 않을 수 있고, `decode()`는 lazy 로딩을 강제로 시작하지 않는다(HTML 표준 `img.decode()`) → 그대로 기다리면 8초 `JOB_TIMEOUT`.
+  1. 내보내기 render 메시지에 `loading: "eager"`(선택 필드 · 미리보기는 안 보냄)를 싣는다 → `Media`가 모든 `<img>`를 즉시 로드로 그린다.
+  2. 렌더 문서는 그린 뒤 모든 `img.decode()`를 `Promise.allSettled`로 기다리고 **그다음** rects를 보낸다. 대기 상한 = 생성기 남은 시간 안(별도 타이머 없음 — 전체 8초 상한이 끊는다).
+  3. decode 실패 1장 이상 = 내보내기 실패 "이미지를 그리지 못했습니다"(조용히 빠뜨리지 않음 — 우리가 변환한 Blob이라 드묾 [추정]).
+  4. 대기 중 새 render 메시지 = 앞 대기 결과 버림(마지막 render만 rects).
+  5. `serializeSite` 복사본에서 hero 밖 `<img>`에 `loading="lazy"`를 다시 붙인다 — 내보낸 HTML은 지금과 같은 로딩 속성.
+  - 테스트: 화면 밖 iframe 모의에서 갤러리·지도 이미지 포함 문서가 시간 안에 rects를 보냄(IMG-AC-26b).
 
 ### 5.4 캔버스 캡션 — F2 (m2a 569행 이월, MQ-C8 ★A)
 - F2 조건 = 모든 섹션 실렌더 + 폰트 자체 호스팅 + 모션 프리셋(M2b 완료 [L1 BRIEF]) + **이미지 슬롯이 사용자 이미지 또는 자체 그래픽**(M2c로 항상 참).
@@ -206,14 +214,14 @@
 | IMG-AC-01 | V1~V3: 확장자·MIME·매직 바이트 3신호 일치만 통과 — `.png` 이름의 JPEG 바이트 · MIME 빈 값 + 올바른 매직 · SVG · GIF · HEIC fixture 각각 기대 결과 | [U] |
 | IMG-AC-02 | V4 10MB 경계(10MB 통과 · 10MB+1B 실패 문구에 소수 1자리 MB) | [U] |
 | IMG-AC-03 | V5 헤더 파서: PNG IHDR · JPEG SOF0/SOF2 · WebP VP8/VP8L/VP8X 폭·높이 · 40MP 경계 · 한 변 16,384 경계 · 잘린 헤더 = 실패 — **디코드 함수가 호출되지 않음**을 스파이로 확인 | [U] |
-| IMG-AC-04 | 폭 사다리: 원본 3000폭 → {640,1280,1920} · 1500폭 → {640,1280} · 500폭 → {500} · 업스케일 0 | [U] |
+| IMG-AC-04 | 폭 사다리: 원본 3000폭 → {640,1280,1920} · 1500폭 → {640,1280,1500} · 500폭 → {500} · 업스케일 0 | [U] |
 | IMG-AC-05 | 포맷: `toBlob` 모의가 `image/webp` 반환 → WebP · `image/png` 반환(미지원 모의) + 투명 없음 → JPEG · 투명 있음(PNG 색 유형 6 · tRNS · WebP VP8X 알파) → PNG | [U] |
 | IMG-AC-06 | EXIF 제거: 자체 제작 fixture(EXIF APP1 + GPS 태그 포함 JPEG) 변환 결과 바이트에 `Exif\0\0`·`eXIf`·GPS 태그 0 | [U]+[B] |
 | IMG-AC-07 | 방향: 자체 제작 방향 태그 6 fixture(세로 사진) → 결과 폭 < 높이 · 메타 width/height도 방향 적용 뒤 | [B] (jsdom은 디코드 불가 — [U]는 옵션 전달만 확인) |
 | IMG-AC-08 | 실패 시 이전 이미지·문서·보관소 불변 · 필드 `aria-invalid` + 설명 연결 · 문구 2.3 그대로 | [U] |
 | IMG-AC-09 | 변환 중 다른 파일 선택 → 마지막 선택만 반영 | [U] |
 | IMG-AC-10 | 원본 미보관: 변환 뒤 보관소 항목에 원본 Blob·File·파일 이름 없음 · `bitmap.close()` 호출 | [U] |
-| IMG-AC-11 | 한도는 보관 바이트로: 2a-05 5.9 문서 12개·30MB · 탭 24개·60MB 문구·기록 비움 규칙 그대로(E-AC-45~47 회귀 0) | [U] |
+| IMG-AC-11 | 한도는 보관 바이트로: 2a-05 5.9 문서 12개·30MB · 탭 24개·60MB 문구·기록 비움 규칙 그대로 — 2a-05 E-AC-45~47(a3, **아직 미구현** [L1 `docs/design/2a-05/SPEC.md:745`])을 이 레인에서 구현·통과 | [U] |
 
 ### 8.2 슬롯 필드·접근성
 | ID | 기준 | 종류 |
@@ -240,10 +248,11 @@
 | IMG-AC-23 | 정적 HTML: 쓰는 이미지가 `data:image/(webp|jpeg|png);base64,`로 들어감 · `blob:`·http(s) 이미지 0 · `srcset` 0 · 동봉 단계 = 5.1 표 | [U] |
 | IMG-AC-24 | 잃은 이미지 = 자체 그래픽 + 결과 문구 개수 · 내보내기 차단 0 | [U] |
 | IMG-AC-25 | 결과 화면 크기 표시 · 3MB 초과 안내 | [U] |
+| IMG-AC-26b | 내보내기 render = `loading:"eager"` · 모든 decode 뒤 rects · decode 실패 = 실패 문구 · 대기 중 새 render = 앞 결과 버림 · 직렬화 결과의 hero 밖 img = `loading="lazy"` | [U] |
 | IMG-AC-26 | PNG: 이미지 포함 캡처에서 캔버스 오염 0(toBlob 성공) · 이미지 decode 뒤 높이 결정 · 같은 입력 5회 같은 높이 | [B] |
 | IMG-AC-27 | sandbox 속성 = `allow-scripts`만(렌더·숨은 iframe 전부) — 기존 가드 유지 | [G] |
 | IMG-AC-28 | F2 캡션 문구 · 잃은 이미지 문장 조건 | [U] |
-| IMG-AC-29 | 예산: `/studio` 진입 증가 ≤ +0.03 · 렌더 JS ≤ 89.70 · CSS ≤ 30 · 조작 뒤 청크 크기 보고 | [G](`check-bundle-size`) |
+| IMG-AC-29 | 예산: `/studio` 진입 증가 ≤ +0.03 · 렌더 JS ≤ 89.70 · CSS ≤ 30 · 조작 뒤 청크 크기 보고. **지금 검사기는 128·90만 강제한다**(Codex r1 P2 — 127.50·89.80이 통과) → M2C-2가 `app/scripts/`에 **M2c 기준선 파일(시작 실측값) + 허용 +0.03 · 렌더 JS 멈춤선 89.70을 실패 조건으로** 추가 · 새 lazy 청크(패널·변환기)를 조작 뒤로 분류 | [G](`check-bundle-size` 개정) |
 
 ---
 
@@ -292,3 +301,4 @@
 | 판 | 내용 |
 |---|---|
 | r0 | 초안 (M2C-0) |
+| r1 | Codex adversarial 1라운드 4건 반영: 내보내기 이미지 eager + decode 대기(5.3 · IMG-AC-26b) · `readImage` = 파생본 전부 + `pickVariant` 규칙 · 원본 폭 단계 추가(2.4 · IMG-AC-04) · 예산 가드 자동화(IMG-AC-29) — 원문 `dev/active/m2c-spec/logs/codex-adv-r1.txt` |

@@ -9,12 +9,12 @@
 | 레인 | 역할 | 산출물(쓰기 경로) | 수용 기준 | 선행 | 병렬 | 시간 [추정] |
 |---|---|---|---|---|---|---|
 | **M2C-1** 변환기 | Developer | `imageIngest` 순수 모듈 — 검증 V1~V6 · 헤더 파서 · 폭 사다리 · 포맷 결정 · EXIF/방향 · 자체 제작 fixture 생성 스크립트 (`app/src/features/studio/images/ingest/**` 신규만) | IMG-AC-01~07 · 10 | MQ 답 | M2C-2 | 1~1.5일 |
-| **M2C-2** 렌더 쪽 | Developer | 자체 그래픽 SVG · 프로토콜 `images` 모양 · masonry 원본 비율 · map `contain` (`app/src/kit/**` · `app/src/render/**`) | IMG-AC-17~22 · 렌더 예산 | MQ 답 | M2C-1 | 1일 |
+| **M2C-2** 렌더 쪽 + 가드 | Developer | 자체 그래픽 SVG · 프로토콜 `images` 모양 + `loading:"eager"` · decode 대기 · masonry 원본 비율 · map `contain` · **부모 송신부 타입 이전**(`StructureCanvas.tsx` images prop 타입·관련 테스트만 — 보관소 연결은 M2C-3) · **예산 검사기 개정**(M2c 기준선 + 0.03 · 렌더 89.70 실패 조건) (`app/src/kit/**` · `app/src/render/**` · `components/studio/StructureCanvas*` · `app/scripts/**`) | IMG-AC-17~22 · 26b(렌더 쪽) · 29 · typecheck 통과 | MQ 답 | M2C-1 | 1.5일 |
 | **M2C-3** 슬롯 UI·보관소 | Developer | 진입 버튼 · `ImageSlotPanel`(lazy) · 보관소(탭 메모리 · 참조 집합 해제 · 한도) · 캔버스 연결 (`app/src/components/studio/**` · `app/src/features/studio/images/store/**` · `data/` 필요 시) | IMG-AC-08·09·11~16 · `/studio` 진입 ≤ +0.03 | M2C-1 · M2C-2 병합 | — | 1.5~2일 |
-| **M2C-4** 산출물 동봉 | Developer | 생성기 `readImage` 주입 · 정적 HTML·PNG 이미지 · 잃은 이미지 문구 · 크기 표시 · F2 캡션 (`app/src/features/studio/staticHtml/**` · `png/**` · `exportFlow` · `canvasCaption`) | IMG-AC-23~29 | M2C-3 병합 | — | 1일 |
+| **M2C-4** 산출물 동봉 | Developer | 생성기 `readImage`(파생본 전부) 주입 · `pickVariant` · 내보내기 render에 images + `loading:"eager"` · 정적 HTML·PNG 이미지 · 잃은 이미지 문구 · 크기 표시 · F2 캡션 (`app/src/features/studio/staticHtml/**` · `png/**` · `exportFlow` · `canvasCaption`) | IMG-AC-23~28 · 26b(부모 쪽) | M2C-3 병합 | — | 1일 |
 | **M2C-5** QA | QA | QB-1~12 · 시각 회귀 기준선 재생성(SVG 변경 = 의도된 변경) · 예산 로그 (`dev/active/m2c-5/` · 기준선 파일) | QB 전부 · B-M2B-09 한계 명시 | M2C-4 병합 | — | 0.5~1일 |
 
-- 합계 **5~6.5 작업일 [추정]** — 계획 1주(5일)보다 0~1.5일 길 수 있다. 근거: 변환기(헤더 파서 3형식)와 보관소 한도 규칙(2a-05 5.9 r2 "계산 뒤 비움")이 단순 UI보다 테스트가 많다. MQ-C2 B(IndexedDB)면 **+0.5~1일**, MQ-C7 B면 **+2~3일**.
+- 합계 **5.5~7 작업일 [추정]**(r1 — M2C-2 +0.5일) — 계획 1주(5일)보다 0~1.5일 길 수 있다. 근거: 변환기(헤더 파서 3형식)와 보관소 한도 규칙(2a-05 5.9 r2 "계산 뒤 비움")이 단순 UI보다 테스트가 많다. MQ-C2 B(IndexedDB)면 **+0.5~1일**, MQ-C7 B면 **+2~3일**.
 - 동시 작업자 2개 상한(이 프로젝트 429 이력) · 서브에이전트 금지 유지 → 병렬은 M2C-1 ∥ M2C-2만.
 
 ## 2. 순서·의존성
@@ -22,7 +22,8 @@
 MQ 답 ──┬─ M2C-1 변환기 ──┐
         └─ M2C-2 렌더 쪽 ──┴─ M2C-3 슬롯 UI·보관소 ── M2C-4 산출물 동봉 ── M2C-5 QA
 ```
-- M2C-1 ∥ M2C-2: 쓰기 경로가 겹치지 않는다(`features/studio/images/ingest/**` vs `kit/**`·`render/**`). 공유 계약은 SPEC 3절 `{blob,width,height}` 한 줄 — M2C-2가 `render/protocol.ts`에 타입을 두고 M2C-3가 import.
+- M2C-1 ∥ M2C-2: 쓰기 경로가 겹치지 않는다(`features/studio/images/ingest/**` vs `kit/**`·`render/**`·`StructureCanvas*`·`scripts/**`). 공유 계약은 SPEC 3절 `{blob,width,height}` — M2C-2가 `render/protocol.ts`에 타입을 두고 **부모 송신부(`StructureCanvas`)까지 같은 레인에서 옮긴다**(r1 · Codex P1 — 반쪽 이전이면 M2C-2 단독 typecheck 실패). 정적 HTML·PNG 송신부는 지금 images를 안 보내므로 M2C-4까지 영향 없음.
+- 예산 검사기 개정은 M2C-2가 맨 먼저(시작 실측 = 기준선 파일) — 뒤 레인은 자동 실패 조건 아래서 일한다(r1 · Codex P2).
 - M2C-1 공개 API(M2C-3가 쓸 것 — SPEC 2.3~2.6에서 고정):
   `ingestImage(file: File, deps?) → Promise<{ ok: true; image: { variants: Partial<Record<640|1280|1920|number, Blob>>; width; height; format: "webp"|"jpeg"|"png"; bytes } } | { ok: false; code: "TYPE_MISMATCH"|"TOO_LARGE"|"TOO_MANY_PIXELS"|"DECODE_FAILED"; detail? }>`
 - M2C-4가 `ExportGenerator` 계약을 바꿔야 한다고 판단하면 멈추고 보고(SPEC 5.1 — 팩토리 주입이 기본안).

@@ -65,6 +65,8 @@
   - `ProfileCompare.test.tsx` it +1 — U8 통합: 대화상자 선택 = 카드와 같은 상태 · 성공 status 1회 · 선택 실패 → 대화상자 alert · 다시 누름 = 재시도
 - S4 실제: +4 → 216 files · 1871(예측 일치)
 
+- Codex R1 P2 수정 (기준 = S4 216 · 1871): `CompareDialog.test.tsx` it +1 — 1안씩 부분 실패 잡에서 C안으로 전환 → status "C안은 만들지 못했습니다" → **216 files · 1872**
+
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)
 - 배치 변경 1회차(SPEC 3.2 허용 — docKitTokens 복제 + 대조 it): `protocol` 0.34KB(readRenderMessage만), StudioLayout 16.57 → `/studio` 127.50(+0.16) — 여전히 > 127.37

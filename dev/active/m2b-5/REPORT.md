@@ -24,7 +24,8 @@
 | 66d2f0c | S1 시제품(버튼·로더·변환, iframe 0) + 배치 변경 1회차(docKitTokens 복제·대조) |
 | 8339bd6 | S1 측정·게이트 로그 |
 | 26c4e43 | PROGRESS — 멈춤선 판정 |
-| (이 커밋) | REPORT · Codex 결과 |
+| aa89189 | REPORT 초안 |
+| (이 커밋) | Codex 결과 반영 · PROGRESS 마감 |
 
 ## 4. 6.2 예산 표 (gzip KB, `npm run build` 출력 — logs/s0-build · s1-build · s1b-build · final-build · s1c-experiment-build)
 | 대상 | baseline | S0 | S1 1차 | S1 1회차 = 최종 커밋 | 실험(리더 사본, 미커밋) | 멈춤선 |
@@ -74,7 +75,9 @@
 - 게이트: typecheck · lint exit 0(logs/s1-gate.txt) · build exit 0(logs/final-build.txt).
 
 ## 8. Codex 검증
-- `codex-companion review --scope branch --base 48487d5` 1라운드 — 결과는 8.1에 기록(logs/codex-review.txt).
+- `codex-companion review --scope branch --base 48487d5` **1라운드 실제 완료**(logs/codex-review.txt, 시작 시점 HEAD 8339bd6 기준): "S1 시제품 범위에서 새로 도입된 수정 대상 결함은 발견하지 못했습니다" — 지적 0건. 비교 UI 미구현·멈춤선 초과는 PROGRESS 기록 중단 상태로 인정.
+- Codex 쪽 테스트 재실행은 읽기 전용 샌드박스 EPERM으로 차단됨(Codex 환경 한계) — 테스트 증거는 7절의 이 worktree fresh 실행이다.
+- 지적 0건이라 2라운드 이상 진행하지 않음(라운드 상한 규칙).
 
 ## 9. 한계 · 주의
 - 브랜치의 버튼은 누르면 숨은 stub만 그린다(사용자에게 아무 변화 없음) — 재개 전 머지 금지.

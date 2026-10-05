@@ -12,7 +12,7 @@
 - [ ] S3 상태·알림·폴백·캡션(U6·U7·U11·U12) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
 - [ ] S4 선택 연동·접근성(U8·포커스·스크롤 영역) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
 - [ ] S5 브라우저 B1~B6 4폭(1280·1024·768·390) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
-- [ ] S6 전체 vitest exit0 · Codex review --scope branch --base 48487d5 · REPORT — vitest 213 files · 1850 passed · exit 0(logs/final-full-vitest.txt) · Codex 진행 중
+- [x] S6 전체 vitest exit0 · Codex review --scope branch --base 48487d5 · REPORT — vitest 213 files · 1850 passed · exit 0 · Errors 0(logs/final-full-vitest.txt) · Codex 1라운드 실제 완료 지적 0(logs/codex-review.txt) · REPORT.md(중단 보고 + 결정 요청 A/B/C)
 
 ## 6.2 예산 표 (gzip KB)
 | 대상 | baseline | S0 | S1 | 최종 | 멈춤선 |

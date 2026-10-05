@@ -1,0 +1,308 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-d1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileCompare.test.tsx (7 tests | 1 failed) 13702ms
+   ❯ 비교 버튼 보이는 조건 (CMP-AC-U1) (2)
+     × 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위 5176ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/SectionRemove.test.tsx (9 tests | 1 failed) 14053ms
+   ❯ 삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19) (4)
+     × 확인 없이 삭제 → 알림 줄 'Services를 삭제했습니다'(status 글자) + 형제 버튼 '되돌리기' · 포커스 = 다음 줄 5239ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (15 tests | 1 failed) 20059ms
+   ❯ 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) (3)
+     × 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0 5373ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileCompact.test.tsx (4 tests | 1 failed) 6358ms
+   ❯ 편집 시작 위치 · 비교 표 디스클로저 (PROFILE-V2-COMPACT 5) (1)
+     × DOM 순서: 카드 목록 → 편집 시작 → '3안 비교 표 보기'(기본 접힘, <768 숨김) 5237ms
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportChunkFailure.test.tsx (2 tests | 1 failed) 5288ms
+   ❯ 내보내기 청크 · 결과 청크 로드 실패 (1)
+     × 재시도 안내(alert '내보내지 못했습니다' + '다시 시도')는 결과 청크 없이 뜬다 · 버튼 busy 해제 · 다시 시도 = 요청 5230ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompact.test.tsx > 편집 시작 위치 · 비교 표 디스클로저 (PROFILE-V2-COMPACT 5) > DOM 순서: 카드 목록 → 편집 시작 → '3안 비교 표 보기'(기본 접힘, <768 숨김)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileCompact.test.tsx:67:3
+     65|
+     66| describe("편집 시작 위치 · 비교 표 디스클로저 (PROFILE-V2-COMPACT 5)", () => {
+     67|   it("DOM 순서: 카드 목록 → 편집 시작 → '3안 비교 표 보기'(기본 접힘, <768 숨김)", async () …
+       |   ^
+     68|     const region = await open();
+     69|     const u = user();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileCompare.test.tsx:62:3
+     60|
+     61| describe("비교 버튼 보이는 조건 (CMP-AC-U1)", () => {
+     62|   it("잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위…
+       |   ^
+     63|     const { region } = await open();
+     64|     await within(region).findByRole("button", { name: /^3안 만들기 \(v\d+\…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/components/studio/ExportChunkFailure.test.tsx > 내보내기 청크 · 결과 청크 로드 실패 > 재시도 안내(alert '내보내지 못했습니다' + '다시 시도')는 결과 청크 없이 뜬다 · 버튼 busy 해제 · 다시 시도 = 요청
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/studio/ExportChunkFailure.test.tsx:45:3
+     43|
+     44| describe("내보내기 청크 · 결과 청크 로드 실패", () => {
+     45|   it("재시도 안내(alert '내보내지 못했습니다' + '다시 시도')는 결과 청크 없이 뜬다 · 버튼 busy 해제 ·…
+       |   ^
+     46|     flowLoad.failures = 1;
+     47|     // 다시 시도도 재시도 가능 실패로 끝나게 — 결과 청크가 필요한 결과(완료·생성기 없음)로 가지 않는다
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) > 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/studio/ExportFlow.test.tsx:64:3
+     62|
+     63| describe("버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18)…
+     64|   it("게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria…
+       |   ^
+     65|     await expectInjected();
+     66|     const { requestExport } = await open(withSections(passingDoc(), pa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/components/studio/SectionRemove.test.tsx > 삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19) > 확인 없이 삭제 → 알림 줄 'Services를 삭제했습니다'(status 글자) + 형제 버튼 '되돌리기' · 포커스 = 다음 줄
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/studio/SectionRemove.test.tsx:38:3
+     36|
+     37| describe("삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19)", () => {
+     38|   it("확인 없이 삭제 → 알림 줄 'Services를 삭제했습니다'(status 글자) + 형제 버튼 '되돌리기' · 포…
+       |   ^
+     39|     await openStudio();
+     40|     pick("Services");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  5 failed | 211 passed (216)
+      Tests  5 failed | 1871 passed (1876)
+   Start at  22:20:19
+   Duration  100.24s (tests 48%, environment 26%, transform 12%, import 7%, setup 7%)
+
+Environment  jsdom was created 216 times · 221.13s total, 26% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

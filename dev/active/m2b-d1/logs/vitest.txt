@@ -1,0 +1,991 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-d1/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. 
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. 
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. 
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+stderr | src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 저장 안 된 조정이 있으면 3안 만들기 aria-disabled + 이유, 눌러도 요청 0 · 취소하면 다시 가능
+You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. 
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+stderr | src/components/studio/ExportFlow.test.tsx > 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) > 통과 → 바로 requestExport 1회(저장된 revision) · GENERATOR_UNAVAILABLE = 형식별 informative 문구(alert 아님) · 계측 · 스냅샷 이벤트 0
+An update to StudioLayout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/studio/ExportFlow.test.tsx > 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) > 통과 → 바로 requestExport 1회(저장된 revision) · GENERATOR_UNAVAILABLE = 형식별 informative 문구(alert 아님) · 계측 · 스냅샷 이벤트 0
+An update to StudioLayout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfilePage.test.tsx (31 tests | 2 failed) 36361ms
+   ❯ P-AC-01 보드 확정 → 프로필 화면 (1)
+     × 비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 필드가 모두 보인다 5462ms
+   ❯ P-AC-09 버전 비교 (P-S08) (2)
+     × '현재와 비교' → 표(caption 'v1과 v2 비교')에 포커스, 바뀐 줄 '바뀜' · 닫으면 비교 버튼으로 포커스 5258ms
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileAdjust.test.tsx (25 tests | 1 failed) 36695ms
+   ❯ P-AC-13 범위 (P-S13 · 모션 L3) (3)
+     × 이어받은 값이 범위 밖 → 그 그룹에 Callout(cautionary = warning 톤) + '맞추기' → 저장 안 된 조정, 그 전에는 저장 aria-disabled + 이유 5734ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (15 tests | 4 failed) 37095ms
+   ❯ 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) (3)
+     × 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0 4005ms
+     × 폴백만 → 구조 미리보기 이유 1개 · '첫 구조 미리보기 섹션으로 이동' → 그 섹션 선택 + 편집 패널 머리 포커스 4142ms
+     × '첫 차단으로 이동' → 첫 차단 줄 이동과 같은 곳(대체텍스트 → 그 섹션 편집 패널 머리) 6029ms
+   ❯ 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) (12)
+     × 통과 → 바로 requestExport 1회(저장된 revision) · GENERATOR_UNAVAILABLE = 형식별 informative 문구(alert 아님) · 계측 · 스냅샷 이벤트 0 5850ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardPage.test.tsx (36 tests | 2 failed) 51895ms
+   ❯ 선택 (P-1·P-2·A-4) (6)
+     × AC-04: B 열 Hero를 누르면 선택됨, 초안 Hero 출처 B, 알림 'Hero 구성: B 선택' 5693ms
+     × AC-06: 선택된 C를 다시 누르면 해제, 초안 Hero 'Hero를 먼저 고르세요', 확정 aria-disabled + 이유 5130ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileCandidates.test.tsx (14 tests | 14 failed) 56175ms
+   ❯ 3안 생성 흐름 (P-S17 → S18 → S19) (3)
+     × 캡션 상시 · 버튼 aria-busy · 카드 자리 고정 · 단계 알림(시작·1/3·2/3·완료) · 카드 3 + 비교 표 · 다시 생성 없음 5815ms
+     × 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지 6447ms
+     × 저장 안 된 조정이 있으면 3안 만들기 aria-disabled + 이유, 눌러도 요청 0 · 취소하면 다시 가능 4135ms
+   ❯ 실패 · 경쟁 (P-S20 · S21) (3)
+     × 부분 실패: role=alert 'C안을 만들지 못했습니다' + 'C안 다시 시도' → C만 다시 → 3안 3962ms
+     × 전체 결정적 실패(라이브러리 없음): 원인 문장 + role=alert, 다시 시도 없음, 비교 표 없음 3627ms
+     × 늦은 응답 차단: v2 요청 응답 전에 ?v=1로 옮기면 v1 화면에 v2 결과가 나타나지 않음 · 이전 버전 선택 복원 3727ms
+   ❯ 잡 조회 중 클릭 (findJob 지연 — HTTP 대비) (1)
+     × 진입 findJob 응답 전에 3안 만들기 → 늦은 findJob 결과를 버려 폴러 1개: 조회마다 한 안씩, 1/3·2/3 알림 유지 3579ms
+   ❯ 리뷰 회귀 (선택·조회 순서 · 멱등 요청) (2)
+     × 선택 응답이 폴링 종료 뒤에 와도 안 상태를 되돌리지 않음 — 3안 유지 + 선택 유지 3407ms
+     × 잡 조회 중 누른 요청이 이미 끝난 잡을 돌려받으면 요청·완료 계측과 완료 알림을 다시 내지 않음 3580ms
+   ❯ 번들 분류 근거 (check-bundle-size /profile afterAction memoryGenerate) (1)
+     × 진입 findJob·폴링·선택은 계산 청크 요청 0 — '3안 만들기' 클릭에서만 1회, 기존 잡 재진입도 0 3576ms
+   ❯ 편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5) (4)
+     × 성공 → startDoc(create) 문서 생성 · /studio/:projectId 이동 · state = 바뀐 쌍 목록(+ 알림 1문장) 3919ms
+     × DOC_EXISTS → 이동 + '이미 편집 중인 문서를 엽니다 (A안 · 프로필 v1)' · 자동 restart 없음 3620ms
+     × 실패(요청 실패) → role=alert '편집을 시작하지 못했습니다' · 이동 없음 → '다시 시도' = 같은 인자 → 이동 3322ms
+     × UNKNOWN_VARIANT → role=alert (b) 문장 · 다시 시도 없음 · 이동 없음 · 버튼 상태 그대로 3352ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileCompare.test.tsx (7 tests | 1 failed) 21849ms
+   ❯ 비교 버튼 보이는 조건 (CMP-AC-U1) (2)
+     × 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위 5240ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileGenerateLoad.test.tsx (5 tests | 1 failed) 9408ms
+   ❯ 3안 만들기 — 본문 받기 로딩·실패 (P-S17 · S20) (2)
+     × 받는 동안 버튼 aria-busy '만드는 중…' · 카드 없음 · 잡 0 → 받은 뒤 3안 + 비교 표 5648ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/SectionRemove.test.tsx (9 tests | 1 failed) 21999ms
+   ❯ 삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19) (4)
+     × 확인 없이 삭제 → 알림 줄 'Services를 삭제했습니다'(status 글자) + 형제 버튼 '되돌리기' · 포커스 = 다음 줄 5522ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+stderr | src/pages/CompareBoardTarget.test.tsx > J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오 > ?new=1로 오면 기본값 = 새 프로젝트
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+
+stderr | src/pages/CompareBoardTarget.test.tsx > J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오 > ?new=1로 오면 기본값 = 새 프로젝트
+The current testing environment is not configured to support act(...)
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/CompareBoardTarget.test.tsx (7 tests | 2 failed) 28459ms
+   ❯ J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오 (4)
+     × '새 프로젝트'를 고르면 버튼 '새 프로젝트로 확정' → 새 계열 v1로 이동 + projectCreated 상태 (J-S11) 5512ms
+     × ?new=1로 오면 기본값 = 새 프로젝트 5976ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 28 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CompareBoardPage.test.tsx > 선택 (P-1·P-2·A-4) > AC-04: B 열 Hero를 누르면 선택됨, 초안 Hero 출처 B, 알림 'Hero 구성: B 선택'
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CompareBoardPage.test.tsx:87:3
+     85|
+     86| describe("선택 (P-1·P-2·A-4)", () => {
+     87|   it("AC-04: B 열 Hero를 누르면 선택됨, 초안 Hero 출처 B, 알림 'Hero 구성: B 선택'", asy…
+       |   ^
+     88|     await openBoard();
+     89|     await userEvent.click(pick("Hero 구성", "B 프리미엄 헤어살롱"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/28]⎯
+
+ FAIL  src/pages/CompareBoardPage.test.tsx > 선택 (P-1·P-2·A-4) > AC-06: 선택된 C를 다시 누르면 해제, 초안 Hero 'Hero를 먼저 고르세요', 확정 aria-disabled + 이유
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CompareBoardPage.test.tsx:104:3
+    102|   });
+    103|
+    104|   it("AC-06: 선택된 C를 다시 누르면 해제, 초안 Hero 'Hero를 먼저 고르세요', 확정 aria-disabl…
+       |   ^
+    105|     await openBoard(boardRepo(THREE, { hero: "ref-c", card: "ref-b" })…
+    106|     await userEvent.click(pick("Hero 구성", "C 동네 치과 클리닉"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/28]⎯
+
+ FAIL  src/pages/CompareBoardTarget.test.tsx > J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오 > '새 프로젝트'를 고르면 버튼 '새 프로젝트로 확정' → 새 계열 v1로 이동 + projectCreated 상태 (J-S11)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CompareBoardTarget.test.tsx:95:3
+     93|   });
+     94|
+     95|   it("'새 프로젝트'를 고르면 버튼 '새 프로젝트로 확정' → 새 계열 v1로 이동 + projectCreated 상태 …
+       |   ^
+     96|     const { board, confirmFirstThenChange, router } = await openBoard(…
+     97|     await confirmFirstThenChange();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/28]⎯
+
+ FAIL  src/pages/CompareBoardTarget.test.tsx > J-S10 확정된 프로젝트가 있으면 '확정할 곳' 라디오 > ?new=1로 오면 기본값 = 새 프로젝트
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/CompareBoardTarget.test.tsx:109:3
+    107|   });
+    108|
+    109|   it("?new=1로 오면 기본값 = 새 프로젝트", async () => {
+       |   ^
+    110|     const { confirmFirstThenChange } = await openBoard();
+    111|     await confirmFirstThenChange("/compare?new=1");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/28]⎯
+
+ FAIL  src/pages/ProfileAdjust.test.tsx > P-AC-13 범위 (P-S13 · 모션 L3) > 이어받은 값이 범위 밖 → 그 그룹에 Callout(cautionary = warning 톤) + '맞추기' → 저장 안 된 조정, 그 전에는 저장 aria-disabled + 이유
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileAdjust.test.tsx:125:3
+    123|   });
+    124|
+    125|   it("이어받은 값이 범위 밖 → 그 그룹에 Callout(cautionary = warning 톤) + '맞추기' → 저…
+       |   ^
+    126|     const { studio } = await openProfile(undefined, { range: NARROW, b…
+    127|     const callout = screen.getByText("지금 값 '촘촘'은 허용 범위 밖이라 저장할 수 없습니다"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 캡션 상시 · 버튼 aria-busy · 카드 자리 고정 · 단계 알림(시작·1/3·2/3·완료) · 카드 3 + 비교 표 · 다시 생성 없음
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileCandidates.test.tsx:75:3
+     73|
+     74| describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
+     75|   it("캡션 상시 · 버튼 aria-busy · 카드 자리 고정 · 단계 알림(시작·1/3·2/3·완료) · 카드 3 + …
+       |   ^
+     76|     const { region } = await open();
+     77|     expect(within(region).getByText(/^프로필 v1 · 라이브러리 1\.4 · seed [0-9a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileCandidates.test.tsx:104:3
+    102|   });
+    103|
+    104|   it("선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 ·…
+       |   ^
+    105|     const { region, router } = await open();
+    106|     const u = user();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 저장 안 된 조정이 있으면 3안 만들기 aria-disabled + 이유, 눌러도 요청 0 · 취소하면 다시 가능
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:133:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 실패 · 경쟁 (P-S20 · S21) > 부분 실패: role=alert 'C안을 만들지 못했습니다' + 'C안 다시 시도' → C만 다시 → 3안
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:148:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 실패 · 경쟁 (P-S20 · S21) > 전체 결정적 실패(라이브러리 없음): 원인 문장 + role=alert, 다시 시도 없음, 비교 표 없음
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:163:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 실패 · 경쟁 (P-S20 · S21) > 늦은 응답 차단: v2 요청 응답 전에 ?v=1로 옮기면 v1 화면에 v2 결과가 나타나지 않음 · 이전 버전 선택 복원
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:176:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 잡 조회 중 클릭 (findJob 지연 — HTTP 대비) > 진입 findJob 응답 전에 3안 만들기 → 늦은 findJob 결과를 버려 폴러 1개: 조회마다 한 안씩, 1/3·2/3 알림 유지
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:205:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 리뷰 회귀 (선택·조회 순서 · 멱등 요청) > 선택 응답이 폴링 종료 뒤에 와도 안 상태를 되돌리지 않음 — 3안 유지 + 선택 유지
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:223:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 리뷰 회귀 (선택·조회 순서 · 멱등 요청) > 잡 조회 중 누른 요청이 이미 끝난 잡을 돌려받으면 요청·완료 계측과 완료 알림을 다시 내지 않음
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:241:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 번들 분류 근거 (check-bundle-size /profile afterAction memoryGenerate) > 진입 findJob·폴링·선택은 계산 청크 요청 0 — '3안 만들기' 클릭에서만 1회, 기존 잡 재진입도 0
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:259:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5) > 성공 → startDoc(create) 문서 생성 · /studio/:projectId 이동 · state = 바뀐 쌍 목록(+ 알림 1문장)
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ pickB src/pages/ProfileCandidates.test.tsx:275:20
+ ❯ src/pages/ProfileCandidates.test.tsx:284:52
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5) > DOC_EXISTS → 이동 + '이미 편집 중인 문서를 엽니다 (A안 · 프로필 v1)' · 자동 restart 없음
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ pickB src/pages/ProfileCandidates.test.tsx:275:20
+ ❯ src/pages/ProfileCandidates.test.tsx:295:52
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5) > 실패(요청 실패) → role=alert '편집을 시작하지 못했습니다' · 이동 없음 → '다시 시도' = 같은 인자 → 이동
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ src/pages/ProfileCandidates.test.tsx:305:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/28]⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5) > UNKNOWN_VARIANT → role=alert (b) 문장 · 다시 시도 없음 · 이동 없음 · 버튼 상태 그대로
+TestingLibraryElementError: Unable to find role="heading" and name "디자인 프로필"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ open src/pages/ProfileCandidates.test.tsx:46:16
+     44|   const projects = () => Promise.resolve(projectRepository);
+     45|   const view = renderApp(path, createMemoryReferenceRepository(referen…
+     46|   await screen.findByRole("heading", { level: 1, name: "디자인 프로필" });
+       |                ^
+     47|   const region = await screen.findByRole("region", { name: "생성된 3안" });
+     48|   return { ...view, gen, store, region, projectRepository };
+ ❯ pickB src/pages/ProfileCandidates.test.tsx:275:20
+ ❯ src/pages/ProfileCandidates.test.tsx:325:60
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/28]⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileCompare.test.tsx:62:3
+     60|
+     61| describe("비교 버튼 보이는 조건 (CMP-AC-U1)", () => {
+     62|   it("잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위…
+       |   ^
+     63|     const { region } = await open();
+     64|     await within(region).findByRole("button", { name: /^3안 만들기 \(v\d+\…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/28]⎯
+
+ FAIL  src/pages/ProfileGenerateLoad.test.tsx > 3안 만들기 — 본문 받기 로딩·실패 (P-S17 · S20) > 받는 동안 버튼 aria-busy '만드는 중…' · 카드 없음 · 잡 0 → 받은 뒤 3안 + 비교 표
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfileGenerateLoad.test.tsx:80:3
+     78|
+     79| describe("3안 만들기 — 본문 받기 로딩·실패 (P-S17 · S20)", () => {
+     80|   it("받는 동안 버튼 aria-busy '만드는 중…' · 카드 없음 · 잡 0 → 받은 뒤 3안 + 비교 표", asy…
+       |   ^
+     81|     const { store, region } = await open();
+     82|     const settle = holdNextLoad();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/28]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > P-AC-01 보드 확정 → 프로필 화면 > 비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 필드가 모두 보인다
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfilePage.test.tsx:72:3
+     70|
+     71| describe("P-AC-01 보드 확정 → 프로필 화면", () => {
+     72|   it("비교 보드에서 확정하면 /profile/profile-1에 h1 '디자인 프로필' · 'v1 · 현재' · 3.1 …
+       |   ^
+     73|     const studio = createMemoryStudio({ catalog: FIXTURE_CATALOG, init…
+     74|     const { router } = renderApp("/compare", references(), studio.boar…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/28]⎯
+
+ FAIL  src/pages/ProfilePage.test.tsx > P-AC-09 버전 비교 (P-S08) > '현재와 비교' → 표(caption 'v1과 v2 비교')에 포커스, 바뀐 줄 '바뀜' · 닫으면 비교 버튼으로 포커스
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/pages/ProfilePage.test.tsx:219:3
+    217|
+    218| describe("P-AC-09 버전 비교 (P-S08)", () => {
+    219|   it("'현재와 비교' → 표(caption 'v1과 v2 비교')에 포커스, 바뀐 줄 '바뀜' · 닫으면 비교 버튼으로 …
+       |   ^
+    220|     const { router } = await openProfile("/profile/profile-1", 2);
+    221|     await h1();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/28]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) > 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0
+TestingLibraryElementError: Unable to find role="heading" and name "동네 치과 클리닉 프로젝트"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m>[39m
+            [0m불러오는 중…[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m>[39m
+            [0m불러오는 중…[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ Module.openStudio src/features/studio/testing/openStudio.tsx:74:16
+     72|   document.title = "";
+     73|   act(() => void router.navigate("/studio/project-1"));
+     74|   await screen.findByRole("heading", { level: 1, name: STUDIO_PROJECT.…
+       |                ^
+     75|   // h1은 act 밖 커밋으로 나타난다 — 그 커밋의 effect(문서 제목 · 캔버스 message 수신 등록)가 돌기…
+     76|   // 같은 커밋의 effect는 함께 돌므로 문서 제목이 바뀔 때까지 기다린 뒤 붙인다
+ ❯ open src/components/studio/ExportFlow.test.tsx:52:24
+ ❯ src/components/studio/ExportFlow.test.tsx:66:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/28]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) > 폴백만 → 구조 미리보기 이유 1개 · '첫 구조 미리보기 섹션으로 이동' → 그 섹션 선택 + 편집 패널 머리 포커스
+TestingLibraryElementError: Unable to find role="heading" and name "동네 치과 클리닉 프로젝트"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m>[39m
+            [0m불러오는 중…[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex max-w-(--layout-max-width) px-4 py-16 md:px-7"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"ds-body2 text-label-alternative"[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m>[39m
+            [0m불러오는 중…[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ Module.openStudio src/features/studio/testing/openStudio.tsx:74:16
+     72|   document.title = "";
+     73|   act(() => void router.navigate("/studio/project-1"));
+     74|   await screen.findByRole("heading", { level: 1, name: STUDIO_PROJECT.…
+       |                ^
+     75|   // h1은 act 밖 커밋으로 나타난다 — 그 커밋의 effect(문서 제목 · 캔버스 message 수신 등록)가 돌기…
+     76|   // 같은 커밋의 effect는 함께 돌므로 문서 제목이 바뀔 때까지 기다린 뒤 붙인다
+ ❯ open src/components/studio/ExportFlow.test.tsx:52:24
+ ❯ src/components/studio/ExportFlow.test.tsx:82:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/28]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) > '첫 차단으로 이동' → 첫 차단 줄 이동과 같은 곳(대체텍스트 → 그 섹션 편집 패널 머리)
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/studio/ExportFlow.test.tsx:89:3
+     87|   });
+     88|
+     89|   it("'첫 차단으로 이동' → 첫 차단 줄 이동과 같은 곳(대체텍스트 → 그 섹션 편집 패널 머리)", async () …
+       |   ^
+     90|     await open(withSections(clean(), clean().sections.map((s) => (s.ty…
+     91|     expect(html()).toHaveAttribute("aria-describedby", "export-reason-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/28]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절) > 통과 → 바로 requestExport 1회(저장된 revision) · GENERATOR_UNAVAILABLE = 형식별 informative 문구(alert 아님) · 계측 · 스냅샷 이벤트 0
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/studio/ExportFlow.test.tsx:99:3
+     97|
+     98| describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28·29·30 · 9절…
+     99|   it("통과 → 바로 requestExport 1회(저장된 revision) · GENERATOR_UNAVAILABLE =…
+       |   ^
+    100|     const { requestExport } = await open(clean());
+    101|     const { events, stop } = listen();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/28]⎯
+
+ FAIL  src/components/studio/SectionRemove.test.tsx > 삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19) > 확인 없이 삭제 → 알림 줄 'Services를 삭제했습니다'(status 글자) + 형제 버튼 '되돌리기' · 포커스 = 다음 줄
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/studio/SectionRemove.test.tsx:38:3
+     36|
+     37| describe("삭제 — 즉시 · 알림 줄 · 포커스 (E-AC-19)", () => {
+     38|   it("확인 없이 삭제 → 알림 줄 'Services를 삭제했습니다'(status 글자) + 형제 버튼 '되돌리기' · 포…
+       |   ^
+     39|     await openStudio();
+     40|     pick("Services");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/28]⎯
+
+
+ Test Files  9 failed | 207 passed (216)
+      Tests  28 failed | 1848 passed (1876)
+   Start at  22:17:13
+   Duration  152.67s (tests 51%, environment 25%, transform 11%, setup 7%, import 6%)
+
+    Isolate  216 workers spawned · ~1.76s startup each (spawn + environment, per file)
+             at least ~40.52s faster with isolate: false — reuses workers across files instead of one per file
+

@@ -10,8 +10,10 @@
   - headless 정상 rAF(`logs/probe-headless-x1.txt`) 5/5 첫 rects부터 1280 → 재현 안 됨(정상 환경에선 드묾).
   - 한계(L3): QA의 10492를 만든 정확한 중간 뷰포트 상태(폭 0×높이>0 등)는 직접 관측 못 함.
 - RED 전 예측: 새 테스트 **3개**(pngCapture.test.ts) — ① 좁은 폭 rects 뒤 최종 rects → 높이 = 최종(RED) ② 좁은 폭만 오면 RENDER_TIMEOUT(RED: 지금은 좁은 높이로 그림) ③ 상한 넘는 문서는 스크롤바로 폭이 줄어도 CANVAS_TOO_TALL(지금도 GREEN — 실패 정책 고정). 픽스처 fakeChannel 섹션 폭 = 열린 폭(rem × 루트 px)으로 맞춤(기존 단언 변경 0). 전체 vitest 1873 → 1876 예상.
-- [ ] 2. (a)/(b)면 RED 전 새 테스트 수 예측 커밋 → RED → 최소 수정 GREEN
+- [x] 2. 예측 커밋 bf32bf9 → RED(예측대로 2 실패·1 통과, 21개) → 수정 7f90b94 GREEN 21/21
+  - 수정: `pngCapture.ts` settled = 바닥 > 0 + 가장 넓은 섹션 폭 = 캡처 폭(±1px) · 바닥 > 상한이면 폭 무관(CANVAS_TOO_TALL 유지). 정적 HTML·렌더 문서 0줄 변경.
+  - 결정적 관측(L2, `logs/capture-ego.txt` 5회차): rects `[폭 0, 바닥 0] → [폭 0, 바닥 8314] → [1280, 3479]` — 옛 조건이면 8314로 그렸을 보고를 수정본은 건너뛰고 3479로 그림.
 - [ ] 3. 마감 게이트: 표적·가드·typecheck·lint·build, 전체 vitest exit0
-- [ ] 4. headless PNG 5회 높이 동일
+- [x] 4. PNG 5회 높이 동일 — headless 5/5 · Ego Lite 5/5 모두 1280×3479, SHA 7dab0a8e54e8 (`logs/capture-headless-x1.txt`, `logs/capture-ego.txt`)
 - [ ] 5. Codex review --scope branch --base a121f31 (≤2라운드)
 - [ ] 6. REPORT.md · 서버 종료(lsof 0)

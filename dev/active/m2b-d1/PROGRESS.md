@@ -13,7 +13,7 @@
 - [x] 2. 예측 커밋 bf32bf9 → RED(예측대로 2 실패·1 통과, 21개) → 수정 7f90b94 GREEN 21/21
   - 수정: `pngCapture.ts` settled = 바닥 > 0 + 가장 넓은 섹션 폭 = 캡처 폭(±1px) · 바닥 > 상한이면 폭 무관(CANVAS_TOO_TALL 유지). 정적 HTML·렌더 문서 0줄 변경.
   - 결정적 관측(L2, `logs/capture-ego.txt` 5회차): rects `[폭 0, 바닥 0] → [폭 0, 바닥 8314] → [1280, 3479]` — 옛 조건이면 8314로 그렸을 보고를 수정본은 건너뛰고 3479로 그림.
-- [ ] 3. 마감 게이트: 표적·가드·typecheck·lint·build, 전체 vitest exit0
+- [x] 3. 마감 게이트: typecheck 0 · lint 0 · build 0(/studio 127.36 · 렌더 JS 83.03) · 전체 vitest 3회차 exit0 1876/1876(1·2회차 부하 타임아웃, 실패 파일 단독 통과)
 - [x] 4. PNG 5회 높이 동일 — headless 5/5 · Ego Lite 5/5 모두 1280×3479, SHA 7dab0a8e54e8 (`logs/capture-headless-x1.txt`, `logs/capture-ego.txt`)
-- [ ] 5. Codex review --scope branch --base a121f31 (≤2라운드)
-- [ ] 6. REPORT.md · 서버 종료(lsof 0)
+- [x] 5. Codex review --scope branch --base a121f31 — 1라운드 지적 0 (`logs/codex-r1.txt`)
+- [x] 6. REPORT.md · 서버 종료(자기 PID 55129 cwd 확인 후 kill · lsof 4337/4339 0줄 · headless Chrome 0)

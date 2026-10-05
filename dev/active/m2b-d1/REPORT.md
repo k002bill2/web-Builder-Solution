@@ -53,7 +53,7 @@
 - 앞선 2회 전체 실행은 부하(load avg 40~52/10코어, 다른 세션의 main 저장소 vitest 동시 실행)로 무관 페이지 테스트 5초 타임아웃(28·5건) — 실패 5파일 단독 37/37 통과(`logs/vitest-2-failed-isolated.txt`). 세 번째 기본 실행 exit 0. 코드 변경은 그 사이 0.
 
 ## Codex
-- (아래 갱신)
+- 1라운드 `codex-companion review --scope branch --base a121f31` 실제 완료(`logs/codex-r1.txt`): **지적 0건** — "수정이 필요한 구체적인 결함을 발견하지 못했습니다". Codex 쪽 표적 테스트 실행은 읽기 전용 샌드박스 EPERM으로 못 함(위 게이트는 이쪽에서 실행). 지적이 없어 2라운드 생략.
 
 ## 책임 / 환경
 - 책임: 제품 코드(PNG settled 판정). 렌더 문서의 보고 시점은 설계대로(ResizeObserver로 최종값을 다시 보냄) — 받는 쪽이 폭을 확인하지 않은 것이 결함.

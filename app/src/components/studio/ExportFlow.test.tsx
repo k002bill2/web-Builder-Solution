@@ -11,6 +11,22 @@ import { openStudio, restoreViewport } from "../../features/studio/testing/openS
 
 afterEach(restoreViewport);
 
+/**
+ * M2B-2c 이관: 이 파일의 폴백 예시 = 샘플의 cta-band/banner(30/30 전 미구현). 실렌더가 된 뒤에도 같은 문서·같은 단언을 유지하려고
+ * 부모 렌더러 목록에서 그 키만 뺀 목록을 주입한다(편집기 폴백 판정 = RENDERED_VARIANTS). 저장·편집 경로는 엔진에 없는 변형을 쓸 수 없다
+ */
+const UNRENDERED = vi.hoisted(() => "cta-band/banner");
+vi.mock("../../features/studio/renderedVariants", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../features/studio/renderedVariants")>();
+  return { RENDERED_VARIANTS: Object.freeze(actual.RENDERED_VARIANTS.filter((key) => key !== UNRENDERED)) };
+});
+/** 이관 전제 — 주입 목록에만 없고 실제 목록에는 있다 */
+const expectInjected = async () => {
+  const actual = (await vi.importActual<typeof import("../../features/studio/renderedVariants")>("../../features/studio/renderedVariants")).RENDERED_VARIANTS;
+  expect(actual).toContain(UNRENDERED);
+  expect((await import("../../features/studio/renderedVariants")).RENDERED_VARIANTS).not.toContain(UNRENDERED);
+};
+
 /** 내보내기 청크 로더를 감싸 실패를 주입한다(기본 = 실제 import) — M2A-3a Codex P2-1 */
 const flowLoad = vi.hoisted(() => ({ failures: 0 }));
 vi.mock("../../features/studio/exportFlowLoader", async (importOriginal) => {
@@ -46,6 +62,7 @@ function listen() {
 
 describe("버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18)", () => {
   it("게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0", async () => {
+    await expectInjected();
     const { requestExport } = await open(withSections(passingDoc(), passingDoc().sections.map((s) => (s.type === "hero" ? withPhoto(section("hero", "fullbleed-left", "s-hero")) : s))));
     for (const button of [zip(), html()]) {
       expect(button).toHaveAttribute("aria-disabled", "true");
@@ -61,6 +78,7 @@ describe("버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 
   });
 
   it("폴백만 → 구조 미리보기 이유 1개 · '첫 구조 미리보기 섹션으로 이동' → 그 섹션 선택 + 편집 패널 머리 포커스", async () => {
+    await expectInjected();
     await open(passingDoc());
     expect(html()).toHaveAttribute("aria-describedby", "export-reason-fallback");
     act(() => void fireEvent.click(within(gateRegion()).getByRole("button", { name: "첫 구조 미리보기 섹션으로 이동" })));

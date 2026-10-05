@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { ImageSlotValue } from "../engine/contracts/pageDoc";
-import { drawDoc, heroDoc, patch } from "../render/testing/drawKit";
+import { drawDoc, heroDoc, patch, withUnknownCta } from "../render/testing/drawKit";
 
 /** hero/split (M2B-1a · SPEC-BOUND B-4 · KB-AC-10~12) — [U] 마크업. 같은 행 배치·비율 실측은 브라우저 */
 const ID = "11111111-1111-4111-8111-111111111111";
@@ -10,13 +10,13 @@ const css = () => readFileSync("src/kit/kit.css", "utf8");
 
 describe("hero/split (B-4)", () => {
   it("킷 등록 · 구조: section 루트 1 · aria-labelledby = h1 id · 제목 → 부제 → CTA(첫 contact 앵커) → figure(미디어) DOM 순서 · 폴백 표식 0 (KB-AC-33)", () => {
-    const c = drawDoc(heroDoc("split"));
+    const c = drawDoc(withUnknownCta(heroDoc("split"))); // M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant
     expect(c.querySelectorAll('[data-section="hero/split"]')).toHaveLength(1);
     const h = hero(c);
     expect(h.tagName).toBe("SECTION");
     expect(h).toHaveAttribute("data-kit");
     expect(h.querySelector("[data-kit-marker]")).toBeNull();
-    expect(c.querySelectorAll('[data-fallback="true"]')).toHaveLength(1); // cta-band만
+    expect(c.querySelectorAll('[data-fallback="true"]')).toHaveLength(1); // cta-band 자리(no-such-variant)만
     const h1 = h.querySelector("h1")!;
     expect(h.getAttribute("aria-labelledby")).toBe(h1.id);
     expect(h.querySelector('a[data-slot="cta"]')).toHaveAttribute("href", "#s-s-contact");

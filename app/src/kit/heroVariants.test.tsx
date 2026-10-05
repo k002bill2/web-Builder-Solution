@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { ImageSlotValue, PageDoc } from "../engine/contracts/pageDoc";
 import { STATIC_MENU_SCRIPT, buildStaticHtml } from "../features/studio/staticHtml/staticMarkup";
-import { drawDoc, heroDoc, patch, without } from "../render/testing/drawKit";
+import { drawDoc, heroDoc, patch, withUnknownCta, without } from "../render/testing/drawKit";
 import { KIT_REGISTRY } from "./registry";
 
 /** hero 5변형 공통 (M2B-1a · SPEC-BOUND 4.1 KB-AC-30·32·33·35 hero 몫 · K-AC-04·09) — [U]·[G]. 계산 스타일 일치는 브라우저 */
@@ -25,10 +25,10 @@ const staticPage = (doc: PageDoc) => {
 };
 
 describe("hero 5변형 공통", () => {
-  it("KB-AC-33: KIT_REGISTRY에 5쌍 등록 · 문서마다 data-section 루트 1 · 폴백 표식 0(cta-band 폴백만) · h1 = 1 · hero는 main 안", () => {
+  it("KB-AC-33: KIT_REGISTRY에 5쌍 등록 · 문서마다 data-section 루트 1 · 폴백 표식 0(cta-band 자리 no-such-variant 폴백만) · h1 = 1 · hero는 main 안", () => {
     for (const v of VARIANTS) {
       expect(KIT_REGISTRY[`hero/${v}`], v).toBeDefined();
-      const site = drawDoc(heroDoc(v)).querySelector("[data-site-root]")!;
+      const site = drawDoc(withUnknownCta(heroDoc(v))).querySelector("[data-site-root]")!; // M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant
       expect(site.querySelectorAll(`[data-section="hero/${v}"]`), v).toHaveLength(1);
       expect(site.querySelector(`[data-section="hero/${v}"] [data-kit-marker]`), v).toBeNull();
       expect(site.querySelectorAll("[data-fallback]"), v).toHaveLength(1);

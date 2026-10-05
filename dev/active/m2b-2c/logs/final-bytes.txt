@@ -1,0 +1,52 @@
+5b20b21
+(작업 트리 = P5 미커밋 구현 — cta-band/banner + renderedVariants 엔진 파생 ★A)
+[bundle] 공통 JS (gzip, 참고): 89344.00KB
+  - assets/index-BD4qRIq8.js 86064.00KB
+  - assets/react-DB-4Zxce.js 3280.00KB
+[bundle] /catalog 첫 화면 합계: 99654.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 102038.00KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97001.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99385.00KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98836.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 121715.00KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2893.00KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2238.00KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1759.00KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +8036.00KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +6608.00KB (2개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98836.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 121715.00KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2893.00KB (5개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2238.00KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1759.00KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +8036.00KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +6608.00KB (2개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99611.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 118672.00KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +7660.00KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5489.00KB (2개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryProjectRepository.ts: +2015.00KB (3개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 94017.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 100298.00KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91776.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 127339.00KB / 예산 128KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +1941.00KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1186.00KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1123.00KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +368.00KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +1339.00KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ExportAfter.tsx: +1675.00KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +4812.00KB (3개 파일, 예산 판정 밖)
+[bundle] 렌더 문서(render.html) JS 합계: 82280.00KB / 예산 90KB · CSS 합계: 7818.00KB / 예산 30KB
+  - assets/render-suicBnsf.js 82280.00KB
+  - assets/render-CioePWLA.css 7818.00KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)
+[bundle] 예산 검사 실패 — /catalog: 첫 화면 99654.00KB > 100KB
+[bundle] 예산 검사 실패 — /catalog: 진입 직후 자동 로드 포함 102038.00KB > 125KB
+[bundle] 예산 검사 실패 — /references/:id: 첫 화면 97001.00KB > 100KB
+[bundle] 예산 검사 실패 — /references/:id: 진입 직후 자동 로드 포함 99385.00KB > 125KB
+[bundle] 예산 검사 실패 — /compare: 첫 화면 98836.00KB > 100KB
+[bundle] 예산 검사 실패 — /compare: 진입 직후 자동 로드 포함 121715.00KB > 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 첫 화면 98836.00KB > 100KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 121715.00KB > 125KB
+[bundle] 예산 검사 실패 — /profile: 첫 화면 99611.00KB > 100KB
+[bundle] 예산 검사 실패 — /profile: 진입 직후 자동 로드 포함 118672.00KB > 125KB
+[bundle] 예산 검사 실패 — /projects: 첫 화면 94017.00KB > 100KB
+[bundle] 예산 검사 실패 — /projects: 진입 직후 자동 로드 포함 100298.00KB > 125KB
+[bundle] 예산 검사 실패 — /studio/:projectId: 첫 화면 91776.00KB > 100KB
+[bundle] 예산 검사 실패 — /studio/:projectId: 진입 직후 자동 로드 포함 127339.00KB > 128KB
+[bundle] 예산 검사 실패 — 렌더 문서: JS 82280.00KB > 90KB
+[bundle] 예산 검사 실패 — 렌더 문서: CSS 7818.00KB > 30KB

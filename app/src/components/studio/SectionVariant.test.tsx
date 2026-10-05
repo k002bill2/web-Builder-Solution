@@ -43,8 +43,9 @@ describe("변형 교체 (E-AC-20)", () => {
     expect(screen.queryByText(/cards-3|\blist\b/)).toBeNull();
   });
 
-  // M2B-2a 이관: services 4변형이 모두 렌더러를 가져(about/text · services/list · cards-2 · cards-masonry 실렌더) 미구현 예시를 contact/booking(2c 대상)으로 옮긴다 — 단언 수·접미어 규칙은 그대로
-  it("렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(문의 폼 · services 4변형)은 없음 · 머리 '변형:'은 그대로", async () => {
+  // M2B-2a 이관: services 4변형이 모두 렌더러를 가져 미구현 예시를 contact/booking(2c 대상)으로 옮겼다.
+  // M2B-2c 이관: contact/booking도 실렌더(30/30) → 접미어 단언은 부모 목록 주입으로 SectionVariantPreview.test.tsx에 옮기고, 여기서는 실제 목록에서 접미어 0을 단언한다
+  it("모든 변형이 렌더러를 가짐(30/30) — services 4변형 · 문의 폼 · 예약 폼 모두 ' · 구조 미리보기' 접미어 0 · 머리 '변형:'은 그대로", async () => {
     await openStudio();
     pickRow("Services");
     const services = await openVariants();
@@ -52,9 +53,9 @@ describe("변형 교체 (E-AC-20)", () => {
     pickRow("Contact");
     const list = await openVariants();
     expect(list.getByRole("radio", { name: "문의 폼" })).toBeInTheDocument();
-    expect(list.getByRole("radio", { name: "예약 폼 · 구조 미리보기" })).toBeInTheDocument();
+    expect(list.getByRole("radio", { name: "예약 폼" })).toBeInTheDocument();
     const labels = list.getAllByRole("radio").map((r) => document.getElementById(r.getAttribute("aria-labelledby")!)!.textContent!);
-    expect(labels.filter((label) => label.endsWith(" · 구조 미리보기"))).toHaveLength(1);
+    expect(labels.filter((label) => label.endsWith(" · 구조 미리보기"))).toHaveLength(0);
     expect(editPanel().getByText("변형: 문의 폼")).toBeInTheDocument();
   });
 

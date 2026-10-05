@@ -6,6 +6,7 @@
 import { isTerminal } from "../domain/generation";
 import type { PageDoc, SectionInstance } from "../engine/contracts/pageDoc";
 import { hashDoc } from "../engine/ops/hash";
+import { getSectionDefinition } from "../engine/sections/registry";
 import { withAlt } from "../engine/testing/gateKit";
 import { section } from "../engine/testing/sampleDoc";
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
@@ -15,6 +16,16 @@ import { STATIC_HTML_SLOT } from "./memoryDocBook";
 import { createMemoryProjectRepository, type ProjectCall } from "./memoryProjectRepository";
 import { ProjectRepositoryError, type ExportGenerator, type ExportGenerators, type ProjectRepository } from "./projectRepository";
 import { createStudioStore } from "./studioStore";
+
+/**
+ * M2B-2c 이관: 폴백 예시 pricing/tiers-2 · testimonials/quotes-2가 실렌더가 되고(30/30 = 엔진 정의 전부), 저장(validatePageDoc)은 모르는 변형을 거부하므로
+ * 7단계(UNRENDERED_SECTIONS)는 실데이터로 도달할 수 없다 → 부모 렌더러 목록에서 두 키만 뺀 목록을 주입해 같은 판정 경로·같은 단언을 유지한다(아래 "이관 전제" it).
+ */
+const UNRENDERED = vi.hoisted(() => ["pricing/tiers-2", "testimonials/quotes-2"]);
+vi.mock("../features/studio/renderedVariants", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../features/studio/renderedVariants")>();
+  return { RENDERED_VARIANTS: Object.freeze(actual.RENDERED_VARIANTS.filter((key) => !UNRENDERED.includes(key))) };
+});
 
 type Hooks = { readonly fail?: (c: ProjectCall) => Error | undefined; readonly generators?: ExportGenerators };
 
@@ -61,6 +72,15 @@ const codeOf = (p: Promise<unknown>) => p.then(() => "ok", (e: { code?: string }
 const exportSnapshots = async (repo: ProjectRepository<PageDoc>) => (await repo.listSnapshots("project-1")).filter((s) => s.kind === "auto" && s.reason === "export");
 
 describe("requestExport 판정 순서 (8.3.2 · E-AC-44 · E-AC-48)", () => {
+  it("이관 전제 — 주입 목록 = 실제 목록 − 폴백 예시 2키 · 실제 목록에는 실렌더 키가 있음 · 두 키는 엔진 정의 변형(저장 검증 통과)", async () => {
+    const injected = (await import("../features/studio/renderedVariants")).RENDERED_VARIANTS;
+    const actual = (await vi.importActual<typeof import("../features/studio/renderedVariants")>("../features/studio/renderedVariants")).RENDERED_VARIANTS;
+    expect(UNRENDERED.filter((key) => injected.includes(key))).toEqual([]);
+    expect(UNRENDERED.filter((key) => actual.includes(key))).toEqual(UNRENDERED);
+    expect(injected).toEqual(actual.filter((key) => !UNRENDERED.includes(key)));
+    for (const s of FALLBACKS) expect(getSectionDefinition(s.type, s.variant)).toBeDefined();
+  });
+
   it("1 모양 — 형식·revision이 아니면 SCHEMA_INVALID", async () => {
     const { repo, save } = await setup({ generators: { "static-html": fake } });
     const doc = await save(RENDERED);

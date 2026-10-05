@@ -3,15 +3,15 @@ import { createElement } from "react";
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
 import { PageDocument } from "../../../render/PageDocument";
 import type { ParentMessage } from "../../../render/protocol";
-import { drawDoc, without } from "../../../render/testing/drawKit";
+import { drawDoc, withUnknownCta, without } from "../../../render/testing/drawKit";
 import { EDITOR_EVENT, type EditorEvent } from "../editorEvents";
 import type { RenderChannel } from "../staticHtml/staticHtml";
 import { MAX_CANVAS_HEIGHT, PngError, buildCaptureSvg, capturePng, pngFileName, reportFailure, savePng, svgDataUrl, type PngDeps, type PngRequest } from "./pngCapture";
 
 const KIT = { palette: { primary: "#111111", surface: "#eeeeee", ink: "#000000", muted: "#555555", bg: "#ffffff" }, card: { tone: "light", style: "flat" }, type: { family: "system-ui", headingWeight: 700, bodyWeight: 400, scale: 1.2 }, space: { grid: 8, sectionGap: 64, density: "comfortable" }, mediaRatio: "4:5" } as const;
 const CSS = '[data-kit-marker="fallback"]{color:red}a>b{x:1}.c::after{content:"<&>"}';
-/** 폴백 1개(CTA Band) 포함 사이트 루트 — 렌더 문서 serialize가 보내는 모양 */
-const withFallback = () => drawDoc(sampleDoc()).querySelector("[data-site-root]")!.outerHTML;
+/** 폴백 1개(CTA Band 자리 — M2B-2c 이관: no-such-variant) 포함 사이트 루트 — 렌더 문서 serialize가 보내는 모양 */
+const withFallback = () => drawDoc(withUnknownCta()).querySelector("[data-site-root]")!.outerHTML;
 const noFallback = () => drawDoc(without(sampleDoc(), "cta-band")).querySelector("[data-site-root]")!.outerHTML;
 const parseSvg = (svg: string) => new DOMParser().parseFromString(svg, "image/svg+xml");
 const REQUEST: PngRequest = { doc: sampleDoc(), kitTokens: KIT, view: "mobile", name: "  강남 카페/리브랜딩:2호점  ", revision: 12 };

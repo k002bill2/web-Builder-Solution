@@ -1,0 +1,195 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app
+
+ ❯ src/kit/CtaBandBanner.test.tsx (4 tests | 4 failed) 220ms
+   ❯ cta-band/banner (B1-12) (4)
+     × KD-AC-21 · KD-AC-08 [U]: 킷 · 면 표시 primary(톤 base·alt 둘 다 — 톤 무관) · h2 1 · h3 0 · 순서 제목 → 본문 → CTA · CTA = a, 첫 contact 앵커 101ms
+     × KD-AC-21 [U]: CTA 대상 = 첫 contact(form·booking 무관) → 없으면 footer → 없으면 a 0 + 버튼 모양 span(포커스 0) · href='#' 0 29ms
+     × KD-AC-03 · KD-AC-04 [U]: 글자 = 슬롯 그대로(상한 40 · 120 · 16자) · body 빈 값 → p 0 · cta 빈 값 → CTA 0(글만 남은 띠) · 빈 p·a·span 0 14ms
+     × KD-AC-21 · 05 · 07 [G]: 띠 면 primary · 글자 on-primary · CTA 뒤집기(on-primary 면 · primary 글자 · hit-min · 버튼 radius) · 링 on-primary + 간격 primary · 위아래 section-gap-narrow(md 이상도) · md 이상 한 줄 · md 미만 CTA 전체 폭 · ink·bg·muted 글자 0 · 재배치 0 75ms
+ ❯ src/components/studio/StructureCanvas.test.tsx (17 tests | 1 failed) 608ms
+   ❯ 캔버스 이름 · 캡션 3상태 (m2a 3.4 · K-AC-33 · r4.9) (2)
+     × 캡션 = 문서 상태: 킷 토큰 있음 + cta-band 폴백 → '일부' · 킷 토큰 없음 → F0 · 라이브 영역 아님 7ms
+Not implemented: Window's scrollTo() method
+ ❯ src/test/kitRegistryEngine.test.ts (2 tests | 2 failed) 40ms
+   ❯ KIT_REGISTRY = 엔진 SECTION_DEFINITIONS (30/30) (2)
+     × 정확 집합 30쌍 · 엔진 정의 중복 0 · 킷 레지스트리 중복 0 5ms
+     × unknown 방어: no-such-variant → 부모 목록 밖 · kitFor undefined · 렌더 문서 폴백(표식 1) · 캔버스 캡션 '일부' 34ms
+ ❯ src/components/studio/PngSave.test.tsx (5 tests | 1 failed) 154ms
+   ❯ 편집기 안 PNG 묶음 (K-AC-19 · E-AC-50 — 게이트 차단·폴백과 무관 · requestExport 0) (1)
+     × 게이트 차단 + 폴백 → 내보내기 두 버튼은 막혀도 PNG는 열림 · aria-describedby에 내보내기 이유 id 0 · 누르면 지금 문서·폭·이름·revision으로 캡처 · requestExport 0 12ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (15 tests | 2 failed) 4324ms
+   ❯ 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) (3)
+     × 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0 6ms
+     × 폴백만 → 구조 미리보기 이유 1개 · '첫 구조 미리보기 섹션으로 이동' → 그 섹션 선택 + 편집 패널 머리 포커스 3ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/CtaBandBanner.test.tsx > cta-band/banner (B1-12) > KD-AC-21 · KD-AC-08 [U]: 킷 · 면 표시 primary(톤 base·alt 둘 다 — 톤 무관) · h2 1 · h3 0 · 순서 제목 → 본문 → CTA · CTA = a, 첫 contact 앵커
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/CtaBandBanner.test.tsx:24:17
+     22|     for (const tone of ["base", "alt"] as const) {
+     23|       const s = band(drawDoc(ctaDoc({}, tone)));
+     24|       expect(s).toHaveAttribute("data-kit");
+       |                 ^
+     25|       expect(s).toHaveAttribute("data-surface", "primary");
+     26|       expect(s).toHaveAttribute("data-tone", tone);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/kit/CtaBandBanner.test.tsx > cta-band/banner (B1-12) > KD-AC-21 [U]: CTA 대상 = 첫 contact(form·booking 무관) → 없으면 footer → 없으면 a 0 + 버튼 모양 span(포커스 0) · href='#' 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ ctaOf src/kit/CtaBandBanner.test.tsx:12:42
+     10|   );
+     11| const band = (c: HTMLElement) => c.querySelector<HTMLElement>('[data-s…
+     12| const ctaOf = (c: HTMLElement) => band(c).querySelector<HTMLElement>('…
+       |                                          ^
+     13| const css = () => readFileSync("src/kit/kit.css", "utf8");
+     14| const cssSection = (marker: string) => {
+ ❯ src/kit/CtaBandBanner.test.tsx:38:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/kit/CtaBandBanner.test.tsx > cta-band/banner (B1-12) > KD-AC-03 · KD-AC-04 [U]: 글자 = 슬롯 그대로(상한 40 · 120 · 16자) · body 빈 값 → p 0 · cta 빈 값 → CTA 0(글만 남은 띠) · 빈 p·a·span 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/CtaBandBanner.test.tsx:52:63
+     50|     const texts = { heading: "가".repeat(40), body: "나".repeat(120), ct…
+     51|     const s = band(drawDoc(ctaDoc(texts)));
+     52|     for (const [key, text] of Object.entries(texts)) expect(s.querySel…
+       |                                                               ^
+     53|     const empty = band(drawDoc(ctaDoc({ body: " ", cta: "" })));
+     54|     expect(empty.querySelectorAll('[data-slot="body"], [data-slot="cta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/kit/CtaBandBanner.test.tsx > cta-band/banner (B1-12) > KD-AC-21 · 05 · 07 [G]: 띠 면 primary · 글자 on-primary · CTA 뒤집기(on-primary 면 · primary 글자 · hit-min · 버튼 radius) · 링 on-primary + 간격 primary · 위아래 section-gap-narrow(md 이상도) · md 이상 한 줄 · md 미만 CTA 전체 폭 · ink·bg·muted 글자 0 · 재배치 0
+AssertionError: /* cta-band/banner: expected -1 to be greater than -1
+ ❯ cssSection src/kit/CtaBandBanner.test.tsx:16:22
+     14| const cssSection = (marker: string) => {
+     15|   const at = css().indexOf(marker);
+     16|   expect(at, marker).toBeGreaterThan(-1);
+       |                      ^
+     17|   return css().slice(at, css().indexOf("\n}\n", at));
+     18| };
+ ❯ src/kit/CtaBandBanner.test.tsx:60:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/test/kitRegistryEngine.test.ts > KIT_REGISTRY = 엔진 SECTION_DEFINITIONS (30/30) > 정확 집합 30쌍 · 엔진 정의 중복 0 · 킷 레지스트리 중복 0
+AssertionError: expected [ 'header/sticky-right-cta', …(28) ] to have a length of 30 but got 29
+
+- Expected
++ Received
+
+- 30
++ 29
+
+ ❯ src/test/kitRegistryEngine.test.ts:17:39
+     15|     expect(engine).toHaveLength(30);
+     16|     expect(new Set(engine).size).toBe(30);
+     17|     expect(Object.keys(KIT_REGISTRY)).toHaveLength(30);
+       |                                       ^
+     18|     expect(Object.keys(KIT_REGISTRY).sort()).toEqual([...engine].sort(…
+     19|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/test/kitRegistryEngine.test.ts > KIT_REGISTRY = 엔진 SECTION_DEFINITIONS (30/30) > unknown 방어: no-such-variant → 부모 목록 밖 · kitFor undefined · 렌더 문서 폴백(표식 1) · 캔버스 캡션 '일부'
+AssertionError: expected '실제 렌더 (F1 · 일부) — 섹션 8개 중 1개는 아직 구조 미…' to be '실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미…' // Object.is equality
+
+Expected: "실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미지는 고른 이미지 또는 자체 그래픽이고, 글꼴·모션은 아직 기본 설정입니다."
+Received: "실제 렌더 (F1 · 일부) — 섹션 8개 중 1개는 아직 구조 미리보기입니다. 이 섹션이 있으면 HTML·zip으로 내보낼 수 없습니다."
+
+ ❯ src/test/kitRegistryEngine.test.ts:31:46
+     29|     expect(c.querySelector('[data-fallback="true"]')!.closest("[data-i…
+     30|     expect(canvasCaption(doc, true)).toBe(CANVAS_CAPTIONS.partial(8, 1…
+     31|     expect(canvasCaption(sampleDoc(), true)).toBe(CANVAS_CAPTIONS.f1);
+       |                                              ^
+     32|   });
+     33| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) > 게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0
+AssertionError: expected [ 'header/sticky-right-cta', …(28) ] to include 'cta-band/banner'
+ ❯ expectInjected src/components/studio/ExportFlow.test.tsx:26:18
+     24| const expectInjected = async () => {
+     25|   const actual = (await vi.importActual<typeof import("../../features/…
+     26|   expect(actual).toContain(UNRENDERED);
+       |                  ^
+     27|   expect((await import("../../features/studio/renderedVariants")).REND…
+     28| };
+ ❯ src/components/studio/ExportFlow.test.tsx:65:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18) > 폴백만 → 구조 미리보기 이유 1개 · '첫 구조 미리보기 섹션으로 이동' → 그 섹션 선택 + 편집 패널 머리 포커스
+AssertionError: expected [ 'header/sticky-right-cta', …(28) ] to include 'cta-band/banner'
+ ❯ expectInjected src/components/studio/ExportFlow.test.tsx:26:18
+     24| const expectInjected = async () => {
+     25|   const actual = (await vi.importActual<typeof import("../../features/…
+     26|   expect(actual).toContain(UNRENDERED);
+       |                  ^
+     27|   expect((await import("../../features/studio/renderedVariants")).REND…
+     28| };
+ ❯ src/components/studio/ExportFlow.test.tsx:81:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  src/components/studio/PngSave.test.tsx > 편집기 안 PNG 묶음 (K-AC-19 · E-AC-50 — 게이트 차단·폴백과 무관 · requestExport 0) > 게이트 차단 + 폴백 → 내보내기 두 버튼은 막혀도 PNG는 열림 · aria-describedby에 내보내기 이유 id 0 · 누르면 지금 문서·폭·이름·revision으로 캡처 · requestExport 0
+AssertionError: expected [ 'header/sticky-right-cta', …(28) ] to include 'cta-band/banner'
+ ❯ expectInjected src/components/studio/PngSave.test.tsx:24:18
+     22| const expectInjected = async () => {
+     23|   const actual = (await vi.importActual<typeof import("../../features/…
+     24|   expect(actual).toContain(UNRENDERED);
+       |                  ^
+     25|   expect((await import("../../features/studio/renderedVariants")).REND…
+     26| };
+ ❯ src/components/studio/PngSave.test.tsx:98:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  src/components/studio/StructureCanvas.test.tsx > 캔버스 이름 · 캡션 3상태 (m2a 3.4 · K-AC-33 · r4.9) > 캡션 = 문서 상태: 킷 토큰 있음 + cta-band 폴백 → '일부' · 킷 토큰 없음 → F0 · 라이브 영역 아님
+AssertionError: expected [ 'header/sticky-right-cta', …(28) ] to include 'cta-band/banner'
+ ❯ expectInjected src/components/studio/StructureCanvas.test.tsx:20:18
+     18| const expectInjected = async () => {
+     19|   const actual = (await vi.importActual<typeof import("../../features/…
+     20|   expect(actual).toContain(UNRENDERED);
+       |                  ^
+     21|   expect((await import("../../features/studio/renderedVariants")).REND…
+     22| };
+ ❯ src/components/studio/StructureCanvas.test.tsx:246:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  5 failed | 9 passed (14)
+      Tests  10 failed | 105 passed (115)
+   Start at  16:29:55
+   Duration  9.29s (environment 43%, transform 22%, tests 21%, setup 10%, import 4%)
+
+Environment  jsdom was created 14 times · 19.18s total, 43% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

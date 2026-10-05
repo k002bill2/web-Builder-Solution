@@ -1,0 +1,201 @@
+diff --git a/app/src/features/studio/renderedVariants.ts b/app/src/features/studio/renderedVariants.ts
+index 796540f..07a5d16 100644
+--- a/app/src/features/studio/renderedVariants.ts
++++ b/app/src/features/studio/renderedVariants.ts
+@@ -9,14 +9,18 @@ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
+   ...Object.entries(SECTION_LIBRARY.sections).flatMap(([type, variants]) => Object.keys(variants).map((variant) => `${type}/${variant}`)),
+   "about/story",
+   "about/text",
++  "contact/booking",
+   "contact/form",
++  "cta-band/banner",
+   "faq/accordion",
+   "portfolio/grid-2",
+   "portfolio/grid-3",
+   "portfolio/masonry",
++  "pricing/tiers-2",
+   "services/cards-2",
+   "services/cards-3",
+   "services/cards-masonry",
+   "services/list",
+   "statistics/stats-3",
++  "testimonials/quotes-2",
+ ]);
+diff --git a/app/src/kit/ContactBooking.tsx b/app/src/kit/ContactBooking.tsx
+new file mode 100644
+index 0000000..eff9150
+--- /dev/null
++++ b/app/src/kit/ContactBooking.tsx
+@@ -0,0 +1,20 @@
++import { ContactKit, type FormSpec } from "./ContactForm";
++import type { KitSectionProps } from "./types";
++
++/** 예약 폼 고정 문구·칸 (SPEC-BODY B1-11 1 — 킷 고정 문구, 슬롯 아님). 날짜·시간 = type text(선택기 0, MQ-B6) · 한 묶음 */
++const BOOKING: FormSpec = {
++  notice: "온라인 예약은 준비 중입니다. 지금은 이 양식으로 예약할 수 없습니다.",
++  legend: "예약 양식",
++  fields: [
++    { key: "name", label: "이름", type: "text", autoComplete: "name" },
++    { key: "tel", label: "연락처", type: "tel", autoComplete: "tel" },
++    [
++      { key: "date", label: "희망 날짜", type: "text" },
++      { key: "time", label: "희망 시간", type: "text" },
++    ],
++    { key: "request", label: "요청 사항 (선택)", rows: 3, optional: true },
++  ],
++};
++
++/** contact/booking (B1-11 · K2 A안 상속) — contact/form과 같은 2단·비활성 폼(fieldset disabled · action·method·placeholder 0), 칸 구성과 고정 문구만 다르다. 실제 예약 기능 아님 */
++export const ContactBooking = (props: KitSectionProps) => <ContactKit {...props} spec={BOOKING} />;
+diff --git a/app/src/kit/ContactForm.tsx b/app/src/kit/ContactForm.tsx
+index 4866958..11590c0 100644
+--- a/app/src/kit/ContactForm.tsx
++++ b/app/src/kit/ContactForm.tsx
+@@ -4,18 +4,55 @@ import type { KitSectionProps } from "./types";
+ 
+ /** 방문자 안내 (K2 A안 문구 1 — 킷 고정 문구, 제작 용어 0) */
+ export const VISITOR_NOTICE = "온라인 문의는 준비 중입니다. 지금은 이 양식으로 보낼 수 없습니다.";
+-/** 입력칸 이름표 (킷 고정 문구 — 이름표 슬롯 없음, 0.1) */
+-const FIELDS = [
+-  { key: "name", label: "이름", type: "text", autoComplete: "name" },
+-  { key: "email", label: "이메일", type: "email", autoComplete: "email" },
+-] as const;
++
++/** 입력칸 (킷 고정 이름표 — 이름표 슬롯 없음, 0.1). rows = textarea · optional = required 없음 */
++interface Field {
++  readonly key: string;
++  readonly label: string;
++  readonly type?: "text" | "email" | "tel";
++  readonly autoComplete?: string;
++  readonly rows?: number;
++  readonly optional?: boolean;
++}
++/** 폼 고정 문구·칸 구성 (B1-11 — contact 변형은 칸 구성과 고정 문구만 다르다). 배열 안 배열 = 한 묶음(md 이상 한 줄 2칸) */
++export interface FormSpec {
++  readonly notice: string;
++  readonly legend: string;
++  readonly fields: readonly (Field | readonly Field[])[];
++}
++
++const CONTACT: FormSpec = {
++  notice: VISITOR_NOTICE,
++  legend: "문의 양식",
++  fields: [
++    { key: "name", label: "이름", type: "text", autoComplete: "name" },
++    { key: "email", label: "이메일", type: "email", autoComplete: "email" },
++    { key: "message", label: "문의 내용", rows: 5 },
++  ],
++};
++
++function Control({ f, id }: { readonly f: Field; readonly id: string }) {
++  return (
++    <div className="kit-control">
++      <label htmlFor={id} className="kit-label">
++        {f.label}
++      </label>
++      {f.rows ? (
++        <textarea id={id} name={f.key} rows={f.rows} required={!f.optional} className="kit-field" />
++      ) : (
++        <input id={id} type={f.type} name={f.key} autoComplete={f.autoComplete} required={!f.optional} className="kit-field" />
++      )}
++    </div>
++  );
++}
+ 
+ /**
+  * contact/form (M2A-2b B5 · m2a K1-6 · K2 A안) — 비활성 폼 + 방문자 안내. `fieldset disabled`가 모든 칸·버튼을 막는다(정적 HTML의 유일한 차단, K-AC-08).
+  * form에 action·method 0 · placeholder 0 · 보이는 label for/id(instanceId 접두) · 숨긴 legend "문의 양식". lg 이상 2단(글 5 : 폼 7) · lg 미만 1단.
+  * 빈 동의 글자 = 체크박스도 생략(이름 없는 체크박스 0) · 빈 보내기 글자 = 버튼 생략(0.8).
++ * contact 변형 공유(B1-11) — 칸 구성·안내·legend = spec. contact/form = CONTACT.
+  */
+-export function ContactForm({ section, root }: KitSectionProps) {
++export function ContactKit({ section, root, spec }: Pick<KitSectionProps, "section" | "root"> & { readonly spec: FormSpec }) {
+   const heading = slotText(section, "heading");
+   const intro = slotText(section, "intro");
+   const submit = slotText(section, "submit");
+@@ -40,24 +77,21 @@ export function ContactForm({ section, root }: KitSectionProps) {
+         </div>
+         <form aria-labelledby={id} className="kit-form">
+           <p id={notice} className="kit-notice">
+-            {VISITOR_NOTICE}
++            {spec.notice}
+           </p>
+           <fieldset disabled aria-describedby={notice} className="kit-fieldset">
+-            <legend className="kit-visually-hidden">문의 양식</legend>
+-            {FIELDS.map((f) => (
+-              <div key={f.key} className="kit-control">
+-                <label htmlFor={field(f.key)} className="kit-label">
+-                  {f.label}
+-                </label>
+-                <input id={field(f.key)} type={f.type} name={f.key} autoComplete={f.autoComplete} required className="kit-field" />
+-              </div>
+-            ))}
+-            <div className="kit-control">
+-              <label htmlFor={field("message")} className="kit-label">
+-                문의 내용
+-              </label>
+-              <textarea id={field("message")} name="message" rows={5} required className="kit-field" />
+-            </div>
++            <legend className="kit-visually-hidden">{spec.legend}</legend>
++            {spec.fields.map((f) =>
++              "key" in f ? (
++                <Control key={f.key} f={f} id={field(f.key)} />
++              ) : (
++                <div key={f[0]!.key} className="kit-control-row">
++                  {f.map((g) => (
++                    <Control key={g.key} f={g} id={field(g.key)} />
++                  ))}
++                </div>
++              ),
++            )}
+             {consent && (
+               <label className="kit-consent">
+                 <input type="checkbox" name="consent" required className="kit-check" />
+@@ -75,3 +109,5 @@ export function ContactForm({ section, root }: KitSectionProps) {
+     </section>
+   );
+ }
++
++export const ContactForm = (props: KitSectionProps) => <ContactKit {...props} spec={CONTACT} />;
+diff --git a/app/src/kit/kit.css b/app/src/kit/kit.css
+index 2adff3b..b71376a 100644
+--- a/app/src/kit/kit.css
++++ b/app/src/kit/kit.css
+@@ -979,10 +979,18 @@
+     font-weight: var(--site-weight-heading);
+     cursor: not-allowed;
+   }
++  /* contact/booking 날짜·시간 묶음 (B1-11 2) — md 미만 세로 · md 이상 한 줄 2칸 같은 폭 */
++  .kit-control-row {
++    display: grid;
++    gap: var(--site-s4);
++  }
+   @media (width >= 48rem) {
+     .kit-submit {
+       align-self: flex-start;
+     }
++    .kit-control-row {
++      grid-template-columns: repeat(2, minmax(0, 1fr));
++    }
+   }
+   @media (width >= 64rem) {
+     .kit-contact-grid {
+diff --git a/app/src/kit/registry.ts b/app/src/kit/registry.ts
+index f621602..12d573c 100644
+--- a/app/src/kit/registry.ts
++++ b/app/src/kit/registry.ts
+@@ -1,5 +1,6 @@
+ import type { SectionInstance } from "../engine/contracts/pageDoc";
+ import { AboutStory } from "./AboutStory";
++import { ContactBooking } from "./ContactBooking";
+ import { ContactForm } from "./ContactForm";
+ import { FaqAccordion } from "./FaqAccordion";
+ import { FooterBizExtended } from "./FooterBizExtended";
+@@ -50,6 +51,7 @@ export const KIT_REGISTRY: Readonly<Record<string, KitSection>> = Object.freeze(
+   "portfolio/masonry": PortfolioMasonry,
+   "faq/accordion": FaqAccordion,
+   "contact/form": ContactForm,
++  "contact/booking": ContactBooking,
+   "footer/biz-extended": FooterBizExtended,
+   "footer/biz-extended-map": FooterBizExtendedMap,
+   "footer/minimal": FooterMinimal,

@@ -1,0 +1,1 @@
+lsof exit=1 (LISTEN 줄 수 0)

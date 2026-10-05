@@ -9,6 +9,22 @@ import type { PngRequest } from "../../features/studio/png/pngCapture";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 import { PngSave } from "./PngSave";
 
+/**
+ * M2B-2c 이관: 이 파일의 폴백 예시 = 샘플의 cta-band/banner(30/30 전 미구현). 실렌더가 된 뒤에도 같은 문서·같은 단언을 유지하려고
+ * 부모 렌더러 목록에서 그 키만 뺀 목록을 주입한다(편집기 폴백 판정 = RENDERED_VARIANTS). 저장·편집 경로는 엔진에 없는 변형을 쓸 수 없다
+ */
+const UNRENDERED = vi.hoisted(() => "cta-band/banner");
+vi.mock("../../features/studio/renderedVariants", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../features/studio/renderedVariants")>();
+  return { RENDERED_VARIANTS: Object.freeze(actual.RENDERED_VARIANTS.filter((key) => key !== UNRENDERED)) };
+});
+/** 이관 전제 — 주입 목록에만 없고 실제 목록에는 있다 */
+const expectInjected = async () => {
+  const actual = (await vi.importActual<typeof import("../../features/studio/renderedVariants")>("../../features/studio/renderedVariants")).RENDERED_VARIANTS;
+  expect(actual).toContain(UNRENDERED);
+  expect((await import("../../features/studio/renderedVariants")).RENDERED_VARIANTS).not.toContain(UNRENDERED);
+};
+
 /** 캡처 청크(조작 뒤) 흉내 — 실제 캡처는 pngCapture.test(단위)와 브라우저 판정(REPORT 6절) */
 const png = vi.hoisted(() => ({
   savePng: vi.fn<(request: PngRequest) => Promise<string>>(),
@@ -79,6 +95,7 @@ describe("PNG 버튼 4상태 (m2a 3.3 · K-AC-19)", () => {
 describe("편집기 안 PNG 묶음 (K-AC-19 · E-AC-50 — 게이트 차단·폴백과 무관 · requestExport 0)", () => {
   const SERIES = { profileId: "profile-1", latestVersion: 2, versions: [sampleTheme().profile] } as unknown as ProfileSeries;
   it("게이트 차단 + 폴백 → 내보내기 두 버튼은 막혀도 PNG는 열림 · aria-describedby에 내보내기 이유 id 0 · 누르면 지금 문서·폭·이름·revision으로 캡처 · requestExport 0", async () => {
+    await expectInjected();
     png.savePng.mockResolvedValue("PNG를 내려받았습니다 · x.png");
     const requestExport = vi.fn(async () => Promise.reject(new ProjectRepositoryError("GENERATOR_UNAVAILABLE", "x")));
     const doc = withSections(passingDoc(), passingDoc().sections.map((s) => (s.type === "hero" ? withPhoto(section("hero", "fullbleed-left", "s-hero")) : s)));

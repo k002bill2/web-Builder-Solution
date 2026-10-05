@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import type { PageDoc } from "../engine/contracts/pageDoc";
 import { sampleDoc } from "../engine/testing/sampleDoc";
 import { STATIC_MENU_SCRIPT, buildStaticHtml } from "../features/studio/staticHtml/staticMarkup";
-import { boundDoc, drawDoc, heroDoc, patch, without } from "../render/testing/drawKit";
+import { boundDoc, drawDoc, heroDoc, patch, withUnknownCta, without } from "../render/testing/drawKit";
 import { KIT_REGISTRY } from "./registry";
 
 /** header 3 + footer 3 공통 (M2B-1b · SPEC-BOUND 4.1 KB-AC-30·32·33·35 header·footer 몫 · K-AC-04) — [U]·[G]. 계산 스타일 일치는 브라우저 */
@@ -32,12 +32,12 @@ const staticPage = (doc: PageDoc) => {
 };
 
 describe("header 3 + footer 3 공통", () => {
-  it("KB-AC-33: KIT_REGISTRY에 6쌍 등록 · 문서마다 data-section 루트 1 · 폴백 표식 0(cta-band만) · header·footer = 사이트 루트 직계(main 밖)", () => {
+  it("KB-AC-33: KIT_REGISTRY에 6쌍 등록 · 문서마다 data-section 루트 1 · 폴백 표식 0(cta-band 자리 no-such-variant만) · header·footer = 사이트 루트 직계(main 밖)", () => {
     for (const [type, list] of [["header", HEADERS], ["footer", FOOTERS]] as const)
       for (const v of list) {
         const key = `${type}/${v}`;
         expect(KIT_REGISTRY[key], key).toBeDefined();
-        const site = drawDoc(boundDoc(type, v)).querySelector("[data-site-root]")!;
+        const site = drawDoc(withUnknownCta(boundDoc(type, v))).querySelector("[data-site-root]")!; // M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant
         expect(site.querySelectorAll(`[data-section="${key}"]`), key).toHaveLength(1);
         expect(site.querySelector(`[data-section="${key}"] [data-kit-marker]`), key).toBeNull();
         expect(site.querySelectorAll("[data-fallback]"), key).toHaveLength(1);

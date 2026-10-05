@@ -2,9 +2,10 @@
 import { readFileSync } from "node:fs";
 import type { ImageSlotValue } from "../engine/contracts/pageDoc";
 import { sampleDoc } from "../engine/testing/sampleDoc";
-import { drawDoc, patch } from "../render/testing/drawKit";
+import { drawDoc, patch, withUnknownCta } from "../render/testing/drawKit";
 
-const site = () => drawDoc().querySelector<HTMLElement>("[data-site-root]")!;
+/** M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant(30/30 전에는 sampleDoc의 cta-band가 미구현 폴백) */
+const site = () => drawDoc(withUnknownCta()).querySelector<HTMLElement>("[data-site-root]")!;
 
 describe("공통 K-AC — 3변형 + 폴백 혼합 문서", () => {
   it("K-AC-09: header(1) · main(1) · footer(1) 형제, hero·폴백 섹션은 main 안 · h1 = 1(hero) · 헤딩 건너뛰기 0", () => {

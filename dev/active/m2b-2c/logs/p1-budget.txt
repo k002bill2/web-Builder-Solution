@@ -1,0 +1,40 @@
+# P1 예산 선행 실측 — 예약 공유 시제품 contact/booking + 부모 최종 목록(30쌍) (2026-10-05)
+시제품 = kit/ContactForm.tsx 공유 추출(ContactKit + FormSpec, contact/form = CONTACT spec) + kit/ContactBooking.tsx(BOOKING spec, 날짜·시간 묶음)
+       + kit.css .kit-control-row(md 이상 2칸) + registry 1쌍(contact/booking)
+       + 부모 RENDERED_VARIANTS 끝 상태(본문 12 → 16쌍: contact/booking · cta-band/banner · pricing/tiers-2 · testimonials/quotes-2 알파벳순 나열, 2b와 같은 방식)
+diff: logs/p1-booking-prototype.diff (측정 뒤 git checkout으로 되돌림 — 최종 구현 아님, RED 전)
+contact/form 마크업 회귀: 추출 전 renderToStaticMarkup = logs/contact-form-markup-before.txt, 추출 후 같은 문자열(임시 테스트 + ContactForm.test 7 pass)
+측정 = npx vite build && npx vite build --mode render → /tmp/m2b2c-bytes.mjs(check-bundle-size.mjs 사본, sizeOf만 바이트) · KB = 1000 B
+
+| 항목 | 기준 2369a3e | 시제품(나열) | 증가 | 한도 |
+|---|---|---|---|---|
+| 렌더 문서 JS | 81,671 B | 81,957 B | +286 B | 끝 예상 ≤ 89.70 |
+| 렌더 문서 CSS | 7,589 B | 7,606 B | +17 B | ≤ 30 KB |
+| /studio 첫 화면 | 91,774 | 91,777 | +3 B | ≤ 99.40 |
+| /studio 진입 직후 | 127,435 B | 127,497 B | **+62 B** | **레인 증가 ≤ 30 B · ≤ 127,700** → **초과** |
+| 공통 JS | 89,347 | 89,347 | 0 | ±30 |
+| /catalog 첫/진입 | 99,643 / 102,027 | 99,650 / 102,034 | +7 / +7 | ±30 |
+| /references 첫/진입 | 96,994 / 99,378 | 97,000 / 99,384 | +6 / +6 | ±30 |
+| /compare 첫/진입 | 98,827 / 121,689 | 98,832 / 121,702 | +5 / +13 | ±30 |
+| /profile 첫/진입 | 99,604 / 118,656 | 99,609 / 118,667 | +5 / +11 | ±30 |
+| /projects 첫/진입 | 94,015 / 100,288 | 94,016 / 100,299 | +1 / +11 | ±30 |
+
+## 원인 분해 (청크별 gzip — logs/p1-chunks-*.txt, 앱 빌드만)
+- RENDERED_VARIANTS가 든 청크 `issue-*.js`(엔진 ops + studio 공유, /studio 첫 화면·진입에 포함): 3,348 B → 나열 3,386 B(**+38 B**).
+  새 어휘 `testimonials`·`quotes`·`pricing`·`tiers`·`banner`가 이 청크에 처음 나와 압축 사전 효과가 없다(약 33자 리터럴).
+- 나머지 ≈ +24 B = issue 청크 해시(파일 이름)가 바뀌어 그것을 import하는 청크들(StudioLayout·deferredStudio·useProjectRepository 등)의 import 문자열이 ±1~4 B씩 변함(내용과 무관한 해시 잡음).
+
+## 압축 표현 재측정 (advisor 권고 1회 — 엔진 import 0 유지)
+| 표현 | issue 청크 | /studio 진입 | 증가 |
+|---|---|---|---|
+| 나열(2b 방식) | 3,386 | 127,497 | +62 |
+| 유형별 묶음 객체 + split | 3,410 | 127,516 | +81 |
+| 공백 구분 문자열 하나 + split | 3,390 | 127,513 | +78 |
+| (참고 · 별도 승인 필요 — 채택 안 함) 엔진 SECTION_DEFINITIONS에서 파생 | 3,215 | 127,339 | −96 |
+- 참고 행: issue 청크는 이미 엔진 registry 청크를 정적 import한다(`import{n as e}from"./registry-*.js"` — 엔진 ops의 getSectionDefinition). 즉 엔진 정의 데이터는 /studio 진입에 이미 로드돼 있다. 그러나 브리프상 부모의 엔진 registry 신규 import는 별도 승인 사항 → 측정만 하고 되돌림.
+
+## 판정: **멈춤 (구현 전)**
+- /studio 진입 레인 증가 +62 B > 30 B (명시 나열 최소안). 새 어휘 리터럴만으로 issue 청크 +38 B라 명시 표현으로는 30 B 안에 들어올 수 없다.
+- 브리프: "초과 시 멈추고 보고, 예산 상향 0" · "부모 킷 import / 엔진 registry 신규 import 0(별도 승인)" → 4변형 구현(P2~P5)·브라우저·Codex 착수 안 함.
+- 렌더 JS는 문제 아님: booking 시제품 +286 B, 남은 3변형 SPEC 추정 +0.62 → 끝 ≈ 82.6 KB(≤ 89.70) · CSS ≈ 7.9 KB.
+- 되돌림 후 재빌드 = 기준과 같은 바이트(/studio 진입 127,435 · 렌더 JS 81,671 · CSS 7,589).

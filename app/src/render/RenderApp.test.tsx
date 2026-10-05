@@ -98,9 +98,9 @@ describe("렌더 문서 수신기", () => {
     const hero = sampleDoc().sections[1]!;
     const withImage = { ...sampleDoc(), sections: sampleDoc().sections.map((s) => (s === hero ? { ...s, slots: { ...s.slots, image: { kind: "image", enabled: true, source: id, alt: "가게", decorative: false } } } : s)) };
     render(<RenderApp host={window} />);
-    fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: new Blob(["x"]) } });
+    fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: { blob: new Blob(["x"]), width: 4, height: 3 } } });
     expect(create).toHaveBeenCalledTimes(1);
-    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: new Blob(["x"]) } });
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: { blob: new Blob(["x"]), width: 4, height: 3 } } });
     expect(revoke).toHaveBeenCalledWith("blob:null/1");
   });
 

@@ -15,3 +15,4 @@
 ## 메모
 - ① 예측(RED 전): bundleBudget.test.mjs 새 테스트 6개 — 6개 모두 RED 예상(기준선 옵션·파일 없음). 기존 8개 GREEN 유지.
 - ① GREEN: 14/14(`logs/green-1-budget.txt`) · 실제 dist 판정 = 127.36 ≤ 127.39 통과 · 테스트 파일에 `@vitest-environment node` 추가(import.meta.url 파일 경로)
+- ② 예측(RED 전): protocol.test 새 3개(IMG-AC-22 메타 · loading · IMAGE_DECODE_FAILED) + 개정 3개(protocol images · RenderApp K4 입력 모양만 · StructureCanvas 송신). RED 예상 5(새 3 + protocol 개정 + RenderApp 개정), StructureCanvas 개정은 런타임 통과·typecheck 실패 예상. RenderApp.test는 SPEC 10절 grep 누락 — IMG-AC-22 해당 · 단언 불변(입력 모양만)

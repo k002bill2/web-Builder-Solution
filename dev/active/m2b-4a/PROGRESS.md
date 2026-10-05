@@ -46,8 +46,8 @@
 - 범위: `render/siteFontLoad.ts:39` 편집 캔버스 — 한 굵기 로드 실패 + 다른 굵기 늦은 성공 시 `late` 재측정 누락. 내보내기 경로 diff 0
 - **새 테스트 사전 예측**: `render/RenderApp.test.tsx` +2 it(① 700 즉시 reject → 바로 폴백 rects · 400 늦은 resolve → rects 재전송 = **RED 1** ② 전부 reject → 바로 폴백 rects · 그 뒤 재전송 0 = 회귀 가드, RED 시점에도 GREEN 예상) → **208 files · 1826**
 - [x] F1 예측 커밋
-- [ ] F2 RED 실측(logs/fix-p2-red.txt)
-- [ ] F3 최소 수정(allSettled + 면별 catch 폴백) · GREEN
-- [ ] F4 gate(표적·가드·typecheck·lint·build, logs/fix-p2-gate.txt) · 전체 vitest 1회(logs/fix-p2-full-vitest.txt)
-- [ ] F5 Codex review --scope branch --base 254e322 1회(logs/codex-review-fix-p2.txt)
-- [ ] F6 REPORT 7·8절 · PROGRESS 갱신 · 커밋
+- [x] F2 RED 실측(logs/fix-p2-red.txt): 15 중 **1 failed**(P2 it — 폴백 rects 단언 통과 뒤 `expected 1 to be greater than 1`) · 전부 실패 가드 it = GREEN(예측대로)
+- [x] F3 최소 수정(allSettled + 면별 catch 폴백) · GREEN 15 passed · 커밋 5b8f176 · 내보내기 경로(20~29행) diff 0
+- [x] F4 gate OK(logs/fix-p2-gate.txt: 표적 22·가드 81·typecheck·lint·build exit 0 · 렌더 JS 82.86KB ≤90) · 전체 vitest 1회차 exit 1 = 무관 6파일 5초 타임아웃(load avg 121, logs/fix-p2-full-vitest.txt) → 6파일 단독 31 passed(logs/fix-p2-timeout-files-isolated.txt) → 2회차 **208 files · 1826 passed · exit 0 · Errors 0**(logs/fix-p2-full-vitest-run2.txt) = 예측 일치
+- [x] F5 Codex review --scope branch --base 254e322 1회 실제 완료 exit 0(logs/codex-review-fix-p2.txt) — 새 P2 2건(P2-a 성공+계속 대기 시 late 지연 · P2-b 폴백 섹션 굵기 불일치) 기록만·미수정(REPORT §7.1)
+- [x] F6 REPORT 7·8절 · PROGRESS 갱신 · 커밋

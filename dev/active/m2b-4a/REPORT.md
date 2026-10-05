@@ -74,9 +74,18 @@
 - EPERM 한계 구분: Codex 샌드박스가 읽기 전용이라 Codex 쪽 표적 vitest 실행은 Vite 임시 설정 파일 작성 차단으로 실패 — **리뷰 자체는 완료**, 테스트 실행 증거는 메인 루프의 전체 vitest 1회(§6)로 대체.
 - 지적 1건 **[P2] 미반영(열림)**: `app/src/render/siteFontLoad.ts:39` 편집 캔버스 경로 — 한 굵기 로드가 실패하고 다른 굵기가 나중에 성공하면 `Promise.all`이 먼저 거부돼 폴백 측정만 하고, 뒤늦은 성공에는 `late` 재측정이 없다(루트 크기가 같으면 ResizeObserver도 못 잡아 선택 오버레이가 옛 사각형 유지). 코드 확인 결과 지적이 맞다(L2). 미반영 사유: 이번 재개는 사전승인 축소 범위(재측정·보충·마감)이고 코드 수정은 범위 밖 + 수정 시 TDD RED·Codex 재리뷰 라운드가 필요. 권고: 후속에서 `Promise.allSettled`로 바꾸고 성공 면이 하나라도 있으면 `waited`일 때 `late` 호출 + RenderApp 테스트(한 굵기 reject·다른 굵기 늦은 resolve → rects 재전송) RED부터.
 
+### 7.1 수정 레인 — Codex P2 반영 (영환님 ★A, 2026-10-05)
+- 수정 5b8f176: `render/siteFontLoad.ts` 편집 캔버스 경로 `Promise.all` → 면별 `.catch(fallback)`(한 면 실패 = 바로 폴백 유지) + `Promise.allSettled`(받은 면 ≥1 이고 이미 폴백으로 그렸으면 `late`, 전부 실패 = 기존 폴백만). 내보내기 경로(20~29행) diff 0
+- TDD: 예측 커밋 bf3310f(+2 it → 208 files · 1826) → RED 1 failed `expected 1 to be greater than 1`(logs/fix-p2-red.txt, 전부 실패 가드 it는 RED 시점 GREEN = 예측대로) → GREEN 15 passed
+- Codex `review --scope branch --base 254e322` 2라운드 **실제 완료**(exit=0, logs/codex-review-fix-p2.txt, base~5b8f176). 새 지적 2건 — 브리프 지시대로 **기록만, 미수정**:
+  - [P2-a] `siteFontLoad.ts:42-44` 폴백 뒤 한 굵기만 먼저 성공하고 다른 굵기가 계속 대기하면 `allSettled`가 끝날 때까지 `late`가 늦어진다(Codex 콜백 재현). 이번 수정의 잔여 갭 — 원 P2(실패+늦은 성공)는 해소, "성공+계속 대기"는 이전 `Promise.all`에도 있던 갭. 권고: 폴백 뒤 각 면 성공마다 `late`(면별 `.then`)
+  - [P2-b] `kit/siteFonts.ts:27` 제목·본문이 모두 400으로 대응되는 프로필에서 `FallbackCanvas` 표식·슬롯(`font-bold`·`ds-heading1`·`ds-body1-strong`)이 700·600을 요구 → 대기 목록 밖 700 파일 요청 · PNG엔 400만 인라인 → 측정 문서와 결과물 글꼴 불일치 가능. 이번 diff(P2 수정) 밖의 기존 M2B-4a 코드 지적 — 후속 판단 필요
+
 ## 8. 한계·책임/환경
 - 운영 정적 호스팅도 woff2에 `Origin: null` 대응 ACAO 헤더가 필요(R-1, 1안 전제).
 - B9-PNG 4.9초 경계: 지연 4.9초 + 실제 받기 시간이 5초 상한에 포함돼 로컬에서 흔들림(1회 성공·1회 5,007ms 실패). 상한 정의(받기 포함) 그대로 두고 기록만 함.
 - 브라우저 검증 = ego-browser(Ego Lite Chromium), 4337 dev·4339 preview loopback, 자기 PID cwd 확인 뒤 종료·lsof 0(logs/qb-b9html.txt 끝), main 5480 무접촉.
-- 열린 결함: Codex P2(§7, 부분 글꼴 실패 뒤 늦은 성공 재측정 누락) — 편집 캔버스 한정, 내보내기 경로(바이트 FontFace)는 실패 = 내보내기 실패라 영향 없음.
+- 해소: Codex 1라운드 P2(부분 글꼴 실패 뒤 늦은 성공 재측정 누락) — 5b8f176(§7.1).
+- 열린 결함: Codex 2라운드 P2-a(한 면 성공 + 다른 면 무기한 대기 시 `late` 지연, 편집 캔버스 한정) · P2-b(폴백 섹션 굵기 vs 사이트 대응 굵기 불일치) — §7.1, 미수정·후속 판단.
+- 전체 vitest(수정 레인): 1회차 exit 1 = 무관 6파일 5초 타임아웃(기계 load avg 121) → 6파일 단독 31 passed → 2회차 208 files · 1826 passed · exit 0 · Errors 0.
 - push·merge·삭제 0 · lock·명세·결정 문서·예산 무수정 · 서브에이전트 0.

@@ -302,7 +302,7 @@ manifest closure로 잰 `/profile` 진입 집합 대비 증가: `CandidateResult
 - 와이어프레임 모양표 폐기(M2B_PLAN 별건) · 비율 축을 편집 문서로 전달하는 엔진 계약 변경(MQ-2 C, 별건).
 
 ## 10. 기록
-- r3 2026-10-06 Designer(M2C-SPECFIX, 코드 0) B-M2B-06 정정: 2.1 DOM 순서(버튼 = 프레임 위 오기 정정 · status 위치) · 4 키보드 순서(스크롤 영역 → 이 안 선택, 근거 WCAG 2.1.1) — 구현 변경 0. (Codex 미검토)
+- r3 2026-10-06 Designer(M2C-SPECFIX, 코드 0) B-M2B-06 정정: 2.1 DOM 순서(버튼 = 프레임 위 오기 정정 · status 위치) · 4 키보드 순서(스크롤 영역 → 이 안 선택, 근거 WCAG 2.1.1) — 구현 변경 0. Codex adversarial r1 — 이 문서 지적 0.
 - r0 2026-10-05 Designer 초안(이 worktree 실측 0.1).
 - r2 2026-10-05 Codex adversarial R2(needs-attention, P2 1건) 반영: 3.4 상태별 알림 범주·문장·복구 규칙 · U7 사례.
 - r1 2026-10-05 Codex adversarial R1(needs-attention) 반영: P1 동일성 범위(2.4) · P2 종결 집계·1안 모드 알림(3.4) · P2 대화상자 안 선택 실패/성공 알림(2.5) · U7·U8·U12·B6. Codex 검토 결과는 `dev/active/m2b-5-spec/REPORT.md`.

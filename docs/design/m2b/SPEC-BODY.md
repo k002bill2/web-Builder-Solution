@@ -639,4 +639,4 @@
 | r2 | 2 KD-AC · 3 시각 QA · 4 예산 · 5 MQ · 부록 A |
 | r3 | 부록 B 시안 3폭 실측(L2) |
 | r4 | Codex 적대적 검토 반영 1건(P2): KD-AC-10 나누기 예시 기대값을 `splitItems` 규칙과 일치 |
-| r5 | 2026-10-06 M2C-SPECFIX(B-M2B-07): booking 비활성 시각 단서(m2a r3 K1-6 3 상속) · KD-AC-20 · QB-11 · 부록 B 목표 행. (Codex 미검토) |
+| r5 | 2026-10-06 M2C-SPECFIX(B-M2B-07): booking 비활성 시각 단서(m2a r3 K1-6 3 상속) · KD-AC-20 · QB-11 · 부록 B 목표 행. Codex adversarial r1 — 이 문서 지적 0. |

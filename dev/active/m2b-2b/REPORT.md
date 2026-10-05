@@ -1,7 +1,8 @@
 # M2B-2b REPORT — 갤러리·통계 4변형
 
 - 책임 역할: Developer · 실행 환경: Orca managed worktree `m2b-2b` + Claude Code (Opus 5.5) · 서브에이전트 0
-- 시작 SHA `425dfff`
+- 시작 SHA `425dfff` · 구현·판정 마지막 SHA `60deef9`(Codex 검토 HEAD) · 마감 커밋 = 이 REPORT를 담은 커밋(`git log -1 -- dev/active/m2b-2b/REPORT.md`)
+- 실렌더 22 → **26**(PageDocument.test 정확 목록 26쌍 · RENDERED_VARIANTS = KIT_REGISTRY 집합 일치)
 
 ## 1. 커밋표
 | 커밋 | 내용 | 변경 경로 |
@@ -10,7 +11,10 @@
 | 66a6d9b | P1 공유 gallery 시제품 예산 실측(멈춤 아님) — 시제품 diff 보존 후 되돌림 | dev/active/m2b-2b/ |
 | 8eaebab | portfolio grid-3·masonry·grid-2 — 공유 PortfolioGallery · 실렌더 25 · memoryExport 폴백 예시 이관 | kit/PortfolioGallery.tsx·.test.tsx · kit/kit.css · kit/registry.ts · features/studio/renderedVariants.ts · render/PageDocument.test.tsx · data/memoryExport.test.ts · dev/active/m2b-2b/ |
 | 20e2c85 | statistics/stats-3 · 4변형 공통 KD-AC-06·07·08 테스트 · 실렌더 26 | kit/StatisticsStats3.tsx·.test.tsx · kit/bodyVariants2b.test.tsx · kit.css · registry · renderedVariants · PageDocument.test · dev/active/m2b-2b/ |
-(경로 앞 `app/src/` 생략. 브라우저 판정·마감 커밋은 아래에 추가)
+| 6841d99 | REPORT 커밋표·번들·공유/명세 차이·이관표(브라우저 전) | dev/active/m2b-2b/ |
+| 60deef9 | 브라우저 판정 KD-AC·QB 3폭 PASS · 캡처 24 · 서버 종료 증거 | dev/active/m2b-2b/ |
+| (마감) | 전체 vitest · Codex 결과 · REPORT/PROGRESS 마감 | dev/active/m2b-2b/ |
+(경로 앞 `app/src/` 생략)
 
 ## 2. KD-AC 판정 (이 레인 4변형 범위)
 [U]/[G] = vitest(표적 파일) · [B] = ego-browser `qb.mjs` → logs/qb-run.txt · logs/qb.json (render.html 127.0.0.1:4337 최상위 페이지, CDP 폭 1280·768·390 — innerWidth 1280/768/390 기록, clientWidth = 스크롤바 제외 1265/753/375). 표본 문서 = header + grid-3 · grid-3(image2 끔) · masonry · grid-2 · stats(세 수치 모두 `1,234,567,89`) + footer, 프로필 media_ratio 기본 4:5.
@@ -91,10 +95,19 @@
 - QB-14(카드 dark)는 이 레인 4변형에 카드 면이 없어 범위 밖 — dark 프로필 색 쌍만 [B] 05로 확인.
 
 ## 6. Codex
-(작성 중)
+- 실행: `node ~/.claude/plugins/cache/openai-codex/codex/1.0.6/scripts/codex-companion.mjs review --scope branch --base 425dfff` 1회 (검토 HEAD `60deef9`, base `425dfff`, 스레드 01a10aae-310d-…, CODEX_HOME = Orca 계정 범위 그대로 — 부모 HOME 대체 0) — 원문 logs/codex.txt. 실제 완료("Reviewer finished · Turn completed" + 결과 본문).
+- 결과: **지적 0건(P1 0 · P2 0)** — "지정된 기준 커밋 대비 변경사항에서 수정이 필요한 구체적인 결함은 발견하지 못했습니다."
+- 한계(로그 그대로): Codex 쪽 테스트 실행은 읽기 전용 환경 EPERM으로 **실행되지 않음**(PASS 아님), 타입 검사만 통과. 테스트 통과 증거는 이 레인의 전체 vitest(logs/full-vitest.txt)로 대신한다.
+- 운영 메모: 완료 대기용 `until ! pgrep -f …` 루프가 자기 명령줄을 잡아 끝나지 않음(Codex는 이미 종료) → 내 대기 셸 2개만 kill. Codex·제품과 무관.
 
 ## 7. 남은 위험 · 미완
-(작성 중)
+- 전체 vitest(마감 전 1회, 기본 설정, HEAD 60deef9): **198 files · 1777 passed · exit 0 · Errors 0**(logs/full-vitest.txt). baseline 1763 → +14(예측 +15 ±3 — stats 테스트 4개로 예측보다 1 적음). typecheck·lint·build는 각 gate 로그(마지막 logs/stats-gate.txt) exit 0.
+- /studio 진입 여유: 127,435 B(한도 127,700 · 레인 증가 +26 B / 30 B). 2c에서 부모 RENDERED_VARIANTS에 본문 4쌍이 더 붙으면 레인 증가 한도(+30 B)에 닿을 수 있음 — 2c P1에서 실측·이미 로드된 데이터로 최소 파생 검토 필요(엔진 registry import는 별도 승인).
+- masonry 단 배정은 Chromium 균형 결과([0,0,1])만 관찰 — 다른 엔진 시각 QA는 M2B-6(SPEC 루브릭 ③ "주의").
+- QB-6 grid-2 1280 칸 532×665(4:5) — 과하지 않다고 판단(MQ 미제기), M2B-6 독립 시각 QA에서 재확인 대상.
+- 로컬 이미지가 든 갤러리의 브라우저 실측은 하지 않음(그라디언트 칸으로 비율·배치 측정) — img alt·width·height·lazy·aria는 [U]로 확인. 실제 업로드 이미지 원본 비율 메타는 M2c(MQ-B3).
+- 넓은 글자 12자 수치(한글·w)는 768·1280 칸에서 두 줄 — SPEC 허용(넘침 0 우선). 정규 시험 문자열 단언은 그대로.
+- 범위 밖 미착수: 2c 변형 · 모션·폰트 · push·병합(Jarvis/영환님 승인 사항). 이 레인은 구현 완료이며 독립 QA·시각 회귀(M2B-6)와는 별개.
 
 ## 8. 서버
 - 이 worktree에서 vite 127.0.0.1:4337(`npm exec vite --host 127.0.0.1 --port 4337 --strictPort`, cwd …/m2b-2b/app) + `python3 -m http.server 4339 --bind 127.0.0.1`(cwd …/m2b-2b/dev/active/m2b-2b/static). 로그 logs/server-4337.txt · server-4339.txt.

@@ -11,9 +11,9 @@
 - [x] P2 portfolio 3변형 공유 PortfolioGallery — RED 7 fail(PortfolioGallery 6 + PageDocument 목록 1, 폴백, logs/portfolio-red.txt) → 시제품 diff git apply 후 GREEN · 조기 전체 vitest 1 fail(memoryExport 폴백 예시 portfolio/masonry) → pricing/tiers-2로 이관(REPORT 4.3) · gate OK(logs/portfolio-gate.txt, 렌더 JS 81.55 · CSS 7.37 · /studio 127.44)
 - [x] P3 statistics/stats-3 — RED 9 fail(stats 4 + 4변형 공통 4 + PageDocument 1, logs/stats-red.txt) → GREEN · 전체 vitest 198 files 1777 passed(+14, 예측 +15±3 — stats 4개로 예측보다 1 적음) · gate OK(logs/stats-gate.txt) · 최종 바이트 logs/final-bytes.txt(렌더 JS +361 B · CSS +342 B · /studio 진입 +26 B)
 - [x] P-B REPORT 1·3·4 선기록(6841d99) → qb.mjs [B] 전부 PASS · 정적 동등성 3폭 일치 · 캡처 24장(grid-3 하나 끔 포함) · 판정 스크립트 nonce 제목 결함 1건 수정·재실행 · 서버 종료 LISTEN 0
-- [ ] P-F 전체 vitest 1회 exit 0 · Errors 0
-- [ ] P-F Codex review --scope branch --base 425dfff 1회
-- [ ] P-F REPORT 마감 · 서버 종료 증거
+- [x] P-F 전체 vitest 1회(기본 설정, HEAD 60deef9) — 198 files · 1777 passed · exit 0 · Errors 0 (logs/full-vitest.txt) · baseline 1763 → +14
+- [x] P-F Codex review --scope branch --base 425dfff 1회 — 완료, 지적 0건(logs/codex.txt, Codex 쪽 테스트는 EPERM으로 미실행 — PASS 아님)
+- [x] P-F REPORT 마감 · 서버 종료 증거(4337·4339 LISTEN 0, logs/server-stop.txt)
 
 ## 새 테스트 delta 사전 예측 (RED 전)
 - (P2 RED 직전 기록) PortfolioGallery.test.tsx = 6 (공통 3 · grid-2 1 · masonry 2) · PageDocument 정확 목록 +0(기존 it 수정) → 실측 1769 = +6 일치

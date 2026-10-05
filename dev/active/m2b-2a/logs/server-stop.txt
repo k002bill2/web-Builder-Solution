@@ -1,0 +1,10 @@
+## 서버 종료 2026-10-05 14:23:57
+PID 77654 cwd=/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/app parent=77605 cmd=node /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/app/node_m
+PID 77606 cwd=/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/dev/active/m2b-2a/static parent=1 cmd=/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/
+parent 77605: npm exec vite --host 127.0.0.1 --port 4337 --strictPort       
+kill 77654(vite node, cwd …/m2b-2a/app) 77605(npm exec 부모) 77606(python http.server, cwd …/m2b-2a/static)
+lsof 4337/4339 LISTEN:
+(위 공백 = 0건) exit=1
+남은 PID: 0
+5480(main, 무접촉):
+node    82062 002billmac_home   15u  IPv4 0xefbc5b6a30df9167

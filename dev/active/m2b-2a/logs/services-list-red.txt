@@ -1,0 +1,101 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/app
+
+ ❯ src/kit/ServicesList.test.tsx (6 tests | 6 failed) 59ms
+   ❯ services/list (B1-2) (6)
+     × 구조 [U]: section aria-labelledby = h2 · 머리(제목·소개) → ul[role=list] > li(기본 3개, 순서 유지) · h3 0 · 링크·포커스 0 31ms
+     × KD-AC-10 [U]: " 상담 ·· 진료 · \n 검사 " → li 3개(상담·진료·검사) 7ms
+     × KD-AC-10 [U]: " 상담 ·· 진료 \n 검사 " → li 2개("상담"·"진료 검사" — 줄바꿈은 구분자 아님, 공백 접힘 white-space normal) 7ms
+     × KD-AC-04 [U]: 조각 0(빈 값·가운뎃점뿐) → ul 0 · 소개 빈 값 → 소개 0 · 빈 p·li 0 6ms
+     × KD-AC-03 [U]: 상한 글자(제목 40 · 소개 160 · 항목 400) — 조각의 합 = 원문 조각 · 한 조각 400자 = 항목 1개 6ms
+     × KD-AC-10 · 토큰 [U]: lg 이상 머리 5 : 목록 7(같은 행) · md~lg 목록 column-count 2 + 항목 break-inside avoid · md 미만 1열 · 항목 ink 제목 굵기 · 구분선 muted 장식 · 소개 --kit-soft 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/ServicesList.test.tsx > services/list (B1-2) > 구조 [U]: section aria-labelledby = h2 · 머리(제목·소개) → ul[role=list] > li(기본 3개, 순서 유지) · h3 0 · 링크·포커스 0
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/ServicesList.test.tsx:27:15
+     25|   it("구조 [U]: section aria-labelledby = h2 · 머리(제목·소개) → ul[role=list]…
+     26|     const s = list(drawDoc(listDoc()));
+     27|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     28|     expect(s.getAttribute("aria-labelledby")).toBe("h-s-services");
+     29|     expect(s.querySelector("h2")).toHaveAttribute("id", "h-s-services"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/kit/ServicesList.test.tsx > services/list (B1-2) > KD-AC-10 [U]: " 상담 ·· 진료 · \n 검사 " → li 3개(상담·진료·검사)
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ items src/kit/ServicesList.test.tsx:16:41
+     14|   );
+     15| const list = (c: HTMLElement) => c.querySelector<HTMLElement>('[data-s…
+     16| const items = (s: HTMLElement) => [...s.querySelectorAll("li")].map((l…
+       |                                         ^
+     17| const css = () => readFileSync("src/kit/kit.css", "utf8");
+     18| const block = (selector: string, from = 0) => {
+ ❯ src/kit/ServicesList.test.tsx:38:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/kit/ServicesList.test.tsx > services/list (B1-2) > KD-AC-10 [U]: " 상담 ·· 진료 \n 검사 " → li 2개("상담"·"진료 검사" — 줄바꿈은 구분자 아님, 공백 접힘 white-space normal)
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ items src/kit/ServicesList.test.tsx:16:41
+     14|   );
+     15| const list = (c: HTMLElement) => c.querySelector<HTMLElement>('[data-s…
+     16| const items = (s: HTMLElement) => [...s.querySelectorAll("li")].map((l…
+       |                                         ^
+     17| const css = () => readFileSync("src/kit/kit.css", "utf8");
+     18| const block = (selector: string, from = 0) => {
+ ❯ src/kit/ServicesList.test.tsx:43:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/kit/ServicesList.test.tsx > services/list (B1-2) > KD-AC-04 [U]: 조각 0(빈 값·가운뎃점뿐) → ul 0 · 소개 빈 값 → 소개 0 · 빈 p·li 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/ServicesList.test.tsx:52:16
+     50|     for (const value of ["", " · ·· "]) {
+     51|       const s = list(drawDoc(listDoc({ items: value, intro: " " })));
+     52|       expect(s.querySelector("ul")).toBeNull();
+       |                ^
+     53|       expect(s.querySelector('[data-slot="intro"]')).toBeNull();
+     54|       expect([...s.querySelectorAll("p, li, h2")].filter((el) => el.te…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/kit/ServicesList.test.tsx > services/list (B1-2) > KD-AC-03 [U]: 상한 글자(제목 40 · 소개 160 · 항목 400) — 조각의 합 = 원문 조각 · 한 조각 400자 = 항목 1개
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/ServicesList.test.tsx:61:14
+     59|     const texts = { heading: "가".repeat(40), intro: "나".repeat(160), i…
+     60|     const s = list(drawDoc(listDoc(texts)));
+     61|     expect(s.querySelector('[data-slot="heading"]')!.textContent).toBe…
+       |              ^
+     62|     expect(s.querySelector('[data-slot="intro"]')!.textContent).toBe(t…
+     63|     expect(items(s)).toEqual([texts.items]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/kit/ServicesList.test.tsx > services/list (B1-2) > KD-AC-10 · 토큰 [U]: lg 이상 머리 5 : 목록 7(같은 행) · md~lg 목록 column-count 2 + 항목 break-inside avoid · md 미만 1열 · 항목 ink 제목 굵기 · 구분선 muted 장식 · 소개 --kit-soft
+AssertionError: expected -1 to be greater than -1
+ ❯ src/kit/ServicesList.test.tsx:70:16
+     68|   it("KD-AC-10 · 토큰 [U]: lg 이상 머리 5 : 목록 7(같은 행) · md~lg 목록 column-cou…
+     69|     const at = css().indexOf("/* services/list");
+     70|     expect(at).toBeGreaterThan(-1);
+       |                ^
+     71|     const section = css().slice(at, css().indexOf("\n}\n", at));
+     72|     expect(section).toMatch(/@media \(width >= 64rem\) \{\s*\.kit-list…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  14:12:00
+   Duration  953ms (environment 65%, transform 14%, setup 12%, tests 7%, import 2%, worker 1%)
+

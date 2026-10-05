@@ -1,0 +1,31 @@
+[bundle] 공통 JS (gzip, 참고): 89340.00KB
+  - assets/index-BJ3ZdA3b.js 86060.00KB
+  - assets/react-DB-4Zxce.js 3280.00KB
+[bundle] /catalog 첫 화면 합계: 99643.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 102027.00KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96993.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99377.00KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98824.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 121704.00KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98824.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 121704.00KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99603.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 118662.00KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94011.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 100292.00KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91766.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 127409.00KB / 예산 128KB
+[bundle] 렌더 문서(render.html) JS 합계: 81218.00KB / 예산 90KB · CSS 합계: 7182.00KB / 예산 30KB
+  - assets/render-5F4cJBds.js 81218.00KB
+  - assets/render-BXWj1DQC.css 7182.00KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)
+[bundle] 예산 검사 실패 — /catalog: 첫 화면 99643.00KB > 100KB
+[bundle] 예산 검사 실패 — /catalog: 진입 직후 자동 로드 포함 102027.00KB > 125KB
+[bundle] 예산 검사 실패 — /references/:id: 첫 화면 96993.00KB > 100KB
+[bundle] 예산 검사 실패 — /references/:id: 진입 직후 자동 로드 포함 99377.00KB > 125KB
+[bundle] 예산 검사 실패 — /compare: 첫 화면 98824.00KB > 100KB
+[bundle] 예산 검사 실패 — /compare: 진입 직후 자동 로드 포함 121704.00KB > 125KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 첫 화면 98824.00KB > 100KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 진입 직후 자동 로드 포함 121704.00KB > 125KB
+[bundle] 예산 검사 실패 — /profile: 첫 화면 99603.00KB > 100KB
+[bundle] 예산 검사 실패 — /profile: 진입 직후 자동 로드 포함 118662.00KB > 125KB
+[bundle] 예산 검사 실패 — /projects: 첫 화면 94011.00KB > 100KB
+[bundle] 예산 검사 실패 — /projects: 진입 직후 자동 로드 포함 100292.00KB > 125KB
+[bundle] 예산 검사 실패 — /studio/:projectId: 첫 화면 91766.00KB > 100KB
+[bundle] 예산 검사 실패 — /studio/:projectId: 진입 직후 자동 로드 포함 127409.00KB > 128KB
+[bundle] 예산 검사 실패 — 렌더 문서: JS 81218.00KB > 90KB
+[bundle] 예산 검사 실패 — 렌더 문서: CSS 7182.00KB > 30KB
+# 주: 바이트 단위(표기 'KB'는 B). 시제품 = logs/p1-masonry-prototype.diff

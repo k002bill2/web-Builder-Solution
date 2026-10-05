@@ -38,20 +38,24 @@ describe("변형 교체 (E-AC-20)", () => {
     const list = await openVariants();
     expect(list.getByRole("radio", { name: "카드 3개" })).toBeChecked();
     expect(list.getByRole("radio", { name: "카드 3개" })).toHaveAccessibleDescription("슬롯 모두 유지");
-    expect(list.getByRole("radio", { name: "목록형 · 구조 미리보기" })).toHaveAccessibleDescription(caption("services", "cards-3", "list"));
+    expect(list.getByRole("radio", { name: "목록형" })).toHaveAccessibleDescription(caption("services", "cards-3", "list"));
     expect(caption("services", "cards-3", "list")).toMatch(/^유지 \d+ · 잃음 [1-9]\d* \(/);
     expect(screen.queryByText(/cards-3|\blist\b/)).toBeNull();
   });
 
-  it("렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(카드 3개)은 없음 · 머리 '변형:'은 그대로", async () => {
+  // M2B-2a 이관: services 4변형이 모두 렌더러를 가져(about/text · services/list · cards-2 · cards-masonry 실렌더) 미구현 예시를 contact/booking(2c 대상)으로 옮긴다 — 단언 수·접미어 규칙은 그대로
+  it("렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(문의 폼 · services 4변형)은 없음 · 머리 '변형:'은 그대로", async () => {
     await openStudio();
     pickRow("Services");
+    const services = await openVariants();
+    for (const name of ["카드 3개", "목록형", "카드 2열", "카드 벽돌형"]) expect(services.getByRole("radio", { name })).toBeInTheDocument();
+    pickRow("Contact");
     const list = await openVariants();
-    expect(list.getByRole("radio", { name: "카드 3개" })).toBeInTheDocument();
-    for (const name of ["목록형", "카드 2열", "카드 벽돌형"]) expect(list.getByRole("radio", { name: `${name} · 구조 미리보기` })).toBeInTheDocument();
+    expect(list.getByRole("radio", { name: "문의 폼" })).toBeInTheDocument();
+    expect(list.getByRole("radio", { name: "예약 폼 · 구조 미리보기" })).toBeInTheDocument();
     const labels = list.getAllByRole("radio").map((r) => document.getElementById(r.getAttribute("aria-labelledby")!)!.textContent!);
-    expect(labels.filter((label) => label.endsWith(" · 구조 미리보기"))).toHaveLength(3);
-    expect(editPanel().getByText("변형: 카드 3개")).toBeInTheDocument();
+    expect(labels.filter((label) => label.endsWith(" · 구조 미리보기"))).toHaveLength(1);
+    expect(editPanel().getByText("변형: 문의 폼")).toBeInTheDocument();
   });
 
   it("고르면 바로 적용 · 알림 '목록형으로 바꿨습니다 · 잃은 슬롯 M개(…)' · 포커스는 라디오 · 되돌리기 → 원래 변형·값", async () => {
@@ -61,14 +65,14 @@ describe("변형 교체 (E-AC-20)", () => {
     act(() => void fireEvent.change(title, { target: { value: "바꾸기 전 제목" } }));
     const list = await openVariants();
     const lost = diffSlots(getSectionDefinition("services", "cards-3")!.slots, getSectionDefinition("services", "list")!.slots).lost;
-    const radio = list.getByRole("radio", { name: "목록형 · 구조 미리보기" });
+    const radio = list.getByRole("radio", { name: "목록형" });
     radio.focus();
     await act(async () => void fireEvent.click(radio));
     const text = `목록형으로 바꿨습니다 · 잃은 슬롯 ${lost.length}개(${lost.map((e) => e.label).join(", ")})`;
     await screen.findByText(text);
     expect(screen.getByRole("status", { name: "편집 알림" })).toHaveTextContent(text);
-    expect(list.getByRole("radio", { name: "목록형 · 구조 미리보기" })).toBeChecked();
-    expect(list.getByRole("radio", { name: "목록형 · 구조 미리보기" })).toHaveFocus();
+    expect(list.getByRole("radio", { name: "목록형" })).toBeChecked();
+    expect(list.getByRole("radio", { name: "목록형" })).toHaveFocus();
     expect(row("s-services")).toHaveTextContent("목록형");
     expect(editPanel().getByText("변형: 목록형")).toBeInTheDocument();
 

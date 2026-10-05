@@ -1,0 +1,120 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2a/app
+
+ ❯ src/kit/ServicesCards.test.tsx (6 tests | 3 failed) 67ms
+   ❯ services/cards-masonry (B1-4) (3)
+     × KD-AC-12 · KD-AC-07 [U]: cards-3과 같은 마크업(li 3 · 번호 순서 1·2·3 · h3) + 목록 판정 표시 data-layout=masonry · 변형 class kit-cards--masonry 9ms
+     × KD-AC-12 [U]: md 이상 CSS 다단 2(columns) · 카드 break-inside avoid · 행 늘이기 0(block 흐름) · 선택자 = class(data-layout 0) · 재배치·단 배정 고정 0 · md 미만 = .kit-cards 1열 1ms
+     × KD-AC-04 [U]: card2Body 빈 값 → 카드 2는 제목만(이웃 높이에 맞춰 늘지 않음 = 다단 block) · 빈 p 0 6ms
+ ❯ src/kit/bodyVariants2a.test.tsx (4 tests | 4 failed) 69ms
+   ❯ M2B-2a 4변형 공통 (4)
+     × 4변형 모두 킷으로 그린다(폴백 표식 0) 34ms
+     × KD-AC-06 [U]: 4변형이 든 문서의 정적 HTML — script = r4.12 고정 인라인 1개(바이트 일치) · on* 속성 0 24ms
+     × KD-AC-08 [U]: 섹션마다 h2 1 · h3는 cards-2·cards-masonry(카드 제목)에만 · about/text·list h3 0 10ms
+     × KD-AC-07 [G]: 이번 변형 CSS 블록에 order·*-reverse·grid-area·grid-row 재배치 0 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/ServicesCards.test.tsx > services/cards-masonry (B1-4) > KD-AC-12 · KD-AC-07 [U]: cards-3과 같은 마크업(li 3 · 번호 순서 1·2·3 · h3) + 목록 판정 표시 data-layout=masonry · 변형 class kit-cards--masonry
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/ServicesCards.test.tsx:64:15
+     62|   it("KD-AC-12 · KD-AC-07 [U]: cards-3과 같은 마크업(li 3 · 번호 순서 1·2·3 · h3…
+     63|     const s = services(drawDoc(cardsDoc("cards-masonry")), "cards-maso…
+     64|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     65|     expect(s.querySelectorAll("h2")).toHaveLength(1);
+     66|     const list = s.querySelector("ul")!;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/kit/ServicesCards.test.tsx > services/cards-masonry (B1-4) > KD-AC-12 [U]: md 이상 CSS 다단 2(columns) · 카드 break-inside avoid · 행 늘이기 0(block 흐름) · 선택자 = class(data-layout 0) · 재배치·단 배정 고정 0 · md 미만 = .kit-cards 1열
+AssertionError: /* services/cards-masonry: expected -1 to be greater than -1
+ ❯ cssSection src/kit/ServicesCards.test.tsx:19:22
+     17| const cssSection = (marker: string) => {
+     18|   const at = css().indexOf(marker);
+     19|   expect(at, marker).toBeGreaterThan(-1);
+       |                      ^
+     20|   return css().slice(at, css().indexOf("\n}\n", at));
+     21| };
+ ❯ src/kit/ServicesCards.test.tsx:75:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/kit/ServicesCards.test.tsx > services/cards-masonry (B1-4) > KD-AC-04 [U]: card2Body 빈 값 → 카드 2는 제목만(이웃 높이에 맞춰 늘지 않음 = 다단 block) · 빈 p 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/ServicesCards.test.tsx:83:14
+     81|   it("KD-AC-04 [U]: card2Body 빈 값 → 카드 2는 제목만(이웃 높이에 맞춰 늘지 않음 = 다단 blo…
+     82|     const s = services(drawDoc(cardsDoc("cards-masonry", { card2Body: …
+     83|     expect(s.querySelector('[data-slot="intro"]')).toBeNull();
+       |              ^
+     84|     const cards = [...s.querySelectorAll("li")];
+     85|     expect(cards).toHaveLength(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/kit/bodyVariants2a.test.tsx > M2B-2a 4변형 공통 > 4변형 모두 킷으로 그린다(폴백 표식 0)
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/bodyVariants2a.test.tsx:24:42
+     22|   it("4변형 모두 킷으로 그린다(폴백 표식 0)", () => {
+     23|     const c = drawDoc(doc2a());
+     24|     for (const s of ofPair(c)) expect(s).toHaveAttribute("data-kit");
+       |                                          ^
+     25|     expect(c.querySelectorAll("[data-fallback], [data-kit-marker]")).t…
+     26|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/kit/bodyVariants2a.test.tsx > M2B-2a 4변형 공통 > KD-AC-06 [U]: 4변형이 든 문서의 정적 HTML — script = r4.12 고정 인라인 1개(바이트 일치) · on* 속성 0
+Error: 구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:62:71
+     60|   if (!site?.hasAttribute("data-site-root") || page.body.childElementC…
+     61|   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
+     62|   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw …
+       |                                                                       ^
+     63|   clean(site);
+     64|   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+ ❯ src/kit/bodyVariants2a.test.tsx:30:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/kit/bodyVariants2a.test.tsx > M2B-2a 4변형 공통 > KD-AC-08 [U]: 섹션마다 h2 1 · h3는 cards-2·cards-masonry(카드 제목)에만 · about/text·list h3 0
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ src/kit/bodyVariants2a.test.tsx:38:62
+     36|   it("KD-AC-08 [U]: 섹션마다 h2 1 · h3는 cards-2·cards-masonry(카드 제목)에만 · a…
+     37|     const [text, list, cards2, masonry] = ofPair(drawDoc(doc2a()));
+     38|     for (const s of [text, list, cards2, masonry]) expect(s!.querySele…
+       |                                                              ^
+     39|     expect(text!.querySelectorAll("h3")).toHaveLength(0);
+     40|     expect(list!.querySelectorAll("h3")).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/kit/bodyVariants2a.test.tsx > M2B-2a 4변형 공통 > KD-AC-07 [G]: 이번 변형 CSS 블록에 order·*-reverse·grid-area·grid-row 재배치 0
+AssertionError: /* services/cards-masonry: expected -1 to be greater than -1
+ ❯ src/kit/bodyVariants2a.test.tsx:49:26
+     47|     for (const marker of ["/* services/cards-2", "/* services/cards-ma…
+     48|       const at = css.indexOf(marker);
+     49|       expect(at, marker).toBeGreaterThan(-1);
+       |                          ^
+     50|       expect(css.slice(at, css.indexOf("\n}\n", at))).not.toMatch(/\bo…
+     51|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  7 failed | 3 passed (10)
+   Start at  14:16:51
+   Duration  1.13s (environment 63%, transform 15%, setup 12%, tests 7%, import 3%, worker 1%)
+

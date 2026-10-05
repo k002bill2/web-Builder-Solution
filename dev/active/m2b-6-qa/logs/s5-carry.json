@@ -1,0 +1,334 @@
+{
+ "L2 data-motion": [
+  "L1",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L2",
+  "L1",
+  "L2",
+  "L2",
+  "L2"
+ ],
+ "motion L2 1280": {
+  "0": {
+   "now": 175,
+   "running": 9,
+   "total": 9,
+   "targets": [
+    "kit-hx-copy|kit-rise|op0.65|matrix(1, 0, 0, 1, 0, 4.20316)",
+    "kit-hx-tile|kit-rise|op0.10|matrix(1, 0, 0, 1, 0, 10.7741)",
+    "kit-hx-tile|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)",
+    "kit-card|kit-rise|op0.65|matrix(1, 0, 0, 1, 0, 4.20316)",
+    "kit-card|kit-rise|op0.10|matrix(1, 0, 0, 1, 0, 10.7741)",
+    "kit-card|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)",
+    "kit-stat|kit-rise|op0.65|matrix(1, 0, 0, 1, 0, 4.20316)",
+    "kit-stat|kit-rise|op0.10|matrix(1, 0, 0, 1, 0, 10.7741)",
+    "kit-stat|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)"
+   ]
+  },
+  "200": {
+   "now": 1120,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "500": {
+   "now": 1121,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "1000": {
+   "now": 1121,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "1200": {
+   "now": 2120,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  }
+ },
+ "motion L2 1280 overflowX": -15,
+ "motion L2 390": {
+  "0": {
+   "now": 76,
+   "running": 7,
+   "total": 7,
+   "targets": [
+    "kit-hx-copy|kit-rise|op0.23|matrix(1, 0, 0, 1, 0, 9.29678)",
+    "kit-card|kit-rise|op0.23|matrix(1, 0, 0, 1, 0, 9.29678)",
+    "kit-card|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)",
+    "kit-card|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)",
+    "kit-stat|kit-rise|op0.23|matrix(1, 0, 0, 1, 0, 9.29678)",
+    "kit-stat|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)",
+    "kit-stat|kit-rise|op0.00|matrix(1, 0, 0, 1, 0, 12)"
+   ]
+  },
+  "200": {
+   "now": 1074,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "500": {
+   "now": 1074,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "1000": {
+   "now": 1074,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "1200": {
+   "now": 2074,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  }
+ },
+ "motion L2 390 overflowX": -15,
+ "motion L2 reduce 1280": {
+  "0": {
+   "now": 74,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "200": {
+   "now": 204,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "500": {
+   "now": 507,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "1000": {
+   "now": 1006,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  },
+  "1200": {
+   "now": 1206,
+   "running": 0,
+   "total": 0,
+   "targets": []
+  }
+ },
+ "header Esc sticky-right-cta": {
+  "opened": {
+   "open": true,
+   "vis": "visible",
+   "disp": "flex",
+   "op": "0",
+   "focus": "kit-menu-button"
+  },
+  "justAfterEsc": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  },
+  "after300": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  }
+ },
+ "header Esc sticky-hamburger": {
+  "opened": {
+   "open": true,
+   "vis": "visible",
+   "disp": "flex",
+   "op": "0",
+   "focus": "kit-menu-button"
+  },
+  "justAfterEsc": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  },
+  "after300": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  }
+ },
+ "header Esc sticky-two-tier": {
+  "opened": {
+   "open": true,
+   "vis": "visible",
+   "disp": "flex",
+   "op": "0",
+   "focus": "kit-menu-button"
+  },
+  "justAfterEsc": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  },
+  "after300": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  }
+ },
+ "header Esc transparent": {
+  "opened": {
+   "open": true,
+   "vis": "visible",
+   "disp": "flex",
+   "op": "0",
+   "focus": "kit-menu-button"
+  },
+  "justAfterEsc": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  },
+  "after300": {
+   "open": false,
+   "vis": "visible",
+   "disp": "none",
+   "op": "1",
+   "focus": "kit-menu-button"
+  }
+ },
+ "CTA Tab": [
+  {
+   "tag": "A",
+   "text": "문의하기",
+   "inBand": false,
+   "outline": "solid 2px rgb(26, 26, 26) off2px",
+   "fv": true
+  },
+  {
+   "tag": "A",
+   "text": "문의하기",
+   "inBand": true,
+   "outline": "solid 2px rgb(255, 255, 255) off2px",
+   "fv": true
+  }
+ ],
+ "CTA shot": "FAIL CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot",
+ "disabled contact--booking": {
+  "fieldsetDisabled": true,
+  "input": {
+   "opacity": "1",
+   "color": "rgb(26, 26, 26)",
+   "backgroundColor": "rgb(255, 255, 255)",
+   "borderTopColor": "rgb(26, 26, 26)",
+   "cursor": "not-allowed"
+  },
+  "button": {
+   "opacity": "1",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(10, 92, 54)",
+   "borderTopColor": "rgb(255, 255, 255)",
+   "cursor": "not-allowed"
+  },
+  "note": [
+   "온라인 예약은 준비 중입니다. 지금은 이 양식으로 예약할 수 없습니다."
+  ]
+ },
+ "disabled contact--form": {
+  "fieldsetDisabled": true,
+  "input": {
+   "opacity": "1",
+   "color": "rgb(26, 26, 26)",
+   "backgroundColor": "rgb(255, 255, 255)",
+   "borderTopColor": "rgb(26, 26, 26)",
+   "cursor": "not-allowed"
+  },
+  "button": {
+   "opacity": "1",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(10, 92, 54)",
+   "borderTopColor": "rgb(255, 255, 255)",
+   "cursor": "not-allowed"
+  },
+  "note": [
+   "온라인 문의는 준비 중입니다. 지금은 이 양식으로 보낼 수 없습니다."
+  ]
+ },
+ "sheet open timeline (motion on)": [
+  {
+   "ms": 100,
+   "open": true,
+   "op": "0",
+   "tf": "matrix(1, 0, 0, 1, 0, -8)",
+   "anims": [
+    "opacity:running:0",
+    "transform:running:0"
+   ]
+  },
+  {
+   "ms": 400,
+   "open": true,
+   "op": "0",
+   "tf": "matrix(1, 0, 0, 1, 0, -8)",
+   "anims": [
+    "opacity:running:0",
+    "transform:running:0"
+   ]
+  },
+  {
+   "ms": 1500,
+   "open": true,
+   "op": "0",
+   "tf": "matrix(1, 0, 0, 1, 0, -8)",
+   "anims": [
+    "opacity:running:0",
+    "transform:running:0"
+   ]
+  },
+  {
+   "ms": 3000,
+   "open": true,
+   "op": "1",
+   "tf": "none",
+   "anims": []
+  }
+ ],
+ "sheet open reduce +50ms": {
+  "open": true,
+  "op": "1"
+ },
+ "motion endTime max(ms) 1280": [
+  580,
+  580,
+  580,
+  500
+ ],
+ "CTA shot 2": "FAIL CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot"
+}

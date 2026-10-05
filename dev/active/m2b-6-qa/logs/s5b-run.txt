@@ -1,0 +1,5 @@
+C sheet open timeline (motion on) [{"ms":100,"open":true,"op":"0","tf":"matrix(1, 0, 0, 1, 0, -8)","anims":["opacity:running:0","transform:running:0"]},{"ms":400,"open":true,"op":"0","tf":"matrix(1, 0, 0, 1, 0, -8)","anims":["opacity:running:0","transform:running:0"]},{"ms":1500,"open":true,"op":"0","tf":"matrix(1, 0, 0, 1, 0, -8)","anims":["opacity:running:0","transform:running:0"]},{"ms":3000,"open":true,"op":"1","tf":"none","anims":[]}]
+C sheet open reduce +50ms {"open":true,"op":"1"}
+C motion endTime max(ms) 1280 [580,580,580,500]
+C CTA shot 2 "FAIL CdpRequestTimeoutError: CDP request timed out: Page.captureScreenshot"
+

@@ -1314,3 +1314,15 @@
 127.0.0.1 - - [05/Oct/2026 21:48:04] "GET /_fonts.css HTTP/1.1" 200 -
 127.0.0.1 - - [05/Oct/2026 21:48:04] code 404, message File not found
 127.0.0.1 - - [05/Oct/2026 21:48:04] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [05/Oct/2026 21:54:59] "GET /_motion-L2.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 21:54:59] "GET /_fonts.css HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:01] "GET /_motion-L2.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:03] "GET /_motion-L2.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:04] "GET /header--sticky-right-cta.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:06] "GET /header--sticky-hamburger.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:08] "GET /header--sticky-two-tier.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:10] "GET /header--transparent.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:12] "GET /cta-band--banner.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:28] "GET /contact--booking.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:55:28] "GET /contact--form.html HTTP/1.1" 304 -
+127.0.0.1 - - [05/Oct/2026 21:56:02] "GET /_motion-L2.html HTTP/1.1" 304 -

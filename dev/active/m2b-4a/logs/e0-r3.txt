@@ -1,0 +1,2 @@
+## R-3 SVG foreignObject data: 폰트 (4339, Ego Lite Chromium) {"fontBytes":362684,"inkFirst":4666,"inkLater":4666,"inkNoFont":3629,"diffFirstVsLater":0,"diffFirstVsNoFont_negative":9247}
+

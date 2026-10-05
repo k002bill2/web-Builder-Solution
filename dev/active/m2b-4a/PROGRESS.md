@@ -6,11 +6,11 @@
 
 ## 체크리스트
 - [x] P0 npm ci exit 0 · lock 불변(`git diff --exit-code -- app/package-lock.json app/package.json` exit 0) · baseline gate OK(logs/baseline-gate.txt) · 바이트 logs/p0-baseline-bytes.txt(렌더 JS 82,280 · CSS 7,818 · /studio 첫 91,776 · 진입 127,339 · /compare 진입 121,715 B) · 골격 커밋
-- [ ] E0-1 R-1 불투명 출처 iframe `@font-face` 로드 (dev 4337 · preview 4339) → 1안/2안 분기
-- [ ] E0-2 R-3 SVG foreignObject `data:` 폰트 PNG 반영 + 음성 검증
+- [x] E0-1 R-1 → **1안**(같은 서버 `url()` @font-face): 4337 dev·4339 preview 모두 불투명 출처(self.origin = "null") iframe에서 `ProbeK:400:loaded` · 없는 파일 = error(음성) · `Origin: null` 응답 ACAO null(logs/e0-r1.txt). 운영 정적 호스팅도 woff2에 같은 헤더 필요(REPORT 한계)
+- [x] E0-2 R-3 통과: SVG foreignObject `data:` KitSerifKR-700 → decode 직후 첫 그리기 = 0.8초 뒤 그리기(차이 0px) · `@font-face` 뺀 음성 = 9,247px 차이(logs/e0-r3.txt, Ego Lite Chromium)
 - [x] E0-3 R-5 Pretendard sha256 = 공식 릴리스 ZIP 동일 (logs/e0-sha256.txt)
 - [x] E0-4 Noto 2종 원본 커밋 고정 URL·sha256 (logs/e0-sha256.txt)
-- [ ] P1 자산: KitSansKR/KitSerifKR 400·700 · OFL.txt · SOURCE.md · Pretendard SOURCE.md
+- [x] P1 자산: `app/src/assets/site-fonts/kit-{sans,serif}-kr/` woff2 400·700 · OFL.txt(원문 바이트 동일) · SOURCE.md(RFN 0건 출력·재현 명령) · `app/src/assets/fonts/SOURCE.md`(Pretendard 출처·체크섬)
 - [ ] P2 렌더 문서 로드(fonts.css/2안 · fontStack 별칭 · font-synthesis · 굵기 대응 · 로드 뒤 rects · 3초 폴백 · 늦은 로드 재전송)
 - [ ] P3 정적 HTML `data:` 인라인 · 고지 주석
 - [ ] P4 PNG `data:` 폰트 · 실패 정책(5초 · 문구 · 파일 0)

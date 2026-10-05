@@ -844,6 +844,39 @@
   }
 }
 
+/* testimonials/quotes-2 (B1-9) — 제목 → 후기 카드 2개(카드 면·2열 = services cards-2 재사용: .kit-cards--2 · .kit-card). 카드 = figure 세로 flex, 작성자는 카드 아래(margin-top auto).
+   후기 ink · body(md 미만) / lead(md 이상) · 줄바꿈 pre-line · blockquote 여백·기울임 0 · 작성자 ink 제목 굵기 body — muted 0(카드 면 C-5 밖) · 인용 부호 생성 글자 0 */
+@layer components {
+  .kit-quote-figure {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--site-s3);
+    margin: 0;
+  }
+  .kit-quote {
+    margin: 0;
+  }
+  .kit-quote-text {
+    margin: 0;
+    font-size: var(--site-t0);
+    font-style: normal;
+    white-space: pre-line;
+    color: var(--site-ink);
+  }
+  .kit-quote-author {
+    margin-top: auto;
+    font-size: var(--site-t0);
+    font-weight: var(--site-weight-heading);
+    color: var(--site-ink);
+  }
+  @media (width >= 48rem) {
+    .kit-quote-text {
+      font-size: var(--site-t1);
+    }
+  }
+}
+
 /* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
 @layer components {
   .kit-faq-inner {

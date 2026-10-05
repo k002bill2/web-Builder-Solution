@@ -7,7 +7,7 @@
 
 ## 체크리스트
 - [x] P0 BRIEF·PROGRESS·REPORT 골격·gate.sh 커밋 / npm ci exit 0(lock 불변, git status = dev/active/m2b-2b/만, logs/npm-ci.txt) / baseline gate OK(logs/baseline-gate.txt: 렌더 JS 81.31 · CSS 7.25 · /studio 91.77/127.41) · 전체 vitest 195 files · 1763 passed · exit 0(logs/baseline-full-vitest.txt) · 바이트 baseline(logs/p1-baseline-bytes.txt)
-- [ ] P1 공유 gallery 시제품(portfolio/masonry) 예산 실측 — 멈춤선 판정
+- [x] P1 공유 gallery 시제품(portfolio/masonry) 예산 실측 — 렌더 JS +213 B · CSS +124 B · /studio 진입 +26 B(부모 끝 상태 포함, ≤30 B) → 멈춤 아님(logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림
 - [ ] P2 portfolio 3변형 공유 PortfolioGallery — RED → GREEN → gate → 커밋
 - [ ] P3 statistics/stats-3 — RED → GREEN → gate → 커밋
 - [ ] P-B REPORT 선기록 → 브라우저 3폭 판정(KD-AC [B]) · 정적 HTML 동등성 · 캡처 · 서버 종료

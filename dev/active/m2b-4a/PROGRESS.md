@@ -11,7 +11,7 @@
 - [x] E0-3 R-5 Pretendard sha256 = 공식 릴리스 ZIP 동일 (logs/e0-sha256.txt)
 - [x] E0-4 Noto 2종 원본 커밋 고정 URL·sha256 (logs/e0-sha256.txt)
 - [x] P1 자산: `app/src/assets/site-fonts/kit-{sans,serif}-kr/` woff2 400·700 · OFL.txt(원문 바이트 동일) · SOURCE.md(RFN 0건 출력·재현 명령) · `app/src/assets/fonts/SOURCE.md`(Pretendard 출처·체크섬)
-- [ ] P2 렌더 문서 로드(fonts.css/2안 · fontStack 별칭 · font-synthesis · 굵기 대응 · 로드 뒤 rects · 3초 폴백 · 늦은 로드 재전송)
+- [x] P2 렌더 문서 로드: `kit/fonts.css`(1안 6규칙·font-synthesis none) · `kit/siteFonts.ts`(별칭·스택·굵기 대응) · `render/siteFontLoad.ts`(캔버스 3초 폴백·늦은 로드 재측정 · 내보내기 bytes FontFace) · protocol render.fonts
 - [ ] P3 정적 HTML `data:` 인라인 · 고지 주석
 - [ ] P4 PNG `data:` 폰트 · 실패 정책(5초 · 문구 · 파일 0)
 - [ ] P5 가드 G2·G3·G4·G5·G6 · 번들 B8
@@ -30,3 +30,5 @@
 - P2 렌더 문서 로드: 새 파일 `kit/siteFonts.test.ts` it 4(U6 굵기 대응 300·550·551·900 + 같은 대응 = 면 1개 · 허용 밖 계열 = 면 0 · U8 fontStack 별칭 맨 앞·"Noto …" 0·sans/serif 스택 · kitVars 굵기 대응값) + `render/renderFonts.test.ts` +1(G2 개정: 기존 2 it 개정 + url 대상 허용 6파일·외부 0·swap·local 0·font-synthesis none) + `render/RenderApp.test.tsx` +3(B7 로드 전 rects 0 → 로드 뒤 · 3초 폴백 rects + 늦은 로드 재전송 · 내보내기 bytes FontFace 등록 뒤 rects) + `render/protocol.test.ts` +1(render.fonts 모양 검사) = **+9 → 206 files · 1811**. 이관(수정만): `kit/tokens.test.ts` 글꼴 스택 단언 2줄(전 `"Pretendard", system-ui, sans-serif`·`"Noto Serif KR", serif` → 후 별칭 스택 — SPEC 2.1 근거)
 - P3·P4 정적 HTML·PNG·실패 정책: 새 파일 `features/studio/siteFontEmbed.test.ts` it 5(@font-face 파싱·제거 · 쓰는 계열·굵기만 data: ≤2·swap·local 0 U7 · 5초 초과 실패/4.9초 성공 · 시간 초과 뒤 도착 무시 B9 · 고지 주석 G4) + `staticHtml.test.ts` +2(data: 인라인·고지 · 폰트 실패 = 실패·object URL 0) + `pngCapture.test.ts` +2(캡처 SVG data: 폰트·url(/assets) 0 · 폰트 실패 = RENDER_TIMEOUT·draw/download 0) + `staticMarkup.test.ts` +1(고지 주석 head·사용자 글자 0) = **+10 → 207 files · 1821**
 - P5 가드: 새 파일 `test/siteFontAssets.test.ts` it 3(G3 라이선스·SOURCE 커밋 고정 URL·sha256 ≥2 · G5 "RFN 사후 검사 | 0건" 행·별칭 금지어 0 · G6 폰트 의존성 0·venv/스크립트 파일 0) = **+3 → 208 files · 1824**
+  - P2 실제: RED 7 failed(새 6 + 이관 tokens.test 1) + siteFonts.test 파일 import 실패(it 4)(logs/p2-red.txt) → GREEN 표적 5파일 41 passed · gate 표적·가드·typecheck·lint·build(logs/p2-gate.txt — 1차 lint 1건 수정 후 개별 재실행 exit 0) · 바이트 렌더 JS 82,820(+540) · CSS 8,034(+216) · 앱 화면 전부 ±0 B(logs/p2-bytes.txt)
+  - 이관(기존 단언 전후): ① `kit/tokens.test.ts:25-26` 전 `"Pretendard", system-ui, sans-serif` · `"Noto Serif KR", serif` → 후 SPEC 2.1 스택(별칭 맨 앞) ② `render/renderFonts.test.ts` 첫 it 전 "@font-face·woff 0·fonts.css 0" → 후 "render.css·kit.css @font-face·woff 0·앱 tokens/fonts.css 0 + @import 는 kit/fonts.css 1개"(G2 SPEC 개정분) ③ `test/tokenUsage.test.ts` V2-AC-14 전 "woff2 전체 4개" → 후 "site-fonts 밖 woff2 4개(앱 UI 그대로) + site-fonts = SPEC 2.1 정확 4파일"(목록 고정 — 약화 아님, P2 gate 가드에서 발견)

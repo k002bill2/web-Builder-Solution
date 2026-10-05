@@ -1,4 +1,5 @@
 import type { KitTokenInput } from "../render/protocol";
+import { fontStack, siteWeight } from "./siteFonts";
 
 /**
  * 킷 토큰 생성기 (M2A-2a K1 · m2a 0.3~0.5) — 킷 토큰 입력 → 사이트 CSS 변수 `--site-*`. 순수 · 결정적(키 순서 고정, 숫자 소수 4자리).
@@ -21,8 +22,6 @@ const CARD: Readonly<Record<KitTokenInput["card"]["style"], readonly [radius: st
 /** 촘촘 = sectionGap × 0.75를 grid 8의 배수로 내림(effectiveProfile `compactGap`과 같은 규칙 — src/test/kitTokens.test.ts가 대조) */
 export const compactSectionGap = (gap: number) => Math.floor((gap * 0.75) / 8) * 8;
 
-const fontStack = (family: string) => (/serif/i.test(family) && !/sans/i.test(family) ? `"${family}", serif` : `"${family}", system-ui, sans-serif`);
-
 export function kitVars(input: KitTokenInput): Readonly<Record<string, string>> {
   const { palette, card, type, space, mediaRatio } = input;
   const g = space.grid / 16;
@@ -37,8 +36,8 @@ export function kitVars(input: KitTokenInput): Readonly<Record<string, string>> 
     "--site-bg": palette.bg,
     "--site-on-primary": SITE_ON_PRIMARY,
     "--site-font": fontStack(type.family),
-    "--site-weight-heading": String(type.headingWeight),
-    "--site-weight-body": String(type.bodyWeight),
+    "--site-weight-heading": String(siteWeight(type.headingWeight)),
+    "--site-weight-body": String(siteWeight(type.bodyWeight)),
     ...Object.fromEntries(TYPE_STEPS.map((n) => [`--site-t${n}`, rem(type.scale ** n)])),
     ...Object.fromEntries(STEPS.map((m, i) => [`--site-s${i + 1}`, rem(g * m)])),
     "--site-section-gap": rem(gap / 16),

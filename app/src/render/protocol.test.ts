@@ -38,6 +38,16 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readParentMessage({ type: "render", doc, images: { [id]: "blob:http://x/1" } })).toBeUndefined();
     expect(readParentMessage({ type: "render", doc, images: { "blob:x": blob } })).toBeUndefined();
   });
+
+  it("render{fonts} — 내보내기용 글꼴 바이트(M2B-4a 2.4): 별칭·400|700·ArrayBuffer · 2개 이하 · 어긋나면 메시지 전체를 버린다", () => {
+    const data = new ArrayBuffer(8);
+    const fonts = [{ family: "Kit Serif KR", weight: 700, data }];
+    expect(readParentMessage({ type: "render", doc, fonts })).toEqual({ type: "render", doc, fonts });
+    expect(readParentMessage({ type: "render", doc, fonts: [{ family: "Kit Serif KR", weight: 500, data }] })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc, fonts: [{ family: "Kit;Serif", weight: 700, data }] })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc, fonts: [{ family: "Kit Serif KR", weight: 700, data: "AAAA" }] })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc, fonts: [...fonts, ...fonts, ...fonts] })).toBeUndefined();
+  });
 });
 
 describe("직렬화 메시지 (M2A-3b G2 — serialize 부모→렌더 · html 렌더→부모)", () => {

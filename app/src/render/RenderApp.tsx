@@ -5,6 +5,7 @@ import { createObjectUrlCache, docImageIds } from "./objectUrls";
 import { PageDocument } from "./PageDocument";
 import { readParentMessage, type FrameRect, type HtmlMessage, type KitTokenInput, type RenderMessage } from "./protocol";
 import { serializeSite } from "./serializeSite";
+import { awaitSiteFonts } from "./siteFontLoad";
 
 /** 섹션·글자 슬롯 사각형 — 문서 좌표(스크롤 포함). 섹션 줄(slotKey null) 다음에 그 섹션의 글자 슬롯 */
 function measure(root: HTMLElement, host: Window): readonly FrameRect[] {
@@ -29,11 +30,14 @@ export function RenderApp({ host }: { readonly host: Window }) {
   const root = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<{ readonly doc: PageDoc; readonly kitTokens?: KitTokenInput; readonly images: Readonly<Record<string, string>> }>();
   const [measureTick, setMeasureTick] = useState(0);
+  // 글꼴이 준비된 문서(그 view 객체) — 첫 rects는 이 문서의 글꼴 대기가 끝난 뒤(M2B-4a B7)
+  const [fontsFor, setFontsFor] = useState<object>();
   const post = useCallback((message: RenderMessage | HtmlMessage) => host.parent.postMessage(message, "*"), [host]);
 
   useEffect(() => {
     // 로컬 이미지 object URL — 렌더 문서가 만들고 문서에서 빠지면 해제, 내릴 때 전부 해제(K4)
     const urls = createObjectUrlCache();
+    let cancelFonts = () => {};
     const receive = (event: MessageEvent) => {
       if (event.source !== host.parent) return;
       const message = readParentMessage(event.data);
@@ -53,7 +57,10 @@ export function RenderApp({ host }: { readonly host: Window }) {
         // 킷 토큰 없음(조회 전·실패) = 킷은 그리지 않고 error — 폴백 섹션은 중립 토큰으로 계속 그린다(MQ-1)
         if (!message.kitTokens) post({ type: "error", code: "NO_KIT_TOKENS" });
         const images = urls.sync(message.images ?? {}, docImageIds(checked.value));
-        setView({ doc: checked.value, images, ...(message.kitTokens && { kitTokens: message.kitTokens }) });
+        const next = { doc: checked.value, images, ...(message.kitTokens && { kitTokens: message.kitTokens }) };
+        setView(next);
+        cancelFonts();
+        cancelFonts = awaitSiteFonts(host, message.kitTokens, message.fonts, () => setFontsFor(next), () => setMeasureTick((n) => n + 1));
       }
       // viewport·select: 폭이 바뀌었거나 선택이 바뀐 뒤 부모가 최신 사각형을 쓰게 다시 잰다
       setMeasureTick((n) => n + 1);
@@ -62,21 +69,22 @@ export function RenderApp({ host }: { readonly host: Window }) {
     post({ type: "ready" });
     return () => {
       host.removeEventListener("message", receive);
+      cancelFonts();
       urls.clear();
     };
   }, [host, post]);
 
-  // 그린 직후 사각형 보고 + 크기 변화(글꼴 로드·폭 변경) 때 다시
+  // 글꼴 준비 뒤 사각형 보고 + 크기 변화(폭 변경) · 늦은 글꼴 로드(measureTick) 때 다시
   useLayoutEffect(() => {
     const el = root.current;
-    if (!el || !view) return undefined;
+    if (!el || !view || fontsFor !== view) return undefined;
     const report = () => post({ type: "rects", rects: measure(el, host) });
     report();
     if (typeof ResizeObserver === "undefined") return undefined;
     const observer = new ResizeObserver(report);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [view, measureTick, host, post]);
+  }, [view, fontsFor, measureTick, host, post]);
 
   const click = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as Element;

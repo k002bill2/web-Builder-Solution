@@ -34,3 +34,10 @@
 | B-M2B-07 | 비활성 문의·예약 폼에 모양 단서 추가: 안내 경계 상자 + 입력칸·버튼 점선 경계(불투명도·회색 0, `fieldset:disabled` 선택자에만) | `docs/design/m2a/SPEC.md` r3 K1-6 3 · K-AC-37 · `docs/design/m2b/SPEC-BODY.md` r5 | IMPL-TODO T-1 |
 | B-M2B-08 | m2a K1 7변형 루브릭 원기록(①~⑩) — ①~⑨ PASS 62 · 주의 1 · ⑩ 7건 주의(변형별 미검증) | `docs/design/m2a/SPEC.md` r3 5절 | 0 (QA 재검 T-6) |
 | B-M2C-08 | 이미지 **지우기·바꾸기** 때 대체텍스트·장식 초기화 · 첫 넣기·잃은 이미지 다시 고르기는 유지 | `docs/design/m2c/SPEC.md` r3 2.7 · IMG-AC-30 | IMPL-TODO T-2 |
+
+---
+
+## 결정 기록 (2026-10-06)
+
+- **MQ-S1 ★A(지금 유지 + QB-10 전제 정정)** — 영환님 Slack 위임 "계속 추천대로 진행해줘"(thread 1790269973.118759)에 따라 Jarvis 기록. B(앱 수준 이미지 맵)·C(문서+이미지 영속, ADR)는 선택하지 않음. 후속: IMPL-TODO T-5(QA 실측).
+- 결정 완료 4건(B-M2B-06·07·08, B-M2C-08)은 Designer 판단 그대로 수용. 구현 T-1·T-2는 M2C-P3 병합 뒤 Developer 레인.

@@ -23,3 +23,4 @@ base `d25fe49` · 브랜치 `k002bill2/m2c-3`
 - [ ] R5 Ego Lite 4폭 확인·캡처 + 창·탭 닫힘 재확인 · 서버 종료·lsof 0
 - [ ] R6 Codex review --scope branch --base d25fe49 (≤2) · REPORT 전체 갱신
 - R1 예측: 새 테스트 9개 → 실제 8개(예측 때 셈 잘못 — 테스트 삭제 0) · RED `logs/red-r1.txt` · GREEN 8/8
+- R2 예측: 새 테스트 10개(ImageSlotPanel.test.tsx) — RED = 모듈 없음

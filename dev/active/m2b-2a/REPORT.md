@@ -1,7 +1,7 @@
 # M2B-2a REPORT — 소개·서비스 4변형
 
 - 책임 역할: Developer · 실행 환경: Orca managed worktree `m2b-2a` + Claude Code (Opus 5.5) · 서브에이전트 0
-- 시작 SHA `c22f169` · 최종 SHA: (마감 시 기록)
+- 시작 SHA `c22f169` · 구현·판정 마지막 SHA `6e5bb93`(Codex 검토 HEAD) · 마감 커밋 = 이 REPORT를 담은 커밋(`git log -1 -- dev/active/m2b-2a/REPORT.md`)
 
 ## 1. 커밋표
 | 커밋 | 내용 | 변경 경로 |
@@ -12,7 +12,10 @@
 | 5c396f0 | services/list — 새 ServicesList + 공유 머리(servicesHead) · SectionVariant.test 미구현 예시 이관 | kit/ServicesList.tsx·.test.tsx · kit/servicesHead.tsx · kit/kit.css · registry · renderedVariants · PageDocument.test · components/studio/SectionVariant.test.tsx |
 | 286c8d3 | services/cards-2 — 공유 ServicesCards(카드 번호 목록) · ServicesCards3 wrapper(출력 cmp 동일) | kit/ServicesCards.tsx·.test.tsx · kit/ServicesCards3.tsx · kit.css · registry · renderedVariants · PageDocument.test |
 | a1a14c3 | services/cards-masonry — CSS 다단 · 4변형 공통 KD-AC-06·07·08 테스트 · 실렌더 22 | kit/ServicesCards.tsx·.test.tsx · kit/bodyVariants2a.test.tsx · kit.css · registry · renderedVariants · PageDocument.test · SectionVariant.test |
-(경로 앞 `app/src/` 생략. 마감 커밋은 6절 뒤에 추가)
+| 0738115 | REPORT 커밋표·번들·공유/명세 차이·이관표(브라우저 전) | dev/active/m2b-2a/ |
+| 6e5bb93 | 브라우저 판정 KD-AC·QB PASS · 캡처 24 · 서버 종료 증거 | dev/active/m2b-2a/ |
+| (마감) | 전체 vitest · Codex 결과 · REPORT/PROGRESS 마감 | dev/active/m2b-2a/ |
+(경로 앞 `app/src/` 생략)
 
 ## 2. KD-AC 판정 (이 레인 4변형 범위)
 [U]/[G] = vitest(표적 파일) · [B] = ego-browser `qb.mjs` → logs/qb-run.txt · logs/qb.json (render.html 127.0.0.1:4337 최상위 페이지, CDP 폭 1280·768·390 — innerWidth 1280/768/390 기록, clientWidth = 스크롤바 제외 1265/753/375)
@@ -89,10 +92,17 @@
 - 판정 스크립트 결함 1건(제품 결함 아님): 1차 실행에서 정적 사본 CSS를 `cssRules.cssText`로 모았더니 `.kit-card { border: var(--site-card-stroke) solid …; border-top-width: … }`의 단축 속성이 빈 값으로 직렬화돼 정적 사본 카드 테두리가 사라짐(카드 높이 1px 차, logs/qb-eq-run.txt · qb-eq.json 진단). 제품 내보내기(`staticHtml.ts kitCss`)는 CSS 파일 원문을 쓰므로 해당 없음 → `<style>` 원문으로 바꿔 재실행, 동등성 일치. 같은 `cssText` 방식을 쓴 1b QA 캡처에도 같은 왜곡이 있었을 수 있음(7절).
 
 ## 6. Codex
-(작성 중)
+- 실행: `node ~/.claude/plugins/cache/openai-codex/codex/1.0.6/scripts/codex-companion.mjs review --scope branch --base c22f169` 1회 (검토 HEAD `6e5bb93`, base `c22f169`, 스레드 01a10a86-…) — 원문 logs/codex.txt. 실제 완료("Reviewer finished · Turn completed" + 결과 본문).
+- 결과: **지적 0건(P1 0 · P2 0)** — "기준 커밋 대비 변경에서 수정이 필요한 결함을 발견하지 못했습니다."
+- 한계(로그 그대로): Codex 쪽 테스트 실행은 읽기 전용 샌드박스 EPERM으로 실패, typecheck만 통과 확인. 테스트 통과 증거는 이 레인의 전체 vitest(logs/full-vitest.txt)로 대신한다.
 
-## 7. 남은 위험
-(작성 중)
+## 7. 남은 위험 · 미완
+- 전체 vitest(마감 전 1회, 기본 설정): **195 files · 1763 passed · exit 0 · Errors 0**(logs/full-vitest.txt). baseline 1744 → +19(예측 +17 ±4). typecheck·lint·build는 각 gate 로그(마지막 logs/cards-masonry-gate.txt) exit 0.
+- masonry 단 배정은 Chromium 균형 결과([0,1,1])만 관찰 — 다른 엔진 시각 QA는 M2B-6(SPEC 루브릭 ③ "주의").
+- masonry `break-inside: avoid`는 다단 폭(md 이상) 규칙 안에만 있음 — md 미만은 다단이 아니라 해당 없음(390 계산값 auto).
+- 판정 스크립트 cssText 직렬화 결함(5절): 이 레인은 수정 후 재측정. 같은 방식을 쓴 이전 QA(1b) 정적 캡처의 카드·테두리 표시는 별도 확인 대상일 수 있음(이번 범위 밖, 제품 코드 영향 없음).
+- 2a 이후에도 SectionVariant.test의 "구조 미리보기" 예시는 contact/booking — 2c에서 booking이 실렌더되면 다시 이관 필요(미구현 변형이 0이 됨).
+- 범위 밖 미착수: 2b·2c 변형 · 모션·폰트 · push·병합(Jarvis/영환님 승인 사항).
 
 ## 8. 서버
 - 이 worktree에서 vite 127.0.0.1:4337(`npm exec vite --host 127.0.0.1 --port 4337 --strictPort`, cwd …/m2b-2a/app) + `python3 -m http.server 4339 --bind 127.0.0.1`(cwd …/m2b-2a/dev/active/m2b-2a/static). 로그 logs/server-4337.txt · server-4339.txt.

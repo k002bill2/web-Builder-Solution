@@ -16,8 +16,8 @@
 | `header.ts` | V5 디코드 전 헤더 파서: PNG IHDR(+tRNS 청크 걷기) · JPEG SOFn(세그먼트 길이로 걷기, 채움·RST/TEM 처리, C4·C8·CC 제외) · WebP VP8/VP8L/VP8X · 40MP · 한 변 16,384 · 알파 판정 |
 | `ladder.ts` | 폭 사다리 640·1280·1920 + 원본 폭 단(<1920) · 업스케일 0 · 파생본 높이 |
 | `format.ts` | WebP 0.82 → 대체 JPEG 0.85 / 투명이면 PNG · WebP 감지 = 1×1 시험 인코딩 `blob.type` 판정, 인코더(키)마다 1회 메모(WeakMap) |
-| `deps.ts` | 브라우저 주입 경계 + 기본 구현(OffscreenCanvas → 없으면 HTMLCanvasElement, 호출 시점에만 전역 접근) |
-| `ingestImage.ts` | 조립: V1~V6 · 큰 폭부터 반씩 단계 축소(`createImageBitmap` resize, `resizeQuality:"high"`) · 단마다 재인코딩 · 모든 bitmap close(성공·실패) |
+| `deps.ts` | 브라우저 주입 경계(`createImageBitmap`·`encode`·`drawScaled`) + 기본 구현(OffscreenCanvas → 없으면 HTMLCanvasElement, 호출 시점에만 전역 접근) |
+| `ingestImage.ts` | 조립: V1·V2(바이트 읽기 전) → V3 → V4 → V5 → V6 · 큰 폭부터 반씩 단계 축소(`createImageBitmap` resize, `resizeQuality:"high"`; 결과 크기가 요청과 다르면 캔버스 단계 축소 `drawScaled`로 대체, 대체도 다르면 DECODE_FAILED) · 단마다 재인코딩 · 파일 읽기 실패 = DECODE_FAILED 결과 · 모든 bitmap close(성공·실패) |
 | `messages.ts` | SPEC 2.3 실패 문구 |
 | `fixtures/imageBytes.ts` | **자체 제작 fixture 생성기**: PNG(색 유형·tRNS·eXIf) · JPEG(SOF0/SOF2·APP1 EXIF 방향·GPS·APP2 채움) · WebP(VP8/VP8L/VP8X 알파) · GIF·SVG·HEIC 서명 · `insertExifApp1`(QA가 캔버스로 만든 실 JPEG에 태그를 붙여 [B] 실측용) |
 
@@ -32,7 +32,7 @@
 | 06 | `ingestImage.test.ts` "EXIF 제거" ×2(JPEG APP1+GPS · PNG eXIf+GPS, 500폭 = 축소 없음에도 재인코딩 · 원본 File을 인코더/결과에 넘기지 않음 · 결과 바이트 `Exif\0\0`·`eXIf`·GPS 태그 0x8825 = 0) | [U] — [B]는 아래 한계 |
 | 07 | `ingestImage.test.ts` "방향": 디코드에 `imageOrientation:"from-image"` 전달 · 메타·사다리 = 디코드(방향 적용 뒤) 크기(헤더 300×200 → 결과 200×300) | [U](옵션 전달) — [B]는 아래 한계 |
 | 10 | `ingestImage.test.ts` "원본 미보관"(모든 bitmap close · 결과에 File·파일 이름 0) · "인코딩 실패 = DECODE_FAILED · bitmap 모두 close" | [U] |
-| (추가) | 반씩 단계 축소(16,000폭 → 매 단계 ≥ 절반 · `resizeQuality:"high"`) · 기본 deps import 시 전역 무접촉 | [U] |
+| (추가) | 반씩 단계 축소(16,000폭 → 매 단계 ≥ 절반 · `resizeQuality:"high"`) · resizeWidth 무시 환경 → 캔버스 대체(반씩 · close) · 대체도 틀리면 DECODE_FAILED(무한 반복 0) · 파일 읽기 실패 2곳 → DECODE_FAILED · 읽을 수 없는 GIF → 읽기 전 TYPE_MISMATCH · 기본 deps import 시 전역 무접촉 | [U] |
 
 - TDD 이력(예측 → RED → GREEN, 로그 `logs/stageN-{red,green}.log`):
   | 단계 | 예측(새 테스트 · RED 실패) | 실제 RED | GREEN(누적) |
@@ -41,6 +41,8 @@
   | 2 헤더 | 21 · 14 | **16 실패** · 5 통과(차이 2 = 상수 단언을 예측에서 빠뜨림 · 테스트 변경 없음) | 45 |
   | 3 사다리·포맷 | 16 · 15 | 15 · 1 | 61 |
   | 4 조립 | 15 · 14 | 14 · 1 | 76 |
+  | Codex r1 반영 | 2 · 2 | 2 · 0 | 78 |
+  | Codex r2 반영 | 3 · 2 | **3 실패**(차이 1 = 가짜 60회 상한까지 bitmap이 쌓여 `< 10` 단언 실패 · 테스트 변경 없음) | 81 |
 - 단언 약화·skip 0.
 
 ## 4. meta(결정·정의)
@@ -56,9 +58,15 @@
 - **IMG-AC-06 [B]·07 [B] 미실측**: jsdom은 디코드·캔버스 인코딩을 못 한다. 이 모듈은 아직 어디서도 import되지 않아 앱 안 클릭으로 닿을 경로가 없고(브라우저 검증 규칙 = 앱 안 이동), 서버 기동도 하지 않았다. → M2C-3 연결 뒤 M2C-5 QA가 `insertExifApp1`로 방향 6·GPS 태그를 붙인 자체 제작 JPEG로 실측.
 - Worker 분리 안 함(SPEC 2.5 "필수 아님") · 변환 시간(≤2초 목표) 미측정 — QB-5.
 - 취소(마지막 선택만 반영, IMG-AC-09)·UI 오류(08)·한도(11)는 M2C-3 범위. 변환기는 `File`을 받아 결과만 돌려준다(취소는 호출 쪽이 결과를 버림).
-- 큰 원본 축소는 `createImageBitmap` resize 옵션에 기댄다 — 미지원 브라우저면 DECODE_FAILED(대상 브라우저 표 SPEC 11절 확인 필요).
+- `resizeWidth` 미지원 대체(캔버스 단계 축소)·`OffscreenCanvas` 부재 경로는 주입 가짜로만 보증 — 기본 구현(`deps.ts`의 캔버스 코드)은 jsdom에 캔버스가 없어 단위 테스트 밖. 실기기 확인은 SPEC 11절대로 [확인 필요]·BACKLOG.
+- `resizeWidth`가 무시되는 환경에서 WebP 감지 1×1 시험 인코딩은 원본 크기로 인코딩된다(탭에서 1회 · 결과 type만 본다) — 비용만 크고 결과는 맞다.
+- WebP 감지 시험 인코딩이 예외면 그 인코더는 탭 동안 미지원으로 기억한다(일시 오류여도 JPEG/PNG로 고정).
 
-## 6. 검증 명령(최종 1회 · 로그 `logs/final-*.txt`)
-- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npx vitest run` exit 0(220 파일 · 1952 테스트) · `npm run build` exit 0
-- dist sha256 비교: `diff logs/dist-baseline.sha256 logs/dist-final.sha256` → 차이 0
-- Codex: 아래 7절
+## 6. 검증 명령(로그 `logs/final-*.txt`)
+- 아래 7절 이후 최신 커밋 기준 값으로 갱신.
+
+## 7. Codex (`review --scope branch --base c870439`, 2라운드 상한 — BRIEF)
+| 라운드 | 결과 | 처리 |
+|---|---|---|
+| r1 (`logs/codex-r1.txt`) | P2 1건: 파일 바이트 읽기 실패(NotReadableError)가 결과가 아니라 reject로 샘 | 반영 `03921db`(TDD 2개) |
+| r2 (`logs/codex-r2.txt`) | P1 1건: `resizeWidth` 무시 환경에서 축소 루프 무한 반복(SPEC 11절 캔버스 대체 없음) · P2 1건: V1·V2 전에 바이트를 읽어 읽을 수 없는 GIF가 DECODE_FAILED | 반영(TDD 3개) — **r2 반영분은 Codex 재검토 없음**(BRIEF ≤2라운드 상한). 3라운드 필요 여부는 사용자 판단 |

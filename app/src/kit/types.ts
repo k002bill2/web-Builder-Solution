@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import type { SectionInstance } from "../engine/contracts/pageDoc";
+import type { SectionInstance, SectionMotion } from "../engine/contracts/pageDoc";
 
 /** 섹션 루트 공통 속성 (m2a 0.12) — id 앵커 · 검사용 type/variant · 사각형 보고(data-instance-id, RenderApp measure) · 킷 표시 */
 export interface KitRootProps {
@@ -7,6 +7,8 @@ export interface KitRootProps {
   readonly "data-section": string;
   readonly "data-instance-id": string;
   readonly "data-kit": "";
+  /** 실효 모션 레벨(M2B-4b MF-AC-U1 · render/sectionMotion) — L0·첫 화면 밖 = 없음 */
+  readonly "data-motion"?: SectionMotion;
 }
 /** hero 맨 위 면 (SPEC-BOUND D-1 · B-3 표) — header/transparent가 이어 칠할 면. media = 이미지(플레이스홀더 포함)가 맨 위 */
 export type HeroTop = "primary" | "bg" | "surface" | "media";

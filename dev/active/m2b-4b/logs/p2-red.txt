@@ -1,0 +1,149 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app
+
+ ❯ src/render/sectionMotion.test.tsx (5 tests | 5 failed) 54ms
+   ❯ 렌더 data-motion (MF-AC-U1) (5)
+     × L2 문서: header L1 · hero L2 · hero 뒤 본문 2개 = min(motion, maxMotion) · 3번째 이후 0 · footer 0 · 사이트 루트 data-motion-play 0 29ms
+     × faq·contact 가 첫 화면 자리에 와도 속성 0 — 자리는 차지한다(그 뒤 본문 = 첫 화면 밖) 9ms
+     × L0 프리셋 = 속성 0 · L1 프리셋 = header·hero·본문 2개 L1 9ms
+     × 경계: hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · 폴백(킷 없음) 섹션 = 속성 0이지만 자리 차지 3ms
+     × maxMotion 상한: about/text·services/list·testimonials·pricing(L1) 의 L2 = L1 · header L2 = L1 · footer 상한 L0 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/sectionMotion.test.tsx > 렌더 data-motion (MF-AC-U1) > L2 문서: header L1 · hero L2 · hero 뒤 본문 2개 = min(motion, maxMotion) · 3번째 이후 0 · footer 0 · 사이트 루트 data-motion-play 0
+AssertionError: expected [ null, null, null, null, null, …(2) ] to deeply equal [ 'L1', 'L2', 'L2', 'L2', null, …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "L1",
+-   "L2",
+-   "L2",
+-   "L2",
++   null,
++   null,
++   null,
++   null,
+    null,
+    null,
+    null,
+  ]
+
+ ❯ src/render/sectionMotion.test.tsx:30:20
+     28|       ["footer", "minimal", "L2"],
+     29|     ]);
+     30|     expect(levels).toEqual(["L1", "L2", "L2", "L2", null, null, null]);
+       |                    ^
+     31|     expect(site.hasAttribute("data-motion-play")).toBe(false);
+     32|     expect(site.ownerDocument.querySelectorAll("[data-motion-play]")).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/render/sectionMotion.test.tsx > 렌더 data-motion (MF-AC-U1) > faq·contact 가 첫 화면 자리에 와도 속성 0 — 자리는 차지한다(그 뒤 본문 = 첫 화면 밖)
+AssertionError: expected [ null, null, null, null ] to deeply equal [ 'L2', null, null, null ]
+
+- Expected
++ Received
+
+  [
+-   "L2",
++   null,
+    null,
+    null,
+    null,
+  ]
+
+ ❯ src/render/sectionMotion.test.tsx:42:20
+     40|       ["services", "cards-3", "L2"],
+     41|     ]);
+     42|     expect(levels).toEqual(["L2", null, null, null]);
+       |                    ^
+     43|     expect(motions([["hero", "text", "L1"], ["contact", "booking", "L1…
+     44|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/render/sectionMotion.test.tsx > 렌더 data-motion (MF-AC-U1) > L0 프리셋 = 속성 0 · L1 프리셋 = header·hero·본문 2개 L1
+AssertionError: expected [ null, null, null, null, null, null ] to deeply equal [ 'L1', 'L1', 'L1', 'L1', null, null ]
+
+- Expected
++ Received
+
+  [
+-   "L1",
+-   "L1",
+-   "L1",
+-   "L1",
++   null,
++   null,
++   null,
++   null,
+    null,
+    null,
+  ]
+
+ ❯ src/render/sectionMotion.test.tsx:56:40
+     54|     ];
+     55|     expect(motions(rows("L0")).levels).toEqual([null, null, null, null…
+     56|     expect(motions(rows("L1")).levels).toEqual(["L1", "L1", "L1", "L1"…
+       |                                        ^
+     57|   });
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/render/sectionMotion.test.tsx > 렌더 data-motion (MF-AC-U1) > 경계: hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · 폴백(킷 없음) 섹션 = 속성 0이지만 자리 차지
+AssertionError: expected [ null, null, null ] to deeply equal [ 'L2', 'L1', null ]
+
+- Expected
++ Received
+
+  [
+-   "L2",
+-   "L1",
++   null,
++   null,
+    null,
+  ]
+
+ ❯ src/render/sectionMotion.test.tsx:60:116
+     58|
+     59|   it("경계: hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · 폴백(킷 없음) 섹션 = 속성 0이지만…
+     60|     expect(motions([["about", "story", "L2"], ["services", "list", "L2…
+       |                                                                                                                    ^
+     61|     expect(motions([["about", "text", "L2"], ["hero", "image", "L2"], …
+     62|     const { site, levels } = motions([["hero", "grid", "L2"], ["servic…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/render/sectionMotion.test.tsx > 렌더 data-motion (MF-AC-U1) > maxMotion 상한: about/text·services/list·testimonials·pricing(L1) 의 L2 = L1 · header L2 = L1 · footer 상한 L0
+AssertionError: expected [ null, null, null ] to deeply equal [ 'L2', 'L1', 'L1' ]
+
+- Expected
++ Received
+
+  [
+-   "L2",
+-   "L1",
+-   "L1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ src/render/sectionMotion.test.tsx:69:116
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  18:55:13
+   Duration  1.07s (environment 64%, transform 16%, setup 11%, tests 6%, import 3%, worker 1%)
+

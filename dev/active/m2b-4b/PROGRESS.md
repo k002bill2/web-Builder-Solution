@@ -9,7 +9,8 @@
 - [x] E0-1 R-4 실측(logs/e0-r4.txt, Ego Lite Chrome 152): 지원 = 열림 직후 opacity 0·translateY(-8px) → 400ms 뒤 1·none · 미지원 대용(알 수 없는 at-rule로 블록 무시) = 처음부터 최종 · reduce·print = 처음부터 최종. Safari·Firefox 실측 환경 없음(한계)
 - [x] E0-2 시제품(hero/fullbleed-left + 토큰·keyframes·시트) CSS 8,034 → 8,391(+357 B) · JS +0 · 빌드 산출 원형 유지 → 외삽 +0.9~1.2KB, SPEC 1.7 이내·멈춤 아님(logs/e0-budget.txt)
 - [x] P1 `kit/motion.css`(토큰 9·keyframes 4·시트·L1 묶음·L2 rise/순차/확대/강조선) · render.css import(kit.css 뒤) · RED 5 failed(logs/p1-red.txt, motion.css·import 없이) = 예측 +5 → GREEN 10 · gate OK(logs/p1-gate.txt) · 바이트 logs/p1-bytes.txt
-- [ ] P2 렌더 `data-motion`(U1)
+- [x] P2 `render/sectionMotion.ts`(firstScreenIds·motionOf) → PageDocument root `data-motion` · KitRootProps 선택 속성(킷 30개 수정 0) · RED 5 failed(logs/p2-red.txt) = 예측 → GREEN 5 · gate OK 표적 render·kit·studio 395(logs/p2-gate.txt) · 바이트(logs/p2-bytes.txt, 축약 뒤 재빌드): 렌더 JS 83,029(+158 — SPEC 1.7 추정 0~150 대비 +8 B 초과, 멈춤선 89,700 여유 6.6KB) · CSS 8,753 · /studio 첫 ±0 · 진입 127,340(+10) · /compare 진입 121,722(+27, 앱 코드 변경 0 — 청크 해시 변화) · 테스트 파일은 .tsx(예측 표기 .ts → JSX 도우미 사용)
+  - 첫 화면 경계 규칙: main 문서 순서 첫 hero + 뒤 2자리 · hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · faq·contact·폴백 = 자리 차지·속성 0 · header = 위치 무관 min(motion,L1)
 - [ ] P3 정적 HTML `data-motion-play`·KEPT_DATA·스크립트 바이트 동일(U4) · PNG 방어 규칙(U5)
 - [ ] P4 브라우저 B1~B5 3폭·reduced-motion·200%·인쇄 · 계산 스타일 동등성
 - [ ] P5 전체 vitest exit 0 · Codex branch review base 8236a2c · REPORT

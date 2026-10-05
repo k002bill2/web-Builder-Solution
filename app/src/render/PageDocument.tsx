@@ -6,6 +6,7 @@ import type { KitSection } from "../kit/types";
 import { canvasVars } from "./fallback/canvasLayouts";
 import { FallbackSection } from "./fallback/FallbackCanvas";
 import type { KitTokenInput } from "./protocol";
+import { firstScreenIds, motionOf } from "./sectionMotion";
 
 /**
  * 렌더 문서 본문 (M2A-2a K2·K3 · m2a 0.12) — 섹션 분기: 킷 레지스트리에 있으면 킷, 없으면 와이어프레임 폴백 + 표식(3.1).
@@ -30,13 +31,15 @@ export function PageDocument({
   const draw = (section: SectionInstance) => {
     const Kit = kit(section);
     if (!Kit) return <FallbackSection key={section.instanceId} section={section} />;
-    const root = { id: `s-${section.instanceId}`, "data-section": `${section.type}/${section.variant}`, "data-instance-id": section.instanceId, "data-kit": "" } as const;
+    const motion = motionOf(section, firstScreen.has(section.instanceId));
+    const root = { id: `s-${section.instanceId}`, "data-section": `${section.type}/${section.variant}`, "data-instance-id": section.instanceId, "data-kit": "", ...(motion && { "data-motion": motion }) } as const;
     return <Kit key={section.instanceId} section={section} links={links} images={images} mediaRatio={mediaRatio} root={root} />;
   };
   const outside = (type: "header" | "footer") => doc.sections.filter((s) => s.type === type && kit(s));
   const head = outside("header");
   const foot = outside("footer");
   const body = doc.sections.filter((s) => !head.includes(s) && !foot.includes(s));
+  const firstScreen = firstScreenIds(body);
   return (
     <div data-site-root style={kitTokens && kitVars(kitTokens)}>
       {head.map(draw)}

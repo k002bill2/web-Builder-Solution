@@ -45,6 +45,10 @@
   - `features/profile/CompareDialog.test.tsx` it 4 — U4 inert·sandbox·title·src · U3 B열 메시지로 A열 불변·click 무시 · U9 폭 전환 = viewport만(render 재전송 0) · U9 <1280 1안씩 + 안 전환 라디오 기본 = 선택한 안
   - `features/profile/compareGuard.test.ts` it 2 — G2 소스 전체 allow-same-origin 0 · 비교 sandbox 리터럴 · G3 로컬 상수 = RENDER_DOC_SRC·FRAME_REM·PREVIEW_WIDTH_OPTIONS + 축소 계산 동일
   - `pages/ProfileCompare.test.tsx` it +1 — U10 닫기·Esc → 연 버튼 포커스 · 닫으면 iframe 0
+- S2 실제: +7 → 216 files · 1859(예측 일치 — 표적 3파일 11 passed)
+- S3 (기준 = S2 216 · 1859): 새 파일 0 · it +8 → **216 files · 1867**
+  - `CompareDialog.test.tsx` it +7 — U6 그림·킷 없이·그리지 못함(Wireframe, iframe 0) · U6 시간 초과 8000ms → 다시 그리기(그 열만 재마운트)·늦은 rects → 그림 · U6 변환 불가(UNKNOWN_VARIANT 문장·iframe 0)·만들지 못한 안 · U7 3열 2 그림 + 1 지연 → 총계 1회·중간 0·복구 "C안을 그렸습니다" · U7 부분 실패 잡 총계(구조·만들지 못함) · U7 1안씩 = 보이는 안 1회·미방문 대기 0 · U11·U12 캡션 2문장·"(구조안)"
+  - `ProfileCompare.test.tsx` it +1 — U11 `CANDIDATE_TEXT.preview` 새 문장
 
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)

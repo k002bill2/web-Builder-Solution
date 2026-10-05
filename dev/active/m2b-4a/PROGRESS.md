@@ -51,3 +51,13 @@
 - [x] F4 gate OK(logs/fix-p2-gate.txt: 표적 22·가드 81·typecheck·lint·build exit 0 · 렌더 JS 82.86KB ≤90) · 전체 vitest 1회차 exit 1 = 무관 6파일 5초 타임아웃(load avg 121, logs/fix-p2-full-vitest.txt) → 6파일 단독 31 passed(logs/fix-p2-timeout-files-isolated.txt) → 2회차 **208 files · 1826 passed · exit 0 · Errors 0**(logs/fix-p2-full-vitest-run2.txt) = 예측 일치
 - [x] F5 Codex review --scope branch --base 254e322 1회 실제 완료 exit 0(logs/codex-review-fix-p2.txt) — 새 P2 2건(P2-a 성공+계속 대기 시 late 지연 · P2-b 폴백 섹션 굵기 불일치) 기록만·미수정(REPORT §7.1)
 - [x] F6 REPORT 7·8절 · PROGRESS 갱신 · 커밋
+
+## 수정 레인 2 — Codex P2-a (영환님 "추천대로 진행" 위임, 2026-10-05, HEAD 4666c3c)
+- 범위: `render/siteFontLoad.ts` 편집 캔버스 — 폴백(실패/3초) 뒤 한 면 성공 + 다른 면 계속 대기 시 `late`가 `allSettled` 종료까지 늦어짐 → 폴백 뒤 면별 성공마다 `late`(같은 tick 중복은 1회로 묶음). 폴백 전 성공 = 기존대로 `ready` 1회 · 전부 실패 = 폴백만 · 내보내기 경로 diff 0. P2-b 미수정(열린 항목 유지)
+- **새 테스트 사전 예측**: `render/RenderApp.test.tsx` +1 it(3초 폴백 rects → 400만 resolve·700 미해결 → rects 재전송 = **RED 1** → 이어서 700 resolve → 또 재전송) → **208 files · 1827**
+- [x] G1 예측 커밋
+- [ ] G2 RED 실측(logs/fix2-p2a-red.txt)
+- [ ] G3 최소 수정 GREEN · 내보내기 경로 diff 0
+- [ ] G4 gate(표적·가드·typecheck·lint·build) · 전체 vitest 1회 exit 0 Errors 0
+- [ ] G5 Codex review --scope branch --base 254e322 3라운드(마지막) 실제 완료 · 새 지적 기록만
+- [ ] G6 REPORT 7.2·8절 · PROGRESS 갱신 · 커밋

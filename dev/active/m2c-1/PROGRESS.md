@@ -4,15 +4,15 @@
 
 ## 체크리스트
 - [x] P0 BRIEF 명시 커밋
-- [ ] 의존성 설치(npm ci — lock 불변) · 기준 build(번들 기준값) 기록
-- [ ] 단계 1 형식 검사 V1~V4 (IMG-AC-01·02) — 예측 커밋 → RED → GREEN
-- [ ] 단계 2 헤더 파서 V5 + 알파 (IMG-AC-03·05 알파) — 예측 커밋 → RED → GREEN
-- [ ] 단계 3 폭 사다리·포맷 결정 (IMG-AC-04·05) — 예측 커밋 → RED → GREEN
-- [ ] 단계 4 ingestImage 조립 V6·인코딩·EXIF·방향·원본 미보관 (IMG-AC-03 스파이·06·07[U]·10) — 예측 커밋 → RED → GREEN
-- [ ] 번들 변화 0 확인(build 전후 비교)
-- [ ] typecheck · lint · build · 전체 vitest exit 0
-- [ ] Codex review --scope branch --base c870439 (≤2라운드)
-- [ ] REPORT.md (IMG-AC↔테스트 매핑 · meta · 한계)
+- [x] 의존성 설치(npm ci — lock 불변) · 기준 build(번들 기준값) 기록
+- [x] 단계 1 형식 검사 V1~V4 (IMG-AC-01·02) — 예측 커밋 → RED → GREEN
+- [x] 단계 2 헤더 파서 V5 + 알파 (IMG-AC-03·05 알파) — 예측 커밋 → RED → GREEN
+- [x] 단계 3 폭 사다리·포맷 결정 (IMG-AC-04·05) — 예측 커밋 → RED → GREEN
+- [x] 단계 4 ingestImage 조립 V6·인코딩·EXIF·방향·원본 미보관 (IMG-AC-03 스파이·06·07[U]·10) — 예측 커밋 → RED → GREEN
+- [x] 번들 변화 0 확인(build 전후 비교)
+- [x] typecheck · lint · build · 전체 vitest exit 0
+- [x] Codex review --scope branch --base c870439 (≤2라운드)
+- [x] REPORT.md (IMG-AC↔테스트 매핑 · meta · 한계)
 
 ## 로그
 - 설치: `npm ci` exit 0 · `git status` lock 변경 0. 기준 build exit 0 → `logs/build-baseline.txt`(/studio 진입 127.36 · 렌더 JS 83.03) · dist 해시 93개 `logs/dist-baseline.sha256`.
@@ -29,3 +29,5 @@
 - r1 반영 RED 2 실패(예측 일치) → GREEN 78/78(ingest) · tsc·eslint 통과.
 - Codex r2(`logs/codex-r2.txt`): P1 1건(resizeWidth 무시 환경 무한 축소 — SPEC 11절 캔버스 대체 경로 없음) · P2 1건(확장자·MIME 검사 전에 바이트 읽기). **반영 예측**: 새 테스트 3개 · RED 2 실패 · 1 통과(대체도 틀린 크기 → 지금은 가짜의 60회 상한 예외로 DECODE_FAILED). 기존 '기본 deps 모양' 테스트에 drawScaled 단언 1줄 추가(스텁도 함수 → 통과).
 - r2 반영 RED 실제 **3 실패**(예측 2 — '대체도 틀린 크기' 테스트가 가짜 60회 상한까지 bitmap이 쌓여 `< 10` 단언에서 실패, 예측 오류 · 테스트 변경 없음) → GREEN 81/81(ingest) · tsc·eslint 통과.
+- Codex 2라운드 완료(r1 P2 1 · r2 P1 1 + P2 1 → 전부 TDD 반영). r2 반영분 Codex 재검토 없음(BRIEF ≤2 상한).
+- 최종: typecheck·lint·build exit 0 · dist 동일 · 전체 vitest 기본 1회 exit 0(1957) — 앞선 부하(load 94) 실행 실패 경과는 REPORT 6절. REPORT 작성 완료.

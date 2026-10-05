@@ -62,8 +62,12 @@
 - `resizeWidth`가 무시되는 환경에서 WebP 감지 1×1 시험 인코딩은 원본 크기로 인코딩된다(탭에서 1회 · 결과 type만 본다) — 비용만 크고 결과는 맞다.
 - WebP 감지 시험 인코딩이 예외면 그 인코더는 탭 동안 미지원으로 기억한다(일시 오류여도 JPEG/PNG로 고정).
 
-## 6. 검증 명령(로그 `logs/final-*.txt`)
-- 아래 7절 이후 최신 커밋 기준 값으로 갱신.
+## 6. 검증 명령(최신 코드 커밋 r2 반영 뒤 · 로그 `logs/final-*.txt`)
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(/studio 진입 127.36 · 렌더 JS 83.03 · CSS 8.75 — 기준과 같음)
+- `npx vitest run`(기본 설정) **exit 0 — 220 파일 · 1957 테스트 통과** (`logs/final-vitest.txt` · 시작 load 18.4, `logs/final-vitest-load.txt`)
+  - 경과(사실대로): 같은 코드로 먼저 돈 전체 1회는 화면 테스트 1건 실패(`pages/ProfileCompact.test.tsx`, `logs/final-vitest-run1-flaky.txt`) → 그 파일 단독 3회도 1·4·3 실패(`logs/profilecompact-isolated.txt`) → 전체 재실행 101 실패(73건 timeout · load 94 — 다른 세션 node 704개). 부하가 내려간 뒤 기본 설정 그대로 1회 → 통과. 설정·테스트 변경 0.
+  - 무관 근거(L1): `git diff --stat c870439 HEAD -- . ':!app/src/features/studio/images/ingest' ':!dev/active/m2c-1'` = 빈 출력(ingest 밖 코드 0줄 변경) · ingest를 import하는 파일 0(grep) · dist 해시 동일.
+- dist sha256 비교: `diff logs/dist-baseline.sha256 logs/dist-final.sha256` → 차이 0(93개 파일) — **번들 변화 0**
 
 ## 7. Codex (`review --scope branch --base c870439`, 2라운드 상한 — BRIEF)
 | 라운드 | 결과 | 처리 |

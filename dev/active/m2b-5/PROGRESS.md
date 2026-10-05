@@ -19,7 +19,7 @@
   - B5 부분: 프레임은 불투명 출처라 부모 DOM 접근 불가, `Page.getFrameTree` childFrames 0 · `Target` 세션 평가 미지원(ego API) → 프레임 안 `[data-motion-play]` 실측 못 함. 근거 = 렌더 문서 규칙 F5(변경 0)
   - B6 부분: 대화상자 "B안 선택" → status "B안을 선택했습니다"(DOM·AX) · 카드 B안 aria-pressed true(같은 상태). 실패 주입은 앱 안 경로 없음 → U8 통합 테스트(ProfileCompare.test)로만
   - 서버: 자기 PID 45774(+npm 45754) cwd m2b-5/app 확인 뒤 kill · 4337·4339 LISTEN 0 · 5480 = 다른 PID 82062 무접촉(logs/s5-servers-stop.txt)
-- [x] S6 전체 vitest exit0 · Codex review --scope branch --base 48487d5 · REPORT — vitest 213 files · 1850 passed · exit 0 · Errors 0(logs/final-full-vitest.txt) · Codex 1라운드 실제 완료 지적 0(logs/codex-review.txt) · REPORT.md(중단 보고 + 결정 요청 A/B/C)
+- [ ] S6 전체 vitest 기본 1회 · Codex review --scope branch --base 48487d5(라운드 ≤3) · REPORT 전체 갱신 — 진행 중 (이전 S1 중단 시점 결과 213/1850·Codex@8339bd6은 무효, 새 실행으로 대체)
 
 ## 재개(결정 A, 2026-10-05, HEAD 25417e9) — S0·S1 재실행 0
 - [x] A 적용 — compareFrame에 readRenderMessage·모양 검사 로컬 사본 + 대조 가드 `compareFrameGuard.test.ts` it 2 · RED logs/a-red.txt(2 failed — it 2도 사본 export 없음으로 실패, 예측과 다름) → GREEN logs/a-green.txt · 음성 검증 1회 logs/a-negative.txt(protocol.ts `<= 1024`→`1025` 임시 변경 → 2 failed → 복원 `git diff` 0 → 2 passed) · build exit 0 logs/a-build.txt · typecheck·lint exit 0 · **6.2 전 행 멈춤선 안**(/studio 127.33)

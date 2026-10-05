@@ -174,6 +174,24 @@ describe("렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7)", () => {
     expect(sent("rects").length).toBeGreaterThan(atFallback);
   });
 
+  it("편집 캔버스: 폴백 뒤 한 굵기만 먼저 로드되면(다른 굵기 대기 중) 바로 rects 다시 보냄 · 남은 굵기 로드 때 또 보냄 (Codex P2-a)", async () => {
+    vi.useFakeTimers();
+    const bold = deferred();
+    const regular = deferred();
+    const fonts = fakeFonts(vi.fn<() => Promise<unknown>>().mockReturnValueOnce(bold.promise).mockReturnValueOnce(regular.promise));
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    expect(fonts.load).toHaveBeenCalledTimes(2);
+    act(() => void vi.advanceTimersByTime(3000));
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => regular.resolve());
+    const afterRegular = sent("rects").length;
+    expect(afterRegular).toBeGreaterThan(atFallback);
+    await act(async () => bold.resolve());
+    expect(sent("rects").length).toBeGreaterThan(afterRegular);
+  });
+
   it("편집 캔버스: 모든 굵기 실패 = 바로 폴백 rects · 다시 보내지 않음", async () => {
     fakeFonts(() => Promise.reject(new Error("실패")));
     render(<RenderApp host={window} />);

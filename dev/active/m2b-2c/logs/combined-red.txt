@@ -1,0 +1,10 @@
+# P5b 합본 테스트 RED 실측 — 구현 뒤 작성한 검증 테스트라 임시 변형으로 RED 확인(되돌림): registry에서 cta-band 제거 · .kit-plan에 order/transition 삽입 · CTA a에 onClick prop
+     × 12변형 모두 킷으로 그린다(폴백 표식 0) · 문서 순서 = 슬롯 순서 · cta-band CTA = 합본의 첫 contact(booking) 앵커 40ms
+     × KD-AC-06 [U]: 12변형 합본의 정적 HTML — script = r4.12 고정 인라인 1개(바이트 일치) · on* 속성 0 28ms
+     × KD-AC-08 [U]: 섹션마다 h2 1 · h3는 cards-2·cards-masonry·pricing에만 · 문서 h1 = 1(hero) · 헤딩 건너뛰기 0 15ms
+     × KD-AC-07 [G]: 2c 변형 CSS 블록(후기·가격·CTA·예약 묶음)에 order·*-reverse·grid-area·grid-row 재배치 0 1ms
+     × KD-AC-01 [G]: 12변형 킷 파일 React 상태·효과·이벤트 prop 0 · 2c CSS 블록 transition·animation·scroll-behavior·vh류·hex·px 0 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: /* pricing/tiers-2: expected '/* pricing/tiers-2 (B1-10) — 머리 → 요금제…' not to match /\border\s*:|-reverse|grid-area|grid-r…/
+AssertionError: CtaBandBanner: expected 'import { headingId } from "./body";\n…' not to match /\b(useState|useReducer|useEffect|useL…/
+      Tests  5 failed (5)

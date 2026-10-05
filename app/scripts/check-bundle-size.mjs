@@ -100,6 +100,14 @@ const SCENARIOS = [
     // 프로젝트 메모리 구현: CandidatesSection loadProjects().startDoc ← "편집 시작" onClick(STUDIO-SLIM — 진입은 받지 않는다)
     afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts"],
   },
+  // 3안이 있는 채 들어올 때(M2B-5 SPEC 0.1 G1) — CandidatesSection effect가 잡이 있으면 조작 없이 카드·표 청크(CandidateResults ← candidateResultsLoader)를 받는다 → 자동.
+  // 잡 없는 진입은 위 "/profile"이 잰다. 조작 뒤 목록은 같다
+  {
+    name: "/profile (3안 있음)",
+    page: "src/pages/ProfilePage.tsx",
+    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/deferredStudio.ts", "src/data/memoryGenerationRepository.ts", "src/features/profile/CandidateResults.tsx"],
+    afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts"],
+  },
   // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(deferredStudio) → projects()(memoryProjectRepository)
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },
   // 편집 틀(StudioLayout — 배치·필드·자동 저장 훅)은 문서가 있으면 렌더에서 자동 lazy(EDITOR-A2-SHELL S7) → 진입 직후 합계

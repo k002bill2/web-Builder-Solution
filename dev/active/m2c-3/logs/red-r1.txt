@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app
+
+ ❯ src/features/studio/images/store/imageStore.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/images/store/imageStore.test.ts [ src/features/studio/images/store/imageStore.test.ts ]
+Error: Failed to resolve import "./imageStore" from "src/features/studio/images/store/imageStore.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/features/studio/images/store/imageStore.test.ts:6:100
+  2  |  import { setSlot } from "../../../../engine/ops/slotOps";
+  3  |  import { sampleDoc } from "../../../../engine/testing/sampleDoc";
+  4  |  import { addImage, checkLimits, imageMeta, pickVariant, pruneImages, retainedIds, slotTarget } from "./imageStore";
+     |                                                                                                       ^
+  5  |  /** 이미지 보관소 순수 함수 (SPEC m2c 2.6 · 5.1 · 2a-05 5.9 한도 · IMG-AC-11 · 15) */
+  6  |  const MB = 1024 * 1024;
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  02:09:53
+   Duration  905ms (environment 84%, setup 14%, transform 2%, worker 1%)
+

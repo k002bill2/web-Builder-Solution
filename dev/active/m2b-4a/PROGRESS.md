@@ -41,3 +41,13 @@
   - P3·P4 실제: RED 3 failed + 2파일 import 실패(siteFontEmbed.test it 5 · staticHtml.test 전체)(logs/p34-red.txt) → GREEN 표적 5파일 54 passed · gate OK(logs/p34-gate.txt) · 바이트(logs/p34-bytes.txt): 렌더 JS 82,820 · CSS 8,034(P2와 같음) · /studio 첫 91,778(+2) · 진입 127,337(−2) · /compare 진입 121,709(−6) · 그 밖 −1~+5 B(청크 이름 해시 변화) · 조작 뒤 pngCapture +8,021(OFL 원문 포함, 판정 밖)
   - 이관(단언 변경 0, 픽스처만): `staticHtml.test.ts` FILES render.css에 Pretendard @font-face 2규칙 추가 + 생성기 deps에 가짜 `fetchBytes` 주입 6곳(픽스처 프로필 계열 = Pretendard → 글꼴 받기가 필수 경로가 됨)
   - P5 가드 실제: `test/siteFontAssets.test.ts` 작성 즉시 3 passed(구현·자산 뒤 검증 테스트) → 임시 변형(SOURCE "2건"·`/main/` URL·Pretendard sha 변조·fontTools .py intent-to-add) RED 3 failed(logs/p5-guard-red.txt) → 복원 GREEN 3. G6 1차 초안은 기존 대비 계산 .py 7개(docs/design 등)에 걸려 "fontTools·pyftsubset을 부르는 .py/.sh + venv 흔적"으로 대상을 정확히 함
+
+## 수정 레인 — Codex P2 (영환님 ★A, 2026-10-05, HEAD 82bf6c3)
+- 범위: `render/siteFontLoad.ts:39` 편집 캔버스 — 한 굵기 로드 실패 + 다른 굵기 늦은 성공 시 `late` 재측정 누락. 내보내기 경로 diff 0
+- **새 테스트 사전 예측**: `render/RenderApp.test.tsx` +2 it(① 700 즉시 reject → 바로 폴백 rects · 400 늦은 resolve → rects 재전송 = **RED 1** ② 전부 reject → 바로 폴백 rects · 그 뒤 재전송 0 = 회귀 가드, RED 시점에도 GREEN 예상) → **208 files · 1826**
+- [x] F1 예측 커밋
+- [ ] F2 RED 실측(logs/fix-p2-red.txt)
+- [ ] F3 최소 수정(allSettled + 면별 catch 폴백) · GREEN
+- [ ] F4 gate(표적·가드·typecheck·lint·build, logs/fix-p2-gate.txt) · 전체 vitest 1회(logs/fix-p2-full-vitest.txt)
+- [ ] F5 Codex review --scope branch --base 254e322 1회(logs/codex-review-fix-p2.txt)
+- [ ] F6 REPORT 7·8절 · PROGRESS 갱신 · 커밋

@@ -7,6 +7,8 @@ import { CandidateCard, type WirePalette } from "./CandidateCard";
 import { doneCount, failureText } from "./generationText";
 
 export { CandidateTable } from "./CandidateTable";
+/** 비교 대화상자(조작 뒤 청크)가 쓰는 카드 부품 — 대화상자가 import하면 이 청크가 공유 청크로 갈라져 부모가 이 모듈을 넘긴다(M2B-5) */
+export { Wireframe, heroText, scaleText } from "./CandidateCard";
 
 export function CandidateList(props: {
   readonly job: GenerationJob;

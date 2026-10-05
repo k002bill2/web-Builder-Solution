@@ -2,7 +2,7 @@
  * M2B-5 3안 실렌더 비교 (SPEC-COMPARE3 1.1 · 3.1 · CMP-AC-U1·U2) — "3안 실제 화면으로 비교" 버튼의 보이는 조건 ·
  * 비교 청크는 누른 뒤에만 받는다(로더 이음새 spy — "번들 분류 근거") · 받는 동안 aria-busy · 청크 실패 → role=alert + 다시 시도 → 새 요청 · 저장소 쓰기 0.
  */
-import { act, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
@@ -119,5 +119,26 @@ describe("비교 청크는 누른 뒤에만 (CMP-AC-U2 · 번들 분류 근거)"
     await act(async () => {});
     expect(within(region).queryByRole("alert")).not.toBeInTheDocument();
     spy.mockRestore();
+  });
+});
+
+describe("닫기 (CMP-AC-U10)", () => {
+  it("Esc(cancel)·닫기 → 대화상자·iframe 0 · 포커스 = 연 버튼 · 다시 열면 새로 그린다", async () => {
+    const { region } = await open();
+    const u = user();
+    await generate(u, region);
+    const button = await within(region).findByRole("button", { name: COMPARE });
+    await u.click(button);
+    const dialog = await screen.findByRole("dialog", { name: "3안 실제 화면 비교" });
+    expect(dialog.querySelectorAll("iframe")).toHaveLength(3);
+    fireEvent(dialog, new Event("cancel", { cancelable: true }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.querySelectorAll("iframe")).toHaveLength(0);
+    expect(button).toHaveFocus();
+    await u.click(button);
+    await u.click(within(await screen.findByRole("dialog", { name: "3안 실제 화면 비교" })).getByRole("button", { name: "닫기" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.querySelectorAll("iframe")).toHaveLength(0);
+    expect(button).toHaveFocus();
   });
 });

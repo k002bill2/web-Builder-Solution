@@ -18,7 +18,7 @@ export type ComparePreview =
   | { readonly id: CandidateId; readonly kind: "failed"; readonly failure: CandidateFailure }
   | { readonly id: CandidateId; readonly kind: "pending" };
 
-export function comparePreviews(job: GenerationJob, viewed: ProfileVersion): readonly ComparePreview[] {
+export function comparePreviews(job: Pick<GenerationJob, "candidates" | "libraryVersion" | "generatorVersion">, viewed: ProfileVersion): readonly ComparePreview[] {
   return job.candidates.map((c): ComparePreview => {
     if (c.status === "failed") return { id: c.id, kind: "failed", failure: c };
     if (c.status === "pending") return { id: c.id, kind: "pending" };

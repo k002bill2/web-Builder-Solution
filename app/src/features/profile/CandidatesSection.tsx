@@ -6,7 +6,7 @@
  * 편집 시작(DS-2A-05 12.3 · 8.3.1): 누를 때 프로젝트 저장소를 받아 `startDoc(create)` — 성공·DOC_EXISTS = 이동(state: 바뀐 쌍 · 편집 알림) ·
  * UNKNOWN_VARIANT = 알림(다시 시도 없음) · 그 밖 = 실패 문형 + 다시 시도(같은 인자 → 멱등). 문장은 조작 뒤 청크(memoryDocBook)가 만든다.
  */
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
@@ -38,7 +38,16 @@ export function CandidatesSection({
   readonly pending: number;
   readonly announce: (text: string) => void;
 }) {
-  const gen = useGeneration(viewed.profileId, viewed.version, announce);
+  /** 비교 대화상자가 열린 동안 announce를 대화상자 status로도 보낸다(SPEC 2.5 — showModal 중 바깥 알림은 inert) */
+  const dialogAnnounce = useRef<((text: string) => void) | undefined>(undefined);
+  const relay = useCallback(
+    (text: string) => {
+      announce(text);
+      dialogAnnounce.current?.(text);
+    },
+    [announce],
+  );
+  const gen = useGeneration(viewed.profileId, viewed.version, relay);
   const { job } = gen;
   const navigate = useNavigate();
   const blockId = useId();
@@ -59,6 +68,8 @@ export function CandidatesSection({
   const [attempt, setAttempt] = useState(0);
   /** 비교 청크(M2B-5 SPEC 1.1) — 누를 때만 받는다. "loading" = 받는 중(aria-busy) · "error" = 실패 Callout */
   const [compare, setCompare] = useState<Awaited<ReturnType<typeof loadCompare>> | "loading" | "error">();
+  const [comparing, setComparing] = useState(false);
+  const compareBox = useRef<HTMLDivElement>(null);
   const hasJob = Boolean(job);
   useEffect(() => {
     if (!hasJob) return;
@@ -88,8 +99,12 @@ export function CandidatesSection({
   };
   const onCompare = () => {
     if (compare === "loading") return;
+    if (typeof compare === "object") return setComparing(true);
     setCompare("loading");
-    loadCompare().then(setCompare, (error: unknown) => {
+    loadCompare().then((loaded) => {
+      setCompare(loaded);
+      setComparing(true);
+    }, (error: unknown) => {
       console.error("[profile] 3안 비교 청크 불러오기 실패", error);
       setCompare("error");
     });
@@ -185,7 +200,7 @@ export function CandidatesSection({
         />
       )}
       {job && isTerminal(job.state) && !allFailed && typeof results === "object" && (
-        <div className="flex flex-col items-start gap-2">
+        <div ref={compareBox} className="flex flex-col items-start gap-2">
           <Button variant="outline" aria-busy={compare === "loading" || undefined} onClick={onCompare}>
             {compare === "loading" ? CANDIDATE_TEXT.compareLoading : CANDIDATE_TEXT.compare}
           </Button>
@@ -194,7 +209,25 @@ export function CandidatesSection({
               <Callout tone="negative" title={CANDIDATE_TEXT.compareFailed} action={<Button size="sm" variant="outline" onClick={onCompare}>다시 시도</Button>} />
             </div>
           )}
-          {typeof compare === "object" && <compare.default job={job} viewed={viewed} />}
+          {comparing && typeof compare === "object" && typeof results === "object" && (
+            <compare.default
+              job={job}
+              viewed={viewed}
+              parts={results}
+              palette={palette}
+              profileScale={profile.typography_tokens.scale}
+              busy={gen.busy === "select"}
+              failure={gen.failure}
+              onSelect={(id) => void gen.select(job.jobId, id)}
+              onClose={() => {
+                setComparing(false);
+                compareBox.current?.querySelector("button")?.focus();
+              }}
+              listen={(receiver) => {
+                dialogAnnounce.current = receiver;
+              }}
+            />
+          )}
         </div>
       )}
       <div className="flex flex-col items-start gap-2 md:items-end">

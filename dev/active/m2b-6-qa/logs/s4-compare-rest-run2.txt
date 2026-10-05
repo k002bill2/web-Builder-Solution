@@ -1,0 +1,13 @@
+ElementResolutionError: page.click timed out after 3000ms: Locator loc=role:button[name='편집 시작'] matched 0 elements
+    at #retryElementAction (file:////[eval1]:18884:27)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:567:9)
+    at process.processTimers (node:internal/timers:541:7)
+    at async file:////[eval1]:18968:29
+    at async file:////[eval1]:16691:28
+E 모바일 폭 @1280 {"n":3,"fr":[{"style":"width: 24.375rem; zoom: 0.970913;","colW":379},{"style":"width: 24.375rem; zoom: 0.970913;","colW":379},{"style":"width: 24.375rem; zoom: 0.970913;","colW":379}],"status":["C안을 그렸습니다"],"pressed":["이 안 선택=false","이 안 선택=false","이 안 선택=false"],"overflowX":0}
+E 데스크톱 폭 @1280 {"n":3,"fr":[{"style":"width: 80rem; zoom: 0.295825;","colW":379},{"style":"width: 80rem; zoom: 0.295825;","colW":379},{"style":"width: 80rem; zoom: 0.295825;","colW":379}],"status":["C안을 그렸습니다"],"pressed":["이 안 선택=false","이 안 선택=false","이 안 선택=false"],"overflowX":0}
+E 이 안 선택 B {"n":3,"fr":[{"style":"width: 80rem; zoom: 0.295825;","colW":379},{"style":"width: 80rem; zoom: 0.295825;","colW":379},{"style":"width: 80rem; zoom: 0.295825;","colW":379}],"status":["B안을 선택했습니다"],"pressed":["이 안 선택=false","선택됨=true","이 안 선택=false"],"overflowX":0}
+E Esc 후 {"dialogOpen":false,"active":"BUTTON|3안 실제 화면으로 비교","pageStatus":["B안을 선택했습니다"],"selectedCards":["B안 선택"]}
+
+ego's nodejs process exited with code 1.

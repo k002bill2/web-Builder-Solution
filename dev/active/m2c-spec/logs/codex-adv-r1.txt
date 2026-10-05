@@ -1,0 +1,61 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a10c71-8c56-7a30-bd3e-07eaaf8b45ae).
+[codex] Turn started (01a10c71-90b7-7d52-b087-fa50528e40b2).
+[codex] Assistant message captured: `92f8e2f` 대비 문서 diff와 실제 코드의 근거를 대조해, 출시를 막을 만한 결함만 검토하겠습니다.
+[codex] Running command: /bin/zsh -lc "git diff --no-ext-diff 92f8e2f -- dev/active/m2c-spec docs/04-plan/M2C_PLAN.md ...
+[codex] Command completed: /bin/zsh -lc "git diff --no-ext-diff 92f8e2f -- dev/active/m2c-spec docs/04-plan/M2C_PLAN.md ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'm2c|web-builder' '/Users/younghwankang/Library/Application Support/orca/...
+[codex] Command failed: /bin/zsh -lc "rg -n 'm2c|web-builder' '/Users/younghwankang/Library/Application Support/orca/... (exit 1)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/m2c/SPEC.md | sed -n '1,215p'; rg --files app/src | rg '(sta...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/m2c/SPEC.md | sed -n '1,215p'; rg --files app/src | rg '(sta... (exit 0)
+[codex] Running command: /bin/zsh -lc "ls /Users/younghwankang/.agents/skills/watch /Users/younghwankang/.Codex/skills...
+[codex] Command failed: /bin/zsh -lc "ls /Users/younghwankang/.agents/skills/watch /Users/younghwankang/.Codex/skills... (exit 1)
+[codex] Running command: /bin/zsh -lc "cat /Users/younghwankang/.Codex/skills/watch/SKILL.md; sed -n '1,230p' app/src/...
+[codex] Command completed: /bin/zsh -lc "cat /Users/younghwankang/.Codex/skills/watch/SKILL.md; sed -n '1,230p' app/src/... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/render/protocol.ts; cat app/src/features/studio/png/pngCapture.ts; ...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/render/protocol.ts; cat app/src/features/studio/png/pngCapture.ts; ... (exit 0)
+[codex] Assistant message captured: 현재 문서의 파생본 선택 규칙과 병렬 레인 계약에 누락이 보입니다. 렌더 높이 확정 경로와 예산 검사기가 명세의 수용 기준을 실제로 보장하는지도 확인하겠습니다. 환경 ...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/render/RenderApp.tsx | sed -n '1,230p'; nl -ba app/src/render/ob...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/render/RenderApp.tsx | sed -n '1,230p'; nl -ba app/src/render/ob... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/StructureCanvas.tsx | sed -n '1,155p'; rg -n '...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/components/studio/StructureCanvas.tsx | sed -n '1,155p'; rg -n '... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff -- docs/design/m2c/SPEC.md; sed -n '34,96p' app/src/render/protocol.ts...
+[codex] Command completed: /bin/zsh -lc "git diff -- docs/design/m2c/SPEC.md; sed -n '34,96p' app/src/render/protocol.ts... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,50p' app/src/features/studio/staticHtml/staticHtml.ts; sed -n '1,58p'...
+[codex] Command completed: /bin/zsh -lc "sed -n '1,50p' app/src/features/studio/staticHtml/staticHtml.ts; sed -n '1,58p'... (exit 0)
+[codex] Searching:
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/StructureCanvas.tsx | sed -n '178,216p'; sed -...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/components/studio/StructureCanvas.tsx | sed -n '178,216p'; sed -... (exit 0)
+[codex] Searching:
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/kit/kit.css | sed -n '970,1015p'; cat app/package.json; git diff...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/kit/kit.css | sed -n '970,1015p'; cat app/package.json; git diff... (exit 0)
+[codex] Assistant message captured: 차단 근거 4건을 확인했습니다: lazy 이미지의 `decode()` 대기, 파생본 선택 계약 누락, 프로토콜 변경 레인의 타입 불일치, `+0.03KB` 감지선을 검...
+[codex] Running command: /bin/zsh -lc "sed -n '1,45p' app/scripts/bundleBudget.mjs; nl -ba docs/design/m2c/SPEC.md | s...
+[codex] Command completed: /bin/zsh -lc "sed -n '1,45p' app/scripts/bundleBudget.mjs; nl -ba docs/design/m2c/SPEC.md | s... (exit 0)
+[codex] Running command: /bin/zsh -lc "node --input-type=module -e 'import {checkBundle} from \"./app/scripts/bundleBu...
+[codex] Command completed: /bin/zsh -lc "node --input-type=module -e 'import {checkBundle} from \"./app/scripts/bundleBu... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "명세·계획 수정 전 구현 착수를 막는 것이 타당합니다. 내보내기 대기 교착, 파생본 계약...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against 92f8e2f
+Verdict: needs-attention
+
+명세·계획 수정 전 구현 착수를 막는 것이 타당합니다. 내보내기 대기 교착, 파생본 계약 누락, 레인별 타입 검사 실패, 예산 가드 미보장 4건입니다. EXIF·원본 비공개·sandbox 규칙 자체의 추가 결함은 확인하지 못했습니다. diff 검사 통과; 빌드·브라우저 재현은 미수행입니다.
+
+Findings:
+- [high] [P1] 이미지 대기 전에 lazy 로딩을 해제해야 합니다 (docs/design/m2c/SPEC.md:160)
+  모든 이미지의 decode() 완료까지 rects를 막지만, Media.tsx:31은 hero 외 이미지를 loading="lazy"로 만듭니다. 정적 HTML용 iframe은 화면 밖 visibility:hidden 상태입니다(staticHtml.ts:30). 추론상 이미지 요청이 지연되면 decode도 완료되지 않아 rects→serialize 진행이 막히고 8초 JOB_TIMEOUT으로 끝납니다. decode()는 요청 완료를 기다리며 lazy 로딩을 강제로 시작하지 않습니다([HTML 표준](https://html.spec.whatwg.org/multipage/embedded-content.html#dom-img-decode)).
+  Recommendation: 내보내기 렌더에서는 이미지를 eager로 바꾼 뒤 decode를 기다리도록 명시하세요. 대기 실패·시간 초과·새 render 도착 시 취소 규칙과 화면 밖 iframe의 갤러리·지도 이미지 테스트도 추가하세요.
+- [high] [P1] 프로토콜 변경과 부모 송신부를 같은 레인에서 이전하세요 (docs/04-plan/M2C_PLAN.md:12-13)
+  M2C-2는 images를 Blob에서 {blob,width,height}로 변경하지만 쓰기 범위는 kit/**·render/**뿐이고 부모 연결은 후속 M2C-3입니다. StructureCanvas.tsx:68,101,208은 여전히 Record<string,Blob>을 ParentMessage에 실어 보냅니다. 따라서 M2C-2 단독 완료 시 타입이 맞지 않아 레인마다 요구하는 typecheck·build를 통과할 수 없고, M2C-3 착수 조건인 M2C-2 병합도 막힙니다.
+  Recommendation: M2C-2에 StructureCanvas 송신부와 관련 테스트의 계약 이전 권한을 포함하세요. 또는 구형 Blob 메시지를 임시 허용하고 M2C-3 이후 제거하는 호환 단계를 계획하세요.
+- [medium] [P2] 파생본 선택에 필요한 입력과 부재 시 대체 규칙을 고정하세요 (docs/design/m2c/SPEC.md:140-148)
+  readImage(id) 계약에는 슬롯이나 목표 폭이 없는데 바로 아래 표는 슬롯별로 다른 Blob을 요구합니다. 또한 2.4와 IMG-AC-04는 1500폭 원본에 {640,1280}만 만들고 500폭에는 {500}만 만듭니다. hero의 1920 또는 갤러리의 640을 그대로 조회하면 정상 업로드에도 해당 Blob이 없습니다. 현재 계약만으로는 슬롯별 선택과 작은 원본의 정상 동봉을 보장할 수 없습니다.
+  Recommendation: readImage가 variants를 반환하거나 목표 폭을 받도록 고정하고, 실제 존재하는 후보 중 선택하며 부족하면 최대 후보를 쓰도록 명시하세요. 같은 id의 여러 슬롯 재사용 시 선택 우선순위와 500·1500폭 동봉 테스트를 추가하세요.
+- [medium] [P2] 기존 번들 검사는 +0.03 감지선을 보장하지 않습니다 (docs/design/m2c/SPEC.md:246)
+  IMG-AC-29는 check-bundle-size를 가드로 지정하지만 기존 검사기는 /studio 128KB와 렌더 JS 90KB만 강제합니다(check-bundle-size.mjs의 eagerBudgetKb, bundleBudget.mjs:8,63). 실제 순수 검사 함수에 합성 manifest를 넣어 /studio 127.50KB·렌더 89.80KB가 failures=[]로 통과함을 확인했습니다. 둘 다 이 명세의 127.39·89.70 한도를 넘습니다. 실행 계획에는 검사기 변경 담당이나 쓰기 권한도 없습니다.
+  Recommendation: 검사기 변경 담당 레인과 app/scripts/** 쓰기 범위를 추가하세요. 고정된 M2c 시작 기준선 대비 누적 +0.03KB 및 렌더 89.70KB를 자동 실패 조건으로 검증하고 새 lazy 청크 분류도 반영하세요.
+
+Next steps:
+- 위 4건의 계약·레인·가드 규칙을 문서에 반영한 뒤 구현 레인을 시작하세요.

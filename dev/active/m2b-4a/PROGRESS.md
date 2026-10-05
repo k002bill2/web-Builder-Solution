@@ -14,9 +14,15 @@
 - [x] P2 렌더 문서 로드: `kit/fonts.css`(1안 6규칙·font-synthesis none) · `kit/siteFonts.ts`(별칭·스택·굵기 대응) · `render/siteFontLoad.ts`(캔버스 3초 폴백·늦은 로드 재측정 · 내보내기 bytes FontFace) · protocol render.fonts
 - [x] P3 정적 HTML `data:` 인라인(쓰는 면만) · `<head>` 고지 주석(OFL 전문) · 렌더 문서에 같은 바이트(render.fonts)
 - [x] P4 PNG 캡처 CSS `data:` 폰트 · 실패 정책(받기 실패·5초 = PNG RENDER_TIMEOUT · HTML JOB_TIMEOUT · 문구 · 렌더 문서 열지 않음·파일 0 · 전체 상한 8초에 글꼴 시간 포함)
-- [ ] P5 가드 G2·G3·G4·G5·G6 · 번들 B8
-- [ ] P-B 브라우저 B6·B7·B9·3폭·200% · 정적 HTML 계산 스타일 동등성 · 서버 종료
-- [ ] P-F 전체 vitest 1회 exit 0 · Codex branch review base 254e322 · REPORT 마감
+- [x] P5 가드 — G2 `render/renderFonts.test.ts` 2 it 개정(RED logs/p2-red.txt → GREEN p2-gate) · G3·G5·G6 `test/siteFontAssets.test.ts`(RED logs/p5-guard-red.txt) · G4 `staticMarkup.test.ts`+`siteFontEmbed.test.ts` 고지 주석(RED logs/p34-red.txt) · B8 check-bundle-size: 서명 수정 뒤 build(logs/fix-magic-gate.txt) 렌더 JS 82.82KB ≤89.70 · CSS 8.03KB · /studio 진입 127.33KB(baseline 127.34) · /compare 진입 121.70KB(baseline 121.72) — 증가 0
+- [x] P-B 브라우저 — B6 render·HTML·PNG · B7 · B9-PNG · 3폭 · 200% · 계산 스타일 Serif·Pretendard(logs/qb-render.txt·qb-export.txt) + **재측정(턴한도 1회차)** B9-HTML·계산 스타일 Kit Sans KR(logs/qb-b9html.txt) · 서버 자기 PID cwd 확인 종료 · lsof 0
+- [x] P-F 전체 vitest 1회 208 files·1824 passed·exit 0·Errors 0(logs/final-full-vitest.txt) · Codex branch review base 254e322(logs/codex-review.txt) · REPORT 마감
+
+## 턴한도 1회차 재개 (2026-10-05, HEAD 0f40de1 → d639868)
+- B9-HTML 재측정(logs/qb-b9html.txt, 서명 수정 0f40de1 뒤 fresh build·4337 dev·4339 preview): curl `4339/assets/NOPE-400.woff2` → **200 text/html**(SPA 폴백) · 생성기 SPA폴백 = JOB_TIMEOUT "글꼴을 불러오지 못했습니다 — 다시 시도하세요" 37ms(수정 전 run2: "정적 HTML 렌더 문서 시간 초과" — logs/qb-export-run2-html-timeout.txt) · 진짜 404 = 같은 문구 5ms · 5.1초 = 같은 문구 5,054ms · 4.9초 = 성공 5,451ms(늦게 도착 2건 뒤에도) · 실패 4건 filesMade 0·iframe 잔류 0
+- 계산 스타일 동등성 Kit Sans KR 보충: 48/48 요소 불일치 0 · 정적 HTML loaded 면 Kit Sans KR 700·400
+- **사후 기록(정직 표기)**: woff2 서명 검사(0f40de1)는 브라우저 B9 실측에서 발견해 넣은 수정이며, 새 단언(woff2 아닌 바이트 = FontLoadError)의 RED는 구현 뒤 되돌려 확인했다(logs/fix-magic-red.txt → fix-magic-gate.txt). 테스트 수 사전 예측 없이 들어감 — it 수 변화 0(기존 it에 단언 1줄 추가 + 픽스처 바이트에 `wOF2` 접두)이라 총계 1824는 예측과 같다. 픽스처 변경: siteFontEmbed.test bytesOf · pngCapture.test 1줄 · staticHtml.test 3줄(단언 약화 0)
+
 
 ## E0 결과
 - E0-3 R-5: 저장소 `Pretendard-Regular.subset.woff2` `01dd7315…3878` · `Pretendard-Bold.subset.woff2` `78eb71c3…6397` = 릴리스 `https://github.com/orioncactus/pretendard/releases/download/v1.3.9/Pretendard-1.3.9.zip`(zip sha256 `04be351a…428a`, 태그 v1.3.9 → 커밋 `5c41199ea0024a9e0b2cb31735265056e5472d76`) 안 `web/static/woff2-subset/` 같은 이름 파일과 **바이트 동일** → 교체 0 · MQ-M2B3-4 ★A 전제 성립

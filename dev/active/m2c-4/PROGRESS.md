@@ -13,3 +13,6 @@ base `2fc32ba` · 시작 build: `/studio` 진입 126.89(멈춤 >127.39) · 첫 9
 - [ ] REPORT.md
 
 ## 쓰기 범위 밖 연결 파일(사유)
+
+## RED 예측 (테스트 작성 전 커밋)
+- ② 새 테스트 3개 (기준 2009 → 2012): protocol.test "IMAGE_DECODE_FAILED 수신" · compareFrame.test "사본도 IMAGE_DECODE_FAILED" · staticHtml.test "decode 실패 = 즉시 '이미지를 그리지 못했습니다'(시간 초과 아님)". RED 예상 3 실패.

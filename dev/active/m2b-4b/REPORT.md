@@ -22,6 +22,8 @@
 | 6746f37 | 렌더 `data-motion`(U1) |
 | d8096de | 정적 HTML `data-motion-play`·KEPT_DATA(U4) · PNG 방어 규칙(U5) |
 | 41e2c02 | 브라우저 B1~B5 원시 증거 |
+| a53e57b | 전체 vitest 1840·REPORT 초안 |
+| 62de09f | Codex R1 P2 — grid 타일 A 확대 제외 |
 
 ## 3. MF-AC별 근거
 | AC | 판정 | 근거 |
@@ -40,7 +42,7 @@
 | B8 예산 | 통과 | §4 |
 
 ### 3.1 SPEC과 다르게 한 부분(사유 한 줄씩)
-- 확대 칸이 없는 hero(fullbleed-left·image·grid 타일 A): 칸 = 섹션(fullbleed·image) 또는 타일 묶음(grid)에 `overflow: clip` + `transform-origin: 50% 100%`(아래 변 고정) — 마크업 변경 없이 카피 쪽 겹침 0. 이 두 속성도 재생 조건 안에만 둬서 계산 스타일 차이 2건(§3.2)이 남는다.
+- 확대 칸이 없는 hero(fullbleed-left·image): 칸 = 섹션(이미지 위·옆 변 = 섹션 변)에 `overflow: clip` + `transform-origin: 50% 100%`(아래 변 고정) — 마크업 변경 없이 카피 쪽 겹침 0. 이 두 속성도 재생 조건 안에만 둬서 계산 스타일 차이 2건(§3.2)이 남는다.
 - 순차 지연 상한 = 2단(×0·×1·×2, 3번째 이후 ×2 공유) — SPEC 1.4 표의 "카드 1·2·3 = stagger×0·1·2"를 따름. U3는 SPEC 문구대로 3×stagger로 보수 검사.
 - hero/center L2 = 제목·부제·CTA 각각 rise 순차(묶음 자체는 정지) · hero/text L2 = 카피 묶음 rise + 강조선 scaleX(1단 지연).
 - 첫 화면 경계(SPEC 미정): hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · 폴백 섹션 = 자리 차지·속성 0.
@@ -52,7 +54,7 @@ opacity·transform·fontFamily·fontSize·color·display 불일치 0. 예상된 
 | 항목 | baseline(P0) | 최종(P3 빌드) | 증감 |
 |---|---|---|---|
 | 렌더 JS | 82,871 | 83,029 | +158(SPEC 추정 0~150 대비 +8 B · 멈춤선 89,700) |
-| 렌더 CSS | 8,034 | 8,753 | +719(≤30KB, 추정 +1.2~2.0KB 아래) |
+| 렌더 CSS | 8,034 | 8,747 | +713(≤30KB, 추정 +1.2~2.0KB 아래 · Codex 수정 뒤 logs/fix-r1-bytes.txt) |
 | /studio 첫 화면 | 91,784 | 91,775 | −9 |
 | /studio 진입 | 127,330 | 127,336 | +6(≤30B) |
 | /compare 진입 | 121,695 | 121,724 | +29(±30B, 앱 코드 변경 0 — 청크 해시) |
@@ -73,9 +75,15 @@ opacity·transform·fontFamily·fontSize·color·display 불일치 0. 예상된 
 - Safari·Firefox `@starting-style` 실측 없음(환경 없음) — 미지원이면 즉시 열림(R-4, 기능 영향 0).
 - 인쇄는 `media print` 에뮬레이션으로 확인(실제 인쇄 미리보기 창 아님).
 
-## 7. Codex
-(P5 기록)
+## 7. Codex (`review --scope branch --base 8236a2c`, 라운드 2/3)
+| 라운드 | 결과 | 처리 |
+|---|---|---|
+| R1(logs/codex-review.txt) | P2 1건 — hero/grid L2 타일 A 확대가 개별 타일이 아닌 타일 묶음에서 잘려 768 이상에서 타일 간격으로 돌출·둥근 경계도 확대 | 수정 62de09f: 타일 A 확대 제외 + `.kit-hx-tiles` clip 제거(예측 커밋 → RED 1 logs/fix-r1-red.txt → gate OK logs/fix-r1-gate.txt → 전체 210·1840·exit 0 logs/fix-r1-full-vitest.txt). 렌더 CSS 8,753 → 8,747 B |
+| R2(logs/codex-review-r2.txt) | 결함 없음 | 종료 |
+- 반영하지 않은 지적 0. Codex 쪽 vitest는 읽기 전용 샌드박스라 실행 불가(typecheck만) — 테스트 증거는 메인 루프 전체 vitest.
+- 편차: SPEC 1.4 grid L2 "타일 A 안쪽 확대"는 구현하지 않음 — 개별 클리핑 칸이 필요해 킷 마크업 변경(범위 밖, 70턴 이후 확장 금지). 후속 후보: HeroGrid 타일 A 래퍼(figure + overflow hidden + radius) 뒤 안쪽 이미지 확대.
+- B4 grid는 수정 전 측정(확대 포함)이라 넘침 0 결론은 수정 뒤에도 유지(규칙 제거만) — 수정 뒤 브라우저 재측정은 하지 않음.
 
 ## 8. 책임·환경
-- 브라우저 검증 = ego-browser(Ego Lite Chromium) TaskSpace 66 · 4337 dev·4339 preview loopback · 자기 PID cwd 확인 뒤 종료·LISTEN 0 · main 5480 무접촉(logs/qb-servers-stop.txt).
+- 브라우저 검증 = ego-browser(Ego Lite Chromium) TaskSpace 66(마감 때 finish keep []) · 4337 dev·4339 preview loopback · 자기 PID cwd 확인 뒤 종료·LISTEN 0 · main 5480 무접촉(logs/qb-servers-stop.txt).
 - push·merge·삭제 0.

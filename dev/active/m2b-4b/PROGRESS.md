@@ -22,7 +22,7 @@
   - 환경 한계: Ego Lite 창에서 로드 애니메이션이 한 번 돈 문서는 이후 전환이 pending에 정지(2줄 최소 문서로 재현, logs/qb-stall-repro.txt) → 시트 측정은 header만 data-motion 남긴 사본으로 대체
   - 계산 스타일 동등성(렌더 문서 vs 정적 HTML 1.2초 뒤, 106/106 요소): opacity·transform·fontFamily·fontSize·color·display 불일치 0 · 예상된 차이만 = hero overflow visible→clip 1 · 확대 대상 transform-origin 1 · animation-name 6(재생 조건 안 규칙 — 최종 값 동일)
   - 서버: 자기 PID cwd 확인 뒤 종료 · LISTEN 0 · 5480 무접촉(logs/qb-servers-stop.txt)
-- [ ] P5 전체 vitest exit 0 · Codex branch review base 8236a2c · REPORT
+- [x] P5 전체 vitest 1회 210 files·1840 passed·exit 0(logs/final-full-vitest.txt, 예측 일치) · Codex R1 P2 1건 → 수정 레인 → R2 결함 0 · REPORT 마감
 
 ## 새 테스트 delta 사전 예측 (각 단계 RED 전 기록 · 기준 208 files · 1827)
 - P1 motion.css·가드: 새 파일 `kit/motion.test.ts` it 4(U2 ① 모든 내용이 media 블록 1개 안 · animation/transition 규칙마다 `[data-site-root][data-motion-play] … [data-kit][data-motion` ② 반복 1·infinite 0·animation-timeline 0·전환 속성 = opacity·transform·overlay/display(allow-discrete)·keyframes = opacity·transform만·translateX 0 · ③ U3 토큰 9개 = SPEC 1.2 값·3×stagger+zoom ≤ 1초·각 dur ≤ 720ms ④ render.css 가 kit.css 뒤에 motion.css import) + `test/kitGuard.test.ts` +1(G1 탐지기: 모션 예외는 kit/motion.css 경로 하나만 — 다른 킷 파일 animation 은 계속 위반) = **+5 → 209 files · 1832**. 기존 kitGuard "모션 0" it 는 motion.css 에 대해서만 모션 규칙 제외(이관)
@@ -32,3 +32,4 @@
 ## 수정 레인 — Codex R1 P2(hero/grid 타일 A 확대가 타일 간격으로 돌출)
 - 판단: 70턴 이후 범위 확장 금지 → 킷 마크업(클리핑 래퍼) 추가 대신 타일 A 확대 제외 + `.kit-hx-tiles` clip 제거(필요 없어짐). SPEC 1.4 grid L2 "타일 A 안쪽 확대" 미구현 = 편차 기록
 - **새 테스트 사전 예측**: `kit/motion.test.ts` 기존 U2 it 에 단언 1줄(kit-zoom 대상 = 자기 칸이 있는 요소만 — `.kit-hx-tile--a` 0) → it 수 변화 0 · **210 files · 1840** · RED 1 failed 예상
+- [x] F1 예측 커밋 · F2 RED 1 failed(logs/fix-r1-red.txt) = 예측 · F3 수정 62de09f · gate OK(logs/fix-r1-gate.txt) · 전체 210·1840·exit 0(logs/fix-r1-full-vitest.txt) · F4 Codex R2 결함 0(logs/codex-review-r2.txt)

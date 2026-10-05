@@ -19,4 +19,12 @@ describe("비교 프레임 수신 판정 (CMP-AC-U3)", () => {
     mine.remove();
     other.remove();
   });
+
+  it("사본도 error{IMAGE_DECODE_FAILED}를 읽는다 — 원본과 같은 커밋에서 개정(결정 A)", () => {
+    const mine = document.createElement("iframe");
+    document.body.append(mine);
+    const data = { type: "error", code: "IMAGE_DECODE_FAILED" };
+    expect(frameMessage(new MessageEvent("message", { data, source: mine.contentWindow }), mine)).toEqual(data);
+    mine.remove();
+  });
 });

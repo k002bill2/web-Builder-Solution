@@ -31,6 +31,10 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readRenderMessage({ type: "error", code: "OTHER" })).toBeUndefined();
   });
 
+  it("error{IMAGE_DECODE_FAILED} — 부모도 읽는다(SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽: 시간 초과 대신 실패 문구)", () => {
+    expect(readRenderMessage({ type: "error", code: "IMAGE_DECODE_FAILED" })).toEqual({ type: "error", code: "IMAGE_DECODE_FAILED" });
+  });
+
   it("render{doc, images} — 로컬 이미지 id → {blob, width, height}(K4 · SPEC m2c 3절 MQ-C4 ★A) · Blob만·문자열·id 형식 틀림은 메시지 전체를 버린다", () => {
     const id = "11111111-1111-4111-8111-111111111111";
     const blob = new Blob(["x"], { type: "image/png" });

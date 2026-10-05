@@ -19,7 +19,7 @@ export function readRenderMessage(data: unknown): RenderMessage | undefined {
   if (data.type === "ready") return { type: "ready" };
   if (data.type === "rects" && Array.isArray(data.rects) && data.rects.length <= 1024 && data.rects.every(isRect)) return { type: "rects", rects: data.rects };
   if (data.type === "click" && isText(data.instanceId)) return { type: "click", instanceId: data.instanceId };
-  if (data.type === "error" && (data.code === "INVALID_DOC" || data.code === "NO_KIT_TOKENS")) return { type: "error", code: data.code };
+  if (data.type === "error" && (data.code === "INVALID_DOC" || data.code === "NO_KIT_TOKENS" || data.code === "IMAGE_DECODE_FAILED")) return { type: "error", code: data.code };
   return undefined;
 }
 

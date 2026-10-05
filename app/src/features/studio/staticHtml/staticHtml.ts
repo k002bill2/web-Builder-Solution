@@ -17,6 +17,9 @@ const RENDER_DOC_SRC = "/render.html";
 /** 숨은 iframe 준비·그리기·직렬화 전체 상한 — exportFlow 조회 상한(10초)보다 짧게 */
 const TIMEOUT_MS = 8000;
 
+/** 렌더 문서가 내보내기 이미지 decode에 실패(error IMAGE_DECODE_FAILED — SPEC m2c 5.3-3) — 조용히 빠뜨리지 않고 실패 */
+export const IMAGE_FAILED = "이미지를 그리지 못했습니다";
+
 /** 부모 ↔ 숨은 렌더 문서 통로 — 받는 쪽은 그 iframe에서 온 메시지만 */
 export interface RenderChannel {
   send(message: ParentMessage): void;
@@ -93,7 +96,7 @@ export function renderAndSerialize(
         rects = message.rects;
         channel.send({ type: "serialize" });
       } else if (message?.type === "error" && !tolerated.includes(message.code)) {
-        reject(new Error(`렌더 문서 오류 ${message.code}`));
+        reject(new Error(message.code === "IMAGE_DECODE_FAILED" ? IMAGE_FAILED : `렌더 문서 오류 ${message.code}`));
       }
     });
   }).finally(() => {

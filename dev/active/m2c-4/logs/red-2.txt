@@ -1,0 +1,81 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app
+
+ ❯ src/render/protocol.test.ts (17 tests | 1 failed) 8ms
+   ❯ 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) (15)
+     × error{IMAGE_DECODE_FAILED} — 부모도 읽는다(SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽: 시간 초과 대신 실패 문구) 3ms
+ ❯ src/features/profile/compareFrame.test.ts (2 tests | 1 failed) 26ms
+   ❯ 비교 프레임 수신 판정 (CMP-AC-U3) (2)
+     × 사본도 error{IMAGE_DECODE_FAILED}를 읽는다 — 원본과 같은 커밋에서 개정(결정 A) 7ms
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts (12 tests | 1 failed) 5230ms
+   ❯ 정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9) (3)
+     × 렌더 문서 error{IMAGE_DECODE_FAILED} → 시간 초과 전에 실패 '이미지를 그리지 못했습니다'(SPEC m2c 5.3-3 부모 쪽) · 결과 파일 0 · iframe 닫음 5007ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > error{IMAGE_DECODE_FAILED} — 부모도 읽는다(SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽: 시간 초과 대신 실패 문구)
+AssertionError: expected undefined to deeply equal { type: 'error', …(1) }
+
+- Expected:
+{
+  "code": "IMAGE_DECODE_FAILED",
+  "type": "error",
+}
+
++ Received:
+undefined
+
+ ❯ src/render/protocol.test.ts:35:79
+     33|
+     34|   it("error{IMAGE_DECODE_FAILED} — 부모도 읽는다(SPEC m2c 5.3-3 · IMG-AC-26b…
+     35|     expect(readRenderMessage({ type: "error", code: "IMAGE_DECODE_FAIL…
+       |                                                                               ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/profile/compareFrame.test.ts > 비교 프레임 수신 판정 (CMP-AC-U3) > 사본도 error{IMAGE_DECODE_FAILED}를 읽는다 — 원본과 같은 커밋에서 개정(결정 A)
+AssertionError: expected undefined to deeply equal { type: 'error', …(1) }
+
+- Expected:
+{
+  "code": "IMAGE_DECODE_FAILED",
+  "type": "error",
+}
+
++ Received:
+undefined
+
+ ❯ src/features/profile/compareFrame.test.ts:27:99
+     25|     document.body.append(mine);
+     26|     const data = { type: "error", code: "IMAGE_DECODE_FAILED" };
+     27|     expect(frameMessage(new MessageEvent("message", { data, source: mi…
+       |                                                                                                   ^
+     28|     mine.remove();
+     29|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9) > 렌더 문서 error{IMAGE_DECODE_FAILED} → 시간 초과 전에 실패 '이미지를 그리지 못했습니다'(SPEC m2c 5.3-3 부모 쪽) · 결과 파일 0 · iframe 닫음
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:160:3
+    158|   });
+    159|
+    160|   it("렌더 문서 error{IMAGE_DECODE_FAILED} → 시간 초과 전에 실패 '이미지를 그리지 못했습니다'(…
+       |   ^
+    161|     const frame = fakeFrame((m, post) => post(m.type === "render" ? { …
+    162|     const urls = fakeUrls();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 1 passed (4)
+      Tests  3 failed | 30 passed (33)
+   Start at  06:47:36
+   Duration  6.47s (tests 57%, environment 31%, setup 5%, transform 5%, import 2%)
+

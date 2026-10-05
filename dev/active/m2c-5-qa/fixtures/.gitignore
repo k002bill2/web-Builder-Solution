@@ -1,0 +1,4 @@
+*
+!.gitignore
+!gen-fixtures.mjs
+!MANIFEST.json

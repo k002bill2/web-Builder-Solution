@@ -40,8 +40,15 @@ R-1~R-7(SPEC 5절). 가장 큰 것: R-1(캔버스 웹폰트 CORS) · R-2(Noto Se
 
 ## 6. 검증
 - 금지 범위: `git diff --stat 0bede09..HEAD` = `docs/design/m2b/` 2파일 + `dev/active/m2b-3/` 파일만(코드·바이너리·lock·`docs/decisions/`·CLAUDE.md 0).
-- Codex: (7절)
+- Codex: 2라운드(7절) — R2 "No material findings"
 - 코드 변경 0이라 typecheck·lint·test·build는 실행하지 않음(문서 전용 레인).
 
-## 7. Codex 검증
-(작성 중)
+## 7. Codex 검증 (`codex-companion adversarial-review --scope branch --base 0bede09`)
+| 라운드 | 결과 | 반영 |
+|---|---|---|
+| R1 (`logs/codex-r1.txt`) | needs-attention · P2 2건: ① 폰트 3초 초과 폴백 시 PNG 측정 글꼴 ≠ SVG 글꼴(하단 잘림) ② MF-AC-B6가 `computed font-family`·`document.fonts.check()`라 폰트 누락에도 통과 | ① 2.4를 편집 캔버스(폴백 + 늦은 로드 뒤 rects 재전송)와 내보내기(로드 완료 뒤에만 측정 · 실패/5초 초과 = 내보내기 실패) 2행으로 분리 ② B6 = `FontFace` `status === "loaded"` 확인 + PNG 글리프 비교 + 음성 검증, B7 보강, **B9 신설**(실패 정책) — 커밋 `3e4641a` |
+| R2 (`logs/codex-r2.txt`) | 승인 — "새로운 P0–P2 문제 없음 · R1 해소" | — |
+- 반영하지 않은 지적 0. 브라우저 실측은 Codex·이 레인 모두 하지 않음(M2B-4 E0 대상).
+
+## 8. 영환님께 필요한 것
+- MQ-M2B3-1~5 결정(모두 ★A 기준으로 본문 작성 — ★A 일괄 승인 시 본문 수정 0). M2B-4 기동 전 필요.

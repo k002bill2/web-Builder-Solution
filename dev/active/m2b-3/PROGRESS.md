@@ -8,5 +8,9 @@
 - [x] P3 SPEC-MOTION-FONT.md 폰트 절 (≤2계열·폴백·굵기·서브셋 범위·woff2·font-display·위치·RFN·출처·체크섬·재현 명령)
 - [x] P4 예산·MF-AC·QB 목록
 - [x] P5 MQ-M2B3.md (필요 시)
-- [ ] P6 자체 일관성 검토 (금지 항목 diff 0 확인)
-- [ ] P7 REPORT.md 마감·커밋
+- [x] P6 자체 일관성 검토 (금지 항목 diff 0 확인)
+- [x] P7 REPORT.md 마감·커밋
+
+## 기록
+- Codex R1 needs-attention(P2 2건) → 반영 `3e4641a` · R2 승인(No material findings). 서브에이전트 0.
+- 금지 범위 확인: `git diff --stat 0bede09..HEAD` = docs/design/m2b/ 2파일 + dev/active/m2b-3/ 만.

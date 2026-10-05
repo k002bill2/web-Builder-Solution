@@ -19,7 +19,7 @@
   - B5 부분: 프레임은 불투명 출처라 부모 DOM 접근 불가, `Page.getFrameTree` childFrames 0 · `Target` 세션 평가 미지원(ego API) → 프레임 안 `[data-motion-play]` 실측 못 함. 근거 = 렌더 문서 규칙 F5(변경 0)
   - B6 부분: 대화상자 "B안 선택" → status "B안을 선택했습니다"(DOM·AX) · 카드 B안 aria-pressed true(같은 상태). 실패 주입은 앱 안 경로 없음 → U8 통합 테스트(ProfileCompare.test)로만
   - 서버: 자기 PID 45774(+npm 45754) cwd m2b-5/app 확인 뒤 kill · 4337·4339 LISTEN 0 · 5480 = 다른 PID 82062 무접촉(logs/s5-servers-stop.txt)
-- [ ] S6 전체 vitest 기본 1회 · Codex review --scope branch --base 48487d5(라운드 ≤3) · REPORT 전체 갱신 — 진행 중 (이전 S1 중단 시점 결과 213/1850·Codex@8339bd6은 무효, 새 실행으로 대체)
+- [x] S6 전체 vitest 기본 1회 **216 files · 1873 passed · exit 0**(logs/final-full-vitest.txt, 재시도 없음) · build exit 0(logs/final-build.txt, 6.2 전 행 멈춤선 안 — /studio 127.35) · Codex review --scope branch --base 48487d5 **3라운드 실제 완료**(R1 P2 → 642e673 · R2 P2 → e59b8d3 · R3 지적 0, logs/codex-r1·r2·r3.txt) · REPORT 전체 갱신
 
 ## 재개(결정 A, 2026-10-05, HEAD 25417e9) — S0·S1 재실행 0
 - [x] A 적용 — compareFrame에 readRenderMessage·모양 검사 로컬 사본 + 대조 가드 `compareFrameGuard.test.ts` it 2 · RED logs/a-red.txt(2 failed — it 2도 사본 export 없음으로 실패, 예측과 다름) → GREEN logs/a-green.txt · 음성 검증 1회 logs/a-negative.txt(protocol.ts `<= 1024`→`1025` 임시 변경 → 2 failed → 복원 `git diff` 0 → 2 passed) · build exit 0 logs/a-build.txt · typecheck·lint exit 0 · **6.2 전 행 멈춤선 안**(/studio 127.33)
@@ -67,6 +67,7 @@
 
 - Codex R1 P2 수정 (기준 = S4 216 · 1871): `CompareDialog.test.tsx` it +1 — 1안씩 부분 실패 잡에서 C안으로 전환 → status "C안은 만들지 못했습니다" → **216 files · 1872**
 - Codex R1 수정 실제: +1 → 216 · 1872(예측 일치) · 전체 vitest 216 · 1872 exit 0
+- Codex R2 수정 실제: +1 → 216 · 1873(예측 일치)
 - Codex R2 P2 수정 (기준 216 · 1872): `CompareDialog.test.tsx` it +1 — 1안씩 C(만들지 못함) → A → C 재방문 시 C 문장 다시 1회 → **216 files · 1873**
 
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)

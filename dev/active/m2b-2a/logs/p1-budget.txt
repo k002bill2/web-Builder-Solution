@@ -1,0 +1,25 @@
+# P1 예산 선행 실측 — services/cards-masonry 시제품 (2026-10-05 KST)
+시제품 = kit/ServicesCards.tsx(ServicesHead · ServicesCards 카드 번호 목록 일반화 · ServicesCardsMasonry) + ServicesCards3 wrapper화 + kit.css masonry 블록 + registry 1쌍
+       + 부모 RENDERED_VARIANTS 끝 상태(본문 4쌍 → 8쌍, 알파벳순 나열: about/text · services/cards-2 · services/cards-masonry · services/list 추가)
+diff: logs/p1-masonry-prototype.diff (측정 뒤 git checkout으로 되돌림 — 최종 구현 아님, RED 전)
+측정 = npx vite build && npx vite build --mode render → /tmp/m2b2a-bytes.mjs(check-bundle-size.mjs 사본, sizeOf만 바이트) · KB = 1000 B
+
+| 항목 | 기준 c22f169 | 시제품 | 증가 |
+|---|---|---|---|
+| 렌더 문서 JS | 81,125 B | 81,218 B | +93 B (+0.09) |
+| 렌더 문서 CSS | 7,135 B | 7,182 B | +47 B (+0.05) |
+| /studio 첫 화면 | 91,776 B | 91,766 B | −10 B |
+| /studio 진입 직후 | 127,404 B | 127,409 B | **+5 B (+0.005)** — 부모 목록 끝 상태(문자열 4개) 포함 |
+| 공통 JS | 89,345 | 89,340 | −5 |
+| /catalog 첫/진입 | 99,652 / 102,036 | 99,643 / 102,027 | −9 / −9 |
+| /references 첫/진입 | 97,000 / 99,384 | 96,993 / 99,377 | −7 / −7 |
+| /compare 첫/진입 | 98,837 / 121,715 | 98,824 / 121,704 | −13 / −11 |
+| /profile 첫/진입 | 99,618 / 118,673 | 99,603 / 118,662 | −15 / −11 |
+| /projects 첫/진입 | 94,020 / 100,301 | 94,011 / 100,292 | −9 / −9 |
+(기준 바이트 = logs/p1-baseline-bytes.txt)
+
+## 끝 예상
+- 이 레인(4변형): 시제품 +93 B에 공유 구조·masonry가 들어 있음. 남은 about/text(레지스트리 1줄 ≈ +0.02) · list(새 컴포넌트 ≈ +0.20) · cards-2(wrapper 1줄 ≈ +0.03) → 렌더 JS 끝 ≈ 81.22 + 0.25 ≈ 81.47 · CSS ≈ 7.18 + 0.15 ≈ 7.33.
+- 남은 본문 8변형(2b·2c): SPEC 4절 공유 추정 1.54 − 2a 몫 0.27 ≈ +1.27, 보수적 단순 곱 8 × 0.26 = +2.08 → 렌더 JS 끝 ≈ 82.7 ~ 83.6 (멈춤선 89.70 아래) · CSS ≈ 8.0 ~ 8.8 (≤ 30).
+- /studio: 부모 목록 끝 상태가 이미 시제품에 포함 → +5 B (≤ +30 B). 다른 화면 −5 ~ −15 B (±30 B 안 — 공통 청크 압축 위치 변화).
+- 판정: **멈춤 조건 아님** (렌더 JS 끝 예상 ≤ 89.70 · /studio 증가 ≤ 0.03 · 다른 화면 ±0.03). 엔진 registry import 0 · 예산 상향 0 · 가드 변경 0.

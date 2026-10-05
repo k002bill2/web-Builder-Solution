@@ -6,8 +6,8 @@
 - 실렌더 목표 18 → 22
 
 ## 체크리스트
-- [ ] P0 PROGRESS · REPORT 골격 · gate.sh 커밋 / npm ci(lock 불변) / baseline typecheck·lint·build·표적
-- [ ] P1 cards-masonry 시제품 실측(렌더 JS 끝 예상 ≤ 89.70 · /studio 증가 ≤ 0.03) — 초과면 정지
+- [x] P0 PROGRESS · REPORT 골격 · gate.sh 커밋(7f3da38) / npm ci exit 0(lock 불변, git status clean) / baseline gate OK(logs/baseline-gate.txt) · 전체 vitest 191 files · 1744 passed exit 0(logs/baseline-full-vitest.txt)
+- [x] P1 cards-masonry 시제품 실측 — 렌더 JS +93 B · CSS +47 B · /studio 진입 +5 B(부모 목록 끝 상태 포함) → 멈춤 아님(logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림
 - [ ] P2 about/text RED → GREEN → gate → 커밋
 - [ ] P3 services/list RED → GREEN → gate → 커밋
 - [ ] P4 services/cards-2 (공유 카드 구조) RED → GREEN → gate → 커밋
@@ -16,3 +16,8 @@
 - [ ] P-F 전체 vitest 1회 exit 0 Errors 0 (logs/full-vitest.txt)
 - [ ] P-F Codex review --scope branch --base c22f169 1회 결과 회수
 - [ ] P-F REPORT 마감 · 서버 종료 증거(4337·4339 LISTEN 0)
+
+## 새 테스트 delta 사전 예측 (RED 전)
+- AboutText.test.tsx ≈ +3 · ServicesList.test.tsx ≈ +6 · ServicesCards.test.tsx(cards-2·masonry) ≈ +6 · 4변형 공통(정적 HTML script·KD-AC-07/08) ≈ +2
+- PageDocument.test.tsx 정확 목록 22쌍 갱신(+0, 기존 it 수정) · renderedVariants.test.ts 무변경 · ServicesCards3.test.tsx 무변경(회귀 보존)
+- 예상 합계 ≈ +17 (±4) → 전체 ≈ 1761

@@ -83,6 +83,8 @@ export function StudioLayout({
   const [selected, setSelected] = useState(() => initialSelection(doc));
   const [tab, setTab] = useState<StudioTab>("sections");
   const [view, setView] = useState<PreviewView>("desktop");
+  // "이미지 편집" 펼침 — 배치마다 트리를 따로 그려 EditFields가 다시 마운트되므로 여기서 든다(B-M2C-04)
+  const imagesOpen = useState(false);
   const [drawn, setDrawn] = useState(false);
   const selectedId = resolveSelection(doc, selected);
   const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
@@ -334,7 +336,7 @@ export function StudioLayout({
   );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
-      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, undoDoc]} />
+      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, undoDoc]} imagesOpen={imagesOpen} />
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)

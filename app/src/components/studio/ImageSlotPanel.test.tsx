@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImageSlotValue, LocalImageId, PageDoc } from "../../engine/contracts/pageDoc";
@@ -306,5 +307,48 @@ describe("ImageSlotPanel — Codex r2", () => {
     expect(typeof b).toBe("string");
     expect(state.images?.[a]?.width).toBe(1000);
     expect(state.images?.[b]?.width).toBe(2000);
+  });
+});
+
+describe("ImageSlotPanel — M2C-P3 지운 뒤 (B-M2C-06)", () => {
+  it("키보드 Enter로 '이미지 지우기' → 포커스가 같은 슬롯 '이미지 고르기'로(BODY 유실 0)", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    setup();
+    pick(file());
+    await settle();
+    const user = userEvent.setup();
+    screen.getByRole("button", { name: "이미지 지우기" }).focus();
+    await user.keyboard("{Enter}");
+    expect(screen.queryByRole("button", { name: "이미지 지우기" })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "이미지 고르기" }));
+  });
+
+  it("잃은 이미지에서 마우스로 '이미지 지우기' → 포커스가 '이미지 고르기'로", async () => {
+    const doc = setSlot(sampleDoc(), "s-hero", "image", { kind: "image", enabled: true, source: uuid(7), alt: "", decorative: false });
+    setup({ doc });
+    await userEvent.setup().click(screen.getByRole("button", { name: "이미지 지우기" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "이미지 고르기" }));
+  });
+});
+
+describe("ImageSlotPanel — M2C-P3 지움 알림 (B-M2C-07)", () => {
+  it("지운 뒤 role=status = '이미지를 지웠습니다' — '이미지를 넣었습니다…'가 남지 않는다", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    setup();
+    pick(file());
+    await settle();
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("이미지를 넣었습니다");
+    fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    expect(status).toHaveTextContent(/^이미지를 지웠습니다$/);
+  });
+});
+
+describe("ImageSlotPanel — M2C-P3 스위치 도움말 (B-M2C-05 · SPEC r2 4절)", () => {
+  it("끄면 미디어 요소가 없고 섹션 배경이 보인다는 문구 — '색 면' 0 · 스위치 설명으로 연결", () => {
+    setup();
+    const caption = screen.getByText("끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다");
+    expect(screen.getByRole("switch", { name: "대표 이미지 사용" })).toHaveAttribute("aria-describedby", caption.id);
+    expect(document.body.textContent).not.toContain("색 면");
   });
 });

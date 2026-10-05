@@ -172,7 +172,7 @@ function SlotSwitch({ id, label, value, error, onChange }: { readonly id: string
         </button>
       </div>
       <p id={`${id}-caption`} className="ds-caption1 text-label-alternative">
-        끄면 이미지 없이 색 면으로 보이고 대체텍스트 검사에서 빠집니다
+        끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다
       </p>
       {error && (
         <p id={`${id}-switch-error`} className="ds-caption1 text-status-negative-text">
@@ -189,6 +189,7 @@ export function ImageSlotField(props: FieldProps) {
   const { busy, error, pick, cancel } = useImagePick(props);
   const [switchError, setSwitchError] = useState("");
   const input = useRef<HTMLInputElement>(null);
+  const actions = useRef<HTMLDivElement>(null);
   const value = slotValue(section, entry.key);
   if (!value) return null;
   const id = `image-${section.instanceId}-${entry.key}`;
@@ -212,7 +213,7 @@ export function ImageSlotField(props: FieldProps) {
           {held ? <Preview blob={held.blob} /> : <div aria-hidden="true" className="aspect-video w-full rounded-md bg-fill-normal" />}
           {held && <p className="ds-caption1 text-label-neutral tabular-nums">{`${held.width} × ${held.height} · ${meta ? FORMAT[meta.format] : ""} ${Math.round(held.blob.size / 1024)}KB`}</p>}
           {local && !held && <p className="ds-body3 text-label-normal">이미지를 다시 골라 주세요</p>}
-          <div className="flex flex-wrap gap-2">
+          <div ref={actions} className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -227,7 +228,11 @@ export function ImageSlotField(props: FieldProps) {
             {local && (
               <Button variant="assistive" size="sm" onClick={() => {
                   cancel();
+                  // 이 버튼은 사라진다 — 포커스를 같은 자리에 남는 "이미지 고르기"로 옮긴다(BODY 유실 방지, B-M2C-06)
+                  actions.current?.querySelector("button")?.focus();
                   edit({ ...value, source: PLACEHOLDER });
+                  // 지움 결과 알림 — 앞선 "이미지를 넣었습니다"가 남지 않게(B-M2C-07 · SPEC 2.5 문구 톤). 대체텍스트는 건드리지 않는다(B-M2C-08 대기)
+                  announce("이미지를 지웠습니다");
                 }}>
                 이미지 지우기
               </Button>

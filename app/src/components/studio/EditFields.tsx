@@ -25,14 +25,18 @@ export function EditFields({
   selectedId,
   onEdit,
   images: host,
+  imagesOpen,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly onEdit: (next: PageDoc) => void;
   /** 편집 틀의 이미지 보관소 자리 — 없으면(필드만 보는 화면 테스트) 이미지 줄을 그리지 않는다 */
   readonly images?: ImageHost;
+  /** "이미지 편집" 펼침 상태 — 편집 틀이 들면 폭 변경(배치 전환 = 이 컴포넌트 재마운트)에도 남는다(B-M2C-04). 없으면 이 안에서 든다 */
+  readonly imagesOpen?: readonly [boolean, (open: boolean) => void];
 }) {
-  const [open, setOpen] = useState(false);
+  const local = useState(false);
+  const [open, setOpen] = imagesOpen ?? local;
   const section = selectedSection(doc, selectedId);
   if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;
   const slots = getSectionDefinition(section.type, section.variant)?.slots ?? [];
@@ -59,7 +63,7 @@ export function EditFields({
         );
       })}
       {images > 0 && host && (
-        <details onToggle={(event) => setOpen(event.currentTarget.open)} className="rounded-md border border-line-normal px-3 py-1">
+        <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)} className="rounded-md border border-line-normal px-3 py-1">
           <summary className="ds-label min-h-8 cursor-pointer py-1.5">이미지 편집 ({images})</summary>
           {open && (
             <Suspense fallback={null}>

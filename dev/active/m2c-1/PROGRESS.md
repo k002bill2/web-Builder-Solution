@@ -17,3 +17,5 @@
 ## 로그
 - 설치: `npm ci` exit 0 · `git status` lock 변경 0. 기준 build exit 0 → `logs/build-baseline.txt`(/studio 진입 127.36 · 렌더 JS 83.03) · dist 해시 93개 `logs/dist-baseline.sha256`.
 - **단계 1 예측(RED 전)**: `fileType.test.ts` 새 테스트 **24개**. 스텁(null·false·"" 반환)에서 **13 실패 · 11 통과**(거부 쪽 null 기대 11개는 스텁도 null — 구현 뒤에도 통과해야 하는 음성 사례). 10MB = 10 × 1024 × 1024 바이트(명세에 단위 없음 · 앱 안 기존 MB 관례 없음 → 너그러운 쪽).
+- 단계 1 GREEN: 24/24 · tsc·eslint 통과 · 커밋 `c6a03a5`. RED 로그 `logs/stage1-red.log`(13 실패 · 11 통과 — 예측 일치).
+- **단계 2 예측(RED 전)**: `header.test.ts` 새 테스트 **21개**. 스텁(null·false)에서 **14 실패 · 7 통과**(null 기대 4 · 한도 안쪽 false 기대 2 · 생성기 던짐 1).

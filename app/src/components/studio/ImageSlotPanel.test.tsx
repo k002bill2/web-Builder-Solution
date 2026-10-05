@@ -343,3 +343,12 @@ describe("ImageSlotPanel — M2C-P3 지움 알림 (B-M2C-07)", () => {
     expect(status).toHaveTextContent(/^이미지를 지웠습니다$/);
   });
 });
+
+describe("ImageSlotPanel — M2C-P3 스위치 도움말 (B-M2C-05 · SPEC r2 4절)", () => {
+  it("끄면 미디어 요소가 없고 섹션 배경이 보인다는 문구 — '색 면' 0 · 스위치 설명으로 연결", () => {
+    setup();
+    const caption = screen.getByText("끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다");
+    expect(screen.getByRole("switch", { name: "대표 이미지 사용" })).toHaveAttribute("aria-describedby", caption.id);
+    expect(document.body.textContent).not.toContain("색 면");
+  });
+});

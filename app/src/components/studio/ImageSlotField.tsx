@@ -172,7 +172,7 @@ function SlotSwitch({ id, label, value, error, onChange }: { readonly id: string
         </button>
       </div>
       <p id={`${id}-caption`} className="ds-caption1 text-label-alternative">
-        끄면 이미지 없이 색 면으로 보이고 대체텍스트 검사에서 빠집니다
+        끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다
       </p>
       {error && (
         <p id={`${id}-switch-error`} className="ds-caption1 text-status-negative-text">

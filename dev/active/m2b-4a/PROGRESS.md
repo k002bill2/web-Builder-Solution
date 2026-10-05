@@ -12,8 +12,8 @@
 - [x] E0-4 Noto 2종 원본 커밋 고정 URL·sha256 (logs/e0-sha256.txt)
 - [x] P1 자산: `app/src/assets/site-fonts/kit-{sans,serif}-kr/` woff2 400·700 · OFL.txt(원문 바이트 동일) · SOURCE.md(RFN 0건 출력·재현 명령) · `app/src/assets/fonts/SOURCE.md`(Pretendard 출처·체크섬)
 - [x] P2 렌더 문서 로드: `kit/fonts.css`(1안 6규칙·font-synthesis none) · `kit/siteFonts.ts`(별칭·스택·굵기 대응) · `render/siteFontLoad.ts`(캔버스 3초 폴백·늦은 로드 재측정 · 내보내기 bytes FontFace) · protocol render.fonts
-- [ ] P3 정적 HTML `data:` 인라인 · 고지 주석
-- [ ] P4 PNG `data:` 폰트 · 실패 정책(5초 · 문구 · 파일 0)
+- [x] P3 정적 HTML `data:` 인라인(쓰는 면만) · `<head>` 고지 주석(OFL 전문) · 렌더 문서에 같은 바이트(render.fonts)
+- [x] P4 PNG 캡처 CSS `data:` 폰트 · 실패 정책(받기 실패·5초 = PNG RENDER_TIMEOUT · HTML JOB_TIMEOUT · 문구 · 렌더 문서 열지 않음·파일 0 · 전체 상한 8초에 글꼴 시간 포함)
 - [ ] P5 가드 G2·G3·G4·G5·G6 · 번들 B8
 - [ ] P-B 브라우저 B6·B7·B9·3폭·200% · 정적 HTML 계산 스타일 동등성 · 서버 종료
 - [ ] P-F 전체 vitest 1회 exit 0 · Codex branch review base 254e322 · REPORT 마감
@@ -32,3 +32,5 @@
 - P5 가드: 새 파일 `test/siteFontAssets.test.ts` it 3(G3 라이선스·SOURCE 커밋 고정 URL·sha256 ≥2 · G5 "RFN 사후 검사 | 0건" 행·별칭 금지어 0 · G6 폰트 의존성 0·venv/스크립트 파일 0) = **+3 → 208 files · 1824**
   - P2 실제: RED 7 failed(새 6 + 이관 tokens.test 1) + siteFonts.test 파일 import 실패(it 4)(logs/p2-red.txt) → GREEN 표적 5파일 41 passed · gate 표적·가드·typecheck·lint·build(logs/p2-gate.txt — 1차 lint 1건 수정 후 개별 재실행 exit 0) · 바이트 렌더 JS 82,820(+540) · CSS 8,034(+216) · 앱 화면 전부 ±0 B(logs/p2-bytes.txt)
   - 이관(기존 단언 전후): ① `kit/tokens.test.ts:25-26` 전 `"Pretendard", system-ui, sans-serif` · `"Noto Serif KR", serif` → 후 SPEC 2.1 스택(별칭 맨 앞) ② `render/renderFonts.test.ts` 첫 it 전 "@font-face·woff 0·fonts.css 0" → 후 "render.css·kit.css @font-face·woff 0·앱 tokens/fonts.css 0 + @import 는 kit/fonts.css 1개"(G2 SPEC 개정분) ③ `test/tokenUsage.test.ts` V2-AC-14 전 "woff2 전체 4개" → 후 "site-fonts 밖 woff2 4개(앱 UI 그대로) + site-fonts = SPEC 2.1 정확 4파일"(목록 고정 — 약화 아님, P2 gate 가드에서 발견)
+  - P3·P4 실제: RED 3 failed + 2파일 import 실패(siteFontEmbed.test it 5 · staticHtml.test 전체)(logs/p34-red.txt) → GREEN 표적 5파일 54 passed · gate OK(logs/p34-gate.txt) · 바이트(logs/p34-bytes.txt): 렌더 JS 82,820 · CSS 8,034(P2와 같음) · /studio 첫 91,778(+2) · 진입 127,337(−2) · /compare 진입 121,709(−6) · 그 밖 −1~+5 B(청크 이름 해시 변화) · 조작 뒤 pngCapture +8,021(OFL 원문 포함, 판정 밖)
+  - 이관(단언 변경 0, 픽스처만): `staticHtml.test.ts` FILES render.css에 Pretendard @font-face 2규칙 추가 + 생성기 deps에 가짜 `fetchBytes` 주입 6곳(픽스처 프로필 계열 = Pretendard → 글꼴 받기가 필수 경로가 됨)

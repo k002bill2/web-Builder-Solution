@@ -248,3 +248,31 @@ describe("캡처용 렌더 iframe (openCaptureFrame — M2A-3c C4 실측)", () =
     expect(document.querySelector("iframe[data-export-frame]")).toBeNull();
   });
 });
+
+describe("PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9)", () => {
+  const FONT_CSS = 'a{x:1}@font-face{font-family:"Kit Sans KR";font-weight:400;font-display:swap;src:url(/assets/S-400.woff2) format("woff2")}@font-face{font-family:"Kit Sans KR";font-weight:700;font-display:swap;src:url(/assets/S-700.woff2) format("woff2")}';
+  const SANS = { ...REQUEST, kitTokens: { ...KIT, type: { ...KIT.type, family: "Noto Sans KR" } } } as PngRequest;
+  const fetchText = async (url: string) => (url === "/render.html" ? '<link rel="stylesheet" href="/assets/render.css">' : FONT_CSS);
+
+  it("캡처 SVG <style> = 킷 @font-face(url) 제거 + 쓰는 면 data: 규칙 · url(/assets) 0 · 렌더 문서에도 같은 바이트", async () => {
+    const fetchBytes = vi.fn(async (url: string) => new TextEncoder().encode(url).buffer as ArrayBuffer);
+    const { d, channel, draw } = deps(noFallback(), 2400, { fetchText, fetchBytes });
+    await capturePng(SANS, d);
+    expect(fetchBytes.mock.calls.map((c) => c[0])).toEqual(["/assets/S-700.woff2", "/assets/S-400.woff2"]);
+    const render = channel.sent.find((m) => m.type === "render") as Extract<ParentMessage, { type: "render" }>;
+    expect(render.fonts?.map((f) => [f.family, f.weight])).toEqual([["Kit Sans KR", 700], ["Kit Sans KR", 400]]);
+    const svg = decodeURIComponent(draw.mock.calls[0]![0].replace("data:image/svg+xml;charset=utf-8,", ""));
+    const style = parseSvg(svg).getElementsByTagName("style")[0]!.textContent!;
+    expect(style.match(/@font-face/g)).toHaveLength(2);
+    expect(style).toMatch(/font-family:\s*"Kit Sans KR"[^}]*url\(data:font\/woff2;base64,/);
+    expect(style).not.toMatch(/\/assets\//);
+  });
+
+  it("글꼴 받기 실패·5초 넘김 → RENDER_TIMEOUT · 문구 '글꼴을 불러오지 못했습니다' · 그리기·내려받기 0 · 렌더 문서 열지 않음", async () => {
+    const { d, channel, draw, download } = deps(noFallback(), 2400, { fetchText, fetchBytes: () => new Promise<ArrayBuffer>(() => undefined), fontTimeoutMs: 20 });
+    await expect(savePng(SANS, d)).rejects.toMatchObject({ code: "RENDER_TIMEOUT", message: "글꼴을 불러오지 못했습니다 — 다시 시도하세요" });
+    expect(draw).not.toHaveBeenCalled();
+    expect(download).not.toHaveBeenCalled();
+    expect(channel.opened).toEqual([]);
+  });
+});

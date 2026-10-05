@@ -1,0 +1,12 @@
+[bundle] 공통 JS (gzip, 참고): 89349 B
+[bundle] /catalog 첫 화면 합계: 99653 B / 예산 100KB · 진입 직후 자동 로드 포함: 102037 B / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97003 B / 예산 100KB · 진입 직후 자동 로드 포함: 99387 B / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98836 B / 예산 100KB · 진입 직후 자동 로드 포함: 121709 B / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98836 B / 예산 100KB · 진입 직후 자동 로드 포함: 121709 B / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99616 B / 예산 100KB · 진입 직후 자동 로드 포함: 118673 B / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94019 B / 예산 100KB · 진입 직후 자동 로드 포함: 100298 B / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91778 B / 예산 100KB · 진입 직후 자동 로드 포함: 127337 B / 예산 128KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +1342 B (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +8021 B (3개 파일, 예산 판정 밖)
+[bundle] 렌더 문서(render.html) JS 합계: 82820 B / 예산 90KB · CSS 합계: 8034 B / 예산 30KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0 B, 양쪽에 다 센다)

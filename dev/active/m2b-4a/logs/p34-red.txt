@@ -1,0 +1,130 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app
+
+ ❯ src/features/studio/staticHtml/siteFontEmbed.test.ts (0 test)
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts (0 test)
+ ❯ src/features/studio/png/pngCapture.test.ts (17 tests | 2 failed) 296ms
+   ❯ PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9) (2)
+     × 캡처 SVG <style> = 킷 @font-face(url) 제거 + 쓰는 면 data: 규칙 · url(/assets) 0 · 렌더 문서에도 같은 바이트 27ms
+     × 글꼴 받기 실패·5초 넘김 → RENDER_TIMEOUT · 문구 '글꼴을 불러오지 못했습니다' · 그리기·내려받기 0 · 렌더 문서 열지 않음 17ms
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (12 tests | 1 failed) 353ms
+   ❯ 정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4) (1)
+     × notice → <head> 주석 1개(그대로 · charset 뒤 · style 앞) · 없으면 주석 0 18ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/staticHtml/siteFontEmbed.test.ts [ src/features/studio/staticHtml/siteFontEmbed.test.ts ]
+Error: Failed to resolve import "./siteFontEmbed" from "src/features/studio/staticHtml/siteFontEmbed.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app/src/features/studio/staticHtml/siteFontEmbed.test.ts:1:100
+  1  |  import { FONT_FAILED, FontLoadError, cssFontFaces, fontNotice, loadSiteFonts, stripFontFaces } from "./siteFontEmbed";
+     |                                                                                                       ^
+  2  |  /** 내보내기 글꼴 인라인 (M2B-4a SPEC-MOTION-FONT 2.4 · MF-AC-U7·G4·B9) */
+  3  |  const CSS = [
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts [ src/features/studio/staticHtml/staticHtml.test.ts ]
+Error: Failed to resolve import "./siteFontEmbed" from "src/features/studio/staticHtml/staticHtml.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app/src/features/studio/staticHtml/staticHtml.test.ts:8:28
+  3  |  import { drawDoc, withUnknownCta, without } from "../../../render/testing/drawKit";
+  4  |  import { createStaticHtmlGenerator, openRenderFrame } from "./staticHtml";
+  5  |  import { FONT_FAILED } from "./siteFontEmbed";
+     |                               ^
+  6  |  import { STATIC_MENU_SCRIPT } from "./staticMarkup";
+  7  |  /** M2A-3b G3 — 정적 HTML 생성기: 잡의 스냅샷 문서를 숨은 렌더 iframe에 그려 직렬화 · 킷 CSS 인라인 · Blob object URL · SHA-256 앞 12자리 */
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/png/pngCapture.test.ts > PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9) > 캡처 SVG <style> = 킷 @font-face(url) 제거 + 쓰는 면 data: 규칙 · url(/assets) 0 · 렌더 문서에도 같은 바이트
+AssertionError: expected [] to deeply equal [ '/assets/S-700.woff2', …(1) ]
+
+- Expected
++ Received
+
+- [
+-   "/assets/S-700.woff2",
+-   "/assets/S-400.woff2",
+- ]
++ []
+
+ ❯ src/features/studio/png/pngCapture.test.ts:261:52
+    259|     const { d, channel, draw } = deps(noFallback(), 2400, { fetchText,…
+    260|     await capturePng(SANS, d);
+    261|     expect(fetchBytes.mock.calls.map((c) => c[0])).toEqual(["/assets/S…
+       |                                                    ^
+    262|     const render = channel.sent.find((m) => m.type === "render") as Ex…
+    263|     expect(render.fonts?.map((f) => [f.family, f.weight])).toEqual([["…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/features/studio/png/pngCapture.test.ts > PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9) > 글꼴 받기 실패·5초 넘김 → RENDER_TIMEOUT · 문구 '글꼴을 불러오지 못했습니다' · 그리기·내려받기 0 · 렌더 문서 열지 않음
+AssertionError: promise resolved "'PNG를 내려받았습니다 · 강남-카페-리브랜딩-2호점_390_r12…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"PNG를 내려받았습니다 · 강남-카페-리브랜딩-2호점_390_r12.png"
+
+ ❯ src/features/studio/png/pngCapture.test.ts:273:35
+    271|   it("글꼴 받기 실패·5초 넘김 → RENDER_TIMEOUT · 문구 '글꼴을 불러오지 못했습니다' · 그리기·내려받기…
+    272|     const { d, channel, draw, download } = deps(noFallback(), 2400, { …
+    273|     await expect(savePng(SANS, d)).rejects.toMatchObject({ code: "REND…
+       |                                   ^
+    274|     expect(draw).not.toHaveBeenCalled();
+    275|     expect(download).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > 정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4) > notice → <head> 주석 1개(그대로 · charset 뒤 · style 앞) · 없으면 주석 0
+AssertionError: expected [] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+- [
+-   "Fonts: Pretendard
+- SIL OPEN FONT LICENSE Version 1.1",
+- ]
++ []
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:149:47
+    147|     const nodes = [...page.head.childNodes];
+    148|     const comment = nodes.filter((n) => n.nodeType === Node.COMMENT_NO…
+    149|     expect(comment.map((n) => n.textContent)).toEqual([notice]);
+       |                                               ^
+    150|     const index = (pick: (n: ChildNode) => boolean) => nodes.findIndex…
+    151|     expect(index((n) => n === comment[0])).toBeGreaterThan(index((n) =…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  4 failed | 1 passed (5)
+      Tests  3 failed | 35 passed (38)
+   Start at  17:53:36
+   Duration  1.64s (environment 63%, transform 12%, setup 12%, tests 11%, import 2%)
+

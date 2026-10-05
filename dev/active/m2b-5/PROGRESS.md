@@ -41,6 +41,10 @@
 - A (기준 = S1 실제 213 files · 1850): 새 파일 1개 `features/profile/compareFrameGuard.test.ts` it 2 → **214 files · 1852**
   - it 1 소스 텍스트 동일(isObject·isText·isNumber·isRect·readRenderMessage, 정규화 = 선언 줄 묶음 + 공백 1칸) — RED 예상(사본 없음)
   - it 2 코퍼스 동작 동일(정상·다른 창·다른 프레임·모양 틀림·출처 틀림) — 원본 재사용 상태에서도 통과(RED 아님)
+- S2 (기준 = A 실제 214 · 1852): 새 파일 2개 + 기존 내 파일 1곳 → it +7 → **216 files · 1859**
+  - `features/profile/CompareDialog.test.tsx` it 4 — U4 inert·sandbox·title·src · U3 B열 메시지로 A열 불변·click 무시 · U9 폭 전환 = viewport만(render 재전송 0) · U9 <1280 1안씩 + 안 전환 라디오 기본 = 선택한 안
+  - `features/profile/compareGuard.test.ts` it 2 — G2 소스 전체 allow-same-origin 0 · 비교 sandbox 리터럴 · G3 로컬 상수 = RENDER_DOC_SRC·FRAME_REM·PREVIEW_WIDTH_OPTIONS + 축소 계산 동일
+  - `pages/ProfileCompare.test.tsx` it +1 — U10 닫기·Esc → 연 버튼 포커스 · 닫으면 iframe 0
 
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)

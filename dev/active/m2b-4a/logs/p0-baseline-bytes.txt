@@ -1,0 +1,19 @@
+[bundle] 공통 JS (gzip, 참고): 89344 B
+[bundle] /catalog 첫 화면 합계: 99654 B / 예산 100KB · 진입 직후 자동 로드 포함: 102038 B / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97001 B / 예산 100KB · 진입 직후 자동 로드 포함: 99385 B / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98836 B / 예산 100KB · 진입 직후 자동 로드 포함: 121715 B / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98836 B / 예산 100KB · 진입 직후 자동 로드 포함: 121715 B / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99611 B / 예산 100KB · 진입 직후 자동 로드 포함: 118672 B / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94017 B / 예산 100KB · 진입 직후 자동 로드 포함: 100298 B / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91776 B / 예산 100KB · 진입 직후 자동 로드 포함: 127339 B / 예산 128KB
+[bundle] 렌더 문서(render.html) JS 합계: 82280 B / 예산 90KB · CSS 합계: 7818 B / 예산 30KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0 B, 양쪽에 다 센다)
+[bundle] 예산 검사 실패 — /catalog: 첫 화면 99654 B > 100KB
+[bundle] 예산 검사 실패 — /references/:id: 첫 화면 97001 B > 100KB
+[bundle] 예산 검사 실패 — /compare: 첫 화면 98836 B > 100KB
+[bundle] 예산 검사 실패 — /compare (조정 있음): 첫 화면 98836 B > 100KB
+[bundle] 예산 검사 실패 — /profile: 첫 화면 99611 B > 100KB
+[bundle] 예산 검사 실패 — /projects: 첫 화면 94017 B > 100KB
+[bundle] 예산 검사 실패 — /studio/:projectId: 첫 화면 91776 B > 100KB
+[bundle] 예산 검사 실패 — 렌더 문서: JS 82280 B > 90KB
+[bundle] 예산 검사 실패 — 렌더 문서: CSS 7818 B > 30KB

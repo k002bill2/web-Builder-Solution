@@ -1,0 +1,1423 @@
+{
+ "boot": {
+  "contrast": {
+   "light": [
+    [
+     "C-1",
+     8.09,
+     true
+    ],
+    [
+     "C-2",
+     16.82,
+     true
+    ],
+    [
+     "C-4",
+     15.31,
+     true
+    ],
+    [
+     "C-5",
+     4.93,
+     true
+    ]
+   ],
+   "dark": [
+    [
+     "C-1",
+     4.61,
+     true
+    ],
+    [
+     "C-2",
+     20.08,
+     true
+    ],
+    [
+     "C-3",
+     4.56,
+     true
+    ],
+    [
+     "C-4",
+     17.62,
+     true
+    ],
+    [
+     "C-5",
+     6.06,
+     true
+    ]
+   ]
+  }
+ },
+ "headings-order": {
+  "docOrder": true,
+  "kit": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "fallback": 0,
+  "per": {
+   "at": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,body"
+   },
+   "sl": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,intro"
+   },
+   "c2": {
+    "h2": 1,
+    "h3": 2,
+    "slots": "heading,intro,card1Title,card1Body,card2Title,card2Body"
+   },
+   "cm": {
+    "h2": 1,
+    "h3": 3,
+    "slots": "heading,intro,card1Title,card1Body,card2Title,card2Body,card3Title,card3Body"
+   },
+   "g3": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,intro,image1,image2,image3"
+   },
+   "ms": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,intro,image1,image2,image3"
+   },
+   "g2": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,intro,image1,image2"
+   },
+   "st": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,stat1Value,stat1Label,stat2Value,stat2Label,stat3Value,stat3Label"
+   },
+   "qt": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,quote1,author1,quote2,author2"
+   },
+   "pr": {
+    "h2": 1,
+    "h3": 2,
+    "slots": "heading,intro,plan1Name,plan1Price,plan1Body,plan2Name,plan2Price,plan2Body"
+   },
+   "bk": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,intro,consent,submit"
+   },
+   "cb": {
+    "h2": 1,
+    "h3": 0,
+    "slots": "heading,body,cta"
+   }
+  },
+  "cbHref": "#s-s-bk"
+ },
+ "static-scripts": {
+  "n": 1,
+  "sameBytes": true,
+  "onAttrs": 0,
+  "hrefHash": 0,
+  "forms": [
+   [
+    null,
+    null
+   ]
+  ],
+  "placeholders": 0
+ },
+ "layout-1280": {
+  "innerWidth": 1280,
+  "overflowX": 0,
+  "qt": {
+   "boxes": [
+    {
+     "l": 88.5,
+     "t": 4928.1,
+     "w": 532,
+     "h": 116,
+     "b": 5044.1,
+     "r": 620.5
+    },
+    {
+     "l": 644.5,
+     "t": 4928.1,
+     "w": 532,
+     "h": 116,
+     "b": 5044.1,
+     "r": 1176.5
+    }
+   ],
+   "sameRow": true,
+   "stacked": false,
+   "sameH": true,
+   "cols": "532px 532px",
+   "authorAtBottom": [
+    0,
+    0
+   ],
+   "quote": {
+    "fontSize": "20px",
+    "fontStyle": "normal",
+    "whiteSpace": "pre-line",
+    "color": "rgb(26, 26, 26)"
+   },
+   "bq": {
+    "marginLeft": "0px",
+    "marginTop": "0px"
+   },
+   "author": {
+    "fontWeight": "700",
+    "color": "rgb(26, 26, 26)",
+    "fontSize": "16px"
+   },
+   "card": {
+    "backgroundColor": "rgb(244, 240, 232)",
+    "color": "rgb(26, 26, 26)"
+   }
+  },
+  "pr": {
+   "boxes": [
+    {
+     "l": 88.5,
+     "t": 5331.2,
+     "w": 532,
+     "h": 155.1,
+     "b": 5486.3,
+     "r": 620.5
+    },
+    {
+     "l": 644.5,
+     "t": 5331.2,
+     "w": 532,
+     "h": 155.1,
+     "b": 5486.3,
+     "r": 1176.5
+    }
+   ],
+   "sameRow": true,
+   "stacked": false,
+   "sameH": true,
+   "priceTexts": [
+    "문의",
+    "99,000"
+   ],
+   "cardsEqual": true,
+   "pricesEqual": true,
+   "card": {
+    "backgroundColor": "rgb(252, 251, 248)",
+    "borderTopWidth": "1px",
+    "borderTopColor": "rgb(110, 110, 110)",
+    "borderLeftWidth": "1px",
+    "borderLeftColor": "rgb(110, 110, 110)",
+    "borderTopLeftRadius": "8px",
+    "paddingTop": "24px",
+    "paddingLeft": "24px",
+    "boxShadow": "none"
+   },
+   "price": {
+    "fontSize": "31.2496px",
+    "fontWeight": "700",
+    "color": "rgb(26, 26, 26)",
+    "lineHeight": "39.062px",
+    "fontVariantNumeric": "tabular-nums"
+   },
+   "badges": 0
+  },
+  "bk": {
+   "twoCol": true,
+   "textForm": [
+    {
+     "l": 88.5,
+     "t": 5678.3,
+     "w": 440,
+     "h": 77.1,
+     "b": 5755.3,
+     "r": 528.5
+    },
+    {
+     "l": 560.5,
+     "t": 5678.3,
+     "w": 616,
+     "h": 548.2,
+     "b": 6226.5,
+     "r": 1176.5
+    }
+   ],
+   "dateTime": [
+    {
+     "l": 560.5,
+     "t": 5932.5,
+     "w": 300,
+     "h": 44,
+     "b": 5976.5,
+     "r": 860.5
+    },
+    {
+     "l": 876.5,
+     "t": 5932.5,
+     "w": 300,
+     "h": 44,
+     "b": 5976.5,
+     "r": 1176.5
+    }
+   ],
+   "dtSameRow": true,
+   "dtStacked": false,
+   "disabled": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "fieldStyle": [
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "cursor": "default"
+    }
+   ],
+   "labels": [
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)"
+   ],
+   "notice": {
+    "color": "rgb(26, 26, 26)",
+    "opacity": "1",
+    "fontWeight": "700"
+   },
+   "button": {
+    "color": "rgb(255, 255, 255)",
+    "backgroundColor": "rgb(10, 92, 54)",
+    "opacity": "1"
+   }
+  },
+  "cb": {
+   "section": {
+    "backgroundColor": "rgb(10, 92, 54)",
+    "color": "rgb(255, 255, 255)",
+    "borderTopLeftRadius": "0px"
+   },
+   "sectionW": 1265,
+   "text": {
+    "l": 88.5,
+    "t": 6370.5,
+    "w": 500.4,
+    "h": 77.1,
+    "b": 6447.5,
+    "r": 588.9
+   },
+   "cta": {
+    "l": 1096.1,
+    "t": 6387,
+    "w": 80.4,
+    "h": 44,
+    "b": 6431,
+    "r": 1176.5
+   },
+   "sameRow": true,
+   "ctaBelow": false,
+   "ctaFull": false,
+   "ctaStyle": {
+    "backgroundColor": "rgb(255, 255, 255)",
+    "color": "rgb(10, 92, 54)",
+    "minHeight": "44px",
+    "borderTopLeftRadius": "8px",
+    "fontWeight": "700"
+   },
+   "title": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "31.2496px"
+   },
+   "body": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "20px"
+   },
+   "href": "#s-s-bk"
+  }
+ },
+ "layout-768": {
+  "innerWidth": 768,
+  "overflowX": 0,
+  "qt": {
+   "boxes": [
+    {
+     "l": 32,
+     "t": 4251,
+     "w": 332.5,
+     "h": 116,
+     "b": 4367,
+     "r": 364.5
+    },
+    {
+     "l": 388.5,
+     "t": 4251,
+     "w": 332.5,
+     "h": 116,
+     "b": 4367,
+     "r": 721
+    }
+   ],
+   "sameRow": true,
+   "stacked": false,
+   "sameH": true,
+   "cols": "332.5px 332.5px",
+   "authorAtBottom": [
+    0,
+    0
+   ],
+   "quote": {
+    "fontSize": "20px",
+    "fontStyle": "normal",
+    "whiteSpace": "pre-line",
+    "color": "rgb(26, 26, 26)"
+   },
+   "bq": {
+    "marginLeft": "0px",
+    "marginTop": "0px"
+   },
+   "author": {
+    "fontWeight": "700",
+    "color": "rgb(26, 26, 26)",
+    "fontSize": "16px"
+   },
+   "card": {
+    "backgroundColor": "rgb(244, 240, 232)",
+    "color": "rgb(26, 26, 26)"
+   }
+  },
+  "pr": {
+   "boxes": [
+    {
+     "l": 32,
+     "t": 4654,
+     "w": 332.5,
+     "h": 147.3,
+     "b": 4801.3,
+     "r": 364.5
+    },
+    {
+     "l": 388.5,
+     "t": 4654,
+     "w": 332.5,
+     "h": 147.3,
+     "b": 4801.3,
+     "r": 721
+    }
+   ],
+   "sameRow": true,
+   "stacked": false,
+   "sameH": true,
+   "priceTexts": [
+    "문의",
+    "99,000"
+   ],
+   "cardsEqual": true,
+   "pricesEqual": true,
+   "card": {
+    "backgroundColor": "rgb(252, 251, 248)",
+    "borderTopWidth": "1px",
+    "borderTopColor": "rgb(110, 110, 110)",
+    "borderLeftWidth": "1px",
+    "borderLeftColor": "rgb(110, 110, 110)",
+    "borderTopLeftRadius": "8px",
+    "paddingTop": "24px",
+    "paddingLeft": "24px",
+    "boxShadow": "none"
+   },
+   "price": {
+    "fontSize": "25px",
+    "fontWeight": "700",
+    "color": "rgb(26, 26, 26)",
+    "lineHeight": "31.25px",
+    "fontVariantNumeric": "tabular-nums"
+   },
+   "badges": 0
+  },
+  "bk": {
+   "twoCol": false,
+   "textForm": [
+    {
+     "l": 32,
+     "t": 4993.3,
+     "w": 689,
+     "h": 77.1,
+     "b": 5070.3,
+     "r": 721
+    },
+    {
+     "l": 32,
+     "t": 5094.3,
+     "w": 689,
+     "h": 548.2,
+     "b": 5642.5,
+     "r": 721
+    }
+   ],
+   "dateTime": [
+    {
+     "l": 32,
+     "t": 5348.5,
+     "w": 336.5,
+     "h": 44,
+     "b": 5392.5,
+     "r": 368.5
+    },
+    {
+     "l": 384.5,
+     "t": 5348.5,
+     "w": 336.5,
+     "h": 44,
+     "b": 5392.5,
+     "r": 721
+    }
+   ],
+   "dtSameRow": true,
+   "dtStacked": false,
+   "disabled": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "fieldStyle": [
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "cursor": "default"
+    }
+   ],
+   "labels": [
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)"
+   ],
+   "notice": {
+    "color": "rgb(26, 26, 26)",
+    "opacity": "1",
+    "fontWeight": "700"
+   },
+   "button": {
+    "color": "rgb(255, 255, 255)",
+    "backgroundColor": "rgb(10, 92, 54)",
+    "opacity": "1"
+   }
+  },
+  "cb": {
+   "section": {
+    "backgroundColor": "rgb(10, 92, 54)",
+    "color": "rgb(255, 255, 255)",
+    "borderTopLeftRadius": "0px"
+   },
+   "sectionW": 753,
+   "text": {
+    "l": 32,
+    "t": 5786.5,
+    "w": 500.4,
+    "h": 77.1,
+    "b": 5863.6,
+    "r": 532.4
+   },
+   "cta": {
+    "l": 640.6,
+    "t": 5803.1,
+    "w": 80.4,
+    "h": 44,
+    "b": 5847.1,
+    "r": 721
+   },
+   "sameRow": true,
+   "ctaBelow": false,
+   "ctaFull": false,
+   "ctaStyle": {
+    "backgroundColor": "rgb(255, 255, 255)",
+    "color": "rgb(10, 92, 54)",
+    "minHeight": "44px",
+    "borderTopLeftRadius": "8px",
+    "fontWeight": "700"
+   },
+   "title": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "31.2496px"
+   },
+   "body": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "20px"
+   },
+   "href": "#s-s-bk"
+  }
+ },
+ "layout-390": {
+  "innerWidth": 390,
+  "overflowX": 0,
+  "qt": {
+   "boxes": [
+    {
+     "l": 16,
+     "t": 5707.4,
+     "w": 343,
+     "h": 94,
+     "b": 5801.4,
+     "r": 359
+    },
+    {
+     "l": 16,
+     "t": 5817.4,
+     "w": 343,
+     "h": 94,
+     "b": 5911.4,
+     "r": 359
+    }
+   ],
+   "sameRow": false,
+   "stacked": true,
+   "sameH": true,
+   "cols": "343px",
+   "authorAtBottom": [
+    0,
+    0
+   ],
+   "quote": {
+    "fontSize": "16px",
+    "fontStyle": "normal",
+    "whiteSpace": "pre-line",
+    "color": "rgb(26, 26, 26)"
+   },
+   "bq": {
+    "marginLeft": "0px",
+    "marginTop": "0px"
+   },
+   "author": {
+    "fontWeight": "700",
+    "color": "rgb(26, 26, 26)",
+    "fontSize": "16px"
+   },
+   "card": {
+    "backgroundColor": "rgb(244, 240, 232)",
+    "color": "rgb(26, 26, 26)"
+   }
+  },
+  "pr": {
+   "boxes": [
+    {
+     "l": 16,
+     "t": 6094.7,
+     "w": 343,
+     "h": 131.3,
+     "b": 6225.9,
+     "r": 359
+    },
+    {
+     "l": 16,
+     "t": 6241.9,
+     "w": 343,
+     "h": 131.3,
+     "b": 6373.2,
+     "r": 359
+    }
+   ],
+   "sameRow": false,
+   "stacked": true,
+   "sameH": true,
+   "priceTexts": [
+    "문의",
+    "99,000"
+   ],
+   "cardsEqual": true,
+   "pricesEqual": true,
+   "card": {
+    "backgroundColor": "rgb(252, 251, 248)",
+    "borderTopWidth": "1px",
+    "borderTopColor": "rgb(110, 110, 110)",
+    "borderLeftWidth": "1px",
+    "borderLeftColor": "rgb(110, 110, 110)",
+    "borderTopLeftRadius": "8px",
+    "paddingTop": "16px",
+    "paddingLeft": "16px",
+    "boxShadow": "none"
+   },
+   "price": {
+    "fontSize": "25px",
+    "fontWeight": "700",
+    "color": "rgb(26, 26, 26)",
+    "lineHeight": "31.25px",
+    "fontVariantNumeric": "tabular-nums"
+   },
+   "badges": 0
+  },
+  "bk": {
+   "twoCol": false,
+   "textForm": [
+    {
+     "l": 16,
+     "t": 6469.2,
+     "w": 343,
+     "h": 99.3,
+     "b": 6568.4,
+     "r": 359
+    },
+    {
+     "l": 16,
+     "t": 6592.4,
+     "w": 343,
+     "h": 660.4,
+     "b": 7252.8,
+     "r": 359
+    }
+   ],
+   "dateTime": [
+    {
+     "l": 16,
+     "t": 6865.8,
+     "w": 343,
+     "h": 44,
+     "b": 6909.8,
+     "r": 359
+    },
+    {
+     "l": 16,
+     "t": 6958.8,
+     "w": 343,
+     "h": 44,
+     "b": 7002.8,
+     "r": 359
+    }
+   ],
+   "dtSameRow": false,
+   "dtStacked": true,
+   "disabled": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "fieldStyle": [
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgb(252, 251, 248)",
+     "cursor": "not-allowed"
+    },
+    {
+     "color": "rgb(26, 26, 26)",
+     "opacity": "1",
+     "webkitTextFillColor": "rgb(26, 26, 26)",
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "cursor": "default"
+    }
+   ],
+   "labels": [
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)",
+    "rgb(26, 26, 26)"
+   ],
+   "notice": {
+    "color": "rgb(26, 26, 26)",
+    "opacity": "1",
+    "fontWeight": "700"
+   },
+   "button": {
+    "color": "rgb(255, 255, 255)",
+    "backgroundColor": "rgb(10, 92, 54)",
+    "opacity": "1"
+   }
+  },
+  "cb": {
+   "section": {
+    "backgroundColor": "rgb(10, 92, 54)",
+    "color": "rgb(255, 255, 255)",
+    "borderTopLeftRadius": "0px"
+   },
+   "sectionW": 375,
+   "text": {
+    "l": 16,
+    "t": 7348.8,
+    "w": 343,
+    "h": 63.3,
+    "b": 7412.1,
+    "r": 359
+   },
+   "cta": {
+    "l": 16,
+    "t": 7428.1,
+    "w": 343,
+    "h": 44,
+    "b": 7472.1,
+    "r": 359
+   },
+   "sameRow": false,
+   "ctaBelow": true,
+   "ctaFull": true,
+   "ctaStyle": {
+    "backgroundColor": "rgb(255, 255, 255)",
+    "color": "rgb(10, 92, 54)",
+    "minHeight": "44px",
+    "borderTopLeftRadius": "8px",
+    "fontWeight": "700"
+   },
+   "title": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "25px"
+   },
+   "body": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "16px"
+   },
+   "href": "#s-s-bk"
+  }
+ },
+ "cb-alt-tone": {
+  "tone": "base",
+  "bg": "rgb(10, 92, 54)"
+ },
+ "static-eq-1280": {
+  "same": true,
+  "elements": 151,
+  "overflowX": 0,
+  "innerWidth": 1280,
+  "diff": {}
+ },
+ "static-eq-768": {
+  "same": true,
+  "elements": 151,
+  "overflowX": 0,
+  "innerWidth": 768,
+  "diff": {}
+ },
+ "static-eq-390": {
+  "same": true,
+  "elements": 151,
+  "overflowX": 0,
+  "innerWidth": 390,
+  "diff": {}
+ },
+ "booking-static-submit": {
+  "before": {
+   "server": 5,
+   "page": {
+    "href": "http://127.0.0.1:4339/qb-11.html",
+    "res": 0,
+    "nav": 1
+   }
+  },
+  "after": {
+   "server": 5,
+   "page": {
+    "href": "http://127.0.0.1:4339/qb-11.html",
+    "res": 0,
+    "nav": 1,
+    "submits": 0,
+    "active": "BODY",
+    "fieldsetDisabled": true
+   }
+  },
+  "focusAfterClick": "BODY",
+  "moved": false,
+  "newServerRequests": 0,
+  "newResources": 0
+ },
+ "colors-light-base-1280": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/bg",
+   "sl": "ink/surface",
+   "c2": "ink/bg muted/bg ink/surface",
+   "cm": "ink/surface ink/bg",
+   "g3": "ink/bg muted/bg",
+   "ms": "ink/surface",
+   "g2": "ink/bg muted/bg",
+   "st": "ink/surface",
+   "qt": "ink/bg ink/surface",
+   "pr": "ink/surface ink/bg",
+   "bk": "ink/bg muted/bg on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.93,
+  "rings": [
+   "문의하기:on-primary/primary:8.09:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-light-base-768": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/bg",
+   "sl": "ink/surface",
+   "c2": "ink/bg muted/bg ink/surface",
+   "cm": "ink/surface ink/bg",
+   "g3": "ink/bg muted/bg",
+   "ms": "ink/surface",
+   "g2": "ink/bg muted/bg",
+   "st": "ink/surface",
+   "qt": "ink/bg ink/surface",
+   "pr": "ink/surface ink/bg",
+   "bk": "ink/bg muted/bg on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.93,
+  "rings": [
+   "문의하기:on-primary/primary:8.09:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-light-base-390": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/bg",
+   "sl": "ink/surface",
+   "c2": "ink/bg muted/bg ink/surface",
+   "cm": "ink/surface ink/bg",
+   "g3": "ink/bg muted/bg",
+   "ms": "ink/surface",
+   "g2": "ink/bg muted/bg",
+   "st": "ink/surface",
+   "qt": "ink/bg ink/surface",
+   "pr": "ink/surface ink/bg",
+   "bk": "ink/bg muted/bg on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.93,
+  "rings": [
+   "문의하기:on-primary/primary:8.09:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-light-alt-1280": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/surface",
+   "sl": "ink/bg muted/bg",
+   "c2": "ink/surface ink/bg",
+   "cm": "ink/bg muted/bg ink/surface",
+   "g3": "ink/surface",
+   "ms": "ink/bg muted/bg",
+   "g2": "ink/surface",
+   "st": "ink/bg muted/bg",
+   "qt": "ink/surface ink/bg",
+   "pr": "ink/bg muted/bg ink/surface",
+   "bk": "ink/surface on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.93,
+  "rings": [
+   "문의하기:on-primary/primary:8.09:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-light-alt-768": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/surface",
+   "sl": "ink/bg muted/bg",
+   "c2": "ink/surface ink/bg",
+   "cm": "ink/bg muted/bg ink/surface",
+   "g3": "ink/surface",
+   "ms": "ink/bg muted/bg",
+   "g2": "ink/surface",
+   "st": "ink/bg muted/bg",
+   "qt": "ink/surface ink/bg",
+   "pr": "ink/bg muted/bg ink/surface",
+   "bk": "ink/surface on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.93,
+  "rings": [
+   "문의하기:on-primary/primary:8.09:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-light-alt-390": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/surface",
+   "sl": "ink/bg muted/bg",
+   "c2": "ink/surface ink/bg",
+   "cm": "ink/bg muted/bg ink/surface",
+   "g3": "ink/surface",
+   "ms": "ink/bg muted/bg",
+   "g2": "ink/surface",
+   "st": "ink/bg muted/bg",
+   "qt": "ink/surface ink/bg",
+   "pr": "ink/bg muted/bg ink/surface",
+   "bk": "ink/surface on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.93,
+  "rings": [
+   "문의하기:on-primary/primary:8.09:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-dark-base-1280": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/bg",
+   "sl": "ink/surface",
+   "c2": "ink/bg muted/bg ink/primary",
+   "cm": "ink/surface ink/primary",
+   "g3": "ink/bg muted/bg",
+   "ms": "ink/surface",
+   "g2": "ink/bg muted/bg",
+   "st": "ink/surface",
+   "qt": "ink/bg ink/primary",
+   "pr": "ink/surface ink/primary",
+   "bk": "ink/bg muted/bg on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.56,
+  "rings": [
+   "문의하기:on-primary/primary:4.61:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-dark-base-768": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/bg",
+   "sl": "ink/surface",
+   "c2": "ink/bg muted/bg ink/primary",
+   "cm": "ink/surface ink/primary",
+   "g3": "ink/bg muted/bg",
+   "ms": "ink/surface",
+   "g2": "ink/bg muted/bg",
+   "st": "ink/surface",
+   "qt": "ink/bg ink/primary",
+   "pr": "ink/surface ink/primary",
+   "bk": "ink/bg muted/bg on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.56,
+  "rings": [
+   "문의하기:on-primary/primary:4.61:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-dark-base-390": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/bg",
+   "sl": "ink/surface",
+   "c2": "ink/bg muted/bg ink/primary",
+   "cm": "ink/surface ink/primary",
+   "g3": "ink/bg muted/bg",
+   "ms": "ink/surface",
+   "g2": "ink/bg muted/bg",
+   "st": "ink/surface",
+   "qt": "ink/bg ink/primary",
+   "pr": "ink/surface ink/primary",
+   "bk": "ink/bg muted/bg on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.56,
+  "rings": [
+   "문의하기:on-primary/primary:4.61:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-dark-alt-1280": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/surface",
+   "sl": "ink/bg muted/bg",
+   "c2": "ink/surface ink/primary",
+   "cm": "ink/bg muted/bg ink/primary",
+   "g3": "ink/surface",
+   "ms": "ink/bg muted/bg",
+   "g2": "ink/surface",
+   "st": "ink/bg muted/bg",
+   "qt": "ink/surface ink/primary",
+   "pr": "ink/bg muted/bg ink/primary",
+   "bk": "ink/surface on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.56,
+  "rings": [
+   "문의하기:on-primary/primary:4.61:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-dark-alt-768": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/surface",
+   "sl": "ink/bg muted/bg",
+   "c2": "ink/surface ink/primary",
+   "cm": "ink/bg muted/bg ink/primary",
+   "g3": "ink/surface",
+   "ms": "ink/bg muted/bg",
+   "g2": "ink/surface",
+   "st": "ink/bg muted/bg",
+   "qt": "ink/surface ink/primary",
+   "pr": "ink/bg muted/bg ink/primary",
+   "bk": "ink/surface on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.56,
+  "rings": [
+   "문의하기:on-primary/primary:4.61:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "colors-dark-alt-390": {
+  "bad": {},
+  "pairs": {
+   "at": "ink/surface",
+   "sl": "ink/bg muted/bg",
+   "c2": "ink/surface ink/primary",
+   "cm": "ink/bg muted/bg ink/primary",
+   "g3": "ink/surface",
+   "ms": "ink/bg muted/bg",
+   "g2": "ink/surface",
+   "st": "ink/bg muted/bg",
+   "qt": "ink/surface ink/primary",
+   "pr": "ink/bg muted/bg ink/primary",
+   "bk": "ink/surface on-primary/primary",
+   "cb": "on-primary/primary primary/on-primary"
+  },
+  "min": 4.56,
+  "rings": [
+   "문의하기:on-primary/primary:4.61:fv=true:solid"
+  ],
+  "focusables": {
+   "at": 0,
+   "sl": 0,
+   "c2": 0,
+   "cm": 0,
+   "g3": 0,
+   "ms": 0,
+   "g2": 0,
+   "st": 0,
+   "qt": 0,
+   "pr": 0,
+   "bk": 0,
+   "cb": 1
+  }
+ },
+ "long200-1280": {
+  "overflowX": 0,
+  "bad": {
+   "bk": {
+    "wider": [],
+    "ellipsis": 0,
+    "scrollOver": 1,
+    "overlap": 0
+   }
+  }
+ },
+ "long200-768": {
+  "overflowX": 0,
+  "bad": {
+   "bk": {
+    "wider": [],
+    "ellipsis": 0,
+    "scrollOver": 1,
+    "overlap": 0
+   }
+  }
+ },
+ "long200-390": {
+  "overflowX": 0,
+  "bad": {
+   "bk": {
+    "wider": [],
+    "ellipsis": 0,
+    "scrollOver": 1,
+    "overlap": 0
+   }
+  }
+ },
+ "ring-shot-1280": {
+  "focusVisible": true,
+  "shot": "fail"
+ },
+ "ring-shot-768": {
+  "focusVisible": true,
+  "shot": "fail"
+ },
+ "ring-shot-390": {
+  "focusVisible": true,
+  "shot": "fail"
+ }
+}

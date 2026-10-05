@@ -25,3 +25,4 @@
 - **단계 4 예측(RED 전)**: `ingestImage.test.ts` 새 테스트 **15개**(it 13 · each 2행 ×2). 스텁(reject)에서 **14 실패 · 1 통과**(기본 deps 모양 — 스텁도 함수).
 - 단계 4 RED 14 실패 · 1 통과(예측 일치). GREEN 76/76(누적, ingest 폴더) · tsc·eslint 통과.
 - 최종 게이트(1회): typecheck 0 · lint 0 · vitest 0(220 파일 · 1952 테스트) · build 0. dist 해시 93개 기준과 **완전 동일**(diff 0) → 번들 변화 0. /studio 진입 127.36 · 렌더 JS 83.03 그대로.
+- Codex r1(`logs/codex-r1.txt`): P2 1건 — 파일 바이트 읽기 실패가 reject로 샘. **반영 예측**: 새 테스트 2개(읽기 단계 2곳) · RED 2 실패.

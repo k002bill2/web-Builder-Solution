@@ -12,7 +12,8 @@
 | 커밋 | 내용 | 변경 경로 |
 |---|---|---|
 | 4f8def7 | P0 BRIEF·PROGRESS·REPORT 골격·gate.sh·baseline 로그(1777 exit 0) | dev/active/m2b-2c/ |
-| (이 커밋) | P1 예산 실측·멈춤 판정·시제품 diff 보존 | dev/active/m2b-2c/ |
+| 4f9b467 | P1 예산 실측·멈춤 판정·시제품 diff 보존 | dev/active/m2b-2c/ |
+| (이 커밋) | 마감 전체 vitest · 승인 범위 확인 · REPORT/PROGRESS 마감 | dev/active/m2b-2c/ |
 
 ## 2. KD-AC
 - 미판정 전부(KD-AC-01~08 합본 · 17~21) — 구현 전 정지.
@@ -41,8 +42,11 @@
 - 실행 안 함 — 검토할 구현 diff가 없음(기록 커밋만). Codex 미완료로 표기.
 
 ## 7. 남은 위험 · 필요한 결정
-- **결정 필요(사용자/Jarvis)**: 부모 RENDERED_VARIANTS 30쌍 표현 — (A) 엔진 `SECTION_DEFINITIONS` 파생 import 승인(−96 B, 이미 로드된 청크 · engineImportGuard 허용 여부 확인 필요 · unknown 방어는 그대로 `includes`) 또는 (B) 이 레인 /studio 진입 증가 한도 예외(+62 B, 127,497 ≤ 127,700) 승인. (A) 권장: 바이트가 줄고 30/30 이후 엔진 정의와 자동 동기.
-- 전체 vitest: baseline 1회만(198 files · 1777 passed · exit 0, logs/baseline-full-vitest.txt). 마감 전체 vitest는 제품 코드 변경 0이라 실행하지 않음.
+- **결정 필요(사용자/Jarvis)**: 부모 RENDERED_VARIANTS 30쌍 표현 — 둘 중 하나.
+  - (A, 권장) `features/studio/renderedVariants.ts`가 엔진 `SECTION_DEFINITIONS`에서 파생하는 import 승인 — 시제품 측정 −96 B. 필요한 승인은 **브리프의 "엔진 registry 신규 import" 1건뿐**: engineImportGuard는 `features/studio/**`를 이미 허용하고(가드 수정 0), 같은 폴더 `selection.ts`·`sectionCatalog.ts`·`variantChoices.ts`가 이미 엔진 registry를 import하는 선례가 있다. unknown 방어는 `includes`라 그대로(no-such-variant = false).
+  - (B) 이 레인 /studio 진입 증가 한도 예외 +62 B(127,497 ≤ 127,700) 승인 — 명시 나열 유지.
+- (A) 구현 메모: `renderedVariants.test`(부모 = KIT_REGISTRY 집합)가 있으므로 파생 형태는 registry가 30쌍이 되는 마지막 단계(P5)에서만 넣고 P2~P4는 명시 문자열. 파생 뒤 "부모 = 엔진"은 구조상 항상 참이므로 30쌍 대조에서 의미 있는 단언은 "KIT_REGISTRY = 엔진 SECTION_DEFINITIONS 정확 집합(30 · 중복 0)" + unknown 방어 별도 단언.
+- 전체 vitest: baseline(logs/baseline-full-vitest.txt) + 마감 1회(HEAD 4f9b467, 기본 설정, logs/full-vitest.txt) 모두 **198 files · 1777 passed · exit 0 · Errors 0** — app 트리 = 2369a3e(제품 diff 0)이라 test delta 0.
 - 30/30은 미달성 — M2b 킷 구현 미마감. 모션·폰트·비교·독립 QA(M2B-3~6) 별건.
 
 ## 8. 서버

@@ -4,3 +4,4 @@ fixtures/*.jpg
 fixtures/*.webp
 run2/
 static/
+fixtures/*.svg

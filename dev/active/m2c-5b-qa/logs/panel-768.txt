@@ -1,0 +1,6 @@
+OPEN: open=true rect=12,729x765 ox=-15 status="" meta=없음 err= fileInvalid=null alt="갈색 원과 점 무늬 그래픽" altDis=null deco=false btns=이미지 고르기 focus=SUMMARY|이미지 편집 (1)
+FAIL: open=true rect=12,729x795 ox=-15 status="JPEG·PNG·WebP 이미지만 쓸 수 있습니다" meta=없음 err=JPEG·PNG·WebP 이미지만 쓸 수 있습니다 fileInvalid=true alt="갈색 원과 점 무늬 그래픽" altDis=null deco=false btns=이미지 고르기 focus=SUMMARY|이미지 편집 (1)
+PICK: open=true rect=12,729x795 ox=-15 status="이미지를 넣었습니다" meta=1000 × 1500 · WebP 30KB err= fileInvalid=null alt="갈색 원과 점 무늬 그래픽" altDis=null deco=false btns=다른 이미지로 바꾸기/이미지 지우기 focus=SUMMARY|이미지 편집 (1)
+DECO: open=true rect=12,729x819 ox=-15 status="이미지를 넣었습니다" meta=1000 × 1500 · WebP 30KB err= fileInvalid=null alt="세로 패턴 그래픽" altDis=true deco=true btns=다른 이미지로 바꾸기/이미지 지우기 focus=INPUT|
+CLEAR: open=true rect=12,729x765 ox=-15 status="이미지를 넣었습니다" meta=없음 err= fileInvalid=null alt="세로 패턴 그래픽" altDis=null deco=false btns=이미지 고르기 focus=BODY|본문으로 건너뛰기모던 카페 
+

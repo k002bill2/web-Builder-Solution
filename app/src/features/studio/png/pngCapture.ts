@@ -81,6 +81,16 @@ export function buildCaptureSvg({ markup, css, width, height }: { readonly marku
 
 /** 문서 바닥 = 섹션 사각형(slotKey null)의 가장 아래 */
 const pageBottom = (rects: readonly FrameRect[]) => Math.ceil(rects.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[3] + r[5]), 0));
+/** 가장 넓은 섹션 폭 = 그 rects를 잰 배치 폭 */
+const layoutWidth = (rects: readonly FrameRect[]) => rects.filter((r) => r[1] === null).reduce((max, r) => Math.max(max, r[4]), 0);
+/**
+ * serialize해도 되는 rects(M2B-D1): 바닥 > 0 + 캡처 폭 배치. iframe 뷰포트가 캡처 폭이 되기 전(0·좁은 폭) 배치도 바닥 > 0일 수 있다 — 그 높이로 그리면 아래가 빈 캔버스.
+ * 상한을 넘는 바닥은 폭과 상관없이 받는다(세로 스크롤바로 폭이 줄어도 CANVAS_TOO_TALL 그대로)
+ */
+const settledAt = (width: number) => (rects: readonly FrameRect[]) => {
+  const bottom = pageBottom(rects);
+  return bottom > 0 && (Math.abs(layoutWidth(rects) - width) <= 1 || bottom > MAX_CANVAS_HEIGHT);
+};
 
 export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ readonly fileName: string; readonly fallbackCount: number; readonly blob: Blob }> {
   // 좌표계 하나(P2-c): iframe 폭 = SVG·캔버스 폭 = 프레임 rem × 지금 rem px(정수로 맞춤 — 캔버스 폭은 정수). 높이는 그 iframe의 사각형 바닥.
@@ -96,9 +106,9 @@ export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ 
         throw new PngError("RENDER_TIMEOUT", FONT_FAILED);
       })
     : { bytes: [], css: "" };
-  // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측).
+  // 렌더 문서는 레이아웃 전 0 크기·캡처 폭 전 배치의 사각형을 먼저 보낼 수 있다 — 캡처 폭에서 바닥 > 0인 보고를 기다린다(M2A-3c C4 · M2B-D1 실측).
   // 킷 토큰 없음(NO_KIT_TOKENS)은 실패가 아니다 — 캔버스처럼 중립 폴백으로 그린 rects·직렬화를 기다린다(P2-b · 정적 HTML은 실패 그대로)
-  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, Math.max(0, deps.timeoutMs - (Date.now() - started)), (r) => pageBottom(r) > 0, ["NO_KIT_TOKENS"], fonts.bytes).catch((error: unknown) => {
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, Math.max(0, deps.timeoutMs - (Date.now() - started)), settledAt(width), ["NO_KIT_TOKENS"], fonts.bytes).catch((error: unknown) => {
     throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
   });
   const height = pageBottom(rects);

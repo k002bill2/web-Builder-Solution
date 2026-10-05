@@ -23,6 +23,8 @@ function fakeChannel(markup: string, bottom = 2400, renderError?: "NO_KIT_TOKENS
   let closed = 0;
   const open = (widthRem: number): RenderChannel => {
     opened.push(widthRem);
+    // 렌더 문서는 그 iframe 폭(rem × 지금 루트 px)으로 배치한다
+    const w = widthRem * (Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
     let receive: (data: unknown) => void = () => undefined;
     return {
       listen: (r) => {
@@ -36,7 +38,7 @@ function fakeChannel(markup: string, bottom = 2400, renderError?: "NO_KIT_TOKENS
           queueMicrotask(() => {
             if (renderError) receive({ type: "error", code: renderError });
             receive({ type: "rects", rects: [["s-header", null, 0, 0, 0, 0], ["s-hero", null, 0, 0, 0, 0]] });
-            receive({ type: "rects", rects: [["s-header", null, 0, 0, 390, 60], ["s-hero", null, 0, 60, 390, bottom - 60], ["s-hero", "title", 8, 80, 300, 40]] });
+            receive({ type: "rects", rects: [["s-header", null, 0, 0, w, 60], ["s-hero", null, 0, 60, w, bottom - 60], ["s-hero", "title", 8, 80, 300, 40]] });
           });
         if (message.type === "serialize") queueMicrotask(() => receive({ type: "html", markup }));
       },
@@ -184,6 +186,41 @@ describe("캡처 흐름 (m2a 3.3 캡처 규칙)", () => {
 
   it("높이가 상한을 넘으면 CANVAS_TOO_TALL 실패(그리지 않음)", async () => {
     const { d, draw } = deps(noFallback(), MAX_CANVAS_HEIGHT + 1);
+    await expect(capturePng({ ...REQUEST, view: "desktop" }, d)).rejects.toMatchObject({ code: "CANVAS_TOO_TALL" });
+    expect(draw).not.toHaveBeenCalled();
+  });
+
+  /** 렌더 문서 흉내 — ready 뒤 render를 받으면 주어진 rects 보고를 차례로 보낸다 */
+  const reporting = (reports: readonly (readonly (readonly [number, number])[])[]) => (): RenderChannel => {
+    let receive: (data: unknown) => void = () => undefined;
+    return {
+      listen: (r) => {
+        receive = r;
+        queueMicrotask(() => receive({ type: "ready" }));
+      },
+      send: (message) => {
+        if (message.type === "render") for (const sections of reports) queueMicrotask(() => receive({ type: "rects", rects: sections.map(([w, h], i) => [`s-${i}`, null, 0, i === 0 ? 0 : 60, w, h]) }));
+        if (message.type === "serialize") queueMicrotask(() => receive({ type: "html", markup: noFallback() }));
+      },
+      close: () => undefined,
+    };
+  };
+
+  it("D-1 iframe 뷰포트가 캡처 폭이 되기 전(좁은 폭) 배치를 보고하면 그 높이를 쓰지 않고 캡처 폭 배치의 rects를 기다린다 — 높이 = 최종 바닥", async () => {
+    // 폭 16px 배치 = 바닥 8313(> 0) → 1280 배치 = 3479 (M2B-D1 실측 logs/width-heights*.txt)
+    const { d, draw } = deps(noFallback(), 2400, { open: reporting([[[16, 60], [16, 8253]], [[1280, 60], [1280, 3419]]]) });
+    await capturePng({ ...REQUEST, view: "desktop" }, d);
+    expect(draw.mock.calls[0]!.slice(1)).toEqual([1280, 3479]);
+  });
+
+  it("D-1 캡처 폭 배치 rects가 끝내 오지 않으면 RENDER_TIMEOUT(좁은 폭 높이로 그리지 않음)", async () => {
+    const { d, draw } = deps(noFallback(), 2400, { open: reporting([[[16, 60], [16, 8253]]]), timeoutMs: 20 });
+    await expect(capturePng({ ...REQUEST, view: "desktop" }, d)).rejects.toMatchObject({ code: "RENDER_TIMEOUT" });
+    expect(draw).not.toHaveBeenCalled();
+  });
+
+  it("D-1 상한 넘는 문서는 세로 스크롤바로 폭이 줄어도(1280 → 1265) 그대로 CANVAS_TOO_TALL(실패 정책 불변)", async () => {
+    const { d, draw } = deps(noFallback(), 2400, { open: reporting([[[1265, 60], [1265, MAX_CANVAS_HEIGHT]]]), timeoutMs: 200 });
     await expect(capturePng({ ...REQUEST, view: "desktop" }, d)).rejects.toMatchObject({ code: "CANVAS_TOO_TALL" });
     expect(draw).not.toHaveBeenCalled();
   });

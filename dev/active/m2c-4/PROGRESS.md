@@ -17,3 +17,4 @@ base `2fc32ba` · 시작 build: `/studio` 진입 126.89(멈춤 >127.39) · 첫 9
 ## RED 예측 (테스트 작성 전 커밋)
 - ② 새 테스트 3개 (기준 2009 → 2012): protocol.test "IMAGE_DECODE_FAILED 수신" · compareFrame.test "사본도 IMAGE_DECODE_FAILED" · staticHtml.test "decode 실패 = 즉시 '이미지를 그리지 못했습니다'(시간 초과 아님)". RED 예상 3 실패.
 - ② RED 3 실패(logs/red-2.txt) → GREEN 16파일 116 통과(logs/green-2.txt) · compareFrameGuard 무수정 통과
+- ① 새 테스트 11개 (2012 → 2023): exportImages.test 6(SPEC 5.1 세 사례 · 쓰는 id만=docImageIds · 잃은 이미지 · imageReader 파생본 전부) · staticMarkup.test 1(img src data:image/(webp|jpeg|png);base64만 · srcset 0) · staticHtml.test 2(render images+eager · onBuilt 요약 / 이미지 없는 문서도 eager) · pngCapture.test 2(D-1 5회 같은 높이+eager+images+fallbackCount 불변+잃은 문장 / decode 실패 PngError). RED 예상: exportImages 파일 import 실패 + 나머지 5 실패.

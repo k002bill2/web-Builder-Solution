@@ -1,0 +1,7 @@
+B B4 AX status/alert 글자 [{"role":"status","text":"3안 중 3개를 그렸습니다","ignored":false}]
+B B2 AX iframe 노출 []
+B OOPIF targets ["chrome-untrusted://new-tab-page/one-google-bar?paramsencoded=","https://ogs.google.com/u/0/widget/app?eom=1&awwd=1&gpa=4&em=2&scv=1&dpi=67911908&origin=chrome-untrusted%3A%2F%2Fnew-tab-page&origin=chrome%3A%2F%2Fnew-tab-page&cn=app&pid=1&spid=243&hl=ko&xstg=CAMSkxAVlxeqs2y-viqOxNEE796jAv6guwWyA9ysSd2SBadYvVUylhO5EeoepBLVBvoCnAGhFPYC9gPbBQWJDr4GGJMFigRBDSrhiYIC-BeOAQKpCPjnlAayBMQEpwTQBeDuBZWXDN0FK6mMBLcDhf58sfUg1gGdBLED2QL3A7XvW7WIpQat8T2j1YQG4-EXTKMGBtTh1A6M0AzRsw7dlA6gTuww5FnkNvYeLuE-pB77OvQImpYT7cYb5n2R2gzHpQXrt-sDxZbpA7jsDdoCvCeGA7_VBe3VHOxciGuXsgTUvgKuubwGuvwB4tghg4EE0eQKsYwahtIC3iqZF4-0BscT_SfRCLFHc7Q9sgUA_hrFHznTQK4ZkA6VHdAG9D-jA8gWwhfzAskB-hfzH5kDjxXWAL0GlwR0iQWaBZIIcoMipQLZBagB3Aj-FoEPoB65A_4l44w6jwZpAo8EkgCJBf0FkgVegQU19gMoThxVKWdqtHu8DoMAQOUEqAOuDwzQC_sG5gx_sgT9BIgGkAXxBlhHbd6WAe8FGogGAAHLBioM5IQFrwuoAoEE2gzr0RF-QMIMtkc-gwaBBCGkBXoSBR5PSrwCzQY61gUzNUOBBgELrAUW6gQTlwD-BgQIuAbC
+B B5 프레임 접근 실패 "task.cdp received unknown option: sessionId. Expected: await task.cdp(method, params?, { timeout? })"
+B shot 1280 "CDP request timed out: Page.captureScreenshot"
+B shot 390 "CDP request timed out: Page.captureScreenshot"
+

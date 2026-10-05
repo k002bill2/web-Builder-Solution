@@ -11,7 +11,14 @@
 - [x] S2 대화상자 + 비교 전용 프레임 다리(U3·U4·U9·U10, G2·G3) — `CompareDialog.tsx`(dialog·3열/1안씩·폭) · `CompareColumn.tsx` · `PreviewFrame.tsx`(다리, `CompareFrame.tsx`는 macOS 대소문자 무시 파일시스템에서 `compareFrame.ts`와 충돌해 이름 변경) · `compareFrame.ts` 로컬 상수 · 카드 부품은 CandidateResults 모듈을 부모가 넘김 · RED logs/s2-red.txt(7 failed) → GREEN 11 passed · typecheck·lint exit 0(s2-gate) · build exit 0(s2-build) · StructureCanvas·/studio·render 소스 변경 0
 - [x] S3 상태·알림·폴백·캡션(U6·U7·U11·U12) — `compareText.ts`(문구·범주·총계) · CompareColumn 상태 줄 7종·Wireframe 폴백·다시 그리기 · 대화상자 role=status(`useAnnouncement` — 열 보고 콜백에서 판정, effect 안 setState lint 회피) · 캡션 2문장 · `CANDIDATE_TEXT.preview` 교체 · RED logs/s3-red.txt(8 failed) → GREEN 표적 56 passed(s3-green) · typecheck·lint exit 0 · build exit 0(s3-build) · 내 새 테스트 1건 조정: 시간 초과 경계 7999/1ms → 7800/200ms(`shouldAdvanceTime` 실시간 경과 흡수, 단언 동일)
 - [x] S4 선택 연동·접근성(U8·포커스·스크롤 영역) — 열마다 "이 안 선택"(카드와 같은 `gen.select`·busy·aria-pressed·선택됨·Tag 선택) · `gen.failure` → 대화상자 role=alert · 선택 성공 = relay announce → 대화상자 status · RED logs/s4-red.txt(3 failed — 포커스 it는 S2 구현으로 이미 통과) → GREEN 21 passed · typecheck·lint exit 0 · build exit 0(s4-build) · 목업 대비: 키보드 순서에서 본문 스크롤 영역이 열 버튼 **앞**(영역이 열을 감싸 DOM 순서상 먼저 — SPEC 4절은 뒤)
-- [ ] S5 브라우저 B1~B6 4폭(1280·1024·768·390) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
+- [x] S5 브라우저 B1~B6 4폭(1280·1024·768·390) — ego-browser space 67, vite preview 4337(S4 dist), 앱 안 클릭만(카탈로그 비교 추가 3 → 비교 보드 Hero A → 프로필 확정 → 3안 만들기 → 비교), 새로고침·goto 0 (`s5-compare.mjs`·`s5-followup.mjs`, logs/s5-browser.json·txt·s5-followup.json)
+  - B1 부분: 1280 3열 iframe 3·킷 렌더 높이 4282/4475/4313px(안마다 다름)·요약 글자 다름 — **스크린샷은 CDP `Page.captureScreenshot` 타임아웃(4회, 환경)** 으로 시각 증거 없음
+  - B2 부분: Tab 순서 데스크톱 라디오 → [1안씩: 안 라디오] → 닫기 → 미리보기 영역 → X안 선택 → (브라우저 UI=BODY) → 처음 — **IFRAME 0(inert 실측)** · AX 트리 iframe 노출 0 · Esc → 대화상자·iframe 0·포커스 "3안 실제 화면으로 비교". SPEC 4절과 차이: 스크롤 영역이 선택 버튼 앞(영역이 열을 감쌈 — SPEC 2.1과 4절 충돌)
+  - B3: 데스크톱 프레임 축소 1280 **29%**(열 379px, SPEC 30) · 1024 **71%**(73) · 768 **51%**(53) · 390 **21%**(26 — 추정 −5%p, 대화상자 inset+패딩) · 모바일 프레임 390 **71%**(87) · 1280 **97%**(99) · 4폭 대화상자 가로 넘침 0 · 문서 넘침 0. 첫 측정 1회는 ResizeObserver 반영 전(zoom 1)이라 zoom 반영 대기 후 재측정
+  - B4: 열자마자 포커스 = 라디오 "데스크톱" · AX `status` 글자 "3안 중 3개를 그렸습니다"(ignored false)
+  - B5 부분: 프레임은 불투명 출처라 부모 DOM 접근 불가, `Page.getFrameTree` childFrames 0 · `Target` 세션 평가 미지원(ego API) → 프레임 안 `[data-motion-play]` 실측 못 함. 근거 = 렌더 문서 규칙 F5(변경 0)
+  - B6 부분: 대화상자 "B안 선택" → status "B안을 선택했습니다"(DOM·AX) · 카드 B안 aria-pressed true(같은 상태). 실패 주입은 앱 안 경로 없음 → U8 통합 테스트(ProfileCompare.test)로만
+  - 서버: 자기 PID 45774(+npm 45754) cwd m2b-5/app 확인 뒤 kill · 4337·4339 LISTEN 0 · 5480 = 다른 PID 82062 무접촉(logs/s5-servers-stop.txt)
 - [x] S6 전체 vitest exit0 · Codex review --scope branch --base 48487d5 · REPORT — vitest 213 files · 1850 passed · exit 0 · Errors 0(logs/final-full-vitest.txt) · Codex 1라운드 실제 완료 지적 0(logs/codex-review.txt) · REPORT.md(중단 보고 + 결정 요청 A/B/C)
 
 ## 재개(결정 A, 2026-10-05, HEAD 25417e9) — S0·S1 재실행 0

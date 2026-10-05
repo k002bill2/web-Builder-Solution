@@ -1,0 +1,5 @@
+server pid 45774 (parent 45754) cwd = m2b-5/app 확인 뒤 kill
+LISTEN 4337/4339 after:
+(빈 줄 = 0)
+5480:
+node 82062

@@ -128,3 +128,45 @@ describe("이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1
     expect(Object.keys(last.images ?? {})).toEqual([]);
   });
 });
+
+describe("폭 변경 시 '이미지 편집' 펼침 유지 (B-M2C-04)", () => {
+  /** 폭을 바꾸면 change를 알리는 matchMedia 흉내 — 배치(3단·2단·탭) 전환이 실제로 일어나게 */
+  function stubWidth(initial: number) {
+    let width = initial;
+    const listeners = new Set<() => void>();
+    const original = window.matchMedia;
+    window.matchMedia = ((query: string) => ({
+      get matches() {
+        return width >= Number(/min-width:\s*([\d.]+)rem/.exec(query)?.[1] ?? 0) * 16;
+      },
+      media: query,
+      addEventListener: (_: string, fn: () => void) => void listeners.add(fn),
+      removeEventListener: (_: string, fn: () => void) => void listeners.delete(fn),
+    })) as unknown as typeof window.matchMedia;
+    return {
+      resize: (next: number) => {
+        width = next;
+        act(() => listeners.forEach((fn) => fn()));
+      },
+      restore: () => {
+        window.matchMedia = original;
+      },
+    };
+  }
+
+  it("1280에서 펼친 뒤 1024·768·390·1280으로 바꿔도 펼침과 패널이 남는다", async () => {
+    const viewport = stubWidth(1280);
+    try {
+      draw();
+      await openImages();
+      for (const width of [1024, 768, 390, 1280]) {
+        viewport.resize(width);
+        await settle();
+        expect(screen.getByText("이미지 편집 (1)").closest("details")!.open, `${width}`).toBe(true);
+        expect(screen.getByRole("switch", { name: "대표 이미지 사용", hidden: true }), `${width}`).toBeInTheDocument();
+      }
+    } finally {
+      viewport.restore();
+    }
+  });
+});

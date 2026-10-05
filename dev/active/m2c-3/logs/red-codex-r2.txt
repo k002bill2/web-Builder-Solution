@@ -1,0 +1,154 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx (17 tests | 5 failed) 251ms
+   ❯ ImageSlotPanel — Codex r2 (5)
+     × 변환 중 스위치를 끄면 진행 작업을 버린다 — 늦게 끝나도 다시 켜지 않음 15ms
+     × 변환 중 '이미지 지우기'를 누르면 진행 작업을 버린다 — 플레이스홀더 유지 11ms
+     × 변환기 실패(거부) → 진행 해제 · 필드 오류 · 다시 고를 수 있음 · 문서 불변 7ms
+     × 변환 중에도 파일 버튼은 파일 선택 창을 연다(IMG-AC-09) — aria-disabled 표시는 SPEC 그대로 7ms
+     × 두 슬롯 변환이 같은 틱에 끝나도 두 결과 모두 반영(원자적 병합) 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r2 > 변환 중 스위치를 끄면 진행 작업을 버린다 — 늦게 끝나도 다시 켜지 않음
+AssertionError: expected { projectId: 'project-1', …(9) } to be { projectId: 'project-1', …(9) } // Object.is equality
+
+- Expected
++ Received
+
+@@ -29,16 +29,13 @@
+        "slots": {
+          "cta": "시작하기",
+          "image": {
+            "alt": "",
+            "decorative": false,
+-           "enabled": false,
++           "enabled": true,
+            "kind": "image",
+-           "source": {
+-             "kind": "placeholder",
+-             "patternId": "diagonal",
+-           },
++           "source": "b4cdba20-329d-4af3-8c7c-4a1768dfa2d5",
+          },
+          "subtitle": "무엇을 누구에게 제공하는지 한두 문장으로 적습니다.",
+          "title": "한 문장으로 소개하는 제목",
+        },
+        "tone": "alt",
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:240:23
+    238|     const off = state.doc;
+    239|     await act(async () => finish(ok()));
+    240|     expect(state.doc).toBe(off);
+       |                       ^
+    241|     expect(hero(state.doc).enabled).toBe(false);
+    242|     expect(state.images).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r2 > 변환 중 '이미지 지우기'를 누르면 진행 작업을 버린다 — 플레이스홀더 유지
+AssertionError: expected 'e86cffa5-1df0-4606-b663-bd59c461399c' to deeply equal { kind: 'placeholder', …(1) }
+
+- Expected:
+{
+  "kind": "placeholder",
+  "patternId": "diagonal",
+}
+
++ Received:
+"e86cffa5-1df0-4606-b663-bd59c461399c"
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:255:36
+    253|     fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    254|     await act(async () => finish(ok()));
+    255|     expect(hero(state.doc).source).toEqual({ kind: "placeholder", patt…
+       |                                    ^
+    256|     expect(screen.queryByText("이미지를 준비하고 있습니다…")).toBeNull();
+    257|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r2 > 변환기 실패(거부) → 진행 해제 · 필드 오류 · 다시 고를 수 있음 · 문서 불변
+Error: [2mexpect([22m[31melement[39m[2m).not.toHaveAttribute([22m[32m[32m"aria-disabled"[32m[39m[2m) // element.hasAttribute("aria-disabled")[22m
+
+Expected the element not to have attribute:
+[32m  aria-disabled[39m
+Received:
+[31m  aria-disabled="true"[39m
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:266:24
+    264|     await settle();
+    265|     const button = screen.getByRole("button", { name: "이미지 고르기" });
+    266|     expect(button).not.toHaveAttribute("aria-disabled");
+       |                        ^
+    267|     expect(button).toHaveAttribute("aria-invalid", "true");
+    268|     expect(button).toHaveAccessibleDescription(/이미지를 준비하지 못했습니다/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r2 > 변환 중에도 파일 버튼은 파일 선택 창을 연다(IMG-AC-09) — aria-disabled 표시는 SPEC 그대로
+AssertionError: expected "click" to be called 1 times, but got 0 times
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:285:20
+    283|     expect(button).toHaveAttribute("aria-disabled", "true");
+    284|     fireEvent.click(button);
+    285|     expect(opened).toHaveBeenCalledTimes(1);
+       |                    ^
+    286|   });
+    287|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r2 > 두 슬롯 변환이 같은 틱에 끝나도 두 결과 모두 반영(원자적 병합)
+AssertionError: expected 'object' to be 'string' // Object.is equality
+
+Expected: "string"
+Received: "object"
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:305:22
+    303|     const a = (slots.image1 as ImageSlotValue).source as string;
+    304|     const b = (slots.image2 as ImageSlotValue).source as string;
+    305|     expect(typeof a).toBe("string");
+       |                      ^
+    306|     expect(typeof b).toBe("string");
+    307|     expect(state.images?.[a]?.width).toBe(1000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: chunk load failed
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:260:37
+    258|
+    259|   it("변환기 실패(거부) → 진행 해제 · 필드 오류 · 다시 고를 수 있음 · 문서 불변", async () => {
+    260|     ingest.fn.mockRejectedValueOnce(new Error("chunk load failed")).mo…
+       |                                     ^
+    261|     const { state } = setup();
+    262|     const before = state.doc;
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1628:35
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2783:26
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3319:20
+ ❯ runWithCancel node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3314:10
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3299:20
+ ❯ runWithTimeout node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3257:10
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3876:64
+
+This error originated in "src/components/studio/ImageSlotPanel.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "변환기 실패(거부) → 진행 해제 · 필드 오류 · 다시 고를 수 있음 · 문서 불변". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 12 passed (17)
+     Errors  1 error
+   Start at  02:28:20
+   Duration  1.26s (environment 57%, tests 21%, transform 10%, setup 9%, import 2%)
+

@@ -1,0 +1,34 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app
+
+ ❯ src/components/studio/StudioLayoutImages.test.tsx (3 tests | 1 failed) 570ms
+   ❯ 이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1) (3)
+     × 파일 고르기 → 캔버스 render 메시지 images = {새 로컬 id: {Blob, 원본 폭·높이}} · 문서 hero source = 그 id 71ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLayoutImages.test.tsx > 이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1) > 파일 고르기 → 캔버스 render 메시지 images = {새 로컬 id: {Blob, 원본 폭·높이}} · 문서 hero source = 그 id
+AssertionError: expected [] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+- [
+-   "b0f4be74-687c-4531-b0db-c9da1d8e92a9",
+- ]
++ []
+
+ ❯ src/components/studio/StudioLayoutImages.test.tsx:96:44
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  02:17:33
+   Duration  1.38s (tests 44%, environment 30%, transform 17%, setup 5%, import 5%)
+

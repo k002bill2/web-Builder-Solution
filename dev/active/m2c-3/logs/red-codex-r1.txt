@@ -1,0 +1,110 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx (12 tests | 2 failed) 214ms
+   ❯ ImageSlotPanel — Codex r1 (2)
+     × 변환 중 패널이 닫히면(언마운트) 늦게 끝난 결과는 버린다 — 그 사이 편집을 덮어쓰지 않음 12ms
+     × 꺼진 슬롯을 다시 켤 때도 문서 한도 — 넘으면 꺼진 채 유지 + 한도 문구 8ms
+ ❯ src/components/studio/StudioLayoutImages.test.tsx (4 tests | 1 failed) 381ms
+   ❯ 이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1) (4)
+     × 패널이 닫혀 있어도 참조 밖 이미지는 캔버스 images에서 빠진다(Codex r1) — 삭제 → 되돌리기 무효화 132ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r1 > 변환 중 패널이 닫히면(언마운트) 늦게 끝난 결과는 버린다 — 그 사이 편집을 덮어쓰지 않음
+AssertionError: expected { projectId: 'project-1', …(9) } to be { projectId: 'project-1', …(9) } // Object.is equality
+
+- Expected
++ Received
+
+@@ -31,17 +31,14 @@
+          "image": {
+            "alt": "",
+            "decorative": false,
+            "enabled": true,
+            "kind": "image",
+-           "source": {
+-             "kind": "placeholder",
+-             "patternId": "diagonal",
+-           },
++           "source": "16cc86e5-90d0-4ad1-8f57-17df1be6236e",
+          },
+          "subtitle": "무엇을 누구에게 제공하는지 한두 문장으로 적습니다.",
+-         "title": "패널을 닫은 뒤 고친 제목",
++         "title": "한 문장으로 소개하는 제목",
+        },
+        "tone": "alt",
+        "type": "hero",
+        "variant": "fullbleed-left",
+      },
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:183:23
+    181|     act(() => state.edit(edited));
+    182|     await act(async () => finish(ok()));
+    183|     expect(state.doc).toBe(edited);
+       |                       ^
+    184|     expect(state.images).toBeUndefined();
+    185|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — Codex r1 > 꺼진 슬롯을 다시 켤 때도 문서 한도 — 넘으면 꺼진 채 유지 + 한도 문구
+AssertionError: expected { projectId: 'project-1', …(9) } to be { projectId: 'project-1', …(9) } // Object.is equality
+
+- Expected
++ Received
+
+@@ -113,11 +113,11 @@
+        "slots": {
+          "cta": "시작하기",
+          "image": {
+            "alt": "",
+            "decorative": true,
+-           "enabled": false,
++           "enabled": true,
+            "kind": "image",
+            "source": "00000000-0000-4000-8000-000000000013",
+          },
+          "subtitle": "무엇을 누구에게 제공하는지 한두 문장으로 적습니다.",
+          "title": "한 문장으로 소개하는 제목",
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:196:23
+    194|     const { state } = setup({ doc, images });
+    195|     fireEvent.click(screen.getByRole("switch", { name: "대표 이미지 사용" }));
+    196|     expect(state.doc).toBe(doc);
+       |                       ^
+    197|     expect(screen.getByRole("switch", { name: "대표 이미지 사용" })).toHaveAc…
+    198|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/components/studio/StudioLayoutImages.test.tsx > 이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1) > 패널이 닫혀 있어도 참조 밖 이미지는 캔버스 images에서 빠진다(Codex r1) — 삭제 → 되돌리기 무효화
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "e3ce692a-1b1d-4603-b101-fe73b24fbcf9",
++ ]
+
+ ❯ src/components/studio/StudioLayoutImages.test.tsx:128:44
+    126|     await settle();
+    127|     const last = sent.filter((m) => m.type === "render").at(-1) as { i…
+    128|     expect(Object.keys(last.images ?? {})).toEqual([]);
+       |                                            ^
+    129|   });
+    130| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 13 passed (16)
+   Start at  02:23:11
+   Duration  1.20s (environment 39%, tests 31%, transform 18%, setup 7%, import 6%)
+

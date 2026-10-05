@@ -1,0 +1,38 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10d19-b093-7471-b97e-51346ab9e72d).
+[codex] Reviewer started: changes against 'd25fe49'
+[codex] Running command: /bin/zsh -lc "git diff --stat d25fe49f132d991affb1f40d1a237f564e46a97a; find .. -name AGENTS....
+[codex] Command failed: /bin/zsh -lc "git diff --stat d25fe49f132d991affb1f40d1a237f564e46a97a; find .. -name AGENTS.... (exit 1)
+[codex] Running command: /bin/zsh -lc 'pwd; ls -a; for d in /Users /Users/younghwankang /Users/younghwankang/orca /Use...
+[codex] Command completed: /bin/zsh -lc 'pwd; ls -a; for d in /Users /Users/younghwankang /Users/younghwankang/orca /Use... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat CLAUDE.md; git diff d25fe49f132d991affb1f40d1a237f564e46a97a -- app/src/com...
+[codex] Command completed: /bin/zsh -lc 'cat CLAUDE.md; git diff d25fe49f132d991affb1f40d1a237f564e46a97a -- app/src/com... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat dev/active/m2c-3/BRIEF.md; cat dev/active/m2c-3/REPORT.md; cat app/src/comp...
+[codex] Command completed: /bin/zsh -lc 'cat dev/active/m2c-3/BRIEF.md; cat dev/active/m2c-3/REPORT.md; cat app/src/comp... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '39,66p' docs/design/m2c/SPEC.md; sed -n '115,150p' docs/design/m2c/SPEC...
+[codex] Command failed: /bin/zsh -lc "sed -n '39,66p' docs/design/m2c/SPEC.md; sed -n '115,150p' docs/design/m2c/SPEC... (exit 1)
+[codex] Running command: /bin/zsh -lc "sed -n '39,65p' docs/design/m2c/SPEC.md; cat app/vite.config.ts | tail -45; cat...
+[codex] Command completed: /bin/zsh -lc "sed -n '39,65p' docs/design/m2c/SPEC.md; cat app/vite.config.ts | tail -45; cat... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 이미지 변환의 취소·동시 완료·청크 실패 처리에 결함이 있고, 변환 중 파일 재선택 흐름도 차단됩니다. 테스트 실행은 읽기 전용 환경에서 Vite 임시 설정 파일 생성...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against d25fe49
+
+이미지 변환의 취소·동시 완료·청크 실패 처리에 결함이 있고, 변환 중 파일 재선택 흐름도 차단됩니다. 테스트 실행은 읽기 전용 환경에서 Vite 임시 설정 파일 생성이 거부되어 완료하지 못했습니다.
+
+Full review comments:
+
+- [P2] 취소·끄기 작업 시 진행 중인 이미지 변환을 무효화하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotField.tsx:79-80
+  이미지를 변환하는 동안 사용 스위치를 끄거나 기존 이미지의 ‘이미지 지우기’를 누를 수 있지만, 이 작업은 `turn`을 변경하지 않습니다. 따라서 변환이 끝나면 이 코드가 슬롯을 다시 켜고 새 이미지를 넣어 사용자의 후속 작업을 취소합니다. 슬롯을 끄거나 이미지를 지울 때 진행 중인 선택을 무효화해야 합니다.
+
+- [P2] 변환기 청크 로드 실패 시 진행 상태를 해제하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotField.tsx:68-72
+  네트워크 오류나 배포 후 청크 교체로 동적 import가 실패하면 `pick()`이 처리되지 않은 Promise rejection으로 끝납니다. `busy`가 계속 true여서 파일 선택 버튼으로 재시도할 수 없고, 타이머는 변환이 진행 중이라는 안내를 표시합니다. import 실패를 잡아 타이머와 진행 상태를 정리하고 재시도 가능한 필드 오류를 표시해야 합니다.
+
+- [P2] 변환 중에도 다른 파일을 선택할 수 있게 하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotField.tsx:202-205
+  변환 중 `busy`이면 유일한 파일 선택 버튼의 클릭이 무시되어 사용자가 다른 파일로 선택을 바꿀 수 없습니다. 이는 IMG-AC-09의 ‘변환 중 다른 파일 선택 → 마지막 선택만 반영’ 흐름을 막습니다. 추가된 테스트는 숨겨진 input에 직접 change 이벤트를 보내므로 실제 버튼의 차단을 검증하지 못합니다. 기존 `turn` 처리로 이전 결과를 버리면서 파일 선택은 허용해야 합니다.
+
+- [P2] 여러 슬롯의 변환 완료 결과를 원자적으로 병합하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotField.tsx:80-85
+  portfolio의 서로 다른 이미지 슬롯을 동시에 변환하고 두 결과가 React의 다음 커밋 전에 완료되면, 두 콜백이 동일한 `latest.current` 문서·맵을 읽습니다. `publish(() => nextImages)`와 `onEdit(nextDoc)`는 각각 전체 상태를 교체하므로 나중 결과가 먼저 완료된 슬롯의 이미지와 문서 변경을 잃게 합니다. 완료 작업을 직렬화하거나 공유 최신 상태를 즉시 갱신하여 각 결과가 앞선 결과에 병합되게 해야 합니다.

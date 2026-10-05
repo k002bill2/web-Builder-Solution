@@ -38,6 +38,7 @@ import { ExportButtons, type ExportReason } from "./ExportButtons";
 import { ExportRetryAlert } from "./ExportRetryAlert";
 import { PngSave } from "./PngSave";
 import { emitEditorEvent } from "../../features/studio/editorEvents";
+import type { RenderImages } from "../../features/studio/images/store/types";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 /** 미저장 편집이 남은 채 멈춘 저장 상태 — PNG 준비 전 이유로 저장 상태 문장을 보인다(P2-a) */
@@ -144,7 +145,8 @@ export function StudioLayout({
     [mode, requestFocus],
   );
   // 알림 줄 "되돌리기"(Q7)가 되살릴 섹션과 알림 문장 — 연산마다 새로 정한다
-  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string }>();
+  // before = 되살릴 문서 — 이미지 참조 집합에 든다(2a-05 5.9)
+  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string; readonly before: PageDoc }>();
   const remove = useCallback(
     async (instanceId: string) => {
       const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
@@ -155,7 +157,7 @@ export function StudioLayout({
       // 포커스·선택 = 다음 섹션 줄(없으면 이전) — resolveSelection(첫 본문)에 맡기지 않는다
       const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
       if (next) setSelected(next.instanceId);
-      setUndoTarget({ instanceId: removed.instanceId, text: notices.restoredNotice(removed.type, sectionName(removed)) });
+      setUndoTarget({ instanceId: removed.instanceId, text: notices.restoredNotice(removed.type, sectionName(removed)), before });
       setNotice(notices.removedNotice(removed.type, sectionName(removed)));
       if (next) focusRow(next.instanceId);
     },
@@ -168,7 +170,7 @@ export function StudioLayout({
       if (!outcome.ok) return setNotice(outcome.reason);
       const notices = await loadDocEngine();
       const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
-      setUndoTarget({ instanceId, text: notices.swapRevertedNotice(variantName(original)) });
+      setUndoTarget({ instanceId, text: notices.swapRevertedNotice(variantName(original)), before: outcome.before });
       setNotice(notices.swappedNotice(choice.label, choice.lostLabels));
       requestFocus({ element: radio });
     },
@@ -277,6 +279,19 @@ export function StudioLayout({
     </Button>
   );
 
+  // 캔버스 images 맵(SPEC m2c 5.1) — 패널 청크의 보관소가 채우고 비운다. 편집 틀이 사라지면 함께 놓인다
+  const [images, setImages] = useState<RenderImages>();
+  const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
+  // 참조 집합(문서 ∪ 되돌릴 문서) 밖 이미지는 패널이 닫혀 있어도 뺀다(2a-05 5.9 · Codex r1) — 렌더 중 상태 조정(effect 아님).
+  // 로컬 id = UUID라 직렬화 문자열 포함으로 잰다(진입 바이트 절약)
+  const [refs, setRefs] = useState([doc, undoDoc]);
+  if (refs[0] !== doc || refs[1] !== undoDoc) {
+    setRefs([doc, undoDoc]);
+    const held = JSON.stringify([doc, undoDoc]);
+    const kept = images && Object.entries(images).filter(([id]) => held.includes(id));
+    if (kept && kept.length < Object.keys(images).length) setImages(Object.fromEntries(kept));
+  }
+
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
@@ -319,7 +334,7 @@ export function StudioLayout({
   );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
-      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
+      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, undoDoc]} />
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
@@ -389,7 +404,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -420,7 +435,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+            <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -452,7 +467,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+          <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

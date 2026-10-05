@@ -1,21 +1,38 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { setSlot } from "../../engine/ops/slotOps";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import { slotIssue } from "../../features/studio/canvasIssues";
 import { selectedSection } from "../../features/studio/selection";
+import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
+import type { ImageHost } from "../../features/studio/images/store/types";
 import { FieldEditor } from "./FieldEditor";
 import { PageInfoFields } from "./PageInfoFields";
 
 /** 사이트 주인용 안내(m2a K2) — contact/form 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
 const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
+/** 이미지 슬롯 패널(SPEC m2c 2.1) — "이미지 편집"을 펼칠 때만 받는다(조작 뒤, VariantSwitch와 같은 모양 — 진입 +0.03KB 예산) */
+const ImageSlotPanel = lazy(() => import("./ImageSlotPanel"));
 
 /**
  * 편집 패널 필드 (SPEC 5.6 · E-AC-06) — 선택 섹션의 글자 슬롯(`FieldEditor`) 또는 "페이지 정보"(`PageInfoFields`).
- * 필드 key·id에 instanceId를 넣는다 — 섹션을 바꾸면 내부 상태(blur 등)가 새로 시작하고 id가 겹치지 않는다. 이미지 슬롯은 a3(E-S20).
+ * 필드 key·id에 instanceId를 넣는다 — 섹션을 바꾸면 내부 상태(blur 등)가 새로 시작하고 id가 겹치지 않는다.
+ * 이미지 슬롯: 진입 층은 "이미지 편집 (N)" 펼침 1개 — 펼치면 패널 청크를 받는다. 펼친 채 섹션을 바꾸면 그 섹션의 패널을 그린다.
  */
-export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc; readonly selectedId: string; readonly onEdit: (next: PageDoc) => void }) {
+export function EditFields({
+  doc,
+  selectedId,
+  onEdit,
+  images: host,
+}: {
+  readonly doc: PageDoc;
+  readonly selectedId: string;
+  readonly onEdit: (next: PageDoc) => void;
+  /** 편집 틀의 이미지 보관소 자리 — 없으면(필드만 보는 화면 테스트) 이미지 줄을 그리지 않는다 */
+  readonly images?: ImageHost;
+}) {
+  const [open, setOpen] = useState(false);
   const section = selectedSection(doc, selectedId);
   if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;
   const slots = getSectionDefinition(section.type, section.variant)?.slots ?? [];
@@ -41,7 +58,16 @@ export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc;
           />
         );
       })}
-      {images > 0 && <p className="ds-caption1 text-label-alternative">이미지 슬롯 {images}개는 다음 단계에서 편집할 수 있습니다.</p>}
+      {images > 0 && host && (
+        <details onToggle={(event) => setOpen(event.currentTarget.open)} className="rounded-md border border-line-normal px-3 py-1">
+          <summary className="ds-label min-h-8 cursor-pointer py-1.5">이미지 편집 ({images})</summary>
+          {open && (
+            <Suspense fallback={null}>
+              <ImageSlotPanel key={section.instanceId} doc={doc} instanceId={section.instanceId} onEdit={onEdit} slots={slots} host={host} Button={Button} />
+            </Suspense>
+          )}
+        </details>
+      )}
     </div>
   );
 }

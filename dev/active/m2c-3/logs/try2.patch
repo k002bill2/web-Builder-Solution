@@ -1,0 +1,197 @@
+diff --git a/app/src/components/studio/ContactOwnerNote.tsx b/app/src/components/studio/ContactOwnerNote.tsx
+index 7458610..ea76a9c 100644
+--- a/app/src/components/studio/ContactOwnerNote.tsx
++++ b/app/src/components/studio/ContactOwnerNote.tsx
+@@ -14,3 +14,5 @@ export default function ContactOwnerNote({ Callout }: { readonly Callout: typeof
+     </Callout>
+   );
+ }
++/** 배치 변경 2 실측(M2C-3) — 이미지 패널을 같은 조작 뒤 청크로 받는다 */
++export { default as ImageSlotPanel } from "./ImageSlotPanel";
+diff --git a/app/src/components/studio/EditFields.tsx b/app/src/components/studio/EditFields.tsx
+index e359cda..8d39e60 100644
+--- a/app/src/components/studio/EditFields.tsx
++++ b/app/src/components/studio/EditFields.tsx
+@@ -1,21 +1,37 @@
+-import { lazy, Suspense } from "react";
++import { lazy, Suspense, useState } from "react";
+ import type { PageDoc } from "../../engine/contracts/pageDoc";
+ import { setSlot } from "../../engine/ops/slotOps";
+ import { getSectionDefinition } from "../../engine/sections/registry";
+ import { slotIssue } from "../../features/studio/canvasIssues";
+ import { selectedSection } from "../../features/studio/selection";
+ import { Callout } from "../ds/Callout";
++import type { ImageHost } from "../../features/studio/images/store/types";
+ import { FieldEditor } from "./FieldEditor";
+ import { PageInfoFields } from "./PageInfoFields";
+ 
+ /** 사이트 주인용 안내(m2a K2) — contact/form 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
+ const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
++/** 이미지 슬롯 패널(SPEC m2c 2.1) — "이미지 편집"을 펼칠 때만 받는다(조작 뒤, VariantSwitch와 같은 모양 — 진입 +0.03KB 예산) */
++const ImageSlotPanel = lazy(() => import("./ContactOwnerNote").then((m) => ({ default: m.ImageSlotPanel })));
+ 
+ /**
+  * 편집 패널 필드 (SPEC 5.6 · E-AC-06) — 선택 섹션의 글자 슬롯(`FieldEditor`) 또는 "페이지 정보"(`PageInfoFields`).
+- * 필드 key·id에 instanceId를 넣는다 — 섹션을 바꾸면 내부 상태(blur 등)가 새로 시작하고 id가 겹치지 않는다. 이미지 슬롯은 a3(E-S20).
++ * 필드 key·id에 instanceId를 넣는다 — 섹션을 바꾸면 내부 상태(blur 등)가 새로 시작하고 id가 겹치지 않는다.
++ * 이미지 슬롯: 진입 층은 "이미지 편집 (N)" 펼침 1개 — 펼치면 패널 청크를 받는다. 펼친 채 섹션을 바꾸면 그 섹션의 패널을 그린다.
+  */
+-export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc; readonly selectedId: string; readonly onEdit: (next: PageDoc) => void }) {
++export function EditFields({
++  doc,
++  selectedId,
++  onEdit,
++  images: host,
++}: {
++  readonly doc: PageDoc;
++  readonly selectedId: string;
++  readonly onEdit: (next: PageDoc) => void;
++  /** 편집 틀의 이미지 보관소 자리 — 없으면(필드만 보는 화면 테스트) 이미지 줄을 그리지 않는다 */
++  readonly images?: ImageHost;
++}) {
++  const [open, setOpen] = useState(false);
+   const section = selectedSection(doc, selectedId);
+   if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;
+   const slots = getSectionDefinition(section.type, section.variant)?.slots ?? [];
+@@ -41,7 +57,16 @@ export function EditFields({ doc, selectedId, onEdit }: { readonly doc: PageDoc;
+           />
+         );
+       })}
+-      {images > 0 && <p className="ds-caption1 text-label-alternative">이미지 슬롯 {images}개는 다음 단계에서 편집할 수 있습니다.</p>}
++      {images > 0 && host && (
++        <details onToggle={(event) => setOpen(event.currentTarget.open)} className="rounded-md border border-line-normal px-3 py-1">
++          <summary className="ds-label min-h-8 cursor-pointer py-1.5">이미지 편집 ({images})</summary>
++          {open && (
++            <Suspense fallback={null}>
++              <ImageSlotPanel key={section.instanceId} doc={doc} instanceId={section.instanceId} onEdit={onEdit} host={host} />
++            </Suspense>
++          )}
++        </details>
++      )}
+     </div>
+   );
+ }
+diff --git a/app/src/components/studio/ImageSlotPanel.tsx b/app/src/components/studio/ImageSlotPanel.tsx
+new file mode 100644
+index 0000000..df3a4c8
+--- /dev/null
++++ b/app/src/components/studio/ImageSlotPanel.tsx
+@@ -0,0 +1,13 @@
++import type { PageDoc } from "../../engine/contracts/pageDoc";
++import type { ImageHost } from "../../features/studio/images/store/types";
++
++export interface ImageSlotPanelProps {
++  readonly doc: PageDoc;
++  readonly instanceId: string;
++  readonly onEdit: (next: PageDoc) => void;
++  readonly host: ImageHost;
++}
++
++export default function ImageSlotPanel(props: ImageSlotPanelProps) {
++  return <p>{props.instanceId}</p>;
++}
+diff --git a/app/src/components/studio/StudioLayout.tsx b/app/src/components/studio/StudioLayout.tsx
+index 95080d7..131a2ed 100644
+--- a/app/src/components/studio/StudioLayout.tsx
++++ b/app/src/components/studio/StudioLayout.tsx
+@@ -38,6 +38,7 @@ import { ExportButtons, type ExportReason } from "./ExportButtons";
+ import { ExportRetryAlert } from "./ExportRetryAlert";
+ import { PngSave } from "./PngSave";
+ import { emitEditorEvent } from "../../features/studio/editorEvents";
++import type { RenderImages } from "../../features/studio/images/store/types";
+ 
+ const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+ /** 미저장 편집이 남은 채 멈춘 저장 상태 — PNG 준비 전 이유로 저장 상태 문장을 보인다(P2-a) */
+@@ -144,7 +145,8 @@ export function StudioLayout({
+     [mode, requestFocus],
+   );
+   // 알림 줄 "되돌리기"(Q7)가 되살릴 섹션과 알림 문장 — 연산마다 새로 정한다
+-  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string }>();
++  // before = 되살릴 문서 — 이미지 참조 집합에 든다(2a-05 5.9)
++  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string; readonly before: PageDoc }>();
+   const remove = useCallback(
+     async (instanceId: string) => {
+       const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
+@@ -155,7 +157,7 @@ export function StudioLayout({
+       // 포커스·선택 = 다음 섹션 줄(없으면 이전) — resolveSelection(첫 본문)에 맡기지 않는다
+       const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
+       if (next) setSelected(next.instanceId);
+-      setUndoTarget({ instanceId: removed.instanceId, text: notices.restoredNotice(removed.type, sectionName(removed)) });
++      setUndoTarget({ instanceId: removed.instanceId, text: notices.restoredNotice(removed.type, sectionName(removed)), before });
+       setNotice(notices.removedNotice(removed.type, sectionName(removed)));
+       if (next) focusRow(next.instanceId);
+     },
+@@ -168,7 +170,7 @@ export function StudioLayout({
+       if (!outcome.ok) return setNotice(outcome.reason);
+       const notices = await loadDocEngine();
+       const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
+-      setUndoTarget({ instanceId, text: notices.swapRevertedNotice(variantName(original)) });
++      setUndoTarget({ instanceId, text: notices.swapRevertedNotice(variantName(original)), before: outcome.before });
+       setNotice(notices.swappedNotice(choice.label, choice.lostLabels));
+       requestFocus({ element: radio });
+     },
+@@ -277,6 +279,9 @@ export function StudioLayout({
+     </Button>
+   );
+ 
++  // 캔버스 images 맵(SPEC m2c 5.1) — 패널 청크의 보관소가 채우고 비운다. 편집 틀이 사라지면 함께 놓인다
++  const [images, setImages] = useState<RenderImages>();
++
+   const current = selectedSection(doc, selectedId);
+   const purpose = docPurpose(ops.series, doc.profileVersion);
+   // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
+@@ -319,7 +324,7 @@ export function StudioLayout({
+   );
+   const edit = (
+     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
+-      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} />
++      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, ops.canUndoLast ? undoTarget?.before : undefined]} />
+     </EditPanel>
+   );
+   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
+@@ -389,7 +394,7 @@ export function StudioLayout({
+             { id: "gate", label: "검사", panel: gate },
+           ]}
+         />
+-        <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
++        <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+       </div>
+     );
+   }
+@@ -420,7 +425,7 @@ export function StudioLayout({
+         </StudioToolbar>
+         <div className="flex min-h-0 flex-1">
+           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+-            <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
++            <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+           </div>
+           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+             {noticeRegion}
+@@ -452,7 +457,7 @@ export function StudioLayout({
+           <ThemePanel doc={doc} profileId={project.profileId} />
+         </div>
+         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+-          <StructureCanvas kitTokens={kitTokens} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
++          <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+         </div>
+         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+           {edit}
+diff --git a/app/src/features/studio/images/store/types.ts b/app/src/features/studio/images/store/types.ts
+new file mode 100644
+index 0000000..dc804c2
+--- /dev/null
++++ b/app/src/features/studio/images/store/types.ts
+@@ -0,0 +1,13 @@
++/**
++ * 이미지 보관소 자리 (SPEC m2c 2.6 · 7절 · 2a-05 5.9) — 진입 청크(StudioLayout·EditFields)는 이 타입만 import한다(`import type` = 번들 0).
++ * 보관소 구현(`imageStore.ts`)은 패널 청크와 함께 lazy로 받는다(7절 "보관소 모듈 자체는 진입에 import 금지").
++ * 진입 예산(+0.03KB) 때문에 편집 틀은 state 1쌍만 든다: 값 = 캔버스로 보낼 images 맵(로컬 id → {blob, width, height}).
++ * 파생본·형식·바이트 메타는 보관소 모듈이 Blob 키로 따로 든다 — 편집 틀이 사라지면(편집기 떠남) 맵과 함께 놓인다.
++ */
++import type { PageDoc } from "../../../../engine/contracts/pageDoc";
++import type { RenderImage } from "../../../../render/protocol";
++
++export type RenderImages = Readonly<Record<string, RenderImage>>;
++
++/** [images 맵, 맵 갱신(함수형), "되돌리기"가 되살릴 이전 문서] — 순서 고정(진입 바이트 절약) */
++export type ImageHost = readonly [images: RenderImages | undefined, publish: (update: (prev: RenderImages | undefined) => RenderImages) => void, undoDoc: PageDoc | undefined];

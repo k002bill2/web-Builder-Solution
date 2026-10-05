@@ -674,6 +674,24 @@
   }
 }
 
+/* services/cards-masonry (B1-4 · 0.2-2 벽돌형 = CSS만) — md 이상 2단 다단, 카드 높이 = 내용 높이(행 늘이기 0) · 단 배정 = 브라우저 균형(고정 0) · 순서 = 문서 순서 · md 미만 = cards-3과 같은 1열 */
+@layer components {
+  @media (width >= 48rem) {
+    .kit-cards--masonry {
+      display: block;
+      columns: 2;
+      column-gap: var(--site-s5);
+    }
+    .kit-cards--masonry > .kit-card {
+      break-inside: avoid;
+      margin-block-end: var(--site-s5);
+    }
+    .kit-cards--masonry > .kit-card:last-child {
+      margin-block-end: 0;
+    }
+  }
+}
+
 /* services/list (B1-2) — 머리 → 이름 목록(항목 위 구분선 muted 장식 + 목록 아래 한 줄) · 항목 ink 제목 굵기, lead(넓은 폭) · body(md 미만) · 항목 안쪽 위아래 s3.
    lg 이상 2단(머리 5 : 목록 7, 위 정렬, 열 사이 s6) · md~lg 1단 + 목록 2열(다단, 순서 = 문서 순서) · md 미만 1열. 조각 안 줄바꿈 = 공백 접힘(white-space 기본) */
 @layer components {

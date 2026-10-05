@@ -57,3 +57,33 @@ describe("services/cards-2 (B1-3)", () => {
     expect([...s.querySelectorAll("p, h2, h3")].filter((el) => el.textContent!.trim() === "")).toHaveLength(0);
   });
 });
+
+describe("services/cards-masonry (B1-4)", () => {
+  it("KD-AC-12 · KD-AC-07 [U]: cards-3과 같은 마크업(li 3 · 번호 순서 1·2·3 · h3) + 목록 판정 표시 data-layout=masonry · 변형 class kit-cards--masonry", () => {
+    const s = services(drawDoc(cardsDoc("cards-masonry")), "cards-masonry");
+    expect(s).toHaveAttribute("data-kit");
+    expect(s.querySelectorAll("h2")).toHaveLength(1);
+    const list = s.querySelector("ul")!;
+    expect(list).toHaveAttribute("role", "list");
+    expect(list).toHaveAttribute("data-layout", "masonry");
+    expect(list).toHaveClass("kit-cards", "kit-cards--masonry");
+    expect([...list.children].map((li) => li.querySelector("h3")!.dataset.slot)).toEqual(["card1Title", "card2Title", "card3Title"]);
+    expect(s.querySelectorAll("a, button, [tabindex]")).toHaveLength(0);
+  });
+
+  it("KD-AC-12 [U]: md 이상 CSS 다단 2(columns) · 카드 break-inside avoid · 행 늘이기 0(block 흐름) · 선택자 = class(data-layout 0) · 재배치·단 배정 고정 0 · md 미만 = .kit-cards 1열", () => {
+    const block = cssSection("/* services/cards-masonry");
+    expect(block).toMatch(/@media \(width >= 48rem\) \{\s*\.kit-cards--masonry \{\s*display: block;\s*columns: 2;\s*column-gap: var\(--site-s5\);/);
+    expect(block).toMatch(/\.kit-cards--masonry > \.kit-card \{\s*break-inside: avoid;/);
+    expect(block).not.toMatch(/data-layout|\border\s*:|-reverse|grid-area|grid-row|grid-template-rows|column-span|nth-child/);
+  });
+
+  it("KD-AC-04 [U]: card2Body 빈 값 → 카드 2는 제목만(이웃 높이에 맞춰 늘지 않음 = 다단 block) · 빈 p 0", () => {
+    const s = services(drawDoc(cardsDoc("cards-masonry", { card2Body: "", intro: "" })), "cards-masonry");
+    expect(s.querySelector('[data-slot="intro"]')).toBeNull();
+    const cards = [...s.querySelectorAll("li")];
+    expect(cards).toHaveLength(3);
+    expect(cards[1]!.querySelector("p")).toBeNull();
+    expect([...s.querySelectorAll("p, h2, h3")].filter((el) => el.textContent!.trim() === "")).toHaveLength(0);
+  });
+});

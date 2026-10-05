@@ -1,0 +1,15 @@
+[bundle] 공통 JS (gzip, 참고): 89340.00KB
+  - assets/index-BJ3ZdA3b.js 86060.00KB
+  - assets/react-DB-4Zxce.js 3280.00KB
+[bundle] /catalog 첫 화면 합계: 99643.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 102027.00KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 96993.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 99377.00KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98824.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 121704.00KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98824.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 121704.00KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99603.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 118662.00KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 94011.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 100292.00KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91766.00KB / 예산 100KB · 진입 직후 자동 로드 포함: 127409.00KB / 예산 128KB
+[bundle] 렌더 문서(render.html) JS 합계: 81310.00KB / 예산 90KB · CSS 합계: 7247.00KB / 예산 30KB
+  - assets/render-BC0cN8gd.js 81310.00KB
+  - assets/render-CtLkWpMt.css 7247.00KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)
+# 주: 바이트 단위(표기 'KB'는 B) — 4변형 구현 끝(커밋 전 작업 트리 = P5 GREEN 상태)

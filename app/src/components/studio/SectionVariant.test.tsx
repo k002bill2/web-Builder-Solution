@@ -44,11 +44,11 @@ describe("변형 교체 (E-AC-20)", () => {
   });
 
   // M2B-2a 이관: services 4변형이 모두 렌더러를 가져(about/text · services/list · cards-2 · cards-masonry 실렌더) 미구현 예시를 contact/booking(2c 대상)으로 옮긴다 — 단언 수·접미어 규칙은 그대로
-  it("렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(문의 폼 · services 목록형)은 없음 · 머리 '변형:'은 그대로", async () => {
+  it("렌더러 없는 변형 이름 뒤 ' · 구조 미리보기'(3.2 C · MQ-3) — 접근 이름에도 · 렌더러 있는 변형(문의 폼 · services 4변형)은 없음 · 머리 '변형:'은 그대로", async () => {
     await openStudio();
     pickRow("Services");
     const services = await openVariants();
-    for (const name of ["카드 3개", "목록형"]) expect(services.getByRole("radio", { name })).toBeInTheDocument();
+    for (const name of ["카드 3개", "목록형", "카드 2열", "카드 벽돌형"]) expect(services.getByRole("radio", { name })).toBeInTheDocument();
     pickRow("Contact");
     const list = await openVariants();
     expect(list.getByRole("radio", { name: "문의 폼" })).toBeInTheDocument();

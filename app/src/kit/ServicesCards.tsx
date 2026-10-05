@@ -48,3 +48,6 @@ export function ServicesCards({ section, root, cards, mod, layout }: Pick<KitSec
 
 /** services/cards-2 (B1-3) — cards-3의 카드 수 2 · md 이상 2열 같은 폭·같은 높이 · md 미만 1열 */
 export const ServicesCards2 = (props: KitSectionProps) => <ServicesCards {...props} cards={[1, 2]} mod="kit-cards--2" />;
+
+/** services/cards-masonry (B1-4) — cards-3과 같은 마크업 · md 이상 CSS 2단 다단(벽돌형 — 단 배정은 브라우저 균형, 순서 = 문서 순서) · md 미만 1열 */
+export const ServicesCardsMasonry = (props: KitSectionProps) => <ServicesCards {...props} cards={[1, 2, 3]} mod="kit-cards--masonry" layout="masonry" />;

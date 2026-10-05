@@ -13,5 +13,6 @@ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
   "faq/accordion",
   "services/cards-2",
   "services/cards-3",
+  "services/cards-masonry",
   "services/list",
 ]);

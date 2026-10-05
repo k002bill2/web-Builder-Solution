@@ -7,7 +7,7 @@
 | 단계 | 커밋 | 내용 |
 |---|---|---|
 | P0 | `d56126f` | BRIEF·PROGRESS·시작 실측 |
-| ① 예산 검사기 | `1df0512`(예측 `…` RED 6/6) | `app/scripts/m2cBaseline.json`(c870439 · `/studio` 진입 127.36 · 허용 0.03 · 렌더 JS 멈춤선 89.70) + `checkBundle({baseline})` 실패 조건. 한도 128·90·30 상향 0. 기준선 없음·형식 틀림·없는 시나리오 = 실패 |
+| ① 예산 검사기 | `1df0512`(예측 커밋 뒤 RED 6/6) | `app/scripts/m2cBaseline.json`(c870439 · `/studio` 진입 127.36 · 허용 0.03 · 렌더 JS 멈춤선 89.70) + `checkBundle({baseline})` 실패 조건. 한도 128·90·30 상향 0. 기준선 없음·형식 틀림·없는 시나리오 = 실패 |
 | ② 프로토콜 | `9797ef6` | `images: Record<id, {blob,width,height}>`(한 변 1~16384 정수) · `loading?: "eager"` · `RenderErrorCode`에 `IMAGE_DECODE_FAILED` · `StructureCanvas` images prop 타입 이전 — 단독 typecheck 통과 |
 | ③ 렌더 쪽 | `5e5ed97` | `kit/art.ts` 결정적 SVG · `Media` 빈 슬롯 = `div.kit-art > svg` · masonry 원본 비율 · 지도 contain · `EagerImages` 컨텍스트 · RenderApp decode 대기 · `serializeSite` lazy 복원 |
 
@@ -50,13 +50,17 @@
 - `npx vitest --run` → 217 files / **1897 passed**, exit 0 (`logs/full-after-3b.txt`) — 시작 1876 + ① 6 + ② 2 + ③ 13
 - `npm run lint` exit 0 (`logs/lint-3.txt`) · `npm run build`(typecheck + vite 2회 + 예산) exit 0 (`logs/build-3.txt`)
 - RED 로그: `logs/red-1-budget.txt`(6/6) · `logs/red-2-protocol.txt`(5 — 예측 5) · `logs/red-3-render.txt`(art.test 모듈 없음 + 6)
-- Codex: 6절 아래 기록
+- Codex: 7절
 
-## 7. Codex
-(아래 갱신)
+## 7. Codex (2라운드 — 상한 안)
+| 라운드 | 명령 | 결과 | 원문 |
+|---|---|---|---|
+| r1 | `review --scope branch --base c870439` | **지적 0** — typecheck 통과, Codex 샌드박스에선 Vitest EPERM으로 미실행 | `logs/codex-r1.txt` |
+| r2 | `adversarial-review --scope branch --base c870439` + SPEC r2 정정 2문장 L1 확인 초점 | **approve · No material findings.** SPEC r2 정정 2문장 = 코드와 일치(text.ts 꺼짐 undefined · 두 Hero Media 생략 + --plain/--solo · 단색 패널·media/copy 분리). decode 대기·masonry·SVG 칸 채움 결함 없음. 주의: readRenderMessage가 IMAGE_DECODE_FAILED를 버림 → M2C-4가 송신(eager)·수신을 함께 연결 | `logs/codex-r2.txt` |
+- 반영할 지적 없음. Vitest 실행 증거는 6절(이 레인 로컬 실행).
 
 ## 8. 한계·남은 일
 - 부모 쪽 decode 실패 문구 · 내보내기 render에 images/`loading:"eager"` 싣기 · `pickVariant` = M2C-4.
 - 보관소 → 캔버스 images 연결 = M2C-3 (지금도 제품에서 images 맵은 비어 있음 → 제품 화면 변화 = 빈 슬롯 그라디언트가 SVG로 바뀐 것뿐).
 - 브라우저 실측(SVG 칸 채움·3안 비교 같은 그림·masonry 3폭) 0 — QB-6·7은 M2C-5. jsdom은 CSS 배치를 계산하지 않는다.
-- SPEC r2 정정 2문장(4절 꺼짐 = 요소 없음 · 대비 문장)은 Codex 범위로 넘김 — 7절 결과 참조.
+- SPEC r2 정정 2문장은 Codex r2에서 코드와 일치 확인(7절).

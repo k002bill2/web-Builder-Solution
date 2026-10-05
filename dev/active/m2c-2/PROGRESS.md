@@ -9,8 +9,8 @@
 - [x] ② 프로토콜 images `{blob,width,height}` + `loading:"eager"` + StructureCanvas 송신부 타입 이전 — 단독 typecheck
 - [x] ③ 결정적 SVG 자체 그래픽 · masonry 원본 비율 · map contain · decode 대기 · serializeSite lazy 복원
 - [x] 마감: typecheck · lint · build · 전체 vitest exit 0 (217파일/1897개 · `logs/full-after-3b.txt` · `logs/lint-3.txt` · `logs/build-3.txt`)
-- [ ] Codex review --scope branch --base c870439 (≤2라운드)
-- [ ] REPORT.md (IMG-AC↔테스트 · 번들 전후 · 한계)
+- [x] Codex review --scope branch --base c870439 (≤2라운드) — r1 지적 0 · r2 adversarial approve
+- [x] REPORT.md (IMG-AC↔테스트 · 번들 전후 · 한계)
 
 ## 메모
 - ① 예측(RED 전): bundleBudget.test.mjs 새 테스트 6개 — 6개 모두 RED 예상(기준선 옵션·파일 없음). 기존 8개 GREEN 유지.

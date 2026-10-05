@@ -47,10 +47,10 @@ describe("about/story (K1-3)", () => {
     expect(deco.querySelector("img")).toHaveAttribute("alt", "");
   });
 
-  it("K-AC-22 · MQ-5: 플레이스홀더 → 그라디언트 aria-hidden, img 0", () => {
+  it("K-AC-22 · MQ-5: 플레이스홀더 → 자체 그래픽(SPEC m2c 4절) aria-hidden, img 0", () => {
     const a = about(drawDoc());
     expect(a.querySelectorAll("img")).toHaveLength(0);
-    expect(a.querySelector("[data-media]")).toHaveAttribute("data-media", "gradient");
+    expect(a.querySelector("[data-media]")).toHaveAttribute("data-media", "art");
     expect(a.querySelector("[data-media]")).toHaveAttribute("aria-hidden", "true");
   });
 

@@ -1,0 +1,332 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-2/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/kit/FooterBizExtendedMap.test.tsx (6 tests | 1 failed) 197ms
+   ❯ footer/biz-extended-map (B-9) (6)
+     × KB-AC-23: 플레이스홀더 → 지도 칸 그라디언트 aria-hidden · img 0 · iframe·script 0 17ms
+ ❯ src/kit/AboutStory.test.tsx (6 tests | 1 failed) 116ms
+   ❯ about/story (K1-3) (6)
+     × K-AC-22 · MQ-5: 플레이스홀더 → 그라디언트 aria-hidden, img 0 11ms
+ ❯ src/kit/HeroFullbleedLeft.test.tsx (6 tests | 1 failed) 100ms
+   ❯ hero/fullbleed-left (K1-2) (6)
+     × K-AC-22 · MQ-5: 플레이스홀더(또는 Blob 미도착) → 그라디언트 요소 aria-hidden, img 0 12ms
+ ❯ src/kit/HeroGrid.test.tsx (5 tests | 1 failed) 82ms
+   ❯ hero/grid (B-6) (5)
+     × KB-AC-15: 플레이스홀더 → img 0 · 그라디언트 타일 1(aria-hidden) 11ms
+ ❯ src/features/profile/compareFrameGuard.test.ts (2 tests | 1 failed) 31ms
+   ❯ readRenderMessage 로컬 사본 대조 (결정 A) (2)
+     × 소스 텍스트 동일 — isObject·isText·isNumber·isRect·readRenderMessage 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/AboutStory.test.tsx > about/story (K1-3) > K-AC-22 · MQ-5: 플레이스홀더 → 그라디언트 aria-hidden, img 0
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"data-media"[32m[39m[2m, [22m[32m[32m"gradient"[32m[39m[2m) // element.getAttribute("data-media") === "gradient"[22m
+
+Expected the element to have attribute:
+[32m  data-media="gradient"[39m
+Received:
+[31m  data-media="art"[39m
+ ❯ src/kit/AboutStory.test.tsx:53:45
+     51|     const a = about(drawDoc());
+     52|     expect(a.querySelectorAll("img")).toHaveLength(0);
+     53|     expect(a.querySelector("[data-media]")).toHaveAttribute("data-medi…
+       |                                             ^
+     54|     expect(a.querySelector("[data-media]")).toHaveAttribute("aria-hidd…
+     55|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/kit/FooterBizExtendedMap.test.tsx > footer/biz-extended-map (B-9) > KB-AC-23: 플레이스홀더 → 지도 칸 그라디언트 aria-hidden · img 0 · iframe·script 0
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/FooterBizExtendedMap.test.tsx:29:58
+     27|     const fig = f.querySelector("figure")!;
+     28|     expect(fig.querySelectorAll("img")).toHaveLength(0);
+     29|     expect(fig.querySelector('[data-media="gradient"]')).toHaveAttribu…
+       |                                                          ^
+     30|     expect(f.querySelectorAll("iframe, script")).toHaveLength(0);
+     31|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/kit/HeroFullbleedLeft.test.tsx > hero/fullbleed-left (K1-2) > K-AC-22 · MQ-5: 플레이스홀더(또는 Blob 미도착) → 그라디언트 요소 aria-hidden, img 0
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"data-media"[32m[39m[2m, [22m[32m[32m"gradient"[32m[39m[2m) // element.getAttribute("data-media") === "gradient"[22m
+
+Expected the element to have attribute:
+[32m  data-media="gradient"[39m
+Received:
+[31m  data-media="art"[39m
+ ❯ src/kit/HeroFullbleedLeft.test.tsx:55:47
+     53|       expect(h.querySelectorAll("img")).toHaveLength(0);
+     54|       expect(h.querySelector("[data-media]")).toHaveAttribute("aria-hi…
+     55|       expect(h.querySelector("[data-media]")).toHaveAttribute("data-me…
+       |                                               ^
+     56|     }
+     57|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/kit/HeroGrid.test.tsx > hero/grid (B-6) > KB-AC-15: 플레이스홀더 → img 0 · 그라디언트 타일 1(aria-hidden)
+AssertionError: expected  to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/kit/HeroGrid.test.tsx:38:59
+     36|     const h = hero(drawDoc(heroDoc("grid")));
+     37|     expect(h.querySelectorAll("img")).toHaveLength(0);
+     38|     expect(h.querySelectorAll('[data-media="gradient"]')).toHaveLength…
+       |                                                           ^
+     39|     expect(h.querySelector('[data-media="gradient"]')).toHaveAttribute…
+     40|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/features/profile/compareFrameGuard.test.ts > readRenderMessage 로컬 사본 대조 (결정 A) > 소스 텍스트 동일 — isObject·isText·isNumber·isRect·readRenderMessage
+AssertionError: readRenderMessage: expected 'export function readRenderMessage(dat…' to be 'export function readRenderMessage(dat…' // Object.is equality
+
+Expected: "export function readRenderMessage(data: unknown): RenderMessage | undefined { if (!isObject(data)) return undefined; if (data.type === "ready") return { type: "ready" }; if (data.type === "rects" && Array.isArray(data.rects) && data.rects.length <= 1024 && data.rects.every(isRect)) return { type: "rects", rects: data.rects }; if (data.type === "click" && isText(data.instanceId)) return { type: "click", instanceId: data.instanceId }; if (data.type === "error" && (data.code === "INVALID_DOC" || data.code === "NO_KIT_TOKENS" || data.code === "IMAGE_DECODE_FAILED")) return { type: "error", code: data.code }; return undefined; }"
+Received: "export function readRenderMessage(data: unknown): RenderMessage | undefined { if (!isObject(data)) return undefined; if (data.type === "ready") return { type: "ready" }; if (data.type === "rects" && Array.isArray(data.rects) && data.rects.length <= 1024 && data.rects.every(isRect)) return { type: "rects", rects: data.rects }; if (data.type === "click" && isText(data.instanceId)) return { type: "click", instanceId: data.instanceId }; if (data.type === "error" && (data.code === "INVALID_DOC" || data.code === "NO_KIT_TOKENS")) return { type: "error", code: data.code }; return undefined; }"
+
+ ❯ src/features/profile/compareFrameGuard.test.ts:36:70
+     34|     const original = source("../../render/protocol.ts");
+     35|     const copy = source("./compareFrame.ts");
+     36|     for (const name of COPIED) expect(declaration(copy, name), name).t…
+       |                                                                      ^
+     37|   });
+     38|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  5 failed | 212 passed (217)
+      Tests  5 failed | 1893 passed (1898)
+   Start at  23:49:08
+   Duration  36.09s (environment 47%, tests 30%, setup 9%, transform 8%, import 5%, worker 1%)
+
+Environment  jsdom was created 217 times · 140.46s total, 47% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

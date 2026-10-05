@@ -31,12 +31,40 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readRenderMessage({ type: "error", code: "OTHER" })).toBeUndefined();
   });
 
-  it("render{doc, images} — 로컬 이미지 id → Blob 자체(K4) · Blob 아닌 값·id 형식 틀림은 메시지 전체를 버린다", () => {
+  it("render{doc, images} — 로컬 이미지 id → {blob, width, height}(K4 · SPEC m2c 3절 MQ-C4 ★A) · Blob만·문자열·id 형식 틀림은 메시지 전체를 버린다", () => {
     const id = "11111111-1111-4111-8111-111111111111";
     const blob = new Blob(["x"], { type: "image/png" });
-    expect(readParentMessage({ type: "render", doc, images: { [id]: blob } })).toEqual({ type: "render", doc, images: { [id]: blob } });
+    const image = { blob, width: 1600, height: 900 };
+    expect(readParentMessage({ type: "render", doc, images: { [id]: image } })).toEqual({ type: "render", doc, images: { [id]: image } });
+    expect(readParentMessage({ type: "render", doc, images: { [id]: blob } })).toBeUndefined();
     expect(readParentMessage({ type: "render", doc, images: { [id]: "blob:http://x/1" } })).toBeUndefined();
-    expect(readParentMessage({ type: "render", doc, images: { "blob:x": blob } })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc, images: { "blob:x": image } })).toBeUndefined();
+  });
+
+  it("IMG-AC-22: images 메타 — 폭·높이 = 1~16384 정수(한 변 경계 · SPEC 2절) · blob = Blob · 하나라도 틀리면 메시지 전체를 버린다", () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    const blob = new Blob(["x"], { type: "image/png" });
+    const read = (image: unknown) => readParentMessage({ type: "render", doc, images: { [id]: image } });
+    expect(read({ blob, width: 16384, height: 1 })).toEqual({ type: "render", doc, images: { [id]: { blob, width: 16384, height: 1 } } });
+    for (const bad of [
+      { blob, width: 0, height: 10 },
+      { blob, width: -1, height: 10 },
+      { blob, width: 10.5, height: 10 },
+      { blob, width: 16385, height: 10 },
+      { blob, width: Number.NaN, height: 10 },
+      { blob, width: "10", height: 10 },
+      { blob, width: 10 },
+      { blob: "x", width: 10, height: 10 },
+      null,
+    ])
+      expect(read(bad)).toBeUndefined();
+  });
+
+  it("render{loading} — 내보내기만 \"eager\"(SPEC m2c 5.3) · 그 밖 값이면 메시지 전체를 버린다 · 없으면 키 없음", () => {
+    expect(readParentMessage({ type: "render", doc, loading: "eager" })).toEqual({ type: "render", doc, loading: "eager" });
+    expect(readParentMessage({ type: "render", doc, loading: "lazy" })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc, loading: true })).toBeUndefined();
+    expect(readParentMessage({ type: "render", doc })).not.toHaveProperty("loading");
   });
 
   it("render{fonts} — 내보내기용 글꼴 바이트(M2B-4a 2.4): 별칭·400|700·ArrayBuffer · 2개 이하 · 어긋나면 메시지 전체를 버린다", () => {

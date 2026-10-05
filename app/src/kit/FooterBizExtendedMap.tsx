@@ -11,7 +11,7 @@ export function FooterBizExtendedMap(props: KitSectionProps) {
   const image = slotImage(props.section, "map");
   const map = image && (
     <figure className="kit-footer-map">
-      <Media image={image} images={props.images} ratio={[4, 3]} className="kit-footer-map-img" />
+      <Media image={image} images={props.images} ratio={[4, 3]} className="kit-footer-map-img" section={props.section} slot="map" />
     </figure>
   );
   return <FooterBizExtended {...props} map={map} />;

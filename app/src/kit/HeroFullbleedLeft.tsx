@@ -17,7 +17,7 @@ export function HeroFullbleedLeft({ section, links, images, root }: KitSectionPr
           <HeroCopy section={section} links={links} heading={heading} cls={PRIMARY_COPY} />
         </div>
       </div>
-      {image && <Media image={image} images={images} ratio={[16, 9]} first className="kit-hero-media" />}
+      {image && <Media image={image} images={images} ratio={[16, 9]} first className="kit-hero-media" section={section} slot="image" />}
     </section>
   );
 }

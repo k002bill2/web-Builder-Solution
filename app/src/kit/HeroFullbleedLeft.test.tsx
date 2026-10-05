@@ -47,12 +47,12 @@ describe("hero/fullbleed-left (K1-2)", () => {
     expect(deco.querySelector("img")).toHaveAttribute("alt", "");
   });
 
-  it("K-AC-22 · MQ-5: 플레이스홀더(또는 Blob 미도착) → 그라디언트 요소 aria-hidden, img 0", () => {
+  it("K-AC-22 · MQ-5: 플레이스홀더(또는 Blob 미도착) → 자체 그래픽 요소(SPEC m2c 4절) aria-hidden, img 0", () => {
     for (const doc of [sampleDoc(), patch(sampleDoc(), "s-hero", { image: img({}) })]) {
       const h = hero(drawDoc(doc));
       expect(h.querySelectorAll("img")).toHaveLength(0);
       expect(h.querySelector("[data-media]")).toHaveAttribute("aria-hidden", "true");
-      expect(h.querySelector("[data-media]")).toHaveAttribute("data-media", "gradient");
+      expect(h.querySelector("[data-media]")).toHaveAttribute("data-media", "art");
     }
   });
 

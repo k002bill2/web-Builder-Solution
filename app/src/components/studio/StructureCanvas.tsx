@@ -6,7 +6,7 @@ import { slotIssue, type SlotIssue } from "../../features/studio/canvasIssues";
 import { canvasCaption } from "../../features/studio/canvasCaption";
 import { FRAME_REM, previewScale, remPx, scaleCaption } from "../../features/studio/previewFrame";
 import { sectionName, variantName } from "../../features/studio/selection";
-import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage } from "../../render/protocol";
+import { readRenderMessage, type FrameRect, type KitTokenInput, type ParentMessage, type RenderImage } from "../../render/protocol";
 
 /** 렌더 문서(별도 빌드 엔트리 render.html — ADR-004 개정 2). 같은 출처 경로지만 sandbox="allow-scripts"라 불투명 출처로 뜬다 */
 export const RENDER_DOC_SRC = "/render.html";
@@ -65,7 +65,7 @@ function useRenderFrame({
 }: {
   readonly doc: PageDoc;
   readonly kitTokens?: KitTokenInput;
-  readonly images?: Readonly<Record<string, Blob>>;
+  readonly images?: Readonly<Record<string, RenderImage>>;
   readonly selectedId: string;
   readonly width: number;
   readonly onSelect: (instanceId: string) => void;
@@ -204,8 +204,8 @@ export function StructureCanvas({
   readonly head?: ReactNode;
   /** 문서 프로필 버전 킷 토큰 입력(docKitTokens, 팔레트 포함) — 없으면 렌더 문서가 킷 대신 error, 폴백은 중립 토큰 */
   readonly kitTokens?: KitTokenInput;
-  /** 로컬 이미지 id → Blob(이미지 보관소 — 아직 호출처 없음, 2a-05 5.9 보관소가 생기면 넘긴다) */
-  readonly images?: Readonly<Record<string, Blob>>;
+  /** 로컬 이미지 id → {Blob, 원본 폭·높이}(SPEC m2c 3절 · 이미지 보관소 — 아직 호출처 없음, 2a-05 5.9 보관소가 생기면 넘긴다) */
+  readonly images?: Readonly<Record<string, RenderImage>>;
   /** 지금 문서를 다 그렸는지(사각형 있음) — PNG 버튼 "준비 전"(m2a 3.3) */
   readonly onDrawn?: (drawn: boolean) => void;
 }) {

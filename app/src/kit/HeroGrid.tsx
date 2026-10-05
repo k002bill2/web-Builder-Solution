@@ -19,7 +19,7 @@ export function HeroGrid({ section, links, images, root }: KitSectionProps) {
         </div>
         {image && (
           <div className="kit-hx-tiles">
-            <Media image={image} images={images} ratio={[4, 5]} first className="kit-hx-tile kit-hx-tile--a" />
+            <Media image={image} images={images} ratio={[4, 5]} first className="kit-hx-tile kit-hx-tile--a" section={section} slot="image" />
             <div aria-hidden="true" className="kit-hx-tile kit-hx-tile--b" />
             <div aria-hidden="true" className="kit-hx-tile kit-hx-tile--c" />
           </div>

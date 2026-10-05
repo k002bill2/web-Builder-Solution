@@ -24,6 +24,13 @@ describe("serializeSite", () => {
     expect(root.querySelector("img")!.getAttribute("src")).toBe("blob:null/1");
   });
 
+  it("IMG-AC-26b: 복사본의 hero 밖 img(fetchpriority 없음)에 loading=lazy를 다시 붙인다 — 내보낸 HTML은 미리보기와 같은 로딩 속성 · 원본 DOM 불변", async () => {
+    const root = host('<div data-site-root><img src="data:image/png;base64,AA" alt="" fetchpriority="high"><img src="data:image/png;base64,BB" alt="a"></div>');
+    const markup = await serializeSite(root, async () => "data:,x");
+    expect(markup).toBe('<div data-site-root=""><img src="data:image/png;base64,AA" alt="" fetchpriority="high"><img src="data:image/png;base64,BB" alt="a" loading="lazy"></div>');
+    expect(root.querySelectorAll("img[loading]")).toHaveLength(0);
+  });
+
   it("사이트 루트가 없으면(그리기 전·INVALID_DOC) undefined", async () => {
     expect(await serializeSite(host("<p>없음</p>"), async () => "data:,x")).toBeUndefined();
   });

@@ -1,3 +1,5 @@
+// @vitest-environment node
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { checkBundle } from "./bundleBudget.mjs";
 
@@ -85,5 +87,50 @@ describe("checkBundle — 엔트리 이름 고정 · 렌더 문서 판정 (ADR-0
     expect(failures).toEqual(["/other: 진입 직후 자동 로드 포함 126.00KB > 125KB"]);
     const over = checkBundle({ manifest: manifest(), sizeOf: (f) => (f === "assets/lazy.js" ? 35 : sizeOf(f)), scenarios: both.slice(0, 1), renderAuto: [] });
     expect(over.failures).toEqual(["/page: 진입 직후 자동 로드 포함 128.00KB > 127KB"]);
+  });
+});
+
+/**
+ * M2c 기준선 가드 (SPEC m2c 7절 · IMG-AC-29 · Codex r1 P2) — 한도(128·90·30)는 그대로 두고, 시작 실측 기준선 + 0.03 · 렌더 JS 멈춤선 89.70을 실패 조건으로 더한다.
+ * baseline 미지정 = 개정 전 판정(한도만). 비교는 출력과 같은 소수 2자리.
+ */
+describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
+  const BASE = { base: "test", eagerKb: { "/page": 123 }, toleranceKb: 0.03, renderJsStopKb: 89.7 };
+  const sized = (over) => (f) => (f in over ? over[f] : sizeOf(f));
+  const judge = (over, baseline = BASE) => checkBundle({ manifest: manifest(), sizeOf: sized(over), scenarios, renderAuto: ["src/render/Kit.ts"], baseline });
+
+  it("개정 전후 — 한도 안(진입 123.47 < 125 · 렌더 JS 89.80 < 90)이라 개정 전은 통과, 기준선 + 0.03 · 멈춤선 89.70 위라 개정 뒤는 실패", () => {
+    const over = { "assets/lazy.js": 30.47, "assets/render.js": 26.8 };
+    expect(checkBundle({ manifest: manifest(), sizeOf: sized(over), scenarios, renderAuto: ["src/render/Kit.ts"] }).failures).toEqual([]);
+    expect(judge(over).failures).toEqual(["/page: 진입 직후 자동 로드 포함 123.47KB > 기준선 123.00KB + 0.03KB", "렌더 문서: JS 89.80KB > 멈춤선 89.70KB"]);
+  });
+
+  it("진입 경계 — 기준선 + 0.03(123.03) 통과 · 123.04 실패", () => {
+    expect(judge({ "assets/lazy.js": 30.03 }).failures).toEqual([]);
+    expect(judge({ "assets/lazy.js": 30.04 }).failures).toEqual(["/page: 진입 직후 자동 로드 포함 123.04KB > 기준선 123.00KB + 0.03KB"]);
+  });
+
+  it("렌더 JS 경계 — 89.70 통과 · 89.71 실패 (한도 90은 그대로)", () => {
+    expect(judge({ "assets/render.js": 26.7 }).failures).toEqual([]);
+    expect(judge({ "assets/render.js": 26.71 }).failures).toEqual(["렌더 문서: JS 89.71KB > 멈춤선 89.70KB"]);
+  });
+
+  it("기준선 출력 줄 · 기준선 없는 시나리오는 한도 판정만(다른 시나리오 불변)", () => {
+    const both = [...scenarios, { name: "/other", page: "src/pages/Page.tsx", auto: ["src/Lazy.ts"] }];
+    const { lines, failures } = checkBundle({ manifest: manifest(), sizeOf: sized({ "assets/lazy.js": 31 }), scenarios: both, renderAuto: [], baseline: BASE });
+    expect(lines).toContain("[bundle]   /page M2c 기준선 123.00KB + 0.03KB (멈춤 > 123.03KB)");
+    expect(failures).toEqual(["/page: 진입 직후 자동 로드 포함 124.00KB > 기준선 123.00KB + 0.03KB"]);
+  });
+
+  it("기준선 파일 없음·형식 틀림·없는 시나리오 이름 = 실패(조용히 건너뛰지 않음)", () => {
+    expect(judge({}, null).failures).toContain("M2c 기준선 파일이 없거나 형식이 틀립니다 (scripts/m2cBaseline.json)");
+    expect(judge({}, { ...BASE, toleranceKb: "0.03" }).failures).toContain("M2c 기준선 파일이 없거나 형식이 틀립니다 (scripts/m2cBaseline.json)");
+    expect(judge({}, { ...BASE, eagerKb: { "/gone": 1 } }).failures).toContain("M2c 기준선: 시나리오 /gone가 SCENARIOS에 없습니다");
+  });
+
+  it("기준선 파일 = 시작 실측 고정(c870439 · /studio 진입 127.36 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 상향하면 이 테스트가 실패", () => {
+    const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json", import.meta.url), "utf8"));
+    expect(file).toMatchObject({ base: "c870439", eagerKb: { "/studio/:projectId": 127.36 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
+    expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId"]);
   });
 });

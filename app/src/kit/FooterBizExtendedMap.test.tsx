@@ -22,11 +22,11 @@ describe("footer/biz-extended-map (B-9)", () => {
     expect(f.querySelector("hr + p")).toHaveTextContent("© 브랜드 이름");
   });
 
-  it("KB-AC-23: 플레이스홀더 → 지도 칸 그라디언트 aria-hidden · img 0 · iframe·script 0", () => {
+  it("KB-AC-23: 플레이스홀더 → 지도 칸 자체 그래픽(SPEC m2c 4절) aria-hidden · img 0 · iframe·script 0", () => {
     const f = footer(drawDoc(doc()));
     const fig = f.querySelector("figure")!;
     expect(fig.querySelectorAll("img")).toHaveLength(0);
-    expect(fig.querySelector('[data-media="gradient"]')).toHaveAttribute("aria-hidden", "true");
+    expect(fig.querySelector('[data-media="art"]')).toHaveAttribute("aria-hidden", "true");
     expect(f.querySelectorAll("iframe, script")).toHaveLength(0);
   });
 

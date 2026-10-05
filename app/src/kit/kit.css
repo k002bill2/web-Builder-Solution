@@ -284,10 +284,30 @@
   }
 }
 
-/* 이미지 슬롯 공통 (0.9) — 토큰 그라디언트 1종(primary → ink, 왼쪽 위 → 오른쪽 아래) · 사용자 이미지 cover */
+/* 이미지 슬롯 공통 (0.9) — 빈 슬롯 = 자체 그래픽 SVG(SPEC m2c 4절: 칸 크기는 바깥 div 그대로, svg는 칸을 채워 slice · 칠 = --site-* 토큰만) · 사용자 이미지 cover */
 @layer components {
-  .kit-gradient {
-    background: linear-gradient(135deg, var(--site-primary), var(--site-ink));
+  .kit-art {
+    position: relative;
+    overflow: hidden;
+  }
+  .kit-art > svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .kit-art-bg {
+    fill: var(--site-surface);
+  }
+  .kit-art-1 {
+    fill: var(--site-primary);
+  }
+  .kit-art-2 {
+    fill: var(--site-muted);
+  }
+  .kit-art-3 {
+    fill: var(--site-ink);
   }
   .kit-img {
     display: block;
@@ -467,10 +487,13 @@
     border: var(--site-stroke-1) solid var(--site-bg);
     border-radius: var(--site-r1);
   }
+  /* 지도 = contain(약도 글자가 잘리면 정보 손실 — SPEC m2c 3절) · 남는 면 = surface 토큰 */
   .kit-footer-map-img {
     width: 100%;
     height: auto;
     aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: var(--site-surface);
   }
   @media (width >= 48rem) {
     .kit-footer--map .kit-footer-top {

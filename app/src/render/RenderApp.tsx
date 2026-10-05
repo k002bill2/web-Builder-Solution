@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEv
 import type { PageDoc } from "../engine/contracts/pageDoc";
 import { validatePageDoc } from "../engine/validate/validatePageDoc";
 import { createObjectUrlCache, docImageIds } from "./objectUrls";
+import type { ImageSize } from "../kit/types";
 import { PageDocument } from "./PageDocument";
 import { readParentMessage, type FrameRect, type HtmlMessage, type KitTokenInput, type RenderMessage } from "./protocol";
 import { serializeSite } from "./serializeSite";
@@ -28,10 +29,18 @@ function measure(root: HTMLElement, host: Window): readonly FrameRect[] {
  */
 export function RenderApp({ host }: { readonly host: Window }) {
   const root = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<{ readonly doc: PageDoc; readonly kitTokens?: KitTokenInput; readonly images: Readonly<Record<string, string>> }>();
+  const [view, setView] = useState<{
+    readonly doc: PageDoc;
+    readonly kitTokens?: KitTokenInput;
+    readonly images: Readonly<Record<string, string>>;
+    readonly imageSizes: Readonly<Record<string, ImageSize>>;
+    readonly loading?: "eager";
+  }>();
   const [measureTick, setMeasureTick] = useState(0);
   // 글꼴이 준비된 문서(그 view 객체) — 첫 rects는 이 문서의 글꼴 대기가 끝난 뒤(M2B-4a B7)
   const [fontsFor, setFontsFor] = useState<object>();
+  // 이미지 decode가 끝난 문서(내보내기 loading "eager"만 — SPEC m2c 5.3-2). 미리보기는 lazy 이미지를 기다리지 않는다(화면 밖 lazy decode는 끝나지 않을 수 있다)
+  const [decodedFor, setDecodedFor] = useState<object>();
   const post = useCallback((message: RenderMessage | HtmlMessage) => host.parent.postMessage(message, "*"), [host]);
 
   useEffect(() => {
@@ -56,8 +65,10 @@ export function RenderApp({ host }: { readonly host: Window }) {
         }
         // 킷 토큰 없음(조회 전·실패) = 킷은 그리지 않고 error — 폴백 섹션은 중립 토큰으로 계속 그린다(MQ-1)
         if (!message.kitTokens) post({ type: "error", code: "NO_KIT_TOKENS" });
-        const images = urls.sync(message.images ?? {}, docImageIds(checked.value));
-        const next = { doc: checked.value, images, ...(message.kitTokens && { kitTokens: message.kitTokens }) };
+        const entries = Object.entries(message.images ?? {});
+        const images = urls.sync(Object.fromEntries(entries.map(([id, image]) => [id, image.blob])), docImageIds(checked.value));
+        const imageSizes = Object.fromEntries(entries.map(([id, { width, height }]) => [id, { width, height }]));
+        const next = { doc: checked.value, images, imageSizes, ...(message.kitTokens && { kitTokens: message.kitTokens }), ...(message.loading && { loading: message.loading }) };
         setView(next);
         cancelFonts();
         cancelFonts = awaitSiteFonts(host, message.kitTokens, message.fonts, () => setFontsFor(next), () => setMeasureTick((n) => n + 1));
@@ -74,17 +85,32 @@ export function RenderApp({ host }: { readonly host: Window }) {
     };
   }, [host, post]);
 
-  // 글꼴 준비 뒤 사각형 보고 + 크기 변화(폭 변경) · 늦은 글꼴 로드(measureTick) 때 다시
+  // 내보내기: 그린 뒤 모든 img decode를 기다린다(SPEC m2c 5.3-2~4) — 실패 1장 이상 = error · 대기 중 새 render = 앞 결과 버림(cleanup)
+  useEffect(() => {
+    const el = root.current;
+    if (!el || view?.loading !== "eager") return undefined;
+    let live = true;
+    void Promise.allSettled([...el.querySelectorAll("img")].map((img) => img.decode?.())).then((results) => {
+      if (!live) return;
+      if (results.some((r) => r.status === "rejected")) post({ type: "error", code: "IMAGE_DECODE_FAILED" });
+      else setDecodedFor(view);
+    });
+    return () => {
+      live = false;
+    };
+  }, [view, post]);
+
+  // 글꼴 준비(+ 내보내기는 이미지 decode) 뒤 사각형 보고 + 크기 변화(폭 변경) · 늦은 글꼴 로드(measureTick) 때 다시
   useLayoutEffect(() => {
     const el = root.current;
-    if (!el || !view || fontsFor !== view) return undefined;
+    if (!el || !view || fontsFor !== view || (view.loading === "eager" && decodedFor !== view)) return undefined;
     const report = () => post({ type: "rects", rects: measure(el, host) });
     report();
     if (typeof ResizeObserver === "undefined") return undefined;
     const observer = new ResizeObserver(report);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [view, fontsFor, measureTick, host, post]);
+  }, [view, fontsFor, decodedFor, measureTick, host, post]);
 
   const click = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as Element;
@@ -99,7 +125,7 @@ export function RenderApp({ host }: { readonly host: Window }) {
   };
   return (
     <div ref={root} onClick={click}>
-      {view && <PageDocument doc={view.doc} kitTokens={view.kitTokens} images={view.images} />}
+      {view && <PageDocument doc={view.doc} kitTokens={view.kitTokens} images={view.images} imageSizes={view.imageSizes} loading={view.loading} />}
     </div>
   );
 }

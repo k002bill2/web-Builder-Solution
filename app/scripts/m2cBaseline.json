@@ -1,0 +1,7 @@
+{
+  "base": "c870439",
+  "note": "M2c 시작 실측(M2C-2 · dev/active/m2c-2/logs/build-start.txt) — 값 상향 금지(ADR-004 개정 4 결정 3). 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29)",
+  "eagerKb": { "/studio/:projectId": 127.36 },
+  "toleranceKb": 0.03,
+  "renderJsStopKb": 89.7
+}

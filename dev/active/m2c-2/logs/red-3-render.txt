@@ -1,0 +1,202 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-2/app
+
+ ❯ src/kit/art.test.tsx (0 test)
+ ❯ src/render/serializeSite.test.ts (4 tests | 1 failed) 20ms
+   ❯ serializeSite (4)
+     × IMG-AC-26b: 복사본의 hero 밖 img(fetchpriority 없음)에 loading=lazy를 다시 붙인다 — 내보낸 HTML은 미리보기와 같은 로딩 속성 · 원본 DOM 불변 4ms
+ ❯ src/kit/PortfolioGallery.test.tsx (7 tests | 2 failed) 94ms
+   ❯ portfolio/masonry (B1-6) (3)
+     × KD-AC-15 · KD-AC-07 [U]: data-layout masonry · class kit-gallery--masonry · DOM 1·2·3 · 칸 비율 슬롯 번호 고정 1:1·16:9·4:5(프로필 media_ratio 무관) · 꺼진 칸 뒤도 자기 비율 17ms
+     × IMG-AC-17 [U]: 실제 이미지 칸 = 원본 비율(1:2~2:1로 자름 — 인라인 aspect-ratio) · img width·height = 메타 · 메타 없는 이미지·이미지 없는 칸 = 고정 배열 · grid는 메타 무시 5ms
+ ❯ src/render/RenderApp.test.tsx (19 tests | 3 failed) 176ms
+   ❯ 렌더 문서 수신기 (13)
+     ❯ 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) (3)
+       × loading "eager" → 모든 img decode 뒤 첫 rects (decode 전 0) · 미리보기(loading 없음)는 decode를 기다리지 않는다 9ms
+       × decode 실패 1장 이상 = error{IMAGE_DECODE_FAILED} · rects 0 9ms
+       × 대기 중 새 render = 앞 대기 결과 버림(앞 decode 실패도 보고하지 않음) · 마지막 render만 rects 9ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/art.test.tsx [ src/kit/art.test.tsx ]
+Error: Failed to resolve import "./art" from "src/kit/art.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-2/app/src/kit/art.test.tsx:8:35
+  5  |  import { drawDoc } from "../render/testing/drawKit";
+  6  |  import { SAMPLE_KIT_TOKENS } from "../render/testing/sampleKitTokens";
+  7  |  import { artSeed, artShapes } from "./art";
+     |                                      ^
+  8  |  var _jsxFileName = "/Users/younghwankang/orca/workspaces/web-builder-solution/m2c-2/app/src/kit/art.test.tsx";
+  9  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) > loading "eager" → 모든 img decode 뒤 첫 rects (decode 전 0) · 미리보기(loading 없음)는 decode를 기다리지 않는다
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ src/render/RenderApp.test.tsx:126:22
+    124|       render(<RenderApp host={window} />);
+    125|       fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_K…
+    126|       expect(decode).toHaveBeenCalledTimes(1);
+       |                      ^
+    127|       expect(sent("rects")).toHaveLength(0);
+    128|       await act(async () => gate.resolve());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) > loading "eager" → 모든 img decode 뒤 첫 rects (decode 전 0) · 미리보기(loading 없음)는 decode를 기다리지 않는다
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) > decode 실패 1장 이상 = error{IMAGE_DECODE_FAILED} · rects 0
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) > 대기 중 새 render = 앞 대기 결과 버림(앞 decode 실패도 보고하지 않음) · 마지막 render만 rects
+TypeError: Class constructor URL cannot be invoked without 'new'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) > decode 실패 1장 이상 = error{IMAGE_DECODE_FAILED} · rects 0
+AssertionError: expected [] to deeply equal [ { type: 'error', …(1) } ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "code": "IMAGE_DECODE_FAILED",
+-     "type": "error",
+-   },
+- ]
++ []
+
+ ❯ src/render/RenderApp.test.tsx:140:29
+    138|       await act(async () => fromParent({ type: "render", doc: withImag…
+    139|       await act(async () => {});
+    140|       expect(sent("error")).toEqual([{ type: "error", code: "IMAGE_DEC…
+       |                             ^
+    141|       expect(sent("rects")).toHaveLength(0);
+    142|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > 내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4) > 대기 중 새 render = 앞 대기 결과 버림(앞 decode 실패도 보고하지 않음) · 마지막 render만 rects
+AssertionError: expected [ { type: 'rects', …(1) }, …(1) ] to have a length of +0 but got 2
+
+- Expected
++ Received
+
+- 0
++ 2
+
+ ❯ src/render/RenderApp.test.tsx:154:29
+    152|       await act(async () => first.reject(new Error("old")));
+    153|       expect(sent("error")).toHaveLength(0);
+    154|       expect(sent("rects")).toHaveLength(0);
+       |                             ^
+    155|       await act(async () => second.resolve());
+    156|       expect(sent("rects").length).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/render/serializeSite.test.ts > serializeSite > IMG-AC-26b: 복사본의 hero 밖 img(fetchpriority 없음)에 loading=lazy를 다시 붙인다 — 내보낸 HTML은 미리보기와 같은 로딩 속성 · 원본 DOM 불변
+AssertionError: expected '<div data-site-root=""><img src="data…' to be '<div data-site-root=""><img src="data…' // Object.is equality
+
+Expected: "<div data-site-root=""><img src="data:image/png;base64,AA" alt="" fetchpriority="high"><img src="data:image/png;base64,BB" alt="a" loading="lazy"></div>"
+Received: "<div data-site-root=""><img src="data:image/png;base64,AA" alt="" fetchpriority="high"><img src="data:image/png;base64,BB" alt="a"></div>"
+
+ ❯ src/render/serializeSite.test.ts:30:20
+     28|     const root = host('<div data-site-root><img src="data:image/png;ba…
+     29|     const markup = await serializeSite(root, async () => "data:,x");
+     30|     expect(markup).toBe('<div data-site-root=""><img src="data:image/p…
+       |                    ^
+     31|     expect(root.querySelectorAll("img[loading]")).toHaveLength(0);
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio/masonry (B1-6) > KD-AC-15 · KD-AC-07 [U]: data-layout masonry · class kit-gallery--masonry · DOM 1·2·3 · 칸 비율 슬롯 번호 고정 1:1·16:9·4:5(프로필 media_ratio 무관) · 꺼진 칸 뒤도 자기 비율
+AssertionError: expected [] to deeply equal [ 'kit-r1x1', 'kit-r16x9', 'kit-r4x5' ]
+
+- Expected
++ Received
+
+- [
+-   "kit-r1x1",
+-   "kit-r16x9",
+-   "kit-r4x5",
+- ]
++ []
+
+ ❯ src/kit/PortfolioGallery.test.tsx:104:128
+    102|     expect(sizes(gap)).toEqual(["1:1", "4:5"]);
+    103|     const grad = portfolio(drawDoc(galleryDoc("masonry")), "masonry");
+    104|     expect([...grad.querySelectorAll('[data-media="art"]')].map((el) =…
+       |                                                                                                                                ^
+    105|   });
+    106|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/kit/PortfolioGallery.test.tsx > portfolio/masonry (B1-6) > IMG-AC-17 [U]: 실제 이미지 칸 = 원본 비율(1:2~2:1로 자름 — 인라인 aspect-ratio) · img width·height = 메타 · 메타 없는 이미지·이미지 없는 칸 = 고정 배열 · grid는 메타 무시
+AssertionError: expected [ '|1|1|kit-r1x1', …(2) ] to deeply equal [ '2 / 1|3000|1000|', …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "2 / 1|3000|1000|",
+-   "900 / 1600|900|1600|",
+-   "1 / 2|500|2000|",
++   "|1|1|kit-r1x1",
++   "|16|9|kit-r16x9",
++   "|4|5|kit-r4x5",
+  ]
+
+ ❯ src/kit/PortfolioGallery.test.tsx:115:88
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: old
+ ❯ src/render/RenderApp.test.tsx:152:42
+    150|       decode.mockImplementation(() => second.promise);
+    151|       fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_K…
+    152|       await act(async () => first.reject(new Error("old")));
+       |                                          ^
+    153|       expect(sent("error")).toHaveLength(0);
+    154|       expect(sent("rects")).toHaveLength(0);
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/render/RenderApp.test.tsx:152:13
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1628:35
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2783:26
+ ❯ node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3319:20
+ ❯ runWithCancel node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3314:10
+
+This error originated in "src/render/RenderApp.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "대기 중 새 render = 앞 대기 결과 버림(앞 decode 실패도 보고하지 않음) · 마지막 render만 rects". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  4 failed (4)
+      Tests  6 failed | 24 passed (30)
+     Errors  1 error
+   Start at  23:46:38
+   Duration  1.44s (environment 63%, transform 15%, setup 12%, tests 7%, import 3%)
+

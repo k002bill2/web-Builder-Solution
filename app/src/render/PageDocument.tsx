@@ -2,7 +2,8 @@ import type { PageDoc, SectionInstance } from "../engine/contracts/pageDoc";
 import { KIT_REGISTRY, kitFor } from "../kit/registry";
 import { kitLinks } from "../kit/text";
 import { kitVars } from "../kit/tokens";
-import type { KitSection } from "../kit/types";
+import { EagerImages } from "../kit/Media";
+import type { ImageSize, KitSection } from "../kit/types";
 import { canvasVars } from "./fallback/canvasLayouts";
 import { FallbackSection } from "./fallback/FallbackCanvas";
 import type { KitTokenInput } from "./protocol";
@@ -17,11 +18,17 @@ export function PageDocument({
   doc,
   kitTokens,
   images = {},
+  imageSizes,
+  loading,
   registry = KIT_REGISTRY,
 }: {
   readonly doc: PageDoc;
   readonly kitTokens?: KitTokenInput;
   readonly images?: Readonly<Record<string, string>>;
+  /** 로컬 이미지 원본 크기(SPEC m2c 3절) — masonry 원본 비율 */
+  readonly imageSizes?: Readonly<Record<string, ImageSize>>;
+  /** 내보내기 render만 "eager"(SPEC m2c 5.3-1) — hero 밖 img도 즉시 로드 */
+  readonly loading?: "eager";
   readonly registry?: Readonly<Record<string, KitSection>>;
 }) {
   const links = kitLinks(doc);
@@ -33,7 +40,7 @@ export function PageDocument({
     if (!Kit) return <FallbackSection key={section.instanceId} section={section} />;
     const motion = motionOf(section, firstScreen.has(section.instanceId));
     const root = { id: `s-${section.instanceId}`, "data-section": `${section.type}/${section.variant}`, "data-instance-id": section.instanceId, "data-kit": "", ...(motion && { "data-motion": motion }) } as const;
-    return <Kit key={section.instanceId} section={section} links={links} images={images} mediaRatio={mediaRatio} root={root} />;
+    return <Kit key={section.instanceId} section={section} links={links} images={images} imageSizes={imageSizes} mediaRatio={mediaRatio} root={root} />;
   };
   const outside = (type: "header" | "footer") => doc.sections.filter((s) => s.type === type && kit(s));
   const head = outside("header");
@@ -41,14 +48,16 @@ export function PageDocument({
   const body = doc.sections.filter((s) => !head.includes(s) && !foot.includes(s));
   const firstScreen = firstScreenIds(body);
   return (
-    <div data-site-root style={kitTokens && kitVars(kitTokens)}>
-      {head.map(draw)}
-      {body.length > 0 && (
-        <main data-fallback-root style={canvasVars(kitTokens?.palette)} className="flex flex-col">
-          {body.map(draw)}
-        </main>
-      )}
-      {foot.map(draw)}
-    </div>
+    <EagerImages value={loading === "eager"}>
+      <div data-site-root style={kitTokens && kitVars(kitTokens)}>
+        {head.map(draw)}
+        {body.length > 0 && (
+          <main data-fallback-root style={canvasVars(kitTokens?.palette)} className="flex flex-col">
+            {body.map(draw)}
+          </main>
+        )}
+        {foot.map(draw)}
+      </div>
+    </EagerImages>
   );
 }

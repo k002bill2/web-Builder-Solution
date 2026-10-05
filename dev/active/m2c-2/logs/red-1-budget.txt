@@ -1,0 +1,123 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-2/app
+
+ ❯ scripts/bundleBudget.test.mjs (14 tests | 6 failed) 12ms
+   ❯ checkBundle — M2c 기준선 가드 (IMG-AC-29) (6)
+     × 개정 전후 — 한도 안(진입 123.47 < 125 · 렌더 JS 89.80 < 90)이라 개정 전은 통과, 기준선 + 0.03 · 멈춤선 89.70 위라 개정 뒤는 실패 5ms
+     × 진입 경계 — 기준선 + 0.03(123.03) 통과 · 123.04 실패 1ms
+     × 렌더 JS 경계 — 89.70 통과 · 89.71 실패 (한도 90은 그대로) 1ms
+     × 기준선 출력 줄 · 기준선 없는 시나리오는 한도 판정만(다른 시나리오 불변) 1ms
+     × 기준선 파일 없음·형식 틀림·없는 시나리오 이름 = 실패(조용히 건너뛰지 않음) 0ms
+     × 기준선 파일 = 시작 실측 고정(c870439 · /studio 진입 127.36 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 상향하면 이 테스트가 실패 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/bundleBudget.test.mjs > checkBundle — M2c 기준선 가드 (IMG-AC-29) > 개정 전후 — 한도 안(진입 123.47 < 125 · 렌더 JS 89.80 < 90)이라 개정 전은 통과, 기준선 + 0.03 · 멈춤선 89.70 위라 개정 뒤는 실패
+AssertionError: expected [] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+- [
+-   "/page: 진입 직후 자동 로드 포함 123.47KB > 기준선 123.00KB + 0.03KB",
+-   "렌더 문서: JS 89.80KB > 멈춤선 89.70KB",
+- ]
++ []
+
+ ❯ scripts/bundleBudget.test.mjs:104:34
+    102|     const over = { "assets/lazy.js": 30.47, "assets/render.js": 26.8 };
+    103|     expect(checkBundle({ manifest: manifest(), sizeOf: sized(over), sc…
+    104|     expect(judge(over).failures).toEqual(["/page: 진입 직후 자동 로드 포함 123.4…
+       |                                  ^
+    105|   });
+    106|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  scripts/bundleBudget.test.mjs > checkBundle — M2c 기준선 가드 (IMG-AC-29) > 진입 경계 — 기준선 + 0.03(123.03) 통과 · 123.04 실패
+AssertionError: expected [] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+- [
+-   "/page: 진입 직후 자동 로드 포함 123.04KB > 기준선 123.00KB + 0.03KB",
+- ]
++ []
+
+ ❯ scripts/bundleBudget.test.mjs:109:57
+    107|   it("진입 경계 — 기준선 + 0.03(123.03) 통과 · 123.04 실패", () => {
+    108|     expect(judge({ "assets/lazy.js": 30.03 }).failures).toEqual([]);
+    109|     expect(judge({ "assets/lazy.js": 30.04 }).failures).toEqual(["/pag…
+       |                                                         ^
+    110|   });
+    111|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  scripts/bundleBudget.test.mjs > checkBundle — M2c 기준선 가드 (IMG-AC-29) > 렌더 JS 경계 — 89.70 통과 · 89.71 실패 (한도 90은 그대로)
+AssertionError: expected [] to deeply equal [ '렌더 문서: JS 89.71KB > 멈춤선 89.70KB' ]
+
+- Expected
++ Received
+
+- [
+-   "렌더 문서: JS 89.71KB > 멈춤선 89.70KB",
+- ]
++ []
+
+ ❯ scripts/bundleBudget.test.mjs:114:59
+    112|   it("렌더 JS 경계 — 89.70 통과 · 89.71 실패 (한도 90은 그대로)", () => {
+    113|     expect(judge({ "assets/render.js": 26.7 }).failures).toEqual([]);
+    114|     expect(judge({ "assets/render.js": 26.71 }).failures).toEqual(["렌더…
+       |                                                           ^
+    115|   });
+    116|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  scripts/bundleBudget.test.mjs > checkBundle — M2c 기준선 가드 (IMG-AC-29) > 기준선 출력 줄 · 기준선 없는 시나리오는 한도 판정만(다른 시나리오 불변)
+AssertionError: expected [ …(11) ] to include '[bundle]   /page M2c 기준선 123.00KB + 0…'
+ ❯ scripts/bundleBudget.test.mjs:120:19
+    118|     const both = [...scenarios, { name: "/other", page: "src/pages/Pag…
+    119|     const { lines, failures } = checkBundle({ manifest: manifest(), si…
+    120|     expect(lines).toContain("[bundle]   /page M2c 기준선 123.00KB + 0.03K…
+       |                   ^
+    121|     expect(failures).toEqual(["/page: 진입 직후 자동 로드 포함 124.00KB > 기준선 12…
+    122|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  scripts/bundleBudget.test.mjs > checkBundle — M2c 기준선 가드 (IMG-AC-29) > 기준선 파일 없음·형식 틀림·없는 시나리오 이름 = 실패(조용히 건너뛰지 않음)
+AssertionError: expected [] to include 'M2c 기준선 파일이 없거나 형식이 틀립니다 (scripts/m2c…'
+ ❯ scripts/bundleBudget.test.mjs:125:38
+    123|
+    124|   it("기준선 파일 없음·형식 틀림·없는 시나리오 이름 = 실패(조용히 건너뛰지 않음)", () => {
+    125|     expect(judge({}, null).failures).toContain("M2c 기준선 파일이 없거나 형식이 틀립…
+       |                                      ^
+    126|     expect(judge({}, { ...BASE, toleranceKb: "0.03" }).failures).toCon…
+    127|     expect(judge({}, { ...BASE, eagerKb: { "/gone": 1 } }).failures).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  scripts/bundleBudget.test.mjs > checkBundle — M2c 기준선 가드 (IMG-AC-29) > 기준선 파일 = 시작 실측 고정(c870439 · /studio 진입 127.36 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 상향하면 이 테스트가 실패
+TypeError: The URL must be of scheme file
+ ❯ scripts/bundleBudget.test.mjs:131:29
+    129|
+    130|   it("기준선 파일 = 시작 실측 고정(c870439 · /studio 진입 127.36 · 허용 0.03 · 렌더 JS …
+    131|     const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json",…
+       |                             ^
+    132|     expect(file).toMatchObject({ base: "c870439", eagerKb: { "/studio/…
+    133|     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 8 passed (14)
+   Start at  23:42:11
+   Duration  857ms (environment 75%, setup 15%, transform 5%, import 2%, tests 2%, worker 1%)
+

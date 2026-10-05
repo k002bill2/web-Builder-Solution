@@ -32,11 +32,11 @@ describe("hero/grid (B-6)", () => {
     for (const t of tiles) expect(t.textContent).toBe("");
   });
 
-  it("KB-AC-15: 플레이스홀더 → img 0 · 그라디언트 타일 1(aria-hidden)", () => {
+  it("KB-AC-15: 플레이스홀더 → img 0 · 자체 그래픽 타일 1(aria-hidden · SPEC m2c 4절)", () => {
     const h = hero(drawDoc(heroDoc("grid")));
     expect(h.querySelectorAll("img")).toHaveLength(0);
-    expect(h.querySelectorAll('[data-media="gradient"]')).toHaveLength(1);
-    expect(h.querySelector('[data-media="gradient"]')).toHaveAttribute("aria-hidden", "true");
+    expect(h.querySelectorAll('[data-media="art"]')).toHaveLength(1);
+    expect(h.querySelector('[data-media="art"]')).toHaveAttribute("aria-hidden", "true");
   });
 
   it("KB-AC-17: 이미지 끔 → 타일 격자 요소 0 · 카피 1열(kit-hx--solo)", () => {

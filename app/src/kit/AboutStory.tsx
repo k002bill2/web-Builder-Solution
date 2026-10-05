@@ -29,7 +29,7 @@ export function AboutStory({ section, images, mediaRatio, root }: KitSectionProp
         </div>
         {image && (
           <figure className="kit-about-media">
-            <Media image={image} images={images} ratio={mediaRatio} className="kit-about-img" />
+            <Media image={image} images={images} ratio={mediaRatio} className="kit-about-img" section={section} slot="image" />
           </figure>
         )}
       </div>

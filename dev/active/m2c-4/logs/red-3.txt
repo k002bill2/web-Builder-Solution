@@ -1,0 +1,183 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app
+
+ ❯ src/features/studio/exportFlow.test.ts (5 tests | 5 failed) 8ms
+   ❯ 내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25) (3)
+     × 크기 줄 = 'HTML 1개 · N.NMB (이미지 N장 포함)' · 이미지 0이면 괄호 생략 2ms
+     × 3MB 경계 — 3MB 이하 안내 0 · 넘으면 한 줄 안내(차단 0) 0ms
+     × 잃은 이미지 = 마지막 줄 '이미지 N장을 다시 골라야 해 자체 그래픽으로 넣었습니다' 0ms
+   ❯ 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) (2)
+     × 슬롯 생성기 = readImage(이번 요청의 images 맵 · 파생본 전부) + onBuilt 요약 → done 결과 notes 1ms
+     × 생성기 decode 실패(IMAGE_FAILED) → retryable + 사유 '이미지를 그리지 못했습니다' · 다른 실패는 사유 0 3ms
+ ❯ src/components/studio/ExportResultNotes.test.tsx (2 tests | 2 failed) 75ms
+   ❯ 내보내기 결과 줄 (IMG-AC-24·25 · 26b 부모 쪽) (2)
+     × done 결과 notes = 상태 영역 안 줄마다 보임 · 결과 해시 그대로 68ms
+     × 재시도 안내 + 사유 = alert 안 '이미지를 그리지 못했습니다' · 사유 없으면 제목만 5ms
+ ❯ src/features/studio/canvasCaption.test.ts (5 tests | 2 failed) 8ms
+   ❯ canvasCaption (3.4) (5)
+     × 문구 = 3.4 표 그대로 · '시안' 단어 0 5ms
+     × F2 + 잃은 이미지(켜진 로컬 id가 images 맵에 없음) → 끝에 ' 다시 골라야 하는 이미지 N장은 자체 그래픽으로 보입니다.' · 있는 id·꺼진 슬롯 제외 · 구조 미리보기 섹션 있으면 안 붙음 1ms
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/PngSave.test.tsx (6 tests | 1 failed) 522ms
+   ❯ PNG 이미지 decode 실패 (SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽) (1)
+     × 캡처 오류 코드 IMAGE_DECODE_FAILED → alert '이미지를 그리지 못했습니다 — 다시 눌러 주세요' 8ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ExportResultNotes.test.tsx > 내보내기 결과 줄 (IMG-AC-24·25 · 26b 부모 쪽) > done 결과 notes = 상태 영역 안 줄마다 보임 · 결과 해시 그대로
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  HTML 1개 · 4.2MB (이미지 9장 포함)[39m
+Received:
+[31m  정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 's'에 있습니다결과 해시 0123456789ab내려받기[39m
+ ❯ src/components/studio/ExportResultNotes.test.tsx:11:46
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/components/studio/ExportResultNotes.test.tsx > 내보내기 결과 줄 (IMG-AC-24·25 · 26b 부모 쪽) > 재시도 안내 + 사유 = alert 안 '이미지를 그리지 못했습니다' · 사유 없으면 제목만
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  내보내지 못했습니다이미지를 그리지 못했습니다[39m
+Received:
+[31m  내보내지 못했습니다다시 시도[39m
+ ❯ src/components/studio/ExportResultNotes.test.tsx:17:39
+     15|   it("재시도 안내 + 사유 = alert 안 '이미지를 그리지 못했습니다' · 사유 없으면 제목만", () => {
+     16|     const { rerender } = render(<ExportRetryAlert onRetry={() => undef…
+     17|     expect(screen.getByRole("alert")).toHaveTextContent("내보내지 못했습니다이미지…
+       |                                       ^
+     18|     rerender(<ExportRetryAlert onRetry={() => undefined} />);
+     19|     expect(screen.getByRole("alert")).not.toHaveTextContent("이미지를");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/components/studio/PngSave.test.tsx > PNG 이미지 decode 실패 (SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽) > 캡처 오류 코드 IMAGE_DECODE_FAILED → alert '이미지를 그리지 못했습니다 — 다시 눌러 주세요'
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  이미지를 그리지 못했습니다 — 다시 눌러 주세요[39m
+Received:
+[31m  PNG를 만들지 못했습니다 — 다시 눌러 주세요[39m
+ ❯ src/components/studio/PngSave.test.tsx:100:46
+     98|     render(<PngSave ready view="desktop" fallbackCount={0} capture={()…
+     99|     fireEvent.click(button());
+    100|     expect(await screen.findByRole("alert")).toHaveTextContent("이미지를 그…
+       |                                              ^
+    101|   });
+    102| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/features/studio/canvasCaption.test.ts > canvasCaption (3.4) > 문구 = 3.4 표 그대로 · '시안' 단어 0
+AssertionError: expected '실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미…' to be '시안 (F2) — 프로필의 색·글자·글꼴·모션과 고른 이미지 또는 …' // Object.is equality
+
+Expected: "시안 (F2) — 프로필의 색·글자·글꼴·모션과 고른 이미지 또는 자체 그래픽으로 그린 페이지입니다."
+Received: "실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미지는 고른 이미지 또는 자체 그래픽이고, 글꼴·모션은 아직 기본 설정입니다."
+
+ ❯ src/features/studio/canvasCaption.test.ts:13:32
+     11|     expect(CANVAS_CAPTIONS.partial(9, 2)).toBe("실제 렌더 (F1 · 일부) — 섹션 9…
+     12|     // 모두 실렌더 = F2(M2c · MQ-C8 ★A — 키 이름 f1은 기존 참조 유지). "시안"은 F2만, "최종…
+     13|     expect(CANVAS_CAPTIONS.f1).toBe("시안 (F2) — 프로필의 색·글자·글꼴·모션과 고른 이미지…
+       |                                ^
+     14|     for (const text of [CANVAS_CAPTIONS.f0, CANVAS_CAPTIONS.partial(9,…
+     15|     expect(CANVAS_CAPTIONS.f1).not.toContain("최종");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/features/studio/canvasCaption.test.ts > canvasCaption (3.4) > F2 + 잃은 이미지(켜진 로컬 id가 images 맵에 없음) → 끝에 ' 다시 골라야 하는 이미지 N장은 자체 그래픽으로 보입니다.' · 있는 id·꺼진 슬롯 제외 · 구조 미리보기 섹션 있으면 안 붙음
+AssertionError: expected '실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미…' to be '실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미…' // Object.is equality
+
+Expected: "실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미지는 고른 이미지 또는 자체 그래픽이고, 글꼴·모션은 아직 기본 설정입니다. 다시 골라야 하는 이미지 1장은 자체 그래픽으로 보입니다."
+Received: "실제 렌더 (F1) — 프로필의 색·글자로 그린 페이지입니다. 이미지는 고른 이미지 또는 자체 그래픽이고, 글꼴·모션은 아직 기본 설정입니다."
+
+ ❯ src/features/studio/canvasCaption.test.ts:44:58
+     42|     const withIds = withSections(doc, rendered.map((s) => (s.type === …
+     43|     const image = { blob: new Blob(["x"]), width: 10, height: 10 };
+     44|     expect(canvasCaption(withIds, true, { [A]: image })).toBe(`${CANVA…
+       |                                                          ^
+     45|     expect(canvasCaption(withIds, true)).toBe(`${CANVAS_CAPTIONS.f1} 다…
+     46|     expect(canvasCaption(withIds, true, { [A]: image, [B]: image })).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25) > 크기 줄 = 'HTML 1개 · N.NMB (이미지 N장 포함)' · 이미지 0이면 괄호 생략
+TypeError: exportNotes is not a function
+ ❯ src/features/studio/exportFlow.test.ts:39:12
+     37| describe("내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25)", () => {
+     38|   it("크기 줄 = 'HTML 1개 · N.NMB (이미지 N장 포함)' · 이미지 0이면 괄호 생략", () => {
+     39|     expect(exportNotes({ bytes: 4.2 * MB, images: 9, lost: 0 })[0]).to…
+       |            ^
+     40|     expect(exportNotes({ bytes: 0.72 * MB, images: 0, lost: 0 })).toEq…
+     41|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25) > 3MB 경계 — 3MB 이하 안내 0 · 넘으면 한 줄 안내(차단 0)
+TypeError: exportNotes is not a function
+ ❯ src/features/studio/exportFlow.test.ts:44:12
+     42|
+     43|   it("3MB 경계 — 3MB 이하 안내 0 · 넘으면 한 줄 안내(차단 0)", () => {
+     44|     expect(exportNotes({ bytes: 3 * MB, images: 1, lost: 0 })).toHaveL…
+       |            ^
+     45|     expect(exportNotes({ bytes: 3 * MB + 1, images: 1, lost: 0 })[1]).…
+     46|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25) > 잃은 이미지 = 마지막 줄 '이미지 N장을 다시 골라야 해 자체 그래픽으로 넣었습니다'
+TypeError: exportNotes is not a function
+ ❯ src/features/studio/exportFlow.test.ts:49:12
+     47|
+     48|   it("잃은 이미지 = 마지막 줄 '이미지 N장을 다시 골라야 해 자체 그래픽으로 넣었습니다'", () => {
+     49|     expect(exportNotes({ bytes: 3.5 * MB, images: 2, lost: 2 })).toEqu…
+       |            ^
+     50|       "HTML 1개 · 3.5MB (이미지 2장 포함)",
+     51|       "메일 첨부에는 클 수 있습니다 — zip 내보내기는 다음 단계에서 지원합니다",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) > 슬롯 생성기 = readImage(이번 요청의 images 맵 · 파생본 전부) + onBuilt 요약 → done 결과 notes
+TypeError: Cannot read properties of undefined (reading 'readImage')
+ ❯ src/features/studio/exportFlow.test.ts:66:28
+     64|     });
+     65|     const result = await requestExportOnce(repository, "p1", "static-h…
+     66|     expect(made.deps.at(-1)!.readImage!(ID)).toEqual({ variants: { 800…
+       |                            ^
+     67|     expect(result).toMatchObject({ kind: "done", notes: ["HTML 1개 · 2.…
+     68|     await requestExportOnce(repository, "p1", "static-html", 4);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) > 생성기 decode 실패(IMAGE_FAILED) → retryable + 사유 '이미지를 그리지 못했습니다' · 다른 실패는 사유 0
+AssertionError: expected { kind: 'retryable', …(1) } to deeply equal { kind: 'retryable', …(2) }
+
+- Expected
++ Received
+
+  {
+    "format": "static-html",
+    "kind": "retryable",
+-   "reason": "이미지를 그리지 못했습니다",
+  }
+
+ ❯ src/features/studio/exportFlow.test.ts:75:73
+     73|     const repository = await repositoryRunningSlot();
+     74|     made.run.mockRejectedValueOnce(new Error("이미지를 그리지 못했습니다")).mockRe…
+     75|     expect(await requestExportOnce(repository, "p1", "static-html", 5)…
+       |                                                                         ^
+     76|     expect(await requestExportOnce(repository, "p1", "static-html", 6)…
+     77|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  4 failed (4)
+      Tests  10 failed | 8 passed (18)
+   Start at  06:54:04
+   Duration  1.94s (environment 54%, transform 19%, tests 12%, setup 10%, import 4%)
+

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ExportFormat, ProjectRepository } from "../../data/projectRepository";
 import type { GateReport } from "../../engine/contracts/records";
 import type { ExportResult } from "./exportFlow";
+import type { RenderImages } from "./images/store/types";
 import { loadExportFlow } from "./exportFlowLoader";
 import { gateCounts } from "./gateView";
 import type { GateState } from "./useGateReport";
@@ -11,7 +12,20 @@ import type { UseDocSave } from "./useDocSave";
  * 내보내기 시작 (DS-2A-05 5.13 시작 문장 · E-S24 · E-AC-28·29·30) — 결과가 오래됐으면 먼저 다시 계산 → 차단이면 멈춤 → 경고만이면 확인 대화상자 →
  * 저장 전 변경이 있으면 저장 먼저(실패·충돌·오프라인이면 요청 0 — E-S07·E-S09 표시는 저장 흐름이 한다) → `requestExport` 1회(조작 뒤 청크).
  */
-export function useExportFlow({ repository, projectId, save, gate }: { readonly repository: ProjectRepository; readonly projectId: string; readonly save: UseDocSave; readonly gate: GateState }) {
+export function useExportFlow({
+  repository,
+  projectId,
+  save,
+  gate,
+  images,
+}: {
+  readonly repository: ProjectRepository;
+  readonly projectId: string;
+  readonly save: UseDocSave;
+  readonly gate: GateState;
+  /** 편집 틀 images 맵 — 생성기가 이번 요청에서 읽는다(SPEC m2c 5.1) */
+  readonly images?: RenderImages;
+}) {
   const [running, setRunning] = useState<ExportFormat>();
   const [waitingSave, setWaitingSave] = useState<ExportFormat>();
   const [confirming, setConfirming] = useState<{ readonly format: ExportFormat; readonly report: GateReport }>();
@@ -28,13 +42,13 @@ export function useExportFlow({ repository, projectId, save, gate }: { readonly 
       setRequested(revision);
       // 청크 로드 실패(오프라인·청크 교체)도 재시도 가능 결과로 — 실행 상태를 남기지 않는다(M2A-3a Codex P2-1)
       const next = await loadExportFlow().then(
-        (flow) => flow.requestExportOnce(repository, projectId, format, revision),
+        (flow) => flow.requestExportOnce(repository, projectId, format, revision, images),
         (): ExportResult => ({ kind: "retryable", format }),
       );
       setResult(next);
       setRunning(undefined);
     },
-    [repository, projectId, savedRevision],
+    [repository, projectId, savedRevision, images],
   );
 
   const phase = save.state.phase;

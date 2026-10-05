@@ -338,7 +338,7 @@ export function StudioLayout({
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
-  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState });
+  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images });
   const exportResult = exportFlow.result;
   const blockRow = gateReport && firstBlockRow(gateReport);
   const blockText = gateReport && gateBlockReason(gateReport);
@@ -354,7 +354,7 @@ export function StudioLayout({
       exports={
         <>
           <ExportButtons reasons={reasons} busy={exportFlow.busy} onExport={(format) => void exportFlow.start(format)} />
-          {exportResult?.kind === "retryable" && <ExportRetryAlert onRetry={exportFlow.retry} />}
+          {exportResult?.kind === "retryable" && <ExportRetryAlert onRetry={exportFlow.retry} reason={exportResult.reason} />}
           {((exportResult && exportResult.kind !== "retryable") || exportFlow.confirming) && (
             <Suspense fallback={null}>
               {exportResult && exportResult.kind !== "retryable" && <ExportResultView result={exportResult} onFirstFallback={goToSection} />}
@@ -368,7 +368,7 @@ export function StudioLayout({
             reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0) : undefined}
             view={view}
             fallbackCount={fallbacks.length}
-            capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }) })}
+            capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }), ...(images && { images }) })}
           />
         </>
       }

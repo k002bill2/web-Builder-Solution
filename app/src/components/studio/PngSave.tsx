@@ -25,7 +25,7 @@ export function PngSave({
   readonly fallbackCount: number;
   readonly capture: () => PngRequest;
 }) {
-  const [state, setState] = useState<{ readonly busy?: true; readonly done?: string; readonly failed?: true }>({});
+  const [state, setState] = useState<{ readonly busy?: true; readonly done?: string; readonly failed?: string }>({});
   const press = () => {
     if (!ready || state.busy) return;
     setState({ busy: true });
@@ -35,7 +35,8 @@ export function PngSave({
         (done) => setState({ done }),
         (error: unknown) => {
           void loadPng().then((png) => png.reportFailure(error), () => undefined);
-          setState({ failed: true });
+          // 이미지 decode 실패(SPEC m2c 5.3-3)만 문구가 다르다 — 캡처 청크를 받지 못해도 떠야 하므로 코드 글자로 가른다
+          setState({ failed: (error as { readonly code?: unknown } | null)?.code === "IMAGE_DECODE_FAILED" ? "이미지를 그리지" : "PNG를 만들지" });
         },
       );
   };
@@ -66,7 +67,7 @@ export function PngSave({
       </p>
       {state.failed && (
         <p role="alert" className="ds-caption1 text-status-negative-text">
-          PNG를 만들지 못했습니다 — 다시 눌러 주세요
+          {state.failed} 못했습니다 — 다시 눌러 주세요
         </p>
       )}
     </div>

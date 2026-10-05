@@ -231,7 +231,7 @@ export function StructureCanvas({
       <h2 id="studio-canvas-heading" className="ds-heading2">
         페이지 미리보기
       </h2>
-      <p className="ds-caption1 text-label-alternative">{canvasCaption(doc, kitTokens !== undefined)}</p>
+      <p className="ds-caption1 text-label-alternative">{canvasCaption(doc, kitTokens !== undefined, images)}</p>
       {head}
       {caption && <p className="ds-caption1 text-label-alternative">{caption}</p>}
       {/* 문제 목록(r4.13) — 사각형 유무와 무관하게 부모 DOM에 늘 있다(필드 aria-describedby 대상, E-AC-49). 문제 0이면 없음 */}

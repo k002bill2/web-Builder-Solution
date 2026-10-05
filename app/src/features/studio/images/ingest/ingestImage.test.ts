@@ -89,6 +89,19 @@ describe("ingestImage 조립", () => {
     expect(fake.createImageBitmap).not.toHaveBeenCalled();
   });
 
+  it.each(["앞 16바이트", "전체 바이트"])("파일 읽기 실패(%s · NotReadableError) = DECODE_FAILED 결과(reject 아님)", async (stage) => {
+    const file = toFile(makePng({ width: 10, height: 10 }), "gone.png", "image/png");
+    const unreadable = (): Promise<ArrayBuffer> => Promise.reject(new DOMException("gone", "NotReadableError"));
+    if (stage === "앞 16바이트") {
+      vi.spyOn(file, "slice").mockReturnValue(Object.assign(new Blob(), { arrayBuffer: unreadable }));
+    } else {
+      vi.spyOn(file, "arrayBuffer").mockImplementation(unreadable);
+    }
+    const fake = fakeDeps({ decoded: { width: 10, height: 10 } });
+    await expect(ingestImage(file, fake.deps)).resolves.toEqual({ ok: false, code: "DECODE_FAILED" });
+    expect(fake.createImageBitmap).not.toHaveBeenCalled();
+  });
+
   it("V6 디코드 실패 = DECODE_FAILED", async () => {
     const fake = fakeDeps({ decoded: { width: 10, height: 10 }, decodeFails: true });
     await expect(ingestImage(toFile(makePng({ width: 10, height: 10 }), "a.png", "image/png"), fake.deps)).resolves.toEqual({

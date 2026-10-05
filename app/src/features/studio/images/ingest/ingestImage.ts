@@ -16,7 +16,12 @@ const WEBP_PROBE_QUALITY = 0.82;
 const fail = (code: IngestErrorCode, detail?: string): IngestResult =>
   detail === undefined ? { ok: false, code } : { ok: false, code, detail };
 
-const readBytes = async (blob: Blob): Promise<Uint8Array> => new Uint8Array(await blob.arrayBuffer());
+/** 파일 읽기 실패(삭제·변경·저장 장치 끊김 — NotReadableError)는 null → DECODE_FAILED 결과로 돌려준다(reject 아님). */
+const readBytes = (blob: Blob): Promise<Uint8Array | null> =>
+  blob.arrayBuffer().then(
+    (buffer) => new Uint8Array(buffer),
+    () => null,
+  );
 
 /** 목표 폭까지 반씩 단계 축소(한 번에 절반 아래로 줄이지 않는다). 만든 중간 bitmap은 `created`에 모아 호출 쪽이 닫는다. */
 async function scaleTo(source: IngestBitmap, width: number, height: number, deps: IngestDeps, created: IngestBitmap[]): Promise<IngestBitmap> {
@@ -64,10 +69,13 @@ async function encodeVariants(bitmap: IngestBitmap, alpha: boolean, deps: Ingest
 }
 
 export async function ingestImage(file: File, deps: IngestDeps = browserIngestDeps): Promise<IngestResult> {
-  const format = checkFileType(file.name, file.type, await readBytes(file.slice(0, MAGIC_BYTES)));
+  const head = await readBytes(file.slice(0, MAGIC_BYTES));
+  if (head === null) return fail("DECODE_FAILED");
+  const format = checkFileType(file.name, file.type, head);
   if (format === null) return fail("TYPE_MISMATCH");
   if (exceedsFileSize(file.size)) return fail("TOO_LARGE", formatMegabytes(file.size));
-  const header = readImageHeader(format, await readBytes(file));
+  const bytes = await readBytes(file);
+  const header = bytes === null ? null : readImageHeader(format, bytes);
   if (header === null) return fail("DECODE_FAILED");
   if (exceedsPixelLimit(header.width, header.height)) return fail("TOO_MANY_PIXELS", `${header.width} × ${header.height}`);
 

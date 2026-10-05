@@ -7,10 +7,11 @@ base `2fc32ba` · 시작 build: `/studio` 진입 126.89(멈춤 >127.39) · 첫 9
 - [x] ① 생성기 readImage 주입 · exportImages(pickVariant) · render images + loading eager · data: 단일 파일 규칙 · PNG decode 대기 · D-1 결정성
 - [x] ③ 잃은 이미지 문구 · 크기 표시 · 3MB 안내 · F2 캡션
 - [x] 진입 청크 변경 뒤 build 예산 재측정 — /studio 진입 126.89→127.03 · /profile 99.61→99.62 · /catalog 진입 +0.02 · 그 밖 ±0.01 · 렌더 JS 84.19 불변 (logs/build-3.txt)
-- [ ] Ego Lite: 앱 안 클릭 이미지 넣기 → 정적 HTML·PNG 결과 육안·캡처 → finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
-- [ ] 마감 게이트: typecheck · lint · build · 전체 vitest
+- [x] Ego Lite: 이미지 넣기·캔버스·PNG 결과 육안 확인·캡처 · finish({keep:[]}) · listTaskSpaces()=[] · 4337 리슨 0
+  - BLOCKED: 정적 HTML 결과 육안 — 시드 문서 기존 게이트 차단(대비 AA C-5)으로 버튼 비활성, QA(QB-8) 이관
+- [x] 마감 게이트: typecheck·lint·build exit 0 · 전체 vitest 227파일 2033 통과 exit 0 (logs/final-*.txt)
 - [ ] Codex review --scope branch --base 2fc32ba (≤2라운드)
-- [ ] REPORT.md
+- [x] REPORT.md
 
 ## 쓰기 범위 밖 연결 파일(사유)
 - `components/studio/StudioLayout.tsx` — images 맵을 useExportFlow·PngSave capture로 넘기기(편집 틀 state가 유일한 보관 자리) · 재시도 alert 사유 전달

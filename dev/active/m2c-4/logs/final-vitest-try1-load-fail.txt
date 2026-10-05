@@ -1,0 +1,563 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileCompare.test.tsx (7 tests | 1 failed) 5113ms
+   ❯ 비교 버튼 보이는 조건 (CMP-AC-U1) (2)
+     × 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위 3814ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-busy[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-10 px-4 rounded-md text-body3 aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m만드는 중…[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [33mid[39m=[32m"_r_9_"[39m
+    [36m>[39m
+      [0m같은 버전으로 다시 만들면 같은 결과가 나옵니다[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [3...
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-busy[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-10 px-4 rounded-md text-body3 aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m만드는 중…[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [33mid[39m=[32m"_r_9_"[39m
+    [36m>[39m
+      [0m같은 버전으로 다시 만들면 같은 결과가 나옵니다[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<ul[39m
+    [33maria-label[39m=[32m"3안"[39m
+    [33mclass[39m=[32m"grid gap-4 md:grid-cols-3"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-3 rounded-lg border border-line-normal p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex aspect-4/5 flex-col gap-1 overflow-hidden rounded-md border border-line-normal bg-(--wf-bg) p-2"[39m
+        [33mstyle[39m=[32m"--wf-primary: #8B5E3C; --wf-surface: #F3E9DD; --wf-ink: #2C2C2C; --wf-muted: #9A7B63; --wf-bg: #FFFFFF;"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-1.5 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex flex-[3] gap-1 rounded-sm bg-(--wf-primary) p-1.5 items-center justify-start"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 rounded-xs bg-(--wf-bg) w-1/2"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"grid flex-[2] gap-0.5 grid-cols-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"rounded-xs bg-(--wf-surface)"[39m
+          [36m/>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-surface)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-1 rounded-xs bg-(--wf-primary)"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-3 flex-none rounded-xs bg-(--wf-ink)"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+        [36m>[39m
+          [0m경고 [0m
+          [0m1[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+        [0m · [0m
+        [0m카드 3열[0m
+        [0m · [0m
+        [0m비율 1.25[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"A안 선택"[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 안 선택[0m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"ds-caption1"[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-primary-text"[39m
+        [36m>[39m
+          [0m상세[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-2 flex flex-col gap-2 text-label-normal"[39m
+        [36m>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"A안 로그"[39m
+            [33mclass[39m=[32m"flex flex-col gap-1"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [0m구조 규칙 모두 충족[0m
+            [3...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfileCompare.test.tsx:71:41
+     69|     expect(within(region).queryByRole("button", { name: COMPARE })).no…
+     70|     for (let i = 0; i < 3; i += 1) await tick();
+     71|     const button = await within(region).findByRole("button", { name: C…
+       |                                         ^
+     72|     const list = within(region).getByRole("list", { name: "3안" });
+     73|     const edit = within(region).getByRole("button", { name: "편집 시작" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 226 passed (227)
+      Tests  1 failed | 2033 passed (2034)
+   Start at  07:06:07
+   Duration  41.84s (environment 47%, tests 30%, setup 9%, transform 8%, import 5%)
+
+Environment  jsdom was created 227 times · 161.60s total, 47% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

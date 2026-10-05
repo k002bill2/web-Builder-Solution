@@ -111,6 +111,9 @@ export function ExportResultView({ result, onFirstFallback }: { readonly result:
           action={download && <DownloadLink href={download.href} fileName={download.fileName} />}
         >
           {download && <span className="text-label-alternative">결과 해시 {download.hash}</span>}
+          {result.notes?.map((note) => (
+            <p key={note}>{note}</p>
+          ))}
         </Callout>
       </div>
     );

@@ -8,10 +8,13 @@ import { ProjectRepositoryError, type DocHead, type ExportGenerator } from "../.
 import type { StudioReader } from "../../../data/studioStore";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { readHtmlMessage } from "../../../render/htmlMessage";
-import { readRenderMessage, type FontBytes, type FrameRect, type KitTokenInput, type ParentMessage, type RenderErrorCode } from "../../../render/protocol";
+import { readRenderMessage, type FontBytes, type FrameRect, type KitTokenInput, type ParentMessage, type RenderErrorCode, type RenderImage } from "../../../render/protocol";
 import { docKitTokens } from "../docPurpose";
+import { IMAGE_FAILED, exportImages, type ExportSummary, type ReadImage } from "./exportImages";
 import { FONT_FAILED, FONT_TIMEOUT_MS, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "./siteFontEmbed";
 import { buildStaticHtml } from "./staticMarkup";
+
+export { IMAGE_FAILED };
 
 const RENDER_DOC_SRC = "/render.html";
 /** 숨은 iframe 준비·그리기·직렬화 전체 상한 — exportFlow 조회 상한(10초)보다 짧게 */
@@ -75,6 +78,8 @@ export function renderAndSerialize(
   tolerated: readonly RenderErrorCode[] = [],
   /** 쓰는 글꼴 바이트(M2B-4a) — 렌더 문서가 이 바이트로 측정한다 */
   fonts: readonly FontBytes[] = [],
+  /** 쓰는 이미지(SPEC m2c 5.1 — id당 1장). 내보내기 render는 늘 loading "eager" — 렌더 문서가 decode를 기다린 뒤 rects를 보낸다(5.3) */
+  images: Readonly<Record<string, RenderImage>> = {},
 ): Promise<{ readonly markup: string; readonly rects: readonly FrameRect[] }> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let rects: readonly FrameRect[] = [];
@@ -87,13 +92,13 @@ export function renderAndSerialize(
       const message = readRenderMessage(data);
       if (message?.type === "ready" && stage === "wait") {
         stage = "render";
-        channel.send({ type: "render", doc, ...(kitTokens && { kitTokens }), ...(fonts.length > 0 && { fonts }) });
+        channel.send({ type: "render", doc, ...(kitTokens && { kitTokens }), ...(fonts.length > 0 && { fonts }), ...(Object.keys(images).length > 0 && { images }), loading: "eager" });
       } else if (message?.type === "rects" && stage === "render" && settled(message.rects)) {
         stage = "serialize";
         rects = message.rects;
         channel.send({ type: "serialize" });
       } else if (message?.type === "error" && !tolerated.includes(message.code)) {
-        reject(new Error(`렌더 문서 오류 ${message.code}`));
+        reject(new Error(message.code === "IMAGE_DECODE_FAILED" ? IMAGE_FAILED : `렌더 문서 오류 ${message.code}`));
       }
     });
   }).finally(() => {
@@ -127,6 +132,10 @@ export interface StaticHtmlDeps {
   /** 글꼴 바이트 받기(M2B-4a) · 상한 5초 */
   readonly fetchBytes: FetchBytes;
   readonly fontTimeoutMs: number;
+  /** 보관소 이미지 읽기(파생본 전부 — SPEC m2c 5.1 팩토리 주입). 기본 = 없음(모든 로컬 이미지가 잃은 이미지) */
+  readonly readImage: ReadImage;
+  /** 결과 요약 알림(크기 표시 — 생성기 계약 `{downloadRef, resultHash}` 밖) */
+  readonly onBuilt: (downloadRef: string, summary: ExportSummary) => void;
 }
 export type StaticHtmlGenerator = ExportGenerator & {
   /** 편집기 이탈 — 그 프로젝트의 내려받기 object URL 해제 */
@@ -135,7 +144,7 @@ export type StaticHtmlGenerator = ExportGenerator & {
 
 /** 저장소(store)당 1개 — 프로젝트별 마지막 object URL을 들고, 같은 프로젝트를 다시 만들면 이전 것을 해제한다 */
 export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<StaticHtmlDeps> = {}): StaticHtmlGenerator {
-  const { open = openRenderFrame, fetchText = defaultFetchText, urls = URL, timeoutMs = TIMEOUT_MS, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS } = deps;
+  const { open = openRenderFrame, fetchText = defaultFetchText, urls = URL, timeoutMs = TIMEOUT_MS, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS, readImage = () => undefined, onBuilt } = deps;
   const held = new Map<string, string>();
   const release = (projectId: string) => {
     const url = held.get(projectId);
@@ -154,13 +163,15 @@ export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<Sta
     const fonts = await loadSiteFonts(css, kitTokens.type, fetchBytes, fontTimeoutMs).catch(() => {
       throw new ProjectRepositoryError("JOB_TIMEOUT", FONT_FAILED);
     });
-    const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes);
+    const { images, lost } = exportImages(doc, readImage);
+    const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images);
     const page = buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, title: doc.meta.title, description: doc.meta.description, notice: fonts.notice });
     const bytes = new TextEncoder().encode(page);
     const resultHash = await hex12(bytes);
     release(projectId);
     const downloadRef = urls.createObjectURL(new Blob([bytes], { type: "text/html;charset=utf-8" }));
     held.set(projectId, downloadRef);
+    onBuilt?.(downloadRef, { bytes: bytes.length, images: Object.keys(images).length, lost });
     return { downloadRef, resultHash };
   };
   return Object.assign(generate, { release });

@@ -325,4 +325,39 @@ describe("PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9)", () => {
     expect(download).not.toHaveBeenCalled();
     expect(channel.opened).toEqual([]);
   });
+
+  it("이미지 포함 문서(D-1 결정성 · IMG-AC-26b) — render{images, loading \"eager\"} · 같은 입력 5회 같은 높이 · fallbackCount에 잃은 이미지 안 더함 · 성공 문장에만 잃은 이미지 문장", async () => {
+    const ID = "11111111-1111-4111-8111-111111111111";
+    const LOST = "22222222-2222-4222-8222-222222222222";
+    const slot = (key: string, id: string, s: PngRequest["doc"]["sections"][number]) => ({ ...s, slots: { ...s.slots, [key]: { ...(s.slots[key] as object), source: id } } });
+    const doc = { ...REQUEST.doc, sections: REQUEST.doc.sections.map((s) => (s.type === "hero" ? slot("image", ID, s) : s.type === "about" ? slot("image", LOST, s) : s)) } as PngRequest["doc"];
+    const image = { blob: new Blob(["webp"], { type: "image/webp" }), width: 800, height: 600 };
+    const heights: number[] = [];
+    for (let i = 0; i < 5; i++) {
+      const { d, channel, draw } = deps(noFallback(), 2400);
+      const made = await capturePng({ ...REQUEST, doc, images: { [ID]: image } }, d);
+      const render = channel.sent[0] as Extract<ParentMessage, { type: "render" }>;
+      expect(render.loading).toBe("eager");
+      expect(render.images).toEqual({ [ID]: image });
+      expect(made.fallbackCount).toBe(0);
+      expect(made.lost).toBe(1);
+      heights.push(draw.mock.calls[0]![2]);
+    }
+    expect(new Set(heights)).toEqual(new Set([2400]));
+    const { d } = deps(noFallback(), 2400);
+    expect(await savePng({ ...REQUEST, doc, images: { [ID]: image } }, d)).toMatch(/\.png · 이미지 1장을 다시 골라야 해 자체 그래픽으로 넣었습니다$/);
+  });
+
+  it("렌더 문서 decode 실패(error IMAGE_DECODE_FAILED) → PngError IMAGE_DECODE_FAILED '이미지를 그리지 못했습니다' · 그리지 않음", async () => {
+    const { d, draw } = deps(noFallback(), 2400, {});
+    const failing: PngDeps = {
+      ...d,
+      open: (rem) => {
+        const channel = d.open(rem);
+        return { ...channel, listen: (r) => channel.listen((data) => r((data as { type?: string }).type === "rects" ? { type: "error", code: "IMAGE_DECODE_FAILED" } : data)) };
+      },
+    };
+    await expect(capturePng(REQUEST, failing)).rejects.toMatchObject({ name: "PngError", code: "IMAGE_DECODE_FAILED", message: "이미지를 그리지 못했습니다" });
+    expect(draw).not.toHaveBeenCalled();
+  });
 });

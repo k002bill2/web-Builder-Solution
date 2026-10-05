@@ -92,6 +92,15 @@ describe("PNG 버튼 4상태 (m2a 3.3 · K-AC-19)", () => {
   });
 });
 
+describe("PNG 이미지 decode 실패 (SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽)", () => {
+  it("캡처 오류 코드 IMAGE_DECODE_FAILED → alert '이미지를 그리지 못했습니다 — 다시 눌러 주세요'", async () => {
+    png.savePng.mockRejectedValueOnce(Object.assign(new Error("이미지를 그리지 못했습니다"), { code: "IMAGE_DECODE_FAILED" }));
+    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} />);
+    fireEvent.click(button());
+    expect(await screen.findByRole("alert")).toHaveTextContent("이미지를 그리지 못했습니다 — 다시 눌러 주세요");
+  });
+});
+
 describe("편집기 안 PNG 묶음 (K-AC-19 · E-AC-50 — 게이트 차단·폴백과 무관 · requestExport 0)", () => {
   const SERIES = { profileId: "profile-1", latestVersion: 2, versions: [sampleTheme().profile] } as unknown as ProfileSeries;
   it("게이트 차단 + 폴백 → 내보내기 두 버튼은 막혀도 PNG는 열림 · aria-describedby에 내보내기 이유 id 0 · 누르면 지금 문서·폭·이름·revision으로 캡처 · requestExport 0", async () => {

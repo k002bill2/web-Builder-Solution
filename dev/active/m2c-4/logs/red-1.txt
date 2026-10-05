@@ -1,0 +1,144 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app
+
+ ❯ src/features/studio/staticHtml/exportImages.test.ts (0 test)
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts (14 tests | 2 failed) 257ms
+   ❯ 정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9) (5)
+     × readImage 주입(SPEC m2c 5.1) → render{images = 쓰는 id만 · id당 1장, loading "eager"} · onBuilt(내려받기 참조, {바이트, 이미지 수, 잃은 수}) 13ms
+     × 이미지 없는 문서·readImage 없음도 내보내기 render = loading "eager" · images 키 0 · onBuilt 이미지 0 10ms
+ ❯ src/features/studio/png/pngCapture.test.ts (23 tests | 2 failed) 441ms
+   ❯ PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9) (4)
+     × 이미지 포함 문서(D-1 결정성 · IMG-AC-26b) — render{images, loading "eager"} · 같은 입력 5회 같은 높이 · fallbackCount에 잃은 이미지 안 더함 · 성공 문장에만 잃은 이미지 문장 18ms
+     × 렌더 문서 decode 실패(error IMAGE_DECODE_FAILED) → PngError IMAGE_DECODE_FAILED '이미지를 그리지 못했습니다' · 그리지 않음 11ms
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (15 tests | 1 failed) 475ms
+   ❯ 정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4) (2)
+     × 이미지 src = data:image/(webp|jpeg|png);base64,만 (SPEC m2c 5.2 · IMG-AC-23) — blob:·http(s)·svg data: = 실패 · srcset 0 11ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/staticHtml/exportImages.test.ts [ src/features/studio/staticHtml/exportImages.test.ts ]
+Error: Failed to resolve import "./exportImages" from "src/features/studio/staticHtml/exportImages.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app/src/features/studio/staticHtml/exportImages.test.ts:5:73
+  2  |  import { docImageIds } from "../../../render/objectUrls";
+  3  |  import { addImage } from "../images/store/imageStore";
+  4  |  import { exportImages, imageReader, lostImageText } from "./exportImages";
+     |                                                            ^
+  5  |  /** SPEC m2c 5.1 — 내보내기 동봉 이미지: 쓰는 id만 · id당 파생본 1장(pickVariant, 목표 = 그 id를 쓰는 슬롯들의 동봉 단계 중 가장 큰 값) · 없으면 잃은 이미지 */
+  6  |  const ID = "11111111-1111-4111-8111-111111111111";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/png/pngCapture.test.ts > PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9) > 이미지 포함 문서(D-1 결정성 · IMG-AC-26b) — render{images, loading "eager"} · 같은 입력 5회 같은 높이 · fallbackCount에 잃은 이미지 안 더함 · 성공 문장에만 잃은 이미지 문장
+AssertionError: expected undefined to be 'eager' // Object.is equality
+
+- Expected:
+"eager"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/png/pngCapture.test.ts:340:30
+    338|       const made = await capturePng({ ...REQUEST, doc, images: { [ID]:…
+    339|       const render = channel.sent[0] as Extract<ParentMessage, { type:…
+    340|       expect(render.loading).toBe("eager");
+       |                              ^
+    341|       expect(render.images).toEqual({ [ID]: image });
+    342|       expect(made.fallbackCount).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/features/studio/png/pngCapture.test.ts > PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9) > 렌더 문서 decode 실패(error IMAGE_DECODE_FAILED) → PngError IMAGE_DECODE_FAILED '이미지를 그리지 못했습니다' · 그리지 않음
+AssertionError: expected Error: 이미지를 그리지 못했습니다 to match object { name: 'PngError', …(2) }
+
+- Expected
++ Received
+
+- {
+-   "code": "IMAGE_DECODE_FAILED",
++ Error {
+    "message": "이미지를 그리지 못했습니다",
+-   "name": "PngError",
+  }
+
+ ❯ src/features/studio/png/pngCapture.test.ts:360:47
+    358|       },
+    359|     };
+    360|     await expect(capturePng(REQUEST, failing)).rejects.toMatchObject({…
+       |                                               ^
+    361|     expect(draw).not.toHaveBeenCalled();
+    362|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9) > readImage 주입(SPEC m2c 5.1) → render{images = 쓰는 id만 · id당 1장, loading "eager"} · onBuilt(내려받기 참조, {바이트, 이미지 수, 잃은 수})
+AssertionError: expected undefined to be 'eager' // Object.is equality
+
+- Expected:
+"eager"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:172:28
+    170|     const made = await createStaticHtmlGenerator(STORE, { open: frame.…
+    171|     const render = frame.sent[0] as Extract<ParentMessage, { type: "re…
+    172|     expect(render.loading).toBe("eager");
+       |                            ^
+    173|     expect(render.images).toEqual({ [ID]: { blob, width: 2400, height:…
+    174|     expect(built).toHaveBeenCalledWith(made.downloadRef, { bytes: urls…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9) > 이미지 없는 문서·readImage 없음도 내보내기 render = loading "eager" · images 키 0 · onBuilt 이미지 0
+AssertionError: expected undefined to be 'eager' // Object.is equality
+
+- Expected:
+"eager"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:182:28
+    180|     await createStaticHtmlGenerator(STORE, { open: frame.open, fetchTe…
+    181|     const render = frame.sent[0] as Extract<ParentMessage, { type: "re…
+    182|     expect(render.loading).toBe("eager");
+       |                            ^
+    183|     expect("images" in render).toBe(false);
+    184|     expect(built).toHaveBeenCalledWith("blob:test/1", expect.objectCon…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > 정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4) > 이미지 src = data:image/(webp|jpeg|png);base64,만 (SPEC m2c 5.2 · IMG-AC-23) — blob:·http(s)·svg data: = 실패 · srcset 0
+AssertionError: src="https://example.com/a.webp": expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:182:75
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  4 failed | 2 passed (6)
+      Tests  5 failed | 61 passed (66)
+   Start at  06:50:20
+   Duration  1.97s (environment 56%, transform 14%, tests 13%, setup 13%, import 4%)
+

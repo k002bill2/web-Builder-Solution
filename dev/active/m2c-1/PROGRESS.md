@@ -15,3 +15,5 @@
 - [ ] REPORT.md (IMG-AC↔테스트 매핑 · meta · 한계)
 
 ## 로그
+- 설치: `npm ci` exit 0 · `git status` lock 변경 0. 기준 build exit 0 → `logs/build-baseline.txt`(/studio 진입 127.36 · 렌더 JS 83.03) · dist 해시 93개 `logs/dist-baseline.sha256`.
+- **단계 1 예측(RED 전)**: `fileType.test.ts` 새 테스트 **24개**. 스텁(null·false·"" 반환)에서 **13 실패 · 11 통과**(거부 쪽 null 기대 11개는 스텁도 null — 구현 뒤에도 통과해야 하는 음성 사례). 10MB = 10 × 1024 × 1024 바이트(명세에 단위 없음 · 앱 안 기존 MB 관례 없음 → 너그러운 쪽).

@@ -19,6 +19,8 @@ interface FieldProps {
   readonly doc: PageDoc;
   readonly images: RenderImages | undefined;
   readonly latest: RefObject<PanelLatest>;
+  /** 넣은 결과를 최신 값에 바로 올린다 — 같은 틱에 끝난 다른 슬롯 결과가 이 위에 쌓이게(Codex r2 P2 — 원자적 병합) */
+  readonly remember: (doc: PageDoc, images: RenderImages) => void;
   readonly publish: ImageHost[1];
   readonly onEdit: (next: PageDoc) => void;
   readonly announce: (text: string) => void;
@@ -42,7 +44,7 @@ const slotValue = (section: SectionInstance, key: string): ImageSlotValue | unde
  * 파일 고르기 → 변환기(파일을 고른 순간 동적 import, SPEC 2.1) → 한도(보관 바이트) → 문서·맵 반영.
  * 마지막 선택만 반영(IMG-AC-09) · 실패·한도 초과 = 필드 오류, 문서·맵 불변(IMG-AC-08·11) · 파일 이름은 어디에도 두지 않는다(IMG-AC-15).
  */
-function useImagePick({ section, entry, latest, publish, onEdit, announce }: FieldProps) {
+function useImagePick({ section, entry, latest, remember, publish, onEdit, announce }: FieldProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const turn = useRef(0);
@@ -94,8 +96,7 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
     const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc)), id, result.image, slotTarget(current.type, current.variant));
     const limit = checkLimits(nextDoc, undoDoc, nextImages);
     if (!limit.ok) return fail(limit.message);
-    // 다른 슬롯 결과가 같은 틱에 끝나도 이 결과 위에 쌓이게 최신 값을 바로 갱신한다(Codex r2 P2 — 원자적 병합)
-    latest.current = { ...latest.current, doc: nextDoc, images: nextImages };
+    remember(nextDoc, nextImages);
     publish(() => nextImages);
     onEdit(nextDoc);
     announce(value.alt.trim() === "" && !value.decorative ? "이미지를 넣었습니다 대체텍스트를 적어 주세요" : "이미지를 넣었습니다");

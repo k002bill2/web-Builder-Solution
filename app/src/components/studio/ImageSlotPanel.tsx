@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { SlotSchemaEntry } from "../../engine/contracts/sectionDefinition";
-import type { ImageHost } from "../../features/studio/images/store/types";
+import type { ImageHost, RenderImages } from "../../features/studio/images/store/types";
 import type { Button as ButtonType } from "../ds/Button";
 import { ImageSlotField, type PanelLatest } from "./ImageSlotField";
 
@@ -28,6 +28,9 @@ export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, B
   useEffect(() => {
     latest.current = { doc, images, undoDoc };
   }, [doc, images, undoDoc]);
+  const remember = (next: PageDoc, map: RenderImages) => {
+    latest.current = { ...latest.current, doc: next, images: map };
+  };
   const section = doc.sections.find((s) => s.instanceId === instanceId);
   if (!section) return null;
   return (
@@ -36,7 +39,7 @@ export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, B
         {status}
       </p>
       {slots.filter((entry) => entry.kind === "image").map((entry) => (
-        <ImageSlotField key={entry.key} section={section} entry={entry} doc={doc} images={images} latest={latest} publish={publish} onEdit={onEdit} announce={setStatus} Button={Button} />
+        <ImageSlotField key={entry.key} section={section} entry={entry} doc={doc} images={images} latest={latest} remember={remember} publish={publish} onEdit={onEdit} announce={setStatus} Button={Button} />
       ))}
       <p className="ds-caption1 text-label-alternative">고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다</p>
     </div>

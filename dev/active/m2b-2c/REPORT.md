@@ -2,7 +2,8 @@
 
 - 책임 역할: Developer · 실행 환경: Orca managed worktree `m2b-2c` + Claude Code (Opus 5.5, medium) · 서브에이전트 0
 - 시작 SHA `2369a3e` · 1차 실행(P1 예산 멈춤) 마감 `a086383` · ★A 승인 기록 `0650df7` · 재개 구현 마감 `2913037`(실렌더 **30/30**)
-- 이 문서는 브라우저 판정 **전에** 구현·번들·명세 차이(1·3·4절)를 먼저 채웠다. 2·5·6·8절은 판정 뒤 채운다.
+- 이 문서는 브라우저 판정 **전에** 구현·번들·명세 차이(1·3·4절)를 먼저 채웠고, 2·5~8절은 판정 뒤(재개 2회차, HEAD ad8b6bc 이후) 채웠다.
+- **Codex 검토(HEAD 2913037) 이후 변경 = 판정 도구만**: `qb.mjs` OVER의 scrollOver 보정(5.2) · 조사/재측정 스크립트 `over-probe.mjs`·`long200-recheck.mjs`. 제품 코드(app/) diff 0이라 vitest 재실행 없음.
 
 ## 0. 결론
 - ★A(APPROVAL-A.md) 범위 안에서 P2~P5를 끝냈다: `testimonials/quotes-2` · `pricing/tiers-2` · `contact/booking` · `cta-band/banner` 킷 등록 → KIT_REGISTRY = 부모 RENDERED_VARIANTS = 엔진 SECTION_DEFINITIONS **정확 30쌍**.
@@ -28,18 +29,18 @@
 | ID | [U]/[G] (vitest) | [B] (브라우저) |
 |---|---|---|
 | 01 | PASS — bodyVariants2c "KD-AC-01" + 기존 kitGuard | — |
-| 02 | — | (P-B 판정 뒤 기록) |
+| 02 | — | PASS — 12변형 상한 글자 + 글자 200% · 3폭 문서 overflowX 0 · 말줄임 0 · 겹침 0 · 보정 scrollOver 0(5.2) |
 | 03 | PASS — 4변형 각 "KD-AC-03"(상한 글자 = textContent) | — |
 | 04 | PASS — 4변형 각 빈 슬롯 테스트 | — |
-| 05 | — | (P-B) |
-| 06 | PASS — bodyVariants2c "KD-AC-06"(12변형 합본 정적 HTML script 1·바이트 일치·on* 0) | (P-B 재확인) |
-| 07 | PASS — bodyVariants2c "KD-AC-07" + 4변형 CSS 블록 단언 | (P-B DOM 순서) |
-| 08 | PASS — bodyVariants2c "KD-AC-08"(h3 = cards-2·masonry·pricing만) | — |
-| 17 quotes | PASS [U] 구조·cite 0·빈 슬롯 | (P-B 2열/1열) |
-| 18 pricing | PASS [U] 두 카드 class·속성 동일·글자 그대로·버튼/표식 0 | (P-B 계산값 동등) |
+| 05 | — | PASS — light·dark × 톤 교대/뒤집기 × 3폭 bad 0 · badRings 0 · 최소 4.93(light)/4.56(dark) · CTA 링 `:focus-visible` fv=true · 캡처 5.3 |
+| 06 | PASS — bodyVariants2c "KD-AC-06"(12변형 합본 정적 HTML script 1·바이트 일치·on* 0) | PASS — static-scripts n 1 · sameBytes · on* 0 · href=# 0 · form action/method null · placeholder 0 |
+| 07 | PASS — bodyVariants2c "KD-AC-07" + 4변형 CSS 블록 단언 | PASS — headings-order docOrder true · 12변형 kit · 폴백 0 |
+| 08 | PASS — bodyVariants2c "KD-AC-08"(h3 = cards-2·masonry·pricing만) | PASS — 12변형 h2 1 · h3 = c2 2·cm 3·pr 2 외 0 |
+| 17 quotes | PASS [U] 구조·cite 0·빈 슬롯 | PASS — 1280·768 같은 행 2열·같은 높이 · 390 쌓임 · 인용 기울임 0 · pre-line |
+| 18 pricing | PASS [U] 두 카드 class·속성 동일·글자 그대로·버튼/표식 0 | PASS — '문의'/'99,000' 카드·가격 계산값 동등(cardsEqual·pricesEqual) · tabular-nums · 표식 0 · 1280·768 2열 / 390 쌓임 |
 | 19 booking | PASS [U] 이름표·for/id·legend·안내·type·placeholder 0·action 0·fieldset 안 | — |
-| 20 booking | [G] 날짜·시간 묶음 CSS | (P-B 2단/1단·행·ink·opacity·Enter/버튼 요청 0) |
-| 21 cta | PASS [U] 면 primary 양 톤·대상 4경로·href=# 0 · [G] CSS | (P-B 같은 행/390 전체 폭·색·링) |
+| 20 booking | [G] 날짜·시간 묶음 CSS | PASS — 1280 2단 / 768·390 1단 · 날짜·시간 1280·768 같은 행 / 390 쌓임 · 칸 6 disabled · ink·opacity 1 · 정적 HTML Enter/버튼 이동 0·서버 요청 0·리소스 0 |
+| 21 cta | PASS [U] 면 primary 양 톤·대상 4경로·href=# 0 · [G] CSS | PASS — 면 primary(alt 톤에도) · 1280·768 같은 행 / 390 아래·전체 폭 · CTA 44px · href #s-s-bk · 링 5.3 |
 
 ## 3. 번들 (측정 = `npx vite build && npx vite build --mode render` → /tmp/m2b2c-bytes.mjs(check-bundle-size.mjs 사본, 바이트 출력) · 원문 logs/p1-baseline-bytes.txt · logs/final-bytes.txt)
 | 항목 | baseline 2369a3e | 최종(P5 파생) | 증가 | 한도 | 판정 |
@@ -67,7 +68,7 @@
 - cta-band 섹션 루트 `data-surface="primary"`(bodySurface 미사용 — 톤 무관 띠, KD-AC-05·21 판정 표시). `data-tone`은 남김(판정 표시, CSS 선택자로 쓰지 않음).
 - pricing 이름 ↔ 가격 s2 · 가격 ↔ 설명 s3: 카드 gap s2 + `.kit-plan-price + .kit-card-body { margin-top: calc(s3 − s2) }`(가격 빈 값이면 이름 ↔ 설명 = s3, B1-3 카드와 같음).
 - booking 칸 `id` = `f-<instanceId>-<key>` (contact/form과 같은 규칙 — SPEC 예시 `f-<id>-name`과 같은 뜻).
-- 시안(mock-body.html) 대조는 5절 브라우저 판정 뒤 적는다.
+- 시안(mock-body.html) px 대조는 하지 않았다(ADR-003: px은 기준 아님). 구조·위계 대조는 캡처(shots/qb-9~15)로 남김 — 별도 시각 검수 대상.
 ### 4.3 이전 단언 이관 (삭제·skip·약화 0 — 전/후/근거)
 | 파일:단언 | 이전 예시(30/30 전) | 이후(이관) | 단언 문자열 | 근거 |
 |---|---|---|---|---|
@@ -91,13 +92,43 @@
 | P5b | +5 → 205 · 1802 | 작성 즉시 PASS(구현 뒤 검증 테스트) → 임시 변형 RED 5 → 복원 GREEN | ✓ |
 
 ## 5. QB
-(P-B 브라우저 판정 뒤 기록)
+원시: `logs/qb-run.txt`(2회차 판정 실행, 36줄) · `logs/qb.json` · 1회차 `logs/qb-run-1st.txt`(같은 판정 + 캡처 CDP 시간 초과로 exit 1) · 보정 재측정 `logs/long200-recheck.{txt,json}` · 원인 조사 `logs/over-probe.{txt,json}`. 환경 = ego-browser, 렌더 문서 127.0.0.1:4337(이 worktree vite) 최상위 페이지, 폭 = CDP setDeviceMetricsOverride.
+
+### 5.1 판정 요약 (qb-run.txt 1~26행 직접 확인)
+| 항목 | 결과 |
+|---|---|
+| 대비(checkProfileContrast) | light C-1 8.09·C-2 16.82·C-4 15.31·C-5 4.93 · dark C-1 4.61·C-2 20.08·C-3 4.56·C-4 17.62·C-5 6.06 — 모두 pass |
+| QB-9~11 레이아웃 3폭 | 문서 overflowX 0(3폭) · quotes/pricing/booking/cta 배치 2절 표 그대로 |
+| 정적 HTML 계산 스타일 동등성 | 3폭 same true · 151요소 · diff {} |
+| 예약 정적 HTML 제출 | Enter·버튼 뒤 moved false · newServerRequests 0 · newResources 0 · submits 0 · fieldset disabled |
+| QB-13/14 색 조합 | light·dark × ALT/FLIP × 3폭 12행 모두 bad {} · 포커스 가능 요소 = cb 1개뿐 |
+| QB-15 상한 글자 + 200% | 원 판정 bk scrollOver 1(3폭) → 5.2 원인 특정·보정 → bad {} |
+
+### 5.2 long200 bk scrollOver=1 — 분류 (b) 판정 도구 오탐 (제품 수정 0)
+- 원인 요소(over-probe, qb.mjs OVER와 같은 조건 `checkVisibility · scrollWidth > clientWidth + 1 · overflowX ≠ visible`): `<legend class="kit-visually-hidden">예약 양식</legend>` — scrollWidth 52 / clientWidth 2(200%)·1(100%) · overflow hidden · `clip-path: inset(50%)` · 0.0625rem 상자(kit.css `.kit-visually-hidden`, 스크린리더 전용 fieldset 이름).
+- 같은 조건 contact/form 기준: `<legend class="kit-visually-hidden">문의 양식</legend>`가 **같은 값**(52/2·52/1). 이 legend·클래스는 baseline 2369a3e `ContactForm.tsx:46`·kit.css부터 있던 패턴(이번 diff가 만든 것 아님). 원 QB에 cf가 없어 bk에서만 보였다.
+- 상한 글자 유무(long0/long1) × 글자 100%/200% × 3폭 × (bk+cf 단독 / 12변형+cf 합본) **24행 전부 같은 결과** → 글자 길이와 무관 = 내용 넘침 아님. 제외 외 다른 요소는 0.
+- SPEC KD-AC-02 문자 그대로(문서 `scrollWidth − clientWidth = 0`)는 원 실행에서 이미 3폭 0. 요소 단위 scrollOver는 도구가 더한 엄격 검사.
+- 보정: OVER scrollOver에 `clipPath ≠ "inset(50%)"` 1조건만 추가, `scrollOverRaw`·`clippedExcluded`(tag·class·clipPath·sw·cw·text)를 함께 기록. wider·ellipsis·overlap·문서 overflowX는 무변경.
+- 재측정(long200-recheck.mjs = qb.mjs 2~76·239~256행 sed 절취, qb-15 캡처 1줄만 제외): 1280·768·390 모두 `overflowX 0 · bad {}` · 제외 = **폭마다 bk legend 1개뿐** → **KD-AC-02 PASS**.
+
+### 5.3 QB-12 실제 :focus-visible 링 캡처
+- ego-browser `page.screenshot` 3폭 × 2회 모두 `CdpRequestTimeoutError`(qb-run.txt 27~35행) — 같은 실행에서 CTA a `focus()` 뒤 `:focus-visible` 매칭은 3폭 true.
+- 대체: shots.sh Chrome headless `--screenshot` · `static/qb-12-ring.html` = qb-12.html과 **CTA a의 `autofocus` 1속성만 다른** 판정용 사본(diff 1줄). 결과 `shots/qb-12-ring-{1280,768,390}.png` 3폭 모두 CTA에 이중 링이 보이고, 같은 문서 `qb-12-*.png`에는 없다. kit.css 링 선택자는 `[data-kit] :where(a, button, summary):focus-visible`(21행)뿐이라 링 표시 = :focus-visible 매칭.
+- 브리프 표기와 차이: 390만 `_w390.html` iframe 래퍼(390폭 iframe), 768·1280은 창 폭 직접(창 폭 = 뷰포트).
 
 ## 6. Codex
-(실행 중 — 결과 회수 뒤 기록)
+- 실행: `codex-companion.mjs review --scope branch --base 2369a3e` 1회 · HEAD 2913037 · 원문 `logs/codex.txt`.
+- 원문 결과: "기준 커밋 대비 변경에서 수정이 필요한 구체적인 결함을 발견하지 못했습니다. 타입 검사는 통과했으나, 테스트는 읽기 전용 환경의 파일 생성 제한(EPERM)으로 실행하지 못했습니다." → 지적 0.
+- 한계: Codex 샌드박스는 vitest를 EPERM으로 못 돌렸다(typecheck만 실행). 테스트 증거는 별도 실측 = 전체 vitest 기본 1회 HEAD 4aee3b2(제품 코드 = 2913037) **205 files · 1802 passed · exit 0**(logs/full-vitest.txt).
+- Codex 이후 변경 = 판정 도구(qb.mjs OVER 보정·조사/재측정 스크립트)뿐. 제품 diff 0이라 Codex 재실행 없음(라운드 1/3).
 
 ## 7. 남은 위험 · 결정
-(마감 때 기록)
+- KD-AC-02 요소 단위 검사 보정은 `clip-path: inset(50%)` 완전 잘림 요소만 제외한다. 앞으로 다른 의도적 잘림 패턴이 생기면 같은 근거(원시 기록)로 따로 분류해야 한다.
+- QB-12 링 캡처는 autofocus 사본(판정용)으로 찍었다 — 제품 출력에는 autofocus 없음. 키보드 Tab 이동으로 생긴 링 캡처는 아님(ego-browser CDP 캡처 시간 초과).
+- 브라우저 판정은 Chromium(ego-browser·Chrome headless)만. 다른 브라우저·실제 로컬 갤러리 이미지·모션/폰트(M2B-3/4)·3안 비교(M2B-5)·독립 QA(M2B-6)는 별건.
+- /compare 진입 +26 B(한도 ±30, 여유 4 B) — 다음 변경에서 넘을 수 있음(3절).
 
 ## 8. 서버
-(P-B 뒤 기록)
+- 판정 실행(qb-run): 4337 vite(app) · 4339 python http.server(static) loopback 127.0.0.1 — 종료 `logs/server-stop.txt`(pid 87898·87873·87875, cwd = 이 worktree, lsof exit 1).
+- 재개 2회차(원인 조사·재측정): 같은 두 서버 재기동 → 종료 `logs/server-stop-r2.txt`(kill 20415 vite·20379 npm exec 부모·20381 http.server, cwd 확인 · 4337·4339 LISTEN lsof exit 1 = 0줄). main 5480(pid 82062) 미접촉.

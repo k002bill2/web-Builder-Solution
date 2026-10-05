@@ -1,0 +1,8 @@
+# 재개 2회차 서버 종료 2026-10-05 16:49:29
+port 4337 pid 20415 cwd n/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app ppid 20379 cmd node /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app/node_modules/.bin/vite --host 127.0.0.1 --port 4337 --strictPort
+  parent 20379: npm exec vite --host 127.0.0.1 --port 4337 --strictPort        cwd n/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app
+port 4339 pid 20381 cwd n/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/dev/active/m2b-2c/static ppid 1 cmd /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python -m h
+  parent 1: /sbin/launchd cwd 
+kill 20415(vite) 20379(npm exec 부모) 20381(http.server) — 모두 cwd = 이 worktree · 5480 무접촉
+LISTEN 4337·4339 lsof exit=1 (1 = 0줄)
+5480: 82062 (기존 프로세스, 미접촉)

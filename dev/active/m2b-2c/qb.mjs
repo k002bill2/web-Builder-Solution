@@ -236,6 +236,7 @@ for (const profile of ["light", "dark"]) for (const tones of [ALT, FLIP]) {
 }
 
 // ⑤ KD-AC-02 / QB-15 상한 글자 + 글자 200% — 12변형 모든 글자 슬롯 상한
+// (재개 보정) scrollOver = 보이는 요소의 내부 넘침. clip-path inset(50%)로 완전히 잘린 스크린리더 전용 요소(.kit-visually-hidden legend — baseline 2369a3e contact/form부터 존재)는 그릴 내용이 없어 제외하고 scrollOverRaw·clippedExcluded로 원시값을 함께 남긴다(logs/over-probe.txt 근거). 문서 overflowX(KD-AC-02 문자 그대로)는 그대로.
 const OVER = (SEL) => {
   const vw = document.documentElement.clientWidth;
   const res = { overflowX: document.documentElement.scrollWidth - vw };
@@ -244,14 +245,14 @@ const OVER = (SEL) => {
   for (const [k, s] of Object.entries(SEL)) {
     const root = document.querySelector(s);
     const all = [...root.querySelectorAll("*")].filter((el) => el.checkVisibility());
-    res[k] = { wider: all.filter((el) => el.getBoundingClientRect().right > vw + 0.5 || el.getBoundingClientRect().left < -0.5).map((el) => el.className || el.tagName).slice(0, 5), ellipsis: all.filter((el) => { const st = getComputedStyle(el); return st.textOverflow === "ellipsis" || st.webkitLineClamp !== "none"; }).length, scrollOver: all.filter((el) => el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== "visible").length, overlap: overlaps([...root.querySelectorAll(":scope li, :scope figure, :scope .kit-control, :scope .kit-band-text, :scope .kit-band-cta")].filter((el) => el.checkVisibility() && !el.parentElement.closest("li, figure"))) };
+    res[k] = { wider: all.filter((el) => el.getBoundingClientRect().right > vw + 0.5 || el.getBoundingClientRect().left < -0.5).map((el) => el.className || el.tagName).slice(0, 5), ellipsis: all.filter((el) => { const st = getComputedStyle(el); return st.textOverflow === "ellipsis" || st.webkitLineClamp !== "none"; }).length, scrollOver: all.filter((el) => el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== "visible" && getComputedStyle(el).clipPath !== "inset(50%)").length, scrollOverRaw: all.filter((el) => el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== "visible").length, clippedExcluded: all.filter((el) => el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== "visible" && getComputedStyle(el).clipPath === "inset(50%)").map((el) => ({ tag: el.tagName, cls: String(el.className), clipPath: getComputedStyle(el).clipPath, sw: el.scrollWidth, cw: el.clientWidth, text: el.textContent })), overlap: overlaps([...root.querySelectorAll(":scope li, :scope figure, :scope .kit-control, :scope .kit-band-text, :scope .kit-band-cta")].filter((el) => el.checkVisibility() && !el.parentElement.closest("li, figure"))) };
   }
   return res;
 };
 await draw("light", { long: true });
 await snap("qb-15", { zoom: true });
 await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
-for (const w of W3) { await setSize(w); await settle(); const o = await page.evaluate(OVER, SEL); log(`long200-${w}`, { overflowX: o.overflowX, bad: Object.fromEntries(KEYS.filter((k) => o[k].wider.length || o[k].ellipsis || o[k].scrollOver || o[k].overlap).map((k) => [k, o[k]])) }); }
+for (const w of W3) { await setSize(w); await settle(); const o = await page.evaluate(OVER, SEL); log(`long200-${w}`, { overflowX: o.overflowX, excluded: Object.fromEntries(KEYS.filter((k) => o[k].clippedExcluded.length).map((k) => [k, o[k].clippedExcluded])), bad: Object.fromEntries(KEYS.filter((k) => o[k].wider.length || o[k].ellipsis || o[k].scrollOver || o[k].overlap).map((k) => [k, o[k]])) }); }
 await page.evaluate(() => { document.documentElement.style.fontSize = ""; });
 
 await writeFile(`${DIR}/logs/qb.json`, JSON.stringify(out, null, 1));

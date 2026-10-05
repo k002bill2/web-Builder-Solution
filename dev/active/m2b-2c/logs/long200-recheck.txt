@@ -1,0 +1,5 @@
+QB long200-1280 {"overflowX":0,"excluded":{"bk":[{"tag":"LEGEND","cls":"kit-visually-hidden","clipPath":"inset(50%)","sw":52,"cw":2,"text":"예약 양식"}]},"bad":{}}
+QB long200-768 {"overflowX":0,"excluded":{"bk":[{"tag":"LEGEND","cls":"kit-visually-hidden","clipPath":"inset(50%)","sw":52,"cw":2,"text":"예약 양식"}]},"bad":{}}
+QB long200-390 {"overflowX":0,"excluded":{"bk":[{"tag":"LEGEND","cls":"kit-visually-hidden","clipPath":"inset(50%)","sw":52,"cw":2,"text":"예약 양식"}]},"bad":{}}
+DONE
+

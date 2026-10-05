@@ -1,0 +1,91 @@
+about--story-1280.png 1280x981 diffPx 348448 maxCh 234 bbox 656,157-1183,816
+about--story-390.png 390x844 diffPx 160352 maxCh 234 bbox 16,196-373,643
+about--story-768.png 768x1024 diffPx 97968 maxCh 234 bbox 456,157-735,506
+about--text-1280.png 1280x900 diffPx 0 maxCh 0 
+about--text-390.png 390x844 diffPx 0 maxCh 0 
+about--text-768.png 768x1024 diffPx 0 maxCh 0 
+contact--booking-1280.png 1280x900 diffPx 0 maxCh 0 
+contact--booking-390.png 390x1044 diffPx 0 maxCh 0 
+contact--booking-768.png 768x1024 diffPx 0 maxCh 0 
+contact--form-1280.png 1280x900 diffPx 0 maxCh 0 
+contact--form-390.png 390x881 diffPx 0 maxCh 0 
+contact--form-768.png 768x1024 diffPx 0 maxCh 0 
+cta-band--banner-1280.png 1280x900 diffPx 0 maxCh 0 
+cta-band--banner-390.png 390x844 diffPx 0 maxCh 0 
+cta-band--banner-768.png 768x1024 diffPx 0 maxCh 0 
+faq--accordion-1280.png 1280x900 diffPx 0 maxCh 0 
+faq--accordion-390.png 390x844 diffPx 0 maxCh 0 
+faq--accordion-768.png 768x1024 diffPx 0 maxCh 0 
+footer--biz-extended-1280.png 1280x900 diffPx 0 maxCh 0 
+footer--biz-extended-390.png 390x844 diffPx 0 maxCh 0 
+footer--biz-extended-768.png 768x1024 diffPx 0 maxCh 0 
+footer--biz-extended-map-1280.png 1280x900 diffPx 144078 maxCh 234 bbox 745,110-1182,438
+footer--biz-extended-map-390.png 390x844 diffPx 95028 maxCh 234 bbox 17,180-372,446
+footer--biz-extended-map-768.png 768x1024 diffPx 92026 maxCh 234 bbox 401,110-750,372
+footer--minimal-1280.png 1280x900 diffPx 0 maxCh 0 
+footer--minimal-390.png 390x844 diffPx 0 maxCh 0 
+footer--minimal-768.png 768x1024 diffPx 0 maxCh 0 
+footer--minimal-biz-1280.png 1280x900 diffPx 0 maxCh 0 
+footer--minimal-biz-390.png 390x844 diffPx 0 maxCh 0 
+footer--minimal-biz-768.png 768x1024 diffPx 0 maxCh 0 
+header--sticky-hamburger-1280.png 1280x900 diffPx 0 maxCh 0 
+header--sticky-hamburger-390.png 390x844 diffPx 0 maxCh 0 
+header--sticky-hamburger-768.png 768x1024 diffPx 0 maxCh 0 
+header--sticky-right-cta-1280.png 1280x900 diffPx 0 maxCh 0 
+header--sticky-right-cta-390.png 390x844 diffPx 0 maxCh 0 
+header--sticky-right-cta-768.png 768x1024 diffPx 0 maxCh 0 
+header--sticky-two-tier-1280.png 1280x900 diffPx 0 maxCh 0 
+header--sticky-two-tier-390.png 390x844 diffPx 0 maxCh 0 
+header--sticky-two-tier-768.png 768x1024 diffPx 0 maxCh 0 
+header--transparent-1280.png 1280x900 diffPx 0 maxCh 0 
+header--transparent-390.png 390x844 diffPx 0 maxCh 0 
+header--transparent-768.png 768x1024 diffPx 0 maxCh 0 
+hero--center-1280.png 1280x900 diffPx 0 maxCh 0 
+hero--center-390.png 390x844 diffPx 0 maxCh 0 
+hero--center-768.png 768x1024 diffPx 0 maxCh 0 
+hero--fullbleed-left-1280.png 1280x900 diffPx 775900 maxCh 234 bbox 0,61-1279,780
+hero--fullbleed-left-390.png 390x844 diffPx 114270 maxCh 234 bbox 0,61-389,353
+hero--fullbleed-left-768.png 768x1024 diffPx 227680 maxCh 234 bbox 0,61-767,520
+hero--grid-1280.png 1280x900 diffPx 114124 maxCh 234 bbox 568,157-869,534
+hero--grid-390.png 390x844 diffPx 96270 maxCh 234 bbox 16,264-373,532
+hero--grid-768.png 768x1024 diffPx 149786 maxCh 234 bbox 32,340-377,772
+hero--image-1280.png 1280x953 diffPx 702720 maxCh 234 bbox 0,61-1279,609
+hero--image-390.png 390x844 diffPx 114270 maxCh 234 bbox 0,61-389,353
+hero--image-768.png 768x1024 diffPx 331776 maxCh 234 bbox 0,61-767,492
+hero--split-1280.png 1280x981 diffPx 348448 maxCh 234 bbox 656,157-1183,816
+hero--split-390.png 390x844 diffPx 96270 maxCh 234 bbox 16,264-373,532
+hero--split-768.png 768x1024 diffPx 97968 maxCh 234 bbox 456,157-735,506
+hero--text-1280.png 1280x900 diffPx 0 maxCh 0 
+hero--text-390.png 390x844 diffPx 0 maxCh 0 
+hero--text-768.png 768x1024 diffPx 0 maxCh 0 
+portfolio--grid-2-1280.png 1280x1087 diffPx 707496 maxCh 234 bbox 96,258-1183,922
+portfolio--grid-2-390.png 390x1221 diffPx 320344 maxCh 234 bbox 16,196-373,1106
+portfolio--grid-2-768.png 768x1024 diffPx 295776 maxCh 234 bbox 32,258-735,687
+portfolio--grid-3-1280.png 1280x900 diffPx 450224 maxCh 234 bbox 96,258-1183,690
+portfolio--grid-3-390.png 390x1666 diffPx 480698 maxCh 234 bbox 16,196-373,1570
+portfolio--grid-3-768.png 768x1024 diffPx 188064 maxCh 234 bbox 32,258-735,537
+portfolio--masonry-1280.png SIZE 1280 1277 1280 1278
+portfolio--masonry-390.png 390x1344 diffPx 360410 maxCh 234 bbox 16,196-373,1234
+portfolio--masonry-768.png 768x1024 diffPx 332896 maxCh 234 bbox 32,258-735,819
+pricing--tiers-2-1280.png 1280x900 diffPx 0 maxCh 0 
+pricing--tiers-2-390.png 390x844 diffPx 0 maxCh 0 
+pricing--tiers-2-768.png 768x1024 diffPx 0 maxCh 0 
+services--cards-2-1280.png 1280x900 diffPx 0 maxCh 0 
+services--cards-2-390.png 390x844 diffPx 0 maxCh 0 
+services--cards-2-768.png 768x1024 diffPx 0 maxCh 0 
+services--cards-3-1280.png 1280x900 diffPx 0 maxCh 0 
+services--cards-3-390.png 390x844 diffPx 0 maxCh 0 
+services--cards-3-768.png 768x1024 diffPx 0 maxCh 0 
+services--cards-masonry-1280.png 1280x900 diffPx 0 maxCh 0 
+services--cards-masonry-390.png 390x844 diffPx 0 maxCh 0 
+services--cards-masonry-768.png 768x1024 diffPx 0 maxCh 0 
+services--list-1280.png 1280x900 diffPx 0 maxCh 0 
+services--list-390.png 390x844 diffPx 0 maxCh 0 
+services--list-768.png 768x1024 diffPx 0 maxCh 0 
+statistics--stats-3-1280.png 1280x900 diffPx 0 maxCh 0 
+statistics--stats-3-390.png 390x844 diffPx 0 maxCh 0 
+statistics--stats-3-768.png 768x1024 diffPx 0 maxCh 0 
+testimonials--quotes-2-1280.png 1280x900 diffPx 0 maxCh 0 
+testimonials--quotes-2-390.png 390x844 diffPx 0 maxCh 0 
+testimonials--quotes-2-768.png 768x1024 diffPx 0 maxCh 0 
+TOTAL 90 pixelDiffFiles 27

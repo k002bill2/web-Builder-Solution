@@ -1,0 +1,34 @@
+W 1280 done
+W 768 done
+W 390 done
+about--story 1280:h981/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+about--text 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+contact--booking 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h1044/ox0/iw390/f2/a0
+contact--form 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h881/ox0/iw390/f2/a0
+cta-band--banner 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+faq--accordion 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+footer--biz-extended 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+footer--biz-extended-map 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+footer--minimal 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+footer--minimal-biz 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+header--sticky-hamburger 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+header--sticky-right-cta 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+header--sticky-two-tier 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+header--transparent 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+hero--center 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+hero--fullbleed-left 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+hero--grid 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+hero--image 1280:h953/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+hero--split 1280:h981/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+hero--text 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+portfolio--grid-2 1280:h1087/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h1221/ox0/iw390/f2/a0
+portfolio--grid-3 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h1666/ox0/iw390/f2/a0
+portfolio--masonry 1280:h1278/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h1344/ox0/iw390/f2/a0
+pricing--tiers-2 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+services--cards-2 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+services--cards-3 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+services--cards-masonry 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+services--list 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+statistics--stats-3 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+testimonials--quotes-2 1280:h900/ox0/iw1280/f2/a0 768:h1024/ox0/iw768/f2/a0 390:h844/ox0/iw390/f2/a0
+

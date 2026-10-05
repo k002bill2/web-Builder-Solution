@@ -1,7 +1,7 @@
 # M2C-5b PROGRESS
 
-- [ ] P0 BRIEF·PROGRESS 커밋
-- [ ] 1 기준선: 스크립트 사본(DIR만 변경) · s1 30/30 · s2 높이 · shots 90장 baseline/ · 2회 결정성 · m2b-6 대비 분류표
+- [x] P0 BRIEF·PROGRESS 커밋
+- [x] 1 기준선: 스크립트 사본(DIR만 변경) · s1 30/30 · s2 높이 · shots 90장 baseline/ · 2회 결정성 · m2b-6 대비 분류표
 - [ ] 2 Ego Lite 768·390 이미지 패널 판정 · 이미지 지우기 실제 실행(1280·768·390)
 - [ ] 3 F2 캡션 육안 · F2 표 갱신
 - [ ] 4 vitest 전체 1회 · build 번들 표
@@ -10,3 +10,4 @@
 
 ## 기록
 - 턴 카운트: 시작 2026-10-06
+- 1단계(약 17턴): s1 30/30 PASS·NEG 검출 · s2 넘침 0·폰트 2면·anim 0 (높이 변화: portfolio--masonry 1280 1277→1278) · shots 90장 2회 pdiff 0/90 · m2b-6 대비 27/90 차이, 전부 kit-art rect 안(outside 0, 스크롤바 숨김 재측정). 사본 변경: s1/s2 DIR, s2 taskSpace 68→77(ego-browser가 env 미전달 — s1 SPACE env 무시돼 새 space 77 "m2b-6 qa" 생성, 빈 space 76은 즉시 finish)

@@ -442,7 +442,8 @@
    | `lg` 이상 (1280) | K1-6과 같은 2단(글 5 : 폼 7). 폼 안 날짜·시간 = **한 줄 2칸**(같은 폭, 칸 사이 `s4`) |
    | `md`~`lg` (768) | 1단(글 → 폼). 날짜·시간 한 줄 2칸 유지 |
    | `md` 미만 (390) | 1단. 날짜·시간도 세로로(각각 전체 폭) |
-3. **토큰 대응** = K1-6 3 그대로(안내 `ink` `small` 제목 굵기 · 이름표 `ink` · 입력칸 면 `bg`·경계 `ink` · 버튼 C-1 · 비활성도 흐리지 않음 · 커서 `not-allowed`). "(선택)"은 이름표 글자의 일부(같은 색·단계).
+3. **토큰 대응** = K1-6 3 그대로(안내 `ink` `small` 제목 굵기 · 이름표 `ink` · 입력칸 면 `bg`·경계 `ink` · 비활성도 흐리지 않음 · 커서 `not-allowed`). "(선택)"은 이름표 글자의 일부(같은 색·단계).
+   - **r5 (B-M2B-07)**: 비활성 단서 = m2a SPEC r3 K1-6 3 "비활성 모양" 그대로 — 안내 경계 상자 · 입력칸(날짜·시간 칸 포함)·`textarea` 점선 경계 · 보내기 버튼 점선 외곽(면 없음, 글자 `ink` C-2/C-4). 같은 킷 클래스(`.kit-fieldset`·`.kit-field`·`.kit-submit`·`.kit-notice`)를 쓰므로 form·booking이 함께 바뀐다.
 4. **빈 슬롯·긴 글자** = K1-6 4(`consent` 비면 체크박스도 생략 · `submit` 비면 버튼 생략).
 5. **이미지 슬롯** — 해당 없음.
 6. **상호작용** = K1-6 6(`fieldset disabled` = 정적 HTML의 유일한 차단 · 스크립트 0 · 기본 검증 속성은 연결 뒤를 위해 남김).
@@ -536,7 +537,7 @@
 | KD-AC-17 | testimonials/quotes-2 | `li > figure > blockquote + figcaption` · `cite` 요소 0 · `blockquote[cite]` 0 · 작성자 글자가 `blockquote` 밖 · `quoteN` 빈 값 → 그 `li` 0 · `authorN` 빈 값 → `figcaption` 0 · 1280·768 2열 / 390 1열 · 카드 안 `muted` 글자 0 | [U]·[B] |
 | KD-AC-18 | pricing/tiers-2 | 가격 `"문의"`(1번)와 `"99,000"`(2번) 문서에서 두 카드의 면·경계·안쪽 여백·가격 글자 크기·굵기·색 계산값이 같다 · 추천 표식·카드별 버튼 0 · 가격 글자색 = `ink` · 킷이 붙인 글자(통화·단위) 0 | [U]·[B] |
 | KD-AC-19 | contact/booking | 보이는 `label`이 `for`/`id`로 "이름"·"연락처"·"희망 날짜"·"희망 시간"·"요청 사항 (선택)"에 연결 · `legend` "예약 양식" · 안내 문구가 `fieldset` `aria-describedby` 대상이고 글자 = 1절 고정 문구 · 입력 `type` = text·tel·text·text + `textarea` · `type=date`·`time` 0 · `placeholder` 0 · `form[action]` 0 · 모든 칸·버튼이 `fieldset[disabled]` 안 (K-AC-08·29 확장) | [U] |
-| KD-AC-20 | contact/booking | 1280 = 글·폼 2단 · 날짜·시간 같은 행 / 768 = 1단 · 날짜·시간 같은 행 / 390 = 모두 세로 · 비활성 칸 글자색 = `ink`·불투명도 1 · 정적 HTML에서 Enter·버튼 → 이동·요청 0 | [B] |
+| KD-AC-20 | contact/booking | 1280 = 글·폼 2단 · 날짜·시간 같은 행 / 768 = 1단 · 날짜·시간 같은 행 / 390 = 모두 세로 · 비활성 칸 글자색 = `ink`·불투명도 1 · 입력칸·버튼 경계 점선·안내 경계 상자(r5 — m2a K-AC-37) · 정적 HTML에서 Enter·버튼 → 이동·요청 0 | [B] |
 | KD-AC-21 | cta-band/banner | 섹션 면 = `primary`(톤 `base`·`alt` 둘 다) · 제목·본문 `on-primary` · CTA 면 `on-primary`·글자 `primary` · CTA `href` = 첫 contact 앵커(`form`·`booking` 무관) → 없으면 footer 앵커 → 없으면 `a` 0 + 버튼 모양 `span` · `href="#"` 0 · 1280·768 = 글·CTA 같은 행 / 390 = CTA 전체 폭, 글 아래 | [U]·[B] |
 
 (KD-AC 번호는 이 명세 안에서만 쓰는 식별자. 빈 번호 없음: 01~21.)
@@ -555,7 +556,7 @@
 | QB-8 | statistics/stats-3: 수치가 가장 먼저 보임 · 12자 수치 한 줄 · 세로 구분선(장식) | 3칸 | 3칸(작은 수치) | 세로 |
 | QB-9 | testimonials/quotes-2: 인용 카드 · 작성자 위치(카드 아래) · 별점·사진 없음 | 2열 | 2열 | 1열 |
 | QB-10 | pricing/tiers-2: 두 요금제가 동등(강조 없음) · "문의" 가격이 숫자 가격과 같은 모양 | 2열 | 2열 | 1열 |
-| QB-11 | contact/booking: 안내가 폼 위에서 읽힘 · 비활성인데 흐리지 않음 · 날짜·시간 묶음 | 2단 | 1단(날짜·시간 2칸) | 1단 |
+| QB-11 | contact/booking: 안내가 폼 위에서 경계 상자로 읽힘 · 비활성인데 흐리지 않음 · **입력칸·버튼 점선 경계로 비활성이 모양으로 보임**(r5 · B-M2B-07) · 날짜·시간 묶음 | 2단 | 1단(날짜·시간 2칸) | 1단 |
 | QB-12 | cta-band/banner: 전체 폭 `primary` 띠 · CTA 뒤집기 · 포커스 링 보임 | 한 줄 | 한 줄 | 세로 |
 | QB-13 | 톤 교대 시 alt 섹션에 `muted` 글자 없음 · cta-band는 톤 무관 | ✓ | ✓ | ✓ |
 | QB-14 | 카드 톤 `dark` 프로필에서 cards-2·masonry·quotes·pricing 카드가 `primary` 면 + `ink` 글자(C-3 통과 버전) | ✓ | ✓ | ✓ |
@@ -615,6 +616,7 @@
 | pricing 두 카드(가격 "문의" vs "99,000") | 같은 폭·높이 | 같은 폭·높이 | 1열 |
 | booking 날짜·시간 | 같은 행 | 같은 행 | 세로 |
 | booking 비활성 칸 글자색 · 불투명도 | `ink` · 1 | 같음 | 같음 |
+| (r5 목표, 시안 실측 아님) booking·form 입력칸·버튼 경계 | 점선 | 점선 | 점선 |
 | cta-band 글 · CTA | 같은 행(CTA 오른쪽) | 같은 행 | 세로(CTA 전체 폭) |
 | `script` 수 · 외부 요청 | 0 · 0 | 0 · 0 | 0 · 0 |
 
@@ -637,3 +639,4 @@
 | r2 | 2 KD-AC · 3 시각 QA · 4 예산 · 5 MQ · 부록 A |
 | r3 | 부록 B 시안 3폭 실측(L2) |
 | r4 | Codex 적대적 검토 반영 1건(P2): KD-AC-10 나누기 예시 기대값을 `splitItems` 규칙과 일치 |
+| r5 | 2026-10-06 M2C-SPECFIX(B-M2B-07): booking 비활성 시각 단서(m2a r3 K1-6 3 상속) · KD-AC-20 · QB-11 · 부록 B 목표 행. (Codex 미검토) |

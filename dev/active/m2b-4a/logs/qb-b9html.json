@@ -1,0 +1,73 @@
+{
+ "B9-HTML 재측정": [
+  {
+   "name": "base(Serif)",
+   "ok": true,
+   "html": true,
+   "ms": 446,
+   "filesMade": 1,
+   "framesLeft": 0
+  },
+  {
+   "name": "spaFallback(NOPE→200 html)",
+   "ok": false,
+   "code": "JOB_TIMEOUT",
+   "message": "JOB_TIMEOUT: 글꼴을 불러오지 못했습니다 — 다시 시도하세요",
+   "ms": 37,
+   "filesMade": 0,
+   "framesLeft": 0,
+   "calls": [
+    [
+     "/assets/NOPE-700-B3ikZB6l.woff2",
+     200,
+     "text/html"
+    ],
+    [
+     "/assets/NOPE-400-CehqrfhO.woff2",
+     200,
+     "text/html"
+    ]
+   ]
+  },
+  {
+   "name": "http404(throw)",
+   "ok": false,
+   "code": "JOB_TIMEOUT",
+   "message": "JOB_TIMEOUT: 글꼴을 불러오지 못했습니다 — 다시 시도하세요",
+   "ms": 5,
+   "filesMade": 0,
+   "framesLeft": 0
+  },
+  {
+   "name": "late51",
+   "ok": false,
+   "code": "JOB_TIMEOUT",
+   "message": "JOB_TIMEOUT: 글꼴을 불러오지 못했습니다 — 다시 시도하세요",
+   "ms": 5054,
+   "filesMade": 0,
+   "framesLeft": 0
+  },
+  {
+   "name": "ok49",
+   "ok": true,
+   "html": true,
+   "ms": 5451,
+   "filesMade": 1,
+   "framesLeft": 0,
+   "lateArrivedBeforeOk49": 2
+  }
+ ],
+ "계산 스타일 동등성 Noto Sans KR": {
+  "elements": [
+   48,
+   48
+  ],
+  "mismatches": 0,
+  "sample": "\"Kit Sans KR\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif|700|20px|25px|none|rgb(26, 26, 26)",
+  "staticFaces": [
+   "Kit Sans KR:700",
+   "Kit Sans KR:400"
+  ],
+  "first": []
+ }
+}

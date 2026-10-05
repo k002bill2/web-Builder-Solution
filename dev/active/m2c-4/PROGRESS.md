@@ -9,8 +9,8 @@ base `2fc32ba` · 시작 build: `/studio` 진입 126.89(멈춤 >127.39) · 첫 9
 - [x] 진입 청크 변경 뒤 build 예산 재측정 — /studio 진입 126.89→127.03 · /profile 99.61→99.62 · /catalog 진입 +0.02 · 그 밖 ±0.01 · 렌더 JS 84.19 불변 (logs/build-3.txt)
 - [x] Ego Lite: 이미지 넣기·캔버스·PNG 결과 육안 확인·캡처 · finish({keep:[]}) · listTaskSpaces()=[] · 4337 리슨 0
   - BLOCKED: 정적 HTML 결과 육안 — 시드 문서 기존 게이트 차단(대비 AA C-5)으로 버튼 비활성, QA(QB-8) 이관
-- [x] 마감 게이트: typecheck·lint·build exit 0 · 전체 vitest 227파일 2033 통과 exit 0 (logs/final-*.txt)
-- [ ] Codex review --scope branch --base 2fc32ba (≤2라운드)
+- [x] 마감 게이트: typecheck·lint·build exit 0 · 전체 vitest 227파일 2034 통과 exit 0(1차 부하 시간 초과 1 → 단독 통과 → 전체 재실행) (logs/final-*.txt)
+- [x] Codex review --scope branch --base 2fc32ba — r1 P2 3(2 반영) · r2 P2 2(1 반영) · HTML_MAX 미반영(범위 밖 — REPORT 6절)
 - [x] REPORT.md
 
 ## 쓰기 범위 밖 연결 파일(사유)

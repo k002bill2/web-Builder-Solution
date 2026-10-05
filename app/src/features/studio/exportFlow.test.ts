@@ -99,4 +99,27 @@ describe("앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 �
     expect(made.deps.at(-1)!.readImage!(ID)).toBeUndefined();
     expect(made.deps.at(-1)!.readImage!(B_ID)).toBeUndefined();
   });
+
+  it("커밋 뒤 응답이 끊겨도(생성은 따로 돈다) 생성기가 이미지를 읽는다 · 생성이 끝나면 놓는다(Codex r2)", async () => {
+    const factory = await (globalThis as unknown as Record<symbol, () => Promise<(store: StudioReader) => (input: unknown) => Promise<unknown>>>)[SLOT]!();
+    const generate = factory({} as StudioReader);
+    const blob = new Blob(["c"]);
+    let running!: Promise<unknown>;
+    const seen: unknown[] = [];
+    made.run.mockImplementationOnce(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      seen.push(made.deps.at(-1)!.readImage!(ID));
+      return { downloadRef: "blob:c", resultHash: "c" };
+    });
+    const repository = {
+      requestExport: async (projectId: string, format: "static-html") => {
+        running = Promise.resolve().then(() => generate({ projectId, format, doc: {} }));
+        throw Object.assign(new Error("응답 유실"), { code: "NETWORK" });
+      },
+    } as unknown as ProjectRepository;
+    expect(await requestExportOnce(repository, "pc", "static-html", 9, { [ID]: { blob, width: 10, height: 10 } })).toEqual({ kind: "retryable", format: "static-html" });
+    await running;
+    expect(seen).toEqual([{ variants: { 10: blob }, width: 10, height: 10 }]);
+    expect(made.deps.at(-1)!.readImage!(ID)).toBeUndefined();
+  });
 });

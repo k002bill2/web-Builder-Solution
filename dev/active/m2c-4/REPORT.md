@@ -1,7 +1,7 @@
 # M2C-4 REPORT — 산출물 동봉(정적 HTML · PNG 이미지) · 부모 디코드 실패 수신 · F2 캡션
 
 - 레인: Developer / Orca managed Claude Code / worktree m2c-4 / base `2fc32ba` · 서브에이전트 0 · push/merge/삭제 0
-- 결론: 구현 3단계 완료 · 전체 vitest 227파일 2033 통과 · typecheck·lint·build exit 0 · 예산 통과. **정적 HTML 결과 화면 육안 확인은 BLOCKED**(아래 4절)
+- 결론: 구현 3단계와 Codex r1·r2 반영을 마쳤습니다. 전체 vitest 227파일 2034 통과(1차 실행은 부하 시간 초과 1건 → 단독 통과 → 전체 재실행 exit 0) · typecheck·lint·build exit 0 · 예산 통과. **정적 HTML 결과 화면 육안 확인은 BLOCKED**(아래 4절)
 
 ## 1. 커밋
 | 단계 | 커밋 | 내용 |
@@ -11,6 +11,7 @@
 | ① 예측 → 구현 | `37c1aba` → `d61c4a7` | `staticHtml/exportImages.ts`(`exportImages`·`imageReader`·`lostImageText`) — `pickVariant`·`slotTarget` 재사용 · 생성기 deps에 `readImage`·`onBuilt` 주입(**`ExportGenerator` 계약 무변경**) · 내보내기 render = images(쓰는 id만) + `loading:"eager"` · `buildStaticHtml`: `img src`는 `data:image/(webp\|jpeg\|png);base64,`만, `srcset`은 0 · PNG `images` 요청 · `PngError IMAGE_DECODE_FAILED` · `fallbackCount`에 잃은 이미지를 더하지 않음 |
 | ③ 예측 → 구현 | `84f1aad` → `29fca65` | F2 캔버스 캡션(MQ-C8 ★A)과 잃은 이미지 문장 · 결과 줄(크기 · 3MB 초과 안내 · 잃은 이미지 — MQ-C3 ★A) · 재시도 alert·PNG alert의 decode 실패 문구 · 편집 틀 images를 exportFlow·PNG·캡션에 연결 |
 | Codex r1 반영 | `f96ade5` → `e85367d` | 내보내기 이미지 맵을 요청(프로젝트)별로 두고, 요청이 끝나면 놓음 |
+| Codex r2 반영 | 예측 커밋 → 반영 커밋(git log) | 맵을 놓는 때 = 잡이 끝났을 때(생성기 종료 · 조회한 잡의 종료 상태). 커밋 뒤 응답이 끊겨도 생성기가 이미지를 읽음 |
 
 ## 2. IMG-AC ↔ 테스트
 | AC | 테스트 |
@@ -23,18 +24,18 @@
 | IMG-AC-27 | 기존 sandbox 가드 그대로 통과 |
 | IMG-AC-28 | `canvasCaption.test.ts` F2 문구(10절 목록 개정) · 잃은 이미지 문장 조건 |
 
-RED 로그는 `logs/red-2.txt` · `red-1.txt` · `red-3.txt` · `red-codex-r1.txt`이고, 매번 예측과 실패 수가 같았습니다. 테스트 수는 2009 → 2012 → 2023 → 2032 → 2033입니다.
+RED 로그는 `logs/red-2.txt` · `red-1.txt` · `red-3.txt` · `red-codex-r1.txt`이고, 매번 예측과 실패 수가 같았습니다. `red-codex-r2.txt`도 같습니다. 테스트 수는 2009 → 2012 → 2023 → 2032 → 2033 → 2034입니다.
 
 ## 3. 번들 (시작 `logs/build-start.txt` → 마감 `logs/final-build.txt`)
 | 라우트 | 시작 | 마감 | 변화 |
 |---|---|---|---|
-| `/studio` 진입 | 126.89 | 127.02 | +0.13 (멈춤 > 127.39 — 통과) |
-| `/studio` 첫 화면 | 91.76 | 91.75 | −0.01 |
-| `/profile` 첫 / 진입 | 99.61 / 119.11 | 99.60 / 119.10 | −0.01 |
-| `/catalog` 첫 / 진입 | 99.65 / 102.03 | 99.64 / 102.03 | −0.01 / 0 |
-| `/references/:id` · `/compare` · `/projects` | 97.00 · 98.83 · 94.02 | 96.99 · 98.83 · 94.01 | ±0.01 |
+| `/studio` 진입 | 126.89 | 127.04 | +0.15 (멈춤 > 127.39 — 통과) |
+| `/studio` 첫 화면 | 91.76 | 91.77 | +0.01 |
+| `/profile` 첫 / 진입 | 99.61 / 119.11 | 99.62 / 119.12 | +0.01 |
+| `/catalog` 첫 / 진입 | 99.65 / 102.03 | 99.66 / 102.04 | +0.01 / +0.01 |
+| `/references/:id` · `/compare` · `/projects` | 97.00 · 98.83 · 94.02 | 97.00 · 98.84 · 94.02 | ≤ +0.01 |
 | 렌더 JS / CSS | 84.19 / 8.80 | 84.19 / 8.80 | 0 |
-| 조작 뒤 exportFlow · ExportAfter · pngCapture | 1.32 · 1.67 · 8.22 | 3.25 · 1.70 · 9.97 | 판정 밖(보고만) |
+| 조작 뒤 exportFlow · ExportAfter · pngCapture | 1.32 · 1.67 · 8.22 | 약 3.3 · 1.70 · 약 10.0 | 판정 밖(보고만 — `logs/final-build.txt`) |
 
 ## 4. Ego Lite (4337 loopback 자기 서버 · `vite preview` · 앱 안 클릭만)
 - 경로: 카탈로그 → 비교 추가 2개 → 비교 보드 → 전부 선택 → 프로필 확정 → 3안 → A안 → 편집 시작(`/studio/project-1`) → About "이미지 편집" → 파일 선택(`shots/fixture-pattern.png`, 자체 제작 1600×900, m2c-3 fixture를 재사용) → 대체텍스트 입력
@@ -56,7 +57,10 @@ RED 로그는 `logs/red-2.txt` · `red-1.txt` · `red-3.txt` · `red-codex-r1.tx
 - r1 (`logs/codex-r1.txt`, `review --scope branch --base 2fc32ba`): P2 3건
   - 전역 이미지 맵 덮어쓰기와 해제 누락(2건) → `e85367d`에서 반영했고, 테스트 1개를 추가했습니다.
   - **미반영:** 직렬화 메시지 상한 `HTML_MAX` = 8,000,000자(`render/htmlMessage.ts`, 쓰기 범위 밖). 이미지 data:가 커지면 html 메시지가 버려져 시간 초과로 실패할 수 있습니다. SPEC 5.2의 추정 상한(4~5MB)은 이 값 안이지만, 보관 한도(30MB)는 넘을 수 있습니다. 렌더 메시지 상한이나 전송 방식 변경은 렌더 쪽 레인 또는 M4 zip에서 다뤄야 합니다.
-- r2: 6절 끝에 기록(`logs/codex-r2.txt`)
+- r2 (`logs/codex-r2.txt`, 같은 범위): P2 2건
+  - 이미지 맵 수명을 HTTP 응답이 아니라 생성 작업에 맞출 것 → 반영했고 테스트 1개를 추가했습니다. 브리프에 따라 r2 반영분은 다시 검토받지 않았습니다.
+  - HTML_MAX: r1과 같은 지적이라 미반영 사유도 같습니다.
+- 남은 한계: 커밋 전에 실패해 생성기가 돌지 않았다면, 그 프로젝트 맵은 다음 내보내기 요청까지 남습니다(프로젝트당 1개, 다음 요청이 덮어씀).
 
 ## 7. meta · 한계
 - 새 의존성·lock·명세·결정문서·scripts 수정 0 · 엔진/PageDoc 계약 변경 0 · 가드 약화·skip 0

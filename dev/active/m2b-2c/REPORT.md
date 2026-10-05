@@ -24,6 +24,10 @@
 | 5b20b21 | P4 | contact/booking(ContactForm 공유 ContactKit) · SectionVariant 이관 · P5 예측 | kit/ContactBooking(.test).tsx · ContactForm.tsx · kit.css · registry.ts · renderedVariants.ts · PageDocument.test · SectionVariant(.Preview).test · 기록 |
 | 427e1ed | P5 | cta-band/banner · 30쌍 엔진 파생(★A) · cta-band 폴백 전제 15건 이관 · P5b 예측 | kit/CtaBandBanner(.test).tsx · test/kitRegistryEngine.test.ts · renderedVariants.ts · registry.ts · kit.css · render/testing/drawKit.tsx · 이관 테스트 11파일 · 기록 |
 | 2913037 | P5b | 12변형 합본 KD-AC-01·06·07·08(임시 변형 RED 실측) | kit/bodyVariants2c.test.tsx · 기록 |
+| 4aee3b2 | 기록 | REPORT 커밋표·번들·공유/명세 차이·이관표·delta(브라우저 판정 전) | dev/active/m2b-2c/ |
+| ad8b6bc | WIP | 턴 한도 회수 — QB 실행·캡처·Codex·전체 vitest 원시 증거 보존 | dev/active/m2b-2c/ |
+| 226c542 | P-B·P-F 마감 | long200 원인 특정·판정 도구 보정·재측정 · REPORT 5~8절 · 서버 종료 | qb.mjs · over-probe.mjs · long200-recheck.mjs · logs · REPORT · PROGRESS |
+| (이 행의 커밋) | 기록 | 커밋표 보완 · 5.2 재현 출처 · 5.3 :focus 단독 0 확인 | REPORT.md |
 
 ## 2. KD-AC (판정 방법 · 표본 · 결과)
 | ID | [U]/[G] (vitest) | [B] (브라우저) |
@@ -109,12 +113,13 @@
 - 같은 조건 contact/form 기준: `<legend class="kit-visually-hidden">문의 양식</legend>`가 **같은 값**(52/2·52/1). 이 legend·클래스는 baseline 2369a3e `ContactForm.tsx:46`·kit.css부터 있던 패턴(이번 diff가 만든 것 아님). 원 QB에 cf가 없어 bk에서만 보였다.
 - 상한 글자 유무(long0/long1) × 글자 100%/200% × 3폭 × (bk+cf 단독 / 12변형+cf 합본) **24행 전부 같은 결과** → 글자 길이와 무관 = 내용 넘침 아님. 제외 외 다른 요소는 0.
 - SPEC KD-AC-02 문자 그대로(문서 `scrollWidth − clientWidth = 0`)는 원 실행에서 이미 3폭 0. 요소 단위 scrollOver는 도구가 더한 엄격 검사.
+- 재현 출처: `logs/qb-run.txt`·`logs/qb.json`은 **보정 전** qb.mjs(ad8b6bc 판)의 출력이다. 지금 qb.mjs를 다시 돌리면 long200 줄에 excluded가 붙고 bk가 bad에서 빠진다.
 - 보정: OVER scrollOver에 `clipPath ≠ "inset(50%)"` 1조건만 추가, `scrollOverRaw`·`clippedExcluded`(tag·class·clipPath·sw·cw·text)를 함께 기록. wider·ellipsis·overlap·문서 overflowX는 무변경.
 - 재측정(long200-recheck.mjs = qb.mjs 2~76·239~256행 sed 절취, qb-15 캡처 1줄만 제외): 1280·768·390 모두 `overflowX 0 · bad {}` · 제외 = **폭마다 bk legend 1개뿐** → **KD-AC-02 PASS**.
 
 ### 5.3 QB-12 실제 :focus-visible 링 캡처
 - ego-browser `page.screenshot` 3폭 × 2회 모두 `CdpRequestTimeoutError`(qb-run.txt 27~35행) — 같은 실행에서 CTA a `focus()` 뒤 `:focus-visible` 매칭은 3폭 true.
-- 대체: shots.sh Chrome headless `--screenshot` · `static/qb-12-ring.html` = qb-12.html과 **CTA a의 `autofocus` 1속성만 다른** 판정용 사본(diff 1줄). 결과 `shots/qb-12-ring-{1280,768,390}.png` 3폭 모두 CTA에 이중 링이 보이고, 같은 문서 `qb-12-*.png`에는 없다. kit.css 링 선택자는 `[data-kit] :where(a, button, summary):focus-visible`(21행)뿐이라 링 표시 = :focus-visible 매칭.
+- 대체: shots.sh Chrome headless `--screenshot` · `static/qb-12-ring.html` = qb-12.html과 **CTA a의 `autofocus` 1속성만 다른** 판정용 사본(diff 1줄). 결과 `shots/qb-12-ring-{1280,768,390}.png` 3폭 모두 CTA에 이중 링이 보이고, 같은 문서 `qb-12-*.png`에는 없다. kit.css 링 선택자는 `[data-kit] :where(a, button, summary):focus-visible`(21행)뿐이고, Chrome이 실제로 그린 static/qb-12-ring.html `<style>` 전체에서도 `:focus` 단독 규칙 0건 · `:focus-visible` 1건이라 링 표시 = :focus-visible 매칭.
 - 브리프 표기와 차이: 390만 `_w390.html` iframe 래퍼(390폭 iframe), 768·1280은 창 폭 직접(창 폭 = 뷰포트).
 
 ## 6. Codex

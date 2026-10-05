@@ -427,11 +427,17 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | 방문자 안내 | `ink` C-2 | `ink` C-4 | `small` · 제목 굵기 |
 | 이름표 · 동의 문구 | `ink` C-2 | `ink` C-4 | `body` · 동의 `small` |
 | 입력칸 면 / 글자 | 면 `bg` · 글자 `ink` C-2 | 면 `bg` · 글자 `ink` C-2 | `body` |
-| 입력칸 경계 | `ink` `stroke-1` (C-2 ≥ 3:1) | `ink` `stroke-1` (`bg` 칸 면 C-2 · `surface` 섹션 면 C-4) | radius 0.5 |
+| 입력칸 경계 | `ink` `stroke-1` (C-2 ≥ 3:1) — 연결 모양. 비활성 중에는 아래 r3 단서(점선) | `ink` `stroke-1` (`bg` 칸 면 C-2 · `surface` 섹션 면 C-4) | radius 0.5 |
 | 체크박스 | 브라우저 기본 + `accent-color: primary` | 같음 | `hit-min` 누름 영역(이름표 포함) |
-| 보내기 버튼 | 면 `primary` · 글자 `on-primary` C-1 | 같음 | `body` · 제목 굵기 |
+| 보내기 버튼 | 면 `primary` · 글자 `on-primary` C-1 — 연결 모양. 비활성 중에는 아래 r3 단서(점선 외곽 · 글자 `ink`) | 같음 | `body` · 제목 굵기 |
 | 포커스 링 | (비활성이라 포커스 안 됨 — 연결 뒤를 위해 0.3 규칙만 둔다) | | |
-- **비활성 모양**: 회색·불투명도로 흐리게 하지 않는다(0.3 불투명도 글자 0 · 흐린 글자는 대비 검사 밖이 된다). 연결되었을 때와 **같은 모양**을 보이고, 비활성 사실은 **안내 문구(글자)**와 `disabled` 의미로 알린다(색 하나로만 알리지 않기). 커서 `not-allowed`.
+- **비활성 모양 (r3 개정 — B-M2B-07)**: 회색·불투명도로 흐리게 하지 않는다(0.3 불투명도 글자 0 · 흐린 글자는 대비 검사 밖이 된다) — **유지**. r2까지는 "연결되었을 때와 같은 모양"이었으나 M2B-6 QA가 "활성처럼 보임"을 관찰(`dev/active/m2b-6-qa/REPORT.md` 57행)해 **모양 단서 2개를 더한다**. 커서 `not-allowed`는 유지하되 근거로 세지 않는다(터치·키보드에서 안 보임).
+  1. **안내 상자**: 방문자 안내 `p`에 경계 `ink` `stroke-1` 실선 + radius 0.5(입력칸과 같은 단계) + 안쪽 `s3`(위아래)×`s4`(좌우). 면은 섹션 면 그대로(새 면 색 0). 글자·단계·굵기 그대로(`ink` `small` 제목 굵기, C-2·C-4).
+  2. **점선 경계**: `fieldset:disabled` 안의 입력칸(`input[type=text|email|tel]`·`textarea`) 경계를 실선 → **점선**(`dashed`)으로. 색·두께는 그대로(`ink` `stroke-1` — 비글자 경계 3:1은 C-2·C-4로 보장). 보내기 버튼은 **면을 빼고 점선 외곽 버튼**으로: 면 = 섹션 면(투명) · 글자 `ink`(C-2 `base` · C-4 `alt`) · 경계 `ink` `stroke-1` 점선 · 굵기·안쪽 여백·radius 그대로. 체크박스는 브라우저 기본 그대로.
+  - **선택자 규칙**: 단서는 모두 `.kit-fieldset:disabled …`(또는 `fieldset:disabled` 하위) 한 블록에만 건다 → 받는 곳 연결(K2 B안)로 `disabled`를 풀면 같은 마크업이 자동으로 연결 모양(실선·`primary` 버튼)으로 돌아간다. 안내 상자는 안내 `p` 자체가 연결 시 제거되므로 `.kit-notice`에 직접 건다. `disabled` 속성은 정적 HTML에 남는다(`data-*`가 아님 — 2a-05 `KEPT_DATA` 무관) → 캔버스 = PNG = 정적 HTML 같은 모양.
+  - 불투명도·회색·새 색·새 토큰 0 · 스크립트 0. 허용 조합은 C-2·C-4만 늘 쓰인다(버튼이 C-1 → C-2/C-4로 바뀜 — 대비 게이트 판정 범위 안).
+  - 근거: WCAG 1.4.1(색만으로 전달 금지 — 모양 단서) · 1.4.11(비글자 3:1) · 일반 UI 관례(점선 = 입력 불가/자리 표시). 트레이드오프: 시안에서 "연결 뒤 모양(실선·`primary` 버튼)"을 그대로 볼 수 없게 된다 — 그 모양은 연결 결정(MQ-6) 때 같은 마크업으로 바로 돌아오므로 손실이 작고, 방문자에게 "누를 수 있어 보이는데 안 되는" 혼란이 더 크다고 판단.
+  - 시각 회귀: `contact--form`·`contact--booking` × 1280·768·390 = **기준선 6장이 의도대로 바뀐다** — QA 레인이 재생성하고 "의도된 변경(B-M2B-07)"으로 분류한다.
 
 **4. 빈 슬롯 · 긴 글자**
 - `intro` 빈 값 → 소개 생략.
@@ -504,6 +510,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | 결론 | VS-1·M2a 채택 | M2b 이후 별도 결정(Security) | 기각 |
 
 **권장: A.** 이유 — ① 미리보기와 내보내기가 같다 ② 계약 변경·보안 검토 없이 VS-1에 들어간다 ③ 문의 섹션의 모양(시안 가치)은 그대로 보인다 ④ 연결 방식(B)은 나중에 `fieldset disabled`를 푸는 것만으로 같은 마크업에 붙는다.
+- (r3 · B-M2B-07) ③은 "배치·필드 구성은 그대로, 입력칸·버튼은 점선 단서"로 좁힌다(K1-6 3). ④는 그대로 — 단서가 `fieldset:disabled` 선택자에만 걸려 있어 `disabled`를 풀면 연결 모양이 된다.
 
 **문구 초안 (두 독자를 나눈다)**
 1. **방문자용 — 렌더 문서·PNG·정적 HTML 안 (킷 고정 문구)**: **"온라인 문의는 준비 중입니다. 지금은 이 양식으로 보낼 수 없습니다."**
@@ -620,6 +627,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | K-AC-34 | 계측 `png_*` 이벤트 값에 프로젝트 이름·파일 이름·슬롯 글자 0 | [U] |
 | K-AC-35 | header 열린 시트 폭 전환: 390에서 시트를 연 채 1024로 바꿈 → 보이는 `nav` 1(바) · 시트·"메뉴" 버튼 `display:none` · 접근성 트리 `navigation` 1 / 다시 390 → 시트 보임 · 바 `nav` 숨김 · `navigation` 1 | [B] |
 | K-AC-36 | 대비 보증 연결: 시험 프로필이 그 대비 수준(AA 4.5 · 강화 7.0)으로 C-1~C-5(어두운 카드 C-3 포함)를 **통과**하는 것을 먼저 확인하고, 렌더 문서의 모든 글자 요소의 실측 대비(계산된 글자색 / 불투명 배경색)가 같은 기준 이상 — 통과 프로필 2벌(카드 톤 `light`·`dark`) × 섹션 톤 `base`·`alt` | [B] |
+| K-AC-37 | contact(form·booking) | (r3 · B-M2B-07) `fieldset[disabled]` 안 입력칸·`textarea`·보내기 버튼의 계산된 `border-style` = `dashed` · 보내기 버튼 배경 투명·글자색 = `--site-ink` · 방문자 안내의 `border-style` = `solid`·두께 = `--site-stroke-1` · 모든 요소 `opacity` 1 · `disabled`를 뗀 같은 마크업에서는 입력칸 `solid`·버튼 면 `--site-primary` — [G] = `kit.css` 글자 가드(기존 `ContactForm.test.tsx`·`ContactBooking.test.tsx` 방식: `.kit-field`·`.kit-submit` 기본 규칙 = 연결 모양 유지 + `.kit-fieldset:disabled` 블록에 `dashed`·투명 면) · [B] = 계산된 스타일(jsdom은 kit.css를 계산하지 않음) | [G]·[B] |
 
 (K-AC 번호는 이 명세 안에서만 쓰는 식별자다. 빈 번호 없음: 01~36.)
 
@@ -632,7 +640,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | Q-3 | about: 2단 정렬(세로 가운데) · 이미지 비율 | 2단 | 1단(글→이미지) |
 | Q-4 | services: 카드 3열 같은 높이 · 카드 면이 섹션 면과 구분 | 3열 | 1열 |
 | Q-5 | faq: 닫힌 질문 3줄 · 펼침 표시 · 구분선 | 읽기 폭 | 전체 폭 |
-| Q-6 | contact: 방문자 안내가 폼 위에서 읽힘 · 비활성인데 흐리지 않음 | 2단 | 1단 |
+| Q-6 | contact: 방문자 안내가 폼 위에서 읽힘(경계 상자) · 비활성인데 흐리지 않음 · 입력칸·버튼 점선 경계(r3) | 2단 | 1단 |
 | Q-7 | footer: 어두운 띠 · 반투명 글자 없음 · 저작권 구분선 | 2단 | 1단 |
 | Q-8 | 섹션 톤 교대(`base`/`alt`)가 R-05대로 보이고 alt 섹션에 `muted` 글자 없음 | ✓ | ✓ |
 | Q-9 | 폴백 2개 상태: 표식 위치(위·오른쪽) · 캡션 "F1 · 일부" · 내보내기 이유 문장 · PNG 캡션 2문장 | ✓ | ✓("검사" 탭) |
@@ -640,6 +648,114 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | Q-11 | 정적 HTML을 로컬에서 열어 캔버스와 나란히 비교(FR-PUB-03) · 메뉴 시트·FAQ가 스크립트 없이 동작 | ✓ | ✓ |
 | Q-12 | 다른 프로필(ref-b처럼 `ink`가 밝은 팔레트)에서도 위 1~7이 성립 — 게이트 "대비 AA" 통과 버전으로 | ✓ | ✓ |
 - 스크린샷 저장 위치(제안): `docs/design/m2a/shots/qa-<번호>-<폭>.png`. 목업 대비 차이는 REPORT "다르게 한 곳" 표에 한 줄씩.
+
+## 5. K1 루브릭 원기록 — TR-POL-04 (r3 · B-M2B-08)
+
+- 왜 지금: M2B-6 QA 30변형 대조에서 m2a K1 7변형만 "루브릭 원기록 없음"으로 주의 7건(`dev/active/m2b-6-qa/REPORT.md` 91~121행). 이 절이 그 원기록이다 — QA 표 "루브릭 원기록" 열은 이후 `m2a SPEC 5절`을 가리킨다.
+- **형식 = SPEC-BOUND 0.3(①~⑩) 하나로 통일**: 7변형이 바깥(header·hero·footer)과 본문(about·services·faq·contact)에 걸쳐 있어 한 절 안에서 두 형식을 섞지 않는다. ①~⑧은 SPEC-BODY 0.3과 같은 뜻, ⑨ 데이터 계약 · ⑩ 내보내기 동일성을 더한다. 판정 = PASS / 주의 + 한 줄 근거.
+- **근거 범위(새 렌더·크롤링 0)**: ① 기능 · ② 위계 · ③ 3폭 = M2C-5b 기준선 3장 + 90칸 가로 넘침 0 실측(`dev/active/m2c-5b-qa/logs/s2-heights.json`, REPORT 33행) · ④ 접근성 = 이 SPEC K1 각 절 + M2B-6 실측(Tab·Esc·inert) + vitest 가드 · ⑤ 토큰 = `noHardcodedStyle` 가드 + 0.3 허용 조합 · ⑥ 예산 = M2C-5 QA REPORT QB-12(M2c 이후 `npm run build` — 렌더 JS 84.19 / CSS 8.80KB, 멈춤선 89.70 / 30 안 · IMG-AC-29 가드) · M2B-6 REPORT 6절(M2c 전 83.03 / 8.75) — 7변형은 그 안의 일부, 변형별 분리 측정 없음 · ⑦ 독자성 = 외부 사이트 접속 0으로 쓴 명세(이 문서 머리) · ⑧ 근거 3 = (가) 일반 레이아웃 원칙 (나) WCAG 번호·HTML 의미 (다) 내부 카탈로그 태그(L1 `app/src/fixtures/referenceDetails.ts` 섹션 `name`/`variant` · `references.ts` `layoutType`·`purpose`).
+- **⑩은 7변형 모두 "주의(변형별 미검증)"**: M2B-6이 내보내기 동일성(캔버스 = PNG = 정적 HTML)을 E2E 문서 1건에서만 보았다(REPORT 92행). 이 절은 새 실측을 하지 않으므로 PASS로 올리지 않는다.
+- 캡처는 M2C-5b 기준선(감소 설정 최종 상태 · 문서 틀 = header sticky-right-cta + 대상 + footer minimal · SAMPLE_KIT_TOKENS). 이미지 슬롯 변형(hero·about)은 이미지 없음 = 자체 그래픽(SVG) 상태다.
+
+### 5.1 `header/sticky-right-cta` — 근거 캡처 `dev/active/m2c-5b-qa/baseline/header--sticky-right-cta-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 메뉴·주 행동(CTA)이 늘 보이는 기본 헤더 — 업종 무관 기본값(엔진 기본 header) |
+| ② 정보 위계 | PASS | 브랜드(왼쪽) → 메뉴 → CTA(오른쪽 끝, 유일한 면 색) — 1280 캡처에서 CTA만 `primary` 면 |
+| ③ 3폭 반응형 | PASS | 1280 한 줄 · 768 브랜드+CTA+"메뉴" · 390 브랜드+"메뉴"(CTA 시트로) — K1-1 2 표대로, 넘침 0 |
+| ④ 접근성 | PASS | `banner` 1 · `nav` 랜드마크 폭마다 1 이하(K-AC-10) · `popover` 포커스 복귀 · `hit-min` · `scroll-margin-top` 두 줄(2.4.11) |
+| ⑤ 토큰 준수 | PASS | C-1(CTA)·C-2만 · 구분선 장식 |
+| ⑥ 예산 감각 | PASS | JS 0 추가(r4.12 고정 스크립트 1개 공유) · 렌더 번들 멈춤선 안(M2B-6 6절) |
+| ⑦ 독자성 | PASS | 일반 패턴(바 + 오른쪽 CTA + 좁은 폭 시트) · 외부 자원 0 |
+| ⑧ 근거 3 | PASS | (가) 주 행동 오른쪽 끝(시선 흐름) (나) WCAG 2.4.11 · 2.5.8 · HTML `popover` (다) `Header`/`sticky` — ref-a·b·c·e·f(`referenceDetails.ts`) |
+| ⑨ 데이터 계약 | PASS | `brand`·`nav`·`cta`만(`boundSections.ts`) · 새 슬롯 0 |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증(E2E 1건) — 시트 닫힘 직렬화 규칙(K-AC-06)은 단위 테스트로만 |
+
+### 5.2 `hero/fullbleed-left` — `dev/active/m2c-5b-qa/baseline/hero--fullbleed-left-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 첫 화면 인상(미디어 전체 폭) + 한 문장 제목·CTA |
+| ② 정보 위계 | PASS | `h1` `display` → 부제 `lead` → CTA, 모두 단색 패널 위 — 1280 캡처에서 패널이 왼쪽 아래 |
+| ③ 3폭 반응형 | PASS | 1280·768 층 배치(패널 6·8칸) · 390 미디어 띠 위 → 패널 아래 · 넘침 0 |
+| ④ 접근성 | PASS | 글자가 이미지 위에 직접 놓이지 않음(대비 판정 가능, 0.3) · DOM = 카피 → 미디어 · 미디어 `aria-hidden`(자체 그래픽) · `vh` 0 |
+| ⑤ 토큰 준수 | PASS | C-1과 C-1 뒤집기(CTA)만 |
+| ⑥ 예산 감각 | PASS | 렌더 번들 멈춤선 안 · 자체 그래픽은 M2c 결정적 SVG(M2C-5b 차이는 `kit-art` 안만 — REPORT 43행) |
+| ⑦ 독자성 | PASS | 목업의 "색 면 위 카피"를 단색 패널로 바꾼 자체 판단(K1-2 1) · 외부 이미지 0 |
+| ⑧ 근거 3 | PASS | (가) 근접·아래 정렬 시선 종착 (나) WCAG 1.4.3(패널 위 글자) · 1.3.2(DOM 순서) (다) `Hero`/`fullbleed-left` — ref-a · `layoutType: fullbleed`(ref-a, `references.ts`) |
+| ⑨ 데이터 계약 | PASS | `title`·`subtitle`·`cta`·`image` · 새 슬롯 0 |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증 · 이미지 넣은 상태의 동일성은 M2c IMG-AC-26(PNG 높이 결정성)로 별도 |
+
+### 5.3 `about/story` — `dev/active/m2c-5b-qa/baseline/about--story-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 이야기 글 + 사진 한 장 — 소개 섹션 기본형 |
+| ② 정보 위계 | PASS | `h2` `title` → 본문 `lead`(넓은 폭) · 본문을 `muted`로 낮추지 않음 |
+| ③ 3폭 반응형 | PASS | 1280 2단 같은 폭 · 768 2단(7:5) · 390 1단 글 → 이미지 · 넘침 0 |
+| ④ 접근성 | PASS | `section[aria-labelledby]` · DOM = 보이는 순서 · 이미지 없음 = `aria-hidden` 그래픽 |
+| ⑤ 토큰 준수 | PASS | C-2 · C-4 · radius `r1` |
+| ⑥ 예산 감각 | PASS | 렌더 번들 멈춤선 안(`about/text`가 같은 컴포넌트 재사용 — SPEC-BODY B1-1) |
+| ⑦ 독자성 | PASS | 일반 2단 글·이미지 · 외부 문구 0 |
+| ⑧ 근거 3 | PASS | (가) Z형 시선(글 → 이미지) (나) WCAG 1.3.2 · 1.4.10(390 리플로) (다) `About`/`split` — ref-a·c · `Story`/`split` — ref-f |
+| ⑨ 데이터 계약 | PASS | `heading`·`body`·`image` · 새 슬롯 0 |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증 |
+
+### 5.4 `services/cards-3` — `dev/active/m2c-5b-qa/baseline/services--cards-3-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 서비스 3개를 같은 무게로 — 가장 흔한 서비스 소개 |
+| ② 정보 위계 | PASS | 머리(`h2`·소개) → 카드 `h3` `subtitle` → 설명 `body` |
+| ③ 3폭 반응형 | PASS | 1280·768 3열 같은 높이 · 390 1열 · 넘침 0 |
+| ④ 접근성 | PASS | `ul role=list > li` 3 · `h3` · 포커스 요소 0(카드는 링크 아님) |
+| ⑤ 토큰 준수 | PASS | 카드 톤 × 섹션 톤 표(K1-4 3) — C-2·C-3·C-4·C-5 |
+| ⑥ 예산 감각 | PASS | `cards-2`와 컴포넌트 공유(SPEC-BODY B1-3) · 렌더 번들 멈춤선 안 |
+| ⑦ 독자성 | PASS | 일반 3열 카드 그리드 |
+| ⑧ 근거 3 | PASS | (가) 같은 무게 항목 = 같은 크기 격자 (나) WCAG 1.3.1(목록 의미) · 1.4.10 (다) `Services`/`grid-3` — ref-a·b·c |
+| ⑨ 데이터 계약 | PASS | `cards3` 스키마 그대로 |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증 |
+
+### 5.5 `faq/accordion` — `dev/active/m2c-5b-qa/baseline/faq--accordion-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 질문 3개를 닫힌 목록으로 — 스크립트 0으로 펼침 |
+| ② 정보 위계 | PASS | `h2` → 질문(제목 굵기) → 답변(`body`, 닫힘) |
+| ③ 3폭 반응형 | PASS | 모든 폭 1열 · 넓은 폭 `prose-max` · 넘침 0 |
+| ④ 접근성 | PASS | 네이티브 `details`/`summary`(Enter·Space) · 질문에 헤딩 넣지 않음 · 누름 영역 ≥ `hit-min` · 포커스 링 2단 |
+| ⑤ 토큰 준수 | PASS | C-2·C-4·C-5 · 펼침 표시 브라우저 기본 |
+| ⑥ 예산 감각 | PASS | JS 0 · CSS 작음 · 렌더 번들 멈춤선 안 |
+| ⑦ 독자성 | PASS | 일반 펼침 목록 |
+| ⑧ 근거 3 | PASS | (가) 점진적 공개 (나) WCAG 2.1.1 · 4.1.2(네이티브 역할) · HTML `details` (다) `FAQ`/`accordion` — ref-a·c |
+| ⑨ 데이터 계약 | PASS | `heading`·`q1~3`·`a1~3` |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증 · 닫힌 상태 직렬화는 0.11 규칙 |
+
+### 5.6 `contact/form` — `dev/active/m2c-5b-qa/baseline/contact--form-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | 주의 | 보낼 수 없는 폼(K2 A안 — 미리보기 = 내보내기). 안내 문구로 알림 · 비활성 모양 단서는 r3(K1-6 3, B-M2B-07)로 추가 결정 — 구현 전 기준선은 "활성처럼 보임" |
+| ② 정보 위계 | PASS | 글(`h2`·소개) → 안내 → 이름표·입력칸 → 동의 → 버튼 |
+| ③ 3폭 반응형 | PASS | 1280 2단(5:7) · 768·390 1단 · 버튼 390 전체 폭 · 넘침 0 |
+| ④ 접근성 | PASS | 보이는 `label for` · 숨긴 `legend` · 안내 `aria-describedby` · `autocomplete`(1.3.5) · `placeholder` 0. 관찰: 비활성 체크박스는 브라우저 기본으로 흐리게 그려진다(390 캡처) — 비활성 요소는 WCAG 1.4.11 예외라 실패 아님 |
+| ⑤ 토큰 준수 | PASS | C-1(버튼)·C-2·C-4·C-5 · 불투명도 0 |
+| ⑥ 예산 감각 | PASS | `contact/booking`과 `ContactForm` 공유(SPEC-BODY 4절) · 렌더 번들 멈춤선 안 |
+| ⑦ 독자성 | PASS | 고정 문구 전부 자체 문장 |
+| ⑧ 근거 3 | PASS | (가) 이름표 위 배치(시선 한 줄) (나) WCAG 1.3.5 · 3.3.2 · HTML `fieldset disabled` (다) `Contact`/`form` — ref-b·d·e · `Contact`/`map + form` — ref-a·c·f · `purpose: inquiry`(ref-c·e) |
+| ⑨ 데이터 계약 | PASS | `heading`·`intro`·`submit`·`consent` — 이름표는 킷 고정 문구(새 슬롯 0) |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증 · 정적 HTML 차단 = `disabled` 하나(K-AC-08, 단위 테스트) |
+
+### 5.7 `footer/biz-extended` — `dev/active/m2c-5b-qa/baseline/footer--biz-extended-{1280,768,390}.png`
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| ① 기능 적합 | PASS | 한국 사업자정보 표기(R-12) 전용 — 필수 정보 자리 |
+| ② 정보 위계 | PASS | 사업자정보 → 하단 링크 → 구분선 → 저작권, 굵기·간격으로만 |
+| ③ 3폭 반응형 | PASS | `md` 이상 위 줄 2단 · 390 1단 · 넘침 0 |
+| ④ 접근성 | PASS | `contentinfo` · `address` 의미 · 링크 0(대상 슬롯 없음 — 글자 항목) |
+| ⑤ 토큰 준수 | PASS | C-2 뒤집기만 · 반투명 글자 0(목업과 다르게 — 0.3) |
+| ⑥ 예산 감각 | PASS | JS 0 · `biz-extended-map`이 확장(SPEC-BOUND) · 렌더 번들 멈춤선 안 |
+| ⑦ 독자성 | PASS | 일반 어두운 바닥 띠 |
+| ⑧ 근거 3 | PASS | (가) 낮은 위계 = 문서 끝 (나) HTML `address`·`footer` 의미 · WCAG 1.4.3 (다) `Footer`/`biz-extended` — ref-c·e·f |
+| ⑨ 데이터 계약 | PASS | `businessInfo`·`links`·`copyright` |
+| ⑩ 내보내기 동일성 | 주의 | 변형별 미검증 |
+
+- 요약: ①~⑨ — PASS 62 · 주의 1(contact/form ① — B-M2B-07로 결정, 구현 대기) · ⑩ 7건 모두 주의(변형별 미검증). QA 표의 "루브릭 원기록 없음" 주의 7건은 해소, ⑩ 주의는 30변형 공통 사안(BOUND·BODY도 ⑩ 실측 없음)이라 이 절 범위 밖 — IMPL-TODO에 QA 재검 항목으로 남긴다.
 
 ## 부록 A. 대비 계산 근거 (L2)
 재현: `python3 -B docs/design/m2a/contrast_calc_m2a.py` (출력 원문 `docs/design/m2a/logs/contrast_calc_m2a.out.txt`). 픽스처 팔레트는 `app/src/fixtures/referenceDetails.ts`에서 **읽는다**(읽기 전용) · 식 = `app/src/domain/contrast.ts` · 버림 2자리. 이 부록에만 hex가 있다.
@@ -655,3 +771,4 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | r0 | 골격 + 0절 공통 규약 |
 | r1 | K1 7변형(변형마다 커밋) · K2 · K3 · K4 · 부록 A (Codex 적대적 검토 전) |
 | r2 | Codex 적대적 검토 반영 3건: header 열린 시트 폭 전환 규칙 + K-AC-35 · F1 캡션 이미지 문장 · 대비 보증 실측 K-AC-36 |
+| r3 | 2026-10-06 M2C-SPECFIX(코드 0): K1-6 3 비활성 모양 단서 + K2 주석 + K-AC-37 + Q-6(B-M2B-07) · 5절 K1 7변형 TR-POL-04 루브릭 원기록(B-M2B-08, 근거 = M2C-5b 기준선). Codex adversarial r1 — 이 문서 지적 0(색 조합·정적 HTML 보존 충돌 없음 확인). |

@@ -14,6 +14,7 @@ export const RENDERED_VARIANTS: readonly string[] = Object.freeze([
   "portfolio/grid-2",
   "portfolio/grid-3",
   "portfolio/masonry",
+  "pricing/tiers-2",
   "services/cards-2",
   "services/cards-3",
   "services/cards-masonry",

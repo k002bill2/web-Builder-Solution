@@ -1,0 +1,97 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-2c/app
+
+ ❯ src/kit/PricingTiers2.test.tsx (4 tests | 4 failed) 224ms
+   ❯ pricing/tiers-2 (B1-10) (4)
+     × KD-AC-18 · KD-AC-08 [U]: 킷 · 머리(h2 + 소개) → ul[role=list] > li 2 · li 안 순서 이름 h3 → 가격 p → 설명 p · 두 카드 class·속성 같음 · 추천 표식·버튼·링크 0 159ms
+     × KD-AC-18 · KD-AC-03 [U]: 가격·이름·설명 글자 = 슬롯 그대로 — 통화·단위·'부터' 붙이기 0 · 기본 '문의' 그대로 · 상한 20·20·120자 35ms
+     × KD-AC-04 [U]: intro·planNBody 빈 값 → 요소 0 · planNName·planNPrice 빈 값 → 그 요소만 0, 카드 2개 유지 · 빈 p·h3·li 0 20ms
+     × KD-AC-18 · 05 · 07 [G]: 카드 면·2열 재사용 · 가격 ink · 제목 굵기 · tabular-nums · t2(lg t3) · 이름 ↔ 가격 s2 · 가격 ↔ 설명 s3 · primary 글자·값별 선택자·재배치 0 7ms
+ ❯ src/data/memoryExport.test.ts (16 tests | 1 failed) 923ms
+   ❯ requestExport 판정 순서 (8.3.2 · E-AC-44 · E-AC-48) (7)
+     × 이관 전제 — 주입 목록 = 실제 목록 − 폴백 예시 2키 · 실제 목록에는 실렌더 키가 있음 · 두 키는 엔진 정의 변형(저장 검증 통과) 35ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/memoryExport.test.ts > requestExport 판정 순서 (8.3.2 · E-AC-44 · E-AC-48) > 이관 전제 — 주입 목록 = 실제 목록 − 폴백 예시 2키 · 실제 목록에는 실렌더 키가 있음 · 두 키는 엔진 정의 변형(저장 검증 통과)
+AssertionError: expected [ 'testimonials/quotes-2' ] to deeply equal [ 'pricing/tiers-2', …(1) ]
+
+- Expected
++ Received
+
+  [
+-   "pricing/tiers-2",
+    "testimonials/quotes-2",
+  ]
+
+ ❯ src/data/memoryExport.test.ts:79:62
+     77|     const actual = (await vi.importActual<typeof import("../features/s…
+     78|     expect(UNRENDERED.filter((key) => injected.includes(key))).toEqual…
+     79|     expect(UNRENDERED.filter((key) => actual.includes(key))).toEqual(U…
+       |                                                              ^
+     80|     expect(injected).toEqual(actual.filter((key) => !UNRENDERED.includ…
+     81|     for (const s of FALLBACKS) expect(getSectionDefinition(s.type, s.v…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/kit/PricingTiers2.test.tsx > pricing/tiers-2 (B1-10) > KD-AC-18 · KD-AC-08 [U]: 킷 · 머리(h2 + 소개) → ul[role=list] > li 2 · li 안 순서 이름 h3 → 가격 p → 설명 p · 두 카드 class·속성 같음 · 추천 표식·버튼·링크 0
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveAttribute()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/kit/PricingTiers2.test.tsx:26:15
+     24|   it("KD-AC-18 · KD-AC-08 [U]: 킷 · 머리(h2 + 소개) → ul[role=list] > li 2 …
+     25|     const s = pricing(drawDoc(pricingDoc({ intro: "소개", plan1Price: "문…
+     26|     expect(s).toHaveAttribute("data-kit");
+       |               ^
+     27|     expect(s.getAttribute("aria-labelledby")).toBe("h-s-pricing");
+     28|     expect(s.querySelector("h2")).toHaveAttribute("id", "h-s-pricing");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/kit/PricingTiers2.test.tsx > pricing/tiers-2 (B1-10) > KD-AC-18 · KD-AC-03 [U]: 가격·이름·설명 글자 = 슬롯 그대로 — 통화·단위·'부터' 붙이기 0 · 기본 '문의' 그대로 · 상한 20·20·120자
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/PricingTiers2.test.tsx:51:63
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/kit/PricingTiers2.test.tsx > pricing/tiers-2 (B1-10) > KD-AC-04 [U]: intro·planNBody 빈 값 → 요소 0 · planNName·planNPrice 빈 값 → 그 요소만 0, 카드 2개 유지 · 빈 p·h3·li 0
+TypeError: Cannot read properties of null (reading 'querySelector')
+ ❯ src/kit/PricingTiers2.test.tsx:59:14
+     57|   it("KD-AC-04 [U]: intro·planNBody 빈 값 → 요소 0 · planNName·planNPrice …
+     58|     const s = pricing(drawDoc(pricingDoc({ intro: "", plan1Body: " ", …
+     59|     expect(s.querySelector('[data-slot="intro"]')).toBeNull();
+       |              ^
+     60|     const items = [...s.querySelectorAll("li")];
+     61|     expect(items).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/kit/PricingTiers2.test.tsx > pricing/tiers-2 (B1-10) > KD-AC-18 · 05 · 07 [G]: 카드 면·2열 재사용 · 가격 ink · 제목 굵기 · tabular-nums · t2(lg t3) · 이름 ↔ 가격 s2 · 가격 ↔ 설명 s3 · primary 글자·값별 선택자·재배치 0
+AssertionError: /* pricing/tiers-2: expected -1 to be greater than -1
+ ❯ cssSection src/kit/PricingTiers2.test.tsx:19:22
+     17| const cssSection = (marker: string) => {
+     18|   const at = css().indexOf(marker);
+     19|   expect(at, marker).toBeGreaterThan(-1);
+       |                      ^
+     20|   return css().slice(at, css().indexOf("\n}\n", at));
+     21| };
+ ❯ src/kit/PricingTiers2.test.tsx:68:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 15 passed (20)
+   Start at  16:22:00
+   Duration  6.11s (environment 49%, transform 26%, tests 11%, setup 10%, import 3%, worker 1%)
+
+  Transform  transforming modules took 2.76s · 26% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

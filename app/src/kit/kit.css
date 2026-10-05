@@ -877,6 +877,30 @@
   }
 }
 
+/* pricing/tiers-2 (B1-10) — 머리 → 요금제 카드 2개(카드 면·2열 = .kit-cards--2/.kit-card 재사용, 두 카드 같은 class = 동등). 카드 안 이름 → 가격 → 설명.
+   가격 ink · 제목 굵기 · tabular-nums · t2(lg t3) · 값과 무관한 한 모양("문의" = "99,000") — primary 글자 0. 간격 이름 ↔ 가격 s2 · 가격 ↔ 설명 s3 */
+@layer components {
+  .kit-plan {
+    gap: var(--site-s2);
+  }
+  .kit-plan-price {
+    margin: 0;
+    font-size: var(--site-t2);
+    font-weight: var(--site-weight-heading);
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-ink);
+  }
+  .kit-plan-price + .kit-card-body {
+    margin-top: calc(var(--site-s3) - var(--site-s2));
+  }
+  @media (width >= 64rem) {
+    .kit-plan-price {
+      font-size: var(--site-t3);
+    }
+  }
+}
+
 /* faq/accordion (K1-5) — 모든 폭 1열 · 목록 폭 prose-max · 질문 줄 전체가 누름 영역(hit-min) · 펼침 표시 = 브라우저 기본(list-item) · 항목 구분선 muted(장식) */
 @layer components {
   .kit-faq-inner {

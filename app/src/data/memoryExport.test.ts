@@ -76,7 +76,7 @@ describe("requestExport 판정 순서 (8.3.2 · E-AC-44 · E-AC-48)", () => {
     const injected = (await import("../features/studio/renderedVariants")).RENDERED_VARIANTS;
     const actual = (await vi.importActual<typeof import("../features/studio/renderedVariants")>("../features/studio/renderedVariants")).RENDERED_VARIANTS;
     expect(UNRENDERED.filter((key) => injected.includes(key))).toEqual([]);
-    expect(actual).toContain("testimonials/quotes-2");
+    expect(UNRENDERED.filter((key) => actual.includes(key))).toEqual(UNRENDERED);
     expect(injected).toEqual(actual.filter((key) => !UNRENDERED.includes(key)));
     for (const s of FALLBACKS) expect(getSectionDefinition(s.type, s.variant)).toBeDefined();
   });

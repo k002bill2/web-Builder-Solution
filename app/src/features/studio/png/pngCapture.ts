@@ -7,9 +7,11 @@
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../detail/previewView";
 import type { FrameRect, KitTokenInput } from "../../../render/protocol";
+import type { RenderImages } from "../images/store/types";
 import { emitEditorEvent } from "../editorEvents";
 import { FRAME_REM, remPx } from "../previewFrame";
 import { exportFileStem } from "../staticHtml/exportFileName";
+import { IMAGE_FAILED, exportImages, imageReader, lostImageText } from "../staticHtml/exportImages";
 import { FONT_FAILED, FONT_TIMEOUT_MS, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "../staticHtml/siteFontEmbed";
 import { defaultFetchText, kitCss, openCaptureFrame, renderAndSerialize, type RenderChannel } from "../staticHtml/staticHtml";
 
@@ -19,7 +21,7 @@ const MAX_CANVAS_AREA = 16_777_216;
 /** 숨은 iframe 준비·그리기·직렬화 상한 */
 const TIMEOUT_MS = 8000;
 
-export type PngErrorCode = "RENDER_TIMEOUT" | "CANVAS_TOO_TALL" | "CANVAS_TAINTED" | "INFRA";
+export type PngErrorCode = "RENDER_TIMEOUT" | "CANVAS_TOO_TALL" | "CANVAS_TAINTED" | "IMAGE_DECODE_FAILED" | "INFRA";
 export class PngError extends Error {
   constructor(
     readonly code: PngErrorCode,
@@ -36,6 +38,8 @@ export interface PngRequest {
   readonly view: PreviewView;
   readonly name: string;
   readonly revision: number;
+  /** 편집 틀 images 맵(SPEC m2c 5.1·5.3) — 정적 HTML과 같은 규칙으로 id당 1장을 싣는다. 없으면 로컬 이미지 = 잃은 이미지(자체 그래픽) */
+  readonly images?: RenderImages;
 }
 export interface PngDeps {
   readonly open: (widthRem: number) => RenderChannel;
@@ -92,7 +96,7 @@ const settledAt = (width: number) => (rects: readonly FrameRect[]) => {
   return bottom > 0 && (Math.abs(layoutWidth(rects) - width) <= 1 || bottom > MAX_CANVAS_HEIGHT);
 };
 
-export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ readonly fileName: string; readonly fallbackCount: number; readonly blob: Blob }> {
+export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ readonly fileName: string; readonly fallbackCount: number; readonly lost: number; readonly blob: Blob }> {
   // 좌표계 하나(P2-c): iframe 폭 = SVG·캔버스 폭 = 프레임 rem × 지금 rem px(정수로 맞춤 — 캔버스 폭은 정수). 높이는 그 iframe의 사각형 바닥.
   // 파일 이름 폭은 프레임 이름(1280·768·390 — 캡션과 같은 값)
   const unit = remPx();
@@ -108,14 +112,18 @@ export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ 
     : { bytes: [], css: "" };
   // 렌더 문서는 레이아웃 전 0 크기·캡처 폭 전 배치의 사각형을 먼저 보낼 수 있다 — 캡처 폭에서 바닥 > 0인 보고를 기다린다(M2A-3c C4 · M2B-D1 실측).
   // 킷 토큰 없음(NO_KIT_TOKENS)은 실패가 아니다 — 캔버스처럼 중립 폴백으로 그린 rects·직렬화를 기다린다(P2-b · 정적 HTML은 실패 그대로)
-  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, Math.max(0, deps.timeoutMs - (Date.now() - started)), settledAt(width), ["NO_KIT_TOKENS"], fonts.bytes).catch((error: unknown) => {
-    throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
+  // 이미지 = 정적 HTML과 같은 id당 1장 + 내보내기 render(eager) — 렌더 문서가 decode 뒤 rects를 보내므로 높이는 이미지가 그려진 배치(D-1 결정성)
+  const { images, lost } = exportImages(request.doc, imageReader(request.images));
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, Math.max(0, deps.timeoutMs - (Date.now() - started)), settledAt(width), ["NO_KIT_TOKENS"], fonts.bytes, images).catch((error: unknown) => {
+    if ((error as { readonly code?: string }).code === "JOB_TIMEOUT") throw new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과");
+    throw error instanceof Error && error.message === IMAGE_FAILED ? new PngError("IMAGE_DECODE_FAILED", IMAGE_FAILED) : error;
   });
   const height = pageBottom(rects);
   if (height <= 0 || height > MAX_CANVAS_HEIGHT || width * height > MAX_CANVAS_AREA) throw new PngError("CANVAS_TOO_TALL", "페이지가 PNG 한 장 상한을 넘습니다");
   const fallbackCount = (markup.match(/data-fallback="true"/g) ?? []).length;
   const blob = await deps.draw(svgDataUrl(buildCaptureSvg({ markup, css: stripFontFaces(css) + fonts.css, width, height })), width, height);
-  return { fileName: pngFileName(request.name, FRAME_REM[request.view] * 16, request.revision, fallbackCount), fallbackCount, blob };
+  // 파일 이름·계측의 fallbackCount = 렌더러 없는 섹션만(잃은 이미지 수는 더하지 않는다 — SPEC m2c 5.3)
+  return { fileName: pngFileName(request.name, FRAME_REM[request.view] * 16, request.revision, fallbackCount), fallbackCount, lost, blob };
 }
 
 async function drawPng(url: string, width: number, height: number): Promise<Blob> {
@@ -155,10 +163,10 @@ const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, M
 /** 누름 → 캡처 → 내려받기 · 계측(코드·개수·열거값만 — 이름·파일 이름 0). 성공 문장을 돌려준다 */
 export async function savePng(request: PngRequest, deps: PngDeps = DEFAULT_DEPS): Promise<string> {
   emitEditorEvent({ name: "png_requested", view: request.view });
-  const { fileName, fallbackCount, blob } = await capturePng(request, deps);
+  const { fileName, fallbackCount, lost, blob } = await capturePng(request, deps);
   deps.download(blob, fileName);
   emitEditorEvent({ name: "png_succeeded", view: request.view, fallback_count: fallbackCount });
-  return `PNG를 내려받았습니다 · ${fileName}`;
+  return `PNG를 내려받았습니다 · ${fileName}${lost > 0 ? ` · ${lostImageText(lost)}` : ""}`;
 }
 
 export function reportFailure(error: unknown): void {

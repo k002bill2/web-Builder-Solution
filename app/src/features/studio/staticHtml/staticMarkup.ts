@@ -1,7 +1,7 @@
 /**
  * 정적 HTML 문서 조립 (M2A-3b G2·G3 · m2a 0.11·K2 · K-AC-06·08) — 렌더 문서가 돌려준 사이트 루트 마크업 + 킷 CSS → 완전한 문서 1개.
  * 사용자 글자는 DOM으로만 넣는다(title·meta content = 속성/글자 대입, 마크업 = 불활성 문서의 innerHTML — 문자열 이어 붙이기 0).
- * 결과 규칙: 고정 스크립트(STATIC_MENU_SCRIPT) 외 script 0 · on* 0 · details[open] 0 · 편집기 흔적(CSS가 안 쓰는 data-*) 0 · 폴백 섹션 = 실패 · blob: = 실패 · CSS 외부 요청 = 실패.
+ * 결과 규칙: 고정 스크립트(STATIC_MENU_SCRIPT) 외 script 0 · on* 0 · details[open] 0 · 편집기 흔적(CSS가 안 쓰는 data-*) 0 · 폴백 섹션 = 실패 · blob: = 실패 · img src = data:image/(webp|jpeg|png);base64,만(srcset 0) · CSS 외부 요청 = 실패.
  */
 
 /**
@@ -44,6 +44,7 @@ function clean(site: Element) {
 const URL_ATTRS = ["src", "href", "srcset", "poster"] as const;
 const BLOB_IN_LIST = /(^|[\s,])blob:/i;
 const BLOB_IN_CSS = /url\(\s*['"]?\s*blob:/i;
+const DATA_IMAGE = /^data:image\/(webp|jpeg|png);base64,/;
 function hasBlobUrl(site: Element): boolean {
   return [site, ...site.querySelectorAll("*")].some(
     (el) =>
@@ -67,6 +68,8 @@ export function buildStaticHtml({ markup, css, title, description, notice }: Sta
   for (const el of site.querySelectorAll("[data-motion-play]")) el.removeAttribute("data-motion-play");
   site.setAttribute("data-motion-play", "");
   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+  // 이미지 = 단일 파일 data:만(SPEC m2c 5.2) · srcset 0(후보가 모두 data:로 들어가 크기만 는다 — zip은 M4)
+  if ([...site.querySelectorAll("img")].some((img) => !DATA_IMAGE.test(img.getAttribute("src") ?? "") || img.hasAttribute("srcset"))) throw new Error("정적 HTML 이미지는 data: 단일 파일만 허용합니다");
 
   const head = page.head;
   head.replaceChildren();

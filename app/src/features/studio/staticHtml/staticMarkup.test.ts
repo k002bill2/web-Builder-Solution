@@ -55,7 +55,7 @@ describe("정적 HTML 문서 조립 (M2A-3b G2·G3 · K-AC-06·08)", () => {
   it("고정 스크립트(바이트 일치) 외 script 0 · on* 속성 0 · details[open] 0 · 편집기 흔적(data-instance-id·data-slot·data-section·data-cta) 0 — CSS가 쓰는 data-kit·data-layout·data-tone·data-always·data-site-root는 남긴다", () => {
     const dirty = siteMarkup()
       .replace("<details", '<details open ontoggle="x()"')
-      .replace("</header>", '<script>alert(1)</script><img src="data:," onerror="x()" alt=""></header>');
+      .replace("</header>", '<script>alert(1)</script><img src="data:image/png;base64,AA" onerror="x()" alt=""></header>');
     const doc = parse(build({ markup: dirty }));
     expect([...doc.querySelectorAll("script")].map((s) => s.textContent)).toEqual([STATIC_MENU_SCRIPT]);
     expect(doc.querySelectorAll("details[open]")).toHaveLength(0);
@@ -172,5 +172,13 @@ describe("정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4)", () => {
     expect(index((n) => n === comment[0])).toBeLessThan(index((n) => n.nodeName === "STYLE"));
     const plain = new DOMParser().parseFromString(build(), "text/html");
     expect([...plain.head.childNodes].filter((n) => n.nodeType === Node.COMMENT_NODE)).toEqual([]);
+  });
+
+  it("이미지 src = data:image/(webp|jpeg|png);base64,만 (SPEC m2c 5.2 · IMG-AC-23) — blob:·http(s)·svg data: = 실패 · srcset 0", () => {
+    const site = (img: string) => `<div data-site-root=""><img alt="" ${img}></div>`;
+    const parts = { css: "", title: "t", description: "d" };
+    for (const type of ["webp", "jpeg", "png"]) expect(buildStaticHtml({ ...parts, markup: site(`src="data:image/${type};base64,AAAA"`) })).toContain(`src="data:image/${type};base64,AAAA"`);
+    for (const bad of ['src="https://example.com/a.webp"', 'src="data:image/svg+xml;base64,AAAA"', 'src="data:image/gif;base64,AAAA"', 'src="/a.png"', 'src="data:image/webp;base64,AAAA" srcset="data:image/webp;base64,AAAA 2x"'])
+      expect(() => buildStaticHtml({ ...parts, markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
   });
 });

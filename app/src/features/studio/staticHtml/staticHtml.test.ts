@@ -157,6 +157,33 @@ describe("정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9)", () => {
     expect(comments[0]!.textContent).toContain("SIL OPEN FONT LICENSE Version 1.1");
   });
 
+  it("readImage 주입(SPEC m2c 5.1) → render{images = 쓰는 id만 · id당 1장, loading \"eager\"} · onBuilt(내려받기 참조, {바이트, 이미지 수, 잃은 수})", async () => {
+    const ID = "11111111-1111-4111-8111-111111111111";
+    const LOST = "22222222-2222-4222-8222-222222222222";
+    const slot = (key: string, id: string, s: PageDoc["sections"][number]) => ({ ...s, slots: { ...s.slots, [key]: { ...(s.slots[key] as object), source: id } } });
+    const doc = { ...DOC, sections: DOC.sections.map((s) => (s.type === "hero" ? slot("image", ID, s) : s.type === "about" ? slot("image", LOST, s) : s)) } as PageDoc;
+    const blob = new Blob(["webp"], { type: "image/webp" });
+    const frame = fakeFrame();
+    const urls = fakeUrls();
+    const built = vi.fn();
+    const readImage = (id: string) => (id === ID ? { variants: { 640: new Blob(["small"]), 1920: blob }, width: 2400, height: 1600 } : undefined);
+    const made = await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api, readImage, onBuilt: built })({ ...input, doc });
+    const render = frame.sent[0] as Extract<ParentMessage, { type: "render" }>;
+    expect(render.loading).toBe("eager");
+    expect(render.images).toEqual({ [ID]: { blob, width: 2400, height: 1600 } });
+    expect(built).toHaveBeenCalledWith(made.downloadRef, { bytes: urls.blobs[0]!.size, images: 1, lost: 1 });
+  });
+
+  it("이미지 없는 문서·readImage 없음도 내보내기 render = loading \"eager\" · images 키 0 · onBuilt 이미지 0", async () => {
+    const frame = fakeFrame();
+    const built = vi.fn();
+    await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: fakeUrls().api, onBuilt: built })(input);
+    const render = frame.sent[0] as Extract<ParentMessage, { type: "render" }>;
+    expect(render.loading).toBe("eager");
+    expect("images" in render).toBe(false);
+    expect(built).toHaveBeenCalledWith("blob:test/1", expect.objectContaining({ images: 0, lost: 0 }));
+  });
+
   it("렌더 문서 error{IMAGE_DECODE_FAILED} → 시간 초과 전에 실패 '이미지를 그리지 못했습니다'(SPEC m2c 5.3-3 부모 쪽) · 결과 파일 0 · iframe 닫음", async () => {
     const frame = fakeFrame((m, post) => post(m.type === "render" ? { type: "error", code: "IMAGE_DECODE_FAILED" } : { type: "html", markup: MARKUP }));
     const urls = fakeUrls();

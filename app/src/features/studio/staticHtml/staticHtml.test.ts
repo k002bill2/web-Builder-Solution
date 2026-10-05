@@ -22,7 +22,7 @@ const FILES: Readonly<Record<string, string>> = {
     '[data-site-root]{color:var(--site-ink)}@font-face{font-family:"Pretendard";font-weight:400;font-display:swap;src:url(/assets/P-400.woff2) format("woff2")}@font-face{font-family:"Pretendard";font-weight:700;font-display:swap;src:url(/assets/P-700.woff2) format("woff2")}',
 };
 /** M2B-4a — 킷 CSS의 @font-face url → 글꼴 바이트(가짜). 기존 테스트는 이 주입만 더했다(단언 변경 0) */
-const fetchBytes = async (url: string) => new TextEncoder().encode(`woff2:${url}`).buffer as ArrayBuffer;
+const fetchBytes = async (url: string) => new TextEncoder().encode(`wOF2:${url}`).buffer as ArrayBuffer;
 const fetchText = async (url: string) => {
   const text = FILES[url];
   if (text === undefined) throw new Error(`404 ${url}`);
@@ -144,8 +144,8 @@ describe("정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9)", () => {
     await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api })(input);
     const render = frame.sent[0] as Extract<ParentMessage, { type: "render" }>;
     expect(render.fonts?.map((f) => [f.family, f.weight, new TextDecoder().decode(f.data)])).toEqual([
-      ["Pretendard", 700, "woff2:/assets/P-700.woff2"],
-      ["Pretendard", 400, "woff2:/assets/P-400.woff2"],
+      ["Pretendard", 700, "wOF2:/assets/P-700.woff2"],
+      ["Pretendard", 400, "wOF2:/assets/P-400.woff2"],
     ]);
     const html = await urls.blobs[0]!.text();
     expect(html.match(/url\(data:font\/woff2;base64,/g)).toHaveLength(2);

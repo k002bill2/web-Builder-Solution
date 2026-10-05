@@ -1,0 +1,185 @@
+{
+ "B6-render Noto Serif KR 700/400": {
+  "faces": [
+   "Kit Serif KR:400:loaded",
+   "Kit Serif KR:700:loaded"
+  ],
+  "style": {
+   "rootFont": "\"Kit Serif KR\", AppleMyungjo, Batang, serif",
+   "synthesis": "none",
+   "headingWeight": "700"
+  },
+  "firstRectsMs": 421,
+  "firstEqualsRemeasure": true,
+  "firstSections": [
+   [
+    "s-header",
+    61
+   ],
+   [
+    "s-hero",
+    1047.4
+   ],
+   [
+    "s-about",
+    852
+   ],
+   [
+    "s-services",
+    395.1
+   ]
+  ]
+ },
+ "B6-render Noto Sans KR 700/400": {
+  "faces": [
+   "Kit Sans KR:400:loaded",
+   "Kit Sans KR:700:loaded"
+  ],
+  "style": {
+   "rootFont": "\"Kit Sans KR\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+   "synthesis": "none",
+   "headingWeight": "700"
+  },
+  "firstRectsMs": 224,
+  "firstEqualsRemeasure": true,
+  "firstSections": [
+   [
+    "s-header",
+    61
+   ],
+   [
+    "s-hero",
+    1047.4
+   ],
+   [
+    "s-about",
+    852
+   ],
+   [
+    "s-services",
+    395.1
+   ]
+  ]
+ },
+ "B6-render Pretendard 600/500": {
+  "faces": [
+   "Pretendard:400:loaded",
+   "Pretendard:700:loaded"
+  ],
+  "style": {
+   "rootFont": "Pretendard, system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+   "synthesis": "none",
+   "headingWeight": "700"
+  },
+  "firstRectsMs": 837,
+  "firstEqualsRemeasure": true,
+  "firstSections": [
+   [
+    "s-header",
+    61
+   ],
+   [
+    "s-hero",
+    1047.4
+   ],
+   [
+    "s-about",
+    852
+   ],
+   [
+    "s-services",
+    395.1
+   ]
+  ]
+ },
+ "B7 느린 망 rects 시점(ms)·앞 3섹션 높이": {
+  "rects": [
+   {
+    "ms": 3200,
+    "sec": [
+     61,
+     1047,
+     852
+    ]
+   },
+   {
+    "ms": 3365,
+    "sec": [
+     61,
+     1047,
+     852
+    ]
+   }
+  ],
+  "faces": [
+   "Kit Serif KR:400:loaded",
+   "Kit Serif KR:700:loaded"
+  ]
+ },
+ "B7 글꼴 차단": {
+  "rects": [
+   400,
+   400
+  ],
+  "sections": 8,
+  "faces": [
+   "Kit Serif KR:400:loaded",
+   "Kit Serif KR:700:loaded"
+  ]
+ },
+ "B7 글꼴 차단(localhost)": {
+  "rectsMs": [
+   642,
+   647
+  ],
+  "sections": 8,
+  "faces": [
+   "Kit Serif KR:400:loaded",
+   "Kit Serif KR:700:loaded"
+  ]
+ },
+ "B7 느린 망(localhost, 80KB/s) rects 시점(ms)·앞 3섹션 높이": {
+  "rects": [
+   {
+    "ms": 3021,
+    "sec": [
+     61,
+     1047,
+     852
+    ]
+   },
+   {
+    "ms": 3025,
+    "sec": [
+     61,
+     1047,
+     852
+    ]
+   },
+   {
+    "ms": 9077,
+    "sec": [
+     61,
+     1047,
+     852
+    ]
+   },
+   {
+    "ms": 9082,
+    "sec": [
+     61,
+     1047,
+     852
+    ]
+   }
+  ],
+  "faces": [
+   "Kit Serif KR:400:loaded",
+   "Kit Serif KR:700:loaded"
+  ],
+  "loadedAt": [
+   8985,
+   8833
+  ]
+ }
+}

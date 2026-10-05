@@ -81,7 +81,10 @@ export async function loadSiteFonts(
     faces.map(async (face) => {
       const url = rules.find((rule) => rule.family === face.family && rule.weight === face.weight)?.url;
       if (!url) throw new FontLoadError();
-      return { ...face, data: await fetchBytes(url) };
+      const data = await fetchBytes(url);
+      // woff2 서명(wOF2) — 없는 파일에 SPA 폴백 HTML(200)이 오는 서버가 있다(M2B-4a B9 실측). 렌더 문서로 넘기면 측정이 멈춘다
+      if (String.fromCharCode(...new Uint8Array(data, 0, Math.min(4, data.byteLength))) !== "wOF2") throw new FontLoadError();
+      return { ...face, data };
     }),
   );
   try {

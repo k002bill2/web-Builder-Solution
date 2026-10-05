@@ -255,7 +255,7 @@ describe("PNG 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·B9)", () => {
   const fetchText = async (url: string) => (url === "/render.html" ? '<link rel="stylesheet" href="/assets/render.css">' : FONT_CSS);
 
   it("캡처 SVG <style> = 킷 @font-face(url) 제거 + 쓰는 면 data: 규칙 · url(/assets) 0 · 렌더 문서에도 같은 바이트", async () => {
-    const fetchBytes = vi.fn(async (url: string) => new TextEncoder().encode(url).buffer as ArrayBuffer);
+    const fetchBytes = vi.fn(async (url: string) => new TextEncoder().encode(`wOF2${url}`).buffer as ArrayBuffer);
     const { d, channel, draw } = deps(noFallback(), 2400, { fetchText, fetchBytes });
     await capturePng(SANS, d);
     expect(fetchBytes.mock.calls.map((c) => c[0])).toEqual(["/assets/S-700.woff2", "/assets/S-400.woff2"]);

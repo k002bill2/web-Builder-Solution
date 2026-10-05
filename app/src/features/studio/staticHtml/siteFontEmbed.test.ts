@@ -10,7 +10,8 @@ const CSS = [
   "[data-site-root]{font-synthesis:none}",
 ].join("");
 const SERIF = { family: "Noto Serif KR", headingWeight: 700, bodyWeight: 400 };
-const bytesOf = (url: string) => new TextEncoder().encode(url).buffer as ArrayBuffer;
+/** woff2 서명(wOF2) + url — 서명 검사(M2B-4a B9 실측: 없는 파일에 SPA 폴백 HTML 200)를 통과하는 가짜 바이트 */
+const bytesOf = (url: string) => new TextEncoder().encode(`wOF2${url}`).buffer as ArrayBuffer;
 
 describe("내보내기 글꼴 인라인", () => {
   it("킷 CSS의 @font-face 파싱(계열·굵기·url) · 제거하면 @font-face·url 0, 나머지 규칙 그대로", () => {
@@ -28,8 +29,8 @@ describe("내보내기 글꼴 인라인", () => {
     const fonts = await loadSiteFonts(CSS, SERIF, fetchBytes);
     expect(fetchBytes.mock.calls.map((c) => c[0])).toEqual(["/assets/KitSerifKR-700-DDD.woff2", "/assets/KitSerifKR-400-CCC.woff2"]);
     expect(fonts.bytes.map((f) => [f.family, f.weight, new TextDecoder().decode(f.data)])).toEqual([
-      ["Kit Serif KR", 700, "/assets/KitSerifKR-700-DDD.woff2"],
-      ["Kit Serif KR", 400, "/assets/KitSerifKR-400-CCC.woff2"],
+      ["Kit Serif KR", 700, "wOF2/assets/KitSerifKR-700-DDD.woff2"],
+      ["Kit Serif KR", 400, "wOF2/assets/KitSerifKR-400-CCC.woff2"],
     ]);
     const rules = fonts.css.match(/@font-face\s*\{[^}]*\}/g) ?? [];
     expect(rules).toHaveLength(2);
@@ -39,12 +40,12 @@ describe("내보내기 글꼴 인라인", () => {
       expect(rule).toMatch(/src:\s*url\(data:font\/woff2;base64,[A-Za-z0-9+/=]+\) format\("woff2"\)/);
     }
     expect(fonts.css).not.toMatch(/Pretendard|local\(|\/assets\//);
-    expect(atob(fonts.css.match(/base64,([^)]+)\)/)![1]!)).toBe("/assets/KitSerifKR-700-DDD.woff2");
+    expect(atob(fonts.css.match(/base64,([^)]+)\)/)![1]!)).toBe("wOF2/assets/KitSerifKR-700-DDD.woff2");
     // 제목 = 본문 대응이면 1개
     expect((await loadSiteFonts(CSS, { family: "Pretendard", headingWeight: 600, bodyWeight: 800 }, fetchBytes)).bytes).toHaveLength(1);
   });
 
-  it("실패 정책(B9): 4.9초 도착 = 성공 · 5초 넘김 = FontLoadError(문구) · 응답 실패·킷 CSS에 면 없음 = FontLoadError", async () => {
+  it("실패 정책(B9): 4.9초 도착 = 성공 · 5초 넘김 = FontLoadError(문구) · 응답 실패·킷 CSS에 면 없음·woff2 아닌 바이트 = FontLoadError", async () => {
     vi.useFakeTimers();
     try {
       const slow = (ms: number) => (url: string) => new Promise<ArrayBuffer>((resolve) => setTimeout(() => resolve(bytesOf(url)), ms));
@@ -61,6 +62,8 @@ describe("내보내기 글꼴 인라인", () => {
     }
     await expect(loadSiteFonts(CSS, SERIF, async () => Promise.reject(new Error("404")))).rejects.toBeInstanceOf(FontLoadError);
     await expect(loadSiteFonts("a{}", SERIF, async (url) => bytesOf(url))).rejects.toBeInstanceOf(FontLoadError);
+    // woff2가 아닌 바이트(없는 파일에 SPA 폴백 HTML 200) = 준비 실패 — 렌더 문서로 넘기지 않는다
+    await expect(loadSiteFonts(CSS, SERIF, async () => new TextEncoder().encode("<!doctype html>").buffer as ArrayBuffer)).rejects.toBeInstanceOf(FontLoadError);
   });
 
   it("시간 초과 뒤 도착한 글꼴은 무시(이미 실패 — 결과 0) · 쓰는 면 0(허용 밖 계열)이면 받지 않음", async () => {

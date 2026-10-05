@@ -1,0 +1,1200 @@
+{
+ "gate-profiles": {
+  "light": [
+   [
+    "C-1",
+    8.09,
+    true
+   ],
+   [
+    "C-2",
+    16.82,
+    true
+   ],
+   [
+    "C-4",
+    15.31,
+    true
+   ],
+   [
+    "C-5",
+    4.93,
+    true
+   ]
+  ],
+  "dark": [
+   [
+    "C-1",
+    4.61,
+    true
+   ],
+   [
+    "C-2",
+    20.08,
+    true
+   ],
+   [
+    "C-3",
+    4.56,
+    true
+   ],
+   [
+    "C-4",
+    17.62,
+    true
+   ],
+   [
+    "C-5",
+    6.06,
+    true
+   ]
+  ]
+ },
+ "headings-order": {
+  "text": {
+   "h2": 1,
+   "h3": 0,
+   "liOrder": []
+  },
+  "list": {
+   "h2": 1,
+   "h3": 0,
+   "liOrder": [
+    "서비스 1",
+    "서비스 2",
+    "서비스 3"
+   ]
+  },
+  "cards2": {
+   "h2": 1,
+   "h3": 2,
+   "liOrder": [
+    "card1Title",
+    "card2Title"
+   ]
+  },
+  "masonry": {
+   "h2": 1,
+   "h3": 3,
+   "liOrder": [
+    "card1Title",
+    "card2Title",
+    "card3Title"
+   ]
+  }
+ },
+ "static-scripts": {
+  "n": 1,
+  "sameBytes": true,
+  "onAttrs": 0,
+  "dataLayout": [
+   "single",
+   "masonry"
+  ]
+ },
+ "layout-1280": {
+  "innerWidth": 1280,
+  "clientWidth": 1265,
+  "overflowX": 0,
+  "text": {
+   "figures": 0,
+   "box": {
+    "l": 88.5,
+    "t": 868.6,
+    "w": 500.4,
+    "h": 77.1
+   },
+   "proseMaxPx": 500.4,
+   "wrapContentLeft": 88.5,
+   "style": {
+    "maxWidth": "500.391px",
+    "textAlign": "start"
+   },
+   "body": {
+    "fontSize": "20px",
+    "whiteSpace": "pre-line",
+    "color": "rgb(26, 26, 26)"
+   },
+   "oneColumn": true
+  },
+  "list": {
+   "head": {
+    "l": 88.5,
+    "t": 1137.6,
+    "w": 440,
+    "h": 71.1
+   },
+   "ul": {
+    "l": 560.5,
+    "t": 1137.6,
+    "w": 616,
+    "h": 166
+   },
+   "sameRow": true,
+   "ulStyle": {
+    "columnCount": "auto",
+    "columnGap": "normal",
+    "borderBottomStyle": "solid"
+   },
+   "li": {
+    "breakInside": "avoid",
+    "fontWeight": "700",
+    "fontSize": "20px",
+    "borderTopStyle": "solid",
+    "whiteSpace": "normal",
+    "color": "rgb(26, 26, 26)",
+    "paddingTop": "12px"
+   },
+   "liLefts": [
+    560.5
+   ],
+   "gridCols": "440px 616px",
+   "texts": [
+    "서비스 1",
+    "서비스 2",
+    "서비스 3"
+   ]
+  },
+  "cards2": {
+   "n": 2,
+   "li": [
+    {
+     "l": 88.5,
+     "t": 1590.7,
+     "w": 532,
+     "h": 108
+    },
+    {
+     "l": 644.5,
+     "t": 1590.7,
+     "w": 532,
+     "h": 108
+    }
+   ],
+   "sameRow": true,
+   "sameHeight": true,
+   "stacked": false,
+   "gridCols": "532px 532px",
+   "card": {
+    "backgroundColor": "rgb(244, 240, 232)",
+    "color": "rgb(26, 26, 26)",
+    "borderTopWidth": "1px",
+    "borderLeftWidth": "1px",
+    "borderBottomWidth": "1px",
+    "borderLeftColor": "rgb(110, 110, 110)",
+    "borderTopLeftRadius": "8px",
+    "boxShadow": "none",
+    "paddingTop": "24px"
+   }
+  },
+  "masonry": {
+   "ulStyle": {
+    "columnCount": "2",
+    "columnGap": "24px",
+    "display": "block"
+   },
+   "li": {
+    "breakInside": "avoid"
+   },
+   "dom": [
+    "card1Title",
+    "card2Title",
+    "card3Title"
+   ],
+   "boxes": [
+    {
+     "l": 88.5,
+     "t": 1985.8,
+     "w": 532,
+     "h": 150
+    },
+    {
+     "l": 644.5,
+     "t": 1985.8,
+     "w": 532,
+     "h": 75
+    },
+    {
+     "l": 644.5,
+     "t": 2084.8,
+     "w": 532,
+     "h": 108
+    }
+   ],
+   "columnsUsed": 2,
+   "assignInfo": [
+    0,
+    1,
+    1
+   ],
+   "heightsDiffer": true,
+   "ulBottom": 2192.8,
+   "clipped": 0
+  }
+ },
+ "layout-768": {
+  "innerWidth": 768,
+  "clientWidth": 753,
+  "overflowX": 0,
+  "text": {
+   "figures": 0,
+   "box": {
+    "l": 32,
+    "t": 617.1,
+    "w": 500.4,
+    "h": 77.1
+   },
+   "proseMaxPx": 500.4,
+   "wrapContentLeft": 32,
+   "style": {
+    "maxWidth": "500.391px",
+    "textAlign": "start"
+   },
+   "body": {
+    "fontSize": "20px",
+    "whiteSpace": "pre-line",
+    "color": "rgb(26, 26, 26)"
+   },
+   "oneColumn": true
+  },
+  "list": {
+   "head": {
+    "l": 32,
+    "t": 886.1,
+    "w": 689,
+    "h": 71.1
+   },
+   "ul": {
+    "l": 32,
+    "t": 981.2,
+    "w": 689,
+    "h": 111
+   },
+   "sameRow": false,
+   "ulStyle": {
+    "columnCount": "2",
+    "columnGap": "24px",
+    "borderBottomStyle": "solid"
+   },
+   "li": {
+    "breakInside": "avoid",
+    "fontWeight": "700",
+    "fontSize": "20px",
+    "borderTopStyle": "solid",
+    "whiteSpace": "normal",
+    "color": "rgb(26, 26, 26)",
+    "paddingTop": "12px"
+   },
+   "liLefts": [
+    32,
+    388.5
+   ],
+   "gridCols": "none",
+   "texts": [
+    "서비스 1",
+    "서비스 2",
+    "서비스 3"
+   ]
+  },
+  "cards2": {
+   "n": 2,
+   "li": [
+    {
+     "l": 32,
+     "t": 1379.3,
+     "w": 332.5,
+     "h": 108
+    },
+    {
+     "l": 388.5,
+     "t": 1379.3,
+     "w": 332.5,
+     "h": 108
+    }
+   ],
+   "sameRow": true,
+   "sameHeight": true,
+   "stacked": false,
+   "gridCols": "332.5px 332.5px",
+   "card": {
+    "backgroundColor": "rgb(244, 240, 232)",
+    "color": "rgb(26, 26, 26)",
+    "borderTopWidth": "1px",
+    "borderLeftWidth": "1px",
+    "borderBottomWidth": "1px",
+    "borderLeftColor": "rgb(110, 110, 110)",
+    "borderTopLeftRadius": "8px",
+    "boxShadow": "none",
+    "paddingTop": "24px"
+   }
+  },
+  "masonry": {
+   "ulStyle": {
+    "columnCount": "2",
+    "columnGap": "24px",
+    "display": "block"
+   },
+   "li": {
+    "breakInside": "avoid"
+   },
+   "dom": [
+    "card1Title",
+    "card2Title",
+    "card3Title"
+   ],
+   "boxes": [
+    {
+     "l": 32,
+     "t": 1774.3,
+     "w": 332.5,
+     "h": 192
+    },
+    {
+     "l": 388.5,
+     "t": 1774.3,
+     "w": 332.5,
+     "h": 75
+    },
+    {
+     "l": 388.5,
+     "t": 1873.3,
+     "w": 332.5,
+     "h": 108
+    }
+   ],
+   "columnsUsed": 2,
+   "assignInfo": [
+    0,
+    1,
+    1
+   ],
+   "heightsDiffer": true,
+   "ulBottom": 1985.8,
+   "clipped": 0
+  }
+ },
+ "layout-390": {
+  "innerWidth": 390,
+  "clientWidth": 375,
+  "overflowX": 0,
+  "text": {
+   "figures": 0,
+   "box": {
+    "l": 16,
+    "t": 553.3,
+    "w": 343,
+    "h": 63.3
+   },
+   "proseMaxPx": 500.4,
+   "wrapContentLeft": 16,
+   "style": {
+    "maxWidth": "500.391px",
+    "textAlign": "start"
+   },
+   "body": {
+    "fontSize": "16px",
+    "whiteSpace": "pre-line",
+    "color": "rgb(26, 26, 26)"
+   },
+   "oneColumn": true
+  },
+  "list": {
+   "head": {
+    "l": 16,
+    "t": 712.6,
+    "w": 343,
+    "h": 63.3
+   },
+   "ul": {
+    "l": 16,
+    "t": 799.8,
+    "w": 343,
+    "h": 148
+   },
+   "sameRow": false,
+   "ulStyle": {
+    "columnCount": "auto",
+    "columnGap": "normal",
+    "borderBottomStyle": "solid"
+   },
+   "li": {
+    "breakInside": "avoid",
+    "fontWeight": "700",
+    "fontSize": "16px",
+    "borderTopStyle": "solid",
+    "whiteSpace": "normal",
+    "color": "rgb(26, 26, 26)",
+    "paddingTop": "12px"
+   },
+   "liLefts": [
+    16
+   ],
+   "gridCols": "none",
+   "texts": [
+    "서비스 1",
+    "서비스 2",
+    "서비스 3"
+   ]
+  },
+  "cards2": {
+   "n": 2,
+   "li": [
+    {
+     "l": 16,
+     "t": 1131.1,
+     "w": 343,
+     "h": 92
+    },
+    {
+     "l": 16,
+     "t": 1239.1,
+     "w": 343,
+     "h": 92
+    }
+   ],
+   "sameRow": false,
+   "sameHeight": true,
+   "stacked": true,
+   "gridCols": "343px",
+   "card": {
+    "backgroundColor": "rgb(244, 240, 232)",
+    "color": "rgb(26, 26, 26)",
+    "borderTopWidth": "1px",
+    "borderLeftWidth": "1px",
+    "borderBottomWidth": "1px",
+    "borderLeftColor": "rgb(110, 110, 110)",
+    "borderTopLeftRadius": "8px",
+    "boxShadow": "none",
+    "paddingTop": "16px"
+   }
+  },
+  "masonry": {
+   "ulStyle": {
+    "columnCount": "auto",
+    "columnGap": "16px",
+    "display": "grid"
+   },
+   "li": {
+    "breakInside": "auto"
+   },
+   "dom": [
+    "card1Title",
+    "card2Title",
+    "card3Title"
+   ],
+   "boxes": [
+    {
+     "l": 16,
+     "t": 1514.3,
+     "w": 343,
+     "h": 176
+    },
+    {
+     "l": 16,
+     "t": 1706.3,
+     "w": 343,
+     "h": 59
+    },
+    {
+     "l": 16,
+     "t": 1781.3,
+     "w": 343,
+     "h": 92
+    }
+   ],
+   "columnsUsed": 1,
+   "assignInfo": [
+    0,
+    0,
+    0
+   ],
+   "heightsDiffer": true,
+   "ulBottom": 1873.3,
+   "clipped": 0
+  }
+ },
+ "static-eq-1280": {
+  "same": true,
+  "found": [
+   "t",
+   "l",
+   "c",
+   "m"
+  ],
+  "overflowX": 0,
+  "clientWidth": 1265
+ },
+ "static-eq-768": {
+  "same": true,
+  "found": [
+   "t",
+   "l",
+   "c",
+   "m"
+  ],
+  "overflowX": 0,
+  "clientWidth": 753
+ },
+ "static-eq-390": {
+  "same": true,
+  "found": [
+   "t",
+   "l",
+   "c",
+   "m"
+  ],
+  "overflowX": 0,
+  "clientWidth": 375
+ },
+ "colors-light-base-1280": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface",
+    "ink/bg"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-light-base-768": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface",
+    "ink/bg"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-light-base-390": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 16.82,
+   "pairs": [
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface",
+    "ink/bg"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-light-alt-1280": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface",
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/surface"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-light-alt-768": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface",
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/surface"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-light-alt-390": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 15.31,
+   "pairs": [
+    "ink/surface",
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.93,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/surface"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-dark-base-1280": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/primary"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/surface",
+    "ink/primary"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-dark-base-768": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/primary"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/surface",
+    "ink/primary"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-dark-base-390": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 20.08,
+   "pairs": [
+    "ink/bg"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/primary"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/surface",
+    "ink/primary"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-dark-alt-1280": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 6.06,
+   "pairs": [
+    "ink/bg",
+    "muted/bg"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/surface",
+    "ink/primary"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/primary"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-dark-alt-768": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 6.06,
+   "pairs": [
+    "ink/bg",
+    "muted/bg"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/surface",
+    "ink/primary"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/primary"
+   ],
+   "focusables": 0
+  }
+ },
+ "colors-dark-alt-390": {
+  "text": {
+   "n": 2,
+   "bad": [],
+   "min": 17.62,
+   "pairs": [
+    "ink/surface"
+   ],
+   "focusables": 0
+  },
+  "list": {
+   "n": 5,
+   "bad": [],
+   "min": 6.06,
+   "pairs": [
+    "ink/bg",
+    "muted/bg"
+   ],
+   "focusables": 0
+  },
+  "cards2": {
+   "n": 6,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/surface",
+    "ink/primary"
+   ],
+   "focusables": 0
+  },
+  "masonry": {
+   "n": 8,
+   "bad": [],
+   "min": 4.56,
+   "pairs": [
+    "ink/bg",
+    "muted/bg",
+    "ink/primary"
+   ],
+   "focusables": 0
+  }
+ },
+ "long200-1280": {
+  "overflowX": 0,
+  "text": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "list": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "cards2": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "masonry": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "textLens": {
+   "text": [
+    40,
+    400
+   ],
+   "list": [
+    40,
+    160
+   ],
+   "cards2": [
+    40,
+    160,
+    30,
+    120,
+    30,
+    120
+   ],
+   "masonry": [
+    40,
+    160,
+    30,
+    120,
+    30,
+    120,
+    30,
+    120
+   ]
+  }
+ },
+ "long200-768": {
+  "overflowX": 0,
+  "text": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "list": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "cards2": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "masonry": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "textLens": {
+   "text": [
+    40,
+    400
+   ],
+   "list": [
+    40,
+    160
+   ],
+   "cards2": [
+    40,
+    160,
+    30,
+    120,
+    30,
+    120
+   ],
+   "masonry": [
+    40,
+    160,
+    30,
+    120,
+    30,
+    120,
+    30,
+    120
+   ]
+  }
+ },
+ "long200-390": {
+  "overflowX": 0,
+  "text": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "list": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "cards2": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "masonry": {
+   "wider": [],
+   "ellipsis": 0,
+   "scrollOver": 0
+  },
+  "textLens": {
+   "text": [
+    40,
+    400
+   ],
+   "list": [
+    40,
+    160
+   ],
+   "cards2": [
+    40,
+    160,
+    30,
+    120,
+    30,
+    120
+   ],
+   "masonry": [
+    40,
+    160,
+    30,
+    120,
+    30,
+    120,
+    30,
+    120
+   ]
+  }
+ }
+}

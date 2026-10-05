@@ -14,8 +14,23 @@
 | a1a14c3 | services/cards-masonry — CSS 다단 · 4변형 공통 KD-AC-06·07·08 테스트 · 실렌더 22 | kit/ServicesCards.tsx·.test.tsx · kit/bodyVariants2a.test.tsx · kit.css · registry · renderedVariants · PageDocument.test · SectionVariant.test |
 (경로 앞 `app/src/` 생략. 마감 커밋은 6절 뒤에 추가)
 
-## 2. KD-AC 판정
-(작성 중)
+## 2. KD-AC 판정 (이 레인 4변형 범위)
+[U]/[G] = vitest(표적 파일) · [B] = ego-browser `qb.mjs` → logs/qb-run.txt · logs/qb.json (render.html 127.0.0.1:4337 최상위 페이지, CDP 폭 1280·768·390 — innerWidth 1280/768/390 기록, clientWidth = 스크롤바 제외 1265/753/375)
+| KD-AC | 방법 · 표본 | 결과 |
+|---|---|---|
+| 01 상태·효과·핸들러·모션·vh·hex·px·앱 DS 0 | [G] `src/test/kitGuard.test.ts`(킷 전체 파일, 새 파일 자동 포함) — gate guards 76 pass | PASS |
+| 02 상한 글자 + 200% 넘침 0 · 말줄임 0 | [B] 4변형 전 슬롯 상한(혼합 한글·영문 무공백) + `html{font-size:200%}` × 3폭: overflowX 0 · 밖으로 나간 요소 0 · 말줄임 0 · 내부 스크롤 넘침 0 (logs/qb.json long200-*) | PASS |
+| 03 입력 = 출력 · items 조각 합 | [U] AboutText·ServicesList·ServicesCards 테스트(상한 글자 그대로, 20조각·400자 1조각) + [B] textLens 일치 | PASS |
+| 04 선택 슬롯 빈 값 → 요소 0 | [U] services intro · 카드 body · 조각 0 → ul 0 · 빈 p·li 0 | PASS |
+| 05 색 조합 | [B] light·dark(카드 dark) × 톤 교대·뒤집기(4변형 각각 base·alt) × 3폭 = 12 문서 × 4변형: 위반 0 · 쌍 = ink/bg · ink/surface · muted/bg(base 소개만) · ink/primary(dark 카드 C-3) · 최소 4.56(dark C-3) · 불투명도 < 1 글자 0 | PASS |
+| 06 script 0 추가 | [U] bodyVariants2a.test(정적 HTML script = 고정 1개 바이트 일치 · on* 0) + [B] 같은 문서 정적 HTML n=1 sameBytes · on* 0 | PASS |
+| 07 순서 = 문서 순서 | [G] 이번 CSS 블록 order·reverse·grid-area·grid-row 0 · [U]/[B] li DOM 순서 1·2·3(masonry), 서비스 1·2·3(list) | PASS |
+| 08 헤딩 | [U]+[B] h2 각 1 · h3 = cards-2 2 · masonry 3 · about/text·list 0 | PASS |
+| 09 about/text | [U] figure 0 · story 이미지 꺼짐과 data-section 외 outerHTML 동일 · [B] 글 묶음 폭 500.4 = prose-max 500.4(1280·768) / 343 전체 폭(390) · 왼쪽 선 = 내용 폭 왼쪽 · text-align start · 1단 | PASS |
+| 10 services/list | [U] 두 기대값(3개 / 2개 "진료 검사") · 조각 0 → ul 0 · ul[role=list] · [B] 1280 머리·목록 같은 행(grid 440:616 = 5:7) column-count auto(1열) / 768 column-count 2(항목 왼쪽 2곳) / 390 1열 · white-space normal | PASS |
+| 11 services/cards-2 | [U] li 2 · [B] 1280·768 같은 행·같은 높이(108/108) / 390 세로 2행 · 카드 면 = K-AC-26 규칙(ServicesCards3.test 그대로 GREEN) | PASS |
+| 12 services/cards-masonry | [B] column-count 2(1280·768) · auto 1열(390, display grid) · break-inside avoid(다단 폭) · 높이 다름(150·75·108) · DOM 1·2·3 · 카드 조각남 0 · 단 배정(참고, 단언 안 함) = [0,1,1] | PASS |
+| 정적 HTML 계산 스타일 동등성 | [B] 같은 문서의 정적 HTML(4339) vs 렌더 문서: 4변형 박스·계산 스타일 3폭 모두 일치(static-eq-* same=true) | PASS |
 
 ## 3. 번들
 측정: `npm run build`(gate.sh) KB 표기 + 바이트 정밀 = `/tmp/m2b2a-bytes.mjs`(check-bundle-size.mjs 사본, sizeOf만 바이트 — 저장소 밖). 원문: logs/p1-baseline-bytes.txt · logs/p1-prototype-bytes.txt · logs/final-bytes.txt
@@ -59,8 +74,19 @@
 | 같은 파일 3 "고르면 바로 적용 …" | 라디오 이름 `목록형 · 구조 미리보기` | `목록형` | 같음. 알림 문구·포커스·되돌리기 단언 그대로 |
 | test/renderedVariants.test.ts | 집합 일치·중복 0·freeze | 변경 0 | — |
 
-## 5. QB
-(작성 중)
+## 5. QB (캡처 = shots/, 3폭 × 8문서 = 24장)
+방식: qb.mjs가 같은 문서의 정적 HTML(static/*.html, CSS = 렌더 문서 `<style>` 원문 — 제품 kitCss와 같은 원문)을 저장 → `shots.sh` Chrome headless로 정적 사이트 문서 전체 높이 창 캡처(렌더 sandbox iframe fullPage 아님) · 390 = 390폭 iframe 래퍼 + sips 크롭. ego screenshot은 쓰지 않음(1b에서 CDP 시간 초과 이력 → 처음부터 headless).
+| QB | 캡처 | 판정 |
+|---|---|---|
+| QB-1 about/text | qb-1-{1280,768,390} | PASS — prose-max 왼쪽 정렬 1단, 이미지 자리 없음 |
+| QB-2 services/list | qb-2-* (항목 7개) | PASS — 1280 2단 · 768 목록 2열(왼쪽 단 위→아래) · 390 1열, 구분선·제목 굵기 |
+| QB-3 services/cards-2 | qb-3-* | PASS — 2열 같은 높이 / 390 1열, 카드 면 ≠ 섹션 면 |
+| QB-4 services/cards-masonry | qb-4-* (설명 길이 다름) | PASS — 엇갈린 높이 · 단 사이 s5 · 카드 잘림 없음 / 390 1열 |
+| QB-13 톤 교대 | qb-13-* · qb-13-flip-* | PASS — alt 섹션에 muted 글자 0([B] 05 쌍 목록) |
+| QB-14 카드 dark | qb-14-* | PASS — cards-2·masonry 카드 primary 면 + ink 글자(C-3 4.56) |
+| QB-15 상한 + 200% | qb-15-* (html 200% 사본) | PASS — 넘침·겹침 없음([B] 02) |
+- 시안(mock-body.html)과 다른 점: 1280 list는 목록 칸 1열(SPEC 2절대로) · 768 list 목록 아래 구분선은 다단 전체 폭 1줄(오른쪽 단 마지막 항목 아래 별도 선 없음 — SPEC "목록 맨 아래 한 줄"). 값(px·색)은 시안이 아니라 토큰 기준(ADR-003).
+- 판정 스크립트 결함 1건(제품 결함 아님): 1차 실행에서 정적 사본 CSS를 `cssRules.cssText`로 모았더니 `.kit-card { border: var(--site-card-stroke) solid …; border-top-width: … }`의 단축 속성이 빈 값으로 직렬화돼 정적 사본 카드 테두리가 사라짐(카드 높이 1px 차, logs/qb-eq-run.txt · qb-eq.json 진단). 제품 내보내기(`staticHtml.ts kitCss`)는 CSS 파일 원문을 쓰므로 해당 없음 → `<style>` 원문으로 바꿔 재실행, 동등성 일치. 같은 `cssText` 방식을 쓴 1b QA 캡처에도 같은 왜곡이 있었을 수 있음(7절).
 
 ## 6. Codex
 (작성 중)
@@ -69,4 +95,5 @@
 (작성 중)
 
 ## 8. 서버
-(작성 중)
+- 이 worktree에서 vite 127.0.0.1:4337(`npm exec vite --host 127.0.0.1 --port 4337 --strictPort`, cwd …/m2b-2a/app) + `python3 -m http.server 4339 --bind 127.0.0.1`(cwd …/m2b-2a/dev/active/m2b-2a/static). 로그 logs/server-4337.txt · server-4339.txt.
+- 종료(logs/server-stop.txt): cwd 확인 후 자기 PID 77654(vite) · 77605(npm exec 부모) · 77606(http.server)만 kill → lsof 4337·4339 **LISTEN 0**, 남은 PID 0. main 5480(PID 82062)은 무접촉.

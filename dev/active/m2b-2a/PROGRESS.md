@@ -12,7 +12,7 @@
 - [x] P3 services/list — RED 6 fail(logs/services-list-red.txt) → GREEN · 첫 gate FAIL(SectionVariant.test 3건: services/list를 미구현 예시로 씀) → 이관(REPORT 4절 표) → gate OK(logs/services-list-gate.txt)
 - [x] P4 services/cards-2 — RED 3 fail(logs/cards-2-red.txt) → 공유 ServicesCards(카드 번호 목록) + ServicesCards3 wrapper · cards-3 마크업 cmp SAME(logs/cards3-markup-same.txt) · gate OK(logs/cards-2-gate.txt, /studio 중간값 127.42)
 - [x] P5 services/cards-masonry — RED 7 fail(masonry 3 + 4변형 공통 4, logs/cards-masonry-red.txt) → GREEN · gate OK(logs/cards-masonry-gate.txt) · 최종 바이트 logs/final-bytes.txt (렌더 JS +185 B · CSS +112 B · /studio 진입 +5 B)
-- [ ] P-B 브라우저 전 REPORT 구현·번들 채움 → 1280/768/390 QB 캡처 · KD-AC [B] 판정 · 정적 HTML 동등성
+- [x] P-B REPORT 1·3·4 선기록(0738115) → qb.mjs [B] 전부 PASS · 정적 동등성 3폭 일치(1차 판정 스크립트 cssText 결함 발견·수정) · 캡처 24장 · 서버 종료 LISTEN 0
 - [ ] P-F 전체 vitest 1회 exit 0 Errors 0 (logs/full-vitest.txt)
 - [ ] P-F Codex review --scope branch --base c22f169 1회 결과 회수
 - [ ] P-F REPORT 마감 · 서버 종료 증거(4337·4339 LISTEN 0)

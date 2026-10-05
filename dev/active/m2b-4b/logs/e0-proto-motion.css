@@ -1,0 +1,41 @@
+/* E0 시제품 — hero/fullbleed-left 1변형 + 토큰·keyframes·시트 */
+@media screen and (prefers-reduced-motion: no-preference) {
+  @layer components {
+    [data-site-root][data-motion-play] {
+      --site-motion-dur-sheet: 200ms;
+      --site-motion-dur-enter: 420ms;
+      --site-motion-dur-zoom: 720ms;
+      --site-motion-stagger: 80ms;
+      --site-motion-ease-out: cubic-bezier(0.2, 0, 0, 1);
+      --site-motion-ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+      --site-motion-rise: 0.75rem;
+      --site-motion-drop: -0.5rem;
+      --site-motion-zoom: 1.04;
+    }
+    @keyframes kit-fade { from { opacity: 0; } }
+    @keyframes kit-rise { from { opacity: 0; transform: translateY(var(--site-motion-rise)); } }
+    @keyframes kit-zoom { from { transform: scale(var(--site-motion-zoom)); } }
+    [data-site-root][data-motion-play] [data-kit][data-motion] .kit-sheet:popover-open {
+      transition: opacity var(--site-motion-dur-sheet) var(--site-motion-ease-std), transform var(--site-motion-dur-sheet) var(--site-motion-ease-std), overlay var(--site-motion-dur-sheet) allow-discrete, display var(--site-motion-dur-sheet) allow-discrete;
+    }
+    @starting-style {
+      [data-site-root][data-motion-play] [data-kit][data-motion] .kit-sheet:popover-open {
+        opacity: 0;
+        transform: translateY(var(--site-motion-drop));
+      }
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L1"] .kit-hero-panel {
+      animation: kit-fade var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] .kit-hero-panel {
+      animation: kit-rise var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"].kit-hero {
+      overflow: clip;
+    }
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] .kit-hero-media {
+      transform-origin: 50% 100%;
+      animation: kit-zoom var(--site-motion-dur-zoom) var(--site-motion-ease-out) 1 backwards;
+    }
+  }
+}

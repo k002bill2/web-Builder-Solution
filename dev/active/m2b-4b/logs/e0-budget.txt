@@ -1,0 +1,6 @@
+# E0-2 모션 CSS 시제품 예산 실측 (bytes.sh, gzip B)
+baseline(P0): 렌더 JS 82,871 · CSS 8,034 · /studio 첫 91,784 · 진입 127,330 · /compare 진입 121,695
+시제품(logs/e0-proto-motion.css = 토큰 9 · keyframes 3 · 시트 transition+@starting-style · hero/fullbleed-left L1·L2·clip·zoom 4규칙): 렌더 JS 82,871(+0) · CSS 8,391(+357) · 앱 화면 ±0
+빌드 산출(dist/assets/render-*.css): @media screen and (prefers-reduced-motion:no-preference){@layer components{…}} 원형 유지 · @starting-style 블록 유지 · transition 의 overlay/display allow-discrete 유지(lightningcss 변환 0)
+외삽: 고정분(토큰·keyframes·시트) ≈ 240 B 추정 + 변형 규칙 ≈ 30 B/규칙 gzip × 남은 약 20규칙(:is() 묶음) ≈ +600 B → 최종 예상 CSS +0.9~1.2KB(≈ 9.0~9.3 / 30) · JS +0~0.15KB(속성 계산만)
+판정: SPEC 1.7 추정(CSS +1.2~2.0 · JS +0~0.15) 이내 예상 · 멈춤선(JS 89.70 · CSS 30) 위험 0 → 진행

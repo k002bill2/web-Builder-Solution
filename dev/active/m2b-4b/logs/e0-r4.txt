@@ -1,0 +1,17 @@
+# E0-1 R-4 @starting-style 실측 (Ego Lite Chromium, 2026-10-05) — 프로브 HTML 원문
+<!doctype html><html><head><style>
+@media screen and (prefers-reduced-motion: no-preference) {
+ [data-play] .s:popover-open { transition: opacity 200ms, transform 200ms, overlay 200ms allow-discrete, display 200ms allow-discrete; }
+ @starting-style { [data-play] .s:popover-open { opacity: 0; transform: translateY(-0.5rem); } }
+ [data-play] .u:popover-open { transition: opacity 200ms, transform 200ms, overlay 200ms allow-discrete, display 200ms allow-discrete; }
+ @starting-stylex { [data-play] .u:popover-open { opacity: 0; transform: translateY(-0.5rem); } }
+}
+</style></head><body><div data-play><div id="s" class="s" popover>시트 S</div><div id="u" class="u" popover>시트 U</div></div></body></html>
+
+# 결과
+UA Chrome/152.0.0.0 · CSSStartingStyleRule 존재 = true
+S(지원 @starting-style): 열림 직후 1프레임 opacity 0 · transform matrix(1,0,0,1,0,-8) · 전환 [opacity, transform] → 400ms 뒤 opacity 1 · transform none
+U(미지원 대용 = 알 수 없는 at-rule @starting-stylex — 브라우저가 블록을 버림): 열림 직후 opacity 1 · transform none · 전환 0 = 처음부터 최종 상태
+prefers-reduced-motion: reduce 에뮬레이션: S·U 모두 열림 직후 opacity 1 · none · 전환 0
+media print 에뮬레이션: S·U 모두 열림 직후 opacity 1 · none · 전환 0
+판정: R-4 = 지원 시 0.2초 열림 · 미지원 시 즉시 최종 상태(기능 영향 0). Safari·Firefox 실측은 환경 없음(한계)

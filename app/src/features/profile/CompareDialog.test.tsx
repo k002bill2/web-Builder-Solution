@@ -136,3 +136,119 @@ describe("미리보기 폭 · 배치 (CMP-AC-U9)", () => {
     expect(framesOf(dialog)[0]).toHaveAttribute("title", "C안 실제 화면 미리보기");
   });
 });
+
+const column = (dialog: HTMLElement, id: string) => within(dialog).getByRole("region", { name: `${id}안` });
+const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+const status = (dialog: HTMLElement) => within(dialog).getByRole("status");
+
+describe("열 상태 (SPEC 3.3 · CMP-AC-U6)", () => {
+  it("그리는 중 → 그림 · NO_KIT_TOKENS 뒤 rects = 기본 모양 · INVALID_DOC = 구조 미리보기(Wireframe, iframe 0)", async () => {
+    const { dialog } = await mountDialog();
+    const [a, b, c] = ["A", "B", "C"].map((id) => column(dialog, id)) as [HTMLElement, HTMLElement, HTMLElement];
+    for (const col of [a, b, c]) expect(col).toHaveTextContent("그리는 중…");
+    await send(frameIn(a)!, { type: "rects", rects: [sectionRect(900)] });
+    expect(a).not.toHaveTextContent("그리는 중…");
+    await send(frameIn(b)!, { type: "error", code: "NO_KIT_TOKENS" });
+    expect(b).toHaveTextContent("그리는 중…");
+    await send(frameIn(b)!, { type: "rects", rects: [sectionRect(900)] });
+    expect(b).toHaveTextContent("프로필 색·글꼴이 없어 기본 모양으로 그렸습니다");
+    await send(frameIn(c)!, { type: "error", code: "INVALID_DOC" });
+    expect(c).toHaveTextContent("이 안을 그리지 못했습니다 — 구조 미리보기로 표시합니다");
+    expect(frameIn(c)).toBeNull();
+    expect(c.querySelector('[aria-hidden="true"].aspect-4\\/5')).not.toBeNull();
+  });
+
+  it("시간 초과 8000ms → '그리는 데 시간이 오래 걸립니다' + 다시 그리기(그 열만 재마운트) · 늦은 rects = 그림", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const { dialog } = await mountDialog();
+      const [a, b] = [column(dialog, "A"), column(dialog, "B")];
+      const before = { a: frameIn(a), b: frameIn(b) };
+      await act(() => vi.advanceTimersByTimeAsync(7800));
+      expect(a).not.toHaveTextContent("그리는 데 시간이 오래 걸립니다");
+      await act(() => vi.advanceTimersByTimeAsync(200));
+      expect(a).toHaveTextContent("그리는 데 시간이 오래 걸립니다");
+      await send(frameIn(b)!, { type: "rects", rects: [sectionRect(900)] });
+      expect(b).not.toHaveTextContent("그리는 데 시간이 오래 걸립니다");
+      expect(frameIn(a)).toBe(before.a);
+      await act(async () => within(a).getByRole("button", { name: "다시 그리기" }).click());
+      expect(frameIn(a)).not.toBe(before.a);
+      expect(frameIn(b)).toBe(before.b);
+      expect(a).toHaveTextContent("그리는 중…");
+      await send(frameIn(a)!, { type: "rects", rects: [sectionRect(900)] });
+      expect(a).not.toHaveTextContent("그리는 중…");
+      expect(within(a).queryByRole("button", { name: "다시 그리기" })).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("변환 불가(UNKNOWN_VARIANT) = 그 alert 문장 · Wireframe · iframe 0 · 만들지 못한 안 = failureText · 프레임 없음", async () => {
+    const { viewed, job } = await fixture({ outcome: ({ id }) => (id === "C" ? "INFRA" : undefined) });
+    const a = job.candidates[0]!;
+    if (a.status !== "succeeded") throw new Error("A안 성공 전제");
+    const odd: GenerationJob = { ...job, candidates: [{ ...a, plan: { ...a.plan, sections: a.plan.sections.map((s, i) => (i === 1 ? { ...s, variant: "nope" } : s)) } }, ...job.candidates.slice(1)] };
+    const { dialog, rerender, props } = await mountDialog();
+    rerender(<CompareDialog {...props} job={odd} viewed={viewed} />);
+    const colA = column(dialog, "A");
+    expect(frameIn(colA)).toBeNull();
+    expect(colA).toHaveTextContent(/이 안에는 편집기가 아직 열 수 없는 섹션이 있습니다/);
+    expect(colA.querySelector('[aria-hidden="true"].aspect-4\\/5')).not.toBeNull();
+    const colC = column(dialog, "C");
+    expect(frameIn(colC)).toBeNull();
+    expect(colC).toHaveTextContent(/^C안.*C안을 만들지 못했습니다 · /);
+  });
+});
+
+describe("대화상자 알림 role=status (SPEC 3.4 · CMP-AC-U7)", () => {
+  it("3열 = 모든 열 범주 확정 때 1회(2 그림 + 1 지연) · 중간 낭독 0 · 지연 안이 늦게 그려지면 그 안만 1회", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const { dialog } = await mountDialog();
+      await send(frameIn(column(dialog, "A"))!, { type: "rects", rects: [sectionRect(900)] });
+      await send(frameIn(column(dialog, "B"))!, { type: "rects", rects: [sectionRect(900)] });
+      expect(status(dialog)).toHaveTextContent(/^$/);
+      await act(() => vi.advanceTimersByTimeAsync(8000));
+      expect(status(dialog)).toHaveTextContent(/^3안 중 2개를 그렸습니다 · 1개는 아직 그려지지 않음$/);
+      await send(frameIn(column(dialog, "C"))!, { type: "rects", rects: [sectionRect(900)] });
+      expect(status(dialog)).toHaveTextContent(/^C안을 그렸습니다$/);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("부분 성공 잡 — 그림 1 · 구조 미리보기 1 · 만들지 못함 1 = 총계 문장에 0 아닌 범주만", async () => {
+    const { dialog } = await mountDialog({ options: { outcome: ({ id }) => (id === "C" ? "INFRA" : undefined) } });
+    await send(frameIn(column(dialog, "A"))!, { type: "rects", rects: [sectionRect(900)] });
+    expect(status(dialog)).toHaveTextContent(/^$/);
+    await send(frameIn(column(dialog, "B"))!, { type: "error", code: "INVALID_DOC" });
+    expect(status(dialog)).toHaveTextContent(/^3안 중 1개를 그렸습니다 · 1개는 구조 미리보기로 표시 · 1개는 만들지 못했습니다$/);
+  });
+
+  it("1안씩 = 보이는 안이 범주에 들면 1회(미방문 안 대기 0) · 전환 자체는 알리지 않음 · 킷 없이 = ' · 기본 모양'", async () => {
+    viewport(768);
+    const { dialog } = await mountDialog();
+    await send(framesOf(dialog)[0]!, { type: "rects", rects: [sectionRect(900)] });
+    expect(status(dialog)).toHaveTextContent(/^A안을 그렸습니다$/);
+    await userEvent.click(within(dialog).getByRole("radio", { name: "B안" }));
+    expect(status(dialog)).toHaveTextContent(/^A안을 그렸습니다$/);
+    await send(framesOf(dialog)[0]!, { type: "error", code: "NO_KIT_TOKENS" });
+    await send(framesOf(dialog)[0]!, { type: "rects", rects: [sectionRect(900)] });
+    expect(status(dialog)).toHaveTextContent(/^B안을 그렸습니다 · 기본 모양$/);
+  });
+});
+
+describe("캡션 · 요약 (SPEC 2.4 · 2.5 · CMP-AC-U11·U12)", () => {
+  it("캡션 1(동일성 범위 + 기존 문서 안내) · 캡션 2(프로필 비율) · 요약 비율 접미 '(구조안)'", async () => {
+    const { dialog, props } = await mountDialog();
+    expect(dialog).toHaveTextContent(
+      "실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.",
+    );
+    const scale = props.viewed.base.typography_tokens.scale;
+    expect(dialog).toHaveTextContent(`제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 ${scale}로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.`);
+    const a = props.job.candidates[0]!;
+    if (a.status !== "succeeded") throw new Error("A안 성공 전제");
+    expect(column(dialog, "A")).toHaveTextContent(`${parts.heroText(a.plan.axes)} · `);
+    expect(column(dialog, "A")).toHaveTextContent(`${parts.scaleText(a.plan, props.profileScale)} (구조안)`);
+  });
+});

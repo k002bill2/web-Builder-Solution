@@ -1,0 +1,1576 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app
+
+ ❯ src/features/profile/CompareDialog.test.tsx (11 tests | 7 failed) 462ms
+   ❯ 열 상태 (SPEC 3.3 · CMP-AC-U6) (3)
+     × 그리는 중 → 그림 · NO_KIT_TOKENS 뒤 rects = 기본 모양 · INVALID_DOC = 구조 미리보기(Wireframe, iframe 0) 42ms
+     × 시간 초과 8000ms → '그리는 데 시간이 오래 걸립니다' + 다시 그리기(그 열만 재마운트) · 늦은 rects = 그림 38ms
+     × 변환 불가(UNKNOWN_VARIANT) = 그 alert 문장 · Wireframe · iframe 0 · 만들지 못한 안 = failureText · 프레임 없음 28ms
+   ❯ 대화상자 알림 role=status (SPEC 3.4 · CMP-AC-U7) (3)
+     × 3열 = 모든 열 범주 확정 때 1회(2 그림 + 1 지연) · 중간 낭독 0 · 지연 안이 늦게 그려지면 그 안만 1회 30ms
+     × 부분 성공 잡 — 그림 1 · 구조 미리보기 1 · 만들지 못함 1 = 총계 문장에 0 아닌 범주만 23ms
+     × 1안씩 = 보이는 안이 범주에 들면 1회(미방문 안 대기 0) · 전환 자체는 알리지 않음 · 킷 없이 = ' · 기본 모양' 23ms
+   ❯ 캡션 · 요약 (SPEC 2.4 · 2.5 · CMP-AC-U11·U12) (1)
+     × 캡션 1(동일성 범위 + 기존 문서 안내) · 캡션 2(프로필 비율) · 요약 비율 접미 '(구조안)' 18ms
+ ❯ src/pages/ProfileCompare.test.tsx (6 tests | 1 failed) 990ms
+   ❯ 3안 영역 캡션 (SPEC 2.4 · CMP-AC-U11) (1)
+     × CANDIDATE_TEXT.preview = 구조 미리보기 + 실제 화면은 비교에서 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 3안 영역 캡션 (SPEC 2.4 · CMP-AC-U11) > CANDIDATE_TEXT.preview = 구조 미리보기 + 실제 화면은 비교에서
+TestingLibraryElementError: Unable to find an element with the text: 구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다.. This could be because the text is broken up by multiple elements. In th
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"profile-candidates"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-4"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading1"[39m
+      [33mid[39m=[32m"profile-candidates"[39m
+    [36m>[39m
+      [0m생성된 3안[0m
+    [36m</h2>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+    [36m>[39m
+      [0m프로필 v1 · 라이브러리 1.4 · seed e979fae6 · 생성기 preview-1 → 같은 입력이면 같은 결과[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgr
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m3안 만들기 (v1)[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [33mid[39m=[32m"_r_28_"[39m
+    [36m>[39m
+      [0m같은 버전으로 다시 만들면 같은 결과가 나옵니다[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2 md:items-end"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-describedby[39m=[32m"_r_29_"[39m
+      [33maria-disabled[39m=[32m"true"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgr
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m편집 시작[0m
+      [36m<i[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"ds-icon size-5 "[39m
+        [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/arrow-right.svg\");"[39m
+      [36m/>[39m
+    [36m</button>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative md:text-right"[39m
+      [33mid[39m=[32m"_r_29_"[39m
+    [36m>[39m
+      [0m안을 고르면 편집을 시작할 수 있습니다 · 편집기는 다음 단계(2a-05)에서 연결됩니다. 지금은 고른 안만 저장되고, 편집 시작을 누르면 편집기 자리표시 화면으로 이동합니다.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/ProfileCompare.test.tsx:149:27
+    147|   it("CANDIDATE_TEXT.preview = 구조 미리보기 + 실제 화면은 비교에서", async () => {
+    148|     const { region } = await open();
+    149|     expect(within(region).getByText("구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화…
+       |                           ^
+    150|   });
+    151| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 열 상태 (SPEC 3.3 · CMP-AC-U6) > 그리는 중 → 그림 · NO_KIT_TOKENS 뒤 rects = 기본 모양 · INVALID_DOC = 구조 미리보기(Wireframe, iframe 0)
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "A안"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_9_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_9_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading2"[39m
+      [33mid[39m=[32m"_r_9_-title"[39m
+    [36m>[39m
+      [0m3안 실제 화면 비교[0m
+    [36m</h2>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mB[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mC[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"C안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ column src/features/profile/CompareDialog.test.tsx:140:68
+    138| });
+    139|
+    140| const column = (dialog: HTMLElement, id: string) => within(dialog).get…
+       |                                                                    ^
+    141| const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+    142| const status = (dialog: HTMLElement) => within(dialog).getByRole("stat…
+ ❯ src/features/profile/CompareDialog.test.tsx:147:51
+ ❯ src/features/profile/CompareDialog.test.tsx:147:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 열 상태 (SPEC 3.3 · CMP-AC-U6) > 시간 초과 8000ms → '그리는 데 시간이 오래 걸립니다' + 다시 그리기(그 열만 재마운트) · 늦은 rects = 그림
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "A안"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_b_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_b_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading2"[39m
+      [33mid[39m=[32m"_r_b_-title"[39m
+    [36m>[39m
+      [0m3안 실제 화면 비교[0m
+    [36m</h2>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mB[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mC[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"C안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ column src/features/profile/CompareDialog.test.tsx:140:68
+    138| });
+    139|
+    140| const column = (dialog: HTMLElement, id: string) => within(dialog).get…
+       |                                                                    ^
+    141| const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+    142| const status = (dialog: HTMLElement) => within(dialog).getByRole("stat…
+ ❯ src/features/profile/CompareDialog.test.tsx:165:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 열 상태 (SPEC 3.3 · CMP-AC-U6) > 변환 불가(UNKNOWN_VARIANT) = 그 alert 문장 · Wireframe · iframe 0 · 만들지 못한 안 = failureText · 프레임 없음
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "A안"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_d_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_d_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading2"[39m
+      [33mid[39m=[32m"_r_d_-title"[39m
+    [36m>[39m
+      [0m3안 실제 화면 비교[0m
+    [36m</h2>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mB[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mC[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ column src/features/profile/CompareDialog.test.tsx:140:68
+    138| });
+    139|
+    140| const column = (dialog: HTMLElement, id: string) => within(dialog).get…
+       |                                                                    ^
+    141| const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+    142| const status = (dialog: HTMLElement) => within(dialog).getByRole("stat…
+ ❯ src/features/profile/CompareDialog.test.tsx:193:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 대화상자 알림 role=status (SPEC 3.4 · CMP-AC-U7) > 3열 = 모든 열 범주 확정 때 1회(2 그림 + 1 지연) · 중간 낭독 0 · 지연 안이 늦게 그려지면 그 안만 1회
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "A안"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_f_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_f_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading2"[39m
+      [33mid[39m=[32m"_r_f_-title"[39m
+    [36m>[39m
+      [0m3안 실제 화면 비교[0m
+    [36m</h2>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mB[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mC[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"C안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ column src/features/profile/CompareDialog.test.tsx:140:68
+    138| });
+    139|
+    140| const column = (dialog: HTMLElement, id: string) => within(dialog).get…
+       |                                                                    ^
+    141| const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+    142| const status = (dialog: HTMLElement) => within(dialog).getByRole("stat…
+ ❯ src/features/profile/CompareDialog.test.tsx:208:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 대화상자 알림 role=status (SPEC 3.4 · CMP-AC-U7) > 부분 성공 잡 — 그림 1 · 구조 미리보기 1 · 만들지 못함 1 = 총계 문장에 0 아닌 범주만
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "A안"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_h_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_h_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading2"[39m
+      [33mid[39m=[32m"_r_h_-title"[39m
+    [36m>[39m
+      [0m3안 실제 화면 비교[0m
+    [36m</h2>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mB[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mC[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ column src/features/profile/CompareDialog.test.tsx:140:68
+    138| });
+    139|
+    140| const column = (dialog: HTMLElement, id: string) => within(dialog).get…
+       |                                                                    ^
+    141| const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+    142| const status = (dialog: HTMLElement) => within(dialog).getByRole("stat…
+ ❯ src/features/profile/CompareDialog.test.tsx:222:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 대화상자 알림 role=status (SPEC 3.4 · CMP-AC-U7) > 1안씩 = 보이는 안이 범주에 들면 1회(미방문 안 대기 0) · 전환 자체는 알리지 않음 · 킷 없이 = ' · 기본 모양'
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_j_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  Name "보는 안":
+  [36m<div[39m
+    [33maria-label[39m=[32m"보는 안"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "A안":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_j_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h2[39m
+      [33mclass[39m=[32m"ds-heading2"[39m
+      [33mid[39m=[32m"_r_j_-title"[39m
+    [36m>[39m
+      [0m3안 실제 화면 비교[0m
+    [36m</h2>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"보는 안"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mA안[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mB안[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mC안[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col gap-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"ds-label"[39m
+        [36m>[39m
+          [0mA[0m
+          [0m안[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mstyle[39m=[32m"height: 900px;"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ status src/features/profile/CompareDialog.test.tsx:142:56
+    140| const column = (dialog: HTMLElement, id: string) => within(dialog).get…
+    141| const frameIn = (col: HTMLElement) => col.querySelector("iframe");
+    142| const status = (dialog: HTMLElement) => within(dialog).getByRole("stat…
+       |                                                        ^
+    143|
+    144| describe("열 상태 (SPEC 3.3 · CMP-AC-U6)", () => {
+ ❯ src/features/profile/CompareDialog.test.tsx:232:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 캡션 · 요약 (SPEC 2.4 · 2.5 · CMP-AC-U11·U12) > 캡션 1(동일성 범위 + 기존 문서 안내) · 캡션 2(프로필 비율) · 요약 비율 접미 '(구조안)'
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.[39m
+Received:
+[31m  3안 실제 화면 비교데스크톱모바일닫기A안B안C안[39m
+ ❯ src/features/profile/CompareDialog.test.tsx:244:20
+    242|   it("캡션 1(동일성 범위 + 기존 문서 안내) · 캡션 2(프로필 비율) · 요약 비율 접미 '(구조안)'", asyn…
+    243|     const { dialog, props } = await mountDialog();
+    244|     expect(dialog).toHaveTextContent(
+       |                    ^
+    245|       "실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서…
+    246|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  8 failed | 9 passed (17)
+   Start at  21:01:52
+   Duration  2.98s (environment 37%, tests 29%, transform 21%, setup 7%, import 6%)
+

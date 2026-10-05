@@ -142,3 +142,10 @@ describe("닫기 (CMP-AC-U10)", () => {
     expect(button).toHaveFocus();
   });
 });
+
+describe("3안 영역 캡션 (SPEC 2.4 · CMP-AC-U11)", () => {
+  it("CANDIDATE_TEXT.preview = 구조 미리보기 + 실제 화면은 비교에서", async () => {
+    const { region } = await open();
+    expect(within(region).getByText("구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다.")).toBeInTheDocument();
+  });
+});

@@ -4,7 +4,7 @@
  * ≥1280(80rem) 3열이 한 스크롤 영역을 공유, 그 아래는 1안씩 + "보는 안" 라디오(기본 = 선택한 안, 전환 = 맨 위로). 프레임은 보이는 열에만(상한 3 · 1).
  * 카드 부품(Wireframe·요약 글자)은 이미 받은 CandidateResults 모듈을 부모가 넘긴다 — import하면 결과 청크가 공유 청크로 갈라진다.
  */
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button } from "../../components/ds/Button";
 import { SegmentedControl } from "../../components/ds/SegmentedControl";
 import type { CandidateId, GenerationJob } from "../../domain/generation";
@@ -13,6 +13,7 @@ import type { WirePalette } from "./CandidateCard";
 import { CompareColumn } from "./CompareColumn";
 import { COMPARE_WIDTH_OPTIONS, type CompareView } from "./compareFrame";
 import { compareKitTokens, comparePreviews } from "./comparePreviews";
+import { categoryText, COMPARE_TEXT, scaleNotice, totalText, type FrameCategory } from "./compareText";
 
 export type CandidateParts = Pick<typeof import("./CandidateResults"), "Wireframe" | "heroText" | "scaleText">;
 export interface CompareDialogProps {
@@ -44,6 +45,41 @@ function useWide() {
   return wide;
 }
 
+/**
+ * 대화상자 안 role=status (SPEC 3.4) — 3열 = 세 열 범주가 모두 정해지면 총계 1회, 그 뒤(복구·다시 그리기)는 범주가 바뀐 안만 1회.
+ * 1안씩 = 보이는 안이 범주에 들면 1회(미방문 안은 기다리지 않는다). 범주가 미정으로 돌아가면(다시 그리기·다시 마운트) 낭독 0 + 다음 범주를 다시 알린다.
+ */
+function useAnnouncement(visible: readonly CandidateId[], wide: boolean) {
+  const [text, say] = useState("");
+  const categories = useRef<Partial<Record<CandidateId, FrameCategory>>>({});
+  const announced = useRef<Partial<Record<CandidateId, FrameCategory>>>({});
+  const totalled = useRef(false);
+  const view = useRef({ visible, wide });
+  useEffect(() => {
+    view.current = { visible, wide };
+  }, [visible, wide]);
+  const report = useCallback((id: CandidateId, category: FrameCategory | undefined) => {
+    categories.current = { ...categories.current, [id]: category };
+    if (category === undefined) {
+      announced.current = { ...announced.current, [id]: undefined };
+      return;
+    }
+    const { visible: ids, wide: three } = view.current;
+    if (!ids.includes(id) || announced.current[id] === category) return;
+    if (three && !totalled.current) {
+      const all = ids.map((i) => categories.current[i]);
+      if (!all.every(Boolean)) return;
+      totalled.current = true;
+      announced.current = { ...categories.current };
+      say(totalText(all as FrameCategory[]));
+      return;
+    }
+    announced.current = { ...announced.current, [id]: category };
+    say(categoryText(id, category));
+  }, []);
+  return { text, say, report };
+}
+
 export default function CompareDialog(props: CompareDialogProps) {
   const { job, viewed, onClose } = props;
   const id = useId();
@@ -56,6 +92,13 @@ export default function CompareDialog(props: CompareDialogProps) {
   const wide = useWide();
   const [view, setView] = useState<CompareView>("desktop");
   const [shown, setShown] = useState<CandidateId>(job.selected ?? "A");
+  const visible = useMemo(() => (wide ? previews.map((p) => p.id) : [shown]), [wide, previews, shown]);
+  const announcement = useAnnouncement(visible, wide);
+  const { listen } = props;
+  useEffect(() => {
+    listen(announcement.say);
+    return () => listen(undefined);
+  }, [listen, announcement.say]);
 
   useEffect(() => {
     const el = dialog.current;
@@ -78,9 +121,13 @@ export default function CompareDialog(props: CompareDialogProps) {
       className="fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 id={`${id}-title`} className="ds-heading2">
-          3안 실제 화면 비교
-        </h2>
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 id={`${id}-title`} className="ds-heading2">
+            3안 실제 화면 비교
+          </h2>
+          <p className="ds-caption1 text-label-alternative">{COMPARE_TEXT.same}</p>
+          <p className="ds-caption1 text-label-alternative">{scaleNotice(viewed.base.typography_tokens.scale)}</p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegmentedControl label="미리보기 폭" size="sm" options={COMPARE_WIDTH_OPTIONS} value={view} onChange={setView} />
           {!wide && (
@@ -100,12 +147,24 @@ export default function CompareDialog(props: CompareDialogProps) {
           </Button>
         </div>
       </div>
+      <p role="status" className="ds-caption1 text-label-alternative">
+        {announcement.text}
+      </p>
       <div ref={body} role="region" aria-label="3안 미리보기 영역" tabIndex={0} className="min-h-0 flex-1 overflow-y-auto">
         <div className={wide ? "mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4" : "flex flex-col gap-4"}>
           {previews
             .filter((p) => wide || p.id === shown)
             .map((p) => (
-              <CompareColumn key={p.id} preview={p} kitTokens={kitTokens} view={view} />
+              <CompareColumn
+                key={p.id}
+                preview={p}
+                kitTokens={kitTokens}
+                view={view}
+                parts={props.parts}
+                palette={props.palette}
+                profileScale={props.profileScale}
+                onCategory={announcement.report}
+              />
             ))}
         </div>
       </div>

@@ -5,7 +5,7 @@ import { GENERATOR_VERSION, isTerminal, type CandidateFailure, type GenerationJo
 import type { ProfileVersion } from "../../domain/profile";
 
 export const CANDIDATE_TEXT = Object.freeze({
-  preview: "구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 페이지는 생성기 연결 후(M2) 만들어집니다.",
+  preview: "구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다.",
   hint: "같은 버전으로 다시 만들면 같은 결과가 나옵니다",
   blocked: "저장하지 않은 조정이 있습니다 — 저장하면 새 버전으로 만듭니다",
   editReason: "안을 고르면 편집을 시작할 수 있습니다",

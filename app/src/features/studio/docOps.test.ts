@@ -1,8 +1,9 @@
 import { addSection, moveSection, removeSection, swapVariant } from "../../engine/ops/sectionOps";
 import { normalizeDoc } from "../../engine/ops/normalize";
 import { ids, sampleDoc, section, withSections } from "../../engine/testing/sampleDoc";
-import { applyDocOp, createInstanceIds, runDocOp, type OpContext } from "./docOps";
+import { applyDocOp, createInstanceIds, type OpContext } from "./docOps";
 import * as engine from "./docEngine";
+import { runDocOp } from "./docEngine";
 
 const doc = sampleDoc();
 const ctx = (over: Partial<OpContext> = {}): OpContext => ({ purpose: "none", motionPreset: "L2", nextInstanceId: () => "s-new-1", ...over });

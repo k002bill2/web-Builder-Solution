@@ -8,8 +8,9 @@ import { setMeta, setSlot, swapTheme } from "../../engine/ops/slotOps";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../engine/testing/sampleTheme";
-import { createInstanceIds, runDocOp, type DocOp } from "./docOps";
+import { createInstanceIds, type DocOp } from "./docOps";
 import * as engine from "./docEngine";
+import { runDocOp } from "./docEngine";
 
 /**
  * K7 엔진 불변 (E-AC-23) — 동결한 입력 문서로 8.2 연산 전부를 편집기 경로(docOps 어댑터 포함)로 실행:

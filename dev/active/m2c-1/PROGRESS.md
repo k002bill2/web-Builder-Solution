@@ -23,3 +23,4 @@
 - **단계 3 예측(RED 전)**: `ladderFormat.test.ts` 새 테스트 **16개**. 스텁에서 **15 실패 · 1 통과**("png로 떨어지면 미지원" — 스텁 false).
 - 단계 3 RED 15 실패 · 1 통과(예측 일치). GREEN 61/61(누적) · tsc·eslint 통과.
 - **단계 4 예측(RED 전)**: `ingestImage.test.ts` 새 테스트 **15개**(it 13 · each 2행 ×2). 스텁(reject)에서 **14 실패 · 1 통과**(기본 deps 모양 — 스텁도 함수).
+- 단계 4 RED 14 실패 · 1 통과(예측 일치). GREEN 76/76(누적, ingest 폴더) · tsc·eslint 통과.

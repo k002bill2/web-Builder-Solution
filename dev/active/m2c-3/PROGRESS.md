@@ -12,3 +12,13 @@ base `d25fe49` · 브랜치 `k002bill2/m2c-3`
 - [ ] 브라우저 4폭 — BLOCKED: 구현 없음(예산 멈춤)
 - [x] REPORT 작성(`REPORT.md`) · 되돌린 뒤 build exit 0 · 진입 127.36(`logs/build-after-revert.txt`)
 - [ ] typecheck·lint·vitest·Codex review — BLOCKED/해당 없음: 앱 코드 diff 0줄(base와 동일) — 새로 증명할 코드가 없음(REPORT 3절)
+
+## 재개 (2026-10-06 · DECISION-RESUME · HEAD 7d05f94 = main ab5fa4a 병합)
+- [x] R0: 시작 build 재실측 `logs/build-resume-start.txt` — `/studio` 진입 **127.14** · 첫 91.77 · `/profile` 첫 99.61 · `/catalog` 99.64 · 렌더 JS 84.19 / CSS 8.80
+- [x] R0: 시제품 = `try1.patch` 그대로 적용 build `logs/build-resume-proto.txt` — 진입 **127.23**(+0.09) · `/catalog` 99.66(+0.02) · `/compare` 자동 로드 121.71(+0.03) · 렌더 변화 0 → 감지선 127.39까지 여유 0.16 — 진행
+- [ ] R1 보관소 순수 함수(참조 집합·prune·한도·pickVariant) TDD
+- [ ] R2 ImageSlotPanel TDD(파일 선택·실패 문구·진행·대체텍스트/장식·제거·잃은 이미지·안내)
+- [ ] R3 EditFields·StudioLayout 연결(캔버스 images) TDD + 중간 build
+- [ ] R4 typecheck·lint·전체 vitest·build
+- [ ] R5 Ego Lite 4폭 확인·캡처 + 창·탭 닫힘 재확인 · 서버 종료·lsof 0
+- [ ] R6 Codex review --scope branch --base d25fe49 (≤2) · REPORT 전체 갱신

@@ -427,9 +427,9 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | 방문자 안내 | `ink` C-2 | `ink` C-4 | `small` · 제목 굵기 |
 | 이름표 · 동의 문구 | `ink` C-2 | `ink` C-4 | `body` · 동의 `small` |
 | 입력칸 면 / 글자 | 면 `bg` · 글자 `ink` C-2 | 면 `bg` · 글자 `ink` C-2 | `body` |
-| 입력칸 경계 | `ink` `stroke-1` (C-2 ≥ 3:1) | `ink` `stroke-1` (`bg` 칸 면 C-2 · `surface` 섹션 면 C-4) | radius 0.5 |
+| 입력칸 경계 | `ink` `stroke-1` (C-2 ≥ 3:1) — 연결 모양. 비활성 중에는 아래 r3 단서(점선) | `ink` `stroke-1` (`bg` 칸 면 C-2 · `surface` 섹션 면 C-4) | radius 0.5 |
 | 체크박스 | 브라우저 기본 + `accent-color: primary` | 같음 | `hit-min` 누름 영역(이름표 포함) |
-| 보내기 버튼 | 면 `primary` · 글자 `on-primary` C-1 | 같음 | `body` · 제목 굵기 |
+| 보내기 버튼 | 면 `primary` · 글자 `on-primary` C-1 — 연결 모양. 비활성 중에는 아래 r3 단서(점선 외곽 · 글자 `ink`) | 같음 | `body` · 제목 굵기 |
 | 포커스 링 | (비활성이라 포커스 안 됨 — 연결 뒤를 위해 0.3 규칙만 둔다) | | |
 - **비활성 모양 (r3 개정 — B-M2B-07)**: 회색·불투명도로 흐리게 하지 않는다(0.3 불투명도 글자 0 · 흐린 글자는 대비 검사 밖이 된다) — **유지**. r2까지는 "연결되었을 때와 같은 모양"이었으나 M2B-6 QA가 "활성처럼 보임"을 관찰(`dev/active/m2b-6-qa/REPORT.md` 57행)해 **모양 단서 2개를 더한다**. 커서 `not-allowed`는 유지하되 근거로 세지 않는다(터치·키보드에서 안 보임).
   1. **안내 상자**: 방문자 안내 `p`에 경계 `ink` `stroke-1` 실선 + radius 0.5(입력칸과 같은 단계) + 안쪽 `s3`(위아래)×`s4`(좌우). 면은 섹션 면 그대로(새 면 색 0). 글자·단계·굵기 그대로(`ink` `small` 제목 굵기, C-2·C-4).
@@ -627,7 +627,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 | K-AC-34 | 계측 `png_*` 이벤트 값에 프로젝트 이름·파일 이름·슬롯 글자 0 | [U] |
 | K-AC-35 | header 열린 시트 폭 전환: 390에서 시트를 연 채 1024로 바꿈 → 보이는 `nav` 1(바) · 시트·"메뉴" 버튼 `display:none` · 접근성 트리 `navigation` 1 / 다시 390 → 시트 보임 · 바 `nav` 숨김 · `navigation` 1 | [B] |
 | K-AC-36 | 대비 보증 연결: 시험 프로필이 그 대비 수준(AA 4.5 · 강화 7.0)으로 C-1~C-5(어두운 카드 C-3 포함)를 **통과**하는 것을 먼저 확인하고, 렌더 문서의 모든 글자 요소의 실측 대비(계산된 글자색 / 불투명 배경색)가 같은 기준 이상 — 통과 프로필 2벌(카드 톤 `light`·`dark`) × 섹션 톤 `base`·`alt` | [B] |
-| K-AC-37 | contact(form·booking) | (r3 · B-M2B-07) `fieldset[disabled]` 안 입력칸·`textarea`·보내기 버튼의 계산된 `border-style` = `dashed` · 보내기 버튼 배경 투명·글자색 = `--site-ink` · 방문자 안내의 `border-style` = `solid`·두께 = `--site-stroke-1` · 모든 요소 `opacity` 1 · `disabled`를 뗀 같은 마크업(테스트용)에서는 입력칸 `solid`·버튼 면 `--site-primary` | [U]·[B] |
+| K-AC-37 | contact(form·booking) | (r3 · B-M2B-07) `fieldset[disabled]` 안 입력칸·`textarea`·보내기 버튼의 계산된 `border-style` = `dashed` · 보내기 버튼 배경 투명·글자색 = `--site-ink` · 방문자 안내의 `border-style` = `solid`·두께 = `--site-stroke-1` · 모든 요소 `opacity` 1 · `disabled`를 뗀 같은 마크업에서는 입력칸 `solid`·버튼 면 `--site-primary` — [G] = `kit.css` 글자 가드(기존 `ContactForm.test.tsx`·`ContactBooking.test.tsx` 방식: `.kit-field`·`.kit-submit` 기본 규칙 = 연결 모양 유지 + `.kit-fieldset:disabled` 블록에 `dashed`·투명 면) · [B] = 계산된 스타일(jsdom은 kit.css를 계산하지 않음) | [G]·[B] |
 
 (K-AC 번호는 이 명세 안에서만 쓰는 식별자다. 빈 번호 없음: 01~36.)
 
@@ -653,7 +653,7 @@ M2A-1 브리프의 메시지는 `render{doc, palette}`뿐이다. 킷은 팔레�
 
 - 왜 지금: M2B-6 QA 30변형 대조에서 m2a K1 7변형만 "루브릭 원기록 없음"으로 주의 7건(`dev/active/m2b-6-qa/REPORT.md` 91~121행). 이 절이 그 원기록이다 — QA 표 "루브릭 원기록" 열은 이후 `m2a SPEC 5절`을 가리킨다.
 - **형식 = SPEC-BOUND 0.3(①~⑩) 하나로 통일**: 7변형이 바깥(header·hero·footer)과 본문(about·services·faq·contact)에 걸쳐 있어 한 절 안에서 두 형식을 섞지 않는다. ①~⑧은 SPEC-BODY 0.3과 같은 뜻, ⑨ 데이터 계약 · ⑩ 내보내기 동일성을 더한다. 판정 = PASS / 주의 + 한 줄 근거.
-- **근거 범위(새 렌더·크롤링 0)**: ① 기능 · ② 위계 · ③ 3폭 = M2C-5b 기준선 3장 + 90칸 가로 넘침 0 실측(`dev/active/m2c-5b-qa/logs/s2-heights.json`, REPORT 33행) · ④ 접근성 = 이 SPEC K1 각 절 + M2B-6 실측(Tab·Esc·inert) + vitest 가드 · ⑤ 토큰 = `noHardcodedStyle` 가드 + 0.3 허용 조합 · ⑥ 예산 = M2B-6 REPORT 6절 번들 표(렌더 JS 83.03 / CSS 8.75KB, 멈춤선 89.70 / 30 안 — 7변형은 그 안의 일부, 변형별 분리 측정 없음) · ⑦ 독자성 = 외부 사이트 접속 0으로 쓴 명세(이 문서 머리) · ⑧ 근거 3 = (가) 일반 레이아웃 원칙 (나) WCAG 번호·HTML 의미 (다) 내부 카탈로그 태그(L1 `app/src/fixtures/referenceDetails.ts` 섹션 `name`/`variant` · `references.ts` `layoutType`·`purpose`).
+- **근거 범위(새 렌더·크롤링 0)**: ① 기능 · ② 위계 · ③ 3폭 = M2C-5b 기준선 3장 + 90칸 가로 넘침 0 실측(`dev/active/m2c-5b-qa/logs/s2-heights.json`, REPORT 33행) · ④ 접근성 = 이 SPEC K1 각 절 + M2B-6 실측(Tab·Esc·inert) + vitest 가드 · ⑤ 토큰 = `noHardcodedStyle` 가드 + 0.3 허용 조합 · ⑥ 예산 = M2C-5 QA REPORT QB-12(M2c 이후 `npm run build` — 렌더 JS 84.19 / CSS 8.80KB, 멈춤선 89.70 / 30 안 · IMG-AC-29 가드) · M2B-6 REPORT 6절(M2c 전 83.03 / 8.75) — 7변형은 그 안의 일부, 변형별 분리 측정 없음 · ⑦ 독자성 = 외부 사이트 접속 0으로 쓴 명세(이 문서 머리) · ⑧ 근거 3 = (가) 일반 레이아웃 원칙 (나) WCAG 번호·HTML 의미 (다) 내부 카탈로그 태그(L1 `app/src/fixtures/referenceDetails.ts` 섹션 `name`/`variant` · `references.ts` `layoutType`·`purpose`).
 - **⑩은 7변형 모두 "주의(변형별 미검증)"**: M2B-6이 내보내기 동일성(캔버스 = PNG = 정적 HTML)을 E2E 문서 1건에서만 보았다(REPORT 92행). 이 절은 새 실측을 하지 않으므로 PASS로 올리지 않는다.
 - 캡처는 M2C-5b 기준선(감소 설정 최종 상태 · 문서 틀 = header sticky-right-cta + 대상 + footer minimal · SAMPLE_KIT_TOKENS). 이미지 슬롯 변형(hero·about)은 이미지 없음 = 자체 그래픽(SVG) 상태다.
 

@@ -24,6 +24,8 @@
 |---|---|---|---|
 | r1 adversarial | `codex-companion.mjs adversarial-review --scope branch --base 7125138 "<focus>"` | needs-attention · P2 2건: ① IMG-AC-30 "지우기 뒤 R-09 차단"은 자체 그래픽이 R-09 대상 밖이라 틀림 ② QB-10 스냅샷 보조 경로 실행 불가(`restoreSnapshot` 미구현). 그 밖: B-M2B-07 색 조합·정적 HTML 보존·E-S20 충돌 없음, QB-10 주 경로 도달 가능 | 2건 모두 반영 `9309ee5` · 원문 `codex-adv-r1.txt` |
 | r2 review | `codex-companion.mjs review --scope branch --base 7125138` | 결함 0 · `git diff --check` 통과 | — · 원문 `codex-review-r2.txt` |
+- r2 이후 문서 정합 수정 4건(**Codex 미검토 — BRIEF 상한 2라운드**): m2a K-AC-37 방법 `[U]·[B]` → `[G]·[B]`(jsdom 계산 스타일 없음, L1 기존 테스트 방식) · m2a 5절 ⑥ 예산을 M2c 이후 값(M2C-5 QB-12 렌더 JS 84.19 / CSS 8.80)으로 · K1-6 3 토큰 표 입력칸·버튼 행에 "연결 모양 — 비활성 중엔 r3 단서" 꼬리표 · IMPL-TODO T-1·T-2 깨질 테스트를 L1 grep 결과로.
+- 4게이트(typecheck·lint·test·build): 코드 0이라 미실행 — 근거 = 금지 경로 diff 0(아래).
 
 ## 운영 확인
 - Ego Lite: **미사용**(화면 확인 불필요 — 문서 근거 + 기존 기준선 캡처 인용). 연 창·탭 0 → `finish`·`listTaskSpaces` 대상 없음.

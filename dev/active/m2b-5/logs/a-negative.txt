@@ -1,0 +1,13 @@
+=== 음성 검증: protocol.ts 1024→1025 임시 변경
+ app/src/render/protocol.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+     × 소스 텍스트 동일 — isObject·isText·isNumber·isRect·readRenderMessage 5ms
+     × 메시지 코퍼스 동작 동일 — 정상·다른 창·다른 프레임·모양 틀림·출처 틀림 21ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/profile/compareFrameGuard.test.ts > readRenderMessage 로컬 사본 대조 (결정 A) > 소스 텍스트 동일 — isObject·isText·isNumber·isRect·readRenderMessage
+AssertionError: readRenderMessage: expected 'export function readRenderMessage(dat…' to be 'export function readRenderMessage(dat…' // Object.is equality
+ FAIL  src/features/profile/compareFrameGuard.test.ts > readRenderMessage 로컬 사본 대조 (결정 A) > 메시지 코퍼스 동작 동일 — 정상·다른 창·다른 프레임·모양 틀림·출처 틀림
+AssertionError: {"type":"rects","rects":[["hero-1",null,0,0,1280,640],["hero-1",null,0,0,1280,640],["hero-1",null,0,0,1280,640],["hero-1",null,0,0,1280,640],["hero-1",null,0,0,1280,640],["hero-1",null,0,0,1280,640],["her
+      Tests  2 failed (2)
+원본 복원 확인: git diff 0
+      Tests  2 passed (2)

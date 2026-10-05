@@ -1,0 +1,28 @@
+B resume "대화상자가 이미 열림 → Esc로 닫고 다시 연다(앱 안 조작)"
+B open-focus "radio:데스크톱"
+B B4 status@1280 dom "3안 중 3개를 그렸습니다"
+B B4 status@1280 AX [{"role":"status","name":"","ignored":false}]
+B zoom wait 1280 "ok"
+B B1/B3 1280 {"open":true,"columns":3,"iframes":3,"frames":[{"title":"A안 실제 화면 미리보기","zoom":"0.295825","frameW":378.65625,"colW":379,"height":"4282.27px","inert":true,"sandbox":"allow-scripts"},{"title":"B안 실제 화면 미리보기","zoom":"0.295825","frameW":378.65625,"colW":379,"height":"4475.4px","inert":true,"sandbox":"allow-scripts"},{"title":"C안 실제 화면 미리보기","zoom":"0.295825","frameW":378.65625,"colW":379,"height":"4313.52px","inert":true,"sandbox":"allow-scripts"}],"lines":["실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.","제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.","3안 중 3개를 그렸습니다","축소 보기 · 29%","축소 보기 · 29%","축소 보기 · 29%"],"dialogOverflow":0,"docOverflow":-15,"vw":1280}
+B shot "screenshot 실패: CDP request timed out: Page.captureScreenshot"
+B B5 motion (reduce off) []
+B B5 motion (reduce on) []
+B B2 Tab 1280 ["BUTTON[radio]:데스크톱","BUTTON:닫기","DIV[region]:3안 미리보기 영역","BUTTON:A안 선택","BUTTON:B안 선택","BUTTON:C안 선택","BODY:본문으로 건너뛰기Design Studio카탈","BUTTON[radio]:데스크톱","BUTTON:닫기","DIV[region]:3안 미리보기 영역","BUTTON:A안 선택","BUTTON:B안 선택"]
+B zoom wait 1024 "ok"
+B B3 1024 {"open":true,"columns":1,"iframes":1,"frames":[{"title":"A안 실제 화면 미리보기","zoom":"0.7125","frameW":912,"colW":912,"height":"4268.56px","inert":true,"sandbox":"allow-scripts"}],"lines":["실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.","제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.","3안 중 3개를 그렸습니다","축소 보기 · 71%"],"dialogOverflow":0,"docOverflow":-15,"vw":1024}
+B shot "screenshot 실패: CDP request timed out: Page.captureScreenshot"
+B zoom wait 768 "ok"
+B B3 768 {"open":true,"columns":1,"iframes":1,"frames":[{"title":"A안 실제 화면 미리보기","zoom":"0.5125","frameW":656,"colW":656,"height":"4268.56px","inert":true,"sandbox":"allow-scripts"}],"lines":["실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.","제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.","3안 중 3개를 그렸습니다","축소 보기 · 51%"],"dialogOverflow":0,"docOverflow":-15,"vw":768}
+B shot "screenshot 실패: CDP request timed out: Page.captureScreenshot"
+B zoom wait 390 "ok"
+B B3 390 {"open":true,"columns":1,"iframes":1,"frames":[{"title":"A안 실제 화면 미리보기","zoom":"0.217188","frameW":278,"colW":278,"height":"4272.41px","inert":true,"sandbox":"allow-scripts"}],"lines":["실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.","제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.","3안 중 3개를 그렸습니다","축소 보기 · 21%"],"dialogOverflow":0,"docOverflow":-15,"vw":390}
+B shot "screenshot 실패: CDP request timed out: Page.captureScreenshot"
+B B2 Tab 390 ["BUTTON[radio]:데스크톱","BUTTON[radio]:A안","BUTTON:닫기","DIV[region]:3안 미리보기 영역","BUTTON:A안 선택","BODY:본문으로 건너뛰기Design Studio카탈","BUTTON[radio]:데스크톱","BUTTON[radio]:A안","BUTTON:닫기","DIV[region]:3안 미리보기 영역"]
+B B3 390 mobile frame {"open":true,"columns":1,"iframes":1,"frames":[{"title":"A안 실제 화면 미리보기","zoom":"0.712821","frameW":278,"colW":278,"height":"3775.3px","inert":true,"sandbox":"allow-scripts"}],"lines":["실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.","제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.","3안 중 3개를 그렸습니다","축소 보기 · 71%"],"dialogOverflow":0,"docOverflow":-15,"vw":390}
+B shot "screenshot 실패: CDP request timed out: Page.captureScreenshot"
+B B3 1280 mobile frame {"open":true,"columns":3,"iframes":3,"frames":[{"title":"A안 실제 화면 미리보기","zoom":"0.970913","frameW":378.65625,"colW":379,"height":"3831.16px","inert":true,"sandbox":"allow-scripts"},{"title":"B안 실제 화면 미리보기","zoom":"0.970913","frameW":378.65625,"colW":379,"height":"3962.84px","inert":true,"sandbox":"allow-scripts"},{"title":"C안 실제 화면 미리보기","zoom":"0.970913","frameW":378.65625,"colW":379,"height":"3798.67px","inert":true,"sandbox":"allow-scripts"}],"lines":["실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.","제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.","C안을 그렸습니다","축소 보기 · 97%","축소 보기 · 97%","축소 보기 · 97%"],"dialogOverflow":0,"docOverflow":-15,"vw":1280}
+B shot "screenshot 실패: CDP request timed out: Page.captureScreenshot"
+B B6 select success dom "B안을 선택했습니다"
+B B6 select success AX [{"role":"status","name":"","ignored":false}]
+B B2 Esc {"dialog":false,"iframes":0,"focus":"3안 실제 화면으로 비교","cardSelected":"B안 선택"}
+

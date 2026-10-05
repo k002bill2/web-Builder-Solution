@@ -1,0 +1,1041 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app
+
+ ❯ src/features/profile/CompareDialog.test.tsx (14 tests | 2 failed) 799ms
+   ❯ 대화상자 안 선택 · 접근성 (SPEC 2.5 · 4 · CMP-AC-U8) (3)
+     × 열마다 '이 안 선택'(접근 이름 'X안 선택') = onSelect · 선택한 안 = aria-pressed + '선택됨' + Tag 선택 · busy = aria-busy · 만들지 못한 안 = 버튼 0 78ms
+     × gen.failure → 머리 아래 role=alert(같은 문장) · 바깥 announce(listen) → 대화상자 status 87ms
+ ❯ src/pages/ProfileCompare.test.tsx (7 tests | 1 failed) 1455ms
+   ❯ 대화상자 안 선택 통합 (SPEC 2.5 · CMP-AC-U8) (1)
+     × 대화상자 'B안 선택' = 카드와 같은 상태 · 성공 = 대화상자 status · 실패 = 대화상자 alert · 다시 누름 = 재시도 173ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 대화상자 안 선택 통합 (SPEC 2.5 · CMP-AC-U8) > 대화상자 'B안 선택' = 카드와 같은 상태 · 성공 = 대화상자 status · 실패 = 대화상자 alert · 다시 누름 = 재시도
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "B안 선택"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_31_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------status:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "A안":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_33_"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_34_"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_35_"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_33_"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_34_"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_35_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_31_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-1"[39m
+    [36m>[39m
+      [36m<h2[39m
+        [33mclass[39m=[32m"ds-heading2"[39m
+        [33mid[39m=[32m"_r_31_-title"[39m
+      [36m>[39m
+        [0m3안 실제 화면 비교[0m
+      [36m</h2>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_33_"[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+            [33mid[39m=[32m"_r_33_"[39m
+          [36m>[39m
+            [0mA[0m
+            [0m안[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+          [36m>[39m
+            [0m경고 [0m
+            [0m1[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+          [0m · [0m
+          [0m카드 3열[0m
+          [0m · [0m
+          [0m비율 1.25[0m
+          [0m (구조안)[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 3열 → 카드 3개 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m그리는 중…[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_34_"[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+            [33mid[39m=[32m"_r_34_"[39m
+          [36m>[39m
+            [0mB[0m
+            [0m안[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+          [36m>[39m
+            [0m경고 [0m
+            [0m1[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0mHero · 텍스트 중심 카피[0m
+          [0m · [0m
+          [0m카드 2열[0m
+          [0m · [0m
+          [0m비율 1.2[0m
+          [0m (구조안)[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 2열 → 카드 2열 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m그리는 중…[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_35_"[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+            [33mid[39m=[32m"_r_35_"[39m
+          [36m>[39m
+            [0mC[0m
+            [0m안[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+          [36m>[39m
+            [0m경고 [0m
+            [0m1[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0mHero · 센터 정렬 카피[0m
+          [0m · [0m
+          [0m카드 마소니[0m
+          [0m · [0m
+          [0m비율 1.333[0m
+          [0m (구조안)[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m그리는 중…[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"C안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/ProfileCompare.test.tsx:162:34
+    160|     const dialog = await screen.findByRole("dialog", { name: "3안 실제 화면…
+    161|     const spy = vi.spyOn(console, "error").mockImplementation(() => un…
+    162|     await u.click(within(dialog).getByRole("button", { name: "B안 선택" }…
+       |                                  ^
+    163|     expect(await within(dialog).findByRole("alert")).toHaveTextContent…
+    164|     failSelect = false;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 대화상자 안 선택 · 접근성 (SPEC 2.5 · 4 · CMP-AC-U8) > 열마다 '이 안 선택'(접근 이름 'X안 선택') = onSelect · 선택한 안 = aria-pressed + '선택됨' + Tag 선택 · busy = aria-busy · 만들
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "A안 선택"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_1p_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"_r_1p_"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+  [36m>[39m
+    [36m<h3[39m
+      [33mclass[39m=[32m"ds-label"[39m
+      [33mid[39m=[32m"_r_1p_"[39m
+    [36m>[39m
+      [0mA[0m
+      [0m안[0m
+    [36m</h3>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+    [36m>[39m
+      [0m경고 [0m
+      [0m1[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+    [0m · [0m
+    [0m카드 3열[0m
+    [0m · [0m
+    [0m비율 1.25[0m
+    [0m (구조안)[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 3열 → 카드 3개 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+  [36m</p>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m그리는 중…[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+      [33minert[39m=[32m""[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+        [33mstyle[39m=[32m"width: 80rem;"[39m
+      [36m>[39m
+        [36m<iframe[39m
+          [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+          [33msandbox[39m=[32m"allow-scripts"[39m
+          [33msrc[39m=[32m"/render.html"[39m
+          [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/profile/CompareDialog.test.tsx:259:43
+    257|   it("열마다 '이 안 선택'(접근 이름 'X안 선택') = onSelect · 선택한 안 = aria-pressed + …
+    258|     const { dialog, onSelect, rerender, props } = await mountDialog({ …
+    259|     const a = within(column(dialog, "A")).getByRole("button", { name: …
+       |                                           ^
+    260|     expect(a).toHaveAttribute("aria-pressed", "true");
+    261|     expect(a).toHaveTextContent("선택됨");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 대화상자 안 선택 · 접근성 (SPEC 2.5 · 4 · CMP-AC-U8) > gen.failure → 머리 아래 role=alert(같은 문장) · 바깥 announce(listen) → 대화상자 status
+TestingLibraryElementError: Unable to find an accessible element with the role "alert"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "3안 실제 화면 비교":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"_r_1s_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "미리보기 폭":
+  [36m<div[39m
+    [33maria-label[39m=[32m"미리보기 폭"[39m
+    [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visibl
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "닫기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[backgrou
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------status:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "3안 미리보기 영역":
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "A안":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_1u_"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_1v_"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_20_"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_1u_"[39m
+  [36m/>[39m
+
+  Name "B안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_1v_"[39m
+  [36m/>[39m
+
+  Name "C안":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+    [33mid[39m=[32m"_r_20_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<dialog[39m
+  [33maria-labelledby[39m=[32m"_r_1s_-title"[39m
+  [33mclass[39m=[32m"fixed inset-4 m-0 h-auto max-h-none w-auto max-w-none flex-col gap-4 rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal open:flex"[39m
+  [33mopen[39m=[32m""[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-3"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-col gap-1"[39m
+    [36m>[39m
+      [36m<h2[39m
+        [33mclass[39m=[32m"ds-heading2"[39m
+        [33mid[39m=[32m"_r_1s_-title"[39m
+      [36m>[39m
+        [0m3안 실제 화면 비교[0m
+      [36m</h2>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 1.25로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"미리보기 폭"[39m
+        [33mclass[39m=[32m"flex-wrap gap-0.5 rounded-md bg-fill-normal p-1 inline-flex"[39m
+        [33mrole[39m=[32m"radiogroup"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"true"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m데스크톱[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-checked[39m=[32m"false"[39m
+          [33mclass[39m=[32m"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-color,color] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-
+          [33mrole[39m=[32m"radio"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m모바일[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[back
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m닫기[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"3안 미리보기 영역"[39m
+    [33mclass[39m=[32m"min-h-0 flex-1 overflow-y-auto"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto grid w-full max-w-[calc(var(--layout-max-width)*1.5)] grid-cols-3 gap-4"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_1u_"[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+            [33mid[39m=[32m"_r_1u_"[39m
+          [36m>[39m
+            [0mA[0m
+            [0m안[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+          [36m>[39m
+            [0m경고 [0m
+            [0m1[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0mHero · 풀블리드 이미지 + 좌측 카피[0m
+          [0m · [0m
+          [0m카드 3열[0m
+          [0m · [0m
+          [0m비율 1.25[0m
+          [0m (구조안)[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 3열 → 카드 3개 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m그리는 중…[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"A안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_1v_"[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+            [33mid[39m=[32m"_r_1v_"[39m
+          [36m>[39m
+            [0mB[0m
+            [0m안[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+          [36m>[39m
+            [0m경고 [0m
+            [0m1[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0mHero · 텍스트 중심 카피[0m
+          [0m · [0m
+          [0m카드 2열[0m
+          [0m · [0m
+          [0m비율 1.2[0m
+          [0m (구조안)[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 2열 → 카드 2열 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m그리는 중…[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"B안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_20_"[39m
+        [33mclass[39m=[32m"flex min-w-0 flex-col gap-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+            [33mid[39m=[32m"_r_20_"[39m
+          [36m>[39m
+            [0mC[0m
+            [0m안[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-orange bg-accent-orange-bg h-6 px-2 rounded-sm text-caption1"[39m
+          [36m>[39m
+            [0m경고 [0m
+            [0m1[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0mHero · 센터 정렬 카피[0m
+          [0m · [0m
+          [0m카드 마소니[0m
+          [0m · [0m
+          [0m비율 1.333[0m
+          [0m (구조안)[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+        [36m>[39m
+          [0m그리는 중…[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+            [33minert[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+              [33mstyle[39m=[32m"width: 80rem;"[39m
+            [36m>[39m
+              [36m<iframe[39m
+                [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+                [33msandbox[39m=[32m"allow-scripts"[39m
+                [33msrc[39m=[32m"/render.html"[39m
+                [33mtitle[39m=[32m"C안 실제 화면 미리보기"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</dialog>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/profile/CompareDialog.test.tsx:278:27
+    276|     expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument(…
+    277|     rerender(<CompareDialog {...props} failure="안을 선택하지 못했습니다 · 다시 시도하…
+    278|     expect(within(dialog).getByRole("alert")).toHaveTextContent("안을 선택…
+       |                           ^
+    279|     act(() => receivers.at(-1)!("B안을 선택했습니다"));
+    280|     expect(status(dialog)).toHaveTextContent(/^B안을 선택했습니다$/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 18 passed (21)
+   Start at  21:05:42
+   Duration  2.87s (tests 47%, environment 27%, transform 16%, setup 5%, import 5%)
+

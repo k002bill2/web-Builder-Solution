@@ -1,0 +1,35 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app
+
+ ❯ src/features/profile/CompareDialog.test.tsx (15 tests | 1 failed) 1082ms
+   ❯ 1안씩 전환 뒤 알림 (Codex R1 P2) (1)
+     × 부분 실패 잡에서 만들지 못한 안으로 전환 = 그 안 문장 1회(전환 직후 보고가 이전 보이는 안 목록을 보지 않는다) 73ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 1안씩 전환 뒤 알림 (Codex R1 P2) > 부분 실패 잡에서 만들지 못한 안으로 전환 = 그 안 문장 1회(전환 직후 보고가 이전 보이는 안 목록을 보지 않는다)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^C안은 만들지 못했습니다$/[39m
+Received:
+[31m  A안을 그렸습니다[39m
+ ❯ src/features/profile/CompareDialog.test.tsx:297:28
+    295|     expect(status(dialog)).toHaveTextContent(/^A안을 그렸습니다$/);
+    296|     await userEvent.click(within(dialog).getByRole("radio", { name: "C…
+    297|     expect(status(dialog)).toHaveTextContent(/^C안은 만들지 못했습니다$/);
+       |                            ^
+    298|   });
+    299| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  21:22:11
+   Duration  5.53s (environment 28%, transform 27%, tests 22%, setup 17%, import 6%)
+

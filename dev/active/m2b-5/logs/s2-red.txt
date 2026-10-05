@@ -1,0 +1,471 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app
+
+ ❯ src/features/profile/compareGuard.test.ts (2 tests | 2 failed) 120ms
+   ❯ 비교 프레임 가드 (CMP-AC-G2·G3) (2)
+     × G2 — 소스 전체 allow-same-origin 0 · 비교 프레임 sandbox 리터럴 = allow-scripts 34ms
+     × G3 — 로컬 상수·축소 계산 = RENDER_DOC_SRC · FRAME_REM · PREVIEW_WIDTH_OPTIONS · previewScale · scaleCaption 85ms
+ ❯ src/features/profile/CompareDialog.test.tsx (4 tests | 4 failed) 142ms
+   ❯ 비교 프레임 (CMP-AC-U4) (1)
+     × 열마다 iframe 1개 — 감싸개 inert · sandbox = allow-scripts · title 'X안 실제 화면 미리보기' · src /render.html 119ms
+   ❯ 프레임별 다리 (CMP-AC-U3) (1)
+     × B열 프레임 메시지로 A열이 바뀌지 않는다 · 그 프레임 ready → render · rects → 높이 · click 무시 7ms
+   ❯ 미리보기 폭 · 배치 (CMP-AC-U9) (2)
+     × 폭 전환 = 세 프레임 viewport만(문서 재전송 0) — 데스크톱 1280 → 모바일 390 7ms
+     × <1280 = 1안씩 + '보는 안' 라디오(기본 = 선택한 안) — 전환하면 그 안 프레임 1개만 6ms
+ ❯ src/pages/ProfileCompare.test.tsx (5 tests | 1 failed) 3947ms
+   ❯ 닫기 (CMP-AC-U10) (1)
+     × Esc(cancel)·닫기 → 대화상자·iframe 0 · 포커스 = 연 버튼 · 다시 열면 새로 그린다 3240ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCompare.test.tsx > 닫기 (CMP-AC-U10) > Esc(cancel)·닫기 → 대화상자·iframe 0 · 포커스 = 연 버튼 · 다시 열면 새로 그린다
+TestingLibraryElementError: Unable to find role="dialog" and name "3안 실제 화면 비교"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outlin
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"-mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:m-0 md:w-auto md:flex-1 md:overflow-vi
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/projects"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5 pb-3 md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary 
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare?new=1"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentC
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</a>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto grid max-w-(--layout-max-width) gap-8 px-4 py-6 md:px-7 md:py-8 xl:grid-cols-[minmax(0,--spacing(85))_minmax(0,1fr)]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex min-w-0 flex-col gap-8"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex flex-col gap-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m디자인 프로필[0m
+                [36m</h1>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1"[39m
+                [36m>[39m
+                  [0mv1 · 현재[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"ds-body3 self-start text-primary-text hover:text-primary-hover"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/projects"[39m
+              [36m>[39m
+                [0m프로젝트: [0m
+                [0m모던 카페 브랜드 프로젝트[0m
+              [36m</a>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+              [36m>[39m
+                [0m기준 레퍼런스: [0m
+                [0m모던 카페 브랜드[0m
+                [0m · [0m
+                [0m템플릿 그대로[0m
+              [36m</p>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"ds-label self-start text-primary-text hover:text-primary-hover"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outlin
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex flex-wrap items-center gap-x-7 border-b border-line-neutral bg-background-normal px-4 md:h-13 md:px-7"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"my-2.5 flex h-8 flex-none items-center gap-2.5 rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring)"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/catalog"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-block flex-none rounded-sm bg-label-normal size-6"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-body1 font-bold tracking-(--tracking-tight)"[39m
+          [36m>[39m
+            [0mDesign Studio[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"주 메뉴"[39m
+          [33mclass[39m=[32m"-mx-1 -mt-1 flex w-full gap-5.5 overflow-x-auto whitespace-nowrap px-1 pt-1 pb-3 text-body3 font-medium text-label-alternative md:m-0 md:w-auto md:flex-1 md:overflow-vi
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog"[39m
+          [36m>[39m
+            [0m카탈로그[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/catalog?tab=saved"[39m
+          [36m>[39m
+            [0m보관함[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) hover:text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare"[39m
+          [36m>[39m
+            [0m비교 보드[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mclass[39m=[32m"rounded-xs focus-visible:outline-none focus-visible:shadow-(--focus-ring) font-bold text-label-normal"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/projects"[39m
+          [36m>[39m
+            [0m프로젝트[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ml-auto flex flex-none items-center gap-2.5 pb-3 md:p-0"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-3 text-caption1 font-semibold leading-none tracking-(--tracking-snug) whitespace-nowrap text-on-primary 
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/compare?new=1"[39m
+          [36m>[39m
+            [36m<i[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"ds-icon size-4 "[39m
+              [33mstyle[39m=[32m"--icon: url(\"data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentC
+            [36m/>[39m
+            [0m새 프로젝트[0m
+          [36m</a>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"강영환"[39m
+            [33mclass[39m=[32m"inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-background-alternative font-semibold text-label-neutral size-8 text-caption2"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [0m강영[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto grid max-w-(--layout-max-width) gap-8 px-4 py-6 md:px-7 md:py-8 xl:grid-cols-[minmax(0,--spacing(85))_minmax(0,1fr)]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex min-w-0 flex-col gap-8"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex flex-col gap-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"ds-title1 focus:outline-none"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m디자인 프로필[0m
+                [36m</h1>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-violet bg-accent-violet-bg h-6 px-2 rounded-sm text-caption1"[39m
+                [36m>[39m
+                  [0mv1 · 현재[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"ds-body3 self-start text-primary-text hover:text-primary-hover"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/projects"[39m
+              [36m>[39m
+                [0m프로젝트: [0m
+                [0m모던 카페 브랜드 프로젝트[0m
+              [36m</a>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"ds-body3 text-label-alternative"[39m
+              [36m>[39m
+                [0m기준 레퍼런스: [0m
+                [0m모던 카페 브랜드[0m
+                [0m · [0m
+                [0m템플릿 그대로[0m
+              [36m</p>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"ds-label self-start text-primary-text hover:text-primary-hover"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/ProfileCompare.test.tsx:132:33
+    130|     const button = await within(region).findByRole("button", { name: C…
+    131|     await u.click(button);
+    132|     const dialog = await screen.findByRole("dialog", { name: "3안 실제 화면…
+       |                                 ^
+    133|     expect(dialog.querySelectorAll("iframe")).toHaveLength(3);
+    134|     fireEvent(dialog, new Event("cancel", { cancelable: true }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 비교 프레임 (CMP-AC-U4) > 열마다 iframe 1개 — 감싸개 inert · sandbox = allow-scripts · title 'X안 실제 화면 미리보기' · src /render.html
+TestingLibraryElementError: Unable to find an accessible element with the role "dialog" and name "3안 실제 화면 비교"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/d
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<span[39m
+      [33mdata-compare-kit[39m=[32m"yes"[39m
+      [33mdata-compare-previews[39m=[32m"3"[39m
+      [33mhidden[39m=[32m""[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ mountDialog src/features/profile/CompareDialog.test.tsx:53:25
+     51|   };
+     52|   const view = render(<CompareDialog {...props} />);
+     53|   const dialog = screen.getByRole("dialog", { name: "3안 실제 화면 비교" });
+       |                         ^
+     54|   return { ...view, props, dialog, onSelect, onClose, receivers, job: …
+     55| }
+ ❯ src/features/profile/CompareDialog.test.tsx:78:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 프레임별 다리 (CMP-AC-U3) > B열 프레임 메시지로 A열이 바뀌지 않는다 · 그 프레임 ready → render · rects → 높이 · click 무시
+TestingLibraryElementError: Unable to find an accessible element with the role "dialog" and name "3안 실제 화면 비교"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/d
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<span[39m
+      [33mdata-compare-kit[39m=[32m"yes"[39m
+      [33mdata-compare-previews[39m=[32m"3"[39m
+      [33mhidden[39m=[32m""[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ mountDialog src/features/profile/CompareDialog.test.tsx:53:25
+     51|   };
+     52|   const view = render(<CompareDialog {...props} />);
+     53|   const dialog = screen.getByRole("dialog", { name: "3안 실제 화면 비교" });
+       |                         ^
+     54|   return { ...view, props, dialog, onSelect, onClose, receivers, job: …
+     55| }
+ ❯ src/features/profile/CompareDialog.test.tsx:92:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 미리보기 폭 · 배치 (CMP-AC-U9) > 폭 전환 = 세 프레임 viewport만(문서 재전송 0) — 데스크톱 1280 → 모바일 390
+TestingLibraryElementError: Unable to find an accessible element with the role "dialog" and name "3안 실제 화면 비교"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/d
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<span[39m
+      [33mdata-compare-kit[39m=[32m"yes"[39m
+      [33mdata-compare-previews[39m=[32m"3"[39m
+      [33mhidden[39m=[32m""[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ mountDialog src/features/profile/CompareDialog.test.tsx:53:25
+     51|   };
+     52|   const view = render(<CompareDialog {...props} />);
+     53|   const dialog = screen.getByRole("dialog", { name: "3안 실제 화면 비교" });
+       |                         ^
+     54|   return { ...view, props, dialog, onSelect, onClose, receivers, job: …
+     55| }
+ ❯ src/features/profile/CompareDialog.test.tsx:113:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/features/profile/CompareDialog.test.tsx > 미리보기 폭 · 배치 (CMP-AC-U9) > <1280 = 1안씩 + '보는 안' 라디오(기본 = 선택한 안) — 전환하면 그 안 프레임 1개만
+TestingLibraryElementError: Unable to find an accessible element with the role "dialog" and name "3안 실제 화면 비교"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/d
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<span[39m
+      [33mdata-compare-kit[39m=[32m"yes"[39m
+      [33mdata-compare-previews[39m=[32m"3"[39m
+      [33mhidden[39m=[32m""[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ mountDialog src/features/profile/CompareDialog.test.tsx:53:25
+     51|   };
+     52|   const view = render(<CompareDialog {...props} />);
+     53|   const dialog = screen.getByRole("dialog", { name: "3안 실제 화면 비교" });
+       |                         ^
+     54|   return { ...view, props, dialog, onSelect, onClose, receivers, job: …
+     55| }
+ ❯ src/features/profile/CompareDialog.test.tsx:129:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/features/profile/compareGuard.test.ts > 비교 프레임 가드 (CMP-AC-G2·G3) > G2 — 소스 전체 allow-same-origin 0 · 비교 프레임 sandbox 리터럴 = allow-scripts
+Error: ENOENT: no such file or directory, open '/Users/younghwankang/orca/workspaces/web-builder-solution/m2b-5/app/src/features/profile/CompareFrame.tsx'
+ ❯ src/features/profile/compareGuard.test.ts:25:21
+     23|     const all = files(SRC);
+     24|     expect(all.filter((path) => readFileSync(path, "utf8").includes("a…
+     25|     const compare = readFileSync(join(SRC, "features/profile/CompareFr…
+       |                     ^
+     26|     expect([...compare.matchAll(/sandbox=("[^"]*"|\{[^}]*\})/g)].map((…
+     27|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/features/profile/compareGuard.test.ts > 비교 프레임 가드 (CMP-AC-G2·G3) > G3 — 로컬 상수·축소 계산 = RENDER_DOC_SRC · FRAME_REM · PREVIEW_WIDTH_OPTIONS · previewScale · scaleCaption
+AssertionError: expected undefined to be '/render.html' // Object.is equality
+
+- Expected:
+"/render.html"
+
++ Received:
+undefined
+
+ ❯ src/features/profile/compareGuard.test.ts:31:32
+     29|   it("G3 — 로컬 상수·축소 계산 = RENDER_DOC_SRC · FRAME_REM · PREVIEW_WIDTH_OP…
+     30|     const { RENDER_DOC_SRC } = await import("../../components/studio/S…
+     31|     expect(COMPARE_RENDER_SRC).toBe(RENDER_DOC_SRC);
+       |                                ^
+     32|     expect(COMPARE_FRAME_REM).toEqual({ desktop: FRAME_REM.desktop, mo…
+     33|     expect(COMPARE_WIDTH_OPTIONS).toEqual(PREVIEW_WIDTH_OPTIONS.filter…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  7 failed | 4 passed (11)
+   Start at  20:56:33
+   Duration  5.04s (tests 68%, environment 14%, transform 11%, setup 3%, import 3%)
+

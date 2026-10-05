@@ -64,6 +64,12 @@ const STUDIO_AFTER_ACTION = [
 ];
 /** 렌더 문서 진입 직후 자동 dynamic import — 지금은 없다(폴백만, M2A-1). 킷 지연 로드가 생기면 넣는다(조작 뒤 코드는 넣지 않고 크기만 출력 대상) */
 const RENDER_AUTO = [];
+/**
+ * 조작 뒤 — /profile 두 시나리오 공통(아래 "/profile" 주석의 호출 지점) +
+ *  3안 실렌더 비교(M2B-5 SPEC 1.1·3.1): CompareDialog(대화상자·프레임 다리·변환 writeStartDoc·docKitTokens) ← compareLoader loadCompare ←
+ *  CandidatesSection "3안 실제 화면으로 비교"·실패 뒤 "다시 시도" onClick. 진입은 받지 않는다 — ProfileCompare.test "번들 분류 근거"가 요청 0을 확인한다
+ */
+const PROFILE_AFTER_ACTION = ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts", "src/features/profile/CompareDialog.tsx"];
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
   "src/data/memoryBoardConfirm.ts",
@@ -98,7 +104,15 @@ const SCENARIOS = [
     // retryFailed ← useGeneration request·retry ← CandidatesSection "3안 만들기"·"다시 시도" onClick. 진입 findJob·getJob 폴링·selectCandidate는 받지 않는다
     // (store 조회만 — GenerationLoad.test "번들 분류 근거"가 요청 0을 확인한다). 기존 잡 표시·폴링 코드는 profileEngine·memoryGenerationRepository(자동 — useGeneration 로더)에 든다.
     // 프로젝트 메모리 구현: CandidatesSection loadProjects().startDoc ← "편집 시작" onClick(STUDIO-SLIM — 진입은 받지 않는다)
-    afterAction: ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts"],
+    afterAction: PROFILE_AFTER_ACTION,
+  },
+  // 3안이 있는 채 들어올 때(M2B-5 SPEC 0.1 G1) — CandidatesSection effect가 잡이 있으면 조작 없이 카드·표 청크(CandidateResults ← candidateResultsLoader)를 받는다 → 자동.
+  // 잡 없는 진입은 위 "/profile"이 잰다. 조작 뒤 목록은 같다
+  {
+    name: "/profile (3안 있음)",
+    page: "src/pages/ProfilePage.tsx",
+    auto: [...EAGER_DYNAMIC, "src/features/profile/profileEngine.ts", "src/data/deferredStudio.ts", "src/data/memoryGenerationRepository.ts", "src/features/profile/CandidateResults.tsx"],
+    afterAction: PROFILE_AFTER_ACTION,
   },
   // 프로젝트 목록·편집기(2a-05 S-B11): 진입 때 자동 — useProjectRepository → main loadStudio(deferredStudio) → projects()(memoryProjectRepository)
   { name: "/projects", page: "src/pages/ProjectsRoute.tsx", auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO] },

@@ -1,0 +1,25 @@
+       |                        ^
+     18|   const body = [lines[start]!];
+     19|   for (const line of lines.slice(start + 1)) {
+ ❯ src/features/profile/compareFrameGuard.test.ts:36:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/profile/compareFrameGuard.test.ts > readRenderMessage 로컬 사본 대조 (결정 A) > 메시지 코퍼스 동작 동일 — 정상·다른 창·다른 프레임·모양 틀림·출처 틀림
+TypeError: readRenderMessage is not a function
+ ❯ src/features/profile/compareFrameGuard.test.ts:68:39
+     66|       { type: "unknown" },
+     67|     ];
+     68|     for (const data of corpus) expect(copiedReadRenderMessage(data), J…
+       |                                       ^
+     69|     // 캔버스 다리(StructureCanvas useRenderFrame)와 같은 판정: 그 프레임의 contentWi…
+     70|     const canvas = (event: MessageEvent, frame: HTMLIFrameElement | nu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  20:52:12
+   Duration  883ms (environment 78%, setup 13%, transform 4%, tests 2%, import 2%, worker 1%)
+

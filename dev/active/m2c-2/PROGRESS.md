@@ -13,3 +13,4 @@
 - [ ] REPORT.md (IMG-AC↔테스트 · 번들 전후 · 한계)
 
 ## 메모
+- ① 예측(RED 전): bundleBudget.test.mjs 새 테스트 6개 — 6개 모두 RED 예상(기준선 옵션·파일 없음). 기존 8개 GREEN 유지.

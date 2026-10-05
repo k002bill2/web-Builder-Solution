@@ -56,7 +56,8 @@ export function RenderApp({ host }: { readonly host: Window }) {
         }
         // 킷 토큰 없음(조회 전·실패) = 킷은 그리지 않고 error — 폴백 섹션은 중립 토큰으로 계속 그린다(MQ-1)
         if (!message.kitTokens) post({ type: "error", code: "NO_KIT_TOKENS" });
-        const images = urls.sync(message.images ?? {}, docImageIds(checked.value));
+        const blobs = Object.fromEntries(Object.entries(message.images ?? {}).map(([id, image]) => [id, image.blob]));
+        const images = urls.sync(blobs, docImageIds(checked.value));
         const next = { doc: checked.value, images, ...(message.kitTokens && { kitTokens: message.kitTokens }) };
         setView(next);
         cancelFonts();

@@ -1,0 +1,59 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a10b1d-8722-7750-9788-70ed359e26f0).
+[codex] Turn started (01a10b1d-90dd-7000-8761-6be94e99a2f5).
+[codex] Assistant message captured: 기준 커밋 `0bede09`와 문서 diff를 읽고, 명시하신 코드 경로와 대조하겠습니다. 검토 결과는 문서 수정 권고만 포함한 JSON으로 반환합니다.
+[codex] Running command: /bin/zsh -lc "pwd; git status --short; git diff --stat 0bede09; rg --files -g AGENTS.md -g '*...
+[codex] Command completed: /bin/zsh -lc "pwd; git status --short; git diff --stat 0bede09; rg --files -g AGENTS.md -g '*... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|m2b|motion|font' '/Users/younghwankang/Library/Application S...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder|m2b|motion|font' '/Users/younghwankang/Library/Application S... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/staticHtml/staticMarkup.ts app/src/features/studio/...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/staticHtml/staticMarkup.ts app/src/features/studio/... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff 0bede09 -- docs/design/m2b/SPEC-MOTION-FONT.md docs/design/m2b/MQ-M2B3...
+[codex] Command completed: /bin/zsh -lc 'git diff 0bede09 -- docs/design/m2b/SPEC-MOTION-FONT.md docs/design/m2b/MQ-M2B3... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files -g AGENTS.md /Users/younghwankang/orca /Users/younghwankang/.agents/...
+[codex] Command completed: /bin/zsh -lc "rg --files -g AGENTS.md /Users/younghwankang/orca /Users/younghwankang/.agents/... (exit 0)
+[codex] Assistant message captured: `engineering:code-review` 스킬을 적용해 문서의 구현 계약과 실패 조건을 점검하고 있습니다.
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/m2b/SPEC-MOTION-FONT.md | sed -n '115,270p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/m2b/SPEC-MOTION-FONT.md | sed -n '115,270p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/m2b/SPEC-MOTION-FONT.md | sed -n '270,370p'; sed -n '150,220...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/m2b/SPEC-MOTION-FONT.md | sed -n '270,370p'; sed -n '150,220... (exit 0)
+[codex] Running command: /bin/zsh -lc "python3 --version; rg --files /Users/younghwankang/.agents/skills /Users/youngh...
+[codex] Command completed: /bin/zsh -lc "python3 --version; rg --files /Users/younghwankang/.agents/skills /Users/youngh... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat /Users/younghwankang/.agents/skills/watch/SKILL.md; nl -ba docs/design/m2b/...
+[codex] Command completed: /bin/zsh -lc "cat /Users/younghwankang/.agents/skills/watch/SKILL.md; nl -ba docs/design/m2b/... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,180p' /Users/younghwankang/.agents/skills/watch/scripts/setup.py; nl ...
+[codex] Command completed: /bin/zsh -lc "sed -n '1,180p' /Users/younghwankang/.agents/skills/watch/scripts/setup.py; nl ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'fonts|rects|ResizeObserver|serialize|useLayoutEffect' app/src/render; rg...
+[codex] Command completed: /bin/zsh -lc "rg -n 'fonts|rects|ResizeObserver|serialize|useLayoutEffect' app/src/render; rg... (exit 0)
+[codex] Searching:
+[codex] Assistant message captured: 폰트의 3초 제한 후 폴백 처리와 PNG 높이 계산 사이에 위험이 보입니다. 렌더 iframe과 SVG가 서로 다른 글꼴로 배치될 수 있는지, 그리고 수용 기준이 이를...
+[codex] Searching:
+[codex] Running command: /bin/zsh -lc "rg -n 'fonts|rects|ResizeObserver|serialize|useLayoutEffect' app/src/render; se...
+[codex] Command completed: /bin/zsh -lc "rg -n 'fonts|rects|ResizeObserver|serialize|useLayoutEffect' app/src/render; se... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'args.json|json|can_proceed|write|mkdir' /Users/younghwankang/.agents/ski...
+[codex] Command completed: /bin/zsh -lc "rg -n 'args.json|json|can_proceed|write|mkdir' /Users/younghwankang/.agents/ski... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/engine/ops/normalizeDoc.ts app/src/engine/ops/sectionOps.ts | sed -...
+[codex] Command completed: /bin/zsh -lc "cat app/src/engine/ops/normalizeDoc.ts app/src/engine/ops/sectionOps.ts | sed -... (exit 0)
+[codex] Searching:
+[codex] Searching:
+[codex] Running command: /bin/zsh -lc "git status --short; git diff --check 0bede09; nl -ba app/src/features/studio/pn...
+[codex] Command completed: /bin/zsh -lc "git status --short; git diff --check 0bede09; nl -ba app/src/features/studio/pn... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "M2B-4 인계 전 폰트 실패 정책과 검증 기준을 수정해야 합니다. 모션 계약·OFL/R...
+[codex] Turn completed.
+# Codex Adversarial Review
+
+Target: branch diff against 0bede09
+Verdict: needs-attention
+
+M2B-4 인계 전 폰트 실패 정책과 검증 기준을 수정해야 합니다. 모션 계약·OFL/RFN 정책에서 별도 중대 결함은 확인하지 못했습니다. diff 검사 통과; 브라우저 실측은 수행하지 않았습니다. 파일 변경 없음.
+
+Findings:
+- [medium] [P2] 폰트 시간 초과 후 PNG의 배치 기준이 달라질 수 있습니다 (docs/design/m2b/SPEC-MOTION-FONT.md:221-224)
+  명세는 3초 초과 시 폴백으로 rects를 보내면서, PNG에는 선택한 웹폰트를 인라인하도록 요구합니다(224행). 현재 capturePng는 iframe의 첫 유효 rects로 높이를 확정하고, renderAndSerialize는 이후 rects를 반영하지 않습니다. 따라서 느린 폰트 요청에서 iframe은 폴백으로 측정하고 SVG는 웹폰트로 줄바꿈하는 경로가 가능합니다. 글꼴별 높이가 다르면 PNG 하단이 잘리거나 여백이 생깁니다. 시간 초과 후 늦은 폰트 적용을 차단하는 계약도 없습니다.
+  Recommendation: 문서에 편집 미리보기와 내보내기의 실패 정책을 구분하십시오. PNG는 최종 SVG에 사용할 폰트가 준비된 상태에서 측정하도록 요구하고, 준비 실패 시 내보내기 실패 또는 측정·SVG 모두 동일한 폴백을 사용하도록 명시하십시오. 3초 초과 및 늦은 완료를 MF-AC에 추가하십시오.
+- [medium] [P2] MF-AC-B6는 웹폰트가 없어도 통과할 수 있습니다 (docs/design/m2b/SPEC-MOTION-FONT.md:326)
+  계산된 font-family는 실제 사용 글꼴이 아니라 선언된 스택을 보여줍니다. document.fonts.check()도 해당 계열이 등록되지 않았을 때 true를 반환합니다([W3C 명세](https://www.w3.org/TR/css-font-loading-3/#font-face-set-check)). 따라서 폰트 등록 누락 상태에서도 별칭·check 조건을 만족하며 시스템 폴백으로 표시될 수 있습니다. 또한 iframe의 검사 결과로 별도 SVG 이미지에서 그려지는 PNG의 글꼴을 검증할 수 없습니다. 이 기준은 문서가 위험 R-1·R-3으로 명시한 실패를 놓칩니다.
+  Recommendation: MF-AC-B6에 선택한 계열·굵기의 FontFace 존재와 loaded 상태 확인을 명시하십시오. PNG에는 알려진 웹폰트 기준 이미지와 실제 출력의 글리프 비교를 요구하고, 폰트 등록을 제거한 음성 검증에서 반드시 실패하도록 문서화하십시오.
+
+Next steps:
+- SPEC-MOTION-FONT.md 2.4절에서 PNG 폰트 시간 초과 정책을 먼저 확정하십시오.

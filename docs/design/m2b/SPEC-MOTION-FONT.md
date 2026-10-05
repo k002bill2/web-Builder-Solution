@@ -218,7 +218,8 @@
 | 경로 | 방식 | 이유·조건 |
 |---|---|---|
 | **렌더 문서**(편집 캔버스 · 숨은 내보내기 iframe) | **1안**: `kit/fonts.css`(새 파일)의 `@font-face` 6규칙(3계열 × 400·700)이 같은 서버 woff2 `url()` 참조. 브라우저는 실제로 쓰는 계열·굵기만 받는다(`@font-face` 지연 로드) → CSS 증가 ≈ 0.4KB gzip [추정], 폰트 바이트는 예산 밖. **2안**(1안이 CORS로 막힐 때): 부모가 같은 출처에서 woff2 바이트를 받아 `postMessage`로 `ArrayBuffer` 전달 → 렌더 문서가 `new FontFace(별칭, buffer, {weight})` + `document.fonts.add` — 렌더 JS +0.1~0.2KB [추정] | C-5: 불투명 출처 iframe의 폰트 요청은 `Origin: null` CORS. Vite dev 서버·운영 정적 호스팅이 이를 허용하는지 [확인 필요 — M2B-4 E0 첫 실측]. 1안 통과 시 1안 |
-| 렌더 문서 사각형·serialize 시점 | 그 사이트의 폰트 로드가 끝난 뒤(`document.fonts.ready` 또는 해당 `FontFace.load()`) 첫 `rects`를 보낸다. 실패·3초 초과 시 폴백 글꼴로 계속(오류 아님) + 콘솔 0 | 폰트가 늦게 바뀌면 줄바꿈이 달라져 사각형·PNG 높이가 어긋난다 |
+| 렌더 문서 사각형·serialize 시점 — **편집 캔버스** | 그 사이트의 폰트 로드가 끝난 뒤(해당 계열·굵기 `FontFace.load()`) 첫 `rects`를 보낸다. 실패·3초 초과 시 폴백 글꼴로 그리고 `rects`를 보낸다(오류 아님 · 콘솔 0). 늦게 로드되면 배치가 바뀌므로 **다시 `rects`를 보낸다**(편집 캔버스는 원래 매 변경마다 다시 보냄) | 폰트가 늦게 바뀌면 줄바꿈이 달라져 사각형이 어긋난다 — 캔버스는 다시 보내 맞춘다 |
+| 렌더 문서 사각형·serialize 시점 — **숨은 내보내기 iframe(정적 HTML·PNG)** | 측정과 결과물이 **같은 글꼴**이어야 한다(Codex R1). 쓰는 계열·굵기 `FontFace`가 `loaded`가 된 뒤에만 첫 `rects`·serialize. 준비 실패 또는 5초 초과(전체 상한 8초 안) → **내보내기 실패**(PNG `RENDER_TIMEOUT` · 정적 HTML `JOB_TIMEOUT`과 같은 실패 경로, 사용자 문구 "글꼴을 불러오지 못했습니다 — 다시 시도하세요"). 폴백으로 측정하고 웹폰트로 그리는 경로 0 · 시간 초과 뒤 늦은 로드는 무시(이미 실패 처리) | `capturePng`는 첫 유효 `rects`로 높이를 확정하고 `renderAndSerialize`는 이후 `rects`를 반영하지 않는다 [L1] → 측정 글꼴 ≠ SVG 글꼴이면 PNG 하단 잘림·여백 |
 | **정적 HTML** | 그 사이트가 쓰는 1계열 × ≤2굵기만 `@font-face { src: url(data:font/woff2;base64,…) format("woff2"); font-display: swap; }`로 `<style>` 안에 인라인. 렌더 문서의 `url()` 6규칙은 빼고 이것으로 바꾼다 | C-1(외부 요청 0 유지) · MQ-M2B3-3 ★A |
 | 정적 HTML 라이선스 고지 | `<head>`에 고정 주석 1개: 사용 계열의 저작권 줄 + "Modified from …"(Noto 2종) + **OFL 1.1 전문**. 사용자 글자 0(문서마다 계열별로 바이트 동일) | OFL 조건 2 "each copy contains the above copyright notice and this license". 전문 약 4.4KB[추정] — 폰트 수백 KB 대비 무시. 이름 테이블 13·14만으로는 전문이 아님 |
 | **PNG** | 캡처 CSS(`buildCaptureSvg`의 `<style>`)에 정적 HTML과 **같은** `data:` `@font-face`를 넣는다. 그린 뒤 캔버스 전에 `img.decode()` | C-4. SVG 이미지 안 `data:` 폰트가 첫 그리기에 반영되는지 브라우저별 [확인 필요 — 위험 R-3]. PNG는 글자를 그림으로 바꾼 결과라 폰트 재배포가 아니다 → 라이선스 고지 불필요 [L2 — OFL FAQ 문서·이미지 항목, 법률 자문 아님] |
@@ -323,8 +324,9 @@ sha256sum <원본> <결과>   # macOS: shasum -a 256
 | MF-AC-B3 | 정적 HTML을 연 뒤 1.0초 시점: 첫 화면 섹션 대상 `opacity` = 1 · `transform` = 항등 / 감소 설정(`prefers-reduced-motion: reduce` 에뮬레이션) 시 0초 시점부터 같음 / 인쇄 미리보기 = 같음 | [B] |
 | MF-AC-B4 | 3폭(1280·768·390): 모션 재생 중·후 모두 `document.scrollingElement.scrollWidth` ≤ 뷰포트 폭(가로 넘침 0) · hero 이미지 확대가 칸 밖으로 0 | [B] |
 | MF-AC-B5 | 200% 글자(루트 글자 크기 2배): 모션 이동 거리가 rem이라 비례 · 넘침 0 · 시트 열림 후 메뉴 전부 보이고 키보드로 닫힘(Esc) | [B] |
-| MF-AC-B6 | 폰트: 렌더 문서·정적 HTML·PNG에서 각 계열 문서의 `h1` 계산 글꼴이 별칭과 일치(`document.fonts.check('700 1em "<별칭>"')` true · 정적 HTML 네트워크 폰트 요청 0) | [B] |
-| MF-AC-B7 | 렌더 문서 사각형: 폰트 로드 전후 첫 `rects`의 섹션 높이 변화 0(로드 뒤에 보냄) · 폰트 로드 실패 시에도 그리기 계속 | [B] |
+| MF-AC-B6 | 폰트 실제 적용: 렌더 문서·정적 HTML에서 `[...document.fonts]` 중 family = 별칭 · weight = 대응 굵기 · `status === "loaded"`인 `FontFace`가 쓰는 굵기마다 1개(계산 `font-family`·`document.fonts.check()`는 **판정 근거로 쓰지 않는다** — 등록이 없어도 참이 될 수 있음, CSS Font Loading 3 `check()`) · 정적 HTML 네트워크 폰트 요청 0 / PNG: 같은 문서를 웹폰트로 그린 기준 PNG와 글리프 영역 비교 일치 · **음성 검증**: `@font-face`를 뺀 캡처 CSS로 같은 비교를 하면 반드시 불일치(테스트가 폰트 누락을 잡는지 확인) | [B] |
+| MF-AC-B7 | 렌더 문서 사각형: 폰트 로드 전후 첫 `rects`의 섹션 높이 변화 0(로드 뒤에 보냄) · 편집 캔버스는 폰트 로드 실패·3초 초과에도 그리기 계속 + 늦은 로드 뒤 `rects` 재전송 | [B] |
+| MF-AC-B9 | 내보내기 폰트 실패 정책: 폰트 응답을 막거나 5초 넘게 지연시키면 PNG·정적 HTML 모두 **실패**(파일 0 · 사용자 문구 표시) · 4.9초 지연이면 성공하고 PNG 높이 = 웹폰트로 그린 높이 · 시간 초과 뒤 폰트가 도착해도 결과 파일 0 | [U]·[B] |
 | MF-AC-B8 | 예산: 렌더 JS ≤ 89.70 · CSS ≤ 30 · `/studio` 진입 증가 0 · 내보낸 사이트 woff2 합계 ≤ 3.2 기준(계열별 실측 표) | [G](check-bundle-size)·[B] |
 
 ### 4.1 QB 목록 (M2B-6 QA 시각·수동 검수)

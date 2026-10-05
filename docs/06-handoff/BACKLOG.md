@@ -20,10 +20,10 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M2B-08 | ✅ 원기록 작성(m2a r3 5절) | M2B-6 QA 루브릭 | m2a K1 7변형(about/story·contact/form·faq/accordion·footer/biz-extended·header/sticky-right-cta·hero/fullbleed-left·services/cards-3) TR-POL-04 루브릭 원기록 보강 | Designer 문서 |
 | B-M2B-09 | M2B-6 QA 미검증 | QB-13·14(BOUND), BODY QB-14·15, MF-AC-B1·B2·B5·B7·B9, CMP QB3~6·B5·B6, 실제 로컬 이미지 갤러리, Safari·Firefox — Ego Lite 렌더 정지 환경 한계. 포그라운드 Chrome 등 실측 환경에서 재검 | QA 재검 |
 | B-M2C-01 | M2C-4 Codex r1·r2 | 렌더 직렬화 메시지 상한 `HTML_MAX` 8,000,000자(`render/htmlMessage.ts`) < 이미지 보관 한도 30MB — 큰 이미지 문서의 정적 HTML이 html 메시지 폐기 → 시간 초과로 실패 가능. 상한·전송 방식·사전 크기 안내 결정 | 렌더 쪽 레인 또는 M4 zip |
-| B-M2C-02 | M2C-5 QA D-1(P3) | IMG-AC-29 — `check-bundle-size` /studio 조작 뒤 목록에 ImageSlotPanel·ingest·imageStore·exportImages 미표시(판정 영향 없음). afterAction 키 추가만 | Developer(scripts 추가만) |
+| B-M2C-02 | ✅ M2C-P3 수정(merge) | M2C-5 QA D-1(P3) | IMG-AC-29 — `check-bundle-size` /studio 조작 뒤 목록에 ImageSlotPanel·ingest·imageStore·exportImages 미표시(판정 영향 없음). afterAction 키 추가만 | Developer(scripts 추가만) |
 | B-M2C-03 | ✅ QB-10 전제 정정(m2c r3)·MQ-S1 ★A → QA T-5 | M2C-5 QA D-2(P3·사양) | QB-10 잃은 이미지 경로가 제품 흐름으로 도달 불가 — 새로고침 시 프로젝트 자체가 사라짐(서버 0). SPEC 9절 QB-10 전제 정정 또는 보관 방식(MQ-C2 B) 재론 | Designer 문서 |
-| B-M2C-04 | M2C-5 QA D-3(P3) | 1280→1024 폭 변경 시 열어 둔 "이미지 편집" 펼침이 닫힘(작업 위치 유실) | Developer |
-| B-M2C-05 | M2C-5 QA D-4(P3) | 스위치 도움말 "끄면 … 색 면으로" ≠ SPEC r2 4절 "꺼짐 = 미디어 없음·섹션 배경" — 문구 정정 | Developer 문구 |
-| B-M2C-06 | M2C-5b QA E-1(P3·접근성) | "이미지 지우기" 실행 시 버튼이 사라지며 포커스가 BODY로 유실(키보드 Enter 포함) — 지운 뒤 "이미지 고르기" 등으로 포커스 이동 | Developer |
-| B-M2C-07 | M2C-5b QA E-2(P3) | 지운 뒤에도 role=status가 "이미지를 넣었습니다…"로 남음 — 지움 결과 알림 | Developer |
+| B-M2C-04 | ✅ M2C-P3 수정(merge) | M2C-5 QA D-3(P3) | 1280→1024 폭 변경 시 열어 둔 "이미지 편집" 펼침이 닫힘(작업 위치 유실) | Developer |
+| B-M2C-05 | ✅ M2C-P3 수정(merge) | M2C-5 QA D-4(P3) | 스위치 도움말 "끄면 … 색 면으로" ≠ SPEC r2 4절 "꺼짐 = 미디어 없음·섹션 배경" — 문구 정정 | Developer 문구 |
+| B-M2C-06 | ✅ M2C-P3 수정(merge) | M2C-5b QA E-1(P3·접근성) | "이미지 지우기" 실행 시 버튼이 사라지며 포커스가 BODY로 유실(키보드 Enter 포함) — 지운 뒤 "이미지 고르기" 등으로 포커스 이동 | Developer |
+| B-M2C-07 | ✅ M2C-P3 수정(merge) | M2C-5b QA E-2(P3) | 지운 뒤에도 role=status가 "이미지를 넣었습니다…"로 남음 — 지움 결과 알림 | Developer |
 | B-M2C-08 | ✅ 결정(m2c r3 2.7) → 구현 T-2 대기 | M2C-5b QA O-2(사양) | 지운 뒤 대체텍스트 입력값 유지(다음 이미지에 재사용) — 유지/초기화 결정 | Designer 판단 |

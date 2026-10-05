@@ -28,6 +28,7 @@ interface FieldProps {
 const PLACEHOLDER = { kind: "placeholder", patternId: "diagonal" } as const;
 const FORMAT = { webp: "WebP", jpeg: "JPEG", png: "PNG" } as const;
 const SLOW_MS = 2000;
+const CHUNK_FAILED = "이미지를 준비하지 못했습니다 — 다시 골라 주세요";
 const BOX =
   "w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none " +
   "focus:border-primary focus:shadow-(--focus-ring) aria-disabled:bg-fill-normal aria-disabled:text-label-alternative";
@@ -58,6 +59,12 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
     setError(message);
     announce(message);
   };
+  /** 스위치 끄기·이미지 지우기 — 진행 중 작업을 버린다(늦게 끝난 결과가 그 조작을 되돌리지 않게, Codex r2 P2) */
+  const cancel = () => {
+    turn.current += 1;
+    clearTimeout(slow.current);
+    setBusy(false);
+  };
   const pick = async (file: File) => {
     const mine = ++turn.current;
     setBusy(true);
@@ -65,12 +72,18 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
     announce("이미지를 준비하고 있습니다");
     clearTimeout(slow.current);
     slow.current = setTimeout(() => announce("큰 이미지라 시간이 걸리고 있습니다"), SLOW_MS);
-    const { ingestImage, ingestErrorMessage } = await import("../../features/studio/images/ingest");
-    const result = await ingestImage(file);
+    // 변환기 청크 로드·변환 실패 = 다시 고를 수 있는 필드 오류(진행 해제, Codex r2 P2)
+    const outcome = await import("../../features/studio/images/ingest")
+      .then(async ({ ingestImage, ingestErrorMessage }) => {
+        const result = await ingestImage(file);
+        return result.ok ? result : ingestErrorMessage(result);
+      })
+      .catch(() => CHUNK_FAILED);
     if (mine !== turn.current) return;
     clearTimeout(slow.current);
     setBusy(false);
-    if (!result.ok) return fail(ingestErrorMessage(result));
+    if (typeof outcome === "string") return fail(outcome);
+    const result = outcome;
     const { doc, images, undoDoc } = latest.current;
     const current = doc.sections.find((s) => s.instanceId === section.instanceId);
     const value = current && slotValue(current, entry.key);
@@ -81,11 +94,13 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
     const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc)), id, result.image, slotTarget(current.type, current.variant));
     const limit = checkLimits(nextDoc, undoDoc, nextImages);
     if (!limit.ok) return fail(limit.message);
+    // 다른 슬롯 결과가 같은 틱에 끝나도 이 결과 위에 쌓이게 최신 값을 바로 갱신한다(Codex r2 P2 — 원자적 병합)
+    latest.current = { ...latest.current, doc: nextDoc, images: nextImages };
     publish(() => nextImages);
     onEdit(nextDoc);
     announce(value.alt.trim() === "" && !value.decorative ? "이미지를 넣었습니다 대체텍스트를 적어 주세요" : "이미지를 넣었습니다");
   };
-  return { busy, error, pick };
+  return { busy, error, pick, cancel };
 }
 
 /** 미리보기 object URL은 이 요소만 소유한다 — 사라지면 해제(편집기를 떠나면 살아 있는 URL 0, E-AC-46) */
@@ -170,7 +185,7 @@ function SlotSwitch({ id, label, value, error, onChange }: { readonly id: string
 /** 이미지 슬롯 1개 (SPEC m2c 2.2 · 2a-05 5.9 · E-S20) — 잃은 이미지(보관소에 없는 로컬 id)는 자체 플레이스홀더 + 다시 고르기 */
 export function ImageSlotField(props: FieldProps) {
   const { section, entry, doc, images, latest, onEdit, announce, Button } = props;
-  const { busy, error, pick } = useImagePick(props);
+  const { busy, error, pick, cancel } = useImagePick(props);
   const [switchError, setSwitchError] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const value = slotValue(section, entry.key);
@@ -182,6 +197,7 @@ export function ImageSlotField(props: FieldProps) {
     const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}) : { ok: true as const };
     setSwitchError(limit.ok ? "" : limit.message);
     if (!limit.ok) return announce(limit.message);
+    if (!next.enabled) cancel();
     edit(next);
   };
   const local = typeof value.source === "string" ? value.source : undefined;
@@ -202,12 +218,16 @@ export function ImageSlotField(props: FieldProps) {
               aria-disabled={busy || undefined}
               aria-invalid={error ? true : undefined}
               aria-describedby={error ? `${id}-error` : undefined}
-              onClick={() => !busy && input.current?.click()}
+              // 변환 중에도 다른 파일을 고를 수 있다 — 마지막 선택만 반영(IMG-AC-09 · SPEC 2.5 "취소"). aria-disabled는 SPEC 2.5 표시 그대로
+              onClick={() => input.current?.click()}
             >
               {held ? "다른 이미지로 바꾸기" : "이미지 고르기"}
             </Button>
             {local && (
-              <Button variant="assistive" size="sm" onClick={() => edit({ ...value, source: PLACEHOLDER })}>
+              <Button variant="assistive" size="sm" onClick={() => {
+                  cancel();
+                  edit({ ...value, source: PLACEHOLDER });
+                }}>
                 이미지 지우기
               </Button>
             )}

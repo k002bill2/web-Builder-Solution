@@ -1,0 +1,5 @@
+{"W":16,"log":[{"t":113,"type":"rects","sections":8,"widths":[16],"bottom":8313}]}
+{"W":50,"log":[{"t":84,"type":"rects","sections":8,"widths":[50],"bottom":8168}]}
+{"W":100,"log":[{"t":88,"type":"rects","sections":8,"widths":[100],"bottom":4374}]}
+{"W":150,"log":[{"t":60,"type":"rects","sections":8,"widths":[150],"bottom":3292}]}
+{"W":200,"log":[{"t":58,"type":"rects","sections":8,"widths":[200],"bottom":3006}]}

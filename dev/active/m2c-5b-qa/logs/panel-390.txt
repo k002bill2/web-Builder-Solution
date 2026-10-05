@@ -1,0 +1,6 @@
+OPEN: open=true rect=12,351x607 ox=-15 status="이미지를 넣었습니다" meta=없음 err= fileInvalid=null alt="세로 패턴 그래픽" altDis=null deco=false btns=이미지 고르기 focus=BUTTON|편집
+FAIL: open=true rect=12,351x637 ox=-15 status="JPEG·PNG·WebP 이미지만 쓸 수 있습니다" meta=없음 err=JPEG·PNG·WebP 이미지만 쓸 수 있습니다 fileInvalid=true alt="세로 패턴 그래픽" altDis=null deco=false btns=이미지 고르기 focus=BUTTON|편집
+PICK: open=true rect=12,351x637 ox=-15 status="이미지를 넣었습니다" meta=1000 × 1500 · WebP 30KB err= fileInvalid=null alt="세로 패턴 그래픽" altDis=null deco=false btns=다른 이미지로 바꾸기/이미지 지우기 focus=BUTTON|편집
+DECO: open=true rect=12,351x661 ox=-15 status="이미지를 넣었습니다" meta=1000 × 1500 · WebP 30KB err= fileInvalid=null alt="세로 패턴 그래픽" altDis=true deco=true btns=다른 이미지로 바꾸기/이미지 지우기 focus=INPUT|
+CLEAR: open=true rect=12,351x607 ox=-15 status="이미지를 넣었습니다" meta=없음 err= fileInvalid=null alt="세로 패턴 그래픽" altDis=null deco=false btns=이미지 고르기 focus=BODY|본문으로 건너뛰기모던 카페 
+

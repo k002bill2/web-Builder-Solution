@@ -1,0 +1,962 @@
+{
+ "about--story": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 981,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "about--text": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "contact--booking": {
+  "390": {
+   "h": 1044,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "contact--form": {
+  "390": {
+   "h": 881,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "cta-band--banner": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "faq--accordion": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "footer--biz-extended": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "footer--biz-extended-map": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "footer--minimal": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "footer--minimal-biz": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "header--sticky-hamburger": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "header--sticky-right-cta": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "header--sticky-two-tier": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "header--transparent": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "hero--center": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "hero--fullbleed-left": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "hero--grid": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "hero--image": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 953,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "hero--split": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 981,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "hero--text": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "portfolio--grid-2": {
+  "390": {
+   "h": 1221,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 1087,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "portfolio--grid-3": {
+  "390": {
+   "h": 1666,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "portfolio--masonry": {
+  "390": {
+   "h": 1344,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 1278,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "pricing--tiers-2": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "services--cards-2": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "services--cards-3": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "services--cards-masonry": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "services--list": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "statistics--stats-3": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ },
+ "testimonials--quotes-2": {
+  "390": {
+   "h": 844,
+   "overflowX": 0,
+   "iw": 390,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "768": {
+   "h": 1024,
+   "overflowX": 0,
+   "iw": 768,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  },
+  "1280": {
+   "h": 900,
+   "overflowX": 0,
+   "iw": 1280,
+   "fonts": [
+    "Pretendard:700",
+    "Pretendard:400"
+   ],
+   "anim": 0
+  }
+ }
+}

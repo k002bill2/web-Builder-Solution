@@ -1,0 +1,27 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10c86-f376-7412-a05f-b80069baed79).
+[codex] Reviewer started: changes against 'c870439'
+[codex] Running command: /bin/zsh -lc "git diff --stat c87043920f998e8f5ba5d5e59f613c6a7d29ae56; pwd; find .. -name AG...
+[codex] Command failed: /bin/zsh -lc "git diff --stat c87043920f998e8f5ba5d5e59f613c6a7d29ae56; pwd; find .. -name AG... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan...
+[codex] Command completed: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/images/ingest/ingestImage.test.ts; cat app/src/feat...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/images/ingest/ingestImage.test.ts; cat app/src/feat... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; sed -n '55,124p' docs/design/m2c/SPEC.md; sed -n '1,130p' docs/0...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; sed -n '55,124p' docs/design/m2c/SPEC.md; sed -n '1,130p' docs/0... (exit 0)
+[codex] Running command: /bin/zsh -lc "node --input-type=module -e 'import ts from \"./app/node_modules/typescript/lib...
+[codex] Command completed: /bin/zsh -lc "node --input-type=module -e 'import ts from \"./app/node_modules/typescript/lib... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 파일 읽기 실패가 공개 API의 실패 결과로 처리되지 않는 결함을 확인했습니다. 오류 주입으로 재현했으며, 전체 테스트 및 브라우저 검증은 실행하지 않았습니다. Rev...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against c870439
+
+파일 읽기 실패가 공개 API의 실패 결과로 처리되지 않는 결함을 확인했습니다. 오류 주입으로 재현했으며, 전체 테스트 및 브라우저 검증은 실행하지 않았습니다.
+
+Review comment:
+
+- [P2] 파일 바이트 읽기 실패도 IngestResult로 반환하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-1/app/src/features/studio/images/ingest/ingestImage.ts:67-70
+  사용자가 선택한 파일이 삭제·변경되거나 저장 장치 접근이 끊겨 `Blob.arrayBuffer()`가 `NotReadableError`로 실패하면, 두 바이트 읽기가 모두 `try/catch` 밖에 있어 `ingestImage()`가 실패 결과 대신 Promise rejection을 반환합니다. 두 읽기 단계에 오류를 주입해 이 동작을 확인했습니다. 디코딩·인코딩 실패와 동일하게 `{ ok: false, code: "DECODE_FAILED" }`로 변환하도록 파일 읽기도 오류 처리 범위에 포함해 주세요.

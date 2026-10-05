@@ -1,0 +1,34 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10c89-2588-7eb2-894d-590cad59376c).
+[codex] Reviewer started: changes against 'c870439'
+[codex] Running command: /bin/zsh -lc 'pwd; git status --short; git diff --stat c87043920f998e8f5ba5d5e59f613c6a7d29ae...
+[codex] Command completed: /bin/zsh -lc 'pwd; git status --short; git diff --stat c87043920f998e8f5ba5d5e59f613c6a7d29ae... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|m2c' '/Users/younghwankang/Library/Application Support/orca/...
+[codex] Command failed: /bin/zsh -lc "rg -n 'web-builder|m2c' '/Users/younghwankang/Library/Application Support/orca/... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan...
+[codex] Command completed: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/images/ingest/header.ts; cat dev/active/m2c-1/{BRIE...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/images/ingest/header.ts; cat dev/active/m2c-1/{BRIE... (exit 0)
+[codex] Running command: /bin/zsh -lc "find app dev .claude -iname '*claude*' -o -name '*AGENTS*'; cat CLAUDE.md; sed ...
+[codex] Command completed: /bin/zsh -lc "find app dev .claude -iname '*claude*' -o -name '*AGENTS*'; cat CLAUDE.md; sed ... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '290,335p' docs/design/m2c/SPEC.md; sed -n '1,140p' docs/04-plan/M2C_PLA...
+[codex] Command completed: /bin/zsh -lc "sed -n '290,335p' docs/design/m2c/SPEC.md; sed -n '1,140p' docs/04-plan/M2C_PLA... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),path=require(\"path\"),ts=require(\"./app/nod...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),path=require(\"path\"),ts=require(\"./app/nod... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: resize 옵션 미지원 환경에서 축소가 무한 반복되는 결함과 검증 순서 위반을 확인했습니다. 메모리 내 오류 주입으로 재현했으며, 전체 테스트와 실제 브라우저 검증은...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against c870439
+
+resize 옵션 미지원 환경에서 축소가 무한 반복되는 결함과 검증 순서 위반을 확인했습니다. 메모리 내 오류 주입으로 재현했으며, 전체 테스트와 실제 브라우저 검증은 실행하지 않았습니다.
+
+Full review comments:
+
+- [P1] resize 옵션이 무시될 때 축소 루프를 중단하고 대체 경로를 사용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-1/app/src/features/studio/images/ingest/ingestImage.ts:29-35
+  `createImageBitmap`이 `resizeWidth` 옵션을 무시하는 환경에서는 반환 bitmap의 폭이 그대로여서 이 루프가 끝나지 않습니다. 매 반복마다 원본 크기 bitmap을 생성해 `created`에 보관하므로 변환이 완료되지 않고 메모리도 계속 증가합니다. 옵션을 무시하는 주입 구현으로 반복이 진행되지 않음을 확인했습니다. 반환 크기를 검증하고, SPEC 11절에 명시된 캔버스 단계 축소 대체 경로를 사용해야 합니다.
+
+- [P2] 파일 바이트를 읽기 전에 확장자와 MIME을 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-1/app/src/features/studio/images/ingest/ingestImage.ts:72-75
+  지원하지 않는 확장자나 MIME의 파일도 먼저 바이트를 읽습니다. 따라서 읽을 수 없는 GIF 파일을 선택하면 V1의 `TYPE_MISMATCH` 대신 `DECODE_FAILED`가 반환되어 형식 제한 안내가 사라집니다. 오류를 주입해 이 결과와 읽기 호출을 확인했습니다. SPEC 2.3의 V1→V6 순서와 앞 단계 실패 시 뒤 단계 미실행 계약을 지키도록 확장자·MIME 검사를 바이트 읽기보다 먼저 수행해 주세요.

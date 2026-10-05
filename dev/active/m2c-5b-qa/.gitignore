@@ -1,0 +1,6 @@
+exports/
+fixtures/*.png
+fixtures/*.jpg
+fixtures/*.webp
+run2/
+static/

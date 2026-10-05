@@ -28,3 +28,4 @@
 - Codex r1(`logs/codex-r1.txt`): P2 1건 — 파일 바이트 읽기 실패가 reject로 샘. **반영 예측**: 새 테스트 2개(읽기 단계 2곳) · RED 2 실패.
 - r1 반영 RED 2 실패(예측 일치) → GREEN 78/78(ingest) · tsc·eslint 통과.
 - Codex r2(`logs/codex-r2.txt`): P1 1건(resizeWidth 무시 환경 무한 축소 — SPEC 11절 캔버스 대체 경로 없음) · P2 1건(확장자·MIME 검사 전에 바이트 읽기). **반영 예측**: 새 테스트 3개 · RED 2 실패 · 1 통과(대체도 틀린 크기 → 지금은 가짜의 60회 상한 예외로 DECODE_FAILED). 기존 '기본 deps 모양' 테스트에 drawScaled 단언 1줄 추가(스텁도 함수 → 통과).
+- r2 반영 RED 실제 **3 실패**(예측 2 — '대체도 틀린 크기' 테스트가 가짜 60회 상한까지 bitmap이 쌓여 `< 10` 단언에서 실패, 예측 오류 · 테스트 변경 없음) → GREEN 81/81(ingest) · tsc·eslint 통과.

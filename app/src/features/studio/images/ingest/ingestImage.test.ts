@@ -21,9 +21,13 @@ interface FakeOptions {
   readonly webp?: boolean;
   readonly decodeFails?: boolean;
   readonly encodeFails?: boolean;
+  /** resizeWidth 옵션을 무시하는 브라우저(SPEC 11절) — 무한 반복 방지를 위해 60회 넘으면 던진다 */
+  readonly ignoreResize?: boolean;
+  /** 캔버스 대체 축소마저 엉뚱한 크기를 돌려주는 경우 */
+  readonly drawScaledWrong?: boolean;
 }
 
-function fakeDeps({ decoded, webp = true, decodeFails = false, encodeFails = false }: FakeOptions) {
+function fakeDeps({ decoded, webp = true, decodeFails = false, encodeFails = false, ignoreResize = false, drawScaledWrong = false }: FakeOptions) {
   const bitmaps: FakeBitmap[] = [];
   const encodedSources: unknown[] = [];
   const createImageBitmap = vi.fn((source: Blob | IngestBitmap, options: ImageBitmapOptions) => {
@@ -33,7 +37,15 @@ function fakeDeps({ decoded, webp = true, decodeFails = false, encodeFails = fal
       bitmaps.push(bitmap);
       return Promise.resolve(bitmap);
     }
-    const bitmap = new FakeBitmap(options.resizeWidth ?? source.width, options.resizeHeight ?? source.height);
+    if (ignoreResize && bitmaps.length > 60) return Promise.reject(new Error("무한 반복"));
+    const bitmap = ignoreResize
+      ? new FakeBitmap(source.width, source.height)
+      : new FakeBitmap(options.resizeWidth ?? source.width, options.resizeHeight ?? source.height);
+    bitmaps.push(bitmap);
+    return Promise.resolve(bitmap);
+  });
+  const drawScaled = vi.fn((_source: IngestBitmap, width: number, height: number) => {
+    const bitmap = drawScaledWrong ? new FakeBitmap(width + 1, height) : new FakeBitmap(width, height);
     bitmaps.push(bitmap);
     return Promise.resolve(bitmap);
   });
@@ -43,8 +55,8 @@ function fakeDeps({ decoded, webp = true, decodeFails = false, encodeFails = fal
     const actual = type === "image/webp" && !webp ? "image/png" : type;
     return Promise.resolve(new Blob([`enc ${bitmap.width}x${bitmap.height}`], { type: actual }));
   });
-  const deps: IngestDeps = { createImageBitmap, encode };
-  return { deps, bitmaps, encodedSources, createImageBitmap, encode };
+  const deps: IngestDeps = { createImageBitmap, encode, drawScaled };
+  return { deps, bitmaps, encodedSources, createImageBitmap, encode, drawScaled };
 }
 
 const bytesOf = async (blob: Blob): Promise<Uint8Array> => new Uint8Array(await blob.arrayBuffer());
@@ -100,6 +112,35 @@ describe("ingestImage 조립", () => {
     const fake = fakeDeps({ decoded: { width: 10, height: 10 } });
     await expect(ingestImage(file, fake.deps)).resolves.toEqual({ ok: false, code: "DECODE_FAILED" });
     expect(fake.createImageBitmap).not.toHaveBeenCalled();
+  });
+
+  it("V1·V2(확장자·MIME) 실패는 바이트를 읽기 전에 TYPE_MISMATCH — 읽을 수 없는 GIF도 형식 문구 (Codex r2 P2)", async () => {
+    const file = toFile(makeGif(), "anim.gif", "image/gif");
+    const slice = vi.spyOn(file, "slice").mockReturnValue(
+      Object.assign(new Blob(), { arrayBuffer: () => Promise.reject(new DOMException("gone", "NotReadableError")) }),
+    );
+    const read = vi.spyOn(file, "arrayBuffer");
+    await expect(ingestImage(file, fakeDeps({ decoded: { width: 1, height: 1 } }).deps)).resolves.toEqual({ ok: false, code: "TYPE_MISMATCH" });
+    expect(slice).not.toHaveBeenCalled();
+    expect(read).not.toHaveBeenCalled();
+  });
+
+  it("resizeWidth를 무시하는 환경 = 캔버스 단계 축소로 대체 · 반씩 · bitmap 모두 close (SPEC 11절 · Codex r2 P1)", async () => {
+    const fake = fakeDeps({ decoded: { width: 3000, height: 2000 }, ignoreResize: true });
+    const result = await ingestImage(toFile(makeJpeg({ width: 3000, height: 2000 }), "a.jpg", "image/jpeg"), fake.deps);
+    if (!result.ok) throw new Error(result.code);
+    expect(Object.keys(result.image.variants).map(Number)).toEqual([640, 1280, 1920]);
+    expect(fake.drawScaled).toHaveBeenCalled();
+    for (const [source, width] of fake.drawScaled.mock.calls) expect(width * 2).toBeGreaterThanOrEqual(source.width);
+    expect(fake.bitmaps.every((bitmap) => bitmap.closed)).toBe(true);
+  });
+
+  it("대체 축소도 크기가 틀리면 멈추고 DECODE_FAILED (무한 반복 0)", async () => {
+    const fake = fakeDeps({ decoded: { width: 3000, height: 2000 }, ignoreResize: true, drawScaledWrong: true });
+    const result = await ingestImage(toFile(makeJpeg({ width: 3000, height: 2000 }), "a.jpg", "image/jpeg"), fake.deps);
+    expect(result).toEqual({ ok: false, code: "DECODE_FAILED" });
+    expect(fake.bitmaps.length).toBeLessThan(10);
+    expect(fake.bitmaps.every((bitmap) => bitmap.closed)).toBe(true);
   });
 
   it("V6 디코드 실패 = DECODE_FAILED", async () => {
@@ -191,5 +232,6 @@ describe("기본 브라우저 deps", () => {
   it("import 시점에 브라우저 전역을 건드리지 않고 함수 모양을 갖는다", () => {
     expect(typeof browserIngestDeps.createImageBitmap).toBe("function");
     expect(typeof browserIngestDeps.encode).toBe("function");
+    expect(typeof browserIngestDeps.drawScaled).toBe("function");
   });
 });

@@ -38,12 +38,17 @@ export function formatFromMagic(head: Uint8Array): ImageFormat | null {
   return null;
 }
 
-export function checkFileType(name: string, type: string, head: Uint8Array): ImageFormat | null {
+/** V1·V2 — 바이트를 읽기 전에 거른다. */
+export function formatFromNameAndMime(name: string, type: string): ImageFormat | null {
   const byName = formatFromName(name);
   if (byName === null) return null;
   const byMime = formatFromMime(type);
-  if (byMime === null || (byMime !== "empty" && byMime !== byName)) return null;
-  return formatFromMagic(head) === byName ? byName : null;
+  return byMime === null || (byMime !== "empty" && byMime !== byName) ? null : byName;
+}
+
+export function checkFileType(name: string, type: string, head: Uint8Array): ImageFormat | null {
+  const format = formatFromNameAndMime(name, type);
+  return format !== null && formatFromMagic(head) === format ? format : null;
 }
 
 export const exceedsFileSize = (size: number): boolean => size > MAX_FILE_BYTES;

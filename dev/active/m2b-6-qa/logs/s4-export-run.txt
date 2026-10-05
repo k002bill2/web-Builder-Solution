@@ -1,0 +1,9 @@
+X gate after SEO {"btn":["검사 · 내보내기","React 프로젝트(zip) 내보내기","정적 HTML 내보내기","PNG 내려받기"],"st":["바뀐 점 3개구조안의 섹션 3개를 편집기 변형으로 바꿔 열었습니다 — About 팀 카드 2열 → 이야기 + 이미지 · Portfolio 사례 "]}
+X after html click {"btn":["검사 · 내보내기","React 프로젝트(zip) 내보내기","정적 HTML 내보내기","PNG 내려받기"],"st":["바뀐 점 3개구조안의 섹션 3개를 편집기 변형으로 바꿔 열었습니다 — About 팀 카드 2열 → 이야기 + 이미지 · Portfolio 사례 "]}
+X html download FAIL "Error: page.waitForEvent(\"download\") timed out after 30000ms"
+X ui {"btn":["검사 · 내보내기","React 프로젝트(zip) 내보내기","정적 HTML 내보내기","내려받기","PNG 내려받기"],"st":["바뀐 점 3개구조안의 섹션 3개를 편집기 변형으로 바꿔 열었습니다 — About 팀 카드 2열 → 이야기 + 이미지 · Portfolio 사례 ","정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 13:01'에 있습니다결과 해시 7e968ec66b8b내려받기"]}
+X png 1 {"ms":16937,"name":"부티크-법률사무소-프로젝트_1280_r2.png"}
+X png 2 {"ms":7032,"name":"부티크-법률사무소-프로젝트_1280_r2.png"}
+X png 3 {"ms":8148,"name":"부티크-법률사무소-프로젝트_1280_r2.png"}
+X final ui {"btn":["검사 · 내보내기","React 프로젝트(zip) 내보내기","정적 HTML 내보내기","내려받기","PNG 내려받기"],"st":["바뀐 점 3개구조안의 섹션 3개를 편집기 변형으로 바꿔 열었습니다 — About 팀 카드 2열 → 이야기 + 이미지 · Portfolio 사례 ","정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 13:01'에 있습니다결과 해시 7e968ec66b8b내려받기","PNG를 내려받았습니다 · 부티크-법률사무소-프로젝트_1280_r2.png"]}
+

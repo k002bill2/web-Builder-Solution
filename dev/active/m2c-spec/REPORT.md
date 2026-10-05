@@ -6,9 +6,9 @@
 ## 1. 산출물
 | 파일 | 내용 |
 |---|---|
-| `docs/design/m2c/SPEC.md` | 0 지금 사실(L1) · 1 범위 · 2 업로드·변환(V1~V6 · 폭 640/1280/1920 · WebP→JPEG/PNG 대체 · EXIF/방향 · 원본 미보관) · 3 원본 비율 메타 · 4 결정적 SVG · 5 산출물 동봉(srcset 미사용 결정 · 잃은 이미지 · PNG decode · F2 캡션) · 6 보안·권리 · 7 예산 배치 · 8 IMG-AC 29개 · 9 QB 12개 · 10 깨질 테스트 · 11 브라우저 한계 |
+| `docs/design/m2c/SPEC.md` | 0 지금 사실(L1) · 1 범위 · 2 업로드·변환(V1~V6 · 폭 640/1280/1920 · WebP→JPEG/PNG 대체 · EXIF/방향 · 원본 미보관) · 3 원본 비율 메타 · 4 결정적 SVG · 5 산출물 동봉(srcset 미사용 결정 · 잃은 이미지 · PNG decode · F2 캡션) · 6 보안·권리 · 7 예산 배치 · 8 IMG-AC 30개(26b 포함) · 9 QB 12개 · 10 깨질 테스트 · 11 브라우저 한계 |
 | `docs/design/m2c/MQ-M2C.md` | MQ-C1~C8 (★ 추천 · 사실/추정) |
-| `docs/04-plan/M2C_PLAN.md` | 레인 M2C-1~5 · 의존성 · 시간 5~6.5일 [추정] · QA 게이트 · 위험 |
+| `docs/04-plan/M2C_PLAN.md` | 레인 M2C-1~5 · 의존성 · 시간 5.5~7일 [추정](r1) · QA 게이트 · 위험 |
 
 ## 2. L1 확인 요약
 - 업로드 경로 0(`EditFields.tsx:44`) · 보관소 0 · 제품 images 맵 빈 값 · 정적 HTML/PNG는 render 메시지에 images 없음(`staticHtml.ts:90`) · `serializeSite` blob:→data: 이미 있음.
@@ -29,7 +29,7 @@
 - TRD 8절 `srcset`을 단일 파일 HTML에 넣지 않음 — 크기만 늘고 절약 0, zip(M4)에서(SPEC 5.2).
 
 ## 5. 검증 명령·결과
-- `git diff --stat 92f8e2f..HEAD` — docs·dev/active만 변경, `app/` 0 (아래 6절 마지막 커밋 뒤 재확인).
+- `git diff --stat 92f8e2f..HEAD` — docs·dev/active만 변경, `app/` 0 — 확인: 8파일 616줄 추가, `app/` 0.
 - Codex r1·r2 위 표. 빌드·테스트는 코드 0 레인이라 실행 안 함(node_modules 없음).
 
 ## 6. 남은 일·영환님 결정

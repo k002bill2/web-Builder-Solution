@@ -14,6 +14,9 @@
 - [ ] S5 브라우저 B1~B6 4폭(1280·1024·768·390) — BLOCKED: S1 `/studio` 진입 127.50 > 멈춤선 127.37 — 배치 변경 1회차(docKitTokens 복제) 뒤 남은 대안(`readRenderMessage` 로컬 사본)이 브리프 "출처·소스 검증 재사용" 제약과 충돌 → 구현 중단, 영환님 결정 필요(REPORT §5)
 - [x] S6 전체 vitest exit0 · Codex review --scope branch --base 48487d5 · REPORT — vitest 213 files · 1850 passed · exit 0 · Errors 0(logs/final-full-vitest.txt) · Codex 1라운드 실제 완료 지적 0(logs/codex-review.txt) · REPORT.md(중단 보고 + 결정 요청 A/B/C)
 
+## 재개(결정 A, 2026-10-05, HEAD 25417e9) — S0·S1 재실행 0
+- [ ] A 적용 — compareFrame에 readRenderMessage·모양 검사 로컬 사본 + 대조 가드(소스 텍스트·코퍼스 동작·음성 검증 1회) · build 6.2 전 행 재측정
+
 ## 6.2 예산 표 (gzip KB)
 | 대상 | baseline | S0 | S1 | 최종 | 멈춤선 |
 |---|---|---|---|---|---|
@@ -34,6 +37,10 @@
   - `features/profile/compareFrame.test.ts` it 1 — 프레임별 source 대조 · 모양 틀림 무시
   - S1 실제: **+10 → 213 files · 1850**(예측 +9보다 1 많음 — 배치 변경 1회차에서 docKitTokens 복제 대조 it 1개 추가). 전체 vitest 1회 213/1850 exit 0(logs/final-full-vitest.txt)
   - 내 새 테스트 전제 수정 1건(약화 아님): comparePreviews.test "프로젝트 없는 프로필" — 보드 확정이 프로젝트를 만들어 `series.project` 전제가 틀림 → "프로젝트를 읽지 않고 보는 버전만으로 문서 + 변환 뒤 편집 문서 0(쓰기 0)"으로 바꿈
+
+- A (기준 = S1 실제 213 files · 1850): 새 파일 1개 `features/profile/compareFrameGuard.test.ts` it 2 → **214 files · 1852**
+  - it 1 소스 텍스트 동일(isObject·isText·isNumber·isRect·readRenderMessage, 정규화 = 선언 줄 묶음 + 공백 1칸) — RED 예상(사본 없음)
+  - it 2 코퍼스 동작 동일(정상·다른 창·다른 프레임·모양 틀림·출처 틀림) — 원본 재사용 상태에서도 통과(RED 아님)
 
 ## S1 멈춤선 판정 (청크 diff: logs/s0-build.txt ↔ s1-build.txt · s1b-build.txt)
 - 1차(s1-build): 비교 청크가 `render/protocol`(readRenderMessage)·`features/studio/docPurpose`(docKitTokens)를 값 import → 편집기 StudioLayout 청크와 공유 청크 `protocol`(0.88KB = docPurpose + readRenderMessage) 신설, StudioLayout 16.77 → 16.09 → `/studio` 진입 127.56(+0.22)

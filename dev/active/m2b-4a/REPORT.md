@@ -70,10 +70,13 @@
 사후 기록: woff2 서명 검사(0f40de1)는 B9 실측에서 발견한 수정으로, 테스트 사전 예측 없이 들어갔다. it 수 변화 0(기존 it에 단언 1줄 + 픽스처 바이트 `wOF2` 접두 3파일), RED는 구현 뒤 되돌려 확인(logs/fix-magic-red.txt → fix-magic-gate.txt). 단언 약화·skip 0.
 
 ## 7. Codex
-(작성 중)
+- `codex-companion.mjs review --scope branch --base 254e322` 1라운드 **실제 완료**(Reviewer finished · exit=0, logs/codex-review.txt). base~HEAD 99576d5 대상.
+- EPERM 한계 구분: Codex 샌드박스가 읽기 전용이라 Codex 쪽 표적 vitest 실행은 Vite 임시 설정 파일 작성 차단으로 실패 — **리뷰 자체는 완료**, 테스트 실행 증거는 메인 루프의 전체 vitest 1회(§6)로 대체.
+- 지적 1건 **[P2] 미반영(열림)**: `app/src/render/siteFontLoad.ts:39` 편집 캔버스 경로 — 한 굵기 로드가 실패하고 다른 굵기가 나중에 성공하면 `Promise.all`이 먼저 거부돼 폴백 측정만 하고, 뒤늦은 성공에는 `late` 재측정이 없다(루트 크기가 같으면 ResizeObserver도 못 잡아 선택 오버레이가 옛 사각형 유지). 코드 확인 결과 지적이 맞다(L2). 미반영 사유: 이번 재개는 사전승인 축소 범위(재측정·보충·마감)이고 코드 수정은 범위 밖 + 수정 시 TDD RED·Codex 재리뷰 라운드가 필요. 권고: 후속에서 `Promise.allSettled`로 바꾸고 성공 면이 하나라도 있으면 `waited`일 때 `late` 호출 + RenderApp 테스트(한 굵기 reject·다른 굵기 늦은 resolve → rects 재전송) RED부터.
 
 ## 8. 한계·책임/환경
 - 운영 정적 호스팅도 woff2에 `Origin: null` 대응 ACAO 헤더가 필요(R-1, 1안 전제).
 - B9-PNG 4.9초 경계: 지연 4.9초 + 실제 받기 시간이 5초 상한에 포함돼 로컬에서 흔들림(1회 성공·1회 5,007ms 실패). 상한 정의(받기 포함) 그대로 두고 기록만 함.
 - 브라우저 검증 = ego-browser(Ego Lite Chromium), 4337 dev·4339 preview loopback, 자기 PID cwd 확인 뒤 종료·lsof 0(logs/qb-b9html.txt 끝), main 5480 무접촉.
+- 열린 결함: Codex P2(§7, 부분 글꼴 실패 뒤 늦은 성공 재측정 누락) — 편집 캔버스 한정, 내보내기 경로(바이트 FontFace)는 실패 = 내보내기 실패라 영향 없음.
 - push·merge·삭제 0 · lock·명세·결정 문서·예산 무수정 · 서브에이전트 0.

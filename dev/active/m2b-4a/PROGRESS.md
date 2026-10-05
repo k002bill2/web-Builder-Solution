@@ -16,7 +16,7 @@
 - [x] P4 PNG 캡처 CSS `data:` 폰트 · 실패 정책(받기 실패·5초 = PNG RENDER_TIMEOUT · HTML JOB_TIMEOUT · 문구 · 렌더 문서 열지 않음·파일 0 · 전체 상한 8초에 글꼴 시간 포함)
 - [x] P5 가드 — G2 `render/renderFonts.test.ts` 2 it 개정(RED logs/p2-red.txt → GREEN p2-gate) · G3·G5·G6 `test/siteFontAssets.test.ts`(RED logs/p5-guard-red.txt) · G4 `staticMarkup.test.ts`+`siteFontEmbed.test.ts` 고지 주석(RED logs/p34-red.txt) · B8 check-bundle-size: 서명 수정 뒤 build(logs/fix-magic-gate.txt) 렌더 JS 82.82KB ≤89.70 · CSS 8.03KB · /studio 진입 127.33KB(baseline 127.34) · /compare 진입 121.70KB(baseline 121.72) — 증가 0
 - [x] P-B 브라우저 — B6 render·HTML·PNG · B7 · B9-PNG · 3폭 · 200% · 계산 스타일 Serif·Pretendard(logs/qb-render.txt·qb-export.txt) + **재측정(턴한도 1회차)** B9-HTML·계산 스타일 Kit Sans KR(logs/qb-b9html.txt) · 서버 자기 PID cwd 확인 종료 · lsof 0
-- [x] P-F 전체 vitest 1회 208 files·1824 passed·exit 0·Errors 0(logs/final-full-vitest.txt) · Codex branch review base 254e322(logs/codex-review.txt) · REPORT 마감
+- [x] P-F 전체 vitest 1회 208 files·1824 passed·exit 0·Errors 0(logs/final-full-vitest.txt) · Codex branch review base 254e322 1라운드 완료(logs/codex-review.txt — P2 1건 미반영·REPORT §7 사유) · REPORT 마감
 
 ## 턴한도 1회차 재개 (2026-10-05, HEAD 0f40de1 → d639868)
 - B9-HTML 재측정(logs/qb-b9html.txt, 서명 수정 0f40de1 뒤 fresh build·4337 dev·4339 preview): curl `4339/assets/NOPE-400.woff2` → **200 text/html**(SPA 폴백) · 생성기 SPA폴백 = JOB_TIMEOUT "글꼴을 불러오지 못했습니다 — 다시 시도하세요" 37ms(수정 전 run2: "정적 HTML 렌더 문서 시간 초과" — logs/qb-export-run2-html-timeout.txt) · 진짜 404 = 같은 문구 5ms · 5.1초 = 같은 문구 5,054ms · 4.9초 = 성공 5,451ms(늦게 도착 2건 뒤에도) · 실패 4건 filesMade 0·iframe 잔류 0

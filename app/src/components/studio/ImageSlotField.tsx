@@ -231,6 +231,8 @@ export function ImageSlotField(props: FieldProps) {
                   // 이 버튼은 사라진다 — 포커스를 같은 자리에 남는 "이미지 고르기"로 옮긴다(BODY 유실 방지, B-M2C-06)
                   actions.current?.querySelector("button")?.focus();
                   edit({ ...value, source: PLACEHOLDER });
+                  // 지움 결과 알림 — 앞선 "이미지를 넣었습니다"가 남지 않게(B-M2C-07 · SPEC 2.5 문구 톤). 대체텍스트는 건드리지 않는다(B-M2C-08 대기)
+                  announce("이미지를 지웠습니다");
                 }}>
                 이미지 지우기
               </Button>

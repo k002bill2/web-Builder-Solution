@@ -330,3 +330,16 @@ describe("ImageSlotPanel — M2C-P3 지운 뒤 (B-M2C-06)", () => {
     expect(document.activeElement).toBe(screen.getByRole("button", { name: "이미지 고르기" }));
   });
 });
+
+describe("ImageSlotPanel — M2C-P3 지움 알림 (B-M2C-07)", () => {
+  it("지운 뒤 role=status = '이미지를 지웠습니다' — '이미지를 넣었습니다…'가 남지 않는다", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    setup();
+    pick(file());
+    await settle();
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("이미지를 넣었습니다");
+    fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    expect(status).toHaveTextContent(/^이미지를 지웠습니다$/);
+  });
+});

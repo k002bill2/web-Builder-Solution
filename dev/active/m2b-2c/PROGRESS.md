@@ -7,13 +7,20 @@
 
 ## 체크리스트
 - [x] P0 npm ci exit 0(lock 불변) · baseline gate OK(logs/baseline-gate.txt) · 전체 vitest 198 files · 1777 passed · exit 0(logs/baseline-full-vitest.txt) · 바이트 baseline(logs/p1-baseline-bytes.txt)
-- [ ] P0 BRIEF·PROGRESS·REPORT 골격·gate.sh 명시 경로 커밋
-- [ ] P1 예약 공유 시제품(contact/booking + ContactForm 공유) + 부모 최종 목록(30쌍) 예산 실측 → 멈춤 판정
+- [x] P0 BRIEF·PROGRESS·REPORT 골격·gate.sh 명시 경로 커밋(4f8def7)
+- [x] P1 예약 공유 시제품(contact/booking + ContactForm 공유) + 부모 최종 목록(30쌍) 예산 실측 → **멈춤**: /studio 진입 +62 B > 레인 한도 30 B(압축 표현 2종 +78·+81 B, logs/p1-budget.txt) · 시제품 diff 보존 후 되돌림(재빌드 바이트 = 기준)
 - [ ] P2 testimonials/quotes-2 (RED → GREEN → gate → 커밋)
+  - BLOCKED: P1 예산 멈춤 — 부모 RENDERED_VARIANTS 끝 상태가 /studio 진입 레인 한도(+30 B) 초과, 해소 방법(엔진 registry 파생 import 또는 예산 예외)은 별도 승인 사항
 - [ ] P3 pricing/tiers-2
+  - BLOCKED: P1 예산 멈춤 — 부모 RENDERED_VARIANTS 끝 상태가 /studio 진입 레인 한도(+30 B) 초과, 해소 방법(엔진 registry 파생 import 또는 예산 예외)은 별도 승인 사항
 - [ ] P4 contact/booking (ContactForm 공유 추출, 기존 문의 폼 회귀 보존)
+  - BLOCKED: P1 예산 멈춤 — 부모 RENDERED_VARIANTS 끝 상태가 /studio 진입 레인 한도(+30 B) 초과, 해소 방법(엔진 registry 파생 import 또는 예산 예외)은 별도 승인 사항
 - [ ] P5 cta-band/banner · 최종 30쌍(registry = 부모 목록 = 엔진 SECTION_DEFINITIONS) · unknown 방어 별도 검증 · 이전 단언 이관표
+  - BLOCKED: P1 예산 멈춤 — 부모 RENDERED_VARIANTS 끝 상태가 /studio 진입 레인 한도(+30 B) 초과, 해소 방법(엔진 registry 파생 import 또는 예산 예외)은 별도 승인 사항
 - [ ] P-B REPORT 선기록 → 12변형 합본 3폭 브라우저 KD-AC·QB-9~15 · 정적 HTML 계산 스타일 동등성 · 예약 요청 0 실측 · 서버 종료 증거
+  - BLOCKED: P1 예산 멈춤 — 부모 RENDERED_VARIANTS 끝 상태가 /studio 진입 레인 한도(+30 B) 초과, 해소 방법(엔진 registry 파생 import 또는 예산 예외)은 별도 승인 사항
 - [ ] P-F 전체 vitest 1회 exit 0 · Codex review --scope branch --base 2369a3e 1회 · REPORT 마감
+  - BLOCKED: P1 예산 멈춤 — 부모 RENDERED_VARIANTS 끝 상태가 /studio 진입 레인 한도(+30 B) 초과, 해소 방법(엔진 registry 파생 import 또는 예산 예외)은 별도 승인 사항
 
 ## 새 테스트 delta 사전 예측 (각 단계 RED 전 기록)
+- RED 단계 미착수(P1 멈춤) — 예측·새 테스트 0, 제품 코드 변경 0

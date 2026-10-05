@@ -107,4 +107,24 @@ describe("이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1
     const last = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
     expect(Object.keys(last.images ?? {})).toEqual([]);
   });
+
+  it("패널이 닫혀 있어도 참조 밖 이미지는 캔버스 images에서 빠진다(Codex r1) — 삭제 → 되돌리기 무효화", async () => {
+    const { sent } = draw();
+    act(() => within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name: /^About/ }).click());
+    await openImages();
+    await pickFile();
+    const summary = within(editRegion()).getByText("이미지 편집 (1)").closest("details")!;
+    summary.open = false;
+    fireEvent(summary, new Event("toggle"));
+    await settle();
+    expect(screen.queryByRole("switch")).toBeNull();
+    fireEvent.click(within(editRegion()).getByRole("button", { name: "삭제" }));
+    await settle();
+    const withUndo = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    expect(Object.keys(withUndo.images ?? {})).toHaveLength(1);
+    fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: "새 제목" } });
+    await settle();
+    const last = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    expect(Object.keys(last.images ?? {})).toEqual([]);
+  });
 });

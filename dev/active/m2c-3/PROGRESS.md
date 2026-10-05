@@ -25,3 +25,4 @@ base `d25fe49` · 브랜치 `k002bill2/m2c-3`
 - R1 예측: 새 테스트 9개 → 실제 8개(예측 때 셈 잘못 — 테스트 삭제 0) · RED `logs/red-r1.txt` · GREEN 8/8
 - R2 예측: 새 테스트 10개 → RED 10/10 실패(`logs/red-r2.txt` — 껍데기 패널) → GREEN 10/10. 테스트 하네스만 고침(동적 import 대기 `settle` · 모의 대상 = ingest 안쪽 모듈) — 단언 변경 0
 - R3 예측: 새 테스트 3개(StudioLayoutImages.test.tsx) — 연결은 try1에서 이미 들어와 GREEN 예상 → 실제 3/3 GREEN(첫 실행 1건 lazy 대기 부족 — findBy로 하네스 수정) · Red-Green: 캔버스 images 줄 빼면 1 실패(`logs/red-r3-revert-wiring.txt`) → 복원 3/3
+- Codex r1 반영 예측: 새 테스트 3개(패널 2 · 연결 1) — RED 확인 후 수정

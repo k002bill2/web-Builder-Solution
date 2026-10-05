@@ -1,0 +1,41 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10d13-952d-70a3-8d4d-bda8cfacc605).
+[codex] Reviewer started: changes against 'd25fe49'
+[codex] Running command: /bin/zsh -lc 'pwd; git diff --stat d25fe49f132d991affb1f40d1a237f564e46a97a; find .. -name AG...
+[codex] Command completed: /bin/zsh -lc 'pwd; git diff --stat d25fe49f132d991affb1f40d1a237f564e46a97a; find .. -name AG... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|m2c' '/Users/younghwankang/Library/Application Support/orca/...
+[codex] Command failed: /bin/zsh -lc "rg -n 'web-builder|m2c' '/Users/younghwankang/Library/Application Support/orca/... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/youn...
+[codex] Command completed: /bin/zsh -lc 'for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/youn... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff d25fe49f132d991affb1f40d1a237f564e46a97a -- app/src/components/studio/...
+[codex] Command completed: /bin/zsh -lc 'git diff d25fe49f132d991affb1f40d1a237f564e46a97a -- app/src/components/studio/... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/useSectionOps.ts; cat app/src/components/studio/Ima...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/useSectionOps.ts; cat app/src/components/studio/Ima... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat dev/active/m2c-3/BRIEF.md; cat dev/active/m2c-3/REPORT.md; cat app/src/feat...
+[codex] Command completed: /bin/zsh -lc "cat dev/active/m2c-3/BRIEF.md; cat dev/active/m2c-3/REPORT.md; cat app/src/feat... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/ImageSlotField.tsx | sed -n '38,90p;125,150p';...
+[codex] Command failed: /bin/zsh -lc "nl -ba app/src/components/studio/ImageSlotField.tsx | sed -n '38,90p;125,150p';... (exit 2)
+[codex] Running command: /bin/zsh -lc "cat dev/active/m2c-3/DECISION-RESUME.md; sed -n '1,100p' CLAUDE.md; sed -n '76,...
+[codex] Command completed: /bin/zsh -lc "cat dev/active/m2c-3/DECISION-RESUME.md; sed -n '1,100p' CLAUDE.md; sed -n '76,... (exit 0)
+[codex] Running command: /bin/zsh -lc './node_modules/.bin/vitest run src/components/studio/ImageSlotPanel.test.tsx sr...
+[codex] Command failed: /bin/zsh -lc './node_modules/.bin/vitest run src/components/studio/ImageSlotPanel.test.tsx sr... (exit 1)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 비동기 이미지 작업이 후속 편집을 덮어쓸 수 있으며, 이미지 한도와 참조 해제에도 누락이 있습니다. 관련 Vitest 실행은 읽기 전용 환경에서 Vite 임시 설정 파...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against d25fe49
+
+비동기 이미지 작업이 후속 편집을 덮어쓸 수 있으며, 이미지 한도와 참조 해제에도 누락이 있습니다. 관련 Vitest 실행은 읽기 전용 환경에서 Vite 임시 설정 파일 생성이 EPERM으로 차단되어 검증하지 못했습니다.
+
+Full review comments:
+
+- [P1] 패널 언마운트 시 진행 중인 이미지 작업을 무효화하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotField.tsx:59-64
+  이미지 변환 중 다른 섹션을 선택하거나 이미지 패널을 닫으면 기존 패널이 언마운트되어 `latest` 갱신도 중단됩니다. 하지만 `turn`은 무효화되지 않아 이전 작업이 완료되면 오래된 문서와 이미지 맵으로 `publish`와 `onEdit`를 호출합니다. 그 사이 수행한 텍스트 편집, 섹션 삭제 또는 다른 이미지 선택을 덮어쓸 수 있으므로 언마운트 시 작업을 무효화하고 타이머도 정리해야 합니다.
+
+- [P2] 이미지 슬롯을 다시 켤 때도 문서 한도를 검사하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotField.tsx:142-142
+  한도 검사는 파일 선택 완료 시에만 실행되지만, 꺼진 슬롯의 이미지는 보관되면서 문서 한도 계산에서는 제외됩니다. 따라서 이미지를 끄고 다른 슬롯에 추가하는 과정을 반복한 뒤 기존 슬롯을 다시 켜면 문서의 12개·30MB 한도를 초과할 수 있습니다. `enabled`를 true로 바꾸기 전에 후보 문서로 `checkLimits`를 실행하고 초과하면 기존 상태를 유지해야 합니다.
+
+- [P2] 이미지 패널이 닫혀 있어도 참조 밖 이미지를 해제하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-3/app/src/components/studio/ImageSlotPanel.tsx:32-34
+  이미지 맵 정리가 패널의 effect에만 있어 패널을 닫거나 이미지 슬롯이 없는 섹션을 선택하면 정리가 중단됩니다. 이 상태에서 이미지가 있는 섹션을 삭제하고 다른 편집으로 되돌리기를 무효화해도, 더 이상 어떤 문서도 참조하지 않는 Blob과 모든 파생본이 `StudioLayout`의 이미지 맵에 남습니다. 패널 표시 여부와 무관하게 문서와 되돌릴 문서의 참조 집합이 바뀔 때 정리를 실행해야 합니다.

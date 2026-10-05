@@ -165,6 +165,34 @@ describe("ImageSlotPanel — 파일 고르기·상태", () => {
   });
 });
 
+describe("ImageSlotPanel — Codex r1", () => {
+  it("변환 중 패널이 닫히면(언마운트) 늦게 끝난 결과는 버린다 — 그 사이 편집을 덮어쓰지 않음", async () => {
+    let finish!: (r: IngestResult) => void;
+    ingest.fn.mockImplementation(() => new Promise((r) => (finish = r)));
+    const { state, view } = setup();
+    pick(file());
+    await settle();
+    const before = state.doc;
+    view.unmount();
+    await act(async () => finish(ok()));
+    expect(state.doc).toBe(before);
+    expect(state.images).toBeUndefined();
+  });
+
+  it("꺼진 슬롯을 다시 켤 때도 문서 한도 — 넘으면 꺼진 채 유지 + 한도 문구", () => {
+    const twelve = Array.from({ length: 12 }, (_, k) => uuid(k + 1));
+    const image = (ok() as Extract<IngestResult, { ok: true }>).image;
+    const images = [...twelve, uuid(13)].reduce<RenderImages>((acc, id) => addImage(acc, id, image, 640), {});
+    const head = sampleDoc().sections[0]!;
+    const crowded = { ...head, slots: { ...head.slots, ...Object.fromEntries(twelve.map((id, i) => [`x${i}`, { kind: "image", enabled: true, source: id, alt: "", decorative: true } as ImageSlotValue])) } };
+    const doc = setSlot(withSections(sampleDoc(), [crowded, ...sampleDoc().sections.slice(1)]), "s-hero", "image", { kind: "image", enabled: false, source: uuid(13), alt: "", decorative: true });
+    const { state } = setup({ doc, images });
+    fireEvent.click(screen.getByRole("switch", { name: "대표 이미지 사용" }));
+    expect(state.doc).toBe(doc);
+    expect(screen.getByRole("switch", { name: "대표 이미지 사용" })).toHaveAccessibleDescription(/이미지는 한 페이지에 12개까지 쓸 수 있습니다/);
+  });
+});
+
 describe("ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이름", () => {
   it("보관소에 없는 로컬 id = 잃은 이미지: 자체 플레이스홀더 + '이미지를 다시 골라 주세요' · 대체텍스트·켜짐 보존", () => {
     const doc = setSlot(sampleDoc(), "s-hero", "image", { kind: "image", enabled: true, source: uuid(7), alt: "가게 앞", decorative: false });

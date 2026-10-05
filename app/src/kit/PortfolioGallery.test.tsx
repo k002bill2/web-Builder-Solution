@@ -109,7 +109,7 @@ describe("portfolio/masonry (B1-6)", () => {
     const src = (id: string) => img({ source: id as ImageSlotValue["source"] });
     const urls = { [A]: "blob:null/a", [B]: "blob:null/b", [C]: "blob:null/c" };
     const sizes = { [A]: { width: 3000, height: 1000 }, [B]: { width: 900, height: 1600 }, [C]: { width: 500, height: 2000 } };
-    const draw = (variant: string, slots: Readonly<Record<string, SlotValue>>, imageSizes = sizes) =>
+    const draw = (variant: string, slots: Readonly<Record<string, SlotValue>>, imageSizes: Readonly<Record<string, { width: number; height: number }>> = sizes) =>
       portfolio(render(<PageDocument doc={galleryDoc(variant, slots)} kitTokens={SAMPLE_KIT_TOKENS} images={urls} imageSizes={imageSizes} />).container, variant);
     const cells = (s: HTMLElement) => [...s.querySelectorAll<HTMLElement>("[data-media]")].map((el) => [el.style.aspectRatio, el.getAttribute("width"), el.getAttribute("height"), [...el.classList].find((c) => c.startsWith("kit-r")) ?? ""].join("|"));
     expect(cells(draw("masonry", { image1: src(A), image2: src(B), image3: src(C) }))).toEqual(["2 / 1|3000|1000|", "900 / 1600|900|1600|", "1 / 2|500|2000|"]);

@@ -1,3 +1,4 @@
+import type { ImageSlotValue } from "../engine/contracts/pageDoc";
 import { bodySurface, headingId } from "./body";
 import { Media } from "./Media";
 import { ServicesHead } from "./servicesHead";
@@ -21,11 +22,18 @@ interface GalleryOptions {
  * portfolio 갤러리 공통 (SPEC-BODY B1-5~7 · 0.2-3) — 머리(제목 + 소개) → 갤러리(켜진 이미지 칸마다 figure, 번호 순서). ul·figcaption 0 · 칸은 링크·버튼 아님.
  * 그라디언트 칸 = figure째 aria-hidden(트리 밖) · 로컬 이미지 = img alt + width·height(칸 비율). 켜진 칸 0 → 갤러리 생략(0.8).
  */
-export function PortfolioGallery({ section, images, mediaRatio, root, cells, mod, layout, ratios }: Omit<KitSectionProps, "links"> & GalleryOptions) {
+export function PortfolioGallery({ section, images, imageSizes, mediaRatio, root, cells, mod, layout, ratios }: Omit<KitSectionProps, "links"> & GalleryOptions) {
   const on = cells.flatMap((n, i) => {
     const image = slotImage(section, `image${n}`);
     return image ? [{ n, image, ratio: ratios?.[i] ?? mediaRatio }] : [];
   });
+  // masonry 실제 이미지 칸 = 원본 비율(SPEC m2c 3절 · IMG-AC-17) — 표시 비율은 1:2~2:1로 자른 값, img width·height = 메타. 메타 없음 = 고정 배열
+  const original = (image: ImageSlotValue) => {
+    const size = ratios && typeof image.source === "string" && images[image.source] ? imageSizes?.[image.source] : undefined;
+    if (!size) return undefined;
+    const r = size.width / size.height;
+    return { ratio: [size.width, size.height] as const, aspect: r > 2 ? "2 / 1" : r < 0.5 ? "1 / 2" : `${size.width} / ${size.height}` };
+  };
   return (
     <section {...root} {...bodySurface(section)} aria-labelledby={headingId(section)} className="kit-body kit-portfolio">
       <div className="kit-wrap kit-services-inner">
@@ -34,9 +42,11 @@ export function PortfolioGallery({ section, images, mediaRatio, root, cells, mod
           <div data-layout={layout} className={`kit-gallery ${mod}`}>
             {on.map(({ n, image, ratio }) => {
               const real = typeof image.source === "string" && !!images[image.source];
+              const meta = original(image);
+              const cls = ratios && !meta ? `kit-gallery-media kit-r${ratio.join("x")}` : "kit-gallery-media";
               return (
                 <figure key={n} data-slot={`image${n}`} aria-hidden={real ? undefined : "true"} className="kit-gallery-cell">
-                  <Media image={image} images={images} ratio={ratio} className={ratios ? `kit-gallery-media kit-r${ratio.join("x")}` : "kit-gallery-media"} />
+                  <Media image={image} images={images} ratio={meta?.ratio ?? ratio} aspect={meta?.aspect} className={cls} section={section} slot={`image${n}`} />
                 </figure>
               );
             })}
@@ -53,7 +63,7 @@ export const PortfolioGrid3 = (props: KitSectionProps) => <PortfolioGallery {...
 /** portfolio/grid-2 (B1-7) — grid-3의 열 수 2(image3 슬롯 없음) */
 export const PortfolioGrid2 = (props: KitSectionProps) => <PortfolioGallery {...props} cells={[1, 2]} mod="kit-gallery--2" layout="grid" />;
 
-/** portfolio/masonry (B1-6 · 0.2-2) — md 이상 CSS 2단 다단(단 배정 = 브라우저 균형) · 칸 비율 슬롯 번호 고정 1:1 · 16:9 · 4:5(원본 비율 메타 = M2c, MQ-B3) */
+/** portfolio/masonry (B1-6 · 0.2-2) — md 이상 CSS 2단 다단(단 배정 = 브라우저 균형) · 칸 비율 슬롯 번호 고정 1:1 · 16:9 · 4:5 · 실제 이미지 칸 = 원본 비율(SPEC m2c 3절) */
 export const PortfolioMasonry = (props: KitSectionProps) => (
   <PortfolioGallery
     {...props}

@@ -16,7 +16,7 @@ export function HeroImage({ section, links, images, root }: KitSectionProps) {
       <div className="kit-wrap kit-hx-copy kit-hx-band">
         <HeroCopy section={section} links={links} heading={heading} cls={TONE_COPY} />
       </div>
-      {image && <Media image={image} images={images} ratio={[16, 9]} first className="kit-hx-wide" />}
+      {image && <Media image={image} images={images} ratio={[16, 9]} first className="kit-hx-wide" section={section} slot="image" />}
     </section>
   );
 }

@@ -19,7 +19,7 @@ export function HeroSplit({ section, links, images, mediaRatio, root }: KitSecti
         </div>
         {image && (
           <figure className="kit-hx-figure">
-            <Media image={image} images={images} ratio={mediaRatio} first className="kit-hx-split-img" />
+            <Media image={image} images={images} ratio={mediaRatio} first className="kit-hx-split-img" section={section} slot="image" />
           </figure>
         )}
       </div>

@@ -25,7 +25,11 @@ export interface KitTokenInput {
 }
 /** 섹션(slotKey null) 또는 글자 슬롯의 사각형 — 렌더 문서 좌표(CSS px, 문서 맨 위 기준) */
 export type FrameRect = readonly [instanceId: string, slotKey: string | null, x: number, y: number, w: number, h: number];
-/** IMAGE_DECODE_FAILED = loading "eager" 렌더에서 이미지 decode 1장 이상 실패 — rects를 보내지 않는다(SPEC m2c 5.3-3, 문구는 부모 생성기) */
+/**
+ * IMAGE_DECODE_FAILED = loading "eager" 렌더에서 이미지 decode 1장 이상 실패 — 렌더 문서는 rects를 보내지 않고 이 코드를 보낸다(SPEC m2c 5.3-3).
+ * 부모 수신(readRenderMessage가 이 코드를 읽기)은 M2C-4 — 비교 프레임 사본(features/profile/compareFrame.ts)과 함께 바꿔야 한다(compareFrameGuard 결정 A).
+ * 그 전까지 부모는 이 코드를 버리고 생성기 시간 초과로 실패한다(조용히 빠뜨리지는 않음).
+ */
 export type RenderErrorCode = "INVALID_DOC" | "NO_KIT_TOKENS" | "IMAGE_DECODE_FAILED";
 /** 렌더 메시지 이미지 1장 (SPEC m2c 3절 · MQ-C4 ★A) — 보관소 파생본 Blob + 방향 적용 뒤 원본 픽셀 크기(masonry 원본 비율) */
 export interface RenderImage {
@@ -119,6 +123,6 @@ export function readRenderMessage(data: unknown): RenderMessage | undefined {
   if (data.type === "ready") return { type: "ready" };
   if (data.type === "rects" && Array.isArray(data.rects) && data.rects.length <= 1024 && data.rects.every(isRect)) return { type: "rects", rects: data.rects };
   if (data.type === "click" && isText(data.instanceId)) return { type: "click", instanceId: data.instanceId };
-  if (data.type === "error" && (data.code === "INVALID_DOC" || data.code === "NO_KIT_TOKENS" || data.code === "IMAGE_DECODE_FAILED")) return { type: "error", code: data.code };
+  if (data.type === "error" && (data.code === "INVALID_DOC" || data.code === "NO_KIT_TOKENS")) return { type: "error", code: data.code };
   return undefined;
 }

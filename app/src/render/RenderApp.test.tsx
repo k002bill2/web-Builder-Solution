@@ -115,7 +115,9 @@ describe("렌더 문서 수신기", () => {
       Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
       return decode;
     };
-    beforeEach(() => Object.assign(URL, { createObjectURL: vi.fn(() => "blob:null/1"), revokeObjectURL: vi.fn() }));
+    beforeEach(() => {
+      Object.assign(URL, { createObjectURL: vi.fn(() => "blob:null/1"), revokeObjectURL: vi.fn() });
+    });
     afterEach(() => Reflect.deleteProperty(HTMLImageElement.prototype, "decode"));
 
     it('loading "eager" → 모든 img decode 뒤 첫 rects (decode 전 0) · 미리보기(loading 없음)는 decode를 기다리지 않는다', async () => {

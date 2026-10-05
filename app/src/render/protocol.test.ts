@@ -25,7 +25,7 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readParentMessage({ type: "render", doc, kitTokens })).toBeUndefined();
   });
 
-  it("렌더 → 부모 error 코드: INVALID_DOC · NO_KIT_TOKENS (· IMAGE_DECODE_FAILED 아래) — 모르는 코드는 버림", () => {
+  it("렌더 → 부모 error 코드: INVALID_DOC · NO_KIT_TOKENS만", () => {
     expect(readRenderMessage({ type: "error", code: "NO_KIT_TOKENS" })).toEqual({ type: "error", code: "NO_KIT_TOKENS" });
     expect(readRenderMessage({ type: "error", code: "INVALID_DOC" })).toEqual({ type: "error", code: "INVALID_DOC" });
     expect(readRenderMessage({ type: "error", code: "OTHER" })).toBeUndefined();
@@ -65,10 +65,6 @@ describe("메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens})", (
     expect(readParentMessage({ type: "render", doc, loading: "lazy" })).toBeUndefined();
     expect(readParentMessage({ type: "render", doc, loading: true })).toBeUndefined();
     expect(readParentMessage({ type: "render", doc })).not.toHaveProperty("loading");
-  });
-
-  it("렌더 → 부모 error IMAGE_DECODE_FAILED(내보내기 이미지 decode 실패 — SPEC m2c 5.3-3)", () => {
-    expect(readRenderMessage({ type: "error", code: "IMAGE_DECODE_FAILED" })).toEqual({ type: "error", code: "IMAGE_DECODE_FAILED" });
   });
 
   it("render{fonts} — 내보내기용 글꼴 바이트(M2B-4a 2.4): 별칭·400|700·ArrayBuffer · 2개 이하 · 어긋나면 메시지 전체를 버린다", () => {

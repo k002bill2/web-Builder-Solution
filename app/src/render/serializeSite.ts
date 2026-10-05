@@ -19,5 +19,7 @@ export async function serializeSite(root: Element, toDataUrl: ToDataUrl = blobTo
   if (!site) return undefined;
   const copy = site.cloneNode(true) as Element;
   for (const img of copy.querySelectorAll<HTMLImageElement>('img[src^="blob:"]')) img.setAttribute("src", await toDataUrl(img.getAttribute("src")!));
+  // 내보내기 render는 즉시 로드로 그린다(SPEC m2c 5.3-5) — 결과 HTML은 미리보기와 같게 hero(fetchpriority) 밖 img에 lazy를 다시 붙인다
+  for (const img of copy.querySelectorAll("img:not([fetchpriority])")) img.setAttribute("loading", "lazy");
   return copy.outerHTML;
 }

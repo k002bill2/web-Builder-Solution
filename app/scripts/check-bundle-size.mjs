@@ -13,7 +13,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
-import { checkBundle } from "./bundleBudget.mjs";
+import { BASELINE_FILE, checkBundle } from "./bundleBudget.mjs";
 
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
 
@@ -137,7 +137,17 @@ const readManifest = (name) => (existsSync(join(DIST, name)) ? JSON.parse(readFi
 const manifest = { ...readManifest(".vite/manifest.json"), ...readManifest(".vite/render-manifest.json") };
 const sizeOf = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
 
-const { lines, failures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO });
+// M2c 기준선(SPEC m2c 7절 · IMG-AC-29) — 시작 실측 고정 파일. 없거나 읽지 못하면 null = 실패(조용히 건너뛰지 않는다)
+const baselinePath = fileURLToPath(new URL(`../${BASELINE_FILE}`, import.meta.url));
+const readBaseline = () => {
+  try {
+    return JSON.parse(readFileSync(baselinePath, "utf8"));
+  } catch {
+    return null;
+  }
+};
+
+const { lines, failures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
 for (const line of lines) console.log(line);
 if (failures.length > 0) {
   for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);

@@ -1,0 +1,37 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10e10-d4a5-7a00-934a-93e89c74691f).
+[codex] Reviewer started: changes against '2fc32ba'
+[codex] Running command: /bin/zsh -lc 'git diff --stat 2fc32baed7c4cf850a5fd416e0af1668625ca935; pwd; find .. -name AG...
+[codex] Command completed: /bin/zsh -lc 'git diff --stat 2fc32baed7c4cf850a5fd416e0af1668625ca935; pwd; find .. -name AG... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|m2c' '/Users/younghwankang/Library/Application Support/orca/...
+[codex] Command failed: /bin/zsh -lc "rg -n 'web-builder|m2c' '/Users/younghwankang/Library/Application Support/orca/... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for p in /Users/younghwankang /Users/younghwankang/orca /Users/younghwankang/or...
+[codex] Command completed: /bin/zsh -lc 'for p in /Users/younghwankang /Users/younghwankang/orca /Users/younghwankang/or... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/images/store/imageStore.ts app/src/features/studio/...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/images/store/imageStore.ts app/src/features/studio/... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/useExportFlow.ts; cat app/src/render/RenderApp.tsx ...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/useExportFlow.ts; cat app/src/render/RenderApp.tsx ... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/render/htmlMessage.ts; cat app/src/features/studio/staticHtml/stati...
+[codex] Command failed: /bin/zsh -lc "cat app/src/render/htmlMessage.ts; cat app/src/features/studio/staticHtml/stati... (exit 2)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/images/ingest/encode.ts 2>/dev/null; rg -n 'MB|byte...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/images/ingest/encode.ts 2>/dev/null; rg -n 'MB|byte... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 허용된 이미지 문서가 직렬화 상한 때문에 내보내기에 실패할 수 있고, 전역 이미지 맵은 동시 요청의 결과를 바꾸거나 작업 종료 후 이미지 메모리를 유지합니다. 코드를 ...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2fc32ba
+
+허용된 이미지 문서가 직렬화 상한 때문에 내보내기에 실패할 수 있고, 전역 이미지 맵은 동시 요청의 결과를 바꾸거나 작업 종료 후 이미지 메모리를 유지합니다. 코드를 정적으로 검토했으며 테스트는 실행하지 않았습니다.
+
+Full review comments:
+
+- [P2] 이미지 동봉 크기에 맞춰 직렬화 메시지 상한을 처리하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app/src/features/studio/staticHtml/staticHtml.ts:166-167
+  이미지를 동봉한 마크업이 8,000,000자를 넘으면 `readHtmlMessage`가 정상적인 직렬화 응답을 버리므로 HTML과 PNG 모두 시간 초과로 실패합니다. 이미지 보관소는 문서당 30MB까지 허용하며, 같은 이미지를 여러 슬롯에서 사용해도 `serializeSite`는 각 `<img>`에 base64를 반복 삽입하므로 이 상한에 도달할 수 있습니다. 허용된 이미지 문서가 내보내지도록 메시지 상한이나 전송 방식을 조정하고, 상한 초과 회귀 테스트를 추가하세요.
+
+- [P2] 이미지 맵을 전역 변수가 아닌 요청별로 고정하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app/src/features/studio/exportFlow.ts:41-41
+  첫 내보내기가 CSS·글꼴을 기다리는 동안 다른 프로젝트로 이동해 내보내기를 시작하면 `requestImages`가 두 번째 요청의 맵으로 덮어써집니다. 생성기는 비동기 로딩 후 `exportImages`에서 이 전역 맵을 읽으므로 첫 프로젝트의 정상 이미지가 없는 것으로 처리되어 자체 그래픽으로 바뀐 파일을 성공 결과로 반환합니다. 저장소가 잡을 비동기로 실행하므로 생성기 호출 시점뿐 아니라 요청 등록 시점부터 이미지 맵을 요청별로 연결해야 합니다.
+
+- [P2] 내보내기가 끝나면 원본 이미지 맵 참조를 해제하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app/src/features/studio/exportFlow.ts:73-73
+  이미지 포함 문서를 한 번 내보낸 뒤 편집기를 떠나거나 이미지를 모두 삭제해도 `requestImages`는 다음 내보내기까지 마지막 맵을 계속 붙잡습니다. 따라서 React 상태가 해제되어도 Blob과 `imageStore`의 WeakMap에 연결된 모든 파생본이 회수되지 않으며, 탭 보관 한도인 60MB까지 불필요하게 남을 수 있습니다. 작업에 필요한 요청별 참조만 유지하고 완료·실패 후 해제하세요.

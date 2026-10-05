@@ -58,12 +58,14 @@ describe("앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 �
   it("슬롯 생성기 = readImage(이번 요청의 images 맵 · 파생본 전부) + onBuilt 요약 → done 결과 notes", async () => {
     const repository = await repositoryRunningSlot();
     const blob = new Blob(["x"]);
+    let read: unknown;
     made.run.mockImplementationOnce(async () => {
+      read = made.deps.at(-1)!.readImage!(ID);
       made.deps.at(-1)!.onBuilt!("blob:r1", { bytes: 2 * MB, images: 1, lost: 1 });
       return { downloadRef: "blob:r1", resultHash: "0123456789ab" };
     });
     const result = await requestExportOnce(repository, "p1", "static-html", 3, { [ID]: { blob, width: 800, height: 600 } });
-    expect(made.deps.at(-1)!.readImage!(ID)).toEqual({ variants: { 800: blob }, width: 800, height: 600 });
+    expect(read).toEqual({ variants: { 800: blob }, width: 800, height: 600 });
     expect(result).toMatchObject({ kind: "done", notes: ["HTML 1개 · 2.0MB (이미지 1장 포함)", "이미지 1장을 다시 골라야 해 자체 그래픽으로 넣었습니다"] });
     await requestExportOnce(repository, "p1", "static-html", 4);
     expect(made.deps.at(-1)!.readImage!(ID)).toBeUndefined();
@@ -74,5 +76,27 @@ describe("앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 �
     made.run.mockRejectedValueOnce(new Error("이미지를 그리지 못했습니다")).mockRejectedValueOnce(new Error("다른 실패"));
     expect(await requestExportOnce(repository, "p1", "static-html", 5)).toEqual({ kind: "retryable", format: "static-html", reason: "이미지를 그리지 못했습니다" });
     expect(await requestExportOnce(repository, "p1", "static-html", 6)).toEqual({ kind: "retryable", format: "static-html" });
+  });
+
+  it("이미지 맵은 요청(프로젝트)별 — 생성 중 다른 프로젝트 요청이 덮어쓰지 않음 · 요청이 끝나면 놓는다(Codex r1)", async () => {
+    const repository = await repositoryRunningSlot();
+    const [a, b] = [new Blob(["a"]), new Blob(["b"])];
+    const B_ID = "22222222-2222-4222-8222-222222222222";
+    let release!: () => void;
+    const seen: unknown[] = [];
+    made.run.mockImplementationOnce(async () => {
+      await new Promise<void>((resolve) => (release = resolve));
+      seen.push(made.deps.at(-1)!.readImage!(ID));
+      return { downloadRef: "blob:a", resultHash: "a" };
+    });
+    made.run.mockImplementationOnce(async () => ({ downloadRef: "blob:b", resultHash: "b" }));
+    const first = requestExportOnce(repository, "pa", "static-html", 7, { [ID]: { blob: a, width: 10, height: 10 } });
+    await Promise.resolve();
+    await requestExportOnce(repository, "pb", "static-html", 8, { [B_ID]: { blob: b, width: 10, height: 10 } });
+    release();
+    await first;
+    expect(seen).toEqual([{ variants: { 10: a }, width: 10, height: 10 }]);
+    expect(made.deps.at(-1)!.readImage!(ID)).toBeUndefined();
+    expect(made.deps.at(-1)!.readImage!(B_ID)).toBeUndefined();
   });
 });

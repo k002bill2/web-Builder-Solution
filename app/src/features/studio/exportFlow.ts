@@ -30,15 +30,17 @@ export type ExportResult =
 // 저장소 쪽은 모듈이 아니라 전역 심볼 슬롯으로 받는다(memoryDocBook STATIC_HTML_SLOT — 같은 키, 청크 분리 0)
 // 생성기 청크는 retryableImport로 받는다(P2-2 — 첫 로드 실패 뒤 다시 시도하면 새 URL로 다시 받는다)
 // 이미지(SPEC m2c 5.1): 생성기 계약은 그대로 두고 팩토리에 readImage(이번 요청의 images 맵 — 파생본 전부)·onBuilt(결과 요약)를 주입한다.
-// 생성기는 저장소당 1개라 맵은 요청마다 바꾸는 자리에서 읽는다. 요약은 내려받기 참조 키(같은 revision 멱등 재생도 같은 참조)
+// 생성기는 저장소당 1개라 맵은 요청(프로젝트)별 자리에서 읽고 요청이 끝나면 놓는다 — 로컬 id(UUID)는 프로젝트 사이에 겹치지 않는다(Codex r1).
+// 요약은 내려받기 참조 키(같은 revision 멱등 재생도 같은 참조)
 const loadGenerator = retryableImport(() => import("./staticHtml/staticHtml"));
-let requestImages: RenderImages | undefined;
+const requestImages = new Map<string, RenderImages>();
+const readRequestImage = (id: string) => [...requestImages.values()].map((images) => imageReader(images)(id)).find(Boolean);
 const summaries = new Map<string, ExportSummary>();
 const imageFailed = new Set<string>();
 (globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => {
   const { createStaticHtmlGenerator } = await loadGenerator();
   return (store: StudioReader): ExportGenerator => {
-    const generate = createStaticHtmlGenerator(store, { readImage: (id) => imageReader(requestImages)(id), onBuilt: (ref, summary) => summaries.set(ref, summary) });
+    const generate = createStaticHtmlGenerator(store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary) });
     return (input) =>
       generate(input).catch((error: unknown) => {
         if (error instanceof Error && error.message === IMAGE_FAILED) imageFailed.add(input.projectId);
@@ -70,8 +72,8 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
 
 export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
-  requestImages = images;
   imageFailed.delete(projectId);
+  if (images) requestImages.set(projectId, images);
   try {
     const result = await repository.requestExport(projectId, format, revision);
     // "내보내기 전" 스냅샷은 이번 호출이 썼을 때만(멱등 재생·재실행이면 내지 않는다 — 9절)
@@ -93,5 +95,7 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
     if (code === "UNRENDERED_SECTIONS") return { kind: "unrendered", format, sections: (error as { readonly sections?: readonly string[] }).sections ?? [] };
     if (code === "JOB_TIMEOUT" || code === "INFRA" || code === "NETWORK" || code === "UNKNOWN") return { kind: "retryable", format };
     return { kind: "refused", format, code };
+  } finally {
+    requestImages.delete(projectId);
   }
 }

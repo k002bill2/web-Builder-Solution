@@ -1,0 +1,45 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-4/app
+
+ ❯ src/features/studio/exportFlow.test.ts (6 tests | 1 failed) 11ms
+   ❯ 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) (3)
+     × 이미지 맵은 요청(프로젝트)별 — 생성 중 다른 프로젝트 요청이 덮어쓰지 않음 · 요청이 끝나면 놓는다(Codex r1) 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) > 이미지 맵은 요청(프로젝트)별 — 생성 중 다른 프로젝트 요청이 덮어쓰지 않음 · 요청이 끝나면 놓는다(Codex r1)
+AssertionError: expected [ undefined ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
+-   {
+-     "height": 10,
+-     "variants": {
+-       "10": Blob {},
+-     },
+-     "width": 10,
+-   },
++   undefined,
+  ]
+
+ ❯ src/features/studio/exportFlow.test.ts:96:18
+     94|     release();
+     95|     await first;
+     96|     expect(seen).toEqual([{ variants: { 10: a }, width: 10, height: 10…
+       |                  ^
+     97|     expect(made.deps.at(-1)!.readImage!(ID)).toBeUndefined();
+     98|     expect(made.deps.at(-1)!.readImage!(B_ID)).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  07:01:58
+   Duration  914ms (environment 77%, setup 13%, transform 7%, tests 1%, import 1%, worker 1%)
+

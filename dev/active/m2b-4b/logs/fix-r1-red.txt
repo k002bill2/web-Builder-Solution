@@ -1,0 +1,37 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4b/app
+
+ ❯ src/kit/motion.test.ts (4 tests | 1 failed) 9ms
+   ❯ 사이트 모션 CSS (MF-AC-U2·U3) (4)
+     × U2: 반복 1 · infinite 0 · 스크롤 연동 0 · 전환 = opacity·transform(+시트 overlay·display allow-discrete) · keyframes = opacity·transform · translateX 0 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/motion.test.ts > 사이트 모션 CSS (MF-AC-U2·U3) > U2: 반복 1 · infinite 0 · 스크롤 연동 0 · 전환 = opacity·transform(+시트 overlay·display allow-discrete) · keyframes = opacity·transform · translateX 0
+AssertionError: expected '[data-site-root][data-motion-play] [d…' not to match /kit-hx-tile/
+
+- Expected:
+/kit-hx-tile/
+
++ Received:
+"[data-site-root][data-motion-play] [data-kit][data-motion=\"L2\"] :is(.kit-hero-media, .kit-hx-split-img, .kit-hx-tile--a, .kit-hx-wide)"
+
+ ❯ src/kit/motion.test.ts:65:35
+     63|     // 확대(kit-zoom)는 자기 칸이 이미지 경계와 같은 대상만 — grid 타일 A는 칸이 타일 묶음이라 간격으로…
+     64|     const zoomRule = rules(css).find((r) => /animation:\s*kit-zoom/.te…
+     65|     expect(zoomRule.selector).not.toMatch(/kit-hx-tile/);
+       |                                   ^
+     66|   });
+     67|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  19:07:30
+   Duration  223ms (setup 71%, transform 17%, tests 7%, worker 3%, import 2%)
+

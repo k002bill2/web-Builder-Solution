@@ -60,6 +60,9 @@ describe("사이트 모션 CSS (MF-AC-U2·U3)", () => {
       for (const r of rules(body!)) for (const decl of r.body.split(";").filter((d) => d.trim())) expect(decl.split(":")[0]!.trim()).toMatch(/^(opacity|transform)$/);
     }
     for (const name of declValues(css, "animation").map((v) => v.split(" ")[0])) expect(frames.map((m) => m[1])).toContain(name);
+    // 확대(kit-zoom)는 자기 칸이 이미지 경계와 같은 대상만 — grid 타일 A는 칸이 타일 묶음이라 간격으로 돌출(Codex R1 P2) → 제외
+    const zoomRule = rules(css).find((r) => /animation:\s*kit-zoom/.test(r.body))!;
+    expect(zoomRule.selector).not.toMatch(/kit-hx-tile/);
   });
 
   it("U3: 토큰 9개 = SPEC 1.2 값 · 3 × stagger + dur-zoom ≤ 1초 · 각 dur ≤ 720ms · 이동 거리 rem", () => {

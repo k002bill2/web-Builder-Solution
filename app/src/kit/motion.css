@@ -68,13 +68,13 @@
     [data-site-root][data-motion-play] [data-kit][data-motion="L2"] [data-layout="masonry"] > * {
       animation: kit-fade var(--site-motion-dur-enter) var(--site-motion-ease-out) 1 backwards;
     }
-    /* L2 hero 이미지 — 칸 안쪽 약한 확대 → 원래 크기(1회). 칸 = split figure(기존 overflow hidden) · grid 타일 묶음 · fullbleed-left·image 섹션(이미지가 섹션 직속).
+    /* L2 hero 이미지 — 칸 안쪽 약한 확대 → 원래 크기(1회). 칸 = split figure(기존 overflow hidden) · fullbleed-left·image 섹션(이미지가 섹션 직속 — 위·옆 변 = 섹션 변).
+       grid 타일 A는 제외 — 자기 칸이 없어 타일 간격으로 돌출(Codex R1 P2, 마크업 래퍼는 범위 밖).
        아래 변 고정(transform-origin) — 확대가 카피 쪽(아래)으로 넘지 않고 위·옆은 칸에서 잘린다 */
-    [data-site-root][data-motion-play] [data-kit][data-motion="L2"]:is(.kit-hero, .kit-hx--image),
-    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] .kit-hx-tiles {
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"]:is(.kit-hero, .kit-hx--image) {
       overflow: clip;
     }
-    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hero-media, .kit-hx-split-img, .kit-hx-tile--a, .kit-hx-wide) {
+    [data-site-root][data-motion-play] [data-kit][data-motion="L2"] :is(.kit-hero-media, .kit-hx-split-img, .kit-hx-wide) {
       transform-origin: 50% 100%;
       animation: kit-zoom var(--site-motion-dur-zoom) var(--site-motion-ease-out) 1 backwards;
     }

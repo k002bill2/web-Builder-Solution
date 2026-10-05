@@ -1,0 +1,5 @@
+{"run":1,"throttle":1,"ms":185,"w":1280,"h":3479,"bytes":181228,"sha":"7dab0a8e54e8","reports":[[1280,3479],[1280,3479]]}
+{"run":2,"throttle":1,"ms":106,"w":1280,"h":3479,"bytes":181228,"sha":"7dab0a8e54e8","reports":[[1280,3479]]}
+{"run":3,"throttle":1,"ms":104,"w":1280,"h":3479,"bytes":181228,"sha":"7dab0a8e54e8","reports":[[1280,3479],[1280,3479]]}
+{"run":4,"throttle":1,"ms":100,"w":1280,"h":3479,"bytes":181228,"sha":"7dab0a8e54e8","reports":[[1280,3479]]}
+{"run":5,"throttle":1,"ms":110,"w":1280,"h":3479,"bytes":181228,"sha":"7dab0a8e54e8","reports":[[1280,3479]]}

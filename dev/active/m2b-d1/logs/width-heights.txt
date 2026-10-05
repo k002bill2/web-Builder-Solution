@@ -1,0 +1,4 @@
+{"W":300,"log":[{"t":108,"type":"rects","sections":8,"widths":[300],"bottom":3003}]}
+{"W":390,"log":[{"t":77,"type":"rects","sections":8,"widths":[390],"bottom":3077}]}
+{"W":768,"log":[{"t":79,"type":"rects","sections":8,"widths":[768],"bottom":3010}]}
+{"W":1280,"log":[{"t":60,"type":"rects","sections":8,"widths":[1280],"bottom":3479}]}

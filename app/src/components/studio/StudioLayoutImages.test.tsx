@@ -63,6 +63,7 @@ const openImages = async () => {
   await settle();
 };
 const pickFile = async () => {
+  await screen.findByTestId("image-file-image");
   fireEvent.change(screen.getByTestId("image-file-image"), { target: { files: [new File([new Uint8Array([0xff, 0xd8, 0xff])], "IMG_0001.jpg", { type: "image/jpeg" })] } });
   await settle();
 };
@@ -80,8 +81,8 @@ describe("이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1
     expect(screen.queryByRole("switch")).toBeNull();
     expect(loads).toMatchObject({ panel: 0, ingest: 0 });
     await openImages();
+    expect(await within(editRegion()).findByRole("switch", { name: "대표 이미지 사용" })).toBeInTheDocument();
     expect(loads.panel).toBe(1);
-    expect(within(editRegion()).getByRole("switch", { name: "대표 이미지 사용" })).toBeInTheDocument();
     expect(loads.ingest).toBe(0);
   });
 

@@ -16,12 +16,12 @@ base `d25fe49` · 브랜치 `k002bill2/m2c-3`
 ## 재개 (2026-10-06 · DECISION-RESUME · HEAD 7d05f94 = main ab5fa4a 병합)
 - [x] R0: 시작 build 재실측 `logs/build-resume-start.txt` — `/studio` 진입 **127.14** · 첫 91.77 · `/profile` 첫 99.61 · `/catalog` 99.64 · 렌더 JS 84.19 / CSS 8.80
 - [x] R0: 시제품 = `try1.patch` 그대로 적용 build `logs/build-resume-proto.txt` — 진입 **127.23**(+0.09) · `/catalog` 99.66(+0.02) · `/compare` 자동 로드 121.71(+0.03) · 렌더 변화 0 → 감지선 127.39까지 여유 0.16 — 진행
-- [ ] R1 보관소 순수 함수(참조 집합·prune·한도·pickVariant) TDD
-- [ ] R2 ImageSlotPanel TDD(파일 선택·실패 문구·진행·대체텍스트/장식·제거·잃은 이미지·안내)
-- [ ] R3 EditFields·StudioLayout 연결(캔버스 images) TDD + 중간 build
-- [ ] R4 typecheck·lint·전체 vitest·build
+- [x] R1 보관소 순수 함수(참조 집합·prune·한도·pickVariant) TDD
+- [x] R2 ImageSlotPanel TDD(파일 선택·실패 문구·진행·대체텍스트/장식·제거·잃은 이미지·안내)
+- [x] R3 EditFields·StudioLayout 연결(캔버스 images) TDD + 중간 build(`build-r3-mid.txt` 126.84 · `/compare` 자동 121.72(+0.04) → 패널의 registry·localImageId·objectUrls import 제거 → `build-r3-mid2.txt` 126.80 · 다른 라우트 ≤ +0.03)
+- [x] R4 typecheck 0 · lint 0 · vitest 224파일 2001 통과 exit 0 · build 0 — `/studio` 진입 **126.79** (`logs/gate-*.txt`)
 - [ ] R5 Ego Lite 4폭 확인·캡처 + 창·탭 닫힘 재확인 · 서버 종료·lsof 0
 - [ ] R6 Codex review --scope branch --base d25fe49 (≤2) · REPORT 전체 갱신
 - R1 예측: 새 테스트 9개 → 실제 8개(예측 때 셈 잘못 — 테스트 삭제 0) · RED `logs/red-r1.txt` · GREEN 8/8
 - R2 예측: 새 테스트 10개 → RED 10/10 실패(`logs/red-r2.txt` — 껍데기 패널) → GREEN 10/10. 테스트 하네스만 고침(동적 import 대기 `settle` · 모의 대상 = ingest 안쪽 모듈) — 단언 변경 0
-- R3 예측: 새 테스트 3개(StudioLayoutImages.test.tsx) — 연결은 try1에서 이미 들어와 GREEN 예상 → Red-Green은 연결 줄 되돌려 확인
+- R3 예측: 새 테스트 3개(StudioLayoutImages.test.tsx) — 연결은 try1에서 이미 들어와 GREEN 예상 → 실제 3/3 GREEN(첫 실행 1건 lazy 대기 부족 — findBy로 하네스 수정) · Red-Green: 캔버스 images 줄 빼면 1 실패(`logs/red-r3-revert-wiring.txt`) → 복원 3/3

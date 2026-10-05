@@ -80,13 +80,13 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
 
 /** 미리보기 object URL은 이 요소만 소유한다 — 사라지면 해제(편집기를 떠나면 살아 있는 URL 0, E-AC-46) */
 function Preview({ blob }: { readonly blob: Blob }) {
-  const [url, setUrl] = useState<string>();
+  const img = useRef<HTMLImageElement>(null);
   useEffect(() => {
     const created = URL.createObjectURL(blob);
-    setUrl(created);
+    if (img.current) img.current.src = created;
     return () => URL.revokeObjectURL(created);
   }, [blob]);
-  return url ? <img src={url} alt="" className="aspect-video w-full rounded-md bg-fill-normal object-cover" /> : null;
+  return <img ref={img} alt="" className="aspect-video w-full rounded-md bg-fill-normal object-cover" />;
 }
 
 function AltFields({ id, value, onChange }: { readonly id: string; readonly value: ImageSlotValue; readonly onChange: (next: ImageSlotValue) => void }) {

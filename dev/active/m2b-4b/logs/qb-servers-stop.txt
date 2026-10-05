@@ -1,0 +1,1 @@
+servers: 28633·28634(npx) · 28669·28680(vite) cwd = m2b-4b/app 확인 뒤 kill · 이후 4337·4339 LISTEN = [] · 5480 = 다른 PID(82062) 무접촉

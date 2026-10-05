@@ -13,7 +13,15 @@
   - 첫 화면 경계 규칙: main 문서 순서 첫 hero + 뒤 2자리 · hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · faq·contact·폴백 = 자리 차지·속성 0 · header = 위치 무관 min(motion,L1)
 - [x] P3 정적 HTML KEPT_DATA +data-motion·data-motion-play · clean 뒤 안쪽 play 제거·사이트 루트에만 부착 · STATIC_MENU_SCRIPT 변경 0(diff 0줄) · PNG buildCaptureSvg play 제거 + style 끝 방어 규칙 · RED 3 failed(logs/p3-red.txt) = 예측 → GREEN · gate OK 표적 398(logs/p3-gate.txt) · 바이트 logs/p3-bytes.txt(렌더 JS 83,029 · CSS 8,753 · /studio 첫 91,775(−9) · 진입 127,336(+6) · /compare 진입 121,724(+29))
   - 이관(전→후): ① `staticMarkup.test.ts` data-* 허용 목록 5개 → +data-motion·data-motion-play 7개(SPEC C-2) ② `pngCapture.test.ts` style 텍스트 `toBe(CSS)` → `toBe(CSS + "\\n" + 방어 규칙)` 정확 일치 유지(SPEC 1.3·U5) — 약화 0
-- [ ] P4 브라우저 B1~B5 3폭·reduced-motion·200%·인쇄 · 계산 스타일 동등성
+- [x] P4 브라우저(ego-browser TaskSpace 66 · 4337 dev·4339 preview · `qb-motion.mjs` → logs/qb-motion.txt·json)
+  - B1 캔버스(render.html 1280, hero split L2): 첫 그리기·슬롯 편집 직후 모두 애니메이션 0 · 최종 아닌 요소 0 · data-motion header L1·hero/about/services L2 · data-motion-play 0
+  - B2 PNG L2 vs L0 픽셀 차이 0 · 높이 같음 — hero fullbleed-left·split·grid × 1280·768·390(9조합) · style 끝 방어 규칙. (`play:true` 표기는 CSS 선택자 문자열까지 센 측정 오류 — 루트 속성 제거는 단위 테스트 U5가 근거)
+  - B3 정적 HTML(1280): 모션 = 로드 시 첫 화면 3섹션만 애니메이션 7개(maxEnd 720ms) → 1.0초 시점 애니메이션 0·최종 아닌 요소 0 · reduce·print = 로드 시점부터 애니메이션 0·최종 · L1 = 페이드 3개(420ms) · L0 = 0
+  - B4 hero 6변형 × 3폭(18조합): 재생 중 30ms 표본·재생 후 가로 넘침 −15(=스크롤바, 넘침 0) · 확대 대상의 칸 = overflow clip/hidden(fullbleed·image 섹션, split figure, grid 타일 묶음) · 아래 변 고정(bottom 0 또는 음수)
+  - B5 200%(390): rise 출발 이동 12px → 24px(rem 비례) · 재생 중 넘침 0 · 시트(logs/qb-sheet.txt): 0.2초 열림(opacity 0→1·−8px/200% −16px→none) · reduce 즉시 · 메뉴 4/4 보임 · Esc 닫힘
+  - 환경 한계: Ego Lite 창에서 로드 애니메이션이 한 번 돈 문서는 이후 전환이 pending에 정지(2줄 최소 문서로 재현, logs/qb-stall-repro.txt) → 시트 측정은 header만 data-motion 남긴 사본으로 대체
+  - 계산 스타일 동등성(렌더 문서 vs 정적 HTML 1.2초 뒤, 106/106 요소): opacity·transform·fontFamily·fontSize·color·display 불일치 0 · 예상된 차이만 = hero overflow visible→clip 1 · 확대 대상 transform-origin 1 · animation-name 6(재생 조건 안 규칙 — 최종 값 동일)
+  - 서버: 자기 PID cwd 확인 뒤 종료 · LISTEN 0 · 5480 무접촉(logs/qb-servers-stop.txt)
 - [ ] P5 전체 vitest exit 0 · Codex branch review base 8236a2c · REPORT
 
 ## 새 테스트 delta 사전 예측 (각 단계 RED 전 기록 · 기준 208 files · 1827)

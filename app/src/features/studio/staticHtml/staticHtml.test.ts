@@ -5,6 +5,7 @@ import { sampleTheme } from "../../../engine/testing/sampleTheme";
 import type { ParentMessage } from "../../../render/protocol";
 import { drawDoc, withUnknownCta, without } from "../../../render/testing/drawKit";
 import { createStaticHtmlGenerator, openRenderFrame, type RenderChannel } from "./staticHtml";
+import { FONT_FAILED } from "./siteFontEmbed";
 import { STATIC_MENU_SCRIPT } from "./staticMarkup";
 
 /** M2A-3b G3 — 정적 HTML 생성기: 잡의 스냅샷 문서를 숨은 렌더 iframe에 그려 직렬화 · 킷 CSS 인라인 · Blob object URL · SHA-256 앞 12자리 */
@@ -17,8 +18,11 @@ const STORE = {
 } as unknown as StudioReader;
 const FILES: Readonly<Record<string, string>> = {
   "/render.html": '<!doctype html><html><head><script type="module" src="/assets/render.js"></script><link rel="stylesheet" crossorigin href="/assets/render.css"></head><body></body></html>',
-  "/assets/render.css": "[data-site-root]{color:var(--site-ink)}",
+  "/assets/render.css":
+    '[data-site-root]{color:var(--site-ink)}@font-face{font-family:"Pretendard";font-weight:400;font-display:swap;src:url(/assets/P-400.woff2) format("woff2")}@font-face{font-family:"Pretendard";font-weight:700;font-display:swap;src:url(/assets/P-700.woff2) format("woff2")}',
 };
+/** M2B-4a — 킷 CSS의 @font-face url → 글꼴 바이트(가짜). 기존 테스트는 이 주입만 더했다(단언 변경 0) */
+const fetchBytes = async (url: string) => new TextEncoder().encode(`wOF2:${url}`).buffer as ArrayBuffer;
 const fetchText = async (url: string) => {
   const text = FILES[url];
   if (text === undefined) throw new Error(`404 ${url}`);
@@ -56,7 +60,7 @@ describe("정적 HTML 생성기 (G3)", () => {
   it("ready → render{잡 문서, 킷 토큰} → rects 뒤 serialize → html → 문서 1개 · Blob text/html;charset=utf-8 · 해시 = 결과 바이트 SHA-256 앞 12자리 · iframe 닫음", async () => {
     const frame = fakeFrame();
     const urls = fakeUrls();
-    const made = await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: urls.api })(input);
+    const made = await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api })(input);
     expect(frame.sent.map((m) => m.type)).toEqual(["render", "serialize"]);
     const render = frame.sent[0] as Extract<ParentMessage, { type: "render" }>;
     expect(render.doc).toBe(DOC);
@@ -78,7 +82,7 @@ describe("정적 HTML 생성기 (G3)", () => {
 
   it("같은 문서 두 번 → 같은 해시(결정적) · 같은 프로젝트 재생성이면 이전 object URL 해제 · release(projectId) = 편집기 이탈 해제", async () => {
     const urls = fakeUrls();
-    const generate = createStaticHtmlGenerator(STORE, { open: fakeFrame().open, fetchText, urls: urls.api });
+    const generate = createStaticHtmlGenerator(STORE, { open: fakeFrame().open, fetchText, fetchBytes, urls: urls.api });
     const first = await generate(input);
     const second = await generate(input);
     expect(second.resultHash).toBe(first.resultHash);
@@ -91,7 +95,7 @@ describe("정적 HTML 생성기 (G3)", () => {
     const urls = fakeUrls();
     let fail = false;
     const frame = fakeFrame((m, post) => (fail ? undefined : post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: MARKUP })));
-    const generate = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: urls.api, timeoutMs: 30 });
+    const generate = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api, timeoutMs: 30 });
     const first = await generate(input);
     expect(urls.revoked).toEqual([]);
     fail = true;
@@ -105,7 +109,7 @@ describe("정적 HTML 생성기 (G3)", () => {
 
   it("렌더 문서가 답하지 않으면 JOB_TIMEOUT(재시도 가능) · iframe 닫음", async () => {
     const frame = fakeFrame(() => {});
-    const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: fakeUrls().api, timeoutMs: 30 })(input);
+    const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: fakeUrls().api, timeoutMs: 30 })(input);
     await expect(failed).rejects.toMatchObject({ code: "JOB_TIMEOUT" });
     expect(frame.closed()).toBe(1);
   });
@@ -117,7 +121,7 @@ describe("정적 HTML 생성기 (G3)", () => {
     ["폴백이 섞인 마크업", (m: ParentMessage, post: (d: unknown) => void) => post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: drawDoc(withUnknownCta()).querySelector("[data-site-root]")!.outerHTML })], // M2B-2c 이관: 폴백 예시 = cta-band 자리 no-such-variant
   ])("%s → INFRA로 기록될 실패(JOB_TIMEOUT 아님) · iframe 닫음", async (_name, reply) => {
     const frame = fakeFrame(reply);
-    const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: fakeUrls().api })(input);
+    const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: fakeUrls().api })(input);
     await expect(failed).rejects.toThrow();
     await expect(failed).rejects.not.toMatchObject({ code: "JOB_TIMEOUT" });
     expect(frame.closed()).toBe(1);
@@ -125,11 +129,41 @@ describe("정적 HTML 생성기 (G3)", () => {
 
   it("render.html에 스타일시트가 없으면(킷 CSS 0) 실패 · 킷 토큰을 만들 수 없는 문서(프로필 버전 없음)도 실패 — 렌더 문서를 열지 않는다", async () => {
     const frame = fakeFrame();
-    const noCss = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText: async () => "<html><head></head></html>", urls: fakeUrls().api });
+    const noCss = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText: async () => "<html><head></head></html>", fetchBytes, urls: fakeUrls().api });
     await expect(noCss(input)).rejects.toThrow(/스타일시트/);
-    const noTokens = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, urls: fakeUrls().api });
+    const noTokens = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: fakeUrls().api });
     await expect(noTokens({ ...input, doc: { ...DOC, profileVersion: 99 } })).rejects.toThrow(/킷 토큰/);
     expect(frame.sent).toEqual([]);
+  });
+});
+
+describe("정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9)", () => {
+  it("킷 CSS의 @font-face(url) 제거 → 쓰는 면만 data: 인라인 · 고지 주석(OFL 전문) · 렌더 문서에도 같은 바이트(측정 글꼴 = 결과 글꼴)", async () => {
+    const frame = fakeFrame();
+    const urls = fakeUrls();
+    await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api })(input);
+    const render = frame.sent[0] as Extract<ParentMessage, { type: "render" }>;
+    expect(render.fonts?.map((f) => [f.family, f.weight, new TextDecoder().decode(f.data)])).toEqual([
+      ["Pretendard", 700, "wOF2:/assets/P-700.woff2"],
+      ["Pretendard", 400, "wOF2:/assets/P-400.woff2"],
+    ]);
+    const html = await urls.blobs[0]!.text();
+    expect(html.match(/url\(data:font\/woff2;base64,/g)).toHaveLength(2);
+    expect(html).not.toMatch(/\/assets\/P-|local\(/);
+    const page = new DOMParser().parseFromString(html, "text/html");
+    const comments = [...page.head.childNodes].filter((n) => n.nodeType === Node.COMMENT_NODE);
+    expect(comments).toHaveLength(1);
+    expect(comments[0]!.textContent).toContain("Copyright (c) 2021, Kil Hyung-jin");
+    expect(comments[0]!.textContent).toContain("SIL OPEN FONT LICENSE Version 1.1");
+  });
+
+  it("글꼴 받기 실패·상한 넘김 → JOB_TIMEOUT(재시도 가능) · 문구 '글꼴을 불러오지 못했습니다' · 렌더 문서 열지 않음 · 결과 파일(object URL) 0", async () => {
+    const frame = fakeFrame();
+    const urls = fakeUrls();
+    const failed = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes: () => new Promise<ArrayBuffer>(() => undefined), urls: urls.api, fontTimeoutMs: 30 })(input);
+    await expect(failed).rejects.toMatchObject({ code: "JOB_TIMEOUT", message: expect.stringContaining(FONT_FAILED) });
+    expect(frame.sent).toEqual([]);
+    expect(urls.blobs).toEqual([]);
   });
 });
 

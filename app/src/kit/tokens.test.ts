@@ -22,8 +22,8 @@ describe("킷 토큰 생성기 (M2A-2a K1 · m2a 0.3~0.5)", () => {
     const v = kitVars(INPUT);
     expect([v["--site-primary"], v["--site-surface"], v["--site-ink"], v["--site-muted"], v["--site-bg"]]).toEqual(Object.values(INPUT.palette));
     expect(v["--site-on-primary"]).toBe("rgb(255 255 255)");
-    expect(v["--site-font"]).toBe('"Pretendard", system-ui, sans-serif');
-    expect(kitVars({ ...INPUT, type: { ...INPUT.type, family: "Noto Serif KR" } })["--site-font"]).toBe('"Noto Serif KR", serif');
+    expect(v["--site-font"]).toBe('"Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif');
+    expect(kitVars({ ...INPUT, type: { ...INPUT.type, family: "Noto Serif KR" } })["--site-font"]).toBe('"Kit Serif KR", "AppleMyungjo", "Batang", serif');
     expect([v["--site-weight-heading"], v["--site-weight-body"]]).toEqual(["700", "400"]);
   });
 

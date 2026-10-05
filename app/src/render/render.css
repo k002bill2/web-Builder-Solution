@@ -12,6 +12,7 @@
 
 @import "../styles/theme.css";
 @import "../kit/kit.css";
+@import "../kit/fonts.css";
 
 /* 폴백 표식 고정 색 (m2a 3.1 · 부록 A M-1 17.40) — 사용자 팔레트·앱 DS 토큰 둘 다 아님 */
 [data-kit-marker="fallback"] {
@@ -19,7 +20,7 @@
   --marker-text: rgb(255 255 255);
 }
 
-/* 웹폰트 0 (m2a 0.4 · M2A-2b B8) — 앱 fonts.css(@font-face 4종)를 싣지 않는다. 글꼴 = 프로필 계열 이름 + 시스템 대체(--site-font).
+/* 앱 fonts.css(@font-face 4종)는 싣지 않는다(M2A-2b B8) — 사이트 글꼴 파일은 kit/fonts.css만(M2B-4a G2). 글꼴 = 별칭 + 시스템 대체(--site-font).
    폴백 와이어프레임(앱 DS 클래스 → --font-sans)도 같은 스택: 사이트 루트에서 덮고, 킷 토큰이 없을 때(NO_KIT_TOKENS)는 시스템 sans */
 @layer base {
   :root {

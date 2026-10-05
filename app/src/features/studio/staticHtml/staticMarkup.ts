@@ -19,6 +19,8 @@ export interface StaticHtmlParts {
   readonly css: string;
   readonly title: string;
   readonly description: string;
+  /** 글꼴 라이선스 고지(M2B-4a G4 — 계열별 고정 문자열) → `<head>` 주석 1개 */
+  readonly notice?: string;
 }
 
 function assertNoExternalCss(css: string) {
@@ -51,7 +53,7 @@ function hasBlobUrl(site: Element): boolean {
   );
 }
 
-export function buildStaticHtml({ markup, css, title, description }: StaticHtmlParts): string {
+export function buildStaticHtml({ markup, css, title, description, notice }: StaticHtmlParts): string {
   assertNoExternalCss(css);
   const page = document.implementation.createHTMLDocument("");
   page.documentElement.setAttribute("lang", "ko");
@@ -76,6 +78,7 @@ export function buildStaticHtml({ markup, css, title, description }: StaticHtmlP
   titleEl.textContent = title;
   head.append(titleEl);
   meta({ name: "description", content: description });
+  if (notice) head.append(page.createComment(notice));
   const style = page.createElement("style");
   style.textContent = css;
   head.append(style);

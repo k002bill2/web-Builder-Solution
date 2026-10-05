@@ -139,3 +139,18 @@ describe("고정 인라인 스크립트 — 메뉴 시트 안 앵커 → 시트 
     expect(() => click("deep")).not.toThrow();
   });
 });
+
+describe("정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4)", () => {
+  it("notice → <head> 주석 1개(그대로 · charset 뒤 · style 앞) · 없으면 주석 0", () => {
+    const notice = "Fonts: Pretendard\nSIL OPEN FONT LICENSE Version 1.1";
+    const page = new DOMParser().parseFromString(build({ notice }), "text/html");
+    const nodes = [...page.head.childNodes];
+    const comment = nodes.filter((n) => n.nodeType === Node.COMMENT_NODE);
+    expect(comment.map((n) => n.textContent)).toEqual([notice]);
+    const index = (pick: (n: ChildNode) => boolean) => nodes.findIndex(pick);
+    expect(index((n) => n === comment[0])).toBeGreaterThan(index((n) => (n as Element).getAttribute?.("charset") === "utf-8"));
+    expect(index((n) => n === comment[0])).toBeLessThan(index((n) => n.nodeName === "STYLE"));
+    const plain = new DOMParser().parseFromString(build(), "text/html");
+    expect([...plain.head.childNodes].filter((n) => n.nodeType === Node.COMMENT_NODE)).toEqual([]);
+  });
+});

@@ -1,0 +1,21 @@
+9b8b27c0dd1adbb0057d1fbe9534207ab3606114ace6755453d14668912471a1  src/notosanskr/METADATA.pb
+194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252  src/notosanskr/NotoSansKR[wght].ttf
+1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9  src/notosanskr/OFL.txt
+11a2445e02b744e88e8ed6fd5b807da7df4628fcc6526a15ea9b111ba0458bf4  src/notoserifkr/METADATA.pb
+11f8d5de6f1b79195efba3828aaa2ec95c1178f5ae976fb23c8d53250a9938f3  src/notoserifkr/NotoSerifKR[wght].ttf
+5e0da210fb04058a8c0087985d2d456b931c2579811a49655721d3cf0c36b6d6  src/notoserifkr/OFL.txt
+b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e  src/pret/LICENSE.txt
+shasum: src/pret/web: Is a directory
+78eb71c33101ee7d4f8d1b777d193a12d00f8a296e712a8c417cf27abe946397  src/pret/web/static/woff2-subset/Pretendard-Bold.subset.woff2
+01dd73155fdfab7ce9b25224523e85a96927e21aef97f21957d41f1bfa7e3878  src/pret/web/static/woff2-subset/Pretendard-Regular.subset.woff2
+04be351a74d6bf7d60c480a3087e51d185485d35a52023142af1df19eb8c428a  src/Pretendard-1.3.9.zip
+01dd73155fdfab7ce9b25224523e85a96927e21aef97f21957d41f1bfa7e3878  /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app/src/assets/fonts/Pretendard-Regular.subset.woff2
+78eb71c33101ee7d4f8d1b777d193a12d00f8a296e712a8c417cf27abe946397  /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app/src/assets/fonts/Pretendard-Bold.subset.woff2
+03decd82b98a96722d1043d9f8b2ff1e8c008deb6bc83c7b8497f14024a54933  out/KitSansKR-400.woff2
+37d455b4d36756753cd15d83c3ff8fe973018d1dd8e6f495b669aefc8c63c46d  out/KitSansKR-700.woff2
+7c3e3399eceb26769fa47813dddae7a204a160facb84166fdcfd4a3581b9fafb  out/KitSerifKR-400.woff2
+3a810728d23dda07e88d476a15b2eaf720b215f4fb6c1306e5ef4a219d1ab537  out/KitSerifKR-700.woff2
+-rw-r--r--@ 1 002billmac_home  wheel  172048 Oct  5 17:42 out/KitSansKR-400.woff2
+-rw-r--r--@ 1 002billmac_home  wheel  175888 Oct  5 17:42 out/KitSansKR-700.woff2
+-rw-r--r--@ 1 002billmac_home  wheel  352812 Oct  5 17:42 out/KitSerifKR-400.woff2
+-rw-r--r--@ 1 002billmac_home  wheel  362684 Oct  5 17:42 out/KitSerifKR-700.woff2

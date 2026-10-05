@@ -1,0 +1,63 @@
+# M2B-4a PROGRESS — 폰트 자체 호스팅(E0 · 서브셋 자산 · 로드 · 내보내기 실패 정책)
+
+- 책임 역할: Developer · 실행 환경: Orca managed worktree `m2b-4a` + Claude Code (Opus 5.5, 서브에이전트 0)
+- 브리프: `dev/active/m2b-4a/BRIEF.md` · 정본 `docs/design/m2b/SPEC-MOTION-FONT.md` 0·2·3·4(폰트 MF-AC)·5절 · `MQ-M2B3.md`(1~5 ★A). 모션(1절) 구현 0 = M2B-4b
+- 시작 SHA `254e322` (브랜치 `k002bill2/m2b-4a`) · baseline 전체 suite 205 files · 1802 passed · exit 0(logs/baseline-full-vitest.txt)
+
+## 체크리스트
+- [x] P0 npm ci exit 0 · lock 불변(`git diff --exit-code -- app/package-lock.json app/package.json` exit 0) · baseline gate OK(logs/baseline-gate.txt) · 바이트 logs/p0-baseline-bytes.txt(렌더 JS 82,280 · CSS 7,818 · /studio 첫 91,776 · 진입 127,339 · /compare 진입 121,715 B) · 골격 커밋
+- [x] E0-1 R-1 → **1안**(같은 서버 `url()` @font-face): 4337 dev·4339 preview 모두 불투명 출처(self.origin = "null") iframe에서 `ProbeK:400:loaded` · 없는 파일 = error(음성) · `Origin: null` 응답 ACAO null(logs/e0-r1.txt). 운영 정적 호스팅도 woff2에 같은 헤더 필요(REPORT 한계)
+- [x] E0-2 R-3 통과: SVG foreignObject `data:` KitSerifKR-700 → decode 직후 첫 그리기 = 0.8초 뒤 그리기(차이 0px) · `@font-face` 뺀 음성 = 9,247px 차이(logs/e0-r3.txt, Ego Lite Chromium)
+- [x] E0-3 R-5 Pretendard sha256 = 공식 릴리스 ZIP 동일 (logs/e0-sha256.txt)
+- [x] E0-4 Noto 2종 원본 커밋 고정 URL·sha256 (logs/e0-sha256.txt)
+- [x] P1 자산: `app/src/assets/site-fonts/kit-{sans,serif}-kr/` woff2 400·700 · OFL.txt(원문 바이트 동일) · SOURCE.md(RFN 0건 출력·재현 명령) · `app/src/assets/fonts/SOURCE.md`(Pretendard 출처·체크섬)
+- [x] P2 렌더 문서 로드: `kit/fonts.css`(1안 6규칙·font-synthesis none) · `kit/siteFonts.ts`(별칭·스택·굵기 대응) · `render/siteFontLoad.ts`(캔버스 3초 폴백·늦은 로드 재측정 · 내보내기 bytes FontFace) · protocol render.fonts
+- [x] P3 정적 HTML `data:` 인라인(쓰는 면만) · `<head>` 고지 주석(OFL 전문) · 렌더 문서에 같은 바이트(render.fonts)
+- [x] P4 PNG 캡처 CSS `data:` 폰트 · 실패 정책(받기 실패·5초 = PNG RENDER_TIMEOUT · HTML JOB_TIMEOUT · 문구 · 렌더 문서 열지 않음·파일 0 · 전체 상한 8초에 글꼴 시간 포함)
+- [x] P5 가드 — G2 `render/renderFonts.test.ts` 2 it 개정(RED logs/p2-red.txt → GREEN p2-gate) · G3·G5·G6 `test/siteFontAssets.test.ts`(RED logs/p5-guard-red.txt) · G4 `staticMarkup.test.ts`+`siteFontEmbed.test.ts` 고지 주석(RED logs/p34-red.txt) · B8 check-bundle-size: 서명 수정 뒤 build(logs/fix-magic-gate.txt) 렌더 JS 82.82KB ≤89.70 · CSS 8.03KB · /studio 진입 127.33KB(baseline 127.34) · /compare 진입 121.70KB(baseline 121.72) — 증가 0
+- [x] P-B 브라우저 — B6 render·HTML·PNG · B7 · B9-PNG · 3폭 · 200% · 계산 스타일 Serif·Pretendard(logs/qb-render.txt·qb-export.txt) + **재측정(턴한도 1회차)** B9-HTML·계산 스타일 Kit Sans KR(logs/qb-b9html.txt) · 서버 자기 PID cwd 확인 종료 · lsof 0
+- [x] P-F 전체 vitest 1회 208 files·1824 passed·exit 0·Errors 0(logs/final-full-vitest.txt) · Codex branch review base 254e322 1라운드 완료(logs/codex-review.txt — P2 1건 미반영·REPORT §7 사유) · REPORT 마감
+
+## 턴한도 1회차 재개 (2026-10-05, HEAD 0f40de1 → d639868)
+- B9-HTML 재측정(logs/qb-b9html.txt, 서명 수정 0f40de1 뒤 fresh build·4337 dev·4339 preview): curl `4339/assets/NOPE-400.woff2` → **200 text/html**(SPA 폴백) · 생성기 SPA폴백 = JOB_TIMEOUT "글꼴을 불러오지 못했습니다 — 다시 시도하세요" 37ms(수정 전 run2: "정적 HTML 렌더 문서 시간 초과" — logs/qb-export-run2-html-timeout.txt) · 진짜 404 = 같은 문구 5ms · 5.1초 = 같은 문구 5,054ms · 4.9초 = 성공 5,451ms(늦게 도착 2건 뒤에도) · 실패 4건 filesMade 0·iframe 잔류 0
+- 계산 스타일 동등성 Kit Sans KR 보충: 48/48 요소 불일치 0 · 정적 HTML loaded 면 Kit Sans KR 700·400
+- **사후 기록(정직 표기)**: woff2 서명 검사(0f40de1)는 브라우저 B9 실측에서 발견해 넣은 수정이며, 새 단언(woff2 아닌 바이트 = FontLoadError)의 RED는 구현 뒤 되돌려 확인했다(logs/fix-magic-red.txt → fix-magic-gate.txt). 테스트 수 사전 예측 없이 들어감 — it 수 변화 0(기존 it에 단언 1줄 추가 + 픽스처 바이트에 `wOF2` 접두)이라 총계 1824는 예측과 같다. 픽스처 변경: siteFontEmbed.test bytesOf · pngCapture.test 1줄 · staticHtml.test 3줄(단언 약화 0)
+
+
+## E0 결과
+- E0-3 R-5: 저장소 `Pretendard-Regular.subset.woff2` `01dd7315…3878` · `Pretendard-Bold.subset.woff2` `78eb71c3…6397` = 릴리스 `https://github.com/orioncactus/pretendard/releases/download/v1.3.9/Pretendard-1.3.9.zip`(zip sha256 `04be351a…428a`, 태그 v1.3.9 → 커밋 `5c41199ea0024a9e0b2cb31735265056e5472d76`) 안 `web/static/woff2-subset/` 같은 이름 파일과 **바이트 동일** → 교체 0 · MQ-M2B3-4 ★A 전제 성립
+- E0-4: google/fonts 커밋 `9710da1eacb3be272583c3224dcb70f9da6eadbb`(2026-09-30) · `NotoSansKR[wght].ttf` `194018e6…e252` · `NotoSerifKR[wght].ttf` `11f8d5de…38f3` · OFL.txt 각 sha256 → logs/e0-sha256.txt
+  - upstream 버전: METADATA.pb에 version 필드 없음(source.commit `523d033d…`만) → 원본 TTF nameID 5에서 읽음: Sans `Version 2.004-H2` · Serif `Version 2.003-H1`
+- 서브셋(저장소 밖 /tmp/m2b4-fonts venv · Python 3.9.6 · fonttools 4.60.1 · brotli 1.1.0): KitSansKR 400 172,048 · 700 175,888 (합 347,936 B) · KitSerifKR 400 352,812 · 700 362,684 (합 715,496 B ≤ 900KB → 멈춤 아님)
+  - RFN 사후 검사 1차 10건(nameID 7 상표 문구 · 11 noto URL · 25 변형 PS 접두어) → 검사 제외를 넓히지 않고 해당 레코드 삭제 → 0건(logs/e0-rfn-check.txt)
+  - cmap: Kit 2,572(한글 2,350 + 222) vs Pretendard 업스트림 3,728 — 차이 logs/e0-cmap-diff.txt(Pretendard는 라틴 확장 등 1,207 더 · Kit에만 51 = U+00A0·CJK 괄호·U+3164~318E 옛 자모·U+FF5E)
+
+## 새 테스트 delta 사전 예측 (각 단계 RED 전 기록 · 기준 205 files · 1802)
+- P2 렌더 문서 로드: 새 파일 `kit/siteFonts.test.ts` it 4(U6 굵기 대응 300·550·551·900 + 같은 대응 = 면 1개 · 허용 밖 계열 = 면 0 · U8 fontStack 별칭 맨 앞·"Noto …" 0·sans/serif 스택 · kitVars 굵기 대응값) + `render/renderFonts.test.ts` +1(G2 개정: 기존 2 it 개정 + url 대상 허용 6파일·외부 0·swap·local 0·font-synthesis none) + `render/RenderApp.test.tsx` +3(B7 로드 전 rects 0 → 로드 뒤 · 3초 폴백 rects + 늦은 로드 재전송 · 내보내기 bytes FontFace 등록 뒤 rects) + `render/protocol.test.ts` +1(render.fonts 모양 검사) = **+9 → 206 files · 1811**. 이관(수정만): `kit/tokens.test.ts` 글꼴 스택 단언 2줄(전 `"Pretendard", system-ui, sans-serif`·`"Noto Serif KR", serif` → 후 별칭 스택 — SPEC 2.1 근거)
+- P3·P4 정적 HTML·PNG·실패 정책: 새 파일 `features/studio/siteFontEmbed.test.ts` it 5(@font-face 파싱·제거 · 쓰는 계열·굵기만 data: ≤2·swap·local 0 U7 · 5초 초과 실패/4.9초 성공 · 시간 초과 뒤 도착 무시 B9 · 고지 주석 G4) + `staticHtml.test.ts` +2(data: 인라인·고지 · 폰트 실패 = 실패·object URL 0) + `pngCapture.test.ts` +2(캡처 SVG data: 폰트·url(/assets) 0 · 폰트 실패 = RENDER_TIMEOUT·draw/download 0) + `staticMarkup.test.ts` +1(고지 주석 head·사용자 글자 0) = **+10 → 207 files · 1821**
+- P5 가드: 새 파일 `test/siteFontAssets.test.ts` it 3(G3 라이선스·SOURCE 커밋 고정 URL·sha256 ≥2 · G5 "RFN 사후 검사 | 0건" 행·별칭 금지어 0 · G6 폰트 의존성 0·venv/스크립트 파일 0) = **+3 → 208 files · 1824**
+  - P2 실제: RED 7 failed(새 6 + 이관 tokens.test 1) + siteFonts.test 파일 import 실패(it 4)(logs/p2-red.txt) → GREEN 표적 5파일 41 passed · gate 표적·가드·typecheck·lint·build(logs/p2-gate.txt — 1차 lint 1건 수정 후 개별 재실행 exit 0) · 바이트 렌더 JS 82,820(+540) · CSS 8,034(+216) · 앱 화면 전부 ±0 B(logs/p2-bytes.txt)
+  - 이관(기존 단언 전후): ① `kit/tokens.test.ts:25-26` 전 `"Pretendard", system-ui, sans-serif` · `"Noto Serif KR", serif` → 후 SPEC 2.1 스택(별칭 맨 앞) ② `render/renderFonts.test.ts` 첫 it 전 "@font-face·woff 0·fonts.css 0" → 후 "render.css·kit.css @font-face·woff 0·앱 tokens/fonts.css 0 + @import 는 kit/fonts.css 1개"(G2 SPEC 개정분) ③ `test/tokenUsage.test.ts` V2-AC-14 전 "woff2 전체 4개" → 후 "site-fonts 밖 woff2 4개(앱 UI 그대로) + site-fonts = SPEC 2.1 정확 4파일"(목록 고정 — 약화 아님, P2 gate 가드에서 발견)
+  - P3·P4 실제: RED 3 failed + 2파일 import 실패(siteFontEmbed.test it 5 · staticHtml.test 전체)(logs/p34-red.txt) → GREEN 표적 5파일 54 passed · gate OK(logs/p34-gate.txt) · 바이트(logs/p34-bytes.txt): 렌더 JS 82,820 · CSS 8,034(P2와 같음) · /studio 첫 91,778(+2) · 진입 127,337(−2) · /compare 진입 121,709(−6) · 그 밖 −1~+5 B(청크 이름 해시 변화) · 조작 뒤 pngCapture +8,021(OFL 원문 포함, 판정 밖)
+  - 이관(단언 변경 0, 픽스처만): `staticHtml.test.ts` FILES render.css에 Pretendard @font-face 2규칙 추가 + 생성기 deps에 가짜 `fetchBytes` 주입 6곳(픽스처 프로필 계열 = Pretendard → 글꼴 받기가 필수 경로가 됨)
+  - P5 가드 실제: `test/siteFontAssets.test.ts` 작성 즉시 3 passed(구현·자산 뒤 검증 테스트) → 임시 변형(SOURCE "2건"·`/main/` URL·Pretendard sha 변조·fontTools .py intent-to-add) RED 3 failed(logs/p5-guard-red.txt) → 복원 GREEN 3. G6 1차 초안은 기존 대비 계산 .py 7개(docs/design 등)에 걸려 "fontTools·pyftsubset을 부르는 .py/.sh + venv 흔적"으로 대상을 정확히 함
+
+## 수정 레인 — Codex P2 (영환님 ★A, 2026-10-05, HEAD 82bf6c3)
+- 범위: `render/siteFontLoad.ts:39` 편집 캔버스 — 한 굵기 로드 실패 + 다른 굵기 늦은 성공 시 `late` 재측정 누락. 내보내기 경로 diff 0
+- **새 테스트 사전 예측**: `render/RenderApp.test.tsx` +2 it(① 700 즉시 reject → 바로 폴백 rects · 400 늦은 resolve → rects 재전송 = **RED 1** ② 전부 reject → 바로 폴백 rects · 그 뒤 재전송 0 = 회귀 가드, RED 시점에도 GREEN 예상) → **208 files · 1826**
+- [x] F1 예측 커밋
+- [x] F2 RED 실측(logs/fix-p2-red.txt): 15 중 **1 failed**(P2 it — 폴백 rects 단언 통과 뒤 `expected 1 to be greater than 1`) · 전부 실패 가드 it = GREEN(예측대로)
+- [x] F3 최소 수정(allSettled + 면별 catch 폴백) · GREEN 15 passed · 커밋 5b8f176 · 내보내기 경로(20~29행) diff 0
+- [x] F4 gate OK(logs/fix-p2-gate.txt: 표적 22·가드 81·typecheck·lint·build exit 0 · 렌더 JS 82.86KB ≤90) · 전체 vitest 1회차 exit 1 = 무관 6파일 5초 타임아웃(load avg 121, logs/fix-p2-full-vitest.txt) → 6파일 단독 31 passed(logs/fix-p2-timeout-files-isolated.txt) → 2회차 **208 files · 1826 passed · exit 0 · Errors 0**(logs/fix-p2-full-vitest-run2.txt) = 예측 일치
+- [x] F5 Codex review --scope branch --base 254e322 1회 실제 완료 exit 0(logs/codex-review-fix-p2.txt) — 새 P2 2건(P2-a 성공+계속 대기 시 late 지연 · P2-b 폴백 섹션 굵기 불일치) 기록만·미수정(REPORT §7.1)
+- [x] F6 REPORT 7·8절 · PROGRESS 갱신 · 커밋
+
+## 수정 레인 2 — Codex P2-a (영환님 "추천대로 진행" 위임, 2026-10-05, HEAD 4666c3c)
+- 범위: `render/siteFontLoad.ts` 편집 캔버스 — 폴백(실패/3초) 뒤 한 면 성공 + 다른 면 계속 대기 시 `late`가 `allSettled` 종료까지 늦어짐 → 폴백 뒤 면별 성공마다 `late`(같은 tick 중복은 1회로 묶음). 폴백 전 성공 = 기존대로 `ready` 1회 · 전부 실패 = 폴백만 · 내보내기 경로 diff 0. P2-b 미수정(열린 항목 유지)
+- **새 테스트 사전 예측**: `render/RenderApp.test.tsx` +1 it(3초 폴백 rects → 400만 resolve·700 미해결 → rects 재전송 = **RED 1** → 이어서 700 resolve → 또 재전송) → **208 files · 1827**
+- [x] G1 예측 커밋
+- [x] G2 RED 실측(logs/fix2-p2a-red.txt): 16 중 **1 failed**(:190 `expected 1 to be greater than 1`) = 예측대로
+- [x] G3 최소 수정 GREEN 16 passed · 커밋 f234a02 · 내보내기 경로 diff 0
+- [x] G4 gate OK(logs/fix2-p2a-gate.txt) · 전체 vitest 1회 **208 files · 1827 passed · exit 0 · Errors 0**(logs/fix2-full-vitest.txt) = 예측 일치
+- [x] G5 Codex 3라운드 실제 완료(logs/codex-review-fix2-p2a.txt) — 새 지적 0 · 기존 P2-b 재지적만(미수정·열림)
+- [x] G6 REPORT 2·7.2·8절 · PROGRESS 갱신 · 커밋

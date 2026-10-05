@@ -1,0 +1,227 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app
+
+ ❯ src/render/renderFonts.test.ts (3 tests | 2 failed) 6ms
+   ❯ 렌더 문서 웹폰트 = 허용 파일만 (B8 → G2) (3)
+     × render.css·kit.css: 앱 fonts.css 미포함 · @font-face·woff 0 — @font-face 출처는 render.css가 싣는 kit/fonts.css 1곳 4ms
+     × kit/fonts.css: @font-face 6규칙 · url() = 허용 6파일(실재)만 · 외부 URL 0 · swap · local() 0 · 사이트 루트 font-synthesis: none 1ms
+ ❯ src/kit/siteFonts.test.ts (0 test)
+ ❯ src/kit/tokens.test.ts (7 tests | 1 failed) 8ms
+   ❯ 킷 토큰 생성기 (M2A-2a K1 · m2a 0.3~0.5) (7)
+     × 팔레트 5역할 + on-primary(흰색 고정) · 글꼴 스택(계열 + 시스템 대체) · 굵기 3ms
+ ❯ src/render/protocol.test.ts (14 tests | 1 failed) 8ms
+   ❯ 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) (12)
+     × render{fonts} — 내보내기용 글꼴 바이트(M2B-4a 2.4): 별칭·400|700·ArrayBuffer · 2개 이하 · 어긋나면 메시지 전체를 버린다 4ms
+ ❯ src/render/RenderApp.test.tsx (13 tests | 3 failed) 129ms
+   ❯ 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) (3)
+     × 편집 캔버스: 쓰는 계열·굵기 로드가 끝난 뒤 첫 rects (로드 전 0) 10ms
+     × 편집 캔버스: 3초 넘으면 폴백 글꼴로 rects · 늦게 로드되면 rects 다시 보냄 8ms
+     × 내보내기: 부모가 준 글꼴 바이트를 FontFace로 등록·로드한 뒤 첫 rects (네트워크 로드 0) 6ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/siteFonts.test.ts [ src/kit/siteFonts.test.ts ]
+Error: Failed to resolve import "./siteFonts" from "src/kit/siteFonts.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app/src/kit/siteFonts.test.ts:2:49
+  1  |  import { SAMPLE_KIT_TOKENS } from "../render/testing/sampleKitTokens";
+  2  |  import { fontStack, siteFaces, siteWeight } from "./siteFonts";
+     |                                                    ^
+  3  |  import { kitVars } from "./tokens";
+  4  |  /** 사이트 글꼴 (M2B-4a · SPEC-MOTION-FONT 2.1·2.2 · MF-AC-U6·U8) */
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) > 편집 캔버스: 쓰는 계열·굵기 로드가 끝난 뒤 첫 rects (로드 전 0)
+AssertionError: expected [] to deeply equal [ '700 1em "Pretendard"', …(1) ]
+
+- Expected
++ Received
+
+- [
+-   "700 1em \"Pretendard\"",
+-   "400 1em \"Pretendard\"",
+- ]
++ []
+
+ ❯ src/render/RenderApp.test.tsx:143:52
+    141|     render(<RenderApp host={window} />);
+    142|     fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_K…
+    143|     expect(fonts.load.mock.calls.map((c) => c[0])).toEqual(['700 1em "…
+       |                                                    ^
+    144|     expect(sent("rects")).toHaveLength(0);
+    145|     await act(async () => gate.resolve());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) > 편집 캔버스: 3초 넘으면 폴백 글꼴로 rects · 늦게 로드되면 rects 다시 보냄
+AssertionError: expected [ { type: 'rects', rects: [ …(43) ] } ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/render/RenderApp.test.tsx:156:27
+    154|     fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_K…
+    155|     act(() => void vi.advanceTimersByTime(2999));
+    156|     expect(sent("rects")).toHaveLength(0);
+       |                           ^
+    157|     act(() => void vi.advanceTimersByTime(1));
+    158|     const atFallback = sent("rects").length;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) > 내보내기: 부모가 준 글꼴 바이트를 FontFace로 등록·로드한 뒤 첫 rects (네트워크 로드 0)
+AssertionError: expected [] to deeply equal [ [ 'Pretendard', , { …(1) } ], …(1) ]
+
+- Expected
++ Received
+
+- [
+-   [
+-     "Pretendard",
+-     ArrayBuffer [
+-       0,
+-       0,
+-       0,
+-       0,
+-     ],
+-     {
+-       "weight": "700",
+-     },
+-   ],
+-   [
+-     "Pretendard",
+-     ArrayBuffer [
+-       0,
+-       0,
+-       0,
+-       0,
+-     ],
+-     {
+-       "weight": "400",
+-     },
+-   ],
+- ]
++ []
+
+ ❯ src/render/RenderApp.test.tsx:178:18
+    176|     render(<RenderApp host={window} />);
+    177|     fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_K…
+    178|     expect(made).toEqual([
+       |                  ^
+    179|       ["Pretendard", data, { weight: "700" }],
+    180|       ["Pretendard", data, { weight: "400" }],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/render/protocol.test.ts > 메시지 모양 검사 (M2A-2a K2 · MQ-1 render{doc, kitTokens}) > render{fonts} — 내보내기용 글꼴 바이트(M2B-4a 2.4): 별칭·400|700·ArrayBuffer · 2개 이하 · 어긋나면 메시지 전체를 버린다
+AssertionError: expected { type: 'render', …(1) } to deeply equal { type: 'render', …(2) }
+
+- Expected
++ Received
+
+  {
+    "doc": {
+      "sections": [],
+    },
+-   "fonts": [
+-     {
+-       "data": ArrayBuffer [
+-         0,
+-         0,
+-         0,
+-         0,
+-         0,
+-         0,
+-         0,
+-         0,
+-       ],
+-       "family": "Kit Serif KR",
+-       "weight": 700,
+-     },
+-   ],
+    "type": "render",
+  }
+
+ ❯ src/render/protocol.test.ts:45:63
+     43|     const data = new ArrayBuffer(8);
+     44|     const fonts = [{ family: "Kit Serif KR", weight: 700, data }];
+     45|     expect(readParentMessage({ type: "render", doc, fonts })).toEqual(…
+       |                                                               ^
+     46|     expect(readParentMessage({ type: "render", doc, fonts: [{ family: …
+     47|     expect(readParentMessage({ type: "render", doc, fonts: [{ family: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/render/renderFonts.test.ts > 렌더 문서 웹폰트 = 허용 파일만 (B8 → G2) > render.css·kit.css: 앱 fonts.css 미포함 · @font-face·woff 0 — @font-face 출처는 render.css가 싣는 kit/fonts.css 1곳
+AssertionError: expected null to deeply equal [ '@import "../kit/fonts.css"' ]
+
+- Expected:
+[
+  "@import \"../kit/fonts.css\"",
+]
+
++ Received:
+null
+
+ ❯ src/render/renderFonts.test.ts:25:80
+     23|       expect(css(path)).not.toMatch(/tokens\/fonts\.css|@font-face|\.w…
+     24|     }
+     25|     expect(css("src/render/render.css").match(/@import\s+"[^"]*fonts\.…
+       |                                                                                ^
+     26|   });
+     27|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/render/renderFonts.test.ts > 렌더 문서 웹폰트 = 허용 파일만 (B8 → G2) > kit/fonts.css: @font-face 6규칙 · url() = 허용 6파일(실재)만 · 외부 URL 0 · swap · local() 0 · 사이트 루트 font-synthesis: none
+Error: ENOENT: no such file or directory, open 'src/kit/fonts.css'
+ ❯ css src/render/renderFonts.test.ts:10:31
+      8|  * 킷 글꼴 = 별칭 + 시스템 대체 스택(--site-font) · 폴백 와이어프레임 글자도 같은 스택(앱 DS 클래스가 …
+      9|  */
+     10| const css = (path: string) => readFileSync(path, "utf8").replace(/\/\*…
+       |                               ^
+     11| const ALLOWED = [
+     12|   "../assets/fonts/Pretendard-Regular.subset.woff2",
+ ❯ src/render/renderFonts.test.ts:29:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/kit/tokens.test.ts > 킷 토큰 생성기 (M2A-2a K1 · m2a 0.3~0.5) > 팔레트 5역할 + on-primary(흰색 고정) · 글꼴 스택(계열 + 시스템 대체) · 굵기
+AssertionError: expected '"Pretendard", system-ui, sans-serif' to be '"Pretendard", system-ui, -apple-syste…' // Object.is equality
+
+Expected: ""Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif"
+Received: ""Pretendard", system-ui, sans-serif"
+
+ ❯ src/kit/tokens.test.ts:25:30
+     23|     expect([v["--site-primary"], v["--site-surface"], v["--site-ink"],…
+     24|     expect(v["--site-on-primary"]).toBe("rgb(255 255 255)");
+     25|     expect(v["--site-font"]).toBe('"Pretendard", system-ui, -apple-sys…
+       |                              ^
+     26|     expect(kitVars({ ...INPUT, type: { ...INPUT.type, family: "Noto Se…
+     27|     expect([v["--site-weight-heading"], v["--site-weight-body"]]).toEq…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  5 failed (5)
+      Tests  7 failed | 30 passed (37)
+   Start at  17:49:15
+   Duration  1.00s (environment 63%, setup 15%, transform 14%, tests 5%, import 3%, worker 1%)
+

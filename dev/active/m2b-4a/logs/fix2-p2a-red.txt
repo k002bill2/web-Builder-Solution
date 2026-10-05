@@ -1,0 +1,31 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app
+
+ ❯ src/render/RenderApp.test.tsx (16 tests | 1 failed) 162ms
+   ❯ 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) (6)
+     × 편집 캔버스: 폴백 뒤 한 굵기만 먼저 로드되면(다른 굵기 대기 중) 바로 rects 다시 보냄 · 남은 굵기 로드 때 또 보냄 (Codex P2-a) 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) > 편집 캔버스: 폴백 뒤 한 굵기만 먼저 로드되면(다른 굵기 대기 중) 바로 rects 다시 보냄 · 남은 굵기 로드 때 또 보냄 (Codex P2-a)
+AssertionError: expected 1 to be greater than 1
+ ❯ src/render/RenderApp.test.tsx:190:26
+    188|     await act(async () => regular.resolve());
+    189|     const afterRegular = sent("rects").length;
+    190|     expect(afterRegular).toBeGreaterThan(atFallback);
+       |                          ^
+    191|     await act(async () => bold.resolve());
+    192|     expect(sent("rects").length).toBeGreaterThan(afterRegular);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  18:28:58
+   Duration  1.24s (environment 56%, transform 16%, tests 14%, setup 10%, import 3%)
+
+exit=1

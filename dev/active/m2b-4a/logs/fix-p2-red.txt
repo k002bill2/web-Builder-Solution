@@ -1,0 +1,31 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app
+
+ ❯ src/render/RenderApp.test.tsx (15 tests | 1 failed) 14824ms
+   ❯ 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) (5)
+     × 편집 캔버스: 한 굵기 실패 = 바로 폴백 rects · 다른 굵기가 늦게 로드되면 rects 다시 보냄 (Codex P2) 1751ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7) > 편집 캔버스: 한 굵기 실패 = 바로 폴백 rects · 다른 굵기가 늦게 로드되면 rects 다시 보냄 (Codex P2)
+AssertionError: expected 1 to be greater than 1
+ ❯ src/render/RenderApp.test.tsx:174:34
+    172|     expect(atFallback).toBeGreaterThan(0);
+    173|     await act(async () => gate.resolve());
+    174|     expect(sent("rects").length).toBeGreaterThan(atFallback);
+       |                                  ^
+    175|   });
+    176|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  18:17:33
+   Duration  39.30s (tests 43%, environment 22%, transform 18%, setup 9%, import 7%, worker 1%)
+
+exit=1

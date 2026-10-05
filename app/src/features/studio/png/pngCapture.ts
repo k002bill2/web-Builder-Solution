@@ -10,6 +10,7 @@ import type { FrameRect, KitTokenInput } from "../../../render/protocol";
 import { emitEditorEvent } from "../editorEvents";
 import { FRAME_REM, remPx } from "../previewFrame";
 import { exportFileStem } from "../staticHtml/exportFileName";
+import { FONT_FAILED, FONT_TIMEOUT_MS, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "../staticHtml/siteFontEmbed";
 import { defaultFetchText, kitCss, openCaptureFrame, renderAndSerialize, type RenderChannel } from "../staticHtml/staticHtml";
 
 /** 캔버스 상한 — 높이 16384px · 넓이 16,777,216px(가장 좁은 브라우저 상한 기준). 넘으면 실패 상태 */
@@ -43,6 +44,9 @@ export interface PngDeps {
   readonly draw: (url: string, width: number, height: number) => Promise<Blob>;
   readonly download: (blob: Blob, fileName: string) => void;
   readonly timeoutMs: number;
+  /** 글꼴 바이트 받기(M2B-4a) · 상한(기본 5초) */
+  readonly fetchBytes?: FetchBytes;
+  readonly fontTimeoutMs?: number;
 }
 
 /** `{이름}_{폭}_r{revision}.png` · 폴백이 있으면 `…_구조포함.png` (3.3 · K-AC-32) */
@@ -81,15 +85,22 @@ export async function capturePng(request: PngRequest, deps: PngDeps): Promise<{ 
   const width = Math.round(FRAME_REM[request.view] * unit);
   const rem = width / unit;
   const css = await kitCss(deps.fetchText);
+  // 글꼴 = 정적 HTML과 같은 data: 규칙 · 렌더 문서도 같은 바이트로 측정(높이 = 그린 글꼴). 실패·5초 넘김 = RENDER_TIMEOUT 경로(그리지 않음)
+  const started = Date.now();
+  const fonts = request.kitTokens
+    ? await loadSiteFonts(css, request.kitTokens.type, deps.fetchBytes ?? defaultFetchBytes, deps.fontTimeoutMs ?? FONT_TIMEOUT_MS).catch(() => {
+        throw new PngError("RENDER_TIMEOUT", FONT_FAILED);
+      })
+    : { bytes: [], css: "" };
   // 렌더 문서는 레이아웃 전 0 크기 사각형을 먼저 보낼 수 있다 — 바닥 > 0인 보고를 기다린다(M2A-3c C4 실측).
   // 킷 토큰 없음(NO_KIT_TOKENS)은 실패가 아니다 — 캔버스처럼 중립 폴백으로 그린 rects·직렬화를 기다린다(P2-b · 정적 HTML은 실패 그대로)
-  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, deps.timeoutMs, (r) => pageBottom(r) > 0, ["NO_KIT_TOKENS"]).catch((error: unknown) => {
+  const { markup, rects } = await renderAndSerialize(deps.open(rem), request.doc, request.kitTokens, Math.max(0, deps.timeoutMs - (Date.now() - started)), (r) => pageBottom(r) > 0, ["NO_KIT_TOKENS"], fonts.bytes).catch((error: unknown) => {
     throw (error as { readonly code?: string }).code === "JOB_TIMEOUT" ? new PngError("RENDER_TIMEOUT", "PNG 렌더 문서 시간 초과") : error;
   });
   const height = pageBottom(rects);
   if (height <= 0 || height > MAX_CANVAS_HEIGHT || width * height > MAX_CANVAS_AREA) throw new PngError("CANVAS_TOO_TALL", "페이지가 PNG 한 장 상한을 넘습니다");
   const fallbackCount = (markup.match(/data-fallback="true"/g) ?? []).length;
-  const blob = await deps.draw(svgDataUrl(buildCaptureSvg({ markup, css, width, height })), width, height);
+  const blob = await deps.draw(svgDataUrl(buildCaptureSvg({ markup, css: stripFontFaces(css) + fonts.css, width, height })), width, height);
   return { fileName: pngFileName(request.name, FRAME_REM[request.view] * 16, request.revision, fallbackCount), fallbackCount, blob };
 }
 

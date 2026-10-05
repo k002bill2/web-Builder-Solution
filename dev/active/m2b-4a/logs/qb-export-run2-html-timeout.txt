@@ -1,0 +1,10 @@
+Error: ProjectRepositoryError: JOB_TIMEOUT: 정적 HTML 렌더 문서 시간 초과
+    at job (file:////[eval2]:20:18)
+    at async file:////[eval2]:108:17
+QB B6-PNG Noto Serif KR {"ok":true,"size":[1280,3479],"heightSame":true,"faces":["Kit Serif KR:700","Kit Serif KR:400"],"assetUrls":0,"diffRepeat":0,"diffNegative":64095,"downloads":2}
+QB B6-PNG Noto Sans KR {"ok":true,"size":[1280,3479],"heightSame":true,"faces":["Kit Sans KR:700","Kit Sans KR:400"],"assetUrls":0,"diffRepeat":0,"diffNegative":102398,"downloads":2}
+QB B6-PNG Pretendard {"ok":true,"size":[1280,3479],"heightSame":true,"faces":["Pretendard:700","Pretendard:400"],"assetUrls":0,"diffRepeat":0,"diffNegative":11020,"downloads":2}
+QB B9-PNG {"base":{"ok":true,"ms":338,"h":3479,"downloads":1},"fail404":{"ok":false,"code":"RENDER_TIMEOUT","message":"글꼴을 불러오지 못했습니다 — 다시 시도하세요","ms":8,"downloads":0},"ok49":{"ok":true,"ms":5969,"h":3479,"downloads":1,"heightEqualsBase":true},"late51":{"ok":false,"code":"RENDER_TIMEOUT","message":"글꼴을 불러오지 못했습니다 — 다시 시도하세요","ms":5008,"downloads":0,"lateArrived":2}}
+QB PNG 3폭 {"desktop":{"ok":true,"w":1280,"h":3479},"tablet":{"ok":true,"w":768,"h":3040},"mobile":{"ok":true,"w":390,"h":3183}}
+
+ego's nodejs process exited with code 1.

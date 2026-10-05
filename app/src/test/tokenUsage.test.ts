@@ -63,6 +63,14 @@ describe("토큰 사용 가드", () => {
 
   it("아이콘·폰트 파일을 추가하지 않는다 (V2-AC-14 · SPEC B-3·B-6)", () => {
     expect(readdirSync(join(SRC, "assets/icons")).length).toBe(13);
-    expect(listFiles(SRC).filter((f) => f.endsWith(".woff2")).length).toBe(4);
+    // 앱 UI 폰트 = assets/fonts 4개 그대로 · 사이트 글꼴(M2B-4a SPEC-MOTION-FONT 2.1 — Noto 2종 서브셋 400·700)은 assets/site-fonts의 정확한 4파일만
+    const woff2 = listFiles(SRC).filter((f) => f.endsWith(".woff2"));
+    expect(woff2.filter((f) => !f.includes("assets/site-fonts/")).length).toBe(4);
+    expect(woff2.filter((f) => f.includes("assets/site-fonts/")).map((f) => f.slice(f.indexOf("site-fonts/"))).sort()).toEqual([
+      "site-fonts/kit-sans-kr/KitSansKR-400.woff2",
+      "site-fonts/kit-sans-kr/KitSansKR-700.woff2",
+      "site-fonts/kit-serif-kr/KitSerifKR-400.woff2",
+      "site-fonts/kit-serif-kr/KitSerifKR-700.woff2",
+    ]);
   });
 });

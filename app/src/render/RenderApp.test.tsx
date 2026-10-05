@@ -118,3 +118,114 @@ describe("렌더 문서 수신기", () => {
     expect(sent("click")).toEqual([{ type: "click", instanceId: "s-header" }]);
   });
 });
+
+describe("렌더 문서 글꼴 대기 (M2B-4a SPEC 2.4 · MF-AC-B7)", () => {
+  const deferred = () => {
+    let resolve!: () => void;
+    const promise = new Promise<void>((r) => (resolve = r));
+    return { promise, resolve };
+  };
+  const fakeFonts = (load: () => Promise<unknown>) => {
+    const fonts = { load: vi.fn<(font: string) => Promise<unknown>>(load), add: vi.fn() };
+    Object.defineProperty(document, "fonts", { configurable: true, value: fonts });
+    return fonts;
+  };
+  afterEach(() => {
+    Reflect.deleteProperty(document, "fonts");
+    vi.useRealTimers();
+  });
+
+  it("편집 캔버스: 쓰는 계열·굵기 로드가 끝난 뒤 첫 rects (로드 전 0)", async () => {
+    const gate = deferred();
+    const fonts = fakeFonts(() => gate.promise);
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    expect(fonts.load.mock.calls.map((c) => c[0])).toEqual(['700 1em "Pretendard"', '400 1em "Pretendard"']);
+    expect(sent("rects")).toHaveLength(0);
+    await act(async () => gate.resolve());
+    expect(sent("rects").length).toBeGreaterThan(0);
+  });
+
+  it("편집 캔버스: 3초 넘으면 폴백 글꼴로 rects · 늦게 로드되면 rects 다시 보냄", async () => {
+    vi.useFakeTimers();
+    const gate = deferred();
+    fakeFonts(() => gate.promise);
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    act(() => void vi.advanceTimersByTime(2999));
+    expect(sent("rects")).toHaveLength(0);
+    act(() => void vi.advanceTimersByTime(1));
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => gate.resolve());
+    expect(sent("rects").length).toBeGreaterThan(atFallback);
+  });
+
+  it("편집 캔버스: 한 굵기 실패 = 바로 폴백 rects · 다른 굵기가 늦게 로드되면 rects 다시 보냄 (Codex P2)", async () => {
+    const gate = deferred();
+    let call = 0;
+    fakeFonts(() => (call++ === 0 ? Promise.reject(new Error("700 실패")) : gate.promise));
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    await act(async () => {});
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => gate.resolve());
+    expect(sent("rects").length).toBeGreaterThan(atFallback);
+  });
+
+  it("편집 캔버스: 폴백 뒤 한 굵기만 먼저 로드되면(다른 굵기 대기 중) 바로 rects 다시 보냄 · 남은 굵기 로드 때 또 보냄 (Codex P2-a)", async () => {
+    vi.useFakeTimers();
+    const bold = deferred();
+    const regular = deferred();
+    const fonts = fakeFonts(vi.fn<() => Promise<unknown>>().mockReturnValueOnce(bold.promise).mockReturnValueOnce(regular.promise));
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    expect(fonts.load).toHaveBeenCalledTimes(2);
+    act(() => void vi.advanceTimersByTime(3000));
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => regular.resolve());
+    const afterRegular = sent("rects").length;
+    expect(afterRegular).toBeGreaterThan(atFallback);
+    await act(async () => bold.resolve());
+    expect(sent("rects").length).toBeGreaterThan(afterRegular);
+  });
+
+  it("편집 캔버스: 모든 굵기 실패 = 바로 폴백 rects · 다시 보내지 않음", async () => {
+    fakeFonts(() => Promise.reject(new Error("실패")));
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS });
+    await act(async () => {});
+    const atFallback = sent("rects").length;
+    expect(atFallback).toBeGreaterThan(0);
+    await act(async () => {});
+    expect(sent("rects")).toHaveLength(atFallback);
+  });
+
+  it("내보내기: 부모가 준 글꼴 바이트를 FontFace로 등록·로드한 뒤 첫 rects (네트워크 로드 0)", async () => {
+    const gate = deferred();
+    const fonts = fakeFonts(() => Promise.resolve([]));
+    const made: unknown[][] = [];
+    class FakeFace {
+      constructor(...args: unknown[]) {
+        made.push(args);
+      }
+      load = () => gate.promise.then(() => this);
+    }
+    vi.stubGlobal("FontFace", FakeFace);
+    const data = new ArrayBuffer(4);
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: sampleDoc(), kitTokens: SAMPLE_KIT_TOKENS, fonts: [{ family: "Pretendard", weight: 700, data }, { family: "Pretendard", weight: 400, data }] });
+    expect(made).toEqual([
+      ["Pretendard", data, { weight: "700" }],
+      ["Pretendard", data, { weight: "400" }],
+    ]);
+    expect(fonts.add).toHaveBeenCalledTimes(2);
+    expect(fonts.load).not.toHaveBeenCalled();
+    expect(sent("rects")).toHaveLength(0);
+    await act(async () => gate.resolve());
+    expect(sent("rects").length).toBeGreaterThan(0);
+    vi.unstubAllGlobals();
+  });
+});

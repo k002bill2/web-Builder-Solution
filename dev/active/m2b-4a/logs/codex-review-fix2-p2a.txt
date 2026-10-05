@@ -1,0 +1,33 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10b66-8cc3-7003-83ef-ce0bf7f0d517).
+[codex] Reviewer started: changes against '254e322'
+[codex] Running command: /bin/zsh -lc "git diff --stat 254e322b699af54ce1a31ecbfb738d01c7731a7f; find .. -name AGENTS....
+[codex] Command failed: /bin/zsh -lc "git diff --stat 254e322b699af54ce1a31ecbfb738d01c7731a7f; find .. -name AGENTS.... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw...
+[codex] Command completed: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff 254e322b699af54ce1a31ecbfb738d01c7731a7f -- app/src/features/studio/st...
+[codex] Command completed: /bin/zsh -lc 'git diff 254e322b699af54ce1a31ecbfb738d01c7731a7f -- app/src/features/studio/st... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/package.json; cat app/src/render/RenderApp.tsx; cat app/src/features/st...
+[codex] Command completed: /bin/zsh -lc "cat app/package.json; cat app/src/render/RenderApp.tsx; cat app/src/features/st... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/render/PageDocument.tsx; rg -n 'font-bold|ds-heading1|ds-body1-stro...
+[codex] Command completed: /bin/zsh -lc "cat app/src/render/PageDocument.tsx; rg -n 'font-bold|ds-heading1|ds-body1-stro... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/render/fallback/FallbackCanvas.tsx; rg -n 'headingWeight|bodyWeight...
+[codex] Command completed: /bin/zsh -lc "cat app/src/render/fallback/FallbackCanvas.tsx; rg -n 'headingWeight|bodyWeight... (exit 0)
+[codex] Running command: /bin/zsh -lc "npm run typecheck; rg -n 'headingWeight|bodyWeight' src | head -50"
+[codex] Command completed: /bin/zsh -lc "npm run typecheck; rg -n 'headingWeight|bodyWeight' src | head -50" (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/domain/fonts.ts; rg -n 'headingWeight|heading_weight|bodyWeight' ap...
+[codex] Command completed: /bin/zsh -lc "cat app/src/domain/fonts.ts; rg -n 'headingWeight|heading_weight|bodyWeight' ap... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 폴백 섹션의 실제 사용 굵기가 글꼴 준비·내보내기 대상에서 누락되는 문제가 있습니다. `npm run typecheck`는 통과했으며, 테스트 스위트는 실행하지 않았습...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 254e322
+
+폴백 섹션의 실제 사용 굵기가 글꼴 준비·내보내기 대상에서 누락되는 문제가 있습니다. `npm run typecheck`는 통과했으며, 테스트 스위트는 실행하지 않았습니다.
+
+Review comment:
+
+- [P2] 폴백 섹션에서 사용하는 굵기도 로드·인라인 대상에 포함하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/m2b-4a/app/src/kit/siteFonts.ts:27-27
+  제목·본문 굵기가 모두 400으로 대응되는 프로필에 폴백 섹션이 있으면, 이 함수는 400만 반환하지만 `FallbackCanvas.tsx`의 표식과 슬롯은 `font-bold`, `ds-heading1`, `ds-body1-strong`으로 700·600을 요구합니다. 렌더 iframe에는 700의 URL 규칙이 있어 추가로 로드될 수 있지만 PNG에는 400만 인라인되므로, 측정 문서와 결과 이미지의 글꼴·줄바꿈이 달라져 내용이 잘리거나 캔버스 선택 오버레이가 어긋날 수 있습니다. 폴백의 굵기를 사이트 토큰에 맞추거나, 실제 사용하는 폴백 굵기도 대기·인라인 대상에 포함해 주세요.

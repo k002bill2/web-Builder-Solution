@@ -1,0 +1,21 @@
+const task = await taskSpace(65);
+const page = task.page("p1");
+await page.cdp("Network.enable", {});
+await page.cdp("Network.setCacheDisabled", { cacheDisabled: true });
+const r = await page.cdp("Network.setBlockedURLs", { urlPatterns: [{ urlPattern: "*://*:*/*KitSerifKR*", block: true }] }).catch((e) => String(e));
+console.log("setBlocked", JSON.stringify(r));
+await page.goto("http://localhost:4337/render.html?b=" + Date.now());
+await page.waitForFunction(() => !!document.getElementById("root"), undefined, { timeout: 15000 });
+const out = await page.evaluate(async () => {
+  const { sampleDoc } = await import("/src/engine/testing/sampleDoc.ts");
+  const base = (await import("/src/render/testing/sampleKitTokens.ts")).SAMPLE_KIT_TOKENS;
+  const rects = []; const t0 = performance.now();
+  window.addEventListener("message", (e) => { if (e.data?.type === "rects") rects.push(Math.round(performance.now() - t0)); });
+  window.postMessage({ type: "render", doc: sampleDoc(), kitTokens: { ...base, type: { ...base.type, family: "Noto Serif KR" } } }, "*");
+  await new Promise((r) => setTimeout(r, 4000));
+  return { rectsMs: rects, sections: document.querySelectorAll("[data-site-root] [data-instance-id]").length, faces: [...document.fonts].filter((f) => f.status !== "unloaded").map((f) => `${f.family}:${f.weight}:${f.status}`), res: performance.getEntriesByType("resource").filter((e) => /KitSerif/.test(e.name)).map((e) => [e.name.slice(-30), e.responseStatus, Math.round(e.duration)]) };
+});
+console.log("QB B7 글꼴 차단(urlPatterns)", JSON.stringify(out));
+await page.cdp("Network.setBlockedURLs", { urlPatterns: [] }).catch(() => undefined);
+await page.cdp("Network.setBlockedURLs", { urls: [] }).catch(() => undefined);
+await page.cdp("Network.setCacheDisabled", { cacheDisabled: false });

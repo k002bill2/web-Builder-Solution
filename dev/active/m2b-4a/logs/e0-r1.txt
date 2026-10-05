@@ -1,0 +1,11 @@
+## curl Origin:null 헤더
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: null
+Content-Type: font/woff2
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: null
+Content-Type: font/woff2
+## browser (frame self.origin) http://127.0.0.1:4337 /src/assets/fonts/Pretendard-Regular.subset.woff2 {"origin":"null","fonts":["ProbeK:400:loaded"]}
+## browser (frame self.origin) http://127.0.0.1:4339 /assets/Pretendard-Regular.subset-BZqc2FCe.woff2 {"origin":"null","fonts":["ProbeK:400:loaded"]}
+## browser (frame self.origin) http://127.0.0.1:4339 /assets/NOPE.woff2 {"origin":"null","fonts":["ProbeK:400:error"]}
+

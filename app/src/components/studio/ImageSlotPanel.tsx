@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { SlotSchemaEntry } from "../../engine/contracts/sectionDefinition";
-import { pruneImages, retainedIds } from "../../features/studio/images/store/imageStore";
 import type { ImageHost } from "../../features/studio/images/store/types";
 import type { Button as ButtonType } from "../ds/Button";
 import { ImageSlotField, type PanelLatest } from "./ImageSlotField";
@@ -20,7 +19,7 @@ export interface ImageSlotPanelProps {
 /**
  * 이미지 슬롯 패널 (SPEC m2c 2.1 조작 뒤 층 · 2.2 · 2.5 · 2a-05 5.9) — "이미지 편집"을 펼칠 때만 받는 lazy 청크.
  * 슬롯마다 스위치·미리보기·파일 고르기·대체텍스트·장식·안내. 낭독은 패널의 `role=status` 1개.
- * 펼쳐 있는 동안 문서·되돌릴 문서가 바뀔 때마다 참조 밖 이미지를 맵에서 뺀다(해제 = 맵에서 빠짐 · 렌더 문서가 자기 URL을 놓는다).
+ * 참조 밖 이미지 해제는 편집 틀(StudioLayout)이 패널 표시와 무관하게 맡는다(Codex r1 P2) — 패널은 넣기 전에 한 번 더 정리한다.
  */
 export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, Button }: ImageSlotPanelProps) {
   const [images, publish, undoDoc] = host;
@@ -29,9 +28,6 @@ export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, B
   useEffect(() => {
     latest.current = { doc, images, undoDoc };
   }, [doc, images, undoDoc]);
-  useEffect(() => {
-    publish((prev) => prev && pruneImages(prev, retainedIds(doc, undoDoc)));
-  }, [doc, undoDoc, publish]);
   const section = doc.sections.find((s) => s.instanceId === instanceId);
   if (!section) return null;
   return (

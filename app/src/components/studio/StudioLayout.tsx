@@ -281,6 +281,16 @@ export function StudioLayout({
 
   // 캔버스 images 맵(SPEC m2c 5.1) — 패널 청크의 보관소가 채우고 비운다. 편집 틀이 사라지면 함께 놓인다
   const [images, setImages] = useState<RenderImages>();
+  const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
+  // 참조 집합(문서 ∪ 되돌릴 문서) 밖 이미지는 패널이 닫혀 있어도 뺀다(2a-05 5.9 · Codex r1) — 렌더 중 상태 조정(effect 아님).
+  // 로컬 id = UUID라 직렬화 문자열 포함으로 잰다(진입 바이트 절약)
+  const [refs, setRefs] = useState([doc, undoDoc]);
+  if (refs[0] !== doc || refs[1] !== undoDoc) {
+    setRefs([doc, undoDoc]);
+    const held = JSON.stringify([doc, undoDoc]);
+    const kept = images && Object.entries(images).filter(([id]) => held.includes(id));
+    if (kept && kept.length < Object.keys(images).length) setImages(Object.fromEntries(kept));
+  }
 
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
@@ -324,7 +334,7 @@ export function StudioLayout({
   );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
-      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, ops.canUndoLast ? undoTarget?.before : undefined]} />
+      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, undoDoc]} />
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)

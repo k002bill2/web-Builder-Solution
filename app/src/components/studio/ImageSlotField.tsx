@@ -45,6 +45,15 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const turn = useRef(0);
+  const slow = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // 패널이 닫히면(섹션 바꿈·펼침 닫음) 진행 중 작업을 버린다 — 늦게 끝난 결과가 그 사이 편집을 덮어쓰지 않게(Codex r1 P1)
+  useEffect(() => {
+    const turns = turn;
+    return () => {
+      turns.current += 1;
+      clearTimeout(slow.current);
+    };
+  }, []);
   const fail = (message: string) => {
     setError(message);
     announce(message);
@@ -54,11 +63,12 @@ function useImagePick({ section, entry, latest, publish, onEdit, announce }: Fie
     setBusy(true);
     setError("");
     announce("이미지를 준비하고 있습니다");
-    const slow = setTimeout(() => announce("큰 이미지라 시간이 걸리고 있습니다"), SLOW_MS);
+    clearTimeout(slow.current);
+    slow.current = setTimeout(() => announce("큰 이미지라 시간이 걸리고 있습니다"), SLOW_MS);
     const { ingestImage, ingestErrorMessage } = await import("../../features/studio/images/ingest");
     const result = await ingestImage(file);
     if (mine !== turn.current) return;
-    clearTimeout(slow);
+    clearTimeout(slow.current);
     setBusy(false);
     if (!result.ok) return fail(ingestErrorMessage(result));
     const { doc, images, undoDoc } = latest.current;
@@ -126,7 +136,7 @@ function AltFields({ id, value, onChange }: { readonly id: string; readonly valu
   );
 }
 
-function SlotSwitch({ id, label, value, onChange }: { readonly id: string; readonly label: string; readonly value: ImageSlotValue; readonly onChange: (next: ImageSlotValue) => void }) {
+function SlotSwitch({ id, label, value, error, onChange }: { readonly id: string; readonly label: string; readonly value: ImageSlotValue; readonly error: string; readonly onChange: (next: ImageSlotValue) => void }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between gap-3">
@@ -138,7 +148,7 @@ function SlotSwitch({ id, label, value, onChange }: { readonly id: string; reado
           role="switch"
           aria-checked={value.enabled}
           aria-labelledby={`${id}-label`}
-          aria-describedby={`${id}-caption`}
+          aria-describedby={error ? `${id}-caption ${id}-switch-error` : `${id}-caption`}
           onClick={() => onChange({ ...value, enabled: !value.enabled })}
           className="group inline-flex h-6 w-10 flex-none items-center rounded-full bg-fill-strong px-0.5 transition-colors duration-(--duration-fast) focus-visible:shadow-(--focus-ring) focus-visible:outline-none aria-checked:bg-primary"
         >
@@ -148,25 +158,38 @@ function SlotSwitch({ id, label, value, onChange }: { readonly id: string; reado
       <p id={`${id}-caption`} className="ds-caption1 text-label-alternative">
         끄면 이미지 없이 색 면으로 보이고 대체텍스트 검사에서 빠집니다
       </p>
+      {error && (
+        <p id={`${id}-switch-error`} className="ds-caption1 text-status-negative-text">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
 
 /** 이미지 슬롯 1개 (SPEC m2c 2.2 · 2a-05 5.9 · E-S20) — 잃은 이미지(보관소에 없는 로컬 id)는 자체 플레이스홀더 + 다시 고르기 */
 export function ImageSlotField(props: FieldProps) {
-  const { section, entry, doc, images, onEdit, Button } = props;
+  const { section, entry, doc, images, latest, onEdit, announce, Button } = props;
   const { busy, error, pick } = useImagePick(props);
+  const [switchError, setSwitchError] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const value = slotValue(section, entry.key);
   if (!value) return null;
   const id = `image-${section.instanceId}-${entry.key}`;
   const edit = (next: ImageSlotValue) => onEdit(setSlot(doc, section.instanceId, entry.key, next));
+  // 꺼진 슬롯 이미지는 문서 한도에서 빠지므로 다시 켤 때도 잰다 — 넘으면 꺼진 채 둔다(Codex r1 P2)
+  const toggle = (next: ImageSlotValue) => {
+    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}) : { ok: true as const };
+    setSwitchError(limit.ok ? "" : limit.message);
+    if (!limit.ok) return announce(limit.message);
+    edit(next);
+  };
   const local = typeof value.source === "string" ? value.source : undefined;
   const held = local ? images?.[local] : undefined;
   const meta = held && imageMeta(held);
   return (
     <section aria-labelledby={`${id}-label`} className="flex flex-col gap-3">
-      <SlotSwitch id={id} label={entry.label} value={value} onChange={edit} />
+      <SlotSwitch id={id} label={entry.label} value={value} error={switchError} onChange={toggle} />
       {value.enabled && (
         <>
           {held ? <Preview blob={held.blob} /> : <div aria-hidden="true" className="aspect-video w-full rounded-md bg-fill-normal" />}

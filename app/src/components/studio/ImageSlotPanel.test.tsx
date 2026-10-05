@@ -33,12 +33,16 @@ afterEach(() => vi.useRealTimers());
 
 /** 편집 틀 흉내 — 문서·images state를 들고 패널에 host 튜플을 넘긴다 */
 function setup({ doc = sampleDoc(), images, undoDoc, instanceId = "s-hero" }: { doc?: PageDoc; images?: RenderImages; undoDoc?: PageDoc; instanceId?: string } = {}) {
-  const state: { doc: PageDoc; images: RenderImages | undefined } = { doc, images };
+  const state: { doc: PageDoc; images: RenderImages | undefined; hide: () => void; edit: (next: PageDoc) => void } = { doc, images, hide: () => {}, edit: () => {} };
   function Host() {
     const [current, setDoc] = useState(doc);
     const [map, setMap] = useState<RenderImages | undefined>(images);
+    const [shown, setShown] = useState(true);
     state.doc = current;
     state.images = map;
+    state.hide = () => setShown(false);
+    state.edit = setDoc;
+    if (!shown) return null;
     const host: ImageHost = [map, setMap, undoDoc];
     const target = current.sections.find((s) => s.instanceId === instanceId)!;
     const slots = getSectionDefinition(target.type, target.variant)!.slots;
@@ -169,13 +173,14 @@ describe("ImageSlotPanel — Codex r1", () => {
   it("변환 중 패널이 닫히면(언마운트) 늦게 끝난 결과는 버린다 — 그 사이 편집을 덮어쓰지 않음", async () => {
     let finish!: (r: IngestResult) => void;
     ingest.fn.mockImplementation(() => new Promise((r) => (finish = r)));
-    const { state, view } = setup();
+    const { state } = setup();
     pick(file());
     await settle();
-    const before = state.doc;
-    view.unmount();
+    act(() => state.hide());
+    const edited = setSlot(state.doc, "s-hero", "title", "패널을 닫은 뒤 고친 제목");
+    act(() => state.edit(edited));
     await act(async () => finish(ok()));
-    expect(state.doc).toBe(before);
+    expect(state.doc).toBe(edited);
     expect(state.images).toBeUndefined();
   });
 
@@ -203,7 +208,7 @@ describe("ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이
     expect(screen.getByText("고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다")).toBeInTheDocument();
   });
 
-  it("지우기 → 플레이스홀더로 · 참조 밖 Blob 해제 · 미리보기 URL은 패널만 소유 — 언마운트 뒤 살아 있는 URL 0 · 파일 이름 DOM·문서·보관소 0", async () => {
+  it("지우기 → 플레이스홀더로 · 미리보기 URL은 패널만 소유 — 언마운트 뒤 살아 있는 URL 0 · 파일 이름 DOM·문서·보관소 0", async () => {
     ingest.fn.mockResolvedValue(ok());
     const { state, view } = setup();
     pick(file());
@@ -214,7 +219,7 @@ describe("ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이
     fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
     expect(hero(state.doc).source).toEqual({ kind: "placeholder", patternId: "diagonal" });
     await settle();
-    expect(state.images).toEqual({});
+    // 맵에서 빼는 해제는 편집 틀이 맡는다(Codex r1) — StudioLayoutImages.test "이미지 지우기"·"패널이 닫혀 있어도"가 단언한다
     expect(urls.revoked).toEqual(["blob:test/1"]);
     view.unmount();
     expect(urls.revoked).toHaveLength(urls.created);

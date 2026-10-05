@@ -11,7 +11,9 @@
 | 항목 | 결과 | 근거 |
 |---|---|---|
 | R-4 `@starting-style`·allow-discrete | Chrome 152(Ego Lite): 지원 — 열림 직후 opacity 0·−8px → 0.4초 뒤 1·none. 미지원 대용(알 수 없는 at-rule로 블록이 버려짐) = 처음부터 최종. reduce·print = 처음부터 최종 | logs/e0-r4.txt |
-| 시제품 예산 | hero/fullbleed-left + 토큰·keyframes·시트 = CSS +357 B · JS +0 · 빌드 산출에 media·@starting-style·allow-discrete 원형 유지 → 외삽 +0.9~1.2KB(SPEC 1.7 추정 +1.2~2.0 이내) → 진행 | logs/e0-budget.txt |
+| 시제품 예산 | hero/fullbleed-left + 토큰·keyframes·시트 = CSS +357 B · JS +0(시제품은 CSS만이라 JS는 측정 대상이 없었음 — 실측 아님) · 빌드 산출에 media·@starting-style·allow-discrete 원형 유지 → 외삽 +0.9~1.2KB(SPEC 1.7 추정 +1.2~2.0 이내) → 진행 | logs/e0-budget.txt |
+
+- **편차(정직 표기)**: 렌더 JS 실제 증가 +158 B는 P2에서 처음 드러났다(SPEC 1.7 추정 0~150 B보다 +8 B). 브리프의 "추정 초과 = 멈춤 보고"를 적용하지 않고 진행했다 — 멈춤선 89,700 B까지 6.6KB 여유라 위험은 낮다고 판단했지만, 허용 여부는 사용자 결정 사항이다.
 
 ## 2. 커밋표
 | SHA | 내용 |
@@ -23,7 +25,9 @@
 | d8096de | 정적 HTML `data-motion-play`·KEPT_DATA(U4) · PNG 방어 규칙(U5) |
 | 41e2c02 | 브라우저 B1~B5 원시 증거 |
 | a53e57b | 전체 vitest 1840·REPORT 초안 |
+| 35ca8ba | Codex R1 P2 수정 레인 — 테스트 수 사전 예측 |
 | 62de09f | Codex R1 P2 — grid 타일 A 확대 제외 |
+| 8e8dcbd | Codex R1·R2 결과·REPORT·PROGRESS 마감 |
 
 ## 3. MF-AC별 근거
 | AC | 판정 | 근거 |
@@ -45,13 +49,14 @@
 - 확대 칸이 없는 hero(fullbleed-left·image): 칸 = 섹션(이미지 위·옆 변 = 섹션 변)에 `overflow: clip` + `transform-origin: 50% 100%`(아래 변 고정) — 마크업 변경 없이 카피 쪽 겹침 0. 이 두 속성도 재생 조건 안에만 둬서 계산 스타일 차이 2건(§3.2)이 남는다.
 - 순차 지연 상한 = 2단(×0·×1·×2, 3번째 이후 ×2 공유) — SPEC 1.4 표의 "카드 1·2·3 = stagger×0·1·2"를 따름. U3는 SPEC 문구대로 3×stagger로 보수 검사.
 - hero/center L2 = 제목·부제·CTA 각각 rise 순차(묶음 자체는 정지) · hero/text L2 = 카피 묶음 rise + 강조선 scaleX(1단 지연).
+- cta-band: 등장 대상 `.kit-band-text`(제목·본문) — CTA(`.kit-band-cta`)는 그 바깥 형제라 움직이지 않음(`CtaBandBanner.tsx:18-38`) · portfolio/services masonry = `data-layout="masonry"`(PortfolioGallery·ServicesCards) → 투명도만.
 - 첫 화면 경계(SPEC 미정): hero 없음 = main 첫 2자리 · hero 앞 본문 = 0 · 폴백 섹션 = 자리 차지·속성 0.
 
 ### 3.2 계산 스타일 동등성(렌더 문서 vs 정적 HTML 1.2초 뒤, 106/106 요소)
 opacity·transform·fontFamily·fontSize·color·display 불일치 0. 예상된 차이만: hero overflow visible→clip 1 · 확대 대상 transform-origin 1 · animation-name 6(재생 조건 안 — 최종 값 동일).
 
 ## 4. 번들 baseline / 최종 (bytes.sh, gzip B)
-| 항목 | baseline(P0) | 최종(P3 빌드) | 증감 |
+| 항목 | baseline(P0) | 최종(Codex 수정 뒤 빌드, logs/fix-r1-bytes.txt) | 증감 |
 |---|---|---|---|
 | 렌더 JS | 82,871 | 83,029 | +158(SPEC 추정 0~150 대비 +8 B · 멈춤선 89,700) |
 | 렌더 CSS | 8,034 | 8,747 | +713(≤30KB, 추정 +1.2~2.0KB 아래 · Codex 수정 뒤 logs/fix-r1-bytes.txt) |

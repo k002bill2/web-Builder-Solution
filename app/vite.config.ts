@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { notInlinedIconLimit } from "./src/build/notInlinedIcons";
+import { studioEngineChunk } from "./src/build/studioEngineChunk";
 import { thumbnailsPlugin } from "./src/thumbs/vitePlugin";
 
 /**
@@ -32,6 +33,8 @@ export default defineConfig(({ mode }) => ({
           manifest: true,
           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
           assetsInlineLimit: notInlinedIconLimit,
+          // 편집기 엔진 공유 청크 1개(issue + runGate) — 목록·근거: src/build/studioEngineChunk.ts
+          rollupOptions: { output: { codeSplitting: { groups: [{ name: "issue", test: studioEngineChunk, includeDependenciesRecursively: false }] } } },
         },
   test: {
     environment: "jsdom",

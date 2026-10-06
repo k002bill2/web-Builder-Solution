@@ -7,5 +7,5 @@
 - [x] typecheck·lint·build(번들 표 전 행)
 - [x] 전체 vitest exit0
 - [x] Ego Lite 실동작 확인 (preview 4337) · finish · listTaskSpaces()=[] · 리슨0
-- [ ] Codex review --scope branch --base 713947d (≤2)
-- [ ] REPORT.md (50턴 전 초안 커밋)
+- [x] Codex review --scope branch --base 713947d (≤2)
+- [x] REPORT.md (초안 d28c70a · 마감)

@@ -50,6 +50,9 @@
 ## 7. 검증 명령 (fresh)
 `npm run build` exit 0 · `npm run lint` exit 0 · `npm run typecheck` exit 0 · `npx vitest run` 243 파일 / 2149건 exit 0.
 
+## 7-1. Codex
+`codex-companion review --scope branch --base db9f25e` r1 실제 완료: **수정이 필요한 결함 0**. Codex는 typecheck·check-bundle-size를 실행해 통과를 확인했습니다. vitest는 Codex 샌드박스(읽기 전용 임시 디렉터리) 때문에 실행하지 못했고, 대신 7절의 로컬 fresh 실행(2149건 통과)으로 검증했습니다. 라운드 1회로 종료(상한 2).
+
 ## 8. 목업·명세와 다르게 한 점 / 남은 것
 - 렌더 CSS를 build-thumbs에서 한 번 더 빌드합니다(앱 build가 dist를 비우고, 키 맵은 앱 build 전에 있어야 하기 때문). 배포 CSS와 바이트가 같은지는 check-bundle-size가 sha256으로 확인합니다. 빌드 시간은 약간 늘어납니다.
 - 썸네일 글꼴은 시스템 대체 글꼴입니다(SPEC 3절에서 예정한 대가).

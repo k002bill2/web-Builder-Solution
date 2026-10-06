@@ -16,8 +16,8 @@ base db9f25e · 브랜치 k002bill2/m3p-2 · Ego Lite preview 4339
 - [x] check-bundle-size 썸네일 크기 출력·가드
 - [x] Ego Lite 6장 확인·finish·서버 종료
 - [x] typecheck·lint·build·vitest exit0
-- [ ] Codex review ≤2
-- [ ] REPORT
+- [x] Codex review ≤2 — r1(branch --base db9f25e) 지적 0, 1라운드로 종료
+- [x] REPORT
 
 ## TDD 예측 로그
 

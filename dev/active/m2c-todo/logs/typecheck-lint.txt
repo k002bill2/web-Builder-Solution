@@ -1,0 +1,7 @@
+> design-studio-app@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+TC=0
+> design-studio-app@0.1.0 lint
+> eslint .
+

@@ -17,7 +17,7 @@
 - [x] ① 번들 감량 3회 — 1회 Callout→자체 마크업 128.51(Callout 청크는 기준에도 있음, 추정 틀림) · 2회 대화상자·미리보기·복원·되돌리기를 조작 뒤 청크 `SnapshotLayer` 1개로 128.35 · 3회 `isPageDoc` props 전달(지연 청크 미리 받기 목록 파일 4개 제거)+lazy 로더 파일 분리 **128.30**(≤128.43 통과 · 목표 128.04 미달 · ER-3b 몫 0.61 → REPORT 첫 줄)
 - [x] ② 가드 `memoryExport.test.ts:235` 대체(허용 목록 정적 + 내보내기 1회 = 스냅샷 1개 동작)
 - [x] ③ Codex r1 P1 복원 중 돌아가기 잠금 · P2 edit 직후 flushed/adopt 동기 · P2 미리보기 kitTokens = 스냅샷 profileVersion
-- [ ] ④ S6 화면 · S10 실메모리 저장소 통합
+- [x] ④ S6 화면 · S10 실메모리 저장소 통합
 - [ ] ⑤ Ego Lite build+preview 4337 경로 A 1280·390 · finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
 - [ ] ⑥ 전체 vitest exit 0 · Codex r2 base 45a5721 · REPORT
 
@@ -41,4 +41,5 @@
 - Codex r1 완료 P1 2 · P2 2(REPORT 5절) · 반영 0(멈춤)
 - D 가드: 정적 가드 허용 목록 대체 + 동작 가드 1 → 19/19 GREEN(동작 가드 RED 아님 — 예측 일치) · 전체 vitest exit 0 2094(`logs/vitest-resume-1.txt`) · 커밋 `9a96a51`
 - E Codex r1: RED 3/3(`logs/red-e.txt`, 예측 일치) → GREEN — P1 테스트는 RED 뒤 테스트 쪽 실수 1건 수정(제목 입력칸을 열지 않음 → 잠금 확인 대상 "검사 · 내보내기"·결과는 캔버스 문서로, RED 단언 aria-disabled는 그대로) · 스튜디오·features 284 통과 · lint 0 · build exit 0 /studio **128.33**(`logs/build-e.txt`)
+- F 보완: S6 화면(`SnapshotImages.test.tsx`)·S10 실메모리(`snapshotRevision.test.tsx`) 첫 실행 GREEN(예측 "RED 아님" 일치). S6 Red-Green 확인: StudioLayout 참조 집합에서 스냅샷 문서를 빼면 실패([A] ≠ [A,B]) → 되돌리면 통과 · typecheck·lint 0
 

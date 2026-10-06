@@ -18,13 +18,13 @@ const P = {
   B4: [["src/components/studio/EditFields.tsx", "  if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;", "  if (!section) return null;"]],
 };
 const originals = new Map();
-for (const pid of ids) for (const [f, a, b] of P[pid]) {
-  const s = readFileSync(`${appDir}/${f}`, "utf8");
-  if (!s.includes(a)) throw new Error(`${pid}: no match in ${f}`);
-  if (!originals.has(f)) originals.set(f, s);
-  writeFileSync(`${appDir}/${f}`, s.replace(a, b));
-}
 try {
+  for (const pid of ids) { if (!P[pid]) throw new Error(`unknown patch ${pid}`); for (const [f, a, b] of P[pid]) {
+    const s = readFileSync(`${appDir}/${f}`, "utf8");
+    if (!s.includes(a)) throw new Error(`${pid}: no match in ${f}`);
+    if (!originals.has(f)) originals.set(f, s);
+    writeFileSync(`${appDir}/${f}`, s.replace(a, b));
+  } }
   execSync(`node /tmp/eroff/reach.mjs ${appDir} /tmp/eroff/p-${id}`, { stdio: "ignore" });
   const out = execSync(`node /tmp/eroff/analyze.mjs /tmp/eroff/p-${id}`).toString().trim().split("\n");
   const sl = out.find((l) => l.includes("StudioLayout.tsx")).split("\t")[1];

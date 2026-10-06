@@ -9,11 +9,11 @@
 - [x] 후보별 시제품 build 실측 → 아래 표 (코드 변경 전, 모두 되돌림 — `git checkout -- <파일>`)
 - [x] 실현 가능성 판정 — **불가**: 동작 변화 0(A군) 최대 −0.16 실측 · −0.32 추정 상한 < −0.60
 - [x] (불가) 억지 변경 없이 멈춤 — 이동 구현·TDD·RED 예측 커밋 N/A(옮기는 요소 0)
-- [ ] 시제품 되돌림 확인 `git diff --stat 9befa6a -- app` 비어 있음
-- [ ] 전체 vitest 1회 exit 0
-- [ ] Ego Lite
-- [ ] Codex review --scope branch --base 9befa6a
-- [ ] REPORT
+- [x] 시제품 되돌림 확인 — `git diff 9befa6a -- app` 0줄
+- [x] 전체 vitest 1회 exit 0 — 227파일 2048 통과 · typecheck·lint·build exit 0, 번들 표 base와 동일
+- [x] Ego Lite — N/A(옮긴 요소 0·앱 diff 0, 창 미개설). `listTaskSpaces()`=[] 확인, 4337 리슨 0
+- [x] Codex review --scope branch --base 9befa6a — 2라운드 실제 완료, P2 각 1건(보조 스크립트) 반영
+- [x] REPORT
 
 ## 진입 청크 구성 (base, gzip KB)
 | 청크 | gz | 비고 |

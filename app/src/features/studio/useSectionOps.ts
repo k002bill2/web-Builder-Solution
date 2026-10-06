@@ -85,11 +85,14 @@ export function useSectionOps({
     },
     [edit, stack],
   );
-  // 단축키 리스너 — 첫 연산 뒤 1회 붙이고 언마운트 때 뗀다
+  // 단축키 리스너 — 첫 연산 뒤 1회 붙이고 언마운트 때 뗀다. 언마운트 뒤 끝난 연산은 붙이지 않는다(Codex fix2 P2)
   const unlisten = useRef<() => void>(undefined);
+  const mounted = useRef(false);
   useEffect(() => {
     const ref = unlisten;
+    mounted.current = true;
     return () => {
+      mounted.current = false;
       ref.current?.();
       ref.current = undefined;
     };
@@ -111,7 +114,7 @@ export function useSectionOps({
           const result = await applyDocOp(before, op, ctx);
           // 꼬리(문서 참조·기록 스택·되돌리기 대상·편집 반영)는 연산 청크에 둔다 — 이미 받은 청크라 바로 풀린다(ER-OFF A2)
           const engine = await loadDocEngine();
-          if (keys) unlisten.current ??= engine.listenHistory(keys);
+          if (keys && mounted.current) unlisten.current ??= engine.listenHistory(keys);
           return engine.commitOp(docRef, stack, setLast, edit, label, before, result, undoable);
         } catch (error) {
           // 화면은 can*로 먼저 막는다 — 여기 오는 것은 프로필을 불러오기 전 목적 판정 등. 엔진 이유 문장을 그대로 알린다

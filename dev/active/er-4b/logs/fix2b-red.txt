@@ -1,0 +1,43 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-4b/app
+
+ ❯ src/features/studio/useSectionOps.test.tsx (2 tests | 1 failed) 63ms
+   ❯ useSectionOps (2)
+     × 첫 연산이 끝나기 전에 언마운트되면 단축키 리스너를 붙이지 않는다 — 떠난 편집기의 Ctrl+Z가 실행 취소를 부르지 않는다(Codex fix2 P2) 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useSectionOps.test.tsx > useSectionOps > 첫 연산이 끝나기 전에 언마운트되면 단축키 리스너를 붙이지 않는다 — 떠난 편집기의 Ctrl+Z가 실행 취소를 부르지 않는다(Codex fix2 P2)
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      false,
+      Object {},
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/features/studio/useSectionOps.test.tsx:70:22
+     68|     });
+     69|     document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "z…
+     70|     expect(step).not.toHaveBeenCalled();
+       |                      ^
+     71|   });
+     72| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  16:25:20
+   Duration  841ms (environment 69%, setup 13%, tests 8%, transform 8%, import 1%, worker 1%)
+

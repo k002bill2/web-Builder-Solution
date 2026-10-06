@@ -72,11 +72,15 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
 
   const autosave = useAutosaveScheduler<PageDoc>({ save, persistence: repository.persistence, debounceMs, maxWaitMs });
   const { change, settle } = autosave;
+  // 스케줄러 단계를 동기로 따라간다 — 같은 흐름에서 edit 직후 flushed()·adopt()가 effect 전 단계(idle·saved)를 보고 저장 없이 끝나지 않게(Codex r1 P2).
+  // 규칙은 스케줄러 change()와 같다: idle·saved → dirty, 그 밖(저장 중·실패 등)은 그대로
+  const phase = useRef<AutosaveState["phase"]>("idle");
   const edit = useCallback(
     (next: PageDoc) => {
       docRef.current = next;
       setDoc(next);
       change(next);
+      if (phase.current === "idle" || phase.current === "saved") phase.current = "dirty";
     },
     [change],
   );
@@ -101,7 +105,6 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   // 저장 먼저 기다리는 쪽 — 렌더마다 상태를 보고 저장 중이면 기다리고, 저장 전 변경이면 바로 저장, 그 밖이면 결과를 돌려준다
   const { retry } = autosave;
   const current = autosave.state.phase;
-  const phase = useRef(current);
   const waiters = useRef<((ok: boolean) => void)[]>([]);
   const check = useCallback(() => {
     const now = phase.current;

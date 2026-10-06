@@ -73,6 +73,8 @@ export default function SnapshotPreview({
   const box = useRef<HTMLDivElement>(null);
   const busy = useRef(false);
   const [failed, setFailed] = useState(false);
+  // 복원 요청 중에는 돌아가기도 잠근다 — 돌아가 입력하면 늦게 온 복원 결과가 그 입력을 덮는다(Codex r1 P1)
+  const [restoring, setRestoring] = useState(false);
   useLayoutEffect(() => {
     const title = box.current?.querySelector<HTMLElement>("h3");
     if (!title) return;
@@ -85,6 +87,7 @@ export default function SnapshotPreview({
     if (busy.current) return;
     busy.current = true;
     setFailed(false);
+    setRestoring(true);
     const before = save.doc;
     try {
       const after = await save.adopt(async (revision) => {
@@ -99,6 +102,7 @@ export default function SnapshotPreview({
       setFailed(true);
     } finally {
       busy.current = false;
+      setRestoring(false);
     }
   };
 
@@ -109,13 +113,14 @@ export default function SnapshotPreview({
         <h3 className="ds-label">{`스냅샷 '${snapshot.name}'를 보고 있습니다 · 편집은 멈췄습니다`}</h3>
         <div className="ds-body3">
           <p id={REASON_ID}>스냅샷을 보는 중에는 편집할 수 없습니다</p>
+          {restoring && <p>복원하는 중입니다 · 끝나면 편집으로 돌아갑니다</p>}
           {failed && <p role="alert">복원하지 못했습니다 · 다시 시도</p>}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" onClick={() => void restore()}>
             이 스냅샷으로 복원
           </Button>
-          <Button variant="outline" size="sm" onClick={onBack}>
+          <Button variant="outline" size="sm" aria-disabled={restoring || undefined} onClick={() => !busy.current && onBack()}>
             편집으로 돌아가기
           </Button>
         </div>

@@ -1,6 +1,8 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProjectRepositoryError, type ProjectRepository, type ProjectSnapshot, type SnapshotKind, type SnapshotReason } from "../../data/projectRepository";
+import type { DesignProfileInput } from "../../domain/compareBoard";
+import type { ProfileSeries } from "../../domain/profile";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
@@ -179,6 +181,62 @@ describe("복원 — ER-AC-S4 · S10", () => {
     await act(async () => void fireEvent.click(button));
     await waitFor(() => expect(screen.getAllByRole("alert").filter((el) => el.textContent === "복원하지 못했습니다 · 다시 시도")).toHaveLength(1));
     expect(button).toHaveFocus();
+  });
+});
+
+const color = (value: string) => ({ $type: "color", $value: value }) as const;
+const V1 = "rgb(10, 92, 54)";
+const V2 = "rgb(120, 20, 40)";
+const versionOf = (version: number, primary: string) => ({
+  profileId: "profile-1",
+  version,
+  origin: "board",
+  baseReferenceId: "ref-1",
+  base: {
+    motion_preset: "L1",
+    color_tokens: { primary: color(primary), surface: color("rgb(244, 244, 244)"), ink: color("rgb(26, 26, 26)"), muted: color("rgb(138, 138, 138)"), bg: color("rgb(255, 255, 255)") },
+    typography_tokens: { family: "Pretendard", headingWeight: 700, bodyWeight: 400, scale: 1.25 },
+    spacing_tokens: { grid: "8pt", sectionGap: 96 },
+    component_choices: {},
+  } as unknown as DesignProfileInput,
+  adjustments: {},
+  createdAt: "2026-09-27T00:00:00.000Z",
+});
+const SERIES = { profileId: "profile-1", latestVersion: 2, versions: [versionOf(1, V1), versionOf(2, V2)] } as unknown as ProfileSeries;
+
+describe("Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트", () => {
+  it("복원 요청 중 '편집으로 돌아가기' = aria-disabled · 눌러도 미리보기 유지 · 상태 문장 → 끝나면 복원 알림(늦은 결과가 입력을 덮지 않는다 — P1)", async () => {
+    const r = snapshotRepo(titled(sampleDoc(), "스냅샷 때 제목"), 1);
+    let release!: () => void;
+    const gate = new Promise<void>((res) => (release = res));
+    const restore = r.repository.restoreSnapshot!;
+    r.repository.restoreSnapshot = async (...args) => (await gate, restore(...args));
+    const { frame } = await openStudio({ doc: titled(sampleDoc(), "지금 제목"), repository: r.repository });
+    const dialog = await openDialog();
+    await previewFirst(dialog, "수동 1");
+    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "이 스냅샷으로 복원" })));
+    const back = screen.getByRole("button", { name: "편집으로 돌아가기" });
+    await waitFor(() => expect(back).toHaveAttribute("aria-disabled", "true"));
+    expect(screen.getByText("복원하는 중입니다 · 끝나면 편집으로 돌아갑니다")).toBeInTheDocument();
+    act(() => void fireEvent.click(back));
+    expect(screen.getByRole("heading", { name: "스냅샷 '수동 1'를 보고 있습니다 · 편집은 멈췄습니다" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "검사 · 내보내기" })).toHaveAttribute("aria-disabled", "true");
+    await act(async () => release());
+    await waitFor(() => expect(notice()).toHaveTextContent("스냅샷 '수동 1'으로 복원했습니다"));
+    await waitFor(() => expect(frame.lastDoc().meta.title).toBe("스냅샷 때 제목"));
+  });
+
+  it("미리보기 캔버스 kitTokens = 스냅샷 profileVersion 팔레트 · 돌아가면 편집 문서 버전 팔레트(P2)", async () => {
+    const r = snapshotRepo(sampleDoc({ profileVersion: 1 }), 1);
+    const { frame } = await openStudio({ doc: sampleDoc({ profileVersion: 2 }), series: SERIES, repository: r.repository });
+    await waitFor(() => expect(frame.lastKitTokens()?.palette.primary).toBe(V2));
+    const dialog = await openDialog();
+    await previewFirst(dialog, "수동 1");
+    await waitFor(() => expect(frame.lastDoc().profileVersion).toBe(1));
+    expect(frame.lastKitTokens()?.palette.primary).toBe(V1);
+    act(() => void fireEvent.click(screen.getByRole("button", { name: "편집으로 돌아가기" })));
+    await waitFor(() => expect(frame.lastDoc().profileVersion).toBe(2));
+    expect(frame.lastKitTokens()?.palette.primary).toBe(V2);
   });
 });
 

@@ -314,6 +314,9 @@ export function StudioLayout({
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
   const kitTokens = useMemo(() => docKitTokens(ops.series, doc.profileVersion), [ops.series, doc.profileVersion]);
+  // 미리보기 캔버스 = 스냅샷 문서의 프로필 버전 팔레트(Codex r1 P2)
+  const shown = snaps.preview?.doc ?? doc;
+  const canvasTokens = useMemo(() => docKitTokens(ops.series, shown.profileVersion), [ops.series, shown.profileVersion]);
   // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
   const opControls = current && (
     <SectionOpControls
@@ -334,7 +337,6 @@ export function StudioLayout({
       {save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />}
     </>
   );
-  const shown = snaps.preview?.doc ?? doc;
   const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : snaps.onUndo} />;
   const nav = (
     <SectionNav
@@ -440,7 +442,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas kitTokens={kitTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -473,7 +475,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas kitTokens={kitTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+            <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -507,7 +509,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} {...theme.panel} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas kitTokens={kitTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+          <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

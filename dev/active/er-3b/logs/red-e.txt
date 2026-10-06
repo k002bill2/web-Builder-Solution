@@ -1,0 +1,203 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app
+
+ ❯ src/features/studio/useDocSaveWrite.test.tsx (4 tests | 1 failed) 30ms
+   ❯ useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10 (4)
+     × 같은 흐름에서 edit 직후 flushed() = 그 입력을 먼저 저장(상태 effect 전이어도 저장 없이 true 금지 — Codex r1 P2) 6ms
+ ❯ src/components/studio/SnapshotFlow.test.tsx (13 tests | 2 failed) 11349ms
+   ❯ Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트 (2)
+     × 복원 요청 중 '편집으로 돌아가기' = aria-disabled · 눌러도 미리보기 유지 · 상태 문장 → 끝나면 복원 알림(늦은 결과가 입력을 덮지 않는다 — P1) 3116ms
+     × 미리보기 캔버스 kitTokens = 스냅샷 profileVersion 팔레트 · 돌아가면 편집 문서 버전 팔레트(P2) 88ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트 > 복원 요청 중 '편집으로 돌아가기' = aria-disabled · 눌러도 미리보기 유지 · 상태 문장 → 끝나면 복원 알림(늦은 결과가 입력을 덮지 않는다 — P1)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-disabled"[32m[39m[2m, [22m[32m[32m"true"[32m[39m[2m) // element.getAttribute("aria-disabled") === "true"[22m
+
+Expected the element to have attribute:
+[32m  aria-disabled="true"[39m
+Received:
+[31m  null[39m
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m동네 치과 클리닉 프로젝트 편집[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+                [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/projects"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+                [36m/>[39m
+              [36m</a>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+                [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+              [36m>[39m
+                [0m동네 치과 클리닉 프로젝트[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+              [36m>[39m
+                [0mcandidate-a안 · 프로필 v2[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+                [36m/>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mrole[39m=[32m"alert"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"contents"[39m
+                [33mdata-preview-keep[39m=[32m"true"[39m
+              [36m>[39m
+                [36m<fieldset[39m
+                  [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+                [36m>[39m
+                  [36m<legend[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                  [36m>[39m
+                    [0m미리보기 폭[0m
+                  [36m</legend>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mchecked[39m=[32m""[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"desktop"[39m
+                      [36m/>[39m
+                      [0m데스크톱[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"tablet"[39m
+                      [36m/>[39m
+                      [0m태블릿[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"mobile"[39m
+                      [36m/>[39m
+                      [0m모바일[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                [36m</fieldset>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33maria-describedby[39m=[32m"snapshot-preview-reason"[39m
+                [33maria-disabled[39m=[32m"true"[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none"[39m
+                [33mid[39m=[32m"studio-snapshot"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m스냅샷[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33maria-describedby[39m=[32m"snapshot-preview-reason"[39m
+                [33...
+ ❯ src/components/studio/SnapshotFlow.test.tsx:219:38
+    217|     await act(async () => void fireEvent.click(screen.getByRole("butto…
+    218|     const back = screen.getByRole("button", { name: "편집으로 돌아가기" });
+    219|     await waitFor(() => expect(back).toHaveAttribute("aria-disabled", …
+       |                                      ^
+    220|     expect(screen.getByText("복원하는 중입니다 · 끝나면 편집으로 돌아갑니다")).toBeInTheDo…
+    221|     act(() => void fireEvent.click(back));
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트 > 미리보기 캔버스 kitTokens = 스냅샷 profileVersion 팔레트 · 돌아가면 편집 문서 버전 팔레트(P2)
+AssertionError: expected 'rgb(120, 20, 40)' to be 'rgb(10, 92, 54)' // Object.is equality
+
+Expected: "rgb(10, 92, 54)"
+Received: "rgb(120, 20, 40)"
+
+ ❯ src/components/studio/SnapshotFlow.test.tsx:236:52
+    234|     await previewFirst(dialog, "수동 1");
+    235|     await waitFor(() => expect(frame.lastDoc().profileVersion).toBe(1)…
+    236|     expect(frame.lastKitTokens()?.palette.primary).toBe(V1);
+       |                                                    ^
+    237|     act(() => void fireEvent.click(screen.getByRole("button", { name: …
+    238|     await waitFor(() => expect(frame.lastDoc().profileVersion).toBe(2)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/useDocSaveWrite.test.tsx > useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10 > 같은 흐름에서 edit 직후 flushed() = 그 입력을 먼저 저장(상태 effect 전이어도 저장 없이 true 금지 — Codex r1 P2)
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'p', 3, ObjectContaining{…} ]
+
+Number of calls: 0
+
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:117:34
+    115|     });
+    116|     expect(ok).toBe(true);
+    117|     expect(r.repository.saveDoc).toHaveBeenCalledWith("p", doc.revisio…
+       |                                  ^
+    118|     expect(result.current.savedRevision()).toBe(doc.revision + 1);
+    119|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 14 passed (17)
+   Start at  13:54:30
+   Duration  12.39s (tests 88%, environment 6%, transform 4%, setup 1%, import 1%)
+

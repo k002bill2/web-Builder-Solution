@@ -104,4 +104,17 @@ describe("useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10", () => 
     expect(result.current.state.phase).toBe("saved");
     expect(result.current.savedRevision()).toBe(doc.revision + 2);
   });
+
+  it("같은 흐름에서 edit 직후 flushed() = 그 입력을 먼저 저장(상태 effect 전이어도 저장 없이 true 금지 — Codex r1 P2)", async () => {
+    const doc = sampleDoc();
+    const r = repo(doc);
+    const { result } = mount(r, doc);
+    const ok = await settle(() => {
+      result.current.edit(titled(doc, "바로 저장"));
+      return result.current.flushed();
+    });
+    expect(ok).toBe(true);
+    expect(r.repository.saveDoc).toHaveBeenCalledWith("p", doc.revision, expect.objectContaining({ meta: expect.objectContaining({ title: "바로 저장" }) }));
+    expect(result.current.savedRevision()).toBe(doc.revision + 1);
+  });
 });

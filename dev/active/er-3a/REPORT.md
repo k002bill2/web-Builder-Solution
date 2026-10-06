@@ -13,6 +13,7 @@
 | ER-AC-S5 | 통과 | `resolveConflict` 3개: mine = 저장된 문서를 "충돌 보존 · 시:분" auto·conflict 1개 + 내 문서 revision 최신+1 / theirs = 내 편집 보존 1개 + 저장 문서 그대로(`toBe`) / 모양(선택·L4 검증·해시·projectId) → NOT_FOUND · commit 실패(mine·theirs) → 0. `useDocSave.test.tsx` 무변경·통과(목 기반 — SPEC 6절 예상대로 안 깨짐) |
 | 번호 순서(E-AC-43·44·restart) | 통과 | `memoryExport.test.ts` 2개: 수동 → 내보내기(+멱등 재생 +0) → 수동 = 1·2·3 / 내보내기 → 수동 → 복원 → 충돌 = 1..4 연속. 기존 export·restart 번호 코드 무변경(같은 `snapshot-${목록 길이+1}`) |
 | ER-AC-C3 | 통과 | 6절 목록 밖 테스트 깨짐 0 · 기존 단언 수정 0 |
+| ER-AC-C2 | **미충족(측정) — 판정 요청** | /studio 진입 127.11 ≤ 127.39 · 첫 91.77 ≤ 100 충족. /projects·/profile(3안) **+0.04**로 ±0.03을 측정상 0.01 초과. 실코드 몫 = `memoryProjectRepository` gzip +0.02(raw +0.06KB), 나머지 = 해시 파일명 잡음(대조: /catalog +0.02, raw 0 변화) |
 
 - "최근 10 + 이전 N개 더 보기": 인터페이스에 페이지 인자가 없어 **저장소 계약 = 전체 목록을 생성 순서로, id 연속**. 자르기·뒤집기는 ER-3b 화면 몫.
 - ER-3b 계약: 복원·충돌 해결 반환은 문서뿐이므로 알림 문장 "복원 전 · 14:05"는 `listSnapshots().at(-1)`에서 읽는다(테스트로 고정).
@@ -28,9 +29,9 @@
 
 | 단계 | 예측 커밋 | RED | GREEN 커밋 |
 |---|---|---|---|
-| S1 createSnapshot | 5 (`test(er-3a): S1 …`) | 5/5 `logs/red-s1.txt` | `c1ecde3` |
-| S2 restoreSnapshot | 4 | 4/4 `logs/red-s2.txt` | S2 feat 커밋 |
-| S3 resolveConflict | 4 | 4/4 `logs/red-s3.txt` | `7887bf1` |
+| S1 createSnapshot | 5 (`7cf9a9d`) | 5/5 `logs/red-s1.txt` | `c1ecde3` |
+| S2 restoreSnapshot | 4 (`81f2cf7`) | 4/4 `logs/red-s2.txt` | `3b307f0` |
+| S3 resolveConflict | 4 (`378e5af`) | 4/4 `logs/red-s3.txt` | `7887bf1` |
 
 - 전체 vitest: `npx vitest run` → exit 0 · 227 파일 · 2061 통과 (`logs/vitest-full.txt`)
 - 매 GREEN 커밋 게이트: 표적 + `npx vitest run src/test` + typecheck + lint + build 모두 exit 0 (`logs/gate-s*-*.txt`, `logs/build-s*.txt`)
@@ -46,7 +47,7 @@
 | /profile · /catalog · /references | 119.10→119.13 · 102.03→102.05 · 99.38→99.39 | +0.03 · +0.02 · +0.01 |
 
 - 파일별 비교(raw·gzip): 실제로 커진 진입 청크는 `memoryProjectRepository` 하나(raw 2.99 → 3.05 · gzip 1.40 → 1.42). `index`·`ProfilePage`·`CompareBoardPage`·`contrast`·`profileContrast`·`memoryCompareBoardRepository`는 **raw 크기 동일·gzip +0.01** = 바뀐 청크 해시 파일명 문자열 잡음. `memoryDocBook`(조작 뒤) 2.41 → 2.90.
-- **주의(판정 필요)**: /projects·/profile(3안) 측정값 +0.04는 "다른 화면 ±0.03"을 0.01 넘는다. 실코드 몫은 +0.02이고 나머지는 해시 잡음(빌드마다 0~0.02 흔들림 — S2 빌드 때 /projects +0.03). 줄인 시도: `nameLength` 공유 import 제거(0.07 → 0.04) · 메서드 3개를 위임 1개(`write`)로 · `missing` 삭제.
+- **주의(판정 필요)**: /projects·/profile(3안) 측정값 +0.04는 "다른 화면 ±0.03"을 0.01 넘는다. 실코드 몫은 +0.02이고 나머지는 해시 잡음. Vite 해시는 같은 소스면 결정적이라 **다시 빌드해도 같은 값**이다(흔들림 단위 = 소스 변경 — S2 소스 때 /projects +0.03). 남은 선택지: (a) 잡음으로 보고 수용 · (b) 코드를 더 줄이는 별도 작업(남은 바이트는 `call` fail/delay 주입 키인 메서드 이름 3개라 이 레인에서는 더 줄이지 않음). 줄인 시도: `nameLength` 공유 import 제거(0.07 → 0.04) · 메서드 3개를 위임 1개(`write`)로 · `missing` 삭제.
 - 렌더 문서 JS 84.19 → 84.19(0). 렌더 변화 0(화면 코드 무변경).
 
 ## 5. Ego Lite
@@ -59,4 +60,5 @@
 
 ## 7. meta
 
-- 턴: 약 33턴(40 상한 안). 2a-05·SPEC와 다르게 한 곳: 없음. 충돌 보존 이름 "충돌 보존 · 시:분"은 5.11 "자동은 종류 + 시각" 규칙을 따름.
+- 턴: 약 37턴(40 상한 안).
+- B-ER-02: 코드상 해소(`resolveConflict` 메모리 구현). `docs/06-handoff/BACKLOG.md`는 docs 수정 금지 규칙으로 미갱신 — 병합 쪽에서 갱신 필요. 2a-05·SPEC와 다르게 한 곳: 없음. 충돌 보존 이름 "충돌 보존 · 시:분"은 5.11 "자동은 종류 + 시각" 규칙을 따름.

@@ -170,15 +170,6 @@ export function StudioLayout({
     },
     [run, requestFocus],
   );
-  const { undoLast } = ops;
-  const undo = useCallback(() => {
-    if (!undoTarget || !undoLast()) return;
-    setNotice(undoTarget.text);
-    if (undoTarget.instanceId === undefined) return;
-    setSelected(undoTarget.instanceId);
-    focusRow(undoTarget.instanceId);
-  }, [undoTarget, undoLast, focusRow]);
-
   // 섹션 추가(5.3) — 대화상자를 연 버튼으로 닫힘 포커스, 추가 뒤엔 새 줄
   const [adding, setAdding] = useState<HTMLElement>();
   const add = useCallback(
@@ -242,6 +233,15 @@ export function StudioLayout({
     target?.closest("details")?.setAttribute("open", "");
     target?.focus();
   }, [gateMoves]);
+  const { undoLast } = ops;
+  // 문서 전체(테마) 되돌리기 = 선택은 그대로 · 사라지는 "되돌리기" 대신 유지되는 "테마 바꾸기"로 포커스(B-ER-04)
+  const undo = useCallback(() => {
+    if (!undoTarget || !undoLast()) return;
+    setNotice(undoTarget.text);
+    if (undoTarget.instanceId === undefined) return goTo("studio-theme-swap", { tab: "sections" });
+    setSelected(undoTarget.instanceId);
+    focusRow(undoTarget.instanceId);
+  }, [undoTarget, undoLast, focusRow, goTo]);
   const gateState = useGateReport(doc, ops.series);
   const goToRow = useCallback(
     (row: GateRow) => {
@@ -346,7 +346,7 @@ export function StudioLayout({
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
-  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images });
+  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images, onSnapshot: snaps.refresh });
   const exportResult = exportFlow.result;
   // "내보내기 전" 스냅샷이 생겼을 수 있다 — 목록(참조 집합)을 다시 읽는다(ER-AC-S7)
   const { refresh: refreshSnapshots } = snaps;

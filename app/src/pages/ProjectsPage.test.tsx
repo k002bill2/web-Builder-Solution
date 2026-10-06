@@ -1,5 +1,5 @@
 /** `/projects` 프로젝트 목록 (DS-2A-05 SPEC 2.4 J-S01~J-S08 · J-AC-02·03·08) — 라우트 미연결, 목 저장소 주입 */
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -278,7 +278,8 @@ describe("ProjectsPage — J-S07 저장", () => {
     const first = screen.getAllByRole("listitem")[0]!;
     expect(within(first).getByRole("heading", { level: 2 })).toHaveTextContent("빵집 리브랜딩");
     expect(within(first).getByText("편집 중 · A안 · 프로필 v2 · 새 프로필 v4 있음")).toBeInTheDocument();
-    expect(button).toHaveFocus();
+    // 포커스는 커밋 뒤 effect에서 옮긴다 — 버튼이 DOM에 나타난 순간(findBy)과 다를 수 있다(B-TEST-01)
+    await waitFor(() => expect(button).toHaveFocus());
   });
 
   it("실패 → role=alert '다시 시도', 입력 유지, 다시 저장 가능", async () => {

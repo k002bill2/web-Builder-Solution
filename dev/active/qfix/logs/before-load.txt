@@ -1,0 +1,20 @@
+run1: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+run1:  FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+run1: TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+run1:       Tests  1 failed | 22 passed (23)
+run2: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+run2:  FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+run2: TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+run2:       Tests  1 failed | 22 passed (23)
+run3: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+run3:  FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+run3: TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+run3:       Tests  1 failed | 22 passed (23)
+run4: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+run4:  FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+run4: TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+run4:       Tests  1 failed | 22 passed (23)
+run5: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+run5:  FAIL  src/pages/ProfileCompare.test.tsx > 비교 버튼 보이는 조건 (CMP-AC-U1) > 잡 없음·만드는 중 = DOM에 없음 → 종료 + 성공 안 있음 + 결과 청크 = 카드 목록 아래 · 편집 시작 위
+run5: TestingLibraryElementError: Unable to find role="button" and name "3안 실제 화면으로 비교"
+run5:       Tests  1 failed | 22 passed (23)

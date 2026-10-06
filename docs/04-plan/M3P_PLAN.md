@@ -2,15 +2,15 @@
 
 - 상위: `docs/04-plan/DEVELOPMENT_PLAN.md` 35행(실행 순서 4 — M2b 이후) · `M2B_PLAN.md` 10·12행 · 명세 `docs/design/m3p/SPEC.md` r1 · 결정 `docs/design/m3p/MQ.md`
 - 출발점(base `f21ce19`, L1 빌드 실측): `/catalog` 첫 화면 99.65/100 · 진입 102.04/125 · `/compare` 진입 121.70/125 · 렌더 JS 84.19/90 · 레퍼런스 6개.
-- **기동 전제**: MQ-M3P-1(썸네일 방식)·MQ-M3P-2(업종·개수)·MQ-M3P-3(데이터 필드) 결정. 아래 계획은 ★추천안 기준이며 MQ-M3P-1이 A가 아니면 레인 B를 다시 쓴다.
+- **기동 전제**: MQ-M3P-1(썸네일 방식)·MQ-M3P-2(업종·개수)·MQ-M3P-3(데이터 필드)·MQ-M3P-7(생성 데이터 로딩 위치 — `/studio` 여유 0.08) 결정. 아래 계획은 ★추천안 기준이며 MQ-M3P-1이 A가 아니면 레인 B를 다시 쓴다.
 - 운영: 동시 작업자 2개 상한(429 이력) · 서브에이전트 0 · 레인마다 전용 브랜치/worktree · 각 커밋 전 typecheck·lint·test·build 4개 · Codex review 실제 완료만 기록 · push/merge는 영환님 승인 후.
 
 ## 1. 레인 분할
 
 | 레인 | 역할 | 내용 | 선행 | 병렬 | 턴 |
 |---|---|---|---|---|---|
-| **M3P-1** 생성기 | Developer | S0 실측(1개분 픽스처 증가·`reference.key` 사용처·깨질 테스트 확정) → 팔레트 표(AA 단위 테스트) → 뼈대 템플릿 3종 → `composeInternalReferences`(SPEC 2.1~2.6) → 생성 스크립트 → 생성 픽스처 커밋(카드·상세·비교 3벌) → 저장소 병합(기존 6 + 생성) · `sourceKind` 필드 · 점수 미측정 정렬 → 깨진 테스트 수정 · AC-U1~4·U7·G1·G2·G5 | MQ-2·3·4 | M3P-2와 병렬 | 55~70 |
-| **M3P-2** 썸네일 파이프라인 | Developer | S0 스파이크(킷 3변형 정적 마크업 vs 렌더 문서 serialize 구조 비교 — SPEC 9-1, 불일치면 멈춤 보고) → 레퍼런스→렌더 입력 변환(`referenceDoc` — 기존 6개 대상) → SSR 빌드 모드 + SVG writer(`thumbs/{id}.{hash}.svg`) → `THUMBNAIL_KEYS` 맵 생성 → 빌드 가드(AC-U8·G2·G3) · package.json `build`에 단계 1개 | MQ-1 | M3P-1과 병렬 | 55~70 |
+| **M3P-1** 생성기 | Developer | S0 실측(1개분 픽스처 증가·`reference.key` 사용처·깨질 테스트 확정) → 팔레트 표(AA 단위 테스트) → 뼈대 템플릿 3종 → `composeInternalReferences`(SPEC 2.1~2.6) → 생성 스크립트 → 생성 픽스처 커밋(카드·상세·비교 3벌) → 생성 데이터 별도 청크 + 라우트 쪽 조건부 로더(SPEC 6절, `/studio` 증가 0 목표) → 저장소 병합(기존 6 + 생성) · `sourceKind` 필드 · 점수 미측정 정렬 → 깨진 테스트 수정 · AC-U1~4·U7·G1·G2·G5 | MQ-2·3·4·7 | M3P-2와 병렬 | 55~70 |
+| **M3P-2** 썸네일 파이프라인 | Developer | S0 스파이크(킷 3변형: 정적 마크업 vs 렌더 문서 serialize 구조 비교 · `@media` 1280 해소 · 중첩 svg 네임스페이스 보존 직렬화 · 실제 `<img>` 시각 확인 — SPEC 3절·9절, 하나라도 실패면 멈춤 보고) → 레퍼런스→렌더 입력 변환(`referenceDoc` — 기존 6개 대상) → SSR 빌드 모드 + SVG writer(`thumbs/{id}.{hash}.svg`) → `THUMBNAIL_KEYS` 맵 생성 → 빌드 가드(AC-U8·G2·G3) · package.json `build`에 단계 1개 | MQ-1 | M3P-1과 병렬 | 55~70 |
 | **M3P-3** 카드 UI | Developer | 카드 img·와이어 배경·실패 복귀·"생성 조합" Tag·"미측정" · 첫 화면 실측(멈춤선 99.90) · AC-U5·U6·G4 · `/compare` 진입 124.70 확인(넘으면 MQ-7 분리 청크) | M3P-1 · M3P-2 병합 | — | 45~60 |
 | **M3P-4** QA | QA | build + preview 4337 · Ego Lite로 AC-B1~B5 · QB-M3P-01~06 · 문서 1개 재사용 · 항목당 15턴 이상 확보(B-QA-01) | M3P-3 병합 | — | 50~70 |
 
@@ -23,7 +23,8 @@
 |---|---|---|---|---|
 | `app/src/domain/internalCompose*.ts`(+test) · 팔레트 표 · 뼈대 템플릿 | **W** | | | 새 파일 |
 | `app/scripts/generate-internal-refs.*` | **W** | | | 새 파일 |
-| `app/src/fixtures/generated*.ts` | **W** | R | | 생성 산출 텍스트 |
+| `app/src/fixtures/generated*.ts` | **W** | R | | 생성 산출 텍스트 · 기존 픽스처와 별도 청크 |
+| `app/src/features/catalog/useReferenceList.ts` 등 라우트 쪽 로더 | **W** | | R | MQ-7 A 배치 |
 | `app/src/fixtures/references.ts`·`referenceDetails.ts`·`referenceComparisons.ts` | 병합 import 1줄씩만 | | | 기존 6개 값 변경 0(AC-G5) |
 | `app/src/domain/reference.ts`(`sourceKind`·점수 미측정 타입) | **W** | R | R | MQ-3 |
 | `app/src/data/referenceRepository.ts`(정렬) · 관련 테스트 | **W** | | | |
@@ -67,4 +68,5 @@
 - 새 의존성이 필요해지면 → 멈춤, MQ.
 
 ## 6. 기록
-- v1 2026-10-06 Designer(M3P-0) 작성. 레인 브리프는 MQ 결정 뒤 Jarvis가 작성.
+- v1 2026-10-06 Designer(M3P-0) 작성.
+- v2 2026-10-06 Codex adversarial r1 반영(MQ-7 기동 전제·로더 배치·S0 통과 조건). 레인 브리프는 MQ 결정 뒤 Jarvis가 작성.

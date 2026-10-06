@@ -1,4 +1,4 @@
-# M3P SPEC — M3′ internal 조합 생성기 + 카탈로그 실렌더 썸네일 (r1)
+# M3P SPEC — M3′ internal 조합 생성기 + 카탈로그 실렌더 썸네일 (r2)
 
 - 작성: Designer(M3P-0) · 2026-10-06 · base `f21ce19` · 브랜치 `k002bill2/m3p-spec`
 - 근거: `docs/04-plan/DEVELOPMENT_PLAN.md` 35행(실행 순서 4) · `docs/04-plan/M2B_PLAN.md` 10·12행(조합 생성기·썸네일 렌더 교체 = M2b 뒤 M3′) · PRD FR-CAT-02·04·06 · TRD 4.1 · ADR-003·004
@@ -15,7 +15,7 @@
 | F2 | 카드 필드는 FR-CAT-02 목록 기준 **누락 0**(썸네일·이름·업종·태그·대표 색상·레이아웃·모션·반응형·접근성/성능 점수+측정일·저장·비교 추가). 남은 차이 = 썸네일이 **팔레트 3색으로 그린 와이어 플레이스홀더**(`Thumbnail`, `role="img"` "자체 렌더 플레이스홀더") | `components/catalog/ReferenceCard.tsx:17~45` |
 | F3 | 진짜 공백은 **FR-CAT-06**(초기 20개 = 베타 5업종 × 4) — 현재 6/20 | PRD 81행 |
 | F4 | 레퍼런스 데이터는 3벌: 카드(`references.ts`) · 상세(`referenceDetails.ts` — 섹션·팔레트 5역할·대비·글꼴·간격·모바일 흐름·유사 추천) · 비교(`referenceComparisons.ts` — `sectionPlan`(type·variant)·메뉴·CTA·카드·이미지 비율·모바일·팔레트 메모). ref-b~f 상세·비교 값 상당수는 "임시값" 주석 | 각 파일 머리 주석 |
-| F5 | 레퍼런스 픽스처는 **진입 직후 자동 로드**(지연 저장소). gzip: `references` 0.97 · `referenceDetails` 1.41 · `referenceComparisons` 1.01KB(6개 기준) | `data/deferredReferenceRepository.ts` · `scripts/check-bundle-size.mjs:29·31` · 빌드 로그 |
+| F5 | 카드·상세 픽스처는 `main.tsx`가 **모든 라우트에서** 지연 저장소로 받는다(`EAGER_DYNAMIC` = /catalog·/references·/compare·/profile·/projects·/studio 시나리오 전부의 auto). 비교 픽스처는 `deferredStudio` 경로로 /compare 등에서 받는다. gzip: `references` 0.97 · `referenceDetails` 1.41 · `referenceComparisons` 1.01KB(6개 기준) | `main.tsx:20~21·32~34` · `scripts/check-bundle-size.mjs:29·93~131` · 빌드 로그 |
 | F6 | 3안 엔진 `composeCandidates`는 **프로필 → 3안**(hero·그리드·제목 비율 축, seed 결정적, 깊은 동결, lint R-01·02·03·04·07·08·12). 레퍼런스 대량 조립용이 아니다 — **재사용 대상은 축 규칙이 아니라 검증 부품**(`lintPlan` · `createDocFromCandidate`의 R-01·R-02 거부 · `validatePageDoc` · 대비 계산 `contrast.ts`) | `domain/composeCandidates.ts:1~10` · `engine/doc/createDocFromCandidate.ts:1~10` |
 | F7 | 비교 변형 이름 → 엔진 변형 대응표 `ENGINE_VARIANT_MAP`(about/split → story 등). 엔진 정의 = 30변형, 실렌더 목록 `RENDERED_VARIANTS` = 엔진 정의 전부 | `data/engineVariantMap.ts` · `features/studio/renderedVariants.ts:9` |
 | F8 | 렌더 문서 = 별도 엔트리 `render.html` iframe(`sandbox="allow-scripts"`만). 3안 비교(M2B-5)가 같은 렌더 문서를 iframe 최대 3개로 띄운다. M2B-5 SPEC은 **카드 썸네일을 iframe으로 바꾸는 안을 기각**했다(카드 안쪽 ≈247px → 축소율 약 19%, 진입 자동 +18.69 수준 → 125 초과 [L3]) | `docs/design/m2b/SPEC-COMPARE3.md:62·118` |
@@ -36,7 +36,7 @@
 | `/studio/:projectId` | 91.76 / 100 | 128.62 / 129 (M2c 판정선 128.70) |
 | 렌더 문서 | JS **84.19 / 90**(멈춤선 89.70) · CSS 8.85 / 30 | — |
 
-→ `/catalog` 첫 화면은 사실상 증가 불가. 레퍼런스 데이터 증가는 진입 직후(여유 22.96)에 들어가지만, **`/compare` 진입 직후에도 비교 픽스처가 자동 로드**되어 여유 3.30을 함께 소모한다(6절).
+→ `/catalog` 첫 화면은 사실상 증가 불가. **기존 픽스처 파일에 생성 데이터를 붙이면 모든 라우트의 진입 직후가 같이 늘어난다** — `/studio` 여유는 판정선 128.70 기준 **0.08**뿐이라 즉시 초과한다(Codex r1 P1, 6절).
 
 ---
 
@@ -99,7 +99,7 @@
 
 - 순수 함수 `composeInternalReferences(spec, GENERATOR_VERSION)` — 시각·`Math.random`·객체 키 순서 의존 0(키 정렬, `composeCandidates`와 같은 원칙). 출력 깊게 동결.
 - seed = `hash(업종|순번|생성기 버전)`(`domain/hash.ts`). 같은 입력 → 같은 출력(바이트 동일 JSON 직렬화).
-- **생성은 빌드 전에 1회, 결과를 텍스트 픽스처로 커밋**(`fixtures/generatedReferences.ts` 가칭). 앱 번들에는 생성기 코드가 들어가지 않고 데이터만 들어간다(6절). 가드 테스트가 생성기를 다시 돌려 커밋된 픽스처와 **완전 일치**를 확인한다(손으로 고친 픽스처·생성기 변경 누락 차단).
+- **생성은 빌드 전에 1회, 결과를 텍스트 픽스처로 커밋**(`fixtures/generatedReferences.ts` 가칭 — 기존 픽스처 파일과 **별도 청크**). 앱 번들에는 생성기 코드가 들어가지 않고 데이터만, 그것도 필요한 화면에서만 받는다(6절). 가드 테스트가 생성기를 다시 돌려 커밋된 픽스처와 **완전 일치**를 확인한다(손으로 고친 픽스처·생성기 변경 누락 차단).
 
 ### 2.5 중복 제거
 
@@ -112,7 +112,7 @@
 
 1. 섹션 계획을 `ENGINE_VARIANT_MAP`으로 옮긴 뒤 `createDocFromCandidate` 성공(UNKNOWN_VARIANT · R-01 · R-02 거부 0) → `validatePageDoc` 통과.
 2. `lintPlan` 오류 0(R-01·02·03·04·07·08·12).
-3. **대비 AA**: 팔레트 ink/bg · ink/surface · primary 위 surface 글자 ≥ 4.5:1(`contrast.ts`). 실패 팔레트는 **보정하지 않고 표에서 제외**(팔레트 표 자체에 단위 테스트 — 메모리 "시드 문서는 대비 AA 차단" 이력 반영).
+3. **대비 AA = 기존 품질 게이트와 같은 판정**: 생성 문서 + 킷 토큰으로 `runGate`의 대비 행(`engine/gate/contrastRow.ts`)을 그대로 돌려 통과해야 한다. 자체 색 쌍을 따로 정의하지 않는다 — 킷 버튼 글자는 팔레트 surface가 아니라 **흰색 고정 `ON_PRIMARY`/`SITE_ON_PRIMARY`**(`domain/contrast.ts:9` · `kit/tokens.ts:11`)이므로 primary 대비는 ON_PRIMARY로 잰다(Codex r1 P2 — surface 기준이면 primary #BBBBBB도 통과하는 반례). 카드 톤(어두운 카드)·보조 글자(muted) 쌍도 게이트가 보는 것과 같게. 실패 팔레트는 **보정하지 않고 표에서 제외**(팔레트 표 단위 테스트 — 메모리 "시드 문서는 대비 AA 차단" 이력 반영).
 4. 모든 변형이 `RENDERED_VARIANTS` 안(폴백 섹션 0 — 썸네일이 실렌더여야 하므로).
 5. 정적 검사: 출력 문자열 어디에도 `http:`/`https:`/`//`·`<`·`data:` 0(TR-POL-01, 자체 플레이스홀더만).
 
@@ -138,6 +138,8 @@
 
 - A의 개발 서버: `npm run dev`에는 `dist/thumbs`가 없다 → img `onError` = 기존 와이어 플레이스홀더 유지(4.3 실패 상태). 테스트(jsdom)도 같은 경로.
 - A의 산출 경로·파일 이름: `thumbs/{id}.{콘텐츠 해시 8자}.svg` — 해시는 지연 청크의 `THUMBNAIL_KEYS` 맵(id → 키)에만. DesignReference에 URL 필드를 넣지 않는다(TR-POL-01, F12의 `thumbnail_key` 뜻 = 키).
+- A의 직렬화 계약(Codex r1 P2): SSR 문자열을 XHTML로 **감싸기만 하면 안 된다** — `kit/Media.tsx` 자체 이미지 패턴은 xmlns 없는 중첩 `<svg>`라 XML 파싱 시 XHTML 네임스페이스로 떨어져 사라진다. SSR 마크업을 HTML DOM으로 파싱(빌드 도구 안, jsdom은 기존 devDependency) → `XMLSerializer`로 직렬화(pngCapture와 같은 원리, 네임스페이스 보존). S0 통과 조건: 최종 SVG의 중첩 `svg` 요소 네임스페이스 = SVG(파싱 검사) + 실제 `<img>` 시각 확인.
+- A의 반응형 함정 [L3 — S0 필수 확인]: `kit.css`에 `@media` **42개**(grep). `<img>`로 그린 SVG 안의 미디어 쿼리는 1280 문서 폭이 아니라 **이미지 자체 뷰포트** 기준으로 평가될 수 있다 → 카드(≈247px)에서 모바일 레이아웃으로 그려질 위험. 대응: 빌드 단계에서 킷 CSS의 `@media`를 1280 기준으로 미리 풀어(맞는 블록은 펼치고 안 맞는 블록은 제거) SVG에 넣는다. S0에서 1280 렌더 문서 캡처와 썸네일을 나란히 비교.
 - A의 보안: SVG를 `<img>`로만 쓴다(스크립트 실행 0, 외부 요청 0). 생성 SVG에 `<script`·`on*=`·`http`·`href=` 외부 값 0을 빌드 가드가 검사.
 
 ---
@@ -174,22 +176,26 @@
 
 ---
 
-## 6. 예산 배치 (상향 없음 — 넘으면 멈춰 보고)
+## 6. 예산 배치 (상향 없음 — 넘으면 멈춰 보고) — r2 전면 수정(Codex r1 P1)
+
+원칙: **생성 데이터(카드·상세·비교 3벌 + 썸네일 키 맵)는 기존 픽스처 파일에 붙이지 않고 별도 청크 1개**(`fixtures/generatedReferences.ts` 가칭)로 둔다. 이 청크는 **목록·유사 추천·생성 id 조회가 실제로 필요할 때만** 저장소 구현이 `import()`한다. 기존 `EAGER_DYNAMIC`(main.tsx — 전 라우트) 크기는 거의 그대로여야 한다.
 
 | 대상 | 지금(L1) | 증가 [추정] | 예상 | 레인 멈춤선 |
 |---|---|---|---|---|
-| `/catalog` 첫 화면 | 99.65 | img·키 조회·Tag·미측정 분기 +0.02~0.10 | 99.67~99.75 | **99.90** (넘으면 구현 전 멈춤 → 상쇄안 보고) |
-| `/catalog` 진입 직후 | 102.04 | 픽스처 15개분: 카드 +2.3 · 상세 +3.4 · 썸네일 키 맵 +0.3 (6개 기준 선형, gzip 반복으로 실제는 더 작을 것) | ≈108 | 124.70 |
-| `/references/:id` 진입 | 99.38 | 같은 픽스처 | ≈105 | 124.70 |
-| `/compare` 진입 직후 | **121.70** | 비교 픽스처 +2.4(1.01 × 15/6) | **≈124.1** — 여유 0.6 | **124.70**. 넘으면 ★MQ-M3P-7 A(생성 레퍼런스 비교 속성을 보드에 생성 레퍼런스가 있을 때만 받는 별도 청크) |
-| `/studio` · `/profile` | 128.62 · 121.54 | 0(픽스처 미사용 확인 S0) | 그대로 | M2c 판정선 128.70 |
+| 전 라우트 공통 지연 저장소(`references`·`referenceDetails` 청크 + 저장소 구현) | 0.97 + 1.41 | 생성 청크 로더(조건부 `import()` 1개 · 병합 함수) +0.05~0.12 | — | 아래 라우트별 판정으로 |
+| `/studio/:projectId` 진입 | **128.62** | 위 로더 +0.05~0.12 → **판정선 128.70 초과 가능** | 128.67~128.74 | **128.70** — 넘으면 멈춤 → ★MQ-M3P-7 |
+| `/catalog` 첫 화면 | 99.65 | img·키 조회·Tag·미측정 분기 +0.02~0.10 | 99.67~99.75 | **99.90** |
+| `/catalog` 진입 직후 | 102.04 | 로더 + 생성 청크(15개 3벌 + 키 맵 ≈ 2.4+3.5+2.5+0.3, 6개 기준 선형 상한 — 실제는 gzip 반복으로 작을 것) ≈ +8.8 | ≈110.9 | 124.70 (생성 청크를 시나리오 auto에 추가해 판정) |
+| `/references/:id` 진입 | 99.38 | 같음(유사 추천이 전체 목록 필요) | ≈108.3 | 124.70 |
+| `/compare` 진입 | **121.70** | 로더만 +0.05~0.12. 생성 청크는 **보드에 생성 레퍼런스가 있을 때만**(조건부 — 조작 뒤 판정) | ≈121.8 | 124.70 |
+| `/profile` · `/projects` | 121.54 · 100.32 | 로더만 | +0.05~0.12 | 124.70 |
 | 렌더 문서 | 84.19 | 0(썸네일은 iframe을 쓰지 않음) | 84.19 | 89.70 |
 | 썸네일 SSR 번들 | — | 배포 산출물 아님(빌드 도구) | — | 판정 밖, 크기만 출력 |
 
+- `/studio`·`/profile`·`/projects`가 진입 때 `list`를 부르지 않는지(= 생성 청크를 받지 않는지)는 M3P-1 S0에서 L1 확인. 부르면 그 경로를 바꾸는 것이 아니라 멈춰 보고.
+- 로더를 전 라우트 공통 지연 저장소에 두면 `/studio` 판정선 초과 가능성이 높다(여유 0.08). 그래서 ★MQ-M3P-7 A = **로더를 카탈로그·상세 라우트 쪽에 두어 `/studio` 증가 0을 목표**로 배치하고(그러면 `/catalog` 첫 화면 99.90 멈춤선과 경쟁), 실측으로도 안 되면 멈춰 B(ADR-004 개정)를 요청한다. 레인 기동 전에 결정한다.
 - 생성기 코드는 `scripts/` 쪽(또는 테스트에서만 import하는 `domain/`)에 두어 **앱 청크에 들어가지 않게** 한다. 가드: 앱 manifest에 생성기 모듈 0.
 - 각 Developer 레인은 시작 때 1개분 시제품으로 증가량을 실측하고 표를 갱신한다.
-
----
 
 ## 7. 접근성
 
@@ -219,7 +225,8 @@
 | M3P-AC-G1 | 커밋된 생성 픽스처 = 생성기 재실행 결과(완전 일치) |
 | M3P-AC-G2 | 생성 픽스처·SVG에 `http`·`https`·`//`(xmlns 제외)·`<script`·`on[a-z]+=`·외부 `href` 0 · `apfs`·APFS 0 |
 | M3P-AC-G3 | 앱 manifest 청크에 생성기·SSR 모듈 0 |
-| M3P-AC-G4 | 번들: 6절 멈춤선 준수(`check-bundle-size.mjs` 출력 기록) · 렌더 문서 변화 0 |
+| M3P-AC-G4 | 번들: 6절 멈춤선 준수(`check-bundle-size.mjs` 출력 기록) · 렌더 문서 변화 0 · 생성 청크가 `EAGER_DYNAMIC` 파일에 정적 import되지 않음 |
+| M3P-AC-G6 | 썸네일 SVG: 중첩 `svg` 네임스페이스 = `http://www.w3.org/2000/svg`(XML 파싱 검사) · `@media` 0(1280 기준으로 풀림) |
 | M3P-AC-G5 | 기존 6개 픽스처 바이트 변경 0(카드·상세·비교) — 생성 데이터는 별도 파일 |
 | M3P-AC-B1 | `/catalog` 1280: 첫 줄 카드에 실렌더 썸네일이 보이고 카드 높이가 로드 전후 같음(레이아웃 이동 0) |
 | M3P-AC-B2 | 768·390: 썸네일 잘림 = 위쪽 기준(header·hero 보임) |
@@ -255,10 +262,12 @@
 ## 9. 위험
 
 1. **킷 정적 렌더 불일치** — SSR 마크업이 브라우저 렌더와 다르면 썸네일이 실제와 다르다. 완화: S0 스파이크에서 3변형(header·hero·footer) 정적 마크업 vs 렌더 문서 serialize 결과를 비교(구조 diff 0 목표). 다르면 MQ-M3P-1 B로 전환 보고.
-2. **`/compare` 진입 여유 0.6 [추정]** — 6절 멈춤선·MQ-M3P-7.
+2. **전 라우트 공통 지연 저장소 증가 → `/studio` 여유 0.08** — 6절·MQ-M3P-7 (Codex r1 P1).
+2-1. **SVG-in-img 미디어 쿼리·네임스페이스** — 3절 A 직렬화 계약·반응형 함정, S0 통과 조건.
 3. **SVG 크기** — 킷 CSS 전체를 매 파일에 넣으면 장당 gzip 12~18KB [추정]. 완화: 문서에 쓰인 변형의 CSS만 남기는 정리(후속), 첫 줄 외 lazy.
 4. **베타 업종 정의 불일치(F13)** — MQ-M3P-2.
 5. **생성 데이터 품질** — 같은 뼈대 템플릿 반복으로 단조로울 수 있음. QB-01·04로 확인, 부족하면 템플릿 추가는 다음 레인.
 
 ## 10. 기록
 - r1 2026-10-06 Designer(M3P-0) 작성.
+- r2 2026-10-06 Codex adversarial r1(needs-attention) 반영: P1 예산(픽스처가 전 라우트 자동 로드 → 생성 데이터 별도 조건부 청크, `/studio` 0.08 → MQ-7 재작성) · P2 SVG 네임스페이스 보존 직렬화 · P2 대비 게이트 = 기존 runGate·ON_PRIMARY. 자체 추가: SVG-in-img `@media` 평가 함정(kit.css 42개).

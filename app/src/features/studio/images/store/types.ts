@@ -14,4 +14,6 @@ export type ImageHost = readonly [
   images: RenderImages | undefined,
   publish: (update: (prev: RenderImages | undefined) => RenderImages | undefined) => void,
   undoDoc: PageDoc | undefined,
+  /** 스냅샷 문서들(+ 되돌릴 복원 직전 문서) — 참조 집합에 든다(ER SPEC r1 3.2) */
+  snapshots?: readonly PageDoc[],
 ];

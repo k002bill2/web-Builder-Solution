@@ -26,6 +26,7 @@ import { SectionOpControls } from "./SectionOpControls";
 import { VariantSwitch } from "./VariantSwitch";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
 import { useThemeSwap } from "./useThemeSwap";
+import { useSnapshots } from "./useSnapshots";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
 import { StructureCanvas } from "./StructureCanvas";
@@ -88,8 +89,10 @@ export function StudioLayout({
   const imagesOpen = useState(false);
   const [drawn, setDrawn] = useState(false);
   const selectedId = resolveSelection(doc, selected);
-  const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
   const root = useRef<HTMLDivElement>(null);
+  // 스냅샷(ER SPEC r1 3.2) — 미리보기 중 편집 입력 무시 · 복원은 저장 훅 경로
+  const snaps = useSnapshots({ repository, projectId: project.projectId, save, root, heading, onNotice: setNotice });
+  const ops = useSectionOps({ doc, edit: snaps.edit, profileId: project.profileId });
   const requestFocus = useFocusRequest(root);
 
   const entrySummary = entryChanges > 0 ? `바뀐 점 ${entryChanges}개` : undefined;
@@ -111,10 +114,11 @@ export function StudioLayout({
       setResolving(true);
       // 해결 거부 → STALE 유지(훅) + 알림 1문장(유추 문장, REPORT)
       resolve(choice)
+        .then(snaps.refresh)
         .catch(() => setNotice("충돌을 해결하지 못했습니다 — 다시 골라 주세요"))
         .finally(() => setResolving(false));
     },
-    [resolve],
+    [resolve, snaps.refresh],
   );
 
   // 앱 안 링크(돌아가기 · 프로필 보기)는 막지 않는다(E-S10) — 대신 떠나기 전에 저장 전 변경을 바로 저장한다.
@@ -288,7 +292,7 @@ export function StudioLayout({
     setNotice(gateSummaryNotice(gateReport));
   }, [goTo, gateReport]);
   const gateButton = (
-    <Button variant="primary" size="sm" onClick={openGate} aria-label={mode === "tabs" ? "검사 · 내보내기" : undefined} className="flex-none">
+    <Button variant="primary" size="sm" onClick={openGate} aria-label={mode === "tabs" ? "검사 · 내보내기" : undefined} className="flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong">
       {mode === "tabs" ? "검사" : "검사 · 내보내기"}
     </Button>
   );
@@ -298,10 +302,10 @@ export function StudioLayout({
   const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
   // 참조 집합(문서 ∪ 되돌릴 문서) 밖 이미지는 패널이 닫혀 있어도 뺀다(2a-05 5.9 · Codex r1) — 렌더 중 상태 조정(effect 아님).
   // 로컬 id = UUID라 직렬화 문자열 포함으로 잰다(진입 바이트 절약)
-  const [refs, setRefs] = useState([doc, undoDoc]);
-  if (refs[0] !== doc || refs[1] !== undoDoc) {
-    setRefs([doc, undoDoc]);
-    const held = JSON.stringify([doc, undoDoc]);
+  const [refs, setRefs] = useState<readonly unknown[]>([doc, undoDoc, snaps.held]);
+  if (refs[0] !== doc || refs[1] !== undoDoc || refs[2] !== snaps.held) {
+    setRefs([doc, undoDoc, snaps.held]);
+    const held = JSON.stringify([doc, undoDoc, snaps.held]);
     const kept = images && Object.entries(images).filter(([id]) => held.includes(id));
     if (kept && kept.length < Object.keys(images).length) setImages(Object.fromEntries(kept));
   }
@@ -310,6 +314,9 @@ export function StudioLayout({
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
   const kitTokens = useMemo(() => docKitTokens(ops.series, doc.profileVersion), [ops.series, doc.profileVersion]);
+  // 미리보기 캔버스 = 스냅샷 문서의 프로필 버전 팔레트(Codex r1 P2)
+  const shown = snaps.preview?.doc ?? doc;
+  const canvasTokens = useMemo(() => docKitTokens(ops.series, shown.profileVersion), [ops.series, shown.profileVersion]);
   // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
   const opControls = current && (
     <SectionOpControls
@@ -324,8 +331,13 @@ export function StudioLayout({
 
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
-  const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
-  const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : undefined} />;
+  const conflict = (
+    <>
+      {snaps.layer}
+      {save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />}
+    </>
+  );
+  const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : snaps.onUndo} />;
   const nav = (
     <SectionNav
       doc={doc}
@@ -348,12 +360,17 @@ export function StudioLayout({
   );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
-      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, undoDoc]} imagesOpen={imagesOpen} />
+      <EditFields doc={doc} selectedId={selectedId} onEdit={snaps.edit} images={[images, setImages, undoDoc, snaps.held]} imagesOpen={imagesOpen} />
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
   const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images });
   const exportResult = exportFlow.result;
+  // "내보내기 전" 스냅샷이 생겼을 수 있다 — 목록(참조 집합)을 다시 읽는다(ER-AC-S7)
+  const { refresh: refreshSnapshots } = snaps;
+  useEffect(() => {
+    if (exportResult) refreshSnapshots();
+  }, [exportResult, refreshSnapshots]);
   const blockRow = gateReport && firstBlockRow(gateReport);
   const blockText = gateReport && gateBlockReason(gateReport);
   const fallbacks = fallbackSections(doc);
@@ -387,15 +404,21 @@ export function StudioLayout({
         </>
       }
     >
+      {snaps.preview && <p className="ds-caption1 px-2 text-label-alternative">스냅샷 보는 중 — 편집 문서 기준 결과</p>}
       <GateList report={gateState.report} stale={gateState.stale} failed={gateState.failed} onRow={goToRow} contrastAction={theme.contrastAction} />
     </GatePanel>
   );
-  const widths = <PreviewWidth value={view} onChange={setView} />;
+  const widths = (
+    <div data-preview-keep className="contents">
+      <PreviewWidth value={view} onChange={setView} />
+    </div>
+  );
 
   if (mode === "tabs") {
     return (
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus}>
+          {snaps.button}
           {gateButton}
         </StudioToolbar>
         {addDialog}
@@ -419,7 +442,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
       </div>
     );
   }
@@ -447,11 +470,12 @@ export function StudioLayout({
             </select>
           </label>
           {widths}
+          {snaps.button}
           {gateButton}
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+            <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -475,6 +499,7 @@ export function StudioLayout({
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}
+        {snaps.button}
         {gateButton}
       </StudioToolbar>
       <div className="flex min-h-0 flex-1">
@@ -484,7 +509,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} {...theme.panel} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+          <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

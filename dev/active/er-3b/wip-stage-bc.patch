@@ -1,0 +1,861 @@
+diff --git a/app/src/components/studio/ImageSlotField.tsx b/app/src/components/studio/ImageSlotField.tsx
+index 44dcdfd..0c6c8fb 100644
+--- a/app/src/components/studio/ImageSlotField.tsx
++++ b/app/src/components/studio/ImageSlotField.tsx
+@@ -11,6 +11,7 @@ export interface PanelLatest {
+   readonly doc: PageDoc;
+   readonly images: RenderImages | undefined;
+   readonly undoDoc: PageDoc | undefined;
++  readonly snapshots?: readonly PageDoc[];
+ }
+ 
+ interface FieldProps {
+@@ -93,7 +94,7 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
+     setBusy(false);
+     if (typeof outcome === "string") return fail(outcome);
+     const result = outcome;
+-    const { doc, images, undoDoc } = latest.current;
++    const { doc, images, undoDoc, snapshots } = latest.current;
+     const current = doc.sections.find((s) => s.instanceId === section.instanceId);
+     const value = current && slotValue(current, entry.key);
+     // randomUUID = UUID v4 소문자 = LOCAL_IMAGE_ID 형식 그대로(Q-13). parseLocalImageId를 import하면 청크가 갈라진다(실측 — REPORT)
+@@ -105,8 +106,8 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
+     const replacing = previous !== undefined && images?.[previous] !== undefined;
+     const kept = replacing ? { ...value, alt: "", decorative: false } : value;
+     const nextDoc = setSlot(doc, current.instanceId, entry.key, { ...kept, enabled: true, source: id });
+-    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc)), id, result.image, slotTarget(current.type, current.variant));
+-    const limit = checkLimits(nextDoc, undoDoc, nextImages);
++    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc, snapshots)), id, result.image, slotTarget(current.type, current.variant));
++    const limit = checkLimits(nextDoc, undoDoc, nextImages, snapshots);
+     if (!limit.ok) return fail(limit.message);
+     remember(nextDoc, nextImages);
+     publish(() => nextImages);
+@@ -208,7 +209,7 @@ export function ImageSlotField(props: FieldProps) {
+   const edit = (next: ImageSlotValue) => onEdit(setSlot(doc, section.instanceId, entry.key, next));
+   // 꺼진 슬롯 이미지는 문서 한도에서 빠지므로 다시 켤 때도 잰다 — 넘으면 꺼진 채 둔다(Codex r1 P2)
+   const toggle = (next: ImageSlotValue) => {
+-    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}) : { ok: true as const };
++    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}, latest.current.snapshots) : { ok: true as const };
+     setSwitchError(limit.ok ? "" : limit.message);
+     if (!limit.ok) return announce(limit.message);
+     if (!next.enabled) cancel();
+diff --git a/app/src/components/studio/ImageSlotPanel.tsx b/app/src/components/studio/ImageSlotPanel.tsx
+index 1895bc8..472fa5b 100644
+--- a/app/src/components/studio/ImageSlotPanel.tsx
++++ b/app/src/components/studio/ImageSlotPanel.tsx
+@@ -22,12 +22,12 @@ export interface ImageSlotPanelProps {
+  * 참조 밖 이미지 해제는 편집 틀(StudioLayout)이 패널 표시와 무관하게 맡는다(Codex r1 P2) — 패널은 넣기 전에 한 번 더 정리한다.
+  */
+ export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, Button }: ImageSlotPanelProps) {
+-  const [images, publish, undoDoc] = host;
++  const [images, publish, undoDoc, snapshots] = host;
+   const [status, setStatus] = useState("");
+-  const latest = useRef<PanelLatest>({ doc, images, undoDoc });
++  const latest = useRef<PanelLatest>({ doc, images, undoDoc, snapshots });
+   useEffect(() => {
+-    latest.current = { doc, images, undoDoc };
+-  }, [doc, images, undoDoc]);
++    latest.current = { doc, images, undoDoc, snapshots };
++  }, [doc, images, undoDoc, snapshots]);
+   const remember = (next: PageDoc, map: RenderImages) => {
+     latest.current = { ...latest.current, doc: next, images: map };
+   };
+diff --git a/app/src/components/studio/SnapshotDialog.tsx b/app/src/components/studio/SnapshotDialog.tsx
+new file mode 100644
+index 0000000..583a8cc
+--- /dev/null
++++ b/app/src/components/studio/SnapshotDialog.tsx
+@@ -0,0 +1,134 @@
++import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent } from "react";
++import type { ProjectRepository, SnapshotReason } from "../../data/projectRepository";
++import { isPageDoc } from "../../features/studio/studioRepository";
++import { Button } from "../ds/Button";
++import type { Snapshot } from "./useSnapshots";
++
++const CAPTION = "ds-caption1 text-label-alternative";
++const RECENT = 10;
++const REASON: Record<SnapshotReason, string> = { export: "내보내기 전", restore: "복원 전", conflict: "충돌 보존", restart: "새로 시작 전" };
++const kindText = (s: Snapshot) => (s.kind === "manual" ? "수동" : s.kind === "published" ? "게시" : `자동${s.reason ? ` · ${REASON[s.reason]}` : ""}`);
++const timeText = (iso: string) => new Date(iso).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
++
++/**
++ * 스냅샷 대화상자(EDITOR-REST SPEC r1 3.2 · 7절 · ER-AC-S1·S7·S9) — 조작 뒤 청크(툴바 "스냅샷"을 눌러야 받는다).
++ * 네이티브 `dialog` + `showModal()` · 열 때 포커스 = 이름 입력 · Esc·"닫기" = 닫기(포커스는 부르는 쪽이 "스냅샷"으로) · 바깥 클릭 닫기 0.
++ * "지금 상태 저장" = 저장 먼저(`flushed`) → 저장됐을 때만 `createSnapshot`. 목록 = 최신 먼저 10개 + "이전 스냅샷 N개 더 보기".
++ */
++export default function SnapshotDialog({
++  repository,
++  projectId,
++  flushed,
++  onCreated,
++  onPreview,
++  onClose,
++}: {
++  readonly repository: ProjectRepository;
++  readonly projectId: string;
++  readonly flushed: () => Promise<boolean>;
++  readonly onCreated: (name: string) => void;
++  readonly onPreview: (snapshot: Snapshot) => void;
++  readonly onClose: () => void;
++}) {
++  const id = useId();
++  const dialog = useRef<HTMLDialogElement>(null);
++  const input = useRef<HTMLInputElement>(null);
++  const [list, setList] = useState<readonly Snapshot[]>();
++  const [all, setAll] = useState(false);
++  const [error, setError] = useState("");
++  const busy = useRef(false);
++
++  const load = useCallback(
++    () => repository.listSnapshots(projectId).then((items) => setList(items.flatMap((s) => (isPageDoc(s.doc) ? [{ ...s, doc: s.doc }] : [])))),
++    [repository, projectId],
++  );
++  useLayoutEffect(() => {
++    const el = dialog.current;
++    if (el && !el.open) el.showModal();
++    input.current?.focus();
++  }, []);
++  useEffect(() => void load(), [load]);
++  // "더 보기"는 누르면 사라진다 — 포커스를 새로 보인 첫 스냅샷의 "미리보기"로(포커스 유실 0)
++  useLayoutEffect(() => {
++    if (all) dialog.current?.querySelectorAll<HTMLElement>("li button")[RECENT]?.focus();
++  }, [all]);
++
++  const save = async (event: FormEvent) => {
++    event.preventDefault();
++    if (busy.current) return;
++    busy.current = true;
++    setError("");
++    try {
++      if (!(await flushed())) return setError("저장하지 못해 스냅샷을 만들지 않았습니다");
++      const created = await repository.createSnapshot(projectId, input.current?.value || undefined);
++      if (input.current) input.current.value = "";
++      onCreated(created.name);
++      await load();
++    } catch {
++      setError("스냅샷을 만들지 못했습니다 · 다시 시도해 주세요");
++    } finally {
++      busy.current = false;
++    }
++  };
++
++  const recent = [...(list ?? [])].reverse();
++  const shown = all ? recent : recent.slice(0, RECENT);
++  const older = recent.length - shown.length;
++  return (
++    <dialog
++      ref={dialog}
++      aria-labelledby={`${id}-title`}
++      onCancel={(event) => {
++        event.preventDefault();
++        onClose();
++      }}
++      className="m-auto w-full max-w-lg rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal"
++    >
++      <div className="flex flex-col gap-4">
++        <h2 id={`${id}-title`} className="ds-heading2">
++          스냅샷
++        </h2>
++        <form onSubmit={(event) => void save(event)} className="flex flex-wrap items-end gap-2">
++          <label className="ds-label flex min-w-0 flex-1 flex-col gap-1">
++            이름(30자까지 · 비우면 "수동 · 시:분")
++            <input ref={input} maxLength={30} aria-describedby={error ? `${id}-error` : undefined} className="ds-body3 h-9 rounded-md border border-line-strong bg-background-normal px-2" />
++          </label>
++          <Button type="submit" size="sm">
++            지금 상태 저장
++          </Button>
++        </form>
++        {error && (
++          <p id={`${id}-error`} role="alert" className="ds-body3">
++            {error}
++          </p>
++        )}
++        {list?.length === 0 && <p className={CAPTION}>아직 스냅샷이 없습니다</p>}
++        <ul aria-label="스냅샷 목록" className="flex max-h-80 flex-col gap-1 overflow-y-auto">
++          {shown.map((s) => (
++            <li key={s.snapshotId} className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-fill-normal">
++              <div className="min-w-0 flex-1">
++                <p className="ds-label truncate">{s.name}</p>
++                <p className={CAPTION}>
++                  {kindText(s)} · {timeText(s.createdAt)} · 프로필 v{s.profileVersion} · {s.candidateId}안
++                </p>
++              </div>
++              <Button variant="outline" size="sm" aria-label={`${s.name} 미리보기`} onClick={() => onPreview(s)}>
++                미리보기
++              </Button>
++            </li>
++          ))}
++        </ul>
++        {older > 0 && (
++          <Button variant="outline" size="sm" onClick={() => setAll(true)}>
++            이전 스냅샷 {older}개 더 보기
++          </Button>
++        )}
++        <div className="flex justify-end">
++          <Button variant="outline" onClick={onClose}>
++            닫기
++          </Button>
++        </div>
++      </div>
++    </dialog>
++  );
++}
+diff --git a/app/src/components/studio/SnapshotFlow.test.tsx b/app/src/components/studio/SnapshotFlow.test.tsx
+new file mode 100644
+index 0000000..fde6cf3
+--- /dev/null
++++ b/app/src/components/studio/SnapshotFlow.test.tsx
+@@ -0,0 +1,220 @@
++import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { ProjectRepositoryError, type ProjectRepository, type ProjectSnapshot, type SnapshotKind, type SnapshotReason } from "../../data/projectRepository";
++import type { PageDoc } from "../../engine/contracts/pageDoc";
++import { sampleDoc } from "../../engine/testing/sampleDoc";
++import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
++
++/** ER-AC-S3·S4·S6~S10 (EDITOR-REST SPEC r1 3.2 · 7절) — 스냅샷 화면: 대화상자 · 미리보기 · 복원(저장 훅 경로) */
++afterEach(() => {
++  restoreViewport();
++  vi.useRealTimers();
++});
++
++const titled = (doc: PageDoc, title: string): PageDoc => ({ ...doc, meta: { ...doc.meta, title } });
++const notice = () => screen.getByRole("status", { name: "편집 알림" });
++const h1 = () => screen.getByRole("heading", { level: 1 });
++const snapButton = () => screen.getByRole("button", { name: "스냅샷" });
++
++/** 상태를 가진 저장소 흉내 — revision 불일치 STALE_DOC · 복원 = "복원 전" 자동 + 새 revision · 쓰기 순서 기록 */
++function snapshotRepo(initial: PageDoc, seed: number = 0) {
++  let stored = initial;
++  const snaps: ProjectSnapshot<PageDoc>[] = [];
++  const writes: string[] = [];
++  const add = (name: string, kind: SnapshotKind, reason?: SnapshotReason) => {
++    const s = { snapshotId: `snapshot-${snaps.length + 1}`, projectId: "project-1", kind, ...(reason && { reason }), name, createdAt: "2026-10-06T05:02:00.000Z", doc: stored, profileVersion: stored.profileVersion, candidateId: stored.candidateId, hash: "h" };
++    snaps.push(s);
++    return s;
++  };
++  for (let i = 1; i <= seed; i++) add(`수동 ${i}`, "manual");
++  let failSave = false;
++  let failRestore = false;
++  const repository: Partial<ProjectRepository> = {
++    saveDoc: async (_id, revision, next) => {
++      writes.push(`save:${revision}`);
++      if (failSave) throw new ProjectRepositoryError("INFRA", "fail");
++      if (revision !== stored.revision) throw new ProjectRepositoryError("STALE_DOC", "stale", { doc: stored });
++      stored = { ...(next as PageDoc), revision: revision + 1 };
++      return stored;
++    },
++    listSnapshots: async () => [...snaps],
++    createSnapshot: async (_id, name) => {
++      writes.push("create");
++      return add(name ?? "수동 · 14:02", "manual");
++    },
++    restoreSnapshot: async (_id, snapshotId, revision) => {
++      writes.push(`restore:${revision}`);
++      if (failRestore) throw new ProjectRepositoryError("INFRA", "fail");
++      if (revision !== stored.revision) throw new ProjectRepositoryError("STALE_DOC", "stale", { doc: stored });
++      const target = snaps.find((s) => s.snapshotId === snapshotId)!;
++      add("복원 전 · 14:05", "auto", "restore");
++      stored = { ...target.doc, revision: stored.revision + 1 };
++      return stored;
++    },
++  };
++  return {
++    repository,
++    writes,
++    snaps,
++    stored: () => stored,
++    failSave: (on: boolean) => void (failSave = on),
++    failRestore: (on: boolean) => void (failRestore = on),
++  };
++}
++
++const titleField = () => document.getElementById("page-info-title") as HTMLInputElement;
++/** 페이지 정보 줄을 골라 SEO 제목 입력칸을 연다(1280 · 1024 섹션 열의 첫 줄) */
++const type = (value: string) => {
++  if (!titleField()) act(() => void fireEvent.click(screen.getAllByText("페이지 정보")[0]!));
++  act(() => void fireEvent.change(titleField(), { target: { value } }));
++};
++async function openDialog() {
++  act(() => void fireEvent.click(snapButton()));
++  return within(await screen.findByRole("dialog", { name: "스냅샷" }));
++}
++async function saveNow(dialog: ReturnType<typeof within>) {
++  await act(async () => void fireEvent.click(dialog.getByRole("button", { name: "지금 상태 저장" })));
++}
++async function previewFirst(dialog: ReturnType<typeof within>, name: string) {
++  const button = await dialog.findByRole("button", { name: `${name} 미리보기` });
++  act(() => void fireEvent.click(button));
++  return screen.findByRole("heading", { name: `스냅샷 '${name}'를 보고 있습니다 · 편집은 멈췄습니다` });
++}
++
++describe("만들기 · 미리보기 — ER-AC-S3 · S9", () => {
++  it("열면 포커스 = 이름 입력 · 입력 직후 '지금 상태 저장' = 저장 먼저(최신 입력 포함) → 스냅샷 1 · 편집 알림 · 닫기 → 포커스 '스냅샷'", async () => {
++    const r = snapshotRepo(sampleDoc());
++    await openStudio({ repository: r.repository });
++    type("방금 입력");
++    const dialog = await openDialog();
++    expect(dialog.getByRole("textbox")).toHaveFocus();
++    await saveNow(dialog);
++    await dialog.findByText("수동 · 14:02");
++    expect(r.writes).toEqual([`save:${sampleDoc().revision}`, "create"]);
++    expect(r.snaps[0]!.doc.meta.title).toBe("방금 입력");
++    expect(notice()).toHaveTextContent("스냅샷 '수동 · 14:02'를 저장했습니다");
++    act(() => void fireEvent.click(dialog.getByRole("button", { name: "닫기" })));
++    expect(screen.queryByRole("dialog")).toBeNull();
++    expect(snapButton()).toHaveFocus();
++  });
++
++  it("저장 실패면 createSnapshot 0 + 대화상자 안 문장", async () => {
++    const r = snapshotRepo(sampleDoc());
++    await openStudio({ repository: r.repository });
++    r.failSave(true);
++    type("방금 입력");
++    const dialog = await openDialog();
++    await saveNow(dialog);
++    expect(await dialog.findByRole("alert")).toHaveTextContent("저장하지 못해 스냅샷을 만들지 않았습니다");
++    expect(r.writes).not.toContain("create");
++  });
++
++  it("미리보기: 캔버스 = 스냅샷 문서 · 포커스 Callout 제목 · 편집 컨트롤 aria-disabled + 같은 이유 · 입력 무시 · 자동 저장 0 · 돌아가기 → 포커스 '스냅샷' · 잠금 해제", async () => {
++    const r = snapshotRepo(titled(sampleDoc(), "스냅샷 때 제목"), 1);
++    const { frame } = await openStudio({ doc: titled(sampleDoc(), "지금 제목"), repository: r.repository });
++    type("미리보기 직전 입력");
++    const dialog = await openDialog();
++    const title = await previewFirst(dialog, "수동 1");
++    expect(title).toHaveFocus();
++    await waitFor(() => expect(frame.lastDoc().meta.title).toBe("스냅샷 때 제목"));
++    const savesAtPreview = r.writes.length;
++    expect(titleField()).toHaveAttribute("aria-disabled", "true");
++    expect(titleField()).toHaveAccessibleDescription("스냅샷을 보는 중에는 편집할 수 없습니다");
++    expect(screen.getByRole("button", { name: "검사 · 내보내기" })).toHaveAttribute("aria-disabled", "true");
++    expect(screen.getByText("스냅샷 보는 중 — 편집 문서 기준 결과")).toBeInTheDocument();
++    type("미리보기 중 입력");
++    await act(async () => void (await new Promise((res) => setTimeout(res, 2300))));
++    expect(r.writes.length).toBe(savesAtPreview);
++    expect(r.stored().meta.title).toBe("미리보기 직전 입력");
++    act(() => void fireEvent.click(screen.getByRole("button", { name: "편집으로 돌아가기" })));
++    expect(snapButton()).toHaveFocus();
++    expect(titleField()).not.toHaveAttribute("aria-disabled");
++    await waitFor(() => expect(frame.lastDoc().meta.title).toBe("미리보기 직전 입력"));
++  }, 10_000);
++});
++
++describe("복원 — ER-AC-S4 · S10", () => {
++  it("복원 = 저장 훅 경로: 알림('복원 전' 이름) · 포커스 h1 · 다음 편집 저장 STALE 0 · '되돌리기' 1건 = 새 revision 저장", async () => {
++    const r = snapshotRepo(titled(sampleDoc(), "스냅샷 때 제목"), 1);
++    await openStudio({ doc: titled(sampleDoc(), "지금 제목"), repository: r.repository });
++    type("복원 직전 입력");
++    const dialog = await openDialog();
++    await previewFirst(dialog, "수동 1");
++    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "이 스냅샷으로 복원" })));
++    await waitFor(() => expect(notice()).toHaveTextContent("스냅샷 '수동 1'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 14:05'에 있습니다"));
++    expect(h1()).toHaveFocus();
++    const base = sampleDoc().revision;
++    expect(r.writes).toEqual([`save:${base}`, `restore:${base + 1}`]);
++    expect(titleField()).toHaveValue("스냅샷 때 제목");
++    type("복원 뒤 편집");
++    act(() => void fireEvent.click(screen.getByRole("button", { name: "검사 · 내보내기" })));
++    await waitFor(() => expect(r.writes).toContain(`save:${base + 2}`), { timeout: 4000 });
++    expect(r.stored().revision).toBe(base + 3);
++    expect(r.stored().meta.title).toBe("복원 뒤 편집");
++  }, 10_000);
++
++  it("복원 직후 '되돌리기' → 복원 직전 문서를 새 편집으로(새 revision) · 포커스 h1", async () => {
++    const r = snapshotRepo(titled(sampleDoc(), "스냅샷 때 제목"), 1);
++    await openStudio({ doc: titled(sampleDoc(), "지금 제목"), repository: r.repository });
++    const dialog = await openDialog();
++    await previewFirst(dialog, "수동 1");
++    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "이 스냅샷으로 복원" })));
++    await waitFor(() => expect(h1()).toHaveFocus());
++    act(() => void fireEvent.click(screen.getByRole("button", { name: "되돌리기" })));
++    expect(notice()).toHaveTextContent("복원을 되돌렸습니다");
++    expect(h1()).toHaveFocus();
++    const base = sampleDoc().revision;
++    await waitFor(() => expect(r.writes).toContain(`save:${base + 1}`), { timeout: 4000 });
++    expect(r.stored().meta.title).toBe("지금 제목");
++  }, 10_000);
++
++  it("복원 실패 → role=alert 1회 '복원하지 못했습니다 · 다시 시도' · 미리보기 유지 · 포커스 = 복원 버튼 그대로", async () => {
++    const r = snapshotRepo(sampleDoc(), 1);
++    await openStudio({ repository: r.repository });
++    r.failRestore(true);
++    const dialog = await openDialog();
++    await previewFirst(dialog, "수동 1");
++    const button = screen.getByRole("button", { name: "이 스냅샷으로 복원" });
++    act(() => button.focus());
++    await act(async () => void fireEvent.click(button));
++    await waitFor(() => expect(screen.getAllByRole("alert").filter((el) => el.textContent === "복원하지 못했습니다 · 다시 시도")).toHaveLength(1));
++    expect(button).toHaveFocus();
++  });
++});
++
++describe("목록 · 좁은 폭 — ER-AC-S1(화면) · S7 · 7절", () => {
++  it("12개 → 최신 10개 + '이전 스냅샷 2개 더 보기' → 누르면 버튼이 사라지고 포커스 = 새로 보인 첫 스냅샷 '미리보기'", async () => {
++    const r = snapshotRepo(sampleDoc(), 12);
++    await openStudio({ repository: r.repository });
++    const dialog = await openDialog();
++    await dialog.findByText("수동 12");
++    expect(dialog.getAllByRole("button", { name: /미리보기$/ })).toHaveLength(10);
++    act(() => void fireEvent.click(dialog.getByRole("button", { name: "이전 스냅샷 2개 더 보기" })));
++    expect(dialog.queryByRole("button", { name: /더 보기/ })).toBeNull();
++    expect(dialog.getByRole("button", { name: "수동 2 미리보기" })).toHaveFocus();
++  });
++
++  it("'내보내기 전' 자동 스냅샷이 종류 글자와 함께 보이고 미리보기 된다", async () => {
++    const r = snapshotRepo(titled(sampleDoc(), "내보낸 제목"));
++    r.snaps.push({ ...r.snaps[0]!, ...{ snapshotId: "snapshot-1", projectId: "project-1", kind: "auto", reason: "export", name: "내보내기 전 · 14:00", createdAt: "2026-10-06T05:00:00.000Z", doc: titled(sampleDoc(), "내보낸 제목"), profileVersion: 1, candidateId: "B", hash: "h" } });
++    await openStudio({ repository: r.repository });
++    const dialog = await openDialog();
++    expect(await dialog.findByText(/^자동 · 내보내기 전 · /)).toBeInTheDocument();
++    expect(await previewFirst(dialog, "내보내기 전 · 14:00")).toHaveFocus();
++  });
++
++  it.each([390, 1024])("폭 %ipx → 대화상자 정확히 1개", async (width) => {
++    await openStudio({ width, repository: snapshotRepo(sampleDoc()).repository });
++    act(() => void fireEvent.click(snapButton()));
++    expect(await screen.findAllByRole("dialog", { name: "스냅샷" })).toHaveLength(1);
++  });
++
++  it("390 미리보기 중 '편집' 탭으로 바꿔 새로 그린 필드도 잠김", async () => {
++    const r = snapshotRepo(sampleDoc(), 1);
++    await openStudio({ width: 390, repository: r.repository });
++    const dialog = await openDialog();
++    await previewFirst(dialog, "수동 1");
++    act(() => void fireEvent.click(screen.getByRole("tab", { name: "편집" })));
++    await waitFor(() => expect(screen.getByRole("tabpanel").querySelector("input, textarea")).toHaveAttribute("aria-disabled", "true"));
++  });
++});
+diff --git a/app/src/components/studio/SnapshotPreview.tsx b/app/src/components/studio/SnapshotPreview.tsx
+new file mode 100644
+index 0000000..9b12f10
+--- /dev/null
++++ b/app/src/components/studio/SnapshotPreview.tsx
+@@ -0,0 +1,126 @@
++import { useLayoutEffect, useRef, useState, type RefObject } from "react";
++import type { ProjectRepository } from "../../data/projectRepository";
++import type { PageDoc } from "../../engine/contracts/pageDoc";
++import { isPageDoc } from "../../features/studio/studioRepository";
++import type { UseDocSave } from "../../features/studio/useDocSave";
++import { Button } from "../ds/Button";
++import { Callout } from "../ds/Callout";
++import type { Snapshot } from "./useSnapshots";
++
++const REASON_ID = "snapshot-preview-reason";
++const LOCK = "button, input, select, textarea";
++const BLOCKED = ["click", "keydown", "beforeinput", "input", "change"] as const;
++
++/**
++ * 편집 잠금(ER SPEC r1 3.2 · 7절 "비활성") — 편집 틀 안 컨트롤 전부 `aria-disabled` + 같은 이유. 미리보기 Callout · 탭 · 미리보기 폭(`data-preview-keep`)은 그대로.
++ * 탭 전환 등으로 새로 그려진 컨트롤도 잠근다(MutationObserver). 누르기·입력은 capture에서 막는다(Tab 이동은 그대로). 끝나면 원래 속성으로 돌린다.
++ */
++function lockEditing(host: HTMLElement | null) {
++  if (!host) return undefined;
++  const saved = new Map<Element, readonly [string | null, string | null]>();
++  const lock = () => {
++    for (const el of host.querySelectorAll(LOCK)) {
++      if (saved.has(el) || el.closest("[data-preview-keep]") || el.getAttribute("role") === "tab") continue;
++      saved.set(el, [el.getAttribute("aria-disabled"), el.getAttribute("aria-describedby")]);
++      el.setAttribute("aria-disabled", "true");
++      el.setAttribute("aria-describedby", REASON_ID);
++    }
++  };
++  const block = (event: Event) => {
++    const el = event.target instanceof Element ? event.target.closest(LOCK) : null;
++    if (!el || !saved.has(el) || (event instanceof KeyboardEvent && event.key !== "Enter" && event.key !== " ")) return;
++    event.preventDefault();
++    event.stopPropagation();
++  };
++  lock();
++  const observer = new MutationObserver(lock);
++  observer.observe(host, { childList: true, subtree: true });
++  for (const type of BLOCKED) host.addEventListener(type, block, true);
++  return () => {
++    observer.disconnect();
++    for (const type of BLOCKED) host.removeEventListener(type, block, true);
++    saved.forEach(([disabled, described], el) => {
++      if (disabled === null) el.removeAttribute("aria-disabled");
++      else el.setAttribute("aria-disabled", disabled);
++      if (described === null) el.removeAttribute("aria-describedby");
++      else el.setAttribute("aria-describedby", described);
++    });
++  };
++}
++
++/**
++ * 스냅샷 미리보기 Callout(EDITOR-REST SPEC r1 3.2 · ER-AC-S3·S4·S10) — 조작 뒤 청크. 캔버스는 부르는 쪽이 스냅샷 문서로 그린다(같은 렌더 경로).
++ * 열면 포커스 = Callout 제목. "이 스냅샷으로 복원" = 저장 훅 경로(`save.adopt` — 저장 먼저 · revision·스케줄러 동기화) →
++ * 알림 문장의 "복원 전" 이름은 목록 마지막에서 읽는다(er-3a 계약). 실패 = `role=alert` 1회 · 포커스는 남는 복원 버튼 그대로.
++ */
++export default function SnapshotPreview({
++  snapshot,
++  root,
++  save,
++  repository,
++  projectId,
++  onBack,
++  onRestored,
++}: {
++  readonly snapshot: Snapshot;
++  readonly root: RefObject<HTMLElement | null>;
++  readonly save: UseDocSave;
++  readonly repository: ProjectRepository;
++  readonly projectId: string;
++  readonly onBack: () => void;
++  readonly onRestored: (before: PageDoc, after: PageDoc, text: string) => void;
++}) {
++  const box = useRef<HTMLDivElement>(null);
++  const busy = useRef(false);
++  const [failed, setFailed] = useState(false);
++  useLayoutEffect(() => {
++    const title = box.current?.querySelector<HTMLElement>("h3");
++    if (!title) return;
++    title.tabIndex = -1;
++    title.focus();
++  }, []);
++  useLayoutEffect(() => lockEditing(root.current), [root]);
++
++  const restore = async () => {
++    if (busy.current) return;
++    busy.current = true;
++    setFailed(false);
++    const before = save.doc;
++    try {
++      const after = await save.adopt(async (revision) => {
++        const restored = await repository.restoreSnapshot(projectId, snapshot.snapshotId, revision);
++        if (!isPageDoc(restored)) throw new Error("복원 결과가 편집 문서 모양이 아닙니다");
++        return restored;
++      });
++      if (!after) throw new Error("저장하지 못해 복원하지 않았습니다");
++      const kept = (await repository.listSnapshots(projectId)).at(-1)?.name;
++      onRestored(before, after, `스냅샷 '${snapshot.name}'으로 복원했습니다 · 복원 전 상태는 '${kept}'에 있습니다`);
++    } catch {
++      setFailed(true);
++    } finally {
++      busy.current = false;
++    }
++  };
++
++  return (
++    <div ref={box} data-preview-keep className="px-4 pt-3">
++      <Callout
++        tone="info"
++        title={`스냅샷 '${snapshot.name}'를 보고 있습니다 · 편집은 멈췄습니다`}
++        action={
++          <>
++            <Button size="sm" onClick={() => void restore()}>
++              이 스냅샷으로 복원
++            </Button>
++            <Button variant="outline" size="sm" onClick={onBack}>
++              편집으로 돌아가기
++            </Button>
++          </>
++        }
++      >
++        <p id={REASON_ID}>스냅샷을 보는 중에는 편집할 수 없습니다</p>
++        {failed && <p role="alert">복원하지 못했습니다 · 다시 시도</p>}
++      </Callout>
++    </div>
++  );
++}
+diff --git a/app/src/components/studio/StudioLayout.tsx b/app/src/components/studio/StudioLayout.tsx
+index 8dd2bc6..e0419bf 100644
+--- a/app/src/components/studio/StudioLayout.tsx
++++ b/app/src/components/studio/StudioLayout.tsx
+@@ -26,6 +26,7 @@ import { SectionOpControls } from "./SectionOpControls";
+ import { VariantSwitch } from "./VariantSwitch";
+ import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
+ import { useThemeSwap } from "./useThemeSwap";
++import { useSnapshots } from "./useSnapshots";
+ import { StudioTabs, type StudioTab } from "./StudioTabs";
+ import { StudioToolbar } from "./StudioToolbar";
+ import { StructureCanvas } from "./StructureCanvas";
+@@ -88,8 +89,10 @@ export function StudioLayout({
+   const imagesOpen = useState(false);
+   const [drawn, setDrawn] = useState(false);
+   const selectedId = resolveSelection(doc, selected);
+-  const ops = useSectionOps({ doc, edit: save.edit, profileId: project.profileId });
+   const root = useRef<HTMLDivElement>(null);
++  // 스냅샷(ER SPEC r1 3.2) — 미리보기 중 편집 입력 무시 · 복원은 저장 훅 경로
++  const snaps = useSnapshots({ repository, projectId: project.projectId, save, root, heading, onNotice: setNotice });
++  const ops = useSectionOps({ doc, edit: snaps.edit, profileId: project.profileId });
+   const requestFocus = useFocusRequest(root);
+ 
+   const entrySummary = entryChanges > 0 ? `바뀐 점 ${entryChanges}개` : undefined;
+@@ -111,10 +114,11 @@ export function StudioLayout({
+       setResolving(true);
+       // 해결 거부 → STALE 유지(훅) + 알림 1문장(유추 문장, REPORT)
+       resolve(choice)
++        .then(snaps.refresh)
+         .catch(() => setNotice("충돌을 해결하지 못했습니다 — 다시 골라 주세요"))
+         .finally(() => setResolving(false));
+     },
+-    [resolve],
++    [resolve, snaps.refresh],
+   );
+ 
+   // 앱 안 링크(돌아가기 · 프로필 보기)는 막지 않는다(E-S10) — 대신 떠나기 전에 저장 전 변경을 바로 저장한다.
+@@ -298,10 +302,10 @@ export function StudioLayout({
+   const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
+   // 참조 집합(문서 ∪ 되돌릴 문서) 밖 이미지는 패널이 닫혀 있어도 뺀다(2a-05 5.9 · Codex r1) — 렌더 중 상태 조정(effect 아님).
+   // 로컬 id = UUID라 직렬화 문자열 포함으로 잰다(진입 바이트 절약)
+-  const [refs, setRefs] = useState([doc, undoDoc]);
+-  if (refs[0] !== doc || refs[1] !== undoDoc) {
+-    setRefs([doc, undoDoc]);
+-    const held = JSON.stringify([doc, undoDoc]);
++  const [refs, setRefs] = useState<readonly unknown[]>([doc, undoDoc, snaps.held]);
++  if (refs[0] !== doc || refs[1] !== undoDoc || refs[2] !== snaps.held) {
++    setRefs([doc, undoDoc, snaps.held]);
++    const held = JSON.stringify([doc, undoDoc, snaps.held]);
+     const kept = images && Object.entries(images).filter(([id]) => held.includes(id));
+     if (kept && kept.length < Object.keys(images).length) setImages(Object.fromEntries(kept));
+   }
+@@ -324,8 +328,14 @@ export function StudioLayout({
+ 
+   const docTag = docTagText(doc);
+   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
+-  const conflict = save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />;
+-  const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : undefined} />;
++  const conflict = (
++    <>
++      {snaps.callout}
++      {save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />}
++    </>
++  );
++  const shown = snaps.preview?.doc ?? doc;
++  const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : snaps.onUndo} />;
+   const nav = (
+     <SectionNav
+       doc={doc}
+@@ -348,12 +358,17 @@ export function StudioLayout({
+   );
+   const edit = (
+     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
+-      <EditFields doc={doc} selectedId={selectedId} onEdit={save.edit} images={[images, setImages, undoDoc]} imagesOpen={imagesOpen} />
++      <EditFields doc={doc} selectedId={selectedId} onEdit={snaps.edit} images={[images, setImages, undoDoc, snaps.held]} imagesOpen={imagesOpen} />
+     </EditPanel>
+   );
+   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
+   const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images });
+   const exportResult = exportFlow.result;
++  // "내보내기 전" 스냅샷이 생겼을 수 있다 — 목록(참조 집합)을 다시 읽는다(ER-AC-S7)
++  const { refresh: refreshSnapshots } = snaps;
++  useEffect(() => {
++    if (exportResult) refreshSnapshots();
++  }, [exportResult, refreshSnapshots]);
+   const blockRow = gateReport && firstBlockRow(gateReport);
+   const blockText = gateReport && gateBlockReason(gateReport);
+   const fallbacks = fallbackSections(doc);
+@@ -387,19 +402,26 @@ export function StudioLayout({
+         </>
+       }
+     >
++      {snaps.preview && <p className="ds-caption1 px-2 text-label-alternative">스냅샷 보는 중 — 편집 문서 기준 결과</p>}
+       <GateList report={gateState.report} stale={gateState.stale} failed={gateState.failed} onRow={goToRow} contrastAction={theme.contrastAction} />
+     </GatePanel>
+   );
+-  const widths = <PreviewWidth value={view} onChange={setView} />;
++  const widths = (
++    <div data-preview-keep className="contents">
++      <PreviewWidth value={view} onChange={setView} />
++    </div>
++  );
+ 
+   if (mode === "tabs") {
+     return (
+       <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
+         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus}>
++          {snaps.button}
+           {gateButton}
+         </StudioToolbar>
+         {addDialog}
+         {theme.dialog}
++        {snaps.dialog}
+         <StudioTabs
+           selected={tab}
+           onSelect={setTab}
+@@ -419,7 +441,7 @@ export function StudioLayout({
+             { id: "gate", label: "검사", panel: gate },
+           ]}
+         />
+-        <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
++        <StructureCanvas kitTokens={kitTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+       </div>
+     );
+   }
+@@ -429,6 +451,7 @@ export function StudioLayout({
+       <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+         {addDialog}
+         {theme.dialog}
++        {snaps.dialog}
+         <StudioToolbar projectName={project.name} headingRef={heading}>
+           {saveStatus}
+           <label className="ds-label flex flex-none items-center gap-2">
+@@ -447,11 +470,12 @@ export function StudioLayout({
+             </select>
+           </label>
+           {widths}
++          {snaps.button}
+           {gateButton}
+         </StudioToolbar>
+         <div className="flex min-h-0 flex-1">
+           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+-            <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
++            <StructureCanvas kitTokens={kitTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+           </div>
+           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+             {noticeRegion}
+@@ -472,9 +496,11 @@ export function StudioLayout({
+     <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
+       {addDialog}
+       {theme.dialog}
++      {snaps.dialog}
+       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
+         {saveStatus}
+         {widths}
++        {snaps.button}
+         {gateButton}
+       </StudioToolbar>
+       <div className="flex min-h-0 flex-1">
+@@ -484,7 +510,7 @@ export function StudioLayout({
+           <ThemePanel doc={doc} profileId={project.profileId} {...theme.panel} />
+         </div>
+         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+-          <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
++          <StructureCanvas kitTokens={kitTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+         </div>
+         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
+           {edit}
+diff --git a/app/src/components/studio/useSnapshots.tsx b/app/src/components/studio/useSnapshots.tsx
+new file mode 100644
+index 0000000..bcbc583
+--- /dev/null
++++ b/app/src/components/studio/useSnapshots.tsx
+@@ -0,0 +1,116 @@
++import { lazy, Suspense, useCallback, useMemo, useState, type RefObject } from "react";
++import type { ProjectRepository, ProjectSnapshot } from "../../data/projectRepository";
++import type { PageDoc } from "../../engine/contracts/pageDoc";
++import { isPageDoc } from "../../features/studio/studioRepository";
++import type { UseDocSave } from "../../features/studio/useDocSave";
++import { Button } from "../ds/Button";
++
++/** 스냅샷 대화상자 · 미리보기 Callout(복원 흐름·편집 잠금 포함) — 조작 뒤 청크(ER-AC-S8) */
++const SnapshotDialog = lazy(() => import("./SnapshotDialog"));
++const SnapshotPreview = lazy(() => import("./SnapshotPreview"));
++export type Snapshot = ProjectSnapshot<PageDoc>;
++const BUTTON_ID = "studio-snapshot";
++const focusButton = () => document.getElementById(BUTTON_ID)?.focus();
++
++/**
++ * 스냅샷 연결(EDITOR-REST SPEC r1 3.2 · 7절) — 진입 직후 청크에는 툴바 버튼·상태·참조 집합만 둔다.
++ * 미리보기 중 = 캔버스가 스냅샷 문서 · 편집 입력 무시(자동 저장 0). 복원 = 저장 훅 경로(`save.adopt`) · 알림 줄 "되돌리기" 1건 =
++ * 복원 직전 문서를 새 편집으로(새 revision). 참조 집합 = 스냅샷 문서 전부 + 되돌릴 복원 직전 문서 — 목록은 생성·복원·내보내기·충돌 해결 뒤에만 읽는다.
++ */
++export function useSnapshots({
++  repository,
++  projectId,
++  save,
++  root,
++  heading,
++  onNotice,
++}: {
++  readonly repository: ProjectRepository;
++  readonly projectId: string;
++  readonly save: UseDocSave;
++  readonly root: RefObject<HTMLElement | null>;
++  readonly heading: RefObject<HTMLElement | null>;
++  readonly onNotice: (text: string) => void;
++}) {
++  const [open, setOpen] = useState(false);
++  const [preview, setPreview] = useState<Snapshot>();
++  const [held, setHeld] = useState<readonly PageDoc[]>([]);
++  const [undo, setUndo] = useState<{ readonly before: PageDoc; readonly after: PageDoc }>();
++  // 목록 읽기 실패는 참조 집합을 그대로 둔다(편집을 막지 않는다)
++  const refresh = useCallback(
++    () =>
++      void Promise.resolve()
++        .then(() => repository.listSnapshots(projectId))
++        .then((list) => setHeld(list.map((s) => s.doc).filter(isPageDoc)), () => undefined),
++    [repository, projectId],
++  );
++  const close = () => {
++    setPreview(undefined);
++    focusButton();
++  };
++  const kept = useMemo(() => (undo ? [...held, undo.before] : held), [held, undo]);
++  return {
++    preview,
++    refresh,
++    held: kept,
++    edit: preview ? () => undefined : save.edit,
++    onUndo:
++      undo?.after === save.doc
++        ? () => {
++            save.edit(undo.before);
++            setUndo(undefined);
++            onNotice("복원을 되돌렸습니다");
++            heading.current?.focus();
++          }
++        : undefined,
++    button: (
++      <Button id={BUTTON_ID} variant="outline" size="sm" className="flex-none" onClick={() => setOpen(true)}>
++        스냅샷
++      </Button>
++    ),
++    dialog: open && (
++      <Suspense fallback={null}>
++        <SnapshotDialog
++          repository={repository}
++          projectId={projectId}
++          flushed={save.flushed}
++          onCreated={(name) => {
++            onNotice(`스냅샷 '${name}'를 저장했습니다`);
++            refresh();
++          }}
++          // 저장 먼저 — 미리보기 중에는 자동 저장이 나가지 않게(ER-AC-S3)
++          onPreview={(snapshot) =>
++            void save.flushed().then(() => {
++              setOpen(false);
++              setPreview(snapshot);
++            })
++          }
++          onClose={() => {
++            setOpen(false);
++            focusButton();
++          }}
++        />
++      </Suspense>
++    ),
++    callout: preview && (
++      <Suspense fallback={null}>
++        <SnapshotPreview
++          key={preview.snapshotId}
++          snapshot={preview}
++          root={root}
++          save={save}
++          repository={repository}
++          projectId={projectId}
++          onBack={close}
++          onRestored={(before, after, text) => {
++            setPreview(undefined);
++            setUndo({ before, after });
++            onNotice(text);
++            refresh();
++            heading.current?.focus();
++          }}
++        />
++      </Suspense>
++    ),
++  };
++}
+diff --git a/app/src/features/studio/images/store/types.ts b/app/src/features/studio/images/store/types.ts
+index 38f0d75..594ab29 100644
+--- a/app/src/features/studio/images/store/types.ts
++++ b/app/src/features/studio/images/store/types.ts
+@@ -14,4 +14,6 @@ export type ImageHost = readonly [
+   images: RenderImages | undefined,
+   publish: (update: (prev: RenderImages | undefined) => RenderImages | undefined) => void,
+   undoDoc: PageDoc | undefined,
++  /** 스냅샷 문서들(+ 되돌릴 복원 직전 문서) — 참조 집합에 든다(ER SPEC r1 3.2) */
++  snapshots?: readonly PageDoc[],
+ ];

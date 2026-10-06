@@ -1,0 +1,45 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/SnapshotFlow.test.tsx (11 tests | 1 failed) 6164ms
+   ❯ 복원 — ER-AC-S4 · S10 (3)
+     × 복원 직후 '되돌리기' → 복원 직전 문서를 새 편집으로(새 revision) · 포커스 h1 134ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > 복원 — ER-AC-S4 · S10 > 복원 직후 '되돌리기' → 복원 직전 문서를 새 편집으로(새 revision) · 포커스 h1
+Error: [2mexpect([22m[31mreceived[39m[2m).toHaveValue()[22m
+
+[31mreceived[39m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[39m
+ ❯ src/components/studio/SnapshotFlow.test.tsx:166:26
+    164|     expect(notice()).toHaveTextContent("복원을 되돌렸습니다");
+    165|     expect(h1()).toHaveFocus();
+    166|     expect(titleField()).toHaveValue("지금 제목");
+       |                          ^
+    167|     const base = sampleDoc().revision;
+    168|     await waitFor(() => expect(r.writes).toContain(`save:${base + 1}`)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  13:41:15
+   Duration  7.16s (tests 87%, transform 6%, environment 5%, import 1%, setup 1%)
+

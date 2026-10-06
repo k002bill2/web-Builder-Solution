@@ -1,0 +1,116 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app
+
+ ❯ src/features/studio/useDocSaveWrite.test.tsx (3 tests | 3 failed) 19ms
+   ❯ useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10 (3)
+     × 진행 중 저장이 끝난 뒤에만 쓰기 1회(저장 revision으로) · 입력 직후여도 최신 입력이 먼저 저장된다 15ms
+     × 저장 실패 · 충돌이면 쓰기 0 · undefined 2ms
+     × 채택 = 화면 문서·revision·스케줄러(saved, 추가 저장 0) 동기화 → 다음 편집 저장 STALE_DOC 0 · revision 연속 1ms
+ ❯ src/features/studio/images/store/imageStore.test.ts (10 tests | 2 failed) 85ms
+   ❯ 참조 집합 ∪ 스냅샷 — ER-AC-S6 (EDITOR-REST SPEC r1 3.2 · 2a-05 5.9 탭 한도) (2)
+     × retainedIds = 문서 ∪ 되돌릴 문서 ∪ 모든 스냅샷 문서 4ms
+     × 탭 한도 초과가 스냅샷이 붙잡은 이미지 때문이면 스냅샷 거부 문장 · 스냅샷 없으면 통과 65ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useDocSaveWrite.test.tsx > useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10 > 진행 중 저장이 끝난 뒤에만 쓰기 1회(저장 revision으로) · 입력 직후여도 최신 입력이 먼저 저장된다
+TypeError: result.current.adopt is not a function
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:65:46
+     63|     act(() => result.current.edit(titled(doc, "둘째 입력")));
+     64|     let adopted: Promise<PageDoc | undefined> | undefined;
+     65|     act(() => void (adopted = result.current.adopt(r.restore)));
+       |                                              ^
+     66|     await act(async () => release());
+     67|     await act(async () => void (await adopted));
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:65:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/features/studio/useDocSaveWrite.test.tsx > useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10 > 저장 실패 · 충돌이면 쓰기 0 · undefined
+TypeError: result.current.adopt is not a function
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:79:60
+     77|     r.failOnce();
+     78|     let out: PageDoc | undefined = doc;
+     79|     await act(async () => void (out = await result.current.adopt(r.res…
+       |                                                            ^
+     80|     expect(out).toBeUndefined();
+     81|     expect(r.restore).not.toHaveBeenCalled();
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:79:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/features/studio/useDocSaveWrite.test.tsx > useDocSave 저장 먼저 · 쓰기 채택 — ER-AC-S9 · S10 > 채택 = 화면 문서·revision·스케줄러(saved, 추가 저장 0) 동기화 → 다음 편집 저장 STALE_DOC 0 · revision 연속
+TypeError: result.current.adopt is not a function
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:89:54
+     87|     const r = repo(doc);
+     88|     const { result } = mount(r, doc);
+     89|     await act(async () => void (await result.current.adopt(r.restore))…
+       |                                                      ^
+     90|     expect(result.current.doc.meta.title).toBe("복원본");
+     91|     expect(result.current.state.phase).toBe("saved");
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSaveWrite.test.tsx:89:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/features/studio/images/store/imageStore.test.ts > 참조 집합 ∪ 스냅샷 — ER-AC-S6 (EDITOR-REST SPEC r1 3.2 · 2a-05 5.9 탭 한도) > retainedIds = 문서 ∪ 되돌릴 문서 ∪ 모든 스냅샷 문서
+AssertionError: expected [ Array(1) ] to deeply equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+    "00000000-0000-4000-8000-000000000001",
+-   "00000000-0000-4000-8000-000000000007",
+-   "00000000-0000-4000-8000-000000000008",
+  ]
+
+ ❯ src/features/studio/images/store/imageStore.test.ts:119:121
+    117|   it("retainedIds = 문서 ∪ 되돌릴 문서 ∪ 모든 스냅샷 문서", () => {
+    118|     const snap = withHero(sampleDoc(), uuid(7));
+    119|     expect([...retainedIds(withHero(sampleDoc(), uuid(1)), undefined, …
+       |                                                                                                                         ^
+    120|   });
+    121|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/features/studio/images/store/imageStore.test.ts > 참조 집합 ∪ 스냅샷 — ER-AC-S6 (EDITOR-REST SPEC r1 3.2 · 2a-05 5.9 탭 한도) > 탭 한도 초과가 스냅샷이 붙잡은 이미지 때문이면 스냅샷 거부 문장 · 스냅샷 없으면 통과
+AssertionError: expected { ok: true } to deeply equal { ok: false, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "message": "스냅샷이 이전 이미지를 보관하고 있어 더 넣을 수 없습니다 (24개 · 60MB까지) — 더 작은 파일을 고르세요",
+-   "ok": false,
++   "ok": true,
+  }
+
+ ❯ src/features/studio/images/store/imageStore.test.ts:129:57
+    127|       [uuid(2), 40 * MB],
+    128|     ]);
+    129|     expect(checkLimits(doc, undefined, images, [snap])).toEqual({ ok: …
+       |                                                         ^
+    130|     expect(checkLimits(doc, undefined, images)).toEqual({ ok: true });
+    131|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 8 passed (13)
+   Start at  13:32:29
+   Duration  1.09s (environment 70%, setup 13%, transform 9%, tests 5%, import 2%)
+

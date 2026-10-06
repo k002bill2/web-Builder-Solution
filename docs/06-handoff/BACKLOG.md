@@ -33,3 +33,6 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-02 | EDITOR-REST-0 | `resolveConflict` 메모리 저장소 missing(memoryProjectRepository.ts:101-103) — 충돌 화면 도달·동작 불가. ER-3a에서 스냅샷과 함께 처리 여부 확인 | Developer(ER-3a) |
 | B-ER-03 | ER-1 QA 관찰 | 프로필 화면 문구 "편집기는 다음 단계(2a-05)에서 연결됩니다 … 자리표시 화면으로 이동"이 실제 동작(편집기 열림)과 불일치 — 문구 정정 | Developer 문구 |
 | B-ER-04 | ER-2F Codex F r2 P2 | 테마 변경 알림 줄 "되돌리기"를 키보드로 실행하면 `undoLast()` 뒤 버튼이 사라져 포커스가 body로 떨어짐(StudioLayout.tsx 187행 근처) — 유지되는 컨트롤(테마 영역 "테마 바꾸기")로 복구 | Developer ER-4(실행 취소) |
+| B-ER-05 | ER-3b Codex r4 P2 | 미리보기 중 편집 경계가 거절해도 `useSectionOps.run`이 docRef·실행 취소 스택·last를 이미 바꿈(StudioLayout.tsx:95) → `edit` false를 run 실패로 처리 | Developer ER-4 |
+| B-ER-06 | ER-3b Codex r4 P2 | 내보내기 진행 중 이미지 교체·삭제 시 "내보내기 전" 스냅샷 Blob이 보관 맵에서 prune될 수 있음(StudioLayout.tsx:371-373) → 스냅샷 생성 응답 시점에 참조 집합 갱신 | Developer ER-4 |
+| B-ER-07 | ER-3b Ego Lite | 변환 중 미리보기 차단 실브라우저 재현 실패(변환이 먼저 끝남)·CDP 캡처 타임아웃 → CPU 스로틀로 재확인·캡처 | QA ER-5 |

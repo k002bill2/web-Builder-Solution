@@ -11,6 +11,7 @@ export interface PanelLatest {
   readonly doc: PageDoc;
   readonly images: RenderImages | undefined;
   readonly undoDoc: PageDoc | undefined;
+  readonly snapshots?: readonly PageDoc[];
 }
 
 interface FieldProps {
@@ -22,7 +23,8 @@ interface FieldProps {
   /** 넣은 결과를 최신 값에 바로 올린다 — 같은 틱에 끝난 다른 슬롯 결과가 이 위에 쌓이게(Codex r2 P2 — 원자적 병합) */
   readonly remember: (doc: PageDoc, images: RenderImages) => void;
   readonly publish: ImageHost[1];
-  readonly onEdit: (next: PageDoc) => void;
+  /** false = 편집 경계가 거절(스냅샷 미리보기 중·미리보기를 지난 작업) */
+  readonly onEdit: (next: PageDoc) => boolean | void;
   readonly announce: (text: string) => void;
   readonly Button: typeof ButtonType;
 }
@@ -31,6 +33,7 @@ const PLACEHOLDER = { kind: "placeholder", patternId: "diagonal" } as const;
 const FORMAT = { webp: "WebP", jpeg: "JPEG", png: "PNG" } as const;
 const SLOW_MS = 2000;
 const CHUNK_FAILED = "이미지를 준비하지 못했습니다 — 다시 골라 주세요";
+const PAUSED = "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요";
 const BOX =
   "w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none " +
   "focus:border-primary focus:shadow-(--focus-ring) aria-disabled:bg-fill-normal aria-disabled:text-label-alternative";
@@ -93,7 +96,7 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     setBusy(false);
     if (typeof outcome === "string") return fail(outcome);
     const result = outcome;
-    const { doc, images, undoDoc } = latest.current;
+    const { doc, images, undoDoc, snapshots } = latest.current;
     const current = doc.sections.find((s) => s.instanceId === section.instanceId);
     const value = current && slotValue(current, entry.key);
     // randomUUID = UUID v4 소문자 = LOCAL_IMAGE_ID 형식 그대로(Q-13). parseLocalImageId를 import하면 청크가 갈라진다(실측 — REPORT)
@@ -105,12 +108,13 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     const replacing = previous !== undefined && images?.[previous] !== undefined;
     const kept = replacing ? { ...value, alt: "", decorative: false } : value;
     const nextDoc = setSlot(doc, current.instanceId, entry.key, { ...kept, enabled: true, source: id });
-    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc)), id, result.image, slotTarget(current.type, current.variant));
-    const limit = checkLimits(nextDoc, undoDoc, nextImages);
+    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc, snapshots)), id, result.image, slotTarget(current.type, current.variant));
+    const limit = checkLimits(nextDoc, undoDoc, nextImages, snapshots);
     if (!limit.ok) return fail(limit.message);
+    // 편집 경계가 거절하면 이미지 맵도 바꾸지 않는다 — 미리보기 중 자동 저장 0 · 늦은 결과가 복원을 덮지 않게(Codex r2 P1)
+    if (onEdit(nextDoc) === false) return fail(PAUSED);
     remember(nextDoc, nextImages);
     publish(() => nextImages);
-    onEdit(nextDoc);
     announce(insertedMessage(kept, replacing, previous !== undefined));
   };
   return { busy, error, pick, cancel };
@@ -208,7 +212,7 @@ export function ImageSlotField(props: FieldProps) {
   const edit = (next: ImageSlotValue) => onEdit(setSlot(doc, section.instanceId, entry.key, next));
   // 꺼진 슬롯 이미지는 문서 한도에서 빠지므로 다시 켤 때도 잰다 — 넘으면 꺼진 채 둔다(Codex r1 P2)
   const toggle = (next: ImageSlotValue) => {
-    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}) : { ok: true as const };
+    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}, latest.current.snapshots) : { ok: true as const };
     setSwitchError(limit.ok ? "" : limit.message);
     if (!limit.ok) return announce(limit.message);
     if (!next.enabled) cancel();

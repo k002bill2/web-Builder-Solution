@@ -22,12 +22,12 @@ export interface ImageSlotPanelProps {
  * 참조 밖 이미지 해제는 편집 틀(StudioLayout)이 패널 표시와 무관하게 맡는다(Codex r1 P2) — 패널은 넣기 전에 한 번 더 정리한다.
  */
 export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, Button }: ImageSlotPanelProps) {
-  const [images, publish, undoDoc] = host;
+  const [images, publish, undoDoc, snapshots] = host;
   const [status, setStatus] = useState("");
-  const latest = useRef<PanelLatest>({ doc, images, undoDoc });
+  const latest = useRef<PanelLatest>({ doc, images, undoDoc, snapshots });
   useEffect(() => {
-    latest.current = { doc, images, undoDoc };
-  }, [doc, images, undoDoc]);
+    latest.current = { doc, images, undoDoc, snapshots };
+  }, [doc, images, undoDoc, snapshots]);
   const remember = (next: PageDoc, map: RenderImages) => {
     latest.current = { ...latest.current, doc: next, images: map };
   };

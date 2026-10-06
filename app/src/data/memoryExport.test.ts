@@ -225,14 +225,31 @@ describe("내보내기 전 스냅샷 한 곳 · 멱등 (8.3.2 8단계 · E-AC-43
 });
 
 describe("화면은 스냅샷을 만들지 않는다 (E-AC-30 · E-AC-43)", () => {
-  it("components·features·pages 비테스트 코드에 createSnapshot 호출 0", async () => {
+  // ER-3b(DECISION-RESUME 결정 2): ER-AC-S1·S9 "지금 상태 저장"은 화면이 createSnapshot을 부르는 것이 기능이라 스냅샷 화면 파일만 허용 목록으로 둔다.
+  // 같은 취지(내보내기 전 스냅샷은 requestExport만)는 그 밖 화면 0 + 아래 동작 가드(내보내기 1회 = 스냅샷 1개)로 더 직접 잰다 — 약화 아님
+  const SNAPSHOT_SCREENS = ["components/studio/SnapshotDialog.tsx"];
+
+  it("components·features·pages 비테스트 코드에 createSnapshot 호출 0 (스냅샷 화면 허용 목록만 예외 · 목록 = 실제 호출 파일과 정확히 같음)", async () => {
     const { readdirSync, readFileSync, statSync } = await import("node:fs");
-    const { join } = await import("node:path");
+    const { join, relative } = await import("node:path");
     const root = join(__dirname, "..");
     const walk = (dir: string): string[] => readdirSync(dir).flatMap((n) => (statSync(join(dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]));
     const screens = ["components", "features", "pages"].flatMap((d) => walk(join(root, d))).filter((f) => /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !f.includes("/testing/"));
     expect(screens.length).toBeGreaterThan(20);
-    expect(screens.filter((f) => readFileSync(f, "utf8").includes("createSnapshot("))).toEqual([]);
+    const calls = screens.filter((f) => readFileSync(f, "utf8").includes("createSnapshot(")).map((f) => relative(root, f));
+    expect(calls.filter((f) => !SNAPSHOT_SCREENS.includes(f))).toEqual([]);
+    expect(calls).toEqual(SNAPSHOT_SCREENS);
+  });
+
+  it("내보내기 1회 = '내보내기 전' 자동 스냅샷 정확히 1개(requestExport가 만든 것) · 화면 '지금 상태 저장'(수동)은 그 수를 바꾸지 않는다", async () => {
+    const { repo, save } = await setup({ generators: { "static-html": fake } });
+    const doc = await save(RENDERED);
+    await repo.createSnapshot("project-1", "수동 앞");
+    const { snapshotId } = await repo.requestExport("project-1", "static-html", doc.revision);
+    expect((await exportSnapshots(repo)).map((s) => s.snapshotId)).toEqual([snapshotId]);
+    await repo.createSnapshot("project-1", "수동 뒤");
+    expect(await exportSnapshots(repo)).toHaveLength(1);
+    expect((await repo.listSnapshots("project-1")).filter((s) => s.kind === "manual").map((s) => s.name)).toEqual(["수동 앞", "수동 뒤"]);
   });
 });
 

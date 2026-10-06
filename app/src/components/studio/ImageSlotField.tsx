@@ -11,6 +11,7 @@ export interface PanelLatest {
   readonly doc: PageDoc;
   readonly images: RenderImages | undefined;
   readonly undoDoc: PageDoc | undefined;
+  readonly snapshots?: readonly PageDoc[];
 }
 
 interface FieldProps {
@@ -93,7 +94,7 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     setBusy(false);
     if (typeof outcome === "string") return fail(outcome);
     const result = outcome;
-    const { doc, images, undoDoc } = latest.current;
+    const { doc, images, undoDoc, snapshots } = latest.current;
     const current = doc.sections.find((s) => s.instanceId === section.instanceId);
     const value = current && slotValue(current, entry.key);
     // randomUUID = UUID v4 소문자 = LOCAL_IMAGE_ID 형식 그대로(Q-13). parseLocalImageId를 import하면 청크가 갈라진다(실측 — REPORT)
@@ -105,8 +106,8 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     const replacing = previous !== undefined && images?.[previous] !== undefined;
     const kept = replacing ? { ...value, alt: "", decorative: false } : value;
     const nextDoc = setSlot(doc, current.instanceId, entry.key, { ...kept, enabled: true, source: id });
-    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc)), id, result.image, slotTarget(current.type, current.variant));
-    const limit = checkLimits(nextDoc, undoDoc, nextImages);
+    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc, snapshots)), id, result.image, slotTarget(current.type, current.variant));
+    const limit = checkLimits(nextDoc, undoDoc, nextImages, snapshots);
     if (!limit.ok) return fail(limit.message);
     remember(nextDoc, nextImages);
     publish(() => nextImages);
@@ -208,7 +209,7 @@ export function ImageSlotField(props: FieldProps) {
   const edit = (next: ImageSlotValue) => onEdit(setSlot(doc, section.instanceId, entry.key, next));
   // 꺼진 슬롯 이미지는 문서 한도에서 빠지므로 다시 켤 때도 잰다 — 넘으면 꺼진 채 둔다(Codex r1 P2)
   const toggle = (next: ImageSlotValue) => {
-    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}) : { ok: true as const };
+    const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}, latest.current.snapshots) : { ok: true as const };
     setSwitchError(limit.ok ? "" : limit.message);
     if (!limit.ok) return announce(limit.message);
     if (!next.enabled) cancel();

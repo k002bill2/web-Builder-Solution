@@ -13,7 +13,22 @@
 - [x] Codex review --scope branch --base 45a5721 (≤2)
 - [x] REPORT 커밋
 
-## TDD 예측 (RED 전 기록 — RED 테스트는 tip에 커밋하지 않고 GREEN과 함께)
+## 재개 (DECISION-RESUME 결정 1~4 · 2026-10-06)
+- [x] ① 번들 감량 3회 — 1회 Callout→자체 마크업 128.51(Callout 청크는 기준에도 있음, 추정 틀림) · 2회 대화상자·미리보기·복원·되돌리기를 조작 뒤 청크 `SnapshotLayer` 1개로 128.35 · 3회 `isPageDoc` props 전달(지연 청크 미리 받기 목록 파일 4개 제거)+lazy 로더 파일 분리 **128.30**(≤128.43 통과 · 목표 128.04 미달 · ER-3b 몫 0.61 → REPORT 첫 줄)
+- [ ] ② 가드 `memoryExport.test.ts:235` 대체(허용 목록 정적 + 내보내기 1회 = 스냅샷 1개 동작)
+- [ ] ③ Codex r1 P1 복원 중 돌아가기 잠금 · P2 edit 직후 flushed/adopt 동기 · P2 미리보기 kitTokens = 스냅샷 profileVersion
+- [ ] ④ S6 화면 · S10 실메모리 저장소 통합
+- [ ] ⑤ Ego Lite build+preview 4337 경로 A 1280·390 · finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
+- [ ] ⑥ 전체 vitest exit 0 · Codex r2 base 45a5721 · REPORT
+
+## TDD 예측 (재개)
+| 단계 | 새 테스트 수 예측 | RED 예측 |
+|---|---|---|
+| D 가드 | 1(+기존 1 대체) | 대체 정적 가드: 허용 목록 = SnapshotDialog.tsx 정확히 일치 → GREEN(작업 트리). 동작 가드(내보내기 1회 = 스냅샷 1 · 수동은 수 불변) = 기존 저장소 동작 고정이라 **RED 아님** 예측 |
+| E Codex | 3 | 3/3 RED — P1 복원 대기 중 "편집으로 돌아가기" 누르면 미리보기가 닫힘 · P2 같은 act 안 edit→flushed가 저장 없이 true · P2 미리보기 kitTokens가 편집 문서 버전 팔레트 |
+| F 보완 | 2 | S6 화면(A→스냅샷→교체→복원 = A가 캔버스 images에 남음) · S10 실메모리(adopt 복원→편집→flushed→requestExport(savedRevision) STALE 0·잡 docRevision 연속) — 구현이 이미 있어 **RED 아님** 예측(보완 테스트) |
+
+## TDD 예측 (1차) (RED 전 기록 — RED 테스트는 tip에 커밋하지 않고 GREEN과 함께)
 | 단계 | 새 테스트 수 예측 | 내용 |
 |---|---|---|
 | A | 5 | useDocSave 3(진행 중 저장 뒤 쓰기 직렬 · 실패/STALE이면 쓰기 0 · 채택 뒤 다음 저장 STALE 0·revision 연속) · imageStore 2(참조 집합 ∪ 스냅샷 · 탭 한도 스냅샷 거부 문장) |

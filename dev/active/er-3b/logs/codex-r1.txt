@@ -1,0 +1,44 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10f85-e659-7522-b1bd-d2927627516e).
+[codex] Reviewer started: changes against '45a5721'
+[codex] Running command: /bin/zsh -lc "git diff --stat 45a5721ed376371b6862026c8e0c553e9d5a8554; find .. -name AGENTS....
+[codex] Command failed: /bin/zsh -lc "git diff --stat 45a5721ed376371b6862026c8e0c553e9d5a8554; find .. -name AGENTS.... (exit 1)
+[codex] Running command: /bin/zsh -lc 'pwd; for p in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/yo...
+[codex] Command completed: /bin/zsh -lc 'pwd; for p in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/yo... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git status --short; ls app/src/components/studio/*Snapshot*; cat app/src/featur...
+[codex] Command completed: /bin/zsh -lc 'git status --short; ls app/src/components/studio/*Snapshot*; cat app/src/featur... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/components/studio/useSnapshots.tsx; cat app/src/components/studio/S...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/components/studio/useSnapshots.tsx; cat app/src/components/studio/S... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '55,90p' app/src/components/studio/StudioLayout.tsx; sed -n '135,205p' a...
+[codex] Command failed: /bin/zsh -lc "sed -n '55,90p' app/src/components/studio/StudioLayout.tsx; sed -n '135,205p' a... (exit 2)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/useSectionOps.ts; cat app/src/components/studio/use...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/useSectionOps.ts; cat app/src/components/studio/use... (exit 0)
+[codex] Running command: /bin/zsh -lc './node_modules/.bin/vitest run src/features/studio/useDocSaveWrite.test.tsx src...
+[codex] Command failed: /bin/zsh -lc './node_modules/.bin/vitest run src/features/studio/useDocSaveWrite.test.tsx src... (exit 1)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/docKitTokens.ts; cat app/src/components/studio/Stru...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/docKitTokens.ts; cat app/src/components/studio/Stru... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'function docKitTokens|NO_KIT_TOKENS|profileVersion.*kit|kitTokens.*profi...
+[codex] Command completed: /bin/zsh -lc "rg -n 'function docKitTokens|NO_KIT_TOKENS|profileVersion.*kit|kitTokens.*profi... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 복원 중 입력 유실, 저장 완료 판단의 경쟁 조건, 스냅샷 테마 표시 오류가 있습니다. 저장된 로그에서도 빌드와 기존 테스트 실패가 확인되며, 이번 테스트 재실행은 n...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 45a5721
+
+복원 중 입력 유실, 저장 완료 판단의 경쟁 조건, 스냅샷 테마 표시 오류가 있습니다. 저장된 로그에서도 빌드와 기존 테스트 실패가 확인되며, 이번 테스트 재실행은 native config loader의 모듈 해석 오류로 시작하지 못했습니다.
+
+Full review comments:
+
+- [P1] 복원 진행 중 새 편집이 유실되지 않도록 보호하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/features/studio/useDocSave.ts:120-124
+  복원 요청이 진행되는 동안 `SnapshotPreview`의 '편집으로 돌아가기' 버튼은 계속 활성화되어 있습니다. 사용자가 돌아간 뒤 입력하면, 늦게 도착한 복원 결과가 `docRef`와 화면 문서를 덮어쓰고 `settle()`이 새 입력까지 저장된 것으로 처리하므로 변경이 유실됩니다. 복원이 끝날 때까지 돌아가기와 편집을 잠그거나, 요청 이후 변경을 감지하여 보존해야 합니다.
+
+- [P1] 스냅샷 연결 코드의 진입 번들 증가를 줄이세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/components/studio/StudioLayout.tsx:29-29
+  새 정적 훅과 연결 코드를 포함한 빌드는 저장된 `dev/active/er-3b/logs/build-bc.txt`에서 `/studio` 진입 크기 128.49KB로 측정되어, 검사기의 128.43KB 제한을 넘고 exit 1로 종료됩니다. 따라서 현재 변경은 `npm run build`를 통과하지 못합니다. 버튼·연결선 이외의 스냅샷 로직과 공유 청크 의존성을 조작 뒤 로딩 경로로 옮겨 기존 검사를 통과시켜야 합니다.
+
+- [P2] 저장 완료 판단에 동기적으로 갱신된 상태를 사용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/features/studio/useDocSave.ts:107-110
+  `edit(next)` 직후 같은 실행 흐름에서 `flushed()` 또는 `adopt()`를 호출하면, `phase.current`는 아직 effect 이전의 `idle` 또는 `saved`입니다. 이 때문에 `check()`가 저장하지 않고 true를 반환하고, 복원 쓰기가 미저장 입력보다 먼저 실행될 수 있습니다. 현재 테스트는 편집과 채택 사이에 별도 `act`를 두어 이 경우를 놓칩니다. 실제 스케줄러의 최신 상태를 확인하거나 편집 시 대기 상태를 동기적으로 갱신해야 합니다.
+
+- [P2] 스냅샷 문서 버전으로 미리보기 토큰을 계산하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/components/studio/StudioLayout.tsx:510-513
+  스냅샷을 만든 뒤 테마 버전을 바꾸고 이전 스냅샷을 미리보기하면, 캔버스 문서만 `shown`으로 바뀌고 `kitTokens`는 계속 편집 문서의 `doc.profileVersion`으로 계산됩니다. `docKitTokens`에는 버전별 팔레트·글꼴·간격·카드 스타일이 포함되므로 이전 스냅샷이 현재 테마로 잘못 표시됩니다. 캔버스용 토큰도 표시 중인 스냅샷 문서의 버전으로 계산해야 합니다.

@@ -31,7 +31,7 @@
 
 | 단계 | 예측 | RED | GREEN |
 |---|---|---|---|
-| A | 5 | 5/5 `logs/red-a.txt` | `d402383` + lint 수정 `ba?`(아래 git log) · 표적 24/24 · typecheck·lint·src/test exit 0 `logs/gate-a.txt` |
+| A | 5 | 5/5 `logs/red-a.txt` | `d402383` + lint 수정 `a34bfd5` · 표적 24/24 · typecheck·lint·src/test exit 0 `logs/gate-a.txt` |
 | B+C | 8 + 5 = 13 | **11/11**(테스트 11개로 합침 — 예측보다 2 적음: S6 화면·S10 내보내기 단언 미작성) `logs/red-bc.txt` = 단계 A 커밋(HEAD)을 `/tmp/er3b-red`에 풀어 같은 테스트 실행 | 11/11 `logs/green-bc.txt` · 미커밋 |
 
 - 깨진 기존 테스트: 6절 목록 밖 1건(1절). 그 밖 studio·features·src/test·data 707 통과(`logs/gate-bc.txt`).
@@ -45,7 +45,13 @@
 ## 5. 미실행 (멈춤 규칙에 따름)
 
 - Ego Lite 브라우저 확인·캡처: **미실행**(빌드 판정 실패 상태 — 이 레인이 연 창 0, 서버 기동 0, 리슨 0)
-- 전체 vitest · Codex: 아래 6절
+- 전체 vitest(작업 트리 = 커밋 + 미커밋 WIP): `npx vitest run` → **exit 1** · 233 파일 · 2093 중 1 실패(위 가드 1건만) `logs/vitest-full.txt`
+- Codex r1 `review --scope branch --base 45a5721` 실제 완료 `logs/codex-r1.txt` (Codex가 작업 트리의 미커밋 파일까지 읽음). **멈춤 상태라 반영 0** — 재개 시 처리:
+  - P1 복원 요청 중 "편집으로 돌아가기"가 살아 있어, 돌아가 입력하면 늦게 온 복원 결과가 덮어써 입력 유실(`useDocSave.ts` adopt) → 복원 중 돌아가기 잠금 또는 요청 뒤 변경 보존
+  - P1 진입 번들 128.49 초과(1절과 같음)
+  - P2 `edit()` 직후 같은 흐름에서 `flushed()`/`adopt()`를 부르면 `phase.current`가 아직 effect 전 값(idle/saved)이라 저장 없이 true → 스케줄러 최신 상태를 동기적으로 보거나 edit 시 갱신(테스트는 사이에 act가 있어 놓침)
+  - P2 미리보기 캔버스 `kitTokens`가 편집 문서 버전 기준 — 스냅샷 `profileVersion`으로 계산해야 함
+  - 라운드 1회로 종료(≤2) — 멈춤 상태라 2라운드 실익 없음
 
 ## 6. 쓰기 범위 메모
 

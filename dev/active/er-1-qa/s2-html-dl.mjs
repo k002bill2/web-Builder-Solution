@@ -1,0 +1,23 @@
+// 정적 HTML 결과 줄 "내려받기" → 저장 → p2에 document.write 렌더(goto 없음) + 캔버스 iframe 정보
+const D = "/Users/younghwankang/orca/workspaces/web-builder-solution/er-1-qa/dev/active/er-1-qa/";
+const TAG = process.env.TAG || "r1";
+const { readFile } = await import("node:fs/promises");
+const task = await taskSpace(82);
+const page = task.page("p1");
+const dl = page.waitForEvent("download", { timeout: 30000 });
+await page.click("text=\"내려받기\"", { label: "HTML 내려받기 " + TAG });
+const d = await dl;
+const htmlPath = `${D}exports/${TAG}-${d.suggestedFilename()}`;
+console.log("HTML FILE", d.suggestedFilename()); await d.saveAs(htmlPath);
+console.log("CANVAS", await page.evaluate(() => { const f = document.querySelector("iframe"); return JSON.stringify({ n: document.querySelectorAll("iframe").length, sandbox: f?.getAttribute("sandbox"), src: (f?.getAttribute("src") || "").slice(0, 60), title: f?.title, w: f?.clientWidth, h: f?.clientHeight }); }));
+const html = await readFile(htmlPath, "utf8");
+console.log("HTML bytes", html.length, "img", (html.match(/<img/g) || []).length, "data:image", (html.match(/data:image/g) || []).length, "http(s)", (html.match(/https?:\/\/[^"' )]+/g) || []).slice(0, 5));
+const p2 = await task.newPage();
+await p2.cdp("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+await p2.evaluate((h) => { document.open(); document.write(h); document.close(); }, html);
+await p2.waitForTimeout(3000);
+console.log("STATIC", JSON.stringify(await p2.evaluate(() => ({ w: document.documentElement.scrollWidth, h: document.documentElement.scrollHeight, fonts: [...new Set([...document.fonts].filter(f => f.status === "loaded").map(f => f.family))], sections: [...document.querySelectorAll("body section, body header, body footer")].map(s => s.tagName + ":" + (s.getAttribute("data-section") || s.getAttribute("data-variant") || s.id || "")).slice(0, 20) }))));
+await p2.cdp("Emulation.setDeviceMetricsOverride", { width: 1280, height: await p2.evaluate(() => document.documentElement.scrollHeight), deviceScaleFactor: 1, mobile: false });
+await p2.waitForTimeout(800);
+await p2.screenshot({ path: `${D}shots/${TAG}-static-render.png` });
+await p2.close();

@@ -1,0 +1,19 @@
+PATH /studio/project-1 GATE 품질 게이트 통과 대비 AA 통과 대
+F2 시안 (F2) — 프로필의 색·글자·글꼴·모션과 고른 이미지 또는 자체 그래픽으로 그린 페이지입니다.
+NO HTML DOWNLOAD page.waitForEvent("download") timed out after 30000ms
+STATUS after HTML: 바뀐 점 3개 ## 정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 02:33'에 있습니다
+결과 해시 5db2d93dec84
+
+HTML 1개 · 1.0MB
+
+내려받기
+PNG FILE 부티크-법률사무소-프로젝트_1280_r2.png
+STATUS after PNG: 바뀐 점 3개 ## 정적 HTML을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 02:33'에 있습니다
+결과 해시 5db2d93dec84
+
+HTML 1개 · 1.0MB
+
+내려받기 ## PNG를 내려받았습니다 · 부티크-법률사무소-프로젝트_1280_r2.png
+EVENTS ["{\"name\":\"export_requested\",\"format\":\"static-html\"}","{\"name\":\"snapshot_created\",\"kind\":\"auto\",\"reason\":\"export\"}","{\"name\":\"export_succeeded\",\"format\":\"static-html\"}","{\"name\":\"png_requested\",\"view\":\"desktop\"}","{\"name\":\"png_succeeded\",\"view\":\"desktop\",\"fallback_count\":0}"]
+CANVAS no iframe doc
+

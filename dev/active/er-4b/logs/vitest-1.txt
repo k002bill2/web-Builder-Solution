@@ -1,0 +1,344 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-4b/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/features/studio/useSectionOps.pin.test.tsx (6 tests | 6 failed) 81ms
+   ❯ useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) (6)
+     × undoable 연산: edit 1회 = 결과 문서 · outcome {ok, result, before} · 기록 스택 {label, before, after} · 되돌리기 대상 → undoLast = 이전 문서 65ms
+     × 기록 스택 항목 = {label, before, after} 그대로(pop으로 확인) 2ms
+     × undoable 아님(이동): 스택에는 쌓지만 되돌리기 대상 없음 — canUndoLast false · undoLast undefined 3ms
+     × edit가 거절(false, 미리보기 편집 경계)하면 run 실패 — ok false + 이유 · 스택 0 · 되돌리기 대상 없음 · 다음 연산도 원래 문서 기준(docRef 불변) 3ms
+     × 테마 연산: 문서 전체(instanceId '' · index -1) · 값 비교 결과 · edit 1회 · 되돌리기 대상 3ms
+     × 엔진 거부: ok false + 엔진 문장 · edit 0 · 스택 0 · 되돌리기 대상 그대로 1ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > undoable 연산: edit 1회 = 결과 문서 · outcome {ok, result, before} · 기록 스택 {label, before, after} · 되돌리기 대상 → undoLast = 이전 문서
+TypeError: Cannot read properties of undefined (reading 'size')
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:66:19
+     64|     expect(outcome.result.instanceId).toBe("s-faq");
+     65|     expect(edits).toEqual([outcome.result.doc]);
+     66|     expect(stack().size()).toBe(1);
+       |                   ^
+     67|     rerender({ doc: outcome.result.doc });
+     68|     expect(result.current.canUndoLast).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > 기록 스택 항목 = {label, before, after} 그대로(pop으로 확인)
+TypeError: Cannot read properties of undefined (reading 'pop')
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:83:19
+     81|     expect(outcome.ok).toBe(true);
+     82|     if (!outcome.ok) return;
+     83|     expect(stack().pop()).toEqual({ label: "이동", before: outcome.befor…
+       |                   ^
+     84|   });
+     85|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > undoable 아님(이동): 스택에는 쌓지만 되돌리기 대상 없음 — canUndoLast false · undoLast undefined
+TypeError: Cannot read properties of undefined (reading 'size')
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:91:19
+     89|     if (!outcome.ok) throw new Error("이동 실패");
+     90|     rerender({ doc: outcome.result.doc });
+     91|     expect(stack().size()).toBe(1);
+       |                   ^
+     92|     expect(result.current.canUndoLast).toBe(false);
+     93|     let undone: PageDoc | undefined = sampleDoc();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > edit가 거절(false, 미리보기 편집 경계)하면 run 실패 — ok false + 이유 · 스택 0 · 되돌리기 대상 없음 · 다음 연산도 원래 문서 기준(docRef 불변)
+TypeError: Cannot read properties of undefined (reading 'size')
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:107:19
+    105|     expect(first).toEqual({ ok: false, reason: "스냅샷을 보는 중에는 편집할 수 없습니다…
+    106|     expect(edits).toHaveLength(1);
+    107|     expect(stack().size()).toBe(0);
+       |                   ^
+    108|     expect(result.current.canUndoLast).toBe(false);
+    109|     const second = await run({ kind: "remove", instanceId: "s-faq" }, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > 테마 연산: 문서 전체(instanceId '' · index -1) · 값 비교 결과 · edit 1회 · 되돌리기 대상
+TypeError: Cannot read properties of undefined (reading 'size')
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:125:19
+    123|     expect(outcome.result.doc.profileVersion).toBe(3);
+    124|     expect(edits).toEqual([outcome.result.doc]);
+    125|     expect(stack().size()).toBe(1);
+       |                   ^
+    126|     rerender({ doc: outcome.result.doc });
+    127|     expect(result.current.canUndoLast).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > 엔진 거부: ok false + 엔진 문장 · edit 0 · 스택 0 · 되돌리기 대상 그대로
+TypeError: Cannot read properties of undefined (reading 'size')
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:137:19
+    135|     expect(outcome.reason.length).toBeGreaterThan(0);
+    136|     expect(edits).toHaveLength(0);
+    137|     expect(stack().size()).toBe(0);
+       |                   ^
+    138|     expect(result.current.canUndoLast).toBe(false);
+    139|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed | 238 passed (239)
+      Tests  6 failed | 2116 passed (2122)
+   Start at  15:58:50
+   Duration  35.85s (environment 44%, tests 35%, setup 9%, transform 8%, import 5%, worker 1%)
+
+Environment  jsdom was created 239 times · 128.11s total, 44% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

@@ -7,12 +7,11 @@ import type { SectionType } from "../../engine/contracts/pageDoc";
 import type { MoveDirection } from "../../engine/ops/rules";
 // 연산 뒤 꼬리(알림 문장·선택·포커스)는 연산 청크(docEngine)에서 받는다 — 연산이 끝났으면 이미 받은 청크라 바로 풀린다(S-B5 · ER-OFF A1)
 import { loadDocEngine } from "../../features/studio/docOps";
-import type { UndoTarget } from "../../features/studio/opAfter";
+import type { HistoryKeys, UndoTarget } from "../../features/studio/opAfter";
 import type { VariantChoice } from "../../features/studio/variantChoices";
 import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
 import { docKitTokens, docPurpose } from "../../features/studio/docPurpose";
 import { useFocusRequest } from "../../features/studio/useFocusRequest";
-import { historyKey } from "../../features/studio/historyKeys";
 import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
 import { useDocSave } from "../../features/studio/useDocSave";
@@ -94,7 +93,8 @@ export function StudioLayout({
   const root = useRef<HTMLDivElement>(null);
   // 스냅샷(ER SPEC r1 3.2) — 미리보기 중 편집 입력 무시 · 복원은 저장 훅 경로
   const snaps = useSnapshots({ repository, projectId: project.projectId, save, root, heading, onNotice: setNotice });
-  const ops = useSectionOps({ doc, edit: snaps.edit, profileId: project.profileId });
+  const historyKeys = useRef<HistoryKeys>(undefined);
+  const ops = useSectionOps({ doc, edit: snaps.edit, profileId: project.profileId, keys: historyKeys });
   const requestFocus = useFocusRequest(root);
 
   const entrySummary = entryChanges > 0 ? `바뀐 점 ${entryChanges}개` : undefined;
@@ -244,28 +244,13 @@ export function StudioLayout({
     focusRow(undoTarget.instanceId);
   }, [undoTarget, undoLast, focusRow, goTo]);
   // 단축키 실행 취소 · 다시 실행(SPEC 3.5 · ER-AC-U1·U2) — 리스너 1개 · 알림 1문장(C1) · 포커스는 그대로(가 있던 줄이 사라지면 h2 "섹션")
-  const { step } = ops;
-  const stepAndTell = useCallback(
-    async (redo: boolean) => {
-      const active = document.activeElement;
-      const entry = await step(redo);
-      if (!entry) return;
-      setNotice(`${redo ? "다시 실행" : "실행 취소"}: ${entry.label}`);
-      setTimeout(() => active && !active.isConnected && goTo("studio-sections-heading", { tab: "sections" }), 0);
-    },
-    [step, goTo],
-  );
-  const locked = snaps.preview !== undefined;
+  // 단축키 맥락(SPEC 3.5) — 리스너 · 판정 · 기록 이동 · 알림 문장 · 포커스는 조작 뒤 청크(listenHistory · stepHistory, ER-4b)
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const kind = historyKey(e, locked);
-      if (!kind) return;
-      e.preventDefault();
-      void stepAndTell(kind === "redo");
+    historyKeys.current = { locked: snaps.preview !== undefined, tell: { setNotice, goTo } };
+    return () => {
+      historyKeys.current = undefined;
     };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [locked, stepAndTell]);
+  }, [snaps.preview, goTo]);
   const gateState = useGateReport(doc, ops.series);
   const goToRow = useCallback(
     (row: GateRow) => {

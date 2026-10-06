@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { OpResult } from "./docOps";
+import { historyKey } from "./historyKeys";
 import { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice, swapRevertedNotice } from "./opNotice";
 import type { UndoStack } from "./undoStack";
 import type { FocusTarget } from "./useFocusRequest";
@@ -19,6 +20,8 @@ type Focus = (target: FocusTarget) => void;
 /** 알림 줄 "되돌리기"가 되살릴 섹션과 알림 문장 — instanceId 없음 = 문서 전체 연산(테마) */
 export type UndoTarget = { readonly instanceId?: string; readonly text: string; readonly before: PageDoc };
 type Name = (s: SectionInstance) => string;
+/** 단축키 뒤 알림 · 포커스 — 부르는 쪽(StudioLayout)이 넘긴다(이 청크가 진입 모듈을 import하지 않는다 · ER-OFF2) */
+export type StepTell = { readonly setNotice: Notify; readonly goTo: (elementId: string, target: { readonly tab: "sections" }) => void };
 type LastOp = { readonly before: PageDoc; readonly after: PageDoc } | undefined;
 /** 미리보기 편집 경계 거절 — SnapshotPreview 이유 문장과 같다 */
 const LOCKED = "스냅샷을 보는 중에는 편집할 수 없습니다";
@@ -45,16 +48,39 @@ export function commitOp(
  * 단축키 · "더보기" 실행 취소/다시 실행(ER-4 U1) — 지금 문서가 그 기록과 이어질 때만(스택 밖 변경을 덮지 않는다).
  * 편집 경계가 거절하면(미리보기 중) 스택 그대로(B-ER-05와 같은 규칙). 알림 줄 "되돌리기" 대상은 비운다
  */
-export function stepHistory(redo: boolean, docRef: RefObject<PageDoc>, stack: UndoStack, setLast: (last: LastOp) => void, edit: (next: PageDoc) => boolean | void) {
+export function stepHistory(redo: boolean, docRef: RefObject<PageDoc>, stack: UndoStack, setLast: (last: LastOp) => void, edit: (next: PageDoc) => boolean | void, tell: StepTell) {
   const entry = redo ? stack.peekRedo() : stack.peek();
   if (!entry || (redo ? entry.before : entry.after) !== docRef.current) return undefined;
+  const active = document.activeElement;
   const next = redo ? entry.after : entry.before;
   if (edit(next) === false) return undefined;
   if (redo) stack.redo();
   else stack.undo();
   docRef.current = next;
   setLast(undefined);
+  // 알림 1문장(C1) · 포커스는 그대로 — 가 있던 줄이 사라지면 h2 "섹션"(유실 0)
+  tell.setNotice(`${redo ? "다시 실행" : "실행 취소"}: ${entry.label}`);
+  setTimeout(() => active && !active.isConnected && tell.goTo("studio-sections-heading", { tab: "sections" }), 0);
   return entry;
+}
+
+/** 단축키 맥락 — StudioLayout이 커밋마다 갱신한다(미리보기 중 여부 · 알림 · 포커스). 언마운트되면 비운다 */
+export type HistoryKeys = { readonly locked: boolean; readonly tell: StepTell };
+
+/**
+ * 편집 틀 단축키 리스너(SPEC 3.5 · ER-AC-U1·U2) — 첫 연산 뒤 이 청크가 붙인다(그 전에는 되돌릴 기록이 없다 · /studio 진입 예산 ER-4b).
+ * 입력칸·대화상자·IME·미리보기 중이면 무시(preventDefault도 하지 않음). 떼는 함수를 돌려준다
+ */
+export function listenHistory(keys: RefObject<HistoryKeys | undefined>, step: (redo: boolean, tell: StepTell) => unknown): () => void {
+  const onKey = (e: KeyboardEvent) => {
+    const ctx = keys.current;
+    const kind = ctx && historyKey(e, ctx.locked);
+    if (!kind) return;
+    e.preventDefault();
+    void step(kind === "redo", ctx.tell);
+  };
+  document.addEventListener("keydown", onKey);
+  return () => document.removeEventListener("keydown", onKey);
 }
 
 /** 이동 뒤 — 알림 + 누른 버튼 포커스 그대로 */

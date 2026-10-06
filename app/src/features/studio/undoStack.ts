@@ -30,43 +30,32 @@ export interface UndoStack {
 }
 
 export function createUndoStack(limit = UNDO_LIMIT): UndoStack {
-  let entries: readonly UndoEntry[] = [];
-  let redos: readonly UndoEntry[] = [];
+  // 기록 한 줄 + 커서 — 커서 앞 = 실행 취소 대상, 커서부터 = 다시 실행 대상(가장 최근에 취소한 기록이 커서 자리)
+  let list: readonly UndoEntry[] = [];
+  let at = 0;
   return {
-    size: () => entries.length,
+    size: () => at,
     push: (entry) => {
-      entries = [...entries, entry].slice(-limit);
-      redos = [];
+      list = [...list.slice(0, at), entry].slice(-limit);
+      at = list.length;
     },
     pop: () => {
-      const last = entries.at(-1);
-      entries = entries.slice(0, -1);
+      const last = list[at - 1];
+      if (last) list = [...list.slice(0, --at), ...list.slice(at + 1)];
       return last;
     },
     clear: () => {
-      entries = [];
-      redos = [];
+      list = [];
+      at = 0;
     },
-    peek: () => entries.at(-1),
-    peekRedo: () => redos.at(-1),
-    undo: () => {
-      const last = entries.at(-1);
-      if (!last) return undefined;
-      entries = entries.slice(0, -1);
-      redos = [...redos, last];
-      return last;
-    },
-    redo: () => {
-      const next = redos.at(-1);
-      if (!next) return undefined;
-      redos = redos.slice(0, -1);
-      entries = [...entries, next];
-      return next;
-    },
+    peek: () => list[at - 1],
+    peekRedo: () => list[at],
+    undo: () => list[at - 1] && list[--at],
+    redo: () => list[at] && list[at++],
     reachable: (doc) => {
       const out: PageDoc[] = [];
-      for (let i = entries.length - 1, cur = doc; i >= 0 && entries[i]!.after === cur; i--) out.push((cur = entries[i]!.before));
-      for (let i = redos.length - 1, cur = doc; i >= 0 && redos[i]!.before === cur; i--) out.push((cur = redos[i]!.after));
+      for (let i = at - 1, cur = doc; list[i]?.after === cur; i--) out.push((cur = list[i]!.before));
+      for (let i = at, cur = doc; list[i]?.before === cur; i++) out.push((cur = list[i]!.after));
       return out;
     },
   };

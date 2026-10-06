@@ -8,4 +8,4 @@ export { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice,
 /** 연산 1회 + R-05 보정(연산 어댑터 본문) — 연산을 누를 때만 쓴다(/studio 진입 예산, M2C-3S) */
 export { runDocOp } from "./docOpRun";
 /** 연산 뒤 꼬리(기록 스택·알림·선택·포커스) — 연산이 끝난 뒤에만 쓴다(ER-OFF A1·A2 · ADR-004 개정 6) */
-export { afterAdd, afterMove, afterRemove, afterSwap, commitOp, stepHistory } from "./opAfter";
+export { afterAdd, afterMove, afterRemove, afterSwap, commitOp, listenHistory, stepHistory } from "./opAfter";

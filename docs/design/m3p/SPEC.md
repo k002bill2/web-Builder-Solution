@@ -271,3 +271,9 @@
 ## 10. 기록
 - r1 2026-10-06 Designer(M3P-0) 작성.
 - r2 2026-10-06 Codex adversarial r1(needs-attention) 반영: P1 예산(픽스처가 전 라우트 자동 로드 → 생성 데이터 별도 조건부 청크, `/studio` 0.08 → MQ-7 재작성) · P2 SVG 네임스페이스 보존 직렬화 · P2 대비 게이트 = 기존 runGate·ON_PRIMARY. 자체 추가: SVG-in-img `@media` 평가 함정(kit.css 42개).
+
+
+## 11. 구현 반영 메모 (M3P-3b, Jarvis 2026-10-06)
+- 4.1 "THUMBNAIL_KEYS에 id 없음 → img 0"은 고정 경로 `thumbs/{id}.svg?v=<빌드 버전>`으로 대체 — 빌드가 대상 = 카드 id 전체·id↔파일 정확 일치를 보장, 런타임은 버전 빈 값일 때만 img 0.
+- 4.1 "성공 — 페이드 인 motion-safe"는 `/catalog` 첫 화면 예산(ADR-004 개정 7 결정 4) 때문에 미구현.
+- 썸네일 수 6 → 21(생성 15 포함).

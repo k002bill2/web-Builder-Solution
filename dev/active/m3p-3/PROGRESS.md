@@ -8,7 +8,7 @@
 - [x] Codex P2-2 빈 팔레트 방어 (RED→GREEN, --check exit 0·번들 변화 0)
 - [x] 예산 멈춤선 확인 — /catalog 99.88 · /studio 128.65 · /compare 121.96 · 렌더 84.19/8.85 (아래 표)
 - [x] typecheck·lint·build·전체 vitest exit0 (246 파일 / 2176건)
-- [ ] Ego Lite 검증 (preview 4337, 캡처 ≤4, finish·listTaskSpaces=[], 서버 종료)
+- [x] Ego Lite 검증 (preview 4337, 캡처 2장, finish·listTaskSpaces=[], 서버 종료·리슨 0)
 - [ ] Codex review --scope branch --base cdad1e8 (≤2)
 - [ ] REPORT
 
@@ -64,7 +64,7 @@
 ## 최종 번들 (`npm run build` exit 0, fresh)
 | 행 | S0 | 최종 | 멈춤선 |
 |---|---|---|---|
-| /catalog 첫 · 진입 | 99.86 · 102.25 | **99.88** · 102.26 | 99.90 · 124.70 |
+| /catalog 첫 · 진입 | 99.86 · 102.25 | **99.89** · 102.27 | 99.90 · 124.70 |
 | /references/:id 첫 · 진입 | 97.31 · 99.70 | 97.30 · 99.68 | 124.70 |
 | /compare 첫 · 진입 | 98.87 · 121.97 | 98.86 · 121.96 | 124.70 |
 | /profile 첫 · 진입 | 99.74 · 119.19 | 99.72 · 119.18 | — |
@@ -75,3 +75,14 @@
 
 ## 검증 (fresh)
 - `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0 · `npx vitest run` exit 0 — 246 파일 / 2176건.
+
+## Ego Lite (build + preview 4337, 1280)
+- 창 normal(minimized 아님) 확인. goto 1회(/catalog) 뒤 앱 안 클릭만, 새로고침 0. 캡처 `captureBeyondViewport:false` + 뷰포트 clip.
+- 카드 21 · "생성 조합" 15(큐레이션 0) · 생성 카드 15 모두 "접근성·성능 미측정"·`<time>` 0.
+- 생성 카드("뷰티 · 세련된 센터형") 비교 담기 → 트레이 "비교 보드 1 / 6"·제목·"비교에서 제거" 버튼 표시 → 제거 후 0 (P2-1 실브라우저 확인, `shots/1280-tray-generated.png`).
+- **발견·수정**: 첫 확인에서 "생성 조합" Tag(중립 = 반투명 `fill-strong` 바탕)가 와이어 색 블록 위에서 거의 안 보임 → 불투명 `bg-surface-elevated` 래퍼에 얹음(/catalog 99.89, ≤99.90). 재확인 `shots/1280-generated-tag-fixed.png`. 결함 상태 캡처는 남기지 않음(설명으로 대체).
+- 리소스 호스트 = `127.0.0.1:4337`만(외부 요청 0). B1(실렌더 썸네일)은 예산 멈춤으로 미연결.
+- `finish({keep:[]})` 2회(space 8·9) → `listTaskSpaces()` = [] · preview 종료 → `lsof -iTCP:4337 -sTCP:LISTEN` 결과 없음. main 5480·영환님 창 무접촉.
+
+## Codex
+- R1 (`review --scope branch --base cdad1e8`, thread 01a11136…): **수정 필요한 결함 0**. Codex 샌드박스 EPERM으로 vitest 미실행(로컬 fresh 실행으로 대체).

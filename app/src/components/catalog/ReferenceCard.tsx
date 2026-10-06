@@ -100,9 +100,10 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
     <article aria-labelledby={titleId} className="relative flex flex-col gap-2">
       <Thumbnail reference={r} />
       {r.sourceKind === "library_composition" && (
-        <Tag size="sm" className="absolute top-9 right-2.5">
-          생성 조합
-        </Tag>
+        // 중립 Tag 바탕은 반투명이라 와이어 색 블록 위에서 읽히지 않는다 — 불투명 면 위에 얹는다
+        <span className="absolute top-9 right-2.5 rounded-xs bg-surface-elevated">
+          <Tag size="sm">생성 조합</Tag>
+        </span>
       )}
       <div className="min-w-0">
         <h3 id={titleId} className="ds-body2 font-semibold text-label-normal">

@@ -5,8 +5,9 @@ import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
 import type { SectionType } from "../../engine/contracts/pageDoc";
 import type { MoveDirection } from "../../engine/ops/rules";
-// 편집 알림 문장은 연산 청크(docEngine)에서 받는다 — 연산이 끝났으면 이미 받은 청크라 바로 풀린다(S-B5)
+// 연산 뒤 꼬리(알림 문장·선택·포커스)는 연산 청크(docEngine)에서 받는다 — 연산이 끝났으면 이미 받은 청크라 바로 풀린다(S-B5 · ER-OFF A1)
 import { loadDocEngine } from "../../features/studio/docOps";
+import type { UndoTarget } from "../../features/studio/opAfter";
 import type { VariantChoice } from "../../features/studio/variantChoices";
 import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
 import { docKitTokens, docPurpose } from "../../features/studio/docPurpose";
@@ -136,10 +137,7 @@ export function StudioLayout({
     async (instanceId: string, direction: MoveDirection, button: HTMLElement) => {
       const outcome = await run({ kind: "move", instanceId, direction }, "이동");
       if (!outcome.ok) return setNotice(outcome.reason);
-      const notices = await loadDocEngine();
-      const moved = outcome.result.doc.sections[outcome.result.index]!;
-      setNotice(notices.movedNotice(moved.type, sectionName(moved), outcome.result.index));
-      requestFocus({ element: button });
+      (await loadDocEngine()).afterMove(outcome, setNotice, requestFocus, button, sectionName);
     },
     [run, requestFocus],
   );
@@ -154,20 +152,12 @@ export function StudioLayout({
   // 알림 줄 "되돌리기"(Q7)가 되살릴 섹션과 알림 문장 — 연산마다 새로 정한다
   // before = 되살릴 문서 — 이미지 참조 집합에 든다(2a-05 5.9)
   // instanceId 없음 = 문서 전체 연산(테마) — 되돌려도 선택·포커스를 옮기지 않는다(ER SPEC 7절)
-  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId?: string; readonly text: string; readonly before: PageDoc }>();
+  const [undoTarget, setUndoTarget] = useState<UndoTarget>();
   const remove = useCallback(
     async (instanceId: string) => {
       const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
       if (!outcome.ok) return setNotice(outcome.reason);
-      const notices = await loadDocEngine();
-      const { before, result } = outcome;
-      const removed = before.sections[result.index]!;
-      // 포커스·선택 = 다음 섹션 줄(없으면 이전) — resolveSelection(첫 본문)에 맡기지 않는다
-      const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
-      if (next) setSelected(next.instanceId);
-      setUndoTarget({ instanceId: removed.instanceId, text: notices.restoredNotice(removed.type, sectionName(removed)), before });
-      setNotice(notices.removedNotice(removed.type, sectionName(removed)));
-      if (next) focusRow(next.instanceId);
+      (await loadDocEngine()).afterRemove(outcome, setSelected, setUndoTarget, setNotice, focusRow, sectionName);
     },
     [run, focusRow],
   );
@@ -176,11 +166,7 @@ export function StudioLayout({
     async (instanceId: string, choice: VariantChoice, radio: HTMLElement) => {
       const outcome = await run({ kind: "swap", instanceId, variant: choice.variant }, "변형 교체", true);
       if (!outcome.ok) return setNotice(outcome.reason);
-      const notices = await loadDocEngine();
-      const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
-      setUndoTarget({ instanceId, text: notices.swapRevertedNotice(variantName(original)), before: outcome.before });
-      setNotice(notices.swappedNotice(choice.label, choice.lostLabels));
-      requestFocus({ element: radio });
+      (await loadDocEngine()).afterSwap(outcome, instanceId, choice, radio, setUndoTarget, setNotice, requestFocus, variantName);
     },
     [run, requestFocus],
   );
@@ -205,11 +191,7 @@ export function StudioLayout({
         if (opener) requestFocus({ element: opener });
         return;
       }
-      const notices = await loadDocEngine();
-      const added = outcome.result.doc.sections[outcome.result.index]!;
-      setSelected(added.instanceId);
-      setNotice(notices.addedNotice(added.type, sectionName(added), outcome.result.index));
-      focusRow(added.instanceId);
+      (await loadDocEngine()).afterAdd(outcome, setSelected, setNotice, focusRow, sectionName);
     },
     [adding, run, selectedId, requestFocus, focusRow],
   );

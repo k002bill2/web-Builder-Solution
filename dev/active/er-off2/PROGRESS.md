@@ -4,9 +4,9 @@
 
 ## 체크리스트
 - [x] 1. 개정 6 커밋 `d698707` — m2cBaseline.json eagerKb 128.40→128.67 · base 5bce9f9 · note, bundleBudget.test.mjs 고정 숫자만 맞춤(로직 변경 0). `vitest scripts/bundleBudget.test.mjs` 16/16
-- [ ] 2a. 옮기기 전 동작 고정 테스트 (예측 아래)
-- [ ] 2b. A1 이동(StudioLayout move·remove·swap·add 꼬리 → docEngine)
-- [ ] 2c. A2 이동(useSectionOps.run 꼬리 → docEngine)
+- [x] 2a. 옮기기 전 동작 고정 테스트 `4bc0d05` (6/6 GREEN — 예측대로)
+- [x] 2b. A1 이동(StudioLayout move·remove·swap·add 꼬리 → docEngine `opAfter.ts`)
+- [x] 2c. A2 이동(useSectionOps.run 꼬리 → docEngine `commitOp`) — 이동 후 studio·scripts 62 files 483 tests GREEN
 - [ ] 3. 감량 실측 표 (REPORT)
 - [ ] 4. Ego Lite 1280 경로 A 확인 · 캡처 ≤4 · finish · listTaskSpaces()=[] · 서버 종료
 - [ ] 5. typecheck · lint · build · 전체 vitest · Codex(base 5bce9f9, ≤2) · REPORT
@@ -20,3 +20,13 @@
   예측: 이동 전 GREEN(동작 고정) → 실제 6/6 GREEN. 이동 후에도 GREEN 이어야 함.
 - A1(포커스·알림·선택·되돌리기 문장)은 기존 컴포넌트 테스트가 이미 고정: SectionMove(26·70) · SectionRemove(38·51·67·85·140·150) · SectionAdd(50·66·106) · SectionVariant(62) · ThemeSwap(48·68·95) · SnapshotFlow(114·323). 예측: 이동 전후 GREEN.
 - 주의: edit 거절(false)이어도 run은 ok·스택 push — 현재 동작 그대로 고정(바꾸지 않음, ER-4 판단 몫).
+
+## 3 실측 (vite build + check-bundle-size, /studio/:projectId 진입 직후)
+| 상태 | 진입 | Δ |
+|---|---|---|
+| base(5bce9f9+개정6) | 128.42 | — |
+| 1차 시도 A1+A2 (opAfter가 selection.ts import) | 128.55 | **+0.13** — selection 공유 청크(0.37) 새로 생김 → 이름 함수를 인자로 넘기게 수정 |
+| A1만 | 128.28 | −0.14 |
+| A2만 | 128.38 | −0.04 |
+| **A1+A2(최종)** | **128.24** | **−0.18** |
+- 다른 화면 ±0.01(해시 잡음), 첫 화면 91.76 그대로, docEngine 조작 뒤 +2.53 → +2.83.

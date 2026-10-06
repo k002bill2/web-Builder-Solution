@@ -47,4 +47,4 @@ E-1은 잃은 이미지·이탈·복귀와 무관하다. REQA가 **vite dev 서�
 - 픽스처 `fixtures/*.jpg`(페이지 OffscreenCanvas 자체 패턴)는 커밋 제외.
 
 ## 8. Codex
-(아래에 기록)
+- r1 `review --scope branch --base 9ecc4cf` 실제 완료(thread 01a10eac…): **지적 0** — "조치가 필요한 결함은 발견하지 못했습니다. 변경은 진단 보고서·로그·이미지 증거와 측정 스크립트에 한정되며 앱 코드는 변경되지 않았습니다. 보고된 원인과 PNG 해시는 확인" (`logs/codex-r1.txt`). 1회로 종료(≤2).

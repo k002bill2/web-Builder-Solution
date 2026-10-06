@@ -7,7 +7,7 @@
 - [x] 3 BLOCKED: 대비 AA가 프로필 보정 필요(편집기 안 적용 0) → 잃은 이미지 상태 소실, 사유 REPORT 3절 · 개수 문구(가능하면)
 - [x] 4 Ego Lite finish({keep:[]}) · listTaskSpaces()=[] · 자기 서버 종료·리슨 0
 - [x] 5 typecheck·lint·build·전체 vitest exit0
-- [ ] 6 Codex review --scope branch --base 9ecc4cf (≤2)
+- [x] 6 Codex r1 지적 0 · review --scope branch --base 9ecc4cf (≤2)
 - [x] 7 REPORT
 
 ## 메모

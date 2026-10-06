@@ -261,6 +261,11 @@ export function composeInternalReferences(spec: ComposeSpec, version: string, en
     if (failures.length > 0) report.push(`팔레트 제외(대비 AA): ${failures.join(", ")}`);
     return failures.length === 0;
   });
+  // 쓸 팔레트가 없으면 후보를 만들 수 없다 — 예외 대신 부족 리포트(M3P-1 Codex P2-2)
+  if (palettes.length === 0) {
+    report.push("쓸 수 있는 팔레트 0개 — 생성 0 (모든 업종 모자람)");
+    return freezeDeep({ references: [], details: {}, comparisons: {}, report });
+  }
   const existingPlans = new Set(spec.existing.map((r) => `${planKey(spec.existingPlans[r.id]?.sectionPlan ?? [])}|${r.colorPalette.primary}`));
   const canonicals = new Set<string>();
   const accepted: Candidate[] = [];

@@ -48,6 +48,16 @@ describe("팔레트 표 (SPEC m3p 2.6 ③ — 대비 게이트와 같은 판정)
     expect(out.references.every((r) => r.colorPalette.primary !== "#BBBBBB")).toBe(true);
     expect(out.report).toContainEqual(expect.stringMatching(/^팔레트 제외\(대비 AA\): pale C-1/));
   });
+
+  it("AA를 통과한 팔레트가 0개면 예외 없이 빈 결과 + 부족 리포트를 돌려준다 (M3P-1 Codex P2-2)", () => {
+    const pale = { ...INTERNAL_PALETTES[0]!, id: "pale", primary: "#BBBBBB" };
+    const out = compose({ ...spec(), palettes: [pale] });
+    expect(out.references).toEqual([]);
+    expect(out.details).toEqual({});
+    expect(out.comparisons).toEqual({});
+    expect(out.report).toContainEqual(expect.stringMatching(/^팔레트 제외\(대비 AA\): pale C-1/));
+    expect(out.report).toContainEqual("쓸 수 있는 팔레트 0개 — 생성 0 (모든 업종 모자람)");
+  });
 });
 
 describe("composeInternalReferences (M3P-AC-U1~U4)", () => {

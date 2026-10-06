@@ -36,3 +36,18 @@ describe("카탈로그 + 생성 레퍼런스", () => {
     expect(unmeasured).toEqual([...Array(referenceFixtures.length).fill(false), ...Array(generatedReferenceFixtures.length).fill(true)]);
   });
 });
+
+describe("비교 트레이 + 생성 레퍼런스 (M3P-1 Codex P2-1)", () => {
+  it("생성 카드만 비교에 담아도 트레이 개수·제목·제거 버튼이 보이고, 제거하면 빠진다", async () => {
+    const generated = generatedReferenceFixtures[0]!;
+    renderApp("/catalog");
+    await waitFor(() => expect(cards()).toHaveLength(TOTAL), { timeout: SLOW });
+    const tray = () => screen.getByRole("region", { name: "비교 트레이" });
+    await userEvent.click(screen.getByRole("button", { name: `${generated.title} 비교 추가` }));
+    await waitFor(() => expect(within(tray()).getByText(generated.title)).toBeInTheDocument(), { timeout: SLOW });
+    expect(within(tray()).getByText("1")).toBeInTheDocument();
+    await userEvent.click(within(tray()).getByRole("button", { name: `${generated.title} 비교에서 제거` }));
+    await waitFor(() => expect(within(tray()).queryByText(generated.title)).not.toBeInTheDocument());
+    expect(within(tray()).getByText("0")).toBeInTheDocument();
+  });
+});

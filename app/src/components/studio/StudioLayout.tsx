@@ -277,6 +277,7 @@ export function StudioLayout({
     profileId: project.profileId,
     contrastBlocked: gateReport?.rows.find((r) => r.id === "contrast")?.state === "block",
     requestFocus,
+    focusTheme: () => goTo("studio-theme-swap", { tab: "sections" }),
     deps: { run, onNotice: setNotice, onUndoable: setUndoTarget },
   });
   const openGate = useCallback(() => {
@@ -399,7 +400,6 @@ export function StudioLayout({
         </StudioToolbar>
         {addDialog}
         {theme.dialog}
-      {theme.dialog}
         <StudioTabs
           selected={tab}
           onSelect={setTab}
@@ -429,7 +429,6 @@ export function StudioLayout({
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
         {addDialog}
         {theme.dialog}
-      {theme.dialog}
         <StudioToolbar projectName={project.name} headingRef={heading}>
           {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">

@@ -96,7 +96,7 @@ export function ThemePanel({
       </h2>
       <span className="ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral">{docTag ?? `프로필 v${doc.profileVersion}`}</span>
       {onTheme && (
-        <Button variant="outline" size="sm" onClick={onTheme} aria-describedby={newer && "studio-theme-newer"}>
+        <Button id="studio-theme-swap" variant="outline" size="sm" onClick={onTheme} aria-describedby={newer && "studio-theme-newer"}>
           테마 바꾸기
         </Button>
       )}

@@ -36,6 +36,14 @@ describe("테마 영역 · E-S18 — ER-AC-T5", () => {
   });
 });
 
+describe("배치별 대화상자 1개 — Codex F r1 P2-1", () => {
+  it.each([390, 1024])("폭 %ipx → '테마 바꾸기'를 누르면 대화상자가 정확히 1개", async (width) => {
+    await openStudio({ width, doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: PASS }, { palette: PASS }]) });
+    act(() => void fireEvent.click(themeRegion().getByRole("button", { name: "테마 바꾸기" })));
+    expect(await screen.findAllByRole("dialog", { name: "테마 바꾸기" })).toHaveLength(1);
+  });
+});
+
 describe("적용 · 되돌리기 — ER-AC-T3 · T4", () => {
   it("적용 → 알림 1문장 '…슬롯 값 N개 모두 그대로입니다' · 캔버스 킷 토큰 = 새 버전 팔레트 · 포커스 '테마 바꾸기' · 대비 줄 재계산", async () => {
     const { frame } = await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }]) });
@@ -82,6 +90,16 @@ describe("게이트 대비 줄 행동 — ER-AC-T6", () => {
     expect(dialog.getByRole("radio", { name: /^v2 / })).toHaveFocus();
     act(() => void fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true })));
     expect(action).toHaveFocus();
+  });
+
+  it("대비 줄에서 연 대화상자로 통과 버전 적용 → 줄 버튼이 사라져도 포커스는 테마 영역 '테마 바꾸기'(Codex F r1 P2-2)", async () => {
+    await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }]) });
+    await gateDrawn();
+    const action = await within(contrastRow()).findByRole("button", { name: "테마 바꾸기" });
+    await swapTo(2, () => action);
+    await waitFor(() => expect(within(contrastRow()).getByText("통과")).toBeInTheDocument(), { timeout: 2000 });
+    expect(within(contrastRow()).queryByRole("button", { name: "테마 바꾸기" })).toBeNull();
+    expect(themeRegion().getByRole("button", { name: "테마 바꾸기" })).toHaveFocus();
   });
 
   it("통과 버전 없음 → 대화상자 안 캡션 + '프로필에서 보정' 링크 · 현재 버전 선택('바꾸기' aria-disabled) — 판정은 조작 뒤(SPEC 3.3 첫 화면 0)", async () => {

@@ -32,3 +32,11 @@
 - [x] ④ Ego Lite build+preview 4337 경로 A 1280·390 캡처 14장 · finish({keep:[]}) · listTaskSpaces()=[] · 4337 리슨 0
 - [x] ⑤ 번들 표 · 전체 vitest exit 0(3회차, 231/2074) · Codex base ddcc111 — REPORT 10절
 - [x] REPORT 마감 절
+
+## ER-2F 축소 재개 (2026-10-06 · 턴 한도 1회차·마지막)
+- 정정: 위 "REPORT 마감 절"·"③ … REPORT 10절" 체크는 잘못 — REPORT.md에 10절이 없었다(9절까지). 이번에 10절 작성.
+- TDD 예측(RED 전): ThemeSwap.test +3 (8→11) · RED 3 실패 예측 — 배치별 1개 it.each[390·1024] 2건(대화상자 2개) · 대비 줄 적용 포커스 1건(포커스 body). 기존 8건 깨짐 0.
+- [ ] ① P2-1 중복 렌더 제거 · P2-2 적용 시 테마 영역 버튼/취소 시 연 버튼
+- [ ] ② Codex r2 (branch --base ddcc111)
+- [ ] ③ Ego Lite 390 확인
+- [ ] ④ build · 전체 vitest · REPORT 10절 · 커밋

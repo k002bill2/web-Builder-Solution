@@ -24,7 +24,8 @@ export default function ThemeDialog({
   readonly profileId: string;
   readonly pickPass: boolean;
   readonly deps: ThemeApplyDeps;
-  readonly onClose: () => void;
+  /** applied = 적용으로 닫힘(취소·Esc는 false) */
+  readonly onClose: (applied: boolean) => void;
 }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -57,7 +58,7 @@ export default function ThemeDialog({
       aria-labelledby={`${id}-title`}
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        onClose(false);
       }}
       className="m-auto w-full max-w-lg rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal"
     >
@@ -66,7 +67,7 @@ export default function ThemeDialog({
         onSubmit={(event) => {
           event.preventDefault();
           if (current || !gate) return;
-          onClose();
+          onClose(true);
           void applyTheme(gate.runGate, deps, chosen);
         }}
       >
@@ -105,7 +106,7 @@ export default function ThemeDialog({
           </p>
         )}
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={() => onClose(false)}>
             취소
           </Button>
           <Button type="submit" aria-disabled={current || !gate || undefined} aria-describedby={current ? `${id}-reason` : undefined}>

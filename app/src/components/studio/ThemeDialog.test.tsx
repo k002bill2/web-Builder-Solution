@@ -48,6 +48,7 @@ describe("ThemeDialog — ER-AC-T2", () => {
     expect(apply).not.toHaveAttribute("aria-disabled");
     await act(async () => void fireEvent.click(apply));
     expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledWith(true);
     expect(deps.run).toHaveBeenCalledWith({ kind: "theme", profileVersion: 3 }, "테마 바꾸기", true);
     expect(deps.onNotice).toHaveBeenCalledWith("테마를 프로필 v3으로 바꿨습니다 · 슬롯 값 5개 모두 그대로입니다");
     expect(deps.onUndoable).toHaveBeenCalledWith(expect.objectContaining({ text: "테마를 프로필 v2로 되돌렸습니다" }));
@@ -59,5 +60,6 @@ describe("ThemeDialog — ER-AC-T2", () => {
     expect(dialog.getByRole("radio", { name: /^v3/ })).toHaveFocus();
     act(() => void fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true })));
     expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledWith(false);
   });
 });

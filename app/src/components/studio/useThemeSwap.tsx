@@ -12,7 +12,8 @@ const ACTION = "ds-label min-h-8 text-primary hover:text-primary-hover";
 /**
  * 테마 바꾸기 연결(EDITOR-REST SPEC r1 3.1 · 3.3) — 진입 직후 청크에는 여는 버튼·상태만 둔다(/studio 진입 예산 여유 0.34KB).
  * 버전별 대비 판정 · 적용(useSectionOps.run → 기록 스택 · 알림 줄 "되돌리기") · 알림 문장은 대화상자 청크(조작 뒤).
- * 대비 줄 "테마 바꾸기" = 대비 통과 최신 버전을 미리 고른 대화상자(없으면 대화상자 안 캡션 + 링크). 닫기·적용 뒤 포커스 = 연 버튼.
+ * 대비 줄 "테마 바꾸기" = 대비 통과 최신 버전을 미리 고른 대화상자(없으면 대화상자 안 캡션 + 링크).
+ * 취소 뒤 포커스 = 연 버튼 · 적용 뒤 = 테마 영역 버튼(대비 줄 버튼은 재계산으로 사라질 수 있다 — Codex F r1 P2).
  */
 export function useThemeSwap({
   doc,
@@ -20,6 +21,7 @@ export function useThemeSwap({
   profileId,
   contrastBlocked,
   requestFocus,
+  focusTheme,
   deps,
 }: {
   readonly doc: PageDoc;
@@ -27,6 +29,8 @@ export function useThemeSwap({
   readonly profileId: string;
   readonly contrastBlocked: boolean;
   readonly requestFocus: (target: FocusTarget) => void;
+  /** 테마 영역 "테마 바꾸기"로 포커스(<1024는 "섹션" 탭 먼저) */
+  readonly focusTheme: () => void;
   readonly deps: Omit<ThemeApplyDeps, "sectionName" | "series">;
 }) {
   const [opened, setOpened] = useState<{ readonly opener: HTMLElement; readonly pickPass: boolean }>();
@@ -37,8 +41,9 @@ export function useThemeSwap({
       profileId,
       pickPass: opened.pickPass,
       deps: { ...deps, series, sectionName },
-      onClose: () => {
-        requestFocus({ element: opened.opener });
+      onClose: (applied) => {
+        if (applied) focusTheme();
+        else requestFocus({ element: opened.opener });
         setOpened(undefined);
       },
     };

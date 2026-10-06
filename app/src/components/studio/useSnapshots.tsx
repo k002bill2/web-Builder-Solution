@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
 import type { ProjectRepository, ProjectSnapshot } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { isPageDoc } from "../../features/studio/studioRepository";
@@ -52,14 +52,29 @@ export function useSnapshots(ctx: SnapshotContext) {
   );
   const { preview, undo } = state;
   const held = useMemo(() => (undo ? [...state.held, undo.before] : state.held), [state.held, undo]);
+  // 편집 경계(Codex r2 P1) — 미리보기를 열고 닫을 때마다 새 구간. 진행 중 비동기 편집(이미지 변환)은 시작 당시 콜백을 쥐고 있으므로
+  // 그 콜백도 최신 구간(ref)을 본다: 미리보기 중이거나 미리보기를 지난(복원 포함) 작업은 거절(false) — 부르는 쪽이 반영하지 않는다
+  const span = useMemo(() => ({ locked: preview !== undefined }), [preview]);
+  const current = useRef(span);
+  useLayoutEffect(() => void (current.current = span), [span]);
+  // 안정 참조 — 구간이 바뀔 때만 새 함수(useSectionOps 등 의존 콜백이 렌더마다 다시 만들어지지 않게)
+  const { edit: write } = save;
+  const edit = useCallback(
+    (next: PageDoc) => {
+      if (span.locked || current.current !== span) return false;
+      write(next);
+      return true;
+    },
+    [span, write],
+  );
   return {
     preview,
     refresh,
     held,
-    edit: preview ? () => undefined : save.edit,
+    edit,
     onUndo: undo?.after === save.doc ? undo.run : undefined,
     button: (
-      <Button id={SNAPSHOT_BUTTON_ID} variant="outline" size="sm" className="flex-none" onClick={() => setState((s) => ({ ...s, open: true }))}>
+      <Button id={SNAPSHOT_BUTTON_ID} variant="outline" size="sm" className="flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable" onClick={() => setState((s) => ({ ...s, open: true }))}>
         스냅샷
       </Button>
     ),

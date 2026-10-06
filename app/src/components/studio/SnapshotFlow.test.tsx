@@ -240,6 +240,59 @@ describe("Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트", () =
   });
 });
 
+describe("Codex r2 지적 · 툴바 시각 — 미리보기 진입 저장 실패 · 복원 뒤 목록 실패", () => {
+  it("미리보기 진입 전 저장 실패 → 미리보기를 열지 않고 대화상자 안 문장(P2)", async () => {
+    const r = snapshotRepo(sampleDoc(), 1);
+    await openStudio({ repository: r.repository });
+    r.failSave(true);
+    type("방금 입력");
+    const dialog = await openDialog();
+    const button = await dialog.findByRole("button", { name: "수동 1 미리보기" });
+    await act(async () => void fireEvent.click(button));
+    expect(await dialog.findByRole("alert")).toHaveTextContent("저장하지 못해 미리보기를 열지 않았습니다");
+    expect(screen.queryByText(/를 보고 있습니다/)).toBeNull();
+    expect(titleField()).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("복원 성공 뒤 목록 조회만 실패 → 복원 성공 유지(알림 · 포커스 h1 · 되돌리기) · '복원 전' 이름은 대체 표기(P2)", async () => {
+    const r = snapshotRepo(titled(sampleDoc(), "스냅샷 때 제목"), 1);
+    const list = r.repository.listSnapshots!;
+    const restore = r.repository.restoreSnapshot!;
+    let restored = false;
+    r.repository.restoreSnapshot = async (...args) => {
+      const doc = await restore(...args);
+      restored = true;
+      return doc;
+    };
+    r.repository.listSnapshots = async (...args) => {
+      if (restored) throw new ProjectRepositoryError("INFRA", "fail");
+      return list(...args);
+    };
+    await openStudio({ doc: titled(sampleDoc(), "지금 제목"), repository: r.repository });
+    const dialog = await openDialog();
+    await previewFirst(dialog, "수동 1");
+    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "이 스냅샷으로 복원" })));
+    await waitFor(() => expect(notice()).toHaveTextContent("스냅샷 '수동 1'으로 복원했습니다 · 복원 전 상태는 스냅샷 목록에 있습니다"));
+    expect(h1()).toHaveFocus();
+    expect(screen.getByRole("button", { name: "되돌리기" })).toBeInTheDocument();
+    expect(screen.queryByText("복원하지 못했습니다 · 다시 시도")).toBeNull();
+    expect(r.writes.filter((w) => w.startsWith("restore"))).toHaveLength(1);
+  });
+
+  it("미리보기 중 툴바 '검사 · 내보내기'·'스냅샷' = aria-disabled + 패널 버튼과 같은 비활성 시각 단서(발견 2)", async () => {
+    const r = snapshotRepo(sampleDoc(), 1);
+    await openStudio({ repository: r.repository });
+    const dialog = await openDialog();
+    await previewFirst(dialog, "수동 1");
+    for (const name of ["검사 · 내보내기", "스냅샷"]) {
+      const button = screen.getByRole("button", { name });
+      expect(button).toHaveAttribute("aria-disabled", "true");
+      expect(button.className).toMatch(/(^| )aria-disabled:cursor-not-allowed( |$)/);
+      expect(button.className).toMatch(/(^| )aria-disabled:text-label-disable( |$)/);
+    }
+  });
+});
+
 describe("목록 · 좁은 폭 — ER-AC-S1(화면) · S7 · 7절", () => {
   it("12개 → 최신 10개 + '이전 스냅샷 2개 더 보기' → 누르면 버튼이 사라지고 포커스 = 새로 보인 첫 스냅샷 '미리보기'", async () => {
     const r = snapshotRepo(sampleDoc(), 12);

@@ -96,8 +96,9 @@ export default function SnapshotPreview({
         return restored;
       });
       if (!after) throw new Error("저장하지 못해 복원하지 않았습니다");
-      const kept = (await repository.listSnapshots(projectId)).at(-1)?.name;
-      onRestored(before, after, `스냅샷 '${snapshot.name}'으로 복원했습니다 · 복원 전 상태는 '${kept}'에 있습니다`);
+      // 이름 조회는 보조 — 실패해도 복원은 끝났다(알림·되돌리기 그대로 · Codex r2 P2)
+      const kept = await repository.listSnapshots(projectId).then((list) => list.at(-1)?.name, () => undefined);
+      onRestored(before, after, `스냅샷 '${snapshot.name}'으로 복원했습니다 · 복원 전 상태는 ${kept ? `'${kept}'` : "스냅샷 목록"}에 있습니다`);
     } catch {
       setFailed(true);
     } finally {

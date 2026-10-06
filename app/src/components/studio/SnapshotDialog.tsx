@@ -12,7 +12,7 @@ const timeText = (iso: string) => new Date(iso).toLocaleTimeString("ko-KR", { ho
 /**
  * 스냅샷 대화상자(EDITOR-REST SPEC r1 3.2 · 7절 · ER-AC-S1·S7·S9) — 조작 뒤 청크(툴바 "스냅샷"을 눌러야 받는다).
  * 네이티브 `dialog` + `showModal()` · 열 때 포커스 = 이름 입력 · Esc·"닫기" = 닫기(포커스는 부르는 쪽이 "스냅샷"으로) · 바깥 클릭 닫기 0.
- * "지금 상태 저장" = 저장 먼저(`flushed`) → 저장됐을 때만 `createSnapshot`. 목록 = 최신 먼저 10개 + "이전 스냅샷 N개 더 보기".
+ * "지금 상태 저장"·"미리보기" = 저장 먼저(`flushed`) → 저장됐을 때만 `createSnapshot`·미리보기(실패면 대화상자 안 문장). 목록 = 최신 먼저 10개 + "이전 스냅샷 N개 더 보기".
  */
 export default function SnapshotDialog({
   repository,
@@ -72,6 +72,17 @@ export default function SnapshotDialog({
     }
   };
 
+  // 저장 먼저 — 저장됐을 때만 미리보기(잠금 중 미저장 변경이 남지 않게 · Codex r2 P2)
+  const preview = async (snapshot: Snapshot) => {
+    if (busy.current) return;
+    busy.current = true;
+    setError("");
+    const ok = await flushed().catch(() => false);
+    busy.current = false;
+    if (!ok) return setError("저장하지 못해 미리보기를 열지 않았습니다");
+    onPreview(snapshot);
+  };
+
   const recent = [...(list ?? [])].reverse();
   const shown = all ? recent : recent.slice(0, RECENT);
   const older = recent.length - shown.length;
@@ -113,7 +124,7 @@ export default function SnapshotDialog({
                   {kindText(s)} · {timeText(s.createdAt)} · 프로필 v{s.profileVersion} · {s.candidateId}안
                 </p>
               </div>
-              <Button variant="outline" size="sm" aria-label={`${s.name} 미리보기`} onClick={() => onPreview(s)}>
+              <Button variant="outline" size="sm" aria-label={`${s.name} 미리보기`} onClick={() => void preview(s)}>
                 미리보기
               </Button>
             </li>

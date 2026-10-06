@@ -36,8 +36,8 @@ export default function SnapshotLayer({ repository, projectId, save, root, headi
             onNotice(`스냅샷 '${name}'를 저장했습니다`);
             refresh();
           }}
-          // 저장 먼저 — 미리보기 중에는 자동 저장이 나가지 않게(ER-AC-S3)
-          onPreview={(snapshot) => void save.flushed().then(() => patch({ open: false, preview: snapshot }))}
+          // 저장 먼저(대화상자가 flushed 성공 뒤에만 부른다) — 미리보기 중에는 자동 저장이 나가지 않게(ER-AC-S3)
+          onPreview={(snapshot) => patch({ open: false, preview: snapshot })}
           onClose={() => {
             patch({ open: false });
             focusButton();

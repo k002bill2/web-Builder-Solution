@@ -23,7 +23,8 @@ interface FieldProps {
   /** 넣은 결과를 최신 값에 바로 올린다 — 같은 틱에 끝난 다른 슬롯 결과가 이 위에 쌓이게(Codex r2 P2 — 원자적 병합) */
   readonly remember: (doc: PageDoc, images: RenderImages) => void;
   readonly publish: ImageHost[1];
-  readonly onEdit: (next: PageDoc) => void;
+  /** false = 편집 경계가 거절(스냅샷 미리보기 중·미리보기를 지난 작업) */
+  readonly onEdit: (next: PageDoc) => boolean | void;
   readonly announce: (text: string) => void;
   readonly Button: typeof ButtonType;
 }
@@ -32,6 +33,7 @@ const PLACEHOLDER = { kind: "placeholder", patternId: "diagonal" } as const;
 const FORMAT = { webp: "WebP", jpeg: "JPEG", png: "PNG" } as const;
 const SLOW_MS = 2000;
 const CHUNK_FAILED = "이미지를 준비하지 못했습니다 — 다시 골라 주세요";
+const PAUSED = "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요";
 const BOX =
   "w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none " +
   "focus:border-primary focus:shadow-(--focus-ring) aria-disabled:bg-fill-normal aria-disabled:text-label-alternative";
@@ -109,9 +111,10 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc, snapshots)), id, result.image, slotTarget(current.type, current.variant));
     const limit = checkLimits(nextDoc, undoDoc, nextImages, snapshots);
     if (!limit.ok) return fail(limit.message);
+    // 편집 경계가 거절하면 이미지 맵도 바꾸지 않는다 — 미리보기 중 자동 저장 0 · 늦은 결과가 복원을 덮지 않게(Codex r2 P1)
+    if (onEdit(nextDoc) === false) return fail(PAUSED);
     remember(nextDoc, nextImages);
     publish(() => nextImages);
-    onEdit(nextDoc);
     announce(insertedMessage(kept, replacing, previous !== undefined));
   };
   return { busy, error, pick, cancel };

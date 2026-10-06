@@ -292,7 +292,7 @@ export function StudioLayout({
     setNotice(gateSummaryNotice(gateReport));
   }, [goTo, gateReport]);
   const gateButton = (
-    <Button variant="primary" size="sm" onClick={openGate} aria-label={mode === "tabs" ? "검사 · 내보내기" : undefined} className="flex-none">
+    <Button variant="primary" size="sm" onClick={openGate} aria-label={mode === "tabs" ? "검사 · 내보내기" : undefined} className="flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong">
       {mode === "tabs" ? "검사" : "검사 · 내보내기"}
     </Button>
   );

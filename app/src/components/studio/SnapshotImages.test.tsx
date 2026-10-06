@@ -67,6 +67,62 @@ beforeEach(() => {
   URL.revokeObjectURL = vi.fn();
 });
 
+const heroSlot = (doc: PageDoc) => (doc.sections.find((s) => s.instanceId === "s-hero")!.slots as Record<string, unknown>).image;
+const PAUSED = "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요";
+
+/** 스냅샷 1개를 만든 뒤 변환을 걸어 둔다(끝나지 않은 채) — 미리보기를 연다 */
+async function pendingPickThenPreview() {
+  render(
+    <ProfileRepositoryProvider repository={NO_PROFILE} generations={UNUSED as () => Promise<GenerationRepository>} projects={UNUSED as () => Promise<ProjectRepository>}>
+      <MemoryRouter>
+        <StudioLayout project={PROJECT} doc={sampleDoc()} repository={snapshotRepo(sampleDoc())} entryNotice={undefined} focusHeading={false} />
+      </MemoryRouter>
+    </ProfileRepositoryProvider>,
+  );
+  const { sent } = connectRenderFrame();
+  const last = () => sent.filter((m) => m.type === "render").at(-1) as unknown as RenderMessage;
+  const details = within(editRegion()).getByText("이미지 편집 (1)").closest("details")!;
+  details.open = true;
+  fireEvent(details, new Event("toggle"));
+  await settle();
+  act(() => void fireEvent.click(screen.getByRole("button", { name: "스냅샷" })));
+  const dialog = within(await screen.findByRole("dialog", { name: "스냅샷" }));
+  await act(async () => void fireEvent.click(dialog.getByRole("button", { name: "지금 상태 저장" })));
+  const previewButton = await dialog.findByRole("button", { name: "수동 · 14:02 미리보기" });
+  const before = heroSlot(last().doc);
+  let finish!: (result: IngestResult) => void;
+  ingest.mockReturnValueOnce(new Promise<IngestResult>((res) => (finish = res)));
+  await pickFile();
+  await act(async () => void fireEvent.click(previewButton));
+  await screen.findByRole("heading", { name: "스냅샷 '수동 · 14:02'를 보고 있습니다 · 편집은 멈췄습니다" });
+  const complete = async () => {
+    await act(async () => finish(picked(20)));
+    await settle();
+  };
+  return { last, before, complete };
+}
+
+describe("변환 중 미리보기 · 복원 — 편집 경계(Codex r2 P1)", () => {
+  it("변환 중 미리보기 → 완료 = 문서·이미지 그대로 + 상태 문장 · 돌아가도 그대로", async () => {
+    const { last, before, complete } = await pendingPickThenPreview();
+    await complete();
+    expect((await screen.findAllByText(PAUSED)).length).toBeGreaterThan(0);
+    act(() => void fireEvent.click(screen.getByRole("button", { name: "편집으로 돌아가기" })));
+    await settle();
+    expect(heroSlot(last().doc)).toEqual(before);
+    expect(Object.keys(last().images ?? {})).toHaveLength(0);
+  }, 10_000);
+
+  it("변환 중 미리보기 → 복원 → 늦은 완료 = 복원 결과 유지", async () => {
+    const { last, before, complete } = await pendingPickThenPreview();
+    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "이 스냅샷으로 복원" })));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "이 스냅샷으로 복원" })).toBeNull());
+    await complete();
+    expect(heroSlot(last().doc)).toEqual(before);
+    expect(Object.keys(last().images ?? {})).toHaveLength(0);
+  }, 10_000);
+});
+
 describe("스냅샷 문서 = 이미지 참조 집합 (ER-AC-S6 화면)", () => {
   it("이미지 A → 스냅샷 → B로 교체해도 A가 캔버스 images에 남는다 → 복원 = 문서 A · A 이미지 그대로", async () => {
     render(

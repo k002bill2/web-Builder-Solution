@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { GateReport, GateRow } from "../../engine/contracts/records";
 import { GATE_ROW_NAMES, gateCounts, gateHeadText, gateRowWord } from "../../features/studio/gateView";
 
@@ -24,11 +25,14 @@ export function GateList({
   stale,
   failed,
   onRow,
+  contrastAction,
 }: {
   readonly report: GateReport | undefined;
   readonly stale: boolean;
   readonly failed?: boolean;
   readonly onRow: (row: GateRow) => void;
+  /** 대비 AA 줄이 차단일 때 줄 안 행동(EDITOR-REST SPEC r1 3.3 — 테마 바꾸기 · 프로필에서 보정) */
+  readonly contrastAction?: ReactNode;
 }) {
   if (!report) return <p className={CAPTION}>{failed ? "검사하지 못했습니다" : "검사하는 중입니다"}</p>;
   const counts = gateCounts(report);
@@ -57,6 +61,7 @@ export function GateList({
                 <span className="flex min-h-8 items-center gap-2 px-2">{label}</span>
               )}
               {cause && <p className={`${CAPTION} px-2 ps-6`}>{cause}</p>}
+              {row.id === "contrast" && row.state === "block" && contrastAction}
               {row.issues.length > 0 && (
                 <details className="px-2 ps-6">
                   <summary className="ds-caption1 cursor-pointer text-label-neutral">원인 · 대체안 {row.issues.length}건</summary>

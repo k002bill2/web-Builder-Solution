@@ -9,6 +9,6 @@
 - [x] AC-B5 resource 목록 — PASS
 - [x] AC-B2 768·390 — PASS
 - [x] AC-B4 흐름 — PASS
-- [ ] QB-M3P-01~06 관찰
-- [ ] 판정표·종합 Go
-- [ ] 정리: clearDeviceMetricsOverride · finish({keep:[]}) · listTaskSpaces()=[] · preview 종료 · 4337 리슨 0
+- [x] QB-M3P-01~06 관찰
+- [x] 판정표·종합 조건부 Go
+- [x] 정리: override 해제·finish·preview 종료·4337 리슨 0 — BLOCKED(부분): listTaskSpaces()에 id 11(user 소유) 잔존, 우회 금지로 사용자 확인 필요

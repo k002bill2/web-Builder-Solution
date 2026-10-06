@@ -26,3 +26,24 @@
 - 레이아웃 이동: `performance.getEntriesByType("layout-shift")` = **0건**. 21장 전부 img 숨김 전후 카드 높이 차 **0px**(357px 고정), 아직 lazy 미로드인 아래 3장(natural 0×0)도 357px — 로드 전후 같음.
 - img alt 예: "동네 치과 클리닉 첫 화면 실제 렌더 미리보기"(SPEC 7 문구와 일치). 머리 문구 "internal · licensed 레퍼런스 21개".
 - 한계: 측정은 첫 goto 직후 뷰포트 오버라이드(1280) 적용 뒤 시점. 첫 페인트 이전 이동은 오버라이드 이전이라 판정에서 제외(오버라이드 이후 엔트리 0, 전체 엔트리도 0).
+
+## AC-B3 — 업종 필터 5종 각각 결과 ≥ 4 → **PASS**
+- 방법: 1280, 칩 그룹 `div[aria-label="업종"]`의 버튼을 하나씩 눌러 `main article` 수를 세고 다시 눌러 해제(앱 안 클릭만, URL `?industry=` 갱신 확인). 끝 상태 `/catalog` 21장 복귀.
+- 대상 5업종(SPEC 2.1 ★MQ-M3P-2 A):
+
+| 업종 | 결과 | 구성 |
+|---|---|---|
+| cafe-fnb | 4 | 모던 카페 브랜드 · 로컬 베이커리 · 따뜻한 분할형 · 활기찬 그리드형 |
+| beauty | 4 | 프리미엄 헤어살롱 · 세련된 센터형 · 따뜻한 텍스트형 · 밝은 그리드형 |
+| medical | 4 | 동네 치과 클리닉 · 신뢰 텍스트형 · 절제 이미지형 · 깔끔한 그리드형 |
+| professional | 4 | 부티크 법률사무소 · 격식 이미지형 · 세련된 분할형 · 미니멀 센터형 |
+| education | 4 | 친근한 텍스트형 · 활기찬 풀블리드형 · 친근한 분할형 · 활기찬 센터형(전부 생성) |
+
+- 대상 밖(참고): fitness 1 · retail 0 — SPEC 2.3대로(기존 데이터 수정 0). 칩 개수 표시와 실제 결과 수 일치(7/7).
+- 증거: 측정 출력은 이 절의 표(L1, Ego Lite evaluate). 캡처 없음(장수 최소).
+
+## AC-B5 — 네트워크: 같은 출처 `thumbs/*.svg`·앱 청크만, 외부 0 → **PASS**
+- 방법: `/catalog` 진입·필터 7회 토글 후 `performance.getEntriesByType("resource")` 전체(97건).
+- 외부 출처 요청 **0건**. 분류: `/assets/*.js` 등 앱 산출물 22건(JS 청크 + Pretendard woff2 4 + 아이콘 svg 5) · `/assets/index-*.css` 1건 · `/thumbs/{id}.svg?v=76d49eca` 74건(고유 21, 경로 정규식 전부 일치) · 기타 0.
+- `generatedReferences-*.js`는 `/catalog`에서 지연 청크로 로드됨(SPEC 6 의도대로).
+- 관찰(BACKLOG 후보 아님, 기록만): 필터 토글로 카드가 다시 마운트될 때 썸네일이 다시 요청됨(74건 = 21 고유 × 재마운트, transferSize 모두 > 0, 합 260KB). vite preview의 캐시 헤더 영향일 수 있음 [추정] — 운영 서버 캐시 정책에서 재확인 필요.

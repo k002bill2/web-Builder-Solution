@@ -5,8 +5,8 @@
 - [x] QB-01 hero 문구 수치(같은 출처 fetch 21장)
 - [x] Ego Lite 기동·첫 goto /catalog (taskSpace 11)
 - [x] AC-B1 1280 첫 줄·레이아웃 이동 — PASS
-- [ ] AC-B3 업종 필터 5종 ≥ 4
-- [ ] AC-B5 resource 목록
+- [x] AC-B3 업종 필터 5종 ≥ 4 — PASS
+- [x] AC-B5 resource 목록 — PASS
 - [ ] AC-B2 768·390
 - [ ] AC-B4 흐름
 - [ ] QB-M3P-01~06 관찰

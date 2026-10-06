@@ -1,0 +1,530 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-4/app
+
+ ❯ src/features/studio/useSectionOps.pin.test.tsx (6 tests | 1 failed) 64ms
+   ❯ useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) (6)
+     × edit가 거절(false, 미리보기 편집 경계)하면 run 실패 — ok false + 이유 · 스택 0 · 되돌리기 대상 없음 · 다음 연산도 원래 문서 기준(docRef 불변) 7ms
+ ❯ src/features/studio/exportFlow.test.ts (8 tests | 1 failed) 265ms
+   ❯ 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) (5)
+     × '내보내기 전' 스냅샷 생성 응답 직후 onSnapshot 1회 — 잡이 끝나기 전(B-ER-06 참조 집합 갱신) · 요청이 거부되면 0 254ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ThemeSwap.test.tsx (11 tests | 1 failed) 5250ms
+   ❯ 게이트 대비 줄 행동 — ER-AC-T6 (4)
+     × 되돌리기를 키보드로 실행(버튼이 사라짐) → 포커스 = 테마 영역 '테마 바꾸기'(B-ER-04 · body로 떨어지지 않음) 3102ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 게이트 대비 줄 행동 — ER-AC-T6 > 되돌리기를 키보드로 실행(버튼이 사라짐) → 포커스 = 테마 영역 '테마 바꾸기'(B-ER-04 · body로 떨어지지 않음)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<button
+  aria-describedby="studio-theme-newer"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"
+  id="studio-theme-swap"
+  type="button"
+>
+  테마 바꾸기
+</button>[39m
+Received element with focus:
+  [31m<body>
+  <div>
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="flex h-dvh flex-col"
+        >
+          <header … />
+          <div … />
+        </div>
+      </main>
+    </div>
+  </div>
+</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m동네 치과 클리닉 프로젝트 편집[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+                [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/projects"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+                [36m/>[39m
+              [36m</a>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+                [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+              [36m>[39m
+                [0m동네 치과 클리닉 프로젝트[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+              [36m>[39m
+                [0mcandidate-a안 · 프로필 v1[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+                [36m>[39m
+                  [0m이 탭에 저장됨 · 방금[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mrole[39m=[32m"alert"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"contents"[39m
+                [33mdata-preview-keep[39m=[32m"true"[39m
+              [36m>[39m
+                [36m<fieldset[39m
+                  [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+                [36m>[39m
+                  [36m<legend[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                  [36m>[39m
+                    [0m미리보기 폭[0m
+                  [36m</legend>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mchecked[39m=[32m""[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"desktop"[39m
+                      [36m/>[39m
+                      [0m데스크톱[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"tablet"[39m
+                      [36m/>[39m
+                      [0m태블릿[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"mobile"[39m
+                      [36m/>[39m
+                      [0m모바일[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                [36m</fieldset>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+                [33mid[39m=[32m"studio-snapshot"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m스냅샷[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-no...
+ ❯ src/components/studio/ThemeSwap.test.tsx:125:87
+    123|     act(() => void fireEvent.click(undo));
+    124|     expect(screen.queryByRole("button", { name: "되돌리기" })).toBeNull();
+    125|     await waitFor(() => expect(themeRegion().getByRole("button", { nam…
+       |                                                                                       ^
+    126|   });
+    127| });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/studio/exportFlow.test.ts > 앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 그대로) > '내보내기 전' 스냅샷 생성 응답 직후 onSnapshot 1회 — 잡이 끝나기 전(B-ER-06 참조 집합 갱신) · 요청이 거부되면 0
+AssertionError: expected [ 'poll' ] to deeply equal [ 'snapshot', 'poll' ]
+
+- Expected
++ Received
+
+  [
+-   "snapshot",
+    "poll",
+  ]
+
+ ❯ src/features/studio/exportFlow.test.ts:137:19
+    135|     } as unknown as ProjectRepository;
+    136|     await requestExportOnce(repository, "pd", "static-html", 1, undefi…
+    137|     expect(order).toEqual(["snapshot", "poll"]);
+       |                   ^
+    138|     const refused = { requestExport: async () => Promise.reject(new Er…
+    139|     await requestExportOnce(refused, "pe", "static-html", 1, undefined…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/useSectionOps.pin.test.tsx > useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2) > edit가 거절(false, 미리보기 편집 경계)하면 run 실패 — ok false + 이유 · 스택 0 · 되돌리기 대상 없음 · 다음 연산도 원래 문서 기준(docRef 불변)
+AssertionError: expected { ok: true, result: { …(4) }, …(1) } to deeply equal { ok: false, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "ok": false,
+-   "reason": "스냅샷을 보는 중에는 편집할 수 없습니다",
++   "before": {
++     "candidateId": "candidate-a",
++     "generatorVersion": "0.1.0",
++     "hash": "",
++     "libraryVersion": "1.4",
++     "meta": {
++       "description": "브랜드를 소개하는 페이지입니다.",
++       "title": "브랜드 홈",
++     },
++     "profileVersion": 2,
++     "projectId": "project-1",
++     "revision": 3,
++     "sections": [
++       {
++         "instanceId": "s-header",
++         "motion": "L1",
++         "slots": {
++           "brand": "브랜드 이름",
++           "cta": "문의하기",
++           "nav": "소개 · 서비스 · 문의",
++         },
++         "tone": "base",
++         "type": "header",
++         "variant": "sticky-right-cta",
++       },
++       {
++         "instanceId": "s-hero",
++         "motion": "L1",
++         "slots": {
++           "cta": "시작하기",
++           "image": {
++             "alt": "",
++             "decorative": false,
++             "enabled": true,
++             "kind": "image",
++             "source": {
++               "kind": "placeholder",
++               "patternId": "diagonal",
++             },
++           },
++           "subtitle": "무엇을 누구에게 제공하는지 한두 문장으로 적습니다.",
++           "title": "한 문장으로 소개하는 제목",
++         },
++         "tone": "alt",
++         "type": "hero",
++         "variant": "fullbleed-left",
++       },
++       {
++         "instanceId": "s-about",
++         "motion": "L1",
++         "slots": {
++           "body": "브랜드가 하는 일을 소개합니다.",
++           "heading": "소개",
++           "image": {
++             "alt": "",
++             "decorative": false,
++             "enabled": true,
++             "kind": "image",
++             "source": {
++               "kind": "placeholder",
++               "patternId": "diagonal",
++             },
++           },
++         },
++         "tone": "base",
++         "type": "about",
++         "variant": "story",
++       },
++       {
++         "instanceId": "s-services",
++         "motion": "L1",
++         "slots": {
++           "card1Body": "항목을 짧게 설명합니다.",
++           "card1Title": "항목 1",
++           "card2Body": "항목을 짧게 설명합니다.",
++           "card2Title": "항목 2",
++           "card3Body": "항목을 짧게 설명합니다.",
++           "card3Title": "항목 3",
++           "heading": "서비스",
++           "intro": "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
++         },
++         "tone": "alt",
++         "type": "services",
++         "variant": "cards-3",
++       },
++       {
++         "instanceId": "s-faq",
++         "motion": "L1",
++         "slots": {
++           "a1": "답변을 적습니다.",
++           "a2": "답변을 적습니다.",
++           "a3": "답변을 적습니다.",
++           "heading": "자주 묻는 질문",
++           "q1": "자주 묻는 질문",
++           "q2": "자주 묻는 질문",
++           "q3": "자주 묻는 질문",
++         },
++         "tone": "base",
++         "type": "faq",
++         "variant": "accordion",
++       },
++       {
++         "instanceId": "s-contact",
++         "motion": "L1",
++         "slots": {
++           "consent": "개인정보 수집·이용에 동의합니다.",
++           "heading": "문의",
++           "intro": "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
++           "submit": "문의하기",
++         },
++         "tone": "alt",
++         "type": "contact",
++         "variant": "form",
++       },
++       {
++         "instanceId": "s-cta",
++         "motion": "L1",
++         "slots": {
++           "body": "다음 행동을 한 문장으로 권합니다.",
++           "cta": "문의하기",
++           "heading": "지금 시작하세요",
++         },
++         "tone": "base",
++         "type": "cta-band",
++         "variant": "banner",
++       },
++       {
++         "instanceId": "s-footer",
++         "motion": "L1",
++         "slots": {
++           "businessInfo": "상호 · 대표 · 사업자등록번호 · 주소",
++           "copyright": "© 브랜드 이름",
++           "links": "이용약관 · 개인정보처리방침",
++         },
++         "tone": "alt",
++         "type": "footer",
++         "variant": "biz-extended",
++       },
++     ],
++     "updatedAt": "2026-09-26T00:00:00.000Z",
++   },
++   "ok": true,
++   "result": {
++     "doc": {
++       "candidateId": "candidate-a",
++       "generatorVersion": "0.1.0",
++       "hash": "",
++       "libraryVersion": "1.4",
++       "meta": {
++         "description": "브랜드를 소개하는 페이지입니다.",
++         "title": "브랜드 홈",
++       },
++       "profileVersion": 2,
++       "projectId": "project-1",
++       "revision": 3,
++       "sections": [
++         {
++           "instanceId": "s-header",
++           "motion": "L1",
++           "slots": {
++             "brand": "브랜드 이름",
++             "cta": "문의하기",
++             "nav": "소개 · 서비스 · 문의",
++           },
++           "tone": "base",
++           "type": "header",
++           "variant": "sticky-right-cta",
++         },
++         {
++           "instanceId": "s-hero",
++           "motion": "L1",
++           "slots": {
++             "cta": "시작하기",
++             "image": {
++               "alt": "",
++               "decorative": false,
++               "enabled": true,
++               "kind": "image",
++               "source": {
++                 "kind": "placeholder",
++                 "patternId": "diagonal",
++               },
++             },
++             "subtitle": "무엇을 누구에게 제공하는지 한두 문장으로 적습니다.",
++             "title": "한 문장으로 소개하는 제목",
++           },
++           "tone": "alt",
++           "type": "hero",
++           "variant": "fullbleed-left",
++         },
++         {
++           "instanceId": "s-about",
++           "motion": "L1",
++           "slots": {
++             "body": "브랜드가 하는 일을 소개합니다.",
++             "heading": "소개",
++             "image": {
++               "alt": "",
++               "decorative": false,
++               "enabled": true,
++               "kind": "image",
++               "source": {
++                 "kind": "placeholder",
++                 "patternId": "diagonal",
++               },
++             },
++           },
++           "tone": "base",
++           "type": "about",
++           "variant": "story",
++         },
++         {
++           "instanceId": "s-services",
++           "motion": "L1",
++           "slots": {
++             "card1Body": "항목을 짧게 설명합니다.",
++             "card1Title": "항목 1",
++             "card2Body": "항목을 짧게 설명합니다.",
++             "card2Title": "항목 2",
++             "card3Body": "항목을 짧게 설명합니다.",
++             "card3Title": "항목 3",
++             "heading": "서비스",
++             "intro": "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
++           },
++           "tone": "alt",
++           "type": "services",
++           "variant": "cards-3",
++         },
++         {
++           "instanceId": "s-contact",
++           "motion": "L1",
++           "slots": {
++             "consent": "개인정보 수집·이용에 동의합니다.",
++             "heading": "문의",
++             "intro": "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
++             "submit": "문의하기",
++           },
++           "tone": "base",
++           "type": "contact",
++           "variant": "form",
++         },
++         {
++           "instanceId": "s-cta",
++           "motion": "L1",
++           "slots": {
++             "body": "다음 행동을 한 문장으로 권합니다.",
++             "cta": "문의하기",
++             "heading": "지금 시작하세요",
++           },
++           "tone": "alt",
++           "type": "cta-band",
++           "variant": "banner",
++         },
++         {
++           "instanceId": "s-footer",
++           "motion": "L1",
++           "slots": {
++             "businessInfo": "상호 · 대표 · 사업자등록번호 · 주소",
++             "copyright": "© 브랜드 이름",
++             "links": "이용약관 · 개인정보처리방침",
++           },
++           "tone": "base",
++           "type": "footer",
++           "variant": "biz-extended",
++         },
++       ],
++       "updatedAt": "2026-09-26T00:00:00.000Z",
++     },
++     "index": 4,
++     "instanceId": "s-faq",
++     "lostSlotKeys": [],
++   },
+  }
+
+ ❯ src/features/studio/useSectionOps.pin.test.tsx:105:19
+    103|     const { run, edits, stack, result } = setup(false);
+    104|     const first = await run({ kind: "remove", instanceId: "s-faq" }, "…
+    105|     expect(first).toEqual({ ok: false, reason: "스냅샷을 보는 중에는 편집할 수 없습니다…
+       |                   ^
+    106|     expect(edits).toHaveLength(1);
+    107|     expect(stack().size()).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  3 failed | 22 passed (25)
+   Start at  15:35:01
+   Duration  6.62s (tests 65%, environment 22%, transform 7%, setup 4%, import 2%)
+

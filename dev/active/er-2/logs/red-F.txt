@@ -1,0 +1,40 @@
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="flex h-dvh flex-col"
+        >
+          <header … />
+          <div … />
+        </div>
+      </main>
+    </div>
+  </div>
+</body>[39m
+ ❯ src/components/studio/ThemeSwap.test.tsx:103:67
+    101|     await waitFor(() => expect(within(contrastRow()).getByText("통과")).…
+    102|     expect(within(contrastRow()).queryByRole("button", { name: "테마 바꾸기…
+    103|     expect(themeRegion().getByRole("button", { name: "테마 바꾸기" })).toHa…
+       |                                                                   ^
+    104|   });
+    105|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 7 passed (10)
+   Start at  13:16:18
+   Duration  9.42s (tests 87%, environment 6%, transform 4%, setup 1%, import 1%)
+

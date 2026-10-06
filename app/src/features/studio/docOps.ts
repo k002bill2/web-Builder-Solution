@@ -7,7 +7,9 @@ export type DocOp =
   | { readonly kind: "move"; readonly instanceId: string; readonly direction: MoveDirection }
   | { readonly kind: "remove"; readonly instanceId: string }
   | { readonly kind: "add"; readonly type: SectionType; readonly variant: string; readonly afterInstanceId: string | null }
-  | { readonly kind: "swap"; readonly instanceId: string; readonly variant: string };
+  | { readonly kind: "swap"; readonly instanceId: string; readonly variant: string }
+  /** 테마 바꾸기(EDITOR-REST SPEC r1 3.1) — 문서 profileVersion만 바꾼다 */
+  | { readonly kind: "theme"; readonly profileVersion: number };
 
 export interface OpContext {
   /** 문서 목적(docPurpose) — remove·swap이 넘긴다 */
@@ -27,6 +29,8 @@ export interface OpResult {
   readonly index: number;
   /** swap만 — 잃은 슬롯 키 */
   readonly lostSlotKeys: readonly string[];
+  /** theme만 — 슬롯 값 + meta 비교(diffSlotValues + 제목·설명). 0건이어야 한다("슬롯 값 23개 모두 그대로입니다") */
+  readonly values?: { readonly compared: number; readonly changed: readonly { readonly instanceId: string; readonly key: string }[] };
 }
 
 export type DocEngine = typeof import("./docEngine");

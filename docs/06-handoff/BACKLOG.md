@@ -32,3 +32,4 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-01 | EDITOR-REST-0 | 프로필 화면 "새로 시작"(EQ-2 A) UI 미구현 — 기존 문서를 대비 통과 버전으로 옮기는 다른 길 | Designer·Developer |
 | B-ER-02 | EDITOR-REST-0 | `resolveConflict` 메모리 저장소 missing(memoryProjectRepository.ts:101-103) — 충돌 화면 도달·동작 불가. ER-3a에서 스냅샷과 함께 처리 여부 확인 | Developer(ER-3a) |
 | B-ER-03 | ER-1 QA 관찰 | 프로필 화면 문구 "편집기는 다음 단계(2a-05)에서 연결됩니다 … 자리표시 화면으로 이동"이 실제 동작(편집기 열림)과 불일치 — 문구 정정 | Developer 문구 |
+| B-ER-04 | ER-2F Codex F r2 P2 | 테마 변경 알림 줄 "되돌리기"를 키보드로 실행하면 `undoLast()` 뒤 버튼이 사라져 포커스가 body로 떨어짐(StudioLayout.tsx 187행 근처) — 유지되는 컨트롤(테마 영역 "테마 바꾸기")로 복구 | Developer ER-4(실행 취소) |

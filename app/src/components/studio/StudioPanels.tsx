@@ -1,7 +1,18 @@
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ComponentProps, type MouseEventHandler, type ReactNode } from "react";
 import { Link } from "react-router";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
+import { Button } from "../ds/Button";
 import { SectionList } from "./SectionList";
+
+/** "테마 바꾸기" 대화상자(조작 뒤, ER-AC-T7) — 테마 영역·대비 줄 "테마 바꾸기"를 눌러야 받는다 */
+const ThemeDialog = lazy(() => import("./ThemeDialog"));
+export function ThemeDialogSlot(props: ComponentProps<typeof ThemeDialog>) {
+  return (
+    <Suspense fallback={null}>
+      <ThemeDialog {...props} />
+    </Suspense>
+  );
+}
 
 /** 편집기 영역 제목(6.1 h2) — 모든 배치가 같은 제목을 쓴다 */
 const H2 = "ds-heading2 focus:outline-none";
@@ -61,15 +72,40 @@ export function SectionNav({
   );
 }
 
-/** 테마(3.1 · 4.2) — ≥1280은 "프로필 v3", 그 밖은 문서 Tag가 여기로 온다. 테마 바꾸기는 a3. h2 `tabIndex=-1` = 게이트 "대비 AA" 줄 이동 대상(5.12) */
-export function ThemePanel({ doc, docTag, profileId }: { readonly doc: PageDoc; readonly docTag?: string; readonly profileId: string }) {
+/**
+ * 테마(3.1 · 4.2) — ≥1280은 "프로필 v3", 그 밖은 문서 Tag가 여기로 온다. h2 `tabIndex=-1` = 게이트 "대비 AA" 줄 이동 대상(5.12).
+ * "테마 바꾸기"(outline · EDITOR-REST SPEC r1 3.1) = 바로 다음 Tab · E-S18 캡션(문서 버전 < 계열 최신)은 그 버튼의 설명 · "프로필 보기"에 `?v=문서 버전`
+ */
+export function ThemePanel({
+  doc,
+  docTag,
+  profileId,
+  onTheme,
+  newer,
+}: {
+  readonly doc: PageDoc;
+  readonly docTag?: string;
+  readonly profileId: string;
+  readonly onTheme?: MouseEventHandler<HTMLElement>;
+  readonly newer?: string;
+}) {
   return (
     <section aria-labelledby="studio-theme-heading" className="flex flex-col items-start gap-2">
       <h2 id="studio-theme-heading" tabIndex={-1} className={H2}>
         테마
       </h2>
       <span className="ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral">{docTag ?? `프로필 v${doc.profileVersion}`}</span>
-      <Link to={`/profile/${profileId}`} className="ds-label text-primary hover:text-primary-hover">
+      {onTheme && (
+        <Button id="studio-theme-swap" variant="outline" size="sm" onClick={onTheme} aria-describedby={newer && "studio-theme-newer"}>
+          테마 바꾸기
+        </Button>
+      )}
+      {newer && (
+        <p id="studio-theme-newer" className={CAPTION}>
+          {newer}
+        </p>
+      )}
+      <Link to={`/profile/${profileId}?v=${doc.profileVersion}`} className="ds-label text-primary hover:text-primary-hover">
         프로필 보기
       </Link>
     </section>

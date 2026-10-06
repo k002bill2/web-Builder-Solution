@@ -25,6 +25,7 @@ import { AddSectionButton } from "./AddSectionButton";
 import { SectionOpControls } from "./SectionOpControls";
 import { VariantSwitch } from "./VariantSwitch";
 import { EditPanel, GatePanel, NoticeRegion, SectionNav, ThemePanel } from "./StudioPanels";
+import { useThemeSwap } from "./useThemeSwap";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
 import { StructureCanvas } from "./StructureCanvas";
@@ -148,7 +149,8 @@ export function StudioLayout({
   );
   // 알림 줄 "되돌리기"(Q7)가 되살릴 섹션과 알림 문장 — 연산마다 새로 정한다
   // before = 되살릴 문서 — 이미지 참조 집합에 든다(2a-05 5.9)
-  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId: string; readonly text: string; readonly before: PageDoc }>();
+  // instanceId 없음 = 문서 전체 연산(테마) — 되돌려도 선택·포커스를 옮기지 않는다(ER SPEC 7절)
+  const [undoTarget, setUndoTarget] = useState<{ readonly instanceId?: string; readonly text: string; readonly before: PageDoc }>();
   const remove = useCallback(
     async (instanceId: string) => {
       const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
@@ -181,8 +183,9 @@ export function StudioLayout({
   const { undoLast } = ops;
   const undo = useCallback(() => {
     if (!undoTarget || !undoLast()) return;
-    setSelected(undoTarget.instanceId);
     setNotice(undoTarget.text);
+    if (undoTarget.instanceId === undefined) return;
+    setSelected(undoTarget.instanceId);
     focusRow(undoTarget.instanceId);
   }, [undoTarget, undoLast, focusRow]);
 
@@ -268,6 +271,15 @@ export function StudioLayout({
   );
   // 툴바 "검사 · 내보내기"(E-S26) — h2 "품질 게이트"로(<1024 "검사" 탭) + 요약 알림 1회 · gate_checked(9절, 누를 때만)
   const { report: gateReport } = gateState;
+  const theme = useThemeSwap({
+    doc,
+    series: ops.series,
+    profileId: project.profileId,
+    contrastBlocked: gateReport?.rows.find((r) => r.id === "contrast")?.state === "block",
+    requestFocus,
+    focusTheme: () => goTo("studio-theme-swap", { tab: "sections" }),
+    deps: { run, onNotice: setNotice, onUndoable: setUndoTarget },
+  });
   const openGate = useCallback(() => {
     goTo("studio-gate-heading", { tab: "gate" });
     if (!gateReport) return;
@@ -375,7 +387,7 @@ export function StudioLayout({
         </>
       }
     >
-      <GateList report={gateState.report} stale={gateState.stale} failed={gateState.failed} onRow={goToRow} />
+      <GateList report={gateState.report} stale={gateState.stale} failed={gateState.failed} onRow={goToRow} contrastAction={theme.contrastAction} />
     </GatePanel>
   );
   const widths = <PreviewWidth value={view} onChange={setView} />;
@@ -387,6 +399,7 @@ export function StudioLayout({
           {gateButton}
         </StudioToolbar>
         {addDialog}
+        {theme.dialog}
         <StudioTabs
           selected={tab}
           onSelect={setTab}
@@ -398,7 +411,7 @@ export function StudioLayout({
               panel: (
                 <div className="flex flex-col gap-6">
                   {nav}
-                  <ThemePanel doc={doc} docTag={docTag} profileId={project.profileId} />
+                  <ThemePanel doc={doc} docTag={docTag} profileId={project.profileId} {...theme.panel} />
                 </div>
               ),
             },
@@ -415,6 +428,7 @@ export function StudioLayout({
     return (
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
         {addDialog}
+        {theme.dialog}
         <StudioToolbar projectName={project.name} headingRef={heading}>
           {saveStatus}
           <label className="ds-label flex flex-none items-center gap-2">
@@ -446,7 +460,7 @@ export function StudioLayout({
               <div className="px-2 pb-2">{nav}</div>
             </details>
             {edit}
-            <ThemePanel doc={doc} docTag={docTag} profileId={project.profileId} />
+            <ThemePanel doc={doc} docTag={docTag} profileId={project.profileId} {...theme.panel} />
             {gate}
           </div>
         </div>
@@ -457,6 +471,7 @@ export function StudioLayout({
   return (
     <div ref={root} onClickCapture={flushBeforeLeave} className="flex h-dvh flex-col">
       {addDialog}
+      {theme.dialog}
       <StudioToolbar projectName={project.name} docTag={docTag} headingRef={heading}>
         {saveStatus}
         {widths}
@@ -466,7 +481,7 @@ export function StudioLayout({
         <div className={`${COLUMN} w-55 flex-none border-r border-line-normal`}>
           {noticeRegion}
           {nav}
-          <ThemePanel doc={doc} profileId={project.profileId} />
+          <ThemePanel doc={doc} profileId={project.profileId} {...theme.panel} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <StructureCanvas kitTokens={kitTokens} images={images} doc={doc} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />

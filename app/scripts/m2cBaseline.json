@@ -1,7 +1,7 @@
 {
-  "base": "c870439",
-  "note": "M2c 시작 실측(M2C-2 · dev/active/m2c-2/logs/build-start.txt) — 값 상향 금지(ADR-004 개정 4 결정 3). 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29)",
-  "eagerKb": { "/studio/:projectId": 127.36 },
+  "base": "5078690",
+  "note": "편집기 잔여(EDITOR-REST) 기준선 — ADR-004 개정 5 결정 2(5078690, 영환님 2026-10-06 \"B, A\"): M2c 시작 실측 128.40(c870439) → 128.40. 늘어난 몫은 ER-2 테마 바꾸기·ER-3b 스냅샷·ER-4 실행 취소 첫 화면 진입점 전용, 레인마다 증가량을 REPORT에 기록. 값 상향 금지(결정 5). 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29)",
+  "eagerKb": { "/studio/:projectId": 128.40 },
   "toleranceKb": 0.03,
   "renderJsStopKb": 89.7
 }

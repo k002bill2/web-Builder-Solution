@@ -1,4 +1,6 @@
 import type { PageDoc } from "../../engine/contracts/pageDoc";
+import { diffSlotValues } from "../../engine/ops/diff";
+import { swapTheme } from "../../engine/ops/slotOps";
 import type { DocEngine, DocOp, OpContext, OpResult } from "./docOps";
 
 /** 조작 뒤 청크(docEngine)에만 싣는다 — docOps.applyDocOp가 엔진 청크를 받은 뒤에만 부른다(/studio 진입 예산, M2C-3S) */
@@ -29,6 +31,13 @@ export function runDocOp(engine: DocEngine, doc: PageDoc, op: DocOp, ctx: OpCont
     case "swap": {
       const swapped = engine.swapVariant(doc, op.instanceId, op.variant, ctx.purpose);
       return done(swapped.doc, op.instanceId, swapped.doc.sections.findIndex((s) => s.instanceId === op.instanceId), swapped.lostSlotKeys);
+    }
+    case "theme": {
+      // 대상 섹션 없음(문서 전체) — instanceId "" · index -1. 값 비교 = 슬롯(diffSlotValues) + meta 2칸(SPEC r1 3.1 "meta 포함")
+      const next = engine.normalizeDoc(swapTheme(doc, op.profileVersion));
+      const slots = diffSlotValues(doc, next);
+      const meta = (["title", "description"] as const).filter((key) => doc.meta[key] !== next.meta[key]).map((key) => ({ instanceId: "", key }));
+      return { doc: next, instanceId: "", index: -1, lostSlotKeys: NO_LOSS, values: { compared: slots.compared + 2, changed: [...slots.changed, ...meta] } };
     }
   }
 }

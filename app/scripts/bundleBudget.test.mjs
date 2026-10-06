@@ -128,9 +128,9 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
     expect(judge({}, { ...BASE, eagerKb: { "/gone": 1 } }).failures).toContain("M2c 기준선: 시나리오 /gone가 SCENARIOS에 없습니다");
   });
 
-  it("기준선 파일 = 시작 실측 고정(c870439 · /studio 진입 127.36 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 상향하면 이 테스트가 실패", () => {
+  it("기준선 파일 = 편집기 잔여 기준선 고정(ADR-004 개정 5 · 5078690 · /studio 진입 128.40 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 상향하면 이 테스트가 실패", () => {
     const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json", import.meta.url), "utf8"));
-    expect(file).toMatchObject({ base: "c870439", eagerKb: { "/studio/:projectId": 127.36 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
+    expect(file).toMatchObject({ base: "5078690", eagerKb: { "/studio/:projectId": 128.40 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId"]);
   });
 });

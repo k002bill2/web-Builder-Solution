@@ -1,7 +1,7 @@
 {
-  "base": "5078690",
-  "note": "편집기 잔여(EDITOR-REST) 기준선 — ADR-004 개정 5 결정 2(5078690, 영환님 2026-10-06 \"B, A\"): M2c 시작 실측 128.40(c870439) → 128.40. 늘어난 몫은 ER-2 테마 바꾸기·ER-3b 스냅샷·ER-4 실행 취소 첫 화면 진입점 전용, 레인마다 증가량을 REPORT에 기록. 값 상향 금지(결정 5). 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29)",
-  "eagerKb": { "/studio/:projectId": 128.40 },
+  "base": "5bce9f9",
+  "note": "편집기 잔여(EDITOR-REST) 기준선 — ADR-004 개정 6 결정 2(5bce9f9, 영환님 2026-10-06 \"★A\"): 개정 5 128.40(5078690) → 128.67(ER-3b 병합 d49439f 실측 128.42 + ER-4 몫). 판정선 128.70 = 개정 5 멈춤선. 늘어난 몫(0.27)과 상쇄 A1+A2분은 ER-4 실행 취소 첫 화면 진입점 전용, 레인마다 증가량을 REPORT에 기록. 한도 129 상향 없음. 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29)",
+  "eagerKb": { "/studio/:projectId": 128.67 },
   "toleranceKb": 0.03,
   "renderJsStopKb": 89.7
 }

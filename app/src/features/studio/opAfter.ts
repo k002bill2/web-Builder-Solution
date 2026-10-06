@@ -1,0 +1,90 @@
+import type { RefObject } from "react";
+import type { PageDoc } from "../../engine/contracts/pageDoc";
+import type { OpResult } from "./docOps";
+import { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice, swapRevertedNotice } from "./opNotice";
+import type { UndoStack } from "./undoStack";
+import type { FocusTarget } from "./useFocusRequest";
+import type { OpOutcome } from "./useSectionOps";
+import type { VariantChoice } from "./variantChoices";
+import type { SectionInstance } from "../../engine/contracts/pageDoc";
+
+/**
+ * 연산이 끝난 뒤 꼬리(ER-OFF A1·A2) — 조작 뒤 청크(docEngine)에만 싣는다. 연산 청크를 받은 뒤에만 부르므로
+ * 화면 동작·문구·포커스는 옮기기 전과 같다(/studio 진입 예산, ADR-004 개정 6).
+ * 섹션 이름(selection.ts)은 부르는 쪽이 넘긴다 — 이 청크가 selection을 import하면 공유 청크가 하나 더 생겨 진입이 오히려 는다(실측 +0.13).
+ */
+type Done = Extract<OpOutcome, { readonly ok: true }>;
+type Notify = (text: string) => void;
+type Focus = (target: FocusTarget) => void;
+/** 알림 줄 "되돌리기"가 되살릴 섹션과 알림 문장 — instanceId 없음 = 문서 전체 연산(테마) */
+export type UndoTarget = { readonly instanceId?: string; readonly text: string; readonly before: PageDoc };
+type Name = (s: SectionInstance) => string;
+type LastOp = { readonly before: PageDoc; readonly after: PageDoc } | undefined;
+
+/** useSectionOps.run — applyDocOp 뒤: 문서 참조 · 기록 스택 · 되돌리기 대상 · 편집 반영(A2) */
+export function commitOp(
+  docRef: RefObject<PageDoc>,
+  stack: UndoStack,
+  setLast: (last: LastOp) => void,
+  edit: (next: PageDoc) => void,
+  label: string,
+  before: PageDoc,
+  result: OpResult,
+  undoable: boolean,
+): Done {
+  docRef.current = result.doc;
+  stack.push({ label, before, after: result.doc });
+  setLast(undoable ? { before, after: result.doc } : undefined);
+  edit(result.doc);
+  return { ok: true, result, before };
+}
+
+/** 이동 뒤 — 알림 + 누른 버튼 포커스 그대로 */
+export function afterMove(outcome: Done, setNotice: Notify, requestFocus: Focus, button: HTMLElement, sectionName: Name): void {
+  const moved = outcome.result.doc.sections[outcome.result.index]!;
+  setNotice(movedNotice(moved.type, sectionName(moved), outcome.result.index));
+  requestFocus({ element: button });
+}
+
+/** 삭제 뒤 — 포커스·선택 = 다음 섹션 줄(없으면 이전). resolveSelection(첫 본문)에 맡기지 않는다 */
+export function afterRemove(
+  outcome: Done,
+  setSelected: (id: string) => void,
+  setUndoTarget: (target: UndoTarget) => void,
+  setNotice: Notify,
+  focusRow: (rowId: string) => void,
+  sectionName: Name,
+): void {
+  const { before, result } = outcome;
+  const removed = before.sections[result.index]!;
+  const next = result.doc.sections[result.index] ?? result.doc.sections[result.index - 1];
+  if (next) setSelected(next.instanceId);
+  setUndoTarget({ instanceId: removed.instanceId, text: restoredNotice(removed.type, sectionName(removed)), before });
+  setNotice(removedNotice(removed.type, sectionName(removed)));
+  if (next) focusRow(next.instanceId);
+}
+
+/** 변형 교체 뒤 — 알림 줄 "되돌리기" 대상 + 포커스는 누른 라디오 그대로 */
+export function afterSwap(
+  outcome: Done,
+  instanceId: string,
+  choice: VariantChoice,
+  radio: HTMLElement,
+  setUndoTarget: (target: UndoTarget) => void,
+  setNotice: Notify,
+  requestFocus: Focus,
+  variantName: Name,
+): void {
+  const original = outcome.before.sections.find((s) => s.instanceId === instanceId)!;
+  setUndoTarget({ instanceId, text: swapRevertedNotice(variantName(original)), before: outcome.before });
+  setNotice(swappedNotice(choice.label, choice.lostLabels));
+  requestFocus({ element: radio });
+}
+
+/** 추가 뒤 — 새 섹션 선택 · 알림 · 포커스 = 새 줄 */
+export function afterAdd(outcome: Done, setSelected: (id: string) => void, setNotice: Notify, focusRow: (rowId: string) => void, sectionName: Name): void {
+  const added = outcome.result.doc.sections[outcome.result.index]!;
+  setSelected(added.instanceId);
+  setNotice(addedNotice(added.type, sectionName(added), outcome.result.index));
+  focusRow(added.instanceId);
+}

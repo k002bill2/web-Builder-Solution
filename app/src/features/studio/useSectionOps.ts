@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useProfileRepository } from "../../data/ProfileRepositoryContext";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { ProfileSeries } from "../../domain/profile";
-import { applyDocOp, createInstanceIds, type DocOp, type OpResult } from "./docOps";
+import { applyDocOp, createInstanceIds, loadDocEngine, type DocOp, type OpResult } from "./docOps";
 import { docMotionPreset, docPurpose } from "./docPurpose";
 import { useUndoStack } from "./undoStack";
 
@@ -76,11 +76,8 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
         const ctx = { purpose: docPurpose(loaded, before.profileVersion), motionPreset: docMotionPreset(loaded, before.profileVersion), nextInstanceId: nextId };
         try {
           const result = await applyDocOp(before, op, ctx);
-          docRef.current = result.doc;
-          stack.push({ label, before, after: result.doc });
-          setLast(undoable ? { before, after: result.doc } : undefined);
-          edit(result.doc);
-          return { ok: true, result, before };
+          // 꼬리(문서 참조·기록 스택·되돌리기 대상·편집 반영)는 연산 청크에 둔다 — 이미 받은 청크라 바로 풀린다(ER-OFF A2)
+          return (await loadDocEngine()).commitOp(docRef, stack, setLast, edit, label, before, result, undoable);
         } catch (error) {
           // 화면은 can*로 먼저 막는다 — 여기 오는 것은 프로필을 불러오기 전 목적 판정 등. 엔진 이유 문장을 그대로 알린다
           return { ok: false, reason: error instanceof Error ? error.message : String(error) };

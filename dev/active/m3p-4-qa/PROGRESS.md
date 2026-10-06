@@ -8,7 +8,7 @@
 - [x] AC-B3 업종 필터 5종 ≥ 4 — PASS
 - [x] AC-B5 resource 목록 — PASS
 - [x] AC-B2 768·390 — PASS
-- [ ] AC-B4 흐름
+- [x] AC-B4 흐름 — PASS
 - [ ] QB-M3P-01~06 관찰
 - [ ] 판정표·종합 Go
 - [ ] 정리: clearDeviceMetricsOverride · finish({keep:[]}) · listTaskSpaces()=[] · preview 종료 · 4337 리슨 0

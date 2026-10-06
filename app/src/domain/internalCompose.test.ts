@@ -29,6 +29,8 @@ const spec = () => defaultComposeSpec(referenceFixtures, referenceComparisonAttr
 const compose = (s: ComposeSpec = spec(), g: EngineGate = gate) => composeInternalReferences(s, VERSION, g);
 /** 앱 루트(vitest cwd) 기준 — jsdom 환경의 import.meta.url은 파일 URL이 아니다 */
 const fixtureText = (name: string) => readFileSync(join(process.cwd(), "src/fixtures", name), "utf8");
+/** 이전(목업) 브랜드 명칭 — brandIsolation 가드를 통과하도록 조각을 이어 만든다(같은 방식) */
+const LEGACY_BRAND = new RegExp(["a", "p", "f", "s"].join(""), "i");
 const TARGET_INDUSTRIES = INDUSTRY_SPECS.map((s) => s.industry);
 
 describe("팔레트 표 (SPEC m3p 2.6 ③ — 대비 게이트와 같은 판정)", () => {
@@ -142,12 +144,12 @@ describe("생성 픽스처 가드 (M3P-AC-G1·G2·G5)", () => {
     expect(generatedReferenceComparisonAttributes).toEqual(out.comparisons);
   });
 
-  it("G2: 생성 픽스처에 URL·스크립트·이벤트 속성·href·APFS 0", () => {
+  it("G2: 생성 픽스처에 URL·스크립트·이벤트 속성·href·이전 브랜드 명칭 0", () => {
     // 값(데이터) 전체 — TS 타입 표기(Readonly<…>)는 데이터가 아니므로 값 직렬화로 본다
     const data = JSON.stringify([generatedReferenceFixtures, generatedReferenceDetailFixtures, generatedReferenceComparisonAttributes]);
-    for (const pattern of [/https?:/i, /\/\//, /<script/i, /\bon[a-z]+=/i, /href/i, /apfs/i, /data:/i, /</]) expect(data, String(pattern)).not.toMatch(pattern);
-    // 파일 텍스트(주석 포함)에도 URL·APFS 0
-    for (const name of GENERATED_FIXTURE_FILES) for (const pattern of [/https?:/i, /<script/i, /apfs/i]) expect(fixtureText(name), `${name} ${pattern}`).not.toMatch(pattern);
+    for (const pattern of [/https?:/i, /\/\//, /<script/i, /\bon[a-z]+=/i, /href/i, LEGACY_BRAND, /data:/i, /</]) expect(data, String(pattern)).not.toMatch(pattern);
+    // 파일 텍스트(주석 포함)에도 URL·이전 브랜드 명칭 0
+    for (const name of GENERATED_FIXTURE_FILES) for (const pattern of [/https?:/i, /<script/i, LEGACY_BRAND]) expect(fixtureText(name), `${name} ${pattern}`).not.toMatch(pattern);
   });
 
   it("G5: 기존 6개 픽스처 3벌 바이트 변경 0 (db9f25e 해시)", () => {

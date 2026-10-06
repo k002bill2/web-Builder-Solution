@@ -2,6 +2,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+import { generatedReferenceFixtures } from "../../fixtures/generatedReferences";
 import { referenceFixtures } from "../../fixtures/references";
 import { ReferenceCard } from "./ReferenceCard";
 
@@ -129,5 +130,24 @@ describe("ReferenceCard", () => {
       </MemoryRouter>,
     );
     expect(within(screen.getByRole("article", { name: "프리미엄 헤어살롱" })).getByText("licensed")).toBeInTheDocument();
+  });
+});
+
+describe("ReferenceCard 생성 레퍼런스 표식 (M3P-3 · SPEC m3p 4.1·7절)", () => {
+  it("생성 레퍼런스: '생성 조합' 글자 Tag(읽힘)·'접근성·성능 미측정'·<time> 0, 큐레이션 카드엔 '생성 조합' 0 (M3P-AC-U5)", () => {
+    const generated = generatedReferenceFixtures[0]!;
+    render(
+      <MemoryRouter>
+        <ReferenceCard reference={generated} saved={false} inTray={false} onToggleSave={vi.fn()} onToggleCompare={vi.fn()} />
+      </MemoryRouter>,
+    );
+    const card = screen.getByRole("article", { name: generated.title });
+    const q = within(card);
+    expect(q.getByText("생성 조합")).toBeVisible();
+    expect(q.getByText("생성 조합").closest('[aria-hidden="true"], [role="img"]')).toBeNull();
+    expect(q.getByText("접근성·성능 미측정")).toBeInTheDocument();
+    expect(card.querySelector("time")).toBeNull();
+    cleanup();
+    expect(within(renderCard().card).queryByText("생성 조합")).toBeNull();
   });
 });

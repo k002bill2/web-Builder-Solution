@@ -97,8 +97,13 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
   const titleId = `${r.id}-title`;
   const tags = r.visualTags.map((t) => VISUAL_TAG_LABELS[t]);
   return (
-    <article aria-labelledby={titleId} className="flex flex-col gap-2">
+    <article aria-labelledby={titleId} className="relative flex flex-col gap-2">
       <Thumbnail reference={r} />
+      {r.sourceKind === "library_composition" && (
+        <Tag size="sm" className="absolute top-9 right-2.5">
+          생성 조합
+        </Tag>
+      )}
       <div className="min-w-0">
         <h3 id={titleId} className="ds-body2 font-semibold text-label-normal">
           <Link to={`/references/${r.id}`} className="line-clamp-2 rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none">

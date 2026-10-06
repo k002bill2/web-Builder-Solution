@@ -12,8 +12,8 @@ base `dd6b0f7` · 판정선 `/studio` 진입 **128.70** · 기준 실측 128.24(
 - [ ] ⑥ U3 필드 편집 묶음 — BLOCKED: ④ 판정선 멈춤 · 미착수(StudioLayoutImages "되돌리기 무효화" 단언과 충돌 가능 — REPORT)
 - [ ] Ego Lite build+preview 4337 경로 A 1280·390 · finish · listTaskSpaces()=[] · 서버 종료 — BLOCKED: 판정선 멈춤 규칙 "추가 빌드 시도 금지" — dist/는 ④ WIP 산출물이라 tip 검증 불가 · 세션 열지 않음 · 4337 리슨 0 확인
 - [x] 전체 vitest · typecheck · lint · build — tip 앱 코드 = e2301c4(`git diff --stat e2301c4 HEAD -- app/` 비어 있음): vitest 237/2113 · build exit 0(build-1-3.txt). lint·tsc는 ④ 단계에서 전체 통과
-- [ ] Codex review --scope branch --base dd6b0f7 (≤2)
-- [ ] REPORT 커밋
+- [x] Codex review --scope branch --base dd6b0f7 (≤2) — r1 지적 0 (logs/codex-r1.txt)
+- [x] REPORT 커밋 (dev/active/er-4/REPORT.md)
 
 ## TDD 예측 (RED 전)
 | 단계 | 새/바뀐 테스트 | RED 예측 |
@@ -33,3 +33,4 @@ base `dd6b0f7` · 판정선 `/studio` 진입 **128.70** · 기준 실측 128.24(
 | ④ (WIP fd3385a, 미병합) | **128.96 > 128.70 판정선 초과 → 멈춤** | 91.76 | logs/build-4.txt — StudioLayout 청크 gzip 18.04→18.75(+0.71) · docEngine +0.09 · 나머지 ±0.01 · tsc·lint·vitest 239/2121 PASS |
 
 ## 목업·SPEC과 다르게 한 곳
+- ③ 테마 되돌리기 포커스: SPEC 7절 "실행 취소 = 이동 없음"과 달리 "테마 바꾸기"로 이동 — B-ER-04(사라지는 버튼 → 유지되는 컨트롤) 우선

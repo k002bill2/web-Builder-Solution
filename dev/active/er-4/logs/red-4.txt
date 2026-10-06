@@ -1,0 +1,249 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-4/app
+
+ ❯ src/features/studio/historyKeys.test.ts (0 test)
+ ❯ src/features/studio/undoStack.test.ts (5 tests | 1 failed) 11ms
+   ❯ 실행 취소 스택 (K2 · 5.14) (5)
+     × 다시 실행(ER-AC-U1): undo → redo 목록 · redo → 다시 · peek = 다음 대상 · push는 redo를 비움 · clear는 양쪽(U5) 2ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/UndoKeys.test.tsx (4 tests | 2 failed) 3718ms
+   ❯ 단축키 실행 취소 · 다시 실행 — ER-AC-U1 · C1 (2)
+     × 삭제 → (자동 저장 뒤) Ctrl+Z = 직전 문서 + '실행 취소: Services 삭제' · Shift+Ctrl+Z = 다시 + '다시 실행: Services 삭제' · ⌘+Z · Ctrl+Y 420ms
+     × 다시 실행으로 포커스한 줄이 사라지면 포커스 = h2 '섹션'(유실 0) 3109ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/historyKeys.test.ts [ src/features/studio/historyKeys.test.ts ]
+Error: Failed to resolve import "./historyKeys" from "src/features/studio/historyKeys.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/er-4/app/src/features/studio/historyKeys.test.ts:1:27
+  1  |  import { historyKey } from "./historyKeys";
+     |                              ^
+  2  |  /** ER-AC-U1 · U2 (EDITOR-REST SPEC r1 3.5) — 단축키 판정: 입력칸 밖 Ctrl/⌘+Z · Shift+Ctrl/⌘+Z · Ctrl+Y, 미리보기 중 무시 */
+  3  |  const body = () => document.body;
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/UndoKeys.test.tsx > 단축키 실행 취소 · 다시 실행 — ER-AC-U1 · C1 > 삭제 → (자동 저장 뒤) Ctrl+Z = 직전 문서 + '실행 취소: Services 삭제' · Shift+Ctrl+Z = 다시 + '다시 실행: Services 삭제' · ⌘+Z · Ctrl+Y
+AssertionError: expected [ 's-header', 's-hero', …(6) ] to have a length of 7 but got 8
+
+- Expected
++ Received
+
+- 7
++ 8
+
+ ❯ src/components/studio/UndoKeys.test.tsx:34:21
+     32|     await removeServices();
+     33|     const removed = rowIds();
+     34|     expect(removed).toHaveLength(ids.length - 1);
+       |                     ^
+     35|     await waitFor(() => expect(saved.length).toBeGreaterThan(0), { tim…
+     36|     expect(await key(CTRL_Z)).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/components/studio/UndoKeys.test.tsx > 단축키 실행 취소 · 다시 실행 — ER-AC-U1 · C1 > 다시 실행으로 포커스한 줄이 사라지면 포커스 = h2 '섹션'(유실 0)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<h2
+  class="ds-heading2 focus:outline-none"
+  id="studio-sections-heading"
+>
+  섹션
+</h2>[39m
+Received element with focus:
+  [31m<button
+  aria-current="true"
+  class="flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-primary bg-primary-container font-bold"
+  data-row-id="s-faq"
+  type="button"
+>
+  <span
+    class="ds-label"
+  >
+    FAQ
+  </span>
+  <span
+    class="ds-caption1 font-normal text-label-alternative"
+  >
+    펼침 목록
+  </span>
+</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m동네 치과 클리닉 프로젝트 편집[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+                [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/projects"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+                [36m/>[39m
+              [36m</a>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+                [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+              [36m>[39m
+                [0m동네 치과 클리닉 프로젝트[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+              [36m>[39m
+                [0mcandidate-a안 · 프로필 v2[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+                [36m>[39m
+                  [0m이 탭에 저장됨 · 방금[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mrole[39m=[32m"alert"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"contents"[39m
+                [33mdata-preview-keep[39m=[32m"true"[39m
+              [36m>[39m
+                [36m<fieldset[39m
+                  [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+                [36m>[39m
+                  [36m<legend[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                  [36m>[39m
+                    [0m미리보기 폭[0m
+                  [36m</legend>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mchecked[39m=[32m""[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"desktop"[39m
+                      [36m/>[39m
+                      [0m데스크톱[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"tablet"[39m
+                      [36m/>[39m
+                      [0m태블릿[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"mobile"[39m
+                      [36m/>[39m
+                      [0m모바일[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                [36m</fieldset>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+                [33mid[39m=[32m"studio-snapshot"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m스냅샷[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-no...
+ ❯ src/components/studio/UndoKeys.test.tsx:58:84
+     56|     await key({ ...CTRL_Z, shiftKey: true }, row(restored));
+     57|     await waitFor(() => expect(rowIds()).not.toContain(restored));
+     58|     await waitFor(() => expect(document.getElementById("studio-section…
+       |                                                                                    ^
+     59|   });
+     60| });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/features/studio/undoStack.test.ts > 실행 취소 스택 (K2 · 5.14) > 다시 실행(ER-AC-U1): undo → redo 목록 · redo → 다시 · peek = 다음 대상 · push는 redo를 비움 · clear는 양쪽(U5)
+TypeError: stack.peek is not a function
+ ❯ src/features/studio/undoStack.test.ts:48:18
+     46|     stack.push(entry(1));
+     47|     stack.push(entry(2));
+     48|     expect(stack.peek()?.label).toBe("연산 2");
+       |                  ^
+     49|     expect(stack.undo()?.label).toBe("연산 2");
+     50|     expect(stack.size()).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  3 failed | 6 passed (9)
+   Start at  15:40:45
+   Duration  4.99s (tests 58%, environment 27%, transform 8%, setup 5%, import 2%)
+

@@ -36,3 +36,4 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-05 | ER-3b Codex r4 P2 | 미리보기 중 편집 경계가 거절해도 `useSectionOps.run`이 docRef·실행 취소 스택·last를 이미 바꿈(StudioLayout.tsx:95) → `edit` false를 run 실패로 처리 | Developer ER-4 |
 | B-ER-06 | ER-3b Codex r4 P2 | 내보내기 진행 중 이미지 교체·삭제 시 "내보내기 전" 스냅샷 Blob이 보관 맵에서 prune될 수 있음(StudioLayout.tsx:371-373) → 스냅샷 생성 응답 시점에 참조 집합 갱신 | Developer ER-4 |
 | B-ER-07 | ER-3b Ego Lite | 변환 중 미리보기 차단 실브라우저 재현 실패(변환이 먼저 끝남)·CDP 캡처 타임아웃 → CPU 스로틀로 재확인·캡처 | QA ER-5 |
+| B-ER-08 | ER-4 Jarvis 판정 | U3 필드 편집 묶음(MQ-R5 ★A) 미이행 — 필드 기록이 삭제 전 문서까지 닿으면 `StudioLayoutImages.test.tsx` "삭제 → 필드 입력 → 되돌리기 무효화 → 이미지 빠짐" 단언과 충돌 → SPEC 결정 먼저(Designer) + 예산 | Designer → Developer |

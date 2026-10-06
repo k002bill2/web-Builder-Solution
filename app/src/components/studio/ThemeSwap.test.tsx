@@ -114,4 +114,15 @@ describe("게이트 대비 줄 행동 — ER-AC-T6", () => {
     expect(dialog.getByRole("radio", { name: /^v1 / })).toBeChecked();
     expect(dialog.getByRole("button", { name: "바꾸기" })).toHaveAttribute("aria-disabled", "true");
   });
+
+  it.each([1280, 390])("폭 %ipx 되돌리기를 키보드로 실행(버튼이 사라짐) → 포커스 = 테마 영역 '테마 바꾸기'(B-ER-04 · body로 떨어지지 않음 · <1024는 '편집' 탭에서 눌러도 '섹션' 탭으로)", async (width) => {
+    await openStudio({ width, doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }]) });
+    await swapTo(2);
+    if (width < 1024) act(() => void fireEvent.click(screen.getByRole("tab", { name: "편집" })));
+    const undo = await screen.findByRole("button", { name: "되돌리기" });
+    act(() => undo.focus());
+    act(() => void fireEvent.click(undo));
+    expect(screen.queryByRole("button", { name: "되돌리기" })).toBeNull();
+    await waitFor(() => expect(themeRegion().getByRole("button", { name: "테마 바꾸기" })).toHaveFocus());
+  });
 });

@@ -73,13 +73,15 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
   return current;
 }
 
-export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages): Promise<ExportResult> {
+export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
   imageFailed.delete(projectId);
   if (images) requestImages.set(projectId, images);
   else requestImages.delete(projectId);
   try {
     const result = await repository.requestExport(projectId, format, revision);
+    // 스냅샷 생성 응답 시점에 참조 집합을 갱신한다 — 잡을 기다리는 동안 이미지를 바꿔도 "내보내기 전" 스냅샷 Blob을 놓지 않게(B-ER-06)
+    onSnapshot?.();
     // "내보내기 전" 스냅샷은 이번 호출이 썼을 때만(멱등 재생·재실행이면 내지 않는다 — 9절)
     if (result.wrote) emitEditorEvent({ name: "snapshot_created", kind: "auto", reason: "export" });
     const job = await settle(repository, result.job);

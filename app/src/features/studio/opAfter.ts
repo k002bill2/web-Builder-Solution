@@ -20,22 +20,24 @@ type Focus = (target: FocusTarget) => void;
 export type UndoTarget = { readonly instanceId?: string; readonly text: string; readonly before: PageDoc };
 type Name = (s: SectionInstance) => string;
 type LastOp = { readonly before: PageDoc; readonly after: PageDoc } | undefined;
+/** 미리보기 편집 경계 거절 — SnapshotPreview 이유 문장과 같다 */
+const LOCKED = "스냅샷을 보는 중에는 편집할 수 없습니다";
 
-/** useSectionOps.run — applyDocOp 뒤: 문서 참조 · 기록 스택 · 되돌리기 대상 · 편집 반영(A2) */
+/** useSectionOps.run — applyDocOp 뒤: 편집 반영 → 문서 참조 · 기록 스택 · 되돌리기 대상(A2). 편집 경계가 거절(false)하면 실패 — 아무것도 바꾸지 않는다(B-ER-05) */
 export function commitOp(
   docRef: RefObject<PageDoc>,
   stack: UndoStack,
   setLast: (last: LastOp) => void,
-  edit: (next: PageDoc) => void,
+  edit: (next: PageDoc) => boolean | void,
   label: string,
   before: PageDoc,
   result: OpResult,
   undoable: boolean,
-): Done {
+): OpOutcome {
+  if (edit(result.doc) === false) return { ok: false, reason: LOCKED };
   docRef.current = result.doc;
   stack.push({ label, before, after: result.doc });
   setLast(undoable ? { before, after: result.doc } : undefined);
-  edit(result.doc);
   return { ok: true, result, before };
 }
 

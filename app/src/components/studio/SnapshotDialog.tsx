@@ -83,6 +83,12 @@ export default function SnapshotDialog({
     onPreview(snapshot);
   };
 
+  // 모달을 먼저 닫는다 — 열린 모달 밖 "스냅샷"은 포커스를 못 받아(inert) 대화상자가 사라지면 BODY로 떨어진다(B-ER-10)
+  const close = () => {
+    dialog.current?.close();
+    onClose();
+  };
+
   const recent = [...(list ?? [])].reverse();
   const shown = all ? recent : recent.slice(0, RECENT);
   const older = recent.length - shown.length;
@@ -92,7 +98,7 @@ export default function SnapshotDialog({
       aria-labelledby={`${id}-title`}
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        close();
       }}
       className="m-auto w-full max-w-lg rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal"
     >
@@ -136,7 +142,7 @@ export default function SnapshotDialog({
           </Button>
         )}
         <div className="flex justify-end">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={close}>
             닫기
           </Button>
         </div>

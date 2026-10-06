@@ -2,7 +2,7 @@
  * M2B-5 3안 실렌더 비교 (SPEC-COMPARE3 1.1 · 3.1 · CMP-AC-U1·U2) — "3안 실제 화면으로 비교" 버튼의 보이는 조건 ·
  * 비교 청크는 누른 뒤에만 받는다(로더 이음새 spy — "번들 분류 근거") · 받는 동안 aria-busy · 청크 실패 → role=alert + 다시 시도 → 새 요청 · 저장소 쓰기 0.
  */
-import { act, fireEvent, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryCompareBoardRepository } from "../data/memoryCompareBoardRepository";
@@ -44,8 +44,15 @@ const user = () => userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 const tick = () => act(() => vi.advanceTimersByTimeAsync(POLL_MS));
 const COMPARE = "3안 실제 화면으로 비교";
 
+/**
+ * 요청 응답이 와서 첫 조회가 예약될 때까지 — "만드는 중…"은 요청 중(계산 청크를 처음 받는 동안)에도 보이므로 그것만 보고 시간을 넘기면
+ * 조회 3회가 모자란다(B-TEST-01: 부하 중 청크 첫 로드가 늦을 때). 시작 알림은 응답을 따라가기 시작한 뒤에만 나온다.
+ */
+const requested = () => waitFor(() => expect(screen.getByRole("status", { name: "프로필 알림" })).toHaveTextContent(/^3안을 만/));
+
 async function generate(u: ReturnType<typeof user>, region: HTMLElement) {
   await u.click(await within(region).findByRole("button", { name: /^3안 만들기 \(v\d+\)$/ }));
+  await requested();
   for (let i = 0; i < 3; i += 1) await tick();
 }
 
@@ -67,6 +74,7 @@ describe("비교 버튼 보이는 조건 (CMP-AC-U1)", () => {
     await u.click(within(region).getByRole("button", { name: /^3안 만들기 \(v\d+\)$/ }));
     await within(region).findByRole("button", { name: "만드는 중…" });
     expect(within(region).queryByRole("button", { name: COMPARE })).not.toBeInTheDocument();
+    await requested();
     for (let i = 0; i < 3; i += 1) await tick();
     const button = await within(region).findByRole("button", { name: COMPARE });
     const list = within(region).getByRole("list", { name: "3안" });

@@ -83,6 +83,32 @@ async function previewFirst(dialog: ReturnType<typeof within>, name: string) {
   return screen.findByRole("heading", { name: `스냅샷 '${name}'를 보고 있습니다 · 편집은 멈췄습니다` });
 }
 
+describe("닫으면 포커스 '스냅샷' — B-ER-10", () => {
+  it.each([
+    [1280, "Esc"],
+    [390, "Esc"],
+    [1280, "닫기"],
+  ] as const)("폭 %ipx %s → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내)", async (width, how) => {
+    const focus = HTMLElement.prototype.focus;
+    const spy = vi.spyOn(HTMLElement.prototype, "focus").mockImplementation(function (this: HTMLElement, options?: FocusOptions) {
+      const modal = document.querySelector("dialog[open]");
+      if (modal && !modal.contains(this)) return;
+      focus.call(this, options);
+    });
+    try {
+      await openStudio({ width, repository: snapshotRepo(sampleDoc()).repository });
+      const dialog = await openDialog();
+      expect(dialog.getByRole("textbox")).toHaveFocus();
+      if (how === "Esc") act(() => void fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true })));
+      else act(() => void fireEvent.click(dialog.getByRole("button", { name: "닫기" })));
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(snapButton()).toHaveFocus();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
 describe("만들기 · 미리보기 — ER-AC-S3 · S9", () => {
   it("열면 포커스 = 이름 입력 · 입력 직후 '지금 상태 저장' = 저장 먼저(최신 입력 포함) → 스냅샷 1 · 편집 알림 · 닫기 → 포커스 '스냅샷'", async () => {
     const r = snapshotRepo(sampleDoc());

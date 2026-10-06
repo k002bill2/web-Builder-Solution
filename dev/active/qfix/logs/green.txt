@@ -1,0 +1,52 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/qfix/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  3 passed (3)
+      Tests  46 passed (46)
+   Start at  18:42:59
+   Duration  10.10s (tests 80%, environment 11%, transform 6%, setup 2%, import 2%)
+

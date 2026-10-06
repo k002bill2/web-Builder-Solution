@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentProps, type MouseEventHandler, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, type ComponentProps, type MouseEventHandler, type ReactNode } from "react";
 import { Link } from "react-router";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { Button } from "../ds/Button";
@@ -23,8 +23,14 @@ const CAPTION = "ds-caption1 text-label-alternative";
  * 알림 줄(5.4 · Q7) = `role=status` 글자 + **영역 밖 형제 버튼** "되돌리기"(D-QA06 형식) — 바로 앞 연산 1개만.
  */
 export function NoticeRegion({ text, detail, onUndo }: { readonly text: string; readonly detail?: string; readonly onUndo?: () => void }) {
+  // "되돌리기"가 있는 알림이 바뀌면 줄을 화면 안으로(B-ER-11 · 즉시 — 모션 0 · 포커스는 그대로). 문장만 있는 알림은 입력 중인 화면을 밀지 않게 그대로 둔다
+  const line = useRef<HTMLDivElement>(null);
+  const undoable = Boolean(onUndo);
+  useEffect(() => {
+    if (text && undoable) line.current?.scrollIntoView?.({ block: "nearest" });
+  }, [text, undoable]);
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+    <div ref={line} className="flex flex-wrap items-center gap-x-2 gap-y-1">
       {/* detail = 접힌 원문(진입 알림 8.2.1 (a), r4.7 A3-Q7) — 요약 줄이 summary, 원문은 펼치면 보인다 */}
       <div role="status" aria-label="편집 알림" className="ds-body2 px-3 empty:p-0">
         {detail ? (

@@ -15,7 +15,7 @@ import { ProjectRepositoryError, type ExportGenerators, type Project, type Proje
 import type { StudioStore } from "./studioStore";
 
 export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict";
-type SnapshotWrite = "createSnapshot" | "restoreSnapshot";
+type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict";
 export interface ProjectCall {
   readonly method: ProjectMethod;
   /** 메서드별 1부터 */
@@ -65,7 +65,6 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     <K extends SnapshotWrite>(method: K) =>
     (...args: Parameters<DocBook[K]>[0]) =>
       bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit)));
-  const missing = (projectId: string) => Promise.reject(new ProjectRepositoryError("NOT_FOUND", projectId));
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
   const summaryOf = (project: Project): ProjectSummary => {
@@ -106,7 +105,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     listSnapshots: async (projectId) => book?.snapshotsOf(projectId) ?? [],
     createSnapshot: write("createSnapshot"),
     restoreSnapshot: write("restoreSnapshot"),
-    resolveConflict: missing,
+    resolveConflict: write("resolveConflict"),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
     requestExport: async (projectId, format, docRevision) =>
       (await bookOf()).requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)),

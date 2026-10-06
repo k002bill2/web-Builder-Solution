@@ -1,0 +1,78 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-3a/app
+
+ ❯ src/data/memoryProjectRepository.test.ts (25 tests | 3 failed) 173ms
+   ❯ resolveConflict (ER-AC-S5 · 2a-05 E-S09 · E-AC-10 · B-ER-02) (3)
+     × mine — 다른 쪽(저장된 문서)을 '충돌 보존 · 시:분' auto·conflict 1개로 남긴 뒤 내 문서 저장(revision 최신 + 1) · 다음 저장 STALE_DOC 0 4ms
+     × theirs — 내 편집을 auto·conflict 1개로 남기고 저장된 문서 그대로 반환(revision 변화 0) · 사본 동결 2ms
+     × 판정 — 모양(선택·문서 L4 검증·해시·projectId) SCHEMA_INVALID → NOT_FOUND · commit 실패(mine·theirs) → 문서·스냅샷 변화 0 4ms
+ ❯ src/data/memoryExport.test.ts (18 tests | 1 failed) 211ms
+   ❯ 스냅샷 번호 공유 — 내보내기 전·수동·복원 전·충돌 보존 (ER-3a) (1)
+     × 내보내기 → 수동 → 복원 → 충돌 해결(mine) = snapshot-1..4 연속 · 종류·이유 순서 고정 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/memoryExport.test.ts > 스냅샷 번호 공유 — 내보내기 전·수동·복원 전·충돌 보존 (ER-3a) > 내보내기 → 수동 → 복원 → 충돌 해결(mine) = snapshot-1..4 연속 · 종류·이유 순서 고정
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing [as resolveConflict] src/data/memoryProjectRepository.ts:68:57
+     66|     (...args: Parameters<DocBook[K]>[0]) =>
+     67|       bookOf().then((docs) => call(method, (commit) => (docs[method] a…
+     68|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     69|   const projectOf = (projectId: string) => store.projects().find((p) =…
+     70|   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
+ ❯ src/data/memoryExport.test.ts:318:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > resolveConflict (ER-AC-S5 · 2a-05 E-S09 · E-AC-10 · B-ER-02) > mine — 다른 쪽(저장된 문서)을 '충돌 보존 · 시:분' auto·conflict 1개로 남긴 뒤 내 문서 저장(revision 최신 + 1) · 다음 저장 STALE_DOC 0
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing [as resolveConflict] src/data/memoryProjectRepository.ts:68:57
+     66|     (...args: Parameters<DocBook[K]>[0]) =>
+     67|       bookOf().then((docs) => call(method, (commit) => (docs[method] a…
+     68|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     69|   const projectOf = (projectId: string) => store.projects().find((p) =…
+     70|   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
+ ❯ src/data/memoryProjectRepository.test.ts:286:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > resolveConflict (ER-AC-S5 · 2a-05 E-S09 · E-AC-10 · B-ER-02) > theirs — 내 편집을 auto·conflict 1개로 남기고 저장된 문서 그대로 반환(revision 변화 0) · 사본 동결
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing [as resolveConflict] src/data/memoryProjectRepository.ts:68:57
+     66|     (...args: Parameters<DocBook[K]>[0]) =>
+     67|       bookOf().then((docs) => call(method, (commit) => (docs[method] a…
+     68|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     69|   const projectOf = (projectId: string) => store.projects().find((p) =…
+     70|   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
+ ❯ src/data/memoryProjectRepository.test.ts:299:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > resolveConflict (ER-AC-S5 · 2a-05 E-S09 · E-AC-10 · B-ER-02) > 판정 — 모양(선택·문서 L4 검증·해시·projectId) SCHEMA_INVALID → NOT_FOUND · commit 실패(mine·theirs) → 문서·스냅샷 변화 0
+AssertionError: expected 'NOT_FOUND' to be 'SCHEMA_INVALID' // Object.is equality
+
+Expected: "SCHEMA_INVALID"
+Received: "NOT_FOUND"
+
+ ❯ src/data/memoryProjectRepository.test.ts:312:84
+    310|     const fail = ({ method, phase }: ProjectCall) => (method === ("res…
+    311|     const { repo, theirs, mine } = await conflict({ fail });
+    312|     expect(await codeOf(repo.resolveConflict("project-1", "both" as ne…
+       |                                                                                    ^
+    313|     expect(await codeOf(repo.resolveConflict("project-1", "theirs", { …
+    314|     expect(await codeOf(repo.resolveConflict("project-1", "mine", { ..…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 39 passed (43)
+   Start at  11:21:34
+   Duration  1.31s (environment 53%, transform 17%, tests 16%, setup 10%, import 3%)
+

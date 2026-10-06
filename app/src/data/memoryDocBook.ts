@@ -16,6 +16,7 @@ import {
   type ExportFormat,
   type ExportGenerator,
   type ExportJob,
+  type ConflictChoice,
   type ExportRequestResult,
   type Project,
   type ProjectSnapshot,
@@ -67,6 +68,11 @@ export interface DocBook {
   readonly createSnapshot: (args: readonly [projectId: string, name?: string], commit: () => void) => ProjectSnapshot<DocHead>;
   /** 복원(E-S30) — 모양 → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) → "복원 전" auto·restore + 새 revision(스냅샷 내용). 기존 스냅샷은 그대로 */
   readonly restoreSnapshot: (args: readonly [projectId: string, snapshotId: string, expectedRevision: number], commit: () => void) => DocHead;
+  /**
+   * 충돌 해결(E-S09) — 모양(선택 · 내 문서 L4 검증) → NOT_FOUND → auto·conflict 보존 1개 + mine = 내 문서 저장(최신 revision + 1) / theirs = 저장된 문서 그대로.
+   * 보존 대상 = 덮이는 쪽(mine → 저장된 문서 · theirs → 내 편집)
+   */
+  readonly resolveConflict: (args: readonly [projectId: string, choice: ConflictChoice, myDoc: DocHead], commit: () => void) => DocHead;
 }
 
 /**
@@ -228,6 +234,20 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
       const doc = deepFreeze({ ...source.doc, revision: current.revision + 1, updatedAt: createdAt });
       commit();
       state = { ...state, docs: new Map(state.docs).set(projectId, doc), snapshots: new Map(state.snapshots).set(projectId, [...list, before]) };
+      return doc;
+    },
+    resolveConflict: ([projectId, choice, myDoc], commit) => {
+      if (typeof projectId !== "string" || (choice !== "mine" && choice !== "theirs")) throw fail("SCHEMA_INVALID", "resolveConflict 인자");
+      const checked = checkSaveDoc(projectId, myDoc);
+      if (!checked.ok) throw fail("SCHEMA_INVALID", checked.message);
+      const current = state.docs.get(projectId);
+      if (!projectOf(projectId) || !current) throw fail("NOT_FOUND", projectId);
+      const createdAt = now();
+      const list = state.snapshots.get(projectId) ?? [];
+      const kept = snapshotOf(list, choice === "mine" ? current : deepFreeze({ ...myDoc }), createdAt, { kind: "auto", reason: "conflict", name: timedName("충돌 보존", createdAt) });
+      const doc = choice === "mine" ? deepFreeze({ ...myDoc, revision: current.revision + 1, updatedAt: createdAt }) : current;
+      commit();
+      state = { ...state, docs: new Map(state.docs).set(projectId, doc), snapshots: new Map(state.snapshots).set(projectId, [...list, kept]) };
       return doc;
     },
     requestExport: async (args, injected, via) => {

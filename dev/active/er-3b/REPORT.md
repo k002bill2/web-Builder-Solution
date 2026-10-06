@@ -1,5 +1,6 @@
 # ER-3b REPORT — 스냅샷 화면 (재개 완료 · Codex r2 지적 3건 미반영)
 
+- **4차 첫 줄: 마감 수정 1·2·3·5 커밋 `cba9f28` — /studio 128.42 ≤ 128.43(감량 2회) · vitest 236/2105 exit 0 · Codex r4 P1 0·P2 2(새 범위, 미반영) · Ego Lite 항목 5 계산 스타일 확인 · 항목 1 실브라우저 재현 실패 · 캡처 0(CDP 캡처 타임아웃).**
 - **3차 첫 줄: 마감 수정 1·2·3·5는 GREEN(19/19)이나 합산 /studio 128.45 > 128.43 → 즉시 멈춤 · 미커밋(`wip-fix3.patch`). 커밋은 항목 4(로컬 시각)만 — HEAD 128.32. Codex r2 P1·P2 2건은 tip에 여전히 열림(r3 같은 3건 · 새 P1 0) → 병합 금지 유지.**
 - **첫 줄: /studio 진입 127.69 → 128.33KB(+0.64) — 판정선 128.43 이내 통과, 목표 128.04 미달. ER-3b 몫 0.64 > 0.35 → ER-4 여유는 0.10KB뿐(경고).** 첫 화면 91.76(±0.00).
 - base `45a5721` · 브랜치 `k002bill2/er-3b` · 서브에이전트 0 · push/merge/삭제 0 · main 5480 무접촉 · 엔진·계약·data 인터페이스·docs·scripts·lock 수정 0
@@ -97,3 +98,32 @@
 2. 감량 2순위 — 진입 청크에 든 편집 경계 코드(`useSnapshots`의 useRef·useLayoutEffect·span, `StudioLayout`의 `LOCKED_PRIMARY`). 경계 판정을 조작 뒤 청크로 옮길 수 있는지
 3. 주의 — patch의 `useSnapshots.edit`는 렌더마다 새 함수(이전엔 안정 `save.edit`). `useSectionOps` 등 의존성 재실행 여부 확인 필요
 4. 복구: `git apply dev/active/er-3b/wip-fix3.patch` → 감량 → build ≤128.43 → 커밋
+
+## 9. 마감 수정(4차) — REPORT 8절 "다음 결정용" 1~4
+
+### 결과
+| 항목 | 상태 | 근거 |
+|---|---|---|
+| 복구 | 완료 | `git apply wip-fix3.patch` |
+| 결정 1 툴바 비활성 단순화 | **커밋 `cba9f28`** | 새 상수 `LOCKED_PRIMARY`·`LOCKED_OUTLINE` 제거. 스냅샷(outline) = `aria-disabled:cursor-not-allowed aria-disabled:text-label-disable`(SectionOpControls·AddSectionButton 패턴) · 검사(primary) = `CandidatesSection` DISABLED와 같은 4개 클래스(파란 면 위 회색 글자 방지) |
+| 결정 2 경계 판정 이동 | 하지 않음 | 결정 1만으로 128.42 ≤ 128.43 — 필요 없음 |
+| 결정 3 `useSnapshots.edit` 안정성 | **커밋 `cba9f28`** | 확인: `useSectionOps.run`·`undoLast`(useCallback deps `edit`)와 StudioLayout의 move·remove·swap·undo 콜백이 렌더마다 재생성(effect 재실행은 없음). `useCallback([span, save.edit])`로 고정 — 미리보기 열고 닫을 때만 새 함수. 새 테스트 `useSnapshots.test.tsx` RED(`logs/red-fix4.txt`, toBe 실패) → GREEN |
+| 항목 1·2·3·5 | **커밋 `cba9f28`** | RED는 3차 `logs/red-fix3.txt` 재사용 · 단언 약화 0 · 대상 3파일 GREEN 20/20(`logs/green-fix4.txt`) |
+
+- 번들: 시도 1(클래스 최소) 128.40(`logs/build-fix4-try1.txt`) → 시도 2(primary에 bg 2개 추가) **128.42**(`logs/build-fix4-try2.txt`, 예산 검사 통과 · exit 0). 감량 시도 2/3회
+- 게이트: typecheck 0 · lint 0 · build exit 0 · 전체 vitest exit 0 **236 파일 / 2105 테스트**(`logs/vitest-fix4.txt`)
+- Codex r4 `review --scope branch --base 45a5721` 1회 완료(`logs/codex-r4.txt`): **P1 0** · r2·r3의 P1·P2 3건은 더 이상 지적되지 않음. 새 P2 2건(미반영 — 아래)
+- Ego Lite(build + `vite preview 127.0.0.1:4337`, 공간 86, 1280): 첫 goto 1회 뒤 앱 안 클릭만 · 새로고침 0. 경로 = 카탈로그 ref-e·ref-a 비교 → "전부 선택: B" → 프로필 v1 → 3안 → A안 편집 → 스냅샷 "변환 전" → Hero "이미지 고르기"(6000×6000 JPEG 1.2MB, `/tmp`) → 즉시 스냅샷 → 미리보기
+  - 항목 5 **확인(계산 스타일)**: 미리보기 중 두 버튼 `aria-disabled=true` · 스냅샷 color `rgba(31,54,40,0.16)`·bg 흰색 · 검사 color 같은 값·bg `rgba(31,54,40,0.12)` · cursor not-allowed (열린 직후 첫 측정은 transition 중간값이라 원색이었음)
+  - 항목 1 **재현 실패**: 변환이 미리보기 열기(약 3.1초) 전에 끝나 알림 "이미지를 넣었습니다"가 미리보기 전 정상 삽입 — 경계가 거절할 구간을 만들지 못함. 단위 테스트(SnapshotImages)로만 보증
+  - 캡처 **0장**: `Page.captureScreenshot` CDP 타임아웃 반복(`bringToFront`·override 해제 후도 동일, 원인 미확인)
+  - 종료: `finish({keep:[]})` → 2.5초 뒤 `listTaskSpaces()` = **[]** · 자기 preview 서버 종료 · 4337 리슨 **0**
+- 서브에이전트 0 · 엔진·계약·docs·scripts·lock·data 수정 0 · push/merge/삭제 0
+
+### 미반영 — Codex r4 P2 (턴 상한 35로 새 수정 중단)
+1. `StudioLayout.tsx:95` — 편집 경계가 거절해도 `useSectionOps.run`이 `docRef`·실행 취소 스택·`last`를 이미 바꿈(구조 연산 진행 중 미리보기 → 다음 연산이 거절된 변경 포함 저장 가능). `edit`의 false를 `run`이 실패로 처리해야 함(features/studio 수정 필요)
+2. `StudioLayout.tsx:371-373` — 내보내기 진행 중 이미지 교체·삭제 시 '내보내기 전' 스냅샷의 Blob이 보관 맵에서 pruning될 수 있음. 스냅샷 생성 응답 시점에 참조 집합 갱신 필요
+
+### 다음 결정용
+1. Codex r4 P2 2건 반영 여부(1번은 이번 P1 수정의 연장 — 우선 권고)
+2. 항목 1 실브라우저 재현: 변환을 늦출 수단(더 큰 입력·CPU 스로틀 `Emulation.setCPUThrottlingRate`)으로 다시 확인할지

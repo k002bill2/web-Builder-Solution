@@ -111,7 +111,7 @@ export function useSectionOps({
           const result = await applyDocOp(before, op, ctx);
           // 꼬리(문서 참조·기록 스택·되돌리기 대상·편집 반영)는 연산 청크에 둔다 — 이미 받은 청크라 바로 풀린다(ER-OFF A2)
           const engine = await loadDocEngine();
-          if (keys) unlisten.current ??= engine.listenHistory(keys, step);
+          if (keys) unlisten.current ??= engine.listenHistory(keys);
           return engine.commitOp(docRef, stack, setLast, edit, label, before, result, undoable);
         } catch (error) {
           // 화면은 can*로 먼저 막는다 — 여기 오는 것은 프로필을 불러오기 전 목적 판정 등. 엔진 이유 문장을 그대로 알린다
@@ -121,7 +121,7 @@ export function useSectionOps({
       chain.current = next;
       return next;
     },
-    [edit, nextId, stack, loadSeries, keys, step],
+    [edit, nextId, stack, loadSeries, keys],
   );
 
   const canUndoLast = last !== undefined && last.after === doc;

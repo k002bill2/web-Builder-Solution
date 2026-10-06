@@ -1,0 +1,40 @@
+                    [36m</label>[39m
+                  [36m</div>[39m
+                [36m</fieldset>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+                [33mid[39m=[32m"studio-snapshot"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m스냅샷[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-no...
+- Expected
++ Received
+  [
+    "s-header",
+    "s-hero",
+    "s-about",
+-   "s-services",
+    "s-faq",
+    "s-contact",
+    "s-cta",
+    "s-footer",
+  ]
+ ❯ src/components/studio/UndoKeys.test.tsx:82:42
+     80|     await waitFor(() => expect(rowIds()).toEqual(removed));
+     81|     expect(await key(CTRL_Z)).toBe(false);
+     82|     await waitFor(() => expect(rowIds()).toEqual(ids));
+       |                                          ^
+     83|     expect(notice()).toHaveTextContent(/^실행 취소: Services 삭제$/);
+     84|     await key({ ...CTRL_Z, key: "Z", shiftKey: true });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  16:19:56
+   Duration  7.32s (tests 87%, environment 5%, transform 5%, import 1%, setup 1%)

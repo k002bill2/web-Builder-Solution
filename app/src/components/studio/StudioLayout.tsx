@@ -246,11 +246,11 @@ export function StudioLayout({
   // 단축키 실행 취소 · 다시 실행(SPEC 3.5 · ER-AC-U1·U2) — 리스너 1개 · 알림 1문장(C1) · 포커스는 그대로(가 있던 줄이 사라지면 h2 "섹션")
   // 단축키 맥락(SPEC 3.5) — 리스너 · 판정 · 기록 이동 · 알림 문장 · 포커스는 조작 뒤 청크(listenHistory · stepHistory, ER-4b)
   useEffect(() => {
-    historyKeys.current = { locked: snaps.preview !== undefined, tell: { setNotice, goTo } };
+    historyKeys.current = { locked: snaps.preview !== undefined, tell: { setNotice, goTo }, step: ops.step };
     return () => {
       historyKeys.current = undefined;
     };
-  }, [snaps.preview, goTo]);
+  }, [snaps.preview, goTo, ops.step]);
   const gateState = useGateReport(doc, ops.series);
   const goToRow = useCallback(
     (row: GateRow) => {

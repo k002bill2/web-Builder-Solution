@@ -21,3 +21,12 @@ base main `6658430` + ④ WIP 병합(97c826d). 판정선 /studio 진입 직후 �
 
 ## 목업·브리프와 다른 점(사유)
 - 브리프 1번 "진입에는 최소 동기 판정만" → 판정까지 조작 뒤 청크로 옮김(진입 판정 0). 사유: 판정 자체가 0.20KB라 진입에 남기면 3회 안에 판정선을 못 맞춤(추정 128.75). 첫 연산 전에는 기록이 없어 Ctrl+Z가 할 일이 없으므로 사용자 동작 차이 없음 — 단, 첫 연산 전 Ctrl+Z는 preventDefault 하지 않음(입력칸 밖 브라우저 기본 동작 = 없음).
+
+## 수정(2차) — Codex r1 P2 미리보기 복귀 뒤 단축키 무시
+- [x] 1. 회귀 테스트 `UndoKeys.test.tsx` "스냅샷 미리보기 복귀 뒤" 추가. 예측: Ctrl+Z preventDefault는 true지만 행 복원 실패(옛 `edit`이 false). RED 실측 일치 — 82행 rowIds에 s-services 없음(logs/fix2-red.txt). RED는 커밋하지 않음
+- [ ] 2. 수정: `HistoryKeys`에 `step` · StudioLayout 맥락 effect가 `ops.step` 갱신 · `listenHistory`가 `ctx.step` 호출 → GREEN 커밋
+- [ ] 3. /studio 진입 ≤128.70 (build)
+- [ ] 4. typecheck · lint · build · 전체 vitest exit 0
+- [ ] 5. Ego Lite 4337 1280: 삭제→미리보기→돌아가기→Ctrl+Z 복원 · 정리
+- [ ] 6. Codex review --scope branch --base 6658430 1회
+- [ ] 7. REPORT "## 7. 수정(2차)" 커밋

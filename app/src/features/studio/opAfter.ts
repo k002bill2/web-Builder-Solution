@@ -64,20 +64,21 @@ export function stepHistory(redo: boolean, docRef: RefObject<PageDoc>, stack: Un
   return entry;
 }
 
-/** 단축키 맥락 — StudioLayout이 커밋마다 갱신한다(미리보기 중 여부 · 알림 · 포커스). 언마운트되면 비운다 */
-export type HistoryKeys = { readonly locked: boolean; readonly tell: StepTell };
+/** 단축키 맥락 — StudioLayout이 커밋마다 갱신한다(미리보기 중 여부 · 알림 · 포커스 · 최신 기록 이동). 언마운트되면 비운다 */
+export type HistoryKeys = { readonly locked: boolean; readonly tell: StepTell; readonly step: (redo: boolean, tell: StepTell) => unknown };
 
 /**
  * 편집 틀 단축키 리스너(SPEC 3.5 · ER-AC-U1·U2) — 첫 연산 뒤 이 청크가 붙인다(그 전에는 되돌릴 기록이 없다 · /studio 진입 예산 ER-4b).
  * 입력칸·대화상자·IME·미리보기 중이면 무시(preventDefault도 하지 않음). 떼는 함수를 돌려준다
  */
-export function listenHistory(keys: RefObject<HistoryKeys | undefined>, step: (redo: boolean, tell: StepTell) => unknown): () => void {
+export function listenHistory(keys: RefObject<HistoryKeys | undefined>): () => void {
   const onKey = (e: KeyboardEvent) => {
     const ctx = keys.current;
     const kind = ctx && historyKey(e, ctx.locked);
     if (!kind) return;
     e.preventDefault();
-    void step(kind === "redo", ctx.tell);
+    // 붙일 때의 step이 아니라 맥락의 최신 step — 미리보기를 오가면 edit가 바뀐다(Codex r1 P2)
+    void ctx.step(kind === "redo", ctx.tell);
   };
   document.addEventListener("keydown", onKey);
   return () => document.removeEventListener("keydown", onKey);

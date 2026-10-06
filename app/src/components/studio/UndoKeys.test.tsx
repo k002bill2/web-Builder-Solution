@@ -1,5 +1,8 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import type { ProjectSnapshot } from "../../data/projectRepository";
+import type { PageDoc } from "../../engine/contracts/pageDoc";
+import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 
 /** ER-AC-U1 · U2 · C1 (EDITOR-REST SPEC r1 3.5 · 7절) — 편집 틀 단축키: 실행 취소 · 다시 실행 · 알림 1문장 · 입력칸 가로채기 0 · 포커스 유실 0 */
@@ -59,6 +62,28 @@ describe("단축키 실행 취소 · 다시 실행 — ER-AC-U1 · C1", () => {
     await waitFor(() => expect(rowIds()).not.toContain(restored));
     await waitFor(() => expect(document.getElementById("studio-sections-heading")).toHaveFocus());
   });
+});
+
+describe("스냅샷 미리보기 복귀 뒤 — Codex r1 P2", () => {
+  it("섹션 삭제 → 미리보기 → 편집으로 돌아가기 → Ctrl+Z = 복원 + '실행 취소: Services 삭제' · Shift+Ctrl+Z = 다시 삭제", async () => {
+    const snap: ProjectSnapshot<PageDoc> = { snapshotId: "snapshot-1", projectId: "project-1", kind: "manual", name: "수동 1", createdAt: "2026-10-06T05:02:00.000Z", doc: sampleDoc(), profileVersion: sampleDoc().profileVersion, candidateId: sampleDoc().candidateId, hash: "h" };
+    await openStudio({ repository: { listSnapshots: async () => [snap] } });
+    const ids = rowIds();
+    await removeServices();
+    const removed = rowIds();
+    act(() => void fireEvent.click(screen.getByRole("button", { name: "스냅샷" })));
+    const dialog = within(await screen.findByRole("dialog", { name: "스냅샷" }));
+    const previewButton = await dialog.findByRole("button", { name: "수동 1 미리보기" });
+    act(() => void fireEvent.click(previewButton));
+    await screen.findByRole("heading", { name: "스냅샷 '수동 1'를 보고 있습니다 · 편집은 멈췄습니다" });
+    act(() => void fireEvent.click(screen.getByRole("button", { name: "편집으로 돌아가기" })));
+    await waitFor(() => expect(rowIds()).toEqual(removed));
+    expect(await key(CTRL_Z)).toBe(false);
+    await waitFor(() => expect(rowIds()).toEqual(ids));
+    expect(notice()).toHaveTextContent(/^실행 취소: Services 삭제$/);
+    await key({ ...CTRL_Z, key: "Z", shiftKey: true });
+    await waitFor(() => expect(rowIds()).toEqual(removed));
+  }, 10000);
 });
 
 describe("입력칸 · 스택 밖 변경 — ER-AC-U2", () => {

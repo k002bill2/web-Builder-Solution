@@ -1,0 +1,14 @@
+contact--booking-390.png bot 919 diffRows 14 1030 1043 A.h 1044 B.h 1070
+ tail aligned by Δh 26 diff 1113
+contact--form-390.png bot 775 diffRows 14 886 899 A.h 881 B.h 926
+ tail aligned by Δh 45 diff 0
+contact--booking-390.png rows 1030-1043 shift 44 diff 1016
+contact--booking-390.png rows 1030-1043 shift 45 diff 0
+contact--booking-390.png rows 1030-1043 shift 46 diff 1046
+contact--booking-390.png rows 1030-1043 shift 47 diff 1228
+contact--booking-390.png rows 1030-1043 shift 48 diff 1255
+contact--form-390.png rows 886-899 shift 44 diff 1016
+contact--form-390.png rows 886-899 shift 45 diff 0
+contact--form-390.png rows 886-899 shift 46 diff 1046
+contact--form-390.png rows 886-899 shift 47 diff 1228
+contact--form-390.png rows 886-899 shift 48 diff 1255

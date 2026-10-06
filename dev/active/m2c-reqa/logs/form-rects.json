@@ -1,0 +1,726 @@
+{
+ "contact--booking": {
+  "390": {
+   "fieldset": [
+    [
+     16,
+     312,
+     374,
+     919
+    ]
+   ],
+   "disabled": [
+    true
+   ],
+   "notice": [
+    [
+     16,
+     232,
+     374,
+     297
+    ]
+   ],
+   "noticeInFieldset": [
+    false
+   ],
+   "parts": [
+    [
+     16,
+     345,
+     374,
+     390
+    ],
+    [
+     16,
+     438,
+     374,
+     483
+    ],
+    [
+     16,
+     531,
+     374,
+     576
+    ],
+    [
+     16,
+     624,
+     374,
+     669
+    ],
+    [
+     16,
+     717,
+     374,
+     799
+    ],
+    [
+     16,
+     814,
+     36,
+     835
+    ],
+    [
+     16,
+     874,
+     374,
+     919
+    ]
+   ],
+   "styles": [
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-check",
+     "bs": "none",
+     "bw": "0px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-submit",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-notice",
+     "bs": "solid",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    }
+   ]
+  },
+  "768": {
+   "fieldset": [
+    [
+     32,
+     319,
+     736,
+     833
+    ]
+   ],
+   "disabled": [
+    true
+   ],
+   "notice": [
+    [
+     32,
+     258,
+     736,
+     304
+    ]
+   ],
+   "noticeInFieldset": [
+    false
+   ],
+   "parts": [
+    [
+     32,
+     352,
+     736,
+     397
+    ],
+    [
+     32,
+     445,
+     736,
+     490
+    ],
+    [
+     32,
+     538,
+     376,
+     583
+    ],
+    [
+     392,
+     538,
+     736,
+     583
+    ],
+    [
+     32,
+     631,
+     736,
+     713
+    ],
+    [
+     32,
+     728,
+     52,
+     749
+    ],
+    [
+     32,
+     788,
+     115,
+     833
+    ]
+   ],
+   "styles": [
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-check",
+     "bs": "none",
+     "bw": "0px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-submit",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-notice",
+     "bs": "solid",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    }
+   ]
+  },
+  "1280": {
+   "fieldset": [
+    [
+     568,
+     218,
+     1184,
+     732
+    ]
+   ],
+   "disabled": [
+    true
+   ],
+   "notice": [
+    [
+     568,
+     157,
+     1184,
+     203
+    ]
+   ],
+   "noticeInFieldset": [
+    false
+   ],
+   "parts": [
+    [
+     568,
+     251,
+     1184,
+     296
+    ],
+    [
+     568,
+     344,
+     1184,
+     389
+    ],
+    [
+     568,
+     437,
+     868,
+     482
+    ],
+    [
+     884,
+     437,
+     1184,
+     482
+    ],
+    [
+     568,
+     530,
+     1184,
+     612
+    ],
+    [
+     568,
+     627,
+     588,
+     648
+    ],
+    [
+     568,
+     687,
+     651,
+     732
+    ]
+   ],
+   "styles": [
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-check",
+     "bs": "none",
+     "bw": "0px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-submit",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-notice",
+     "bs": "solid",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    }
+   ]
+  }
+ },
+ "contact--form": {
+  "390": {
+   "fieldset": [
+    [
+     16,
+     312,
+     374,
+     775
+    ]
+   ],
+   "disabled": [
+    true
+   ],
+   "notice": [
+    [
+     16,
+     232,
+     374,
+     297
+    ]
+   ],
+   "noticeInFieldset": [
+    false
+   ],
+   "parts": [
+    [
+     16,
+     345,
+     374,
+     390
+    ],
+    [
+     16,
+     438,
+     374,
+     483
+    ],
+    [
+     16,
+     531,
+     374,
+     655
+    ],
+    [
+     16,
+     670,
+     36,
+     691
+    ],
+    [
+     16,
+     730,
+     374,
+     775
+    ]
+   ],
+   "styles": [
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-check",
+     "bs": "none",
+     "bw": "0px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-submit",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-notice",
+     "bs": "solid",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    }
+   ]
+  },
+  "768": {
+   "fieldset": [
+    [
+     32,
+     319,
+     736,
+     782
+    ]
+   ],
+   "disabled": [
+    true
+   ],
+   "notice": [
+    [
+     32,
+     258,
+     736,
+     304
+    ]
+   ],
+   "noticeInFieldset": [
+    false
+   ],
+   "parts": [
+    [
+     32,
+     352,
+     736,
+     397
+    ],
+    [
+     32,
+     445,
+     736,
+     490
+    ],
+    [
+     32,
+     538,
+     736,
+     662
+    ],
+    [
+     32,
+     677,
+     52,
+     698
+    ],
+    [
+     32,
+     737,
+     115,
+     782
+    ]
+   ],
+   "styles": [
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-check",
+     "bs": "none",
+     "bw": "0px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-submit",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-notice",
+     "bs": "solid",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    }
+   ]
+  },
+  "1280": {
+   "fieldset": [
+    [
+     568,
+     218,
+     1184,
+     681
+    ]
+   ],
+   "disabled": [
+    true
+   ],
+   "notice": [
+    [
+     568,
+     157,
+     1184,
+     203
+    ]
+   ],
+   "noticeInFieldset": [
+    false
+   ],
+   "parts": [
+    [
+     568,
+     251,
+     1184,
+     296
+    ],
+    [
+     568,
+     344,
+     1184,
+     389
+    ],
+    [
+     568,
+     437,
+     1184,
+     561
+    ],
+    [
+     568,
+     576,
+     588,
+     597
+    ],
+    [
+     568,
+     636,
+     651,
+     681
+    ]
+   ],
+   "styles": [
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-field",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgb(255, 255, 255)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-check",
+     "bs": "none",
+     "bw": "0px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-submit",
+     "bs": "dashed",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    },
+    {
+     "cls": "kit-notice",
+     "bs": "solid",
+     "bw": "1px",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 26, 26)",
+     "op": "1"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,6 @@
+contact--booking-1280.png A1280x900 B1280x900 Δh0 zone x568-1184 y157-732 inZone 25427 outside 5674 bbox 0,801-1279,867
+contact--booking-768.png A768x1024 B768x1024 Δh0 zone x32-736 y258-833 inZone 26963 outside 4650 bbox 0,902-767,968
+contact--booking-390.png A390x1044 B390x1070 Δh26 zone x16-374 y232-919 inZone 36014 outside 3922 bbox 0,947-389,1042
+contact--form-1280.png A1280x900 B1280x900 Δh0 zone x568-1184 y157-681 inZone 21076 outside 5674 bbox 0,750-1279,816
+contact--form-768.png A768x1024 B768x1024 Δh0 zone x32-736 y258-782 inZone 22488 outside 4650 bbox 0,851-767,917
+contact--form-390.png A390x881 B390x926 Δh45 zone x16-374 y232-775 inZone 31085 outside 1297 bbox 0,822-389,863

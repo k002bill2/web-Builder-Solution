@@ -1,0 +1,3 @@
+FINISH {"spaceId":80,"closedSpace":true,"keptManagedLabels":[],"closedManagedLabels":["p1"],"preservedUnmanagedCount":0}
+LIST []
+

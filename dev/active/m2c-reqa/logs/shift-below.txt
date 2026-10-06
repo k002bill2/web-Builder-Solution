@@ -1,0 +1,6 @@
+contact--booking-1280.png rowsBelow 168 bestShift 26 diffAtBest 0 rowsCompared 168 shift0diff 5674
+contact--booking-768.png rowsBelow 191 bestShift 26 diffAtBest 0 rowsCompared 191 shift0diff 4650
+contact--booking-390.png rowsBelow 151 bestShift 46 diffAtBest 1046 rowsCompared 151 shift0diff 3899
+contact--form-1280.png rowsBelow 219 bestShift 26 diffAtBest 0 rowsCompared 219 shift0diff 5674
+contact--form-768.png rowsBelow 242 bestShift 26 diffAtBest 0 rowsCompared 242 shift0diff 4650
+contact--form-390.png rowsBelow 151 bestShift 46 diffAtBest 1046 rowsCompared 151 shift0diff 2786

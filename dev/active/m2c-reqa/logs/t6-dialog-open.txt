@@ -1,0 +1,14 @@
+{
+ "focus": "<button type=\"button\" role=\"radio\" aria-checked=\"true\" tabindex=\"0\" class=\"cursor-pointer whitespace-nowrap rounded-sm font-semibold transition-[background-colo",
+ "ctrls": [
+  "BUTTON|radio|button|데스크톱|ti=0|chk=true",
+  "BUTTON|radio|button|모바일|ti=-1|chk=false",
+  "BUTTON|null|button|닫기|ti=0|chk=null",
+  "DIV|region|null|3안 미리보기 영역|ti=0|chk=null",
+  "BUTTON|null|button|A안 선택|ti=0|chk=null",
+  "BUTTON|null|button|B안 선택|ti=0|chk=null",
+  "BUTTON|null|button|C안 선택|ti=0|chk=null"
+ ]
+}
+KB object function label,spaceId,mouse,keyboard
+

@@ -1,0 +1,6 @@
+768 edit tab open=true visible=true
+About panel open true
+ABOUT 이미지 편집 (1) | 이미지를 넣었습니다 대체텍스트를 적어 주세요 | 소개 이미지 사용 | 끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다 | 1000 × 1500 · WebP 30KB | 다른 이미지로 바꾸기 | 이미지 지우기 | 대체텍스트(필수) | 이미지에 담긴 내용을 한 문장으로 적어 주세요. 꾸밈용이면 '장식 이미지'를 고르세요. | 장식 이미지 — 대체텍스트 없이 둡니다 | 직접 찍었거나 사용 권리가 있는 이미지만 넣어 주세요. | 고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다
+GATE-before ["검사 · 내보내기:dis=null","대비 AA차단 1:dis=null","대체텍스트차단 2:dis=null","SEO 메타차단 2:dis=null","React 프로젝트(zip) 내보내기:dis=true","정적 HTML 내보내기:dis=true","첫 차단으로 이동:dis=null","PNG 내려받기:dis=true"]
+PROJECT LINKS ["A:/projects:프로젝트로 돌아가기","BUTTON:null:React 프로젝트(zip) 내보내기"]
+

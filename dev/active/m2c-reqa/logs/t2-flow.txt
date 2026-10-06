@@ -1,0 +1,12 @@
+OPEN: open=true status="" meta=없음 alt="" altDis=null deco=false btns=이미지 고르기 focus=SUMMARY|이미지 편집 (1)
+HELP "이미지 편집 (1)\n\n대표 이미지 사용\n\n끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다\n\n이미지 고르기\n대체텍스트(필수)\n\n이미지에 담긴 내용을 한 문장으로 적어 주세요. 꾸밈용이면 '장식 이미지'를 고르세요.\n\n장식 이미지 — 대체텍스트 없이 둡니다\n\n직접 찍었거나 사용 권리가 있는 이미지만 넣어 주세요.\n\n고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다"
+PICK1: open=true status="이미지를 넣었습니다 대체텍스트를 적어 주세요" meta=1500 × 1000 · WebP 28KB alt="" altDis=null deco=false btns=다른 이미지로 바꾸기/이미지 지우기 focus=SUMMARY|이미지 편집 (1)
+ALT: open=true status="이미지를 넣었습니다 대체텍스트를 적어 주세요" meta=1500 × 1000 · WebP 28KB alt="가로 패턴 그래픽" altDis=null deco=false btns=다른 이미지로 바꾸기/이미지 지우기 focus=INPUT|
+DECO: open=true status="이미지를 넣었습니다 대체텍스트를 적어 주세요" meta=1500 × 1000 · WebP 28KB alt="가로 패턴 그래픽" altDis=true deco=true btns=다른 이미지로 바꾸기/이미지 지우기 focus=INPUT|
+REPLACE: open=true status="이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요" meta=1000 × 1500 · WebP 30KB alt="" altDis=null deco=false btns=다른 이미지로 바꾸기/이미지 지우기 focus=INPUT|
+CLEAR-ENTER: open=true status="이미지를 지웠습니다" meta=없음 alt="" altDis=null deco=false btns=이미지 고르기 focus=BUTTON|이미지 고르기
+WIDTH 768 details.open=true visible=false selectedTab=섹션 ox=-15
+WIDTH 390 details.open=true visible=false selectedTab=섹션 ox=-15
+WIDTH 1280 details.open=true visible=true selectedTab=탭없음 ox=0
+END: open=true status="" meta=1500 × 1000 · WebP 28KB alt="" altDis=null deco=false btns=다른 이미지로 바꾸기/이미지 지우기 focus=BODY|본문으로 건너뛰기모던 카페 브랜드 프
+

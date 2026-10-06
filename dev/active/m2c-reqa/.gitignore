@@ -1,0 +1,8 @@
+exports/
+fixtures/*.gif
+fixtures/*.jpg
+fixtures/*.png
+fixtures/*.svg
+fixtures/*.webp
+run2/
+static/

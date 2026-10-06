@@ -67,3 +67,11 @@
 - `swapTheme`·`diffSlotValues` 신규 엔진 연산: PageDoc 계약 변경 0 → Q-18 선례(범위 예외 파일)로 PLAN에서 처리.
 - 새 의존성: 0(네이티브 `dialog` · 기존 렌더 경로 재사용).
 - 프로필 화면 "새로 시작"(EQ-2 A) UI: 이미 결정된 사항의 미구현 — BACKLOG 후보로 보고만(ER SPEC 4절).
+
+---
+
+## 결정 기록 (2026-10-06)
+
+- **MQ-R1~R5 전부 ★A** — 영환님 Slack 위임 "계속 추천대로 진행해줘"(thread 1790269973.118759)에 따라 Jarvis 기록. 예산 상향(R3-B)·엔진 계약 동작 변경(R2-C)은 선택하지 않음.
+- ER-2의 `engine/ops/theme.ts` 신규 연산은 PageDoc·SectionDefinition 계약 변경 0 조건의 범위 예외(Q-18 선례). 계약이 바뀌어야 하면 멈추고 MQ.
+- Codex: r1 adversarial 완료·3건 반영(SPEC r1). r2 review는 레인 종료로 미완(`logs/codex-review-r2.txt` 시작부만) — r1 반영분은 Codex 재검토 없음. ER-2·ER-3a 구현 Codex에서 함께 확인.

@@ -41,7 +41,9 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-10 | ER-5b QA P3 후보 | 스냅샷 대화상자를 Esc로 닫으면 포커스가 BODY(1024·1280, 재현 1회) — 테마 대화상자는 "테마 바꾸기"로 복귀. 닫힌 뒤 "스냅샷" 버튼으로 복귀 | Developer · ✅ QFIX `0415e74` 닫힘 |
 | B-ER-11 | ER-5b QA 관찰 P3 | 390에서 테마 적용 직후 알림 줄 "되돌리기"가 뷰포트 위(y=-337)라 안 보임(status라 보조기기는 읽음) — 알림 위치/스크롤 | Designer → Developer · ✅ QFIX `0415e74` 수정(단위) — 390 실화면 미확인 |
 | B-QA-01 | ER-5·5b QA 운영 | QA 문서 생성 경로만 ~10턴 — QA 레인 턴 예산 항목당 15턴+. Ego Lite 캡처: 창 minimized면 `Browser.setWindowBounds normal`, 스크롤된 fixed dialog는 `captureBeyondViewport:false`+뷰포트 clip(`er-5b-qa/lib.mjs shotV`) | Jarvis 브리프 |
-| B-M3P-01 | M3P-4 QA QB-01 | 썸네일 21장 hero h1이 모두 "일상에 꼭 맞는 서비스를 만듭니다"(21/21, 고유 1종), h2도 3종 조합뿐 — 모양·색은 구분되나 문구로 업종·레퍼런스 구분 0. 업종·레퍼런스별 hero·섹션 문구 주입(썸네일·생성 문서 공통, 빌드 시라 `/catalog` 예산 영향 0 예상) | Developer · M3′ 목적 직결 |
-| B-M3P-02 | M3P-4 QA QB-02 | 상세 섹션 계획·와이어 ↔ 렌더 불일치: gen-beauty-1 About "team-grid-3"(상세) vs 실렌더 "이야기+이미지" · 상세 섹션 7개(Footer 없음) vs 보드·편집기 8개 | Developer · M3′ 목적 직결 |
+| B-M3P-01 | M3P-4 QA QB-01 | 썸네일 21장 hero h1이 모두 "일상에 꼭 맞는 서비스를 만듭니다"(21/21, 고유 1종), h2도 3종 조합뿐 — 모양·색은 구분되나 문구로 업종·레퍼런스 구분 0. 업종·레퍼런스별 hero·섹션 문구 주입(썸네일·생성 문서 공통, 빌드 시라 `/catalog` 예산 영향 0 예상) | Developer · M3′ 목적 직결 · ✅ M3P-5 `e62a48f` 닫힘(h1 고유 21/21) |
+| B-M3P-02 | M3P-4 QA QB-02 | 상세 섹션 계획·와이어 ↔ 렌더 불일치: gen-beauty-1 About "team-grid-3"(상세) vs 실렌더 "이야기+이미지" · 상세 섹션 7개(Footer 없음) vs 보드·편집기 8개 | Developer · M3′ 목적 직결 · ✅ M3P-5 `e62a48f` 닫힘(생성 15, 상세 = 렌더 1:1·8섹션) — 큐레이션 6은 B-M3P-05 |
 | B-M3P-03 | M3P-4 QA QB-05 경미 | 상세 화면에 "생성 조합" 표식 없음(buildNote 문장만) · 라이선스/생성 조합 Tag가 썸네일 header 내비·CTA를 덮음 | Designer → Developer |
 | B-M3P-04 | M3P-4 QA AC-B5 관찰 | 필터 토글 재마운트 때 썸네일 재요청(74건=21×재마운트, 260KB) — vite preview 캐시 헤더 영향 추정, 운영 서버 캐시 정책(`?v=` 고정 → immutable)에서 확인 | 배포 시 |
+| B-M3P-05 | M3P-5 기록 | 큐레이션 6개 상세 변형 이름이 렌더와 다름(ref-a About split→story 등)·ref-a Footer 없음·ref-c~f 섹션 자유 표기 — 맞추려면 큐레이션 픽스처 수정 승인 필요. 상세 와이어(`ReferencePreview`)는 전 레퍼런스 공통(MQ-M3P-6 A) | 영환님 승인 → Developer |
+| B-M3P-06 | M3P-5 기록 | 편집기 새 문서는 여전히 `sampleCopy` 공통 문구 — 업종 문구 주입은 `/studio` 예산(여유 0.03) 재조정 선행 | 예산 결정 → Developer |

@@ -2,7 +2,7 @@
 
 - [x] P0 BRIEF 커밋
 - [x] S0 실측 (번들·썸네일 21장) — 아래 S0 절
-- [ ] 카드 썸네일 (RED→GREEN): lazy img · THUMBNAIL_KEYS import() 지연 · 와이어 폴백 · 레이아웃 이동 0 · 실패 복귀(AC-U6) · 생성 조합/미측정(AC-U5)
+- [ ] 카드 썸네일 — BLOCKED: 상쇄 3단계 뒤에도 /catalog 첫 화면 100.02 > 멈춤선 99.90(남은 0.12). 브리프대로 구현 멈춤·보고. 작업분은 `thumbnail-over-budget.patch`로 보존, app은 base로 복원
 - [ ] Codex P2-1 트레이 생성 카드 (RED→GREEN)
 - [ ] Codex P2-2 빈 팔레트 방어 (RED→GREEN, --check 변화 0)
 - [ ] 예산 멈춤선 확인 (/catalog 99.90 · /studio 128.70 · /compare 124.70 · 렌더 변화 0)
@@ -24,3 +24,22 @@
 | 렌더 JS · CSS | 84.19 · 8.85 | 변화 0 |
 
 - **썸네일 6장(21장 아님)**: 원인 `src/thumbs/entry.tsx` `thumbnailIds()`가 큐레이션 `referenceComparisons`·`referenceDetails`만 읽음 — 생성 `generatedReferenceDetails.ts` 미포함. M3P-2 "자동 포함" 예상과 다름. `src/thumbs/**` 수정 금지라 이 레인에서 고치지 않음 → 생성 카드 = SPEC 5절 "썸네일 키 없음"(와이어). **Jarvis 결정 항목.**
+
+## TDD 기록
+### 카드 썸네일 (ReferenceCard.test 새 describe 4건)
+- 예측 RED: `thumbnailLoader.ts`는 빈 맵을 돌려주는 스텁(임포트 해소용) → 키 있음·실패 복귀 2건은 img를 못 찾아 FAIL, 생성 조합 1건은 글자 없음 FAIL, 키 없음/로더 실패 1건은 load 미호출로 FAIL. 총 4 FAIL 예상.
+- RED 4 FAIL 확인(예측 일치) → GREEN 4 PASS(카드·catalog 74건 통과)까지 갔으나 아래 예산 초과로 커밋하지 않음(빌드 깨진 채 커밋 금지).
+
+### 카드 썸네일 예산 상쇄 기록 (`npx vite build` + `check-bundle-size`, /catalog 첫 화면 KB)
+| 단계 | 내용 | /catalog 첫 | CatalogPage 청크 gzip |
+|---|---|---|---|
+| S0 | base | 99.86 | 6.87 |
+| 1 | 카드 img·hook·로더(키 맵만 `import()` 별도 청크 0.18KB) · 생성 조합 Tag | 100.18 | 7.20 |
+| 2 | img 요소·alt·경로를 지연 청크로(JSX 반환) | 100.13 | 7.16 |
+| 2' | 지연 청크가 JSX 런타임을 import → 카드 청크에 `__vite__mapDeps` 헤더(파일명 4개)가 붙음 → img **속성 객체**만 반환하게 변경 | 100.05 | 7.07 |
+| 3 | 로더 객체 파일 제거(카드가 직접 `import()`, 테스트는 `vi.mock`) · 언마운트 가드 제거 | 100.03 | 7.05 |
+| 4 | 래퍼 div 제거(생성 조합 Tag는 article 기준) · `z-10` 제거 · role/label 토글 합치기 | **100.02** | 7.03 |
+
+- 결론: 마지막 단계 감소 −0.01 → 다듬기 여지 소진. 남은 수단(트레이 필 펼침 목록 지연·카드 자체 지연 청크)은 첫 화면·포커스 동작을 바꾸는 범위 밖 변경이라 시도하지 않음. **썸네일 연결은 멈춤(남은 0.12KB)** — Jarvis 결정 대기. 썸네일 6장 사실(S0)과 함께 보고.
+- 보존: `dev/active/m3p-3/thumbnail-over-budget.patch`(카드·지연 청크 `thumbnailImage.ts`·테스트 4건, 4단계 상태). 빌드 대상 아님.
+- 멈춤선 규칙은 항목별 적용: 썸네일 멈춤, P2-1·P2-2는 각자 판정.

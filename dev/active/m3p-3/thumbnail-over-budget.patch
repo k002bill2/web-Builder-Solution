@@ -1,0 +1,206 @@
+diff --git a/app/src/components/catalog/ReferenceCard.test.tsx b/app/src/components/catalog/ReferenceCard.test.tsx
+index 0cca853..7e8c32d 100644
+--- a/app/src/components/catalog/ReferenceCard.test.tsx
++++ b/app/src/components/catalog/ReferenceCard.test.tsx
+@@ -1,10 +1,25 @@
+-import { cleanup, render, screen, within } from "@testing-library/react";
++import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+ import userEvent from "@testing-library/user-event";
+ import { MemoryRouter } from "react-router";
+-import { describe, expect, it, vi } from "vitest";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { thumbnailImageOf } from "../../features/catalog/thumbnailImage";
++import { generatedReferenceFixtures } from "../../fixtures/generatedReferences";
+ import { referenceFixtures } from "../../fixtures/references";
+ import { ReferenceCard } from "./ReferenceCard";
+ 
++/** 썸네일 지연 청크 — 기본은 실제 모듈(테스트 키 맵 = 빈 맵), 썸네일 테스트만 바꿔 끼운다 */
++const thumbs = vi.hoisted(() => ({ load: undefined as undefined | (() => unknown) }));
++vi.mock("../../features/catalog/thumbnailImage", async (actual) => {
++  const real = await actual<typeof import("../../features/catalog/thumbnailImage")>();
++  return {
++    ...real,
++    get THUMBNAIL_IMAGE() {
++      if (!thumbs.load) return real.THUMBNAIL_IMAGE;
++      return thumbs.load();
++    },
++  };
++});
++
+ const cafe = referenceFixtures[0]!;
+ 
+ function renderCard(overrides: Partial<Parameters<typeof ReferenceCard>[0]> = {}) {
+@@ -131,3 +146,81 @@ describe("ReferenceCard", () => {
+     expect(within(screen.getByRole("article", { name: "프리미엄 헤어살롱" })).getByText("licensed")).toBeInTheDocument();
+   });
+ });
++
++describe("ReferenceCard 실렌더 썸네일 (M3P-3 · SPEC m3p 4.1·5·7절)", () => {
++  const KEY = "ref-a.0123abcd";
++  const PLACEHOLDER = "모던 카페 브랜드 썸네일 (자체 렌더 플레이스홀더)";
++  const RENDERED = "모던 카페 브랜드 첫 화면 실제 렌더 미리보기";
++
++  afterEach(() => {
++    vi.restoreAllMocks();
++    thumbs.load = undefined;
++  });
++
++  it("키가 있으면 같은 출처 lazy img가 이름을 갖고, 와이어는 이름 없는 배경으로 남는다(레이아웃 이동 0)", async () => {
++    thumbs.load = () => thumbnailImageOf({ [cafe.id]: KEY });
++    const { card } = renderCard();
++    const img = await within(card).findByRole("img", { name: RENDERED });
++    expect(img).toHaveAttribute("src", `/thumbs/${KEY}.svg`);
++    expect(img).toHaveAttribute("loading", "lazy");
++    expect(img).toHaveAttribute("decoding", "async");
++    expect(img).toHaveClass("absolute", "inset-0", "object-cover", "object-top");
++    expect(within(card).queryByRole("img", { name: PLACEHOLDER })).toBeNull();
++    const wire = img.parentElement;
++    expect(wire).toHaveClass("relative", "bg-background-alternative", "aspect-video", "sm:aspect-[4/3]");
++    expect(wire).not.toHaveAttribute("role");
++    expect(wire).not.toHaveAttribute("aria-label");
++    expect(within(card).getByText(cafe.licenseStatus).closest('[aria-hidden="true"]')).not.toBeNull();
++    expect(within(card).getAllByRole("img", { name: /미리보기|썸네일/ })).toHaveLength(1);
++  });
++
++  it("img 실패 → img 제거·와이어 role=img 이름 복귀, 알림·콘솔 0 (M3P-AC-U6)", async () => {
++    thumbs.load = () => thumbnailImageOf({ [cafe.id]: KEY });
++    const consoleError = vi.spyOn(console, "error");
++    const consoleWarn = vi.spyOn(console, "warn");
++    const { card } = renderCard();
++    fireEvent.error(await within(card).findByRole("img", { name: RENDERED }));
++    expect(within(card).queryByRole("img", { name: RENDERED })).toBeNull();
++    expect(card.querySelector("img")).toBeNull();
++    expect(within(card).getByRole("img", { name: PLACEHOLDER })).not.toHaveAttribute("aria-hidden");
++    expect(screen.queryByRole("alert")).toBeNull();
++    expect(screen.queryByRole("status")).toBeNull();
++    expect(consoleError).not.toHaveBeenCalled();
++    expect(consoleWarn).not.toHaveBeenCalled();
++  });
++
++  it("키 맵에 id가 없거나 키 맵을 못 받으면 img 0·와이어 이름 유지, 콘솔 0", async () => {
++    const consoleError = vi.spyOn(console, "error");
++    const load = vi.fn(() => thumbnailImageOf({ other: "other.0123abcd" }));
++    thumbs.load = load;
++    renderCard();
++    await waitFor(() => expect(load).toHaveBeenCalled());
++    expect(screen.getByRole("img", { name: PLACEHOLDER })).toBeInTheDocument();
++    cleanup();
++    load.mockImplementation(() => {
++      throw new Error("chunk");
++    });
++    const { card } = renderCard();
++    await waitFor(() => expect(load).toHaveBeenCalledTimes(2));
++    expect(card.querySelector("img")).toBeNull();
++    expect(within(card).getByRole("img", { name: PLACEHOLDER })).toBeInTheDocument();
++    expect(consoleError).not.toHaveBeenCalled();
++  });
++
++  it("생성 레퍼런스: '생성 조합' 글자 Tag(읽힘)·'접근성·성능 미측정'·<time> 0, 큐레이션 카드엔 '생성 조합' 0 (M3P-AC-U5)", () => {
++    const generated = generatedReferenceFixtures[0]!;
++    render(
++      <MemoryRouter>
++        <ReferenceCard reference={generated} saved={false} inTray={false} onToggleSave={vi.fn()} onToggleCompare={vi.fn()} />
++      </MemoryRouter>,
++    );
++    const card = screen.getByRole("article", { name: generated.title });
++    const q = within(card);
++    expect(q.getByText("생성 조합")).toBeVisible();
++    expect(q.getByText("생성 조합").closest('[aria-hidden="true"], [role="img"]')).toBeNull();
++    expect(q.getByText("접근성·성능 미측정")).toBeInTheDocument();
++    expect(card.querySelector("time")).toBeNull();
++    cleanup();
++    expect(within(renderCard().card).queryByText("생성 조합")).toBeNull();
++  });
++});
+diff --git a/app/src/components/catalog/ReferenceCard.tsx b/app/src/components/catalog/ReferenceCard.tsx
+index 9bd8c37..28bd87c 100644
+--- a/app/src/components/catalog/ReferenceCard.tsx
++++ b/app/src/components/catalog/ReferenceCard.tsx
+@@ -1,3 +1,4 @@
++import { useEffect, useState, type ImgHTMLAttributes } from "react";
+ import { Link } from "react-router";
+ import type { DesignReference } from "../../domain/reference";
+ import { INDUSTRY_LABELS, LAYOUT_LABELS, MOTION_LABELS, VISUAL_TAG_LABELS } from "../../fixtures/catalogFilters";
+@@ -13,13 +14,22 @@ export interface ReferenceCardProps {
+   readonly onToggleCompare: (id: string) => void;
+ }
+ 
+-/** 자체 렌더 와이어프레임 썸네일 — 외부 캡처를 쓰지 않는다. 색은 레퍼런스 팔레트 데이터에서 온다. */
++/**
++ * 썸네일 — 같은 출처 실렌더 SVG `<img>`(키가 있을 때)를 자체 렌더 와이어 안에 absolute로 얹는다(SPEC m3p 4.1·5·7절). 높이는 와이어가 정해 로드 전후 같다.
++ * img가 이름을 가지면 와이어는 role·이름을 내려놓고(남는 건 빈 장식 + aria-hidden 라이선스 Tag), 실패하면 img를 빼고 와이어 이름을 되돌린다(AC-U6).
++ */
+ function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
+   const p = r.colorPalette;
++  const [image, setImage] = useState<ImgHTMLAttributes<HTMLImageElement>>();
++  // 키 맵·img 속성은 지연 청크(첫 화면 예산). 못 받으면 와이어 유지·콘솔 0. 언마운트 뒤 setState는 React가 무시한다
++  useEffect(() => {
++    import("../../features/catalog/thumbnailImage")
++      .then((m) => setImage(m.THUMBNAIL_IMAGE(r)))
++      .catch(() => undefined);
++  }, [r]);
+   return (
+     <div
+-      role="img"
+-      aria-label={`${r.title} 썸네일 (자체 렌더 플레이스홀더)`}
++      {...(!image && { role: "img", "aria-label": `${r.title} 썸네일 (자체 렌더 플레이스홀더)` })}
+       className="relative flex aspect-video flex-col gap-1.5 rounded-lg bg-background-alternative px-3.5 py-3 sm:aspect-[4/3]"
+     >
+       <div className="flex h-1.25 w-full justify-between">
+@@ -34,7 +44,8 @@ function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
+           <span key={i} className="flex-1 rounded-xs border border-line-alternative bg-surface-elevated" />
+         ))}
+       </div>
+-      <div className="absolute top-2.5 right-2.5">
++      {image && <img {...image} onError={() => setImage(undefined)} />}
++      <div aria-hidden className="absolute top-2.5 right-2.5">
+         <Tag tone={LICENSE_TONE[r.licenseStatus]} size="sm">
+           {r.licenseStatus}
+         </Tag>
+@@ -97,8 +108,13 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
+   const titleId = `${r.id}-title`;
+   const tags = r.visualTags.map((t) => VISUAL_TAG_LABELS[t]);
+   return (
+-    <article aria-labelledby={titleId} className="flex flex-col gap-2">
++    <article aria-labelledby={titleId} className="relative flex flex-col gap-2">
+       <Thumbnail reference={r} />
++      {r.sourceKind === "library_composition" && (
++        <Tag size="sm" className="absolute top-9 right-2.5">
++          생성 조합
++        </Tag>
++      )}
+       <div className="min-w-0">
+         <h3 id={titleId} className="ds-body2 font-semibold text-label-normal">
+           <Link to={`/references/${r.id}`} className="line-clamp-2 rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none">
+diff --git a/app/src/features/catalog/thumbnailImage.ts b/app/src/features/catalog/thumbnailImage.ts
+new file mode 100644
+index 0000000..b13e519
+--- /dev/null
++++ b/app/src/features/catalog/thumbnailImage.ts
+@@ -0,0 +1,26 @@
++/**
++ * 카드 썸네일 img 속성 (M3P-3 · SPEC m3p 4.1·5·7절) — 키 맵과 함께 `import()`로 받는 지연 청크(첫 화면 예산 — 카드에는 상태 토글만 남긴다).
++ * JSX 대신 속성만 돌려준다(이 청크가 다른 청크에 기대지 않아 프리로드 목록이 카드 청크에 붙지 않는다). 키가 없으면 undefined(와이어 유지).
++ */
++import type { ImgHTMLAttributes } from "react";
++import type { DesignReference } from "../../domain/reference";
++import { THUMBNAIL_KEYS, thumbnailPath } from "./thumbnailKeys";
++
++export type ThumbnailImage = (reference: DesignReference) => ImgHTMLAttributes<HTMLImageElement> | undefined;
++
++export const thumbnailImageOf =
++  (keys: Readonly<Record<string, string>>): ThumbnailImage =>
++  (r) => {
++    const key = keys[r.id];
++    return key === undefined
++      ? undefined
++      : {
++          src: thumbnailPath(key),
++          alt: `${r.title} 첫 화면 실제 렌더 미리보기`,
++          loading: "lazy",
++          decoding: "async",
++          className: "absolute inset-0 size-full rounded-lg object-cover object-top",
++        };
++  };
++
++export const THUMBNAIL_IMAGE = thumbnailImageOf(THUMBNAIL_KEYS);

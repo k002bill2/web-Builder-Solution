@@ -1,0 +1,526 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-2/app
+
+ ❯ src/components/studio/ThemeDialog.test.tsx (0 test)
+ ❯ src/test/gateRowActions.test.tsx (1 test | 1 failed) 29ms
+   ❯ 게이트 차단 줄 행동 가드 — ER-AC-G1 (1)
+     × 모든 줄이 차단이어도 줄마다 행동 ≥ 1 · 대비 줄 = 행동 2개 27ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ThemeSwap.test.tsx (7 tests | 7 failed) 12715ms
+   ❯ 테마 영역 · E-S18 — ER-AC-T5 (2)
+     × 문서 v < 계열 최신 → 캡션 '프로필 v3가 새로 있습니다' + 버튼이 이유로 받음 · '프로필 보기' href에 ?v=문서 버전 3398ms
+     × 문서 v = 최신 → 캡션 0(버튼은 있음) 3068ms
+   ❯ 적용 · 되돌리기 — ER-AC-T3 · T4 (3)
+     × 적용 → 알림 1문장 '…슬롯 값 N개 모두 그대로입니다' · 캔버스 킷 토큰 = 새 버전 팔레트 · 포커스 '테마 바꾸기' · 대비 줄 재계산 65ms
+     × 목적이 바뀌어 필수 섹션 차단이 생기면 두 번째 문장(섹션 자동 추가 0) 47ms
+     × 알림 줄 '되돌리기' → 원래 버전(캔버스·Tag) · 알림 '테마를 프로필 v1로 되돌렸습니다' · 선택 그대로 41ms
+   ❯ 게이트 대비 줄 행동 — ER-AC-T6 (2)
+     × 통과 버전 있음 → '테마 바꾸기'(그 버전을 미리 고른 대화상자) + '프로필에서 보정' 링크(?v=문서 버전) 3044ms
+     × 통과 버전 없음 → 캡션 + 링크(버튼 0) 3049ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ThemeDialog.test.tsx [ src/components/studio/ThemeDialog.test.tsx ]
+Error: Failed to resolve import "./ThemeDialog" from "src/components/studio/ThemeDialog.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/er-2/app/src/components/studio/ThemeDialog.test.tsx:5:24
+  3  |  import { sampleDoc } from "../../engine/testing/sampleDoc";
+  4  |  import { FAIL, PASS, themeSeries } from "../../features/studio/testing/themeSeries";
+  5  |  import ThemeDialog from "./ThemeDialog";
+     |                           ^
+  6  |  var _jsxFileName = "/Users/younghwankang/orca/workspaces/web-builder-solution/er-2/app/src/components/studio/ThemeDia...
+  7  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/gateRowActions.test.tsx > 게이트 차단 줄 행동 가드 — ER-AC-G1 > 모든 줄이 차단이어도 줄마다 행동 ≥ 1 · 대비 줄 = 행동 2개
+AssertionError: expected [ '대비 AA차단 1' ] to deeply equal ArrayContaining ["테마 바꾸기", "프로필에서 보정"]
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   "테마 바꾸기",
+-   "프로필에서 보정",
++ [
++   "대비 AA차단 1",
+  ]
+
+ ❯ src/test/gateRowActions.test.tsx:30:89
+     28|     }
+     29|     const contrast = rows.find((r) => r.dataset.gateRow === "contrast"…
+     30|     expect([...contrast.querySelectorAll("button, a[href]")].map((e) =…
+       |                                                                                         ^
+     31|   });
+     32| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 테마 영역 · E-S18 — ER-AC-T5 > 문서 v < 계열 최신 → 캡션 '프로필 v3가 새로 있습니다' + 버튼이 이유로 받음 · '프로필 보기' href에 ?v=문서 버전
+TestingLibraryElementError: Unable to find an element with the text: 프로필 v3가 새로 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+  [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m테마[0m
+  [36m</h2>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+  [36m>[39m
+    [0m프로필 v2[0m
+  [36m</span>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1"[39m
+  [36m>[39m
+    [0m프로필 보기[0m
+  [36m</a>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+  [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m테마[0m
+  [36m</h2>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+  [36m>[39m
+    [0m프로필 v2[0m
+  [36m</span>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1"[39m
+  [36m>[39m
+    [0m프로필 보기[0m
+  [36m</a>[39m
+[36m</section>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/studio/ThemeSwap.test.tsx:24:41
+     22|   it("문서 v < 계열 최신 → 캡션 '프로필 v3가 새로 있습니다' + 버튼이 이유로 받음 · '프로필 보기' href…
+     23|     await openStudio({ doc: sampleDoc({ profileVersion: 2 }), series: …
+     24|     const caption = await themeRegion().findByText("프로필 v3가 새로 있습니다");
+       |                                         ^
+     25|     expect(themeRegion().getByRole("button", { name: "테마 바꾸기" })).toHa…
+     26|     expect(themeRegion().getByRole("link", { name: "프로필 보기" })).toHave…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 테마 영역 · E-S18 — ER-AC-T5 > 문서 v = 최신 → 캡션 0(버튼은 있음)
+TestingLibraryElementError: Unable to find role="button" and name "테마 바꾸기"
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+  [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m테마[0m
+  [36m</h2>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+  [36m>[39m
+    [0m프로필 v2[0m
+  [36m</span>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1"[39m
+  [36m>[39m
+    [0m프로필 보기[0m
+  [36m</a>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+  [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m테마[0m
+  [36m</h2>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+  [36m>[39m
+    [0m프로필 v2[0m
+  [36m</span>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1"[39m
+  [36m>[39m
+    [0m프로필 보기[0m
+  [36m</a>[39m
+[36m</section>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/studio/ThemeSwap.test.tsx:31:25
+     29|   it("문서 v = 최신 → 캡션 0(버튼은 있음)", async () => {
+     30|     await openStudio({ doc: sampleDoc({ profileVersion: 2 }), series: …
+     31|     await themeRegion().findByRole("button", { name: "테마 바꾸기" });
+       |                         ^
+     32|     expect(themeRegion().queryByText(/새로 있습니다/)).toBeNull();
+     33|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 적용 · 되돌리기 — ER-AC-T3 · T4 > 적용 → 알림 1문장 '…슬롯 값 N개 모두 그대로입니다' · 캔버스 킷 토큰 = 새 버전 팔레트 · 포커스 '테마 바꾸기' · 대비 줄 재계산
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 적용 · 되돌리기 — ER-AC-T3 · T4 > 목적이 바뀌어 필수 섹션 차단이 생기면 두 번째 문장(섹션 자동 추가 0)
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 적용 · 되돌리기 — ER-AC-T3 · T4 > 알림 줄 '되돌리기' → 원래 버전(캔버스·Tag) · 알림 '테마를 프로필 v1로 되돌렸습니다' · 선택 그대로
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "테마 바꾸기"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "테마":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------link:
+
+  Name "프로필 보기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+  [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [0m테마[0m
+  [36m</h2>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"ds-caption1 rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+  [36m>[39m
+    [0m프로필 v1[0m
+  [36m</span>[39m
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1"[39m
+  [36m>[39m
+    [0m프로필 보기[0m
+  [36m</a>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ opener src/components/studio/ThemeSwap.test.tsx:14:69
+     12| const contrastRow = () => document.querySelector<HTMLElement>('[data-g…
+     13|
+     14| async function swapTo(version: number, opener = () => themeRegion().ge…
+       |                                                                     ^
+     15|   act(() => void fireEvent.click(opener()));
+     16|   const dialog = within(await screen.findByRole("dialog", { name: "테마 …
+ ❯ src/components/studio/ThemeSwap.test.tsx:15:34
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ swapTo src/components/studio/ThemeSwap.test.tsx:15:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 게이트 대비 줄 행동 — ER-AC-T6 > 통과 버전 있음 → '테마 바꾸기'(그 버전을 미리 고른 대화상자) + '프로필에서 보정' 링크(?v=문서 버전)
+TestingLibraryElementError: Unable to find role="button" and name "테마 바꾸기"
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col"[39m
+  [33mdata-gate-row[39m=[32m"contrast"[39m
+[36m>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-8 items-center gap-2 rounded-sm px-2 text-left hover:bg-fill-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"size-2 flex-none rounded-full bg-status-negative"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-label flex-1"[39m
+    [36m>[39m
+      [0m대비 AA[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+    [36m>[39m
+      [0m차단 1[0m
+    [36m</span>[39m
+  [36m</button>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative px-2 ps-6"[39m
+  [36m>[39m
+    [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+  [36m</p>[39m
+  [36m<details[39m
+    [33mclass[39m=[32m"px-2 ps-6"[39m
+  [36m>[39m
+    [36m<summary[39m
+      [33mclass[39m=[32m"ds-caption1 cursor-pointer text-label-neutral"[39m
+    [36m>[39m
+      [0m원인 · 대체안 [0m
+      [0m1[0m
+      [0m건[0m
+    [36m</summary>[39m
+    [36m<ul[39m
+      [33mclass[39m=[32m"ds-caption1 flex flex-col gap-1 pt-1 text-label-neutral"[39m
+    [36m>[39m
+      [36m<li>[39m
+        [0mR-08[0m
+        [0m · [0m
+        [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+        [0m · [0m
+        [0m프로필에서 보정[0m
+      [36m</li>[39m
+    [36m</ul>[39m
+  [36m</details>[39m
+[36m</li>[39m
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col"[39m
+  [33mdata-gate-row[39m=[32m"contrast"[39m
+[36m>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-8 items-center gap-2 rounded-sm px-2 text-left hover:bg-fill-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"size-2 flex-none rounded-full bg-status-negative"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-label flex-1"[39m
+    [36m>[39m
+      [0m대비 AA[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+    [36m>[39m
+      [0m차단 1[0m
+    [36m</span>[39m
+  [36m</button>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative px-2 ps-6"[39m
+  [36m>[39m
+    [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+  [36m</p>[39m
+  [36m<details[39m
+    [33mclass[39m=[32m"px-2 ps-6"[39m
+  [36m>[39m
+    [36m<summary[39m
+      [33mclass[39m=[32m"ds-caption1 cursor-pointer text-label-neutral"[39m
+    [36m>[39m
+      [0m원인 · 대체안 [0m
+      [0m1[0m
+      [0m건[0m
+    [36m</summary>[39m
+    [36m<ul[39m
+      [33mclass[39m=[32m"ds-caption1 flex flex-col gap-1 pt-1 text-label-neutral"[39m
+    [36m>[39m
+      [36m<li>[39m
+        [0mR-08[0m
+        [0m · [0m
+        [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+        [0m · [0m
+        [0m프로필에서 보정[0m
+      [36m</li>[39m
+    [36m</ul>[39m
+  [36m</details>[39m
+[36m</li>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/studio/ThemeSwap.test.tsx:72:48
+     70|   it("통과 버전 있음 → '테마 바꾸기'(그 버전을 미리 고른 대화상자) + '프로필에서 보정' 링크(?v=문서 버전)"…
+     71|     await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: …
+     72|     const action = await within(contrastRow()).findByRole("button", { …
+       |                                                ^
+     73|     expect(within(contrastRow()).getByRole("link", { name: "프로필에서 보정" …
+     74|     act(() => void fireEvent.click(action));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 게이트 대비 줄 행동 — ER-AC-T6 > 통과 버전 없음 → 캡션 + 링크(버튼 0)
+TestingLibraryElementError: Unable to find an element with the text: 대비를 통과하는 프로필 버전이 아직 없습니다 — 프로필에서 보정값을 쓰고 저장한 뒤 테마를 바꾸세요. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col"[39m
+  [33mdata-gate-row[39m=[32m"contrast"[39m
+[36m>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-8 items-center gap-2 rounded-sm px-2 text-left hover:bg-fill-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"size-2 flex-none rounded-full bg-status-negative"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-label flex-1"[39m
+    [36m>[39m
+      [0m대비 AA[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+    [36m>[39m
+      [0m차단 1[0m
+    [36m</span>[39m
+  [36m</button>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative px-2 ps-6"[39m
+  [36m>[39m
+    [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+  [36m</p>[39m
+  [36m<details[39m
+    [33mclass[39m=[32m"px-2 ps-6"[39m
+  [36m>[39m
+    [36m<summary[39m
+      [33mclass[39m=[32m"ds-caption1 cursor-pointer text-label-neutral"[39m
+    [36m>[39m
+      [0m원인 · 대체안 [0m
+      [0m1[0m
+      [0m건[0m
+    [36m</summary>[39m
+    [36m<ul[39m
+      [33mclass[39m=[32m"ds-caption1 flex flex-col gap-1 pt-1 text-label-neutral"[39m
+    [36m>[39m
+      [36m<li>[39m
+        [0mR-08[0m
+        [0m · [0m
+        [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+        [0m · [0m
+        [0m프로필에서 보정[0m
+      [36m</li>[39m
+    [36m</ul>[39m
+  [36m</details>[39m
+[36m</li>[39m
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col"[39m
+  [33mdata-gate-row[39m=[32m"contrast"[39m
+[36m>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-8 items-center gap-2 rounded-sm px-2 text-left hover:bg-fill-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"size-2 flex-none rounded-full bg-status-negative"[39m
+    [36m/>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-label flex-1"[39m
+    [36m>[39m
+      [0m대비 AA[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+    [36m>[39m
+      [0m차단 1[0m
+    [36m</span>[39m
+  [36m</button>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative px-2 ps-6"[39m
+  [36m>[39m
+    [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+  [36m</p>[39m
+  [36m<details[39m
+    [33mclass[39m=[32m"px-2 ps-6"[39m
+  [36m>[39m
+    [36m<summary[39m
+      [33mclass[39m=[32m"ds-caption1 cursor-pointer text-label-neutral"[39m
+    [36m>[39m
+      [0m원인 · 대체안 [0m
+      [0m1[0m
+      [0m건[0m
+    [36m</summary>[39m
+    [36m<ul[39m
+      [33mclass[39m=[32m"ds-caption1 flex flex-col gap-1 pt-1 text-label-neutral"[39m
+    [36m>[39m
+      [36m<li>[39m
+        [0mR-08[0m
+        [0m · [0m
+        [0mC-5 보조 글자(muted / bg) 대비 3.8:1 — 목표 4.5:1 미달[0m
+        [0m · [0m
+        [0m프로필에서 보정[0m
+      [36m</li>[39m
+    [36m</ul>[39m
+  [36m</details>[39m
+[36m</li>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/studio/ThemeSwap.test.tsx:84:40
+     82|   it("통과 버전 없음 → 캡션 + 링크(버튼 0)", async () => {
+     83|     await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: …
+     84|     expect(await within(contrastRow()).findByText("대비를 통과하는 프로필 버전이 아직…
+       |                                        ^
+     85|     expect(within(contrastRow()).getByRole("link", { name: "프로필에서 보정" …
+     86|     expect(within(contrastRow()).queryByRole("button", { name: "테마 바꾸기…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+
+ Test Files  3 failed | 1 passed (4)
+      Tests  8 failed | 2 passed (10)
+   Start at  11:19:36
+   Duration  14.28s (tests 74%, environment 17%, transform 5%, setup 3%, import 1%)
+

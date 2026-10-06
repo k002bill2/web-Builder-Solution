@@ -164,3 +164,160 @@ describe("saveDoc (8.3 · E-AC-11)", () => {
     expect((await repo.saveDoc("project-1", 2, edit(retried, "셋째"))).revision).toBe(3);
   });
 });
+
+describe("createSnapshot (ER-AC-S1 · 2a-05 5.11 · E-AC-31 앞부분)", () => {
+  it("기본 이름 '수동 · 시:분'(주입 now) · kind manual · reason 없음 · 문서 revision 그대로 · 사본 = 저장 문서 · 스냅샷·사본 동결", async () => {
+    const { repo } = await setup();
+    const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    const snap = await repo.createSnapshot("project-1");
+    expect(snap).toMatchObject({ snapshotId: "snapshot-1", projectId: "project-1", kind: "manual", name: "수동 · 09:00", createdAt: "2026-09-27T09:00:01.000Z", profileVersion: 1, candidateId: "B", hash: doc.hash });
+    expect("reason" in snap).toBe(false);
+    expect(snap.doc).toBe(doc);
+    expect(Object.isFrozen(snap) && Object.isFrozen(snap.doc)).toBe(true);
+    expect(await repo.getDoc("project-1")).toBe(doc);
+    expect(await repo.listSnapshots("project-1")).toEqual([snap]);
+  });
+
+  it("이름 = 앞뒤 공백 제거 · 30자(코드포인트) 허용 · 31자 SCHEMA_INVALID · 빈 값·공백만 = 기본 이름 · 판정 순서 모양 → NOT_FOUND(프로젝트·문서)", async () => {
+    const { repo } = await setup();
+    expect(await codeOf(repo.createSnapshot("project-1", 7 as never))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.createSnapshot("project-9", "가".repeat(31)))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.createSnapshot("project-9"))).toBe("NOT_FOUND");
+    expect(await codeOf(repo.createSnapshot("project-1"))).toBe("NOT_FOUND");
+    await repo.startDoc("project-1", 1, "B", "create");
+    expect((await repo.createSnapshot("project-1", "  시안 확정  ")).name).toBe("시안 확정");
+    expect((await repo.createSnapshot("project-1", "😀".repeat(30))).name).toBe("😀".repeat(30));
+    expect(await codeOf(repo.createSnapshot("project-1", "😀".repeat(31)))).toBe("SCHEMA_INVALID");
+    expect((await repo.createSnapshot("project-1", "")).name).toMatch(/^수동 · \d\d:\d\d$/);
+    expect((await repo.createSnapshot("project-1", "   ")).name).toMatch(/^수동 · \d\d:\d\d$/);
+    expect((await repo.listSnapshots("project-1")).map((s) => s.snapshotId)).toEqual(["snapshot-1", "snapshot-2", "snapshot-3", "snapshot-4"]);
+  });
+
+  it("목록 계약 — 12개 → listSnapshots 전부(자르지 않음) · 생성 순서 · id snapshot-1..12 연속(최근 10 + '이전 N개 더 보기'는 화면이 자른다)", async () => {
+    const { repo } = await setup();
+    await repo.startDoc("project-1", 1, "B", "create");
+    for (let i = 1; i <= 12; i++) await repo.createSnapshot("project-1", `스냅샷 ${i}`);
+    const list = await repo.listSnapshots("project-1");
+    expect(list.map((s) => s.snapshotId)).toEqual(Array.from({ length: 12 }, (_, i) => `snapshot-${i + 1}`));
+    expect(list.map((s) => s.name)).toEqual(Array.from({ length: 12 }, (_, i) => `스냅샷 ${i + 1}`));
+  });
+
+  it("fail phase:'commit' → 스냅샷 0 · 문서 그대로 · 재시도는 빈 번호 없이 snapshot-1", async () => {
+    const { repo } = await setup("ref-a", { fail: ({ method, seq, phase }) => (method === ("createSnapshot" as never) && seq === 1 && phase === "commit" ? new Error("커밋 실패") : undefined) });
+    const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    await expect(repo.createSnapshot("project-1", "첫 시도")).rejects.toThrow("커밋 실패");
+    expect(await repo.listSnapshots("project-1")).toEqual([]);
+    expect(await repo.getDoc("project-1")).toBe(doc);
+    expect((await repo.createSnapshot("project-1", "다시")).snapshotId).toBe("snapshot-1");
+  });
+});
+
+describe("restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31)", () => {
+  it("'복원 전 · 시:분' auto·restore(지금 문서 사본) + 새 revision(스냅샷 내용) 한 번에 · now 1회 · 기존 스냅샷 동결·그대로 · 다음 저장 STALE_DOC 0", async () => {
+    const { repo } = await setup();
+    const { doc: first } = await repo.startDoc("project-1", 1, "B", "create");
+    const kept = await repo.createSnapshot("project-1", "처음");
+    const edited = await repo.saveDoc("project-1", 1, edit(first, "바꾼 제목"));
+    const restored = await repo.restoreSnapshot("project-1", kept.snapshotId, edited.revision);
+    expect(restored).toEqual({ ...first, revision: 3, updatedAt: "2026-09-27T09:00:03.000Z" });
+    expect(restored.hash).toBe(first.hash);
+    expect(Object.isFrozen(restored)).toBe(true);
+    expect(await repo.getDoc("project-1")).toBe(restored);
+    const list = await repo.listSnapshots("project-1");
+    expect(list[0]).toBe(kept);
+    expect(Object.isFrozen(kept) && Object.isFrozen(kept.doc) && kept.doc === first).toBe(true);
+    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-2", kind: "auto", reason: "restore", name: "복원 전 · 09:00", createdAt: restored.updatedAt, hash: edited.hash });
+    expect(list.at(-1)?.doc).toBe(edited);
+    expect((await repo.saveDoc("project-1", restored.revision, edit(restored, "복원 뒤 편집"))).revision).toBe(4);
+  });
+
+  it("판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) · 실패면 스냅샷 0 추가", async () => {
+    const { repo } = await setup();
+    expect(await codeOf(repo.restoreSnapshot("project-9", "snapshot-1", 1.5))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.restoreSnapshot("project-9", 3 as never, 1))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.restoreSnapshot("project-9", "snapshot-1", 1))).toBe("NOT_FOUND");
+    expect(await codeOf(repo.restoreSnapshot("project-1", "snapshot-1", 1))).toBe("NOT_FOUND");
+    const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    expect(await codeOf(repo.restoreSnapshot("project-1", "snapshot-1", 1))).toBe("NOT_FOUND");
+    const kept = await repo.createSnapshot("project-1");
+    await expect(repo.restoreSnapshot("project-1", kept.snapshotId, 7)).rejects.toMatchObject({ code: "STALE_DOC", doc });
+    expect(await repo.listSnapshots("project-1")).toEqual([kept]);
+    expect(await repo.getDoc("project-1")).toBe(doc);
+  });
+
+  it("fail phase:'commit' → 문서·스냅샷 변화 0 · 재시도 = 같은 revision으로 성공 · 빈 번호 없음", async () => {
+    const { repo } = await setup("ref-a", { fail: ({ method, seq, phase }) => (method === ("restoreSnapshot" as never) && seq === 1 && phase === "commit" ? new Error("커밋 실패") : undefined) });
+    const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    const kept = await repo.createSnapshot("project-1");
+    await expect(repo.restoreSnapshot("project-1", kept.snapshotId, 1)).rejects.toThrow("커밋 실패");
+    expect(await repo.getDoc("project-1")).toBe(doc);
+    expect(await repo.listSnapshots("project-1")).toEqual([kept]);
+    expect((await repo.restoreSnapshot("project-1", kept.snapshotId, 1)).revision).toBe(2);
+    expect((await repo.listSnapshots("project-1")).map((s) => s.snapshotId)).toEqual(["snapshot-1", "snapshot-2"]);
+  });
+
+  it("자동 스냅샷(새로 시작 전)도 복원 — 안·프로필 버전이 스냅샷 쪽으로 · 번호는 restart와 같은 열", async () => {
+    const { repo } = await setup();
+    await repo.startDoc("project-1", 1, "A", "create");
+    const b = await repo.startDoc("project-1", 1, "B", "restart", 1);
+    const [restart] = await repo.listSnapshots("project-1");
+    const restored = await repo.restoreSnapshot("project-1", restart!.snapshotId, b.doc.revision);
+    expect(restored).toMatchObject({ candidateId: "A", revision: 3, hash: restart!.hash });
+    expect((await repo.listSnapshots("project-1")).map((s) => [s.snapshotId, s.reason, s.candidateId])).toEqual([
+      ["snapshot-1", "restart", "A"],
+      ["snapshot-2", "restore", "B"],
+    ]);
+  });
+});
+
+describe("resolveConflict (ER-AC-S5 · 2a-05 E-S09 · E-AC-10 · B-ER-02)", () => {
+  /** 탭 1 문서(revision 1) → 다른 탭이 revision 2로 저장 → 탭 1의 미저장 편집(옛 revision) */
+  async function conflict(hooks: Hooks = {}) {
+    const { repo } = await setup("ref-a", hooks);
+    const { doc: first } = await repo.startDoc("project-1", 1, "B", "create");
+    const theirs = await repo.saveDoc("project-1", 1, edit(first, "다른 탭 편집"));
+    const mine = edit(first, "내 편집");
+    await expect(repo.saveDoc("project-1", 1, mine)).rejects.toMatchObject({ code: "STALE_DOC", doc: theirs });
+    return { repo, theirs, mine };
+  }
+
+  it("mine — 다른 쪽(저장된 문서)을 '충돌 보존 · 시:분' auto·conflict 1개로 남긴 뒤 내 문서 저장(revision 최신 + 1) · 다음 저장 STALE_DOC 0", async () => {
+    const { repo, theirs, mine } = await conflict();
+    const saved = await repo.resolveConflict("project-1", "mine", mine);
+    expect(saved).toEqual({ ...mine, revision: 3, updatedAt: "2026-09-27T09:00:02.000Z" });
+    expect(Object.isFrozen(saved)).toBe(true);
+    expect(await repo.getDoc("project-1")).toBe(saved);
+    const list = await repo.listSnapshots("project-1");
+    expect(list).toHaveLength(1);
+    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-1", kind: "auto", reason: "conflict", name: "충돌 보존 · 09:00", createdAt: saved.updatedAt, hash: theirs.hash });
+    expect(list.at(-1)?.doc).toBe(theirs);
+    expect((await repo.saveDoc("project-1", saved.revision, edit(saved, "이어서"))).revision).toBe(4);
+  });
+
+  it("theirs — 내 편집을 auto·conflict 1개로 남기고 저장된 문서 그대로 반환(revision 변화 0) · 사본 동결", async () => {
+    const { repo, theirs, mine } = await conflict();
+    const latest = await repo.resolveConflict("project-1", "theirs", mine);
+    expect(latest).toBe(theirs);
+    expect(await repo.getDoc("project-1")).toBe(theirs);
+    const [kept, ...rest] = await repo.listSnapshots("project-1");
+    expect(rest).toEqual([]);
+    expect(kept).toMatchObject({ snapshotId: "snapshot-1", kind: "auto", reason: "conflict", hash: mine.hash, doc: mine });
+    expect(kept?.name).toMatch(/^충돌 보존 · \d\d:\d\d$/);
+    expect(Object.isFrozen(kept) && Object.isFrozen(kept?.doc)).toBe(true);
+  });
+
+  it("판정 — 모양(선택·문서 L4 검증·해시·projectId) SCHEMA_INVALID → NOT_FOUND · commit 실패(mine·theirs) → 문서·스냅샷 변화 0", async () => {
+    const fail = ({ method, phase }: ProjectCall) => (method === ("resolveConflict" as never) && phase === "commit" ? new Error("커밋 실패") : undefined);
+    const { repo, theirs, mine } = await conflict({ fail });
+    expect(await codeOf(repo.resolveConflict("project-1", "both" as never, mine))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.resolveConflict("project-1", "theirs", { nope: true } as never))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.resolveConflict("project-1", "mine", { ...mine, hash: "0000000000000000" }))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.resolveConflict("project-2", "mine", mine))).toBe("SCHEMA_INVALID");
+    const empty = await setup();
+    expect(await codeOf(empty.repo.resolveConflict("project-1", "mine", mine))).toBe("NOT_FOUND");
+    await expect(repo.resolveConflict("project-1", "mine", mine)).rejects.toThrow("커밋 실패");
+    await expect(repo.resolveConflict("project-1", "theirs", mine)).rejects.toThrow("커밋 실패");
+    expect(await repo.getDoc("project-1")).toBe(theirs);
+    expect(await repo.listSnapshots("project-1")).toEqual([]);
+  });
+});

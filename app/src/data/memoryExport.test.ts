@@ -289,3 +289,39 @@ describe("앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT)", () => {
     expect(loads).toBe(2);
   });
 });
+
+describe("스냅샷 번호 공유 — 수동·내보내기 전이 같은 순서 (ER-3a · E-AC-43)", () => {
+  it("수동 → 내보내기(+ 멱등 재생 +0) → 수동 = snapshot-1·2·3 연속 · 내보내기 결과 snapshotId = 목록의 auto·export", async () => {
+    const { repo, save } = await setup({ generators: { "static-html": fake } });
+    const doc = await save(RENDERED);
+    const manual = await repo.createSnapshot("project-1");
+    const exported = await repo.requestExport("project-1", "static-html", doc.revision);
+    await repo.requestExport("project-1", "static-html", doc.revision);
+    const later = await repo.createSnapshot("project-1", "내보낸 뒤");
+    expect([manual.snapshotId, exported.snapshotId, later.snapshotId]).toEqual(["snapshot-1", "snapshot-2", "snapshot-3"]);
+    expect((await repo.listSnapshots("project-1")).map((s) => [s.snapshotId, s.kind, s.reason ?? null])).toEqual([
+      ["snapshot-1", "manual", null],
+      ["snapshot-2", "auto", "export"],
+      ["snapshot-3", "manual", null],
+    ]);
+  });
+});
+
+describe("스냅샷 번호 공유 — 내보내기 전·수동·복원 전·충돌 보존 (ER-3a)", () => {
+  it("내보내기 → 수동 → 복원 → 충돌 해결(mine) = snapshot-1..4 연속 · 종류·이유 순서 고정", async () => {
+    const { repo, save } = await setup({ generators: { "static-html": fake } });
+    const doc = await save(RENDERED);
+    const exported = await repo.requestExport("project-1", "static-html", doc.revision);
+    const manual = await repo.createSnapshot("project-1");
+    const restored = await repo.restoreSnapshot("project-1", exported.snapshotId, doc.revision);
+    const stale = { ...restored, meta: { ...restored.meta, title: "옛 탭 편집" }, revision: doc.revision };
+    await repo.resolveConflict("project-1", "mine", { ...stale, hash: hashDoc(stale) });
+    expect([exported.snapshotId, manual.snapshotId]).toEqual(["snapshot-1", "snapshot-2"]);
+    expect((await repo.listSnapshots("project-1")).map((s) => [s.snapshotId, s.kind, s.reason ?? null])).toEqual([
+      ["snapshot-1", "auto", "export"],
+      ["snapshot-2", "manual", null],
+      ["snapshot-3", "auto", "restore"],
+      ["snapshot-4", "auto", "conflict"],
+    ]);
+  });
+});

@@ -41,6 +41,22 @@ export function commitOp(
   return { ok: true, result, before };
 }
 
+/**
+ * 단축키 · "더보기" 실행 취소/다시 실행(ER-4 U1) — 지금 문서가 그 기록과 이어질 때만(스택 밖 변경을 덮지 않는다).
+ * 편집 경계가 거절하면(미리보기 중) 스택 그대로(B-ER-05와 같은 규칙). 알림 줄 "되돌리기" 대상은 비운다
+ */
+export function stepHistory(redo: boolean, docRef: RefObject<PageDoc>, stack: UndoStack, setLast: (last: LastOp) => void, edit: (next: PageDoc) => boolean | void) {
+  const entry = redo ? stack.peekRedo() : stack.peek();
+  if (!entry || (redo ? entry.before : entry.after) !== docRef.current) return undefined;
+  const next = redo ? entry.after : entry.before;
+  if (edit(next) === false) return undefined;
+  if (redo) stack.redo();
+  else stack.undo();
+  docRef.current = next;
+  setLast(undefined);
+  return entry;
+}
+
 /** 이동 뒤 — 알림 + 누른 버튼 포커스 그대로 */
 export function afterMove(outcome: Done, setNotice: Notify, requestFocus: Focus, button: HTMLElement, sectionName: Name): void {
   const moved = outcome.result.doc.sections[outcome.result.index]!;

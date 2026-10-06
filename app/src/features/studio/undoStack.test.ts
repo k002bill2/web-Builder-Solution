@@ -40,4 +40,38 @@ describe("실행 취소 스택 (K2 · 5.14)", () => {
     unmount();
     expect(stack.size()).toBe(0);
   });
+
+  it("다시 실행(ER-AC-U1): undo → redo 목록 · redo → 다시 · peek = 다음 대상 · push는 redo를 비움 · clear는 양쪽(U5)", () => {
+    const stack = createUndoStack();
+    stack.push(entry(1));
+    stack.push(entry(2));
+    expect(stack.peek()?.label).toBe("연산 2");
+    expect(stack.undo()?.label).toBe("연산 2");
+    expect(stack.size()).toBe(1);
+    expect(stack.peekRedo()?.label).toBe("연산 2");
+    expect(stack.redo()?.label).toBe("연산 2");
+    expect(stack.peekRedo()).toBeUndefined();
+    expect(stack.size()).toBe(2);
+    stack.undo();
+    stack.push(entry(3));
+    expect(stack.peekRedo()).toBeUndefined();
+    expect(stack.redo()).toBeUndefined();
+    const e3 = stack.undo()!;
+    stack.clear();
+    expect(stack.size()).toBe(0);
+    expect(stack.peekRedo()).toBeUndefined();
+    expect(stack.reachable(e3.before)).toEqual([]);
+  });
+
+  it("참조 집합(SPEC 3.5) = 지금 문서에서 실행 취소 · 다시 실행으로 닿는 문서만 — 끊긴 기록은 넣지 않는다", () => {
+    const stack = createUndoStack();
+    const [a, b, c] = [sampleDoc({ revision: 1 }), sampleDoc({ revision: 2 }), sampleDoc({ revision: 3 })];
+    stack.push({ label: "1", before: a, after: b });
+    stack.push({ label: "2", before: b, after: c });
+    expect(stack.reachable(c)).toEqual([b, a]);
+    stack.undo();
+    expect(stack.reachable(b)).toEqual([a, c]);
+    expect(stack.reachable(sampleDoc({ revision: 9 }))).toEqual([]);
+  });
 });
+

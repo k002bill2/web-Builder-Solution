@@ -1,0 +1,4 @@
+exports/
+fixtures/*
+!fixtures/gen-fixtures.mjs
+!fixtures/MANIFEST.json

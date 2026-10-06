@@ -1,0 +1,2 @@
+4337 listen: 0
+ego finish: {"spaceId":2,"closedSpace":true,"keptManagedLabels":[],"closedManagedLabels":["p1"]} · listTaskSpaces()=[] · preview PID 3693 kill

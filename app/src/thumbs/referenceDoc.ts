@@ -1,13 +1,16 @@
 /**
  * 레퍼런스 → 렌더 입력 (M3P SPEC 3절 공통 렌더 입력) — 비교 `sectionPlan` → `writeStartDoc`(앱 "편집 시작"과 같은 엔진 변형 대응·예시 문구) +
- * 상세 팔레트 5역할·글꼴·간격 + 비교 카드·이미지 비율 → KitTokenInput. 시각·난수 0(고정 상수) → 같은 레퍼런스 = 같은 문서.
+ * 상세 팔레트 5역할·글꼴·간격 + 비교 카드·이미지 비율 → KitTokenInput. 텍스트는 예시 문구 위에 업종·레퍼런스별 썸네일 문구(`thumbCopy`, B-M3P-01)를 덮는다. 시각·난수 0(고정 상수) → 같은 레퍼런스 = 같은 문서.
  * 목록 밖 값(카드 모양·비율·역할 누락)은 throw — 조용한 폴백 0. 빌드 도구 전용(앱 번들 밖 — thumbsImportGuard).
  */
 import { writeStartDoc, type StartDocWrite } from "../data/startDocWrite";
 import { generatedReferenceComparisonAttributes, generatedReferenceDetailFixtures } from "../fixtures/generatedReferenceDetails";
 import { referenceComparisonAttributes } from "../fixtures/referenceComparisons";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
+import { generatedReferenceFixtures } from "../fixtures/generatedReferences";
+import { referenceFixtures } from "../fixtures/references";
 import type { CanvasPalette, KitCardStyle, KitTokenInput } from "../render/protocol";
+import { thumbCopyOf } from "./thumbCopy";
 
 const CARD_STYLES: readonly KitCardStyle[] = ["bordered-lg", "bordered-md", "elevated", "flat"];
 const RATIOS: readonly KitTokenInput["mediaRatio"][] = ["16:9", "4:5", "1:1"];
@@ -24,17 +27,32 @@ function oneOf<T extends string>(list: readonly T[], value: string, what: string
 /** 큐레이션 + 생성 레퍼런스(ADR-004 개정 7 결정 5) — 같은 상세·비교 형태라 렌더 입력 규칙은 그대로 */
 const DETAILS = { ...referenceDetailFixtures, ...generatedReferenceDetailFixtures };
 const ATTRIBUTES = { ...referenceComparisonAttributes, ...generatedReferenceComparisonAttributes };
+const CARDS = new Map([...referenceFixtures, ...generatedReferenceFixtures].map((r) => [r.id, r]));
+
+type ThumbDoc = Extract<StartDocWrite, { readonly ok: true }>["doc"];
 
 export interface RenderInput {
   /** 엔진 문서(PageDoc) — engine 직접 import 없이 writeStartDoc 결과 타입에서(engineImportGuard) */
-  readonly doc: Extract<StartDocWrite, { readonly ok: true }>["doc"];
+  readonly doc: ThumbDoc;
   readonly kitTokens: KitTokenInput;
+}
+
+/** 이미 문자열인 텍스트 슬롯만 덮는다(withSampleCopy와 같은 규칙) — 새 객체. hash는 다시 재지 않는다(썸네일 SSR은 문서를 검증·저장하지 않고 그리기만) */
+function withThumbCopy(doc: ThumbDoc, copy: Readonly<Record<string, string>>): ThumbDoc {
+  const sections = doc.sections.map((section) => ({
+    ...section,
+    slots: Object.fromEntries(
+      Object.entries(section.slots).map(([key, value]) => [key, typeof value === "string" ? (copy[`${section.type}/${key}`] ?? value) : value]),
+    ),
+  }));
+  return { ...doc, sections };
 }
 
 export function referenceRenderInput(id: string): RenderInput {
   const detail = DETAILS[id];
   const attributes = ATTRIBUTES[id];
-  if (!detail || !attributes) throw new Error(`썸네일 렌더 입력 없음: ${id}`);
+  const card = CARDS.get(id);
+  if (!detail || !attributes || !card) throw new Error(`썸네일 렌더 입력 없음: ${id}`);
   const written = writeStartDoc({
     candidateId: `thumb-${id}`,
     sections: attributes.sectionPlan.map((s) => ({ ...s, motion: "L1" })),
@@ -54,7 +72,7 @@ export function referenceRenderInput(id: string): RenderInput {
   const grid = Number.parseFloat(detail.spacing.grid);
   if (!Number.isFinite(grid) || grid <= 0) throw new Error(`썸네일 ${id}: 간격 grid "${detail.spacing.grid}"`);
   return {
-    doc: written.doc,
+    doc: withThumbCopy(written.doc, thumbCopyOf(card)),
     kitTokens: {
       palette,
       card: { tone: attributes.card.surfaceTone === "dark" ? "dark" : "light", style: oneOf(CARD_STYLES, attributes.card.style, "카드 모양", id) },

@@ -1,0 +1,35 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a10f93-1300-7190-b2cd-6d789f9d2090).
+[codex] Reviewer started: changes against '45a5721'
+[codex] Running command: /bin/zsh -lc "git diff --stat 45a5721ed376371b6862026c8e0c553e9d5a8554; pwd; find .. -name AG...
+[codex] Command failed: /bin/zsh -lc "git diff --stat 45a5721ed376371b6862026c8e0c553e9d5a8554; pwd; find .. -name AG... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for p in /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/younghwankang/o...
+[codex] Command completed: /bin/zsh -lc 'for p in /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/younghwankang/o... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff 45a5721 -- app/src/components/studio/StudioLayout.tsx; cat app/src/fea...
+[codex] Command completed: /bin/zsh -lc 'git diff 45a5721 -- app/src/components/studio/StudioLayout.tsx; cat app/src/fea... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/components/studio/SnapshotPreview.tsx; cat app/src/components/studi...
+[codex] Command completed: /bin/zsh -lc "cat app/src/components/studio/SnapshotPreview.tsx; cat app/src/components/studi... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'restoreSnapshot|listSnapshots' app/src/data; cat app/src/features/studio...
+[codex] Command completed: /bin/zsh -lc "rg -n 'restoreSnapshot|listSnapshots' app/src/data; cat app/src/features/studio... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '35,150p' app/src/components/studio/ImageSlotField.tsx; sed -n '50,95p' ...
+[codex] Command failed: /bin/zsh -lc "sed -n '35,150p' app/src/components/studio/ImageSlotField.tsx; sed -n '50,95p' ... (exit 2)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 미리보기 잠금이 진행 중인 비동기 편집과 저장 실패 경로를 차단하지 못합니다. 또한 복원 완료 후 보조 조회 실패를 복원 실패로 처리하여 실제 저장 상태와 UI 상태가...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 45a5721
+
+미리보기 잠금이 진행 중인 비동기 편집과 저장 실패 경로를 차단하지 못합니다. 또한 복원 완료 후 보조 조회 실패를 복원 실패로 처리하여 실제 저장 상태와 UI 상태가 어긋납니다.
+
+Full review comments:
+
+- [P1] 미리보기 잠금을 비동기 편집 완료에도 적용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/components/studio/useSnapshots.tsx:59-59
+  이미지 변환을 시작한 뒤 완료 전에 스냅샷 미리보기를 열면, `useImagePick`의 진행 중 작업은 시작 당시의 `onEdit`(즉 `save.edit`)을 계속 보유합니다. 데스크톱에서는 편집 패널이 그대로 마운트되어 작업도 취소되지 않으므로, 변환이 끝나면 미리보기 중에도 문서와 이미지 맵이 변경되고 자동 저장됩니다. 복원 요청과 겹치면 늦은 편집이 복원 결과를 덮을 수도 있습니다. 렌더마다 콜백을 교체하는 대신 최신 잠금 상태를 확인하는 편집 경계를 사용하고, 진행 중 이미지 작업도 취소하거나 반영을 차단해야 합니다.
+
+- [P2] 저장 성공 여부를 확인한 뒤 미리보기를 여세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/components/studio/SnapshotLayer.tsx:40-40
+  저장이 실패하거나 오프라인이면 `save.flushed()`는 `false`를 반환하지만, 이 콜백은 결과를 무시하고 미리보기를 엽니다. 따라서 미저장 변경이 남은 상태에서 편집이 잠기며, 오프라인 이후 `online` 이벤트가 발생하면 스케줄러가 미리보기 중에도 해당 변경을 자동 저장합니다. 반환값이 참일 때만 미리보기로 전환하고, 실패하면 대화상자를 유지하면서 저장 실패를 안내해야 합니다.
+
+- [P2] 복원 후 목록 조회 실패를 복원 실패와 분리하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/components/studio/SnapshotPreview.tsx:99-102
+  `save.adopt()`가 성공한 뒤 `listSnapshots()`만 실패하면, 저장소와 편집 문서는 이미 복원되었는데도 화면은 '복원하지 못했습니다'를 표시하고 미리보기와 잠금을 유지합니다. `onRestored`가 실행되지 않아 되돌리기도 제공되지 않으며, 사용자가 안내대로 재시도하면 복원 쓰기와 자동 스냅샷이 다시 생성됩니다. 목록 조회는 보조 정보로 취급하여 실패하더라도 성공한 복원 전환과 되돌리기 등록은 완료해야 합니다.

@@ -1,59 +1,74 @@
-# ER-3b REPORT — 스냅샷 화면 · **멈춤(판정선 초과 + 6절 목록 밖 가드 실패)**
+# ER-3b REPORT — 스냅샷 화면 (재개 완료 · Codex r2 지적 3건 미반영)
 
-- **첫 줄 요약: /studio 진입 127.69 → 128.49KB(+0.80) — 판정선 128.43 초과, ER-3b 몫 목표 0.35 초과. 브리프 규칙대로 즉시 멈춤 · 추가 빌드 시도 0.** 동시에 6절 목록 밖 단언 1건 실패(`memoryExport.test.ts` "화면은 스냅샷을 만들지 않는다 (E-AC-30 · E-AC-43)").
-- base `45a5721` · 브랜치 `k002bill2/er-3b` · 서브에이전트 0 · push/merge/삭제 0 · main 5480 무접촉 · 엔진·계약·data·docs·scripts·lock 수정 0
-- 커밋된 것 = 단계 A(GREEN)뿐. 단계 B·C 화면 코드는 **커밋하지 않음**(빌드 깨진 채 커밋 금지) → 작업 트리 그대로 + `dev/active/er-3b/wip-stage-bc.patch`(신규 파일 포함 전체 diff)로 보존.
+- **첫 줄: /studio 진입 127.69 → 128.33KB(+0.64) — 판정선 128.43 이내 통과, 목표 128.04 미달. ER-3b 몫 0.64 > 0.35 → ER-4 여유는 0.10KB뿐(경고).** 첫 화면 91.76(±0.00).
+- base `45a5721` · 브랜치 `k002bill2/er-3b` · 서브에이전트 0 · push/merge/삭제 0 · main 5480 무접촉 · 엔진·계약·data 인터페이스·docs·scripts·lock 수정 0
+- 재개 커밋: `9a96a51`(B·C + 감량 + 가드 대체) · `d9f92bb`(Codex r1 3건) · `c12aad6`(S6·S10 테스트) · 이 REPORT 커밋
+- **열린 것: Codex r2 P1 1 · P2 2 미반영**(턴 상한 55 도달 규칙 — 6절). 다음 레인 1순위.
 
-## 1. 멈춘 이유 (L1)
+## 1. 번들 (결정 1 — 감량 3회, `logs/build-*.txt`)
 
-| 조건 | 측정 | 근거 |
-|---|---|---|
-| /studio 진입 ≤ 128.43(멈춤) · ER-3b 몫 ≤ 0.35 | **128.49 (+0.80)** · 첫 화면 91.76 → 91.75 | `logs/build-base.txt` → `logs/build-bc.txt` (check-bundle-size exit 1) |
-| 6절 목록 밖 테스트 깨짐 0 | **1건**: `src/data/memoryExport.test.ts:235` "components·features·pages 비테스트 코드에 createSnapshot 호출 0" | `logs/gate-bc.txt` (708 중 1 실패) |
+| 시도 | 바꾼 것 | /studio 진입 | 판정 |
+|---|---|---|---|
+| 기준 | `logs/build-base.txt` | 127.69 | — |
+| 멈춤 당시 | `logs/build-bc.txt` | 128.49 | 초과 |
+| 1 | SnapshotPreview `ds/Callout` → 같은 토큰 자체 마크업(Icon 0) | 128.51 | 초과 — Callout 청크는 **기준 빌드에도 있음**(1차 REPORT 추정 틀림) |
+| 2 | 대화상자·미리보기·복원·되돌리기 처리를 조작 뒤 청크 `SnapshotLayer` 1개로, 진입 훅은 상태·버튼·참조 집합만 | 128.35 | 통과 |
+| 3 | 지연 청크의 `isPageDoc` 직접 import 제거(props 전달 — 진입 청크 미리 받기 목록에서 파일 4개 빠짐) + lazy 로더 파일 분리 | **128.30** | 통과 |
+| 최종 | Codex r1 반영 뒤(`logs/build-e.txt`) | **128.33** | 통과 · 몫 0.64 |
 
-- 가드 충돌: 이 가드는 "화면은 스냅샷을 만들지 않는다"(E-AC-30·43 — 내보내기 전 스냅샷은 requestExport만)를 **createSnapshot 호출 0** 으로 잰다. ER-AC-S1·S9("지금 상태 저장")는 화면이 `createSnapshot`을 부르는 것이 기능 자체라 정면 충돌. 파일은 6절 목록에 있지만 사유("번호 공유")가 달라 **목록 밖 단언**으로 판정 → 멈춤. 판정 요청(아래 4절).
-- 번들 원인 추정(L3, 추가 빌드 없이 산출물만 봄): 새 조작 뒤 청크 `SnapshotPreview` 1.39 · `SnapshotDialog` 1.75(gzip)는 분리됐다. 진입 증가 +0.80은 ① 정적 훅 `useSnapshots.tsx`(버튼·상태·참조 집합·lazy 래퍼) + StudioLayout 연결선, ② **`SnapshotPreview`가 `ds/Callout`(→ `Icon`)을 import → 공통 청크 재분할**(빌드에 `Callout-*.js` 0.42KB 별도 청크 생김 — `StudioToolbar.tsx` 주석의 "Icon import 시 +0.39" 실측과 같은 유형) 로 추정. 재개 시 1순위 = Callout 대신 Icon 없는 자체 마크업, 2순위 = 되돌리기·참조 집합 로직을 조작 뒤로.
+- 원인 실측: 증가분은 거의 전부 `StudioLayout` 청크(17.46 → 18.1) — 정적 훅 + 연결선. 남은 0.6KB를 더 줄이려면 연결선(버튼 3곳·참조 집합·게이트 캡션·미리보기 폭 감싸개)을 옮겨야 해 범위가 커져 멈춤.
+- 다른 화면: /compare·/profile·/projects 변화 ≤0.01(로그 대조). 렌더 문서 84.19 그대로.
 
-## 2. AC 판정 (현재 작업 트리 기준 — 단계 B·C는 미커밋)
+## 2. AC 판정
 
 | AC | 판정 | 근거 |
 |---|---|---|
-| ER-AC-S3 | 테스트 통과(미커밋) | `SnapshotFlow.test.tsx` 미리보기: 캔버스 = 스냅샷 문서(`frame.lastDoc`) · 포커스 Callout 제목 · 편집 필드·"검사 · 내보내기" `aria-disabled` + 같은 이유 · 입력 무시 · 2.3초 진행 뒤 저장 추가 0 · 돌아가기 → 포커스 "스냅샷" · 잠금 해제 |
-| ER-AC-S4 | 테스트 통과(미커밋) · **해석 명시** | 알림 "스냅샷 '수동 1'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 14:05'에 있습니다" · 포커스 h1. "기록 스택 1건" = 알림 줄 "되돌리기" 1건(복원 직전 문서를 새 편집으로 → 새 revision 저장). `useSectionOps` 내부 기록 스택(쓰기 목록 밖)에는 넣지 않음 — ER-4(키보드·다시 실행) 몫으로 넘김 |
-| ER-AC-S9 | 단위 + 화면 통과 | 단위 `useDocSaveWrite.test.tsx`(커밋) · 화면: 입력 직후 "지금 상태 저장" = `save` → `create` 순서 · 스냅샷 = 최신 입력 / 저장 실패 → create 0 + "저장하지 못해 스냅샷을 만들지 않았습니다" |
-| ER-AC-S10 | 단위 통과(커밋) · 화면 부분 | 단위: 진행 중 저장 → 저장 먼저 → 쓰기 직렬(`save:r → saved → save:r+1 → restore:r+2`) · 채택 뒤 다음 저장 STALE 0. 화면: 복원 → 편집 → 저장(expectedRevision = 복원 revision, STALE 0) · 되돌리기 → 새 revision. **내보내기 요청 revision 단언은 화면 테스트에 없음**(상태 있는 저장소 흉내 사용 — 실메모리 저장소 통합은 미작성) |
-| ER-AC-S6 | 단위 통과(커밋) · 화면 미작성 | `imageStore.test.ts` 참조 집합 ∪ 스냅샷 · 탭 한도 스냅샷 거부 문장(2a-05 5.9 표 원문). 화면 연결(StudioLayout 렌더 중 prune · ImageSlotField 교체 prune에 스냅샷 문서 전달)은 코드만 — "A → 스냅샷 → 교체 → 복원 = A 유지" 화면 테스트 미작성 |
-| ER-AC-S7 | 테스트 통과(미커밋) | "자동 · 내보내기 전 · 시:분" 종류 글자 + 미리보기. 내보내기 결과 뒤 목록 다시 읽기(참조 집합) 연결 |
-| ER-AC-S8 | 청크 분리됨 · **진입 예산 미충족** | 위 1절 |
-| 접근성(7절) | 테스트 통과(미커밋) | 대화상자 포커스 = 이름 입력 · 닫기 → "스냅샷" · "더 보기"(사라짐) → 새로 보인 첫 "미리보기" · 복원 실패 `role=alert` 1회 · 포커스 = 남는 복원 버튼 · 390·1024 대화상자 정확히 1개 · 390 "편집" 탭 전환 뒤 새 필드도 잠김 |
+| S3 미리보기 | 통과 | `SnapshotFlow.test.tsx` + Ego 1280·390(입력 "XX" 무시 · 포커스 Callout 제목 · `aria-disabled`+이유) |
+| S4 복원 | 통과(해석 1차 REPORT 그대로) | 알림 "스냅샷 '통과 상태'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 05:00'에 있습니다" · 포커스 h1 · 되돌리기 1건 |
+| S6 이미지 | 통과 | 화면 `SnapshotImages.test.tsx` A→스냅샷→B 교체 = 캔버스 images [A,B] → 복원 = A. Red-Green 확인(참조 집합에서 스냅샷 빼면 실패) |
+| S7 | 통과 | Ego: 내보내기 뒤 목록에 "자동 · 내보내기 전 · 14:00" |
+| S8 청크 | 통과(경고) | 1절 |
+| S9 | 통과 | 저장 먼저 → create · 실패면 create 0 |
+| S10 | 통과 | `snapshotRevision.test.tsx` 실메모리: 복원(adopt) → 편집 → 저장 r0+4 → requestExport 잡 docRevision r0+4 · 내보내기 전 스냅샷 = 복원 뒤 편집 |
+| 접근성 7절 | 통과 | 1차 테스트 + Ego 390 대화상자 1개 · 탭 전환 뒤 잠김 |
 
-## 3. TDD (예측 → RED → GREEN)
+## 3. TDD
 
 | 단계 | 예측 | RED | GREEN |
 |---|---|---|---|
-| A | 5 | 5/5 `logs/red-a.txt` | `d402383` + lint 수정 `a34bfd5` · 표적 24/24 · typecheck·lint·src/test exit 0 `logs/gate-a.txt` |
-| B+C | 8 + 5 = 13 | **11/11**(테스트 11개로 합침 — 예측보다 2 적음: S6 화면·S10 내보내기 단언 미작성) `logs/red-bc.txt` = 단계 A 커밋(HEAD)을 `/tmp/er3b-red`에 풀어 같은 테스트 실행 | 11/11 `logs/green-bc.txt` · 미커밋 |
+| D 가드 | 1(+대체 1) · 동작 가드 RED 아님 | 예측 일치 | `9a96a51` 19/19 |
+| E Codex r1 | 3 RED | 3/3 `logs/red-e.txt` | `d9f92bb` (P1 테스트는 RED 뒤 테스트 쪽 실수 1건 수정 — RED 단언 그대로) |
+| F 보완 | 2 · RED 아님 | 예측 일치 · S6 Red-Green 별도 확인 | `c12aad6` |
 
-- 깨진 기존 테스트: 6절 목록 밖 1건(1절). 그 밖 studio·features·src/test·data 707 통과(`logs/gate-bc.txt`).
-- 구현 중 수정: act 콜백 안에서 저장 약속을 기다리면 교착(테스트 도우미로 해결) · 렌더 중 ref 쓰기 lint · 3단 배치 대화상자 누락 · 참조 배열 매 렌더 새로 만들어 무한 렌더(useMemo) · 미리보기 진입 직전 디바운스 저장이 미리보기 중 나감(진입도 저장 먼저).
+- 가드 대체(결정 2): `memoryExport.test.ts` 정적 가드 = 허용 목록 `components/studio/SnapshotDialog.tsx`만, 실제 호출 파일 목록과 **정확히 같아야** 함(목록 낡음 방지) + 동작 가드 "내보내기 1회 = 내보내기 전 스냅샷 1개 · 수동은 수 불변". 이유는 테스트 주석 2줄.
+- Codex r1 반영: P1 복원 요청 중 "편집으로 돌아가기" `aria-disabled`+누름 무시+"복원하는 중입니다 · 끝나면 편집으로 돌아갑니다" · P2 `edit()`이 단계 ref를 동기로 dirty(스케줄러 change 규칙과 같음) · P2 캔버스 kitTokens = 보이는 문서(스냅샷) profileVersion.
 
-## 4. 판정 요청 (영환님)
+## 4. 검증 (fresh)
 
-1. 번들: (a) Callout→자체 마크업 등 진입 감량 후 재측정 허용 여부 / (b) 예산 조정(MQ-R3·ADR-004)
-2. 가드 `memoryExport.test.ts:235`: "화면 createSnapshot 0"을 "내보내기 흐름에서 createSnapshot 0"(스냅샷 화면 파일 제외)으로 좁혀도 되는지 — E-AC-30·43 취지(내보내기 전 스냅샷은 requestExport만)는 유지
+- 전체 vitest `npx vitest run` → **exit 0 · 235 파일 · 2099 통과** (`logs/vitest-full-final.txt`)
+- typecheck 0 · lint 0(경고 0) · build exit 0 `/studio 128.33`(`logs/build-e.txt` — 이후 변경은 테스트 파일뿐)
+- Codex r2 `review --scope branch --base 45a5721` 실제 완료 `logs/codex-r2.txt`(라운드 2/2)
 
-## 5. 미실행 (멈춤 규칙에 따름)
+## 5. Ego Lite (build + `vite preview 127.0.0.1:4337`, 경로 A) — `shots/r1~r12`
 
-- Ego Lite 브라우저 확인·캡처: **미실행**(빌드 판정 실패 상태 — 이 레인이 연 창 0, 서버 기동 0, 리슨 0)
-- 전체 vitest(작업 트리 = 커밋 + 미커밋 WIP): `npx vitest run` → **exit 1** · 233 파일 · 2093 중 1 실패(위 가드 1건만) `logs/vitest-full.txt`
-- Codex r1 `review --scope branch --base 45a5721` 실제 완료 `logs/codex-r1.txt` (Codex가 작업 트리의 미커밋 파일까지 읽음). **멈춤 상태라 반영 0** — 재개 시 처리:
-  - P1 복원 요청 중 "편집으로 돌아가기"가 살아 있어, 돌아가 입력하면 늦게 온 복원 결과가 덮어써 입력 유실(`useDocSave.ts` adopt) → 복원 중 돌아가기 잠금 또는 요청 뒤 변경 보존
-  - P1 진입 번들 128.49 초과(1절과 같음)
-  - P2 `edit()` 직후 같은 흐름에서 `flushed()`/`adopt()`를 부르면 `phase.current`가 아직 effect 전 값(idle/saved)이라 저장 없이 true → 스케줄러 최신 상태를 동기적으로 보거나 edit 시 갱신(테스트는 사이에 act가 있어 놓침)
-  - P2 미리보기 캔버스 `kitTokens`가 편집 문서 버전 기준 — 스냅샷 `profileVersion`으로 계산해야 함
-  - 라운드 1회로 종료(≤2) — 멈춤 상태라 2라운드 실익 없음
+- 시작 전 `listTaskSpaces()` = [] → 공간 85 생성 · 첫 goto 1회 뒤 앱 안 클릭만 · 새로고침 0
+- 경로 A: 카탈로그 ref-e·ref-a 비교 추가 → "이 레퍼런스로 전부 선택: A" → 프로필 확정 v1 → 3안 → A안 → "A안으로 편집 시작" → 제목·설명 입력 → 게이트 통과
+- 1280: 스냅샷 "통과 상태" 만들기(포커스 = 이름 입력, r2) → 제목 바꿈 → 미리보기(잠금·캡션, r3) → 복원(알림·h1, r4) → 다시 편집 "이 탭에 저장됨"(r5) → 정적 HTML 성공(r6) → 목록에 내보내기 전 자동(r7)
+- 390: 대화상자 1개 · "390 수동" 만들기(r9) → 미리보기 → "편집" 탭 컨트롤 전부 `aria-disabled`(r10) → 복원(h1, r11) → 편집·저장 → 검사 탭 정적 HTML 성공(r12)
+- 종료: `finish({keep:[]})` 직후 목록에 공간 85가 `ownership:user`로 1회 보였고, 2초 뒤 `listTaskSpaces()` = **[]** 재확인. 미리보기 서버 종료 · 4337 리슨 **0**
 
-## 6. 쓰기 범위 메모
+### 발견 (이 레인 밖 — 고치지 않음)
+1. **스냅샷 이름 시각이 UTC**: `src/data/memoryDocBook.ts:93·96`이 ISO 문자열 `slice(11,16)`을 이름에 씀 → "복원 전 · 05:00"인데 같은 줄 캡션은 "14:00"(KST). data/** 수정 금지라 기록만(B-ER 후보, er-3a 몫).
+2. 미리보기 중 툴바 "검사 · 내보내기"·"스냅샷"은 `aria-disabled`이지만 시각적으로 활성처럼 보임(r3) — 패널 버튼은 흐리게 보임. 시각 상태 맞추기는 다음 레인.
 
-- PLAN 목록 밖 쓴 파일: `features/studio/images/store/types.ts`(ImageHost 튜플 선택적 4번째 = 스냅샷 문서 — 컴파일상 필요) · `components/studio/useSnapshots.tsx`(신규 정적 훅 — StudioLayout 증가 방지) · 테스트 `useDocSaveWrite.test.tsx`·`SnapshotFlow.test.tsx`
-- SPEC과 다르게 한 곳: "스냅샷" 버튼을 모든 폭 툴바에 둠(SPEC: <1280 "더보기" 안 — "더보기" 메뉴는 ER-4 몫이라 아직 없음)
+## 6. 미반영 — Codex r2 (턴 상한 55 규칙으로 새 수정 중단)
+
+- **P1** 이미지 변환 진행 중 미리보기를 열면 `useImagePick`이 시작 당시 `save.edit`을 쥐고 있어 변환 완료 시 미리보기 중에도 문서·이미지가 바뀌고 자동 저장됨(복원과 겹치면 덮어씀) → 렌더마다 콜백 교체가 아니라 최신 잠금 상태를 보는 편집 경계(ref) + 진행 중 이미지 작업 반영 차단.
+- **P2** `SnapshotLayer.tsx:40` 미리보기 진입 시 `flushed()` 결과 무시 → false면 미리보기 열지 말고 대화상자에 저장 실패 문장.
+- **P2** `SnapshotPreview.tsx:99-102` 복원 성공 뒤 `listSnapshots()` 실패를 복원 실패로 표시 → 이름 조회는 보조로(실패해도 onRestored · 되돌리기 등록).
+- 세 건 모두 이 diff가 만든 코드 → 다음 레인 1순위(TDD 3건 + 번들 재측정, 진입 여유 0.10KB 주의).
+
+## 7. 쓰기 범위 · SPEC 차이
+
+- PLAN 목록 밖: `features/studio/images/store/types.ts`(튜플 4번째) · 신규 `useSnapshots.tsx`·`SnapshotLayer.tsx`·`SnapshotLayerLoader.tsx` · 테스트 `SnapshotImages.test.tsx`·`snapshotRevision.test.tsx`·`memoryExport.test.ts`(결정 2)
+- SPEC 차이: "스냅샷" 버튼을 모든 폭 툴바에 둠(SPEC <1280 "더보기" — ER-4 "더보기" 도입 때 이동)

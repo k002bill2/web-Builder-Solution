@@ -5,11 +5,11 @@
 ## 체크리스트
 - [x] P0 BRIEF·PROGRESS 명시 커밋
 - [x] A. useDocSave 저장 먼저(`flushed`)·쓰기 채택(`adopt`) + imageStore 참조 집합(스냅샷)·한도 문장 — RED → GREEN
-- [ ] B. BLOCKED: /studio 진입 128.49 > 128.43 + 6절 밖 가드 1건 — 테스트 11/11 GREEN이나 미커밋(wip-stage-bc.patch) · 툴바 "스냅샷" · SnapshotDialog(조작 뒤) · SnapshotPreview(조작 뒤) · 복원(저장 훅 경로) · 편집 잠금 — RED → GREEN · 번들 1회
-- [ ] C. BLOCKED: B와 같은 이유(테스트는 B와 같은 파일에서 GREEN·미커밋) · 포커스(사라지는 버튼) · 좁은 폭 대화상자 1개 · 390 탭 전환 잠금 · 최근 10 + 더 보기 · 복원 실패 alert — RED → GREEN
-- [ ] BLOCKED: build exit 1(번들 판정) · test 1 실패 — 검증 4종(typecheck·lint·test·build) + 번들 표
-- [ ] BLOCKED: 멈춤 규칙(빌드 판정 실패) — 창 0·서버 0 · Ego Lite build+preview 4337 경로 A 1280·390 캡처 · finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
-- [ ] BLOCKED: exit 1(가드 1건, logs/vitest-full.txt) — 전체 vitest exit 0
+- [x] B. (재개로 해소 — 9a96a51) 이전 BLOCKED: /studio 진입 128.49 > 128.43 + 6절 밖 가드 1건 — 테스트 11/11 GREEN이나 미커밋(wip-stage-bc.patch) · 툴바 "스냅샷" · SnapshotDialog(조작 뒤) · SnapshotPreview(조작 뒤) · 복원(저장 훅 경로) · 편집 잠금 — RED → GREEN · 번들 1회
+- [x] C. (재개로 해소 — 9a96a51) 이전 BLOCKED: B와 같은 이유(테스트는 B와 같은 파일에서 GREEN·미커밋) · 포커스(사라지는 버튼) · 좁은 폭 대화상자 1개 · 390 탭 전환 잠금 · 최근 10 + 더 보기 · 복원 실패 alert — RED → GREEN
+- [x] (재개로 해소 — build 128.33 · vitest 0 실패) 이전: 검증 4종(typecheck·lint·test·build) + 번들 표
+- [x] (재개 ⑤에서 실행) 이전: 창 0·서버 0 · Ego Lite build+preview 4337 경로 A 1280·390 캡처 · finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
+- [x] (재개 ⑥ exit 0) 이전: 전체 vitest exit 0
 - [x] Codex review --scope branch --base 45a5721 (≤2)
 - [x] REPORT 커밋
 
@@ -18,8 +18,8 @@
 - [x] ② 가드 `memoryExport.test.ts:235` 대체(허용 목록 정적 + 내보내기 1회 = 스냅샷 1개 동작)
 - [x] ③ Codex r1 P1 복원 중 돌아가기 잠금 · P2 edit 직후 flushed/adopt 동기 · P2 미리보기 kitTokens = 스냅샷 profileVersion
 - [x] ④ S6 화면 · S10 실메모리 저장소 통합
-- [ ] ⑤ Ego Lite build+preview 4337 경로 A 1280·390 · finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
-- [ ] ⑥ 전체 vitest exit 0 · Codex r2 base 45a5721 · REPORT
+- [x] ⑤ Ego Lite build+preview 4337 경로 A 1280·390 · finish({keep:[]}) · listTaskSpaces()=[] · 서버 종료·리슨 0
+- [x] ⑥ 전체 vitest exit 0 · Codex r2 base 45a5721 · REPORT
 
 ## TDD 예측 (재개)
 | 단계 | 새 테스트 수 예측 | RED 예측 |
@@ -42,4 +42,6 @@
 - D 가드: 정적 가드 허용 목록 대체 + 동작 가드 1 → 19/19 GREEN(동작 가드 RED 아님 — 예측 일치) · 전체 vitest exit 0 2094(`logs/vitest-resume-1.txt`) · 커밋 `9a96a51`
 - E Codex r1: RED 3/3(`logs/red-e.txt`, 예측 일치) → GREEN — P1 테스트는 RED 뒤 테스트 쪽 실수 1건 수정(제목 입력칸을 열지 않음 → 잠금 확인 대상 "검사 · 내보내기"·결과는 캔버스 문서로, RED 단언 aria-disabled는 그대로) · 스튜디오·features 284 통과 · lint 0 · build exit 0 /studio **128.33**(`logs/build-e.txt`)
 - F 보완: S6 화면(`SnapshotImages.test.tsx`)·S10 실메모리(`snapshotRevision.test.tsx`) 첫 실행 GREEN(예측 "RED 아님" 일치). S6 Red-Green 확인: StudioLayout 참조 집합에서 스냅샷 문서를 빼면 실패([A] ≠ [A,B]) → 되돌리면 통과 · typecheck·lint 0
+- ⑤ Ego Lite 공간 85 · 1280·390 경로 A 전 흐름 성공 `shots/r1~r12` · finish({keep:[]}) → listTaskSpaces()=[] · 4337 리슨 0
+- ⑥ 전체 vitest exit 0 235/2099(`logs/vitest-full-final.txt`) · Codex r2 완료(`logs/codex-r2.txt`) P1 1·P2 2 — 턴 상한 규칙으로 미반영(REPORT 6절) · REPORT 커밋
 

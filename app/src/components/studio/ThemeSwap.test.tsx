@@ -10,11 +10,14 @@ afterEach(restoreViewport);
 const themeRegion = () => within(screen.getByRole("region", { name: "테마" }));
 const notice = () => screen.getByRole("status", { name: "편집 알림" });
 const contrastRow = () => document.querySelector<HTMLElement>('[data-gate-row="contrast"]')!;
+/** 게이트 결과(진입 직후 자동 계산)가 그려질 때까지 */
+const gateDrawn = () => waitFor(() => expect(contrastRow()).not.toBeNull());
 
 async function swapTo(version: number, opener = () => themeRegion().getByRole("button", { name: "테마 바꾸기" })) {
   act(() => void fireEvent.click(opener()));
   const dialog = within(await screen.findByRole("dialog", { name: "테마 바꾸기" }));
-  act(() => void fireEvent.click(dialog.getByRole("radio", { name: new RegExp(`^v${version} `) })));
+  const radio = await dialog.findByRole("radio", { name: new RegExp(`^v${version} `) });
+  act(() => void fireEvent.click(radio));
   await act(async () => void fireEvent.click(dialog.getByRole("button", { name: "바꾸기" })));
 }
 
@@ -36,6 +39,7 @@ describe("테마 영역 · E-S18 — ER-AC-T5", () => {
 describe("적용 · 되돌리기 — ER-AC-T3 · T4", () => {
   it("적용 → 알림 1문장 '…슬롯 값 N개 모두 그대로입니다' · 캔버스 킷 토큰 = 새 버전 팔레트 · 포커스 '테마 바꾸기' · 대비 줄 재계산", async () => {
     const { frame } = await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }]) });
+    await gateDrawn();
     await waitFor(() => expect(within(contrastRow()).getAllByText(/^차단 \d+$/).length).toBe(1));
     await swapTo(2);
     await waitFor(() => expect(notice()).toHaveTextContent(/^테마를 프로필 v2로 바꿨습니다 · 슬롯 값 \d+개 모두 그대로입니다$/));
@@ -50,7 +54,7 @@ describe("적용 · 되돌리기 — ER-AC-T3 · T4", () => {
     await openStudio({ doc, series: themeSeries([{ palette: PASS }, { palette: PASS, adjustments: { purpose: "booking" } }]) });
     await swapTo(2);
     await waitFor(() => expect(notice()).toHaveTextContent(/ · 목적이 '예약'으로 바뀌어 필수 섹션 \d+건이 차단입니다$/));
-    expect(screen.getByRole("navigation", { name: "섹션" }).querySelectorAll("[data-row-id]").length).toBe(doc.sections.length + 1);
+    expect(screen.getByRole("navigation", { name: "섹션" }).querySelectorAll("[data-row-id]").length).toBe(doc.sections.length);
   });
 
   it("알림 줄 '되돌리기' → 원래 버전(캔버스·Tag) · 알림 '테마를 프로필 v1로 되돌렸습니다' · 선택 그대로", async () => {
@@ -69,20 +73,27 @@ describe("적용 · 되돌리기 — ER-AC-T3 · T4", () => {
 describe("게이트 대비 줄 행동 — ER-AC-T6", () => {
   it("통과 버전 있음 → '테마 바꾸기'(그 버전을 미리 고른 대화상자) + '프로필에서 보정' 링크(?v=문서 버전)", async () => {
     await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }, { palette: FAIL }]) });
+    await gateDrawn();
     const action = await within(contrastRow()).findByRole("button", { name: "테마 바꾸기" });
     expect(within(contrastRow()).getByRole("link", { name: "프로필에서 보정" })).toHaveAttribute("href", "/profile/profile-1?v=1");
     act(() => void fireEvent.click(action));
     const dialog = within(await screen.findByRole("dialog", { name: "테마 바꾸기" }));
-    expect(dialog.getByRole("radio", { name: /^v2 / })).toBeChecked();
+    expect(await dialog.findByRole("radio", { name: /^v2 / })).toBeChecked();
     expect(dialog.getByRole("radio", { name: /^v2 / })).toHaveFocus();
     act(() => void fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true })));
     expect(action).toHaveFocus();
   });
 
-  it("통과 버전 없음 → 캡션 + 링크(버튼 0)", async () => {
+  it("통과 버전 없음 → 대화상자 안 캡션 + '프로필에서 보정' 링크 · 현재 버전 선택('바꾸기' aria-disabled) — 판정은 조작 뒤(SPEC 3.3 첫 화면 0)", async () => {
     await openStudio({ doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: FAIL }]) });
-    expect(await within(contrastRow()).findByText("대비를 통과하는 프로필 버전이 아직 없습니다 — 프로필에서 보정값을 쓰고 저장한 뒤 테마를 바꾸세요")).toBeInTheDocument();
-    expect(within(contrastRow()).getByRole("link", { name: "프로필에서 보정" })).toBeInTheDocument();
-    expect(within(contrastRow()).queryByRole("button", { name: "테마 바꾸기" })).toBeNull();
+    await gateDrawn();
+    expect(within(contrastRow()).getByRole("link", { name: "프로필에서 보정" })).toHaveAttribute("href", "/profile/profile-1?v=1");
+    const action = await within(contrastRow()).findByRole("button", { name: "테마 바꾸기" });
+    act(() => void fireEvent.click(action));
+    const dialog = within(await screen.findByRole("dialog", { name: "테마 바꾸기" }));
+    expect(await dialog.findByText(/^대비를 통과하는 프로필 버전이 아직 없습니다 — 프로필에서 보정값을 쓰고 저장한 뒤 테마를 바꾸세요/)).toBeInTheDocument();
+    expect(dialog.getByRole("link", { name: "프로필에서 보정" })).toHaveAttribute("href", "/profile/profile-1?v=1");
+    expect(dialog.getByRole("radio", { name: /^v1 / })).toBeChecked();
+    expect(dialog.getByRole("button", { name: "바꾸기" })).toHaveAttribute("aria-disabled", "true");
   });
 });

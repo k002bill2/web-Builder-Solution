@@ -9,8 +9,8 @@
 - [x] 예산 멈춤선 확인 — /catalog 99.88 · /studio 128.65 · /compare 121.96 · 렌더 84.19/8.85 (아래 표)
 - [x] typecheck·lint·build·전체 vitest exit0 (246 파일 / 2176건)
 - [x] Ego Lite 검증 (preview 4337, 캡처 2장, finish·listTaskSpaces=[], 서버 종료·리슨 0)
-- [ ] Codex review --scope branch --base cdad1e8 (≤2)
-- [ ] REPORT
+- [x] Codex review --scope branch --base cdad1e8 — R1·R2 결함 0 (2/2)
+- [x] REPORT
 
 ## S0 (코드 변경 전, base cdad1e8+P0, `npm run build` exit 0 — /tmp 로그)
 | 행 | 실측 KB | 멈춤선 |
@@ -86,3 +86,4 @@
 
 ## Codex
 - R1 (`review --scope branch --base cdad1e8`, thread 01a11136…): **수정 필요한 결함 0**. Codex 샌드박스 EPERM으로 vitest 미실행(로컬 fresh 실행으로 대체).
+- R2 (Tag 바탕 수정분 포함, 85ba1c0 기준): **결함 0**. 같은 EPERM으로 테스트 미실행. 상한 2회 사용.

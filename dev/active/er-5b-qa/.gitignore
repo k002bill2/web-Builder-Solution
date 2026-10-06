@@ -1,0 +1,4 @@
+exports/
+fixtures/*.jpg
+fixtures/*.png
+node_modules/

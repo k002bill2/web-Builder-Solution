@@ -15,9 +15,9 @@ base `db9f25e` · branch `k002bill2/m3p-1` · 서브에이전트 0
 - [x] 깨진 테스트 수정 (SPEC 8.3 해결 원칙 "큐레이션 6개만 주입" — 단언 변경 0)
 - [x] AC U1~U4·U7·G1·G2·G5 테스트, G4 수동 합산 기록
 - [x] Ego Lite 확인(4337) + 정리
-- [ ] typecheck·lint·build·vitest 전체 (마감 1회)
-- [ ] Codex review (≤2)
-- [ ] REPORT
+- [ ] typecheck·lint·build·vitest 전체 (마감 1회) — BLOCKED: 재개 지시로 실행 금지(Jarvis 같은 worktree 병렬 검증 중)
+- [x] Codex review (≤2) — R1 완료 P1 0·P2 2(REPORT 기록만, 코드 무변경이라 R2 생략)
+- [x] REPORT (`REPORT.md`)
 
 ## 예산 반복 (S0 실측 → 상쇄)
 | 빌드 | 배치 | /catalog 첫 | /profile 첫 | /studio 진입 | 판정 |
@@ -37,3 +37,4 @@ base `db9f25e` · branch `k002bill2/m3p-1` · 서브에이전트 0
 ## 로그
 - cc5ab69 구현 커밋. Ego Lite: 업종 5종 각 4개(카페 4: 큐레이션 2·생성 2), 생성 카드 → 상세(미측정·buildNote) → 비교 추가 → 보드 열기 = 열 A, 셀 전부 표시·"접근성·성능 미측정", 외부 요청 0. 캡처 3장 `dev/active/m3p-1/shots/`.
 - 전체 vitest 1차: brandIsolation 1건 실패(새 테스트에 이전 브랜드 문자열) → 조각 이어 만들기로 수정.
+- 재개 세션: Codex R1(branch --base db9f25e) 완료 — P2 트레이 생성 항목 누락·빈 팔레트 예외, REPORT 기록. 마감 게이트는 Jarvis 몫.

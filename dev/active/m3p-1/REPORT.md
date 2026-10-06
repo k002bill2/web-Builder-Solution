@@ -14,7 +14,7 @@ base `db9f25e` · branch `k002bill2/m3p-1` · 서브에이전트 0 · push/merge
 | 생성 스크립트 | `app/scripts/generate-internal-refs.mjs` |
 | 생성 픽스처 | `app/src/fixtures/generatedReferences.ts`(카드) · `generatedReferenceDetails.ts`(상세·비교) |
 | 저장소·로더 | `app/src/data/generatedCatalog.ts` · `referenceRepository.ts` · `memoryCompareBoardRepository.ts` · `features/catalog/useCatalogRepository.ts` · `useFacetCounts.ts` · `useReferenceList.ts` · `features/detail/useReferenceDetail.ts` · `features/profile/useProfileDetail.ts` |
-| 화면 | `components/detail/DetailPanels.tsx` · `DetailSidebar.tsx`(미측정·buildNote 표시) |
+| 화면 | `components/catalog/ReferenceCard.tsx` · `components/detail/DetailPanels.tsx` · `DetailSidebar.tsx`(미측정·buildNote 표시) |
 | 테스트 | `domain/internalCompose.test.ts` · `data/generatedCatalog.test.ts` · `data/referenceRepository.test.ts` · `pages/CatalogGenerated.test.tsx` · `CatalogPage.test.tsx` · `keyboardA11y.test.tsx` · `ReferenceDetailPage.test.tsx` |
 | 문서 | `dev/active/m3p-1/BRIEF.md` · `PROGRESS.md` · `REPORT.md` · `shots/*.png` 3장 |
 
@@ -51,10 +51,18 @@ base `db9f25e` · branch `k002bill2/m3p-1` · 서브에이전트 0 · push/merge
 - 캡처: `shots/1-catalog-education.png` · `2-detail-generated.png` · `3-compare-generated.png`. 창·서버 정리 완료(PROGRESS 기록).
 
 ## Codex review (`--scope branch --base db9f25e`)
-- R1: 진행 중
+- R1 완료(thread `01a1111c-06f7-7ca1-a8ae-1e52aeaae1be`): **P1 0 · P2 2**. Codex 샌드박스에서 typecheck 통과, vitest는 읽기 전용 환경 임시 파일 제한으로 실행 불가(Codex 보고).
+- 재개 지시("P2는 REPORT에 기록만")에 따라 코드 수정 0 → diff 불변이라 R2 생략(1/2라운드 사용).
+
+| # | 위치 | 지적 | 처리 |
+|---|---|---|---|
+| P2-1 | `app/src/features/catalog/useCatalogRepository.ts:19-21` | `CatalogPage`의 `useTrayReferences`가 큐레이션만 있는 기본 저장소로 `getById` → 생성 카드를 비교에 담으면 보드에는 들어가지만 **트레이 개수·제목·제거 버튼에서 누락**(생성 항목만 담으면 0개 표시) | 미반영. **후속 1순위** — 사용자에게 보이는 결함. 트레이 단건 조회에도 생성 카드 로더 연결 필요(+ 예산 재실측) |
+| P2-2 | `app/src/domain/internalCompose.ts:278-279` | AA 필터 후 팔레트가 0개면 빈 배열로 `build` → `palette.primary` 접근 예외. 부족 리포트로 반환해야 함 | 미반영. 커밋된 팔레트 표는 12개 전부 AA 통과라 현재 생성 경로에선 발생 안 함(입력 방어 결함) |
 
 ## 목업·명세와 다르게 한 부분
 - TDD 순서: 예산 상쇄 반복 때문에 로더·타입 구현을 테스트보다 먼저 씀. 핵심 동작은 Red-Green으로 보완(PROGRESS "TDD 기록").
 
 ## 남은 것
-- typecheck·lint·build·전체 vitest 마감 1회 — Jarvis 병렬 검증 결과로 확인 필요.
+- typecheck·lint·build·전체 vitest 마감 1회 — 재개 지시로 이 세션 실행 금지. Jarvis 병렬 검증 결과로 확인 필요.
+- Codex P2-1(트레이 생성 항목 누락) 수정 여부 결정 — 병합 전 수정 권장.
+- Codex P2-2(빈 팔레트 예외) — 후속 정리 후보.

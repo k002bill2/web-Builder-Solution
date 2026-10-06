@@ -8,6 +8,6 @@ base `9d817bd` · 브랜치 `k002bill2/er-3a` · 서브에이전트 0
 - [x] 단계 2 restoreSnapshot(ER-AC-S2) — **예측: 새 테스트 4개 RED**(memoryProjectRepository.test, 모두 missing NOT_FOUND·SCHEMA 불일치로 실패) — 예측 커밋 → RED 4/4(`logs/red-s2.txt`) → GREEN · 게이트(표적+src/test 116 · tc · lint · build `logs/build-s2.txt`) · 번들 /studio 127.09 · /projects 100.32
 - [x] 단계 3 resolveConflict(ER-AC-S5 · B-ER-02) — **예측: 새 테스트 4개 RED**(memoryProjectRepository.test 3 · memoryExport.test 1 번호열) — 예측 커밋 → RED 4/4(`logs/red-s3.txt`) → GREEN · 게이트(표적+useDocSave+src/test 131 · tc · lint · build `logs/build-s3.txt`) · 번들 /studio 127.11(+0.06, 멈춤 127.39 안) · /projects 100.33(+0.04 = 저장소 청크 gzip +0.02[raw +0.06KB] + 해시 파일명 잡음 — raw 0 변화 청크 index·ProfilePage·CompareBoardPage 등 +0.01)
 - [x] 단계 4 내보내기 스냅샷 순서 — 단계 1(수동↔내보내기)·단계 3(복원·충돌 포함)에 접어 넣음
-- [ ] 전체 vitest exit 0
-- [ ] Codex review --scope branch --base 9d817bd (≤2)
-- [ ] REPORT.md
+- [x] 전체 vitest exit 0 — 227 파일 · 2061 통과 `logs/vitest-full.txt`
+- [x] Codex review --scope branch --base 9d817bd r1 완료 — 지적 0 `logs/codex-r1.txt`
+- [x] REPORT.md (번들 /projects·/profile(3안) +0.04 판정 요청 포함)

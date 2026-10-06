@@ -1,7 +1,7 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { generatedReferenceFixtures } from "../../fixtures/generatedReferences";
 import { referenceFixtures } from "../../fixtures/references";
 import { ReferenceCard } from "./ReferenceCard";
@@ -149,5 +149,76 @@ describe("ReferenceCard 생성 레퍼런스 표식 (M3P-3 · SPEC m3p 4.1·7절)
     expect(card.querySelector("time")).toBeNull();
     cleanup();
     expect(within(renderCard().card).queryByText("생성 조합")).toBeNull();
+  });
+});
+
+describe("ReferenceCard 실렌더 썸네일 (M3P-3b · SPEC m3p 4.1·5·7절 · ADR-004 개정 7)", () => {
+  const VERSION = "0123abcd";
+  const PLACEHOLDER = "모던 카페 브랜드 썸네일 (자체 렌더 플레이스홀더)";
+  const RENDERED = "모던 카페 브랜드 첫 화면 실제 렌더 미리보기";
+
+  // 썸네일 빌드 버전 — 테스트 기본은 빈 값(dev·vitest = img 0), 썸네일 테스트만 정의 상수를 바꿔 끼운다
+  const withVersion = () => vi.stubGlobal("__THUMBS_VERSION__", VERSION);
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("버전이 있으면 같은 출처 고정 경로 lazy img가 이름을 갖고, 와이어는 이름 없는 배경으로 남는다(레이아웃 이동 0)", () => {
+    withVersion();
+    const { card } = renderCard();
+    const img = within(card).getByRole("img", { name: RENDERED });
+    expect(img).toHaveAttribute("src", `/thumbs/${cafe.id}.svg?v=${VERSION}`);
+    expect(img).toHaveAttribute("loading", "lazy");
+    expect(img).toHaveAttribute("decoding", "async");
+    expect(img).toHaveClass("absolute", "inset-0", "object-cover", "object-top");
+    expect(within(card).queryByRole("img", { name: PLACEHOLDER })).toBeNull();
+    const wire = img.parentElement;
+    expect(wire).toHaveClass("relative", "bg-background-alternative", "aspect-video", "sm:aspect-[4/3]");
+    expect(wire).not.toHaveAttribute("role");
+    expect(wire).not.toHaveAttribute("aria-label");
+    expect(within(card).getByText(cafe.licenseStatus).closest('[aria-hidden="true"]')).not.toBeNull();
+    expect(within(card).getAllByRole("img", { name: /미리보기|썸네일/ })).toHaveLength(1);
+  });
+
+  it("img 실패 → img 제거·와이어 role=img 이름 복귀, 알림·콘솔 0 (M3P-AC-U6)", () => {
+    withVersion();
+    const consoleError = vi.spyOn(console, "error");
+    const consoleWarn = vi.spyOn(console, "warn");
+    const { card } = renderCard();
+    fireEvent.error(within(card).getByRole("img", { name: RENDERED }));
+    expect(within(card).queryByRole("img", { name: RENDERED })).toBeNull();
+    expect(card.querySelector("img")).toBeNull();
+    expect(within(card).getByRole("img", { name: PLACEHOLDER })).not.toHaveAttribute("aria-hidden");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(consoleError).not.toHaveBeenCalled();
+    expect(consoleWarn).not.toHaveBeenCalled();
+  });
+
+  it("버전 빈 값(dev·테스트 — 썸네일 산출물 없음)이면 img 0·와이어 이름 유지, 콘솔 0 (id 누락은 빌드가 막는다 — thumbnail.test·check-bundle-size)", () => {
+    const consoleError = vi.spyOn(console, "error");
+    const { card } = renderCard();
+    expect(card.querySelector("img")).toBeNull();
+    expect(within(card).getByRole("img", { name: PLACEHOLDER })).toBeInTheDocument();
+    expect(consoleError).not.toHaveBeenCalled();
+  });
+
+  it("생성 레퍼런스 카드: 썸네일 img와 '생성 조합' Tag가 함께 있고 Tag는 이름 있는 그림 밖(읽힘)", () => {
+    withVersion();
+    const generated = generatedReferenceFixtures[0]!;
+    render(
+      <MemoryRouter>
+        <ReferenceCard reference={generated} saved={false} inTray={false} onToggleSave={vi.fn()} onToggleCompare={vi.fn()} />
+      </MemoryRouter>,
+    );
+    const card = screen.getByRole("article", { name: generated.title });
+    const img = within(card).getByRole("img", { name: `${generated.title} 첫 화면 실제 렌더 미리보기` });
+    expect(img).toHaveAttribute("src", `/thumbs/${generated.id}.svg?v=${VERSION}`);
+    const tag = within(card).getByText("생성 조합");
+    expect(tag).toBeVisible();
+    expect(tag.closest('[aria-hidden="true"], [role="img"]')).toBeNull();
+    expect(img.contains(tag)).toBe(false);
   });
 });

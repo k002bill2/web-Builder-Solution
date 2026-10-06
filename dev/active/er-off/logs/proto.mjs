@@ -17,11 +17,12 @@ const P = {
        ["src/features/studio/useDocSave.ts", "      const mine = docRef.current;\n      const resolved = await repository.resolveConflict(projectId, choice, { ...mine, hash: hashDoc(mine) });\n      revisionRef.current = resolved.revision;\n      setLatest(undefined);\n      if (choice === \"theirs\") {\n        docRef.current = resolved;\n        setDoc(resolved);\n      }\n      settle();\n      // 해결 요청 중에 생긴 내 편집은 다시 미저장으로 둔다(\"내 편집으로 저장\"만 — 불러오기는 최신으로 바꿨다)\n      if (choice === \"mine\" && docRef.current !== mine) change(docRef.current);", "      void [choice, repository, settle, change];"]],
   B4: [["src/components/studio/EditFields.tsx", "  if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;", "  if (!section) return null;"]],
 };
-const files = new Set();
+const originals = new Map();
 for (const pid of ids) for (const [f, a, b] of P[pid]) {
   const s = readFileSync(`${appDir}/${f}`, "utf8");
   if (!s.includes(a)) throw new Error(`${pid}: no match in ${f}`);
-  writeFileSync(`${appDir}/${f}`, s.replace(a, b)); files.add(f);
+  if (!originals.has(f)) originals.set(f, s);
+  writeFileSync(`${appDir}/${f}`, s.replace(a, b));
 }
 try {
   execSync(`node /tmp/eroff/reach.mjs ${appDir} /tmp/eroff/p-${id}`, { stdio: "ignore" });
@@ -30,5 +31,6 @@ try {
   const iss = out.find((l) => l.includes("_issue")).split("\t")[1];
   console.log(`${id}\t[${ids.join("+")}]\t${out.at(-1)}\tStudioLayout ${sl}\tissue ${iss}`);
 } finally {
-  execSync(`git -C ${appDir} checkout -- ${[...files].join(" ")}`);
+  // 실행 전 내용 그대로 복원(미커밋 수정 보존 — Codex r1 P2)
+  for (const [f, s] of originals) writeFileSync(`${appDir}/${f}`, s);
 }

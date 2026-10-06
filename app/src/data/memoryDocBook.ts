@@ -5,6 +5,8 @@
  * - start(8.3.1): 모양 → 멱등 키 → NOT_FOUND(프로젝트·버전·안·restart 문서) → DOC_EXISTS·STALE_DOC → 어댑터(8.2.1, 표 밖·엔진 거부 =
  *   UNKNOWN_VARIANT 쓰기 0) → 문서(+ restart 스냅샷) + 멱등 기록. 동기 — `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0).
  * - save(8.3): 모양(L4 검증) → 멱등 키 (revision, hash) → NOT_FOUND → STALE_DOC(최신 동봉) → 저장(revision +1).
+ * - 스냅샷 쓰기(ER SPEC 3.2 · 2a-05 5.11): 수동 · 복원(복원 전 + 새 revision) · 충돌 해결(보존 + 저장) — 각각 한 번에(commit 실패 → 변화 0).
+ *   id는 종류와 상관없이 프로젝트 목록 순서 `snapshot-N`(내보내기 전·새로 시작 전과 같은 번호열).
  */
 import type { CandidatePlan } from "../domain/generation";
 import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
@@ -17,6 +19,8 @@ import {
   type ExportRequestResult,
   type Project,
   type ProjectSnapshot,
+  type SnapshotKind,
+  type SnapshotReason,
   type StartDocMode,
   type StartDocResult,
 } from "./projectRepository";
@@ -59,6 +63,8 @@ export interface DocBook {
     via: (work: (commit: () => void) => ExportOutcome) => Promise<ExportOutcome>,
   ) => Promise<ExportRequestResult>;
   readonly jobOf: (jobId: string) => ExportJob | undefined;
+  /** 수동 스냅샷(E-S28) — 모양(이름 30자) → NOT_FOUND → 저장된 문서 사본. 문서 revision은 그대로. 인자 = 저장소 메서드 인자 그대로(진입 청크 연결 최소화) */
+  readonly createSnapshot: (args: readonly [projectId: string, name?: string], commit: () => void) => ProjectSnapshot<DocHead>;
 }
 
 /**
@@ -77,6 +83,13 @@ const isVersion = (n: unknown): n is number => typeof n === "number" && Number.i
 const isFormat = (f: unknown): f is ExportFormat => f === "react-zip" || f === "static-html";
 /** "내보내기 전 · 14:02"(E-S27) — 주입 시각(ISO)의 시:분 */
 const exportSnapshotName = (iso: string) => `내보내기 전 · ${iso.slice(11, 16)}`;
+/** 스냅샷 이름 상한(2a-05 5.11) — 글자 수는 프로젝트 이름과 같이 코드포인트 */
+const SNAPSHOT_NAME_MAX = 30;
+const timedName = (label: string, iso: string) => `${label} · ${iso.slice(11, 16)}`;
+/** 문서 사본 스냅샷(불변) — 번호 = 프로젝트 목록 길이 + 1 */
+function snapshotOf(list: readonly ProjectSnapshot<DocHead>[], doc: DocHead, createdAt: string, label: { readonly kind: SnapshotKind; readonly reason?: SnapshotReason; readonly name: string }) {
+  return deepFreeze<ProjectSnapshot<DocHead>>({ snapshotId: `snapshot-${list.length + 1}`, projectId: doc.projectId, ...label, createdAt, doc, profileVersion: doc.profileVersion, candidateId: doc.candidateId, hash: doc.hash });
+}
 
 /** 판정 3 — (계열, 버전)의 생성 잡과 그 안의 구조안. 잡 키는 생성 저장소와 같다(profileId|version|library|generator) */
 function planOf(store: StudioReader, project: Project, profileVersion: number, candidateId: string) {
@@ -188,6 +201,19 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
     docOf: (projectId) => state.docs.get(projectId),
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
     jobOf: (jobId) => state.jobs.get(jobId),
+    createSnapshot: ([projectId, name], commit) => {
+      if (typeof projectId !== "string" || (name !== undefined && typeof name !== "string")) throw fail("SCHEMA_INVALID", "createSnapshot 인자");
+      const trimmed = (name ?? "").trim();
+      if ([...trimmed].length > SNAPSHOT_NAME_MAX) throw fail("SCHEMA_INVALID", `스냅샷 이름 ${SNAPSHOT_NAME_MAX}자 초과`);
+      const current = state.docs.get(projectId);
+      if (!projectOf(projectId) || !current) throw fail("NOT_FOUND", projectId);
+      const createdAt = now();
+      const list = state.snapshots.get(projectId) ?? [];
+      const made = snapshotOf(list, current, createdAt, { kind: "manual", name: trimmed || timedName("수동", createdAt) });
+      commit();
+      state = { ...state, snapshots: new Map(state.snapshots).set(projectId, [...list, made]) };
+      return made;
+    },
     requestExport: async (args, injected, via) => {
       const generate = injected ?? appGenerator(args.format);
       // 잡 실행은 응답 전달과 분리 — 커밋됐으면 응답이 끊겨도(phase "response" 실패) 돈다

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import type { DesignReference } from "../../domain/reference";
 import { INDUSTRY_LABELS, LAYOUT_LABELS, MOTION_LABELS, VISUAL_TAG_LABELS } from "../../fixtures/catalogFilters";
 import { Icon, type IconName } from "../ds/Icon";
 import { Tag } from "../ds/Tag";
+import { thumbnailSrc } from "../../features/catalog/thumbnailSrc";
 import { LICENSE_TONE } from "./referenceDisplay";
 
 export interface ReferenceCardProps {
@@ -13,13 +15,17 @@ export interface ReferenceCardProps {
   readonly onToggleCompare: (id: string) => void;
 }
 
-/** 자체 렌더 와이어프레임 썸네일 — 외부 캡처를 쓰지 않는다. 색은 레퍼런스 팔레트 데이터에서 온다. */
+/**
+ * 썸네일 — 같은 출처 실렌더 SVG `<img>`(고정 경로 + 빌드 버전, ADR-004 개정 7)를 자체 렌더 와이어 안에 absolute로 얹는다(SPEC m3p 4.1·5·7절). 높이는 와이어가 정해 로드 전후 같다.
+ * img가 이름을 가지면 와이어는 role·이름을 내려놓고(남는 건 빈 장식 + aria-hidden 라이선스 Tag), 실패하면 img를 빼고 와이어 이름을 되돌린다(AC-U6). 와이어 색은 레퍼런스 팔레트 데이터.
+ */
 function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
   const p = r.colorPalette;
+  const [failed, setFailed] = useState(false);
+  const src = failed ? undefined : thumbnailSrc(r.id);
   return (
     <div
-      role="img"
-      aria-label={`${r.title} 썸네일 (자체 렌더 플레이스홀더)`}
+      {...(!src && { role: "img", "aria-label": `${r.title} 썸네일 (자체 렌더 플레이스홀더)` })}
       className="relative flex aspect-video flex-col gap-1.5 rounded-lg bg-background-alternative px-3.5 py-3 sm:aspect-[4/3]"
     >
       <div className="flex h-1.25 w-full justify-between">
@@ -34,7 +40,17 @@ function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
           <span key={i} className="flex-1 rounded-xs border border-line-alternative bg-surface-elevated" />
         ))}
       </div>
-      <div className="absolute top-2.5 right-2.5">
+      {src && (
+        <img
+          src={src}
+          alt={`${r.title} 첫 화면 실제 렌더 미리보기`}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+          className="absolute inset-0 size-full rounded-lg object-cover object-top"
+        />
+      )}
+      <div aria-hidden className="absolute top-2.5 right-2.5">
         <Tag tone={LICENSE_TONE[r.licenseStatus]} size="sm">
           {r.licenseStatus}
         </Tag>

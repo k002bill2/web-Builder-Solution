@@ -1,15 +1,18 @@
-import { referenceComparisonAttributes } from "../fixtures/referenceComparisons";
+import { generatedReferenceFixtures } from "../fixtures/generatedReferences";
+import { referenceFixtures } from "../fixtures/references";
 import { referenceRenderInput } from "./referenceDoc";
-import { buildThumbnail, buildThumbnails, THUMB_HEIGHT, THUMB_WIDTH } from "./entry";
+import { buildThumbnail, buildThumbnails, thumbnailIds, THUMB_HEIGHT, THUMB_WIDTH } from "./entry";
 import { thumbnailIssues } from "./guards";
 
 /** 빌드 render CSS 대신 고정 CSS — 테스트가 dist에 의존하지 않는다 */
 const CSS = "/*! tailwindcss | https://tailwindcss.com */@font-face{font-family:X;src:url(/assets/x.woff2)}[data-site-root]{color:red}@media (width>=64rem){.kit-hero{display:grid}}@media (width<48rem){.kit-hero{display:block}}";
-const IDS = Object.keys(referenceComparisonAttributes);
+/** 썸네일 대상 = 카탈로그 카드 id 전체(큐레이션 6 + 생성 15, ADR-004 개정 7 결정 5) — 키 맵 없이 카드는 id별로 판단하지 않으므로 빠진 id 0을 빌드가 보장한다 */
+const IDS = [...referenceFixtures, ...generatedReferenceFixtures].map((r) => r.id);
 
 describe("referenceRenderInput — 레퍼런스 → 렌더 입력", () => {
-  it("기존 6개 모두 문서·킷 토큰을 만든다 — 팔레트 5역할·카드·비율은 픽스처 값", () => {
-    expect(IDS).toHaveLength(6);
+  it("카드 21개(큐레이션 6 + 생성 15) 모두 문서·킷 토큰을 만든다 — 팔레트 5역할·카드·비율은 픽스처 값", () => {
+    expect(IDS).toHaveLength(21);
+    expect(IDS.filter((id) => id.startsWith("gen-"))).toHaveLength(15);
     for (const id of IDS) {
       const { doc, kitTokens } = referenceRenderInput(id);
       expect(doc.sections.length).toBeGreaterThan(3);
@@ -25,12 +28,13 @@ describe("referenceRenderInput — 레퍼런스 → 렌더 입력", () => {
 });
 
 describe("buildThumbnail — SVG writer (M3P-AC-U8·G2·G6)", () => {
-  it("같은 레퍼런스 → 같은 문자열·같은 키(해시 고정), 키 = {id}.{hex 8}", () => {
+  it("같은 레퍼런스 → 같은 문자열(고정 경로 thumbs/{id}.svg — 버전은 빌드 상수), 다른 레퍼런스 → 다른 문자열", () => {
     const one = buildThumbnail("ref-a", CSS);
     const two = buildThumbnail("ref-a", CSS);
     expect(two).toEqual(one);
-    expect(one.key).toMatch(/^ref-a\.[0-9a-f]{8}$/);
-    expect(buildThumbnail("ref-b", CSS).key).not.toBe(one.key.replace("ref-a", "ref-b"));
+    expect(Object.keys(one).sort()).toEqual(["id", "svg"]);
+    expect(buildThumbnail("ref-b", CSS).svg).not.toBe(one.svg);
+    expect(buildThumbnail("gen-cafe-fnb-1", CSS).svg).not.toBe(buildThumbnail("gen-beauty-1", CSS).svg);
   });
   it("viewBox 1280×960 · @media 0(1280 기준으로 풀림) · 글꼴 파일 0 · 주석 0", () => {
     const { svg } = buildThumbnail("ref-c", CSS);
@@ -40,7 +44,8 @@ describe("buildThumbnail — SVG writer (M3P-AC-U8·G2·G6)", () => {
     expect(svg).toContain(".kit-hero{display:grid}");
     expect(svg).not.toContain(".kit-hero{display:block}");
   });
-  it("6개 전부 가드 위반 0 — 중첩 svg 네임스페이스 = SVG(XML 파싱) · 외부 참조 0", () => {
+  it("대상 = 카드 id 전체 21개, 21장 전부 가드 위반 0 — 중첩 svg 네임스페이스 = SVG(XML 파싱) · 외부 참조 0", () => {
+    expect(thumbnailIds()).toEqual(IDS);
     const all = buildThumbnails(CSS);
     expect(all.map((t) => t.id)).toEqual(IDS);
     for (const t of all) expect(thumbnailIssues(t.svg)).toEqual([]);

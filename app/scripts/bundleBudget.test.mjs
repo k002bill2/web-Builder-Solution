@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { checkBundle } from "./bundleBudget.mjs";
+import { checkBundle, ROUTE_BUDGET_KB } from "./bundleBudget.mjs";
 
 /**
  * 번들 검사 판정 (ADR-004 개정 2 결정 5) — 픽스처 manifest + 주입한 크기(KB)로 판정만 본다.
@@ -87,6 +87,25 @@ describe("checkBundle — 엔트리 이름 고정 · 렌더 문서 판정 (ADR-0
     expect(failures).toEqual(["/other: 진입 직후 자동 로드 포함 126.00KB > 125KB"]);
     const over = checkBundle({ manifest: manifest(), sizeOf: (f) => (f === "assets/lazy.js" ? 35 : sizeOf(f)), scenarios: both.slice(0, 1), renderAuto: [] });
     expect(over.failures).toEqual(["/page: 진입 직후 자동 로드 포함 128.00KB > 127KB"]);
+  });
+
+  it("시나리오별 첫 화면 한도(ADR-004 개정 7 — /catalog 101) — 그 시나리오만 바뀌고 다른 시나리오·기본값은 100 그대로", () => {
+    expect(ROUTE_BUDGET_KB).toBe(100);
+    const bigger = (f) => (f === "assets/page.js" ? 17.5 : sizeOf(f));
+    const both = [
+      { name: "/page", page: "src/pages/Page.tsx", auto: ["src/Lazy.ts"], routeBudgetKb: 101 },
+      { name: "/other", page: "src/pages/Page.tsx", auto: ["src/Lazy.ts"] },
+    ];
+    const { lines, failures } = checkBundle({ manifest: manifest(), sizeOf: bigger, scenarios: both, renderAuto: [] });
+    expect(lines).toContain("[bundle] /page 첫 화면 합계: 100.50KB / 예산 101KB · 진입 직후 자동 로드 포함: 130.50KB / 예산 125KB");
+    expect(lines).toContain("[bundle] /other 첫 화면 합계: 100.50KB / 예산 100KB · 진입 직후 자동 로드 포함: 130.50KB / 예산 125KB");
+    expect(failures).toEqual([
+      "/page: 진입 직후 자동 로드 포함 130.50KB > 125KB",
+      "/other: 첫 화면 100.50KB > 100KB",
+      "/other: 진입 직후 자동 로드 포함 130.50KB > 125KB",
+    ]);
+    const over = checkBundle({ manifest: manifest(), sizeOf: (f) => (f === "assets/page.js" ? 18.5 : sizeOf(f)), scenarios: both.slice(0, 1), renderAuto: [] });
+    expect(over.failures).toEqual(["/page: 첫 화면 101.50KB > 101KB", "/page: 진입 직후 자동 로드 포함 131.50KB > 125KB"]);
   });
 });
 

@@ -15,6 +15,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 import { BASELINE_FILE, checkBundle } from "./bundleBudget.mjs";
+import { thumbsVersion } from "./thumbsVersion.mjs";
 
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
 
@@ -89,9 +90,12 @@ const COMPARE_AFTER_ACTION = [
  *  - auto: 자동 dynamic import(진입 직후 = 첫 화면 + 이 목록의 정적 closure, ≤ 125KB)
  *  - afterAction: 조작 뒤 dynamic import(진입 직후 합계에 없는 파일 크기만 출력)
  *  - eagerBudgetKb: 진입 직후 한도(없으면 125 — ADR-004 개정 1). 지금은 /studio/:projectId만 129(개정 5)
+ *  - routeBudgetKb: 첫 화면 한도(없으면 100). 지금은 /catalog만 101(개정 7)
  */
 const SCENARIOS = [
-  { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC },
+  // ADR-004 개정 7 결정 2·3 — 카드 실렌더 썸네일(img·실패 복귀·생성 조합 Tag 공존)이 고정 경로 상쇄 뒤에도 99.90을 넘어(100.05) 이 라우트 첫 화면 한도만 101(멈춤선 100.90).
+  // 늘어난 몫은 썸네일 연결에만. 다시 올리자는 요청은 첫 화면 청크 구조 점검(공용 셸·트레이·필터 분해) 결과와 함께만(결정 4)
+  { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC, routeBudgetKb: 101 },
   { name: "/references/:id", page: "src/pages/ReferenceDetailPage.tsx", auto: EAGER_DYNAMIC },
   { name: "/compare", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
   // 확정한 프로필의 최신 버전에 조정이 있을 때 — 자동으로 더 받는 dynamic import가 없다(캡션은 인라인 계산, CarryOverCaption은 엔진 청크).
@@ -157,28 +161,43 @@ const { lines, failures: budgetFailures } = checkBundle({ manifest, sizeOf, scen
 for (const line of lines) console.log(line);
 
 /**
- * 썸네일(M3P-2 · SPEC 3절 A) — 예산 판정 밖, 크기 출력 + 가드만: ① keys.json의 키마다 dist/thumbs/{key}.svg가 있고 그 밖 파일 0
- * ② 썸네일에 넣은 렌더 CSS = 배포 dist 렌더 CSS(바이트 sha256 동일 — build-thumbs가 따로 빌드했으므로) ③ 앱·렌더 manifest에 SSR 도구(src/thumbs)·react-dom/server 0 (M3P-AC-G3)
+ * 썸네일(M3P-2 · ADR-004 개정 7 결정 1) — 예산 판정 밖, 크기 출력 + 가드만:
+ * ① meta.json id 목록 ↔ dist/thumbs/{id}.svg 정확 일치(빠진 id·목록 밖 파일 0 — 카드는 id별로 유무를 모르므로 빌드 보장)
+ * ② 버전 = dist 파일을 다시 해시한 값(scripts/thumbsVersion.mjs) ③ /catalog 첫 화면 JS에 `.svg?v=버전`이 실제로 있다(버전이 비어 img 분기가 접힌 채 통과하지 않는다)
+ * ④ 썸네일에 넣은 렌더 CSS = 배포 dist 렌더 CSS(바이트 sha256 동일 — build-thumbs가 따로 빌드했으므로) ⑤ 앱·렌더 manifest에 SSR 도구(src/thumbs)·react-dom/server 0 (M3P-AC-G3)
  */
 function checkThumbnails() {
   const stage = fileURLToPath(new URL("../node_modules/.thumbs/out/", import.meta.url));
-  if (!existsSync(join(stage, "keys.json"))) return ["썸네일 산출물(node_modules/.thumbs/out) 없음 — scripts/build-thumbs.mjs"];
-  const keys = Object.values(JSON.parse(readFileSync(join(stage, "keys.json"), "utf8")));
-  const { renderCssSha256 } = JSON.parse(readFileSync(join(stage, "meta.json"), "utf8"));
+  if (!existsSync(join(stage, "meta.json"))) return ["썸네일 산출물(node_modules/.thumbs/out) 없음 — scripts/build-thumbs.mjs"];
+  const { ids, version, renderCssSha256 } = JSON.parse(readFileSync(join(stage, "meta.json"), "utf8"));
   const shipped = existsSync(join(DIST, "thumbs")) ? readdirSync(join(DIST, "thumbs")) : [];
   const issues = [];
-  for (const key of keys) {
-    const file = `thumbs/${key}.svg`;
-    if (!shipped.includes(`${key}.svg`)) issues.push(`${file} 없음`);
-    else console.log(`[bundle] 썸네일 ${file} ${(readFileSync(join(DIST, file)).length / 1000).toFixed(2)}KB · gzip ${sizeOf(file).toFixed(2)}KB (판정 밖)`);
+  if (!Array.isArray(ids) || ids.length === 0) issues.push("썸네일 id 목록이 비었습니다");
+  const present = [];
+  for (const id of ids ?? []) {
+    const file = `thumbs/${id}.svg`;
+    if (!shipped.includes(`${id}.svg`)) issues.push(`${file} 없음`);
+    else {
+      present.push({ id, svg: readFileSync(join(DIST, file), "utf8") });
+      console.log(`[bundle] 썸네일 ${file} ${(readFileSync(join(DIST, file)).length / 1000).toFixed(2)}KB · gzip ${sizeOf(file).toFixed(2)}KB (판정 밖)`);
+    }
   }
-  const extra = shipped.filter((name) => !keys.some((key) => `${key}.svg` === name));
-  if (extra.length > 0) issues.push(`키 맵 밖 썸네일 파일 ${extra.join(", ")}`);
+  const extra = shipped.filter((name) => !(ids ?? []).some((id) => `${id}.svg` === name));
+  if (extra.length > 0) issues.push(`id 목록 밖 썸네일 파일 ${extra.join(", ")}`);
+  if (present.length > 0 && thumbsVersion(present) !== version) issues.push(`썸네일 버전 ${version} ≠ dist 파일 해시 ${thumbsVersion(present)}`);
+  const closure = (key, seen = new Set()) => {
+    if (!manifest[key] || seen.has(manifest[key].file)) return seen;
+    seen.add(manifest[key].file);
+    for (const dep of manifest[key].imports ?? []) closure(dep, seen);
+    return seen;
+  };
+  const catalogJs = [...closure("src/pages/CatalogPage.tsx", closure("index.html"))].map((file) => readFileSync(join(DIST, file), "utf8"));
+  if (!catalogJs.some((code) => code.includes(`.svg?v=${version}`))) issues.push(`/catalog 첫 화면 JS에 썸네일 경로 .svg?v=${version} 없음`);
   const renderCss = (manifest["render.html"]?.css ?? []).map((file) => readFileSync(join(DIST, file), "utf8")).join("\n");
   if (createHash("sha256").update(renderCss).digest("hex") !== renderCssSha256) issues.push("썸네일 CSS ≠ 배포 렌더 문서 CSS");
   const tools = Object.keys(manifest).filter((src) => src.startsWith("src/thumbs/") || src.includes("react-dom/server"));
   if (tools.length > 0) issues.push(`manifest에 썸네일 빌드 도구 ${tools.join(", ")}`);
-  console.log(`[bundle] 썸네일 ${keys.length}장 · 가드 ${issues.length === 0 ? "통과" : "실패"}`);
+  console.log(`[bundle] 썸네일 ${(ids ?? []).length}장 · 버전 ${version} · 가드 ${issues.length === 0 ? "통과" : "실패"}`);
   return issues;
 }
 const failures = [...budgetFailures, ...checkThumbnails()];

@@ -1,7 +1,7 @@
 // 썸네일 빌드 단계 (M3P-2 · SPEC 3절 A · package.json build의 tsc 다음) — 새 의존성 0(vite·react-dom/server·jsdom 기존).
 // 1) 렌더 문서 CSS = `vite build --mode render`를 산출 폴더(node_modules/.thumbs/render)에 한 번 더(배포 dist와 바이트 동일은 check-bundle-size 가드)
 // 2) `vite build --mode thumbs`(SSR 엔트리 src/thumbs/entry.tsx) → 3) jsdom 창을 전역에 두고 레퍼런스마다 SVG → 가드(U8·G2·G6) 위반이면 실패
-// 4) node_modules/.thumbs/out/{key}.svg · keys.json · meta.json — 앱 `vite build`의 thumbnailsPlugin이 dist/thumbs로 내보낸다.
+// 4) node_modules/.thumbs/out/{id}.svg · meta.json(ids · 버전 · 렌더 CSS 해시) — 앱 `vite build`의 thumbnailsPlugin이 dist/thumbs/{id}.svg로 내보내고 버전을 정의한다(ADR-004 개정 7 결정 1).
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { gzipSync } from "node:zlib";
 import { JSDOM } from "jsdom";
 import { build } from "vite";
+import { thumbsVersion } from "./thumbsVersion.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const STAGE = join(ROOT, "node_modules/.thumbs");
@@ -36,9 +37,10 @@ if (failures.length > 0) {
 const out = join(STAGE, "out");
 mkdirSync(out, { recursive: true });
 for (const t of thumbs) {
-  writeFileSync(join(out, `${t.key}.svg`), t.svg);
-  console.log(`[thumbs] ${t.key}.svg ${(Buffer.byteLength(t.svg) / 1000).toFixed(2)}KB · gzip ${(gzipSync(t.svg).length / 1000).toFixed(2)}KB`);
+  writeFileSync(join(out, `${t.id}.svg`), t.svg);
+  console.log(`[thumbs] ${t.id}.svg ${(Buffer.byteLength(t.svg) / 1000).toFixed(2)}KB · gzip ${(gzipSync(t.svg).length / 1000).toFixed(2)}KB`);
 }
-writeFileSync(join(out, "keys.json"), JSON.stringify(Object.fromEntries(thumbs.map((t) => [t.id, t.key])), null, 2));
-writeFileSync(join(out, "meta.json"), JSON.stringify({ renderCssSha256: createHash("sha256").update(renderCss).digest("hex") }, null, 2));
-console.log(`[thumbs] ${thumbs.length}장 · 가드 통과(U8·G2·G6)`);
+const version = thumbsVersion(thumbs);
+const meta = { ids: thumbs.map((t) => t.id), version, renderCssSha256: createHash("sha256").update(renderCss).digest("hex") };
+writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 2));
+console.log(`[thumbs] ${thumbs.length}장 · 버전 ${version} · 가드 통과(U8·G2·G6)`);

@@ -4,6 +4,7 @@
  * 목록 밖 값(카드 모양·비율·역할 누락)은 throw — 조용한 폴백 0. 빌드 도구 전용(앱 번들 밖 — thumbsImportGuard).
  */
 import { writeStartDoc, type StartDocWrite } from "../data/startDocWrite";
+import { generatedReferenceComparisonAttributes, generatedReferenceDetailFixtures } from "../fixtures/generatedReferenceDetails";
 import { referenceComparisonAttributes } from "../fixtures/referenceComparisons";
 import { referenceDetailFixtures } from "../fixtures/referenceDetails";
 import type { CanvasPalette, KitCardStyle, KitTokenInput } from "../render/protocol";
@@ -20,6 +21,10 @@ function oneOf<T extends string>(list: readonly T[], value: string, what: string
   return found;
 }
 
+/** 큐레이션 + 생성 레퍼런스(ADR-004 개정 7 결정 5) — 같은 상세·비교 형태라 렌더 입력 규칙은 그대로 */
+const DETAILS = { ...referenceDetailFixtures, ...generatedReferenceDetailFixtures };
+const ATTRIBUTES = { ...referenceComparisonAttributes, ...generatedReferenceComparisonAttributes };
+
 export interface RenderInput {
   /** 엔진 문서(PageDoc) — engine 직접 import 없이 writeStartDoc 결과 타입에서(engineImportGuard) */
   readonly doc: Extract<StartDocWrite, { readonly ok: true }>["doc"];
@@ -27,8 +32,8 @@ export interface RenderInput {
 }
 
 export function referenceRenderInput(id: string): RenderInput {
-  const detail = referenceDetailFixtures[id];
-  const attributes = referenceComparisonAttributes[id];
+  const detail = DETAILS[id];
+  const attributes = ATTRIBUTES[id];
   if (!detail || !attributes) throw new Error(`썸네일 렌더 입력 없음: ${id}`);
   const written = writeStartDoc({
     candidateId: `thumb-${id}`,

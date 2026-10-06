@@ -9,7 +9,8 @@
 //    render.html이 manifest에 없으면 실패. 실제 내보낸 사이트(정적 HTML·zip)의 예산은 내보내기 단계에서 따로 판정한다(결정 4 — 이 스크립트 밖).
 // gzip 크기는 Node zlib 기본 레벨, KB = 1000 bytes (Vite 빌드 출력 표기와 같은 단위).
 // Vite 8 빌드 출력의 gzip 값은 네이티브 리포터라 이 값보다 약 1% 크게 나온다(예: 86.58 vs 87.47). 둘 다 예산 안에 두도록 여유를 둔다.
-import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
@@ -152,8 +153,35 @@ const readBaseline = () => {
   }
 };
 
-const { lines, failures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
+const { lines, failures: budgetFailures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
 for (const line of lines) console.log(line);
+
+/**
+ * 썸네일(M3P-2 · SPEC 3절 A) — 예산 판정 밖, 크기 출력 + 가드만: ① keys.json의 키마다 dist/thumbs/{key}.svg가 있고 그 밖 파일 0
+ * ② 썸네일에 넣은 렌더 CSS = 배포 dist 렌더 CSS(바이트 sha256 동일 — build-thumbs가 따로 빌드했으므로) ③ 앱·렌더 manifest에 SSR 도구(src/thumbs)·react-dom/server 0 (M3P-AC-G3)
+ */
+function checkThumbnails() {
+  const stage = fileURLToPath(new URL("../node_modules/.thumbs/out/", import.meta.url));
+  if (!existsSync(join(stage, "keys.json"))) return ["썸네일 산출물(node_modules/.thumbs/out) 없음 — scripts/build-thumbs.mjs"];
+  const keys = Object.values(JSON.parse(readFileSync(join(stage, "keys.json"), "utf8")));
+  const { renderCssSha256 } = JSON.parse(readFileSync(join(stage, "meta.json"), "utf8"));
+  const shipped = existsSync(join(DIST, "thumbs")) ? readdirSync(join(DIST, "thumbs")) : [];
+  const issues = [];
+  for (const key of keys) {
+    const file = `thumbs/${key}.svg`;
+    if (!shipped.includes(`${key}.svg`)) issues.push(`${file} 없음`);
+    else console.log(`[bundle] 썸네일 ${file} ${(readFileSync(join(DIST, file)).length / 1000).toFixed(2)}KB · gzip ${sizeOf(file).toFixed(2)}KB (판정 밖)`);
+  }
+  const extra = shipped.filter((name) => !keys.some((key) => `${key}.svg` === name));
+  if (extra.length > 0) issues.push(`키 맵 밖 썸네일 파일 ${extra.join(", ")}`);
+  const renderCss = (manifest["render.html"]?.css ?? []).map((file) => readFileSync(join(DIST, file), "utf8")).join("\n");
+  if (createHash("sha256").update(renderCss).digest("hex") !== renderCssSha256) issues.push("썸네일 CSS ≠ 배포 렌더 문서 CSS");
+  const tools = Object.keys(manifest).filter((src) => src.startsWith("src/thumbs/") || src.includes("react-dom/server"));
+  if (tools.length > 0) issues.push(`manifest에 썸네일 빌드 도구 ${tools.join(", ")}`);
+  console.log(`[bundle] 썸네일 ${keys.length}장 · 가드 ${issues.length === 0 ? "통과" : "실패"}`);
+  return issues;
+}
+const failures = [...budgetFailures, ...checkThumbnails()];
 if (failures.length > 0) {
   for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
   process.exit(1);

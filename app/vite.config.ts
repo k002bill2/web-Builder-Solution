@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { notInlinedIconLimit } from "./src/build/notInlinedIcons";
+import { thumbnailsPlugin } from "./src/thumbs/vitePlugin";
 
 /**
  * 렌더 문서(render.html)는 `<iframe sandbox="allow-scripts">` 안에서 불투명 출처(Origin: null)로 모듈 스크립트·CSS를 받는다(M2A-1 R1 PoC).
@@ -17,13 +18,16 @@ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(
  * 불투명 출처 iframe은 부모와 HTTP 캐시를 나누지 않으므로 공유 청크로 얻는 내려받기 이득도 없다. 번들 검사는 두 manifest를 합쳐 엔트리 이름으로 판정한다.
  */
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), thumbnailsPlugin()],
   server: { cors },
   preview: { cors },
   build:
     mode === "render"
       ? { manifest: ".vite/render-manifest.json", emptyOutDir: false, rollupOptions: { input: { render: "render.html" } } }
-      : {
+      : mode === "thumbs"
+        ? // 썸네일 SSR 빌드 도구(M3P-2 — scripts/build-thumbs.mjs가 부른다). 배포 산출물 아님: node_modules/.thumbs/ssr
+          { ssr: "src/thumbs/entry.tsx", outDir: "node_modules/.thumbs/ssr", emptyOutDir: true, copyPublicDir: false, rollupOptions: { output: { entryFileNames: "entry.mjs" } } }
+        : {
           // scripts/check-bundle-size.mjs가 초기 청크를 manifest로 계산한다
           manifest: true,
           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts

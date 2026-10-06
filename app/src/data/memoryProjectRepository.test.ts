@@ -170,7 +170,7 @@ describe("createSnapshot (ER-AC-S1 · 2a-05 5.11 · E-AC-31 앞부분)", () => {
     const { repo } = await setup();
     const { doc } = await repo.startDoc("project-1", 1, "B", "create");
     const snap = await repo.createSnapshot("project-1");
-    expect(snap).toMatchObject({ snapshotId: "snapshot-1", projectId: "project-1", kind: "manual", name: "수동 · 09:00", createdAt: "2026-09-27T09:00:01.000Z", profileVersion: 1, candidateId: "B", hash: doc.hash });
+    expect(snap).toMatchObject({ snapshotId: "snapshot-1", projectId: "project-1", kind: "manual", name: "수동 · 18:00", createdAt: "2026-09-27T09:00:01.000Z", profileVersion: 1, candidateId: "B", hash: doc.hash });
     expect("reason" in snap).toBe(false);
     expect(snap.doc).toBe(doc);
     expect(Object.isFrozen(snap) && Object.isFrozen(snap.doc)).toBe(true);
@@ -226,7 +226,7 @@ describe("restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31)", () => {
     const list = await repo.listSnapshots("project-1");
     expect(list[0]).toBe(kept);
     expect(Object.isFrozen(kept) && Object.isFrozen(kept.doc) && kept.doc === first).toBe(true);
-    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-2", kind: "auto", reason: "restore", name: "복원 전 · 09:00", createdAt: restored.updatedAt, hash: edited.hash });
+    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-2", kind: "auto", reason: "restore", name: "복원 전 · 18:00", createdAt: restored.updatedAt, hash: edited.hash });
     expect(list.at(-1)?.doc).toBe(edited);
     expect((await repo.saveDoc("project-1", restored.revision, edit(restored, "복원 뒤 편집"))).revision).toBe(4);
   });
@@ -289,7 +289,7 @@ describe("resolveConflict (ER-AC-S5 · 2a-05 E-S09 · E-AC-10 · B-ER-02)", () =
     expect(await repo.getDoc("project-1")).toBe(saved);
     const list = await repo.listSnapshots("project-1");
     expect(list).toHaveLength(1);
-    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-1", kind: "auto", reason: "conflict", name: "충돌 보존 · 09:00", createdAt: saved.updatedAt, hash: theirs.hash });
+    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-1", kind: "auto", reason: "conflict", name: "충돌 보존 · 18:00", createdAt: saved.updatedAt, hash: theirs.hash });
     expect(list.at(-1)?.doc).toBe(theirs);
     expect((await repo.saveDoc("project-1", saved.revision, edit(saved, "이어서"))).revision).toBe(4);
   });

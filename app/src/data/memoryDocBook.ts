@@ -89,11 +89,16 @@ const fail = (code: "NOT_FOUND" | "SCHEMA_INVALID", message: string) => new Proj
 const isMode = (mode: unknown): mode is StartDocMode => mode === "create" || mode === "restart";
 const isVersion = (n: unknown): n is number => typeof n === "number" && Number.isSafeInteger(n) && n >= 1;
 const isFormat = (f: unknown): f is ExportFormat => f === "react-zip" || f === "static-html";
-/** "내보내기 전 · 14:02"(E-S27) — 주입 시각(ISO)의 시:분 */
-const exportSnapshotName = (iso: string) => `내보내기 전 · ${iso.slice(11, 16)}`;
+/** 주입 시각(ISO)의 로컬 시:분 — 대화상자 캡션(`toLocaleTimeString`)과 같은 시계(ISO `slice`는 UTC라 KST에서 9시간 어긋났다) */
+const hhmm = (iso: string) => {
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+};
+/** "내보내기 전 · 14:02"(E-S27) */
+const exportSnapshotName = (iso: string) => `내보내기 전 · ${hhmm(iso)}`;
 /** 스냅샷 이름 상한(2a-05 5.11) — 글자 수는 프로젝트 이름과 같이 코드포인트 */
 const SNAPSHOT_NAME_MAX = 30;
-const timedName = (label: string, iso: string) => `${label} · ${iso.slice(11, 16)}`;
+const timedName = (label: string, iso: string) => `${label} · ${hhmm(iso)}`;
 /** 문서 사본 스냅샷(불변) — 번호 = 프로젝트 목록 길이 + 1 */
 function snapshotOf(list: readonly ProjectSnapshot<DocHead>[], doc: DocHead, createdAt: string, label: { readonly kind: SnapshotKind; readonly reason?: SnapshotReason; readonly name: string }) {
   return deepFreeze<ProjectSnapshot<DocHead>>({ snapshotId: `snapshot-${list.length + 1}`, projectId: doc.projectId, ...label, createdAt, doc, profileVersion: doc.profileVersion, candidateId: doc.candidateId, hash: doc.hash });

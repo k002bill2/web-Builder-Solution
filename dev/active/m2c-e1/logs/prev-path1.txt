@@ -1,0 +1,5 @@
+SERVER preview(build) 4337 · PATH ① 이미지 없음 · /studio/project-1
+FILE 모던-카페-브랜드-프로젝트_1280_r1.png
+EVENTS ["{\"name\":\"png_requested\",\"view\":\"desktop\"}","{\"name\":\"png_succeeded\",\"view\":\"desktop\",\"fallback_count\":0}"]
+STATUS 바뀐 점 4개 ## PNG를 내려받았습니다 · 모던-카페-브랜드-프로젝트_1280_r1.png
+

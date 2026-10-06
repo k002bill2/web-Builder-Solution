@@ -1,0 +1,12 @@
+TABS [{"label":"p1","url":"http://127.0.0.1:4337/studio/project-1","openedBy":"agent"}]
+FINISHED
+LIST [{"createdBy":"agent","id":81,"name":"m2c-e1 E-1 PNG 대조","ownership":"user","profileId":"Default","profileName":"영환","recentTabTitles":["모던 카페 브랜드 프로젝트 편집"],"taskId":"m2c-e1 E-1 PNG 대조"}]
+
+LIST(+3s) []
+
+PID 97995
+node    97995 002billmac_home  cwd    DIR   1,15      416 197018902 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-e1/app
+4337 LISTEN count:        0
+4339 LISTEN count:        0
+5480 (확인만):
+node    82062 002billmac_home   15u  IPv4 0xefbc5b6a30df9167      0t0  TCP 127.0.0.1:5480 (LISTEN)

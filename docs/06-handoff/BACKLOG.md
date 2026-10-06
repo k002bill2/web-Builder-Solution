@@ -38,3 +38,6 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-07 | ER-3b Ego Lite | 변환 중 미리보기 차단 실브라우저 재현 실패(변환이 먼저 끝남)·CDP 캡처 타임아웃 → CPU 스로틀로 재확인·캡처 | QA ER-5 · ER-5 미재현(수단 미기록) → ER-5b |
 | B-ER-08 | ER-4 Jarvis 판정 | U3 필드 편집 묶음(MQ-R5 ★A) 미이행 — 필드 기록이 삭제 전 문서까지 닿으면 `StudioLayoutImages.test.tsx` "삭제 → 필드 입력 → 되돌리기 무효화 → 이미지 빠짐" 단언과 충돌 → SPEC 결정 먼저(Designer) + 예산 | Designer → Developer |
 | B-ER-09 | ER-4b | U4 "더보기" 메뉴(실행 취소·다시 실행 항목 · <1280 "스냅샷" 이동) 미구현 — /studio 128.56 > 시도 조건 128.55. "스냅샷" 버튼은 모든 폭 툴바(SPEC 차이 유지) | Developer(예산 확보 후) |
+| B-ER-10 | ER-5b QA P3 후보 | 스냅샷 대화상자를 Esc로 닫으면 포커스가 BODY(1024·1280, 재현 1회) — 테마 대화상자는 "테마 바꾸기"로 복귀. 닫힌 뒤 "스냅샷" 버튼으로 복귀 | Developer |
+| B-ER-11 | ER-5b QA 관찰 P3 | 390에서 테마 적용 직후 알림 줄 "되돌리기"가 뷰포트 위(y=-337)라 안 보임(status라 보조기기는 읽음) — 알림 위치/스크롤 | Designer → Developer |
+| B-QA-01 | ER-5·5b QA 운영 | QA 문서 생성 경로만 ~10턴 — QA 레인 턴 예산 항목당 15턴+. Ego Lite 캡처: 창 minimized면 `Browser.setWindowBounds normal`, 스크롤된 fixed dialog는 `captureBeyondViewport:false`+뷰포트 clip(`er-5b-qa/lib.mjs shotV`) | Jarvis 브리프 |

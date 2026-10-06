@@ -1,0 +1,32 @@
+[
+ {
+  "name": "a1.jpg",
+  "bytes": 79035,
+  "sha256": "6567bb29ffe8708b",
+  "note": "QB-R2 이미지 1"
+ },
+ {
+  "name": "a2.jpg",
+  "bytes": 81238,
+  "sha256": "7c4b67b8fd1d73ad",
+  "note": "QB-R2 이미지 2"
+ },
+ {
+  "name": "a3.jpg",
+  "bytes": 84315,
+  "sha256": "6073337a4307eeb5",
+  "note": "QB-R5 교체용"
+ },
+ {
+  "name": "noise-12mp.jpg",
+  "bytes": 12171578,
+  "sha256": "43c8c1765e9eeb3f",
+  "note": "B-ER-07 12MP 노이즈"
+ },
+ {
+  "name": "big-noise.jpg",
+  "bytes": 24327838,
+  "sha256": "ce9f5b92bf1f3b4c",
+  "note": "B-ER-07 24MP 노이즈"
+ }
+]

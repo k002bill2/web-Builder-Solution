@@ -7,9 +7,9 @@
 - [x] 2a. 옮기기 전 동작 고정 테스트 `4bc0d05` (6/6 GREEN — 예측대로)
 - [x] 2b. A1 이동(StudioLayout move·remove·swap·add 꼬리 → docEngine `opAfter.ts`)
 - [x] 2c. A2 이동(useSectionOps.run 꼬리 → docEngine `commitOp`) — 이동 후 studio·scripts 62 files 483 tests GREEN
-- [ ] 3. 감량 실측 표 (REPORT)
-- [ ] 4. Ego Lite 1280 경로 A 확인 · 캡처 ≤4 · finish · listTaskSpaces()=[] · 서버 종료
-- [ ] 5. typecheck · lint · build · 전체 vitest · Codex(base 5bce9f9, ≤2) · REPORT
+- [x] 3. 감량 실측 표 (REPORT 3절)
+- [x] 4. Ego Lite 1280 경로 A — 이동·삭제·되돌리기·추가 확인, finish·listTaskSpaces()=[]·4337 리슨 0. 캡처 0(CDP 타임아웃 2회 → DOM 대체), 테마 실제 적용은 v1 하나뿐이라 미확인(REPORT 5절)
+- [x] 5. typecheck·lint·build·vitest(237/2111) exit 0 · Codex r1 지적 0 · REPORT 5~7절
 
 ## 기준 실측 (5bce9f9 + 개정6, `npm run build`)
 - /studio/:projectId 진입 직후 128.42 · 첫 화면 91.76 · docEngine 조작 뒤 +2.53

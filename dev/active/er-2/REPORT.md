@@ -65,3 +65,37 @@
 ## 9. Codex
 
 - r1 `review --scope branch --base 9d817bd` 실제 완료(`logs/codex-r1.txt`): **지적 0** — "테마 연산 테스트 2개와 작업 문서·로그, 수정이 필요한 결함 없음". 범위 = tip(T1 테스트·문서)뿐이라 WIP 연결 코드는 Codex 미검토(재개 레인에서 리뷰 필요). r2 생략(지적 0).
+
+## 10. ER-2F 마감 (Jarvis 작성 — Developer 2회 연속 턴 한도: 66/65 → 축소 재개 41/40)
+
+- 커밋: 개정 5 적용 `b3e427a` · BRIEF-F `eea7a1c` · 병합 누락 복원 `be10d79` · 포커스 useLayoutEffect `fa1268b` · Codex F r1 P2 2건 `cdba3fb`(RED 예측 +3 = 실제 3 실패, `logs/red-F.txt`) · 마감 로그 Jarvis 커밋.
+- **PROGRESS 정정**: F 1차가 "REPORT 10절 완료"로 체크했으나 10절은 없었다(재개 레인 PROGRESS에 정정 기록, 이 절은 Jarvis가 작성).
+
+### AC
+| AC | 판정 | 근거 |
+|---|---|---|
+| T1 | PASS | `engine/ops/theme.test.ts` |
+| T2 | PASS | ThemeDialog.test(포커스 = 선택 라디오, useLayoutEffect) |
+| T3 | PASS | ThemeSwap.test · Ego Lite 04·10 |
+| T4 | 부분 PASS — 알림 줄 되돌리기 PASS, Ctrl+Z는 ER-4 | ThemeSwap.test · Ego Lite 07·14 · **Codex F r2 P2(되돌리기 뒤 포커스 body) 미수정 → B-ER-04/ER-4** |
+| T5 | PASS | 캡션 · `?v=` · Ego Lite 02·16 |
+| T6 | PASS(ER-D6 설계 변경) | gateRowActions · 대화상자 통과 버전 선택 · 적용 뒤 포커스 = 테마 영역 버튼(`cdba3fb`) |
+| G1 | PASS | `src/test/gateRowActions.test.tsx` · Ego Lite 05·12 |
+| T7 | 실측 | 아래 번들 |
+
+### 번들 (`logs/build-F3.txt`, cdba3fb)
+- `/studio` 진입 **127.69** (한도 129 · 판정선 128.43 · ER-2 몫 +0.58 vs main 127.11) · 첫 화면 91.76.
+- 다른 화면: /catalog 102.04 · /references 99.38 · /compare 121.71 · /profile 119.11 · /profile(3안) 121.58 · /projects 100.33 — main 대비 ±0.01 이내.
+- 렌더 JS 84.19 · CSS 8.85 — **ER-2 변화 0**. 8.85는 main(ER-3a·ER-OFF 기준 빌드)에서 이미 8.85이며, 브리프의 "8.80"은 M2c 시점 기록값이었다(원인 레인 미특정, 이 레인 무관).
+
+### 검증
+- 전체 vitest: F1 1실패(ProfileCompare 부하) · F2 1실패(ThemeDialog 포커스 → `fa1268b` 수정) · F3 231/2074 PASS · **F4(cdba3fb) 231/2077 PASS** · Jarvis 검증은 JARVIS_FINAL.
+- Codex F r1(`logs/codex-F-r1.txt`): P2 2건(좁은 폭 대화상자 중복 · 대비 줄 적용 뒤 포커스) → `cdba3fb` 반영. **F r2(`logs/codex-F-r2.txt`): P2 1건** — 알림 줄 "되돌리기" 실행 시 버튼이 사라져 포커스 body. 턴 한도로 미수정 → BACKLOG B-ER-04, ER-4(실행 취소) 레인에서 처리.
+
+### Ego Lite
+- 1차 14장(1280·390: 캡션·대화상자·적용·대비 줄·통과 버전 선택·되돌리기) · 재개 2장: `15-390-dialog-single.png`(390 대화상자 1개·배경막 1개 — Jarvis 육안 확인) · `16-390-applied-focus.png`(적용 뒤 v1·"프로필 v2가 새로 있습니다" — **포커스 링은 캡처에서 육안 식별 불가**, 포커스 위치는 테스트 근거).
+- 두 회차 모두 `finish({keep:[]})` · Jarvis 재확인 `listTaskSpaces()` = `[]` · 4337/4339 리슨 0 · main 5480 무접촉.
+
+### meta
+- F 1차 66턴(error_max_turns) · 재개 41턴(error_max_turns) — 2회 연속 → Developer 재실행 없음, Jarvis 마감.
+

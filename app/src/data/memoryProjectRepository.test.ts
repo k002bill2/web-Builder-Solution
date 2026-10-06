@@ -211,3 +211,61 @@ describe("createSnapshot (ER-AC-S1 · 2a-05 5.11 · E-AC-31 앞부분)", () => {
     expect((await repo.createSnapshot("project-1", "다시")).snapshotId).toBe("snapshot-1");
   });
 });
+
+describe("restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31)", () => {
+  it("'복원 전 · 시:분' auto·restore(지금 문서 사본) + 새 revision(스냅샷 내용) 한 번에 · now 1회 · 기존 스냅샷 동결·그대로 · 다음 저장 STALE_DOC 0", async () => {
+    const { repo } = await setup();
+    const { doc: first } = await repo.startDoc("project-1", 1, "B", "create");
+    const kept = await repo.createSnapshot("project-1", "처음");
+    const edited = await repo.saveDoc("project-1", 1, edit(first, "바꾼 제목"));
+    const restored = await repo.restoreSnapshot("project-1", kept.snapshotId, edited.revision);
+    expect(restored).toEqual({ ...first, revision: 3, updatedAt: "2026-09-27T09:00:03.000Z" });
+    expect(restored.hash).toBe(first.hash);
+    expect(Object.isFrozen(restored)).toBe(true);
+    expect(await repo.getDoc("project-1")).toBe(restored);
+    const list = await repo.listSnapshots("project-1");
+    expect(list[0]).toBe(kept);
+    expect(Object.isFrozen(kept) && Object.isFrozen(kept.doc) && kept.doc === first).toBe(true);
+    expect(list.at(-1)).toMatchObject({ snapshotId: "snapshot-2", kind: "auto", reason: "restore", name: "복원 전 · 09:00", createdAt: restored.updatedAt, hash: edited.hash });
+    expect(list.at(-1)?.doc).toBe(edited);
+    expect((await repo.saveDoc("project-1", restored.revision, edit(restored, "복원 뒤 편집"))).revision).toBe(4);
+  });
+
+  it("판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) · 실패면 스냅샷 0 추가", async () => {
+    const { repo } = await setup();
+    expect(await codeOf(repo.restoreSnapshot("project-9", "snapshot-1", 1.5))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.restoreSnapshot("project-9", 3 as never, 1))).toBe("SCHEMA_INVALID");
+    expect(await codeOf(repo.restoreSnapshot("project-9", "snapshot-1", 1))).toBe("NOT_FOUND");
+    expect(await codeOf(repo.restoreSnapshot("project-1", "snapshot-1", 1))).toBe("NOT_FOUND");
+    const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    expect(await codeOf(repo.restoreSnapshot("project-1", "snapshot-1", 1))).toBe("NOT_FOUND");
+    const kept = await repo.createSnapshot("project-1");
+    await expect(repo.restoreSnapshot("project-1", kept.snapshotId, 7)).rejects.toMatchObject({ code: "STALE_DOC", doc });
+    expect(await repo.listSnapshots("project-1")).toEqual([kept]);
+    expect(await repo.getDoc("project-1")).toBe(doc);
+  });
+
+  it("fail phase:'commit' → 문서·스냅샷 변화 0 · 재시도 = 같은 revision으로 성공 · 빈 번호 없음", async () => {
+    const { repo } = await setup("ref-a", { fail: ({ method, seq, phase }) => (method === ("restoreSnapshot" as never) && seq === 1 && phase === "commit" ? new Error("커밋 실패") : undefined) });
+    const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    const kept = await repo.createSnapshot("project-1");
+    await expect(repo.restoreSnapshot("project-1", kept.snapshotId, 1)).rejects.toThrow("커밋 실패");
+    expect(await repo.getDoc("project-1")).toBe(doc);
+    expect(await repo.listSnapshots("project-1")).toEqual([kept]);
+    expect((await repo.restoreSnapshot("project-1", kept.snapshotId, 1)).revision).toBe(2);
+    expect((await repo.listSnapshots("project-1")).map((s) => s.snapshotId)).toEqual(["snapshot-1", "snapshot-2"]);
+  });
+
+  it("자동 스냅샷(새로 시작 전)도 복원 — 안·프로필 버전이 스냅샷 쪽으로 · 번호는 restart와 같은 열", async () => {
+    const { repo } = await setup();
+    await repo.startDoc("project-1", 1, "A", "create");
+    const b = await repo.startDoc("project-1", 1, "B", "restart", 1);
+    const [restart] = await repo.listSnapshots("project-1");
+    const restored = await repo.restoreSnapshot("project-1", restart!.snapshotId, b.doc.revision);
+    expect(restored).toMatchObject({ candidateId: "A", revision: 3, hash: restart!.hash });
+    expect((await repo.listSnapshots("project-1")).map((s) => [s.snapshotId, s.reason, s.candidateId])).toEqual([
+      ["snapshot-1", "restart", "A"],
+      ["snapshot-2", "restore", "B"],
+    ]);
+  });
+});

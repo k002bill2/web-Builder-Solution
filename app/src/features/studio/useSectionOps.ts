@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useProfileRepository } from "../../data/ProfileRepositoryContext";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { ProfileSeries } from "../../domain/profile";
 import { applyDocOp, createInstanceIds, loadDocEngine, type DocOp, type OpResult } from "./docOps";
 import { docMotionPreset, docPurpose } from "./docPurpose";
-import { useUndoStack } from "./undoStack";
+import { useUndoStack, type UndoEntry } from "./undoStack";
 
 const PROFILE_UNAVAILABLE = "프로필을 불러오지 못해 목적을 확인할 수 없습니다 — 다시 시도해 주세요";
 
@@ -19,6 +19,13 @@ export interface SectionOps {
   readonly canUndoLast: boolean;
   /** 바로 앞 연산 1개 되돌리기 = 이전 문서(같은 instanceId·값·위치·톤). 되돌린 문서를 돌려준다 */
   readonly undoLast: () => PageDoc | undefined;
+  /** 단축키 · "더보기" 실행 취소(false)/다시 실행(true) — 연산과 같은 사슬로 하나씩. 한 기록 = 반환(알림 이름) */
+  readonly step: (redo: boolean) => Promise<UndoEntry | undefined>;
+  /** 지금 문서에서 실행 취소 · 다시 실행할 기록 이름(없으면 undefined — 비활성) */
+  readonly undoLabel: string | undefined;
+  readonly redoLabel: string | undefined;
+  /** 기록이 쥔 문서 — 이미지 참조 집합(SPEC 3.5) */
+  readonly held: readonly PageDoc[];
 }
 
 /**
@@ -60,7 +67,13 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
   const [nextId] = useState(() => createInstanceIds());
   const stack = useUndoStack();
   const chain = useRef<Promise<unknown>>(Promise.resolve());
-  const [last, setLast] = useState<{ readonly before: PageDoc; readonly after: PageDoc }>();
+  const [last, setLastState] = useState<{ readonly before: PageDoc; readonly after: PageDoc }>();
+  // 기록이 바뀔 때마다 판 번호를 올린다 — 더보기 이름 · 참조 집합이 다시 계산된다
+  const [history, setHistory] = useState(0);
+  const setLast = useCallback((next: typeof last) => {
+    setLastState(next);
+    setHistory((n) => n + 1);
+  }, []);
 
   const run = useCallback(
     (op: DocOp, label: string, undoable = false) => {
@@ -86,18 +99,29 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
       chain.current = next;
       return next;
     },
-    [edit, nextId, stack, loadSeries],
+    [edit, nextId, stack, loadSeries, setLast],
+  );
+  const step = useCallback(
+    (redo: boolean) => {
+      const next = chain.current.then(async () => (await loadDocEngine()).stepHistory(redo, docRef, stack, setLast, edit));
+      chain.current = next;
+      return next;
+    },
+    [edit, stack, setLast],
   );
 
   const canUndoLast = last !== undefined && last.after === doc;
   const undoLast = useCallback(() => {
     if (!last || last.after !== docRef.current) return undefined;
-    stack.pop();
+    stack.undo();
     docRef.current = last.before;
     setLast(undefined);
     edit(last.before);
     return last.before;
-  }, [last, stack, edit]);
+  }, [last, stack, edit, setLast]);
+  const top = stack.peek();
+  const redoTop = stack.peekRedo();
+  const held = useMemo(() => (history >= 0 ? stack.reachable(doc) : []), [stack, history, doc]);
 
-  return { series, run, canUndoLast, undoLast };
+  return { series, run, canUndoLast, undoLast, step, undoLabel: top?.after === doc ? top.label : undefined, redoLabel: redoTop?.before === doc ? redoTop.label : undefined, held };
 }

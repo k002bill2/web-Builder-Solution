@@ -63,7 +63,7 @@ export function SectionNav({
 }) {
   return (
     <nav aria-labelledby="studio-sections-heading" className="flex flex-col gap-2">
-      <h2 id="studio-sections-heading" className={H2}>
+      <h2 id="studio-sections-heading" tabIndex={-1} className={H2}>
         섹션
       </h2>
       <SectionList sections={doc.sections} selectedId={selectedId} onSelect={onSelect} selectedExtra={selectedExtra} />

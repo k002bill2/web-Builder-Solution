@@ -12,6 +12,7 @@ import type { VariantChoice } from "../../features/studio/variantChoices";
 import { canAdd, canMove, canRemove } from "../../features/studio/opPermissions";
 import { docKitTokens, docPurpose } from "../../features/studio/docPurpose";
 import { useFocusRequest } from "../../features/studio/useFocusRequest";
+import { historyKey } from "../../features/studio/historyKeys";
 import { useSectionOps } from "../../features/studio/useSectionOps";
 import { toDocSaveRepository } from "../../features/studio/studioRepository";
 import { useDocSave } from "../../features/studio/useDocSave";
@@ -134,8 +135,8 @@ export function StudioLayout({
 
   const { run } = ops;
   const move = useCallback(
-    async (instanceId: string, direction: MoveDirection, button: HTMLElement) => {
-      const outcome = await run({ kind: "move", instanceId, direction }, "이동");
+    async (instanceId: string, direction: MoveDirection, button: HTMLElement, name: string) => {
+      const outcome = await run({ kind: "move", instanceId, direction }, `${name} 이동`);
       if (!outcome.ok) return setNotice(outcome.reason);
       (await loadDocEngine()).afterMove(outcome, setNotice, requestFocus, button, sectionName);
     },
@@ -154,8 +155,8 @@ export function StudioLayout({
   // instanceId 없음 = 문서 전체 연산(테마) — 되돌려도 선택·포커스를 옮기지 않는다(ER SPEC 7절)
   const [undoTarget, setUndoTarget] = useState<UndoTarget>();
   const remove = useCallback(
-    async (instanceId: string) => {
-      const outcome = await run({ kind: "remove", instanceId }, "삭제", true);
+    async (instanceId: string, name: string) => {
+      const outcome = await run({ kind: "remove", instanceId }, `${name} 삭제`, true);
       if (!outcome.ok) return setNotice(outcome.reason);
       (await loadDocEngine()).afterRemove(outcome, setSelected, setUndoTarget, setNotice, focusRow, sectionName);
     },
@@ -163,8 +164,8 @@ export function StudioLayout({
   );
   // 변형 교체(5.5) — 바로 적용 + 알림 줄 "되돌리기", 포커스는 누른 라디오 그대로(6.4)
   const swap = useCallback(
-    async (instanceId: string, choice: VariantChoice, radio: HTMLElement) => {
-      const outcome = await run({ kind: "swap", instanceId, variant: choice.variant }, "변형 교체", true);
+    async (instanceId: string, choice: VariantChoice, radio: HTMLElement, name: string) => {
+      const outcome = await run({ kind: "swap", instanceId, variant: choice.variant }, `${name} 변형 교체`, true);
       if (!outcome.ok) return setNotice(outcome.reason);
       (await loadDocEngine()).afterSwap(outcome, instanceId, choice, radio, setUndoTarget, setNotice, requestFocus, variantName);
     },
@@ -176,7 +177,7 @@ export function StudioLayout({
     async (type: SectionType, variant: string) => {
       const opener = adding;
       setAdding(undefined);
-      const outcome = await run({ kind: "add", type, variant, afterInstanceId: selectedId === PAGE_INFO_ID ? null : selectedId }, "추가");
+      const outcome = await run({ kind: "add", type, variant, afterInstanceId: selectedId === PAGE_INFO_ID ? null : selectedId }, "섹션 추가");
       if (!outcome.ok) {
         setNotice(outcome.reason);
         if (opener) requestFocus({ element: opener });
@@ -242,6 +243,29 @@ export function StudioLayout({
     setSelected(undoTarget.instanceId);
     focusRow(undoTarget.instanceId);
   }, [undoTarget, undoLast, focusRow, goTo]);
+  // 단축키 실행 취소 · 다시 실행(SPEC 3.5 · ER-AC-U1·U2) — 리스너 1개 · 알림 1문장(C1) · 포커스는 그대로(가 있던 줄이 사라지면 h2 "섹션")
+  const { step } = ops;
+  const stepAndTell = useCallback(
+    async (redo: boolean) => {
+      const active = document.activeElement;
+      const entry = await step(redo);
+      if (!entry) return;
+      setNotice(`${redo ? "다시 실행" : "실행 취소"}: ${entry.label}`);
+      setTimeout(() => active && !active.isConnected && goTo("studio-sections-heading", { tab: "sections" }), 0);
+    },
+    [step, goTo],
+  );
+  const locked = snaps.preview !== undefined;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const kind = historyKey(e, locked);
+      if (!kind) return;
+      e.preventDefault();
+      void stepAndTell(kind === "redo");
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [locked, stepAndTell]);
   const gateState = useGateReport(doc, ops.series);
   const goToRow = useCallback(
     (row: GateRow) => {
@@ -284,10 +308,12 @@ export function StudioLayout({
   const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
   // 참조 집합(문서 ∪ 되돌릴 문서) 밖 이미지는 패널이 닫혀 있어도 뺀다(2a-05 5.9 · Codex r1) — 렌더 중 상태 조정(effect 아님).
   // 로컬 id = UUID라 직렬화 문자열 포함으로 잰다(진입 바이트 절약)
-  const [refs, setRefs] = useState<readonly unknown[]>([doc, undoDoc, snaps.held]);
-  if (refs[0] !== doc || refs[1] !== undoDoc || refs[2] !== snaps.held) {
-    setRefs([doc, undoDoc, snaps.held]);
-    const held = JSON.stringify([doc, undoDoc, snaps.held]);
+  // 스냅샷 문서 + 실행 취소 기록이 쥔 문서(SPEC 3.5) — 여러 단계를 되돌려도 Blob이 남는다
+  const heldDocs = useMemo(() => [...snaps.held, ...ops.held], [snaps.held, ops.held]);
+  const [refs, setRefs] = useState<readonly unknown[]>([doc, undoDoc, heldDocs]);
+  if (refs[0] !== doc || refs[1] !== undoDoc || refs[2] !== heldDocs) {
+    setRefs([doc, undoDoc, heldDocs]);
+    const held = JSON.stringify([doc, undoDoc, heldDocs]);
     const kept = images && Object.entries(images).filter(([id]) => held.includes(id));
     if (kept && kept.length < Object.keys(images).length) setImages(Object.fromEntries(kept));
   }
@@ -305,8 +331,8 @@ export function StudioLayout({
       up={canMove(doc, current.instanceId, "up")}
       down={canMove(doc, current.instanceId, "down")}
       remove={canRemove(doc, current.instanceId, purpose)}
-      onMove={(direction, button) => void move(current.instanceId, direction, button)}
-      onRemove={() => void remove(current.instanceId)}
+      onMove={(direction, button) => void move(current.instanceId, direction, button, sectionName(current))}
+      onRemove={() => void remove(current.instanceId, sectionName(current))}
       profileHref={`/profile/${project.profileId}?v=${doc.profileVersion}`}
     />
   );
@@ -337,12 +363,12 @@ export function StudioLayout({
   const editHead = current && (
     <>
       {opControls}
-      <VariantSwitch key={current.instanceId} doc={doc} section={current} purpose={purpose} onSwap={(choice, radio) => void swap(current.instanceId, choice, radio)} />
+      <VariantSwitch key={current.instanceId} doc={doc} section={current} purpose={purpose} onSwap={(choice, radio) => void swap(current.instanceId, choice, radio, sectionName(current))} />
     </>
   );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
-      <EditFields doc={doc} selectedId={selectedId} onEdit={snaps.edit} images={[images, setImages, undoDoc, snaps.held]} imagesOpen={imagesOpen} />
+      <EditFields doc={doc} selectedId={selectedId} onEdit={snaps.edit} images={[images, setImages, undoDoc, heldDocs]} imagesOpen={imagesOpen} />
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)

@@ -29,3 +29,5 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M2C-08 | ✅ 결정·구현(M2C-TODO T-2) | M2C-5b QA O-2(사양) | 지운 뒤 대체텍스트 입력값 유지(다음 이미지에 재사용) — 유지/초기화 결정 | Designer 판단 |
 | B-TEST-01 | M2C-TODO Jarvis 검증 | `pages/ProjectsPage.test.tsx` J-S07 "저장 뒤 맨 위 줄 '이름 바꾸기' 포커스"가 부하(load 32) 중 1/3회 toHaveFocus 실패(161ms, 단독·재실행 통과) — 포커스 이동 시점 비결정. 대기 방식 안정화 | Developer(테스트) |
 | B-M2C-09 | M2C-REQA·E1 미검증 | QB-10 정적 HTML 개수 문구 · m2a 7변형 ⑩ 내보내기 동일성(캔버스·정적 HTML·PNG) — 잃은 이미지 상태에서 시드 문서 게이트(대비 AA·SEO) 차단으로 미실측. E-1(PNG INFRA)은 dev 서버 설계상 실패로 닫음(preview에서 3경로 성공) — **QA의 PNG·정적 HTML 실측은 build+`vite preview`에서** | QA 재검(게이트 통과 시드 또는 B-M2B-09와 묶음) |
+| B-ER-01 | EDITOR-REST-0 | 프로필 화면 "새로 시작"(EQ-2 A) UI 미구현 — 기존 문서를 대비 통과 버전으로 옮기는 다른 길 | Designer·Developer |
+| B-ER-02 | EDITOR-REST-0 | `resolveConflict` 메모리 저장소 missing(memoryProjectRepository.ts:101-103) — 충돌 화면 도달·동작 불가. ER-3a에서 스냅샷과 함께 처리 여부 확인 | Developer(ER-3a) |

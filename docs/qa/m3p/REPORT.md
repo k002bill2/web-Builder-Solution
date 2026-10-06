@@ -79,7 +79,7 @@
 
 ## 측정 방법 보정 기록
 - `04`~`07` 캡처는 기기 배율 2(2560×1800 px, CSS 1280×900). 원인: CLI 라운드 사이에 `deviceScaleFactor:1`이 유지되지 않음 [추정]. 폭(1280)은 매번 `innerWidth`로 확인. 판정 영향 없음.
-- 캡처 7장(≤10): `01-catalog-1280` · `02-catalog-768` · `02-catalog-390` · `03-generated-cards-1280` · `04-detail-gen-beauty-1` · `05-compare-board-gen` · `06-profile-confirmed` · `07-editor-gen-beauty-1`(= 8장).
+- 캡처 8장(≤10): `01-catalog-1280` · `02-catalog-768` · `02-catalog-390` · `03-generated-cards-1280` · `04-detail-gen-beauty-1` · `05-compare-board-gen` · `06-profile-confirmed` · `07-editor-gen-beauty-1`.
 
 ## 판정표
 | 항목 | 판정 |

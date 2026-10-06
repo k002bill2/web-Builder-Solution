@@ -1,0 +1,37 @@
+[
+ {
+  "name": "pic-a.jpg",
+  "w": 1200,
+  "h": 800,
+  "bytes": 21775,
+  "sha256": "b59e31188749e48a"
+ },
+ {
+  "name": "pic-b.jpg",
+  "w": 1200,
+  "h": 800,
+  "bytes": 21753,
+  "sha256": "0b07ddf3b5faa058"
+ },
+ {
+  "name": "pic-c.jpg",
+  "w": 1200,
+  "h": 800,
+  "bytes": 21468,
+  "sha256": "b5eaa24a7da90889"
+ },
+ {
+  "name": "noise-12mp.jpg",
+  "w": 4000,
+  "h": 3000,
+  "bytes": 10497067,
+  "sha256": "c4ff2c6fff9e21af"
+ },
+ {
+  "name": "big-noise.jpg",
+  "w": 6000,
+  "h": 4000,
+  "bytes": 20979581,
+  "sha256": "983dde1a91057afa"
+ }
+]

@@ -18,6 +18,7 @@ export function useExportFlow({
   save,
   gate,
   images,
+  onSnapshot,
 }: {
   readonly repository: ProjectRepository;
   readonly projectId: string;
@@ -25,6 +26,8 @@ export function useExportFlow({
   readonly gate: GateState;
   /** 편집 틀 images 맵 — 생성기가 이번 요청에서 읽는다(SPEC m2c 5.1) */
   readonly images?: RenderImages;
+  /** "내보내기 전" 스냅샷 생성 응답 직후 — 참조 집합(스냅샷 목록)을 다시 읽는다(B-ER-06) */
+  readonly onSnapshot?: () => void;
 }) {
   const [running, setRunning] = useState<ExportFormat>();
   const [waitingSave, setWaitingSave] = useState<ExportFormat>();
@@ -42,13 +45,13 @@ export function useExportFlow({
       setRequested(revision);
       // 청크 로드 실패(오프라인·청크 교체)도 재시도 가능 결과로 — 실행 상태를 남기지 않는다(M2A-3a Codex P2-1)
       const next = await loadExportFlow().then(
-        (flow) => flow.requestExportOnce(repository, projectId, format, revision, images),
+        (flow) => flow.requestExportOnce(repository, projectId, format, revision, images, onSnapshot),
         (): ExportResult => ({ kind: "retryable", format }),
       );
       setResult(next);
       setRunning(undefined);
     },
-    [repository, projectId, savedRevision, images],
+    [repository, projectId, savedRevision, images, onSnapshot],
   );
 
   const phase = save.state.phase;

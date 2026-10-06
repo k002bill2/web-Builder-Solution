@@ -122,4 +122,21 @@ describe("앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 �
     expect(seen).toEqual([{ variants: { 10: blob }, width: 10, height: 10 }]);
     expect(made.deps.at(-1)!.readImage!(ID)).toBeUndefined();
   });
+
+  it("'내보내기 전' 스냅샷 생성 응답 직후 onSnapshot 1회 — 잡이 끝나기 전(B-ER-06 참조 집합 갱신) · 요청이 거부되면 0", async () => {
+    const order: string[] = [];
+    const job = { jobId: "j9", format: "static-html", docRevision: 1, state: "failed", retryable: true, errorCode: "INFRA" } as ExportJob;
+    const repository = {
+      requestExport: async () => ({ wrote: true, snapshotName: "내보내기 전 · 10:00", snapshotId: "s9", job: { ...job, state: "running" } }),
+      getExportJob: async () => {
+        order.push("poll");
+        return job;
+      },
+    } as unknown as ProjectRepository;
+    await requestExportOnce(repository, "pd", "static-html", 1, undefined, () => order.push("snapshot"));
+    expect(order).toEqual(["snapshot", "poll"]);
+    const refused = { requestExport: async () => Promise.reject(new Error("x")) } as unknown as ProjectRepository;
+    await requestExportOnce(refused, "pe", "static-html", 1, undefined, () => order.push("snapshot"));
+    expect(order).toEqual(["snapshot", "poll"]);
+  });
 });

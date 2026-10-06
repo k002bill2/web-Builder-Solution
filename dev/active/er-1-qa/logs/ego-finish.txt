@@ -1,0 +1,4 @@
+pages [{"label":"p1","url":"http://127.0.0.1:4337/studio/project-1","openedBy":"agent"}]
+after finish [{"createdBy":"agent","id":82,"name":"er-1-qa B-M2C-09","ownership":"user","profileId":"Default","profileName":"영환","recentTabTitles":["부티크 법률사무소 프로젝트 편집"],"taskId":"er-1-qa B-M2C-09"}]
+after 3s []
+

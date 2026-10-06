@@ -1,0 +1,5 @@
+HTML FILE 부티크-법률사무소-프로젝트_r2.html
+CANVAS {"n":1,"sandbox":"allow-scripts","src":"/render.html","title":"페이지 미리보기 화면","w":1280,"h":3307}
+HTML bytes 1012557 img 0 data:image 0 http(s) [ 'https://scripts.sil.org/OFL\n\n\n-----------------------------------------------------------\nSIL', 'https://tailwindcss.com' ]
+STATIC {"w":1265,"h":3299,"fonts":["Kit Serif KR"],"sections":["HEADER:s-header-1","SECTION:s-hero-1","SECTION:s-services-1","SECTION:s-about-1","SECTION:s-portfolio-1","SECTION:s-portfolio-2","SECTION:s-contact-1","FOOTER:s-footer-1"]}
+

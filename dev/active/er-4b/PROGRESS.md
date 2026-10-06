@@ -5,10 +5,10 @@ base main `6658430` + ④ WIP 병합(97c826d). 판정선 /studio 진입 직후 �
 ## 체크리스트
 - [x] 1. ④ 상쇄 — /studio 128.56 ≤128.70, 동작 변화 0(④ 테스트·U1·U2·U5 GREEN), 커밋
 - [x] 2. ⑤ U4 더보기 — 미시도(조건 미달: 128.56 > 128.55) → B-ER-09
-- [ ] 3. Ego Lite build+preview 4337 · 1280·390 · 정리(finish keep:[] · listTaskSpaces=[] · 리슨 0)
-- [ ] 4. typecheck · lint · build · 전체 vitest exit 0
-- [ ] 5. Codex review --scope branch --base 6658430 (≤2라운드)
-- [ ] 6. REPORT.md 커밋
+- [x] 3. Ego Lite build+preview 4337 · 1280·390 · 정리(finish keep:[] · listTaskSpaces=[] · 리슨 0) — 390 테마 되돌리기 클릭 미도달(미확인), 캡처 2회 시간초과→DOM 대체
+- [x] 4. typecheck · lint · build · 전체 vitest exit 0
+- [x] 5. Codex review r1 완료 — P2 1건 미반영. BLOCKED: 40턴 규칙으로 수정 중단(REPORT 1절)
+- [x] 6. REPORT.md 커밋
 
 ## 감량 시도 표
 | 시도 | 변경 | /studio 진입 직후 | StudioLayout gz / raw | docEngine gz | build | 로그 |

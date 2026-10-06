@@ -187,7 +187,8 @@ function build({ spec, n, attempt, layout, palettes }: Slot, version: string): C
   const detail: Omit<ReferenceDetail, "similar"> = {
     audienceNote: audience.map((a) => AUDIENCE_NOTES[a]).join(" · "),
     buildNote: `internal 조합 생성기 ${version}으로 조립`,
-    sections: plan.filter((s) => s.type !== "footer").map((s) => ({ name: SECTION_NAMES[s.type]!, variant: s.variant })),
+    // 상세 "섹션 구성" = 실제 렌더(썸네일·편집기)와 1:1 — 엔진 변형(ENGINE_VARIANT_MAP) · Footer 포함(큐레이션 ref-b~f와 같은 규칙, B-M3P-02)
+    sections: plan.map((s) => ({ name: SECTION_NAMES[s.type]!, variant: mapVariant(s.type, s.variant)! })),
     palette: paletteEntries(palette),
     bodyContrast: Math.round(contrastRatio(palette.ink, palette.bg) * 10) / 10,
     typography: { family, headingWeight: 700, bodyWeight: 400, scale: pick(TYPE_SCALES, seed, "scale") },

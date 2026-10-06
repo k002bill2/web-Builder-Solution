@@ -17,7 +17,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "grid-3"
+        "variant": "cards-3"
       },
       {
         "name": "Portfolio",
@@ -25,15 +25,19 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Pricing",
-        "variant": "cards"
+        "variant": "tiers-2"
       },
       {
         "name": "Testimonials",
-        "variant": "carousel"
+        "variant": "quotes-2"
       },
       {
         "name": "Contact",
         "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -110,11 +114,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "split"
+        "variant": "story"
       },
       {
         "name": "Services",
-        "variant": "schedule-table"
+        "variant": "list"
       },
       {
         "name": "Testimonials",
@@ -127,6 +131,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended-map"
       }
     ],
     "palette": [
@@ -206,11 +214,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "team-grid-3"
+        "variant": "story"
       },
       {
         "name": "Services",
-        "variant": "schedule-table"
+        "variant": "list"
       },
       {
         "name": "Testimonials",
@@ -223,6 +231,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -300,7 +312,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "masonry"
+        "variant": "cards-masonry"
       },
       {
         "name": "Portfolio",
@@ -308,15 +320,19 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Pricing",
-        "variant": "cards"
+        "variant": "tiers-2"
       },
       {
         "name": "Testimonials",
-        "variant": "carousel"
+        "variant": "quotes-2"
       },
       {
         "name": "Contact",
         "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -399,11 +415,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "schedule-table"
+        "variant": "list"
       },
       {
         "name": "Testimonials",
-        "variant": "carousel"
+        "variant": "quotes-2"
       },
       {
         "name": "FAQ",
@@ -412,6 +428,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended-map"
       }
     ],
     "palette": [
@@ -491,11 +511,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "split"
+        "variant": "story"
       },
       {
         "name": "Services",
-        "variant": "grid-3"
+        "variant": "cards-3"
       },
       {
         "name": "Testimonials",
@@ -508,6 +528,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -586,15 +610,15 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "grid-2"
+        "variant": "cards-2"
       },
       {
         "name": "About",
-        "variant": "team-grid-2"
+        "variant": "story"
       },
       {
         "name": "Portfolio",
-        "variant": "insights-grid-3"
+        "variant": "grid-3"
       },
       {
         "name": "FAQ",
@@ -603,6 +627,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "minimal-biz"
       }
     ],
     "palette": [
@@ -681,11 +709,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "split"
+        "variant": "story"
       },
       {
         "name": "Services",
-        "variant": "schedule-table"
+        "variant": "list"
       },
       {
         "name": "Testimonials",
@@ -698,6 +726,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -781,7 +813,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "team-grid-2"
+        "variant": "story"
       },
       {
         "name": "Portfolio",
@@ -793,7 +825,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Contact",
-        "variant": "map-form"
+        "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -870,7 +906,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "grid-2"
+        "variant": "cards-2"
       },
       {
         "name": "About",
@@ -886,7 +922,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Contact",
-        "variant": "map-form"
+        "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended-map"
       }
     ],
     "palette": [
@@ -965,7 +1005,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "grid-2"
+        "variant": "cards-2"
       },
       {
         "name": "About",
@@ -973,7 +1013,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Portfolio",
-        "variant": "insights-grid-3"
+        "variant": "grid-3"
       },
       {
         "name": "FAQ",
@@ -981,7 +1021,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Contact",
-        "variant": "map-form"
+        "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended-map"
       }
     ],
     "palette": [
@@ -1068,7 +1112,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Portfolio",
-        "variant": "case-list"
+        "variant": "grid-3"
       },
       {
         "name": "FAQ",
@@ -1076,7 +1120,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Contact",
-        "variant": "map-form"
+        "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended"
       }
     ],
     "palette": [
@@ -1156,15 +1204,15 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "team-grid-3"
+        "variant": "story"
       },
       {
         "name": "Services",
-        "variant": "grid-3"
+        "variant": "cards-3"
       },
       {
         "name": "Testimonials",
-        "variant": "carousel"
+        "variant": "quotes-2"
       },
       {
         "name": "FAQ",
@@ -1173,6 +1221,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "biz-extended-map"
       }
     ],
     "palette": [
@@ -1254,11 +1306,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "About",
-        "variant": "team-grid-2"
+        "variant": "story"
       },
       {
         "name": "Portfolio",
-        "variant": "case-list"
+        "variant": "grid-3"
       },
       {
         "name": "FAQ",
@@ -1266,7 +1318,11 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Contact",
-        "variant": "map-form"
+        "variant": "form"
+      },
+      {
+        "name": "Footer",
+        "variant": "minimal-biz"
       }
     ],
     "palette": [
@@ -1350,7 +1406,7 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       },
       {
         "name": "Services",
-        "variant": "grid-3"
+        "variant": "cards-3"
       },
       {
         "name": "Testimonials",
@@ -1363,6 +1419,10 @@ export const generatedReferenceDetailFixtures: Readonly<Record<string, Reference
       {
         "name": "Contact",
         "variant": "booking"
+      },
+      {
+        "name": "Footer",
+        "variant": "minimal-biz"
       }
     ],
     "palette": [

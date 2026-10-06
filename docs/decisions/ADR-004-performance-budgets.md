@@ -105,4 +105,4 @@ TRD 8절의 "초기 JS ≤ 90KB gzip"은 **생성되는 홈페이지(export)** �
 ### 결과
 - 적용은 ER-2 마감 레인이 `check-bundle-size.mjs`의 `/studio/:projectId` `eagerBudgetKb`를 129로, `m2cBaseline.json`을 결정 2대로 바꾸는 커밋(메시지에 "ADR-004 개정 5")에서 한다. 검사기 로직은 바꾸지 않는다. Jarvis가 실측과 함께 이 절에 "적용 — 커밋 · 실측"을 덧붙인다.
 - 결정 3 첫 적용: ER-3a(`/projects`·`/profile` +0.04, 코드 몫 +0.02) — 통과.
-
+- **적용** — ER-2 커밋 `b3e427a` · 병합 `f9d3e14` · 실측 `/studio` 진입 직후 **127.69**(판정선 128.43 · 여유 0.74 — ER-3b·ER-4 몫) · 다른 화면 ±0.01.

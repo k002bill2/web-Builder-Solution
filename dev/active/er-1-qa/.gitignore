@@ -1,0 +1,3 @@
+exports/
+fixtures/*.jpg
+fixtures/*.ppm

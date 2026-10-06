@@ -33,6 +33,7 @@ base `45e4c1e` · 브랜치 `k002bill2/m3p-5` · 서브에이전트 0
 | lint | `npm run lint` | 0 |
 | build | `npm run build` | exit 0 · `[thumbs] 21장 · 버전 8d7310f2 · 가드 통과(U8·G2·G6)` (base 76d49eca) |
 | 생성 픽스처 | `node scripts/generate-internal-refs.mjs --check` | exit 0 |
+| 금지 파일 변경 0 | `git diff --stat 45e4c1e..HEAD -- app/src/engine app/src/data/sampleCopy.ts app/src/data/startDocWrite.ts app/src/render docs CLAUDE.md app/package-lock.json app/package.json app/src/fixtures/references.ts app/src/fixtures/referenceDetails.ts app/src/fixtures/referenceComparisons.ts` | 출력 0줄 |
 | 전체 vitest | `npx vitest run` | exit 0 · 249 files · 2190 tests passed |
 
 ## 번들 (base 45e4c1e 같은 머신 빌드 대비)
@@ -43,13 +44,14 @@ base `45e4c1e` · 브랜치 `k002bill2/m3p-5` · 서브에이전트 0
 | `/references/:id` 자동 로드 포함 | 99.69 | 99.69 | 124.70 |
 | `/compare` 자동 로드 포함 | 121.96 | 121.97 | 124.70 |
 - 내용이 바뀐 앱 청크는 `generatedCatalog-*.js` 1개(25,120 → 25,625B raw) — 원인 = 생성 상세에 Footer 15행 추가 + 엔진 변형 이름. 썸네일 문구(thumbs/)는 앱 번들 밖이라 0. 나머지 청크는 크기 동일(파일명 해시만 연쇄 변경). **"앱 청크 증가 0" 목표는 B-M3P-02 데이터 추가로 미달**, 멈춤선 안.
-- 렌더 변화 0: 렌더 문서 JS 84.19KB·CSS 8.85KB 그대로, 킷·엔진 코드 변경 0.
+- 렌더 변화 0: base·현재 빌드 모두 `render-BDQsGS9W.js`·`render-BHkyxf8o.css` — 내용 해시 파일명 동일 = 바이트 동일(84.19KB·8.85KB). 킷·엔진 코드 변경 0.
 
 ## Ego Lite (build + `vite preview --port 4337`)
-- 시작 `listTaskSpaces()` = [] → TaskSpace 12 하나. 창 bounds 조회 결과 없음(최소화 아님으로 판단). 1280 뷰포트(CDP override), `goto` 1회(/catalog) 뒤 칩 클릭·카드 클릭·스크롤만, 새로고침 0.
+- 시작 `listTaskSpaces()` = [] → TaskSpace 12 하나. 창 상태 조회(`Browser.getWindowForTarget`)는 실패(오류가 `.catch`로 삼켜져 미출력)해 직접 확인 못 함 — 간접 근거: 캡처가 정상 렌더됨. 1280 뷰포트(CDP override), `goto` 1회(/catalog) 뒤 칩 클릭·카드 클릭·스크롤만, 새로고침 0.
 - `shots/01-catalog-1280.png`: 첫 화면 6장 h1이 모두 다름("아픈 곳을 먼저 듣는 진료실", "기록과 근거로 말하는 상담", "아침을 여는 한 잔의 커피" …), 썸네일 21장 `?v=8d7310f2`.
 - `shots/02-catalog-beauty-1280.png`: 뷰티 4장 h1·부제 각각 다름.
 - `shots/03-detail-gen-beauty-1.png`: "섹션 구성 · 8개" — About story · Services list · Testimonials quotes-2 · 08 Footer biz-extended. (캡처 위쪽 흰 띠 = 스크롤 직후 sticky 헤더 영역 캡처 잔상, 내용 판정 영향 없음)
+- 해상도: 01 = 1280×900(override 적용 실행 안). 02·03 = 2560×1800 — 새 ego-browser 실행(새 CDP 세션)에 override가 이어지지 않아 DPR 2 캡처, 마지막 `clearDeviceMetricsOverride`도 같은 이유로 사실상 무효. 요구 판정은 01 + DOM 추출(`섹션 구성 · 8개`, 항목 8개)로 충족.
 - 정리: `clearDeviceMetricsOverride` → `finish({keep:[]})` → `listTaskSpaces()` = **[]**. 자기 preview 종료, 4337 리슨 0. main 5480·사용자 창 무접촉.
 
 ## 기록만(이번에 안 바꿈)
@@ -59,7 +61,7 @@ base `45e4c1e` · 브랜치 `k002bill2/m3p-5` · 서브에이전트 0
 - 썸네일 문서 hash는 문구 덮은 뒤 재계산 안 함(엔진 import 금지 · SSR은 검증·저장 안 함).
 
 ## Codex
-- 1라운드 `node codex-companion.mjs review --scope branch --base 45e4c1e`(대상: e62a48f~2b33173): **조치 필요 결함 0건**. Codex 쪽 typecheck·`git diff --check` 통과, 테스트는 Codex 샌드박스 EPERM으로 미실행(동작 검증은 위 로컬 전체 vitest exit0로 갈음). 지적 0이라 2라운드 생략(≤2 상한 안).
+- 1라운드 `node codex-companion.mjs review --scope branch --base 45e4c1e`(대상: 브랜치 diff vs 45e4c1e, 실행 시점 682916b까지 — 코드 커밋 e62a48f 포함): **조치 필요 결함 0건**. Codex 쪽 typecheck·`git diff --check` 통과, 테스트는 Codex 샌드박스 EPERM으로 미실행(동작 검증은 위 로컬 전체 vitest exit0로 갈음). 지적 0이라 2라운드 생략(≤2 상한 안).
 
 ## 남은 일 · 요청
 - 미해결 차단 0. push/merge 안 함(승인 대상).

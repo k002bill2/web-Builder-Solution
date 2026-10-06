@@ -72,6 +72,7 @@
 L1 근거: `contrastAaRegression.test.ts` 인라인 스냅샷에서 **ref-e(부티크 법률사무소) · 밝은 카드**는 제안 0줄(= C-1~C-5 AA 통과). 편집 시작은 보고 있는 버전으로 `create`(`CandidatesSection.tsx:89` `viewed.version`).
 
 1. (경로 A — 보정 없이) 카탈로그 → 비교 보드에서 **ref-e를 기준, 카드 톤 밝음** → 확정(첫 프로젝트 또는 "새 프로젝트로 확정") → 3안 → 하나 고름 → 편집 시작 → "페이지 정보"에 제목·설명 입력 → 게이트 "통과"(성능 "측정 전"은 차단 아님).
+   - (r1) Codex가 코드 실행으로 확인: ref-e 초안 → A/B/C 문서 생성 → 메타 입력 뒤 세 안 모두 게이트 차단 0(`dev/active/editor-rest-spec/logs/codex-adv-r1.txt`). 브라우저 실측은 여전히 없음.
 2. (경로 B — 보정) 다른 레퍼런스면 **문서가 없는 새 프로젝트**에서: 프로필 화면 "보정값 쓰기" → 조정 저장(새 버전) → 그 버전으로 3안 → 편집 시작 → 페이지 정보 입력.
 3. 주의: 이미 문서가 있는 프로젝트에서는 경로 B가 통하지 않는다(`DOC_EXISTS`). 테마 레인(L2) 병합 뒤에는 편집기 안에서 "테마 바꾸기"로 푼다(3.3).
 4. 이동은 앱 안 클릭만(새로고침 = 메모리 store 소실). PNG·정적 HTML 실측은 **build + `vite preview`**(dev 서버는 `kitCss` 설계상 INFRA — m2c-e1 REPORT).
@@ -84,7 +85,7 @@ L1 근거: `contrastAaRegression.test.ts` 인라인 스냅샷에서 **ref-e(부�
 
 ### 3.1 테마 바꾸기 (2a-05 5.8 · E-S17·S18 대체)
 
-**실렌더 이후 바뀐 사정**: 캔버스는 실렌더 iframe이고 색은 `docKitTokens(series, doc.profileVersion)`이 정한다(L1 `StudioLayout.tsx:300`). 즉 **버전 필드 하나만 바꾸면 캔버스·게이트(대비·목적 필수 섹션)·모션 판정이 모두 따라온다** — 별도 색 주입 작업이 없다.
+**실렌더 이후 바뀐 사정**: 캔버스는 실렌더 iframe이고 색은 `docKitTokens(series, doc.profileVersion)`이 정한다(L1 `StudioLayout.tsx:300`). 즉 **버전 필드 하나만 바꾸면 캔버스 색·게이트 대비·목적 필수 섹션이 따라온다** — 별도 색 주입 작업이 없다. **모션은 따라오지 않는다**(r1 정정 — Codex): 게이트 모션 줄은 섹션 인스턴스 `motion`만 본다(`engine/gate/docRows.ts:28-37`)·렌더도 인스턴스 값(`sectionMotion.ts:19-25`). 테마를 바꿔도 **기존 섹션 모션은 그대로**이고, 새로 추가하는 섹션의 기본값만 새 버전 모션 프리셋을 따른다(`useSectionOps.ts:76` `docMotionPreset`). 모션 예산 차단은 테마 바꾸기로 풀리지 않는다 — 기존 경로(문제 섹션 이동)를 쓴다.
 
 - **연산(엔진 L4, 신규 2개)**: `swapTheme(doc, profileVersion) → doc'`(문서 `profileVersion`만 바꾼 새 문서 · 입력 불변) · `diffSlotValues(docA, docB) → 달라진 {instanceId, slotKey}[]`(meta 포함). PageDoc 계약 **변경 없음**(필드 추가 0) → MQ 아님. 소유는 Q-18 선례대로 L2 레인의 **범위 예외 엔진 파일**(PLAN 2절).
 - **진입**: "테마" 영역(`ThemePanel`)에 버튼 **"테마 바꾸기"**(primary 아님, outline). E-S18: 문서 버전 < 계열 최신이면 캡션 **"프로필 v4가 새로 있습니다"** + 같은 버튼이 이유를 받는다(자동 적용 0).
@@ -102,6 +103,8 @@ L1 근거: `contrastAaRegression.test.ts` 인라인 스냅샷에서 **ref-e(부�
 
 - **저장소(메모리 구현)**: `createSnapshot(projectId, name?)` · `restoreSnapshot(projectId, snapshotId, expectedRevision)` · `resolveConflict(projectId, choice, myDoc)`를 `memoryDocBook`(조작 뒤 청크 — 지금 export와 같은 자리)에 구현. 판정·트랜잭션은 2a-05 8.3 · E-AC-31 그대로(복원 = "복원 전" 자동 스냅샷 + 새 revision 한 트랜잭션, `commit` 실패 → 변화 0). id는 기존 관례 `snapshot-N`(store마다).
   - `resolveConflict`를 이 레인에 묶는 이유: 같은 스냅샷 쓰기 경로(충돌 보존 = `auto·conflict`)이고 지금 `missing`이다. 제품 흐름 도달은 여전히 어렵다(1.1) — **단위·컴포넌트 테스트로만 보증**(ER-AC-S5).
+- **(r1 — Codex P1) 미저장 편집 먼저 저장**: `createSnapshot(projectId, name?)`·`restoreSnapshot`은 저장소의 문서를 본다(화면 문서 인자 없음). 자동 저장은 2초 지연이라(`useDocSave.ts:70-74`) 입력 직후 스냅샷을 만들면 옛 내용이 남는다. 그래서 "지금 상태 저장"·"이 스냅샷으로 복원"은 **내보내기와 같은 순서**(2a-05 5.13): 진행 중 저장을 기다림 → 저장 전 변경 즉시 저장 → 성공했을 때만 저장소 호출. 저장 실패·`STALE_DOC`·오프라인이면 **호출 0**(E-S07·E-S09·E-S08 표시는 저장 흐름이 한다) + 대화상자 안 문장 "저장하지 못해 스냅샷을 만들지 않았습니다".
+- **(r1 — Codex P1) 복원 결과 = 저장소 revision 동기화**: `restoreSnapshot`은 저장소 revision을 올리는 쓰기다. 결과 문서를 일반 편집(`onEdit`)으로 넣으면 `useDocSave`의 revision(`useDocSave.ts:52-59`, `saveDoc`·`resolveConflict`에서만 갱신)이 옛 값이라 다음 저장이 `STALE_DOC`가 된다. 그래서 복원은 `resolveConflict`와 같은 **저장 훅 경로**로 넣는다 — 진행 중 저장과 직렬화 · 반환 문서·revision·스케줄러(`settle`, 추가 저장 0)를 함께 갱신. 복원의 실행 취소(3.5)는 "복원 직전 문서"를 **새 편집**으로 넣고 일반 자동 저장으로 새 revision을 만든다(저장소 revision을 되돌리지 않는다).
 - **툴바 "스냅샷"**(≥1280 툴바, <1280 "더보기" 안 — 2a-05 4.2) → 대화상자(조작 뒤 청크): "지금 상태 저장"(이름 30자, 빈 값 = "수동 · 14:02") + 목록(이름 · 종류 글자 · 시각 · "프로필 vN · B안" · "미리보기"). 최근 10 + "이전 스냅샷 N개 더 보기".
 - **미리보기(실렌더)**: 대화상자를 닫고 캔버스 iframe이 **스냅샷 문서**를 그린다(같은 렌더 경로 — 새 렌더 코드 0). 위 `Callout informative` "스냅샷 '수동 · 14:02'를 보고 있습니다 · 편집은 멈췄습니다" + "이 스냅샷으로 복원" · "편집으로 돌아가기". 편집 컨트롤 `aria-disabled` + 이유 "스냅샷을 보는 중에는 편집할 수 없습니다". **자동 저장·게이트 재계산 멈춤**(보는 문서는 편집 문서가 아니다). 게이트 패널은 편집 문서 기준 그대로 + 캡션 "스냅샷 보는 중 — 편집 문서 기준 결과".
 - **이미지와의 관계(MQ-S1 A 전제 유지)**:
@@ -182,6 +185,8 @@ L1 근거: `contrastAaRegression.test.ts` 인라인 스냅샷에서 **ref-e(부�
 | ER-AC-S2 | `restoreSnapshot`: "복원 전" 자동 + 새 revision 한 트랜잭션 · 기존 스냅샷 불변(동결) · `commit` 실패 → 변화 0 · `STALE_DOC` 판정 | [U] |
 | ER-AC-S3 | 미리보기: 캔버스 = 스냅샷 문서 · 편집 컨트롤 전부 `aria-disabled` + 같은 이유 · 자동 저장 0회 · 포커스 Callout 제목 · "편집으로 돌아가기" → 포커스 "스냅샷" 버튼 | [U] |
 | ER-AC-S4 | 복원 완료 알림 · 포커스 h1 · 기록 스택 1건 | [U] |
+| ER-AC-S9 | (r1) 입력 직후(자동 저장 전) "지금 상태 저장"·복원 → 저장 먼저, 스냅샷·"복원 전" 사본 = **최신 입력 포함** · 저장 실패·`STALE_DOC`·오프라인 → 저장소 호출 0 + 문장 | [U] |
+| ER-AC-S10 | (r1) 복원 → 편집 → 자동 저장 성공(`STALE_DOC` 0, revision 연속) → 내보내기 요청 revision = 저장 revision · 복원 실행 취소 → 새 revision 저장 · 진행 중 저장과 복원이 겹쳐도 저장소 쓰기 순서 직렬 | [U] |
 | ER-AC-S5 | `resolveConflict` 메모리 구현: mine/theirs 각각 보존 스냅샷 1 + 저장 한 트랜잭션 · `commit` 실패 → 0 · 기존 `useDocSave.test.tsx` 단언 불변 | [U] |
 | ER-AC-S6 | 참조 집합 = 문서 ∪ 스냅샷 ∪ 실행 취소 ∪ 다시 실행: 이미지 A → 스냅샷 → 교체 → 복원 = A 살아 있음 · 떠났다 돌아와 복원 = 잃은 이미지 표시 · 탭 한도 거부 문장(스냅샷이 붙잡음) | [U] |
 | ER-AC-S7 | 내보내기 완료 문구의 "내보내기 전" 스냅샷이 목록에 보이고 미리보기 가능 | [U] |
@@ -282,3 +287,4 @@ L1 근거: `contrastAaRegression.test.ts` 인라인 스냅샷에서 **ref-e(부�
 | r | 날짜 | 내용 |
 |---|---|---|
 | r0 | 2026-10-06 | EDITOR-REST-0 첫 작성(코드 0). 근거 L1 grep·빌드 로그 |
+| r1 | 2026-10-06 | Codex adversarial r1(needs-attention) 3건 반영: P1 스냅샷·복원 전 미저장 편집 저장(ER-AC-S9) · P1 복원 = 저장 훅 revision 동기화(ER-AC-S10) · P2 테마가 기존 섹션 모션을 바꾸지 않음(3.1 정정). ref-e 경로 코드 실행 확인 기록 |

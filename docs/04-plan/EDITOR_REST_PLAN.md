@@ -27,12 +27,12 @@
 | ER-1 | `dev/active/er-1/`만(코드 0) | 아니오 | 없음 |
 | ER-2 | 엔진 **범위 예외**: `engine/ops/theme.ts`(신규 `swapTheme`·`diffSlotValues`) + 그 test · 화면: `components/studio/ThemeDialog.tsx`(신규, 조작 뒤) · `StudioPanels.tsx`(`ThemePanel`) · `GateList.tsx`/`features/studio/gateView.ts`(대비 줄 행동) · `features/studio/docOps.ts`·`docOpRun.ts`(연산 종류 `theme`) · `StudioLayout.tsx` | **예** | ER-3a와 0 |
 | ER-3a | `data/memoryDocBook.ts` · `data/memoryProjectRepository.ts` · 그 test(`memoryProjectRepository.test.ts`·`memoryExport.test.ts`) | 아니오 | ER-2와 0 |
-| ER-3b | `components/studio/SnapshotDialog.tsx`·`SnapshotPreview.tsx`(신규, 조작 뒤) · `StudioToolbar.tsx` · `features/studio/images/store/imageStore.ts`(`retainedIds` 확장) · `ImageSlotField.tsx`·`ImageSlotPanel.tsx` · `StudioLayout.tsx` | **예** | ER-2(StudioLayout) · ER-4(Toolbar) → 직렬 |
+| ER-3b | `components/studio/SnapshotDialog.tsx`·`SnapshotPreview.tsx`(신규, 조작 뒤) · `features/studio/useDocSave.ts`(복원 = 저장 훅 경로 · revision 동기화 — r1) · `StudioToolbar.tsx` · `features/studio/images/store/imageStore.ts`(`retainedIds` 확장) · `ImageSlotField.tsx`·`ImageSlotPanel.tsx` · `StudioLayout.tsx` | **예** | ER-2(StudioLayout) · ER-4(Toolbar) → 직렬 |
 | ER-4 | `features/studio/undoStack.ts`(redo) · `useSectionOps.ts` · `EditFields.tsx`·`PageInfoFields.tsx`·`ImageSlotField.tsx`(편집 묶음) · `components/studio/MoreMenu.tsx`(신규, 조작 뒤) · `StudioToolbar.tsx` · `StudioLayout.tsx` | **예** | 직렬 |
 | ER-5 | `dev/active/er-5/`만 | 아니오 | — |
 
 - **엔진 파일 소유(Q-18 선례)**: ER-2는 `engine/ops/theme.ts` + test 2파일만 범위 예외로 쓴다. PageDoc·SectionDefinition 계약 변경 0(필드 추가 0) — 바뀌면 멈추고 MQ로.
-- **ER-3b가 ER-2 뒤인 이유**: 테마 바꾸기를 기록·복원과 같은 문서 연산 경로(`docOpRun`)로 먼저 정리해 두면 ER-3b의 "복원 = 연산"과 ER-4의 "모든 연산 기록"이 같은 길을 쓴다.
+- **ER-3b가 ER-2 뒤인 이유**: 둘 다 `StudioLayout.tsx`에 연결한다. (r1 정정 — Codex) 복원은 `docOpRun` 일반 연산이 아니라 **저장 훅(`useDocSave`) 경로**다 — 저장소 revision을 올리므로 `resolveConflict`처럼 revision·스케줄러를 함께 갱신해야 다음 저장이 `STALE_DOC`가 되지 않는다(ER SPEC 3.2).
 - **선택 레인(권하지 않음)**: `StudioLayout.tsx` 분리 리팩터링을 ER-2 앞에 두면 ER-2·ER-3b 병렬이 가능해진다. 범위 확장이고 테스트 대량 이동이 생겨 이득(약 3시간 단축, 추정)보다 위험이 커서 기본 계획에 넣지 않는다. 각 레인은 **자기가 더하는 코드만** 새 파일로 빼서 StudioLayout 증가를 막는다(파일 800행 한도).
 
 ## 3. 레인별 완료 기준 · 체크포인트
@@ -48,7 +48,7 @@
 | ER-1 | QB-R1(동일성 ⑩) · QB-R2(개수 문구) PASS/FAIL + 스크린샷 · B-M2B-09 중 같은 preview 환경에서 닿는 항목은 함께 표시 | 2.2 경로 A가 실제로 통과 문서를 만드는지가 **첫 확인** — 안 되면(예: 3안 중 대비 외 차단) 원인 기록 후 경로 B 시도, 둘 다 실패면 BLOCKED + ER-2 뒤로 |
 | ER-2 | ER-AC-T1~T7 · G1(대비 줄) PASS | 첫 화면 증가 실측(ER SPEC 8절 추정 +0.04~0.08 옆에 기록) |
 | ER-3a | ER-AC-S1·S2·S5 저장소 단위 PASS · E-AC-43·44(내보내기 스냅샷) 회귀 0 | 스냅샷 id 번호가 내보내기·restart와 같은 순서 |
-| ER-3b | ER-AC-S3·S4·S6·S7·S8 PASS | 미리보기 중 자동 저장 0회 · 참조 집합 확장 뒤 E-AC-45~47 회귀 0 |
+| ER-3b | ER-AC-S3·S4·S6~S10 PASS | 미리보기 중 자동 저장 0회 · 복원→편집→저장→내보내기 revision 연속 · 참조 집합 확장 뒤 E-AC-45~47 회귀 0 |
 | ER-4 | ER-AC-U1~U5 · C1 PASS | 입력칸 안 단축키 가로채기 0 |
 | ER-5 | QB-R3~R7 · ER-AC-T8 · C2 재측정 | Designer 시각 QA(1280·1024·390) |
 

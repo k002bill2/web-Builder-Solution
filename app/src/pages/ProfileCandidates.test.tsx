@@ -108,7 +108,10 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     const edit = within(region).getByRole("button", { name: "편집 시작" });
     expect(edit).toHaveAttribute("aria-disabled", "true");
     expect(edit).toHaveAccessibleDescription(/안을 고르면 편집을 시작할 수 있습니다/);
-    expect(edit).toHaveAccessibleDescription(/편집기는 다음 단계\(2a-05\)에서 연결됩니다/);
+    // B-ER-03 — 편집 시작은 실제 편집기를 연다(자리표시 화면 · 2a-05 예고 문구 0)
+    expect(edit).toHaveAccessibleDescription(/편집 시작을 누르면 고른 안으로 편집기를 엽니다/);
+    expect(region).not.toHaveTextContent(/자리표시|2a-05/);
+    expect(edit).toHaveAccessibleDescription(/이미 편집 중인 문서가 있으면 그 문서를 엽니다/);
     await u.click(edit);
     expect(router.state.location.pathname).toBe("/profile/profile-1");
     await u.click(within(region).getByRole("button", { name: "B안 선택" }));

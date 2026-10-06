@@ -1,5 +1,5 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 import { FAIL, PASS, themeSeries } from "../../features/studio/testing/themeSeries";
@@ -124,5 +124,26 @@ describe("게이트 대비 줄 행동 — ER-AC-T6", () => {
     act(() => void fireEvent.click(undo));
     expect(screen.queryByRole("button", { name: "되돌리기" })).toBeNull();
     await waitFor(() => expect(themeRegion().getByRole("button", { name: "테마 바꾸기" })).toHaveFocus());
+  });
+});
+
+describe("알림 줄 보이기 — B-ER-11", () => {
+  it("390 테마 적용 → '되돌리기' 있는 알림 줄을 scrollIntoView({block:'nearest'})(즉시 · 모션 0) · 포커스는 옮기지 않음(테마 영역 '테마 바꾸기')", async () => {
+    // jsdom에는 scrollIntoView가 없다 — 이 테스트 동안만 둔다
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      await openStudio({ width: 390, doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }]) });
+      const line = () => notice().parentElement;
+      await themeRegion().findByRole("button", { name: "테마 바꾸기" });
+      expect(scroll.mock.contexts).not.toContain(line());
+      await swapTo(2);
+      await screen.findByRole("button", { name: "되돌리기" });
+      await waitFor(() => expect(scroll.mock.contexts).toContain(line()));
+      expect(scroll.mock.calls[scroll.mock.contexts.indexOf(line())]).toEqual([{ block: "nearest" }]);
+      await waitFor(() => expect(themeRegion().getByRole("button", { name: "테마 바꾸기" })).toHaveFocus());
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    }
   });
 });

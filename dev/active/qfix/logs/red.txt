@@ -1,0 +1,318 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/qfix/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileCandidates.test.tsx (14 tests | 1 failed) 2680ms
+   ❯ 3안 생성 흐름 (P-S17 → S18 → S19) (3)
+     × 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지 139ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ThemeSwap.test.tsx (13 tests | 1 failed) 5822ms
+   ❯ 알림 줄 보이기 — B-ER-11 (1)
+     × 390 테마 적용 → '되돌리기' 있는 알림 줄을 scrollIntoView({block:'nearest'})(즉시 · 모션 0) · 포커스는 옮기지 않음(테마 영역 '테마 바꾸기') 3101ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/SnapshotFlow.test.tsx (19 tests | 3 failed) 8910ms
+   ❯ 닫으면 포커스 '스냅샷' — B-ER-10 (3)
+     × 폭 1280px Esc → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내) 758ms
+     × 폭 390px Esc → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내) 106ms
+     × 폭 1280px 닫기 → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내) 91ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileCandidates.test.tsx > 3안 생성 흐름 (P-S17 → S18 → S19) > 선택: 선택 전 편집 시작 aria-disabled + 이유 → 'B안 선택' aria-pressed · 선택됨 · Tag → 'B안으로 편집 시작' → /studio/:projectId, 다시 들어와도 유지
+Error: expect(element).toHaveAccessibleDescription()
+
+Expected element to have accessible description:
+  /편집 시작을 누르면 고른 안으로 편집기를 엽니다/
+Received:
+  안을 고르면 편집을 시작할 수 있습니다 · 편집기는 다음 단계(2a-05)에서 연결됩니다. 지금은 고른 안만 저장되고, 편집 시작을 누르면 편집기 자리표시 화면으로 이동합니다.
+ ❯ src/pages/ProfileCandidates.test.tsx:112:18
+    110|     expect(edit).toHaveAccessibleDescription(/안을 고르면 편집을 시작할 수 있습니다/);
+    111|     // B-ER-03 — 편집 시작은 실제 편집기를 연다(자리표시 화면 · 2a-05 예고 문구 0)
+    112|     expect(edit).toHaveAccessibleDescription(/편집 시작을 누르면 고른 안으로 편집기를 엽…
+       |                  ^
+    113|     expect(region).not.toHaveTextContent(/자리표시|2a-05/);
+    114|     expect(edit).toHaveAccessibleDescription(/편집기는 다음 단계\(2a-05\)에서 연결…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > 닫으면 포커스 '스냅샷' — B-ER-10 > 폭 1280px Esc → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내)
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > 닫으면 포커스 '스냅샷' — B-ER-10 > 폭 1280px 닫기 → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내)
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"
+  id="studio-snapshot"
+  type="button"
+>
+  스냅샷
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="flex h-dvh flex-col"
+        >
+          <header … />
+          <div … />
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+ ❯ src/components/studio/SnapshotFlow.test.tsx:105:28
+    103|       else act(() => void fireEvent.click(dialog.getByRole("button", {…
+    104|       expect(screen.queryByRole("dialog")).toBeNull();
+    105|       expect(snapButton()).toHaveFocus();
+       |                            ^
+    106|     } finally {
+    107|       spy.mockRestore();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > 닫으면 포커스 '스냅샷' — B-ER-10 > 폭 390px Esc → 대화상자가 닫힌 뒤 포커스 = '스냅샷'(열린 모달 밖 요소는 포커스를 못 받는다 — 브라우저 inert 흉내)
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"
+  id="studio-snapshot"
+  type="button"
+>
+  스냅샷
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="flex flex-col"
+        >
+          <header … />
+          <div … />
+          <section … />
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+ ❯ src/components/studio/SnapshotFlow.test.tsx:105:28
+    103|       else act(() => void fireEvent.click(dialog.getByRole("button", {…
+    104|       expect(screen.queryByRole("dialog")).toBeNull();
+    105|       expect(snapButton()).toHaveFocus();
+       |                            ^
+    106|     } finally {
+    107|       spy.mockRestore();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/studio/ThemeSwap.test.tsx > 알림 줄 보이기 — B-ER-11 > 390 테마 적용 → '되돌리기' 있는 알림 줄을 scrollIntoView({block:'nearest'})(즉시 · 모션 0) · 포커스는 옮기지 않음(테마 영역 '테마 바꾸기')
+AssertionError: expected [ …(2) ] to include <div …(1)><div …(3)></div>
+…(1)</div>
+
+Ignored nodes: comments, script, style
+<html
+  style=""
+>
+  <head>
+    <title>
+      동네 치과 클리닉 프로젝트 편집
+    </title>
+  </head>
+  <body>
+    <div>
+      <div
+        class="min-h-dvh bg-background-normal text-label-normal"
+      >
+        <a
+          class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+          href="#main-content"
+        >
+          본문으로 건너뛰기
+        </a>
+        <main
+          class="focus:outline-none"
+          id="main-content"
+          tabindex="-1"
+        >
+          <div
+            class="flex flex-col"
+          >
+            <header
+              class="flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"
+            >
+              <a
+                aria-label="프로젝트로 돌아가기"
+                class="inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"
+                data-discover="true"
+                href="/projects"
+              >
+                <span
+                  aria-hidden="true"
+                  class="ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"
+                />
+              </a>
+              <h1
+                class="min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"
+                tabindex="-1"
+                title="동네 치과 클리닉 프로젝트"
+              >
+                동네 치과 클리닉 프로젝트
+              </h1>
+              <button
+                class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"
+                id="studio-snapshot"
+                type="button"
+              >
+                스냅샷
+              </button>
+              <button
+                aria-label="검사 · 내보내기"
+                class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"
+                type="button"
+              >
+                검사
+              </button>
+              <div
+                class="basis-full ps-10"
+              >
+                <div
+                  class="flex min-w-0 items-center gap-2"
+                >
+                  <p
+                    class="text-caption1 text-label-alternative"
+                  >
+                    이 탭에 저장됨 · 방금
+                  </p>
+                  <p
+                    class="sr-only"
+                    role="alert"
+                  />
+                </div>
+              </div>
+            </header>
+            <div
+              class="flex flex-col gap-2"
+            >
+              <div
+                aria-label="편집 도구"
+                class="flex border-b border-line-normal px-3"
+                role="tablist"
+              >
+                <button
+                  aria-controls="studio-panel-sections"
+                  aria-selected="true"
+                  class="ds-label min-h-10 flex-1 border-b-2 px-3 border-primary text-primary"
+                  id="studio-tab-sections"
+                  role="tab"
+                  tabindex="0"
+                  type="button"
+                >
+                  섹션
+                </button>
+                <button
+                  aria-controls="studio-panel-edit"
+                  aria-selected="false"
+                  class="ds-label min-h-10 flex-1 border-b-2 px-3 border-transparent text-label-neutral"
+                  id="studio-tab-edit"
+                  role="tab"
+                  tabindex="-1"
+                  type="button"
+                >
+                  편집
+                </button>
+                <button
+                  aria-controls="studio-panel-gate"
+                  aria-selected="false"
+                  class="ds-label min-h-10 flex-1 border-b-2 px-3 border-transparent text-label-neutral"
+                  id="studio-tab-gate"
+                  role="tab"
+                  tabindex="-1"
+                  type="button"
+                >
+                  검사
+                </button>
+             ...
+ ❯ src/components/studio/ThemeSwap.test.tsx:142:56
+    140|       await swapTo(2);
+    141|       await screen.findByRole("button", { name: "되돌리기" });
+    142|       await waitFor(() => expect(scroll.mock.contexts).toContain(line(…
+       |                                                        ^
+    143|       expect(scroll.mock.calls[scroll.mock.contexts.indexOf(line())]).…
+    144|       await waitFor(() => expect(themeRegion().getByRole("button", { n…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  5 failed | 41 passed (46)
+   Start at  18:41:55
+   Duration  10.27s (tests 82%, environment 9%, transform 6%, import 2%, setup 2%)
+

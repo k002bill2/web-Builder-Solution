@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { applyTheme, passVersion, themeLines, type RunGate, type ThemeApplyDeps } from "../../features/studio/themeText";
@@ -47,7 +47,8 @@ export default function ThemeDialog({
     // 열 때 1회 — 연 동안 문서·계열이 바뀌어도 고른 버전을 바꾸지 않는다
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useEffect(() => first.current?.focus(), [gate]);
+  // 라디오가 그려지는 커밋 안에서 바로 포커스 — useEffect(페인트 뒤)면 라디오는 보이는데 포커스가 아직 없는 틈이 생긴다
+  useLayoutEffect(() => first.current?.focus(), [gate]);
 
   const noPass = pickPass && gate && gate.initial === doc.profileVersion;
   return (

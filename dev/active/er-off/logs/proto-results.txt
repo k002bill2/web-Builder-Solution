@@ -1,0 +1,11 @@
+base	[]	total 127.05	StudioLayout 16.84	issue 5.95
+A1	[A1]	total 126.93	StudioLayout 16.69	issue 5.95
+A2	[A2]	total 127.05	StudioLayout 16.81	issue 5.95
+A12	[A1+A2]	total 126.89	StudioLayout 16.66	issue 5.95
+B1	[B1]	total 126.28	StudioLayout 16.06	issue 5.95
+B2	[B2]	total 127.05	StudioLayout 16.83	issue 5.95
+B3	[B3]	total 126.87	StudioLayout 16.64	issue 5.95
+B4	[B4]	total 126.79	StudioLayout 16.57	issue 5.95
+B34	[B3+B4]	total 126.59	StudioLayout 16.36	issue 5.95
+Ball	[B1+B2+B3+B4]	total 125.79	StudioLayout 15.56	issue 5.95
+ALL	[A1+A2+B1+B2+B3+B4]	total 125.61	StudioLayout 15.38	issue 5.95

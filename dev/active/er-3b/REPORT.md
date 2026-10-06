@@ -1,5 +1,6 @@
 # ER-3b REPORT — 스냅샷 화면 (재개 완료 · Codex r2 지적 3건 미반영)
 
+- **3차 첫 줄: 마감 수정 1·2·3·5는 GREEN(19/19)이나 합산 /studio 128.45 > 128.43 → 즉시 멈춤 · 미커밋(`wip-fix3.patch`). 커밋은 항목 4(로컬 시각)만 — HEAD 128.32. Codex r2 P1·P2 2건은 tip에 여전히 열림(r3 같은 3건 · 새 P1 0) → 병합 금지 유지.**
 - **첫 줄: /studio 진입 127.69 → 128.33KB(+0.64) — 판정선 128.43 이내 통과, 목표 128.04 미달. ER-3b 몫 0.64 > 0.35 → ER-4 여유는 0.10KB뿐(경고).** 첫 화면 91.76(±0.00).
 - base `45a5721` · 브랜치 `k002bill2/er-3b` · 서브에이전트 0 · push/merge/삭제 0 · main 5480 무접촉 · 엔진·계약·data 인터페이스·docs·scripts·lock 수정 0
 - 재개 커밋: `9a96a51`(B·C + 감량 + 가드 대체) · `d9f92bb`(Codex r1 3건) · `c12aad6`(S6·S10 테스트) · 이 REPORT 커밋
@@ -72,3 +73,27 @@
 
 - PLAN 목록 밖: `features/studio/images/store/types.ts`(튜플 4번째) · 신규 `useSnapshots.tsx`·`SnapshotLayer.tsx`·`SnapshotLayerLoader.tsx` · 테스트 `SnapshotImages.test.tsx`·`snapshotRevision.test.tsx`·`memoryExport.test.ts`(결정 2)
 - SPEC 차이: "스냅샷" 버튼을 모든 폭 툴바에 둠(SPEC <1280 "더보기" — ER-4 "더보기" 도입 때 이동)
+
+## 8. 마감 수정(3차) — DECISION-FIX3 1~5
+
+### 결과
+| 항목 | 상태 | 근거 |
+|---|---|---|
+| 4 스냅샷 이름 로컬 시각 | **커밋 `f4a0eb5`** | `memoryDocBook.ts` 내부 `hhmm`(getHours·getMinutes) — 시그니처·인터페이스 변경 0 · 테스트 TZ=Asia/Seoul 고정(09:00Z → 18:00) · RED 2/2 → GREEN, 예측 밖 '충돌 보존' 기대 1건도 같은 이유로 갱신 |
+| 1 P1 변환 중 미리보기·복원 | GREEN · **미커밋** | `useSnapshots` 편집 경계 = 미리보기 열고 닫을 때마다 새 구간(useMemo) + 최신 구간 ref · 거절 시 false → `ImageSlotField`는 이미지 맵도 안 바꾸고 상태 문장 "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요" |
+| 2 P2 미리보기 진입 저장 실패 | GREEN · **미커밋** | `SnapshotDialog`가 flushed 성공 뒤에만 `onPreview` · 실패 = "저장하지 못해 미리보기를 열지 않았습니다"(alert) |
+| 3 P2 복원 뒤 목록 실패 | GREEN · **미커밋** | 이름 조회 실패 = undefined → 알림 "…복원 전 상태는 스냅샷 목록에 있습니다" · onRestored·되돌리기 그대로 |
+| 5 툴바 비활성 시각 | GREEN · **미커밋** | 툴바 두 버튼에 `aria-disabled:` 짝 클래스(primary = bg-fill-strong·text-label-disable · outline = text-label-disable·border-line-alternative) |
+
+- TDD: RED 5/5(`logs/red-fix3.txt`, 예측 일치) → GREEN 19/19(`logs/green-fix3.txt`) · typecheck·lint 0
+- 번들: 작업 트리 build exit 1 **128.45 > 128.43**(`logs/build-fix3.txt`) → 브리프 규칙대로 감량 시도 없이 멈춤 · 1·2·3·5를 `wip-fix3.patch`(306줄)로 보존 후 되돌림 · HEAD build exit 0 **128.32**(`logs/build-fix3-head.txt`, 항목 4 증가 −0.01)
+- 전체 vitest(HEAD) exit 0 · 235 파일 / 2099 테스트(`logs/vitest-fix3.txt`)
+- Codex r3 `review --scope branch --base 45a5721` 1회 완료(`logs/codex-r3.txt`): r2와 같은 P1 1·P2 2(미커밋이라 tip에 그대로) · 새 지적 0 · f4a0eb5 지적 0. Codex 쪽 테스트 실행은 읽기 전용 EPERM으로 못 함(자체 보고)
+- Ego Lite: **BLOCKED** — 확인 대상 1·5가 커밋 코드에 없어 미실행(캡처 0). `listTaskSpaces()` = [] · 4337 리슨 0 확인. 자기 서버 0
+- 서브에이전트 0 · 엔진·계약·docs·scripts·lock 수정 0 · data는 memoryDocBook 포맷만 · push/merge/삭제 0
+
+### 다음 결정용(적용하지 않음)
+1. 감량 1순위 — 항목 5의 새 aria-disabled 변형 규칙(`bg-fill-strong`·`hover:bg-fill-strong`·`active:scale-100`·`border-line-alternative`)은 코드베이스에 없던 규칙. 기존 패턴(`aria-disabled:cursor-not-allowed aria-disabled:text-label-disable`)만 쓰면 줄어들 가능성(추정 · 미측정)
+2. 감량 2순위 — 진입 청크에 든 편집 경계 코드(`useSnapshots`의 useRef·useLayoutEffect·span, `StudioLayout`의 `LOCKED_PRIMARY`). 경계 판정을 조작 뒤 청크로 옮길 수 있는지
+3. 주의 — patch의 `useSnapshots.edit`는 렌더마다 새 함수(이전엔 안정 `save.edit`). `useSectionOps` 등 의존성 재실행 여부 확인 필요
+4. 복구: `git apply dev/active/er-3b/wip-fix3.patch` → 감량 → build ≤128.43 → 커밋

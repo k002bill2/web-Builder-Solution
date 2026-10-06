@@ -45,3 +45,28 @@
 - ⑤ Ego Lite 공간 85 · 1280·390 경로 A 전 흐름 성공 `shots/r1~r12` · finish({keep:[]}) → listTaskSpaces()=[] · 4337 리슨 0
 - ⑥ 전체 vitest exit 0 235/2099(`logs/vitest-full-final.txt`) · Codex r2 완료(`logs/codex-r2.txt`) P1 1·P2 2 — 턴 상한 규칙으로 미반영(REPORT 6절) · REPORT 커밋
 
+
+## 마감 수정(3차) — DECISION-FIX3 1~5 (2026-10-06)
+- [ ] 1 P1 BLOCKED: GREEN(19/19)이나 1·2·3·5 합산 /studio 128.45 > 128.43 → 멈춤 · 미커밋 `wip-fix3.patch`
+- [ ] 2 BLOCKED: 1과 같은 이유(patch 보존)
+- [ ] 3 BLOCKED: 1과 같은 이유(patch 보존)
+- [x] 4 스냅샷 이름 로컬 시각 — `f4a0eb5` (RED 2/2 → GREEN · 충돌 보존 기대 1건 추가 갱신 · HEAD build 128.32)
+- [ ] 5 BLOCKED: 1과 같은 이유(patch 보존)
+- [x] build — 작업 트리 128.45(exit 1 · `logs/build-fix3.txt`) → 멈춤 · HEAD 128.32(exit 0 · `logs/build-fix3-head.txt`)
+- [ ] Ego Lite BLOCKED: 확인 대상 1·5가 커밋 코드에 없음 → 미실행 · listTaskSpaces()=[] · 4337 리슨 0 확인
+- [x] 전체 vitest exit 0(2099) · Codex r3 1회 완료(새 P1 0) · REPORT 8절 커밋 aed8407
+
+### TDD 예측 (3차 · RED 전 기록)
+| 항목 | 새/바뀐 테스트 | RED 예측 |
+|---|---|---|
+| 1 | 2 (SnapshotImages) | 2/2 RED — 미리보기 중 변환 완료가 편집 문서에 이미지 반영(돌아가면 바뀐 hero) · 복원 뒤 늦은 완료가 복원 결과 덮음 |
+| 2 | 1 (SnapshotFlow) | RED — 저장 실패여도 미리보기 Callout이 열림 |
+| 3 | 1 (SnapshotFlow) | RED — '복원하지 못했습니다' alert · 알림 없음 |
+| 4 | 2 바뀜 (memoryProjectRepository · TZ=Asia/Seoul) | 2/2 RED — '수동 · 09:00'·'복원 전 · 09:00'(UTC) ≠ 18:00 |
+| 5 | 1 (SnapshotFlow) | RED — 툴바 두 버튼에 aria-disabled 시각 클래스 없음 |
+
+### 로그 (3차)
+- 4: RED 2/2(예측 일치, TZ=Asia/Seoul) → GREEN — 예측 밖 1건: '충돌 보존 · 09:00' 기대도 같은 이유로 18:00 갱신 · data 181/181 · 커밋 f4a0eb5
+- 1·2·3·5: RED 5/5(`logs/red-fix3.txt`, 예측 일치) → GREEN 19/19(`logs/green-fix3.txt`) · typecheck·lint 0 · build 128.45 > 128.43 → 즉시 멈춤 · 미커밋 `wip-fix3.patch`(306줄, `git apply`로 복구)
+- HEAD build 128.32 · 전체 vitest exit 0 235/2099(`logs/vitest-fix3.txt`) · Codex r3 `logs/codex-r3.txt`
+- 서브에이전트 0

@@ -7,7 +7,7 @@
 - [x] AC-B1 1280 첫 줄·레이아웃 이동 — PASS
 - [x] AC-B3 업종 필터 5종 ≥ 4 — PASS
 - [x] AC-B5 resource 목록 — PASS
-- [ ] AC-B2 768·390
+- [x] AC-B2 768·390 — PASS
 - [ ] AC-B4 흐름
 - [ ] QB-M3P-01~06 관찰
 - [ ] 판정표·종합 Go

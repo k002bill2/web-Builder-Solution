@@ -47,13 +47,13 @@ base `b5ca6df` · 브랜치 `k002bill2/m3p-3b`
 | /studio/:projectId | 91.79 | 91.77 | 100 | 128.65 | 128.64 | 129 · 128.70 |
 | 렌더 문서 JS·CSS | 84.19 · 8.85 | 84.19 · 8.85 | 90 · 30 | | | 89.70 |
 - 썸네일: base 6장 → **21장**, 버전 `76d49eca`, 가드 통과(id ↔ 파일·버전 재해시·`.svg?v=` 존재·렌더 CSS 동일·manifest 도구 0).
-- 판정: 고정 경로 상쇄 뒤 /catalog 100.05 > 99.90 → **개정 7 결정 3 적용**(≤ 100.90). base 대비 +0.16. 참고: M3P-3 패치 4단계는 99.86 → 100.02(+0.16)였으나 그 안에 생성 조합 Tag(+0.04, 지금은 base에 포함)가 들어 있어 썸네일 몫은 ≈ +0.12였고, 그 패치는 img alt·className 문자열을 지연 청크로 옮겨 카드 청크 밖에 두었다. 이번은 키 맵·`import()`·`__vite__mapDeps`를 없앤 대신 img 속성 문자열이 카드 청크에 들어와 썸네일 몫 +0.16 — 고정 경로 상쇄만으로는 99.90 아래로 내려가지 않았다(ADR 배경의 "주원인 = 키 맵 청크·mapDeps" 추정은 실측과 다름).
+- 판정: 고정 경로 상쇄 뒤 /catalog 100.05 > 99.90 → **개정 7 결정 3 적용**(≤ 100.90). base 대비 +0.16. 참고: M3P-3 패치(99.86 base·생성 조합 Tag 포함·img 문자열은 지연 청크)와 같은 base 직접 비교는 하지 않음 — 원인 비중은 결정 4 구조 점검 때 확인.
 - base 실측: `git archive b5ca6df app` → /tmp 사본(node_modules 복사)에서 `npm run build`.
 - 전체 vitest: 첫 시도는 base 빌드와 병렬로 돌다 셸 cwd 리셋으로 저장소 루트에서 설정 없이 실행(`describe is not defined` 181 파일) — 무효. app에서 단독 재실행 **exit 0 · 247 파일 · 2184건 통과**.
 
 ## Ego Lite (preview 127.0.0.1:4337, taskSpace 10, 창 normal 확인, 뷰포트 1280×900 CDP 에뮬레이션, goto 1회 뒤 휠 스크롤만·새로고침 0)
 - 첫 화면: 카드 21 · img 21(전부 `loading=lazy`·`decoding=async`) · 첫 src `/thumbs/ref-c.svg?v=76d49eca` · 뷰포트 안 6장 로드. 첫 카드 와이어 높이 decode 전후 229.24 = 229.24(레이아웃 이동 0).
-- layout-shift 항목 4건 출처 = 헤더 nav·필터 줄·제목 행(뷰포트 에뮬레이션 전환·목록 로드 시점) — article·img 출처 0. (카드 밖 기존 동작, 이 변경 범위 아님)
+- layout-shift: 마지막 shift t=391ms, 첫 `/thumbs/` 요청 t=393ms → img 로드 뒤 shift 0. 보인 출처는 헤더 nav·필터 줄·제목 행(뷰포트 에뮬레이션 전환·목록 로드 시점, 출력 일부 잘림).
 - 스크롤 뒤: 21장 decode 성공 21 · 실패 0, 생성 카드 15 모두 img 로드, "생성 조합" Tag가 img 영역 안 · 바탕 rgb(255,255,255) 불투명(판독 확인 — 캡처 2), 플레이스홀더 role=img 0.
 - 네트워크: 외부 요청 0, `/thumbs/` 21건, 그 밖 이미지 요청은 앱 아이콘 `/assets/*.svg`만.
 - 캡처: `shots/01-catalog-1280-first-row.png`, `shots/02-catalog-1280-generated-cards.png`(첫 촬영은 clip을 문서 좌표 0으로 줘 빈 영역 — clip y=scrollY로 같은 파일 재촬영).

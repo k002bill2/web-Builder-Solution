@@ -20,7 +20,7 @@ base `b5ca6df` · 브랜치 `k002bill2/m3p-3b` · 커밋: `762d447` BRIEF P0 · 
 | 렌더 문서 JS · CSS | 84.19 · 8.85 | 84.19 · 8.85 | 90 · 30 | | | 89.70 |
 
 - 썸네일 6장 → 21장, 가드 통과. base 값은 `git archive b5ca6df` 사본에서 같은 명령으로 실측.
-- 상쇄 효과 메모: 썸네일 몫 +0.16. M3P-3 패치(썸네일 몫 ≈ +0.12)는 img alt·className 문자열을 지연 청크에 두었고, 이번은 import 기계를 없앤 대신 그 문자열이 카드 청크에 들어왔다 → ADR 배경의 "주원인 = 키 맵 청크·mapDeps" 추정은 실측과 다르다. 다시 올리자는 요청은 결정 4대로 첫 화면 청크 구조 점검과 함께만.
+- 상쇄 효과 메모: b5ca6df 대비 이번 방식 +0.16. M3P-3 패치(99.86 base·생성 조합 Tag 포함·img 문자열은 지연 청크)와 같은 base 직접 비교는 하지 않음 — 원인 비중(키 맵 청크·mapDeps vs 카드 안 img 코드)은 결정 4의 첫 화면 청크 구조 점검 때 확인. 다시 올리자는 요청은 그 점검과 함께만.
 
 ## 변경 (app/)
 1. 21장: `src/thumbs/referenceDoc.ts` 상세·비교 맵에 생성 픽스처 합치기, `src/thumbs/entry.tsx` 대상 = 카드 id 전체(`references` ∪ `generatedReferences`) — 렌더 입력 없는 카드 id는 throw(조용히 빠지지 않음). 가드(`guards.ts`) 변경 0, 21장 위반 0. 엔진·PageDoc 계약 변경 0.

@@ -25,7 +25,7 @@ export interface SectionOps {
  * 구조 연산 훅 (K2 · 5.2~5.5 · 5.14). 목적·모션은 **문서 버전**의 프로필 값(docPurpose) — 프로필 조회를 기다린 뒤 연산한다
  * (불러오기 전 "none"으로 추정하지 않는다). 연산은 promise 사슬로 하나씩 — 동적 import 사이에 두 번 눌러도 같은 문서로 두 번 계산하지 않는다.
  */
-export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc; readonly edit: (next: PageDoc) => void; readonly profileId: string }): SectionOps {
+export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc; readonly edit: (next: PageDoc) => boolean | void; readonly profileId: string }): SectionOps {
   const profiles = useProfileRepository();
   const [series, setSeries] = useState<ProfileSeries>();
   // 조회 1회를 공유한다 — 실패하면 비워 두고 다음 연산이 다시 조회한다(편집기를 오류 경계로 보내지 않는다: 저장·필드 편집은 계속된다)

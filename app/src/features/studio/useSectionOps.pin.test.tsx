@@ -97,16 +97,20 @@ describe("useSectionOps.run 꼬리 동작 고정 (ER-OFF2 A2)", () => {
     expect(undone).toBeUndefined();
   });
 
-  it("edit가 거절(false, 미리보기 편집 경계)해도 현재 run은 ok · 스택에 쌓고 다음 연산은 결과 문서 기준(docRef) — 현재 동작 그대로 고정", async () => {
-    const { run, edits, stack } = setup(false);
+  // 의도된 동작 변경(ER-4 B-ER-05 · ER-3b Codex r4 P2): 이전 고정은 "거절해도 ok · 스택에 쌓음 · docRef 이동"이었다 —
+  // 미리보기 편집 경계가 거절한 연산은 문서에 들어가지 않았으므로 실패로 처리한다(더 엄격: docRef·스택·되돌리기 대상 불변 · 엔진 거부와 같은 경로)
+  it("edit가 거절(false, 미리보기 편집 경계)하면 run 실패 — ok false + 이유 · 스택 0 · 되돌리기 대상 없음 · 다음 연산도 원래 문서 기준(docRef 불변)", async () => {
+    const { run, edits, stack, result } = setup(false);
     const first = await run({ kind: "remove", instanceId: "s-faq" }, "삭제", true);
-    expect(first.ok).toBe(true);
+    expect(first).toEqual({ ok: false, reason: "스냅샷을 보는 중에는 편집할 수 없습니다" });
     expect(edits).toHaveLength(1);
-    expect(stack().size()).toBe(1);
+    expect(stack().size()).toBe(0);
+    expect(result.current.canUndoLast).toBe(false);
     const second = await run({ kind: "remove", instanceId: "s-faq" }, "삭제", true);
     expect(second.ok).toBe(false);
-    expect(edits).toHaveLength(1);
-    expect(stack().size()).toBe(1);
+    expect(edits).toHaveLength(2);
+    expect(edits[1]).toEqual(edits[0]);
+    expect(stack().size()).toBe(0);
   });
 
   it("테마 연산: 문서 전체(instanceId '' · index -1) · 값 비교 결과 · edit 1회 · 되돌리기 대상", async () => {

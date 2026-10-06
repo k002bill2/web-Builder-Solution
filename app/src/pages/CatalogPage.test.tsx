@@ -1,10 +1,11 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
 import type { DesignReference } from "../domain/reference";
 import { ALL_FILTER_GROUPS, INDUSTRY_LABELS, MOTION_OPTIONS } from "../fixtures/catalogFilters";
 import { referenceFixtures } from "../fixtures/references";
+import { GENERATED_CARDS } from "../features/catalog/useCatalogRepository";
 import { renderApp } from "../test/renderApp";
 
 const cards = () => screen.queryAllByRole("article");
@@ -13,6 +14,14 @@ const expectCardCount = (n: number, timeout?: number) => waitFor(() => expect(ca
 /** 병렬 부하에서 데이터 청크·렌더가 기본 대기(1초)를 넘는 곳에만 쓴다 (2a-04b1 플레이크) */
 const SLOW = 5_000;
 const tray = () => screen.getByRole("region", { name: "비교 트레이" });
+
+/** 이 파일은 큐레이션 6개 기준 카탈로그 동작 테스트 — 생성 레퍼런스는 빈 목록으로 주입한다(SPEC m3p 8.3). 생성 포함 목록은 CatalogGenerated.test */
+beforeEach(() => {
+  vi.spyOn(GENERATED_CARDS, "load").mockResolvedValue([]);
+});
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("CatalogPage (1a-01)", () => {
   it("필터 없이 진입하면 노출 가능한 레퍼런스 6개를 보여준다", async () => {

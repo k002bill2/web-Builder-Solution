@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useProfileRepository } from "../../data/ProfileRepositoryContext";
 import { ProfileError } from "../../data/profileRepository";
+import type { ReferenceRepository } from "../../data/referenceRepository";
 import { useReferenceRepository } from "../../data/ReferenceRepositoryContext";
 import { useThrowToBoundary } from "../../data/useThrowToBoundary";
 import type { AdjustmentRange, ProfileAdjustments, ProfileSeries } from "../../domain/profile";
@@ -35,6 +36,13 @@ export type ProfileDetailState =
   | { readonly status: "not-found" }
   | { readonly status: "ready"; readonly series: ProfileSeries; readonly range: AdjustmentRange; readonly engine: ProfileEngine; readonly sources: Sources };
 
+/**
+ * 큐레이션 저장소에 없는 id만 생성 카드 청크에서 찾는다(상세·비교 청크는 받지 않음) — 큐레이션만 담긴 프로필 진입은 받지 않는다(SPEC m3p 6절 · MQ-M3P-7 A).
+ * 판별 도우미를 공통 청크에 두지 않으려고 접두어 대신 "큐레이션에 없음"으로 판단한다.
+ */
+const sourceOf = async (references: ReferenceRepository, id: string) =>
+  (await references.getById(id)) ?? (await import("../../fixtures/generatedReferences")).generatedReferenceFixtures.find((r) => r.id === id);
+
 export function useProfileDetail(profileId: string) {
   const profiles = useProfileRepository();
   const references = useReferenceRepository();
@@ -52,7 +60,7 @@ export function useProfileDetail(profileId: string) {
     const load = async () => {
       const [{ profileEngine }, series] = await Promise.all([import("./profileEngine"), profiles.getProfile(profileId)]);
       const ids = [...new Set(series?.versions.flatMap((v) => [v.baseReferenceId, ...v.base.source_reference_ids]) ?? [])];
-      const [range, ...found] = await Promise.all([series && profiles.getAdjustmentRange(profileId, series.latestVersion), ...ids.map((id) => references.getById(id))]);
+      const [range, ...found] = await Promise.all([series && profiles.getAdjustmentRange(profileId, series.latestVersion), ...ids.map((id) => sourceOf(references, id))]);
       if (!cancelled) setLoaded({ series, range, engine: profileEngine, sources: new Map(ids.map((id, i) => [id, found[i]])) });
     };
     load().catch((error: unknown) => {

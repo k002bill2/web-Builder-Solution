@@ -1,7 +1,16 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { GENERATED_CARDS } from "../features/catalog/useCatalogRepository";
 import { renderApp } from "../test/renderApp";
+
+/** 이 파일은 큐레이션 6개 기준 카탈로그 동작 테스트 — 생성 레퍼런스는 빈 목록으로 주입한다(SPEC m3p 8.3). 생성 포함 목록은 CatalogGenerated.test */
+beforeEach(() => {
+  vi.spyOn(GENERATED_CARDS, "load").mockResolvedValue([]);
+});
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 const expectCardCount = (n: number) => waitFor(() => expect(screen.queryAllByRole("article")).toHaveLength(n));
 const tray = () => screen.getByRole("region", { name: "비교 트레이" });

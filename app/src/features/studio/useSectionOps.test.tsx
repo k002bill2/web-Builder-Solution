@@ -1,9 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
+import { vi } from "vitest";
 import type { ReactNode } from "react";
 import { ProfileRepositoryProvider } from "../../data/ProfileRepositoryContext";
 import type { GenerationRepository } from "../../data/generationRepository";
 import type { ProfileRepository } from "../../data/profileRepository";
 import type { ProjectRepository } from "../../data/projectRepository";
+import type { HistoryKeys } from "./opAfter";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { useSectionOps } from "./useSectionOps";
@@ -47,5 +49,24 @@ describe("useSectionOps", () => {
     expect(second?.ok).toBe(true);
     expect(edits).toHaveLength(1);
     expect(calls).toBe(3);
+  });
+
+  it("첫 연산이 끝나기 전에 언마운트되면 단축키 리스너를 붙이지 않는다 — 떠난 편집기의 Ctrl+Z가 실행 취소를 부르지 않는다(Codex fix2 P2)", async () => {
+    let release: (value: undefined) => void = () => undefined;
+    const pending = new Promise<undefined>((resolve) => {
+      release = resolve;
+    });
+    const profiles = { getProfile: () => pending } as unknown as ProfileRepository;
+    const step = vi.fn();
+    const keys = { current: { locked: false, tell: {} as HistoryKeys["tell"], step } as HistoryKeys | undefined };
+    const { result, unmount } = renderHook(() => useSectionOps({ doc: sampleDoc(), edit: () => undefined, profileId: "profile-1", keys }), { wrapper: wrapperFor(profiles) });
+    const outcome = result.current.run({ kind: "remove", instanceId: "s-faq" }, "삭제", true);
+    unmount();
+    await act(async () => {
+      release(undefined);
+      await outcome;
+    });
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "z", ctrlKey: true, bubbles: true }));
+    expect(step).not.toHaveBeenCalled();
   });
 });

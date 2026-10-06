@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { useProfileRepository } from "../../data/ProfileRepositoryContext";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { ProfileSeries } from "../../domain/profile";
 import { applyDocOp, createInstanceIds, loadDocEngine, type DocOp, type OpResult } from "./docOps";
 import { docMotionPreset, docPurpose } from "./docPurpose";
-import { useUndoStack } from "./undoStack";
+import type { HistoryKeys, StepTell } from "./opAfter";
+import { useUndoStack, type UndoEntry } from "./undoStack";
 
 const PROFILE_UNAVAILABLE = "프로필을 불러오지 못해 목적을 확인할 수 없습니다 — 다시 시도해 주세요";
 
@@ -19,13 +20,28 @@ export interface SectionOps {
   readonly canUndoLast: boolean;
   /** 바로 앞 연산 1개 되돌리기 = 이전 문서(같은 instanceId·값·위치·톤). 되돌린 문서를 돌려준다 */
   readonly undoLast: () => PageDoc | undefined;
+  /** 단축키 · "더보기" 실행 취소(false)/다시 실행(true) — 연산과 같은 사슬로 하나씩. 한 기록 = 반환(알림 이름) */
+  readonly step: (redo: boolean, tell: StepTell) => Promise<UndoEntry | undefined>;
+  /** 기록이 쥔 문서 — 이미지 참조 집합(SPEC 3.5) */
+  readonly held: readonly PageDoc[];
 }
 
 /**
  * 구조 연산 훅 (K2 · 5.2~5.5 · 5.14). 목적·모션은 **문서 버전**의 프로필 값(docPurpose) — 프로필 조회를 기다린 뒤 연산한다
  * (불러오기 전 "none"으로 추정하지 않는다). 연산은 promise 사슬로 하나씩 — 동적 import 사이에 두 번 눌러도 같은 문서로 두 번 계산하지 않는다.
  */
-export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc; readonly edit: (next: PageDoc) => boolean | void; readonly profileId: string }): SectionOps {
+export function useSectionOps({
+  doc,
+  edit,
+  profileId,
+  keys,
+}: {
+  readonly doc: PageDoc;
+  readonly edit: (next: PageDoc) => boolean | void;
+  readonly profileId: string;
+  /** 단축키 맥락 — 있으면 첫 연산 뒤 조작 뒤 청크가 keydown 리스너를 붙인다(ER-4b) */
+  readonly keys?: RefObject<HistoryKeys | undefined>;
+}): SectionOps {
   const profiles = useProfileRepository();
   const [series, setSeries] = useState<ProfileSeries>();
   // 조회 1회를 공유한다 — 실패하면 비워 두고 다음 연산이 다시 조회한다(편집기를 오류 경계로 보내지 않는다: 저장·필드 편집은 계속된다)
@@ -61,6 +77,26 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
   const stack = useUndoStack();
   const chain = useRef<Promise<unknown>>(Promise.resolve());
   const [last, setLast] = useState<{ readonly before: PageDoc; readonly after: PageDoc }>();
+  const step = useCallback(
+    (redo: boolean, tell: StepTell) => {
+      const next = chain.current.then(async () => (await loadDocEngine()).stepHistory(redo, docRef, stack, setLast, edit, tell));
+      chain.current = next;
+      return next;
+    },
+    [edit, stack],
+  );
+  // 단축키 리스너 — 첫 연산 뒤 1회 붙이고 언마운트 때 뗀다. 언마운트 뒤 끝난 연산은 붙이지 않는다(Codex fix2 P2)
+  const unlisten = useRef<() => void>(undefined);
+  const mounted = useRef(false);
+  useEffect(() => {
+    const ref = unlisten;
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      ref.current?.();
+      ref.current = undefined;
+    };
+  }, []);
 
   const run = useCallback(
     (op: DocOp, label: string, undoable = false) => {
@@ -77,7 +113,9 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
         try {
           const result = await applyDocOp(before, op, ctx);
           // 꼬리(문서 참조·기록 스택·되돌리기 대상·편집 반영)는 연산 청크에 둔다 — 이미 받은 청크라 바로 풀린다(ER-OFF A2)
-          return (await loadDocEngine()).commitOp(docRef, stack, setLast, edit, label, before, result, undoable);
+          const engine = await loadDocEngine();
+          if (keys && mounted.current) unlisten.current ??= engine.listenHistory(keys);
+          return engine.commitOp(docRef, stack, setLast, edit, label, before, result, undoable);
         } catch (error) {
           // 화면은 can*로 먼저 막는다 — 여기 오는 것은 프로필을 불러오기 전 목적 판정 등. 엔진 이유 문장을 그대로 알린다
           return { ok: false, reason: error instanceof Error ? error.message : String(error) };
@@ -86,18 +124,20 @@ export function useSectionOps({ doc, edit, profileId }: { readonly doc: PageDoc;
       chain.current = next;
       return next;
     },
-    [edit, nextId, stack, loadSeries],
+    [edit, nextId, stack, loadSeries, keys],
   );
 
   const canUndoLast = last !== undefined && last.after === doc;
   const undoLast = useCallback(() => {
     if (!last || last.after !== docRef.current) return undefined;
-    stack.pop();
+    stack.undo();
     docRef.current = last.before;
     setLast(undefined);
     edit(last.before);
     return last.before;
   }, [last, stack, edit]);
+  // 기록이 바뀌는 곳(연산 · 단축키 · 되돌리기)은 모두 edit로 문서도 바꾼다 — 문서 기준으로 다시 계산
+  const held = useMemo(() => stack.reachable(doc), [stack, doc]);
 
-  return { series, run, canUndoLast, undoLast };
+  return { series, run, canUndoLast, undoLast, step, held };
 }

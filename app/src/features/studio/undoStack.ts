@@ -18,22 +18,45 @@ export interface UndoStack {
   /** 가장 최근 기록을 꺼낸다(없으면 undefined) */
   readonly pop: () => UndoEntry | undefined;
   readonly clear: () => void;
+  /** 다음 실행 취소 · 다시 실행 대상(꺼내지 않음) — "더보기" 항목 이름 */
+  readonly peek: () => UndoEntry | undefined;
+  readonly peekRedo: () => UndoEntry | undefined;
+  /** 가장 최근 기록을 다시 실행 목록으로 옮긴다(ER-4 U1) */
+  readonly undo: () => UndoEntry | undefined;
+  readonly redo: () => UndoEntry | undefined;
+  /** 지금 문서에서 실행 취소 · 다시 실행으로 닿는 문서 — 이미지 참조 집합(SPEC 3.5 "참조 집합이 기록을 본다").
+   *  스택 밖 변경(필드 글자 등)으로 끊긴 기록은 닿지 않으므로 넣지 않는다(Codex r1 "되돌리기 무효화" 그대로) */
+  readonly reachable: (doc: PageDoc) => readonly PageDoc[];
 }
 
 export function createUndoStack(limit = UNDO_LIMIT): UndoStack {
-  let entries: readonly UndoEntry[] = [];
+  // 기록 한 줄 + 커서 — 커서 앞 = 실행 취소 대상, 커서부터 = 다시 실행 대상(가장 최근에 취소한 기록이 커서 자리)
+  let list: readonly UndoEntry[] = [];
+  let at = 0;
   return {
-    size: () => entries.length,
+    size: () => at,
     push: (entry) => {
-      entries = [...entries, entry].slice(-limit);
+      list = [...list.slice(0, at), entry].slice(-limit);
+      at = list.length;
     },
     pop: () => {
-      const last = entries.at(-1);
-      entries = entries.slice(0, -1);
+      const last = list[at - 1];
+      if (last) list = [...list.slice(0, --at), ...list.slice(at + 1)];
       return last;
     },
     clear: () => {
-      entries = [];
+      list = [];
+      at = 0;
+    },
+    peek: () => list[at - 1],
+    peekRedo: () => list[at],
+    undo: () => list[at - 1] && list[--at],
+    redo: () => list[at] && list[at++],
+    reachable: (doc) => {
+      const out: PageDoc[] = [];
+      for (let i = at - 1, cur = doc; list[i]?.after === cur; i--) out.push((cur = list[i]!.before));
+      for (let i = at, cur = doc; list[i]?.before === cur; i++) out.push((cur = list[i]!.after));
+      return out;
     },
   };
 }

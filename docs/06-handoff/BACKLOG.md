@@ -27,7 +27,7 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M2C-06 | ✅ M2C-P3 수정(merge) | M2C-5b QA E-1(P3·접근성) | "이미지 지우기" 실행 시 버튼이 사라지며 포커스가 BODY로 유실(키보드 Enter 포함) — 지운 뒤 "이미지 고르기" 등으로 포커스 이동 | Developer |
 | B-M2C-07 | ✅ M2C-P3 수정(merge) | M2C-5b QA E-2(P3) | 지운 뒤에도 role=status가 "이미지를 넣었습니다…"로 남음 — 지움 결과 알림 | Developer |
 | B-M2C-08 | ✅ 결정·구현(M2C-TODO T-2) | M2C-5b QA O-2(사양) | 지운 뒤 대체텍스트 입력값 유지(다음 이미지에 재사용) — 유지/초기화 결정 | Designer 판단 |
-| B-TEST-01 | M2C-TODO Jarvis 검증 | `pages/ProjectsPage.test.tsx` J-S07 "저장 뒤 맨 위 줄 '이름 바꾸기' 포커스"가 부하(load 32) 중 1/3회 toHaveFocus 실패(161ms, 단독·재실행 통과) — 포커스 이동 시점 비결정. 대기 방식 안정화 | Developer(테스트) · ER-3a 검증: `pages/ProfileCompare.test.tsx` CMP-AC-U1 부하(82) 2회 연속 실패 → 단독·전체 재실행 통과 |
+| B-TEST-01 | M2C-TODO Jarvis 검증 | `pages/ProjectsPage.test.tsx` J-S07 "저장 뒤 맨 위 줄 '이름 바꾸기' 포커스"가 부하(load 32) 중 1/3회 toHaveFocus 실패(161ms, 단독·재실행 통과) — 포커스 이동 시점 비결정. 대기 방식 안정화 | Developer(테스트) · ER-3a 검증: `pages/ProfileCompare.test.tsx` CMP-AC-U1 부하(82) 2회 연속 실패 → 단독·전체 재실행 통과 · **ER-4b 검증에서 3번째 재발 → 우선순위 상향** |
 | B-M2C-09 | 🔶 ER-1 부분 닫힘 | 남은 것: ① QB-10 잃은 이미지 정적 HTML·PNG 개수 문구 ② ⑩ 나머지 변형·태블릿/모바일 폭 ③ 캔버스 픽셀 대조(교차 출처 iframe 환경 한계). 해소: 경로 A(ref-e·밝은 카드 + 페이지 정보) 게이트 통과 실측, 정적 HTML 성공·PNG↔정적 HTML 47px/4.2M(1280) | QA ER-5(경로 A로 재개, build+preview) |
 | B-ER-01 | EDITOR-REST-0 | 프로필 화면 "새로 시작"(EQ-2 A) UI 미구현 — 기존 문서를 대비 통과 버전으로 옮기는 다른 길 | Designer·Developer |
 | B-ER-02 | EDITOR-REST-0 | `resolveConflict` 메모리 저장소 missing(memoryProjectRepository.ts:101-103) — 충돌 화면 도달·동작 불가. ER-3a에서 스냅샷과 함께 처리 여부 확인 | Developer(ER-3a) |
@@ -37,3 +37,4 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-06 | ER-3b Codex r4 P2 | 내보내기 진행 중 이미지 교체·삭제 시 "내보내기 전" 스냅샷 Blob이 보관 맵에서 prune될 수 있음(StudioLayout.tsx:371-373) → 스냅샷 생성 응답 시점에 참조 집합 갱신 | Developer ER-4 |
 | B-ER-07 | ER-3b Ego Lite | 변환 중 미리보기 차단 실브라우저 재현 실패(변환이 먼저 끝남)·CDP 캡처 타임아웃 → CPU 스로틀로 재확인·캡처 | QA ER-5 |
 | B-ER-08 | ER-4 Jarvis 판정 | U3 필드 편집 묶음(MQ-R5 ★A) 미이행 — 필드 기록이 삭제 전 문서까지 닿으면 `StudioLayoutImages.test.tsx` "삭제 → 필드 입력 → 되돌리기 무효화 → 이미지 빠짐" 단언과 충돌 → SPEC 결정 먼저(Designer) + 예산 | Designer → Developer |
+| B-ER-09 | ER-4b | U4 "더보기" 메뉴(실행 취소·다시 실행 항목 · <1280 "스냅샷" 이동) 미구현 — /studio 128.56 > 시도 조건 128.55. "스냅샷" 버튼은 모든 폭 툴바(SPEC 차이 유지) | Developer(예산 확보 후) |

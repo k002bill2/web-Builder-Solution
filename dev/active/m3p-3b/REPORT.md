@@ -1,6 +1,6 @@
 # M3P-3b REPORT — 카드 실렌더 썸네일 연결 (ADR-004 개정 7)
 
-base `b5ca6df` · 브랜치 `k002bill2/m3p-3b` · 커밋: `762d447` BRIEF P0 · `ac3a244` 구현(ADR-004 개정 7) · `46442d0` Ego Lite
+base `b5ca6df` · 브랜치 `k002bill2/m3p-3b` · 커밋: `762d447` BRIEF P0 · `ac3a244` 구현(ADR-004 개정 7) · `46442d0` Ego Lite · `e62656f` REPORT 초안 · 이 커밋 REPORT 완성
 
 ## 결론
 - 카탈로그 카드 21장(큐레이션 6 + 생성 15)에 같은 출처 실렌더 썸네일이 연결됐다. 고정 경로 `thumbs/{id}.svg?v=76d49eca`, 키 맵·`import()`·`virtual:thumbnail-keys` 0.
@@ -41,7 +41,7 @@ base `b5ca6df` · 브랜치 `k002bill2/m3p-3b` · 커밋: `762d447` BRIEF P0 · 
 - SPEC 4.1 "썸네일 키 없음(THUMBNAIL_KEYS에 id 없음) → img 0": 키 맵이 없어졌으므로 빌드 보장으로 옮김(대상 = 카드 id 전체 · id ↔ 파일 정확 일치). 런타임은 버전 빈 값일 때 img 0. docs 수정 금지라 SPEC 문구는 그대로 — 다음 SPEC 개정 때 반영 필요.
 
 ## Codex
-(R1 진행 중)
+- R1: `node codex-companion.mjs review --scope branch --base b5ca6df`(1.0.6) 실제 완료 — **"수정이 필요한 구체적인 결함을 발견하지 못했습니다"**(지적 0). Codex 자체 확인: 타입 검사·기존 빌드 산출물의 번들·썸네일 검사·`git diff --check` 통과, 전체 테스트·새 빌드는 미실행(이 레인이 위 "검증"에서 실행). 지적 0이라 R2 없음(라운드 1/2).
 
 ## 남은 일 · 요청
 - docs(SPEC m3p 4.1·ADR-004 개정 7 "적용" 줄)는 이 레인이 수정하지 않음 — Jarvis가 실측과 함께 덧붙여 주세요.

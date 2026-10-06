@@ -11,8 +11,8 @@ base `b5ca6df` · 브랜치 `k002bill2/m3p-3b`
 - [x] 3. 실측 → 판정: 100.05 > 99.90 → 개정 7 결정 3 적용(`routeBudgetKb`, `/catalog`만 101), 100.90 이하
 - [x] 4. typecheck·lint·build·전체 vitest 1회 exit 0
 - [x] 5. Ego Lite(build+preview 4337) 확인·캡처 2장·정리(finish·listTaskSpaces=[]·서버 종료·리슨 0)
-- [ ] 6. Codex review --scope branch --base b5ca6df (≤2)
-- [ ] 7. REPORT — 초안 커밋, Codex 절 대기
+- [x] 6. Codex review --scope branch --base b5ca6df — R1 지적 0(R2 불필요)
+- [x] 7. REPORT
 
 ## 설계 메모
 - "썸네일 없는 id는 img 0": 키 맵이 없어 카드가 id별로 판단할 수 없다 → **런타임 분기를 빌드 보장으로 이동**: build-thumbs가 카드 id 전체(큐레이션 ∪ 생성)가 썸네일 대상에 다 드는지 확인(빠지면 실패), check-bundle-size가 id 목록 ↔ 파일 정확 일치. 카드는 버전 빈 값(dev·테스트·render·thumbs 모드) → img 0.

@@ -1,0 +1,11 @@
+SERVER dev 4337 · PATH ① 이미지 없음
+EVENTS ["{\"name\":\"png_requested\",\"view\":\"desktop\"}","{\"name\":\"png_failed\",\"reason\":\"INFRA\"}"]
+FETCH ["/render.html 200"]
+ALERT 바뀐 점 4개 ## PNG를 만들지 못했습니다 — 다시 눌러 주세요
+KITCSS THROW name=Error instanceofPngError=false message=render.html에 스타일시트가 없습니다
+Error: render.html에 스타일시트가 없습니다
+    at Module.kitCss (http://127.0.0.1:4337/src/features/studio/staticHtml/staticHtml.ts:113:32)
+    at async <anonymous>:2:128
+    at async __egoPageEvaluate (<anonymous>:2:16)
+RENDER_HTML_LINKS (link 0) 556B
+

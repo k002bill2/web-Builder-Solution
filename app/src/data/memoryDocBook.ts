@@ -65,6 +65,8 @@ export interface DocBook {
   readonly jobOf: (jobId: string) => ExportJob | undefined;
   /** 수동 스냅샷(E-S28) — 모양(이름 30자) → NOT_FOUND → 저장된 문서 사본. 문서 revision은 그대로. 인자 = 저장소 메서드 인자 그대로(진입 청크 연결 최소화) */
   readonly createSnapshot: (args: readonly [projectId: string, name?: string], commit: () => void) => ProjectSnapshot<DocHead>;
+  /** 복원(E-S30) — 모양 → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) → "복원 전" auto·restore + 새 revision(스냅샷 내용). 기존 스냅샷은 그대로 */
+  readonly restoreSnapshot: (args: readonly [projectId: string, snapshotId: string, expectedRevision: number], commit: () => void) => DocHead;
 }
 
 /**
@@ -213,6 +215,20 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
       commit();
       state = { ...state, snapshots: new Map(state.snapshots).set(projectId, [...list, made]) };
       return made;
+    },
+    restoreSnapshot: ([projectId, snapshotId, expectedRevision], commit) => {
+      if (typeof projectId !== "string" || typeof snapshotId !== "string" || !Number.isSafeInteger(expectedRevision)) throw fail("SCHEMA_INVALID", "restoreSnapshot 인자");
+      const current = state.docs.get(projectId);
+      const list = state.snapshots.get(projectId) ?? [];
+      const source = list.find((s) => s.snapshotId === snapshotId);
+      if (!projectOf(projectId) || !current || !source) throw fail("NOT_FOUND", `${projectId} ${snapshotId}`);
+      if (current.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${expectedRevision} ≠ ${current.revision}`, { doc: current });
+      const createdAt = now();
+      const before = snapshotOf(list, current, createdAt, { kind: "auto", reason: "restore", name: timedName("복원 전", createdAt) });
+      const doc = deepFreeze({ ...source.doc, revision: current.revision + 1, updatedAt: createdAt });
+      commit();
+      state = { ...state, docs: new Map(state.docs).set(projectId, doc), snapshots: new Map(state.snapshots).set(projectId, [...list, before]) };
+      return doc;
     },
     requestExport: async (args, injected, via) => {
       const generate = injected ?? appGenerator(args.format);

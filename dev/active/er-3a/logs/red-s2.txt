@@ -1,0 +1,79 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-3a/app
+
+ ❯ src/data/memoryProjectRepository.test.ts (22 tests | 4 failed) 233ms
+   ❯ restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31) (4)
+     × '복원 전 · 시:분' auto·restore(지금 문서 사본) + 새 revision(스냅샷 내용) 한 번에 · now 1회 · 기존 스냅샷 동결·그대로 · 다음 저장 STALE_DOC 0 4ms
+     × 판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) · 실패면 스냅샷 0 추가 2ms
+     × fail phase:'commit' → 문서·스냅샷 변화 0 · 재시도 = 같은 revision으로 성공 · 빈 번호 없음 2ms
+     × 자동 스냅샷(새로 시작 전)도 복원 — 안·프로필 버전이 스냅샷 쪽으로 · 번호는 restart와 같은 열 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31) > '복원 전 · 시:분' auto·restore(지금 문서 사본) + 새 revision(스냅샷 내용) 한 번에 · now 1회 · 기존 스냅샷 동결·그대로 · 다음 저장 STALE_DOC 0
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing src/data/memoryProjectRepository.ts:68:57
+     66|     (...args: Parameters<DocBook[K]>[0]) =>
+     67|       bookOf().then((docs) => call(method, (commit) => (docs[method] a…
+     68|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     69|   const projectOf = (projectId: string) => store.projects().find((p) =…
+     70|   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
+ ❯ src/data/memoryProjectRepository.test.ts:221:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31) > 판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) · 실패면 스냅샷 0 추가
+AssertionError: expected 'NOT_FOUND' to be 'SCHEMA_INVALID' // Object.is equality
+
+Expected: "SCHEMA_INVALID"
+Received: "NOT_FOUND"
+
+ ❯ src/data/memoryProjectRepository.test.ts:236:80
+    234|   it("판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(…
+    235|     const { repo } = await setup();
+    236|     expect(await codeOf(repo.restoreSnapshot("project-9", "snapshot-1"…
+       |                                                                                ^
+    237|     expect(await codeOf(repo.restoreSnapshot("project-9", 3 as never, …
+    238|     expect(await codeOf(repo.restoreSnapshot("project-9", "snapshot-1"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31) > fail phase:'commit' → 문서·스냅샷 변화 0 · 재시도 = 같은 revision으로 성공 · 빈 번호 없음
+AssertionError: expected [Function] to throw error including '커밋 실패' but got 'NOT_FOUND: project-1'
+
+Expected: "커밋 실패"
+Received: "NOT_FOUND: project-1"
+
+ ❯ src/data/memoryProjectRepository.test.ts:252:72
+    250|     const { doc } = await repo.startDoc("project-1", 1, "B", "create");
+    251|     const kept = await repo.createSnapshot("project-1");
+    252|     await expect(repo.restoreSnapshot("project-1", kept.snapshotId, 1)…
+       |                                                                        ^
+    253|     expect(await repo.getDoc("project-1")).toBe(doc);
+    254|     expect(await repo.listSnapshots("project-1")).toEqual([kept]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/data/memoryProjectRepository.test.ts > restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31) > 자동 스냅샷(새로 시작 전)도 복원 — 안·프로필 버전이 스냅샷 쪽으로 · 번호는 restart와 같은 열
+ProjectRepositoryError: NOT_FOUND: project-1
+ ❯ Object.missing src/data/memoryProjectRepository.ts:68:57
+     66|     (...args: Parameters<DocBook[K]>[0]) =>
+     67|       bookOf().then((docs) => call(method, (commit) => (docs[method] a…
+     68|   const missing = (projectId: string) => Promise.reject(new ProjectRep…
+       |                                                         ^
+     69|   const projectOf = (projectId: string) => store.projects().find((p) =…
+     70|   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
+ ❯ src/data/memoryProjectRepository.test.ts:264:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 18 passed (22)
+   Start at  11:20:35
+   Duration  890ms (environment 46%, tests 29%, transform 14%, setup 8%, import 2%)
+

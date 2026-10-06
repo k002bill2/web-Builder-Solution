@@ -15,7 +15,7 @@ import { ProjectRepositoryError, type ExportGenerators, type Project, type Proje
 import type { StudioStore } from "./studioStore";
 
 export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict";
-type SnapshotWrite = "createSnapshot";
+type SnapshotWrite = "createSnapshot" | "restoreSnapshot";
 export interface ProjectCall {
   readonly method: ProjectMethod;
   /** 메서드별 1부터 */
@@ -105,7 +105,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     },
     listSnapshots: async (projectId) => book?.snapshotsOf(projectId) ?? [],
     createSnapshot: write("createSnapshot"),
-    restoreSnapshot: missing,
+    restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: missing,
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
     requestExport: async (projectId, format, docRevision) =>

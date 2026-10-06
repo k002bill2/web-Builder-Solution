@@ -11,7 +11,7 @@
 - [x] T7 번들 실측 표 — REPORT 1절(초과 → 멈춤)
 - [ ] Ego Lite — BLOCKED: 연결 코드가 tip에 없음. task space·서버 생성 0(4337 LISTEN = ER-1 QA 레인 pid 45236, 무접촉)
 - [x] 전체 vitest exit0 (228 files / 2050 tests)
-- [ ] Codex review --scope branch --base 9d817bd (≤2)
+- [x] Codex review r1 완료 · 지적 0 (logs/codex-r1.txt) — WIP 연결 코드는 미검토
 - [x] REPORT.md
 
 ## 설계 메모

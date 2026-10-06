@@ -40,6 +40,13 @@ const slotValue = (section: SectionInstance, key: string): ImageSlotValue | unde
   return typeof value === "object" ? value : undefined;
 };
 
+/** 반영 뒤 상태 문장 (m2c SPEC r3 2.7 표) — 바꾸기 · 잃은 이미지 다시 고르기(빈 alt 아님) · 첫 넣기 */
+const insertedMessage = (value: ImageSlotValue, replacing: boolean, relinking: boolean): string => {
+  if (replacing) return "이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요";
+  if (value.alt.trim() === "" && !value.decorative) return "이미지를 넣었습니다 대체텍스트를 적어 주세요";
+  return relinking && value.alt.trim() !== "" ? "이미지를 넣었습니다 대체텍스트가 맞는지 확인해 주세요" : "이미지를 넣었습니다";
+};
+
 /**
  * 파일 고르기 → 변환기(파일을 고른 순간 동적 import, SPEC 2.1) → 한도(보관 바이트) → 문서·맵 반영.
  * 마지막 선택만 반영(IMG-AC-09) · 실패·한도 초과 = 필드 오류, 문서·맵 불변(IMG-AC-08·11) · 파일 이름은 어디에도 두지 않는다(IMG-AC-15).
@@ -92,14 +99,19 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     // randomUUID = UUID v4 소문자 = LOCAL_IMAGE_ID 형식 그대로(Q-13). parseLocalImageId를 import하면 청크가 갈라진다(실측 — REPORT)
     const id = crypto.randomUUID() as LocalImageId;
     if (!current || !value) return;
-    const nextDoc = setSlot(doc, current.instanceId, entry.key, { ...value, enabled: true, source: id });
+    // 다른 이미지로 바꾸기(Blob 있는 이미지 → 새 파일) = 이전 그림의 설명을 같은 편집 1회로 비운다(B-M2C-08 · m2c SPEC r3 2.7 표).
+    // 첫 넣기·잃은 이미지 다시 고르기는 유지 — 실패·한도 초과면 아래에서 반영 전에 끝나므로 아무것도 비우지 않는다
+    const previous = typeof value.source === "string" ? value.source : undefined;
+    const replacing = previous !== undefined && images?.[previous] !== undefined;
+    const kept = replacing ? { ...value, alt: "", decorative: false } : value;
+    const nextDoc = setSlot(doc, current.instanceId, entry.key, { ...kept, enabled: true, source: id });
     const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc)), id, result.image, slotTarget(current.type, current.variant));
     const limit = checkLimits(nextDoc, undoDoc, nextImages);
     if (!limit.ok) return fail(limit.message);
     remember(nextDoc, nextImages);
     publish(() => nextImages);
     onEdit(nextDoc);
-    announce(value.alt.trim() === "" && !value.decorative ? "이미지를 넣었습니다 대체텍스트를 적어 주세요" : "이미지를 넣었습니다");
+    announce(insertedMessage(kept, replacing, previous !== undefined));
   };
   return { busy, error, pick, cancel };
 }
@@ -230,8 +242,9 @@ export function ImageSlotField(props: FieldProps) {
                   cancel();
                   // 이 버튼은 사라진다 — 포커스를 같은 자리에 남는 "이미지 고르기"로 옮긴다(BODY 유실 방지, B-M2C-06)
                   actions.current?.querySelector("button")?.focus();
-                  edit({ ...value, source: PLACEHOLDER });
-                  // 지움 결과 알림 — 앞선 "이미지를 넣었습니다"가 남지 않게(B-M2C-07 · SPEC 2.5 문구 톤). 대체텍스트는 건드리지 않는다(B-M2C-08 대기)
+                  // 대체텍스트·장식 여부는 지운 그림의 설명 — 같은 편집 1회로 비운다(다음 이미지에 따라가지 않게, B-M2C-08 · m2c SPEC r3 2.7)
+                  edit({ ...value, source: PLACEHOLDER, alt: "", decorative: false });
+                  // 지움 결과 알림 — 앞선 "이미지를 넣었습니다"가 남지 않게(B-M2C-07 · SPEC 2.5 문구 톤)
                   announce("이미지를 지웠습니다");
                 }}>
                 이미지 지우기

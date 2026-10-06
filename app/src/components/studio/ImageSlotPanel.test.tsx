@@ -9,6 +9,7 @@ import { section, sampleDoc, withSections } from "../../engine/testing/sampleDoc
 import type { IngestResult } from "../../features/studio/images/ingest";
 import type { ImageHost, RenderImages } from "../../features/studio/images/store/types";
 import { addImage } from "../../features/studio/images/store/imageStore";
+import { slotRowIssues } from "../../engine/gate/slotRows";
 import { Button } from "../ds/Button";
 import ImageSlotPanel from "./ImageSlotPanel";
 
@@ -34,7 +35,7 @@ afterEach(() => vi.useRealTimers());
 
 /** 편집 틀 흉내 — 문서·images state를 들고 패널에 host 튜플을 넘긴다 */
 function setup({ doc = sampleDoc(), images, undoDoc, instanceId = "s-hero" }: { doc?: PageDoc; images?: RenderImages; undoDoc?: PageDoc; instanceId?: string } = {}) {
-  const state: { doc: PageDoc; images: RenderImages | undefined; hide: () => void; edit: (next: PageDoc) => void } = { doc, images, hide: () => {}, edit: () => {} };
+  const state: { doc: PageDoc; images: RenderImages | undefined; hide: () => void; edit: (next: PageDoc) => void; edits: number } = { doc, images, hide: () => {}, edit: () => {}, edits: 0 };
   function Host() {
     const [current, setDoc] = useState(doc);
     const [map, setMap] = useState<RenderImages | undefined>(images);
@@ -47,7 +48,11 @@ function setup({ doc = sampleDoc(), images, undoDoc, instanceId = "s-hero" }: { 
     const host: ImageHost = [map, setMap, undoDoc];
     const target = current.sections.find((s) => s.instanceId === instanceId)!;
     const slots = getSectionDefinition(target.type, target.variant)!.slots;
-    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={setDoc} slots={slots} host={host} Button={Button} />;
+    const onEdit = (next: PageDoc) => {
+      state.edits += 1;
+      setDoc(next);
+    };
+    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={onEdit} slots={slots} host={host} Button={Button} />;
   }
   const view = render(<Host />);
   return { state, view };
@@ -350,5 +355,86 @@ describe("ImageSlotPanel — M2C-P3 스위치 도움말 (B-M2C-05 · SPEC r2 4�
     const caption = screen.getByText("끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다");
     expect(screen.getByRole("switch", { name: "대표 이미지 사용" })).toHaveAttribute("aria-describedby", caption.id);
     expect(document.body.textContent).not.toContain("색 면");
+  });
+});
+
+describe("ImageSlotPanel — IMG-AC-30 이미지가 바뀔 때 대체텍스트 (B-M2C-08 · m2c SPEC r3 2.7 표)", () => {
+  const held = (alt: string, decorative: boolean) => ({
+    doc: setSlot(sampleDoc(), "s-hero", "image", { kind: "image", enabled: true, source: uuid(1), alt, decorative }),
+    images: addImage({}, uuid(1), (ok() as Extract<IngestResult, { ok: true }>).image, 1920),
+  });
+  const heroAltBlocks = (doc: PageDoc) => slotRowIssues(doc).altText.filter((i) => i.ruleId === "R-09" && i.instanceId === "s-hero");
+
+  it("지우기 → 편집 1회로 source 자체 그래픽 · alt '' · decorative false · status '이미지를 지웠습니다'(P3 문장 그대로) · 포커스 '이미지 고르기'", () => {
+    const { state } = setup(held("가게 앞 사진", true));
+    fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    expect(state.edits).toBe(1);
+    expect(hero(state.doc)).toMatchObject({ enabled: true, source: { kind: "placeholder" }, alt: "", decorative: false });
+    expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 지웠습니다$/);
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "이미지 고르기" }));
+    expect(screen.getByRole("textbox", { name: /대체텍스트/ })).toHaveValue("");
+    expect(screen.getByRole("checkbox", { name: "장식 이미지 — 대체텍스트 없이 둡니다" })).not.toBeChecked();
+  });
+
+  it("다른 이미지로 바꾸기 성공 → 같은 편집 1회로 새 source · alt '' · decorative false · status '이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요'", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    const { state } = setup(held("가게 앞", false));
+    pick(file());
+    await settle();
+    expect(state.edits).toBe(1);
+    const next = hero(state.doc);
+    expect(next.source).not.toBe(uuid(1));
+    expect(typeof next.source).toBe("string");
+    expect(next).toMatchObject({ enabled: true, alt: "", decorative: false });
+    expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요$/);
+  });
+
+  it("첫 넣기(자체 그래픽 → 이미지) → 미리 적은 alt·decorative 유지 · status '이미지를 넣었습니다'", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    const doc = setSlot(sampleDoc(), "s-hero", "image", { ...hero(sampleDoc()), alt: "미리 쓴 설명", decorative: false });
+    const { state } = setup({ doc });
+    pick(file());
+    await settle();
+    expect(typeof hero(state.doc).source).toBe("string");
+    expect(hero(state.doc)).toMatchObject({ alt: "미리 쓴 설명", decorative: false });
+    expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 넣었습니다$/);
+  });
+
+  it("잃은 이미지 다시 고르기(로컬 id · Blob 없음) → alt·decorative 유지 · 빈 alt 아니면 status '이미지를 넣었습니다 대체텍스트가 맞는지 확인해 주세요'", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    const doc = setSlot(sampleDoc(), "s-hero", "image", { kind: "image", enabled: true, source: uuid(7), alt: "가게 앞", decorative: false });
+    const { state } = setup({ doc });
+    pick(file());
+    await settle();
+    expect(hero(state.doc).source).not.toBe(uuid(7));
+    expect(hero(state.doc)).toMatchObject({ alt: "가게 앞", decorative: false });
+    expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 넣었습니다 대체텍스트가 맞는지 확인해 주세요$/);
+  });
+
+  it("바꾸기 실패 → 이전 이미지·alt·decorative 그대로(아무것도 비우지 않음)", async () => {
+    ingest.fn.mockRejectedValue(new Error("decode"));
+    const { state } = setup(held("가게 앞", false));
+    pick(file());
+    await settle();
+    expect(state.edits).toBe(0);
+    expect(hero(state.doc)).toMatchObject({ source: uuid(1), alt: "가게 앞", decorative: false });
+  });
+
+  it("게이트 R-09(코드 변경 0): 바꾸기 뒤 실제 이미지 + 빈 alt = 차단 재표시 · 지우기 뒤 자체 그래픽 = 대상 밖(차단 0)", async () => {
+    ingest.fn.mockResolvedValue(ok());
+    const { state } = setup(held("가게 앞", false));
+    expect(heroAltBlocks(state.doc)).toHaveLength(0);
+    pick(file());
+    await settle();
+    expect(heroAltBlocks(state.doc)).toHaveLength(1);
+    expect(heroAltBlocks(state.doc)[0]!.severity).toBe("block");
+    fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    expect(heroAltBlocks(state.doc)).toHaveLength(0);
+  });
+
+  it("스위치 끄기 → 이미지·alt·decorative 그대로", () => {
+    const { state } = setup(held("가게 앞", true));
+    fireEvent.click(screen.getByRole("switch", { name: "대표 이미지 사용" }));
+    expect(hero(state.doc)).toEqual({ kind: "image", enabled: false, source: uuid(1), alt: "가게 앞", decorative: true });
   });
 });

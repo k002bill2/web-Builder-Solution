@@ -1,0 +1,109 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-todo/app
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx (28 tests | 4 failed) 357ms
+   ❯ ImageSlotPanel — IMG-AC-30 이미지가 바뀔 때 대체텍스트 (B-M2C-08 · m2c SPEC r3 2.7 표) (7)
+     × 지우기 → 편집 1회로 source 자체 그래픽 · alt '' · decorative false · status '이미지를 지웠습니다'(P3 문장 그대로) · 포커스 '이미지 고르기' 10ms
+     × 다른 이미지로 바꾸기 성공 → 같은 편집 1회로 새 source · alt '' · decorative false · status '이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요' 6ms
+     × 잃은 이미지 다시 고르기(로컬 id · Blob 없음) → alt·decorative 유지 · 빈 alt 아니면 status '이미지를 넣었습니다 대체텍스트가 맞는지 확인해 주세요' 8ms
+     × 게이트 R-09(코드 변경 0): 바꾸기 뒤 실제 이미지 + 빈 alt = 차단 재표시 · 지우기 뒤 자체 그래픽 = 대상 밖(차단 0) 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — IMG-AC-30 이미지가 바뀔 때 대체텍스트 (B-M2C-08 · m2c SPEC r3 2.7 표) > 지우기 → 편집 1회로 source 자체 그래픽 · alt '' · decorative false · status '이미지를 지웠습니다'(P3 문장 그대로) · 포커스 '이미지 고르기'
+AssertionError: expected { kind: 'image', enabled: true, …(3) } to match object { enabled: true, …(3) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "alt": "",
+-   "decorative": false,
++   "alt": "가게 앞 사진",
++   "decorative": true,
+    "enabled": true,
+    "source": {
+      "kind": "placeholder",
+    },
+  }
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:372:29
+    370|     fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+    371|     expect(state.edits).toBe(1);
+    372|     expect(hero(state.doc)).toMatchObject({ enabled: true, source: { k…
+       |                             ^
+    373|     expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 지웠습니다$…
+    374|     expect(document.activeElement).toBe(screen.getByRole("button", { n…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — IMG-AC-30 이미지가 바뀔 때 대체텍스트 (B-M2C-08 · m2c SPEC r3 2.7 표) > 다른 이미지로 바꾸기 성공 → 같은 편집 1회로 새 source · alt '' · decorative false · status '이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요'
+AssertionError: expected { kind: 'image', enabled: true, …(3) } to match object { enabled: true, alt: '', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "alt": "",
++   "alt": "가게 앞",
+    "decorative": false,
+    "enabled": true,
+  }
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:388:18
+    386|     expect(next.source).not.toBe(uuid(1));
+    387|     expect(typeof next.source).toBe("string");
+    388|     expect(next).toMatchObject({ enabled: true, alt: "", decorative: f…
+       |                  ^
+    389|     expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 바꿨습니다 …
+    390|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — IMG-AC-30 이미지가 바뀔 때 대체텍스트 (B-M2C-08 · m2c SPEC r3 2.7 표) > 잃은 이미지 다시 고르기(로컬 id · Blob 없음) → alt·decorative 유지 · 빈 alt 아니면 status '이미지를 넣었습니다 대체텍스트가 맞는지 확인해 주세요'
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^이미지를 넣었습니다 대체텍스트가 맞는지 확인해 주세요$/[39m
+Received:
+[31m  이미지를 넣었습니다[39m
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:411:40
+    409|     expect(hero(state.doc).source).not.toBe(uuid(7));
+    410|     expect(hero(state.doc)).toMatchObject({ alt: "가게 앞", decorative: f…
+    411|     expect(screen.getByRole("status")).toHaveTextContent(/^이미지를 넣었습니다 …
+       |                                        ^
+    412|   });
+    413|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/components/studio/ImageSlotPanel.test.tsx > ImageSlotPanel — IMG-AC-30 이미지가 바뀔 때 대체텍스트 (B-M2C-08 · m2c SPEC r3 2.7 표) > 게이트 R-09(코드 변경 0): 바꾸기 뒤 실제 이미지 + 빈 alt = 차단 재표시 · 지우기 뒤 자체 그래픽 = 대상 밖(차단 0)
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/components/studio/ImageSlotPanel.test.tsx:429:38
+    427|     pick(file());
+    428|     await settle();
+    429|     expect(heroAltBlocks(state.doc)).toHaveLength(1);
+       |                                      ^
+    430|     expect(heroAltBlocks(state.doc)[0]!.severity).toBe("block");
+    431|     fireEvent.click(screen.getByRole("button", { name: "이미지 지우기" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 24 passed (28)
+   Start at  09:06:01
+   Duration  1.21s (environment 34%, tests 32%, transform 15%, setup 13%, import 6%)
+

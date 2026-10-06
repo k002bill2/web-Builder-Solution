@@ -72,7 +72,7 @@
 | `npm run build`(①②③) | exit 0 · /studio 128.28 — logs/build-1-3.txt |
 | `git diff --stat e2301c4 HEAD -- app/` | 빈 출력(그 뒤 70bae59는 테스트만 바꿈) → 위 빌드가 tip 앱 코드의 빌드다 |
 | `npx vitest --run src/components/studio/ThemeSwap.test.tsx`(70bae59) | 12/12 통과 |
-| `npx tsc --noEmit` · `npm run lint` | ④ WIP 상태에서 둘 다 0(①②③을 포함한 상위 집합) |
+| tip 70bae59 fresh: `npm run typecheck` · `npm run lint` · `npx vitest --run` | 각각 exit 0 · 0 · 0 — vitest 237 파일 / 2114 통과(logs/vitest-tip.txt) |
 | RED 로그 | logs/red-1-3.txt(예측대로 3 fail) · logs/red-4.txt |
 
 ## 5. Codex

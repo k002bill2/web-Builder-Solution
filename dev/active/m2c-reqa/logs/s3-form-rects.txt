@@ -1,0 +1,8 @@
+contact--booking 390 fs [[16,312,374,919]] [ true ] notice [[16,232,374,297]] [ false ] parts 7
+contact--booking 768 fs [[32,319,736,833]] [ true ] notice [[32,258,736,304]] [ false ] parts 7
+contact--booking 1280 fs [[568,218,1184,732]] [ true ] notice [[568,157,1184,203]] [ false ] parts 7
+contact--form 390 fs [[16,312,374,775]] [ true ] notice [[16,232,374,297]] [ false ] parts 5
+contact--form 768 fs [[32,319,736,782]] [ true ] notice [[32,258,736,304]] [ false ] parts 5
+contact--form 1280 fs [[568,218,1184,681]] [ true ] notice [[568,157,1184,203]] [ false ] parts 5
+[{"cls":"kit-field","bs":"dashed","bw":"1px","bg":"rgb(255, 255, 255)","color":"rgb(26, 26, 26)","op":"1"},{"cls":"kit-field","bs":"dashed","bw":"1px","bg":"rgb(255, 255, 255)","color":"rgb(26, 26, 26)","op":"1"},{"cls":"kit-field","bs":"dashed","bw":"1px","bg":"rgb(255, 255, 255)","color":"rgb(26, 26, 26)","op":"1"},{"cls":"kit-check","bs":"none","bw":"0px","bg":"rgba(0, 0, 0, 0)","color":"rgb(26, 26, 26)","op":"1"},{"cls":"kit-submit","bs":"dashed","bw":"1px","bg":"rgba(0, 0, 0, 0)","color":"rgb(26, 26, 26)","op":"1"},{"cls":"kit-notice","bs":"solid","bw":"1px","bg":"rgba(0, 0, 0, 0)","color":"rgb(26, 26, 26)","op":"1"}]
+

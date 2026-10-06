@@ -1,0 +1,15 @@
+W1280-3col TAB D:BUTTON[radio]:데스크톱(true) → D:BUTTON:닫기 → D:DIV[region]:3안 미리보기 영역 → D:BUTTON:A안 선택 → D:BUTTON:B안 선택 → D:BUTTON:C안 선택 → OUT:BODY:본문으로 건너뛰기Design Studio카탈 → D:BUTTON[radio]:데스크톱(true) → D:BUTTON:닫기 → D:DIV[region]:3안 미리보기 영역
+W1280-3col SHIFT+TAB D:BUTTON:닫기 → D:BUTTON[radio]:데스크톱(true) → OUT:BODY:본문으로 건너뛰기Design Studio카탈
+after Esc focus OUT:BUTTON:3안 실제 화면으로 비교
+W1024 radios 데스크톱:true:ti0 모바일:false:ti-1 A안:true:ti0 B안:false:ti-1 C안:false:ti-1 redrawButtons 0 ox -15
+W1024 TAB D:BUTTON[radio]:데스크톱(true) → D:BUTTON[radio]:A안(true) → D:BUTTON:닫기 → D:DIV[region]:3안 미리보기 영역 → D:BUTTON:A안 선택 → OUT:BODY:본문으로 건너뛰기Design Studio카탈 → D:BUTTON[radio]:데스크톱(true) → D:BUTTON[radio]:A안(true) → D:BUTTON:닫기
+W1024 SHIFT+TAB D:BUTTON[radio]:A안(true) → D:BUTTON[radio]:데스크톱(true) → OUT:BODY:본문으로 건너뛰기Design Studio카탈
+after Esc focus OUT:BUTTON:3안 실제 화면으로 비교
+W768 radios 데스크톱:true:ti0 모바일:false:ti-1 A안:true:ti0 B안:false:ti-1 C안:false:ti-1 redrawButtons 0 ox -15
+W768 TAB D:BUTTON[radio]:데스크톱(true) → D:BUTTON[radio]:A안(true) → D:BUTTON:닫기 → D:DIV[region]:3안 미리보기 영역 → D:BUTTON:A안 선택 → OUT:BODY:본문으로 건너뛰기Design Studio카탈 → D:BUTTON[radio]:데스크톱(true) → D:BUTTON[radio]:A안(true) → D:BUTTON:닫기
+W768 SHIFT+TAB D:BUTTON[radio]:A안(true) → D:BUTTON[radio]:데스크톱(true) → OUT:BODY:본문으로 건너뛰기Design Studio카탈
+after Esc focus OUT:BUTTON:3안 실제 화면으로 비교
+W390 radios 데스크톱:true:ti0 모바일:false:ti-1 A안:true:ti0 B안:false:ti-1 C안:false:ti-1 redrawButtons 0 ox -15
+W390 TAB D:BUTTON[radio]:데스크톱(true) → D:BUTTON[radio]:A안(true) → D:BUTTON:닫기 → D:DIV[region]:3안 미리보기 영역 → D:BUTTON:A안 선택 → OUT:BODY:본문으로 건너뛰기Design Studio카탈 → D:BUTTON[radio]:데스크톱(true) → D:BUTTON[radio]:A안(true) → D:BUTTON:닫기
+W390 SHIFT+TAB D:BUTTON[radio]:A안(true) → D:BUTTON[radio]:데스크톱(true) → OUT:BODY:본문으로 건너뛰기Design Studio카탈
+

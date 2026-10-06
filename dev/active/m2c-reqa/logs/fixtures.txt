@@ -1,0 +1,27 @@
+SPACE 80
+WROTE f01-jpeg-12mp.jpg 392876
+WROTE f02-png-alpha.png 35633
+WROTE f03-webp.webp 27724
+WROTE f04-orient6-gps.jpg 71455
+WROTE f05-exif-gps.jpg 92319
+WROTE f06-disguised-jpeg.png 41912
+WROTE f07-11mb.jpg 11534336
+WROTE f08-41mp.jpg 465205
+WROTE f09-truncated.jpg 4096
+WROTE f09b-truncated-head.jpg 12
+WROTE f10-vector.svg 115
+WROTE f11-land-3x2.jpg 91851
+WROTE f12-port-2x3.jpg 97979
+WROTE f13-pano-4x1.jpg 87804
+WROTE f21-set-1.jpg 88862
+WROTE f22-set-2.jpg 85196
+WROTE f23-set-3.jpg 85394
+WROTE f24-set-4.jpg 91802
+WROTE f25-set-5.jpg 86495
+WROTE f26-set-6.jpg 90114
+WROTE f31-noise-1.jpg 6087071
+WROTE f32-noise-2.jpg 6087702
+WROTE f33-noise-3.jpg 6086350
+WROTE f34-noise-4.jpg 6086978
+DONE 24
+

@@ -1,0 +1,146 @@
+[
+ {
+  "name": "f01-jpeg-12mp.jpg",
+  "bytes": 392876,
+  "sha256": "80985fae0b8c2a79",
+  "note": "4000×3000 JPEG 패턴 (QB-2·QB-5)"
+ },
+ {
+  "name": "f02-png-alpha.png",
+  "bytes": 35633,
+  "sha256": "03591bded293c58b",
+  "note": "1200×800 PNG 투명(색 유형 6) (QB-2)"
+ },
+ {
+  "name": "f03-webp.webp",
+  "bytes": 27724,
+  "sha256": "5ca82c26b042ed70",
+  "note": "1600×900 WebP (QB-2)"
+ },
+ {
+  "name": "f04-orient6-gps.jpg",
+  "bytes": 71455,
+  "sha256": "0aacebb69a532f96",
+  "note": "저장 1200×800 · EXIF 방향 6 + GPS → 보이는 800×1200, 화살표 위 (QB-4)"
+ },
+ {
+  "name": "f05-exif-gps.jpg",
+  "bytes": 92319,
+  "sha256": "02b0384788c3f0a3",
+  "note": "1600×1000 · EXIF 방향 1 + GPS + Make (QB-4 EXIF 0)"
+ },
+ {
+  "name": "f06-disguised-jpeg.png",
+  "bytes": 41912,
+  "sha256": "73e585ca5437b9c0",
+  "note": "JPEG 바이트를 .png 이름으로 — 형식 위장 (QB-3)"
+ },
+ {
+  "name": "f07-11mb.jpg",
+  "bytes": 11534336,
+  "sha256": "b03e43bc15137b40",
+  "note": "유효 JPEG 뒤 0 채움 → 11MB (QB-3 V4)"
+ },
+ {
+  "name": "f08-41mp.jpg",
+  "bytes": 465205,
+  "sha256": "aef1c31bd1a5e91b",
+  "note": "8000×5125 = 41,000,000화소 JPEG ≤10MB (QB-3 V5) — PNG는 22MB라 V4에 먼저 걸려 JPEG로"
+ },
+ {
+  "name": "f09-truncated.jpg",
+  "bytes": 4096,
+  "sha256": "e1ec324399877afa",
+  "note": "12MP JPEG 앞 4096바이트 — SOF 있음, 디코드 실패 (QB-3 V6)"
+ },
+ {
+  "name": "f09b-truncated-head.jpg",
+  "bytes": 12,
+  "sha256": "3c4bae649b6c0fad",
+  "note": "앞 12바이트 — 헤더 못 읽음 (QB-3 V5)"
+ },
+ {
+  "name": "f10-vector.svg",
+  "bytes": 115,
+  "sha256": "63c2af3fa803f446",
+  "note": "SVG (QB-3 V1)"
+ },
+ {
+  "name": "f11-land-3x2.jpg",
+  "bytes": 91851,
+  "sha256": "360527f48a90aefc",
+  "note": "가로 3:2 (QB-6)"
+ },
+ {
+  "name": "f12-port-2x3.jpg",
+  "bytes": 97979,
+  "sha256": "aea8f25535802c63",
+  "note": "세로 2:3 (QB-6)"
+ },
+ {
+  "name": "f13-pano-4x1.jpg",
+  "bytes": 87804,
+  "sha256": "bf713ad361441420",
+  "note": "파노라마 4:1 → 2:1로 잘림 기대 (QB-6)"
+ },
+ {
+  "name": "f21-set-1.jpg",
+  "bytes": 88862,
+  "sha256": "842e2448af7dfdad",
+  "note": "9장 문서용 패턴 1 (QB-8)"
+ },
+ {
+  "name": "f22-set-2.jpg",
+  "bytes": 85196,
+  "sha256": "0d9724a292c4adc0",
+  "note": "9장 문서용 패턴 2 (QB-8)"
+ },
+ {
+  "name": "f23-set-3.jpg",
+  "bytes": 85394,
+  "sha256": "13c4ac4a4728bb01",
+  "note": "9장 문서용 패턴 3 (QB-8)"
+ },
+ {
+  "name": "f24-set-4.jpg",
+  "bytes": 91802,
+  "sha256": "a66dbc9ec34538e0",
+  "note": "9장 문서용 패턴 4 (QB-8)"
+ },
+ {
+  "name": "f25-set-5.jpg",
+  "bytes": 86495,
+  "sha256": "ed676c1068aadf1f",
+  "note": "9장 문서용 패턴 5 (QB-8)"
+ },
+ {
+  "name": "f26-set-6.jpg",
+  "bytes": 90114,
+  "sha256": "ef04157eb451463e",
+  "note": "9장 문서용 패턴 6 (QB-8)"
+ },
+ {
+  "name": "f31-noise-1.jpg",
+  "bytes": 6087071,
+  "sha256": "e68babe6ffef0e7d",
+  "note": "노이즈 3000×2000 (B-M2C-01 큰 문서)"
+ },
+ {
+  "name": "f32-noise-2.jpg",
+  "bytes": 6087702,
+  "sha256": "021e8ed4d1d11b31",
+  "note": "노이즈 3000×2000 (B-M2C-01 큰 문서)"
+ },
+ {
+  "name": "f33-noise-3.jpg",
+  "bytes": 6086350,
+  "sha256": "2c9a9bde91bf55a1",
+  "note": "노이즈 3000×2000 (B-M2C-01 큰 문서)"
+ },
+ {
+  "name": "f34-noise-4.jpg",
+  "bytes": 6086978,
+  "sha256": "5da25435d2b5a58e",
+  "note": "노이즈 3000×2000 (B-M2C-01 큰 문서)"
+ }
+]

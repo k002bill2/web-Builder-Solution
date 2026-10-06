@@ -1,0 +1,102 @@
+{
+ "contact--form": {
+  "390": {
+   "checkbox": {
+    "disabled": false,
+    "matchesDisabled": true,
+    "opacity": "1",
+    "accent": "rgb(10, 92, 54)",
+    "appearance": "auto",
+    "w": 20,
+    "h": 20,
+    "ancestorsOpacityNot1": []
+   },
+   "lowOpacityEls": 0,
+   "filterEls": 0,
+   "consentLabelColor": "rgb(26, 26, 26)",
+   "ink": "rgb(26, 26, 26)"
+  },
+  "768": {
+   "checkbox": {
+    "disabled": false,
+    "matchesDisabled": true,
+    "opacity": "1",
+    "accent": "rgb(10, 92, 54)",
+    "appearance": "auto",
+    "w": 20,
+    "h": 20,
+    "ancestorsOpacityNot1": []
+   },
+   "lowOpacityEls": 0,
+   "filterEls": 0,
+   "consentLabelColor": "rgb(26, 26, 26)",
+   "ink": "rgb(26, 26, 26)"
+  },
+  "1280": {
+   "checkbox": {
+    "disabled": false,
+    "matchesDisabled": true,
+    "opacity": "1",
+    "accent": "rgb(10, 92, 54)",
+    "appearance": "auto",
+    "w": 20,
+    "h": 20,
+    "ancestorsOpacityNot1": []
+   },
+   "lowOpacityEls": 0,
+   "filterEls": 0,
+   "consentLabelColor": "rgb(26, 26, 26)",
+   "ink": "rgb(26, 26, 26)"
+  }
+ },
+ "contact--booking": {
+  "390": {
+   "checkbox": {
+    "disabled": false,
+    "matchesDisabled": true,
+    "opacity": "1",
+    "accent": "rgb(10, 92, 54)",
+    "appearance": "auto",
+    "w": 20,
+    "h": 20,
+    "ancestorsOpacityNot1": []
+   },
+   "lowOpacityEls": 0,
+   "filterEls": 0,
+   "consentLabelColor": "rgb(26, 26, 26)",
+   "ink": "rgb(26, 26, 26)"
+  },
+  "768": {
+   "checkbox": {
+    "disabled": false,
+    "matchesDisabled": true,
+    "opacity": "1",
+    "accent": "rgb(10, 92, 54)",
+    "appearance": "auto",
+    "w": 20,
+    "h": 20,
+    "ancestorsOpacityNot1": []
+   },
+   "lowOpacityEls": 0,
+   "filterEls": 0,
+   "consentLabelColor": "rgb(26, 26, 26)",
+   "ink": "rgb(26, 26, 26)"
+  },
+  "1280": {
+   "checkbox": {
+    "disabled": false,
+    "matchesDisabled": true,
+    "opacity": "1",
+    "accent": "rgb(10, 92, 54)",
+    "appearance": "auto",
+    "w": 20,
+    "h": 20,
+    "ancestorsOpacityNot1": []
+   },
+   "lowOpacityEls": 0,
+   "filterEls": 0,
+   "consentLabelColor": "rgb(26, 26, 26)",
+   "ink": "rgb(26, 26, 26)"
+  }
+ }
+}

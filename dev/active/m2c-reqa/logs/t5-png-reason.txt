@@ -1,0 +1,4 @@
+EVENTS ["{\"name\":\"png_requested\",\"view\":\"desktop\"}","{\"name\":\"png_failed\",\"reason\":\"INFRA\"}"]
+ALERT PNG를 만들지 못했습니다 — 다시 눌러 주세요
+PREVIEW 
+

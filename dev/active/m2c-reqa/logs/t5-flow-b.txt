@@ -1,0 +1,25 @@
+AT /projects ["A:/projects:프로젝트","A:/compare?new=1:새 프로젝트","A:/compare?new=1:새 프로젝트 시작","A:/studio/project-1:모던 카페 브랜드 프로젝트 편집기 열기","A:/profile/profile-1:모던 카페 브랜드 프로젝트 프로필 보기","B::모던 카페 브랜드 프로젝트 이름 바꾸기"]
+TARGET 모던 카페 브랜드 프로젝트 편집기 열기
+RETURN {
+ "url": "/studio/project-1",
+ "panels": [
+  "이미지 편집 (1)"
+ ],
+ "again": [
+  "시안 (F2) — 프로필의 색·글자·글꼴·모션과 고른 이미지 또는 자체 그래픽으로 그린 페이지입니다. 다시 골라야 하는 이미지 2장은 자체 그래픽으로 보입니다."
+ ],
+ "f2": [
+  "시안 (F2) — 프로필의 색·글자·글꼴·모션과 고른 이미지 또는 자체 그래픽으로 그린 페이지입니다. 다시 골라야 하는 이미지 2장은 자체 그래픽으로 보입니다."
+ ],
+ "gate": [
+  "검사 · 내보내기:dis=false",
+  "대비 AA차단 1:dis=false",
+  "대체텍스트차단 1:dis=false",
+  "SEO 메타차단 2:dis=false",
+  "React 프로젝트(zip) 내보내기:dis=false",
+  "정적 HTML 내보내기:dis=false",
+  "첫 차단으로 이동:dis=false",
+  "PNG 내려받기:dis=false"
+ ]
+}
+

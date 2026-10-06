@@ -3,8 +3,8 @@
 - base `45a5721` · 브랜치 `k002bill2/er-3b` · 서브에이전트 0 · 기준 빌드 `logs/build-base.txt`: /studio 진입 **127.69** · 첫 91.76 (멈춤 > 128.43, ER-3b 목표 ≤ +0.35)
 
 ## 체크리스트
-- [ ] P0 BRIEF·PROGRESS 명시 커밋
-- [ ] A. useDocSave 저장 먼저(`flushed`)·쓰기 채택(`adopt`) + imageStore 참조 집합(스냅샷)·한도 문장 — RED → GREEN
+- [x] P0 BRIEF·PROGRESS 명시 커밋
+- [x] A. useDocSave 저장 먼저(`flushed`)·쓰기 채택(`adopt`) + imageStore 참조 집합(스냅샷)·한도 문장 — RED → GREEN
 - [ ] B. 툴바 "스냅샷" · SnapshotDialog(조작 뒤) · SnapshotPreview(조작 뒤) · 복원(저장 훅 경로) · 편집 잠금 — RED → GREEN · 번들 1회
 - [ ] C. 포커스(사라지는 버튼) · 좁은 폭 대화상자 1개 · 390 탭 전환 잠금 · 최근 10 + 더 보기 · 복원 실패 alert — RED → GREEN
 - [ ] 검증 4종(typecheck·lint·test·build) + 번들 표
@@ -21,3 +21,4 @@
 | C | 5 | 좁은 폭 390·1024 대화상자 1개(2) · 390 탭 전환 뒤 잠금 · 더 보기 → 포커스 유지 · 복원 실패 role=alert 1회·포커스 유지 |
 
 ## 로그
+- A: RED 5/5(`logs/red-a.txt`, 예측 5 일치) → GREEN 24/24(표적 3파일) · typecheck·lint exit 0(`logs/gate-a.txt`). 테스트 도우미: act 콜백 안에서 저장 약속을 기다리면 교착 → act 밖 시작 + 렌더 흘리기

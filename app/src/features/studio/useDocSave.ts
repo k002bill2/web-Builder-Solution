@@ -5,8 +5,11 @@
  * - 화면 문서는 늘 내 편집이다 — `STALE_DOC`이어도 바꾸지 않고 최신 문서만 `conflict.latest`로 따로 둔다(E-S09).
  * - `resolve(choice)` = 저장소 `resolveConflict`(보존 스냅샷 + 저장 한 트랜잭션, 8.3) 1회 → 성공이면 스케줄러 `settle`(추가 저장 0).
  *   "다른 편집 불러오기"는 돌려받은 최신 문서를 화면 문서로. 거부는 그대로 돌려주고 STALE을 유지한다(고르기 전 자동 저장 0).
+ * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·충돌·오프라인이면 false.
+ * - `adopt(write)` = 저장소 revision을 올리는 쓰기(스냅샷 복원)를 저장 훅 경로로 — 저장 먼저 → `write(저장 revision)` 1회 →
+ *   돌려받은 문서·revision·스케줄러(`settle`, 추가 저장 0)를 함께 갱신. 저장하지 못했으면 쓰기 0 · undefined.
  */
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { projectErrorCode, type ConflictChoice, type DocHead, type ProjectPersistence } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { hashDoc } from "../../engine/ops/hash";
@@ -43,6 +46,8 @@ export interface UseDocSave {
   /** 저장소에 저장된 마지막 revision(내보내기 요청 revision — 5.13 "저장 먼저" 뒤에 읽는다) */
   readonly savedRevision: () => number;
   readonly resolve: (choice: ConflictChoice) => Promise<void>;
+  readonly flushed: () => Promise<boolean>;
+  readonly adopt: (write: (revision: number) => Promise<PageDoc>) => Promise<PageDoc | undefined>;
 }
 
 export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
@@ -93,7 +98,33 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     [repository, projectId, settle, change],
   );
 
+  // 저장 먼저 기다리는 쪽 — 렌더마다 상태를 보고 저장 중이면 기다리고, 저장 전 변경이면 바로 저장, 그 밖이면 결과를 돌려준다
+  const { retry } = autosave;
+  const phase = useRef(autosave.state.phase);
+  phase.current = autosave.state.phase;
+  const waiters = useRef<((ok: boolean) => void)[]>([]);
+  const check = useCallback(() => {
+    const now = phase.current;
+    if (!waiters.current.length || now === "saving") return;
+    if (now === "dirty") return retry();
+    for (const done of waiters.current.splice(0)) done(now === "idle" || now === "saved");
+  }, [retry]);
+  useEffect(check);
+  const flushed = useCallback(() => new Promise<boolean>((done) => (waiters.current.push(done), check())), [check]);
+  const adopt = useCallback(
+    async (write: (revision: number) => Promise<PageDoc>) => {
+      if (!(await flushed())) return undefined;
+      const next = await write(revisionRef.current);
+      revisionRef.current = next.revision;
+      docRef.current = next;
+      setDoc(next);
+      settle();
+      return next;
+    },
+    [flushed, settle],
+  );
+
   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
   const savedRevision = useCallback(() => revisionRef.current, []);
-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry: autosave.retry, savedRevision, resolve };
+  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt };
 }

@@ -112,3 +112,21 @@ describe("보관소 — 파생본 선택(SPEC 5.1) · 메타", () => {
     expect(Object.keys(meta!).sort()).toEqual(["bytes", "format", "height", "variants", "width"]);
   });
 });
+
+describe("참조 집합 ∪ 스냅샷 — ER-AC-S6 (EDITOR-REST SPEC r1 3.2 · 2a-05 5.9 탭 한도)", () => {
+  it("retainedIds = 문서 ∪ 되돌릴 문서 ∪ 모든 스냅샷 문서", () => {
+    const snap = withHero(sampleDoc(), uuid(7));
+    expect([...retainedIds(withHero(sampleDoc(), uuid(1)), undefined, [snap, withAbout(sampleDoc(), uuid(8))])].sort()).toEqual([uuid(1), uuid(7), uuid(8)]);
+  });
+
+  it("탭 한도 초과가 스냅샷이 붙잡은 이미지 때문이면 스냅샷 거부 문장 · 스냅샷 없으면 통과", () => {
+    const doc = withHero(sampleDoc(), uuid(1));
+    const snap = withHero(sampleDoc(), uuid(2));
+    const images = store([
+      [uuid(1), 25 * MB],
+      [uuid(2), 40 * MB],
+    ]);
+    expect(checkLimits(doc, undefined, images, [snap])).toEqual({ ok: false, message: "스냅샷이 이전 이미지를 보관하고 있어 더 넣을 수 없습니다 (24개 · 60MB까지) — 더 작은 파일을 고르세요" });
+    expect(checkLimits(doc, undefined, images)).toEqual({ ok: true });
+  });
+});

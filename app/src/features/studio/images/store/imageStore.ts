@@ -22,8 +22,9 @@ const TAB_BYTES = 60 * MB;
 const localIds = (docs: ReadonlyArray<PageDoc | undefined>, onlyEnabled: boolean): ReadonlySet<string> =>
   new Set(docs.flatMap((d) => d?.sections.flatMap((s) => Object.values(s.slots).flatMap((v) => (typeof v === "object" && typeof v.source === "string" && (v.enabled || !onlyEnabled) ? [v.source] : []))) ?? []));
 
-/** 참조 집합 = 문서 ∪ 되돌릴 문서의 로컬 id — 꺼진 슬롯도 붙잡는다(다시 켜면 그대로 보이게) */
-export const retainedIds = (doc: PageDoc, undoDoc: PageDoc | undefined): ReadonlySet<string> => localIds([doc, undoDoc], false);
+/** 참조 집합 = 문서 ∪ 되돌릴 문서 ∪ 모든 스냅샷 문서의 로컬 id(ER SPEC r1 3.2) — 꺼진 슬롯도 붙잡는다(다시 켜면 그대로 보이게) */
+export const retainedIds = (doc: PageDoc, undoDoc: PageDoc | undefined, snapshots: readonly PageDoc[] = []): ReadonlySet<string> =>
+  localIds([doc, undoDoc, ...snapshots], false);
 
 /** 참조 밖 id를 버린 새 맵 — 버릴 것이 없으면 같은 맵(편집 틀 재렌더 0) */
 export function pruneImages(images: RenderImages | undefined, keep: ReadonlySet<string>): RenderImages {
@@ -38,12 +39,22 @@ const total = (images: RenderImages, ids: Iterable<string>) => {
 };
 
 /** 새 이미지를 넣은 뒤의 문서·맵으로 한도를 잰다(보관 바이트). 거부는 아무것도 바꾸지 않는다 — 부르는 쪽이 넣지 않는다 */
-export function checkLimits(doc: PageDoc, undoDoc: PageDoc | undefined, images: RenderImages): LimitCheck {
+export function checkLimits(doc: PageDoc, undoDoc: PageDoc | undefined, images: RenderImages, snapshots: readonly PageDoc[] = []): LimitCheck {
   const page = total(images, localIds([doc], true));
   if (page.count > DOC_COUNT) return { ok: false, message: "이미지는 한 페이지에 12개까지 쓸 수 있습니다 — 다른 슬롯의 이미지를 끈 뒤 고르세요" };
   if (page.bytes > DOC_BYTES) return { ok: false, message: `이 페이지의 이미지가 합계 30MB를 넘습니다 (${(page.bytes / MB).toFixed(1)}MB) — 더 작은 파일을 고르세요` };
-  const tab = total(images, retainedIds(doc, undoDoc));
-  if (tab.count > TAB_COUNT || tab.bytes > TAB_BYTES) return { ok: false, message: "이 탭에 보관한 이미지가 24개 · 60MB를 넘습니다 — 쓰지 않는 슬롯의 이미지를 지운 뒤 고르세요" };
+  const over = (ids: ReadonlySet<string>) => {
+    const tab = total(images, ids);
+    return tab.count > TAB_COUNT || tab.bytes > TAB_BYTES;
+  };
+  if (over(retainedIds(doc, undoDoc, snapshots)))
+    return {
+      ok: false,
+      // 스냅샷은 지울 수 없다(5.11) — 스냅샷 없이는 한도 안이면 스냅샷이 붙잡은 것(2a-05 5.9 표 ③)
+      message: over(retainedIds(doc, undoDoc))
+        ? "이 탭에 보관한 이미지가 24개 · 60MB를 넘습니다 — 쓰지 않는 슬롯의 이미지를 지운 뒤 고르세요"
+        : "스냅샷이 이전 이미지를 보관하고 있어 더 넣을 수 없습니다 (24개 · 60MB까지) — 더 작은 파일을 고르세요",
+    };
   return { ok: true };
 }
 

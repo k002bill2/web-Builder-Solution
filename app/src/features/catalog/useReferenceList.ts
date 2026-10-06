@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useReferenceRepository } from "../../data/ReferenceRepositoryContext";
 import { useThrowToBoundary } from "../../data/useThrowToBoundary";
+import { useCatalogReferenceRepository } from "./useCatalogRepository";
 import type { DesignReference, ReferenceQuery } from "../../domain/reference";
 
 interface ListState {
@@ -10,7 +10,7 @@ interface ListState {
 
 /** 조회 조건이 바뀌면 저장소에서 다시 읽는다. 응답 전에는 이전 결과를 유지한다. */
 export function useReferenceList(query: ReferenceQuery) {
-  const repository = useReferenceRepository();
+  const repository = useCatalogReferenceRepository();
   const fail = useThrowToBoundary();
   const [state, setState] = useState<ListState | null>(null);
   useEffect(() => {

@@ -40,15 +40,16 @@ function ScoreTile({ label, value, tone }: { readonly label: string; readonly va
 /** 점수 3칸 — 접근성·성능·모션 (목업 2a-02). 숫자 색 status-*-text (D-A11Y-N1). */
 export function ScoreTiles({ reference: r, detail }: { readonly reference: DesignReference; readonly detail: ReferenceDetail }) {
   const s = r.scores;
+  const measured = !("status" in s);
   return (
     <section aria-label="점수">
       <div className="grid grid-cols-3 gap-2.5">
-        <ScoreTile label="접근성" value={String(s.accessibility)} tone={scoreTone(s.accessibility)} />
-        <ScoreTile label="성능" value={String(s.performance)} tone={scoreTone(s.performance)} />
+        <ScoreTile label="접근성" value={measured ? String(s.accessibility) : "미측정"} tone={measured ? scoreTone(s.accessibility) : undefined} />
+        <ScoreTile label="성능" value={measured ? String(s.performance) : "미측정"} tone={measured ? scoreTone(s.performance) : undefined} />
         <ScoreTile label="모션" value={MOTION_LABELS[r.motionLevel]} />
       </div>
       <div className="ds-caption2 mt-1.5 text-label-alternative">
-        측정 {formatDate(s.measuredAt)} · {detail.measuredWith}
+        {measured ? `측정 ${formatDate(s.measuredAt)} · ${detail.measuredWith}` : "접근성·성능 미측정"}
       </div>
     </section>
   );

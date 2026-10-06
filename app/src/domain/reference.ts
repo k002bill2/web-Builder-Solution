@@ -3,6 +3,8 @@
 import type { ColorFamily } from "./colorFamily";
 
 export type LicenseStatus = "internal" | "licensed" | "external_observed";
+/** TRD 4.1 `source_kind` (MQ-M3P-3 A) — 섹션 라이브러리 조합 / 라이선스 자산 */
+export type SourceKind = "library_composition" | "licensed_asset";
 /** MVP 카탈로그에 노출 가능한 라이선스 (FR-CAT-04). */
 export type ExposedLicenseStatus = Exclude<LicenseStatus, "external_observed">;
 export const EXPOSED_LICENSE_STATUSES: readonly ExposedLicenseStatus[] = Object.freeze(["internal", "licensed"]);
@@ -45,6 +47,13 @@ export interface BenchmarkScores {
   readonly measuredAt: string;
 }
 
+/** 측정하지 않은 점수 (MQ-M3P-4 A) — 숫자를 지어내지 않는다. 화면은 "미측정", 점수순은 맨 뒤. 판별은 `"status" in scores`(공통 청크에 도우미 함수를 두지 않는다 — 첫 화면 예산) */
+export interface UnmeasuredScores {
+  readonly status: "unmeasured";
+}
+
+export type ReferenceScores = BenchmarkScores | UnmeasuredScores;
+
 export interface DesignReference {
   readonly id: string;
   /** 비교 보드 열 표기 (A~F) */
@@ -52,6 +61,8 @@ export interface DesignReference {
   readonly slug: string;
   readonly title: string;
   readonly licenseStatus: LicenseStatus;
+  /** 없으면 큐레이션 레퍼런스(기존 6개 — 픽스처 바이트 변경 0, M3P-AC-G5). 조합 생성기 출력은 library_composition */
+  readonly sourceKind?: SourceKind;
   readonly industry: IndustryId;
   readonly audience: readonly AudienceId[];
   readonly purpose: readonly PurposeId[];
@@ -61,7 +72,7 @@ export interface DesignReference {
   readonly motionLevel: MotionLevel;
   readonly responsive: boolean;
   readonly devices: readonly DeviceId[];
-  readonly scores: BenchmarkScores;
+  readonly scores: ReferenceScores;
   /** ISO 날짜 — 최신순 정렬 기준 */
   readonly createdAt: string;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useReferenceRepository } from "../../data/ReferenceRepositoryContext";
 import { useThrowToBoundary } from "../../data/useThrowToBoundary";
+import { useCatalogReferenceRepository } from "./useCatalogRepository";
 import type { DesignReference } from "../../domain/reference";
 import type { CatalogFilters } from "./catalogSearchParams";
 import { countFacets, selectedFacets, withoutFacet, type FacetCounts, type FacetKey } from "./facetCounts";
@@ -16,7 +16,7 @@ export function useFacetCounts(
   current: readonly DesignReference[],
   scope?: ReadonlySet<string>,
 ): FacetCounts {
-  const repository = useReferenceRepository();
+  const repository = useCatalogReferenceRepository();
   const fail = useThrowToBoundary();
   const [excluded, setExcluded] = useState<Excluded>({});
   useEffect(() => {

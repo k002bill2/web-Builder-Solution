@@ -42,7 +42,8 @@ function matches(ref: DesignReference, q: ReferenceQuery): boolean {
   );
 }
 
-const totalScore = (ref: DesignReference) => ref.scores.accessibility + ref.scores.performance;
+/** 미측정 = -1 → 점수순 맨 뒤 (MQ-M3P-4 A). 같은 점수는 입력 순서(안정 정렬) — 생성 픽스처는 id 순으로 커밋되고 createdAt이 같아 미측정 그룹 = id 오름차순 */
+const totalScore = (ref: DesignReference) => ("status" in ref.scores ? -1 : ref.scores.accessibility + ref.scores.performance);
 
 const COMPARATORS: Record<SortKey, (a: DesignReference, b: DesignReference) => number> = {
   score: (a, b) => totalScore(b) - totalScore(a),

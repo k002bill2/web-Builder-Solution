@@ -104,12 +104,20 @@ export function ScoreHistory({ reference, detail }: DetailProps & { readonly ref
           </tr>
         </thead>
         <tbody>
-          <tr className="border-b border-line-alternative">
-            <td className="py-2.5">{formatDate(s.measuredAt)}</td>
-            <td className="py-2.5">{detail.measuredWith}</td>
-            <td className="py-2.5 font-semibold">{s.accessibility}</td>
-            <td className="py-2.5 font-semibold">{s.performance}</td>
-          </tr>
+          {!("status" in s) ? (
+            <tr className="border-b border-line-alternative">
+              <td className="py-2.5">{formatDate(s.measuredAt)}</td>
+              <td className="py-2.5">{detail.measuredWith}</td>
+              <td className="py-2.5 font-semibold">{s.accessibility}</td>
+              <td className="py-2.5 font-semibold">{s.performance}</td>
+            </tr>
+          ) : (
+            <tr className="border-b border-line-alternative">
+              <td colSpan={4} className="py-2.5">
+                측정 기록 없음 · 접근성·성능 미측정
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       <p className="ds-caption1 mt-2 text-label-alternative">이전 측정 기록이 없습니다.</p>

@@ -112,9 +112,15 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
           {[...tags, r.responsive ? "반응형 지원" : "반응형 미지원"].join(" · ")}
         </p>
         <p className="ds-caption2 mt-1 text-label-alternative tabular-nums">
-          접근성 <b className="font-semibold text-label-neutral">{r.scores.accessibility}</b> · 성능{" "}
-          <b className="font-semibold text-label-neutral">{r.scores.performance}</b> ·{" "}
-          <time dateTime={r.scores.measuredAt}>{monthDay(r.scores.measuredAt)}</time> 측정
+          {!("status" in r.scores) ? (
+            <>
+              접근성 <b className="font-semibold text-label-neutral">{r.scores.accessibility}</b> · 성능{" "}
+              <b className="font-semibold text-label-neutral">{r.scores.performance}</b> ·{" "}
+              <time dateTime={r.scores.measuredAt}>{monthDay(r.scores.measuredAt)}</time> 측정
+            </>
+          ) : (
+            "접근성·성능 미측정"
+          )}
         </p>
       </div>
       <div className="flex items-center justify-between gap-2">

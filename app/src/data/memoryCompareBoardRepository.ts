@@ -40,7 +40,9 @@ export interface MemoryCompareBoardOptions {
 }
 
 export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOptions): CompareBoardRepository {
-  const { catalog, library = SECTION_LIBRARY, now = () => new Date().toISOString(), store = createStudioStore() } = options;
+  const { library = SECTION_LIBRARY, now = () => new Date().toISOString(), store = createStudioStore() } = options;
+  /** 카탈로그에 없는 id를 담을 때만 생성 청크를 받아 넓힌다(SPEC m3p 6절 · MQ-M3P-7 A) — 그 뒤 조회·비교는 넓힌 카탈로그. 넓혀도 없으면 기존대로 unavailable */
+  let catalog = options.catalog;
   let board: CompareBoard = options.initialBoard ?? emptyBoard("board-current", now());
   const counts = new Map<BoardMethod, number>();
 
@@ -115,15 +117,19 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
         if (released.length > 0) commit({ ...board, picks });
         return { board: view(), released };
       }),
-    addReference: (referenceId) =>
-      call("addReference", () => {
+    addReference: async (referenceId) => {
+      if (!catalog.references.some((r) => r.id === referenceId)) {
+        catalog = (await import("./generatedCatalog")).withGeneratedCatalog(catalog);
+      }
+      return call("addReference", () => {
         const reference = catalog.references.find((r) => r.id === referenceId);
         const exposed = reference && (EXPOSED_LICENSE_STATUSES as readonly string[]).includes(reference.licenseStatus);
         if (!exposed) return { ok: false, reason: "unavailable", board: view() } as const;
         const result = addColumn(board, referenceId);
         if (result.ok) commit(result.board);
         return { ...result, board: view() };
-      }),
+      });
+    },
     removeReference: (referenceId) =>
       call("removeReference", () => {
         const { board: next, released } = removeColumn(board, referenceId);

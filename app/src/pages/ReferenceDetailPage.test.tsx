@@ -256,7 +256,7 @@ describe("ReferenceDetailPage — 404·이동", () => {
     expect(router.state.location.pathname).toBe("/references/ref-f");
     expect(screen.queryByRole("heading", { level: 1, name: "모던 카페 브랜드" })).not.toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "데스크톱" })).toHaveAttribute("aria-checked", "true");
-    expect(within(screen.getByRole("region", { name: "점수" })).getByText(String(referenceFixtures[5]!.scores.accessibility))).toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "점수" })).getByText(String(!("status" in referenceFixtures[5]!.scores) && referenceFixtures[5]!.scores.accessibility))).toBeInTheDocument();
   });
 
   it("유사 레퍼런스의 응답이 늦어도 이전 레퍼런스 내용 대신 로딩 상태를 보인다 (경쟁 상태)", async () => {

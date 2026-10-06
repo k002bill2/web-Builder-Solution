@@ -134,3 +134,21 @@ describe("상세·유사 레퍼런스 (FR-CAT-03, T-API-CAT-04)", () => {
     }
   });
 });
+
+describe("점수순 미측정 (M3P-AC-U7 · MQ-M3P-4 A)", () => {
+  const unmeasured = (id: string, createdAt = "2026-10-06"): DesignReference => ({ ...referenceFixtures[0]!, id, key: "", scores: { status: "unmeasured" }, createdAt });
+
+  it("미측정은 측정 점수가 낮아도 그 뒤 — 맨 뒤에 모이고, 측정 그룹 순서는 그대로다", async () => {
+    const repo = createMemoryReferenceRepository([unmeasured("gen-a"), ...referenceFixtures, unmeasured("gen-b")]);
+    const ids = (await repo.list({ sort: "score" })).map((r) => r.id);
+    expect(ids.slice(0, 6)).toEqual(["ref-c", "ref-e", "ref-a", "ref-f", "ref-b", "ref-d"]);
+    expect(ids.slice(6)).toEqual(["gen-a", "gen-b"]);
+  });
+
+  it("같은 입력이면 미측정 그룹 순서가 매번 같다(안정 정렬 — 생성 픽스처는 id 순으로 커밋)", async () => {
+    const records = [unmeasured("gen-b"), unmeasured("gen-a"), ...referenceFixtures];
+    const run = async () => (await createMemoryReferenceRepository(records).list({ sort: "score" })).map((r) => r.id);
+    expect(await run()).toEqual(await run());
+    expect((await run()).slice(-2)).toEqual(["gen-b", "gen-a"]);
+  });
+});

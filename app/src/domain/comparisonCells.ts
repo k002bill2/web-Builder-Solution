@@ -93,7 +93,7 @@ export function buildReferenceComparison(
     motion: { label: MOTION_LABELS[reference.motionLevel], binding: { kind: "motion", level: reference.motionLevel } },
     mobile: { label: a.mobile.label, binding: { kind: "choice", field: "mobile_pattern", value: a.mobile.value } },
     footer: sectionCell(a.sectionPlan, "footer", library),
-    quality: { label: `접근성 ${s.accessibility} · 성능 ${s.performance} (측정일 ${s.measuredAt})`, binding: null },
+    quality: { label: !("status" in s) ? `접근성 ${s.accessibility} · 성능 ${s.performance} (측정일 ${s.measuredAt})` : "접근성·성능 미측정", binding: null },
   };
   return { referenceId: reference.id, cells, sectionPlan: a.sectionPlan, spacing: detail.spacing };
 }

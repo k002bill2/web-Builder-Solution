@@ -24,9 +24,12 @@ base main `6658430` + ④ WIP 병합(97c826d). 판정선 /studio 진입 직후 �
 
 ## 수정(2차) — Codex r1 P2 미리보기 복귀 뒤 단축키 무시
 - [x] 1. 회귀 테스트 `UndoKeys.test.tsx` "스냅샷 미리보기 복귀 뒤" 추가. 예측: Ctrl+Z preventDefault는 true지만 행 복원 실패(옛 `edit`이 false). RED 실측 일치 — 82행 rowIds에 s-services 없음(logs/fix2-red.txt). RED는 커밋하지 않음
-- [ ] 2. 수정: `HistoryKeys`에 `step` · StudioLayout 맥락 effect가 `ops.step` 갱신 · `listenHistory`가 `ctx.step` 호출 → GREEN 커밋
-- [ ] 3. /studio 진입 ≤128.70 (build)
-- [ ] 4. typecheck · lint · build · 전체 vitest exit 0
-- [ ] 5. Ego Lite 4337 1280: 삭제→미리보기→돌아가기→Ctrl+Z 복원 · 정리
-- [ ] 6. Codex review --scope branch --base 6658430 1회
-- [ ] 7. REPORT "## 7. 수정(2차)" 커밋
+- [x] 2. 수정: `HistoryKeys`에 `step` · StudioLayout 맥락 effect가 `ops.step` 갱신 · `listenHistory`가 `ctx.step` 호출 → GREEN 커밋
+- [x] 3. /studio 진입 ≤128.70 (build)
+- [x] 4. typecheck · lint · build · 전체 vitest exit 0
+- [x] 5. Ego Lite 4337 1280: 삭제→미리보기→돌아가기→Ctrl+Z 복원 · 정리
+- [x] 6. Codex review --scope branch --base 6658430 1회 — fix2 완료(logs/codex-fix2.txt), P2 1건 → 8번
+- [x] 7. REPORT "## 7. 수정(2차)" 커밋
+- [x] 8. Codex fix2 P2 언마운트 뒤 리스너 누수 — 회귀 테스트 예측(수정 전 step 1회 호출) RED 일치(logs/fix2b-red.txt, 미커밋) → `mounted` ref 가드 GREEN a4bf4d1 · /studio 128.59 · typecheck·lint·vitest 2124·build exit 0
+- [x] 9. Ego Lite space 91 1280: 삭제→스냅샷 미리보기→편집으로 돌아가기→Ctrl+Z Services 복원 확인(캡처 시간초과 → DOM 대체) · finish keep:[] · listTaskSpaces=[] · 리슨 0
+- 참고: 2번 GREEN은 4f7db01(이전 회차), 3·4번은 4f7db01 시점 128.57·2123 → 누수 수정 뒤 128.59·2124. Codex 재검토는 하지 않음(Jarvis 판단)

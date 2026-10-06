@@ -82,3 +82,16 @@
 
 ## 6. 서브에이전트
 없음(브리프 "서브에이전트 0").
+
+## 7. 수정(2차)
+- **4f7db01** (Codex r1 P2, 미리보기 복귀 뒤 단축키 무시): `HistoryKeys`에 `step`을 두고, StudioLayout 맥락 effect가 `ops.step`을 갱신, `listenHistory`가 붙일 때가 아니라 맥락의 최신 `ctx.step`을 호출. 회귀 `UndoKeys.test.tsx` "스냅샷 미리보기 복귀 뒤" — RED logs/fix2-red.txt(RED 미커밋). /studio 128.57 · vitest 2123.
+- **Codex fix2** (`review --scope branch --base 6658430`, logs/codex-fix2.txt): P2 1건 — `useSectionOps.ts:113-114` 첫 연산의 조회·동적 import 대기 중 언마운트되면 완료 뒤 document keydown 리스너가 등록되고 cleanup이 다시 돌지 않아 누수.
+- **누수 수정 a4bf4d1**: `mounted` ref(마운트 effect에서 true, cleanup에서 false) — `keys && mounted.current`일 때만 `listenHistory`. 연산 결과·편집 반영은 그대로.
+  - 회귀 `useSectionOps.test.tsx` "첫 연산이 끝나기 전에 언마운트되면…": 조회 대기 중 run → unmount → 조회 완료 → body에서 Ctrl+Z → `step` 미호출 단언. 예측: 수정 전 step 1회 호출. RED 실측 일치(Number of calls: 1, logs/fix2b-red.txt). RED는 커밋하지 않음.
+  - fresh: typecheck exit 0 · lint exit 0 · vitest 239 files / 2124 tests exit 0 · build exit 0 — /studio 진입 직후 **128.59KB** ≤128.70 (logs/fix2b-*.txt).
+- **Ego Lite** (build + preview localhost:4337, space 91, 1280): 시작 전 `listTaskSpaces()`=[]. goto는 `/catalog` 1회, 이후 앱 안 클릭·키 입력만, 새로고침 0.
+  - 경로: 카탈로그 → 법률사무소·치과 비교 추가 → 비교 보드 → ref-A "전부 선택" → 프로필 확정 v1 → 3안 → A안 → `/studio/project-1`.
+  - Services 선택 → 삭제(행에서 Services 사라짐) → 스냅샷 → 지금 상태 저장 → 미리보기 → **편집으로 돌아가기** → Ctrl+Z: Services 행 복원, 알림 "실행 취소: Services 삭제", z keydown defaultPrevented true.
+  - 캡처 1회 시도 → `Page.captureScreenshot` 시간초과 → **DOM 대체**(위 행 목록·알림 문장·defaultPrevented는 page.evaluate로 읽음). (그 앞 1회는 screenshot에 잘못된 옵션을 넘겨 호출 전 거부됨.)
+  - 정리: `finish({keep:[]})` → `listTaskSpaces()`=[] · 자기 preview 종료 · 4337 리슨 0.
+- Codex 재검토는 하지 않음(Jarvis 판단).

@@ -59,4 +59,8 @@ base `45e4c1e` · 브랜치 `k002bill2/m3p-5` · 서브에이전트 0
 - 썸네일 문서 hash는 문구 덮은 뒤 재계산 안 함(엔진 import 금지 · SSR은 검증·저장 안 함).
 
 ## Codex
-(아래 갱신)
+- 1라운드 `node codex-companion.mjs review --scope branch --base 45e4c1e`(대상: e62a48f~2b33173): **조치 필요 결함 0건**. Codex 쪽 typecheck·`git diff --check` 통과, 테스트는 Codex 샌드박스 EPERM으로 미실행(동작 검증은 위 로컬 전체 vitest exit0로 갈음). 지적 0이라 2라운드 생략(≤2 상한 안).
+
+## 남은 일 · 요청
+- 미해결 차단 0. push/merge 안 함(승인 대상).
+- 결정 요청(후속): ① 큐레이션 6개 상세 변형 이름·ref-a Footer를 렌더 기준으로 맞출지(픽스처 수정 승인) ② 편집기 새 문서에도 업종 문구를 줄지(`/studio` 예산 재조정 필요).

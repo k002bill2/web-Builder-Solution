@@ -4,15 +4,15 @@ base `45e4c1e` · 브랜치 `k002bill2/m3p-5` · 서브에이전트 0(브리프)
 
 ## 체크리스트
 - [x] BRIEF P0 커밋 (e32986f)
-- [ ] 원인 조사 — B-M3P-01 · B-M3P-02
-- [ ] TDD 예측 기록 → RED 확인(커밋 안 함)
-- [ ] B-M3P-01 썸네일 문구 주입 (`src/thumbs/referenceDoc.ts` + thumbs 전용 문구 표)
-- [ ] B-M3P-02 생성기 상세 섹션 정합 + 생성 스크립트 재생성 · `--check`
-- [ ] typecheck · lint · build(21장·가드·버전) · 번들 멈춤선
-- [ ] 전체 vitest 1회 exit0
-- [ ] Ego Lite 캡처 (catalog 1280 1~2장 · gen-beauty-1 상세 1장) + 정리(finish·listTaskSpaces=[]·서버 종료)
-- [ ] Codex review --scope branch --base 45e4c1e (≤2)
-- [ ] REPORT.md
+- [x] 원인 조사 — B-M3P-01 · B-M3P-02
+- [x] TDD 예측 기록 → RED 확인(5 실패, 예측 일치 · 커밋 안 함)
+- [x] B-M3P-01 썸네일 문구 주입 (`src/thumbs/referenceDoc.ts` + thumbs 전용 문구 표)
+- [x] B-M3P-02 생성기 상세 섹션 정합 + 생성 스크립트 재생성 · `--check`
+- [x] typecheck · lint · build(21장·가드·버전 8d7310f2) · 번들 멈춤선 안(/catalog 100.06 · /studio 128.67)
+- [x] 전체 vitest 1회 exit0 (249 files · 2190 tests)
+- [x] Ego Lite 캡처 (catalog 1280 1~2장 · gen-beauty-1 상세 1장) + 정리(finish·listTaskSpaces=[]·서버 종료)
+- [x] Codex review --scope branch --base 45e4c1e — 1라운드 지적 0
+- [x] REPORT.md (Codex 결과 반영 완료)
 
 ## 원인 (조사 결과)
 - B-M3P-01: `writeStartDoc` → `withSampleCopy`가 모든 텍스트 슬롯을 `SAMPLE_COPY`(업종 무관 고정)로 채움 → 21장 h1 동일.

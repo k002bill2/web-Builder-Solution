@@ -1,0 +1,458 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-todo/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProjectsPage.test.tsx (16 tests | 1 failed) 1247ms
+   ❯ ProjectsPage — J-S07 저장 (3)
+     × 저장 중 aria-busy · 연타 무시 → 성공 알림, 새 이름, 맨 위로 옮긴 줄의 '이름 바꾸기'로 포커스 161ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProjectsPage.test.tsx > ProjectsPage — J-S07 저장 > 저장 중 aria-busy · 연타 무시 → 성공 알림, 새 이름, 맨 위로 옮긴 줄의 '이름 바꾸기'로 포커스
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<button
+  aria-label="빵집 리브랜딩 이름 바꾸기"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"
+  data-rename-for="mid"
+  type="button"
+>
+  이름 바꾸기
+</button>[39m
+Received element with focus:
+  [31m<body>
+  <div>
+    <div
+      class="mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-4 px-4 py-8 md:px-7"
+    >
+      <header
+        class="flex w-full flex-wrap items-center justify-between gap-3"
+      >
+        <h1
+          class="ds-title1"
+        >
+          프로젝트
+        </h1>
+        <a
+          class="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover"
+          data-discover="true"
+          href="/compare?new=1"
+        >
+          새 프로젝트 시작
+        </a>
+      </header>
+      <p
+        aria-label="프로젝트 알림"
+        class="sr-only"
+        role="status"
+      >
+        <span>
+          이름을 '빵집 리브랜딩'으로 바꿨습니다
+        </span>
+      </p>
+      <ul
+        aria-label="프로젝트 목록"
+        class="flex w-full flex-col"
+      >
+        <li
+          class="flex flex-col gap-2 border-b border-line-neutral py-4"
+        >
+          <h2
+            class="ds-heading2"
+          >
+            빵집 리브랜딩
+          </h2>
+          <p
+            class="flex flex-wrap items-center gap-x-3 gap-y-1"
+          >
+            <span
+              class="ds-body3"
+            >
+              프로필 v4
+            </span>
+            <span
+              class="ds-caption1 text-label-alternative"
+            >
+              편집 중 · A안 · 프로필 v2 · 새 프로필 v4 있음
+            </span>
+            <time
+              class="ds-caption1 text-label-alternative"
+              datetime="2026-09-27T11:59:50.000Z"
+            >
+              방금 전
+            </time>
+          </p>
+          <div
+            class="flex flex-wrap items-center gap-3"
+          >
+            <a
+              aria-label="빵집 리브랜딩 편집기 열기"
+              class="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"
+              data-discover="true"
+              href="/studio/mid"
+            >
+              편집기 열기
+            </a>
+            <a
+              aria-label="빵집 리브랜딩 프로필 보기"
+              class="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"
+              data-discover="true"
+              href="/profile/prof-mid"
+            >
+              프로필 보기
+            </a>
+            <button
+              aria-label="빵집 리브랜딩 이름 바꾸기"
+              class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"
+              data-rename-for="mid"
+              type="button"
+            >
+              이름 바꾸기
+            </button>
+          </div>
+        </li>
+        <li
+          class="flex flex-col gap-2 border-b border-line-neutral py-4"
+        >
+          <h2
+            class="ds-heading2"
+          >
+            카페 온도 프로젝트
+          </h2>
+          <p
+            class="flex flex-wrap items-center gap-x-3 gap-y-1"
+          >
+            <span
+              class="ds-body3"
+            >
+              프로필 v3
+            </span>
+            <span
+              class="ds-caption1 text-label-alternative"
+            >
+              편집 중 · B안 · 프로필 v3
+            </span>
+            <time
+              class="ds-caption1 text-label-alternative"
+              datetime="2026-09-27T11:55:00.000Z"
+            >
+              5분 전
+            </time>
+          </p>
+          <div
+            class="flex flex-wrap items-center gap-3"
+          >
+            <a
+              aria-label="카페 온도 프로젝트 편집기 열기"
+              class="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"
+              data-discover="true"
+              href="/studio/new"
+            >
+              편집기 열기
+            </a>
+            <a
+              aria-label="카페 온도 프로젝트 프로필 보기"
+              class="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"
+              data-discover="true"
+              href="/profile/prof-new"
+            >
+              프로필 보기
+            </a>
+            <button
+              aria-label="카페 온도 프로젝트 이름 바꾸기"
+              class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"
+              data-rename-for="new"
+              type="button"
+            >
+              이름 바꾸기
+            </button>
+          </div>
+        </li>
+        <li
+          class="flex flex-col gap-2 border-b border-line-neutral py-4"
+        >
+          <h2
+            class="ds-heading2"
+          >
+            오래된 프로젝트
+          </h2>
+          <p
+            class="flex flex-wrap items-center gap-x-3 gap-y-1"
+          >
+            <span
+              class="ds-body3"
+            >
+              프로필 v3
+            </span>
+            <span
+              class="ds-caption1 text-label-alternative"
+            >
+              편집 전 — 프로필에서 3안을 고르면 시작합니다
+            </span>
+            <time
+              class="ds-caption1 text-label-alternative"
+              datetime="2026-09-25T12:00:00.000Z"
+            >
+              2일 전
+            </time>
+          </p>
+          <div
+            class="flex flex-wrap items-center gap-3"
+          >
+            <a
+              aria-label="오래된 프로젝트 프로필 보기"
+              class="ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"
+              data-discover="true"
+              href="/profile/prof-old"
+            >
+              프로필 보기
+            </a>
+            <button
+              aria-label="오래된 프로젝트 이름 바꾸기"
+              class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"
+              data-rename-for="old"
+              type="button"
+            >
+              이름 바꾸기
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>[39m
+ ❯ src/pages/ProjectsPage.test.tsx:281:20
+    279|     expect(within(first).getByRole("heading", { level: 2 })).toHaveTex…
+    280|     expect(within(first).getByText("편집 중 · A안 · 프로필 v2 · 새 프로필 v4 있음")…
+    281|     expect(button).toHaveFocus();
+       |                    ^
+    282|   });
+    283|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 226 passed (227)
+      Tests  1 failed | 2047 passed (2048)
+   Start at  09:14:21
+   Duration  33.86s (environment 47%, tests 32%, setup 9%, transform 7%, import 4%, worker 1%)
+
+Environment  jsdom was created 227 times · 130.15s total, 47% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

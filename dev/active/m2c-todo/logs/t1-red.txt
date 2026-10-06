@@ -1,0 +1,30 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m2c-todo/app
+
+ ❯ src/kit/ContactForm.test.tsx (6 tests | 1 failed) 72ms
+   ❯ contact/form (K1-6 · K2 A안) (6)
+     × K-AC-37 [G] 비활성 모양 단서: 기본 규칙 = 연결 모양(실선·primary 버튼, UA 회색·반투명 0, 커서 not-allowed) · .kit-fieldset:disabled 블록에만 입력칸 점선·버튼 점선 외곽(면 투명·글자 ink) · 안내 경계 상자 · 불투명도 0 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/kit/ContactForm.test.tsx > contact/form (K1-6 · K2 A안) > K-AC-37 [G] 비활성 모양 단서: 기본 규칙 = 연결 모양(실선·primary 버튼, UA 회색·반투명 0, 커서 not-allowed) · .kit-fieldset:disabled 블록에만 입력칸 점선·버튼 점선 외곽(면 투명·글자 ink) · 안내 경계 상자 · 불투명도 0
+TypeError: Cannot read properties of null (reading '0')
+ ❯ src/kit/ContactForm.test.tsx:70:85
+     68|     const submit = css.match(/\.kit-submit \{[^}]*\}/)![0];
+     69|     for (const decl of ["color: var(--site-on-primary)", "background: …
+     70|     const disabledField = css.match(/\.kit-fieldset:disabled \.kit-fie…
+       |                                                                                     ^
+     71|     expect(disabledField).toContain("border-style: dashed");
+     72|     const disabledSubmit = css.match(/\.kit-fieldset:disabled \.kit-su…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 9 passed (10)
+   Start at  09:05:06
+   Duration  1.11s (environment 59%, transform 20%, setup 11%, tests 7%, import 3%)
+

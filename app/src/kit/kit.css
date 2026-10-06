@@ -1063,8 +1063,12 @@
     min-width: 0;
     margin: 0;
   }
+  /* 방문자 안내 경계 상자 (K1-6 3 r3 · B-M2B-07) — 연결(K2 B안) 때 안내 p 자체가 빠지므로 직접 건다. 면 = 섹션 면 그대로 */
   .kit-notice {
     margin: 0;
+    padding: var(--site-s3) var(--site-s4);
+    border: var(--site-stroke-1) solid var(--site-ink);
+    border-radius: var(--site-radius-control);
     font-size: var(--site-t-1);
     font-weight: var(--site-weight-heading);
     color: var(--site-ink);
@@ -1133,6 +1137,16 @@
     font: inherit;
     font-weight: var(--site-weight-heading);
     cursor: not-allowed;
+  }
+  /* 비활성 모양 단서 (K1-6 3 r3 · B-M2B-07) — fieldset:disabled 블록에만 건다: disabled를 풀면 위 기본 규칙(실선·primary 버튼)으로 돌아간다.
+     회색·불투명도·새 토큰 0 · 입력칸 점선 경계 · 버튼 = 면 없는 점선 외곽(글자 ink, C-2·C-4) */
+  .kit-fieldset:disabled .kit-field {
+    border-style: dashed;
+  }
+  .kit-fieldset:disabled .kit-submit {
+    border: var(--site-stroke-1) dashed var(--site-ink);
+    background: transparent;
+    color: var(--site-ink);
   }
   /* contact/booking 날짜·시간 묶음 (B1-11 2) — md 미만 세로 · md 이상 한 줄 2칸 같은 폭 */
   .kit-control-row {

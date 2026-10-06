@@ -60,12 +60,20 @@ describe("contact/form (K1-6 · K2 A안)", () => {
     expect([...c.querySelectorAll<HTMLElement>("*")].filter((el) => el.style.opacity !== "")).toHaveLength(0);
   });
 
-  it("비활성 모양 = 연결됐을 때와 같은 모양: 입력칸·버튼 글자·면·경계 색을 직접 정한다(UA 비활성 회색·반투명 0) · 커서 not-allowed", () => {
+  // m2a SPEC r3 K1-6 3 (B-M2B-07): r2 "연결됐을 때와 같은 모양" → 기본 규칙 = 연결 모양 유지 + fieldset:disabled 블록에만 점선 단서 · 안내 경계 상자 (K-AC-37 [G])
+  it("K-AC-37 [G] 비활성 모양 단서: 기본 규칙 = 연결 모양(실선·primary 버튼, UA 회색·반투명 0, 커서 not-allowed) · .kit-fieldset:disabled 블록에만 입력칸 점선·버튼 점선 외곽(면 투명·글자 ink) · 안내 경계 상자 · 불투명도 0", () => {
     const css = readFileSync("src/kit/kit.css", "utf8");
     const field = css.match(/\.kit-field \{[^}]*\}/)![0];
     for (const decl of ["color: var(--site-ink)", "background: var(--site-bg)", "border: var(--site-stroke-1) solid var(--site-ink)", "cursor: not-allowed"]) expect(field).toContain(decl);
     const submit = css.match(/\.kit-submit \{[^}]*\}/)![0];
     for (const decl of ["color: var(--site-on-primary)", "background: var(--site-primary)", "cursor: not-allowed"]) expect(submit).toContain(decl);
+    const disabledField = css.match(/\.kit-fieldset:disabled \.kit-field \{[^}]*\}/)![0];
+    expect(disabledField).toContain("border-style: dashed");
+    const disabledSubmit = css.match(/\.kit-fieldset:disabled \.kit-submit \{[^}]*\}/)![0];
+    for (const decl of ["border: var(--site-stroke-1) dashed var(--site-ink)", "background: transparent", "color: var(--site-ink)"]) expect(disabledSubmit).toContain(decl);
+    const notice = css.match(/\.kit-notice \{[^}]*\}/)![0];
+    for (const decl of ["border: var(--site-stroke-1) solid var(--site-ink)", "border-radius: var(--site-radius-control)", "padding: var(--site-s3) var(--site-s4)", "color: var(--site-ink)"]) expect(notice).toContain(decl);
+    for (const block of [disabledField, disabledSubmit, notice]) expect(block).not.toMatch(/opacity|filter|#[0-9a-f]{3,8}\b/i);
   });
 
   it("K-AC-04: 소개 빈 값 → 소개 0 · 동의 빈 값 → 체크박스도 0 · 보내기 빈 값 → 버튼 0 · 빈 p 0", () => {

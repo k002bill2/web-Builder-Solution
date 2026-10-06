@@ -100,8 +100,8 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
 
   // 저장 먼저 기다리는 쪽 — 렌더마다 상태를 보고 저장 중이면 기다리고, 저장 전 변경이면 바로 저장, 그 밖이면 결과를 돌려준다
   const { retry } = autosave;
-  const phase = useRef(autosave.state.phase);
-  phase.current = autosave.state.phase;
+  const current = autosave.state.phase;
+  const phase = useRef(current);
   const waiters = useRef<((ok: boolean) => void)[]>([]);
   const check = useCallback(() => {
     const now = phase.current;
@@ -109,7 +109,10 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     if (now === "dirty") return retry();
     for (const done of waiters.current.splice(0)) done(now === "idle" || now === "saved");
   }, [retry]);
-  useEffect(check);
+  useEffect(() => {
+    phase.current = current;
+    check();
+  });
   const flushed = useCallback(() => new Promise<boolean>((done) => (waiters.current.push(done), check())), [check]);
   const adopt = useCallback(
     async (write: (revision: number) => Promise<PageDoc>) => {

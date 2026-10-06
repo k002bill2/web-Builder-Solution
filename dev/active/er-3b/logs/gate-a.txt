@@ -6,21 +6,16 @@
 > design-studio-app@0.1.0 lint
 > eslint .
 
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 
-/Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/features/studio/useDocSave.ts
-  104:3  error  Error: Cannot access refs during render
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app
 
-React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
 
-/Users/younghwankang/orca/workspaces/web-builder-solution/er-3b/app/src/features/studio/useDocSave.ts:104:3
-  102 |   const { retry } = autosave;
-  103 |   const phase = useRef(autosave.state.phase);
-> 104 |   phase.current = autosave.state.phase;
-      |   ^^^^^^^^^^^^^ Cannot update ref during render
-  105 |   const waiters = useRef<((ok: boolean) => void)[]>([]);
-  106 |   const check = useCallback(() => {
-  107 |     const now = phase.current;  react-hooks/refs
+ Test Files  13 passed (13)
+      Tests  92 passed (92)
+   Start at  13:35:00
+   Duration  1.60s (environment 50%, setup 21%, transform 13%, tests 11%, import 4%, worker 1%)
 
-✖ 1 problem (1 error, 0 warnings)
-
-gate exit 1
+gate exit 0

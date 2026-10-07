@@ -141,6 +141,16 @@ const SCENARIOS = [
     // ADR-004 개정 9 결정 1 — 영속 진입(ADR-007 P1) 몫으로 129 → 130(멈춤선 129.70). 영속 진입 몫 기준선 상한 129.60(개정 10)
     eagerBudgetKb: 130,
   },
+  // ADR-004 개정 11 — 저장 데이터 복원 진입(로컬 영속 + 이미지 참조가 있는 문서로 진입): 편집 틀 마운트 effect(StudioLayout → memoryProjectRepository images)가
+  // 조작 없이 이미지 복원 본문(imageRestore — 레코드 읽기 검증 imageRecord·보관소 imageStore·폭 사다리와 한도 정적 의존성)을 받는다 → 자동.
+  // 첫 방문(저장 데이터 없음)은 위 "/studio/:projectId"(130)가 잰다. 한도 134 · 멈춤선 133.70 · 기준선 잠금(m2cBaseline)
+  {
+    name: "/studio/:projectId (저장 데이터 복원 진입)",
+    page: "src/pages/StudioPage.tsx",
+    auto: [...EAGER_DYNAMIC, ...PROJECT_AUTO, "src/components/studio/StudioLayout.tsx", "src/features/studio/gateCheck.ts", "src/data/persistence/imageRestore.ts"],
+    afterAction: STUDIO_AFTER_ACTION,
+    eagerBudgetKb: 134,
+  },
 ];
 
 // 앱 manifest + 렌더 문서 manifest(`vite build --mode render`) — 합친 뒤 엔트리 이름으로 판정한다. 렌더 manifest가 없으면 render.html 없음 = 실패

@@ -15,8 +15,10 @@ import { deepFreeze, type StudioState } from "../studioStore";
 import { SCHEMA_VERSION, checkEnvelope } from "./envelope";
 import type { DocRecord, LocalEntry } from "./entryRead";
 import { openIdbPersistence } from "./idbPersistence";
+import { imageOps } from "./imageOps";
 import { jobPut, readJobRecord } from "./jobRecord";
 import type { StudioPersistence, WriteOp } from "./studioPersistence";
+import type { RenderImages } from "../../features/studio/images/store/types";
 import { createWriteQueue } from "./writeQueue";
 
 /** DocBook 중 싱크가 읽는 부분 */
@@ -29,8 +31,8 @@ export interface LocalSync {
   /** 검증한 문서 레코드 — DocBook 시드 */
   readonly docs: ReadonlyMap<string, DocRecord>;
   saveState(state: StudioState): void;
-  /** 문서 쓰기 뒤 — 그 프로젝트의 지금 문서·스냅샷(DocBook) */
-  flush(projectId: string, book: BookView): Promise<void>;
+  /** 문서 쓰기 뒤 — 그 프로젝트의 지금 문서·스냅샷(DocBook). images = 편집 틀 맵(P1b — 참조 이미지를 같은 트랜잭션에) */
+  flush(projectId: string, book: BookView, images?: RenderImages): Promise<void>;
   /** DocBook save가 판정 전에 부른다 — current = 지금 메모리 문서 */
   base(projectId: string, expectedRevision: number, current: DocHead | undefined, hash: string): number;
 }
@@ -63,9 +65,14 @@ export async function openLocalSync(entry: LocalEntry, open: () => Promise<Studi
   if (entry.state) Object.values(entry.state).forEach((records: ReadonlyMap<string, unknown>) => records.forEach(deepFreeze));
   deepFreeze(entry.doc);
   let docs: ReadonlyMap<string, DocRecord>;
+  /** 커밋 확인된 이미지 레코드 id(P1b) — 트랜잭션 성공 뒤에만 갱신. 실패한 id는 "모름"으로 빼 다음 flush가 다시 put한다(Codex r2 P1) */
+  let stored: ReadonlySet<string>;
+  /** 진행 중(미확인) 이미지 op — id → 그 op를 낸 제출. 다음 flush는 이 id의 put을 빼지 않는다 */
+  let inflight: ReadonlyMap<string, object> = new Map();
   try {
     if (entry.state) checkState(entry.state);
     docs = new Map((await persistence.getAll("docs")).map(readDoc));
+    stored = new Set(await persistence.keys("images"));
   } catch (error) {
     persistence.close();
     throw error instanceof ProjectRepositoryError && error.code === "INFRA" ? error : unreadable();
@@ -87,15 +94,27 @@ export async function openLocalSync(entry: LocalEntry, open: () => Promise<Studi
       latest = state;
       queue.submit("state", [statePut(heads)]).catch(() => undefined);
     },
-    flush: (projectId, book) => {
+    flush: (projectId, book, images) => {
       const record: DocRecord = { doc: book.docOf(projectId)!, snapshots: book.snapshotsOf(projectId) };
       const sent = submitted.get(projectId);
       if (sent?.doc === record.doc && sent.snapshots === record.snapshots) return queue.retry(projectId);
       const nextHeads = new Map(heads).set(projectId, headOf(record.doc));
-      const writing = queue.submit(projectId, [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA_VERSION, kind: "doc", id: projectId, data: record } }, statePut(nextHeads)]);
+      const settled = new Set([...stored].filter((id) => !inflight.has(id)));
+      const imaging = imageOps(projectId, record, images, settled, new Set([...stored, ...inflight.keys()]));
+      const writing = queue.submit(projectId, [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA_VERSION, kind: "doc", id: projectId, data: record } }, statePut(nextHeads), ...imaging]);
       if (queue.status(projectId) === "pending") {
         submitted.set(projectId, record);
         heads = nextHeads;
+        const ids = imaging.map((op) => (op.type === "put" ? op.record.id : op.id));
+        inflight = new Map([...inflight, ...ids.map((id) => [id, writing] as const)]);
+        const settle = (ok: boolean) => {
+          const next = new Set(stored);
+          // 성공 = op대로 반영 · 실패 = 모름(빼 둔다 — put은 다시 내고, delete는 큐가 다음 제출에 합친다)
+          imaging.forEach((op) => (ok && op.type === "put" ? next.add(op.record.id) : next.delete(op.type === "put" ? op.record.id : op.id)));
+          stored = next;
+          inflight = new Map([...inflight].filter(([, by]) => by !== writing));
+        };
+        writing.then(() => settle(true), () => settle(false));
       }
       return writing;
     },

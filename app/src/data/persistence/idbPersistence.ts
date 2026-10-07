@@ -84,6 +84,7 @@ export async function openIdbPersistence(factory: IDBFactory = indexedDB, name =
   return {
     get: (store, id) => read(() => db.transaction(store).objectStore(store).get(id)),
     getAll: (store) => read(() => db.transaction(store).objectStore(store).getAll()),
+    keys: async (store) => (await read(() => db.transaction(store).objectStore(store).getAllKeys())).map(String),
     write: async (ops) => {
       if (ops.length === 0) return;
       try {

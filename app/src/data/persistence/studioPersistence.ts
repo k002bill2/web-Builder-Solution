@@ -14,6 +14,8 @@ export interface StudioPersistence {
   get(store: StoreName, id: string): Promise<unknown>;
   /** 키 오름차순 */
   getAll(store: StoreName): Promise<readonly unknown[]>;
+  /** 레코드 id 오름차순 — 값(이미지 Blob)을 읽지 않는다(P1b 저장된 이미지 집합) */
+  keys(store: StoreName): Promise<readonly string[]>;
   /** 한 트랜잭션 — 커밋 완료(IDB complete) 뒤에만 resolve, 실패면 INFRA로 reject하고 쓰기 0건 */
   write(ops: readonly WriteOp[]): Promise<void>;
   close(): void;
@@ -46,6 +48,10 @@ export function createMemoryPersistence(options: MemoryPersistenceOptions = {}):
       live("읽기");
       const rows = [...(tables.get(store) ?? new Map<string, unknown>())].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
       return rows.map(([, value]) => structuredClone(value));
+    },
+    keys: async (store) => {
+      live("읽기");
+      return [...(tables.get(store)?.keys() ?? [])].sort();
     },
     write: async (ops) => {
       live("저장");

@@ -1,0 +1,53 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a1164f-ef86-7e00-9476-6251ed121859).
+[codex] Reviewer started: changes against '4c09dfa'
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|GDWEB' /Users/younghwankang/.codex/memories/MEMORY.md | head...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder|GDWEB' /Users/younghwankang/.codex/memories/MEMORY.md | head... (exit 0)
+[codex] Running command: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw...
+[codex] Command completed: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/data/persistence/entryRead.ts app/src/data/persistence/writeQueue.t...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/data/persistence/entryRead.ts app/src/data/persistence/writeQueue.t... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/data/persistence/localSync.test.ts; cat app/src/data/studioStore.ts...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/data/persistence/localSync.test.ts; cat app/src/data/studioStore.ts... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/data/memoryDocBook.ts; cat app/src/data/sharedLoader.ts; cat app/sr...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/data/memoryDocBook.ts; cat app/src/data/sharedLoader.ts; cat app/sr... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/sharedLoader.ts; rg -n 'restoreSnapshot|createSnapshot|renameP...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/sharedLoader.ts; rg -n 'restoreSnapshot|createSnapshot|renameP... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; rg -n 'restoreSnapshot|createSnapshot|renameProject' app/src/fea...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; rg -n 'restoreSnapshot|createSnapshot|renameProject' app/src/fea... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'restoreSnapshot|createSnapshot' app/src; cat app/src/features/studio/use...
+[codex] Command failed: /bin/zsh -lc "rg -n 'restoreSnapshot|createSnapshot' app/src; cat app/src/features/studio/use... (exit 1)
+[codex] Running command: /bin/zsh -lc "cat app/src/components/studio/SnapshotPreview.tsx | sed -n '70,125p'; cat app/s...
+[codex] Command failed: /bin/zsh -lc "cat app/src/components/studio/SnapshotPreview.tsx | sed -n '70,125p'; cat app/s... (exit 1)
+[codex] Running command: /bin/zsh -lc "node -e ' const fs=require(\"fs\"),ts=require(\"./app/node_modules/typescript\"...
+[codex] Command completed: /bin/zsh -lc "node -e ' const fs=require(\"fs\"),ts=require(\"./app/node_modules/typescript\"... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '43,86p'; nl -ba app/sr...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '43,86p'; nl -ba app/sr... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '43,86p'; nl -ba app/sr...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '43,86p'; nl -ba app/sr... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/memoryBoardConfirm.ts | sed -n '30,190p'; cat app/src/domain/c...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/memoryBoardConfirm.ts | sed -n '30,190p'; cat app/src/domain/c... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'savePicks\\(' app/src/data/memoryCompareBoardRepository.test.ts | head -...
+[codex] Command completed: /bin/zsh -lc "rg -n 'savePicks\\(' app/src/data/memoryCompareBoardRepository.test.ts | head -... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e ' const fs=require(\"fs\"),ts=require(\"./app/node_modules/typescript\"...
+[codex] Command completed: /bin/zsh -lc "node -e ' const fs=require(\"fs\"),ts=require(\"./app/node_modules/typescript\"... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: typecheck는 통과했지만, 새로고침 후 새 프로젝트 확정이 이전 요청으로 재생되는 문제와 영속 저장 실패 후 스냅샷 복원이 재시도되지 않는 문제를 재현했습니다. ...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 4c09dfa
+
+typecheck는 통과했지만, 새로고침 후 새 프로젝트 확정이 이전 요청으로 재생되는 문제와 영속 저장 실패 후 스냅샷 복원이 재시도되지 않는 문제를 재현했습니다. 새 영속 싱크 청크의 다운로드 실패 복구 경로도 보완이 필요합니다.
+
+Full review comments:
+
+- [P1] 새 보드가 이전 확정 요청의 멱등 키를 재사용하지 않게 하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a2/app/src/data/deferredStudio.ts:49-51
+  새로고침하면 확정 멱등 기록은 복원되지만 보드는 동일한 `board-current` ID와 revision 0으로 다시 생성됩니다. 레퍼런스 추가 → Hero 선택 → 확정을 다시 수행하면 `memoryBoardConfirm.replayOf()`가 이전 요청으로 오인합니다. 실제로 ref-a로 프로젝트를 만든 뒤 복원하여 ref-b로 확정했지만, 새 프로젝트 대신 `profile-1`이 반환되고 보드도 미확정 상태로 남았습니다. 보드의 식별자·revision을 함께 복원하거나 새 보드에 새로운 멱등 네임스페이스를 부여해야 합니다.
+
+- [P2] 영속 저장에 실패한 스냅샷 복원을 재시도 가능하게 하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a2/app/src/data/memoryProjectRepository.ts:78-81
+  스냅샷 복원의 IDB 쓰기가 실패하면 메모리 revision은 이미 증가했지만 `useDocSave.adopt()`는 실패 때문에 호출자의 revision을 갱신하지 않습니다. 저장소가 복구된 뒤 화면에서 다시 시도해도 동일한 revision이 전달되어 `STALE_DOC`가 발생하고, `flush()`까지 도달하지 못합니다. 메모리 영속 어댑터로 revision 2의 복원 실패 → 메모리 revision 3 → 재시도 `STALE_DOC`를 재현했습니다. 실패한 복원 요청을 멱등 재생하여 미확인 쓰기를 재제출하거나, 실패 시 메모리 변경을 되돌려야 합니다.
+
+- [P2] 영속 싱크 청크에도 재시도 가능한 import를 적용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a2/app/src/data/memoryDocBook.ts:129-129
+  첫 조작에서 `localSync` 청크 다운로드가 실패하면 Chromium은 실패한 모듈 URL을 캐시하므로, 네트워크가 복구되어도 이 동일한 `import()`는 계속 거부될 수 있습니다. 외부 `createSharedLoader()`의 Promise 캐시를 비우는 것만으로는 복구되지 않아 이후 문서 저장과 편집 시작이 새로고침 전까지 실패합니다. 기존 `loadDocBook`처럼 `retryableImport()`를 사용하여 재시도 시 새 청크 URL을 요청해야 합니다.

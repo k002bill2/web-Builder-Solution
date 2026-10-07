@@ -143,7 +143,14 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
         maps.set(projectId, map);
         // 복원 끝에 한 번 더 부른다 — 그 사이 저장된 최신 문서·스냅샷으로 한도를 잰다(BRIEF-R2 ③)
-        if (!map) void entered(projectId).then(async (first) => (await loadImageRestore()).restoreImages(projectId, () => (book ? { doc: book.docOf(projectId), snapshots: book.snapshotsOf(projectId) } : first), publish)).catch(() => undefined);
+        // 청크 받기 전 판정 — 로컬 이미지 참조만 source가 문자열이다(플레이스홀더는 객체) · 없으면 복원 청크 0(Codex r2 P2 · BRIEF-R3 ③)
+        if (!map)
+          void entered(projectId)
+            .then(async (first) => {
+              const latest = () => (book ? { doc: book.docOf(projectId), snapshots: book.snapshotsOf(projectId) } : first);
+              if (JSON.stringify(latest()).includes('"source":"')) return (await loadImageRestore()).restoreImages(projectId, latest, publish);
+            })
+            .catch(() => undefined);
         // 편집 틀 effect cleanup — 편집기를 떠나면 등록을 푼다(Blob·메타가 앱 수명 동안 남지 않게 · Codex r1 P2)
         return () => maps.delete(projectId);
       },

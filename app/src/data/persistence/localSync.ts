@@ -105,17 +105,16 @@ export async function openLocalSync(entry: LocalEntry, open: () => Promise<Studi
       if (queue.status(projectId) === "pending") {
         submitted.set(projectId, record);
         heads = nextHeads;
-        const token = {};
         const ids = imaging.map((op) => (op.type === "put" ? op.record.id : op.id));
-        inflight = new Map([...inflight, ...ids.map((id) => [id, token] as const)]);
+        inflight = new Map([...inflight, ...ids.map((id) => [id, writing] as const)]);
         const settle = (ok: boolean) => {
           const next = new Set(stored);
           // 성공 = op대로 반영 · 실패 = 모름(빼 둔다 — put은 다시 내고, delete는 큐가 다음 제출에 합친다)
           imaging.forEach((op) => (ok && op.type === "put" ? next.add(op.record.id) : next.delete(op.type === "put" ? op.record.id : op.id)));
           stored = next;
-          inflight = new Map([...inflight].filter(([, by]) => by !== token));
+          inflight = new Map([...inflight].filter(([, by]) => by !== writing));
         };
-        if (imaging.length) writing.then(() => settle(true), () => settle(false));
+        writing.then(() => settle(true), () => settle(false));
       }
       return writing;
     },

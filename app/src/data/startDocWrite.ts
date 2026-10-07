@@ -2,7 +2,7 @@
  * 편집 문서 쓰기 본문 (DS-2A-05 SPEC 8.2.1 어댑터 · 8.3 saveDoc 모양 검사) — 조작 뒤 청크("편집 시작" onClick·저장 때 로드).
  * engine을 부를 수 있는 data/ 파일은 이것 하나(engineImportGuard 허용 목록). 순수·동기 — 판정·쓰기 원자성은 저장소 동기 구간이 맡는다.
  * 어댑터: 구조안 섹션 → 표로 엔진 변형(표 밖 = UNKNOWN_VARIANT, 엔진 호출 전) → `createDocFromCandidate`(motion 전달, Q-18 A) →
- * 텍스트 슬롯은 예시 문구로 채운다(r4.7 A3-Q8, `sampleCopy`). 엔진 예외는 잡아 결과로 돌려준다(쓰기 0). `toEngineCandidate`는 쓰지 않는다(모션을 버리고 /profile 청크에 있다).
+ * 텍스트 슬롯은 예시 문구로 채운다(r4.7 A3-Q8, `sampleCopy`) — 부르는 쪽이 레퍼런스 문구(`copy`, B-M3P-06)를 주면 그 키만 먼저 쓴다. 엔진 예외는 잡아 결과로 돌려준다(쓰기 0). `toEngineCandidate`는 쓰지 않는다(모션을 버리고 /profile 청크에 있다).
  */
 import type { SectionType } from "../domain/compareBoard";
 import type { PlannedSection } from "../domain/generation";
@@ -36,6 +36,8 @@ export interface StartDocInput {
   /** DocStart — 저장소가 정한 값(주입 now 한 번) */
   readonly projectId: string;
   readonly updatedAt: string;
+  /** 레퍼런스 문구(B-M3P-06, `industryCopyOf`) — 키 = `섹션 유형/슬롯 키`. 없으면 예시 문구만 */
+  readonly copy?: Readonly<Record<string, string>>;
 }
 
 export type StartDocWrite =
@@ -50,12 +52,12 @@ function noticeOf(changes: readonly VariantChange[], count: number): string | un
   return `구조안의 섹션 ${count}개를 편집기 변형으로 바꿔 열었습니다 — ${pairs.join(" · ")}`;
 }
 
-/** 새 문서의 텍스트 슬롯 = 예시 문구(A3-Q8) — 엔진 setSlot으로 넣고 해시를 다시 잰다(revision·updatedAt 그대로). 표에 없는 슬롯은 엔진 기본값 */
-function withSampleCopy(doc: PageDoc): PageDoc {
+/** 새 문서의 텍스트 슬롯 = 레퍼런스 문구 → 예시 문구(A3-Q8) — 엔진 setSlot으로 넣고 해시를 다시 잰다(revision·updatedAt 그대로). 둘 다 없는 슬롯은 엔진 기본값 */
+function withSampleCopy(doc: PageDoc, copy: Readonly<Record<string, string>> = {}): PageDoc {
   const filled = doc.sections.reduce(
     (current, section) =>
       Object.keys(section.slots).reduce((next, key) => {
-        const text = typeof section.slots[key] === "string" ? sampleCopyOf(section.type, key) : undefined;
+        const text = typeof section.slots[key] === "string" ? (copy[`${section.type}/${key}`] ?? sampleCopyOf(section.type, key)) : undefined;
         return text === undefined ? next : setSlot(next, section.instanceId, key, text);
       }, current),
     doc,
@@ -74,7 +76,7 @@ export function writeStartDoc(input: StartDocInput): StartDocWrite {
       { candidateId: input.candidateId, sections: mapped, libraryVersion: input.libraryVersion, generatorVersion: input.generatorVersion },
       input.profileVersion,
       { projectId: input.projectId, updatedAt: input.updatedAt },
-    ));
+    ), input.copy);
     const moved = input.sections.filter((s, i) => s.variant !== mapped[i]!.variant);
     const changes = moved
       .map((s) => ({ type: s.type, from: s.variant, to: mapVariant(s.type, s.variant)! }))

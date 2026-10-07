@@ -1,0 +1,85 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:6:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:7:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-9/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/MoreMenu.test.tsx (9 tests | 2 failed) 1758ms
+   ❯ Codex r1 — 잠금 · 포커스 (2)
+     × 스냅샷 미리보기 중(트리거 aria-disabled) ArrowDown/ArrowUp/Enter로 메뉴가 열리지 않는다 460ms
+     × 열기 직후(본문 청크 받기 전) 포커스가 다른 컨트롤로 가면 본문이 포커스를 빼앗지 않고 닫힌다 54ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > Codex r1 — 잠금 · 포커스 > 스냅샷 미리보기 중(트리거 aria-disabled) ArrowDown/ArrowUp/Enter로 메뉴가 열리지 않는다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"aria-expanded"[32m[39m[2m, [22m[32m[32m"false"[32m[39m[2m) // element.getAttribute("aria-expanded") === "false"[22m
+
+Expected the element to have attribute:
+[32m  aria-expanded="false"[39m
+Received:
+[31m  aria-expanded="true"[39m
+ ❯ src/components/studio/MoreMenu.test.tsx:138:25
+    136|     for (const k of ["ArrowDown", "ArrowUp", "Enter"]) {
+    137|       await act(async () => void fireEvent.keyDown(trigger(), { key: k…
+    138|       expect(trigger()).toHaveAttribute("aria-expanded", "false");
+       |                         ^
+    139|     }
+    140|     await act(async () => undefined);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > Codex r1 — 잠금 · 포커스 > 열기 직후(본문 청크 받기 전) 포커스가 다른 컨트롤로 가면 본문이 포커스를 빼앗지 않고 닫힌다
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<h1
+  class="min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"
+  tabindex="-1"
+  title="동네 치과 클리닉 프로젝트"
+>
+  동네 치과 클리닉 프로젝트
+</h1>[39m
+Received element with focus:
+  [31m<div
+  aria-describedby="studio-more-reason-0"
+  aria-disabled="true"
+  aria-label="실행 취소"
+  class="ds-body3 flex cursor-pointer flex-col items-start gap-0.5 rounded-sm px-3 py-2 text-label-normal hover:bg-fill-normal focus:bg-fill-normal focus:shadow-(--focus-ring) focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"
+  role="menuitem"
+  tabindex="-1"
+>
+  실행 취소
+  <span
+    class="ds-caption1 text-label-alternative"
+    id="studio-more-reason-0"
+  >
+    되돌릴 편집이 없습니다
+  </span>
+</div>[39m
+ ❯ src/components/studio/MoreMenu.test.tsx:153:16
+    151|     });
+    152|     await act(async () => undefined);
+    153|     expect(h1).toHaveFocus();
+       |                ^
+    154|     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    155|     expect(trigger()).toHaveAttribute("aria-expanded", "false");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 7 passed (9)
+   Start at  11:09:32
+   Duration  2.78s (tests 65%, transform 15%, environment 14%, import 4%, setup 2%)
+

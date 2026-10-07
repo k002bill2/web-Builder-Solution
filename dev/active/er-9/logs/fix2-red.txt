@@ -1,0 +1,80 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:6:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:7:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-9/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/MoreMenu.test.tsx (10 tests | 1 failed) 1863ms
+   ❯ Codex r1 — 잠금 · 포커스 (3)
+     × 메뉴에서 Tab = 닫고 포커스를 트리거에 둔 채 기본 Tab 이동(포커스 유실 0 · Codex r2 P2) 73ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > Codex r1 — 잠금 · 포커스 > 메뉴에서 Tab = 닫고 포커스를 트리거에 둔 채 기본 Tab 이동(포커스 유실 0 · Codex r2 P2)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveFocus()[22m
+
+Expected element with focus:
+  [32m<button
+  aria-expanded="false"
+  aria-haspopup="menu"
+  class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"
+  id="studio-more"
+  type="button"
+>
+  더보기
+</button>[39m
+Received element with focus:
+  [31m<body>
+  <div>
+    <div
+      class="min-h-dvh bg-background-normal text-label-normal"
+    >
+      <a
+        class="ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"
+        href="#main-content"
+      >
+        본문으로 건너뛰기
+      </a>
+      <main
+        class="focus:outline-none"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="flex h-dvh flex-col"
+        >
+          <header … />
+          <div … />
+        </div>
+      </main>
+    </div>
+  </div>
+</body>[39m
+ ❯ src/components/studio/MoreMenu.test.tsx:134:23
+    132|     expect(passed).toBe(true);
+    133|     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    134|     expect(trigger()).toHaveFocus();
+       |                       ^
+    135|   });
+    136|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  11:12:43
+   Duration  3.16s (tests 61%, environment 19%, transform 13%, setup 3%, import 3%)
+

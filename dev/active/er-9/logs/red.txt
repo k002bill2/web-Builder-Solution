@@ -1,0 +1,2932 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:6:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:7:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/er-9/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/MoreMenu.test.tsx (7 tests | 7 failed) 944ms
+   ❯ 툴바 '더보기' 버튼 — ER-AC-U4 (3)
+     × ≥1280 툴바 순서 = 스냅샷 → 더보기 → 검사 · 내보내기 · aria-haspopup=menu · 닫힘 = aria-expanded false 384ms
+     × 1024px 배치에도 '더보기'가 툴바에 있다 83ms
+     × 390px 배치에도 '더보기'가 툴바에 있다 46ms
+   ❯ 메뉴 항목 · 비활성 이유 — ER-AC-U4 (2)
+     × 빈 기록 = 두 항목 aria-disabled + 보이는 이유 '되돌릴 편집이 없습니다' · 눌러도 문서·알림 변화 0 106ms
+     × 삭제 → '실행 취소: Services 삭제' = 단축키와 같은 결과(행 복원 + 알림) · 닫힘 + 포커스 트리거 → '다시 실행: Services 삭제' → 다시 삭제 157ms
+   ❯ 메뉴 키보드 — 화살표 · Home/End · Esc (ER SPEC 7절) (2)
+     × ArrowDown/Up 순환 · Home/End · Esc = 닫힘 + 포커스 트리거 87ms
+     × 트리거 ArrowUp = 열고 마지막 항목 포커스 · ArrowDown = 첫 항목 79ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 툴바 '더보기' 버튼 — ER-AC-U4 > ≥1280 툴바 순서 = 스냅샷 → 더보기 → 검사 · 내보내기 · aria-haspopup=menu · 닫힘 = aria-expanded false
+AssertionError: expected -1 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ -1
+
+ ❯ src/components/studio/MoreMenu.test.tsx:33:23
+     31|     const at = (name: string) => buttons.indexOf(name);
+     32|     expect(at("스냅샷")).toBeGreaterThan(-1);
+     33|     expect(at("더보기")).toBe(at("스냅샷") + 1);
+       |                       ^
+     34|     expect(at("검사 · 내보내기")).toBe(at("더보기") + 1);
+     35|     expect(trigger()).toHaveAttribute("aria-haspopup", "menu");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 툴바 '더보기' 버튼 — ER-AC-U4 > 1024px 배치에도 '더보기'가 툴바에 있다
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "더보기"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "프로젝트로 돌아가기":
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "동네 치과 클리닉 프로젝트":
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------combobox:
+
+  Name "섹션":
+  [36m<select[39m
+    [33mclass[39m=[32m"ds-body3 h-8 rounded-md border border-line-strong bg-background-normal px-2 text-label-normal"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "페이지 정보":
+  [36m<option[39m
+    [33mvalue[39m=[32m":page-info"[39m
+  [36m/>[39m
+
+  Name "Header":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-header"[39m
+  [36m/>[39m
+
+  Name "Hero":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-hero"[39m
+  [36m/>[39m
+
+  Name "About":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-about"[39m
+  [36m/>[39m
+
+  Name "Services":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-services"[39m
+  [36m/>[39m
+
+  Name "FAQ":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-faq"[39m
+  [36m/>[39m
+
+  Name "Contact":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-contact"[39m
+  [36m/>[39m
+
+  Name "CTA Band":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-cta"[39m
+  [36m/>[39m
+
+  Name "Footer":
+  [36m<option[39m
+    [33mvalue[39m=[32m"s-footer"[39m
+  [36m/>[39m
+
+  --------------------------------------------------group:
+
+  Name "미리보기 폭":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"desktop"[39m
+  [36m/>[39m
+
+  Name "태블릿":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"tablet"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"mobile"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "스냅샷":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "검사 · 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+[36m>[39m
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+    [36m/>[39m
+  [36m</a>[39m
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m>[39m
+    [0m동네 치과 클리닉 프로젝트[0m
+  [36m</h1>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+  [36m>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+    [36m/>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"sr-only"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<label[39m
+    [33mclass[39m=[32m"ds-label flex flex-none items-center gap-2"[39m
+  [36m>[39m
+    [0m섹션[0m
+    [36m<select[39m
+      [33mclass[39m=[32m"ds-body3 h-8 rounded-md border border-line-strong bg-background-normal px-2 text-label-normal"[39m
+    [36m>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m":page-info"[39m
+      [36m>[39m
+        [0m페이지 정보[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-header"[39m
+      [36m>[39m
+        [0mHeader[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-hero"[39m
+      [36m>[39m
+        [0mHero[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-about"[39m
+      [36m>[39m
+        [0mAbout[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-services"[39m
+      [36m>[39m
+        [0mServices[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-faq"[39m
+      [36m>[39m
+        [0mFAQ[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-contact"[39m
+      [36m>[39m
+        [0mContact[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-cta"[39m
+      [36m>[39m
+        [0mCTA Band[0m
+      [36m</option>[39m
+      [36m<option[39m
+        [33mvalue[39m=[32m"s-footer"[39m
+      [36m>[39m
+        [0mFooter[0m
+      [36m</option>[39m
+    [36m</select>[39m
+  [36m</label>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"contents"[39m
+    [33mdata-preview-keep[39m=[32m"true"[39m
+  [36m>[39m
+    [36m<fieldset[39m
+      [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+    [36m>[39m
+      [36m<legend[39m
+        [33mclass[39m=[32m"sr-only"[39m
+      [36m>[39m
+        [0m미리보기 폭[0m
+      [36m</legend>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33mchecked[39m=[32m""[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mname[39m=[32m"studio-preview-width"[39m
+            [33mtype[39m=[32m"radio"[39m
+            [33mvalue[39m=[32m"desktop"[39m
+          [36m/>[39m
+          [0m데스크톱[0m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mname[39m=[32m"studio-preview-width"[39m
+            [33mtype[39m=[32m"radio"[39m
+            [33mvalue[39m=[32m"tablet"[39m
+          [36m/>[39m
+          [0m태블릿[0m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mname[39m=[32m"studio-preview-width"[39m
+            [33mtype[39m=[32m"radio"[39m
+            [33mvalue[39m=[32m"mobile"[39m
+          [36m/>[39m
+          [0m모바일[0m
+        [36m</label>[39m
+      [36m</div>[39m
+    [36m</fieldset>[39m
+  [36m</div>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m스냅샷[0m
+  [36m</button>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m검사 · 내보내기[0m
+  [36m</button>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/MoreMenu.test.tsx:42:47
+     40|   it.each([1024, 390])("%ipx 배치에도 '더보기'가 툴바에 있다", async (width) => {
+     41|     await openStudio({ width });
+     42|     expect(within(screen.getByRole("banner")).getByRole("button", { na…
+       |                                               ^
+     43|   });
+     44| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 툴바 '더보기' 버튼 — ER-AC-U4 > 390px 배치에도 '더보기'가 툴바에 있다
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "더보기"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "프로젝트로 돌아가기":
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "동네 치과 클리닉 프로젝트":
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "스냅샷":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "검사 · 내보내기":
+  [36m<button[39m
+    [33maria-label[39m=[32m"검사 · 내보내기"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+[36m>[39m
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+    [36m/>[39m
+  [36m</a>[39m
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m>[39m
+    [0m동네 치과 클리닉 프로젝트[0m
+  [36m</h1>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m스냅샷[0m
+  [36m</button>[39m
+  [36m<button[39m
+    [33maria-label[39m=[32m"검사 · 내보내기"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m검사[0m
+  [36m</button>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"basis-full ps-10"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/MoreMenu.test.tsx:42:47
+     40|   it.each([1024, 390])("%ipx 배치에도 '더보기'가 툴바에 있다", async (width) => {
+     41|     await openStudio({ width });
+     42|     expect(within(screen.getByRole("banner")).getByRole("button", { na…
+       |                                               ^
+     43|   });
+     44| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 메뉴 항목 · 비활성 이유 — ER-AC-U4 > 빈 기록 = 두 항목 aria-disabled + 보이는 이유 '되돌릴 편집이 없습니다' · 눌러도 문서·알림 변화 0
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "더보기"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "본문으로 건너뛰기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+    [33mhref[39m=[32m"#main-content"[39m
+  [36m/>[39m
+
+  Name "프로젝트로 돌아가기":
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  Name "프로필 보기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1?v=2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"focus:outline-none"[39m
+    [33mid[39m=[32m"main-content"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "동네 치과 클리닉 프로젝트":
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m/>[39m
+
+  Name "섹션":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-sections-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "테마":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m/>[39m
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-gate-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "내보내기":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "이미지로 저장":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"_r_3h_-reason-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"_r_3h_-reason-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-title-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-subtitle-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-cta-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"png-caption"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "미리보기 폭":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"desktop"[39m
+  [36m/>[39m
+
+  Name "태블릿":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"tablet"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"mobile"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "스냅샷":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "검사 · 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "페이지 정보검색 제목 · 설명":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Header고정 헤더 · 우측 CTA":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-header"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Hero풀블리드 이미지 + 좌측 카피":
+  [36m<button[39m
+    [33maria-current[39m=[32m"true"[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-primary bg-primary-container font-bold"[39m
+    [33mdata-row-id[39m=[32m"s-hero"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "About이야기 + 이미지":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-about"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Services카드 3개":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-services"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "FAQ펼침 목록":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-faq"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Contact문의 폼":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-contact"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "CTA Band가로 띠 배너":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-cta"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Footer확장형 사업자정보":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-footer"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "섹션 추가":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 self-start aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-add-section"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "위로":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_3h_-reason-0"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "아래로":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_3h_-reason-0"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "삭제":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_3h_-reason-1"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "React 프로젝트(zip) 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "정적 HTML 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "PNG 내려받기":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"png-caption"[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "편집 알림":
+  [36m<div[39m
+    [33maria-label[39m=[32m"편집 알림"[39m
+    [33mclass[39m=[32m"ds-body2 px-3 empty:p-0"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "섹션":
+  [36m<nav[39m
+    [33maria-labelledby[39m=[32m"studio-sections-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "테마":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "편집 · Hero":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-3"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-gate-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "제목(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-hero-title-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-title"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"한 문장으로 소개하는 제목"[39m
+  [36m/>[39m
+
+  Name "부제":
+  [36m<textarea[39m
+    [33maria-describedby[39m=[32m"field-s-hero-subtitle-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-subtitle"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "버튼 문구(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-hero-cta-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-cta"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"시작하기"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+              [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/projects"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+              [36m/>[39m
+            [36m</a>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+            [36m>[39m
+              [0mcandidate-a안 · 프로필 v2[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+              [36m/>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"sr-only"[39m
+                [33mrole[39m=[32m"alert"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"contents"[39m
+              [33mdata-preview-keep[39m=[32m"true"[39m
+            [36m>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+              [36m>[39m
+                [36m<legend[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                [36m>[39m
+                  [0m미리보기 폭[0m
+                [36m</legend>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mchecked[39m=[32m""[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"desktop"[39m
+                    [36m/>[39m
+                    [0m데스크톱[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"tablet"[39m
+                    [36m/>[39m
+                    [0m태블릿[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"mobile"[39m
+                    [36m/>[39m
+                    [0m모바일[0m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</fieldset>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+              [33mid[39m=[32m"studio-snapshot"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m스냅샷[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger src/components/studio/MoreMenu.test.tsx:13:30
+     11| const editPanel = () => within(screen.getByRole("region", { name: /^편집…
+     12| const notice = () => screen.getByRole("status", { name: "편집 알림" });
+     13| const trigger = () => screen.getByRole("button", { name: "더보기" });
+       |                              ^
+     14| const key = (target: Element, init: KeyboardEventInit) => act(() => vo…
+     15| const removeServices = async () => {
+ ❯ src/components/studio/MoreMenu.test.tsx:22:13
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ openMenu src/components/studio/MoreMenu.test.tsx:22:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 메뉴 항목 · 비활성 이유 — ER-AC-U4 > 삭제 → '실행 취소: Services 삭제' = 단축키와 같은 결과(행 복원 + 알림) · 닫힘 + 포커스 트리거 → '다시 실행: Services 삭제' → 다시 삭제
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "더보기"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "본문으로 건너뛰기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+    [33mhref[39m=[32m"#main-content"[39m
+  [36m/>[39m
+
+  Name "프로젝트로 돌아가기":
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  Name "프로필 보기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1?v=2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"focus:outline-none"[39m
+    [33mid[39m=[32m"main-content"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "동네 치과 클리닉 프로젝트":
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m/>[39m
+
+  Name "섹션":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-sections-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "테마":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m/>[39m
+
+  Name "편집 · FAQ":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-gate-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "내보내기":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "이미지로 저장":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-heading-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-q1-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-a1-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-q2-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-a2-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-q3-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-faq-a3-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-neutral"[39m
+    [33mid[39m=[32m"png-wait"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"png-caption"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "미리보기 폭":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"desktop"[39m
+  [36m/>[39m
+
+  Name "태블릿":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"tablet"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"mobile"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "스냅샷":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "검사 · 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "되돌리기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-8 rounded-sm px-3 text-primary hover:bg-fill-normal hover:text-primary-hover"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "페이지 정보검색 제목 · 설명":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Header고정 헤더 · 우측 CTA":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-header"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Hero풀블리드 이미지 + 좌측 카피":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-hero"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "About이야기 + 이미지":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-about"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "FAQ펼침 목록":
+  [36m<button[39m
+    [33maria-current[39m=[32m"true"[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-primary bg-primary-container font-bold"[39m
+    [33mdata-row-id[39m=[32m"s-faq"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Contact문의 폼":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-contact"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "CTA Band가로 띠 배너":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-cta"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Footer확장형 사업자정보":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-footer"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "섹션 추가":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 self-start aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-add-section"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "위로":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "아래로":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "삭제":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "React 프로젝트(zip) 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "정적 HTML 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "PNG 내려받기":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"png-wait png-caption"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "편집 알림":
+  [36m<div[39m
+    [33maria-label[39m=[32m"편집 알림"[39m
+    [33mclass[39m=[32m"ds-body2 px-3 empty:p-0"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "섹션":
+  [36m<nav[39m
+    [33maria-labelledby[39m=[32m"studio-sections-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "테마":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "편집 · FAQ":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-3"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-gate-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "섹션 제목(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-faq-heading-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-heading"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"자주 묻는 질문"[39m
+  [36m/>[39m
+
+  Name "질문 1(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-faq-q1-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-q1"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"자주 묻는 질문"[39m
+  [36m/>[39m
+
+  Name "답변 1(필수)":
+  [36m<textarea[39m
+    [33maria-describedby[39m=[32m"field-s-faq-a1-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-a1"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "질문 2(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-faq-q2-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-q2"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"자주 묻는 질문"[39m
+  [36m/>[39m
+
+  Name "답변 2(필수)":
+  [36m<textarea[39m
+    [33maria-describedby[39m=[32m"field-s-faq-a2-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-a2"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "질문 3(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-faq-q3-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-q3"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"자주 묻는 질문"[39m
+  [36m/>[39m
+
+  Name "답변 3(필수)":
+  [36m<textarea[39m
+    [33maria-describedby[39m=[32m"field-s-faq-a3-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-faq-a3"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+              [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/projects"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+              [36m/>[39m
+            [36m</a>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+            [36m>[39m
+              [0mcandidate-a안 · 프로필 v2[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+              [36m>[39m
+                [0m저장 전 변경 있음[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"sr-only"[39m
+                [33mrole[39m=[32m"alert"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"contents"[39m
+              [33mdata-preview-keep[39m=[32m"true"[39m
+            [36m>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+              [36m>[39m
+                [36m<legend[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                [36m>[39m
+                  [0m미리보기 폭[0m
+                [36m</legend>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mchecked[39m=[32m""[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"desktop"[39m
+                    [36m/>[39m
+                    [0m데스크톱[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"tablet"[39m
+                    [36m/>[39m
+                    [0m태블릿[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"mobile"[39m
+                    [36m/>[39m
+                    [0m모바일[0m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</fieldset>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+              [33mid[39m=[32m"studio-snapshot"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m스냅샷[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-f...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger src/components/studio/MoreMenu.test.tsx:13:30
+     11| const editPanel = () => within(screen.getByRole("region", { name: /^편집…
+     12| const notice = () => screen.getByRole("status", { name: "편집 알림" });
+     13| const trigger = () => screen.getByRole("button", { name: "더보기" });
+       |                              ^
+     14| const key = (target: Element, init: KeyboardEventInit) => act(() => vo…
+     15| const removeServices = async () => {
+ ❯ src/components/studio/MoreMenu.test.tsx:22:13
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ openMenu src/components/studio/MoreMenu.test.tsx:22:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 메뉴 키보드 — 화살표 · Home/End · Esc (ER SPEC 7절) > ArrowDown/Up 순환 · Home/End · Esc = 닫힘 + 포커스 트리거
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "더보기"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "본문으로 건너뛰기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+    [33mhref[39m=[32m"#main-content"[39m
+  [36m/>[39m
+
+  Name "프로젝트로 돌아가기":
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  Name "프로필 보기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1?v=2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"focus:outline-none"[39m
+    [33mid[39m=[32m"main-content"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "동네 치과 클리닉 프로젝트":
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m/>[39m
+
+  Name "섹션":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-sections-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "테마":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m/>[39m
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-gate-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "내보내기":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "이미지로 저장":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"_r_5r_-reason-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"_r_5r_-reason-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-title-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-subtitle-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-cta-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"png-caption"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "미리보기 폭":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"desktop"[39m
+  [36m/>[39m
+
+  Name "태블릿":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"tablet"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"mobile"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "스냅샷":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "검사 · 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "페이지 정보검색 제목 · 설명":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Header고정 헤더 · 우측 CTA":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-header"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Hero풀블리드 이미지 + 좌측 카피":
+  [36m<button[39m
+    [33maria-current[39m=[32m"true"[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-primary bg-primary-container font-bold"[39m
+    [33mdata-row-id[39m=[32m"s-hero"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "About이야기 + 이미지":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-about"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Services카드 3개":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-services"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "FAQ펼침 목록":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-faq"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Contact문의 폼":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-contact"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "CTA Band가로 띠 배너":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-cta"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Footer확장형 사업자정보":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-footer"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "섹션 추가":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 self-start aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-add-section"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "위로":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_5r_-reason-0"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "아래로":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_5r_-reason-0"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "삭제":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_5r_-reason-1"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "React 프로젝트(zip) 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "정적 HTML 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "PNG 내려받기":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"png-caption"[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "편집 알림":
+  [36m<div[39m
+    [33maria-label[39m=[32m"편집 알림"[39m
+    [33mclass[39m=[32m"ds-body2 px-3 empty:p-0"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "섹션":
+  [36m<nav[39m
+    [33maria-labelledby[39m=[32m"studio-sections-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "테마":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "편집 · Hero":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-3"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-gate-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "제목(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-hero-title-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-title"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"한 문장으로 소개하는 제목"[39m
+  [36m/>[39m
+
+  Name "부제":
+  [36m<textarea[39m
+    [33maria-describedby[39m=[32m"field-s-hero-subtitle-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-subtitle"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "버튼 문구(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-hero-cta-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-cta"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"시작하기"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+              [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/projects"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+              [36m/>[39m
+            [36m</a>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+            [36m>[39m
+              [0mcandidate-a안 · 프로필 v2[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+              [36m/>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"sr-only"[39m
+                [33mrole[39m=[32m"alert"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"contents"[39m
+              [33mdata-preview-keep[39m=[32m"true"[39m
+            [36m>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+              [36m>[39m
+                [36m<legend[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                [36m>[39m
+                  [0m미리보기 폭[0m
+                [36m</legend>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mchecked[39m=[32m""[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"desktop"[39m
+                    [36m/>[39m
+                    [0m데스크톱[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"tablet"[39m
+                    [36m/>[39m
+                    [0m태블릿[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"mobile"[39m
+                    [36m/>[39m
+                    [0m모바일[0m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</fieldset>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+              [33mid[39m=[32m"studio-snapshot"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m스냅샷[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger src/components/studio/MoreMenu.test.tsx:13:30
+     11| const editPanel = () => within(screen.getByRole("region", { name: /^편집…
+     12| const notice = () => screen.getByRole("status", { name: "편집 알림" });
+     13| const trigger = () => screen.getByRole("button", { name: "더보기" });
+       |                              ^
+     14| const key = (target: Element, init: KeyboardEventInit) => act(() => vo…
+     15| const removeServices = async () => {
+ ❯ src/components/studio/MoreMenu.test.tsx:22:13
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ openMenu src/components/studio/MoreMenu.test.tsx:22:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/components/studio/MoreMenu.test.tsx > 메뉴 키보드 — 화살표 · Home/End · Esc (ER SPEC 7절) > 트리거 ArrowUp = 열고 마지막 항목 포커스 · ArrowDown = 첫 항목
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "더보기"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "본문으로 건너뛰기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+    [33mhref[39m=[32m"#main-content"[39m
+  [36m/>[39m
+
+  Name "프로젝트로 돌아가기":
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m/>[39m
+
+  Name "프로필 보기":
+  [36m<a[39m
+    [33mclass[39m=[32m"ds-label text-primary hover:text-primary-hover"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/profile/profile-1?v=2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"focus:outline-none"[39m
+    [33mid[39m=[32m"main-content"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "동네 치과 클리닉 프로젝트":
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m/>[39m
+
+  Name "섹션":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-sections-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "테마":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-theme-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m/>[39m
+
+  Name "편집 · Hero":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-edit-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2 focus:outline-none"[39m
+    [33mid[39m=[32m"studio-gate-heading"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "내보내기":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-label"[39m
+  [36m/>[39m
+
+  Name "이미지로 저장":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"_r_70_-reason-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"_r_70_-reason-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-body3 text-label-neutral"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-title-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-subtitle-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"tabular-nums text-label-alternative"[39m
+    [33mid[39m=[32m"field-s-hero-cta-count"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [33mid[39m=[32m"png-caption"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "미리보기 폭":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"rounded-md border border-line-normal px-3 py-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "데스크톱":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"desktop"[39m
+  [36m/>[39m
+
+  Name "태블릿":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"tablet"[39m
+  [36m/>[39m
+
+  Name "모바일":
+  [36m<input[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mname[39m=[32m"studio-preview-width"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"mobile"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "스냅샷":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "검사 · 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "페이지 정보검색 제목 · 설명":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Header고정 헤더 · 우측 CTA":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-header"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Hero풀블리드 이미지 + 좌측 카피":
+  [36m<button[39m
+    [33maria-current[39m=[32m"true"[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-primary bg-primary-container font-bold"[39m
+    [33mdata-row-id[39m=[32m"s-hero"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "About이야기 + 이미지":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-about"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Services카드 3개":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-services"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "FAQ펼침 목록":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-faq"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Contact문의 폼":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-contact"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "CTA Band가로 띠 배너":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-cta"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Footer확장형 사업자정보":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-10 w-full flex-col items-start rounded-md border-l-4 px-3 py-1.5 text-left hover:bg-fill-normal border-transparent"[39m
+    [33mdata-row-id[39m=[32m"s-footer"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "섹션 추가":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 self-start aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-add-section"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "위로":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_70_-reason-0"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "아래로":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_70_-reason-0"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "삭제":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"_r_70_-reason-1"[39m
+    [33maria-disabled[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable aria-disabled:hover:bg-background-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "React 프로젝트(zip) 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "정적 HTML 내보내기":
+  [36m<button[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "PNG 내려받기":
+  [36m<button[39m
+    [33maria-describedby[39m=[32m"png-caption"[39m
+    [33mclass[39m=[32m"ds-label min-h-10 rounded-md border border-line-normal px-4 text-label-normal hover:bg-fill-normal aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "편집 알림":
+  [36m<div[39m
+    [33maria-label[39m=[32m"편집 알림"[39m
+    [33mclass[39m=[32m"ds-body2 px-3 empty:p-0"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "섹션":
+  [36m<nav[39m
+    [33maria-labelledby[39m=[32m"studio-sections-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"flex flex-col gap-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "테마":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-theme-heading"[39m
+    [33mclass[39m=[32m"flex flex-col items-start gap-2"[39m
+  [36m/>[39m
+
+  Name "페이지 미리보기":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "편집 · Hero":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-edit-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-3"[39m
+  [36m/>[39m
+
+  Name "품질 게이트":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"studio-gate-heading"[39m
+    [33mclass[39m=[32m"flex flex-col gap-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "제목(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-hero-title-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-title"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"한 문장으로 소개하는 제목"[39m
+  [36m/>[39m
+
+  Name "부제":
+  [36m<textarea[39m
+    [33maria-describedby[39m=[32m"field-s-hero-subtitle-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-subtitle"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "버튼 문구(필수)":
+  [36m<input[39m
+    [33maria-describedby[39m=[32m"field-s-hero-cta-count"[39m
+    [33mclass[39m=[32m"w-full rounded-md border-(length:--border-thick) border-line-strong bg-background-normal px-4 py-2 text-body3 text-label-normal outline-none transition-[border-color,box-shadow] duration-(--duration-fast) ease-standard hover:border-label-alternative focus:border-primary focus:shadow-(--focus-ring) aria-invalid:border-status-negative-text"[39m
+    [33mid[39m=[32m"field-s-hero-cta"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"시작하기"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0m본문으로 건너뛰기[0m
+      [36m</a>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"focus:outline-none"[39m
+        [33mid[39m=[32m"main-content"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+              [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/projects"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+              [36m/>[39m
+            [36m</a>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+            [36m>[39m
+              [0m동네 치과 클리닉 프로젝트[0m
+            [36m</h1>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+            [36m>[39m
+              [0mcandidate-a안 · 프로필 v2[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+              [36m/>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"sr-only"[39m
+                [33mrole[39m=[32m"alert"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"contents"[39m
+              [33mdata-preview-keep[39m=[32m"true"[39m
+            [36m>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+              [36m>[39m
+                [36m<legend[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                [36m>[39m
+                  [0m미리보기 폭[0m
+                [36m</legend>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mchecked[39m=[32m""[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"desktop"[39m
+                    [36m/>[39m
+                    [0m데스크톱[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"tablet"[39m
+                    [36m/>[39m
+                    [0m태블릿[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                      [33mname[39m=[32m"studio-preview-width"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"mobile"[39m
+                    [36m/>[39m
+                    [0m모바일[0m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</fieldset>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+              [33mid[39m=[32m"studio-snapshot"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m스냅샷[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger src/components/studio/MoreMenu.test.tsx:13:30
+     11| const editPanel = () => within(screen.getByRole("region", { name: /^편집…
+     12| const notice = () => screen.getByRole("status", { name: "편집 알림" });
+     13| const trigger = () => screen.getByRole("button", { name: "더보기" });
+       |                              ^
+     14| const key = (target: Element, init: KeyboardEventInit) => act(() => vo…
+     15| const removeServices = async () => {
+ ❯ src/components/studio/MoreMenu.test.tsx:22:13
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ openMenu src/components/studio/MoreMenu.test.tsx:22:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  11:00:34
+   Duration  2.27s (tests 43%, environment 27%, transform 19%, setup 5%, import 5%)
+

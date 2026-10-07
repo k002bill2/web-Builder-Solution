@@ -1,0 +1,34 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a1141d-fda5-7ec2-9371-4550b2c1178d).
+[codex] Reviewer started: changes against '19a97d0'
+[codex] Running command: /bin/zsh -lc "git diff --stat 19a97d04a5f3a700b13aeaede266c3cf9c1530a8; find .. -name AGENTS....
+[codex] Command failed: /bin/zsh -lc "git diff --stat 19a97d04a5f3a700b13aeaede266c3cf9c1530a8; find .. -name AGENTS.... (exit 1)
+[codex] Running command: /bin/zsh -lc 'git diff 19a97d04a5f3a700b13aeaede266c3cf9c1530a8'
+[codex] Command completed: /bin/zsh -lc 'git diff 19a97d04a5f3a700b13aeaede266c3cf9c1530a8' (exit 0)
+[codex] Running command: /bin/zsh -lc 'pwd; for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users...
+[codex] Command completed: /bin/zsh -lc 'pwd; for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/opAfter.ts; cat app/src/components/studio/useSnapsh...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/opAfter.ts; cat app/src/components/studio/useSnapsh... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; cat app/src/components/studio/useSnapshots.tsx; cat app/src/comp...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; cat app/src/components/studio/useSnapshots.tsx; cat app/src/comp... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/components/studio/SnapshotPreview.tsx; rg -n 'inert|data-preview-ke...
+[codex] Command completed: /bin/zsh -lc "cat app/src/components/studio/SnapshotPreview.tsx; rg -n 'inert|data-preview-ke... (exit 0)
+[codex] Running command: /bin/zsh -lc "node --input-type=module -e 'import {JSDOM} from \"jsdom\"; import ts from \"ty...
+[codex] Command completed: /bin/zsh -lc "node --input-type=module -e 'import {JSDOM} from \"jsdom\"; import ts from \"ty... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 새 메뉴에는 스냅샷 미리보기의 비활성 경계를 우회하는 키보드 경로와 지연 로딩 후 포커스를 빼앗는 문제가 있습니다. 두 경우 모두 현재 추가된 테스트에서 다루지 않습니...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 19a97d0
+
+새 메뉴에는 스냅샷 미리보기의 비활성 경계를 우회하는 키보드 경로와 지연 로딩 후 포커스를 빼앗는 문제가 있습니다. 두 경우 모두 현재 추가된 테스트에서 다루지 않습니다.
+
+Full review comments:
+
+- [P2] 스냅샷 잠금 중에는 화살표로 메뉴를 열지 못하게 하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-9/app/src/components/studio/MoreMenu.tsx:35-39
+  스냅샷 미리보기 중 `SnapshotPreview.lockEditing`은 트리거에 `aria-disabled`를 설정하지만 키보드 이벤트는 Enter와 Space만 차단합니다. 따라서 이 핸들러의 ArrowDown/ArrowUp으로 비활성 트리거에서 메뉴를 열 수 있습니다. 메뉴 항목은 `div`여서 기존 잠금 대상에도 포함되지 않으므로 실행 가능한 것처럼 표시되지만, 선택하면 `snaps.edit`가 거절하여 아무 작업 없이 닫힙니다. 미리보기 잠금 상태를 메뉴에도 전달하고 화살표 열기와 항목 활성화를 함께 막아 주세요.
+
+- [P2] 메뉴 청크 로딩 중 이동한 포커스를 빼앗지 마세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/er-9/app/src/components/studio/MoreMenuBody.tsx:18-18
+  최초 메뉴 열기에서 청크 다운로드가 지연되는 동안 사용자가 Tab이나 클릭으로 다른 편집 컨트롤로 이동해도, 아직 메뉴 본문이 없어 `onBlur`가 실행되지 않고 열림 상태가 유지됩니다. 이후 다운로드가 끝나면 이 effect가 무조건 메뉴 항목에 포커스를 보내 사용자가 작업 중인 컨트롤의 포커스를 빼앗습니다. 로딩 중에도 트리거 바깥으로의 포커스 이동을 감지해 열기를 취소하거나, 마운트 시 트리거에 포커스가 남아 있는지 확인해 주세요.

@@ -1,0 +1,47 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a1150c-2d12-7e91-9a9f-db0f2cbba1d9).
+[codex] Reviewer started: changes against '4c09dfa'
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder-solution' /Users/younghwankang/.codex/memories/MEMORY.md | h...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder-solution' /Users/younghwankang/.codex/memories/MEMORY.md | h... (exit 0)
+[codex] Running command: /bin/zsh -lc 'pwd; for p in /Users/younghwankang /Users/younghwankang/orca /Users/younghwanka...
+[codex] Command completed: /bin/zsh -lc 'pwd; for p in /Users/younghwankang /Users/younghwankang/orca /Users/younghwanka... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff 4c09dfaf1fa9d94cec82751cedf241ff1fcd1b86 -- app/src/data/persistence/e...
+[codex] Command completed: /bin/zsh -lc 'git diff 4c09dfaf1fa9d94cec82751cedf241ff1fcd1b86 -- app/src/data/persistence/e... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/persistence/localSync.test.ts; cat app/src/data/studioStore.ts...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/persistence/localSync.test.ts; cat app/src/data/studioStore.ts... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; rg -n 'listSnapshots' app/src; sed -n '290,430p' app/src/data/me...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; rg -n 'listSnapshots' app/src; sed -n '290,430p' app/src/data/me... (exit 0)
+[codex] Running command: /bin/zsh -lc 'node scripts/check-bundle-size.mjs'
+[codex] Command failed: /bin/zsh -lc 'node scripts/check-bundle-size.mjs' (exit 1)
+[codex] Running command: /bin/zsh -lc "nl -ba CLAUDE.md | sed -n '52,65p'; nl -ba app/src/data/memoryProjectRepository...
+[codex] Command completed: /bin/zsh -lc "nl -ba CLAUDE.md | sed -n '52,65p'; nl -ba app/src/data/memoryProjectRepository... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/useDocSave.ts | sed -n '1,180p'; sed -n '100,235p' ...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/useDocSave.ts | sed -n '1,180p'; sed -n '100,235p' ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'import.meta' app/src/data/{memoryDocBook.ts,memoryProjectRepository.ts,s...
+[codex] Command completed: /bin/zsh -lc "rg -n 'import.meta' app/src/data/{memoryDocBook.ts,memoryProjectRepository.ts,s... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs = require('\\''fs'\\''); const ts = require('\\''typescript'\...
+[codex] Command failed: /bin/zsh -lc "node -e 'const fs = require('\\''fs'\\''); const ts = require('\\''typescript'\... (exit 1)
+[codex] Running command: /bin/zsh -lc 'cat app/src/data/chunkRetry.ts | head -90; cat app/src/data/persistence/studioP...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/data/chunkRetry.ts | head -90; cat app/src/data/persistence/studioP... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''),ts=require('\\''typescript'\\''); requi...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''),ts=require('\\''typescript'\\''); requi... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 번들 검사 실패로 빌드 게이트를 통과하지 못합니다. 또한 반복 저장 실패 후 재시도가 거짓 충돌로 처리되고, 직접 재진입 시 저장된 스냅샷 목록이 누락되는 문제를 재현...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 4c09dfa
+
+번들 검사 실패로 빌드 게이트를 통과하지 못합니다. 또한 반복 저장 실패 후 재시도가 거짓 충돌로 처리되고, 직접 재진입 시 저장된 스냅샷 목록이 누락되는 문제를 재현했습니다.
+
+Full review comments:
+
+- [P1] 진입 번들을 줄여 빌드 예산 검사를 통과시키세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a2/app/src/data/deferredStudio.ts:38-40
+  영속 진입 경로를 추가하면서 `/studio/:projectId`의 자동 로드 합계가 기존 번들 예산을 초과합니다. 현재 빌드 산출물에 `node scripts/check-bundle-size.mjs`를 실행하면 129.23KB가 129KB 한도와 기준선 증가 한도를 초과하여 exit 1을 반환하며, REPORT에도 fresh build 실패가 기록되어 있습니다. 이 검사는 `npm run build`의 필수 단계이므로 병합 전에 진입 의존성을 줄이고 승인된 예산 설정을 적용해야 합니다. [CLAUDE.md:56](CLAUDE.md#L56)의 완료 기준도 build 통과를 요구합니다.
+
+- [P2] 보정된 저장 요청의 재시도에도 멱등 키를 유지하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a2/app/src/data/persistence/localSync.ts:102-105
+  저장 실패 후 더 편집한 내용을 저장하고 그 요청도 실패하면, 저장소가 복구되어도 같은 요청의 재시도가 `STALE_DOC`로 거부됩니다. revision 1에서 A 저장 실패 → B 저장 실패 → B 재시도를 재현하면 메모리는 revision 3인데 호출자는 여전히 1을 보내며, 현재 해시가 B와 같아 `base()`가 보정을 생략합니다. B의 멱등 키는 보정된 revision 2로 기록되어 있으므로 재시도 키와 일치하지 않아 자동 저장이 거짓 충돌 상태로 멈춥니다. 보정된 요청의 원래 revision과 멱등 키를 연결해 재시도에서도 같은 결과를 찾도록 해야 합니다.
+
+- [P2] 직접 진입 후에도 저장된 스냅샷 목록을 복원하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a2/app/src/data/memoryProjectRepository.ts:111-114
+  스냅샷이 있는 프로젝트의 `/studio/:projectId`를 새로고침하면 `getDoc()`은 진입 문서를 반환하면서 DocBook을 초기화하지 않습니다. 그런데 `listSnapshots()`는 여전히 `book?.snapshotsOf(...) ?? []`만 읽으므로, 편집이나 쓰기 전에 스냅샷 대화상자를 열면 저장된 항목이 모두 없는 것으로 표시됩니다. 메모리 영속 어댑터로 저장·재진입을 재현해 목록이 1개에서 0개로 바뀌는 것을 확인했습니다. 목록 조회에서도 진입 레코드의 스냅샷을 반환하거나 DocBook 시드 로드를 기다리도록 해야 합니다.

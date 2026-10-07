@@ -15,6 +15,7 @@ import { ProjectRepositoryError, type ExportGenerators, type Project, type Proje
 import type { LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
 import type { StudioStore } from "./studioStore";
+import type { ImageKeeper, RenderImages } from "../features/studio/images/store/types";
 
 export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict";
 type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict";
@@ -41,12 +42,17 @@ export interface MemoryProjectOptions {
 const loadDocBook = retryableImport(() => import("./memoryDocBook"));
 
 /** 로컬 영속 싱크 열기(조작 뒤 — DocBook 청크와 함께 받는다) */
+/** 이미지 복원 본문(ADR-007 P1b) — 편집 틀 마운트 때 자동(로컬 영속만) · 별도 청크 */
+const loadImageRestore = retryableImport(() => import("./persistence/imageRestore"));
+
 export const openLocal = async (entry: LocalEntry) => (await loadDocBook()).openLocalSync(entry);
 
-export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository {
+export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper {
   const { store, now = () => new Date().toISOString(), generators = {}, local } = options;
   const entry = local?.entry;
   const counts = new Map<ProjectMethod, number>();
+  /** 편집 틀 이미지 맵(프로젝트별) — 문서 쓰기 트랜잭션이 참조 이미지를 함께 쓴다(P1b) */
+  const maps = new Map<string, RenderImages | undefined>();
   /** 문서 쓰기 본문 — 청크를 받은 뒤 1개. 받기 전 문서 = 진입 읽기 문서·머리(로컬 영속)뿐 — 본문은 싱크 시드로 시작한다 */
   let book: DocBook | undefined;
   const bookOf = createSharedLoader(async () => {
@@ -55,7 +61,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
   });
   /** 문서 쓰기가 끝난 뒤 그 프로젝트 레코드를 IDB 커밋까지 기다린다(Codex 제약 3 — "저장됨"은 이 뒤) */
   const kept = <T>(projectId: string, work: Promise<T>) =>
-    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!), result)) : work;
+    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!, maps.get(projectId)), result)) : work;
 
   /** work는 동기 — `commit()`을 부른 뒤에만 state를 바꾼다(던지면 변화 0) */
   async function call<T>(method: ProjectMethod, work: (commit: () => void) => T): Promise<T> {
@@ -136,5 +142,11 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     requestExport: async (projectId, format, docRevision) =>
       kept(projectId, (await bookOf()).requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work))),
     getExportJob: async (jobId) => book?.jobOf(jobId),
+    ...(local && {
+      images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
+        maps.set(projectId, map);
+        if (!map) void entered(projectId).then(async (first) => (await loadImageRestore()).restoreImages(projectId, book ? { doc: book.docOf(projectId), snapshots: book.snapshotsOf(projectId) } : first, publish)).catch(() => undefined);
+      },
+    }),
   };
 }

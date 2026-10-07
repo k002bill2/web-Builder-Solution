@@ -49,5 +49,28 @@ export function persistenceContract(name: string, open: () => Promise<StudioPers
       expect(((await p.get("studio", "job-1")) as Envelope<typeof data>).data.hidden[1]).toBeUndefined();
       p.close();
     });
+
+    it("keys = 그 저장소 레코드 id 오름차순(이미지 Blob을 읽지 않고 저장된 id만 — P1b)", async () => {
+      const p = await open();
+      await p.write([
+        { type: "put", store: "images", record: record("image", "project-2/b", 1) },
+        { type: "put", store: "images", record: record("image", "project-1/a", 2) },
+        { type: "put", store: "docs", record: record("doc", "project-1", 3) },
+      ]);
+      expect(await p.keys("images")).toEqual(["project-1/a", "project-2/b"]);
+      expect(await p.keys("snapshots")).toEqual([]);
+      p.close();
+    });
+
+    it("Blob 보존(이미지 변형본 — P1b): put한 Blob을 같은 크기·형식·바이트로 읽는다", async () => {
+      const p = await open();
+      const blob = new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 7])], { type: "image/png" });
+      await p.write([{ type: "put", store: "images", record: record("image", "project-1/a", { variants: { 640: blob }, bytes: blob.size }) }]);
+      const read = ((await p.get("images", "project-1/a")) as Envelope<{ variants: Record<number, Blob> }>).data.variants[640]!;
+      expect(read).toBeInstanceOf(Blob);
+      expect([read.size, read.type]).toEqual([5, "image/png"]);
+      expect([...new Uint8Array(await read.arrayBuffer())]).toEqual([0x89, 0x50, 0x4e, 0x47, 7]);
+      p.close();
+    });
   });
 }

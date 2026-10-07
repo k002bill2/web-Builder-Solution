@@ -42,7 +42,7 @@ import { ExportButtons, type ExportReason } from "./ExportButtons";
 import { ExportRetryAlert } from "./ExportRetryAlert";
 import { PngSave } from "./PngSave";
 import { emitEditorEvent } from "../../features/studio/editorEvents";
-import type { RenderImages } from "../../features/studio/images/store/types";
+import type { ImageKeeper, RenderImages } from "../../features/studio/images/store/types";
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 /** 미저장 편집이 남은 채 멈춘 저장 상태 — PNG 준비 전 이유로 저장 상태 문장을 보인다(P2-a) */
@@ -293,6 +293,8 @@ export function StudioLayout({
 
   // 캔버스 images 맵(SPEC m2c 5.1) — 패널 청크의 보관소가 채우고 비운다. 편집 틀이 사라지면 함께 놓인다
   const [images, setImages] = useState<RenderImages>();
+  // 로컬 영속 이미지(ADR-007 P1b · Codex 제약 2) — 맵 등록 + 마운트 때 복원 시작(본문은 별도 청크)
+  useEffect(() => (repository as ImageKeeper).images?.(project.projectId, images, setImages), [repository, project.projectId, images]);
   const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
   // 참조 집합(문서 ∪ 되돌릴 문서) 밖 이미지는 패널이 닫혀 있어도 뺀다(2a-05 5.9 · Codex r1) — 렌더 중 상태 조정(effect 아님).
   // 로컬 id = UUID라 직렬화 문자열 포함으로 잰다(진입 바이트 절약)

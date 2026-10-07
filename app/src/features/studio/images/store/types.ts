@@ -17,3 +17,8 @@ export type ImageHost = readonly [
   /** 스냅샷 문서들(+ 되돌릴 복원 직전 문서) — 참조 집합에 든다(ER SPEC r1 3.2) */
   snapshots?: readonly PageDoc[],
 ];
+
+/** 로컬 영속 이미지(ADR-007 P1b) — 로컬 저장소에만 있다. 편집 틀이 맵이 바뀔 때마다 부른다: 맵 등록(문서 저장 트랜잭션이 Blob을 함께 쓴다) · 맵 없음(마운트) = 복원 시작 */
+export interface ImageKeeper {
+  readonly images?: (projectId: string, images: RenderImages | undefined, publish: ImageHost[1]) => void;
+}

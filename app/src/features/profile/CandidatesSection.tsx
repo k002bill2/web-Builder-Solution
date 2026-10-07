@@ -21,6 +21,7 @@ import { loadCompare } from "./compareLoader";
 import { CANDIDATE_TEXT, determinismText, failureText } from "./generationText";
 import { PALETTE_ROLES } from "./profileFields";
 import { useGeneration } from "./useGeneration";
+import type { DesignReference } from "../../domain/reference";
 
 const DISABLED = "aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong";
 const PLACEHOLDER = "ds-caption1 flex aspect-4/5 items-center justify-center rounded-md border border-dashed border-line-normal bg-fill-normal p-3 text-center text-label-alternative";
@@ -28,11 +29,14 @@ const failuresOf = (job: GenerationJob) => job.candidates.filter((c): c is Candi
 
 export function CandidatesSection({
   viewed,
+  base,
   projectId,
   pending,
   announce,
 }: {
   readonly viewed: ProfileVersion;
+  /** 보는 버전의 기준 레퍼런스 카드(3안 미리보기 문구, B-M3P-07) */
+  readonly base?: DesignReference;
   /** 편집 시작 → `/studio/:projectId`(DS-2A-05 12.3). 문서 만들기(startDoc)는 a2 몫 — 여기서는 이동만 */
   readonly projectId?: string;
   readonly pending: number;
@@ -213,6 +217,7 @@ export function CandidatesSection({
             <compare.default
               job={job}
               viewed={viewed}
+              base={base}
               parts={results}
               palette={palette}
               profileScale={profile.typography_tokens.scale}

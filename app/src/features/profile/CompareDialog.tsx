@@ -14,11 +14,14 @@ import { CompareColumn } from "./CompareColumn";
 import { COMPARE_WIDTH_OPTIONS, type CompareView } from "./compareFrame";
 import { compareKitTokens, comparePreviews } from "./comparePreviews";
 import { categoryText, COMPARE_TEXT, scaleNotice, totalText, type FrameCategory } from "./compareText";
+import type { CopyReference } from "../../data/industryCopy";
 
 export type CandidateParts = Pick<typeof import("./CandidateResults"), "Wireframe" | "heroText" | "scaleText">;
 export interface CompareDialogProps {
   readonly job: GenerationJob;
   readonly viewed: ProfileVersion;
+  /** 보는 버전의 기준 레퍼런스 카드 — 미리보기 문구 = 편집 시작 문구(B-M3P-07). 없으면 예시 문구 */
+  readonly base?: CopyReference;
   readonly parts: CandidateParts;
   readonly palette: WirePalette;
   readonly profileScale: number;
@@ -80,13 +83,13 @@ function useAnnouncement(visible: readonly CandidateId[], wide: boolean) {
 }
 
 export default function CompareDialog(props: CompareDialogProps) {
-  const { job, viewed, onClose } = props;
+  const { job, viewed, base, onClose } = props;
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const body = useRef<HTMLDivElement>(null);
   const { candidates, libraryVersion, generatorVersion } = job;
   // 선택이 바뀌어도 문서는 그대로(재전송 0) — 잡의 안·버전과 보는 버전만 본다
-  const previews = useMemo(() => comparePreviews({ candidates, libraryVersion, generatorVersion }, viewed), [candidates, libraryVersion, generatorVersion, viewed]);
+  const previews = useMemo(() => comparePreviews({ candidates, libraryVersion, generatorVersion }, viewed, base), [candidates, libraryVersion, generatorVersion, viewed, base]);
   const kitTokens = useMemo(() => compareKitTokens(viewed), [viewed]);
   const wide = useWide();
   const [view, setView] = useState<CompareView>("desktop");

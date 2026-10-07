@@ -34,7 +34,8 @@ export function MoreMenu({ peek, onStep }: MoreMenuProps) {
         onClick={() => setOpen(open === undefined ? 0 : undefined)}
         onKeyDown={(e) => {
           const at = e.key === "ArrowUp" ? 1 : e.key === "Enter" || e.key === "ArrowDown" ? 0 : undefined;
-          if (at === undefined) return;
+          // 미리보기 잠금(aria-disabled)은 Enter·Space만 막는다 — 화살표 열기도 막는다(Codex r1 P2)
+          if (at === undefined || e.currentTarget.getAttribute("aria-disabled") === "true") return;
           e.preventDefault();
           setOpen(at);
         }}

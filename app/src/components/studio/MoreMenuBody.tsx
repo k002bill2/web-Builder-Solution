@@ -15,7 +15,13 @@ const ITEMS = [
 export default function MoreMenuBody({ at, labelledBy, peek, onStep, onClose }: MoreMenuProps & { readonly at: 0 | 1; readonly labelledBy: string; readonly onClose: (refocus: boolean) => void }) {
   const menu = useRef<HTMLDivElement>(null);
   const items = () => [...(menu.current?.querySelectorAll<HTMLElement>("[role=menuitem]") ?? [])];
-  useEffect(() => items()[at]?.focus(), [at]);
+  // 본문 청크를 받는 동안 포커스가 트리거 밖 컨트롤로 갔으면 빼앗지 않고 닫는다(Codex r1 P2). 클릭으로 연 Safari = body
+  useEffect(() => {
+    const active = document.activeElement;
+    if (active === document.body || active?.id === labelledBy) items()[at]?.focus();
+    else onClose(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 열 때 1회(at이 바뀌면 다시)
+  }, [at]);
   const run = (redo: boolean, target: string | undefined) => {
     if (!target) return;
     // 포커스를 트리거로 먼저 — 실행 취소는 포커스 이동 없음(7절), 가 있던 줄이 사라지면 h2 "섹션"은 단축키 경로가 맡는다

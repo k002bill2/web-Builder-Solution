@@ -32,6 +32,8 @@ export interface MemoryCompareBoardOptions {
   readonly catalog: ComparisonCatalog;
   readonly library?: SectionLibrary;
   readonly initialBoard?: CompareBoard;
+  /** 빈 보드 id(기본 "board-current") — 로컬 영속은 세션마다 새 id: 복원된 확정 멱등 기록이 새 보드의 확정을 재생하지 않게(Codex r2 P1) */
+  readonly boardId?: string;
   readonly now?: () => string;
   readonly delay?: (call: BoardCall) => Promise<void> | void | undefined;
   readonly fail?: (call: BoardCall) => Error | undefined;
@@ -43,7 +45,7 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
   const { library = SECTION_LIBRARY, now = () => new Date().toISOString(), store = createStudioStore() } = options;
   /** 카탈로그에 없는 id를 담을 때만 생성 청크를 받아 넓힌다(SPEC m3p 6절 · MQ-M3P-7 A) — 그 뒤 조회·비교는 넓힌 카탈로그. 넓혀도 없으면 기존대로 unavailable */
   let catalog = options.catalog;
-  let board: CompareBoard = options.initialBoard ?? emptyBoard("board-current", now());
+  let board: CompareBoard = options.initialBoard ?? emptyBoard(options.boardId ?? "board-current", now());
   const counts = new Map<BoardMethod, number>();
 
   /** `commitGate`는 확정 쓰기가 ② 삽입 뒤에 부른다 — 던지면 store 트랜잭션이 ②를 버린다 */

@@ -4,8 +4,8 @@
  * (`import type` 포함, engineImportGuard). 문서 쓰기는 모두 `expectedRevision`이 필수 인자다(If-Match).
  */
 
-/** 저장 상태 문구(E-S06)·떠나기 경고 조건(E-S10)이 보는 저장 방식 */
-export type ProjectPersistence = "memory" | "server";
+/** 저장 상태 문구(E-S06)·떠나기 경고 조건(E-S10)이 보는 저장 방식 — local = 이 브라우저 IndexedDB(ADR-007 P1) */
+export type ProjectPersistence = "memory" | "local" | "server";
 
 /**
  * SPEC 8.3 오류 코드 모음. `DOC_EXISTS`는 오류가 아니라 `startDoc` create의 결정적 결과(8.3.1).

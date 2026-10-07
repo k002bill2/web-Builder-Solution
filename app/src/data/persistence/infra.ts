@@ -16,7 +16,8 @@ function reasonOf(error: unknown): string {
   }
 }
 
-export function toInfra(error: unknown, action: string): ProjectRepositoryError {
+/** `reason` = 원인을 아는 호출자가 직접(예: 복제 실패) — 없으면 오류 이름으로 고른다 */
+export function toInfra(error: unknown, action: string, reason = reasonOf(error)): ProjectRepositoryError {
   if (error instanceof ProjectRepositoryError) return error;
-  return new ProjectRepositoryError("INFRA", `${action} — ${reasonOf(error)}`);
+  return new ProjectRepositoryError("INFRA", `${action} — ${reason}`);
 }

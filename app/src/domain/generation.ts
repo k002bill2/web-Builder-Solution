@@ -82,6 +82,13 @@ export interface GenerationJob {
 }
 
 /** 종료 상태 — 화면 조회(1초 간격)를 멈춘다 (6.3) */
+/** 후보 진행 상태 → 잡 상태(메모리 생성 저장소 getJob · 영속 잡 검증 jobRecord가 함께 쓴다) — pending 있음 = running · 전부 성공 = succeeded · 일부 = partial · 0 = failed */
+export function stateOf(candidates: readonly Pick<CandidateResult, "status">[]): JobState {
+  if (candidates.some((c) => c.status === "pending")) return "running";
+  const ok = candidates.filter((c) => c.status === "succeeded").length;
+  return ok === candidates.length ? "succeeded" : ok > 0 ? "partial" : "failed";
+}
+
 export const isTerminal = (state: JobState): boolean => state === "succeeded" || state === "partial" || state === "failed";
 
 /** 엔진 `createDocFromCandidate` 첫 인자와 같은 구조 (L4c 이음새, 2a-05 8.2) */

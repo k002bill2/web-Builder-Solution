@@ -1,8 +1,8 @@
 {
-  "base": "19a97d0",
-  "note": "/studio 감량분 잠금 — ADR-004 개정 8 결정 1(영환님 2026-10-07 \"★A\"): STUDIO-OFF3 실측 128.19(병합 8596c43). 배분 ① B-M3P-06(M3P-6, base 2b67601) +0.04 → 128.23(편집기 새 문서 업종 문구 — memoryDocBook이 fixture 2청크를 import해 memoryProjectRepository 미리받기 목록 +2 파일명). 판정선 128.26. 배분 ② B-ER-09(ER-9, base 19a97d0) +0.32 → 128.55(편집기 툴바 \"더보기\" 버튼 — 메뉴 본문은 조작 뒤 MoreMenuBody 청크). 판정선 128.58. 배분 끝, 상한 128.67(판정선 128.70 = 개정 5 멈춤선). 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29)",
+  "base": "f2eaab3",
+  "note": "/studio 감량분 잠금 — ADR-004 개정 8 결정 1(영환님 2026-10-07 \"★A\"): STUDIO-OFF3 실측 128.19(병합 8596c43). 배분 ① B-M3P-06(M3P-6, base 2b67601) +0.04 → 128.23(편집기 새 문서 업종 문구 — memoryDocBook이 fixture 2청크를 import해 memoryProjectRepository 미리받기 목록 +2 파일명). 판정선 128.26. 배분 ② B-ER-09(ER-9, base 19a97d0) +0.32 → 128.55(편집기 툴바 \"더보기\" 버튼 — 메뉴 본문은 조작 뒤 MoreMenuBody 청크). 판정선 128.58. 배분 끝, 상한 128.67(판정선 128.70 = 개정 5 멈춤선). 판정: 진입 > 기준선 + toleranceKb · 렌더 JS > renderJsStopKb = 실패(SPEC m2c 7절 · IMG-AC-29) · ADR-004 개정 9·10 배분 P1a(PERSIST-P1a-2, base ab73c67): 진입 하이드레이션·저장 배선 +0.78(감량 4단계 뒤) → 129.33, Codex r1 P2 수정(cc6a5a9 — 쓰기 전 listSnapshots 진입 레코드) +0.02 → 129.35, Codex r2 수정(f2eaab3 — 로컬 영속 세션별 보드 id) +0.06 → 129.41. 판정선 129.44. 영속 진입 몫 상한 129.60(판정선 129.63), 한도 130 · 멈춤선 129.70(개정 9·10)",
   "eagerKb": {
-    "/studio/:projectId": 128.55
+    "/studio/:projectId": 129.41
   },
   "toleranceKb": 0.03,
   "renderJsStopKb": 89.7

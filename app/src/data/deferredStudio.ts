@@ -9,6 +9,8 @@ import type { GenerationRepository } from "./generationRepository";
 import { createMemoryProfileRepository } from "./memoryProfileRepository";
 import type { ProfileRepository } from "./profileRepository";
 import type { ProjectRepository } from "./projectRepository";
+import { readEntry, type LocalEntry } from "./persistence/entryRead";
+import type { LocalSync } from "./persistence/localSync";
 import { createSharedLoader } from "./sharedLoader";
 import { createStudioStore } from "./studioStore";
 
@@ -26,15 +28,30 @@ export const STUDIO_IMPORTS = {
   projects: () => import("./memoryProjectRepository"),
 };
 
-export function createDeferredStudio(loadCatalog: () => Promise<ComparisonCatalog>, imports: typeof STUDIO_IMPORTS = STUDIO_IMPORTS): DeferredStudio {
-  const store = createStudioStore();
+/** 로컬 영속(ADR-007 P1) — 진입 결과 + 조작 뒤 싱크 열기(탭당 1개) */
+export interface LocalStart {
+  readonly entry: LocalEntry;
+  readonly sync: (entry: LocalEntry) => Promise<LocalSync>;
+}
+
+/** 진입 하이드레이션(E0 안1-min) — main loadStudio가 진입 읽기를 기다린 뒤 store를 만든다. 읽기 실패·불일치 = 메모리(쓰기 0) */
+export const loadDeferredStudio = async (loadCatalog: () => Promise<ComparisonCatalog>) => {
+  const entry = await readEntry(/^\/studio\/([^/]+)/.exec(location.pathname)?.[1]).catch(() => undefined);
+  return createDeferredStudio(loadCatalog, STUDIO_IMPORTS, entry && { entry, sync: async (e) => (await STUDIO_IMPORTS.projects()).openLocal(e) });
+};
+
+export function createDeferredStudio(loadCatalog: () => Promise<ComparisonCatalog>, imports: typeof STUDIO_IMPORTS = STUDIO_IMPORTS, local?: LocalStart): DeferredStudio {
+  const state = local?.entry.state;
+  const sync = local && createSharedLoader(() => local.sync(local.entry));
+  const store = createStudioStore(state, sync && ((next) => void sync().then((s) => s.saveState(next), () => undefined)));
   return {
     profiles: createMemoryProfileRepository({ store }),
     board: createSharedLoader(async () => {
       const [{ createMemoryCompareBoardRepository }, catalog] = await Promise.all([imports.board(), loadCatalog()]);
-      return createMemoryCompareBoardRepository({ catalog, store });
+      // 보드는 영속 범위 밖 — 새로고침마다 빈 보드라 세션별 id로 멱등 네임스페이스를 나눈다(Codex r2 P1)
+      return createMemoryCompareBoardRepository({ catalog, store, ...(local && { boardId: `board-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}` }) });
     }),
     generations: createSharedLoader(async () => (await imports.generations()).createMemoryGenerationRepository({ store })),
-    projects: createSharedLoader(async () => (await imports.projects()).createMemoryProjectRepository({ store })),
+    projects: createSharedLoader(async () => (await imports.projects()).createMemoryProjectRepository({ store, ...(local && sync && { local: { entry: local.entry, sync } }) })),
   };
 }

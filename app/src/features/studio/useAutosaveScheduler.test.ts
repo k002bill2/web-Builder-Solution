@@ -342,6 +342,12 @@ describe("needsUnloadGuard (E-S10)", () => {
       expect(needsUnloadGuard("server", phase)).toBe(true);
     }
   });
+
+  it("로컬 영속(ADR-007 P1)은 서버와 같은 조건 — 저장됨·변경 없음이면 경고 0", () => {
+    for (const phase of ["idle", "dirty", "saving", "saved", "failed", "offline", "stale"] as const) {
+      expect(needsUnloadGuard("local", phase)).toBe(needsUnloadGuard("server", phase));
+    }
+  });
 });
 
 describe("createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4)", () => {

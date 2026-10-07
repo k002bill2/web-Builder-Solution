@@ -62,7 +62,7 @@ function makeState(fields: AutosaveState): AutosaveState {
   return Object.freeze(Object.fromEntries(entries) as unknown as AutosaveState);
 }
 
-/** E-S10 — 메모리는 늘(새로고침하면 문서가 사라진다), 서버는 저장 전 변경·저장 중·실패·오프라인·STALE일 때만 */
+/** E-S10 — 메모리는 늘(새로고침하면 문서가 사라진다), 서버·로컬(ADR-007 P1)은 저장 전 변경·저장 중·실패·오프라인·STALE일 때만 */
 export function needsUnloadGuard(persistence: ProjectPersistence, phase: AutosavePhase): boolean {
   if (persistence === "memory") return true;
   return phase !== "idle" && phase !== "saved";

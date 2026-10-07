@@ -34,6 +34,11 @@ describe("saveStatusText (E-S06~E-S09)", () => {
     expect(saveStatusText(saved, "server", NOW)).toBe("저장됨 · 12초 전");
   });
 
+  it("저장됨 — 로컬 영속(ADR-007 P1)은 '이 브라우저에 저장됨' + 상대 시각", () => {
+    expect(saveStatusText({ phase: "saved", lastSavedAt: NOW - 12_000 }, "local", NOW)).toBe("이 브라우저에 저장됨 · 12초 전");
+    expect(saveStatusText({ phase: "saved" }, "local", NOW)).toBe("이 브라우저에 저장됨");
+  });
+
   it("saved인데 lastSavedAt이 없으면 시각 없이 표시", () => {
     expect(saveStatusText({ phase: "saved" }, "memory", NOW)).toBe("이 탭에 저장됨");
   });

@@ -48,7 +48,7 @@ export function createWriteQueue(persistence: StudioPersistence): WriteQueue {
       ops = structuredClone(input);
     } catch (error) {
       // 복제 불가 값(함수 등) — 쓰기 0 · 순번·미확인 기록 변화 0, IDB 실패와 같은 Promise 오류 계약
-      return Promise.reject(toInfra(error, "저장할 내용을 복제하지 못했습니다"));
+      return Promise.reject(toInfra(error, "저장", "저장할 내용을 복제하지 못했습니다"));
     }
     seq += 1;
     const s = seq;

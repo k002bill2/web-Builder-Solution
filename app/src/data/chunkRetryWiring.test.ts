@@ -31,4 +31,10 @@ describe("조작 뒤 로더 배선", () => {
     expect(added).toHaveLength(1);
     expect("createStaticHtmlGenerator" in (await added[0]!())).toBe(true);
   });
+
+  it("영속 싱크 청크(localSync)도 retryableImport로 싼다 — Codex r2 P2(실패 뒤 재시도 = 새 URL)", async () => {
+    await import("./memoryDocBook");
+    const modules = await Promise.all(wrapped.map((load) => load()));
+    expect(modules.filter((m) => "openLocalSync" in m && !("createDocBook" in m))).toHaveLength(1);
+  });
 });

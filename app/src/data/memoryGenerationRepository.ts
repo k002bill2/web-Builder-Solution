@@ -6,7 +6,7 @@
  * 멱등: 키 = (profileId, version, libraryVersion, generatorVersion) — 있으면 그 잡을 그대로(계산 0). 요청 응답이 사라져도 다시 요청하면 같은 잡.
  * `delay`·`fail` 주입은 보드·프로필 구현과 같은 모양(요청 도착 전 · 응답 반환 전). `outcome`은 안별 실패 주입(부분 실패·재시도, P-S20·S21).
  */
-import type { CandidateId, CandidateResult, GenerationErrorCode, JobState } from "../domain/generation";
+import { stateOf, type CandidateId, type GenerationErrorCode, type JobState } from "../domain/generation";
 import type { ProfileVersion } from "../domain/profile";
 import type { SectionLibrary } from "../domain/sectionLibrary";
 import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
@@ -53,12 +53,6 @@ const keyOf = (record: ProfileVersion) => [record.profileId, record.version, rec
 const recordOf = (reader: StudioReader, profileId: string, version: number) => reader.versions(profileId).find((v) => v.version === version);
 
 /** 모든 안이 끝났으면 종료 상태, 아니면 running */
-function stateOf(candidates: readonly CandidateResult[]): JobState {
-  if (candidates.some((c) => c.status === "pending")) return "running";
-  const ok = candidates.filter((c) => c.status === "succeeded").length;
-  return ok === candidates.length ? "succeeded" : ok > 0 ? "partial" : "failed";
-}
-
 export function createMemoryGenerationRepository(options: MemoryGenerationOptions): GenerationRepository {
   const { store } = options;
   const counts = new Map<GenerationMethod, number>();

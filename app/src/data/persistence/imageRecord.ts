@@ -5,7 +5,6 @@
  * - 쓰기 = 문서 레코드와 같은 트랜잭션(문서가 참조하는데 이미지가 없는 저장 상태를 만들지 않는다). 정리 = 2a-05 5.9 참조 집합(`retainedIds`) 그대로.
  * - 읽기 검증 = 저장(변환기) 규칙과 1:1 — 형식 목록·바이트 서명(formatFromMagic)·폭 사다리(widthLadder)·변 길이·픽셀 한도·bytes = 변형본 합.
  */
-import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { formatFromMagic } from "../../features/studio/images/ingest/fileType";
 import { exceedsPixelLimit, MAX_SIDE } from "../../features/studio/images/ingest/header";
 import { widthLadder } from "../../features/studio/images/ingest/ladder";
@@ -15,6 +14,9 @@ import type { RenderImages } from "../../features/studio/images/store/types";
 import { SCHEMA_VERSION, checkEnvelope } from "./envelope";
 import type { DocRecord } from "./entryRead";
 import type { WriteOp } from "./studioPersistence";
+
+/** 문서 모양 = imageStore가 받는 PageDoc — engine을 직접 import하지 않는다(engineImportGuard: data/ 허용 목록 밖) */
+type PageDoc = Parameters<typeof retainedIds>[0];
 
 export const imageRecordId = (projectId: string, localId: string) => `${projectId}/${localId}`;
 

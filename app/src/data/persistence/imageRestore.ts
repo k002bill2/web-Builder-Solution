@@ -3,12 +3,14 @@
  * 저장된 문서·스냅샷의 참조 집합(5.9)만 읽어 레코드를 저장 규칙과 1:1로 검증(readImageRecord)하고, 슬롯 목표 폭 변형본으로 맵을 만든다(`addImage` —
  * 메타 WeakMap 재구성). 조립한 맵이 한도(checkLimits) 밖이면 아무것도 넣지 않는다. 읽지 못한 id는 맵에 없음 = 기존 잃은 이미지 경로(QB-10).
  */
-import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { IngestedImage } from "../../features/studio/images/ingest/types";
-import { addImage, checkLimits, slotTarget } from "../../features/studio/images/store/imageStore";
+import { addImage, checkLimits, slotTarget, type retainedIds } from "../../features/studio/images/store/imageStore";
 import type { ImageHost, RenderImages } from "../../features/studio/images/store/types";
 import { done, openForEntry, type DocRecord } from "./entryRead";
 import { imageRecordId, readImageRecord, recordRefs } from "./imageRecord";
+
+/** 문서 모양 = imageStore가 받는 PageDoc — engine을 직접 import하지 않는다(engineImportGuard: data/ 허용 목록 밖) */
+type PageDoc = Parameters<typeof retainedIds>[0];
 
 /** IDB 단건 읽기(진입 읽기 연결 함수 재사용) — 키마다 연결을 열지 않게 복원 1회에 연결 1개. 테스트가 메모리 가짜로 바꿔 끼운다 */
 export const IMAGE_READ = {

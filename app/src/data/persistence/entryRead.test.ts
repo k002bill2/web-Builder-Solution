@@ -3,8 +3,8 @@
  * undefined = 메모리(쓰기 0 — 더 새 레코드·깨진 봉투를 덮지 않는다) · {} = 첫 실행(local, 빈 상태).
  */
 import { describe, expect, it } from "vitest";
-import { SCHEMA_VERSION } from "./envelope";
-import { readEntry } from "./entryRead";
+import { DB_NAME, SCHEMA_VERSION, checkEnvelope } from "./envelope";
+import { ENTRY_DB_NAME, checkEntryEnvelope, readEntry } from "./entryRead";
 
 function fakeFactory(stores?: Record<string, Record<string, unknown>>) {
   const request = (result: unknown) => {
@@ -53,5 +53,24 @@ describe("readEntry", () => {
     expect(await readEntry("project-1", fakeFactory({ studio: { state: env("state", "state", {}, SCHEMA_VERSION + 1) }, docs: {} }).factory)).toBeUndefined();
     expect(await readEntry("project-1", fakeFactory({ studio: { state: env("state", "state", {}) }, docs: { "project-1": env("doc", "project-1", {}, 0) } }).factory)).toBeUndefined();
     expect(await readEntry("project-1", fakeFactory({ studio: { state: { nope: true } }, docs: {} }).factory)).toBeUndefined();
+  });
+});
+
+describe("checkEntryEnvelope — 진입 청크용 사본은 envelope 규칙과 같다", () => {
+  it("DB 이름 · 봉투 판정(ok·missing·mismatch(older·newer·비숫자)·invalid) 모두 checkEnvelope와 같음", () => {
+    expect(ENTRY_DB_NAME).toBe(DB_NAME);
+    const records: unknown[] = [
+      undefined,
+      null,
+      "text",
+      env("doc", "p1", { a: 1 }),
+      env("doc", "p1", { a: 1 }, SCHEMA_VERSION + 1),
+      env("doc", "p1", { a: 1 }, SCHEMA_VERSION - 1),
+      { ...env("doc", "p1", 1), schemaVersion: "1" },
+      env("state", "p1", {}),
+      env("doc", "p2", {}),
+      { schemaVersion: SCHEMA_VERSION, kind: "doc", id: "p1" },
+    ];
+    for (const record of records) expect(checkEntryEnvelope(record, "doc", "p1")).toEqual(checkEnvelope(record, "doc", "p1"));
   });
 });

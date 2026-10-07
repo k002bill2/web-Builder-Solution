@@ -173,6 +173,70 @@ describe("이미지 저장 — 문서 쓰기 트랜잭션에 Blob + 메타(P1b �
   });
 });
 
+describe("진행 중 이미지 쓰기 ≠ 저장됨(Codex r2 P1 · BRIEF-R3 ①)", () => {
+  /** 다음 write 하나를 잡아 두는 가짜 — 잡힌 순번을 실패시킬 수 있다 */
+  function held() {
+    const gate: { arm?: Promise<void>; seq?: number; failSeq?: number } = {};
+    const options: MemoryPersistenceOptions = {
+      commit: (n) => {
+        if (!gate.arm) return undefined;
+        const arm = gate.arm;
+        gate.arm = undefined;
+        gate.seq = n;
+        return arm;
+      },
+      fail: (n) => (n === gate.failSeq ? new DOMException("x", "QuotaExceededError") : undefined),
+    };
+    return { gate, persistence: createMemoryPersistence(options) };
+  }
+  const retitle = (doc: PageDoc, title: string): PageDoc => {
+    const next = { ...doc, meta: { ...doc.meta, title } };
+    return { ...next, hash: hashDoc(next) };
+  };
+
+  it("Codex 재현 — flush1(이미지 put) 미완료 중 flush2 제출 → flush1 실패 → flush2 성공 → 이미지 저장소에 있음 · 새 세션 복원", async () => {
+    const { gate, persistence } = held();
+    const { projects, doc } = await started(persistence);
+    const view = frame();
+    view.set(addImage({}, uuid(1), image(), 1920));
+    projects.images?.("project-1", view.images, view.publish);
+    let release!: () => void;
+    gate.arm = new Promise<void>((ok) => (release = ok));
+    const first = codeOf(projects.saveDoc("project-1", doc.revision, withImage(doc, uuid(1))));
+    await vi.waitFor(() => expect(gate.seq).toBeDefined());
+    const one = (await projects.getDoc("project-1"))!;
+    expect(one.hash).toBe(withImage(doc, uuid(1)).hash);
+    const second = codeOf(projects.saveDoc("project-1", one.revision, retitle(one, "둘째 저장")));
+    for (let i = 0; i < 30; i += 1) await Promise.resolve();
+    gate.failSeq = gate.seq;
+    release();
+    expect(await first).toBe("INFRA");
+    expect(await second).toBe("ok");
+    expect(await persistence.keys("images")).toEqual([imageRecordId("project-1", uuid(1))]);
+    const { view: again } = await reopen(persistence);
+    expect(again.images?.[uuid(1)]).toBeDefined();
+  });
+
+  it("delete도 같은 규칙 — 지우기(진행 중) 뒤 다시 참조하면 put을 다시 낸다 → 둘 다 성공해도 이미지가 남는다", async () => {
+    const { gate, persistence } = held();
+    const { projects, doc } = await started(persistence);
+    const view = frame();
+    view.set(addImage({}, uuid(1), image(), 1920));
+    projects.images?.("project-1", view.images, view.publish);
+    const one = await projects.saveDoc("project-1", doc.revision, withImage(doc, uuid(1)));
+    let release!: () => void;
+    gate.arm = new Promise<void>((ok) => (release = ok));
+    const first = codeOf(projects.saveDoc("project-1", one.revision, withImage(one, { kind: "placeholder", patternId: "diagonal" })));
+    await vi.waitFor(() => expect(gate.seq).toBeDefined());
+    const two = (await projects.getDoc("project-1"))!;
+    const second = codeOf(projects.saveDoc("project-1", two.revision, withImage(two, uuid(1))));
+    for (let i = 0; i < 30; i += 1) await Promise.resolve();
+    release();
+    expect([await first, await second]).toEqual(["ok", "ok"]);
+    expect(await persistence.keys("images")).toEqual([imageRecordId("project-1", uuid(1))]);
+  });
+});
+
 describe("편집기 이탈 = 이미지 맵 해제(Codex r1 P2 · BRIEF-R2 ②)", () => {
   it("등록 → 저장 진행 중 이탈(cleanup) → 그 저장은 이미지까지 기록 · 이탈 뒤 저장은 옛 맵을 쓰지 않는다(저장소 maps에 그 프로젝트 없음)", async () => {
     const persistence = createMemoryPersistence();

@@ -46,3 +46,14 @@
 - 구현 수정 1건: 복제 실패 단위 테스트(가짜 book 문서에 sections 없음)에서 imageOps가 참조 집합을 재다 던짐 → "넣을 맵도 지울 저장 id도 없으면 참조 집합을 재지 않는다" 조건(동작 같음, 계산 생략).
 - Ego Lite TaskSpace 22: 업로드 → 저장됨 → 새로고침 1회 → 유지 · 이탈→재진입 유지 · IDB 삭제 onsuccess · finish · listTaskSpaces []· 4337 종료.
 - 마감 게이트(d987302): typecheck 0 · lint 0 · build 0(129.57) · vitest 263/2297 exit 0. 서브에이전트 0.
+
+## BRIEF-R3 (Codex r2 수정 — 마지막 라운드)
+- [x] ① [P1] localSync 이미지 저장 집합 = 확인된 것 / 진행 중 구분 · Codex 재현 회귀 테스트
+- [ ] ② [P2] 복원 최종 한도 검사 = 화면의 현재 참조 집합(미저장 편집 + undo) · Codex 재현 회귀 테스트
+- [ ] ③ [P2] 이미지 참조 있을 때만 복원 청크 로드 · import 0/1 테스트 · /studio ≤ 129.60
+- [ ] 게이트(typecheck·lint·build·전체 vitest 1회) · REPORT "Codex r2 수정(BRIEF-R3)" 절
+
+### TDD 예측 ①
+- 새 테스트 "Codex 재현"(imagePersist.test): flush2가 제출 시 uuid1을 `stored`로 보고 put을 빼므로 flush1 실패 뒤 이미지 저장소 비어 있음 → `expected [] to deeply equal [project-1/…1]` 실패 1. "delete도 같은 규칙"(지우기 진행 중 → 다시 참조) = 지금은 제출 때 stored에서 빼 put을 다시 내므로 통과 예측(새 구현의 회귀 방지용).
+- 실측 RED: 215행 `expected [] to deeply equal [ Array(1) ]` 1건 · 나머지 8 통과 — 예측 일치.
+- GREEN: persistence 10파일 80 통과 · typecheck 0 · build 0 — /studio 129.58 → **129.60**(localSync가 진입 자동 로드에 포함 · 상한 딱 맞음, 넘지 않음) · 복원 진입 132.58. 실패한 op id는 확인 집합에서 빼 "모름"으로(put 재포함, delete는 큐가 다음 제출에 합침).

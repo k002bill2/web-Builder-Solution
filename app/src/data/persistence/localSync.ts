@@ -65,8 +65,10 @@ export async function openLocalSync(entry: LocalEntry, open: () => Promise<Studi
   if (entry.state) Object.values(entry.state).forEach((records: ReadonlyMap<string, unknown>) => records.forEach(deepFreeze));
   deepFreeze(entry.doc);
   let docs: ReadonlyMap<string, DocRecord>;
-  /** 저장된 이미지 레코드 id(P1b) — 제출마다 갱신(실패한 op는 큐가 같은 키의 다음 제출에 합친다) */
+  /** 커밋 확인된 이미지 레코드 id(P1b) — 트랜잭션 성공 뒤에만 갱신. 실패한 id는 "모름"으로 빼 다음 flush가 다시 put한다(Codex r2 P1) */
   let stored: ReadonlySet<string>;
+  /** 진행 중(미확인) 이미지 op — id → 그 op를 낸 제출. 다음 flush는 이 id의 put을 빼지 않는다 */
+  let inflight: ReadonlyMap<string, object> = new Map();
   try {
     if (entry.state) checkState(entry.state);
     docs = new Map((await persistence.getAll("docs")).map(readDoc));
@@ -97,14 +99,23 @@ export async function openLocalSync(entry: LocalEntry, open: () => Promise<Studi
       const sent = submitted.get(projectId);
       if (sent?.doc === record.doc && sent.snapshots === record.snapshots) return queue.retry(projectId);
       const nextHeads = new Map(heads).set(projectId, headOf(record.doc));
-      const imaging = imageOps(projectId, record, images, stored);
+      const settled = new Set([...stored].filter((id) => !inflight.has(id)));
+      const imaging = imageOps(projectId, record, images, settled, new Set([...stored, ...inflight.keys()]));
       const writing = queue.submit(projectId, [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA_VERSION, kind: "doc", id: projectId, data: record } }, statePut(nextHeads), ...imaging]);
       if (queue.status(projectId) === "pending") {
         submitted.set(projectId, record);
         heads = nextHeads;
-        const next = new Set(stored);
-        imaging.forEach((op) => (op.type === "put" ? next.add(op.record.id) : next.delete(op.id)));
-        stored = next;
+        const token = {};
+        const ids = imaging.map((op) => (op.type === "put" ? op.record.id : op.id));
+        inflight = new Map([...inflight, ...ids.map((id) => [id, token] as const)]);
+        const settle = (ok: boolean) => {
+          const next = new Set(stored);
+          // 성공 = op대로 반영 · 실패 = 모름(빼 둔다 — put은 다시 내고, delete는 큐가 다음 제출에 합친다)
+          imaging.forEach((op) => (ok && op.type === "put" ? next.add(op.record.id) : next.delete(op.type === "put" ? op.record.id : op.id)));
+          stored = next;
+          inflight = new Map([...inflight].filter(([, by]) => by !== token));
+        };
+        if (imaging.length) writing.then(() => settle(true), () => settle(false));
       }
       return writing;
     },

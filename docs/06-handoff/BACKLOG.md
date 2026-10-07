@@ -45,7 +45,7 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M3P-02 | M3P-4 QA QB-02 | 상세 섹션 계획·와이어 ↔ 렌더 불일치: gen-beauty-1 About "team-grid-3"(상세) vs 실렌더 "이야기+이미지" · 상세 섹션 7개(Footer 없음) vs 보드·편집기 8개 | Developer · M3′ 목적 직결 · ✅ M3P-5 `e62a48f` 닫힘(생성 15, 상세 = 렌더 1:1·8섹션) — 큐레이션 6은 B-M3P-05 |
 | B-M3P-03 | M3P-4 QA QB-05 경미 | 상세 화면에 "생성 조합" 표식 없음(buildNote 문장만) · 라이선스/생성 조합 Tag가 썸네일 header 내비·CTA를 덮음 | Designer → Developer |
 | B-M3P-04 | M3P-4 QA AC-B5 관찰 | 필터 토글 재마운트 때 썸네일 재요청(74건=21×재마운트, 260KB) — vite preview 캐시 헤더 영향 추정, 운영 서버 캐시 정책(`?v=` 고정 → immutable)에서 확인 | 배포 시 |
-| B-M3P-05 | M3P-5 기록 | 큐레이션 6개 상세 변형 이름이 렌더와 다름(ref-a About split→story 등)·ref-a Footer 없음·ref-c~f 섹션 자유 표기 — 맞추려면 큐레이션 픽스처 수정 승인 필요. 상세 와이어(`ReferencePreview`)는 전 레퍼런스 공통(MQ-M3P-6 A) | 영환님 승인 → Developer |
+| B-M3P-05 | M3P-5 기록 | 큐레이션 6개 상세 변형 이름이 렌더와 다름(ref-a About split→story 등)·ref-a Footer 없음·ref-c~f 섹션 자유 표기 — 맞추려면 큐레이션 픽스처 수정 승인 필요. 상세 와이어(`ReferencePreview`)는 전 레퍼런스 공통(MQ-M3P-6 A) | 영환님 승인 → Developer · ✅ M3P-7 `cb7527c` 닫힘(큐레이션 6 상세 = 렌더 1:1, G5 해시 갱신) |
 | B-M3P-06 | M3P-5 기록 | 편집기 새 문서는 여전히 `sampleCopy` 공통 문구 — 업종 문구 주입은 `/studio` 예산(여유 0.03) 재조정 선행 | 예산 결정 → Developer · ✅ M3P-6 `f1a2391` 닫힘(개정 8 배분 ① +0.04) |
-| B-M3P-07 | M3P-6 기록 | 3안 미리보기(`comparePreviews`·CompareDialog)는 SAMPLE_COPY 문구 — 편집 시작 뒤 업종 문구와 다름, 안내문 "편집 시작이 이 문서로 시작합니다"와 엄밀히 어긋남. 미리보기에도 `industryCopy` 적용(/profile 조작 뒤 청크, 판정 밖) 또는 안내문 수정 | Developer |
-| B-M3P-08 | ER-9 Jarvis 관찰 | 큐레이션 "동네 치과" 편집 문서에 About 섹션 2개(둘 다 "이야기 + 이미지" story) — `ENGINE_VARIANT_MAP`이 서로 다른 구조안 변형을 같은 엔진 변형으로 접는 것으로 추정(M3P-5 원인과 같은 계열). B-M3P-05와 함께 확인 | Developer |
+| B-M3P-07 | M3P-6 기록 | 3안 미리보기(`comparePreviews`·CompareDialog)는 SAMPLE_COPY 문구 — 편집 시작 뒤 업종 문구와 다름, 안내문 "편집 시작이 이 문서로 시작합니다"와 엄밀히 어긋남. 미리보기에도 `industryCopy` 적용(/profile 조작 뒤 청크, 판정 밖) 또는 안내문 수정 | Developer · ✅ M3P-7 `173eacd` 닫힘(미리보기 hero = 편집기 hero) |
+| B-M3P-08 | ER-9 Jarvis 관찰 | 큐레이션 "동네 치과" 편집 문서에 About 섹션 2개(둘 다 "이야기 + 이미지" story) — `ENGINE_VARIANT_MAP`이 서로 다른 구조안 변형을 같은 엔진 변형으로 접는 것으로 추정(M3P-5 원인과 같은 계열). B-M3P-05와 함께 확인 | Developer · ✅ M3P-7 `cb7527c` 닫힘(데이터 중복 3건 삭제·21개 전수 가드) |

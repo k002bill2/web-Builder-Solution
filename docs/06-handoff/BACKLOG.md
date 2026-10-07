@@ -37,7 +37,7 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-ER-06 | ER-3b Codex r4 P2 | 내보내기 진행 중 이미지 교체·삭제 시 "내보내기 전" 스냅샷 Blob이 보관 맵에서 prune될 수 있음(StudioLayout.tsx:371-373) → 스냅샷 생성 응답 시점에 참조 집합 갱신 | Developer ER-4 |
 | B-ER-07 | ER-3b Ego Lite | 변환 중 미리보기 차단 실브라우저 재현 실패(변환이 먼저 끝남)·CDP 캡처 타임아웃 → CPU 스로틀로 재확인·캡처 | QA ER-5 · ER-5 미재현(수단 미기록) → ER-5b · QFIX-QA 시도 무효(12MP 10.5MB가 TOO_LARGE 거절) → 10MB 미만 고화소 + 스로틀 ≥6으로 재시도 |
 | B-ER-08 | ER-4 Jarvis 판정 | U3 필드 편집 묶음(MQ-R5 ★A) 미이행 — 필드 기록이 삭제 전 문서까지 닿으면 `StudioLayoutImages.test.tsx` "삭제 → 필드 입력 → 되돌리기 무효화 → 이미지 빠짐" 단언과 충돌 → SPEC 결정 먼저(Designer) + 예산 | Designer → Developer |
-| B-ER-09 | ER-4b | U4 "더보기" 메뉴(실행 취소·다시 실행 항목 · <1280 "스냅샷" 이동) 미구현 — /studio 128.56 > 시도 조건 128.55. "스냅샷" 버튼은 모든 폭 툴바(SPEC 차이 유지) | Developer(예산 확보 후) |
+| B-ER-09 | ER-4b | U4 "더보기" 메뉴(실행 취소·다시 실행 항목 · <1280 "스냅샷" 이동) 미구현 — /studio 128.56 > 시도 조건 128.55. "스냅샷" 버튼은 모든 폭 툴바(SPEC 차이 유지) | Developer(예산 확보 후) · ✅ ER-9 `9b1e001` 더보기 실행 취소·다시 실행 닫힘(개정 8 배분 ② +0.33) — <1280 "스냅샷" 이동만 열림(여유 0.11) |
 | B-ER-10 | ER-5b QA P3 후보 | 스냅샷 대화상자를 Esc로 닫으면 포커스가 BODY(1024·1280, 재현 1회) — 테마 대화상자는 "테마 바꾸기"로 복귀. 닫힌 뒤 "스냅샷" 버튼으로 복귀 | Developer · ✅ QFIX `0415e74` 닫힘 |
 | B-ER-11 | ER-5b QA 관찰 P3 | 390에서 테마 적용 직후 알림 줄 "되돌리기"가 뷰포트 위(y=-337)라 안 보임(status라 보조기기는 읽음) — 알림 위치/스크롤 | Designer → Developer · ✅ QFIX `0415e74` 수정(단위) — 390 실화면 미확인 |
 | B-QA-01 | ER-5·5b QA 운영 | QA 문서 생성 경로만 ~10턴 — QA 레인 턴 예산 항목당 15턴+. Ego Lite 캡처: 창 minimized면 `Browser.setWindowBounds normal`, 스크롤된 fixed dialog는 `captureBeyondViewport:false`+뷰포트 clip(`er-5b-qa/lib.mjs shotV`) | Jarvis 브리프 |
@@ -48,3 +48,4 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M3P-05 | M3P-5 기록 | 큐레이션 6개 상세 변형 이름이 렌더와 다름(ref-a About split→story 등)·ref-a Footer 없음·ref-c~f 섹션 자유 표기 — 맞추려면 큐레이션 픽스처 수정 승인 필요. 상세 와이어(`ReferencePreview`)는 전 레퍼런스 공통(MQ-M3P-6 A) | 영환님 승인 → Developer |
 | B-M3P-06 | M3P-5 기록 | 편집기 새 문서는 여전히 `sampleCopy` 공통 문구 — 업종 문구 주입은 `/studio` 예산(여유 0.03) 재조정 선행 | 예산 결정 → Developer · ✅ M3P-6 `f1a2391` 닫힘(개정 8 배분 ① +0.04) |
 | B-M3P-07 | M3P-6 기록 | 3안 미리보기(`comparePreviews`·CompareDialog)는 SAMPLE_COPY 문구 — 편집 시작 뒤 업종 문구와 다름, 안내문 "편집 시작이 이 문서로 시작합니다"와 엄밀히 어긋남. 미리보기에도 `industryCopy` 적용(/profile 조작 뒤 청크, 판정 밖) 또는 안내문 수정 | Developer |
+| B-M3P-08 | ER-9 Jarvis 관찰 | 큐레이션 "동네 치과" 편집 문서에 About 섹션 2개(둘 다 "이야기 + 이미지" story) — `ENGINE_VARIANT_MAP`이 서로 다른 구조안 변형을 같은 엔진 변형으로 접는 것으로 추정(M3P-5 원인과 같은 계열). B-M3P-05와 함께 확인 | Developer |

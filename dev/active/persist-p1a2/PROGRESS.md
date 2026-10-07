@@ -44,8 +44,8 @@
 - [x] ①[P1] 새로고침 뒤 새 보드 확정이 이전 확정 멱등 재생 — 로컬 영속 세션마다 새 보드 id(멱등 네임스페이스)
 - [x] ②[P2] 스냅샷 복원 IDB 실패 뒤 재시도 STALE_DOC — 복원 멱등 기록(저장 경로와 같은 방식) → flush 재제출
 - [x] ③[P2] localSync 동적 import → retryableImport
-- [ ] 번들 실측(상한 129.60) · 필요 시 기준선 커밋
-- [ ] 게이트(typecheck·lint·build·vitest 1회) + REPORT "Codex r2 수정" 절 커밋
+- [x] 번들 실측(상한 129.60) · 필요 시 기준선 커밋 — 129.41 · `f73af1a`
+- [x] 게이트(typecheck·lint·build·vitest 1회 2275) + REPORT "Codex r2 수정" 절 커밋
 
 ### r2 TDD 예측 (RED 전 기록)
 - ① localSync.test "ref-a 확정 → 새로고침 → ref-b 확정": 새 보드 id `board-current`·revision 2가 이전과 같아 replayOf가 profile-1 재생 → `expected 'profile-1' to be 'profile-2'` RED 1건.

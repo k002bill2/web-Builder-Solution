@@ -114,3 +114,26 @@
 
 - Codex 실행 0(Jarvis 몫). 엔진·PageDoc 계약·docs·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge 0.
 - 남은 것: 생성 중 새로고침 실측(시나리오 밖) · /projects 빈 상태 문구 local 분기(P1c) · 이 마감 커밋들에 대한 Codex 재검증(Jarvis).
+
+## Codex r2 수정 (마지막 라운드, `f2eaab3` · 기준선 `f73af1a`)
+대상 = `codex-r2-jarvis.txt` 3건만. TDD: 예측 PROGRESS 기록 → RED 3건 예측 일치 → GREEN. RED 커밋 없음 · 단언 약화·skip 0. Red-Green: 수정 3파일만 되돌리면 3 failed / 복원 15 passed.
+
+| # | 재현(회귀 테스트) | 원인 | 수정 |
+|---|---|---|---|
+| ①P1 | localSync.test "ref-a 확정 → 새로고침 → 새 보드에서 ref-b 확정" — RED `expected 'profile-1' to be 'profile-2'` | 확정 멱등 기록(store commits)은 복원되는데 보드는 영속 범위 밖이라 같은 id `board-current`·같은 revision으로 다시 만들어져 `replayOf`가 이전 확정을 재생 | 보드 영속은 범위 밖 → **새 멱등 네임스페이스**: `createMemoryCompareBoardRepository`에 `boardId` 옵션(기본 `board-current`), `deferredStudio`가 로컬 영속일 때만 세션별 id(`board-<시각36><난수>`)를 넘긴다. 메모리 모드·테스트 동작 그대로 |
+| ②P2 | localSync.test "스냅샷 복원 IDB 실패 → 같은 요청 재시도" — RED `STALE_DOC: revision 2 ≠ 3` | 복원은 메모리 revision을 올린 뒤 IDB 실패 → 같은 요청 재시도가 STALE 판정에서 막혀 `flush`까지 못 감 | 저장 경로와 같은 방식 — DocBook `restores` 멱등 기록(키 `snapshotId\|expectedRevision`, 프로젝트당 마지막 1건). 재시도 = 재생 → `flush`가 같은 레코드를 보고 `queue.retry`(미확인 쓰기 재제출). 테스트가 IDB 문서·스냅샷 목록까지 확인 |
+| ③P2 | chunkRetryWiring.test "localSync도 retryableImport" — RED `expected [] to have a length of 1` | `openLocalSync`가 맨 `import()` — 청크 실패가 URL 단위로 캐시되면 새로고침 전까지 복구 불가 | `memoryDocBook`의 `loadLocalSync = retryableImport(() => import("./persistence/localSync"))` |
+
+- 한계(그대로 둠): ② 재생은 저장(saveDoc)과 같이 "마지막 성공 1건" 비교라, 복원 성공 뒤 다른 편집을 저장하고 같은 인자로 다시 복원하면 STALE 대신 이전 결과를 재생한다(저장 경로와 같은 성질 — 이번 범위 밖).
+- 번들: /studio 진입 129.35 → **129.41**(+0.06, 예측 +0.02~0.05 대비 +0.01 초과 — deferredStudio 세션 id 식) · 상한 129.60 이내 → 기준선 `f73af1a` "ADR-004 개정 9·10 배분 P1a" **129.41**(base f2eaab3, 판정선 129.44). 여유 0.19. 다른 라우트: /projects 101.20 · /compare 122.61 · /profile 119.86/122.33 · /catalog 100.05/102.39 · /references 97.30/99.64 (모두 한도 안).
+
+### 검증 (fresh, f73af1a 기준)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm run build` | exit 0 · /studio 129.41 / 130 · 기준선 129.41 + 0.03 |
+| `npx vitest run` 전체 1회 | exit 0 · 260 파일 · 2275 테스트 |
+
+- Codex 실행 0 · Ego Lite 0(브리프: 불필요) · 엔진·계약·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · main 5480 무접촉 · push/merge/삭제 0.
+- 남은 것: r3 없음 — 이 수정분 Codex 재검증 여부는 Jarvis 판단.

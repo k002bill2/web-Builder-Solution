@@ -1,0 +1,39 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a116eb-c657-7640-8279-769ea6213ce5).
+[codex] Reviewer started: changes against 'a07ba59'
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|persist' /Users/younghwankang/.codex/memories/MEMORY.md | he...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder|persist' /Users/younghwankang/.codex/memories/MEMORY.md | he... (exit 0)
+[codex] Running command: /bin/zsh -lc 'for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/youn...
+[codex] Command completed: /bin/zsh -lc 'for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/youn... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/persistence/imageRecord.ts app/src/features/studio/images/stor...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/persistence/imageRecord.ts app/src/features/studio/images/stor... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/persistence/imagePersist.test.ts app/src/data/persistence/imag...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/persistence/imagePersist.test.ts app/src/data/persistence/imag... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; cat app/src/features/studio/useDocSave.ts 2>/dev/null; rg -n 'de...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; cat app/src/features/studio/useDocSave.ts 2>/dev/null; rg -n 'de... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/persistence/entryRead.ts | head -65; cat app/src/features/stud...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/persistence/entryRead.ts | head -65; cat app/src/features/stud... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'requestExport|createSnapshot|snapshotsOf' app/src/data/memoryDocBook.ts;...
+[codex] Command completed: /bin/zsh -lc "rg -n 'requestExport|createSnapshot|snapshotsOf' app/src/data/memoryDocBook.ts;... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''), ts=require('\\''./app/node_modules/typ...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''), ts=require('\\''./app/node_modules/typ... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 읽기 전용 메모리 실행으로 동시 저장 실패 시 이미지 누락과 미저장 편집 중 복원 한도 초과를 재현했습니다. 이미지가 없는 진입에서도 복원 청크를 자동 로드하므로 번들...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against a07ba59
+
+읽기 전용 메모리 실행으로 동시 저장 실패 시 이미지 누락과 미저장 편집 중 복원 한도 초과를 재현했습니다. 이미지가 없는 진입에서도 복원 청크를 자동 로드하므로 번들 시나리오의 전제도 실제 동작과 다릅니다.
+
+Full review comments:
+
+- [P1] 이미지 저장 집합은 트랜잭션 성공 후 갱신하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1b/app/src/data/persistence/localSync.ts:104-106
+  같은 프로젝트의 다음 flush가 앞선 트랜잭션 완료 전에 제출되면, 아직 커밋되지 않은 이미지도 `stored`에 있으므로 다음 요청에서 이미지 put이 빠집니다. 이때 첫 트랜잭션이 실패하면 writeQueue는 제출 당시 아직 실패하지 않았던 이미지 op를 다음 요청에 합치지 못합니다. 직접 재현한 결과 두 번째 flush는 성공했지만 이미지 저장소는 비어 있어, 문서만 저장되고 새로고침 시 이미지가 사라집니다. 커밋된 이미지와 진행 중 이미지 쓰기를 구분하고, 뒤 요청이 앞 요청의 성공에 의존하지 않도록 처리해야 합니다.
+
+- [P2] 복원 한도를 실제 편집 중인 문서로 검사하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1b/app/src/data/persistence/imageRestore.ts:58-64
+  이미지 복원 중 사용자가 다른 슬롯에 이미지를 추가하고 2초 자동 저장 전에 복원이 끝나면, `latest()`는 화면의 최신 편집이 아니라 DocBook의 저장된 문서를 반환합니다. 따라서 `prev`에 새 이미지가 있어도 해당 슬롯 참조가 한도 계산에서 빠집니다. 저장된 20MB 이미지와 미저장 상태로 추가한 20MB 이미지로 직접 재현했으며, 둘 다 복원 맵에 남아 실제 화면 문서가 30MB 한도를 초과했습니다. 최종 검사에는 미저장 편집과 실행 취소 보관 문서까지 포함한 현재 참조 집합을 전달하거나, 복원 완료 전 업로드를 차단해야 합니다.
+
+- [P2] 이미지 참조 확인 후 복원 청크를 내려받으세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1b/app/src/data/memoryProjectRepository.ts:146-146
+  StudioLayout의 이미지 state는 마운트마다 `undefined`이므로, 로컬 모드에서는 이미지 참조가 없는 새 문서에서도 `loadImageRestore()`가 실행됩니다. 문서·참조 없음 검사는 청크를 받은 뒤 `restoreImages()` 내부에서 수행됩니다. 따라서 추가 청크가 저장 이미지 재방문에만 필요하다는 전제와 달리 일반 진입도 복원 시나리오의 약 132.55KB를 받으며, 기존 130KB 예산과 129.60KB 상한을 넘는데도 검사기는 129.58KB로 보고합니다. 복원할 이미지 참조가 있는지 청크 로드 전에 확인해야 합니다.

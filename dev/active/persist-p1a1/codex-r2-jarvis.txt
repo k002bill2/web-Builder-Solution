@@ -1,0 +1,39 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a114eb-5bc0-7171-bb4c-9400e8fcafc7).
+[codex] Reviewer started: changes against '2700242'
+[codex] Running command: /bin/zsh -lc "pwd; git status --short; git diff --stat 27002421a3a5f6528b3f8438bfdb70ebfafb37...
+[codex] Command completed: /bin/zsh -lc "pwd; git status --short; git diff --stat 27002421a3a5f6528b3f8438bfdb70ebfafb37... (exit 0)
+[codex] Running command: /bin/zsh -lc 'find .. -name AGENTS.md -o -name AGENTS.override.md; for d in /Users /Users/you...
+[codex] Command completed: /bin/zsh -lc 'find .. -name AGENTS.md -o -name AGENTS.override.md; for d in /Users /Users/you... (exit 0)
+[codex] Running command: /bin/zsh -lc "ls -a; find app dev -iname '*agents*'; cat app/src/data/persistence/{studioPers...
+[codex] Command completed: /bin/zsh -lc "ls -a; find app dev -iname '*agents*'; cat app/src/data/persistence/{studioPers... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/studioStore.ts app/src/domain/generation.ts app/src/data/memor...
+[codex] Command failed: /bin/zsh -lc "cat app/src/data/studioStore.ts app/src/domain/generation.ts app/src/data/memor... (exit 1)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/memoryGenerate.ts; rg -n 'axes\\.|plan.sections|plan.lint|atte...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/memoryGenerate.ts; rg -n 'axes\\.|plan.sections|plan.lint|atte... (exit 0)
+[codex] Running command: /bin/zsh -lc "node <<'NODE' const fs=require('fs'),path=require('path'),ts=require('./app/nod...
+[codex] Command failed: /bin/zsh -lc "node <<'NODE' const fs=require('fs'),path=require('path'),ts=require('./app/nod... (exit 1)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),path=require(\"path\"),ts=require(\"./node_mo...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),path=require(\"path\"),ts=require(\"./node_mo... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),path=require(\"path\"),ts=require(\"./node_mo...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),path=require(\"path\"),ts=require(\"./node_mo... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 타입 검사는 통과했습니다. 하지만 손상된 잡을 정상 복원하여 생성 진행이나 재시도를 깨뜨리는 검증 누락과, 큐 제출의 Promise 오류 계약을 벗어나는 복제 실패 처...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2700242
+
+타입 검사는 통과했습니다. 하지만 손상된 잡을 정상 복원하여 생성 진행이나 재시도를 깨뜨리는 검증 누락과, 큐 제출의 Promise 오류 계약을 벗어나는 복제 실패 처리가 남아 있습니다.
+
+Full review comments:
+
+- [P2] 잡 종료 상태와 후보 진행 상태의 일관성을 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a1/app/src/data/persistence/jobRecord.ts:54-56
+  `state: "succeeded"`인데 후보가 모두 `pending`인 레코드도 hidden 결과만 있으면 검증을 통과합니다. 이를 복원하면 `memoryGenerationRepository.getJob()`은 종료 상태라는 이유로 결과를 공개하지 않고 그대로 반환하며, 화면도 폴링을 중단합니다. 해당 순서를 재현했습니다. 종료 상태에는 pending 후보가 없어야 하고, 상태가 후보들의 성공·실패 결과와 일치하는지 확인하여 불일치는 `SCHEMA_INVALID`로 거부해야 합니다.
+
+- [P2] 모든 후보의 재시도 횟수를 필수로 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a1/app/src/data/persistence/jobRecord.ts:49-49
+  `attempts: {}` 또는 일부 후보 키가 빠진 레코드도 `readJobRecord()`가 정상 반환합니다. 그러나 `memoryGenerate.retryJob()`은 `attempts[id] += 1`을 수행하므로, 누락된 후보를 재시도하면 횟수가 `NaN`이 되어 실패 주입에 잘못된 값이 전달되고 다음 저장 레코드는 현재 검증으로도 복원할 수 없게 됩니다. A·B·C 각각의 유효한 정수 횟수를 필수로 확인해야 합니다.
+
+- [P2] 스냅샷 복제 실패도 Promise 오류로 반환하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1a1/app/src/data/persistence/writeQueue.ts:43-45
+  입력 데이터에 함수 등 structured clone이 불가능한 값이 있으면 이 줄에서 `DataCloneError`가 동기적으로 발생합니다. 따라서 `submit()`의 Promise에 연결한 오류 처리가 실행되지 않고, IDB 쓰기 오류와 달리 `INFRA` 분류도 적용되지 않습니다. 실제로 동기 예외와 상태 `undefined`를 확인했습니다. 제출 시점의 복제는 유지하되 복제 실패를 잡아 분류된 rejected Promise로 반환해야 합니다.

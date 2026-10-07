@@ -124,7 +124,7 @@
 | ②P2 | localSync.test "스냅샷 복원 IDB 실패 → 같은 요청 재시도" — RED `STALE_DOC: revision 2 ≠ 3` | 복원은 메모리 revision을 올린 뒤 IDB 실패 → 같은 요청 재시도가 STALE 판정에서 막혀 `flush`까지 못 감 | 저장 경로와 같은 방식 — DocBook `restores` 멱등 기록(키 `snapshotId\|expectedRevision`, 프로젝트당 마지막 1건). 재시도 = 재생 → `flush`가 같은 레코드를 보고 `queue.retry`(미확인 쓰기 재제출). 테스트가 IDB 문서·스냅샷 목록까지 확인 |
 | ③P2 | chunkRetryWiring.test "localSync도 retryableImport" — RED `expected [] to have a length of 1` | `openLocalSync`가 맨 `import()` — 청크 실패가 URL 단위로 캐시되면 새로고침 전까지 복구 불가 | `memoryDocBook`의 `loadLocalSync = retryableImport(() => import("./persistence/localSync"))` |
 
-- 한계(그대로 둠): ② 재생은 저장(saveDoc)과 같이 "마지막 성공 1건" 비교라, 복원 성공 뒤 다른 편집을 저장하고 같은 인자로 다시 복원하면 STALE 대신 이전 결과를 재생한다(저장 경로와 같은 성질 — 이번 범위 밖).
+- 한계(그대로 둠): ② 재생은 저장(saveDoc)과 같이 "마지막 성공 1건" 비교라, 복원 성공 뒤 다른 편집을 저장하고 같은 인자로 다시 복원하면 STALE 대신 이전 결과를 재생한다(저장 경로와 같은 성질 — 이번 범위 밖). 멱등 기록은 메모리 모드에도 적용 — `phase:"response"` 실패 뒤 같은 인자 재시도는 이제 STALE_DOC 대신 이전 결과 재생(저장·startDoc과 같은 동작, 기존 테스트 전부 통과).
 - 번들: /studio 진입 129.35 → **129.41**(+0.06, 예측 +0.02~0.05 대비 +0.01 초과 — deferredStudio 세션 id 식) · 상한 129.60 이내 → 기준선 `f73af1a` "ADR-004 개정 9·10 배분 P1a" **129.41**(base f2eaab3, 판정선 129.44). 여유 0.19. 다른 라우트: /projects 101.20 · /compare 122.61 · /profile 119.86/122.33 · /catalog 100.05/102.39 · /references 97.30/99.64 (모두 한도 안).
 
 ### 검증 (fresh, f73af1a 기준)
@@ -134,6 +134,7 @@
 | `npm run lint` | exit 0 |
 | `npm run build` | exit 0 · /studio 129.41 / 130 · 기준선 129.41 + 0.03 |
 | `npx vitest run` 전체 1회 | exit 0 · 260 파일 · 2275 테스트 |
+| `npx vitest run scripts/bundleBudget.test.mjs` | exit 0 · 17 테스트(기준선 고정값 f2eaab3·129.41) |
 
 - Codex 실행 0 · Ego Lite 0(브리프: 불필요) · 엔진·계약·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · main 5480 무접촉 · push/merge/삭제 0.
 - 남은 것: r3 없음 — 이 수정분 Codex 재검증 여부는 Jarvis 판단.

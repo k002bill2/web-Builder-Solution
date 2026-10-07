@@ -22,6 +22,8 @@ export interface SectionOps {
   readonly undoLast: () => PageDoc | undefined;
   /** 단축키 · "더보기" 실행 취소(false)/다시 실행(true) — 연산과 같은 사슬로 하나씩. 한 기록 = 반환(알림 이름) */
   readonly step: (redo: boolean, tell: StepTell) => Promise<UndoEntry | undefined>;
+  /** step이 지금 옮길 기록 이름("더보기" 항목) — 지금 문서와 이어지지 않으면 undefined(step도 아무것도 하지 않는다) */
+  readonly peekStep: (redo: boolean) => string | undefined;
   /** 기록이 쥔 문서 — 이미지 참조 집합(SPEC 3.5) */
   readonly held: readonly PageDoc[];
 }
@@ -85,6 +87,13 @@ export function useSectionOps({
     },
     [edit, stack],
   );
+  const peekStep = useCallback(
+    (redo: boolean) => {
+      const entry = redo ? stack.peekRedo() : stack.peek();
+      return entry && (redo ? entry.before : entry.after) === docRef.current ? entry.label : undefined;
+    },
+    [stack],
+  );
   // 단축키 리스너 — 첫 연산 뒤 1회 붙이고 언마운트 때 뗀다. 언마운트 뒤 끝난 연산은 붙이지 않는다(Codex fix2 P2)
   const unlisten = useRef<() => void>(undefined);
   const mounted = useRef(false);
@@ -139,5 +148,5 @@ export function useSectionOps({
   // 기록이 바뀌는 곳(연산 · 단축키 · 되돌리기)은 모두 edit로 문서도 바꾼다 — 문서 기준으로 다시 계산
   const held = useMemo(() => stack.reachable(doc), [stack, doc]);
 
-  return { series, run, canUndoLast, undoLast, step, held };
+  return { series, run, canUndoLast, undoLast, step, peekStep, held };
 }

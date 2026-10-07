@@ -30,6 +30,7 @@ import { useThemeSwap } from "./useThemeSwap";
 import { useSnapshots } from "./useSnapshots";
 import { StudioTabs, type StudioTab } from "./StudioTabs";
 import { StudioToolbar } from "./StudioToolbar";
+import { MoreMenu } from "./MoreMenu";
 import { StructureCanvas } from "./StructureCanvas";
 import { GateList } from "./GateList";
 import { Button } from "../ds/Button";
@@ -251,6 +252,8 @@ export function StudioLayout({
       historyKeys.current = undefined;
     };
   }, [snaps.preview, goTo, ops.step]);
+  // 툴바 "더보기"(ER-AC-U4) — 단축키와 같은 ops.step · 같은 알림·포커스 꼬리
+  const more = <MoreMenu peek={ops.peekStep} onStep={(redo) => ops.step(redo, { setNotice, goTo })} />;
   const gateState = useGateReport(doc, ops.series);
   const goToRow = useCallback(
     (row: GateRow) => {
@@ -412,6 +415,7 @@ export function StudioLayout({
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
         <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus}>
           {snaps.button}
+          {more}
           {gateButton}
         </StudioToolbar>
         {addDialog}
@@ -464,6 +468,7 @@ export function StudioLayout({
           </label>
           {widths}
           {snaps.button}
+          {more}
           {gateButton}
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
@@ -493,6 +498,7 @@ export function StudioLayout({
         {saveStatus}
         {widths}
         {snaps.button}
+        {more}
         {gateButton}
       </StudioToolbar>
       <div className="flex min-h-0 flex-1">

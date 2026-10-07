@@ -124,6 +124,16 @@ describe("메뉴 키보드 — 화살표 · Home/End · Esc (ER SPEC 7절)", () 
 });
 
 describe("Codex r1 — 잠금 · 포커스", () => {
+  it("메뉴에서 Tab = 닫고 포커스를 트리거에 둔 채 기본 Tab 이동(포커스 유실 0 · Codex r2 P2)", async () => {
+    await openStudio();
+    const menu = await openMenu();
+    const passed = fireEvent.keyDown(menu.getAllByRole("menuitem")[0]!, { key: "Tab" });
+    await act(async () => undefined);
+    expect(passed).toBe(true);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(trigger()).toHaveFocus();
+  });
+
   it("스냅샷 미리보기 중(트리거 aria-disabled) ArrowDown/ArrowUp/Enter로 메뉴가 열리지 않는다", async () => {
     const snap: ProjectSnapshot<PageDoc> = { snapshotId: "snapshot-1", projectId: "project-1", kind: "manual", name: "수동 1", createdAt: "2026-10-06T05:02:00.000Z", doc: sampleDoc(), profileVersion: sampleDoc().profileVersion, candidateId: sampleDoc().candidateId, hash: "h" };
     await openStudio({ repository: { listSnapshots: async () => [snap] } });

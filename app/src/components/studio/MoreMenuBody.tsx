@@ -10,7 +10,7 @@ const ITEMS = [
 
 /**
  * "더보기" 메뉴 본문(조작 뒤 청크 · ER-AC-U4) — 항목 = 단축키와 같은 함수 · 알림은 그 함수가 낸다(편집 알림 1문장).
- * 비활성 = `aria-disabled` + 보이는 이유(포커스는 받는다). 화살표 순환 · Home/End · Esc = 닫고 트리거로 · Tab·바깥 포커스 = 닫기
+ * 비활성 = `aria-disabled` + 보이는 이유(포커스는 받는다). 화살표 순환 · Home/End · Esc·Tab = 닫고 트리거로(Tab은 이어서 기본 이동) · 바깥 포커스 = 닫기
  */
 export default function MoreMenuBody({ at, labelledBy, peek, onStep, onClose }: MoreMenuProps & { readonly at: 0 | 1; readonly labelledBy: string; readonly onClose: (refocus: boolean) => void }) {
   const menu = useRef<HTMLDivElement>(null);
@@ -34,7 +34,8 @@ export default function MoreMenuBody({ at, labelledBy, peek, onStep, onClose }: 
     const to = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: list.length - 1 }[e.key];
     if (to !== undefined) list[(to + list.length) % list.length]?.focus();
     else if (e.key === "Escape") onClose(true);
-    else if (e.key === "Tab") return onClose(false);
+    // 트리거로 먼저 옮긴 뒤 기본 Tab 이동 — 포커스한 항목이 사라져 body로 떨어지지 않게(Codex r2 P2)
+    else if (e.key === "Tab") return onClose(true);
     else return;
     e.preventDefault();
   };

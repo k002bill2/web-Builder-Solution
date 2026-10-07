@@ -49,7 +49,7 @@
 
 ## BRIEF-R3 (Codex r2 수정 — 마지막 라운드)
 - [x] ① [P1] localSync 이미지 저장 집합 = 확인된 것 / 진행 중 구분 · Codex 재현 회귀 테스트
-- [ ] ② [P2] 복원 최종 한도 검사 = 화면의 현재 참조 집합(미저장 편집 + undo) · Codex 재현 회귀 테스트
+- [x] ② [P2] 복원 최종 한도 검사 = 화면의 현재 참조 집합(미저장 편집 + undo) · Codex 재현 회귀 테스트
 - [ ] ③ [P2] 이미지 참조 있을 때만 복원 청크 로드 · import 0/1 테스트 · /studio ≤ 129.60
 - [ ] 게이트(typecheck·lint·build·전체 vitest 1회) · REPORT "Codex r2 수정(BRIEF-R3)" 절
 
@@ -57,3 +57,9 @@
 - 새 테스트 "Codex 재현"(imagePersist.test): flush2가 제출 시 uuid1을 `stored`로 보고 put을 빼므로 flush1 실패 뒤 이미지 저장소 비어 있음 → `expected [] to deeply equal [project-1/…1]` 실패 1. "delete도 같은 규칙"(지우기 진행 중 → 다시 참조) = 지금은 제출 때 stored에서 빼 put을 다시 내므로 통과 예측(새 구현의 회귀 방지용).
 - 실측 RED: 215행 `expected [] to deeply equal [ Array(1) ]` 1건 · 나머지 8 통과 — 예측 일치.
 - GREEN: persistence 10파일 80 통과 · typecheck 0 · build 0 — /studio 129.58 → **129.60**(localSync가 진입 자동 로드에 포함 · 상한 딱 맞음, 넘지 않음) · 복원 진입 132.58. 실패한 op id는 확인 집합에서 빼 "모름"으로(put 재포함, delete는 큐가 다음 제출에 합침).
+
+### TDD 예측 ②
+- 새 테스트 "Codex r2 재현"(imageRestore.test): latest()가 끝까지 저장 문서(uuid1만 참조)라 prev의 uuid2(20MB)가 한도 계산에서 빠져 둘 다 병합 → `page` ≈ 40MB > 30MB 단언 실패 1(toBeLessThanOrEqual). 기존 6건 통과.
+- 선택: 진입 청크 증가 0 — 편집 틀은 맵을 참조 집합(문서 ∪ 되돌릴 문서 ∪ 보관 문서)으로 렌더 중 가지치기하므로 prev의 id는 모두 화면이 참조 중이다. 최종 검사에서 prev id를 "켜진 참조"로 더한 문서로 checkLimits = 현재 참조 집합의 상한(보수적 — undo만 참조하는 prev도 페이지에 셈 → 복원분이 덜 들어갈 수는 있어도 넘지는 않음). StudioLayout·ImageKeeper 수정 0.
+- 실측 RED: `expected 41943170 to be less than or equal to 31457280` 1건 · 기존 5건 통과(예측 "6건"은 셈 오기 — 실제 기존 5건). GREEN: src/data 32파일 279 · typecheck 0 · lint 0.
+- 번들: /studio 129.57(진입 증가 0) · 복원 진입 132.55 → 132.60(멈춤선 132.58 초과 → 브리프 허용대로 기준선 갱신, 133.70 안) — m2cBaseline·bundleBudget.test 고정값 같은 커밋. build 0 · bundleBudget 17.

@@ -108,4 +108,18 @@ describe("restoreImages", () => {
     expect(Object.keys(images!)).toEqual([uuid(2)]);
     expect(images![uuid(2)]).toBe(mine[uuid(2)]);
   });
+  it("Codex r2 재현 — 저장된 20MB 복원이 늦는 동안 미저장 상태로 다른 슬롯에 20MB 추가(저장 문서는 그대로) → 복원 완료 → 최종 페이지 30MB 이하 · 사용자 이미지는 남는다", async () => {
+    const MB = 1024 * 1024;
+    const variants = Object.fromEntries(widthLadder(800).map((w, i) => [w, i === 0 ? new Blob([new Uint8Array(makePng({ width: w, height: 10 })), new Uint8Array(20 * MB)], { type: "image/png" }) : png(w)]));
+    const big: IngestedImage = { variants, width: 800, height: 400, format: "png", bytes: Object.values(variants).reduce((sum, b) => sum + b.size, 0) };
+    const saved = recordOf(setSlot(sampleDoc(), "s-hero", "image", slot(uuid(1))));
+    IMAGE_READ.read = stored([[uuid(1), big]]);
+    // 2초 자동 저장 전 — latest()는 끝까지 저장 문서(uuid2 참조 없음)
+    const mine = addImage({}, uuid(2), { ...image(640), bytes: 20 * MB }, 1280);
+    const { images } = await run(saved, mine, () => saved);
+    const page = Object.values(images!).reduce((sum, img) => sum + imageMeta(img)!.bytes, 0);
+    expect(page).toBeLessThanOrEqual(30 * MB);
+    expect(Object.keys(images!)).toEqual([uuid(2)]);
+    expect(images![uuid(2)]).toBe(mine[uuid(2)]);
+  });
 });

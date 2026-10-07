@@ -36,7 +36,7 @@ const targetOf = (docs: readonly PageDoc[], localId: string) => {
 
 /**
  * latest = 저장소 문서·스냅샷을 그때그때 읽는다 — 시작에 한 번(복원 대상), 복원이 끝난 때 한 번 더(최신). 복원 중 사용자가 넣은 이미지(prev)가 이기고, 복원분은 하나씩 더해
- * 최신 문서·참조 집합 + 병합 맵의 checkLimits(업로드와 같은 함수)를 넘기면 뺀다 = 잃은 이미지 경로(Codex r1 P2 · BRIEF-R2 ③)
+ * 최신 문서 + prev id(미저장 편집·되돌릴 문서가 쓰는 중) 참조 집합 + 병합 맵의 checkLimits(업로드와 같은 함수)를 넘기면 뺀다 = 잃은 이미지 경로(Codex r1·r2 P2)
  */
 export async function restoreImages(projectId: string, latest: () => Partial<DocRecord> | undefined, publish: ImageHost[1]): Promise<void> {
   const record = latest();
@@ -57,11 +57,15 @@ export async function restoreImages(projectId: string, latest: () => Partial<Doc
   if (Object.keys(restored).length === 0 || !checkLimits(doc, undefined, restored, snapshots).ok) return;
   const last = latest();
   const now = last?.doc ? { doc: last.doc as unknown as PageDoc, snapshots: (last.snapshots ?? []).map((s) => s.doc as unknown as PageDoc) } : { doc, snapshots };
-  publish((prev) =>
-    Object.entries(restored).reduce<RenderImages | undefined>((acc, [localId, image]) => {
+  publish((prev) => {
+    // 편집 틀은 맵을 화면의 참조 집합(미저장 편집 문서 ∪ 되돌릴 문서 ∪ 보관 문서)으로 가지치기한다 — prev id는 모두 화면이 쓰는 중.
+    // 저장 문서에 prev id를 켜진 참조로 더해 잰다 = 현재 참조 집합의 상한(보수적 · 진입 청크 증가 0 · Codex r2 P2)
+    const held = { slots: Object.fromEntries(Object.keys(prev ?? {}).map((id) => [id, { source: id, enabled: true }])) } as unknown as PageDoc["sections"][number];
+    const screen = { ...now.doc, sections: [...now.doc.sections, held] };
+    return Object.entries(restored).reduce<RenderImages | undefined>((acc, [localId, image]) => {
       if (acc?.[localId]) return acc;
       const next = { ...acc, [localId]: image };
-      return checkLimits(now.doc, undefined, next, now.snapshots).ok ? next : acc;
-    }, prev),
-  );
+      return checkLimits(screen, undefined, next, now.snapshots).ok ? next : acc;
+    }, prev);
+  });
 }

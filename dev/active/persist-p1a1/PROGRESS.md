@@ -3,9 +3,9 @@
 - [x] P0: BRIEF 커밋
 - [x] 1. StudioPersistence 어댑터 + 메모리 가짜 + IDB 구현 + 진입 읽기 함수 + 계약 테스트
 - [x] 2. 직렬 쓰기 큐 + StoredJob 직렬화 테스트
-- [ ] Ego Lite (선택)
-- [ ] 게이트: typecheck · lint · build(번들 /studio ≈0) · 전체 vitest
-- [ ] REPORT
+- [x] Ego Lite (선택) — 생략: 호출 진입점 = 금지된 앱 배선, P1a-2 새로고침 생존 실측(REPORT)
+- [x] 게이트: typecheck · lint · build(/studio 128.51 변화 0) · 전체 vitest 258/2246 exit0
+- [x] REPORT
 
 ## TDD 예측
 ### 커밋 A (어댑터·가짜·IDB·진입 읽기) — 구현 전

@@ -4,7 +4,7 @@
 - [x] P0 BRIEF 커밋 (`8e66c23`)
 - [x] 예산 스파이크: 진입 골격(StudioLayout effect · memoryProjectRepository `images` · 복원 청크 로더)만 → `/studio` **129.54** (+0.13, 상한 129.60 안) — 이 배치 채택
 - [x] 1번 커밋: 이미지 저장 + 자동 복원 구현(저장·복원 배선이 같은 테스트 왕복이라 한 커밋 — 아래 기록)
-- [x] 2번 커밋 = 기준선 "ADR-004 개정 9·10 배분 P1b" `6a2f87b`(129.57, m2cBaseline · bundleBudget.test 고정값) · 가드 수정 `d987302`
+- [x] (브리프 2번 = 복원은 1번 커밋에 합침) 기준선 커밋 "ADR-004 개정 9·10 배분 P1b" `6a2f87b`(129.57, m2cBaseline · bundleBudget.test 고정값) · 가드 수정 `d987302`
 - [x] Ego Lite(build + preview 4337) 업로드 → 저장됨 → 새로고침 → 직접 진입 유지 · 이탈 후 재진입 유지 → 정리
 - [x] 게이트: typecheck · lint · build · 전체 vitest 1회
 - [x] REPORT

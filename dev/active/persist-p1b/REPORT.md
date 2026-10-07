@@ -1,7 +1,10 @@
 # PERSIST-P1b REPORT — 이미지 영속 · 새로고침/재진입 뒤 이미지 복원
 
 ## 판정 — 완료: 저장·자동 복원 구현 · `/studio` 진입 129.57 / 130(상한 129.60 이내) · Ego Lite 새로고침·재진입 이미지 유지 실측
-- 커밋: P0 `8e66c23` · 구현 `4950ccb` · 기준선 "ADR-004 개정 9·10 배분 P1b" `6a2f87b`(129.57, base 4950ccb) · 가드 수정 `d987302`(engineImportGuard — 타입 전용, 번들 0).
+- 커밋: P0 `8e66c23` · 구현(저장+복원 한 커밋 — 브리프의 1번 저장/2번 복원 분리를 합침: 배선 테스트가 저장→새 세션 복원 왕복이라 한 쌍) `4950ccb` · 기준선 "ADR-004 개정 9·10 배분 P1b" `6a2f87b`(129.57, base 4950ccb) · 가드 수정 `d987302`(engineImportGuard — 타입 전용, 번들 0).
+- **중간 커밋 상태(bisect용)**: `4950ccb` = engineImportGuard 실패 + check-bundle 실패(129.57 > 129.44) · `6a2f87b` = guard 실패. 전 게이트 통과는 `d987302`부터.
+- **턴 관리 [추정 — 직접 센 값 아님]**: 1번 커밋 30턴·2번 42턴·Ego Lite 45턴·REPORT 초안 56턴 기준을 모두 넘겼다(구현 커밋이 약 40턴째, REPORT 초안 약 65턴째).
+- Ego Lite 실측 빌드 = `4950ccb` 코드(이후 `d987302`는 타입만 — 번들 129.57 동일).
 
 ## 구현
 1. **저장** (`localSync.flush(projectId, book, images)` · `persistence/imageRecord.ts`)
@@ -34,7 +37,8 @@
 
 ## TDD
 - 예측 PROGRESS → RED: imageRecord·imageRestore 모듈 없음 · 계약 `p.keys is not a function` · Blob `expected {} to be an instance of Blob` — 예측 일치. 어긋남 1: imagePersist는 첫 RED 실행(src/test 포함)이 출력 없이 멈춰 중단, RED 단독 확인 못 함. RED 커밋 0.
-- GREEN: 새 테스트 imageRecord(10)·imageRestore(4)·imagePersist(5) + 계약 2건. 단언 약화·skip 0.
+- GREEN: 새 테스트 imageRecord(11)·imageRestore(4)·imagePersist(6 — 마감 때 "같은 세션 이탈→재진입(DocBook 분기)" 1건 추가) + 계약 2건 = +23.
+- Red-Green(imagePersist): flush의 이미지 op·복원 본문만 임시로 끄면 4 failed / 2 passed(실패 경로·메모리 모드) → 되돌리면 6 passed. 첫 RED 실행 미관측 어긋남은 이것으로 대체. 단언 약화·skip 0.
 - jsdom `structuredClone`은 Blob을 `{}`로 잃는다(실측) → `src/test/setup.ts`에 Blob 있을 때만 동작하는 보존 래퍼(제품 코드 우회 0). **단위 테스트는 배선만 증명하고 실제 IDB Blob 생존은 Ego Lite만 증명한다.**
 - 전체 1차 실행에서 engineImportGuard 실패 1건(새 data 모듈의 `import type PageDoc`) → `Parameters<typeof retainedIds>[0]` 타입 별칭으로 수정 `d987302`.
 
@@ -47,13 +51,13 @@
 - 정리: `deleteDatabase("design-studio")` = onsuccess → `databases()` = [] · `finish({keep:[]})` · `listTaskSpaces()` = [] · preview 종료, 4337 리슨 0. 새로고침 합계 1회. main 5480·영환님 창 무접촉.
 - 캡처는 `page.cdp("Page.captureScreenshot", { captureBeyondViewport:false, clip })` 4장.
 
-## 검증 (fresh, `d987302`)
+## 검증 (fresh — build는 `d987302`, typecheck·lint·vitest는 마감 tip)
 | 명령 | 결과 |
 |---|---|
 | `npm run typecheck` | exit 0 |
 | `npm run lint` | exit 0 |
 | `npm run build` | exit 0 · /studio 129.57 / 130 · 기준선 129.57 + 0.03 · 전 행 한도 안 |
-| `npx vitest run` 전체 1회 | exit 0 · 263 파일 · 2297 테스트 |
+| `npx vitest run` 전체 1회(tip) | exit 0 · 263 파일 · 2298 테스트(기준 2275 → +23) |
 
 ## 남은 것 · P1c/P1d 입력
 - 위 "Jarvis 결정 항목"(복원 청크 자동 분류).

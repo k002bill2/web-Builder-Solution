@@ -123,6 +123,22 @@ describe("이미지 저장 — 문서 쓰기 트랜잭션에 Blob + 메타(P1b �
     expect(Object.keys(imageMeta(restored!)!.variants)).toEqual(Object.keys(img.variants));
   });
 
+  it("같은 세션 편집기 이탈 → 재진입(새로고침 없음 · DocBook 문서) → 이미지·메타 복원", async () => {
+    const persistence = createMemoryPersistence();
+    const { projects, doc } = await started(persistence);
+    IMAGE_READ.read = (key) => persistence.get("images", key);
+    const img = image();
+    const view = frame();
+    view.set(addImage({}, uuid(1), img, 1920));
+    projects.images?.("project-1", view.images, view.publish);
+    await projects.saveDoc("project-1", doc.revision, withImage(doc, uuid(1)));
+    // 편집 틀이 사라졌다가 다시 마운트(맵 없음)
+    const again = frame();
+    projects.images?.("project-1", undefined, again.publish);
+    await vi.waitFor(() => expect(again.publish).toHaveBeenCalled(), { timeout: 1000 });
+    expect(imageMeta(again.images![uuid(1)]!)).toMatchObject({ width: img.width, height: img.height, format: "png", bytes: img.bytes });
+  });
+
   it("이미지 지우기 저장 → 레코드 삭제 · 스냅샷이 참조하면 남는다(5.9 참조 집합)", async () => {
     const persistence = createMemoryPersistence();
     const { projects, doc } = await started(persistence);

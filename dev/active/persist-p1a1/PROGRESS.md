@@ -29,3 +29,18 @@
 ### 마감 보완 (조언 반영)
 - IDB write 중간 op 동기 예외 시 부분 자동 커밋 → `applyOps` + `tx.abort()`. 예측 RED: applyOps 없음 2건 실패 → 실측 일치 → GREEN 29. blocked 뒤 늦은 연결 close.
 - 마감 게이트 fresh: typecheck 0 · lint 0 · build 0(/studio 128.51) · vitest 258/2248 exit 0.
+
+## Codex r1 수정 (codex-r1-jarvis.txt P2 3건)
+- [x] ① writeQueue.submit 시점 스냅샷(structuredClone) — 제출 뒤 원본 변경이 저장·재시도에 영향 0
+- [x] ② retry(key) = 진행 중 요청 모두 대기 → 남은 실패 기록 재확인·재제출 (a·b 연속 제출 → a 실패·b 성공 회귀)
+- [x] ③ jobRecord 읽기 검증 강화 — 필수 잡 필드·후보별 결과 모양·pending 후보마다 hidden 결과, 위반 SCHEMA_INVALID
+- [x] 게이트: typecheck · lint · build(/studio 128.51 변화 0) · 전체 vitest exit0
+- [x] REPORT "Codex r1 수정" 절 + 커밋
+
+### TDD 예측 (구현 전)
+- ① 예측 RED: 새 테스트 2건(제출 뒤 data 변경 → 저장값 원본 / 실패 뒤 변경 → 재시도 저장값 원본) 실패 — 현재는 참조 보관이라 변경된 값이 저장됨.
+- ② 예측 RED: 새 테스트 1건 실패 — retry가 b의 Promise만 반환해 resolve 뒤 status=unconfirmed·a 값 undefined.
+- ③ 예측 RED: 새 테스트 1건 실패 — Codex 예시(pending 3개 + hidden [undefined×3])와 필수 필드 누락·후보 모양 위반 사례가 통과(throw 안 함). 기존 정상 왕복 테스트는 GREEN 유지.
+- 실측 RED: 4건 실패(writeQueue 3: 저장값 '바뀜' ×2 · status 'unconfirmed' / jobRecord 1: "expected function to throw") — 예측 일치(커밋 안 함).
+- 실측 GREEN: persistence 6파일 33 테스트 통과. 구현 = submit 입력 structuredClone · retry가 같은 키 pending을 끝날 때까지 기다린 뒤 실패 기록 재확인·재제출 · jobRecord zod에 필수 잡 필드·후보/hidden 결과 모양(discriminatedUnion)·A·B·C 순서·hidden id 일치·pending⇒hidden 존재 refine.
+- 게이트 fresh: typecheck 0 · lint 0 · build 0(/studio 진입 직후 128.51KB 변화 0) · vitest 258 파일/2252 테스트 exit 0.

@@ -117,4 +117,45 @@ describe("직렬 쓰기 큐", () => {
     expect(await valueOf(persistence, "b")).toBe(1);
     expect(queue.unconfirmed()).toEqual([]);
   });
+
+  it("제출 시점 스냅샷: 제출 뒤 원본 data를 바꿔도 저장값은 제출 당시 값", async () => {
+    const { persistence, queue } = setup();
+    const data = { title: "제출값" };
+    const saving = queue.submit("save-1", [put("a", data)]);
+    data.title = "바뀜";
+    await saving;
+    expect(await valueOf(persistence, "a")).toEqual({ title: "제출값" });
+  });
+
+  it("제출 시점 스냅샷: 실패 뒤 원본 data를 바꿔도 재시도는 제출 당시 값을 쓴다", async () => {
+    const { persistence, queue } = setup({ fail: (seq) => (seq === 1 ? new Error("x") : undefined) });
+    const data = { title: "제출값" };
+    await expect(queue.submit("save-1", [put("a", data)])).rejects.toMatchObject({ code: "INFRA" });
+    data.title = "바뀜";
+    await queue.retry("save-1");
+    expect(await valueOf(persistence, "a")).toEqual({ title: "제출값" });
+    expect(queue.unconfirmed()).toEqual([]);
+  });
+
+  it("진행 중 재시도: 같은 키 a·b 연속 제출 → retry → a 실패·b 성공 → retry 성공 = 그 키 미확인 0 · a 저장됨", async () => {
+    const gates: (() => void)[] = [];
+    const { persistence, queue } = setup({
+      commit: (seq) => (seq <= 2 ? new Promise<void>((ok) => gates.push(ok)) : undefined),
+      fail: (seq) => (seq === 1 ? new Error("x") : undefined),
+    });
+    const first = queue.submit("doc-save", [put("a", "a값")]);
+    const second = queue.submit("doc-save", [put("b", "b값")]);
+    const retried = queue.retry("doc-save");
+    for (let i = 0; i < 2; i += 1) {
+      await flush();
+      gates[i]?.();
+    }
+    await expect(first).rejects.toMatchObject({ code: "INFRA" });
+    await second;
+    await retried;
+    expect(queue.status("doc-save")).toBeUndefined();
+    expect(queue.unconfirmed()).toEqual([]);
+    expect(await valueOf(persistence, "a")).toBe("a값");
+    expect(await valueOf(persistence, "b")).toBe("b값");
+  });
 });

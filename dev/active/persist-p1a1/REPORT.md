@@ -43,3 +43,15 @@
 5. 같은 요청 키가 진행 중일 때 재제출하면 앞 요청의 실패 기록은 별도 항목으로 남는다(같은 키로 `unconfirmed()`에 1회 표시, 다음 submit/retry에 합쳐짐).
 6. 진입 closure 크기: `entryRead` → `infra` → `ProjectRepositoryError` + 한국어 사유 문구 3개를 진입으로 끌어온다. 진입 몫 +0.60 배분 안에서 P1a-2가 실측 — 넘치면 진입에서는 원 오류를 그대로 던지고 분류는 조작 뒤로 옮기는 안.
 - Codex 검증: Jarvis 몫(이 레인 실행 안 함).
+
+## Codex r1 수정 (codex-r1-jarvis.txt P2 3건)
+| 건 | 수정 | 회귀 테스트 |
+|---|---|---|
+| ① 제출 시점 스냅샷 | `writeQueue.submit`이 입력 ops를 `structuredClone` — 제출 뒤 원본 변경이 저장·재시도에 영향 0 | `writeQueue.test` "제출 시점 스냅샷" 2건(즉시 저장 · 실패 뒤 재시도) |
+| ② 진행 중 재시도 | `retry(key)`가 같은 키 진행 중 요청을 끝날 때까지 기다린 뒤 남은 실패 기록을 다시 확인·재제출. 성공 = 그 키 미확인 0 | Codex 재현 순서: a·b 연속 제출 → retry → a 실패·b 성공 → status 없음 · a 저장됨 |
+| ③ 잡 읽기 검증 | zod에 필수 잡 필드(profileId·version·libraryVersion·generatorVersion·seed·state·selected) · 후보/hidden 결과 모양(succeeded=plan · failed=errorCode·retryable·message) · A·B·C 순서 · hidden id = 후보 id · pending 후보마다 hidden 결과 존재 → 위반 SCHEMA_INVALID | Codex 예시(pending ×3 + hidden [undefined ×3]) 포함 위반 12건 |
+
+- TDD: RED 4건 실측(예측 일치, 커밋 안 함) → GREEN. 단언 약화·skip 0. 기존 테스트 수정 0.
+- 게이트(fresh): `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(/studio 진입 직후 128.51KB/129 변화 0) · `npm test -- --run` exit 0, 258 파일 · 2252 테스트(전체 실행은 확인 목적상 2회 돌았음 — 둘 다 exit 0).
+- 범위: 수정 파일 = `writeQueue.ts`·`writeQueue.test.ts`·`jobRecord.ts`·`jobRecord.test.ts`·PROGRESS·REPORT. 앱 배선·엔진·계약·m2cBaseline·검사기·docs·lock 수정 0, 새 의존성 0. Codex 재실행 안 함(Jarvis 몫).
+- 남은 판단(반영 안 함): 공개되지 않은 후보(succeeded/failed)의 hidden이 undefined가 아니어도 거부하지 않는다 — Codex 지적 범위 밖이고 getJob 진행에 영향 없음.

@@ -1,5 +1,6 @@
 /**
  * 직렬 쓰기 큐 (ADR-007 3절 쓰기 방식 · 부록 Codex 제약 3) — 메모리 store가 커밋한 변경을 요청 단위로 한 트랜잭션씩 기록한다.
+ * - 스냅샷: 제출 시점에 쓰기 내용을 복제(structuredClone)한다 — 제출 뒤 원본 변경은 저장·재시도에 영향 0.
  * - 성공 = 커밋 확인: `persistence.write`가 resolve(IDB complete)한 뒤에만 resolve. SaveStatus "저장됨"은 이 뒤에만(P1a-2 배선).
  * - 순서: 앞 요청이 끝난(성공·실패) 뒤 다음 요청을 쓴다 — 같은 레코드는 뒤 쓰기가 앞 쓰기를 덮는다.
  * - 실패: INFRA로 reject하고 그 요청의 쓰기를 "미확인"으로 남긴다. 실패가 큐를 막지는 않는다(다음 요청은 그대로 처리).
@@ -13,7 +14,7 @@ export type WriteStatus = "pending" | "unconfirmed";
 
 export interface WriteQueue {
   submit(key: string, ops: readonly WriteOp[]): Promise<void>;
-  /** 미확인 기록 재제출 · 진행 중이면 그 Promise · 둘 다 없으면(확인됨·덮임) 쓰기 0으로 resolve */
+  /** 진행 중 요청을 모두 기다린 뒤 남은 미확인 기록 재제출 · 없으면(확인됨·덮임) 쓰기 0으로 resolve. 성공 = 그 키 미확인 0 */
   retry(key: string): Promise<void>;
   /** 확인됐거나 모르는 키 = undefined */
   status(key: string): WriteStatus | undefined;
@@ -39,7 +40,9 @@ export function createWriteQueue(persistence: StudioPersistence): WriteQueue {
 
   const stillLatest = (ops: readonly WriteOp[], s: number) => ops.filter((op) => latest.get(recordKey(op)) === s);
 
-  function submit(key: string, ops: readonly WriteOp[]): Promise<void> {
+  function submit(key: string, input: readonly WriteOp[]): Promise<void> {
+    // 요청별 스냅샷 — 제출 뒤 호출자가 원본을 바꿔도 이 요청의 쓰기·재시도 내용은 그대로
+    const ops = structuredClone(input);
     seq += 1;
     const s = seq;
     const fresh = new Set(ops.map(recordKey));
@@ -71,9 +74,10 @@ export function createWriteQueue(persistence: StudioPersistence): WriteQueue {
 
   return {
     submit,
-    retry: (key) => {
-      if (failed.some((f) => f.key === key)) return submit(key, []);
-      return pending.get(key) ?? Promise.resolve();
+    retry: async (key) => {
+      // 진행 중 요청이 모두 끝난 뒤(직렬이라 마지막 요청이 가장 늦게 끝남) 남은 실패 기록을 다시 본다
+      for (let inFlight = pending.get(key); inFlight; inFlight = pending.get(key)) await inFlight.catch(() => undefined);
+      if (failed.some((f) => f.key === key)) await submit(key, []);
     },
     status: (key) => (pending.has(key) ? "pending" : failed.some((f) => f.key === key) ? "unconfirmed" : undefined),
     unconfirmed: () => [...new Set(failed.map((f) => f.key))],

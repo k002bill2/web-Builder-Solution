@@ -7,7 +7,7 @@ import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
 import type { GenerationRepository } from "../generationRepository";
 import { createMemoryCompareBoardRepository } from "../memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "../memoryGenerationRepository";
-import { createStudioStore, type StudioStore } from "../studioStore";
+import { createStudioStore, type StoredJob, type StudioStore } from "../studioStore";
 import { SCHEMA_VERSION } from "./envelope";
 import { jobPut, readJobRecord } from "./jobRecord";
 import { createMemoryPersistence } from "./studioPersistence";
@@ -70,5 +70,34 @@ describe("StoredJob 레코드", () => {
       undefined,
     ];
     for (const value of bad) expect(() => readJobRecord(value)).toThrow(expect.objectContaining({ code: "SCHEMA_INVALID" }));
+  });
+
+  it("읽기 검증 강화: 필수 잡 필드·후보별 결과 모양·진행 중 후보의 hidden 결과 위반 → SCHEMA_INVALID (Codex r1 예시 포함)", async () => {
+    const store = await confirmedStore();
+    const { jobId } = await createMemoryGenerationRepository({ store }).requestGeneration("profile-1", 1);
+    const stored = store.job(jobId)!;
+    const recordOf = (value: unknown) => (jobPut(value as StoredJob) as { record: unknown }).record;
+    expect(readJobRecord(recordOf(stored))).toEqual(stored);
+    const withoutProfile = Object.fromEntries(Object.entries(stored.job).filter(([name]) => name !== "profileId"));
+    const succeeded = stored.hidden.find((h) => h?.status === "succeeded")!;
+    const bad: unknown[] = [
+      // Codex r1 예시: 세 후보 모두 pending인 running 잡 + hidden [undefined ×3]
+      { ...stored, job: { ...stored.job, state: "running" }, hidden: [undefined, undefined, undefined] },
+      // 진행 중 후보 하나만 hidden 없음
+      { ...stored, hidden: [stored.hidden[0], undefined, stored.hidden[2]] },
+      // 필수 잡 필드 누락·타입 다름
+      { ...stored, job: withoutProfile },
+      { ...stored, job: { ...stored.job, version: "1" } },
+      { ...stored, job: { ...stored.job, state: "unknown" } },
+      // 후보별 결과 모양
+      { ...stored, job: { ...stored.job, candidates: stored.job.candidates.slice(0, 2) }, hidden: stored.hidden.slice(0, 2) },
+      { ...stored, job: { ...stored.job, candidates: stored.job.candidates.map((c) => ({ ...c, status: "done" })) } },
+      { ...stored, job: { ...stored.job, candidates: [{ id: "A", status: "succeeded" }, ...stored.job.candidates.slice(1)] }, hidden: [undefined, ...stored.hidden.slice(1)] },
+      { ...stored, job: { ...stored.job, candidates: [{ id: "A", status: "failed", errorCode: "INFRA" }, ...stored.job.candidates.slice(1)] }, hidden: [undefined, ...stored.hidden.slice(1)] },
+      { ...stored, hidden: [{ ...succeeded, id: stored.job.candidates[0]!.id, plan: undefined }, ...stored.hidden.slice(1)] },
+      { ...stored, hidden: [{ id: "A", status: "pending" }, ...stored.hidden.slice(1)] },
+      { ...stored, hidden: [stored.hidden[1], stored.hidden[0], stored.hidden[2]] },
+    ];
+    for (const value of bad) expect(() => readJobRecord(recordOf(value))).toThrow(expect.objectContaining({ code: "SCHEMA_INVALID" }));
   });
 });

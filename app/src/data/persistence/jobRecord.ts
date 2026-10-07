@@ -4,12 +4,28 @@
  * 읽기 검증은 zod — 조작 뒤 몫(진입 검증은 envelope 수제 확인만). 버전 불일치 때 미완료 잡 강등("다시 시도")은 P1a-2 배선·문구 Designer.
  */
 import { z } from "zod";
+import { CANDIDATE_IDS } from "../../domain/generation";
 import { ProjectRepositoryError } from "../projectRepository";
 import type { StoredJob } from "../studioStore";
 import { SCHEMA_VERSION, type Envelope } from "./envelope";
 import type { WriteOp } from "./studioPersistence";
 
 export const JOB_KIND = "job";
+
+const candidateId = z.enum(CANDIDATE_IDS);
+const plan = z.looseObject({
+  id: candidateId,
+  axes: z.looseObject({}),
+  sections: z.array(z.looseObject({})),
+  summary: z.tuple([z.string(), z.string(), z.string()]),
+  log: z.array(z.string()),
+  lint: z.array(z.looseObject({})),
+  hash: z.string(),
+});
+const succeeded = z.looseObject({ id: candidateId, status: z.literal("succeeded"), plan });
+const failed = z.looseObject({ id: candidateId, status: z.literal("failed"), errorCode: z.string(), retryable: z.boolean(), message: z.string() });
+const composed = z.discriminatedUnion("status", [succeeded, failed]);
+const candidate = z.discriminatedUnion("status", [succeeded, failed, z.looseObject({ id: candidateId, status: z.literal("pending") })]);
 
 const jobEnvelope = z
   .object({
@@ -18,12 +34,26 @@ const jobEnvelope = z
     id: z.string(),
     data: z.object({
       key: z.string(),
-      job: z.looseObject({ jobId: z.string(), candidates: z.array(z.looseObject({ id: z.string(), status: z.string() })) }),
-      hidden: z.array(z.unknown()),
+      job: z.looseObject({
+        jobId: z.string(),
+        profileId: z.string(),
+        version: z.number(),
+        libraryVersion: z.string(),
+        generatorVersion: z.string(),
+        seed: z.string(),
+        state: z.enum(["queued", "running", "succeeded", "partial", "failed"]),
+        candidates: z.array(candidate).length(CANDIDATE_IDS.length),
+        selected: candidateId.optional(),
+      }),
+      hidden: z.array(composed.optional()),
       attempts: z.record(z.string(), z.number()),
     }),
   })
-  .refine(({ id, data }) => id === data.job.jobId && data.hidden.length === data.job.candidates.length);
+  .refine(({ id, data }) => id === data.job.jobId && data.hidden.length === data.job.candidates.length)
+  // 후보 순서 = A·B·C · 숨은 결과는 같은 안 · 진행 중 후보마다 드러낼 결과가 있어야 getJob이 끝낸다
+  .refine(({ data: { job, hidden } }) =>
+    job.candidates.every((c, i) => c.id === CANDIDATE_IDS[i] && (hidden[i] ? hidden[i].id === c.id : c.status !== "pending")),
+  );
 
 export function jobPut(stored: StoredJob): WriteOp {
   const record: Envelope<StoredJob> = { schemaVersion: SCHEMA_VERSION, kind: JOB_KIND, id: stored.job.jobId, data: stored };

@@ -60,8 +60,9 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     return (book = mod.createDocBook(store, now, sync));
   });
   /** 문서 쓰기가 끝난 뒤 그 프로젝트 레코드를 IDB 커밋까지 기다린다(Codex 제약 3 — "저장됨"은 이 뒤) */
-  const kept = <T>(projectId: string, work: Promise<T>) =>
-    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!, maps.get(projectId)), result)) : work;
+  /** 맵은 부를 때 잡아 둔다 — 저장 중 편집기를 떠나 등록이 풀려도 그 저장은 이미지까지 쓴다(BRIEF-R2 ②) */
+  const kept = <T>(projectId: string, work: Promise<T>, held = maps.get(projectId)) =>
+    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!, maps.get(projectId) ?? held), result)) : work;
 
   /** work는 동기 — `commit()`을 부른 뒤에만 state를 바꾼다(던지면 변화 0) */
   async function call<T>(method: ProjectMethod, work: (commit: () => void) => T): Promise<T> {
@@ -123,14 +124,10 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       const first = await entered(projectId);
       return call("getDoc", () => book?.docOf(projectId) ?? first?.doc);
     },
-    saveDoc: async (projectId, expectedRevision, doc) => {
-      const docs = await bookOf();
-      return kept(projectId, call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)));
-    },
-    startDoc: async (projectId, profileVersion, candidateId, mode, expectedRevision) => {
-      const docs = await bookOf();
-      return kept(projectId, call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit)));
-    },
+    // kept를 청크 받기 전에 부른다 — 맵을 저장 요청 시점에 잡는다(BRIEF-R2 ②)
+    saveDoc: (projectId, expectedRevision, doc) => kept(projectId, bookOf().then((docs) => call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)))),
+    startDoc: (projectId, profileVersion, candidateId, mode, expectedRevision) =>
+      kept(projectId, bookOf().then((docs) => call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit)))),
     listSnapshots: async (projectId) => {
       const first = await entered(projectId);
       return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];
@@ -139,13 +136,15 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: write("resolveConflict"),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
-    requestExport: async (projectId, format, docRevision) =>
-      kept(projectId, (await bookOf()).requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work))),
+    requestExport: (projectId, format, docRevision) =>
+      kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),
     getExportJob: async (jobId) => book?.jobOf(jobId),
     ...(local && {
       images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
         maps.set(projectId, map);
         if (!map) void entered(projectId).then(async (first) => (await loadImageRestore()).restoreImages(projectId, book ? { doc: book.docOf(projectId), snapshots: book.snapshotsOf(projectId) } : first, publish)).catch(() => undefined);
+        // 편집 틀 effect cleanup — 편집기를 떠나면 등록을 푼다(Blob·메타가 앱 수명 동안 남지 않게 · Codex r1 P2)
+        return () => maps.delete(projectId);
       },
     }),
   };

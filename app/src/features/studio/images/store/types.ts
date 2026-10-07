@@ -20,5 +20,6 @@ export type ImageHost = readonly [
 
 /** 로컬 영속 이미지(ADR-007 P1b) — 로컬 저장소에만 있다. 편집 틀이 맵이 바뀔 때마다 부른다: 맵 등록(문서 저장 트랜잭션이 Blob을 함께 쓴다) · 맵 없음(마운트) = 복원 시작 */
 export interface ImageKeeper {
-  readonly images?: (projectId: string, images: RenderImages | undefined, publish: ImageHost[1]) => void;
+  /** 돌려주는 함수 = 편집 틀 effect cleanup(등록 해제 — 편집기를 떠날 때·맵이 바뀔 때) */
+  readonly images?: (projectId: string, images: RenderImages | undefined, publish: ImageHost[1]) => () => void;
 }

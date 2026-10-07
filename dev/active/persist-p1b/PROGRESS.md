@@ -9,6 +9,17 @@
 - [x] 게이트: typecheck · lint · build · 전체 vitest 1회
 - [x] REPORT
 
+## BRIEF-R2 (Codex r1 수정)
+- [x] ① ADR-004 개정 11 — 감량 1회(limits.ts 분리 · imageOps 분리) 133.25 → 132.47 · 시나리오 1행 한도 134 · 기준선 · 테스트 고정값 한 커밋 `c773178`(기존 129.57 그대로)
+- [x] ② 편집기 이탈 시 이미지 맵 해제(StudioLayout effect cleanup = images()가 돌려주는 함수 — StudioLayout 수정 0) · 진행 중 저장 맵 확보(kept를 청크 받기 전에 부름) — /studio 129.59 · 복원 132.48
+- [ ] ③ 복원 완료 시 최신 문서·참조 집합 + 최종 병합 맵으로 checkLimits · Codex 20MB+20MB 회귀 테스트
+- [ ] 게이트(typecheck·lint·build·전체 vitest 1회) · REPORT "Codex r1 수정(BRIEF-R2)" 절
+
+### TDD 예측 ②
+- 새 테스트 "이탈(cleanup) → 맵 해제 · 진행 중 저장은 이미지 포함": 지금 `images()`가 cleanup을 돌려주지 않아 이탈 뒤 저장이 옛 맵의 uuid2를 넣는다 → `expected [project-1/…1, project-1/…2] to deeply equal [project-1/…1]` 실패 1. 앞 단언(진행 중 저장 = uuid1 레코드 있음)은 지금 통과(맵을 계속 쥐므로).
+- Red-Green 추가: cleanup만 넣고 kept의 맵 확보를 빼면 진행 중 저장 단언이 실패해야 한다.
+- 실측: RED = 이탈 뒤 저장 단언 실패(uuid2 기록 — 예측 일치). 어긋남 1 = 그 단언의 기대값 내 오기(uuid1은 두 번째 문서에서 참조 밖이라 삭제 → 기대 `[]`, 단언 강도 동일). 첫 구현(kept 안에서 맵 확보)은 진행 중 저장 단언 실패 — saveDoc이 `await bookOf()` 뒤에 kept를 불러 이탈이 먼저였다 → saveDoc·startDoc·requestExport를 write와 같은 `kept(id, bookOf().then(…))` 모양으로. GREEN 7/7. Red-Green: `?? held` 제거 → 186행 실패 · 복원 → 통과.
+
 ## 설계(요약)
 - 저장: `localSync.flush(projectId, book, images)` — 문서 레코드·상태 레코드와 **같은 트랜잭션**에 이미지 op(큐 키 = projectId → INFRA·retry·미확인 재제출 그대로).
   - put = 참조 집합(`retainedIds(doc, undefined, 스냅샷 문서들)` — 5.9 함수 재사용) ∩ 편집 틀 맵 − 이미 저장된 id. 레코드 = 변형본 Blob 전부 + width·height·format·bytes(`imageMeta`).

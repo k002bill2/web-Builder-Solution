@@ -173,6 +173,23 @@ describe("이미지 저장 — 문서 쓰기 트랜잭션에 Blob + 메타(P1b �
   });
 });
 
+describe("편집기 이탈 = 이미지 맵 해제(Codex r1 P2 · BRIEF-R2 ②)", () => {
+  it("등록 → 저장 진행 중 이탈(cleanup) → 그 저장은 이미지까지 기록 · 이탈 뒤 저장은 옛 맵을 쓰지 않는다(저장소 maps에 그 프로젝트 없음)", async () => {
+    const persistence = createMemoryPersistence();
+    const { projects, doc } = await started(persistence);
+    const view = frame();
+    view.set(addImage(addImage({}, uuid(1), image(), 1920), uuid(2), image(900), 1920));
+    const release = projects.images?.("project-1", view.images, view.publish);
+    const saving = projects.saveDoc("project-1", doc.revision, withImage(doc, uuid(1)));
+    if (typeof release === "function") release();
+    const one = await saving;
+    expect(await persistence.keys("images")).toEqual([imageRecordId("project-1", uuid(1))]);
+    // 이탈 뒤(맵 없음) uuid2를 참조하는 저장 — 놓인 맵의 Blob을 쓰지 않는다(uuid1은 참조 밖이라 지워진다)
+    await projects.saveDoc("project-1", one.revision, withImage(one, uuid(2)));
+    expect(await persistence.keys("images")).toEqual([]);
+  });
+});
+
 describe("이미지 자동 복원 실패 = 잃은 이미지 경로(P1b ②)", () => {
   it("읽기 실패 → publish 0(맵 없음 = 기존 잃은 이미지 표시)", async () => {
     const persistence = createMemoryPersistence();

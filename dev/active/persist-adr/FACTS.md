@@ -56,6 +56,10 @@
 - MQ-C2 ★A 탭 메모리(B = IndexedDB +0.5~1주 [추정]) · MQ-S1 ★A: "이미지만 IndexedDB는 새로고침 생존 이득 0 — 문서 영속과 같이 가야 의미" · MQ-R1 ★A: 메모리 스냅샷, "백엔드(문서 영속)는 별도 ADR".
 - BACKLOG B-M2C-03: 새로고침 시 프로젝트 자체가 사라짐. B-M2C-01: HTML_MAX < 30MB.
 - ADR-004 개정 8 배분 끝: `/studio` 진입 기준선 128.55 · 판정선 128.58 · 상한 128.67(판정선 128.70) · 한도 129 · 최근 실측 128.51 (`app/scripts/m2cBaseline.json`, `dev/active/m3p-7/JARVIS_FINAL.md:4`). **여유 0.07KB** — 진입 청크에 저장소 코드를 넣을 자리 없음.
+- 예산 측정 방식: "진입 직후" = 첫 화면 + 조작 없이 받는 dynamic import의 정적 closure(`app/scripts/check-bundle-size.mjs:6·90`) — 지연 청크라도 진입 자동 로드면 예산에 든다.
+- 순번 id 추가: `project-${length+1}`(`memoryBoardConfirm.ts:142`). 프로젝트 삭제 메서드 없음(`projectRepository.ts:141-164`).
+- 이미지 변형본은 항상 `deps.encode` 재인코딩(`ingestImage.ts:68-87`), 원본 `bytes`(97행)는 헤더 판독용 — 결과에 원본 Blob 없음.
+- 가드: `app/src/test`에 `allow-same-origin`·`dangerouslySetInnerHTML` 금지 가드 없음(grep 0건).
 - 진입 청크 규칙: 저장소 구현은 이미 동적 import(`deferredStudio`), 판정 본문은 조작 뒤 청크(`memoryDocBook`), 이미지 보관소는 "진입에 import 금지"(types.ts 3행).
 - 보안 경계: 렌더 iframe `sandbox="allow-scripts"`(불투명 출처, `StructureCanvas.tsx:260`, `PreviewFrame.tsx:81`) — iframe 안 코드는 앱 출처 IndexedDB 접근 불가 [사실: 불투명 출처는 스토리지 접근 불가 — 웹 표준].
 - PRD: FR-EDT-06 자동저장 30초 이내(P0), FR-CMP-04 조직 내 공유(P1), FR-PUB-06 미리보기 공유 링크(P1) — 공유 기능은 서버 전제.

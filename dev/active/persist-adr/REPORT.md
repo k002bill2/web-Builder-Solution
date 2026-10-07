@@ -4,7 +4,7 @@
 
 ## 1. 결론
 
-★ **(a) 브라우저 IndexedDB 로컬 영속(문서·스냅샷·이미지 함께) → (b) 프로젝트 파일 묶음 내보내기·가져오기 → (c) 서버는 별도 ADR.** 서버·계정·새 의존성 0으로 새로고침 소실(B-M2C-03)을 푼다. 저장소 인터페이스는 바꾸지 않는다. 결정 항목 8개는 `docs/design/persistence/MQ.md`(P0~P7)에 정리했다.
+★ **(a) 브라우저 IndexedDB 로컬 영속(문서·스냅샷·이미지 함께) → (b) 프로젝트 파일 묶음 내보내기·가져오기 → (c) 서버는 별도 ADR.** 서버·계정·새 의존성 0으로 새로고침 소실(B-M2C-03)을 푼다. 저장소 인터페이스는 바꾸지 않는다. 결정 항목 9개는 `docs/design/persistence/MQ.md`(P0~P8)에 정리했다.
 
 ## 2. 산출물 (커밋)
 
@@ -15,7 +15,8 @@
 | `docs/design/persistence/ADR-007-DRAFT.md` | `46ae76c` |
 | `docs/design/persistence/MQ.md` | `c103a41` |
 | `docs/design/persistence/THREATS.md` | `4af4248` |
-| `dev/active/persist-adr/REPORT.md` | 이 커밋 |
+| `dev/active/persist-adr/REPORT.md`·PROGRESS 마감 | `93dd2bd` |
+| 조언자 지적 반영(번들 측정 방식·MQ-P5 B 분리·MQ-P8 프로젝트 삭제·단조 카운터·가드 부재·(b)(c) 이행/단계) | 이 커밋 |
 
 ## 3. 핵심 사실 (L1, 설계를 가른 것)
 
@@ -25,7 +26,8 @@
 4. PageDoc에 저장 형식 버전 없음 → 레코드 봉투에 `schemaVersion`(엔진 계약 불변).
 5. 이미지 메타는 `WeakMap<Blob>` → Blob 옆에 메타 함께 저장. 변형본은 재인코딩이라 EXIF 미보관.
 6. 스냅샷 상한·삭제 없음 → 영속 시 무한 누적 → MQ-P3.
-7. `/studio` 진입 128.51 / 판정선 128.58(여유 0.07) → KB 추정 대신 P1-E0 실측 관문(MQ-P5).
+7. `/studio` 진입 128.51 / 판정선 128.58(여유 0.07). "진입 직후"는 조작 없이 받는 dynamic import까지 센다(`check-bundle-size.mjs:6·90`) → 새로고침 뒤 직접 진입의 IDB 읽기기는 예산에 듦 → 하이드레이션 2단(진입 읽기기 / 조작 뒤 쓰기·판정) + P1-E0 실측 관문(MQ-P5, B1 = 개정 8 남은 0.12 · B2 = 멈춤선 상향은 구조 점검 선행).
+9. 프로젝트 삭제 메서드 없음 + 길이 기반 순번 → 삭제 도입 시 id 재발급 → 단조 카운터 영속(MQ-P3·P8).
 8. ADR-001 독립 저장소 → shared-infra 재사용은 ADR-001 개정 필요(MQ-P7 C).
 
 ## 4. 검증
@@ -40,7 +42,7 @@
 
 ## 5. 남은 일·차단
 
-- **영환님 결정 필요**: MQ-P0~P7 (회신 예 "P0 A · P1 A · … · P7 A").
+- **영환님 결정 필요**: MQ-P0~P8 (회신 예 "P0 A · P1 A · … · P8 A").
 - Jarvis: Codex review/adversarial 1라운드 · 확정 시 `docs/decisions/` 이동 · ADR 번호 확정(`REF-LLM-PIPELINE_BRIEF.md:178`이 ADR-007을 다른 제목으로 제안만 함).
 - 규모 추정(a 1.5~2.5주 · b 0.5~1주)은 L3 수준 — 레인 BRIEF에서 재측정.
 

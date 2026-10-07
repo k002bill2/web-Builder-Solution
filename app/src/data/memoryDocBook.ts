@@ -299,7 +299,8 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const expectedRevision = local?.base(projectId, requested, state.docs.get(projectId), doc.hash) ?? requested;
       const checked = checkSaveDoc(projectId, doc);
       if (!checked.ok) throw fail("SCHEMA_INVALID", checked.message);
-      const key = `${expectedRevision}|${doc.hash}`;
+      // 멱등 키 = 요청의 원래 revision — 보정(local.base)된 요청의 재시도도 같은 키로 재생된다(A 실패 → B 실패 → B 재시도)
+      const key = `${requested}|${doc.hash}`;
       const last = state.saves.get(projectId);
       if (last?.key === key) return last.doc;
       const current = state.docs.get(projectId);

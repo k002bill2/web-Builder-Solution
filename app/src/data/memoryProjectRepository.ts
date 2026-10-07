@@ -79,6 +79,12 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     <K extends SnapshotWrite>(method: K) =>
     (...args: Parameters<DocBook[K]>[0]) =>
       kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
+  /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
+  const entered = async (projectId: string) => {
+    const first = entry?.doc?.doc.projectId === projectId ? entry.doc : undefined;
+    if (!book && !first && entry?.state?.heads.has(projectId)) await bookOf();
+    return first;
+  };
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
   const summaryOf = (project: Project): ProjectSummary => {
@@ -108,10 +114,8 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
         return next;
       }),
     getDoc: async (projectId) => {
-      const first = entry?.doc?.doc.projectId === projectId ? entry.doc.doc : undefined;
-      // 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다
-      if (!book && !first && entry?.state?.heads.has(projectId)) await bookOf();
-      return call("getDoc", () => book?.docOf(projectId) ?? first);
+      const first = await entered(projectId);
+      return call("getDoc", () => book?.docOf(projectId) ?? first?.doc);
     },
     saveDoc: async (projectId, expectedRevision, doc) => {
       const docs = await bookOf();
@@ -121,7 +125,10 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       const docs = await bookOf();
       return kept(projectId, call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit)));
     },
-    listSnapshots: async (projectId) => book?.snapshotsOf(projectId) ?? [],
+    listSnapshots: async (projectId) => {
+      const first = await entered(projectId);
+      return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];
+    },
     createSnapshot: write("createSnapshot"),
     restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: write("resolveConflict"),

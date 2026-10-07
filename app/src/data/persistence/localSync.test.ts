@@ -74,6 +74,17 @@ describe("새로고침 생존 — 저장 → 레코드 → 새 store 복원 (D2 
     expect(next.revision).toBe(saved.revision + 1);
   });
 
+  it("스냅샷 있는 프로젝트 새로고침 → 쓰기 전 listSnapshots가 저장된 목록을 돌려준다(진입 문서 · 앱 안 이동 둘 다 — Codex r1 P2)", async () => {
+    const persistence = createMemoryPersistence();
+    const { projects, doc } = await started(persistence);
+    await projects.saveDoc("project-1", doc.revision, edit(doc, "스냅샷 앞"));
+    const snapshot = await projects.createSnapshot("project-1", "생존1");
+    const direct = await studioOn(persistence, await entryFrom(persistence, "project-1")).projects();
+    expect(await direct.listSnapshots("project-1")).toEqual([snapshot]);
+    const viaList = await studioOn(persistence, await entryFrom(persistence)).projects();
+    expect(await viaList.listSnapshots("project-1")).toEqual([snapshot]);
+  });
+
   it("진입 문서가 아닌 프로젝트(/projects → 앱 안 이동)도 문서 머리가 있으면 시드를 기다려 문서를 돌려준다", async () => {
     const persistence = createMemoryPersistence();
     const { projects, doc } = await started(persistence);
@@ -131,6 +142,19 @@ describe("저장됨 = IDB 커밋 확인 뒤 (Codex 제약 3)", () => {
     expect(await codeOf(projects.saveDoc("project-1", doc.revision, next))).toBe("INFRA");
     gate.fail = false;
     const saved = await projects.saveDoc("project-1", doc.revision, next);
+    expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc).toEqual(saved);
+  });
+
+  it("A 실패 → B 실패 → B 재시도: 보정된 요청도 원래 revision으로 멱등 재생된다(STALE_DOC 아님 — Codex r1 P2)", async () => {
+    const { gate, persistence } = gated();
+    const { projects, doc } = await started(persistence);
+    const b = edit(doc, "B 편집");
+    gate.fail = true;
+    expect(await codeOf(projects.saveDoc("project-1", doc.revision, edit(doc, "A 편집")))).toBe("INFRA");
+    expect(await codeOf(projects.saveDoc("project-1", doc.revision, b))).toBe("INFRA");
+    gate.fail = false;
+    const saved = await projects.saveDoc("project-1", doc.revision, b);
+    expect(saved).toMatchObject({ revision: doc.revision + 2, hash: b.hash });
     expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc).toEqual(saved);
   });
 

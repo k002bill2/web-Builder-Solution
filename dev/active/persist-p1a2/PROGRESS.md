@@ -30,7 +30,12 @@
 
 ## BRIEF-F 마감
 - [x] F1 Ego Lite 새로고침 생존 실측(편집 유지·/projects 유지·v1→v2 ✓, 스냅샷 목록 0개 ✗=P2② 재현) · 정리 완료
-- [ ] F2 감량 1회 + 예산 적용(ADR-004 개정 9·10 배분 P1a)
+- [x] F2 감량 1회(진입 봉투 확인 인라인 129.38→129.33, `ab73c67`) + 예산 적용 130·기준선 129.33(`b801ab3`) · build exit 0
 - [ ] F3 Codex r1 P2 ①(연속 실패 재시도 STALE) ②(직접 진입 listSnapshots) TDD
 - [ ] F4 스냅샷 목록 Ego Lite 재확인 1회
 - [ ] F5 게이트(typecheck·lint·build·vitest) + REPORT 마감
+
+### F3 TDD 예측 (RED 전 기록)
+- ① localSync.test "A 실패 → B 실패 → B 재시도": 지금은 B 재시도가 `STALE_DOC`로 reject(멱등 키가 보정 revision `2|B`로 기록, 재시도 키 `1|B`) → 단언 `resolves revision = doc.revision + 2`에서 RED 1건. 수정 = 멱등 키를 요청 원래 revision으로(`${requested}|hash`).
+- ② localSync.test "스냅샷 있는 프로젝트 새로고침 → 쓰기 전 listSnapshots": 진입 문서 경로 `[]` ≠ 1개 → RED 1건. 같은 테스트 안 비진입(/projects → 앱 안 이동) 경로도 `[]`. 수정 = 진입 레코드 스냅샷 반환 · 비진입은 getDoc처럼 시드 대기.
+- 번들 예측: memoryProjectRepository +0.02~0.05 → /studio 129.35~129.38(상한 129.60 이내, 기준선 갱신 필요 가능).

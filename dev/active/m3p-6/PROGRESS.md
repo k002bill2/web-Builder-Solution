@@ -5,15 +5,15 @@ base `2b67601` · P0 `2e400ff` · 2026-10-07
 ## 체크리스트
 - [x] P0 BRIEF 커밋 (`2e400ff`)
 - [x] S0 실측(아래)
-- [ ] TDD 예측 기록 → RED 확인(커밋 안 함)
-- [ ] 공용 문구 표 `src/data/industryCopy.ts` + thumbs import(G3 유지) · 썸네일 버전 `8d7310f2` 유지
-- [ ] 편집기 적용(레퍼런스 알면 업종 문구, 모르면 SAMPLE_COPY 폴백)
-- [ ] 테스트: 썸네일 h1 = 편집기 hero · 폴백 · 기존 단언 변경 0
-- [ ] 빌드 번들 표 · 예산 커밋(필요 시, "ADR-004 개정 8 배분 ①")
-- [ ] typecheck · lint · build · 전체 vitest exit0
-- [ ] Ego Lite(4337 preview, 생성 1·큐레이션 1, 캡처 ≤3)
-- [ ] Codex review --scope branch --base 2b67601 (≤2)
-- [ ] REPORT(증가량 표)
+- [x] TDD 예측 기록 → RED 확인(커밋 안 함)
+- [x] 공용 문구 표 `src/data/industryCopy.ts` + thumbs import(G3 유지) · 썸네일 버전 `8d7310f2` 유지
+- [x] 편집기 적용(레퍼런스 알면 업종 문구, 모르면 SAMPLE_COPY 폴백)
+- [x] 테스트: 썸네일 h1 = 편집기 hero · 폴백 · 기존 단언 변경 0
+- [x] 빌드 번들 표 · 예산 커밋(필요 시, "ADR-004 개정 8 배분 ①") — `388bca9` 기준선 128.19→128.23, 구현 `f1a2391`. 재측정 표는 REPORT
+- [x] typecheck · lint · build · 전체 vitest exit0 (build·lint exit0, vitest 251/2199 pass)
+- [x] Ego Lite(4337 preview, 생성 1·큐레이션 1, 캡처 ≤3) — `shots/1-ref-a-editor-hero.png`, `shots/2-gen-beauty-1-editor-hero.png`(hero "피부 결을 살피는 맞춤 관리" = 썸네일 h1). space finish·listTaskSpaces=[]·4337 리슨 0
+- [x] Codex review --scope branch --base 2b67601 (≤2) — R1 지적 0 (`logs/codex-r1.log`)
+- [x] REPORT(증가량 표) — `REPORT.md`
 
 ## S0 실측 (코드 변경 전, base 빌드 `npm run build`)
 | 라우트 | 첫 화면 | 진입 직후 자동 |

@@ -20,6 +20,9 @@
 - Red-Green 추가: cleanup만 넣고 kept의 맵 확보를 빼면 진행 중 저장 단언이 실패해야 한다.
 - 실측: RED = 이탈 뒤 저장 단언 실패(uuid2 기록 — 예측 일치). 어긋남 1 = 그 단언의 기대값 내 오기(uuid1은 두 번째 문서에서 참조 밖이라 삭제 → 기대 `[]`, 단언 강도 동일). 첫 구현(kept 안에서 맵 확보)은 진행 중 저장 단언 실패 — saveDoc이 `await bookOf()` 뒤에 kept를 불러 이탈이 먼저였다 → saveDoc·startDoc·requestExport를 write와 같은 `kept(id, bookOf().then(…))` 모양으로. GREEN 7/7. Red-Green: `?? held` 제거 → 186행 실패 · 복원 → 통과.
 
+### TDD 예측 ③
+- 새 테스트 "Codex 예시 — 기존 20MB 복원이 늦는 동안 다른 슬롯에 20MB 추가(그 사이 저장) → 최종 페이지 30MB 초과 복원분은 빠지고 사용자 이미지는 남는다": 지금은 복원분만 시작 문서로 재고 무조건 병합 → `expected [uuid1, uuid2] to deeply equal [uuid2]` 실패 1. 기존 4건은 통과(4번째 인자 없으면 시작 레코드 = 최신).
+
 ## 설계(요약)
 - 저장: `localSync.flush(projectId, book, images)` — 문서 레코드·상태 레코드와 **같은 트랜잭션**에 이미지 op(큐 키 = projectId → INFRA·retry·미확인 재제출 그대로).
   - put = 참조 집합(`retainedIds(doc, undefined, 스냅샷 문서들)` — 5.9 함수 재사용) ∩ 편집 틀 맵 − 이미 저장된 id. 레코드 = 변형본 Blob 전부 + width·height·format·bytes(`imageMeta`).

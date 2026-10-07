@@ -27,12 +27,12 @@ const stored = (entries: ReadonlyArray<readonly [LocalImageId, unknown]>) => {
   const rows = new Map(entries.map(([id, data]) => [imageRecordId("project-1", id), { schemaVersion: SCHEMA_VERSION, kind: "image", id: imageRecordId("project-1", id), data }]));
   return vi.fn(async (key: string) => rows.get(key));
 };
-async function run(record: DocRecord, prev?: RenderImages) {
+async function run(record: DocRecord, prev?: RenderImages, latest?: () => DocRecord) {
   let images = prev;
   const publish = vi.fn((update: (p: RenderImages | undefined) => RenderImages | undefined) => {
     images = update(images);
   });
-  await restoreImages("project-1", record, publish);
+  await restoreImages("project-1", latest ?? (() => record), publish);
   return { images, publish };
 }
 const original = IMAGE_READ.read;
@@ -86,5 +86,26 @@ describe("restoreImages", () => {
     IMAGE_READ.read = stored(ids.map((id) => [id, image(640)] as const));
     const over = { ...sampleDoc(), sections: sampleDoc().sections.map((s, k) => (k === 0 ? { ...s, slots: { ...s.slots, ...Object.fromEntries(ids.map((id, i) => [`x${i}`, slot(id)])) } } : s)) } as PageDoc;
     expect((await run(recordOf(over))).publish).not.toHaveBeenCalled();
+  });
+
+  it("Codex r1 예시 — 기존 슬롯 20MB 복원이 늦는 동안 다른 슬롯에 20MB 추가(그 사이 저장) → 최신 문서 + 병합 맵으로 재서 페이지 30MB를 넘기는 복원분은 빠진다 · 사용자 이미지는 남는다", async () => {
+    const MB = 1024 * 1024;
+    // 저장 규칙에 맞는 20MB 레코드(800 폭 사다리 640·800 — 바이트 서명 PNG + 채움)
+    const variants = Object.fromEntries(widthLadder(800).map((w, i) => [w, i === 0 ? new Blob([new Uint8Array(makePng({ width: w, height: 10 })), new Uint8Array(20 * MB)], { type: "image/png" }) : png(w)]));
+    const big: IngestedImage = { variants, width: 800, height: 400, format: "png", bytes: Object.values(variants).reduce((sum, b) => sum + b.size, 0) };
+    const saved = setSlot(sampleDoc(), "s-hero", "image", slot(uuid(1)));
+    const latest = setSlot(saved, "s-about", "image", slot(uuid(2)));
+    let now = recordOf(saved);
+    const rows = stored([[uuid(1), big]]);
+    // 복원 읽기가 늦는 사이 사용자가 about 슬롯에 20MB를 넣고 그 문서가 저장됐다
+    IMAGE_READ.read = async (key) => {
+      now = recordOf(latest);
+      return rows(key);
+    };
+    const mine = addImage({}, uuid(2), { ...image(640), bytes: 20 * MB }, 1280);
+    const { images, publish } = await run(recordOf(saved), mine, () => now);
+    expect(publish).toHaveBeenCalled();
+    expect(Object.keys(images!)).toEqual([uuid(2)]);
+    expect(images![uuid(2)]).toBe(mine[uuid(2)]);
   });
 });

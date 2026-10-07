@@ -34,7 +34,12 @@ const targetOf = (docs: readonly PageDoc[], localId: string) => {
   return 1920;
 };
 
-export async function restoreImages(projectId: string, record: Partial<DocRecord> | undefined, publish: ImageHost[1]): Promise<void> {
+/**
+ * latest = 저장소 문서·스냅샷을 그때그때 읽는다 — 시작에 한 번(복원 대상), 복원이 끝난 때 한 번 더(최신). 복원 중 사용자가 넣은 이미지(prev)가 이기고, 복원분은 하나씩 더해
+ * 최신 문서·참조 집합 + 병합 맵의 checkLimits(업로드와 같은 함수)를 넘기면 뺀다 = 잃은 이미지 경로(Codex r1 P2 · BRIEF-R2 ③)
+ */
+export async function restoreImages(projectId: string, latest: () => Partial<DocRecord> | undefined, publish: ImageHost[1]): Promise<void> {
+  const record = latest();
   if (!record?.doc) return;
   const full = { doc: record.doc, snapshots: record.snapshots ?? [] };
   const ids = [...recordRefs(full)];
@@ -50,5 +55,13 @@ export async function restoreImages(projectId: string, record: Partial<DocRecord
   }
   const restored = found.reduce<RenderImages>((acc, [localId, image]) => (image ? addImage(acc, localId, image, targetOf([doc, ...snapshots], localId)) : acc), {});
   if (Object.keys(restored).length === 0 || !checkLimits(doc, undefined, restored, snapshots).ok) return;
-  publish((prev) => (prev ? { ...restored, ...prev } : restored));
+  const last = latest();
+  const now = last?.doc ? { doc: last.doc as unknown as PageDoc, snapshots: (last.snapshots ?? []).map((s) => s.doc as unknown as PageDoc) } : { doc, snapshots };
+  publish((prev) =>
+    Object.entries(restored).reduce<RenderImages | undefined>((acc, [localId, image]) => {
+      if (acc?.[localId]) return acc;
+      const next = { ...acc, [localId]: image };
+      return checkLimits(now.doc, undefined, next, now.snapshots).ok ? next : acc;
+    }, prev),
+  );
 }

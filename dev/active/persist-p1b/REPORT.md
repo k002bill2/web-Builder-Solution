@@ -94,3 +94,35 @@
 ### 중단·재개 기록
 - 1차 실행이 턴 한도로 ③ 도중 중단(①② 커밋 뒤, ③ 구현·테스트·예측은 미커밋 작업 트리) → 축소 재개 1회: RED 확인(구현만 임시 되돌림) → GREEN → build 실패(129.61) 발견 → 진입 코드 축소 + 복원 기준선 갱신 → **GREEN 커밋을 amend**(푸시 전, 빌드 깨진 커밋을 남기지 않으려고 — 첫 GREEN `e3b9ff5`는 build 실패라 대체됨).
 - 엔진·PageDoc 계약·한도 값·docs/**·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge/삭제 0.
+
+## Codex r2 수정(BRIEF-R3)
+
+| # | 지적 | 결과 | 커밋 |
+|---|------|------|------|
+| ① | [P1] 이미지 저장 집합을 커밋 확인 뒤 갱신 | 수정 · 회귀 2 | `1259539` |
+| ② | [P2] 복원 최종 한도 검사에 현재 참조 집합 | 수정 · 회귀 1 | `095f70e` |
+| ③ | [P2] 이미지 참조 있을 때만 복원 청크 로드 | **멈춤(예산)** — 작업물 `r3-item3-stopped.patch` | — |
+
+### ① localSync 확인된 이미지 / 진행 중 이미지
+- `stored` = 커밋 확인된 id(트랜잭션 성공 뒤에만 갱신) · `inflight` = 진행 중 op id → 그 제출. put 생략은 "확인됨 − 진행 중"(settled)에만 — 진행 중 put은 다음 flush가 다시 낸다(같은 키 put 멱등, 앞 트랜잭션 성공에 기대지 않음).
+- delete 후보 = 확인됨 ∪ 진행 중(진행 중 put도 지울 수 있게). 지우기가 진행 중인데 다시 참조하면 put을 다시 낸다(회귀 테스트 "delete도 같은 규칙").
+- 실패 = 진행 중에서 빼고 확인 집합에서도 뺀다("모름") — put은 다음 flush가 다시 내고, delete는 writeQueue가 같은 키 다음 제출에 합친다.
+- 회귀(imagePersist.test, Codex 재현 순서 그대로): flush1(이미지 put) 커밋 대기 중 flush2 제출 → flush1 실패(INFRA) → flush2 성공 → 이미지 저장소에 `project-1/…1` 있음 + 새 세션 복원 성공. RED = `expected [] to deeply equal [ Array(1) ]`.
+- `imageOps(…, settled, known = settled)` — 매개변수 1개 추가(기존 호출 동작 동일).
+
+### ② 복원 최종 한도 = 화면 참조 집합 상한
+- 진입 청크 증가 0 경로 선택: 편집 틀(StudioLayout)은 맵을 화면 참조 집합(미저장 문서 ∪ 되돌릴 문서 ∪ 보관 문서)으로 렌더 중 가지치기하므로 publish의 `prev` id는 전부 화면이 쓰는 중이다. 복원 청크가 저장 문서에 prev id를 "켜진 참조"로 더한 문서로 기존 `checkLimits`를 잰다 = 현재 참조 집합의 **상한**(보수적).
+- 가정·한계: undo/보관 문서만 참조하는 prev도 페이지 한도에 센다 → 복원분이 실제보다 덜 들어갈 수는 있어도(잃은 이미지 경로) 한도를 넘지는 않는다. StudioLayout·ImageKeeper·한도 값·엔진 수정 0.
+- 회귀(imageRestore.test): 저장된 20MB 복원 중 미저장 20MB 추가(latest()는 끝까지 저장 문서) → 최종 페이지 ≤ 30MB · 사용자 이미지 유지. RED = `expected 41943170 to be less than or equal to 31457280`.
+- 번들: 복원 진입 132.55 → **132.60**(멈춤선 132.58 초과 → 브리프 허용 "133.70 안"대로 m2cBaseline·bundleBudget.test 고정값을 같은 커밋에서 갱신). /studio 129.57.
+
+### ③ 멈춤 — /studio 예산 초과
+- 구현: `images()`에서 청크 받기 전 `JSON.stringify(최신 문서·스냅샷).includes('"source":"')`로 판정(로컬 이미지 참조만 source가 문자열). 테스트 imageRestoreLoad.test(resetModules + doMock으로 복원 모듈 평가 횟수): 이미지 없는 진입 import 0 · 있는 진입 1 — GREEN 확인.
+- 번들: /studio **129.63** → 축소 1회 **129.62** > 상한 129.60 → 브리프 멈춤 조건. 소스는 되돌렸고(커밋 0) 작업물은 `dev/active/persist-p1b/r3-item3-stopped.patch`(`git apply`로 재현).
+- 판단 필요(영환님): (a) 상한 129.60 → 129.63 배분 추가(ADR-004 개정) 후 패치 적용, (b) 판정을 진입 밖으로 — 예: 저장 시 상태 레코드 heads에 이미지 참조 표식(쓰기 청크) + 진입은 표식 읽기만(진입 바이트 추가 여전히 0.02~ 예상, 실측 필요), (c) 현행 유지(복원 시나리오 132.60을 일반 진입이 받는 상태 — Codex 지적 그대로 남음). 권고: (a) — 판정이 가장 싸고 테스트까지 준비됨.
+- 참고: 현재(③ 미적용) 로컬 모드 일반 진입은 여전히 복원 청크를 받는다 — 검사기 /studio 129.57은 그 청크를 세지 않는다(Codex 지적 그대로).
+
+### 검증 (fresh, 095f70e 소스)
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(/studio 129.57 · 복원 진입 132.60) · `npx vitest run` exit 0 — 263파일 2303건.
+- 단언 약화·skip 0 · amend/rebase 0 · RED 커밋 0 · 엔진·계약·한도 값·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · Codex·Ego Lite 실행 0 · push/merge 0.
+- bisect 메모: ① 커밋 `1259539` 시점 build 0(/studio 129.60) · ② 커밋 `095f70e` build 0 — 깨진 커밋 없음.

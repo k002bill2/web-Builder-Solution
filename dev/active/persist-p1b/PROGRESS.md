@@ -50,8 +50,8 @@
 ## BRIEF-R3 (Codex r2 수정 — 마지막 라운드)
 - [x] ① [P1] localSync 이미지 저장 집합 = 확인된 것 / 진행 중 구분 · Codex 재현 회귀 테스트
 - [x] ② [P2] 복원 최종 한도 검사 = 화면의 현재 참조 집합(미저장 편집 + undo) · Codex 재현 회귀 테스트
-- [ ] ③ [P2] 이미지 참조 있을 때만 복원 청크 로드 · import 0/1 테스트 · /studio ≤ 129.60
-- [ ] 게이트(typecheck·lint·build·전체 vitest 1회) · REPORT "Codex r2 수정(BRIEF-R3)" 절
+- [ ] ③ [P2] 이미지 참조 있을 때만 복원 청크 로드 — BLOCKED: 판정 코드 진입 포함 /studio 129.62~129.63 > 상한 129.60(브리프 멈춤 조건) · 작업물 `r3-item3-stopped.patch`
+- [x] 게이트(typecheck·lint·build·전체 vitest 1회) · REPORT "Codex r2 수정(BRIEF-R3)" 절
 
 ### TDD 예측 ①
 - 새 테스트 "Codex 재현"(imagePersist.test): flush2가 제출 시 uuid1을 `stored`로 보고 put을 빼므로 flush1 실패 뒤 이미지 저장소 비어 있음 → `expected [] to deeply equal [project-1/…1]` 실패 1. "delete도 같은 규칙"(지우기 진행 중 → 다시 참조) = 지금은 제출 때 stored에서 빼 put을 다시 내므로 통과 예측(새 구현의 회귀 방지용).
@@ -63,3 +63,10 @@
 - 선택: 진입 청크 증가 0 — 편집 틀은 맵을 참조 집합(문서 ∪ 되돌릴 문서 ∪ 보관 문서)으로 렌더 중 가지치기하므로 prev의 id는 모두 화면이 참조 중이다. 최종 검사에서 prev id를 "켜진 참조"로 더한 문서로 checkLimits = 현재 참조 집합의 상한(보수적 — undo만 참조하는 prev도 페이지에 셈 → 복원분이 덜 들어갈 수는 있어도 넘지는 않음). StudioLayout·ImageKeeper 수정 0.
 - 실측 RED: `expected 41943170 to be less than or equal to 31457280` 1건 · 기존 5건 통과(예측 "6건"은 셈 오기 — 실제 기존 5건). GREEN: src/data 32파일 279 · typecheck 0 · lint 0.
 - 번들: /studio 129.57(진입 증가 0) · 복원 진입 132.55 → 132.60(멈춤선 132.58 초과 → 브리프 허용대로 기준선 갱신, 133.70 안) — m2cBaseline·bundleBudget.test 고정값 같은 커밋. build 0 · bundleBudget 17.
+
+### TDD ③ (멈춤)
+- 예측: 새 테스트 imageRestoreLoad.test(테스트마다 resetModules + doMock으로 복원 모듈 평가 횟수 셈) — 이미지 없는 진입 `expected 1 to be +0` 실패 · 이미지 있는 진입 통과.
+- 실측: 첫 실행은 두 건 다 실패 — `vi.mock` 팩토리 결과가 resetModules 뒤에도 남아 둘째 테스트가 0(장치 문제, 어긋남 1) → beforeEach `vi.doMock`으로 바꿔 RED = 이미지 없는 진입 1건 실패(예측 일치).
+- 판정: `JSON.stringify(최신 문서·스냅샷).includes('"source":"')` — 로컬 이미지 참조만 source가 문자열(플레이스홀더는 객체), JSON 문자열 값 안 따옴표는 이스케이프되어 오탐 0. GREEN(src/data 33파일 281).
+- 번들: /studio 129.63 → 축소 1회(localSync 토큰 = writing · 판정 return) 129.62 — 상한 129.60 초과 → 구현 멈춤. 소스 되돌림, 테스트·구현은 `r3-item3-stopped.patch`(git apply로 재현 가능)로 보존. 복원 진입은 132.65(133.70 안).
+- 마감 게이트(095f70e 소스 + 문서): typecheck 0 · lint 0 · build 0(/studio 129.57 · 복원 132.60) · 전체 vitest 263파일 2303 exit 0. 서브에이전트 0 · Codex 0 · Ego Lite 0.

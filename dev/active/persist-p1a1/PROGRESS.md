@@ -25,3 +25,7 @@
 - 실측 RED: 2파일 `Failed to resolve import "./jobRecord"`·`"./writeQueue"` — 예측 일치(커밋 안 함).
 - 실측 GREEN: 5파일 27 테스트 통과 · typecheck(테스트 캐스트 1건 수정 후) · eslint 통과.
 - 변이 확인: 실패 시 `stillLatest` 필터 제거 → "진행 중 덮임" 테스트 1건 실패 → 복원 후 27 통과.
+
+### 마감 보완 (조언 반영)
+- IDB write 중간 op 동기 예외 시 부분 자동 커밋 → `applyOps` + `tx.abort()`. 예측 RED: applyOps 없음 2건 실패 → 실측 일치 → GREEN 29. blocked 뒤 늦은 연결 close.
+- 마감 게이트 fresh: typecheck 0 · lint 0 · build 0(/studio 128.51) · vitest 258/2248 exit 0.

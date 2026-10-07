@@ -7,7 +7,7 @@
 import { DB_NAME, STORE_NAMES } from "./envelope";
 import { done } from "./entryRead";
 import { toInfra } from "./infra";
-import type { StudioPersistence } from "./studioPersistence";
+import type { StudioPersistence, WriteOp } from "./studioPersistence";
 
 /** 1 = 진입 읽기가 버전 없이 열어 생길 수 있는 빈 DB · 2 = 3절 저장소 7개 */
 export const DB_VERSION = 2;
@@ -27,6 +27,28 @@ export function upgradeDatabase(db: UpgradeTarget, oldVersion: number, newVersio
   STEPS.slice(oldVersion, newVersion).forEach((step) => step(db));
 }
 
+type OpTarget = {
+  objectStore(name: string): { put(value: unknown, key: string): unknown; delete(key: string): unknown };
+  abort(): void;
+};
+
+/** 트랜잭션에 ops를 순서대로 — 중간 op가 동기로 던지면(DataCloneError 등) abort해 앞 put이 자동 커밋되지 않게 한다(전부 아니면 전무) */
+export function applyOps(tx: OpTarget, ops: readonly WriteOp[]) {
+  try {
+    for (const op of ops) {
+      if (op.type === "put") tx.objectStore(op.store).put(op.record, op.record.id);
+      else tx.objectStore(op.store).delete(op.id);
+    }
+  } catch (error) {
+    try {
+      tx.abort();
+    } catch {
+      // 이미 끝난 트랜잭션 — 원래 오류를 던진다
+    }
+    throw error;
+  }
+}
+
 const txDone = (tx: IDBTransaction) =>
   new Promise<void>((ok, ko) => {
     tx.oncomplete = () => ok();
@@ -36,10 +58,15 @@ const txDone = (tx: IDBTransaction) =>
 
 export async function openIdbPersistence(factory: IDBFactory = indexedDB, name = DB_NAME): Promise<StudioPersistence> {
   const db = await new Promise<IDBDatabase>((ok, ko) => {
+    let blocked = false;
     const request = factory.open(name, DB_VERSION);
     request.onupgradeneeded = (event) => upgradeDatabase(request.result, event.oldVersion, event.newVersion ?? DB_VERSION);
-    request.onblocked = () => ko(new DOMException("blocked", "BlockedError"));
-    request.onsuccess = () => ok(request.result);
+    request.onblocked = () => {
+      blocked = true;
+      ko(new DOMException("blocked", "BlockedError"));
+    };
+    // blocked로 이미 실패를 돌려준 뒤 늦게 열리면 닫는다 — 남은 연결이 다음 업그레이드를 막지 않게
+    request.onsuccess = () => (blocked ? request.result.close() : ok(request.result));
     request.onerror = () => ko(request.error);
   }).catch((error: unknown) => {
     throw toInfra(error, "열기");
@@ -62,10 +89,8 @@ export async function openIdbPersistence(factory: IDBFactory = indexedDB, name =
       try {
         const tx = db.transaction([...new Set(ops.map((op) => op.store))], "readwrite");
         const committed = txDone(tx);
-        for (const op of ops) {
-          if (op.type === "put") tx.objectStore(op.store).put(op.record, op.record.id);
-          else tx.objectStore(op.store).delete(op.id);
-        }
+        committed.catch(() => undefined); // applyOps가 던지면 abort된 committed는 기다리지 않는다
+        applyOps(tx, ops);
         await committed;
       } catch (error) {
         throw toInfra(error, "저장");

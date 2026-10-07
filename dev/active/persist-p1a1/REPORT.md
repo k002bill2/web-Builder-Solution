@@ -1,7 +1,7 @@
 # PERSIST-P1a-1 REPORT — 영속 어댑터 · IDB 구현 · 직렬 쓰기 큐 (배선 0)
 
-- 브랜치 `k002bill2/persist-p1a1` · base `2700242` · 커밋: `d458fb6`(BRIEF P0) → `627d0aa`(1번) → `ac2adf9`(2번) → 이 REPORT
-- 변경 = `app/src/data/persistence/**`(새 모듈 8 + 테스트 5) · `app/src/test/persistenceContract.ts` · `dev/active/persist-p1a1/**`. 앱 배선·엔진·계약·m2cBaseline·검사기·docs·lock·CLAUDE.md 수정 0, 새 의존성 0, 서브에이전트 0.
+- 브랜치 `k002bill2/persist-p1a1` · base `2700242` · 커밋: `d458fb6`(BRIEF P0) → `627d0aa`(1번) → `ac2adf9`(2번) → `f90377f`(REPORT 초안) → 마감 커밋(applyOps abort 수정 + REPORT 정정)
+- 변경 = `app/src/data/persistence/**`(새 모듈 7 + 테스트 5) · `app/src/test/persistenceContract.ts` · `dev/active/persist-p1a1/**`. 앱 배선·엔진·계약·m2cBaseline·검사기·docs·lock·CLAUDE.md 수정 0, 새 의존성 0, 서브에이전트 0.
 
 ## 1. StudioPersistence 어댑터 (`627d0aa`)
 | 모듈 | 역할 | 진입/조작 뒤 |
@@ -10,7 +10,7 @@
 | `entryRead.ts` | `openForEntry`(버전 없이 열기, 저장소 없으면 close → undefined, versionchange=close) · `readEntryRecord`(단건 get + 수제 확인) | 진입 몫 — P1a-2가 진입에 둠 |
 | `infra.ts` | `toInfra` — quota·blocked·abort·그 밖 → `ProjectRepositoryError("INFRA")`, 사유는 메시지 | 공용 |
 | `studioPersistence.ts` | 인터페이스(get·getAll·write(트랜잭션 단위)·close) + 메모리 가짜(put/get structured clone, 전부 아니면 전무, 커밋 지연·실패 주입) | 테스트용 |
-| `idbPersistence.ts` | IDB 구현(브라우저 API 직접) · `DB_VERSION=2` · `upgradeDatabase` 버전별 단계(contains 가드) · write resolve = `oncomplete` · blocked/error/abort → INFRA | 조작 뒤 |
+| `idbPersistence.ts` | IDB 구현(브라우저 API 직접) · `DB_VERSION=2` · `upgradeDatabase` 버전별 단계(contains 가드) · write resolve = `oncomplete` · `applyOps` 중간 op 동기 예외 시 `tx.abort()`(부분 자동 커밋 방지, 전부 아니면 전무) · blocked/error/abort → INFRA · blocked 뒤 늦게 열린 연결은 close | 조작 뒤 |
 - 버전 2인 이유: 진입 읽기는 버전 없이 열어 첫 실행이면 저장소 없는 빈 v1 DB가 생길 수 있음 → 쓰기 쪽이 v2 업그레이드로 저장소를 만든다(0→2·1→2 모두 테스트).
 - 계약 테스트 1벌 `src/test/persistenceContract.ts` — 메모리 가짜만 등록(jsdom에 IndexedDB 없음, `typeof indexedDB === "undefined"` 실측). IDB 구현은 같은 계약을 P1a-2 브라우저 실측으로.
 
@@ -25,10 +25,11 @@
 | RED `npx vitest run src/data/persistence` (커밋 A 전) | 3파일 import 실패 — 예측 일치, 커밋 안 함 |
 | RED 같은 명령 (커밋 B 전) | 2파일 import 실패 — 예측 일치, 커밋 안 함 |
 | 변이: writeQueue 실패 시 최신 의도 필터 제거 | 1건 실패 → 복원 27 통과 |
+| RED `applyOps` 테스트 2건(마감 전 추가) | `applyOps is not a function` 2건 실패 → 구현 후 29 통과 |
 | `npm run typecheck` | exit 0 |
 | `npm run lint` | exit 0 |
-| `npm run build`(check-bundle 포함) | exit 0 · `/studio/:projectId` 첫 화면 91.84 · 진입 직후 **128.51KB**/129(ADR-007 사실 9 기준값 128.51과 동일 = 변화 0) · 다른 라우트 표도 판정 통과 · `dist`에 새 모듈 문자열(`BlockedError`·`stillLatest`·"브라우저 저장소에 접근") 0건 |
-| `npx vitest run` 전체 1회 | exit 0 · 258 파일 · 2246 테스트 통과 |
+| `npm run build`(check-bundle 포함) | exit 0 · `/studio/:projectId` 첫 화면 91.84 · 진입 직후 **128.51KB**/129(ADR-007 사실 9 기준값 128.51과 동일 = 변화 0) · 다른 라우트 표도 판정 통과 · 앱 코드에서 persistence import 0줄(`grep -rn "persistence/" src --include='*.ts' --include='*.tsx' | grep -v ^src/data/persistence/ | grep -v persistenceContract | wc -l` = 0) |
+| `npx vitest run` 전체 1회 | exit 0 · 258 파일 · 2248 테스트 통과(마감 재실행, typecheck·lint·build도 같은 회차 exit 0) |
 - 단언 약화·skip 0. 테스트 수정 1건 = 타입 캐스트(`as unknown as`) — 단언 불변.
 
 ## Ego Lite — 생략
@@ -40,4 +41,5 @@
 3. 봉투 버전 불일치 시 미완료 잡 "다시 시도" 강등(개정 1)은 배선·문구(Designer) 몫 — 이 레인은 `checkEnvelope` mismatch/newer 판별까지.
 4. 키는 단일 문자열 id(out-of-line). snapshots·images의 `[projectId, id]` 복합 키는 P1b/P1d에서 id 규칙 또는 저장소 이행 단계로 결정.
 5. 같은 요청 키가 진행 중일 때 재제출하면 앞 요청의 실패 기록은 별도 항목으로 남는다(같은 키로 `unconfirmed()`에 1회 표시, 다음 submit/retry에 합쳐짐).
+6. 진입 closure 크기: `entryRead` → `infra` → `ProjectRepositoryError` + 한국어 사유 문구 3개를 진입으로 끌어온다. 진입 몫 +0.60 배분 안에서 P1a-2가 실측 — 넘치면 진입에서는 원 오류를 그대로 던지고 분류는 조작 뒤로 옮기는 안.
 - Codex 검증: Jarvis 몫(이 레인 실행 안 함).

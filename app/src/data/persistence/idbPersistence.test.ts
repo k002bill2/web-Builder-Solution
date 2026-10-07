@@ -2,10 +2,10 @@
  * IDB 구현의 순수 부분 — 업그레이드 단계(저장소 생성·버전 이행 골격)와 오류 분류(INFRA).
  * 트랜잭션·커밋 자체는 jsdom에 IndexedDB가 없어 브라우저 실측 몫(계약 테스트는 가짜에만 등록 — persistenceContract 머리 주석).
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ProjectRepositoryError } from "../projectRepository";
-import { DB_VERSION, upgradeDatabase } from "./idbPersistence";
-import { STORE_NAMES } from "./envelope";
+import { DB_VERSION, applyOps, upgradeDatabase } from "./idbPersistence";
+import { SCHEMA_VERSION, STORE_NAMES } from "./envelope";
 import { toInfra } from "./infra";
 
 function fakeDb(existing: readonly string[]) {
@@ -56,5 +56,26 @@ describe("toInfra", () => {
   it("이미 저장소 오류면 그대로", () => {
     const same = new ProjectRepositoryError("INFRA", "앞서 분류됨");
     expect(toInfra(same, "저장")).toBe(same);
+  });
+});
+
+describe("applyOps (전부 아니면 전무)", () => {
+  const put = (id: string) => ({ type: "put" as const, store: "docs" as const, record: { schemaVersion: SCHEMA_VERSION, kind: "doc", id, data: id } });
+
+  it("중간 op가 동기로 던지면(DataCloneError 등) 트랜잭션을 abort하고 다시 던진다 — 앞 put이 자동 커밋되지 않게", () => {
+    const store = { put: vi.fn((_v: unknown, key: string) => { if (key === "b") throw new DOMException("x", "DataCloneError"); }), delete: vi.fn() };
+    const tx = { objectStore: () => store, abort: vi.fn() };
+    expect(() => applyOps(tx, [put("a"), put("b"), put("c")])).toThrow("x");
+    expect(tx.abort).toHaveBeenCalledTimes(1);
+    expect(store.put).toHaveBeenCalledTimes(2);
+  });
+
+  it("정상이면 put(record, id)·delete(id)를 순서대로, abort 0", () => {
+    const calls: string[] = [];
+    const store = { put: (_v: unknown, key: string) => calls.push(`put:${key}`), delete: (key: string) => calls.push(`del:${key}`) };
+    const tx = { objectStore: () => store, abort: vi.fn() };
+    applyOps(tx, [put("a"), { type: "delete", store: "docs", id: "a" }, put("b")]);
+    expect(calls).toEqual(["put:a", "del:a", "put:b"]);
+    expect(tx.abort).not.toHaveBeenCalled();
   });
 });

@@ -26,7 +26,7 @@ export interface StoredJob {
   readonly attempts: Readonly<Record<CandidateId, number>>;
 }
 
-interface StudioState {
+export interface StudioState {
   readonly series: ReadonlyMap<string, readonly ProfileVersion[]>;
   readonly commits: ReadonlyMap<string, IdempotentCommit>;
   /** 조정 저장 멱등 기록 — 보드 `commits` 슬롯과 따로 둔다(같이 쓰면 보드 확정 재시도가 조정 저장에 덮여 A-Q4가 깨진다) */
@@ -94,8 +94,9 @@ function readerOf(read: () => StudioState): StudioReader {
   };
 }
 
-export function createStudioStore(): StudioStore {
-  let state: StudioState = { series: new Map(), commits: new Map(), adjustCommits: new Map(), jobs: new Map(), projects: new Map() };
+/** `initial` = 영속 하이드레이션(ADR-007 3절) · `onCommit` = 바뀐 커밋 뒤 상태(쓰기 큐로 기록 — 동기 판정은 그대로) */
+export function createStudioStore(initial?: StudioState, onCommit?: (state: StudioState) => void): StudioStore {
+  let state: StudioState = initial ?? { series: new Map(), commits: new Map(), adjustCommits: new Map(), jobs: new Map(), projects: new Map() };
   return {
     ...readerOf(() => state),
     transact(work) {
@@ -123,7 +124,10 @@ export function createStudioStore(): StudioStore {
         },
       };
       const result = work(tx);
-      state = draft;
+      if (draft !== state) {
+        state = draft;
+        onCommit?.(state);
+      }
       return result;
     },
   };

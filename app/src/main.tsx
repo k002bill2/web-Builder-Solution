@@ -27,7 +27,7 @@ const repository = createDeferredReferenceRepository(async () => {
 // 프로필 화면이 읽는다 (DS-2A-04 6.3). 보드·생성·프로젝트 구현은 그 안에서 다시 처음 부를 때 받는다(STUDIO-SLIM, deferredStudio).
 // 보드 로드 전의 보드 조회(트레이 진입)는 빈 보드 — 메모리 구현은 새로고침하면 비어 있다.
 const loadStudio = createSharedLoader(async () =>
-  (await import("./data/deferredStudio")).createDeferredStudio(async () => {
+  (await import("./data/deferredStudio")).loadDeferredStudio(async () => {
     const [{ referenceFixtures }, { referenceDetailFixtures }, { referenceComparisonAttributes }] = await Promise.all([
       import("./fixtures/references"),
       import("./fixtures/referenceDetails"),

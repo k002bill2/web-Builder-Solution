@@ -4,7 +4,7 @@
  * 읽기 검증은 zod — 조작 뒤 몫(진입 검증은 envelope 수제 확인만). 버전 불일치 때 미완료 잡 강등("다시 시도")은 P1a-2 배선·문구 Designer.
  */
 import { z } from "zod";
-import { CANDIDATE_IDS, type JobState } from "../../domain/generation";
+import { CANDIDATE_IDS, stateOf } from "../../domain/generation";
 import { ProjectRepositoryError } from "../projectRepository";
 import type { StoredJob } from "../studioStore";
 import { SCHEMA_VERSION, type Envelope } from "./envelope";
@@ -55,15 +55,9 @@ const jobEnvelope = z
   .refine(({ data: { job, hidden } }) =>
     job.candidates.every((c, i) => c.id === CANDIDATE_IDS[i] && (hidden[i] ? hidden[i].id === c.id : c.status !== "pending")),
   )
-  // state = 후보 진행 상태(memoryGenerationRepository `stateOf`) · queued = 요청 직후(후보 전부 pending)
+  // state = 후보 진행 상태(`stateOf` — memoryGenerationRepository getJob과 같은 함수) · queued = 요청 직후(후보 전부 pending)
   .refine(({ data: { job } }) => job.state === stateOf(job.candidates) || (job.state === "queued" && job.candidates.every((c) => c.status === "pending")));
 
-/** memoryGenerationRepository `stateOf`와 같은 규칙 — pending 있음 = running · 전부 성공 = succeeded · 일부 = partial · 0 = failed */
-function stateOf(candidates: readonly { status: string }[]): JobState {
-  if (candidates.some((c) => c.status === "pending")) return "running";
-  const ok = candidates.filter((c) => c.status === "succeeded").length;
-  return ok === candidates.length ? "succeeded" : ok > 0 ? "partial" : "failed";
-}
 
 export function jobPut(stored: StoredJob): WriteOp {
   const record: Envelope<StoredJob> = { schemaVersion: SCHEMA_VERSION, kind: JOB_KIND, id: stored.job.jobId, data: stored };

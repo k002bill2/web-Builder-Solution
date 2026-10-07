@@ -31,7 +31,7 @@ export function relativeTimeText(elapsedMs: number): string {
 }
 
 function savedText(state: AutosaveState, persistence: ProjectPersistence, now: number): string {
-  const label = persistence === "memory" ? "이 탭에 저장됨" : "저장됨";
+  const label = persistence === "memory" ? "이 탭에 저장됨" : persistence === "local" ? "이 브라우저에 저장됨" : "저장됨";
   return state.lastSavedAt === undefined ? label : `${label} · ${relativeTimeText(now - state.lastSavedAt)}`;
 }
 

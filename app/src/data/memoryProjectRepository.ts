@@ -12,6 +12,8 @@ import { retryableImport } from "./chunkRetry";
 import type { DocBook } from "./memoryDocBook";
 import { createSharedLoader } from "./sharedLoader";
 import { ProjectRepositoryError, type ExportGenerators, type Project, type ProjectRepository, type ProjectSummary } from "./projectRepository";
+import type { LocalEntry } from "./persistence/entryRead";
+import type { LocalSync } from "./persistence/localSync";
 import type { StudioStore } from "./studioStore";
 
 export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict";
@@ -31,17 +33,29 @@ export interface MemoryProjectOptions {
   readonly fail?: (call: ProjectCall) => Error | undefined;
   /** 형식별 생성기(8.3.2 6단계) — 기본 = 둘 다 없음(M2A-3a → `GENERATOR_UNAVAILABLE`). 3b가 `static-html`을 등록한다 */
   readonly generators?: ExportGenerators;
+  /** 로컬 영속(ADR-007 P1) — 진입 결과(봉투 확인만) + 조작 뒤 싱크(공유 로더). 없으면 메모리 */
+  readonly local?: { readonly entry: LocalEntry; readonly sync: () => Promise<LocalSync> };
 }
 
 /** 조작 뒤 청크 — 판정·상태·어댑터·엔진. "편집 시작"·저장 때만 받는다(진입 직후 청크 크기 유지) */
 const loadDocBook = retryableImport(() => import("./memoryDocBook"));
 
+/** 로컬 영속 싱크 열기(조작 뒤 — DocBook 청크와 함께 받는다) */
+export const openLocal = async (entry: LocalEntry) => (await loadDocBook()).openLocalSync(entry);
+
 export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository {
-  const { store, now = () => new Date().toISOString(), generators = {} } = options;
+  const { store, now = () => new Date().toISOString(), generators = {}, local } = options;
+  const entry = local?.entry;
   const counts = new Map<ProjectMethod, number>();
-  /** 문서 쓰기 본문 — 청크를 받은 뒤 1개. 받기 전에는 문서가 있을 수 없다 */
+  /** 문서 쓰기 본문 — 청크를 받은 뒤 1개. 받기 전 문서 = 진입 읽기 문서·머리(로컬 영속)뿐 — 본문은 싱크 시드로 시작한다 */
   let book: DocBook | undefined;
-  const bookOf = createSharedLoader(async () => (book = (await loadDocBook()).createDocBook(store, now)));
+  const bookOf = createSharedLoader(async () => {
+    const [mod, sync] = await Promise.all([loadDocBook(), local?.sync()]);
+    return (book = mod.createDocBook(store, now, sync));
+  });
+  /** 문서 쓰기가 끝난 뒤 그 프로젝트 레코드를 IDB 커밋까지 기다린다(Codex 제약 3 — "저장됨"은 이 뒤) */
+  const kept = <T>(projectId: string, work: Promise<T>) =>
+    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!), result)) : work;
 
   /** work는 동기 — `commit()`을 부른 뒤에만 state를 바꾼다(던지면 변화 0) */
   async function call<T>(method: ProjectMethod, work: (commit: () => void) => T): Promise<T> {
@@ -64,19 +78,19 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
   const write =
     <K extends SnapshotWrite>(method: K) =>
     (...args: Parameters<DocBook[K]>[0]) =>
-      bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit)));
+      kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
   /** 마지막 변경 = 이름·문서 저장·프로필 새 버전 중 최신 (8.1) */
   const summaryOf = (project: Project): ProjectSummary => {
     const latest = store.versions(project.profileId).at(-1);
-    const doc = book?.docOf(project.projectId);
+    const doc = book?.docOf(project.projectId) ?? entry?.state?.heads.get(project.projectId);
     const updatedAt = [project.updatedAt, latest?.createdAt ?? "", doc?.updatedAt ?? ""].reduce((a, b) => (b > a ? b : a));
     const docPart = doc ? { hasDoc: true, docProfileVersion: doc.profileVersion, candidateId: doc.candidateId, docSavedAt: doc.updatedAt } : { hasDoc: false };
     return { ...project, updatedAt, latestProfileVersion: latest?.version ?? 0, ...docPart };
   };
 
   return {
-    persistence: "memory",
+    persistence: local ? "local" : "memory",
     listProjects: async () => store.projects().map(summaryOf).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
     getProject: async (projectId) => {
       const project = projectOf(projectId);
@@ -93,14 +107,19 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
         tx.putProject(next);
         return next;
       }),
-    getDoc: (projectId) => call("getDoc", () => book?.docOf(projectId)),
+    getDoc: async (projectId) => {
+      const first = entry?.doc?.doc.projectId === projectId ? entry.doc.doc : undefined;
+      // 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다
+      if (!book && !first && entry?.state?.heads.has(projectId)) await bookOf();
+      return call("getDoc", () => book?.docOf(projectId) ?? first);
+    },
     saveDoc: async (projectId, expectedRevision, doc) => {
       const docs = await bookOf();
-      return call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit));
+      return kept(projectId, call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)));
     },
     startDoc: async (projectId, profileVersion, candidateId, mode, expectedRevision) => {
       const docs = await bookOf();
-      return call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit));
+      return kept(projectId, call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit)));
     },
     listSnapshots: async (projectId) => book?.snapshotsOf(projectId) ?? [],
     createSnapshot: write("createSnapshot"),
@@ -108,7 +127,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     resolveConflict: write("resolveConflict"),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
     requestExport: async (projectId, format, docRevision) =>
-      (await bookOf()).requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)),
+      kept(projectId, (await bookOf()).requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work))),
     getExportJob: async (jobId) => book?.jobOf(jobId),
   };
 }

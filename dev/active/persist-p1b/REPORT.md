@@ -48,7 +48,12 @@
 - 캡처는 `page.cdp("Page.captureScreenshot", { captureBeyondViewport:false, clip })` 4장.
 
 ## 검증 (fresh, `d987302`)
-(아래 표는 마감 게이트 결과로 채움)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm run build` | exit 0 · /studio 129.57 / 130 · 기준선 129.57 + 0.03 · 전 행 한도 안 |
+| `npx vitest run` 전체 1회 | exit 0 · 263 파일 · 2297 테스트 |
 
 ## 남은 것 · P1c/P1d 입력
 - 위 "Jarvis 결정 항목"(복원 청크 자동 분류).

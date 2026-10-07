@@ -46,10 +46,17 @@
 | `npm run typecheck` | exit 0 |
 | `npm run lint` | exit 0 |
 | `npm run build` | **exit 1** — check-bundle `/studio/:projectId 129.38KB > 129KB` (그 밖 전 행 통과) |
-| `npx vitest run` 전체 | (마감 때 기록) |
-| Ego Lite | (마감 때 기록) |
+| `npx vitest run` 전체 1회 | exit 0 · 260 파일 · 2269 테스트 |
+| Ego Lite | **부분 실측 — 시나리오 미완(시간)**, 아래 |
 
 ## 남은 P1b~P1d 입력
 - P1b: 진입 예산 여유가 없다(현재 상한 초과). 이미지 자동 복원 +0.15 전에 예산 결정 필요. 이미지 저장소 키(`[projectId, id]`)는 미정 그대로.
 - P1c: 다중 탭(Web Locks)·"데이터 지우기"·사용량 · StudioPanels/ExportAfter "이 탭에 저장돼 있습니다" 문구 분기 · 강등 문구(Designer).
 - P1d: 스냅샷 보존·삭제 · 단조 카운터(지금 id는 길이 기반 그대로).
+
+## Ego Lite (build + `vite preview --port 4337`, TaskSpace 19)
+- 창 상태 조회는 windowState 값 없음(최소화 아님 판단) · 캡처 0장(시간 부족으로 생략).
+- 진행: /catalog → 저장 버튼 3회(비교 추가로 잘못 누름 — 보관함에 3개 저장됨) → 앱 안 이동 /compare(비어 있음) → /catalog → "비교 추가" 버튼 클릭이 3초 타임아웃(호버 노출 버튼 추정 [추정]) → 시나리오 중단. **새로고침 0회.**
+- IDB 실측 1건: /catalog 진입 때 DB 없음(`indexedDB.databases()` = []) → store 라우트(/compare) 진입 뒤 `design-studio` **v1 빈 DB** 생성 확인(진입 읽기가 버전 없이 엶 — 첫 실행 경로). v1→v2 업그레이드·저장·새로고침 생존·생성 중 새로고침은 **미실측(BLOCKED: 시간)**.
+- /projects 빈 상태 문구 "새로고침하면 프로젝트가 사라집니다(서버 연결 전)"가 local 모드에서도 그대로 — P1c 문구 몫으로 넘김.
+- 정리: `indexedDB.deleteDatabase("design-studio")` = **onsuccess** → `databases()` = [] · `finish({keep:[]})` · `listTaskSpaces()` = [] · preview 종료, 4337 리슨 0 · `/tmp/p1a2-base`(기준 빌드 사본) 삭제. main 5480·영환님 창 무접촉.

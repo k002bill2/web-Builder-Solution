@@ -7,9 +7,9 @@
 - [x] 1-b 저장 배선(쓰기 큐, "저장됨"=IDB 커밋 뒤, 실패 INFRA·retry, persistence local 문구)
 - [x] 1-c P1a-1 한계(복제 실패 재시도 불가·문구 원인 일치·stateOf 공유)
 - [ ] 2 ADR-004 개정 9 적용 — BLOCKED: 실측 129.38 > 상한 129.15(멈춤 조건), 예산 결정 필요
-- [ ] Ego Lite 시나리오(preview 4337) + IDB 삭제 + finish/listTaskSpaces=[] + 서버 종료
-- [ ] 게이트 typecheck·lint·build·vitest exit0
-- [ ] REPORT (초안 커밋됨, 마감 갱신 필요)
+- [x] Ego Lite 정리(IDB 삭제 onsuccess·finish·spaces=[]·리슨 0) — 시나리오 본체는 BLOCKED: 시간(새로고침 생존 미실측, REPORT)
+- [x] 게이트: typecheck 0 · lint 0 · vitest 0(2269) · build — BLOCKED: check-bundle 129.38 > 129(예산 멈춤)
+- [x] REPORT
 
 ## TDD 예측 (RED 전 기록)
 - localSync.test(새 파일) 전부 RED 예상: `./localSync`·`readEntry` 없음 → import 실패(파일 단위 1실패).

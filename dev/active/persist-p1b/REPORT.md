@@ -65,3 +65,32 @@
 - 맵 등록은 effect 뒤라 저장 시점에 맵이 늦으면 그 저장에는 이미지가 빠지고 다음 문서 저장이 채운다(문서가 바뀌지 않으면 재생 경로라 채우지 않음) [추정 — 실측에서는 발생 안 함].
 - P1c: "이 브라우저 데이터 지우기"는 `images` 저장소 포함 필요 · 사용량 표시는 이미지가 지배. P1d: 프로젝트 삭제 시 `projectId/` 접두 이미지 레코드 함께 삭제 · 스냅샷 보존 정책이 이미지 정리(참조 집합)와 맞물림.
 - Codex 실행 0(Jarvis 몫) · 엔진·PageDoc 계약·한도·포맷 판정·docs·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge 0.
+
+## Codex r1 수정(BRIEF-R2)
+- 커밋: ① `c773178` · ② `82efd7a` · ③ `217ce5c`(이 절 = 다음 docs 커밋). Codex·Ego Lite 실행 0(브리프 지시).
+1. **[P1] ADR-004 개정 11** `c773178`: check-bundle `SCENARIOS`에 `/studio/:projectId (저장 데이터 복원 진입)` 1행 · 한도 134(판정 로직 변경 0). 감량 1회 = 헤더 파서와 한도 상수 분리(`ingest/limits.ts`, header.ts 재수출) · 저장 전용 `imageOps` 분리 → **133.25 → 132.47**. 기준선 132.47(base 303647b) · bundleBudget.test 고정값 · 기존 `/studio` 129.57 그대로.
+2. **[P2] 편집기 이탈 시 맵 해제** `82efd7a`: `images()`가 등록 해제 함수를 돌려줘 StudioLayout effect cleanup이 된다(StudioLayout 수정 0). 진행 중 저장은 요청 시점 맵 확보(saveDoc·startDoc·requestExport를 `kept(id, bookOf().then(…))` 모양으로). `/studio` 129.59 · 복원 132.48.
+3. **[P2] 복원 완료 시 최종 한도 검사** `217ce5c`: `restoreImages(projectId, latest, publish)` — `latest`는 저장소 문서·스냅샷 getter로 시작(복원 대상)·완료(최신) 때 각각 읽는다. 복원분을 prev(사용자가 복원 중 넣은 이미지) 우선 병합 맵에 한 장씩 더하며 **최신 문서·스냅샷 + 병합 맵**으로 기존 `checkLimits`를 재고 넘는 복원분은 뺀다.
+   - **선택 근거**: "넘는 복원분 → 잃은 이미지 경로"를 골랐다. 기존 QB-10 문구·UI를 그대로 쓰고, 사용자가 방금 넣은 이미지를 지우지 않으며, 업로드와 같은 함수·기준이라 새 상태(복원 중 추가 차단)·새 문구가 필요 없다. 한도 값 변경 0.
+   - TDD: 예측(PROGRESS ③) → RED = 구현만 HEAD로 되돌려 108행 `expected [uuid1, uuid2] to deeply equal [uuid2]` 1건 · 기존 4건 통과 — 예측 일치. GREEN 5/5. RED 커밋 0 · 단언 약화 0.
+   - 번들 1차: getter 클로저를 진입 청크(memoryProjectRepository)에 두자 `/studio` **129.61 > 129.60** → build 실패. getter 생성을 호출 인자로 옮기고 두 번째 읽기를 복원 청크(`restoreImages` 안)로 옮겨 `/studio` **129.58**(기준선 129.57 그대로). 복원 진입 132.55 → 기준선 132.47 → **132.55**(멈춤선 133.70 안) · bundleBudget.test 고정값 같은 커밋.
+
+### 번들(gzip KB, `npm run build` check-bundle 출력)
+| 시나리오 (한도) | ① 뒤 | 최종 |
+|---|---|---|
+| /studio/:projectId (130 · 상한 129.60) | 129.57 | **129.58** |
+| /studio/:projectId 저장 데이터 복원 진입 (134 · 멈춤선 133.70) | 132.47 | **132.55**(기준선 갱신) |
+| 그 밖 라우트 | — | /catalog 102.39 · /references 99.64 · /compare 122.61 · /profile 119.86·122.34 · /projects 101.35 |
+
+### 검증 (fresh, ③ 커밋 tip `217ce5c`)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm run build` | exit 0 · 위 표 · 기준선 실패 0 |
+| `npm test -- --run` 전체 1회 | exit 0 · 263 파일 · 2300 테스트 |
+| `npx vitest --run scripts/bundleBudget.test.mjs` | 17 passed |
+
+### 중단·재개 기록
+- 1차 실행이 턴 한도로 ③ 도중 중단(①② 커밋 뒤, ③ 구현·테스트·예측은 미커밋 작업 트리) → 축소 재개 1회: RED 확인(구현만 임시 되돌림) → GREEN → build 실패(129.61) 발견 → 진입 코드 축소 + 복원 기준선 갱신 → **GREEN 커밋을 amend**(푸시 전, 빌드 깨진 커밋을 남기지 않으려고 — 첫 GREEN `e3b9ff5`는 build 실패라 대체됨).
+- 엔진·PageDoc 계약·한도 값·docs/**·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge/삭제 0.

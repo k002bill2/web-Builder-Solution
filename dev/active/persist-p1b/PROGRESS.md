@@ -12,8 +12,8 @@
 ## BRIEF-R2 (Codex r1 수정)
 - [x] ① ADR-004 개정 11 — 감량 1회(limits.ts 분리 · imageOps 분리) 133.25 → 132.47 · 시나리오 1행 한도 134 · 기준선 · 테스트 고정값 한 커밋 `c773178`(기존 129.57 그대로)
 - [x] ② 편집기 이탈 시 이미지 맵 해제(StudioLayout effect cleanup = images()가 돌려주는 함수 — StudioLayout 수정 0) · 진행 중 저장 맵 확보(kept를 청크 받기 전에 부름) — /studio 129.59 · 복원 132.48
-- [ ] ③ 복원 완료 시 최신 문서·참조 집합 + 최종 병합 맵으로 checkLimits · Codex 20MB+20MB 회귀 테스트
-- [ ] 게이트(typecheck·lint·build·전체 vitest 1회) · REPORT "Codex r1 수정(BRIEF-R2)" 절
+- [x] ③ 복원 완료 시 최신 문서·참조 집합 + 최종 병합 맵으로 checkLimits · Codex 20MB+20MB 회귀 테스트 `217ce5c`(e3b9ff5를 build 통과 상태로 amend)
+- [x] 게이트(typecheck 0 · lint 0 · build 0 · 전체 vitest 263/2300 exit 0 · bundleBudget 17) · REPORT "Codex r1 수정(BRIEF-R2)" 절
 
 ### TDD 예측 ②
 - 새 테스트 "이탈(cleanup) → 맵 해제 · 진행 중 저장은 이미지 포함": 지금 `images()`가 cleanup을 돌려주지 않아 이탈 뒤 저장이 옛 맵의 uuid2를 넣는다 → `expected [project-1/…1, project-1/…2] to deeply equal [project-1/…1]` 실패 1. 앞 단언(진행 중 저장 = uuid1 레코드 있음)은 지금 통과(맵을 계속 쥐므로).
@@ -22,6 +22,8 @@
 
 ### TDD 예측 ③
 - 새 테스트 "Codex 예시 — 기존 20MB 복원이 늦는 동안 다른 슬롯에 20MB 추가(그 사이 저장) → 최종 페이지 30MB 초과 복원분은 빠지고 사용자 이미지는 남는다": 지금은 복원분만 시작 문서로 재고 무조건 병합 → `expected [uuid1, uuid2] to deeply equal [uuid2]` 실패 1. 기존 4건은 통과(4번째 인자 없으면 시작 레코드 = 최신).
+- 실측(재개 후): 구현만 HEAD로 되돌려 실행 → RED = 108행 `expected [uuid1, uuid2] to deeply equal [uuid2]` 1건 · 기존 4건 통과 — 예측 일치. 구현 복원 → GREEN 5/5 · src/data 32파일 276건 · typecheck 0. 첫 커밋 `e3b9ff5`는 build 실패(/studio 129.61 > 129.60 — 진입 청크에 getter 클로저) → getter를 호출 인자로·두 번째 읽기를 복원 청크로 옮겨 129.58, 복원 진입 기준선 132.47 → 132.55(멈춤선 133.70 안) → amend `217ce5c`.
+- 선택 근거: 복원분을 한 장씩 병합 맵(prev 우선)에 더하며 복원 완료 시점의 최신 문서·스냅샷(저장소 book)으로 기존 checkLimits를 잰다 — 업로드와 같은 함수·같은 기준, 넘는 복원분만 빠져 잃은 이미지 경로로 간다. 한도 값·엔진·계약 수정 0.
 
 ## 설계(요약)
 - 저장: `localSync.flush(projectId, book, images)` — 문서 레코드·상태 레코드와 **같은 트랜잭션**에 이미지 op(큐 키 = projectId → INFRA·retry·미확인 재제출 그대로).

@@ -65,6 +65,8 @@
 
 # 마감(BRIEF-F)
 
+## 판정 — 완료: 게이트 4종 exit 0 · /studio 진입 129.35(한도 130 · 상한 129.60 이내) · Codex r1 P2 2건 수정 · Ego Lite 새로고침 생존 실측(스냅샷 목록 결함 → 수정 뒤 재확인 통과)
+
 ## 1. Ego Lite 새로고침 생존 실측 (HEAD `f7a09e0` 코드, TaskSpace 20)
 - **dist 생성 방법**: `npm run build` 그대로 — check-bundle(마지막 단계)만 exit 1(129.38 > 129), 앞 단계(tsc·build-thumbs·`vite build`·`vite build --mode render`)는 완료돼 `dist/`(index.html·render.html·assets·thumbs) 생성됨. 별도 단계 실행 불필요. → `npx vite preview --port 4337 --strictPort`.
 - 창: `Browser.getWindowForTarget` = `windowState: "normal"`(최소화 아님, 조작 없음). 캡처 4장 `shots/`(뷰포트 clip, fullPage 아님 — ego-browser `screenshot()`은 `captureBeyondViewport` 옵션을 받지 않아 clip만 지정, 기본이 뷰포트 캡처).
@@ -76,3 +78,39 @@
   - 앱 안 이동("프로젝트로 돌아가기") `/projects`: "모던 카페 브랜드 프로젝트 · 편집 중 · A안 · 프로필 v1" 유지 ✓ (`4-projects-after-reload.png`). DB `{design-studio, version 2}`.
 - 정리: `indexedDB.deleteDatabase("design-studio")` = **onsuccess**(앱 연결이 열린 상태에서도 blocked 아님 → versionchange 닫기 동작) → `databases()`=[] · `finish({keep:[]})` · `listTaskSpaces()`=[] · preview 종료, 4337 리슨 0. main 5480·영환님 창 무접촉.
 - 생성 중 새로고침: 미실측(이번 브리프 시나리오 밖).
+
+## 2. 감량 1회 + 예산 적용
+- 후보 ① **진입 봉투 확인 인라인**(entryRead가 envelope 모듈 값을 import하지 않음 — `ENTRY_DB_NAME`·`checkEntryEnvelope` 사본, envelope 규칙과의 동치는 entryRead.test가 10개 레코드로 고정): 실측 129.38 → 시험판 129.31 → 최종(export 추가) **129.33(−0.05)**. 커밋 `ab73c67`.
+- 후보 ②(memoryDocBook 미리받기 목록 축소)는 이번 1회 시도에 넣지 않음 — 미리받기 목록은 Vite 생성 코드라 청크 구조 변경이 필요(범위·시간 대비 이득 불확실 [추정]).
+- 적용 `b801ab3` "ADR-004 개정 9·10 배분 P1a": `check-bundle-size.mjs` `/studio/:projectId` `eagerBudgetKb` 129 → **130**(주석 개정 9·10) · `m2cBaseline.json` 128.55 → **129.33**(base ab73c67) · `bundleBudget.test.mjs` 고정값. 판정 로직 변경 0.
+- 3의 수정으로 진입 +0.02(129.35, 허용 0.03 안) → 브리프대로 기준선 포함 `41f65f9`: 기준선 **129.35**(base cc6a5a9, 판정선 129.38). 상한 129.60 대비 여유 0.25(P1b 이미지 자동 복원 E0 +0.15 수용 가능 [추정]).
+
+| 라우트 (한도) | 앞 레인 | 마감 |
+|---|---|---|
+| /studio/:projectId (130 · 상한 129.60) | 129.38 ✗(129) | **129.35 ✓** |
+| /projects (125) | 101.17 | 101.14 |
+| /compare · (조정 있음) (125) | 122.60 | 122.55 |
+| /profile · (3안 있음) (125) | 119.85 · 122.33 | 119.80 · 122.28 |
+| /catalog (첫 화면 101 · 125) | 100.05 / 102.39 | 100.05 / 102.39 |
+| /references/:id | 97.30 / 99.64 | 97.30 / 99.64 |
+| 렌더 JS (90) | 84.19 | 84.19 |
+
+## 3. Codex r1 P2 2건 (TDD, `cc6a5a9`)
+- ① **A 실패 → B 실패 → B 재시도 STALE_DOC**: 원인 = 멱등 키가 `local.base`로 보정된 revision(`2|B`)으로 기록되는데 재시도는 원래 revision(`1|B`)으로 옴. 수정 = `memoryDocBook.save` 멱등 키를 **요청의 원래 revision**(`${requested}|hash`)으로 — 메모리 모드(보정 없음)는 키 동일. 재시도는 멱등 재생 → `flush`가 미확인 기록 재제출(`queue.retry`).
+- ② **직접 진입 뒤 쓰기 전 listSnapshots = []**: 수정 = `memoryProjectRepository`에 `entered()`(getDoc과 공유) — 진입 문서면 진입 레코드 스냅샷 반환, 비진입인데 문서 머리가 있으면(/projects → 앱 안 이동) DocBook 시드 대기.
+- TDD: 예측 PROGRESS 기록 → RED 2건(① `STALE_DOC: revision 1 ≠ 3` reject, ② `expected [] to deeply equal [snapshot]`) 예측 일치, RED 커밋 안 함 → GREEN. Red-Green: 수정만 되돌리면 2 failed / 복원 10 passed. 단언 약화·skip 0.
+
+## 4. 스냅샷 목록 Ego Lite 재확인 (TaskSpace 21, 같은 절차)
+- 창 normal · `databases()`=[] 시작 → 같은 시나리오 → Hero 제목 "스냅샷 목록 재확인" · "이 브라우저에 저장됨" → 스냅샷 "재확인1" → **새로고침 1회** → 편집 유지 ✓ · 스냅샷 대화상자 **"재확인1 · 수동 · 21:15 · 프로필 v1 · A안" ✓** (`5-snapshots-after-reload-fixed.png`).
+- 정리: `deleteDatabase("design-studio")` = onsuccess → `databases()`=[] · `finish({keep:[]})` · `listTaskSpaces()`=[] · preview 종료, 4337 리슨 0. 새로고침 합계 2회(F1 1 · F4 1).
+
+## 검증 (fresh, 마감 HEAD 기준)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npx vitest run` 전체 1회 | exit 0 · 260 파일 · 2272 테스트 |
+| `npm run build` | exit 0 · /studio 129.35 / 130 · 기준선 129.35 + 0.03 |
+
+- Codex 실행 0(Jarvis 몫). 엔진·PageDoc 계약·docs·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge 0.
+- 남은 것: 생성 중 새로고침 실측(시나리오 밖) · /projects 빈 상태 문구 local 분기(P1c) · 이 마감 커밋들에 대한 Codex 재검증(Jarvis).

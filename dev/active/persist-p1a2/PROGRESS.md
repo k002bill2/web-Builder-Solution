@@ -6,7 +6,7 @@
 - [x] 1-a 진입 하이드레이션(안1-min, 수제 schemaVersion)
 - [x] 1-b 저장 배선(쓰기 큐, "저장됨"=IDB 커밋 뒤, 실패 INFRA·retry, persistence local 문구)
 - [x] 1-c P1a-1 한계(복제 실패 재시도 불가·문구 원인 일치·stateOf 공유)
-- [ ] 2 ADR-004 개정 9 적용 — BLOCKED: 실측 129.38 > 상한 129.15(멈춤 조건), 예산 결정 필요
+- [x] 2 ADR-004 개정 9 적용 — 개정 10(상한 129.60) 뒤 BRIEF-F F2로 적용
 - [x] Ego Lite 정리(IDB 삭제 onsuccess·finish·spaces=[]·리슨 0) — 시나리오 본체는 BLOCKED: 시간(새로고침 생존 미실측, REPORT)
 - [x] 게이트: typecheck 0 · lint 0 · vitest 0(2269) · build — BLOCKED: check-bundle 129.38 > 129(예산 멈춤)
 - [x] REPORT
@@ -31,9 +31,9 @@
 ## BRIEF-F 마감
 - [x] F1 Ego Lite 새로고침 생존 실측(편집 유지·/projects 유지·v1→v2 ✓, 스냅샷 목록 0개 ✗=P2② 재현) · 정리 완료
 - [x] F2 감량 1회(진입 봉투 확인 인라인 129.38→129.33, `ab73c67`) + 예산 적용 130·기준선 129.33(`b801ab3`) · build exit 0
-- [ ] F3 Codex r1 P2 ①(연속 실패 재시도 STALE) ②(직접 진입 listSnapshots) TDD
-- [ ] F4 스냅샷 목록 Ego Lite 재확인 1회
-- [ ] F5 게이트(typecheck·lint·build·vitest) + REPORT 마감
+- [x] F3 Codex r1 P2 ①(연속 실패 재시도 STALE) ②(직접 진입 listSnapshots) TDD — RED 예측 일치 · `cc6a5a9` · 기준선 129.35 `41f65f9`
+- [x] F4 스냅샷 목록 Ego Lite 재확인 1회 — 새로고침 뒤 목록 유지 ✓ · 정리 완료
+- [x] F5 게이트(typecheck 0·lint 0·build 0·vitest 2272 0) + REPORT 마감(BRIEF-F)
 
 ### F3 TDD 예측 (RED 전 기록)
 - ① localSync.test "A 실패 → B 실패 → B 재시도": 지금은 B 재시도가 `STALE_DOC`로 reject(멱등 키가 보정 revision `2|B`로 기록, 재시도 키 `1|B`) → 단언 `resolves revision = doc.revision + 2`에서 RED 1건. 수정 = 멱등 키를 요청 원래 revision으로(`${requested}|hash`).

@@ -32,7 +32,7 @@ base `2b67601` · 구현 `f1a2391` · 예산 `388bca9` · 2026-10-07
 - 편집기 iframe(`/render.html`)은 contentDocument 접근 불가 → 접근성 스냅샷으로 hero heading 확인.
 
 ## 알려진 차이 (의도)
-- **3안 미리보기 문구 ≠ 편집기 문구**: `comparePreviews`(CompareDialog)는 변경 0이라 여전히 SAMPLE_COPY 예시 문구로 그린다. 편집 시작 뒤 편집기는 업종 문구. 미리보기 안내문(compareText.same "3안 모두 예시 문구로 그렸습니다")과 모순 없음. 맞추려면 별건(CompareDialog 조작 뒤 청크 +표 크기).
+- **3안 미리보기 문구 ≠ 편집기 문구**: `comparePreviews`(CompareDialog)는 변경 0이라 여전히 SAMPLE_COPY 예시 문구로 그린다. 편집 시작 뒤 편집기는 업종 문구. 단 안내문 compareText.same("…편집 문서가 없으면 편집 시작이 **이 문서로** 시작합니다")은 이제 문구가 다르므로 엄밀히는 어긋남 — 구조·테마는 같고 문구만 다름. 안내문 수정 또는 미리보기 문구 통일은 별건 판단 필요. 맞추려면 별건(CompareDialog 조작 뒤 청크 +표 크기).
 
 ## 검증
 | 명령 | 결과 |

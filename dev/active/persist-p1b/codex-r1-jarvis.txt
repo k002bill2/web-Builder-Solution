@@ -1,0 +1,41 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a116ca-6807-7440-9820-a4fa799aeb62).
+[codex] Reviewer started: changes against 'a07ba59'
+[codex] Running command: /bin/zsh -lc "pwd; rg -n 'web-builder|persist' /Users/younghwankang/.codex/memories/MEMORY.md...
+[codex] Command completed: /bin/zsh -lc "pwd; rg -n 'web-builder|persist' /Users/younghwankang/.codex/memories/MEMORY.md... (exit 0)
+[codex] Running command: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw...
+[codex] Command completed: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff a07ba5910523319a2eb6012a35f84e4fe1fcaa3d -- app/src/data/persistence/i...
+[codex] Command completed: /bin/zsh -lc 'git diff a07ba5910523319a2eb6012a35f84e4fe1fcaa3d -- app/src/data/persistence/i... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '280,355p' app/src/components/studio/StudioLayout.tsx; cat app/src/data/...
+[codex] Command completed: /bin/zsh -lc "sed -n '280,355p' app/src/components/studio/StudioLayout.tsx; cat app/src/data/... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/studioRepository.ts; sed -n '75,150p' app/src/compo...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/studioRepository.ts; sed -n '75,150p' app/src/compo... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/images/ingest/ingest.ts 2>/dev/null; ls app/src/fea...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/images/ingest/ingest.ts 2>/dev/null; ls app/src/fea... (exit 0)
+[codex] Running command: /bin/zsh -lc "head -95 app/scripts/check-bundle-size.mjs; head -100 app/scripts/bundleBudget....
+[codex] Command completed: /bin/zsh -lc "head -95 app/scripts/check-bundle-size.mjs; head -100 app/scripts/bundleBudget.... (exit 0)
+[codex] Running command: /bin/zsh -lc "node --input-type=module <<'JS' import {readFileSync} from 'node:fs'; import {g...
+[codex] Command completed: /bin/zsh -lc "node --input-type=module <<'JS' import {readFileSync} from 'node:fs'; import {g... (exit 0)
+[codex] Running command: /bin/zsh -lc "node --input-type=module -e 'import {readFileSync} from \"node:fs\"; import {gz...
+[codex] Command completed: /bin/zsh -lc "node --input-type=module -e 'import {readFileSync} from \"node:fs\"; import {gz... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 자동 복원 청크를 포함한 실제 진입 번들이 예산을 초과하며, 이미지 맵의 수명 관리와 비동기 복원 중 한도 검증에도 결함이 있습니다. 소스와 현재 dist를 읽기 전용...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against a07ba59
+
+자동 복원 청크를 포함한 실제 진입 번들이 예산을 초과하며, 이미지 맵의 수명 관리와 비동기 복원 중 한도 검증에도 결함이 있습니다. 소스와 현재 dist를 읽기 전용으로 확인했으며 전체 테스트는 재실행하지 않았습니다.
+
+Full review comments:
+
+- [P1] 자동 복원 청크를 진입 번들 예산에 포함하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1b/app/src/data/memoryProjectRepository.ts:148-148
+  로컬 영속 모드에서는 편집기 마운트만으로 `imageRestore`를 받으므로 이 청크와 정적 의존성은 진입 예산에 포함되어야 합니다. 현재 `SCENARIOS.auto`에는 빠져 있어 검사기가 129.575KB만 계산하지만, 현재 dist의 복원 청크까지 합산하면 133.249KB로 `/studio` 한도 130KB를 초과합니다. `check-bundle-size.mjs`의 자동 import 분류 규칙(24–25행)에 따라 복원 시나리오를 검사에 포함하고, 실제 합계가 한도 안에 들도록 감량해야 합니다.
+
+- [P2] 편집기 이탈 시 등록된 이미지 맵을 해제하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1b/app/src/components/studio/StudioLayout.tsx:297-297
+  이미지를 등록한 뒤 편집기를 떠나도 effect에 cleanup이 없어 저장소의 `maps`가 마지막 이미지 맵을 계속 보유합니다. `deferredStudio.projects()`는 앱 수명 동안 같은 저장소를 공유하므로 여러 프로젝트를 열면 각 프로젝트의 Blob과 WeakMap 메타에 연결된 변형본이 누적되고, 편집기 state가 사라져도 회수되지 않습니다. 진행 중 저장에 필요한 데이터를 확보한 뒤 해당 프로젝트의 맵 등록을 해제하는 unmount 경로가 필요합니다.
+
+- [P2] 복원 중 업로드와 병합한 최종 이미지 집합의 한도를 검사하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/persist-p1b/app/src/data/persistence/imageRestore.ts:52-53
+  복원 완료 전에 사용자가 이미지를 추가하면 업로드의 `checkLimits`는 아직 복원되지 않은 이미지의 용량을 세지 않습니다. 여기서는 복원된 맵만 이전 문서로 검사한 뒤 사용자 맵과 무조건 병합하므로, 각각 검사에 통과한 두 집합의 합계가 페이지 30MB 또는 탭 60MB 한도를 초과할 수 있습니다. 예를 들어 기존 슬롯 이미지가 합계 20MB인 상태에서 복원이 지연되는 동안 다른 슬롯에 20MB를 추가하면 최종 페이지는 40MB가 됩니다. 복원이 끝날 때까지 추가를 차단하거나 최신 문서·참조 집합과 최종 병합 맵으로 한도를 검증해야 합니다.

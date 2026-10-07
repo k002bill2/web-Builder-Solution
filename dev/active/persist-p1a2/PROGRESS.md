@@ -27,3 +27,10 @@
 ## 로그
 
 - 번들: 129.87 → 129.52(진입 toInfra 제거) → 129.46 → 129.38. 상한 129.15 초과로 멈춤(②미적용).
+
+## BRIEF-F 마감
+- [x] F1 Ego Lite 새로고침 생존 실측(편집 유지·/projects 유지·v1→v2 ✓, 스냅샷 목록 0개 ✗=P2② 재현) · 정리 완료
+- [ ] F2 감량 1회 + 예산 적용(ADR-004 개정 9·10 배분 P1a)
+- [ ] F3 Codex r1 P2 ①(연속 실패 재시도 STALE) ②(직접 진입 listSnapshots) TDD
+- [ ] F4 스냅샷 목록 Ego Lite 재확인 1회
+- [ ] F5 게이트(typecheck·lint·build·vitest) + REPORT 마감

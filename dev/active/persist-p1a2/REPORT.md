@@ -60,3 +60,19 @@
 - IDB 실측 1건: /catalog 진입 때 DB 없음(`indexedDB.databases()` = []) → store 라우트(/compare) 진입 뒤 `design-studio` **v1 빈 DB** 생성 확인(진입 읽기가 버전 없이 엶 — 첫 실행 경로). v1→v2 업그레이드·저장·새로고침 생존·생성 중 새로고침은 **미실측(BLOCKED: 시간)**.
 - /projects 빈 상태 문구 "새로고침하면 프로젝트가 사라집니다(서버 연결 전)"가 local 모드에서도 그대로 — P1c 문구 몫으로 넘김.
 - 정리: `indexedDB.deleteDatabase("design-studio")` = **onsuccess** → `databases()` = [] · `finish({keep:[]})` · `listTaskSpaces()` = [] · preview 종료, 4337 리슨 0 · `/tmp/p1a2-base`(기준 빌드 사본) 삭제. main 5480·영환님 창 무접촉.
+
+---
+
+# 마감(BRIEF-F)
+
+## 1. Ego Lite 새로고침 생존 실측 (HEAD `f7a09e0` 코드, TaskSpace 20)
+- **dist 생성 방법**: `npm run build` 그대로 — check-bundle(마지막 단계)만 exit 1(129.38 > 129), 앞 단계(tsc·build-thumbs·`vite build`·`vite build --mode render`)는 완료돼 `dist/`(index.html·render.html·assets·thumbs) 생성됨. 별도 단계 실행 불필요. → `npx vite preview --port 4337 --strictPort`.
+- 창: `Browser.getWindowForTarget` = `windowState: "normal"`(최소화 아님, 조작 없음). 캡처 4장 `shots/`(뷰포트 clip, fullPage 아님 — ego-browser `screenshot()`은 `captureBeyondViewport` 옵션을 받지 않아 clip만 지정, 기본이 뷰포트 캡처).
+- 진행: `/catalog`(IDB `databases()`=[]) → 카드 제목 → `/references/ref-a` **상세의 "비교 추가"**(→ "비교 중") → "보드 열기" `/compare`(이때 `design-studio` **v1** 생성) → "이 레퍼런스로 프로필 만들기" → "프로필 확정 (v1)" → `/profile/profile-1` → "3안 만들기 (v1)"(이 뒤 **v2** — v1→v2 업그레이드 관찰) → "이 안 선택"(A) → "A안으로 편집 시작" → `/studio/project-1` → Hero 제목 "새로고침 생존 실측" 입력 → **"이 브라우저에 저장됨 · 8초 전"** 확인(캡처는 스냅샷 저장 직후 `1-snapshot-saved.png`) → 스냅샷 "생존1" 저장(목록 1개 "생존1 · 수동 · 21:08 · 프로필 v1 · A안").
+- **새로고침 1회**(`page.reload()`, `/studio/project-1` 직접 진입):
+  - 편집 유지 ✓ — Hero 제목 입력값 "새로고침 생존 실측" (`2-after-reload.png`).
+  - 스냅샷 대화상자 **"아직 스냅샷이 없습니다" ✗** — Codex r1 P2 ② 결함 재현(`3-snapshots-after-reload.png`). → 3에서 수정.
+  - 저장 상태 문구는 새로고침 직후 표시 없음(저장 전이라 상태 없음 — 관찰만).
+  - 앱 안 이동("프로젝트로 돌아가기") `/projects`: "모던 카페 브랜드 프로젝트 · 편집 중 · A안 · 프로필 v1" 유지 ✓ (`4-projects-after-reload.png`). DB `{design-studio, version 2}`.
+- 정리: `indexedDB.deleteDatabase("design-studio")` = **onsuccess**(앱 연결이 열린 상태에서도 blocked 아님 → versionchange 닫기 동작) → `databases()`=[] · `finish({keep:[]})` · `listTaskSpaces()`=[] · preview 종료, 4337 리슨 0. main 5480·영환님 창 무접촉.
+- 생성 중 새로고침: 미실측(이번 브리프 시나리오 밖).

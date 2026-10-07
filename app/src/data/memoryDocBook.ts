@@ -11,6 +11,7 @@
 import type { CandidatePlan } from "../domain/generation";
 import { generatedReferenceFixtures } from "../fixtures/generatedReferences";
 import { referenceFixtures } from "../fixtures/references";
+import { retryableImport } from "./chunkRetry";
 import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
 import {
   ProjectRepositoryError,
@@ -40,6 +41,8 @@ interface DocState {
   readonly starts: ReadonlyMap<string, { readonly key: string; readonly result: StartDocResult<DocHead> }>;
   /** 프로젝트마다 마지막으로 성공한 saveDoc 1건 — 키 (revision, hash) */
   readonly saves: ReadonlyMap<string, { readonly key: string; readonly doc: DocHead }>;
+  /** 프로젝트마다 마지막으로 성공한 restoreSnapshot 1건 — 키 (snapshotId, revision). 영속 실패 뒤 재시도는 재생 → 미확인 쓰기 재제출 */
+  readonly restores: ReadonlyMap<string, { readonly key: string; readonly doc: DocHead }>;
   /** 프로젝트·형식마다 마지막으로 잡을 만든 requestExport 1건(8.3.2 멱등 기록) — 키 (format, docRevision) */
   readonly exports: ReadonlyMap<string, { readonly key: string; readonly result: ExportRequestResult }>;
   readonly jobs: ReadonlyMap<string, ExportJob>;
@@ -125,8 +128,9 @@ function copyOf(baseReferenceId: string): Readonly<Record<string, string>> | und
   return card && industryCopyOf(card);
 }
 
-/** 로컬 영속 싱크 열기 — 조작 뒤 청크(이 파일)에서 한 번 더 받는다: 진입 청크의 미리받기 목록에 싱크 의존(zod 등)을 싣지 않는다 */
-export const openLocalSync = async (entry: LocalEntry) => (await import("./persistence/localSync")).openLocalSync(entry);
+/** 로컬 영속 싱크 열기 — 조작 뒤 청크(이 파일)에서 한 번 더 받는다: 진입 청크의 미리받기 목록에 싱크 의존(zod 등)을 싣지 않는다. 실패 뒤 재시도 = 새 URL(F1) */
+const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
+export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
 
 /** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷) · 저장 기준 revision 보정(내 미확인 쓰기 위에 얹기) */
 export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs" | "base">): DocBook {
@@ -154,6 +158,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
     snapshots: new Map([...seed].map(([id, r]) => [id, r.snapshots])),
     starts: new Map(),
     saves: new Map(),
+    restores: new Map(),
     exports: new Map(),
     jobs: new Map(),
   };
@@ -252,6 +257,9 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
     },
     restoreSnapshot: ([projectId, snapshotId, expectedRevision], commit) => {
       if (typeof projectId !== "string" || typeof snapshotId !== "string" || !Number.isSafeInteger(expectedRevision)) throw fail("SCHEMA_INVALID", "restoreSnapshot 인자");
+      const key = `${snapshotId}|${expectedRevision}`;
+      const last = state.restores.get(projectId);
+      if (last?.key === key) return last.doc;
       const current = state.docs.get(projectId);
       const list = state.snapshots.get(projectId) ?? [];
       const source = list.find((s) => s.snapshotId === snapshotId);
@@ -261,7 +269,12 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const before = snapshotOf(list, current, createdAt, { kind: "auto", reason: "restore", name: timedName("복원 전", createdAt) });
       const doc = deepFreeze({ ...source.doc, revision: current.revision + 1, updatedAt: createdAt });
       commit();
-      state = { ...state, docs: new Map(state.docs).set(projectId, doc), snapshots: new Map(state.snapshots).set(projectId, [...list, before]) };
+      state = {
+        ...state,
+        docs: new Map(state.docs).set(projectId, doc),
+        snapshots: new Map(state.snapshots).set(projectId, [...list, before]),
+        restores: new Map(state.restores).set(projectId, { key, doc }),
+      };
       return doc;
     },
     resolveConflict: ([projectId, choice, myDoc], commit) => {

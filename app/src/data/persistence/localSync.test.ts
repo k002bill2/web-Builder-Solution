@@ -111,6 +111,25 @@ describe("새로고침 생존 — 저장 → 레코드 → 새 store 복원 (D2 
     for (let i = 0; i < 10 && !isTerminal(job.state); i += 1) job = await regen.getJob(job.jobId);
     expect(job.state).toBe("succeeded");
   });
+
+  it("ref-a 확정 → 새로고침 → 새 보드에서 ref-b 확정 = 새 프로필·보드 확정(이전 확정의 멱등 재생 아님 — Codex r2 P1)", async () => {
+    const persistence = createMemoryPersistence();
+    const confirmOn = async (studio: ReturnType<typeof createDeferredStudio>, referenceId: string) => {
+      const board = await studio.board();
+      await board.addReference(referenceId);
+      const picked = await board.savePicks({ hero: referenceId }, {}, (await board.getBoard()).board.revision);
+      return { board, result: await board.confirmProfile(picked.revision, 0) };
+    };
+    const first = createDeferredStudio(async () => FIXTURE_CATALOG, STUDIO_IMPORTS, { entry: {}, sync: (e) => openLocalSync(e, async () => persistence) });
+    expect((await confirmOn(first, "ref-a")).result.profileId).toBe("profile-1");
+    await (await first.projects()).listProjects();
+    for (let i = 0; i < 20; i += 1) await Promise.resolve();
+    const again = createDeferredStudio(async () => FIXTURE_CATALOG, STUDIO_IMPORTS, { entry: await entryFrom(persistence), sync: (e) => openLocalSync(e, async () => persistence) });
+    const { board, result } = await confirmOn(again, "ref-b");
+    expect(result.profileId).toBe("profile-2");
+    expect((await board.getBoard()).board.confirmed).toMatchObject({ profileId: "profile-2", version: 1 });
+    expect((await (await again.projects()).listProjects()).map((p) => p.baseReferenceId).sort()).toEqual(["ref-a", "ref-b"]);
+  });
 });
 
 describe("저장됨 = IDB 커밋 확인 뒤 (Codex 제약 3)", () => {
@@ -156,6 +175,21 @@ describe("저장됨 = IDB 커밋 확인 뒤 (Codex 제약 3)", () => {
     const saved = await projects.saveDoc("project-1", doc.revision, b);
     expect(saved).toMatchObject({ revision: doc.revision + 2, hash: b.hash });
     expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc).toEqual(saved);
+  });
+
+  it("스냅샷 복원 IDB 실패 → 같은 요청 재시도: 멱등 재생으로 미확인 쓰기를 재제출해 저장된다(STALE_DOC 아님 — Codex r2 P2)", async () => {
+    const { gate, persistence } = gated();
+    const { projects, doc } = await started(persistence);
+    const kept = await projects.createSnapshot("project-1", "복원 대상");
+    const edited = await projects.saveDoc("project-1", doc.revision, edit(doc, "복원 전 편집"));
+    gate.fail = true;
+    expect(await codeOf(projects.restoreSnapshot("project-1", kept.snapshotId, edited.revision))).toBe("INFRA");
+    gate.fail = false;
+    const restored = await projects.restoreSnapshot("project-1", kept.snapshotId, edited.revision);
+    expect(restored).toMatchObject({ revision: edited.revision + 1, hash: kept.hash });
+    const stored = (await persistence.get("docs", "project-1")) as { data: { doc: PageDoc; snapshots: readonly unknown[] } };
+    expect(stored.data.doc).toEqual(restored);
+    expect(stored.data.snapshots).toEqual(await projects.listSnapshots("project-1"));
   });
 
   it("IDB 실패 → 더 편집 → 다음 저장: 내 미확인 쓰기 위에 얹는다(STALE_DOC 아님)", async () => {

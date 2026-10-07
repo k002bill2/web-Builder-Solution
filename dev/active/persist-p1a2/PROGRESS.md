@@ -39,3 +39,18 @@
 - ① localSync.test "A 실패 → B 실패 → B 재시도": 지금은 B 재시도가 `STALE_DOC`로 reject(멱등 키가 보정 revision `2|B`로 기록, 재시도 키 `1|B`) → 단언 `resolves revision = doc.revision + 2`에서 RED 1건. 수정 = 멱등 키를 요청 원래 revision으로(`${requested}|hash`).
 - ② localSync.test "스냅샷 있는 프로젝트 새로고침 → 쓰기 전 listSnapshots": 진입 문서 경로 `[]` ≠ 1개 → RED 1건. 같은 테스트 안 비진입(/projects → 앱 안 이동) 경로도 `[]`. 수정 = 진입 레코드 스냅샷 반환 · 비진입은 getDoc처럼 시드 대기.
 - 번들 예측: memoryProjectRepository +0.02~0.05 → /studio 129.35~129.38(상한 129.60 이내, 기준선 갱신 필요 가능).
+
+## Codex r2 수정 (마지막 라운드)
+- [x] ①[P1] 새로고침 뒤 새 보드 확정이 이전 확정 멱등 재생 — 로컬 영속 세션마다 새 보드 id(멱등 네임스페이스)
+- [x] ②[P2] 스냅샷 복원 IDB 실패 뒤 재시도 STALE_DOC — 복원 멱등 기록(저장 경로와 같은 방식) → flush 재제출
+- [x] ③[P2] localSync 동적 import → retryableImport
+- [ ] 번들 실측(상한 129.60) · 필요 시 기준선 커밋
+- [ ] 게이트(typecheck·lint·build·vitest 1회) + REPORT "Codex r2 수정" 절 커밋
+
+### r2 TDD 예측 (RED 전 기록)
+- ① localSync.test "ref-a 확정 → 새로고침 → ref-b 확정": 새 보드 id `board-current`·revision 2가 이전과 같아 replayOf가 profile-1 재생 → `expected 'profile-1' to be 'profile-2'` RED 1건.
+- ② localSync.test "스냅샷 복원 IDB 실패 → 재시도": 메모리 revision이 이미 올라 재시도가 `STALE_DOC`로 reject → RED 1건(await에서 reject).
+- ③ chunkRetryWiring.test "localSync도 retryableImport": 싼 로더 중 localSync 모듈 0개 → `expected length 1, got 0` RED 1건.
+- 번들 예측: deferredStudio(진입) 세션 보드 id +0.02~0.05 → /studio 129.37~129.40(상한 129.60 이내). memoryDocBook은 조작 뒤 청크라 진입 영향 0 예상.
+- RED 3건 예측 일치(①`expected 'profile-1' to be 'profile-2'` ②`STALE_DOC: revision 2 ≠ 3` ③`expected [] to have a length of 1`) · RED 커밋 없음 · Red-Green: 수정 3파일만 되돌리면 3 failed / 복원 15 passed.
+- 번들 실측 /studio 129.41(예측 범위 129.37~129.40 대비 +0.01) — 상한 129.60 이내 → 기준선 갱신.

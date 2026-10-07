@@ -15,7 +15,7 @@ import { deepFreeze, type StudioState } from "../studioStore";
 import { SCHEMA_VERSION, checkEnvelope } from "./envelope";
 import type { DocRecord, LocalEntry } from "./entryRead";
 import { openIdbPersistence } from "./idbPersistence";
-import { imageOps } from "./imageRecord";
+import { imageOps } from "./imageOps";
 import { jobPut, readJobRecord } from "./jobRecord";
 import type { StudioPersistence, WriteOp } from "./studioPersistence";
 import type { RenderImages } from "../../features/studio/images/store/types";

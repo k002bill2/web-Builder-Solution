@@ -12,7 +12,8 @@ import { addImage } from "../../features/studio/images/store/imageStore";
 import type { RenderImages } from "../../features/studio/images/store/types";
 import { SCHEMA_VERSION } from "./envelope";
 import type { DocRecord } from "./entryRead";
-import { imageOps, imageRecordId, readImageRecord } from "./imageRecord";
+import { imageOps } from "./imageOps";
+import { imageRecordId, readImageRecord } from "./imageRecord";
 
 const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}` as LocalImageId;
 const slot = (source: ImageSlotValue["source"], enabled = true): ImageSlotValue => ({ kind: "image", enabled, source, alt: "", decorative: false });

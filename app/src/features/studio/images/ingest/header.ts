@@ -11,11 +11,7 @@ export interface ImageHeader {
   readonly alpha: boolean;
 }
 
-export const MAX_PIXELS = 40_000_000;
-export const MAX_SIDE = 16_384;
-
-export const exceedsPixelLimit = (width: number, height: number): boolean =>
-  width > MAX_SIDE || height > MAX_SIDE || width * height > MAX_PIXELS;
+export { MAX_PIXELS, MAX_SIDE, exceedsPixelLimit } from "./limits";
 
 const u16be = (b: Uint8Array, i: number): number => ((b[i] ?? 0) << 8) | (b[i + 1] ?? 0);
 const u32be = (b: Uint8Array, i: number): number => (u16be(b, i) * 0x10000 + u16be(b, i + 2)) >>> 0;

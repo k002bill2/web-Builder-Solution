@@ -3,12 +3,14 @@
  * 저장소(`memoryProjectRepository`)는 진입 직후 청크(`/projects`·`/studio`)라 판정·상태 코드를 여기로 뺀다(C4 번들 누수 수정).
  * 문서가 하나라도 있으면 이 청크는 이미 받아져 있다 — 저장소는 청크를 받기 전에는 "문서 없음"으로 읽는다.
  * - start(8.3.1): 모양 → 멱등 키 → NOT_FOUND(프로젝트·버전·안·restart 문서) → DOC_EXISTS·STALE_DOC → 어댑터(8.2.1, 표 밖·엔진 거부 =
- *   UNKNOWN_VARIANT 쓰기 0) → 문서(+ restart 스냅샷) + 멱등 기록. 동기 — `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0).
+ *   UNKNOWN_VARIANT 쓰기 0) → 문서(+ restart 스냅샷) + 멱등 기록. 텍스트 = 버전의 기준 레퍼런스(baseReferenceId) 업종 문구(B-M3P-06, 썸네일과 같은 표) — 카드를 모르거나 표 밖이면 예시 문구. 동기 — `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0).
  * - save(8.3): 모양(L4 검증) → 멱등 키 (revision, hash) → NOT_FOUND → STALE_DOC(최신 동봉) → 저장(revision +1).
  * - 스냅샷 쓰기(ER SPEC 3.2 · 2a-05 5.11): 수동 · 복원(복원 전 + 새 revision) · 충돌 해결(보존 + 저장) — 각각 한 번에(commit 실패 → 변화 0).
  *   id는 종류와 상관없이 프로젝트 목록 순서 `snapshot-N`(내보내기 전·새로 시작 전과 같은 번호열).
  */
 import type { CandidatePlan } from "../domain/generation";
+import { generatedReferenceFixtures } from "../fixtures/generatedReferences";
+import { referenceFixtures } from "../fixtures/references";
 import { MEMORY_GENERATOR_VERSION } from "./generatorVersion";
 import {
   ProjectRepositoryError,
@@ -25,6 +27,7 @@ import {
   type StartDocMode,
   type StartDocResult,
 } from "./projectRepository";
+import { industryCopyOf } from "./industryCopy";
 import { checkSaveDoc, judgeExport, writeStartDoc } from "./startDocWrite";
 import { deepFreeze, type StudioReader } from "./studioStore";
 
@@ -111,7 +114,13 @@ function planOf(store: StudioReader, project: Project, profileVersion: number, c
   const job = store.jobByKey([project.profileId, profileVersion, record.base.library_version, MEMORY_GENERATOR_VERSION].join("|"))?.job;
   const found = job?.candidates.find((c) => c.id === candidateId);
   if (!job || found?.status !== "succeeded") throw fail("NOT_FOUND", `${candidateId}안`);
-  return { job, plan: found.plan as CandidatePlan };
+  return { job, plan: found.plan as CandidatePlan, baseReferenceId: record.baseReferenceId };
+}
+
+/** 기준 레퍼런스 → 새 문서 문구(B-M3P-06) — 카드(큐레이션 + 생성) 조회 실패·표 밖 = undefined(예시 문구) */
+function copyOf(baseReferenceId: string): Readonly<Record<string, string>> | undefined {
+  const card = [...referenceFixtures, ...generatedReferenceFixtures].find((r) => r.id === baseReferenceId);
+  return card && industryCopyOf(card);
 }
 
 export function createDocBook(store: StudioReader, now: () => string): DocBook {
@@ -297,7 +306,7 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
       // 3 NOT_FOUND
       const project = projectOf(projectId);
       if (!project) throw fail("NOT_FOUND", projectId);
-      const { job, plan } = planOf(store, project, profileVersion, candidateId);
+      const { job, plan, baseReferenceId } = planOf(store, project, profileVersion, candidateId);
       const current = state.docs.get(projectId);
       if (mode === "restart" && !current) throw fail("NOT_FOUND", `${projectId} 문서`);
       // 4 문서 상태
@@ -306,7 +315,8 @@ export function createDocBook(store: StudioReader, now: () => string): DocBook {
       if (current && current.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${expectedRevision} ≠ ${current.revision}`, { doc: current });
       // 5 쓰기 — 어댑터(8.2.1) · restart = 스냅샷 + 교체(revision 현재 + 1) · 멱등 기록 — 한 번에
       const updatedAt = now();
-      const made = writeStartDoc({ candidateId, sections: plan.sections, libraryVersion: job.libraryVersion, generatorVersion: job.generatorVersion, profileVersion, projectId, updatedAt });
+      const copy = copyOf(baseReferenceId);
+      const made = writeStartDoc({ candidateId, sections: plan.sections, libraryVersion: job.libraryVersion, generatorVersion: job.generatorVersion, profileVersion, projectId, updatedAt, ...(copy && { copy }) });
       if (!made.ok) throw new ProjectRepositoryError("UNKNOWN_VARIANT", made.reason, { alert: made.alert });
       const doc: DocHead = deepFreeze(current ? { ...made.doc, revision: current.revision + 1 } : made.doc);
       const result: StartDocResult<DocHead> = deepFreeze({ doc, changes: made.changes, ...(made.changeNotice && { changeNotice: made.changeNotice }) });

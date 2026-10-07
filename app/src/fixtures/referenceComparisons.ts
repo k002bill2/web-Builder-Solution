@@ -5,8 +5,9 @@ import type { ComparisonAttributes } from "../domain/comparisonCells";
  * - A·B·C: 목업 `rowDefs`(Design Studio Mockups.dc.html 628~640행)의 메뉴·CTA·카드·이미지 비율·모바일·Footer 값.
  * - D·E·F: 목업에 없어 **임시값**이다. 상세 픽스처의 섹션·모바일 흐름과 맞췄다.
  * - sectionPlan: 상세 `sections`를 TRD 4.4 SectionType으로 옮긴 것. 유형이 없는 섹션(의료진·시간표 등)은
- *   가장 가까운 유형 + 변형 이름으로 적었다(임시). A는 SPEC 8.5에 따라 끝에 footer/biz-extended를 넣었다
- *   (상세 픽스처는 목업 1a-02와 같게 8개 그대로 둔다).
+ *   가장 가까운 유형 + 변형 이름으로 적었다(임시). A는 SPEC 8.5에 따라 끝에 footer/biz-extended를 넣었다.
+ * - M3P-7(영환님 ★A 승인 · B-M3P-08): 엔진 변형으로 접으면 같은 (유형, 변형)이 되는 뒤쪽 행을 뺐다 — C 의료진(about/team-grid-3 = 소개와 같은 story)·
+ *   E 인사이트(portfolio/insights-grid-3 = 사례와 같은 grid-3)·F 오시는 길(contact/map-form = 주문과 같은 form). 상세 `sections`는 이 계획의 렌더 1:1(B-M3P-05).
  */
 export const referenceComparisonAttributes: Readonly<Record<string, ComparisonAttributes>> = Object.freeze({
   "ref-a": {
@@ -51,7 +52,6 @@ export const referenceComparisonAttributes: Readonly<Record<string, ComparisonAt
       { type: "hero", variant: "center" },
       { type: "about", variant: "split" },
       { type: "services", variant: "grid-3" },
-      { type: "about", variant: "team-grid-3" },
       { type: "faq", variant: "accordion" },
       { type: "services", variant: "notice-list" },
       { type: "contact", variant: "map-form" },
@@ -89,7 +89,6 @@ export const referenceComparisonAttributes: Readonly<Record<string, ComparisonAt
       { type: "services", variant: "list" },
       { type: "about", variant: "team-grid-2" },
       { type: "portfolio", variant: "case-list" },
-      { type: "portfolio", variant: "insights-grid-3" },
       { type: "contact", variant: "form" },
       { type: "footer", variant: "biz-extended" },
     ],
@@ -108,7 +107,6 @@ export const referenceComparisonAttributes: Readonly<Record<string, ComparisonAt
       { type: "about", variant: "split" },
       { type: "portfolio", variant: "masonry" },
       { type: "contact", variant: "order-form" },
-      { type: "contact", variant: "map-form" },
       { type: "footer", variant: "biz-extended" },
     ],
     menuLabel: "5개 · 우측 주문 CTA",

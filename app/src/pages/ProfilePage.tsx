@@ -259,7 +259,7 @@ function ProfileView({
             }
           />
       </div>
-      <CandidatesSection key={viewed.version} viewed={viewed} projectId={series.project?.projectId} pending={pending} announce={announce} />
+      <CandidatesSection key={viewed.version} viewed={viewed} base={sources.get(viewed.baseReferenceId)} projectId={series.project?.projectId} pending={pending} announce={announce} />
     </div>
   );
 }

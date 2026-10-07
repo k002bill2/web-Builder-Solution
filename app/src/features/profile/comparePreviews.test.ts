@@ -9,6 +9,10 @@ import { createMemoryProfileRepository } from "../../data/memoryProfileRepositor
 import { createMemoryProjectRepository } from "../../data/memoryProjectRepository";
 import { createStudioStore } from "../../data/studioStore";
 import { isTerminal, type GenerationJob } from "../../domain/generation";
+import type { PageDoc } from "../../engine/contracts/pageDoc";
+import type { ProjectRepository } from "../../data/projectRepository";
+import { SAMPLE_COPY } from "../../data/sampleCopy";
+import { referenceFixtures } from "../../fixtures/references";
 import type { ProfileVersion } from "../../domain/profile";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
 import { docKitTokens } from "../studio/docPurpose";
@@ -79,5 +83,27 @@ describe("미리보기 문서 변환 (SPEC 3.2 · CMP-AC-U5)", () => {
     ];
     for (const version of variants) expect(compareKitTokens(version)).toEqual(docKitTokens({ ...series, versions: [version] }, version.version));
     expect(compareKitTokens(variants[3]!)).toBeUndefined();
+  });
+});
+
+describe("미리보기 문구 = 편집 시작 문서 문구 (B-M3P-07)", () => {
+  it.each(["A", "B", "C"] as const)("%s안 — 미리보기 섹션(유형·변형·슬롯) = 같은 안 편집 시작 문서 · hero 제목은 예시 문구가 아니라 업종 문구", async (id) => {
+    const { job, viewed, store } = await fixture();
+    const base = referenceFixtures.find((r) => r.id === viewed.baseReferenceId);
+    expect(base?.id).toBe("ref-a");
+    const preview = comparePreviews(job, viewed, base).find((p) => p.id === id)!;
+    if (preview.kind !== "doc" || !preview.write.ok) throw new Error("문서가 아닙니다");
+    const repo = createMemoryProjectRepository({ store, now: () => "2026-10-07T00:00:00.000Z" }) as ProjectRepository<PageDoc>;
+    const started = (await repo.startDoc("project-1", 1, id, "create")).doc;
+    const view = (doc: Pick<PageDoc, "sections">) => doc.sections.map(({ type, variant, slots }) => ({ type, variant, slots }));
+    expect(view(preview.write.doc)).toEqual(view(started));
+    expect(preview.write.doc.sections.find((s) => s.type === "hero")?.slots.title).not.toBe(SAMPLE_COPY["hero/title"]);
+  });
+
+  it("기준 카드를 모르면(base 없음) 예시 문구 그대로(폴백)", async () => {
+    const { job, viewed } = await fixture();
+    const preview = comparePreviews(job, viewed)[0]!;
+    if (preview.kind !== "doc" || !preview.write.ok) throw new Error("문서가 아닙니다");
+    expect(preview.write.doc.sections.find((s) => s.type === "hero")?.slots.title).toBe(SAMPLE_COPY["hero/title"]);
   });
 });

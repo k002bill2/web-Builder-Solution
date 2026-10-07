@@ -1,10 +1,13 @@
 /**
  * 3안 → 미리보기 문서 (M2B-5 SPEC 3.2) — 비교 청크 전용, 순수·동기. 편집 시작과 같은 변환(`writeStartDoc`)을 저장소 없이 부른다(쓰기 0).
+ * 문구 = 편집 시작(memoryDocBook)과 같은 기준 레퍼런스 업종 문구(`industryCopyOf`, B-M3P-07) → 미리보기 hero = 편집 시작 뒤 편집기 hero.
+ *  카드는 부르는 쪽(/profile이 이미 받은 출처 카드)이 넘긴다 — 이 청크가 픽스처를 import하면 카드 픽스처 청크가 갈라진다(빌드 실측). 카드 없음·표 밖 = 예시 문구.
  * 고정 projectId·시각 = 결정성(같은 안 → 같은 해시). 프로젝트가 없는 프로필도 문서를 만든다.
  * 킷 토큰 = 보는 버전에 편집기 `docKitTokens`(features/studio/docPurpose)와 같은 규칙 — 3안 공통, 제목 비율 덮어쓰기 0(MQ-M2B5-2 A).
  *  값 import 대신 복제한다: docPurpose를 import하면 편집기 StudioLayout 청크와 공유 청크로 갈라져 `/studio` 진입 +0.22KB(S1 1차 빌드 실측 — PROGRESS, 멈춤선 +0.03).
  *  같은 값인지는 comparePreviews.test가 docKitTokens와 대조한다(보정·촘촘·어두운 카드·부분 레코드).
  */
+import { industryCopyOf, type CopyReference } from "../../data/industryCopy";
 import { writeStartDoc, type StartDocWrite } from "../../data/startDocWrite";
 import type { CandidateFailure, CandidateId, CandidatePlan, GenerationJob } from "../../domain/generation";
 import type { ProfileVersion } from "../../domain/profile";
@@ -18,7 +21,9 @@ export type ComparePreview =
   | { readonly id: CandidateId; readonly kind: "failed"; readonly failure: CandidateFailure }
   | { readonly id: CandidateId; readonly kind: "pending" };
 
-export function comparePreviews(job: Pick<GenerationJob, "candidates" | "libraryVersion" | "generatorVersion">, viewed: ProfileVersion): readonly ComparePreview[] {
+/** base = 보는 버전의 기준 레퍼런스 카드(viewed.baseReferenceId) */
+export function comparePreviews(job: Pick<GenerationJob, "candidates" | "libraryVersion" | "generatorVersion">, viewed: ProfileVersion, base?: CopyReference): readonly ComparePreview[] {
+  const copy = base && industryCopyOf(base);
   return job.candidates.map((c): ComparePreview => {
     if (c.status === "failed") return { id: c.id, kind: "failed", failure: c };
     if (c.status === "pending") return { id: c.id, kind: "pending" };
@@ -30,6 +35,7 @@ export function comparePreviews(job: Pick<GenerationJob, "candidates" | "library
       profileVersion: viewed.version,
       projectId: PREVIEW_PROJECT_ID,
       updatedAt: PREVIEW_UPDATED_AT,
+      ...(copy && { copy }),
     });
     return { id: c.id, kind: "doc", plan: c.plan, write };
   });

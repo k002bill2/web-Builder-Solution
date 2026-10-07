@@ -5,20 +5,23 @@ import type { ReferenceDetail } from "../domain/referenceDetail";
  * - ref-a: 목업 1a-02(Design Studio Mockups.dc.html 126~183행)와 renderVals()의 refSections·mobileFlow·similarGroups·palette.
  * - ref-b~f: 목업에 상세 화면이 A 하나뿐이라 **임시값**이다. 비교 보드 행(rowDefs)의 폰트·섹션 수·모바일 구조가 있으면 따랐다.
  * - similar: 목업 similarGroups가 규칙이 아니라 큐레이션이라(A '유사 레이아웃'에 A 자신 포함) id 목록으로 둔다.
+ * - sections: M3P-7(영환님 ★A 승인 · B-M3P-05) — 생성 15와 같은 "상세 = 렌더 1:1" 규칙. 비교 `sectionPlan`을 엔진 변형으로 옮긴 렌더 문서의
+ *   유형 이름·엔진 변형 그대로(detailRender.test). A는 목업 1a-02의 8개(Footer 없음) 대신 렌더와 같은 9개(Footer biz-extended) — ADR-003 사용자 흐름 우선.
  */
 export const referenceDetailFixtures: Readonly<Record<string, ReferenceDetail>> = Object.freeze({
   "ref-a": {
     audienceNote: "20~30대 여성",
     buildNote: "우리 섹션 라이브러리 v1.4로 제작",
     sections: [
-      { name: "Header", variant: "sticky" },
+      { name: "Header", variant: "sticky-right-cta" },
       { name: "Hero", variant: "fullbleed-left" },
-      { name: "About", variant: "split" },
-      { name: "Services", variant: "grid-3" },
+      { name: "About", variant: "story" },
+      { name: "Services", variant: "cards-3" },
       { name: "Portfolio", variant: "masonry" },
-      { name: "Testimonials", variant: "carousel" },
+      { name: "Testimonials", variant: "quotes-2" },
       { name: "FAQ", variant: "accordion" },
-      { name: "Contact", variant: "map + form" },
+      { name: "Contact", variant: "form" },
+      { name: "Footer", variant: "biz-extended" },
     ],
     palette: [
       { role: "primary", hex: "#8B5E3C" },
@@ -43,11 +46,11 @@ export const referenceDetailFixtures: Readonly<Record<string, ReferenceDetail>> 
     audienceNote: "20~30대 여성",
     buildNote: "라이선스 템플릿 기반",
     sections: [
-      { name: "Header", variant: "sticky" },
+      { name: "Header", variant: "sticky-hamburger" },
       { name: "Hero", variant: "split" },
-      { name: "Services", variant: "grid-3" },
+      { name: "Services", variant: "cards-3" },
       { name: "Portfolio", variant: "masonry" },
-      { name: "Testimonials", variant: "carousel" },
+      { name: "Testimonials", variant: "quotes-2" },
       { name: "Contact", variant: "form" },
       { name: "Footer", variant: "minimal" },
     ],
@@ -70,15 +73,14 @@ export const referenceDetailFixtures: Readonly<Record<string, ReferenceDetail>> 
     audienceNote: "가족 단위",
     buildNote: "우리 섹션 라이브러리 v1.4로 제작",
     sections: [
-      { name: "Header", variant: "sticky" },
+      { name: "Header", variant: "sticky-two-tier" },
       { name: "Hero", variant: "center" },
-      { name: "About", variant: "split" },
-      { name: "Services", variant: "grid-3" },
-      { name: "Doctors", variant: "grid-3" },
+      { name: "About", variant: "story" },
+      { name: "Services", variant: "cards-3" },
       { name: "FAQ", variant: "accordion" },
-      { name: "Notice", variant: "list" },
-      { name: "Contact", variant: "map + form" },
-      { name: "Footer", variant: "biz-extended" },
+      { name: "Services", variant: "list" },
+      { name: "Contact", variant: "form" },
+      { name: "Footer", variant: "biz-extended-map" },
     ],
     palette: [
       { role: "primary", hex: "#1F5FBF" },
@@ -101,10 +103,10 @@ export const referenceDetailFixtures: Readonly<Record<string, ReferenceDetail>> 
     sections: [
       { name: "Header", variant: "transparent" },
       { name: "Hero", variant: "grid" },
-      { name: "Classes", variant: "grid-3" },
-      { name: "Schedule", variant: "table" },
-      { name: "Instructors", variant: "carousel" },
-      { name: "Pricing", variant: "cards" },
+      { name: "Services", variant: "cards-3" },
+      { name: "Services", variant: "list" },
+      { name: "About", variant: "story" },
+      { name: "Pricing", variant: "tiers-2" },
       { name: "Contact", variant: "form" },
       { name: "Footer", variant: "minimal" },
     ],
@@ -127,12 +129,11 @@ export const referenceDetailFixtures: Readonly<Record<string, ReferenceDetail>> 
     audienceNote: "기업 고객",
     buildNote: "라이선스 템플릿 기반",
     sections: [
-      { name: "Header", variant: "sticky" },
+      { name: "Header", variant: "sticky-right-cta" },
       { name: "Hero", variant: "text" },
-      { name: "Practice", variant: "list" },
-      { name: "Attorneys", variant: "grid-2" },
-      { name: "Cases", variant: "list" },
-      { name: "Insights", variant: "grid-3" },
+      { name: "Services", variant: "list" },
+      { name: "About", variant: "story" },
+      { name: "Portfolio", variant: "grid-3" },
       { name: "Contact", variant: "form" },
       { name: "Footer", variant: "biz-extended" },
     ],
@@ -155,13 +156,12 @@ export const referenceDetailFixtures: Readonly<Record<string, ReferenceDetail>> 
     audienceNote: "가족·20~30대",
     buildNote: "우리 섹션 라이브러리 v1.4로 제작",
     sections: [
-      { name: "Header", variant: "sticky" },
+      { name: "Header", variant: "sticky-right-cta" },
       { name: "Hero", variant: "image" },
-      { name: "Menu", variant: "grid-3" },
-      { name: "Story", variant: "split" },
-      { name: "Gallery", variant: "masonry" },
-      { name: "Order", variant: "form" },
-      { name: "Contact", variant: "map + form" },
+      { name: "Services", variant: "cards-3" },
+      { name: "About", variant: "story" },
+      { name: "Portfolio", variant: "masonry" },
+      { name: "Contact", variant: "form" },
       { name: "Footer", variant: "biz-extended" },
     ],
     palette: [

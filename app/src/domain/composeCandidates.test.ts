@@ -141,7 +141,7 @@ describe("composeCandidates — P-AC-22 세 축", () => {
     const plans = compose({ profile: refE });
     expect(plans.map((p) => p.axes.grid).sort()).toEqual(["grid-2", "grid-3", "masonry"]);
     expect(plans[0]!.axes.grid).toBe("grid-3");
-    for (const p of plans) expect(p.sections.filter((x) => x.type === "services" || x.type === "portfolio").map((x) => x.variant)).toEqual(["list", "case-list", "insights-grid-3"]);
+    for (const p of plans) expect(p.sections.filter((x) => x.type === "services" || x.type === "portfolio").map((x) => x.variant)).toEqual(["list", "case-list"]); // M3P-7 ★A: 인사이트(사례와 같은 grid-3) 행 뺌
   });
 
   it.each([

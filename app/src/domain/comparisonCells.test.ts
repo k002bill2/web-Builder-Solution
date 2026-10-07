@@ -49,14 +49,14 @@ describe("레퍼런스 → 12행 셀 값 (SPEC 2.3·8.1)", () => {
 
   it("info 행(섹션 수·접근성·성능)은 바인딩이 없다", () => {
     const { cells } = build("ref-c");
-    expect(cells.sectionCount).toEqual({ label: "9개", binding: null });
+    expect(cells.sectionCount).toEqual({ label: "8개", binding: null }); // M3P-7 ★A: 의료진(about 중복) 행을 뺀 8개
     expect(cells.quality).toEqual({ label: "접근성 98 · 성능 95 (측정일 2026-09-20)", binding: null });
   });
 
-  it("A의 sectionPlan 끝에 footer/biz-extended가 있다 (SPEC 8.5 — 상세 픽스처는 그대로)", () => {
+  it("A의 sectionPlan 끝에 footer/biz-extended가 있다 (SPEC 8.5 — M3P-7 ★A: 상세도 렌더 1:1로 Footer 포함 9개)", () => {
     const a = build("ref-a");
     expect(a.sectionPlan.at(-1)).toEqual({ type: "footer", variant: "biz-extended" });
-    expect(referenceDetailFixtures["ref-a"]!.sections).toHaveLength(8);
+    expect(referenceDetailFixtures["ref-a"]!.sections).toHaveLength(9);
     expect(a.cells.sectionCount.label).toBe("9개");
   });
 

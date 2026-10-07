@@ -56,7 +56,7 @@ describe("ReferenceDetailPage (2a-02 v2, FR-CAT-03)", () => {
 
     const info = infoPanel();
     expect(within(info).getByRole("heading", { level: 1, name: "모던 카페 브랜드" })).toBeInTheDocument();
-    expect(within(info).getByRole("heading", { name: "섹션 구성 · 8개" })).toBeInTheDocument();
+    expect(within(info).getByRole("heading", { name: "섹션 구성 · 9개" })).toBeInTheDocument();
     const sections = within(within(info).getByRole("list", { name: "섹션 구성" })).getAllByRole("listitem");
     expect(sections.map((li) => li.textContent)).toEqual(
       detailA.sections.map((s, i) => `${String(i + 1).padStart(2, "0")}${s.name}${s.variant}`),
@@ -80,7 +80,7 @@ describe("ReferenceDetailPage (2a-02 v2, FR-CAT-03)", () => {
   it("미리보기 폭을 모바일로 바꿔도 섹션 구성·토큰 요약은 그대로 보인다 (V2-AC-27)", async () => {
     renderApp("/references/ref-a?view=mobile");
     await heading("모던 카페 브랜드");
-    expect(within(infoPanel()).getByRole("heading", { name: "섹션 구성 · 8개" })).toBeInTheDocument();
+    expect(within(infoPanel()).getByRole("heading", { name: "섹션 구성 · 9개" })).toBeInTheDocument();
     expect(within(infoPanel()).getByRole("heading", { name: "토큰 요약" })).toBeInTheDocument();
   });
 

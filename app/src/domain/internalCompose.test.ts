@@ -162,9 +162,11 @@ describe("생성 픽스처 가드 (M3P-AC-G1·G2·G5)", () => {
     for (const name of GENERATED_FIXTURE_FILES) for (const pattern of [/https?:/i, /<script/i, LEGACY_BRAND]) expect(fixtureText(name), `${name} ${pattern}`).not.toMatch(pattern);
   });
 
-  it("G5: 기존 6개 픽스처 3벌 바이트 변경 0 (db9f25e 해시)", () => {
+  // M3P-7 영환님 ★A 승인(2026-10-07, 큐레이션 픽스처 수정 — B-M3P-05·08) · 새 base: referenceDetails·referenceComparisons 해시를 승인된 내용으로 갱신.
+  // 가드는 그대로 — 이 base 이후 무단 변경은 계속 잡는다. references.ts(카드)는 바꾸지 않아 db9f25e 해시 그대로.
+  it("G5: 기존 6개 픽스처 3벌 바이트 변경 0 (db9f25e 해시 → M3P-7 영환님 ★A 승인 · 새 base)", () => {
     expect(hash(fixtureText("references.ts"))).toBe("bea53875");
-    expect(hash(fixtureText("referenceDetails.ts"))).toBe("574fbca2");
-    expect(hash(fixtureText("referenceComparisons.ts"))).toBe("4c0ffbaf");
+    expect(hash(fixtureText("referenceDetails.ts"))).toBe("c515bbcb");
+    expect(hash(fixtureText("referenceComparisons.ts"))).toBe("69d5ca7b");
   });
 });

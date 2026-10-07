@@ -158,4 +158,24 @@ describe("직렬 쓰기 큐", () => {
     expect(await valueOf(persistence, "a")).toBe("a값");
     expect(await valueOf(persistence, "b")).toBe("b값");
   });
+  it("스냅샷 복제 실패(함수 값) → 동기 예외 0 · INFRA로 reject · 상태 기록 변화 0 · 큐는 계속 처리 (Codex r2)", async () => {
+    const { persistence, writes, queue } = setup({ fail: (seq) => (seq === 1 ? new Error("x") : undefined) });
+    await expect(queue.submit("save-1", [put("a", 1)])).rejects.toMatchObject({ code: "INFRA" });
+    let cloneFailed!: Promise<void>;
+    let freshFailed!: Promise<void>;
+    expect(() => {
+      cloneFailed = queue.submit("save-1", [put("b", () => 1)]);
+      freshFailed = queue.submit("save-2", [put("c", () => 1)]);
+    }).not.toThrow();
+    await expect(cloneFailed).rejects.toMatchObject({ code: "INFRA" });
+    await expect(freshFailed).rejects.toMatchObject({ code: "INFRA" });
+    expect(writes).toEqual([1]);
+    expect(queue.status("save-1")).toBe("unconfirmed");
+    expect(queue.status("save-2")).toBeUndefined();
+    expect(queue.unconfirmed()).toEqual(["save-1"]);
+    await queue.retry("save-1");
+    expect(queue.unconfirmed()).toEqual([]);
+    expect(await valueOf(persistence, "a")).toBe(1);
+    expect(await valueOf(persistence, "b")).toBeUndefined();
+  });
 });

@@ -44,3 +44,24 @@
 - 실측 RED: 4건 실패(writeQueue 3: 저장값 '바뀜' ×2 · status 'unconfirmed' / jobRecord 1: "expected function to throw") — 예측 일치(커밋 안 함).
 - 실측 GREEN: persistence 6파일 33 테스트 통과. 구현 = submit 입력 structuredClone · retry가 같은 키 pending을 끝날 때까지 기다린 뒤 실패 기록 재확인·재제출 · jobRecord zod에 필수 잡 필드·후보/hidden 결과 모양(discriminatedUnion)·A·B·C 순서·hidden id 일치·pending⇒hidden 존재 refine.
 - 게이트 fresh: typecheck 0 · lint 0 · build 0(/studio 진입 직후 128.51KB 변화 0) · vitest 258 파일/2252 테스트 exit 0.
+
+## Codex r2 수정 (codex-r2-jarvis.txt P2 3건 — 마지막 라운드)
+- [x] ① jobRecord 잡 state ↔ 후보 진행 상태 일관성 (memoryGenerationRepository `stateOf` 규칙 그대로)
+- [x] ② attempts A·B·C 각각 0 이상 정수 필수
+- [x] ③ writeQueue.submit structuredClone 실패 → INFRA rejected Promise · 상태 변화 0
+- [x] 게이트: typecheck · lint · build(/studio 128.51 변화 0) · 전체 vitest exit0
+- [x] REPORT "Codex r2 수정" 절 + 커밋
+
+### 상태 규칙 (코드 확인)
+- `stateOf`(memoryGenerationRepository.ts:56): pending 있음 → running · 전부 succeeded → succeeded · 일부 → partial · 0 → failed.
+- `newJob`(memoryGenerate.ts:63): queued + 후보 전부 pending. `retryJob`: running + 재시도 후보 pending.
+- 검증 규칙: state = stateOf(후보) 이거나 (state = queued 이고 후보 전부 pending). 종료 상태면 pending 0이 자동으로 따라온다.
+
+### TDD 예측 (구현 전)
+- ① 예측 RED: 새 테스트 1건 실패 — Codex 재현 레코드(state succeeded + 후보 전부 pending + hidden 있음)·running인데 pending 0·partial인데 전부 성공 등이 통과(throw 안 함).
+- ② 예측 RED: 새 테스트 1건 실패 — `attempts: {}`·B 누락·1.5·-1·"1" 중 `{}`·누락·1.5·-1이 통과("1"은 이미 거부).
+- ③ 예측 RED: 새 테스트 1건 실패 — 함수 값 제출 시 submit이 동기 DataCloneError를 던져 `not.toThrow` 단언에서 실패.
+- 실측 RED: 3건 실패(jobRecord 2: "expected function to throw" ×2 / writeQueue 1: `DataCloneError` 동기 예외로 `not.toThrow` 실패) — 예측 일치(커밋 안 함).
+- 실측 GREEN: persistence 6파일 36 테스트 통과. 구현 = jobRecord zod에 `attempts: z.record(A|B|C, int ≥ 0)`(zod 4 enum 키 = 전부 필수) + state 일관 refine(stateOf 규칙 복제) · writeQueue.submit의 structuredClone을 try로 감싸 `toInfra`로 reject(순번·latest·failed 변경 전 반환).
+- 게이트 fresh: typecheck 0 · lint 0 · build 0(/studio 진입 직후 128.51KB/129 변화 0) · vitest 258 파일/2255 테스트 exit 0(1회).
+- 단언 약화·skip 0 · 기존 테스트 수정 0.

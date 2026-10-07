@@ -100,4 +100,43 @@ describe("StoredJob 레코드", () => {
     ];
     for (const value of bad) expect(() => readJobRecord(recordOf(value))).toThrow(expect.objectContaining({ code: "SCHEMA_INVALID" }));
   });
+  it("읽기 검증: 잡 state ↔ 후보 진행 상태 불일치(stateOf 규칙) → SCHEMA_INVALID (Codex r2 재현 레코드 포함)", async () => {
+    const store = await confirmedStore();
+    const gen = createMemoryGenerationRepository({ store });
+    const { jobId } = await gen.requestGeneration("profile-1", 1);
+    const queued = store.job(jobId)!;
+    await gen.getJob(jobId);
+    const running = store.job(jobId)!;
+    await finish(gen, jobId);
+    const done = store.job(jobId)!;
+    expect([queued.job.state, running.job.state, done.job.state]).toEqual(["queued", "running", "succeeded"]);
+    const recordOf = (value: unknown) => (jobPut(value as StoredJob) as { record: unknown }).record;
+    for (const ok of [queued, running, done]) expect(readJobRecord(recordOf(ok))).toEqual(ok);
+    const withState = (stored: StoredJob, state: string) => ({ ...stored, job: { ...stored.job, state } });
+    const bad: unknown[] = [
+      // Codex r2 재현: 종료 상태(succeeded)인데 후보 전부 pending + hidden 결과 있음
+      withState(queued, "succeeded"),
+      withState(queued, "failed"),
+      withState(running, "partial"),
+      // 진행 중인데 pending 0 — getJob이 영원히 running을 돌려준다
+      withState(done, "running"),
+      withState(done, "queued"),
+      // 종료 상태 종류가 후보 결과와 다름
+      withState(done, "partial"),
+      withState(done, "failed"),
+      // queued인데 이미 드러난 후보가 있음
+      withState(running, "queued"),
+    ];
+    for (const value of bad) expect(() => readJobRecord(recordOf(value))).toThrow(expect.objectContaining({ code: "SCHEMA_INVALID" }));
+  });
+
+  it("읽기 검증: attempts는 A·B·C 각각 0 이상 정수 필수 — 누락·비정수 → SCHEMA_INVALID (Codex r2)", async () => {
+    const store = await confirmedStore();
+    const { jobId } = await createMemoryGenerationRepository({ store }).requestGeneration("profile-1", 1);
+    const stored = store.job(jobId)!;
+    const recordOf = (value: unknown) => (jobPut(value as StoredJob) as { record: unknown }).record;
+    expect(readJobRecord(recordOf({ ...stored, attempts: { A: 0, B: 2, C: 1 } })).attempts).toEqual({ A: 0, B: 2, C: 1 });
+    const bad: unknown[] = [{}, { A: 1, C: 1 }, { A: 1, B: 1.5, C: 1 }, { A: 1, B: -1, C: 1 }, { A: 1, B: "1", C: 1 }, { A: 1, B: Number.NaN, C: 1 }];
+    for (const attempts of bad) expect(() => readJobRecord(recordOf({ ...stored, attempts }))).toThrow(expect.objectContaining({ code: "SCHEMA_INVALID" }));
+  });
 });

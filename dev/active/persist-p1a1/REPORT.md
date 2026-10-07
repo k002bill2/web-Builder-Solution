@@ -55,3 +55,15 @@
 - 게이트(fresh): `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(/studio 진입 직후 128.51KB/129 변화 0) · `npm test -- --run` exit 0, 258 파일 · 2252 테스트(전체 실행은 확인 목적상 2회 돌았음 — 둘 다 exit 0).
 - 범위: 수정 파일 = `writeQueue.ts`·`writeQueue.test.ts`·`jobRecord.ts`·`jobRecord.test.ts`·PROGRESS·REPORT. 앱 배선·엔진·계약·m2cBaseline·검사기·docs·lock 수정 0, 새 의존성 0. Codex 재실행 안 함(Jarvis 몫).
 - 남은 판단(반영 안 함): 공개되지 않은 후보(succeeded/failed)의 hidden이 undefined가 아니어도 거부하지 않는다 — Codex 지적 범위 밖이고 getJob 진행에 영향 없음.
+
+## Codex r2 수정 (codex-r2-jarvis.txt P2 3건 — 마지막 라운드)
+| 건 | 수정 | 회귀 테스트 |
+|---|---|---|
+| ① 잡 state ↔ 후보 진행 상태 | jobRecord zod refine: state = `stateOf(후보)`(memoryGenerationRepository.ts:56 규칙 그대로: pending 있음 → running · 전부 성공 → succeeded · 일부 → partial · 0 → failed) 또는 queued + 후보 전부 pending(`newJob` 직후). 종료 상태 pending 0이 여기서 따라온다 | Codex 재현(succeeded + 후보 전부 pending + hidden) 포함 불일치 8건 · 정상 queued/running/succeeded 왕복 3건 |
+| ② attempts 필수 | `z.record(A|B|C, z.number().int().nonnegative())` — zod 4 enum 키 record는 모든 키 필수 | `{}` · B 누락 · 1.5 · -1 · "1" · NaN → SCHEMA_INVALID, `{A:0,B:2,C:1}` 통과 |
+| ③ 복제 실패 | `writeQueue.submit`의 structuredClone을 try로 감싸 `toInfra(…, "저장할 내용을 복제하지 못했습니다")`로 reject — 순번·최신 의도·미확인 기록 변경 전에 반환(상태 변화 0) | 함수 값 제출 → 동기 예외 0 · INFRA reject · 쓰기 0 · 같은 키 기존 미확인 유지 · 새 키 상태 없음 · 이후 retry 정상 |
+
+- 주의: jobRecord의 `stateOf`는 memoryGenerationRepository의 비공개 함수를 복제한 것이다(그 파일 수정 = 범위 밖). 규칙이 바뀌면 두 곳을 함께 바꿔야 한다 — 정상 왕복 테스트(queued/running/succeeded)가 어긋남을 일부 잡는다.
+- TDD: RED 3건 실측(예측 일치, 커밋 안 함) → GREEN. 단언 약화·skip 0. 기존 테스트 수정 0.
+- 게이트(fresh): `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(/studio 진입 직후 128.51KB/129 변화 0) · `npm test -- --run` exit 0, 258 파일 · 2255 테스트(1회).
+- 범위: 수정 파일 = `jobRecord.ts`·`jobRecord.test.ts`·`writeQueue.ts`·`writeQueue.test.ts`·PROGRESS·REPORT. 앱 배선·엔진·계약·m2cBaseline·검사기·docs·lock 수정 0, 새 의존성 0. Codex 실행 안 함(r3 없음).

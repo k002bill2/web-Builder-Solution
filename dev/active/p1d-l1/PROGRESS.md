@@ -24,5 +24,5 @@
 
 ## 결과
 - 관문 통과: /studio 129.64 · 복원 132.68 · /profile 첫 화면 99.87 · /projects 104.49 · /compare 122.73
-- 게이트: typecheck·lint·build exit 0 · vitest 276 files / 2418 tests exit 0
+- 게이트: typecheck·lint·build exit 0 · vitest 276 files / 2420 tests exit 0(최종)
 - 서브에이전트 0(BRIEF 금지) · Codex = Jarvis 몫

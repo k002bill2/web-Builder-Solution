@@ -134,3 +134,21 @@ describe("AC-D01 project·profile·job — 상태 레코드 seq(묘비 상한) �
     expect((await stateRecord(persistence)).data.seq).toBeUndefined();
   });
 });
+
+describe("seq · snapshotSeq 모양 검증 — 정수가 아니면 기존 '읽지 못함'(INFRA) 경로", () => {
+  it("상태 레코드 seq 꼬리가 정수가 아니면 싱크 열기 = INFRA", async () => {
+    const persistence = createMemoryPersistence();
+    await started(persistence);
+    const raw = await stateRecord(persistence);
+    await persistence.write([{ type: "put", store: "studio", record: { ...raw, data: { ...raw.data, seq: { project: "x", profile: 1, job: 1 } } } }]);
+    expect(await codeOf(openLocalSync(await entryFrom(persistence), async () => persistence, soloLocks()))).toBe("INFRA");
+  });
+
+  it("문서 레코드 snapshotSeq가 정수가 아니면 싱크 열기 = INFRA", async () => {
+    const persistence = createMemoryPersistence();
+    await started(persistence);
+    const raw = (await persistence.get("docs", "project-1")) as { schemaVersion: number; kind: string; id: string; data: object };
+    await persistence.write([{ type: "put", store: "docs", record: { ...raw, data: { ...raw.data, snapshotSeq: 1.5 } } }]);
+    expect(await codeOf(openLocalSync(await entryFrom(persistence), async () => persistence, soloLocks()))).toBe("INFRA");
+  });
+});

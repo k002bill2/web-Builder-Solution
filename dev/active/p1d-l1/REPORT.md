@@ -13,6 +13,8 @@
 | `/projects` 진입 직후 | ≤ 125 | 104.47 | **104.49** | — |
 | `/compare` 진입 직후 | ≤ 125 | 122.73 | **122.73** | — |
 
+- 판정 강제 근거: `app/scripts/bundleBudget.mjs:13`(`over` = 소수 둘째 자리 반올림 값 비교) · `:85`(진입 > 기준선 + 0.03 → failures) · `app/scripts/check-bundle-size.mjs:217`(`process.exit(1)`) → **build exit 0 = 관문 통과**.
+- 반올림 전 원본(스크립트 사본 `/tmp/p1d-raw`에서 표기만 소수 넷째 자리로 — 저장소 스크립트 수정 0): `/studio` **129.643** < 129.650 · 복원 **132.676** < 132.680 · `/profile` 첫 화면 99.871 · `/projects` 104.487 · `/compare` 122.729.
 - 측정: 배선 직후 `npm run build`(exit 0, `/tmp/p1d-l1-gate-build.log`) · 구현 커밋 tip에서 다시 `npm run build`(exit 0) — 같은 수치.
 - `/studio` 첫 화면 91.83 → 91.84(studioStore reader 변경). `seqId.ts`는 별도 청크(`seqId-*.js`) — 조작 뒤 3모듈만 import, 진입 판정 수치에 영향 없음(위 실측).
 - **주의(L2·L3에 전달)**: 복원 진입 여유 0.00 · `/studio` 0.01 — 진입 closure(`studioStore`·`memoryProjectRepository`·`deferredStudio`)에 더 넣을 자리 없음. L2(SnapshotDialog 조작 뒤)·L3(`/projects` 조작 뒤 청크)는 SPEC대로 진입 몫 0이어야 함.
@@ -42,6 +44,7 @@
   - 하네스 수정 2회(단언 아님): `confirmProfile` 반환 모양(`.result` 없음) · 두 번째 확정은 보드 id를 바꿔야 새 계열(같은 보드 id면 확정 멱등 키가 같아 `profile-1` 재생).
 - GREEN: 새 테스트 13건 + `writerLock.test.ts` 추가 2건.
 - 추가 2건(낡은 탭 `deleteSnapshot` 쓰기 0 · 커밋 실패 뒤 같은 삭제 재시도 = 변화 0 + flush 재제출로 레코드 반영·`snapshotSeq` 1)은 **구현 뒤 작성** — RED 출발 아님(기존 localSync 경로를 그대로 타는 회귀 고정).
+- 검증 분기 테스트 2건(`seq` 꼬리 비정수 · `snapshotSeq` 비정수 → 싱크 열기 INFRA) — 구현 뒤 작성, **Red-Green 확인**(검증 줄 제거 시 2건 FAIL → 커밋본 복원 시 PASS).
 - 기존 테스트 수정: `ProfileGenerateLoad.test.tsx` `store.jobCount()` → `store.jobIds().length` 5곳(같은 값 — 단언 약화 0) · `ProjectsPage.test.tsx` 가짜 저장소에 `deleteSnapshot: unused` 1줄(인터페이스 추가).
 - RED 테스트 단독 커밋 0 · amend·rebase 0.
 
@@ -59,7 +62,7 @@
 
 ## 6. 검증 (fresh, 구현 커밋 기준)
 
-- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(번들 가드 통과) · `npx vitest run` exit 0 — **276 files / 2418 tests passed**.
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(번들 가드 통과) · `npx vitest run` exit 0 — **276 files / 2418 tests passed**(구현 커밋 기준) · 검증 분기 테스트 추가 뒤 최종 `npx vitest run` exit 0 — **276 files / 2420 tests passed** · typecheck·lint exit 0(테스트 파일만 바뀌어 build 산출물 변화 없음 — build 수치는 구현 커밋 tip 실측).
 - Ego Lite 생략: UI 변경 0(L1은 저장소·판정·카운터만) — 브라우저로 볼 화면이 없음. E 항목(AC-D01④ 실제 IDB 새로고침)은 L3 프로젝트 삭제와 함께.
 - Codex 검증: Jarvis 몫(BRIEF) — 미실행.
 

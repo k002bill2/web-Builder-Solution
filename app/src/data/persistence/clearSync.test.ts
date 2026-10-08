@@ -16,7 +16,7 @@ import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type StudioPersistence, type WriteOp } from "./studioPersistence";
 import { type WriterLocks } from "./writerLock";
 import { createLinkNetwork } from "./fakeTabLink";
-import type { TabLink } from "./tabLink";
+import { createTabLink, type TabLink } from "./tabLink";
 import { createClearer } from "../../features/projects/clearBrowserData";
 
 
@@ -179,7 +179,8 @@ describe("탭 간 알림 — saved(쓰기 커밋 뒤) · cleared 수신(SPEC 1.5
 
   it("AC-C06: 한 번도 편집하지 않은 편집기 탭 A(싱크 전 — 구독 0)가 열린 채 B가 지움 → A 편집 = 쓰기 0 · 낡은 탭 사유(최신성 확인이 막는다)", async () => {
     const { persistence, browser, net } = await seeded();
-    const a = await openTab(persistence, browser.tab(), net.tab(), "project-1");
+    // A = /projects를 거치지 않은 /studio 탭 — 싱크 전이라 탭 링크(채널)가 아직 없어 cleared를 못 받는다(받는 탭은 아래 Codex r2 절)
+    const a = await openTab(persistence, browser.tab(), createTabLink(undefined), "project-1");
     const projectsA = await a.projects();
     const docA = (await projectsA.getDoc("project-1"))!;
     const { factory, succeed } = deleter(persistence);
@@ -209,5 +210,57 @@ describe("탭 간 알림 — saved(쓰기 커밋 뒤) · cleared 수신(SPEC 1.5
     expect(await failureOf(projectsA.saveDoc("project-1", saved.revision, edit(saved as PageDoc, "지운 뒤")))).toBe(`INFRA: 저장 — ${CLEARED}`);
     await settle();
     expect(a.writes.length).toBe(writes);
+  });
+});
+
+describe("싱크 열기 전 받은 cleared (Codex r2 P2) — 탭 링크가 기억하고 나중에 열리는 싱크도 지워짐으로 시작", () => {
+  it("Codex r2 재현: 빈 DB /projects 탭(링크만 있음)이 cleared 수신 → 같은 탭 프로필 확정 = 상태 레코드 쓰기 0 · 잠금 0", async () => {
+    const persistence = createMemoryPersistence();
+    const browser = createLockRegistry();
+    const net = createLinkNetwork();
+    const link = net.tab();
+    net.tab().post({ type: "cleared" });
+    await settle();
+    const a = await openTab(persistence, browser.tab(), link);
+    await (await a.studio.board()).confirmProfile(1, 0);
+    await settle();
+    expect(a.writes).toEqual([]);
+    expect(await persistence.get("studio", "state")).toBeUndefined();
+    expect(browser.holder("design-studio-writer")).toBeUndefined();
+    expect(link.own()?.isWriter()).toBe(false);
+  });
+
+  it("데이터 있는 탭(싱크 전)이 cleared 수신(삭제 대기 — 레코드 그대로) → 편집 = 지워짐 사유 · 부활 0", async () => {
+    const { persistence, browser, net } = await seeded();
+    const link = net.tab();
+    const a = await openTab(persistence, browser.tab(), link, "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    const stateBefore = await persistence.get("studio", "state");
+    const docBefore = await persistence.get("docs", "project-1");
+    net.tab().post({ type: "cleared" });
+    await settle();
+    expect(await failureOf(projectsA.saveDoc("project-1", docA.revision, edit(docA, "부활 시도")))).toBe(`INFRA: 저장 — ${CLEARED}`);
+    await settle();
+    expect(a.writes).toEqual([]);
+    expect(await persistence.get("studio", "state")).toEqual(stateBefore);
+    expect(await persistence.get("docs", "project-1")).toEqual(docBefore);
+    expect(browser.holder("design-studio-writer")).toBeUndefined();
+  });
+
+  it("새로고침 뒤(새 페이지 = 새 링크) = 정상 저장", async () => {
+    const { persistence, browser, net } = await seeded();
+    const old = net.tab();
+    net.tab().post({ type: "cleared" });
+    await settle();
+    expect(old.wasCleared()).toBe(true);
+    const fresh = net.tab();
+    expect(fresh.wasCleared()).toBe(false);
+    const a = await openTab(persistence, browser.tab(), fresh, "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    await projectsA.saveDoc("project-1", docA.revision, edit(docA, "새로고침 뒤"));
+    await settle();
+    expect(a.writes.length).toBeGreaterThan(0);
   });
 });

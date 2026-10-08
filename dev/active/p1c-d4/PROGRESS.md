@@ -48,3 +48,19 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - RED: 예측대로 4건 FAIL(① 재현 요청 1건 · clearerFor 없음 2건 · ② close 0회).
 - GREEN 1차 예측 차이 2건: ClearDataDialog "Esc·취소" 테스트가 Esc 뒤 modal이 닫혀(취소 버튼 숨김) FAIL → 경로마다 새로 렌더 + `dialog.open=false` 단언 추가(강화). ② 순서 테스트는 여는 클릭의 focus 호출을 세어 FAIL → 열고 나서 spy 초기화.
 - Red-Green: Slot을 createClearer로 · `close()` 줄 제거 → 3건 FAIL → 복원 25/25 PASS.
+
+## Codex r2 수정 레인 (P2 1건 · 마지막 라운드 · 2026-10-08)
+- [x] 싱크 열기 전 받은 `cleared`를 탭 링크에 유지(`wasCleared()`) · 나중에 열리는 싱크도 cleared로 시작(쓰기 직전 INFRA 지워짐 사유 · 잠금 획득 0)
+- [x] typecheck · lint · build(번들 관문) · 전체 vitest — 2390 통과 · /studio 129.62 · 복원 132.66 · /projects 104.47
+- [x] REPORT "Codex r2 수정" 절
+
+### RED 예측 (구현 전 기록)
+- clearSync "Codex r2 재현: 빈 DB /projects 탭 cleared 수신 → 프로필 확정" = 상태 레코드 쓰기 발생·잠금 보유 → FAIL.
+- clearSync "데이터 있는 탭(싱크 전) cleared 수신 → 편집 = 부활 0"(삭제 대기 중 — 레코드 그대로라 최신성 통과) = 저장 resolve·쓰기 발생 → FAIL.
+- clearSync "새로고침 뒤(새 링크) 정상 저장" = 가드라 처음부터 PASS(예측).
+- tabLink "listen 없이 받은 cleared 기록 · saved는 기록 0 · 채널 없음 false" = `wasCleared` 없음 → TypeError FAIL.
+
+### 기록 (r2)
+- RED: 새 4건 FAIL. 예측 차이 1건 — "새로고침 뒤"는 `wasCleared` 단언 때문에 TypeError FAIL(가드 PASS 예측과 다름).
+- GREEN 1차: 기존 AC-C06이 지워짐 사유를 받아 FAIL(링크가 cleared를 받음 — SPEC 허용) → A를 링크 미생성 탭으로 명시해 STALE 경로 유지. 새 테스트 `toBe`(메모리 영속은 복사본) → `toEqual`.
+- Red-Green: stop 줄 제거 → 2건 FAIL → 복원 PASS.

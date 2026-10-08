@@ -52,4 +52,18 @@ describe("tabLink", () => {
     detach();
     expect(link.own()).toBeUndefined();
   });
+
+  it("지워짐 기억 — listen 없이 받은 cleared도 기록 · saved는 기록 0 · 채널 없음 false (Codex r2 P2)", async () => {
+    const net = createLinkNetwork();
+    const a = net.tab();
+    const b = net.tab();
+    a.post({ type: "saved" });
+    await settle();
+    expect(b.wasCleared()).toBe(false);
+    a.post({ type: "cleared" });
+    await settle();
+    expect(b.wasCleared()).toBe(true);
+    expect(a.wasCleared()).toBe(false);
+    expect(createTabLink(undefined).wasCleared()).toBe(false);
+  });
 });

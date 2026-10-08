@@ -32,3 +32,14 @@
 - **미실측 ⓐ** 같은 탭 편집 → /projects → 지우기: 프로젝트 생성(카탈로그→프로필→3안→편집기) 흐름 스크립트화가 턴 한도 안에 불가 — 단위·컴포넌트 회귀(Codex 재현 테스트)만. ⓑ의 지우기 성공은 쓰기 탭 아닌 탭에서 확인.
 - 정리: `deleteDatabase("design-studio")` = success · `databases()` = [] · preview 종료 → 4337 리슨 0. **TaskSpace 26**: `finish({keep:[]})` 뒤에도 `listTaskSpaces()`에 ownership `user`로 남음 · `claimTaskSpace(26)` 재정리 실패(exit 1) — 우회하지 않음. 사용자가 Ego Lite에서 공간 26("p1c-d4 codex r1 실측")을 닫아야 함.
 - Codex 재검증은 이 레인 금지 — 다음 레인 몫.
+
+## Codex r2 수정 (P2 1건 · 마지막 라운드 · 2026-10-08)
+- 지적: 싱크를 열기 전에 받은 `cleared`가 버려져, `/projects`를 연 탭이 알림 뒤 같은 탭에서 편집하면 새 싱크가 `cleared=false`로 시작 → 지운 데이터를 새 DB에 되살림.
+- 수정: `tabLink.ts` — 링크가 생성 때 채널 리스너 1개로 `cleared` 수신을 기억(`wasCleared()`, `saved`는 기록 0, 채널 없음 false). `localSync.ts` — 구독 직후 `if (link.wasCleared()) stop()` → `saveState` 쓰기 0 · `flush` = INFRA "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요" · 둘 다 `gate.enter()` 전이라 잠금 획득 0. 새로고침 = 새 페이지 = 새 링크(정상).
+- TDD: RED 예측(PROGRESS) — 새 4건 FAIL 확인(빈 DB 재현 쓰기 1건 발생 · 데이터 탭 저장 'ok' · `wasCleared` 없음 TypeError 2건). 예측 차이 1건: "새로고침 뒤" 테스트에 `wasCleared` 단언을 넣어 가드가 아닌 TypeError FAIL.
+- 기존 테스트 1건 조정: AC-C06(편집 안 한 탭 → 낡은 탭 사유)의 탭 A가 이제 네트워크 링크로 cleared를 받아 지워짐 사유가 됨(SPEC AC-C06 허용 범위). 최신성 확인 경로를 계속 지키려고 A를 "링크 미생성 /studio 탭"(`createTabLink(undefined)`)으로 명시 — 기대 문장(STALE)·쓰기 0·레코드 없음 단언은 그대로(약화 0). 받는 탭은 새 Codex r2 절이 맡음.
+- Red-Green: `if (link.wasCleared()) stop();` 줄 제거 → Codex 재현·부활 0 2건 FAIL → 복원 9/9 PASS.
+- 검증(fresh, 1회): `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0 · `npx vitest --run` 272 파일 / 2390 테스트 통과 exit 0.
+- 번들: `/studio` 129.62(≤129.65) · 복원 132.66(≤132.68) · `/projects` 104.47(≤125).
+- 범위 밖(의도): `/projects`를 거치지 않고 편집도 안 한 순수 `/studio` 탭은 링크(채널)가 없어 `cleared`를 못 받는다 — 최신성 확인(삭제 완료 뒤 낡은 탭 사유)에 의존. 진입 때 링크를 열면 진입 바이트 0 원칙·번들 한도를 깬다.
+- 엔진·계약·docs·lock 수정 0 · 새 의존성 0 · Ego Lite·Codex 실행 0(이 레인 금지).

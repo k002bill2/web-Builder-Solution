@@ -3,6 +3,8 @@
  * - BroadcastChannel `design-studio` 메시지 2종: `saved`(쓰기 탭 IDB 커밋 뒤) · `cleared`(지우기 직전). 받는 쪽은 모양을 검사한다(경계).
  * - 탭당 채널 1개를 공유한다: 같은 탭의 다른 BroadcastChannel 인스턴스는 자기 탭 메시지도 받으므로, 싱크와 영역이 따로 열면
  *   같은 탭 저장이 영역에 "다른 탭에서 저장한 변경"으로 뜬다.
+ * - 지워짐 기억(Codex r2 P2): 링크가 `cleared` 수신을 기억한다 — 싱크가 열리기 전(`/projects`만 연 탭)에 받아도 나중에 열리는 싱크가
+ *   지워짐으로 시작한다(지우기 전 데이터를 메모리에 가진 탭이 새 DB에 되살리지 않게). 새로고침 = 새 페이지 = 새 링크.
  * - 손잡이: 열린 싱크가 등록 — 지우기가 "이 탭이 쓰기 탭인가"(같은 탭 재요청은 Web Locks 재진입 불가로 null)와 싱크 멈춤을 쓴다.
  */
 export const TAB_CHANNEL = "design-studio";
@@ -22,6 +24,8 @@ export interface TabLink {
   /** 끊는 함수를 돌려준다(그 손잡이가 아직 등록돼 있을 때만 뗀다) */
   attach(handle: TabSyncHandle): () => void;
   own(): TabSyncHandle | undefined;
+  /** 이 링크가 다른 탭의 `cleared`를 받았나(새로고침 전까지 유지) */
+  wasCleared(): boolean;
 }
 
 type Channel = {
@@ -37,6 +41,10 @@ const readMessage = (data: unknown): TabMessage | undefined => {
 
 export function createTabLink(channel: Channel | undefined): TabLink {
   let handle: TabSyncHandle | undefined;
+  let cleared = false;
+  channel?.addEventListener("message", (event) => {
+    if (readMessage(event.data)?.type === "cleared") cleared = true;
+  });
   return {
     post: (message) => {
       try {
@@ -60,6 +68,7 @@ export function createTabLink(channel: Channel | undefined): TabLink {
       };
     },
     own: () => handle,
+    wasCleared: () => cleared,
   };
 }
 

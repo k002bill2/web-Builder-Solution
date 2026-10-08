@@ -27,4 +27,10 @@
 | 라운드 | vitest a | vitest b | build | 실패 |
 |---|---|---|---|---|
 
+| 1 (r21) | exit 0 (2642 passed (2642)) | exit 0 (2642 passed (2642)) | build exit 0 | 0 |
+| 2 (r22) | exit 0 (2642 passed (2642)) | exit 0 (2642 passed (2642)) | build exit 0 | 0 |
+| 3 (r23) | exit 0 (2642 passed (2642)) | exit 0 (2642 passed (2642)) | build exit 0 | 0 |
+| 4 (r24) | exit 0 (2642 passed (2642)) | exit 0 (2642 passed (2642)) | build exit 0 | 0 |
+| 5 (r25) | exit 0 (2642 passed (2642)) | exit 0 (2642 passed (2642)) | build exit 0 | 0 |
+
 정적 가설: `src/test/renderApp.tsx`는 라우트 페이지 6개만 미리 로드 — 렌더 뒤 2단계 lazy 청크(`StudioLayout`·`docEngine`·`AddSectionDialog`·`VariantOptions`·`ImageSlotPanel`·`boardEngine`·`memoryGenerate`·`CandidateResults` 등)는 파일 첫 테스트의 findBy(3s)/testTimeout(5s) 창 안에서 콜드 변환된다.

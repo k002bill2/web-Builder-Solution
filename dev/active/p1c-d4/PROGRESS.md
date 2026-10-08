@@ -36,9 +36,9 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 ## Codex r1 수정 레인 (P2 2건 · 2026-10-08)
 - [x] ① 같은 탭 writer 삭제 실패 → 취소 → 재개 = 자기 잠금에 막혀 busy — clearer를 탭 단위(링크별 1개)로 유지
 - [x] ② 네이티브 modal 닫은 뒤 여는 버튼 포커스 — 대화상자를 먼저 `close()`한 뒤 onClose
-- [ ] Ego Lite 실측 ⓐ 같은 탭 편집→/projects→지우기 성공 ⓑ 지운 뒤 status 1회 ⓒ 취소/Esc 뒤 activeElement = 여는 버튼 + 정리
-- [ ] typecheck · lint · build(번들 관문) · 전체 vitest
-- [ ] REPORT "Codex r1 수정" 절
+- [x] Ego Lite 실측(ⓐ BLOCKED: 프로젝트 생성→편집 흐름 탐색이 턴 한도 밖 · TaskSpace 26 user 소유 잔존 — REPORT 참조) ⓐ 같은 탭 편집→/projects→지우기 성공 ⓑ 지운 뒤 status 1회 ⓒ 취소/Esc 뒤 activeElement = 여는 버튼 + 정리
+- [x] typecheck · lint · build(번들 관문) · 전체 vitest
+- [x] REPORT "Codex r1 수정" 절
 
 ### RED 예측 (구현 전 기록)
 - ① BrowserStorageSection "Codex r1 재현: 같은 탭 편집 → 삭제 실패 → 취소 → 재개 = 삭제 실행": 재개한 대화상자가 새 clearer를 만들어 held 손실 → tryLock이 자기 잠금에 막혀 busy → deleteDatabase 2번째 호출 0 → FAIL(요청 1건). clearBrowserData "clearerFor = 링크당 1개": export 없음 → TypeError FAIL.

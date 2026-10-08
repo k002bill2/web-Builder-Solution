@@ -1,6 +1,6 @@
 # P2-L1 REPORT — 프로젝트 파일 형식·검증·재매김·이미지 재인코딩 (순수 모듈)
 
-- 브랜치 `k002bill2/p2-l1` · base `2285df8` · 커밋: f781931(P0) → a5692c4(format·rekeyDoc) → 5574ba2(L1a ①~④) → a8b3fa9(L1b ⑤·rekey·encode) → b409152(테스트 타입 오류 수정) → (이 REPORT)
+- 브랜치 `k002bill2/p2-l1` · base `2285df8` · 커밋: f781931(P0) → a5692c4(format·rekeyDoc) → 5574ba2(L1a ①~④) → a8b3fa9(L1b ⑤·rekey·encode) → b409152(테스트 타입 오류 수정) → ff59ee4(REPORT) → (parity·⑤ 순서 커밋)
 - 정본: P2-SPEC 머리 "Jarvis 채택 결정" 우선(⑤ 재인코딩 유지 · AC-P01 수정본) · 8절 L1 행.
 
 ## 1. 바뀐 파일
@@ -20,10 +20,10 @@
 |---|---|
 | `npm run typecheck` | exit 0 |
 | `npm run lint` | exit 0 |
-| `npx vitest --run` (전체 1회) | exit 0 · 289 파일 · 2518 테스트 통과 |
+| `npx vitest --run` (전체, 마지막 실행) | exit 0 · 289 파일 · 2520 테스트 통과 |
 | `npm run build` | exit 0 · 아래 번들 표 |
 
-번들(KB, 진입 직후 자동 로드 포함) — a5692c4 직후와 b409152 뒤 두 번 실측, 둘 다 같음:
+번들(KB, 진입 직후 자동 로드 포함) — a5692c4 직후 · b409152 뒤 · 마지막 커밋 전 세 번 실측, 모두 같음:
 | 시나리오 | main 기준 | 이 레인 | 증가 |
 |---|---|---|---|
 | `/studio` | 129.09 | 129.09 | 0 |
@@ -44,17 +44,20 @@
 - **AC-P01 왕복(수정본)**: encode → checkFile → rekey — 문서·스냅샷 projectId·hash 외 canonical 동일 · snapshotSeq 동일 · series profileId 외 동일 · 이미지 키·형식·치수·사다리 동일 + 디코드 성공 · 바이트 = 재인코딩 출력.
 - **AC-P03**: project-1 대상 → project-2 · 기존 레코드 같은 참조 · 2회 = project-3 · 묘비 seq 5 → project-6 · seq 불변.
 - **AC-P05**: 병합 상태 + 새 문서 레코드로 실제 `openLocalSync`(checkState·readDoc) 성공 · 문서 시드에 새 id. localSync 수정 0.
+- **parity**: 재인코딩 결과(png 3단·webp·jpeg)를 실제 `readImageRecord`(다음 열기 `imageRestore`가 쓰는 함수)가 같은 값으로 받는다 — 가져온 이미지가 잃은 이미지가 되지 않음.
 - 미래 버전 IM-3: formatVersion 2 + series 없음도 IM-3(다른 필드보다 먼저).
 
 ## 5. 판단·목업/SPEC과 다른 점
 - ⑥ 참조 판정 **생략**(SPEC 6절 택1): `recordRefs`가 `imageStore.retainedIds`(복원 closure)에 묶임 · 참조 밖 이미지는 다음 flush `imageOps`가 지운다(P1D F2).
 - 재인코딩 디코드 옵션 = `{}`(브라우저 기본). 저장 변형본은 이미 캔버스 출력이라 EXIF 없음 — 실제 동작은 L3 Ego Lite에서 확인.
 - 치수 검사는 폭(사다리)에 더해 높이(`variantHeight`)도 본다 — 업로드 경로가 같은 식으로 만들고 크기 불일치를 던지므로 정상 파일은 통과.
+- ⑤ 판정 순서 = SPEC대로 개수 → (bytes 정수 아니면 IM-6) → 합 60MB(IM-5) → localId·중복·레코드 규칙(IM-6). 처음 구현은 localId 검사가 합계보다 먼저였고 advisor 점검에서 고침(테스트 "localId 중복 + 합 60MB+1 = IM-5" 추가 — 이 1건은 수정과 같은 단계에서 써서 RED를 실행으로 확인하지 못함, 옛 순서면 IM-6이 나와 실패했을 것으로 판단).
 - localId 빈 문자열도 IM-6(SPEC은 "문자열·/ 없음"만 명시 — 빈 id는 슬롯 참조가 될 수 없어 더함).
 
 ## 6. 한계·남은 일
 - 재인코딩 손실이 왕복마다 누적될 수 있음(Jarvis 결정 2 — SPEC 10절 추가는 docs 몫, 이 레인 docs 수정 0).
 - 대상 브라우저에 webp 인코더가 없으면 webp 이미지 가져오기 = IM-6(형식 불일치로 닫음). 다른 형식으로 바꿔 저장하지 않는다.
+- 3.2 메모리 규칙 ②와 차이: 파싱 객체가 base64 문자열을 ⑤가 끝날 때까지 참조하고, 이미지 1건의 변형본을 한꺼번에 base64 디코드한다(디코드·재인코딩은 1개씩). 큰 파일 피크 메모리는 실측 안 함(SPEC 8절).
 - `upgradeDatabase`·`DB_VERSION` import 실측은 쓰기 트랜잭션(L3)에서 — 이 레인은 IDB 코드 0.
 - 실제 디코드·인코딩·메모리는 jsdom 밖 — L3 Ego Lite. **Ego Lite 생략 사유: UI·화면 0(순수 모듈).** Codex 검증은 Jarvis 몫(미실행).
 - 지켜진 금지: 엔진·PageDoc 계약·docs/**·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge/삭제 0 · main 5480 무접촉.

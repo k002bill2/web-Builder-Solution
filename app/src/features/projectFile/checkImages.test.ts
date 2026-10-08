@@ -3,6 +3,7 @@
  * jsdom에 디코더·캔버스가 없어 IngestDeps 가짜(주입)로 본다 — 실제 브라우저는 L3 Ego Lite.
  */
 import { describe, expect, it } from "vitest";
+import { readImageRecord } from "../../data/persistence/imageRecord";
 import { fakeDeps, fakeImageBytes, fileImage, jsonFile, seedFile, toBase64 } from "../../test/projectFileFixtures";
 import { checkFile } from "./checkFile";
 import { checkImages } from "./checkImages";
@@ -83,6 +84,21 @@ describe("⑤ 통과 = 재인코딩 바이트가 저장 대상", () => {
     const result = await checkImages([fileImage("w", 500, 300, "webp"), fileImage("j", 500, 300, "jpeg"), fileImage("p", 500, 300, "png")], deps);
     expect(result.ok).toBe(true);
     expect(calls.encodes).toEqual([{ type: "image/webp", quality: 0.82 }, { type: "image/jpeg", quality: 0.85 }, { type: "image/png" }]);
+  });
+});
+
+describe("parity — 재인코딩 결과 = 다음 열기 readImageRecord 통과(잃은 이미지 0)", () => {
+  it("png 3단 · webp · jpeg 결과를 실제 readImageRecord가 받는다", async () => {
+    const { deps } = fakeDeps();
+    const result = await checkImages([fileImage("a", 1500, 900), fileImage("w", 500, 300, "webp"), fileImage("j", 640, 300, "jpeg")], deps);
+    if (!result.ok) throw new Error(result.message);
+    for (const { localId, ...data } of result.images) {
+      const id = `project-1/${localId}`;
+      expect(await readImageRecord({ schemaVersion: 1, kind: "image", id, data }, id)).toEqual(data);
+    }
+  });
+  it("한도가 레코드 검사보다 먼저 — localId 중복 + 합 60MB+1 = IM-5", async () => {
+    await rejected([fileImage("a", 500, 300, "png", { bytes: 30 * MB }), fileImage("a", 500, 300, "png", { bytes: 30 * MB + 1 })], "IM-5");
   });
 });
 

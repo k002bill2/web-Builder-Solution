@@ -93,8 +93,9 @@ const idOk = (image: unknown, i: number, all: readonly unknown[]): image is Loos
 
 export async function checkImages(images: readonly unknown[], deps: IngestDeps = browserIngestDeps): Promise<{ readonly ok: true; readonly images: readonly CheckedImage[] } | CheckFailure> {
   if (images.length > MAX_IMAGE_COUNT) return failure("IM-5");
-  if (!images.every(idOk) || !images.every((im) => Number.isSafeInteger(im.bytes) && (im.bytes as number) >= 0)) return failure("IM-6");
-  if (images.reduce((sum, im) => sum + (im.bytes as number), 0) > MAX_IMAGE_BYTES) return failure("IM-5");
+  if (!images.every((im) => Number.isSafeInteger((im as Loose | null)?.bytes) && ((im as Loose).bytes as number) >= 0)) return failure("IM-6");
+  if (images.reduce((sum: number, im) => sum + ((im as Loose).bytes as number), 0) > MAX_IMAGE_BYTES) return failure("IM-5"); // 한도가 레코드 검사보다 먼저(3.3 ⑤)
+  if (!images.every(idOk)) return failure("IM-6");
   const checked: CheckedImage[] = [];
   for (const image of images) {
     const one = await checkOne(image, deps);

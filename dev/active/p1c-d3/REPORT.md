@@ -47,3 +47,12 @@ base `d4a0ee5` · 브랜치 `k002bill2/p1c-d3` · 커밋: `53769ec` BRIEF P0 →
 - Codex 검증은 Jarvis 몫(이 레인 실행 안 함).
 - 3절 `/studio` +0.03 해시 잡음 관문 해석 결정.
 - D4: 영역 4줄(지우기 버튼) 자리 = `BrowserStorageSection` 맨 아래, 영역 `role=status`("저장소 알림") 재사용 가능.
+
+## 7. Codex r1 수정 (P2 1건 — `codex-r1-jarvis.txt`)
+- **지적**: `checkStorage`가 `studio/state`만 읽어, 상태는 정상이고 진입 문서 봉투만 newer·깨짐이라 `readEntry(projectId)`가 메모리로 강등한 경우 `ok`(일반 W1 문장)를 돌려줌 → `/studio/:id`→`/projects`에서 1.8 newer 문장·"새로고침" 버튼 누락.
+- **수정**(`app/src/features/projects/storageCheck.ts`만): 상태 레코드가 있고 v1이면 `docs` 저장소 봉투 전체를 같은 트랜잭션의 `getAllKeys`+`getAll`로 확인. 규칙은 entryRead `checkEntryEnvelope`와 같음(kind "doc" · id === key · data 있음 · v1 ok · 숫자>1 newer · 그 외 invalid) — 리터럴 복제 유지, entryRead import 0. 여럿이면 **newer 우선**(새로고침으로 풀 수 있는 쪽) > invalid > ok. 상태 레코드 없음 → 문서 안 봄(진입은 그때 문서와 무관하게 빈 상태 local). docs 저장소 없음 → ok.
+- **선택 근거(전체 스캔 vs 가장 최근 진입 문서)**: 후자는 `/projects`가 진입 projectId를 알아야 해 진입 경로(`deferredStudio` 등)에 기록을 남겨야 함 → 진입 바이트 ≠0이고 이 레인 쓰기 범위 밖. 전체 스캔은 `/projects` 페이지 청크에만 들어가며 memory 모드일 때만 실행. 진입 몫 0 실측: /studio 129.63 · 복원 132.66(이 diff는 /studio closure 파일 변경 0 → ±0.0x는 3절 해시 잡음).
+- **한계**: 경합 등 다른 이유로 memory가 됐는데 진입하지 않은 다른 문서가 newer·깨짐이면 그 문서로 귀속됨. 다만 그 문서로 진입하면 실제로 강등되므로 안내(새로고침·지우기)는 여전히 유효.
+- **테스트(TDD)**: PROGRESS에 예측 → RED 5건(예측 차이 1건: parity 테스트도 FAIL, 사유 PROGRESS) → GREEN. storageCheck: 문서 v99→newer · 깨짐/id≠key/v0→invalid · 혼재→newer · 전부 정상→ok+연결 닫힘 · 상태 없음→문서 무시 · `checkEntryEnvelope` parity. Codex 재현: Section에 memory + 상태 v1 + 문서 v99 주입 → 1.8 문장 + "새로고침" 클릭 → reload 1회. 실제 `/studio`→`/projects` 라우팅·IndexedDB는 jsdom에 없어(fake-indexeddb는 새 의존성) **주입 factory로 같은 저장 상태를 재현**했다. 기존 단언 수정·약화 0.
+- **검증(fresh)**: `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0(/projects 96.17 / 103.53 ≤125 · /studio 129.63 ≤129.65 · 복원 132.66 ≤132.68) · `npx vitest run` exit 0 — 267 파일 / 2338 테스트.
+- 수정 0: persistence/localSync·entryRead·deferredStudio·엔진·계약·docs·lock. 새 의존성 0. Ego Lite·Codex 미실행(브리프).

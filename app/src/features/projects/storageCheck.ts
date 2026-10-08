@@ -26,13 +26,25 @@ const done = <T>(request: IDBRequest<T>) =>
     request.onerror = () => ko(request.error);
   });
 
-function envelopeIssue(record: unknown): StorageIssue {
+function envelopeIssue(record: unknown, kind: string, id: unknown): StorageIssue {
   if (record === undefined) return "ok";
   const env = record as { schemaVersion?: unknown; kind?: unknown; id?: unknown } | null;
-  if (!env || typeof env !== "object" || env.kind !== "state" || env.id !== "state" || !("data" in env)) return "invalid";
+  if (!env || typeof env !== "object" || env.kind !== kind || env.id !== id || !("data" in env)) return "invalid";
   const found = env.schemaVersion;
   if (found === 1) return "ok";
   return typeof found === "number" && found > 1 ? "newer" : "invalid";
+}
+
+/**
+ * 문서 봉투(docs 저장소, id = projectId) — 진입은 상태가 정상이어도 진입 문서 봉투가 newer·깨짐이면 메모리로 시작한다(Codex r1).
+ * 어느 문서로 진입했는지 이 페이지는 모르므로(진입에 기록을 남기면 진입 바이트가 는다) 전부 보고, 새로고침으로 풀 수 있는 newer를 앞세운다.
+ */
+async function docsIssue(db: IDBDatabase): Promise<StorageIssue> {
+  if (!db.objectStoreNames.contains("docs")) return "ok";
+  const store = db.transaction("docs").objectStore("docs");
+  const [keys, records] = await Promise.all([done(store.getAllKeys()), done(store.getAll())]);
+  const issues = records.map((record, i) => envelopeIssue(record, "doc", keys[i]));
+  return issues.includes("newer") ? "newer" : issues.includes("invalid") ? "invalid" : "ok";
 }
 
 export async function checkStorage(factory: IDBFactory | undefined): Promise<StorageIssue> {
@@ -46,7 +58,10 @@ export async function checkStorage(factory: IDBFactory | undefined): Promise<Sto
   db.onversionchange = () => db.close();
   try {
     if (!db.objectStoreNames.contains("studio")) return "ok";
-    return envelopeIssue(await done(db.transaction("studio").objectStore("studio").get("state")));
+    const state = await done(db.transaction("studio").objectStore("studio").get("state"));
+    const issue = envelopeIssue(state, "state", "state");
+    // 상태 레코드가 없으면 진입은 문서와 무관하게 빈 상태(local)로 시작한다 — 문서는 상태가 정상일 때만 강등 원인이 된다
+    return issue === "ok" && state !== undefined ? await docsIssue(db) : issue;
   } catch {
     return "blocked";
   } finally {

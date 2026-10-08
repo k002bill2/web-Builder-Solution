@@ -3,10 +3,12 @@
  * 가짜 IDBFactory(요청 객체 모양만)로 분기를 본다(jsdom에는 IndexedDB가 없다).
  */
 import { describe, expect, it } from "vitest";
-import { ENTRY_DB_NAME } from "../../data/persistence/entryRead";
+import { ENTRY_DB_NAME, checkEntryEnvelope } from "../../data/persistence/entryRead";
 import { STORAGE_DB_NAME, checkStorage, issueText } from "./storageCheck";
 
-function fakeFactory(opts: { readonly fail?: boolean; readonly state?: unknown; readonly stores?: boolean } = {}) {
+function fakeFactory(
+  opts: { readonly fail?: boolean; readonly state?: unknown; readonly stores?: boolean; readonly docs?: Readonly<Record<string, unknown>> } = {},
+) {
   const request = (result: unknown, error?: Error) => {
     const r: { result?: unknown; error?: Error; onsuccess?: () => void; onerror?: () => void } = {};
     setTimeout(() => {
@@ -24,11 +26,17 @@ function fakeFactory(opts: { readonly fail?: boolean; readonly state?: unknown; 
   const db = {
     closed: false,
     onversionchange: null as null | (() => void),
-    objectStoreNames: { contains: (name: string) => opts.stores !== false && name === "studio" },
+    objectStoreNames: { contains: (name: string) => opts.stores !== false && (name === "studio" || (name === "docs" && opts.docs !== undefined)) },
     close() {
       db.closed = true;
     },
-    transaction: () => ({ objectStore: () => ({ get: (id: string) => request(id === "state" ? opts.state : undefined) }) }),
+    transaction: () => ({
+      objectStore: (store: string) => ({
+        get: (id: string) => request(store === "studio" && id === "state" ? opts.state : undefined),
+        getAllKeys: () => request(Object.keys(opts.docs ?? {})),
+        getAll: () => request(Object.values(opts.docs ?? {})),
+      }),
+    }),
   };
   const factory = {
     open: (name: string) => {
@@ -75,6 +83,45 @@ describe("checkStorage (1.7 · 1.8)", () => {
     const empty = fakeFactory({ stores: false });
     expect(await checkStorage(empty.factory)).toBe("ok");
     expect(empty.db.closed).toBe(true);
+  });
+});
+
+describe("checkStorage — 진입 문서 봉투 (Codex r1: 상태 정상 · 문서 봉투가 강등 원인)", () => {
+  const doc = (id: string, schemaVersion: unknown, over: Record<string, unknown> = {}) => ({ schemaVersion, kind: "doc", id, data: {}, ...over });
+
+  it("상태 v1 + 문서 봉투 더 새 버전 → newer · 연결은 닫는다", async () => {
+    const { factory, db } = fakeFactory({ state: env(1), docs: { p1: doc("p1", 1), p2: doc("p2", 99) } });
+    expect(await checkStorage(factory)).toBe("newer");
+    expect(db.closed).toBe(true);
+  });
+
+  it("깨진 문서 봉투 · id≠key · 더 낮은 버전 → invalid", async () => {
+    expect(await checkStorage(fakeFactory({ state: env(1), docs: { p1: { nope: 1 } } }).factory)).toBe("invalid");
+    expect(await checkStorage(fakeFactory({ state: env(1), docs: { p1: doc("other", 1) } }).factory)).toBe("invalid");
+    expect(await checkStorage(fakeFactory({ state: env(1), docs: { p1: doc("p1", 0) } }).factory)).toBe("invalid");
+  });
+
+  it("newer와 invalid가 섞이면 newer(새로고침으로 풀 수 있는 쪽)", async () => {
+    expect(await checkStorage(fakeFactory({ state: env(1), docs: { a: { nope: 1 }, b: doc("b", 2) } }).factory)).toBe("newer");
+  });
+
+  it("문서가 모두 정상이면 ok · 연결은 닫는다", async () => {
+    const { factory, db } = fakeFactory({ state: env(1), docs: { p1: doc("p1", 1), p2: doc("p2", 1) } });
+    expect(await checkStorage(factory)).toBe("ok");
+    expect(db.closed).toBe(true);
+  });
+
+  it("상태 레코드가 없으면 문서를 보지 않는다(진입은 문서와 무관하게 빈 상태로 local 시작)", async () => {
+    expect(await checkStorage(fakeFactory({ state: undefined, docs: { p1: doc("p1", 99) } }).factory)).toBe("ok");
+  });
+
+  it("문서 봉투 판정은 진입 읽기(checkEntryEnvelope)와 같다", async () => {
+    const cases: readonly unknown[] = [doc("p", 1), doc("p", 2), doc("p", 0), doc("p", "1"), doc("q", 1), doc("p", 1, { kind: "state" }), { schemaVersion: 1, kind: "doc", id: "p" }, null];
+    for (const record of cases) {
+      const entry = checkEntryEnvelope(record, "doc", "p");
+      const expected = entry.status === "ok" ? "ok" : entry.status === "mismatch" && entry.newer ? "newer" : "invalid";
+      expect(await checkStorage(fakeFactory({ state: env(1), docs: { p: record } }).factory)).toBe(expected);
+    }
   });
 });
 

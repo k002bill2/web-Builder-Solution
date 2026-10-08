@@ -106,6 +106,34 @@ describe("BrowserStorageSection — 강등 (1.7 · 1.8 · AC-C10)", () => {
     expect(storage.persist).not.toHaveBeenCalled();
   });
 
+  it("Codex r1 재현: 상태 정상 · 진입 문서 봉투만 더 새 버전(/studio/:id에서 강등 → /projects) → 1.8 문장 + 새로고침 버튼", async () => {
+    const request = (result: unknown) => {
+      const r: { result?: unknown; onsuccess?: () => void } = {};
+      setTimeout(() => {
+        r.result = result;
+        r.onsuccess?.();
+      });
+      return r;
+    };
+    const db = {
+      objectStoreNames: { contains: (name: string) => name === "studio" || name === "docs" },
+      close: () => undefined,
+      transaction: () => ({
+        objectStore: () => ({
+          get: () => request({ schemaVersion: 1, kind: "state", id: "state", data: {} }),
+          getAllKeys: () => request(["p1"]),
+          getAll: () => request([{ schemaVersion: 99, kind: "doc", id: "p1", data: {} }]),
+        }),
+      }),
+    };
+    const factory = { open: () => request(db) } as unknown as IDBFactory;
+    const reload = vi.fn();
+    render(<BrowserStorageSection persistence="memory" storage={storageApi()} factory={factory} reload={reload} />);
+    expect(await screen.findByRole("heading", { name: /더 새 버전의 앱에서 저장되어 읽지 못했습니다/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
   it("newer → 1.8 문장 + 새로고침 버튼", async () => {
     const request = (result: unknown) => {
       const r: { result?: unknown; onsuccess?: () => void } = {};

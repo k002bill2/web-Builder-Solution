@@ -32,3 +32,27 @@
 
 ## Ego Lite 중 발견 → 수정 (TDD)
 - 거절 결과가 sr-only status에만 있어 화면에 안 보임(SPEC 2절 "결과 문장 갱신" 위반) → 테스트를 "보이는 문장 = 거절 문장 · 축출 문장 사라짐 · 버튼 유지"로 바꿔 RED 2건 확인 → `kept: "refused"` 상태로 GREEN(28).
+
+## Codex r1 수정 (P2 1건 — 문서 봉투로 인한 강등 미판정)
+- [x] RED 예측 기록 → 테스트 → RED 실측
+- [x] storageCheck: state v1일 때 docs 봉투 전체 스캔(newer 우선 > invalid) — GREEN
+- [x] typecheck·lint·build(/projects ≤125 · /studio ≤129.65 · 복원 ≤132.68)·전체 vitest 1회
+- [x] REPORT "Codex r1 수정" 절 · 커밋
+
+### 선택: docs 저장소 봉투 전체 스캔 (진입 몫 0)
+- "가장 최근 진입 문서" 안은 /projects가 진입 projectId를 알아야 해 진입 경로(deferredStudio 등)에 기록이 필요 → 진입 바이트 ≠0. 전체 스캔은 /projects 페이지 청크에만 들어간다.
+- 스캔 조건: state 레코드가 있고 v1일 때만(state missing이면 readEntry는 문서와 무관하게 `{}`=local). docs 저장소 없으면 ok.
+- 규칙: entryRead `checkEntryEnvelope`와 같음(kind "doc" · id === key · data 있음 · v1 ok · 숫자>1 newer · 그 외 invalid). getAllKeys+getAll 같은 트랜잭션.
+
+### RED 예측
+- storageCheck.test 새 케이스: state v1 + doc v99 → newer / 깨진 doc · id≠key · v0 → invalid / newer+invalid 혼재 → newer — 현재 `ok` 반환이라 전부 FAIL. "전부 정상 → ok"와 parity 테스트는 PASS 예상(현 구현도 ok/규칙 동일).
+- BrowserStorageSection.test Codex 재현(memory · state v1 · doc v99): 현재 ok 문장이 떠 1.8 문장 heading 못 찾음 → FAIL.
+- 기존 케이스 전부 PASS 유지.
+
+### RED 실측
+- 5건 FAIL(storageCheck 4 · Section Codex 재현 1), 기존 19건 PASS. **예측과 차이 1건**: parity 테스트도 FAIL — 현 구현이 문서를 보지 않아 v2 문서에 `ok`를 돌려줌(예측은 "규칙 동일이라 PASS"였으나 입력이 docs라 판정 자체가 없음).
+
+### GREEN · 관문
+- 대상 2파일 24건 통과 · typecheck·lint exit 0.
+- build exit 0: /projects 96.17 / 103.53(≤125) · /studio 129.63(≤129.65) · 복원 132.66(≤132.68).
+- 전체 vitest 1회 exit 0 — 267 파일 / 2338 테스트.

@@ -4,7 +4,13 @@
  */
 import { describe, expect, it } from "vitest";
 import { DB_NAME, SCHEMA_VERSION } from "../../data/persistence/envelope";
-import { EXPORT_DB_NAME, readProject } from "./readProject";
+import { fakeDeps, fakeImageBytes, seedDocRecord, seedProject, seedSeries } from "../../test/projectFileFixtures";
+import { checkFile } from "./checkFile";
+import { encodeProjectFile } from "./encode";
+import { readImageRecord } from "../../data/persistence/imageRecord";
+import { WIDTH_STEPS, widthLadder } from "../studio/images/ingest/ladder";
+import { MAX_PIXELS, MAX_SIDE } from "../studio/images/ingest/limits";
+import { EXPORT_DB_NAME, EXPORT_MAX_PIXELS, EXPORT_MAX_SIDE, EXPORT_WIDTH_STEPS, exportImageOf, readProject } from "./readProject";
 
 const env = (kind: string, id: string, data: unknown, schemaVersion = SCHEMA_VERSION) => ({ schemaVersion, kind, id, data });
 
@@ -31,7 +37,11 @@ function stateData(over: Record<string, unknown> = {}) {
   };
 }
 
-const image = (tag: string) => ({ variants: { 640: new Blob([tag]) }, width: 640, height: 480, format: "png", bytes: tag.length });
+/** 저장 규칙(readImageRecord)을 지키는 레코드 — 폭 640 사다리 1단 · PNG 서명 바이트 · bytes = 변형본 합 */
+const image = (tag: string) => {
+  const blob = new Blob([fakeImageBytes("png", 640, 480, tag) as BlobPart], { type: "image/png" });
+  return { variants: { 640: blob }, width: 640, height: 480, format: "png", bytes: blob.size };
+};
 const docData = { doc: { projectId: "project-1", hash: "h" }, snapshots: [], snapshotSeq: 2 };
 
 /** 손 IDB 가짜 — 요청은 마이크로태스크 뒤 성공. 트랜잭션·연결 닫기를 기록한다 */
@@ -133,6 +143,97 @@ describe("readProject — 읽기 한 트랜잭션 (P2-SPEC 3.6)", () => {
     ]);
     const result = await readProject(seeded({ images }).factory, "project-1");
     expect(result.status === "ok" && result.source.images.map((i) => i.localId)).toEqual(["a"]);
+  });
+});
+
+describe("Codex r1 — 이미지 레코드는 저장 규칙 전체(readImageRecord)로 검사 · 실패 레코드 제외", () => {
+  const png = (w: number, h: number) => new Blob([fakeImageBytes("png", w, h) as BlobPart], { type: "image/png" });
+  /** width 1280인데 변형본 640만(사다리 640·1280 아님) */
+  const shortLadder = () => {
+    const v = png(640, 240);
+    return { variants: { 640: v }, width: 1280, height: 480, format: "png", bytes: v.size };
+  };
+  const emptyVariants = { variants: {}, width: 640, height: 480, format: "png", bytes: 0 };
+
+  it("width 1280 + variants 640만 · variants {} → 제외 · 나머지 정상 이미지는 포함", async () => {
+    const images = new Map<string, unknown>([
+      ["project-1/a", env("image", "project-1/a", image("a"))],
+      ["project-1/b", env("image", "project-1/b", shortLadder())],
+      ["project-1/c", env("image", "project-1/c", emptyVariants)],
+      ["project-1/d", env("image", "project-1/d", image("d"))],
+    ]);
+    const result = await readProject(seeded({ images }).factory, "project-1");
+    expect(result.status).toBe("ok");
+    if (result.status !== "ok") return;
+    expect(result.source.images.map((i) => i.localId)).toEqual(["a", "d"]);
+    expect(result.source.images[0]!.image).toEqual(image("a"));
+  });
+
+  it("왕복 보장 — 정상 1 + 손상 1 시드 → readProject → encodeProjectFile → checkFile(L1) ok · 이미지 = 정상 1", async () => {
+    const good = png(640, 480);
+    const idb = fakeIdb({
+      studio: new Map([["state", env("state", "state", stateData({ projects: new Map([["project-1", seedProject()]]), series: new Map([["profile-1", seedSeries()]]) }))]]),
+      docs: new Map([["project-1", env("doc", "project-1", seedDocRecord())]]),
+      images: new Map<string, unknown>([
+        ["project-1/good", env("image", "project-1/good", { variants: { 640: good }, width: 640, height: 480, format: "png", bytes: good.size })],
+        ["project-1/bad", env("image", "project-1/bad", shortLadder())],
+      ]),
+    });
+    const read = await readProject(idb.factory, "project-1");
+    if (read.status !== "ok") throw new Error(read.status);
+    const encoded = await encodeProjectFile({ ...read.source, exportedAt: "2026-10-08T09:12:33.000Z" });
+    if (!encoded.ok) throw new Error(encoded.message);
+    const checked = await checkFile(encoded.blob, fakeDeps().deps);
+    expect(checked).toMatchObject({ ok: true });
+    if (!checked.ok) return;
+    expect(checked.file.images.map((i) => [i.localId, i.width, Object.keys(i.variants)])).toEqual([["good", 640, ["640"]]]);
+  });
+});
+
+describe("exportImageOf = readImageRecord parity (리터럴 복제 — 진입 closure를 import하지 않으려고)", () => {
+  it("한도·사다리 상수 = limits·ladder", () => {
+    expect([EXPORT_MAX_SIDE, EXPORT_MAX_PIXELS, EXPORT_WIDTH_STEPS]).toEqual([MAX_SIDE, MAX_PIXELS, [...WIDTH_STEPS]]);
+  });
+
+  const blobOf = (format: string, w: number) => new Blob([fakeImageBytes(format, w, 10) as BlobPart]);
+  const valid = (width: number, height: number, format = "png") => {
+    const variants = Object.fromEntries(widthLadder(width).map((w) => [w, blobOf(format, w)]));
+    return { variants, width, height, format, bytes: Object.values(variants).reduce((sum, b) => sum + b.size, 0) };
+  };
+  const id = "project-1/x";
+  const base = valid(800, 400);
+  const corpus: Array<[string, unknown]> = [
+    ...[500, 640, 800, 1280, 1500, 1920, 2400].map((w) => [`정상 png ${w}`, env("image", id, valid(w, 300))] as [string, unknown]),
+    ["정상 jpeg", env("image", id, valid(800, 400, "jpeg"))],
+    ["정상 webp", env("image", id, valid(800, 400, "webp"))],
+    ["레코드 없음", undefined],
+    ["null", null],
+    ["kind 다름", env("doc", id, base)],
+    ["id 다름", env("image", "project-1/y", base)],
+    ["schemaVersion 2", env("image", id, base, 2)],
+    ["data null", env("image", id, null)],
+    ["형식 gif", env("image", id, { ...base, format: "gif" })],
+    ["사다리 1280 단 추가", env("image", id, { ...base, variants: { ...base.variants, 1280: blobOf("png", 1280) } })],
+    ["사다리 640 빠짐", env("image", id, { ...base, variants: { 800: base.variants[800] } })],
+    ["width 1280 · 변형본 640만", env("image", id, { ...valid(640, 300), width: 1280 })],
+    ["variants {}", env("image", id, { ...base, variants: {}, bytes: 0 })],
+    ["서명 ≠ 형식(png 바이트 webp로)", env("image", id, { ...base, format: "webp" })],
+    ["bytes ≠ 합", env("image", id, { ...base, bytes: base.bytes + 1 })],
+    ["높이 한도 밖", env("image", id, { ...base, height: 16_385 })],
+    ["픽셀 한도 밖", env("image", id, valid(8000, 6000))],
+    ["높이 소수", env("image", id, { ...base, height: 1.5 })],
+    ["폭 0", env("image", id, { ...base, width: 0 })],
+    ["변형본 Blob 아님", env("image", id, { ...base, variants: { 640: "x", 800: base.variants[800] } })],
+  ];
+
+  it.each(corpus)("%s → 원본과 같은 판정", async (_, record) => {
+    const [mine, original] = await Promise.all([exportImageOf(record, id), readImageRecord(record, id)]);
+    expect(mine).toEqual(original);
+  });
+
+  it("말뭉치에 통과·거절이 둘 다 있다(대조가 한쪽으로 쏠리지 않게)", async () => {
+    const passed = await Promise.all(corpus.map(([, record]) => readImageRecord(record, id)));
+    expect(passed.filter(Boolean)).toHaveLength(9);
   });
 });
 

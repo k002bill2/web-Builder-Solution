@@ -14,7 +14,7 @@
 | 새 `components/projects/ExportProjectFileDialog.tsx` | X-S01~X-S06: 네이티브 dialog · 열 때 포커스 "파일 만들기" · Esc=취소(만드는 중 무시) · "만드는 중…" aria-disabled + ref 연타 막기 · ≥50MB면 EX-8 + "내려받기"(포커스) · 실패 alert key 패턴(EX-6·7·10·12) · 성공 = save → `close()` 먼저 → onClose(true) |
 | 새 `components/projects/ExportProjectFileDialogSlot.tsx` | 조작 뒤 청크: readProject → `encodeProjectFile`(L1, 수정 0) · 예외 = EX-10 · 부모 문서 `a[download]` + 다음 틱 `revokeObjectURL` · 의존성 주입(factory·now·download·read) |
 | 새 `features/projectFile/readProject.ts` | IDB readonly **한 트랜잭션** `studio·docs·images` · 버전 없이 열기 · 저장소 없음/상태 없음/프로젝트 없음 = gone(EX-7) · 상태·문서 봉투 mismatch·invalid = unreadable(EX-6) · 계열 version 오름차순 · 이미지 = `projectImageKeys`(P1d 슬래시 접두) · `projectFileName`(1.3, 로컬 날짜) · envelope 등 진입 closure 값 import 0(DB 이름 리터럴 + parity 테스트) |
-| 테스트 | 새 `readProject.test`(11) · `ExportProjectFileDialog.test`(14) · `pages/ProjectsExport.test`(8) · `ProjectsDelete.test` 줄 순서 단언 `slice(-2)`→`slice(-3)` = 이름 바꾸기·파일로 내보내기·삭제(강화 — **L3 겹침 후보**) |
+| 테스트 | 새 `readProject.test`(10) · `ExportProjectFileDialog.test`(14) · `pages/ProjectsExport.test`(8) · `ProjectsDelete.test` 줄 순서 단언 `slice(-2)`→`slice(-3)` = 이름 바꾸기·파일로 내보내기·삭제(강화 — **L3 겹침 후보**) |
 
 ## 2. 검증 (fresh, app/, Ego Lite·수정 뒤 마지막 실행)
 | 명령 | 결과 |
@@ -32,11 +32,11 @@
 | /profile 첫 화면 | 99.87 | 99.86 | 99.87 | ≤100 ✓ |
 | /projects | 104.69 | 104.95 | 104.95 | ≤125 ✓ |
 | /compare | 122.71 | 122.70 | 122.72 | ≤125 ✓ |
-- 멈춤 조건 미해당 → 원인 모듈 조사 불필요. /studio·복원 +0.01~0.03은 진입 closure 변경 없이 공유 청크·해시 이름 변동으로 보임 [추정 — 모듈별 분해 안 함]. 6절 "진입 closure 검증 함수 import 재분할"은 이 레인 export 경로가 `validateProjectName`·`formatFromMagic` 등을 import하지 않아(encode·readProject) 해당 없음 — 가져오기(L3)에서 판정.
+- 멈춤 조건 미해당 → 원인 모듈 조사 불필요. **브리프 몫 0 대비 실측 /studio +0.03 · 복원 +0.02(관문 안)**. 근거: 1ab4291은 지연 청크(대화상자) 1개만 바꿨는데 /studio 129.10→129.12 · 복원 132.14→132.15로 움직였다 — 진입 청크 안 lazy 청크 해시 문자열 변동에 따른 gzip 흔들림으로 보임 [추정 — 모듈별 분해 안 함]. 6절 "진입 closure 검증 함수 import 재분할"은 이 레인 export 경로가 `validateProjectName`·`formatFromMagic` 등을 import하지 않아(encode·readProject) 해당 없음 — 가져오기(L3)에서 판정.
 
 ## 3. TDD 기록
 - RED 예측(PROGRESS) = 실제: R1~R3 모듈 없음 import 실패 · R4 `slice(-3)` 1건 FAIL. RED 테스트 tip 커밋 0 · skip 0 · 단언 약화 0 · amend·rebase 0.
-- Ego Lite 결함 회귀: showModal이 첫 버튼에 포커스하는 spy 테스트 → RED(포커스 = 취소) 확인 → 수정 → GREEN(1ab4291).
+- Ego Lite 결함 회귀: showModal이 첫 버튼에 포커스하는 spy 테스트 → RED(포커스 = 취소) 확인 → 수정 → GREEN(1ab4291). 이 1건은 RED 예측을 PROGRESS에 먼저 적지 않고 바로 실행했다.
 
 ## 4. Ego Lite (build + preview 4337, TaskSpace 31) — 상세 PROGRESS
 - 단색 PNG 800×400(스크립트 생성, 저장소 밖) 1장 넣은 project-1 → `/projects` "파일로 내보내기" → 포커스 "파일 만들기" → 만들기 → 내려받기 `모던-카페-브랜드-프로젝트_project_20261008.json`(8826 B) · JSON 최상위 `format` design-studio-project · `formatVersion` 1 · `schemaVersion` 1 · images 1(webp 800×400, 640·800).
@@ -55,5 +55,12 @@
 ## 6. 한계·남은 일
 - Codex 검증 미실행(Jarvis 몫). AC-P01 E 뒷반(가져오기 왕복)·AC-P07 가져오기는 L3.
 - X-S03(50MB 이상)·EX-6/7/10/12는 U만(실 브라우저 미실측 — 큰 파일·손상 상태 시드 안 함).
-- 턴 기준: 대체로 충족 [대략 셈] — Ego Lite 시작 약 26번째, 결과 커밋 약 40번째.
+- **턴 기준 미달 [도구 호출 메시지 기준 대략 셈]**:
+  | 기준 | 실제 | 원인 |
+  |---|---|---|
+  | 배선 커밋 직후 build 16턴 전 | 약 23번째 — 미달 | Button ref 타입 회피·lint 경고로 `projectFileName` 이동에 2턴 추가, 정본·선례 읽기 |
+  | Ego Lite 28턴 전 시작 | 약 28~29번째 — 경계 | 위 지연 |
+  | Ego 결과 커밋 40턴 전 | 약 48번째(706d726) — 미달 | 시나리오 준비(비교 추가 클릭 가로막힘·이미지 패널 summary) + 실측에서 찾은 포커스 결함 수정·재빌드·재실측 |
+  | 44턴부터 게이트·REPORT만 | 44~47번째에 수정·재빌드·재실측 — 위반 | 같은 결함 수정 |
+  | REPORT 초안 48턴 전 | 약 51번째(cca8366) — 미달 | 위 누적 |
 - 금지 준수: 엔진·계약·docs/**·lock·CLAUDE.md·L3 파일 수정 0 · 새 의존성·아이콘 0 · 서브에이전트 0 · push/merge/삭제 0 · amend/rebase 0.

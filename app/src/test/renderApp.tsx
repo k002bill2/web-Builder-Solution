@@ -20,12 +20,17 @@ import "../pages/ReferenceDetailPage";
 import "../pages/StudioPage";
 import "../data/memoryProjectRepository";
 // 라우트 아래 2단계 지연 청크도 미리 로드한다 — 렌더·조작 뒤 첫 import()가 부하 시 콜드 변환으로 findBy(3초)·테스트(5초) 대기를 넘겼다(FLAKY-TESTS).
-// boardEngine은 넣지 않는다: CompareBoardEngineLoading·CompareBoardEngineUi가 팩토리 목(붙잡기·실패)으로 첫 import 시점을 제어한다
+// boardEngine·ExportAfter·exportFlow·staticHtml은 넣지 않는다: 팩토리 목(붙잡기·실패 주입)으로 첫 import 시점을 제어하는 테스트가 있다
 import "../components/studio/StudioLayout";
 import "../components/studio/AddSectionDialog";
 import "../components/studio/VariantOptions";
 import "../components/studio/ImageSlotPanel";
 import "../components/studio/ContactOwnerNote";
+import "../components/studio/MoreMenuBody";
+import "../components/studio/SnapshotLayer";
+import "../components/studio/ThemeDialog";
+import "../features/profile/CompareDialog";
+import "../features/compare/carryOverPanel";
 import "../features/studio/docEngine";
 import "../features/studio/gateCheck";
 import "../features/profile/profileEngine";

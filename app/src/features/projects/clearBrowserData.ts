@@ -7,7 +7,8 @@
  *    성공할 수 있다 — 늦은 성공도 성공 흐름) · onerror = failed. 4. 성공 = sessionStorage 1회 키 → `/projects` 새로고침 이동.
  */
 import type { TabLink } from "../../data/persistence/tabLink";
-import { tryLock, type WriterLocks } from "../../data/persistence/writerLock";
+import type { WriterLocks } from "../../data/persistence/writerLock";
+import { tabLockHold } from "./tabLockHold";
 
 export type ClearResult = "done" | "busy" | "failed";
 
@@ -27,10 +28,8 @@ export interface ClearDeps {
 }
 
 export function createClearer({ locks, factory, link, session, go }: ClearDeps) {
-  /** 대기 중인 삭제 요청(onblocked 뒤) — 재시도가 두 번째 삭제를 내지 않게 */
-  let waiting = false;
-  /** writer = 이 탭 싱크가 보유한 잠금(멈춘 뒤에도 탭 수명 동안 보유 — 재시도도 다시 요청하지 않는다) · 함수 = 지우기가 잡은 잠금 */
-  let held: "writer" | (() => void) | undefined;
+  /** 보유 잠금·대기 중 삭제 요청(clearing — 재시도가 두 번째 삭제를 내지 않게)·멈춤은 탭 단위로 프로젝트 삭제와 공유(Codex r1 P2) */
+  const hold = tabLockHold(link, locks);
   const finish = () => {
     try {
       session?.setItem(CLEARED_KEY, "1");
@@ -40,35 +39,26 @@ export function createClearer({ locks, factory, link, session, go }: ClearDeps) 
     go("/projects");
   };
   const fail = (): ClearResult => {
-    if (typeof held === "function") {
-      held();
-      held = undefined;
-    }
+    hold.release();
     return "failed";
   };
   return {
     async clear(): Promise<ClearResult> {
-      if (waiting) return "busy";
-      const own = link.own();
-      if (own?.isWriter()) held = "writer";
-      if (!held && locks) {
-        held = await tryLock(locks);
-        if (!held) return "busy";
-      }
-      own?.stop();
+      if (!(await hold.acquire())) return "busy";
+      hold.stop();
       link.post({ type: "cleared" });
       return new Promise<ClearResult>((resolve) => {
         try {
           const request = factory.deleteDatabase(CLEAR_DB_NAME);
-          waiting = true;
+          hold.clearing = true;
           request.onsuccess = () => {
-            waiting = false;
+            hold.clearing = false;
             finish();
             resolve("done");
           };
           request.onblocked = () => resolve("busy");
           request.onerror = () => {
-            waiting = false;
+            hold.clearing = false;
             resolve(fail());
           };
         } catch {

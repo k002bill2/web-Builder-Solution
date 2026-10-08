@@ -115,9 +115,19 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     return result;
   }
 
-  /** 첫 저장 안내 판정(P1C-D5) — 싱크 실패·지연(2초)은 안내 0으로 확정 성공 그대로(확정은 IDB를 기다리지 않는다) */
+  /** 첫 저장 안내 판정(P1C-D5) — 싱크 실패·지연(2초)은 안내 0으로 확정 성공 그대로(확정은 IDB를 기다리지 않는다).
+   * 시간 초과 뒤 늦게 끝난 판정은 키를 쓰지 않는다(`live`) — 다음 확정이 다시 안내(Codex r1 P2) */
   async function noticed(result: ConfirmResult): Promise<ConfirmResult> {
-    const first = await Promise.race([options.sync?.().then((s) => s.firstSave(), () => false), new Promise<false>((done) => setTimeout(done, 2000, false))]);
+    let late = false;
+    const first = await Promise.race([
+      options.sync?.().then((s) => s.firstSave(() => !late), () => false),
+      new Promise<false>((done) =>
+        setTimeout(() => {
+          late = true;
+          done(false);
+        }, 2000),
+      ),
+    ]);
     return first ? { ...result, firstSave: true } : result;
   }
 

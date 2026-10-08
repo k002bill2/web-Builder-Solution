@@ -3,7 +3,7 @@
  * 키 쓰기는 확정 상태 쓰기 뒤 별도 제출(쓰기 큐 경유 — 트랜잭션마다 세대 +1 불변식 유지) · 실패해도 확정 성공(다음 확정에 한 번 더) ·
  * 지우기(빈 DB) 뒤 다시 안내 · 읽기 전용·지워짐 탭·memory(강등)는 안내 0·쓰기 0.
  */
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
 import { STUDIO_IMPORTS, createDeferredStudio } from "../deferredStudio";
 import { checkEnvelope } from "./envelope";
@@ -32,6 +32,7 @@ const settle = async () => {
 };
 
 const NOTICE = "firstSaveNotice";
+afterEach(() => vi.useRealTimers());
 const isNotice = (op: WriteOp) => op.type === "put" && op.store === "meta" && op.record.id === NOTICE;
 const genOf = (ops: readonly WriteOp[]) => (ops.find((op) => op.type === "put" && op.store === "meta" && op.record.id === "generation") as { record: { data: number } } | undefined)?.record.data;
 const stateGenOf = (ops: readonly WriteOp[]) => (ops.find((op) => op.type === "put" && op.store === "studio") as { record: { data: { gen: number } } } | undefined)?.record.data.gen;
@@ -173,6 +174,36 @@ describe("보드 확정 결과 firstSave (deferredStudio 배선)", () => {
     await settle();
     const { board: seen } = await board.getBoard();
     expect(await board.createProfileVersion("profile-1", seen.revision, 0, "new")).toMatchObject({ profileId: "profile-2", firstSave: true });
+  });
+
+  it("싱크가 2초 넘게 늦으면(Codex r1 P2) 첫 확정 안내 없음 · 늦은 판정은 키 기록 0 · 다음 확정에 안내 1회", async () => {
+    const persistence = createMemoryPersistence();
+    const { own } = tabOf(persistence);
+    let release = () => undefined as void;
+    const gate = new Promise<void>((done) => (release = done));
+    const entry = await entryFrom(persistence);
+    const studio = createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: async (e) => (await gate, openLocalSync(e, async () => own, soloLocks(), createLinkNetwork().tab())) });
+    const board = await studio.board();
+    vi.useFakeTimers({ toFake: ["setTimeout"] });
+    let first: Awaited<ReturnType<typeof board.confirmProfile>> | undefined;
+    const pending = board.confirmProfile(1, 0).then((r) => (first = r));
+    for (let i = 0; i < 50 && !first; i += 1) {
+      await vi.advanceTimersByTimeAsync(100);
+      await new Promise((done) => setImmediate(done));
+    }
+    await pending;
+    expect(first).toMatchObject({ profileId: "profile-1", version: 1 });
+    expect(first?.firstSave).toBeUndefined();
+    vi.useRealTimers();
+    release();
+    for (let i = 0; i < 5; i += 1) await new Promise((done) => setImmediate(done));
+    await settle();
+    expect(await persistence.get("meta", NOTICE)).toBeUndefined();
+    const { board: seen } = await board.getBoard();
+    expect(await board.createProfileVersion("profile-1", seen.revision, 0, "new")).toMatchObject({ profileId: "profile-2", firstSave: true });
+    await settle();
+    const { board: again } = await board.getBoard();
+    expect((await board.createProfileVersion("profile-2", again.revision, 0, "new")).firstSave).toBeUndefined();
   });
 
   it("memory(강등 — 로컬 영속 없음) → 확정 성공 · firstSave 없음", async () => {

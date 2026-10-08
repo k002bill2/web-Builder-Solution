@@ -73,7 +73,7 @@ export default function ClearDataDialog({
           <li>문서에 넣은 이미지</li>
           <li>확정한 프로필(모든 버전)과 만든 3안</li>
         </ul>
-        <p className="ds-caption1 text-label-alternative">비교 보드와 보관함은 이 탭에만 있어 지우지 않습니다. 내려받은 파일도 그대로 남습니다.</p>
+        <p className="ds-caption1 text-label-alternative">비교 보드와 보관함은 따로 저장하지 않아 지운 뒤 함께 비워집니다. 내려받은 파일은 그대로 남습니다.</p>
         {error.text && (
           <p key={error.key} role="alert" className="ds-caption1 text-status-negative-text">
             {error.text}

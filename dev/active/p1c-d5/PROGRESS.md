@@ -30,3 +30,17 @@
 - 재개 세션: ⓐ 같은 탭 지우기 status 1개 · ⓑ 지운 뒤 첫 확정 안내 포함 · ⓒ 두 번째 확정 안내 0 — 상세 REPORT.md. shots 4장.
 - 정리: deleteDatabase success · databases() [] · finish · listTaskSpaces [] · 94187 종료 · 4337 LISTEN 0.
 - 게이트(fresh): typecheck 0 · lint 0 · build 0 · vitest 274/2402 exit 0. 코드 수정 0.
+
+# Codex r1 수정 레인 (2026-10-08)
+- [x] RED 예측 기록 → 테스트 작성 → RED 확인(커밋 안 함)
+- [x] ① [P2] firstSave 2초 시간 초과 뒤 늦은 판정이 안내 키를 기록하지 않게 (`firstSave(live)` — put 제출 직전 확인)
+- [x] ② ClearDataDialog 본문 2 문구 교체 + 고정 테스트 기대값 갱신
+- [x] GREEN · 번들 관문(/profile ≤100 · /compare ≤125 · /studio ≤129.65 · 복원 ≤132.68 · /projects ≤125)
+- [x] 게이트: typecheck·lint·build·전체 vitest exit 0
+- [x] REPORT "Codex r1 수정" 절 + 커밋
+
+## RED 예측 (Codex r1 수정)
+- 새 회귀 테스트 `firstSaveNotice.test.ts` "싱크가 2초 넘게 늦으면 첫 확정 안내 없음 · 키 기록 0 · 다음 확정에 안내 1회": 현 코드는 늦은 firstSave가 키를 put → 키 존재 단언에서 FAIL(1건).
+- `ClearDataDialog.test.tsx` 첫 건: 새 문구 getByText 실패로 FAIL(1건). 나머지 기존 테스트 PASS.
+- RED 실측: 2 FAIL(새 회귀 — 늦은 판정이 키 put → `get(meta, firstSaveNotice)` undefined 단언 실패 · 대화상자 문구) / 나머지 PASS — 예측과 같음.
+- GREEN: 대상 3파일 18/18 · 전체 274 files / 2403 passed.

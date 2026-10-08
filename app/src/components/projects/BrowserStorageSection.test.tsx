@@ -318,3 +318,66 @@ describe("BrowserStorageSection — 다른 탭 알림 (1.5 · AC-C03)", () => {
     await new Promise((r) => setTimeout(r, 20));
   });
 });
+
+describe("BrowserStorageSection — 프로젝트 파일 가져오기 (P2-SPEC 1.2 · 1.4 · 4.2 I-S01·I-S08 · AC-P07)", () => {
+  const importDeps = () => {
+    const factory = { open: vi.fn(), deleteDatabase: vi.fn() } as unknown as IDBFactory;
+    const session = { getItem: vi.fn(() => null), setItem: vi.fn(), removeItem: vi.fn() };
+    return { factory, session, link: createLinkNetwork().tab(), locks: createLockRegistry().tab(), go: vi.fn() };
+  };
+  const picker = (container: HTMLElement) => container.querySelector<HTMLInputElement>('input[type="file"]')!;
+
+  it("local = '이 브라우저 데이터 지우기' 앞 outline 버튼 + 숨긴 input(accept·tabIndex -1·aria-hidden) · 버튼 = input click()", async () => {
+    const { container } = render(<BrowserStorageSection persistence="local" storage={storageApi()} {...importDeps()} />);
+    const buttons = screen.getAllByRole("button").map((b) => b.textContent);
+    expect(buttons.indexOf("프로젝트 파일 가져오기")).toBeGreaterThanOrEqual(0);
+    expect(buttons.indexOf("프로젝트 파일 가져오기")).toBeLessThan(buttons.indexOf("이 브라우저 데이터 지우기"));
+    const input = picker(container);
+    expect(input).toHaveAttribute("accept", ".json,application/json");
+    expect(input).toHaveAttribute("tabindex", "-1");
+    expect(input).toHaveAttribute("aria-hidden", "true");
+    const click = vi.spyOn(input, "click");
+    await userEvent.click(screen.getByRole("button", { name: "프로젝트 파일 가져오기" }));
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("AC-P07 memory·IndexedDB 없음 = 버튼·input 숨김", () => {
+    const { container, unmount } = render(<BrowserStorageSection persistence="memory" storage={storageApi()} {...importDeps()} />);
+    expect(screen.queryByRole("button", { name: "프로젝트 파일 가져오기" })).not.toBeInTheDocument();
+    expect(picker(container)).toBeNull();
+    unmount();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} {...importDeps()} factory={undefined} />);
+    expect(screen.queryByRole("button", { name: "프로젝트 파일 가져오기" })).not.toBeInTheDocument();
+  });
+
+  it("파일 고름 → 대화상자(조작 뒤 청크) · input 값 비움(같은 파일 다시 고르기) · 검증 실패 → 닫기 → 포커스 = 가져오기 버튼 · 쓰기 0", async () => {
+    const deps = importDeps();
+    const { container } = render(<BrowserStorageSection persistence="local" storage={storageApi()} {...deps} />);
+    const input = picker(container);
+    const file = new File(["not json"], "x.json", { type: "application/json" });
+    await userEvent.upload(input, file);
+    expect(await screen.findByRole("dialog", { name: "프로젝트 파일 가져오기" })).toBeInTheDocument();
+    expect(input.value).toBe("");
+    expect(await screen.findByRole("alert")).toHaveTextContent("프로젝트 파일이 아닙니다");
+    await userEvent.click(screen.getByRole("button", { name: "닫기" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "프로젝트 파일 가져오기" })).toHaveFocus();
+    expect(deps.factory.open).not.toHaveBeenCalled();
+  });
+
+  it("'다른 파일 고르기' → 대화상자 닫고 선택기 다시 열기(input click) · 같은 파일 다시 고르면 새 대화상자", async () => {
+    const { container } = render(<BrowserStorageSection persistence="local" storage={storageApi()} {...importDeps()} />);
+    const input = picker(container);
+    const file = new File(["not json"], "x.json", { type: "application/json" });
+    await userEvent.upload(input, file);
+    const first = await screen.findByRole("alert");
+    const click = vi.spyOn(input, "click");
+    await userEvent.click(screen.getByRole("button", { name: "다른 파일 고르기" }));
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await userEvent.upload(input, file);
+    const again = await screen.findByRole("alert");
+    expect(again).not.toBe(first);
+  });
+});

@@ -12,3 +12,7 @@
 - [ ] Ego Lite ①~⑤ + 정리
 - [ ] 게이트 typecheck·lint·build·vitest
 - [ ] REPORT
+
+## RED 예측 (R1 — writeImport·대화상자)
+- writeImport.test: 모듈 없음 → import 실패로 파일 전체 FAIL (AC-P06 abort·Quota=IM-11·IM-8·IM-9 포함)
+- ImportProjectFileDialog.test: 모듈 없음 → 파일 전체 FAIL (AC-P02 손상 파일 = IM-2 + factory.open 호출 0 포함)

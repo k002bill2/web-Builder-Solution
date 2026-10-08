@@ -13,7 +13,7 @@
 | `components/projects/DeleteProjectDialogSlot.tsx` (새) | 조작 뒤 청크 — 브라우저 기본 의존성은 여기서만 푼다 |
 | `ProjectRow.tsx` · `ProjectList.tsx` | "삭제"(outline sm · `aria-label "{이름} 삭제"` · `data-delete-for`) — `onDelete` 있을 때만 |
 | `ProjectsPage.tsx` | local일 때만 `onDelete` · 대화상자 lazy · 취소 포커스 = 그 줄 "삭제" · 이름 바꾸는 줄에서 삭제 = 초안만 취소(`close()` 아님 — 포커스가 끌려가지 않게) · 알림 setter를 useRename 밖으로 · PJ-10 1회 + h1 `tabIndex=-1` 포커스(키 있을 때만) · 키 `DELETED_NOTICE_KEY` 리터럴 복제 |
-| 테스트 | `deleteProject.test.ts`(18) · `DeleteProjectDialog.test.tsx`(6) · `ProjectsDelete.test.tsx`(8) · `dialogText.test.ts`(1) |
+| 테스트 | `deleteProject.test.ts`(21) · `DeleteProjectDialog.test.tsx`(6) · `ProjectsDelete.test.tsx`(8) · `dialogText.test.ts`(1) |
 
 - 수정 0 확인: `memoryDocBook`·`Snapshot*`·`projectRepository.ts`·`memoryProjectRepository.ts`·`studioStore.ts`·엔진·docs·lock·`BrowserStorageSection.tsx`.
 - import 규칙: `deleteProject.ts`는 `envelope`·`entryRead`·`idbPersistence`·`studioStore` 런타임 import 0(타입만). DB 이름·SCHEMA 1·봉투 확인은 복제 + parity 테스트(`DELETE_DB_NAME === DB_NAME` · `DELETED_NOTICE_KEY === DELETED_KEY` · put 레코드 `schemaVersion === SCHEMA_VERSION`).
@@ -32,7 +32,8 @@
 - 트랜잭션 원자성: jsdom에 IDB가 없고 새 의존성 금지라 손 IDB 가짜(마이크로태스크 요청 · 매크로태스크 커밋 · 실패 주입 = 쓰기 0)로 U, 실제 IDB는 Ego Lite.
 
 ## 게이트 (fresh 실행 — 코드 = `04c959e`)
-- `npx tsc --noEmit -p tsconfig.json` exit 0 · `npx eslint .` 출력 0 · `npm run build` exit 0(번들 가드 통과) · `npx vitest --run` **280 files / 2456 tests passed, EXIT=0**.
+- `npx tsc --noEmit -p tsconfig.json` TSC=0 · `npm run lint` LINT=0 · `npm run build` BUILD=0(번들 가드 통과, 수치 위 표와 같음) — 셋 다 Ego 뒤 fresh 재실행해 exit code를 직접 잡음 · `npx vitest --run` **280 files / 2456 tests passed, EXIT=0**.
+- `/studio` 129.63이 main 129.64보다 0.01 낮은 것은 진입 closure 파일 변경 0이라 gzip 측정 변동으로 봄 [추정] — 진입 몫 증가 0 판정은 같음.
 
 ## Ego Lite (build + `vite preview --port 4339 --strictPort`, TaskSpace 29)
 - 창 상태 확인 = `normal`(첫 클릭 CDP 타임아웃 1회 뒤 확인, 이후 정상). 캡처는 래퍼 `page.screenshot`이 `captureBeyondViewport`를 받지 않아 `page.cdp("Page.captureScreenshot", { captureBeyondViewport:false, clip })`로 3장(`shots/`).
@@ -48,4 +49,5 @@
 - AC-D05 추가분(지운 프로젝트 편집기를 열어만 둔 탭 C의 저장 실패·부활 0)과 AC-D08 "쓰기 탭에서 실패 → 닫기 = 새로고침 → 이름 바꾸기 저장"은 U(흐름 `stopped`·대화상자 onClose(true))로만 확인, 실측 안 함 — 세대 +1은 ②에서 실측(6→7)되어 최신성 확인 경로는 기존 P1c 동작.
 - 쓰기 탭이 아닌 다른 탭이 잠금 없이 열린 `/profile` 등에서 B의 미저장 메모리 편집은 낡은 탭 처리(P1c) — 이 레인 변경 0.
 - ST-1 문구 교체(`BrowserStorageSection`)는 L3 쓰기 목록 밖이라 하지 않음.
-- 턴 관리 [추정 — 직접 센 값 아님]: 구현 커밋 약 20턴째, Ego Lite 시작 약 22턴째·종료 약 50턴째(시나리오 준비 탐색 — 확정 비활성·잠금 보유로 재시도), REPORT 초안 약 52턴째.
+- Slot의 `onClose(true) → go("/projects")` 매핑은 단위 테스트 없음(대화상자 onClose(true)와 흐름 stopped만 U) — 남은 위험.
+- **턴 기준 미달 [도구 호출 메시지 기준 대략 셈]**: 구현 커밋 + build 약 21번째(**18턴 기준 미달**) · Ego Lite 시작 약 23번째(30턴 기준 충족) · Ego 결과 커밋 약 57번째(**44턴 기준 미달**) · 49~56번째에도 Ego 시나리오 실행(**"48턴부터 게이트·REPORT만" 위반**) · REPORT 초안 약 57번째(**52턴 기준 미달**). 원인 = 시나리오 준비 탐색(확정 비활성 → 폰트 select 변경, 확정 탭의 쓰기 잠금 보유로 편집 시작 실패 → 탭 A 새로 불러오기, 파일 선택기 대신 setInputFiles).

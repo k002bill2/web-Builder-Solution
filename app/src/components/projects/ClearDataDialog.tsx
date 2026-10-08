@@ -1,9 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { ClearResult } from "../../features/projects/clearBrowserData";
+import { BUSY_TEXT, FAIL_TEXT } from "../../features/projects/dialogText";
 import { Button } from "../ds/Button";
-
-const BUSY_TEXT = "다른 탭에서 편집 중이라 지우지 못했습니다 — 그 탭을 닫은 뒤 다시 시도하세요";
-const FAIL_TEXT = "지우지 못했습니다 — 다시 시도하세요";
 
 /**
  * "이 브라우저 데이터 지우기" 대화상자(P1C-SPEC 1.6 · AC-C08) — 조작 뒤 청크(영역의 버튼을 눌러야 받는다).

@@ -18,7 +18,18 @@ export interface RenameHandlers {
  * 행동의 접근 이름에 프로젝트 이름을 붙여 줄마다 구분한다(aria-label, 보이는 글자로 끝남).
  * 긴 이름은 자르지 않는다(J-S08 — base.css의 keep-all + overflow-wrap:anywhere).
  */
-export function ProjectRow({ row, draft, rename }: { readonly row: ProjectRowView; readonly draft?: RenameDraft; readonly rename: RenameHandlers }) {
+export function ProjectRow({
+  row,
+  draft,
+  rename,
+  onDelete,
+}: {
+  readonly row: ProjectRowView;
+  readonly draft?: RenameDraft;
+  readonly rename: RenameHandlers;
+  /** 있을 때만 "삭제"(P1D-SPEC J-S12 — local만) */
+  readonly onDelete?: (projectId: string) => void;
+}) {
   return (
     <li className="flex flex-col gap-2 border-b border-line-neutral py-4">
       {draft ? (
@@ -45,6 +56,11 @@ export function ProjectRow({ row, draft, rename }: { readonly row: ProjectRowVie
         <Button variant="outline" size="sm" data-rename-for={row.projectId} aria-label={`${row.name} 이름 바꾸기`} onClick={() => rename.onOpen(row.projectId)}>
           이름 바꾸기
         </Button>
+        {onDelete && (
+          <Button variant="outline" size="sm" data-delete-for={row.projectId} aria-label={`${row.name} 삭제`} onClick={() => onDelete(row.projectId)}>
+            삭제
+          </Button>
+        )}
       </div>
     </li>
   );

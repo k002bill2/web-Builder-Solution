@@ -5,3 +5,5 @@
 - Ego Lite(TaskSpace 30, Jarvis 확인): `1-studio-saved` · `2-reload-restored`(새로고침 뒤 편집기 복원 — 섹션 목록·"A안 · 프로필 v1") · `3-snapshot-dialog`(대화상자·보관 캡션). 이동한 코드의 실화면 증거: `/projects` status textContent **"이름을 '치과 검증 이름'으로 바꿨습니다"**(이름 바꾸기 성공). ⚠️ 캡처 2의 미리보기 iframe이 비어 보임 — 캡처 시점(샌드박스 렌더 전)인지 미확인, 이 레인 변경(이름 바꾸기)과 무관한 경로로 판단 [추정].
 - 정리(Jarvis): `deleteDatabase("design-studio")` = success · `databases()` = [] · `finish({keep:[]})` → `listTaskSpaces()` = [] · preview PID 91387(cwd = 이 worktree app 확인) 종료 · 4337 리슨 0.
 - 기준선(`m2cBaseline.json`) 갱신은 Jarvis가 ADR-004 개정과 함께(이 레인 수정 0).
+
+- Jarvis 검증 `scratch/entry-slim-final-gates/`: typecheck·lint·build exit 0 · vitest ×3 모두 2479 PASS · `/studio` 129.09 · 복원 132.13 · `/profile` 99.87 · `/projects` 104.69 · Codex r1 지적 0.

@@ -57,11 +57,11 @@ describe("AC-P01 왕복 — encode → checkFile → rekey (문서·스냅샷 �
     if (!result.ok) throw new Error(result.message);
     const { plan } = result;
     const canon = (v: unknown) => JSON.parse(JSON.stringify(v));
-    const strip = <T extends { projectId: string; hash: string }>(v: T) => ({ ...v, projectId: undefined, hash: undefined });
+    const strip = (v: object) => ({ ...v, projectId: undefined, hash: undefined });
     expect(canon(strip(plan.doc!.doc))).toEqual(canon(strip(src.doc!.doc)));
     expect(canon(plan.doc!.snapshots.map((s) => ({ ...strip(s), doc: strip(s.doc) })))).toEqual(canon(src.doc!.snapshots.map((s) => ({ ...strip(s), doc: strip(s.doc) }))));
     expect(plan.doc!.snapshotSeq).toBe(src.doc!.snapshotSeq);
-    const noProfile = <T extends { profileId: string }>(v: T) => ({ ...v, profileId: undefined });
+    const noProfile = (v: object) => ({ ...v, profileId: undefined });
     expect(canon(plan.series.map(noProfile))).toEqual(canon(src.series.map(noProfile)));
     expect(plan.images.map(({ key, image: im }) => [key, im.format, im.width, im.height, Object.keys(im.variants)])).toEqual([
       ["project-1/a", "png", 500, 300, ["500"]],

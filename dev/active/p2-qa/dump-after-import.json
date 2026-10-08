@@ -1,0 +1,48 @@
+{
+ "counts": {
+  "board": 0,
+  "docs": 1,
+  "images": 1,
+  "meta": 1,
+  "saved": 0,
+  "snapshots": 0,
+  "studio": 1
+ },
+ "imgs": [
+  {
+   "key": "project-1/4ef200c8-288d-4354-93ed-5e5b28f85d00",
+   "width": 800,
+   "height": 400,
+   "format": "webp",
+   "bytes": 2066,
+   "variants": [
+    "640:image/webp/930",
+    "800:image/webp/1136"
+   ]
+  }
+ ],
+ "docs": [
+  {
+   "key": "project-1",
+   "sections": 9,
+   "snapshots": [
+    "snapshot-1:manual"
+   ]
+  }
+ ],
+ "meta": [
+  [
+   "generation",
+   "{\"schemaVersion\":1,\"kind\":\"generation\",\"id\":\"generation\",\"data\":1}"
+  ]
+ ],
+ "studio": [
+  {
+   "key": "state",
+   "gen": 1,
+   "projects": [
+    "project-1"
+   ]
+  }
+ ]
+}

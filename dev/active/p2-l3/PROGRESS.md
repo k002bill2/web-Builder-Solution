@@ -6,12 +6,13 @@
 - [x] writeImport.ts + 테스트
 - [x] ImportProjectFileDialog(+Slot) + 테스트
 - [x] BrowserStorageSection 버튼·hidden input + 테스트
-- [ ] FX-1 (ClearDataDialog·DeleteProjectDialog) · IM-9 상수(dialogText)
+- [x] IM-9 상수(dialogText)
+- [ ] FX-1 (ClearDataDialog·DeleteProjectDialog) — BLOCKED: 번들 관문 실패(/profile 100.22>100, 원인 L1 profileShape.ts — REPORT 1절) · Jarvis 결정 대기
 - [x] 배선 첫 커밋 직후 build 번들 실측 — **실패 /profile 100.22>100 · 원인 L1 profileShape.ts 값 import (REPORT 1절)**
-- [ ] ProjectsPage(IM-15·키·포커스) = 마지막 커밋
-- [ ] Ego Lite ①~⑤ + 정리
-- [ ] 게이트 typecheck·lint·build·vitest
-- [ ] REPORT
+- [ ] ProjectsPage(IM-15·키·포커스) = 마지막 커밋 — BLOCKED: 번들 관문 실패(/profile 100.22>100, 원인 L1 profileShape.ts — REPORT 1절) · Jarvis 결정 대기
+- [ ] Ego Lite ①~⑤ + 정리 — BLOCKED: 번들 관문 실패(/profile 100.22>100, 원인 L1 profileShape.ts — REPORT 1절) · Jarvis 결정 대기 (preview·Ego 공간 미생성 — 정리 대상 0)
+- [ ] 게이트 typecheck·lint·build·vitest — typecheck·lint·전체 vitest(291/2561) exit 0 · build exit 1 — BLOCKED: 번들 관문 실패(/profile 100.22>100, 원인 L1 profileShape.ts — REPORT 1절) · Jarvis 결정 대기
+- [x] REPORT (관문 정지판 — 1절 원인 실측·Jarvis 결정 요청)
 
 ## RED 예측 (R1 — writeImport·대화상자)
 - writeImport.test: 모듈 없음 → import 실패로 파일 전체 FAIL (AC-P06 abort·Quota=IM-11·IM-8·IM-9 포함)

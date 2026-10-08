@@ -13,6 +13,7 @@ import { checkEnvelope } from "./envelope";
 import type { LocalEntry } from "./entryRead";
 import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type MemoryPersistenceOptions, type StudioPersistence } from "./studioPersistence";
+import { soloLocks } from "./fakeLocks";
 
 const imports = {
   ...STUDIO_IMPORTS,
@@ -33,7 +34,7 @@ const edit = (doc: PageDoc, title: string): PageDoc => {
 const codeOf = (p: Promise<unknown>) => p.then(() => "ok", (e: { code?: string }) => e.code ?? String(e));
 
 function studioOn(persistence: StudioPersistence, entry: LocalEntry = {}) {
-  return createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: (e) => openLocalSync(e, async () => persistence) });
+  return createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: (e) => openLocalSync(e, async () => persistence, soloLocks()) });
 }
 
 /** 확정 → 3안(끝까지) → B안 편집 시작 — 앱 흐름 그대로 */
@@ -120,11 +121,11 @@ describe("새로고침 생존 — 저장 → 레코드 → 새 store 복원 (D2 
       const picked = await board.savePicks({ hero: referenceId }, {}, (await board.getBoard()).board.revision);
       return { board, result: await board.confirmProfile(picked.revision, 0) };
     };
-    const first = createDeferredStudio(async () => FIXTURE_CATALOG, STUDIO_IMPORTS, { entry: {}, sync: (e) => openLocalSync(e, async () => persistence) });
+    const first = createDeferredStudio(async () => FIXTURE_CATALOG, STUDIO_IMPORTS, { entry: {}, sync: (e) => openLocalSync(e, async () => persistence, soloLocks()) });
     expect((await confirmOn(first, "ref-a")).result.profileId).toBe("profile-1");
     await (await first.projects()).listProjects();
     for (let i = 0; i < 20; i += 1) await Promise.resolve();
-    const again = createDeferredStudio(async () => FIXTURE_CATALOG, STUDIO_IMPORTS, { entry: await entryFrom(persistence), sync: (e) => openLocalSync(e, async () => persistence) });
+    const again = createDeferredStudio(async () => FIXTURE_CATALOG, STUDIO_IMPORTS, { entry: await entryFrom(persistence), sync: (e) => openLocalSync(e, async () => persistence, soloLocks()) });
     const { board, result } = await confirmOn(again, "ref-b");
     expect(result.profileId).toBe("profile-2");
     expect((await board.getBoard()).board.confirmed).toMatchObject({ profileId: "profile-2", version: 1 });
@@ -207,7 +208,7 @@ describe("저장됨 = IDB 커밋 확인 뒤 (Codex 제약 3)", () => {
 describe("싱크 단위", () => {
   it("복제 실패 = 재시도 불가 INFRA — 원인 문구 일치 · 재호출도 실패(거짓 저장됨 0)", async () => {
     const persistence = createMemoryPersistence();
-    const sync = await openLocalSync({}, async () => persistence);
+    const sync = await openLocalSync({}, async () => persistence, soloLocks());
     const book = { docOf: () => ({ projectId: "p", revision: 1, bad: () => 1 }) as never, snapshotsOf: () => [] };
     const first = sync.flush("p", book);
     await expect(first).rejects.toMatchObject({ code: "INFRA" });
@@ -235,7 +236,7 @@ describe("싱크 단위", () => {
     ];
     for (const entry of broken) {
       // 열기마다 새 연결(실패 시 닫힘)이 같은 데이터를 본다
-      await expect(openLocalSync(entry, async () => ({ ...persistence, close: () => undefined }))).rejects.toMatchObject({ code: "INFRA" });
+      await expect(openLocalSync(entry, async () => ({ ...persistence, close: () => undefined }), soloLocks())).rejects.toMatchObject({ code: "INFRA" });
     }
     expect(await persistence.getAll("studio")).toEqual(before);
   });

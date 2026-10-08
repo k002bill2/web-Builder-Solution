@@ -7,6 +7,8 @@
  * - 멱등 재시도: 메모리 쪽 멱등 기록 때문에 재시도가 새 쓰기를 만들지 않으므로 `retry(요청 키)`가 미확인 기록을 재제출한다.
  *   같은 요청 키로 `submit`하면 새 쓰기에 남은 미확인 기록을 합쳐 한 트랜잭션으로 낸다.
  * - 최신 의도: 뒤에 제출된 요청이 같은 (저장소, id)를 쓰면 앞 요청의 미확인 기록에서 그 레코드는 빠진다 — 재시도가 옛 값으로 덮지 않는다.
+ * - 도장(stamp): 모든 제출(재시도 포함)에 `stamp()`가 낸 레코드를 새로 붙인다 — 다중 탭 세대 번호가 쓰기 트랜잭션마다 +1(Codex r1 P1).
+ *   재시도가 미확인 기록만 재제출하면 뒤 요청이 대체한 세대 레코드가 빠져 세대가 그대로인 커밋이 생긴다.
  */
 import { toInfra } from "./infra";
 import type { StudioPersistence, WriteOp } from "./studioPersistence";
@@ -31,7 +33,7 @@ interface Failed {
 
 const recordKey = (op: WriteOp) => `${op.store}\u0000${op.type === "put" ? op.record.id : op.id}`;
 
-export function createWriteQueue(persistence: StudioPersistence): WriteQueue {
+export function createWriteQueue(persistence: StudioPersistence, stamp: () => readonly WriteOp[] = () => []): WriteQueue {
   let tail: Promise<unknown> = Promise.resolve();
   let seq = 0;
   /** 레코드 → 그 레코드를 마지막으로 제출한 요청 순번 */
@@ -45,7 +47,9 @@ export function createWriteQueue(persistence: StudioPersistence): WriteQueue {
     // 요청별 스냅샷 — 제출 뒤 호출자가 원본을 바꿔도 이 요청의 쓰기·재시도 내용은 그대로
     let ops: readonly WriteOp[];
     try {
-      ops = structuredClone(input);
+      // 도장은 입력 복제가 된 뒤에만 낸다 — 복제 실패면 세대도 그대로
+      const own = structuredClone(input);
+      ops = [...own, ...structuredClone(stamp())];
     } catch (error) {
       // 복제 불가 값(함수 등) — 쓰기 0 · 순번·미확인 기록 변화 0, IDB 실패와 같은 Promise 오류 계약
       return Promise.reject(toInfra(error, "저장", "저장할 내용을 복제하지 못했습니다"));

@@ -23,6 +23,7 @@ import { imageRecordId } from "./imageRecord";
 import { IMAGE_READ } from "./imageRestore";
 import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type MemoryPersistenceOptions, type StudioPersistence } from "./studioPersistence";
+import { soloLocks } from "./fakeLocks";
 
 const imports = {
   ...STUDIO_IMPORTS,
@@ -56,7 +57,7 @@ const withImage = (doc: PageDoc, source: ImageSlotValue["source"]): PageDoc => {
 };
 
 function studioOn(persistence: StudioPersistence, entry: LocalEntry = {}) {
-  return createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: (e) => openLocalSync(e, async () => persistence) });
+  return createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: (e) => openLocalSync(e, async () => persistence, soloLocks()) });
 }
 async function started(persistence: StudioPersistence) {
   const studio = studioOn(persistence);

@@ -38,11 +38,17 @@ describe("ClearDataDialog", () => {
   it("Esc(cancel) = 취소로 닫힘 · 취소 버튼도 닫힘 · 지우기 0", async () => {
     const clear = vi.fn();
     const onClose = vi.fn();
-    render(<ClearDataDialog count={1} clear={clear} onClose={onClose} />);
-    fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true }));
+    const first = render(<ClearDataDialog count={1} clear={clear} onClose={onClose} />);
+    const dialog = screen.getByRole("dialog") as HTMLDialogElement;
+    fireEvent(dialog, new Event("cancel", { cancelable: true }));
     expect(onClose).toHaveBeenCalledTimes(1);
+    // 여는 쪽이 언마운트하기 전에 modal을 먼저 닫는다(여는 버튼 포커스 복귀 — Codex r1)
+    expect(dialog.open).toBe(false);
+    first.unmount();
+    render(<ClearDataDialog count={1} clear={clear} onClose={onClose} />);
     await userEvent.click(screen.getByRole("button", { name: "취소" }));
     expect(onClose).toHaveBeenCalledTimes(2);
+    expect((screen.getByRole("dialog", { hidden: true }) as HTMLDialogElement).open).toBe(false);
     expect(clear).not.toHaveBeenCalled();
   });
 

@@ -32,3 +32,19 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - 2번 번들: /studio **129.64** · 복원 **132.67** · /projects **104.44** — 통과.
 
 - 재개(턴 한도 첫 중단 1회 뒤): 직전 preview(4337)는 Jarvis가 종료. 번들 재측정 통과.
+
+## Codex r1 수정 레인 (P2 2건 · 2026-10-08)
+- [x] ① 같은 탭 writer 삭제 실패 → 취소 → 재개 = 자기 잠금에 막혀 busy — clearer를 탭 단위(링크별 1개)로 유지
+- [x] ② 네이티브 modal 닫은 뒤 여는 버튼 포커스 — 대화상자를 먼저 `close()`한 뒤 onClose
+- [ ] Ego Lite 실측 ⓐ 같은 탭 편집→/projects→지우기 성공 ⓑ 지운 뒤 status 1회 ⓒ 취소/Esc 뒤 activeElement = 여는 버튼 + 정리
+- [ ] typecheck · lint · build(번들 관문) · 전체 vitest
+- [ ] REPORT "Codex r1 수정" 절
+
+### RED 예측 (구현 전 기록)
+- ① BrowserStorageSection "Codex r1 재현: 같은 탭 편집 → 삭제 실패 → 취소 → 재개 = 삭제 실행": 재개한 대화상자가 새 clearer를 만들어 held 손실 → tryLock이 자기 잠금에 막혀 busy → deleteDatabase 2번째 호출 0 → FAIL(요청 1건). clearBrowserData "clearerFor = 링크당 1개": export 없음 → TypeError FAIL.
+- ② BrowserStorageSection "취소·Esc = dialog.close()가 여는 버튼 focus보다 먼저": 지금은 close() 호출 0(언마운트로만 사라짐) → FAIL.
+
+### 기록
+- RED: 예측대로 4건 FAIL(① 재현 요청 1건 · clearerFor 없음 2건 · ② close 0회).
+- GREEN 1차 예측 차이 2건: ClearDataDialog "Esc·취소" 테스트가 Esc 뒤 modal이 닫혀(취소 버튼 숨김) FAIL → 경로마다 새로 렌더 + `dialog.open=false` 단언 추가(강화). ② 순서 테스트는 여는 클릭의 focus 호출을 세어 FAIL → 열고 나서 spy 초기화.
+- Red-Green: Slot을 createClearer로 · `close()` 줄 제거 → 3건 FAIL → 복원 25/25 PASS.

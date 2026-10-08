@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createLockRegistry } from "../../data/persistence/fakeLocks";
 import { createLinkNetwork } from "../../data/persistence/fakeTabLink";
 import { WRITER_LOCK } from "../../data/persistence/writerLock";
-import { CLEARED_KEY, CLEAR_DB_NAME, createClearer } from "./clearBrowserData";
+import { CLEARED_KEY, CLEAR_DB_NAME, clearerFor, createClearer } from "./clearBrowserData";
 import { DB_NAME } from "../../data/persistence/envelope";
 import { CLEARED_NOTICE_KEY } from "../../components/projects/BrowserStorageSection";
 
@@ -120,6 +120,25 @@ describe("지우기 흐름 (SPEC 1.6)", () => {
     t.last().onsuccess?.();
     expect(t.session.setItem).toHaveBeenCalledWith(CLEARED_KEY, "1");
     expect(t.go).toHaveBeenCalledWith("/projects");
+  });
+
+  it("clearerFor = 탭(링크)당 1개 — 대화상자를 닫았다 다시 열어도 같은 지우기(보유 잠금·대기 중 요청 유지) · 다른 탭 링크는 별개", () => {
+    const t = setup();
+    const deps = { locks: t.locks, factory: t.factory, link: t.link, session: t.session, go: t.go };
+    const first = clearerFor(deps);
+    expect(clearerFor({ ...deps })).toBe(first);
+    expect(clearerFor({ ...deps, link: t.net.tab() })).not.toBe(first);
+  });
+
+  it("대기 중(onblocked) 대화상자를 닫았다 다시 열어도 두 번째 삭제 요청 0", async () => {
+    const t = setup();
+    const deps = { locks: t.locks, factory: t.factory, link: t.link, session: t.session, go: t.go };
+    const first = clearerFor(deps).clear();
+    await flushAll();
+    t.last().onblocked?.();
+    expect(await first).toBe("busy");
+    expect(await clearerFor({ ...deps }).clear()).toBe("busy");
+    expect(t.requests).toHaveLength(1);
   });
 
   it("onerror = failed · 잠금을 놓는다 · 이동 0 · 다시 시도하면 새 삭제 요청", async () => {

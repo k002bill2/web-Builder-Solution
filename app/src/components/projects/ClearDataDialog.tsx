@@ -9,7 +9,7 @@ const FAIL_TEXT = "지우지 못했습니다 — 다시 시도하세요";
  * "이 브라우저 데이터 지우기" 대화상자(P1C-SPEC 1.6 · AC-C08) — 조작 뒤 청크(영역의 버튼을 눌러야 받는다).
  * 네이티브 `dialog` + `showModal()` · h2 = 접근 이름 · 열 때 포커스 = "취소" · Esc = 취소 · 바깥 클릭 닫기 0(닫는 경로는 취소·Esc뿐).
  * 진행 중 = "지우는 중…" aria-disabled(누름은 핸들러가 막는다) · Esc 무시. 실패는 대화상자 안 `role=alert`(시도마다 새로 낭독).
- * 포커스 복귀(여는 버튼)는 여는 쪽이 맡는다 — 닫히면 이 컴포넌트가 빠진다. P2 백업 문장은 파일 묶음 출시 전이라 두지 않는다.
+ * 포커스 복귀(여는 버튼)는 여는 쪽이 맡는다 — 닫을 때 modal을 먼저 `close()`한다(열린 modal 바깥은 inert라 언마운트 전 focus가 무시된다). P2 백업 문장은 파일 묶음 출시 전이라 두지 않는다.
  */
 export default function ClearDataDialog({
   count,
@@ -35,6 +35,11 @@ export default function ClearDataDialog({
   // 열 때 포커스 = "취소"(위험 쪽이 아닌 버튼)
   useLayoutEffect(() => dialog.current?.querySelector<HTMLButtonElement>("[data-cancel]")?.focus(), []);
 
+  const dismiss = () => {
+    dialog.current?.close();
+    onClose();
+  };
+
   const run = async () => {
     if (running.current) return;
     running.current = true;
@@ -53,7 +58,7 @@ export default function ClearDataDialog({
       aria-labelledby={`${id}-title`}
       onCancel={(event) => {
         event.preventDefault();
-        if (!busy) onClose();
+        if (!busy) dismiss();
       }}
       className="m-auto w-full max-w-lg rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal"
     >
@@ -75,7 +80,7 @@ export default function ClearDataDialog({
           </p>
         )}
         <div className="flex justify-end gap-2">
-          <Button data-cancel variant="outline" onClick={() => !busy && onClose()}>
+          <Button data-cancel variant="outline" onClick={() => !busy && dismiss()}>
             취소
           </Button>
           <Button aria-disabled={busy || undefined} onClick={() => void run()}>

@@ -78,3 +78,16 @@ export function createClearer({ locks, factory, link, session, go }: ClearDeps) 
     },
   };
 }
+
+export type Clearer = ReturnType<typeof createClearer>;
+
+/** 탭(링크)당 지우기 1개 — 보유 잠금(`held`)·대기 중 삭제 요청(`waiting`)은 대화상자 수명이 아니라 탭 수명 상태다.
+ *  대화상자마다 새로 만들면 실패 뒤 다시 연 지우기가 멈춘 싱크(isWriter=false)만 보고 자기 잠금에 막혀 busy가 된다(Codex r1). */
+const perTab = new WeakMap<TabLink, Clearer>();
+export function clearerFor(deps: ClearDeps): Clearer {
+  const found = perTab.get(deps.link);
+  if (found) return found;
+  const made = createClearer(deps);
+  perTab.set(deps.link, made);
+  return made;
+}

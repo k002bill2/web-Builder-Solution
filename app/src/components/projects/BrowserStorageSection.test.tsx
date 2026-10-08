@@ -2,12 +2,13 @@
  * `/projects` "이 브라우저 저장소" 영역 (P1C-SPEC 2절 1~3줄 · 1.7 · 1.8 · AC-C07·C10·C15).
  * 저장소 API·IDBFactory는 주입한다(jsdom에는 navigator.storage·indexedDB가 없다).
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BrowserStorageSection, type StorageApi } from "./BrowserStorageSection";
 import { createLockRegistry } from "../../data/persistence/fakeLocks";
 import { createLinkNetwork } from "../../data/persistence/fakeTabLink";
+import { WRITER_LOCK } from "../../data/persistence/writerLock";
 
 const MB = 1024 ** 2;
 const LOCAL_TEXT = "프로젝트·편집 문서·스냅샷·이미지를 이 브라우저에만 저장합니다. 공용 PC라면 다 쓴 뒤 지우세요.";
@@ -208,6 +209,54 @@ describe("BrowserStorageSection — 이 브라우저 데이터 지우기 (1.6 ·
     deps.requests[0]!.onsuccess?.();
     await waitFor(() => expect(deps.go).toHaveBeenCalledWith("/projects"));
     expect(deps.store.size).toBe(1);
+  });
+
+  it("Codex r1 재현: 같은 탭 편집(쓰기 탭) → 삭제 실패 → 취소 → 다시 열어 모두 지우기 = 자기 잠금에 막히지 않고 삭제 실행", async () => {
+    const deps = clearDeps();
+    // 이 탭이 편집해 잠금을 보유 중(같은 탭 재요청은 null) — stop하면 isWriter는 false지만 잠금은 탭 수명 동안 남는다
+    void deps.locks.request(WRITER_LOCK, { ifAvailable: true }, () => new Promise(() => undefined));
+    let writing = true;
+    deps.link.attach({ isWriter: () => writing, stop: () => void (writing = false) });
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} count={1} {...deps} />);
+    await userEvent.click(screen.getByRole("button", { name: "이 브라우저 데이터 지우기" }));
+    await userEvent.click(await screen.findByRole("button", { name: "모두 지우기" }));
+    await waitFor(() => expect(deps.requests).toHaveLength(1));
+    deps.requests[0]!.onerror?.();
+    expect(await screen.findByRole("alert")).toHaveTextContent("지우지 못했습니다 — 다시 시도하세요");
+    await userEvent.click(screen.getByRole("button", { name: "취소" }));
+    await userEvent.click(screen.getByRole("button", { name: "이 브라우저 데이터 지우기" }));
+    await userEvent.click(await screen.findByRole("button", { name: "모두 지우기" }));
+    await waitFor(() => expect(deps.requests).toHaveLength(2));
+    deps.requests[1]!.onsuccess?.();
+    await waitFor(() => expect(deps.go).toHaveBeenCalledWith("/projects"));
+  });
+
+  it("취소·Esc = 네이티브 modal을 먼저 close()한 뒤 여는 버튼에 포커스(열린 modal 바깥은 inert라 focus가 무시된다 — jsdom 대체는 inert 미흉내라 순서로 검증)", async () => {
+    const deps = clearDeps();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} count={1} {...deps} />);
+    const opener = screen.getByRole("button", { name: "이 브라우저 데이터 지우기" });
+    const focus = vi.spyOn(opener, "focus");
+    const close = vi.spyOn(HTMLDialogElement.prototype, "close");
+    try {
+      for (const dismiss of [
+        () => userEvent.click(screen.getByRole("button", { name: "취소" })),
+        async () => void fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true })),
+      ]) {
+        await userEvent.click(opener);
+        await screen.findByRole("dialog");
+        // 여는 클릭 자체의 focus는 빼고 닫기 뒤 호출만 본다
+        focus.mockClear();
+        close.mockClear();
+        await dismiss();
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        expect(close).toHaveBeenCalledTimes(1);
+        expect(focus).toHaveBeenCalled();
+        expect(close.mock.invocationCallOrder[0]!).toBeLessThan(focus.mock.invocationCallOrder[0]!);
+        expect(opener).toHaveFocus();
+      }
+    } finally {
+      close.mockRestore();
+    }
   });
 
   it("새로고침 뒤 1회 키 → status '이 브라우저 데이터를 지웠습니다' 1회 · 키 삭제 → 다시 열면 없음", async () => {

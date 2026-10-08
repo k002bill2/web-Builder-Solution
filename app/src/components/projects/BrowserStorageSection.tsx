@@ -153,9 +153,9 @@ export function BrowserStorageSection({
   const [importing, setImporting] = useState<{ readonly file: File; readonly key: number }>();
   const picks = useRef(0);
   const picker = useRef<HTMLInputElement>(null);
-  const importOpener = useRef<HTMLButtonElement>(null);
+  const importOpener = useRef<HTMLDivElement>(null);
   const pickFile = () => {
-    importOpener.current?.focus();
+    importOpener.current?.querySelector("button")?.focus();
     picker.current?.click();
   };
 
@@ -207,8 +207,8 @@ export function BrowserStorageSection({
         </div>
       )}
       {local && factory && (
-        <div className="flex">
-          <Button ref={importOpener} variant="outline" size="sm" onClick={pickFile}>
+        <div ref={importOpener} className="flex">
+          <Button variant="outline" size="sm" onClick={pickFile}>
             프로젝트 파일 가져오기
           </Button>
           <input
@@ -240,7 +240,7 @@ export function BrowserStorageSection({
             }}
             onClose={() => {
               setImporting(undefined);
-              importOpener.current?.focus();
+              importOpener.current?.querySelector("button")?.focus();
             }}
           />
         </Suspense>

@@ -188,7 +188,7 @@ describe("runImport — 한 IDB 트랜잭션 (3.5 ②)", () => {
     const file = await checked();
     await expect(runImport(idb.factory, file, NOW)).resolves.toMatchObject({ status: "done", projectId: "project-2" });
     const state = idb.stores.get("studio")!.get("state") as { data: ReturnType<typeof stateOf> };
-    expect(state.data.projects.get("project-1")).toBe(before.data.projects.get("project-1"));
+    expect(state.data.projects.get("project-1")).toBe((before.data as ReturnType<typeof stateOf>).projects.get("project-1"));
     expect([...state.data.series.keys()]).toEqual(["profile-1", "profile-2"]);
     expect(state.data.gen).toBe(8);
     expect(idb.stores.get("docs")!.get("project-1")).toEqual(env("doc", "project-1", { doc: {}, snapshots: [] }));

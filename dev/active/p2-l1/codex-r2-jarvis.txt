@@ -1,0 +1,41 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a119c2-f13d-78e0-8599-1ee8271cf681).
+[codex] Reviewer started: changes against '2285df8'
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder-solution' /Users/younghwankang/.codex/memories/MEMORY.md | h...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder-solution' /Users/younghwankang/.codex/memories/MEMORY.md | h... (exit 0)
+[codex] Running command: /bin/zsh -lc 'pwd; for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users...
+[codex] Command completed: /bin/zsh -lc 'pwd; for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/projectFile/{checkImages,encode}.ts; cat app/src/data/star...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/projectFile/{checkImages,encode}.ts; cat app/src/data/star... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/domain/profile.ts; cat app/src/data/persistence/readDoc.ts; cat app...
+[codex] Command completed: /bin/zsh -lc "cat app/src/domain/profile.ts; cat app/src/data/persistence/readDoc.ts; cat app... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md | head -100; rg -n 'function readDoc|snapshot|checkState' app/src...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md | head -100; rg -n 'function readDoc|snapshot|checkState' app/src... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'createdAt.localeCompare|dropped\\.|snapshot\\.name|\\.createdAt|\\.hash'...
+[codex] Command completed: /bin/zsh -lc "rg -n 'createdAt.localeCompare|dropped\\.|snapshot\\.name|\\.createdAt|\\.hash'... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/profile/adjustmentText.ts; cat app/src/domain/profileContr...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/profile/adjustmentText.ts; cat app/src/domain/profileContr... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const ts=require(\"./app/node_modules/typescript\"),fs=require(\"fs\")...
+[codex] Command completed: /bin/zsh -lc "node -e 'const ts=require(\"./app/node_modules/typescript\"),fs=require(\"fs\")... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'droppedSummary|targetText\\(' app/src/features/profile; sed -n '217,233p...
+[codex] Command completed: /bin/zsh -lc "rg -n 'droppedSummary|targetText\\(' app/src/features/profile; sed -n '217,233p... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 외부 파일 검증을 통과한 데이터가 기존 프로필 및 스냅샷 화면에서 런타임 예외를 발생시키는 경로를 확인했습니다. 해당 필드들의 검증을 보강해야 합니다. Full rev...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2285df8
+
+외부 파일 검증을 통과한 데이터가 기존 프로필 및 스냅샷 화면에서 런타임 예외를 발생시키는 경로를 확인했습니다. 해당 필드들의 검증을 보강해야 합니다.
+
+Full review comments:
+
+- [P2] 대비 조정값을 허용된 열거형으로 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p2-l1/app/src/features/projectFile/profileShape.ts:35-36
+  `adjustments.contrast`가 `"invalid"`인 파일도 `checkFile`을 통과합니다(재현 확인). 가져온 프로필의 대비 표시를 만들면 `profileMessages.ts`의 `targetText`가 `CONTRAST_TARGET[level].toFixed(1)`을 실행하면서 예외가 발생합니다. 문자열 여부만 확인하지 말고 `aa` 또는 `enhanced`인지 검증하여 손상된 파일을 IM-4로 거절해야 합니다.
+
+- [P2] 선택 필드 dropped도 존재하면 모양을 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p2-l1/app/src/features/projectFile/profileShape.ts:40-40
+  프로필 버전에 `dropped: "x"`를 넣어도 검증과 재매김이 통과합니다(검증 통과 재현 확인). 이후 `profileDiff.ts`는 문자열의 양수 `length`를 보고 `droppedSummary`를 호출하며, 여기서 `dropped.map is not a function`으로 버전 요약 표시가 실패합니다. 필드를 필수로 만들 필요는 없지만, 존재할 때는 배열이며 각 항목이 소비 코드가 읽을 수 있는 객체인지 확인해야 합니다.
+
+- [P2] 스냅샷 표시 필드의 모양을 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p2-l1/app/src/features/projectFile/checkFile.ts:64-65
+  스냅샷의 `name`을 `{ "bad": true }`로 바꾼 파일도 `checkFile`을 통과합니다(재현 확인). 재매김은 이 값을 그대로 보존하지만 `SnapshotDialog.tsx`는 `{s.name}`을 React 자식으로 직접 렌더링하므로, 가져온 프로젝트에서 스냅샷 목록을 열면 객체를 렌더링할 수 없다는 예외가 발생합니다. 스냅샷 문서뿐 아니라 `name`과 화면에서 직접 사용하는 머리 필드의 타입도 검사하여 IM-4로 거절해야 합니다.

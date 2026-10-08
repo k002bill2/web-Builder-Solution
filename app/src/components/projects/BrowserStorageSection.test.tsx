@@ -49,12 +49,13 @@ describe("BrowserStorageSection — local (2절)", () => {
     expect(statusRegion()).toHaveTextContent(KEPT_TEXT);
   });
 
-  it("요청 → 거절: 거절 문장 · 축출 문장과 버튼 유지(다시 요청 가능)", async () => {
+  it("요청 → 거절: 보이는 문장이 거절 문장으로 갱신 · 버튼 유지(다시 요청 가능) · status 낭독", async () => {
     const storage = storageApi({ persist: vi.fn(async () => false) });
     render(<BrowserStorageSection persistence="local" storage={storage} />);
     await userEvent.click(await screen.findByRole("button", { name: "자동 삭제 막기 요청" }));
     await waitFor(() => expect(statusRegion()).toHaveTextContent(REFUSED_TEXT));
-    expect(screen.getByText(EVICT_TEXT)).toBeInTheDocument();
+    expect(screen.getByText(REFUSED_TEXT, { selector: "p:not([role])" })).toBeInTheDocument();
+    expect(screen.queryByText(EVICT_TEXT)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "자동 삭제 막기 요청" })).toBeInTheDocument();
   });
 
@@ -63,6 +64,7 @@ describe("BrowserStorageSection — local (2절)", () => {
     render(<BrowserStorageSection persistence="local" storage={storage} />);
     await userEvent.click(await screen.findByRole("button", { name: "자동 삭제 막기 요청" }));
     await waitFor(() => expect(statusRegion()).toHaveTextContent(REFUSED_TEXT));
+    expect(screen.getByText(REFUSED_TEXT, { selector: "p:not([role])" })).toBeInTheDocument();
   });
 
   it("이미 persisted면 버튼 없이 요청해 둔 문장", async () => {

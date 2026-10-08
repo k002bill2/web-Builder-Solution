@@ -5,9 +5,9 @@
 - [x] 1번: 영역(상태 문장·사용량 순수 함수·persist 버튼) + W1 문구 교체 — TDD 예측·RED·GREEN, 커밋
 - [x] 2번: 강등 판정 표시(1.7·1.8) — TDD, 커밋 (영역 컴포넌트가 storageCheck에 의존해 1번과 한 커밋)
 - [x] 번들 관문(/projects ≤125 · /studio 129.62 · 복원 132.65±0.03) — 96.03/100 · 103.38/125 · /studio 129.61(−0.01) · 복원 132.65
-- [ ] Ego Lite 캡처 ≤3장 + 정리
-- [ ] typecheck·lint·build·전체 vitest exit 0
-- [ ] REPORT
+- [x] Ego Lite 캡처 ≤3장 + 정리
+- [x] typecheck·lint·build·전체 vitest exit 0
+- [x] REPORT
 
 ## 설계 (advisor 검토 반영)
 - 배치: 영역을 `/projects` 페이지 청크에 **정적**으로 둔다(첫 화면 94.04/100 · 진입 101.39/125 여유). 지연 청크는 `check-bundle-size.mjs` auto 목록 수정이 필요해(이 레인 쓰기 범위 밖) 택하지 않음 — 정적이면 측정이 자동으로 정직.
@@ -29,3 +29,6 @@
 - 대상 8파일 87건 통과 · typecheck·eslint 무출력.
 - ProjectsPage.test "60자 이름" 쿼리: 영역 h2가 생겨 `{ level: 2 }`가 2개 → `{ level: 2, name: long }`으로 대상 지정(단언 동일, 약화 아님).
 - 기준선 build(53769ec): /projects 94.04 · 101.39, /studio 129.62, 복원 132.65.
+
+## Ego Lite 중 발견 → 수정 (TDD)
+- 거절 결과가 sr-only status에만 있어 화면에 안 보임(SPEC 2절 "결과 문장 갱신" 위반) → 테스트를 "보이는 문장 = 거절 문장 · 축출 문장 사라짐 · 버튼 유지"로 바꿔 RED 2건 확인 → `kept: "refused"` 상태로 GREEN(28).

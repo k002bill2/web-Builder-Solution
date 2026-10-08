@@ -21,7 +21,8 @@ const reloadPage = () => window.location.reload();
 /** 사용량(1.3) · 보관 요청 상태(MQ-C4 A — `persist()`는 버튼 누를 때만, 진입은 `persisted()` 조회만) */
 function useLocalStorageInfo(storage: StorageApi | undefined, enabled: boolean) {
   const [estimate, setEstimate] = useState<StorageEstimate>();
-  const [kept, setKept] = useState<boolean>();
+  /** refused = 버튼으로 요청했으나 거절 — 보이는 문장을 거절 문장으로 바꾸고 버튼은 남긴다 */
+  const [kept, setKept] = useState<boolean | "refused">();
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
@@ -78,7 +79,7 @@ export function BrowserStorageSection({
 
   const requestPersist = async () => {
     const granted = await Promise.resolve(storage?.persist?.()).catch(() => false);
-    if (granted) setKept(true);
+    setKept(granted ? true : "refused");
     setNotice((n) => ({ text: granted ? KEPT_TEXT : REFUSED_TEXT, key: n.key + 1 }));
   };
 
@@ -107,9 +108,9 @@ export function BrowserStorageSection({
       {local && usage && <p className="ds-caption1 text-label-alternative">{usage}</p>}
       {local && isQuotaHigh(estimate) && <p className="ds-caption1 text-label-alternative">{FULL_TEXT}</p>}
       {local && kept === true && <p className="ds-caption1 text-label-alternative">{KEPT_TEXT}</p>}
-      {local && kept === false && (
+      {local && (kept === false || kept === "refused") && (
         <div className="flex flex-wrap items-center gap-2">
-          <p className="ds-caption1 text-label-alternative">{EVICT_TEXT}</p>
+          <p className="ds-caption1 text-label-alternative">{kept === "refused" ? REFUSED_TEXT : EVICT_TEXT}</p>
           <Button variant="assistive" size="sm" onClick={() => void requestPersist()}>
             자동 삭제 막기 요청
           </Button>

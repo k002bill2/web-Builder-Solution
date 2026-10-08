@@ -130,7 +130,7 @@
 | ③ 봉투 | `format` 정확히 일치 · `formatVersion`·`schemaVersion` 정수 · 미래 버전 판정(2.2) · `exportedAt` 문자열 · `project` 객체 · `series` 배열 · `doc` 객체 또는 null · `images` 배열 | IM-2 · 미래 = IM-3 |
 | ④ 레코드 모양 | `project`: 문자열 필드·`revision` 정수 · `validateProjectName(name)` 결과가 정확히 같음(F5) · `project.profileId` 문자열. `series`: 비지 않음 · 버전 1..n 연속 · 모든 `profileId === project.profileId`(F5 규칙 — 계열 1개). `doc`: `snapshots` 배열 · `snapshotSeq` 없음 또는 안전 정수 · doc·각 스냅샷 doc **원래 id로** `checkSaveDoc(project.projectId, doc).ok`(F4) · 각 스냅샷 `projectId === project.projectId`·`snapshotId` 문자열·`kind` 알려진 값 · `doc.profileVersion` ≤ series 길이 | IM-4 |
 | ⑤ 이미지 | 레코드 수 ≤ **24** · `bytes` 합 ≤ **60MB**(F7) → 각 레코드: `localId` 문자열(`/` 없음) · 중복 0 · base64 엄격 디코드(문자 집합·패딩 — `atob` 예외 = 실패) → `new Blob([bytes], { type: "image/" + format })` → **`readImageRecord`와 같은 규칙**(F6: 형식·변·픽셀·사다리·bytes 합·머리 서명) → 각 변형본 **`createImageBitmap` 디코드 성공 + 폭 = 사다리 값**(그 뒤 `bitmap.close()`) | 한도 = IM-5 · 그 밖 = IM-6 |
-| ⑥ 참조 | 문서 ∪ 스냅샷 참조 집합(`recordRefs`와 같은 규칙, F6) **밖** 이미지 = 버림(쓰지 않음 — 거절 아님) · 참조인데 파일에 없음 = 그대로(기존 "잃은 이미지" 경로) | — |
+| ⑥ 참조 | 문서 ∪ 스냅샷 참조 집합(`recordRefs`와 같은 규칙, F6) **밖** 이미지 = 버림(쓰지 않음 — 거절 아님) 또는 단계 생략(L1 택1 — 6절) · 참조인데 파일에 없음 = 그대로(기존 "잃은 이미지" 경로) | — |
 
 - **MIME 판정은 파일·Blob이 말하는 type을 믿지 않는다** — 바이트 머리 서명(`formatFromMagic`)과 디코드 결과만 믿는다. Blob type은 우리가 format에서 정해 붙인다.
 - ★ **재인코딩 0**(THREATS T4 "디코드·재인코딩 재통과"와 다름 — 사유): 저장분은 이미 이 앱이 재인코딩한 변형본이고, 디코드 성공·치수·서명·크기 규칙이 악성 바이트 표면을 막는다. 재인코딩하면 왕복 바이트가 달라져 ADR 5절 P2 관문 "왕복 동일성"을 바이트로 확인할 수 없다. 디코더 자체 취약점은 T4 잔여 위험(브라우저 몫) 그대로.
@@ -165,7 +165,7 @@
 1. **잠금**(F9 그대로): `tabLockHold(link, locks).acquire()` — 이 탭이 쓰기 탭이면 보유 잠금(이때만 `stop()` — 새로고침까지 쓰기 0) · 아니면 `tryLock` · 못 잡으면 **IM-9 busy**, 쓰기 0. `navigator.locks` 없음 = 잠금 없이 진행(어느 탭도 쓰지 않는 환경 — 개정 2 보충). 지우기 대기 중(`clearing`) = busy.
 2. **트랜잭션** `studio·docs·images·meta` readwrite 1개. 안에서는 IDB 요청만 await: get `studio/state`·`meta/generation` → 상태 봉투 확인(mismatch·invalid = **IM-8**, abort) · 상태 없음(첫 실행·지운 직후) = 빈 상태에서 시작 → 3.4 계산(동기) → put state(`projects`·`series`에 추가 · `heads` 추가 · `gen` = generation + 1) · put meta generation(같은 값) · put `docs/<새 id>`(doc 있을 때) · put images(새 키). **연결은 쓰기 쪽과 같이 `open("design-studio", DB_VERSION=2)` + `onupgradeneeded = upgradeDatabase`로 연다**[L1 `data/persistence/idbPersistence.ts:3·13·20-26·62-63` — 조작 뒤 청크] — **새 브라우저로 옮겨 가져오기(이 기능의 주 용도)** 에서는 DB가 없거나 `/projects` 진입 읽기가 만든 저장소 0개 v1 DB만 있다(`entryRead.ts:4·27-35` [L1]). 버전 없이 열면(deleteProject 방식 `deleteProject.ts:89-92`) 저장소가 없어 쓸 수 없으므로 이 점만 deleteProject와 다르다. `upgradeDatabase`·`DB_VERSION`은 idbPersistence에서 import하거나(6절 규칙 — 실측) 복제 + parity. 상태 레코드가 없으면 빈 상태(맵 5개 비어 있음)에서 시작.
 3. 실패: `QuotaExceededError` = **IM-11** · 그 밖 = **IM-10**. 전부 아니면 전무(트랜잭션 abort).
-4. 커밋 확인 뒤 BroadcastChannel 기존 `{ type: "saved" }`(다른 `/projects` 탭 "다른 탭에서 저장한 변경이 있습니다") → `sessionStorage` 키 **`design-studio-imported`** = 이름 → **`/projects` 새로고침 이동**.
+4. 커밋 확인 뒤 BroadcastChannel 기존 `{ type: "saved" }`(다른 `/projects` 탭 "다른 탭에서 저장한 변경이 있습니다") → `sessionStorage` 키 **`design-studio-imported`** = JSON `{ projectId: 새 id, name }`(이름만으로는 같은 파일 2회 가져오기의 같은 이름 줄을 구분 못 함 — IM-14) → **`/projects` 새로고침 이동**.
 - **새로고침 ★ 이유**(P1c 1.6·P1d 1.3과 같음): 이 탭 메모리 store는 가져온 프로젝트를 모른다. 새로고침 없이 이어가면 이 탭이 다음 `saveState`로 **가져온 프로젝트가 빠진 상태를 덮어쓴다**(쓰기 탭인 경우) — 하이드레이션 경로를 그대로 타는 새로고침이 유일하게 새 코드 0인 길.
 - 멈춘 뒤 실패(쓰기 탭에서 IM-10·IM-11): alert 끝에 **" 이 화면을 새로 불러옵니다."** · 대화상자를 닫으면 새로고침 이동(P1D 1.3 같은 이유 — 멈춘 싱크로 이름 바꾸기가 조용히 저장 0).
 - **다른 탭 안전**: 세대 +1 → 다른 탭(낡은 메모리)은 첫 쓰기 때 최신성 확인 실패 = 낡은 탭(P1c 1.5) — 가져온 프로젝트를 덮는 경로 0.
@@ -175,6 +175,7 @@
 - IDB **readonly 한 트랜잭션** `studio·docs·images`: state·`docs/<id>`·`images` 중 `${projectId}/` 접두 키(P1d `projectImageKeys`와 같은 슬래시 접두 규칙) — 한 트랜잭션이라 문서·이미지가 같은 시점. 잠금 불필요(읽기만 · 다른 탭 쓰기와 무관).
 - 원본 = **IDB에 커밋된 것**(저장된 마지막 상태). 다른 탭에서 저장 전 편집 중인 내용은 들어가지 않는다 → 대화상자 캡션 EX-4.
 - 상태 봉투 mismatch·invalid = EX-6 · 그 프로젝트 없음(다른 탭이 지움) = EX-7.
+- **자기 거절 파일 금지**(왕복 관문): 만든 파일에 가져오기 ①·⑤와 **같은 한도**(Blob 크기 ≤ 96MB · 이미지 ≤ 24개 · `bytes` 합 ≤ 60MB)를 적용 — 넘으면 내려받기 0, alert **EX-12**. 한도 상수는 가져오기와 같은 모듈 1곳(`features/projectFile/format.ts`).
 - 만든 Blob → object URL → 부모 문서 `a[download]` 클릭(렌더 내보내기 `ExportAfter` 선례 [L1 `ExportAfter.tsx:68`]) → 내려받기 시작 뒤 `URL.revokeObjectURL`(다음 틱).
 
 ## 4. 화면 상태표
@@ -187,7 +188,7 @@
 | X-S02 | 만드는 중 | "파일 만들기" `aria-disabled` + **"만드는 중…"** · 연타 무시(ref) · Esc 무시 | — |
 | X-S03 | 큰 파일 경고 | 만든 Blob 크기 ≥ **50MB** [추정 — 메일·메신저 첨부 한도대 L3]면 내려받기 전 같은 대화상자에 캡션 EX-8 + 버튼 **내려받기**(primary)·**취소** | 포커스 = 내려받기 |
 | X-S04 | 성공 | 내려받기 시작 → `dialog.close()` **먼저** → 포커스 = 그 줄 **"파일로 내보내기"**(`data-export-for`) | "프로젝트 알림" `role=status` **EX-9** 1회(새 알림 영역 0) |
-| X-S05 | 실패 | 대화상자 유지 · 안 `role=alert` EX-6·EX-7·EX-10 중 하나(시도마다 새로 낭독 — **alert key 패턴**: `<span key={시도 번호}>`, `ClearDataDialog` 선례) · 버튼 복귀 | alert 1회 |
+| X-S05 | 실패 | 대화상자 유지 · 안 `role=alert` EX-6·EX-7·EX-10·EX-12 중 하나(시도마다 새로 낭독 — **alert key 패턴**: `<span key={시도 번호}>`, `ClearDataDialog` 선례) · 버튼 복귀 | alert 1회 |
 | X-S06 | 취소 | `close()` 먼저 → 포커스 = 그 줄 "파일로 내보내기" | — |
 
 ### 4.2 가져오기 (저장소 영역 "프로젝트 파일 가져오기")
@@ -200,7 +201,7 @@
 | I-S04 | 검증 실패 | 본문 대신 `role=alert` IM-1~IM-6 중 하나 · 버튼 **다른 파일 고르기**(outline — I-S01 다시) · **닫기** | alert 1회(key 패턴) · 포커스 = 다른 파일 고르기 |
 | I-S05 | 쓰는 중 | "가져오기" `aria-disabled` + **"가져오는 중…"** · Esc 무시 | — |
 | I-S06 | 차단·쓰기 실패 | 대화상자 유지 · `role=alert` IM-8~IM-11 · 버튼 복귀(재시도) · 멈춘 뒤 실패면 문장 끝 " 이 화면을 새로 불러옵니다." + 닫으면 새로고침 | alert 시도마다 1회 |
-| I-S07 | 성공 | 3.5 ④ → 새로고침 뒤 "프로젝트 알림" `role=status` **IM-15** 1회(키 삭제) · 가져온 줄이 목록 맨 위(updatedAt) | 포커스 = **가져온 줄의 "편집기 열기"**(문서 없으면 "프로필 보기") — 키가 있을 때만 · 줄을 못 찾으면 h1(P1d J-S16) |
+| I-S07 | 성공 | 3.5 ④ → 새로고침 뒤 "프로젝트 알림" `role=status` **IM-15** 1회(키 삭제) · 가져온 줄이 목록 맨 위(updatedAt) | 포커스 = 키의 **projectId 줄** 첫 행동("편집기 열기", 문서 없으면 "프로필 보기") — 줄 컨테이너에 새 `data-project-row={projectId}`로 찾는다(이름으로 찾지 않는다) · 키가 있을 때만 · 줄을 못 찾으면 h1(P1d J-S16) |
 | I-S08 | 취소·닫기 | `close()` 먼저 → 포커스 = "프로젝트 파일 가져오기" 버튼 | — |
 
 ### 4.3 접근성 요약
@@ -226,6 +227,7 @@
 | EX-9 | '{이름}' 프로젝트 파일을 내려받았습니다 | 프로젝트 알림 |
 | EX-10 | 파일을 만들지 못했습니다 — 다시 시도하세요 | alert |
 | EX-11 | 파일 만들기 / 만드는 중… / 내려받기 / 취소 | 버튼 |
+| EX-12 | 이 프로젝트는 가져오기 한도(파일 96MB · 이미지 24개 · 60MB)를 넘어 파일로 만들 수 없습니다 — 쓰지 않는 스냅샷을 지운 뒤 다시 시도하세요 | alert(3.6) |
 | IM-0 | 프로젝트 파일 가져오기 | 저장소 영역 버튼 · I-S02 h2 |
 | IM-1 | 파일이 너무 큽니다(최대 96MB) — 이 앱에서 내보낸 프로젝트 파일인지 확인하세요 | 검증 alert |
 | IM-2 | 프로젝트 파일이 아닙니다 — 이 앱의 '파일로 내보내기'로 만든 .json 파일을 고르세요 | 검증 alert |
@@ -271,13 +273,13 @@
 단위(vitest·메모리/가짜 IDB 의존성 0) = U · Ego Lite build+preview 실측 = E.
 
 - **AC-P01 왕복 동일** — U: 시드 상태(프로젝트·계열 2버전·문서·스냅샷 3개(`snapshotSeq` 2 포함)·이미지 2개) → 내보내기 → 파싱 → 재매김 → 쓰기 계획: 문서·스냅샷 **projectId·hash 외 필드 동일**(canonical JSON 비교) · 이미지 변형본 **바이트 동일**(재인코딩 0) · series profileId 외 동일. E: 단색 PNG 1장 넣은 프로젝트 내보내기 → "이 브라우저 데이터 지우기" → 가져오기 → 편집기에서 문서·스냅샷 목록·이미지가 같다(이미지 Blob SHA-256 = 내보내기 전).
-- **AC-P02 거절 = 쓰기 0** — U: 96MB+1 · 0바이트 · JSON 아님 · `format` 다름 · `formatVersion` 2 · `schemaVersion` 2 · `checkSaveDoc` 실패 doc · series 버전 구멍 · 이미지 25개 · 이미지 합 60MB+1 · base64 잘못된 문자 · 머리 서명 ≠ format · 사다리 불일치 · `bytes` 합 불일치 → 각각 IM-1~IM-6 정확한 문장 · **IDB 쓰기 호출 0**(트랜잭션 열지 않음). E: 손상 파일 1개(문자 하나 지움) → IM-2 또는 IM-4 · IDB 레코드 수 불변.
+- **AC-P02 거절 = 쓰기 0** — U: 96MB+1 · 0바이트 · JSON 아님 · `format` 다름 · `formatVersion` 2 · `schemaVersion` 2 · `checkSaveDoc` 실패 doc · series 버전 구멍 · 이미지 25개 · 이미지 합 60MB+1 · base64 잘못된 문자 · 머리 서명 ≠ format · 사다리 불일치 · `bytes` 합 불일치 → 각각 IM-1~IM-6 정확한 문장 · **IDB 쓰기 호출 0**(트랜잭션 열지 않음). 짝: 내보내기 쪽 이미지 25개·합 60MB+1·Blob 96MB+1 시드 → EX-12 · 내려받기 0(자기 거절 파일 0). E: 손상 파일 1개(문자 하나 지움) → IM-2 또는 IM-4 · IDB 레코드 수 불변.
 - **AC-P03 id 충돌** — U: 대상에 `project-1`·`profile-1` 있음 + 같은 id 파일 → 새 `project-2`·`profile-2` · 기존 레코드 **값 그대로** · 같은 파일 2회 = `project-2`·`project-3`. 묘비: 대상 `seq.project` 5(프로젝트 1개) → 새 `project-6`. 대상 `seq` 불변.
 - **AC-P04 다른 탭 차단** — E: 탭 A 편집기에서 편집·저장(쓰기 탭) → 탭 B `/projects` 가져오기 → IM-9 1회 · IDB 그대로(레코드 수·generation 불변) · A 닫고 B 재시도 성공. U: `tabLockHold` 가짜 — busy · 쓰기 탭 `stop()` 뒤 실패 → 닫기 = 새로고침.
 - **AC-P05 열기 무결** — U: 가져오기 결과 state·doc 레코드를 **`checkState`·`readDoc` 그대로 통과**(F4·F5 — 실패하면 모든 프로젝트 INFRA). E: 가져오기 뒤 새로고침 → 모든 프로젝트 편집기 열림.
 - **AC-P06 한 트랜잭션** — U: 트랜잭션 실패 주입(put 중 abort) → state·docs·images·meta 전부 이전 값 · Quota 주입 → IM-11.
 - **AC-P07 강등·불가** — U: memory 모드 = 두 버튼 숨김 · 상태 봉투 `schemaVersion: 99` → 내보내기 EX-6 · 가져오기 IM-8 · 쓰기 0.
-- **AC-P08 화면·포커스** — E: 내보내기 열면 포커스 "파일 만들기" · Esc = 닫힘 + 포커스 그 줄 "파일로 내보내기" · 성공 EX-9 1회 · 가져오기 확인 중 → 요약 → 포커스 "가져오기" · 성공 새로고침 뒤 IM-15 1회 + 포커스 가져온 줄 "편집기 열기"(다시 새로고침하면 0회) · 검증 실패 alert 같은 파일 재선택 시 다시 낭독.
+- **AC-P08 화면·포커스** — E: 내보내기 열면 포커스 "파일 만들기" · Esc = 닫힘 + 포커스 그 줄 "파일로 내보내기" · 성공 EX-9 1회 · 가져오기 확인 중 → 요약 → 포커스 "가져오기" · 성공 새로고침 뒤 IM-15 1회 + 포커스 가져온 줄 "편집기 열기"(다시 새로고침하면 0회) · **같은 파일 2회 가져오기 → 두 번째 성공 뒤 포커스가 같은 이름의 앞 줄이 아니라 새 `project-3` 줄** · 검증 실패 alert 같은 파일 재선택 시 다시 낭독.
 - **AC-P09 번들** — 6절 관문 수치(배선 전·후 표).
 - **AC-P10 Ego Lite 범위** — 이미지는 **단색 PNG만**(외부 이미지·사진 0 — CLAUDE.md 권리 경계). 큰 파일(80MB) 메모리 피크는 실측하지 않는다(8절).
 - **AC-P11 회귀** — P1D AC-D04·D05(삭제·차단) · P1C 지우기(C05) 재실행 통과 · FX-1 문장 표시.

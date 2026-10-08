@@ -8,7 +8,7 @@
 - [x] SPEC ④ Developer 레인 L1~L3 (병렬·겹침)
 - [x] SPEC ⑤ MQ (D1 ★A · D2 조건부)
 - [x] 바뀌는 문서 행 목록
-- [ ] SPEC 초안 커밋
-- [ ] 자체 재검토(행 번호·문구 일관성)
-- [ ] Ego Lite (선택) — 실행 여부 판단
-- [ ] REPORT.md 작성·커밋
+- [x] SPEC 초안 커밋
+- [x] 자체 재검토(행 번호·문구 일관성)
+- [x] Ego Lite (선택) — 미실행: 위치는 코드로 확인(REPORT 사유)
+- [x] REPORT.md 작성·커밋

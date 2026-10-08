@@ -54,3 +54,17 @@
 - C2 "variants {}" 레코드 → `[].every` = true로 통과 → 포함 → FAIL.
 - C3 왕복(정상 1 + 손상 1 → readProject → encodeProjectFile → checkFile(fakeDeps)) → 손상 포함 → IM-6 → ok 단언 FAIL.
 - 정상 이미지 포함 단언은 수정 전후 PASS. 기존 테스트(픽스처 교체 뒤) 전부 PASS.
+
+# Codex r2 수정 (P2 1건 — readProject 문서·스냅샷·계열·프로젝트 레코드 검사, 마지막 라운드)
+- [x] 기존 readProject.test 픽스처 project·version·docData를 시드(seedProject·seedSeries·seedDocRecord)로 교체 — 단언 변경 0, 옛 코드 41 PASS
+- [x] 회귀 테스트 작성 + RED 확인(커밋 안 함)
+- [ ] 구현: IDB 읽기(연결 닫음) 뒤 checkFile.recordsHold(L1 export 그대로 — L1 수정 0) 적용, 실패 = unreadable
+- [ ] build 번들 판정(/studio ≤129.65 · 복원 ≤132.68 · /profile ≤100 · 직전 129.11/132.14/99.86)
+- [ ] 게이트 typecheck·lint·build·전체 vitest 1회 exit 0
+- [ ] REPORT "Codex r2 수정" 절 커밋
+
+## RED 예측 (Codex r2 수정)
+- D1 문서 hash만 "x"(Codex 재현) · D2 스냅샷 문서 hash "x" · D3 계열 v2 base 없음 · D4 계열 버전 1·3 · D5 프로젝트 이름 " 강남 " → 옛 readProject는 봉투만 봐서 status ok → unreadable 단언 FAIL(5건).
+- D6 왕복(정상 시드 → readProject → encode → 실제 checkFile ok · 레코드 toEqual) = 가드 테스트, 옛 코드에서도 PASS 예상(RED 아님).
+- 실제: D1~D5 FAIL · 나머지 42 PASS. D6은 첫 작성 때 IM-6 FAIL — 원인 = 픽스처 image(tag)의 표시 문자열이 가짜 디코더 정규식(`^\d+x\d+`)을 깨뜨림(테스트 픽스처 문제, 구현 무관) → 그 테스트만 표시 없는 PNG 2개로 시드 → 옛 코드 PASS.
+- "내려받기 0"은 ExportProjectFileDialog.test `X-S05 unreadable → … 내려받기 0`(save 미호출)이 이미 단언 — readProject unreadable이 그 경로로 간다.

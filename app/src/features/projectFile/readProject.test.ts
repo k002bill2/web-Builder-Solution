@@ -14,8 +14,9 @@ import { EXPORT_DB_NAME, EXPORT_MAX_PIXELS, EXPORT_MAX_SIDE, EXPORT_WIDTH_STEPS,
 
 const env = (kind: string, id: string, data: unknown, schemaVersion = SCHEMA_VERSION) => ({ schemaVersion, kind, id, data });
 
-const project = (n: number) => Object.freeze({ projectId: `project-${n}`, profileId: `profile-${n}`, name: `이름 ${n}`, revision: 1 });
-const version = (n: number, v: number) => Object.freeze({ profileId: `profile-${n}`, version: v });
+/** 가져오기 레코드 규칙(recordsHold)을 지키는 시드 — Codex r2 */
+const project = (n: number) => Object.freeze(seedProject(`project-${n}`, `profile-${n}`));
+const version = (n: number, v: number) => Object.freeze(seedSeries(`profile-${n}`)[v - 1]!);
 
 function stateData(over: Record<string, unknown> = {}) {
   return {
@@ -42,7 +43,7 @@ const image = (tag: string) => {
   const blob = new Blob([fakeImageBytes("png", 640, 480, tag) as BlobPart], { type: "image/png" });
   return { variants: { 640: blob }, width: 640, height: 480, format: "png", bytes: blob.size };
 };
-const docData = { doc: { projectId: "project-1", hash: "h" }, snapshots: [], snapshotSeq: 2 };
+const docData = seedDocRecord("project-1");
 
 /** 손 IDB 가짜 — 요청은 마이크로태스크 뒤 성공. 트랜잭션·연결 닫기를 기록한다 */
 function fakeIdb(initial: Record<string, ReadonlyMap<string, unknown>>) {
@@ -187,6 +188,49 @@ describe("Codex r1 — 이미지 레코드는 저장 규칙 전체(readImageReco
     expect(checked).toMatchObject({ ok: true });
     if (!checked.ok) return;
     expect(checked.file.images.map((i) => [i.localId, i.width, Object.keys(i.variants)])).toEqual([["good", 640, ["640"]]]);
+  });
+});
+
+describe("Codex r2 — 문서·스냅샷·계열·프로젝트도 가져오기와 같은 레코드 규칙(recordsHold) · 실패 = unreadable(EX-6)", () => {
+  const record = seedDocRecord("project-1");
+  const v1 = version(1, 1);
+  const v2 = version(1, 2);
+  const v2NoBase = Object.fromEntries(Object.entries(v2).filter(([key]) => key !== "base"));
+  const withState = (over: Record<string, unknown>) => env("state", "state", stateData(over));
+
+  it.each([
+    ["문서 hash만 변경(Codex 재현)", { doc: env("doc", "project-1", { ...record, doc: { ...record.doc, hash: "x" } }) }],
+    ["스냅샷 문서 hash 변경", { doc: env("doc", "project-1", { ...record, snapshots: [{ ...record.snapshots[0]!, doc: { ...record.doc, hash: "x" } }] }) }],
+    ["계열 v2 프로필 모양 손상(base 없음)", { state: withState({ series: new Map([["profile-1", [v1, v2NoBase]]]) }) }],
+    ["계열 버전 건너뜀(1·3)", { state: withState({ series: new Map([["profile-1", [v1, { ...v2, version: 3 }]]]) }) }],
+    ["프로젝트 이름 규칙 밖(앞뒤 공백)", { state: withState({ projects: new Map([["project-1", { ...project(1), name: " 강남 " }]]) }) }],
+  ])("%s → unreadable · 연결 닫음", async (_, over) => {
+    const idb = seeded(over);
+    await expect(readProject(idb.factory, "project-1")).resolves.toEqual({ status: "unreadable" });
+    expect(idb.closed()).toBe(1);
+  });
+
+  it("왕복 보장 — 정상 시드 → readProject → encodeProjectFile → checkFile(L1 실제) ok · 레코드·이미지 그대로", async () => {
+    // 가짜 디코더는 표시 없는 "가로x세로" 바이트만 읽는다 — image(tag) 대신 표시 없는 PNG
+    const plain = () => {
+      const blob = new Blob([fakeImageBytes("png", 640, 480) as BlobPart], { type: "image/png" });
+      return { variants: { 640: blob }, width: 640, height: 480, format: "png", bytes: blob.size };
+    };
+    const images = new Map([
+      ["project-1/a", env("image", "project-1/a", plain())],
+      ["project-1/b", env("image", "project-1/b", plain())],
+    ]);
+    const read = await readProject(seeded({ images }).factory, "project-1");
+    if (read.status !== "ok") throw new Error(read.status);
+    const encoded = await encodeProjectFile({ ...read.source, exportedAt: "2026-10-08T09:12:33.000Z" });
+    if (!encoded.ok) throw new Error(encoded.message);
+    const checked = await checkFile(encoded.blob, fakeDeps().deps);
+    expect(checked).toMatchObject({ ok: true });
+    if (!checked.ok) return;
+    expect(checked.file.project).toEqual(read.source.project);
+    expect(checked.file.series).toEqual(read.source.series);
+    expect(checked.file.doc).toEqual(read.source.doc);
+    expect(checked.file.images.map((i) => i.localId).sort()).toEqual(["a", "b"]);
   });
 });
 

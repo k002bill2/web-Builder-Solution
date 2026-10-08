@@ -3,6 +3,8 @@
  * 원본 = IDB에 커밋된 것(EX-4). 상태·문서 봉투 mismatch·invalid = unreadable(EX-6) · 그 프로젝트 없음 = gone(EX-7).
  * 이미지 레코드는 연결을 닫은 뒤 저장 규칙 전체(readImageRecord 리터럴 복제 — 사다리·메타·바이트 서명)로 검사해 통과한 것만 싣는다 —
  * 실패 레코드는 열기에서도 잃은 이미지이고, 실으면 가져오기 checkImages가 IM-6으로 파일 전체를 거절한다(Codex r1).
+ * 프로젝트·계열·문서(스냅샷 포함)도 연결을 닫은 뒤 가져오기와 **같은 함수**(checkFile.recordsHold)로 검사한다 — 실패 = unreadable(EX-6).
+ * 가져오기가 IM-4로 거절할 파일을 정상 백업으로 내려받게 하지 않는다(Codex r2 · 3.6 자기 거절 파일 금지).
  * 트랜잭션 안에서는 IDB 요청만 기다린다(Blob 읽기·base64 인코딩은 연결을 닫은 뒤).
  * `envelope`·`entryRead`·`imageRecord`·`studioStore`는 값으로 import하지 않는다(6절 진입·복원 closure) — 값은 리터럴 복제 + parity 테스트.
  */
@@ -12,6 +14,7 @@ import type { ProfileVersion } from "../../domain/profile";
 import { projectImageKeys } from "../projects/deleteProject";
 import type { IngestedImage } from "../studio/images/ingest/types";
 import { exportFileStem } from "../studio/staticHtml/exportFileName";
+import { recordsHold } from "./checkFile";
 import type { ExportSource } from "./encode";
 
 /** envelope.DB_NAME과 같은 값(테스트가 단언) */
@@ -113,6 +116,7 @@ async function readRaw(factory: IDBFactory, projectId: string): Promise<RawRead>
 export async function readProject(factory: IDBFactory, projectId: string): Promise<ReadResult> {
   const raw = await readRaw(factory, projectId);
   if (raw.status !== "ok") return raw;
+  if (!recordsHold(raw.source)) return { status: "unreadable" };
   const checked = await Promise.all(raw.images.map(([key, record]) => exportImageOf(record, key)));
   const images = raw.images.flatMap(([key], i) => {
     const image = checked[i];

@@ -5,8 +5,10 @@
 - [x] L1a: format.ts + checkFile ①~④ (R2 RED = 모듈 없음 확인 → GREEN 15건) 커밋
 - [x] build 실측 (a5692c4 직후): /studio 129.09 · 복원 132.13 · /profile 99.87 · /projects 104.69 · /compare 122.71 — 기준선과 동일(증가 0), exit 0
 - [ ] L1b: ⑤ 이미지·재인코딩 · ⑥ 참조 · rekey · encode · rekeyDoc 커밋
-- [ ] 게이트: typecheck · lint · build · 전체 vitest
-- [ ] REPORT.md
+- [x] 게이트: typecheck 0 · lint 0 · build 0(번들 불변) · 전체 vitest 0(289 파일·2518건)
+- [x] REPORT.md
+- [ ] Codex 검증 — BLOCKED: 브리프상 Jarvis 몫(이 레인 실행 안 함)
+- [ ] Ego Lite — BLOCKED: UI 0(순수 모듈) — L3에서 실측
 
 ## RED 예측
 - R1 format.test.ts: `./format` 모듈 없음 → import 실패로 파일 전체 FAIL 예상.

@@ -42,6 +42,8 @@ export async function readEntryRecord(db: IDBDatabase, store: StoreName, kind: s
 /** 상태 레코드(studio 저장소 "state") = StudioState(잡은 StoredJob 통째로 — 개정 1) + 프로젝트별 문서 머리(목록 hasDoc) */
 export interface LocalState extends StudioState {
   readonly heads: ReadonlyMap<string, DocHead>;
+  /** 이 상태를 쓴 커밋의 세대 번호(P1C-D2 — `meta` generation과 같은 트랜잭션) · 없으면 0(P1b 이전 레코드) */
+  readonly gen?: number;
 }
 /** 문서 레코드(docs 저장소, id = projectId) — 문서 + 스냅샷 목록 */
 export interface DocRecord {

@@ -15,6 +15,7 @@ import { FIXTURE_CATALOG } from "../../test/compareFixtures";
 import type { ProjectRepository } from "../projectRepository";
 import type { LocalEntry } from "./entryRead";
 import type { StudioPersistence } from "./studioPersistence";
+import { soloLocks } from "./fakeLocks";
 
 const loads = { n: 0 };
 
@@ -51,7 +52,7 @@ async function enterAfterSave(edit: (doc: PageDoc) => PageDoc, map?: (doc: PageD
     },
   };
   const persistence = createMemoryPersistence();
-  const studioOn = (p: StudioPersistence, entry: LocalEntry = {}) => createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: (e) => openLocalSync(e, async () => p) });
+  const studioOn = (p: StudioPersistence, entry: LocalEntry = {}) => createDeferredStudio(async () => FIXTURE_CATALOG, imports, { entry, sync: (e) => openLocalSync(e, async () => p, soloLocks()) });
   const studio = studioOn(persistence);
   await (await studio.board()).confirmProfile(1, 0);
   const gen = await studio.generations();

@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
 import type { ProjectPersistence } from "../../data/projectRepository";
+import { tabLink, type TabLink } from "../../data/persistence/tabLink";
+import type { WriterLocks } from "../../data/persistence/writerLock";
 import { checkStorage, issueText, type StorageIssue } from "../../features/projects/storageCheck";
 import { isQuotaHigh, usageText } from "../../features/projects/storageUsage";
 
@@ -17,6 +19,23 @@ const FULL_TEXT = "저장 공간이 부족하면 저장이 실패합니다 — �
 const defaultStorage = (): StorageApi | undefined => (typeof navigator === "undefined" ? undefined : navigator.storage);
 const defaultFactory = (): IDBFactory | undefined => (typeof indexedDB === "undefined" ? undefined : indexedDB);
 const reloadPage = () => window.location.reload();
+const defaultLocks = (): WriterLocks | undefined => (typeof navigator === "undefined" ? undefined : navigator.locks);
+const defaultSession = (): Session | undefined => {
+  try {
+    return window.sessionStorage;
+  } catch {
+    return undefined;
+  }
+};
+const goReload = (path: string) => window.location.assign(path);
+
+/** 지우기 대화상자 + 흐름 본문(1.6) — 조작 뒤 청크("이 브라우저 데이터 지우기"를 눌러야 받는다) */
+const ClearDialogSlot = lazy(() => import("./ClearDataDialogSlot"));
+/** clearBrowserData.CLEARED_KEY와 같은 값(조작 뒤 청크를 진입에 싣지 않으려고 리터럴 — 테스트가 같음을 단언) */
+export const CLEARED_NOTICE_KEY = "design-studio-cleared";
+const CLEARED_TEXT = "이 브라우저 데이터를 지웠습니다";
+
+type Session = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
 /** 사용량(1.3) · 보관 요청 상태(MQ-C4 A — `persist()`는 버튼 누를 때만, 진입은 `persisted()` 조회만) */
 function useLocalStorageInfo(storage: StorageApi | undefined, enabled: boolean) {
@@ -56,31 +75,62 @@ function useStorageIssue(factory: IDBFactory | undefined, enabled: boolean) {
   return issue;
 }
 
+/** 새로고침 뒤 1회(1.6 5단계) — 키를 읽으면 바로 지운다 */
+function useClearedNotice(session: Session | undefined, announce: (text: string) => void) {
+  useEffect(() => {
+    try {
+      if (!session || session.getItem(CLEARED_NOTICE_KEY) === null) return;
+      session.removeItem(CLEARED_NOTICE_KEY);
+    } catch {
+      return;
+    }
+    announce(CLEARED_TEXT);
+    // 마운트 1회
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
 /**
- * `/projects` "이 브라우저 저장소" 영역 (P1C-SPEC 2절 1~3줄 · 1.7 · 1.8). 지우기(4줄)·다중 탭 문장·탭 간 알림은 P1C-D4·D2 몫.
- * 영역 안 알림은 `role=status` 1개(보관 요청 결과) — 늘 DOM에 둔다(display:none 금지, D-QA06).
+ * `/projects` "이 브라우저 저장소" 영역 (P1C-SPEC 2절 1~4줄 · 1.6 · 1.7 · 1.8).
+ * 영역 안 알림은 `role=status` 1개(보관 요청 결과 · 지운 뒤 결과) — 늘 DOM에 둔다(display:none 금지, D-QA06).
+ * 4줄 지우기: IndexedDB 없음이면 버튼 숨김 · 대화상자·흐름은 조작 뒤 청크 · 닫히면 포커스 = 여는 버튼.
  */
 export function BrowserStorageSection({
   persistence,
   storage = defaultStorage(),
   factory = defaultFactory(),
   reload = reloadPage,
+  count = 0,
+  locks = defaultLocks(),
+  link = tabLink(),
+  session = defaultSession(),
+  go = goReload,
 }: {
   readonly persistence: ProjectPersistence;
   readonly storage?: StorageApi;
   readonly factory?: IDBFactory;
   readonly reload?: () => void;
+  /** 지금 목록의 프로젝트 수(대화상자 목록 N) */
+  readonly count?: number;
+  readonly locks?: WriterLocks;
+  readonly link?: TabLink;
+  readonly session?: Session;
+  readonly go?: (path: string) => void;
 }) {
   const local = persistence === "local";
   const { estimate, kept, setKept } = useLocalStorageInfo(storage, local);
   const issue = useStorageIssue(factory, persistence === "memory");
   const [notice, setNotice] = useState({ text: "", key: 0 });
   const usage = usageText(estimate);
+  const announce = (text: string) => setNotice((n) => ({ text, key: n.key + 1 }));
+  useClearedNotice(session, announce);
+  const [clearing, setClearing] = useState(false);
+  const opener = useRef<HTMLDivElement>(null);
 
   const requestPersist = async () => {
     const granted = await Promise.resolve(storage?.persist?.()).catch(() => false);
     setKept(granted ? true : "refused");
-    setNotice((n) => ({ text: granted ? KEPT_TEXT : REFUSED_TEXT, key: n.key + 1 }));
+    announce(granted ? KEPT_TEXT : REFUSED_TEXT);
   };
 
   return (
@@ -115,6 +165,25 @@ export function BrowserStorageSection({
             자동 삭제 막기 요청
           </Button>
         </div>
+      )}
+      {factory && (
+        <div ref={opener} className="flex">
+          <Button variant="outline" size="sm" onClick={() => setClearing(true)}>
+            이 브라우저 데이터 지우기
+          </Button>
+        </div>
+      )}
+      {factory && clearing && (
+        <Suspense fallback={null}>
+          <ClearDialogSlot
+            count={count}
+            deps={{ locks, factory, link, session, go }}
+            onClose={() => {
+              setClearing(false);
+              opener.current?.querySelector("button")?.focus();
+            }}
+          />
+        </Suspense>
       )}
     </section>
   );

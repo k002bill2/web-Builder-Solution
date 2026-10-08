@@ -20,8 +20,8 @@ export interface WriterGate {
   enter(): Promise<WriterMode>;
 }
 
-/** 잡으면 놓는 함수 · 못 잡으면 undefined */
-const tryLock = (locks: WriterLocks) =>
+/** 잡으면 놓는 함수 · 못 잡으면 undefined — 지우기(P1C-D4)도 같은 방식으로 잡는다 */
+export const tryLock = (locks: WriterLocks) =>
   new Promise<(() => void) | undefined>((resolve) => {
     locks
       .request(WRITER_LOCK, { ifAvailable: true }, (lock) => (lock ? new Promise<void>((release) => resolve(release)) : resolve(undefined)))

@@ -54,3 +54,7 @@ globalThis.structuredClone = ((value: unknown, options?: StructuredSerializeOpti
   const swapped = swapBlobs(value, blobs, found);
   return found.any ? restoreBlobs(nativeClone(swapped, options), blobs) : nativeClone(value, options);
 }) as typeof structuredClone;
+
+// Node의 전역 BroadcastChannel은 같은 프로세스의 vitest 워커 스레드 사이로 메시지를 보낸다 — 다른 테스트 파일의 saved·cleared가 새어 들지 않게
+// 지운다(탭 링크는 채널 없음 = 알림 0으로 동작). 탭 간 알림 테스트는 fakeTabLink를 주입한다(P1C-D4).
+Reflect.deleteProperty(globalThis, "BroadcastChannel");

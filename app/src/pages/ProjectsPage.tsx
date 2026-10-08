@@ -131,7 +131,7 @@ export function ProjectsPage({ repository, now = systemNow }: { readonly reposit
       {items !== null && items.length > 0 && (
         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft} rename={rename} />
       )}
-      {items !== null && <BrowserStorageSection persistence={repository.persistence} />}
+      {items !== null && <BrowserStorageSection persistence={repository.persistence} count={items.length} />}
     </div>
   );
 }

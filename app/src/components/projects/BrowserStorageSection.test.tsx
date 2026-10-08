@@ -6,6 +6,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BrowserStorageSection, type StorageApi } from "./BrowserStorageSection";
+import { createLockRegistry } from "../../data/persistence/fakeLocks";
+import { createLinkNetwork } from "../../data/persistence/fakeTabLink";
 
 const MB = 1024 ** 2;
 const LOCAL_TEXT = "프로젝트·편집 문서·스냅샷·이미지를 이 브라우저에만 저장합니다. 공용 PC라면 다 쓴 뒤 지우세요.";
@@ -154,5 +156,68 @@ describe("BrowserStorageSection — 강등 (1.7 · 1.8 · AC-C10)", () => {
     expect(await screen.findByRole("heading", { name: /더 새 버전의 앱에서 저장되어 읽지 못했습니다/ })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "새로고침" }));
     expect(reload).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("BrowserStorageSection — 이 브라우저 데이터 지우기 (1.6 · AC-C05·C08)", () => {
+  type Req = { onsuccess?: () => void; onblocked?: () => void; onerror?: () => void };
+  const CLEARED_TEXT = "이 브라우저 데이터를 지웠습니다";
+
+  function clearDeps(stored: Record<string, string> = {}) {
+    const requests: Req[] = [];
+    const factory = { deleteDatabase: vi.fn(() => (requests.push({}), requests[requests.length - 1])) } as unknown as IDBFactory;
+    const store = new Map(Object.entries(stored));
+    const session = {
+      getItem: vi.fn((k: string) => store.get(k) ?? null),
+      setItem: vi.fn((k: string, v: string) => void store.set(k, v)),
+      removeItem: vi.fn((k: string) => void store.delete(k)),
+    };
+    const net = createLinkNetwork();
+    return { factory, requests, session, store, link: net.tab(), locks: createLockRegistry().tab(), go: vi.fn() };
+  }
+
+  it("IndexedDB 없음 = 버튼 숨김 · 있으면 프로젝트 0개여도 버튼(outline)", () => {
+    const { unmount } = render(<BrowserStorageSection persistence="local" storage={storageApi()} factory={undefined} count={0} />);
+    expect(screen.queryByRole("button", { name: "이 브라우저 데이터 지우기" })).not.toBeInTheDocument();
+    unmount();
+    const deps = clearDeps();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} count={0} {...deps} />);
+    expect(screen.getByRole("button", { name: "이 브라우저 데이터 지우기" })).toBeInTheDocument();
+  });
+
+  it("누르면 대화상자(조작 뒤 청크) · 프로젝트 N개 · 취소 → 닫히고 포커스 = 여는 버튼", async () => {
+    const deps = clearDeps();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} count={2} {...deps} />);
+    const opener = screen.getByRole("button", { name: "이 브라우저 데이터 지우기" });
+    await userEvent.click(opener);
+    expect(await screen.findByRole("dialog", { name: "이 브라우저 데이터를 지울까요?" })).toBeInTheDocument();
+    expect(screen.getByText("프로젝트 2개와 각 편집 문서")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "취소" })).toHaveFocus();
+    await userEvent.click(screen.getByRole("button", { name: "취소" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
+    expect(deps.factory.deleteDatabase).not.toHaveBeenCalled();
+  });
+
+  it("모두 지우기 → 삭제 성공 → 1회 키 저장 → /projects 새로고침 이동", async () => {
+    const deps = clearDeps();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} count={1} {...deps} />);
+    await userEvent.click(screen.getByRole("button", { name: "이 브라우저 데이터 지우기" }));
+    await userEvent.click(await screen.findByRole("button", { name: "모두 지우기" }));
+    await waitFor(() => expect(deps.requests).toHaveLength(1));
+    deps.requests[0]!.onsuccess?.();
+    await waitFor(() => expect(deps.go).toHaveBeenCalledWith("/projects"));
+    expect(deps.store.size).toBe(1);
+  });
+
+  it("새로고침 뒤 1회 키 → status '이 브라우저 데이터를 지웠습니다' 1회 · 키 삭제 → 다시 열면 없음", async () => {
+    const deps = clearDeps({ "design-studio-cleared": "1" });
+    const { unmount } = render(<BrowserStorageSection persistence="local" storage={storageApi()} count={0} {...deps} />);
+    await waitFor(() => expect(statusRegion()).toHaveTextContent(CLEARED_TEXT));
+    expect(deps.store.size).toBe(0);
+    unmount();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} count={0} {...deps} />);
+    await Promise.resolve();
+    expect(statusRegion()).not.toHaveTextContent(CLEARED_TEXT);
   });
 });

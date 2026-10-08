@@ -3,6 +3,7 @@
  * 보드 진입 직후 합계(/compare)에 싣지 않는다. 판정·쓰기(`confirmFirst`·`confirmVersion`)는 저장소 `call`의 동기 구간 안에서만 부른다.
  * 재확정 이어받기 규칙(대비 검사 포함)은 이 청크에서 한 번 더 필요할 때만 받는다 — 계열 최신에 조정이 있을 때(`prepare`, 동기 구간 앞).
  */
+import { nextSeqId } from "./seqId";
 import type { CompareBoard, ComparisonResult, DesignProfileInput, Picks } from "../domain/compareBoard";
 import type { ProfileVersion } from "../domain/profile";
 import type { buildProfileDraft } from "../domain/profileDraft";
@@ -120,7 +121,7 @@ function confirmIn(
   if (hasAdjustments(latest) && !carryOver) throw new CompareBoardError("STALE_PROFILE", "이어받을 조정이 새로 생겼습니다", undefined, latest && headOf(latest));
   const plan = latest && confirmedBase && carryOver && hasAdjustments(latest) ? carryOver(confirmedBase, latest.adjustments, base) : undefined;
   const result = store.transact((tx): ConfirmResult => {
-    const id = profileId ?? tx.nextProfileId();
+    const id = profileId ?? nextSeqId("profile", tx.profileIds(), tx.seq()?.profile);
     const version = expectedLatest + 1;
     const record: ProfileVersion = {
       profileId: id,
@@ -139,7 +140,7 @@ function confirmIn(
       const title = results.find((r) => r.referenceId === draft.baseReferenceId)?.reference?.title ?? draft.baseReferenceId;
       const createdAt = now();
       tx.putProject({
-        projectId: `project-${tx.projects().length + 1}`,
+        projectId: nextSeqId("project", tx.projects().map((p) => p.projectId), tx.seq()?.project),
         name: defaultProjectName(title, tx.projects().map((p) => p.name)),
         revision: 1,
         profileId: id,

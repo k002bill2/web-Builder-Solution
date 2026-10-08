@@ -26,6 +26,13 @@ export interface StoredJob {
   readonly attempts: Readonly<Record<CandidateId, number>>;
 }
 
+/** 지운 것 중 최대 번호(P1D-SPEC 3절 묘비 상한) — 삭제 때만 올린다(L3) · 발급은 조작 뒤 `nextSeqId` */
+export interface StudioSeq {
+  readonly project: number;
+  readonly profile: number;
+  readonly job: number;
+}
+
 export interface StudioState {
   readonly series: ReadonlyMap<string, readonly ProfileVersion[]>;
   readonly commits: ReadonlyMap<string, IdempotentCommit>;
@@ -35,6 +42,8 @@ export interface StudioState {
   readonly jobs: ReadonlyMap<string, StoredJob>;
   /** projectId → 프로젝트(DS-2A-05 8.3). 보드 확정 트랜잭션이 만들고(12.2 ④) 이름 바꾸기가 바꾼다 */
   readonly projects: ReadonlyMap<string, Project>;
+  /** 없으면 0(이행 — 현존 최대 + 1) */
+  readonly seq?: StudioSeq;
 }
 
 export interface StudioReader {
@@ -47,7 +56,8 @@ export interface StudioReader {
   adjustCommitOf(profileId: string): IdempotentCommit | undefined;
   job(jobId: string): StoredJob | undefined;
   jobByKey(key: string): StoredJob | undefined;
-  jobCount(): number;
+  jobIds(): readonly string[];
+  seq(): StudioSeq | undefined;
   /** 만든 순서 */
   projects(): readonly Project[];
   /** 계열과 1:1 (2.1) */
@@ -55,7 +65,6 @@ export interface StudioReader {
 }
 
 export interface StudioTx extends StudioReader {
-  nextProfileId(): string;
   /** 계열 최신 + 1 번호만 받는다 — 번호 중복·건너뜀 0 */
   insert(record: ProfileVersion): void;
   remember(commit: IdempotentCommit): void;
@@ -88,7 +97,8 @@ function readerOf(read: () => StudioState): StudioReader {
     adjustCommitOf: (profileId) => read().adjustCommits.get(profileId),
     job: (jobId) => read().jobs.get(jobId),
     jobByKey: (key) => [...read().jobs.values()].find((stored) => stored.key === key),
-    jobCount: () => read().jobs.size,
+    jobIds: () => [...read().jobs.keys()],
+    seq: () => read().seq,
     projects: () => [...read().projects.values()],
     projectOf: (profileId) => [...read().projects.values()].find((p) => p.profileId === profileId),
   };
@@ -103,7 +113,6 @@ export function createStudioStore(initial?: StudioState, onCommit?: (state: Stud
       let draft = state;
       const tx: StudioTx = {
         ...readerOf(() => draft),
-        nextProfileId: () => `profile-${draft.series.size + 1}`,
         insert(record) {
           const current = draft.series.get(record.profileId) ?? [];
           const latest = current.at(-1)?.version ?? 0;

@@ -64,6 +64,7 @@ function repositoryWith(over: Partial<ProjectRepository>): ProjectRepository {
     startDoc: unused,
     listSnapshots: unused,
     createSnapshot: unused,
+    deleteSnapshot: unused,
     restoreSnapshot: unused,
     resolveConflict: unused,
     requestExport: unused,

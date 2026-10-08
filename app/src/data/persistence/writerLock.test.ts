@@ -307,3 +307,50 @@ describe("navigator.locks 미지원 — 읽기 전용(SPEC 1.5 · THREATS T5)", 
     expect(a.writes).toEqual([]);
   });
 });
+
+describe("스냅샷 삭제 — 낡은 탭 쓰기 0 · IDB 실패 뒤 재시도 멱등 (P1D-SPEC 1.1 D-S09 · AC-D08 판정)", () => {
+  const savedRecord = async (persistence: StudioPersistence) =>
+    (checkEnvelope(await persistence.get("docs", "project-1"), "doc", "project-1") as { data: { snapshots: readonly { snapshotId: string }[]; snapshotSeq?: number } }).data;
+
+  it("탭A 진입 → 탭B 저장·닫기 → 탭A 스냅샷 삭제 = 쓰기 0 · 낡은 탭 사유 · 저장 레코드 그대로", async () => {
+    const { persistence, browser } = await seeded();
+    const lockS = browser.tab();
+    const s = await openTab(persistence, lockS, "project-1");
+    await (await s.projects()).createSnapshot("project-1", "하나");
+    await settle();
+    lockS.close();
+
+    const a = await openTab(persistence, browser.tab(), "project-1");
+    const projectsA = await a.projects();
+    await projectsA.getDoc("project-1");
+    const lockB = browser.tab();
+    const b = await openTab(persistence, lockB, "project-1");
+    const projectsB = await b.projects();
+    const docB = (await projectsB.getDoc("project-1"))!;
+    await projectsB.saveDoc("project-1", docB.revision, edit(docB, "B 저장 후 닫음"));
+    await settle();
+    lockB.close();
+
+    expect(await failureOf(projectsA.deleteSnapshot("project-1", "snapshot-1"))).toBe(`INFRA: 저장 — ${STALE}`);
+    expect(a.writes).toEqual([]);
+    expect((await savedRecord(persistence)).snapshots.map((x) => x.snapshotId)).toEqual(["snapshot-1"]);
+  });
+
+  it("삭제 커밋 실패 → 같은 삭제 재시도 = 없는 id(변화 0) + flush 재제출 → 레코드에서 빠지고 snapshotSeq 기록", async () => {
+    const { persistence, browser } = await seeded();
+    const { gate, wrapped } = flaky(persistence);
+    const tab = await openTab(wrapped, browser.tab(), "project-1");
+    const projects = await tab.projects();
+    await projects.createSnapshot("project-1", "하나");
+    await settle();
+    gate.fail = true;
+    expect(await failureOf(projects.deleteSnapshot("project-1", "snapshot-1"))).not.toBe("ok");
+    expect(await projects.listSnapshots("project-1")).toEqual([]);
+    expect((await savedRecord(persistence)).snapshots.map((x) => x.snapshotId)).toEqual(["snapshot-1"]);
+    gate.fail = false;
+    await projects.deleteSnapshot("project-1", "snapshot-1");
+    const record = await savedRecord(persistence);
+    expect(record.snapshots).toEqual([]);
+    expect(record.snapshotSeq).toBe(1);
+  });
+});

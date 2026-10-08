@@ -13,7 +13,8 @@ import type { ProfileVersion } from "../domain/profile";
 import { SECTION_LIBRARY, type SectionLibrary } from "../domain/sectionLibrary";
 import { GenerationError } from "./generationRepository";
 import type { CandidateCall, MemoryGenerationOptions } from "./memoryGenerationRepository";
-import type { StoredJob } from "./studioStore";
+import { nextSeqId } from "./seqId";
+import type { StoredJob, StudioReader } from "./studioStore";
 
 const DEFAULT_LIBRARIES: Readonly<Record<string, SectionLibrary>> = Object.freeze({ [SECTION_LIBRARY.version]: SECTION_LIBRARY });
 
@@ -50,8 +51,9 @@ function injected(result: ComposedResult, call: CandidateCall, outcome: JobOptio
 }
 
 /** 새 잡 — 세 안을 한 번에 계산해 숨겨 둔다(저장소 트랜잭션 안에서 부른다) */
-/** `generatorVersion`은 저장소가 넘긴다 — 멱등 키(keyOf)와 같은 값 하나를 쓴다 */
-export function newJob(record: ProfileVersion, jobId: string, key: string, generatorVersion: string, { outcome, libraries }: JobOptions): StoredJob {
+/** `generatorVersion`은 저장소가 넘긴다 — 멱등 키(keyOf)와 같은 값 하나를 쓴다 · jobId = 단조(P1D-SPEC 3절 — 진입 저장소는 트랜잭션 reader만 넘긴다) */
+export function newJob(record: ProfileVersion, reader: StudioReader, key: string, generatorVersion: string, { outcome, libraries }: JobOptions): StoredJob {
+  const jobId = nextSeqId("job", reader.jobIds(), reader.seq()?.job);
   const results = composeFor(record, libraries);
   const job: GenerationJob = {
     jobId,

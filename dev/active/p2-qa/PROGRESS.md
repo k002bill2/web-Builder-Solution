@@ -10,9 +10,13 @@
   - 성공 뒤 "프로젝트 알림" `'모던 카페 브랜드 프로젝트' 프로젝트를 가져왔습니다` 1개 · 포커스 A "편집기 열기"(data-rename-for=project-1 줄) · sessionStorage `{}`
   - 가져온 뒤 IDB: images 같은 키·800×400 webp 2066 · 640:930 · 800:1136 (바이트 수까지 동일) · docs 9섹션 snapshot-1:manual · gen 1
   - 편집기: 섹션 9 · 스냅샷 "수동 · 14:49 · 프로필 v1 · A안" · Hero 파랑 단색 표시 (shots/1-editor.png)
-- [ ] 2. AC-P04 다른 탭 차단 + 삭제 차단 회귀
-- [x] 3. 확인 단계 소요 — ①에서 780ms (정체 없음)
+- [x] 2. AC-P04 다른 탭 차단 — **PASS** (기한 28턴 초과)
+  - B(newPage `/studio/project-1`) 대표 이미지 스위치 끔 → "이 브라우저에 저장됨 · 방금" (05:53:00)
+  - A `/projects` 가져오기: 요약 782ms → 가져오기 → alert IM-9 1개 "다른 탭에서 편집 중이라 가져오지 못했습니다 — 그 탭을 닫은 뒤 다시 시도하세요" · IDB 전후 동일(docs1·images1·gen 2·meta gen 2) · shots/2-im9.png
+  - 삭제 회귀: "프로젝트 지우기" → alert "다른 탭에서 편집 중이라 지우지 못했습니다 — …" · IDB 불변(gen 2)
+  - B 닫기 → A 재시도: 요약 264ms → status IM-15 1개 · 포커스 A "…편집기 열기" · IDB docs2·images2(`project-2/4ef200c8-…` localId 유지) · gen 3
+- [x] 3. 확인 단계 소요 — 780ms · 782ms(B 쓰기 탭 열린 상태) · 264ms · 15초 정체 재현 안 됨
 - [x] 4. 요약 "파일 1MB" (13,115B) — IM-13 `파일 {N}MB` 대조 필요
-- [ ] 5. 회귀 스모크 — Esc 포커스 PASS(열기 포커스 "파일 만들기" → Esc → "…파일로 내보내기" project-1) · 새로고침·손상 파일 미실행
+- [x] 5. 회귀 스모크 — Esc 포커스 PASS · 새로고침 편집기 열림 부분 PASS(B 새 탭 로드로 project-1 열림) · 손상 파일 IM-2/4 미확정: BLOCKED: 34턴 마감 규칙으로 미실행
 - [ ] 6. 정리
 - [ ] 7. QA-REPORT.md 커밋

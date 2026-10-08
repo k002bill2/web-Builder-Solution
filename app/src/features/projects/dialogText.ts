@@ -3,3 +3,5 @@ export const BUSY_TEXT = "다른 탭에서 편집 중이라 지우지 못했습�
 export const FAIL_TEXT = "지우지 못했습니다 — 다시 시도하세요";
 /** 가져오기 IM-9(P2-SPEC 5절 — PJ-7 문형, 동사만 다름) */
 export const IMPORT_BUSY_TEXT = "다른 탭에서 편집 중이라 가져오지 못했습니다 — 그 탭을 닫은 뒤 다시 시도하세요";
+/** FX-1(P2-SPEC 5절) — 지우기·프로젝트 삭제 대화상자 백업 안내(F12 예비 문장을 실제 버튼 이름에 맞춤) */
+export const BACKUP_TEXT = "지우기 전에 각 프로젝트의 '파일로 내보내기'로 백업할 수 있습니다.";

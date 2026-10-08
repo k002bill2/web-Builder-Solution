@@ -17,7 +17,7 @@ function deferred() {
 }
 
 describe("ClearDataDialog", () => {
-  it("SPEC 1.6 문구 · h2 접근 이름 · 열 때 포커스 = 취소 · P2 백업 문장 숨김", () => {
+  it("SPEC 1.6 문구 · h2 접근 이름 · 열 때 포커스 = 취소 · FX-1 백업 문장(P2-SPEC 5절 — 숨김 해제)", () => {
     render(<ClearDataDialog count={3} clear={vi.fn()} onClose={vi.fn()} />);
     const dialog = screen.getByRole("dialog", { name: "이 브라우저 데이터를 지울까요?" });
     expect(dialog).toHaveAttribute("open");
@@ -25,7 +25,7 @@ describe("ClearDataDialog", () => {
     const items = screen.getAllByRole("listitem").map((li) => li.textContent);
     expect(items).toEqual(["프로젝트 3개와 각 편집 문서", "스냅샷", "문서에 넣은 이미지", "확정한 프로필(모든 버전)과 만든 3안"]);
     expect(screen.getByText("비교 보드와 보관함은 따로 저장하지 않아 지운 뒤 함께 비워집니다. 내려받은 파일은 그대로 남습니다.")).toBeInTheDocument();
-    expect(screen.queryByText(/백업할 수 있습니다/)).not.toBeInTheDocument();
+    expect(screen.getByText("지우기 전에 각 프로젝트의 '파일로 내보내기'로 백업할 수 있습니다.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "취소" })).toHaveFocus();
     expect(screen.getByRole("button", { name: "모두 지우기" })).toBeInTheDocument();
   });

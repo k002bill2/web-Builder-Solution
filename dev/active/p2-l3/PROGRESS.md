@@ -17,7 +17,7 @@
 ## 재개 (Jarvis 결정 ①채택 ②허용 ③순서)
 - [x] R0 profileShape.ts 값 import 5개 → 리터럴 복제 + parity 테스트(원천은 테스트에서만 import) · checkImages는 /profile 영향 없음(REPORT 1절 스텁③ 99.87 불변) → 그대로
 - [x] R0 build → /profile 첫 화면 ≤100 (목표 99.87) — 실측 99.86 · /studio 129.09 · 복원 132.12 · /projects 105.13 · build exit 0 · RED 5/5 확인 → GREEN projectFile 73/73
-- [ ] FX-1 (ClearDataDialog·DeleteProjectDialog)
+- [x] FX-1 (ClearDataDialog·DeleteProjectDialog) — BACKUP_TEXT 상수(dialogText) · RED 2건(ClearDataDialog 숨김 단언→존재 단언 사양 변경, DeleteProjectDialog 캡션 단언 추가) → GREEN 125/125
 - [ ] ProjectsPage(IM-15·가져온 줄 포커스 — data-rename-for 경유) = 마지막 커밋
 - [ ] Ego Lite ①~⑤ + 정리
 - [ ] 게이트 typecheck·lint·build·전체 vitest exit 0

@@ -98,6 +98,12 @@ export function checkSaveDoc(projectId: string, input: unknown): { readonly ok: 
   return { ok: true, doc: input as PageDoc };
 }
 
+/** 가져오기 id 재매김(P2-SPEC 3.4) — projectId만 바꾸고 hash를 다시 잰다(projectId는 해시 대상 · revision·updatedAt 그대로). 입력 = checkSaveDoc을 통과한 문서 */
+export function rekeyDoc<T extends DocHead>(doc: T, projectId: string): T {
+  const next = { ...doc, projectId };
+  return { ...next, hash: hashDoc(next as unknown as PageDoc) };
+}
+
 /**
  * 내보내기 판정 5·7단계 (DS-2A-05 8.3.2) — 저장된 문서로 서버 게이트(`runGate`)를 다시 돌리고(화면 판정을 믿지 않는다) 렌더러 없는 섹션을 고른다.
  * engine을 부를 수 있는 data 파일이 이것 하나라(engineImportGuard) 여기 둔다 — 같은 조작 뒤 청크(memoryDocBook). 렌더러 목록은 부모 데이터 상수(RENDERED_VARIANTS).

@@ -10,7 +10,7 @@ import { composeCandidates } from "../domain/composeCandidates";
 import { GENERATOR_VERSION } from "../domain/generation";
 import { buildProfileDraft } from "../domain/profileDraft";
 import { SECTION_LIBRARY } from "../domain/sectionLibrary";
-import { checkSaveDoc, writeStartDoc, type StartDocInput } from "./startDocWrite";
+import { checkSaveDoc, rekeyDoc, writeStartDoc, type StartDocInput } from "./startDocWrite";
 
 const s = (type: PlannedSection["type"], variant: string, motion: PlannedSection["motion"] = "L1"): PlannedSection => ({ type, variant, motion });
 const SECTIONS: readonly PlannedSection[] = [
@@ -176,5 +176,22 @@ describe("예시 문구 채우기 (SPEC r4.7 A3-Q8 · V4)", () => {
     const hero = getSectionDefinition("hero", "split")!;
     expect(defaultSlots(hero).title).toBe("한 문장으로 소개하는 제목");
     expect(sampleCopyOf("hero", "title")).not.toBe("한 문장으로 소개하는 제목");
+  });
+});
+
+describe("rekeyDoc (P2-SPEC 3.4 — projectId 치환 + hash 재계산)", () => {
+  it("새 projectId · hash = hashDoc(바뀐 문서) · revision·updatedAt 그대로 · 입력 불변 · 새 id로만 checkSaveDoc 통과", () => {
+    const result = writeStartDoc(input());
+    if (!result.ok) throw new Error(result.alert);
+    const frozen = Object.freeze(result.doc);
+    const moved = rekeyDoc(frozen, "project-7");
+    expect(frozen.projectId).toBe("project-1");
+    expect(moved).not.toBe(frozen);
+    expect(moved.projectId).toBe("project-7");
+    expect(moved.hash).toBe(hashDoc(moved));
+    expect(moved.hash).not.toBe(frozen.hash);
+    expect({ ...moved, projectId: "project-1", hash: frozen.hash }).toEqual(frozen);
+    expect(checkSaveDoc("project-7", moved).ok).toBe(true);
+    expect(checkSaveDoc("project-1", moved).ok).toBe(false);
   });
 });

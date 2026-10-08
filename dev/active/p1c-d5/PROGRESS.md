@@ -6,10 +6,10 @@
 - [x] 구현: 첫 저장 1회 안내(meta.firstSaveNotice, 큐 경유, 강등 0, 지우기 뒤 재안내)
 - [x] GREEN + 구현 커밋 — 12/12, 전체 274파일 2402 PASS
 - [x] 번들 관문(/compare ≤125 · /studio ≤129.65 · 복원 ≤132.68 · /projects ≤125) + J-S11 청크 위치 실측
-- [ ] Ego Lite 통합 실측(preview 4337) + shots ≤4 + 정리(deleteDatabase·finish·listTaskSpaces·서버 종료)
-- [ ] 실측 결과 커밋
-- [ ] 게이트: typecheck·lint·build·전체 vitest exit 0
-- [ ] REPORT 커밋
+- [x] Ego Lite 통합 실측(preview 4337) + shots ≤4 + 정리(deleteDatabase·finish·listTaskSpaces·서버 종료)
+- [x] 실측 결과 커밋
+- [x] 게이트: typecheck·lint·build·전체 vitest exit 0
+- [x] REPORT 커밋
 
 ## 설계 (탐색 결과)
 - J-S11 [확인 필요] 실측: 확정 성공 결과 문장은 `/compare`가 아니라 `/profile` 화면 "프로필 알림" status(`ProfilePage.tsx:79` announce ← `useCompareBoard.ts:273~275` navigate state). → `/compare` closure 밖.
@@ -25,3 +25,8 @@
 - RED 실측: 10 FAIL / 2 PASS(예측과 같음). GREEN 전 셋업 1건 정정: 테스트의 `createProfileVersion(…, 1, "new")` → `0`("새 프로젝트는 expectedLatest 0" 계약 — 단언 변경 0) · 타입 좁히기 1건.
 - 번들(build 출력): `/compare` 122.62→**122.72**(≤125) · `/studio` 129.62→**129.63**(≤129.65) · 복원 132.66→**132.66**(≤132.68) · `/projects` **104.47**(≤125) · `/profile` 첫 화면 99.72→**99.87**(/100) · `/profile` 자동 120.00.
 - 게이트(fresh): typecheck 0 · lint 0 · build 0 · `npx vitest --run` 274 files / 2402 passed exit 0.
+
+## 결과 (실측·재개)
+- 재개 세션: ⓐ 같은 탭 지우기 status 1개 · ⓑ 지운 뒤 첫 확정 안내 포함 · ⓒ 두 번째 확정 안내 0 — 상세 REPORT.md. shots 4장.
+- 정리: deleteDatabase success · databases() [] · finish · listTaskSpaces [] · 94187 종료 · 4337 LISTEN 0.
+- 게이트(fresh): typecheck 0 · lint 0 · build 0 · vitest 274/2402 exit 0. 코드 수정 0.

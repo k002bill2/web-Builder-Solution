@@ -3,6 +3,7 @@
 판정: **완료** — typecheck·lint·build·전체 vitest exit 0 · 번들 관문 그대로 · Ego Lite 탭 2개 실측 3시나리오 통과. Codex 0(Jarvis 몫).
 
 ## 1. 변경 (커밋 `f9895ab`, 쓰기 파일 = `app/src/data/persistence/**`만)
+- 커밋 구조: 브리프는 ①잠금·②세대 번호 각각 커밋을 요구했으나 `f9895ab` 1개에 함께 — 잠금 획득 직후 최신성 확인(SPEC 1.5)이 한 단위라 분리 시 중간 커밋이 "잠금은 있으나 낡은 탭이 덮는" 상태가 됨. 2번째 커밋 = 실측·REPORT(`8e50823`). amend/rebase 금지라 사후 분리 안 함.
 | 파일 | 내용 |
 |---|---|
 | `writerLock.ts`(새) | `design-studio-writer` ifAvailable 요청 · 잡으면 끝나지 않는 Promise로 탭 수명 보유(닫힘·언로드 자연 해제) · steal 없음 · 잡은 직후 `fresh()` 실패면 즉시 놓고 `stale`(새로고침까지 유지) · 못 잡으면 `readonly`(다음 flush=다시 저장 때 재요청) · locks 없음 = `unsupported` |
@@ -40,7 +41,8 @@
 2. **AC-C14**: p2(A)·p3(B) 둘 다 `/studio/project-1` 진입 → held **[]** → B 먼저 편집 → "이 브라우저에 저장됨" · held [writer] → A 편집 → "저장하지 못했습니다" + "다시 저장" · `role=alert` 1개 · IDB rev 3 = B 값(A 글자 0) · gen 9. `shots/1-tabA-readonly.png`
 3. **AC-C02**: B 닫기 → held [] → A "다시 저장" → 여전히 실패 · IDB rev3/gen9 그대로 · held [](낡아 놓음). `shots/2-tabA-stale-after-retry.png` → A 새로고침 → 제목 "B가 먼저 편집" 표시 · held [] → 편집 → 저장됨 · rev4/gen10.
 4. **BRIEF 회귀**: p4(A) 진입(rev4/gen10) → p2(B) 편집·저장(rev5/gen11)·닫기 → A 편집 → "저장하지 못했습니다" · alert 1개 · IDB rev5/gen11 그대로(A 글자 0) · held []. `shots/3-stale-tab-regression.png`
-- 정리: `indexedDB.deleteDatabase("design-studio")` = **success** · `databases()` = [] · `finish({keep:[]})` · `listTaskSpaces()` = **[]**(자기 공간만 사용·종료, 다른 레인 공간 조작 0) · preview 종료 · 4337 리슨 **0**. 캡처 3장(clip 1400×160, 뷰포트 캡처).
+- 정리: `indexedDB.deleteDatabase("design-studio")` = **success** · `databases()` = [] · `finish({keep:[]})` · `listTaskSpaces()` = **[]**(자기 공간만 사용·종료, 다른 레인 공간 조작 0) · preview 종료 · 4337 리슨 **0**. 캡처 3장(clip 1400×160, 뷰포트 캡처) — `1-tabA-readonly.png` 직접 확인: 툴바에 "저장하지 못했습니다" + "다시 저장" 보임.
+- C09 브라우저 증거: AC-C02에서 "다시 저장"으로 연속 실패해도 `role=alert` 1개 그대로(재낭독용 새 alert 0).
 - 미실측: 떠나기 경고(beforeunload) — 기존 `needsUnloadGuard`가 failed에서 켜짐(새 조건 0, 단위 테스트 기존 그대로). 사유 문장 자체는 편집기에 표시되지 않으므로(MQ-C1 A) 단위 테스트가 증거.
 
 ## 6. 게이트 (마지막 코드 기준 fresh)
@@ -51,5 +53,5 @@
 - 목업과 다르게 한 부분: 없음(UI 변경 0).
 
 ## 8. 남은 것 / Jarvis에게
-- Codex 리뷰(Jarvis 몫). 리뷰 포인트 제안: ① 쓰기 탭이 잠금을 쥔 채 IDB 지우기(D4)가 오면 `cleared` 수신 전까지 쓰기 가능 — D4에서 큐 정지 필요 ② `saveState`가 게이트 대기 중 연속 호출되면 각 호출이 then 체인으로 순서대로 제출(최신 의도는 큐가 정리) ③ 세대 계수는 탭 안 계수(쓰기 탭 단독 작성자 전제).
+- Codex 리뷰(Jarvis 몫). 리뷰 포인트 제안: ① **D4 인터페이스 메모**: 다른 탭의 지우기는 SPEC 1.6 1단계(같은 잠금 ifAvailable)로 쓰기 탭이 있으면 막히므로 안전. 문제는 **같은 탭**에서 편집 뒤 앱 안 이동으로 `/projects` 지우기 — 이 레인은 잠금을 탭 수명 동안 쥐고 Web Locks는 재진입이 안 되어 자기 요청이 null → 거짓 alert "다른 탭에서 편집 중이라 지우지 못했습니다". D4에서 LocalSync가 "이 탭이 writer인가"를 노출하거나 보유 중인 잠금 안에서 지우기를 실행하는 경로가 필요(이 레인은 코드 추가 0). ② `saveState`가 게이트 대기 중 연속 호출되면 각 호출이 then 체인으로 순서대로 제출(최신 의도는 큐가 정리) ③ 세대 계수는 탭 안 계수(쓰기 탭 단독 작성자 전제).
 - ADR-007/SPEC에 "세대 번호 = meta `generation` + 상태 레코드 `gen`" 기록(문서 수정은 이 레인 금지).

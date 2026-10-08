@@ -51,3 +51,30 @@
 - ST-1 문구 교체(`BrowserStorageSection`)는 L3 쓰기 목록 밖이라 하지 않음.
 - Slot의 `onClose(true) → go("/projects")` 매핑은 단위 테스트 없음(대화상자 onClose(true)와 흐름 stopped만 U) — 남은 위험.
 - **턴 기준 미달 [도구 호출 메시지 기준 대략 셈]**: 구현 커밋 + build 약 21번째(**18턴 기준 미달**) · Ego Lite 시작 약 23번째(30턴 기준 충족) · Ego 결과 커밋 약 57번째(**44턴 기준 미달**) · 49~56번째에도 Ego 시나리오 실행(**"48턴부터 게이트·REPORT만" 위반**) · REPORT 초안 약 57번째(**52턴 기준 미달**). 원인 = 시나리오 준비 탐색(확정 비활성 → 폰트 select 변경, 확정 탭의 쓰기 잠금 보유로 편집 시작 실패 → 탭 A 새로 불러오기, 파일 선택기 대신 setInputFiles).
+
+## Codex r1 수정 (P2 — `codex-r1-jarvis.txt`)
+**판정 — 수정 완료: 두 파괴 흐름이 탭 단위 잠금 소유 상태 1개를 공유(★ 방향). 대안(지우기 실패 뒤 닫을 때 새로고침)은 쓰지 않음.**
+
+- 원인: `createClearer`·`createDeleter`가 보유 잠금(`held`)을 각자 기억. 쓰기 탭에서 지우기가 실패하면 싱크는 멈춰(`isWriter()=false`) 있어도 잠금은 이 탭이 쥔 채 → 삭제가 같은 잠금을 다시 요청(Web Locks 재진입 불가 → null) → 자기 잠금을 다른 탭 편집으로 오인해 busy. 반대 순서도 같음.
+- 수정: 새 `app/src/features/projects/tabLockHold.ts` — `WeakMap<TabLink, {held, clearing, stopped}>`. `acquire`(대기 중 지우기면 false · 쓰기 탭이면 보유 잠금 · 이미 쥐면 재사용 · 아니면 tryLock) · `release`(파괴 흐름이 잡은 함수 잠금만 놓고 지움) · `stop`(싱크 멈춤 + 공유 멈춤 표시). `clearBrowserData.ts`·`deleteProject.ts`가 이를 쓰도록 이관(동작 계약 그대로).
+- 공유로 새로 생길 구멍 2개를 같이 막음: ① 지우기 `onblocked` 대기 중(deleteDatabase 요청 남음)에 삭제가 그 잠금을 재사용해 끼어드는 것 → `clearing`이면 삭제 busy·실행 0. ② 실패 시 놓은 함수 잠금을 공유 상태에서도 지움 → 다른 탭이 잡으면 여전히 busy.
+- `stopped`는 공유 상태에서 계산 — 지우기가 이미 싱크를 멈춘 탭에서 삭제가 실패/busy여도 `stopped: true`(닫으면 새로고침 — 멈춘 싱크로 조용히 저장 0이 되는 경로 차단, 기존 계약 주석과 같은 이유).
+- 청크: 새 모듈은 두 대화상자 청크가 공유하는 `dialogText-*.js`(gzip 0.46KB)에 합쳐짐 — 조작 뒤 청크, 진입 closure 아님.
+
+### TDD
+- RED 예측(PROGRESS, 구현 전) → 실측 일치: 신규 `tabLockHold.test.ts` 5건 중 4 FAIL(① 재현 `{busy,false}` ≠ `{done,true}` · ② 반대 순서 잠금 재요청 1회 · ③·⑤ stopped false) · ④ GREEN. RED 커밋 0.
+- 구현 뒤 GREEN. 기존 테스트 수정 0 · 단언 약화 0(D4 Codex r1·r2 테스트 포함 `clearBrowserData`·`deleteProject`·`clearSync` 그대로 GREEN).
+- 회귀 5건: ① Codex 재현(쓰기 탭 → 지우기 실패 → 삭제 = done·잠금 재요청 0) ② 반대 순서(삭제 실패 → 지우기 진행·성공) ③ 쓰기 탭 아님: 지우기 실패(잠금 놓음) → 다른 탭 실제 보유 → 삭제 busy·실행 0 ④ 반대(삭제 실패 → 다른 탭 보유 → 지우기 busy·요청 0) ⑤ 지우기 대기 중 → 삭제 busy·실행 0.
+
+### 번들 (`npm run build`)
+| 경로 | 결과 | 관문 |
+|---|---|---|
+| `/studio` 진입 직후 | 129.65 | ≤129.65 ✅ (직전 129.63 → +0.02, 상한 정확히) |
+| 복원 진입 직후 | 132.68 | ≤132.68 ✅ (직전 132.66 → +0.02, 상한 정확히) |
+| `/profile` 첫 화면 | 99.87 | ≤100 ✅ (변화 0) |
+| `/projects` 진입 직후 | 104.85 | ≤125 ✅ |
+- +0.02는 진입 closure 파일을 바꾸지 않았는데 생김 — `tryLock` 사용처가 바뀌어 공유 `writerLock` 청크의 export 이름·순서가 달라진 것으로 봄 [추정 — 확인 못 함: HEAD 기준선 재빌드는 파일 임시 교체 명령이 로컬 훅("시스템 파일 삭제 차단")에 막혀 건너뜀]. 여유 0이므로 다음 작업은 이 수치에서 시작.
+
+### 게이트 (fresh 실행)
+- `npx tsc --noEmit -p tsconfig.json` TSC=0 · `npm run lint` LINT=0 · `npm run build` BUILD=0(번들 가드 통과) · `npx vitest --run` **281 files / 2461 tests passed, VITEST=0**.
+- Ego Lite·Codex 실행 0(브리프 금지) · 새 의존성 0 · 서브에이전트 0 · push/merge 0.

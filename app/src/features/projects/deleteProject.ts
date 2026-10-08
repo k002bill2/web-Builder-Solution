@@ -10,9 +10,10 @@
  */
 import type { LocalState } from "../../data/persistence/entryRead";
 import type { TabLink } from "../../data/persistence/tabLink";
-import { tryLock, type WriterLocks } from "../../data/persistence/writerLock";
+import type { WriterLocks } from "../../data/persistence/writerLock";
 import type { StudioSeq } from "../../data/studioStore";
 import { seqOf } from "../../data/seqId";
+import { tabLockHold } from "./tabLockHold";
 
 /** envelope.DB_NAME과 같은 값(테스트가 단언) */
 export const DELETE_DB_NAME = "design-studio";
@@ -138,27 +139,15 @@ export interface DeleteResult {
 }
 
 export function createDeleter({ locks, factory, link, session, go, run = runDelete }: DeleteDeps) {
-  /** writer = 이 탭 싱크가 보유한 잠금(멈춘 뒤에도 탭 수명 동안 보유) · 함수 = 삭제가 잡은 잠금 */
-  let held: "writer" | (() => void) | undefined;
-  let stopped = false;
-  const release = () => {
-    if (typeof held === "function") {
-      held();
-      held = undefined;
-    }
-  };
+  /** 보유 잠금·멈춤은 탭 단위로 지우기와 공유(Codex r1 P2 — 지우기 실패 뒤 멈춘 쓰기 탭이 자기 잠금에 막혀 busy가 되지 않게) */
+  const hold = tabLockHold(link, locks);
+  const release = () => hold.release();
   return {
     async remove(projectId: string, name: string): Promise<DeleteResult> {
-      const own = link.own();
-      if (own?.isWriter()) {
-        held = "writer";
-        own.stop();
-        stopped = true;
-      }
-      if (!held && locks) {
-        held = await tryLock(locks);
-        if (!held) return { status: "busy", stopped };
-      }
+      const writer = link.own()?.isWriter() ?? false;
+      if (!(await hold.acquire())) return { status: "busy", stopped: hold.stopped };
+      if (writer) hold.stop();
+      const stopped = hold.stopped;
       let result: RunResult;
       try {
         result = await run(factory, projectId);

@@ -8,8 +8,8 @@
 - [x] 배선 첫 커밋 직후 build 번들 실측 (/profile ≤100, /studio ≤129.65)
 - [x] 구현 커밋
 - [x] Ego Lite (build+preview 4337, 내려받기·파일명·JSON·EX-9·Esc 포커스, 정리)
-- [ ] 게이트: typecheck·lint·build·전체 vitest exit 0
-- [ ] REPORT.md
+- [x] 게이트: typecheck·lint·build·전체 vitest exit 0
+- [x] REPORT.md
 
 ## TDD RED 예측
 - R1 `readProject.test.ts`: 모듈 없음 → 파일 import 실패(전체 FAIL).

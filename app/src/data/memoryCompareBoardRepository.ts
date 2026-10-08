@@ -16,6 +16,7 @@ import { EXPOSED_LICENSE_STATUSES } from "../domain/reference";
 import { SECTION_LIBRARY, type SectionLibrary } from "../domain/sectionLibrary";
 import { CompareBoardError, type CompareBoardRepository, type ConfirmResult } from "./compareBoardRepository";
 import type { BoardConfirmer } from "./memoryBoardConfirm";
+import type { LocalSync } from "./persistence/localSync";
 import { createStudioStore, headOf, type StudioStore } from "./studioStore";
 import { loadBoardConfirm, loadBoardInput } from "./writeBodyLoader";
 
@@ -39,6 +40,8 @@ export interface MemoryCompareBoardOptions {
   readonly fail?: (call: BoardCall) => Error | undefined;
   /** 프로필 저장소와 함께 쓰는 저장 모듈 (DS-2A-04 6.3). 없으면 새로 만든다 */
   readonly store?: StudioStore;
+  /** 로컬 영속 싱크(P1C-D5 첫 저장 안내) — 없으면(memory·강등) 안내 0 */
+  readonly sync?: () => Promise<Pick<LocalSync, "firstSave">>;
 }
 
 export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOptions): CompareBoardRepository {
@@ -112,6 +115,12 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     return result;
   }
 
+  /** 첫 저장 안내 판정(P1C-D5) — 싱크 실패·지연(2초)은 안내 0으로 확정 성공 그대로(확정은 IDB를 기다리지 않는다) */
+  async function noticed(result: ConfirmResult): Promise<ConfirmResult> {
+    const first = await Promise.race([options.sync?.().then((s) => s.firstSave(), () => false), new Promise<false>((done) => setTimeout(done, 2000, false))]);
+    return first ? { ...result, firstSave: true } : result;
+  }
+
   return {
     getBoard: () =>
       call("getBoard", () => {
@@ -152,11 +161,11 @@ export function createMemoryCompareBoardRepository(options: MemoryCompareBoardOp
     getComparison: (referenceIds) => call("getComparison", () => ({ libraryVersion: library.version, results: resultsOf(referenceIds) })),
     confirmProfile: async (revision, expectedLatest) => {
       const body = await confirmerFor(board.confirmed?.profileId);
-      return call("confirmProfile", (commitGate) => confirmWith(body.confirmFirst(board, revision, expectedLatest, commitGate)));
+      return noticed(await call("confirmProfile", (commitGate) => confirmWith(body.confirmFirst(board, revision, expectedLatest, commitGate))));
     },
     createProfileVersion: async (profileId, revision, expectedLatest, target) => {
       const body = await confirmerFor(profileId);
-      return call("createProfileVersion", (commitGate) => confirmWith(body.confirmVersion(board, profileId, revision, expectedLatest, target, commitGate)));
+      return noticed(await call("createProfileVersion", (commitGate) => confirmWith(body.confirmVersion(board, profileId, revision, expectedLatest, target, commitGate))));
     },
     getProfileVersions: (profileId) => call("getProfileVersions", () => store.versions(profileId)),
   };

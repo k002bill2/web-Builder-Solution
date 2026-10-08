@@ -38,8 +38,10 @@ function droppedCountOf(state: unknown): number {
   return typeof n === "number" && Number.isSafeInteger(n) && n > 0 ? n : 0;
 }
 
-/** J-S11 보드가 "새 프로젝트로 확정" 뒤 넘긴 표시 */
-const projectCreatedOf = (state: unknown) => typeof state === "object" && state !== null && "projectCreated" in state && state.projectCreated === true;
+/** 보드 확정이 넘긴 표시 — projectCreated(J-S11 새 프로젝트) · firstSave(P1C-D5 이 브라우저 첫 저장) */
+const flagOf = (state: unknown, key: "projectCreated" | "firstSave") => typeof state === "object" && state !== null && (state as Record<string, unknown>)[key] === true;
+/** SPEC 1.4 첫 저장 1회 안내 — 확정 결과 문장 뒤에 이어 붙인다(같은 status 문장 · 새 라이브 영역 0) */
+const FIRST_SAVE = "이 브라우저에 저장했습니다 — 공용 PC라면 다 쓴 뒤 '프로젝트' 화면의 '이 브라우저 데이터 지우기'로 지우세요";
 /** 목적격 조사 — 마지막 글자 받침 있으면 "을" */
 const objectOf = (word: string) => ((word.charCodeAt(word.length - 1) - 0xac00) % 28 > 0 ? "을" : "를");
 
@@ -57,26 +59,29 @@ function ProfileDetail({ profileId }: { readonly profileId: string }) {
   const location = useLocation();
   const navigate = useNavigate();
   const dropped = droppedCountOf(location.state);
-  const created = projectCreatedOf(location.state);
+  const created = flagOf(location.state, "projectCreated");
+  const firstSave = flagOf(location.state, "firstSave");
   // 새 프로젝트 이름은 불러온 뒤에 안다 — 표시는 마운트 때 ref에 잡아 두고 이름이 오면 한 번 알린다(J-S11)
   const announceCreated = useRef(created);
+  const tail = useRef(firstSave ? ` · ${FIRST_SAVE}` : "");
   const createdName = state.status === "ready" ? state.series.project?.name : undefined;
   // 탭 제목(WCAG 2.4.2) — 비교 보드와 같은 패턴. 버전 전환(?v=)은 같은 화면이라 그대로 (PROFILE-A11Y-FIX D2)
   useEffect(() => {
     document.title = `디자인 프로필 · ${brand.name}`;
   }, []);
   useEffect(() => {
-    if (dropped === 0 && !created) return;
+    if (dropped === 0 && !created && !firstSave) return;
     history.replaceState({ ...history.state, usr: null }, "");
-    if (dropped === 0) return;
-    announce(`조정 ${dropped}개를 지웠습니다`);
+    // 기준 문장 없는 재확정(앞 확정의 안내 키 쓰기 실패 뒤) = 안내만 같은 영역에
+    if (dropped === 0) return void (created || announce(FIRST_SAVE));
+    announce(`조정 ${dropped}개를 지웠습니다${tail.current}`);
     // 지운 조정(재확정)만 라우터 state도 비운다 — 기존 계약(CompareBoardCarryOver 13.7). 첫 확정(C6)은 이 경로를 타지 않는다
     void navigate(location, { replace: true, state: null });
-  }, [location, dropped, created, announce, navigate]);
+  }, [location, dropped, created, firstSave, announce, navigate]);
   useEffect(() => {
     if (createdName === undefined || !announceCreated.current) return;
     announceCreated.current = false;
-    announce(`새 프로젝트 '${createdName}'${objectOf(createdName)} 만들었습니다`);
+    announce(`새 프로젝트 '${createdName}'${objectOf(createdName)} 만들었습니다${tail.current}`);
   }, [createdName, announce]);
   return (
     <>

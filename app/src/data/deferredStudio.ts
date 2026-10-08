@@ -48,8 +48,8 @@ export function createDeferredStudio(loadCatalog: () => Promise<ComparisonCatalo
     profiles: createMemoryProfileRepository({ store }),
     board: createSharedLoader(async () => {
       const [{ createMemoryCompareBoardRepository }, catalog] = await Promise.all([imports.board(), loadCatalog()]);
-      // 보드는 영속 범위 밖 — 새로고침마다 빈 보드라 세션별 id로 멱등 네임스페이스를 나눈다(Codex r2 P1)
-      return createMemoryCompareBoardRepository({ catalog, store, ...(local && { boardId: `board-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}` }) });
+      // 보드는 영속 범위 밖 — 새로고침마다 빈 보드라 세션별 id로 멱등 네임스페이스를 나눈다(Codex r2 P1) · sync = 첫 저장 안내(P1C-D5)
+      return createMemoryCompareBoardRepository({ catalog, store, ...(local && { boardId: `board-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`, sync }) });
     }),
     generations: createSharedLoader(async () => (await imports.generations()).createMemoryGenerationRepository({ store })),
     projects: createSharedLoader(async () => (await imports.projects()).createMemoryProjectRepository({ store, ...(local && sync && { local: { entry: local.entry, sync } }) })),

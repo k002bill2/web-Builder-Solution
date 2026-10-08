@@ -7,6 +7,7 @@
  * - save(8.3): 모양(L4 검증) → 멱등 키 (revision, hash) → NOT_FOUND → STALE_DOC(최신 동봉) → 저장(revision +1).
  * - 스냅샷 쓰기(ER SPEC 3.2 · 2a-05 5.11): 수동 · 복원(복원 전 + 새 revision) · 충돌 해결(보존 + 저장) — 각각 한 번에(commit 실패 → 변화 0).
  *   id는 종류와 상관없이 프로젝트별 단조 `snapshot-N` = max(현존 최대, 지운 최대 `snapshotSeq`) + 1(내보내기 전·새로 시작 전과 같은 번호열, P1D-SPEC 3절).
+ * - 자동 스냅샷(내보내기·복원·충돌·새로 시작 4곳)은 공용 `withAuto`로 더한다 — 같은 커밋에서 자동 최근 20개만 남긴다(P1D-SPEC 1.2).
  */
 import type { CandidatePlan } from "../domain/generation";
 import { generatedReferenceFixtures } from "../fixtures/generatedReferences";
@@ -110,6 +111,8 @@ const hhmm = (iso: string) => {
 };
 /** "내보내기 전 · 14:02"(E-S27) */
 const exportSnapshotName = (iso: string) => `내보내기 전 · ${hhmm(iso)}`;
+/** 자동 스냅샷 보존 개수(P1D-SPEC 1.2) — 수동·게시는 개수 무관 */
+const AUTO_KEEP = 20;
 /** 스냅샷 이름 상한(2a-05 5.11) — 글자 수는 프로젝트 이름과 같이 코드포인트 */
 const SNAPSHOT_NAME_MAX = 30;
 const timedName = (label: string, iso: string) => `${label} · ${hhmm(iso)}`;
@@ -171,6 +174,21 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
   };
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
   const nextSnapshotId = (projectId: string, list: readonly ProjectSnapshot<DocHead>[]) => nextSeqId("snapshot", list.map((s) => s.snapshotId), state.snapshotSeq.get(projectId));
+  /**
+   * 자동 스냅샷 더하기 + 정리(P1D-SPEC 1.2) — 목록 순서(= 생성 순서)상 오래된 자동부터 20개가 될 때까지 뺀다(이미 넘은 옛 데이터도 이번에 한 번에 — 이행).
+   * `keep` = 지금 복원한 스냅샷(빼지 않고 그다음 오래된 자동을 뺀다). 뺀 번호는 `snapshotSeq`로 올린다(묘비 — 재발급 0).
+   * 상태 조각만 돌려준다 — 부르는 쪽이 `commit()` 뒤 다른 변경과 한 번에 반영한다(문서 레코드 + 이미지 delete가 같은 flush · F2).
+   */
+  const withAuto = (projectId: string, list: readonly ProjectSnapshot<DocHead>[], made: ProjectSnapshot<DocHead>, keep?: string): Pick<DocState, "snapshots" | "snapshotSeq"> => {
+    const all = [...list, made];
+    const excess = all.filter((s) => s.kind === "auto").length - AUTO_KEEP;
+    const dropped = all.filter((s) => s.kind === "auto" && s !== made && s.snapshotId !== keep).slice(0, Math.max(0, excess));
+    const seq = Math.max(state.snapshotSeq.get(projectId) ?? 0, ...dropped.map((s) => seqOf("snapshot", s.snapshotId)));
+    return {
+      snapshots: new Map(state.snapshots).set(projectId, dropped.length ? all.filter((s) => !dropped.includes(s)) : all),
+      snapshotSeq: dropped.length ? new Map(state.snapshotSeq).set(projectId, seq) : state.snapshotSeq,
+    };
+  };
 
   /** 8.3.2 판정 1~8 — 동기. `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0) */
   function judgeAndWrite({ projectId, format, docRevision, hasGenerator }: { projectId: string; format: ExportFormat; docRevision: number; hasGenerator: boolean }, commit: () => void): ExportOutcome {
@@ -226,7 +244,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       commit();
       state = {
         ...state,
-        snapshots: new Map(state.snapshots).set(projectId, [...snapshots, snapshot]),
+        ...withAuto(projectId, snapshots, snapshot),
         jobs: new Map(state.jobs).set(job.jobId, job),
         exports: new Map(state.exports).set(`${projectId}|${format}`, { key, result }),
       };
@@ -296,7 +314,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       state = {
         ...state,
         docs: new Map(state.docs).set(projectId, doc),
-        snapshots: new Map(state.snapshots).set(projectId, [...list, before]),
+        ...withAuto(projectId, list, before, snapshotId),
         restores: new Map(state.restores).set(projectId, { key, doc }),
       };
       return doc;
@@ -312,7 +330,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const kept = snapshotOf(nextSnapshotId(projectId, list), choice === "mine" ? current : deepFreeze({ ...myDoc }), createdAt, { kind: "auto", reason: "conflict", name: timedName("충돌 보존", createdAt) });
       const doc = choice === "mine" ? deepFreeze({ ...myDoc, revision: current.revision + 1, updatedAt: createdAt }) : current;
       commit();
-      state = { ...state, docs: new Map(state.docs).set(projectId, doc), snapshots: new Map(state.snapshots).set(projectId, [...list, kept]) };
+      state = { ...state, docs: new Map(state.docs).set(projectId, doc), ...withAuto(projectId, list, kept) };
       return doc;
     },
     requestExport: async (args, injected, via) => {
@@ -374,14 +392,14 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const doc: DocHead = deepFreeze(current ? { ...made.doc, revision: current.revision + 1 } : made.doc);
       const result: StartDocResult<DocHead> = deepFreeze({ doc, changes: made.changes, ...(made.changeNotice && { changeNotice: made.changeNotice }) });
       const snapshots = state.snapshots.get(projectId) ?? [];
-      const kept: readonly ProjectSnapshot<DocHead>[] = current
-        ? [...snapshots, deepFreeze({ snapshotId: nextSnapshotId(projectId, snapshots), projectId, kind: "auto", reason: "restart", name: "새로 시작 전", createdAt: updatedAt, doc: current, profileVersion: current.profileVersion, candidateId: current.candidateId, hash: current.hash })]
-        : snapshots;
+      const kept = current
+        ? withAuto(projectId, snapshots, snapshotOf(nextSnapshotId(projectId, snapshots), current, updatedAt, { kind: "auto", reason: "restart", name: "새로 시작 전" }))
+        : { snapshots: new Map(state.snapshots).set(projectId, snapshots) };
       commit();
       state = {
         ...state,
         docs: new Map(state.docs).set(projectId, doc),
-        snapshots: new Map(state.snapshots).set(projectId, kept),
+        ...kept,
         starts: new Map(state.starts).set(projectId, { key, result }),
       };
       return result;

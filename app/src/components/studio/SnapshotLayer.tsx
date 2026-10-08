@@ -36,6 +36,11 @@ export default function SnapshotLayer({ repository, projectId, save, root, headi
             onNotice(`스냅샷 '${name}'를 저장했습니다`);
             refresh();
           }}
+          // 참조 집합(held) 갱신 — 지운 스냅샷에만 있던 이미지를 탭 메모리에서도 놓는다(5.9 · P1D-SPEC D-S06)
+          onDeleted={(name) => {
+            onNotice(`스냅샷 '${name}'를 지웠습니다`);
+            refresh();
+          }}
           // 저장 먼저(대화상자가 flushed 성공 뒤에만 부른다) — 미리보기 중에는 자동 저장이 나가지 않게(ER-AC-S3)
           onPreview={(snapshot) => patch({ open: false, preview: snapshot })}
           onClose={() => {

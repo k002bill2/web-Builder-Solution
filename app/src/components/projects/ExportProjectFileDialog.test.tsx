@@ -43,6 +43,20 @@ describe("ExportProjectFileDialog", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
+  it("실제 브라우저처럼 showModal()이 첫 포커스 대상(취소)으로 옮겨도 열린 뒤 포커스 = 파일 만들기 (Ego Lite 실측 회귀)", () => {
+    const original = HTMLDialogElement.prototype.showModal;
+    const spy = vi.spyOn(HTMLDialogElement.prototype, "showModal").mockImplementation(function (this: HTMLDialogElement) {
+      original.call(this);
+      this.querySelector<HTMLButtonElement>("button")?.focus();
+    });
+    try {
+      renderDialog();
+      expect(screen.getByRole("button", { name: "파일 만들기" })).toHaveFocus();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it("문서 없음 = '편집 문서와 스냅샷' 줄 생략", () => {
     renderDialog({ hasDoc: false });
     expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual(["문서에 넣은 이미지", "확정한 프로필(모든 버전)"]);

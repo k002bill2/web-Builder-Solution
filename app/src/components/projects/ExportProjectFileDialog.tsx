@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { EXPORT_TOO_LARGE } from "../../features/projectFile/format";
 import { Button } from "../ds/Button";
 
@@ -45,11 +45,12 @@ export default function ExportProjectFileDialog({
   const [large, setLarge] = useState<Blob | null>(null);
   const [error, setError] = useState({ text: "", key: 0 });
 
-  useEffect(() => {
+  // showModal()은 첫 포커스 대상(취소)으로 옮기므로 연 뒤에 "파일 만들기"로 — 순서가 바뀌면 실제 브라우저에서 취소가 잡힌다(Ego Lite 실측)
+  useLayoutEffect(() => {
     const el = dialog.current;
     if (el && !el.open) el.showModal();
+    el?.querySelector<HTMLButtonElement>("[data-make]")?.focus();
   }, []);
-  useLayoutEffect(() => dialog.current?.querySelector<HTMLButtonElement>("[data-make]")?.focus(), []);
   useLayoutEffect(() => {
     if (large) dialog.current?.querySelector<HTMLButtonElement>("[data-download]")?.focus();
   }, [large]);

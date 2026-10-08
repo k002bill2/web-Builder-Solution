@@ -1,6 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { DeleteResult } from "../../features/projects/deleteProject";
-import { BUSY_TEXT, FAIL_TEXT } from "../../features/projects/dialogText";
+import { BACKUP_TEXT, BUSY_TEXT, FAIL_TEXT } from "../../features/projects/dialogText";
 import { Button } from "../ds/Button";
 
 const UNREADABLE_TEXT = "저장된 데이터를 읽지 못해 지우지 못했습니다 — '이 브라우저 데이터 지우기'로 비울 수 있습니다";
@@ -82,6 +82,7 @@ export default function DeleteProjectDialog({
         <p className="ds-caption1 text-label-alternative">
           다른 프로젝트와 내려받은 파일은 그대로 남습니다. 지운 뒤 이 화면을 새로 불러오므로 비교 보드와 보관함도 비워집니다.
         </p>
+        <p className="ds-caption1 text-label-alternative">{BACKUP_TEXT}</p>
         {error.text && (
           <p key={error.key} role="alert" className="ds-caption1 text-status-negative-text">
             {error.text}

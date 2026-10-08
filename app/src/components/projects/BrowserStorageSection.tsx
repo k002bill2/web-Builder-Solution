@@ -31,6 +31,8 @@ const goReload = (path: string) => window.location.assign(path);
 
 /** 지우기 대화상자 + 흐름 본문(1.6) — 조작 뒤 청크("이 브라우저 데이터 지우기"를 눌러야 받는다) */
 const ClearDialogSlot = lazy(() => import("./ClearDataDialogSlot"));
+/** 가져오기 대화상자 + 검증·재매김·쓰기 본문(P2-SPEC 3절·4.2) — 조작 뒤 청크(파일을 골라야 받는다) */
+const ImportDialogSlot = lazy(() => import("./ImportProjectFileDialogSlot"));
 /** clearBrowserData.CLEARED_KEY와 같은 값(조작 뒤 청크를 진입에 싣지 않으려고 리터럴 — 테스트가 같음을 단언) */
 export const CLEARED_NOTICE_KEY = "design-studio-cleared";
 const CLEARED_TEXT = "이 브라우저 데이터를 지웠습니다";
@@ -148,6 +150,14 @@ export function BrowserStorageSection({
   const other = useOtherTab(link, announce);
   const [clearing, setClearing] = useState(false);
   const opener = useRef<HTMLDivElement>(null);
+  const [importing, setImporting] = useState<{ readonly file: File; readonly key: number }>();
+  const picks = useRef(0);
+  const picker = useRef<HTMLInputElement>(null);
+  const importOpener = useRef<HTMLDivElement>(null);
+  const pickFile = () => {
+    importOpener.current?.querySelector("button")?.focus();
+    picker.current?.click();
+  };
 
   const requestPersist = async () => {
     const granted = await Promise.resolve(storage?.persist?.()).catch(() => false);
@@ -195,6 +205,45 @@ export function BrowserStorageSection({
             자동 삭제 막기 요청
           </Button>
         </div>
+      )}
+      {local && factory && (
+        <div ref={importOpener} className="flex">
+          <Button variant="outline" size="sm" onClick={pickFile}>
+            프로젝트 파일 가져오기
+          </Button>
+          <input
+            ref={picker}
+            type="file"
+            accept=".json,application/json"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0];
+              // 같은 파일을 다시 골라도 change가 나게 비운다(AC-P08 재낭독 · 같은 파일 2회 가져오기)
+              event.currentTarget.value = "";
+              picks.current += 1;
+              if (file) setImporting({ file, key: picks.current });
+            }}
+          />
+        </div>
+      )}
+      {local && factory && importing && (
+        <Suspense fallback={null}>
+          <ImportDialogSlot
+            key={importing.key}
+            file={importing.file}
+            deps={{ locks, factory, link, session, go }}
+            onPickAgain={() => {
+              setImporting(undefined);
+              pickFile();
+            }}
+            onClose={() => {
+              setImporting(undefined);
+              importOpener.current?.querySelector("button")?.focus();
+            }}
+          />
+        </Suspense>
       )}
       {factory && (
         <div ref={opener} className="flex">

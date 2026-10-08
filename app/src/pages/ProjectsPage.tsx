@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router";
 import { BrowserStorageSection } from "../components/projects/BrowserStorageSection";
 import { ProjectList } from "../components/projects/ProjectList";
@@ -22,6 +22,9 @@ const DeleteDialogSlot = lazy(() => import("../components/projects/DeleteProject
 /** deleteProject.DELETED_KEY와 같은 값(조작 뒤 청크를 페이지에 싣지 않으려고 리터럴 — 테스트가 같음을 단언) */
 export const DELETED_NOTICE_KEY = "design-studio-deleted";
 const deletedText = (name: string) => `'${name}' 프로젝트를 지웠습니다`;
+/** writeImport.IMPORTED_KEY와 같은 값(P2-SPEC 3.5 ④ — 같은 이유로 리터럴, 테스트가 같음을 단언) */
+export const IMPORTED_NOTICE_KEY = "design-studio-imported";
+const importedText = (name: string) => `'${name}' 프로젝트를 가져왔습니다`;
 
 type Session = Pick<Storage, "getItem" | "removeItem">;
 const defaultSession = (): Session | undefined => {
@@ -134,6 +137,52 @@ function useDeletedNotice(session: Session | undefined, announce: (text: string)
   return { heading, focusable: name !== null };
 }
 
+interface Imported {
+  readonly projectId: string;
+  readonly name: string;
+}
+const parseImported = (raw: string): Imported | null => {
+  try {
+    const v: unknown = JSON.parse(raw);
+    if (typeof v !== "object" || v === null) return null;
+    const { projectId, name } = v as Record<string, unknown>;
+    return typeof projectId === "string" && typeof name === "string" ? { projectId, name } : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * 가져오기 성공 새로고침 뒤 1회(P2-SPEC I-S07 · IM-15) — 키를 읽으면 바로 지우고 알림 · 목록이 그려진 뒤 1회 포커스 = 그 projectId 줄의 첫 행동.
+ * 줄은 기존 `data-rename-for`로 찾는다(SPEC의 새 `data-project-row`는 L2 파일 ProjectRow라 붙이지 않음 — 이름으로는 찾지 않는다) · 못 찾으면 h1.
+ */
+function useImportedNotice(session: Session | undefined, announce: (text: string) => void, loaded: boolean, page: RefObject<HTMLDivElement | null>, heading: RefObject<HTMLHeadingElement | null>) {
+  const [found] = useState(() => {
+    try {
+      const raw = session?.getItem(IMPORTED_NOTICE_KEY) ?? null;
+      if (raw === null) return null;
+      session?.removeItem(IMPORTED_NOTICE_KEY);
+      return parseImported(raw);
+    } catch {
+      return null;
+    }
+  });
+  useEffect(() => {
+    if (found !== null) announce(importedText(found.name));
+    // 마운트 1회
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const focused = useRef(false);
+  useEffect(() => {
+    if (found === null || !loaded || focused.current) return;
+    focused.current = true;
+    const buttons = page.current?.querySelectorAll<HTMLElement>("[data-rename-for]") ?? [];
+    const row = Array.from(buttons).find((el) => el.dataset.renameFor === found.projectId)?.closest("li");
+    (row?.querySelector<HTMLElement>("a, button") ?? heading.current)?.focus();
+  }, [found, loaded, page, heading]);
+  return found !== null;
+}
+
 /** DS-2A-05 `/projects` 프로젝트 목록 (SPEC 2.4 J-S01~J-S08). 라우트 연결은 a1-β */
 export function ProjectsPage({
   repository,
@@ -152,6 +201,7 @@ export function ProjectsPage({
   const announce = useCallback((text: string) => setNotice((n) => ({ text, key: n.key + 1 })), []);
   const { draft, setDraft, page, close, submit } = useRename(repository, replace, announce);
   const { heading, focusable } = useDeletedNotice(session, announce);
+  const importedNotice = useImportedNotice(session, announce, items !== null, page, heading);
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null);
   const openDelete = (projectId: string) => {
     const found = items?.find((s) => s.projectId === projectId);
@@ -181,7 +231,7 @@ export function ProjectsPage({
   return (
     <div ref={page} className={PAGE}>
       <header className="flex w-full flex-wrap items-center justify-between gap-3">
-        <h1 ref={heading} tabIndex={focusable ? -1 : undefined} className="ds-title1">
+        <h1 ref={heading} tabIndex={focusable || importedNotice ? -1 : undefined} className="ds-title1">
           프로젝트
         </h1>
         {items !== null && items.length > 0 && (

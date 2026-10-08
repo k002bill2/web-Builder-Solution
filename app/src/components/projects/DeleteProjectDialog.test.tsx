@@ -21,7 +21,7 @@ function deferred() {
 const result = (status: DeleteResult["status"], stopped = false): DeleteResult => ({ status, stopped });
 
 describe("DeleteProjectDialog", () => {
-  it("J-S13 문구 · h2 접근 이름 · 목록 3줄 · 캡션 · 열 때 포커스 = 취소", () => {
+  it("J-S13 문구 · h2 접근 이름 · 목록 3줄 · 캡션 + FX-1 백업 문장 · 열 때 포커스 = 취소", () => {
     render(<DeleteProjectDialog name="카페 온도" hasDoc remove={vi.fn()} onClose={vi.fn()} />);
     const dialog = screen.getByRole("dialog", { name: "'카페 온도' 프로젝트를 지울까요?" });
     expect(dialog).toHaveAttribute("open");
@@ -30,6 +30,7 @@ describe("DeleteProjectDialog", () => {
     expect(
       screen.getByText("다른 프로젝트와 내려받은 파일은 그대로 남습니다. 지운 뒤 이 화면을 새로 불러오므로 비교 보드와 보관함도 비워집니다."),
     ).toBeInTheDocument();
+    expect(screen.getByText("지우기 전에 각 프로젝트의 '파일로 내보내기'로 백업할 수 있습니다.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "취소" })).toHaveFocus();
     expect(screen.getByRole("button", { name: "프로젝트 지우기" })).toBeInTheDocument();
   });

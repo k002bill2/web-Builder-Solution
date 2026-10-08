@@ -211,7 +211,7 @@ describe("ImageSlotPanel — 잃은 이미지·지우기·URL 수명·파일 이
     expect(screen.getByText("이미지를 다시 골라 주세요")).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /대체텍스트/ })).toHaveValue("가게 앞");
     expect(screen.getByRole("button", { name: "이미지 고르기" })).toBeInTheDocument();
-    expect(screen.getByText("고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다")).toBeInTheDocument();
+    expect(screen.getByText("고른 이미지는 문서와 함께 저장됩니다 — 툴바에 '이 탭에 저장됨'이 보이면 편집기를 나가거나 새로고침하면 다시 골라야 합니다")).toBeInTheDocument();
   });
 
   it("지우기 → 플레이스홀더로 · 미리보기 URL은 패널만 소유 — 언마운트 뒤 살아 있는 URL 0 · 파일 이름 DOM·문서·보관소 0", async () => {

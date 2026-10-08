@@ -61,7 +61,7 @@ const NEXT: Readonly<Record<ExportFormat, string>> = {
   "react-zip": "React 프로젝트(zip)는 코드 생성기 연결 후(M4) 내보낼 수 있습니다",
   "static-html": "정적 HTML은 생성기 연결 후(다음 단계) 내보낼 수 있습니다",
 };
-const KEEP = "지금 문서는 이 탭에 저장돼 있습니다 — 따로 남기려면 '스냅샷'에서 저장하세요";
+const KEEP = "지금 문서는 자동으로 저장됩니다 — 이 시점을 따로 남기려면 '스냅샷'에서 저장하세요";
 const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip", "static-html": "정적 HTML" };
 
 /**

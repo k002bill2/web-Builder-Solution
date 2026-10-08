@@ -100,7 +100,7 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     const { requestExport } = await open(clean());
     const { events, stop } = listen();
     act(() => void fireEvent.click(html()));
-    await within(gateRegion()).findByText(/^정적 HTML은 생성기 연결 후\(다음 단계\) 내보낼 수 있습니다\. 지금 문서는 이 탭에 저장돼 있습니다/);
+    await within(gateRegion()).findByText(/^정적 HTML은 생성기 연결 후\(다음 단계\) 내보낼 수 있습니다\. 지금 문서는 자동으로 저장됩니다/);
     expect(requestExport).toHaveBeenCalledTimes(1);
     expect(requestExport).toHaveBeenCalledWith("project-1", "static-html", 3);
     expect(within(gateRegion()).queryByRole("alert")).not.toBeInTheDocument();

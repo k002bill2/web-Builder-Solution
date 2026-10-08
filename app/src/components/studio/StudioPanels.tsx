@@ -143,7 +143,7 @@ export function GatePanel({ children, exports }: { readonly children?: ReactNode
       </h2>
       {children}
       <h3 className="ds-label">내보내기</h3>
-      {exports ?? <p className={CAPTION}>코드 생성기 연결 후(M2) 내보낼 수 있습니다. 지금 문서는 이 탭에 저장돼 있습니다.</p>}
+      {exports ?? <p className={CAPTION}>코드 생성기 연결 후(M2) 내보낼 수 있습니다.</p>}
     </section>
   );
 }

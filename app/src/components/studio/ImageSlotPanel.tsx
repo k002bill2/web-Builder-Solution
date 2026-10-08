@@ -41,7 +41,7 @@ export default function ImageSlotPanel({ doc, instanceId, onEdit, slots, host, B
       {slots.filter((entry) => entry.kind === "image").map((entry) => (
         <ImageSlotField key={entry.key} section={section} entry={entry} doc={doc} images={images} latest={latest} remember={remember} publish={publish} onEdit={onEdit} announce={setStatus} Button={Button} />
       ))}
-      <p className="ds-caption1 text-label-alternative">고른 이미지는 이 탭의 편집기 안에서만 보관됩니다 — 편집기를 나가거나 새로고침하면 다시 골라야 합니다</p>
+      <p className="ds-caption1 text-label-alternative">고른 이미지는 문서와 함께 저장됩니다 — 툴바에 '이 탭에 저장됨'이 보이면 편집기를 나가거나 새로고침하면 다시 골라야 합니다</p>
     </div>
   );
 }

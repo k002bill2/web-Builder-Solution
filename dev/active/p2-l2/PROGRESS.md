@@ -46,7 +46,7 @@
 - [x] 회귀 테스트 작성 + RED 확인(커밋 안 함) — $TMPDIR에서 HEAD 구현 대조, C1·C2(한 테스트)·C3 FAIL
 - [x] 구현: IDB 읽기(연결 닫음) 뒤 readImageRecord 규칙 검사 · 실패 레코드 제외
 - [x] build 번들 판정(/studio ≤129.65 · 복원 ≤132.68 · /profile ≤100 · 직전 129.12/132.15/99.86) — 늘면 리터럴 복제 + parity → 129.11 / 132.14 / 99.86
-- [x] 게이트 typecheck·lint·build·전체 vitest 1회 exit 0
+- [x] 게이트 typecheck·lint·build exit 0 · 전체 vitest 1회차 exit 1(무관 FAQ 단언 1건) → 재실행 2597 passed exit 0
 - [x] REPORT "Codex r1 수정" 절 커밋 (구현 커밋 10d11f7)
 
 ## RED 예측 (Codex r1 수정)

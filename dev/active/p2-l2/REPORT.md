@@ -64,3 +64,11 @@
   | 44턴부터 게이트·REPORT만 | 44~47번째에 수정·재빌드·재실측 — 위반 | 같은 결함 수정 |
   | REPORT 초안 48턴 전 | 약 51번째(cca8366) — 미달 | 위 누적 |
 - 금지 준수: 엔진·계약·docs/**·lock·CLAUDE.md·L3 파일 수정 0 · 새 의존성·아이콘 0 · 서브에이전트 0 · push/merge/삭제 0 · amend/rebase 0.
+
+## 7. Codex r1 수정 (P2 1건 — 내보내기 이미지 레코드 전체 규칙 검사)
+- **수정** (10d11f7): `readProject`가 이미지 레코드를 변형본 Blob 여부만 보던 것을 저장 규칙 전체(사다리·폭/높이/픽셀 한도·형식·bytes 합·바이트 서명)로 검사하고 실패 레코드를 제외. `readImageRecord`를 값 import하지 않고 `exportImageOf`로 리터럴 복제(진입 closure·공유 청크 분리 방지) + parity 테스트(말뭉치 26건, 통과 9 · 거절 17, 상수 대조). IDB 읽기(`readRaw`, 요청만 기다림·연결 닫음)와 Blob 서명 읽기를 분리.
+- **회귀**: C1 "width 1280 + 변형본 640만"·C2 "variants {}" 제외(한 테스트) · C3 왕복(정상 1 + 손상 1 → readProject → encodeProjectFile → checkFile ok · 이미지 = 정상 1). 픽스처 `image(tag)`는 저장 규칙 바이트로 교체 — 기존 단언 변경 0.
+- **RED 실측**: 저장소 파일 무접촉. `git show HEAD:…/readProject.ts`를 $TMPDIR로 꺼내 import를 절대경로로 바꾸고, 같은 테스트를 그 파일 대상으로 실행(`-t "Codex r1"`) → 2 failed: C1·C2 `expected ['a','b','c','d'] to deeply equal ['a','d']`, C3 `expected { ok: false, code: 'IM-6' } to match { ok: true }`. 예측과 일치.
+- **GREEN**: `npx vitest --run src/features/projectFile` 6 files · 95 passed.
+- **번들** (`npm run build` exit 0): /studio 129.11KB (≤129.65, 직전 129.12) · 복원 진입 132.14KB (≤132.68, 직전 132.15) · /profile 99.86KB (≤100, 직전 99.86).
+- **게이트**: typecheck exit 0 · lint exit 0 · build exit 0 · 전체 vitest — 1회차 exit 1(projectFile 무관 "편집 · FAQ" heading 단언 1건, build 직후 병렬 부하 중), 즉시 재실행 292 files · 2597 passed exit 0. 1회차 실패는 불안정 테스트로 추정(원인 미조사, 변경 파일과 import 관계 없음).

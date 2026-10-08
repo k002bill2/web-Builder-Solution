@@ -40,3 +40,17 @@
 - **결함 발견·수정**: 첫 실측에서 두 번째 열기 포커스 = "취소"(showModal()이 useLayoutEffect 포커스 뒤에 실행돼 첫 버튼으로 옮김 — jsdom은 재현 안 함). RED 테스트(showModal이 첫 버튼에 포커스하도록 spy) FAIL 확인 → 같은 layout effect에서 showModal 뒤 포커스 → GREEN → 1ab4291 → 재빌드 후 재실측: 열기 2회 모두 activeElement "파일 만들기" (`shots/1-dialog-focus.png`).
 - 바깥(8,8) 클릭 = 열린 채 · 실제 Esc 키 → 닫힘 · activeElement "파일로 내보내기" data-export-for=project-1 · 알림 변화 0 (`shots/3-esc-focus.png`).
 - 정리: `deleteDatabase("design-studio")` = success · databases() [] · `task.finish({keep:[]})` 완료 · `listTaskSpaces()` = [{id 31, 'p2-l2 export QA', ownership 'user'}] (finish 뒤에도 목록에 남음 — 다른 공간 0, L3 공간 무접촉) · preview 종료, 4337 리슨 0. main 5480 무접촉.
+
+# Codex r1 수정 (P2 1건 — readProject 이미지 레코드 전체 규칙 검사)
+- [x] 픽스처 image(tag)를 저장 규칙 바이트(fakeImageBytes png · 사다리 640)로 교체 — 단언 변경 0, 기존 PASS 확인
+- [x] 회귀 테스트 작성 + RED 확인(커밋 안 함) — $TMPDIR에서 HEAD 구현 대조, C1·C2(한 테스트)·C3 FAIL
+- [x] 구현: IDB 읽기(연결 닫음) 뒤 readImageRecord 규칙 검사 · 실패 레코드 제외
+- [x] build 번들 판정(/studio ≤129.65 · 복원 ≤132.68 · /profile ≤100 · 직전 129.12/132.15/99.86) — 늘면 리터럴 복제 + parity → 129.11 / 132.14 / 99.86
+- [x] 게이트 typecheck·lint·build·전체 vitest 1회 exit 0
+- [x] REPORT "Codex r1 수정" 절 커밋 (구현 커밋 10d11f7)
+
+## RED 예측 (Codex r1 수정)
+- C1 "width 1280 + variants 640만" 레코드 → 현재 imageOf 통과 → images에 포함 → 제외 단언 FAIL.
+- C2 "variants {}" 레코드 → `[].every` = true로 통과 → 포함 → FAIL.
+- C3 왕복(정상 1 + 손상 1 → readProject → encodeProjectFile → checkFile(fakeDeps)) → 손상 포함 → IM-6 → ok 단언 FAIL.
+- 정상 이미지 포함 단언은 수정 전후 PASS. 기존 테스트(픽스처 교체 뒤) 전부 PASS.

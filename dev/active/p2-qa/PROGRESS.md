@@ -16,7 +16,7 @@
   - 삭제 회귀: "프로젝트 지우기" → alert "다른 탭에서 편집 중이라 지우지 못했습니다 — …" · IDB 불변(gen 2)
   - B 닫기 → A 재시도: 요약 264ms → status IM-15 1개 · 포커스 A "…편집기 열기" · IDB docs2·images2(`project-2/4ef200c8-…` localId 유지) · gen 3
 - [x] 3. 확인 단계 소요 — 780ms · 782ms(B 쓰기 탭 열린 상태) · 264ms · 15초 정체 재현 안 됨
-- [x] 4. 요약 "파일 1MB" (13,115B) — IM-13 `파일 {N}MB` 대조 필요
+- [x] 4. 요약 "파일 1MB"(13,115B) — IM-13 형식 일치 · Math.ceil 올림 → P3 D1
 - [x] 5. 회귀 스모크 — Esc 포커스 PASS · 새로고침 편집기 열림 부분 PASS(B 새 탭 로드로 project-1 열림) · 손상 파일 IM-2/4 미확정: BLOCKED: 34턴 마감 규칙으로 미실행
-- [ ] 6. 정리
-- [ ] 7. QA-REPORT.md 커밋
+- [x] 6. 정리 — deleteDatabase success · databases [] · finish({keep:[]}) · listTaskSpaces = 33(user 소유로 남음 — 영환님 탭 닫기 필요) · 4337 LISTEN 0
+- [x] 7. QA-REPORT.md 커밋 (8af03c9)

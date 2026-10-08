@@ -64,3 +64,5 @@
 - 게이트(fresh): typecheck 0 · lint 0 · build 0 · `npx vitest --run` 265파일 **2316/2316** exit 0.
 - 번들: `/studio/:projectId` **129.64**(관문 ≤129.65) · 복원 진입 **132.67**(≤132.68) · `/projects` 101.40.
 - 범위: persistence 계열만(writeQueue·localSync + 테스트 2). ProjectsPage·features/projects·엔진·계약·docs·lock 수정 0 · 새 의존성 0 · Ego Lite·Codex 미실행(브리프 금지) · 서브에이전트 0.
+- 불변식 범위 근거: `grep -rn --include='*.ts' --include='*.tsx' '\.write(' app/src`(테스트·writeQueue 제외) = `src/test/persistenceContract.ts`(테스트 계약 헬퍼)뿐 → 운영 IDB 쓰기는 모두 `writeQueue`를 지나고, 도장으로 트랜잭션마다 세대 +1.
+- 열린 항목: Codex r2 검증은 이 레인 브리프가 금지해 실행하지 않음 — 다음 관문 `/codex:review --scope branch --base d4a0ee5`.

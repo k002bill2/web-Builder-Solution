@@ -34,6 +34,8 @@ const ClearDialogSlot = lazy(() => import("./ClearDataDialogSlot"));
 /** clearBrowserData.CLEARED_KEY와 같은 값(조작 뒤 청크를 진입에 싣지 않으려고 리터럴 — 테스트가 같음을 단언) */
 export const CLEARED_NOTICE_KEY = "design-studio-cleared";
 const CLEARED_TEXT = "이 브라우저 데이터를 지웠습니다";
+/** 다른 탭 알림(1.5) — 구독은 이 영역(`/projects` 페이지 청크)에서만 */
+const OTHER_TEXT = { saved: "다른 탭에서 저장한 변경이 있습니다 — 새로고침하면 보입니다", cleared: "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요" } as const;
 
 type Session = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
@@ -73,6 +75,25 @@ function useStorageIssue(factory: IDBFactory | undefined, enabled: boolean) {
     };
   }, [factory, enabled]);
   return issue;
+}
+
+/** 다른 탭의 saved·cleared — 처음 받을 때만 알린다(같은 종류 반복 낭독 0) · cleared가 saved를 덮는다 */
+function useOtherTab(link: TabLink, announce: (text: string) => void) {
+  const [other, setOther] = useState<keyof typeof OTHER_TEXT>();
+  useEffect(
+    () =>
+      link.listen(({ type }) =>
+        setOther((prev) => {
+          if (prev === type || prev === "cleared") return prev;
+          announce(OTHER_TEXT[type]);
+          return type;
+        }),
+      ),
+    // 링크당 1회 구독
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [link],
+  );
+  return other;
 }
 
 /** 새로고침 뒤 1회(1.6 5단계) — 키를 읽으면 바로 지운다 */
@@ -124,6 +145,7 @@ export function BrowserStorageSection({
   const usage = usageText(estimate);
   const announce = (text: string) => setNotice((n) => ({ text, key: n.key + 1 }));
   useClearedNotice(session, announce);
+  const other = useOtherTab(link, announce);
   const [clearing, setClearing] = useState(false);
   const opener = useRef<HTMLDivElement>(null);
 
@@ -142,6 +164,14 @@ export function BrowserStorageSection({
         {notice.text && <span key={notice.key}>{notice.text}</span>}
       </p>
       {local && <p className="ds-body3">{LOCAL_TEXT}</p>}
+      {other && (
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="ds-body3">{OTHER_TEXT[other]}</p>
+          <Button variant="outline" size="sm" onClick={reload}>
+            새로고침
+          </Button>
+        </div>
+      )}
       {issue && (
         <Callout
           tone="warning"

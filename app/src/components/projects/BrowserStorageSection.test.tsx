@@ -221,3 +221,51 @@ describe("BrowserStorageSection — 이 브라우저 데이터 지우기 (1.6 ·
     expect(statusRegion()).not.toHaveTextContent(CLEARED_TEXT);
   });
 });
+
+describe("BrowserStorageSection — 다른 탭 알림 (1.5 · AC-C03)", () => {
+  const SAVED_TEXT = "다른 탭에서 저장한 변경이 있습니다 — 새로고침하면 보입니다";
+  const CLEARED_BY_OTHER = "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요";
+
+  it("다른 탭 saved → 보이는 문장 + '새로고침' + status 1회 · 누르면 reload", async () => {
+    const net = createLinkNetwork();
+    const other = net.tab();
+    const reload = vi.fn();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} link={net.tab()} reload={reload} />);
+    other.post({ type: "saved" });
+    other.post({ type: "saved" });
+    await waitFor(() => expect(statusRegion()).toHaveTextContent(SAVED_TEXT));
+    expect(screen.getAllByText(SAVED_TEXT, { selector: "p:not([role]) *, p:not([role])" })).toHaveLength(1);
+    await userEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  it("다른 탭 cleared → 지워짐 문장 + '새로고침'", async () => {
+    const net = createLinkNetwork();
+    const other = net.tab();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} link={net.tab()} reload={vi.fn()} />);
+    other.post({ type: "cleared" });
+    await waitFor(() => expect(statusRegion()).toHaveTextContent(CLEARED_BY_OTHER));
+    expect(screen.getByRole("button", { name: "새로고침" })).toBeInTheDocument();
+  });
+
+  it("같은 탭(같은 링크)의 saved는 표시 0 — 탭당 채널 1개 공유", async () => {
+    const net = createLinkNetwork();
+    const mine = net.tab();
+    render(<BrowserStorageSection persistence="local" storage={storageApi()} link={mine} reload={vi.fn()} />);
+    mine.post({ type: "saved" });
+    await new Promise((r) => setTimeout(r, 20));
+    expect(screen.queryByText(SAVED_TEXT)).not.toBeInTheDocument();
+  });
+
+  it("언마운트하면 구독을 끊는다", async () => {
+    const net = createLinkNetwork();
+    const other = net.tab();
+    const mine = net.tab();
+    const listen = vi.spyOn(mine, "listen");
+    const { unmount } = render(<BrowserStorageSection persistence="local" storage={storageApi()} link={mine} />);
+    expect(listen).toHaveBeenCalledTimes(1);
+    unmount();
+    other.post({ type: "saved" });
+    await new Promise((r) => setTimeout(r, 20));
+  });
+});

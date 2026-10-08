@@ -13,6 +13,8 @@
  *   못 잡음 = 읽기 전용(saveState 쓰기 0 · flush INFRA) · 낡음 = 쓰기 0. 열 때 이미 낡았으면 문서 시드에 진입 문서를 둔다(다른 탭의 새 revision으로 판정하지 않게).
  * - 지우기(P1C-D4 · SPEC 1.6): 열면 탭 링크에 손잡이를 등록한다(쓰기 탭인가 · 멈춤). 멈춤 = 연결 닫기 + 이후 쓰기 0 — 큐에 이미 든 쓰기도
  *   쓰기 직전에 막고, 저장은 INFRA 사유 "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요".
+ * - 탭 간 알림(SPEC 1.5): 쓰기 커밋 확인 뒤 `saved` 전송(재시도 커밋 포함) · `cleared` 수신 = 멈춤. `saved` 수신은 무시
+ *   (편집기 안 표시 0 — MQ-C1 A, 다음 저장 때 최신성 확인이 막는다). 구독은 싱크가 열릴 때(조작 뒤) — 진입 몫 0.
  */
 import { validateProjectName } from "../../domain/projectName";
 import { ProjectRepositoryError, type DocHead, type ProjectSnapshot } from "../projectRepository";
@@ -126,10 +128,13 @@ export async function openLocalSync(
     persistence.close();
   };
   link.attach({ isWriter: () => !cleared && gate.mode === "writer", stop });
-  const queue = createWriteQueue(
-    { ...persistence, write: (ops) => (cleared ? Promise.reject(toInfra(undefined, "저장", CLEARED_TAB)) : persistence.write(ops)) },
-    stateOps,
-  );
+  link.listen((message) => message.type === "cleared" && stop());
+  const committed = async (ops: readonly WriteOp[]) => {
+    if (cleared) throw toInfra(undefined, "저장", CLEARED_TAB);
+    await persistence.write(ops);
+    link.post({ type: "saved" });
+  };
+  const queue = createWriteQueue({ ...persistence, write: committed }, stateOps);
   const write = (projectId: string, book: BookView, images?: RenderImages) => {
     const record: DocRecord = { doc: book.docOf(projectId)!, snapshots: book.snapshotsOf(projectId) };
     const sent = submitted.get(projectId);

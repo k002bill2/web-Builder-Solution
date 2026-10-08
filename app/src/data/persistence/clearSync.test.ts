@@ -77,11 +77,24 @@ async function seeded() {
 }
 
 const CLEARED = "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요";
+const STALE = "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요";
 type Req = { onsuccess?: () => void; onblocked?: () => void; onerror?: () => void };
-function deleter() {
+/** wipe = 실제 deleteDatabase처럼 그 브라우저의 레코드를 지운다(onsuccess 전에) */
+function deleter(wipe?: StudioPersistence) {
   const requests: Req[] = [];
   const factory = { deleteDatabase: () => (requests.push({}), requests[requests.length - 1]) } as unknown as IDBFactory;
-  return { factory, requests };
+  const succeed = async (i = 0) => {
+    if (wipe)
+      await wipe.write(
+        [
+          { type: "delete", store: "studio", id: "state" },
+          { type: "delete", store: "docs", id: "project-1" },
+          { type: "delete", store: "meta", id: "generation" },
+        ],
+      );
+    requests[i]!.onsuccess?.();
+  };
+  return { factory, requests, succeed };
 }
 
 describe("같은 탭 쓰기 탭에서 지우기 (BRIEF 필수 — D2 함정 회귀)", () => {
@@ -126,5 +139,75 @@ describe("같은 탭 쓰기 탭에서 지우기 (BRIEF 필수 — D2 함정 회�
     expect(await createClearer({ locks: browser.tab(), factory, link: net.tab(), session: { setItem: vi.fn() }, go: vi.fn() }).clear()).toBe("busy");
     expect(requests).toHaveLength(0);
     expect(net.sent()).not.toContainEqual({ type: "cleared" });
+  });
+});
+
+describe("탭 간 알림 — saved(쓰기 커밋 뒤) · cleared 수신(SPEC 1.5 · AC-C06)", () => {
+  it("쓰기 탭은 IDB 커밋 확인 뒤 saved 전송 · 커밋 전에는 0", async () => {
+    const { persistence, browser, net } = await seeded();
+    let commit!: () => void;
+    const gate = new Promise<void>((r) => (commit = r));
+    const slow: StudioPersistence = { ...persistence, write: async (ops) => (await gate, persistence.write(ops)) };
+    const tab = await openTab(slow, browser.tab(), net.tab(), "project-1");
+    const projects = await tab.projects();
+    const doc = (await projects.getDoc("project-1"))!;
+    const before = net.sent().length;
+    const saving = projects.saveDoc("project-1", doc.revision, edit(doc, "커밋 대기"));
+    await settle();
+    expect(net.sent().slice(before)).toEqual([]);
+    commit();
+    await saving;
+    await settle();
+    expect(net.sent().slice(before)).toContainEqual({ type: "saved" });
+  });
+
+  it("읽기 전용 탭(쓰기 0)은 saved를 보내지 않는다", async () => {
+    const { persistence, browser, net } = await seeded();
+    const b = await openTab(persistence, browser.tab(), net.tab(), "project-1");
+    const projectsB = await b.projects();
+    const docB = (await projectsB.getDoc("project-1"))!;
+    await projectsB.saveDoc("project-1", docB.revision, edit(docB, "B 쓰기 탭"));
+    await settle();
+    const a = await openTab(persistence, browser.tab(), net.tab(), "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    const before = net.sent().length;
+    expect(await failureOf(projectsA.saveDoc("project-1", docA.revision, edit(docA, "A 읽기 전용")))).toMatch(/^INFRA/);
+    await settle();
+    expect(net.sent().slice(before)).toEqual([]);
+  });
+
+  it("AC-C06: 한 번도 편집하지 않은 편집기 탭 A(싱크 전 — 구독 0)가 열린 채 B가 지움 → A 편집 = 쓰기 0 · 낡은 탭 사유(최신성 확인이 막는다)", async () => {
+    const { persistence, browser, net } = await seeded();
+    const a = await openTab(persistence, browser.tab(), net.tab(), "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    const { factory, succeed } = deleter(persistence);
+    const lockB = browser.tab();
+    const clearing = createClearer({ locks: lockB, factory, link: net.tab(), session: { setItem: vi.fn() }, go: vi.fn() }).clear();
+    await settle();
+    await succeed();
+    expect(await clearing).toBe("done");
+    // B는 /projects로 새로고침 이동 — 지우기가 잡은 잠금이 풀린다
+    lockB.close();
+    expect(await failureOf(projectsA.saveDoc("project-1", docA.revision, edit(docA, "부활 시도")))).toBe(`INFRA: 저장 — ${STALE}`);
+    await settle();
+    expect(a.writes).toEqual([]);
+    expect(await persistence.get("studio", "state")).toBeUndefined();
+  });
+
+  it("쓰기 탭이 cleared 수신 → 큐에 든 다음 쓰기도 0 · 이후 저장 = 지워짐 사유", async () => {
+    const { persistence, browser, net } = await seeded();
+    const a = await openTab(persistence, browser.tab(), net.tab(), "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    const saved = await projectsA.saveDoc("project-1", docA.revision, edit(docA, "A 쓰기 탭"));
+    await settle();
+    const writes = a.writes.length;
+    net.tab().post({ type: "cleared" });
+    await settle();
+    expect(await failureOf(projectsA.saveDoc("project-1", saved.revision, edit(saved as PageDoc, "지운 뒤")))).toBe(`INFRA: 저장 — ${CLEARED}`);
+    await settle();
+    expect(a.writes.length).toBe(writes);
   });
 });

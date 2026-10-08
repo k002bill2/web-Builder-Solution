@@ -6,7 +6,7 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - [x] BRIEF P0 커밋 (`b11913d`)
 - [x] 기준선 build: `/studio` 129.65 · 복원 132.68 · `/projects` 103.55 (둘 다 이미 경계값)
 - [x] 1번: 지우기 버튼 + 대화상자(조작 뒤 청크) + 흐름 1~5 + `cleared` 전송 + 같은 탭 writer 회귀 → 커밋
-- [ ] 2번: `saved` 전송(커밋 뒤) · 수신(싱크 `cleared` = 쓰기 0 · 영역 `saved`/`cleared`) · 같은 탭 `saved` 무시 → 커밋
+- [x] 2번: `saved` 전송(커밋 뒤) · 수신(싱크 `cleared` = 쓰기 0 · 영역 `saved`/`cleared`) · 같은 탭 `saved` 무시 → 커밋
 - [ ] 번들 관문(129.65 · 132.68 · ≤125)
 - [ ] Ego Lite 실측(① 같은 탭 ② 탭 2개 alert ③ B 닫은 뒤 성공·cleared 수신) + 정리
 - [ ] typecheck · lint · build · 전체 vitest
@@ -27,3 +27,6 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - 1번 RED: 예측대로 새 테스트 5파일 import 실패(모듈 없음). GREEN 147/147. Red-Green: `own.isWriter()` 분기를 지우면 같은 탭 회귀 2건 FAIL(clearBrowserData·clearSync) → 복원 PASS.
 - 1번 번들 1차: /studio 129.66 · 복원 **132.81**(멈춤선 132.68 초과). 원인: `clearBrowserData`가 `envelope`의 `DB_NAME`을 import → envelope가 별도 공유 청크(0.27KB)로 쪼개져 복원 closure에 청크 1개 추가. 수정: 리터럴 `CLEAR_DB_NAME` + parity 테스트(D3 선례). 2차: /studio **129.64** · 복원 **132.67** · /projects **104.32** — 통과.
 - 테스트 환경: Node 전역 BroadcastChannel은 vitest 워커 사이로 메시지를 보내 `setup.ts`에서 지움(알림 테스트는 fakeTabLink 주입).
+- 2번 RED: 예측대로 6건 FAIL(saved 전송 0 · cleared 수신 뒤 쓰기 · 영역 saved/cleared 표시 없음 · 구독 0). "읽기 전용 saved 0"·"같은 탭 saved 표시 0"은 가드라 처음부터 PASS(예측 범위).
+- 2번 예측 차이 1건: AC-C06 "편집 안 한 탭 A가 cleared 수신" 테스트가 GREEN 뒤에도 FAIL — 편집 전엔 싱크가 안 열려 구독 0(SPEC 1.5 "진입 때 구독하지 않는다" 그대로). 가짜 삭제가 레코드를 실제로 지우지 않아 최신성 확인도 통과했던 것. 테스트를 SPEC AC-C06 문장("지워짐 사유 **또는** 낡은 탭 문장")대로: 가짜 삭제가 레코드를 지우고 B 새로고침(잠금 해제)을 흉내 → A = 낡은 탭 사유·쓰기 0. 싱크 열린 탭의 cleared 수신은 "쓰기 탭이 cleared 수신" 테스트가 맡음(Red-Green: listen 줄 제거 → FAIL).
+- 2번 번들: /studio **129.64** · 복원 **132.67** · /projects **104.44** — 통과.

@@ -41,7 +41,12 @@ function repo(kinds: readonly SnapshotKind[]) {
   }));
   const deleted: string[] = [];
   let next: () => Promise<void> = async () => undefined;
+  let saving: () => Promise<void> = async () => undefined;
   const repository: Partial<ProjectRepository> = {
+    saveDoc: async (_id, revision, doc) => {
+      await saving();
+      return { ...(doc as PageDoc), revision: revision + 1 };
+    },
     listSnapshots: async () => [...snaps],
     deleteSnapshot: async (_id, snapshotId) => {
       deleted.push(snapshotId);
@@ -49,7 +54,7 @@ function repo(kinds: readonly SnapshotKind[]) {
       snaps = snaps.filter((s) => s.snapshotId !== snapshotId);
     },
   };
-  return { repository, deleted, then: (run: () => Promise<void>) => void (next = run) };
+  return { repository, deleted, then: (run: () => Promise<void>) => void (next = run), save: (run: () => Promise<void>) => void (saving = run) };
 }
 
 async function openDialog() {
@@ -62,6 +67,12 @@ async function askDelete(dialog: ReturnType<typeof within>, name: string) {
 }
 const confirmGone = () => expect(screen.queryByRole("dialog", { name: "스냅샷을 지울까요?" })).toBeNull();
 const notice = () => screen.getByRole("status", { name: "편집 알림" });
+const previewHeading = (name: string) => screen.queryByRole("heading", { name: `스냅샷 '${name}'를 보고 있습니다 · 편집은 멈췄습니다` });
+/** 페이지 정보 줄을 골라 SEO 제목을 바꾼다 — 미저장 변경 → 미리보기가 저장(flushed)을 기다린다 */
+const type = (value: string) => {
+  if (!document.getElementById("page-info-title")) act(() => void fireEvent.click(screen.getAllByText("페이지 정보")[0]!));
+  act(() => void fireEvent.change(document.getElementById("page-info-title")!, { target: { value } }));
+};
 
 describe("AC-D07 버튼 노출 · D-S01 캡션", () => {
   it("수동 줄에만 '삭제'(자동·게시 0) · 캡션은 목록 바로 위", async () => {
@@ -174,5 +185,46 @@ describe("AC-D08 실패 → 확인 대화상자 안 alert(시도마다 새로)",
     act(() => void fireEvent.click(confirm.getByRole("button", { name: "지우기" })));
     await waitFor(confirmGone);
     expect(notice()).toHaveTextContent("스냅샷 '수동 1'를 지웠습니다");
+  });
+});
+
+describe("Codex r1 P2 — 삭제 확인과 저장·미리보기 직렬화", () => {
+  it("미저장 변경 → '미리보기' 저장 대기 중 '삭제' = 확인 열림 0 · 삭제 0 → 저장 끝나면 미리보기", async () => {
+    const r = repo(["manual", "manual"]);
+    let release!: () => void;
+    r.save(() => new Promise<void>((resolve) => (release = resolve)));
+    await openStudio({ repository: r.repository });
+    type("방금 입력");
+    const dialog = await openDialog();
+    await dialog.findByText("수동 2");
+    act(() => void fireEvent.click(dialog.getByRole("button", { name: "수동 2 미리보기" })));
+    act(() => void fireEvent.click(dialog.getByRole("button", { name: "수동 2 삭제" })));
+    confirmGone();
+    await act(async () => release());
+    expect(await screen.findByRole("heading", { name: "스냅샷 '수동 2'를 보고 있습니다 · 편집은 멈췄습니다" })).toBeInTheDocument();
+    confirmGone();
+    expect(r.deleted).toEqual([]);
+  });
+
+  it("지우는 중 '미리보기'·'지금 상태 저장' = 진입 0(미리보기 0 · 저장 0)", async () => {
+    const r = repo(["manual", "manual"]);
+    let release!: () => void;
+    r.then(() => new Promise<void>((resolve) => (release = resolve)));
+    const create = vi.fn();
+    r.repository.createSnapshot = create;
+    await openStudio({ repository: r.repository });
+    const dialog = await openDialog();
+    await dialog.findByText("수동 2");
+    const confirm = await askDelete(dialog, "수동 2");
+    act(() => void fireEvent.click(confirm.getByRole("button", { name: "지우기" })));
+    await act(async () => void fireEvent.click(dialog.getByRole("button", { name: "수동 1 미리보기" })));
+    await act(async () => void fireEvent.click(dialog.getByRole("button", { name: "지금 상태 저장" })));
+    expect(previewHeading("수동 1")).toBeNull();
+    expect(create).not.toHaveBeenCalled();
+    await act(async () => release());
+    await waitFor(confirmGone);
+    expect(previewHeading("수동 1")).toBeNull();
+    expect(create).not.toHaveBeenCalled();
+    expect(r.deleted).toEqual(["snapshot-2"]);
   });
 });

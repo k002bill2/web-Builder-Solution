@@ -172,6 +172,17 @@ export default function SnapshotDialog({
     onPreview(snapshot);
   };
 
+  // 삭제 확인도 같은 busy로 직렬화 — 저장·미리보기 진행 중엔 열지 않고, 확인이 열린 동안엔 저장·미리보기 진입 0(Codex r1 P2)
+  const ask = (next: NonNullable<typeof target>) => {
+    if (busy.current) return;
+    busy.current = true;
+    setTarget(next);
+  };
+  const settle = () => {
+    busy.current = false;
+    setTarget(undefined);
+  };
+
   // 모달을 먼저 닫는다 — 열린 모달 밖 "스냅샷"은 포커스를 못 받아(inert) 대화상자가 사라지면 BODY로 떨어진다(B-ER-10)
   const close = () => {
     dialog.current?.close();
@@ -224,7 +235,7 @@ export default function SnapshotDialog({
                 미리보기
               </Button>
               {s.kind === "manual" && (
-                <Button variant="outline" size="sm" aria-label={`${s.name} 삭제`} onClick={(event) => setTarget({ snapshot: s, index, opener: event.currentTarget })}>
+                <Button variant="outline" size="sm" aria-label={`${s.name} 삭제`} onClick={(event) => ask({ snapshot: s, index, opener: event.currentTarget })}>
                   삭제
                 </Button>
               )}
@@ -248,11 +259,11 @@ export default function SnapshotDialog({
           snapshot={target.snapshot}
           remove={() => repository.deleteSnapshot(projectId, target.snapshot.snapshotId)}
           onCancel={() => {
-            setTarget(undefined);
+            settle();
             target.opener.focus();
           }}
           onDeleted={() => {
-            setTarget(undefined);
+            settle();
             focusAt.current = target.index;
             onDeleted(target.snapshot.name);
             void load();

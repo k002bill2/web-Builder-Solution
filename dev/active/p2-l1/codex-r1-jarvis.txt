@@ -1,0 +1,35 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a119b1-ceb0-7452-bd4a-998e25b115ea).
+[codex] Reviewer started: changes against '2285df8'
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder-solution' /Users/younghwankang/.codex/memories/MEMORY.md | h...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder-solution' /Users/younghwankang/.codex/memories/MEMORY.md | h... (exit 0)
+[codex] Running command: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw...
+[codex] Command completed: /bin/zsh -lc 'for d in / /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghw... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/projectFile/checkImages.ts app/src/features/projectFile/en...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/projectFile/checkImages.ts app/src/features/projectFile/en... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/startDocWrite.ts; rg -n 'checkState|readDoc|snapshots|profileV...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/startDocWrite.ts; rg -n 'checkState|readDoc|snapshots|profileV... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const re=/"'^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{...
+[codex] Command completed: /bin/zsh -lc "node -e 'const re=/"'^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '136,151p' docs/design/persistence/P2-SPEC.md; sed -n '275,340p' app/src...
+[codex] Command completed: /bin/zsh -lc "sed -n '136,151p' docs/design/persistence/P2-SPEC.md; sed -n '275,340p' app/src... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 큰 base64 입력에서 검증이 예외로 종료되는 문제를 재현했습니다. 또한 프로필 데이터와 스냅샷의 프로필 참조 검증이 부족하여 통과한 파일이 후속 화면이나 내보내기 ...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2285df8
+
+큰 base64 입력에서 검증이 예외로 종료되는 문제를 재현했습니다. 또한 프로필 데이터와 스냅샷의 프로필 참조 검증이 부족하여 통과한 파일이 후속 화면이나 내보내기 동작을 깨뜨릴 수 있습니다.
+
+Full review comments:
+
+- [P1] 큰 base64 문자열에서도 안전한 검증을 사용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p2-l1/app/src/features/projectFile/checkImages.ts:35-36
+  큰 이미지 변형본을 가져오면 이 정규식의 반복 그룹이 V8의 스택 한도를 초과합니다. Node에서 유효한 base64인 `"A".repeat(8 * 1024 * 1024)`로 `RangeError`를 재현했으며, 이는 이미지 60MB·파일 96MB 한도 안입니다. `BASE64.test`가 `try` 밖에 있고 `ruledVariants` 예외도 처리되지 않아 `checkFile`이 결과 대신 reject됩니다. 반복 그룹 없는 문자 검사와 길이·패딩 검사로 바꾸고, 큰 변형본의 왕복 테스트를 추가해야 합니다.
+
+- [P2] 프로필 버전의 실제 필수 필드를 검증하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p2-l1/app/src/features/projectFile/checkFile.ts:54-55
+  파일의 `series`를 `[{"profileId":"profile-1","version":1}]`로 바꾸고 `doc:null`로 설정해도 검증과 재매김이 통과합니다. 하지만 가져온 프로필을 열면 `ProfilePanel`이 `adjustments`와 `base.color_tokens`를 직접 사용하므로 예외가 발생합니다. 기존 `checkState`의 최소 검사만 복제해서는 외부 파일을 `ProfileVersion`으로 신뢰할 수 없으므로, 필수 프로필 데이터의 모양을 확인하고 손상된 레코드는 IM-4로 거절해야 합니다.
+
+- [P2] 스냅샷 문서의 프로필 버전도 계열 범위와 대조하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p2-l1/app/src/features/projectFile/checkFile.ts:65-65
+  현재 문서의 `profileVersion`은 계열 길이와 비교하지만 스냅샷 문서는 비교하지 않습니다. 따라서 현재 문서는 v2이고 스냅샷 문서는 올바른 해시를 가진 v3인데 계열에는 v1·v2만 있는 파일도 통과합니다. 이후 `memoryDocBook.restoreSnapshot`이 해당 문서를 현재 문서로 복원하면, 내보내기에서 필요한 프로필을 찾지 못해 `NOT_FOUND`가 발생합니다. 모든 스냅샷 문서에도 같은 프로필 범위 검사를 적용해야 합니다.

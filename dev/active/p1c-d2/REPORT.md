@@ -55,3 +55,12 @@
 ## 8. 남은 것 / Jarvis에게
 - Codex 리뷰(Jarvis 몫). 리뷰 포인트 제안: ① **D4 인터페이스 메모**: 다른 탭의 지우기는 SPEC 1.6 1단계(같은 잠금 ifAvailable)로 쓰기 탭이 있으면 막히므로 안전. 문제는 **같은 탭**에서 편집 뒤 앱 안 이동으로 `/projects` 지우기 — 이 레인은 잠금을 탭 수명 동안 쥐고 Web Locks는 재진입이 안 되어 자기 요청이 null → 거짓 alert "다른 탭에서 편집 중이라 지우지 못했습니다". D4에서 LocalSync가 "이 탭이 writer인가"를 노출하거나 보유 중인 잠금 안에서 지우기를 실행하는 경로가 필요(이 레인은 코드 추가 0). ② `saveState`가 게이트 대기 중 연속 호출되면 각 호출이 then 체인으로 순서대로 제출(최신 의도는 큐가 정리) ③ 세대 계수는 탭 안 계수(쓰기 탭 단독 작성자 전제).
 - ADR-007/SPEC에 "세대 번호 = meta `generation` + 상태 레코드 `gen`" 기록(문서 수정은 이 레인 금지).
+
+## Codex r1 수정 (P1 1건 — 재시도 커밋 세대 미증가)
+- 원인: 문서 저장 실패 뒤 상태 저장이 성공하면 큐의 "최신 의도" 규칙이 실패 기록에서 `studio/state`·`meta/generation`을 빼고, 재시도(`retry` = 미확인 재제출)는 `docs`만 커밋 → 세대 그대로 → 사이에 진입한 탭이 최신성 확인 통과.
+- 수정(커밋 `427a9be`): `createWriteQueue(persistence, stamp)` — 큐가 **모든 제출(재시도 포함)**에 `stamp()` 레코드를 새로 붙인다(한 곳 보장). 싱크는 상태 레코드 + meta 세대를 도장으로만 낸다(`saveState` = `submit("state", [])`, flush = 문서·이미지 op만). 도장은 입력 복제 성공 뒤에만 내고(복제 실패 = 세대 그대로), flush는 머리를 제출 전에 바꾸고 큐가 받지 않으면 되돌린다.
+- 테스트: `writerLock.test` 재현(실패 → 이름 변경 성공 → 사이 진입 탭 B → 재시도: 재시도 ops에 docs·meta·state, gen before+1, A 닫힌 뒤 B 저장 = 낡은 탭 사유·쓰기 0) + 불변식(실패·재시도·상태 저장 혼합에서 트랜잭션마다 meta gen 단조 증가·상태 gen 동일) · `writeQueue.test` 큐 단위 도장(재시도에도 새 도장 · 복제 실패면 도장 0).
+- TDD: RED 2/2 FAIL(예측과 같음: 재시도 ops meta/state undefined) → GREEN · Red-Green(수정 2파일 임시 원복 → 3 FAIL → 복원 94/94). 단언 약화 0 · 테스트 헬퍼 1건(실패 래퍼를 `toInfra`로 감쌈).
+- 게이트(fresh): typecheck 0 · lint 0 · build 0 · `npx vitest --run` 265파일 **2316/2316** exit 0.
+- 번들: `/studio/:projectId` **129.64**(관문 ≤129.65) · 복원 진입 **132.67**(≤132.68) · `/projects` 101.40.
+- 범위: persistence 계열만(writeQueue·localSync + 테스트 2). ProjectsPage·features/projects·엔진·계약·docs·lock 수정 0 · 새 의존성 0 · Ego Lite·Codex 미실행(브리프 금지) · 서브에이전트 0.

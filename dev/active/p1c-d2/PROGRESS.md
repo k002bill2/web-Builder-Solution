@@ -29,3 +29,15 @@
 
 ## 결과
 - 번들 129.62 · 132.65 그대로 · Ego Lite 3시나리오 통과·정리 완료 · 게이트 4종 exit 0(2313 tests) · 서브에이전트 0 — REPORT.md
+
+## Codex r1 수정 (P1 — 재시도 커밋 세대 미증가)
+- [x] 재현 테스트 + 불변식 테스트 작성(writerLock.test "재시도 커밋도 세대 +1")
+- [x] RED 확인 — 예측대로 2 FAIL(재시도 ops meta/state = undefined · 불변식 typeof meta "undefined"). 첫 실행은 테스트 래퍼가 원시 DOMException을 던져 "x"로 실패 → 래퍼를 toInfra로 감쌈(헬퍼만, 단언 변경 0)
+- [x] 수정: 큐 한 곳에서 모든 쓰기 트랜잭션에 새 세대 도장(stamp) — 커밋 427a9be
+- [x] GREEN · Red-Green — 큐 단위 도장 테스트 추가 후 수정 2파일 임시 원복 → 3 FAIL → 복원 94/94
+- [x] typecheck·lint·build(번들)·vitest 1회 — 전부 exit 0 · /studio 129.64 · 복원 132.67 · 2316/2316
+- [x] REPORT "Codex r1 수정" 절 커밋
+
+### RED 예측
+- 재현 테스트: 재시도 ops = docs만 → `opsGen(last)` = {meta: undefined, state: undefined} ≠ {before+1} 에서 FAIL(Codex 재현과 같음).
+- 불변식 테스트: 재시도 트랜잭션에 meta 없음 → `typeof g.meta` = "undefined"로 FAIL. 마지막 "재시도할 것 없는 재생"은 쓰기 0이라 a.writes에 안 들어감.

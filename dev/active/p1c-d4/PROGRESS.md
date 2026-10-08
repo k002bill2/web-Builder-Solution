@@ -7,7 +7,7 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - [x] 기준선 build: `/studio` 129.65 · 복원 132.68 · `/projects` 103.55 (둘 다 이미 경계값)
 - [x] 1번: 지우기 버튼 + 대화상자(조작 뒤 청크) + 흐름 1~5 + `cleared` 전송 + 같은 탭 writer 회귀 → 커밋
 - [x] 2번: `saved` 전송(커밋 뒤) · 수신(싱크 `cleared` = 쓰기 0 · 영역 `saved`/`cleared`) · 같은 탭 `saved` 무시 → 커밋
-- [ ] 번들 관문(129.65 · 132.68 · ≤125)
+- [x] 번들 관문(129.65 · 132.68 · ≤125) — 재개 build(60d398d): /studio 129.64 · 복원 132.67 · /projects 104.44
 - [ ] Ego Lite 실측(① 같은 탭 ② 탭 2개 alert ③ B 닫은 뒤 성공·cleared 수신) + 정리
 - [ ] typecheck · lint · build · 전체 vitest
 - [ ] REPORT
@@ -30,3 +30,5 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - 2번 RED: 예측대로 6건 FAIL(saved 전송 0 · cleared 수신 뒤 쓰기 · 영역 saved/cleared 표시 없음 · 구독 0). "읽기 전용 saved 0"·"같은 탭 saved 표시 0"은 가드라 처음부터 PASS(예측 범위).
 - 2번 예측 차이 1건: AC-C06 "편집 안 한 탭 A가 cleared 수신" 테스트가 GREEN 뒤에도 FAIL — 편집 전엔 싱크가 안 열려 구독 0(SPEC 1.5 "진입 때 구독하지 않는다" 그대로). 가짜 삭제가 레코드를 실제로 지우지 않아 최신성 확인도 통과했던 것. 테스트를 SPEC AC-C06 문장("지워짐 사유 **또는** 낡은 탭 문장")대로: 가짜 삭제가 레코드를 지우고 B 새로고침(잠금 해제)을 흉내 → A = 낡은 탭 사유·쓰기 0. 싱크 열린 탭의 cleared 수신은 "쓰기 탭이 cleared 수신" 테스트가 맡음(Red-Green: listen 줄 제거 → FAIL).
 - 2번 번들: /studio **129.64** · 복원 **132.67** · /projects **104.44** — 통과.
+
+- 재개(턴 한도 첫 중단 1회 뒤): 직전 preview(4337)는 Jarvis가 종료. 번들 재측정 통과.

@@ -5,6 +5,7 @@ import { ProjectList } from "../components/projects/ProjectList";
 import type { RenameHandlers } from "../components/projects/ProjectRow";
 import type { RenameSubmitOutcome } from "../components/projects/RenameField";
 import type { DeleteTarget } from "../components/projects/DeleteProjectDialogSlot";
+import type { ExportDeps, ExportTarget } from "../components/projects/ExportProjectFileDialogSlot";
 import { LoadingState } from "../components/layout/LoadingState";
 import { ProjectRepositoryError, type Project, type ProjectPersistence, type ProjectRepository } from "../data/projectRepository";
 import type { DeleteDeps } from "../features/projects/deleteProject";
@@ -22,6 +23,10 @@ const DeleteDialogSlot = lazy(() => import("../components/projects/DeleteProject
 /** deleteProject.DELETED_KEY와 같은 값(조작 뒤 청크를 페이지에 싣지 않으려고 리터럴 — 테스트가 같음을 단언) */
 export const DELETED_NOTICE_KEY = "design-studio-deleted";
 const deletedText = (name: string) => `'${name}' 프로젝트를 지웠습니다`;
+/** 프로젝트 파일 내보내기 대화상자 + 읽기·인코딩(P2-SPEC 3.6·4.1) — 조작 뒤 청크(줄의 "파일로 내보내기"를 눌러야 받는다) */
+const ExportDialogSlot = lazy(() => import("../components/projects/ExportProjectFileDialogSlot"));
+/** EX-9 — 성공은 기존 "프로젝트 알림"에 1회 */
+const exportedText = (name: string) => `'${name}' 프로젝트 파일을 내려받았습니다`;
 
 type Session = Pick<Storage, "getItem" | "removeItem">;
 const defaultSession = (): Session | undefined => {
@@ -140,12 +145,15 @@ export function ProjectsPage({
   now = systemNow,
   session = defaultSession(),
   deleteDeps,
+  exportDeps,
 }: {
   readonly repository: ProjectRepository;
   readonly now?: () => Date;
   readonly session?: Session;
   /** 삭제 흐름 의존성 — 테스트 주입(없으면 대화상자 청크가 브라우저 기본값을 푼다) */
   readonly deleteDeps?: DeleteDeps;
+  /** 내보내기 의존성 — 테스트 주입(없으면 대화상자 청크가 브라우저 기본값을 푼다) */
+  readonly exportDeps?: ExportDeps;
 }) {
   const { items, replace } = useProjectList(repository);
   const [notice, setNotice] = useState<Notice>({ text: "", key: 0 });
@@ -165,6 +173,20 @@ export function ProjectsPage({
     setDeleting(null);
     const buttons = page.current?.querySelectorAll<HTMLElement>("[data-delete-for]") ?? [];
     Array.from(buttons).find((el) => el.dataset.deleteFor === id)?.focus();
+  };
+  const [exporting, setExporting] = useState<ExportTarget | null>(null);
+  const openExport = (projectId: string) => {
+    const found = items?.find((s) => s.projectId === projectId);
+    if (!found) return;
+    setDraft(null);
+    setExporting({ projectId, name: found.name, hasDoc: found.hasDoc });
+  };
+  const closeExport = (done: boolean) => {
+    if (!exporting) return;
+    setExporting(null);
+    if (done) announce(exportedText(exporting.name));
+    const buttons = page.current?.querySelectorAll<HTMLElement>("[data-export-for]") ?? [];
+    Array.from(buttons).find((el) => el.dataset.exportFor === exporting.projectId)?.focus();
   };
   const at = now().getTime();
   const rename: RenameHandlers = {
@@ -199,12 +221,18 @@ export function ProjectsPage({
       {items !== null && items.length > 0 && (
         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft}
           rename={rename}
+          onExport={repository.persistence === "local" ? openExport : undefined}
           onDelete={repository.persistence === "local" ? openDelete : undefined}
         />
       )}
       {deleting && (
         <Suspense fallback={null}>
           <DeleteDialogSlot target={deleting} deps={deleteDeps} onClose={closeDelete} />
+        </Suspense>
+      )}
+      {exporting && (
+        <Suspense fallback={null}>
+          <ExportDialogSlot target={exporting} deps={exportDeps} onClose={closeExport} />
         </Suspense>
       )}
       {items !== null && <BrowserStorageSection persistence={repository.persistence} count={items.length} />}

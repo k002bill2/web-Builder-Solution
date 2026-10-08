@@ -1,4 +1,4 @@
-# P2-L3 REPORT — 프로젝트 파일 가져오기 화면·쓰기 (초안 — 번들 관문 정지)
+# P2-L3 REPORT — 프로젝트 파일 가져오기 화면·쓰기 (재개 완료 — 7절이 최신 상태)
 
 - 브랜치 `k002bill2/p2-l3` · base `483c0db` · 커밋: 198501f(P0) → d67949d(writeImport·대화상자·Slot·저장소 영역 배선·IM-9) → ebf99b3(타입 오류 2건 수정)
 - **상태: 배선 첫 커밋 직후 build 관문 실패 → 브리프 규칙대로 멈춤.** 원인 모듈 아래 1절.
@@ -67,3 +67,52 @@
 - 브리프 기한 "배선 첫 커밋 직후 18턴 전 build": 실제 약 29~30턴(늦음). 구현 커밋(d67949d) 28턴 전후. Ego Lite 30턴 전 시작: 미시작(관문 정지).
 - 정본 읽기에 턴을 많이 썼고, 계획했던 "구현·배선·build 한 턴"이 테스트 실행 위치(app/ 밖 실행 → jsdom 미적용)·타입 오류 수정으로 늘어났다.
 - 지켜진 금지: 엔진·계약·docs/**·lock·CLAUDE.md 수정 0 · L2 파일(`ProjectRow`·`ProjectList`·`ExportProjectFileDialog`·`readProject`) 수정 0 · L1 파일 수정 0 · 새 의존성·아이콘 0 · 서브에이전트 0 · push/merge/삭제 0 · amend/rebase 0 · main 5480 무접촉 · RED 테스트 tip 커밋 0 · 단언 약화 0.
+
+## 7. 재개 (Jarvis 결정 ①채택 ②허용 ③순서) — 최신 상태
+- 커밋: bd36c2d(R0 profileShape 리터럴 복제 + parity) → d2f66e7(FX-1) → 5beaa41(ProjectsPage IM-15·포커스, 레인 마지막 코드 커밋) → 이 REPORT·shots 커밋. 재개 뒤 코드 수정 0(실측에서 고칠 결함 확정 못 함 — 7.3).
+- preview `vite preview --port 4339`(PID 5694, 이 worktree) = 5beaa41 build 확인(`find app/src -newer app/dist/index.html` 0건). Ego Lite TaskSpace 32 이어 씀(새 공간 0).
+
+### 7.1 번들 (fresh `npm run build` exit 0, 5beaa41)
+| 경로 | main 기준 | 이 브랜치 | 판정 |
+|---|---|---|---|
+| `/profile` 첫 화면 (예산 100) | 99.87 | 99.87 | 통과 |
+| `/studio` 자동 로드 포함 (멈춤 >129.65) | 129.09 | 129.10 | +0.01 (결정 ② 허용 범위) |
+| `/studio` 복원 (멈춤 >132.68) | 132.13 | 132.13 | 0 |
+| `/projects` 자동 로드 포함 (/125) | 104.69 | 105.37 | 통과 |
+| `/compare` 자동 로드 포함 (/125) | 122.71 | 122.69 | 통과 |
+
+### 7.2 Ego Lite 실측 (단색 PNG만 · 증거 = evaluate textContent·activeElement·IDB 키 덤프)
+- 입력 파일 방법: build된 앱(4339) 안 evaluate로 IDB `studio/state`(Map)·`docs/project-1`·`images/project-1/*`를 읽어 `encodeProjectFile`과 같은 봉투(`format·formatVersion 1·schemaVersion 1·exportedAt·project·series·doc·images[{localId,width,height,format,bytes,variants(base64)}]`)를 만들어 `$TMPDIR/p2-l3-ego/good.json`(13,111B)으로 저장. 손상 파일 = 같은 파일에서 `"name"`의 따옴표 1자를 지운 `broken.json`. 이미지 = 이전 회차에 넣은 단색 PNG(편집기에서 단색 파랑 Hero로 표시 — `shots/s1-editor.png`).
+- 실측 보조 스크립트는 저장소 밖 `$TMPDIR/p2l3-*.mjs`.
+
+| # | 결과 | 증거 |
+|---|---|---|
+| ① | **통과** — 프로젝트(이미지 1·스냅샷 1 "수동 · 14:06") → 파일 준비 → 지우기 대화상자(FX-1 문장 "지우기 전에 각 프로젝트의 '파일로 내보내기'로 백업할 수 있습니다." 표시) → 모두 지우기 → 가져오기 요약(편집 문서 있음·스냅샷 1개·이미지 1개·파일 1MB·2026-10-08 내보냄) · 포커스 `BUTTON "가져오기"` → 성공 새로고침 뒤 status `'모던 카페 브랜드 프로젝트' 프로젝트를 가져왔습니다` 1개 · 포커스 `A "편집기 열기"`(project-1 줄) · sessionStorage `{}`(키 읽고 지움) → 편집기: 9개 섹션·스냅샷 목록 1건(`수동 · 14:06 · 프로필 v1 · A안`)·Hero 단색 이미지 표시 | IDB 지우기 전 `projects[project-1] gen 10` → 가져온 뒤 `docs[project-1]·images[project-1/c8367c84…]·gen 1`. 이미지 레코드 = 원본과 같음 `800×400 webp bytes 2062 · 640:image/webp/928 · 800:image/webp/1134` · `shots/s1-summary.png`·`s1-editor.png` |
+| ② | **통과** — 같은 파일 2회 → 줄 `[project-2, project-1]` · status 1개 · 포커스 `A "편집기 열기"`(project-2 줄) | IDB `docs[project-1,project-2]` · `images[project-1/…, project-2/c8367c84…]`(localId 유지 · 프로젝트 키 새로) · gen 2 |
+| ③ | **통과(IM-2)** — alert `프로젝트 파일이 아닙니다 — 이 앱의 '파일로 내보내기'로 만든 .json 파일을 고르세요` · 포커스 `BUTTON "다른 파일 고르기"` · 닫기 뒤 포커스 `BUTTON "프로젝트 파일 가져오기"` | IDB 덤프 전후 문자열 같음(`true`) · `shots/s3-broken.png`. IM-4(구조는 맞고 내용 손상)는 실측 안 함 |
+| ④ | **미확정 — IM-9 관찰 못 함** (7.3) | `shots/s4-busy.png` = "파일을 확인하는 중… / 취소"에 멈춘 화면 |
+| ⑤ | **통과** — B 닫고 새로고침 뒤 project-3·2·1 편집기 모두 열림(앱 안 클릭 이동 · 각 9개 섹션 · alert 0) | IDB `projects[project-1,2,3]` gen 3 |
+
+- 정리: `indexedDB.deleteDatabase("design-studio")` = `success` · `indexedDB.databases()` = `[]` · TaskSpace 32만 `finish({keep:[]})` · `listTaskSpaces()` = `[]`(L2 공간은 그 시점 목록에 없음 — 무접촉) · preview 5694 종료 · 4339 LISTEN 0줄.
+- 덤프 부수효과(사실): 지운 직후 내 덤프의 `indexedDB.open("design-studio")`(버전 없음)가 빈 v1 DB를 만들었다. 가져오기는 이 상태에서 `open(…, 2)` + 없는 저장소 생성으로 정상 진행(v2·저장소 7개).
+
+### 7.3 ④ 관찰 (원인 미확정 — 코드 수정 0)
+1. 탭 B(`/studio/project-1`, `task.newPage()` 직접 goto)를 연 뒤 A에서 파일을 고르자 대화상자가 `파일을 확인하는 중…`에서 15초 넘게 진행 안 됨(첫 시도는 "가져오기" 클릭 직후 A 페이지가 응답 없음 판정). A를 `Page.bringToFront`해도 같음 → 배경 탭 탓만은 아님 [추정].
+2. 확인 경로(`checkFile`·`checkImages`)에는 `navigator.locks` 사용이 없다(grep) — 확인 단계가 B 때문에 막힐 코드상 이유를 찾지 못함. `checkImages`의 `createImageBitmap`·`OffscreenCanvas`가 자동화 탭 전환 상태에서 늦어진 것일 수 있음 [추정 — 실측 안 함].
+3. 이후 B가 열린 동안(정리 스크립트 시작 시점 — B 닫기 전) 이미 `project-3`이 생겨 있었다(gen 3, 대화상자 닫힘). 즉 어느 시점의 "가져오기"가 B 열린 상태에서 **IM-9 없이 성공**했을 수 있다 — 타임스탬프를 남기지 않아 어느 클릭인지 확정 못 함. B 쪽 status/alert는 매번 빈 배열.
+- 결론: AC-P07/P08(가져오기 쪽 IM-9) Ego 실측 **미완**. 단위 테스트(`writeImport.test` busy=IM-9·쓰기 탭 `stop()`)는 통과. 다음 실측은 B를 사람이 연 탭(앞 탭 = A)에서 클릭마다 시각·IDB를 남겨 재현할 것.
+- 기타 관찰: 요약의 "파일 1MB"는 13KB 파일을 MB 올림 표시한 것으로 보임 [추정 — SPEC IM-12 표기 대조 안 함].
+
+### 7.4 게이트 (fresh, app/, 5beaa41 + 문서만)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm run build` | exit 0 (7.1 수치) |
+| `npx vitest --run` (전체 1회) | exit 0 · 293 파일 · 2573 테스트 |
+
+### 7.5 목업/SPEC과 다른 점
+- 가져온 줄 찾기 = SPEC의 새 `data-project-row` 대신 기존 `data-rename-for={projectId}` 경유(L2 파일 `ProjectRow` 수정 금지 때문).
+
+### 7.6 지킨 금지 (재개분)
+단언 약화 0 · amend/rebase 0 · Codex 미실행(Jarvis 몫) · L2 파일·엔진·계약·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · main 5480 무접촉 · push/merge/삭제 0(테스트 IDB 삭제만).

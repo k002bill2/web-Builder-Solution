@@ -1,28 +1,31 @@
 /**
  * 가져오기 검증 (P2-SPEC 3.2 · 3.3 — Jarvis 채택 결정 2 우선). 앞 단계 실패 = 뒤 단계 0 · 전부 트랜잭션 전 · 쓰기 0.
  * ① 크기(읽기 전) → ② 파싱 → ③ 봉투(미래 버전은 다른 필드보다 먼저) → ④ 레코드 모양(원래 id로 checkSaveDoc · 열기 checkState 규칙).
- * 실패 = { code, message }(IM-1~IM-4)만 — 부분 결과를 내지 않는다.
+ * → ⑤ 이미지(checkImages — 디코드·재인코딩). ⑥ 참조 판정은 생략(L1 택1 — 참조 밖 이미지는 다음 flush의 imageOps가 지운다 · recordRefs는 복원 closure).
+ * 실패 = { code, message }(IM-1~IM-6)만 — 부분 결과를 내지 않는다.
  */
 import type { DocRecord } from "../../data/persistence/entryRead";
 import type { Project } from "../../data/projectRepository";
 import { checkSaveDoc } from "../../data/startDocWrite";
 import type { ProfileVersion } from "../../domain/profile";
 import { validateProjectName } from "../../domain/projectName";
-import { FILE_FORMAT, FORMAT_VERSION, IMPORT_MESSAGES, MAX_FILE_BYTES, SCHEMA, type FileImage, type ImportCode } from "./format";
+import type { IngestDeps } from "../studio/images/ingest/deps";
+import { checkImages, type CheckedImage } from "./checkImages";
+import { FILE_FORMAT, FORMAT_VERSION, MAX_FILE_BYTES, SCHEMA, failure, type CheckFailure, type ImportCode } from "./format";
 
-export type CheckFailure = { readonly ok: false; readonly code: ImportCode; readonly message: string };
 export interface CheckedFile {
   readonly exportedAt: string;
   readonly project: Project;
   readonly series: readonly ProfileVersion[];
   readonly doc: DocRecord | null;
-  readonly images: readonly FileImage[];
+  readonly images: readonly CheckedImage[];
   /** 고른 파일 바이트(요약 IM-13) */
   readonly size: number;
 }
 export type CheckResult = { readonly ok: true; readonly file: CheckedFile } | CheckFailure;
+/** ①~④ 결과 — 이미지는 아직 원문(⑤ 전) */
+export type RecordsResult = { readonly ok: true; readonly file: Omit<CheckedFile, "images"> & { readonly images: readonly unknown[] } } | CheckFailure;
 
-export const failure = (code: ImportCode): CheckFailure => ({ ok: false, code, message: IMPORT_MESSAGES[code] });
 
 type Loose = Record<string, unknown>;
 const isObject = (v: unknown): v is Loose => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -80,7 +83,7 @@ async function parse(file: Pick<Blob, "text">): Promise<unknown> {
 }
 
 /** ①~④ — 통과하면 레코드를 타입으로 좁혀 돌려준다(이미지는 ⑤가 본다) */
-export async function checkRecords(file: Pick<Blob, "size" | "text">): Promise<CheckResult> {
+export async function checkRecords(file: Pick<Blob, "size" | "text">): Promise<RecordsResult> {
   if (file.size > MAX_FILE_BYTES) return failure("IM-1");
   if (file.size <= 0) return failure("IM-2");
   const top = await parse(file);
@@ -95,11 +98,20 @@ export async function checkRecords(file: Pick<Blob, "size" | "text">): Promise<C
       project: top.project as unknown as Project,
       series: top.series as ProfileVersion[],
       doc: top.doc as unknown as DocRecord | null,
-      images: top.images as FileImage[],
+      images: top.images as unknown[],
       size: file.size,
     },
   };
 }
 
-/** L1a = ①~④ — ⑤ 이미지(L1b)가 붙으면 바뀐다 */
-export const checkFile = checkRecords;
+/** 직렬화된 레코드 규칙 ④를 재매김 뒤에도 다시 쓴다(3.4 이중 확인) */
+export const recordsHold = (records: { readonly project: unknown; readonly series: unknown; readonly doc: unknown }): boolean =>
+  isObject(records.project) && Array.isArray(records.series) && (records.doc === null || isObject(records.doc)) && recordsOk(records as Loose);
+
+/** ①~⑤ — deps = 업로드 경로와 같은 디코더·인코더(주입 — jsdom 가짜) */
+export async function checkFile(file: Pick<Blob, "size" | "text">, deps?: IngestDeps): Promise<CheckResult> {
+  const records = await checkRecords(file);
+  if (!records.ok) return records;
+  const images = await checkImages(records.file.images, deps);
+  return images.ok ? { ok: true, file: { ...records.file, images: images.images } } : images;
+}

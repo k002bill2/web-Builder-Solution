@@ -12,3 +12,5 @@
 - R1 format.test.ts: `./format` 모듈 없음 → import 실패로 파일 전체 FAIL 예상.
 - R1 startDocWrite.test.ts rekeyDoc: `rekeyDoc` export 없음 → TypeError(rekeyDoc is not a function) 1건 FAIL 예상, 기존 케이스 PASS.
 - R2 checkFile.test.ts: `./checkFile` 모듈 없음 → 파일 전체 FAIL 예상.
+- R3 checkImages.test.ts: `./checkImages` 모듈 없음 → 파일 전체 FAIL 예상.
+- R4 rekey.test.ts · encode.test.ts: `./rekey`·`./encode` 모듈 없음 → 두 파일 FAIL 예상(checkFile·checkImages 30건은 리팩터 뒤에도 PASS 유지).

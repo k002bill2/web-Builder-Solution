@@ -29,6 +29,8 @@ export const IMPORT_MESSAGES = {
   "IM-6": "이미지를 읽지 못해 가져올 수 없습니다 — 파일이 손상되었을 수 있습니다",
 } as const;
 export type ImportCode = keyof typeof IMPORT_MESSAGES;
+export type CheckFailure = { readonly ok: false; readonly code: ImportCode; readonly message: string };
+export const failure = (code: ImportCode): CheckFailure => ({ ok: false, code, message: IMPORT_MESSAGES[code] });
 
 /** EX-12 — 만든 파일이 가져오기 한도를 넘으면 내려받기 0(3.6 자기 거절 파일 금지) */
 export const EXPORT_TOO_LARGE = "이 프로젝트는 가져오기 한도(파일 96MB · 이미지 24개 · 60MB)를 넘어 파일로 만들 수 없습니다 — 쓰지 않는 스냅샷을 지운 뒤 다시 시도하세요";

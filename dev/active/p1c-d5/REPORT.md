@@ -40,7 +40,7 @@
 
 ## Codex r1 수정 (2026-10-08)
 1. **[P2] 시간 초과 뒤 안내 키 소비** (`dev/active/p1c-d5/codex-r1-jarvis.txt`) — 판정이 2초를 넘겨 확정 결과에서 빠져도 남은 작업이 `firstSaveNotice`를 put해 안내가 영구 생략되던 결함.
-   - 수정: `LocalSync.firstSave(live?)` — put 제출 직전(모든 await 뒤) `live()`가 false면 키를 쓰지 않고 false. `memoryCompareBoardRepository.noticed`는 2초 타이머가 발화하면 `late = true`로 `live = () => !late` 를 끈다. 변경은 조작 뒤 청크(보드 · localSync)만 — 진입 몫 0.
+   - 수정: `LocalSync.firstSave(live?)` — put 제출 직전(모든 await 뒤) `live()`가 false면 키를 쓰지 않고 false. `memoryCompareBoardRepository.noticed`는 2초 타이머가 발화하면 `late = true`로 `live = () => !late` 를 끈다. 판정·키 쓰기 검사는 localSync(조작 뒤 청크). 보드 저장소 쪽 취소 플래그 몇 줄은 `/compare` 진입 직후 자동 로드에 포함되어 +0.01KB(≤125 통과). `/studio`·복원 −0.01은 gzip 반올림 잡음.
    - 회귀 테스트(`firstSaveNotice.test.ts`): 싱크를 2초 넘게 묶음(fake setTimeout) → 첫 확정 `firstSave` 없음 → 싱크 풀린 뒤 키 기록 0 → 다음 확정 `firstSave: true` → 그다음 확정 없음. RED(수정 전) = 키 존재로 FAIL 확인.
 2. **[Jarvis 결정 — 문구] ClearDataDialog 본문 2** → "비교 보드와 보관함은 따로 저장하지 않아 지운 뒤 함께 비워집니다. 내려받은 파일은 그대로 남습니다." — 지우기 성공 = `/projects` 새로고침 이동으로 메모리 보드·보관함도 비워지는 실제 동작과 일치. 고정 테스트 기대값만 교체(getByText 완전 일치 — 단언 강도 동일).
 - 번들(build 출력, KB): `/profile` 첫 화면 99.87(≤100) · `/compare` 자동 122.73(≤125, +0.01) · `/studio` 129.62(≤129.65) · 복원 132.65(≤132.68) · `/projects` 104.47(≤125).

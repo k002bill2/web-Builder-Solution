@@ -22,11 +22,14 @@ export function ProjectRow({
   row,
   draft,
   rename,
+  onExport,
   onDelete,
 }: {
   readonly row: ProjectRowView;
   readonly draft?: RenameDraft;
   readonly rename: RenameHandlers;
+  /** 있을 때만 "파일로 내보내기"(P2-SPEC 1.2·1.4 — local만, "삭제" 앞) */
+  readonly onExport?: (projectId: string) => void;
   /** 있을 때만 "삭제"(P1D-SPEC J-S12 — local만) */
   readonly onDelete?: (projectId: string) => void;
 }) {
@@ -56,6 +59,11 @@ export function ProjectRow({
         <Button variant="outline" size="sm" data-rename-for={row.projectId} aria-label={`${row.name} 이름 바꾸기`} onClick={() => rename.onOpen(row.projectId)}>
           이름 바꾸기
         </Button>
+        {onExport && (
+          <Button variant="outline" size="sm" data-export-for={row.projectId} aria-label={`${row.name} 파일로 내보내기`} onClick={() => onExport(row.projectId)}>
+            파일로 내보내기
+          </Button>
+        )}
         {onDelete && (
           <Button variant="outline" size="sm" data-delete-for={row.projectId} aria-label={`${row.name} 삭제`} onClick={() => onDelete(row.projectId)}>
             삭제

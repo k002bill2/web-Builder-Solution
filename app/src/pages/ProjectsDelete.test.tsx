@@ -78,7 +78,7 @@ describe("J-S12 줄 '삭제' 버튼 (AC-D07 프로젝트)", () => {
     expect(button).toHaveAttribute("data-delete-for", "project-1");
     const row = button.closest("li")!;
     const labels = within(row).getAllByRole("button").map((b) => b.textContent);
-    expect(labels.slice(-2)).toEqual(["이름 바꾸기", "삭제"]);
+    expect(labels.slice(-3)).toEqual(["이름 바꾸기", "파일로 내보내기", "삭제"]);
     expect(screen.getByRole("button", { name: "프로젝트 2 삭제" })).toBeInTheDocument();
   });
 

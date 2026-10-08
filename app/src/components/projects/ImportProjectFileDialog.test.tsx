@@ -82,7 +82,7 @@ describe("ImportProjectFileDialog", () => {
   ])("IM-13 파일 크기(Jarvis 결정 2) — %iB = '%s'", async (size, label) => {
     open(async () => ok(checkedFile({ size })));
     await screen.findByRole("button", { name: "가져오기" });
-    expect(screen.getAllByRole("listitem")[3].textContent).toBe(label);
+    expect(screen.getAllByRole("listitem")[3]?.textContent).toBe(label);
   });
 
   it("I-S04 검증 실패 — alert 문장 · 버튼 '다른 파일 고르기'(포커스)·'닫기' · 다시 고르기 = 닫고 onPickAgain", async () => {

@@ -12,3 +12,4 @@
 - 설계: 표기 함수 `fileSizeLabel(bytes)`는 ImportProjectFileDialog.tsx 안 비공개 순수 함수(정수 산술: KB=ceil(b/1024)·최소1, MB=ceil(b*10/MB)/10 toFixed(1)). export 하면 react-refresh/only-export-components 경고 → 컴포넌트 렌더로 경계값 검증(수정 파일 2개 유지).
 - RED 예측: 새 경계값 테스트 8건 중 1B·1,024B·1,025B·13,115B·1,048,575B(현행 "파일 1MB") · 1,048,576B(현행 "파일 1MB" ≠ "1.0MB") · 1,048,577B(현행 "파일 2MB" ≠ "1.1MB") · 52,428,800B(현행 "파일 50MB" ≠ "50.0MB") → 8건 전부 FAIL. 기존 I-S03의 "파일 3MB"(3MB-5B)는 결정 2에 따라 "파일 3.0MB"로 기대값 갱신(동일 강도 — 약화 아님) → 갱신 후 이것도 RED.
 - RED 실측: 예측대로 9 failed | 8 passed (I-S03 + 경계값 8). GREEN: 17 passed.
+- ec75943 typecheck 실패(TS2532 [3] possibly undefined) → 후속 커밋에서 `?.` 로 수정(amend 금지, 단언 강도 동일: undefined면 toBe 실패).

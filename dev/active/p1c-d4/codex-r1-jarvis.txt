@@ -1,0 +1,38 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a11912-4dfa-7160-9e88-afa8809b9cdf).
+[codex] Reviewer started: changes against '719f26d'
+[codex] Running command: /bin/zsh -lc "pwd; git status --short; git diff --stat 719f26d017ae1df51017f88719adc0ca39b628...
+[codex] Command completed: /bin/zsh -lc "pwd; git status --short; git diff --stat 719f26d017ae1df51017f88719adc0ca39b628... (exit 0)
+[codex] Running command: /bin/zsh -lc 'find .. -name AGENTS.md -o -name AGENTS.override.md; for p in /Users/AGENTS.md ...
+[codex] Command completed: /bin/zsh -lc 'find .. -name AGENTS.md -o -name AGENTS.override.md; for p in /Users/AGENTS.md ... (exit 0)
+[codex] Running command: /bin/zsh -lc 'ls -a; cat app/package.json; cat app/src/data/persistence/writerLock.ts; cat ap...
+[codex] Command completed: /bin/zsh -lc 'ls -a; cat app/package.json; cat app/src/data/persistence/writerLock.ts; cat ap... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; find app dev -name CLAUDE.md -o -name AGENTS.override.md -o -nam...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; find app dev -name CLAUDE.md -o -name AGENTS.override.md -o -nam... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/pages/ProjectsPage.tsx; rg -n 'StrictMode|BrowserStorageSection|Pro...
+[codex] Command completed: /bin/zsh -lc "cat app/src/pages/ProjectsPage.tsx; rg -n 'StrictMode|BrowserStorageSection|Pro... (exit 0)
+[codex] Running command: /bin/zsh -lc './node_modules/.bin/vitest run src/features/projects/clearBrowserData.test.ts s...
+[codex] Command failed: /bin/zsh -lc './node_modules/.bin/vitest run src/features/projects/clearBrowserData.test.ts s... (exit 1)
+[codex] Running command: /bin/zsh -lc "cat docs/design/persistence/P1C-SPEC.md | sed -n '90,235p'; rg -n 'StrictMode' ...
+[codex] Command completed: /bin/zsh -lc "cat docs/design/persistence/P1C-SPEC.md | sed -n '90,235p'; rg -n 'StrictMode' ... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),ts=require(\"./app/node_modules/typescript\")...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require(\"fs\"),ts=require(\"./app/node_modules/typescript\")... (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/components/projects/BrowserStorageSection.tsx | tail -35; cat ap...
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/components/projects/BrowserStorageSection.tsx | tail -35; cat ap... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 삭제 실패 후 대화상자를 다시 열면 자기 잠금에 막히는 문제와 네이티브 모달의 포커스 복귀 문제가 있습니다. TypeScript 검사는 통과했지만, Vitest는 읽기...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 719f26d
+
+삭제 실패 후 대화상자를 다시 열면 자기 잠금에 막히는 문제와 네이티브 모달의 포커스 복귀 문제가 있습니다. TypeScript 검사는 통과했지만, Vitest는 읽기 전용 환경의 임시 파일 생성 제한으로 실행되지 못했습니다.
+
+Full review comments:
+
+- [P2] 대화상자를 다시 열어도 삭제 잠금 소유권을 유지하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p1c-d4/app/src/components/projects/ClearDataDialogSlot.tsx:8-9
+  같은 탭에서 편집한 뒤 삭제가 실패하고 대화상자를 취소·재개하면, 새 clearer는 기존 `held="writer"` 정보를 잃습니다. 그러나 `stop()` 때문에 `own().isWriter()`는 false이고 실제 Web Lock은 계속 이 탭이 보유하므로, 재시도는 자기 잠금에 막혀 계속 `busy`를 반환합니다. 메모리 내 재현에서도 첫 삭제 실패 후 재개한 삭제 요청이 실행되지 않았습니다. clearer의 잠금·대기 상태를 대화상자 수명 밖에서 유지하거나, 중단된 싱크의 실제 잠금 소유권을 별도로 추적해야 합니다.
+
+- [P2] 모달이 닫힌 뒤 여는 버튼으로 포커스를 복귀시키세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p1c-d4/app/src/components/projects/BrowserStorageSection.tsx:211-214
+  취소 버튼이나 Esc로 닫을 때 `setClearing(false)`는 언마운트를 예약할 뿐이므로, 바로 다음 `focus()`가 실행되는 시점에는 네이티브 모달이 아직 열려 있습니다. 실제 브라우저에서는 모달 바깥의 여는 버튼이 inert여서 이 포커스 요청이 무시됩니다. 모달을 먼저 `close()`하거나 언마운트 이후 effect에서 포커스를 복귀시켜야 합니다. 현재 jsdom 대체 구현은 inert를 흉내 내지 않아 이 문제를 검출하지 못합니다.

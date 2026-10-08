@@ -8,9 +8,9 @@ base `a0bbede` · 브랜치 `k002bill2/p1c-d4`
 - [x] 1번: 지우기 버튼 + 대화상자(조작 뒤 청크) + 흐름 1~5 + `cleared` 전송 + 같은 탭 writer 회귀 → 커밋
 - [x] 2번: `saved` 전송(커밋 뒤) · 수신(싱크 `cleared` = 쓰기 0 · 영역 `saved`/`cleared`) · 같은 탭 `saved` 무시 → 커밋
 - [x] 번들 관문(129.65 · 132.68 · ≤125) — 재개 build(60d398d): /studio 129.64 · 복원 132.67 · /projects 104.44
-- [ ] Ego Lite 실측(① 같은 탭 ② 탭 2개 alert ③ B 닫은 뒤 성공·cleared 수신) + 정리
-- [ ] typecheck · lint · build · 전체 vitest
-- [ ] REPORT
+- [x] Ego Lite 실측(① 같은 탭 ② 탭 2개 alert ③ B 닫은 뒤 성공·cleared 수신) + 정리 — ②③ 실측 · ① BLOCKED: 편집 흐름 스크립트화가 턴 한도 밖(REPORT, D5 QA로 이월)
+- [x] typecheck · lint · build · 전체 vitest (r2 레인 fresh 실행 포함)
+- [x] REPORT
 
 ## 설계
 - `data/persistence/tabLink.ts`(새): 탭당 BroadcastChannel `design-studio` 1개(같은 탭 다른 인스턴스는 자기 메시지도 받으므로 공유) + 이 탭 싱크 손잡이(`attach`/`own`). localSync 청크·`/projects` 페이지 청크만 import — `/studio` 진입 closure 파일 변경 0.

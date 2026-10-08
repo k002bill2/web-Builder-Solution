@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { BrowserStorageSection } from "../components/projects/BrowserStorageSection";
 import { ProjectList } from "../components/projects/ProjectList";
 import type { RenameHandlers } from "../components/projects/ProjectRow";
 import type { RenameSubmitOutcome } from "../components/projects/RenameField";
 import { LoadingState } from "../components/layout/LoadingState";
-import { ProjectRepositoryError, type Project, type ProjectRepository } from "../data/projectRepository";
+import { ProjectRepositoryError, type Project, type ProjectPersistence, type ProjectRepository } from "../data/projectRepository";
 import { projectRowView, sortProjects } from "../features/projects/projectListView";
 import { editRename, failRename, openRename, renamedText, submitRename, type RenameDraft, type RenameRequest } from "../features/projects/renameDraft";
 import { useProjectList } from "../features/projects/useProjectList";
@@ -19,12 +20,18 @@ interface Notice {
   readonly key: number;
 }
 
+/** P1C-SPEC 1.2 W1 — 저장 위치 캡션(강등 사유는 저장소 영역) */
+const EMPTY_CAPTION: Partial<Record<ProjectPersistence, string>> = {
+  local: "프로젝트는 이 브라우저에 저장됩니다 — 다른 기기나 브라우저에서는 보이지 않습니다",
+  memory: "이 브라우저에 저장할 수 없어 새로고침하면 프로젝트가 사라집니다",
+};
+
 /** J-S02 — 오류가 아니라 빈 상태(role=alert 아님) */
-function ProjectsEmpty() {
+function ProjectsEmpty({ persistence }: { readonly persistence: ProjectPersistence }) {
   return (
     <>
       <p className="ds-body2">프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다</p>
-      <p className="ds-caption1 text-label-alternative">새로고침하면 프로젝트가 사라집니다(서버 연결 전)</p>
+      {EMPTY_CAPTION[persistence] && <p className="ds-caption1 text-label-alternative">{EMPTY_CAPTION[persistence]}</p>}
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/compare" className={BUTTON_LINK}>
           비교 보드로
@@ -120,10 +127,11 @@ export function ProjectsPage({ repository, now = systemNow }: { readonly reposit
         {notice.text && <span key={notice.key}>{notice.text}</span>}
       </p>
       {items === null && <LoadingState />}
-      {items !== null && items.length === 0 && <ProjectsEmpty />}
+      {items !== null && items.length === 0 && <ProjectsEmpty persistence={repository.persistence} />}
       {items !== null && items.length > 0 && (
         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft} rename={rename} />
       )}
+      {items !== null && <BrowserStorageSection persistence={repository.persistence} />}
     </div>
   );
 }

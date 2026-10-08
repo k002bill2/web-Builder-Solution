@@ -22,7 +22,7 @@
 | F10 | `/projects` 조작 뒤 청크 패턴: `ClearDialogSlot = lazy(() => import("./ClearDataDialogSlot"))`(`BrowserStorageSection.tsx:33`) · `DeleteDialogSlot = lazy(…)`(`pages/ProjectsPage.tsx:21`) · 줄 행동 = "편집기 열기"·"프로필 보기"·"이름 바꾸기"·"삭제"(local만, `data-delete-for`)(`ProjectRow.tsx:49-62`) · "이 브라우저 저장소" 영역 h2 + `role=status` "저장소 알림" + "이 브라우저 데이터 지우기"(`BrowserStorageSection.tsx:159-205`) · "프로젝트 알림" `role=status`(`ProjectsPage.tsx:194`) | 진입 위치·알림 영역·Slot 모양을 그대로 쓴다(1절·4절) |
 | F11 | 파일명 정리 `exportFileStem(name)` = NFC · 금지·제어 문자 `-` · 40 코드 포인트 · 빈 값 `page` · Windows 예약 이름 회피(`exportFileName.ts:5-17`) | 프로젝트 파일 이름도 이 함수(1.3) |
 | F12 | 예비 문장 2개가 P2 출시를 기다린다: 지우기 대화상자 "지우기 전에 '프로젝트 파일로 내보내기'로 백업할 수 있습니다."(P1C-SPEC 1.6 — **숨김**) · 프로젝트 삭제 J-S13 캡션 같은 문장(P1D-SPEC 8절) | L3에서 켠다(7절) — 버튼 이름에 맞춰 문장 조정(5절 FX-1) |
-| F13 | 보드 확정 멱등 키 = `[board.id, revision, expectedLatest, target, callerSeries].join("\n")`(`memoryBoardConfirm.ts:82-83`) — `board.id`는 탭 메모리 비교 보드(영속 범위 밖, P1C-SPEC 0절 5) | `commits`·`adjustCommits`는 다른 탭·다른 브라우저에서 다시 쓰일 수 없는 재시도 기록 → **내보내지 않는다**(2.3, [확인 필요] 소비처) |
+| F13 | 보드 확정 멱등 키 = `[board.id, revision, expectedLatest, target, callerSeries].join("\n")`(`memoryBoardConfirm.ts:82-83`) — `board.id`는 탭 메모리 비교 보드(영속 범위 밖, P1C-SPEC 0절 5) | `commits`·`adjustCommits`는 다른 탭·다른 브라우저에서 다시 쓰일 수 없는 재시도 기록 → **내보내지 않는다**(2.3). 소비처는 재시도 판정뿐: `commitOf` = 보드 확정 replay(`memoryBoardConfirm.ts:86`) · `adjustCommitOf` = 조정 저장 replay, 키에 profileId 포함(`memoryProfileAdjust.ts:44-46`) |
 
 ## 1. 범위 · 진입 위치 · 파일 이름
 
@@ -102,8 +102,8 @@
 | `seq` 묘비 · `gen` · `meta`(`generation`·`firstSaveNotice`) | 브라우저마다의 내부 상태(F8·개정 2 보충) — 가져오는 쪽 값을 쓴다 |
 | `heads`(문서 머리) | `doc`에서 다시 만든다(3.5 — 목록 `hasDoc`) |
 | 잠금·쓰기 탭 여부·BroadcastChannel | 탭 수명 |
-| `commits`·`adjustCommits`(멱등 재시도 기록) | 키에 탭 메모리 `board.id`가 들어가 다른 탭·브라우저에서 다시 맞을 일이 없다(F13) · [확인 필요] `commitOf`·`adjustCommitOf` 소비처가 재시도 판정뿐인지 L1이 grep(`grep -rn "commitOf\|adjustCommitOf" app/src --include=*.ts --include=*.tsx | grep -v test`) — 표시에 쓰이면 그 계열 것만 profileId 치환해 포함 |
-| `jobs`(생성 잡 StoredJob) | ★ 제외 — 키 `(profileId, version, libraryVersion, generatorVersion)`(`studioStore.ts:21-27`)를 새 profileId로 다시 써야 하고 `hidden`(아직 안 드러낸 결과)까지 파일에 실린다. 생성은 결정적(ADR-007 부록 1)이라 가져온 프로젝트의 `/profile`에서 다시 만들면 같은 3안 · [확인 필요] 그 (profileId, version)에 잡이 없을 때 `/profile`이 새 요청을 내는지(F3 P1D "`/profile` 진입 자동" — L1이 `memoryGenerationRepository.ts` 확인). 다시 만들지 않는 경로면 그 계열 잡만 id·key 치환해 포함으로 바꾼다 |
+| `commits`·`adjustCommits`(멱등 재시도 기록) | 소비처가 재시도(replay) 판정뿐이고 키에 탭 메모리 `board.id`·옛 profileId가 들어가 가져온 곳에서 다시 맞을 일이 없다(F13 [L1]) — 없으면 첫 확정·조정이 새 기록을 만든다(기존 첫 실행과 같음) |
+| `jobs`(생성 잡 StoredJob) | ★ 제외 — 키 `(profileId, version, libraryVersion, generatorVersion)`(`studioStore.ts:21-27`)를 새 profileId로 다시 써야 하고 `hidden`(아직 안 드러낸 결과)까지 파일에 실린다. 생성은 결정적(ADR-007 부록 1)이라 다시 만들면 같은 3안. 잡이 없는 `/profile` 진입 = 진입 때 `findJob`(store 조회)만 하고 결과 없음 → **"3안 만들기" 버튼**(사용자 조작 뒤 `requestGeneration`) [L1 `features/profile/useGeneration.ts:3·70-74·127` · `scripts/check-bundle-size.mjs:113-119` "잡 없는 진입은 위 /profile이 잰다"] — 이미 실측된 `/profile` 99.87 시나리오 그대로라 예산 영향 0. 대가: 가져온 프로젝트의 프로필 화면은 3안을 한 번 다시 눌러 만든다(EX-4가 고지) |
 | 비교 보드·보관함(저장한 레퍼런스) | 영속 범위 밖 탭 메모리(P1C-SPEC 0절 5) |
 | 렌더 내보내기 잡·`downloadRef`(blob: URL)·object URL | 탭 수명(F1) |
 | 다른 프로젝트·다른 계열 | 범위 = 프로젝트 1개(1.1) |
@@ -152,18 +152,18 @@
 | `project` | `{ ...project, projectId: 새, profileId: 새, updatedAt: 가져온 시각 }` — `name`·`revision`·`createdAt`·`baseReferenceId` 그대로(목록 맨 위로 — 정렬 기준이 updatedAt [L1 `projectRepository.ts:39`]) |
 | `series` 각 버전 | `profileId: 새` · 나머지 그대로 |
 | `doc.doc` · 각 `snapshot.doc` | `projectId: 새` → **`hash = hashDoc(바뀐 doc)`**(F4 — projectId가 해시 대상) · `revision`·`updatedAt` 그대로 |
-| 각 스냅샷 | `projectId: 새` · `hash: 그 doc의 새 hash`(스냅샷 `hash` 필드 [L1 `projectRepository.ts:107`] — [확인 필요] 스냅샷 `hash`가 doc hash와 같은 값인지 L1 확인) · `snapshotId`·`snapshotSeq` **그대로**(프로젝트 범위 F8) |
+| 각 스냅샷 | `projectId: 새` · `hash: 그 doc의 새 hash`(스냅샷 `hash` = 만들 때의 `doc.hash` [L1 `memoryDocBook.ts:121·240`]) · `snapshotId`·`snapshotSeq` **그대로**(프로젝트 범위 F8) |
 | 이미지 키 | `${새 projectId}/${localId}` — localId 그대로(문서 참조가 localId) |
 | 대상 `seq` | **그대로** — 가져오기는 발급이지 삭제가 아니다(묘비는 삭제 때만, 개정 3) |
 | 대상 `heads` | `+ 새 projectId → headOf(바뀐 doc)`(doc null이면 넣지 않음 — 목록 `hasDoc:false`) [L1 `localSync.ts:156`] |
 
-- `hashDoc`은 engine 모듈이다. 가져오기 청크가 부를 경로는 `engineImportGuard.test.ts` 허용 목록으로 정한다 — 후보: `data/startDocWrite.ts`(engine을 부를 수 있는 data 파일, `startDocWrite.ts:101-102` 주석)를 통해 재검증·재계산 [확인 필요 L1].
+- `hashDoc`은 engine 모듈이고 engine import 허용 목록은 `pages/StudioPage.tsx`·`components/studio/**`·`features/studio/**`·**`data/startDocWrite.ts`**·`render/**`·`kit/**`뿐 [L1 `engine/engineImportGuard.test.ts:27`] → `features/projectFile/`은 engine을 직접 부를 수 없다. **`data/startDocWrite.ts`에 순수 함수 1개(`rekeyDoc(doc, projectId)` = projectId 치환 + `hashDoc` 재계산)를 더해** 가져오기 청크가 그것과 기존 `checkSaveDoc`을 쓴다(startDocWrite = "편집 시작" onClick 조작 뒤 청크 — 진입 closure 밖 [L1 `engineImportGuard.test.ts:9`]).
 - 재매김 뒤 **다시** ④의 검사(`checkSaveDoc(새 projectId, …)` · F5 규칙)를 돌려 통과해야 쓰기 단계로 간다 — 열기(`readDoc`·`checkState`)가 깨지면 모든 프로젝트가 INFRA(F4)라서 이중 확인.
 
 ### 3.5 쓰기 — 한 트랜잭션 · 다른 탭 차단 · 새로고침
 
 1. **잠금**(F9 그대로): `tabLockHold(link, locks).acquire()` — 이 탭이 쓰기 탭이면 보유 잠금(이때만 `stop()` — 새로고침까지 쓰기 0) · 아니면 `tryLock` · 못 잡으면 **IM-9 busy**, 쓰기 0. `navigator.locks` 없음 = 잠금 없이 진행(어느 탭도 쓰지 않는 환경 — 개정 2 보충). 지우기 대기 중(`clearing`) = busy.
-2. **트랜잭션** `studio·docs·images·meta` readwrite 1개. 안에서는 IDB 요청만 await: get `studio/state`·`meta/generation` → 상태 봉투 확인(mismatch·invalid = **IM-8**, abort) · 상태 없음(첫 실행·지운 직후) = 빈 상태에서 시작 → 3.4 계산(동기) → put state(`projects`·`series`에 추가 · `heads` 추가 · `gen` = generation + 1) · put meta generation(같은 값) · put `docs/<새 id>`(doc 있을 때) · put images(새 키). 저장소가 없으면(빈 v1 DB — P1c 1.6) **IM-8이 아니라** "쓸 저장소 없음" = IM-10 실패로 본다 [확인 필요 — 저장소 생성은 쓰기 쪽 `DB_VERSION` 업그레이드 몫; 가져오기 청크가 업그레이드를 맡지 않는다].
+2. **트랜잭션** `studio·docs·images·meta` readwrite 1개. 안에서는 IDB 요청만 await: get `studio/state`·`meta/generation` → 상태 봉투 확인(mismatch·invalid = **IM-8**, abort) · 상태 없음(첫 실행·지운 직후) = 빈 상태에서 시작 → 3.4 계산(동기) → put state(`projects`·`series`에 추가 · `heads` 추가 · `gen` = generation + 1) · put meta generation(같은 값) · put `docs/<새 id>`(doc 있을 때) · put images(새 키). **연결은 쓰기 쪽과 같이 `open("design-studio", DB_VERSION=2)` + `onupgradeneeded = upgradeDatabase`로 연다**[L1 `data/persistence/idbPersistence.ts:3·13·20-26·62-63` — 조작 뒤 청크] — **새 브라우저로 옮겨 가져오기(이 기능의 주 용도)** 에서는 DB가 없거나 `/projects` 진입 읽기가 만든 저장소 0개 v1 DB만 있다(`entryRead.ts:4·27-35` [L1]). 버전 없이 열면(deleteProject 방식 `deleteProject.ts:89-92`) 저장소가 없어 쓸 수 없으므로 이 점만 deleteProject와 다르다. `upgradeDatabase`·`DB_VERSION`은 idbPersistence에서 import하거나(6절 규칙 — 실측) 복제 + parity. 상태 레코드가 없으면 빈 상태(맵 5개 비어 있음)에서 시작.
 3. 실패: `QuotaExceededError` = **IM-11** · 그 밖 = **IM-10**. 전부 아니면 전무(트랜잭션 abort).
 4. 커밋 확인 뒤 BroadcastChannel 기존 `{ type: "saved" }`(다른 `/projects` 탭 "다른 탭에서 저장한 변경이 있습니다") → `sessionStorage` 키 **`design-studio-imported`** = 이름 → **`/projects` 새로고침 이동**.
 - **새로고침 ★ 이유**(P1c 1.6·P1d 1.3과 같음): 이 탭 메모리 store는 가져온 프로젝트를 모른다. 새로고침 없이 이어가면 이 탭이 다음 `saveState`로 **가져온 프로젝트가 빠진 상태를 덮어쓴다**(쓰기 탭인 경우) — 하이드레이션 경로를 그대로 타는 새로고침이 유일하게 새 코드 0인 길.
@@ -218,7 +218,7 @@
 | EX-1 | 파일로 내보내기 / {이름} 파일로 내보내기 | 줄 버튼 / aria-label |
 | EX-2 | 이 프로젝트를 다른 브라우저나 기기에서 가져올 수 있는 파일 1개로 내려받습니다. | X-S01 본문 |
 | EX-3 | 편집 문서와 스냅샷(문서 없으면 생략) · 문서에 넣은 이미지 · 확정한 프로필(모든 버전) | X-S01 목록 |
-| EX-4 | 마지막으로 저장된 내용이 들어갑니다. 비교 보드·보관함·만든 3안은 들어가지 않습니다. | X-S01 캡션 |
+| EX-4 | 마지막으로 저장된 내용이 들어갑니다. 비교 보드·보관함·만든 3안은 들어가지 않습니다 — 3안은 가져온 뒤 프로필 화면에서 다시 만들 수 있습니다. | X-S01 캡션 |
 | EX-5 | 파일에 이미지와 문구가 그대로 들어 있습니다 — 공유할 때 주의하세요. | X-S01 캡션(THREATS T10) |
 | EX-6 | 저장된 데이터를 읽지 못해 파일을 만들지 못했습니다 — '이 브라우저 데이터 지우기'로 비울 수 있습니다 | alert(PJ-8 문형) |
 | EX-7 | 이 프로젝트를 찾지 못했습니다 — 다른 탭에서 지웠을 수 있습니다. 새로고침하세요 | alert |
@@ -252,7 +252,7 @@
 
 | 항목 | 놓는 곳 | 진입 몫 | 근거 |
 |---|---|---|---|
-| 줄 "파일로 내보내기" 버튼 | `ProjectRow`(`/projects` 페이지 청크) | `/projects` 소폭 | `/projects` 104.86 / 125 — 여유 큼 · `/studio`·`/profile` closure 밖 [확인 필요 L1: `check-bundle-size.mjs`에서 `ProjectRow`·`ProjectsPage`가 `/projects`에만 속함] |
+| 줄 "파일로 내보내기" 버튼 | `ProjectRow`(`/projects` 페이지 청크) | `/projects` 소폭 | `/projects` 104.86 / 125 — 여유 큼 · `/projects` 시나리오 = `ProjectsRoute` + 미리받기 + `PROJECT_AUTO`(`deferredStudio`·`memoryProjectRepository`) [L1 `scripts/check-bundle-size.mjs:50·127`] — `ProjectRow`는 `/studio`·`/profile` closure 밖 |
 | 저장소 영역 "프로젝트 파일 가져오기" 버튼·숨긴 input | `BrowserStorageSection`(`/projects` 청크) | `/projects` 소폭 | 같음 |
 | 내보내기 대화상자 + 읽기 트랜잭션 + JSON 조각·base64 인코딩 | 새 `ExportProjectFileSlot`(lazy — 누른 뒤) | **0** | F10 Slot 패턴 |
 | 가져오기 대화상자 + 파싱·검증·디코드·재매김·쓰기 트랜잭션 | 새 `ImportProjectFileSlot`(lazy — 파일을 고른 뒤) | **0** | 같음 |
@@ -260,8 +260,9 @@
 | 성공 알림 키 `design-studio-imported`·IM-15·EX-9 | `ProjectsPage`(리터럴 — `DELETED_KEY` 선례 `ProjectsPage.tsx:22`) | `/projects` 소폭 | — |
 | FX-1 문장 | `ClearDataDialog`·`DeleteProjectDialog`(이미 조작 뒤 청크) | 0 | — |
 
-- **"지연 import면 0"만으로는 부족하다**(P1d 완료 기록: 진입 closure를 안 바꾼 레인도 공유 청크 export 변동으로 ±0.02, 지금 여유 0.00). 그래서 새 모듈은 **진입·복원 closure 모듈을 값으로 import하지 않는다**: `data/persistence/envelope`·`entryRead`·`idbPersistence`·`localSync`·`imageRecord`·`imageRestore`·`data/studioStore`·`features/studio/images/store/imageStore`. 필요한 상수(`"design-studio"`·`SCHEMA_VERSION 1`·저장소 이름·한도 24/60MB)는 **리터럴 복제 + parity 테스트**(`deleteProject.ts:9` 선례), 타입은 `import type`만.
-  - 재사용 허용(조작 뒤 모듈): `data/seqId`(`nextSeqId`·`seqOf` — P1d가 deleteProject에서 이미 import) · `exportFileStem` · `tabLockHold`·`writerLock`·`tabLink`(deleteProject 선례) · 검증 함수(`checkSaveDoc`·`validateProjectName`·`formatFromMagic`·`widthLadder`·`exceedsPixelLimit`) — **[확인 필요 L1]** 이 모듈들이 진입·복원 closure에 속하는지 `check-bundle-size.mjs` 시나리오 목록으로 확인, 속하면 위와 같이 복제.
+- **"지연 import면 0"만으로는 부족하다**(P1d 완료 기록: 진입 closure를 안 바꾼 레인도 공유 청크 export 변동으로 ±0.02, 지금 여유 0.00). 그래서 새 모듈은 **진입·복원 closure 모듈을 값으로 import하지 않는다**: `data/deferredStudio`·`memoryProjectRepository`(`/studio`·`/projects` 진입 `PROJECT_AUTO` [L1 `check-bundle-size.mjs:50`]) · `data/persistence/envelope`·`entryRead`·`idbPersistence`·`localSync` · 복원 진입 자동 `imageRestore`와 그 정적 의존 `imageRecord`·`imageStore`·`ingest/fileType`·`ladder`·`limits` [L1 `check-bundle-size.mjs:145·150`] · `data/studioStore`. 필요한 상수(`"design-studio"`·`SCHEMA_VERSION 1`·저장소 이름·한도 24/60MB)는 **리터럴 복제 + parity 테스트**(`deleteProject.ts:9` 선례), 타입은 `import type`만.
+  - 재사용 허용(조작 뒤 모듈): `data/seqId`(`nextSeqId`·`seqOf` — deleteProject가 이미 import [L1 `deleteProject.ts:15`]) · `exportFileStem`(렌더 내보내기 조작 뒤) · `tabLockHold`·`writerLock`·`tabLink`(deleteProject 선례) · `data/startDocWrite`(`checkSaveDoc`·새 `rekeyDoc` — 조작 뒤).
+  - **진입 closure에 이미 있는 검증 함수**(`domain/projectName.validateProjectName` — `memoryProjectRepository.ts:10`로 진입 [L1] · `formatFromMagic`·`widthLadder`·`exceedsPixelLimit` — 복원 진입 [L1]): ★ **import 우선**(보안 검증 규칙의 원천을 둘로 만들지 않는다) — L1이 lazy 청크에서 import한 상태로 **관문 실측**하고, 진입·복원 수치가 하나라도 바뀌면(공유 청크 재분할) 그 함수만 리터럴 복제 + parity 테스트(같은 입력 표 → 같은 결과)로 바꾼다. 복제는 마지막 수단.
   - `recordRefs`는 `imageStore.retainedIds`에 묶여 있어(`imageRecord.ts:13·23`) 복원 closure — ⑥ 참조 판정은 **`retainedIds` 규칙을 복제하지 말고** 필요하면 ⑥을 생략(버림 없이 전부 쓰기 — 참조 밖 이미지는 다음 flush의 `imageOps`가 지운다 [L1 P1D F2])하는 안이 더 작다 → L1이 closure 확인 뒤 택1.
 - **관문**(L1 첫 레인, 배선 전·후): `/studio` ≤ 129.65 · 복원 ≤ 132.68 · `/profile` ≤ 100 · `/projects`·`/compare` ≤ 125. 하나라도 넘으면 **멈추고 실측 보고**(KB 추정 금지 — ADR-007 사실 9).
 
@@ -286,11 +287,11 @@
 
 | 레인 | 범위(절) | 주 쓰기 파일 | AC | 선행 | 관문 |
 |---|---|---|---|---|---|
-| **L1 형식·검증·재매김(순수)** | 2절 · 3.2~3.4 · 6절 closure 확인 · 0절 [확인 필요] 4건 해소(commitOf 소비처·`/profile` 잡 없음 동작·스냅샷 hash·engine 경로) | 새 `features/projectFile/format.ts`(상수·타입·parity) · `checkFile.ts`(① ~ ⑥) · `rekey.ts`(3.4 + hash 재계산) · `encode.ts`(state → 조각 배열) + 각 `.test.ts` | P01(U) · P02(U) · P03(U) · P05(U) | 없음 | 진입 파일 변경 0 → 관문 실측 1회(기준선 기록) |
-| **L2 내보내기 화면** | 1.2 · 1.3 · 3.6 · 4.1 · EX 문구 | `ProjectRow.tsx`(버튼·`data-export-for`) · `ProjectList.tsx`(Slot 상태 소유 — `ProjectsPage` 무접촉) · 새 `components/projects/ExportProjectFileDialog.tsx`(+`Slot`) · 새 `features/projectFile/readProject.ts`(readonly 트랜잭션) | P01(E 앞반) · P07(내보내기) · P08(내보내기) · P09 | L1 | `/projects` ≤125 · `/studio`·`/profile` 불변 |
+| **L1 형식·검증·재매김(순수)** | 2절 · 3.2~3.4 · 6절 검증 함수·`upgradeDatabase` import 실측(복제 여부 결정) | 새 `features/projectFile/format.ts`(상수·타입·parity) · `checkFile.ts`(① ~ ⑥) · `rekey.ts`(3.4) · `encode.ts`(state → 조각 배열) + 각 `.test.ts` · `data/startDocWrite.ts`(`rekeyDoc` 1개 추가) | P01(U) · P02(U) · P03(U) · P05(U) | 없음 | 진입 파일 변경 0 → 관문 실측 1회(기준선 기록) |
+| **L2 내보내기 화면** | 1.2 · 1.3 · 3.6 · 4.1 · EX 문구 | `ProjectRow.tsx`(버튼·`data-export-for`) · `ProjectList.tsx`(`onExport` 전달) · `ProjectsPage.tsx`(Slot·EX-9 — 겹침 아래) · 새 `components/projects/ExportProjectFileDialog.tsx`(+`Slot`) · 새 `features/projectFile/readProject.ts`(readonly 트랜잭션) | P01(E 앞반) · P07(내보내기) · P08(내보내기) · P09 | L1 | `/projects` ≤125 · `/studio`·`/profile` 불변 |
 | **L3 가져오기 화면·쓰기** | 3.1 · 3.5 · 4.2 · IM 문구 · FX-1 · I-S07 알림·포커스 | `BrowserStorageSection.tsx`(버튼·input) · 새 `components/projects/ImportProjectFileDialog.tsx`(+`Slot`) · 새 `features/projectFile/writeImport.ts`(트랜잭션·잠금) · `ProjectsPage.tsx`(키·IM-15·포커스) · `ClearDataDialog.tsx`·`DeleteProjectDialog.tsx`(FX-1 한 줄씩) | P01(E 왕복) · P02(E) · P04 · P06 · P07(가져오기) · P08(가져오기) · P11 | L1 | 같음 |
 
-- **병렬**: L1 먼저. 그다음 **L2 ‖ L3 — 쓰기 파일 겹침 0**(L2 = `ProjectRow`·`ProjectList`·Export* / L3 = `BrowserStorageSection`·`ProjectsPage`·Import*·두 대화상자 FX-1). 겹침 후보 `ProjectsPage`는 L3 단독(L2는 성공 알림을 `ProjectList`가 받은 `onNotice` prop으로 올린다 — **[확인 필요]** `ProjectList`가 "프로젝트 알림" 갱신 콜백을 이미 받는지. 없으면 L2가 `ProjectsPage` 1줄 추가 → L3를 L2 뒤로 직렬화).
+- **병렬**: L1 먼저. 그다음 **L2 ‖ L3**, 단 **`ProjectsPage.tsx` 겹침 1건**: `ProjectList`는 알림 콜백이 없고 `onDelete`만 받으며(`ProjectList.tsx:15` [L1]) 삭제 Slot·"프로젝트 알림"이 `ProjectsPage`에 있다(`ProjectsPage.tsx:21·194` [L1]) → L2도 같은 모양(`onExport` + `ExportProjectFileSlot` + EX-9)으로 `ProjectsPage`를 고친다. 처리 = **L2 먼저 병합, L3는 `ProjectsPage` 수정을 레인 마지막 커밋으로 두고 L2 병합 뒤 rebase**(나머지 L3 파일은 겹침 0 — 처음부터 병렬). L2 파일 목록에 `ProjectsPage.tsx` 추가.
 - 공유 상수 `BUSY` 문형: IM-9는 새 상수(동사 다름) — `features/projects/dialogText.ts`(P1d 공용)에 추가하면 L3 단독 파일.
 - **턴 한도 대응**: L1이 가장 크다(검증 6단계 + 재매김) — 넘치면 L1a(format·checkFile ①~④) / L1b(⑤ 이미지·rekey·encode)로 나눈다(파일 겹침 0). E 실측은 L3 끝에 한 번에(왕복·차단·포커스) — L2는 U + 내려받기 1회 E.
 - 각 레인 완료 기준: typecheck·lint·test·build + 해당 AC + 관문. TDD — AC-P02(거절 = 쓰기 0)·AC-P05(열기 무결)가 RED 출발점.
@@ -308,6 +309,6 @@
 ## 10. 이 SPEC이 정하지 않는 것 (한계)
 
 - **강등(memory) 상태의 내보내기** — 백업이 가장 필요한 상황(열기 실패·깨진 봉투)인데 IDB를 읽을 수 없어 불가. 탭 메모리에서 내보내는 경로는 store·DocBook 직렬화가 진입·복원 closure에 닿아(6절) 예산 0과 충돌 [추정] — 필요하면 별도 레인에서 실측 후 결정.
-- 여러 프로젝트 한꺼번에(전체 백업) · 덮어쓰기 가져오기(1.1 B·3.4 B) · 생성 잡·멱등 기록 포함(2.3 — [확인 필요] 결과에 따라 L1이 포함으로 바꿀 수 있음).
+- 여러 프로젝트 한꺼번에(전체 백업) · 덮어쓰기 가져오기(1.1 B·3.4 B) · 생성 잡·멱등 기록 포함(2.3 — 제외 근거 [L1] 확인됨).
 - 80MB 파일 메모리 피크 실측 · 파일 암호화·서명(위변조 탐지 — 검증 규칙이 모양만 본다) · 서버 업로드 형식 재사용(ADR-007 (c) 별도 ADR).
 - 렌더 내보내기(HTML·React zip·PNG)와 화면 통합 — 그대로 별개.

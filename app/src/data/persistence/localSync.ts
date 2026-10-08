@@ -46,6 +46,9 @@ export interface LocalSync {
   flush(projectId: string, book: BookView, images?: RenderImages): Promise<void>;
   /** DocBook save가 판정 전에 부른다 — current = 지금 메모리 문서 */
   base(projectId: string, expectedRevision: number, current: DocHead | undefined, hash: string): number;
+  /** 첫 저장 1회 안내(P1C-D5 · SPEC 1.4) — 쓰기 탭이고 meta `firstSaveNotice`가 없으면 키를 큐로 제출하고 true(커밋을 기다리지 않는다 — 실패면 다음 호출에 다시 true).
+   * `live`가 false면(호출자가 이미 시간 초과로 안내를 버림) 키를 쓰지 않고 false — 안내하지 않은 판정이 키를 소비하지 않게(Codex r1 P2) */
+  firstSave(live?: () => boolean): Promise<boolean>;
 }
 
 const unreadable = () => new ProjectRepositoryError("INFRA", "열기 — 저장된 데이터를 읽지 못했습니다");
@@ -69,6 +72,7 @@ function readDoc(record: unknown): [string, DocRecord] {
 }
 
 const GENERATION = "generation";
+const NOTICE = "firstSaveNotice";
 const blocked = (mode: WriterMode) => toInfra(undefined, "저장", ...(mode === "readonly" ? [READ_ONLY_TAB] : mode === "stale" ? [STALE_TAB] : []));
 const ignore = () => undefined;
 
@@ -122,6 +126,8 @@ export async function openLocalSync(
   };
   /** 지워짐(이 탭이 지웠거나 cleared 수신) — 새로고침 전까지 쓰기 0 */
   let cleared = false;
+  /** 안내 키 제출 중·성공 — 대기 중 연속 확정에서 두 번 알리지 않는다(실패면 풀어 다음 확정에 한 번 더) */
+  let noticing = false;
   const stop = () => {
     if (cleared) return;
     cleared = true;
@@ -182,5 +188,17 @@ export async function openLocalSync(
       current && current.hash !== hash && current === submitted.get(projectId)?.doc && queue.status(projectId) === "unconfirmed" && current.revision > expectedRevision
         ? current.revision
         : expectedRevision,
+    // 상태 쓰기(saveState)가 먼저 잠금을 요청했으면 그 제출 뒤에 낸다 — 같은 enter 시도를 기다린다
+    firstSave: async (live = () => true) => {
+      try {
+        if (cleared || (await gate.enter()) !== "writer" || noticing) return false;
+        if (checkEnvelope(await persistence.get("meta", NOTICE), NOTICE, NOTICE).status === "ok" || noticing || cleared || !live()) return false;
+        noticing = true;
+        queue.submit(NOTICE, [{ type: "put", store: "meta", record: { schemaVersion: SCHEMA_VERSION, kind: NOTICE, id: NOTICE, data: true } }]).catch(() => (noticing = false));
+        return true;
+      } catch {
+        return false;
+      }
+    },
   };
 }

@@ -31,6 +31,8 @@ export interface ConfirmResult {
   readonly version: number;
   /** 재확정 이어받기에서 지운 조정 수(6.1-3 개수 단위) — 1 이상일 때만. 확정 뒤 "조정 M개를 지웠습니다"(P-S25 r6) */
   readonly droppedCount?: number;
+  /** 이 브라우저 첫 저장(P1C-D5 · SPEC 1.4) — 확정 결과 문장 뒤에 안내를 이어 붙인다. memory(강등)·두 번째 확정은 없음 */
+  readonly firstSave?: true;
 }
 
 export interface CompareBoardRepository {

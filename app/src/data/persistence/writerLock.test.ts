@@ -12,6 +12,7 @@ import type { ProjectRepository } from "../projectRepository";
 import { checkEnvelope } from "./envelope";
 import type { LocalEntry } from "./entryRead";
 import { createLockRegistry } from "./fakeLocks";
+import { toInfra } from "./infra";
 import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type StudioPersistence, type WriteOp } from "./studioPersistence";
 import { WRITER_LOCK, type WriterLocks } from "./writerLock";
@@ -211,6 +212,88 @@ describe("최신성 확인 — 세대 번호 (AC-C02 · BRIEF 회귀)", () => {
     await settle();
     expect((await generationOf(persistence))?.data).toBe(before + a.writes.length);
     expect((checkEnvelope(await persistence.get("studio", "state"), "state", "state") as { data: { gen?: number } }).data.gen).toBe(before + a.writes.length);
+  });
+});
+
+/** 실패 주입 래퍼 — gate.fail이면 쓰기 트랜잭션 reject(IDB QuotaExceeded처럼) */
+function flaky(persistence: StudioPersistence) {
+  const gate = { fail: false };
+  const wrapped: StudioPersistence = {
+    ...persistence,
+    write: (ops) => (gate.fail ? Promise.reject(toInfra(new DOMException("x", "QuotaExceededError"), "저장")) : persistence.write(ops)),
+  };
+  return { gate, wrapped };
+}
+const opsGen = (ops: readonly WriteOp[]) => {
+  const put = (store: string, id: string) => ops.find((op) => op.type === "put" && op.store === store && op.record.id === id) as Extract<WriteOp, { type: "put" }> | undefined;
+  return { meta: (put("meta", "generation")?.record as { data?: unknown } | undefined)?.data, state: (put("studio", "state")?.record as { data?: { gen?: unknown } } | undefined)?.data?.gen };
+};
+
+describe("재시도 커밋도 세대 +1 (Codex r1 P1)", () => {
+  it("문서 저장 실패 → 상태 저장(이름 변경) 성공 → 문서 재시도: 재시도 커밋이 새 generation·같은 상태 gen을 함께 쓴다 → 사이에 진입한 탭은 낡음", async () => {
+    const { persistence, browser } = await seeded();
+    const { gate, wrapped } = flaky(persistence);
+    const lockA = browser.tab();
+    const a = await openTab(wrapped, lockA, "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    const edited = edit(docA, "재시도할 문서");
+    gate.fail = true;
+    expect(await failureOf(projectsA.saveDoc("project-1", docA.revision, edited))).toMatch(/^INFRA: /);
+    gate.fail = false;
+    await projectsA.renameProject("project-1", (await projectsA.getProject("project-1"))!.revision, "이름 바꿈");
+    await settle();
+    const before = (await generationOf(persistence))?.data as number;
+
+    // 상태 저장과 문서 재시도 사이에 진입한 탭 B — 옛 문서·세대 before를 읽는다
+    const lockB = browser.tab();
+    const b = await openTab(persistence, lockB, "project-1");
+
+    const retried = await projectsA.saveDoc("project-1", docA.revision, edited);
+    await settle();
+    const last = a.writes[a.writes.length - 1]!;
+    expect(last.some((op) => op.store === "docs")).toBe(true);
+    expect(opsGen(last)).toEqual({ meta: before + 1, state: before + 1 });
+    expect((await generationOf(persistence))?.data).toBe(before + 1);
+    expect(await savedDoc(persistence)).toEqual(retried);
+
+    // A 닫힘 → B 편집 = 최신성 실패(재시도된 문서를 덮지 않는다)
+    lockA.close();
+    const projectsB = await b.projects();
+    const docB = (await projectsB.getDoc("project-1"))!;
+    expect(await failureOf(projectsB.saveDoc("project-1", docB.revision, edit(docB, "B가 덮기")))).toBe(`INFRA: 저장 — ${STALE}`);
+    expect(b.writes).toEqual([]);
+    expect(await savedDoc(persistence)).toEqual(retried);
+  });
+
+  it("불변식: 실패·재시도·상태 저장이 섞여도 쓰기 트랜잭션마다 meta generation이 직전보다 크고 상태 gen과 같다", async () => {
+    const { persistence, browser } = await seeded();
+    const { gate, wrapped } = flaky(persistence);
+    const a = await openTab(wrapped, browser.tab(), "project-1");
+    const projectsA = await a.projects();
+    const docA = (await projectsA.getDoc("project-1"))!;
+    const first = edit(docA, "첫 편집");
+    const rename = async (name: string) => projectsA.renameProject("project-1", (await projectsA.getProject("project-1"))!.revision, name);
+    gate.fail = true;
+    expect(await failureOf(projectsA.saveDoc("project-1", docA.revision, first))).toMatch(/^INFRA: /);
+    await rename("실패 중 이름");
+    await settle();
+    gate.fail = false;
+    await rename("성공 이름");
+    await settle();
+    await projectsA.saveDoc("project-1", docA.revision, first);
+    await settle();
+    // 재시도할 것이 없는 재생도 포함
+    await projectsA.saveDoc("project-1", docA.revision, first);
+    await settle();
+
+    expect(a.writes.length).toBeGreaterThanOrEqual(4);
+    const gens = a.writes.map(opsGen);
+    gens.forEach((g) => {
+      expect(typeof g.meta).toBe("number");
+      expect(g.state).toBe(g.meta);
+    });
+    gens.slice(1).forEach((g, i) => expect(g.meta as number).toBeGreaterThan(gens[i]!.meta as number));
   });
 });
 

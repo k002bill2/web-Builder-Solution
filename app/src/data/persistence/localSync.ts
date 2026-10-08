@@ -8,6 +8,7 @@
  *   (멱등 재생) 미확인 기록 재제출(retry). 큐가 받은 제출만 기억한다 — 복제 실패는 재생 때 다시 제출해 같은 INFRA(재시도로 풀리지 않는 실패, 거짓 "저장됨" 0).
  * - base: IDB 실패 뒤 메모리 revision만 오른 상태에서 다음 편집 저장을 내 미확인 쓰기 위에 얹는다(STALE_DOC 아님).
  * - 다중 탭(P1C-D2 · SPEC 1.5): 쓰기마다 `meta` generation을 +1(상태 레코드 `gen`에도 같은 값 — 진입이 읽는 레코드라 진입 바이트 0).
+ *   상태 레코드 + 세대는 큐 도장(stamp)으로만 낸다 — 재시도·미확인 재제출 커밋도 새 세대(Codex r1 P1).
  *   첫 쓰기 때 writerLock 획득 → 최신성 확인(진입 gen = 지금 meta gen · 진입 때 있던 상태 레코드가 그대로) 통과 시에만 쓴다.
  *   못 잡음 = 읽기 전용(saveState 쓰기 0 · flush INFRA) · 낡음 = 쓰기 0. 열 때 이미 낡았으면 문서 시드에 진입 문서를 둔다(다른 탭의 새 revision으로 판정하지 않게).
  */
@@ -99,32 +100,34 @@ export async function openLocalSync(
     persistence.close();
     throw error instanceof ProjectRepositoryError && error.code === "INFRA" ? error : unreadable();
   }
-  const queue = createWriteQueue(persistence);
   const gate = createWriterGate(locks, fresh);
   let generation = hydrated;
   let latest: StudioState = entry.state ?? { series: new Map(), commits: new Map(), adjustCommits: new Map(), jobs: new Map(), projects: new Map() };
   let heads: ReadonlyMap<string, DocHead> = entry.state?.heads ?? new Map();
   /** 큐가 받은 마지막 문서 레코드(프로젝트별) — 같으면 멱등 재생 */
   const submitted = new Map<string, DocRecord>();
-  /** 상태 레코드 + meta 세대 — 제출마다 세대 +1(쓰기 탭은 단독 작성자라 탭 안 계수로 충분) */
-  const stateOps = (withHeads: ReadonlyMap<string, DocHead>): WriteOp[] => {
+  /** 큐 도장 = 상태 레코드 + meta 세대 — 제출(재시도 포함)마다 세대 +1(쓰기 탭은 단독 작성자라 탭 안 계수로 충분) */
+  const stateOps = (): WriteOp[] => {
     generation += 1;
     return [
-      { type: "put", store: "studio", record: { schemaVersion: SCHEMA_VERSION, kind: "state", id: "state", data: { ...latest, heads: withHeads, gen: generation } } },
+      { type: "put", store: "studio", record: { schemaVersion: SCHEMA_VERSION, kind: "state", id: "state", data: { ...latest, heads, gen: generation } } },
       { type: "put", store: "meta", record: { schemaVersion: SCHEMA_VERSION, kind: GENERATION, id: GENERATION, data: generation } },
     ];
   };
+  const queue = createWriteQueue(persistence, stateOps);
   const write = (projectId: string, book: BookView, images?: RenderImages) => {
     const record: DocRecord = { doc: book.docOf(projectId)!, snapshots: book.snapshotsOf(projectId) };
     const sent = submitted.get(projectId);
     if (sent?.doc === record.doc && sent.snapshots === record.snapshots) return queue.retry(projectId);
-    const nextHeads = new Map(heads).set(projectId, headOf(record.doc));
+    const prevHeads = heads;
+    // 도장(상태 레코드)이 이 문서의 머리를 담도록 제출 전에 바꾸고, 큐가 받지 않으면(복제 실패) 되돌린다
+    heads = new Map(heads).set(projectId, headOf(record.doc));
     const settled = new Set([...stored].filter((id) => !inflight.has(id)));
     const imaging = imageOps(projectId, record, images, settled, new Set([...stored, ...inflight.keys()]));
-    const writing = queue.submit(projectId, [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA_VERSION, kind: "doc", id: projectId, data: record } }, ...stateOps(nextHeads), ...imaging]);
-    if (queue.status(projectId) === "pending") {
+    const writing = queue.submit(projectId, [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA_VERSION, kind: "doc", id: projectId, data: record } }, ...imaging]);
+    if (queue.status(projectId) !== "pending") heads = prevHeads;
+    else {
       submitted.set(projectId, record);
-      heads = nextHeads;
       const ids = imaging.map((op) => (op.type === "put" ? op.record.id : op.id));
       inflight = new Map([...inflight, ...ids.map((id) => [id, writing] as const)]);
       const settle = (ok: boolean) => {
@@ -143,7 +146,7 @@ export async function openLocalSync(
     docs,
     saveState: (state) => {
       latest = state;
-      const put = () => void queue.submit("state", stateOps(heads)).catch(ignore);
+      const put = () => void queue.submit("state", []).catch(ignore);
       // 읽기 전용·낡음은 조용히 쓰기 0(다시 시도는 flush — "다시 저장") · 시도 전이면 첫 쓰기로 잠금을 요청한다
       if (gate.mode === "writer") put();
       else if (gate.mode === undefined) gate.enter().then((mode) => mode === "writer" && put(), ignore);

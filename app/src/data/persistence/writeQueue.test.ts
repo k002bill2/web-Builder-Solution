@@ -179,3 +179,22 @@ describe("직렬 쓰기 큐", () => {
     expect(await valueOf(persistence, "b")).toBeUndefined();
   });
 });
+
+describe("도장(stamp) — 모든 쓰기 트랜잭션에 새 도장 (Codex r1 P1)", () => {
+  it("실패 → 다른 키가 도장 레코드 대체 → 재시도: 재시도 트랜잭션에도 새 도장 · 복제 실패면 도장 0", async () => {
+    const sent: (readonly WriteOp[])[] = [];
+    const persistence = createMemoryPersistence({ fail: (seq) => (seq === 1 ? new Error("x") : undefined) });
+    let n = 0;
+    const queue = createWriteQueue({ ...persistence, write: (ops) => (sent.push(ops), persistence.write(ops)) }, () => [put("gen", (n += 1))]);
+    await expect(queue.submit("doc", [put("a", 1)])).rejects.toMatchObject({ code: "INFRA" });
+    await queue.submit("state", []);
+    await expect(queue.submit("doc", [put("b", () => 1)])).rejects.toMatchObject({ code: "INFRA" });
+    await queue.retry("doc");
+    expect(sent.map((ops) => ops.map((op) => (op.type === "put" ? `${op.record.id}=${String((op.record as { data: unknown }).data)}` : op.id)))).toEqual([
+      ["a=1", "gen=1"],
+      ["gen=2"],
+      ["gen=3", "a=1"],
+    ]);
+    expect(await valueOf(persistence, "gen")).toBe(3);
+  });
+});

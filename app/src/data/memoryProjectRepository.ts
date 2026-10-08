@@ -17,8 +17,8 @@ import type { LocalSync } from "./persistence/localSync";
 import type { StudioStore } from "./studioStore";
 import type { ImageKeeper, RenderImages } from "../features/studio/images/store/types";
 
-export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict";
-type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict";
+export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
+type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
 export interface ProjectCall {
   readonly method: ProjectMethod;
   /** 메서드별 1부터 */
@@ -133,6 +133,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];
     },
     createSnapshot: write("createSnapshot"),
+    deleteSnapshot: write("deleteSnapshot"),
     restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: write("resolveConflict"),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다

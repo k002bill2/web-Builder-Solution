@@ -49,6 +49,8 @@ export interface LocalState extends StudioState {
 export interface DocRecord {
   readonly doc: DocHead;
   readonly snapshots: readonly ProjectSnapshot<DocHead>[];
+  /** 지운 스냅샷 중 최대 번호(P1D-SPEC 3절 묘비 상한) · 없으면 0(이행) */
+  readonly snapshotSeq?: number;
 }
 /** 진입 결과 — 상태 없음 = 첫 실행(빈 상태) */
 export interface LocalEntry {

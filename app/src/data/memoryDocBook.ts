@@ -6,7 +6,7 @@
  *   UNKNOWN_VARIANT 쓰기 0) → 문서(+ restart 스냅샷) + 멱등 기록. 텍스트 = 버전의 기준 레퍼런스(baseReferenceId) 업종 문구(B-M3P-06, 썸네일과 같은 표) — 카드를 모르거나 표 밖이면 예시 문구. 동기 — `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0).
  * - save(8.3): 모양(L4 검증) → 멱등 키 (revision, hash) → NOT_FOUND → STALE_DOC(최신 동봉) → 저장(revision +1).
  * - 스냅샷 쓰기(ER SPEC 3.2 · 2a-05 5.11): 수동 · 복원(복원 전 + 새 revision) · 충돌 해결(보존 + 저장) — 각각 한 번에(commit 실패 → 변화 0).
- *   id는 종류와 상관없이 프로젝트 목록 순서 `snapshot-N`(내보내기 전·새로 시작 전과 같은 번호열).
+ *   id는 종류와 상관없이 프로젝트별 단조 `snapshot-N` = max(현존 최대, 지운 최대 `snapshotSeq`) + 1(내보내기 전·새로 시작 전과 같은 번호열, P1D-SPEC 3절).
  */
 import type { CandidatePlan } from "../domain/generation";
 import { generatedReferenceFixtures } from "../fixtures/generatedReferences";
@@ -29,6 +29,7 @@ import {
   type StartDocResult,
 } from "./projectRepository";
 import { industryCopyOf } from "./industryCopy";
+import { nextSeqId, seqOf } from "./seqId";
 import { checkSaveDoc, judgeExport, writeStartDoc } from "./startDocWrite";
 import type { DocRecord, LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
@@ -37,6 +38,8 @@ import { deepFreeze, type StudioReader } from "./studioStore";
 interface DocState {
   readonly docs: ReadonlyMap<string, DocHead>;
   readonly snapshots: ReadonlyMap<string, readonly ProjectSnapshot<DocHead>[]>;
+  /** 프로젝트별 지운 스냅샷 중 최대 번호(묘비 상한) — 문서 레코드 `snapshotSeq` */
+  readonly snapshotSeq: ReadonlyMap<string, number>;
   /** 프로젝트마다 마지막으로 성공한 startDoc 1건(8.3.1) */
   readonly starts: ReadonlyMap<string, { readonly key: string; readonly result: StartDocResult<DocHead> }>;
   /** 프로젝트마다 마지막으로 성공한 saveDoc 1건 — 키 (revision, hash) */
@@ -57,6 +60,7 @@ export interface ExportOutcome {
 export interface DocBook {
   readonly docOf: (projectId: string) => DocHead | undefined;
   readonly snapshotsOf: (projectId: string) => readonly ProjectSnapshot<DocHead>[];
+  readonly snapshotSeqOf: (projectId: string) => number;
   readonly save: (projectId: string, expectedRevision: number, doc: DocHead, commit: () => void) => DocHead;
   readonly start: (
     args: { projectId: string; profileVersion: number; candidateId: string; mode: StartDocMode; expectedRevision?: number },
@@ -74,6 +78,8 @@ export interface DocBook {
   readonly jobOf: (jobId: string) => ExportJob | undefined;
   /** 수동 스냅샷(E-S28) — 모양(이름 30자) → NOT_FOUND → 저장된 문서 사본. 문서 revision은 그대로. 인자 = 저장소 메서드 인자 그대로(진입 청크 연결 최소화) */
   readonly createSnapshot: (args: readonly [projectId: string, name?: string], commit: () => void) => ProjectSnapshot<DocHead>;
+  /** 수동만(아니면 SCHEMA_INVALID) · 없는 id = 변화 0으로 성공(재시도 멱등 — 저장소가 flush를 다시 낸다) · 지우면 `snapshotSeq` 상향 (P1D-SPEC 1.1) */
+  readonly deleteSnapshot: (args: readonly [projectId: string, snapshotId: string], commit: () => void) => void;
   /** 복원(E-S30) — 모양 → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) → "복원 전" auto·restore + 새 revision(스냅샷 내용). 기존 스냅샷은 그대로 */
   readonly restoreSnapshot: (args: readonly [projectId: string, snapshotId: string, expectedRevision: number], commit: () => void) => DocHead;
   /**
@@ -108,8 +114,8 @@ const exportSnapshotName = (iso: string) => `내보내기 전 · ${hhmm(iso)}`;
 const SNAPSHOT_NAME_MAX = 30;
 const timedName = (label: string, iso: string) => `${label} · ${hhmm(iso)}`;
 /** 문서 사본 스냅샷(불변) — 번호 = 프로젝트 목록 길이 + 1 */
-function snapshotOf(list: readonly ProjectSnapshot<DocHead>[], doc: DocHead, createdAt: string, label: { readonly kind: SnapshotKind; readonly reason?: SnapshotReason; readonly name: string }) {
-  return deepFreeze<ProjectSnapshot<DocHead>>({ snapshotId: `snapshot-${list.length + 1}`, projectId: doc.projectId, ...label, createdAt, doc, profileVersion: doc.profileVersion, candidateId: doc.candidateId, hash: doc.hash });
+function snapshotOf(snapshotId: string, doc: DocHead, createdAt: string, label: { readonly kind: SnapshotKind; readonly reason?: SnapshotReason; readonly name: string }) {
+  return deepFreeze<ProjectSnapshot<DocHead>>({ snapshotId, projectId: doc.projectId, ...label, createdAt, doc, profileVersion: doc.profileVersion, candidateId: doc.candidateId, hash: doc.hash });
 }
 
 /** 판정 3 — (계열, 버전)의 생성 잡과 그 안의 구조안. 잡 키는 생성 저장소와 같다(profileId|version|library|generator) */
@@ -156,6 +162,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
   let state: DocState = {
     docs: new Map([...seed].map(([id, r]) => [id, r.doc])),
     snapshots: new Map([...seed].map(([id, r]) => [id, r.snapshots])),
+    snapshotSeq: new Map([...seed].map(([id, r]) => [id, r.snapshotSeq ?? 0])),
     starts: new Map(),
     saves: new Map(),
     restores: new Map(),
@@ -163,6 +170,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
     jobs: new Map(),
   };
   const projectOf = (projectId: string) => store.projects().find((p) => p.projectId === projectId);
+  const nextSnapshotId = (projectId: string, list: readonly ProjectSnapshot<DocHead>[]) => nextSeqId("snapshot", list.map((s) => s.snapshotId), state.snapshotSeq.get(projectId));
 
   /** 8.3.2 판정 1~8 — 동기. `commit()`을 부른 뒤에만 상태를 바꾼다(던지면 변화 0) */
   function judgeAndWrite({ projectId, format, docRevision, hasGenerator }: { projectId: string; format: ExportFormat; docRevision: number; hasGenerator: boolean }, commit: () => void): ExportOutcome {
@@ -202,7 +210,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const createdAt = now();
       const snapshots = state.snapshots.get(projectId) ?? [];
       const snapshot: ProjectSnapshot<DocHead> = deepFreeze({
-        snapshotId: `snapshot-${snapshots.length + 1}`,
+        snapshotId: nextSnapshotId(projectId, snapshots),
         projectId,
         kind: "auto",
         reason: "export",
@@ -241,6 +249,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
   return {
     docOf: (projectId) => state.docs.get(projectId),
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
+    snapshotSeqOf: (projectId) => state.snapshotSeq.get(projectId) ?? 0,
     jobOf: (jobId) => state.jobs.get(jobId),
     createSnapshot: ([projectId, name], commit) => {
       if (typeof projectId !== "string" || (name !== undefined && typeof name !== "string")) throw fail("SCHEMA_INVALID", "createSnapshot 인자");
@@ -250,10 +259,25 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       if (!projectOf(projectId) || !current) throw fail("NOT_FOUND", projectId);
       const createdAt = now();
       const list = state.snapshots.get(projectId) ?? [];
-      const made = snapshotOf(list, current, createdAt, { kind: "manual", name: trimmed || timedName("수동", createdAt) });
+      const made = snapshotOf(nextSnapshotId(projectId, list), current, createdAt, { kind: "manual", name: trimmed || timedName("수동", createdAt) });
       commit();
       state = { ...state, snapshots: new Map(state.snapshots).set(projectId, [...list, made]) };
       return made;
+    },
+    deleteSnapshot: ([projectId, snapshotId], commit) => {
+      if (typeof projectId !== "string" || typeof snapshotId !== "string") throw fail("SCHEMA_INVALID", "deleteSnapshot 인자");
+      if (!projectOf(projectId) || !state.docs.get(projectId)) throw fail("NOT_FOUND", projectId);
+      const list = state.snapshots.get(projectId) ?? [];
+      const target = list.find((s) => s.snapshotId === snapshotId);
+      // 없는 id = 변화 0 — 앞 시도가 메모리만 지우고 IDB에 실패했으면 저장소 flush가 기록을 다시 낸다(localSync queue.retry)
+      if (!target) return;
+      if (target.kind !== "manual") throw fail("SCHEMA_INVALID", "수동 스냅샷만 지울 수 있습니다");
+      commit();
+      state = {
+        ...state,
+        snapshots: new Map(state.snapshots).set(projectId, list.filter((s) => s !== target)),
+        snapshotSeq: new Map(state.snapshotSeq).set(projectId, Math.max(state.snapshotSeq.get(projectId) ?? 0, seqOf("snapshot", snapshotId))),
+      };
     },
     restoreSnapshot: ([projectId, snapshotId, expectedRevision], commit) => {
       if (typeof projectId !== "string" || typeof snapshotId !== "string" || !Number.isSafeInteger(expectedRevision)) throw fail("SCHEMA_INVALID", "restoreSnapshot 인자");
@@ -266,7 +290,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       if (!projectOf(projectId) || !current || !source) throw fail("NOT_FOUND", `${projectId} ${snapshotId}`);
       if (current.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${expectedRevision} ≠ ${current.revision}`, { doc: current });
       const createdAt = now();
-      const before = snapshotOf(list, current, createdAt, { kind: "auto", reason: "restore", name: timedName("복원 전", createdAt) });
+      const before = snapshotOf(nextSnapshotId(projectId, list), current, createdAt, { kind: "auto", reason: "restore", name: timedName("복원 전", createdAt) });
       const doc = deepFreeze({ ...source.doc, revision: current.revision + 1, updatedAt: createdAt });
       commit();
       state = {
@@ -285,7 +309,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       if (!projectOf(projectId) || !current) throw fail("NOT_FOUND", projectId);
       const createdAt = now();
       const list = state.snapshots.get(projectId) ?? [];
-      const kept = snapshotOf(list, choice === "mine" ? current : deepFreeze({ ...myDoc }), createdAt, { kind: "auto", reason: "conflict", name: timedName("충돌 보존", createdAt) });
+      const kept = snapshotOf(nextSnapshotId(projectId, list), choice === "mine" ? current : deepFreeze({ ...myDoc }), createdAt, { kind: "auto", reason: "conflict", name: timedName("충돌 보존", createdAt) });
       const doc = choice === "mine" ? deepFreeze({ ...myDoc, revision: current.revision + 1, updatedAt: createdAt }) : current;
       commit();
       state = { ...state, docs: new Map(state.docs).set(projectId, doc), snapshots: new Map(state.snapshots).set(projectId, [...list, kept]) };
@@ -351,7 +375,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const result: StartDocResult<DocHead> = deepFreeze({ doc, changes: made.changes, ...(made.changeNotice && { changeNotice: made.changeNotice }) });
       const snapshots = state.snapshots.get(projectId) ?? [];
       const kept: readonly ProjectSnapshot<DocHead>[] = current
-        ? [...snapshots, deepFreeze({ snapshotId: `snapshot-${snapshots.length + 1}`, projectId, kind: "auto", reason: "restart", name: "새로 시작 전", createdAt: updatedAt, doc: current, profileVersion: current.profileVersion, candidateId: current.candidateId, hash: current.hash })]
+        ? [...snapshots, deepFreeze({ snapshotId: nextSnapshotId(projectId, snapshots), projectId, kind: "auto", reason: "restart", name: "새로 시작 전", createdAt: updatedAt, doc: current, profileVersion: current.profileVersion, candidateId: current.candidateId, hash: current.hash })]
         : snapshots;
       commit();
       state = {

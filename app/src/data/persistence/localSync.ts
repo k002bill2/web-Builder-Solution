@@ -36,6 +36,8 @@ import { createWriterGate, type WriterLocks, type WriterMode } from "./writerLoc
 export interface BookView {
   docOf(projectId: string): DocHead | undefined;
   snapshotsOf(projectId: string): readonly ProjectSnapshot<DocHead>[];
+  /** 지운 스냅샷 중 최대 번호(P1D-SPEC 3절) — 문서 레코드 `snapshotSeq`(0이면 생략 — 기존 레코드 모양 그대로) */
+  snapshotSeqOf?(projectId: string): number;
 }
 
 export interface LocalSync {
@@ -53,7 +55,8 @@ export interface LocalSync {
 
 const unreadable = () => new ProjectRepositoryError("INFRA", "열기 — 저장된 데이터를 읽지 못했습니다");
 
-function checkState({ series, projects, jobs }: StudioState) {
+function checkState({ series, projects, jobs, seq }: StudioState) {
+  if (seq && ![seq.project, seq.profile, seq.job].every(Number.isSafeInteger)) throw unreadable();
   for (const [profileId, versions] of series) if (versions.some((v, i) => v.version !== i + 1 || v.profileId !== profileId)) throw unreadable();
   for (const project of projects.values()) {
     const checked = validateProjectName(project.name);
@@ -67,7 +70,7 @@ function readDoc(record: unknown): [string, DocRecord] {
   const env = checkEnvelope(record, "doc", String(id));
   if (env.status !== "ok") throw unreadable();
   const data = env.data as DocRecord;
-  if (!Array.isArray(data?.snapshots) || ![data.doc, ...data.snapshots.map((s) => s?.doc)].every((doc) => checkSaveDoc(String(id), doc).ok)) throw unreadable();
+  if (!Array.isArray(data?.snapshots) || (data.snapshotSeq !== undefined && !Number.isSafeInteger(data.snapshotSeq)) || ![data.doc, ...data.snapshots.map((s) => s?.doc)].every((doc) => checkSaveDoc(String(id), doc).ok)) throw unreadable();
   return [String(id), deepFreeze(data)];
 }
 
@@ -144,7 +147,8 @@ export async function openLocalSync(
   };
   const queue = createWriteQueue({ ...persistence, write: committed }, stateOps);
   const write = (projectId: string, book: BookView, images?: RenderImages) => {
-    const record: DocRecord = { doc: book.docOf(projectId)!, snapshots: book.snapshotsOf(projectId) };
+    const snapshotSeq = book.snapshotSeqOf?.(projectId) ?? 0;
+    const record: DocRecord = { doc: book.docOf(projectId)!, snapshots: book.snapshotsOf(projectId), ...(snapshotSeq > 0 && { snapshotSeq }) };
     const sent = submitted.get(projectId);
     if (sent?.doc === record.doc && sent.snapshots === record.snapshots) return queue.retry(projectId);
     const prevHeads = heads;

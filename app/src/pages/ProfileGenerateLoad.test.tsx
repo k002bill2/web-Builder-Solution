@@ -85,9 +85,9 @@ describe("3안 만들기 — 본문 받기 로딩·실패 (P-S17 · S20)", () =>
     const busy = within(region).getByRole("button", { name: "만드는 중…" });
     expect(busy).toHaveAttribute("aria-busy", "true");
     expect(within(region).queryByRole("heading", { level: 3 })).not.toBeInTheDocument();
-    expect(store.jobCount()).toBe(0);
+    expect(store.jobIds().length).toBe(0);
     await act(async () => settle().release());
-    await waitFor(() => expect(store.jobCount()).toBe(1));
+    await waitFor(() => expect(store.jobIds().length).toBe(1));
     for (let i = 0; i < 3; i += 1) await tick();
     expect(await within(region).findByRole("table", { name: "3안 비교" })).toBeInTheDocument();
   });
@@ -99,9 +99,9 @@ describe("3안 만들기 — 본문 받기 로딩·실패 (P-S17 · S20)", () =>
     await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
     await act(async () => settle().fail());
     expect(await within(region).findByRole("alert")).toHaveTextContent("3안 만들기를 요청하지 못했습니다 · 다시 시도하세요");
-    expect(store.jobCount()).toBe(0);
+    expect(store.jobIds().length).toBe(0);
     await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
-    await waitFor(() => expect(store.jobCount()).toBe(1));
+    await waitFor(() => expect(store.jobIds().length).toBe(1));
     for (let i = 0; i < 3; i += 1) await tick();
     expect(await within(region).findByRole("table", { name: "3안 비교" })).toBeInTheDocument();
     expect(loads.generate).toHaveBeenCalledTimes(2);
@@ -113,7 +113,7 @@ describe("C안 다시 시도 — 본문 받기 로딩·실패 (P-S20)", () => {
     const { store, region } = await open({ outcome: ({ id, attempt }) => (id === "C" && attempt === 1 ? "JOB_TIMEOUT" : undefined) });
     const u = user();
     await u.click(within(region).getByRole("button", { name: "3안 만들기 (v1)" }));
-    await waitFor(() => expect(store.jobCount()).toBe(1));
+    await waitFor(() => expect(store.jobIds().length).toBe(1));
     for (let i = 0; i < 3; i += 1) await tick();
     const retry = await within(region).findByRole("button", { name: "C안 다시 시도" });
     const settle = holdNextLoad();

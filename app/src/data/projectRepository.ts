@@ -154,6 +154,8 @@ export interface ProjectRepository<TDoc extends DocHead = DocHead> {
   startDoc(projectId: string, profileVersion: number, candidateId: string, mode: StartDocMode, expectedRevision?: number): Promise<StartDocResult<TDoc>>;
   listSnapshots(projectId: string): Promise<readonly ProjectSnapshot<TDoc>[]>;
   createSnapshot(projectId: string, name?: string): Promise<ProjectSnapshot<TDoc>>;
+  /** 수동 스냅샷 지우기(P1D-SPEC 1.1) — 수동만(아니면 SCHEMA_INVALID) · 없는 id = 변화 0으로 성공(재시도 멱등) */
+  deleteSnapshot(projectId: string, snapshotId: string): Promise<void>;
   /** "복원 전" 자동 스냅샷 + 새 revision을 한 트랜잭션. 불일치 STALE_DOC */
   restoreSnapshot(projectId: string, snapshotId: string, expectedRevision: number): Promise<TDoc>;
   /** E-S09 두 선택 — 보존 스냅샷과 저장이 한 트랜잭션 */

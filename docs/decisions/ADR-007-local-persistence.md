@@ -166,3 +166,10 @@
   - 진입 봉투 검증은 **수제 schemaVersion 확인만**(zod를 진입에 두면 +6.17 · 125 한도 3개 라우트 초과). zod 검증은 조작 뒤.
   - 이미지 자동 복원을 idle로 미뤄도 검사기 규칙상 같은 바이트 — 효과 없음.
 - **Codex 제약 1 결정 = B hidden 영속**: 3절 `studio` 행 "생성 잡은 `job`만, `hidden`·`attempts` 제외"를 **"StoredJob 통째로(hidden·attempts 포함)"**로 바꾼다. 재계산 재시작은 `/profile`(3안 있음) 121.59 → 127.08로 125 초과. 봉투 schemaVersion 불일치 시에만 미완료 잡을 "다시 시도"로 강등(문구는 Designer). 테스트 = 요청 → getJob 1회 → 직렬화/역직렬화 → getJob 반복으로 succeeded.
+
+
+## 개정 2 — 다중 탭 쓰기 잠금 = "먼저 편집한 탭" · P1c 명세 결정 (Jarvis 2026-10-08, 위임 범위)
+- 정본: `docs/design/persistence/P1C-SPEC.md` · `P1C-MQ.md`(MQ-C1~C5 모두 A — 예산 재상신 0 · 엔진 계약 변경 0 · 새 의존성 0 · 백엔드 0).
+- 3절 다중 탭 "먼저 연 탭만 쓰기"를 **"먼저 편집한 탭만 쓰기"**로 바꾼다(MQ-C2 A): Web Locks는 쓰기 경로(조작 뒤 청크)에서 첫 편집 때 잡고, 잡은 직후 최신성 확인(세대 번호)으로 낡은 메모리 덮기 0. 근거 = `/studio` 진입 몫 0(ADR-004 개정 12 여유 0.03).
+- 잠금 빼앗기(`steal`) 없음(MQ-C3 A) · 다중 탭·강등 사유 안내는 `/projects` "이 브라우저 저장소" 영역(MQ-C1 A) · 사용량도 그 영역에만(MQ-C5 A) · `persist()`는 버튼을 누를 때만(MQ-C4 A).
+- 구현 레인: SPEC 6절 D1~D5.

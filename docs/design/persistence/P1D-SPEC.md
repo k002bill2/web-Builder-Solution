@@ -67,7 +67,7 @@
 2. 대상 프로젝트 `P`(없으면 J-S17)와 계열 `F = P.profileId` 기준으로 새 상태: `projects` − P · `heads` − P · `series` − F · `adjustCommits` − F · `commits` 중 `profileId === F` 제거 · `jobs` 중 `job.profileId === F` 제거 · **`seq` 갱신**(3절 — 지운 project·profile·job 번호의 최대값을 반영) · `gen` = meta generation + 1.
 3. put `studio/state` · put `meta/generation`(같은 값) · delete `docs/P.projectId` · delete `images` 중 키가 **`${P.projectId}/`로 시작**하는 것 전부(슬래시 포함 접두 — `project-1` 삭제가 `project-10/…`를 건드리지 않음).
 4. 커밋 확인 뒤 BroadcastChannel 기존 `{ type: "saved" }` 전송(다른 `/projects` 탭 "다른 탭에서 저장한 변경이 있습니다" — P1c 1.5) → J-S16.
-- **잠금**(F6, `clearBrowserData` 그대로): 이 탭이 쓰기 탭이면 보유 잠금 안에서 · 아니면 `tryLock` · 못 잡으면 J-S15 busy. 진행 전 이 탭 싱크 멈춤(`own.stop()` — 새로고침까지 쓰기 0). `navigator.locks` 없음 = 잠금 없이 진행(어느 탭도 쓰지 않음 — 개정 2 보충).
+- **잠금**(F6, `clearBrowserData` 그대로): 이 탭이 쓰기 탭이면 보유 잠금 안에서 · 아니면 `tryLock` · 못 잡으면 J-S15 busy. **이 탭이 쓰기 탭일 때만** 진행 전 싱크 멈춤(`own.stop()` — 새로고침까지 쓰기 0). 쓰기 탭이 아니면 멈추지 않는다(세대 +1 뒤 최신성 확인이 이 탭의 이후 쓰기를 이미 막음). **멈춘 뒤 실패(PJ-8·PJ-9)** = alert 문장 끝에 **" 이 화면을 새로 불러옵니다."**를 붙이고 대화상자를 닫으면(취소·Esc) `/projects` **새로고침 이동** — 멈춘 싱크로 이름 바꾸기가 화면에서만 성공하는 조용한 소실 방지(`saveState`는 멈춘 뒤 조용히 반환 [L1 `localSync.ts` saveState]). `navigator.locks` 없음 = 잠금 없이 진행(어느 탭도 쓰지 않음 — 개정 2 보충).
 - **다른 탭 안전**: 쓰기 탭이 아닌 다른 탭(그 프로젝트 편집기를 열어만 둔 탭 포함)은 세대가 바뀌어 첫 쓰기 때 최신성 확인 실패 → 낡은 탭(P1c 1.5) — 지운 프로젝트 부활 0. 새로고침하면 `/studio/<지운 id>` = E-S02 "이 브라우저에 저장된 프로젝트만 열 수 있습니다", `/profile/<지운 계열>` = P-S02(기존 문구, 변경 0).
 - 메모리 비교 보드(영속 범위 밖)가 지운 계열을 `confirmed`로 쥔 다른 탭: 그 탭은 낡은 탭이라 재확정 쓰기 0 — 새로고침하면 빈 보드.
 
@@ -130,7 +130,7 @@
 - **현존 최대 번호** = 같은 접두 id의 `-(\d+)$` 정수 최대(접두가 다른 id·숫자 아닌 꼬리는 무시). 순수 함수 `nextSeqId(prefix, ids, deletedMax)` 1개를 조작 뒤 공용 모듈에 두고 4곳이 쓴다.
 - **이행(기존 `length+1` 데이터)**: `seq`·`snapshotSeq` 없음 = 0으로 읽음 → 다음 id = **현존 최대 + 1**(삭제가 없던 데이터라 지금 `length+1`과 같은 값). 이행 쓰기 0 · `SCHEMA_VERSION` 1 유지(필드 추가는 선택 필드 — 옛 앱이 읽어도 무시, 봉투 버전 올리지 않음).
 - **`meta` 키**: **새 키 0**. ADR-007 3절 "`meta` — 단조 순번 카운터"는 진입이 `meta`를 읽지 않고(F5) 동기 `transact` 안에서 id를 정해야 해서 **상태 레코드 `seq`**로 둔다(P1C-D2 `gen`과 같은 선례). `meta`는 기존 `generation`·`firstSaveNotice`만. → ADR 3절 문구는 "바뀌는 문서" 행(6절).
-- **store 노출**: `StudioState`에 선택 필드 `seq?: { project; profile; job }` — `createStudioStore`는 초기 상태를 그대로 쓰고 `transact`는 `{ ...draft, … }`로 펼쳐 보존 [L1 `studioStore.ts:99·104`] · localSync 직렬화도 `{ ...latest, heads, gen }`로 보존. 읽기는 reader 1개(`seq()`) — `studioStore` 진입 바이트, `nextProfileId` 제거로 상쇄(4절 관문).
+- **store 노출**: `StudioState`에 선택 필드 `seq?: { project; profile; job }` — 진입 상태는 `deferredStudio.ts:44·46`이 `entry.state`를 **그대로** `createStudioStore`에 넘기고, store는 초기 상태를 그대로 쓰며 `transact`는 `{ ...draft, … }`로 펼쳐 보존 [L1 `studioStore.ts:99·104`] · localSync 직렬화도 `{ ...latest, heads, gen }`로 보존. 읽기는 reader 1개(`seq()`) — `studioStore` 진입 바이트, `nextProfileId` 제거로 상쇄(4절 관문).
 - 강등(memory): `seq` 없음 → 현존 최대 + 1. 메모리 모드에서 프로젝트 삭제는 없고(1.5) 스냅샷 삭제는 book 메모리 `snapshotSeq`로 같은 규칙.
 - 다중 탭: 쓰기 탭 1개 + 최신성 확인이라 두 탭이 같은 번호를 저장하는 경로 0(낡은 탭은 메모리에서만 발급, 쓰기 0).
 
@@ -155,14 +155,14 @@
 
 단위(메모리 가짜·vitest) = U, Ego Lite build+preview 실측 = E.
 
-- **AC-D01 삭제 뒤 id 재발급 0 · 겹침 0 · 덮어쓰기 0 (ADR P1d 행)** — U: ① 수동 스냅샷 3개(1·2·3) → 2 삭제 → 새 수동 = `snapshot-4`(3과 겹침 0) ② 3 삭제(최대) → 새 = `snapshot-4`(재발급 0, `snapshotSeq`=3 반영) ③ 프로젝트 3개(계열 1·2·3, 잡 1·2·3) → 프로젝트 2 삭제 → 새 확정 = `project-4`·`profile-4` · 새 잡 = `job-4`, 프로젝트 1·3의 레코드·계열·잡 **값 그대로**(덮어쓰기 0) ④ 프로젝트 3(최대) 삭제 → 새 = `project-4`·`profile-4`·`job-4`. E: ③을 실제 IDB에서 새로고침 뒤 확인.
+- **AC-D01 삭제 뒤 id 재발급 0 · 겹침 0 · 덮어쓰기 0 (ADR P1d 행)** — U(**각 번호는 새 기준 데이터에서 시작**): ① 수동 스냅샷 1·2·3 → 2 삭제 → 새 수동 = `snapshot-4`(3과 겹침 0) ② 수동 스냅샷 1·2·3 → **3(최대) 삭제** → 새 = `snapshot-4`(재발급 0, `snapshotSeq`=3) ③ 프로젝트 3개(계열 1·2·3, 잡 1·2·3) → 프로젝트 2 삭제 → 새 확정 = `project-4`·`profile-4` · 새 잡 = `job-4`, 프로젝트 1·3의 레코드·계열·잡 **값 그대로**(덮어쓰기 0) ④ 프로젝트 3개 → **프로젝트 3(최대) 삭제** → 새 = `project-4`·`profile-4`·`job-4`. 묘비 규칙을 검사하는 것은 ②·④. **E: ④를 실제 IDB에서 — 삭제 → 새로고침 → 새 확정 = `project-4`(진입 상태가 `seq`를 통과하는지 확인하는 유일한 실측)** · ②도 새로고침 뒤 1회.
 - **AC-D02 자동 21번째 정리** — U: 자동 20개 + 수동 5개 → 자동 1개 추가(4 reason 각각 1회 이상) → 자동 20개(가장 오래된 자동 빠짐)·수동 5개 그대로 · 같은 flush 1회에 문서 레코드 put + 뺀 스냅샷 전용 이미지 delete가 **한 트랜잭션**(메모리 가짜 write 호출 1회) · 다른 스냅샷·문서가 같이 참조하는 이미지는 남음. 복원 예외: 가장 오래된 자동을 복원 → 그 스냅샷은 남고 다음 오래된 자동이 빠짐.
 - **AC-D03 수동은 정리 대상 아님** — U: 수동 30개 + 자동 20개에 자동 추가 → 수동 30개 전부 남음. 기존 데이터 이행: 자동 25개인 레코드로 열기 → 쓰기 0 → 다음 자동 생성 때 20개.
 - **AC-D04 프로젝트 삭제 뒤 IDB 레코드 0** — E(+ U 메모리 가짜): 프로젝트 `project-1`·`project-10`(둘 다 이미지·스냅샷 있음) → `project-1` 삭제 → ① `docs/project-1` 없음 ② `images` 키 중 `project-1/` 접두 0 · **`project-10/…` 수 그대로** ③ `studio/state`의 projects·heads에 `project-1` 0 · series·adjustCommits에 그 계열 0 · commits·jobs에 그 계열 0 ④ `meta/generation` = 삭제 전 + 1 = state `gen` ⑤ `snapshots` 저장소 비어 있음(원래).
 - **AC-D05 다른 탭 편집 중 차단** — E: 탭 A 편집기에서 편집·저장(쓰기 탭) → 탭 B `/projects`에서 아무 프로젝트(A가 편집 중이 아닌 것 포함) 삭제 → alert PJ-7 1회 · IDB 그대로(레코드 수·generation 불변) · A 닫은 뒤 B 재시도 성공. 추가: 탭 C가 지운 프로젝트 편집기를 열어만 둔 상태 → 삭제 성공 → C 편집 → C 저장 실패(낡은 탭 문장) · `docs/<id>` 부활 0.
 - **AC-D06 포커스·대화상자** — E: (스냅샷) 확인 열면 포커스 "취소" · Tab이 확인 대화상자 안에서 순환 · **Esc 1회 = 확인만 닫힘, 스냅샷 대화상자 열림 유지, 포커스 = 그 줄 "삭제"** · 지우기 성공 → 포커스 다음 줄 "미리보기"(마지막 줄이면 이전 줄, 하나뿐이면 이름 입력) · 편집 알림 SN-8 1회 · 진행 중 "지우는 중…" aria-disabled. (프로젝트) 열면 포커스 "취소" · Esc = 닫힘 + 포커스 그 줄 "삭제" · 바깥 클릭 무반응 · 성공 → 새로고침 뒤 h1 포커스 + PJ-10 1회(다시 새로고침하면 0회).
 - **AC-D07 버튼 노출 규칙** — U: 수동 줄에만 "삭제"(자동·게시 0) · SN-1 캡션 늘 표시 · `/projects` "삭제"는 local일 때만(memory 0).
-- **AC-D08 실패 경로** — U: 스냅샷 삭제 flush INFRA → alert SN-7 · 재시도 = 없는 id → 변화 0 + flush 재제출 성공. 프로젝트: 봉투 `schemaVersion: 99` → PJ-8 · 쓰기 0 · 트랜잭션 실패 주입 → PJ-9 · 쓰기 0(전부 아니면 전무).
+- **AC-D08 실패 경로** — U: 스냅샷 삭제 flush INFRA → alert SN-7 · 재시도 = 없는 id → 변화 0 + flush 재제출 성공. 프로젝트: 봉투 `schemaVersion: 99` → PJ-8 · 쓰기 0 · 트랜잭션 실패 주입 → PJ-9 · 쓰기 0(전부 아니면 전무) · **쓰기 탭에서 실패 → 닫기 = 새로고침 이동 → 이름 바꾸기가 저장됨**(멈춘 싱크로 저장 0이 되는 경로 없음).
 - **AC-D09 번들** — 4절 관문 수치.
 - **AC-D10 회귀** — P1c AC-C01~C15 중 잠금·지우기·첫 저장(C01·C04·C05·C06·C11) 재실행 통과 · 기존 스냅샷 AC(ER-AC-S1·S7·S9) 통과.
 - 정리(모든 E 뒤): `indexedDB.deleteDatabase("design-studio")` · 탭 정리 · preview 종료.
@@ -187,7 +187,7 @@
 
 | 레인 | 범위(절) | 주 쓰기 파일 | AC | 선행 | 관문 |
 |---|---|---|---|---|---|
-| **L1 카운터 + 스냅샷 삭제 판정** | 3절 전부 · `nextSeqId` · `seq` reader · `nextProfileId` 제거 · job id 이동 · `snapshotSeq` · **`deleteSnapshot` 저장소 메서드(인터페이스·위임 1줄·DocBook 판정 본체 — 1.1 판정 줄)** — 진입 배선을 한 레인에 모아 관문을 1번에 잰다 | `studioStore.ts` · `memoryBoardConfirm.ts` · `memoryGenerationRepository.ts` · `memoryGenerate.ts` · `memoryDocBook.ts`(id 식) · `projectRepository.ts` · `memoryProjectRepository.ts` · 새 `seqId.ts` | D01①② · D08(스냅샷 판정 — 없는 id 멱등) · D09 | 없음 | **4절 관문 실측 — 넘으면 멈춤(MQ-D2)** |
+| **L1 카운터 + 스냅샷 삭제 판정** | 3절 전부 · `nextSeqId` · `seq` reader · `nextProfileId` 제거 · job id 이동 · `snapshotSeq` · **`deleteSnapshot` 저장소 메서드(인터페이스·위임 1줄·DocBook 판정 본체 — 1.1 판정 줄)** — 진입 배선을 한 레인에 모아 관문을 1번에 잰다 | `studioStore.ts` · `memoryBoardConfirm.ts` · `memoryGenerationRepository.ts` · `memoryGenerate.ts` · `memoryDocBook.ts`(id 식·`snapshotSeq` 상태) · `localSync.ts`(`BookView.snapshotSeqOf` → 문서 레코드에 넣기 · `readDoc` 시드로 book에 되돌림) · `entryRead.ts`(`DocRecord` 선택 필드 `snapshotSeq?` — **타입만, 진입 바이트 0**) · `projectRepository.ts` · `memoryProjectRepository.ts` · 새 `seqId.ts` | D01①② · D08(스냅샷 판정 — 없는 id 멱등) · D09 | 없음 | **4절 관문 실측 — 넘으면 멈춤(MQ-D2)** |
 | **L2 스냅샷 삭제 + 자동 정리** | 1.1 · 1.2 · SN 문구 | `memoryDocBook.ts`(자동 정리 헬퍼 4곳) · `SnapshotDialog.tsx`(+ 확인 대화상자) · `SnapshotLayer.tsx`(onNotice·refresh) | D02 · D03 · D06(스냅샷) · D07(스냅샷) · D08(스냅샷 UI alert) | L1 | `/studio` 몫 0(조작 뒤만) |
 | **L3 프로젝트 삭제** | 1.3 · 1.5 · PJ 문구 · J-S16 알림 | 새 `features/projects/deleteProject.ts` · 새 `components/projects/DeleteProjectDialog.tsx`(+ Slot) · `ProjectRow.tsx` · `ProjectList.tsx` · `ProjectsPage.tsx` | D01③④ · D04 · D05 · D06(프로젝트) · D07(프로젝트) · D08(프로젝트) | L1(`seq` 형식) | `/projects` ≤125 |
 

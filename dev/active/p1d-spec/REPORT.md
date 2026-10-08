@@ -21,6 +21,7 @@
 - 사실 확인은 grep·읽기 [L1]: `studioStore.ts:106` · `memoryBoardConfirm.ts:141-142` · `memoryGenerationRepository.ts:92` · `memoryDocBook.ts:112·205·354` · `localSync.ts`(write·stateOps) · `imageOps.ts:29` · `imageRecord.ts:4` · `entryRead.ts` · `check-bundle-size.mjs:33·50·111` · `SnapshotDialog.tsx` · `ProjectRow.tsx` · `ClearDataDialog.tsx` · `clearBrowserData.ts`.
 - 바뀌는 문서 행 번호 grep 확인: 2a-05 SPEC 17·19·22·117·315·341·506·555~556 · ADR-007 52 · P1C-SPEC 118 · THREATS 21.
 - **Ego Lite 미실행(선택 항목)** — 스냅샷 대화상자·`/projects` 줄 행동 위치는 코드(`SnapshotDialog.tsx`·`ProjectRow.tsx`)로 확인해 브라우저 실측이 결론을 바꾸지 않음 · 시간 예산 우선. 그래서 서버·TaskSpace·IDB 정리 대상도 없음.
+- `sed -n 38,47p app/src/data/deferredStudio.ts` → `createStudioStore(local?.entry.state, …)` 그대로 전달 확인(`seq` 새로고침 생존 근거) · advisor 지적 반영: L1 파일 목록에 `localSync.ts`·`entryRead.ts` 추가 · 프로젝트 삭제 멈춤 대상 = 쓰기 탭만 + 멈춘 뒤 실패 = 새로고침 · AC-D01 기준 데이터 분리·E 실측 = ④.
 - 번들 KB는 추정하지 않음 — L1 실측 관문으로 넘김.
 
 ## 운영 메모

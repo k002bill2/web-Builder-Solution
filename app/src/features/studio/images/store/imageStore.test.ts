@@ -75,7 +75,7 @@ describe("보관소 — 한도(보관 바이트 · 2a-05 5.9 · IMG-AC-11)", () 
     const doc = docUsing(ids.slice(0, 12));
     const undo = docUsing(ids.slice(12));
     const before = JSON.stringify(Object.keys(images));
-    expect(checkLimits(doc, undo, images)).toEqual({ ok: false, message: "이 탭에 보관한 이미지가 24개 · 60MB를 넘습니다 — 쓰지 않는 슬롯의 이미지를 지운 뒤 고르세요" });
+    expect(checkLimits(doc, undo, images)).toEqual({ ok: false, message: "이 프로젝트의 이미지가 24개 · 60MB를 넘습니다 — 쓰지 않는 슬롯의 이미지를 지운 뒤 고르세요" });
     expect(JSON.stringify(Object.keys(images))).toBe(before);
     expect(checkLimits(doc, docUsing(ids.slice(12, 24)), images)).toEqual({ ok: true });
   });

@@ -95,7 +95,7 @@ describe("P-AC-02 없는 프로필 (P-S02)", () => {
   it("없는 id → h1 '프로필을 찾을 수 없습니다' + 새로고침 안내 + '비교 보드로', role=alert 없음", async () => {
     await openProfile("/profile/profile-9");
     expect(await h1()).toHaveTextContent("프로필을 찾을 수 없습니다");
-    expect(screen.getByText("새로고침하면 확정한 프로필이 사라집니다(서버 연결 전)")).toBeInTheDocument();
+    expect(screen.getByText("이 브라우저에 저장된 프로필만 열 수 있습니다")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "비교 보드로" })).toHaveAttribute("href", "/compare");
     expect(within(screen.getByRole("main")).getByRole("link", { name: "카탈로그" })).toHaveAttribute("href", "/catalog");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();

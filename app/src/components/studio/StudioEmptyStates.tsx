@@ -14,7 +14,7 @@ export function StudioProjectNotFound() {
   return (
     <div className={WRAP}>
       <h1 className="ds-title1">프로젝트를 찾을 수 없습니다</h1>
-      <p className="ds-body2 text-label-alternative">새로고침하면 프로젝트와 편집 내용이 사라집니다(서버 연결 전)</p>
+      <p className="ds-body2 text-label-alternative">이 브라우저에 저장된 프로젝트만 열 수 있습니다</p>
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/projects" className={PRIMARY_LINK}>
           프로젝트 목록

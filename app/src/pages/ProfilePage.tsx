@@ -19,7 +19,7 @@ function ProfileNotFound() {
   return (
     <div className="mx-auto flex max-w-(--layout-max-width) flex-col items-start gap-3 px-4 py-16 md:px-7">
       <h1 className="ds-title1">프로필을 찾을 수 없습니다</h1>
-      <p className="ds-body2 text-label-alternative">새로고침하면 확정한 프로필이 사라집니다(서버 연결 전)</p>
+      <p className="ds-body2 text-label-alternative">이 브라우저에 저장된 프로필만 열 수 있습니다</p>
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/compare" className="ds-label inline-flex h-10 items-center rounded-md bg-primary px-4 text-on-primary hover:bg-primary-hover">
           비교 보드로

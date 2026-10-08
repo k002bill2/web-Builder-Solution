@@ -52,7 +52,7 @@ export function checkLimits(doc: PageDoc, undoDoc: PageDoc | undefined, images: 
       ok: false,
       // 스냅샷은 지울 수 없다(5.11) — 스냅샷 없이는 한도 안이면 스냅샷이 붙잡은 것(2a-05 5.9 표 ③)
       message: over(retainedIds(doc, undoDoc))
-        ? "이 탭에 보관한 이미지가 24개 · 60MB를 넘습니다 — 쓰지 않는 슬롯의 이미지를 지운 뒤 고르세요"
+        ? "이 프로젝트의 이미지가 24개 · 60MB를 넘습니다 — 쓰지 않는 슬롯의 이미지를 지운 뒤 고르세요"
         : "스냅샷이 이전 이미지를 보관하고 있어 더 넣을 수 없습니다 (24개 · 60MB까지) — 더 작은 파일을 고르세요",
     };
   return { ok: true };

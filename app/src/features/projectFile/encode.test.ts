@@ -71,3 +71,20 @@ describe("AC-P01 왕복 — encode → checkFile → rekey (문서·스냅샷 �
     expect(await plan.images[0]!.image.variants["500"]!.text()).toContain("re:");
   });
 });
+
+describe("Codex r1 ① 큰 변형본 왕복", () => {
+  it("원본 6MiB(base64 8MiB) 변형본 = encode → checkFile ok · 디코드 1 · 재인코딩 바이트", async () => {
+    const bytes = new Uint8Array(6 * 1024 * 1024).fill(0x20);
+    bytes.set(fakeImageBytes("png", 500, 300));
+    const blob = new Blob([bytes as BlobPart], { type: "image/png" });
+    const encoded = await encodeProjectFile(source([{ localId: "big", image: { variants: { 500: blob }, width: 500, height: 300, format: "png", bytes: blob.size } }]));
+    if (!encoded.ok) throw new Error(encoded.message);
+    const { deps, calls } = fakeDeps();
+    const checked = await checkFile(encoded.blob, deps);
+    if (!checked.ok) throw new Error(checked.message);
+    expect(calls.decoded).toBe(1);
+    const [image] = checked.file.images;
+    expect(image).toMatchObject({ localId: "big", width: 500, height: 300, format: "png" });
+    expect(new Uint8Array(await image!.variants["500"]!.arrayBuffer())).toEqual(fakeImageBytes("png", 500, 300, "re:"));
+  });
+});

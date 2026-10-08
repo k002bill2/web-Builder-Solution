@@ -24,16 +24,26 @@ export interface CheckedImage {
 
 /** 업로드 경로(ingestImage)가 그 형식을 고를 때와 같은 설정 — 품질 값을 따로 두지 않는다 */
 const ENCODERS: Readonly<Record<ImageFormat, EncodeChoice>> = { webp: chooseFormat(false, true), jpeg: chooseFormat(false, false), png: chooseFormat(true, false) };
-const BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 const MAGIC_BYTES = 16;
 
 type Loose = Record<string, unknown>;
 const isSide = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 1 && (v as number) <= MAX_SIDE;
 const isFormat = (v: unknown): v is ImageFormat => typeof v === "string" && Object.hasOwn(ENCODERS, v);
 
+/** A-Z a-z 0-9 + / */
+const isBase64Char = (c: number) => (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || (c >= 48 && c <= 57) || c === 43 || c === 47;
+
+/** 엄격 base64(표준·패딩 있음·공백 0) — 문자 1회 선형 스캔(반복 그룹 정규식은 큰 입력에서 스택 한도를 넘는다, Codex r1 P1) */
+function isStrictBase64(text: string): boolean {
+  if (text.length % 4 !== 0) return false;
+  const pad = text.endsWith("==") ? 2 : text.endsWith("=") ? 1 : 0;
+  for (let i = 0; i < text.length - pad; i += 1) if (!isBase64Char(text.charCodeAt(i))) return false;
+  return true;
+}
+
 /** 엄격 base64 → 바이트 · 규칙 밖 = undefined */
 function decodeBase64(text: unknown): Uint8Array | undefined {
-  if (typeof text !== "string" || !BASE64.test(text)) return undefined;
+  if (typeof text !== "string" || !isStrictBase64(text)) return undefined;
   try {
     return Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
   } catch {
@@ -73,17 +83,18 @@ async function reencode(blob: Blob, width: number, height: number, source: { wid
   }
 }
 
+/** 규칙·디코드·재인코딩 중 어떤 예외도 undefined(IM-6) — reject 0 */
 async function checkOne(image: Loose, deps: IngestDeps): Promise<CheckedImage | undefined> {
-  const ruled = await ruledVariants(image);
-  if (!ruled) return undefined;
-  const source = { width: image.width as number, height: image.height as number, format: image.format as ImageFormat };
-  const variants: Array<readonly [string, Blob]> = [];
   try {
+    const ruled = await ruledVariants(image);
+    if (!ruled) return undefined;
+    const source = { width: image.width as number, height: image.height as number, format: image.format as ImageFormat };
+    const variants: Array<readonly [string, Blob]> = [];
     for (const [w, blob] of ruled) variants.push([String(w), await reencode(blob, w, variantHeight(source.width, source.height, w), source, deps)]);
+    return { localId: image.localId as string, ...source, bytes: variants.reduce((sum, [, b]) => sum + b.size, 0), variants: Object.fromEntries(variants) };
   } catch {
     return undefined;
   }
-  return { localId: image.localId as string, ...source, bytes: variants.reduce((sum, [, b]) => sum + b.size, 0), variants: Object.fromEntries(variants) };
 }
 
 const idOk = (image: unknown, i: number, all: readonly unknown[]): image is Loose => {

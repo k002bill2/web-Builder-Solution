@@ -116,3 +116,20 @@ describe("checkFile ①~⑤ 연결", () => {
     expect(calls.decoded).toBe(0);
   });
 });
+
+describe("Codex r1 ① 큰 base64 · 검증 중 예외 = IM-6 결과(reject 0)", () => {
+  it("변형본 \"A\" × 8MiB(유효 base64) = IM-6 결과 · checkFile도 결과를 돌려준다", async () => {
+    const big = { ...fileImage("a", 500, 300), bytes: 6 * MB, variants: { 500: "A".repeat(8 * MB) } };
+    await rejected([big], "IM-6");
+    expect(await checkFile(jsonFile(seedFile({}, [big])))).toEqual(fail("IM-6"));
+  });
+  it("변형본 읽기가 던짐 = IM-6 결과", async () => {
+    const image = fileImage("a", 500, 300);
+    Object.defineProperty(image, "variants", {
+      get: () => {
+        throw new RangeError("boom");
+      },
+    });
+    await rejected([image], "IM-6");
+  });
+});

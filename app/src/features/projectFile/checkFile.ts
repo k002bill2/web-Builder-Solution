@@ -11,6 +11,7 @@ import type { ProfileVersion } from "../../domain/profile";
 import { validateProjectName } from "../../domain/projectName";
 import type { IngestDeps } from "../studio/images/ingest/deps";
 import { checkImages, type CheckedImage } from "./checkImages";
+import { profileVersionShapeOk } from "./profileShape";
 import { FILE_FORMAT, FORMAT_VERSION, MAX_FILE_BYTES, SCHEMA, failure, type CheckFailure, type ImportCode } from "./format";
 
 export interface CheckedFile {
@@ -50,19 +51,24 @@ const projectOk = (p: Loose): boolean => {
   return named.ok && named.name === p.name;
 };
 
-/** 열기 checkState와 같은 규칙 — 버전 1..n 연속 · profileId = 계열 키(계열 1개) */
+/** 열기 checkState와 같은 규칙 — 버전 1..n 연속 · profileId = 계열 키(계열 1개) + 화면이 읽는 필드 모양(Codex r1) */
 const seriesOk = (series: readonly unknown[], profileId: string): boolean =>
-  series.length > 0 && series.every((v, i) => isObject(v) && v.version === i + 1 && v.profileId === profileId);
+  series.length > 0 && series.every((v, i) => isObject(v) && v.version === i + 1 && v.profileId === profileId && profileVersionShapeOk(v));
 
-const snapshotOk = (s: unknown, projectId: string): boolean =>
-  isObject(s) && s.projectId === projectId && isString(s.snapshotId) && SNAPSHOT_KINDS.includes(s.kind) && checkSaveDoc(projectId, s.doc).ok;
+/** 문서(현재·스냅샷)의 프로필 버전 = 계열 1..n — 복원 뒤 내보내기가 버전을 찾게(Codex r1) */
+const docHolds = (projectId: string, doc: unknown, seriesLength: number): boolean => {
+  const checked = checkSaveDoc(projectId, doc);
+  return checked.ok && isInt(checked.doc.profileVersion) && checked.doc.profileVersion >= 1 && checked.doc.profileVersion <= seriesLength;
+};
 
-/** 열기 readDoc과 같은 규칙 + 스냅샷 머리 · 문서 프로필 버전 ≤ 계열 길이 */
+const snapshotOk = (s: unknown, projectId: string, seriesLength: number): boolean =>
+  isObject(s) && s.projectId === projectId && isString(s.snapshotId) && SNAPSHOT_KINDS.includes(s.kind) && docHolds(projectId, s.doc, seriesLength);
+
+/** 열기 readDoc과 같은 규칙 + 스냅샷 머리 · 문서·스냅샷 프로필 버전 1..계열 길이 */
 function docOk(record: Loose, projectId: string, seriesLength: number): boolean {
   const { doc, snapshots, snapshotSeq } = record;
   if (!Array.isArray(snapshots) || (snapshotSeq !== undefined && !isInt(snapshotSeq))) return false;
-  const checked = checkSaveDoc(projectId, doc);
-  return checked.ok && checked.doc.profileVersion <= seriesLength && snapshots.every((s) => snapshotOk(s, projectId));
+  return docHolds(projectId, doc, seriesLength) && snapshots.every((s) => snapshotOk(s, projectId, seriesLength));
 }
 
 /** ④ — 원래 id로 판정 */

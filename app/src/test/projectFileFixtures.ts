@@ -5,6 +5,7 @@
 import type { DocRecord } from "../data/persistence/entryRead";
 import type { Project, ProjectSnapshot, DocHead } from "../data/projectRepository";
 import { writeStartDoc } from "../data/startDocWrite";
+import type { DesignProfileInput } from "../domain/compareBoard";
 import type { PlannedSection } from "../domain/generation";
 import type { ProfileVersion } from "../domain/profile";
 import type { FileImage, ProjectFile } from "../features/projectFile/format";
@@ -19,8 +20,8 @@ const SECTIONS: readonly PlannedSection[] = [
   { type: "footer", variant: "biz-extended", motion: "L1" },
 ];
 
-export function seedDoc(projectId = "project-1", updatedAt = "2026-10-01T00:00:00.000Z"): DocHead {
-  const result = writeStartDoc({ candidateId: "B", sections: SECTIONS, libraryVersion: "1.4", generatorVersion: "preview-1", profileVersion: 2, projectId, updatedAt });
+export function seedDoc(projectId = "project-1", updatedAt = "2026-10-01T00:00:00.000Z", profileVersion = 2): DocHead {
+  const result = writeStartDoc({ candidateId: "B", sections: SECTIONS, libraryVersion: "1.4", generatorVersion: "preview-1", profileVersion, projectId, updatedAt });
   if (!result.ok) throw new Error(result.alert);
   return result.doc;
 }
@@ -35,8 +36,25 @@ export const seedProject = (projectId = "project-1", profileId = "profile-1"): P
   updatedAt: "2026-10-01T00:00:00.000Z",
 });
 
+const color = ($value: string) => ({ $type: "color", $value }) as const;
+/** 화면이 직접 읽는 필드를 모두 갖춘 base(DesignProfileInput 타입 그대로 — 손상 검사 IM-4의 정상 짝) */
+export const SEED_BASE: DesignProfileInput = {
+  source_reference_ids: ["ref-a", "ref-b"],
+  visual_direction: "따뜻한 미니멀",
+  layout_direction: "분할 히어로",
+  color_tokens: { primary: color("#B5562F"), surface: color("#FFFFFF"), ink: color("#1F1F1F"), muted: color("#6B6B6B"), bg: color("#FAF7F2") },
+  typography_tokens: { family: "Pretendard", headingWeight: 700, bodyWeight: 400, scale: 1.25 },
+  spacing_tokens: { grid: "8", sectionGap: 96 },
+  motion_preset: "L1",
+  component_choices: { hero: { section: "hero", variant: "split" }, card_style: { style: "flat", surfaceTone: "light" } },
+  section_plan: [{ type: "hero", variant: "split" }],
+  library_version: "1.4",
+  seed: "seed-1",
+  selection_mode: "template",
+};
+
 export const seedSeries = (profileId = "profile-1"): ProfileVersion[] =>
-  [1, 2].map((version) => ({ profileId, version, origin: "board", baseReferenceId: "ref-a", base: {}, adjustments: {}, createdAt: `2026-09-30T00:0${version}:00.000Z` }) as unknown as ProfileVersion);
+  [1, 2].map((version) => ({ profileId, version, origin: version === 1 ? "board" : "adjust", ...(version === 1 && { boardRevision: 1 }), baseReferenceId: "ref-a", base: SEED_BASE, adjustments: version === 1 ? {} : { density: "compact", corrections: [{ role: "ink", from: "#1F1F1F", to: "#111111", check: "C-4" }] }, createdAt: `2026-09-30T00:0${version}:00.000Z` }));
 
 const snapshot = (doc: DocHead, n: number, kind: ProjectSnapshot<DocHead>["kind"]): ProjectSnapshot<DocHead> => ({
   snapshotId: `snapshot-${n}`,
@@ -82,7 +100,12 @@ const MAGIC: Readonly<Record<string, readonly number[]>> = {
 };
 export const fakeImageBytes = (format: string, width: number, height: number, mark = ""): Uint8Array =>
   new Uint8Array([...MAGIC[format]!, ...new TextEncoder().encode(`${mark}${width}x${height}`)]);
-export const toBase64 = (bytes: Uint8Array): string => btoa(String.fromCharCode(...bytes));
+/** 조각 단위(큰 바이트도 spread 한도 안) */
+export function toBase64(bytes: Uint8Array): string {
+  const pieces: string[] = [];
+  for (let i = 0; i < bytes.length; i += 0x8000) pieces.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
+  return btoa(pieces.join(""));
+}
 
 export function fileImage(localId: string, width: number, height: number, format: FileImage["format"] = "png", over: Partial<FileImage> = {}): FileImage {
   const ladder = [640, 1280, 1920].filter((s) => s <= width);
@@ -104,8 +127,9 @@ export function fakeDeps(options: { readonly failDecode?: boolean; readonly enco
   const deps = {
     createImageBitmap: async (source: Blob | { width: number; height: number }) => {
       if (options.failDecode) throw new Error("decode");
-      const text = new TextDecoder().decode(new Uint8Array(await (source as Blob).arrayBuffer()).slice(16)).replace(/^re:/, "");
-      const [width, height] = text.split("x").map(Number) as [number, number];
+      const text = new TextDecoder().decode(new Uint8Array(await (source as Blob).arrayBuffer()).slice(16));
+      const match = /^(?:re:)?(\d+)x(\d+)/.exec(text);
+      const [width, height] = [Number(match?.[1]), Number(match?.[2])];
       calls.decoded += 1;
       return { width, height, close: () => void (calls.closed += 1) };
     },

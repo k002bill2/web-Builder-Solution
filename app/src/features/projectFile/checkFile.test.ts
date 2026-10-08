@@ -4,7 +4,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { hashDoc } from "../../engine/ops/hash";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
-import { fileOf, jsonFile, seedDocRecord, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
+import { createMemoryCompareBoardRepository } from "../../data/memoryCompareBoardRepository";
+import { createMemoryProfileRepository } from "../../data/memoryProfileRepository";
+import { createStudioStore } from "../../data/studioStore";
+import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
+import { fileOf, jsonFile, seedDoc, seedDocRecord, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
 import { checkFile } from "./checkFile";
 import { IMPORT_MESSAGES, MAX_FILE_BYTES, type ImportCode } from "./format";
 
@@ -104,5 +108,51 @@ describe("checkFile 통과 (AC-P05 앞단 — 원래 id로 검증)", () => {
     const rehashed = { ...doc, hash: hashDoc(doc) };
     const result = await checkFile(jsonFile(seedFile({ doc: { ...record, doc: rehashed } })));
     expect(result.ok).toBe(true);
+  });
+});
+
+describe("Codex r1 ② 프로필 버전 모양 · ③ 스냅샷 프로필 범위 = IM-4", () => {
+  it("series {profileId, version}만 + doc:null = IM-4 (Codex 재현)", async () => {
+    await rejected(jsonFile(seedFile({ series: [{ profileId: "profile-1", version: 1 }], doc: null })), "IM-4");
+  });
+  it("화면이 직접 읽는 필드 손상 각각 = IM-4", async () => {
+    const [v1, v2] = seedSeries() as [ReturnType<typeof seedSeries>[number], ReturnType<typeof seedSeries>[number]];
+    const base = v2.base;
+    const broken: unknown[] = [
+      { ...v2, adjustments: undefined },
+      { ...v2, adjustments: { corrections: {} } },
+      { ...v2, adjustments: { corrections: [{ role: "ink", from: "#1F1F1F", to: 7, check: "C-4" }] } },
+      { ...v2, origin: "unknown" },
+      { ...v2, createdAt: 1 },
+      { ...v2, baseReferenceId: undefined },
+      { ...v2, base: undefined },
+      { ...v2, base: { ...base, color_tokens: undefined } },
+      { ...v2, base: { ...base, color_tokens: { ...base.color_tokens, ink: { $type: "color" } } } },
+      { ...v2, base: { ...base, typography_tokens: { ...base.typography_tokens, scale: "1.25" } } },
+      { ...v2, base: { ...base, spacing_tokens: undefined } },
+      { ...v2, base: { ...base, motion_preset: "L9" } },
+      { ...v2, base: { ...base, component_choices: null } },
+      { ...v2, base: { ...base, source_reference_ids: "ref-a" } },
+      { ...v2, base: { ...base, section_plan: [{ type: "hero" }] } },
+      { ...v2, base: { ...base, library_version: undefined } },
+      { ...v2, base: { ...base, seed: 1 } },
+      { ...v2, base: { ...base, selection_mode: "auto" } },
+      { ...v2, base: { ...base, visual_direction: undefined } },
+    ];
+    for (const v of broken) await rejected(jsonFile(seedFile({ series: [v1, v] })), "IM-4");
+  });
+  it("실제 보드 확정(confirmProfile)으로 만든 버전 = 통과(과잉 엄격 0)", async () => {
+    const store = createStudioStore();
+    const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a", "ref-b", "ref-c"], { hero: "ref-a" }), store });
+    await board.confirmProfile(1, 0);
+    const series = (await createMemoryProfileRepository({ store }).getProfile("profile-1"))!;
+    const result = await checkFile(jsonFile(seedFile({ series: series.versions, doc: null })));
+    expect(result.ok).toBe(true);
+  });
+  it("현재 v2 · 스냅샷 문서 v3(hash 일치) · 계열 v1·v2 = IM-4", async () => {
+    const record = seedDocRecord();
+    const v3 = seedDoc("project-1", "2026-10-01T00:00:00.000Z", 3);
+    const doc = { ...record, snapshots: [...record.snapshots, { ...record.snapshots[0]!, snapshotId: "snapshot-9", doc: v3, profileVersion: 3, hash: v3.hash }] };
+    await rejected(jsonFile(seedFile({ doc })), "IM-4");
   });
 });

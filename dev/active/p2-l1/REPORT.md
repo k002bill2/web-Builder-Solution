@@ -61,3 +61,25 @@
 - `upgradeDatabase`·`DB_VERSION` import 실측은 쓰기 트랜잭션(L3)에서 — 이 레인은 IDB 코드 0.
 - 실제 디코드·인코딩·메모리는 jsdom 밖 — L3 Ego Lite. **Ego Lite 생략 사유: UI·화면 0(순수 모듈).** Codex 검증은 Jarvis 몫(미실행).
 - 지켜진 금지: 엔진·PageDoc 계약·docs/**·lock·CLAUDE.md 수정 0 · 새 의존성 0 · 서브에이전트 0 · push/merge/삭제 0 · main 5480 무접촉.
+
+## 7. Codex r1 수정 (codex-r1-jarvis.txt 3건)
+| # | 지적 | 수정 | 회귀 테스트 |
+|---|---|---|---|
+| ①P1 | BASE64 반복 그룹 정규식이 8MiB에서 RangeError → `checkFile` reject (node 실측: 4MiB 통과·8MiB RangeError) | `checkImages.ts` 정규식 삭제 → `isStrictBase64`(길이 %4 · 끝 `=`/`==` 패딩 · 나머지 문자 1회 선형 스캔, 규칙은 옛 정규식과 같음 · node 80MiB 253ms) · `checkOne` 본문 전체(`ruledVariants` 포함) try → 예외 = IM-6 | `checkImages.test` "A"×8MiB = IM-6 결과(checkImages·checkFile 둘 다 reject 0) · 변형본 getter 던짐 = IM-6 · `encode.test` 원본 6MiB(base64 8MiB) encode → checkFile ok · 디코드 1 · 재인코딩 바이트 |
+| ②P2 | series가 `{profileId,version}`만이어도 통과 → ProfilePanel 예외 | 새 `profileShape.ts` `profileVersionShapeOk` → `seriesOk`에서 호출 · 손상 = IM-4 | Codex 재현(`{profileId,version}` + doc:null) = IM-4 · 필드 손상 19종 각각 IM-4 · 실제 `confirmProfile` 버전 = 통과(과잉 엄격 0) |
+| ③P2 | 스냅샷 문서 profileVersion을 계열과 대조 안 함 → 복원 뒤 내보내기 NOT_FOUND | `docHolds`(checkSaveDoc + profileVersion 정수 1..n)를 현재 문서·모든 스냅샷 문서에 같이 적용 | 현재 v2 · 스냅샷 v3(`writeStartDoc`으로 새로 만든 문서 · hash 일치) · 계열 v1·v2 = IM-4 |
+
+- **② 필수 필드 근거**: 기존 ProfileVersion 검증 함수 없음(grep `ProfileVersionSchema|designProfileSchema` 0건 · zod 사용 파일은 `jobRecord.ts`뿐). 사용처 grep으로 가드 없이 읽는 필드만 요구: `origin`·`baseReferenceId`·`createdAt` · `base.color_tokens[역할 5개].$value`(ProfilePanel:35·profileFields:79) · `typography_tokens.family·headingWeight·bodyWeight·scale`(profileFields:61·CompareDialog:131) · `spacing_tokens.grid·sectionGap`(profileFields:74·profileDiff:57) · `motion_preset`(docPurpose:20) · `component_choices` 객체(ProfilePanel:57) · `section_plan[].type·variant`(profileFields:76·ProfileValues:83) · `source_reference_ids` 문자열 배열(useProfileDetail:62) · `visual_direction`·`layout_direction`(profileFields:64-65) · `library_version`·`seed`(memoryGenerate:62-64·memoryDocBook:128) · `selection_mode`(ProfilePage:197) · `adjustments` 객체 + 있으면 `density·contrast·motion·purpose` 문자열 · `corrections[]` {role(역할 5개)·from·to·check 문자열}(ProfilePanel:35·comparePreviews:52). 선택 필드(basedOn·boardRevision·dropped·component_choices 하위·$extensions)는 요구 안 함. zod 미사용(가져오기 청크에 zod를 끌어오지 않게).
+- **fixture 교정(단언 약화 아님)**: `seedSeries`의 `base: {}`를 실제 `DesignProfileInput` 리터럴(`SEED_BASE`, 타입 검사 통과)로 · `seedDoc`에 profileVersion 인자 · `toBase64` 조각 단위(큰 바이트 spread 한도) · 가짜 디코더가 `^(re:)?WxH` 매치로 치수를 읽음(뒤 패딩 허용). 기존 테스트 기대값 변경 0.
+- **TDD**: RED 예측(PROGRESS) = 실제 6건 FAIL(① RangeError 2 · getter `boom` reject 1 · ②③ `ok:true` 3) · 실제 confirmProfile 통과 케이스는 예측대로 RED 때도 PASS · 기존 41건 PASS. RED 커밋 0 · amend·rebase 0. lint 1건(fixture sparse array) 고친 뒤 재실행.
+- **검증(fresh, app/)**: 아래 8절.
+- 남김: checkImages 앞단(개수·bytes·localId) 속성 접근은 try 밖 — JSON 파싱 결과에는 getter가 없어 던질 수 없음(이번 diff 범위 밖).
+
+## 8. Codex r1 수정 검증 (fresh, app/)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm run build` | exit 0 · `/studio` 129.09 · 복원 132.13 · `/profile` 99.87 · `/projects` 104.69 · `/compare` 122.71 — 변화 0 |
+| `npx vitest --run` (전체) | 1회차 exit 1 — `SectionAdd.test.tsx` 포커스 1건(이번 diff 무관 파일 · build 직후 실행) · 단독 재실행 6/6 통과 · 전체 재실행 **exit 0 · 289 파일 · 2527 테스트** |
+- 금지 준수: 엔진·계약·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · Ego Lite·Codex 미실행 · push/merge/삭제 0 · amend/rebase 0.

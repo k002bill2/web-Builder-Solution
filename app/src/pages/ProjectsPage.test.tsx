@@ -94,16 +94,41 @@ describe("ProjectsPage — J-S01 로딩", () => {
 });
 
 describe("ProjectsPage — J-S02 비어 있음 (J-AC-02)", () => {
-  it("안내 문장 + 새로고침 캡션 + 보드·카탈로그 링크, role=alert 없음", async () => {
+  it("안내 문장 + 강등(memory) 캡션 + 보드·카탈로그 링크, role=alert 없음 (P1C W1)", async () => {
     renderPage(repositoryWith({ listProjects: async () => [] }));
     expect(await screen.findByText("프로젝트는 비교 보드에서 프로필을 확정하면 만들어집니다")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "프로젝트" })).toBeInTheDocument();
-    expect(screen.getByText("새로고침하면 프로젝트가 사라집니다(서버 연결 전)")).toBeInTheDocument();
+    expect(screen.getByText("이 브라우저에 저장할 수 없어 새로고침하면 프로젝트가 사라집니다")).toBeInTheDocument();
+    expect(screen.queryByText(/서버 연결 전/)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "비교 보드로" })).toHaveAttribute("href", "/compare");
     expect(screen.getByRole("link", { name: "카탈로그에서 고르기" })).toHaveAttribute("href", "/catalog");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
     expect(notice()).toBeInTheDocument();
+  });
+});
+
+describe("ProjectsPage — P1C W1 · 저장소 영역", () => {
+  it("local 빈 상태 캡션 = 이 브라우저에 저장 · 다른 기기·브라우저 안내", async () => {
+    renderPage(repositoryWith({ persistence: "local", listProjects: async () => [] }));
+    expect(await screen.findByText("프로젝트는 이 브라우저에 저장됩니다 — 다른 기기나 브라우저에서는 보이지 않습니다")).toBeInTheDocument();
+    expect(screen.queryByText(/새로고침하면 프로젝트가 사라집니다/)).not.toBeInTheDocument();
+  });
+
+  it("목록이 비어도·있어도 맨 아래 '이 브라우저 저장소' 영역(h2)이 보이고 알림 영역은 둘(목록·저장소)", async () => {
+    const { unmount } = renderPage(repositoryWith({ listProjects: async () => [] }));
+    expect(await screen.findByRole("heading", { level: 2, name: "이 브라우저 저장소" })).toBeInTheDocument();
+    expect(screen.getAllByRole("status").map((el) => el.getAttribute("aria-label"))).toEqual(["프로젝트 알림", "저장소 알림"]);
+    unmount();
+    renderPage(repositoryWith({}));
+    expect(await screen.findByRole("heading", { level: 2, name: "이 브라우저 저장소" })).toBeInTheDocument();
+    expect(screen.getAllByRole("listitem").length).toBeGreaterThan(0);
+  });
+
+  it("불러오는 동안에는 영역을 그리지 않는다", () => {
+    const pending = deferred<readonly ProjectSummary[]>();
+    renderPage(repositoryWith({ listProjects: () => pending.promise }));
+    expect(screen.queryByRole("heading", { level: 2, name: "이 브라우저 저장소" })).not.toBeInTheDocument();
   });
 });
 
@@ -183,7 +208,7 @@ describe("ProjectsPage — J-S08 긴 이름", () => {
   it("60자 이름을 자르지 않고 그대로 보인다(말줄임·줄바꿈 금지 클래스 없음)", async () => {
     const long = "가나다라마바사아자차".repeat(6);
     renderPage(repositoryWith({ listProjects: async () => [summary({ name: long })] }));
-    const title = await screen.findByRole("heading", { level: 2 });
+    const title = await screen.findByRole("heading", { level: 2, name: long });
     expect(title).toHaveTextContent(long);
     expect(title.className).not.toMatch(/truncate|whitespace-nowrap|line-clamp|text-ellipsis/);
   });

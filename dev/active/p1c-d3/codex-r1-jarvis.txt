@@ -1,0 +1,31 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a118e9-c37c-7713-880f-7b9ca96536f7).
+[codex] Reviewer started: changes against 'd4a0ee5'
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|cross-review' /Users/younghwankang/.codex/memories/MEMORY.md...
+[codex] Command completed: /bin/zsh -lc "rg -n 'web-builder|cross-review' /Users/younghwankang/.codex/memories/MEMORY.md... (exit 0)
+[codex] Running command: /bin/zsh -lc 'for p in /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/younghwankang/o...
+[codex] Command completed: /bin/zsh -lc 'for p in /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/younghwankang/o... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; find app dev -name CLAUDE.md -o -name AGENTS.override.md -o -nam...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; find app dev -name CLAUDE.md -o -name AGENTS.override.md -o -nam... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat docs/design/persistence/P1C-SPEC.md; cat app/src/data/deferredStudio.ts; rg...
+[codex] Command completed: /bin/zsh -lc "cat docs/design/persistence/P1C-SPEC.md; cat app/src/data/deferredStudio.ts; rg... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '158,217p' docs/design/persistence/P1C-SPEC.md; sed -n '1,65p' app/src/d...
+[codex] Command completed: /bin/zsh -lc "sed -n '158,217p' docs/design/persistence/P1C-SPEC.md; sed -n '1,65p' app/src/d... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '28,46p' app/src/data/deferredStudio.ts; sed -n '127,153p' docs/design/p...
+[codex] Command completed: /bin/zsh -lc "sed -n '28,46p' app/src/data/deferredStudio.ts; sed -n '127,153p' docs/design/p... (exit 0)
+[codex] Running command: /bin/zsh -lc "node --input-type=module -e 'import fs from \"node:fs\"; import ts from \"./app...
+[codex] Command completed: /bin/zsh -lc "node --input-type=module -e 'import fs from \"node:fs\"; import ts from \"./app... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 문서 레코드 때문에 강등된 경우 저장소 진단이 실제 원인과 필요한 복구 안내를 누락합니다. 읽기 전용 재현으로 확인했으며, 타입 검사는 통과했습니다. Review co...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against d4a0ee5
+
+문서 레코드 때문에 강등된 경우 저장소 진단이 실제 원인과 필요한 복구 안내를 누락합니다. 읽기 전용 재현으로 확인했으며, 타입 검사는 통과했습니다.
+
+Review comment:
+
+- [P2] 문서 봉투로 인한 강등 사유도 확인하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/p1c-d3/app/src/features/projects/storageCheck.ts:49-49
+  `studio/state`는 정상이고 진입 문서의 봉투만 더 새 버전이거나 깨진 경우, `readEntry(projectId)`는 메모리 모드로 강등하지만 이 검사는 상태 레코드만 읽어 `ok`를 반환합니다. `/studio/:id`에서 시작해 `/projects`로 이동하면 실제 원인 대신 일반 저장 불가 문장만 표시되고, newer 상태에 필요한 최신 앱 새로고침 안내와 버튼도 누락됩니다. 진입에서 강등을 일으킨 문서 봉투까지 확인하거나 해당 진단 결과를 전달받아 표시해야 합니다.

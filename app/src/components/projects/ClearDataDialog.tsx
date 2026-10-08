@@ -1,13 +1,13 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { ClearResult } from "../../features/projects/clearBrowserData";
-import { BUSY_TEXT, FAIL_TEXT } from "../../features/projects/dialogText";
+import { BACKUP_TEXT, BUSY_TEXT, FAIL_TEXT } from "../../features/projects/dialogText";
 import { Button } from "../ds/Button";
 
 /**
  * "이 브라우저 데이터 지우기" 대화상자(P1C-SPEC 1.6 · AC-C08) — 조작 뒤 청크(영역의 버튼을 눌러야 받는다).
  * 네이티브 `dialog` + `showModal()` · h2 = 접근 이름 · 열 때 포커스 = "취소" · Esc = 취소 · 바깥 클릭 닫기 0(닫는 경로는 취소·Esc뿐).
  * 진행 중 = "지우는 중…" aria-disabled(누름은 핸들러가 막는다) · Esc 무시. 실패는 대화상자 안 `role=alert`(시도마다 새로 낭독).
- * 포커스 복귀(여는 버튼)는 여는 쪽이 맡는다 — 닫을 때 modal을 먼저 `close()`한다(열린 modal 바깥은 inert라 언마운트 전 focus가 무시된다). P2 백업 문장은 파일 묶음 출시 전이라 두지 않는다.
+ * 포커스 복귀(여는 버튼)는 여는 쪽이 맡는다 — 닫을 때 modal을 먼저 `close()`한다(열린 modal 바깥은 inert라 언마운트 전 focus가 무시된다). 백업 안내 = FX-1(P2-SPEC 5절).
  */
 export default function ClearDataDialog({
   count,
@@ -72,6 +72,7 @@ export default function ClearDataDialog({
           <li>확정한 프로필(모든 버전)과 만든 3안</li>
         </ul>
         <p className="ds-caption1 text-label-alternative">비교 보드와 보관함은 따로 저장하지 않아 지운 뒤 함께 비워집니다. 내려받은 파일은 그대로 남습니다.</p>
+        <p className="ds-caption1 text-label-alternative">{BACKUP_TEXT}</p>
         {error.text && (
           <p key={error.key} role="alert" className="ds-caption1 text-status-negative-text">
             {error.text}

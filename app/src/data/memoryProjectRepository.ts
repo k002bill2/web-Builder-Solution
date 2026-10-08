@@ -7,11 +7,10 @@
  * - 판정·상태·쓰기 본문(어댑터·엔진·L4 검증)은 조작 뒤 청크 `memoryDocBook` — 동기 구간 앞에서 받는다(받기 실패 = 쓰기 0).
  * - `delay`·`fail` 주입 = `phase: request | commit | response`(보드·프로필 구현과 같은 모양). 시각은 주입 `now()` — 쓰기당 1회.
  */
-import { validateProjectName } from "../domain/projectName";
 import { retryableImport } from "./chunkRetry";
 import type { DocBook } from "./memoryDocBook";
 import { createSharedLoader } from "./sharedLoader";
-import { ProjectRepositoryError, type ExportGenerators, type Project, type ProjectRepository, type ProjectSummary } from "./projectRepository";
+import { type ExportGenerators, type Project, type ProjectRepository, type ProjectSummary } from "./projectRepository";
 import type { LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
 import type { StudioStore } from "./studioStore";
@@ -40,6 +39,8 @@ export interface MemoryProjectOptions {
 
 /** 조작 뒤 청크 — 판정·상태·어댑터·엔진. "편집 시작"·저장 때만 받는다(진입 직후 청크 크기 유지) */
 const loadDocBook = retryableImport(() => import("./memoryDocBook"));
+/** 이름 바꾸기 본문(조작 뒤 — /projects "이름 바꾸기" 저장) · 이름 규칙과 함께 진입 closure 밖(ENTRY-SLIM) */
+const loadRename = retryableImport(() => import("./projectRename"));
 
 /** 로컬 영속 싱크 열기(조작 뒤 — DocBook 청크와 함께 받는다) */
 /** 이미지 복원 본문(ADR-007 P1b) — 편집 틀 마운트 때 자동(로컬 영속만) · 별도 청크 */
@@ -109,17 +110,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       const project = projectOf(projectId);
       return project && Object.freeze({ ...project, updatedAt: summaryOf(project).updatedAt });
     },
-    renameProject: async (projectId, expectedRevision, name) =>
-      store.transact((tx) => {
-        const checked = validateProjectName(name);
-        if (!checked.ok) throw new ProjectRepositoryError("SCHEMA_INVALID", checked.message);
-        const project = tx.projects().find((p) => p.projectId === projectId);
-        if (!project) throw new ProjectRepositoryError("NOT_FOUND", projectId);
-        if (project.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_PROJECT", `revision ${expectedRevision} ≠ ${project.revision}`, { project });
-        const next: Project = { ...project, name: checked.name, revision: project.revision + 1, updatedAt: now() };
-        tx.putProject(next);
-        return next;
-      }),
+    renameProject: async (projectId, expectedRevision, name) => (await loadRename()).renameProjectIn(store, now, projectId, expectedRevision, name),
     getDoc: async (projectId) => {
       const first = await entered(projectId);
       return call("getDoc", () => book?.docOf(projectId) ?? first?.doc);

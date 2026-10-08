@@ -44,3 +44,11 @@ base `557fe35` · 브랜치 `k002bill2/p1d-l2` · 구현 커밋 `45506b6` · 서
 ## 7. 남은 것
 - Codex 리뷰(Jarvis 몫).
 - 번들 진입 +0.008KB 원인 확인 여부 판단(위 3절).
+
+## Codex r1 수정 (P2 1건 · `codex-r1-jarvis.txt`)
+- 지적: 미저장 변경이 있어 `preview()`가 `flushed()`를 기다리는 동안 수동 줄 "삭제"가 busy를 보지 않아 확인이 열림 → 저장 완료 뒤 `onPreview`가 대화상자를 언마운트하거나, 삭제된 스냅샷이 미리보기로 열려 복원 `NOT_FOUND`.
+- 수정(`app/src/components/studio/SnapshotDialog.tsx`): "삭제" → `ask()` — `busy.current`면 무시, 아니면 `busy.current = true` 후 확인 열기. 취소·삭제 성공 시 `settle()`이 busy 해제. 기존 `save`·`preview`의 `if (busy.current) return` 가드가 그대로 확인 열린 동안(지우는 중 포함)의 진입을 막는다. 새 상태·aria-disabled 추가 0(busy는 ref라 기존 저장·미리보기 버튼도 aria-disabled 없음 — 같은 패턴 유지).
+- 회귀 테스트(`SnapshotDelete.test.tsx` "Codex r1 P2" 2건): ① 지연 `saveDoc` + 미저장 변경 → 미리보기 클릭 → flush 대기 중 삭제 클릭 = 확인 열림 0 · 삭제 0 → 저장 끝나면 미리보기 열림 ② 지우는 중 미리보기·지금 상태 저장 클릭 = 미리보기 0 · `createSnapshot` 0 · 삭제는 정상 완료. RED 2/2 예측대로 → GREEN.
+- 게이트: `npm run typecheck`·`npm run lint`·`npm run build`·`npm test -- --run` 모두 exit 0 (279 files · 2438 tests).
+- 번들(build 판정 통과 + 사본 스크립트 4자리): /studio 129.648(직전 129.651) · 복원 132.681(직전 132.684) · /profile 99.869(직전 99.864). 진입 closure 소스 변경 0 — 차이는 ±0.005KB gzip 변동(지연 청크 해시 추정, 확인 안 함).
+- 하지 않음: Ego Lite·Codex 재검증(브리프 금지), L3·엔진·계약·docs·lock 수정 0, 새 의존성 0.

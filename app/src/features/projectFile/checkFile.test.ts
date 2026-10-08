@@ -6,6 +6,9 @@ import { hashDoc } from "../../engine/ops/hash";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { createMemoryCompareBoardRepository } from "../../data/memoryCompareBoardRepository";
 import { createMemoryProfileRepository } from "../../data/memoryProfileRepository";
+import { createMemoryGenerationRepository } from "../../data/memoryGenerationRepository";
+import { createMemoryProjectRepository } from "../../data/memoryProjectRepository";
+import { isTerminal } from "../../domain/generation";
 import { createStudioStore } from "../../data/studioStore";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
 import { fileOf, jsonFile, seedDoc, seedDocRecord, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
@@ -154,5 +157,100 @@ describe("Codex r1 ② 프로필 버전 모양 · ③ 스냅샷 프로필 범위
     const v3 = seedDoc("project-1", "2026-10-01T00:00:00.000Z", 3);
     const doc = { ...record, snapshots: [...record.snapshots, { ...record.snapshots[0]!, snapshotId: "snapshot-9", doc: v3, profileVersion: 3, hash: v3.hash }] };
     await rejected(jsonFile(seedFile({ doc })), "IM-4");
+  });
+});
+
+describe("Codex r2 — 화면이 열거·모양으로 바로 쓰는 필드 = IM-4 (REPORT 9절 표)", () => {
+  const [v1, v2] = seedSeries() as [ReturnType<typeof seedSeries>[number], ReturnType<typeof seedSeries>[number]];
+  const base = v2.base;
+  const withVersion = (v: unknown) => jsonFile(seedFile({ series: [v1, v] }));
+  const record = seedDocRecord();
+  const withSnapshot = (over: Record<string, unknown>) => jsonFile(seedFile({ doc: { ...record, snapshots: [{ ...record.snapshots[0]!, ...over }] } }));
+
+  it("① adjustments.contrast \"invalid\" = IM-4 (Codex 재현 — targetText CONTRAST_TARGET[level].toFixed)", async () => {
+    await rejected(withVersion({ ...v2, adjustments: { contrast: "invalid" } }), "IM-4");
+  });
+  it("② dropped \"x\" = IM-4 (Codex 재현 — summarizeVersions droppedSummary(dropped.map))", async () => {
+    await rejected(withVersion({ ...v2, dropped: "x" }), "IM-4");
+  });
+  it("③ 스냅샷 name {bad:true} = IM-4 (Codex 재현 — SnapshotDialog {s.name})", async () => {
+    await rejected(withSnapshot({ name: { bad: true } }), "IM-4");
+  });
+  it("버전 표 행 손상 각각 = IM-4", async () => {
+    const choices = base.component_choices;
+    const broken: unknown[] = [
+      { ...v2, adjustments: { density: "tight" } },
+      { ...v2, adjustments: { purpose: "shop" } },
+      { ...v2, adjustments: { purpose: "toString" } },
+      { ...v2, adjustments: { corrections: [{ role: "ink", from: "#1F1F1F", to: "#111111", check: "C-9" }] } },
+      { ...v2, adjustments: { corrections: [{ role: "ink", from: "red", to: "#111111", check: "C-4" }] } },
+      { ...v2, adjustments: { corrections: [{ role: "ink", from: "#1F1F1F", to: "#11111", check: "C-4" }] } },
+      { ...v2, dropped: [1] },
+      { ...v2, dropped: [{ key: "size" }] },
+      { ...v2, dropped: [{ key: "correction", role: 3 }] },
+      { ...v2, dropped: [{ key: "motion", reason: "oops" }] },
+      { ...v2, basedOn: "1" },
+      { ...v1, boardRevision: 1.5 },
+      { ...v2, base: { ...base, color_tokens: { ...base.color_tokens, ink: { $type: "color", $value: "blue" } } } },
+      { ...v2, base: { ...base, section_plan: [{ type: "banner", variant: "x" }] } },
+      { ...v2, base: { ...base, component_choices: { ...choices, hero: { section: "hero", variant: 1 } } } },
+      { ...v2, base: { ...base, component_choices: { ...choices, header: "sticky" } } },
+      { ...v2, base: { ...base, component_choices: { ...choices, cta_placement: {} } } },
+      { ...v2, base: { ...base, component_choices: { ...choices, media_ratio: 16 } } },
+      { ...v2, base: { ...base, component_choices: { ...choices, mobile_pattern: [] } } },
+      { ...v2, base: { ...base, component_choices: { ...choices, card_style: { style: "flat", surfaceTone: "grey" } } } },
+      { ...v2, base: { ...base, component_choices: { ...choices, card_style: { style: {}, surfaceTone: "dark" } } } },
+    ];
+    for (const v of broken) await rejected(withVersion(v), "IM-4");
+  });
+  it("스냅샷 머리 표 행 손상 각각 = IM-4", async () => {
+    const broken: Record<string, unknown>[] = [
+      { name: undefined },
+      { createdAt: 1 },
+      { candidateId: null },
+      { hash: 7 },
+      { profileVersion: "2" },
+      { profileVersion: 0 },
+      { profileVersion: 3 },
+      { kind: "auto", reason: "oops" },
+    ];
+    for (const over of broken) await rejected(withSnapshot(over), "IM-4");
+  });
+
+  it("실제 저장소 버전(조정 4열거+보정 · 재확정 dropped · revertTo basedOn) = 통과(과잉 엄격 0)", async () => {
+    const store = createStudioStore();
+    const now = () => "2026-09-26T00:00:00.000Z";
+    const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, now, initialBoard: boardOf(["ref-a", "ref-b", "ref-c"], { hero: "ref-a" }), store });
+    const profiles = createMemoryProfileRepository({ store, now });
+    await board.confirmProfile(1, 0);
+    const mutedFix = { role: "muted", from: "#9A7B63", to: "#8E715B", check: "C-5" } as const;
+    await profiles.saveAdjustments("profile-1", 1, { density: "compact", motion: "L0", contrast: "enhanced", purpose: "booking", corrections: [mutedFix] });
+    const { board: current } = await board.getBoard();
+    const saved = await board.savePicks({ hero: "ref-a", palette: "ref-c", motion: "ref-b" }, {}, current.revision);
+    await board.createProfileVersion("profile-1", saved.revision, 2, "current");
+    await profiles.revertTo("profile-1", 2, 3);
+    const versions = (await profiles.getProfile("profile-1"))!.versions;
+    expect(versions[2]!.dropped?.length).toBeGreaterThan(0);
+    expect(versions[3]).toMatchObject({ origin: "revert", basedOn: 2 });
+    const result = await checkFile(jsonFile(seedFile({ series: versions, doc: null })));
+    expect(result.ok).toBe(true);
+  });
+  it("실제 저장소 스냅샷(createSnapshot manual · restoreSnapshot auto/restore) = 통과(과잉 엄격 0)", async () => {
+    const store = createStudioStore();
+    const board = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a", "ref-b", "ref-c"], { hero: "ref-a" }), store });
+    await board.confirmProfile(1, 0);
+    const gen = createMemoryGenerationRepository({ store });
+    let job = await gen.requestGeneration("profile-1", 1);
+    for (let i = 0; i < 10 && !isTerminal(job.state); i++) job = await gen.getJob(job.jobId);
+    let ticks = 0;
+    const repo = createMemoryProjectRepository({ store, now: () => `2026-09-27T09:00:0${ticks++}.000Z` });
+    const { doc: first } = await repo.startDoc("project-1", 1, "B", "create");
+    const kept = await repo.createSnapshot("project-1");
+    await repo.restoreSnapshot("project-1", kept.snapshotId, first.revision);
+    const snapshots = await repo.listSnapshots("project-1");
+    expect(snapshots.map((s) => s.kind)).toEqual(["manual", "auto"]);
+    const doc = { doc: await repo.getDoc("project-1"), snapshots, snapshotSeq: 0 };
+    const result = await checkFile(jsonFile(seedFile({ doc })));
+    expect(result.ok).toBe(true);
   });
 });

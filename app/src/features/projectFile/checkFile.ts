@@ -33,6 +33,8 @@ const isObject = (v: unknown): v is Loose => typeof v === "object" && v !== null
 const isInt = (v: unknown): v is number => Number.isSafeInteger(v);
 const isString = (v: unknown): v is string => typeof v === "string";
 const SNAPSHOT_KINDS: readonly unknown[] = ["manual", "auto", "published"];
+/** SnapshotDialog REASON 키 */
+const SNAPSHOT_REASONS: readonly unknown[] = ["export", "restore", "conflict", "restart"];
 const PROJECT_TEXT = ["projectId", "name", "profileId", "baseReferenceId", "createdAt", "updatedAt"] as const;
 
 /** ③ — undefined = 통과 */
@@ -61,8 +63,14 @@ const docHolds = (projectId: string, doc: unknown, seriesLength: number): boolea
   return checked.ok && isInt(checked.doc.profileVersion) && checked.doc.profileVersion >= 1 && checked.doc.profileVersion <= seriesLength;
 };
 
+/** 머리 = SnapshotDialog가 바로 렌더링하는 필드(name·createdAt·profileVersion·candidateId · REASON[reason]) — rekey는 projectId·doc·hash만 덮는다(Codex r2) */
+const snapshotHeadOk = (s: Loose, seriesLength: number): boolean =>
+  [s.name, s.createdAt, s.candidateId, s.hash].every(isString) &&
+  isInt(s.profileVersion) && s.profileVersion >= 1 && s.profileVersion <= seriesLength &&
+  (s.reason === undefined || SNAPSHOT_REASONS.includes(s.reason));
+
 const snapshotOk = (s: unknown, projectId: string, seriesLength: number): boolean =>
-  isObject(s) && s.projectId === projectId && isString(s.snapshotId) && SNAPSHOT_KINDS.includes(s.kind) && docHolds(projectId, s.doc, seriesLength);
+  isObject(s) && s.projectId === projectId && isString(s.snapshotId) && SNAPSHOT_KINDS.includes(s.kind) && snapshotHeadOk(s, seriesLength) && docHolds(projectId, s.doc, seriesLength);
 
 /** 열기 readDoc과 같은 규칙 + 스냅샷 머리 · 문서·스냅샷 프로필 버전 1..계열 길이 */
 function docOk(record: Loose, projectId: string, seriesLength: number): boolean {

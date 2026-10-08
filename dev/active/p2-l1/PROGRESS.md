@@ -28,3 +28,15 @@
 - ①c encode.test 8MiB+ base64 왕복(원본 ≈6MiB): 옛 정규식 RangeError → checkFile reject로 FAIL.
 - ② checkFile.test series `{profileId,version}`만 + doc:null 등: 옛 seriesOk는 version·profileId만 봄 → ok:true 반환으로 FAIL(기대 IM-4). 실제 confirmProfile 버전 통과 케이스는 옛 코드에서도 PASS.
 - ③ checkFile.test 현재 v2 · 스냅샷 v3(writeStartDoc으로 새로 만든 문서·hash 일치) · 계열 v1·v2: 옛 docOk는 스냅샷 profileVersion을 안 봄 → ok:true로 FAIL(기대 IM-4).
+
+## Codex r2 수정 (codex-r2-jarvis.txt 3건 + 같은 계열 전수 점검 — 마지막 라운드)
+- [x] ①[P2] adjustments.contrast·density·purpose 열거(+ corrections check C-1..5 · from/to #RRGGBB) → IM-4
+- [x] ②[P2] 선택 필드 dropped(배열·항목 key/role/reason) · basedOn·boardRevision(정수) · component_choices 하위 → IM-4
+- [x] ③[P2] 스냅샷 머리 name·createdAt·candidateId·hash(문자열) · profileVersion(정수 1..계열) · reason(열거) → IM-4
+- [x] 전수 점검 표(REPORT) — 색 $value #RRGGBB · section_plan type 열거 포함
+- [x] 실제 데이터 통과(saveAdjustments 4열거+보정 · 재확정 dropped · revertTo basedOn · createSnapshot·restoreSnapshot)
+- [x] 게이트(typecheck·lint·build 번들 불변·전체 vitest) · REPORT "Codex r2 수정" 절 커밋
+
+### RED 예측 (Codex r2)
+- "Codex r2" describe의 손상 테스트 3건(Codex 재현 ①②③)과 표 기반 손상 테스트 2건(버전·스냅샷): 옛 profileShape/snapshotOk는 문자열 여부·kind만 봄 → ok:true 반환으로 FAIL(기대 IM-4). 루프 첫 미검사 항목에서 멈춤.
+- 실제 데이터 통과 2건(재확정·되돌리기·조정 버전 / 실제 스냅샷): 옛 코드도 통과 → PASS(과잉 엄격 가드 — 구현 뒤에도 PASS여야 함).

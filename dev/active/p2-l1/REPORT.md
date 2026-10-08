@@ -83,3 +83,71 @@
 | `npm run build` | exit 0 · `/studio` 129.09 · 복원 132.13 · `/profile` 99.87 · `/projects` 104.69 · `/compare` 122.71 — 변화 0 |
 | `npx vitest --run` (전체) | 1회차 exit 1 — `SectionAdd.test.tsx` 포커스 1건(이번 diff 무관 파일 · build 직후 실행) · 단독 재실행 6/6 통과 · 전체 재실행 **exit 0 · 289 파일 · 2527 테스트** |
 - 금지 준수: 엔진·계약·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · Ego Lite·Codex 미실행 · push/merge/삭제 0 · amend/rebase 0.
+
+## 9. Codex r2 수정 (codex-r2-jarvis.txt 3건 · 마지막 라운드 — 같은 계열 전수 점검)
+| # | 지적 | 수정 | 회귀 테스트 (`checkFile.test` "Codex r2") |
+|---|---|---|---|
+| ①P2 | `adjustments.contrast:"invalid"` 통과 → `targetText` `CONTRAST_TARGET[level].toFixed` 예외 | `profileShape.ts` 조정 열거 = 화면이 인덱싱하는 Record 키(`keyOf` · 자기 키만) — contrast `CONTRAST_TARGET` · density `DENSITY_LABELS` · purpose `PURPOSE_LABELS`+`"none"` · motion L0~L2 · corrections check C-1..5 · from/to `#RRGGBB` | Codex 재현 = IM-4 + 표 행 손상 |
+| ②P2 | `dropped:"x"` 통과 → `droppedSummary` `dropped.map` 예외 | 선택 필드는 있으면 소비 모양: `dropped` 배열·항목 {key 5종 · role? 역할 · reason? 3종} · `basedOn`·`boardRevision` 정수 · `component_choices` 하위 | Codex 재현 = IM-4 + 표 행 손상 |
+| ③P2 | 스냅샷 `name:{bad:true}` 통과 → `SnapshotDialog` `{s.name}` 렌더 예외 | `checkFile.ts` `snapshotHeadOk`: name·createdAt·candidateId·hash 문자열 · profileVersion 정수 1..계열 길이 · reason? 4종 | Codex 재현 = IM-4 + 표 행 손상 |
+
+### 전수 점검 표 — 가져온 레코드 필드 → 기대 모양 → 사용처 → 판정
+**ProfileVersion** (`profileShape.ts` · 굵게 = 이번 r2 추가)
+| 필드 | 기대 모양/열거 | 사용처 | 판정 |
+|---|---|---|---|
+| version·profileId | 정수 1..n 연속 · 계열 키 | VersionList · 저장소 find | 검증(r0 seriesOk) |
+| origin | board·board-reconfirm·adjust·revert | VersionList.tsx:10 `ORIGIN_LABELS[v.origin]` | 검증(r1) |
+| **basedOn?** | 정수 | VersionList.tsx:10 `v${v.basedOn}` | **검증** |
+| **boardRevision?** | 정수 | 저장소 재확정 비교 | **검증** |
+| baseReferenceId·createdAt | 문자열 | ProfilePage.tsx:197 `titleOf` · 목록 | 검증(r1) |
+| **dropped?** | 배열 · {key 5종(CarryOverKey) · role? PaletteRole · reason? 3종} | profileDiff.ts:51 `droppedSummary(dropped)` · adjustmentText.ts:34 `REASONS[item.reason]` | **검증** |
+| base.color_tokens[역할].$value | **#RRGGBB** | contrast.ts:16 `relativeLuminance` throw · profileFields.ts:79 `toUpperCase` | **검증(문자열→hex)** |
+| base.color_tokens.$extensions | — | profileDraft.ts:137 쓰기만(읽기 0) | 제외: 화면 읽기 없음 |
+| base.typography_tokens·spacing_tokens | family 문자열·숫자 3 / grid 문자열·sectionGap 숫자 | profileFields.ts:73-74 · profileDiff.ts:57 | 검증(r1) |
+| base.motion_preset | L0·L1·L2 | profileFields.ts:75 `MOTION_PRESET_LABELS[...]` | 검증(r1) |
+| base.selection_mode | template·mix | ProfilePage.tsx:197 · profileFields.ts:78 `SELECTION_MODE_LABELS[...]` | 검증(r1) |
+| **base.section_plan[].type** | **SectionType 12종** | profileFields.ts:56 `SECTION_TYPE_LABELS[type]` | **검증(문자열→열거)** |
+| base.section_plan[].variant | 문자열 | profileFields.ts:56 | 검증(r1) |
+| **base.component_choices.hero·header·footer?** | {variant 문자열} | profileFields.ts:36 `librarySection` → value·caption 렌더 | **검증** |
+| **base.component_choices.cta_placement·media_ratio·mobile_pattern?** | 문자열 | profileFields.ts:41 `choice` → value 렌더(객체면 React 예외) | **검증** |
+| **base.component_choices.card_style?** | {style 문자열 · surfaceTone light·dark} | profileFields.ts:47-50 `cardRow` | **검증** |
+| base.visual_direction·layout_direction | 문자열 | profileFields.ts:64-65 `?? 원값` | 검증(r1) — 열거 아님: Record 결과 `??` 원값 가드 |
+| base.source_reference_ids | 문자열 배열 | useProfileDetail `map(titleOf)` | 검증(r1) |
+| base.library_version·seed | 문자열 | profileFields.ts:78 · memoryGenerate·memoryDocBook | 검증(r1) |
+| **adjustments.contrast?** | **aa·enhanced (`CONTRAST_TARGET` 키)** | profileMessages.ts:51 `toFixed` · profileDiff.ts:38 · adjustmentText.ts:23 | **검증(문자열→열거)** |
+| **adjustments.density?** | **comfortable·compact (`DENSITY_LABELS` 키)** | adjustmentText.ts:22 · effectiveProfile | **검증(문자열→열거)** |
+| adjustments.motion? | L0·L1·L2 | effectiveProfile · themeText.ts:29 | 검증(r1) |
+| **adjustments.purpose?** | **booking·inquiry·sales·none (`PURPOSE_LABELS` 키+none)** | adjustmentText.ts:11 · themeText.ts:30·76 · composeCandidates `PURPOSE_LABEL` | **검증(문자열→열거)** |
+| adjustments.corrections[] | role 역할 5 · **from·to #RRGGBB** · **check C-1..5** | adjustmentDraft.ts:49 `to.toUpperCase` · comparePreviews · 대비 재계산 | **검증(문자열→hex·열거)** |
+
+**Project** (`checkFile.ts projectOk`) — projectId·name(validateProjectName 정규형)·profileId·baseReferenceId·createdAt·updatedAt 문자열 · revision 정수: 전부 검증(r0). 목록·이름 바꾸기·정렬이 읽는 필드는 이 7개뿐(`Project` 인터페이스 전 필드).
+
+**Snapshot** (`checkFile.ts snapshotOk`)
+| 필드 | 기대 모양/열거 | 사용처 | 판정 |
+|---|---|---|---|
+| snapshotId | 문자열 | SnapshotDialog.tsx:227 key · memoryDocBook.ts:176·186 `seqOf`(형식 밖 = 0 가드) | 검증(r0) |
+| projectId | = 프로젝트 id | rekey가 덮음 | 검증(r0) |
+| kind | manual·auto·published | SnapshotDialog.tsx:9 · memoryDocBook.ts:184 | 검증(r0) |
+| **reason?** | export·restore·conflict·restart | SnapshotDialog.tsx:9 `REASON[s.reason]` | **검증** |
+| **name** | 문자열 | SnapshotDialog.tsx:66·229 `{s.name}` · memoryDocBook.ts:243 | **검증** |
+| **createdAt** | 문자열 | SnapshotDialog.tsx:10·231 `timeText` | **검증** |
+| **profileVersion** | 정수 1..계열 길이 | SnapshotDialog.tsx:231 `v{s.profileVersion}` | **검증** |
+| **candidateId** | 문자열 | SnapshotDialog.tsx:231 `{s.candidateId}` | **검증** |
+| **hash** | 문자열 | rekey.ts가 새 doc.hash로 덮음 | **검증**(덮이더라도 문자열 검사) |
+| doc | checkSaveDoc + profileVersion 1..n | 미리보기·복원 | 검증(r0·r1) |
+| 레코드 doc·snapshotSeq | checkSaveDoc / 정수? | 열기 readDoc · nextSeqId(`isSafeInteger` 가드) | 검증(r0) |
+
+- **열거 원천**: 화면이 인덱싱하는 그 Record의 키(`CONTRAST_TARGET`·`DENSITY_LABELS`·`PURPOSE_LABELS`·`SECTION_TYPE_LABELS`) — `Object.hasOwn`이라 `"toString"` 같은 프로토타입 키는 거절(테스트 포함). 내보내지 않은 표(adjustmentText `REASONS`·SnapshotDialog `REASON`·ContrastCheckId·CarryOverKey·SurfaceTone)는 같은 키의 `Record<T, true>`/배열로 둠 — Record 타입이라 열거가 늘면 tsc가 잡는다(SnapshotReason 배열 제외). 다른 파일 수정 0.
+- **과잉 엄격 0**: 실제 저장소로 만든 버전 4개(confirmProfile · saveAdjustments 4열거+보정 · 팔레트·모션 바꾼 재확정 = dropped · revertTo = basedOn)와 실제 스냅샷(createSnapshot manual · restoreSnapshot auto/restore + 실제 문서) 각각 checkFile ok. 기존 confirmProfile 통과 테스트도 그대로(카탈로그 색이 hex 규칙 통과).
+- **TDD**: RED 예측(PROGRESS) = 실제 5건 FAIL(Codex 재현 3 · 표 손상 2, 모두 `ok:true`) · 실제 데이터 2건 PASS. RED 커밋 0 · 단언 약화 0 · amend·rebase 0.
+
+## 10. Codex r2 수정 검증 (fresh, app/)
+| 명령 | 결과 |
+|---|---|
+| `npx vitest --run src/features/projectFile` | 5 파일 · 54 테스트 통과 |
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm run build` | exit 0 · `/studio` 129.09 · 복원 132.13 · `/profile` 99.87 · `/projects` 104.69 · `/compare` 122.71 — 변화 0 (projectFile을 import하는 앱 코드 0 — 테스트 fixture만) |
+| `npx vitest --run` (전체 1회) | **exit 0 · 289 파일 · 2534 테스트** |
+- 금지 준수: 엔진·계약·docs·lock 수정 0 · 새 의존성 0 · 서브에이전트 0 · Ego Lite·Codex 미실행 · push/merge/삭제 0 · amend/rebase 0.
+- 남김: 없음(r3 없음 — 이후 Jarvis 검증).

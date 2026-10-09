@@ -4,7 +4,8 @@ import { importMessage, type ImportResult } from "../../features/projectFile/wri
 import { Button } from "../ds/Button";
 
 const RELOAD_TEXT = " 이 화면을 새로 불러옵니다.";
-const MB = 1024 * 1024;
+const KB = 1024;
+const MB = KB * KB;
 
 type Phase = { readonly kind: "checking" } | { readonly kind: "ready"; readonly file: CheckedFile } | { readonly kind: "invalid"; readonly text: string };
 
@@ -15,12 +16,17 @@ function exportedDay(iso: string): string {
   return Number.isNaN(day.getTime()) ? iso.slice(0, 10) : `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}`;
 }
 
+/** IM-13 파일 크기(P2-SPEC Jarvis 결정 2) — 1MB 미만 KB 올림 정수(최소 1KB) · 이상 MB 소수 1자리 올림 · 정수 산술 */
+function fileSizeLabel(bytes: number): string {
+  return bytes < MB ? `${Math.max(1, Math.ceil(bytes / KB))}KB` : `${(Math.ceil((bytes * 10) / MB) / 10).toFixed(1)}MB`;
+}
+
 /** IM-13 목록 */
 const summaryItems = (file: CheckedFile): string[] => [
   `편집 문서 ${file.doc ? "있음" : "없음"}`,
   `스냅샷 ${file.doc?.snapshots.length ?? 0}개`,
   `이미지 ${file.images.length}개`,
-  `파일 ${Math.ceil(file.size / MB)}MB`,
+  `파일 ${fileSizeLabel(file.size)}`,
   `${exportedDay(file.exportedAt)} 내보냄`,
 ];
 

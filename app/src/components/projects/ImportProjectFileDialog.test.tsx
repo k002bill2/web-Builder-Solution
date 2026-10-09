@@ -59,7 +59,7 @@ describe("ImportProjectFileDialog", () => {
     expect(await screen.findByText("'카페 온도' 프로젝트를 새 프로젝트로 추가합니다.")).toBeInTheDocument();
     const day = new Date("2026-10-07T03:00:00.000Z");
     const ymd = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
-    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual(["편집 문서 있음", "스냅샷 2개", "이미지 1개", "파일 3MB", `${ymd} 내보냄`]);
+    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual(["편집 문서 있음", "스냅샷 2개", "이미지 1개", "파일 3.0MB", `${ymd} 내보냄`]);
     expect(screen.getByText("지금 있는 프로젝트는 바뀌지 않습니다. 같은 파일을 다시 가져오면 프로젝트가 하나 더 생깁니다.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "가져오기" })).toHaveFocus();
   });
@@ -68,6 +68,21 @@ describe("ImportProjectFileDialog", () => {
     open(async () => ok(checkedFile({ doc: null, images: [] })));
     await screen.findByRole("button", { name: "가져오기" });
     expect(screen.getAllByRole("listitem").map((li) => li.textContent).slice(0, 3)).toEqual(["편집 문서 없음", "스냅샷 0개", "이미지 0개"]);
+  });
+
+  it.each([
+    [1, "파일 1KB"],
+    [1024, "파일 1KB"],
+    [1025, "파일 2KB"],
+    [13_115, "파일 13KB"],
+    [1_048_575, "파일 1024KB"],
+    [1_048_576, "파일 1.0MB"],
+    [1_048_577, "파일 1.1MB"],
+    [52_428_800, "파일 50.0MB"],
+  ])("IM-13 파일 크기(Jarvis 결정 2) — %iB = '%s'", async (size, label) => {
+    open(async () => ok(checkedFile({ size })));
+    await screen.findByRole("button", { name: "가져오기" });
+    expect(screen.getAllByRole("listitem")[3]?.textContent).toBe(label);
   });
 
   it("I-S04 검증 실패 — alert 문장 · 버튼 '다른 파일 고르기'(포커스)·'닫기' · 다시 고르기 = 닫고 onPickAgain", async () => {

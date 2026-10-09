@@ -179,7 +179,8 @@ describe("P-AC-15 조정 저장 (P-S11 저장됨) · P-AC-37 계측", () => {
     expect(within(values).getByText(labels[other])).toBeInTheDocument();
     expect(within(values).getByText(`조정됨 · 보드 값 ${base.motion_preset}`)).toBeInTheDocument();
     expect(screen.getByText("v2 · 현재")).toBeInTheDocument();
-    expect(screen.queryByText(/저장하지 않은 조정/)).not.toBeInTheDocument();
+    // 3안 차단 문구는 ProfilePanel의 onPending effect → ProfilePage setPending으로 한 렌더 늦게 사라진다
+    await waitFor(() => expect(screen.queryByText(/저장하지 않은 조정/)).not.toBeInTheDocument());
     expect(saveButton()).toHaveTextContent("조정 저장 (v3)");
     expect(events).toEqual([{ name: "profile_saved", version: 2, origin: "adjust" }]);
     // 버전 줄 요약 = 적용된 값 차이

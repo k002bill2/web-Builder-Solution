@@ -1,0 +1,5 @@
+idb deleted
+finish {"spaceId":1,"closedSpace":true,"keptManagedLabels":[],"closedManagedLabels":["p1"],"preservedUnmanagedCount":0}
+spaces after [{"createdBy":"agent","id":2,"name":"fallback-font 4343 woff2 check","ownership":"agent","profileId":"Default","profileName":"영환","recentTabTitles":["프로젝트 · Design Studio"],"taskId":"fallback-font 4343 woff2 check"}]
+
+4345 listen:        0

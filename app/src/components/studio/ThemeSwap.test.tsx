@@ -184,4 +184,22 @@ describe("알림 줄 보이기 — B-ER-11", () => {
       delete (Element.prototype as Partial<Element>).scrollIntoView;
     }
   });
+
+  it("1280 섹션 → '페이지 정보' → 같은 섹션 왕복 → 선택 상자를 다시 scrollIntoView(Codex P2 — 사각형 없는 선택을 거쳐도 기록이 남지 않음)", async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      await openStudio({ width: 1280, doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: PASS }]) });
+      const box = () => document.querySelector("[data-canvas-overlay] > div");
+      await waitFor(() => expect(box()).not.toBeNull());
+      const current = document.querySelector("[data-row-id][aria-current=true]")!.getAttribute("data-row-id")!;
+      act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));
+      await waitFor(() => expect(box()).toBeNull());
+      scroll.mockClear();
+      act(() => void fireEvent.click(document.querySelector<HTMLElement>(`[data-row-id="${current}"]`)!));
+      await waitFor(() => expect(scroll.mock.contexts).toContain(box()));
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    }
+  });
 });

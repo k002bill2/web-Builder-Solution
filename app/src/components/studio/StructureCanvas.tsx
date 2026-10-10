@@ -133,11 +133,15 @@ function Overlay({
   const rectOf = (instanceId: string, slotKey: string | null) => rects?.find((r) => r[0] === instanceId && r[1] === slotKey);
   const selected = doc.sections.find((s) => s.instanceId === selectedId);
   const selectedRect = selected && rectOf(selected.instanceId, null);
-  // 선택이 바뀐 뒤 사각형이 처음 오면 한 번만 — 문서 재측정(테마 적용 등)은 다시 스크롤하지 않는다(B-ER-11 · 알림 줄 스크롤을 덮었다)
-  const scrolledFor = useRef<string>(undefined);
+  // 선택이 바뀐 뒤 사각형이 처음 오면 한 번만 — 문서 재측정(테마 적용 등)은 다시 스크롤하지 않는다(B-ER-11 · 알림 줄 스크롤을 덮었다).
+  // 선택이 바뀔 때마다 다시 세운다 — 사각형 없는 선택('페이지 정보')을 거쳐 같은 섹션으로 돌아와도 스크롤한다
+  const scrollPending = useRef(true);
   useEffect(() => {
-    if (!selectedRect || scrolledFor.current === selectedId) return;
-    scrolledFor.current = selectedId;
+    scrollPending.current = true;
+  }, [selectedId]);
+  useEffect(() => {
+    if (!selectedRect || !scrollPending.current) return;
+    scrollPending.current = false;
     // 애니메이션 없이 즉시 — jsdom에는 scrollIntoView가 없다
     selectedBox.current?.scrollIntoView?.({ block: "nearest" });
   }, [selectedId, selectedRect]);

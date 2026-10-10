@@ -147,9 +147,9 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
     expect(judge({}, { ...BASE, eagerKb: { "/gone": 1 } }).failures).toContain("M2c 기준선: 시나리오 /gone가 SCENARIOS에 없습니다");
   });
 
-  it("기준선 파일 = /studio 감량분 잠금 기준선 고정(ADR-004 개정 15 배분 B-RS-01 129.77 · 저장 데이터 복원 진입 132.80(개정 11·12 · BRIEF-R2 ③ · BRIEF-R3 ②③ 포함) · base 4f0e730 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 배분 레인이 올리면 이 기대값도 그 커밋에서 함께 갱신", () => {
+  it("기준선 파일 = /studio 감량분 잠금 기준선 고정(ADR-004 개정 15 배분 B-RS-01 — main 합산 실측(FU-BLUR 포함) 129.84 · 저장 데이터 복원 진입 132.87(개정 11·12 · BRIEF-R2 ③ · BRIEF-R3 ②③ 포함) · base 4f0e730 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 배분 레인이 올리면 이 기대값도 그 커밋에서 함께 갱신", () => {
     const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json", import.meta.url), "utf8"));
-    expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 129.77, "/studio/:projectId (저장 데이터 복원 진입)": 132.80 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
+    expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 129.84, "/studio/:projectId (저장 데이터 복원 진입)": 132.87 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId", "/studio/:projectId (저장 데이터 복원 진입)"]);
   });
 });

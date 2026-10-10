@@ -40,7 +40,7 @@
 - 원칙: **`/studio`·`/profile` closure 무접촉**. 이 SPEC의 모든 ★안은 이 원칙 안에서 설계했다.
 - 이 worktree 실측(`npm run build` exit 0, base `d68006e`, L1): `/catalog` 100.32 · `/references/:id` 97.76 · `/compare` 98.92 / 진입 122.74 · `/profile` 99.90 · `/studio` 진입 129.63(멈춤 > 129.65) · **`/studio` 저장 데이터 복원 진입 132.67(멈춤 > 132.68, 여유 0.01)**.
 - manifest 정적 closure(L1): `ProfilePage` ⊃ `catalogFilters`·`referenceDisplay` 청크 · `CompareBoardPage` ⊃ `referenceDisplay` · `StudioPage` 정적 closure엔 셋 다 0 · `SourceTags` 청크는 Catalog·Detail만.
-- **F14 (L1 + gen-mark-impl REPORT 3절)**: 새 공유 청크가 생기면 그 파일 이름이 엔트리 `index-*.js` preload 맵에 들어가 **모든 라우트 +0.02** — `/studio` 복원 진입 여유 0.01을 넘는다. → 이 SPEC의 ★안은 **새 공유 청크 0**(기존 `SourceTags` 청크에 합류)으로 설계했다.
+- **F14 (gen-mark-impl REPORT 3절 관측 + Codex r1 시제품)**: 새 공유 청크가 생기면 그 파일 이름이 엔트리 `index-*.js` preload 맵에 들어가 모든 라우트가 늘어난다(gen-mark-impl 관측 +0.02 — 고정값 아님). 새 청크가 없어도 청크 재편으로 엔트리·공유 청크 gzip이 수 바이트 바뀔 수 있다(Codex r1 시제품 write:false 빌드: SourceTags가 `compareTray` 청크로 합쳐지며 `/profile` +3B · `/studio` +8B · 복원 진입 +7B). → `/studio` 복원 진입 여유 0.01KB(≈10B) 안에서 **영향 0은 보장이 아니라 목표**다. ★안은 새 공유 청크를 만들지 않는 쪽으로 설계해 위험을 줄이고, 판정은 G2 base/head 실측으로 한다.
 
 ---
 
@@ -98,9 +98,11 @@
 - 위치: 둘째 줄(견본·업종·라이선스) **라이선스 Tag 바로 뒤**. 순서 = 견본 → 업종 → 라이선스 → 생성 조합 → (사용 불가). 카드·상세 출처 줄과 같은 "라이선스 → 생성 조합" 순서.
 - 크기: `Tag size="sm"`, neutral tone(카드·상세와 같음). **축약 없음**("생성"·"조합" 등 줄임말 0) — 4글자라 줄임 이득이 작고, 화면마다 다른 말이 되면 r1 목적(같은 말)이 깨진다.
 - 폭 검산 [추정]: 견본 12 + 업종(2~4자) ≈ 30~55 + [자체 제작] ≈ 58 + [생성 조합] ≈ 58 + 간격 6×3 = 176~201px. 168px 열에서는 [생성 조합]이 다음 줄로 넘어간다 → 열 머리 높이 +≈22px(Tag 1줄) [추정]. 같은 표 머리 행의 다른 열도 같은 높이로 맞춰지므로(표 행) 정렬 깨짐 0. 390 카드는 198px라 업종 글자 수에 따라 1줄 또는 2줄.
-- 1행(제목·빼기 버튼)·"전부 선택" 버튼 위치는 그대로 — 조작 요소 위치 변화 0.
+- 1행(제목·빼기 버튼) 위치는 그대로. "전부 선택"은 위 배치 계약의 허용 범위 안에서만 내려간다.
 - 부품: ★ **`SourceTags` 재사용** — `ColumnHeader`의 라이선스 Tag 자리를 `<SourceTags reference={{ licenseStatus, sourceKind }} />`로 바꾼다(접두·라이선스·생성 조합이 카드·상세와 한 부품). 근거: F14 — 라이선스 표시 맵(3.3)을 `SourceTags` 청크에 두면 ColumnHeader가 어차피 그 청크를 import해야 하므로, 부품까지 재사용해도 추가 비용이 거의 같다. 새 공유 청크 0 → preload 맵 변화 0.
-  - 대가: `/compare` 첫 화면에 `SourceTags` 청크(gzip ≈0.33, impl REPORT L1) 추가 → 98.92 → **≈99.25~99.30 / 100** [추정].
+  - 대가: `/compare` 첫 화면에 `SourceTags` 코드(gzip ≈0.33, impl REPORT L1) 추가 → 98.92 → **≈99.25~99.30 / 100** [추정].
+  - **배치 계약(Codex r1 P2-2 반영)**: 지금 `SourceTags`는 자체 `flex` div 래퍼(`SourceTags.tsx:12`)라 ColumnHeader 둘째 줄에 넣으면 두 Tag가 한 덩어리로 같이 줄바꿈된다. 구현은 래퍼가 부모 행에 녹아들게 한다 — 예: 래퍼에 `contents` 배치를 주는 prop(가칭 `inline`)이나 Fragment 반환 변형. 카드·상세의 기존 배치(r1 GM-AC-E2: 1줄 · 같은 top)는 바뀌지 않아야 한다.
+  - 줄바꿈 시 "전부 선택" 버튼은 둘째 줄 높이만큼 **아래로 이동해도 된다**(세로 flex — 허용 범위 = Tag 1줄 높이). 가로 위치·빼기 버튼 위치는 그대로.
 - 뷰 모델: `BoardColumnView`에 `sourceKind?: SourceKind` 추가, `columnView()`에서 `reference.sourceKind` 전달(`boardView.ts:60-68`). 화면 모델 필드 1개 추가이며 엔진·저장 스키마·비교 픽스처 변경 0.
 
 ### 3.2 상세 메타 줄 (B-GM-02 · ★MQ-GM2-2 A)
@@ -190,10 +192,10 @@
 | GM2-AC-U9 | 표시 맵이 `LicenseStatus` 3값 전부 정의(타입 `Record<LicenseStatus, string>`로 누락 컴파일 오류) | [G] typecheck |
 | GM2-AC-U10 | 표식·라벨 비대화형 — `keyboardA11y.test.tsx` 통과, Tab 순서 변화 0 | [U] |
 | GM2-AC-G1 | **`/studio`·`/profile` closure 무접촉**: `referenceDisplay.ts`·`catalogFilters.ts`·`ProfileValues.tsx`·`Tag.tsx`·`internalCompose*.ts`·`fixtures/` 변경 0 | [G] `git diff --stat` |
-| GM2-AC-G2 | 예산: `/studio` 진입 ≤ 129.65(멈춤) 그대로 · `/profile` 첫 화면 ≤ 100 그대로 · `/compare` 첫 화면 ≤ 100 · 진입 ≤ 125 · `/catalog` ≤ 100.90 · `/references/:id` ≤ 100 | [G] `npm run build` 로그 |
+| GM2-AC-G2 | 예산: `/studio` 진입 ≤ 129.65 · **`/studio` 복원 진입 ≤ 132.68** · `/profile` 첫 화면 ≤ 100 · `/compare` 첫 화면 ≤ 100 · 진입 ≤ 125 · `/catalog` ≤ 100.90 · `/references/:id` ≤ 100. 같은 머신에서 base(`d68006e`)·head 빌드를 둘 다 돌려 두 `/studio` 시나리오·`/profile` 수치와 manifest 정적 closure 변화를 표로 비교 | [G] `npm run build` 로그 ×2 |
 | GM2-AC-G3 | G1·G5 생성 픽스처 가드 그대로 통과(데이터 변경 0) · 썸네일 `thumbsVersion` 불변 | [G] vitest · build-thumbs 출력 |
 | GM2-AC-G4 | 하드코딩 금지 가드 통과 | [G] `noHardcodedStyle.test.ts` |
-| GM2-AC-E1 | 1280·1024·390 비교 보드(생성 1 + 큐레이션 1 이상): 생성 열 머리에 [자체 제작][생성 조합], 같은 머리 행 정렬 유지, 빼기·전부 선택 버튼 위치 그대로 | [E] 캡처 3장 |
+| GM2-AC-E1 | 1280·1024·390 비교 보드(생성 1 + 큐레이션 1 이상, 4열 포함): 생성 열 머리에 [자체 제작][생성 조합] · 좁은 열에서 **[생성 조합]만** 다음 줄(라이선스는 업종과 같은 줄) · 빼기 버튼 위치 그대로 · 전부 선택은 허용 범위(Tag 1줄 높이) 안 이동 · 긴 업종명 열과 withdrawn 열 각 1개 포함 | [E] 캡처 3장 + Tag rect |
 | GM2-AC-E2 | 생성 상세 1280·390: 메타 줄에 "internal-compose" 0 | [E] |
 | GM2-AC-E3 | 카탈로그 1280: 필터 레일·부제·카드에 영문 `internal`/`licensed` 0 · 체크 후 URL에 `internal` | [E] |
 
@@ -219,9 +221,9 @@ QB(사람 판단, QA 레인): QB-GM2-1 `이용 허락`이 사용자에게 뜻이
 - `/compare` 첫 화면: `SourceTags` 청크 합류 ≈ +0.33 + 맵·조건 ≈ +0.02 → **≈99.25~99.30 / 100**(여유 ≥ 0.70). 진입 직후 122.74 → ≈123.10 / 125. ColumnHeader는 보드가 열리면 바로 그려지므로 조작 뒤 청크로 미룰 대상이 아니다.
 - `/catalog`: SourceTags 청크 맵 + FilterRail·부제 → +0.02~0.05 → ≤100.37 / 멈춤 100.90.
 - `/references/:id`: 맵 + 메타 조건 → +0.01~0.03 → ≤97.79 / 100.
-- `/studio`(진입 129.63 · 복원 132.67)·`/profile` 99.90: **0** — 정적 closure에 SourceTags 없음(L1 manifest), 새 공유 청크 0이라 preload 맵 이름 변화 0. 기존 청크 내용 해시만 바뀌어 파일 이름 길이는 같다.
-  - 검증: G2. 만약 Vite가 SourceTags 청크를 쪼개거나 다른 청크와 합치면서 이름이 하나라도 늘면 `/studio` 복원 진입이 132.68을 넘을 수 있다 → **넘으면 멈추고 보고**(예산 증액은 이 SPEC 범위 밖).
-- 대안 비교(MQ-GM2-1 B, Tag 직접 + 새 `licenseLabel.ts`): `/compare` +0.03~0.06로 작지만 새 공유 청크 → 모든 라우트 +0.02 → `/studio` 복원 진입 132.69 > 132.68 **초과** [추정, F14 근거]. 그래서 ★가 아니다.
+- `/studio`(진입 129.63 · 복원 132.67)·`/profile` 99.90: **목표 0, 보장 아님** — 정적 closure에 SourceTags 없음(L1 manifest)이고 새 공유 청크를 만들지 않지만, 청크 재편만으로 수 바이트가 바뀔 수 있다(Codex r1 시제품: `/studio` +8B · 복원 +7B · `/profile` +3B [추정, 정식 구현 아님]). 복원 진입 여유 ≈10B라 **G2 base/head 실측이 판정**이다.
+  - 넘으면 멈추고 보고한다(예산 증액은 이 SPEC 범위 밖). 시도 순서 제안: ① 청크 배치 그대로 두고 수 바이트 원인 확인 ② `SourceTags`를 `compareTray`에 합치지 않게 하는 import 경로 조정 — 둘 다 안 되면 사용자 결정.
+- 대안 비교(MQ-GM2-1 B, Tag 직접 + 새 `licenseLabel.ts`): `/compare` +0.03~0.06로 작지만 새 공유 청크 → preload 맵 증가(gen-mark-impl 관측 +0.02)면 `/studio` 복원 진입 132.69 > 132.68 **초과 가능** [추정, F14]. 그래서 ★가 아니다.
 - 예산 상향 0 · 엔진 계약 0 · 저장 스키마 0 · 픽스처·썸네일 0.
 
 ---
@@ -230,7 +232,7 @@ QB(사람 판단, QA 레인): QB-GM2-1 `이용 허락`이 사용자에게 뜻이
 
 | 위험 | 영향 | 대응 |
 |---|---|---|
-| 구현 중 새 공유 청크가 생겨(파일 분리·Vite 청크 재편) 엔트리 preload 맵 +0.02 → `/studio` 복원 진입 132.67 → 132.69 > 132.68 | 멈춤선 초과 | 맵·부품을 `SourceTags.tsx` 한 파일에(8절) · G2 실측 · 초과 시 멈춤·보고 |
+| 새 공유 청크(preload 맵 증가) 또는 청크 재편(수 바이트)으로 `/studio` 복원 진입 132.67 → > 132.68 | 멈춤선 초과 | 맵·부품을 `SourceTags.tsx` 한 파일에(8절) · G2 실측 · 초과 시 멈춤·보고 |
 | `/compare` 첫 화면 +≈0.35 [추정] | 여유 1.08 → ≈0.70 | 실측 G2. 이후 `/compare` 레인은 남은 여유를 의식 |
 | `/profile` 출처 목록만 영문 원값 → 화면 간 불일치 1곳 | 사용자가 같은 값을 두 이름으로 봄 | 제외 사유 기록 · BACKLOG 후보(B-GM-03b) · `/profile` 예산 재편 때 함께 |
 | `이용 허락`이 낯선 표현 | 이해도 | QB-GM2-1 · MQ-GM2-3 B("제휴")로 교체 가능(문구만) |

@@ -426,3 +426,33 @@ describe("유사 레퍼런스 긴 이름 (B-DET-02)", () => {
     }
   });
 });
+
+describe("상세 머리 출처 표식 (GEN-MARK · SPEC gen-mark 3.2·4·5·7절)", () => {
+  const GEN_NOTE = "섹션 라이브러리를 조합 규칙으로 자동 생성한 레퍼런스입니다.";
+  const follows = (a: Node, b: Node) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+
+  it("GM-AC-U5·U7: 생성 조합 상세 — h1 → '라이선스' 접두 → 라이선스 Tag → '생성 조합' Tag 순서, 설명 한 줄 1회", async () => {
+    renderApp("/references/gen-beauty-1");
+    const h1 = await screen.findByRole("heading", { level: 1, name: "뷰티 · 세련된 센터형" }, { timeout: 5_000 });
+    const info = within(infoPanel());
+    const prefix = info.getByText("라이선스");
+    const license = info.getByText("internal");
+    const gen = info.getByText("생성 조합");
+    expect(prefix).toHaveClass("sr-only");
+    expect(prefix.nextElementSibling).toBe(license);
+    expect(follows(h1, prefix)).toBe(true);
+    expect(follows(license, gen)).toBe(true);
+    expect(license.closest('[aria-hidden="true"]')).toBeNull();
+    expect(info.getAllByText(GEN_NOTE)).toHaveLength(1);
+    expect(follows(gen, info.getByText(GEN_NOTE))).toBe(true);
+  });
+
+  it("GM-AC-U6: 큐레이션 상세 — '생성 조합' 0 · 설명 한 줄 0, 라이선스는 접두와 함께 읽힘", async () => {
+    renderApp("/references/ref-a");
+    await heading("모던 카페 브랜드");
+    const info = within(infoPanel());
+    expect(info.queryByText("생성 조합")).toBeNull();
+    expect(info.queryByText(GEN_NOTE)).toBeNull();
+    expect(info.getByText("라이선스").nextElementSibling).toHaveTextContent(/^internal$/);
+  });
+});

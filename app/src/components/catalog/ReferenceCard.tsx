@@ -3,9 +3,8 @@ import { Link } from "react-router";
 import type { DesignReference } from "../../domain/reference";
 import { INDUSTRY_LABELS, LAYOUT_LABELS, MOTION_LABELS, VISUAL_TAG_LABELS } from "../../fixtures/catalogFilters";
 import { Icon, type IconName } from "../ds/Icon";
-import { Tag } from "../ds/Tag";
 import { thumbnailSrc } from "../../features/catalog/thumbnailSrc";
-import { LICENSE_TONE } from "./referenceDisplay";
+import { SourceTags } from "./SourceTags";
 
 export interface ReferenceCardProps {
   readonly reference: DesignReference;
@@ -17,7 +16,8 @@ export interface ReferenceCardProps {
 
 /**
  * 썸네일 — 같은 출처 실렌더 SVG `<img>`(고정 경로 + 빌드 버전, ADR-004 개정 7)를 자체 렌더 와이어 안에 absolute로 얹는다(SPEC m3p 4.1·5·7절). 높이는 와이어가 정해 로드 전후 같다.
- * img가 이름을 가지면 와이어는 role·이름을 내려놓고(남는 건 빈 장식 + aria-hidden 라이선스 Tag), 실패하면 img를 빼고 와이어 이름을 되돌린다(AC-U6). 와이어 색은 레퍼런스 팔레트 데이터.
+ * img가 이름을 가지면 와이어는 role·이름을 내려놓고(남는 건 빈 장식), 실패하면 img를 빼고 와이어 이름을 되돌린다(AC-U6). 와이어 색은 레퍼런스 팔레트 데이터.
+ * 썸네일 위에는 아무것도 얹지 않는다 — 렌더 header(내비·CTA)가 우상단에 온다. 출처 Tag는 썸네일 아래 출처 줄(SPEC gen-mark 3.1).
  */
 function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
   const p = r.colorPalette;
@@ -50,11 +50,6 @@ function Thumbnail({ reference: r }: { readonly reference: DesignReference }) {
           className="absolute inset-0 size-full rounded-lg object-cover object-top"
         />
       )}
-      <div aria-hidden className="absolute top-2.5 right-2.5">
-        <Tag tone={LICENSE_TONE[r.licenseStatus]} size="sm">
-          {r.licenseStatus}
-        </Tag>
-      </div>
     </div>
   );
 }
@@ -113,14 +108,9 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
   const titleId = `${r.id}-title`;
   const tags = r.visualTags.map((t) => VISUAL_TAG_LABELS[t]);
   return (
-    <article aria-labelledby={titleId} className="relative flex flex-col gap-2">
+    <article aria-labelledby={titleId} className="flex flex-col gap-2">
       <Thumbnail reference={r} />
-      {r.sourceKind === "library_composition" && (
-        // 중립 Tag 바탕은 반투명이라 와이어 색 블록 위에서 읽히지 않는다 — 불투명 면 위에 얹는다
-        <span className="absolute top-9 right-2.5 rounded-xs bg-surface-elevated">
-          <Tag size="sm">생성 조합</Tag>
-        </span>
-      )}
+      <SourceTags reference={r} />
       <div className="min-w-0">
         <h3 id={titleId} className="ds-body2 font-semibold text-label-normal">
           <Link to={`/references/${r.id}`} className="line-clamp-2 rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none">

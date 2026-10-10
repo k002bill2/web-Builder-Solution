@@ -9,7 +9,7 @@
 - [x] `npm ci`(lock 변경 0) · 기준 예산 실측 — `/studio` 129.57 · 복원 132.60 · docEngine +3.83
 - [x] RED(청크 응답 전 첫 입력 → blur → 같은 칸 재입력 → 기록 1건) — 예측 "첫 실행 취소가 시작 문서로" · 결과 `expected '한 문장으로 소개하는 제목' to be '하나'` 1 failed
 - [x] GREEN 구현(기록 2건) `53f4864` + r1 반영 `8a9e409` — 기존 FU-AC · FU-AC-13 회귀 0 · focusout 리스너 누적 0(P2-4 · 새 it 2)
-- [x] 예산 실측 — BLOCKED: 최종 `/studio` 129.63(+0.06) · 복원 132.67(+0.07) 몫 초과(판정선 안) · 감량 1회 뒤 멈춤 — 영환님 결정(REPORT 0절)
+- [ ] BLOCKED: 예산 몫 +0.01/+0.02 초과(최종 `/studio` 129.63 · 복원 132.67 — 판정선 안) · 감량 1회 뒤 멈춤 — 영환님 결정(REPORT 0절)
 - [x] 게이트 typecheck · lint · build exit 0 · 전체 vitest 300 files / 2705
 - [x] Codex `review --scope branch --base 2ad7221` — r1 P2 1 반영 · r2 0
 - [x] BACKLOG B-ER-08 행 "Codex r2 P2-1" 결과 표기
@@ -24,3 +24,4 @@
 ## 기록
 
 - 예산 이력: GREEN `53f4864` 129.62/132.65(+0.05 · 몫 꽉 참) → r1 수정 `.finally(off)` 129.65/132.69(복원 판정선 초과, build 실패) → 감량 1회(해제를 묶음 off로 · 청크가 on 표시로 교체) 129.63/132.67(build 0 · 몫 +0.01/+0.02 초과) → 멈춤.
+- r1 수정 RED→GREEN 보강: 언마운트 직후 단언 — `53f4864` 코드 RED(`expected 1 to be +0`) → HEAD GREEN 17/17.

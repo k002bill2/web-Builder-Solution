@@ -228,7 +228,7 @@ describe("Codex r1 P2 — 청크 로딩 중 칸 이동 · IME 확정 · 리스�
     remove.mockRestore();
   });
 
-  it("FU-BLUR r1 P2 청크 응답 전 언마운트 = 응답 뒤 표시 리스너도 해제(누적 0)", async () => {
+  it("FU-BLUR r1 P2 청크 응답 전 언마운트 = 표시 리스너 바로 해제(응답 전 · 실패여도) · 누적 0", async () => {
     const add = vi.spyOn(document, "addEventListener");
     const remove = vi.spyOn(document, "removeEventListener");
     const live = (type: string) => add.mock.calls.filter(([t]) => t === type).length - remove.mock.calls.filter(([t]) => t === type).length;
@@ -236,6 +236,8 @@ describe("Codex r1 P2 — 청크 로딩 중 칸 이동 · IME 확정 · 리스�
     act(() => void result.current.ops.field(TITLE, "Hero 제목 편집", setSlot(result.current.doc, "s-hero", "title", "하나")));
     expect(live("focusout")).toBe(1);
     unmount();
+    // 청크 응답을 기다리지 않고도(로딩 실패여도) 언마운트 정리가 뗀다
+    expect(live("focusout")).toBe(0);
     await act(async () => void (await loadDocEngine()));
     expect(live("focusout")).toBe(0);
     expect(live("compositionend")).toBe(0);

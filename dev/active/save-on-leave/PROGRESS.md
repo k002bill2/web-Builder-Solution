@@ -27,6 +27,6 @@
 ## RESUME-1
 - [x] main(`d68006e`) `--no-ff` 병합 — `dbcfd4f`
 - [x] 다운로드 제외 복원 RED→GREEN (`StudioLeave.test.tsx`) — RED(선택자 `a[href]`로 되돌림): 1 failed | 13 passed `expected false to be true`(click 기본 동작 취소=보류) · GREEN(`a[href]:not([download])`): 14/14
-- [ ] 게이트 typecheck·lint·vitest·build
-- [ ] 기준선 정리 (`/studio` ≤ 129.88 · 복원 ≤ 132.92)
-- [ ] REPORT RESUME-1 절
+- [x] 게이트 typecheck·lint·vitest·build — 0·0·301/2720·기준선 갱신 뒤 build 0
+- [x] 기준선 정리 (`/studio` ≤ 129.88 · 복원 ≤ 132.92) — 129.84 · 132.87 `8497c88`
+- [x] REPORT RESUME-1 절

@@ -98,3 +98,13 @@
 ## 7. 커밋
 
 - `09e9e05` PROGRESS 시작 · `4d878be` 구현 · `5d6ff9e` Codex r1 반영 · `7db2c0b` Codex r2 반영 · 문서 커밋(REPORT·PROGRESS·BACKLOG·로그·캡처). push·merge 0.
+
+## RESUME-1 (RESUME-2에서 마무리 — 직전 실행은 세션 한도로 2단계 도중 중단)
+
+1. **병합**: `git merge --no-ff main`(`d68006e`) → `dbcfd4f` · 충돌 0(FU-BLUR 코드 3파일 + 문서 7파일, `m2cBaseline.json`·`bundleBudget.test.mjs`는 병합 대상 아님). 참고: 현재 main은 `b416328`(문서 커밋)으로 앞서 있음 — 브리프 지정 `d68006e`까지만 병합.
+2. **다운로드 제외 복원** `33e0c0c`: `StudioLayout.tsx` 링크 가로채기 선택자 `a[href]` → `a[href]:not([download])` · 테스트 `StudioLeave.test.tsx` "저장 실패 중에도 내려받기 링크(a[download])는 가로채지 않는다 · 저장 대기 0".
+   - RED(선택자만 `a[href]`로 되돌림): 1 failed | 13 passed — `fireEvent.click(download)` `expected false to be true`(기본 동작 취소 = 다운로드 보류).
+   - GREEN(복원): 14/14 · 저장 1회(실패한 이탈 저장분)뿐, 다운로드 클릭으로 추가 저장·대기 0.
+3. **게이트**(`33e0c0c` 기준): typecheck 0 · lint 0 · vitest 301 파일 2720건 통과 · build 1 = 예산 검사만 실패(129.84 > 129.77+0.03 · 132.87 > 132.80+0.03, 기준선 미갱신 상태 — 4단계 대상). 기준선 갱신 뒤 build 0 · `npx vitest --run scripts/bundleBudget.test.mjs` 17/17.
+4. **기준선** `8497c88`: main 합산 실측(FU-BLUR 포함) `/studio` **129.84**(상한 129.88 이내) · 복원 진입 **132.87**(상한 132.92 이내) → `m2cBaseline.json` `eagerKb` 두 값 + `bundleBudget.test.mjs` 기대값 같은 커밋 갱신 · note 한 줄 추가. 감량 시도 없음.
+5. **Codex 생략**: 변경이 선택자 1개 + 테스트 1건 + 기준선 수치(RESUME-1 지시). r1·r2는 기존 기능에 대해 완료.

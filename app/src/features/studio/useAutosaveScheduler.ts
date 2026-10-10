@@ -46,7 +46,8 @@ export interface AutosaveOptions<T> {
 
 export interface AutosaveScheduler<T> {
   change(doc: T): void;
-  retry(): void;
+  /** 돌려주는 값 = 재시도 직후 단계(떠나기 대기가 effect 전에 읽는다, B-RS-01) */
+  retry(): AutosavePhase;
   setOnline(online: boolean): void;
   resume(): void;
   settle(): void;
@@ -97,9 +98,9 @@ class Scheduler<T> implements AutosaveScheduler<T> {
     }
   }
 
-  retry(): void {
-    if (this.disposed || this.stale || this.saving || !this.pending()) return;
-    this.flush();
+  retry(): AutosavePhase {
+    if (!(this.disposed || this.stale || this.saving || !this.pending())) this.flush();
+    return this.state.phase;
   }
 
   setOnline(online: boolean): void {
@@ -243,7 +244,7 @@ export interface UseAutosaveOptions<T> {
 export interface UseAutosave<T> {
   readonly state: AutosaveState;
   readonly change: (doc: T) => void;
-  readonly retry: () => void;
+  readonly retry: () => AutosavePhase | undefined;
   readonly resume: () => void;
   readonly settle: () => void;
 }

@@ -1,0 +1,37 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a1269d-d097-7a32-87d8-bf76d0593293).
+[codex] Reviewer started: changes against '2ad7221'
+[codex] Running command: /bin/zsh -lc "pwd; git status --short; git diff --stat 2ad7221fb98dbb868da0f9eb38eaa245525bfe...
+[codex] Command failed: /bin/zsh -lc "pwd; git status --short; git diff --stat 2ad7221fb98dbb868da0f9eb38eaa245525bfe... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan...
+[codex] Command completed: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan... (exit 0)
+[codex] Running command: /bin/zsh -lc 'find . -name AGENTS.md -o -name AGENTS.override.md -o -name CLAUDE.md; cat app/...
+[codex] Command completed: /bin/zsh -lc 'find . -name AGENTS.md -o -name AGENTS.override.md -o -name CLAUDE.md; cat app/... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; cat app/package.json; rg -n 'READ_ONLY_TAB|with.*Lock|lock|resol...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; cat app/package.json; rg -n 'READ_ONLY_TAB|with.*Lock|lock|resol... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'READ_ONLY_TAB|navigator.locks|ifAvailable|resolveConflict|writeLock' app...
+[codex] Command completed: /bin/zsh -lc "rg -n 'READ_ONLY_TAB|navigator.locks|ifAvailable|resolveConflict|writeLock' app... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '300,337p' app/src/data/persistence/writerLock.test.ts; cat app/src/data...
+[codex] Command completed: /bin/zsh -lc "sed -n '300,337p' app/src/data/persistence/writerLock.test.ts; cat app/src/data... (exit 0)
+[codex] Running command: /bin/zsh -lc 'npm run typecheck'
+[codex] Command completed: /bin/zsh -lc 'npm run typecheck' (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 저장 대기 흐름은 개선되었지만, 읽기 전용 상태 처리에서 데이터 유실과 이동 차단이 발생하며 수정 키 링크 클릭도 기존 동작을 잃습니다. typecheck와 git d...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2ad7221
+
+저장 대기 흐름은 개선되었지만, 읽기 전용 상태 처리에서 데이터 유실과 이동 차단이 발생하며 수정 키 링크 클릭도 기존 동작을 잃습니다. typecheck와 git diff --check는 통과했으며 런타임 테스트는 실행하지 않았습니다.
+
+Full review comments:
+
+- [P1] 이전 읽기 전용 거절로 새 저장을 건너뛰지 마세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/save-on-leave/app/src/features/studio/useDocSave.ts:142-145
+  다른 탭 때문에 저장이 거절된 뒤 해당 탭이 닫히더라도 `readOnly.current`는 다음 저장 성공까지 유지됩니다. 이 상태에서 추가 편집하고 바로 이동하면 저장 가능한 변경도 재시도 없이 버립니다. 재시도가 이미 진행 중인 경우에도 이탈 대기를 건너뛰므로 저장 중 추가 편집이 유실될 수 있습니다. 이전 거절 기록을 현재 쓰기 가능 여부로 취급하지 말고, 새 저장 시도와 진행 중 저장은 정상적으로 기다려야 합니다.
+
+- [P2] 수정 키가 있는 링크 클릭의 원래 동작을 보존하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/save-on-leave/app/src/components/studio/StudioLayout.tsx:141-145
+  미저장 변경이 있을 때 프로젝트 또는 프로필 링크를 Cmd/Ctrl/Shift와 함께 클릭하면 원래 클릭은 취소되고 저장 후 수정 키 없는 `.click()`으로 재실행됩니다. 따라서 새 탭이나 새 창을 열려던 동작이 현재 탭의 라우트 이동으로 바뀝니다. 현재 탭을 떠나지 않는 클릭은 가로채지 않도록 수정 키와 링크 대상 등을 검사해야 합니다.
+
+- [P2] Web Locks 미지원 읽기 전용 폴백도 이탈을 허용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/save-on-leave/app/src/features/studio/useDocSave.ts:73-74
+  `navigator.locks`가 없는 환경에서는 `createWriterGate`가 `unsupported` 읽기 전용 폴백을 사용하지만, `localSync.blocked()`는 `READ_ONLY_TAB`이 아닌 일반 INFRA 메시지를 반환합니다. 따라서 이 문자열 검사로는 읽기 전용 상태를 인식하지 못하며, 한 번 편집하면 프로젝트·프로필 링크를 누를 때마다 불가능한 저장을 재시도하고 이동을 계속 차단합니다. 영구적인 읽기 전용 폴백도 일시적인 저장 실패와 구분하여 이탈을 허용해야 합니다.

@@ -9,7 +9,7 @@
 - [x] 조사: 기존 SPEC·BACKLOG·QA 기록(editor-rest 3.5·ER-AC-U3·B-ER-08·B-ER-05·ER-9)
 - [x] SPEC 초안(필수 절 전부) 커밋
 - [x] MQ 커밋
-- [ ] REPORT 커밋
+- [x] REPORT 커밋
 
 ## 서브에이전트
 - Explore(읽기 전용) — 기존 SPEC·BACKLOG·QA·예산 기록 조사: 완료, 인용 SPEC 반영(2a-05 :281 blur 전용 vs ER 600ms · ADR-004 개정 13 129.09 vs fix-ber11 129.28 · IME/탭 BACKLOG 항목 없음)

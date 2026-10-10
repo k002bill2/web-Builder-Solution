@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
-import { LICENSE_TONE } from "../components/catalog/referenceDisplay";
+import { SourceTags } from "../components/catalog/SourceTags";
 import { MobileStructure, ScoreHistory, SectionsList, TokenSummary } from "../components/detail/DetailPanels";
 import { DetailActions, ScoreTiles, SimilarReferences, type DetailNotice } from "../components/detail/DetailSidebar";
 import { ReferencePreview } from "../components/detail/ReferencePreview";
@@ -45,11 +45,12 @@ function DetailHeader({ reference: r, detail }: { readonly reference: DesignRefe
     <div>
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="ds-title2">{r.title}</h1>
-        <Tag tone={LICENSE_TONE[r.licenseStatus]} size="sm">
-          {r.licenseStatus}
-        </Tag>
+        <SourceTags reference={r} />
       </div>
       <p className="ds-caption1 mt-1 text-label-alternative">{meta.join(" · ")}</p>
+      {r.sourceKind === "library_composition" && (
+        <p className="ds-caption1 mt-1 text-label-alternative">섹션 라이브러리를 조합 규칙으로 자동 생성한 레퍼런스입니다.</p>
+      )}
     </div>
   );
 }

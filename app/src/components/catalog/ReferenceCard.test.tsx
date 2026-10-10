@@ -178,7 +178,9 @@ describe("ReferenceCard 실렌더 썸네일 (M3P-3b · SPEC m3p 4.1·5·7절 · 
     expect(wire).toHaveClass("relative", "bg-background-alternative", "aspect-video", "sm:aspect-[4/3]");
     expect(wire).not.toHaveAttribute("role");
     expect(wire).not.toHaveAttribute("aria-label");
-    expect(within(card).getByText(cafe.licenseStatus).closest('[aria-hidden="true"]')).not.toBeNull();
+    // GM-AC-U3: 라이선스 Tag는 썸네일 밖으로 나와 읽힌다(SPEC gen-mark 5절 — 기존 aria-hidden 단언을 뒤집음)
+    expect(within(card).getByText(cafe.licenseStatus).closest('[aria-hidden="true"]')).toBeNull();
+    expect(wire!.contains(within(card).getByText(cafe.licenseStatus))).toBe(false);
     expect(within(card).getAllByRole("img", { name: /미리보기|썸네일/ })).toHaveLength(1);
   });
 
@@ -220,5 +222,67 @@ describe("ReferenceCard 실렌더 썸네일 (M3P-3b · SPEC m3p 4.1·5·7절 · 
     expect(tag).toBeVisible();
     expect(tag.closest('[aria-hidden="true"], [role="img"]')).toBeNull();
     expect(img.contains(tag)).toBe(false);
+  });
+});
+
+describe("ReferenceCard 출처 줄 (GEN-MARK · SPEC gen-mark 3.1·5·7절)", () => {
+  const generated = generatedReferenceFixtures[0]!;
+  const renderGenerated = () => {
+    render(
+      <MemoryRouter>
+        <ReferenceCard reference={generated} saved={false} inTray={false} onToggleSave={vi.fn()} onToggleCompare={vi.fn()} />
+      </MemoryRouter>,
+    );
+    return screen.getByRole("article", { name: generated.title });
+  };
+  const thumbnailOf = (card: HTMLElement) => within(card).getByRole("img", { name: /썸네일|미리보기/ });
+  const absoluteAncestor = (el: HTMLElement, card: HTMLElement) => {
+    for (let n: HTMLElement | null = el; n && n !== card; n = n.parentElement) if (n.classList.contains("absolute")) return n;
+    return null;
+  };
+
+  it("GM-AC-U1·U2: 라이선스·'생성 조합' Tag는 썸네일 밖에 있고 absolute 배치 0, '생성 조합'은 읽힌다", () => {
+    const card = renderGenerated();
+    const thumb = thumbnailOf(card);
+    for (const text of [generated.licenseStatus, "생성 조합"]) {
+      const tag = within(card).getByText(text);
+      expect(thumb.contains(tag), text).toBe(false);
+      expect(absoluteAncestor(tag, card), text).toBeNull();
+      expect(tag.closest('[aria-hidden="true"], [role="img"]'), text).toBeNull();
+    }
+  });
+
+  it("GM-AC-U3: 라이선스는 sr-only 접두 '라이선스' + Tag로 읽힌다(internal·licensed), aria-hidden 조상 0", () => {
+    const { card } = renderCard();
+    const prefix = within(card).getByText("라이선스");
+    expect(prefix).toHaveClass("sr-only");
+    expect(prefix.nextElementSibling).toHaveTextContent(/^internal$/);
+    expect(prefix.closest('[aria-hidden="true"]')).toBeNull();
+    expect(within(card).getByText("internal").closest('[aria-hidden="true"]')).toBeNull();
+    cleanup();
+    render(
+      <MemoryRouter>
+        <ReferenceCard reference={referenceFixtures[1]!} saved={false} inTray={false} onToggleSave={vi.fn()} onToggleCompare={vi.fn()} />
+      </MemoryRouter>,
+    );
+    const licensed = screen.getByRole("article", { name: referenceFixtures[1]!.title });
+    expect(within(licensed).getByText("라이선스").nextElementSibling).toHaveTextContent(/^licensed$/);
+  });
+
+  it("GM-AC-U4: 큐레이션 카드는 '생성 조합' 0 · 라이선스 Tag 1개", () => {
+    const { card } = renderCard();
+    expect(within(card).queryByText("생성 조합")).toBeNull();
+    expect(within(card).getAllByText("internal")).toHaveLength(1);
+  });
+
+  it("GM-AC-U7: 출처 표식 DOM 순서 = 라이선스 → 생성 조합, 둘 다 썸네일 뒤·제목 앞", () => {
+    const card = renderGenerated();
+    const license = within(card).getByText(generated.licenseStatus);
+    const gen = within(card).getByText("생성 조합");
+    const title = within(card).getByRole("heading", { name: generated.title });
+    const follows = (a: Node, b: Node) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+    expect(follows(thumbnailOf(card), license)).toBe(true);
+    expect(follows(license, gen)).toBe(true);
+    expect(follows(gen, title)).toBe(true);
   });
 });

@@ -8,7 +8,7 @@
 - [x] 조사: 실행 취소 스택·섹션 연산·opAfter·필드 입력 경로(코드)
 - [x] 조사: 기존 SPEC·BACKLOG·QA 기록(editor-rest 3.5·ER-AC-U3·B-ER-08·B-ER-05·ER-9)
 - [x] SPEC 초안(필수 절 전부) 커밋
-- [ ] MQ 커밋
+- [x] MQ 커밋
 - [ ] REPORT 커밋
 
 ## 서브에이전트

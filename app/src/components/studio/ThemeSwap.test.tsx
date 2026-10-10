@@ -146,4 +146,42 @@ describe("알림 줄 보이기 — B-ER-11", () => {
       delete (Element.prototype as Partial<Element>).scrollIntoView;
     }
   });
+  it.each([390, 1024, 1280])("폭 %ipx 테마 적용 → 문서 재측정이 선택 상자를 다시 스크롤하지 않음 — 마지막 scrollIntoView = 알림 줄(실화면 y=-246 · 선택은 그대로)", async (width) => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      await openStudio({ width, doc: sampleDoc({ profileVersion: 1 }), series: themeSeries([{ palette: FAIL }, { palette: PASS }]) });
+      await themeRegion().findByRole("button", { name: "테마 바꾸기" });
+      // 진입 시 선택 상자 스크롤(사각형 도착)은 그대로 — 그 뒤의 호출만 본다
+      await waitFor(() => expect(document.querySelector("[data-canvas-overlay] > div")).not.toBeNull());
+      scroll.mockClear();
+      await swapTo(2);
+      await screen.findByRole("button", { name: "되돌리기" });
+      const line = notice().parentElement;
+      await waitFor(() => expect(scroll.mock.contexts).toContain(line));
+      expect(scroll.mock.contexts.at(-1)).toBe(line);
+      expect(scroll.mock.contexts.filter((el) => (el as Element).closest("[data-canvas-overlay]"))).toEqual([]);
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    }
+  });
+
+  it("1280 섹션 선택을 바꾸면 선택 상자는 여전히 scrollIntoView({block:'nearest'}) — 회귀 0", async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      const doc = sampleDoc({ profileVersion: 1 });
+      await openStudio({ width: 1280, doc, series: themeSeries([{ palette: PASS }]) });
+      await waitFor(() => expect(document.querySelector("[data-canvas-overlay] > div")).not.toBeNull());
+      scroll.mockClear();
+      const current = document.querySelector("[data-row-id][aria-current=true]")?.getAttribute("data-row-id");
+      const next = doc.sections.find((s) => s.instanceId !== current)!.instanceId;
+      act(() => void fireEvent.click(document.querySelector<HTMLElement>(`[data-row-id="${next}"]`)!));
+      const box = () => document.querySelector("[data-canvas-overlay] > div");
+      await waitFor(() => expect(scroll.mock.contexts).toContain(box()));
+      expect(scroll.mock.calls[scroll.mock.contexts.indexOf(box())]).toEqual([{ block: "nearest" }]);
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    }
+  });
 });

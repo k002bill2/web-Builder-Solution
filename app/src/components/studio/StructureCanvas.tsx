@@ -133,7 +133,11 @@ function Overlay({
   const rectOf = (instanceId: string, slotKey: string | null) => rects?.find((r) => r[0] === instanceId && r[1] === slotKey);
   const selected = doc.sections.find((s) => s.instanceId === selectedId);
   const selectedRect = selected && rectOf(selected.instanceId, null);
+  // 선택이 바뀐 뒤 사각형이 처음 오면 한 번만 — 문서 재측정(테마 적용 등)은 다시 스크롤하지 않는다(B-ER-11 · 알림 줄 스크롤을 덮었다)
+  const scrolledFor = useRef<string>(undefined);
   useEffect(() => {
+    if (!selectedRect || scrolledFor.current === selectedId) return;
+    scrolledFor.current = selectedId;
     // 애니메이션 없이 즉시 — jsdom에는 scrollIntoView가 없다
     selectedBox.current?.scrollIntoView?.({ block: "nearest" });
   }, [selectedId, selectedRect]);

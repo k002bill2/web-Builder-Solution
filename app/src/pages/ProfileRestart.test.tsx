@@ -153,15 +153,18 @@ describe("F4 새로 시작 대화상자 (RS-AC-03·04·09·11)", () => {
     expect(dialog).toBeDefined();
   });
 
-  it("RS-AC-10 되돌리기: 새로 시작 뒤 '새로 시작 전' 복원 → 안·버전 = 옛 값 · '복원 전' 자동 +1", async () => {
+  it("RS-AC-10 되돌리기: 새로 시작 뒤 '새로 시작 전' 복원 → 안·버전 = 옛 값 · '복원 전' 자동 신규 1개(id 집합 차이)", async () => {
     const { dialog, router, repo, u } = await openDialog();
     await u.click(primary(dialog));
     await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
     const [restart] = await repo.listSnapshots("project-1");
     const current = (await repo.getDoc("project-1"))!;
+    const ids = new Set((await repo.listSnapshots("project-1")).map((x) => x.snapshotId));
     const restored = await repo.restoreSnapshot("project-1", restart!.snapshotId, current.revision);
     expect(restored).toMatchObject({ candidateId: "A", profileVersion: 1 });
-    expect((await repo.listSnapshots("project-1")).map((s) => s.reason)).toEqual(expect.arrayContaining(["restart", "restore"]));
+    // r2 — 총수가 아니라 id 집합 차이: 신규 = "복원 전" 자동 1개(복원 직전 문서 = B안)
+    const fresh = (await repo.listSnapshots("project-1")).filter((x) => !ids.has(x.snapshotId));
+    expect(fresh.map((x) => [x.kind, x.reason, x.doc.candidateId, x.doc.revision])).toEqual([["auto", "restore", "B", current.revision]]);
   });
 });
 

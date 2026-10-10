@@ -1,0 +1,22 @@
+// RS-AC-15 재시도 ③ — 게이트 대비 행 확인 → 스냅샷 "새로 시작 전" 미리보기 → 이 스냅샷으로 복원 → A안 v1(대비 차단 1)
+const task = await taskSpace(14);
+const page = task.page("p1");
+const click = (re) => page.evaluate((src) => void [...document.querySelectorAll("button")].find((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).trim())).click(), re);
+const gate = () => page.evaluate(() => { const all = document.body.innerText.split("\n"); const i = all.indexOf("대비 AA"); return all.slice(i, i + 2).join(" / "); });
+const before = await gate();
+await click("^스냅샷$");
+await page.waitForSelector("dialog[open]", { timeout: 10000 });
+const list = await page.evaluate(() => document.querySelector("dialog[open]").innerText.split("\n").filter((l) => /새로 시작 전|자동/.test(l)));
+await click("^새로 시작 전 미리보기$");
+await page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "이 스냅샷으로 복원"), undefined, { timeout: 10000 });
+await click("^이 스냅샷으로 복원$");
+await page.waitForFunction(() => /복원했습니다/.test(document.body.innerText), undefined, { timeout: 10000 });
+const after = await page.evaluate(() => ({ notice: [...document.querySelectorAll('[role="status"]')].map((n) => n.textContent.trim()).filter((t) => /복원/.test(t)), gate: [...document.querySelectorAll("button")].map((b) => b.textContent.trim()).filter((t) => /^대비 AA/.test(t)) }));
+const fs = await import("node:fs/promises");
+const shot = "/Users/younghwankang/orca/workspaces/web-builder-solution/restart-impl/dev/active/restart-impl/shots/rs15b-restored-1280.png";
+await page.screenshot({ path: shot });
+console.log(JSON.stringify({ before, list, after, bytes: (await fs.stat(shot)).size }));
+console.log(await page.evaluate(async () => { const dbs = await indexedDB.databases(); await Promise.all(dbs.map((d) => new Promise((r) => { const q = indexedDB.deleteDatabase(d.name); q.onsuccess = q.onerror = q.onblocked = () => r(); }))); return { deleted: dbs.map((d) => d.name), left: (await indexedDB.databases()).length }; }));
+await page.cdp("Emulation.clearDeviceMetricsOverride", {});
+await task.finish({ keep: [] });
+console.log({ spaces: (await listTaskSpaces()).filter((s) => [13, 14].includes(s.spaceId)).length });

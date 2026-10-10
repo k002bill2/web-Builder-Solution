@@ -111,15 +111,17 @@
 | RS-AC-06b | 통과 | 최신 = 고른 안 → 주 버튼 없음 · R-E1b · [취소][편집기 열기 (B안 · v1 편집 중)] · 포커스 제목 · restart 추가 0 · 변화 0 |
 | RS-AC-07·07b | 통과 | commit 단계 → R-E3·변화 0 · response 단계 UNKNOWN_VARIANT·STALE_DOC 모양 → R-E4 · 요청 실패 + getDoc 실패 → R-E5 → 다시 시도 성공(restart 스냅샷 총 1) · INFRA 그 밖 사유 → "새로 시작하지 못했습니다 · <첫 ' — ' 뒤 사유>" |
 | RS-AC-07c | 통과 | response 단계 INFRA `… — READ_ONLY_TAB` → R-E4 |
-| RS-AC-08·08c | 통과(기존) | `restartLock.test.ts` 5/5 · 화면 R-E2/R-E2b(커밋 확인 음성 경로) |
+| RS-AC-08 | 통과 | `restartLock.test.ts`(잠금 readonly·stale 쓰기 0 · 풀리면 재시도 성공) · 화면 R-E2/R-E2b(커밋 확인 음성 경로) |
+| RS-AC-08c | 통과(3행) | `restartLock.test.ts` ① flush 성공 → 스냅샷 = 그 revision·hash·updatedAt ② 직전 저장 flush 진행 중(쓰기 지연) → 스냅샷 = 메모리 최신 revision · IDB 최종 = 새 문서 + 그 스냅샷 ③ quota 실패(IDB r1·메모리 r2) → 스냅샷 = r2 · restart flush 성공 시 IDB에 r2 스냅샷 / 실패 시 INFRA(화면 R-E4) · 메모리 = 새 문서. ②③은 RESUME-1 추가(저장소 기존 동작 기록 — 구현 변경 없음이라 RED 해당 없음) |
 | RS-AC-08b | 통과(화면) | R-E4 · [취소][다시 시도] · 다시 시도 → 이동 + R-N1 · 신규 restart 스냅샷 1 · IDB 쪽은 `restartLock.test.ts` 하네스 |
-| RS-AC-08d | 통과 | R-E4 취소 뒤 같은 안·다른 안 모두 create 0 · 이동 0 · R-E4 대화상자 → 다시 시도 성공 / R-E5 → 다시 시도 확인 음성 → 기억 삭제 + R-E3 · 다음 편집 시작 = create |
-| RS-AC-09·10 | 통과 | 기존 단언 |
+| RS-AC-08d | 통과(화면) | R-E4 취소 뒤 같은 안·다른 안 모두 create 0 · 이동 0 · R-E4 대화상자 → 다시 시도 성공 / R-E5 → 다시 시도 확인 음성 → 기억 삭제 + R-E3 · 다음 편집 시작 = create. "IDB = 새 문서 + 스냅샷"은 08d 셋업(응답 실패 주입 · 메모리 저장소)에서 **미단언** — 재생 flush 재제출은 08b `restartLock` 하네스가 단언 |
+| RS-AC-09 | 통과 | 기존 단언 |
+| RS-AC-10 | 통과 | 화면 경로 restart 뒤 "새로 시작 전" 복원 → A안 v1 · 신규 스냅샷(id 집합 차이) = `auto`·`restore`·복원 직전 문서(B안·그 revision) 1개 (RESUME-1에서 총수식 `arrayContaining` → id 집합 차이로 교체) · Ego 실흐름 복원 2회 |
 | RS-AC-11 | 통과 | `autoSnapshotRetention.test.ts` restart 행(20→20) + 재생 행 신규(20 그대로·신규 0) |
 | RS-AC-12 | 통과 | `contrastFails` = 게이트 `contrastIssues` 미달 수(기본·enhanced) · 색 못 읽음 = undefined → 줄 생략 · Ego 실흐름에서 R-D5 "미달 2" = 편집기 게이트 "대비 AA 차단 2" |
 | RS-AC-13 | **실패** | R2절 |
 | RS-AC-14 | 통과 | R4절 |
-| RS-AC-15 | **부분** | R4절. "편집기 게이트 대비 통과" 단계 미확인 — 픽스처 v1의 "보정값 쓰기" v2도 미달 2(어두운 카드와 ink 충돌) |
+| RS-AC-15 | 통과 | R4절 2차 흐름(모던 카페 브랜드): 문서 A안 v1(미달 1) → 보정값 쓰기 v2(통과 4 · 미달 0) → 3안 v2 → B안 → R-D5 "지금 v1 미달 1 · 새 v2 모두 통과" → 새로 시작 → 게이트 "대비 AA 통과" → "새로 시작 전" 복원 → 머리표 "A안 · 프로필 v1" |
 | RS-AC-16 | 통과 | R5절 |
 | RS-AC-17 | 통과 | 재생 → getDoc r2 → F3(R-C3 + "v1를 쓰려면…") · getDoc 실패 → F1 `{changes, editNotice: changeNotice}` · 다른 안 문서로 바뀐 재생 → F4 |
 | RS-AC-18 | 통과 | /studio 렌더 · `status "편집 알림"` 텍스트 = R-N1 + " · " + changeNotice 전체 · details 0 · "바뀐 점" 0 |
@@ -149,6 +151,7 @@
 
 - r1: **기능 결함 0** · P2 1건 = `/profile` 진입 +0.09 예산 초과(R2와 같은 사실).
   - Codex 샌드박스는 테스트를 다시 돌리지 못했다(EPERM).
+- 보고 커밋에서 바뀐 것은 테스트(08c ②③ · RS-AC-10)뿐이고 앱 코드 변경 0 → Codex 재검토 대상 아님.
 - r2는 생략했다. 남은 지적이 예산 결정(재상신) 1건뿐이고, 이 레인이 코드로 고칠 수 없는 항목이라 라운드 상한 규칙의 "남은 지적이 결정 사항"에 해당한다.
 
 ## R4. Ego Lite (vite preview 127.0.0.1:4359 · TaskSpace 13 · 앱 안 클릭만)
@@ -170,21 +173,27 @@
   - 단계 1 — 문서 A안 v1(프로필 대비 "통과 2 · 미달 3") → "보정값 쓰기" → 조정 저장 v2(여전히 "통과 3 · 미달 2") → 3안 v2 → B안 → 대화상자. R-D5 = "대비 검사: 새 v2도 미달 2 — 새로 시작해도 내보내기 전에 보정이 필요합니다"(`shots/rs15-dialog-1280.png` 179190B).
   - 단계 2 — 새로 시작 → `/studio/project-1`. 편집 알림 = "B안 · 프로필 v2로 새로 시작했습니다 · 이전 문서(A안 · v1)는 스냅샷 '새로 시작 전'에 있습니다 · 구조안의 섹션 2개를 …"(R-N1 전체). 게이트 = "대비 AA 차단 2"(R-D5와 일치).
   - 단계 3 — 스냅샷 "새로 시작 전 · 02:20 · 프로필 v1 · A안" → 미리보기 → "이 스냅샷으로 복원". 알림 "스냅샷 '새로 시작 전'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 02:20'에 있습니다", 게이트 "대비 AA 차단 3"(= v1), Services "카드 3개"(A안)(`shots/rs15-restored-1280.png` 160157B).
-  - **미확인**: "대비 통과 버전으로 옮기면 게이트 통과" 단계. 이 픽스처는 보정값을 써도 대비 통과 버전이 나오지 않는다(화면 안내: 본문 ink가 면·어두운 카드와 함께 쓰여 한 값으로 둘 다 맞출 수 없음).
+  - 1차 흐름(프리미엄 헤어살롱)은 보정값을 써도 통과 버전이 안 나와서(본문 ink가 면·어두운 카드와 함께 쓰여 한 값으로 둘 다 맞출 수 없음) 2차 흐름으로 게이트 통과 단계를 확인했다.
+- **RS-AC-15 2차 흐름** (TaskSpace 14 · 모던 카페 브랜드 · `qa-5.mjs`·`qa-6.mjs`·`qa-6b.mjs`·`qa-7.mjs` · `logs/ego-rs15b.txt`):
+  - 문서 A안 v1(프로필 대비 "통과 3 · 미달 1") → "보정값 쓰기" → "통과 4 · 미달 0" → 조정 저장 v2 → 3안 v2 → B안 → 대화상자 R-D5 = "대비 검사: 지금 v1 미달 1 · 새 v2 모두 통과"(`shots/rs15b-dialog-1280.png` 160655B).
+  - 새로 시작 → 편집기 게이트 "대비 AA / 통과"(`shots/rs15b-studio-1280.png` 153860B).
+  - 스냅샷 "자동 · 새로 시작 전 · 02:27 · 프로필 v1 · A안" → 미리보기 → 복원 → 알림 "스냅샷 '새로 시작 전'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 02:28'에 있습니다" · 머리표 "A안 · 프로필 v1"(`shots/rs15b-restored-1280.png` 150728B). 캡처 시점 게이트는 "편집 전 기준 결과입니다 · 다시 검사하는 중"이라 v1 대비 재판정 결과는 캡처에 없음.
+  - 진행 중 스크립트 1회가 대기 시간 초과로 끊겼다(qa-6 — "보정값 쓰기" 직후 저장 버튼 대기). 같은 TaskSpace에서 상태를 읽고 이어서 진행했다(qa-6b).
 - 정리:
   - IDB `design-studio` 삭제(남은 DB 0)
   - 에뮬레이션 해제 · `finish({keep:[]})` · `listTaskSpaces()` 해당 0
   - preview 종료 · 4359 리슨 0
+  - 2차(TaskSpace 14)도 같은 정리: IDB `design-studio` 삭제 · `finish({keep:[]})` · 13·14 남은 space 0 · 4359 리슨 0
   - 영환님 창·main 5480은 건드리지 않음
 
 ## R5. 검증 (fresh 실행)
 
 - 병합 직후: lock 변경 0 · typecheck exit 0 · 관련 3개 파일 33/33.
-- 최종:
+- 최종 (HEAD 트리 · 보고 커밋 직전 fresh):
   - `npm run typecheck` exit 0
   - `npm run lint` exit 0
-  - `npx vitest --run` → 302 files · **2739 passed**
-  - `npm run build` exit 0(`logs/build-r1d.txt`)
+  - `npx vitest --run` → 302 files · **2741 passed** (0 failed)
+  - `npm run build` exit 0(`logs/build-final.txt` — /profile 120.10 · 122.58 · /studio 129.65 · 132.69)
   - `scripts/bundleBudget.test.mjs` 17/17
 - 변이 RED: 새 테스트는 구현 뒤에 썼으므로 변이로 RED를 확인했다(PROGRESS 기록).
   - ① 커밋 확인 읽기 실패를 "no"로 바꾸고 기억을 끔 → 3건 실패
@@ -203,7 +212,8 @@
   - `generationText.ts` — `themeSwapText` 제거
   - `compareLoader.ts` · `candidateResultsLoader.ts` · `restartLoader.ts` — `retryLoader` 사용
 - 테스트:
-  - `pages/ProfileRestart.test.tsx` — 14 → 28
+  - `pages/ProfileRestart.test.tsx` — 14 → 28(RS-AC-10 id 집합 차이 교체 포함)
+  - `data/persistence/restartLock.test.ts` — 08c ②③ +2(보고 커밋)
   - `pages/ProfileCandidates.test.tsx` — 주석만
   - `data/autoSnapshotRetention.test.ts` — +1
 - 예산: `scripts/m2cBaseline.json` · `scripts/bundleBudget.test.mjs`
@@ -221,12 +231,11 @@
    - 구현은 SPEC 술어 그대로다. 06b 테스트는 revision이 2 뛰는 셋업(저장 + restart)으로 검증했다. **Designer 검토 후보.**
 3. **미확인 기억 시점**: R-E4·R-E5 상태에 **들어갈 때** 기억한다(SPEC "닫은 뒤"). 대화상자는 모달이라 닫기 전에는 편집 시작을 누를 수 없으므로 결과는 같다.
 4. **R-E4·R-E5 버튼**: [취소][다시 시도(주)]. 알림 안의 작은 "다시 시도"는 R-E2·R-E3에서만 둔다.
-5. **390 대화상자 가장자리 여백**: 대화상자 바깥 여백 0(뷰포트 전체 폭 시트, 내부 p-6). SPEC 6절은 "가장자리 여백 = 페이지 여백 토큰"이다. 기능·가림 영향 없음 → 후속 다듬기 후보.
+5. **390 대화상자 가장자리 여백**: 바깥 여백 0(뷰포트 전체 폭 시트, 내부 p-6). SPEC 6절은 "가장자리 여백 = 페이지 여백 토큰"이지만, 대화상자 클래스를 `SnapshotDialog.tsx:203`과 같은 DS 클래스(`m-auto w-full max-w-lg … p-6`)로 두었다. 사유: ADR-003 우선순위상 DS 일관성이 SPEC의 레이아웃 기술보다 앞선다. 가림 0(R4).
 6. **R-D2 시각**: 시스템 로캘 표기 "10월 11일 02:19" — RS-D5 규칙 그대로.
 
 ## R8. 남은 것 / 필요한 것
 
 1. **MQ-S7 재상신** — `/profile` 진입 직후 +0.09(구성 R2절). 결정 전까지 RS-AC-13 실패 상태이며 병합하지 않는다.
-2. RS-AC-15 "대비 통과 버전 → 게이트 통과" 단계 — 통과 버전을 만들 수 있는 픽스처나 경로가 필요하다(Designer·QA).
-3. R7-2 술어 충돌 검토(Designer).
-4. Jarvis — 병합 때 `/studio` 기준선 합산 재조정(SAVE-ON-LEAVE 레인과 함께).
+2. R7-2 술어 충돌 검토(Designer).
+3. Jarvis — 병합 때 `/studio` 기준선 합산 재조정(SAVE-ON-LEAVE 레인과 함께).

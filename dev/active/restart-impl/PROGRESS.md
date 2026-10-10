@@ -33,7 +33,7 @@
 - [x] R3 P2: STALE 재판정(06b · R-E1b) · create 재생 재판정(17 · R-C3) · R-D2 문구 · 성공 state {editNotice}만(18) · RS-AC-01 · 스냅샷 id 집합(04·08b·10·11)
 - [ ] R4 MQ-S7 A 배치(Promise.all · create 판정 = 조작 뒤) · /profile 진입 직후 ±0.03 · /studio ≤ +0.05 — BLOCKED: 배치 변경·감량 1회(로더 3개 본문 공용화 retryLoader) 뒤에도 /profile 120.10(+0.09) · 122.58(+0.09) > ±0.03 → MQ-S7 재상신(B 자동 전환 금지). /studio 129.65 · 132.69(+0.02 · +0.02, 몫 안) → 기준선 갱신
 - [x] R5 게이트 4종(typecheck·lint·vitest 2739·build exit 0) → Codex r1 기능 결함 0 · P2 1(=예산, 재상신 사항) → r2 생략(남은 지적 = 결정 사항)
-- [x] R6 Ego RS-AC-14 통과 · RS-AC-15 부분(대비 통과 버전 단계 — 픽스처 보정값도 미달 2) · 정리 완료(IDB·finish·4359 0)
+- [x] R6 Ego RS-AC-14 통과 · RS-AC-15 통과(2차 흐름 모던 카페 — v1 미달 1 → v2 통과 → 게이트 대비 통과 → 복원 A v1) · 정리 완료(IDB·finish·4359 0, space 13·14)
 - [x] R7 REPORT "RESUME-1" 절 · BACKLOG B-ER-01
 
 ### RESUME-1 TDD·측정 기록
@@ -46,3 +46,4 @@
 ## RESUME-1 서브에이전트
 
 - 분할하지 않음 — 작업이 한 청크(RestartDialog·restartFlow)와 그 테스트에 몰려 있어 독립 병렬 단위가 없었다. 쓰기는 메인만.
+- 보고 보강(advisor 검토): 08c ②③ 테스트 +2 · RS-AC-10 id 집합 차이 교체 · 08d IDB 미단언 표기 · 390 여백 = SnapshotDialog DS 클래스 사유 · HEAD fresh 게이트 typecheck 0 · lint 0 · 2741 passed · build 0

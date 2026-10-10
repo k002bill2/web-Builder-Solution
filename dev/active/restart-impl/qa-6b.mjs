@@ -1,0 +1,28 @@
+// RS-AC-15 재시도 ②(보정값 쓰기는 앞 라운드에서 눌러 둠) — 문서 A안 v1(미달 1) → 보정값 쓰기 v2 → 3안 v2 → B안 새로 시작 → 게이트
+const task = await taskSpace(14);
+const page = task.page("p1");
+const btn = (re) => page.evaluate((src) => void [...document.querySelectorAll("button")].find((b) => new RegExp(src).test(b.textContent.trim()))?.click(), re);
+const has = (re) => page.waitForFunction((src) => [...document.querySelectorAll("button")].some((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).trim())), re, { timeout: 20000 });
+const summary = () => page.evaluate(() => [...document.querySelectorAll("summary, button")].map((b) => b.textContent.trim()).find((t) => /대비 상세/.test(t)));
+const gateA = "(앞 라운드 — 문서 A안 v1)";
+await btn("^조정 저장 \\(v2\\)$");
+await has("^3안 만들기 \\(v2\\)$");
+const v2 = await summary();
+await btn("^3안 만들기 \\(v2\\)$");
+await has("^B안 선택$");
+await page.click("loc=role:button[name='B안 선택']");
+await has("^B안으로 편집 시작$");
+await btn("^B안으로 편집 시작$");
+await page.waitForSelector("dialog[open]", { timeout: 15000 });
+await page.waitForFunction(() => /대비 검사/.test(document.querySelector("dialog[open]").innerText), undefined, { timeout: 5000 }).catch(() => undefined);
+const rd5 = await page.evaluate(() => document.querySelector("dialog[open]").innerText.split("\n").find((l) => /대비 검사/.test(l)));
+const fs = await import("node:fs/promises");
+const shot = "/Users/younghwankang/orca/workspaces/web-builder-solution/restart-impl/dev/active/restart-impl/shots/rs15b-dialog-1280.png";
+await page.screenshot({ path: shot });
+await btn("^B안으로 새로 시작$");
+await page.waitForFunction(() => /^\/studio\//.test(location.pathname), undefined, { timeout: 15000 });
+await page.waitForTimeout(1500);
+const gateB = await page.evaluate(() => ({ rows: [...document.querySelectorAll("button")].map((b) => b.textContent.trim()).filter((t) => /^대비 AA/.test(t)), lines: document.body.innerText.split("\n").filter((l) => /대비 AA|통과/.test(l)).slice(0, 5) }));
+const shot2 = "/Users/younghwankang/orca/workspaces/web-builder-solution/restart-impl/dev/active/restart-impl/shots/rs15b-studio-1280.png";
+await page.screenshot({ path: shot2 });
+console.log(JSON.stringify({ gateA, v2, rd5, gateB, bytes: [(await fs.stat(shot)).size, (await fs.stat(shot2)).size] }));

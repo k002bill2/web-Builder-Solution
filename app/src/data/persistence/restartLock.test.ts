@@ -164,7 +164,7 @@ describe("RS-AC-08b 커밋 뒤 미확인 — 잠금 획득 뒤 flush INFRA", () 
   });
 });
 
-describe("RS-AC-08c 스냅샷 = 마지막 저장된 revision (기록)", () => {
+describe("RS-AC-08c ① 직전 저장 flush 성공 → 스냅샷 = 그 revision", () => {
   it("저장 두 번 뒤 restart → '새로 시작 전' = 마지막 저장 문서(revision·hash·updatedAt) — 저장 안 된 화면 편집은 저장소가 모른다", async () => {
     const { persistence, browser } = await seeded();
     const tab = await openTab(persistence, browser.tab(), "project-1");
@@ -176,5 +176,63 @@ describe("RS-AC-08c 스냅샷 = 마지막 저장된 revision (기록)", () => {
     const [snapshot] = await projects.listSnapshots("project-1");
     expect(snapshot).toMatchObject({ reason: "restart", name: "새로 시작 전", hash: saved.hash, doc: { revision: saved.revision } });
     expect((await savedRecord(persistence)).snapshots[0]!.doc.updatedAt).toBe(saved.updatedAt);
+  });
+});
+
+/** 조건이 참이 될 때까지 매크로태스크를 넘긴다(청크 로드·flush 대기) */
+const until = async (check: () => Promise<boolean>) => {
+  for (let i = 0; i < 100 && !(await check()); i += 1) await new Promise((r) => setTimeout(r, 0));
+};
+
+describe("RS-AC-08c (r2 · Codex P2-5) 스냅샷 = 이 탭 저장소 문서 — 브라우저 저장 상태와 무관", () => {
+  it("② 직전 저장 flush 진행 중(delay) → 스냅샷 = 메모리 최신 revision · restart flush가 뒤에 이어져 IDB 최종 = 새 문서 + 그 스냅샷", async () => {
+    const { persistence, browser } = await seeded();
+    const hold: { wait?: Promise<void> } = {};
+    const delayed: StudioPersistence = { ...persistence, write: async (ops) => (await hold.wait, persistence.write(ops)) };
+    const tab = await openTab(delayed, browser.tab(), "project-1");
+    const projects = await tab.projects();
+    const first = (await projects.getDoc("project-1"))!;
+    let release = () => undefined as void;
+    hold.wait = new Promise<void>((r) => (release = r));
+    const saving = projects.saveDoc("project-1", first.revision, edit(first, "진행 중 저장"));
+    await until(async () => (await projects.getDoc("project-1"))!.revision > first.revision);
+    const now = (await projects.getDoc("project-1"))!;
+    expect(now.revision).toBe(first.revision + 1);
+    expect((await savedRecord(persistence)).doc.revision).toBe(first.revision);
+    const restarting = projects.startDoc("project-1", 1, "C", "restart", now.revision);
+    release();
+    hold.wait = undefined;
+    await saving;
+    await restarting;
+    const record = await savedRecord(persistence);
+    expect(record.doc).toMatchObject({ candidateId: "C", revision: now.revision + 1 });
+    expect(record.snapshots.filter((s) => s.reason === "restart").map((s) => [s.doc.revision, s.doc.hash])).toEqual([[now.revision, now.hash]]);
+  });
+
+  it("③ 직전 저장 flush 실패(quota — IDB r1 · 메모리 r2) → 스냅샷 = r2 · restart flush 성공 시 IDB에 r2 스냅샷이 처음 저장 / 실패 시 INFRA(화면 R-E4) · 메모리 = 새 문서", async () => {
+    for (const restartFails of [false, true]) {
+      const { persistence, browser } = await seeded();
+      const { gate, wrapped } = flaky(persistence);
+      const tab = await openTab(wrapped, browser.tab(), "project-1");
+      const projects = await tab.projects();
+      const first = (await projects.getDoc("project-1"))!;
+      gate.fail = true;
+      expect(await failureOf(projects.saveDoc("project-1", first.revision, edit(first, "quota")))).toMatch(/^INFRA: /);
+      const r2 = (await projects.getDoc("project-1"))!;
+      expect([r2.revision, (await savedRecord(persistence)).doc.revision]).toEqual([first.revision + 1, first.revision]);
+      gate.fail = restartFails;
+      const result = await failureOf(projects.startDoc("project-1", 1, "C", "restart", r2.revision));
+      const [snapshot] = (await projects.listSnapshots("project-1")).filter((s) => s.reason === "restart");
+      expect(snapshot).toMatchObject({ hash: r2.hash, doc: { revision: r2.revision } });
+      expect(await projects.getDoc("project-1")).toMatchObject({ candidateId: "C", revision: r2.revision + 1 });
+      const record = await savedRecord(persistence);
+      if (restartFails) {
+        expect(result).toMatch(/^INFRA: /);
+        expect(record.doc.revision).toBe(first.revision);
+      } else {
+        expect(result).toBe("ok");
+        expect(record.snapshots.filter((s) => s.reason === "restart").map((s) => s.doc.revision)).toEqual([r2.revision]);
+      }
+    }
   });
 });

@@ -69,17 +69,22 @@ const FIELD_PAUSE_MS = 600;
 
 /**
  * 묶음 닫기 = 기록 1건 { 시작 문서 → 마지막 입력 문서 }. 내용이 시작과 같으면(쳤다 지움) 기록 0 — 대신 문서를 시작 문서 참조로 돌려
- * 앞 기록과의 사슬(문서 동일성 비교)을 잇는다. 그사이 기록 밖 경로로 문서가 바뀌었으면(충돌 "최신") 그 문서를 덮지 않는다
+ * 앞 기록과의 사슬(문서 동일성 비교)을 잇는다. 그사이 기록 밖 경로로 문서가 바뀌었으면(충돌 "최신") 그 문서를 덮지 않는다.
+ * 돌려주는 값 = 다음 기록이 이어 붙을 문서(기록했으면 마지막 문서 · 기록 0이면 시작 문서 참조)
  */
-export function closeField({ open, docRef, stack, edit, hold }: FieldRec): void {
+export function closeField({ open, docRef, stack, edit, hold }: FieldRec): PageDoc | undefined {
   const o = open.current;
-  if (!o) return;
+  if (!o) return undefined;
   o.off?.();
   open.current = undefined;
   hold(undefined);
   const after = o.after ?? o.base;
-  if (JSON.stringify(after) !== JSON.stringify(o.base)) stack.push({ label: o.label, before: o.base, after });
-  else if (docRef.current === after && after !== o.base && edit(o.base) !== false) docRef.current = o.base;
+  if (JSON.stringify(after) !== JSON.stringify(o.base)) {
+    stack.push({ label: o.label, before: o.base, after });
+    return after;
+  }
+  if (docRef.current === after && after !== o.base && edit(o.base) !== false) docRef.current = o.base;
+  return o.base;
 }
 
 /**
@@ -91,12 +96,15 @@ export function closeField({ open, docRef, stack, edit, hold }: FieldRec): void 
 export function fieldTyped(rec: FieldRec, composing: boolean | undefined, key: string, label: string, base: PageDoc, next: PageDoc): void {
   let o = rec.open.current;
   if (!o) return;
-  if (o.key !== key || base !== (o.seen ?? o.base)) {
+  const seen = o.seen ?? o.base;
+  if (o.key !== key || base !== seen) {
     const latest = o.after;
-    o.after = o.seen;
-    closeField(rec);
-    o = rec.open.current = { key, label, base, after: latest };
-    rec.hold(base);
+    o.after = seen;
+    // 기록 밖 교체가 아니면 앞 묶음이 이어 준 문서에서 시작한다 — 쳤다 지운 묶음(기록 0)이면 같은 내용의 복제 대신 시작 문서 참조(Codex r2 P2)
+    const kept = closeField(rec);
+    const start = base === seen && kept ? kept : base;
+    o = rec.open.current = { key, label, base: start, after: latest };
+    rec.hold(start);
   }
   o.seen = next;
   const mine = o;

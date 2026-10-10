@@ -154,6 +154,22 @@ describe("Codex r1 P2 — 청크 로딩 중 칸 이동 · IME 확정 · 리스�
     expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
   });
 
+  it("r2 P2 쳤다 지운 칸(기록 0) 뒤 blur 없이 다른 칸 입력 = 사슬 유지 · Ctrl+Z 2회 = 다른 칸 → 앞 기록", async () => {
+    const { result } = setup();
+    await type(result, "하나");
+    await wait(600);
+    await type(result, "하나x");
+    await type(result, "하나");
+    await type(result, "새 부제", false, "s-hero-subtitle", "Hero 부제 편집", "subtitle");
+    blur();
+    const step = () => act(async () => void (await result.current.ops.step(false, { setNotice: () => undefined, goTo: () => undefined })));
+    expect(result.current.ops.peekStep(false)).toBe("Hero 부제 편집");
+    await step();
+    expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
+    await step();
+    expect(result.current.doc).toBe(result.current.start);
+  });
+
   it("P2-2 조합 끝(compositionend · 값 변화 없는 확정) 뒤 600ms = 닫힘", async () => {
     const { result } = setup();
     await type(result, "봄", true);

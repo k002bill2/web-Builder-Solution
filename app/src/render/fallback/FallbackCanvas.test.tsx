@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
@@ -107,5 +108,26 @@ describe("렌더 문서 DOM — 외부 자원 0 · 폴백 표식 · 편집기 UI
     const c = draw(withSections(sampleDoc(), SAMPLE_SECTIONS.map((s, i) => (i === 1 ? { ...s, slots: { ...s.slots, title: "가".repeat(45) } } : s))));
     expect(c.textContent).not.toMatch(/권장|상한|경고 1|차단 1|Hero · /);
     expect(c.querySelector('[data-instance-id="s-hero"] [data-slot="title"]')).toHaveTextContent("가".repeat(45));
+  });
+});
+
+// B-M2B-04 — 폴백은 [data-site-root] 안에서 사이트 글꼴 계열로 풀린다. 400·700 면 중 사이트가 안 쓰는 면을 받지 않게 굵기를 사이트 굵기에 맞춘다
+describe("구조 미리보기 — 사이트 굵기만 쓴다(B-M2B-04 · siteWeight)", () => {
+  const WEIGHT = /^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/;
+  it("글자·표식은 모두 사이트 굵기 클래스 하나를 쓰고 고정 굵기 유틸리티는 0", () => {
+    const container = draw(sampleDoc({ sections: [section("hero", "center", "s-hero"), section("services", "cards-2", "s-cards"), section("faq", "accordion", "s-faq")] }));
+    const nodes = [...container.querySelectorAll<HTMLElement>("[data-slot], [data-kit-marker='fallback'], [data-fallback] > p")];
+    expect(nodes.length).toBeGreaterThan(3);
+    for (const node of nodes) {
+      const classes = node.className.split(/\s+/);
+      expect(classes.filter((c) => WEIGHT.test(c))).toEqual([]);
+      expect(classes.filter((c) => c === "font-(--fallback-strong)" || c === "font-(--fallback-regular)")).toHaveLength(1);
+    }
+    expect(within(blockOf(container, "s-hero")).getAllByText(/.+/, { selector: "[data-slot]" })[0]!.className).toContain("font-(--fallback-strong)");
+  });
+  it("render.css가 두 굵기 변수를 사이트 굵기(--site-weight-*)에 묶는다 — 킷 토큰 없으면 DS 굵기", () => {
+    const css = readFileSync("src/render/render.css", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css).toMatch(/--fallback-strong:\s*var\(--site-weight-heading,\s*var\(--weight-bold\)\)/);
+    expect(css).toMatch(/--fallback-regular:\s*var\(--site-weight-body,\s*var\(--weight-regular\)\)/);
   });
 });

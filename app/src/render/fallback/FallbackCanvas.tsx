@@ -38,11 +38,15 @@ const Stripes = ({ className = "" }: { readonly className?: string }) => (
   />
 );
 
+/** 굵기 = 사이트 굵기(B-M2B-04 · render.css) — 폴백도 사이트 글꼴 계열이라 siteFaces 밖 400·700 면을 받지 않게 DS 굵기를 덮는다 */
+const STRONG = "font-(--fallback-strong)";
+const REGULAR = "font-(--fallback-regular)";
+
 /** 글자 1개 — 첫 글자는 굵게(Hero는 크게), 빈 값은 자리표시 */
 function SlotLine({ view, strong, big }: { readonly view: SlotView; readonly strong: boolean; readonly big?: boolean }) {
-  const className = strong ? (big ? "ds-heading1" : "ds-body1-strong") : "ds-body3";
+  const className = strong ? `${big ? "ds-heading1" : "ds-body1-strong"} ${STRONG}` : `ds-body3 ${REGULAR}`;
   return (
-    <p data-slot={view.key} className={view.empty ? "ds-body3 text-label-alternative" : className}>
+    <p data-slot={view.key} className={view.empty ? `ds-body3 ${REGULAR} text-label-alternative` : className}>
       {view.text}
     </p>
   );
@@ -61,7 +65,7 @@ export function FallbackSection({ section }: { readonly section: SectionInstance
   const face = look.face ?? (section.tone === "alt" ? "bg-(--canvas-surface) text-(--canvas-ink)" : "bg-(--canvas-bg) text-(--canvas-ink)");
   return (
     <div id={`s-${section.instanceId}`} data-instance-id={section.instanceId} data-fallback="true" data-layout={layout} className={`relative flex cursor-pointer flex-col gap-3 px-4 py-3 ${face}`}>
-      <span data-kit-marker="fallback" className="self-end rounded-sm bg-(--marker-face) px-2 py-0.5 text-caption2 font-bold text-(--marker-text)">
+      <span data-kit-marker="fallback" className={`self-end rounded-sm bg-(--marker-face) px-2 py-0.5 text-caption2 ${STRONG} text-(--marker-text)`}>
         {FALLBACK_MARK}
       </span>
       <div className={`flex gap-4 ${look.row ?? "flex-col"}`}>
@@ -90,7 +94,7 @@ export function FallbackSection({ section }: { readonly section: SectionInstance
           ))}
         </div>
       )}
-      {texts.length + cells.length === 0 && <p className="ds-caption1">{SECTION_TYPE_INFO[section.type].name}</p>}
+      {texts.length + cells.length === 0 && <p className={`ds-caption1 ${REGULAR}`}>{SECTION_TYPE_INFO[section.type].name}</p>}
     </div>
   );
 }

@@ -64,6 +64,8 @@ export type FieldRec = {
   /** 참조 집합의 "열린 묶음 시작 문서" — 닫으면 비운다(FU 4.4) */
   readonly hold: (base: PageDoc | undefined) => void;
 };
+/** 입력 1회의 종류 — true = IME 조합 중 · "click" = 이미지 패널 클릭(켜기·고르기·지우기·끄기·장식 — 묶음 없이 즉시 1건, FU 4.5) */
+export type FieldMode = boolean | "click";
 /** 묶음 닫힘 멈춤(ER 3.5 · FU 4.1) */
 const FIELD_PAUSE_MS = 600;
 
@@ -89,11 +91,12 @@ export function closeField({ open, docRef, stack, edit, hold }: FieldRec): PageD
 
 /**
  * 입력 1회 뒤(진입이 입력마다 순서대로 부른다) — 멈춤 타이머를 다시 건다. 조합 중(IME)이면 걸지 않고 compositionend가 건다(FU 4.6 · Codex r1 P2-2).
+ * 클릭("click")이면 앞 묶음을 닫은 뒤 이 입력만으로 바로 기록 1건(FU 4.5) — 청크 응답 전 이 클릭 뒤에 온 입력은 다음 호출이 이어 받게 남긴다.
  * 이 입력이 다른 칸이거나 시작 문서가 앞 입력의 문서가 아니면(기록 밖 교체 — 충돌 "최신") 앞 묶음을 앞 입력 문서까지로 닫고 이 입력부터 새 묶음
  * (청크 응답 전 칸 이동 · 교체 전 base 재사용으로 다른 탭 변경을 덮는 것 방지 — Codex r1 P2-1 · P2-3).
  * 묶음의 첫 입력이면 포커스가 떠날 때(focusout = 칸 blur · "더보기"·미리보기·충돌 버튼 누름) 닫는 문서 리스너를 단다(FU 4.1)
  */
-export function fieldTyped(rec: FieldRec, composing: boolean | undefined, key: string, label: string, base: PageDoc, next: PageDoc): void {
+export function fieldTyped(rec: FieldRec, composing: FieldMode | undefined, key: string, label: string, base: PageDoc, next: PageDoc): void {
   let o = rec.open.current;
   if (!o) return;
   const seen = o.seen ?? o.base;
@@ -107,6 +110,16 @@ export function fieldTyped(rec: FieldRec, composing: boolean | undefined, key: s
     rec.hold(start);
   }
   o.seen = next;
+  if (composing === "click") {
+    const latest = o.after;
+    o.after = next;
+    closeField(rec);
+    if (latest !== next) {
+      rec.open.current = { key: "", label, base: next, after: latest, seen: next };
+      rec.hold(next);
+    }
+    return;
+  }
   const mine = o;
   const close = () => rec.open.current === mine && closeField(rec);
   const arm = () => {

@@ -15,5 +15,5 @@
 - [x] 10. 예산 MQ-S7 (★A ±0.03 유지 + 배치 변경 / B ≤+0.40 / C ≤+0.15)
 - [x] 11. RS-D4~D8 판정(D4·D5·D7 수용 · D6 조건부 · D8 대체 수용) · RS-D1 근거 정정
 - [x] 12. SPEC 변경 이력 r2 · MQ-S6·S7 · 결정 기록 — 커밋 `1d3e56a`
-- [x] 13. Codex r1 — P1 1·P2 1 → 반영 `f09ef85` · r2 실행 중(`logs/codex-r2.txt`)
-- [ ] 14. REPORT 작성 · 커밋
+- [x] 13. Codex r1 — P1 1·P2 1 → 반영 `f09ef85` · r2(`logs/codex-r2.txt`) — P1 0·P2 1(MQ-S6 A안·REPORT 문구 예외 잔존) → 반영 · 재검증 상한 2회 도달로 종료
+- [x] 14. REPORT 작성 · 커밋 (RESUME-1)

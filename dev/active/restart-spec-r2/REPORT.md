@@ -1,6 +1,6 @@
 # RESTART-SPEC-R2 REPORT — SPEC r1 → r2 (Codex 재검증 P1 1 · P2 8 반영)
 
-- 결론: **SPEC r2 · MQ-S6·S7 작성 완료(코드 0).** 회신 필요 = MQ-S6(★A) · MQ-S7(★A). Codex adversarial 결과는 3절.
+- 결론: **SPEC r2 · MQ-S6·S7 작성 완료(코드 0).** Codex adversarial r1(P1 1·P2 1) · r2(P1 0·P2 1) 모두 반영 — 남은 지적 0. 회신 필요 = MQ-S6(★A) · MQ-S7(★A). 상세 3절.
 - 브랜치 `k002bill2/restart-spec-r2`(base main `9d5076e`) · push·merge 0 · amend·rebase 0.
 - 산출물: `docs/design/restart/SPEC.md`(r2) · `docs/design/restart/MQ.md`(MQ-S6·S7 · 결정 기록) · 이 파일 · `PROGRESS.md` · `logs/codex-r*.txt`.
 
@@ -8,7 +8,7 @@
 
 | # | 지적 | r2 반영 |
 |---|---|---|
-| P1 | R-E3/R-E4를 오류 모양으로 못 가름 | **3.3.1 실패 판정 순서**: `UNKNOWN_VARIANT`·`STALE_DOC` 말고는 실패 뒤 `getDoc`으로 이 탭 저장소 문서 확인 → 양성(revision+1·안·버전 일치) R-E4 / 음성 → 메시지 사유 R-E2·R-E2b·R-E3 / 확인 실패 → **R-E5(신설, 단정 안 함)**. 커밋 확인이 메시지보다 먼저(RS-AC-07c). 저장소 인터페이스·오류 타입·스키마 변경 0 — MQ-S6 ★A(B = 오류에 `committed` 필드 · C = 가르지 않음). RS-AC-07 정정 + 07b(주입 단계별 표)·07c · 08b 정정 |
+| P1 | R-E3/R-E4를 오류 모양으로 못 가름 | **3.3.1 실패 판정 순서**: **오류 코드 예외 없이 모든 restart 실패**에 먼저 `getDoc`으로 이 탭 저장소 문서 확인 → 양성(revision+1·안·버전 일치) R-E4 / 음성일 때만 코드·사유 판정(STALE·`UNKNOWN_VARIANT` 행 · R-E2·R-E2b·R-E3) / 확인 실패 → **R-E5(신설, 단정 안 함)**. 커밋 확인이 메시지보다 먼저(RS-AC-07c). 저장소 인터페이스·오류 타입·스키마 변경 0 — MQ-S6 ★A(B = 오류에 `committed` 필드 · C = 가르지 않음). RS-AC-07 정정 + 07b(주입 단계별 표)·07c · 08b 정정 |
 | P2-2 | R-E4 뒤 편집기 열기 미인계 · 3.3 닫기 문장 충돌 | R-E4·R-E5 버튼 = [취소][다시 시도] · "편집기 열기" 숨김 · 취소 = 이동 0(RS-AC-09와 일치) · r1 87행 "닫거나 열면 새 문서" 삭제 · R-E4 문장에 "닫으면 새로고침 때 이전 문서로 돌아갈 수 있음" · 남는 경로 RS-R7(BACKLOG 후보: 편집기 진입 때 미확인 쓰기 인계) |
 | P2-3 | STALE_DOC 갱신 뒤 F2~F4 재판정 없음 | 3.3 STALE 행: 최신 doc으로 재판정 — 다른 안이면 R-E1 + 다시 채움, 같은 안이면 주 버튼 숨김 + **R-E1b(신설)** + "편집기 열기" · RS-AC-06b |
 | P2-4 | create 멱등 재생이 F3 우회 | 3.1: create 성공 뒤 `getDoc` → revision 다르면 재판정(F2·F3·F4) · 알림은 화면이 **R-C3(신설)** · `getDoc` 실패면 F1 · RS-AC-17 |
@@ -29,7 +29,9 @@
 - **r1** (`logs/codex-r1.txt`, HEAD `3811dd3`): needs-attention · **P1 1 · P2 1**.
   - P1: `UNKNOWN_VARIANT`·`STALE_DOC` 예외가 커밋 확인을 우회 — 응답 단계 주입이면 커밋됐는데 "쓰기 0". → **반영 `f09ef85`**: 3.3.1 = 모든 restart 실패에 커밋 확인 먼저, 음성일 때만 코드·사유 · RS-AC-07b에 응답 단계 두 코드 주입 → R-E4.
   - P2: R-E4 취소 뒤 "편집 시작" 재클릭 → DOC_EXISTS → F2 이동으로 미확인 쓰기 우회. → **반영 `f09ef85`**: 3.3 "미확인 기억" 행(조작 뒤 청크 모듈 Map · 프로젝트별 미확인 restart 인자 → 재클릭 시 create 전에 R-E4 대화상자 재오픈) · RS-AC-08d · RS-R7 범위 축소(남는 우회 = `/projects` → 편집기, BACKLOG 후보).
-- **r2** (`logs/codex-r2.txt`): 아래 갱신.
+- **r2** (`logs/codex-r2.txt`, HEAD `68b02da`): needs-attention · **P1 0 · P2 1**. SPEC 본문은 r1 P1·P2를 닫았다고 판정.
+  - P2: MQ-S6 ★A 문구와 이 REPORT 1절 P1 행이 아직 `UNKNOWN_VARIANT`·`STALE_DOC`를 커밋 확인에서 뺌 — MQ대로 구현하면 r1 P1 재발. → **반영(이 커밋)**: MQ-S6 A안 · 1절 P1 행을 "오류 코드 예외 없이 모든 restart 실패에 커밋 확인 먼저, 음성일 때만 코드·사유"로 SPEC 3.3.1과 통일. SPEC 본문 변경 0.
+  - 재검증 종료: 브리프 상한(재검증 최대 2회) 도달 · r2에 P1 없음 → 3회차 실행 안 함. 남은 Codex 지적 0(P2는 문구 정합으로 반영).
 
 ## 4. 목업과 다르게 한 곳
 

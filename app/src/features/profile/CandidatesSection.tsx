@@ -3,22 +3,21 @@
  * 생성은 저장된 버전에만: 저장 안 된 조정이 있으면 "3안 만들기" aria-disabled + 이유. "다시 생성" 없음(결정성, M-02) — 재시도는 실패 안만.
  * 폭: ≥768 카드 3열 + 비교 표(접힘), <768 한 열·표 없음(카드가 같은 정보를 모두 가진다). 편집 시작은 2a-05 경계(Q7) — 편집 미구현 안내 상시.
  * 순서(PROFILE-V2-COMPACT 5): 카드 → 편집 시작(바로 아래 오른쪽) → "3안 비교 표 보기".
- * 편집 시작(DS-2A-05 12.3 · 8.3.1): 누를 때 프로젝트 저장소를 받아 `startDoc(create)` — 성공·DOC_EXISTS = 이동(state: 바뀐 쌍 · 편집 알림) ·
- * UNKNOWN_VARIANT = 알림(다시 시도 없음) · 그 밖 = 실패 문형 + 다시 시도(같은 인자 → 멱등). 문장은 조작 뒤 청크(memoryDocBook)가 만든다.
+ * 편집 시작(DS-2A-05 12.3 · 8.3.1 · RESTART SPEC r2 MQ-S7 ★A): 누를 때 프로젝트 저장소와 "새로 시작" 청크를 함께 받아 청크의 `startEdit`이 `startDoc(create)`·판정을 한다 —
+ * 이동(F1~F3 · state) / 대화상자(F4 · 미확인 기억) / 알림(UNKNOWN_VARIANT 다시 시도 없음 · 그 밖 실패 문형 + 다시 시도). 진입 청크는 호출 1곳 + 대화상자 슬롯만.
  */
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
 import { useProjectLoader } from "../../data/ProfileRepositoryContext";
-import type { DocHead, StudioEntryState } from "../../data/projectRepository";
 import { effectiveProfile } from "../../domain/effectiveProfile";
 import { isTerminal, type CandidateFailure, type GenerationJob } from "../../domain/generation";
 import type { ProfileVersion } from "../../domain/profile";
 import type { WirePalette } from "./CandidateCard";
 import { loadCandidateResults as loadResults } from "./candidateResultsLoader";
 import { loadCompare } from "./compareLoader";
-import { CANDIDATE_TEXT, determinismText, failureText, themeSwapText } from "./generationText";
+import { CANDIDATE_TEXT, determinismText, failureText } from "./generationText";
 import { PALETTE_ROLES } from "./profileFields";
 import { loadRestart } from "./restartLoader";
 import { useGeneration } from "./useGeneration";
@@ -68,8 +67,12 @@ export function CandidatesSection({
   const loadProjects = useProjectLoader();
   const [starting, setStarting] = useState(false);
   const [startAlert, setStartAlert] = useState<{ readonly text: string; readonly retry: boolean }>();
-  /** "새로 시작" 대화상자(RESTART F4) — 다른 안일 때 조작 뒤 청크를 받아 연다 */
-  const [restart, setRestart] = useState<{ readonly mod: Awaited<ReturnType<typeof loadRestart>>; readonly doc: DocHead }>();
+  /** "새로 시작" 대화상자(RESTART F4) — 판정·대화상자는 조작 뒤 청크(MQ-S7 ★A) */
+  const [restart, setRestart] = useState<{
+    readonly mod: Awaited<ReturnType<typeof loadRestart>>;
+    readonly repo: Awaited<ReturnType<typeof loadProjects>>;
+    readonly open: import("./restartFlow").RestartOpen;
+  }>();
   const editBox = useRef<HTMLDivElement>(null);
   /** 카드·표 청크(PROFILE-HEADROOM-2) — 잡이 생긴 뒤에만 쓰여 따로 받는다. 다시 시도 = attempt 증가 → 새 URL로 다시 받기 */
   const [results, setResults] = useState<Awaited<ReturnType<typeof loadResults>> | "error">();
@@ -92,31 +95,16 @@ export function CandidatesSection({
     if (!projectId) return void navigate("/projects");
     setStarting(true);
     setStartAlert(undefined);
-    let state: StudioEntryState | undefined;
-    let other: DocHead | undefined;
-    try {
-      const started = await (await loadProjects()).startDoc(projectId, viewed.version, selected, "create");
-      state = { changes: started.changes, editNotice: started.changeNotice };
-    } catch (error: unknown) {
-      // 오류 모양만 읽는다 — 오류 클래스(프로젝트 저장소 청크)를 프로필 청크로 끌어오지 않는다
-      const { code, alert, doc } = (error ?? {}) as { code?: string; alert?: string; doc?: DocHead };
-      // RESTART 3.1 — 같은 안 = 이동(F2 · 버전만 다르면 테마 바꾸기 안내 F3) · 다른 안 = 대화상자(F4)
-      if (code === "DOC_EXISTS" && doc && doc.candidateId !== selected) other = doc;
-      else if (code === "DOC_EXISTS") state = { editNotice: alert && doc && doc.profileVersion !== viewed.version ? themeSwapText(alert, viewed.version) : alert };
-      else setStartAlert({ text: (code === "UNKNOWN_VARIANT" && alert) || CANDIDATE_TEXT.startFailed, retry: code !== "UNKNOWN_VARIANT" });
-    }
-    if (other) {
-      const doc = other;
-      await loadRestart().then(
-        (mod) => setRestart({ mod, doc }),
-        (error: unknown) => {
-          console.error("[profile] 새로 시작 청크 불러오기 실패", error);
-          setStartAlert({ text: CANDIDATE_TEXT.startFailed, retry: true });
-        },
-      );
-    }
+    // RESTART MQ-S7 ★A — 저장소·판정 청크를 함께 받고 create 결과 판정(F1~F4 · 재생 재판정 · 미확인 기억)은 청크가 한다. 로드 실패 = 실패 문형 + 다시 시도
+    const next = await Promise.all([loadProjects(), loadRestart()]).then(
+      async ([repo, mod]) => ({ repo, mod, out: await mod.startEdit(repo, projectId, viewed.version, selected) }),
+      (error: unknown) => void console.error("[profile] 편집 시작 청크 불러오기 실패", error),
+    );
     setStarting(false);
-    if (state) void navigate(`/studio/${projectId}`, { state });
+    const out = next?.out ?? { alert: CANDIDATE_TEXT.startFailed, retry: true };
+    if ("go" in out) void navigate(`/studio/${projectId}`, { state: out.go });
+    else if ("open" in out) setRestart({ ...next!, open: out.open });
+    else setStartAlert({ text: out.alert, retry: out.retry });
   };
   const onCompare = () => {
     if (compare === "loading") return;
@@ -275,14 +263,12 @@ export function CandidatesSection({
             />
           </div>
         )}
-        {restart && selected && projectId && (
+        {restart && projectId && (
           <restart.mod.default
+            repo={restart.repo}
             projectId={projectId}
             profileId={viewed.profileId}
-            version={viewed.version}
-            selected={selected}
-            doc={restart.doc}
-            load={loadProjects}
+            open={restart.open}
             go={(state) => void navigate(`/studio/${projectId}`, { state })}
             onClose={() => {
               setRestart(undefined);

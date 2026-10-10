@@ -79,6 +79,16 @@ describe("AC-D02 자동 21번째 → 가장 오래된 자동 1개 정리 (4곳 �
     expect(after.at(-1)!.snapshotId).toBe("snapshot-26");
   });
 
+  it("RESTART RS-AC-11 — 자동 20에서 restart 뒤 같은 인자 재생 → 자동 20 그대로 · 신규 0 · 수동 불변", async () => {
+    const { repo, revision } = await seeded();
+    const rev = await revision();
+    await repo.startDoc("project-1", 1, "A", "restart", rev);
+    const after = await listOf(repo);
+    await repo.startDoc("project-1", 1, "A", "restart", rev);
+    expect(await listOf(repo)).toEqual(after);
+    expect((await autoIds(repo)).length).toBe(20);
+  });
+
   it("자동 19개 + 자동 1개 = 20개 → 아무것도 빼지 않는다", async () => {
     const { repo, revision } = await seeded({ autos: 19 });
     const before = await autoIds(repo);

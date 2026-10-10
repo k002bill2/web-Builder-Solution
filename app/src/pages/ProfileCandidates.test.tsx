@@ -295,7 +295,7 @@ describe("편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5)", () 
     if (state.changes!.length > 0) expect(state.editNotice).toMatch(/^구조안의 섹션 \d+개를 편집기 변형으로 바꿔 열었습니다/);
   });
 
-  // RESTART SPEC r1 F2(RS-AC-01) — 같은 쌍(B안 · v1)만 바로 이동. 다른 안 문서(A안)는 F4 대화상자(ProfileRestart.test.tsx)
+  // RESTART SPEC r2 F2(RS-AC-01 — r2가 허용한 교체) — 같은 쌍(B안 · v1)만 바로 이동. 다른 안 문서(A안)는 F4 대화상자(ProfileRestart.test.tsx)
   it("DOC_EXISTS(같은 쌍) → 이동 + '이미 편집 중인 문서를 엽니다 (B안 · 프로필 v1)' · 자동 restart 없음", async () => {
     const { u, edit, router, projectRepository } = await pickB();
     // 같은 인자 create는 멱등 재생(성공)이라 다른 경로로 B안 문서를 만든다 — A안 create → B안 restart

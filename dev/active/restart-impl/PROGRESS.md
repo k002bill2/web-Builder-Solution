@@ -29,9 +29,16 @@
 ## RESUME-1 (2026-10-11 02:03 시작 · 정본 SPEC r2 + MQ S1~S7 · 시간 상한 90분)
 
 - [x] R1 `git merge --no-ff main`(b416328) → 충돌 0 · lock 변경 0 · typecheck exit 0 · 3개 파일 33/33 · 새 base 빌드(임시 worktree `/tmp/restart-impl-base`, 실측 뒤 제거) `logs/base-build-r1.txt`: /profile 120.01 · 122.49 · /studio 129.63 · 132.67
-- [ ] R2 3.3.1 실패 판정 순서(커밋 확인 먼저 → R-E4 / 음성 → 코드·사유 / 확인 실패 R-E5) · RS-AC-07·07b·07c·08b·08d(미확인 기억)
-- [ ] R3 P2: STALE 재판정(06b · R-E1b) · create 재생 재판정(17 · R-C3) · R-D2 문구 · 성공 state {editNotice}만(18) · RS-AC-01 · 스냅샷 id 집합(04·08b·10·11)
-- [ ] R4 MQ-S7 A 배치(Promise.all · create 판정 = 조작 뒤) · /profile 진입 직후 ±0.03 · /studio ≤ +0.05
+- [x] R2 3.3.1 실패 판정 순서(커밋 확인 먼저 → R-E4 / 음성 → 코드·사유 / 확인 실패 R-E5) · RS-AC-07·07b·07c·08b·08d(미확인 기억)
+- [x] R3 P2: STALE 재판정(06b · R-E1b) · create 재생 재판정(17 · R-C3) · R-D2 문구 · 성공 state {editNotice}만(18) · RS-AC-01 · 스냅샷 id 집합(04·08b·10·11)
+- [ ] R4 MQ-S7 A 배치(Promise.all · create 판정 = 조작 뒤) · /profile 진입 직후 ±0.03 · /studio ≤ +0.05 — BLOCKED: 배치 변경·감량 1회(로더 3개 본문 공용화 retryLoader) 뒤에도 /profile 120.10(+0.09) · 122.58(+0.09) > ±0.03 → MQ-S7 재상신(B 자동 전환 금지). /studio 129.65 · 132.69(+0.02 · +0.02, 몫 안) → 기준선 갱신
 - [ ] R5 게이트 4종 → Codex review --scope branch --base main(≤2라운드)
 - [ ] R6 Ego RS-AC-14·15
 - [ ] R7 REPORT "RESUME-1" 절 · BACKLOG B-ER-01
+
+### RESUME-1 TDD·측정 기록
+- 배치 1차 build(`logs/build-r1a.txt`): /profile 120.21(+0.20) · 122.68(+0.19) · /studio 129.67 · 132.70(exit 1 기준선) → 감량 1회 = compare·candidateResults·restart 로더 본문을 `retryLoader.ts`로 공용화 → `logs/build-r1b.txt` 120.10 · 122.58 · 129.65 · 132.69. 추가 감량 없음(RESUME "감량 1회 → 멈추고 수치 보고")
+- 기존 테스트 RED 예측 "R-D2 문구 · 성공 state changes · R-E4 버튼 3건" → 결과 정확히 3건 실패 → SPEC r2 행으로 갱신(R-D2 r2 P2-5 · RS-AC-04/RS-D9 · RS-AC-08b P2-2 — SPEC이 바꾼 단언, 약화 아님)
+- 새 테스트는 구현 뒤 작성 → 변이로 RED 확인: ① `committed` 읽기 실패 → "no" + 미확인 기억 끔 = 3건 실패 ② 커밋 확인 먼저 끔(unknown만) = 5건 실패 → 원복 28/28
+- 테스트 오류 1건: RS-AC-17 "getDoc 실패 → F1 알림 없음"을 editNotice undefined로 단언 → SPEC 3.1 F1 = `{changes, editNotice: changeNotice}`라 테스트를 "F2·F3 알림 없음"으로 수정
+- 게이트: typecheck exit 0 · lint exit 0 · vitest 302 files / 2739 passed · build exit 0(`logs/build-r1d.txt`, 기준선 갱신 뒤)

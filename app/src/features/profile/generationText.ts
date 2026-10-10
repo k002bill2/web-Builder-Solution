@@ -24,9 +24,6 @@ export const CANDIDATE_TEXT = Object.freeze({
   compareFailed: "실제 화면 비교를 불러오지 못했습니다",
 });
 
-/** F3 편집 알림(RESTART R-C2) — 같은 안·다른 버전: DOC_EXISTS 문장 + 테마 바꾸기 안내(내용 보존) */
-export const themeSwapText = (opened: string, version: number) => `${opened} · v${version}를 쓰려면 '테마 바꾸기'를 누르세요 — 내용은 그대로입니다`;
-
 export const GRID_LABELS: Readonly<Record<GridStyle, string>> = Object.freeze({ "grid-3": "카드 3열", "grid-2": "카드 2열", masonry: "카드 마소니" });
 
 /** 결정성 캡션 (4.5) — 보는 버전의 입력 */

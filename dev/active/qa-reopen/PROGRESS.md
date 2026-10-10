@@ -13,4 +13,4 @@
 ## RESUME-1 (60분 상한)
 - [x] 환경: build EXIT 0(`logs/build-r1.txt`) · preview 4345 · Ego space 3(시작 listTaskSpaces=[])
 - [x] 경로 A 문서: ref-e → 프로필 v1 → 3안 → B안 → `/studio/project-1` → 페이지 정보 → 게이트 전 통과 · 프로필 조정(촘촘) v2 저장
-- [ ] B-M2C-09 ② · [ ] B-ER-07 · [ ] B-M2B-09 · [ ] 정리 · [ ] REPORT 갱신
+- [x] B-M2C-09 ② **PASS**(768 높이 차 0 · 390 1px · 차 1.59%·2.65% · `logs/m2c09-*.txt` · shots m2c09-*-side) · [ ] B-ER-07 · [ ] B-M2B-09 · [ ] 정리 · [ ] REPORT 갱신

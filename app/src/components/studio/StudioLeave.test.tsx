@@ -30,7 +30,7 @@ const UNUSED = () => Promise.reject(new Error("이 테스트는 쓰지 않는다
 
 type Outcome = "ok" | Error;
 /** 저장 요청마다 `release(결과)`를 기다리는 저장소 — `stored` = 저장소에 반영된 마지막 문서 */
-function heldRepository() {
+function heldRepository(persistence: "memory" | "local" = "memory") {
   const held: ((outcome: Outcome) => void)[] = [];
   let stored: PageDoc | undefined;
   const save = vi.fn(
@@ -43,7 +43,7 @@ function heldRepository() {
         }),
       ),
   );
-  const repository = { persistence: "memory", saveDoc: save, resolveConflict: vi.fn() } as unknown as ProjectRepository;
+  const repository = { persistence, saveDoc: save, resolveConflict: vi.fn() } as unknown as ProjectRepository;
   const release = async (outcome: Outcome = "ok") => {
     await act(async () => held.shift()!(outcome));
     await act(() => vi.advanceTimersByTimeAsync(0));
@@ -77,14 +77,21 @@ function draw(repository: ProjectRepository) {
 
 const editRegion = () => screen.getByRole("region", { name: /^편집 · / });
 const type = (value: string) => act(() => void fireEvent.change(within(editRegion()).getByRole("textbox", { name: /^제목/ }), { target: { value } }));
-const leave = () => act(() => void fireEvent.click(screen.getByRole("link", { name: "프로젝트로 돌아가기" })));
+const backLink = () => screen.getByRole("link", { name: "프로젝트로 돌아가기" });
+const leave = () => act(() => void fireEvent.click(backLink()));
 const titleOf = (doc: PageDoc | undefined) => doc?.sections.find((s) => s.instanceId === "s-hero")?.slots.title;
+
+/** 실제 브라우저(보안 컨텍스트)는 Web Locks가 있다 — 없으면 읽기 전용 폴백으로 본다(jsdom은 없음) */
+const withLocks = () => Object.defineProperty(navigator, "locks", { value: {}, configurable: true });
+const withoutLocks = () => Reflect.deleteProperty(navigator, "locks");
 
 beforeEach(() => {
   vi.useFakeTimers();
+  withLocks();
 });
 afterEach(() => {
   vi.useRealTimers();
+  withoutLocks();
 });
 
 describe("편집기 이탈 저장 (B-RS-01)", () => {
@@ -147,7 +154,7 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(arrivals).toHaveLength(1);
   });
 
-  it("읽기 전용 탭(저장 거절 READ_ONLY_TAB) = 이동을 막지 않는다 · 저장소 반영 0", async () => {
+  it("읽기 전용 탭(저장 거절 READ_ONLY_TAB) = 다시 저장해 보고 또 거절이면 이동을 막지 않는다 · 저장소 반영 0", async () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);
     type("읽기 전용 편집");
@@ -155,6 +162,8 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));
     expect(screen.getByRole("banner")).toHaveTextContent("저장하지 못했습니다");
     leave();
+    expect(repo.save).toHaveBeenCalledTimes(2);
+    await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));
     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
     expect(repo.stored()).toBeUndefined();
     expect(arrivals).toHaveLength(1);
@@ -169,6 +178,50 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
     expect(repo.stored()).toBeUndefined();
     expect(arrivals).toHaveLength(1);
+  });
+
+  it("읽기 전용 거절 뒤 쓰기 가능해진 탭(다른 탭 닫힘) = 지난 거절로 건너뛰지 않고 저장 뒤 이동(Codex r1 P1)", async () => {
+    const repo = heldRepository();
+    const { arrivals } = draw(repo.repository);
+    type("거절된 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));
+    type("쓰기 가능해진 뒤 편집");
+    leave();
+    expect(repo.save).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText("프로젝트 목록")).toBeNull();
+    await repo.release();
+    expect(titleOf(repo.stored())).toBe("쓰기 가능해진 뒤 편집");
+    expect(arrivals).toHaveLength(1);
+  });
+
+  it("Web Locks 없는 로컬 저장(영구 읽기 전용 폴백 — 일반 INFRA 문장) = 거절 뒤 이동을 막지 않는다(Codex r1 P2)", async () => {
+    withoutLocks();
+    expect(navigator.locks).toBeUndefined();
+    const repo = heldRepository("local");
+    const { arrivals } = draw(repo.repository);
+    type("잠금 없는 편집");
+    leave();
+    await repo.release(toInfra(undefined, "저장"));
+    expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
+    expect(arrivals).toHaveLength(1);
+  });
+
+  it("Web Locks 있는 브라우저의 일반 저장 실패는 그대로 보류", async () => {
+    const repo = heldRepository();
+    draw(repo.repository);
+    type("메모리 편집");
+    leave();
+    await repo.release(toInfra(undefined, "저장"));
+    expect(screen.queryByText("프로젝트 목록")).toBeNull();
+  });
+
+  it("수정 키(Ctrl·Meta·Shift·Alt) 클릭은 이 탭을 떠나지 않으므로 가로채지 않는다(Codex r1 P2)", () => {
+    const repo = heldRepository();
+    draw(repo.repository);
+    type("새 탭으로 열기 전 편집");
+    for (const key of ["ctrlKey", "metaKey", "shiftKey", "altKey"]) expect(fireEvent.click(backLink(), { [key]: true })).toBe(true);
+    expect(repo.save).not.toHaveBeenCalled();
   });
 
   it("바뀐 것이 없으면 바로 이동 · 저장 0", () => {

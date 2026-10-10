@@ -91,6 +91,7 @@
 | 쓰기 전 거부 · `stale`(다른 탭이 저장함 — 새로고침 전까지 유지, `writerLock.ts:35-51` · `writerLock.test.ts:152-168`) | `role=alert` R-E2b · 쓰기 0 · 다시 시도 **없음** · 새로고침 안내(최신 문서로 다시 고르기) | `localSync.ts:91-96` |
 | 쓰기 전 거부 · `NOT_FOUND` · `SCHEMA_INVALID` · 그 밖 실패 **중 커밋 확인 음성** | `role=alert` R-E3 "새로 시작하지 못했습니다" + "다시 시도"(같은 인자 → 멱등) | 2a-05 SPEC:585 문형 · 3.3.1 |
 | **커밋 뒤 미확인** — 커밋 확인 **양성**(flush INFRA(quota 등) · 응답 실패, `memoryProjectRepository.ts:65-66,79-81`) | 이 탭 저장소 메모리는 **이미 새 문서**다. `role=alert` R-E4. **(r2 · Codex P2-2) 버튼 = [취소] [다시 시도(주)]** — 주 버튼 "C안으로 새로 시작"과 "편집기 열기"는 숨긴다(RS-D8 수용). "다시 시도" = 같은 인자 → 멱등 재생 → flush 재제출(거짓 "저장됨" 0 — `localSync.ts:7-8`) → 성공이면 "성공" 행과 같다. "취소"·Esc = 닫기 · **이동 0** · 포커스 "C안으로 편집 시작"(RS-AC-09와 같음). 편집기로 넘기지 않는 이유: `/studio` 저장 훅은 `idle`로 시작해 이 미확인 쓰기를 이어받을 길이 없다(`useDocSave.ts:53-73` · `useAutosaveScheduler.ts:65-68`) — `/studio` 변경 0 범위에서는 "다시 시도로 확인되기 전에는 편집기로 보내지 않는다"가 정직한 유일한 길. 닫은 뒤 남는 위험은 RS-R7 | Codex r1 P2 · Codex SPEC r1 재검증 P2-2 |
+| **미확인 기억** (r2 Codex r1 P2) — R-E4·R-E5로 닫은 뒤 | 화면(조작 뒤 청크의 모듈 수준 Map — 탭 세션 동안, 새로고침이면 메모리도 IDB로 돌아가 의미 없음)이 **프로젝트별 미확인 restart 인자**(`projectId, version, candidateId, expectedRevision`)를 기억한다. 기억이 있는 동안 그 프로젝트의 "X안으로 편집 시작"은 `create`·F2/F3 이동 **전에** 대화상자를 R-E4(또는 R-E5) 상태로 다시 연다 — 어느 안을 골랐든 같다(미확인 쓰기를 먼저 확인해야 다음 판단이 참이다). "다시 시도" 성공 → 기억 삭제 + 성공 행(이동 + R-N1) · 커밋 확인 음성(R-E5였는데 실제 커밋 안 됨) → 기억 삭제 + 처음 F1~F4 흐름. 남는 우회 = 프로필 밖 진입(`/projects` → 편집기) — RS-R7 | Codex r2 재검증 r1 P2 |
 | **확인 불가** — 실패 뒤 커밋 확인용 `getDoc`도 실패 | 새로 시작됐는지 **단정하지 않는다**. `role=alert` R-E5 + 버튼 = [취소] [다시 시도(주)]. 다시 시도는 어느 쪽이든 안전하다(커밋됐으면 멱등 재생, 아니면 처음 요청 — 같은 키). 취소 = 이동 0 | 3.3.1 |
 
 #### 3.3.1 실패 판정 순서 (r2 · Codex P1 · MQ-S6 ★A)
@@ -99,10 +100,10 @@
 
 화면(대화상자 청크)은 restart 실패를 받으면 이 순서로 결과를 정한다:
 
-1. `UNKNOWN_VARIANT`·`STALE_DOC` → 확인 없이 그 행(둘 다 판정 단계에서 던지며 쓰기 0 — `memoryDocBook.ts:386,391` · 동봉 doc이 곧 최신).
-2. 그 밖 모든 실패 → `getDoc(projectId)`로 **이 탭 저장소 문서**를 읽는다(메모리 — 커밋되면 flush 실패와 무관하게 바뀌어 있다, `memoryProjectRepository.ts:114-117`).
+1. (r2 Codex r1 P1) **예외 없음 — 모든 restart 실패**에 먼저 커밋 확인을 한다. `UNKNOWN_VARIANT`·`STALE_DOC`도 저장소 본문은 판정 단계(쓰기 전)에서 던지지만(`memoryDocBook.ts:386,391`), 같은 코드의 오류가 응답 단계(`memoryProjectRepository.ts:79-81`, 커밋 뒤)에서 올 수 있다 — 코드만 보고 "쓰기 0"이라 하면 거짓.
+2. `getDoc(projectId)`로 **이 탭 저장소 문서**를 읽는다(메모리 — 커밋되면 flush 실패와 무관하게 바뀌어 있다, `memoryProjectRepository.ts:114-117`).
    - 확인 **양성**: `now.revision === doc.revision + 1 && now.candidateId === selected && now.profileVersion === viewed.version`(`doc` = 이 요청의 `expectedRevision`을 준 문서) → **R-E4**. 오류 코드·메시지는 보지 않는다(커밋 뒤 flush가 잠금 사유 문장을 달고 와도 "변화 0" 문장을 내면 거짓).
-   - 확인 **음성**(위 조건 거짓 — 보통 `now.revision === doc.revision`) → 오류 사유로 가린다: 메시지 끝이 `READ_ONLY_TAB` → R-E2 · `STALE_TAB` → R-E2b · 그 밖(`CLEARED_TAB`·`unsupported`·`NOT_FOUND`·`SCHEMA_INVALID`·요청 실패·청크 로드 실패) → R-E3(INFRA면 메시지의 " — " 뒤 사유를 R-E3 뒤에 " · "로 잇는다). 사유 문자열은 `infra.ts:26-29` 상수와 같은 값이어야 한다 — 화면은 오류 **모양**만 읽는다(`CandidatesSection.tsx:100-101` 원칙, 오류 클래스 import 0).
+   - 확인 **음성**(위 조건 거짓 — 보통 `now.revision === doc.revision`) → 오류 코드·사유로 가린다: `STALE_DOC` → 3.3 STALE 행(동봉 doc 재판정) · `UNKNOWN_VARIANT` → 그 행(다시 시도 없음) · INFRA 메시지 끝이 `READ_ONLY_TAB` → R-E2 · `STALE_TAB` → R-E2b · 그 밖(`CLEARED_TAB`·`unsupported`·`NOT_FOUND`·`SCHEMA_INVALID`·요청 실패·청크 로드 실패) → R-E3(INFRA면 메시지의 " — " 뒤 사유를 R-E3 뒤에 " · "로 잇는다). 사유 문자열은 `infra.ts:26-29` 상수와 같은 값이어야 한다 — 화면은 오류 **모양**만 읽는다(`CandidatesSection.tsx:100-101` 원칙, 오류 클래스 import 0).
    - `getDoc` **실패**(던짐) → **R-E5**.
 3. 이 판정은 restart에만 쓴다. `create`의 실패는 지금 그대로(`CandidatesSection.tsx:96-101` — 쓰기 전 `DOC_EXISTS`·`UNKNOWN_VARIANT`가 대부분이고 create 갈라짐은 MQ-S2 C로 별건).
 
@@ -209,11 +210,12 @@
 | RS-AC-05 | 진행 중 두 번 누름·Esc → 요청 1회 · 대화상자 유지 | [U] |
 | RS-AC-06 | `STALE_DOC`(delay 주입으로 사이에 저장 — 최신도 **다른 안**) → 이동 0 · R-E1(r번호 = 최신) · 대화상자 내용이 최신 doc으로 바뀜 · 주 버튼 다시 누르면 `expectedRevision` = 최신 · 문서·스냅샷 변화 0 | [U] |
 | RS-AC-06b | (r2 · Codex P2-3) `STALE_DOC` · 최신이 **고른 안과 같음**(delay 주입 사이에 "새로 시작 전" 복원 등으로 C안이 됨) → 주 버튼 없음 · R-E1b · "편집기 열기 (C안 · v4 편집 중)" → F2 이동(버전 다르면 R-C2) · restart 요청 추가 0 · 문서·스냅샷 변화 0 | [U] |
-| RS-AC-07 | (r2 · Codex P1 정정) `UNKNOWN_VARIANT` → 저장소 alert 문장 · 다시 시도 없음 · 쓰기 0 · 커밋 확인 `getDoc` 0회. **"그 밖 실패"는 3.3.1 판정을 거친다 — 아래 주입 단계별 표** | [U] |
-| RS-AC-07b | 주입 단계별 결과(`fail({method:"startDoc", phase})` · flush 주입 · `getDoc` 주입) — **같은 `Error`를 주입해도 단계에 따라 결과가 갈려야 통과**: `request` → 문서·스냅샷 변화 0 · R-E3 · 다시 시도 → 성공 / `commit`(커밋 함수 안에서 던짐) → 변화 0 · R-E3 / `response` → 메모리 = 새 문서 · R-E4(08b) / flush INFRA → R-E4(08b) / 잠금 거부(`readonly`·`stale`) → R-E2·R-E2b(08) / 요청 실패 + 커밋 확인 `getDoc`도 실패 → **R-E5** · 다시 시도 → 성공(멱등 — 스냅샷 신규 총 1개) | [U] |
+| RS-AC-07 | (r2 · Codex P1 정정) `UNKNOWN_VARIANT`(판정 단계) → 커밋 확인 음성 → 저장소 alert 문장 · 다시 시도 없음 · 쓰기 0. **"그 밖 실패"는 3.3.1 판정을 거친다 — 아래 주입 단계별 표** | [U] |
+| RS-AC-07b | 주입 단계별 결과(`fail({method:"startDoc", phase})` · flush 주입 · `getDoc` 주입) — **같은 `Error`를 주입해도 단계에 따라 결과가 갈려야 통과**: `request` → 문서·스냅샷 변화 0 · R-E3 · 다시 시도 → 성공 / `commit`(커밋 함수 안에서 던짐) → 변화 0 · R-E3 / `response` → 메모리 = 새 문서 · R-E4(08b) / flush INFRA → R-E4(08b) / 잠금 거부(`readonly`·`stale`) → R-E2·R-E2b(08) / 요청 실패 + 커밋 확인 `getDoc`도 실패 → **R-E5** · 다시 시도 → 성공(멱등 — 스냅샷 신규 총 1개) / (Codex r1 P1) `response` 단계에 `UNKNOWN_VARIANT`·`STALE_DOC` 모양 오류 주입 → 커밋 확인 양성 → **R-E4**("쓰기 0"·다시 시도 제거 아님) | [U] |
 | RS-AC-07c | 커밋 확인은 메시지보다 먼저: flush INFRA 메시지 끝을 `READ_ONLY_TAB`으로 주입해도(커밋 뒤) 결과는 R-E2가 아니라 **R-E4** | [U] |
 | RS-AC-08 | (MQ-S2 ★A) 가짜 잠금(`fakeLocks`) 다른 탭 보유 → restart → INFRA R-E2 · **메모리 문서·스냅샷·멱등 기록 변화 0** · IDB 쓰기 0 · 보유 탭이 **쓰지 않고** 풀면 다시 시도 → 성공 / 보유 탭이 저장(meta generation +1) 뒤 풀면 → `stale` R-E2b · 다시 시도 없음 · 쓰기 0 | [U] |
 | RS-AC-08b | 커밋 뒤 미확인: 잠금 획득 뒤 flush INFRA 주입 · 응답 실패 주입 → R-E4 · 메모리 = 새 문서 · IDB = 옛 문서 · (r2 · Codex P2-2) 버튼 = [취소][다시 시도] — "편집기 열기"·"C안으로 새로 시작" 없음 · 취소 → 이동 0 · 쓰기 추가 0 · 포커스 "C안으로 편집 시작" · 다시 시도 → 멱등 재생으로 flush 재제출 성공 → IDB = 새 문서 + "새로 시작 전" 스냅샷 · 이동 + R-N1 · 재생에서 신규 스냅샷 0(최초 커밋의 1개뿐) | [U] |
+| RS-AC-08d | (r2 · Codex r1 P2) R-E4 → 취소 → **같은 안(C) 다시 "편집 시작"** → `create` 호출 0 · 이동 0 · 대화상자 R-E4 상태로 다시 열림 → 다시 시도 → flush 확인 → 이동 + R-N1 · IDB = 새 문서 + 스냅샷 / 다른 안(B)을 골라도 같은 R-E4 대화상자 / R-E5 → 취소 → 다시 편집 시작 → 다시 시도에서 커밋 확인 음성이면 기억 삭제 + F4 흐름 | [U] |
 | RS-AC-08c | (r2 · Codex P2-5 — 3행) "새로 시작 전" 스냅샷 = **이 탭 저장소 문서**(R-D2가 보여 준 revision·updatedAt과 일치)이며 브라우저 저장 상태와 무관함을 셋으로 단언: ① 직전 저장 flush **성공** → 스냅샷 = 그 revision · restart 확인 뒤 IDB에도 그 스냅샷 ② flush **진행 중**(delay) → R-D2·스냅샷 = 메모리 최신 revision · restart flush가 뒤에 이어져 IDB 최종 = 새 문서 + 그 스냅샷 ③ flush **실패**(quota — r1은 IDB, r2는 메모리) → R-D2·스냅샷 = r2 · restart flush 성공 시 IDB에 r2 스냅샷이 처음 저장됨 / 실패 시 R-E4. 편집기 이탈 손실(RS-R6)은 기록만 | [U] |
 | RS-AC-09 | 취소·Esc → 쓰기 0 · 포커스 "C안으로 편집 시작" · "편집기 열기" → F2와 같은 이동·알림 | [U] |
 | RS-AC-10 | 되돌리기: restart 뒤 "새로 시작 전" 복원 → `candidateId`·`profileVersion` = 옛 값 · "복원 전" 자동 **신규 1개**(r2 — 총수 아님, RS-AC-04와 같은 id 집합 차이 방식) (저장소 기존 단언 재사용 + 화면 경로 1건) | [U] |
@@ -254,7 +256,7 @@
 | RS-R3 | 20개 정리로 오래된 "내보내기 전" 등 자동 사본이 밀림 · 반복 새로 시작이면 "새로 시작 전"도 밀림 | R-D4 상시 · 문구가 "모두 보존"을 약속하지 않는다 |
 | RS-R4 | "새로 시작 전" 이름에 시각이 없어 반복 시 같은 이름 | 목록 캡션에 시각이 있다(`SnapshotDialog.tsx:231`) — 이름 변경은 저장소 문자열이라 MQ-S4 |
 | RS-R5 | `/studio` 진입 직후 예산 증가(MQ-S2 ★A) | 9절 조작 뒤 배치 · ADR-004 개정 15 restart 몫 +0.05(RS-AC-13) · 넘으면 감량 1회 → 재상신 |
-| RS-R7 | (r2 · Codex P2-2) R-E4에서 "취소"로 닫은 뒤: 이 탭 메모리 = 새 문서(C안), IDB = 옛 문서. 사용자가 다시 "C안으로 편집 시작"을 누르면 `DOC_EXISTS`(메모리 C) → F2 이동 → 편집기 저장 훅은 `idle`이라 미확인 쓰기를 모른 채 C안을 연다. 그 상태로 새로고침하면 B안으로 돌아온다(B 문서 자체는 IDB에 그대로 — 내용 손실은 아님, "새로 시작이 사라짐"). 편집기에서 한 번이라도 저장이 확인되면 그 flush가 프로젝트 레코드 전체(새 문서 + 스냅샷)를 써서 갈라짐이 닫힌다 | R-E4 문장이 "닫으면 새로고침 때 이전 문서로 돌아갈 수 있음"을 밝힌다 · 대화상자는 미확인 상태로 편집기에 보내지 않는다(3.3) · 남는 경로는 create 갈라짐(MQ-S2 C)과 같은 부류 — **BACKLOG 후보**(편집기 진입 때 미확인 쓰기 인계 · Jarvis 등록) |
+| RS-R7 | (r2 · Codex P2-2 · r1 P2) R-E4에서 "취소"로 닫은 뒤: 이 탭 메모리 = 새 문서(C안), IDB = 옛 문서. **프로필 화면 재진입은 3.3 "미확인 기억"이 막는다**(RS-AC-08d). 남는 우회: `/projects` → 편집기 진입 → 편집기 저장 훅은 `idle`이라 미확인 쓰기를 모른 채 C안을 연다. 그 상태로 새로고침하면 B안으로 돌아온다(B 문서 자체는 IDB에 그대로 — 내용 손실은 아님, "새로 시작이 사라짐"). 편집기에서 한 번이라도 저장이 확인되면 그 flush가 프로젝트 레코드 전체(새 문서 + 스냅샷)를 써서 갈라짐이 닫힌다 | R-E4 문장이 "닫으면 새로고침 때 이전 문서로 돌아갈 수 있음"을 밝힌다 · 대화상자는 미확인 상태로 편집기에 보내지 않는다(3.3) · 남는 경로는 create 갈라짐(MQ-S2 C)과 같은 부류 — **BACKLOG 후보**(편집기 진입 때 미확인 쓰기 인계 · Jarvis 등록) |
 | RS-R8 | (r2) 3.3.1 사유 판정이 메시지 끝 문자열(`infra.ts:26-29`)에 기대므로 문장이 바뀌면 R-E2·R-E2b가 R-E3로 떨어진다 | 화면이 같은 상수 값을 쓰는지 테스트(RS-AC-08이 실제 `blocked()` 경로로 단언) · 떨어져도 R-E3는 거짓이 아니다("못했습니다" — 커밋 확인 음성) |
 | RS-R6 | **(Codex r1 P1)** 편집기 이탈 저장은 완료를 기다리지 않는다(`StudioLayout.tsx:127-134` `retry()`만) · 저장 중 추가 편집은 이탈(unmount) 때 버려질 수 있다(`useAutosaveScheduler.ts:100-102,274-278`). 이때 저장소 revision은 정상이라 restart가 성공하고, "새로 시작 전" 스냅샷에는 **마지막 화면 편집이 없다** — revision 검사로는 못 잡는다 | 이 레인 판정: 새로 시작은 **저장된 문서**만 보존한다고 문구로 밝힌다(R-D2 "이 저장 기준으로 스냅샷에 남습니다"). 이탈 손실 자체는 편집기 기존 결함(restart 없이도 같은 손실) → **BACKLOG 후보**(Jarvis 등록: 이탈 전 `flushed()` 확인·실패 시 이동 보류) · MQ-S5 |
 
@@ -276,4 +278,4 @@
 ## 변경 이력
 - r0 (2026-10-10): 초안.
 - r1 (2026-10-10): Codex adversarial r1 반영 — 이탈 저장 미보장(RS-R6·R-D2·RS-AC-08c·MQ-S5) · 커밋 뒤 미확인 결과 분리(R-E4·RS-AC-08b) · `readonly`/`stale` 분리(R-E2b) · 복원 진입 132.68 예산(9절·RS-AC-13).
-- r2 (2026-10-11): Codex SPEC r1 재검증(`restart-impl/dev/active/restart-impl/logs/codex-spec-result.md`) P1 1 · P2 8 + RESTART-IMPL 실측 반영 — **P1** 실패 판정 순서 3.3.1(커밋 확인 `getDoc` → 사유 · 확인 불가 R-E5 · MQ-S6) · RS-AC-07 정정 + 07b·07c / P2-2 R-E4 버튼 [취소][다시 시도] · 편집기로 보내지 않음 · RS-R7 / P2-3 STALE_DOC 재판정 R-E1b · RS-AC-06b / P2-4 `create` 재생 재판정 R-C3 · RS-AC-17 / P2-5 R-D2 "마지막 변경"(저장소 문서 기준) · RS-AC-08c 3행 / P2-6 성공 state `changes` 제외 RS-D9 · RS-AC-18 / P2-7 RS-AC-01 기존 테스트 교체 허용 / P2-8 스냅샷 단언 = 신규 id 기준 · 20→20 / P2-9 RS-AC-13 = ADR-004 개정 15 · 9절 예산 실측 · MQ-S7 / RS-D4~D8 판정 · RS-D1 근거 정정.
+- r2 (2026-10-11): Codex SPEC r1 재검증(`restart-impl/dev/active/restart-impl/logs/codex-spec-result.md`) P1 1 · P2 8 + RESTART-IMPL 실측 반영 — **P1** 실패 판정 순서 3.3.1(커밋 확인 `getDoc` → 사유 · 확인 불가 R-E5 · MQ-S6) · RS-AC-07 정정 + 07b·07c / P2-2 R-E4 버튼 [취소][다시 시도] · 편집기로 보내지 않음 · RS-R7 / P2-3 STALE_DOC 재판정 R-E1b · RS-AC-06b · **Codex r2-문서 r1 P1(오류 코드 예외 없이 모든 실패 커밋 확인) · P2(미확인 기억 · RS-AC-08d)** / P2-4 `create` 재생 재판정 R-C3 · RS-AC-17 / P2-5 R-D2 "마지막 변경"(저장소 문서 기준) · RS-AC-08c 3행 / P2-6 성공 state `changes` 제외 RS-D9 · RS-AC-18 / P2-7 RS-AC-01 기존 테스트 교체 허용 / P2-8 스냅샷 단언 = 신규 id 기준 · 20→20 / P2-9 RS-AC-13 = ADR-004 개정 15 · 9절 예산 실측 · MQ-S7 / RS-D4~D8 판정 · RS-D1 근거 정정.

@@ -126,13 +126,13 @@ export function StudioLayout({
 
   // 앱 안 링크(돌아가기 · 프로필 보기)로 떠날 때 마지막 화면 편집까지 저장한 뒤 이동한다(E-S10 · B-RS-01) — 틀이 사라지면 스케줄러가
   // 디바운스·저장 중 편집을 버린다. 저장할 것이 없으면 그대로 이동 · 기다리는 동안 다시 누름은 무시 · 저장하지 못하면 이동 보류(저장 상태가 실패 안내·"다시 저장")
-  // 수정 키 클릭(새 탭·창)은 이 탭을 떠나지 않으므로 막지 않는다(Codex r1 P2). 다운로드 링크(내보내기 결과)는 저장 뒤 같은 링크를 다시 눌러 그대로 받는다
+  // 수정 키 클릭(새 탭·창)은 이 탭을 떠나지 않으므로 막지 않는다(Codex r1 P2). 내려받기 링크(내보내기 결과)는 떠나지 않으므로 저장 실패와 무관하게 통과
   const { leave } = save;
   /** true = 저장을 기다리는 중 · 요소 = 저장을 마치고 다시 누르는 그 링크(통과) */
   const leaving = useRef<Element | boolean>(false);
   const flushBeforeLeave = useCallback(
     (event: MouseEvent) => {
-      const link = event.target instanceof Element && event.target.closest("a[href]");
+      const link = event.target instanceof Element && event.target.closest("a[href]:not([download])");
       if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       if (leaving.current) return leaving.current === link ? void (leaving.current = false) : event.preventDefault();
       const saved = leave();

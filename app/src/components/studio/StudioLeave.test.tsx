@@ -249,6 +249,20 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(repo.save).not.toHaveBeenCalled();
   });
 
+  it("저장 실패 중에도 내려받기 링크(a[download] — 내보내기 결과)는 가로채지 않는다 · 저장 대기 0(RESUME-1)", async () => {
+    const repo = heldRepository();
+    draw(repo.repository);
+    type("실패할 편집");
+    leave();
+    await repo.release(new Error("boom"));
+    expect(screen.getByRole("banner")).toHaveTextContent("저장하지 못했습니다");
+    const download = Object.assign(document.createElement("a"), { href: "blob:site", download: "site.zip", textContent: "내려받기" });
+    screen.getByRole("banner").append(download);
+    expect(fireEvent.click(download)).toBe(true);
+    expect(repo.save).toHaveBeenCalledTimes(1);
+    expect(repo.waiting()).toBe(0);
+  });
+
   it("바뀐 것이 없으면 바로 이동 · 저장 0", () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);

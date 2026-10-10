@@ -25,8 +25,8 @@
 - 최종 게이트(7db2c0b): typecheck·lint·build 0 · vitest 301/2717 · Ego 재실행 3/3.
 
 ## RESUME-1
-- [ ] main(`d68006e`) `--no-ff` 병합
-- [ ] 다운로드 제외 복원 RED→GREEN (`StudioLeave.test.tsx`)
+- [x] main(`d68006e`) `--no-ff` 병합 — `dbcfd4f`
+- [x] 다운로드 제외 복원 RED→GREEN (`StudioLeave.test.tsx`) — RED(선택자 `a[href]`로 되돌림): 1 failed | 13 passed `expected false to be true`(click 기본 동작 취소=보류) · GREEN(`a[href]:not([download])`): 14/14
 - [ ] 게이트 typecheck·lint·vitest·build
 - [ ] 기준선 정리 (`/studio` ≤ 129.88 · 복원 ≤ 132.92)
 - [ ] REPORT RESUME-1 절

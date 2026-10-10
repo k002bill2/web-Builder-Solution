@@ -48,11 +48,12 @@ function setup({ doc = sampleDoc(), images, undoDoc, instanceId = "s-hero" }: { 
     const host: ImageHost = [map, setMap, undoDoc];
     const target = current.sections.find((s) => s.instanceId === instanceId)!;
     const slots = getSectionDefinition(target.type, target.variant)!.slots;
-    const onEdit = (next: PageDoc) => {
+    // 편집 틀의 기록 경로(useSectionOps.field) 흉내 — 키·이름·클릭 표시는 받고 문서만 바꾼다(FIELD-UNDO 4.5)
+    const onEdit = (_key: string, _label: string, next: PageDoc) => {
       state.edits += 1;
       setDoc(next);
     };
-    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={onEdit} slots={slots} host={host} Button={Button} />;
+    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={onEdit} name="Hero" slots={slots} host={host} Button={Button} />;
   }
   const view = render(<Host />);
   return { state, view };
@@ -312,6 +313,32 @@ describe("ImageSlotPanel — Codex r2", () => {
     expect(typeof b).toBe("string");
     expect(state.images?.[a]?.width).toBe(1000);
     expect(state.images?.[b]?.width).toBe(2000);
+  });
+
+  it("두 슬롯 바꾸기가 같은 틱에 끝나도 두 이전 이미지 모두 남는다 — 앞 바꾸기의 시작 문서(실행 취소 기록)도 정리 참조에(FIELD-UNDO 4.4 · Codex FU2 r1 P2)", async () => {
+    const gallery = section("portfolio", "grid-3", "s-gallery");
+    let doc = withSections(sampleDoc(), [...sampleDoc().sections.slice(0, 2), gallery, ...sampleDoc().sections.slice(2)]);
+    const [old1, old2] = [uuid(1), uuid(2)];
+    for (const [key, id] of [["image1", old1], ["image2", old2]] as const) {
+      const value = doc.sections.find((s) => s.instanceId === "s-gallery")!.slots[key] as ImageSlotValue;
+      doc = setSlot(doc, "s-gallery", key, { ...value, enabled: true, source: id });
+    }
+    const { image } = ok(800) as Extract<IngestResult, { ok: true }>;
+    const images = addImage(addImage({}, old1, image, 640), old2, image, 640);
+    const done: ((r: IngestResult) => void)[] = [];
+    ingest.fn.mockImplementation(() => new Promise((r) => void done.push(r)));
+    const { state } = setup({ doc, images, instanceId: "s-gallery" });
+    fireEvent.change(screen.getByTestId("image-file-image1"), { target: { files: [file("a.jpg")] } });
+    fireEvent.change(screen.getByTestId("image-file-image2"), { target: { files: [file("b.jpg")] } });
+    await settle();
+    await act(async () => {
+      done[0]!(ok(1000));
+      done[1]!(ok(2000));
+    });
+    const slots = state.doc.sections.find((s) => s.instanceId === "s-gallery")!.slots;
+    expect((slots.image1 as ImageSlotValue).source).not.toBe(old1);
+    expect((slots.image2 as ImageSlotValue).source).not.toBe(old2);
+    expect(Object.keys(state.images ?? {})).toEqual(expect.arrayContaining([old1, old2]));
   });
 });
 

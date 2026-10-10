@@ -1,0 +1,29 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a12694-5615-74d0-be0f-4564a8d94d40).
+[codex] Reviewer started: changes against '2ad7221'
+[codex] Running command: /bin/zsh -lc 'pwd; git status --short; git diff --stat 2ad7221fb98dbb868da0f9eb38eaa245525bfe...
+[codex] Command completed: /bin/zsh -lc 'pwd; git status --short; git diff --stat 2ad7221fb98dbb868da0f9eb38eaa245525bfe... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'fu-blur|web-builder' '/Users/younghwankang/Library/Application Support/o...
+[codex] Command failed: /bin/zsh -lc "rg -n 'fu-blur|web-builder' '/Users/younghwankang/Library/Application Support/o... (exit 1)
+[codex] Running command: /bin/zsh -lc 'git diff 2ad7221fb98dbb868da0f9eb38eaa245525bfe12; for d in /Users /Users/young...
+[codex] Command completed: /bin/zsh -lc 'git diff 2ad7221fb98dbb868da0f9eb38eaa245525bfe12; for d in /Users /Users/young... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/opAfter.ts; cat app/src/features/studio/useSectionO...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/opAfter.ts; cat app/src/features/studio/useSectionO... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/docOps.ts; cat app/package.json; ls app/node_module...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/docOps.ts; cat app/package.json; ls app/node_module... (exit 0)
+[codex] Running command: /bin/zsh -lc './node_modules/.bin/vitest run src/features/studio/useSectionOps.field.test.tsx...
+[codex] Command failed: /bin/zsh -lc './node_modules/.bin/vitest run src/features/studio/useSectionOps.field.test.tsx... (exit 1)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 새 임시 리스너의 정리가 청크 로딩 성공에만 의존하여 언마운트·로딩 실패 경로에서 누수가 발생합니다. 대상 테스트 실행은 읽기 전용 환경의 임시 디렉터리 생성 제한(E...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2ad7221
+
+새 임시 리스너의 정리가 청크 로딩 성공에만 의존하여 언마운트·로딩 실패 경로에서 누수가 발생합니다. 대상 테스트 실행은 읽기 전용 환경의 임시 디렉터리 생성 제한(EPERM)으로 차단되어 검증하지 못했습니다.
+
+Review comment:
+
+- [P2] 임시 focusout 리스너를 언마운트와 로딩 실패 시에도 해제하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/fu-blur/app/src/features/studio/useSectionOps.ts:183-184
+  첫 입력 후 엔진 청크 로딩 중 편집기를 언마운트하거나 동적 import가 실패하면, 새 `focusout` 리스너가 해제되지 않습니다. 해제 함수는 지역 변수에만 있고 성공한 `.then()`에서만 호출되므로, 기존 언마운트 정리의 `o.current?.off?.()`로는 제거할 수 없습니다. 특히 로딩 실패 시 문서와 열린 묶음을 붙잡는 전역 리스너가 영구적으로 남습니다. 임시 리스너도 훅의 정리 경로에서 접근할 수 있게 관리하고, 로딩 실패 시에도 해제해야 합니다.

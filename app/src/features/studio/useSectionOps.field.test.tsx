@@ -5,7 +5,7 @@ import { ProfileRepositoryProvider } from "../../data/ProfileRepositoryContext";
 import type { GenerationRepository } from "../../data/generationRepository";
 import type { ProfileRepository } from "../../data/profileRepository";
 import type { ProjectRepository } from "../../data/projectRepository";
-import type { PageDoc } from "../../engine/contracts/pageDoc";
+import type { ImageSlotValue, PageDoc } from "../../engine/contracts/pageDoc";
 import { setSlot } from "../../engine/ops/slotOps";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { loadDocEngine } from "./docOps";
@@ -198,5 +198,106 @@ describe("Codex r1 P2 — 청크 로딩 중 칸 이동 · IME 확정 · 리스�
     expect(live("compositionend")).toBe(0);
     add.mockRestore();
     remove.mockRestore();
+  });
+
+  it("r2 P2-1 청크 응답 전 첫 입력 → blur → 같은 칸 재입력 = 기록 2건 · 문서 리스너 누적 0", async () => {
+    const add = vi.spyOn(document, "addEventListener");
+    const remove = vi.spyOn(document, "removeEventListener");
+    const live = (type: string) => add.mock.calls.filter(([t]) => t === type).length - remove.mock.calls.filter(([t]) => t === type).length;
+    const { result, unmount } = setup();
+    // 같은 틱 = 청크(docEngine) 응답 전 — 그사이 칸을 떠났다(focusout) 돌아와 다시 친다
+    await act(async () => {
+      const first = setSlot(result.current.doc, "s-hero", "title", "하나");
+      result.current.ops.field(TITLE, "Hero 제목 편집", first);
+      document.dispatchEvent(new FocusEvent("focusout"));
+      result.current.ops.field(TITLE, "Hero 제목 편집", setSlot(first, "s-hero", "title", "하나 둘"));
+    });
+    blur();
+    const step = () => act(async () => void (await result.current.ops.step(false, { setNotice: () => undefined, goTo: () => undefined })));
+    expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
+    await step();
+    expect(title(result.current.doc)).toBe("하나");
+    expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
+    await step();
+    expect(result.current.doc).toBe(result.current.start);
+    expect(live("focusout")).toBe(0);
+    unmount();
+    expect(live("focusout")).toBe(0);
+    expect(live("compositionend")).toBe(0);
+    add.mockRestore();
+    remove.mockRestore();
+  });
+
+  it("FU-BLUR r1 P2 청크 응답 전 언마운트 = 표시 리스너 바로 해제(응답 전 · 실패여도) · 누적 0", async () => {
+    const add = vi.spyOn(document, "addEventListener");
+    const remove = vi.spyOn(document, "removeEventListener");
+    const live = (type: string) => add.mock.calls.filter(([t]) => t === type).length - remove.mock.calls.filter(([t]) => t === type).length;
+    const { result, unmount } = setup();
+    act(() => void result.current.ops.field(TITLE, "Hero 제목 편집", setSlot(result.current.doc, "s-hero", "title", "하나")));
+    expect(live("focusout")).toBe(1);
+    unmount();
+    // 청크 응답을 기다리지 않고도(로딩 실패여도) 언마운트 정리가 뗀다
+    expect(live("focusout")).toBe(0);
+    await act(async () => void (await loadDocEngine()));
+    expect(live("focusout")).toBe(0);
+    expect(live("compositionend")).toBe(0);
+    add.mockRestore();
+    remove.mockRestore();
+  });
+});
+
+describe("이미지 패널 클릭 = 즉시 기록 1건 — FIELD-UNDO-2 · FU-AC-13 (4.5)", () => {
+  const IMAGE = "image-s-hero-image";
+  const image = (doc: PageDoc) => doc.sections.find((s) => s.instanceId === "s-hero")!.slots.image as ImageSlotValue;
+  const switched = (doc: PageDoc, enabled: boolean) => setSlot(doc, "s-hero", "image", { ...image(doc), enabled });
+  const undo = (result: View) => act(async () => void (await result.current.ops.step(false, { setNotice: () => undefined, goTo: () => undefined })));
+
+  it("클릭 1회 = 타이머 없이 바로 기록 1건 · 실행 취소 = 클릭 전 문서", async () => {
+    const { result } = setup();
+    await act(async () => void result.current.ops.field(IMAGE, "Hero 이미지 끄기", switched(result.current.doc, false), "click"));
+    expect(result.current.ops.peekStep(false)).toBe("Hero 이미지 끄기");
+    await undo(result);
+    expect(result.current.doc).toBe(result.current.start);
+  });
+
+  it("같은 키 클릭 2회(청크 응답 전 같은 틱 포함) = 기록 2건 — 묶이지 않음", async () => {
+    const { result } = setup();
+    await act(async () => {
+      const off = switched(result.current.doc, false);
+      result.current.ops.field(IMAGE, "Hero 이미지 끄기", off, "click");
+      result.current.ops.field(IMAGE, "Hero 이미지 켜기", switched(off, true), "click");
+    });
+    expect(result.current.ops.peekStep(false)).toBe("Hero 이미지 켜기");
+    await undo(result);
+    expect(image(result.current.doc).enabled).toBe(false);
+    expect(result.current.ops.peekStep(false)).toBe("Hero 이미지 끄기");
+    await undo(result);
+    expect(result.current.doc).toBe(result.current.start);
+  });
+
+  it("클릭 뒤 같은 틱 글자 입력(청크 응답 전) = 클릭 1건 + 글자 묶음 — 사슬이 끊기지 않음", async () => {
+    const { result } = setup();
+    await act(async () => {
+      const off = switched(result.current.doc, false);
+      result.current.ops.field(IMAGE, "Hero 이미지 끄기", off, "click");
+      result.current.ops.field(TITLE, "Hero 제목 편집", setSlot(off, "s-hero", "title", "새 제목"));
+    });
+    blur();
+    expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
+    await undo(result);
+    expect(result.current.ops.peekStep(false)).toBe("Hero 이미지 끄기");
+    await undo(result);
+    expect(result.current.doc).toBe(result.current.start);
+  });
+
+  it("편집 경계 거절(미리보기 중) = false 반환 · 기록 0 · 문서 그대로", async () => {
+    let locked = true;
+    const { result } = setup(() => locked);
+    let returned: boolean | void = undefined;
+    await act(async () => void (returned = result.current.ops.field(IMAGE, "Hero 이미지 고르기", switched(result.current.doc, false), "click")));
+    expect(returned).toBe(false);
+    expect(result.current.ops.peekStep(false)).toBeUndefined();
+    expect(result.current.doc).toBe(result.current.start);
+    locked = false;
   });
 });

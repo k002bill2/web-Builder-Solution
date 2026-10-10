@@ -14,6 +14,9 @@ export interface PanelLatest {
   readonly snapshots?: readonly PageDoc[];
 }
 
+/** 편집 1회 = 실행 취소 기록(FIELD-UNDO 4.5 · useSectionOps.field) — mode "click" = 즉시 1건 · 그 밖 = 글자 묶음(true = IME 조합 중). false = 편집 경계가 거절 */
+export type FieldEdit = (key: string, label: string, next: PageDoc, mode?: boolean | "click") => boolean | void;
+
 interface FieldProps {
   readonly section: SectionInstance;
   readonly entry: SlotSchemaEntry;
@@ -24,7 +27,9 @@ interface FieldProps {
   readonly remember: (doc: PageDoc, images: RenderImages) => void;
   readonly publish: ImageHost[1];
   /** false = 편집 경계가 거절(스냅샷 미리보기 중·미리보기를 지난 작업) */
-  readonly onEdit: (next: PageDoc) => boolean | void;
+  readonly onEdit: FieldEdit;
+  /** 섹션 이름 — 기록 이름 "{섹션} 이미지 고르기" 등(FU 4.5) */
+  readonly name: string;
   readonly announce: (text: string) => void;
   readonly Button: typeof ButtonType;
 }
@@ -54,7 +59,7 @@ const insertedMessage = (value: ImageSlotValue, replacing: boolean, relinking: b
  * 파일 고르기 → 변환기(파일을 고른 순간 동적 import, SPEC 2.1) → 한도(보관 바이트) → 문서·맵 반영.
  * 마지막 선택만 반영(IMG-AC-09) · 실패·한도 초과 = 필드 오류, 문서·맵 불변(IMG-AC-08·11) · 파일 이름은 어디에도 두지 않는다(IMG-AC-15).
  */
-function useImagePick({ section, entry, latest, remember, publish, onEdit, announce }: FieldProps) {
+function useImagePick({ section, entry, latest, remember, publish, onEdit, name, announce }: FieldProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const turn = useRef(0);
@@ -108,11 +113,13 @@ function useImagePick({ section, entry, latest, remember, publish, onEdit, annou
     const replacing = previous !== undefined && images?.[previous] !== undefined;
     const kept = replacing ? { ...value, alt: "", decorative: false } : value;
     const nextDoc = setSlot(doc, current.instanceId, entry.key, { ...kept, enabled: true, source: id });
-    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc, snapshots)), id, result.image, slotTarget(current.type, current.variant));
-    const limit = checkLimits(nextDoc, undoDoc, nextImages, snapshots);
+    // 지금 문서 = 이 고르기 기록의 시작 문서 — 바꾸기 전 이미지는 실행 취소가 닿는 동안 놓지 않는다(FIELD-UNDO 4.4)
+    const held = [doc, ...(snapshots ?? [])];
+    const nextImages = addImage(pruneImages(images, retainedIds(nextDoc, undoDoc, held)), id, result.image, slotTarget(current.type, current.variant));
+    const limit = checkLimits(nextDoc, undoDoc, nextImages, held);
     if (!limit.ok) return fail(limit.message);
     // 편집 경계가 거절하면 이미지 맵도 바꾸지 않는다 — 미리보기 중 자동 저장 0 · 늦은 결과가 복원을 덮지 않게(Codex r2 P1)
-    if (onEdit(nextDoc) === false) return fail(PAUSED);
+    if (onEdit(`image-${section.instanceId}-${entry.key}`, `${name} 이미지 고르기`, nextDoc, "click") === false) return fail(PAUSED);
     remember(nextDoc, nextImages);
     publish(() => nextImages);
     announce(insertedMessage(kept, replacing, previous !== undefined));
@@ -131,7 +138,8 @@ function Preview({ blob }: { readonly blob: Blob }) {
   return <img ref={img} alt="" className="aspect-video w-full rounded-md bg-fill-normal object-cover" />;
 }
 
-function AltFields({ id, value, onChange }: { readonly id: string; readonly value: ImageSlotValue; readonly onChange: (next: ImageSlotValue) => void }) {
+/** onChange = 대체텍스트 글자(조합 중 여부 · 필드 묶음) · onDecorative = 장식 체크(클릭 1건) */
+function AltFields({ id, value, onChange, onDecorative }: { readonly id: string; readonly value: ImageSlotValue; readonly onChange: (next: ImageSlotValue, composing: boolean) => void; readonly onDecorative: (next: ImageSlotValue) => void }) {
   const help = `${id}-help`;
   const reason = `${id}-reason`;
   return (
@@ -148,7 +156,7 @@ function AltFields({ id, value, onChange }: { readonly id: string; readonly valu
           readOnly={value.decorative}
           aria-disabled={value.decorative || undefined}
           aria-describedby={value.decorative ? `${reason} ${help}` : help}
-          onChange={(e) => onChange({ ...value, alt: e.target.value })}
+          onChange={(e) => onChange({ ...value, alt: e.target.value }, (e.nativeEvent as InputEvent).isComposing)}
           className={BOX}
         />
         {value.decorative && (
@@ -161,7 +169,7 @@ function AltFields({ id, value, onChange }: { readonly id: string; readonly valu
         </p>
       </div>
       <label className="inline-flex min-h-6 cursor-pointer items-center gap-2 text-body3 text-label-normal">
-        <input type="checkbox" checked={value.decorative} onChange={(e) => onChange({ ...value, decorative: e.target.checked })} className="size-4 accent-primary" />
+        <input type="checkbox" checked={value.decorative} onChange={(e) => onDecorative({ ...value, decorative: e.target.checked })} className="size-4 accent-primary" />
         장식 이미지 — 대체텍스트 없이 둡니다
       </label>
     </>
@@ -201,7 +209,7 @@ function SlotSwitch({ id, label, value, error, onChange }: { readonly id: string
 
 /** 이미지 슬롯 1개 (SPEC m2c 2.2 · 2a-05 5.9 · E-S20) — 잃은 이미지(보관소에 없는 로컬 id)는 자체 플레이스홀더 + 다시 고르기 */
 export function ImageSlotField(props: FieldProps) {
-  const { section, entry, doc, images, latest, onEdit, announce, Button } = props;
+  const { section, entry, doc, images, latest, onEdit, name, announce, Button } = props;
   const { busy, error, pick, cancel } = useImagePick(props);
   const [switchError, setSwitchError] = useState("");
   const input = useRef<HTMLInputElement>(null);
@@ -209,14 +217,16 @@ export function ImageSlotField(props: FieldProps) {
   const value = slotValue(section, entry.key);
   if (!value) return null;
   const id = `image-${section.instanceId}-${entry.key}`;
-  const edit = (next: ImageSlotValue) => onEdit(setSlot(doc, section.instanceId, entry.key, next));
+  // 클릭(켜기·끄기·지우기·장식) = 즉시 기록 1건 "{섹션} 이미지 …" · 대체텍스트 = 필드 묶음 "{섹션} 대체텍스트 편집"(FU 4.5)
+  const edit = (what: string, next: ImageSlotValue) => onEdit(id, `${name} 이미지 ${what}`, setSlot(doc, section.instanceId, entry.key, next), "click");
+  const alt = (next: ImageSlotValue, composing: boolean) => onEdit(`${id}-alt`, `${name} 대체텍스트 편집`, setSlot(doc, section.instanceId, entry.key, next), composing);
   // 꺼진 슬롯 이미지는 문서 한도에서 빠지므로 다시 켤 때도 잰다 — 넘으면 꺼진 채 둔다(Codex r1 P2)
   const toggle = (next: ImageSlotValue) => {
     const limit = next.enabled ? checkLimits(setSlot(doc, section.instanceId, entry.key, next), latest.current.undoDoc, images ?? {}, latest.current.snapshots) : { ok: true as const };
     setSwitchError(limit.ok ? "" : limit.message);
     if (!limit.ok) return announce(limit.message);
     if (!next.enabled) cancel();
-    edit(next);
+    edit(next.enabled ? "켜기" : "끄기", next);
   };
   const local = typeof value.source === "string" ? value.source : undefined;
   const held = local ? images?.[local] : undefined;
@@ -247,7 +257,7 @@ export function ImageSlotField(props: FieldProps) {
                   // 이 버튼은 사라진다 — 포커스를 같은 자리에 남는 "이미지 고르기"로 옮긴다(BODY 유실 방지, B-M2C-06)
                   actions.current?.querySelector("button")?.focus();
                   // 대체텍스트·장식 여부는 지운 그림의 설명 — 같은 편집 1회로 비운다(다음 이미지에 따라가지 않게, B-M2C-08 · m2c SPEC r3 2.7)
-                  edit({ ...value, source: PLACEHOLDER, alt: "", decorative: false });
+                  edit("지우기", { ...value, source: PLACEHOLDER, alt: "", decorative: false });
                   // 지움 결과 알림 — 앞선 "이미지를 넣었습니다"가 남지 않게(B-M2C-07 · SPEC 2.5 문구 톤)
                   announce("이미지를 지웠습니다");
                 }}>
@@ -275,7 +285,7 @@ export function ImageSlotField(props: FieldProps) {
               {error}
             </p>
           )}
-          <AltFields id={`${id}-alt`} value={value} onChange={edit} />
+          <AltFields id={`${id}-alt`} value={value} onChange={alt} onDecorative={(next) => edit("장식", next)} />
           <p className="ds-caption1 text-label-alternative">직접 찍었거나 사용 권리가 있는 이미지만 넣어 주세요.</p>
           {entry.key === "map" && (
             <p className="ds-caption1 text-label-alternative">지도 서비스 화면을 캡처해 쓰면 그 서비스 약관을 따라야 합니다 — 직접 그린 약도나 사용 허락을 받은 지도를 권장합니다.</p>

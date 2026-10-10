@@ -1,0 +1,55 @@
+/Users/younghwankang/orca/workspaces/web-builder-solution/qa-reopen/dev/active/qa-reopen/shots/ber07-r6-settled.png (1280x900, viewport)
+/Users/younghwankang/orca/workspaces/web-builder-solution/qa-reopen/dev/active/qa-reopen/shots/ber07-r6-after.png (1280x900, viewport)
+{
+ "RATE": 6,
+ "FILE": "hi-35mp.jpg 7000x5000 4,882,057B",
+ "log": [
+  {
+   "at": "before",
+   "live": [
+    "이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요"
+   ],
+   "hero": "이미지 편집 (1) / 이미지를 바꿨습니다 대체텍스트를 다시 적어 주세요 / 대표 이미지 사용 / 끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다 / 7000 × 5000 · WebP 12KB / 다른 이미지로 바꾸기",
+   "preview": false,
+   "pausedMsg": false
+  },
+  {
+   "at": "picked +66ms",
+   "live": [
+    "이미지를 준비하고 있습니다"
+   ],
+   "hero": "이미지 편집 (1) / 이미지를 준비하고 있습니다 / 대표 이미지 사용 / 끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다 / 7000 × 5000 · WebP 12KB / 다른 이미지로 바꾸기",
+   "preview": false,
+   "pausedMsg": false
+  },
+  {
+   "at": "preview +3042ms",
+   "live": [
+    "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요"
+   ],
+   "hero": "이미지 편집 (1) / 스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요 / 대표 이미지 사용 / 끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다 / 7000 × 5000 · WebP 12KB / 다른 이미지로 바꾸기",
+   "preview": true,
+   "pausedMsg": true
+  },
+  {
+   "at": "settled +3565ms",
+   "live": [
+    "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요"
+   ],
+   "hero": "이미지 편집 (1) / 스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요 / 대표 이미지 사용 / 끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다 / 7000 × 5000 · WebP 12KB / 다른 이미지로 바꾸기",
+   "preview": true,
+   "pausedMsg": true
+  },
+  {
+   "at": "after back",
+   "live": [
+    "스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요"
+   ],
+   "hero": "이미지 편집 (1) / 스냅샷을 보는 동안 준비된 이미지는 넣지 않았습니다 · 다시 골라 주세요 / 대표 이미지 사용 / 끄면 이미지 자리 없이 섹션 배경만 보이고 대체텍스트 검사에서 빠집니다 / 7000 × 5000 · WebP 12KB / 다른 이미지로 바꾸기",
+   "preview": false,
+   "pausedMsg": true,
+   "alt": ""
+  }
+ ]
+}
+

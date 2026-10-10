@@ -1,0 +1,1 @@
+{'name': 'hi-35mp.jpg', 'w': 7000, 'h': 5000, 'px': 35000000, 'quality': 80, 'bytes': 4882057, 'under10MiB': True, 'sha256': 'c2a9265a702cf380'}

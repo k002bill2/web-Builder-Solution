@@ -1,0 +1,6 @@
+override·스로틀 해제
+IDB deleted
+finish {"spaceId":3,"closedSpace":true,"keptManagedLabels":[],"closedManagedLabels":["p1"],"preservedUnmanagedCount":0}
+spaces [{"id":3,"name":"qa-reopen 4345 r1","ownership":"user"}]
+
+4345 listen: 0

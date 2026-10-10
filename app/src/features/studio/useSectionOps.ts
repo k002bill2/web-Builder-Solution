@@ -175,11 +175,24 @@ export function useSectionOps({
       if (edit(next) === false) return false;
       // 문서 참조는 같은 틱에 — 바로 이은 Ctrl+Z·연산의 동일성 비교가 이 입력을 본다(FU 4.2)
       docRef.current = next;
-      const o = (open.current ??= { key, label, base });
+      let off: (() => void) | undefined;
+      if (!open.current) {
+        // 새 묶음 — 이 입력의 청크 응답(focusout 리스너)까지 blur를 표시해 둔다(청크 로딩 중 떠났다 같은 칸 재입력 = 따로 기록, Codex r2 P2-1)
+        const o: FieldOpen = (open.current = { key, label, base });
+        const mark = () => void (o.cut = true);
+        document.addEventListener("focusout", mark);
+        off = () => document.removeEventListener("focusout", mark);
+      }
+      const o = open.current;
+      const cut = o.cut;
+      o.cut = false;
       o.after = next;
       setHold(o.base);
-      // 다른 칸(재마운트·탭 전환 포함) · 기록 밖 교체 뒤면 청크가 앞 묶음을 닫고 새로 연다 — 청크 응답 전 입력도 순서대로(Codex r1 P2-1 · P2-3)
-      void loadDocEngine().then((e) => listen(e).fieldTyped(rec, composing, key, label, base, next));
+      // 다른 칸(재마운트·탭 전환 포함) · 기록 밖 교체 · 앞 입력 뒤 blur면 청크가 앞 묶음을 닫고 새로 연다 — 청크 응답 전 입력도 순서대로(Codex r1 P2-1 · P2-3)
+      void loadDocEngine().then((e) => {
+        listen(e).fieldTyped(rec, composing, key, label, base, next, cut);
+        off?.();
+      });
     },
     [edit, listen, rec],
   );

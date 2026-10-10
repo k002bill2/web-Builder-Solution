@@ -23,3 +23,10 @@
 - 기준선 최종 129.73 · 132.76 (마지막 빌드 실측, 커밋 `4d878be`).
 - Codex r1 반영 뒤 129.82/132.85 → 감량 1회 → 129.77/132.80(기준선 갱신). r2 반영 뒤 → 감량 1회 → 129.79/132.83, 판정선 안·몫 초과 → 멈추고 보고.
 - 최종 게이트(7db2c0b): typecheck·lint·build 0 · vitest 301/2717 · Ego 재실행 3/3.
+
+## RESUME-1
+- [ ] main(`d68006e`) `--no-ff` 병합
+- [ ] 다운로드 제외 복원 RED→GREEN (`StudioLeave.test.tsx`)
+- [ ] 게이트 typecheck·lint·vitest·build
+- [ ] 기준선 정리 (`/studio` ≤ 129.88 · 복원 ≤ 132.92)
+- [ ] REPORT RESUME-1 절

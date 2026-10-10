@@ -53,6 +53,10 @@ export type FieldOpen = {
   /** 청크가 마지막으로 처리한 입력의 문서 — 다음 입력의 시작 문서와 다르면 그사이 기록 밖 교체(충돌 "최신")가 있었다 */
   seen?: PageDoc;
   timer?: ReturnType<typeof setTimeout>;
+  /** 청크 응답 전 blur 표시 — 진입이 다음 입력에서 읽어 지우고 청크에 넘긴다(Codex r2 P2-1) */
+  cut?: boolean;
+  /** 청크가 이 묶음에 리스너를 달았는지 — 전에는 off가 진입의 blur 표시 리스너 해제다 */
+  on?: boolean;
   /** 타이머 · 문서 리스너(focusout · compositionend) 해제 — 닫기 · 언마운트가 부른다(Codex r1 P2-4) */
   off?: () => void;
 };
@@ -93,14 +97,14 @@ export function closeField({ open, docRef, stack, edit, hold }: FieldRec): PageD
  * 입력 1회 뒤(진입이 입력마다 순서대로 부른다) — 멈춤 타이머를 다시 건다. 조합 중(IME)이면 걸지 않고 compositionend가 건다(FU 4.6 · Codex r1 P2-2).
  * 클릭("click")이면 앞 묶음을 닫은 뒤 이 입력만으로 바로 기록 1건(FU 4.5) — 청크 응답 전 이 클릭 뒤에 온 입력은 다음 호출이 이어 받게 남긴다.
  * 이 입력이 다른 칸이거나 시작 문서가 앞 입력의 문서가 아니면(기록 밖 교체 — 충돌 "최신") 앞 묶음을 앞 입력 문서까지로 닫고 이 입력부터 새 묶음
- * (청크 응답 전 칸 이동 · 교체 전 base 재사용으로 다른 탭 변경을 덮는 것 방지 — Codex r1 P2-1 · P2-3).
+ * (청크 응답 전 칸 이동 · 교체 전 base 재사용으로 다른 탭 변경을 덮는 것 방지 — Codex r1 P2-1 · P2-3). 청크 응답 전 앞 입력 뒤 blur(cut)도 같다(Codex r2 P2-1).
  * 묶음의 첫 입력이면 포커스가 떠날 때(focusout = 칸 blur · "더보기"·미리보기·충돌 버튼 누름) 닫는 문서 리스너를 단다(FU 4.1)
  */
-export function fieldTyped(rec: FieldRec, composing: FieldMode | undefined, key: string, label: string, base: PageDoc, next: PageDoc): void {
+export function fieldTyped(rec: FieldRec, composing: FieldMode | undefined, key: string, label: string, base: PageDoc, next: PageDoc, cut?: boolean): void {
   let o = rec.open.current;
   if (!o) return;
   const seen = o.seen ?? o.base;
-  if (o.key !== key || base !== seen) {
+  if (o.key !== key || base !== seen || cut) {
     const latest = o.after;
     o.after = seen;
     // 기록 밖 교체가 아니면 앞 묶음이 이어 준 문서에서 시작한다 — 쳤다 지운 묶음(기록 0)이면 같은 내용의 복제 대신 시작 문서 참조(Codex r2 P2)
@@ -126,7 +130,10 @@ export function fieldTyped(rec: FieldRec, composing: FieldMode | undefined, key:
     clearTimeout(mine.timer);
     mine.timer = setTimeout(close, FIELD_PAUSE_MS);
   };
-  if (!o.off) {
+  if (!o.on) {
+    // 진입이 단 blur 표시 리스너를 떼고(새 묶음 첫 처리) 청크 리스너로 바꾼다
+    o.off?.();
+    o.on = true;
     const end = () => rec.open.current === mine && arm();
     document.addEventListener("focusout", close);
     document.addEventListener("compositionend", end);

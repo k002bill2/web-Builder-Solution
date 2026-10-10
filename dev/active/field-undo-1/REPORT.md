@@ -23,8 +23,8 @@
 | FU-AC-14 | 통과(경계값) | 4절 예산 표 |
 | FU-AC-15 | 통과 | 6절 단언 2건만 변경(아래) · 그 밖 기존 단언 변경 0 · 게이트 4종 |
 | FU-AC-16 | 통과 | `role=status` 수 불변 · 묶음 닫힘 알림 0(blur 직후 알림 빈 문자열) · 실행 취소 알림 1문장 |
-| FU-QB-1 | **BLOCKED** | Ego 스크립트(`qb.mjs`)가 `/profile/profile-1`에서 "3안 만들기" 버튼 대기 15초 초과로 /studio에 못 감 — 시간 예산(90분) 안에 흐름 보정 못 함. 캡처 0장 |
-| FU-QB-2 | **BLOCKED** | 같은 이유(QB-1 흐름 선행) |
+| FU-QB-1 | 통과(RESUME-1) | 1차 BLOCKED → RESUME-1에서 3폭 통과 — 8절 |
+| FU-QB-2 | 통과(RESUME-1) | 1차 BLOCKED → RESUME-1에서 통과 — 8절 |
 | FU-QB-3 | 범위 밖 | 실제 한글 IME — **영환님 수동 1회 필요** |
 
 ## 2. 변경 파일
@@ -77,3 +77,49 @@
 
 - Ego: TaskSpace 7 `finish({keep:[]})` · IDB `deleteDatabase("design-studio")` · `listTaskSpaces()` = `[]` · preview 서버 종료 · 4355 리슨 0. 영환님 창·main·다른 레인 무접촉.
 - **남은 것**: Codex r1 P2 4건(5절 — 특히 3번) · FU-QB-1·2 Ego 재시도(흐름: /profile "3안 만들기" 셀렉터 보정 필요) · FU-QB-3 영환님 수동 IME 1회 · FIELD-UNDO-2(FU-AC-13).
+
+## 8. RESUME-1 (2026-10-11 · 같은 브랜치 이어서)
+
+커밋: `b04c9df`(r1 P2 4건) · `fd37453`(PROGRESS) · `645be5f`(r2 P2 1건 + `logs/codex-r2.txt`) · 이 REPORT 커밋.
+
+### 8.1 Codex r1 P2 4건
+
+| 항목 | 결과 | 근거 |
+|---|---|---|
+| P2-3 기록 밖 교체 뒤 묶음 재사용 | **반영** | 청크 `fieldTyped`가 이 입력의 시작 문서 ≠ 앞 입력 문서(`seen`)면 앞 묶음을 `seen`까지로 닫고 새 묶음. `FieldUndo.test.tsx` "충돌 '다른 편집 불러오기' 뒤 같은 칸 입력 → Ctrl+Z = 불러온 문서" — RED("첫 편집"으로 덮음) → GREEN |
+| P2-4 focusout 리스너 누적 | **반영** | 묶음에 `off()`(타이머·focusout·compositionend 해제) 보관 → `closeField`·언마운트가 부름. 훅 단위: 타이머로 닫힌 묶음 5회 뒤 리스너 0 · 열린 묶음 1 · 언마운트 0 — RED(5) → GREEN |
+| P2-2 IME 확정 `composing` 고착 | **반영** | 청크가 묶음 첫 입력에 `compositionend` 문서 리스너 → 600ms 타이머 재개. 훅 단위: 조합 중 입력 + compositionend + 599ms = 0 · 600ms = 1건 — RED → GREEN |
+| P2-1 청크 로딩 중 칸 이동 합쳐짐 | **반영(진입 0)** | 칸 바뀜 판정을 진입(`engine.current?.closeField`)에서 청크로 옮김 — 진입은 입력마다 `fieldTyped(rec, composing, key, label, base, next)`를 순서대로 큐에 넣기만. 훅 단위: 같은 틱 제목→부제 = 기록 2건 — RED(한 기록 "Hero 제목 편집") → GREEN |
+
+- 4건 한 커밋: 넷 다 `fieldTyped` 시그니처·본문 한곳을 바꿔 따로 GREEN이 될 수 없음(amend·rebase 금지라 PROGRESS에 사유 기록).
+- Codex 제안과 다르게 한 것: "충돌 해결 시작 때 명시 닫기 복원"은 하지 않음 — 진입 증가 0 원칙. 대신 다음 입력에서 교체를 판정하고, 교체 전 묶음이 (타이머·focusout으로) 닫혀 남는 기록은 `after`가 지금 문서와 달라 Ctrl+Z가 닿지 않음(덮어쓰기 0).
+
+### 8.2 Codex r2 (`logs/codex-r2.txt`) — 반영 1회
+
+1. [P2] 청크 로딩 전 blur 경계 유실(첫 입력 → 청크 받는 중 칸을 떠났다가 같은 칸 재입력 = 한 기록) — **미반영(진입 증가 필요)**. 청크 전에는 focusout 리스너가 없어 사건 자체를 못 본다. 고치려면 진입 `field()`에 청크 미로드 시 1회 focusout 표시(예: `document.addEventListener("focusout", () => open.current && (open.current.blurred = true), { once: true })` + 청크 판정 1줄)가 필요 — 추정 +0.03~0.05KB gzip. 진입 여유 0.01(129.54/129.55)이라 영환님 예산 결정 사항. 영향: 청크(+3.79KB) 받는 수십 ms 안에 떠났다 돌아와야 생김 — 결과는 "두 입력이 한 묶음"(데이터 손실 아님, L3).
+2. [P2] 쳤다 지운 묶음(기록 0) 뒤 blur 없이 다른 칸 입력 = 다음 기록이 같은 내용 복제 문서에서 시작해 앞 기록과 사슬이 끊김 — **반영** `645be5f`. `closeField`가 "다음 기록이 이어 붙을 문서"(기록 0이면 시작 문서 참조)를 돌려주고, 분리 시 교체가 아니면 그 문서에서 새 묶음 시작. 훅 단위 RED(첫 Ctrl+Z 뒤 앞 기록에 못 닿음) → GREEN. r3 미실행(라운드 상한).
+
+### 8.3 게이트 · 예산 (fresh, `645be5f` 코드)
+
+- `npm run lint` exit 0 · `npm run build` exit 0(typecheck · 번들 검사 포함) · `npx vitest run` — Test Files 299 passed · **Tests 2683 passed** (exit 0)
+- 예산: `/studio` 129.55 → **129.54**(한도 129.55) · 복원 132.58 → **132.57**(≤132.58) · `/profile` 첫 화면 99.87 · docEngine 조작 뒤 +3.67 → +3.79(판정 밖). 진입 증가 0(진입의 `engine` ref·`closeField` 호출 제거로 −0.01).
+
+### 8.4 Ego FU-QB-1·2 (preview 4355)
+
+- 1차 실패 원인: `qb.mjs`가 비교 보드에서 Hero A만 골라 프로필 확정 뒤 "3안 만들기"까지 못 감(추정) + `B안 선택`이 aria-label이라 textContent 대기가 놓침. RESUME-1 경로(앱 안 클릭만, 첫 goto 1회): 카탈로그 → 모던 카페 브랜드·프리미엄 헤어살롱 비교 추가 → 비교 보드 "이 레퍼런스로 전부 선택: B" → 프로필 확정 (v1) → 3안 만들기 (v1) → B안 선택 → B안으로 편집 시작(`qb-flow.mjs`). 경로 준비 7턴.
+- **FU-QB-1 통과 3/3** (`qb1.mjs`): 제목 입력 → 섹션 목록 Hero 줄 실제 클릭(1024 = 접힌 "섹션 목록 · 순서" 요약 먼저 클릭 · 390 = "섹션" 탭) → "더보기" 메뉴 → Ctrl+Z.
+
+| 폭 | 값 원복 | 알림 | "더보기" 항목 | 캡처(뷰포트 clip) |
+|---|---|---|---|---|
+| 1280 | 예 | 실행 취소: Hero 제목 편집 | 실행 취소: Hero 제목 편집 · 다시 실행(비활성) | `shots/qb1-1280.png` 150,997B |
+| 1024 | 예 | 같음 | 같음 | `shots/qb1-1024.png` 111,378B |
+| 390 | 예 | 같음 | 같음 | `shots/qb1-390.png` 57,868B |
+
+- **FU-QB-2 통과** (`qb2.mjs`, 1280): Portfolio "사례 이미지 1"에 자체 이미지(이 레인 390 캡처 파일, 외부 이미지 아님) 넣음 → Portfolio 삭제 → Hero 제목 입력 → 줄 클릭 → Ctrl+Z 1회 = "실행 취소: Hero 제목 편집"(제목 원복) · 2회 = "실행 취소: Portfolio 삭제"(원래 자리 4번째) → 패널 이미지 로드(naturalWidth 390 = 넣은 파일 폭) · 캔버스에 같은 이미지 보임. 캡처 `shots/qb2-1280.png` 452,156B. blob URL은 패널 재마운트로 새로 만들어져 문자열이 다름(이미지 id 동일성은 컴포넌트 테스트 `StudioLayoutImages.test.tsx`가 단언).
+- 캡처는 모두 PNG 시그니처 확인. 정리: IDB `deleteDatabase("design-studio")` = deleted(공간 8·9) · `finish({keep:[]})` · `listTaskSpaces()` = `[]` · preview 종료 · 4355 LISTEN 0 · 임시 파일 삭제. 영환님 창·main 5480·다른 레인 무접촉.
+
+### 8.5 남은 것
+
+- Codex r2 P2-1(청크 로딩 전 blur) — 진입 예산 결정 필요(8.2-1).
+- compositionend 리스너는 문서 전체 — 조합 입력이 compositionend보다 늦게 오는 브라우저에서 타이머가 다시 지워질 수 있음(최악 = 다음 입력·blur까지 묶음 유지). 실제 IME 확인은 **FU-QB-3 — 영환님 수동 1회 필요**.
+- FIELD-UNDO-2(FU-AC-13 이미지 패널 기록).

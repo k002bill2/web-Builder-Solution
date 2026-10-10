@@ -1,0 +1,40 @@
+// FU-QB-2 — qb-flow.mjs 뒤 같은 공간 · Portfolio 사례 이미지 1에 자체 이미지(직접 만든 캡처) 넣은 상태에서:
+// Portfolio 삭제 → Hero 제목 입력 → 섹션 줄 클릭(blur) → Ctrl+Z 2회 → Portfolio 복원 · 같은 blob 이미지가 로드됨
+const OUT = "/Users/younghwankang/orca/workspaces/web-builder-solution/field-undo-1/dev/active/field-undo-1/shots";
+const { writeFileSync } = await import("node:fs");
+const page = (await taskSpace(globalThis.SPACE)).page("p1");
+const shotV = async (name) => {
+  const { w, h } = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }));
+  const r = await page.cdp("Page.captureScreenshot", { format: "png", captureBeyondViewport: false, clip: { x: 0, y: 0, width: w, height: h, scale: 1 } });
+  const buf = Buffer.from(r.data, "base64"); const p = `${OUT}/${name}.png`; writeFileSync(p, buf);
+  return { p, w, h, bytes: buf.length, png: buf.subarray(1, 4).toString() === "PNG" };
+};
+const notice = () => page.evaluate(() => document.querySelector("[role=status][aria-label='편집 알림']")?.textContent.trim());
+const row = async (id) => { await page.evaluate((i) => document.querySelector(`[data-row-id='${i}']`).scrollIntoView({ block: "center" }), id); await page.click(`loc=css:[data-row-id='${id}']`); await page.waitForTimeout(300); };
+const imgOf = () => page.evaluate(() => { const d = [...document.querySelectorAll("details")].find((x) => x.querySelector("summary")?.textContent.includes("이미지 편집")); if (!d) return null; d.open = true; return [...d.querySelectorAll("img")].map((i) => i.src); });
+const loads = (src) => page.evaluate((s) => new Promise((r) => { const i = new Image(); i.onload = () => r(i.naturalWidth); i.onerror = () => r(-1); i.src = s; }), src);
+const log = {};
+await row("portfolio-1");
+log.imgBefore = await imgOf();
+await page.click("loc=role:button[name='삭제']");
+await page.waitForTimeout(500);
+log.afterDelete = { notice: await notice(), rows: await page.evaluate(() => [...document.querySelectorAll("[data-row-id]")].map((b) => b.getAttribute("data-row-id"))) };
+await row("hero-1");
+const before = await page.evaluate(() => document.getElementById("field-hero-1-title").value);
+await page.click("loc=css:#field-hero-1-title");
+await page.fill("loc=css:#field-hero-1-title", `${before} QB2`);
+await page.waitForTimeout(150);
+await row("hero-1");
+await page.keyboard.press("Control+z");
+await page.waitForTimeout(500);
+log.undo1 = { notice: await notice(), title: await page.evaluate(() => document.getElementById("field-hero-1-title")?.value), titleRestored: (await page.evaluate(() => document.getElementById("field-hero-1-title")?.value)) === before };
+await page.keyboard.press("Control+z");
+await page.waitForTimeout(800);
+log.undo2 = { notice: await notice(), rows: await page.evaluate(() => [...document.querySelectorAll("[data-row-id]")].map((b) => b.getAttribute("data-row-id"))) };
+await row("portfolio-1");
+log.imgAfter = await imgOf();
+log.sameSrc = JSON.stringify(log.imgBefore) === JSON.stringify(log.imgAfter);
+log.loadsWidth = log.imgAfter?.[0] ? await loads(log.imgAfter[0]) : null;
+await page.waitForTimeout(800);
+log.shot = await shotV("qb2-1280");
+console.log(JSON.stringify(log, null, 1));

@@ -96,14 +96,21 @@ describe("입력칸 · 스택 밖 변경 — ER-AC-U2", () => {
     expect(rowIds()).toEqual(removed);
   });
 
-  it("스택 밖 변경(필드 글자) 뒤 Ctrl+Z = 문서를 되돌리지 않는다 — 입력한 글자를 덮지 않음", async () => {
+  it("필드 글자 뒤 칸 밖 Ctrl+Z = 그 묶음 1건만 되돌림(값 원래대로 · 섹션 삭제 유지) · 한 번 더 = Services 복원", async () => {
     await openStudio();
+    const ids = rowIds();
     await removeServices();
     const removed = rowIds();
     const input = editPanel().getAllByRole("textbox")[0]! as HTMLInputElement;
+    const original = input.value;
     act(() => void fireEvent.change(input, { target: { value: "새 제목" } }));
+    await act(async () => void (await new Promise<void>((r) => setTimeout(r, 0))));
+    act(() => void fireEvent.blur(input));
     await key(CTRL_Z);
+    await waitFor(() => expect((editPanel().getAllByRole("textbox")[0] as HTMLInputElement).value).toBe(original));
     expect(rowIds()).toEqual(removed);
-    expect((editPanel().getAllByRole("textbox")[0] as HTMLInputElement).value).toBe("새 제목");
+    expect(notice()).toHaveTextContent(/^실행 취소: FAQ 섹션 제목 편집$/);
+    await key(CTRL_Z);
+    await waitFor(() => expect(rowIds()).toEqual(ids));
   });
 });

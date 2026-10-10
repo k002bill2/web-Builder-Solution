@@ -9,3 +9,5 @@ export { addedNotice, movedNotice, removedNotice, restoredNotice, swappedNotice,
 export { runDocOp } from "./docOpRun";
 /** 연산 뒤 꼬리(기록 스택·알림·선택·포커스) — 연산이 끝난 뒤에만 쓴다(ER-OFF A1·A2 · ADR-004 개정 6) */
 export { afterAdd, afterMove, afterRemove, afterSwap, commitOp, listenHistory, stepHistory } from "./opAfter";
+/** 필드 편집 묶음 타이머 · 닫기(FIELD-UNDO 4.1 · 8.2) — 첫 입력 뒤에만 쓴다 */
+export { closeField, fieldTyped } from "./opAfter";

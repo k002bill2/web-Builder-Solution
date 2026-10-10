@@ -1,0 +1,46 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a12657-ffe2-7f73-b83d-4bf951365cad).
+[codex] Reviewer started: changes against 'b3f8894'
+[codex] Running command: /bin/zsh -lc "pwd; git diff --stat b3f8894572854436a838cab956eda173528fac10; find .. -name AG...
+[codex] Command failed: /bin/zsh -lc "pwd; git diff --stat b3f8894572854436a838cab956eda173528fac10; find .. -name AG... (exit 1)
+[codex] Running command: /bin/zsh -lc 'git diff b3f8894572854436a838cab956eda173528fac10; for d in /Users /Users/young...
+[codex] Command completed: /bin/zsh -lc 'git diff b3f8894572854436a838cab956eda173528fac10; for d in /Users /Users/young... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/opAfter.ts; cat app/src/features/studio/undoStack.t...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/opAfter.ts; cat app/src/features/studio/undoStack.t... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat CLAUDE.md; sed -n '1,220p' docs/design/field-undo/SPEC.md; sed -n '70,210p'...
+[codex] Command completed: /bin/zsh -lc "cat CLAUDE.md; sed -n '1,220p' docs/design/field-undo/SPEC.md; sed -n '70,210p'... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,180p' app/src/features/studio/useSnapshots.tsx; cat app/src/component...
+[codex] Command completed: /bin/zsh -lc "sed -n '1,180p' app/src/features/studio/useSnapshots.tsx; cat app/src/component... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files app/src | rg 'useSnapshots|SnapshotPreview|vitest.config'; sed -n '1...
+[codex] Command failed: /bin/zsh -lc "rg --files app/src | rg 'useSnapshots|SnapshotPreview|vitest.config'; sed -n '1... (exit 1)
+[codex] Running command: /bin/zsh -lc "rg --files app/src | rg 'useSnapshots|SnapshotPreview'; sed -n '1,105p' app/src...
+[codex] Command completed: /bin/zsh -lc "rg --files app/src | rg 'useSnapshots|SnapshotPreview'; sed -n '1,105p' app/src... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''), ts=require('\\''./app/node_modules/typ...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''), ts=require('\\''./app/node_modules/typ... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'resolve|setDoc' app/src/features/studio/useDocSave.ts; rg -n 'preview|ar...
+[codex] Command completed: /bin/zsh -lc "rg -n 'resolve|setDoc' app/src/features/studio/useDocSave.ts; rg -n 'preview|ar... (exit 0)
+[codex] Running command: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''), ts=require('\\''./app/node_modules/typ...
+[codex] Command completed: /bin/zsh -lc "node -e 'const fs=require('\\''fs'\\''), ts=require('\\''./app/node_modules/typ... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 비동기 로딩, IME 확정, 기록 밖 문서 교체에서 실행 취소 묶음이 잘못 연결되며 리스너 정리도 누락되었습니다. 세 가지 동작 결함은 메모리 내 재현으로 확인했으나,...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against b3f8894
+
+비동기 로딩, IME 확정, 기록 밖 문서 교체에서 실행 취소 묶음이 잘못 연결되며 리스너 정리도 누락되었습니다. 세 가지 동작 결함은 메모리 내 재현으로 확인했으나, Vitest 실행은 읽기 전용 환경의 설정 임시 파일 생성 제한으로 차단되었습니다.
+
+Full review comments:
+
+- [P2] 청크 로딩 중에도 필드 변경 경계를 보존하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/field-undo-1/app/src/features/studio/useSectionOps.ts:177-182
+  첫 입력으로 `docEngine`을 내려받는 동안 다른 필드로 이동하면 `engine.current`가 없어 이전 묶음이 닫히지 않습니다. 이후 `open.current ??=`가 이전 묶음을 재사용하므로 서로 다른 필드 입력이 첫 필드 이름의 기록 하나로 합쳐집니다. 지연된 로딩을 재현했을 때 실행 취소 한 번으로 제목과 부제가 모두 복원되었습니다. 로딩 전에 발생한 키 변경과 blur도 보존하여 청크 준비 후 순서대로 처리해야 합니다.
+
+- [P2] compositionend에서 묶음 종료 타이머를 재개하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/field-undo-1/app/src/components/studio/FieldEditor.tsx:50-58
+  IME 확정 시 마지막 조합 입력과 확정 입력의 값이 같으면 React는 추가 `onChange`를 호출하지 않습니다. 따라서 마지막으로 전달된 `composing=true`가 유지되어 조합이 끝난 뒤에도 600ms 타이머가 시작되지 않고, 이후 같은 칸 입력까지 하나의 기록으로 합쳐집니다. 실제 컴포넌트에 조합 시작·입력·종료·동일 값 확정 입력을 전달했을 때 콜백은 `true`로 한 번만 호출되었습니다. 값 변경 여부와 별개로 `compositionend`를 처리해야 합니다.
+
+- [P2] 기록 밖 문서 교체 시 열린 묶음을 분리하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/field-undo-1/app/src/features/studio/useSectionOps.ts:177-183
+  blur 없이 열린 묶음이 남은 상태에서 충돌 해결의 '최신으로 불러오기'가 문서를 교체하고 같은 필드를 다시 입력하면, 키가 같다는 이유로 교체 전 `base`를 계속 사용합니다. 이후 실행 취소는 최신 문서가 아니라 충돌 해결 전 문서 전체를 복원하여 다른 탭의 변경까지 덮어씁니다. 문서 교체 후 같은 키 입력을 재현해 이 동작을 확인했습니다. 충돌 해결 시작 시 묶음을 닫고, 현재 문서가 묶음의 마지막 문서와 달라졌을 때도 새 묶음을 시작해야 합니다.
+
+- [P2] 묶음을 닫을 때 focusout 리스너도 제거하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/field-undo-1/app/src/features/studio/opAfter.ts:83-85
+  같은 칸에서 600ms 이상 멈췄다가 입력하기를 반복하면 묶음마다 document 리스너가 추가되지만, 타이머로 묶음을 닫아도 제거되지 않습니다. `once`는 실제 focusout이 발생해야 제거하므로 포커스를 유지하는 동안 모든 이전 묶음과 문서가 계속 메모리에 남아 기록 상한 50을 넘어 누적됩니다. 언마운트 정리도 이 리스너를 제거하지 않습니다. 제거 함수를 보관하고 묶음 종료 및 언마운트 시 호출해야 합니다.

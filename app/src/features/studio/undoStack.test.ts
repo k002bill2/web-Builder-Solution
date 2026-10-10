@@ -73,5 +73,26 @@ describe("실행 취소 스택 (K2 · 5.14)", () => {
     expect(stack.reachable(b)).toEqual([a, c]);
     expect(stack.reachable(sampleDoc({ revision: 9 }))).toEqual([]);
   });
+
+  it("무효화(FIELD-UNDO 4.4 · FU-AC-9): 실행 취소 뒤 새 기록 = 다시 실행 목록의 문서가 reachable에서 빠진다", () => {
+    const stack = createUndoStack();
+    const [a, b, c] = [sampleDoc({ revision: 1 }), sampleDoc({ revision: 2 }), sampleDoc({ revision: 3 })];
+    stack.push({ label: "삭제", before: a, after: b });
+    stack.undo();
+    expect(stack.reachable(a)).toEqual([b]);
+    stack.push({ label: "Hero 제목 편집", before: a, after: c });
+    expect(stack.reachable(c)).toEqual([a]);
+    expect(stack.reachable(c)).not.toContain(b);
+  });
+
+  it("무효화(FU-AC-9): 상한 51번째 push = 첫 기록 before가 reachable에서 빠진다", () => {
+    const stack = createUndoStack();
+    const docs = Array.from({ length: UNDO_LIMIT + 2 }, (_, n) => sampleDoc({ revision: n }));
+    for (let n = 0; n < UNDO_LIMIT; n += 1) stack.push({ label: `${n}`, before: docs[n]!, after: docs[n + 1]! });
+    expect(stack.reachable(docs[UNDO_LIMIT]!)).toContain(docs[0]);
+    stack.push({ label: "끝", before: docs[UNDO_LIMIT]!, after: docs[UNDO_LIMIT + 1]! });
+    expect(stack.reachable(docs[UNDO_LIMIT + 1]!)).not.toContain(docs[0]);
+    expect(stack.reachable(docs[UNDO_LIMIT + 1]!)).toHaveLength(UNDO_LIMIT);
+  });
 });
 

@@ -44,8 +44,91 @@ export function commitOp(
   return { ok: true, result, before };
 }
 
+/** 열린 필드 묶음(FIELD-UNDO 4.1) — 진입(useSectionOps.field)이 키·시작 문서·마지막 문서를 같은 틱에 적고, 타이머·닫기는 이 청크가 한다 */
+export type FieldOpen = {
+  readonly key: string;
+  readonly label: string;
+  readonly base: PageDoc;
+  after?: PageDoc;
+  /** 청크가 마지막으로 처리한 입력의 문서 — 다음 입력의 시작 문서와 다르면 그사이 기록 밖 교체(충돌 "최신")가 있었다 */
+  seen?: PageDoc;
+  timer?: ReturnType<typeof setTimeout>;
+  /** 타이머 · 문서 리스너(focusout · compositionend) 해제 — 닫기 · 언마운트가 부른다(Codex r1 P2-4) */
+  off?: () => void;
+};
+export type FieldRec = {
+  readonly open: RefObject<FieldOpen | undefined>;
+  readonly docRef: RefObject<PageDoc>;
+  readonly stack: UndoStack;
+  readonly edit: (next: PageDoc) => boolean | void;
+  /** 참조 집합의 "열린 묶음 시작 문서" — 닫으면 비운다(FU 4.4) */
+  readonly hold: (base: PageDoc | undefined) => void;
+};
+/** 묶음 닫힘 멈춤(ER 3.5 · FU 4.1) */
+const FIELD_PAUSE_MS = 600;
+
 /**
- * 단축키 · "더보기" 실행 취소/다시 실행(ER-4 U1) — 지금 문서가 그 기록과 이어질 때만(스택 밖 변경을 덮지 않는다).
+ * 묶음 닫기 = 기록 1건 { 시작 문서 → 마지막 입력 문서 }. 내용이 시작과 같으면(쳤다 지움) 기록 0 — 대신 문서를 시작 문서 참조로 돌려
+ * 앞 기록과의 사슬(문서 동일성 비교)을 잇는다. 그사이 기록 밖 경로로 문서가 바뀌었으면(충돌 "최신") 그 문서를 덮지 않는다.
+ * 돌려주는 값 = 다음 기록이 이어 붙을 문서(기록했으면 마지막 문서 · 기록 0이면 시작 문서 참조)
+ */
+export function closeField({ open, docRef, stack, edit, hold }: FieldRec): PageDoc | undefined {
+  const o = open.current;
+  if (!o) return undefined;
+  o.off?.();
+  open.current = undefined;
+  hold(undefined);
+  const after = o.after ?? o.base;
+  if (JSON.stringify(after) !== JSON.stringify(o.base)) {
+    stack.push({ label: o.label, before: o.base, after });
+    return after;
+  }
+  if (docRef.current === after && after !== o.base && edit(o.base) !== false) docRef.current = o.base;
+  return o.base;
+}
+
+/**
+ * 입력 1회 뒤(진입이 입력마다 순서대로 부른다) — 멈춤 타이머를 다시 건다. 조합 중(IME)이면 걸지 않고 compositionend가 건다(FU 4.6 · Codex r1 P2-2).
+ * 이 입력이 다른 칸이거나 시작 문서가 앞 입력의 문서가 아니면(기록 밖 교체 — 충돌 "최신") 앞 묶음을 앞 입력 문서까지로 닫고 이 입력부터 새 묶음
+ * (청크 응답 전 칸 이동 · 교체 전 base 재사용으로 다른 탭 변경을 덮는 것 방지 — Codex r1 P2-1 · P2-3).
+ * 묶음의 첫 입력이면 포커스가 떠날 때(focusout = 칸 blur · "더보기"·미리보기·충돌 버튼 누름) 닫는 문서 리스너를 단다(FU 4.1)
+ */
+export function fieldTyped(rec: FieldRec, composing: boolean | undefined, key: string, label: string, base: PageDoc, next: PageDoc): void {
+  let o = rec.open.current;
+  if (!o) return;
+  const seen = o.seen ?? o.base;
+  if (o.key !== key || base !== seen) {
+    const latest = o.after;
+    o.after = seen;
+    // 기록 밖 교체가 아니면 앞 묶음이 이어 준 문서에서 시작한다 — 쳤다 지운 묶음(기록 0)이면 같은 내용의 복제 대신 시작 문서 참조(Codex r2 P2)
+    const kept = closeField(rec);
+    const start = base === seen && kept ? kept : base;
+    o = rec.open.current = { key, label, base: start, after: latest };
+    rec.hold(start);
+  }
+  o.seen = next;
+  const mine = o;
+  const close = () => rec.open.current === mine && closeField(rec);
+  const arm = () => {
+    clearTimeout(mine.timer);
+    mine.timer = setTimeout(close, FIELD_PAUSE_MS);
+  };
+  if (!o.off) {
+    const end = () => rec.open.current === mine && arm();
+    document.addEventListener("focusout", close);
+    document.addEventListener("compositionend", end);
+    o.off = () => {
+      clearTimeout(mine.timer);
+      document.removeEventListener("focusout", close);
+      document.removeEventListener("compositionend", end);
+    };
+  }
+  if (composing) clearTimeout(o.timer);
+  else arm();
+}
+
+/**
+ * 단축키 · "더보기" 실행 취소/다시 실행(ER-4 U1) — 지금 문서가 그 기록과 이어질 때만(기록 밖 문서 교체 — 충돌 "최신" 등 — 를 덮지 않는다).
  * 편집 경계가 거절하면(미리보기 중) 스택 그대로(B-ER-05와 같은 규칙). 알림 줄 "되돌리기" 대상은 비운다
  */
 export function stepHistory(redo: boolean, docRef: RefObject<PageDoc>, stack: UndoStack, setLast: (last: LastOp) => void, edit: (next: PageDoc) => boolean | void, tell: StepTell) {

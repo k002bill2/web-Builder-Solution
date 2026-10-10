@@ -25,7 +25,7 @@ export interface UndoStack {
   readonly undo: () => UndoEntry | undefined;
   readonly redo: () => UndoEntry | undefined;
   /** 지금 문서에서 실행 취소 · 다시 실행으로 닿는 문서 — 이미지 참조 집합(SPEC 3.5 "참조 집합이 기록을 본다").
-   *  스택 밖 변경(필드 글자 등)으로 끊긴 기록은 닿지 않으므로 넣지 않는다(Codex r1 "되돌리기 무효화" 그대로) */
+   *  기록 밖 문서 교체(충돌 해결 "최신" 등)로 끊긴 기록은 닿지 않으므로 넣지 않는다(Codex r1 "되돌리기 무효화" 그대로) */
   readonly reachable: (doc: PageDoc) => readonly PageDoc[];
 }
 

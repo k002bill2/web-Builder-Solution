@@ -108,7 +108,7 @@ describe("이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1
     expect(Object.keys(last.images ?? {})).toEqual([]);
   });
 
-  it("패널이 닫혀 있어도 참조 밖 이미지는 캔버스 images에서 빠진다(Codex r1) — 삭제 → 되돌리기 무효화", async () => {
+  it("패널이 닫혀 있어도 삭제한 섹션의 이미지는 기록이 쥐는 동안 남는다 — 삭제 → 필드 입력 = 유지(Ctrl+Z 2번으로 닿음)", async () => {
     const { sent } = draw();
     act(() => within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name: /^About/ }).click());
     await openImages();
@@ -122,11 +122,49 @@ describe("이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1
     await settle();
     const withUndo = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
     expect(Object.keys(withUndo.images ?? {})).toHaveLength(1);
+    const [id] = Object.keys(withUndo.images ?? {});
+    // 600ms 전(묶음이 열린 채)에도 놓지 않는다(FU-AC-8)
     fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: "새 제목" } });
+    await settle();
+    const typing = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    expect(Object.keys(typing.images ?? {})).toEqual([id]);
+    fireEvent.blur(within(editRegion()).getAllByRole("textbox")[0]!);
+    await settle();
+    const last = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    expect(Object.keys(last.images ?? {})).toHaveLength(1);
+    for (let i = 0; i < 2; i++) {
+      fireEvent.keyDown(document.body, { key: "z", code: "KeyZ", ctrlKey: true });
+      await settle();
+    }
+    expect(within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name: /^About/ })).toBeInTheDocument();
+    const restored = sent.filter((m) => m.type === "render").at(-1) as { doc: { sections: Array<{ instanceId: string; slots: Record<string, ImageSlotValue> }> }; images?: Record<string, unknown> };
+    expect(restored.doc.sections.find((s) => s.instanceId === "s-about")!.slots.image!.source).toBe(id);
+    expect(Object.keys(restored.images ?? {})).toEqual([id]);
+  });
+
+  it("무효화: 삭제한 섹션의 이미지만 쥔 기록이 상한 50에서 밀려나면 캔버스 images에서 빠진다(FU-AC-9 · Codex r1 의도 보존)", async () => {
+    const { sent } = draw();
+    act(() => within(screen.getByRole("navigation", { name: "섹션" })).getByRole("button", { name: /^About/ }).click());
+    await openImages();
+    await pickFile();
+    fireEvent.click(within(editRegion()).getByRole("button", { name: "삭제" }));
+    await settle();
+    for (let i = 0; i < 49; i++) {
+      fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: `제목 ${i}` } });
+      await settle();
+      fireEvent.blur(within(editRegion()).getAllByRole("textbox")[0]!);
+    }
+    await settle();
+    const kept = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    expect(Object.keys(kept.images ?? {})).toHaveLength(1);
+    fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: "제목 끝" } });
+    await settle();
+    fireEvent.blur(within(editRegion()).getAllByRole("textbox")[0]!);
+    fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: "제목 끝 2" } });
     await settle();
     const last = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
     expect(Object.keys(last.images ?? {})).toEqual([]);
-  });
+  }, 20000);
 });
 
 describe("폭 변경 시 '이미지 편집' 펼침 유지 (B-M2C-04)", () => {

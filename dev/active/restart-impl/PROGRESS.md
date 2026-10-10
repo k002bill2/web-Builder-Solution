@@ -25,3 +25,13 @@
 - restartLock(저장소): 예측 "잠금 없는 탭 restart가 메모리를 바꿈" → 결과 3/5 실패(08 readonly·stale 2건 = 예측대로 메모리 변경, 08c 1건 = 테스트 오류: 스냅샷에 `revision` 필드 없음 → `doc.revision`으로 수정). 08b·create 2건은 회귀 고정용이라 처음부터 통과. 구현 뒤 identity 비교(`toBe`)가 청크 로드 뒤 사본이라 실패 → `toEqual`로 수정 → 5/5
 - ProfileRestart(화면): 1차 = 모듈 없음 import 실패 · `restartText` 추가 뒤 13/14 실패(대화상자·분기 없음, 순수 문구 1건 통과) → 구현 → 11/14 → 테스트 `seq` 번호 오류(셋업 create 1 · UI create 2 · restart 3) 수정 → 14/14
 - 전체: 2706/2708 → 엔진 import 가드(대화상자가 `engine/gate` import) → domain 함수로 교체 · 기존 F2 단언 셋업이 create 멱등 재생에 걸림 → 셋업 변경 → 2708/2708
+
+## RESUME-1 (2026-10-11 02:03 시작 · 정본 SPEC r2 + MQ S1~S7 · 시간 상한 90분)
+
+- [x] R1 `git merge --no-ff main`(b416328) → 충돌 0 · lock 변경 0 · typecheck exit 0 · 3개 파일 33/33 · 새 base 빌드(임시 worktree `/tmp/restart-impl-base`, 실측 뒤 제거) `logs/base-build-r1.txt`: /profile 120.01 · 122.49 · /studio 129.63 · 132.67
+- [ ] R2 3.3.1 실패 판정 순서(커밋 확인 먼저 → R-E4 / 음성 → 코드·사유 / 확인 실패 R-E5) · RS-AC-07·07b·07c·08b·08d(미확인 기억)
+- [ ] R3 P2: STALE 재판정(06b · R-E1b) · create 재생 재판정(17 · R-C3) · R-D2 문구 · 성공 state {editNotice}만(18) · RS-AC-01 · 스냅샷 id 집합(04·08b·10·11)
+- [ ] R4 MQ-S7 A 배치(Promise.all · create 판정 = 조작 뒤) · /profile 진입 직후 ±0.03 · /studio ≤ +0.05
+- [ ] R5 게이트 4종 → Codex review --scope branch --base main(≤2라운드)
+- [ ] R6 Ego RS-AC-14·15
+- [ ] R7 REPORT "RESUME-1" 절 · BACKLOG B-ER-01

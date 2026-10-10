@@ -54,3 +54,4 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-GM-03 | GEN-MARK-SPEC REPORT 6절 | 라이선스 Tag 영문 원값(`internal`/`licensed`) 그대로 노출 — 한국어 표기 검토 | Designer |
 | B-RS-01 | RESTART-SPEC MQ-S5 (Codex r1 P1) | **편집기 이탈 저장 미보장** — 이탈 시 `retry()`만 부르고 완료를 기다리지 않음(StudioLayout.tsx:127-134 · useAutosaveScheduler.ts:100-102,274-278) → 저장 중 추가 편집이 이탈 때 버려질 수 있음. 이탈 전 `flushed()` 확인·실패 시 이동 보류 | Developer(`/studio` 진입 예산 영향 — 예산 결정 선행) |
 | B-RS-02 | RESTART-SPEC MQ-S2 C | 잠금 없는 탭의 `startDoc`(create)이 메모리 commit 뒤 IDB flush INFRA → 탭 메모리·IDB 갈라짐(memoryProjectRepository.ts:65-66 · localSync.ts:187-190) | Developer(MQ-S2 결정과 함께) |
+| B-RS-03 | RESTART-SPEC-R2 RS-R7 | 커밋 뒤 미확인(R-E4) restart를 `/projects` → 편집기 경로로 열면 미확인 쓰기 인계 없음(편집기 진입 때 인계 필요) — B-RS-02(create 갈라짐)와 묶음 | Designer → Developer |

@@ -88,3 +88,4 @@
 - **Jarvis 2026-10-10 — MQ-S1 A · S3 A · S4 A · S5 A 채택**(계약·스키마·예산 변경 0). **MQ-S2는 보류** — ★A가 `/studio` 진입 청크(`memoryProjectRepository`) 증가를 동반하고, `/studio` 여유는 ADR-004 개정 14로 FIELD-UNDO에 +0.27 배분·잡음 0.10만 남아 예산 결정 사항 → 영환님 회신 대기. SPEC r1(Codex r1 반영분)은 Codex r2 미검증 — 구현 레인 착수 전 r2 실행.
 - **영환님 2026-10-11 "1·4 진행" — MQ-S2 A 채택**. 예산 = ADR-004 개정 15 배분 +0.05(`/studio`·복원 진입 각각). 구현 레인 RESTART-IMPL.
 - **RESTART-SPEC-R2 2026-10-11 — SPEC r2 · MQ-S6·S7 상신**(Codex SPEC r1 재검증 P1 1 · P2 8 반영). 회신 대기: **MQ-S6**(★A 실패 뒤 문서 확인 — 계약 변경 0) · **MQ-S7**(★A ±0.03 유지 + 배치 변경). 구현 레인 RESTART-IMPL은 회신 뒤 재개.
+- **Jarvis 2026-10-11 — MQ-S6 A · MQ-S7 A 채택**(저장소 인터페이스·오류 타입·스키마 변경 0 · 한도 상향 0 — 위임 기준). MQ-S7 A의 ±0.03 달성 실패 시 감량 1회 → 재상신. RESTART-IMPL 재개.

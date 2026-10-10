@@ -84,7 +84,7 @@
 | 결과 | 화면 | 근거 |
 |---|---|---|
 | 진행 중 | 주 버튼 `aria-busy` + 글자 "새로 시작하는 중…", 두 버튼·닫기 `aria-disabled`(Esc 무시). 다시 눌러도 요청 0 | `CandidatesSection.tsx:87` `starting` 선례 |
-| 성공(처음·멱등 재생) | 대화상자 닫고 `/studio/:projectId` 이동, state `{changes, editNotice}` — 편집 알림 = 5.3 R-N1(+ `changeNotice`가 있으면 뒤에 " · "로 잇는다). 편집기는 `getDoc` 최신을 연다(2a-05 8.3.1 583행 위 행) | 8.3.1 |
+| 성공(처음·멱등 재생) | 대화상자 닫고 `/studio/:projectId` 이동, state **`{editNotice}`만**(r2 — `changes` 제외, RS-D9) — 편집 알림 = 5.3 R-N1(+ `changeNotice`가 있으면 뒤에 " · "로 잇는다). 편집기는 `getDoc` 최신을 연다(2a-05 8.3.1 583행 위 행) | 8.3.1 |
 | `STALE_DOC` | 이동 없음. **(r2 · Codex P2-3) 동봉된 최신 doc으로 3.1 표를 다시 판정한다.** ① 최신 doc도 **다른 안** → F4 유지: 대화상자를 최신 doc으로 다시 채우고(R-D2·R-B2·R-D5의 안·버전·r번호) `role=alert` R-E1 · 주 버튼은 다시 누를 수 있다(다음 요청의 `expectedRevision` = 최신 revision). ② 최신 doc이 **고른 안과 같음**(예: 지연된 복원이 이미 C안으로 바꿈) → 새로 시작할 이유가 없다: 주 버튼을 **숨기고** `role=alert` R-E1b + "편집기 열기 (C안 · v4 편집 중)"(누르면 F2 이동 · 버전이 다르면 F3 알림 R-C2) + 취소. 문서·스냅샷 변화 0 | 2a-05 SPEC:584 · `memoryDocBook.ts:386` |
 | `UNKNOWN_VARIANT` | 대화상자 안 `role=alert` = 저장소 `alert` 문장, 다시 시도 없음 · 쓰기 0 | `CandidatesSection.tsx:99` 선례 |
 | 쓰기 전 거부 · 다른 탭 잠금 `readonly`(MQ-S2 ★A) | 대화상자 안 `role=alert` R-E2 · 쓰기 0 · "다시 시도"(같은 인자 — 잠금 보유 탭이 **쓰지 않고** 닫혔을 때만 성공). **판정은 3.3.1 순서를 따른다**(커밋 확인 음성일 때만) | 4절 · 3.3.1 |
@@ -204,7 +204,7 @@
 |---|---|---|
 | RS-AC-01 | (r2 · Codex P2-7) F1: 기존 단언 그대로(문서 없음 → 이동). F2: **기존 테스트 `ProfileCandidates.test.tsx:297-303`(A안 문서 · B안 선택 → 이동)은 F4와 반대라 바꾼다** — ① 그 사례(다른 안)는 RS-AC-03의 F4 단언(이동 0 · 대화상자)으로 **교체**, ② F2 사례는 "같은 쌍" 셋업으로 **새로** 둔다. 같은 인자 `create`는 재생이라(3.1) `DOC_EXISTS`를 내지 않으므로 셋업은 마지막 start가 다른 키가 되게 만든다(예: A `create` → B `restart`로 B 문서를 만든 뒤 B 선택 · 기대 revision은 셋업에 맞춰 갱신). 이 두 변경은 SPEC이 허용한 기존 단언 변경이며 그 밖 기존 단언 변경 0 | [U] |
 | RS-AC-02 | F3: 같은 안·다른 버전 → 이동 + R-C2(두 버전 숫자) · `startDoc` 호출 = `create` 1회뿐(restart 0) | [U] |
-| RS-AC-03 | F4: 다른 안 → 이동 0 · 대화상자 열림 · 포커스 = 제목 · R-D2의 안·버전·저장 시각 = 동봉 `doc` 값 | [U] |
+| RS-AC-03 | F4: 다른 안 → 이동 0 · 대화상자 열림 · 포커스 = 제목 · R-D2의 안·버전·변경 시각(`doc.updatedAt`) = 동봉 `doc` 값 | [U] |
 | RS-AC-04 | "C안으로 새로 시작" → `startDoc(projectId, viewed.version, "C", "restart", doc.revision)` 1회 · 성공 → `/studio/:id` state = `{editNotice: R-N1(+changeNotice)}`(`changes` 키 없음) · (r2 · Codex P2-8) 스냅샷 단언 = **최초 성공 전후 id 집합 차이 = `reason: "restart"`·이름 "새로 시작 전" 신규 1개**, 그 스냅샷 doc = 요청 전 문서(revision·hash 일치). 총수 "+1"은 단언하지 않는다(20개 보존 — RS-AC-11) | [U] |
 | RS-AC-05 | 진행 중 두 번 누름·Esc → 요청 1회 · 대화상자 유지 | [U] |
 | RS-AC-06 | `STALE_DOC`(delay 주입으로 사이에 저장 — 최신도 **다른 안**) → 이동 0 · R-E1(r번호 = 최신) · 대화상자 내용이 최신 doc으로 바뀜 · 주 버튼 다시 누르면 `expectedRevision` = 최신 · 문서·스냅샷 변화 0 | [U] |

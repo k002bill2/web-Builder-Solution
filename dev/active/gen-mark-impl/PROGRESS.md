@@ -10,10 +10,11 @@
 - [x] 게이트 1차: typecheck · lint · build exit 0 · 전체 vitest exit 0
 - [x] G1: `referenceDisplay.ts`·`Tag.tsx` diff 0 · SourceTags는 Catalog·Detail 청크만 import
 - [x] G2 실측(base 재빌드 비교) — /profile 첫 화면 +0.02 편차(엔트리 preload 맵, 아래)
-- [ ] 구현 커밋
-- [ ] Ego Lite E1~E4 + shots/ + 정리(IDB·finish·listTaskSpaces·포트)
-- [ ] Codex review (최대 2라운드)
-- [ ] REPORT.md
+- [x] 구현 커밋
+- [x] Ego Lite E1~E4 + shots/ 6장 + 정리(IDB deleted · finish · listTaskSpaces [] · 4353 리슨 0)
+- [x] Codex review 1라운드 — 지적 0 (2라운드 불필요)
+- [x] REPORT.md
+- [ ] BLOCKED: `/profile` 첫 화면 +0.02 수용 여부 — 사용자 결정 필요(REPORT 7절)
 
 ## RED 결과 (구현 전, `npx vitest --run ReferenceCard.test ReferenceDetailPage.test`)
 - 5 failed / 49 passed.

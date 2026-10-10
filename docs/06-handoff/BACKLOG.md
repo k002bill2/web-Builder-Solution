@@ -6,11 +6,11 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 |---|---|---|---|
 | D-QA01 | QA-1A-02 | 1280 상세 캡처 하단 GNB 반복 — 캡처 도구 아티팩트 추정(DOM 헤더 1개) | 다음 QA에서 뷰포트 단위 캡처로 재확인 후 종결 |
 | B-DET-01 | QA-1A-02 판단 필요 3 | 상세 탭: 목업은 기본 탭에서 섹션·토큰·모바일 동시 노출, 구현은 패널 전환 | **패널 전환 유지** (영환님 2026-09-25, 선택 1) |
-| B-DET-02 | QA-1A-02 판단 필요 | 유사 레퍼런스 이름 말줄임("필라테스 스튜…") | **사용성 문제로 수정**: 이름을 식별할 수 있게 2줄 허용 또는 전체 이름 노출. 긴 이름 픽스처로 테스트 |
+| B-DET-02 | QA-1A-02 판단 필요 | 유사 레퍼런스 이름 말줄임("필라테스 스튜…") | **사용성 문제로 수정**: 이름을 식별할 수 있게 2줄 허용 또는 전체 이름 노출. 긴 이름 픽스처로 테스트 · ✅ `5dcd61a` 닫힘(DetailSidebar 2줄·전체 이름 툴팁 · ReferenceDetailPage.test 단언) |
 | ~~B-DET-03~~ | Jarvis 시각 대조 | 상세 안내 문구↔탭 간격 약 20px | **취소** (ADR-003: px 차이는 기준 아님) |
 | ~~B-QA-01~~ | QA-1A-02 주의 1 | px 단위 측정 필수화 | **취소** → 다음 QA는 뷰포트 캡처만 필수, 판정은 위계·정렬·일관성·가독성 |
-| B-DOC-01 | ADR-003 | `CLAUDE.md` 규칙 3 문구("레이아웃·간격·타이포·색을 충실히 옮긴다")를 ADR-003 기준으로 교체 | 보호 파일이라 영환님 승인 후 수정 (2026-09-25 승인 창 만료로 미반영) |
-| B-M2B-01 | SPEC-BOUND MQ-B4 | `footer/biz-extended-map` 이미지 슬롯 도움말 — 지도 캡처를 올릴 때 권리 안내 한 줄 | 편집기 레인(M2b 뒤) |
+| B-DOC-01 | ADR-003 | `CLAUDE.md` 규칙 3 문구("레이아웃·간격·타이포·색을 충실히 옮긴다")를 ADR-003 기준으로 교체 | 보호 파일이라 영환님 승인 후 수정 (2026-09-25 승인 창 만료로 미반영) · ✅ `9894207` 닫힘(CLAUDE.md 규칙 3 ADR-003 문구 반영 — 현행 58행) |
+| B-M2B-01 | SPEC-BOUND MQ-B4 | `footer/biz-extended-map` 이미지 슬롯 도움말 — 지도 캡처를 올릴 때 권리 안내 한 줄 | 편집기 레인(M2b 뒤) · ✅ M2C-3 `da802bb` 닫힘(ImageSlotField 지도 권리 안내 · ImageSlotPanel.test 단언) |
 | B-M2B-02 | SPEC-BODY MQ-B1 | `services/list` `items` 필드 도움말 "가운뎃점(·)으로 나눕니다" | 편집기 레인(M2b 뒤) |
 | B-M2B-03 | SPEC-BODY MQ-B4 | 예약 섹션 사이트 주인용 안내 `Callout` — K2 문구의 "문의"를 "예약"으로 | 편집기 레인(M2b 뒤) |
 | B-M2B-04 | M2B-4a Codex P2-b | 폴백 섹션 표식(`FallbackCanvas`)이 사이트 굵기 대응 밖 700·600 글꼴 파일을 요청(`kit/siteFonts.ts:27`) — 편집 캔버스 한정, 내보내기는 미렌더 차단으로 영향 없음 | M2B-6 또는 폴백 정리 별건 |
@@ -30,11 +30,11 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-TEST-01 | M2C-TODO Jarvis 검증 | `pages/ProjectsPage.test.tsx` J-S07 "저장 뒤 맨 위 줄 '이름 바꾸기' 포커스"가 부하(load 32) 중 1/3회 toHaveFocus 실패(161ms, 단독·재실행 통과) — 포커스 이동 시점 비결정. 대기 방식 안정화 | Developer(테스트) · ER-3a 검증: `pages/ProfileCompare.test.tsx` CMP-AC-U1 부하(82) 2회 연속 실패 → 단독·전체 재실행 통과 · **ER-4b 검증에서 3번째 재발 → 우선순위 상향** · ✅ **QFIX 닫힘**(`241aafb` 대기 지점 안정화, 부하 5/5 실패→5/5 통과, Jarvis ×3 PASS) |
 | B-M2C-09 | 🔶 ER-1 부분 닫힘 | 남은 것: ① QB-10 잃은 이미지 정적 HTML·PNG 개수 문구 ② ⑩ 나머지 변형·태블릿/모바일 폭 ③ 캔버스 픽셀 대조(교차 출처 iframe 환경 한계). 해소: 경로 A(ref-e·밝은 카드 + 페이지 정보) 게이트 통과 실측, 정적 HTML 성공·PNG↔정적 HTML 47px/4.2M(1280) | QA ER-5(경로 A로 재개, build+preview) · ER-5: ①잃은 이미지 처리·내보내기 성공 확인, 결과 줄 개수 문구만 미확인 · **QFIX-QA: ① 개수 문구 PASS(QB-R2·R5) → ① 닫힘**, ②·③ 남음 |
 | B-ER-01 | EDITOR-REST-0 | 프로필 화면 "새로 시작"(EQ-2 A) UI 미구현 — 기존 문서를 대비 통과 버전으로 옮기는 다른 길 | Designer·Developer |
-| B-ER-02 | EDITOR-REST-0 | `resolveConflict` 메모리 저장소 missing(memoryProjectRepository.ts:101-103) — 충돌 화면 도달·동작 불가. ER-3a에서 스냅샷과 함께 처리 여부 확인 | Developer(ER-3a) |
+| B-ER-02 | EDITOR-REST-0 | `resolveConflict` 메모리 저장소 missing(memoryProjectRepository.ts:101-103) — 충돌 화면 도달·동작 불가. ER-3a에서 스냅샷과 함께 처리 여부 확인 | Developer(ER-3a) · ✅ ER-3a `7887bf1` 닫힘(memoryProjectRepository resolveConflict · 테스트 동봉) |
 | B-ER-03 | ER-1 QA 관찰 | 프로필 화면 문구 "편집기는 다음 단계(2a-05)에서 연결됩니다 … 자리표시 화면으로 이동"이 실제 동작(편집기 열림)과 불일치 — 문구 정정 | Developer 문구 · ✅ QFIX `0415e74` 닫힘 |
-| B-ER-04 | ER-2F Codex F r2 P2 | 테마 변경 알림 줄 "되돌리기"를 키보드로 실행하면 `undoLast()` 뒤 버튼이 사라져 포커스가 body로 떨어짐(StudioLayout.tsx 187행 근처) — 유지되는 컨트롤(테마 영역 "테마 바꾸기")로 복구 | Developer ER-4(실행 취소) |
-| B-ER-05 | ER-3b Codex r4 P2 | 미리보기 중 편집 경계가 거절해도 `useSectionOps.run`이 docRef·실행 취소 스택·last를 이미 바꿈(StudioLayout.tsx:95) → `edit` false를 run 실패로 처리 | Developer ER-4 |
-| B-ER-06 | ER-3b Codex r4 P2 | 내보내기 진행 중 이미지 교체·삭제 시 "내보내기 전" 스냅샷 Blob이 보관 맵에서 prune될 수 있음(StudioLayout.tsx:371-373) → 스냅샷 생성 응답 시점에 참조 집합 갱신 | Developer ER-4 |
+| B-ER-04 | ER-2F Codex F r2 P2 | 테마 변경 알림 줄 "되돌리기"를 키보드로 실행하면 `undoLast()` 뒤 버튼이 사라져 포커스가 body로 떨어짐(StudioLayout.tsx 187행 근처) — 유지되는 컨트롤(테마 영역 "테마 바꾸기")로 복구 | Developer ER-4(실행 취소) · ✅ ER-4 `e2301c4`·`70bae59` 닫힘(ThemeSwap.test 1280·390) |
+| B-ER-05 | ER-3b Codex r4 P2 | 미리보기 중 편집 경계가 거절해도 `useSectionOps.run`이 docRef·실행 취소 스택·last를 이미 바꿈(StudioLayout.tsx:95) → `edit` false를 run 실패로 처리 | Developer ER-4 · ✅ ER-4 `05bded2` 닫힘(opAfter 거절 = 실패 · useSectionOps.pin.test) |
+| B-ER-06 | ER-3b Codex r4 P2 | 내보내기 진행 중 이미지 교체·삭제 시 "내보내기 전" 스냅샷 Blob이 보관 맵에서 prune될 수 있음(StudioLayout.tsx:371-373) → 스냅샷 생성 응답 시점에 참조 집합 갱신 | Developer ER-4 · ✅ ER-4 `f7bea33` 닫힘(exportFlow 응답 시점 참조 갱신 · exportFlow.test) |
 | B-ER-07 | ER-3b Ego Lite | 변환 중 미리보기 차단 실브라우저 재현 실패(변환이 먼저 끝남)·CDP 캡처 타임아웃 → CPU 스로틀로 재확인·캡처 | QA ER-5 · ER-5 미재현(수단 미기록) → ER-5b · QFIX-QA 시도 무효(12MP 10.5MB가 TOO_LARGE 거절) → 10MB 미만 고화소 + 스로틀 ≥6으로 재시도 |
 | B-ER-08 | ER-4 Jarvis 판정 | U3 필드 편집 묶음(MQ-R5 ★A) 미이행 — 필드 기록이 삭제 전 문서까지 닿으면 `StudioLayoutImages.test.tsx` "삭제 → 필드 입력 → 되돌리기 무효화 → 이미지 빠짐" 단언과 충돌 → SPEC 결정 먼저(Designer) + 예산 | Designer → Developer |
 | B-ER-09 | ER-4b | U4 "더보기" 메뉴(실행 취소·다시 실행 항목 · <1280 "스냅샷" 이동) 미구현 — /studio 128.56 > 시도 조건 128.55. "스냅샷" 버튼은 모든 폭 툴바(SPEC 차이 유지) | Developer(예산 확보 후) · ✅ ER-9 `9b1e001` 더보기 실행 취소·다시 실행 닫힘(개정 8 배분 ② +0.33) — <1280 "스냅샷" 이동만 열림(여유 0.11) |

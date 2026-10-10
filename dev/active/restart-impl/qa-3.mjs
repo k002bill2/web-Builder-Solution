@@ -1,0 +1,25 @@
+// RS-AC-15 실흐름 ① — 문서 A안 v1(대비 미달 3) → 보정값 쓰기 → 조정 저장 v2 → 3안 v2 → B안 → 새로 시작 대화상자(R-D5) → 새로 시작 → 편집기
+const task = await taskSpace(13);
+const page = task.page("p1");
+const btn = (re) => page.evaluate((src) => [...document.querySelectorAll("button")].find((b) => new RegExp(src).test(b.textContent.trim()))?.click() ?? "missing", re);
+const has = (re) => page.waitForFunction((src) => [...document.querySelectorAll("button")].some((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).trim())), re, { timeout: 20000 });
+await btn("^보정값 쓰기$");
+await page.waitForTimeout(300);
+await btn("^조정 저장 \\(v2\\)$");
+await has("^3안 만들기 \\(v2\\)$");
+const contrastV2 = await page.evaluate(() => [...document.querySelectorAll("summary, button")].map((b) => b.textContent.trim()).find((t) => /통과 \d|모두 통과|대비 상세/.test(t)));
+await btn("^3안 만들기 \\(v2\\)$");
+await has("^B안 선택$");
+await page.click("loc=role:button[name='B안 선택']");
+await has("^B안으로 편집 시작$");
+await btn("^B안으로 편집 시작$");
+await page.waitForSelector("dialog[open]", { timeout: 15000 });
+await page.waitForFunction(() => /대비 검사/.test(document.querySelector("dialog[open]").innerText), undefined, { timeout: 5000 }).catch(() => "no R-D5");
+const dialog = await page.evaluate(() => document.querySelector("dialog[open]").innerText);
+await page.screenshot({ path: "/Users/younghwankang/orca/workspaces/web-builder-solution/restart-impl/dev/active/restart-impl/shots/rs15-dialog-1280.png" });
+await btn("^B안으로 새로 시작$");
+await page.waitForFunction(() => /^\/studio\//.test(location.pathname), undefined, { timeout: 15000 });
+await page.waitForTimeout(1500);
+const notice = await page.evaluate(() => [...document.querySelectorAll('[role="status"]')].map((n) => (n.getAttribute("aria-label") || "") + ": " + n.textContent.trim()).filter((t) => t.length > 3));
+const gate = await page.evaluate(() => document.body.innerText.split("\n").filter((l) => /대비|게이트|내보내기 전/.test(l)).slice(0, 8));
+console.log(JSON.stringify({ contrastV2, dialog, path: await page.url(), notice, gate }, null, 1));

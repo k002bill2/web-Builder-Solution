@@ -1,0 +1,32 @@
+// RESTART-IMPL RESUME-1 Ego QA 1단계 — 앱 안 클릭만(메모리 store 새로고침 함정). 127.0.0.1:4359 vite preview
+// 경로: 카탈로그 → 비교 2개 → B 전부 선택 → 프로필 확정 v1 → 3안 → A안 편집 시작 → (history.back) → B안 선택 → B안으로 편집 시작 → 대화상자
+const task = await taskSpace("restart-impl resume-1 qa");
+console.log({ spaceId: task.spaceId });
+const page = task.page("p1");
+const btn = (re) => page.evaluate((src) => [...document.querySelectorAll("button")].find((b) => new RegExp(src).test(b.textContent.trim()))?.click() ?? "missing", re);
+const has = (re) => page.waitForFunction((src) => [...document.querySelectorAll("button")].some((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).trim())), re, { timeout: 20000 });
+await page.cdp("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+await page.goto("http://127.0.0.1:4359/catalog");
+await has("비교 추가$");
+for (const n of ["모던 카페 브랜드", "프리미엄 헤어살롱"]) await page.click(`loc=role:button[name='${n} 비교 추가']`);
+await page.evaluate(() => [...document.querySelectorAll("a")].find((a) => a.textContent.trim() === "비교 보드").click());
+await page.waitForFunction(() => location.pathname === "/compare", undefined, { timeout: 10000 });
+await page.click("loc=role:button[name='이 레퍼런스로 전부 선택: B 프리미엄 헤어살롱']");
+await page.waitForTimeout(400);
+await btn("^프로필 확정");
+await has("^3안 만들기");
+await btn("^3안 만들기");
+await has("^A안 선택$");
+await page.click("loc=role:button[name='A안 선택']");
+await has("^A안으로 편집 시작$");
+await btn("^A안으로 편집 시작$");
+await page.waitForFunction(() => /^\/studio\//.test(location.pathname), undefined, { timeout: 15000 });
+await page.waitForTimeout(800);
+await page.evaluate(() => history.back());
+await page.waitForFunction(() => /^\/profile\//.test(location.pathname), undefined, { timeout: 15000 });
+await has("^B안 선택$");
+await page.click("loc=role:button[name='B안 선택']");
+await has("^B안으로 편집 시작$");
+await btn("^B안으로 편집 시작$");
+await page.waitForSelector("dialog[open]", { timeout: 15000 });
+console.log(await page.evaluate(() => ({ path: location.pathname + location.search, dialog: document.querySelector("dialog[open]").innerText })));

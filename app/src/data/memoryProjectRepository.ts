@@ -117,8 +117,9 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     },
     // kept를 청크 받기 전에 부른다 — 맵을 저장 요청 시점에 잡는다(BRIEF-R2 ②)
     saveDoc: (projectId, expectedRevision, doc) => kept(projectId, bookOf().then((docs) => call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)))),
+    // restart = 판정 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 메모리·IDB 쓰기 0으로 던진다(갈라짐 0)
     startDoc: (projectId, profileVersion, candidateId, mode, expectedRevision) =>
-      kept(projectId, bookOf().then((docs) => call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit)))),
+      kept(projectId, bookOf().then(async (docs) => (mode === "restart" && (await (await local?.sync())?.guardWrite()), call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit))))),
     listSnapshots: async (projectId) => {
       const first = await entered(projectId);
       return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];

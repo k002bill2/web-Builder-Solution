@@ -111,7 +111,8 @@ describe("3안 생성 흐름 (P-S17 → S18 → S19)", () => {
     // B-ER-03 — 편집 시작은 실제 편집기를 연다(자리표시 화면 · 2a-05 예고 문구 0)
     expect(edit).toHaveAccessibleDescription(/편집 시작을 누르면 고른 안으로 편집기를 엽니다/);
     expect(region).not.toHaveTextContent(/자리표시|2a-05/);
-    expect(edit).toHaveAccessibleDescription(/이미 편집 중인 문서가 있으면 그 문서를 엽니다/);
+    // RESTART R-C1 — 문서가 있고 다른 안이면 새로 시작할지 묻는다(SPEC 5.1 교체)
+    expect(edit).toHaveAccessibleDescription(/이미 편집 중인 문서가 있고 다른 안을 골랐으면 새로 시작할지 묻습니다/);
     await u.click(edit);
     expect(router.state.location.pathname).toBe("/profile/profile-1");
     await u.click(within(region).getByRole("button", { name: "B안 선택" }));
@@ -294,13 +295,16 @@ describe("편집 시작 연결 (DS-2A-05 12.3 · 8.3.1 · 8.2.1 — a2 C5)", () 
     if (state.changes!.length > 0) expect(state.editNotice).toMatch(/^구조안의 섹션 \d+개를 편집기 변형으로 바꿔 열었습니다/);
   });
 
-  it("DOC_EXISTS → 이동 + '이미 편집 중인 문서를 엽니다 (A안 · 프로필 v1)' · 자동 restart 없음", async () => {
+  // RESTART SPEC r2 F2(RS-AC-01 — r2가 허용한 교체) — 같은 쌍(B안 · v1)만 바로 이동. 다른 안 문서(A안)는 F4 대화상자(ProfileRestart.test.tsx)
+  it("DOC_EXISTS(같은 쌍) → 이동 + '이미 편집 중인 문서를 엽니다 (B안 · 프로필 v1)' · 자동 restart 없음", async () => {
     const { u, edit, router, projectRepository } = await pickB();
+    // 같은 인자 create는 멱등 재생(성공)이라 다른 경로로 B안 문서를 만든다 — A안 create → B안 restart
     await projectRepository.startDoc("project-1", 1, "A", "create");
+    await projectRepository.startDoc("project-1", 1, "B", "restart", 1);
     await u.click(edit());
     await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
-    expect(router.state.location.state).toEqual({ editNotice: "이미 편집 중인 문서를 엽니다 (A안 · 프로필 v1)" });
-    expect(await projectRepository.getDoc("project-1")).toMatchObject({ candidateId: "A", revision: 1 });
+    expect(router.state.location.state).toEqual({ editNotice: "이미 편집 중인 문서를 엽니다 (B안 · 프로필 v1)" });
+    expect(await projectRepository.getDoc("project-1")).toMatchObject({ candidateId: "B", revision: 2 });
   });
 
   it("실패(요청 실패) → role=alert '편집을 시작하지 못했습니다' · 이동 없음 → '다시 시도' = 같은 인자 → 이동", async () => {

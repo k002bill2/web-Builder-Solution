@@ -75,7 +75,7 @@ const RENDER_AUTO = [];
  *  3안 실렌더 비교(M2B-5 SPEC 1.1·3.1): CompareDialog(대화상자·프레임 다리·변환 writeStartDoc·docKitTokens) ← compareLoader loadCompare ←
  *  CandidatesSection "3안 실제 화면으로 비교"·실패 뒤 "다시 시도" onClick. 진입은 받지 않는다 — ProfileCompare.test "번들 분류 근거"가 요청 0을 확인한다
  */
-const PROFILE_AFTER_ACTION = ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts", "src/features/profile/CompareDialog.tsx"];
+const PROFILE_AFTER_ACTION = ["src/data/memoryProfileAdjust.ts", "src/data/memoryGenerate.ts", "src/data/memoryProjectRepository.ts", "src/features/profile/CompareDialog.tsx", "src/features/profile/RestartDialog.tsx"];
 const COMPARE_AFTER_ACTION = [
   "src/features/compare/carryOverPanel.tsx",
   "src/data/memoryBoardConfirm.ts",

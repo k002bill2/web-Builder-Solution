@@ -51,6 +51,8 @@ export interface LocalSync {
   /** 첫 저장 1회 안내(P1C-D5 · SPEC 1.4) — 쓰기 탭이고 meta `firstSaveNotice`가 없으면 키를 큐로 제출하고 true(커밋을 기다리지 않는다 — 실패면 다음 호출에 다시 true).
    * `live`가 false면(호출자가 이미 시간 초과로 안내를 버림) 키를 쓰지 않고 false — 안내하지 않은 판정이 키를 소비하지 않게(Codex r1 P2) */
   firstSave(live?: () => boolean): Promise<boolean>;
+  /** 되돌리기 어려운 쓰기(restart) 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 flush와 같은 INFRA 사유로 던진다(호출자는 쓰기 0) */
+  guardWrite(): Promise<void>;
 }
 
 const unreadable = () => new ProjectRepositoryError("INFRA", "열기 — 저장된 데이터를 읽지 못했습니다");
@@ -192,6 +194,11 @@ export async function openLocalSync(
       current && current.hash !== hash && current === submitted.get(projectId)?.doc && queue.status(projectId) === "unconfirmed" && current.revision > expectedRevision
         ? current.revision
         : expectedRevision,
+    guardWrite: async () => {
+      if (cleared) throw toInfra(undefined, "저장", CLEARED_TAB);
+      const mode = await gate.enter();
+      if (mode !== "writer") throw blocked(mode);
+    },
     // 상태 쓰기(saveState)가 먼저 잠금을 요청했으면 그 제출 뒤에 낸다 — 같은 enter 시도를 기다린다
     firstSave: async (live = () => true) => {
       try {

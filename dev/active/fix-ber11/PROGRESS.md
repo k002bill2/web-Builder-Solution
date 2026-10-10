@@ -9,9 +9,10 @@ base main `5db4275` · branch `k002bill2/fix-ber11`
 - [x] GREEN 최소 변경 + 회귀 0
 - [x] 게이트: typecheck · lint · build · vitest 전체 1회
 - [x] 번들 예산 확인 (/studio ≤129.65 · 복원 ≤132.68 · /profile ≤100)
-- [ ] Ego Lite 390 실화면 3회 + 캡처 + 정리
-- [ ] BACKLOG B-ER-11 결과 표기 커밋
-- [ ] REPORT.md
+- [x] Ego Lite 390 실화면 3회 + 캡처 + 정리
+- [x] BACKLOG B-ER-11 결과 표기 커밋
+- [x] REPORT.md
+- [x] Codex 리뷰(branch --base main) — R1 P2 반영(`0777ceb`) · R2 지적 0
 
 ## 원인 (코드 추적 확정)
 - `StructureCanvas.tsx` `Overlay`의 선택 상자 effect 의존성 `[selectedId, selectedRect]`. `selectedRect` = `rects.find(...)` 결과 **배열 원소(객체 정체성)**.
@@ -32,3 +33,7 @@ base main `5db4275` · branch `k002bill2/fix-ber11`
 ## 게이트 (fresh)
 - typecheck 0 · lint 0 · vitest 297 files / 2660 tests passed · build 0
 - 번들: /studio 129.28 (≤129.65) · 복원 132.31 (≤132.68) · /profile 99.87 (≤100)
+
+## Ego (preview 4347 · 390×844)
+- "되돌리기" top 176 · 52 · 52 (vh 844) → 화면 안 3/3 · 캡처 `shots/ber11-390-applied-fixed.png` 41,023B
+- 정리: IDB deleted · finish({keep:[]}) · listTaskSpaces() = [] · 4347 LISTEN 0

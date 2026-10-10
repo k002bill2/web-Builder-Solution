@@ -193,7 +193,7 @@ ER 6절(`:233`) "단언 약화 금지, 경우 추가" 원칙에 따라 **약화�
 | 같은 파일 (새 it) | — | (MQ-F3 A) "이미지 고르기 → 칸 밖 Ctrl+Z(문서에서 빠지고 다시 실행 목록만 쥠) → 필드 입력(다시 실행 잘림) → images = `[]`" · (MQ-F3 B) "이미지 고르기 → 충돌 '최신으로 불러오기' → images = `[]`" — 결정된 쪽 1건 | 무효화 경로(이미지가 정말 아무 데서도 안 닿음)를 컴포넌트 수준에서 1건 유지 |
 | `app/src/features/studio/undoStack.test.ts` (새 it) | — | "실행 취소 뒤 새 기록 = 다시 실행 목록의 문서가 `reachable`에서 빠진다" · "상한 51번째 push = 첫 기록 `before`가 빠진다" | 무효화 단언을 단위로 이동(Codex r1 의도 보존) |
 | `app/src/components/studio/UndoKeys.test.tsx:99` (it 제목) | "스택 밖 변경(필드 글자) 뒤 Ctrl+Z = 문서를 되돌리지 않는다 — 입력한 글자를 덮지 않음" | "필드 글자 뒤 칸 밖 Ctrl+Z = 그 묶음 1건만 되돌림(값 원래대로 · 섹션 삭제 유지) · 한 번 더 = Services 복원" | 필드 글자가 스택 안으로 들어온다(MQ-R5 ★A) |
-| 같은 파일 `:104-107` | change "새 제목" → Ctrl+Z → rows 그대로 · 값 "새 제목" | change "새 제목" → (blur 또는 600ms) → Ctrl+Z → rows 그대로 · 값 = 입력 전 · 알림 "실행 취소: Hero 제목 편집" → Ctrl+Z → rows = 삭제 전 | 같음. "입력한 글자를 덮지 않음"은 **묶음이 열린 채 기록 밖 경로로 문서가 바뀌는 경우**(4.1 닫힘 규칙)로 보존 |
+| 같은 파일 `:104-107` | change "새 제목" → Ctrl+Z → rows 그대로 · 값 "새 제목" | change "새 제목" → (blur 또는 600ms) → Ctrl+Z → rows 그대로 · 값 = 입력 전 · 알림 "실행 취소: {삭제 뒤 선택된 섹션 이름} {첫 필드 라벨} 편집"(삭제 뒤 선택 = 다음 섹션 — `opAfter.ts:105-106`; 이름은 fixture에서 확정) → Ctrl+Z → rows = 삭제 전 | 같음. "입력한 글자를 덮지 않음"은 **묶음이 열린 채 기록 밖 경로로 문서가 바뀌는 경우**(4.1 닫힘 규칙)로 보존 |
 | 개발 레인 메모(코드 주석) | `undoStack.ts:27-28` "스택 밖 변경(필드 글자 등)으로 끊긴 기록은 닿지 않으므로…" · `opAfter.ts:48` "스택 밖 변경을 덮지 않는다" · `useSectionOps.ts:19` | 필드 글자 예시를 "충돌 해결 '최신' 등"으로 | 주석이 규칙과 어긋나지 않게 |
 
 - 그 밖에 깨질 수 있는 테스트(추정 L3): `useSectionOps.test.tsx`·`useSectionOps.pin.test.tsx`(`held` 계산·리스너 붙는 시점) · `MoreMenu*.test.tsx`(항목 이름) · `useSnapshots.test.tsx`(미리보기 열 때 닫힘). 깨지면 이 표의 사유 범위 안에서만 고친다.
@@ -228,6 +228,7 @@ ER 6절(`:233`) "단언 약화 금지, 경우 추가" 원칙에 따라 **약화�
 - 현재(브리프·`dev/active/fix-ber11/REPORT.md:25`): `/studio` **129.28 / 멈춤 129.65**(기준선 `app/scripts/m2cBaseline.json` 129.62 + 0.03 — `app/scripts/bundleBudget.mjs:14`) → 여유 **0.37KB**. 복원 진입 132.31/132.68. `/profile` 99.87/100은 이 변경과 무관(±0 목표).
 - 진입 closure에 둘 것(최소): 열린 묶음 ref · 키 비교 · `docRef` 갱신 · `held` base 포함 · 청크 호출 1줄 · 칸에서 키·라벨·조합 플래그 전달 · `onBlur` 1줄. **추정 +0.10~0.25KB [L3]**.
 - **주의(L1)**: 과거 실측은 추정의 3~8배였다 — ER-4 리스너·스택 +0.68(추정 +0.02~0.08, `dev/active/er-4/REPORT.md:28,36`) · ER-9 +0.33(추정 +0.06~0.12, `dev/active/er-9/REPORT.md:4`). 조작 뒤 청크가 진입 모듈(`selection.ts` 등)을 import하면 공유 청크가 새로 생겨 오히려 진입이 는다(+0.13 `opAfter.ts:15` · 0.37 `dev/active/er-off2/REPORT.md:28`) → **라벨 문자열은 진입 쪽(EditFields — 이미 `selection` import)에서 만들어 넘긴다**.
+- **배분(L1)**: ADR-004 개정 13(`:227`) "여유를 실제 기능에 배분하려면 새 개정으로 배분한다" — 이 레인이 0.37 중 ≤ 0.27을 쓴다는 가정이며, 배분은 ADR-004 새 개정 1건(Jarvis — 전례 ER-9 "개정 8 배분 ② +0.33", BACKLOG `:40`). 병렬 Designer 레인(RESTART-SPEC · GEN-MARK-SPEC) 구현과 같은 여유를 나눠 쓸 수 있다.
 - **멈춤 규칙**: ER 8절 `:271`대로 실측 후 남은 여유가 0.10 아래(= 증가 > 0.27KB)면 그 레인에서 멈추고 보고 → MQ-F4. 예산 상향은 ADR-004 새 개정으로만(`docs/decisions/ADR-004-performance-budgets.md`).
 - 조작 뒤 청크(`docEngine`) 증가 +0.3~0.6KB [L3] — 예산 밖(`check-bundle-size.mjs` afterAction), 크기만 출력.
 - 수치 메모: ADR-004 개정 13(`:226-227`)은 ENTRY-SLIM 뒤 129.09를 기록 — 이후 레인이 129.28로 올렸다(fix-ber11). 이 SPEC은 최신 실측 129.28을 쓴다. 구현 레인이 빌드 실측으로 다시 확인.

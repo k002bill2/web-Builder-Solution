@@ -44,10 +44,10 @@
 
 ## 7. 남은 것 · 필요한 것
 
-- **결정 필요(영환님·Jarvis)**: MQ-F0~F4 회신 — 권장 "F0 A · F1 A · F2 A · F3 A · F4 A"(전부 예산 증액·엔진 계약·저장 스키마 변경 0). F4 B만 예산 증액.
+- **결정 필요(영환님·Jarvis)**: MQ-F0~F4 회신 — 권장 "F0 A · F1 A · F2 A · F3 A · F4 A"(엔진 계약·저장 스키마·한도 상향 0). F4 B만 한도 상향. 단 0.37 여유 사용 자체는 ADR-004 배분 개정 1건 필요(개정 13 `:227`) — 병렬 레인과 공유.
 - 구현 레인(Developer): SPEC 8.1 파일 · FU-AC-1~16 · FU-QB-1~3. FU-QB-3(실제 한글 IME)은 Ego가 IME를 못 내면 영환님 수동 1회.
 - BACKLOG 갱신(Jarvis): B-ER-08 "SPEC 결정 완료 → Developer" · MQ-F3 B 선택 시 이미지 패널 기록 새 항목.
 
 ## 커밋
 
-- `f1d2b10` PROGRESS · `5291fbf` SPEC r0 · `0a997f7` MQ · (이 커밋) REPORT
+- `f1d2b10` PROGRESS · `5291fbf` SPEC r0 · `0a997f7` MQ · `22b2760` REPORT · (이 커밋) 보정 — ADR-004 개정 13 배분 개정 필요 명시 · UndoKeys 바꿀 문장 섹션 이름 일반화 · MQ ★ 근거 한 줄

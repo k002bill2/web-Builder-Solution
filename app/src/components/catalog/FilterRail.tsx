@@ -1,5 +1,5 @@
 import { useId, useRef } from "react";
-import type { MotionLevel } from "../../domain/reference";
+import type { LicenseStatus, MotionLevel } from "../../domain/reference";
 import type { FacetCounts } from "../../features/catalog/facetCounts";
 import {
   FILTER_GROUPS,
@@ -11,6 +11,7 @@ import {
 import { Button } from "../ds/Button";
 import { Checkbox } from "../ds/Checkbox";
 import { SegmentedControl } from "../ds/SegmentedControl";
+import { LICENSE_LABEL } from "./SourceTags";
 
 type MotionValue = MotionLevel | "all";
 
@@ -18,6 +19,10 @@ const MOTION_SEGMENTS: ReadonlyArray<{ value: MotionValue; label: string }> = [
   { value: "all", label: "전체" },
   ...MOTION_OPTIONS.map((o) => ({ value: o.id, label: o.label })),
 ];
+
+/** 라이선스 그룹은 표시 문구만 한국어(SPEC gen-mark-2 3.3) — 필터 id·URL은 `catalogFilters.ts` 영문 그대로 */
+const optionLabel = (key: FilterGroupKey, option: { readonly id: string; readonly label: string }) =>
+  key === "license" ? (LICENSE_LABEL[option.id as LicenseStatus] ?? option.label) : option.label;
 
 function CheckboxGroup({
   group,
@@ -37,7 +42,7 @@ function CheckboxGroup({
         {group.options.map((option) => (
           <Checkbox
             key={option.id}
-            label={option.label}
+            label={optionLabel(group.key, option)}
             count={counts[group.key][option.id] ?? 0}
             checked={isSelected(group.key, option.id)}
             onChange={() => onToggle(group.key, option.id)}

@@ -306,6 +306,18 @@ describe("createAutosaveScheduler — 실패·오프라인·STALE (E-S07~E-S09)"
     expect(saveMock).toHaveBeenCalledTimes(1);
   });
 
+  it("retry는 직후 단계를 돌려준다 — 떠나기 대기가 effect 전에 읽는다(B-RS-01)", async () => {
+    const { scheduler } = setup(vi.fn<(doc: string) => Promise<unknown>>().mockRejectedValueOnce(new Error("boom")).mockReturnValue(deferred().promise));
+    expect(scheduler.retry()).toBe("idle");
+    scheduler.change("a");
+    expect(scheduler.retry()).toBe("saving");
+    await vi.advanceTimersByTimeAsync(0);
+    expect(scheduler.retry()).toBe("saving");
+    const offline = setup(async () => undefined, () => false);
+    offline.scheduler.change("a");
+    expect(offline.scheduler.retry()).toBe("offline");
+  });
+
   it("dispose — 타이머를 지우고 진행 중 저장이 끝나도 onChange를 부르지 않는다", async () => {
     const first = deferred();
     const { scheduler, saveMock, states } = setup(vi.fn<(doc: string) => Promise<unknown>>().mockReturnValue(first.promise));

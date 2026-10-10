@@ -21,7 +21,8 @@ describe("ReferenceDetailPage (2a-02 v2, FR-CAT-03)", () => {
     const breadcrumb = screen.getByRole("navigation", { name: "브레드크럼" });
     expect(within(breadcrumb).getByRole("link", { name: "카탈로그" })).toHaveAttribute("href", "/catalog");
 
-    expect(screen.getByText("internal")).toBeInTheDocument();
+    expect(screen.getByText("자체 제작")).toBeInTheDocument();
+    expect(screen.queryByText("internal")).toBeNull();
     expect(
       screen.getByText("카페·F&B · 풀블리드 히어로 · 20~30대 여성 타깃 · 우리 섹션 라이브러리 v1.4로 제작"),
     ).toBeInTheDocument();
@@ -431,12 +432,12 @@ describe("상세 머리 출처 표식 (GEN-MARK · SPEC gen-mark 3.2·4·5·7절
   const GEN_NOTE = "섹션 라이브러리를 조합 규칙으로 자동 생성한 레퍼런스입니다.";
   const follows = (a: Node, b: Node) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
 
-  it("GM-AC-U5·U7: 생성 조합 상세 — h1 → '라이선스' 접두 → 라이선스 Tag → '생성 조합' Tag 순서, 설명 한 줄 1회", async () => {
+  it("GM-AC-U5·U7·GM2-AC-U6: 생성 조합 상세 — h1 → '라이선스: ' 접두 → '자체 제작' Tag → '생성 조합' Tag 순서, 설명 한 줄 1회", async () => {
     renderApp("/references/gen-beauty-1");
     const h1 = await screen.findByRole("heading", { level: 1, name: "뷰티 · 세련된 센터형" }, { timeout: 5_000 });
     const info = within(infoPanel());
-    const prefix = info.getByText("라이선스");
-    const license = info.getByText("internal");
+    const prefix = info.getByText("라이선스:");
+    const license = info.getByText("자체 제작");
     const gen = info.getByText("생성 조합");
     expect(prefix).toHaveClass("sr-only");
     expect(prefix.nextElementSibling).toBe(license);
@@ -453,6 +454,21 @@ describe("상세 머리 출처 표식 (GEN-MARK · SPEC gen-mark 3.2·4·5·7절
     const info = within(infoPanel());
     expect(info.queryByText("생성 조합")).toBeNull();
     expect(info.queryByText(GEN_NOTE)).toBeNull();
-    expect(info.getByText("라이선스").nextElementSibling).toHaveTextContent(/^internal$/);
+    expect(info.getByText("라이선스:").nextElementSibling).toHaveTextContent(/^자체 제작$/);
+  });
+
+  it("GM2-AC-U4: 생성 조합 상세 메타 줄 — buildNote(내부 버전 문자열) 0 · 끝 구분점 0 · 설명 한 줄 1회", async () => {
+    renderApp("/references/gen-beauty-1");
+    await screen.findByRole("heading", { level: 1, name: "뷰티 · 세련된 센터형" }, { timeout: 5_000 });
+    const info = within(infoPanel());
+    expect(info.queryByText(/internal-compose|조합 생성기/)).toBeNull();
+    expect(info.getByText(/^뷰티 · .+ 타깃$/)).toBeInTheDocument();
+    expect(info.getAllByText(GEN_NOTE)).toHaveLength(1);
+  });
+
+  it("GM2-AC-U5: 큐레이션 상세 메타 줄 — buildNote 그대로", async () => {
+    renderApp("/references/ref-a");
+    await heading("모던 카페 브랜드");
+    expect(within(infoPanel()).getByText(/ · 우리 섹션 라이브러리 v1\.4로 제작$/)).toBeInTheDocument();
   });
 });

@@ -1,0 +1,32 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a126a4-54e8-7b70-a402-a24cc9eb319a).
+[codex] Reviewer started: changes against '2ad7221'
+[codex] Running command: /bin/zsh -lc "pwd; git status --short; git diff --stat 2ad7221fb98dbb868da0f9eb38eaa245525bfe...
+[codex] Command failed: /bin/zsh -lc "pwd; git status --short; git diff --stat 2ad7221fb98dbb868da0f9eb38eaa245525bfe... (exit 1)
+[codex] Running command: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan...
+[codex] Command completed: /bin/zsh -lc 'for d in /Users /Users/younghwankang /Users/younghwankang/orca /Users/younghwan... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/useDocSave.ts; cat app/src/features/studio/useAutos...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/useDocSave.ts; cat app/src/features/studio/useAutos... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/persistence/infra.ts; cat app/src/data/persistence/localSync.t...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/persistence/infra.ts; cat app/src/data/persistence/localSync.t... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/components/studio/ThemeDialog.tsx; cat app/src/components/studio/St...
+[codex] Command completed: /bin/zsh -lc "cat app/src/components/studio/ThemeDialog.tsx; cat app/src/components/studio/St... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '65,125p' app/src/data/memoryProjectRepository.ts; rg -n 'STALE_DOC|SCHE...
+[codex] Command completed: /bin/zsh -lc "sed -n '65,125p' app/src/data/memoryProjectRepository.ts; rg -n 'STALE_DOC|SCHE... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 읽기 전용 예외 처리에 실제 저장 실패를 이동 허용으로 바꾸는 두 경로가 남아 있습니다. diff와 관련 저장소·스케줄러 구현을 확인했으며, 테스트는 실행하지 않았습니...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against 2ad7221
+
+읽기 전용 예외 처리에 실제 저장 실패를 이동 허용으로 바꾸는 두 경로가 남아 있습니다. diff와 관련 저장소·스케줄러 구현을 확인했으며, 테스트는 실행하지 않았습니다.
+
+Full review comments:
+
+- [P1] 재시도가 실행되지 않았다면 이전 읽기 전용 판정을 재사용하지 마세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/save-on-leave/app/src/features/studio/useDocSave.ts:145-146
+  이전 저장이 READ_ONLY_TAB으로 거절된 뒤 브라우저가 오프라인이 되면, `retry()`는 저장소를 호출하지 않고 `offline`을 반환합니다. 따라서 `readOnly.current`가 이전의 true로 남고, `flushed()`가 false여도 이탈이 허용되어 최신 편집이 버려집니다. 다른 탭이 이미 닫혀 쓰기가 가능해졌더라도 동일합니다. 이번 이탈 시도에서 실제 읽기 전용 거절을 받은 경우에만 실패를 무시하도록 판정을 제한해야 합니다.
+
+- [P2] Web Locks 부재 판정을 로컬 저장소에만 적용하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/save-on-leave/app/src/features/studio/useDocSave.ts:75-75
+  `navigator.locks`가 없는 환경에서는 메모리 저장소의 모든 예외도 읽기 전용 거절로 처리됩니다. 하지만 `memoryProjectRepository.saveDoc()`도 저장 본문 청크 로드 실패나 STALE_DOC 등으로 거절될 수 있습니다. 이 경우 `leave()`가 true를 반환하여 실제 저장 실패나 충돌이 있는데도 이동하고 편집을 잃습니다. Web Locks 부재에 따른 예외 처리는 `repository.persistence === "local"`인 경우로 제한하고, 메모리 저장 실패는 이동을 보류해야 합니다.

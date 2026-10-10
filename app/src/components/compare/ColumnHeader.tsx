@@ -1,7 +1,7 @@
 import type { Ref } from "react";
 import type { ColumnStatus } from "../../domain/compareBoard";
 import type { BoardColumnView } from "../../features/compare/boardView";
-import { LICENSE_TONE } from "../catalog/referenceDisplay";
+import { SourceTags } from "../catalog/SourceTags";
 import { Button } from "../ds/Button";
 import { Icon } from "../ds/Icon";
 import { Tag } from "../ds/Tag";
@@ -60,11 +60,7 @@ export function ColumnHeader({
       <div className="flex flex-wrap items-center gap-1.5">
         {column.swatch && <span aria-hidden="true" className="size-3 flex-none rounded-full" style={{ backgroundColor: column.swatch }} />}
         {column.industry && <span className="ds-caption1 text-label-alternative">{column.industry}</span>}
-        {column.license && (
-          <Tag size="sm" tone={LICENSE_TONE[column.license]}>
-            {column.license}
-          </Tag>
-        )}
+        {column.license && <SourceTags inline reference={{ licenseStatus: column.license, sourceKind: column.sourceKind }} />}
         {unavailable && (
           <Tag size="sm" tone="red">
             사용 불가

@@ -84,7 +84,7 @@ export function useExportFlow({
   // 저장 중 생긴 변경(dirty)은 다시 바로 저장. 상태 정리는 effect 밖(다음 마이크로태스크)에서 — 렌더 중 연쇄 갱신을 만들지 않는다
   useEffect(() => {
     if (!waitingSave) return;
-    if (phase === "dirty") return flushSave();
+    if (phase === "dirty") return void flushSave();
     if (phase !== "saved" && phase !== "failed" && phase !== "stale" && phase !== "offline") return;
     let live = true;
     void Promise.resolve().then(() => {

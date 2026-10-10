@@ -40,7 +40,9 @@ function Breadcrumb() {
 }
 
 function DetailHeader({ reference: r, detail }: { readonly reference: DesignReference; readonly detail: ReferenceDetail }) {
-  const meta = [INDUSTRY_LABELS[r.industry], LAYOUT_LABELS[r.layoutType], `${detail.audienceNote} 타깃`, detail.buildNote];
+  // 생성 조합은 buildNote(내부 생성기 버전)를 빼고 아래 설명 한 줄이 대신 말한다(SPEC gen-mark-2 3.2)
+  const generated = r.sourceKind === "library_composition";
+  const meta = [INDUSTRY_LABELS[r.industry], LAYOUT_LABELS[r.layoutType], `${detail.audienceNote} 타깃`, ...(generated ? [] : [detail.buildNote])];
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2">
@@ -48,7 +50,7 @@ function DetailHeader({ reference: r, detail }: { readonly reference: DesignRefe
         <SourceTags reference={r} />
       </div>
       <p className="ds-caption1 mt-1 text-label-alternative">{meta.join(" · ")}</p>
-      {r.sourceKind === "library_composition" && (
+      {generated && (
         <p className="ds-caption1 mt-1 text-label-alternative">섹션 라이브러리를 조합 규칙으로 자동 생성한 레퍼런스입니다.</p>
       )}
     </div>

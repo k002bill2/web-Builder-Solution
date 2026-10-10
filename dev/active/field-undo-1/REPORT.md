@@ -60,7 +60,11 @@
 
 ## 5. Codex
 
-- r1: (아래 갱신)
+- r1(`logs/codex-r1.txt`): **P2 4건 — 미반영(시간 예산 90분 소진 · 진입 여유 0.00이라 진입을 늘리는 수정은 MQ-F4/ADR 판단 필요)**. r2 미실행.
+  1. 청크 로딩 중 다른 칸 이동 = 두 칸이 한 기록으로 합쳐짐(6절 3과 같은 것) — 수정안: 로딩 전 키 변경·blur를 큐에 보존해 청크 준비 뒤 순서대로 처리.
+  2. IME 확정 값이 마지막 조합 값과 같으면 onChange가 다시 안 와 `composing=true`가 남아 600ms 타이머가 안 걸림(blur·다른 칸·다른 기록으로만 닫힘) — 수정안: `compositionend`에서 타이머 재개(청크 리스너로 두면 진입 0).
+  3. 묶음 열린 채 기록 밖 문서 교체(충돌 "최신") 뒤 같은 칸 입력 = 교체 전 base 재사용 → 실행 취소가 다른 탭 변경을 덮음 — **데이터 덮어쓰기 위험, 다음 레인 최우선**. 수정안: `docRef.current !== open.after`면 새 묶음 시작 + 충돌 해결 시작 때 닫기 복원.
+  4. 타이머로 닫힌 묶음의 focusout `once` 리스너가 남아 포커스를 유지하는 동안 누적(메모리) · 언마운트 정리 없음 — 수정안: 제거 함수를 묶음에 보관해 closeField·언마운트에서 해제.
 
 ## 6. SPEC과 다르게 한 것
 
@@ -72,4 +76,4 @@
 ## 7. 정리 · 남은 것
 
 - Ego: TaskSpace 7 `finish({keep:[]})` · IDB `deleteDatabase("design-studio")` · `listTaskSpaces()` = `[]` · preview 서버 종료 · 4355 리슨 0. 영환님 창·main·다른 레인 무접촉.
-- **남은 것**: FU-QB-1·2 Ego 재시도(흐름: /profile "3안 만들기" 셀렉터 보정 필요) · FU-QB-3 영환님 수동 IME 1회 · FIELD-UNDO-2(FU-AC-13).
+- **남은 것**: Codex r1 P2 4건(5절 — 특히 3번) · FU-QB-1·2 Ego 재시도(흐름: /profile "3안 만들기" 셀렉터 보정 필요) · FU-QB-3 영환님 수동 IME 1회 · FIELD-UNDO-2(FU-AC-13).

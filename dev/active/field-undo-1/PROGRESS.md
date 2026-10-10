@@ -10,14 +10,15 @@
 - [x] ② 참조·거절·IME·탭 FU-AC-8~12 — `67026a5`
 - [x] ③ 단언 변경(SPEC 6절 2건)·예산 FU-AC-14~16 — `67026a5` · /studio 129.55 · 복원 132.58
 - [ ] ④ Ego FU-QB-1·2 — BLOCKED: /profile "3안 만들기" 대기 타임아웃으로 /studio 진입 실패, 90분 예산 안 보정 불가(REPORT 1절)
-- [x] ⑤ 게이트 4종 exit 0 · vitest 2678 통과 · REPORT 작성 · Codex r1(REPORT 5절)
+- [x] ⑤ 게이트 4종 exit 0 · vitest 2678 통과 · REPORT 작성 · Codex r1 실행(REPORT 5절)
+- [ ] Codex r1 P2 4건 반영 · r2 — BLOCKED: 90분 예산 소진, 진입 여유 0.00이라 진입 증가 수정은 MQ-F4/ADR 판단 필요(REPORT 5절)
 - [ ] FU-QB-3(실제 한글 IME) — BLOCKED: 범위 밖, 영환님 수동 1회 필요
 
 ## 설계 메모
 
 - 진입(useSectionOps): 열린 묶음 ref `{key,label,base,after}` · `field()`(편집 경계 → docRef 같은 틱 → 키 바뀌면 앞 묶음 닫기) · `held`에 base 포함 · 로드된 청크 ref.
-- 조작 뒤 청크(opAfter → docEngine): `fieldTyped`(600ms 타이머 · 조합 중 타이머 없음) · `closeField`(push · 내용 같으면 기록 0 + 문서 참조 복귀) · `listenHistory`에 focusout(= blur 닫기).
-- 닫힘 호출: run 본문(before 캡처 전) · step 본문 · undoLast · edit 바뀜(미리보기 열기/닫기) · 충돌 해결 시작(StudioLayout choose) · 언마운트 = 버림.
+- 조작 뒤 청크(opAfter → docEngine): `fieldTyped`(600ms 타이머 · 조합 중 타이머 없음 · 묶음 첫 입력에 focusout 1회 리스너 = blur 닫기) · `closeField`(push · 내용 같으면 기록 0 + 문서 참조 복귀).
+- 닫힘 호출(최종): 600ms · focusout · 다른 key · run 본문(before 캡처 전) · step 본문 · 언마운트 = 버림. 미리보기·충돌 앞 명시 닫기는 예산 이동(MQ-F4 A)으로 제거 — REPORT 6절.
 
 ## TDD 기록 (RED 예측 → 결과)
 

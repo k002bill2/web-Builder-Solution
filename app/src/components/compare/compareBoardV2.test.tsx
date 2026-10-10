@@ -149,7 +149,8 @@ describe("열 머리글 (V2-AC-35 · C-10)", () => {
     expect(badge).toHaveClass("bg-surface-inverse", "text-on-surface-inverse");
     const swatch = header.querySelector<HTMLElement>("span[aria-hidden='true'].rounded-full")!;
     expect(swatch.style.backgroundColor).toBe(COLOR.a);
-    expect(within(header).getByText("internal")).toBeInTheDocument();
+    expect(within(header).getByText("자체 제작")).toBeInTheDocument();
+    expect(within(header).queryByText("internal")).toBeNull();
     expect(within(header).getByRole("button", { name: "모던 카페 브랜드 비교에서 빼기" })).toBeInTheDocument();
   });
 

@@ -5,6 +5,7 @@ import { CatalogToolbar } from "../components/catalog/CatalogToolbar";
 import { CompareTrayBar } from "../components/catalog/CompareTrayBar";
 import { FilterRail } from "../components/catalog/FilterRail";
 import { ReferenceCard } from "../components/catalog/ReferenceCard";
+import { LICENSE_LABEL } from "../components/catalog/SourceTags";
 import { CATALOG_RESULTS_ID } from "../components/layout/SkipLinks";
 import {
   clearRailFilters,
@@ -58,7 +59,7 @@ export function CatalogPage() {
       ? { title: "보관함", subtitle: `저장한 레퍼런스 ${savedItems.length}개` }
       : state.tab === "rec"
         ? { title: "추천" }
-        : { title: "레퍼런스 카탈로그", subtitle: `internal · licensed 레퍼런스 ${items.length}개` };
+        : { title: "레퍼런스 카탈로그", subtitle: `${LICENSE_LABEL.internal} · ${LICENSE_LABEL.licensed} 레퍼런스 ${items.length}개` };
 
   return (
     <>

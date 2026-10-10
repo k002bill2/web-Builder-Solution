@@ -12,7 +12,7 @@ import {
   type RowRole,
 } from "../../domain/compareBoard";
 import { EMPTY_CELL_LABEL, isRowUniform } from "../../domain/comparisonCells";
-import type { LicenseStatus } from "../../domain/reference";
+import type { LicenseStatus, SourceKind } from "../../domain/reference";
 import { INDUSTRY_LABELS } from "../../fixtures/catalogFilters";
 
 const MISSING_TITLE = "찾을 수 없는 레퍼런스";
@@ -24,6 +24,8 @@ export interface BoardColumnView {
   readonly status: ColumnStatus;
   readonly industry?: string;
   readonly license?: LicenseStatus;
+  /** 출처 종류 — "생성 조합" 표식(SPEC gen-mark-2 3.1) */
+  readonly sourceKind?: SourceKind;
   /** 대표색 견본 (데이터 값) */
   readonly swatch?: string;
 }
@@ -64,6 +66,7 @@ function columnView(referenceId: string, label: ColumnLabel, result: ComparisonR
     title: reference.title,
     industry: INDUSTRY_LABELS[reference.industry],
     license: reference.licenseStatus,
+    sourceKind: reference.sourceKind,
     swatch: reference.colorPalette.primary,
   };
 }

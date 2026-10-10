@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { generatedReferenceFixtures } from "../../fixtures/generatedReferences";
 import { referenceFixtures } from "../../fixtures/references";
 import { ReferenceCard } from "./ReferenceCard";
+import { LICENSE_LABEL } from "./SourceTags";
 
 const cafe = referenceFixtures[0]!;
 
@@ -38,7 +39,7 @@ describe("ReferenceCard", () => {
     const score = q.getByText(/^접근성/);
     expect(score).toHaveTextContent("접근성 96 · 성능 92 · 09.20 측정");
     expect(score.querySelector("time")).toHaveAttribute("datetime", "2026-09-20");
-    expect(q.getByText("internal")).toBeInTheDocument();
+    expect(q.getByText("자체 제작")).toBeInTheDocument();
   });
 
   it("반응형 미지원이면 캡션 2에 그렇게 적는다", () => {
@@ -117,7 +118,7 @@ describe("ReferenceCard", () => {
     expect(onToggleCompare).toHaveBeenCalledWith("ref-a");
   });
 
-  it("licensed 레퍼런스는 licensed 배지를 표시한다", () => {
+  it("licensed 레퍼런스는 '이용 허락' 배지를 표시한다(GM2-AC-U6)", () => {
     render(
       <MemoryRouter>
         <ReferenceCard
@@ -129,7 +130,7 @@ describe("ReferenceCard", () => {
         />
       </MemoryRouter>,
     );
-    expect(within(screen.getByRole("article", { name: "프리미엄 헤어살롱" })).getByText("licensed")).toBeInTheDocument();
+    expect(within(screen.getByRole("article", { name: "프리미엄 헤어살롱" })).getByText("이용 허락")).toBeInTheDocument();
   });
 });
 
@@ -179,8 +180,8 @@ describe("ReferenceCard 실렌더 썸네일 (M3P-3b · SPEC m3p 4.1·5·7절 · 
     expect(wire).not.toHaveAttribute("role");
     expect(wire).not.toHaveAttribute("aria-label");
     // GM-AC-U3: 라이선스 Tag는 썸네일 밖으로 나와 읽힌다(SPEC gen-mark 5절 — 기존 aria-hidden 단언을 뒤집음)
-    expect(within(card).getByText(cafe.licenseStatus).closest('[aria-hidden="true"]')).toBeNull();
-    expect(wire!.contains(within(card).getByText(cafe.licenseStatus))).toBe(false);
+    expect(within(card).getByText(LICENSE_LABEL[cafe.licenseStatus]).closest('[aria-hidden="true"]')).toBeNull();
+    expect(wire!.contains(within(card).getByText(LICENSE_LABEL[cafe.licenseStatus]))).toBe(false);
     expect(within(card).getAllByRole("img", { name: /미리보기|썸네일/ })).toHaveLength(1);
   });
 
@@ -244,7 +245,7 @@ describe("ReferenceCard 출처 줄 (GEN-MARK · SPEC gen-mark 3.1·5·7절)", ()
   it("GM-AC-U1·U2: 라이선스·'생성 조합' Tag는 썸네일 밖에 있고 absolute 배치 0, '생성 조합'은 읽힌다", () => {
     const card = renderGenerated();
     const thumb = thumbnailOf(card);
-    for (const text of [generated.licenseStatus, "생성 조합"]) {
+    for (const text of ["자체 제작", "생성 조합"]) {
       const tag = within(card).getByText(text);
       expect(thumb.contains(tag), text).toBe(false);
       expect(absoluteAncestor(tag, card), text).toBeNull();
@@ -252,13 +253,15 @@ describe("ReferenceCard 출처 줄 (GEN-MARK · SPEC gen-mark 3.1·5·7절)", ()
     }
   });
 
-  it("GM-AC-U3: 라이선스는 sr-only 접두 '라이선스' + Tag로 읽힌다(internal·licensed), aria-hidden 조상 0", () => {
+  it("GM-AC-U3·GM2-AC-U6: 라이선스는 sr-only 접두 '라이선스: ' + 한국어 Tag로 읽힌다(자체 제작·이용 허락), 영문 원값 0", () => {
     const { card } = renderCard();
-    const prefix = within(card).getByText("라이선스");
+    const prefix = within(card).getByText("라이선스:");
     expect(prefix).toHaveClass("sr-only");
-    expect(prefix.nextElementSibling).toHaveTextContent(/^internal$/);
+    expect(prefix.textContent).toBe("라이선스: ");
+    expect(prefix.nextElementSibling).toHaveTextContent(/^자체 제작$/);
     expect(prefix.closest('[aria-hidden="true"]')).toBeNull();
-    expect(within(card).getByText("internal").closest('[aria-hidden="true"]')).toBeNull();
+    expect(within(card).getByText("자체 제작").closest('[aria-hidden="true"]')).toBeNull();
+    expect(within(card).queryByText("internal")).toBeNull();
     cleanup();
     render(
       <MemoryRouter>
@@ -266,18 +269,19 @@ describe("ReferenceCard 출처 줄 (GEN-MARK · SPEC gen-mark 3.1·5·7절)", ()
       </MemoryRouter>,
     );
     const licensed = screen.getByRole("article", { name: referenceFixtures[1]!.title });
-    expect(within(licensed).getByText("라이선스").nextElementSibling).toHaveTextContent(/^licensed$/);
+    expect(within(licensed).getByText("라이선스:").nextElementSibling).toHaveTextContent(/^이용 허락$/);
+    expect(within(licensed).queryByText("licensed")).toBeNull();
   });
 
   it("GM-AC-U4: 큐레이션 카드는 '생성 조합' 0 · 라이선스 Tag 1개", () => {
     const { card } = renderCard();
     expect(within(card).queryByText("생성 조합")).toBeNull();
-    expect(within(card).getAllByText("internal")).toHaveLength(1);
+    expect(within(card).getAllByText("자체 제작")).toHaveLength(1);
   });
 
   it("GM-AC-U7: 출처 표식 DOM 순서 = 라이선스 → 생성 조합, 둘 다 썸네일 뒤·제목 앞", () => {
     const card = renderGenerated();
-    const license = within(card).getByText(generated.licenseStatus);
+    const license = within(card).getByText("자체 제작");
     const gen = within(card).getByText("생성 조합");
     const title = within(card).getByRole("heading", { name: generated.title });
     const follows = (a: Node, b: Node) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;

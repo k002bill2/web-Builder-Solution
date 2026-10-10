@@ -227,6 +227,21 @@ describe("Codex r1 P2 — 청크 로딩 중 칸 이동 · IME 확정 · 리스�
     add.mockRestore();
     remove.mockRestore();
   });
+
+  it("FU-BLUR r1 P2 청크 응답 전 언마운트 = 응답 뒤 표시 리스너도 해제(누적 0)", async () => {
+    const add = vi.spyOn(document, "addEventListener");
+    const remove = vi.spyOn(document, "removeEventListener");
+    const live = (type: string) => add.mock.calls.filter(([t]) => t === type).length - remove.mock.calls.filter(([t]) => t === type).length;
+    const { result, unmount } = setup();
+    act(() => void result.current.ops.field(TITLE, "Hero 제목 편집", setSlot(result.current.doc, "s-hero", "title", "하나")));
+    expect(live("focusout")).toBe(1);
+    unmount();
+    await act(async () => void (await loadDocEngine()));
+    expect(live("focusout")).toBe(0);
+    expect(live("compositionend")).toBe(0);
+    add.mockRestore();
+    remove.mockRestore();
+  });
 });
 
 describe("이미지 패널 클릭 = 즉시 기록 1건 — FIELD-UNDO-2 · FU-AC-13 (4.5)", () => {

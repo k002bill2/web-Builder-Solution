@@ -55,6 +55,8 @@ export type FieldOpen = {
   timer?: ReturnType<typeof setTimeout>;
   /** 청크 응답 전 blur 표시 — 진입이 다음 입력에서 읽어 지우고 청크에 넘긴다(Codex r2 P2-1) */
   cut?: boolean;
+  /** 청크가 이 묶음에 리스너를 달았는지 — 전에는 off가 진입의 blur 표시 리스너 해제다 */
+  on?: boolean;
   /** 타이머 · 문서 리스너(focusout · compositionend) 해제 — 닫기 · 언마운트가 부른다(Codex r1 P2-4) */
   off?: () => void;
 };
@@ -128,7 +130,10 @@ export function fieldTyped(rec: FieldRec, composing: FieldMode | undefined, key:
     clearTimeout(mine.timer);
     mine.timer = setTimeout(close, FIELD_PAUSE_MS);
   };
-  if (!o.off) {
+  if (!o.on) {
+    // 진입이 단 blur 표시 리스너를 떼고(새 묶음 첫 처리) 청크 리스너로 바꾼다
+    o.off?.();
+    o.on = true;
     const end = () => rec.open.current === mine && arm();
     document.addEventListener("focusout", close);
     document.addEventListener("compositionend", end);

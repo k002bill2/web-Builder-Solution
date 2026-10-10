@@ -31,8 +31,10 @@ export default function ImageSlotPanel({ doc, instanceId, onEdit, name, slots, h
   useEffect(() => {
     latest.current = { doc, images, undoDoc, snapshots };
   }, [doc, images, undoDoc, snapshots]);
+  // 바뀌기 전 문서 = 이 편집의 실행 취소 기록 시작 문서 — 다음 렌더 전(같은 틱) 다른 슬롯 결과의 정리 참조에도 남긴다(FIELD-UNDO 4.4 · Codex FU2 r1 P2)
   const remember = (next: PageDoc, map: RenderImages) => {
-    latest.current = { ...latest.current, doc: next, images: map };
+    const { doc: before, snapshots: held = [] } = latest.current;
+    latest.current = { ...latest.current, doc: next, images: map, snapshots: [before, ...held] };
   };
   const section = doc.sections.find((s) => s.instanceId === instanceId);
   if (!section) return null;

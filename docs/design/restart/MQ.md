@@ -61,3 +61,4 @@
 ## 결정 기록
 
 - **Jarvis 2026-10-10 — MQ-S1 A · S3 A · S4 A · S5 A 채택**(계약·스키마·예산 변경 0). **MQ-S2는 보류** — ★A가 `/studio` 진입 청크(`memoryProjectRepository`) 증가를 동반하고, `/studio` 여유는 ADR-004 개정 14로 FIELD-UNDO에 +0.27 배분·잡음 0.10만 남아 예산 결정 사항 → 영환님 회신 대기. SPEC r1(Codex r1 반영분)은 Codex r2 미검증 — 구현 레인 착수 전 r2 실행.
+- **영환님 2026-10-11 "1·4 진행" — MQ-S2 A 채택**. 예산 = ADR-004 개정 15 배분 +0.05(`/studio`·복원 진입 각각). 구현 레인 RESTART-IMPL.

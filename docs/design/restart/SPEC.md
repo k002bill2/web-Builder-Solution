@@ -1,4 +1,4 @@
-# RESTART SPEC r0 — 프로필 화면 "새로 시작"(EQ-2 A `restart`) UI (B-ER-01)
+# RESTART SPEC r1 — 프로필 화면 "새로 시작"(EQ-2 A `restart`) UI (B-ER-01)
 
 - 작성: RESTART-SPEC Designer 레인 · base main `18e5e12` · 코드 0
 - 원 명세: `docs/design/2a-05/SPEC.md` EQ-2(863행) · 8.3.1(566-588행) · 12.3(817-824행) · 5.11(338행). 이 문서가 그 행들의 **화면 처리**를 구체화하고, 다르게 한 곳은 10절(RS-D#)에 적는다.
@@ -81,8 +81,10 @@
 | 성공(처음·멱등 재생) | 대화상자 닫고 `/studio/:projectId` 이동, state `{changes, editNotice}` — 편집 알림 = 5.3 R-N1(+ `changeNotice`가 있으면 뒤에 " · "로 잇는다). 편집기는 `getDoc` 최신을 연다(2a-05 8.3.1 583행 위 행) | 8.3.1 |
 | `STALE_DOC` | 이동 없음. 대화상자 안 `role=alert` R-E1(2a-05 584행 원문) + "편집기 열기" 버튼. 주 버튼은 **동봉된 최신 doc으로 다시 채운 대화상자**에서만 다시 누를 수 있다(문장의 r번호·편집 중 표시가 최신으로 바뀜) | 2a-05 SPEC:584 |
 | `UNKNOWN_VARIANT` | 대화상자 안 `role=alert` = 저장소 `alert` 문장, 다시 시도 없음 · 쓰기 0 | `CandidatesSection.tsx:99` 선례 |
-| INFRA · 다른 탭 잠금(MQ-S2 ★A) | 대화상자 안 `role=alert` R-E2 · 쓰기 0 · "다시 시도"(같은 인자) | 4절 |
-| INFRA · 그 밖 · `NOT_FOUND` · `SCHEMA_INVALID` · 응답 실패 | `role=alert` R-E3 "새로 시작하지 못했습니다" + "다시 시도"(같은 인자 → 멱등) | 2a-05 SPEC:585 문형 |
+| 쓰기 전 거부 · 다른 탭 잠금 `readonly`(MQ-S2 ★A) | 대화상자 안 `role=alert` R-E2 · 쓰기 0 · "다시 시도"(같은 인자 — 잠금 보유 탭이 **쓰지 않고** 닫혔을 때만 성공) | 4절 |
+| 쓰기 전 거부 · `stale`(다른 탭이 저장함 — 새로고침 전까지 유지, `writerLock.ts:35-51` · `writerLock.test.ts:152-168`) | `role=alert` R-E2b · 쓰기 0 · 다시 시도 **없음** · 새로고침 안내(최신 문서로 다시 고르기) | `localSync.ts:91-96` |
+| 쓰기 전 거부 · `NOT_FOUND` · `SCHEMA_INVALID` · 요청 단계 실패 | `role=alert` R-E3 "새로 시작하지 못했습니다" + "다시 시도"(같은 인자 → 멱등) | 2a-05 SPEC:585 문형 |
+| **커밋 뒤 미확인** — flush INFRA(quota 등) · 응답 실패(`memoryProjectRepository.ts:65-66,75-81`) | 이 탭 메모리는 **이미 새 문서**다. `role=alert` R-E4 + "다시 시도"(같은 인자 → 멱등 재생 → flush 재제출, 거짓 "저장됨" 0 — `localSync.ts:7-8`). 대화상자를 닫거나 "편집기 열기"를 누르면 새 문서(C안)가 열린다 — 보조 버튼 이름도 이때 "편집기 열기 (C안 · v4 — 저장 확인 안 됨)"으로 바뀐다 | Codex r1 P2 |
 
 ### 3.4 빈 · 오류 · 경고 · 진행 중 상태 요약
 
@@ -100,7 +102,7 @@
 
 ### 3.6 다른 탭 · 열린 편집기
 
-- **다른 탭이 잠금을 가짐**(그 탭에서 먼저 편집함): MQ-S2 ★A — 잠금 확인 실패 → 쓰기 0 + R-E2. 그 탭을 닫거나 거기서 하면 된다.
+- **다른 탭이 잠금을 가짐**(그 탭에서 먼저 편집함): MQ-S2 ★A — 잠금 확인 실패(`readonly`) → 쓰기 0 + R-E2. 그 탭이 저장한 뒤 닫혔으면 이 탭은 잠금을 잡아도 최신성 확인에서 `stale`이 되고 새로고침 전까지 유지된다 → R-E2b(다시 시도 없음).
 - **이 탭이 쓰기 탭이고 다른 탭에 같은 프로젝트 편집기가 열려 있음**: 그 탭은 읽기 전용이라 저장이 이미 INFRA다. 새로 시작 뒤 그 탭이 새로고침하면 새 문서를 연다(추가 처리 0).
 - **잠금 지원 없음(`unsupported`)**: 저장 자체가 안 되는 환경(ADR-007 개정 2) — R-E2와 같은 자리에 INFRA 사유 문장.
 
@@ -108,7 +110,8 @@
 
 - L1: 잠금 없는 탭에서 지금 `startDoc`(create도 같다)은 메모리 `commit()` → `flush` INFRA. 결과: 이 탭 메모리의 문서 = 새 C안, IDB = 옛 B안 · 스냅샷 없음. 새로고침하면 B안으로 돌아오고 "새로 시작 전" 스냅샷은 IDB에 없다. 화면은 "편집을 시작하지 못했다"고 말하는데 탭 안에서는 이미 바뀌어 있다 — **거짓 상태**.
 - `create`는 덮을 문서가 없어 피해가 작지만, `restart`는 사용자의 편집 문서를 바꾸는 쓰기다. 그래서 P1D-SPEC 70행(지우기 흐름: 쓰기 탭이면 진행, 아니면 `tryLock`, 못 잡으면 busy 쓰기 0) 패턴을 restart에 적용한다 → MQ-S2.
-- ★A 구현 위치(추정 L3): `memoryProjectRepository.startDoc`에서 `mode === "restart" && local`이면 `docs.start` **전에** `(await local.sync()).enter?.()`(writerGate.enter 노출) → `writer`가 아니면 `blocked(mode)` INFRA로 던진다. `commit` 전에 던지므로 "던지면 변화 0" 규칙과 맞다. 메모리 저장소(`persistence: "memory"`)는 해당 없음.
+- ★A 구현 위치(추정 L3): `memoryProjectRepository.startDoc`에서 `mode === "restart" && local`이면 `docs.start` **전에** `await (await local.sync()).guardWrite()` 한 줄(본문은 `localSync.ts` — `gate.enter()` 뒤 `writer`가 아니면 `blocked(mode)` INFRA, `readonly`·`stale` 사유 구분). `commit` 전에 던지므로 "던지면 변화 0" 규칙과 맞다. 메모리 저장소(`persistence: "memory"`)는 해당 없음.
+- **잠금 확인은 원자성을 끝까지 보장하지 않는다**(Codex r1 P2): 잠금을 잡은 뒤에도 flush INFRA(quota 등)·응답 실패는 메모리 커밋 **뒤**에 난다. 그래서 결과를 "쓰기 전 거부"(변화 0)와 "커밋 뒤 미확인"(R-E4)으로 나눈다(3.3).
 
 ## 5. 문구 원문 (한국어)
 
@@ -124,7 +127,7 @@
 | ID | 자리 | 문구 |
 |---|---|---|
 | R-D1 | 제목(h2, `aria-labelledby`) | "C안으로 새로 시작할까요?" |
-| R-D2 | 본문 1 — 지금 문서 | "지금 편집 중인 문서: B안 · 프로필 v3 · 마지막 저장 10월 10일 14:05" |
+| R-D2 | 본문 1 — 지금 문서 | "지금 편집 중인 문서: B안 · 프로필 v3 · 마지막 저장 10월 10일 14:05 — 이 저장 기준으로 스냅샷에 남습니다" |
 | R-D3 | 본문 2 — 결과 | "지금 문서는 스냅샷 '새로 시작 전'으로 남고, C안 · 프로필 v4로 새 문서를 만듭니다. 지금 문서의 문구·이미지는 새 문서로 옮겨지지 않습니다." |
 | R-D3b | 본문 3 — 되돌리기 | "되돌리려면 편집기의 '스냅샷'에서 '새로 시작 전'을 복원하세요." |
 | R-D4 | 캡션(상시) | "자동 스냅샷은 최근 20개만 보관합니다 — 오래 남기려면 편집기에서 '지금 상태 저장'으로 만드세요" (`SnapshotDialog.tsx:223` SN-1과 같은 뜻, 장소만 "편집기에서" 추가) |
@@ -143,7 +146,9 @@
 | R-N1 | 성공 — `/studio` 편집 알림(1문장, ER-AC-C1) | "C안 · 프로필 v4로 새로 시작했습니다 · 이전 문서(B안 · v3)는 스냅샷 '새로 시작 전'에 있습니다" (+ `changeNotice` 있으면 " · " + 그 문장) |
 | R-E1 | `STALE_DOC` | "다른 곳에서 편집 문서가 바뀌었습니다(r8). 새로 시작하지 않았습니다 — 편집기에서 확인한 뒤 다시 고르세요" (2a-05 SPEC:584 원문) |
 | R-E2 | 다른 탭 잠금 | "다른 탭에서 편집 중이라 새로 시작하지 않았습니다 — 그 탭을 닫은 뒤 다시 시도하세요" |
-| R-E3 | 그 밖 실패 | "새로 시작하지 못했습니다" + 버튼 "다시 시도" |
+| R-E2b | 다른 탭이 저장함(`stale`) | "다른 탭에서 바뀐 내용이 있어 새로 시작하지 않았습니다 — 새로고침한 뒤 다시 고르세요" |
+| R-E3 | 쓰기 전 실패 | "새로 시작하지 못했습니다" + 버튼 "다시 시도" |
+| R-E4 | 커밋 뒤 미확인 | "새로 시작했지만 브라우저에 저장됐는지 확인하지 못했습니다 — 다시 시도하면 같은 요청으로 저장을 이어 갑니다" + 버튼 "다시 시도" |
 
 ## 6. 화면 구조 · 정보 위계 (1280 · 1024 · 390)
 
@@ -177,12 +182,14 @@
 | RS-AC-05 | 진행 중 두 번 누름·Esc → 요청 1회 · 대화상자 유지 | [U] |
 | RS-AC-06 | `STALE_DOC`(delay 주입으로 사이에 저장) → 이동 0 · R-E1(r번호 = 최신) · 대화상자 내용이 최신 doc으로 바뀜 · 문서·스냅샷 변화 0 | [U] |
 | RS-AC-07 | `UNKNOWN_VARIANT` → 저장소 alert 문장 · 다시 시도 없음 · 쓰기 0 / 그 밖 실패 → R-E3 + 다시 시도(같은 인자 → 멱등 재생) | [U] |
-| RS-AC-08 | (MQ-S2 ★A) 가짜 잠금(`fakeLocks`) 다른 탭 보유 → restart → INFRA R-E2 · **메모리 문서·스냅샷·멱등 기록 변화 0** · IDB 쓰기 0 · 잠금 풀린 뒤 다시 시도 → 성공 | [U] |
+| RS-AC-08 | (MQ-S2 ★A) 가짜 잠금(`fakeLocks`) 다른 탭 보유 → restart → INFRA R-E2 · **메모리 문서·스냅샷·멱등 기록 변화 0** · IDB 쓰기 0 · 보유 탭이 **쓰지 않고** 풀면 다시 시도 → 성공 / 보유 탭이 저장(meta generation +1) 뒤 풀면 → `stale` R-E2b · 다시 시도 없음 · 쓰기 0 | [U] |
+| RS-AC-08b | 커밋 뒤 미확인: 잠금 획득 뒤 flush INFRA 주입 · 응답 실패 주입 → R-E4 · 메모리 = 새 문서("편집기 열기" 이름 = C안 · 저장 확인 안 됨) · IDB = 옛 문서 · 다시 시도 → 멱등 재생으로 flush 재제출 성공 → IDB = 새 문서 + "새로 시작 전" 스냅샷 | [U] |
+| RS-AC-08c | 저장 진행 중 추가 편집 → 앱 안 이동 → 새로 시작 → "새로 시작 전" 스냅샷 = 마지막 **저장된** revision(R-D2 문구와 일치) — 손실 여부는 기록만(수정은 BACKLOG 후보) | [U] |
 | RS-AC-09 | 취소·Esc → 쓰기 0 · 포커스 "C안으로 편집 시작" · "편집기 열기" → F2와 같은 이동·알림 | [U] |
 | RS-AC-10 | 되돌리기: restart 뒤 "새로 시작 전" 복원 → `candidateId`·`profileVersion` = 옛 값 · "복원 전" 자동 +1 (저장소 기존 단언 재사용 + 화면 경로 1건) | [U] |
 | RS-AC-11 | 자동 스냅샷 20개 상태에서 restart → 가장 오래된 자동 1개 빠짐 · 수동 불변 · R-D4 캡션 상시 표시 | [U] |
 | RS-AC-12 | (MQ-S3 ★A) R-D5: 두 버전 결과가 다를 때만 · 글자로 통과/미달 · 둘 다 미달 문형 | [U] |
-| RS-AC-13 | 대화상자·문구·대비 요약 코드 = 조작 뒤 청크(`PROFILE_AFTER_ACTION`에 추가) · `/profile` 첫 화면 ≤ 100 · `/profile (3안 있음)` 진입 직후 기준 불변(±0.03) · `/studio` 진입 바이트 변화 0 · 조작 뒤 청크 크기 출력 | [G] |
+| RS-AC-13 | 대화상자·문구·대비 요약 코드 = 조작 뒤 청크(`PROFILE_AFTER_ACTION`에 추가) · `/profile` 첫 화면 ≤ 100 · `/profile (3안 있음)` 진입 직후 기준 불변(±0.03) · `/studio` 일반 진입 ≤ 129.65 **및** 복원 진입 ≤ 132.68 각각 실측·둘 다 통과(증분 = 저장소 래퍼 호출 한 줄뿐 — 판정 본문은 조작 뒤 청크) · 조작 뒤 청크 크기 출력 | [G] |
 | RS-AC-14 | 1280·1024·390: 버튼 순서·주 버튼 위치(6절) · 390 세로 쌓기 · 확대 200%에서 버튼 가림 0 | [E] |
 | RS-AC-15 | 실흐름: 문서(B안 v3, 대비 미달) → 프로필 보정 v4 → 3안 만들기 → C안 → 새로 시작 → 편집기 게이트 대비 통과 → 스냅샷 "새로 시작 전" 복원 → B안 v3 | [E] |
 | RS-AC-16 | 검증 4종(typecheck·lint·test·build) + 가드(`noHardcodedStyle`·브랜드 격리) | [G] |
@@ -195,14 +202,14 @@
 | `features/profile/RestartDialog.tsx` (신규) | 대화상자·문구·결과 처리·R-D5 | 조작 뒤(신규 — `PROFILE_AFTER_ACTION` 추가) |
 | `features/profile/restartLoader.ts` (신규) | `retryableImport` 로더(`compareLoader.ts` 선례) | 엔진 청크(로더 몇 줄) |
 | `features/profile/generationText.ts` | R-C1 교체 · R-C2 | 엔진 청크(문자열 증분 소량) |
-| `data/memoryProjectRepository.ts` · `data/persistence/localSync.ts` | (MQ-S2 ★A) restart 전 잠금 확인 · `LocalSync`에 `enter` 노출 | 조작 뒤(/profile) · `/studio`에서는 memoryProjectRepository가 **진입 직후** 청크 — 몇 줄 증가(아래) |
+| `data/memoryProjectRepository.ts` · `data/persistence/localSync.ts` | (MQ-S2 ★A) restart 전 잠금 확인 — 판정 본문은 `localSync.ts`(조작 뒤)에 `guardWrite()`로 두고, 저장소 `startDoc` 래퍼에는 `mode === "restart"`일 때 그 호출 **한 줄**만(`docs.start`가 동기라 await는 래퍼에서만 가능 — `memoryProjectRepository.ts:120-121`) | `/studio` 일반·복원 진입 모두 memoryProjectRepository가 진입 직후 청크 — 한 줄 증가(아래) |
 | `scripts/check-bundle-size.mjs` | `PROFILE_AFTER_ACTION`에 `RestartDialog.tsx` | — |
 | 테스트 | `ProfileCandidates.test.tsx`(분기) · `RestartDialog.test.tsx`(신규) · `memoryProjectRepository.test.ts`(잠금) | — |
 
 **예산 영향**
 - `/profile` 첫 화면 99.87/100: 변화 0 목표(대화상자 전부 조작 뒤). `CandidatesSection`은 엔진 청크라 첫 화면에 들지 않는다(`check-bundle-size.mjs:109-116` — `profileEngine.ts`는 `auto`). 진입 직후 시나리오 증분은 분기·로더·문자열뿐.
-- `/studio` 129.28 / 멈춤 129.65: 화면 쪽 변경 0(편집 알림은 이동 state 문자열 — 기존 경로). **MQ-S2 ★A만** `memoryProjectRepository.ts`(진입 직후 청크)에 restart 잠금 확인 몇 줄을 더한다 → 여유 0.37 안(추정 +0.01~0.03, 실측 필수). 넘으면 잠금 확인 본문을 조작 뒤 청크 `memoryDocBook` 쪽 호출부로 옮긴다(조작 뒤 청크 설계: `startDoc` 래퍼는 `bookOf()` 뒤에 `sync.enter()`를 부르므로 판정 코드를 `localSync.ts` — 이미 조작 뒤 — 에 두고 저장소에는 호출 한 줄만).
-- 진입 closure(`/studio` 진입 파일)를 건드리는 것은 위 한 줄뿐이다.
+- `/studio` 129.28 / 멈춤 129.65 **와 복원 진입 132.31 / 판정선 132.68**(`check-bundle-size.mjs:148-150` · `bundleBudget.mjs:82-85` · `m2cBaseline.json` — 두 시나리오 모두 `memoryProjectRepository`를 진입 직후로 포함): 화면 쪽 변경 0(편집 알림은 이동 state 문자열 — 기존 경로). MQ-S2 ★A는 저장소 래퍼에 호출 한 줄을 더한다(판정 본문은 조작 뒤 `localSync.ts`). **두 시나리오를 각각 실측·판정하고 둘 다 통과해야 배치 승인**(추정 +0.01 안팎 L3). 넘으면 MQ-S2 B로 내려가거나 상쇄를 먼저 찾는다(상향은 MQ로만).
+- 진입 closure(`/studio` 진입 파일)를 건드리는 것은 위 호출 한 줄뿐이다. /profile은 진입 closure 변경 0(대화상자·문구 = 조작 뒤 청크).
 
 ## 10. 위험 · 2a-05와 다르게 한 곳
 
@@ -214,7 +221,7 @@
 | RS-R3 | 20개 정리로 오래된 "내보내기 전" 등 자동 사본이 밀림 · 반복 새로 시작이면 "새로 시작 전"도 밀림 | R-D4 상시 · 문구가 "모두 보존"을 약속하지 않는다 |
 | RS-R4 | "새로 시작 전" 이름에 시각이 없어 반복 시 같은 이름 | 목록 캡션에 시각이 있다(`SnapshotDialog.tsx:231`) — 이름 변경은 저장소 문자열이라 MQ-S4 |
 | RS-R5 | `/studio` 진입 직후 예산 증가(MQ-S2 ★A) | 9절 조작 뒤 배치 · 실측 후 멈춤선 판정 |
-| RS-R6 | 편집기에서 미저장 상태로 프로필로 와 바로 새로 시작 | 편집기 이탈 시 저장 경로(기존). `DOC_EXISTS` revision이 최신이 아니면 `STALE_DOC`(R-E1)로 막힌다 |
+| RS-R6 | **(Codex r1 P1)** 편집기 이탈 저장은 완료를 기다리지 않는다(`StudioLayout.tsx:127-134` `retry()`만) · 저장 중 추가 편집은 이탈(unmount) 때 버려질 수 있다(`useAutosaveScheduler.ts:100-102,274-278`). 이때 저장소 revision은 정상이라 restart가 성공하고, "새로 시작 전" 스냅샷에는 **마지막 화면 편집이 없다** — revision 검사로는 못 잡는다 | 이 레인 판정: 새로 시작은 **저장된 문서**만 보존한다고 문구로 밝힌다(R-D2 "이 저장 기준으로 스냅샷에 남습니다"). 이탈 손실 자체는 편집기 기존 결함(restart 없이도 같은 손실) → **BACKLOG 후보**(Jarvis 등록: 이탈 전 `flushed()` 확인·실패 시 이동 보류) · MQ-S5 |
 
 **2a-05와 다르게 한 곳 (RS-D#)**
 - **RS-D1**: EQ-2 A는 "문서가 있으면 주 버튼 = '편집기 열기 (B안 · v3 편집 중)', 다른 안이면 보조 버튼 'C안으로 새로 시작'"으로 **진입 때부터** 두 버튼을 그린다. 이 SPEC은 버튼은 그대로 두고 **누른 뒤 대화상자**에 같은 두 버튼을 둔다. 사유: 진입 때 문서 상태를 알려면 `memoryProjectRepository`를 /profile 진입에 받아야 하는데 첫 화면 여유 0.13이고(fix-ber11 REPORT:25), 진입 직후 시나리오도 기록상 120.00 → 119.97로 여유가 작다(p1d-l1 REPORT:12 — 한도 해석은 추정 L3). MQ-S1.
@@ -223,3 +230,4 @@
 
 ## 변경 이력
 - r0 (2026-10-10): 초안.
+- r1 (2026-10-10): Codex adversarial r1 반영 — 이탈 저장 미보장(RS-R6·R-D2·RS-AC-08c·MQ-S5) · 커밋 뒤 미확인 결과 분리(R-E4·RS-AC-08b) · `readonly`/`stale` 분리(R-E2b) · 복원 진입 132.68 예산(9절·RS-AC-13).

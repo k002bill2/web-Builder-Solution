@@ -1,8 +1,9 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import type { ProjectSnapshot } from "../../data/projectRepository";
+import { ProjectRepositoryError, type ProjectSnapshot } from "../../data/projectRepository";
 import { READ_ONLY_TAB, toInfra } from "../../data/persistence/infra";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
+import { setSlot } from "../../engine/ops/slotOps";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 
@@ -143,4 +144,30 @@ describe("미리보기 · 읽기 전용 탭 — FU-AC-10 · 12", () => {
     expect(notice()).toHaveTextContent(/^실행 취소: Hero 제목 편집$/);
     expect(saved).toHaveLength(0);
   });
+});
+
+describe("기록 밖 문서 교체 — Codex r1 P2-3", () => {
+  it("묶음 열린 채 충돌 '다른 편집 불러오기' 뒤 같은 칸 입력 → Ctrl+Z = 불러온 문서(다른 탭 값을 덮지 않음)", async () => {
+    const theirs = setSlot(sampleDoc({ revision: 7 }), "s-hero", "subtitle", "다른 탭 부제");
+    await openStudio({
+      repository: {
+        saveDoc: async () => Promise.reject(new ProjectRepositoryError("STALE_DOC", "stale", { doc: theirs })),
+        resolveConflict: async () => theirs,
+      },
+    });
+    typeIn(/^제목/, "첫 편집");
+    await screen.findByRole("button", { name: "다른 편집 불러오기" }, { timeout: 4000 });
+    // 묶음을 열어 둔 채(600ms 안 · blur 없음) 불러오기 → 같은 칸 입력
+    typeIn(/^제목/, "첫 편집 둘");
+    await settle();
+    act(() => void fireEvent.click(screen.getByRole("button", { name: "다른 편집 불러오기" })));
+    await waitFor(() => expect(box(/^부제/).value).toBe("다른 탭 부제"));
+    const latestTitle = box(/^제목/).value;
+    typeIn(/^제목/, `${latestTitle}!`);
+    await settle();
+    act(() => void fireEvent.blur(box(/^제목/)));
+    await key(CTRL_Z);
+    await waitFor(() => expect(box(/^제목/).value).toBe(latestTitle));
+    expect(box(/^부제/).value).toBe("다른 탭 부제");
+  }, 10_000);
 });

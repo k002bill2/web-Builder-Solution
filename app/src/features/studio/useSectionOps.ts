@@ -94,9 +94,8 @@ export function useSectionOps({
   // 단축키 리스너 — 첫 연산·첫 필드 기록 뒤 1회 붙이고 언마운트 때 뗀다. 언마운트 뒤 끝난 연산은 붙이지 않는다(Codex fix2 P2)
   const unlisten = useRef<() => void>(undefined);
   const mounted = useRef(false);
-  // 열린 필드 묶음 · 받은 조작 뒤 청크(타이머·닫기 — FIELD-UNDO 8.2). 언마운트 = 묶음 버림(스택도 비워진다)
+  // 열린 필드 묶음(타이머·닫기는 조작 뒤 청크 — FIELD-UNDO 8.2). 언마운트 = 묶음 버림(스택도 비워진다)
   const open = useRef<FieldOpen>(undefined);
-  const engine = useRef<DocEngine>(undefined);
   // 열린 묶음의 시작 문서(참조 집합용 상태 — 렌더 중 ref를 읽지 않는다). 닫으면 청크가 비운다
   const [hold, setHold] = useState<PageDoc>();
   useEffect(() => {
@@ -106,14 +105,13 @@ export function useSectionOps({
       mounted.current = false;
       ref.current?.();
       ref.current = undefined;
-      clearTimeout(o.current?.timer);
+      o.current?.off?.();
       o.current = undefined;
     };
   }, []);
   const rec: FieldRec = useMemo(() => ({ open, docRef, stack, edit, hold: setHold }), [stack, edit]);
   const listen = useCallback(
     (e: DocEngine) => {
-      engine.current = e;
       if (keys && mounted.current) unlisten.current ??= e.listenHistory(keys);
       return e;
     },
@@ -173,8 +171,6 @@ export function useSectionOps({
 
   const field = useCallback(
     (key: string, label: string, next: PageDoc, composing?: boolean) => {
-      // 다른 칸이면 앞 묶음을 이 입력 직전 문서로 닫는다(blur가 오지 않는 재마운트·탭 전환 포함)
-      if (open.current?.key !== key) engine.current?.closeField(rec);
       const base = docRef.current;
       if (edit(next) === false) return;
       // 문서 참조는 같은 틱에 — 바로 이은 Ctrl+Z·연산의 동일성 비교가 이 입력을 본다(FU 4.2)
@@ -182,7 +178,8 @@ export function useSectionOps({
       const o = (open.current ??= { key, label, base });
       o.after = next;
       setHold(o.base);
-      void loadDocEngine().then((e) => listen(e).fieldTyped(rec, composing));
+      // 다른 칸(재마운트·탭 전환 포함) · 기록 밖 교체 뒤면 청크가 앞 묶음을 닫고 새로 연다 — 청크 응답 전 입력도 순서대로(Codex r1 P2-1 · P2-3)
+      void loadDocEngine().then((e) => listen(e).fieldTyped(rec, composing, key, label, base, next));
     },
     [edit, listen, rec],
   );

@@ -138,3 +138,49 @@ describe("기록 0 · 다시 실행 잘림 · 거절 — FU-AC-4 · 7 · 10", ()
     expect(result.current.ops.held).toEqual(expect.arrayContaining([afterFirst, result.current.start]));
   });
 });
+
+describe("Codex r1 P2 — 청크 로딩 중 칸 이동 · IME 확정 · 리스너 정리", () => {
+  it("P2-1 청크 응답 전(같은 틱) 다른 칸 입력 = 따로 기록 — 앞 칸 이름으로 합쳐지지 않는다", async () => {
+    const { result } = setup();
+    await act(async () => {
+      const first = setSlot(result.current.doc, "s-hero", "title", "새 제목");
+      result.current.ops.field(TITLE, "Hero 제목 편집", first);
+      result.current.ops.field("s-hero-subtitle", "Hero 부제 편집", setSlot(first, "s-hero", "subtitle", "새 부제"));
+    });
+    blur();
+    expect(result.current.ops.peekStep(false)).toBe("Hero 부제 편집");
+    await act(async () => void (await result.current.ops.step(false, { setNotice: () => undefined, goTo: () => undefined })));
+    expect(title(result.current.doc)).toBe("새 제목");
+    expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
+  });
+
+  it("P2-2 조합 끝(compositionend · 값 변화 없는 확정) 뒤 600ms = 닫힘", async () => {
+    const { result } = setup();
+    await type(result, "봄", true);
+    await wait(1000);
+    act(() => void document.dispatchEvent(new Event("compositionend")));
+    await wait(599);
+    expect(result.current.ops.peekStep(false)).toBeUndefined();
+    await wait(1);
+    expect(result.current.ops.peekStep(false)).toBe("Hero 제목 편집");
+  });
+
+  it("P2-4 타이머로 닫힌 묶음 N회 뒤 문서 리스너 수 상수 · 언마운트 = 0", async () => {
+    const add = vi.spyOn(document, "addEventListener");
+    const remove = vi.spyOn(document, "removeEventListener");
+    const live = (type: string) => add.mock.calls.filter(([t]) => t === type).length - remove.mock.calls.filter(([t]) => t === type).length;
+    const { result, unmount } = setup();
+    for (let i = 1; i <= 5; i++) {
+      await type(result, `제목 ${i}`);
+      await wait(600);
+    }
+    expect(live("focusout")).toBe(0);
+    await type(result, "제목 6");
+    expect(live("focusout")).toBe(1);
+    unmount();
+    expect(live("focusout")).toBe(0);
+    expect(live("compositionend")).toBe(0);
+    add.mockRestore();
+    remove.mockRestore();
+  });
+});

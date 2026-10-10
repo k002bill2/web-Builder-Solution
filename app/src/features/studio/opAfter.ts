@@ -45,7 +45,17 @@ export function commitOp(
 }
 
 /** 열린 필드 묶음(FIELD-UNDO 4.1) — 진입(useSectionOps.field)이 키·시작 문서·마지막 문서를 같은 틱에 적고, 타이머·닫기는 이 청크가 한다 */
-export type FieldOpen = { readonly key: string; readonly label: string; readonly base: PageDoc; after?: PageDoc; timer?: ReturnType<typeof setTimeout> };
+export type FieldOpen = {
+  readonly key: string;
+  readonly label: string;
+  readonly base: PageDoc;
+  after?: PageDoc;
+  /** 청크가 마지막으로 처리한 입력의 문서 — 다음 입력의 시작 문서와 다르면 그사이 기록 밖 교체(충돌 "최신")가 있었다 */
+  seen?: PageDoc;
+  timer?: ReturnType<typeof setTimeout>;
+  /** 타이머 · 문서 리스너(focusout · compositionend) 해제 — 닫기 · 언마운트가 부른다(Codex r1 P2-4) */
+  off?: () => void;
+};
 export type FieldRec = {
   readonly open: RefObject<FieldOpen | undefined>;
   readonly docRef: RefObject<PageDoc>;
@@ -64,7 +74,7 @@ const FIELD_PAUSE_MS = 600;
 export function closeField({ open, docRef, stack, edit, hold }: FieldRec): void {
   const o = open.current;
   if (!o) return;
-  clearTimeout(o.timer);
+  o.off?.();
   open.current = undefined;
   hold(undefined);
   const after = o.after ?? o.base;
@@ -73,16 +83,40 @@ export function closeField({ open, docRef, stack, edit, hold }: FieldRec): void 
 }
 
 /**
- * 입력 1회 뒤 — 멈춤 타이머를 다시 건다. 조합 중(IME)이면 걸지 않는다(반쪽 자모가 기록 경계가 되지 않게 · FU 4.6).
- * 묶음의 첫 입력이면 포커스가 떠날 때(focusout = 칸 blur · "더보기"·미리보기·충돌 버튼 누름) 닫는 1회 리스너를 단다(FU 4.1)
+ * 입력 1회 뒤(진입이 입력마다 순서대로 부른다) — 멈춤 타이머를 다시 건다. 조합 중(IME)이면 걸지 않고 compositionend가 건다(FU 4.6 · Codex r1 P2-2).
+ * 이 입력이 다른 칸이거나 시작 문서가 앞 입력의 문서가 아니면(기록 밖 교체 — 충돌 "최신") 앞 묶음을 앞 입력 문서까지로 닫고 이 입력부터 새 묶음
+ * (청크 응답 전 칸 이동 · 교체 전 base 재사용으로 다른 탭 변경을 덮는 것 방지 — Codex r1 P2-1 · P2-3).
+ * 묶음의 첫 입력이면 포커스가 떠날 때(focusout = 칸 blur · "더보기"·미리보기·충돌 버튼 누름) 닫는 문서 리스너를 단다(FU 4.1)
  */
-export function fieldTyped(rec: FieldRec, composing: boolean | undefined): void {
-  const o = rec.open.current;
+export function fieldTyped(rec: FieldRec, composing: boolean | undefined, key: string, label: string, base: PageDoc, next: PageDoc): void {
+  let o = rec.open.current;
   if (!o) return;
-  // timer 키가 없으면 이 묶음의 첫 입력(조합 중이면 undefined로라도 키가 생긴다)
-  if (!("timer" in o)) document.addEventListener("focusout", () => rec.open.current === o && closeField(rec), { once: true });
-  clearTimeout(o.timer);
-  o.timer = composing ? undefined : setTimeout(() => rec.open.current === o && closeField(rec), FIELD_PAUSE_MS);
+  if (o.key !== key || base !== (o.seen ?? o.base)) {
+    const latest = o.after;
+    o.after = o.seen;
+    closeField(rec);
+    o = rec.open.current = { key, label, base, after: latest };
+    rec.hold(base);
+  }
+  o.seen = next;
+  const mine = o;
+  const close = () => rec.open.current === mine && closeField(rec);
+  const arm = () => {
+    clearTimeout(mine.timer);
+    mine.timer = setTimeout(close, FIELD_PAUSE_MS);
+  };
+  if (!o.off) {
+    const end = () => rec.open.current === mine && arm();
+    document.addEventListener("focusout", close);
+    document.addEventListener("compositionend", end);
+    o.off = () => {
+      clearTimeout(mine.timer);
+      document.removeEventListener("focusout", close);
+      document.removeEventListener("compositionend", end);
+    };
+  }
+  if (composing) clearTimeout(o.timer);
+  else arm();
 }
 
 /**

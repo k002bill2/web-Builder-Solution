@@ -10,10 +10,13 @@ import type { ImageHost } from "../../features/studio/images/store/types";
 import { FieldEditor } from "./FieldEditor";
 import { PageInfoFields } from "./PageInfoFields";
 
-/** 사이트 주인용 안내(m2a K2) — contact/form 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
+/** 사이트 주인용 안내(m2a K2 · 예약 MQ-B4) — contact(form · booking) 섹션을 고를 때만 받는다(조작 뒤 청크, /studio 진입 예산 — M2A-2b B6 실측) */
 const ContactOwnerNote = lazy(() => import("./ContactOwnerNote"));
 /** 이미지 슬롯 패널(SPEC m2c 2.1) — "이미지 편집"을 펼칠 때만 받는다(조작 뒤, VariantSwitch와 같은 모양 — 진입 +0.03KB 예산) */
 const ImageSlotPanel = lazy(() => import("./ImageSlotPanel"));
+
+/** 필드 도움말 — services/list `items`는 가운뎃점으로만 나눈다(SPEC-BODY MQ-B1 · 줄바꿈은 구분자가 아니다) */
+const ITEMS_HINT = "가운뎃점(·)으로 나눕니다";
 
 /**
  * 편집 패널 필드 (SPEC 5.6 · E-AC-06) — 선택 섹션의 글자 슬롯(`FieldEditor`) 또는 "페이지 정보"(`PageInfoFields`).
@@ -43,9 +46,9 @@ export function EditFields({
   const images = slots.filter((entry) => entry.kind === "image").length;
   return (
     <div className="flex flex-col gap-4">
-      {section.type === "contact" && section.variant === "form" && (
+      {section.type === "contact" && (section.variant === "form" || section.variant === "booking") && (
         <Suspense fallback={null}>
-          <ContactOwnerNote Callout={Callout} />
+          <ContactOwnerNote Callout={Callout} booking={section.variant === "booking"} />
         </Suspense>
       )}
       {slots.map((entry) => {
@@ -59,6 +62,7 @@ export function EditFields({
             value={typeof value === "string" ? value : ""}
             onChange={(next) => onEdit(setSlot(doc, section.instanceId, entry.key, next))}
             describedBy={slotIssue(section, entry)?.id}
+            hint={section.type === "services" && section.variant === "list" && entry.key === "items" ? ITEMS_HINT : undefined}
           />
         );
       })}

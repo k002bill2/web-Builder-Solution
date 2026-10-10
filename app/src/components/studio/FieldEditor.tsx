@@ -26,6 +26,7 @@ export function FieldEditor({
   onChange,
   describedBy,
   warnNote,
+  hint,
 }: {
   readonly id: string;
   readonly spec: FieldSpec;
@@ -33,6 +34,8 @@ export function FieldEditor({
   readonly onChange: (value: string) => void;
   readonly describedBy?: string;
   readonly warnNote?: (recommended: number) => string;
+  /** 필드 도움말(입력 규칙 안내) — 라벨 아래 고정 문장, `aria-describedby`로 잇는다 */
+  readonly hint?: string;
 }) {
   const [blurred, setBlurred] = useState(false);
   const count = countField(value, spec, warnNote);
@@ -41,7 +44,8 @@ export function FieldEditor({
   const invalid = requiredEmpty || count.level === "block";
   const counterId = `${id}-count`;
   const messageId = `${id}-note`;
-  const describedIds = [describedBy, counterId, message && messageId].filter(Boolean).join(" ");
+  const hintId = `${id}-hint`;
+  const describedIds = [describedBy, hint && hintId, counterId, message && messageId].filter(Boolean).join(" ");
   const common = {
     id,
     value,
@@ -56,6 +60,11 @@ export function FieldEditor({
         {spec.label}
         {spec.required && <span className="ml-1 text-label-alternative">(필수)</span>}
       </label>
+      {hint && (
+        <p id={hintId} className="text-caption1 text-label-alternative">
+          {hint}
+        </p>
+      )}
       {spec.kind === "long-text" ? (
         <textarea {...common} rows={3} onChange={(e) => onChange(clampInput(e.target.value, count.inputMaxLength))} />
       ) : (

@@ -1,8 +1,9 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { LICENSE_LABEL } from "../components/catalog/SourceTags";
 import { createMemoryReferenceRepository } from "../data/referenceRepository";
-import type { DesignReference } from "../domain/reference";
+import type { DesignReference, LicenseStatus } from "../domain/reference";
 import { ALL_FILTER_GROUPS, INDUSTRY_LABELS, MOTION_OPTIONS } from "../fixtures/catalogFilters";
 import { referenceFixtures } from "../fixtures/references";
 import { GENERATED_CARDS } from "../features/catalog/useCatalogRepository";
@@ -176,7 +177,22 @@ describe("카탈로그 상단 v2 (SPEC 4.2 r2)", () => {
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "레퍼런스 카탈로그" })).toBeInTheDocument();
-    expect(screen.getByText("internal · licensed 레퍼런스 6개")).toBeInTheDocument();
+    expect(screen.getByText("자체 제작 · 이용 허락 레퍼런스 6개")).toBeInTheDocument();
+    expect(screen.queryByText(/internal|licensed/)).toBeNull();
+  });
+
+  it("GM2-AC-U7: 라이선스 필터 체크박스 이름은 한국어, URL 값은 영문 id 그대로", async () => {
+    const { router } = renderApp("/catalog");
+    await expectCardCount(6);
+    const group = within(screen.getByRole("group", { name: "라이선스" }));
+    expect(group.getAllByRole("checkbox").map((c) => c.closest("label")!.textContent)).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^자체 제작\d+$/), expect.stringMatching(/^이용 허락\d+$/)]),
+    );
+    expect(group.queryByText(/internal|licensed/)).toBeNull();
+    await userEvent.click(group.getByRole("checkbox", { name: "자체 제작" }));
+    expect(new URLSearchParams(router.state.location.search).get("license")).toBe("internal");
+    await userEvent.click(group.getByRole("checkbox", { name: "이용 허락" }));
+    expect(new URLSearchParams(router.state.location.search).get("license")).toBe("internal,licensed");
   });
 
   it("?tab=rec 는 h1 '추천' + 안내 + '전체 보기' 링크, 링크는 tab만 지운다 (V2-AC-21)", async () => {
@@ -326,12 +342,15 @@ describe("필터 레일 r2 (SPEC 4.2)", () => {
   });
 
   it("9종 모든 옵션을 고를 수 있고 URL로 복원되며, 레일은 한 벌이다 (V2-AC-17r2)", async () => {
+    // 라이선스 그룹은 표시 문구만 한국어(GM2-AC-U7) — id·URL은 그대로
+    const shown = (key: string, option: { readonly id: string; readonly label: string }) =>
+      key === "license" ? LICENSE_LABEL[option.id as LicenseStatus] : option.label;
     const { router } = renderApp("/catalog");
     await expectCardCount(6);
     for (const group of ALL_FILTER_GROUPS) {
       for (const option of group.options) {
-        expect(screen.getAllByRole("checkbox", { name: option.label })).toHaveLength(1);
-        await userEvent.click(checkbox(option.label));
+        expect(screen.getAllByRole("checkbox", { name: shown(group.key, option) })).toHaveLength(1);
+        await userEvent.click(checkbox(shown(group.key, option)));
       }
     }
     for (const option of MOTION_OPTIONS) expect(screen.getAllByRole("radio", { name: option.label })).toHaveLength(1);
@@ -350,7 +369,7 @@ describe("필터 레일 r2 (SPEC 4.2)", () => {
 
     renderApp(`/catalog${search}`);
     await screen.findByRole("heading", { level: 1 });
-    for (const group of ALL_FILTER_GROUPS) for (const option of group.options) expect(checkbox(option.label)).toBeChecked();
+    for (const group of ALL_FILTER_GROUPS) for (const option of group.options) expect(checkbox(shown(group.key, option))).toBeChecked();
     expect(screen.getByRole("radio", { name: "높음" })).toHaveAttribute("aria-checked", "true");
     expect(chip("리테일")).toHaveAttribute("aria-pressed", "true");
     // 옵션 30여 개를 차례로 누르는 긴 흐름이라 병렬 부하에서 기본 5초를 넘는다 — 넘으면 남은 클릭이 다음 테스트 DOM을 건드린다 (2a-04b1)

@@ -86,3 +86,147 @@
 
 1. **Designer SPEC r2** — P1(커밋 전/후 실패 구분 계약: 실패 뒤 문서 확인 절차를 계약으로 둘지) · P2-2·3·4·5·6·7·8·9 · `/profile` 진입 직후 예산(+0.36 실측 — 상향 또는 배치 변경 결정).
 2. r2 뒤 이 레인 재개: 코드 반영 → 감량 1회 → 게이트 4종 → Codex `review --scope branch --base 9d5076e`(≤2라운드) → Ego RS-AC-14·15.
+
+---
+
+# RESUME-1 — SPEC r2 반영 재개 (2026-10-11)
+
+- 결론: **기능은 SPEC r2대로 구현·검증 완료, 예산 1건 미달로 멈춤.** `/profile` 진입 직후 두 시나리오 +0.09 · +0.09 (MQ-S7 A 기준 ±0.03). 감량 1회 뒤에도 넘어서 **MQ-S7 재상신 대기**입니다. SPEC 9절에 따라 B안으로 자동 전환하지 않았습니다.
+- 브랜치 `k002bill2/restart-impl` 커밋 3건 (push·merge 0):
+  - `ccfa3fd` main 병합(b416328)
+  - `b1f37a0` 체크포인트 ①
+  - `92cb266` 구현
+  - 이 보고 커밋
+
+## R1. RS-AC별 결과
+
+| ID | 결과 | 근거 |
+|---|---|---|
+| RS-AC-01 | 통과 | `ProfileCandidates.test.tsx` F2 = 같은 쌍 셋업(A create → B restart). r2가 허용한 교체, 그 밖 단언 변경 0 |
+| RS-AC-02 | 통과 | F3 → 이동 + R-C2 · startDoc = create 1회 |
+| RS-AC-03 | 통과 | 이동 0 · 포커스 제목 · R-D2 r2 문구 "마지막 변경 … 이 탭에 있는 이 상태 그대로" |
+| RS-AC-04 | 통과 | `startDoc(…,"restart",1)` 1회 · state 키 = `["editNotice"]` · 신규 스냅샷(id 집합 차이) = restart 1개 · doc revision·hash = 요청 전 문서 |
+| RS-AC-05 | 통과 | 진행 중 연타·Esc → 요청 1회 |
+| RS-AC-06 | 통과 | R-E1 r번호 최신 · 다시 누르면 최신 revision |
+| RS-AC-06b | 통과 | 최신 = 고른 안 → 주 버튼 없음 · R-E1b · [취소][편집기 열기 (B안 · v1 편집 중)] · 포커스 제목 · restart 추가 0 · 변화 0 |
+| RS-AC-07·07b | 통과 | commit 단계 → R-E3·변화 0 · response 단계 UNKNOWN_VARIANT·STALE_DOC 모양 → R-E4 · 요청 실패 + getDoc 실패 → R-E5 → 다시 시도 성공(restart 스냅샷 총 1) · INFRA 그 밖 사유 → "새로 시작하지 못했습니다 · <첫 ' — ' 뒤 사유>" |
+| RS-AC-07c | 통과 | response 단계 INFRA `… — READ_ONLY_TAB` → R-E4 |
+| RS-AC-08·08c | 통과(기존) | `restartLock.test.ts` 5/5 · 화면 R-E2/R-E2b(커밋 확인 음성 경로) |
+| RS-AC-08b | 통과(화면) | R-E4 · [취소][다시 시도] · 다시 시도 → 이동 + R-N1 · 신규 restart 스냅샷 1 · IDB 쪽은 `restartLock.test.ts` 하네스 |
+| RS-AC-08d | 통과 | R-E4 취소 뒤 같은 안·다른 안 모두 create 0 · 이동 0 · R-E4 대화상자 → 다시 시도 성공 / R-E5 → 다시 시도 확인 음성 → 기억 삭제 + R-E3 · 다음 편집 시작 = create |
+| RS-AC-09·10 | 통과 | 기존 단언 |
+| RS-AC-11 | 통과 | `autoSnapshotRetention.test.ts` restart 행(20→20) + 재생 행 신규(20 그대로·신규 0) |
+| RS-AC-12 | 통과 | `contrastFails` = 게이트 `contrastIssues` 미달 수(기본·enhanced) · 색 못 읽음 = undefined → 줄 생략 · Ego 실흐름에서 R-D5 "미달 2" = 편집기 게이트 "대비 AA 차단 2" |
+| RS-AC-13 | **실패** | R2절 |
+| RS-AC-14 | 통과 | R4절 |
+| RS-AC-15 | **부분** | R4절. "편집기 게이트 대비 통과" 단계 미확인 — 픽스처 v1의 "보정값 쓰기" v2도 미달 2(어두운 카드와 ink 충돌) |
+| RS-AC-16 | 통과 | R5절 |
+| RS-AC-17 | 통과 | 재생 → getDoc r2 → F3(R-C3 + "v1를 쓰려면…") · getDoc 실패 → F1 `{changes, editNotice: changeNotice}` · 다른 안 문서로 바뀐 재생 → F4 |
+| RS-AC-18 | 통과 | /studio 렌더 · `status "편집 알림"` 텍스트 = R-N1 + " · " + changeNotice 전체 · details 0 · "바뀐 점" 0 |
+
+## R2. 예산 (base = main `b416328` 재실측 `logs/base-build-r1.txt`)
+
+| 시나리오 | base | 배치 1차(`build-r1a`) | 감량 뒤(`build-r1d`) | 판정 |
+|---|---|---|---|---|
+| `/profile` 첫 화면 | 99.90 | 99.89 | 99.89 | 통과 |
+| `/profile` 진입 직후 | 120.01 | 120.21 (+0.20) | **120.10 (+0.09)** | **실패 (±0.03)** |
+| `/profile (3안 있음)` 진입 직후 | 122.49 | 122.68 (+0.19) | **122.58 (+0.09)** | **실패** |
+| `/studio` 진입 직후 | 129.63 | 129.67 | 129.65 (+0.02) | 몫 0.05 안 |
+| `/studio` 복원 진입 | 132.67 | 132.70 | 132.69 (+0.02) | 몫 0.05 안 |
+| 조작 뒤 `RestartDialog.tsx` | — | +3.48 | +3.47 | 판정 밖 |
+
+- **감량 1회**: compare·candidateResults·restart 세 로더가 같은 본문을 손으로 복제하고 있었다. 이를 `features/profile/retryLoader.ts` 팩토리 하나로 합쳤다(chunkRetry import 없음 — 기존 이유 유지). 결과 −0.11.
+- **남은 +0.09의 구성** (실측, 커밋하지 않은 측정 빌드):
+  - R-C1 상시 캡션 문자열 교체 ≈ +0.02 — 옛 문장으로 되돌리면 120.08 · 122.56.
+  - 나머지 ≈ +0.07 — 진입 배선: `Promise.all` 2 로더, 결과 3갈래 처리, 대화상자 슬롯·상태.
+- **재상신 선택지** (Designer/Jarvis 결정 — MQ-S7):
+  - (a) ±0.10으로 상향 — B 계열.
+  - (b) R-C1 문구 축약.
+  - (c) 진입 배선을 더 줄이기 — 예: 대화상자 슬롯을 청크가 직접 렌더하는 포털 방식. 추정 L3이며 실측 전이다.
+- **`/studio` 기준선 갱신**: 복원 진입 132.69가 옛 판정선 132.68을 넘어 build가 exit 1이었다. 개정 15 MQ-S2 몫(+0.05) 안이므로 `m2cBaseline.json` `eagerKb`를 실측값 129.65 · 132.69로 올렸고, `bundleBudget.test.mjs` 기대값도 같은 커밋(`92cb266`)에서 함께 갱신했다. 병합 때 합산 재조정은 Jarvis 몫.
+
+## R3. Codex (`review --scope branch --base b416328`, `logs/codex-r1.txt`)
+
+- r1: **기능 결함 0** · P2 1건 = `/profile` 진입 +0.09 예산 초과(R2와 같은 사실).
+  - Codex 샌드박스는 테스트를 다시 돌리지 못했다(EPERM).
+- r2는 생략했다. 남은 지적이 예산 결정(재상신) 1건뿐이고, 이 레인이 코드로 고칠 수 없는 항목이라 라운드 상한 규칙의 "남은 지적이 결정 사항"에 해당한다.
+
+## R4. Ego Lite (vite preview 127.0.0.1:4359 · TaskSpace 13 · 앱 안 클릭만)
+
+- 경로: 카탈로그 → 비교 2개 → B 전부 선택 → 프로필 확정 v1 → 3안 → A안 편집 시작 → `history.back()`(SPA, 새로고침 아님) → B안 선택 → B안으로 편집 시작 → F4 대화상자
+  - 스크립트: `qa-1.mjs`~`qa-4.mjs`
+  - 측정값: `logs/ego-rs14.txt`
+- **RS-AC-14** (뷰포트 캡처, PNG 바이트):
+
+  | 캡처 | 대화상자 / 버튼 배치 | PNG 바이트 |
+  |---|---|---|
+  | `shots/rs14-1280.png` | 대화상자 512폭 · 버튼 한 줄 끝 정렬 · x 순서 = 취소 459 < 편집기 열기 525 < B안으로 새로 시작 731(= DOM 순서) | 176385 |
+  | `shots/rs14-1024.png` | 같은 배치 | 121313 |
+  | `shots/rs14-390.png` | 세로 쌓기 · 주 버튼 맨 위(y 512 < 560 < 608) · 각 325폭 | 70953 |
+  | `shots/rs14-zoom200.png` | 확대 200% = CSS 640×450 · 세로 쌓기 · 대화상자 내부 스크롤 434/414 · 끝까지 스크롤 시 버튼 3개 모두 뷰포트 안 | 55538 |
+
+  - 모든 폭에서 가림 0.
+- **RS-AC-15** (실흐름):
+  - 단계 1 — 문서 A안 v1(프로필 대비 "통과 2 · 미달 3") → "보정값 쓰기" → 조정 저장 v2(여전히 "통과 3 · 미달 2") → 3안 v2 → B안 → 대화상자. R-D5 = "대비 검사: 새 v2도 미달 2 — 새로 시작해도 내보내기 전에 보정이 필요합니다"(`shots/rs15-dialog-1280.png` 179190B).
+  - 단계 2 — 새로 시작 → `/studio/project-1`. 편집 알림 = "B안 · 프로필 v2로 새로 시작했습니다 · 이전 문서(A안 · v1)는 스냅샷 '새로 시작 전'에 있습니다 · 구조안의 섹션 2개를 …"(R-N1 전체). 게이트 = "대비 AA 차단 2"(R-D5와 일치).
+  - 단계 3 — 스냅샷 "새로 시작 전 · 02:20 · 프로필 v1 · A안" → 미리보기 → "이 스냅샷으로 복원". 알림 "스냅샷 '새로 시작 전'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 02:20'에 있습니다", 게이트 "대비 AA 차단 3"(= v1), Services "카드 3개"(A안)(`shots/rs15-restored-1280.png` 160157B).
+  - **미확인**: "대비 통과 버전으로 옮기면 게이트 통과" 단계. 이 픽스처는 보정값을 써도 대비 통과 버전이 나오지 않는다(화면 안내: 본문 ink가 면·어두운 카드와 함께 쓰여 한 값으로 둘 다 맞출 수 없음).
+- 정리:
+  - IDB `design-studio` 삭제(남은 DB 0)
+  - 에뮬레이션 해제 · `finish({keep:[]})` · `listTaskSpaces()` 해당 0
+  - preview 종료 · 4359 리슨 0
+  - 영환님 창·main 5480은 건드리지 않음
+
+## R5. 검증 (fresh 실행)
+
+- 병합 직후: lock 변경 0 · typecheck exit 0 · 관련 3개 파일 33/33.
+- 최종:
+  - `npm run typecheck` exit 0
+  - `npm run lint` exit 0
+  - `npx vitest --run` → 302 files · **2739 passed**
+  - `npm run build` exit 0(`logs/build-r1d.txt`)
+  - `scripts/bundleBudget.test.mjs` 17/17
+- 변이 RED: 새 테스트는 구현 뒤에 썼으므로 변이로 RED를 확인했다(PROGRESS 기록).
+  - ① 커밋 확인 읽기 실패를 "no"로 바꾸고 기억을 끔 → 3건 실패
+  - ② 커밋 확인 먼저를 끔 → 5건 실패
+  - 원복 후 28/28
+
+## R6. 변경 파일 (`92cb266`)
+
+- 추가:
+  - `features/profile/restartFlow.ts` — `startEdit`(F1~F4 · 재생 재판정 · 미확인 기억 WeakMap) · `committed`(3값) · `contrastFails`(게이트와 같은 판정 + 색 못 읽음 처리)
+  - `features/profile/retryLoader.ts` — 로더 공용 본문
+- 수정:
+  - `RestartDialog.tsx` — 3.3.1 · 모드 ready/same/unconfirmed/unknown · 상태 전환 시 포커스를 제목으로 · `startEdit` 재수출
+  - `restartText.ts` — r2 문구 · R-C2/R-C3 이전 · `TAB_REASON`
+  - `CandidatesSection.tsx` — 진입 = `Promise.all` + `startEdit` + 슬롯
+  - `generationText.ts` — `themeSwapText` 제거
+  - `compareLoader.ts` · `candidateResultsLoader.ts` · `restartLoader.ts` — `retryLoader` 사용
+- 테스트:
+  - `pages/ProfileRestart.test.tsx` — 14 → 28
+  - `pages/ProfileCandidates.test.tsx` — 주석만
+  - `data/autoSnapshotRetention.test.ts` — +1
+- 예산: `scripts/m2cBaseline.json` · `scripts/bundleBudget.test.mjs`
+- 문서: BACKLOG B-ER-01 행 · 이 디렉터리(PROGRESS · REPORT · logs · shots · qa-*.mjs)
+
+## R7. SPEC과 다르게 한 곳 / 기록할 점
+
+1. **사유 상수를 값으로 복제**
+   - SPEC 3.3.1은 "오류 클래스 import 0"을 요구한다. 그런데 `infra.ts`를 import하면 `ProjectRepositoryError`가 함께 들어온다.
+   - 그래서 `READ_ONLY_TAB`·`STALE_TAB`를 `restartText.TAB_REASON`에 값으로 두었고, 두 값이 같은지는 테스트로 고정했다(RS-R8).
+2. **SPEC 술어 충돌(블로커 아님)**
+   - 3.3.1 확인 양성 조건은 `revision+1 · 같은 안 · 같은 버전`이다.
+   - 외부 쓰기(예: 지연된 복원·다른 경로의 restart)가 정확히 이 모양이면 STALE_DOC이 R-E1b 대신 R-E4가 된다.
+   - 그 상태에서 다시 시도해도 재생이 아니라 STALE이라 R-E4로 되돌아간다.
+   - 구현은 SPEC 술어 그대로다. 06b 테스트는 revision이 2 뛰는 셋업(저장 + restart)으로 검증했다. **Designer 검토 후보.**
+3. **미확인 기억 시점**: R-E4·R-E5 상태에 **들어갈 때** 기억한다(SPEC "닫은 뒤"). 대화상자는 모달이라 닫기 전에는 편집 시작을 누를 수 없으므로 결과는 같다.
+4. **R-E4·R-E5 버튼**: [취소][다시 시도(주)]. 알림 안의 작은 "다시 시도"는 R-E2·R-E3에서만 둔다.
+5. **390 대화상자 가장자리 여백**: 대화상자 바깥 여백 0(뷰포트 전체 폭 시트, 내부 p-6). SPEC 6절은 "가장자리 여백 = 페이지 여백 토큰"이다. 기능·가림 영향 없음 → 후속 다듬기 후보.
+6. **R-D2 시각**: 시스템 로캘 표기 "10월 11일 02:19" — RS-D5 규칙 그대로.
+
+## R8. 남은 것 / 필요한 것
+
+1. **MQ-S7 재상신** — `/profile` 진입 직후 +0.09(구성 R2절). 결정 전까지 RS-AC-13 실패 상태이며 병합하지 않는다.
+2. RS-AC-15 "대비 통과 버전 → 게이트 통과" 단계 — 통과 버전을 만들 수 있는 픽스처나 경로가 필요하다(Designer·QA).
+3. R7-2 술어 충돌 검토(Designer).
+4. Jarvis — 병합 때 `/studio` 기준선 합산 재조정(SAVE-ON-LEAVE 레인과 함께).

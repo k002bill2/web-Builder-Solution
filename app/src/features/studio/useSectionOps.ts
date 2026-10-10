@@ -4,7 +4,7 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { ProfileSeries } from "../../domain/profile";
 import { applyDocOp, createInstanceIds, loadDocEngine, type DocEngine, type DocOp, type OpResult } from "./docOps";
 import { docMotionPreset, docPurpose } from "./docPurpose";
-import type { FieldOpen, FieldRec, HistoryKeys, StepTell } from "./opAfter";
+import type { FieldMode, FieldOpen, FieldRec, HistoryKeys, StepTell } from "./opAfter";
 import { useUndoStack, type UndoEntry } from "./undoStack";
 
 const PROFILE_UNAVAILABLE = "프로필을 불러오지 못해 목적을 확인할 수 없습니다 — 다시 시도해 주세요";
@@ -27,10 +27,10 @@ export interface SectionOps {
   /** 기록이 쥔 문서 — 이미지 참조 집합(SPEC 3.5) · 열린 필드 묶음의 시작 문서와 그 사슬 포함(FIELD-UNDO 4.4) */
   readonly held: readonly PageDoc[];
   /**
-   * 필드 글자 입력 1회(FIELD-UNDO 4.1) — 같은 key가 이어지면 한 묶음, 멈춤 600ms·blur(focusout)·다른 key·다른 기록이 닫는다. 편집 경계가 거절하면 기록 0.
-   * 이미지 패널 편집(4.5 · 다음 레인)도 같은 함수로 넣는다 — 닫기·타이머는 조작 뒤 청크(closeField · fieldTyped)
+   * 필드 글자 입력 1회(FIELD-UNDO 4.1) — 같은 key가 이어지면 한 묶음, 멈춤 600ms·blur(focusout)·다른 key·다른 기록이 닫는다. 편집 경계가 거절하면 기록 0 · false.
+   * 이미지 패널 편집(4.5)도 같은 함수 — 클릭은 mode "click"(즉시 1건) · 대체텍스트는 글자와 같다. 닫기·타이머는 조작 뒤 청크(closeField · fieldTyped)
    */
-  readonly field: (key: string, label: string, next: PageDoc, composing?: boolean) => void;
+  readonly field: (key: string, label: string, next: PageDoc, composing?: FieldMode) => boolean | void;
 }
 
 /**
@@ -170,9 +170,9 @@ export function useSectionOps({
   }, [last, stack, edit]);
 
   const field = useCallback(
-    (key: string, label: string, next: PageDoc, composing?: boolean) => {
+    (key: string, label: string, next: PageDoc, composing?: FieldMode) => {
       const base = docRef.current;
-      if (edit(next) === false) return;
+      if (edit(next) === false) return false;
       // 문서 참조는 같은 틱에 — 바로 이은 Ctrl+Z·연산의 동일성 비교가 이 입력을 본다(FU 4.2)
       docRef.current = next;
       const o = (open.current ??= { key, label, base });

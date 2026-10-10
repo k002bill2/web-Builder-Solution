@@ -48,11 +48,12 @@ function setup({ doc = sampleDoc(), images, undoDoc, instanceId = "s-hero" }: { 
     const host: ImageHost = [map, setMap, undoDoc];
     const target = current.sections.find((s) => s.instanceId === instanceId)!;
     const slots = getSectionDefinition(target.type, target.variant)!.slots;
-    const onEdit = (next: PageDoc) => {
+    // 편집 틀의 기록 경로(useSectionOps.field) 흉내 — 키·이름·클릭 표시는 받고 문서만 바꾼다(FIELD-UNDO 4.5)
+    const onEdit = (_key: string, _label: string, next: PageDoc) => {
       state.edits += 1;
       setDoc(next);
     };
-    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={onEdit} slots={slots} host={host} Button={Button} />;
+    return <ImageSlotPanel doc={current} instanceId={instanceId} onEdit={onEdit} name="Hero" slots={slots} host={host} Button={Button} />;
   }
   const view = render(<Host />);
   return { state, view };

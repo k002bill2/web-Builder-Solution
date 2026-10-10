@@ -7,6 +7,7 @@ import { sectionName, selectedSection } from "../../features/studio/selection";
 import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
 import type { ImageHost } from "../../features/studio/images/store/types";
+import type { FieldEdit } from "./ImageSlotField";
 import { FieldEditor } from "./FieldEditor";
 import { PageInfoFields } from "./PageInfoFields";
 
@@ -34,8 +35,8 @@ export function EditFields({
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly onEdit: (next: PageDoc) => void;
-  /** 글자 칸 입력 = 실행 취소 기록 묶음(FIELD-UNDO 4.1 · key · 이름 "{섹션} {라벨} 편집") — 없으면 onEdit */
-  readonly onField?: (key: string, label: string, next: PageDoc, composing?: boolean) => void;
+  /** 글자 칸 입력 = 실행 취소 기록 묶음(FIELD-UNDO 4.1 · key · 이름 "{섹션} {라벨} 편집") · 이미지 패널 편집도 이 길(4.5) — 없으면 onEdit */
+  readonly onField?: FieldEdit;
   /** 편집 틀의 이미지 보관소 자리 — 없으면(필드만 보는 화면 테스트) 이미지 줄을 그리지 않는다 */
   readonly images?: ImageHost;
   /** "이미지 편집" 펼침 상태 — 편집 틀이 들면 폭 변경(배치 전환 = 이 컴포넌트 재마운트)에도 남는다(B-M2C-04). 없으면 이 안에서 든다 */
@@ -76,7 +77,7 @@ export function EditFields({
           <summary className="ds-label min-h-8 cursor-pointer py-1.5">이미지 편집 ({images})</summary>
           {open && (
             <Suspense fallback={null}>
-              <ImageSlotPanel key={section.instanceId} doc={doc} instanceId={section.instanceId} onEdit={onEdit} slots={slots} host={host} Button={Button} />
+              <ImageSlotPanel key={section.instanceId} doc={doc} instanceId={section.instanceId} onEdit={typed} name={sectionName(section)} slots={slots} host={host} Button={Button} />
             </Suspense>
           )}
         </details>

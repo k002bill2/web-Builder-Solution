@@ -5,11 +5,11 @@
 
 ## 체크리스트
 
-- [ ] P0 PROGRESS 커밋
-- [ ] `npm ci`(lock 변경 0) · 기준 예산 실측
-- [ ] RED — FU-AC-13 갈래: 고르기 · 지우기 · 끄기/켜기 · 장식 · 대체텍스트 묶음 · 변환 거절 0 · 미리보기 거절 0 · 묶음 열린 채 이미지 조작 = 앞 묶음 닫힘 후 1건
-- [ ] GREEN 구현 + 커밋
-- [ ] 게이트 4종(typecheck · lint · test · build) + 예산 실측(`/studio` 진입 증가 0 · 복원 ≤132.60 · `/profile` 0)
+- [x] P0 PROGRESS 커밋 `096a32d`
+- [x] `npm ci`(lock 변경 0) · 기준 예산 실측 — `/studio` 129.56 · 복원 132.59 · `/profile` 99.90/120.00 · docEngine +3.79 · ImageSlotPanel +4.71
+- [x] RED(신규 15건 실패 확인) — FU-AC-13 갈래: 고르기 · 지우기 · 끄기/켜기 · 장식 · 대체텍스트 묶음 · 변환 거절 0 · 미리보기 거절 0 · 묶음 열린 채 이미지 조작 = 앞 묶음 닫힘 후 1건
+- [x] GREEN 구현 + 커밋
+- [x] 게이트 4종(typecheck · lint · test · build) + 예산 실측 — lint 0 · build 0(typecheck 포함) · vitest 300 files · 2702 tests(`/studio` 진입 증가 0 · 복원 ≤132.60 · `/profile` 0)
 - [ ] Codex `review --scope branch --base 09c2623` r1 (최대 2라운드)
 - [ ] Ego Lite(4357) — 1280 이미지 고르기 → Ctrl+Z → 다시 실행 · 대체텍스트 Ctrl+Z · 캡처 2장 · 정리
 - [ ] BACKLOG B-ER-08 행 결과 표기
@@ -18,3 +18,9 @@
 ## 설계 메모
 
 - 진입 0 원칙: 이미지 패널(조작 뒤 lazy 청크)이 기존 `field()` 경로를 그대로 쓴다. "클릭 1회 = 즉시 1건"은 `field`의 4번째 인자(조합 플래그 자리)에 클릭 표시를 실어 청크(`fieldTyped`)가 바로 닫는다 — 진입 런타임 바이트 0(타입만 넓힘).
+
+## 기록
+
+- RED: `ImageUndo.test.tsx`(새 8) · `useSectionOps.field.test.tsx` +4(2 RED · 2 회귀 가드) · `StudioLayoutImages.test.tsx` 지우기 it 규칙 이동 + 무효화 it 1 — 15 실패 확인.
+- GREEN 중 발견: 바꾸기(A→B) 때 패널이 넣기 전 정리에서 지금 문서(= 새 기록의 시작 문서)를 참조 집합에 안 넣어 A가 놓임 → `held = [doc, ...snapshots]`.
+- 예산(GREEN 직후): `/studio` 129.54(−0.02) · 복원 132.58(−0.01) · `/profile` 99.89/119.99(−0.01 — 진입 청크 해시·gzip 잡음) · docEngine +3.83 · ImageSlotPanel +4.86.

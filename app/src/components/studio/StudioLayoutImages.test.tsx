@@ -98,11 +98,36 @@ describe("이미지 편집 진입 층 · 캔버스 연결 (IMG-AC-12 · SPEC 5.1
     expect(last.images![id]!.blob.size).toBe(20);
   });
 
-  it("이미지 지우기 → 참조 밖이 된 이미지가 캔버스 images에서 빠진다", async () => {
+  it("이미지 지우기 → 기록(지우기 전 문서)이 쥐는 동안 캔버스 images에 남는다 · Ctrl+Z = 같은 이미지 id(FIELD-UNDO 4.4 · MQ-F3 A — 무효화는 아래 다시 실행 잘림 it)", async () => {
     const { sent } = draw();
     await openImages();
     await pickFile();
+    const picked = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    const [id] = Object.keys(picked.images ?? {});
     fireEvent.click(within(editRegion()).getByRole("button", { name: "이미지 지우기" }));
+    await settle();
+    const last = sent.filter((m) => m.type === "render").at(-1) as { doc: { sections: Array<{ instanceId: string; slots: Record<string, ImageSlotValue> }> }; images?: Record<string, unknown> };
+    expect(last.doc.sections.find((s) => s.instanceId === "s-hero")!.slots.image!.source).not.toBe(id);
+    expect(Object.keys(last.images ?? {})).toEqual([id]);
+    fireEvent.keyDown(document.body, { key: "z", code: "KeyZ", ctrlKey: true });
+    await settle();
+    const restored = sent.filter((m) => m.type === "render").at(-1) as { doc: { sections: Array<{ instanceId: string; slots: Record<string, ImageSlotValue> }> }; images?: Record<string, unknown> };
+    expect(restored.doc.sections.find((s) => s.instanceId === "s-hero")!.slots.image!.source).toBe(id);
+    expect(Object.keys(restored.images ?? {})).toEqual([id]);
+  });
+
+  it("무효화(MQ-F3 A): 이미지 고르기 → 칸 밖 Ctrl+Z(다시 실행 목록만 쥠) → 필드 입력(다시 실행 잘림) → 캔버스 images에서 빠진다", async () => {
+    const { sent } = draw();
+    await openImages();
+    await pickFile();
+    fireEvent.keyDown(document.body, { key: "z", code: "KeyZ", ctrlKey: true });
+    await settle();
+    const undone = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
+    expect(Object.keys(undone.images ?? {})).toHaveLength(1);
+    fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: "새 제목" } });
+    await settle();
+    fireEvent.blur(within(editRegion()).getAllByRole("textbox")[0]!);
+    fireEvent.change(within(editRegion()).getAllByRole("textbox")[0]!, { target: { value: "새 제목 2" } });
     await settle();
     const last = sent.filter((m) => m.type === "render").at(-1) as { images?: Record<string, unknown> };
     expect(Object.keys(last.images ?? {})).toEqual([]);

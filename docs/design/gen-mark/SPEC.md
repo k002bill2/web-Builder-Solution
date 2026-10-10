@@ -27,7 +27,7 @@
 
 | 라우트 | 첫 화면 / 예산 | 진입 직후 / 예산 |
 |---|---|---|
-| `/catalog` | **100.07 / 101** (여유 0.93) | 102.41 / 125 |
+| `/catalog` | **100.07 / 101 · 멈춤선 100.90** (여유 0.83, ADR-004 개정 7 `ADR-004-performance-budgets.md:135`) | 102.41 / 125 |
 | `/references/:id` | 97.32 / 100 (여유 2.68) | 99.66 / 125 |
 | `/profile` | 99.87 / 100 | 119.98 / 125 |
 | `/studio/:projectId` | 91.84 / 100 | **129.28 / 130** (M2c 기준선 129.62 + 0.03, 멈춤 > 129.65) |
@@ -166,7 +166,7 @@
 | GM-AC-U7 | 카드·상세 출처 표식 DOM 순서 = 라이선스 → 생성 조합(같은 부품) | [U] |
 | GM-AC-U8 | 표식은 포커스 불가 — 카드·상세 Tab 순서 변화 0(기존 `keyboardA11y.test.tsx` 통과) | [U] |
 | GM-AC-G1 | 새 출처 부품 파일이 `/profile`·`/studio` 진입 closure에 0 · `referenceDisplay.ts`·`Tag.tsx` 변경 0 | [G] `check-bundle-size` 출력 · `git diff --stat` |
-| GM-AC-G2 | 예산: `/catalog` 첫 화면 ≤ 101 · `/references/:id` 첫 화면 ≤ 100 · `/profile` 99.87 그대로 · `/studio` 129.28 그대로(멈춤 > 129.65) | [G] `npm run build` 로그 |
+| GM-AC-G2 | 예산: `/catalog` 첫 화면 ≤ 100.90(멈춤선) · `/references/:id` 첫 화면 ≤ 100 · `/profile` 99.87 그대로 · `/studio` 129.28 그대로(멈춤 > 129.65) | [G] `npm run build` 로그 |
 | GM-AC-G3 | 하드코딩 금지 가드 통과(hex·px 0, 토큰만) | [G] `noHardcodedStyle.test.ts` |
 | GM-AC-E1 | 390·1024·1280에서 생성 카드 썸네일 우상단 header CTA·내비가 가려지지 않음(썸네일 영역 안 Tag 0) | [E] 캡처 3장, `getBoundingClientRect` 교차 0 |
 | GM-AC-E2 | 1280에서 출처 줄이 1줄(Tag 2개 같은 top) · 카드 행 높이 정렬 유지 | [E] |
@@ -188,7 +188,7 @@ QB(사람 판단, QA 레인): QB-GM-1 출처 줄이 제목 위계를 해치지 �
 | `ReferenceDetailPage.test.tsx` | U5·U6 추가 | `getByText("internal")`류 단언은 sr-only를 형제로 두면 유지 [추정] |
 
 **예산 영향 [추정]**
-- `/catalog` 첫 화면: 받침 span·absolute 클래스 제거 − 출처 부품·sr-only 추가 + → 순증 **+0.03~0.10** → 100.10~100.17 / 101(여유 0.83 이상).
+- `/catalog` 첫 화면: 받침 span·absolute 클래스 제거 − 출처 부품·sr-only 추가 + → 순증 **+0.03~0.10** → 100.10~100.17 / 101 · 멈춤선 100.90 아래(남는 여유 ≥ 0.73).
 - `/references/:id` 첫 화면: 부품 + T3 문장(한국어 약 30자) **+0.08~0.15** → 97.40~97.47 / 100.
 - 공용 부품이 CatalogPage·ReferenceDetailPage 두 lazy 청크에 걸리면 Vite가 작은 공유 청크로 뺄 수 있다 → 두 라우트 첫 화면에 각각 포함(위 추정에 포함).
 - `/studio`·`/profile`·`/projects`·`/compare`: **0** — 진입 closure를 건드리지 않으므로 조작 뒤 청크 설계 불필요. 단 `referenceDisplay.ts`를 수정하면 `/profile`에 닿으므로 금지(F7).

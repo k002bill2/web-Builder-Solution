@@ -11,15 +11,16 @@ import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
 import { useProjectLoader } from "../../data/ProfileRepositoryContext";
-import type { StudioEntryState } from "../../data/projectRepository";
+import type { DocHead, StudioEntryState } from "../../data/projectRepository";
 import { effectiveProfile } from "../../domain/effectiveProfile";
 import { isTerminal, type CandidateFailure, type GenerationJob } from "../../domain/generation";
 import type { ProfileVersion } from "../../domain/profile";
 import type { WirePalette } from "./CandidateCard";
 import { loadCandidateResults as loadResults } from "./candidateResultsLoader";
 import { loadCompare } from "./compareLoader";
-import { CANDIDATE_TEXT, determinismText, failureText } from "./generationText";
+import { CANDIDATE_TEXT, determinismText, failureText, themeSwapText } from "./generationText";
 import { PALETTE_ROLES } from "./profileFields";
+import { loadRestart } from "./restartLoader";
 import { useGeneration } from "./useGeneration";
 import type { DesignReference } from "../../domain/reference";
 
@@ -67,6 +68,9 @@ export function CandidatesSection({
   const loadProjects = useProjectLoader();
   const [starting, setStarting] = useState(false);
   const [startAlert, setStartAlert] = useState<{ readonly text: string; readonly retry: boolean }>();
+  /** "새로 시작" 대화상자(RESTART F4) — 다른 안일 때 조작 뒤 청크를 받아 연다 */
+  const [restart, setRestart] = useState<{ readonly mod: Awaited<ReturnType<typeof loadRestart>>; readonly doc: DocHead }>();
+  const editBox = useRef<HTMLDivElement>(null);
   /** 카드·표 청크(PROFILE-HEADROOM-2) — 잡이 생긴 뒤에만 쓰여 따로 받는다. 다시 시도 = attempt 증가 → 새 URL로 다시 받기 */
   const [results, setResults] = useState<Awaited<ReturnType<typeof loadResults>> | "error">();
   const [attempt, setAttempt] = useState(0);
@@ -89,14 +93,27 @@ export function CandidatesSection({
     setStarting(true);
     setStartAlert(undefined);
     let state: StudioEntryState | undefined;
+    let other: DocHead | undefined;
     try {
       const started = await (await loadProjects()).startDoc(projectId, viewed.version, selected, "create");
       state = { changes: started.changes, editNotice: started.changeNotice };
     } catch (error: unknown) {
       // 오류 모양만 읽는다 — 오류 클래스(프로젝트 저장소 청크)를 프로필 청크로 끌어오지 않는다
-      const { code, alert } = (error ?? {}) as { code?: string; alert?: string };
-      if (code === "DOC_EXISTS") state = { editNotice: alert };
+      const { code, alert, doc } = (error ?? {}) as { code?: string; alert?: string; doc?: DocHead };
+      // RESTART 3.1 — 같은 안 = 이동(F2 · 버전만 다르면 테마 바꾸기 안내 F3) · 다른 안 = 대화상자(F4)
+      if (code === "DOC_EXISTS" && doc && doc.candidateId !== selected) other = doc;
+      else if (code === "DOC_EXISTS") state = { editNotice: alert && doc && doc.profileVersion !== viewed.version ? themeSwapText(alert, viewed.version) : alert };
       else setStartAlert({ text: (code === "UNKNOWN_VARIANT" && alert) || CANDIDATE_TEXT.startFailed, retry: code !== "UNKNOWN_VARIANT" });
+    }
+    if (other) {
+      const doc = other;
+      await loadRestart().then(
+        (mod) => setRestart({ mod, doc }),
+        (error: unknown) => {
+          console.error("[profile] 새로 시작 청크 불러오기 실패", error);
+          setStartAlert({ text: CANDIDATE_TEXT.startFailed, retry: true });
+        },
+      );
     }
     setStarting(false);
     if (state) void navigate(`/studio/${projectId}`, { state });
@@ -235,7 +252,7 @@ export function CandidatesSection({
           )}
         </div>
       )}
-      <div className="flex flex-col items-start gap-2 md:items-end">
+      <div ref={editBox} className="flex flex-col items-start gap-2 md:items-end">
         <Button
           trailingIcon="arrow-right"
           aria-disabled={!selected || undefined}
@@ -257,6 +274,21 @@ export function CandidatesSection({
               action={startAlert.retry && <Button size="sm" variant="outline" onClick={() => void onEdit()}>다시 시도</Button>}
             />
           </div>
+        )}
+        {restart && selected && projectId && (
+          <restart.mod.default
+            projectId={projectId}
+            profileId={viewed.profileId}
+            version={viewed.version}
+            selected={selected}
+            doc={restart.doc}
+            load={loadProjects}
+            go={(state) => void navigate(`/studio/${projectId}`, { state })}
+            onClose={() => {
+              setRestart(undefined);
+              editBox.current?.querySelector("button")?.focus();
+            }}
+          />
         )}
       </div>
       {job && isTerminal(job.state) && !allFailed && typeof results === "object" && (

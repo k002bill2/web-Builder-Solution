@@ -10,7 +10,7 @@ export const CANDIDATE_TEXT = Object.freeze({
   blocked: "저장하지 않은 조정이 있습니다 — 저장하면 새 버전으로 만듭니다",
   editReason: "안을 고르면 편집을 시작할 수 있습니다",
   startFailed: "편집을 시작하지 못했습니다",
-  editNotice: "편집 시작을 누르면 고른 안으로 편집기를 엽니다. 이미 편집 중인 문서가 있으면 그 문서를 엽니다.",
+  editNotice: "편집 시작을 누르면 고른 안으로 편집기를 엽니다. 이미 편집 중인 문서가 있고 다른 안을 골랐으면 새로 시작할지 묻습니다.",
   allFailed: "3안을 만들지 못했습니다",
   request: "3안 만들기를 요청하지 못했습니다 · 다시 시도하세요",
   retry: "다시 시도를 요청하지 못했습니다 · 다시 시도하세요",
@@ -23,6 +23,9 @@ export const CANDIDATE_TEXT = Object.freeze({
   compareLoading: "불러오는 중…",
   compareFailed: "실제 화면 비교를 불러오지 못했습니다",
 });
+
+/** F3 편집 알림(RESTART R-C2) — 같은 안·다른 버전: DOC_EXISTS 문장 + 테마 바꾸기 안내(내용 보존) */
+export const themeSwapText = (opened: string, version: number) => `${opened} · v${version}를 쓰려면 '테마 바꾸기'를 누르세요 — 내용은 그대로입니다`;
 
 export const GRID_LABELS: Readonly<Record<GridStyle, string>> = Object.freeze({ "grid-3": "카드 3열", "grid-2": "카드 2열", masonry: "카드 마소니" });
 

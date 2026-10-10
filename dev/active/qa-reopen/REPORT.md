@@ -24,4 +24,5 @@
 - B-ER-11 · B-ER-07 · B-M2C-09 ② · B-M2B-09: **열림 유지** — 이번 실행 미측정.
 
 ## 정리
-- (아래 정리 결과로 갱신)
+- Emulation override 해제 · CPU 스로틀 1 · IDB `deleteDatabase("design-studio")`=deleted · `finish({keep:[]})` closedSpace:true · `listTaskSpaces()` = space 2("fallback-font 4343", 병렬 레인 소유 — 무접촉)만 남음 · preview 종료 · 4345 리슨 0 (`logs/cleanup.txt`). main 5480·다른 레인 무접촉. 서브에이전트 0 · 앱/테스트/docs/lock/scripts 수정 0 · push/merge 0.
+- 후속: 1·3·4·5는 다음 QA 실행에서 이 브리프 그대로 재개(우선순위 1부터). B-ER-07은 gen-fixtures로 fixture 재생성 필요.

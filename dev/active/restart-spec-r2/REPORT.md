@@ -26,7 +26,10 @@
 
 ## 3. Codex adversarial-review
 
-(결과 대기 — `logs/codex-r1.txt`)
+- **r1** (`logs/codex-r1.txt`, HEAD `3811dd3`): needs-attention · **P1 1 · P2 1**.
+  - P1: `UNKNOWN_VARIANT`·`STALE_DOC` 예외가 커밋 확인을 우회 — 응답 단계 주입이면 커밋됐는데 "쓰기 0". → **반영 `f09ef85`**: 3.3.1 = 모든 restart 실패에 커밋 확인 먼저, 음성일 때만 코드·사유 · RS-AC-07b에 응답 단계 두 코드 주입 → R-E4.
+  - P2: R-E4 취소 뒤 "편집 시작" 재클릭 → DOC_EXISTS → F2 이동으로 미확인 쓰기 우회. → **반영 `f09ef85`**: 3.3 "미확인 기억" 행(조작 뒤 청크 모듈 Map · 프로젝트별 미확인 restart 인자 → 재클릭 시 create 전에 R-E4 대화상자 재오픈) · RS-AC-08d · RS-R7 범위 축소(남는 우회 = `/projects` → 편집기, BACKLOG 후보).
+- **r2** (`logs/codex-r2.txt`): 아래 갱신.
 
 ## 4. 목업과 다르게 한 곳
 

@@ -1,7 +1,7 @@
 # RESTART-SPEC REPORT — B-ER-01 프로필 "새로 시작"(EQ-2 A) UI 설계
 
 - 역할 Designer · base `18e5e12` · 코드 변경 0 · 로컬 커밋만(push·merge 0)
-- 산출물: `docs/design/restart/SPEC.md`(r0) · `docs/design/restart/MQ.md`(MQ-S1~S4) · `dev/active/restart-spec/PROGRESS.md` · 이 파일
+- 산출물: `docs/design/restart/SPEC.md`(r1) · `docs/design/restart/MQ.md`(MQ-S1~S5) · `dev/active/restart-spec/PROGRESS.md` · 이 파일
 
 ## 결론
 1. **계약 판정**: 저장소 `restart`(`app/src/data/memoryDocBook.ts:369-406`)가 "새로 시작 전" 자동 스냅샷 + 문서 교체(revision +1) + 멱등 기록을 한 커밋으로 이미 한다. SPEC 흐름은 기존 인터페이스(`startDoc`·`restoreSnapshot`) 안에서 가능. **예외 1건**: 다른 탭 잠금 사전 확인(MQ-S2 ★A)은 `memoryProjectRepository` restart 경로의 내부 순서 변경(인터페이스·스키마 불변).
@@ -25,8 +25,16 @@
 
 ## 검증
 - 코드 변경 0이라 typecheck·lint·test·build 대상 없음(문서만).
-- Codex adversarial-review(branch, base `18e5e12`): 아래 "Codex" 절 참조.
+- Codex adversarial-review r1(`codex-companion.mjs adversarial-review --scope branch --base 18e5e12`): verdict **needs-attention**, P1 1 · P2 3 — 전부 이번 diff 대상 → SPEC r1(`4a4a6ad`)에 반영:
+  - P1 이탈 저장 미보장 → RS-R6 재작성 · R-D2 "이 저장 기준" · RS-AC-08c · MQ-S5(수정은 별건 BACKLOG 후보)
+  - P2 커밋 뒤 실패를 미실행으로 단정 → "쓰기 전 거부"/"커밋 뒤 미확인" 분리 · R-E4 · RS-AC-08b
+  - P2 잠금 해제 뒤 재시도 vs `stale` → R-E2b(다시 시도 없음) · RS-AC-08 갈래 추가
+  - P2 복원 진입 132.68 누락 → 9절·RS-AC-13 두 시나리오 각각 판정
+  - Codex가 확인한 일치 사항: 이미지 보존·자동 20개 정리 주장
+- **Codex r2는 실행하지 않음** — 60분 시간 상한(r1 소요 약 6분 + 반영). r1 반영분은 미검증 상태다.
 
 ## 열린 것 · 필요한 결정
-- MQ-S1~S4 회신(권장: 전부 A). 회신 뒤 Developer 레인 착수 가능.
+- MQ-S1~S5 회신(권장: 전부 A).
+- BACKLOG 후보 등록(Jarvis — 이 레인은 BACKLOG 수정 0): ① 편집기 이탈 전 `flushed()` 확인(MQ-S5) ② create 경로의 잠금 없는 탭 갈라짐(MQ-S2 C).
+- Codex r2로 SPEC r1 재검증. 회신 뒤 Developer 레인 착수 가능.
 - 예산 수치(`/profile` 진입 직후 한도 해석, `/studio` +0.01~0.03)는 추정 L3 — Developer 레인에서 실측.

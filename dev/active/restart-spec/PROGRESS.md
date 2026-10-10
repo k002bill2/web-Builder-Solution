@@ -11,7 +11,8 @@
 - [x] SPEC 초안 커밋 (`62f8568`)
 - [x] MQ 커밋 (`0ed0256`)
 - [x] REPORT 커밋
-- [ ] Codex adversarial-review 반영(최대 3라운드)
+- [x] Codex adversarial-review r1 반영 (`4a4a6ad`)
+- [ ] Codex r2 — BLOCKED: 60분 시간 상한, 다음 세션에서 실행
 
 ## 서브에이전트
 - Explore #1 코드 경로(읽기 전용): 완료 · SPEC 2·9절 반영

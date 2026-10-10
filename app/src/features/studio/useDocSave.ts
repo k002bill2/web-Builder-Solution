@@ -8,6 +8,8 @@
  * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·충돌·오프라인이면 false.
  * - `adopt(write)` = 저장소 revision을 올리는 쓰기(스냅샷 복원)를 저장 훅 경로로 — 저장 먼저 → `write(저장 revision)` 1회 →
  *   돌려받은 문서·revision·스케줄러(`settle`, 추가 저장 0)를 함께 갱신. 저장하지 못했으면 쓰기 0 · undefined.
+ * - `leave()` = 앱 안 이동 전(B-RS-01) — 저장할 것이 없거나 읽기 전용 탭(저장 0이 정상)이면 undefined(바로 이동).
+ *   그 밖이면 지금 저장(실패·오프라인도 1회 다시)하고 `flushed()` 결과 — 읽기 전용 거절이면 true.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectErrorCode, type ConflictChoice, type DocHead, type ProjectPersistence } from "../../data/projectRepository";
@@ -42,12 +44,14 @@ export interface UseDocSave {
   /** STALE_DOC일 때만 */
   readonly conflict?: DocConflict;
   readonly edit: (next: PageDoc) => void;
-  readonly retry: () => void;
+  /** 돌려주는 값 = 재시도 직후 단계(스케줄러) — effect에서 그대로 return하지 않는다 */
+  readonly retry: () => AutosaveState["phase"] | undefined;
   /** 저장소에 저장된 마지막 revision(내보내기 요청 revision — 5.13 "저장 먼저" 뒤에 읽는다) */
   readonly savedRevision: () => number;
   readonly resolve: (choice: ConflictChoice) => Promise<void>;
   readonly flushed: () => Promise<boolean>;
   readonly adopt: (write: (revision: number) => Promise<PageDoc>) => Promise<PageDoc | undefined>;
+  readonly leave: () => Promise<boolean> | undefined;
 }
 
 export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
@@ -55,6 +59,8 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   const docRef = useRef(initialDoc);
   const [latest, setLatest] = useState<PageDoc | undefined>(undefined);
   const revisionRef = useRef(initialDoc.revision);
+  /** 마지막 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5)이었나 — 잠금은 저장마다 다시 잡아 보므로 저장마다 새로 정한다 */
+  const readOnly = useRef(false);
 
   const save = useCallback(
     async (next: PageDoc) => {
@@ -62,7 +68,10 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
       try {
         const saved = await repository.saveDoc(projectId, revision, { ...next, revision, hash: hashDoc(next) });
         revisionRef.current = saved.revision;
+        readOnly.current = false;
       } catch (error) {
+        // 사유 문장(`infra.ts` READ_ONLY_TAB)으로 가린다 — 그 모듈을 import하면 영속 청크가 진입으로 올라온다(+0.76KB 실측). 문장이 바뀌면 StudioLeave 테스트가 잡는다
+        readOnly.current = String((error as Error)?.message).includes("탭에서 편집 중");
         if (projectErrorCode(error) === "STALE_DOC") setLatest((error as { readonly doc?: PageDoc }).doc);
         throw error;
       }
@@ -130,7 +139,13 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     [flushed, settle],
   );
 
+  const leave = useCallback(() => {
+    if (readOnly.current || phase.current === "idle" || phase.current === "saved") return undefined;
+    phase.current = retry() ?? phase.current;
+    return flushed().then((ok) => ok || readOnly.current);
+  }, [retry, flushed]);
+
   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
   const savedRevision = useCallback(() => revisionRef.current, []);
-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt };
+  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave };
 }

@@ -4,7 +4,7 @@ import { sampleDoc } from "../../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../../engine/testing/sampleTheme";
 import type { ParentMessage } from "../../../render/protocol";
 import { drawDoc, withUnknownCta, without } from "../../../render/testing/drawKit";
-import { IMAGE_FAILED, createStaticHtmlGenerator, openRenderFrame, type RenderChannel } from "./staticHtml";
+import { DEV_SERVER_UNSUPPORTED, IMAGE_FAILED, createStaticHtmlGenerator, openRenderFrame, type RenderChannel } from "./staticHtml";
 import { FONT_FAILED } from "./siteFontEmbed";
 import { STATIC_MENU_SCRIPT } from "./staticMarkup";
 
@@ -134,6 +134,15 @@ describe("정적 HTML 생성기 (G3)", () => {
     const noTokens = createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: fakeUrls().api });
     await expect(noTokens({ ...input, doc: { ...DOC, profileVersion: 99 } })).rejects.toThrow(/킷 토큰/);
     expect(frame.sent).toEqual([]);
+  });
+
+  it("스타일시트 0의 사유: dev 서버면 preview 안내(DEV_SERVER_UNSUPPORTED) · 빌드 결과면 원래 문장", async () => {
+    const noCss = createStaticHtmlGenerator(STORE, { open: fakeFrame().open, fetchText: async () => "<html><head></head></html>", fetchBytes, urls: fakeUrls().api });
+    vi.stubEnv("DEV", true);
+    await expect(noCss(input)).rejects.toThrow(DEV_SERVER_UNSUPPORTED);
+    vi.stubEnv("DEV", false);
+    await expect(noCss(input)).rejects.toThrow("render.html에 스타일시트가 없습니다");
+    vi.unstubAllEnvs();
   });
 });
 

@@ -1,6 +1,7 @@
 import type { ExportJob, ProjectRepository } from "../../data/projectRepository";
 import type { StudioReader } from "../../data/studioStore";
 import type { StaticHtmlDeps } from "./staticHtml/staticHtml";
+import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
 
 /** SPEC m2c 5.1·5.2 · MQ-C3 ★A — 앱 경로 생성기 주입(readImage·onBuilt) · 결과 크기 표시 · 3MB 안내 · 잃은 이미지 문장 · decode 실패 사유 */
 const made = vi.hoisted(() => ({ deps: [] as Partial<StaticHtmlDeps>[], run: vi.fn() }));
@@ -76,6 +77,12 @@ describe("앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 �
     made.run.mockRejectedValueOnce(new Error("이미지를 그리지 못했습니다")).mockRejectedValueOnce(new Error("다른 실패"));
     expect(await requestExportOnce(repository, "p1", "static-html", 5)).toEqual({ kind: "retryable", format: "static-html", reason: "이미지를 그리지 못했습니다" });
     expect(await requestExportOnce(repository, "p1", "static-html", 6)).toEqual({ kind: "retryable", format: "static-html" });
+  });
+
+  it("dev 서버라 킷 CSS를 못 읽음(DEV_SERVER_UNSUPPORTED) → retryable + 사유로 preview 안내", async () => {
+    const repository = await repositoryRunningSlot();
+    made.run.mockRejectedValueOnce(new Error(DEV_SERVER_UNSUPPORTED));
+    expect(await requestExportOnce(repository, "p1", "static-html", 5)).toEqual({ kind: "retryable", format: "static-html", reason: DEV_SERVER_UNSUPPORTED });
   });
 
   it("이미지 맵은 요청(프로젝트)별 — 생성 중 다른 프로젝트 요청이 덮어쓰지 않음 · 요청이 끝나면 놓는다(Codex r1)", async () => {

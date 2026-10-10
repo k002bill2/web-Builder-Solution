@@ -358,7 +358,7 @@ export function StudioLayout({
   );
   const edit = (
     <EditPanel name={selectionName(doc, selectedId)} head={editHead}>
-      <EditFields doc={doc} selectedId={selectedId} onEdit={snaps.edit} images={[images, setImages, undoDoc, heldDocs]} imagesOpen={imagesOpen} />
+      <EditFields doc={doc} selectedId={selectedId} onEdit={snaps.edit} onField={ops.field} images={[images, setImages, undoDoc, heldDocs]} imagesOpen={imagesOpen} />
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)

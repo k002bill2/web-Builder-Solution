@@ -3,7 +3,7 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { setSlot } from "../../engine/ops/slotOps";
 import { getSectionDefinition } from "../../engine/sections/registry";
 import { slotIssue } from "../../features/studio/canvasIssues";
-import { selectedSection } from "../../features/studio/selection";
+import { sectionName, selectedSection } from "../../features/studio/selection";
 import { Button } from "../ds/Button";
 import { Callout } from "../ds/Callout";
 import type { ImageHost } from "../../features/studio/images/store/types";
@@ -29,10 +29,13 @@ export function EditFields({
   onEdit,
   images: host,
   imagesOpen,
+  onField,
 }: {
   readonly doc: PageDoc;
   readonly selectedId: string;
   readonly onEdit: (next: PageDoc) => void;
+  /** 글자 칸 입력 = 실행 취소 기록 묶음(FIELD-UNDO 4.1 · key · 이름 "{섹션} {라벨} 편집") — 없으면 onEdit */
+  readonly onField?: (key: string, label: string, next: PageDoc, composing?: boolean) => void;
   /** 편집 틀의 이미지 보관소 자리 — 없으면(필드만 보는 화면 테스트) 이미지 줄을 그리지 않는다 */
   readonly images?: ImageHost;
   /** "이미지 편집" 펼침 상태 — 편집 틀이 들면 폭 변경(배치 전환 = 이 컴포넌트 재마운트)에도 남는다(B-M2C-04). 없으면 이 안에서 든다 */
@@ -41,7 +44,8 @@ export function EditFields({
   const local = useState(false);
   const [open, setOpen] = imagesOpen ?? local;
   const section = selectedSection(doc, selectedId);
-  if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta) => onEdit({ ...doc, meta })} />;
+  const typed = onField ?? ((_key: string, _label: string, next: PageDoc) => onEdit(next));
+  if (!section) return <PageInfoFields meta={doc.meta} onChange={(meta, label, composing) => typed(label, `페이지 정보 ${label} 편집`, { ...doc, meta }, composing)} />;
   const slots = getSectionDefinition(section.type, section.variant)?.slots ?? [];
   const images = slots.filter((entry) => entry.kind === "image").length;
   return (
@@ -54,13 +58,14 @@ export function EditFields({
       {slots.map((entry) => {
         if (entry.kind === "image") return null;
         const value = section.slots[entry.key];
+        const key = `${section.instanceId}-${entry.key}`;
         return (
           <FieldEditor
-            key={`${section.instanceId}-${entry.key}`}
+            key={key}
             id={`field-${section.instanceId}-${entry.key}`}
             spec={entry}
             value={typeof value === "string" ? value : ""}
-            onChange={(next) => onEdit(setSlot(doc, section.instanceId, entry.key, next))}
+            onChange={(next, composing) => typed(key, `${sectionName(section)} ${entry.label} 편집`, setSlot(doc, section.instanceId, entry.key, next), composing)}
             describedBy={slotIssue(section, entry)?.id}
             hint={section.type === "services" && section.variant === "list" && entry.key === "items" ? ITEMS_HINT : undefined}
           />

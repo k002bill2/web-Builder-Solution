@@ -24,7 +24,8 @@ export function PageInfoFields({
   idPrefix = "page-info",
 }: {
   readonly meta: PageMeta;
-  readonly onChange: (meta: PageMeta) => void;
+  /** label = 바뀐 칸 라벨 · composing = IME 조합 중(실행 취소 기록 이름·묶음 — FIELD-UNDO 5절) */
+  readonly onChange: (meta: PageMeta, label: string, composing?: boolean) => void;
   readonly describedBy?: Partial<Record<PageMetaField, string>>;
   readonly idPrefix?: string;
 }) {
@@ -36,7 +37,7 @@ export function PageInfoFields({
           id={`${idPrefix}-${key}`}
           spec={spec}
           value={meta[key]}
-          onChange={(value) => onChange({ ...meta, [key]: value })}
+          onChange={(value, composing) => onChange({ ...meta, [key]: value }, spec.label, composing)}
           describedBy={describedBy[key]}
           warnNote={seoNote}
         />

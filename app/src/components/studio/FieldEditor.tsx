@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import type { SlotSchemaEntry } from "../../engine/contracts/sectionDefinition";
 import { GATE_TEXT } from "../../engine/gate/gateText";
 import { cx } from "../ds/cx";
@@ -31,7 +31,8 @@ export function FieldEditor({
   readonly id: string;
   readonly spec: FieldSpec;
   readonly value: string;
-  readonly onChange: (value: string) => void;
+  /** composing = IME 조합 중 입력(묶음 멈춤 타이머를 걸지 않는다 — FIELD-UNDO 4.6) */
+  readonly onChange: (value: string, composing?: boolean) => void;
   readonly describedBy?: string;
   readonly warnNote?: (recommended: number) => string;
   /** 필드 도움말(입력 규칙 안내) — 라벨 아래 고정 문장, `aria-describedby`로 잇는다 */
@@ -46,6 +47,7 @@ export function FieldEditor({
   const messageId = `${id}-note`;
   const hintId = `${id}-hint`;
   const describedIds = [describedBy, hint && hintId, counterId, message && messageId].filter(Boolean).join(" ");
+  const change = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange(clampInput(e.target.value, count.inputMaxLength), (e.nativeEvent as InputEvent).isComposing);
   const common = {
     id,
     value,
@@ -53,6 +55,7 @@ export function FieldEditor({
     "aria-invalid": invalid || undefined,
     className: BOX,
     onBlur: () => setBlurred(true),
+    onChange: change,
   };
   return (
     <div className="flex flex-col gap-1.5">
@@ -66,9 +69,9 @@ export function FieldEditor({
         </p>
       )}
       {spec.kind === "long-text" ? (
-        <textarea {...common} rows={3} onChange={(e) => onChange(clampInput(e.target.value, count.inputMaxLength))} />
+        <textarea {...common} rows={3} />
       ) : (
-        <input {...common} type="text" onChange={(e) => onChange(clampInput(e.target.value, count.inputMaxLength))} />
+        <input {...common} type="text" />
       )}
       <div className="flex flex-wrap items-baseline gap-x-2 text-caption1">
         <p id={counterId} className="tabular-nums text-label-alternative">

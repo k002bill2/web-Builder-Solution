@@ -44,8 +44,49 @@ export function commitOp(
   return { ok: true, result, before };
 }
 
+/** 열린 필드 묶음(FIELD-UNDO 4.1) — 진입(useSectionOps.field)이 키·시작 문서·마지막 문서를 같은 틱에 적고, 타이머·닫기는 이 청크가 한다 */
+export type FieldOpen = { readonly key: string; readonly label: string; readonly base: PageDoc; after?: PageDoc; timer?: ReturnType<typeof setTimeout> };
+export type FieldRec = {
+  readonly open: RefObject<FieldOpen | undefined>;
+  readonly docRef: RefObject<PageDoc>;
+  readonly stack: UndoStack;
+  readonly edit: (next: PageDoc) => boolean | void;
+  /** 참조 집합의 "열린 묶음 시작 문서" — 닫으면 비운다(FU 4.4) */
+  readonly hold: (base: PageDoc | undefined) => void;
+};
+/** 묶음 닫힘 멈춤(ER 3.5 · FU 4.1) */
+const FIELD_PAUSE_MS = 600;
+
 /**
- * 단축키 · "더보기" 실행 취소/다시 실행(ER-4 U1) — 지금 문서가 그 기록과 이어질 때만(스택 밖 변경을 덮지 않는다).
+ * 묶음 닫기 = 기록 1건 { 시작 문서 → 마지막 입력 문서 }. 내용이 시작과 같으면(쳤다 지움) 기록 0 — 대신 문서를 시작 문서 참조로 돌려
+ * 앞 기록과의 사슬(문서 동일성 비교)을 잇는다. 그사이 기록 밖 경로로 문서가 바뀌었으면(충돌 "최신") 그 문서를 덮지 않는다
+ */
+export function closeField({ open, docRef, stack, edit, hold }: FieldRec): void {
+  const o = open.current;
+  if (!o) return;
+  clearTimeout(o.timer);
+  open.current = undefined;
+  hold(undefined);
+  const after = o.after ?? o.base;
+  if (JSON.stringify(after) !== JSON.stringify(o.base)) stack.push({ label: o.label, before: o.base, after });
+  else if (docRef.current === after && after !== o.base && edit(o.base) !== false) docRef.current = o.base;
+}
+
+/**
+ * 입력 1회 뒤 — 멈춤 타이머를 다시 건다. 조합 중(IME)이면 걸지 않는다(반쪽 자모가 기록 경계가 되지 않게 · FU 4.6).
+ * 묶음의 첫 입력이면 포커스가 떠날 때(focusout = 칸 blur · "더보기"·미리보기·충돌 버튼 누름) 닫는 1회 리스너를 단다(FU 4.1)
+ */
+export function fieldTyped(rec: FieldRec, composing: boolean | undefined): void {
+  const o = rec.open.current;
+  if (!o) return;
+  // timer 키가 없으면 이 묶음의 첫 입력(조합 중이면 undefined로라도 키가 생긴다)
+  if (!("timer" in o)) document.addEventListener("focusout", () => rec.open.current === o && closeField(rec), { once: true });
+  clearTimeout(o.timer);
+  o.timer = composing ? undefined : setTimeout(() => rec.open.current === o && closeField(rec), FIELD_PAUSE_MS);
+}
+
+/**
+ * 단축키 · "더보기" 실행 취소/다시 실행(ER-4 U1) — 지금 문서가 그 기록과 이어질 때만(기록 밖 문서 교체 — 충돌 "최신" 등 — 를 덮지 않는다).
  * 편집 경계가 거절하면(미리보기 중) 스택 그대로(B-ER-05와 같은 규칙). 알림 줄 "되돌리기" 대상은 비운다
  */
 export function stepHistory(redo: boolean, docRef: RefObject<PageDoc>, stack: UndoStack, setLast: (last: LastOp) => void, edit: (next: PageDoc) => boolean | void, tell: StepTell) {

@@ -11,8 +11,8 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | ~~B-QA-01~~ | QA-1A-02 주의 1 | px 단위 측정 필수화 | **취소** → 다음 QA는 뷰포트 캡처만 필수, 판정은 위계·정렬·일관성·가독성 |
 | B-DOC-01 | ADR-003 | `CLAUDE.md` 규칙 3 문구("레이아웃·간격·타이포·색을 충실히 옮긴다")를 ADR-003 기준으로 교체 | 보호 파일이라 영환님 승인 후 수정 (2026-09-25 승인 창 만료로 미반영) · ✅ `9894207` 닫힘(CLAUDE.md 규칙 3 ADR-003 문구 반영 — 현행 58행) |
 | B-M2B-01 | SPEC-BOUND MQ-B4 | `footer/biz-extended-map` 이미지 슬롯 도움말 — 지도 캡처를 올릴 때 권리 안내 한 줄 | 편집기 레인(M2b 뒤) · ✅ M2C-3 `da802bb` 닫힘(ImageSlotField 지도 권리 안내 · ImageSlotPanel.test 단언) |
-| B-M2B-02 | SPEC-BODY MQ-B1 | `services/list` `items` 필드 도움말 "가운뎃점(·)으로 나눕니다" | 편집기 레인(M2b 뒤) |
-| B-M2B-03 | SPEC-BODY MQ-B4 | 예약 섹션 사이트 주인용 안내 `Callout` — K2 문구의 "문의"를 "예약"으로 | 편집기 레인(M2b 뒤) |
+| B-M2B-02 | SPEC-BODY MQ-B1 | `services/list` `items` 필드 도움말 "가운뎃점(·)으로 나눕니다" | 편집기 레인(M2b 뒤) · ✅ COPY-HELP `bb58eaa` 닫힘(FieldEditor `hint` → aria-describedby · EditFields.test 단언) |
+| B-M2B-03 | SPEC-BODY MQ-B4 | 예약 섹션 사이트 주인용 안내 `Callout` — K2 문구의 "문의"를 "예약"으로 | 편집기 레인(M2b 뒤) · ✅ COPY-HELP `98a8d2e` 닫힘(ContactOwnerNote booking 문구 분기 · ContactOwnerNote.test form/booking 단언) |
 | B-M2B-04 | M2B-4a Codex P2-b | 폴백 섹션 표식(`FallbackCanvas`)이 사이트 굵기 대응 밖 700·600 글꼴 파일을 요청(`kit/siteFonts.ts:27`) — 편집 캔버스 한정, 내보내기는 미렌더 차단으로 영향 없음 | M2B-6 또는 폴백 정리 별건 |
 | B-M2B-05 | MQ-M2B5-2 C | 3안 제목 비율 축(`axes.typeScale`)을 편집 문서·킷 토큰까지 전달 — 엔진 계약·저장 검증·내보내기 변경이라 별도 승인 필요 | M2b 뒤 별건 |
 | B-M2B-06 | ✅ M2C-SPECFIX 정정(SPEC-COMPARE3 r3, 구현 0) | M2B-6 QA 사양 결정 | 3안 비교 대화상자 키보드 순서 — 스크롤 영역(tabIndex 0)이 "이 안 선택"보다 먼저(WCAG 2.1.1 키보드 스크롤). QA 권고: SPEC-COMPARE3 2.1·4절을 실제 순서로 정정 | Designer 문서 정정 |

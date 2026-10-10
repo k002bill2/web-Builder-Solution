@@ -91,6 +91,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
   withoutLocks();
 });
 
@@ -205,6 +206,30 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     await repo.release(toInfra(undefined, "저장"));
     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
     expect(arrivals).toHaveLength(1);
+  });
+
+  it("읽기 전용 거절 뒤 오프라인 = 이번 이탈에서 거절을 받지 않았으므로 보류(Codex r2 P1)", async () => {
+    const repo = heldRepository();
+    draw(repo.repository);
+    type("거절된 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));
+    type("오프라인 중 편집");
+    vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    leave();
+    await act(() => vi.advanceTimersByTimeAsync(0));
+    expect(repo.save).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText("프로젝트 목록")).toBeNull();
+  });
+
+  it("Web Locks 없어도 메모리 저장 실패는 보류(잠금 폴백은 로컬 저장만, Codex r2 P2)", async () => {
+    withoutLocks();
+    const repo = heldRepository("memory");
+    draw(repo.repository);
+    type("메모리 편집");
+    leave();
+    await repo.release(new Error("청크 로드 실패"));
+    expect(screen.queryByText("프로젝트 목록")).toBeNull();
   });
 
   it("Web Locks 있는 브라우저의 일반 저장 실패는 그대로 보류", async () => {

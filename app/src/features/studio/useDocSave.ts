@@ -9,7 +9,7 @@
  * - `adopt(write)` = 저장소 revision을 올리는 쓰기(스냅샷 복원)를 저장 훅 경로로 — 저장 먼저 → `write(저장 revision)` 1회 →
  *   돌려받은 문서·revision·스케줄러(`settle`, 추가 저장 0)를 함께 갱신. 저장하지 못했으면 쓰기 0 · undefined.
  * - `leave()` = 앱 안 이동 전(B-RS-01) — 저장할 것이 없으면 undefined(바로 이동). 그 밖이면 지금 저장(실패·오프라인도 1회 다시)하고
- *   `flushed()` 결과 — 이번 저장이 읽기 전용 거절(저장 0이 정상)이면 true. 지난 거절로 건너뛰지 않는다(다른 탭이 닫혔을 수 있다, Codex r1 P1).
+ *   `flushed()` 결과 — 이번 이탈 중 저장이 읽기 전용 거절(저장 0이 정상)이면 true. 지난 거절은 쓰지 않는다(다른 탭이 닫혔거나 오프라인일 수 있다, Codex r1·r2 P1).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectErrorCode, type ConflictChoice, type DocHead, type ProjectPersistence } from "../../data/projectRepository";
@@ -59,8 +59,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   const docRef = useRef(initialDoc);
   const [latest, setLatest] = useState<PageDoc | undefined>(undefined);
   const revisionRef = useRef(initialDoc.revision);
-  /** 마지막 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없으면 늘 읽기 전용 폴백)이었나 — 잠금은 저장마다 다시 잡아 보므로 저장마다 새로 정한다.
-   *  Web Locks 없음은 저장소 종류를 보지 않는다 — 메모리 저장은 실패 경로가 사실상 없다(바이트, 개정 15 몫) */
+  /** 이번 이탈 중 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없는 로컬 폴백)을 받았나 — `leave()`가 지우고 저장마다 새로 정한다(Codex r2 P1) */
   const readOnly = useRef(false);
 
   const save = useCallback(
@@ -72,7 +71,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
         readOnly.current = false;
       } catch (error) {
         // 사유 문장(`infra.ts` READ_ONLY_TAB)으로 가린다 — 그 모듈을 import하면 영속 청크가 진입으로 올라온다(+0.76KB 실측). 문장이 바뀌면 StudioLeave 테스트가 잡는다
-        readOnly.current = String((error as Error)?.message).includes("탭에서 편집 중") || !navigator.locks;
+        readOnly.current = String((error as Error)?.message).includes("탭에서 편집 중") || (repository.persistence === "local" && !navigator.locks);
         if (projectErrorCode(error) === "STALE_DOC") setLatest((error as { readonly doc?: PageDoc }).doc);
         throw error;
       }
@@ -142,6 +141,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
 
   const leave = useCallback(() => {
     if (phase.current === "idle" || phase.current === "saved") return undefined;
+    readOnly.current = false;
     phase.current = retry() ?? phase.current;
     return flushed().then((ok) => ok || readOnly.current);
   }, [retry, flushed]);

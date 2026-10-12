@@ -6,6 +6,7 @@ import { passingDoc, withPhoto } from "../../engine/testing/gateKit";
 import { sampleDoc, section, withSections } from "../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../engine/testing/sampleTheme";
 import type { PngRequest } from "../../features/studio/png/pngCapture";
+import { DEV_SERVER_UNSUPPORTED } from "../../features/studio/staticHtml/devServer";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 import { PngSave } from "./PngSave";
 
@@ -98,6 +99,13 @@ describe("PNG 이미지 decode 실패 (SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽)"
     render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} />);
     fireEvent.click(button());
     expect(await screen.findByRole("alert")).toHaveTextContent("이미지를 그리지 못했습니다 — 다시 눌러 주세요");
+  });
+
+  it("dev 서버라 킷 CSS를 못 읽음(DEV_SERVER_UNSUPPORTED) → alert = preview 안내 문장", async () => {
+    png.savePng.mockRejectedValueOnce(new Error(DEV_SERVER_UNSUPPORTED));
+    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} />);
+    fireEvent.click(button());
+    expect(await screen.findByRole("alert")).toHaveTextContent(DEV_SERVER_UNSUPPORTED);
   });
 });
 

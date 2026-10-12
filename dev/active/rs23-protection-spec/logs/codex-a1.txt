@@ -1,0 +1,40 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a1322c-3043-7562-96ca-c48c61a02a51).
+[codex] Turn started (01a1322c-3451-7670-8a50-857147f2a327).
+[codex] Assistant message captured: `7dbf116..HEAD` 설계 diff와 앱 `93f8111`의 저장·이탈 경로를 대조해 차단할 만한 결함을 확인하겠습니다.
+[codex] Running command: /bin/zsh -lc 'git status --short; git diff --stat 7dbf116; git diff 7dbf116 -- docs/design/re...
+[codex] Command completed: /bin/zsh -lc 'git status --short; git diff --stat 7dbf116; git diff 7dbf116 -- docs/design/re... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat /Users/younghwankang/.codex/plugins/cache/claude-cowork/engineering/1.2.0/s...
+[codex] Command failed: /bin/zsh -lc "cat /Users/younghwankang/.codex/plugins/cache/claude-cowork/engineering/1.2.0/s... (exit 1)
+[codex] Assistant message captured: `engineering:code-review` 스킬을 적용합니다. 설계의 “flush 확인 뒤에만 삭제” 주장과 실제 상태 전이·언마운트 순서를 집중 대조하고 있습니다.
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '45,248p'; rg --files -g AGENTS.m...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '45,248p'; rg --files -g AGENTS.m... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff 93f8111 -- app; nl -ba app/src/data/persistence/localSync.ts | sed -n ...
+[codex] Command completed: /bin/zsh -lc "git diff 93f8111 -- app; nl -ba app/src/data/persistence/localSync.ts | sed -n ... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '45,145p'; nl -ba app/s...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '45,145p'; nl -ba app/s... (exit 0)
+[codex] Assistant message captured: `deleteSnapshot(p, "")`는 로컬 저장소에서 내용 변경 없이 flush하는 경로가 맞습니다. 다만 편집기의 `offline` 상태는 저장소에 쓰기 전에...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '350,415p'; nl -ba app/src/featur...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '350,415p'; nl -ba app/src/featur... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "구현 기준으로 승인하기 어렵습니다. F1의 일반 재시도와 F2의 저장 수단은 개선됐지만,...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against 7dbf116
+Verdict: needs-attention
+
+구현 기준으로 승인하기 어렵습니다. F1의 일반 재시도와 F2의 저장 수단은 개선됐지만, 편집 손실·거짓 saved·origin 미정의 경로가 남습니다. 앱 93f8111 변경 0과 diff 검사는 확인했으며 런타임 테스트는 실행하지 않았습니다.
+
+Findings:
+- [high] [P1] offline 편집을 PendingRecord로 넘기면 이전 문서만 확인됩니다 (docs/design/restart/SPEC-4.md:119-121)
+  offline을 ‘메모리 커밋 완료’로 취급하지만, 앱 useAutosaveScheduler.ts:171-176은 오프라인이면 save 호출 전에 반환합니다. 편집 후 offline → POP 언마운트 시 최신 내용은 스케줄러와 함께 사라지고, PendingRecord에는 내용이 없습니다. 이후 deleteSnapshot(p, "")는 이전 저장소 레코드만 flush하고 기억을 삭제합니다. 사용자는 잃어버린 편집에 대해 저장 확인 성공을 받습니다. failed도 저장 전 실패라면 같은 문제가 있습니다.
+  Recommendation: 저장소 반영 여부와 편집기 미제출 내용을 구분하십시오. 미제출 내용은 탭 수명으로 보존하고 실제 saveDoc 성공까지 유지하거나 이탈을 차단하십시오. offline → POP → 재진입 → 확인 테스트에서 최종 IDB 내용이 마지막 편집과 같은지 검증하십시오.
+- [high] [P1] 외부 저장 확인 완료가 도중에 발생한 편집을 saved로 덮습니다 (docs/design/restart/SPEC-4.md:228-230)
+  저장 훅 밖에서 확인 요청을 보내고 성공하면 무조건 phase saved로 전환합니다. 확인 시작 당시 편집이 없어도 IDB 완료를 기다리는 동안 사용자가 편집할 수 있습니다. localSync.ts:151-161은 제출 당시 레코드를 저장하므로 그 편집은 확인 대상이 아닙니다. 이 설계를 그대로 구현하면 최신 편집이 남은 상태에서 saved가 표시되고 이탈 보호가 해제됩니다. 기존 Scheduler.onSaved(version)의 최신 편집 검사와 달리 확인 경로에는 버전 검사나 편집 차단 규칙이 없습니다.
+  Recommendation: 확인을 스케줄러의 버전 관리에 통합하십시오. 요청 시작 후 편집이 생겼으면 확인된 기억만 해제하고 dirty와 이탈 보호를 유지하십시오. 확인 지연 중 편집 → 확인 resolve → 즉시 이탈을 수용 테스트에 추가하십시오.
+- [medium] [P2] 최초 origin 읽기 실패를 기억에 표현할 수 없습니다 (docs/design/restart/SPEC-4.md:150-159)
+  이 행은 최초 getDoc 실패 시 origin unknown을 판정에만 사용한다고 지정하지만 F-5/F-6은 PendingStart unknown을 생성하도록 합니다. PendingStart.origin은 필수이며 타입은 absent/doc만 허용합니다(72-84행). 재시도는 저장된 origin만 사용해야 하므로 이 경로에 유효한 기억 값을 만들 수 없습니다. absent로 대체하면 관측하지 않은 부재를 근거로 기억을 삭제할 수 있고, 다시 읽으면 F1의 origin 보존 규칙을 위반합니다.
+  Recommendation: Origin에 unknown을 추가하고 재시도 판정표를 정의하십시오. unknown에서는 관측값으로 최초 origin을 덮거나 not-applied-absent로 삭제하지 않고, flush 확인 또는 명시 폐기까지 유지하도록 테스트하십시오.
+
+Next steps:
+- SPEC-4의 편집 내용 인계·확인 완료 버전 검사·unknown origin 전이를 먼저 수정하십시오.

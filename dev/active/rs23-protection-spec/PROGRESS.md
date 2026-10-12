@@ -7,9 +7,9 @@ base 설계 7dbf116 · 앱 93f8111 · branch k002bill2/rs23-fix · 문서만(앱
 - [x] 2. 원인/복구표 체크포인트 (F1·F2·history 재진입 · 판정표)
 - [x] 3. SPEC-4.md 작성 (닫힌 상태·보호·재시도/확정 경로 · 구현 계획 4 CP)
 - [x] 4. MQ-4.md 작성 (예산 관문 · 새 계약 필요 여부)
-- [ ] 5. Codex adversarial-review 1회 → 한 번 반영 (미재검토 명시)
-- [ ] 6. REPORT.md (F1/F2 닫힘 · 보호범위 · 브라우저 한계 · 측정 관문 · QA 수용기준 · 미실행 구분)
-- [ ] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
+- [x] 5. Codex adversarial-review 1회(logs/codex-a1.txt, needs-attention P1 2·P2 1) + advisor 점검 → r0.1 한 번 반영 · **미재검토**
+- [x] 6. REPORT.md (F1/F2 닫힘 · 보호범위 · 브라우저 한계 · 측정 관문 · QA 수용기준 · 미실행 구분)
+- [x] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
 
 ## 서브에이전트
 - A unload/history 수명(Explore, 읽기 전용, 29 tool): 완료 — beforeunload 1곳(useAutosaveScheduler.ts:290-291, 편집기 수명), 저장소 탭당 1개(main.tsx·sharedLoader), POP·주소입력 가로채기 0, 요청 진행 중 기억·경고 0, 앱 공통 guard = index 청크 전 시나리오 증가. 메인 재확인: grep beforeunload/popstate 1곳 확인 · SPEC-4 2절 반영

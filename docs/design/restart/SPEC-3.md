@@ -130,7 +130,8 @@
 
 1. `DOC_EXISTS`(동봉 doc 있음): 지금 그대로 `judge`. 판정 단계에서만 나오므로 커밋 확인 대상이 아니다(`memoryDocBook.ts:384-385`). 응답 단계에서 이 모양이 오는 경우는 주입 테스트뿐이고, 그때 동봉 doc이 곧 지금 문서다. 지금처럼 이동한다.
 2. 그 밖 모든 실패: **커밋 확인**으로 `getDoc(projectId)`를 부른다.
-   - **양성**: `now && now.candidateId === selected && now.profileVersion === version`. create는 문서가 없을 때만 커밋한다. 그러니 판정 단계 거절이 아닌 실패 뒤에 요청 쌍과 같은 문서가 있다면 이 요청(또는 그 재생)이 커밋한 것이다. 결과는 **C-E4**이고, 기억에 `{mode:"create", projectId, version, selected}`를 저장한다.
+   - **before 읽기(요청 전)**: create를 부르기 **직전**에 `before = getDoc(projectId)`를 읽는다(메모리 — 조작 뒤 청크, 실패하면 `before = "unknown"`). 이유: 같은 쌍 문서가 이미 있는 상태에서 커밋 전 실패(청크·싱크 열기 실패, 가드 거절, request 단계)가 나면 `now`가 요청 쌍과 같아 거짓 양성이 된다. 가드는 멱등 재생 판정보다 앞이다(`memoryProjectRepository.ts:122` → `memoryDocBook.ts:374-376`).
+   - **양성**: `before === undefined && now && now.candidateId === selected && now.profileVersion === version`. `before`가 문서였으면(같은 키 재생이 아닌 한 `DOC_EXISTS`가 먼저 났을 것) 이 요청이 커밋한 것이 없으므로 **음성**이다. `before === "unknown"`이고 `now`가 요청 쌍이면 **확인 불가(C-E5)**다. create는 문서가 없을 때만 커밋한다. 그러니 판정 단계 거절이 아닌 실패 뒤에 요청 쌍과 같은 문서가 있다면 이 요청(또는 그 재생)이 커밋한 것이다. 결과는 **C-E4**이고, 기억에 `{mode:"create", projectId, version, selected}`를 저장한다.
    - **음성**: 문서 없음, 또는 다른 쌍. 아래 사유 판정으로 가고 기억은 지운다.
      - INFRA 메시지 끝이 `READ_ONLY_TAB`이면 C-E2, `STALE_TAB`이면 C-E2b, `CLEARED_TAB`이면 C-E2c.
      - `UNKNOWN_VARIANT`이면 저장소 alert(지금 그대로, 다시 시도 없음).
@@ -164,7 +165,7 @@
 | 행동 | "편집기 열기" 링크를 **숨기고** 버튼 **"저장 다시 시도"**를 둔다. 같은 위치, 같은 버튼 크기 |
 | 다시 시도 | 같은 인자 `startDoc` 재생(restart면 `expectedRevision` = 기억의 `doc.revision`). 진행 중에는 `aria-busy`와 `aria-disabled`, 연타는 요청 1회 |
 | 성공 | 기억을 지운다. P-U1을 지우고 링크를 되살린다. 행 안 `role=status` P-U2 "저장을 확인했습니다 — 편집기를 열 수 있습니다". **자동 이동은 하지 않는다**(목록에서 사용자가 고른다). 포커스는 되살아난 "편집기 열기" 링크로 간다 |
-| 실패 | 커밋 확인(5.1 2단계, restart면 SPEC r2 3.3.1)을 다시 한다. ① 양성: 행 `role=alert` P-U3 "아직 저장을 확인하지 못했습니다 · {INFRA 사유}" + 버튼 유지 ② 음성(실제로는 커밋 안 됨): 기억을 지우고 링크를 되살린 뒤 P-U4 "새로 시작(편집 시작)이 반영되지 않은 상태입니다 — 지금 문서를 그대로 엽니다" ③ 확인 불가: P-U3 문형 + 버튼 유지 |
+| 실패 | 커밋 확인(5.1 2단계, restart면 SPEC r2 3.3.1)을 다시 한다. ① 양성: 행 `role=alert` P-U3 "아직 저장을 확인하지 못했습니다 · {INFRA 사유}" + 버튼 유지 ② 음성(실제로는 커밋 안 됨): 기억을 지운 뒤 P-U4 — restart면 링크를 되살리고 "새로 시작이 반영되지 않은 상태입니다 — 지금 문서(B안 · v3)를 그대로 엽니다" · create면 문서가 없어 링크도 없음(`hasDoc` false — `projectListView.ts:64`)이고 "편집 시작이 반영되지 않았습니다 — 프로필에서 다시 고르세요" ③ 확인 불가: P-U3 문형 + 버튼 유지 |
 | 복구 안내(상시, 버튼 아래 캡션) | P-U5 restart: "계속 실패하면 새로고침하세요 — 이전 문서(B안 · v3)로 돌아가고 새로 시작은 취소됩니다" · create: "계속 실패하면 새로고침하세요 — 편집 시작 전 상태로 돌아갑니다" |
 | 삭제 행동 | 미확인 행의 "삭제"는 지금 그대로다. 삭제는 IDB 직접 트랜잭션 + 새로고침 이동이라 메모리 미확인과 무관하다(ADR-007 개정 3). 기억은 새로고침과 함께 사라진다 |
 | 청크 | 판정·버튼·문구 = `/projects` 진입 청크의 행 분기 몇 줄 + **기억 모듈(의존성 0)**. 재시도 본문(커밋 확인 포함)은 조작 뒤 청크(클릭 때 import)에 둔다 |
@@ -205,9 +206,9 @@
 | RS3-AC-02 | **기존 단언 교체 허용**: `restartLock.test.ts:136` "create는 그대로(MQ-S2 C 범위 밖)"를 RS3-AC-01 단언으로 **교체**한다. 그 밖 기존 단언 변경은 0이다(SPEC r2 RS-AC-01 선례) | [U] |
 | RS3-AC-03 | **commit 뒤 오류 재시도 중복 없음**: create와 restart 각각 ① 잠금 획득 뒤 flush INFRA(quota 주입) ② `fail({method:"startDoc", phase:"response"})`(flush 0회) ③ ① + `getDoc` 실패 주입(C-E5·R-E5). 각각 다시 시도 1~3회 뒤 성공. 문서 revision은 +1 한 번뿐이고, restart "새로 시작 전" 스냅샷 신규 id는 1개, 멱등 기록은 1건, IDB 최종 = 메모리. `DOC_EXISTS` 0 | [U] |
 | RS3-AC-04 | **같은 탭 잠금 소유 공통**: ① 같은 탭에서 create 성공(writer) → restart → 잠금 재요청 0(fakeLocks request 호출 수 불변) ② 비쓰기 탭에서 `/projects` 삭제가 busy·실패로 끝난 뒤 같은 탭 create → 자기 잠금 때문에 C-E2가 나는 일이 0 ③ 쓰기 탭 삭제 실패(싱크 멈춤) 뒤 create → C-E2c(새로고침 안내), 쓰기 0. 프로필·`/projects` 흐름 코드에서 `tryLock` 직접 호출 0(가드 테스트 또는 grep 단언) | [U][G] |
-| RS3-AC-05 | **create 커밋 확인 판정표**: 같은 `Error`를 request·commit·response·flush 단계에 주입했을 때 결과가 각각 C-E3·C-E3·C-E4·C-E4로 갈린다. `DOC_EXISTS`는 지금 그대로 judge. C-E4 상태에서 편집기 이동 0 | [U] |
+| RS3-AC-05 | **create 커밋 확인 판정표**: 같은 `Error`를 request·commit·response·flush 단계에 주입했을 때 결과가 각각 C-E3·C-E3·C-E4·C-E4로 갈린다. **거짓 양성 0**: 같은 쌍 문서가 이미 있고(앞 create가 확인 저장됨, 마지막 start 키는 다른 restart) 청크 로드 실패·가드 거절·request 실패를 주입 → C-E3/C-E2(미확인 아님) · 기억 0. before 읽기 실패 + now = 요청 쌍 → C-E5. `DOC_EXISTS`는 지금 그대로 judge. C-E4 상태에서 편집기 이동 0 | [U] |
 | RS3-AC-06 | **기억 공통**: C-E4 뒤 다른 안 "편집 시작" → create 호출 0, C-E4 재표시 → 다시 시도 인자 = 처음 쌍. R-E4 뒤도 같다(기존 RS-AC-08d 유지). 기억 모듈 이동 뒤 `restartFlow` 기존 테스트 전부 통과 | [U] |
-| RS3-AC-07 | **`/projects` 미확인 안내·재시도**: R-E4(또는 C-E4) 뒤 앱 안 클릭으로 `/projects`에 가면 그 행에 P-U1 글자가 보이고 "편집기 열기" 링크가 0개, "저장 다시 시도" 버튼이 있다. 재시도 성공 → P-U2 · 링크 복원 · 포커스 = 링크 · 기억 삭제 · IDB = 메모리. 재시도 실패(flush 주입 지속) → P-U3 · 버튼 유지. 확인 음성 → P-U4 · 링크 복원. 다른 프로젝트 행은 변화 0 | [U][E] |
+| RS3-AC-07 | **`/projects` 미확인 안내·재시도**: R-E4(또는 C-E4) 뒤 앱 안 클릭으로 `/projects`에 가면 그 행에 P-U1 글자가 보이고 "편집기 열기" 링크가 0개, "저장 다시 시도" 버튼이 있다. 재시도 성공 → P-U2 · 링크 복원 · 포커스 = 링크 · 기억 삭제 · IDB = 메모리. 재시도 실패(flush 주입 지속) → P-U3 · 버튼 유지. 확인 음성 → P-U4(restart = 링크 복원 · create = 링크 0, 행 "편집 전" 상태). 다른 프로젝트 행은 변화 0 | [U][E] |
 | RS3-AC-08 | **새로고침 한계**: R-E4 → 새로고침 → 프로필·`/projects`·편집기 모두 옛 문서(B안 v3), "새로 시작 전" 스냅샷 없음, 미확인 표시 0. 메모리 = IDB이고 내용 손실 0 | [E](+[U] 하이드레이션 단언) |
 | RS3-AC-09 | **탭 변경 한계 · 다른 탭 차단 실측**: 탭 A에서 프로젝트를 **실제로 편집해 저장**한다(첫 쓰기로 writer 잠금 취득 — 탭을 열기만 하면 잠금이 잡히지 않는다, `writerLock.ts:2-3`). 탭 B 프로필에서 문서 없는 프로젝트 create → C-E2, B의 `/projects`·IDB 변화 0. 탭 A를 **편집 없이** 닫은 경우와 **저장 뒤** 닫은 경우 각각 B 다시 시도 → 성공 / C-E2b | [E] |
 | RS3-AC-10 | **회귀 — save-on-leave(B-RS-01)·undo(FIELD-UNDO)·export**: 기존 테스트 전부 통과(변경 0). 추가로 RS3-R1 경로(뒤로로 편집기 재진입)에서 편집 1회 저장 성공 → IDB에 새 문서 + "새로 시작 전" 스냅샷. 되돌리기 1회 뒤 저장 → 같은 결과. 내보내기 요청 → flush로 레코드 확정. 링크 이탈 시 `leave()`는 dirty일 때만 대기한다(지금 그대로) | [U][E] |

@@ -1,0 +1,48 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a130fb-7433-7042-b2e0-850ea157eed9).
+[codex] Turn started (01a130fb-7570-7b22-9012-444d6161096a).
+[codex] Assistant message captured: 기준 커밋 `93f8111`과 설계 문서 diff를 읽고, 재시도 판정·create 잠금·새로고침 손실 경로를 검토합니다. 파일은 수정하지 않습니다.
+[codex] Running command: /bin/zsh -lc 'git diff 93f8111 -- docs/design/restart/SPEC-3.md docs/design/restart/MQ-3.md d...
+[codex] Command completed: /bin/zsh -lc 'git diff 93f8111 -- docs/design/restart/SPEC-3.md docs/design/restart/MQ-3.md d... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'rs23|SPEC-3|web-builder' '/Users/younghwankang/Library/Application Suppo...
+[codex] Command failed: /bin/zsh -lc "rg -n 'rs23|SPEC-3|web-builder' '/Users/younghwankang/Library/Application Suppo... (exit 1)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-3.md | sed -n '70,205p'"
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/profile/restartFlow.ts; cat app/src/data/memoryProjectRepo...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/profile/restartFlow.ts; cat app/src/data/memoryProjectRepo... (exit 0)
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-3.md | sed -n '70,205p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files -g AGENTS.md; cat '/Users/younghwankang/.codex/plugins/cache/claude-...
+[codex] Command completed: /bin/zsh -lc "rg --files -g AGENTS.md; cat '/Users/younghwankang/.codex/plugins/cache/claude-... (exit 0)
+[codex] Assistant message captured: `engineering:code-review` 스킬의 정확성·동시성 점검을 적용하고 있습니다. 새로고침 안내가 후속 편집 손실까지 안전하다고 단정하는지, create의...
+[codex] Running command: /bin/zsh -lc "sed -n '300,450p' app/src/data/memoryDocBook.ts; sed -n '55,155p' app/src/featu...
+[codex] Running command: /bin/zsh -lc "sed -n '90,220p' app/src/data/persistence/localSync.ts; cat app/src/data/persis...
+[codex] Command completed: /bin/zsh -lc "sed -n '300,450p' app/src/data/memoryDocBook.ts; sed -n '55,155p' app/src/featu... (exit 0)
+[codex] Command completed: /bin/zsh -lc "sed -n '90,220p' app/src/data/persistence/localSync.ts; cat app/src/data/persis... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff --stat 93f8111; git diff 93f8111 -- dev/active/rs23-spec/BRIEF.md dev/...
+[codex] Command completed: /bin/zsh -lc 'git diff --stat 93f8111; git diff 93f8111 -- dev/active/rs23-spec/BRIEF.md dev/... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '350,415p'; nl -ba app/src/featur...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '350,415p'; nl -ba app/src/featur... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/features/studio/useAutosaveScheduler.ts; nl -ba app/src/components/...
+[codex] Command completed: /bin/zsh -lc "cat app/src/features/studio/useAutosaveScheduler.ts; nl -ba app/src/components/... (exit 0)
+[codex] Assistant message captured: 재시도 규칙에서 고착 경로가 확인됐습니다. 첫 요청이 커밋되지 않은 R-E5 상태에서 history로 들어가 편집하면, 이후 재시도는 오래된 revision 때문에 `...
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "설계 승인 보류: 최초 실패의 거짓 음성, R-E5 재시도 고착, 후속 편집 손실을 숨기...
+[codex] Turn completed.
+# Codex Adversarial Review
+
+Target: branch diff against 93f8111
+Verdict: needs-attention
+
+설계 승인 보류: 최초 실패의 거짓 음성, R-E5 재시도 고착, 후속 편집 손실을 숨기는 새로고침 안내가 남습니다. create 가드에서 신규 커밋의 잠금 우회는 확인하지 못했습니다. 읽기 전용으로 diff와 구현을 대조했으며 테스트·번들 실측은 수행하지 않았습니다.
+
+Findings:
+- [high] [P1] 최초 요청에도 후속 revision으로 인한 거짓 음성이 남습니다 (docs/design/restart/SPEC-3.md:191)
+  6절은 보수적 판정을 기억이 있는 재시도에만 적용하고 최초 요청 판정은 유지합니다. 그러나 최초 restart가 메모리에 커밋된 뒤 flush가 지연되는 동안 history로 편집기에 들어가 후속 저장을 시작하면 revision이 +2가 됩니다(memoryDocBook.ts:364-366). 최초 flush가 실패하면 기존 committed()는 +1만 인정해 'no'를 반환하고, RestartDialog.settle()은 기억을 삭제합니다(restartFlow.ts:59-62, RestartDialog.tsx:80-87). run()에는 언마운트 후 판정을 막는 검사도 없습니다. 비동기 순서에서 도출되는 경로이며, 두 저장이 실패하면 미확인 문서와 편집이 남는데도 목록 게이트가 생기지 않습니다.
+  Recommendation: restart 최초 실패에도 '요청 전 상태 그대로'일 때만 음성을 허용하십시오. 최초 flush 대기 → history 진입 → 후속 편집 커밋 → 두 flush 실패를 수용 기준에 추가하십시오. 판정 변경은 조작 뒤 청크에서 처리할 수 있어 새 저장소 계약이 필요하지 않습니다.
+- [high] [P1] 새로고침 복구 안내가 실제 후속 편집 손실을 누락합니다 (docs/design/restart/SPEC-3.md:182-185)
+  RS3-R1은 손실이 '편집 없이 새로고침한 경우'뿐이라고 단정하지만, RS3-AC-07b 자체가 history 진입 후 편집 저장 실패로 revision이 진행되는 상태를 인정합니다. 그 상태에서 history로 목록에 돌아오면 편집기의 beforeunload 경고는 해제되고, 목록에는 언로드 가드가 없습니다. P-U5의 '계속 실패하면 새로고침하세요'를 따르면 메모리에만 있던 사용자 편집까지 사라집니다. 메모리와 IDB의 일치는 내용 보존을 뜻하지 않습니다. MQ-3-1·4의 '내용 손실 없음'을 근거로 경고 생략을 승인하는 판단도 잘못됩니다.
+  Recommendation: SPEC·MQ·REPORT의 무손실 단정을 제한하고, P-U5에 '저장되지 않은 후속 편집도 사라질 수 있음'을 명시하십시오. 후속 편집 quota 실패 → history로 목록 복귀 → 새로고침 시나리오를 검증에 추가하십시오. 문구·수용 기준 수정은 새 스키마·인터페이스·의존성 없이 가능하며 예산은 기존 관문으로 실측하십시오.
+- [medium] [P2] 커밋되지 않은 R-E5 요청은 후속 편집 뒤 재시도가 영구 고착됩니다 (docs/design/restart/SPEC-3.md:191-197)
+  최초 restart가 request 단계에서 실패하고 확인 getDoc도 실패하면 R-E5 기억은 생기지만 해당 start 멱등 기록은 없습니다. 이후 history로 원래 문서를 편집해 정상 저장하면 revision이 증가합니다. 기억의 옛 expectedRevision으로 재시도하면 memoryDocBook.ts:386에서 STALE_DOC가 발생하고, kept()는 실패한 작업을 flush하지 않습니다. 새 판정은 진행된 revision을 계속 미확인으로 유지하므로 저장소가 정상이어도 모든 재시도가 같은 오류로 끝납니다. 이미 저장된 문서의 목록 링크와 다른 안 선택이 새로고침 전까지 차단됩니다. RS3-AC-07b는 최초 커밋이 존재하는 경우만 다뤄 이 경로를 놓칩니다.
+  Recommendation: 미확인 유지와 별도로 STALE_DOC에서 끝나는 재시도의 복구 전이를 정의하십시오. 예를 들어 기존 getDoc/saveDoc으로 현재 전체 문서의 저장을 확인한 뒤 기억을 종료하고, 원래 restart 반영 여부는 단정하지 않는 방식이 가능합니다. R-E5 커밋 전 실패 → 후속 편집 저장 성공·실패 각각의 복구 테스트를 추가하십시오.
+
+Next steps:
+- 6절 판정과 P-U5 복구 안내를 먼저 수정하고, 세 실패 시나리오를 수용 기준에 추가하십시오. 새 저장소 계약 없이 해결하는 구현안을 기존 번들 관문에서 실측하십시오.

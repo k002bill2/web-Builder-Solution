@@ -1,0 +1,27 @@
+{
+ "port": 4369,
+ "before": {
+  "btn": [
+   "검사 · 내보내기",
+   "React 프로젝트(zip) 내보내기",
+   "정적 HTML 내보내기",
+   "PNG 내려받기"
+  ],
+  "status": [],
+  "alert": []
+ },
+ "after click +1507ms": {
+  "btn": [
+   "검사 · 내보내기",
+   "React 프로젝트(zip) 내보내기",
+   "정적 HTML 내보내기",
+   "다시 시도",
+   "PNG 내려받기"
+  ],
+  "status": [],
+  "alert": [
+   "<div role=\"alert\"><div data-tone=\"negative\" class=\"flex gap-2.5 rounded-md p-3.5 bg-status-negative-bg\"><i aria-hidden=\"true\" class=\"ds-icon size-5 mt-0.5 flex-none text-status-negative\" style=\"--icon: url(&quot;/src/assets/icons/warning.svg&quot;);\"></i><div class=\"flex min-w-0 flex-1 flex-col gap-1.5 text-label-normal\"><h3 class=\"ds-label\">내보내지 못했습니다</h3><div class=\"ds-body3\">개발 서버에서는 스타일시트를 읽을 수 없습니다 — npm run build 후 vite preview에서 확인해 주세요</div><div class=\"flex flex-wrap gap-2\"><button type=\"button\" class=\"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none foc"
+  ]
+ },
+ "shot": "/Users/younghwankang/orca/workspaces/web-builder-solution/export-sync-qa/dev/active/export-sync-qa/shots/export-4369.png 154073B"
+}

@@ -10,11 +10,13 @@ import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { readHtmlMessage } from "../../../render/htmlMessage";
 import { readRenderMessage, type FontBytes, type FrameRect, type KitTokenInput, type ParentMessage, type RenderErrorCode, type RenderImage } from "../../../render/protocol";
 import { docKitTokens } from "../docPurpose";
+import { DEV_SERVER_UNSUPPORTED } from "./devServer";
 import { IMAGE_FAILED, exportImages, type ExportSummary, type ReadImage } from "./exportImages";
 import { FONT_FAILED, FONT_TIMEOUT_MS, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "./siteFontEmbed";
 import { buildStaticHtml } from "./staticMarkup";
 
 export { IMAGE_FAILED };
+export { DEV_SERVER_UNSUPPORTED };
 
 const RENDER_DOC_SRC = "/render.html";
 /** 숨은 iframe 준비·그리기·직렬화 전체 상한 — exportFlow 조회 상한(10초)보다 짧게 */
@@ -111,7 +113,7 @@ export function renderAndSerialize(
 export async function kitCss(fetchText: (url: string) => Promise<string>): Promise<string> {
   const page = new DOMParser().parseFromString(await fetchText(RENDER_DOC_SRC), "text/html");
   const hrefs = [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") ?? "").filter(Boolean);
-  if (hrefs.length === 0) throw new Error("render.html에 스타일시트가 없습니다");
+  if (hrefs.length === 0) throw new Error(import.meta.env.DEV ? DEV_SERVER_UNSUPPORTED : "render.html에 스타일시트가 없습니다");
   return (await Promise.all(hrefs.map(fetchText))).join("\n");
 }
 

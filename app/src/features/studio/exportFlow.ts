@@ -8,12 +8,13 @@ import type { StudioReader } from "../../data/studioStore";
 import { emitEditorEvent } from "./editorEvents";
 import type { RenderImages } from "./images/store/types";
 import { staticHtmlFileName } from "./staticHtml/exportFileName";
+import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
 import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary } from "./staticHtml/exportImages";
 
 export type ExportResult =
   | { readonly kind: "unavailable"; readonly format: ExportFormat }
   | { readonly kind: "unrendered"; readonly format: ExportFormat; readonly sections: readonly string[] }
-  /** reason = 사용자에게 보일 실패 사유(지금은 이미지 decode 실패만 — SPEC m2c 5.3-3) */
+  /** reason = 사용자에게 보일 실패 사유(이미지 decode 실패 — SPEC m2c 5.3-3 · dev 서버 preview 안내) */
   | { readonly kind: "retryable"; readonly format: ExportFormat; readonly reason?: string }
   | {
       readonly kind: "done";
@@ -37,7 +38,9 @@ const loadGenerator = retryableImport(() => import("./staticHtml/staticHtml"));
 const requestImages = new Map<string, RenderImages>();
 const readRequestImage = (id: string) => [...requestImages.values()].map((images) => imageReader(images)(id)).find(Boolean);
 const summaries = new Map<string, ExportSummary>();
-const imageFailed = new Set<string>();
+/** 생성기 실패 중 사유를 보여 줄 것 → 프로젝트별 사유 */
+const REASONS: readonly string[] = [IMAGE_FAILED, DEV_SERVER_UNSUPPORTED];
+const failReasons = new Map<string, string>();
 (globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => {
   const { createStaticHtmlGenerator } = await loadGenerator();
   return (store: StudioReader): ExportGenerator => {
@@ -45,7 +48,7 @@ const imageFailed = new Set<string>();
     return (input) =>
       generate(input)
         .catch((error: unknown) => {
-          if (error instanceof Error && error.message === IMAGE_FAILED) imageFailed.add(input.projectId);
+          if (error instanceof Error && REASONS.includes(error.message)) failReasons.set(input.projectId, error.message);
           throw error;
         })
         .finally(() => requestImages.delete(input.projectId));
@@ -75,7 +78,7 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
 
 export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
-  imageFailed.delete(projectId);
+  failReasons.delete(projectId);
   if (images) requestImages.set(projectId, images);
   else requestImages.delete(projectId);
   try {
@@ -94,7 +97,8 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
       return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }), ...(summary && { notes: exportNotes(summary) }) };
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });
-    return job.retryable || job.state !== "failed" ? { kind: "retryable", format, ...(imageFailed.has(projectId) && { reason: IMAGE_FAILED }) } : { kind: "refused", format, code: job.errorCode ?? "UNKNOWN" };
+    const reason = failReasons.get(projectId);
+    return job.retryable || job.state !== "failed" ? { kind: "retryable", format, ...(reason && { reason }) } : { kind: "refused", format, code: job.errorCode ?? "UNKNOWN" };
   } catch (error) {
     const code = projectErrorCode(error) ?? "UNKNOWN";
     emitEditorEvent({ name: "export_failed", reason: code });

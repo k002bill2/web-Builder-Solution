@@ -1,0 +1,47 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a13236-2b24-7863-87cf-f3b26b63380f).
+[codex] Turn started (01a13236-2e29-70e1-bc81-3c4fee1168a4).
+[codex] Assistant message captured: 설계 diff와 `app/src` 소비 경로를 읽기 전용으로 대조해, 데이터 유실·저장 경쟁·이탈 보호의 차단 사유를 확인합니다.
+[codex] Running command: /bin/zsh -lc 'git diff 7dbf116 -- docs/design/restart/SPEC-4.md docs/design/restart/MQ-4.md'
+[codex] Command completed: /bin/zsh -lc 'git diff 7dbf116 -- docs/design/restart/SPEC-4.md docs/design/restart/MQ-4.md' (exit 0)
+[codex] Running command: /bin/zsh -lc "cat /Users/younghwankang/.agents/skills/review/SKILL.md; rg -n 'rs4|SPEC-4|web-...
+[codex] Command completed: /bin/zsh -lc "cat /Users/younghwankang/.agents/skills/review/SKILL.md; rg -n 'rs4|SPEC-4|web-... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '95,280p'; rg --files -g AGENTS.m...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '95,280p'; rg --files -g AGENTS.m... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/useDocSave.ts; cat app/src/features/studio/useAutos...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/useDocSave.ts; cat app/src/features/studio/useAutos... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '237,279p'; cat app/src/data/pers...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '237,279p'; cat app/src/data/pers... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/memoryProjectRepository.ts; sed -n '265,440p' app/src/data/mem...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/memoryProjectRepository.ts; sed -n '265,440p' app/src/data/mem... (exit 0)
+[codex] Assistant message captured: `PendingDraft` 복원에서 현재 메모리 revision을 쓰는 규칙이 기존 충돌 상태까지 덮는지 확인하고 있습니다. 확인 요청이 끝난 뒤에도 남아야 할 dra...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '45,165p'; nl -ba app/s...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '45,165p'; nl -ba app/s... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'images\\?\\.|images\\(|useDocSave|useState.*images' app/src/features/stu...
+[codex] Command completed: /bin/zsh -lc "rg -n 'images\\?\\.|images\\(|useDocSave|useState.*images' app/src/features/stu... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files app/src | rg 'StudioLayout|StudioLeave|Snapshot'; rg -n 'restoreSnap...
+[codex] Command completed: /bin/zsh -lc "rg --files app/src | rg 'StudioLayout|StudioLeave|Snapshot'; rg -n 'restoreSnap... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/StudioLayout.tsx | sed -n '75,150p'; nl -ba ap...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/components/studio/StudioLayout.tsx | sed -n '75,150p'; nl -ba ap... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "출하 보류: r0.1b에도 최신 draft 삭제 경쟁, 재진입 revision 경쟁, 시...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against 7dbf116
+Verdict: needs-attention
+
+출하 보류: r0.1b에도 최신 draft 삭제 경쟁, 재진입 revision 경쟁, 시작 요청 확인 후 편집기 불일치가 남습니다. 문서 diff와 app/src를 읽기 전용 대조했으며 실행 테스트는 수행하지 않았습니다.
+
+Findings:
+- [high] 이전 저장의 완료가 이후 생성된 PendingDraft를 삭제할 수 있습니다 (docs/design/restart/SPEC-4.md:256-258)
+  A 저장 중 B를 편집하고 POP하면 cleanup은 B를 PendingDraft로 보관합니다. 이후 A가 resolve하면 이 규칙은 기억을 무조건 삭제합니다. 실제 useDocSave.ts:65-71의 비동기 save는 언마운트 뒤에도 완료하며, useAutosaveScheduler.ts:193의 disposed 검사는 스케줄러 콜백만 막습니다. 규칙대로 구현하면 IDB에는 A만 있는데 B의 복원 내용·이미지와 모듈 경고가 사라집니다. 확인 요청 중 POP으로 새 draft가 생기는 경우도 같은 문제가 있습니다.
+  Recommendation: 저장·확인 시작 시 편집 세대와 pending 식별자를 캡처하고, 완료가 현재 draft의 내용까지 확인한 경우에만 해제하도록 명시하십시오. A 저장 → B 편집 → POP → A resolve에서 B와 이미지·경고가 유지되는 테스트를 추가하십시오.
+- [high] PendingStart 확인이 문서를 교체해도 편집기 내용과 revision을 인계하지 않습니다 (docs/design/restart/SPEC-4.md:255-256)
+  첫 restart가 request 단계에서 실패하고 후속 getDoc도 실패하면 PendingStart가 남지만 실제 문서는 origin 그대로입니다. history 재진입은 그 문서로 편집기를 엽니다. 여기서 저장 확인을 누르면 startDoc은 재생이 아니라 최초 커밋으로 문서를 교체하고 revision을 올립니다(memoryDocBook.ts:374-403). 설계는 version이 같으면 saved로 바꾸고 기억만 해제하며, 교체된 문서와 revisionRef를 반영하지 않습니다. 현재 useDocSave는 initialDoc을 state/ref로 고정합니다(:57-61). 규칙대로 구현하면 화면은 옛 내용인데 저장 완료로 표시되고, 다음 편집은 STALE_DOC가 됩니다.
+  Recommendation: PendingStart 확인 성공은 현재 메모리 문서를 다시 읽어 편집기 내용·revision을 인계하는 별도 전이로 정의하십시오. 확인 중 후속 편집이 있으면 보존하고 명시적으로 조정해야 합니다. 미커밋 PendingStart의 history 재진입 후 확인 시나리오를 추가하십시오.
+- [medium] 재진입 getDoc만으로 진행 중 자기 저장과의 충돌을 제거하지 못합니다 (docs/design/restart/SPEC-4.md:135)
+  r0.1b는 이전 저장이 getDoc보다 먼저 메모리에 커밋된 순서만 해결합니다. 요청이 지연되는 동안 POP하고 재진입하면 getDoc은 revision r을 반환할 수 있습니다. 이후 이전 저장이 r+1로 성공하고 새 편집기가 복원 draft를 저장하면 revisionRef는 여전히 r입니다(useDocSave.ts:61,67-70). memoryDocBook.ts:363은 STALE_DOC를 반환하며, localSync.ts:193-195의 보정도 성공 완료된 저장에는 적용되지 않습니다. 따라서 자기 저장으로 충돌 0이라는 수용 기준이 성립하지 않습니다.
+  Recommendation: 프로젝트별 이전 저장의 완료를 재진입과 동기화하고, 완료 뒤 현재 문서 revision을 읽어 draft를 복원하십시오. getDoc 이후 이전 저장이 커밋되는 순서도 RS4-AC-11에 추가하십시오.
+
+Next steps:
+- CP4 설계에 완료 요청의 세대 검사, 이전 저장과 재진입의 동기화, PendingStart 성공 후 문서 인계를 명시하고 세 경쟁 시나리오를 수용 기준에 추가하십시오.

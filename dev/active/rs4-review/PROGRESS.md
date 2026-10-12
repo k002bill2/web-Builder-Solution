@@ -6,3 +6,4 @@ base spec 1a48ce8 · 앱 93f8111 · 코드/SPEC/MQ 수정 금지 · 쓰기 dev/a
 - [x] 3. 독립 판단 — REPORT 2절(Codex 열람 전 저장) · QA Q1~Q7
 - [x] 4. REPORT.md — QA Q1~Q7 · Codex C1~C3 · 대조 · BLOCKED(설계 회수)
 - [x] 5. diffcheck(`git diff --cached --check` 통과) + 명시적 pathspec 커밋
+- [x] 6. advisor 점검 반영 — Q8(guarding 토글) 2.3 추가 · Codex 등급 귀속 명시(후속 커밋)

@@ -23,7 +23,7 @@
 | offline·커밋 전 실패의 내용·이미지 보존 | 내용: `edit(next: PageDoc)` 전체 교체 API가 있어 첫 edit 복원 가능. 이미지: 맵은 `StudioLayout` state(`:310`)라 재진입 시 draft 이미지를 그 state에 넣는 수단이 SPEC에 없음(명세 공백 · L3) | L1-코드 `useDocSave.ts:46` · `StudioLayout.tsx:310` |
 | POP `saving` 중 자기 저장·재진입 revision | 조건부 성립 → **Q2** | 아래 |
 | 확인 중 후속 edit 버전 검사 | "확인 시작 뒤 편집"만 본다 → **Q1** | 아래 |
-| unload guard 유지·정리 | 모듈 리스너라 화면 언마운트와 무관(설계). 대화상자는 언마운트 뒤에도 `run`이 이어져 기억을 만든다(alive 검사 없음). 해제는 `release` 3사유·폐기뿐 | L1-코드 `RestartDialog.tsx:102-115` |
+| unload guard 유지·정리 | 모듈 리스너라 화면 언마운트와 무관(설계). 대화상자는 언마운트 뒤에도 `run`이 이어져 기억을 만든다(alive 검사 없음). 해제는 `release` 3사유·폐기뿐 | L1-코드 `RestartDialog.tsx:102-115` | (정정: 2.3 Q8)
 | `deleteSnapshot(p,"")` 이미지 안전성 | **보장 못 함**(편집기 밖) → **Q3** | 아래 |
 | 메모리 resolve vs IDB oncomplete | local 모드: `kept` → `flush` → `queue.submit` → `persistence.write` → `tx.oncomplete` 뒤 resolve. 같은 레코드면 `queue.retry`(진행 중 대기 + 실패분 재제출, 없으면 쓰기 0으로 resolve). **memory 모드(`local` 없음)는 `kept = work` — resolve = 메모리뿐**인데 SPEC 6-1은 모드 구분 없이 "영속 확인"이라 함(P3 · Q7) | L1-코드 `memoryProjectRepository.ts:65-66` · `writeQueue.ts:69-92` · `idbPersistence.ts:52-57,88-95` |
 | request pending 없는 일반 dirty 편집 | **CP4가 있을 때만** POP 보호(Draft "없음·기억" 행). CP4 없으면 지금처럼 POP으로 버려지고 경고 0(R8가 정직히 적음). 3.3-3 "화면 언마운트로 보호가 사라지는 순간 0"은 **기억이 있는 경우에만** 참 → **Q5** | SPEC 3.3-3·3.4·5.6 R8 |
@@ -38,6 +38,10 @@
 - **Q6 [P3] MQ-4-1 A "훅 인자 변경 1건" 과소.** CP4는 (a) 스케줄러 초기 phase (b) cleanup에서 스케줄러 최신 doc·phase 읽기(`Scheduler.doc` private, getter 0 — `useAutosaveScheduler.ts:73`) (c) `StudioLayout` images state 시드(`:310`) (d) 새 phase 또는 `failed` 재사용 + `change()` 전이 + `SaveStatus` 버튼(`SaveStatus.tsx:57-61`)을 바꾼다. 모두 화면 내부지만 1건이 아니며 `/studio` 바이트 추정(S2·S3)에 들어가야 한다.
 - **Q7 [P3] 기타.** (a) memory 모드 resolve = 메모리뿐 — 6-1 "영속 확인"은 local 모드 한정이라고 적어야 한다. (b) restart 판정의 `hold`는 `await committed()`(getDoc) 뒤라(`RestartDialog.tsx:112`) `guarding`이 `startDoc` promise만 감싸면 카운트가 0을 거친다 — 판정 전체를 감싸야 한다(실제 공백은 microtask 수준 · L3). (c) create에 before `getDoc`가 새로 생기면 `call("getDoc")` seq가 1 밀려(`memoryProjectRepository.ts:70-71`) 기존 seq 주입 테스트가 바뀔 수 있다(RS4-AC-06 "변경 없이 통과"와 충돌 가능 · L3).
 
+### 2.3 Codex 열람 뒤 QA 추가 (advisor 점검으로 발견 — 2절 본문은 열람 전 그대로 둔다)
+
+- **Q8 [P2] `guarding`(inflight)과 리스너 토글의 연결이 정의되지 않았다.** SPEC 3.3-1(`:128-129`)은 add/remove 주체를 `hold`(0→1)·`release`(1→0)로만 적고, `guarding`은 `inflight` ±1만 한다. 문장대로 구현하면 (a) `guarding`의 0→1이 리스너를 걸지 않아 "요청 진행 중 보호"가 실제로 없거나, (b) 건다면 최초 `startDoc` resolve(성공 — 전이표 `:145` "없음→없음", `hold`·`release` 호출 0)에서 1→0을 떼는 주체가 없어 성공 뒤 `go()`로 연 `idle` 편집기에 모듈 `beforeunload`가 남는다(거짓 경고 · bfcache 영향 R7). RS4-AC-05는 "guarding만 있고 성공 → 리스너 0"을 단언하지 않는다. 토글 조건은 `active.size + inflight`의 0↔1 전이 전체(hold·release·guarding 시작·finally)에 걸어야 한다(제안만). L1-문서.
+
 ## 3. Codex adversarial-review r1 (1회 · 미재검토)
 
 - 명령: `node ~/.claude/plugins/cache/openai-codex/codex/1.0.6/scripts/codex-companion.mjs adversarial-review --scope branch --base 7dbf116 "<SPEC-4 r0.1/r0.1b 집중 문장>"` — 경로는 rs23 REPORT 42행과 같음 · `--help` 실행 0 · 원문 `logs/codex-r1.txt`(시작 시각 `logs/codex-r1.started`).
@@ -50,7 +54,7 @@
 | C3 [medium] | 재진입 `getDoc`이 이전 저장 커밋보다 먼저면 revision r → 이전 저장 r+1 → draft 저장 `STALE_DOC` · `base` 보정은 성공 완료에 미적용 | **QA Q2와 같은 결론**(독립 도출). 다만 QA는 "내용 손실 아님(충돌 흐름이 내 편집 유지) · 창 크기 L3"로 P2 | L1-추적 · 창 크기 L3 |
 
 - Codex가 다루지 않은 QA 항목: Q1(확인 시작 **전** 미저장 편집 → 거짓 `saved`), Q3(편집기 밖 확인의 이미지 — RS4-R10 코드 추적 성립 · R10 완화문 출처 공백), Q4(MQ-4-2 A 쓰기 0 과장), Q5~Q7(범위 문장·변경 건수·모드·카운트·seq).
-- 지적 출처 구별: **QA 단독** = Q1·Q3·Q4·Q5·Q6·Q7 · **Codex 단독** = C1·C2 · **공통** = Q2/C3.
+- 지적 출처 구별: **QA 단독** = Q1·Q3·Q4·Q5·Q6·Q7·Q8(Q8은 Codex 열람 뒤 추가) · **Codex 단독** = C1·C2 · **공통** = Q2/C3.
 
 ## 4. r0.1 / r0.1b 수정 ↔ 실제 소비 코드 대조
 
@@ -64,7 +68,7 @@
 
 ## 5. 상태 · 다음 단계
 
-- 설계 BLOCKED 사유(수정 안 함): **P1 4건** — C1·C2(CP4 경쟁) · Q1(CP4 거짓 saved) · Q3(CP3 편집기 밖 확인의 이미지 — P-3 측정으로 확정 대기). P2: Q2/C3 · Q4.
+- 설계 BLOCKED 사유(수정 안 함): **P1 4건** — C1·C2(CP4 경쟁 · Codex 원문 등급 `[high]` → QA가 P1로 분류) · Q1(CP4 거짓 saved) · Q3(CP3 편집기 밖 확인의 이미지 — P-3 측정으로 확정 대기). P2: Q2/C3(Codex `[medium]`) · Q4 · Q8.
 - CP1~3 착수 가능 여부: CP4 결함(C1·C2·Q1·Q2)은 CP1~3을 막지 않는다. 단 CP3의 편집기 밖 "저장 확인"은 Q3/RS4-R10이 P-3 측정(RS4-AC-17)으로 부정되기 전까지 차단 — SPEC 8.0-3b와 같은 관문.
 - 측정 대기(이 레인 실행 0): P-3 이미지 확인 경로 · Q2/C3 창 크기(첫 저장 청크 로드 중 POP) · draft 이미지 유효성(Blob 참조 유지).
 - 별도 Developer `rs4-measure` 파일·세션 무접촉.

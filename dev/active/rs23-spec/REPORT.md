@@ -5,7 +5,7 @@
 
 ## 0. 결론
 
-1. **B-RS-02**: create도 커밋 전에 기존 `guardWrite()`를 부른다(★ MQ-3-2 A).
+1. **B-RS-02**: create도 커밋 전에 기존 `guardWrite()`를 부른다. 단 메모리에 문서가 없을 때만이다(★ MQ-3-2 A · Codex r1 P2).
    - 잠금 소유자는 탭당 `LocalSync` gate 하나다. 흐름별 `tryLock`·`held`는 없다.
    - 거절되면 메모리와 IDB 둘 다 변화 0이다.
    - 커밋 뒤 실패(flush INFRA·응답 단계)는 restart와 같은 "커밋 확인 → 사유" 순서로 미확인(C-E4)·확인 불가(C-E5)·사유별 거절(C-E2/2b/2c/3)로 나눈다(★ MQ-3-3 A).
@@ -19,7 +19,7 @@
 | ID | 질문 | ★ | 막는 것 |
 |---|---|---|---|
 | MQ-3-1 | B-RS-03 인계 위치 | A `/projects` 행 게이트(`/studio` 0B) — B는 `/studio` 예산 상향 결정 필요 | 구현 착수 |
-| MQ-3-2 | create 커밋 전 잠금 확인(MQ-S2 C 승격) | A — 내부 순서 변경, `restartLock.test.ts:136` 단언 교체 | 구현 착수 |
+| MQ-3-2 | create 커밋 전 잠금 확인(MQ-S2 C 승격) | A — 내부 순서 변경(문서 없을 때만), `restartLock.test.ts:136-142` 유지 | 구현 착수 |
 | MQ-3-3 | create 커밋 뒤 실패 문장 | A 커밋 확인 → 사유 | 구현 착수 |
 | MQ-3-4 | 미확인 중 새로고침 경고 | A 없음(문장으로 밝힘) | 없음(★ 기본) |
 
@@ -37,7 +37,11 @@
 - 목업(design/)에는 미확인 상태 화면이 없다. ADR-003 우선순위(기능·흐름 → 사용성 → DS 일관성)에 따라 기존 Callout·행 버튼 관례를 썼다.
 
 ## 4. Codex 적대검토
-- r1: (진행 중 — 결과 반영 후 갱신)
+- r1(`node codex-companion.mjs adversarial-review --scope branch --base 93f8111`, 원문 `logs/codex-r1.txt`): **needs-attention · P1 1 · P2 1 — 둘 다 반영(SPEC-3 r0.1)**.
+  - [P1] 기억 재시도 음성 판정이 revision+1만 양성으로 봐서, 후속 편집(quota 실패)으로 revision이 앞선 미확인을 "반영 안 됨"으로 풀어 버린다. → 음성은 "요청 전 상태 그대로"일 때만으로 좁힌다(6절 3-1). RS3-AC-07b 추가. 이 판정은 기존 `restartFlow.committed()`의 재시도 경로도 고친다.
+  - [P2] 조건 제거만 하면 가드가 `DOC_EXISTS`보다 앞서, 다른 탭 writer일 때 저장된 문서 열기·F4 진입이 막힌다. → 가드는 메모리에 문서가 없을 때만 건다(3절 4). `restartLock.test.ts:136-142`는 유지한다(RS3-AC-02). RS3-D5를 정정했다.
+- 자체 점검(r1 전후): create 커밋 확인 before 읽기(거짓 양성 0 — RS3-AC-05) · P-U4 create 문형.
+- r2: **실행하지 않음** — 60분 예산 소진. 남은 위험: r0.1 수정분(6절 3-1, 3절 4)은 Codex 미검증이다. 구현 레인 착수 전 r2 1회를 권장한다(adversarial-review, 같은 base).
 
 ## 5. 검증
-- 코드 변경 0 → typecheck·lint·test·build 게이트 대상 없음. `git diff --stat 93f8111 -- app/` = 0을 확인한다(아래 기록).
+- 코드 변경 0 → typecheck·lint·test·build 게이트 대상 없음. `git diff 93f8111 -- app/ | wc -l` = **0**(실행 확인).

@@ -8,7 +8,7 @@ base 93f8111 · branch k002bill2/rs23-fix · 코드 수정 금지 (문서만)
 - [x] 2. draft — docs/design/restart/SPEC-3.md (상태·메시지·재시도/취소/복구·수용 기준)
 - [x] 2. draft — docs/design/restart/MQ-3.md (예산·진입 증분 precondition)
 - [x] 3. 저장소 계약 변경 필요 여부 판정 (메모리 전달 vs 계약 변경)
-- [ ] 4. Codex 적대검토 r1 → 반영 (r1 실행 중 — logs/codex-r1.txt · 자체 발견 반영: create 커밋 확인 before 읽기 · P-U4 create 문형)
+- [x] 4. Codex 적대검토 r1 → 반영 (P1 1·P2 1 반영, SPEC-3 r0.1) · r2 BLOCKED: 60분 예산 소진 — 구현 착수 전 r2 권장
 - [x] 5. REPORT.md 작성 · 커밋 (push/merge 금지)
 
 ## 서브에이전트

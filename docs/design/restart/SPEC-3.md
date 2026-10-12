@@ -8,7 +8,7 @@
 ## 0. 요약
 
 1. **B-RS-02 원인(L1)**: `startDoc`은 restart일 때만 커밋 전에 잠금을 확인한다(`app/src/data/memoryProjectRepository.ts:121-122`). create는 메모리 커밋 → `kept()` flush(`:65-66`) 순서라, 쓰기 탭이 아니면 메모리에만 문서가 생기고 IDB는 그대로(INFRA)다. 이것은 SPEC r2가 일부러 남긴 범위(MQ-S2 C)이고, 테스트가 지금 동작을 고정한다(`app/src/data/persistence/restartLock.test.ts:136` "create는 그대로").
-2. **B-RS-02 수정(★ MQ-3-2 A)**: create도 커밋 **전에** 같은 `guardWrite()`를 부른다. 잠금 소유자는 탭당 하나인 `LocalSync` 쓰기 문(`createWriterGate`)이다. 흐름별로 따로 잡는 잠금(`tryLock`·`held`)은 새로 두지 않는다. 거절되면 메모리·IDB 변화 0이다. 저장소 인터페이스·스키마·오류 타입은 바뀌지 않고, 바뀌는 것은 내부 순서 1곳이다(restart 조건 제거).
+2. **B-RS-02 수정(★ MQ-3-2 A)**: create도 커밋 **전에** 같은 `guardWrite()`를 부른다. 잠금 소유자는 탭당 하나인 `LocalSync` 쓰기 문(`createWriterGate`)이다. 흐름별로 따로 잡는 잠금(`tryLock`·`held`)은 새로 두지 않는다. 거절되면 메모리·IDB 변화 0이다. 저장소 인터페이스·스키마·오류 타입은 바뀌지 않고, 바뀌는 것은 내부 순서 1곳이다(가드 조건을 "restart 또는 메모리에 문서 없음"으로 — Codex r1 P2, 3절 4).
 3. **커밋 뒤 실패는 남는다(L1)**: flush INFRA(quota·트랜잭션 중단·`cleared`)와 응답 단계 실패(`:79-81` — 이때는 flush가 아예 실행되지 않는다)는 잠금과 무관하게 커밋 **뒤**에 난다. create도 restart처럼 **커밋 확인 → 사유** 순서로 결과를 정한다(★ MQ-3-3 A). 커밋된 것으로 확인되면 "미확인"이라고 말하고, 성공이나 실패로 단정하지 않는다.
 4. **B-RS-03 원인(L1)**: 미확인 기억은 `restartFlow.ts:28-35`의 모듈 Map에 있다(프로필 조작 뒤 청크). `/projects` 목록은 메모리 문서를 저장된 것처럼 보여 주고(`memoryProjectRepository.ts:100-103` · `projectListView.ts:36-41`), "편집기 열기" 링크(`projectListView.ts:64`)는 아무 상태 없이 편집기로 보낸다. 편집기 저장 상태는 `idle`로 시작한다(`useAutosaveScheduler.ts:59`). 그래서 상태 글자가 비고, 떠나기 경고가 없고(`:67-70`), `leave()`도 하지 않는다(`useDocSave.ts:143`).
 5. **B-RS-03 수정(★ MQ-3-1 A — `/studio` 진입 0B)**: 미확인 기억을 의존성 없는 탭 메모리 모듈로 옮긴다. `/projects` 행이 그 기억을 읽어 "편집기 열기" 대신 **"저장 다시 시도"**를 보여 준다. 다시 시도는 같은 인자로 `startDoc`을 부르는 멱등 재생이고, 기존 계약 그대로다. 확인되면 링크가 돌아온다. 편집기 쪽 인계(진입 때 미확인 상태로 시작)는 `/studio` 진입 바이트가 필요하다. 판정선 수정 금지 조건에서는 예산 결정 사항이므로 MQ-3-1 B로 둔다.
@@ -105,7 +105,7 @@
    - **쓰기 탭**이면 싱크 잠금을 재사용하고 싱크를 멈춘다(`stop` → `cleared` → 이후 `guardWrite`는 `CLEARED_TAB`, 새로고침 안내).
    - **비쓰기 탭**이면 `tryLock` 잠금을 흐름이 끝날 때 놓는다(`deleteProject.ts:155,159` · `writeImport.ts:171,175` · `clearBrowserData.ts:42`). 성공 경로는 새로고침 이동이다.
    - 그러므로 파괴 흐름 뒤 같은 탭 create가 **자기 잠금에 막히는 경로는 없다**. RS3-AC-04가 이를 고정한다.
-4. create 가드 위치: `startDoc` 래퍼에서 `docs.start` **전**. 지금 restart 줄의 `mode === "restart" &&` 조건만 없앤다.
+4. create 가드 위치 (r0.1 · Codex r1 P2): `startDoc` 래퍼에서 `docs.start` **전**, 단 **이 탭 메모리에 그 프로젝트 문서가 없을 때만**. 조건은 `(mode === "restart" || !docs.docOf(projectId)) && await guardWrite()`이다. 문서가 있으면 create는 `DOC_EXISTS`(읽기 판정)나 같은 키 재생으로 끝나 새 커밋이 없다. 그러니 가드를 걸면 저장된 문서 열기(F2·F3)와 F4 대화상자 진입을 읽기 전용 탭에서 막는 회귀가 된다(`memoryDocBook.ts:374-376,384-385`). 가드와 `docs.start` 사이에 같은 탭에서 문서가 생기면 `DOC_EXISTS`로 끝난다(쓰기 0). 조건 제거만 하는 r0 안은 폐기한다.
    - `local`이 없으면(`persistence: "memory"` — 테스트·폴백) 가드도 없다(지금과 같다).
    - 판정·커밋 구간에 await를 더하지 않는다. 가드는 `call()` 바깥이다.
 5. 가드는 원자성을 끝까지 보장하지 않는다. 잠금을 잡은 뒤의 flush 실패와 응답 실패는 6절 판정이 맡는다.
@@ -165,7 +165,7 @@
 | 행동 | "편집기 열기" 링크를 **숨기고** 버튼 **"저장 다시 시도"**를 둔다. 같은 위치, 같은 버튼 크기 |
 | 다시 시도 | 같은 인자 `startDoc` 재생(restart면 `expectedRevision` = 기억의 `doc.revision`). 진행 중에는 `aria-busy`와 `aria-disabled`, 연타는 요청 1회 |
 | 성공 | 기억을 지운다. P-U1을 지우고 링크를 되살린다. 행 안 `role=status` P-U2 "저장을 확인했습니다 — 편집기를 열 수 있습니다". **자동 이동은 하지 않는다**(목록에서 사용자가 고른다). 포커스는 되살아난 "편집기 열기" 링크로 간다 |
-| 실패 | 커밋 확인(5.1 2단계, restart면 SPEC r2 3.3.1)을 다시 한다. ① 양성: 행 `role=alert` P-U3 "아직 저장을 확인하지 못했습니다 · {INFRA 사유}" + 버튼 유지 ② 음성(실제로는 커밋 안 됨): 기억을 지운 뒤 P-U4 — restart면 링크를 되살리고 "새로 시작이 반영되지 않은 상태입니다 — 지금 문서(B안 · v3)를 그대로 엽니다" · create면 문서가 없어 링크도 없음(`hasDoc` false — `projectListView.ts:64`)이고 "편집 시작이 반영되지 않았습니다 — 프로필에서 다시 고르세요" ③ 확인 불가: P-U3 문형 + 버튼 유지 |
+| 실패 | 커밋 확인을 다시 한다. 단, **기억이 있는 재시도의 음성 판정은 6절 3-1 "요청 전 상태 그대로"일 때만**이다(Codex r1 P1). ① 양성: 행 `role=alert` P-U3 "아직 저장을 확인하지 못했습니다 · {INFRA 사유}" + 버튼 유지 ② 음성(실제로는 커밋 안 됨): 기억을 지운 뒤 P-U4 — restart면 링크를 되살리고 "새로 시작이 반영되지 않은 상태입니다 — 지금 문서(B안 · v3)를 그대로 엽니다" · create면 문서가 없어 링크도 없음(`hasDoc` false — `projectListView.ts:64`)이고 "편집 시작이 반영되지 않았습니다 — 프로필에서 다시 고르세요" ③ 확인 불가: P-U3 문형 + 버튼 유지 |
 | 복구 안내(상시, 버튼 아래 캡션) | P-U5 restart: "계속 실패하면 새로고침하세요 — 이전 문서(B안 · v3)로 돌아가고 새로 시작은 취소됩니다" · create: "계속 실패하면 새로고침하세요 — 편집 시작 전 상태로 돌아갑니다" |
 | 삭제 행동 | 미확인 행의 "삭제"는 지금 그대로다. 삭제는 IDB 직접 트랜잭션 + 새로고침 이동이라 메모리 미확인과 무관하다(ADR-007 개정 3). 기억은 새로고침과 함께 사라진다 |
 | 청크 | 판정·버튼·문구 = `/projects` 진입 청크의 행 분기 몇 줄 + **기억 모듈(의존성 0)**. 재시도 본문(커밋 확인 포함)은 조작 뒤 청크(클릭 때 import)에 둔다 |
@@ -188,6 +188,7 @@
 
 1. **커밋 확인 먼저**: 오류 모양만으로 커밋 전·뒤를 가를 수 없다(SPEC r2 3.3.1 사실 그대로). create에서는 `DOC_EXISTS`만 예외다(판정 단계 전용, 5.1).
 2. **판정 근거는 이 탭 저장소 메모리**: 다른 탭은 이 탭 메모리를 바꾸지 못하고, 이 탭에서 그 사이 같은 프로젝트를 쓰는 다른 경로도 화면에 없다. 프로필 화면, 그리고 `/projects` 행(같은 탭 다른 라우트는 동시에 마운트되지 않는다)이 그렇다.
+3-1. **기억이 있는 재시도(R-E4·R-E5·C-E4·C-E5 다시 시도 — 프로필 대화상자·Callout·`/projects` 행 모두)의 음성 판정 (r0.1 · Codex r1 P1)**: 기억을 지우는 "커밋 안 됨"은 지금 문서가 **요청 전 상태와 정확히 같을 때만**이다. restart면 `now.revision === open.doc.revision && now.candidateId === open.doc.candidateId && now.profileVersion === open.doc.profileVersion`, create면 `now === undefined`. 그 밖(예: R-E4 → history로 편집기 재진입 → 편집 저장이 quota로 실패해 revision이 +2가 됨)은 **미확인 유지**다. 기억·버튼·링크 차단을 그대로 두고 P-U3/R-E4/C-E4로 답한다. 지금 `committed()`(`restartFlow.ts:59-62`)는 revision+1만 양성으로 보고 나머지를 전부 "no"로 처리해 기억을 지운다. 이 레인에서 이 판정을 고친다(SPEC r2 3.3.1 처음 요청 판정은 그대로).
 3. **결과 3분류만 쓴다**:
    - 확인 양성 = "미확인"(R-E4·C-E4·P-U3)
    - 확인 음성 = 사유별 "하지 않았습니다/하지 못했습니다"(쓰기 0 확실)
@@ -203,7 +204,7 @@
 | ID | 조건 | 검증 |
 |---|---|---|
 | RS3-AC-01 | **create 거절 시 메모리·IDB 동일**: `fakeLocks` 다른 탭 보유 → create → C-E2. 메모리 문서·멱등 기록·`listProjects().hasDoc` 변화 0, IDB `docs` 레코드 0, 큐 제출 0. 보유 탭이 쓰지 않고 놓으면 다시 시도 → 성공 + IDB 문서 1. `stale`이면 C-E2b(다시 시도 없음). `cleared`이면 C-E2c. `unsupported`이면 C-E3 + 기본 사유. 각 경우 쓰기 0 | [U] |
-| RS3-AC-02 | **기존 단언 교체 허용**: `restartLock.test.ts:136` "create는 그대로(MQ-S2 C 범위 밖)"를 RS3-AC-01 단언으로 **교체**한다. 그 밖 기존 단언 변경은 0이다(SPEC r2 RS-AC-01 선례) | [U] |
+| RS3-AC-02 | (r0.1 · Codex r1 P2) **기존 단언 유지**: `restartLock.test.ts:136-142`(잠금이 다른 탭에 있어도 저장된 문서 create = `DOC_EXISTS`)는 **그대로 통과해야 한다**. 테스트 이름의 "MQ-S2 C 범위 밖" 문구만 고칠 수 있다. 추가 단언: 다른 탭 writer + IDB에 저장된 같은 쌍 문서 → 프로필 편집 시작 → F2 이동(가드 호출 0) · 다른 안 → F4 대화상자. 둘 다 C-E4 분류 0, 기억 등록 0, `/projects` 링크 유지 | [U] |
 | RS3-AC-03 | **commit 뒤 오류 재시도 중복 없음**: create와 restart 각각 ① 잠금 획득 뒤 flush INFRA(quota 주입) ② `fail({method:"startDoc", phase:"response"})`(flush 0회) ③ ① + `getDoc` 실패 주입(C-E5·R-E5). 각각 다시 시도 1~3회 뒤 성공. 문서 revision은 +1 한 번뿐이고, restart "새로 시작 전" 스냅샷 신규 id는 1개, 멱등 기록은 1건, IDB 최종 = 메모리. `DOC_EXISTS` 0 | [U] |
 | RS3-AC-04 | **같은 탭 잠금 소유 공통**: ① 같은 탭에서 create 성공(writer) → restart → 잠금 재요청 0(fakeLocks request 호출 수 불변) ② 비쓰기 탭에서 `/projects` 삭제가 busy·실패로 끝난 뒤 같은 탭 create → 자기 잠금 때문에 C-E2가 나는 일이 0 ③ 쓰기 탭 삭제 실패(싱크 멈춤) 뒤 create → C-E2c(새로고침 안내), 쓰기 0. 프로필·`/projects` 흐름 코드에서 `tryLock` 직접 호출 0(가드 테스트 또는 grep 단언) | [U][G] |
 | RS3-AC-05 | **create 커밋 확인 판정표**: 같은 `Error`를 request·commit·response·flush 단계에 주입했을 때 결과가 각각 C-E3·C-E3·C-E4·C-E4로 갈린다. **거짓 양성 0**: 같은 쌍 문서가 이미 있고(앞 create가 확인 저장됨, 마지막 start 키는 다른 restart) 청크 로드 실패·가드 거절·request 실패를 주입 → C-E3/C-E2(미확인 아님) · 기억 0. before 읽기 실패 + now = 요청 쌍 → C-E5. `DOC_EXISTS`는 지금 그대로 judge. C-E4 상태에서 편집기 이동 0 | [U] |
@@ -214,17 +215,18 @@
 | RS3-AC-10 | **회귀 — save-on-leave(B-RS-01)·undo(FIELD-UNDO)·export**: 기존 테스트 전부 통과(변경 0). 추가로 RS3-R1 경로(뒤로로 편집기 재진입)에서 편집 1회 저장 성공 → IDB에 새 문서 + "새로 시작 전" 스냅샷. 되돌리기 1회 뒤 저장 → 같은 결과. 내보내기 요청 → flush로 레코드 확정. 링크 이탈 시 `leave()`는 dirty일 때만 대기한다(지금 그대로) | [U][E] |
 | RS3-AC-11 | **예산(관문 — 9절)**: `/studio` 일반 ≤ 129.90 · 복원 ≤ 132.94(판정선, 수정 금지) · `/profile` 첫 화면 ≤ 100 · `/profile`·`/profile (3안 있음)` 진입 직후 ≤ 125이고 base 대비 증분 0 목표(조작 뒤만 변경) · `/projects` 첫 화면 ≤ 100 · 진입 직후 ≤ 125. base·브랜치 두 빌드 출력을 REPORT에 | [G] |
 | RS3-AC-12 | 검증 4종(typecheck·lint·test·build) + 가드(`noHardcodedStyle`·브랜드 격리). 기억 모듈 import 간선 가드: `StudioPage`·`StudioLayout`·`useDocSave`·`memoryProjectRepository`·`CandidatesSection`에서 정적·동적 import 0 | [G] |
+| RS3-AC-07b | (r0.1 · Codex r1 P1) **진행된 revision에서 게이트 유지**: R-E4 → (history 이동 대신 테스트는 같은 저장소로) 편집 저장 1회를 quota 실패로 주입(메모리 revision = 요청 전+2) → `/projects` 재시도와 프로필 R-E4 재시도 모두 flush 계속 실패 → 기억 유지 · 링크 0 · P-U3/R-E4 · "반영되지 않았다" 문장 0. 그 뒤 flush 성공 → IDB = 메모리(restart + 편집 둘 다) · 기억 삭제. create(C-E4)도 같다 | [U] |
 | RS3-AC-13 | 접근성: P-U1은 글자(색만으로 구분 0). 버튼 이름 "저장 다시 시도"는 행 이름을 포함한 `aria-label`로 둔다(예: "가게 홈페이지 저장 다시 시도" — 기존 `ProjectRow.tsx:52` 링크 관례). 결과 알림은 행 안 한 자리(`role=status`/`alert`). 1280·1024·390에서 버튼 가림 0 | [U][E] |
 
 ## 8. 구현 순서 (Developer — RED → GREEN 체크포인트 4개)
 
 0. **Precondition — 진입 증분 측정(구현 전, 코드 커밋 0)**: base `93f8111` 빌드 출력을 기록한다(`/studio` 129.87·132.91, `/profile` 3시나리오, `/projects`). 다음 두 스파이크를 빌드해 9절 표를 채운다.
-   - (i) `memoryProjectRepository.ts:122` restart 조건 제거만
+   - (i) `memoryProjectRepository.ts:122` 가드 조건 변경만(3절 4)
    - (ii) (i) + `/projects` 행 분기·기억 모듈
    - 판정선을 넘으면 감량 1회 → 그래도 넘으면 **멈추고 MQ 재상신**. 판정선 수정과 MQ-3-1 B 자동 전환은 하지 않는다.
 1. **CP1 — create 가드(B-RS-02)**
-   - RED: RS3-AC-01·02·04 테스트를 쓴다. `restartLock.test.ts:136`을 교체하고 RED를 확인한다.
-   - GREEN: `memoryProjectRepository.ts:122` 조건을 제거한다. `localSync.guardWrite` 본문은 변경 0이다.
+   - RED: RS3-AC-01·04 테스트를 쓰고 RED를 확인한다. RS3-AC-02(기존 `restartLock.test.ts:136-142` 유지 + 저장 문서 열기 회귀)는 GREEN 뒤에도 통과해야 한다.
+   - GREEN: `memoryProjectRepository.ts:122` 조건을 `(mode === "restart" || !docs.docOf(projectId))`로 바꾼다(3절 4). `localSync.guardWrite` 본문은 변경 0이다.
 2. **CP2 — 기억 모듈 + create 판정(B-RS-02 화면)**
    - RED: RS3-AC-03·05·06.
    - GREEN:
@@ -244,14 +246,14 @@
 
 | 시나리오 | base 실측(L1) | 판정선 | 이 레인 변경 | 기대(L3 — 실측 전) |
 |---|---|---|---|---|
-| `/studio/:projectId` | 129.87 (`m2cBaseline.json`) | **129.90**(+0.03) | `memoryProjectRepository.ts:122` 조건 1개 **삭제** | ≤ +0.00 (감소 가능) |
-| `/studio` 복원 진입 | 132.91 | **132.94** | 같음 | ≤ +0.00 |
+| `/studio/:projectId` | 129.87 (`m2cBaseline.json`) | **129.90**(+0.03) | `memoryProjectRepository.ts:122` 가드 조건 1개 교체(`mode === "restart"` → `(mode === "restart" \|\| !docs.docOf(projectId))`) | 수 바이트 증가 — +0.03 안 예상(L3), **실측 필수** |
+| `/studio` 복원 진입 | 132.91 | **132.94** | 같음 | 같음 |
 | `/profile` 첫 화면 | 99.90(SPEC r2 실측) | 100 | 0(조작 뒤만) | 0 |
 | `/profile` · `(3안 있음)` 진입 직후 | 120.10 · 122.58(MQ-S7 재상신 기록) | 125(MQ-S7 B 계열 ≤ +0.10 수용분 유지) | 0(`restartFlow`·`restartText`·기억 모듈 = 조작 뒤) | 0. 기억 모듈이 공유 청크로 분리되면서 엔진 청크 import 문 몇 바이트가 늘 수 있으니 실측 필수 |
 | `/projects` 첫 화면 · 진입 직후 | 실측 필요(P2 기록 105.63은 진입 직후) | 100 · 125 | 행 분기 + 기억 모듈 + 문구 P-U1·P-U5 | 증분 있음(소량, L3) — 한도 여유 큼 |
 
 - **판정선(129.90·132.94)·`m2cBaseline.json`·`bundleBudget.test.mjs` 수정 금지.** 넘으면 감량 1회(예: 조건식 정리) → 그래도 넘으면 멈추고 재상신.
-- `/studio` 진입 closure에 들어가는 변경은 조건 삭제 1건뿐이어야 한다(RS3-AC-12 import 간선 가드).
+- `/studio` 진입 closure에 들어가는 변경은 가드 조건 교체 1건뿐이어야 한다(RS3-AC-12 import 간선 가드).
 
 ## 10. SPEC r2와 다르게 한 곳 (RS3-D#)
 
@@ -259,7 +261,8 @@
 - **RS3-D2**: SPEC r2 MQ-S2 C("create는 별건")를 이 레인에서 처리한다(MQ-3-2). `restartLock.test.ts:136` 단언을 교체한다.
 - **RS3-D3**: SPEC r2 RS-R7("남는 우회 = `/projects` → 편집기")을 → `/projects` 행 게이트로 닫는다. 남는 것은 history 이동(RS3-R1)뿐이다.
 - **RS3-D4**: 미확인 기억 위치를 `restartFlow.ts` 모듈 Map에서 의존성 없는 공용 모듈로 옮기고, create도 담는다. 기억 의미·수명(탭 메모리)은 같다.
-- **RS3-D5**: 읽기 전용·stale·cleared 탭에서는 프로필 "편집 시작"으로 편집기를 열 수 없게 된다. 지금은 메모리에만 문서를 만들고 같은 안·다른 버전 재클릭으로 편집기가 열렸다(2.2). 그 편집기는 저장이 전부 INFRA였으므로, 잃는 기능은 "저장 안 되는 편집기"뿐이다.
+- **RS3-D5** (r0.1 정정): 읽기 전용·stale·cleared 탭에서 **문서가 없는** 프로젝트는 프로필 "편집 시작"으로 새 문서를 만들 수 없게 된다. 지금은 메모리에만 문서를 만들고 같은 안·다른 버전 재클릭으로 편집기가 열렸다(2.2). **이미 저장된 문서 열기(F2·F3)·F4 대화상자 진입은 지금 그대로다**(가드는 문서 없을 때만 — 3절 4).
 
 ## 변경 이력
+- r0.1 (2026-10-13): Codex 적대검토 r1 반영 — P1 기억 재시도 음성 판정을 "요청 전 상태 그대로"로 좁힘(6절 3-1 · RS3-AC-07b) · P2 create 가드는 메모리에 문서 없을 때만(3절 4 · RS3-AC-02 기존 단언 유지 · RS3-D5 정정). 자체 점검: create 커밋 확인 before 읽기(거짓 양성 0) · P-U4 create 문형.
 - r0 (2026-10-13): 초안 — RS02·RS03 trace 통합, ★ MQ-3-1 A(`/projects` 게이트, `/studio` 0B) · MQ-3-2 A · MQ-3-3 A.

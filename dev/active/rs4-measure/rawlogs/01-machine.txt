@@ -1,0 +1,5 @@
+Darwin younghwankang-Mac-Studio.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:22:49 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6000 arm64
+v24.12.0
+11.6.2
+Apple M1 Max
+younghwankang-Mac-Studio

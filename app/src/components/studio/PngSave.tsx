@@ -2,10 +2,22 @@ import { useState } from "react";
 import { retryableImport } from "../../data/chunkRetry";
 import type { PreviewView } from "../../features/detail/previewView";
 import type { PngRequest } from "../../features/studio/png/pngCapture";
+import { DEV_SERVER_UNSUPPORTED } from "../../features/studio/staticHtml/devServer";
 import { FRAME_REM, PREVIEW_WIDTH_OPTIONS } from "../../features/studio/previewFrame";
 
 /** 캡처 청크(조작 뒤 — m2a 3.3 "캡처 라이브러리는 누른 뒤에만") */
 const loadPng = retryableImport(() => import("../../features/studio/png/pngCapture"));
+
+/**
+ * 실패 문장 — 캡처 청크를 받지 못해도 떠야 하므로 코드·메시지 글자로 가른다.
+ * 이미지 decode 실패(SPEC m2c 5.3-3) · dev 서버(킷 CSS 없음 — 다시 눌러도 같으므로 preview 안내만)
+ */
+const failureText = (error: unknown): string => {
+  const { code, message } = (error ?? {}) as { readonly code?: unknown; readonly message?: unknown };
+  // dev 전용 분기 — 빌드에서는 문장째 빠진다(편집기 진입 청크 예산)
+  if (import.meta.env.DEV && message === DEV_SERVER_UNSUPPORTED) return DEV_SERVER_UNSUPPORTED;
+  return `${code === "IMAGE_DECODE_FAILED" ? "이미지를 그리지" : "PNG를 만들지"} 못했습니다 — 다시 눌러 주세요`;
+};
 
 /**
  * PNG 내려받기 (m2a 3.3 · K-AC-19) — 내보내기 묶음 다음. `requestExport` 밖, 게이트·폴백 차단과 무관하게 열림(이유 목록과 describedby 분리).
@@ -35,8 +47,7 @@ export function PngSave({
         (done) => setState({ done }),
         (error: unknown) => {
           void loadPng().then((png) => png.reportFailure(error), () => undefined);
-          // 이미지 decode 실패(SPEC m2c 5.3-3)만 문구가 다르다 — 캡처 청크를 받지 못해도 떠야 하므로 코드 글자로 가른다
-          setState({ failed: (error as { readonly code?: unknown } | null)?.code === "IMAGE_DECODE_FAILED" ? "이미지를 그리지" : "PNG를 만들지" });
+          setState({ failed: failureText(error) });
         },
       );
   };
@@ -67,7 +78,7 @@ export function PngSave({
       </p>
       {state.failed && (
         <p role="alert" className="ds-caption1 text-status-negative-text">
-          {state.failed} 못했습니다 — 다시 눌러 주세요
+          {state.failed}
         </p>
       )}
     </div>

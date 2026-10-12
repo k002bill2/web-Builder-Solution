@@ -1,0 +1,4 @@
+before {"path":"/profile/profile-1","btns":["보정값 쓰기","조정 저장 (v2)[disabled]","이 안 선택","이 안 선택","3안 실제 화면으로 비교"],"sum":["통과 3 · 미달 1 · 대비 상세"],"status":["3안을 만들었습니다"]}
+after 보정 {"path":"/profile/profile-1","btns":["보정값을 썼습니다[disabled]","조정 저장 (v2)","조정 취소","이 안 선택","이 안 선택","3안 실제 화면으로 비교"],"sum":["통과 4 · 미달 0 · 대비 상세"],"status":["보조 글자(muted) 보정값을 썼습니다 · 조정을 저장하면 새 버전에 적용됩니다"]}
+after save {"path":"/profile/profile-1","btns":["조정 저장 (v3)[disabled]","3안 만들기 (v2)"],"sum":["통과 4 · 미달 0 · 대비 상세"],"status":["v2로 저장했습니다"]}
+

@@ -1,0 +1,15 @@
+Error: page label not found: p2
+    at PageLedgerStore.getPage (file:////[eval1]:16996:15)
+    at async #resolve (file:////[eval1]:18796:23)
+    at async Page.cdp (file:////[eval1]:18596:22)
+    at async run (file:////[eval2]:12:3)
+    at async file:////[eval2]:51:1
+{ spaceId: 16 }
+X 4367 path "/studio/project-1"
+X 4367 gate before {"btn":["검사 · 내보내기","대비 AA차단 3","SEO 메타차단 2","React 프로젝트(zip) 내보내기[disabled]","정적 HTML 내보내기[disabled]","첫 차단으로 이동","PNG 내려받기[disabled]"],"status":["바뀐 점 2개구조안의 섹션 2개를 편집기 변형으로 바꿔 열었습니다 — Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개"],"alert":[]}
+X 4367 desc err "ElementResolutionError: page.fill timed out after 3000ms: Locator loc=role:textbox[name*='설명'] matched 0 elements"
+X 4367 gate after SEO {"btn":["검사 · 내보내기","대비 AA차단 3","SEO 메타차단 2","React 프로젝트(zip) 내보내기[disabled]","정적 HTML 내보내기[disabled]","첫 차단으로 이동","PNG 내려받기"],"status":["바뀐 점 2개구조안의 섹션 2개를 편집기 변형으로 바꿔 열었습니다 — Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개"],"alert":[]}
+X 4367 html click err "ElementResolutionError: page.click timed out after 3000ms: Locator loc=role:button[name='정적 HTML 내보내기'] matched 1 elements, but none can receive input"
+X 4367 after html (23264ms) {"btn":["검사 · 내보내기","대비 AA차단 3","SEO 메타차단 2","React 프로젝트(zip) 내보내기[disabled]","정적 HTML 내보내기[disabled]","첫 차단으로 이동","PNG 내려받기"],"status":["바뀐 점 2개구조안의 섹션 2개를 편집기 변형으로 바꿔 열었습니다 — Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개"],"alert":[]}
+
+ego's nodejs process exited with code 1.

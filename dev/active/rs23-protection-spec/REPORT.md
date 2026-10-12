@@ -50,7 +50,8 @@
   - QA 경고 판정법: CDP `Page.javascriptDialogOpening`과 신뢰 입력.
   - 폐기 시 `inflight`도 0으로 만든다.
   - MQ-4-1에 훅 인자 변경을 명시한다.
-- **r0.1 반영분은 Codex 미재검토다.** 브리프에 따라 r2 루프를 돌리지 않았다. **구현 전에 독립 회수(QA 또는 Codex 1회)가 필요하다.**
+- r0.1 커밋(`cc58057`) 뒤 advisor 추가 1건(r0.1b — `PendingDraft` 재진입 revision: `saving` 중 POP 뒤 자기 저장과 거짓 충돌 → 재진입은 메모리 `getDoc` + 첫 `edit()` · draft 중첩 시 `under` 상속)을 반영했다. r0.1이 새로 만든 문장의 결함이라 고쳤고, 반복 루프는 아니다. Codex는 다시 돌리지 않았다.
+- **r0.1/r0.1b 반영분은 Codex 미재검토다.** 브리프에 따라 r2 루프를 돌리지 않았다. **구현 전에 독립 회수(QA 또는 Codex 1회)가 필요하다.**
 
 ## 4. 보호 범위와 남는 브라우저 한계 (SPEC-4 5.6)
 

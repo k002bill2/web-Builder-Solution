@@ -1,0 +1,202 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-fix/dev/active/save-core-harness
+
+ × test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 save → failed{discarding} · write 0 · inflight 0 · 저장소 A 유지 · confirm은 A wrote:false 5ms
+   → expected true to be false // Object.is equality
+ × test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상 2ms
+   → expected { status: 'rejected', …(1) } to match object { status: 'rejected', …(1) }
+ ✓ test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 중 읽기 throw → discard reject · 가드 해제(finally) → 다음 save saved 1ms
+ ✓ test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 중 edit·replace는 받는다(mark 살아 있음) → discard blocked{newer} · 바인딩 보존 0ms
+ × test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 저장이 writer 확인에서 대기 중 같은 id 다른 Blob 편집 → 커밋된 D1은 D1 편집 때 Blob(X) 3ms
+   → expected 'Y' to be 'X' // Object.is equality
+ × test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > edit·replace 뒤 호출자가 넘긴 doc·imageIds를 바꿔도 코어 초안 불변 1ms
+   → expected { revision: 2, body: 'hacked', …(1) } to deeply equal { revision: 2, body: 'B', …(1) }
+ × test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음 0ms
+   → expected 'Y' to be 'X' // Object.is equality
+ × test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장 1ms
+   → expected Blob { size: 1, type: 'image/png' } to be undefined
+ × test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 바인딩 없고 저장소 key의 레코드가 코어 이미지가 아님 → image-missing · 제출 0 0ms
+   → expected { status: 'saved', …(2) } to match object { status: 'failed', …(1) }
+(7 matching properties omitted from actual)
+ × test/h6.test.ts > H6-3 같은 영속·같은 프로젝트의 세대 읽기~쓰기는 코어 간 직렬(CE-3a) > 한 탭 코어 2개가 gate 공유 · 동시 save → 하나 saved · 다른 하나 stale · 먼저 커밋 보존 1ms
+   → expected [ 'saved', 'saved' ] to deeply equal [ 'saved', 'failed' ]
+ ✓ test/h6.test.ts > H6-3 같은 영속·같은 프로젝트의 세대 읽기~쓰기는 코어 간 직렬(CE-3a) > 회귀: 한 코어 연속 save 3회 = 세대 1·2·3 · 같은 gate로 다시 연 코어 save saved · 쓰기 실패 뒤 다른 코어 진입 가능 0ms
+ ✓ test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 반영 없이 resolve(거짓 성공) → confirm failed{not-committed} 0ms
+ ✓ test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 이미지 op만 빠뜨리고 resolve → confirm failed{not-committed} 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 save → failed{discarding} · write 0 · inflight 0 · 저장소 A 유지 · confirm은 A wrote:false
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ test/h6.test.ts:42:34
+     40|     const discarding = core.discard();
+     41|     const saving = core.save();
+     42|     expect(core.view().inflight).toBe(false);
+       |                                  ^
+     43|     expect(await discarding).toMatchObject({ status: "discarded", rest…
+     44|     expect(await saving).toMatchObject({ status: "failed", reason: "di…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상
+AssertionError: expected { status: 'rejected', …(1) } to match object { status: 'rejected', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "reason": "discarding",
++   "reason": "inflight",
+    "status": "rejected",
+  }
+
+ ❯ test/h6.test.ts:55:34
+     53|     const discarding = core.discard();
+     54|     const confirming = core.confirm();
+     55|     expect(await core.discard()).toMatchObject({ status: "rejected", r…
+       |                                  ^
+     56|     await discarding;
+     57|     expect(await confirming).toMatchObject({ status: "failed", reason:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 저장이 writer 확인에서 대기 중 같은 id 다른 Blob 편집 → 커밋된 D1은 D1 편집 때 Blob(X)
+AssertionError: expected 'Y' to be 'X' // Object.is equality
+
+Expected: "X"
+Received: "Y"
+
+ ❯ test/h6.test.ts:103:68
+    101|     held.release();
+    102|     expect(await saving).toMatchObject({ status: "saved", receipt: { h…
+    103|     expect(await (await readImage(db.persistence, "img"))?.text()).toB…
+       |                                                                    ^
+    104|     expect(await core.view().blob("img")?.text()).toBe("Y");
+    105|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > edit·replace 뒤 호출자가 넘긴 doc·imageIds를 바꿔도 코어 초안 불변
+AssertionError: expected { revision: 2, body: 'hacked', …(1) } to deeply equal { revision: 2, body: 'B', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "body": "B",
++   "body": "hacked",
+    "imageIds": [
+      "img",
++     "img-ghost",
+    ],
+    "revision": 2,
+  }
+
+ ❯ test/h6.test.ts:113:29
+    111|     mine.body = "hacked";
+    112|     mine.imageIds.push("img-ghost");
+    113|     expect(core.view().doc).toEqual(docOf(2, "B", ["img"]));
+       |                             ^
+    114|     await core.save();
+    115|     const next = { revision: 3, body: "R", imageIds: [] as string[] };
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음
+AssertionError: expected 'Y' to be 'X' // Object.is equality
+
+Expected: "X"
+Received: "Y"
+
+ ❯ test/h6.test.ts:125:51
+    123|     core.edit(B, new Map([["img", blobOf("Y")], ["img-new", blobOf("N"…
+    124|     expect(await core.discard()).toMatchObject({ status: "discarded" }…
+    125|     expect(await core.view().blob("img")?.text()).toBe("X");
+       |                                                   ^
+    126|     expect(core.view().blob("img-new")).toBeUndefined();
+    127|     core.edit(docOf(3, "A-text", ["img"]));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장
+AssertionError: expected Blob { size: 1, type: 'image/png' } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+Blob {
+  Symbol(kHandle): Blob {},
+  Symbol(kLength): 1,
+  Symbol(kType): "image/png",
+}
+
+ ❯ test/h6.test.ts:137:41
+    135|     reopened.edit(B, new Map([["img", blobOf("Y")]]));
+    136|     expect(await reopened.discard()).toMatchObject({ status: "discarde…
+    137|     expect(reopened.view().blob("img")).toBeUndefined();
+       |                                         ^
+    138|     reopened.edit(docOf(3, "A-text", ["img"]));
+    139|     expect(await reopened.save()).toMatchObject({ status: "saved" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 바인딩 없고 저장소 key의 레코드가 코어 이미지가 아님 → image-missing · 제출 0
+AssertionError: expected { status: 'saved', …(2) } to match object { status: 'failed', …(1) }
+(7 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reason": "image-missing",
+-   "status": "failed",
++   "status": "saved",
+  }
+
+ ❯ test/h6.test.ts:148:31
+    146|     const core = await open(db.persistence);
+    147|     core.edit(docOf(1, "F", ["img-f"]));
+    148|     expect(await core.save()).toMatchObject({ status: "failed", reason…
+       |                               ^
+    149|     expect(db.ops.length).toBe(1);
+    150|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  test/h6.test.ts > H6-3 같은 영속·같은 프로젝트의 세대 읽기~쓰기는 코어 간 직렬(CE-3a) > 한 탭 코어 2개가 gate 공유 · 동시 save → 하나 saved · 다른 하나 stale · 먼저 커밋 보존
+AssertionError: expected [ 'saved', 'saved' ] to deeply equal [ 'saved', 'failed' ]
+
+- Expected
++ Received
+
+  [
+    "saved",
+-   "failed",
++   "saved",
+  ]
+
+ ❯ test/h6.test.ts:166:36
+    164|     c2.edit(docOf(2, "c2"));
+    165|     const [r1, r2] = await Promise.all([c1.save(), c2.save()]);
+    166|     expect([r1.status, r2.status]).toEqual(["saved", "failed"]);
+       |                                    ^
+    167|     expect(r2).toMatchObject({ reason: "stale" });
+    168|     expect(await readStored(db.persistence, P)).toMatchObject({ doc: {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 5 passed (13)
+   Start at  02:35:24
+   Duration  184ms (transform 63%, tests 19%, import 14%, worker 4%)
+
+exit 1

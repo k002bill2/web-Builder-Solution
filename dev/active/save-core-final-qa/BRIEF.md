@@ -1,0 +1,7 @@
+# SAVE-CORE 수정본 최종 독립 QA 1회
+책임QA / Orca Claude Code. base3652a8f. 쓰기 dev/active/save-core-final-qa/만. 기존코어/harness/QA반례·제품app·예산/merge/push새의존성변경0. 사용자격리하네스구현검증승인범위. Designer생략:UI없음.
+입력 save-core-fix/REPORT·MINIMAL-CONTRACT·core 및save-core-qa/REPORT·test·browser/probe실행script. 자기결과37harness+10QA ×2 pass, tsc/lint0. CE3a수정은같은persistence객체안WeakMap직렬일뿐다른객체같은DBatomic보장0. discard/read·write안끝나면liveness무기한대기잔존. 세대조건부IDB쓰기제품API변경없음. 제품미통합.
+1.npmci lock0; 하네스37/QA10 fresh2회+type/lint.exitrawmanifest. 예상delta와실제동일성검사. QA원본단언변경0확인. 제품scopeappdiff0.
+2.CE1/CE2/CX3/CE3a좁힌수정 code경계·throw/finally·Blobbinding복귀확인. 직접읽기반례는자기폴더테스트만,소스수정금지. 새범위기능검토/추가리뷰반복0. 타임아웃없는liveness는기록/제품gate분리,하네스전체 PASS에숨기지말것. 같은DB어댑터2개·다른프로젝트이미지허용은실행가능한경우정책경계반례로만보고하며제품수정요구로범위확장금지.
+3. 기존브라우저프로브(코어read-only import+제품IDB+실제WebLocks)를전용origin4367에서재실행. 선행port0/자기cwd확인, 사용자5480접근0,DB prefix save-core-qa-/finalqa-만. doc+Blob save/reload; aborttransactionrollback;2탭readonly→writer탭close→stale거절/Bpreservation. 수정후discard경쟁1건·binding동결1건도가능하면추가자기probe. 새probe품질/역할과수동1회는자동suite와구분. 브라우저경로10턴안기동불가시BLOCKED남기고마감.
+4.Codex자동0(Developer1회이미있음). 독립판정출처/trace vs 재현과메모리/realIDB구분. REPORTH1~H5 PASS/PARTIAL/FAIL 및CE별/새증상·제품미통합·번들미측정. corePASS도제품PASS아님. rawtracked커밋·appdiff0·clean본인증거. 서버종료·taskspacefinish/DB삭제/port0 readback. 최대35턴40분,25부터마감. 서브에이전트불필요. BLOCKED시수정dispatch하지않고Jarvis에게결과반환.

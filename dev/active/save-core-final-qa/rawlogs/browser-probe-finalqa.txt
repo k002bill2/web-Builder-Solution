@@ -1,0 +1,13 @@
+{ taskSpaceId: 24 }
+origin http://127.0.0.1:4367/ title save-core-final-qa probe
+0-databases-before []
+0-locks-before {"held":[],"pending":[]}
+1-discardRace {"a":"saved","discard":"discarded","save":"failed:discarding","confirm":"confirmed:gen1","view":{"body":"A","dirty":false,"blob":"none"},"idb":{"body":"A","generation":1,"hashOk":true}}
+2-bindingFreeze {"save":"saved:gen1","dirty":true,"idb":{"body":"D1","generation":1,"hashOk":true,"bytes":"X"}}
+3-twoAdapters {"r":["saved:gen2","saved:gen2"],"idb":{"body":"c2","generation":2,"hashOk":true}}
+4-locks {"held":["design-studio-writer"],"pending":[]}
+5-cleanup {"results":["finalqa-bind-1791914279885:deleted","finalqa-discard-1791914279885:deleted","finalqa-two-1791914279885:deleted"],"after":[]}
+6-databases-after []
+taskSpace finished
+
+exit 0

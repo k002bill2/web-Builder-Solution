@@ -1,0 +1,71 @@
+## git diff --stat 78e3c52 3652a8f -- dev/active/save-core-qa (QA 원본 변경)
+exit 0 (빈 출력 = 0 변경)
+## git diff --stat 5b7d026 HEAD -- app
+exit 0
+## git status --porcelain app dev/active/save-core-qa dev/active/save-core-harness dev/active/save-core-fix
+       0
+## git diff --stat 78e3c52 3652a8f -- dev/active/save-core-harness/test (h1~h5 변경 여부)
+ dev/active/save-core-harness/test/h6.test.ts | 220 +++++++++++++++++++++++++++
+ 1 file changed, 220 insertions(+)
+## git log --name-status 78e3c52..3652a8f (수정 레인 변경 파일)
+3652a8f docs(save-core-fix): Codex review 1회 원문(actionable 0·테스트 EPERM) · EXIT-MANIFEST 최종
+
+M	dev/active/save-core-fix/PROGRESS.md
+M	dev/active/save-core-fix/REPORT.md
+M	dev/active/save-core-fix/rawlogs/EXIT-MANIFEST.txt
+A	dev/active/save-core-fix/rawlogs/codex-review.txt
+242d8d9 test(save-core-harness): discard 지연 읽기 회귀 1건 · 최종 37 ×2·QA 10 ×2 · liveness/verify 한계 표기
+
+M	dev/active/save-core-fix/PROGRESS.md
+M	dev/active/save-core-fix/REPORT.md
+M	dev/active/save-core-fix/rawlogs/final-harness-run1.txt
+M	dev/active/save-core-fix/rawlogs/final-harness-run2.txt
+M	dev/active/save-core-fix/rawlogs/final-qa-run1.txt
+M	dev/active/save-core-fix/rawlogs/final-qa-run2.txt
+M	dev/active/save-core-fix/rawlogs/mutations.txt
+M	dev/active/save-core-harness/MINIMAL-CONTRACT.md
+M	dev/active/save-core-harness/test/h6.test.ts
+defe9d2 docs(save-core-fix): mutation·최종 2회·tsc·lint 원문 · MINIMAL-CONTRACT I6·I7·I9·G3 · REPORT
+
+M	dev/active/save-core-fix/PROGRESS.md
+A	dev/active/save-core-fix/REPORT.md
+A	dev/active/save-core-fix/rawlogs/EXIT-MANIFEST.txt
+R100	dev/active/save-core-fix/rawlogs/harness-eslint.txt	dev/active/save-core-fix/rawlogs/final-harness-eslint.txt
+A	dev/active/save-core-fix/rawlogs/final-harness-run1.txt
+A	dev/active/save-core-fix/rawlogs/final-harness-run2.txt
+R100	dev/active/save-core-fix/rawlogs/harness-tsc.txt	dev/active/save-core-fix/rawlogs/final-harness-tsc.txt
+R100	dev/active/save-core-fix/rawlogs/qa-tsc.txt	dev/active/save-core-fix/rawlogs/final-qa-eslint.txt
+A	dev/active/save-core-fix/rawlogs/final-qa-run1.txt
+A	dev/active/save-core-fix/rawlogs/final-qa-run2.txt
+A	dev/active/save-core-fix/rawlogs/final-qa-tsc.txt
+A	dev/active/save-core-fix/rawlogs/mutations.txt
+M	dev/active/save-core-harness/MINIMAL-CONTRACT.md
+ee37c92 fix(save-core-harness): QA 반례 CE-1·CE-2·CX-3·CE-3a RED→GREEN
+
+A	dev/active/save-core-fix/BRIEF.md
+A	dev/active/save-core-fix/PROGRESS.md
+A	dev/active/save-core-fix/rawlogs/baseline-harness.txt
+A	dev/active/save-core-fix/rawlogs/baseline-qa.txt
+A	dev/active/save-core-fix/rawlogs/h6-green.txt
+A	dev/active/save-core-fix/rawlogs/h6-red.txt
+A	dev/active/save-core-fix/rawlogs/harness-eslint.txt
+A	dev/active/save-core-fix/rawlogs/harness-tsc.txt
+A	dev/active/save-core-fix/rawlogs/lock-diff.txt
+A	dev/active/save-core-fix/rawlogs/npm-ci.txt
+A	dev/active/save-core-fix/rawlogs/qa-after.txt
+A	dev/active/save-core-fix/rawlogs/qa-tsc.txt
+M	dev/active/save-core-harness/core/saveCore.ts
+A	dev/active/save-core-harness/test/h6.test.ts
+## 테스트 이름 대조: fix final-harness-run1 vs 이번 harness-run1 (✓ 줄, 시간 제거)
+diff exit 0
+## 테스트 이름 대조: fix final-qa-run1 vs 이번 qa-run1
+diff exit 0
+## [QA] 관측 줄 대조 qa-run1 vs fix final-qa-run1
+diff exit 0
+## 파일별 테스트 수 (harness-run1)
+   3 test/h1.test.ts
+   5 test/h2.test.ts
+   4 test/h3.test.ts
+   4 test/h4.test.ts
+   7 test/h5.test.ts
+  14 test/h6.test.ts

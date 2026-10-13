@@ -1,7 +1,7 @@
 # RS5-UX — REPORT (UX-5 상위 UX 명세 초안)
 
 - 성격: **Designer 상위 UX 초안 1건.** QA 리뷰와 병렬이며 계약 확정본이 아니다. 앱·CONTRACT-5·기존 SPEC/MQ·ADR 변경 0, 코드 0, 실화면 검증 0(PASS 주장 없음).
-- base `418979e` · 앱 `93f8111` · 브랜치 `k002bill2/rs5-ux` · 산출물 `docs/design/restart/UX-5.md`(r0).
+- base `418979e` · 앱 `93f8111` · 브랜치 `k002bill2/rs5-ux` · 산출물 `docs/design/restart/UX-5.md`(r0a).
 - 회수: Jarvis.
 
 ## 1. 결론
@@ -33,6 +33,7 @@ MQ-5-1 충돌 보존(★양쪽 스냅샷) · MQ-5-2 충돌 라벨(★기존 E-S0
 | 범위 확인 `git diff --stat 418979e -- app docs/decisions docs/design/restart/{CONTRACT-5,SPEC,SPEC-3,SPEC-4,MQ,MQ-3,MQ-4}.md CLAUDE.md` | 실행 — 빈 출력 exit=0, 미추적은 `dev/active/rs5-ux/`·`UX-5.md`뿐(`logs/scope-check.txt`) |
 | `git diff --cached --check` | 커밋 전 실행(아래 로그) |
 | 자체 review | 1회 — 모순 3건 수정(seed conflicted 편집 잠금을 C5 4.4 문면에 맞춤 · 편집기 "저장 확인" 노출 조건 · start-pending 링크 숨김 근거 + G10) |
+| advisor 점검(자체 review 2회차 아님) | 3건 반영 = UX-5 r0a: `failed` 우선순위·버튼 1개 규칙 · 8.1 1:1 조건 정정 · 충돌 보존을 문서 단위로 낮춤(이미지 대화상자 유지 · G4 이미지 기록) |
 | Codex | **0회** — BRIEF: QA 소유, 중복 실행 금지 |
 | typecheck/lint/test/build | 미실행 — 앱 변경 0, 문서 레인 |
 | 실화면(ego-browser) | 미실행 — 코드 없는 명세. UX5-AC는 구현 레인 검증 기준 |

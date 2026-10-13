@@ -49,7 +49,9 @@
 
 ### 2.2 표시 우선순위 (동시에 걸리면 위가 이긴다 — 1줄 규칙)
 
-`cleared` > `conflicted` > `start-pending` > `stale` > `readonly` > `image-missing` > `unsupported` > `memory-only` > `offline` > `saving` > `unconfirmed` > `dirty` > 영구 확인 > (없음)
+`cleared` > `conflicted` > `start-pending` > `stale` > `readonly` > `image-missing` > `unsupported` > `memory-only` > `offline` > `saving` > `failed` > `unconfirmed` > `dirty` > 영구 확인 > (없음)
+
+- **`failed` vs `unconfirmed` (한 상태에 버튼 1개)**: 편집기 마운트 중 저장 실패는 memory 커밋 여부와 무관하게 **`failed` 행("다시 저장" → `save`)만** 보인다. `unconfirmed`의 "저장 확인"(`confirm`)은 **seed 인계(6.1)와 편집기 밖(`/projects`)에서만** 쓴다. 그래서 한 화면에 method가 다른 두 버튼이 동시에 붙지 않는다.
 
 - 근거: 사용자가 다음에 할 일이 바뀌는 순서다. `cleared`는 어떤 행동도 저장되지 않는다. `conflicted`와 `start-pending`은 선택 전에 저장이 0이다(I3b·I7). 환경 제약은 재시도해도 실패한다.
 - 이긴 상태만 상태 글자로 보인다. 진 상태 중 **보호 술어(I8)에 들어가는 것**(`dirty`·`unconfirmed`·`saving`·`start-pending`·`conflicted`)은 `beforeunload` 등록에 그대로 반영된다. 화면 표시와 보호는 독립이다.
@@ -152,12 +154,12 @@
 | 내 초안으로 저장 | 내 초안(`latest.doc`), revision = theirs+1 | theirs가 현재 문서에서 빠짐 | **기존 `resolveConflict("mine")`을 쓰면** theirs가 자동 스냅샷 "충돌 보존"으로 남는다 [L1 `memoryDocBook.ts:330-331`]. C5에 이 method 매핑 없음 [G2] | 내 binding 이미지가 같은 트랜잭션으로 커밋돼야 함(I4). theirs가 참조하던 이미지는 IDB에 남는다. 스냅샷 복원 때 이미지가 다시 붙는지는 [L3 확인 필요 — `imageStore.ts:26` 보존 집합은 문서+직전 1개] |
 | 바뀐 문서 쓰기 | theirs(이미 IDB에 있는 교체 문서) | 내 초안이 현재 문서에서 빠지고 장부 `latest`·binding 해제 | **`resolveConflict("theirs")`를 쓰면** 내 초안이 스냅샷 "충돌 보존"으로 남는다 [L1 `:330`]. `discard`로 매핑하면 **스냅샷 0 = 복구 불가** [G4] | 내 초안에만 있던 새 이미지(binding)는 해제 → 스냅샷 문서가 참조해도 Blob이 없을 수 있다 [L3 확인 필요] |
 
-- **권장(MQ-5-1)**: 두 선택 모두 기존 `resolveConflict` 의미(진 쪽을 스냅샷으로 보존)를 장부 경유로 쓴다. `discard`(보존 0)는 충돌 선택에 쓰지 않는다. 이렇게 하면 두 선택 모두 "되돌릴 수 있는 선택"이 된다.
+- **권장(MQ-5-1)**: 두 선택 모두 기존 `resolveConflict` 의미(진 쪽을 스냅샷으로 보존)를 장부 경유로 쓴다. `discard`(보존 0)는 충돌 선택에 쓰지 않는다. 이렇게 하면 **문서**는 두 선택 모두 스냅샷으로 되찾을 수 있다. 다만 초안에만 있는 새 이미지(binding)가 보존 스냅샷과 함께 IDB에 기록된다는 근거는 C5에도 코드에도 없다(I4는 현재 문서 레코드만 보장). 그래서 이미지까지 되돌릴 수 있다고 말하지 않는다(G4 제안 참조).
 - 단, 자동 스냅샷 개수 상한(`withAuto`)으로 오래된 "충돌 보존"이 밀려날 수 있다 [L3 — 상한 값 미확인]. 문구에 "언제든 되찾을 수 있습니다"를 쓰지 않는다.
 
 ### 5.4 확인 대화상자 (취소/폐기 확인)
 
-- **G2/G4가 MQ-5-1 권장대로 닫히면**(양쪽 스냅샷 보존): 확인 대화상자 없이 바로 실행한다. 기존 E-S09와 같다. 결과 1줄이 버튼 옆에 미리 보이기 때문이다.
+- **G2/G4가 MQ-5-1 권장대로 닫히면**(양쪽 문서 스냅샷 보존): "내 초안으로 저장"은 확인 대화상자 없이 바로 실행한다(기존 E-S09와 같음, 결과 1줄이 버튼 옆에 미리 보임). "바뀐 문서 쓰기"는 **초안에 새로 고른 이미지가 n>0이면 대화상자를 유지한다.** 본문은 "내 초안은 스냅샷 '충돌 보존'에 남기지만, 새로 고른 이미지 {n}개는 스냅샷에 남지 않을 수 있습니다."이다. n=0이면 바로 실행한다. G4 제안의 이미지 기록이 채택되면 이 대화상자는 뺀다.
 - **보존 0 경로가 남으면**(예: "바뀐 문서 쓰기" = `discard`): 반드시 확인 대화상자를 거친다.
   - 기존 패턴: 네이티브 `<dialog>` + `showModal()` [L1 `DeleteProjectDialog.tsx:37-47`]. `role="alertdialog"`를 붙이고 `aria-labelledby`(제목) · `aria-describedby`(본문)를 둔다.
   - 제목 "내 초안 버리기" · 본문 "내 초안과 새로 고른 이미지 {n}개가 사라지고 되찾을 수 없습니다." · 버튼 "취소"(초기 포커스) · "버리고 바뀐 문서 쓰기"(위험 스타일).
@@ -172,7 +174,7 @@
 | 충돌 진입(seed `conflicted`로 재마운트) | 충돌 영역 제목(`h3`에 `tabIndex=-1`)으로 이동. 진입 직후라 탈취가 아니고, 선택 전 저장 0을 먼저 읽히기 위함 | alert 1회 |
 | 대화상자 열림 | "취소" | — |
 | 대화상자 닫힘(취소) | 연 버튼으로 복귀 | — |
-| 선택 성공 | 충돌 영역이 사라지므로 **편집기 h1**(`tabIndex=-1`, [L1] `StudioToolbar.tsx:25`)으로 이동 | status: 주 "내 초안으로 저장했습니다 — 바뀐 문서는 스냅샷 '충돌 보존'에 있습니다" / 보조 "바뀐 문서를 불러왔습니다 — 내 초안은 스냅샷 '충돌 보존'에 있습니다" |
+| 선택 성공 | 충돌 영역이 사라지므로 **편집기 h1**(`tabIndex=-1`, [L1] `StudioToolbar.tsx:25`)으로 이동 | status(문서 단위로만 말함): 주 "내 초안으로 저장했습니다 — 바뀐 문서는 스냅샷 '충돌 보존'에 남겼습니다" / 보조 "바뀐 문서를 불러왔습니다 — 내 초안 문서는 스냅샷 '충돌 보존'에 남겼습니다" |
 | 선택 실패 | 누른 버튼에 그대로 둔다 | alert ★"충돌을 해결하지 못했습니다 — 다시 골라 주세요" [L1 `StudioLayout.tsx:116-120`] — 사유가 `read-only`·`stale-tab`·`cleared`면 해당 환경 문구로 바꾼다 |
 
 ### 5.6 수명 한계 (재마운트 · POP · 새로고침 · 모바일 종료)
@@ -228,7 +230,7 @@
 
 | 화면 | 버튼 | method | 쓰기 | 1:1 여부 |
 |---|---|---|---|---|
-| 편집기 · `/projects` | "저장 확인" | `confirm(projectId)` | 있음/0 | 편집기 밖 1:1. **마운트 중에는 dirty 편집이 `latest`에 없어 `publish` 선행이 필요 → 1:2 [G6]** |
+| 편집기 · `/projects` | "저장 확인" | `confirm(projectId)` | 있음/0 | **MQ-5-3 ★A 적용 시 1:1**(편집기 안에서는 dirty가 아닐 때만 노출 · 마운트 중 실패는 "다시 저장"). B를 고르면 `publish` 선행이 필요해 G6 계약 보강 전제 |
 | 편집기 | ★"다시 저장"(failed) | 기존 `save.retry` → 장부 `save(token, seq)`(C5 2.5 경유) | 있음 | 1:1(기존 동작 유지) |
 | `/profile`·`/projects`·편집기 | "시작 다시 시도" | `retryStart(projectId)` | 있음 | 1:1 |
 | 같음 | "지금 문서 유지" | **없음** — C5 4.3 "`start` 비움" | 0 | **[G3]** |
@@ -305,7 +307,7 @@ replace + latest → conflicted → 편집기 → [내 초안으로 저장 | 바
 | G1 | `view()`의 `LedgerView` 필드 미정의. 전 장부 순회도 없음 | 상태표 전체의 판정 조건, 6.3 다른 프로젝트 개수 | `LedgerView = { phase(2.1 장부 단계), env, lastResult, dirty: boolean, start?, conflicted?: {theirsRevision, cause?} }` + `views(): readonly LedgerView[]` |
 | G2 | "내 초안 유지" method 없음(I3b 문장만) · `confirm`은 conflicted면 거절 | 충돌 주 버튼 | `resolve(projectId, "mine")` = 장부 경유 `resolveConflict("mine", latest.doc)` + binding 이미지(I4) |
 | G3 | 재판정 "지금 문서 유지"(`start` 비움) method 없음 | start-pending 보조 버튼 | `keepCurrent(projectId)` 또는 `retryStart`의 반대 `dropStart(projectId)` — 쓰기 0, `start` 비움, I8 재계산 |
-| G4 | conflicted 상태 `discard`의 효과(conflicted 해제·binding·phase·보존 여부) 미정 | 충돌 보조 버튼의 파괴성 | `resolve(projectId, "theirs")` = `resolveConflict("theirs")`(초안 스냅샷 보존) 후 `latest` 비움. `discard`는 conflicted에서 쓰지 않음 |
+| G4 | conflicted 상태 `discard`의 효과(conflicted 해제·binding·phase·보존 여부) 미정 | 충돌 보조 버튼의 파괴성 | `resolve(projectId, "theirs")` = `resolveConflict("theirs")`(초안 스냅샷 보존) 후 `latest` 비움. **보존 스냅샷이 참조하는 binding 이미지도 같은 트랜잭션으로 기록**(I4를 보존 스냅샷까지 확장). `discard`는 conflicted에서 쓰지 않음 |
 | G5 | `unsupported` vs `memory-only` 구별 필드 없음(C5 9절 인정) | 문구 분기 | `mode()` 결과를 `LedgerView.env`로 노출 |
 | G6 | 마운트 중 "저장 확인"은 dirty 편집이 `latest`에 없어 `target = memSeq` → **거짓 확인 가능** | "저장 확인" 1:1 위반 | `confirm(projectId, { flush: token })` — 활성 lease가 있으면 publish 후 confirm을 장부 안에서 1회. 또는 마운트 중엔 "저장 확인"을 숨기고 "다시 저장"만(★ UX-5 기본값) |
 | G7 | `image-missing`의 `missing`은 `localId`만 있고 슬롯 라벨 매핑이 없음 | "어느 이미지" 안내 불가 | 결과에 `{ localId, sectionId, slotKey }` 또는 문서에서 역추적하는 순수 함수 |
@@ -335,3 +337,4 @@ replace + latest → conflicted → 편집기 → [내 초안으로 저장 | 바
 
 ## 변경 이력
 - r0 (2026-10-14) — 최초 초안 + 자체 review 1회 반영(seed `conflicted` 편집 잠금을 C5 4.4 문면에 맞춤 · 편집기 "저장 확인" 노출 조건 · start-pending 행 링크 숨김 근거와 G10 · MQ-5-5). Codex 0회(QA 소유).
+- r0a (2026-10-14) — advisor 점검 반영(자체 review 2회차 아님): 우선순위에 `failed` 추가 + 편집기 안 실패/미확인 버튼 1개 규칙 · 8.1 "저장 확인" 1:1 조건 정정 · 충돌 보존을 문서 단위로 낮춤(이미지 n>0이면 "바뀐 문서 쓰기" 대화상자 유지 · G4에 binding 이미지 기록 추가).

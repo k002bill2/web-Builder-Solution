@@ -1,0 +1,90 @@
+== F1 save의 discarding 가드 삭제
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 2 failed | 34 passed (36)
+     × discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상 3ms
+     × discard await 중 save → failed{discarding} · write 0 · inflight 0 · 저장소 A 유지 · confirm은 A wrote:false 5ms
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 save → failed{discarding} · write 0 · inflight 0 · 저장소 A 유지 · confirm은 A wrote:false
+qa:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 9 passed (10)
+== F2 discard의 discarding 재진입 거절 삭제
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 35 passed (36)
+     × discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상 5ms
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상
+qa: Tests 10 passed (10)
+== F3 discard finally 해제 삭제
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 4 failed | 32 passed (36)
+     × 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장 0ms
+     × 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음 1ms
+     × discard 중 읽기 throw → discard reject · 가드 해제(finally) → 다음 save saved 2ms
+     × discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상 5ms
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 중 읽기 throw → discard reject · 가드 해제(finally) → 다음 save saved
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상
+qa: Tests 10 passed (10)
+== F4 제출 바인딩 동결 해제(commit 시점 attached 읽기)
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 35 passed (36)
+     × 저장이 writer 확인에서 대기 중 같은 id 다른 Blob 편집 → 커밋된 D1은 D1 편집 때 Blob(X) 5ms
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 저장이 writer 확인에서 대기 중 같은 id 다른 Blob 편집 → 커밋된 D1은 D1 편집 때 Blob(X)
+qa:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 9 passed (10)
+== F5 doc 동결 사본 해제
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 35 passed (36)
+     × edit·replace 뒤 호출자가 넘긴 doc·imageIds를 바꿔도 코어 초안 불변 5ms
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > edit·replace 뒤 호출자가 넘긴 doc·imageIds를 바꿔도 코어 초안 불변
+qa: Tests 10 passed (10)
+== F6 discard 바인딩 복귀 삭제
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 2 failed | 34 passed (36)
+     × 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장 1ms
+     × 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음 4ms
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음
+qa:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 9 passed (10)
+== F7 코어 간 직렬 구간 해제
+harness:⎯⎯⎯⎯⎯⎯ Failed Tests 32 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 32 failed | 4 passed (36)
+     × 커밋 안 된 초안(quota 실패) discard → IDB 재읽기로 저장 상태 A 복귀 증명 · 이후 confirm에 폐기 초안 부활 0 3ms
+     × 다른 탭이 잠금 보유(readonly 거절) → detach → 잠금 해제 → 재시도: 바인딩 동결 보존 · 리로드 Blob 일치 · delete op 0 4ms
+     × 한 탭 코어 2개가 gate 공유 · 동시 save → 하나 saved · 다른 하나 stale · 먼저 커밋 보존 1ms
+     × 커밋 전 편집 B + detach → A 완료: newer=true · dirty · confirmed=A(≠B) · B 문서/Blob 보존 → 재저장으로 B+Blob 영속 245ms
+     × 커밋 뒤 편집 B: A 완료는 newer=false로 끝났고 B는 dirty로 남는다(confirmed=A) 256ms
+     × 저장 진행 중 discard → rejected{inflight} · 초안 그대로 · 완료 뒤 B 커밋 244ms
+qa:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 8 failed | 2 passed (10)
+== F8 save 이미지 재읽기 → keys 존재(원 동작)
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 35 passed (36)
+     × 바인딩 없고 저장소 key의 레코드가 코어 이미지가 아님 → image-missing · 제출 0 5ms
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 바인딩 없고 저장소 key의 레코드가 코어 이미지가 아님 → image-missing · 제출 0
+qa: Tests 10 passed (10)
+== M8' verify 이미지 검사 → true
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 35 passed (36)
+     × 어댑터가 이미지 op만 빠뜨리고 resolve → confirm failed{not-committed} 5ms
+ FAIL  test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 이미지 op만 빠뜨리고 resolve → confirm failed{not-committed}
+qa: Tests 10 passed (10)
+== M9 confirm wrote:true 재읽기 verify 삭제
+harness:⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 2 failed | 34 passed (36)
+     × 어댑터가 반영 없이 resolve(거짓 성공) → confirm failed{not-committed} 5ms
+     × 어댑터가 이미지 op만 빠뜨리고 resolve → confirm failed{not-committed} 1ms
+ FAIL  test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 반영 없이 resolve(거짓 성공) → confirm failed{not-committed}
+ FAIL  test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 이미지 op만 빠뜨리고 resolve → confirm failed{not-committed}
+qa: Tests 10 passed (10)
+core restored (git diff 0)
+exit 0
+== F7(정정) 코어 간 직렬 구간 해제 — 위 F7은 패턴 오류(함수를 반환해 32건 무관 실패)로 무효, 이 블록이 유효
+      Tests  1 failed | 35 passed (36)
+ FAIL  test/h6.test.ts > H6-3 같은 영속·같은 프로젝트의 세대 읽기~쓰기는 코어 간 직렬(CE-3a) > 한 탭 코어 2개가 gate 공유 · 동시 save → 하나 saved · 다른 하나 stale · 먼저 커밋 보존
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+qa:
+      Tests  1 failed | 9 passed (10)
+ FAIL  test/qa.test.ts > save-core-qa 반례 > CE-3a [계약 I6b '다른 writer 덮어쓰기 0'] [범위 밖 사용: 한 탭 코어 2개, 제품 gate 공유] 동시 save → 같은 세대 2회 saved
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+core restored (git diff 0)
+exit 0

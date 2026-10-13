@@ -1,0 +1,46 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-fix/dev/active/save-core-harness
+
+ ✓ test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 탭 B 저장(세대 2) 뒤 탭 B 닫힘 → 탭 A가 잠금 획득해도 wrote:false confirm = failed stale 2ms
+ ✓ test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > hydration 같음 ≠ fresh proof: 아무도 안 쓴 writer 탭의 wrote:false는 IDB 재읽기로 proof=fresh receipt 0ms
+ ✓ test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 읽기 전용 탭(다른 탭이 잠금 보유): 편집 없이 confirm → failed readonly(hydration 증명 재사용 0) 0ms
+ ✓ test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 탭 B 저장 뒤 탭 A의 dirty 저장 → failed stale · B 문서 덮어쓰기 0(예상 세대 불일치) 0ms
+ ✓ test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > 다른 탭이 잠금 보유(readonly 거절) → detach → 잠금 해제 → 재시도: 바인딩 동결 보존 · 리로드 Blob 일치 · delete op 0 4ms
+ ✓ test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > quota 실패: 문서·이미지 둘 다 0 → 같은 코어 재시도 성공: 둘 다 있음 1ms
+ ✓ test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > transaction abort(confirm 경로): failed → detach → confirm 재시도 confirmed · 문서/이미지 함께 0ms
+ ✓ test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > 부족 이미지(바인딩·IDB 모두 없음) → 제출 0 · image-missing / 리로드 뒤 IDB에 있는 이미지는 바인딩 없이 저장 가능 0ms
+ ✓ test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > A 저장 진행 중 B 편집 → confirm: receipt = B(문서 hash·이미지 id·세대)이고 IDB 재읽기와 일치 4ms
+ ✓ test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > confirm 진행 중(커밋 전) 편집 C → confirmed 아님: status newer · receipt=B · C는 dirty 2ms
+ ✓ test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > wrote:false 확인 진행 중(await 사이) 편집 C → confirmed 아님: status newer · C는 dirty 0ms
+ ✓ test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > 메모리 폴백(영속 없음): save·confirm 모두 failed{not-persistent} · view.confirmed 없음 0ms
+ ✓ test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > unsupported(navigator.locks 없음 — 제품 createWriterGate(undefined)): confirm failed · 쓰기 0 0ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 저장 진행 중 discard → rejected{inflight} · 초안 그대로 · 완료 뒤 B 커밋 4ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 커밋 안 된 초안(quota 실패) discard → IDB 재읽기로 저장 상태 A 복귀 증명 · 이후 confirm에 폐기 초안 부활 0 1ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > discard 진행 중(await 사이) 편집 C → blocked{newer} · C 보존(폐기로 최신 초안 소실 0) 0ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 복귀 근거 없음(다른 탭이 세대 2 기록) → discard blocked{stale} · 초안 보존 0ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음 2ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > confirm은 start(문서 생성) 호출 0 · retryStart는 명시 호출에서만 0ms
+ ✓ test/h5.test.ts > H5 replace/discard와 진행 중 저장 > lease: 같은 mountId 재acquire(StrictMode 이중 effect) = 같은 토큰 · release 뒤 acquire = 새 토큰 0ms
+ ✓ test/h1.test.ts > H1 저장 중 편집·cleanup·늦은 완료 > 커밋 전 편집 B + detach → A 완료: newer=true · dirty · confirmed=A(≠B) · B 문서/Blob 보존 → 재저장으로 B+Blob 영속 4ms
+ ✓ test/h1.test.ts > H1 저장 중 편집·cleanup·늦은 완료 > 커밋 뒤 편집 B: A 완료는 newer=false로 끝났고 B는 dirty로 남는다(confirmed=A) 2ms
+ ✓ test/h1.test.ts > H1 저장 중 편집·cleanup·늦은 완료 > 늦은 callback: A 커밋 보류 중 B 저장 시작 → A가 나중에 풀려도 IDB·confirmed는 B(세대로 식별) 3ms
+ ✓ test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 save → failed{discarding} · write 0 · inflight 0 · 저장소 A 유지 · confirm은 A wrote:false 2ms
+ ✓ test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상 0ms
+ ✓ test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 중 읽기 throw → discard reject · 가드 해제(finally) → 다음 save saved 1ms
+ ✓ test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 중 edit·replace는 받는다(mark 살아 있음) → discard blocked{newer} · 바인딩 보존 0ms
+ ✓ test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 저장이 writer 확인에서 대기 중 같은 id 다른 Blob 편집 → 커밋된 D1은 D1 편집 때 Blob(X) 2ms
+ ✓ test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > edit·replace 뒤 호출자가 넘긴 doc·imageIds를 바꿔도 코어 초안 불변 0ms
+ ✓ test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음 0ms
+ ✓ test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장 0ms
+ ✓ test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 바인딩 없고 저장소 key의 레코드가 코어 이미지가 아님 → image-missing · 제출 0 0ms
+ ✓ test/h6.test.ts > H6-3 같은 영속·같은 프로젝트의 세대 읽기~쓰기는 코어 간 직렬(CE-3a) > 한 탭 코어 2개가 gate 공유 · 동시 save → 하나 saved · 다른 하나 stale · 먼저 커밋 보존 0ms
+ ✓ test/h6.test.ts > H6-3 같은 영속·같은 프로젝트의 세대 읽기~쓰기는 코어 간 직렬(CE-3a) > 회귀: 한 코어 연속 save 3회 = 세대 1·2·3 · 같은 gate로 다시 연 코어 save saved · 쓰기 실패 뒤 다른 코어 진입 가능 0ms
+ ✓ test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 반영 없이 resolve(거짓 성공) → confirm failed{not-committed} 0ms
+ ✓ test/h6.test.ts > H6-4 confirm wrote:true는 쓰기 resolve를 믿지 않고 재읽기로 증명(M8·M9) > 어댑터가 이미지 op만 빠뜨리고 resolve → confirm failed{not-committed} 0ms
+
+ Test Files  6 passed (6)
+      Tests  36 passed (36)
+   Start at  02:37:37
+   Duration  155ms (transform 71%, import 14%, tests 11%, worker 3%)
+
+exit 0

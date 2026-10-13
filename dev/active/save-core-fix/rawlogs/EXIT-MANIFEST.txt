@@ -1,0 +1,19 @@
+baseline-harness.txt:  Tests 23 passed (23) | exit 0
+baseline-qa.txt:  Tests 4 failed | 6 passed (10) | exit 1
+final-harness-eslint.txt:  | exit 0
+final-harness-run1.txt:  Tests 36 passed (36) | exit 0
+final-harness-run2.txt:  Tests 36 passed (36) | exit 0
+final-harness-tsc.txt:  | exit 0
+final-qa-eslint.txt:  | exit 0
+final-qa-run1.txt:  Tests 10 passed (10) | exit 0
+final-qa-run2.txt:  Tests 10 passed (10) | exit 0
+final-qa-tsc.txt:  | exit 0
+h6-green.txt:  Tests 36 passed (36) | exit 0
+h6-red.txt:  Tests 8 failed | 5 passed (13) | exit 1
+lock-diff.txt:  | git status --porcelain app lines:        0
+mutations.txt:  Tests 2 failed | 34 passed (36) | exit 0
+npm-ci.txt:  | exit 0
+qa-after.txt:  Tests 10 passed (10) | exit 0
+manual: git status --porcelain app dev/active/save-core-qa → 0 lines
+manual: grep -l 'Errors|Unhandled' final-* → none (grep exit 1)
+note: mutations.txt 첫 F7 블록은 패턴 오류로 무효 · 끝의 'F7(정정)' 블록이 유효

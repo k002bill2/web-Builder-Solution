@@ -111,9 +111,12 @@ export async function openSaveCore(options: CoreOptions) {
     const generation = (prev?.generation ?? 0) + 1;
     const hash = hashOf(target);
     const ops: WriteOp[] = [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA, kind: "core-doc", id: projectId, data: { doc: target, hash, generation } } }];
+    // H3: 참조 이미지 = 바인딩에 있으면 문서와 같은 트랜잭션으로 put · 없으면 이미 IDB에 있어야 함 · 둘 다 아니면 제출 0
+    const stored = new Set(await persistence.keys("images"));
     for (const id of target.imageIds) {
       const blob = attached.get(id);
       if (blob) ops.push({ type: "put", store: "images", record: { schemaVersion: SCHEMA, kind: "core-image", id, data: { projectId, blob } } });
+      else if (!stored.has(id)) return { status: "failed", reason: "image-missing", newer: mark > submitted };
     }
     try {
       await persistence.write(ops);

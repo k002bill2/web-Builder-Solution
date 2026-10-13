@@ -1,5 +1,5 @@
 /** 하네스 공용 — 영속 경계는 제품 메모리 영속(트랜잭션 전부-아니면-전무 · structuredClone). 실제 IndexedDB 엔진 아님. */
-import { createMemoryPersistence, type StudioPersistence } from "../../../../app/src/data/persistence/studioPersistence";
+import { createMemoryPersistence, type StudioPersistence, type WriteOp } from "../../../../app/src/data/persistence/studioPersistence";
 import type { CoreDoc, WriterCheck } from "../core/saveCore";
 
 export interface Deferred {
@@ -17,16 +17,20 @@ export function harnessDb() {
   const holds = new Map<number, Deferred>();
   const fails = new Map<number, unknown>();
   const seen: number[] = [];
-  const persistence: StudioPersistence = createMemoryPersistence({
+  const ops: (readonly WriteOp[])[] = [];
+  const inner: StudioPersistence = createMemoryPersistence({
     commit: (n) => {
       seen.push(n);
       return holds.get(n)?.promise;
     },
     fail: (n) => fails.get(n),
   });
+  // 제출된 op 기록만 덧붙인다 — 커밋·실패는 inner(제품 구현)가 판정
+  const persistence: StudioPersistence = { ...inner, write: (batch) => (ops.push(batch), inner.write(batch)) };
   return {
     persistence,
     seen,
+    ops,
     hold(n: number) {
       const d = deferred();
       holds.set(n, d);

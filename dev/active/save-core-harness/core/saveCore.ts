@@ -17,6 +17,8 @@ export interface Receipt {
   readonly imageIds: readonly string[];
   readonly generation: number;
   readonly mark: number;
+  /** H4: hydrated = 열기 때 읽은 것 · committed = 이 코어의 트랜잭션 완료 · fresh = confirm 시점 재읽기 */
+  readonly proof: "hydrated" | "committed" | "fresh";
 }
 
 export interface StoredDoc {
@@ -84,7 +86,7 @@ export async function openSaveCore(options: CoreOptions) {
   let savedMark = 0;
   let inflight = 0;
   const epoch = 0;
-  let confirmed: Receipt | undefined = loaded && { hash: loaded.hash, imageIds: loaded.doc.imageIds, generation: loaded.generation, mark: 0 };
+  let confirmed: Receipt | undefined = loaded && { hash: loaded.hash, imageIds: loaded.doc.imageIds, generation: loaded.generation, mark: 0, proof: "hydrated" };
   // H1: Blob 바인딩은 코어 소유(편집 시 동기 등록) — 편집기 detach(POP/cleanup)와 무관하게 보존
   let attached: ReadonlyMap<string, Blob> = new Map();
   // H1: 저장은 직렬 — 늦은 완료가 새 커밋을 덮지 않게(IDB 커밋 순서 = 제출 순서)
@@ -108,6 +110,8 @@ export async function openSaveCore(options: CoreOptions) {
     const mode = await writer.mode();
     if (mode !== "writer") return { status: "failed", reason: mode, newer: mark > submitted };
     const prev = await readStored(persistence, projectId);
+    // H4: 예상 세대 = 이 코어가 마지막으로 본 세대 — 다른 탭이 그 뒤 썼으면 덮지 않는다
+    if ((prev?.generation ?? 0) !== (confirmed?.generation ?? 0)) return { status: "failed", reason: "stale", newer: mark > submitted };
     const generation = (prev?.generation ?? 0) + 1;
     const hash = hashOf(target);
     const ops: WriteOp[] = [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA, kind: "core-doc", id: projectId, data: { doc: target, hash, generation } } }];
@@ -123,7 +127,7 @@ export async function openSaveCore(options: CoreOptions) {
     } catch (error) {
       return { status: "failed", reason: (error as Error).message, newer: mark > submitted };
     }
-    const receipt: Receipt = { hash, imageIds: target.imageIds, generation, mark: submitted };
+    const receipt: Receipt = { hash, imageIds: target.imageIds, generation, mark: submitted, proof: "committed" };
     settle(receipt);
     return { status: "saved", receipt, newer: mark > submitted };
   };
@@ -139,7 +143,13 @@ export async function openSaveCore(options: CoreOptions) {
   /** H2: dirty면 최신 초안을 저장(진행 중 저장 뒤 직렬) · 끝난 뒤 mark가 앞서면 newer(확정 아님) */
   const confirm = async (): Promise<ConfirmResult> => {
     if (!persistence) return { status: "failed", reason: "not-persistent" };
-    if (mark <= savedMark && confirmed) return { status: "confirmed", wrote: false, receipt: confirmed };
+    if (mark <= savedMark && confirmed) {
+      // H4: wrote:false = writer 탭 + 지금 IDB 재읽기가 마지막 증명과 같을 때만(열기·직전 증명 재사용 0)
+      const mode = await writer.mode();
+      if (mode !== "writer") return { status: "failed", reason: mode };
+      if (!(await verify(confirmed))) return { status: "failed", reason: "stale" };
+      return { status: "confirmed", wrote: false, receipt: { ...confirmed, proof: "fresh" } };
+    }
     const result = await save();
     if (result.status === "failed") return { status: "failed", reason: result.reason };
     if (!(await verify(result.receipt))) return { status: "failed", reason: "not-committed" };

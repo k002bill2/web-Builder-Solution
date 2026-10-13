@@ -23,7 +23,7 @@
 | 같은 명령 2회차 | 23 passed · exit 0 | `rawlogs/harness-run2.txt` |
 | `tsc --noEmit -p dev/active/save-core-harness/tsconfig.json` | exit 0 | `rawlogs/harness-tsc.txt` |
 | `eslint --config app/eslint.config.js …/core …/test` | exit 0 | `rawlogs/harness-eslint.txt` |
-| `grep -n "Errors\|Unhandled" rawlogs/harness-run*.txt rawlogs/qa-run*.txt` | 일치 0줄(grep exit 1) — unhandled error 없음 | — |
+| `grep -n "Errors\|Unhandled" rawlogs/{harness-run*,qa-run*,qa-final-run,codex-followup-run*}.txt`(최종 커밋 로그 기준 재실행) | 일치 0줄(grep exit 1) — unhandled error 없음 | `rawlogs/EXIT-MANIFEST.txt`(전 로그 exit 줄 + port·pgrep 수기 3줄) |
 | `git diff --stat 5b7d026 HEAD -- app` | 빈 출력 | `scope-check.txt` |
 | `git log --name-status 5b7d026..8da53e0` | 9커밋 변경 파일 전부 `dev/active/save-core-harness/` | `scope-check.txt` |
 
@@ -41,13 +41,13 @@
 ## 2. 반례 (QA 폴더 `test/qa.test.ts`, 2회 실행 동일)
 
 - 명령: `app/node_modules/.bin/vitest run --config dev/active/save-core-qa/vitest.config.mjs --reporter=verbose --silent=false`
-- 결과: **Tests 3 failed | 6 passed (9) · exit 1**, 2회 동일(`rawlogs/qa-run{1,2}.txt`). tsc·eslint exit 0(`qa-tsc.txt`·`qa-eslint.txt`).
+- 결과: Codex 전 `qa.test.ts` 9건 = **3 failed | 6 passed (9) · exit 1**, 2회 동일(`rawlogs/qa-run{1,2}.txt`). **최종 = CE 9 + CX 1 = 10건: 같은 명령(include 전체) fresh 1회 4 failed | 6 passed (10) · exit 1**(`rawlogs/qa-final-run.txt`). tsc·eslint exit 0(`qa-tsc.txt`·`qa-eslint.txt`).
 - CE = 계약 단언(실패 = 반례 확인), OBS = 관찰 고정. 테스트를 유리하게 고치지 않았다. 원본 코어와 헬퍼는 읽기 전용으로 import했다.
 - 이 테스트들은 Codex 실행 **전에** 커밋했다(`07dec81`). 그래서 "자기 단언 → 원문 검토" 순서가 git 이력에 남는다.
 
 | ID | 판정 | 등급(QA) | 분류 | 관측(로그 원문 `[QA]`) |
 |---|---|---|---|---|
-| **CE-1** | **RED = 반례** | **P1** | **모델 내** (단일 탭·배타 writer·제품 메모리 영속, 실제 IDB에서도 같은 코드 경로) | `discard:"discarded", save:"saved", confirm:"confirmed", confirmHashIsB:true, stored:"B", view:{body:"A", dirty:false}` |
+| **CE-1** | **RED = 반례** | **P1** | **모델 내** (단일 탭·배타 writer·제품 메모리 영속. 실제 IDB 재현은 미실행 — 영속 구현과 무관한 코드 경로라는 추론) | `discard:"discarded", save:"saved", confirm:"confirmed", confirmHashIsB:true, stored:"B", view:{body:"A", dirty:false}` |
 | **CE-2** | **RED = 반례** | P2 | **id 정책 의존** (같은 id에 다른 Blob) | `receiptHashIsD1:true, storedBody:"D1", imageBytes:"Y", reopenedConfirm:"confirmed"` |
 | **CE-3a** | **RED = 반례** | P2 | **범위 밖 사용** (한 탭에 코어 2개가 제품 gate 1개를 공유) | `r1:2, r2:2, stored:["c2",2]` — 둘 다 gen2 `saved`, c1 커밋은 소실 |
 | CE-3b | PASS | — | 두 탭 = 제품 gate 2개 + fakeLocks | `ra:"saved", rb:"readonly"` — 배타 writer에서는 TOCTOU에 도달하지 않음 |
@@ -118,7 +118,7 @@
 | ② 제출 문서와 Blob 바인딩을 다른 시점에 읽음 (:119-135) | CE-2 | **일치(등급 불일치)** | Codex P1, QA P2. QA 근거: 제품 localId 재사용 정책을 확인하지 못했고, 같은 id 재바인딩이 제품에서 발생하는지 미검증이다. Codex 근거: 현재 코어 API가 재바인딩을 허용한다. **결정은 Jarvis에게 넘긴다** |
 | ③ discard가 폐기 Blob 바인딩을 남김 (:187-190) | **QA 놓침** | 신규 | Codex 이후 재현: CX-3 **RED 2회 동일**. 관측 `discard:"discarded", viewBlobAfterDiscard:"Y", stored:"A-text", imageBytes:"Y"`(`rawlogs/codex-followup-run{1,2}.txt`, exit 1). 경합 없이 **순차 호출만으로** 도달하고, 같은 id 재바인딩이 전제다(CE-2와 같은 id 정책 의존). QA 등급 P1 후보(순차 도달) / id 정책 확인 전까지 P2 하한 |
 | (Codex 언급) 세대 TOCTOU는 배타 writer 전제 | CE-3a/3b | 일치 | 두 탭에서는 막히고(CE-3b·브라우저 14번), 같은 탭에서 gate를 공유하면 뚫린다 |
-| (Codex 언급) 실제 IDB 미검증 | 3절 | **불일치** | Codex는 하네스 rawlogs만 보고 판단했다. QA는 브라우저 실제 IDB·locks 프로브를 실행했다(3절). 단 제품 통합 미검증이라는 점은 같다 |
+| (Codex 언급) 실제 IDB 미검증 | 3절 | **실행 시점 차이**(판단 불일치 아님) | Codex는 `07dec81` 직후, 브라우저 프로브 커밋 `aa3784e` 전에 실행됐다. 프로브는 그 뒤 실행(3절). 단 제품 통합 미검증이라는 점은 같다 |
 
 - 새 수정 0: 코어를 고치지 않았다(BRIEF). 지적 ①②③의 수정 방향은 7절에 넘긴다.
 

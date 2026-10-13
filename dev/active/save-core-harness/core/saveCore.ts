@@ -1,0 +1,169 @@
+/**
+ * 저장 코어(격리 하네스) — 프로젝트 1개·탭 1개의 문서+이미지 저장/확인 상태기.
+ * 영속 경계 = 제품 `StudioPersistence`(write 1회 = 트랜잭션 1개). 제품 DocBook·localSync·useDocSave와 연결하지 않는다(MINIMAL-CONTRACT 참조).
+ * v0 = 제품 위험을 흉내 낸 순진한 구현(RED 기준선). H1: Blob 바인딩은 코어 소유 · 저장 직렬화 · 제출 mark 고정 · 세대로 늦은 완료 식별.
+ */
+import type { StudioPersistence, WriteOp } from "../../../../app/src/data/persistence/studioPersistence";
+import type { WriterMode } from "../../../../app/src/data/persistence/writerLock";
+
+export interface CoreDoc {
+  readonly revision: number;
+  readonly body: string;
+  readonly imageIds: readonly string[];
+}
+
+export interface Receipt {
+  readonly hash: string;
+  readonly imageIds: readonly string[];
+  readonly generation: number;
+  readonly mark: number;
+}
+
+export interface StoredDoc {
+  readonly doc: CoreDoc;
+  readonly hash: string;
+  readonly generation: number;
+}
+
+export type SaveResult =
+  | { readonly status: "saved"; readonly receipt: Receipt; readonly newer: boolean }
+  | { readonly status: "failed"; readonly reason: string; readonly newer: boolean };
+
+export type ConfirmResult =
+  | { readonly status: "confirmed"; readonly wrote: boolean; readonly receipt: Receipt }
+  | { readonly status: "newer"; readonly receipt: Receipt }
+  | { readonly status: "failed"; readonly reason: string };
+
+export interface CoreView {
+  readonly doc: CoreDoc;
+  readonly mark: number;
+  readonly dirty: boolean;
+  readonly inflight: boolean;
+  readonly epoch: number;
+  readonly confirmed: Receipt | undefined;
+  readonly blob: (id: string) => Blob | undefined;
+}
+
+export interface WriterCheck {
+  mode(): Promise<WriterMode>;
+}
+
+export interface CoreOptions {
+  readonly projectId: string;
+  /** undefined = 메모리 폴백(영속 없음) */
+  readonly persistence: StudioPersistence | undefined;
+  readonly writer: WriterCheck;
+  readonly initial: CoreDoc;
+  readonly starter?: () => Promise<void>;
+}
+
+export const SCHEMA = 1;
+
+export function hashOf(doc: CoreDoc): string {
+  const text = JSON.stringify([doc.revision, doc.body, [...doc.imageIds]]);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193) >>> 0;
+  return h.toString(16).padStart(8, "0");
+}
+
+export async function readStored(persistence: StudioPersistence, projectId: string): Promise<StoredDoc | undefined> {
+  const raw = (await persistence.get("docs", projectId)) as { kind?: string; data?: StoredDoc } | undefined;
+  return raw?.kind === "core-doc" ? raw.data : undefined;
+}
+
+export async function readImage(persistence: StudioPersistence, id: string): Promise<Blob | undefined> {
+  const raw = (await persistence.get("images", id)) as { kind?: string; data?: { blob: Blob } } | undefined;
+  return raw?.kind === "core-image" ? raw.data?.blob : undefined;
+}
+
+export async function openSaveCore(options: CoreOptions) {
+  const { projectId, persistence, writer } = options;
+  const loaded = persistence ? await readStored(persistence, projectId) : undefined;
+  let doc: CoreDoc = loaded?.doc ?? options.initial;
+  let mark = 0;
+  let savedMark = 0;
+  let inflight = 0;
+  const epoch = 0;
+  let confirmed: Receipt | undefined = loaded && { hash: loaded.hash, imageIds: loaded.doc.imageIds, generation: loaded.generation, mark: 0 };
+  // H1: Blob 바인딩은 코어 소유(편집 시 동기 등록) — 편집기 detach(POP/cleanup)와 무관하게 보존
+  let attached: ReadonlyMap<string, Blob> = new Map();
+  // H1: 저장은 직렬 — 늦은 완료가 새 커밋을 덮지 않게(IDB 커밋 순서 = 제출 순서)
+  let chain: Promise<unknown> = Promise.resolve();
+  const settle = (receipt: Receipt) => {
+    savedMark = Math.max(savedMark, receipt.mark);
+    if (!confirmed || receipt.generation > confirmed.generation) confirmed = receipt;
+  };
+
+  const save = (): Promise<SaveResult> => {
+    inflight += 1;
+    const run = chain.then(saveNow).finally(() => (inflight -= 1));
+    chain = run.catch(() => undefined);
+    return run;
+  };
+  const saveNow = async (): Promise<SaveResult> => {
+    const target = doc;
+    const submitted = mark;
+    if (!persistence) {
+      savedMark = mark;
+      confirmed = { hash: hashOf(doc), imageIds: doc.imageIds, generation: 0, mark };
+      return { status: "saved", receipt: confirmed, newer: false };
+    }
+    const mode = await writer.mode();
+    if (mode !== "writer") return { status: "failed", reason: mode, newer: mark > submitted };
+    const prev = await readStored(persistence, projectId);
+    const generation = (prev?.generation ?? 0) + 1;
+    const hash = hashOf(target);
+    const ops: WriteOp[] = [{ type: "put", store: "docs", record: { schemaVersion: SCHEMA, kind: "core-doc", id: projectId, data: { doc: target, hash, generation } } }];
+    for (const id of target.imageIds) {
+      const blob = attached.get(id);
+      if (blob) ops.push({ type: "put", store: "images", record: { schemaVersion: SCHEMA, kind: "core-image", id, data: { projectId, blob } } });
+    }
+    try {
+      await persistence.write(ops);
+    } catch (error) {
+      return { status: "failed", reason: (error as Error).message, newer: mark > submitted };
+    }
+    const receipt: Receipt = { hash, imageIds: target.imageIds, generation, mark: submitted };
+    settle(receipt);
+    return { status: "saved", receipt, newer: mark > submitted };
+  };
+
+  return {
+    edit(next: CoreDoc, blobs: ReadonlyMap<string, Blob> = new Map()) {
+      doc = next;
+      mark += 1;
+      attached = new Map([...attached, ...blobs]);
+      return mark;
+    },
+    attach() {
+      return { detach: () => undefined };
+    },
+    save,
+    async confirm(): Promise<ConfirmResult> {
+      if (savedMark === mark && confirmed) return { status: "confirmed", wrote: false, receipt: confirmed };
+      const result = await save();
+      if (result.status === "failed") return { status: "failed", reason: result.reason };
+      return { status: "confirmed", wrote: true, receipt: result.receipt };
+    },
+    async discard() {
+      if (confirmed && loaded) doc = loaded.doc;
+      savedMark = mark;
+      return { status: "discarded" as const };
+    },
+    replace(next: CoreDoc) {
+      doc = next;
+      mark += 1;
+      savedMark = mark;
+      return { status: "replaced" as const };
+    },
+    async retryStart() {
+      await options.starter?.();
+    },
+    view(): CoreView {
+      const blobs = attached;
+      return { doc, mark, dirty: mark > savedMark, inflight: inflight > 0, epoch, confirmed, blob: (id) => blobs.get(id) };
+    },
+  };
+}
+
+export type SaveCore = Awaited<ReturnType<typeof openSaveCore>>;

@@ -5,6 +5,6 @@
 - [x] 1. 입력 읽기: CONTRACT-5.md, rs5-contract/REPORT.md, rs4-measure/REPORT.md
 - [x] 2. 실제 코드 대조(mark/dirtyMark/publishedMark, epoch/baseEpoch, hydrated-confirm-proof 외 체크리스트 10항)
 - [x] 3. QA 독립 판단 먼저 저장(logs/qa-independent.md) + 커밋 — P1 4 · P2 5 · Obs 3
-- [ ] 4. Codex adversarial-review 1회 --scope branch --base 467a691 → logs/codex-r1.txt (실행 중 · nohup · exit 미수집)
-- [ ] 5. REPORT.md (QA/Codex 귀속·근거행·미측정 구분, 제품 PASS 주장 없음)
-- [ ] 6. 명시 pathspec 커밋 + git diff --check
+- [x] 4. Codex adversarial-review 1회 --scope branch --base 467a691 → logs/codex-r1.txt — needs-attention · 신규 P1 1(CX-1) · QA-1·3·4·5 동의 · QA-2 부분 동의 · exit 미수집(출력 블록으로 완료 판정)
+- [x] 5. REPORT.md (QA/Codex 귀속·근거행·미측정 구분, 제품 PASS 주장 없음)
+- [x] 6. 명시 pathspec 커밋 + git diff --check

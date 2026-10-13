@@ -37,14 +37,14 @@ stdout | test/qa.test.ts > save-core-qa 반례 > OBS-2 [관찰] 이미지 존재
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-3a [계약 I6b '다른 writer 덮어쓰기 0'] [범위 밖 사용: 한 탭 코어 2개, 제품 gate 공유] 동시 save → 같은 세대 2회 saved 1ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-3b [계약 I6b] [두 탭 = 제품 gate 2개 + fakeLocks] 동시 save → 하나만 saved(배타 writer) 0ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-4 [계약 I3: 커밋됐으면 confirmed|newer] [모델 내] 같은 코어 confirm 2회 동시(더블클릭) 1ms
- ✓ test/qa.test.ts > save-core-qa 반례 > CE-5 [계약 I4: 내용 같으면 wrote:false confirmed] [모델 내] clean 상태에서 save 진행 중 confirm 1ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-5 [계약 I4: 내용 같으면 wrote:false confirmed] [모델 내] clean 상태에서 save 진행 중 confirm 2ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-6 [계약 I7/I8] [모델 내] clean discard await 중 replace → discard는 교체본을 되돌리지 않는다 0ms
  ✓ test/qa.test.ts > save-core-qa 반례 > OBS-1 [관찰] stale 이후 회복 경로 없음: save stale · discard blocked stale · replace dirty · confirm stale (재열기 외) 0ms
  ✓ test/qa.test.ts > save-core-qa 반례 > OBS-2 [관찰] 이미지 존재 확인은 프로젝트 무관 — 다른 프로젝트 img-x가 있으면 바인딩 없이 saved 0ms
 
  Test Files  2 passed (2)
       Tests  10 passed (10)
-   Start at  02:37:38
-   Duration  134ms (transform 69%, import 16%, tests 10%, worker 4%)
+   Start at  02:41:50
+   Duration  140ms (transform 70%, import 16%, tests 10%, worker 4%)
 
 exit 0

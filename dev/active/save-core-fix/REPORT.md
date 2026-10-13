@@ -1,7 +1,7 @@
 # save-core-fix REPORT — QA 반례(78e3c52) 좁힌 수정
 
 - 브랜치 `k002bill2/save-core-fix` · base `78e3c52`. 쓰기 = `save-core-harness/core/saveCore.ts` · `save-core-harness/test/h6.test.ts`(신규) · `save-core-harness/MINIMAL-CONTRACT.md`(I6·I7·I9·G3) · `save-core-fix/`.
-- QA 원본(`save-core-qa/` 테스트·readme·보고·프로브)·제품 `app/`·`helpers.ts`·h1~h5 테스트 변경 0. 새 의존성 0. merge/push 0. Codex 실행 0(브리프: 자동 반복 0 — 뒤 별도 QA 몫).
+- QA 원본(`save-core-qa/` 테스트·readme·보고·프로브)·제품 `app/`·`helpers.ts`·h1~h5 테스트 변경 0. 새 의존성 0. merge/push 0. Codex review 1회(반복 0) — 6절.
 - **판정 범위 = 격리 하네스.** 아래 PASS는 제품 통합 PASS가 아니다.
 
 ## 0. 결론
@@ -25,8 +25,8 @@
 | baseline `vitest run --config dev/active/save-core-harness/vitest.config.mjs` | 23 passed · exit 0 | `baseline-harness.txt` |
 | baseline `vitest run --config dev/active/save-core-qa/vitest.config.mjs --reporter=verbose --silent=false` | **4 failed(CE-1·CE-2·CE-3a·CX-3) \| 6 passed (10) · exit 1** — QA `qa-final-run.txt`와 같은 관측 | `baseline-qa.txt` |
 | 신규 h6 RED (수정 전) | **8 failed \| 5 passed (13) · exit 1** | `h6-red.txt` |
-| 수정 뒤 하네스 | 36 passed · exit 0 | `h6-green.txt` |
-| 최종 하네스 2회 | 36 passed (36) · exit 0 ×2 | `final-harness-run{1,2}.txt` |
+| 수정 뒤 하네스(지연 읽기 테스트 추가 전) | 36 passed · exit 0 | `h6-green.txt` |
+| 최종 하네스 2회 | 37 passed (37) · exit 0 ×2 | `final-harness-run{1,2}.txt` |
 | 최종 QA 원본 10건 2회 | **10 passed (10) · exit 0 ×2** | `final-qa-run{1,2}.txt` |
 | `tsc --noEmit -p` 하네스 / QA(browser/probe.ts 포함) | exit 0 / exit 0 | `final-harness-tsc.txt` · `final-qa-tsc.txt` |
 | `eslint --config app/eslint.config.js` 하네스 core·test / QA test | exit 0 / exit 0 | `final-harness-eslint.txt` · `final-qa-eslint.txt` |
@@ -34,10 +34,11 @@
 
 ## 2. test delta (RED 전에 PROGRESS에 기록)
 
-- 신규 `h6.test.ts` 13건. 기존 h1~h5 23건·QA 10건의 단언 변경 0.
+- 신규 `h6.test.ts` 14건(RED 전 기록 13 + 마감 점검에서 회귀 가드 1 추가 — 아래). 기존 h1~h5 23건·QA 10건의 단언 변경 0.
   - RED 8: H6-1 discard 중 save · discard 중 dirty confirm/2번째 discard · H6-2 D1 Blob 동결 · doc 외부 변경 · 순차 discard 바인딩 X 복귀 · 재열기 코어 discard 폐기 Blob 제거 · 비코어 레코드 image-missing · H6-3 공유 gate 동시 save.
+  - 추가 회귀 가드 1(수정 뒤 추가, 브리프 '지연 읽기' 명시분): discard 읽기 지연 중 save `failed{discarding}`·write 0·edit 수용 → `blocked{newer}`·바인딩 보존·다음 save saved. F3(finally 삭제) 원복 시 RED(`mutations.txt` 끝 블록). 수정 전 코어에서는 미실행.
   - 회귀 가드 5(수정 전에도 GREEN): discard 읽기 throw 뒤 가드 해제 · discard 중 edit/replace 수용(→`blocked{newer}`·바인딩 보존) · 한 코어 연속 save·같은 gate 재열기·쓰기 실패 뒤 진입 · M9 거짓 성공(drop) · M8 이미지 op 누락.
-- 하네스 23 → 36.
+- 하네스 23 → 37.
 
 ## 3. mutation — 각 수정 원복 시 RED (`rawlogs/mutations.txt`, 원복 뒤 `git diff` 0)
 
@@ -45,7 +46,7 @@
 |---|---|---|
 | F1 save의 discarding 가드 | 2 failed | CE-1 RED |
 | F2 discard 재진입 거절 | 1 failed | — |
-| F3 finally 해제 | 4 failed | — |
+| F3 finally 해제 | 4 failed(지연 읽기 추가 뒤 재실행 5 failed) | — |
 | F4 바인딩 동결(commit 시점 attached 읽기) | 1 failed | CE-2 RED |
 | F5 doc 동결 사본 | 1 failed | — |
 | F6 discard 바인딩 복귀 | 2 failed | CX-3 RED |
@@ -84,7 +85,10 @@
   - discard 중 거절된 save·confirm(`discarding`)은 자동 재시도하지 않는다. 호출자(스케줄러·UI)가 다시 불러야 한다.
   - OBS-1(stale 뒤 재열기 외 회복 경로 없음)은 그대로다.
   - CE-4(동시 confirm 2회 = 같은 내용 write 2회)도 그대로다.
+  - **이번 수정이 새로 만든 성질 ①**: 코어 간 직렬 구간이 write resolve까지 포함한다. 같은 영속 인스턴스에서 한 코어의 write가 멈추면 다른 코어의 save도 무기한 대기한다(타임아웃 없음).
+  - **이번 수정이 새로 만든 성질 ②**: discard의 읽기가 끝나지 않으면 `discarding`이 풀리지 않는다. 그동안 save·dirty confirm은 계속 `failed{discarding}`다(edit은 받음).
 - **OBS-2**: 이미지 존재 확인이 프로젝트를 구분하지 않는 동작은 그대로다(코어 이미지 레코드면 다른 프로젝트 것도 통과). 범위 밖.
+- **verify 한계**: 이미지 증명은 코어 이미지 레코드 존재 확인이다. 바이트 비교는 없고, 다른 프로젝트의 같은 id도 통과한다.
 - **비용**: save와 verify가 참조 이미지마다 `get("images")`로 Blob 레코드를 읽는다(전에는 `keys` 1회). 성능은 미측정.
 - **id 정책**: 제품 localId 재사용 여부는 여전히 미확인이다. 브리프에 따라, 공개 하네스 API가 허용하는 같은 id 재바인딩 반례로 보고 닫았다.
-- **필요한 것**: 뒤 별도 QA 1회(Codex 대조·브라우저 프로브 재실행 포함). 제품 적용 승인은 없다.
+- **필요한 것**: 뒤 별도 QA 1회(브라우저 프로브 재실행 포함). 제품 적용 승인은 없다.

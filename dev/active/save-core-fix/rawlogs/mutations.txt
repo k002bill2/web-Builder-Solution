@@ -88,3 +88,13 @@ qa:
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
 core restored (git diff 0)
 exit 0
+== F3 재실행(지연 읽기 테스트 추가 뒤) finally 해제 삭제
+      Tests  5 failed | 32 passed (37)
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 읽기 지연 중: save failed{discarding}·write 0 · edit 수용(mark 증가) → 풀린 뒤 blocked{newer}·바인딩 보존 · 다음 save saved
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard 중 읽기 throw → discard reject · 가드 해제(finally) → 다음 save saved
+ FAIL  test/h6.test.ts > H6-1 discard는 진입부터 끝까지 배타(CE-1) > discard await 중 dirty confirm · 두 번째 discard → 거절(쓰기 0) · 끝난 뒤 save는 정상
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 다시 연 코어(바인딩 없음)의 discard → 폐기 Blob 제거 · IDB의 X로 저장
+ FAIL  test/h6.test.ts > H6-2 제출 doc·Blob 동결과 discard 바인딩 복귀(CE-2·CX-3) > 순차 discard → 바인딩 = 커밋된 X · 다음 save에 폐기 Blob Y가 붙지 않음
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+core restored (git diff 0)
+exit 0

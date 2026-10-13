@@ -71,6 +71,24 @@ describe("H6-1 discard는 진입부터 끝까지 배타(CE-1)", () => {
     expect(await core.save()).toMatchObject({ status: "saved", receipt: { hash: hashOf(B) } });
   });
 
+  it("discard 읽기 지연 중: save failed{discarding}·write 0 · edit 수용(mark 증가) → 풀린 뒤 blocked{newer}·바인딩 보존 · 다음 save saved", async () => {
+    const { db, core } = await savedA();
+    const held = deferred();
+    const real = db.persistence.get;
+    db.persistence.get = async (store, id) => (await held.promise, real(store, id));
+    const discarding = core.discard();
+    expect(await core.save()).toMatchObject({ status: "failed", reason: "discarding" });
+    const before = core.view().mark;
+    core.edit(B, new Map([["img", blobOf("Y")]]));
+    expect(core.view().mark).toBe(before + 1);
+    held.release();
+    expect(await discarding).toMatchObject({ status: "blocked", reason: "newer" });
+    db.persistence.get = real;
+    expect(db.ops.length).toBe(1);
+    expect(await core.view().blob("img")?.text()).toBe("Y");
+    expect(await core.save()).toMatchObject({ status: "saved", receipt: { hash: hashOf(B), generation: 2 } });
+  });
+
   it("discard 중 edit·replace는 받는다(mark 살아 있음) → discard blocked{newer} · 바인딩 보존", async () => {
     const { core } = await savedA();
     const discarding = core.discard();

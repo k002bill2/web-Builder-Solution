@@ -34,7 +34,7 @@ stdout | test/qa.test.ts > save-core-qa 반례 > OBS-2 [관찰] 이미지 존재
 
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-1 [계약 I7·H5 '폐기 초안 부활 0'] [모델 내] discard await 중 save 진입 → discarded인데 B가 커밋·confirm됨 2ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-2 [계약 I6 '바인딩 동결' · H3] [id 정책 의존] 같은 id 다른 Blob: 제출 doc1이 나중 Blob Y와 커밋 · 재읽기 confirm이 바이트를 안 봄 2ms
- ✓ test/qa.test.ts > save-core-qa 반례 > CE-3a [계약 I6b '다른 writer 덮어쓰기 0'] [범위 밖 사용: 한 탭 코어 2개, 제품 gate 공유] 동시 save → 같은 세대 2회 saved 1ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-3a [계약 I6b '다른 writer 덮어쓰기 0'] [범위 밖 사용: 한 탭 코어 2개, 제품 gate 공유] 동시 save → 같은 세대 2회 saved 0ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-3b [계약 I6b] [두 탭 = 제품 gate 2개 + fakeLocks] 동시 save → 하나만 saved(배타 writer) 0ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-4 [계약 I3: 커밋됐으면 confirmed|newer] [모델 내] 같은 코어 confirm 2회 동시(더블클릭) 1ms
  ✓ test/qa.test.ts > save-core-qa 반례 > CE-5 [계약 I4: 내용 같으면 wrote:false confirmed] [모델 내] clean 상태에서 save 진행 중 confirm 2ms
@@ -44,7 +44,7 @@ stdout | test/qa.test.ts > save-core-qa 반례 > OBS-2 [관찰] 이미지 존재
 
  Test Files  2 passed (2)
       Tests  10 passed (10)
-   Start at  02:37:38
-   Duration  139ms (transform 69%, import 16%, tests 10%, worker 4%)
+   Start at  02:41:50
+   Duration  133ms (transform 69%, import 17%, tests 10%, worker 4%)
 
 exit 0

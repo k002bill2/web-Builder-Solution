@@ -1,0 +1,10 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-harness/dev/active/save-core-harness
+
+
+ Test Files  4 passed (4)
+      Tests  15 passed (15)
+   Start at  02:05:43
+   Duration  160ms (transform 71%, import 15%, tests 9%, worker 4%)
+
+exit 0

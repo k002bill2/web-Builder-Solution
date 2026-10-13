@@ -30,29 +30,31 @@
 
 | 순서 | 로그 | 결과 | 핵심 실패 단언(원문) | 커밋 |
 |---|---|---|---|---|
-| 1 | `h1-red.log` | 2 failed / 1 passed, exit 1 | `expected { status: 'saved', …(2) } to match object { status: 'saved', newer: true, …(1) }` | `0410ea0` |
-| 2 | `h1-green.log` | 3 passed, exit 0 | — | `0410ea0` |
-| 3 | `h2-red.log` | 2 failed / 5 passed, exit 1 | `expected { status: 'confirmed', …(2) } to match object { status: 'newer', …(1) }` · `expected { status: 'saved', …(2) } to match object { status: 'failed', …(1) }`(memory) | `4dbef70` |
-| 4 | `h2-green.log` | 7 passed, exit 0 | — | `4dbef70` |
-| 5 | `h3-red.log` | 1 failed / 10 passed, exit 1 | reason `- "image-missing" + "not-committed"` — v0가 이미지 없이 **문서만 커밋**함을 재읽기 verify가 잡음 | `ce99f37` |
-| 6 | `h3-green.log` | 11 passed, exit 0 | — (첫 green 시도는 패치 스크립트 실패로 같은 RED가 다시 찍혀 덮였고, 수정 뒤 재실행본) | `ce99f37` |
-| 7 | `h4-red-1.log` | 4 failed / 11 passed | 테스트1 첫 단언이 신규 `proof` 필드라 핵심 단언이 가려짐 → 구현 전 proof 단언을 테스트2로 이동 | `fa64ebd` |
-| 8 | `h4-red.log` | 4 failed / 11 passed, exit 1 | `expected { status: 'confirmed', …(2) } to match object { status: 'failed', reason: 'stale' }` · readonly 탭 confirmed · dirty 저장 `saved`(B 덮어씀) | `fa64ebd` |
-| 9 | `h4-green.log` | 15 passed, exit 0 | — | `fa64ebd` |
-| 10 | `h5-red.log` | 5 failed / 16 passed, exit 1 | `expected { status: 'discarded' } to match object { status: 'rejected', …(1) }` · `… { status: 'blocked', reason: 'stale' }` · replace `… { status: 'rejected', reason: 'dirty' }` · lease `expected 2 to be 1` | `e73c162` |
-| 11 | `h5-green.log` | 21 passed, exit 0 | — | `e73c162` |
+| 1 | `h1-red.txt` | 2 failed / 1 passed, exit 1 | `expected { status: 'saved', …(2) } to match object { status: 'saved', newer: true, …(1) }` | `0410ea0` |
+| 2 | `h1-green.txt` | 3 passed, exit 0 | — | `0410ea0` |
+| 3 | `h2-red.txt` | 2 failed / 5 passed, exit 1 | `expected { status: 'confirmed', …(2) } to match object { status: 'newer', …(1) }` · `expected { status: 'saved', …(2) } to match object { status: 'failed', …(1) }`(memory) | `4dbef70` |
+| 4 | `h2-green.txt` | 7 passed, exit 0 | — | `4dbef70` |
+| 5 | `h3-red.txt` | 1 failed / 10 passed, exit 1 | reason `- "image-missing" + "not-committed"` — v0가 이미지 없이 **문서만 커밋**함을 재읽기 verify가 잡음 | `ce99f37` |
+| 6 | `h3-green.txt` | 11 passed, exit 0 | — (첫 green 시도는 패치 스크립트 실패로 같은 RED가 다시 찍혀 덮였고, 수정 뒤 재실행본) | `ce99f37` |
+| 7 | `h4-red-1.txt` | 4 failed / 11 passed | 테스트1 첫 단언이 신규 `proof` 필드라 핵심 단언이 가려짐 → 구현 전 proof 단언을 테스트2로 이동 | `fa64ebd` |
+| 8 | `h4-red.txt` | 4 failed / 11 passed, exit 1 | `expected { status: 'confirmed', …(2) } to match object { status: 'failed', reason: 'stale' }` · readonly 탭 confirmed · dirty 저장 `saved`(B 덮어씀) | `fa64ebd` |
+| 9 | `h4-green.txt` | 15 passed, exit 0 | — | `fa64ebd` |
+| 10 | `h5-red.txt` | 5 failed / 16 passed, exit 1 | `expected { status: 'discarded' } to match object { status: 'rejected', …(1) }` · `… { status: 'blocked', reason: 'stale' }` · replace `… { status: 'rejected', reason: 'dirty' }` · lease `expected 2 to be 1` | `e73c162` |
+| 11 | `h5-green.txt` | 21 passed, exit 0 | — | `e73c162` |
 
 RED 없이 처음부터 PASS한 테스트(정직 표기): H1-2(커밋 뒤 편집 경계) · H2-1(진행 중 저장 뒤 confirm) · H2-4(unsupported 쓰기 0) · H3-1~3(바인딩 보존·quota·abort — H1의 코어 소유 바인딩과 제품 메모리 영속의 원자성 덕) · H5-5(confirm starter 0, 회귀 가드). v0의 "detach 시 Blob 폐기"는 H1-1에서 앞선 `newer` 단언에 가려 별도 RED로 관측하지 못했다. H5 lease RED는 TypeError가 아니도록 v0 스텁(호출마다 새 토큰 = QA-6 흉내)을 먼저 넣고 측정했다.
+
+rawlogs 커밋 시점(정직 표기): 실행 때 `*.log`로 저장했는데 저장소 `.gitignore:5 *.log`에 걸려 H별 커밋(`0410ea0`~`e73c162`)에 **로그가 빠졌다**. 이전 레인 관례대로 `.txt`로 이름만 바꿔(내용 무변경) 마지막 커밋에 추가했다. 위 "커밋" 열은 해당 H의 테스트·코어가 들어간 커밋이다. `.gitignore`는 수정하지 않았다.
 
 ## 4. 최종 실행 (fresh)
 
 | 명령 | 결과 | 로그 |
 |---|---|---|
-| `app/node_modules/.bin/vitest run --config dev/active/save-core-harness/vitest.config.mjs` 1회차 | Test Files 5 passed · Tests 21 passed · exit 0 | `final-harness-run1.log` |
-| 같은 명령 2회차 | Test Files 5 passed · Tests 21 passed · exit 0 | `final-harness-run2.log` |
-| `app/node_modules/.bin/tsc --noEmit -p dev/active/save-core-harness/tsconfig.json` | exit 0 | `final-tsc.log` |
-| `app/node_modules/.bin/eslint --config app/eslint.config.js …/core …/test` | exit 0(오류 검출은 착수 시 의도적 위반 파일로 확인) | `final-eslint.log` |
-| 제품 baseline `(cd app && npx vitest run)` 1회(구현 착수 전, 01:59) | Test Files 304 passed · Tests 2769 passed · exit 0 | `baseline-app-fullsuite.log` |
+| `app/node_modules/.bin/vitest run --config dev/active/save-core-harness/vitest.config.mjs` 1회차 | Test Files 5 passed · Tests 21 passed · exit 0 | `final-harness-run1.txt` |
+| 같은 명령 2회차 | Test Files 5 passed · Tests 21 passed · exit 0 | `final-harness-run2.txt` |
+| `app/node_modules/.bin/tsc --noEmit -p dev/active/save-core-harness/tsconfig.json` | exit 0 | `final-tsc.txt` |
+| `app/node_modules/.bin/eslint --config app/eslint.config.js …/core …/test` | exit 0(오류 검출은 착수 시 의도적 위반 파일로 확인) | `final-eslint.txt` |
+| 제품 baseline `(cd app && npx vitest run)` 1회(구현 착수 전, 01:59) | Test Files 304 passed · Tests 2769 passed · exit 0 | `baseline-app-fullsuite.txt` |
 
 결정성: `sequence.shuffle: false, seed: 1` · 환경 node · unhandled error 허용 안 함(`dangerouslyIgnoreUnhandledErrors: false`, 두 회차 모두 exit 0). 제품 baseline은 하네스 통과를 대체하지 않으며, 하네스도 제품 회귀 PASS를 대체하지 않는다.
 

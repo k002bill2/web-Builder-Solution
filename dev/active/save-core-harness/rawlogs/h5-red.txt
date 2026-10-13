@@ -1,0 +1,130 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-harness/dev/active/save-core-harness
+
+ ❯ test/h5.test.ts (6 tests | 5 failed) 12ms
+   ❯ H5 replace/discard와 진행 중 저장 (6)
+     × 저장 진행 중 discard → rejected{inflight} · 초안 그대로 · 완료 뒤 B 커밋 8ms
+     × 커밋 안 된 초안(quota 실패) discard → IDB 재읽기로 저장 상태 A 복귀 증명 · 이후 confirm에 폐기 초안 부활 0 1ms
+     × 복귀 근거 없음(다른 탭이 세대 2 기록) → discard blocked{stale} · 초안 보존 1ms
+     × replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음 0ms
+     × lease: 같은 mountId 재acquire(StrictMode 이중 effect) = 같은 토큰 · release 뒤 acquire = 새 토큰 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 저장 진행 중 discard → rejected{inflight} · 초안 그대로 · 완료 뒤 B 커밋
+AssertionError: expected { status: 'discarded' } to match object { status: 'rejected', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "reason": "inflight",
+-   "status": "rejected",
++   "status": "discarded",
+  }
+
+ ❯ test/h5.test.ts:27:34
+     25|     const pending = core.save();
+     26|     await until(() => db.seen.includes(2));
+     27|     expect(await core.discard()).toMatchObject({ status: "rejected", r…
+       |                                  ^
+     28|     expect(core.view().doc).toEqual(B);
+     29|     gate.release();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 커밋 안 된 초안(quota 실패) discard → IDB 재읽기로 저장 상태 A 복귀 증명 · 이후 confirm에 폐기 초안 부활 0
+AssertionError: expected { status: 'discarded' } to match object { status: 'discarded', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "restored": {
+-     "generation": 1,
+-     "hash": "7f488f7f",
+-     "proof": "fresh",
+-   },
+    "status": "discarded",
+  }
+
+ ❯ test/h5.test.ts:40:20
+     38|     expect(await core.save()).toMatchObject({ status: "failed" });
+     39|     const result = await core.discard();
+     40|     expect(result).toMatchObject({ status: "discarded", restored: { ha…
+       |                    ^
+     41|     expect(core.view()).toMatchObject({ doc: A, dirty: false });
+     42|     expect(await core.confirm()).toMatchObject({ status: "confirmed", …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 복귀 근거 없음(다른 탭이 세대 2 기록) → discard blocked{stale} · 초안 보존
+AssertionError: expected { status: 'discarded' } to match object { status: 'blocked', reason: 'stale' }
+
+- Expected
++ Received
+
+  {
+-   "reason": "stale",
+-   "status": "blocked",
++   "status": "discarded",
+  }
+
+ ❯ test/h5.test.ts:52:34
+     50|     await other.save();
+     51|     core.edit(B, new Map([["img-b", blobOf("bytes-B")]]));
+     52|     expect(await core.discard()).toMatchObject({ status: "blocked", re…
+       |                                  ^
+     53|     expect(core.view()).toMatchObject({ doc: B, dirty: true });
+     54|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음
+AssertionError: expected { status: 'replaced' } to match object { status: 'rejected', reason: 'dirty' }
+
+- Expected
++ Received
+
+  {
+-   "reason": "dirty",
+-   "status": "rejected",
++   "status": "replaced",
+  }
+
+ ❯ test/h5.test.ts:59:70
+     57|     const { db, core } = await savedA();
+     58|     core.edit(B, new Map([["img-b", blobOf("bytes-B")]]));
+     59|     expect(core.replace(R, { intent: "replace", expectedEpoch: 0 })).t…
+       |                                                                      ^
+     60|     expect(core.view().doc).toEqual(B);
+     61|     const gate = db.hold(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > lease: 같은 mountId 재acquire(StrictMode 이중 effect) = 같은 토큰 · release 뒤 acquire = 새 토큰
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ test/h5.test.ts:87:37
+     85|     const { core } = await savedA();
+     86|     const first = core.acquire("mount-1");
+     87|     expect(core.acquire("mount-1")).toBe(first);
+       |                                     ^
+     88|     core.release(first);
+     89|     expect(core.acquire("mount-1")).not.toBe(first);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  5 failed | 16 passed (21)
+   Start at  02:06:34
+   Duration  184ms (transform 69%, import 15%, tests 11%, worker 4%)
+
+exit 1

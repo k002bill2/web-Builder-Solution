@@ -1,6 +1,6 @@
 # MINIMAL-CONTRACT — 하네스에서 테스트로 확정된 저장 코어 최소 계약
 
-- 근거 = `core/saveCore.ts` + `test/h1~h5.test.ts`(21건 PASS, `rawlogs/final-harness-run{1,2}.log`). CONTRACT-5 API를 옮긴 것이 아니다.
+- 근거 = `core/saveCore.ts` + `test/h1~h5.test.ts`(21건 PASS, `rawlogs/final-harness-run{1,2}.txt`). CONTRACT-5 API를 옮긴 것이 아니다.
 - 범위 = 프로젝트 1개·탭 1개 코어. 영속 경계 = 제품 `StudioPersistence`(하네스에서는 메모리 구현). **실제 IndexedDB·Web Locks·제품 통합은 미검증.**
 
 ## 1. API (실제 구현)

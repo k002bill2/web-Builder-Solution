@@ -17,3 +17,5 @@ base 418979e · 앱 93f8111 · 2026-10-14 01:42~ · 결과 = REPORT.md
 - [x] 명시 pathspec 커밋 (diff --check)
 - 서브에이전트: 0 (BRIEF 불필요) · Codex: 0 (BRIEF 금지)
 - UNMEASURED: REPORT 2절 "배선 없음" · 5절 표 전부
+- 기록 누락: BRIEF의 PROGRESS 시작·중간·마감 중 **중간 갱신을 하지 않았다**(시작 체크리스트 작성 → 마감 일괄 갱신). 측정 순서·시각은 rawlogs 번호와 REPORT 6절에 남아 있다.
+- 마감 보정(advisor): REPORT 4절 S5c 6B 원인 귀속 철회(흔들림 범위) · 8절 범위 검증 행 추가

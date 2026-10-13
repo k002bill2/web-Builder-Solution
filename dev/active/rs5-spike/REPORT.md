@@ -66,7 +66,7 @@
 | S5a | `memoryProjectRepository` +448 | 그 밖은 ±8 이하 해시 흔들림 |
 | S5a-r | `memoryProjectRepository` +424 | 감량 효과 −24B뿐 |
 | S5b | `memoryProjectRepository` +448 · `StudioLayout` +294 · `StudioPage` +8 | 편집기 배선 + 정적 seed ≈ +294 |
-| S5c | `memoryProjectRepository` +448 · `StudioLayout` +302 · `StudioPage` +10 · `ledgerSeed` +133(별도 청크) | **lazy로 해도 진입이 줄지 않는다** — import 래퍼 비용(+8)이 옮긴 본문보다 커서 S5c 진입(130655)이 S5b(130649)보다 6B 크다 |
+| S5c | `memoryProjectRepository` +448 · `StudioLayout` +302 · `StudioPage` +10 · `ledgerSeed` +133(별도 청크) | **lazy로 해도 진입 절감이 측정되지 않았다** — S5c 진입(130655)과 S5b(130649)의 차이 6B, `StudioLayout` 차이 8B는 해시 흔들림 범위(±1~8B) 안이라 원인(래퍼 비용 등)을 귀속하지 않는다 |
 
 - 진입 청크 해시 이름이 바뀌어 참조하는 청크가 ±1~8B 흔들린다(base 여유 4B와 같은 규모). 그래서 합계뿐 아니라 청크별로 귀속했다.
 
@@ -109,6 +109,7 @@
 | base 재빌드 | `npm run build` | exit=0 (`41-restore-build.txt`) |
 | dist 바이트 | `find . -type f \| sort \| xargs shasum` vs `01-base-dist-sha.txt` | 143/143 동일 (`42-restore-dist-sha.txt` · `.result`) |
 | rawbytes | `diff 03-base-rawbytes.txt 43-restore-rawbytes.txt` | 출력 0, 바이트 동일 |
+| 범위(기준선·ADR·시나리오 한도·docs·scripts 변경 0) | `git diff --stat 418979e HEAD -- . ':(exclude)dev/active/rs5-spike'` | 빈 출력 (`45-scope-check.txt`) |
 
 - 테스트 재실행 0(BRIEF: suite는 base 1회만).
 - 부수 정리: rs4-measure `tools/.rawbytes.gen.mjs`(이번 base rawbytes 실행이 남긴 생성 파일 · untracked)를 삭제했다. rs5 사본이 만든 gen 파일도 측정마다 삭제했다.
@@ -122,4 +123,4 @@
 ## 10. 필요한 결정 (사용자/Jarvis)
 
 1. 판정선 안에 들어가는 후보는 0건이다. 진입 여유는 4B이고, 최소 하한도 +417B다. 선택지는 셋이다: (a) /studio 예산 상향 승인(7절 수치) (b) 장부 진입 몫을 0으로 만드는 다른 구조 설계(예: 기존 저장소 코드 감량으로 상쇄 — 미측정) (c) CONTRACT-5 범위 축소.
-2. seed lazy(S5c)는 진입 절감 효과가 없다(4절). 계약 8.2의 3행 "lazy 가능" 문구를 다시 볼 것.
+2. seed lazy(S5c)로 진입 절감이 측정되지 않았다(4절 — S5b와 차이는 흔들림 범위 안). 계약 8.2의 3행 "lazy 가능" 문구를 다시 볼 것.

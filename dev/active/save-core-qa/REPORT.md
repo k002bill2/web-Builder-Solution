@@ -12,7 +12,7 @@
 | H2 | PASS(하네스) | **PASS(하네스) · 단언 공백** | wrote:true 경로의 IDB 재읽기 verify를 지워도 23건 PASS(M9 생존) |
 | H3 | PASS(하네스) | **PASS(하네스) + 실제 IDB abort 롤백 확인** | 브라우저 실제 IDB에서 문서 put 뒤 이미지 DataCloneError → 문서·이미지 함께 0 |
 | H4 | PARTIAL | **PARTIAL 유지(제품 미통합)** · 코어×제품 IDB 어댑터×실제 `navigator.locks` **프로브 PASS 1회** | 2탭 실측: B 잠금 보유 중 A readonly → B 닫힘 → A confirm `stale` · A dirty 저장 `stale` · B2 보존 |
-| H5 | PASS(하네스) | **FAIL — 반례 CE-1** | discard await 사이 save 진입 → `discarded`인데 폐기 초안 B가 IDB에 커밋되고 confirm까지 됨, 화면은 A·clean |
+| H5 | PASS(하네스) | **FAIL — 반례 CE-1 (+ Codex ③ 재현 CX-3)** | discard await 사이 save 진입 → `discarded`인데 폐기 초안 B가 IDB에 커밋되고 confirm까지 됨, 화면은 A·clean. 또 discard 뒤에도 폐기 Blob 바인딩이 남아 다음 저장에 커밋됨(CX-3) |
 
 ## 1. 독립 자동 검증 (fresh)
 
@@ -104,13 +104,23 @@
 | 멀티탭 | 같은 영속 인스턴스 위 코어 2개 | 같음 | 같은 origin 페이지 2개 |
 | React·DocBook·스케줄러 | 미연결 | 미연결 | **미연결** |
 
-## 5. Codex adversarial-review (1회)
+## 5. Codex adversarial-review (1회 · 구현물 대상)
 
-(아래 6절에 원문 요약 · 원문 `rawlogs/codex-adversarial.txt`)
+- 명령: `node codex-companion.mjs adversarial-review --scope branch --base 5b7d026 "<saveCore 동시성 focus>"`(1회, 재실행 0). 원문은 `rawlogs/codex-adversarial.txt`.
+- 순서: QA 반례 커밋 `07dec81` → Codex 실행 → Codex 원문 검토 → 새 지적 1건만 재현 테스트(`test/codex-followup.test.ts`, 이 커밋).
+- Codex 판정: **needs-attention**, 지적 3건(전부 high/P1).
 
 ## 6. Codex 결과 대조
 
-_작성 중_
+| Codex 지적 | QA 자기 반례(Codex 전) | 일치 | 비고 |
+|---|---|---|---|
+| ① discard await 중 save → 폐기 초안 부활 (:178-190) | CE-1 | **일치** | 등급도 P1로 일치. 관측값(화면 A·dirty false·저장소 B·confirm B)이 같다 |
+| ② 제출 문서와 Blob 바인딩을 다른 시점에 읽음 (:119-135) | CE-2 | **일치(등급 불일치)** | Codex P1, QA P2. QA 근거: 제품 localId 재사용 정책을 확인하지 못했고, 같은 id 재바인딩이 제품에서 발생하는지 미검증이다. Codex 근거: 현재 코어 API가 재바인딩을 허용한다. **결정은 Jarvis에게 넘긴다** |
+| ③ discard가 폐기 Blob 바인딩을 남김 (:187-190) | **QA 놓침** | 신규 | Codex 이후 재현: CX-3 **RED 2회 동일**. 관측 `discard:"discarded", viewBlobAfterDiscard:"Y", stored:"A-text", imageBytes:"Y"`(`rawlogs/codex-followup-run{1,2}.txt`, exit 1). 경합 없이 **순차 호출만으로** 도달하고, 같은 id 재바인딩이 전제다(CE-2와 같은 id 정책 의존). QA 등급 P1 후보(순차 도달) / id 정책 확인 전까지 P2 하한 |
+| (Codex 언급) 세대 TOCTOU는 배타 writer 전제 | CE-3a/3b | 일치 | 두 탭에서는 막히고(CE-3b·브라우저 14번), 같은 탭에서 gate를 공유하면 뚫린다 |
+| (Codex 언급) 실제 IDB 미검증 | 3절 | **불일치** | Codex는 하네스 rawlogs만 보고 판단했다. QA는 브라우저 실제 IDB·locks 프로브를 실행했다(3절). 단 제품 통합 미검증이라는 점은 같다 |
+
+- 새 수정 0: 코어를 고치지 않았다(BRIEF). 지적 ①②③의 수정 방향은 7절에 넘긴다.
 
 ## 7. 회수 요청 · 다음 범위 (Jarvis 결정)
 
@@ -118,6 +128,8 @@ _작성 중_
    - 후보 (a): discard가 진입부터 끝까지 save를 막는 상태(예: `discarding` 플래그 → save는 `rejected`)
    - 후보 (b): discard가 저장 chain에 직렬로 들어감
 2. **M6·M8·M9 생존**: 빠진 단언 3건을 보강할지, 아니면 죽은 코드(M6·M8)를 정리할지 결정이 필요하다.
-3. **CE-2**: 제품 localId 재사용 정책을 확인한 뒤 P2 유지 또는 기각을 정한다. 수정한다면 바인딩을 target 캡처와 같은 시점에 동결한다.
+3. **CE-2·CX-3**: 제품 localId 재사용 정책을 확인한 뒤 등급을 정한다(Codex P1 / QA P2). 수정한다면 두 가지가 필요하다.
+   - 바인딩을 target 캡처와 같은 시점에 동결한다.
+   - discard 때 바인딩을 복원하거나 비운다.
 4. **OBS-1 stale 회복 경로**와 **CE-3a 같은 탭 재열기 시 gate 공유 규칙**: 제품 통합(G1~G3) 설계 때 함께 결정한다.
 5. H4는 실제 IDB·locks 결합 프로브까지 확인했다. 그래도 제품 통합 검증(DocBook·스케줄러·React)은 별도 레인이 필요하다.

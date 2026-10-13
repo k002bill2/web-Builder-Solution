@@ -1,0 +1,34 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-qa/dev/active/save-core-qa
+
+stdout | test/codex-followup.test.ts > Codex 지적 재현 > CX-3 [계약 I7 '저장 상태로 복귀'] [모델 내·id 정책 의존] discard 뒤 바인딩에 폐기 Blob이 남아 다음 저장이 폐기 바이트를 커밋
+[QA] CX-3 {"discard":"discarded","viewBlobAfterDiscard":"Y","save":"saved","stored":"A-text","imageBytes":"Y"}
+
+ × test/codex-followup.test.ts > Codex 지적 재현 > CX-3 [계약 I7 '저장 상태로 복귀'] [모델 내·id 정책 의존] discard 뒤 바인딩에 폐기 Blob이 남아 다음 저장이 폐기 바이트를 커밋 5ms
+   → expected 'Y' to be 'X' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/codex-followup.test.ts > Codex 지적 재현 > CX-3 [계약 I7 '저장 상태로 복귀'] [모델 내·id 정책 의존] discard 뒤 바인딩에 폐기 Blob이 남아 다음 저장이 폐기 바이트를 커밋
+AssertionError: expected 'Y' to be 'X' // Object.is equality
+
+Expected: "X"
+Received: "Y"
+
+ ❯ test/codex-followup.test.ts:22:19
+     20|     const bytes = await (await readImage(db.persistence, "img"))?.text…
+     21|     console.log(`[QA] CX-3 ${JSON.stringify({ discard: d.status, viewB…
+     22|     expect(bytes).toBe("X");
+       |                   ^
+     23|   });
+     24| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  02:24:38
+   Duration  123ms (transform 65%, import 18%, tests 12%, worker 5%)
+
+exit 1

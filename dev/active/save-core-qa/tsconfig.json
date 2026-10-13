@@ -1,0 +1,9 @@
+{
+  "extends": "../../../app/tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "typeRoots": ["../../../app/node_modules/@types"],
+    "paths": { "vitest": ["../../../app/node_modules/vitest"] }
+  },
+  "include": ["test"]
+}

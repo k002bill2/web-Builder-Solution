@@ -1,0 +1,78 @@
+## git diff --stat 5b7d026 HEAD -- app
+(end)
+## git status --porcelain app (after npm ci)
+(end)
+## commits 5b7d026..HEAD files
+8da53e0 docs(save-core-harness): 후속 결함 반영 — REPORT·MINIMAL-CONTRACT·PROGRESS 23건 기준 갱신
+
+M	dev/active/save-core-harness/MINIMAL-CONTRACT.md
+M	dev/active/save-core-harness/PROGRESS.md
+M	dev/active/save-core-harness/REPORT.md
+6000c29 fix(save-core-harness): confirm wrote:false·discard의 await 사이 편집 보존 RED→GREEN
+
+M	dev/active/save-core-harness/README.md
+M	dev/active/save-core-harness/core/saveCore.ts
+M	dev/active/save-core-harness/rawlogs/final-harness-run1.txt
+M	dev/active/save-core-harness/rawlogs/final-harness-run2.txt
+A	dev/active/save-core-harness/rawlogs/followup-green.txt
+A	dev/active/save-core-harness/rawlogs/followup-red.txt
+A	dev/active/save-core-harness/rawlogs/h3-mutation-red.txt
+M	dev/active/save-core-harness/test/h2.test.ts
+M	dev/active/save-core-harness/test/h5.test.ts
+ba711d5 docs(save-core-harness): rawlogs 추가(.gitignore *.log 회피 위해 .txt) · REPORT 커밋 시점 표기
+
+M	dev/active/save-core-harness/MINIMAL-CONTRACT.md
+M	dev/active/save-core-harness/PROGRESS.md
+M	dev/active/save-core-harness/REPORT.md
+A	dev/active/save-core-harness/rawlogs/baseline-app-fullsuite.txt
+A	dev/active/save-core-harness/rawlogs/final-eslint.txt
+A	dev/active/save-core-harness/rawlogs/final-harness-run1.txt
+A	dev/active/save-core-harness/rawlogs/final-harness-run2.txt
+A	dev/active/save-core-harness/rawlogs/final-tsc.txt
+A	dev/active/save-core-harness/rawlogs/h1-green.txt
+A	dev/active/save-core-harness/rawlogs/h1-red.txt
+A	dev/active/save-core-harness/rawlogs/h2-green.txt
+A	dev/active/save-core-harness/rawlogs/h2-red.txt
+A	dev/active/save-core-harness/rawlogs/h3-green.txt
+A	dev/active/save-core-harness/rawlogs/h3-red.txt
+A	dev/active/save-core-harness/rawlogs/h4-green.txt
+A	dev/active/save-core-harness/rawlogs/h4-red-1.txt
+A	dev/active/save-core-harness/rawlogs/h4-red.txt
+A	dev/active/save-core-harness/rawlogs/h5-green.txt
+A	dev/active/save-core-harness/rawlogs/h5-red.txt
+be871ba docs(save-core-harness): README·MINIMAL-CONTRACT·REPORT·최종 실행 rawlogs
+
+A	dev/active/save-core-harness/MINIMAL-CONTRACT.md
+M	dev/active/save-core-harness/PROGRESS.md
+A	dev/active/save-core-harness/README.md
+A	dev/active/save-core-harness/REPORT.md
+e73c162 test(save-core-harness): H5 replace/discard×inflight·lease 멱등 RED→GREEN
+
+M	dev/active/save-core-harness/PROGRESS.md
+M	dev/active/save-core-harness/core/saveCore.ts
+A	dev/active/save-core-harness/test/h5.test.ts
+fa64ebd test(save-core-harness): H4 낡은 증명 wrote:false·예상 세대 RED→GREEN
+
+M	dev/active/save-core-harness/PROGRESS.md
+M	dev/active/save-core-harness/core/saveCore.ts
+A	dev/active/save-core-harness/test/h4.test.ts
+ce99f37 test(save-core-harness): H3 이미지 바인딩·원자 실패·재시도 RED→GREEN
+
+M	dev/active/save-core-harness/PROGRESS.md
+M	dev/active/save-core-harness/core/saveCore.ts
+A	dev/active/save-core-harness/test/h3.test.ts
+M	dev/active/save-core-harness/test/helpers.ts
+4dbef70 test(save-core-harness): H2 confirm 최신 초안 커밋·재읽기 receipt RED→GREEN
+
+M	dev/active/save-core-harness/PROGRESS.md
+M	dev/active/save-core-harness/core/saveCore.ts
+A	dev/active/save-core-harness/test/h2.test.ts
+0410ea0 test(save-core-harness): H1 저장 중 편집·cleanup·늦은 완료 RED→GREEN
+
+A	dev/active/save-core-harness/BRIEF.md
+A	dev/active/save-core-harness/PROGRESS.md
+A	dev/active/save-core-harness/core/saveCore.ts
+A	dev/active/save-core-harness/test/h1.test.ts
+A	dev/active/save-core-harness/test/helpers.ts
+A	dev/active/save-core-harness/tsconfig.json
+A	dev/active/save-core-harness/vitest.config.mjs

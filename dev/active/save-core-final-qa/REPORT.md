@@ -12,8 +12,8 @@
 | H1 Blob 바인딩·직렬 저장 | **PASS(하네스)** | [메모리] 37×2 · CE-2 GREEN · [실제IDB] 바인딩 동결(D1+X 커밋) |
 | H2 confirm 증명 | **PASS(하네스)** | [메모리] 37×2(M9 kill 테스트 포함) · [실제IDB] reload 뒤 wrote:false `confirmed gen1 fresh` |
 | H3 이미지 원자 쓰기 | **PASS(하네스) + 실제 IDB 롤백 재확인** | [실제IDB] DataCloneError → save failed · 문서 A gen1·bytes-A 그대로 |
-| H4 다른 탭·낡은 증명 | **PARTIAL 유지(제품 미통합)** | [실제IDB] 2탭 readonly → B 닫힘 → A `stale`·B2 보존. 단 같은 탭·같은 DB의 어댑터 2개는 같은 세대 2회 saved(BD-1, 4절) |
-| H5 discard/replace | **PASS(하네스) — QA FAIL 회수** | [메모리] CE-1·CX-3 GREEN ×2 · [실제IDB] discard 경쟁 save `failed:discarding`·IDB A. 단 liveness 2건은 별도(3절) |
+| H4 다른 탭·낡은 증명 | **PARTIAL 유지(제품 미통합) · CE-3a 다른 어댑터 객체 PARTIAL · liveness 미보장 LV-1(3절)** | [실제IDB] 2탭 readonly → B 닫힘 → A `stale`·B2 보존. 단 같은 탭·같은 DB의 어댑터 2개는 같은 세대 2회 saved(BD-1, 4절) |
+| H5 discard/replace | **PASS(하네스 · 안전성) — QA FAIL 회수 / liveness 미보장 LV-2(3절)** | [메모리] CE-1·CX-3 GREEN ×2 · [실제IDB] discard 경쟁 save `failed:discarding`·IDB A. 단 liveness 2건은 별도(3절) |
 
 - CE별: CE-1 **PASS** · CE-2 **PASS** · CX-3 **PASS** · CE-3a **PASS(같은 객체) / PARTIAL(다른 객체)** · CE-3b·CE-4·CE-5·CE-6·OBS-1·OBS-2 관측값 불변.
 - **새 증상**: 없음(새 결함 0). 새로 확인한 것은 이미 save-core-fix REPORT 5절이 적은 성질의 실측뿐이다(LV-1·LV-2·BD-1·BD-2).

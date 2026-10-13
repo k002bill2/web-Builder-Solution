@@ -16,7 +16,8 @@
 - [x] H5 RED(`rawlogs/h5-red.txt` 5 failed/16 passed) → GREEN(`rawlogs/h5-green.txt` 21 passed) → 커밋
 - [x] 하네스 full suite 2회(21/21 ×2, exit 0) · tsc exit 0 · eslint exit 0 (rawlogs/final-*)
 - [x] README · MINIMAL-CONTRACT · REPORT
-- [ ] 최종: app diff 0 · lock diff 0 · git status · pathspec 커밋 증거
+- [x] 후속(H5 커밋 뒤 마감 점검에서 발견): confirm wrote:false·discard의 await 사이 편집 누락 → `followup-red.txt` 2 failed/21 passed → `followup-green.txt` 23 passed(`6000c29`) · H3 mutation RED `h3-mutation-red.txt`(원복)
+- [x] 최종: app diff 0(`git diff --stat 5b7d026 HEAD -- app` 빈 출력) · lock diff 0 · git status 빈 출력 · 전 커밋 pathspec `dev/active/save-core-harness/`(경로 밖 파일 0)
 
 ## 예상 테스트 수 (최초 예상 — 실제와 REPORT에서 대조)
 
@@ -46,4 +47,4 @@ v0 코어 = 제품 위험을 그대로 흉내 낸 순진한 구현(완료 시 �
 - H3: RED = 부족 이미지 `reason` expected image-missing received not-committed — v0는 이미지 없이 **문서만 커밋**(재읽기 verify가 잡음). 테스트1~3(readonly 거절·quota·abort 재시도)은 H1 구현(코어 소유 바인딩)과 제품 메모리 영속의 원자 트랜잭션 덕에 RED 없이 PASS — v0의 detach Blob 폐기 RED는 H1 테스트에서 `newer` 단언에 가려 별도 관측 못 함(정직 표기). 구현 = 바인딩 또는 IDB keys에 없으면 제출 0. 첫 green 시도는 패치 스크립트 실패로 덮였고 재실행 로그가 h3-green.txt.
 - H4: 1차 RED(`h4-red-1.txt`)는 테스트1 첫 단언이 신규 `proof` 필드라 핵심 단언이 가려짐 → proof 단언을 테스트2로 옮기고(구현 전) 재실행한 `h4-red.txt`가 기준: 테스트1 `status` expected failed/stale received confirmed · 테스트3 readonly 탭 confirmed · 테스트4 dirty 저장 saved(B 덮어씀). 예상 3건 → 실제 4건(예상 세대 불일치 저장 추가). 구현 = Receipt.proof · wrote:false는 writer 모드+IDB 재읽기 verify · save는 예상 세대(prev = confirmed.generation) 불일치 시 stale.
 - H5: RED 전 v0 lease 스텁(호출마다 새 토큰 = QA-6 흉내)을 넣어 TypeError가 아닌 단언 실패로 RED(`expected 2 to be 1`). RED 5건 = discard inflight·근거 복귀·stale blocked·replace dirty·lease. starter 분리 테스트는 v0에서도 PASS(회귀 가드). 구현 = discard(inflight 거절·IDB 재읽기 근거·없으면 blocked) · replace(intent·inflight·dirty·epoch 거절, 성공 시 epoch+1·dirty) · acquire(mountId) 멱등.
-- 최종: 예상 20 → 실제 21(H4 +1). 판정 H1·H2·H3·H5 PASS(하네스) · H4 PARTIAL(실제 IDB·Web Locks NOT VERIFIED).
+- 최종: 예상 20 → H5 커밋 시점 21(H4 +1) → 후속 23(H2 +1 · H5 +1). 최종 하네스 2회 23/23 exit 0 · tsc 0 · eslint 0. 판정 H1·H2·H3·H5 PASS(하네스) · H4 PARTIAL(실제 IDB·Web Locks NOT VERIFIED).

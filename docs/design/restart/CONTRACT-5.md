@@ -69,6 +69,7 @@ interface ProjectLedger {
   nextSeq: DraftSeq;
   epoch: number;                      // (r0.1) 문서 교체(replace) 횟수 — 자기 저장 커밋은 올리지 않는다
   dirtyMark: number;                  // (r0.1 · Codex a1-1) 편집마다 동기 +1(스냅샷·해시 0 — 비용 상수). publish·확인과 별개
+  publishedMark: number;              // (r0.1a) 마지막 publish 때의 dirtyMark — 그 뒤 편집은 dirtyMark > publishedMark, 그 전 편집은 latest가 덮는다
   conflicted?: { readonly theirs: DocHead }; // (r0.1) latest.baseEpoch ≠ epoch — 명시 선택 전 저장·확인 0
   memHead?: DocHead;                  // 장부가 본 마지막 메모리 커밋 head — expectedRevision의 유일한 출처
   memSeq: DraftSeq | 0;               // memHead에 담긴 초안 세대(교체 전이면 교체 시점 seq)
@@ -151,7 +152,7 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 - **I5 (위장 0)**: 확인은 `deleteSnapshot`·빈 id·같은 내용 `saveDoc`을 쓰지 않는다. `latest.hash === memHead.hash`면 `saveDoc` 0. `lastConfirmed`와 메모리 레코드가 동일(참조 동일)이면 IDB 쓰기 0·세대 도장 0·`saved` 전송 0. (Q4·F6·F7)
 - **I6 (영구 확인 정직)**: `persistence === "memory"` 또는 싱크 `unsupported`/`closed`면 `confirmed` 0 — `memory-only` 또는 `failed{unsupported}`. (Q7a)
 - **I7 (시작 분리)**: `confirm`은 `startDoc` 0. `start.held === "not-applied"`(R-E5 무커밋)·`unknown`이면 `confirm`은 `failed{start-pending}`이며 쓰기 0. 시작 재생은 `retryStart`만, 사용자 명시 조작으로만. (C2)
-- **I8 (보호 술어 1개)**: 모듈 `beforeunload` 등록 ⇔ ∃ 장부: `dirtyMark > markAtConfirm ∨ (latest && latest.seq > confirmedSeq) ∨ inflight ∨ start ∨ conflicted` (local 모드). `markAtConfirm` = 확인된 저장이 시작될 때의 dirtyMark. 모든 전이 끝(`mark` 포함)에서 재계산(0↔1 토글 주체 단일). (Q8·Q7b)
+- **I8 (보호 술어 1개)**: 모듈 `beforeunload` 등록 ⇔ ∃ 장부: `dirtyMark > publishedMark ∨ (latest && latest.seq > confirmedSeq) ∨ inflight ∨ start ∨ conflicted` (local 모드). (r0.1a) publish가 `publishedMark = dirtyMark`로 맞춘다 — publish 뒤 미확인은 `latest` 항이 맡는다. 모든 전이 끝(`mark` 포함)에서 재계산(0↔1 토글 주체 단일). (Q8·Q7b)
   - r0.1(Codex a1-1): 디바운스 중 편집은 publish 전이라 `latest`가 없다 → `mark()`가 편집마다 동기로 술어를 켠다. `beforeunload`는 cleanup보다 먼저 판정되므로 release 시 publish로는 탭 닫기를 막지 못한다. 또한 **기존 편집기 경고(`useAutosaveScheduler.ts:283-291`)는 제거·통합하지 않는다** — 마운트 중에는 두 리스너가 함께 있고 브라우저 경고는 1번이다.
 - **I9 (임대 1개)**: 프로젝트당 활성 lease 1. 새 acquire는 옛 lease를 대체, 옛 lease의 publish는 `superseded`(쓰기 0). release는 멱등.
 - **I10 (권한 유지)**: 쓰기 탭 규칙(Web Locks 단일 작성자 · 최신성 · cleared 멈춤 · steal 0)과 렌더 iframe 격리는 변경 0. 장부는 그 위에서만 쓴다.
@@ -163,7 +164,7 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 | 지금 | 사건 | 장부 동작 | 다음 |
 |---|---|---|---|
 | — | 편집(`change`) | `mark(token)` — dirtyMark +1, I8 재계산(스냅샷 0) | — |
-| — | 스케줄러 저장 시작(version v) | `publish` → seq s(스냅샷 동결 · hash · binding) → `save(s)` | inflight{s} |
+| — | 스케줄러 저장 시작(version v) | `publish` → seq s(스냅샷 동결 · hash · binding · `baseEpoch = epoch`) · `publishedMark = dirtyMark` → `save(s)` | inflight{s} |
 | inflight{s} | 다른 저장 요청 | 단일 비행 — 끝난 뒤 `latest`만 1회 이어서(중간 세대 생략 = 최신 의도 병합) | — |
 | inflight{s} | 메모리 커밋 | `memHead`, `memSeq = s` | — |
 | inflight{s} | IDB oncomplete | `lastConfirmed = 제출 레코드` · `confirmedSeq = max(…, s)` · `latest.seq ≤ s`면 `latest` 비움 | idle 또는 `newer` |
@@ -201,7 +202,7 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 | 순서 | 장부(프로젝트) 직렬 → 기존 큐(탭 전역 직렬). 순서 보장 추가 비용 0 |
 | 취소 | 디바운스 타이머만 취소 가능. 시작된 요청·트랜잭션은 취소 0 — 결과는 장부에 기록 |
 | dispose/POP | cleanup: `release(token, last)` — **pending이면 먼저 publish**(디바운스 편집 보존, F9) → lease 해제. 진행 저장은 장부가 계속 소유 → resolve는 장부에 기록(I1·I3) |
-| StrictMode | mount→cleanup→mount: pending 없으면 publish 0(거짓 초안 0), lease 재획득 멱등 |
+| StrictMode | mount→cleanup→mount: pending 없으면 publish 0(거짓 초안 0), lease 재획득 멱등. (r0.1a) `acquire`·`release`는 **commit 단계 effect에서만** 부른다(render·초기화 함수는 StrictMode에서 두 번 돈다). render 중 읽기는 부수효과 없는 `view()`만, `acquire`가 돌려준 seed가 정본이며 그 `view()` 이후 seq·epoch가 바뀌었으면 편집기가 다시 seed한다 |
 | 호출자 언마운트 | 결과는 `lastResult` + `subscribe`. 호출자 setState는 alive 검사 뒤만 |
 | 프로젝트 삭제·`cleared` | 장부 폐기(binding 해제). `cleared`면 모든 confirm `failed{cleared}` |
 | 탭 수명 | 장부는 탭 메모리 — 새로고침·탭 닫기·모바일 종료·크래시에 사라진다. 보호는 I8 `beforeunload`(안전층, **보장 아님**). 모바일 백그라운드 종료·크래시는 데이터 손실 잔존 |
@@ -302,7 +303,7 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 
 | 조각 | 위치 | 이유 |
 |---|---|---|
-| 장부 상태 Map · `view`·`acquire`·`release`·`publish`(동기) · I8 리스너 토글 | **진입**(저장소와 같은 closure — PROJECT_AUTO) | cleanup이 동기로 넘겨야 함(F9) |
+| 장부 상태 Map · `view`·`acquire`·`release`·`publish`·`mark`(동기 — `mark`는 편집마다) · I8 리스너 토글 | **진입**(저장소와 같은 closure — PROJECT_AUTO) | cleanup이 동기로 넘겨야 함(F9) |
 | `confirm`·`retryStart`·`save` 본문 · 결과 분류 · 엄격 imageOps · `LocalSync.confirm` | **조작 뒤**(memoryDocBook/localSync 청크) | 사용자 조작 또는 첫 저장 때만 |
 | 편집기 seed 인계(초기 phase `unconfirmed`·binding 시드) | 진입(조건부 경로) — S3처럼 lazy 가능하나 조건부 자동 import는 별도 시나리오 필요(`check-bundle-size.mjs:25`) | MQ-4-3 승계 |
 | `/projects` 행 확인 UI | 조작 뒤 | 진입 0 목표 |
@@ -321,3 +322,4 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 ## 변경 이력
 - r0 (2026-10-14) — 최초 작성.
 - r0.1 (2026-10-14) — Codex adversarial-review a1(`dev/active/rs5-contract/logs/codex-a1.txt`, needs-attention · P1 3) 반영 1회: a1-1 디바운스 편집 이탈 보호(`mark` · I8 · 기존 편집기 경고 유지) · a1-2 lease 없는 교체 충돌(`epoch`·`baseEpoch`·I3b·4.4) · a1-3 하이드레이트 확인 증명 분리(I5b). T16~T19 추가. **미재검토.**
+- r0.1a (2026-10-14) — Codex 이후 자체 정합성 수정(advisor 점검): I8의 미정의 항 `markAtConfirm` → `publishedMark`(2.2 타입·4.1 행) · `mark`를 8.2 진입 몫 표에 추가 · `acquire`/`release` commit 단계 effect 한정(4.5 StrictMode 행). **Codex 미재검토.**

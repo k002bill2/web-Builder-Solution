@@ -61,6 +61,6 @@
 
 ## 9. 남은 것 · 필요한 것
 
-- 미재검토: r0.1 반영분(Codex 2회차 금지). 회수 시 Jarvis 검토 또는 별도 승인된 재검토 필요.
+- 미재검토: r0.1 반영분(Codex 2회차 금지) + r0.1a 자체 정합성 수정(I8 `publishedMark` · `mark` 진입 몫 표 · `acquire` effect 한정 — Codex 검토 아님). 회수 시 Jarvis 검토 또는 별도 승인된 재검토 필요.
 - 미측정: 장부 진입 몫(S5a~c). 이미 `/studio` 판정선 여유 4B(base 129896 / 129900).
 - 필요한 결정(사용자/Jarvis): ① 추천안 A 채택 여부 ② 공개 interface 추가(`ProjectRepository.ledger`) 승인 여부 ③ S5 스파이크 레인 승인 ④ Designer 상위 UX 레인(conflicted·start-pending·memory-only 문구) 착수.

@@ -1,7 +1,7 @@
 /**
  * 저장 코어(격리 하네스) — 프로젝트 1개·탭 1개의 문서+이미지 저장/확인 상태기.
  * 영속 경계 = 제품 `StudioPersistence`(write 1회 = 트랜잭션 1개). 제품 DocBook·localSync·useDocSave와 연결하지 않는다(MINIMAL-CONTRACT 참조).
- * v0 = 제품 위험을 흉내 낸 순진한 구현(RED 기준선). H1: Blob 바인딩은 코어 소유 · 저장 직렬화 · 제출 mark 고정 · 세대로 늦은 완료 식별.
+ * v0 = 제품 위험을 흉내 낸 순진한 구현(RED 기준선 — 각 H 커밋 전 rawlogs/*-red.log). H5: discard/replace 거절 규칙 · lease 멱등. H1: Blob 바인딩은 코어 소유 · 저장 직렬화 · 제출 mark 고정 · 세대로 늦은 완료 식별.
  */
 import type { StudioPersistence, WriteOp } from "../../../../app/src/data/persistence/studioPersistence";
 import type { WriterMode } from "../../../../app/src/data/persistence/writerLock";
@@ -35,6 +35,17 @@ export type ConfirmResult =
   | { readonly status: "confirmed"; readonly wrote: boolean; readonly receipt: Receipt }
   | { readonly status: "newer"; readonly receipt: Receipt }
   | { readonly status: "failed"; readonly reason: string };
+
+export type DiscardResult =
+  | { readonly status: "discarded"; readonly restored: Receipt }
+  | { readonly status: "rejected" | "blocked"; readonly reason: string };
+
+export interface ReplaceRequest {
+  readonly intent?: "replace";
+  readonly expectedEpoch?: number;
+}
+
+export type ReplaceResult = { readonly status: "replaced"; readonly epoch: number } | { readonly status: "rejected"; readonly reason: string };
 
 export interface CoreView {
   readonly doc: CoreDoc;
@@ -85,7 +96,9 @@ export async function openSaveCore(options: CoreOptions) {
   let mark = 0;
   let savedMark = 0;
   let inflight = 0;
-  const epoch = 0;
+  let leases = 0;
+  let live: { readonly mountId: string; readonly token: number } | undefined;
+  let epoch = 0;
   let confirmed: Receipt | undefined = loaded && { hash: loaded.hash, imageIds: loaded.doc.imageIds, generation: loaded.generation, mark: 0, proof: "hydrated" };
   // H1: Blob 바인딩은 코어 소유(편집 시 동기 등록) — 편집기 detach(POP/cleanup)와 무관하게 보존
   let attached: ReadonlyMap<string, Blob> = new Map();
@@ -157,6 +170,31 @@ export async function openSaveCore(options: CoreOptions) {
     return { status: "confirmed", wrote: true, receipt: result.receipt };
   };
 
+  /** H5: 진행 중이면 거절 · 저장 상태로 돌아갈 근거(IDB 재읽기 = 마지막 증명)가 있을 때만 폐기, 없으면 blocked(초안 보존) */
+  const discard = async (): Promise<DiscardResult> => {
+    if (inflight > 0) return { status: "rejected", reason: "inflight" };
+    if (!persistence) return { status: "blocked", reason: "not-persistent" };
+    if (!confirmed) return { status: "blocked", reason: "no-saved-state" };
+    const stored = await readStored(persistence, projectId);
+    if (!stored || !(await verify(confirmed))) return { status: "blocked", reason: "stale" };
+    doc = stored.doc;
+    savedMark = mark;
+    epoch += 1;
+    return { status: "discarded", restored: { ...confirmed, proof: "fresh" } };
+  };
+  /** H5: 문서 교체(재시작·R-E5 재시도 교체)는 명시 intent + 예상 epoch · 진행 중/미저장 편집이 있으면 거절(덮어쓰기 0) */
+  const replace = (next: CoreDoc, request: ReplaceRequest, blobs: ReadonlyMap<string, Blob> = new Map()): ReplaceResult => {
+    if (request.intent !== "replace") return { status: "rejected", reason: "intent-required" };
+    if (inflight > 0) return { status: "rejected", reason: "inflight" };
+    if (mark > savedMark) return { status: "rejected", reason: "dirty" };
+    if (request.expectedEpoch !== epoch) return { status: "rejected", reason: "epoch" };
+    doc = next;
+    attached = new Map([...attached, ...blobs]);
+    mark += 1;
+    epoch += 1;
+    return { status: "replaced", epoch };
+  };
+
   return {
     edit(next: CoreDoc, blobs: ReadonlyMap<string, Blob> = new Map()) {
       doc = next;
@@ -169,16 +207,17 @@ export async function openSaveCore(options: CoreOptions) {
     },
     save,
     confirm,
-    async discard() {
-      if (confirmed && loaded) doc = loaded.doc;
-      savedMark = mark;
-      return { status: "discarded" as const };
+    discard,
+    replace,
+    /** H5: 같은 mountId 재요청(StrictMode 이중 effect) = 같은 토큰 · release 뒤 = 새 토큰 */
+    acquire(mountId: string) {
+      if (live?.mountId === mountId) return live.token;
+      leases += 1;
+      live = { mountId, token: leases };
+      return leases;
     },
-    replace(next: CoreDoc) {
-      doc = next;
-      mark += 1;
-      savedMark = mark;
-      return { status: "replaced" as const };
+    release(token: number) {
+      if (live?.token === token) live = undefined;
     },
     async retryStart() {
       await options.starter?.();

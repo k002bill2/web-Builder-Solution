@@ -43,6 +43,18 @@ describe("H5 replace/discard와 진행 중 저장", () => {
     expect((await readStored(db.persistence, P))?.hash).toBe(hashOf(A));
   });
 
+  it("discard 진행 중(await 사이) 편집 C → blocked{newer} · C 보존(폐기로 최신 초안 소실 0)", async () => {
+    const { db, core } = await savedA();
+    db.failAt(2, "QuotaExceededError");
+    core.edit(B, new Map([["img-b", blobOf("bytes-B")]]));
+    await core.save();
+    const discarding = core.discard();
+    const C = docOf(3, "C");
+    core.edit(C);
+    expect(await discarding).toMatchObject({ status: "blocked", reason: "newer" });
+    expect(core.view()).toMatchObject({ doc: C, dirty: true });
+  });
+
   it("복귀 근거 없음(다른 탭이 세대 2 기록) → discard blocked{stale} · 초안 보존", async () => {
     const { db, core } = await savedA();
     const other = await openSaveCore({ projectId: P, persistence: db.persistence, writer: writerAlways, initial: docOf(0, "seed") });

@@ -156,12 +156,16 @@ export async function openSaveCore(options: CoreOptions) {
   /** H2: dirty면 최신 초안을 저장(진행 중 저장 뒤 직렬) · 끝난 뒤 mark가 앞서면 newer(확정 아님) */
   const confirm = async (): Promise<ConfirmResult> => {
     if (!persistence) return { status: "failed", reason: "not-persistent" };
+    const entered = mark;
     if (mark <= savedMark && confirmed) {
       // H4: wrote:false = writer 탭 + 지금 IDB 재읽기가 마지막 증명과 같을 때만(열기·직전 증명 재사용 0)
       const mode = await writer.mode();
       if (mode !== "writer") return { status: "failed", reason: mode };
-      if (!(await verify(confirmed))) return { status: "failed", reason: "stale" };
-      return { status: "confirmed", wrote: false, receipt: { ...confirmed, proof: "fresh" } };
+      const proof = confirmed;
+      if (!(await verify(proof))) return { status: "failed", reason: "stale" };
+      // 진입 뒤(await 사이) 편집이 있으면 확정 아님
+      if (mark !== entered) return { status: "newer", receipt: { ...proof, proof: "fresh" } };
+      return { status: "confirmed", wrote: false, receipt: { ...proof, proof: "fresh" } };
     }
     const result = await save();
     if (result.status === "failed") return { status: "failed", reason: result.reason };
@@ -175,8 +179,11 @@ export async function openSaveCore(options: CoreOptions) {
     if (inflight > 0) return { status: "rejected", reason: "inflight" };
     if (!persistence) return { status: "blocked", reason: "not-persistent" };
     if (!confirmed) return { status: "blocked", reason: "no-saved-state" };
+    const entered = mark;
     const stored = await readStored(persistence, projectId);
     if (!stored || !(await verify(confirmed))) return { status: "blocked", reason: "stale" };
+    // 진입 뒤(await 사이) 편집이 있으면 그 초안을 버리지 않는다
+    if (mark !== entered) return { status: "blocked", reason: "newer" };
     doc = stored.doc;
     savedMark = mark;
     epoch += 1;

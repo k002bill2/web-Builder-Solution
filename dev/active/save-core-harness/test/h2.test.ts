@@ -50,6 +50,14 @@ describe("H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패�
     expect(core.view()).toMatchObject({ dirty: true, confirmed: { hash: hashOf(B) } });
   });
 
+  it("wrote:false 확인 진행 중(await 사이) 편집 C → confirmed 아님: status newer · C는 dirty", async () => {
+    const { core } = await savedA();
+    const confirming = core.confirm();
+    core.edit(C);
+    expect(await confirming).toMatchObject({ status: "newer", receipt: { hash: hashOf(A) } });
+    expect(core.view()).toMatchObject({ doc: C, dirty: true });
+  });
+
   it("메모리 폴백(영속 없음): save·confirm 모두 failed{not-persistent} · view.confirmed 없음", async () => {
     const core = await openSaveCore({ projectId: P, persistence: undefined, writer: writerAlways, initial: docOf(0, "seed") });
     core.edit(B, new Map([["img-b", blobOf("bytes-B")]]));

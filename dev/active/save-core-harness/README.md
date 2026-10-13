@@ -30,7 +30,7 @@ app/node_modules/.bin/eslint --config app/eslint.config.js dev/active/save-core-
 
 | 경로 | 내용 |
 |---|---|
-| `core/saveCore.ts` | 저장 코어(232행) |
+| `core/saveCore.ts` | 저장 코어(239행) |
 | `test/h1~h5.test.ts` · `test/helpers.ts` | 체크포인트별 테스트 · commit/fail 게이트 |
 | `vitest.config.mjs` · `tsconfig.json` | 하네스 전용 설정(제품 설정 변경 0) |
 | `rawlogs/` | RED/GREEN·최종 2회·tsc·eslint·제품 baseline 원문 |

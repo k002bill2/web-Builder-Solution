@@ -1,6 +1,6 @@
 # CONTRACT-5 — 전용 저장 확인 기술 계약 (내용 · 이미지 · 편집 세대 · 진행 중 저장)
 
-- 상태: **r0 설계안 — 구현 승인 아님.** 사용자 최신 지시 1 = "계약 설계만 승인; 구현·예산 상향 별도". 이 문서의 인터페이스 변경은 전부 **제안**이다.
+- 상태: **r0.1 설계안 — 구현 승인 아님.** r0.1 = Codex a1(P1 3) 반영, **미재검토**. 사용자 최신 지시 1 = "계약 설계만 승인; 구현·예산 상향 별도". 이 문서의 인터페이스 변경은 전부 **제안**이다.
 - base `467a691`(앱 `93f8111`). 작성 Developer(Orca Claude Code) · 회수 Jarvis. 상위 UX(문구·버튼 배치·화면 흐름)는 이 계약 회수 뒤 Designer.
 - 대체 관계: SPEC-4 r0.1b의 `deleteSnapshot(projectId, "")` 확인 차용(MQ-4-2 ★A)과 `PendingDraft`/`PendingRecord` 분산 소유를 **버린다**. 근거 = rs4-measure P-3 판정(이미지 누락 실재 · 빈 id 스냅샷 실재 가능, `dev/active/rs4-measure/REPORT.md` 2절)과 rs4-review P1 4건(C1·C2·Q1·Q3).
 - 표기: [L1] 코드 행 직접 확인 · [L1-추적] 여러 행 이어 읽은 경로 추론(실행 0) · [L3] 추정/미측정.
@@ -52,6 +52,7 @@ interface DraftSnapshot {
   readonly doc: PageDoc;              // frozen
   readonly hash: string;              // hashDoc(doc) — 편집기 계산
   readonly images: ImageBinding;      // 이 doc + 현재 스냅샷이 참조하는 localId → 이미지 항목(Blob 포함). 참조 밖 항목 0
+  readonly baseEpoch: number;         // (r0.1 · Codex a1-2) publish 시점 장부 epoch — 문서 교체 뒤 초안을 새 head 위에 조용히 재기반하지 않게
 }
 type ImageBinding = ReadonlyMap<string /* localId */, RenderImage /* Blob 변형본 포함 */>;
 
@@ -66,10 +67,13 @@ interface ProjectLedger {
   readonly projectId: string;
   latest?: DraftSnapshot;             // 아직 확인 안 된 최신 초안(없으면 = 메모리 문서가 최신 의도)
   nextSeq: DraftSeq;
+  epoch: number;                      // (r0.1) 문서 교체(replace) 횟수 — 자기 저장 커밋은 올리지 않는다
+  dirtyMark: number;                  // (r0.1 · Codex a1-1) 편집마다 동기 +1(스냅샷·해시 0 — 비용 상수). publish·확인과 별개
+  conflicted?: { readonly theirs: DocHead }; // (r0.1) latest.baseEpoch ≠ epoch — 명시 선택 전 저장·확인 0
   memHead?: DocHead;                  // 장부가 본 마지막 메모리 커밋 head — expectedRevision의 유일한 출처
   memSeq: DraftSeq | 0;               // memHead에 담긴 초안 세대(교체 전이면 교체 시점 seq)
   confirmedSeq: DraftSeq | 0;         // oncomplete로 확인된 세대
-  lastConfirmed?: DocRecord;          // IDB와 같다고 확인된 레코드(하이드레이트 시드 포함 — F6)
+  lastConfirmed?: DocRecord;          // 영속 확인 증명 — 이 탭이 제출해 oncomplete 받은 레코드, 또는 검증된 하이드레이트(3 I5b · r0.1 Codex a1-3). 편집용 시드와 별개
   inflight?: { readonly seq: DraftSeq; readonly kind: "save" | "confirm"; readonly done: Promise<ConfirmResult> };
   lease?: LeaseToken;                 // 활성 편집기 1개
   start?: StartPending;               // 시작 요청 미확인(확인과 별개 축)
@@ -84,7 +88,8 @@ interface SaveLedgerApi {
   // 편집기 전용
   acquire(projectId): { token: LeaseToken; seed: LedgerSeed };      // 멱등: 같은 마운트의 재호출 = 같은 토큰
   release(token: LeaseToken, last?: DraftInput): void;               // cleanup — last가 있으면 먼저 publish(F9)
-  publish(token, input: DraftInput): DraftSeq | "superseded";        // 저장 시작·cleanup 때만(키 입력마다 아님)
+  mark(token): void;                                                  // (r0.1) 편집마다 동기 — dirtyMark +1만(I8 보호 · view() 표시용)
+  publish(token, input: DraftInput): DraftSeq | "superseded";        // 저장 시작·cleanup 때만(스냅샷·해시 비용 — 키 입력마다 아님)
   save(token, seq: DraftSeq): Promise<ConfirmResult>;                // 스케줄러의 저장 = 장부 경유 단일 경로
   // 어디서나(편집기 · /projects · 프로필)
   view(projectId): LedgerView;                                       // 동기 조회, 쓰기 0
@@ -98,7 +103,7 @@ interface LedgerSeed {                                               // 재진�
   readonly doc: PageDoc;              // latest?.doc ?? 메모리 문서
   readonly revision: number;          // memHead.revision (getDoc 순서와 무관 — C3)
   readonly images: ImageBinding;      // latest?.images ∪ 복원 대상(기존 restoreImages 경로)
-  readonly phase: "idle" | "unconfirmed" | "saving" | "start-pending";
+  readonly phase: "idle" | "unconfirmed" | "saving" | "start-pending" | "conflicted"; // conflicted = 내 초안 + 교체 문서(theirs) 선택 대기
 }
 ```
 
@@ -108,7 +113,7 @@ interface LedgerSeed {                                               // 재진�
 type Stage = "before-request" | "request" | "commit" | "idb" | "response";
 type Reason =
   | "offline" | "quota" | "read-only" | "stale-tab" | "cleared" | "unsupported"
-  | "stale-doc" | "image-missing" | "clone-failed" | "start-pending" | "superseded" | "infra-unknown";
+  | "stale-doc" | "image-missing" | "clone-failed" | "start-pending" | "superseded" | "replaced-conflict" | "infra-unknown";
 
 type ConfirmResult =
   | { kind: "confirmed"; seq: DraftSeq | 0; head: DocHead; wrote: boolean; newer: boolean } // newer = 확인 중 더 새 초안 생김(=여전히 미확인)
@@ -139,12 +144,15 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 
 - **I1 (최신 보호)**: 어떤 저장·확인 resolve도 자기 대상 seq보다 큰 `latest`를 지우지 못한다. `latest`는 `confirmedSeq ≥ latest.seq`일 때만 비운다. (C1)
 - **I2 (확인 단조)**: `confirmedSeq = max(confirmedSeq, seqOf(제출 레코드.doc))` — F1에 따라 resolve는 *그때 실린 레코드*를 확인한다. 옛 요청 resolve가 새 커밋을 과소 확인할 수는 있어도 과대 확인은 0.
-- **I3 (revision 단일 출처)**: 저장 요청의 expectedRevision은 요청 직전 `memHead.revision`만. 편집기 마운트·`getDoc` 순서와 무관. (C3·F3)
+- **I3 (revision 단일 출처)**: 저장 요청의 expectedRevision은 요청 직전 `memHead.revision`만. 편집기 마운트·`getDoc` 순서와 무관. (C3·F3) **단 `latest.baseEpoch === epoch`일 때만** — 교체 뒤 초안을 새 head 위에 올리는 것은 I3b가 막는다.
+- **I3b (교체 충돌 · r0.1 Codex a1-2)**: replace는 lease 유무와 무관하게 미확인 `latest`가 있으면 `conflicted{theirs}`로 간다. conflicted 동안 자동 저장·`confirm`·`acquire` seed의 자동 저장은 쓰기 0(`failed{replaced-conflict}`), 사용자 명시 선택(내 초안 유지 = 새 head 위에 명시 저장 · 교체 문서 채택 = 초안 폐기)만 푼다.
 - **I4 (원자 묶음)**: IDB에 커밋되는 문서 레코드가 참조하는 모든 이미지는 같은 트랜잭션의 put 또는 이미 `stored`. 아니면 제출 0 + `image-missing`. (Q3·F4)
+- **I5b (확인 증명 · r0.1 Codex a1-3)**: `lastConfirmed`는 (가) 이 탭이 제출해 `oncomplete`를 받은 레코드 또는 (나) **검증된 하이드레이트** — 싱크 열기 때 최신성(`fresh()`) 통과 **그리고** 실제 IDB 문서 레코드에서 읽은 것(`localSync.ts:110-111`의 낡은 entry 대체분 제외) **그리고** 그 레코드 참조 이미지 id 전부가 `stored`(`keys("images")`)에 있음 — 일 때만. 아니면 증명 없음 → 확인은 binding으로 이미지를 실어 새 제출하거나, binding에도 없으면 `failed{image-missing}`. 이미지 **존재**는 확인하나 Blob **내용 유효성**은 확인하지 않는다(읽기 비용 — 잔여 위험, 9절).
 - **I5 (위장 0)**: 확인은 `deleteSnapshot`·빈 id·같은 내용 `saveDoc`을 쓰지 않는다. `latest.hash === memHead.hash`면 `saveDoc` 0. `lastConfirmed`와 메모리 레코드가 동일(참조 동일)이면 IDB 쓰기 0·세대 도장 0·`saved` 전송 0. (Q4·F6·F7)
 - **I6 (영구 확인 정직)**: `persistence === "memory"` 또는 싱크 `unsupported`/`closed`면 `confirmed` 0 — `memory-only` 또는 `failed{unsupported}`. (Q7a)
 - **I7 (시작 분리)**: `confirm`은 `startDoc` 0. `start.held === "not-applied"`(R-E5 무커밋)·`unknown`이면 `confirm`은 `failed{start-pending}`이며 쓰기 0. 시작 재생은 `retryStart`만, 사용자 명시 조작으로만. (C2)
-- **I8 (보호 술어 1개)**: 모듈 `beforeunload` 등록 ⇔ ∃ 장부: `(latest && latest.seq > confirmedSeq) ∨ inflight ∨ start` (local 모드). 모든 전이 끝에서 재계산(0↔1 토글 주체 단일). (Q8·Q7b)
+- **I8 (보호 술어 1개)**: 모듈 `beforeunload` 등록 ⇔ ∃ 장부: `dirtyMark > markAtConfirm ∨ (latest && latest.seq > confirmedSeq) ∨ inflight ∨ start ∨ conflicted` (local 모드). `markAtConfirm` = 확인된 저장이 시작될 때의 dirtyMark. 모든 전이 끝(`mark` 포함)에서 재계산(0↔1 토글 주체 단일). (Q8·Q7b)
+  - r0.1(Codex a1-1): 디바운스 중 편집은 publish 전이라 `latest`가 없다 → `mark()`가 편집마다 동기로 술어를 켠다. `beforeunload`는 cleanup보다 먼저 판정되므로 release 시 publish로는 탭 닫기를 막지 못한다. 또한 **기존 편집기 경고(`useAutosaveScheduler.ts:283-291`)는 제거·통합하지 않는다** — 마운트 중에는 두 리스너가 함께 있고 브라우저 경고는 1번이다.
 - **I9 (임대 1개)**: 프로젝트당 활성 lease 1. 새 acquire는 옛 lease를 대체, 옛 lease의 publish는 `superseded`(쓰기 0). release는 멱등.
 - **I10 (권한 유지)**: 쓰기 탭 규칙(Web Locks 단일 작성자 · 최신성 · cleared 멈춤 · steal 0)과 렌더 iframe 격리는 변경 0. 장부는 그 위에서만 쓴다.
 
@@ -154,6 +162,7 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 
 | 지금 | 사건 | 장부 동작 | 다음 |
 |---|---|---|---|
+| — | 편집(`change`) | `mark(token)` — dirtyMark +1, I8 재계산(스냅샷 0) | — |
 | — | 스케줄러 저장 시작(version v) | `publish` → seq s(스냅샷 동결 · hash · binding) → `save(s)` | inflight{s} |
 | inflight{s} | 다른 저장 요청 | 단일 비행 — 끝난 뒤 `latest`만 1회 이어서(중간 세대 생략 = 최신 의도 병합) | — |
 | inflight{s} | 메모리 커밋 | `memHead`, `memSeq = s` | — |
@@ -164,10 +173,10 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 ### 4.2 `confirm(projectId)` (어디서나 · 사용자 명시)
 
 1. memory 모드 → `memory-only`. 끝.
-2. `start`가 있으면 → `failed{start-pending}`(쓰기 0). 끝.
+2. `start`가 있으면 → `failed{start-pending}`(쓰기 0). `conflicted`면 → `failed{replaced-conflict}`(쓰기 0). 끝.
 3. `target = latest?.seq ?? memSeq`. `inflight`가 있으면 그것을 기다린다(취소 0 — IDB 트랜잭션은 취소 불가).
 4. `latest`가 있고 `latest.hash !== memHead.hash` → 장부 경유 `saveDoc(expectedRevision = memHead.revision, latest.doc)` + binding(편집기 밖이어도 장부가 Blob을 가진다 → **편집기 밖 확인이 초안을 커밋할 수 있다** — P-3 c "옛 레코드 resolve" 해소).
-5. `LocalSync.confirm(projectId, book, binding)`: 메모리 레코드 === `lastConfirmed` → `{wrote:false}` · === `submitted` → `queue.retry` · 그 밖 → 엄격 imageOps 뒤 새 제출.
+5. `LocalSync.confirm(projectId, book, binding)`: 메모리 레코드 === `lastConfirmed`(I5b 증명만) → `{wrote:false}` · === `submitted` → `queue.retry` · 그 밖 → 엄격 imageOps 뒤 새 제출.
 6. 결과: `confirmed{seq: target, newer: latest?.seq > target}` 또는 `failed`. `newer`면 UI는 "확인됨"을 표시하지 않는다(Q1).
 
 ### 4.3 시작 요청 (create · restart) — 확인과 분리
@@ -180,9 +189,9 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 
 | 조건 | 결과 |
 |---|---|
-| lease 없음 | `memHead`·`memSeq = nextSeq++` 갱신. 다음 acquire가 새 seed를 받는다 |
-| lease 있음 · `latest` 없음(또는 `confirmedSeq ≥ latest.seq`) | 편집기에 `replaced{doc, revision, images}` 전달 → 편집기 doc·revision·이미지 기준 교체 · phase `saved` |
-| lease 있음 · 미확인 `latest` 있음 | **조용히 덮지 않는다**: phase `stale`(기존 충돌 흐름 E-S09)로 내 편집 보존 + 선택. `adopt` 중 편집(F12)도 같은 규칙 |
+| 공통 | `epoch += 1` · `memHead` 갱신 |
+| 미확인 `latest` 없음(lease 유무 무관) | 편집기에 `replaced{doc, revision, images}` 전달 → 편집기 doc·revision·이미지 기준 교체 · phase `saved` |
+| 미확인 `latest` 있음(**lease 유무 무관** · r0.1 Codex a1-2) | **조용히 덮지 않는다**: `conflicted{theirs}`(I3b). lease 있으면 phase `stale`(기존 충돌 흐름 E-S09), lease 없으면 다음 acquire seed phase `conflicted` — 초안 doc를 바로 편집 문서로 쓰지 않고 선택을 먼저 보인다. `adopt` 중 편집(F12)도 같은 규칙 |
 
 ### 4.5 수명 — dedupe · 순서 · 취소 · dispose · POP
 
@@ -270,6 +279,10 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 | T13 | 같은 내용 재확인 | saveDoc 0 · revision 변화 0 (I5) |
 | T14 | quota(제출됨) → 재시도 | retry에 이미지 op 포함 · confirmedSeq 갱신(P-3 b 회귀) |
 | T15 | 빈 id 스냅샷이 있는 문서에서 confirm | 스냅샷 변화 0(P-3 d2 회귀 — deleteSnapshot 미사용) |
+| T16 | (r0.1) saved 상태에서 편집 → 디바운스 타이머 전 `beforeunload` 발화 | 경고 등록됨(I8 `mark` · 기존 편집기 경고도 유지) · 탭 닫기 취소 가능 |
+| T17 | (r0.1) 편집 B → POP(latest=B) → 프로필에서 restart 성공(replace) → `/projects` confirm → 재진입 | confirm = `failed{replaced-conflict}` 쓰기 0 · IDB 문서 = restart 결과 · 재진입 seed phase `conflicted`(B는 mine으로 보존) · 선택 전 자동 저장 0 |
+| T18 | (r0.1) 이미지 누락 저장이 IDB에 있는 상태로 리로드 → 편집 없이 confirm | 증명 없음 → binding 없으면 `failed{image-missing}` · `confirmed` 0 |
+| T19 | (r0.1) entry 읽기 → 다른 탭 저장 → 이 탭 싱크 열기(stale — entry 대체 시드) → confirm | 증명 없음 · `failed{stale-tab}` · `wrote:false confirmed` 0 |
 
 브라우저 실측(Ego Lite, build+preview — memory `png-export-needs-preview` 교훈 동일): POP 재진입·탭 2개 잠금·리로드 복원은 단위 테스트로 대체 불가 → 구현 레인 QA.
 
@@ -302,8 +315,9 @@ SPEC-4가 "훅 인자 1건"이라 한 것(Q6)보다 크다. 숨기지 않는다.
 
 ## 9. 새로 내린 결정 · 남는 위험
 
-- 새 결정(회수 대상): ① 소유자 = 저장소 인스턴스 장부 ② 편집기 밖 확인이 초안을 커밋할 수 있음(편집기가 hash·binding 동봉) ③ 확인/시작 재시도 분리 ④ 참조 이미지 미기록 = 제출 전 실패(현 동작 변경) ⑤ 새 스키마 0 ⑥ `deleteSnapshot(p,"")` 확인 차용 폐기.
-- 남는 위험: 탭 종료·모바일 종료·크래시 손실(안전층만) · ingest 중 이탈 · 저장소 책임 증가로 리팩터 범위 큼(2.5) · 진입 바이트 미측정(이미 판정선 여유 4B) · `local`인데 싱크 열기 실패 상태 구별 필드 신설 필요.
+- 새 결정(회수 대상): ① 소유자 = 저장소 인스턴스 장부 ② 편집기 밖 확인이 초안을 커밋할 수 있음(편집기가 hash·binding 동봉) ③ 확인/시작 재시도 분리 ④ 참조 이미지 미기록 = 제출 전 실패(현 동작 변경) ⑤ 새 스키마 0 ⑥ `deleteSnapshot(p,"")` 확인 차용 폐기. ⑦ (r0.1) 미확인 초안이 있는 문서 교체 = 항상 충돌 선택(자동 재기반 0) ⑧ (r0.1) 하이드레이트는 검증 조건(I5b)을 통과해야만 확인 증명.
+- 남는 위험: 이미지 Blob 내용 유효성은 확인하지 않음(I5b — 존재만) · 탭 종료·모바일 종료·크래시 손실(안전층만) · ingest 중 이탈 · 저장소 책임 증가로 리팩터 범위 큼(2.5) · 진입 바이트 미측정(이미 판정선 여유 4B) · `local`인데 싱크 열기 실패 상태 구별 필드 신설 필요.
 
 ## 변경 이력
-- r0 (2026-10-14) — 최초 작성. Codex 적대 검토 전.
+- r0 (2026-10-14) — 최초 작성.
+- r0.1 (2026-10-14) — Codex adversarial-review a1(`dev/active/rs5-contract/logs/codex-a1.txt`, needs-attention · P1 3) 반영 1회: a1-1 디바운스 편집 이탈 보호(`mark` · I8 · 기존 편집기 경고 유지) · a1-2 lease 없는 교체 충돌(`epoch`·`baseEpoch`·I3b·4.4) · a1-3 하이드레이트 확인 증명 분리(I5b). T16~T19 추가. **미재검토.**

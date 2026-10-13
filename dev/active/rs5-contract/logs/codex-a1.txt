@@ -1,0 +1,56 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a1361b-d060-7cf1-8c1a-9855e6368bbe).
+[codex] Turn started (01a1361b-d40a-79e0-87a4-0ce253d36383).
+[codex] Assistant message captured: `467a691` 대비 변경과 실제 저장 경로를 대조해, 계약이 놓친 경쟁 순서와 실패 결과를 확인하겠습니다.
+[codex] Running command: /bin/zsh -lc 'git diff 467a691 -- docs/design/restart/CONTRACT-5.md; git status --short'
+[codex] Command completed: /bin/zsh -lc 'git diff 467a691 -- docs/design/restart/CONTRACT-5.md; git status --short' (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'rs5|SPEC-4|web-builder' '/Users/younghwankang/Library/Application Suppor...
+[codex] Command completed: /bin/zsh -lc "rg -n 'rs5|SPEC-4|web-builder' '/Users/younghwankang/Library/Application Suppor... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files -g AGENTS.md -g '*SPEC-4*' -g '*review*' -g '*localSync*' -g '*write...
+[codex] Command completed: /bin/zsh -lc "rg --files -g AGENTS.md -g '*SPEC-4*' -g '*review*' -g '*localSync*' -g '*write... (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/infra/local/localSync.ts'
+[codex] Command failed: /bin/zsh -lc 'nl -ba app/src/infra/local/localSync.ts' (exit 1)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/data/persistence/localSync.ts; nl -ba app/src/data/persistence/w...
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/data/memoryProjectRepository.ts; nl -ba app/src/features/studio/...
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/data/memoryProjectRepository.ts; nl -ba app/src/features/studio/... (exit 0)
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/data/persistence/localSync.ts; nl -ba app/src/data/persistence/w... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/StudioLayout.tsx | sed -n '50,180p;260,355p'; ...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/components/studio/StudioLayout.tsx | sed -n '50,180p;260,355p'; ... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '35,170p'; nl -ba app/s...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts | sed -n '35,170p'; nl -ba app/s... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts | sed -n '65,205p'; nl -...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts | sed -n '65,205p'; nl -... (exit 0)
+[codex] Assistant message captured: 저장 시작·cleanup 때만 초안을 넘기는 규칙 때문에, 디바운스 중 편집은 장부의 확인·교체·이탈 보호 판정에 보이지 않습니다. 하이드레이트 시드를 영속 확인으로 ...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '85,160p'; nl -ba app/src/feature...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '85,160p'; nl -ba app/src/feature... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff 467a691 -- dev/active/rs5-contract/BRIEF.md dev/active/rs5-contract/PR...
+[codex] Command completed: /bin/zsh -lc "git diff 467a691 -- dev/active/rs5-contract/BRIEF.md dev/active/rs5-contract/PR... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-review/dev/ac...
+[codex] Command completed: /bin/zsh -lc 'cat /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-review/dev/ac... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/images/store/imageStore.ts | sed -n '1,135p'; nl...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/images/store/imageStore.ts | sed -n '1,135p'; nl... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'deepFreeze|hashDoc' app/src/data/studioStore.ts app/src/engine/ops/hash....
+[codex] Command completed: /bin/zsh -lc "rg -n 'deepFreeze|hashDoc' app/src/data/studioStore.ts app/src/engine/ops/hash.... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "구현 착수 보류: 새 장부 계약에 일반 편집의 이탈 보호 누락, 교체 문서의 무충돌 덮어...
+[codex] Turn completed.
+# Codex Adversarial Review
+
+Target: branch diff against 467a691
+Verdict: needs-attention
+
+구현 착수 보류: 새 장부 계약에 일반 편집의 이탈 보호 누락, 교체 문서의 무충돌 덮어쓰기, 하이드레이트 기반 거짓 확인 경로가 있습니다. diff와 실제 코드를 읽기 전용 대조했으며 실행 테스트는 수행하지 않았습니다.
+
+Findings:
+- [high] [P1] I8은 디바운스 중 일반 편집에 이탈 경고를 등록하지 않습니다 (docs/design/restart/CONTRACT-5.md:147)
+  publish는 저장 시작·cleanup 때만 호출하도록 제한됩니다(:87,157,194). 저장 완료 상태에서 편집하고 디바운스 전에 탭을 닫으면 latest·inflight·start가 모두 없어 I8의 보호 술어는 false입니다. 실제 스케줄러는 change에서 자신의 version만 증가시킵니다(useAutosaveScheduler.ts:90-98). beforeunload는 cleanup보다 먼저 판정되므로 release에서 publish하는 것으로 복구되지 않습니다. 규칙대로 기존 경고를 I8로 통합하면 현재 훅이 보호하는 dirty 구간(:283-291)의 경고가 사라지고, 일반적인 탭 닫기에서 편집이 유실됩니다. 문서가 인정한 모바일 종료·크래시 한계와 다른 새 누락입니다.
+  Recommendation: 각 edit에서 장부에 dirty 세대 또는 pending 표식을 동기로 전달하고 I8에 포함하십시오. Blob 스냅샷 생성은 지연해도 됩니다. 편집 직후 타이머 실행 전 beforeunload에서 경고가 등록되어 있는 테스트를 추가하십시오.
+- [high] [P1] lease 없는 replace가 보관 초안을 새 문서 위에 자동 저장합니다 (docs/design/restart/CONTRACT-5.md:183-185)
+  편집 B를 POP cleanup으로 latest에 보관한 뒤, 편집기 밖에서 restart를 성공시키면 lease 없는 replace는 memHead·memSeq만 갱신합니다. latest를 폐기하거나 충돌로 격리하는 규칙은 없습니다. 따라서 다음 acquire는 새 문서 대신 latest.doc인 B를 반환합니다(:98). 이후 confirm은 새 memHead.revision으로 B를 saveDoc합니다(:169). 실제 memoryDocBook.save는 expectedRevision이 현재 revision이면 그대로 덮어씁니다(:361-366). 계약을 그대로 따르면 사용자에게 충돌 선택을 보여주지 않고 성공한 restart를 옛 초안으로 되돌립니다. I3의 최신 revision 사용이 이 경쟁에서는 충돌 검사를 무력화합니다.
+  Recommendation: lease 유무와 별개로 미확인 latest가 있는 replace를 충돌 전이로 정의하십시오. 초안의 기준 head 또는 문서 교체 epoch를 보존하고, 명시적 선택 전에는 confirm·자동 저장이 새 head 위에 초안을 재기반하지 못하게 하십시오. POP→restart→재진입/confirm 순서를 테스트하십시오.
+- [high] [P1] 하이드레이트 시드의 동일성만으로 영속 확인을 반환할 수 없습니다 (docs/design/restart/CONTRACT-5.md:170)
+  lastConfirmed는 하이드레이트 시드까지 포함하지만(:72), 4.2-5의 동일성 분기는 이미지 엄격 검사 없이 성공합니다. 기존 이미지 누락 저장을 리로드하면 문서 시드는 있어도 참조 이미지가 없으며, 현재 openLocalSync는 이미지 keys만 읽습니다(:113). 따라서 이 분기는 이미지 없는 문서도 confirmed로 판정합니다. 추가로 localSync.ts:110-111은 최신성 검사 실패 시 실제 IDB 문서를 낡은 entry.doc로 대체해 DocBook 시드로 제공합니다(memoryDocBook.ts:145-146). 이 시드를 lastConfirmed로 사용하면 다른 탭이 이미 교체한 옛 문서에도 wrote:false 확인을 반환할 수 있습니다. 이는 현재 시드 경로를 재사용할 경우의 코드 추론이며, 계약에는 두 경우를 제외하는 조건이 없습니다.
+  Recommendation: 편집용 시드와 영속 확인 증명을 분리하십시오. 하이드레이트 확인 증명은 실제 IDB 문서와 참조 이미지 전체의 존재·유효성을 확인한 경우에만 생성하고, stale entry 대체분은 제외하십시오. 누락 이미지 리로드와 entry 읽기→다른 탭 저장→싱크 열기 순서에서 confirmed를 금지하는 테스트를 추가하십시오.
+
+Next steps:
+- CONTRACT-5에 dirty 통지, lease 없는 교체 충돌, 검증된 하이드레이트 확인 증명을 명시하고 해당 경쟁 순서를 테스트 계획에 추가하십시오.
+exit=0

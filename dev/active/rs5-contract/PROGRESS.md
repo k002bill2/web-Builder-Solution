@@ -7,6 +7,6 @@ base 467a691 (앱 93f8111). 범위: 설계 문서만. 앱/interface/예산 변�
 - [x] 3. invariant/types/transitions → docs/design/restart/CONTRACT-5.md
 - [x] 4. QA 대조표 Q1~Q8·C1~C3 + test plan
 - [x] 5. 번들 연결 (측정 0, 미측정 표기)
-- [ ] 6. Codex adversarial-review 1회 → logs/codex-a1.txt, 지적 반영 1회(미재검토 명시)
-- [ ] 7. REPORT.md 작성
-- [ ] 8. 명시적 pathspec 커밋 + diff --check
+- [x] 6. Codex adversarial-review 1회 → logs/codex-a1.txt, 지적 반영 1회(미재검토 명시)
+- [x] 7. REPORT.md 작성
+- [x] 8. 명시적 pathspec 커밋 + diff --check (r0 871c121 · r0.1 이 커밋)

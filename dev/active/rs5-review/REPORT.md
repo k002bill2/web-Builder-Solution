@@ -12,7 +12,7 @@
 
 1. QA 독립 P1 4건: QA-1 `wrote:false` 증명 낡음 · QA-2 4.1↔I2 모순 및 커밋 레코드 미반환 · QA-3 replace가 dirtyMark를 안 봄 · QA-4 `discard`가 메모리 커밋분을 되돌리지 않음.
 2. Codex 신규 P1 1건: CX-1 `confirm`이 아직 publish되지 않은 편집(dirtyMark)을 대상에서 빠뜨려 거짓 `confirmed`를 낸다. QA-3과 뿌리가 같다(dirtyMark가 I8에만 쓰이고 판정 전이에는 쓰이지 않음). 하지만 경로(4.2)가 달라 별개 결함으로 센다.
-3. 공통 원인 [L3 해석]: r0.1의 `mark`/dirtyMark는 **이탈 경고 술어(I8)에만** 들어갔다. `confirm`(4.2), `replace`(4.4), 결과 `newer`(2.4), settle(QA-8) 판정에는 들어가지 않았다. P1 셋(CX-1·QA-3·QA-8 일부)이 여기서 나온다.
+3. 공통 원인 [L3 해석]: r0.1의 `mark`/dirtyMark는 **이탈 경고 술어(I8)에만** 들어갔다. `confirm`(4.2), `replace`(4.4), 결과 `newer`(2.4), settle(QA-8) 판정에는 들어가지 않았다. CX-1·QA-3(P1)과 QA-8(P2)이 이 원인에서 나온다.
 4. P2 5건(QA-5~9)은 내부 모순·누수·미정 수단이다. 반영은 이 레인 범위 밖이다.
 
 ## 2. QA 독립 지적 (귀속: QA · Codex 전 커밋 `109ea6e`)

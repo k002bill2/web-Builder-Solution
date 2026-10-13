@@ -103,11 +103,8 @@ export async function openSaveCore(options: CoreOptions) {
   const saveNow = async (): Promise<SaveResult> => {
     const target = doc;
     const submitted = mark;
-    if (!persistence) {
-      savedMark = mark;
-      confirmed = { hash: hashOf(doc), imageIds: doc.imageIds, generation: 0, mark };
-      return { status: "saved", receipt: confirmed, newer: false };
-    }
+    // H2: 메모리 폴백은 영속 confirmed를 만들지 않는다
+    if (!persistence) return { status: "failed", reason: "not-persistent", newer: mark > submitted };
     const mode = await writer.mode();
     if (mode !== "writer") return { status: "failed", reason: mode, newer: mark > submitted };
     const prev = await readStored(persistence, projectId);
@@ -128,6 +125,25 @@ export async function openSaveCore(options: CoreOptions) {
     return { status: "saved", receipt, newer: mark > submitted };
   };
 
+  /** H2: 커밋 증명 = IDB 재읽기(문서 hash·세대 일치 + 참조 이미지 레코드 존재) */
+  const verify = async (receipt: Receipt): Promise<boolean> => {
+    if (!persistence) return false;
+    const stored = await readStored(persistence, projectId);
+    if (stored?.hash !== receipt.hash || stored.generation !== receipt.generation) return false;
+    const keys = new Set(await persistence.keys("images"));
+    return receipt.imageIds.every((id) => keys.has(id));
+  };
+  /** H2: dirty면 최신 초안을 저장(진행 중 저장 뒤 직렬) · 끝난 뒤 mark가 앞서면 newer(확정 아님) */
+  const confirm = async (): Promise<ConfirmResult> => {
+    if (!persistence) return { status: "failed", reason: "not-persistent" };
+    if (mark <= savedMark && confirmed) return { status: "confirmed", wrote: false, receipt: confirmed };
+    const result = await save();
+    if (result.status === "failed") return { status: "failed", reason: result.reason };
+    if (!(await verify(result.receipt))) return { status: "failed", reason: "not-committed" };
+    if (mark > result.receipt.mark) return { status: "newer", receipt: result.receipt };
+    return { status: "confirmed", wrote: true, receipt: result.receipt };
+  };
+
   return {
     edit(next: CoreDoc, blobs: ReadonlyMap<string, Blob> = new Map()) {
       doc = next;
@@ -139,12 +155,7 @@ export async function openSaveCore(options: CoreOptions) {
       return { detach: () => undefined };
     },
     save,
-    async confirm(): Promise<ConfirmResult> {
-      if (savedMark === mark && confirmed) return { status: "confirmed", wrote: false, receipt: confirmed };
-      const result = await save();
-      if (result.status === "failed") return { status: "failed", reason: result.reason };
-      return { status: "confirmed", wrote: true, receipt: result.receipt };
-    },
+    confirm,
     async discard() {
       if (confirmed && loaded) doc = loaded.doc;
       savedMark = mark;

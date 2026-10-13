@@ -10,7 +10,7 @@
 - [x] 0. 실행 경로 smoke — vitest(`vitest.config.mjs`) · tsc(`tsconfig.json`) · eslint(app config 읽기 전용) 오류 검출 실측
 - [x] 0. 제품 baseline full suite 1회(`rawlogs/baseline-app-fullsuite.log` exit 0 — 수치는 REPORT)
 - [x] H1 RED(`rawlogs/h1-red.log` 2 failed/1 passed) → GREEN(`rawlogs/h1-green.log` 3 passed) → 커밋
-- [ ] H2 RED → GREEN → 하네스 전체 pass → 커밋
+- [x] H2 RED(`rawlogs/h2-red.log` 2 failed/5 passed) → GREEN(`rawlogs/h2-green.log` 7 passed) → 커밋
 - [ ] H3 RED → GREEN → 하네스 전체 pass → 커밋
 - [ ] H4 RED → GREEN → 하네스 전체 pass → 커밋
 - [ ] H5 RED → GREEN → 하네스 전체 pass → 커밋
@@ -42,4 +42,5 @@ v0 코어 = 제품 위험을 그대로 흉내 낸 순진한 구현(완료 시 �
 ## 기록
 
 - H1: RED 첫 실패 단언 = `newer` expected true received false(테스트1·3). 테스트2(커밋 뒤 편집)는 v0에서도 PASS — 경계 확인용. 구현 = 코어 소유 바인딩·저장 직렬 chain·제출 mark 고정·세대 큰 receipt만 confirmed.
+- H2: RED = `status` expected newer received confirmed(진행 중 편집) · memory `status` expected failed received saved. 테스트1(진행 중 저장 뒤 B confirm)·4(unsupported 쓰기 0)는 v0+H1에서도 PASS — 경계 확인. 구현 = memory save 실패 · confirm은 save 직렬 경유 → IDB 재읽기 verify → mark 앞서면 newer.
 - (진행하며 추가)

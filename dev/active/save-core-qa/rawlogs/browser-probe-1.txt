@@ -1,0 +1,10 @@
+{ taskSpaceId: 23 }
+origin http://127.0.0.1:4367 db save-core-qa-1791912138069
+databases-before []
+1-save {"save":{"gen":1,"hash":"be408eb0"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+locks-after-save {"held":["design-studio-writer"],"pending":[]}
+2-afterReload {"hydrated":{"hash":"be408eb0","imageIds":["img"],"generation":1,"mark":0,"proof":"hydrated"},"confirm":{"status":"confirmed","gen":1,"proof":"fresh"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+3-abortWrite {"save":"readonly","snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+4-afterAbortReload {"hydrated":{"hash":"be408eb0","imageIds":["img"],"generation":1,"mark":0,"proof":"hydrated"},"confirm":{"status":"confirmed","gen":1,"proof":"fresh"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+name save-core-qa-1791912138069
+

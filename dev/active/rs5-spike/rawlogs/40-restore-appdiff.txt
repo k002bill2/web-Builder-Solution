@@ -1,0 +1,7 @@
+## git diff --quiet 418979e -- app
+exit=0
+## git ls-files -o --exclude-standard app (빈 출력 기대)
+## lock
+exit=0
+fdd7c98e8d39fd88b54e7445fddca85207034b13  app/package-lock.json
+fdd7c98e8d39fd88b54e7445fddca85207034b13  app/package-lock.json

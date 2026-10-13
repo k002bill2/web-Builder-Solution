@@ -92,3 +92,11 @@
 - **비용**: save와 verify가 참조 이미지마다 `get("images")`로 Blob 레코드를 읽는다(전에는 `keys` 1회). 성능은 미측정.
 - **id 정책**: 제품 localId 재사용 여부는 여전히 미확인이다. 브리프에 따라, 공개 하네스 API가 허용하는 같은 id 재바인딩 반례로 보고 닫았다.
 - **필요한 것**: 뒤 별도 QA 1회(브라우저 프로브 재실행 포함). 제품 적용 승인은 없다.
+
+## 6. Codex review (1회, 반복 0)
+
+- 명령: `node codex-companion.mjs review --scope branch --base 78e3c52`(nohup, 02:41 시작). 원문은 `rawlogs/codex-review.txt`.
+- 결과 원문: "이번 변경으로 도입된 actionable 결함은 발견하지 못했습니다." 지적은 0건.
+- 한계: Codex는 하네스와 QA의 tsc를 exit 0으로 확인했다. 테스트 실행은 Codex 샌드박스 EPERM으로 차단돼, Codex 쪽 런타임 검증은 없다. 런타임 근거는 1절의 fresh 실행 원문이다.
+- 실행 시점: Codex는 지연 읽기 테스트를 커밋하기 전에 시작했다. diff를 읽은 시점에 따라 그 1건이 검토 범위에 들어갔는지는 확인하지 못했다.
+- 이것은 독립 QA를 대체하지 않는다. 뒤 별도 QA 1회가 필요하다.

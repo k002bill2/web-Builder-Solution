@@ -1,0 +1,51 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a13b4d-01a3-78d2-ab92-9d62d7a815c8).
+[codex] Turn started (01a13b4d-0461-7b01-9d38-2d19c0753a3e).
+[codex] Assistant message captured: `d71c852` 이후 diff와 참조 규칙을 읽기 전용으로 대조해, 새 P1/P2 결함과 문서 모순을 확인하겠습니다.
+[codex] Running command: /bin/zsh -lc 'git diff d71c852 -- docs/design/restart/SPEC-4.md docs/design/restart/MQ-4.md d...
+[codex] Command completed: /bin/zsh -lc 'git diff d71c852 -- docs/design/restart/SPEC-4.md docs/design/restart/MQ-4.md d... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'web-builder|rs23|SPEC-4' '/Users/younghwankang/Library/Application Suppo...
+[codex] Command failed: /bin/zsh -lc "rg -n 'web-builder|rs23|SPEC-4' '/Users/younghwankang/Library/Application Suppo... (exit 1)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '1,220p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '1,220p'" (exit 0)
+[codex] Running command: /bin/zsh -lc "cat '/Users/younghwankang/.codex/plugins/cache/claude-cowork/engineering/1.2.0/...
+[codex] Command completed: /bin/zsh -lc "cat '/Users/younghwankang/.codex/plugins/cache/claude-cowork/engineering/1.2.0/... (exit 0)
+[codex] Assistant message captured: `engineering:code-review` 스킬의 정확성·경합 점검을 적용 중입니다. PendingDraft 재진입 규칙을 기존 저장·충돌 경로와 대조하고, 오래된...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts | sed -n '75,285p'; nl -...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts | sed -n '75,285p'; nl -... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff 93f8111 --stat -- app; nl -ba app/src/data/memoryDocBook.ts | sed -n '...
+[codex] Command completed: /bin/zsh -lc "git diff 93f8111 --stat -- app; nl -ba app/src/data/memoryDocBook.ts | sed -n '... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '310,389p'; nl -ba app/src/data/m...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '310,389p'; nl -ba app/src/data/m... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '220,390p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-4.md | sed -n '220,390p'" (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff d71c852 -- dev/active/rs23-protection-spec/PROGRESS.md dev/active/rs23...
+[codex] Command completed: /bin/zsh -lc 'git diff d71c852 -- dev/active/rs23-protection-spec/PROGRESS.md dev/active/rs23... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/persistence/localSync.test.ts | sed -n '1,65p'; nl -ba app/...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/persistence/localSync.test.ts | sed -n '1,65p'; nl -ba app/... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff d71c852 -- docs/design/restart/SPEC-4.md'
+[codex] Command completed: /bin/zsh -lc 'git diff d71c852 -- docs/design/restart/SPEC-4.md' (exit 0)
+[codex] Assistant message captured: 확인 버전 검사는 `saved` 표시만 제한합니다. 확인 도중 POP으로 새 PendingDraft가 생겨도 오래된 resolve가 기억을 지우도록 되어 있어, 내용과...
+[codex] Running command: /bin/zsh -lc "rg --files -g AGENTS.md -g '*writer*Gate*' -g '*writerLock*' -g '*studioReposit...
+[codex] Command completed: /bin/zsh -lc "rg --files -g AGENTS.md -g '*writer*Gate*' -g '*writerLock*' -g '*studioReposit... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/persistence/localSync.test.ts | sed -n '115,230p'; rg -n 'S...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/persistence/localSync.test.ts | sed -n '115,230p'; rg -n 'S... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "구현 기준 승인 보류: 늦은 확인 완료가 새 draft를 지우는 P1과 재진입이 충돌 선...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against d71c852
+Verdict: needs-attention
+
+구현 기준 승인 보류: 늦은 확인 완료가 새 draft를 지우는 P1과 재진입이 충돌 선택을 우회하는 P2가 남습니다. d71c852 이후 diff와 앱 93f8111을 읽기 전용 대조했습니다. 앱 변경 0, diff 검사 통과. 런타임 테스트는 미실행입니다.
+
+Findings:
+- [high] [P1] 오래된 확인 resolve가 POP으로 보존한 새 draft를 삭제합니다 (docs/design/restart/SPEC-4.md:256-258)
+  PendingRecord 확인 제출 → 확인 중 새 편집 → 디바운스 전에 POP 순서이면 cleanup이 최신 내용을 PendingDraft로 보존합니다. 이후 확인 resolve는 이 규칙에 따라 기억을 해제합니다. 스케줄러 version 검사는 phase만 제한하고, release(repo, projectId, why)는 기억 세대를 검사하지 않습니다(124행). localSync.ts:151-161의 확인 제출에는 새 편집이 없으므로, 명세대로 구현하면 미저장 내용·이미지와 모듈 경고를 함께 잃습니다. 이는 draft는 재진입 후 실제 saveDoc으로만 해제한다는 99행과도 모순됩니다.
+  Recommendation: 확인·저장 완료를 요청 당시 기억 세대와 제출한 편집 버전에 묶으십시오. 현재 기억이 새 draft로 교체되었다면 삭제하지 말고, 확인된 under만 정리하십시오. 확인 제출 → 새 편집 → POP → 이전 확인 resolve에서 draft·이미지·경고 유지 테스트를 추가하십시오.
+- [medium] [P2] stale draft 재진입은 충돌 선택 대신 자동 덮어쓰기를 수행합니다 (docs/design/restart/SPEC-4.md:135-136)
+  136행은 stale 언마운트 후 충돌 선택을 다시 보여 준다고 하지만, PendingDraft에는 stale 여부가 없고 135행은 모든 draft를 최신 메모리 getDoc 위에 첫 edit()로 얹습니다. 명세대로 구현하면 expectedRevision이 최신 revision과 같아져 memoryDocBook.ts:363의 충돌 검사를 통과합니다. 따라서 미해결 내 편집이 자동 저장되어 최신 문서를 덮고, resolveConflict가 만드는 충돌 보존 스냅샷(:322-334)도 생성되지 않습니다. 충돌 선택을 보존한다는 규칙과 실제 복원 절차가 양립하지 않습니다.
+  Recommendation: PendingDraft에 미해결 충돌 상태를 보존하고 해당 draft는 stale로 복원하여 자동 저장을 차단하십시오. 사용자 선택 후 resolveConflict로만 저장하도록 일반 draft 복원과 분리하고, stale → POP → 재진입에서 선택 전 쓰기 0을 검증하십시오.
+
+Next steps:
+- SPEC-4에 기억 세대별 해제와 stale draft 복원 규칙을 명시하십시오.

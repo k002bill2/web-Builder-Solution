@@ -13,8 +13,8 @@ base 설계 7dbf116 · 앱 93f8111 · branch k002bill2/rs23-fix · 문서만(앱
 - [x] 9. SPEC-4 r0.1b 독립 재검토(2026-10-15, `review-r01b/`) — Codex a2 needs-attention P1 1·P2 1 + 메인 P2 1 → **구현 BLOCKED**
 - [x] 10a. r0.2 교정(N1 기억 토큰 해제 · N2 stale draft 충돌 복원 · N3 settling 대기 · Q-2 · Q-3) — 사용자 "1"(2026-10-15)
 - [x] 10b. Codex a3 1회(3라운드 = 상한, `review-r02/`) — P1 1(전이 세대 검사) → r0.2a 반영 · **미재검토**
-- [ ] 10c. BLOCKED: 4라운드(사용자 "1" 승인) 실행 실패 — Codex usage limit(06:29 이후 재시도 가능, `review-r02a/codex-a4.txt`). r0.2a 미재검토
-- [ ] 11. BLOCKED: Developer 측정 관문(SPEC-4 8.0) — r0.2 통과 뒤
+- [x] 10c. Codex 4라운드(사용자 승인 · 1차 usage limit 실패 → 재실행 `codex-a4b.txt`) — P2 1(기억 없음 세대) → r0.2b 반영 · **미재검토, 추가 라운드 없음**
+- [ ] 11. BLOCKED: Developer 측정 관문(SPEC-4 8.0) + CP2 RED(RS4-AC-18·18b·18c)를 독립 검증으로 — 별도 구현 레인 트리거 필요
 - [x] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
 
 ## 서브에이전트

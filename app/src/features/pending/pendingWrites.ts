@@ -50,6 +50,13 @@ let tokens = 0;
 const active = new Set<string>();
 let inflight = 0;
 let listening = false;
+/** 기억 변경 구독(이미 그려진 목록이 늦게 끝난 요청의 기억을 다시 판정 — Codex review P2) */
+const listeners = new Set<() => void>();
+export function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => void listeners.delete(listener);
+}
+const notify = () => listeners.forEach((listener) => listener());
 
 const onUnload = (event: BeforeUnloadEvent) => {
   event.preventDefault();
@@ -91,6 +98,7 @@ export function settle(repo: object, projectId: string, ticket: Ticket, next: Pe
     active.delete(key);
   }
   sync();
+  notify();
   return true;
 }
 

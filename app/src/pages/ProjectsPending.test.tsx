@@ -2,7 +2,7 @@
  * RESTART SPEC-4 r0.3a 5.2 — `/projects` 행의 미확인 기억(P-U1~P-U5 · RS4-AC-07 · 08 · 14).
  * 미확인 행은 "편집기 열기"를 숨기고 "저장 다시 시도"(재생)·"저장 확인"(confirmDoc)을 둔다. 확인되면 링크를 되살리고 포커스를 옮긴다.
  */
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -125,5 +125,46 @@ describe("폐기 확인 (RS4-AC-08 · 14)", () => {
     render(<MemoryRouter><ProjectsPage repository={memory} now={now} /></MemoryRouter>);
     await screen.findByRole("heading", { level: 2, name: "가게 홈페이지" });
     expect(within(rowOf("가게 홈페이지")).queryByRole("button", { name: /버리고 새로고침/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("Codex review P2 반영", () => {
+  it("재시도 성공 → 목록 다시 조회 → hasDoc false였던 행에 '편집기 열기'가 생긴다(create 미확인)", async () => {
+    let created = false;
+    const listProjects = vi.fn(async () => ITEMS.map((s) => (s.projectId === "p1" ? { ...s, hasDoc: created } : s)));
+    const startDoc = vi.fn(async () => ((created = true), { doc: head("C", 1) }));
+    const repo = repositoryWith({ listProjects, startDoc: startDoc as unknown as ProjectRepository["startDoc"], getDoc: async () => head("C", 1) });
+    hold(repo, { kind: "start", mode: "create", projectId: "p1", version: 4, selected: "C", origin: { kind: "unknown" }, held: "unknown" });
+    const u = userEvent.setup();
+    render(<MemoryRouter><ProjectsPage repository={repo} now={now} /></MemoryRouter>);
+    await u.click(await screen.findByRole("button", { name: "가게 홈페이지 저장 다시 시도" }));
+    const link = await within(rowOf("가게 홈페이지")).findByRole("link", { name: "가게 홈페이지 편집기 열기" });
+    expect(listProjects).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(link).toHaveFocus());
+  });
+
+  it("목록이 그려진 뒤 생긴 기억 → 행이 다시 판정된다(구독)", async () => {
+    const repo = repositoryWith({});
+    render(<MemoryRouter><ProjectsPage repository={repo} now={now} /></MemoryRouter>);
+    expect(await within(await screen.findByRole("heading", { level: 2, name: "가게 홈페이지" }).then(() => rowOf("가게 홈페이지"))).findByRole("link", { name: "가게 홈페이지 편집기 열기" })).toBeInTheDocument();
+    await act(async () => void hold(repo, restartPending));
+    expect(within(rowOf("가게 홈페이지")).queryByRole("link", { name: "가게 홈페이지 편집기 열기" })).not.toBeInTheDocument();
+    expect(within(rowOf("가게 홈페이지")).getByRole("button", { name: "가게 홈페이지 저장 다시 시도" })).toBeInTheDocument();
+  });
+
+  it("저장 확인이 IMAGES_MISSING → 알림 · '저장 확인' 숨김 · 폐기만 · 기억 유지", async () => {
+    const repo = repositoryWith({
+      confirmDoc: async () => {
+        throw new ProjectRepositoryError("IMAGES_MISSING", "p1");
+      },
+    });
+    hold(repo, { kind: "record", projectId: "p1", cause: "start-not-applied", head: head("C", 6) });
+    const u = userEvent.setup();
+    render(<MemoryRouter><ProjectsPage repository={repo} now={now} /></MemoryRouter>);
+    await u.click(await screen.findByRole("button", { name: "가게 홈페이지 저장 확인" }));
+    expect(await within(rowOf("가게 홈페이지")).findByRole("alert")).toHaveTextContent("일부 이미지");
+    expect(within(rowOf("가게 홈페이지")).queryByRole("button", { name: "가게 홈페이지 저장 확인" })).not.toBeInTheDocument();
+    expect(within(rowOf("가게 홈페이지")).getByRole("button", { name: "가게 홈페이지 버리고 새로고침" })).toBeInTheDocument();
+    expect(pendingOf(repo, "p1")?.kind).toBe("record");
   });
 });

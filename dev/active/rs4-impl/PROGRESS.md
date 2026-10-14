@@ -6,8 +6,13 @@
 - [x] CP1 — pendingWrites(기억·토큰/epoch·guarding·beforeunload·폐기) · create 가드 · confirmDoc 계약(IMAGES_MISSING · 진행 중 대기 뒤 IDB keys 판정)
 - [x] CP2 — 프로필 판정표(create F/R · restart origin · PendingRecord · C-E4~6/R-E6 · 저장 확인)
 - [x] CP3 — /projects 행(P-U1~5 · 다시 시도/저장 확인 · 버리고 새로고침 확인)
-- [ ] 게이트 4종 + 정규화 예산(멈춤 128.53/131.51) + Codex review
+- [x] 게이트 4종 + 정규화 예산(멈춤 128.53/131.51) + Codex review
 - [ ] REPORT · 커밋(push 0)
+
+## Codex review r1 (codex-r1.txt) — P2 4건 전부 반영
+- ① 표시 모듈 로드 실패 → 목록 게이트 유지 + "다시 시도"(Callout) ② 재시도 성공 → 목록 재조회(useProjectList.reload) + 링크 생긴 뒤 포커스 ③ 기억 변경 구독(pendingWrites.subscribe) → 그려진 목록 재판정 ④ 확인 불가(stale·cleared·IMAGES_MISSING) → 주 버튼 숨김·폐기만.
+- 테스트: ②③④ 추가(ProjectsPending 8). ①은 vitest에서 동적 import 실패 주입이 어려워 **단위 테스트 없음**(코드 리뷰·브라우저 QA 몫).
+- 포커스 의도는 ref(effect 안 setState 금지 lint).
 
 ## 설계와 다르게 한 곳
 - CP3 예산: 처음 정적 import로 /projects 첫 화면 100.65(초과) → 감량 1회 = 미확인 행 표시 모듈(pendingRows: 기억 조회 · 문구 · 폐기 확인)을 **진입 직후 자동 import**로 옮기고 목록은 그 모듈이 온 뒤 그린다(거짓 "편집기 열기" 구간 0) → 첫 화면 99.15 · 진입 직후 108.38. check-bundle-size `/projects` auto에 pendingRows, afterAction에 pendingRetry 등록(판정선 변경 0).

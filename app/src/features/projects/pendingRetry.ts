@@ -8,7 +8,8 @@ import type { Pending } from "../pending/pendingWrites";
 import { restartOnce, startEdit } from "../profile/restartFlow";
 import { RESTART_TEXT as T } from "../profile/restartText";
 
-export async function retryPending(repo: ProjectRepository, pending: Pending): Promise<{ readonly ok: boolean; readonly text: string }> {
+/** ok = 확인됨 · stuck = 이 탭에서 더 확인할 수 없음(stale·cleared·이미지 — 폐기만) */
+export async function retryPending(repo: ProjectRepository, pending: Pending): Promise<{ readonly ok: boolean; readonly text: string; readonly stuck?: boolean }> {
   const { projectId } = pending;
   if (pending.kind === "start" && pending.mode === "restart" && pending.origin.kind === "doc") {
     const out = await restartOnce(repo, projectId, { selected: pending.selected, version: pending.version, doc: pending.origin.head, held: pending.held });
@@ -20,5 +21,5 @@ export async function retryPending(repo: ProjectRepository, pending: Pending): P
   const selected = pending.kind === "start" ? pending.selected : (pending.head?.candidateId ?? "");
   const out = await startEdit(repo, projectId, version, selected, true);
   if ("go" in out || "open" in out) return { ok: true, text: P.confirmed };
-  return { ok: !out.held && !out.retry, text: out.alert };
+  return { ok: !out.held && !out.retry, text: out.alert, stuck: Boolean(out.held) && !out.retry };
 }

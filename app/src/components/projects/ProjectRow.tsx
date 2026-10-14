@@ -12,7 +12,7 @@ export interface PendingRow {
   /** 기억이 있을 때만 — P-U1 상태 글자 · 주 버튼 이름 · P-U5 캡션 · 진행 중 글자 */
   readonly pending?: { readonly status: string; readonly label: string; readonly caption: string; readonly working: string };
   readonly busy?: boolean;
-  readonly result?: { readonly ok: boolean; readonly text: string; readonly key: number };
+  readonly result?: { readonly ok: boolean; readonly text: string; readonly key: number; readonly stuck?: boolean };
   readonly onRetry: (projectId: string) => void;
   /** local 영속에서만 폐기(새로고침) */
   readonly Discard?: (props: { readonly label?: string }) => ReactNode;
@@ -65,7 +65,7 @@ export function ProjectRow({
         {pending && <span className="ds-caption1 text-status-negative-text">{pending.status}</span>}
       </p>
       <div className="flex flex-wrap items-center gap-3">
-        {pending && (
+        {pending && !held.result?.stuck && (
           <Button
             variant="outline"
             size="sm"

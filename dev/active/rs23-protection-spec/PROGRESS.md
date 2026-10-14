@@ -17,7 +17,8 @@ base 설계 7dbf116 · 앱 93f8111 · branch k002bill2/rs23-fix · 문서만(앱
 - [x] 11. 측정 관문 — 기존 `rs4-measure`(467a6910) 결과 원문 대조 → **FAIL**(S1r /studio +15B · P-3 이미지 누락·빈 id 스냅샷 삭제) · `MEASURE-GATE.md`
 - [x] 12a. 구조 재설계 스파이크(`rs4-spike2` 2aff4a37) — CP1~3 /studio 구조 증가 = create 가드 +6B뿐 · 판정 수치 해시 흔들림 ±22B
 - [x] 12b. ADR-004 개정 16(해시 정규화 기준선) — 사용자 "1" · 브랜치 `k002bill2/budget-normalize` 19f448a(4종 게이트 통과 · Codex 결함 0 · 미병합)
-- [ ] 12c. BLOCKED: budget-normalize 병합 승인 · MQ-4-2 B 새 confirm 계약 결정 · SPEC-4 r0.3(C2·Q1)
+- [x] 12c. budget-normalize main 병합(로컬 · main e3e22520 · 병합 상태 정규화 128.50/131.48 · 게이트 4종 통과 · push 0)
+- [ ] 13. BLOCKED: MQ-4-2 B 새 confirm 계약 결정 · SPEC-4 r0.3(C2·Q1) · rs23-fix를 새 main 위로 갱신(구현 착수 전)
 - [x] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
 
 ## 서브에이전트

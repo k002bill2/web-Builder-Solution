@@ -5,11 +5,15 @@
 
 - [x] CP1 — pendingWrites(기억·토큰/epoch·guarding·beforeunload·폐기) · create 가드 · confirmDoc 계약(IMAGES_MISSING · 진행 중 대기 뒤 IDB keys 판정)
 - [x] CP2 — 프로필 판정표(create F/R · restart origin · PendingRecord · C-E4~6/R-E6 · 저장 확인)
-- [ ] CP3 — /projects 행(P-U1~5 · 다시 시도/저장 확인 · 버리고 새로고침 확인)
+- [x] CP3 — /projects 행(P-U1~5 · 다시 시도/저장 확인 · 버리고 새로고침 확인)
 - [ ] 게이트 4종 + 정규화 예산(멈춤 128.53/131.51) + Codex review
 - [ ] REPORT · 커밋(push 0)
 
 ## 설계와 다르게 한 곳
+- CP3 예산: 처음 정적 import로 /projects 첫 화면 100.65(초과) → 감량 1회 = 미확인 행 표시 모듈(pendingRows: 기억 조회 · 문구 · 폐기 확인)을 **진입 직후 자동 import**로 옮기고 목록은 그 모듈이 온 뒤 그린다(거짓 "편집기 열기" 구간 0) → 첫 화면 99.15 · 진입 직후 108.38. check-bundle-size `/projects` auto에 pendingRows, afterAction에 pendingRetry 등록(판정선 변경 0).
+- /profile 진입 직후 120.09 → 120.63(+0.54, 한도 125 안) — SPEC 9절 "증분 0 목표" 미달. 공유 청크 재편(기억 모듈이 프로필 조작 뒤 청크와 /projects 자동 청크에 함께 쓰임) 영향. 첫 화면은 99.83(≤100).
+- 폐기 확인 위험 스타일 토큰 없음 → 확인 버튼은 기존 primary(새 색 0).
+- 성공 알림 role=status · 실패 role=alert(행 안 한 자리) — SPEC 5.2 그대로. 대화상자 성공도 role=status로 바꿨다(기존은 alert 한 자리).
 - CP2 TDD 순서: 판정 로직을 먼저 쓰고 단위 테스트를 뒤에 썼다(RED 선행 아님). 대신 변이 검사로 Red를 확인 — F1(재시도 문서 있음 → 해제로 바꿈) 1 실패 · F2(DOC_EXISTS → 판정·이동으로 바꿈) 2 실패.
 - memory 영속에서도 기억을 만든다(SPEC 3.5 "UI는 memory 모드에서 기억을 만들지 않는다"와 다름) — 기존 SPEC r2 R-E4 테스트(memory 모드 응답 실패 주입)가 그 동작을 고정한다. 폐기 버튼만 local 영속에서 보인다.
 - restart 판정 순서: 커밋 확인(요청 쌍 + revision+1)을 STALE_DOC/UNKNOWN_VARIANT 코드 판정보다 먼저 한다(기존 RS-AC-07c 응답 단계 주입 테스트 — 모양만으로 커밋 전·뒤를 가를 수 없다). SPEC 6절 3-2 "코드 분리를 커밋 확인 앞에서"와 순서가 다르지만, 양성이 아니면 코드 분리가 그대로 적용된다.

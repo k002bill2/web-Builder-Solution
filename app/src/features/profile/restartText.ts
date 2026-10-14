@@ -75,11 +75,6 @@ export const RESTART_TEXT = Object.freeze({
     `편집 시작은 반영되지 않았습니다${doc ? ` — 이 프로젝트에는 이미 문서(${doc.candidateId}안 · v${doc.profileVersion})가 있습니다` : ""}. 그 문서가 브라우저에 저장됐는지는 아직 확인하지 않았습니다 — 저장 확인을 누르면 확인한 뒤 엽니다`,
   createNotAppliedAbsent: "편집 시작이 반영되지 않았습니다 — 프로필에서 다시 고르세요",
   retrySave: "저장 다시 시도",
-  // 폐기 확인(5.5)
-  discard: "버리고 새로고침",
-  discardTitle: "확인되지 않은 변경 버리기",
-  discardBody: "이 탭에서 저장을 확인하지 못한 변경(새로 시작 · 편집 문서 · 그 뒤 편집)을 모두 버리고, 브라우저에 마지막으로 저장된 상태로 다시 엽니다. 되돌릴 수 없습니다.",
-  keepIt: "취소",
 });
 
 /** R-D5 — 두 버전 대비 결과가 다를 때만 한 줄(글자로 통과/미달). 한쪽이라도 판정 불가(undefined)면 줄 없음(RS-D6) */

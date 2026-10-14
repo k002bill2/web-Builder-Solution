@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObjec
 import { Link } from "react-router";
 import { BrowserStorageSection } from "../components/projects/BrowserStorageSection";
 import { ProjectList } from "../components/projects/ProjectList";
-import type { RenameHandlers } from "../components/projects/ProjectRow";
+import type { PendingRow, RenameHandlers } from "../components/projects/ProjectRow";
 import type { RenameSubmitOutcome } from "../components/projects/RenameField";
 import type { DeleteTarget } from "../components/projects/DeleteProjectDialogSlot";
 import type { ExportDeps, ExportTarget } from "../components/projects/ExportProjectFileDialogSlot";
@@ -188,6 +188,58 @@ function useImportedNotice(session: Session | undefined, announce: (text: string
   return found !== null;
 }
 
+/**
+ * 미확인 기억 행(RESTART SPEC-4 5.2) — 기억은 동기 조회(쓰기 0), 다시 시도·저장 확인 본문은 조작 뒤 청크.
+ * 결과 = 행 안 알림 · 성공이면 되살아난 "편집기 열기"로, 실패면 그 버튼에 포커스를 둔다.
+ */
+function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivElement | null>) {
+  // 진입 직후 자동 import — 오기 전에는 목록을 그리지 않는다(ready = false). 실패 = 기억 조회 불가(기억은 같은 공유 청크에만 있으므로 그 청크가 없으면 기억도 없다)
+  const [mod, setMod] = useState<typeof import("../features/projects/pendingRows") | null>();
+  useEffect(() => {
+    let live = true;
+    import("../features/projects/pendingRows").then(
+      (loaded) => live && setMod(loaded),
+      () => live && setMod(null),
+    );
+    return () => void (live = false);
+  }, []);
+  const pendingOf = (projectId: string) => mod?.pendingOf(repository, projectId);
+  const [state, setState] = useState<{ readonly busy?: string; readonly focus?: string; readonly results: ReadonlyMap<string, { readonly ok: boolean; readonly text: string; readonly key: number }> }>({ results: new Map() });
+  const onRetry = async (projectId: string) => {
+    const pending = pendingOf(projectId);
+    if (!pending || state.busy) return;
+    setState((s) => ({ ...s, busy: projectId, focus: undefined }));
+    const out = await import("../features/projects/pendingRetry").then(
+      (mod) => mod.retryPending(repository, pending),
+      () => ({ ok: false, text: "저장을 확인하지 못했습니다 — 잠시 뒤 다시 시도하세요" }),
+    );
+    setState((s) => ({ busy: undefined, focus: projectId, results: new Map(s.results).set(projectId, { ...out, key: (s.results.get(projectId)?.key ?? 0) + 1 }) }));
+  };
+  // 결과가 그려진 뒤 포커스 — 성공이면 되살아난 링크, 아니면 그 버튼(없으면 행 그대로)
+  useEffect(() => {
+    const id = state.focus;
+    if (!id) return;
+    const box = page.current;
+    const pick = (selector: string, key: "editorFor" | "retryFor") => box && Array.from(box.querySelectorAll<HTMLElement>(selector)).find((el) => el.dataset[key] === id);
+    (pick("[data-editor-for]", "editorFor") ?? pick("[data-retry-for]", "retryFor"))?.focus();
+  }, [state, page]);
+  const heldOf = (projectId: string): PendingRow | undefined => {
+    const pending = pendingOf(projectId);
+    const result = state.results.get(projectId);
+    if (!pending && !result) return undefined;
+    const local = repository.persistence === "local";
+    return {
+      pending: pending && mod ? { ...mod.describePending(pending), caption: mod.ROW_TEXT.caption, working: mod.ROW_TEXT.working } : undefined,
+      busy: state.busy === projectId,
+      result,
+      onRetry: (id) => void onRetry(id),
+      Discard: local ? mod?.DiscardConfirm : undefined,
+      discardLabel: mod?.ROW_TEXT.discard,
+    };
+  };
+  return { heldOf, ready: mod !== undefined };
+}
+
 /** DS-2A-05 `/projects` 프로젝트 목록 (SPEC 2.4 J-S01~J-S08). 라우트 연결은 a1-β */
 export function ProjectsPage({
   repository,
@@ -209,7 +261,10 @@ export function ProjectsPage({
   const announce = useCallback((text: string) => setNotice((n) => ({ text, key: n.key + 1 })), []);
   const { draft, setDraft, page, close, submit } = useRename(repository, replace, announce);
   const { heading, focusable } = useDeletedNotice(session, announce);
-  const importedNotice = useImportedNotice(session, announce, items !== null, page, heading);
+  const { heldOf, ready } = usePendingRows(repository, page);
+  // 목록은 미확인 행 모듈이 온 뒤 그린다 — 가져오기 알림의 첫 행동 포커스도 그 뒤
+  const importedNotice = useImportedNotice(session, announce, items !== null && ready, page, heading);
+
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null);
   const openDelete = (projectId: string) => {
     const found = items?.find((s) => s.projectId === projectId);
@@ -238,6 +293,7 @@ export function ProjectsPage({
     const buttons = page.current?.querySelectorAll<HTMLElement>("[data-export-for]") ?? [];
     Array.from(buttons).find((el) => el.dataset.exportFor === exporting.projectId)?.focus();
   };
+
   const at = now().getTime();
   const rename: RenameHandlers = {
     onOpen: (projectId) => {
@@ -266,13 +322,14 @@ export function ProjectsPage({
       <p role="status" aria-label="프로젝트 알림" className="sr-only">
         {notice.text && <span key={notice.key}>{notice.text}</span>}
       </p>
-      {items === null && <LoadingState />}
+      {(items === null || !ready) && <LoadingState />}
       {items !== null && items.length === 0 && <ProjectsEmpty persistence={repository.persistence} />}
-      {items !== null && items.length > 0 && (
+      {items !== null && ready && items.length > 0 && (
         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft}
           rename={rename}
           onExport={repository.persistence === "local" ? openExport : undefined}
           onDelete={repository.persistence === "local" ? openDelete : undefined}
+          heldOf={heldOf}
         />
       )}
       {deleting && (

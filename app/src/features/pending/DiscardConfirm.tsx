@@ -4,8 +4,8 @@
  */
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "../../components/ds/Button";
-import { discardAndReload } from "../pending/pendingWrites";
-import { RESTART_TEXT as T } from "./restartText";
+import { PENDING_TEXT as T } from "./pendingText";
+import { discardAndReload } from "./pendingWrites";
 
 export function DiscardConfirm({ label, reload }: { readonly label?: string; readonly reload?: () => void }) {
   const id = useId();

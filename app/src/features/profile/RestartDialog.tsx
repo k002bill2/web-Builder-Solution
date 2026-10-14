@@ -8,12 +8,12 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "../../components/ds/Button";
 import { useProfileRepository } from "../../data/ProfileRepositoryContext";
 import type { ProjectRepository, StudioEntryState } from "../../data/projectRepository";
-import { DiscardConfirm } from "./DiscardConfirm";
+import { DiscardConfirm } from "../pending/DiscardConfirm";
 import { confirmRestart, contrastFails, restartOnce, shapeOf, type RestartOpen } from "./restartFlow";
 import { RESTART_TEXT as T, TAB_REASON, contrastText } from "./restartText";
 
 export { startEdit } from "./restartFlow";
-export { DiscardConfirm } from "./DiscardConfirm";
+export { DiscardConfirm } from "../pending/DiscardConfirm";
 
 const FULL = "w-full md:w-auto";
 /** ready = 처음 · same = STALE_DOC 최신이 고른 안(R-E1b) · unconfirmed = R-E4 · unknown = R-E5 · record = R-E6(새로 시작 미반영 · 저장 확인 전 — SPEC-4) */

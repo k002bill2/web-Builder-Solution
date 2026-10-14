@@ -9,6 +9,8 @@ base 설계 7dbf116 · 앱 93f8111 · branch k002bill2/rs23-fix · 문서만(앱
 - [x] 4. MQ-4.md 작성 (예산 관문 · 새 계약 필요 여부)
 - [x] 5. Codex adversarial-review 1회(logs/codex-a1.txt, needs-attention P1 2·P2 1) + advisor 점검 → r0.1 한 번 반영 · **미재검토**
 - [x] 6. REPORT.md (F1/F2 닫힘 · 보호범위 · 브라우저 한계 · 측정 관문 · QA 수용기준 · 미실행 구분)
+- [x] 8. MQ-4 결정 기록 (2026-10-15 사용자: 4-1 A · 4-2 A · 4-3 A)
+- [ ] 9. BLOCKED: 구현 착수 전 SPEC-4 r0.1/r0.1b 독립 재검토 1회 + Developer 측정 관문(8.0) — 별도 레인 트리거 필요
 - [x] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
 
 ## 서브에이전트

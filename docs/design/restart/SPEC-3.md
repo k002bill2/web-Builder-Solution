@@ -130,9 +130,9 @@
 
 1. `DOC_EXISTS`(동봉 doc 있음): 지금 그대로 `judge`. 판정 단계에서만 나오므로 커밋 확인 대상이 아니다(`memoryDocBook.ts:384-385`). 응답 단계에서 이 모양이 오는 경우는 주입 테스트뿐이고, 그때 동봉 doc이 곧 지금 문서다. 지금처럼 이동한다.
 2. 그 밖 모든 실패: **커밋 확인**으로 `getDoc(projectId)`를 부른다.
-   - **before 읽기(요청 전)**: create를 부르기 **직전**에 `before = getDoc(projectId)`를 읽는다(메모리 — 조작 뒤 청크, 실패하면 `before = "unknown"`). 이유: 같은 쌍 문서가 이미 있는 상태에서 커밋 전 실패(청크·싱크 열기 실패, 가드 거절, request 단계)가 나면 `now`가 요청 쌍과 같아 거짓 양성이 된다. 가드는 멱등 재생 판정보다 앞이다(`memoryProjectRepository.ts:122` → `memoryDocBook.ts:374-376`).
+   - **before 읽기(요청 전)**: create를 부르기 **직전**에 `before = getDoc(projectId)`를 읽는다(메모리 — 조작 뒤 청크, 실패하면 `before = "unknown"`). 이유: 같은 쌍 문서가 이미 있는 상태에서 커밋 전 실패(청크·싱크 열기 실패, 가드 거절, request 단계)가 나면 `now`가 요청 쌍과 같아 거짓 양성이 된다. 가드는 멱등 재생 판정보다 앞이다(`memoryProjectRepository.ts:122` → `memoryDocBook.ts:374-376`). **before는 처음 요청 때만 읽고 기억에 `before`로 보존한다**(r0.3 · Codex r3 P1). 기억이 있는 재시도는 새로 읽지 않고 기억의 `before`(= `undefined`)를 쓴다 — 재시도 직전에는 처음 커밋한 문서가 이미 있으므로, 새로 읽으면 같은 키 재생 + flush 연속 실패가 "before에 문서 있음 → 음성"으로 기억을 지운다.
    - **양성**: `before === undefined && now && now.candidateId === selected && now.profileVersion === version`. `before`가 문서였으면(같은 키 재생이 아닌 한 `DOC_EXISTS`가 먼저 났을 것) 이 요청이 커밋한 것이 없으므로 **음성**이다. `before === "unknown"`이고 `now`가 요청 쌍이면 **확인 불가(C-E5)**다. create는 문서가 없을 때만 커밋한다. 그러니 판정 단계 거절이 아닌 실패 뒤에 요청 쌍과 같은 문서가 있다면 이 요청(또는 그 재생)이 커밋한 것이다. 결과는 **C-E4**이고, 기억에 `{mode:"create", projectId, version, selected}`를 저장한다.
-   - **음성**: 문서 없음, 또는 다른 쌍. 아래 사유 판정으로 가고 기억은 지운다.
+   - **음성**(처음 요청): 문서 없음, 또는 다른 쌍. 아래 사유 판정으로 가고 기억은 만들지 않는다. 기억이 있는 재시도의 음성은 6절 3-1(`now === undefined`)만이고, 요청 쌍 문서가 있으면 미확인 유지다.
      - INFRA 메시지 끝이 `READ_ONLY_TAB`이면 C-E2, `STALE_TAB`이면 C-E2b, `CLEARED_TAB`이면 C-E2c.
      - `UNKNOWN_VARIANT`이면 저장소 alert(지금 그대로, 다시 시도 없음).
      - 그 밖이면 `startFailed`(지금 문장) + INFRA 사유(" · " 뒤). 다시 시도가 있다.
@@ -150,7 +150,7 @@
 
 - **C-E4·C-E5의 다시 시도**는 기억의 인자(처음 요청한 안·버전)로 create를 재생한다. 지금 고른 안과 다르더라도 그렇다.
   - 성공하면 기억을 지우고 기존 성공 경로(이동 + `changeNotice`)로 간다.
-  - 다시 실패하면 같은 판정 순서를 다시 탄다.
+  - 다시 실패하면 같은 판정 순서를 다시 탄다. 단 before는 기억 값을 쓰고(위 before 읽기), 음성·종결은 6절 3-1·3-2를 따른다(r0.3 · Codex r3 P1).
   - 기억이 있는 동안 다른 안의 "편집 시작"은 create 전에 같은 C-E4/C-E5를 다시 보여 준다(restart R-E4의 RS-AC-08d와 같은 규칙).
 - **취소**: Callout에는 닫기가 없다. 다른 화면으로 가는 것이 곧 취소이고, 기억은 남는다(5.2가 `/projects`에서 이어받는다).
 - **이동 금지**: C-E4·C-E5 상태에서는 편집기로 보내지 않는다(SPEC r2 R-E4와 같은 원칙 — 편집기는 미확인을 이어받지 못한다, 2.3).
@@ -191,8 +191,8 @@
 3-1. **음성 판정은 "요청 전 상태 그대로"일 때만 — 처음 요청과 기억이 있는 재시도 모두 (r0.1 Codex r1 P1 · r0.2 Codex r2 P1-a로 처음 요청까지 넓힘)**: 기억을 지우는(또는 기억을 만들지 않는) "커밋 안 됨"은 지금 문서가 **요청 전 상태와 정확히 같을 때만**이다. restart면 `now.revision === open.doc.revision && now.candidateId === open.doc.candidateId && now.profileVersion === open.doc.profileVersion`, create면 `before === undefined && now === undefined`. 양성은 지금처럼 "요청 쌍 · revision +1"(create는 5.1)이다. **그 밖(revision이 더 나감 — 예: 처음 flush를 기다리는 사이 또는 R-E4 뒤 history로 편집기에 들어가 편집 저장이 commit 뒤 실패해 revision이 +2)은 미확인 유지**다. 기억·버튼·링크 차단을 두고 R-E4/C-E4/P-U3으로 답한다. `committed()`(`restartFlow.ts:59-62`)는 "yes/no/unknown" 대신 이 3분류(+확인 불가)를 돌려주도록 고친다. 기억 삭제가 "요청 전 그대로"에서만 일어나므로 대화상자가 언마운트된 뒤 `settle()`이 늦게 돌아도 미확인을 지우지 않는다(r2가 지적한 `run()` 언마운트 검사 부재의 영향 차단).
 3-2. **`STALE_DOC`·`DOC_EXISTS` 분리 (r0.2 · Codex r2 P1-a·P2)**: 둘은 판정 단계에서만 나고(`memoryDocBook.ts:384-386`), 같은 키 재생(`:374-376`)보다 뒤다. `state.starts`를 쓰는 곳은 start 커밋 1곳(`:403`, 초기값 `:169`)뿐이고, 기억이 있는 동안 이 탭에서 그 프로젝트의 다른 start는 기억이 막는다. 따라서 **이 오류로 끝난 요청(같은 키)은 커밋된 적이 없다**(L1). 커밋 확인보다 앞에서 따로 처리한다.
    - 처음 요청 restart의 `STALE_DOC`: SPEC r2의 기존 처리(R-E1·R-E1b 재판정) 그대로다 — 3-1을 넓혀도 이 경로가 미확인 게이트가 되지 않는다.
-   - **기억이 있는 restart 재시도가 `STALE_DOC`로 끝남**(r2 P2 — 예: R-E5 커밋 전 실패 → history 편집 저장 → 옛 `expectedRevision` 재시도): **종결 R-E6/P-U6**. 기억을 지우고 링크를 되살린다. 새로 시작은 "반영되지 않음"으로 확정한다. 문구: "새로 시작은 반영되지 않았습니다 — 그 사이 이 문서가 바뀌었습니다(X안 · vN). 그 사이 편집은 브라우저 저장을 확인하지 못했을 수 있습니다 — 편집기에서 한 번 저장하면 확인됩니다". 프로필 대화상자는 동봉 doc으로 R-E1/R-E1b처럼 다시 판정하고 이 문장을 덧붙인다. 확인 저장(같은 내용 `saveDoc`) 같은 새 쓰기는 하지 않는다(사용자 편집 없는 revision 증가·다른 탭 stale 신호 방지).
-   - **기억이 있는 create 재시도가 `DOC_EXISTS`로 끝남**: 같은 근거로 기억된 create는 커밋된 적이 없다. **종결 C-E6**: 기억을 지우고 동봉 doc으로 `judge`한다. 문구 끝에 R-E6와 같은 "저장을 확인하지 못했을 수 있습니다 — 편집기에서 한 번 저장하면 확인됩니다"를 붙인다.
+   - **기억이 있는 restart 재시도가 `STALE_DOC`로 끝남**(r2 P2 — 예: R-E5 커밋 전 실패 → history 편집 저장 → 옛 `expectedRevision` 재시도): **종결 R-E6/P-U6**. 기억을 지우고 링크를 되살린다. 새로 시작은 "반영되지 않음"으로 확정한다. 문구: "새로 시작은 반영되지 않았습니다 — 그 사이 이 문서가 바뀌었습니다(X안 · vN). 그 사이 편집은 브라우저 저장을 확인하지 못했을 수 있습니다 — 편집기에서 내용을 한 번 고쳐 '저장됨'이 보이면 확인된 것입니다. 그 전에 새로고침하면 그 사이 편집은 사라질 수 있습니다"(r0.3 · Codex r3 P2 — 재진입 편집기는 `idle`이라 '다시 저장' 버튼이 없고(`SaveStatus.tsx:57-60`) 편집 없이는 저장이 돌지 않는다. 실행 가능한 확인 수단은 편집 1회 → 자동 저장 → 레코드 전체 flush뿐이다. 종결 뒤 저장 미확인 상태를 편집기에 넘기는 것은 `/studio` 바이트가 필요해 MQ-3-1 B 범위로 남긴다). 프로필 대화상자는 동봉 doc으로 R-E1/R-E1b처럼 다시 판정하고 이 문장을 덧붙인다. 확인 저장(같은 내용 `saveDoc`) 같은 새 쓰기는 하지 않는다(사용자 편집 없는 revision 증가·다른 탭 stale 신호 방지).
+   - **기억이 있는 create 재시도가 `DOC_EXISTS`로 끝남**: 같은 근거로 기억된 create는 커밋된 적이 없다. **종결 C-E6**: 기억을 지우고 동봉 doc으로 `judge`한다. 문구 끝에 R-E6와 같은 "저장을 확인하지 못했을 수 있습니다 — 편집기에서 내용을 한 번 고쳐 '저장됨'이 보이면 확인된 것입니다. 그 전에 새로고침하면 그 사이 편집은 사라질 수 있습니다"를 붙인다.
 3. **결과 3분류만 쓴다**:
    - 확인 양성 = "미확인"(R-E4·C-E4·P-U3)
    - 확인 음성 = 사유별 "하지 않았습니다/하지 못했습니다"(쓰기 0 확실)
@@ -221,7 +221,8 @@
 | RS3-AC-12 | 검증 4종(typecheck·lint·test·build) + 가드(`noHardcodedStyle`·브랜드 격리). 기억 모듈 import 간선 가드: `StudioPage`·`StudioLayout`·`useDocSave`·`memoryProjectRepository`·`CandidatesSection`에서 정적·동적 import 0 | [G] |
 | RS3-AC-07b | (r0.1 · Codex r1 P1) **진행된 revision에서 게이트 유지**: R-E4 → (history 이동 대신 테스트는 같은 저장소로) 편집 저장 1회를 quota 실패로 주입(메모리 revision = 요청 전+2) → `/projects` 재시도와 프로필 R-E4 재시도 모두 flush 계속 실패 → 기억 유지 · 링크 0 · P-U3/R-E4 · "반영되지 않았다" 문장 0. 그 뒤 flush 성공 → IDB = 메모리(restart + 편집 둘 다) · 기억 삭제. create(C-E4)도 같다 | [U] |
 | RS3-AC-07c | (r0.2 · Codex r2 P1-a) **처음 요청 거짓 음성 0**: restart 처음 요청의 flush를 `delay`로 붙잡은 사이 같은 저장소로 편집 저장 1회(commit 뒤 quota 실패 주입 → revision = 요청 전+2) → 처음 flush도 실패 → 판정 = 미확인(R-E4), 기억 등록 · `/projects` 링크 0 · "반영되지 않았다" 문장 0. 대화상자를 언마운트한 뒤 `settle()`이 늦게 돌아도 기억 유지. 처음 요청 `STALE_DOC`(커밋 전 다른 저장으로 revision 변경)은 지금처럼 R-E1/R-E1b이고 기억 0 | [U] |
-| RS3-AC-07d | (r0.2 · Codex r2 P2) **R-E5 고착 0**: restart 처음 요청 request 단계 실패 + `getDoc` 실패 → R-E5 기억 → 편집 저장 ① 성공 ② commit 뒤 실패, 각각 → 프로필·`/projects` 재시도 = `STALE_DOC` → 종결 R-E6/P-U6: 기억 삭제 · 링크 복원 · "저장을 확인하지 못했을 수 있습니다" 문장 · 새 쓰기 호출 0(`saveDoc` 추가 호출 0). 같은 키가 커밋된 경우(재생)는 `STALE_DOC`이 나지 않음을 같이 단언. create 대응(C-E5 → `DOC_EXISTS` → C-E6 · `judge`)도 같다 | [U] |
+| RS3-AC-07d | (r0.2 · Codex r2 P2) **R-E5 고착 0**: restart 처음 요청 request 단계 실패 + `getDoc` 실패 → R-E5 기억 → 편집 저장 ① 성공 ② commit 뒤 실패, 각각 → 프로필·`/projects` 재시도 = `STALE_DOC` → 종결 R-E6/P-U6: 기억 삭제 · 링크 복원 · "저장을 확인하지 못했을 수 있습니다" 문장 · 새 쓰기 호출 0(`saveDoc` 추가 호출 0). 같은 키가 커밋된 경우(재생)는 `STALE_DOC`이 나지 않음을 같이 단언. create 대응(C-E5 → `DOC_EXISTS` → C-E6 · `judge`)도 같다 · (r0.3 · r3 P2) ②에서 링크로 편집기 재진입 → 편집 1회 → 자동 저장 성공 → IDB = 메모리(앞선 저장 실패 편집 포함) · R-E6 문구에 "내용을 한 번 고쳐"와 새로고침 손실 경고가 있음 | [U][E] |
+| RS3-AC-07e | (r0.3 · Codex r3 P1) **create 재시도 기억 유지**: C-E4(처음 create 커밋 뒤 flush 실패) → 다시 시도 = 같은 키 재생 → flush 연속 실패 2회 → 매번 C-E4/P-U3 · 기억 유지 · `/projects` 링크 0. 재시도 판정의 before = 기억 값(`undefined`) — 재시도 직전 `getDoc` before 읽기 0회. 그 뒤 flush 성공 → 기억 삭제 · IDB = 메모리 | [U] |
 | RS3-AC-08b | (r0.2 · Codex r2 P1-b) **후속 편집 손실 한계 명시**: R-E4 → history로 편집기 → 편집 저장 commit 뒤 quota 실패 → history로 `/projects` → P-U5 문장에 "그 뒤 편집은 사라집니다"가 보임 → 새로고침 → 이전 IDB 문서(B안 v3)만 남고 새로 시작·편집은 없음(손실이 문서화된 대로 일어남을 확인 — 무손실 단정 0) | [E](+[U] 문구) |
 | RS3-AC-13 | 접근성: P-U1은 글자(색만으로 구분 0). 버튼 이름 "저장 다시 시도"는 행 이름을 포함한 `aria-label`로 둔다(예: "가게 홈페이지 저장 다시 시도" — 기존 `ProjectRow.tsx:52` 링크 관례). 결과 알림은 행 안 한 자리(`role=status`/`alert`). 1280·1024·390에서 버튼 가림 0 | [U][E] |
 
@@ -235,7 +236,7 @@
    - RED: RS3-AC-01·04 테스트를 쓰고 RED를 확인한다. RS3-AC-02(기존 `restartLock.test.ts:136-142` 유지 + 저장 문서 열기 회귀)는 GREEN 뒤에도 통과해야 한다.
    - GREEN: `memoryProjectRepository.ts:122` 조건을 `(mode === "restart" || !docs.docOf(projectId))`로 바꾼다(3절 4). `localSync.guardWrite` 본문은 변경 0이다.
 2. **CP2 — 기억 모듈 + create 판정(B-RS-02 화면)**
-   - RED: RS3-AC-03·05·06·07b·07c·07d·08b(U).
+   - RED: RS3-AC-03·05·06·07b·07c·07d·07e·08b(U).
    - GREEN:
      - 기억 모듈 신설(예: `features/projects/unconfirmedStart.ts`, import 0, `WeakMap<object, Map>`, 값 `{mode, projectId, version, selected, doc?, held}`).
      - `restartFlow.remember`가 이 모듈을 쓰게 한다.
@@ -273,6 +274,7 @@
 - **RS3-D6** (r0.2 · Codex r2 P1-a·P2): SPEC r2 3.3.1의 **처음 요청** 커밋 확인 판정을 바꾼다. 음성은 "요청 전 상태 그대로"일 때만이고, revision이 더 나간 경우는 미확인 유지다(6절 3-1). `STALE_DOC`·`DOC_EXISTS`는 커밋 확인 앞에서 분리하고, 기억이 있는 재시도가 이 오류로 끝나면 종결 R-E6/C-E6로 간다(6절 3-2). 처음 요청 `STALE_DOC`의 R-E1/R-E1b는 그대로다.
 
 ## 변경 이력
+- r0.3 (2026-10-15): Codex 적대검토 r3(사용자 실행, `logs/codex-r3.txt`) 반영 — P1 create before는 처음 요청 때만 읽어 기억에 보존, 재시도는 기억 값 사용(5.1 · RS3-AC-07e) · P2 R-E6/C-E6 안내를 실행 가능한 "내용 한 번 고쳐 저장됨 확인" + 새로고침 손실 경고로 교정(6절 3-2 · RS3-AC-07d). **r0.3 반영분은 Codex 미재검토**(라운드 상한 3 도달).
 - r0.2 (2026-10-13): Codex 적대검토 r2 반영(**Codex 미재검토** — r3 자동 실행 금지) — P1-a 처음 요청에도 "요청 전 그대로"만 음성(6절 3-1 · RS3-AC-07c · RS3-D6) · P1-b 무손실 단정 삭제와 안전 경고(0절 6 · 2.3 · 4절 · P-U5 · RS3-R1·R4 · RS3-AC-08·08b) · P2 `STALE_DOC`/`DOC_EXISTS` 분리와 종결 R-E6/C-E6(6절 3-2 · RS3-AC-07d). RS3-D2 문장을 r0.1 결정(단언 유지)에 맞춤. 결정: MQ-3-1~4 모두 A(Jarvis, MQ-3 결정 기록).
 - r0.1 (2026-10-13): Codex 적대검토 r1 반영 — P1 기억 재시도 음성 판정을 "요청 전 상태 그대로"로 좁힘(6절 3-1 · RS3-AC-07b) · P2 create 가드는 메모리에 문서 없을 때만(3절 4 · RS3-AC-02 기존 단언 유지 · RS3-D5 정정). 자체 점검: create 커밋 확인 before 읽기(거짓 양성 0) · P-U4 create 문형.
 - r0 (2026-10-13): 초안 — RS02·RS03 trace 통합, ★ MQ-3-1 A(`/projects` 게이트, `/studio` 0B) · MQ-3-2 A · MQ-3-3 A.

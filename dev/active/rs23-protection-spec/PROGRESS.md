@@ -12,7 +12,8 @@ base 설계 7dbf116 · 앱 93f8111 · branch k002bill2/rs23-fix · 문서만(앱
 - [x] 8. MQ-4 결정 기록 (2026-10-15 사용자: 4-1 A · 4-2 A · 4-3 A)
 - [x] 9. SPEC-4 r0.1b 독립 재검토(2026-10-15, `review-r01b/`) — Codex a2 needs-attention P1 1·P2 1 + 메인 P2 1 → **구현 BLOCKED**
 - [x] 10a. r0.2 교정(N1 기억 토큰 해제 · N2 stale draft 충돌 복원 · N3 settling 대기 · Q-2 · Q-3) — 사용자 "1"(2026-10-15)
-- [ ] 10b. Codex 1회(SPEC-4 3라운드 = 상한) → `review-r02/`
+- [x] 10b. Codex a3 1회(3라운드 = 상한, `review-r02/`) — P1 1(전이 세대 검사) → r0.2a 반영 · **미재검토**
+- [ ] 10c. BLOCKED: 4라운드는 상한 초과 — 사용자 승인 또는 RS4-AC-18b RED로 대체 결정 대기
 - [ ] 11. BLOCKED: Developer 측정 관문(SPEC-4 8.0) — r0.2 통과 뒤
 - [x] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
 

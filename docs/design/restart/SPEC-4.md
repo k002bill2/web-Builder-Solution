@@ -1,6 +1,6 @@
 # RESTART SPEC-4 — 미확인 쓰기 이탈 보호 · 실제 저장 재시도 (B-RS-02 · B-RS-03 재정리)
 
-- 작성: RS23 이탈 보호 Designer 레인 · 설계 base `7dbf116` · 앱 base `93f8111` · 코드 0 · **r0.2(Codex a1·a2 반영 — r0.2 검토는 REPORT `review-r02/`)**. 결정 질문 = `docs/design/restart/MQ-4.md`. ★ = 권장안.
+- 작성: RS23 이탈 보호 Designer 레인 · 설계 base `7dbf116` · 앱 base `93f8111` · 코드 0 · **r0.2a(Codex a1·a2·a3 반영 — a3 반영분 미재검토, `review-r02/`)**. 결정 질문 = `docs/design/restart/MQ-4.md`. ★ = 권장안.
 - 승인 근거: 사용자 최신 "2" = **이탈 보호 확장**(미확인 상태 새로고침·탭 닫기 경고 + 실제 저장 재시도 수단). 예산 상향·새 스키마·새 인터페이스·의존성·백엔드·push 승인은 **아니다**.
 - **SPEC-3 r0.2는 superseded 초안이다.** 수정하지 않고 보존한다. 이 문서가 B-RS-02·03의 구현 기준을 한 번에 다시 정리한다. SPEC-3에서 그대로 가져오는 규칙은 "(SPEC-3 유지)"로 표시하고, 바꾼 규칙은 10절에 적는다.
 - 닫아야 하는 지적(최종 게이트 `dev/active/rs23-spec/final-gate/REPORT.md`):
@@ -130,6 +130,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 | 읽기 | `pendingOf(repo, projectId)` 동기 조회(쓰기 0) |
 | 쓰기 | `hold(repo, pending): token` · `release(repo, projectId, token, why: "confirmed" \| "not-applied-absent" \| "discarded")` 두 함수만. 지우는 이유를 인자로 받아 테스트가 "확인 없이 지움"을 잡는다 |
 | 해제 세대 규칙 (r0.2 · N1) | 쓰기·확인을 **시작할 때** 그 프로젝트 기억의 토큰(없으면 없음)을 잡아 두고, 끝나면 그 토큰으로 `release`한다. ① 지금 기억 토큰 = 잡은 토큰 → 해제 ② 지금 기억이 그 뒤 생긴 `PendingDraft`이고 `under.token` = 잡은 토큰 → `under`만 떼고 draft는 유지(확인된 것은 draft보다 앞선 레코드뿐) ③ 그 밖(토큰 불일치·기억 없음) → 아무것도 하지 않음. 시작 때 기억이 없었으면 끝나도 해제할 것이 없다. 편집기 `saveDoc` resolve·편집기/밖 "저장 확인"·프로필/`/projects` 재생 모두 같은 규칙. 폐기(`discarded`)만 토큰 없이 전부 지운다 |
+| 전이 세대 규칙 (r0.2a · Codex a3 P1 — **미재검토**) | 해제뿐 아니라 **실패 뒤 hold·종류 전환(4.1·4.2의 모든 결과 상태)도 시작 토큰과 비교**한다. 요청이 끝났을 때 ① 지금 기억 토큰 = 시작 토큰 → 판정표대로 교체 ② 지금 기억이 그 뒤 생긴 `PendingDraft`이고 `under.token` = 시작 토큰 → **draft는 그대로 두고 `under`만** 판정 결과로 바꾼다(해제면 떼고, `PendingStart` 갱신·`PendingRecord` 전환이면 그 값으로) ③ 시작 때 기억이 없었는데(최초 요청) 지금 `PendingDraft`가 있다 → 결과가 기억이면 draft의 `under`가 비어 있을 때만 `under`로 붙이고, 아니면 무시 ④ 그 밖(토큰 불일치·이미 해제됨) → 아무것도 하지 않는다. 오래된 요청이 새 세대에 옛 기억을 다시 만들거나 draft를 덮는 일이 0이다. 화면이 언마운트된 뒤 판정이 끝나도(`RestartDialog.tsx:107-112` — 취소 검사 없음) 같은 규칙이 지킨다 |
 
 ### 3.3 이탈 보호(beforeunload) — 기억에 붙는다
 
@@ -323,6 +324,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 | RS4-AC-10 | **멀티 탭 잠금 실취득**: 탭 A 실제 편집 저장(writer) → 탭 B 문서 없는 프로젝트 create → C-E2 · B IDB 변화 0 · B 기억 0. 탭 B에서 `PendingRecord`의 "저장 확인" → READ_ONLY 문형 · 버튼 유지. A를 편집 없이 닫음 → B 확인 성공 / A가 저장 뒤 닫음 → B STALE 문형(폐기만) | [E] |
 | RS4-AC-11 | **(CP4) history 재진입**: R-E4 → 브라우저 뒤로 `/studio/:id` → 상태 글자 "확인하지 못했습니다" · "저장 확인" 버튼 · 새로고침 경고 · 편집 없이 저장 확인 성공 → 기억 0 · `saved`. 편집 저장 성공 → 기억 0. **(r0.1 · Codex P1-2) 확인 지연(`delay` 주입) 중 편집 → 확인 resolve → phase `dirty` · 경고 유지 · 곧바로 이탈 시 저장 대기**. **(r0.1 · Codex P1-1) 편집 → 오프라인 → POP 언마운트 → `PendingDraft` → 재진입 → 온라인 저장 → 최종 IDB 내용 = 마지막 편집 · 기억 0**. `failed`(request 단계 실패)도 같다. **(r0.1b) `saving` 중 POP → 진행 중 저장이 메모리 커밋까지 성공 → 재진입 → 충돌(`STALE_DOC`) 0 · IDB = 마지막 편집 · 기억 0. 재진입 뒤 다시 POP → draft 1개 · `under` = 최초 기억** | [U][E] |
 | RS4-AC-18 | (r0.2 · N1) **늦은 해제가 새 draft를 지우지 않음**: 편집기 `PendingRecord` → "저장 확인" 제출(`delay`) → 새 편집 → 디바운스 전 POP(draft hold) → 확인 resolve → draft·이미지·`beforeunload` 유지 · draft의 `under`만 제거 · `release` 토큰 불일치 무시 1회. 같은 경로를 편집기 `saveDoc`(saving 중 POP → 늦은 resolve)으로도 — draft 유지 | [U] |
+| RS4-AC-18b | (r0.2a · Codex a3 P1 — 미재검토) **늦은 재생 실패가 draft를 덮지 않음**: `PendingStart` → 프로필/`/projects` 재생 시작(`delay`) → history로 편집기 → 편집 → POP(draft hold, under = 그 `PendingStart`) → 재생 reject를 R-3·R-5(`PendingStart` 갱신)와 R-2·R-4(`PendingRecord` 전환) 각각으로 → draft의 문서·이미지·토큰 유지 · `under`만 결과로 갱신 · `beforeunload` 유지. 최초 요청 진행 중 draft가 생긴 경우 ③도 같다 | [U] |
 | RS4-AC-19 | (r0.2 · N2) **stale draft 선택 전 쓰기 0**: `STALE_DOC`(phase stale) → POP → draft{conflict} → 재진입 → 충돌 선택 표시 · `saveDoc` 호출 0 · 디바운스 경과 뒤에도 0 → "내 편집으로 저장" → `resolveConflict` 1회 · 보존 스냅샷 1 · draft 해제 | [U] |
 | RS4-AC-20 | (r0.2 · N3) **saving 재진입 거짓 충돌 0**: 저장 request `delay` 중 POP → 곧바로 재진입(진행 중 저장 미커밋) → 문서 읽기는 `settling` 뒤 1회 · 그 저장 커밋 → 재진입 편집 저장 `STALE_DOC` 0 · IDB = 마지막 편집. `settling`이 reject여도 재진입 진행 | [U] |
 | RS4-AC-21 | (r0.2 · Q-3) **blocked draft**: 읽기 전용→stale 전환 탭에서 저장 실패(`STALE_TAB`) 상태로 POP → `/projects` 행 문구 = "더 저장할 수 없습니다" · 링크 0 · 폐기만 | [U] |
@@ -395,6 +397,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 - **RS4-D7** (r0.1): 편집기 언마운트 시 `PendingRecord edit-unsaved` → `PendingDraft`(내용·이미지 보존, 편집기 재진입 저장으로만 해제). 편집기 확인은 스케줄러 버전과 묶음. `Origin`에 `unknown` 추가와 R-4u.
 
 ## 변경 이력
+- r0.2a (2026-10-15): Codex a3(3라운드 — 상한) P1 반영: N1 세대 규칙을 해제에서 **모든 전이**(실패 뒤 hold·종류 전환)로 확장(3.2 전이 세대 규칙 · RS4-AC-18b). **Codex 미재검토 — 4라운드는 상한 초과라 실행하지 않음.**
 - r0.2 (2026-10-15): 독립 재검토(`dev/active/rs23-protection-spec/review-r01b/` — Codex a2 + 메인) 반영 — N1(P1) 기억 토큰·해제 세대 규칙(3.1 `Held` · 3.2 · 5.3 · RS4-AC-18) · N2(P2) stale draft는 충돌 선택으로 복원·자동 저장 0(3.3-5 · RS4-AC-19) · N3(P2) 재진입은 `settling` 뒤 읽기(RS4-AC-20) · Q-2 이미지는 컴포넌트 state에서 · Q-3 `blocked` draft 문구(RS4-AC-21). 결정 MQ-4-1~3 A(2026-10-15).
 - r0.1b (2026-10-13): r0.1 커밋 뒤 advisor 추가 1건 — draft 재진입은 메모리 `getDoc` + 첫 `edit()`(baseRevision 판정 미사용 · saving 중 POP 거짓 충돌 0) · draft 중첩 시 under 상속 · RS4-AC-11 시나리오 추가(**미재검토**).
 - r0.1 (2026-10-13): Codex 적대검토 a1(P1 2 · P2 1) + advisor 점검 반영(**Codex 미재검토**) — P1-1 offline·dirty·커밋 전 failed 편집을 `PendingRecord`로 확인하던 거짓 saved → `PendingDraft`(3.1 · 3.3-5 · 5.3 · RS4-AC-11) · P1-2 편집기 확인 resolve가 확인 중 편집을 saved로 덮음 → 스케줄러 버전 검사(3.4 · 5.3) · P2 origin unknown 표현 불가 → `Origin.unknown` · F-6/F-6b · R-4u · RS4-AC-16. advisor: C-E6 "엽니다"·P-OK 이동은 확인 뒤에만 · 다시 여는 문구 종류별 · 편집기 밖 확인의 이미지 누락 위험 RS4-R10 + P-3 측정 · QA 경고 판정법(CDP) · 폐기 시 inflight 0.

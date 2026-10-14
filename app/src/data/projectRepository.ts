@@ -23,7 +23,9 @@ export type ProjectErrorCode =
   | "GATE_FAILED"
   | "JOB_TIMEOUT"
   | "INFRA"
-  | "NETWORK";
+  | "NETWORK"
+  /** confirmDoc — 레코드가 참조하는 이미지가 IDB에도 맵에도 없어 확인하지 않았다(쓰기 0 · RESTART SPEC-4 3.5) */
+  | "IMAGES_MISSING";
 
 /** 프로젝트 = 이름 + 프로필 계열 1개(1:1) + 편집 문서 1개 (2.1 · 8.1) */
 export interface Project {
@@ -163,6 +165,12 @@ export interface ProjectRepository<TDoc extends DocHead = DocHead> {
   /** POST /projects/{id}/export — "내보내기 전" 스냅샷은 여기서만 만든다 (8.3.2) */
   requestExport(projectId: string, format: ExportFormat, docRevision: number): Promise<ExportRequestResult>;
   getExportJob(jobId: string): Promise<ExportJob | undefined>;
+  /**
+   * 지금 메모리 레코드(문서 + 스냅샷)의 IDB 커밋 확인(RESTART SPEC-4 3.5 · MQ-4-2 B) — 내용·revision·스냅샷 변화 0.
+   * 로컬 영속: 진행 중·실패 기록을 먼저 끝낸 뒤 flush와 같은 잠금·경로로 제출. 참조 이미지가 IDB에도 이번 맵에도 없으면 쓰기 0으로 IMAGES_MISSING.
+   * 메모리 영속: 확인할 영속 계층이 없어 바로 끝난다.
+   */
+  confirmDoc(projectId: string): Promise<void>;
 }
 
 export class ProjectRepositoryError<TDoc = unknown> extends Error {

@@ -43,6 +43,7 @@ const repository = (persistence: ProjectPersistence): ProjectRepository => ({
   resolveConflict: unused,
   requestExport: unused,
   getExportJob: unused,
+  confirmDoc: unused,
 });
 
 function session(initial: Record<string, string> = {}) {

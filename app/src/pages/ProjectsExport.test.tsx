@@ -46,6 +46,7 @@ const repository = (persistence: ProjectPersistence): ProjectRepository => ({
   resolveConflict: unused,
   requestExport: unused,
   getExportJob: unused,
+  confirmDoc: unused,
 });
 
 /** 2026-10-08 23:30 로컬 — 파일명 날짜는 로컬(UTC면 다음 날이 될 수 있는 시각) */

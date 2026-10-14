@@ -143,6 +143,41 @@ describe("RS-AC-08 restart 전 잠금 확인 (MQ-S2 ★A)", () => {
   });
 });
 
+describe("RS4-AC-15 create 가드 — 메모리에 문서 없을 때만 커밋 전에 잠금 확인(SPEC-4 r0.3a · MQ-3-2 A)", () => {
+  /** 확정 → 3안까지만(편집 문서 없음) → 닫기 */
+  async function docless() {
+    const persistence = createMemoryPersistence();
+    const browser = createLockRegistry();
+    const lock = browser.tab();
+    const tab = await openTab(persistence, lock);
+    await (await tab.studio.board()).confirmProfile(1, 0);
+    const gen = await tab.studio.generations();
+    let job = await gen.requestGeneration("profile-1", 1);
+    for (let i = 0; i < 10 && !isTerminal(job.state); i += 1) job = await gen.getJob(job.jobId);
+    await settle();
+    lock.close();
+    return { persistence, browser };
+  }
+
+  it("다른 탭 잠금 + 문서 없는 프로젝트 create → READ_ONLY_TAB · 메모리 문서 0 · IDB 쓰기 0 · 보유 탭이 놓으면 다시 시도 성공", async () => {
+    const { persistence, browser } = await docless();
+    const other = browser.tab();
+    let release!: () => void;
+    void other.request(WRITER_LOCK, { ifAvailable: true }, () => new Promise<void>((ok) => (release = ok)));
+    const a = await openTab(persistence, browser.tab());
+    const projects = await a.projects();
+    expect(await failureOf(projects.startDoc("project-1", 1, "B", "create"))).toBe(`INFRA: 저장 — ${READ_ONLY_TAB}`);
+    expect(await projects.getDoc("project-1")).toBeUndefined();
+    await settle();
+    expect(a.writes).toEqual([]);
+    release();
+    other.close();
+    await settle();
+    expect(await failureOf(projects.startDoc("project-1", 1, "B", "create"))).toBe("ok");
+    expect((await savedRecord(persistence)).doc.candidateId).toBe("B");
+  });
+});
+
 describe("RS-AC-08b 커밋 뒤 미확인 — 잠금 획득 뒤 flush INFRA", () => {
   it("flush 실패 → 메모리 = 새 문서 · IDB = 옛 문서 → 같은 인자 다시 시도 = 멱등 재생으로 flush 재제출 → IDB = 새 문서 + '새로 시작 전'", async () => {
     const { persistence, browser } = await seeded();

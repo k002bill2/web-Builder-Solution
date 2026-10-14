@@ -1,6 +1,6 @@
 # RESTART SPEC-4 — 미확인 쓰기 이탈 보호 · 실제 저장 재시도 (B-RS-02 · B-RS-03 재정리)
 
-- 작성: RS23 이탈 보호 Designer 레인 · 설계 base `7dbf116` · 앱 base `93f8111` · 코드 0 · **r0.2b(Codex a1~a4 반영 — a4 반영분 미재검토, `review-r02a/`)**. 결정 질문 = `docs/design/restart/MQ-4.md`. ★ = 권장안.
+- 작성: RS23 이탈 보호 Designer 레인 · 설계 base `7dbf116` · 앱 base `93f8111` · 코드 0 · **r0.3(MQ-4-2 B `confirmDoc` · C2·Q1 반영 — 검토는 `review-r03/`)**. 결정 질문 = `docs/design/restart/MQ-4.md`. ★ = 권장안.
 - 승인 근거: 사용자 최신 "2" = **이탈 보호 확장**(미확인 상태 새로고침·탭 닫기 경고 + 실제 저장 재시도 수단). 예산 상향·새 스키마·새 인터페이스·의존성·백엔드·push 승인은 **아니다**.
 - **SPEC-3 r0.2는 superseded 초안이다.** 수정하지 않고 보존한다. 이 문서가 B-RS-02·03의 구현 기준을 한 번에 다시 정리한다. SPEC-3에서 그대로 가져오는 규칙은 "(SPEC-3 유지)"로 표시하고, 바꾼 규칙은 10절에 적는다.
 - 닫아야 하는 지적(최종 게이트 `dev/active/rs23-spec/final-gate/REPORT.md`):
@@ -15,7 +15,7 @@
 2. **보호는 컴포넌트가 아니라 기억에 붙는다.** 기억이 0→1개가 되는 순간 모듈이 `window`에 `beforeunload`를 걸고, 1→0개가 되는 순간 뗀다. 화면이 언마운트돼도 기억이 남으면 보호가 남는다(언마운트 공백 0). 앱 공통 진입 코드는 0이다 — 기억을 만드는 코드(프로필 조작 뒤 청크 · `/projects` 재시도 청크 · 편집기)가 이미 모듈을 싣는다.
 3. **실제 저장 재시도 수단 두 가지(인터페이스 변경 0, L1)**:
    - **요청 재생**(`PendingStart`): 같은 인자 `startDoc` — 같은 키 재생(`memoryDocBook.ts:374-376`)이 판정보다 앞이고, 성공하면 `kept`가 **그 프로젝트의 현재 메모리 레코드 전체**를 IDB 커밋까지 flush한다(`memoryProjectRepository.ts:65-66` · `localSync.ts:152-155`).
-   - **내용 보존 저장 확인**(`PendingRecord`): `deleteSnapshot(projectId, "")` — 계약상 "없는 id = 변화 0으로 성공(재시도 멱등)"(`projectRepository.ts:157` · `memoryDocBook.ts:290-291`)이고, 성공하면 같은 `kept` flush를 탄다. revision 증가 0 · 문서 내용 변화 0 · 스냅샷 변화 0(★ MQ-4-2 A).
+   - **내용 보존 저장 확인**(`PendingRecord`): **r0.3 — 새 계약 `confirmDoc(projectId)`(MQ-4-2 B 승인, 3.5)**. 아래 r0~r0.2의 `deleteSnapshot(projectId, "")` 안은 측정으로 무효(빈 id 수동 스냅샷 실재 · 이미지 누락 — `dev/active/rs23-protection-spec/MEASURE-GATE.md` 2절). 옛 문장: `deleteSnapshot(projectId, "")` — 계약상 "없는 id = 변화 0으로 성공(재시도 멱등)"(`projectRepository.ts:157` · `memoryDocBook.ts:290-291`)이고, 성공하면 같은 `kept` flush를 탄다. revision 증가 0 · 문서 내용 변화 0 · 스냅샷 변화 0(★ MQ-4-2 A).
    - 기억은 **이 두 쓰기의 resolve(= IDB 커밋 확인) 또는 사용자의 명시적 폐기**로만 끝난다. "요청 전 상태와 같음"은 **요청 미반영**일 뿐이고, 저장 확정이 아니다.
 4. **F2 닫힘**: R-E6/C-E6(재시도가 `STALE_DOC`/`DOC_EXISTS`로 끝남)은 기억을 지우지 않는다. `PendingStart` → `PendingRecord`로 바꾸고, 문구는 "새로 시작은 반영되지 않았습니다"와 **실행 가능한 버튼 "저장 확인"**을 함께 준다. "편집기에서 한 번 저장" 지시는 삭제한다.
 5. **history 재진입(★ MQ-4-1 A)**: 편집기가 진입 때 기억을 읽어 저장 상태를 **"저장 확인 전"**(실패 계열 · 떠나기 경고 · "저장 확인" 버튼)으로 시작하고, 편집기 저장이 성공하면 기억을 지운다. 확인 resolve는 확인 중 편집이 없을 때만 `saved`다(r0.1). 편집기가 확인되지 않은 편집을 가진 채 POP으로 언마운트되면 그 **내용을 `PendingDraft`로 탭 수명 동안 보존**하고, 재진입 뒤 실제 저장으로만 해제한다(r0.1 — 메모리 레코드 확인으로 잃은 편집을 "확인"하지 않는다). 이 레인은 `/studio` 진입 바이트가 필요하므로 **Developer 예산 스파이크가 먼저**다(9절). 넘으면 감량 1회 → 그래도 넘으면 복원하고 멈춰 수치로 보고한다. 그동안 `/studio` 링크는 기억이 있는 프로젝트에서 계속 막는다(SPEC-3 5.2 게이트 유지).
@@ -52,7 +52,7 @@
 | flush는 `cleared`면 INFRA, writer가 아니면 `gate.enter()` 뒤 `blocked(mode)` | `localSync.ts:189-192` |
 | `startDoc` 같은 키 재생은 `NOT_FOUND`·`DOC_EXISTS`·`STALE_DOC` 판정보다 앞이고, 그 사이 `saveDoc`이 revision을 올려도 재생은 성공한다(옛 result 반환 + 현재 레코드 flush) | `memoryDocBook.ts:374-386` · save는 `starts`를 지우지 않음 `:366` |
 | `saveDoc` 같은 내용이라도 새 키(`requested|hash`)면 revision +1. 직전 키와 같을 때만 재생 | `memoryDocBook.ts:358-366` |
-| `deleteSnapshot` 없는 id = commit 없이 return(flush는 `kept`가 함). 문서가 메모리에 없으면 `NOT_FOUND`. 스냅샷 id는 `nextSeqId("snapshot", …)` 생성(빈 문자열은 생성되지 않음 — L3, CP1에서 테스트로 고정) | `memoryDocBook.ts:176,285-291` · `projectRepository.ts:157` |
+| `deleteSnapshot` 없는 id = commit 없이 return(flush는 `kept`가 함). 문서가 메모리에 없으면 `NOT_FOUND`. 스냅샷 id는 `nextSeqId("snapshot", …)` 생성(**r0.3 정정: 파일 가져오기로 빈 id 수동 스냅샷이 실재 — P-3 d2 실측. 그래서 저장 확인 수단으로 쓰지 않는다** · 원문: 빈 문자열은 생성되지 않음 — L3, CP1에서 테스트로 고정) | `memoryDocBook.ts:176,285-291` · `projectRepository.ts:157` |
 | `committed()`는 **메모리** `getDoc`을 본다. IDB 커밋 확인이 아니다 | `restartFlow.ts:59-66` · `memoryProjectRepository.ts:114-116` |
 | 현재 기억: `WeakMap<ProjectRepository, Map<projectId, RestartOpen>>`, restart만. 값 `doc`이 곧 restart의 요청 전 문서(재시도도 같은 `doc` 사용) | `restartFlow.ts:14-35` · `RestartDialog.tsx:80-87,107` |
 | LocalSync·ProjectRepository에는 "이 프로젝트 레코드가 커밋됐나"를 묻는 메서드가 없다. 확인 수단은 flush하는 쓰기의 resolve뿐 | `localSync.ts:43-56` · `projectRepository.ts:143-165` |
@@ -86,7 +86,7 @@ interface PendingStart {
 }
 
 /** 시작 요청은 반영되지 않음(종결). 그 사이 메모리 레코드(다른 편집 포함)의 IDB 커밋이 확인되지 않음.
- *  재시도 = 내용 보존 저장 확인(deleteSnapshot(projectId, "")) */
+ *  재시도 = 내용 보존 저장 확인 confirmDoc(projectId) (r0.3 · 3.5) */
 interface PendingRecord {
   readonly kind: "record";
   readonly projectId: string;
@@ -174,6 +174,31 @@ type Held<T extends Pending> = T & { readonly token: number };
 - `PendingRecord`의 재시도는 `startDoc`을 부르지 않는다. 그래서 `STALE_DOC` 고착(SPEC-3 r2 P2)이 다시 생기지 않는다.
 - 다른 화면(편집기 저장·복원·내보내기)이 이 프로젝트를 성공적으로 써도 ★ CP4 전에는 기억이 남는다(RS4-R2 — 1클릭 확인으로 끝남, 거짓은 아님).
 
+### 3.5 새 계약 `confirmDoc` (r0.3 · MQ-4-2 B 승인 2026-10-15)
+
+```ts
+interface ProjectRepository<TDoc> {
+  // …기존 메서드 그대로…
+  /**
+   * 이 프로젝트의 **현재 메모리 레코드**(문서 + 스냅샷)가 IDB에 커밋됐음을 확인한다. 내용·revision·스냅샷·멱등 기록 변화 0.
+   * - local 모드: 기존 `kept` flush와 같다(마지막 제출과 같으면 `queue.retry`, 다르면 새 제출 · 성공 = IDB `oncomplete` 뒤).
+   *   잠금·사유도 flush와 같다(`cleared` → CLEARED_TAB, writer 아님 → `blocked(mode)`).
+   * - **이미지 fail-closed**: 새 제출인데 레코드가 참조하는 이미지 중 IDB에도(`stored`·진행 중) 이번 호출의 이미지 맵에도 없는 것이 있으면
+   *   **쓰기 0으로 reject** — `ProjectRepositoryError("IMAGES_MISSING")`(이미지 없는 문서를 커밋하지 않는다 — P-3 a 실측 결함 차단).
+   * - 메모리에 문서가 없으면 `NOT_FOUND`.
+   * - memory 모드(`local` 없음): 확인할 영속 계층이 없어 즉시 resolve. UI는 memory 모드에서 기억을 만들지 않는다(로컬 영속에서만 미확인이 생긴다).
+   */
+  confirmDoc(projectId: string): Promise<void>;
+}
+```
+
+| 항목 | 규칙 |
+|---|---|
+| 구현 위치(바이트) | `memoryProjectRepository`에는 기존 스냅샷 쓰기 래퍼처럼 `confirmDoc: write("confirmDoc")` 한 줄만(진입 closure 증분 최소 — 9절 측정). 본문(문서 존재 확인, commit 없음)은 `memoryDocBook`(조작 뒤 청크). 이미지 fail-closed 판정은 `localSync.write`에 **confirm 전용 옵션 인자**로(기존 `kept` flush 경로 동작 변경 0) |
+| 기존 경로의 같은 결함 | 맵 없는 새 제출이 이미지 없는 문서를 커밋하는 동작은 기존 `startDoc` 재생(편집기 밖)에도 있다(P-3 a와 같은 원인). 이 레인은 바꾸지 않는다 → 별건 BACKLOG 후보 **RS4-B1**(위험 표 RS4-R10) |
+| 오류 사유 | `IMAGES_MISSING`은 오류 코드 추가(타입 유니온 1개) — 계약 변경에 포함. 문구: "이 문서의 일부 이미지는 이 탭에서 더 저장할 수 없습니다 — 새로고침하면 확인되지 않은 변경이 사라집니다" · 버튼 숨김 · 폐기만 |
+| 테스트 | RS4-AC-13(계약): 내용·revision·스냅샷 수·`snapshotSeq` 변화 0 · 미확인 없으면 IDB 쓰기 0 · 새 제출이면 문서 put 1 · `IMAGES_MISSING`이면 IDB 쓰기 0 · memory 모드 즉시 resolve · NOT_FOUND |
+
 ## 4. 판정표 — 최초 요청 vs 재시도 (F1)
 
 ### 4.1 최초 요청 (기억 없음)
@@ -218,14 +243,15 @@ type Held<T extends Pending> = T & { readonly token: number };
 
 ### 4.3 `PendingRecord` "저장 확인"
 
-- 이미지 조건(r0.1): RS4-R10 — P-3 측정 전에는 편집기 밖 확인이 이미지까지 확인한다고 단정하지 않는다.
+- 이미지 조건(r0.3): P-3 측정으로 RS4-R10 확정 → `confirmDoc`의 이미지 fail-closed(3.5)로 "이미지 없는 문서를 확인됨으로 커밋" 0.
 
-- 호출: `repo.deleteSnapshot(projectId, "")`(★ MQ-4-2 A). 조작 뒤 청크.
+- 호출: `repo.confirmDoc(projectId)`(r0.3 · MQ-4-2 B · 3.5). 조작 뒤 청크.
 - resolve → `release "confirmed"` · 성공 문구. reject → 사유 판정(SPEC-3 6절 5 상수 비교):
   - `READ_ONLY_TAB` → "다른 탭에서 편집 중이라 저장을 확인하지 못했습니다 — 그 탭을 닫은 뒤 저장 확인을 다시 누르세요"(버튼 유지).
   - `STALE_TAB` → "다른 탭에서 바뀐 내용이 있어 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다"(버튼 숨김 · 폐기만).
   - `CLEARED_TAB` → 같은 문형("이 브라우저 데이터가 지워져 …").
   - `NOT_FOUND`(메모리 문서 없음 — 이론상 없음) → `release "not-applied-absent"`.
+  - `IMAGES_MISSING` → 3.5 문구(버튼 숨김 · 폐기만).
   - 그 밖(quota·중단) → "아직 저장을 확인하지 못했습니다 · {사유}"(버튼 유지).
 - 같은 내용 `saveDoc`은 쓰지 않는다(새 키면 revision +1 — `memoryDocBook.ts:364`, 다른 탭에 저장 세대 신호). 쓸 경우는 MQ-4-2 C.
 
@@ -264,7 +290,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 | 항목 | 규칙 |
 |---|---|
 | 진입 | (r0.2) `PendingDraft`면 `settling`을 먼저 기다린다(N3). `pendingOf(repo, projectId)`가 `PendingStart`·`PendingRecord`면 저장 상태를 **`unconfirmed`**(기존 `failed` 계열 표시 재사용 — 바이트 최소)로 시작. 상태 글자 "브라우저 저장을 확인하지 못했습니다", 버튼 **저장 확인**, 떠나기 경고 켬(`needsUnloadGuard`가 `idle`·`saved`가 아니므로 자동). `PendingDraft`면 draft 내용·이미지 맵을 복원하고 **dirty**로 시작(자동 저장이 실제 저장). 단 `conflict`가 있으면 **stale + 충돌 선택**으로 복원(자동 저장 0 — N2) |
-| 저장 확인 | `PendingStart`면 재생, `PendingRecord`면 `deleteSnapshot(projectId, "")` — 저장 훅 바깥 1회 호출이지만 **스케줄러 버전과 묶는다**(r0.1 · Codex P1-2): 시작 때 스케줄러 version과 **기억 토큰**을 기록 → resolve면 3.2 해제 세대 규칙으로 해제(N1), version이 그대로면 `saved`, 늘었으면 `dirty` 유지(경고·자동 저장 계속). 확인 중 편집은 막지 않는다. reject면 4.3 사유 문형 · phase 유지 |
+| 저장 확인 | (r0.3 · rs4-review C2·Q1) **편집기 안에서는 종류와 무관하게 `startDoc` 재생을 쓰지 않는다** — 재생이 첫 커밋이면(미커밋 R-E5) 메모리 문서가 교체되는데 편집기는 옛 문서·`revisionRef`를 쥐고 있어 다음 편집이 `STALE_DOC`이 된다(C2). 편집기는 지금 화면 문서 = 메모리 문서를 확인하면 충분하다. 버튼 동작: ① 스케줄러에 저장 전 변경(`pending()` — version > savedVersion)이나 진행 중 저장이 있으면 **기존 `retry()`**(실제 `saveDoc`)를 부른다 — 그 resolve가 레코드 전체를 확인한다(Q1: 확인 시작 *전* 미저장 편집을 놓치지 않는다) ② 없으면 `confirmDoc(projectId)`(3.5) 1회. 시작 때 스케줄러 version과 기억 토큰(+ epoch)을 잡고 resolve 때: 기억은 3.2 규칙으로 해제, phase는 **그때도 저장 전 변경·진행 중 저장이 0일 때만** `saved`, 아니면 `dirty` 유지(경고·자동 저장 계속). `PendingStart`가 이 확인으로 해제되면 문구는 "브라우저 저장을 확인했습니다" + 지금 문서가 origin과 같으면 "새로 시작(편집 시작)은 반영되지 않았습니다"를 덧붙인다(편집기 안 문서가 곧 사실). reject면 4.3 사유 문형 · phase 유지 |
 | 편집 저장 | 지금 경로 그대로(`saveDoc`). 저장 시작 때 기억 토큰을 잡고, resolve하면 3.2 해제 세대 규칙으로 해제(현재 레코드 전체 flush 커밋 = 시작 때 기억이 가리키던 쓰기를 포함). 언마운트 뒤 늦게 resolve해도 그 뒤 생긴 draft는 지우지 않는다(N1) |
 | 떠남 | phase가 `dirty`·`saving`·`failed`·`offline`·`stale`이면 cleanup에서 `hold(PendingDraft)` 먼저, 리스너 해제 나중(3.3-5). `idle`·`saved`·`unconfirmed`(편집 없음)면 진입 때 기억을 그대로 둔다 |
 | 링크 게이트 | CP4가 들어가면 `/projects`의 `PendingRecord` 행은 "편집기 열기"를 되살린다(편집기가 인계·확인 — 이미지 맵이 등록된 자리). `PendingStart` 행은 게이트 유지(재생을 한 곳에서). `PendingDraft` 행은 "편집기에서 이어 저장" 링크 |
@@ -299,7 +325,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 
 ## 6. 공통 규칙 (SPEC-3 6절 대체)
 
-1. **영속 확인 = flush하는 쓰기의 resolve뿐**: `startDoc` 재생 · `deleteSnapshot(projectId, "")` · 편집기 `saveDoc`. 메모리 `getDoc`은 **커밋 여부(이 요청이 메모리에 썼는가)** 판정에만 쓰고, 영속 성공 근거로 쓰지 않는다.
+1. **영속 확인 = flush하는 쓰기의 resolve뿐**(local 모드 — memory 모드는 영속 계층이 없어 미확인 자체가 없다): `startDoc` 재생(편집기 밖에서만) · `confirmDoc`(r0.3) · 편집기 `saveDoc`. 메모리 `getDoc`은 **커밋 여부(이 요청이 메모리에 썼는가)** 판정에만 쓰고, 영속 성공 근거로 쓰지 않는다.
 2. **기억 삭제 이유는 3개뿐**: `confirmed`(위 1의 resolve) · `not-applied-absent`(origin `absent` + 지금도 문서 없음) · `discarded`(사용자 확인). 그 밖의 삭제 0 — 테스트가 `release` 인자를 단언한다.
 3. **"요청 전 그대로" = 요청 미반영**. 기억이 있던 프로젝트에서 이 판정이 나면 origin `doc`이면 `PendingRecord`로 바꾸고 지우지 않는다.
 4. **재시도는 기억의 인자 그대로, before 재조회 0**(F1). 화면이 인자를 다시 만들지 않는다.
@@ -314,7 +340,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 | ID | 조건 | 검증 |
 |---|---|---|
 | RS4-AC-01 | **F1**: create 처음 요청 commit 뒤 flush 실패(quota) → C-E4 · 기억 `PendingStart{origin absent}` → 재시도(flush 계속 실패) 1·2회 → 기억 유지 · `release` 호출 0 · `/projects` 링크 0 · "반영되지 않았다" 문장 0. 재시도 경로에서 `getDoc` before 읽기 호출 0(스파이). flush 성공 주입 → R-1 · IDB 문서 1 · 기억 0 | [U] |
-| RS4-AC-02 | **F2**: R-E5(request 실패 + getDoc 실패) → 편집 저장 ① 성공 ② commit 뒤 실패 → 재시도 = `STALE_DOC` → `PendingRecord start-not-applied` · 기억 유지 · 링크 0 · "저장 확인" 버튼 존재 · "편집기에서 한 번 저장" 문장 0 → "저장 확인"(`deleteSnapshot(p,"")`) ② 경우 flush 실패 주입 → 유지 · 성공 → 기억 0 · IDB 문서 = 메모리(그 사이 편집 포함) · revision 변화 0 · 스냅샷 수 변화 0. create 대응(C-E5 → `DOC_EXISTS` → C-E6)도 같다 | [U] |
+| RS4-AC-02 | **F2**: R-E5(request 실패 + getDoc 실패) → 편집 저장 ① 성공 ② commit 뒤 실패 → 재시도 = `STALE_DOC` → `PendingRecord start-not-applied` · 기억 유지 · 링크 0 · "저장 확인" 버튼 존재 · "편집기에서 한 번 저장" 문장 0 → "저장 확인"(`confirmDoc(p)`(r0.3)) ② 경우 flush 실패 주입 → 유지 · 성공 → 기억 0 · IDB 문서 = 메모리(그 사이 편집 포함) · revision 변화 0 · 스냅샷 수 변화 0. create 대응(C-E5 → `DOC_EXISTS` → C-E6)도 같다 | [U] |
 | RS4-AC-03 | **같은 키 재생 분리**: C-E4/R-E4 뒤 편집 저장으로 revision +2 → 재시도 = 재생 resolve(STALE 0) → 기억 0 · IDB = 메모리(편집 포함). 기억이 있는 동안 프로필 다른 안 "편집 시작" → `startDoc` 호출 0(기억 재표시) | [U] |
 | RS4-AC-04 | **판정표 4.1 전 행**: request·commit·response·flush 주입 × create·restart → F-5~F-10 기대 상태. 거짓 양성 0(SPEC-3 RS3-AC-05 유지 · 같은 쌍 문서가 이미 있고 가드 거절 → C-E2 · 기억 0) | [U] |
 | RS4-AC-05 | **보호 수명**: `hold` 0→1 → `beforeunload` 등록 1회, 이벤트 `defaultPrevented` true · 1→0 → 해제. 화면(대화상자·행·편집기) 언마운트 뒤에도 기억이 있으면 리스너 존재. (CP4) 편집기 `failed`·`offline`·`dirty` 상태 언마운트 → `PendingDraft` · cleanup 순서: `hold` 호출이 리스너 해제보다 먼저(호출 순서 스파이) | [U] |
@@ -331,9 +357,11 @@ type Held<T extends Pending> = T & { readonly token: number };
 | RS4-AC-20 | (r0.2 · N3) **saving 재진입 거짓 충돌 0**: 저장 request `delay` 중 POP → 곧바로 재진입(진행 중 저장 미커밋) → 문서 읽기는 `settling` 뒤 1회 · 그 저장 커밋 → 재진입 편집 저장 `STALE_DOC` 0 · IDB = 마지막 편집. `settling`이 reject여도 재진입 진행 | [U] |
 | RS4-AC-21 | (r0.2 · Q-3) **blocked draft**: 읽기 전용→stale 전환 탭에서 저장 실패(`STALE_TAB`) 상태로 POP → `/projects` 행 문구 = "더 저장할 수 없습니다" · 링크 0 · 폐기만 | [U] |
 | RS4-AC-12 | **예산·간선**: 9절 표 전부. `pendingWrites` 런타임 import 0. `memoryProjectRepository`·`localSync`·저장소 인터페이스 diff 0(가드 조건 1줄 제외). `/studio` 진입 closure 변경은 CP4 범위만 | [G] |
-| RS4-AC-13 | 검증 4종(typecheck·lint·test·build) + `noHardcodedStyle`·브랜드 격리. `deleteSnapshot(p, "")` 계약 테스트(빈 id = 변화 0 + flush 1회 · 스냅샷 id 생성기가 빈 문자열을 만들지 않음) | [G][U] |
+| RS4-AC-13 | 검증 4종(typecheck·lint·test·build) + `noHardcodedStyle`·브랜드 격리. `confirmDoc` 계약 테스트(3.5 표 — r0.3) | [G][U] |
 | RS4-AC-16 | (r0.1 · Codex P2) **origin unknown**: create before 읽기 실패 + flush 실패 → C-E5 · 기억 `origin unknown` → 재시도 reject(문서 있음·없음 각각) → 기억 유지(R-4u) · `release` 0 · getDoc before 재조회 0 → 재생 resolve → 기억 0. F-6b(문서 없음 첫 요청) → C-E3 · 기억 0 | [U] |
-| RS4-AC-17 | (r0.1 · advisor) **이미지 확인 경로(P-3)**: 읽기 전용 탭에서 새 이미지를 넣은 편집 저장(gate 거절 · 제출 0) → 편집기 이탈 → 보유 탭 닫음 → 편집기 밖 `deleteSnapshot(p,"")` → IDB `images`에 그 참조 레코드가 있는가. 없으면 RS4-R10 결함 확정 | [U] |
+| RS4-AC-17 | (r0.3 — P-3 a 회귀) **이미지 fail-closed**: 읽기 전용 탭에서 새 이미지를 넣은 편집 저장(gate 거절 · 제출 0) → 편집기 이탈 → 보유 탭 닫음 → 편집기 밖 `confirmDoc` → `IMAGES_MISSING` · IDB `docs`·`images` 쓰기 0 · 기억 유지 · 행 문구 3.5 · 버튼 0. 대조: 맵 등록 중(편집기 안) `confirmDoc` → 문서 + 이미지 레코드 커밋 | [U] |
+| RS4-AC-22 | (r0.3 · C2) **편집기 확인은 문서를 바꾸지 않음**: R-E5(실제 미커밋) → history로 편집기 → "저장 확인" → `startDoc` 호출 0 · `confirmDoc` 1 · 화면 문서 = 메모리 문서 · 다음 편집 저장 `STALE_DOC` 0 · 문구에 "새로 시작은 반영되지 않았습니다" | [U] |
+| RS4-AC-23 | (r0.3 · Q1) **확인 전 미저장 편집**: 편집기 unconfirmed 상태에서 편집 → 디바운스 전 "저장 확인" → `confirmDoc` 0 · `saveDoc` 1(retry) → resolve 뒤 `saved` · IDB = 마지막 편집. offline 편집 뒤 "저장 확인" → `saved` 0 · 경고 유지 | [U] |
 | RS4-AC-14 | 접근성: 상태는 글자(색만 0) · 결과 알림 한 자리 · `alertdialog` 이름 · 1280·1024·390 버튼 가림 0 | [U][E] |
 | RS4-AC-15 | create 가드(SPEC-3 RS3-AC-01·02·04 유지): 거절 시 메모리·IDB 변화 0 · `restartLock.test.ts:136-142` 그대로 통과 · 흐름 코드 `tryLock` 직접 호출 0 | [U][G] |
 
@@ -349,7 +377,7 @@ type Held<T extends Pending> = T & { readonly token: number };
 
 ### 8.1 CP1 — 기억 모듈 + 보호 + create 가드
 - RED: `app/src/features/pending/pendingWrites.test.ts`(RS4-AC-05 · 13 일부), `app/src/data/persistence/restartLock.test.ts`에 RS4-AC-15(create 가드) 추가.
-- GREEN: `app/src/features/pending/pendingWrites.ts` 신설 · `memoryProjectRepository.ts:122` 조건 1개 교체 · `deleteSnapshot(p,"")` 계약 테스트(`app/src/data/memoryDocBook.test.ts` 또는 기존 스냅샷 테스트 파일).
+- GREEN: `app/src/features/pending/pendingWrites.ts` 신설 · `memoryProjectRepository.ts:122` 조건 1개 교체 · **`confirmDoc` 계약**(`app/src/data/projectRepository.ts` 인터페이스 · `memoryProjectRepository.ts` `write("confirmDoc")` · `memoryDocBook.ts` 본문 · `persistence/localSync.ts` confirm 전용 이미지 fail-closed 옵션 · 오류 코드 `IMAGES_MISSING`) + 계약 테스트(RS4-AC-13·17 — `app/src/data/persistence/confirmDoc.test.ts`).
 - 실행: `npm test -- --run src/features/pending src/data/persistence/restartLock.test.ts`.
 
 ### 8.2 CP2 — 프로필 판정표(F1·F2)
@@ -373,6 +401,9 @@ type Held<T extends Pending> = T & { readonly token: number };
 
 ## 9. 예산 관문 (ADR-004 · 판정선 수정 금지 · Designer는 0B를 단정하지 않는다)
 
+> **r0.3 갱신**: ADR-004 개정 16(main `e3e22520`)으로 `/studio` 기준선은 **해시 정규화** 판정이다 — 기준 128.50 · 복원 131.48, 멈춤 > 128.53 · 131.51. rs4-spike2 정규화 실측: CP1~3 = create 가드 **+6B**(128.51). r0.3 `confirmDoc`은 `memoryProjectRepository`에 래퍼 1줄(+수십 B 추정, L3)이 더해지므로 **정규화 재측정 필수** — 합이 +30B를 넘으면 감량 1회(예: 래퍼 키 공유) → 그래도 넘으면 수치로 배분 재상신. CP4(S2 +922 · S3 +472 raw, 흔들림보다 큼)는 여전히 판정선 밖이라 배분 결정 없이는 착수 불가. 아래 표는 r0 당시 raw 기준 기록이다.
+
+
 | 시나리오 | base(L1) | 판정선 | S1: 기억 모듈 + 프로필·`/projects`(CP1~3) | S2: S1 + 편집기 인계 정적(CP4) | S3: S1 + 편집기 동기 조회만 + 인계 본문 lazy |
 |---|---|---|---|---|---|
 | `/studio/:projectId` | 129.87 | **129.90** | 가드 조건 1줄(수 B) — **실측** | 모듈 + 훅 초기 상태 + 버튼·cleanup — 30B 초과 가능성 높음(L3) | 모듈 동기 조회 + `import()` 1개 — 초과 가능성 있음(L3). 조건부 로드 시나리오 추가가 필요(`check-bundle-size.mjs:25`) |
@@ -390,15 +421,17 @@ type Held<T extends Pending> = T & { readonly token: number };
 ## 10. SPEC-3 r0.2와 다르게 한 곳 (RS4-D#)
 
 - **RS4-D1**(F1): SPEC-3 5.1 "before 읽기 → before가 문서면 음성"과 "재시도도 같은 판정 순서"를 → before는 최초 요청에서 1번 읽어 기억 `origin`에 저장, 재시도는 origin과 비교(4.2). F-9만 최초 요청 규칙으로 남는다.
-- **RS4-D2**(F2): SPEC-3 6절 3-2 R-E6/C-E6 "기억 삭제 · 링크 복원 · 편집기에서 한 번 저장"을 → `PendingRecord` 전이 · 링크 게이트 유지 · "저장 확인" 버튼(`deleteSnapshot(p,"")`)(4.3).
+- **RS4-D2**(F2): SPEC-3 6절 3-2 R-E6/C-E6 "기억 삭제 · 링크 복원 · 편집기에서 한 번 저장"을 → `PendingRecord` 전이 · 링크 게이트 유지 · "저장 확인" 버튼(r0.3: `confirmDoc` — 처음 안 `deleteSnapshot(p,"")`는 폐기)(4.3).
 - **RS4-D3**: SPEC-3 MQ-3-4 A(경고 없음)를 → 기억이 있는 동안 모듈 수준 `beforeunload`(사용자 "2" 승인).
 - **RS4-D4**: SPEC-3 MQ-3-1 A(`/projects` 게이트만)를 → 게이트 유지 + 편집기 인계(★ MQ-4-1 A, 예산 관문 조건부).
 - **RS4-D5**: SPEC-3 6절 3-1 "요청 전 그대로 = 음성 → 기억 삭제"를 → origin `absent`일 때만 삭제, origin `doc`이면 `PendingRecord`("요청 미반영 ≠ 저장 확정").
 - **RS4-D6**: 기억 값 타입 `RestartOpen{doc, held}` → `Pending` 판별 유니온(3.1). 지우기는 이유 인자 필수.
+- **RS4-D9** (r0.3): 저장 확인 수단 `deleteSnapshot(p,"")` → 새 계약 `confirmDoc`. 편집기 안 확인에서 `startDoc` 재생 제거.
 - **RS4-D8** (r0.2): 기억 해제에 토큰(세대) 필수 · `PendingDraft`에 `settling`·`conflict`·`blocked`.
 - **RS4-D7** (r0.1): 편집기 언마운트 시 `PendingRecord edit-unsaved` → `PendingDraft`(내용·이미지 보존, 편집기 재진입 저장으로만 해제). 편집기 확인은 스케줄러 버전과 묶음. `Origin`에 `unknown` 추가와 R-4u.
 
 ## 변경 이력
+- r0.3 (2026-10-15): MQ-4-2 B 승인 → 새 계약 `confirmDoc`(3.5 · 이미지 fail-closed · `IMAGES_MISSING`), `deleteSnapshot(p,"")` 안 폐기(측정 무효 근거). rs4-review C2(편집기 확인이 재생으로 문서 교체) · Q1(확인 전 미저장 편집 거짓 saved) 반영 — 편집기 안 확인 = retry 또는 `confirmDoc`, 재생 0(5.3 · RS4-AC-22·23). 9절 정규화 기준 갱신.
 - r0.2b (2026-10-15): Codex a4(4라운드 — 사용자 승인 상한 초과 1회, 마지막) P2 반영: 기억이 없어도 유지되는 프로젝트 세대 `epoch`로 ①·③을 정의(3.2 · RS4-AC-18c). **Codex 미재검토 — 추가 라운드 없음.**
 - r0.2a (2026-10-15): Codex a3(3라운드 — 상한) P1 반영: N1 세대 규칙을 해제에서 **모든 전이**(실패 뒤 hold·종류 전환)로 확장(3.2 전이 세대 규칙 · RS4-AC-18b). **Codex 미재검토 — 4라운드는 상한 초과라 실행하지 않음.**
 - r0.2 (2026-10-15): 독립 재검토(`dev/active/rs23-protection-spec/review-r01b/` — Codex a2 + 메인) 반영 — N1(P1) 기억 토큰·해제 세대 규칙(3.1 `Held` · 3.2 · 5.3 · RS4-AC-18) · N2(P2) stale draft는 충돌 선택으로 복원·자동 저장 0(3.3-5 · RS4-AC-19) · N3(P2) 재진입은 `settling` 뒤 읽기(RS4-AC-20) · Q-2 이미지는 컴포넌트 state에서 · Q-3 `blocked` draft 문구(RS4-AC-21). 결정 MQ-4-1~3 A(2026-10-15).

@@ -49,3 +49,4 @@
   - 4-2 A: 저장 확인 = `deleteSnapshot(projectId, "")`. **P-3(RS4-AC-17) 조건부**다. 이미지 누락이 확정되면 편집기 밖 확인을 편집기 링크로 대체하거나 재상신한다.
   - 4-3 A: S3 새 시나리오 한도는 수치를 본 뒤 ADR-004 개정으로 정한다(지금은 정하지 않음).
   - 남은 착수 조건(결정과 별개): ① SPEC-4 r0.1/r0.1b 독립 재검토 1회(QA 또는 Codex) ② Developer 측정 관문(SPEC-4 8.0 — 테스트 수·base 빌드·S1~S3·P-3).
+- **2026-10-15 MQ-4-2 재결정 — B 승인**(사용자 "B승인"). A는 측정으로 무효다(빈 id 수동 스냅샷이 실재하고, 이미지 누락이 확인됨 — `dev/active/rs23-protection-spec/MEASURE-GATE.md` 2절). 저장소 인터페이스에 `confirmDoc(projectId)`를 더하고, 오류 코드 `IMAGES_MISSING`을 추가한다(SPEC-4 r0.3 3.5). `/studio` 바이트는 ADR-004 개정 16의 정규화 판정으로 재측정한다.

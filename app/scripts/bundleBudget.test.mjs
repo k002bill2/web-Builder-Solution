@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { checkBundle, ROUTE_BUDGET_KB } from "./bundleBudget.mjs";
+import { checkBundle, normalizeHashes, ROUTE_BUDGET_KB } from "./bundleBudget.mjs";
 
 /**
  * 번들 검사 판정 (ADR-004 개정 2 결정 5) — 픽스처 manifest + 주입한 크기(KB)로 판정만 본다.
@@ -151,6 +151,8 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
     const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json", import.meta.url), "utf8"));
     expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 129.87, "/studio/:projectId (저장 데이터 복원 진입)": 132.91 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId", "/studio/:projectId (저장 데이터 복원 진입)"]);
+    // ADR-004 개정 16 — 판정은 해시 정규화 기준선(앱 93f8111 실측)
+    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 128.5, "/studio/:projectId (저장 데이터 복원 진입)": 131.48 });
   });
 });
 
@@ -172,5 +174,48 @@ describe("조작 뒤 보고 목록 (B-M2C-02 · IMG-AC-29) — 보고용 키 추
     expect(before.failures.length).toBeGreaterThan(0);
     expect(after.lines.filter((line) => !line.includes("조작 뒤"))).toEqual(before.lines);
     expect(after.lines.filter((line) => line.includes("조작 뒤"))).toEqual(["[bundle]   /page 조작 뒤 src/After.ts: +7.00KB (1개 파일, 예산 판정 밖)"]);
+  });
+});
+
+/**
+ * 해시 정규화 기준선 (ADR-004 개정 16) — 청크 파일명 해시가 바뀌면 importer gzip이 ±수십 B 흔들린다(rs4-spike2 대조 N: /studio −22B).
+ * 기준선 판정은 해시를 지운 크기(normSizeOf)로 한다. 한도(100·125·시나리오 한도·90·30)는 raw 그대로.
+ */
+describe("checkBundle — 해시 정규화 기준선 (ADR-004 개정 16)", () => {
+  const NORM = { "assets/index.js": 19, "assets/client.js": 60, "assets/page.js": 10, "assets/lazy.js": 30 };
+  const normOf = (over = {}) => (f) => (f in over ? over[f] : NORM[f] ?? 0);
+  const BASE = { base: "test", eagerKb: { "/page": 123 }, normEagerKb: { "/page": 119 }, toleranceKb: 0.03, renderJsStopKb: 89.7 };
+  const judge = ({ raw = {}, norm = {}, baseline = BASE, withNorm = true } = {}) =>
+    checkBundle({ manifest: manifest(), sizeOf: (f) => (f in raw ? raw[f] : sizeOf(f)), ...(withNorm && { normSizeOf: normOf(norm) }), scenarios, renderAuto: [], baseline });
+
+  it("normalizeHashes — Vite 청크 이름의 8자 해시만 지운다(js·css), 그 밖 문자열 불변", () => {
+    expect(normalizeHashes('import("./StudioLayout-AbC_d-12.js");x="./index-ZZZZZZZZ.css"')).toBe('import("./StudioLayout.js");x="./index.css"');
+    expect(normalizeHashes('"a-short.js" "no-hash-here"')).toBe('"a-short.js" "no-hash-here"');
+  });
+
+  it("정규화 기준선이 있으면 raw가 기준선+0.03을 넘어도(해시 흔들림) 정규화가 안이면 통과 — raw는 참고 줄", () => {
+    const { lines, failures } = judge({ raw: { "assets/index.js": 20.05 } });
+    expect(failures).toEqual([]);
+    expect(lines).toContain("[bundle]   /page 해시 정규화 진입 119.00KB · 기준선 119.00KB + 0.03KB (멈춤 > 119.03KB) — raw 123.05KB는 참고(해시 이름 흔들림 포함)");
+  });
+
+  it("정규화 경계 — 119.03 통과 · 119.04 실패", () => {
+    expect(judge({ norm: { "assets/lazy.js": 30.03 } }).failures).toEqual([]);
+    expect(judge({ norm: { "assets/lazy.js": 30.04 } }).failures).toEqual(["/page: 해시 정규화 진입 119.04KB > 기준선 119.00KB + 0.03KB"]);
+  });
+
+  it("raw 한도(125)는 정규화와 무관하게 그대로 판정", () => {
+    expect(judge({ raw: { "assets/lazy.js": 33 } }).failures).toEqual(["/page: 진입 직후 자동 로드 포함 126.00KB > 125KB"]);
+  });
+
+  it("정규화 기준선이 있는데 normSizeOf가 없으면 실패(조용히 raw로 돌아가지 않음) · 형식 틀림 = 실패", () => {
+    expect(judge({ withNorm: false }).failures).toContain("/page: 해시 정규화 기준선이 있는데 정규화 크기 함수가 없습니다");
+    expect(judge({ baseline: { ...BASE, normEagerKb: { "/page": "119" } } }).failures).toContain("M2c 기준선 파일이 없거나 형식이 틀립니다 (scripts/m2cBaseline.json)");
+    expect(judge({ baseline: { ...BASE, normEagerKb: { "/gone": 1 } } }).failures).toContain("M2c 기준선: 시나리오 /gone가 SCENARIOS에 없습니다");
+  });
+
+  it("정규화 기준선이 없는 시나리오는 지금처럼 raw 기준선 판정", () => {
+    const rawOnly = Object.fromEntries(Object.entries(BASE).filter(([key]) => key !== "normEagerKb"));
+    expect(judge({ baseline: rawOnly, raw: { "assets/lazy.js": 30.04 } }).failures).toEqual(["/page: 진입 직후 자동 로드 포함 123.04KB > 기준선 123.00KB + 0.03KB"]);
   });
 });

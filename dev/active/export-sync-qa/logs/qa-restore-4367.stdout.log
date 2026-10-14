@@ -1,0 +1,6 @@
+X download {"name":"모던-카페-브랜드-프로젝트_r3.html","bytes":777750}
+X before restore {"header":"B안 · 프로필 v2","gate":[]}
+X snapshot list ["자동 스냅샷은 최근 20개만 보관합니다 — 오래 남기려면 '지금 상태 저장'으로 만드세요","내보내기 전 · 01:00","자동 · 내보내기 전 · 01:00 · 프로필 v2 · B안","새로 시작 전","자동 · 새로 시작 전 · 01:00 · 프로필 v1 · A안"]
+X after restore {"header":"A안 · 프로필 v1","gate":["대비 AA차단 1","SEO 메타차단 2"],"notice":["스냅샷 '새로 시작 전'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 01:01'에 있습니다"]}
+X shot "/Users/younghwankang/orca/workspaces/web-builder-solution/export-sync-qa/dev/active/export-sync-qa/shots/restored-4367.png 160771B"
+

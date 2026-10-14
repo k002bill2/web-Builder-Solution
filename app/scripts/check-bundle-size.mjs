@@ -14,7 +14,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
-import { BASELINE_FILE, checkBundle } from "./bundleBudget.mjs";
+import { BASELINE_FILE, checkBundle, normalizeHashes } from "./bundleBudget.mjs";
 import { thumbsVersion } from "./thumbsVersion.mjs";
 
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
@@ -157,6 +157,8 @@ const SCENARIOS = [
 const readManifest = (name) => (existsSync(join(DIST, name)) ? JSON.parse(readFileSync(join(DIST, name), "utf8")) : {});
 const manifest = { ...readManifest(".vite/manifest.json"), ...readManifest(".vite/render-manifest.json") };
 const sizeOf = (file) => gzipSync(readFileSync(join(DIST, file))).length / 1000;
+/** 해시 정규화 gzip KB(ADR-004 개정 16) — 기준선 판정 전용. 한도 판정은 sizeOf(raw) */
+const normSizeOf = (file) => gzipSync(normalizeHashes(readFileSync(join(DIST, file), "utf8"))).length / 1000;
 
 // M2c 기준선(SPEC m2c 7절 · IMG-AC-29) — 시작 실측 고정 파일. 없거나 읽지 못하면 null = 실패(조용히 건너뛰지 않는다)
 const baselinePath = fileURLToPath(new URL(`../${BASELINE_FILE}`, import.meta.url));
@@ -168,7 +170,7 @@ const readBaseline = () => {
   }
 };
 
-const { lines, failures: budgetFailures } = checkBundle({ manifest, sizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
+const { lines, failures: budgetFailures } = checkBundle({ manifest, sizeOf, normSizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
 for (const line of lines) console.log(line);
 
 /**

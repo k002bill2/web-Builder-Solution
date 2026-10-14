@@ -1,0 +1,21 @@
+# ADR-004 개정 16 — 기준선 해시 정규화 판정 REPORT (2026-10-15)
+
+- 결정: 영환님 "1"(MEASURE-GATE 5절 선택지 1). 브랜치 `k002bill2/budget-normalize`(main `2714dee`에서 분기) · 커밋 `19f448a`.
+- 변경:
+  - `app/scripts/bundleBudget.mjs`: `normalizeHashes` 추가, `normEagerKb` 판정 추가.
+  - `check-bundle-size.mjs`: `normSizeOf` 연결.
+  - `m2cBaseline.json`: `normEagerKb` 128.50·131.48 추가.
+  - `bundleBudget.test.mjs`: 테스트 6개 추가 + 기준선 고정값 갱신.
+  - `docs/decisions/ADR-004-performance-budgets.md`: 개정 16.
+- TDD: 새 테스트 5개 실패(RED)를 확인한 뒤 구현해 23/23 통과(GREEN).
+- 4종 게이트:
+  - `npm run typecheck`: 0
+  - `npm run lint`: 0. 한 번 실패한 뒤 미사용 변수를 고쳐 0이 됐다.
+  - `npm test -- --run`: 304 files / 2775 tests 통과
+  - `npm run build`: 0
+- 결정성 확인(같은 머신, 빌드 후 원복):
+  - base: 정규화 128.50 / 131.48 → 통과
+  - 대조 N(Catalog 문구 1글자): 정규화 128.50 / 131.48(변화 0), raw 129.87
+  - create 가드 1줄: 정규화 128.51 / 131.49 → 통과
+- Codex `review --scope branch --base main` 1회: **결함 0**(원문 `codex-r1.txt`). 단 Codex 환경에서는 단위 테스트를 실행하지 못했다. 테스트 실행은 위 로컬 게이트가 근거다.
+- push·merge: 하지 않았다(사용자 승인 필요).

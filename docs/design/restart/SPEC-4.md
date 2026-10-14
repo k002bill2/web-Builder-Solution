@@ -1,6 +1,6 @@
 # RESTART SPEC-4 — 미확인 쓰기 이탈 보호 · 실제 저장 재시도 (B-RS-02 · B-RS-03 재정리)
 
-- 작성: RS23 이탈 보호 Designer 레인 · 설계 base `7dbf116` · 앱 base `93f8111` · 코드 0 · **r0.3(MQ-4-2 B `confirmDoc` · C2·Q1 반영 — 검토는 `review-r03/`)**. 결정 질문 = `docs/design/restart/MQ-4.md`. ★ = 권장안.
+- 작성: RS23 이탈 보호 Designer 레인 · 설계 base `7dbf116` · 앱 base `93f8111` · 코드 0 · **r0.3a(MQ-4-2 B `confirmDoc` · C2·Q1 · Codex a5 P1 반영 — a5 반영분 미재검토, `review-r03/`)**. 결정 질문 = `docs/design/restart/MQ-4.md`. ★ = 권장안.
 - 승인 근거: 사용자 최신 "2" = **이탈 보호 확장**(미확인 상태 새로고침·탭 닫기 경고 + 실제 저장 재시도 수단). 예산 상향·새 스키마·새 인터페이스·의존성·백엔드·push 승인은 **아니다**.
 - **SPEC-3 r0.2는 superseded 초안이다.** 수정하지 않고 보존한다. 이 문서가 B-RS-02·03의 구현 기준을 한 번에 다시 정리한다. SPEC-3에서 그대로 가져오는 규칙은 "(SPEC-3 유지)"로 표시하고, 바꾼 규칙은 10절에 적는다.
 - 닫아야 하는 지적(최종 게이트 `dev/active/rs23-spec/final-gate/REPORT.md`):
@@ -183,8 +183,10 @@ interface ProjectRepository<TDoc> {
    * 이 프로젝트의 **현재 메모리 레코드**(문서 + 스냅샷)가 IDB에 커밋됐음을 확인한다. 내용·revision·스냅샷·멱등 기록 변화 0.
    * - local 모드: 기존 `kept` flush와 같다(마지막 제출과 같으면 `queue.retry`, 다르면 새 제출 · 성공 = IDB `oncomplete` 뒤).
    *   잠금·사유도 flush와 같다(`cleared` → CLEARED_TAB, writer 아님 → `blocked(mode)`).
-   * - **이미지 fail-closed**: 새 제출인데 레코드가 참조하는 이미지 중 IDB에도(`stored`·진행 중) 이번 호출의 이미지 맵에도 없는 것이 있으면
+   * - **이미지 fail-closed**: 새 제출인데 레코드가 참조하는 이미지 중 **커밋이 확인된** IDB 이미지(`stored`)에도 이번 호출의 이미지 맵에도 없는 것이 있으면
    *   **쓰기 0으로 reject** — `ProjectRepositoryError("IMAGES_MISSING")`(이미지 없는 문서를 커밋하지 않는다 — P-3 a 실측 결함 차단).
+   * - (r0.3a · Codex a5 P1 — 미재검토) **진행 중 이미지 쓰기는 근거가 아니다**: 판정 전에 그 프로젝트의 진행 중 쓰기를 모두 기다린다(`queue.retry`와 같은 대기).
+   *   앞선 이미지 put이 실패했으면 그 실패 op는 큐의 미확인 기록으로 남아 이번 제출에 합쳐지고, 맵도 `stored`도 없으면 `IMAGES_MISSING`. 대기 뒤 `stored`로만 판정한다.
    * - 메모리에 문서가 없으면 `NOT_FOUND`.
    * - memory 모드(`local` 없음): 확인할 영속 계층이 없어 즉시 resolve. UI는 memory 모드에서 기억을 만들지 않는다(로컬 영속에서만 미확인이 생긴다).
    */
@@ -360,6 +362,7 @@ interface ProjectRepository<TDoc> {
 | RS4-AC-13 | 검증 4종(typecheck·lint·test·build) + `noHardcodedStyle`·브랜드 격리. `confirmDoc` 계약 테스트(3.5 표 — r0.3) | [G][U] |
 | RS4-AC-16 | (r0.1 · Codex P2) **origin unknown**: create before 읽기 실패 + flush 실패 → C-E5 · 기억 `origin unknown` → 재시도 reject(문서 있음·없음 각각) → 기억 유지(R-4u) · `release` 0 · getDoc before 재조회 0 → 재생 resolve → 기억 0. F-6b(문서 없음 첫 요청) → C-E3 · 기억 0 | [U] |
 | RS4-AC-17 | (r0.3 — P-3 a 회귀) **이미지 fail-closed**: 읽기 전용 탭에서 새 이미지를 넣은 편집 저장(gate 거절 · 제출 0) → 편집기 이탈 → 보유 탭 닫음 → 편집기 밖 `confirmDoc` → `IMAGES_MISSING` · IDB `docs`·`images` 쓰기 0 · 기억 유지 · 행 문구 3.5 · 버튼 0. 대조: 맵 등록 중(편집기 안) `confirmDoc` → 문서 + 이미지 레코드 커밋 | [U] |
+| RS4-AC-17b | (r0.3a · Codex a5 P1 — 미재검토) **진행 중 이미지 실패 순서**: 맵 있는 저장의 이미지 put `delay` 중 편집기 이탈(맵 해제) → 편집기 밖 `confirmDoc` 호출 → 앞선 put 실패 → `confirmDoc`은 resolve하지 않음(이미지 op 합쳐 재제출 성공 또는 `IMAGES_MISSING`) · 이미지 없는 문서 커밋 0 · 기억·경고 유지 | [U] |
 | RS4-AC-22 | (r0.3 · C2) **편집기 확인은 문서를 바꾸지 않음**: R-E5(실제 미커밋) → history로 편집기 → "저장 확인" → `startDoc` 호출 0 · `confirmDoc` 1 · 화면 문서 = 메모리 문서 · 다음 편집 저장 `STALE_DOC` 0 · 문구에 "새로 시작은 반영되지 않았습니다" | [U] |
 | RS4-AC-23 | (r0.3 · Q1) **확인 전 미저장 편집**: 편집기 unconfirmed 상태에서 편집 → 디바운스 전 "저장 확인" → `confirmDoc` 0 · `saveDoc` 1(retry) → resolve 뒤 `saved` · IDB = 마지막 편집. offline 편집 뒤 "저장 확인" → `saved` 0 · 경고 유지 | [U] |
 | RS4-AC-14 | 접근성: 상태는 글자(색만 0) · 결과 알림 한 자리 · `alertdialog` 이름 · 1280·1024·390 버튼 가림 0 | [U][E] |
@@ -431,6 +434,7 @@ interface ProjectRepository<TDoc> {
 - **RS4-D7** (r0.1): 편집기 언마운트 시 `PendingRecord edit-unsaved` → `PendingDraft`(내용·이미지 보존, 편집기 재진입 저장으로만 해제). 편집기 확인은 스케줄러 버전과 묶음. `Origin`에 `unknown` 추가와 R-4u.
 
 ## 변경 이력
+- r0.3a (2026-10-15): Codex a5(r0.3 새 계약 검토 1회) P1 반영 — `confirmDoc` 이미지 판정은 진행 중 쓰기를 기다린 뒤 `stored`로만(3.5 · RS4-AC-17b). **미재검토 — 추가 라운드 없음.**
 - r0.3 (2026-10-15): MQ-4-2 B 승인 → 새 계약 `confirmDoc`(3.5 · 이미지 fail-closed · `IMAGES_MISSING`), `deleteSnapshot(p,"")` 안 폐기(측정 무효 근거). rs4-review C2(편집기 확인이 재생으로 문서 교체) · Q1(확인 전 미저장 편집 거짓 saved) 반영 — 편집기 안 확인 = retry 또는 `confirmDoc`, 재생 0(5.3 · RS4-AC-22·23). 9절 정규화 기준 갱신.
 - r0.2b (2026-10-15): Codex a4(4라운드 — 사용자 승인 상한 초과 1회, 마지막) P2 반영: 기억이 없어도 유지되는 프로젝트 세대 `epoch`로 ①·③을 정의(3.2 · RS4-AC-18c). **Codex 미재검토 — 추가 라운드 없음.**
 - r0.2a (2026-10-15): Codex a3(3라운드 — 상한) P1 반영: N1 세대 규칙을 해제에서 **모든 전이**(실패 뒤 hold·종류 전환)로 확장(3.2 전이 세대 규칙 · RS4-AC-18b). **Codex 미재검토 — 4라운드는 상한 초과라 실행하지 않음.**

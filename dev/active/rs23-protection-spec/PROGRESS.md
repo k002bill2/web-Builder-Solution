@@ -15,7 +15,8 @@ base 설계 7dbf116 · 앱 93f8111 · branch k002bill2/rs23-fix · 문서만(앱
 - [x] 10b. Codex a3 1회(3라운드 = 상한, `review-r02/`) — P1 1(전이 세대 검사) → r0.2a 반영 · **미재검토**
 - [x] 10c. Codex 4라운드(사용자 승인 · 1차 usage limit 실패 → 재실행 `codex-a4b.txt`) — P2 1(기억 없음 세대) → r0.2b 반영 · **미재검토, 추가 라운드 없음**
 - [x] 11. 측정 관문 — 기존 `rs4-measure`(467a6910) 결과 원문 대조 → **FAIL**(S1r /studio +15B · P-3 이미지 누락·빈 id 스냅샷 삭제) · `MEASURE-GATE.md`
-- [ ] 12. BLOCKED: 사용자 결정 — 예산(ADR-004 개정) / `/studio` 무변화 구조 재설계 / MQ-4-2 B 새 계약 · C2·Q1 반영
+- [x] 12a. 구조 재설계 스파이크(`rs4-spike2` 2aff4a37) — CP1~3 /studio 구조 증가 = create 가드 +6B뿐 · 판정 수치 해시 흔들림 ±22B
+- [ ] 12b. BLOCKED: 사용자 결정 — ADR-004 판정 방식(정규화)/+6B 배분/가드 제외 · MQ-4-2 B 새 confirm 계약 · r0.3(C2·Q1)
 - [x] 7. diff check · 앱 변경 0 증거 · 명시 pathspec 커밋 (push/merge 0, FINAL-GATE.md 보존)
 
 ## 서브에이전트

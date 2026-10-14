@@ -7,7 +7,9 @@
 - [x] CP2 — 프로필 판정표(create F/R · restart origin · PendingRecord · C-E4~6/R-E6 · 저장 확인)
 - [x] CP3 — /projects 행(P-U1~5 · 다시 시도/저장 확인 · 버리고 새로고침 확인)
 - [x] 게이트 4종 + 정규화 예산(멈춤 128.53/131.51) + Codex review
-- [ ] REPORT · 커밋(push 0)
+- [x] REPORT · 커밋(push 0)
+- [ ] BLOCKED: Codex r3 — usage limit(07:22 이후 재시도 가능, codex-r3.txt) · r2 반영분 미재검토
+- [ ] BLOCKED: 브라우저 QA(Ego Lite RS4-AC-07~10·14) · push/병합 — 사용자 승인
 
 ## Codex review r1 (codex-r1.txt) — P2 4건 전부 반영
 - ① 표시 모듈 로드 실패 → 목록 게이트 유지 + "다시 시도"(Callout) ② 재시도 성공 → 목록 재조회(useProjectList.reload) + 링크 생긴 뒤 포커스 ③ 기억 변경 구독(pendingWrites.subscribe) → 그려진 목록 재판정 ④ 확인 불가(stale·cleared·IMAGES_MISSING) → 주 버튼 숨김·폐기만.

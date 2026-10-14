@@ -13,6 +13,7 @@ interface DocLike {
 export const TAB_REASON = Object.freeze({
   readonly: "다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다",
   stale: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요",
+  cleared: "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요",
 });
 
 /** 변경 시각 "10월 10일 14:05" (R-D2 · RS-D5 — 월·일 + 24시 시:분, 로컬 시계) */
@@ -49,6 +50,36 @@ export const RESTART_TEXT = Object.freeze({
   unconfirmed: (before: DocLike) =>
     `새로 시작했지만 브라우저에 저장됐는지 확인하지 못했습니다 — 다시 시도하면 같은 요청으로 저장을 이어 갑니다. 지금 닫으면 새로고침 때 이전 문서(${before.candidateId}안 · v${before.profileVersion})로 돌아갈 수 있습니다`,
   unknown: "새로 시작됐는지 확인하지 못했습니다 — 다시 시도해도 같은 요청이라 두 번 바뀌지 않습니다",
+  // ── RESTART SPEC-4 r0.3a 5절 — 미확인 이어받기 · 저장 확인 · 폐기 ──
+  /** R-E4·R-E5 뒤에 붙는 경고(5.1) */
+  leaveWarning: "확인 전에 새로고침하거나 탭을 닫으면 새로 시작과 그 뒤 편집이 사라집니다",
+  /** R-E6 — 새로 시작 미반영 · 저장 확인 전 */
+  notApplied: (doc?: Pick<DocLike, "candidateId" | "profileVersion">) =>
+    `새로 시작은 반영되지 않았습니다${doc ? ` — 지금 문서는 ${doc.candidateId}안 · v${doc.profileVersion}입니다` : ""}. 이 문서가 브라우저에 저장됐는지는 아직 확인하지 않았습니다 — 저장 확인을 누르세요`,
+  confirm: "저장 확인",
+  confirming: "확인하는 중…",
+  confirmed: "저장을 확인했습니다",
+  confirmedOpen: (doc: Pick<DocLike, "candidateId" | "profileVersion">) => `저장을 확인했습니다 · ${opened(doc)}`,
+  notYet: "아직 저장을 확인하지 못했습니다",
+  confirmReadonly: "다른 탭에서 편집 중이라 저장을 확인하지 못했습니다 — 그 탭을 닫은 뒤 저장 확인을 다시 누르세요",
+  confirmStaleTab: "다른 탭에서 바뀐 내용이 있어 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다",
+  confirmCleared: "이 브라우저 데이터가 지워져 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다",
+  imagesMissing: "이 문서의 일부 이미지는 이 탭에서 더 저장할 수 없습니다 — 새로고침하면 확인되지 않은 변경이 사라집니다",
+  // create(C-E#) — 편집 시작 Callout
+  createReadonly: "다른 탭에서 편집 중이라 편집을 시작하지 않았습니다 — 그 탭을 닫은 뒤 다시 시도하세요",
+  createStaleTab: "다른 탭에서 바뀐 내용이 있어 편집을 시작하지 않았습니다 — 새로고침한 뒤 다시 고르세요",
+  createCleared: "이 브라우저 데이터가 지워져 편집을 시작하지 않았습니다 — 새로고침하세요",
+  createUnconfirmed: "편집 문서를 만들었지만 브라우저에 저장됐는지 확인하지 못했습니다 — 저장 다시 시도를 누르면 같은 요청으로 저장을 이어 갑니다. 확인 전에 새로고침하거나 탭을 닫으면 이 편집 문서는 사라집니다",
+  createUnknown: "편집 문서를 만들었는지 확인하지 못했습니다 — 저장 다시 시도는 같은 요청이라 두 번 만들어지지 않습니다",
+  createNotApplied: (doc?: Pick<DocLike, "candidateId" | "profileVersion">) =>
+    `편집 시작은 반영되지 않았습니다${doc ? ` — 이 프로젝트에는 이미 문서(${doc.candidateId}안 · v${doc.profileVersion})가 있습니다` : ""}. 그 문서가 브라우저에 저장됐는지는 아직 확인하지 않았습니다 — 저장 확인을 누르면 확인한 뒤 엽니다`,
+  createNotAppliedAbsent: "편집 시작이 반영되지 않았습니다 — 프로필에서 다시 고르세요",
+  retrySave: "저장 다시 시도",
+  // 폐기 확인(5.5)
+  discard: "버리고 새로고침",
+  discardTitle: "확인되지 않은 변경 버리기",
+  discardBody: "이 탭에서 저장을 확인하지 못한 변경(새로 시작 · 편집 문서 · 그 뒤 편집)을 모두 버리고, 브라우저에 마지막으로 저장된 상태로 다시 엽니다. 되돌릴 수 없습니다.",
+  keepIt: "취소",
 });
 
 /** R-D5 — 두 버전 대비 결과가 다를 때만 한 줄(글자로 통과/미달). 한쪽이라도 판정 불가(undefined)면 줄 없음(RS-D6) */

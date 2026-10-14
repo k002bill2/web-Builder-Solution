@@ -6,7 +6,7 @@
  * 편집 시작(DS-2A-05 12.3 · 8.3.1 · RESTART SPEC r2 MQ-S7 ★A): 누를 때 프로젝트 저장소와 "새로 시작" 청크를 함께 받아 청크의 `startEdit`이 `startDoc(create)`·판정을 한다 —
  * 이동(F1~F3 · state) / 대화상자(F4 · 미확인 기억) / 알림(UNKNOWN_VARIANT 다시 시도 없음 · 그 밖 실패 문형 + 다시 시도). 진입 청크는 호출 1곳 + 대화상자 슬롯만.
  */
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../components/ds/Button";
 import { Callout } from "../../components/ds/Callout";
@@ -66,7 +66,8 @@ export function CandidatesSection({
   const selected = job?.selected;
   const loadProjects = useProjectLoader();
   const [starting, setStarting] = useState(false);
-  const [startAlert, setStartAlert] = useState<{ readonly text: string; readonly retry: boolean }>();
+  /** held·label·Discard = 미확인(RESTART SPEC-4 C-E4~6) — 주 버튼은 재생·저장 확인, 폐기는 로컬 영속에서만(문구·본문은 조작 뒤 청크) */
+  const [startAlert, setStartAlert] = useState<{ readonly text: string; readonly retry: boolean; readonly held?: string; readonly label?: string; readonly Discard?: (props: object) => ReactNode }>();
   /** "새로 시작" 대화상자(RESTART F4) — 판정·대화상자는 조작 뒤 청크(MQ-S7 ★A) */
   const [restart, setRestart] = useState<{
     readonly mod: Awaited<ReturnType<typeof loadRestart>>;
@@ -90,21 +91,21 @@ export function CandidatesSection({
     });
   }, [hasJob, attempt]);
 
-  const onEdit = async () => {
+  const onEdit = async (retry = false) => {
     if (!selected || starting) return;
     if (!projectId) return void navigate("/projects");
     setStarting(true);
     setStartAlert(undefined);
     // RESTART MQ-S7 ★A — 저장소·판정 청크를 함께 받고 create 결과 판정(F1~F4 · 재생 재판정 · 미확인 기억)은 청크가 한다. 로드 실패 = 실패 문형 + 다시 시도
     const next = await Promise.all([loadProjects(), loadRestart()]).then(
-      async ([repo, mod]) => ({ repo, mod, out: await mod.startEdit(repo, projectId, viewed.version, selected) }),
+      async ([repo, mod]) => ({ repo, mod, out: await mod.startEdit(repo, projectId, viewed.version, selected, retry) }),
       (error: unknown) => void console.error("[profile] 편집 시작 청크 불러오기 실패", error),
     );
     setStarting(false);
     const out = next?.out ?? { alert: CANDIDATE_TEXT.startFailed, retry: true };
     if ("go" in out) void navigate(`/studio/${projectId}`, { state: out.go });
     else if ("open" in out) setRestart({ ...next!, open: out.open });
-    else setStartAlert({ text: out.alert, retry: out.retry });
+    else setStartAlert({ text: out.alert, retry: out.retry, held: out.held, label: out.label, Discard: out.held && next?.repo.persistence === "local" ? next.mod.DiscardConfirm : undefined });
   };
   const onCompare = () => {
     if (compare === "loading") return;
@@ -259,7 +260,14 @@ export function CandidatesSection({
             <Callout
               tone="negative"
               title={startAlert.text}
-              action={startAlert.retry && <Button size="sm" variant="outline" onClick={() => void onEdit()}>다시 시도</Button>}
+              action={
+                (startAlert.retry || startAlert.Discard) && (
+                  <>
+                    {startAlert.retry && <Button size="sm" variant="outline" onClick={() => void onEdit(Boolean(startAlert.held))}>{startAlert.label ?? "다시 시도"}</Button>}
+                    {startAlert.Discard && <startAlert.Discard />}
+                  </>
+                )
+              }
             />
           </div>
         )}

@@ -82,7 +82,10 @@ export async function startEdit(repo: ProjectRepository, projectId: string, vers
     const before = await read(repo, projectId);
     const origin: Origin = !before ? { kind: "unknown" } : before.doc ? { kind: "doc", head: before.doc } : { kind: "absent" };
     try {
-      return await createdOut(repo, projectId, version, selected, await repo.startDoc(projectId, version, selected, "create"));
+      const started = await repo.startDoc(projectId, version, selected, "create");
+      // 성공도 세대를 올린다 — 앞서 시작해 늦게 실패한 요청이 기억을 되살리지 못하게(Codex review r2)
+      settle(repo, projectId, ticket, undefined, "confirmed");
+      return await createdOut(repo, projectId, version, selected, started);
     } catch (error: unknown) {
       const { code, alert, doc } = shapeOf(error);
       if (code === "DOC_EXISTS" && doc) return judge(doc, version, selected, alert);

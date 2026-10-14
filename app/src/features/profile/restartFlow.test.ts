@@ -153,3 +153,19 @@ describe("restart(4.1·4.2 restart 열 — RS4-AC-03·04)", () => {
     expect(pendingOf(ok, "p")).toBeUndefined();
   });
 });
+
+describe("Codex review r2 — 성공도 세대를 올린다", () => {
+  it("요청 A 진행 중 요청 B 성공 → 뒤늦은 A 실패가 기억을 만들지 않는다", async () => {
+    let failA!: (e: unknown) => void;
+    const repo = fake({
+      docs: [undefined, undefined, head("B", 1), head("B", 1)],
+      start: [() => new Promise((_, no) => (failA = no)), () => Promise.resolve(created)],
+    });
+    const a = startEdit(repo, "p", 1, "B");
+    await vi.waitFor(() => expect(repo.startDoc).toHaveBeenCalledTimes(1));
+    expect(await startEdit(repo, "p", 1, "B")).toMatchObject({ go: expect.anything() });
+    failA(infra("quota"));
+    await a;
+    expect(pendingOf(repo, "p")).toBeUndefined();
+  });
+});

@@ -251,4 +251,3 @@ TRD 8절의 "초기 JS ≤ 90KB gzip"은 **생성되는 홈페이지(export)** �
 4. 레인 병합 순서가 겹치면 Jarvis가 병합 때 기준선 값을 합산 실측으로 다시 맞춘다.
 
 - **개정 15 적용 기록 (Jarvis 2026-10-11):** FIELD-UNDO-2 `2ad7221` 진입 +11B(129.56→129.57 · 미배분에서) · FU-BLUR `ab5f71a` +0.06/+0.07(몫 0.05 + 미배분 0.01~0.02 — 같은 기능 Codex 누수 수정분, 영환님 승인 +0.30 범위 안 Jarvis 배분). main 실측 `/studio` **129.63** · 복원 **132.67**(판정선 129.65·132.68 — 기준선 파일 미갱신). 남은 미배분 ≈0.02 · SAVE-ON-LEAVE 몫 0.15는 병합 때 `m2cBaseline` 갱신 필요.
-- **개정 15 배분 결정 (사용자 2026-10-15):** B-RS-02 create 가드(RESTART SPEC-4 CP1) `/studio`·복원 진입 각각 **+6B**(해시 정규화 실측 — `dev/active/rs23-protection-spec/MEASURE-GATE.md` 5절) — 미배분분에서. 판정선 상한 129.95·132.98·한도·toleranceKb 변경 0. 구현 레인이 실측값으로 `m2cBaseline.json`·`bundleBudget.test.mjs`를 같은 커밋에서 갱신. CP4(편집기 인계) 증분은 이 배분에 포함되지 않음.

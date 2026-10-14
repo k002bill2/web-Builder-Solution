@@ -50,7 +50,3 @@
   - 4-3 A: S3 새 시나리오 한도는 수치를 본 뒤 ADR-004 개정으로 정한다(지금은 정하지 않음).
   - 남은 착수 조건(결정과 별개): ① SPEC-4 r0.1/r0.1b 독립 재검토 1회(QA 또는 Codex) ② Developer 측정 관문(SPEC-4 8.0 — 테스트 수·base 빌드·S1~S3·P-3).
 - **2026-10-15 MQ-4-2 재결정 — B 승인**(사용자 "B승인"). A는 측정으로 무효다(빈 id 수동 스냅샷이 실재하고, 이미지 누락이 확인됨 — `dev/active/rs23-protection-spec/MEASURE-GATE.md` 2절). 저장소 인터페이스에 `confirmDoc(projectId)`를 더하고, 오류 코드 `IMAGES_MISSING`을 추가한다(SPEC-4 r0.3 3.5). `/studio` 바이트는 ADR-004 개정 16의 정규화 판정으로 재측정한다.
-- **2026-10-15 결정(사용자) — 측정 관문 FAIL 후속** (`dev/active/rs23-protection-spec/MEASURE-GATE.md` 2·5절):
-  - **create 가드 +6B = 배분**: ADR-004 개정 15 미배분분(판정선 상한 129.95·132.98 안)에서 B-RS-02 create 가드 몫 +6B(해시 정규화 실측)를 배분한다. 한도·판정 로직·toleranceKb 변경 0. 기준선(`m2cBaseline.json`·`bundleBudget.test.mjs`)은 구현 커밋에서 실측값으로 같은 커밋에 올린다(개정 15 결정 3 관례). 해시 흔들림(±22B) 판정 문제는 별건.
-  - **MQ-4-2 A 폐기 → 편집기 링크로 대체**: `deleteSnapshot(p,"")` 편집기 밖 확인은 쓰지 않는다(빈 id 스냅샷 삭제·이미지 누락 실측). "저장 확인"은 편집기 저장 경로에서만 한다. 새 저장소 계약(MQ-4-2 B `confirmDoc`)은 채택하지 않는다.
-  - 남은 착수 조건: ① SPEC-4 r0.3 — MQ-4-2 대체 반영 + C2·Q1(MEASURE-GATE 4절) ② CP4(편집기 인계) 예산 — S2 +922B·S3 +472B 초과는 이 결정으로 풀리지 않는다. 편집기 링크 대체로 편집기 밖 확인이 없어지므로 CP4가 필수 경로가 됐다 → 감량 설계 또는 ADR-004 상향 재상신.

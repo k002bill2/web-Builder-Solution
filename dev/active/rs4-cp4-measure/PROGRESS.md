@@ -13,3 +13,14 @@
 - [x] REPORT.md (결론 첫 줄) 커밋
 
 서브에이전트: ① M1 경로 조사 완료(반영) ② M2 후보 조사 완료(추정 표만 REPORT 반영, 빌드 미검증)
+
+## M2 실측 (BRIEF-M2, 2026-10-17)
+- [ ] M2-0. BRIEF-M2·PROGRESS 커밋
+- [ ] M2-1. 후보 1 preload 중복 제거 — build 실측·표·patches/m2-1·복원
+- [ ] M2-2. 후보 2 modulePreload.polyfill:false — build 실측·표·patches/m2-2·복원
+- [ ] M2-3. 후보 4 writeBodyLoader 분리 — build 실측·표·patches/m2-4·복원
+- [ ] M2-4. 효과 후보 조합 1회 빌드
+- [ ] M2-5. 조합 + M1 배치안 a 합산 1회 빌드 → 결론
+- [ ] M2-6. (선택) 후보 3 react 청크 엔트리 병합
+- [ ] M2-7. 복원 · git diff -- app/ 빈 출력 · fresh build(128.47·131.45) + test(315/2842)
+- [ ] M2-8. REPORT-M2.md 커밋

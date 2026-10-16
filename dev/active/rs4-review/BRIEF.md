@@ -1,0 +1,6 @@
+# SPEC-4 r0.1b 독립 설계 회수
+책임 QA / Orca Claude Code. base spec1a48ce8, 앱93f8111. 쓰기 dev/active/rs4-review/만. source·SPEC/MQ·예산 변경/push/merge금지. 승인: 사용자2 이탈보호확장, 새 저장소 인터페이스·스키마·의존성·예산상향 승인없음.
+입력 docs/design/restart/SPEC-4.md,MQ-4.md 및 dev/active/rs23-protection-spec/REPORT.md·logs/codex-a1.txt, 기존 final-gate/F1 F2.
+독립 판단 먼저: origin 최초1회보존과 재시도, unknown판정, PendingRecord/PendingDraft 구별, offline/commit전 저장실패의 내용·이미지 보존, POP saving중 자기저장 완료 및 재진입revision, 확인중 후속edit 버전검사, unload guard가 inflight/request/언마운트와 무관하게 유지/정리되는지 trace. deleteSnapshot(p,"")가 뜻이 다른 API 차용이며 실제 flush 이미지맵 안전성을 보장 못하면 결함/측정대기로 분리. 메모리 resolve와 IDB oncomplete 구별. dirty 편집은 request pending이 없는 일반 경우도 보호 확장이 포함하는지 과장 금지.
+Codex adversarial-review 1회만 --scope branch --base 7dbf116 실행(경로 기존 logs참조, --help 부수실행 금지). r0.1/r0.1b 수정과 실제 소비코드 대조. REPORT에서 QA/Codex 지적·근거·미확인 구별. 새 결함은 고치지 말고 BLOCKED 보고; 리뷰루프 금지. 독립 검토는 코드/예산/runtime PASS아님.
+30턴40분. 서브에이전트 불필요. PROGRESS 시작/독립판단/Codex/보고 checkpoint. raw logs tracked 보존(diffcheck). REPORT·명시적pathspec 커밋. 별도 Developer rs4-measure는 측정만 병렬 중; 그 파일/세션 무접촉. 책임자 Jarvis.

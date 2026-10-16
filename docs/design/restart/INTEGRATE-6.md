@@ -24,7 +24,7 @@
 
 | 코어 API [L1 `saveCore.ts`] | 제품 쪽 연결점 | 분류 | 근거 |
 |---|---|---|---|
-| `openSaveCore({projectId, persistence, writer, initial, starter})` :106 | 새 `features/studio/save/` (가칭) `coreFor(projectId)` — 탭당 레지스트리(`Map<projectId, Core>`)가 **`LocalSync` 인스턴스에 매달린다**. `persistence` 인자 → `CorePort`(1.3), `writer` → `LocalSync` 안 `gate`(:122), `initial` → DocBook 시드(`LocalSync.docs`), `starter` → 기존 create/restart 재생 경로 | 신설 | `deferredStudio.ts:45,55` · `localSync.ts:47,122` |
+| `openSaveCore({projectId, persistence, writer, initial, starter})` :106 | 새 `features/studio/save/` (가칭) `coreFor(projectId, seed)` — 탭당 레지스트리(`Map<projectId, Core>`)가 **저장소 인스턴스(`createMemoryProjectRepository` closure)** 에 매달린다(2.2-2). **동기 생성** — `initial` = 편집기가 이미 받은 문서(`getDoc` 결과 = 진입 레코드 또는 DocBook), 열 때 IDB 읽기(`readStored`) 0. `persistence` 인자 → `CorePort`(1.3, 첫 `save()` 때 늦게 붙음), `writer` → `LocalSync` 안 `gate`(:122), `starter` → 기존 create/restart 재생 경로 | 신설 · **MC 변경**(D6-10) | `memoryProjectRepository.ts:56,114-117` · `deferredStudio.ts:45,55` · `localSync.ts:47,122` |
 | `edit(doc, blobs)` :241 — **동기** | `useDocSave`의 `change` 경로(편집마다). 지금은 스케줄러가 version만 올리고 2초 뒤 `saveDoc`(MC G2) | 변경 | 2절 G2 행 |
 | `attach()/detach()` :247 | 코어에서 의미 없음(no-op). 제품에는 넣지 않는다 | 삭제 | 코어 본문이 빈 함수 |
 | `acquire(mountId)/release(token)` :255-263 | `StudioLayout` commit 단계 effect(마운트·cleanup). mountId = `useId()` 계열 | 신설 | C5 4.5 StrictMode 행 · MC G7 |
@@ -80,7 +80,10 @@
 ### 2.2 최소안 (구현 레인 규칙)
 
 1. 코어는 `StudioPersistence`를 인자로 받지 않는다 — 포트만 받는다(1.3). 하네스의 `exclusive(WeakMap)`은 남겨도 되지만 제품 보장의 근거로 쓰지 않는다.
-2. 코어 레지스트리(`projectId → Core`)는 **`LocalSync` 객체에 매단다**(모듈 전역 Map 금지 — 테스트 간 공유 문제, save-core-fix 4절 `writerAlways` 교훈).
+2. 코어 레지스트리(`projectId → Core`)는 **저장소 인스턴스에 매단다** — `createMemoryProjectRepository` closure, 편집기 이미지 맵 `maps`와 같은 자리(`memoryProjectRepository.ts:56`). 모듈 전역 Map 금지(테스트 간 공유 문제, save-core-fix 4절 `writerAlways` 교훈) — 저장소는 테스트마다 새로 만들어지므로 공유 0. 결정 3줄(r1 · QA R2):
+   - **① 생성 시점**: 편집기 첫 마운트 때 `coreFor(projectId, seed)`가 **동기 생성**한다(seed = `useStudioDoc`이 받은 문서 · 증명 `hydrated`). 같은 projectId의 다음 마운트는 레지스트리의 같은 코어를 받는다. 하네스 `openSaveCore`의 async 열기(`readStored` await, `saveCore.ts:106-108`)는 쓰지 않는다 — IDB 머리(`head()`)는 첫 save·confirm 때 포트가 읽는다. MC 열기 조항 변경(D6-10 · MQ-6-1 ★A에 포함).
+   - **② 소유 객체(local·memory 공통)**: 저장소 인스턴스. memory 모드에도 저장소는 있으므로(`memoryProjectRepository.ts:107` `persistence: "memory"`) 같은 레지스트리를 쓴다. 저장소는 `createDeferredStudio`로 탭당 1개이고 진입 closure(PROJECT_AUTO)에 이미 있다(9.1).
+   - **③ 포트 없는 동안 `save()`**: `edit`·`view`·`acquire`·`release`는 포트 없이 동기 동작한다. **local** = `save()`가 먼저 포트(`local.sync()` + io 청크)를 기다린 뒤 커밋한다 — 같은 promise 안이라 화면은 `saving`. 로드 실패 = `failed`(청크 재시도 `retryableImport` 경유 → 기존 "다시 저장"). **memory** = 포트가 영원히 없다 → DocBook 메모리 커밋(지금 `saveDoc` 경로)을 한 뒤 `not-persistent`(I5). DocBook은 계속 문서를 받으므로 `/projects`·스냅샷은 memory 모드에서도 지금과 같다.
 3. 가드 테스트(RS6-AC-G2): `openIdbPersistence` import 1곳(`localSync.ts`) · `openLocalSync` 호출 = `openLocal` 1곳 · 코어 모듈이 `idbPersistence`를 import 0. 기존 `pendingImportGuard.test.ts`·`tryLock` import 가드와 같은 방식.
 4. **조건부 쓰기(G3)는 하지 않는다.** 필요해지는 경우 = 같은 탭에서 어댑터 2개 경로를 일부러 만들 때뿐이다. 그때는 `StudioPersistence` 변경(MQ)이다.
 
@@ -267,7 +270,7 @@
 
 | 조각 | 배치 | 이유 |
 |---|---|---|
-| 코어 상태 부분: 초안·`mark`·`savedMark`·바인딩 Map·`edit`·`view`·`acquire`/`release`·epoch | **진입**(편집기와 같은 closure) | `edit`는 편집마다 동기(G2), `view`는 render 중 동기, cleanup `release`는 동기 |
+| 코어 상태 부분: 초안·`mark`·`savedMark`·바인딩 Map·`edit`·`view`·`acquire`/`release`·epoch · **레지스트리**(`coreFor` — 저장소 인스턴스, 2.2-2) | **진입**(편집기와 같은 closure · 레지스트리는 `memoryProjectRepository` 쪽 PROJECT_AUTO) | `edit`는 편집마다 동기(G2), `view`는 render 중 동기, cleanup `release`는 동기, 코어 생성도 마운트 때 동기(2.2-2 ①) |
 | 코어 io 부분: `save`/`commit` 호출·`confirm`·`discard`·`replace`·`retryStart`·`verify`·reason 분류 | **조작 뒤** — `localSync` 청크(포트 구현과 같은 청크) | 첫 save는 편집 뒤 디바운스(비동기)라 lazy 가능. 이미 `memoryDocBook`→`localSync`가 조작 뒤 |
 | 포트 `CorePort` 구현 · 엄격 imageOps | 조작 뒤(`localSync`) | 같은 이유 |
 | 감시(watchdog) 타이머 · `saving-slow` 문구 | 진입(스케줄러 안 상수·분기 1개) | 저장 중 표시 |
@@ -282,7 +285,7 @@
 |---|---|---|
 | **S6-base** | main `c7a7a2a8` 재빌드 = 128.09/129.40 재현 확인(dist sha 기록) | 재현 실패면 중단 |
 | **S6a** | 코어 상태 부분(진입) + io 부분(localSync 청크) + 포트 — 편집기 호출 배선 없음(하한) | 정규화 ≤ 128.53 · ≤ 131.51 · raw ≤ 130 · ≤ 134 |
-| **S6b** | S6a + 편집기 배선(`edit`·`acquire`/`release`·seed·`save` 경유·상태 표시) = CP4 흡수판 | 같음 |
+| **S6b** | S6a + 편집기 배선(`edit`·`acquire`/`release`·seed·`save` 경유·상태 표시) = CP4 흡수판. **배치 = 2.2-2 결정 3줄 그대로**(레지스트리·동기 생성 = 저장소 인스턴스 쪽 진입 · 포트는 첫 `save()` 때 `localSync` 청크) — 이 배치의 진입 영향은 S6a(레지스트리 포함)·S6b가 잰다 | 같음 |
 | **S6c** | S6b + 대체 코드 제거(`revisionRef`·`base()`·`adopt` 경로·dispose 경로 중 코어가 대신하는 것) — **상쇄 실측** | 같음 |
 | **S6d** (측정 전용, UNAPPROVED) | S6c + 충돌/폐기 본문 lazy 조건 참 | 한도 미승인 — 수치만(`EXTRA_SCENARIOS`, `rs5-spike/tools/rawbytes.mjs`) |
 | 공통 | `/profile`·`/projects`·`/catalog` 첫 화면·진입 동시 기록(공통 런타임 청크 분리 감시) | 기존 한도 |
@@ -358,6 +361,7 @@
 | D6-6 | UX-5 G6(마운트 중 confirm 거짓 확인) | 코어 confirm이 dirty면 save 후 verify → G6 해소. 노출 규칙(MQ-5-3 ★A)은 유지 | 8.2 |
 | D6-7 | UX-5 "바뀐 문서 쓰기" = `discard`? | `discard` 아님 — 코어 discard는 자기 증명으로 복귀 | 8.2 · MQ-6-5 |
 | D6-8 | C5 8.3 S5a~c 판정선 raw 129900/132940 | 정규화 128.53/131.51 + raw 130/134 | ADR-004 개정 16 |
+| D6-10 | MC `openSaveCore` "`docs/{projectId}`를 읽어 초안·`hydrated` 설정"(async 열기) | 편집기 마운트 때 **동기 생성** · seed = 편집기가 받은 문서 · IDB 머리는 첫 save·confirm 때 포트가 읽음 — **MC 계약 변경**(MQ-6-1 A에 포함) | 2.2-2 ① · QA R2 |
 
 ## 변경 이력
 - r0 (2026-10-17) — 최초 작성. 코드 0 · 측정 0 · Codex 0.

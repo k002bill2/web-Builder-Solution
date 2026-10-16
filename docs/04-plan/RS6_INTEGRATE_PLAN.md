@@ -32,7 +32,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | CP | RED/GREEN 대신 | 할 일 | 판정 |
 |---|---|---|---|
 | CP1 | base 재현 | `npm ci` · lock diff 0 · `npm run build` → 정규화 128.09 / raw 129.40 재현 · dist sha 저장 | 다르면 중단·보고 |
-| CP2 | S6a(하한) | 코어 상태 부분(진입) + io·포트(localSync 청크) — 호출 배선 0 | 정규화 ≤128.53/131.51 · raw ≤130/134 |
+| CP2 | S6a(하한) | 코어 상태 부분 + 레지스트리(진입 — 저장소 인스턴스 쪽, I6 2.2-2) + io·포트(localSync 청크) — 호출 배선 0 | 정규화 ≤128.53/131.51 · raw ≤130/134 |
 | CP3 | S6b·S6c | S6b = 편집기 배선(CP4 흡수판) · S6c = 대체 코드 제거(상쇄 실측) | 같음. S6c가 최종 후보 |
 | CP4 | S6d·원복 | 조건 참 lazy 시나리오(UNAPPROVED, `EXTRA_SCENARIOS`) · `/profile`·`/projects`·`/catalog` 첫 화면 동시 기록 · 원복 뒤 dist sha 동일 | 수치만 |
 
@@ -47,7 +47,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | CP1 | 하네스 h1·h2 의미를 `createMemoryPersistence` + 제품 `LocalSync` 포트 위에서(제출 mark 고정·직렬·confirm 증명) | 코어 상태기 이식(`saveCore.ts` 로직, 레코드 접근 제거) + 포트 `mode`·`head`·`verify` |
 | CP2 | h3·h6 이미지(동결 바인딩·엄격 참조 → 제출 0 · 실패 시 문서·이미지 함께 0) + 기존 `imagePersist`·`imageRecord` 회귀 + 문서 필드 = 코어 doc·스냅샷 = DocBook(I6 5절 G1) | 포트 `commit` = "코어 doc + DocBook snapshots" 레코드 → `queue.submit`→`committed`(도장·cleared·saved 유지) + 엄격 `imageOps` |
 | CP3 | h4·h5(readonly·stale·discard·replace·lease) + RS6-AC-U10(cleared 직전 save) | 포트 `mode` = gate·cleared 결합 · discard·replace |
-| CP4 | RS6-AC-G2 import 가드 + C5 T10·T13(시드 확인 쓰기 0 · 같은 내용 재확인 쓰기 0) | 레지스트리를 `LocalSync`에 매달기 · 가드 테스트 |
+| CP4 | RS6-AC-G2 import 가드 + C5 T10·T13(시드 확인 쓰기 0 · 같은 내용 재확인 쓰기 0) + 동기 생성·포트 늦게 붙이기(I6 2.2-2 ①③ — 포트 로드 전 `edit`·`view` 동작 · local `save()` = 포트 대기 · memory `save()` = DocBook 커밋 뒤 `not-persistent`) | 레지스트리를 저장소 인스턴스(`memoryProjectRepository`)에 매달기 · 가드 테스트 |
 
 - 하네스 37건 → 3분류 대응표(이식/잠금 기반 대체/폐기)를 REPORT에(RS6-AC-U1).
 - 금지: 레코드 형식 변경(MQ-6-1 B를 고르지 않는 한) · `StudioPersistence` 변경 · 새 의존성.

@@ -116,7 +116,8 @@
 2. **탭 수준 `beforeunload` 소유자 = 코어 레지스트리**(저장소 인스턴스, 2.2-2): 코어 중 하나라도 `dirty` 또는 `inflight`면 등록, 모두 0이면 해제. memory 모드는 코어가 1개라도 있으면 늘(`needsUnloadGuard` "메모리 늘" 승계, `useAutosaveScheduler.ts:67-70`). 편집기 훅 경고(`:283-292`)는 L3에서 이 경고로 옮긴다(리스너 중복 0). `pendingWrites` 모듈 경고(`pendingWrites.ts:61-71`)는 `PendingStart`·`PendingRecord` 몫으로 그대로 둔다. → 편집기를 떠난 뒤 `/projects`에서 탭을 닫아도 코어 dirty·inflight면 경고가 뜬다.
 3. **예외 목록(클릭 시점 상태 — 지금 동작 기준)** [L1 `StudioLeave.test.tsx` 14건 GREEN · `save-on-leave/REPORT.md:92,95`]:
    - 이동: `readonly`(거절 · `:158,173`) · `unsupported`(Web Locks 없음 로컬 · `:199`). 편집은 코어에 남고 해제 save가 거절돼도 반영 0.
-   - 보류: `failed`(`:127` 뒤 절반 · `:225,235` — 클릭 시점이 이미 실패일 때) · `offline`(출처 = 스케줄러 `navigator.onLine` → phase `offline`, `useAutosaveScheduler.ts:25` — 8.1에는 offline 행이 없어 스케줄러 phase를 그대로 쓴다 · `:211`) · `stale`·`cleared`(새로고침이 출구 · `save-on-leave/REPORT.md:92`). 보류 경로 동작은 **지금 `leave()` 그대로** — 클릭 → 저장 1회 → 성공이면 이동, 아니면 보류(`useDocSave.ts:142-146`).
+   - 보류: `failed`(`:127` 뒤 절반 · `:225,235` — 클릭 시점이 이미 실패일 때) · `offline`(출처 = `navigator.onLine` 직접 — 8.1에는 offline 행이 없다 · `:211`) · `stale`·`cleared`(새로고침이 출구 · `save-on-leave/REPORT.md:92`). 보류 경로 동작은 **지금 `leave()` 그대로** — 클릭 → 저장 1회 → 성공이면 이동, 아니면 보류(`useDocSave.ts:142-146`).
+   - **판정 순서(고정)**: ① `navigator.onLine === false` → 보류(스케줄러 phase는 flush 때만 `offline`이 되므로 클릭 시점은 `navigator.onLine`을 직접 읽는다) ② `stale`·`cleared` → 보류 ③ `failed`이고 reason이 `readonly`·`unsupported`가 아님 → 보류 ④ 그 밖(`dirty`·`saving`·`readonly`·`unsupported`) → 이동. **지난 `readonly` 결과는 보류 조건을 덮지 않는다**(`:184` "지난 거절로 건너뛰지 않고" · `:211` "이번 이탈에서 거절을 받지 않았으므로 보류").
    - 바꾸려면 MQ(MQ-6-7 B·C).
 4. **`StudioLeave.test.tsx` 14건 대응(r1 설계 기준)** — 유지 7 · 의미 변경 6 · 폐기(이전) 1:
 
@@ -341,7 +342,7 @@
 | RS6-AC-U11 | 저장 정지(지연 주입) 중 앱 안 링크 → 이동함 · 코어 inflight 유지 · `/projects` 행 "저장 중…" · 해제 뒤 IDB = 마지막 편집(6.5 고착 해소) | [U] |
 | RS6-AC-U9 | memory 모드: "저장 확인" DOM 0 · "브라우저에 저장됨" 0(UX5-AC-09) | [U] |
 | RS6-AC-U12 | **디바운스 대기 중 이탈**(dirty · inflight 0 → 앱 안 링크, 그리고 POP 언마운트): 즉시 이동 · lease 해제 save 1회 · 해제 뒤 IDB = 마지막 편집 · `/projects`에서 탭 닫기 경고 on(레지스트리 `beforeunload`) · 저장 끝나면 경고 off(3.1) | [U] |
-| RS6-AC-U13 | 이탈 예외 목록(3.1-3): 클릭 시점 `readonly`·`unsupported` = 이동 · `failed`·`offline`·`stale`·`cleared` = 보류 + 지금 `leave()` 동작. `StudioLeave.test.tsx` 유지 7건 변경 없이 GREEN · 의미 변경 6건·이전 1건은 3.1-4 표대로 단언 교체(REPORT에 대응표) | [U] |
+| RS6-AC-U13 | 이탈 예외 목록(3.1-3) **판정 순서 ①~④**: 오프라인 → `stale`·`cleared` → `failed`(readonly·unsupported 외) = 보류 + 지금 `leave()` 동작 · 그 밖(`readonly`·`unsupported` 포함) = 이동 · 지난 `readonly`가 보류를 덮지 않음(`:184`·`:211`). `StudioLeave.test.tsx` 유지 7건 변경 없이 GREEN · 의미 변경 6건·이전 1건은 3.1-4 표대로 단언 교체(REPORT에 대응표) | [U] |
 | RS6-AC-U14 | **G1 DocBook 경로 재쓰기(RED 먼저)**: 코어 commit 진행 중(지연 주입) `deleteSnapshot` → IDB doc = 코어 최신 · 새 이미지 삭제 0 · 스냅샷 삭제 반영. 같은 단언 `createSnapshot`·`confirmDoc` 각 1건(5절 G1 r1) | [U] |
 | RS6-AC-U15 | OBS-2/BD-2: 두 프로젝트에 같은 localId 이미지 → 다른 프로젝트 이미지 레코드로 `verify`·`image` 통과 0 · 포트 모듈의 이미지 키는 `imageRecordId` 경유만(직접 문자열 조립 0 — 가드) | [U]·[G] |
 | RS6-AC-U16 | RS4-R2: 편집기 저장 성공(local 커밋) 뒤 `/projects` 행 기억 0(1클릭 확인 불필요) | [U] |

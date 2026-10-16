@@ -84,7 +84,7 @@
 - **사실(L1)**: `StudioLeave.test.tsx` 14건 제목·행(:99~:266) · `pendingWrites.ts:61-71` 경고 = `active`+`inflight`만 · `localSync.ts:155-157` 레코드 = 제출 시점 `book.docOf` · `memoryProjectRepository.ts:56,65-66,86-89,107,114-117,128` · `SnapshotDialog.tsx:260` · MC `openSaveCore` = `docs/{id}` 읽기(`MINIMAL-CONTRACT.md:11`) · save-on-leave 커밋 4개 base 조상 · ADR-004 개정 16 결정 3(`:267`) · ADR-007 `:124` · `ImageKeeper`(`types.ts:22`) · `save-on-leave/REPORT.md:90,92,93,95`.
 - **추적(L1-추적, 실행 0)**: 코어 I1·I2로 언마운트 save의 같은 revision 충돌이 사라짐 · DocBook 경로 재쓰기를 chain 뒤로 미루면 후퇴·GC 삭제 0 · RS4-B1 코어 없는 탭 = 이미 잃은 참조뿐 · CE-4 남는 경로 손실 0.
 - **추정(L3)**: 엄격 imageOps 공유 시 `PendingStart` 고착 · MQ-6-7 B에 추가 규칙 필요 · 능력 인터페이스면 ADR-007 개정 불필요.
-- **미확인**: 실행 0(테스트·빌드·측정·화면) — 이번 보완은 문서만.
+- **미확인**: 실행 0(테스트·빌드·측정·화면) — 이번 보완은 문서만. `StudioLeave` `:158`·`:173`·`:184`의 유지/의미 변경 판정은 **제목 기준**(본문 미독) — L3가 본문으로 확인.
 
 ### 8.4 자체 검토 1회
 
@@ -96,4 +96,6 @@
 
 - QA P3: 가드 범위(raw `indexedDB.` 지점 고정) · HMR · QA 탭 화면("같은 `/studio/{id}` 2개") · MQ-6-3b 기본값 출처 · MQ-6-2 의존 기재 · MQ-6-5 UX-5 결정 상태 · F1(`main.tsx:30` → 지연 1회) — 구현 레인 BRIEF에서.
 - 8.1 `/projects` 행 "코어 dirty + 편집기 밖" 표시 정의(QA 2절 #2 언급) — 이번 7건 밖. L5 BRIEF에서.
+- `StudioLeave` `:158`·`:173`·`:184` 판정 = 제목 기준(추정) → L3 레인이 테스트 본문으로 확인.
+- advisor 마감 검토 반영 1건: 3.1-3 판정 순서 고정(오프라인 = `navigator.onLine` 직접 · 지난 `readonly`가 보류를 덮지 않음) — `:211` 유지 판정이 그대로 성립하도록.
 - 필요한 것: Jarvis — r1 재검토(QA 또는 Codex) 여부 · MQ-6-1·6-3·6-7 결정 · L0 발주.

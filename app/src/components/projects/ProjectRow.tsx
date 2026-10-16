@@ -94,7 +94,11 @@ export function ProjectRow({
             파일로 내보내기
           </Button>
         )}
-        {pending && held.Discard && <held.Discard label={`${row.name} ${held.discardLabel}`} />}
+        {pending && held.Discard && (
+          <span data-discard-for={row.projectId} className="contents">
+            <held.Discard label={`${row.name} ${held.discardLabel}`} />
+          </span>
+        )}
         {onDelete && (
           <Button variant="outline" size="sm" data-delete-for={row.projectId} aria-label={`${row.name} 삭제`} onClick={() => onDelete(row.projectId)}>
             삭제
@@ -103,7 +107,7 @@ export function ProjectRow({
       </div>
       {pending && <p className="ds-caption1 text-label-alternative">{pending.caption}</p>}
       {held?.result && (
-        <p key={held.result.key} role={held.result.ok ? "status" : "alert"} className={held.result.ok ? "ds-body3" : "ds-body3 text-status-negative-text"}>
+        <p key={held.result.key} data-result-for={row.projectId} tabIndex={-1} role={held.result.ok ? "status" : "alert"} className={held.result.ok ? "ds-body3" : "ds-body3 text-status-negative-text"}>
           {held.result.text}
         </p>
       )}

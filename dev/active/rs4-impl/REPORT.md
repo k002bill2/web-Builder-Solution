@@ -40,7 +40,12 @@
   - 확인 불가 시 주 버튼 숨김
   - 단, 모듈 로드 실패 경로는 **단위 테스트가 없다**.
 - r2(`codex-r2.txt`): P2 1건, 반영했다. 최초 create 성공 때도 세대를 올려, 늦게 실패한 요청이 기억을 되살리지 못하게 했다.
-- **r3(`codex-r3.txt`): 실행 실패 — Codex usage limit**("try again at 7:22 AM"). r2 반영분(`a3b6b91`)은 Codex 미재검토다. 전역 상한 3라운드 중 3번째 시도라, 한도가 복구된 뒤 같은 명령으로 1회 재실행하면 된다.
+
+- r3(`codex-r3.txt`, 2026-10-16 재실행 · `--scope branch --base e3e22520`): P2 1건, 반영했다. 이것으로 3라운드 상한에 도달했고 r4는 실행하지 않는다(반영분은 Codex 미재검토).
+  - 지적: 행 확인이 `IMAGES_MISSING`·`STALE_TAB`·`CLEARED_TAB`으로 끝나면(`stuck`) 포커스된 버튼이 사라지는데, 포커스 대상(링크·재시도 버튼)이 없어 본문으로 빠진다.
+  - 반영: `stuck`일 때만 포커스를 그 행의 "버리고 새로고침"으로 옮긴다. 그 버튼이 없으면(memory 영속) 행 안 결과 알림(`tabIndex=-1`)으로 옮긴다. 성공 뒤 목록 재조회를 기다리는 경우는 기존대로 링크로 간다(폴백을 `stuck`으로 좁히지 않으면 회귀가 생겨 좁혔다).
+  - 테스트: `ProjectsPending.test.tsx` +2개(local·memory). RED(포커스 단언 2건 실패) → GREEN 확인.
+  - 게이트(`build-r3fix.txt`): typecheck 0 · lint 0 · test **309 files / 2812 tests** 통과 · build 0. `/projects` 첫 화면 99.42 · 진입 직후 108.70 · `/profile` 99.83 / 120.62 · `/studio` 정규화 128.47(멈춤 128.53) · 복원 131.45(멈춤 131.51).
 
 ## 4. 설계(SPEC-4 r0.3a)와 다르게 한 곳
 - PROGRESS.md "설계와 다르게 한 곳"에 전부 적었다. 요약:

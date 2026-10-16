@@ -168,3 +168,31 @@ describe("Codex review P2 반영", () => {
     expect(pendingOf(repo, "p1")?.kind).toBe("record");
   });
 });
+
+describe("Codex review r3 P2 — 더 확인할 수 없음(stuck)이면 포커스를 남은 행동으로", () => {
+  const recordWith = (persistence: "local" | "memory") => {
+    const confirmDoc = vi.fn(async () => {
+      throw new ProjectRepositoryError("IMAGES_MISSING", "이미지가 저장되지 않았습니다");
+    });
+    const repo = repositoryWith({ persistence, confirmDoc: confirmDoc as unknown as ProjectRepository["confirmDoc"] });
+    hold(repo, { kind: "record", projectId: "p1", cause: "start-not-applied", head: head("C", 6) });
+    return repo;
+  };
+
+  it("local → '저장 확인' 버튼이 사라지면 포커스 = '버리고 새로고침'", async () => {
+    const u = userEvent.setup();
+    render(<MemoryRouter><ProjectsPage repository={recordWith("local")} now={now} /></MemoryRouter>);
+    await u.click(await screen.findByRole("button", { name: "가게 홈페이지 저장 확인" }));
+    await within(rowOf("가게 홈페이지")).findByRole("alert");
+    expect(within(rowOf("가게 홈페이지")).queryByRole("button", { name: "가게 홈페이지 저장 확인" })).not.toBeInTheDocument();
+    await waitFor(() => expect(within(rowOf("가게 홈페이지")).getByRole("button", { name: "가게 홈페이지 버리고 새로고침" })).toHaveFocus());
+  });
+
+  it("memory(폐기 버튼 없음) → 포커스 = 행 안 결과 알림", async () => {
+    const u = userEvent.setup();
+    render(<MemoryRouter><ProjectsPage repository={recordWith("memory")} now={now} /></MemoryRouter>);
+    await u.click(await screen.findByRole("button", { name: "가게 홈페이지 저장 확인" }));
+    const alert = await within(rowOf("가게 홈페이지")).findByRole("alert");
+    await waitFor(() => expect(alert).toHaveFocus());
+  });
+});

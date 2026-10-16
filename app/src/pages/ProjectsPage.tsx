@@ -192,7 +192,7 @@ function useImportedNotice(session: Session | undefined, announce: (text: string
 
 /**
  * 미확인 기억 행(RESTART SPEC-4 5.2) — 기억은 동기 조회(쓰기 0), 다시 시도·저장 확인 본문은 조작 뒤 청크.
- * 결과 = 행 안 알림 · 성공이면 되살아난 "편집기 열기"로, 실패면 그 버튼에 포커스를 둔다.
+ * 결과 = 행 안 알림 · 성공이면 되살아난 "편집기 열기"로, 실패면 그 버튼에, 더 확인할 수 없으면 폐기 버튼·결과 알림에 포커스를 둔다.
  */
 function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivElement | null>, reload: () => void, items: unknown) {
   // 진입 직후 자동 import — 오기 전에는 목록을 그리지 않는다(ready = false). 실패 = 기억 조회 불가(기억은 같은 공유 청크에만 있으므로 그 청크가 없으면 기억도 없다)
@@ -232,8 +232,13 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
     const id = focusFor.current;
     if (!id) return;
     const box = page.current;
-    const pick = (selector: string, key: "editorFor" | "retryFor") => box && Array.from(box.querySelectorAll<HTMLElement>(selector)).find((el) => el.dataset[key] === id);
-    const target = pick("[data-editor-for]", "editorFor") ?? pick("[data-retry-for]", "retryFor");
+    const pick = (selector: string, key: "editorFor" | "retryFor" | "discardFor" | "resultFor") => box && Array.from(box.querySelectorAll<HTMLElement>(selector)).find((el) => el.dataset[key] === id);
+    // 더 확인할 수 없으면(stuck) 재시도 버튼이 사라진다 — 남은 행동(폐기)으로, 그것도 없으면(memory) 행 안 결과 알림으로(Codex review r3 P2)
+    const stuck = state.results.get(id)?.stuck;
+    const target =
+      pick("[data-editor-for]", "editorFor") ??
+      pick("[data-retry-for]", "retryFor") ??
+      (stuck ? (pick("[data-discard-for]", "discardFor")?.querySelector<HTMLElement>("button") ?? pick("[data-result-for]", "resultFor")) : undefined);
     if (!target) return;
     target.focus();
     focusFor.current = undefined;

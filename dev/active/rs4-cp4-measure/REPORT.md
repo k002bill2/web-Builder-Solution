@@ -1,4 +1,6 @@
-상향 필요: 정규화 +1.20 KB · raw 한도 +1.15 KB (배치안 a 기준 · 기본 `/studio` — 복원 진입은 정규화 +1.20 · raw +0.18) · 감량(M2) 미측정 상태의 수치
+판정 불가(M2 감량 미실측 — 감량 전 상향 폭: 정규화 +1.20 KB · raw 한도 +1.15 KB, 배치안 a 기준)
+
+보충: 복원 진입은 정규화 +1.20 · raw +0.18(한도 134). UNMEASURED 1·2(settling 대기·편집 저장 토큰 해제)가 빠져 있어 위 상향 폭은 **하한**이다.
 
 # RS4-CP4-MEASURE REPORT
 
@@ -84,4 +86,17 @@
 
 ## 서브에이전트
 - ① M1 SPEC-4 5.3·5.4 요구 코드 경로 조사(읽기 전용 Explore) — 완료, 결과를 스파이크 설계에 반영(PendingDraft·hold 부재, 등록 안 된 import()는 기계 집계 안 됨 확인).
-- ② M2 `/studio` closure 후보 조사(읽기 전용 Explore) — M2_PLACEHOLDER
+- ② M2 `/studio` closure 후보 조사(읽기 전용 Explore) — 완료. 결과는 **추정 · 빌드 미검증**(메모리에서 청크 텍스트를 고쳐 gzip한 값)이라 A표(실측)가 아니다:
+
+| # | 후보(A — 동작 변화 0 추정) | 위치 | 추정 Δ 정규화/raw | 비고 |
+|---|---|---|---|---|
+| 1 | 정적 import로 이미 받는 청크를 preload 목록에서 제거(`build.modulePreload.resolveDependencies`) | `vite.config.ts:31-36` | −0.21 / −0.30 | 모든 라우트 소폭 감소 |
+| 2 | `build.modulePreload.polyfill: false` | vite.config | −0.26 / −0.26 | 모든 라우트. modulepreload 미지원 브라우저만 워터폴(A*) |
+| 3 | react 청크를 엔트리로 합침 | vite.config codeSplitting | −0.2~−0.4 (L3) | 프로토타입 필요 |
+| 4 | `writeBodyLoader` 분리(로더별 단일 importer) | `src/data/writeBodyLoader.ts:10-16` | −0.10 / −0.16 | 작은 공유 청크 생길 위험(er-off2 교훈) |
+| 5 | effectiveProfile + profileContrast 그룹 | vite.config | ≤ −0.10 | 다른 라우트 조작 뒤 +0.76 |
+| 6 | `issue`에서 진입 미사용 엔진 심볼 분리(er-off A4) | `src/engine/**` | ≤ −0.16 | 엔진 경계 승인 필요 |
+
+- 겹치므로 단순 합산 불가. 1+2+4 대략 −0.5~−0.6(추정). 그래도 배치안 a의 +1.20(하한)을 다 메우지 못한다는 것이 추정 — 실측으로 확인해야 함.
+- B분류(적용 금지, 체감 변화): `modulePreload: false` ≈ −1.4(lazy 의존성 워터폴 · 편집기 약 1 RTT 늦게 표시) · 자동 저장 스케줄러 첫 편집 때 로드 −0.77(er-off 실측 · 상태 글자 늦음) · 충돌 Callout 지연 −0.18 · StudioLayout+issue 병합 ≤ −0.87(다른 라우트가 StudioLayout 받음).
+- 이미 시도·기각된 것(studio-off3·entry-slim·er-off·er-off2·rs4-cp4)과 겹치지 않게 골랐다. entry-slim에서도 공유 모듈 dynamic import가 rolldown-runtime 청크를 만들어 `/profile` 100.11이 됐다 — 이번 (b′) 관찰과 같은 현상(근거 보강).

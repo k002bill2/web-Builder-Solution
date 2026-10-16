@@ -10,6 +10,6 @@
 - [ ] M2. 동작 변화 0 후보 build 실측 — BLOCKED: 60분 시간 한도, 실측 0건
 - [ ] M2+M1 합산 빌드 1회 — BLOCKED: M2 미실측
 - [x] 최종 fresh 게이트 typecheck·lint·test·build (315 files / 2842 tests 기대), git diff -- app/ 빈 출력
-- [ ] REPORT.md (결론 첫 줄) 커밋
+- [x] REPORT.md (결론 첫 줄) 커밋
 
-서브에이전트: ① M1 경로 조사 완료(반영) ② M2 후보 조사 — REPORT 참조
+서브에이전트: ① M1 경로 조사 완료(반영) ② M2 후보 조사 완료(추정 표만 REPORT 반영, 빌드 미검증)

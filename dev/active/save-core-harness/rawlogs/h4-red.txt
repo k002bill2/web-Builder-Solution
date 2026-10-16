@@ -1,0 +1,115 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-harness/dev/active/save-core-harness
+
+ ❯ test/h4.test.ts (4 tests | 4 failed) 9ms
+   ❯ H4 낡은 증명으로 거짓 confirmed 0 (4)
+     × 탭 B 저장(세대 2) 뒤 탭 B 닫힘 → 탭 A가 잠금 획득해도 wrote:false confirm = failed stale 6ms
+     × hydration 같음 ≠ fresh proof: 아무도 안 쓴 writer 탭의 wrote:false는 IDB 재읽기로 proof=fresh receipt 1ms
+     × 읽기 전용 탭(다른 탭이 잠금 보유): 편집 없이 confirm → failed readonly(hydration 증명 재사용 0) 1ms
+     × 탭 B 저장 뒤 탭 A의 dirty 저장 → failed stale · B 문서 덮어쓰기 0(예상 세대 불일치) 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 탭 B 저장(세대 2) 뒤 탭 B 닫힘 → 탭 A가 잠금 획득해도 wrote:false confirm = failed stale
+AssertionError: expected { status: 'confirmed', …(2) } to match object { status: 'failed', reason: 'stale' }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reason": "stale",
+-   "status": "failed",
++   "status": "confirmed",
+  }
+
+ ❯ test/h4.test.ts:42:20
+     40|     lockB.close();
+     41|     const result = await tabA.confirm();
+     42|     expect(result).toMatchObject({ status: "failed", reason: "stale" }…
+       |                    ^
+     43|     expect((await readStored(db.persistence, P))?.hash).toBe(hashOf(B2…
+     44|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > hydration 같음 ≠ fresh proof: 아무도 안 쓴 writer 탭의 wrote:false는 IDB 재읽기로 proof=fresh receipt
+AssertionError: expected { status: 'confirmed', …(2) } to match object { status: 'confirmed', …(2) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "receipt": {
+      "generation": 1,
+      "hash": "7f488f7f",
+-     "proof": "fresh",
+    },
+    "status": "confirmed",
+    "wrote": false,
+  }
+
+ ❯ test/h4.test.ts:49:20
+     47|     const { tabA } = await twoTabs();
+     48|     const result = await tabA.confirm();
+     49|     expect(result).toMatchObject({ status: "confirmed", wrote: false, …
+       |                    ^
+     50|     expect(tabA.view().confirmed).toMatchObject({ proof: "hydrated" });
+     51|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 읽기 전용 탭(다른 탭이 잠금 보유): 편집 없이 confirm → failed readonly(hydration 증명 재사용 0)
+AssertionError: expected { status: 'confirmed', …(2) } to match object { Object (status, reason) }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reason": "readonly",
+-   "status": "failed",
++   "status": "confirmed",
+  }
+
+ ❯ test/h4.test.ts:57:34
+     55|     tabB.edit(B2);
+     56|     await tabB.save(); // 탭 B가 잠금을 탭 수명 동안 보유
+     57|     expect(await tabA.confirm()).toMatchObject({ status: "failed", rea…
+       |                                  ^
+     58|   });
+     59|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 탭 B 저장 뒤 탭 A의 dirty 저장 → failed stale · B 문서 덮어쓰기 0(예상 세대 불일치)
+AssertionError: expected { status: 'saved', …(2) } to match object { status: 'failed', reason: 'stale' }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reason": "stale",
+-   "status": "failed",
++   "status": "saved",
+  }
+
+ ❯ test/h4.test.ts:66:31
+     64|     lockB.close();
+     65|     tabA.edit(docOf(2, "A-edit"));
+     66|     expect(await tabA.save()).toMatchObject({ status: "failed", reason…
+       |                               ^
+     67|     expect((await readStored(db.persistence, P))?.hash).toBe(hashOf(B2…
+     68|     expect(tabA.view()).toMatchObject({ dirty: true, confirmed: { gene…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  4 failed | 11 passed (15)
+   Start at  02:05:31
+   Duration  176ms (transform 67%, import 17%, tests 12%, worker 4%)
+
+exit 1

@@ -1,0 +1,24 @@
+browser-cleanup.txt:  | 
+browser-precheck.txt:  | exit 1
+browser-probe-existing.txt:  | exit 0
+browser-probe-finalqa.txt:  | exit 0
+finalqa-eslint.txt:  | exit 0
+finalqa-run1.txt: Tests  4 passed (4) | exit 0
+finalqa-run2.txt: Tests  4 passed (4) | exit 0
+finalqa-tsc.txt:  | exit 0
+harness-eslint.txt:  | exit 0
+harness-run1.txt: Tests  37 passed (37) | exit 0
+harness-run2.txt: Tests  37 passed (37) | exit 0
+harness-tsc.txt:  | exit 0
+npm-ci.txt:  | exit 0
+qa-eslint.txt:  | exit 0
+qa-run1.txt: Tests  10 passed (10) | exit 0
+qa-run2.txt: Tests  10 passed (10) | exit 0
+qa-tsc.txt:  | exit 0
+scope-delta.txt:  | exit 0
+vite-finalqa-probe.txt:  | 
+vite-qa-probe.txt:  | 
+manual: grep -l 'Errors|Unhandled' rawlogs/*-run*.txt → none (grep exit 1)
+manual: scope-delta.txt — QA 원본 diff 0 · app diff 0(5b7d026..HEAD) · 테스트 이름/[QA] 관측 줄 save-core-fix 최종 로그와 diff 0
+manual: browser-cleanup.txt — lsof 4367 exit 1 · pgrep exit 1 · databases-after [] ×2 · TaskSpace 24 finish({keep:[]})
+note: browser-precheck exit 1 = lsof·pgrep 일치 없음(기대값, 포트 4367 비어 있음) · scope-delta exit 0 = 마지막 diff 비교 exit · exit 줄 없는 수기 로그 = vite-*.txt · browser-cleanup.txt(본문에 lsof/pgrep exit 1)

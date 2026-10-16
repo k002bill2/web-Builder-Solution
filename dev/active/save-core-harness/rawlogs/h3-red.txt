@@ -1,0 +1,38 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-harness/dev/active/save-core-harness
+
+ ❯ test/h3.test.ts (4 tests | 1 failed) 10ms
+   ❯ H3 이미지 바인딩·원자 실패·재시도 (4)
+     × 부족 이미지(바인딩·IDB 모두 없음) → 제출 0 · image-missing / 리로드 뒤 IDB에 있는 이미지는 바인딩 없이 저장 가능 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > 부족 이미지(바인딩·IDB 모두 없음) → 제출 0 · image-missing / 리로드 뒤 IDB에 있는 이미지는 바인딩 없이 저장 가능
+AssertionError: expected { status: 'failed', …(1) } to match object { status: 'failed', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "reason": "image-missing",
++   "reason": "not-committed",
+    "status": "failed",
+  }
+
+ ❯ test/h3.test.ts:69:34
+     67|     const core = await openSaveCore({ projectId: P, persistence: db.pe…
+     68|     core.edit(docOf(1, "X", ["img-x"]));
+     69|     expect(await core.confirm()).toMatchObject({ status: "failed", rea…
+       |                                  ^
+     70|     expect(db.seen).toEqual([]);
+     71|     core.edit(B, new Map([["img-b", blobOf("bytes-B")]]));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 10 passed (11)
+   Start at  02:04:05
+   Duration  162ms (transform 62%, import 21%, tests 13%, worker 4%)
+
+exit 1

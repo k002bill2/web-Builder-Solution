@@ -1,0 +1,9 @@
+# RS4 구현 전 측정 관문 — 결과 1건
+책임 Developer / Orca Claude Code. base1a48ce8(앱93f8111). 저장소 rs4-measure. 사용자2 이탈보호확장 승인, 예산상향/저장소인터페이스·스키마·의존성·backend/push 승인0. 최종 제품 구현 금지. QA rs4-review 병렬 독립검토, 결과 미승인 초안의 측정임을 명시.
+읽을 입력 SPEC-4.md 전체 특히8.0/9절, MQ-4, rs23-protection-spec REPORT. 기존 잠금·예산 ADR/CLAUDE 준수.
+0. npm ci lock변경0, PROGRESS 시작커밋, base build rawlog(한 머신/동일 측정·raw bytes) 및 전체 suite baseline파일/테스트 수. 기존 로그 숫자 복사 금지.
+1. P-3 이미지 안전 경로를 가장 먼저 측정(AC17). deleteSnapshot(projectId,"")은 저장소 메서드 의미차용임. 빈id가 실제로 불가능/부재인지 검증, revision/내용/snapshot 변화0·실제IDB oncomplete·이미지레코드 존재/리로드후 decode를 검증. WebLock거절·offline·이미지 등록뒤 submit전 실패·quota retry의 하네스. request snapshot삭제 부수효과 없는지. 안전불확실/이미지누락이면 편집기밖 confirm 금지 판정, 별도 계약 승인 필요 여부 보고. 해당 회귀테스트는 dev/active/rs4-measure/하네스로 보존하고 앱영구수정금지.
+2. 초안 그대로 최소 스파이크 S1(탭 pending/unload + profile/projects), S2(S1+static studio 인계), S3(S1+동기조회 lazy본문). 순차빌드·기준선대비 rawbytes·자동import가 참인 pending studio시나리오도 실측. 새 시나리오는 한도승인전 UNAPPROVED 표시, 기존 시나리오 뒤에 숨기지 않음. 시간안 3개 불가시 실행한후보/미실행후보 구별. 앱공통guard는 비교가능할때만 참고.
+3. 판정선 /studio129.90·복원132.94, profile첫100/진입125, projects첫100/진입125. m2cBaseline/bundleBudget.test/ADR한도 수정금지. 넘으면 감량1회 후 raw수치로 중단. 수치없는 상향요청금지. 결과를 통과로 만들기위해 경고/보호/이미지 보존/상태 정확성 생략금지.
+4. prototype모든 source 변경을 scoped patch로 base복원(git reset/clean금지, unrelated 무접촉). base재빌드바이트동일 확인. 앱diff0·lockdiff0로 마감. 실험패치는 dev/active/rs4-measure/에 preserve(diff 텍스트, 민감정보없음). REPORT·rawlogs·측정실패근거·명시 stage 커밋. full suite확정은 실험전base만, prototype은측정용; 구현완료주장금지.
+최대55턴60분. checkpoint base/P3/S1/S2/S3/복원REPORT. 서브에이전트불필요(빌드직렬로 부하혼선방지). 새 설계 리뷰/Codex반복 금지. 측정후 제품 구현자동착수금지. 불가능한 계약항목은 손실위험과 더정직한 대안보고. 임시서버 사용시자기cwd확인종료·port0. 다른worker무접촉.

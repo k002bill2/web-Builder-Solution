@@ -1,0 +1,10 @@
+# SAVE-CORE QA 반례 좁힌 수정 — 승인된 격리하네스 범위
+책임Developer / Orca Claude Code. worktree save-core-fix, base78e3c52. 사용자1=격리하네스 구현검증; 범위내 실제결함수정. 제품app/main/예산/ADR/인터페이스·새의존성/merge/push 변경금지. Designer생략 UI없는코어. QA보고78e3c52 입력 dev/active/save-core-qa/REPORT.md·반례test/readme/core. 쓰기 하네스core와하네스회귀test 및dev/active/save-core-fix/만. 기존QA 반례테스트/readme/보고원본무수정.
+
+회수기준: H5FAIL 실제CE1,CE2,CX3. 브라우저core×제품IDB×WebLocks프로브pass는 제품통합PASS아님. 제품id정책과무관하게공개하네스API가허용한sameidBlob반례는하네스mergeblocker로취급하고닫는다. 4failed/6passed10QA중CE3a는코어당소유자중복정책문제이지단순이미지수정아님.
+1.npmci lock0; 기존하네스23pass 및QA반례10 4fail baseline을실제재실행,rawexit/log 보존. 예정testdelta(beforeRED)기록. 
+2.CE1 discard await 중 save 진입: discard가진입부터끝까지排他mutation주체 되도록 최소안 'discarding' 가드, save/confirm/replace/discard 등모든경쟁쓰기행동검토. afterawait표면검사만으로이미커밋을되돌리지말것. savechain직렬화대안은복잡할때만,반대로save진행중discard거절유지. 지연읽기/throwfinally해제 및mark는늘살아야함. 추가test후RED→GREEN.
+3.CE2 targetdoc와참조Blob binding은동일시점동결(Blob불변,map복사). doc snapshot도외부mutation방지. CX3 discard복귀문서의이미지binding을정확복귀/부재시폐기Blob제거·실패보존; 이미지삭제API차용0. sequentialdiscard→다음save에서Y가몰래붙지않음. QA원본sameidtest완화0. 실제stored참조Blob재읽기와불충분binding거절.
+4.CE3a same-tab2cores/sharedgate: 싱글owner enforcement또는실제atomic세대read+write 중하나최소안확정. 코어내registry새전역복잡성보다명시불변식/실행거절추천. 단위test조건거부해pass위장금지: 두독립저장자동시에들어갔을때두개다samegen saved되는현상을run-time거절/atomiccommit으로차단. 해결하려면제품API변경필요하면PARTIAL/BLOCKED로남겨비승인확장금지. 한코어재진입의임대/gatereuse regression포함.
+5.M6M8M9 mutation단언공백: 핵심wrote:true receipt재검증을강제하는test(어댑터resolve후반영안됨·이미지미기록 false-success주입) 추가. 의미상죽은guard는근거표기해삭제가능(테스트약화금지),모든mutation무조건kill목표아님.
+마감: 하네스23+정당추가test/fullQA반례10재실행2회,tsc/lint명령rawexit manifest. QA원본실패남으면REPORT에서H/CE별FAIL을그대로표기(제품적용승인없음). 프로브스크립트변경0,가능하면기존브라우저재실행은뒤QA책임. Codex자동반복0. MINIMAL-CONTRACT에서실제확정한discard/image/owner규칙만업데이트(제품CONTRACT5수정0). REPORT원문초기RED와최종,delta,남은liveness및제품통합미검증 명시. scopedcommit. 최대55턴60분,40턴부터새수정0/마감. 서브에이전트불필요(단일코어공유쓰기/TDD). 원본QA또는제약을변경해서전체green주장금지. 뒤별도QA한번필요.

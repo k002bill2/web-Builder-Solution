@@ -1,0 +1,39 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a13628-e6c4-7163-b050-103cc1f89520).
+[codex] Turn started (01a13628-eaa3-7d61-9f4a-357cdd78f670).
+[codex] Assistant message captured: 검토 범위는 CONTRACT-5 r0.1a입니다. 기준 커밋 diff와 실제 저장 경로를 대조해 데이터 소실·거짓 확인·사용자 조작 무효 경로를 확인하겠습니다.
+[codex] Running command: /bin/zsh -lc 'pwd; git status --short; git diff 467a691 -- docs/design/restart/CONTRACT-5.md;...
+[codex] Command failed: /bin/zsh -lc 'pwd; git status --short; git diff 467a691 -- docs/design/restart/CONTRACT-5.md;... (exit 1)
+[codex] Running command: /bin/zsh -lc "rg -n 'rs5|web-builder|CONTRACT' '/Users/younghwankang/Library/Application Supp...
+[codex] Command completed: /bin/zsh -lc "rg -n 'rs5|web-builder|CONTRACT' '/Users/younghwankang/Library/Application Supp... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/CONTRACT-5.md | sed -n '155,245p'; cat dev/active/rs...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/CONTRACT-5.md | sed -n '155,245p'; cat dev/active/rs... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts; nl -ba app/src/data/memoryDocBo...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryProjectRepository.ts; nl -ba app/src/data/memoryDocBo... (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/data/persistence/localSync.ts; nl -ba app/src/data/persistence/w...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts; nl -ba app/src/componen...
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/data/persistence/localSync.ts; nl -ba app/src/data/persistence/w... (exit 0)
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts; nl -ba app/src/componen... (exit 0)
+[codex] Running command: /bin/zsh -lc "cat app/src/data/persistence/imageOps.ts; cat app/src/data/persistence/writerLo...
+[codex] Command completed: /bin/zsh -lc "cat app/src/data/persistence/imageOps.ts; cat app/src/data/persistence/writerLo... (exit 0)
+[codex] Assistant message captured: `mark()`만 반영되고 아직 publish되지 않은 편집은 `confirm`의 대상·결과 판정에서 빠져 있습니다. 교체 전이에서도 같은 편집이 누락되는지, 진행 중...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts | sed -n '35,220p'; nl -...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/useAutosaveScheduler.ts | sed -n '35,220p'; nl -... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/studioStore.ts | sed -n '1,75p'; rg -n 'guarding|retryStart...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/studioStore.ts | sed -n '1,75p'; rg -n 'guarding|retryStart... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "구현 승인 보류: 미publish 편집에 거짓 확인을 반환하는 신규 P1 경로가 있습니다...
+[codex] Turn completion inferred after the main thread finished and subagent work drained.
+# Codex Adversarial Review
+
+Target: branch diff against 467a691
+Verdict: needs-attention
+
+구현 승인 보류: 미publish 편집에 거짓 확인을 반환하는 신규 P1 경로가 있습니다. QA-1·3·4·5에 동의합니다. QA-2의 제출 레코드 증명 누락에 동의하나 경쟁 경로는 replace 직렬화 범위에 달립니다. 467a691 대비 diff와 지정 코드를 읽기 전용으로 대조했습니다. 파일 수정·런타임 테스트는 하지 않았습니다.
+
+Findings:
+- [high] [P1] confirm이 아직 publish되지 않은 최신 편집을 확인 대상에서 누락합니다 (docs/design/restart/CONTRACT-5.md:178-181)
+  4.1에서 편집은 mark만 호출하고 publish는 저장 시작·cleanup 때 수행합니다. 그러나 4.2는 latest 또는 memSeq만 대상으로 삼으며, 활성 편집기의 현재 doc을 publish하는 단계가 없습니다. 저장된 A에서 B를 편집하고 디바운스 전에 confirm하면 latest가 없어 A를 확인하고 newer=false로 해석되는 결과를 반환합니다. A 확인 중 B를 편집해도 동일합니다. 실제 useDocSave.ts:87-92는 새 내용을 docRef와 스케줄러에만 넘기고, useAutosaveScheduler.ts:57,90-98은 기본 2초 동안 저장을 지연합니다. 따라서 계약대로 구현하면 화면의 B가 영속되지 않았는데 '확인됨'을 표시합니다. I8의 dirtyMark 보호는 경고 등록만 보장하며 이 거짓 확인을 막지 못합니다. T3의 '4.2-4로 초안 커밋' 기대도 latest가 없는 이 경로에서는 성립하지 않습니다.
+  Recommendation: confirm 시작 시 dirtyMark > publishedMark이면 활성 lease에서 최신 doc·hash·binding을 동기 publish하도록 계약과 API를 추가하세요. 제출 대상의 mark를 고정하고, 결과의 newer는 publish된 seq뿐 아니라 제출 이후 미publish 편집도 포함해야 합니다. 최신 초안을 확보하지 못하면 confirmed를 반환하지 마세요.
+
+Next steps:
+- 4.2의 publish 인계와 mark 기반 완료 판정을 명시하고, T3에 '확인 직전 편집' 및 '확인 진행 중 편집, publish 전 resolve' 사례를 추가하세요.

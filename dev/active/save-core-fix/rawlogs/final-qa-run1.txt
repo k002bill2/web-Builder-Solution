@@ -1,0 +1,50 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-fix/dev/active/save-core-qa
+
+stdout | test/codex-followup.test.ts > Codex 지적 재현 > CX-3 [계약 I7 '저장 상태로 복귀'] [모델 내·id 정책 의존] discard 뒤 바인딩에 폐기 Blob이 남아 다음 저장이 폐기 바이트를 커밋
+[QA] CX-3 {"discard":"discarded","viewBlobAfterDiscard":"X","save":"saved","stored":"A-text","imageBytes":"X"}
+
+ ✓ test/codex-followup.test.ts > Codex 지적 재현 > CX-3 [계약 I7 '저장 상태로 복귀'] [모델 내·id 정책 의존] discard 뒤 바인딩에 폐기 Blob이 남아 다음 저장이 폐기 바이트를 커밋 2ms
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-1 [계약 I7·H5 '폐기 초안 부활 0'] [모델 내] discard await 중 save 진입 → discarded인데 B가 커밋·confirm됨
+[QA] CE-1 {"discard":"discarded","save":"failed","confirm":"confirmed","confirmHashIsB":false,"stored":"A","view":{"body":"A","dirty":false}}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-2 [계약 I6 '바인딩 동결' · H3] [id 정책 의존] 같은 id 다른 Blob: 제출 doc1이 나중 Blob Y와 커밋 · 재읽기 confirm이 바이트를 안 봄
+[QA] CE-2 {"save":"saved","receiptHashIsD1":true,"storedBody":"D1","imageBytes":"X","reopenedConfirm":"confirmed"}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-3a [계약 I6b '다른 writer 덮어쓰기 0'] [범위 밖 사용: 한 탭 코어 2개, 제품 gate 공유] 동시 save → 같은 세대 2회 saved
+[QA] CE-3a {"r1":2,"r2":{"status":"failed","reason":"stale","newer":false},"stored":["c1",2]}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-3b [계약 I6b] [두 탭 = 제품 gate 2개 + fakeLocks] 동시 save → 하나만 saved(배타 writer)
+[QA] CE-3b {"ra":"saved","rb":"readonly"}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-4 [계약 I3: 커밋됐으면 confirmed|newer] [모델 내] 같은 코어 confirm 2회 동시(더블클릭)
+[QA] CE-4 {"c1":["confirmed",1],"c2":["confirmed",2],"writes":2}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-5 [계약 I4: 내용 같으면 wrote:false confirmed] [모델 내] clean 상태에서 save 진행 중 confirm
+[QA] CE-5 {"save":2,"confirm":["confirmed",1],"writes":2}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > CE-6 [계약 I7/I8] [모델 내] clean discard await 중 replace → discard는 교체본을 되돌리지 않는다
+[QA] CE-6 {"replace":{"status":"replaced","epoch":1},"discard":"newer","body":"R"}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > OBS-1 [관찰] stale 이후 회복 경로 없음: save stale · discard blocked stale · replace dirty · confirm stale (재열기 외)
+[QA] OBS-1 {"save":"stale","discard":{"status":"blocked","reason":"stale"},"replace":{"status":"rejected","reason":"dirty"},"confirm":{"status":"failed","reason":"stale"}}
+
+stdout | test/qa.test.ts > save-core-qa 반례 > OBS-2 [관찰] 이미지 존재 확인은 프로젝트 무관 — 다른 프로젝트 img-x가 있으면 바인딩 없이 saved
+[QA] OBS-2 {"p2save":"saved"}
+
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-1 [계약 I7·H5 '폐기 초안 부활 0'] [모델 내] discard await 중 save 진입 → discarded인데 B가 커밋·confirm됨 2ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-2 [계약 I6 '바인딩 동결' · H3] [id 정책 의존] 같은 id 다른 Blob: 제출 doc1이 나중 Blob Y와 커밋 · 재읽기 confirm이 바이트를 안 봄 2ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-3a [계약 I6b '다른 writer 덮어쓰기 0'] [범위 밖 사용: 한 탭 코어 2개, 제품 gate 공유] 동시 save → 같은 세대 2회 saved 0ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-3b [계약 I6b] [두 탭 = 제품 gate 2개 + fakeLocks] 동시 save → 하나만 saved(배타 writer) 0ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-4 [계약 I3: 커밋됐으면 confirmed|newer] [모델 내] 같은 코어 confirm 2회 동시(더블클릭) 1ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-5 [계약 I4: 내용 같으면 wrote:false confirmed] [모델 내] clean 상태에서 save 진행 중 confirm 2ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > CE-6 [계약 I7/I8] [모델 내] clean discard await 중 replace → discard는 교체본을 되돌리지 않는다 0ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > OBS-1 [관찰] stale 이후 회복 경로 없음: save stale · discard blocked stale · replace dirty · confirm stale (재열기 외) 0ms
+ ✓ test/qa.test.ts > save-core-qa 반례 > OBS-2 [관찰] 이미지 존재 확인은 프로젝트 무관 — 다른 프로젝트 img-x가 있으면 바인딩 없이 saved 0ms
+
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Start at  02:41:50
+   Duration  133ms (transform 69%, import 17%, tests 10%, worker 4%)
+
+exit 0

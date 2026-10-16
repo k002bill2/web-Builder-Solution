@@ -14,7 +14,7 @@
 | # | 범위 | 결과 | 반영 |
 |---|---|---|---|
 | ① | I6·PLAN·MQ-6 코드 주장 대조(읽기 전용) | 38건: 일치 25 / 부분 9 / 오류 3 / 확인불가 1. 결론 변경 = `deleteSnapshot` 등 DocBook 경로 레코드 재쓰기(G1 공백) · `StudioLeave.test.tsx` 11절 누락 · D6-9 vs SPEC-4 RS4-AC-06 | QA-REVIEW 1.1 · R7 · R1 |
-| ② | backlog-rs-status 12건 커버리지(읽기 전용) | 해결 4 / MQ 0 / 범위 밖 1 / 누락 7. RS4-R8·CE-4 = 해결 주장→부분 · RS4-B1 누락 · BD-2 포트 시그니처 재발 경로 | QA-REVIEW 2절 · 6절-6 |
+| ② | backlog-rs-status 12건 커버리지(읽기 전용) | 원보고 해결 4 / 범위 밖 1 / 누락 7 → 메인 재분류 해결 4 / 부분 2 / 범위 밖 1 / 누락 5. RS4-R8·CE-4 = 해결 주장→부분 · RS4-B1 누락 · BD-2 포트 시그니처 재발 경로 | QA-REVIEW 2절 · 6절-6 |
 
 - 메인 재확인: `imageOps.ts:19,25` · `memoryProjectRepository.ts:65-66,149` · `localSync.ts:155-157` · `SnapshotDialog.tsx:260` · `restartFlow.ts:135,166` · `SPEC-4.md:349`.
 - 실행: `npx vitest --run src/components/studio/StudioLeave.test.tsx` → 14 passed (14).

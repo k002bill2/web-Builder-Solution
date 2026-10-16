@@ -14,7 +14,7 @@
 | R7 | **P1** | G1 "문서 필드 작성자 = 코어 단독"이 DocBook 경로 레코드 재쓰기(`deleteSnapshot`·`createSnapshot`·내보내기·`confirmDoc` → `write`가 `book.docOf`로 레코드 통째 put)를 덮지 않는다 → IDB 문서가 옛 revision으로 되돌아가고 GC delete가 새 이미지를 지울 수 있다 | I6 5절 G1 규칙 1줄 + RED AC 1건 |
 | R2 | **P1** | **코어가 존재하는 시점**이 정해지지 않았다. `edit()`·`view()`·`acquire()`는 편집기 마운트 때 동기인데 `openSaveCore`는 async(`readStored` await)이고, 레지스트리는 조작 뒤 청크인 `LocalSync`에 매달리며, memory 모드에는 `LocalSync`가 없다 | I6 2.2-2·9.2 명세(코어 생성 시점·레지스트리 위치·memory 모드) — L0 S6b 측정 전에 필요 |
 
-P2(계획 쓰기 경로 누락 · D6-9 숨은 결정 · L0 S6b/c 실행 가능성·상쇄 조건 · 11절 깨질 테스트에 `StudioLeave.test.tsx` 누락 · 12건 중 누락 7 — 특히 RS4-B1)는 같은 보완 회차에 함께 닫으면 된다. 세부 = 3·6절.
+P2(계획 쓰기 경로 누락 · D6-9 숨은 결정 · L0 S6b/c 실행 가능성·상쇄 조건 · 11절 깨질 테스트에 `StudioLeave.test.tsx` 누락 · 12건 중 누락 5·부분 2 — 특히 RS4-B1)는 같은 보완 회차에 함께 닫으면 된다. 세부 = 3·6절.
 
 ## 1. 사실 대조 (L1 표본)
 
@@ -65,13 +65,13 @@ P2(계획 쓰기 경로 누락 · D6-9 숨은 결정 · L0 S6b/c 실행 가능�
 | # | 결함 | 판정 | I6/PLAN 근거 | 원인 코드 [L1] | 메커니즘 충분성 |
 |---|---|---|---|---|---|
 | 1 | RS4-R1 history 재진입 거짓 idle | **해결**(MQ-6-4 A·L0 조건부) | I6 7절 · PLAN L3 · AC-U6·U7·B1 | 편집기 쪽 `pendingOf` 0건 | lease+seed로 닫힘. 단 원 시나리오("미확인 기억 있는 프로젝트를 history 재진입 → unconfirmed") 직접 AC 없음(B1은 편집 뒤 POP만) |
-| 2 | **RS4-R8** POP·주소 입력 편집 소실·경고 없음 | **해결 주장 → 부분** | I6 5절 G2 · 7절 · 12절 · D6-9 · AC-B1 | `useAutosaveScheduler.ts:134-137`(dispose) · `:283-292`(경고 = 편집기 수명) · `pendingWrites.ts:61-71` · `StudioLayout.tsx:133-148`(링크만 가로챔) | 메모리 소실은 `edit()` 동기 등록으로 닫힘. **IDB 쓰기 주체 0 · 경고 0은 남음**(= R1과 같은 구멍). CP4 `hold(PendingDraft)`가 하던 언마운트 뒤 경고를 버리고 대체 없음. 8.1에 "코어 dirty + 편집기 밖" `/projects` 행 표시 미정의 |
+| 2 | **RS4-R8** POP·주소 입력 편집 소실·경고 없음 | **부분**(해결 주장, 원인 미폐쇄) | I6 5절 G2 · 7절 · 12절 · D6-9 · AC-B1 | `useAutosaveScheduler.ts:134-137`(dispose) · `:283-292`(경고 = 편집기 수명) · `pendingWrites.ts:61-71` · `StudioLayout.tsx:133-148`(링크만 가로챔) | 메모리 소실은 `edit()` 동기 등록으로 닫힘. **IDB 쓰기 주체 0 · 경고 0은 남음**(= R1과 같은 구멍). CP4 `hold(PendingDraft)`가 하던 언마운트 뒤 경고를 버리고 대체 없음. 8.1에 "코어 dirty + 편집기 밖" `/projects` 행 표시 미정의 |
 | 3 | RS4-R2 편집기 저장 성공해도 기억 남음 | **누락** | ID 언급 0 · `PendingRecord` 대체 = "구현 레인 판단"(I6 6.3) | 편집기 저장 경로에 기억 해제 없음 | CP4 흡수 시 승계 문장 없음 |
 | 4 | **RS4-B1** 편집기 밖 `startDoc` 재생 = 이미지 없는 커밋 | **누락** | RS4-B1/R10 언급 0 · 간접: I6 1.2 I6 행(엄격 imageOps) · 6.4 `restartFlow` 행("열린 코어 없으면 다음 열기가 새 시드" = 기존 경로 유지) | `memoryProjectRepository.ts:121` startDoc → `:65-66` `kept`(`maps.get ?? held`, 편집기 cleanup `:149`가 맵 삭제) → `imageOps.ts:19` 조기 반환·`:25` 메타 없는 참조 put 건너뜀 | 재생은 코어 밖 DocBook→flush 경로 그대로. "엄격 imageOps"가 공유 `imageOps.ts`(flush 포함)를 바꾸는지 포트 전용인지 미정 — 공유면 재생 flush가 throw → `PendingStart` 고착 가능 [L3] |
 | 5 | RS5 코어 미통합(G1·G2·G7·G8) | **해결**(MQ-6-1·L0 조건부) | I6 전체 · PLAN L0~L5 | `app/src`에 saveCore 0 | 설계 본체. 단 G1 "필드별 작성자"의 물리 보장 공백 → R7 |
 | 6 | CE-3a / BD-1 | **해결** | I6 2절 · AC-G2 | `localSync.ts:92` · `idbPersistence.ts:59` | 충분(R3 가드 범위 보강만). D6-3 MC 변경 수반 |
 | 7 | LV-1·LV-2 | **해결**(MQ-6-3 A 조건부) | I6 3절 · AC-U4·U5·U11 | race·Abort 0 · `StudioLayout.tsx:135-142` 고착 | LV-2 포기 토큰으로 닫힘. LV-1은 표시 전환만(무기한 대기는 의도적으로 남음). 시간 값 미정(6-3b) |
-| 8 | 묶음(가장 약한 하위 판정) | **누락** | — | — | — |
+| 8 | 묶음(가장 약한 하위 판정) | **부분** | — | — | 하위 = 범위 밖 3 · 부분 1(CE-4) |
 | 8a | OBS-1 stale 뒤 회복 = 재열기뿐 | 범위 밖(명시) | I6 2.3 · 4절 "유지" | — | — |
 | 8b | **CE-4** 동시 confirm = write 2회 | **해결 주장 → 부분** | I6 3절 공통 행 · 4절 · AC-U8 | `saveCore.ts:182-196`(dirty면 매번 save) · `:132-137`(쓸 것 없음 가드 없음) | 화면 dedupe는 같은 버튼 연타만 막음. 남는 경로: autosave 진행 중 dirty confirm · D6-9로 편집기 버튼과 `/projects` 행이 다른 훅 · 스냅샷·내보내기 전 `core.save()`. 손실 0·중복 쓰기 수준(낮음) |
 | 8c | **OBS-2/BD-2** 이미지 확인 프로젝트 미구분 | 범위 밖(명시 "비도달") — AC 없음 | I6 12절 마지막 행 | 하네스 bare id(`saveCore.ts:87,161,178`) · 제품 `${projectId}/${localId}`(`imageRecord.ts:20`) | 지금 제품 기준 비도달 판정은 맞음. 그러나 포트 시그니처 `image(id)`·`verify(receipt)`(I6 1.3)에 projectId가 없고 코어 imageIds = `recordRefs` = localId — **포트가 prefix를 안 붙이면 원인 부활** → 가드 AC 필요 |
@@ -81,7 +81,8 @@ P2(계획 쓰기 경로 누락 · D6-9 숨은 결정 · L0 S6b/c 실행 가능�
 | 11 | RS-AC-08d IDB 쪽 미단언 | **누락** | 언급 0 | — | RS6 범위와 거리 있음 — 명시 제외 1줄이면 충분 |
 | 12 | B-RS-01 개정 15 실측 +0.02·+0.03 초과 결정 대기 | **누락** | 언급 0(MQ-6-6은 RS6 예산만) | — | 같은 예산선을 쓰므로 L0 판정선과의 관계 1줄 필요 |
 
-- 집계(주 행 12): **해결 4**(#1·5·6·7) · **MQ 0** · **범위 밖 1**(#9) · **누락 7**(#2·3·4·8·10·11·12 — #2·#8b는 해결 주장이 부분으로 강등).
+- 집계(주 행 12): **해결 4**(#1·5·6·7) · **부분 2**(#2·8) · **MQ 0** · **범위 밖 1**(#9) · **누락 5**(#3·4·10·11·12). 합계 12.
+- **부분** = 브리프 4분류 밖 보조 분류 — 해결 경로는 있으나 원인을 다 닫지 못함(#2 RS4-R8 · #8b CE-4).
 - 브리프 중점 4건: RS4-R8 = 부분(R1과 같은 원인) · RS4-B1 = 누락 · CE-4 = 부분(낮음) · OBS-2/BD-2 = 범위 밖(비도달)이나 포트 시그니처상 재발 경로 있음.
 
 ## 3. 설계 위험 판정
@@ -115,7 +116,7 @@ P2(계획 쓰기 경로 누락 · D6-9 숨은 결정 · L0 S6b/c 실행 가능�
 | 244·252·266 수정 키·`a[download]`·변경 없음 | 통과 | 통과 | 유지 |
 
 **보완 요청(최소)**
-1. 이탈 시 코어 dirty면 **save 1회 발사**(대기 없이) — 발사 주체를 명시(링크 핸들러 또는 레지스트리).
+1. **편집기 lease 해제(언마운트 cleanup) 때 코어 dirty면 save 1회 발사**(대기 없이) — 링크·POP·레이아웃 재마운트 공통. 링크 핸들러에만 두면 POP(RS4-R8)이 그대로 남는다.
 2. 코어 dirty·inflight 동안 **탭 수준 `beforeunload`** 소유자를 명시(편집기 밖 — `pendingWrites` 확장 또는 레지스트리).
 3. 예외 목록을 지금 동작 기준으로 다시 쓴다: readonly·`unsupported`(Web Locks 없음)는 **지금 이동**, `offline`·`failed`는 보류 — 바꾸려면 MQ.
 4. AC 추가: "디바운스 대기 중 이탈 → 이동 · IDB = 마지막 편집(save 1회) · `/projects`에서 탭 닫기 경고 on".
@@ -193,7 +194,7 @@ PLAN 레인 표 쓰기 경로에 없는 파일 [L1 grep — PLAN에 이름 0]: `
 
 ## 6. Jarvis에게 권고 (보완 요청 — 최소·구체)
 
-1. **[P1·R1]** I6 3절·D6-9: 이탈 시 dirty면 save 1회 발사 주체 + 탭 수준 `beforeunload` 소유자 명시 · 예외 목록을 지금 동작 기준(readonly·unsupported = 이동, offline·failed = 보류)으로 고침 · AC "디바운스 대기 중 이탈" 추가.
+1. **[P1·R1]** I6 3절·7절·D6-9: 편집기 lease 해제(언마운트 cleanup) 때 코어 dirty면 save 1회(링크·POP 공통) + 탭 수준 `beforeunload` 소유자 명시 · 예외 목록을 지금 동작 기준(readonly·unsupported = 이동, offline·failed = 보류)으로 고침 · AC "디바운스 대기 중 이탈" 추가.
 2. **[P1·R7]** I6 5절 G1: "DocBook 경로 `write`(스냅샷 생성·삭제·내보내기·`confirmDoc`)도 문서 필드는 코어의 마지막 커밋 doc으로 만든다(또는 코어 inflight 중 DocBook 레코드 쓰기를 코어 chain 뒤로)" 1줄 + RED AC "코어 commit 중 `deleteSnapshot` → IDB doc = 코어 최신 · 새 이미지 삭제 0" + 6.4 표에 `deleteSnapshot` 추가.
 3. **[P1·R2]** I6 2.2·9.2: 코어 생성 시점 · 레지스트리 소유 객체(local·memory 공통) · 포트 없는 동안 `save()` 결과 — 3줄 결정. L0 S6b가 그 배치로 잰다고 명시.
 4. **[P2]** MQ-6: 링크 이탈 규칙(D6-9)을 MQ로 올림(SPEC-4 RS4-AC-06 대체 D행 포함) · MQ-6-1에 ADR-007 4절 이유 2 관계와 포트 실제 표면(+5 이상) 1줄.

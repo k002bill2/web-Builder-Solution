@@ -19,7 +19,7 @@ import { CLEARED_TAB, READ_ONLY_TAB, STALE_TAB } from "./infra";
 import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type StudioPersistence, type WriteOp } from "./studioPersistence";
 import type { TabLink } from "./tabLink";
-import { WRITER_LOCK, type WriterLocks } from "./writerLock";
+import { WRITER_LOCK, tryLock, type WriterLocks } from "./writerLock";
 
 const imports = {
   ...STUDIO_IMPORTS,
@@ -145,6 +145,44 @@ describe("RS3-AC-04 같은 탭 잠금 소유 공통", () => {
     const hold = tabLockHold(link, locks);
     expect(await hold.acquire()).toBe(true);
     hold.release();
+    await expect(projects.startDoc("project-1", 1, "B", "create")).resolves.toMatchObject({ doc: { candidateId: "B" } });
+  });
+
+  it("②-b 파괴 흐름 잠금: 잡은 동안 재요청 = 재사용(true) · 다른 탭은 못 잡음 · 놓고 다시 잡으면 실제로 다시 잡는다", async () => {
+    const { browser } = await seeded();
+    const locks = browser.tab();
+    const link = createLinkNetwork().tab();
+    const other = browser.tab();
+    const hold = tabLockHold(link, locks);
+    expect(await hold.acquire()).toBe(true);
+    // 이미 쥐고 있으면 재사용 — Web Locks 재진입 불가라 다시 tryLock 하면 false
+    expect(await tabLockHold(link, locks).acquire()).toBe(true);
+    hold.release();
+    await settle();
+    expect(await hold.acquire()).toBe(true);
+    // 다시 잡은 잠금이 진짜 잠금인지 — 다른 탭 tryLock 은 실패
+    expect(await tryLock(other)).toBeUndefined();
+    hold.release();
+    await settle();
+    const otherRelease = await tryLock(other);
+    expect(otherRelease).toBeTypeOf("function");
+    otherRelease?.();
+  });
+
+  it("②-c 쓰기 탭 파괴 흐름 = 싱크 보유 잠금 재사용(true) · release 뒤에도 같은 탭 쓰기 계속", async () => {
+    const { persistence, browser } = await seeded();
+    const locks = browser.tab();
+    const link = createLinkNetwork().tab();
+    const a = await openTab(persistence, locks, link);
+    const projects = await a.projects();
+    await projects.renameProject("project-1", 1, "쓰기 탭");
+    await settle();
+    expect(link.own()?.isWriter()).toBe(true);
+    const hold = tabLockHold(link, locks);
+    expect(await hold.acquire()).toBe(true);
+    hold.release();
+    await settle();
+    expect(await tryLock(browser.tab())).toBeUndefined();
     await expect(projects.startDoc("project-1", 1, "B", "create")).resolves.toMatchObject({ doc: { candidateId: "B" } });
   });
 

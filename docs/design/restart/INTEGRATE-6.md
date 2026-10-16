@@ -157,7 +157,7 @@
 
 | gap | 결정 | 근거 |
 |---|---|---|
-| G1 메모리 커밋 층(DocBook) | **필드별 작성자 1명**: `docs/{projectId}` 레코드의 **문서 필드 작성자 = 코어 단독**, **스냅샷 필드(`snapshots`·`snapshotSeq`) 작성자 = DocBook**, 둘 다 같은 `writeQueue`로 직렬. 포트 `commit`은 기존 `write`(`localSync.ts:155-157` — 레코드를 `book.docOf`에서 만듦)를 그대로 쓰지 않고, **"코어 동결 doc + 제출 시점 DocBook snapshots"로 레코드를 만드는 변형**을 쓴다(그대로 쓰면 아직 DocBook에 없는 코어 doc 대신 옛 문서가 써진다). 코어 `saved` resolve 뒤 DocBook 문서를 같은 doc으로 맞춘다(`memHead` 동기) · 실패면 DocBook 변경 0. restart·복원·충돌 해결은 6.4대로 `core.replace` 경유라 문서 필드를 DocBook이 직접 바꾸는 경로가 남지 않는다. → C5 F2·F3·QA-4를 함께 닫는다. 다른 화면은 DocBook을 계속 읽는다 | C5 F2·F3 · rs5-review QA-4 · 6.4 |
+| G1 메모리 커밋 층(DocBook) | **필드별 작성자 1명**: `docs/{projectId}` 레코드의 **문서 필드 작성자 = 코어 단독**, **스냅샷 필드(`snapshots`·`snapshotSeq`) 작성자 = DocBook**, 둘 다 같은 `writeQueue`로 직렬. 포트 `commit`은 기존 `write`(`localSync.ts:155-157` — 레코드를 `book.docOf`에서 만듦)를 그대로 쓰지 않고, **"코어 동결 doc + 제출 시점 DocBook snapshots"로 레코드를 만드는 변형**을 쓴다(그대로 쓰면 아직 DocBook에 없는 코어 doc 대신 옛 문서가 써진다). 코어 `saved` resolve 뒤 DocBook 문서를 같은 doc으로 맞춘다(`memHead` 동기) · 실패면 DocBook 변경 0. restart·복원·충돌 해결은 6.4대로 `core.replace` 경유라 문서 필드를 DocBook이 직접 바꾸는 경로가 남지 않는다. **(r1 · QA R7) DocBook 경로 레코드 재쓰기도 같은 규칙**: `createSnapshot`·`deleteSnapshot`·`requestExport`·`confirmDoc`·`startDoc`(→ `kept` → `LocalSync.flush` → `write`, `memoryProjectRepository.ts:65-66,86-89,122,131,134`)는 그 projectId 코어의 **chain 뒤에서 레코드를 만든다**(코어 inflight가 끝난 뒤 `write` 호출) · 문서 필드 = 코어의 마지막 커밋 doc(레지스트리에 코어가 있으면, 없으면 DocBook) · 이미지 GC 기준 = 그 doc의 참조. 이유: 지금 `write`는 레코드를 **제출 시점**에 `book.docOf`로 만든다(`localSync.ts:155-157`) — 코어 N+1 진행 중 제출되면 doc N이 뒤에 써져 IDB가 되돌고 같은 트랜잭션 GC가 N+1의 새 이미지를 지운다. RED = RS6-AC-U14. → C5 F2·F3·QA-4를 함께 닫는다. 다른 화면은 DocBook을 계속 읽는다 | C5 F2·F3 · rs5-review QA-4 · 6.4 |
 | G2 디바운스 | `change`마다 `core.edit(doc, newBlobs)` **동기 1회**. 스케줄러 디바운스는 **save 시점**만 정한다. 비용 = 동결 사본 1개(엔진 문서 객체는 이미 불변이면 얕은 동결) | MC G2 · C5 I8 `mark` |
 | G7 lease ↔ 재seed | 마운트 effect: `token = acquire(mountId)` → `view()`로 doc·바인딩·dirty를 받아 편집기 state를 다시 seed(StrictMode 2회째도 같은 토큰이라 결과 같음). render 중에는 `view()`만 | C5 4.5 StrictMode 행 · MC H5-6 |
 | G8 start 상태 | 코어는 `retryStart`만 있고 `held` 상태가 없다 → start 상태는 **기존 `pendingWrites` `PendingStart`를 유지**(이미 main, `/projects`·프로필이 읽음). 코어는 start-pending 동안 save를 막지 않는다 → UX-5 G10 ★(편집기 진입 막기 + 편집기 안 Callout) 그대로 | SPEC-4 3절 · UX-5 G10 |
@@ -199,15 +199,18 @@
 | `pendingWrites.ts` | `PendingStart·PendingRecord`만(:32), 저장소 키 WeakMap(:47), 모듈 `beforeunload`(:65-71) | `PendingStart` 유지(G8) · `PendingRecord`는 코어 `confirm`으로 대체 후보(구현 레인 판단, 행 문구 유지) |
 | 리스너 | `pagehide`·`visibilitychange` 0건(grep) | 추가하지 않음(모바일 손실은 12절 그대로) |
 
-### 6.4 revision을 올리는 다른 쓰기 — 코어가 조율해야 하는 곳
+### 6.4 revision을 올리거나 문서 레코드를 다시 쓰는 다른 쓰기 — 코어가 조율해야 하는 곳
+
+- revision을 실제로 올리는 곳 [L1 · QA F4]: `memoryDocBook.ts` `save`:368 · `restoreSnapshot`:316 · `resolveConflict("mine")`:335 · `start("restart")`:396 (+ DocBook 밖 `writeImport.ts:110`). 아래 표의 스냅샷 생성·삭제·내보내기는 revision을 올리지 않지만 **레코드를 통째 다시 쓴다**(5절 G1 r1 규칙 대상).
 
 | 쓰기 | 위치 | 코어 규칙 |
 |---|---|---|
 | 충돌 해결 `resolveConflict` | `useDocSave.ts:100` | 해결 결과 문서 → `core.replace(doc, {intent, expectedEpoch})`. dirty면 거절 → 선택 전에 편집 잠금(UX-5 MQ-5-5 ★A) |
 | 스냅샷 복원 `adopt` | `SnapshotPreview.tsx:93` → `useDocSave.ts:129-140` | 같음(F12 덮어쓰기는 `rejected{dirty}`로 막힘 → "저장 뒤 다시 복원" 안내) |
-| 스냅샷 생성 전 `flushed` | `SnapshotDialog.tsx:152` | `core.save()` 결과 대기로 대체 — 정지 시 3절 감시 적용 |
-| 내보내기 | `useExportFlow.ts:39-44` | 내보내기 전 저장 = `core.save()` 경유 |
-| 편집기 밖 `startDoc`·`confirmDoc` | `restartFlow.ts:135` | restart 재생 = `starter`. 이미 열린 코어가 있으면 `replace`, 없으면 다음 열기가 새 시드 |
+| 스냅샷 생성(전 `flushed`) | `SnapshotDialog.tsx:152` | "저장 먼저" 대기(revision 변화 0)는 `core.save()` 결과 대기로 대체 — 정지 시 3절 감시. 생성 자체 = DocBook 레코드 재쓰기 → G1 r1 규칙 |
+| **스냅샷 삭제 `deleteSnapshot`** (r1 추가) | `SnapshotDialog.tsx:260` → `memoryProjectRepository.ts:128` `write` → `kept`(:65-66) → `flush` | "저장 먼저" 대기 없음 · revision 변화 0 · 레코드 통째 재쓰기 → G1 r1 규칙(코어 chain 뒤 · 코어 doc) · RS6-AC-U14 |
+| 내보내기 | `useExportFlow.ts:57-62`(`proceed` 분기) | 내보내기 전 저장 = `core.save()` 경유 · 잡 기록은 레코드 재쓰기 → G1 r1 규칙 |
+| 편집기 밖 `confirmDoc`·`startDoc` | `restartFlow.ts:135`(`confirmDoc`) · `:166`(`startDoc`) | restart 재생 = `starter`. 레지스트리에 코어가 있으면 `replace`, 없으면 다음 열기가 새 시드. 레코드 재쓰기는 G1 r1 규칙 |
 
 ### 6.5 liveness 현재 사실 (서브에이전트 ②)
 
@@ -339,6 +342,7 @@
 | RS6-AC-U9 | memory 모드: "저장 확인" DOM 0 · "브라우저에 저장됨" 0(UX5-AC-09) | [U] |
 | RS6-AC-U12 | **디바운스 대기 중 이탈**(dirty · inflight 0 → 앱 안 링크, 그리고 POP 언마운트): 즉시 이동 · lease 해제 save 1회 · 해제 뒤 IDB = 마지막 편집 · `/projects`에서 탭 닫기 경고 on(레지스트리 `beforeunload`) · 저장 끝나면 경고 off(3.1) | [U] |
 | RS6-AC-U13 | 이탈 예외 목록(3.1-3): 클릭 시점 `readonly`·`unsupported` = 이동 · `failed`·`offline`·`stale`·`cleared` = 보류 + 지금 `leave()` 동작. `StudioLeave.test.tsx` 유지 7건 변경 없이 GREEN · 의미 변경 6건·이전 1건은 3.1-4 표대로 단언 교체(REPORT에 대응표) | [U] |
+| RS6-AC-U14 | **G1 DocBook 경로 재쓰기(RED 먼저)**: 코어 commit 진행 중(지연 주입) `deleteSnapshot` → IDB doc = 코어 최신 · 새 이미지 삭제 0 · 스냅샷 삭제 반영. 같은 단언 `createSnapshot`·`confirmDoc` 각 1건(5절 G1 r1) | [U] |
 | RS6-AC-G1 | 9.3 측정 관문 PASS 수치 + 최종 `npm run build` 정규화·raw 줄 | [G] |
 | RS6-AC-G2 | import 그래프: `openIdbPersistence` 호출 1곳 · 코어 모듈 → `idbPersistence` import 0 · 코어 io 부분이 진입 closure에 없음 | [G] |
 | RS6-AC-G3 | UX-5 2.4 금지 문구 0건(UX5-AC-14) + 3절 새 문구가 `saveStatusText.ts` 1곳 | [G] |

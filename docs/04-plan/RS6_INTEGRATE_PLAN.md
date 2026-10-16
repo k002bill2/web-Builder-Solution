@@ -33,7 +33,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 |---|---|---|---|
 | CP1 | base 재현 | `npm ci` · lock diff 0 · `npm run build` → 정규화 128.09 / raw 129.40 재현 · dist sha 저장 | 다르면 중단·보고 |
 | CP2 | S6a(하한) | 코어 상태 부분 + 레지스트리(진입 — 저장소 인스턴스 쪽, I6 2.2-2) + io·포트(localSync 청크) — 호출 배선 0 | 정규화 ≤128.53/131.51 · raw ≤130/134 |
-| CP3 | S6b·S6c | S6b = 편집기 배선(CP4 흡수판) · S6c = 대체 코드 제거(상쇄 실측) | 같음. S6c가 최종 후보 |
+| CP3 | S6b·S6c | S6b = 편집기 배선(CP4 흡수판, I6 2.2-2 배치) · S6c = 대체 코드 제거(상쇄 실측). **S6c 제거 목록을 REPORT에 파일:행으로 고정** | 같음. S6c가 최종 후보. 상쇄는 L3가 같은 목록을 머지할 때만 유효 — 다르면 L3 머지 전 재측정(r1 · QA R5) |
 | CP4 | S6d·원복 | 조건 참 lazy 시나리오(UNAPPROVED, `EXTRA_SCENARIOS`) · `/profile`·`/projects`·`/catalog` 첫 화면 동시 기록 · 원복 뒤 dist sha 동일 | 수치만 |
 
 - 도구: `npm run build`(정식) · `dev/active/rs4-cp4-measure/tools/chunks.mjs`(청크 귀속) · `dev/active/rs5-spike/tools/rawbytes.mjs`(UNAPPROVED 시나리오). 같은 머신·직렬 빌드.
@@ -71,6 +71,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | CP3 | 충돌 해결·스냅샷 복원·내보내기 전 저장이 코어 경유(I6 6.4) · dirty면 복원 거절 안내 | `replace` 경유 · `flushed` → `core.save()` |
 | CP4 | 링크 이탈 저장 대기 제거(U11) · POP 재진입 상태 이어짐(C5 T1) · 레이아웃 재마운트 같은 코어(U7) | `flushBeforeLeave` 규칙 변경 |
 
+- 대체 코드 제거는 L0 REPORT의 S6c 제거 목록(파일:행)과 같게 한다. 다르면 머지 전 L0 도구로 재측정하고 수치를 REPORT에(r1).
 - CP4(SPEC-4 8.4) 패치(`rs4-cp4-measure/patches/`)는 **참고만** — `PendingDraft`·`hold`·`studioHandoff`는 만들지 않는다(I6 7절).
 - 예상 깨짐: I6 11절 표. RED 전 PROGRESS에 예상 delta 기록.
 

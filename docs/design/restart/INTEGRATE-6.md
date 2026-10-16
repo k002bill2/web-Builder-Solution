@@ -104,10 +104,36 @@
 | LV-1 | 한 코어의 `commit` write가 끝나지 않음 → 같은 포트의 다른 save 무기한 대기 | **저장 감시(watchdog)**: 스케줄러가 `save()` 시작 시각을 잡고, `T_slow`가 지나도 resolve가 없으면 phase를 `saving-slow`로 바꾼다(코어 inflight 유지). 그 뒤 편집은 계속 `edit()`로 받는다(mark 증가 — I1이 newer로 처리). 두 번째 save는 chain에 줄 서지만 **스케줄러가 inflight 중 추가 save를 내지 않는다**(단일 비행 + resolve 뒤 최신 1회, C5 4.5 dedupe 행 승계) | `saving` 행 문구 뒤 꼬리 "· 브라우저 응답이 늦습니다"(status 1회). 버튼 0(누를 것이 없음). 보호(I8) on. `T_hang` 지나면 alert 1회 "브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다" + 버튼 없음 |
 | LV-2 | `discard`의 IDB 읽기가 끝나지 않음 → `discarding` 고정, save·dirty confirm 계속 `failed{discarding}` | **포기 토큰**: discard 진입 때 토큰을 만들고 `T_discard` 뒤 resolve가 없으면 토큰을 무효화하고 `discarding = false`로 풀고 결과 `blocked{timeout}`을 돌려준다. 늦게 온 읽기 결과는 토큰이 다르면 **버린다**(doc·attached·savedMark·epoch 변경 0). 초안·바인딩은 보존 | 폐기 대화상자 진행 표시(`aria-busy`) → 시간 초과면 대화상자 안 alert "버리지 못했습니다 — 변경은 그대로 있습니다" · 포커스 "취소" 유지 |
 | (공통) | `confirm()`이 save 뒤 `verify` 읽기에서 정지 | 버튼 `aria-busy` 유지 · `T_slow` 꼬리 문구는 LV-1과 같음. 연타는 진행 중 promise 공유(C5 4.5 dedupe — 코어에는 없음, 화면 훅 몫, CE-4 "동시 confirm = write 2회" 회피) | UX5-AC-07 |
-| (공통) | 이탈(POP·링크) 중 inflight · 링크 이동 고착(6.5) | 코어는 탭 수명이라 계속 소유한다. 그래서 **앱 안 링크는 `edit()` 등록만 끝났으면 저장 완료를 기다리지 않고 이동한다**(`flushBeforeLeave`의 저장 대기 제거 — 편집은 이미 코어에 있음). 예외: `failed`·`readonly`·`stale`이면 지금처럼 이동 보류 + 상태 글자(UX-5 7절 링크 행) | `/projects` 행 "저장 중…"(UX-5 2.3) |
+| (공통) | 이탈(POP·링크) 중 inflight · 링크 이동 고착(6.5) | 코어는 탭 수명이라 계속 소유한다. **편집기 lease 해제(언마운트 cleanup) 때 마지막 제출 뒤 편집이 있으면 `core.save()` 1회**(링크·POP·재마운트 공통, 대기 없음) → 앱 안 링크는 저장 완료를 기다리지 않고 이동한다(`flushBeforeLeave`의 저장 대기 제거). 예외(클릭 시점 상태, **지금 동작 기준**): `readonly`·`unsupported` = 이동 · `failed`·`offline`·`stale`·`cleared` = 보류(지금 `leave()` 그대로). 세부·테스트 대응 = 3.1 · MQ-6-7 | `/projects` 행 "저장 중…"(UX-5 2.3) · 탭 수준 떠나기 경고(3.1) |
 
 - 시간 값(`T_slow`·`T_hang`·`T_discard`)은 **이 문서에서 정하지 않는다.** 근거 없는 수치를 만들지 않기 위해, 구현 레인 L2가 가짜 지연 주입(`createMemoryPersistence({commit})` :28)으로 테스트를 고정하고 값은 상수 1곳에 둔다. 제안 기본값과 그 근거는 MQ-6-3에서 결정한다.
 - LV-2 포기 토큰은 MC I7 "읽기가 끝나지 않으면 가드도 풀리지 않는다"를 **바꾼다** → MQ-6-3(코어 계약 변경). 안전성 근거: 늦은 결과를 버리므로 폐기 초안 부활·바인딩 오염 0 — CE-1·CX-3 테스트는 그대로 GREEN이어야 한다(RS6-AC-U5).
+
+### 3.1 링크 이탈 · lease 해제 저장 · 탭 수준 경고 (r1 — QA R1 · 결정 = MQ-6-7)
+
+1. **save 주체 = lease 해제**: `StudioLayout`의 `acquire`/`release` effect cleanup이 `release(token)` 전에 "마지막 제출 mark 뒤 편집 있음"이면 `core.save()`를 1회 낸다(결과를 기다리지 않음). 링크·POP(RS4-R8)·레이아웃 재마운트·StrictMode가 같은 경로라 링크 핸들러에만 두지 않는다. 편집이 없으면 0회(RS6-AC-U6 "편집 없으면 mark 변화 0"과 일치) · 재마운트 때 1회 나가도 스케줄러가 곧 낼 저장을 앞당긴 것뿐이다(RS6-AC-U7 = 최대 1회).
+   - save-on-leave가 언마운트 저장을 버린 이유("진행 중 저장과 같은 revision으로 겹쳐 STALE" · 스케줄러 "dispose 뒤 저장 0" 단언, `save-on-leave/REPORT.md:90`)는 코어에서 성립하지 않는다 [L1-추적]: 제출 mark가 고정되고(I1) 저장이 코어 chain으로 직렬이라(I2) 두 번째 save는 앞 커밋 뒤 다음 revision으로 나간다. 스케줄러 `dispose`는 그대로 저장 0이다 — 저장은 스케줄러가 아니라 lease 해제가 낸다(`useAutosaveScheduler.test.ts:321,387` 유지).
+2. **탭 수준 `beforeunload` 소유자 = 코어 레지스트리**(저장소 인스턴스, 2.2-2): 코어 중 하나라도 `dirty` 또는 `inflight`면 등록, 모두 0이면 해제. memory 모드는 코어가 1개라도 있으면 늘(`needsUnloadGuard` "메모리 늘" 승계, `useAutosaveScheduler.ts:67-70`). 편집기 훅 경고(`:283-292`)는 L3에서 이 경고로 옮긴다(리스너 중복 0). `pendingWrites` 모듈 경고(`pendingWrites.ts:61-71`)는 `PendingStart`·`PendingRecord` 몫으로 그대로 둔다. → 편집기를 떠난 뒤 `/projects`에서 탭을 닫아도 코어 dirty·inflight면 경고가 뜬다.
+3. **예외 목록(클릭 시점 상태 — 지금 동작 기준)** [L1 `StudioLeave.test.tsx` 14건 GREEN · `save-on-leave/REPORT.md:92,95`]:
+   - 이동: `readonly`(거절 · `:158,173`) · `unsupported`(Web Locks 없음 로컬 · `:199`). 편집은 코어에 남고 해제 save가 거절돼도 반영 0.
+   - 보류: `failed`(`:127` 뒤 절반 · `:225,235` — 클릭 시점이 이미 실패일 때) · `offline`(출처 = 스케줄러 `navigator.onLine` → phase `offline`, `useAutosaveScheduler.ts:25` — 8.1에는 offline 행이 없어 스케줄러 phase를 그대로 쓴다 · `:211`) · `stale`·`cleared`(새로고침이 출구 · `save-on-leave/REPORT.md:92`). 보류 경로 동작은 **지금 `leave()` 그대로** — 클릭 → 저장 1회 → 성공이면 이동, 아니면 보류(`useDocSave.ts:142-146`).
+   - 바꾸려면 MQ(MQ-6-7 B·C).
+4. **`StudioLeave.test.tsx` 14건 대응(r1 설계 기준)** — 유지 7 · 의미 변경 6 · 폐기(이전) 1:
+
+| 행 | 지금 | r1 | 판정 · 사유 |
+|---|---|---|---|
+| :99 저장 중 추가 편집 → 마지막 편집 반영 뒤 이동 1회 | 저장 뒤 이동 | 즉시 이동 · 해제 save가 진행 중 저장 뒤 마지막 편집 1회(chain) | 의미 변경 — 단언을 "이동 1회 · 해제 뒤 IDB = 마지막 편집"으로 |
+| :114 저장 전 변경 → 저장 끝까지 대기 | 대기 | 즉시 이동 · 해제 save 1회 | 의미 변경 — RS6-AC-U12로 대체 |
+| :127 실패 → 보류 · 다음 클릭 다시 저장 → 성공 이동 | 보류 | 클릭 시점 dirty면 즉시 이동(뒤 실패는 `/projects` 행 + 탭 경고). 클릭 시점 `failed`면 보류·다시 저장·성공 이동 | 의미 변경 — 앞 절반(dirty 클릭) 변경 · 뒤 절반은 시작 상태를 `failed`로 옮겨 유지 |
+| :144 대기 중 연타 = 저장 1·이동 1 | — | dirty 클릭에는 대기가 없음 | 폐기(이전) — 대기는 보류 경로에만 남으므로 "`failed` 상태 클릭 대기 중 연타 = 저장 1·이동 1"로 옮긴다 |
+| :158 읽기 전용 거절 → 이동 · 반영 0 | 이동 | 이동 · 해제 save 거절 · 반영 0 | 유지 |
+| :173 읽기 전용 · 저장 전 변경 채로 떠나도 이동 | 이동 | 이동 | 유지 |
+| :184 거절 뒤 쓰기 가능 → 저장 뒤 이동 | 저장 뒤 이동 | 즉시 이동 · 해제 save가 writer를 잡고 저장(지난 거절로 건너뛰지 않음) | 의미 변경 — 단언을 "이동 + IDB 반영"으로 |
+| :199 Web Locks 없음 로컬 → 이동 | 이동 | 이동(`unsupported`) | 유지 |
+| :211 거절 뒤 오프라인 → 보류 · 저장 0 | 보류 | 보류(`offline`) | 유지 |
+| :225 메모리 저장 실패 → 보류 | 보류 | 클릭 시점 dirty면 이동(memory 탭 경고 늘) · `failed` 클릭이면 보류 | 의미 변경 — 시작 상태를 `failed`로 옮기면 보류 단언 유지 |
+| :235 일반 저장 실패 → 보류 | 보류 | 같음(local) | 의미 변경 — 같음 |
+| :244 수정 키 · :252 `a[download]` · :266 변경 없음 | 통과 | 통과 | 유지 3 |
 
 ## 4. H4 — 다른 탭·낡은 증명과 실제 Web Locks·writerLock 결합
 
@@ -193,7 +219,7 @@
 | 항목 | 내용 |
 |---|---|
 | CP4가 하던 일 | 편집기가 `PendingDraft`/`PendingRecord`를 진입 때 읽고(`unconfirmed`/dirty 복원), 떠날 때 `hold(PendingDraft)` — RS4-R1(history 재진입 거짓 idle)·RS4-R8(POP 편집 소실) 해소 [L1 SPEC-4 5.3·5.6] |
-| 코어에서 같은 일 | 코어 = 탭 수명 객체. 떠날 때 할 일 = `release(token)`뿐(초안·바인딩은 이미 `edit()`로 코어에 있음). 재진입 = `acquire` + `view()` seed. **`PendingDraft` 타입·`hold`·`studioHandoff` 경로가 필요 없다** |
+| 코어에서 같은 일 | 코어 = 탭 수명 객체. 떠날 때 할 일 = 마지막 제출 뒤 편집이 있으면 `core.save()` 1회 + `release(token)`(3.1-1 · 초안·바인딩은 이미 `edit()`로 코어에 있음). CP4 `hold(PendingDraft)`가 하던 언마운트 뒤 떠나기 경고는 레지스트리 탭 수준 경고가 대신한다(3.1-2). 재진입 = `acquire` + `view()` seed. **`PendingDraft` 타입·`hold`·`studioHandoff` 경로가 필요 없다** |
 | 판정 | ★ **흡수**(MQ-6-4 A). 별도 CP4를 먼저 넣으면 RS6에서 그 경로(`pendingWrites` 진입 정적 638B · `StudioLayout` +622B, raw — `rs4-cp4-measure/REPORT.md:57`)를 다시 걷어내야 한다 |
 | 진입 바이트 공유 | CP4의 "진입 정적 조회"(배치안 a) 몫과 코어의 진입 몫은 **같은 자리**(편집기 마운트 effect·상태 표시)다. 흡수하면 진입 증분은 1번만 생긴다. 다만 얼마인지는 **미측정** — 기존 CP4 수치(+0.80)와 C5 S5b(+753B)를 더하거나 빼서 추정하지 않는다 |
 | 상쇄 | 코어가 대체하는 진입 코드 후보(`useDocSave` `revisionRef`·`base()` 보정·`adopt`, 스케줄러 dispose 경로)를 **같은 스파이크에서 제거해** 잴 때만 상쇄로 인정한다(8.2 S6c) |
@@ -306,11 +332,13 @@
 | RS6-AC-U4 | LV-1: 커밋 지연 주입 → `T_slow` 뒤 `saving-slow` · 편집 계속 수용 · 해제 뒤 `newer` 처리 · 추가 save 제출 0 | [U] |
 | RS6-AC-U5 | LV-2: discard 읽기 정지 → `T_discard` 뒤 `blocked{timeout}` · 가드 해제 · 늦은 결과 버림(doc·바인딩·epoch 불변) · CE-1·CX-3 회귀 GREEN | [U] |
 | RS6-AC-U6 | StrictMode mount→cleanup→mount: 같은 토큰 · 코어 새로 열기 0 · 편집 없으면 mark 변화 0 | [U] |
-| RS6-AC-U7 | 레이아웃 모드 전환 재마운트 → 같은 코어 · 알림 재발화 0(UX5-AC-01) | [U] |
+| RS6-AC-U7 | 레이아웃 모드 전환 재마운트 → 같은 코어 · 알림 재발화 0(UX5-AC-01) · lease 해제 save 최대 1회(편집 없으면 0) | [U] |
 | RS6-AC-U8 | 버튼 1:1(8.2) — 각 버튼 클릭이 해당 코어 메서드 1회만 호출(스파이), 연타 1회 | [U] |
 | RS6-AC-U10 | 삭제·가져오기·지우기 흐름의 `stop()` 직전 진행 중 코어 save → cleared 이후 쓰기 0(6.2) | [U] |
 | RS6-AC-U11 | 저장 정지(지연 주입) 중 앱 안 링크 → 이동함 · 코어 inflight 유지 · `/projects` 행 "저장 중…" · 해제 뒤 IDB = 마지막 편집(6.5 고착 해소) | [U] |
 | RS6-AC-U9 | memory 모드: "저장 확인" DOM 0 · "브라우저에 저장됨" 0(UX5-AC-09) | [U] |
+| RS6-AC-U12 | **디바운스 대기 중 이탈**(dirty · inflight 0 → 앱 안 링크, 그리고 POP 언마운트): 즉시 이동 · lease 해제 save 1회 · 해제 뒤 IDB = 마지막 편집 · `/projects`에서 탭 닫기 경고 on(레지스트리 `beforeunload`) · 저장 끝나면 경고 off(3.1) | [U] |
+| RS6-AC-U13 | 이탈 예외 목록(3.1-3): 클릭 시점 `readonly`·`unsupported` = 이동 · `failed`·`offline`·`stale`·`cleared` = 보류 + 지금 `leave()` 동작. `StudioLeave.test.tsx` 유지 7건 변경 없이 GREEN · 의미 변경 6건·이전 1건은 3.1-4 표대로 단언 교체(REPORT에 대응표) | [U] |
 | RS6-AC-G1 | 9.3 측정 관문 PASS 수치 + 최종 `npm run build` 정규화·raw 줄 | [G] |
 | RS6-AC-G2 | import 그래프: `openIdbPersistence` 호출 1곳 · 코어 모듈 → `idbPersistence` import 0 · 코어 io 부분이 진입 closure에 없음 | [G] |
 | RS6-AC-G3 | UX-5 2.4 금지 문구 0건(UX5-AC-14) + 3절 새 문구가 `saveStatusText.ts` 1곳 | [G] |
@@ -342,7 +370,8 @@
 | 경로 | 결과 | 보호 |
 |---|---|---|
 | 모바일 백그라운드 종료 · OS 회수 · 크래시 | 코어(탭 메모리) 소멸 → IDB = 마지막 커밋 | 0. 상태 꼬리 문구만(UX-5 7절) |
-| 새로고침·주소 입력·탭 닫기 | `beforeunload` 경고(브라우저 문구) — 무시하면 소멸 | 안전층(보장 아님, SPEC-4 RS4-R3) |
+| 새로고침·주소 입력·탭 닫기 | `beforeunload` 경고(브라우저 문구 · 편집기 밖에서도 — 레지스트리 소유, 3.1-2) — 무시하면 소멸 | 안전층(보장 아님, SPEC-4 RS4-R3) |
+| 이탈 뒤 lease 해제 save 실패(r1) | 사용자는 이미 `/projects` · 편집은 코어에 남음 · 행 상태 `failed`·탭 경고 on | `/projects` 행 "다시 저장" — 경고를 무시하고 탭을 닫으면 소멸(3.1) |
 | `T_hang` 저장 정지 중 탭 닫기 | 미확인 변경 소멸, IDB는 직전 커밋 또는 이번 트랜잭션 전부/전무 | alert 고지 |
 | 이미지 ingest 중 이탈 | 고른 이미지 소실 | UX-5 G9 |
 | stale 탭의 초안 | 저장 불가 → 새로고침 시 소멸 | 상태 문구 |
@@ -355,7 +384,7 @@
 | D6-1 | C5 2.3 `SaveLedgerApi`(`mark`/`publish`/`save(token, seq)`/`subscribe`) | 코어 API(`edit`/`save`/`confirm`/`discard`/`replace`/`retryStart`/`acquire`/`release`/`view`) | 하네스 37건·QA로 확정된 쪽을 쓴다. C5 P1 5건(rs5-review)이 코어에서는 구조로 닫힘(dirty = mark 비교) |
 | D6-2 | C5 2.5 "`ProjectRepository.ledger?`" | 코어 접근자 + `LocalSync` 포트(MQ-6-1) | 이름·모양만 다름 — 공개 인터페이스 추가 1은 같음 |
 | D6-3 | MC I6b 커밋마다 문서별 세대 재읽기 | 잠금 획득 때 `fresh()` 1회 + 배타 잠금 — **MC 계약 변경**(MQ-6-1 A에 포함) | 4절 |
-| D6-9 | UX-5 7절 링크 행 — `leave()` 이동 보류(저장 대기) | `edit()` 등록만 끝났으면 저장 완료를 기다리지 않고 이동. `failed`·`readonly`·`stale`이면 지금처럼 보류 | 3절 LV-1 공통 행 · 6.5 고착 해소 |
+| D6-9 | UX-5 7절 링크 행 — `leave()` 이동 보류(저장 대기) | lease 해제 save 1회(대기 없음) 뒤 이동 · 탭 수준 경고 = 레지스트리. 클릭 시점 `readonly`·`unsupported` = 이동, `failed`·`offline`·`stale`·`cleared` = 보류(지금 동작 그대로) | 3절 LV-1 공통 행 · 3.1 · 6.5 고착 해소 · 결정 = MQ-6-7 |
 | D6-4 | MC I7 "읽기가 끝나지 않으면 가드도 안 풀림" | 포기 토큰 `blocked{timeout}` | LV-2 · MQ-6-3 |
 | D6-5 | SPEC-4 CP4(`PendingDraft`·`hold`·`studioHandoff`) | 코어 lease + seed로 흡수 | 7절 · MQ-6-4 |
 | D6-6 | UX-5 G6(마운트 중 confirm 거짓 확인) | 코어 confirm이 dirty면 save 후 verify → G6 해소. 노출 규칙(MQ-5-3 ★A)은 유지 | 8.2 |

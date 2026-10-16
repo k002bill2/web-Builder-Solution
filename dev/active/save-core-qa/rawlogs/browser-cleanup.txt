@@ -1,0 +1,8 @@
+## vite log
+
+  VITE v8.3.1  ready in 181 ms
+
+  ➜  Local:   http://127.0.0.1:4367/
+## lsof 127.0.0.1:4367 after kill
+lsof exit 1
+## ego-browser task spaces (23 finished)

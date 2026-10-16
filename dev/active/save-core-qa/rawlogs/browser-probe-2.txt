@@ -1,0 +1,15 @@
+5-abortWrite(fresh page) {"save":"INFRA: 저장 — 브라우저 저장소에 접근하지 못했습니다","snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+6-afterAbortReload {"hydrated":{"hash":"be408eb0","imageIds":["img"],"generation":1,"mark":0,"proof":"hydrated"},"confirm":{"status":"confirmed","gen":1,"proof":"fresh"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+7-A-open {"confirmed":1}
+8-B-open {"confirmed":1}
+9-B-save {"status":"saved","gen":2}
+10-locks(B 보유) {"held":["design-studio-writer"],"pending":[]}
+11-A-confirm(B 보유 중) {"status":"failed","reason":"readonly"}
+12-locks(B 닫힘 뒤) {"held":[],"pending":[]}
+13-A-confirm(B 닫힘 뒤) {"status":"failed","reason":"stale"}
+14-A-dirty-save {"status":"failed","reason":"stale","newer":false}
+15-final-snapshot {"hydrated":{"hash":"a0cfd55c","imageIds":["img"],"generation":2,"mark":0,"proof":"hydrated"},"confirm":{"status":"failed","reason":"readonly"},"snap":{"body":"B2","generation":2,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+16-cleanup {"results":["save-core-qa-1791912138069:deleted"],"after":[]}
+17-databases-after []
+taskSpace finished
+

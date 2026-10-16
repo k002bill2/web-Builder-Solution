@@ -1,0 +1,15 @@
+dev/active/save-core-qa/rawlogs/codex-followup-run2.txt:exit 1
+dev/active/save-core-qa/rawlogs/codex-followup-run1.txt:exit 1
+dev/active/save-core-qa/rawlogs/harness-eslint.txt:exit 0
+dev/active/save-core-qa/rawlogs/harness-run1.txt:exit 0
+dev/active/save-core-qa/rawlogs/harness-tsc.txt:exit 0
+dev/active/save-core-qa/rawlogs/qa-final-run.txt:exit 1
+dev/active/save-core-qa/rawlogs/harness-run2.txt:exit 0
+dev/active/save-core-qa/rawlogs/npm-ci.txt:exit 0
+dev/active/save-core-qa/rawlogs/qa-eslint.txt:exit 0
+dev/active/save-core-qa/rawlogs/qa-run2.txt:exit 1
+dev/active/save-core-qa/rawlogs/qa-run1.txt:exit 1
+dev/active/save-core-qa/rawlogs/qa-tsc.txt:exit 0
+manual: lsof -nP -iTCP:4367 -sTCP:LISTEN (after vite kill) exit 1
+manual: pgrep -f save-core-qa/browser/vite.config exit 1
+manual: codex-adversarial.txt has no exit line — ends with 'Turn completed' + review body (companion foreground run, nohup)

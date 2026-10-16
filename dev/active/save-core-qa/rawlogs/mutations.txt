@@ -1,0 +1,40 @@
+=== M0 원본(무변경 대조) | exit 0 | changed-lines 0 |  Tests 23 passed (23)
+=== M1 confirm wrote:false 진입 mark 재확인 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × wrote:false 확인 진행 중(await 사이) 편집 C → confirmed 아님: status newer · C는 dirty 5ms
+ FAIL  test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > wrote:false 확인 진행 중(await 사이) 편집 C → confirmed 아님: status newer · C는 dirty
+=== M2 discard 진입 mark 재확인 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × discard 진행 중(await 사이) 편집 C → blocked{newer} · C 보존(폐기로 최신 초안 소실 0) 5ms
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > discard 진행 중(await 사이) 편집 C → blocked{newer} · C 보존(폐기로 최신 초안 소실 0)
+=== M3 save 예상 세대(stale) 검사 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × 탭 B 저장 뒤 탭 A의 dirty 저장 → failed stale · B 문서 덮어쓰기 0(예상 세대 불일치) 4ms
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 탭 B 저장 뒤 탭 A의 dirty 저장 → failed stale · B 문서 덮어쓰기 0(예상 세대 불일치)
+=== M4 discard inflight 거절 삭제 | exit 1 | changed-lines 1 |  Tests 1 failed | 22 passed (23)
+     × 저장 진행 중 discard → rejected{inflight} · 초안 그대로 · 완료 뒤 B 커밋 8ms
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 저장 진행 중 discard → rejected{inflight} · 초안 그대로 · 완료 뒤 B 커밋
+=== M5 replace dirty 거절 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음 5ms
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음
+=== M6 settle 세대 가드 제거 | exit 0 | changed-lines 2 |  Tests 23 passed (23)
+=== M7 저장 직렬(chain) 제거 | exit 1 | changed-lines 2 |  Tests 2 failed | 21 passed (23)
+     × 늦은 callback: A 커밋 보류 중 B 저장 시작 → A가 나중에 풀려도 IDB·confirmed는 B(세대로 식별) 4ms
+     × A 저장 진행 중 B 편집 → confirm: receipt = B(문서 hash·이미지 id·세대)이고 IDB 재읽기와 일치 7ms
+ FAIL  test/h1.test.ts > H1 저장 중 편집·cleanup·늦은 완료 > 늦은 callback: A 커밋 보류 중 B 저장 시작 → A가 나중에 풀려도 IDB·confirmed는 B(세대로 식별)
+ FAIL  test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > A 저장 진행 중 B 편집 → confirm: receipt = B(문서 hash·이미지 id·세대)이고 IDB 재읽기와 일치
+=== M8 verify 이미지 key 검사 제거 | exit 0 | changed-lines 2 |  Tests 23 passed (23)
+=== M9 confirm wrote:true 재읽기 verify 삭제 | exit 0 | changed-lines 2 |  Tests 23 passed (23)
+=== M10 confirm wrote:false 재읽기 verify 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × 탭 B 저장(세대 2) 뒤 탭 B 닫힘 → 탭 A가 잠금 획득해도 wrote:false confirm = failed stale 6ms
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 탭 B 저장(세대 2) 뒤 탭 B 닫힘 → 탭 A가 잠금 획득해도 wrote:false confirm = failed stale
+=== M11 confirm wrote:false writer 모드 검사 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × 읽기 전용 탭(다른 탭이 잠금 보유): 편집 없이 confirm → failed readonly(hydration 증명 재사용 0) 4ms
+ FAIL  test/h4.test.ts > H4 낡은 증명으로 거짓 confirmed 0 > 읽기 전용 탭(다른 탭이 잠금 보유): 편집 없이 confirm → failed readonly(hydration 증명 재사용 0)
+=== M12 replace epoch 검사 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음 6ms
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > replace: dirty 미저장이면 conflict · intent 없음/epoch 불일치 거절 · 진행 중 거절 · 옛 완료가 교체 초안을 덮지 않음
+=== M13 confirm wrote:true newer 판정 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × confirm 진행 중(커밋 전) 편집 C → confirmed 아님: status newer · receipt=B · C는 dirty 6ms
+ FAIL  test/h2.test.ts > H2 confirm은 최신 초안을 커밋하거나 명시적으로 실패한다 > confirm 진행 중(커밋 전) 편집 C → confirmed 아님: status newer · receipt=B · C는 dirty
+=== M14 discard 재읽기 verify 삭제 | exit 1 | changed-lines 2 |  Tests 1 failed | 22 passed (23)
+     × 복귀 근거 없음(다른 탭이 세대 2 기록) → discard blocked{stale} · 초안 보존 4ms
+ FAIL  test/h5.test.ts > H5 replace/discard와 진행 중 저장 > 복귀 근거 없음(다른 탭이 세대 2 기록) → discard blocked{stale} · 초안 보존
+done

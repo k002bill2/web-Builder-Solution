@@ -73,7 +73,14 @@
 - 미확인: M2 감량으로 +1.20을 상쇄할 수 있는지 — 직전 감량 기록(studio-off3·entry-slim·er-off·er-off2)이 이미 큰 후보를 썼고 여유가 0.06KB인 상태라 1.2KB 상쇄는 어려울 것으로 보나 실측 없음.
 
 ## 마지막 fresh 게이트 (복원 뒤, `app/`)
-GATE_PLACEHOLDER
+| 명령 | 결과 |
+|---|---|
+| `npm run build` | exit 0 — 정규화 128.47 · 복원 131.45 (`raw/final-build.txt`) |
+| `npm run typecheck` | exit 0 (`raw/final-typecheck.txt`) |
+| `npm run lint` | exit 0 (`raw/final-lint.txt`) |
+| `npm test -- --run` | exit 0 — Test Files 315 passed (315) · Tests 2842 passed (2842) = 기대값 (`raw/final-test.txt`) |
+
+- 복원 확인: `git diff --stat -- app/` 빈 출력 · `git status --short`는 `dev/active/rs4-cp4-measure/` 아래만.
 
 ## 서브에이전트
 - ① M1 SPEC-4 5.3·5.4 요구 코드 경로 조사(읽기 전용 Explore) — 완료, 결과를 스파이크 설계에 반영(PendingDraft·hold 부재, 등록 안 된 import()는 기계 집계 안 됨 확인).

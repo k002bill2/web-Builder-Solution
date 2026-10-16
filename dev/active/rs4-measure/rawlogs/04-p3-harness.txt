@@ -1,0 +1,108 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:6:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:7:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-measure/app
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가
+[P3] a.save(readonly) "INFRA:INFRA: 저장 — 다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다"
+[P3] a.writesAfterSave []
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가
+[P3] a.memory revision before→afterSave [1,2,true]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가
+[P3] a.confirm "ok"
+[P3] a.writesAll [["put:docs:project-1","put:studio:state","put:meta:generation"]]
+[P3] a.memory revision/hash 변화(확인 전→후) [2,2,true]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가
+[P3] a.snapshots 변화 [[],[]]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가
+[P3] a.IDB doc revision·이미지 참조 [2,true]
+[P3] a.IDB images 레코드 있음 false
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가
+[P3] a.reload doc 참조·복원 맵 키 [true,[],0]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 대조: 같은 흐름에서 편집기가 마운트된 채(맵 등록 유지) deleteSnapshot(p, "")
+[P3] ctl.save(readonly) "INFRA:INFRA: 저장 — 다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 대조: 같은 흐름에서 편집기가 마운트된 채(맵 등록 유지) deleteSnapshot(p, "")
+[P3] ctl.confirm "ok"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 대조: 같은 흐름에서 편집기가 마운트된 채(맵 등록 유지) deleteSnapshot(p, "")
+[P3] ctl.writesAll [["put:docs:project-1","put:images:project-1/00000000-0000-4000-8000-000000000001","put:studio:state","put:meta:generation"]]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 대조: 같은 흐름에서 편집기가 마운트된 채(맵 등록 유지) deleteSnapshot(p, "")
+[P3] ctl.IDB images 레코드 있음 true
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 대조: 같은 흐름에서 편집기가 마운트된 채(맵 등록 유지) deleteSnapshot(p, "")
+[P3] ctl.reload 복원 맵 키 ["00000000-0000-4000-8000-000000000001"]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가
+[P3] b.save(quota) "INFRA:INFRA: 저장 — 브라우저 저장 공간이 부족합니다"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가
+[P3] b.confirm "ok"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가
+[P3] b.writesAll [["put:docs:project-1","put:images:project-1/00000000-0000-4000-8000-000000000001","put:studio:state","put:meta:generation"],["put:studio:state","put:meta:generation","put:docs:project-1","put:images:project-1/00000000-0000-4000-8000-000000000001"]]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가
+[P3] b.IDB doc 이미지 참조 true
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가
+[P3] b.IDB images 레코드 있음 true
+
+ ✓ src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 측정: 문서는 커밋되는가 · 그 문서가 참조하는 이미지 레코드는 IDB images에 있는가 · 리로드 뒤 복원되는가 1602ms
+ ✓ src/data/persistence/rs4P3.harness.test.ts > P-3 a. 잠금 거절(읽기 전용 탭) → 편집기 이탈 → 보유 탭 닫힘 → 편집기 밖 deleteSnapshot(p, "") > 대조: 같은 흐름에서 편집기가 마운트된 채(맵 등록 유지) deleteSnapshot(p, "") 67ms
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가
+[P3] b.reload 복원 맵 키 ["00000000-0000-4000-8000-000000000001"]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 c. offline(저장 호출 전 멈춤) → 편집기 밖 확인 > 측정: 저장소 메모리에 없는 편집은 확인 대상이 아니다 — resolve = 옛 레코드
+[P3] c.confirm "ok"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 c. offline(저장 호출 전 멈춤) → 편집기 밖 확인 > 측정: 저장소 메모리에 없는 편집은 확인 대상이 아니다 — resolve = 옛 레코드
+[P3] c.writesAll [["put:docs:project-1","put:studio:state","put:meta:generation"]]
+[P3] c.IDB doc = 편집 전(revision·이미지 참조) [true,false]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 스냅샷이 있는 문서에서 deleteSnapshot(p, "") = revision·hash·스냅샷·snapshotSeq·IDB 레코드 변화 0
+[P3] d.confirm "ok"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 스냅샷이 있는 문서에서 deleteSnapshot(p, "") = revision·hash·스냅샷·snapshotSeq·IDB 레코드 변화 0
+[P3] d.writes 확인 뒤 추가 []
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 스냅샷이 있는 문서에서 deleteSnapshot(p, "") = revision·hash·스냅샷·snapshotSeq·IDB 레코드 변화 0
+[P3] d.memory revision·hash [1,1,true]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 스냅샷이 있는 문서에서 deleteSnapshot(p, "") = revision·hash·스냅샷·snapshotSeq·IDB 레코드 변화 0
+[P3] d.snapshots 동일 true
+[P3] d.IDB 레코드 동일 true
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 빈 문자열 id 수동 스냅샷이 저장 레코드에 있으면(파일 가져오기 checkFile.ts:73 isString 허용) deleteSnapshot(p, "")이 그것을 지운다
+[P3] d2.entry 스냅샷 목록(빈 id 읽힘?) [["","manual"]]
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 빈 문자열 id 수동 스냅샷이 저장 레코드에 있으면(파일 가져오기 checkFile.ts:73 isString 허용) deleteSnapshot(p, "")이 그것을 지운다
+[P3] d2.confirm "ok"
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 빈 문자열 id 수동 스냅샷이 저장 레코드에 있으면(파일 가져오기 checkFile.ts:73 isString 허용) deleteSnapshot(p, "")이 그것을 지운다
+[P3] d2.확인 뒤 목록 []
+
+stdout | src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 빈 문자열 id 수동 스냅샷이 저장 레코드에 있으면(파일 가져오기 checkFile.ts:73 isString 허용) deleteSnapshot(p, "")이 그것을 지운다
+[P3] d2.IDB 스냅샷 id []
+
+ ✓ src/data/persistence/rs4P3.harness.test.ts > P-3 b. quota 실패(제출됨) → 편집기 이탈 → 편집기 밖 확인 > 측정: queue.retry가 제출 당시 이미지 op를 다시 내는가 66ms
+ ✓ src/data/persistence/rs4P3.harness.test.ts > P-3 c. offline(저장 호출 전 멈춤) → 편집기 밖 확인 > 측정: 저장소 메모리에 없는 편집은 확인 대상이 아니다 — resolve = 옛 레코드 11ms
+ ✓ src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 스냅샷이 있는 문서에서 deleteSnapshot(p, "") = revision·hash·스냅샷·snapshotSeq·IDB 레코드 변화 0 6ms
+ ✓ src/data/persistence/rs4P3.harness.test.ts > P-3 d. 빈 id 의미 — 부재가 보장되는가 · 부수효과 > 측정: 빈 문자열 id 수동 스냅샷이 저장 레코드에 있으면(파일 가져오기 checkFile.ts:73 isString 허용) deleteSnapshot(p, "")이 그것을 지운다 7ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  07:28:56
+   Duration  2.51s (tests 72%, environment 15%, transform 8%, setup 3%, import 2%)
+
+exit=0

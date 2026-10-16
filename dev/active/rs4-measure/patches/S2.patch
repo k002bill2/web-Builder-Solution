@@ -1,0 +1,554 @@
+diff --git a/app/src/components/projects/ProjectList.tsx b/app/src/components/projects/ProjectList.tsx
+index c72acf8..19584b2 100644
+--- a/app/src/components/projects/ProjectList.tsx
++++ b/app/src/components/projects/ProjectList.tsx
+@@ -1,6 +1,7 @@
+ import type { ProjectRowView } from "../../features/projects/projectListView";
+ import type { RenameDraft } from "../../features/projects/renameDraft";
+ import { ProjectRow, type RenameHandlers } from "./ProjectRow";
++import type { Pending } from "../../features/pending/pendingWrites";
+ 
+ /** J-S04 목록 — 정렬은 호출하는 쪽(rows 순서 그대로). 이름 바꾸는 줄은 한 번에 하나 */
+ export function ProjectList({
+@@ -9,7 +10,13 @@ export function ProjectList({
+   rename,
+   onExport,
+   onDelete,
++  pendingOf,
++  onConfirm,
++  onDiscard,
+ }: {
++  readonly pendingOf?: (projectId: string) => Pending | undefined;
++  readonly onConfirm?: (projectId: string) => void;
++  readonly onDiscard?: () => void;
+   readonly rows: readonly ProjectRowView[];
+   readonly draft: RenameDraft | null;
+   readonly rename: RenameHandlers;
+@@ -19,7 +26,7 @@ export function ProjectList({
+   return (
+     <ul aria-label="프로젝트 목록" className="flex w-full flex-col">
+       {rows.map((row) => (
+-        <ProjectRow key={row.projectId} row={row} draft={draft?.projectId === row.projectId ? draft : undefined} rename={rename} onExport={onExport} onDelete={onDelete} />
++        <ProjectRow key={row.projectId} row={row} draft={draft?.projectId === row.projectId ? draft : undefined} rename={rename} onExport={onExport} onDelete={onDelete} pending={pendingOf?.(row.projectId)} onConfirm={onConfirm} onDiscard={onDiscard} />
+       ))}
+     </ul>
+   );
+diff --git a/app/src/components/projects/ProjectRow.tsx b/app/src/components/projects/ProjectRow.tsx
+index f373392..7447c56 100644
+--- a/app/src/components/projects/ProjectRow.tsx
++++ b/app/src/components/projects/ProjectRow.tsx
+@@ -2,6 +2,7 @@ import { Link } from "react-router";
+ import type { ProjectRowView } from "../../features/projects/projectListView";
+ import type { RenameDraft } from "../../features/projects/renameDraft";
+ import { Button } from "../ds/Button";
++import type { Pending } from "../../features/pending/pendingWrites";
+ import { RenameField, type RenameSubmitOutcome } from "./RenameField";
+ 
+ const ACTION_LINK = "ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover";
+@@ -24,7 +25,13 @@ export function ProjectRow({
+   rename,
+   onExport,
+   onDelete,
++  pending,
++  onConfirm,
++  onDiscard,
+ }: {
++  readonly pending?: Pending;
++  readonly onConfirm?: (projectId: string) => void;
++  readonly onDiscard?: () => void;
+   readonly row: ProjectRowView;
+   readonly draft?: RenameDraft;
+   readonly rename: RenameHandlers;
+@@ -48,7 +55,27 @@ export function ProjectRow({
+         </time>
+       </p>
+       <div className="flex flex-wrap items-center gap-3">
+-        {row.editorHref && (
++        {pending && (
++          <span role="status" className="ds-caption1 text-status-negative">
++            {pending.kind === "draft" ? "편집기에서 저장하지 못한 변경이 있습니다" : pending.kind === "record" ? "새로 시작은 반영되지 않았습니다 · 브라우저 저장을 확인하지 못했습니다" : "브라우저 저장을 확인하지 못했습니다"}
++          </span>
++        )}
++        {pending?.kind === "draft" && row.editorHref && (
++          <Link to={row.editorHref} aria-label={`${row.name} 편집기에서 이어 저장`} className={ACTION_LINK}>
++            편집기에서 이어 저장
++          </Link>
++        )}
++        {pending && pending.kind !== "draft" && onConfirm && (
++          <Button variant="outline" size="sm" aria-label={`${row.name} ${pending.kind === "record" ? "저장 확인" : "다시 시도"}`} onClick={() => onConfirm(row.projectId)}>
++            {pending.kind === "record" ? "저장 확인" : "다시 시도"}
++          </Button>
++        )}
++        {pending && onDiscard && (
++          <Button variant="outline" size="sm" aria-label={`${row.name} 버리고 새로고침`} onClick={onDiscard}>
++            버리고 새로고침
++          </Button>
++        )}
++        {!pending && row.editorHref && (
+           <Link to={row.editorHref} aria-label={`${row.name} 편집기 열기`} className={ACTION_LINK}>
+             편집기 열기
+           </Link>
+diff --git a/app/src/components/studio/SaveStatus.tsx b/app/src/components/studio/SaveStatus.tsx
+index b955476..b40bd26 100644
+--- a/app/src/components/studio/SaveStatus.tsx
++++ b/app/src/components/studio/SaveStatus.tsx
+@@ -23,12 +23,15 @@ export function SaveStatus({
+   state,
+   persistence,
+   onRetry,
++  onConfirm,
+   onAnnounce,
+   now = Date.now,
+ }: {
+   readonly state: AutosaveState;
+   readonly persistence: ProjectPersistence;
+   readonly onRetry: () => void;
++  /** RS4 스파이크 — 인계된 미확인 기억의 "저장 확인" */
++  readonly onConfirm?: () => void;
+   readonly onAnnounce?: (text: string) => void;
+   readonly now?: () => number;
+ }) {
+@@ -53,10 +56,10 @@ export function SaveStatus({
+ 
+   return (
+     <div className="flex min-w-0 items-center gap-2">
+-      <p className="text-caption1 text-label-alternative">{saveStatusText(state, persistence, now())}</p>
++      <p className="text-caption1 text-label-alternative">{onConfirm && state.phase === "failed" ? "브라우저 저장을 확인하지 못했습니다" : saveStatusText(state, persistence, now())}</p>
+       {state.phase === "failed" && (
+-        <Button variant="outline" size="sm" onClick={onRetry}>
+-          다시 저장
++        <Button variant="outline" size="sm" onClick={onConfirm ?? onRetry}>
++          {onConfirm ? "저장 확인" : "다시 저장"}
+         </Button>
+       )}
+       <p role="alert" className="sr-only">
+diff --git a/app/src/components/studio/StudioLayout.tsx b/app/src/components/studio/StudioLayout.tsx
+index ae35d33..870235c 100644
+--- a/app/src/components/studio/StudioLayout.tsx
++++ b/app/src/components/studio/StudioLayout.tsx
+@@ -341,7 +341,7 @@ export function StudioLayout({
+   );
+ 
+   const docTag = docTagText(doc);
+-  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
++  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onConfirm={save.confirm} onAnnounce={setNotice} />;
+   const conflict = (
+     <>
+       {snaps.layer}
+diff --git a/app/src/data/memoryProjectRepository.ts b/app/src/data/memoryProjectRepository.ts
+index 294eaae..6d11f5d 100644
+--- a/app/src/data/memoryProjectRepository.ts
++++ b/app/src/data/memoryProjectRepository.ts
+@@ -119,7 +119,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
+     saveDoc: (projectId, expectedRevision, doc) => kept(projectId, bookOf().then((docs) => call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)))),
+     // restart = 판정 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 메모리·IDB 쓰기 0으로 던진다(갈라짐 0)
+     startDoc: (projectId, profileVersion, candidateId, mode, expectedRevision) =>
+-      kept(projectId, bookOf().then(async (docs) => (mode === "restart" && (await (await local?.sync())?.guardWrite()), call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit))))),
++      kept(projectId, bookOf().then(async (docs) => ((mode === "restart" || !docs.docOf(projectId)) && (await (await local?.sync())?.guardWrite()), call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit))))),
+     listSnapshots: async (projectId) => {
+       const first = await entered(projectId);
+       return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];
+diff --git a/app/src/features/profile/RestartDialog.tsx b/app/src/features/profile/RestartDialog.tsx
+index 377ca4f..bb04d7f 100644
+--- a/app/src/features/profile/RestartDialog.tsx
++++ b/app/src/features/profile/RestartDialog.tsx
+@@ -9,6 +9,7 @@ import { Button } from "../../components/ds/Button";
+ import { useProfileRepository } from "../../data/ProfileRepositoryContext";
+ import type { ProjectRepository, StudioEntryState } from "../../data/projectRepository";
+ import { committed, contrastFails, remember, shapeOf, type RestartOpen } from "./restartFlow";
++import { guarding } from "../pending/pendingWrites";
+ import { RESTART_TEXT as T, TAB_REASON, contrastText } from "./restartText";
+ 
+ export { startEdit } from "./restartFlow";
+@@ -104,7 +105,7 @@ export default function RestartDialog({
+     running.current = true;
+     setBusy(true);
+     try {
+-      const started = await repo.startDoc(projectId, version, selected, "restart", doc.revision);
++      const started = await guarding(() => repo.startDoc(projectId, version, selected, "restart", doc.revision));
+       remember(repo, projectId);
+       // 성공 state = editNotice만(RS-D9 — changes가 있으면 편집기가 R-N1을 접는다)
+       return go({ editNotice: T.done(selected, version, doc, started.changeNotice) });
+diff --git a/app/src/features/profile/restartFlow.ts b/app/src/features/profile/restartFlow.ts
+index 1163ef4..7d1c342 100644
+--- a/app/src/features/profile/restartFlow.ts
++++ b/app/src/features/profile/restartFlow.ts
+@@ -9,6 +9,7 @@ import { checkProfileContrast } from "../../domain/profileContrast";
+ import type { PaletteEntry } from "../../domain/referenceDetail";
+ import { CANDIDATE_TEXT } from "./generationText";
+ import { RESTART_TEXT as T } from "./restartText";
++import { guarding, hold, pendingOf, release } from "../pending/pendingWrites";
+ 
+ /** 대화상자를 여는 인자 — `held` = 미확인 기억으로 다시 연 상태(R-E4 unconfirmed · R-E5 unknown) */
+ export interface RestartOpen {
+@@ -26,13 +27,14 @@ export type EditOutcome =
+ export const shapeOf = (error: unknown) => (error ?? {}) as { code?: string; alert?: string; doc?: DocHead; message?: string };
+ 
+ /** 미확인 기억(3.3) — 저장소(탭 메모리)별 · 프로젝트별. 새로고침이면 메모리도 IDB로 돌아가 기억도 사라진다 */
+-const memory = new WeakMap<ProjectRepository, Map<string, RestartOpen>>();
+ export function remember(repo: ProjectRepository, projectId: string, open?: RestartOpen) {
+-  const held = memory.get(repo) ?? new Map<string, RestartOpen>();
+-  memory.set(repo, held);
+-  if (open) held.set(projectId, open);
+-  else held.delete(projectId);
++  if (open) hold(repo, { kind: "start", mode: "restart", projectId, version: open.version, selected: open.selected, origin: { kind: "doc", head: open.doc }, held: open.held ?? "unconfirmed" });
++  else release(repo, projectId, "confirmed");
+ }
++const openOf = (repo: ProjectRepository, projectId: string): RestartOpen | undefined => {
++  const p = pendingOf(repo, projectId);
++  return p?.kind === "start" && p.origin.kind === "doc" ? { selected: p.selected, version: p.version, doc: p.origin.head, held: p.held } : undefined;
++};
+ 
+ /** 3.1 표 — 다른 안 = 대화상자(F4) · 같은 안 = 이동(F2 · 버전만 다르면 R-C2 F3) */
+ const judge = (doc: DocHead, version: number, selected: string, alert?: string): EditOutcome =>
+@@ -40,14 +42,23 @@ const judge = (doc: DocHead, version: number, selected: string, alert?: string):
+ 
+ export async function startEdit(repo: ProjectRepository, projectId: string, version: number, selected: string): Promise<EditOutcome> {
+   // 미확인 restart가 있으면 create·이동 전에 그 대화상자부터(어느 안을 골랐든 — RS-AC-08d)
+-  const held = memory.get(repo)?.get(projectId);
++  const held = openOf(repo, projectId);
+   if (held) return { open: held };
++  const pending = pendingOf(repo, projectId);
++  if (pending) return { alert: pending.kind === "draft" ? T.failed : CANDIDATE_TEXT.startFailed, retry: false };
++  const before = await repo.getDoc(projectId).then((d) => (d ? ({ kind: "doc", head: d } as const) : ({ kind: "absent" } as const)), () => ({ kind: "unknown" }) as const);
+   let started;
+   try {
+-    started = await repo.startDoc(projectId, version, selected, "create");
++    started = await guarding(() => repo.startDoc(projectId, version, selected, "create"));
+   } catch (error: unknown) {
+     const { code, alert, doc } = shapeOf(error);
+     if (code === "DOC_EXISTS" && doc) return judge(doc, version, selected, alert);
++    if (code !== "UNKNOWN_VARIANT" && code !== "STALE_DOC") {
++      const now = await repo.getDoc(projectId).then((d) => d ?? null, () => undefined);
++      const pair = !!now && now.candidateId === selected && now.profileVersion === version;
++      if (now === undefined || (before.kind === "unknown" && now)) hold(repo, { kind: "start", mode: "create", projectId, version, selected, origin: before, held: "unknown" });
++      else if (before.kind === "absent" && pair) hold(repo, { kind: "start", mode: "create", projectId, version, selected, origin: before, held: "unconfirmed" });
++    }
+     return { alert: (code === "UNKNOWN_VARIANT" && alert) || CANDIDATE_TEXT.startFailed, retry: code !== "UNKNOWN_VARIANT" };
+   }
+   // create 성공도 재생일 수 있다(3.1 r2) — 지금 문서가 돌려받은 머리와 다르면 지금 문서로 다시 판정. 읽기 실패 = F1
+diff --git a/app/src/features/studio/studioRepository.ts b/app/src/features/studio/studioRepository.ts
+index 229ba8f..0f9acb6 100644
+--- a/app/src/features/studio/studioRepository.ts
++++ b/app/src/features/studio/studioRepository.ts
+@@ -15,6 +15,9 @@ export function toDocSaveRepository(repository: ProjectRepository): DocSaveRepos
+   return {
+     persistence: repository.persistence,
+     saveDoc: (projectId, expectedRevision, doc) => repository.saveDoc(projectId, expectedRevision, doc),
++    key: repository,
++    deleteSnapshot: (projectId, snapshotId) => repository.deleteSnapshot(projectId, snapshotId),
++    startDoc: (projectId, version, candidateId, mode, expectedRevision) => repository.startDoc(projectId, version, candidateId, mode, expectedRevision),
+     resolveConflict: async (projectId, choice, myDoc) => {
+       const resolved = await repository.resolveConflict(projectId, choice, myDoc);
+       if (!isPageDoc(resolved)) throw new ProjectRepositoryError("SCHEMA_INVALID", "충돌 해결 결과가 편집 문서 모양이 아닙니다");
+diff --git a/app/src/features/studio/useAutosaveScheduler.ts b/app/src/features/studio/useAutosaveScheduler.ts
+index 280c68c..50a8501 100644
+--- a/app/src/features/studio/useAutosaveScheduler.ts
++++ b/app/src/features/studio/useAutosaveScheduler.ts
+@@ -52,6 +52,9 @@ export interface AutosaveScheduler<T> {
+   resume(): void;
+   settle(): void;
+   dispose(): void;
++  /** RS4 스파이크 — 인계 확인 */
++  ver(): number;
++  mark(state: AutosaveState): void;
+ }
+ 
+ export const AUTOSAVE_DEBOUNCE_MS = 2000;
+@@ -87,6 +90,16 @@ class Scheduler<T> implements AutosaveScheduler<T> {
+     this.options = options;
+   }
+ 
++  ver(): number {
++    return this.version;
++  }
++
++  mark(state: AutosaveState): void {
++    if (this.disposed) return;
++    this.state = state;
++    this.options.onChange(state);
++  }
++
+   change(doc: T): void {
+     if (this.disposed) return;
+     this.doc = doc;
+@@ -239,6 +252,8 @@ export interface UseAutosaveOptions<T> {
+   readonly persistence: ProjectPersistence;
+   readonly debounceMs?: number;
+   readonly maxWaitMs?: number;
++  /** RS4 스파이크 — 미확인 기억 인계(5.3) */
++  readonly initial?: AutosaveState;
+ }
+ 
+ export interface UseAutosave<T> {
+@@ -247,11 +262,13 @@ export interface UseAutosave<T> {
+   readonly retry: () => AutosavePhase | undefined;
+   readonly resume: () => void;
+   readonly settle: () => void;
++  readonly ver: () => number;
++  readonly mark: (state: AutosaveState) => void;
+ }
+ 
+ /** 얇은 훅 — window online/offline 연결, 떠나기 경고(needsUnloadGuard일 때만 등록), unmount 정리 */
+-export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWaitMs }: UseAutosaveOptions<T>): UseAutosave<T> {
+-  const [state, setState] = useState<AutosaveState>(IDLE);
++export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWaitMs, initial }: UseAutosaveOptions<T>): UseAutosave<T> {
++  const [state, setState] = useState<AutosaveState>(initial ?? IDLE);
+   const saveRef = useRef(save);
+   const schedulerRef = useRef<AutosaveScheduler<T> | null>(null);
+ 
+@@ -295,5 +312,7 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
+   const retry = useCallback(() => schedulerRef.current?.retry(), []);
+   const resume = useCallback(() => schedulerRef.current?.resume(), []);
+   const settle = useCallback(() => schedulerRef.current?.settle(), []);
+-  return { state, change, retry, resume, settle };
++  const ver = useCallback(() => schedulerRef.current?.ver() ?? 0, []);
++  const mark = useCallback((s: AutosaveState) => schedulerRef.current?.mark(s), []);
++  return { state, change, retry, resume, settle, ver, mark };
+ }
+diff --git a/app/src/features/studio/useDocSave.ts b/app/src/features/studio/useDocSave.ts
+index 6f792f4..2b59222 100644
+--- a/app/src/features/studio/useDocSave.ts
++++ b/app/src/features/studio/useDocSave.ts
+@@ -16,12 +16,17 @@ import { projectErrorCode, type ConflictChoice, type DocHead, type ProjectPersis
+ import type { PageDoc } from "../../engine/contracts/pageDoc";
+ import { hashDoc } from "../../engine/ops/hash";
+ import { useAutosaveScheduler, type AutosaveState } from "./useAutosaveScheduler";
++import { hold, pendingOf, release } from "../pending/pendingWrites";
+ 
+ /** 저장소 중 이 훅이 쓰는 부분(ProjectRepository<PageDoc>의 부분 구조) */
+ export interface DocSaveRepository {
+   readonly persistence: ProjectPersistence;
+   saveDoc(projectId: string, expectedRevision: number, doc: PageDoc): Promise<DocHead>;
+   resolveConflict(projectId: string, choice: ConflictChoice, myDoc: PageDoc): Promise<PageDoc>;
++  /** RS4 스파이크 — 미확인 기억 키(저장소 인스턴스) · 확인 쓰기 */
++  readonly key?: object;
++  deleteSnapshot?(projectId: string, snapshotId: string): Promise<void>;
++  startDoc?(projectId: string, profileVersion: number, candidateId: string, mode: "create" | "restart", expectedRevision?: number): Promise<unknown>;
+ }
+ 
+ export interface UseDocSaveOptions {
+@@ -52,6 +57,8 @@ export interface UseDocSave {
+   readonly flushed: () => Promise<boolean>;
+   readonly adopt: (write: (revision: number) => Promise<PageDoc>) => Promise<PageDoc | undefined>;
+   readonly leave: () => Promise<boolean> | undefined;
++  /** RS4 스파이크 — 인계된 기억의 "저장 확인"(없으면 undefined) */
++  readonly confirm?: () => void;
+ }
+ 
+ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
+@@ -69,6 +76,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+         const saved = await repository.saveDoc(projectId, revision, { ...next, revision, hash: hashDoc(next) });
+         revisionRef.current = saved.revision;
+         readOnly.current = false;
++        release(repository.key ?? repository, projectId, "confirmed");
+       } catch (error) {
+         // 사유 문장(`infra.ts` READ_ONLY_TAB)으로 가린다 — 그 모듈을 import하면 영속 청크가 진입으로 올라온다(+0.76KB 실측). 문장이 바뀌면 StudioLeave 테스트가 잡는다
+         readOnly.current = String((error as Error)?.message).includes("탭에서 편집 중") || (repository.persistence === "local" && !navigator.locks);
+@@ -79,7 +87,9 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+     [repository, projectId],
+   );
+ 
+-  const autosave = useAutosaveScheduler<PageDoc>({ save, persistence: repository.persistence, debounceMs, maxWaitMs });
++  // RS4 스파이크 5.3 — 진입 때 기억을 1번 읽는다. start·record = "저장 확인 전"(failed 계열 재사용) · draft = 첫 edit로 dirty
++  const [entry] = useState(() => pendingOf(repository.key ?? repository, projectId));
++  const autosave = useAutosaveScheduler<PageDoc>({ save, persistence: repository.persistence, debounceMs, maxWaitMs, initial: entry && entry.kind !== "draft" ? { phase: "failed" } : undefined });
+   const { change, settle } = autosave;
+   // 스케줄러 단계를 동기로 따라간다 — 같은 흐름에서 edit 직후 flushed()·adopt()가 effect 전 단계(idle·saved)를 보고 저장 없이 끝나지 않게(Codex r1 P2).
+   // 규칙은 스케줄러 change()와 같다: idle·saved → dirty, 그 밖(저장 중·실패 등)은 그대로
+@@ -146,7 +156,35 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+     return flushed().then((ok) => ok || readOnly.current);
+   }, [retry, flushed]);
+ 
++  // draft 복원 = 첫 edit(메모리 getDoc 위 — r0.1b) · 떠날 때 확인 안 된 편집이면 cleanup에서 draft hold(경고 리스너 해제보다 먼저 선언)
++  useEffect(() => {
++    // eslint-disable-next-line react-hooks/set-state-in-effect -- 스파이크(측정 전용)
++    if (entry?.kind === "draft") edit(entry.doc as PageDoc);
++  }, [entry, edit]);
++  useEffect(
++    () => () => {
++      if (phase.current === "idle" || phase.current === "saved") return;
++      const under = entry?.kind === "draft" ? entry.under : entry;
++      hold(repository.key ?? repository, { kind: "draft", projectId, doc: docRef.current, baseRevision: revisionRef.current, under: pendingOf(repository.key ?? repository, projectId)?.kind === "draft" ? under : (pendingOf(repository.key ?? repository, projectId) as typeof under) ?? under });
++    },
++    [entry, repository, projectId],
++  );
++  const { ver, mark } = autosave;
++  const confirm = useCallback(async () => {
++    const p = pendingOf(repository.key ?? repository, projectId);
++    if (!p || p.kind === "draft") return;
++    const v = ver();
++    try {
++      if (p.kind === "record") await repository.deleteSnapshot?.(projectId, "");
++      else await repository.startDoc?.(projectId, p.version, p.selected, p.mode, p.origin.kind === "doc" ? p.origin.head.revision : undefined);
++      release(repository.key ?? repository, projectId, "confirmed");
++      if (ver() === v) mark({ phase: "saved", lastSavedAt: Date.now() });
++    } catch {
++      // 4.3 사유 문형 — phase 유지
++    }
++  }, [repository, projectId, ver, mark]);
++
+   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
+   const savedRevision = useCallback(() => revisionRef.current, []);
+-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave };
++  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, confirm: entry && entry.kind !== "draft" ? () => void confirm() : undefined };
+ }
+diff --git a/app/src/pages/ProjectsPage.tsx b/app/src/pages/ProjectsPage.tsx
+index d08cdbe..2dde679 100644
+--- a/app/src/pages/ProjectsPage.tsx
++++ b/app/src/pages/ProjectsPage.tsx
+@@ -1,3 +1,6 @@
++import type { Pending } from "../features/pending/pendingWrites";
++/** 감량 1회(측정) — pendingWrites 정적 import 0 · 같은 전역 표 동기 조회 */
++const pendingOf = (repo: object, projectId: string) => ((globalThis as Record<symbol, unknown>)[Symbol.for("design-studio.pending")] as WeakMap<object, Map<string, Pending>> | undefined)?.get(repo)?.get(projectId);
+ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
+ import { Link } from "react-router";
+ import { BrowserStorageSection } from "../components/projects/BrowserStorageSection";
+@@ -270,6 +273,12 @@ export function ProjectsPage({
+       {items !== null && items.length === 0 && <ProjectsEmpty persistence={repository.persistence} />}
+       {items !== null && items.length > 0 && (
+         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft}
++          pendingOf={(projectId) => pendingOf(repository, projectId)}
++          onConfirm={(projectId) => {
++            const p = pendingOf(repository, projectId);
++            if (p && p.kind !== "draft") void import("../features/pending/pendingConfirm").then((m) => m.confirmPending(repository, p)).then((r) => announce(r === "confirmed" ? "저장을 확인했습니다" : "저장을 확인하지 못했습니다"), () => announce("저장을 확인하지 못했습니다"));
++          }}
++          onDiscard={() => window.confirm("저장을 확인하지 못한 변경을 버리고 새로고침할까요?") && void import("../features/pending/pendingConfirm").then((m) => m.discardAndReload())}
+           rename={rename}
+           onExport={repository.persistence === "local" ? openExport : undefined}
+           onDelete={repository.persistence === "local" ? openDelete : undefined}
+diff --git a/src/features/pending/pendingWrites.ts b/src/features/pending/pendingWrites.ts
+new file mode 100644
+index 0000000..05653c0
+--- /dev/null
++++ b/src/features/pending/pendingWrites.ts
+@@ -0,0 +1,90 @@
++/** RS4 스파이크(측정 전용) — 미확인 기억 · 탭 수명 · 기억에 붙는 beforeunload (SPEC-4 3절). 런타임 import 0 */
++import type { DocHead } from "../../data/projectRepository";
++
++export type Origin = { readonly kind: "absent" } | { readonly kind: "doc"; readonly head: DocHead } | { readonly kind: "unknown" };
++export interface PendingStart {
++  readonly kind: "start";
++  readonly mode: "create" | "restart";
++  readonly projectId: string;
++  readonly version: number;
++  readonly selected: string;
++  readonly origin: Origin;
++  readonly held: "unconfirmed" | "unknown";
++}
++export interface PendingRecord {
++  readonly kind: "record";
++  readonly projectId: string;
++  readonly cause: "start-not-applied";
++  readonly head?: DocHead;
++}
++export interface PendingDraft {
++  readonly kind: "draft";
++  readonly projectId: string;
++  readonly doc: unknown;
++  readonly baseRevision: number;
++  readonly images?: unknown;
++  readonly under?: PendingStart | PendingRecord;
++}
++export type Pending = PendingStart | PendingRecord | PendingDraft;
++
++/** 감량 1회(측정): /projects가 이 모듈을 정적 import하지 않고 같은 표를 동기 조회하도록 전역 키에 둔다(공유 청크 = index mapDeps +20B 회피) */
++export const PENDING_KEY = Symbol.for("design-studio.pending");
++const memory = ((globalThis as Record<symbol, unknown>)[PENDING_KEY] ??= new WeakMap<object, Map<string, Pending>>()) as WeakMap<object, Map<string, Pending>>;
++const seqs = new WeakMap<object, number>();
++let seq = 0;
++let active: ReadonlySet<string> = new Set();
++let inflight = 0;
++let attached = false;
++
++const onUnload = (e: BeforeUnloadEvent) => {
++  e.preventDefault();
++  e.returnValue = "";
++};
++const sync = () => {
++  const want = active.size + inflight > 0;
++  if (want === attached) return;
++  attached = want;
++  if (want) window.addEventListener("beforeunload", onUnload);
++  else window.removeEventListener("beforeunload", onUnload);
++};
++const keyOf = (repo: object, projectId: string) => {
++  if (!seqs.has(repo)) seqs.set(repo, ++seq);
++  return `${seqs.get(repo)}:${projectId}`;
++};
++
++export const pendingOf = (repo: object, projectId: string): Pending | undefined => memory.get(repo)?.get(projectId);
++
++export function hold(repo: object, pending: Pending) {
++  const map = memory.get(repo) ?? new Map<string, Pending>();
++  memory.set(repo, map.set(pending.projectId, pending));
++  active = new Set(active).add(keyOf(repo, pending.projectId));
++  sync();
++}
++
++export function release(repo: object, projectId: string, why: "confirmed" | "not-applied-absent" | "discarded") {
++  void why;
++  memory.get(repo)?.delete(projectId);
++  const key = keyOf(repo, projectId);
++  active = new Set([...active].filter((k) => k !== key));
++  sync();
++}
++
++/** 진행 중 요청 보호 — 시작 +1 · 끝 -1. 판정이 기억이면 hold가 finally보다 먼저(카운트가 0을 거치지 않음) */
++export async function guarding<T>(work: () => Promise<T>): Promise<T> {
++  inflight += 1;
++  sync();
++  try {
++    return await work();
++  } finally {
++    inflight -= 1;
++    sync();
++  }
++}
++
++/** 사용자 명시 폐기(5.5) — 리스너 먼저 떼고 새로고침 */
++export function discardAndReload() {
++  active = new Set();
++  inflight = 0;
++  sync();
++  location.reload();
++}
+diff --git a/src/features/pending/pendingConfirm.ts b/src/features/pending/pendingConfirm.ts
+new file mode 100644
+index 0000000..3e708e2
+--- /dev/null
++++ b/src/features/pending/pendingConfirm.ts
+@@ -0,0 +1,33 @@
++/** RS4 스파이크(측정 전용) — /projects 행 "다시 시도"·"저장 확인" 본문(조작 뒤 청크). 4.2·4.3 */
++import type { ProjectRepository } from "../../data/projectRepository";
++import { guarding, hold, release, type PendingRecord, type PendingStart } from "./pendingWrites";
++export { discardAndReload } from "./pendingWrites";
++
++const codeOf = (error: unknown) => (error as { code?: string } | undefined)?.code;
++const same = (a: { revision: number; candidateId: string; profileVersion: number } | undefined, b: { revision: number; candidateId: string; profileVersion: number }) =>
++  !!a && a.revision === b.revision && a.candidateId === b.candidateId && a.profileVersion === b.profileVersion;
++
++export async function confirmPending(repo: ProjectRepository, pending: PendingStart | PendingRecord): Promise<"confirmed" | "record" | "held" | "gone"> {
++  const { projectId } = pending;
++  return guarding(async () => {
++    try {
++      if (pending.kind === "record") await repo.deleteSnapshot(projectId, "");
++      else await repo.startDoc(projectId, pending.version, pending.selected, pending.mode, pending.origin.kind === "doc" ? pending.origin.head.revision : undefined);
++      release(repo, projectId, "confirmed");
++      return "confirmed";
++    } catch (error: unknown) {
++      if (pending.kind === "record") return "held";
++      const now = await repo.getDoc(projectId).catch(() => null);
++      const code = codeOf(error);
++      if (pending.origin.kind === "unknown" || now === null) return (hold(repo, { ...pending, held: "unknown" }), "held");
++      if (code === "STALE_DOC" || code === "DOC_EXISTS" || (pending.origin.kind === "doc" && same(now, pending.origin.head))) {
++        if (!now) return (release(repo, projectId, "not-applied-absent"), "gone");
++        hold(repo, { kind: "record", projectId, cause: "start-not-applied", head: now });
++        return "record";
++      }
++      if (pending.origin.kind === "absent" && !now) return (release(repo, projectId, "not-applied-absent"), "gone");
++      hold(repo, { ...pending, held: "unconfirmed" });
++      return "held";
++    }
++  });
++}

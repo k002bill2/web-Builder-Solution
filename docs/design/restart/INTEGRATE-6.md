@@ -44,7 +44,7 @@
 | I3 confirm wrote:true = 재읽기 증명 | 포트 `verify` = `persistence.get("docs")` hash·revision 비교 + 이미지 레코드 재읽기 | 신설(포트) | 코어 `verify` :174를 제품 레코드 모양으로 |
 | I4 confirm wrote:false | 포트 `verify` + `gate.mode === "writer"` | 신설(포트) | QA-1(rs5-review) 해소 경로 |
 | I5 비영속 | `persistence === "memory"` → 포트 없음 → `not-persistent`. `navigator.locks` 없음 → gate `unsupported` | 유지 | UX-5 `memory-only`·`unsupported` |
-| I6 원자·이미지 | 포트 `commit`이 문서 put + 바인딩 이미지 put + 상태 레코드·meta(도장)를 **한 `queue.submit`** 으로. 참조 이미지가 바인딩에도 IDB에도 없으면 제출 0 | 변경 | 지금 `imageOps`는 맵 없는 참조를 조용히 건너뜀(C5 F4) → 엄격 모드 필요. 제품 `imageOps`의 참조 밖 id **delete(GC)** 는 코어 계약("delete op 0")과 다르다 → 포트가 GC delete를 같은 트랜잭션에 계속 싣되, discard는 delete를 내지 않는다(CX-3 유지). 편집기 맵 cleanup 삭제(`memoryProjectRepository.ts:138-149`)는 코어 바인딩이 대신하므로 L3에서 정리 [L1-추적] |
+| I6 원자·이미지 | 포트 `commit`이 문서 put + 바인딩 이미지 put + 상태 레코드·meta(도장)를 **한 `queue.submit`** 으로. 참조 이미지가 바인딩에도 IDB에도 없으면 제출 0 | 변경 | 지금 `imageOps`는 맵 없는 참조를 조용히 건너뜀(C5 F4) → 엄격 모드 필요 — **포트 `commit` 전용**(공유 `imageOps`·`flush` 경로는 그대로, r1 · 12.1 #4). 제품 `imageOps`의 참조 밖 id **delete(GC)** 는 코어 계약("delete op 0")과 다르다 → 포트가 GC delete를 같은 트랜잭션에 계속 싣되, discard는 delete를 내지 않는다(CX-3 유지). 편집기 맵 cleanup 삭제(`memoryProjectRepository.ts:138-149`)는 코어 바인딩이 대신하므로 L3에서 정리 [L1-추적] |
 | I6b 예상 세대 | 제품 = **잠금 획득 때 `fresh()` 1회**(meta.generation == hydrated)[L1 `localSync.ts:99-103`] + 탭 수명 잠금 보유(`writerLock.ts:2-3`). 커밋마다 IDB 재읽기 불필요 — 4절 | 대체 | 코어의 문서별 세대 읽기를 제품 잠금 규칙으로 대체 |
 | I7 discard 배타 | 코어 그대로 + 3절 포기 토큰 | 변경(코어) | LV-2 |
 | I8 replace 거절 | 코어 그대로. `adopt` 중 편집(F12)은 `dirty` 거절로 막힘 | 유지 | QA-3 해소 |
@@ -57,8 +57,8 @@
 | `mode(): Promise<WriterMode \| "cleared">` | 쓰기 전 잠금 판정 | `gate.enter()` :122 · `cleared` 플래그 :137 |
 | `head(projectId)` | 마지막 커밋 문서 레코드(hash·revision) | `persistence.get("docs", id)` · 시드 `LocalSync.docs` |
 | `commit(projectId, doc, bound)` | 문서 + 바인딩 이미지 + 도장 1 트랜잭션. 참조 이미지가 바인딩·`stored`에 없으면 throw `image-missing`(제출 0) | `write` :155-183 + 엄격 `imageOps` |
-| `verify(receipt)` | IDB 재읽기 증명(문서 hash·revision + 참조 이미지 레코드 존재) | `confirm` :197-207의 이미지 키 검사 + 문서 재읽기 |
-| `image(id)` | 코어 바인딩에 없는 참조 이미지의 IDB 레코드 존재 | `keys("images")`/`get("images")` |
+| `verify(projectId, receipt)` | IDB 재읽기 증명(문서 hash·revision + 참조 이미지 레코드 존재) | `confirm` :197-207의 이미지 키 검사 + 문서 재읽기 |
+| `image(projectId, localId)` | 코어 바인딩에 없는 참조 이미지의 IDB 레코드 존재. 이미지 키는 **`imageRecordId(projectId, localId)`로만** 만든다(OBS-2/BD-2 재발 방지 — r1, RS6-AC-U15) | `keys("images")`/`get("images")` |
 
 - 이 포트는 `LocalSync`(data 내부 인터페이스, `localSync.ts:43-56`)에 메서드를 더한다. `ProjectRepository`(공개)에는 **코어 접근자 1개**(`saveCore(projectId)` 또는 `studioRepository` 경유)가 더해진다 → 둘 다 MQ-6-1.
 - 문서 모양: 코어 `CoreDoc{revision, body, imageIds}`는 하네스용 축약이다. 제품에서는 `PageDoc` + `DocHead`(revision·hash)를 쓰고, `imageIds` = 기존 `recordRefs(record)`(:201)로 계산한다. **PageDoc·엔진 계약 변경 0**이 목표다. 바뀌어야 하면 MQ.
@@ -343,6 +343,8 @@
 | RS6-AC-U12 | **디바운스 대기 중 이탈**(dirty · inflight 0 → 앱 안 링크, 그리고 POP 언마운트): 즉시 이동 · lease 해제 save 1회 · 해제 뒤 IDB = 마지막 편집 · `/projects`에서 탭 닫기 경고 on(레지스트리 `beforeunload`) · 저장 끝나면 경고 off(3.1) | [U] |
 | RS6-AC-U13 | 이탈 예외 목록(3.1-3): 클릭 시점 `readonly`·`unsupported` = 이동 · `failed`·`offline`·`stale`·`cleared` = 보류 + 지금 `leave()` 동작. `StudioLeave.test.tsx` 유지 7건 변경 없이 GREEN · 의미 변경 6건·이전 1건은 3.1-4 표대로 단언 교체(REPORT에 대응표) | [U] |
 | RS6-AC-U14 | **G1 DocBook 경로 재쓰기(RED 먼저)**: 코어 commit 진행 중(지연 주입) `deleteSnapshot` → IDB doc = 코어 최신 · 새 이미지 삭제 0 · 스냅샷 삭제 반영. 같은 단언 `createSnapshot`·`confirmDoc` 각 1건(5절 G1 r1) | [U] |
+| RS6-AC-U15 | OBS-2/BD-2: 두 프로젝트에 같은 localId 이미지 → 다른 프로젝트 이미지 레코드로 `verify`·`image` 통과 0 · 포트 모듈의 이미지 키는 `imageRecordId` 경유만(직접 문자열 조립 0 — 가드) | [U]·[G] |
+| RS6-AC-U16 | RS4-R2: 편집기 저장 성공(local 커밋) 뒤 `/projects` 행 기억 0(1클릭 확인 불필요) | [U] |
 | RS6-AC-G1 | 9.3 측정 관문 PASS 수치 + 최종 `npm run build` 정규화·raw 줄 | [G] |
 | RS6-AC-G2 | import 그래프: `openIdbPersistence` 호출 1곳 · 코어 모듈 → `idbPersistence` import 0 · 코어 io 부분이 진입 closure에 없음 | [G] |
 | RS6-AC-G3 | UX-5 2.4 금지 문구 0건(UX5-AC-14) + 3절 새 문구가 `saveStatusText.ts` 1곳 | [G] |
@@ -360,7 +362,7 @@
 | `features/studio/useDocSave.test.tsx` · `useDocSaveWrite.test.tsx` | 변경 많음 | `revisionRef`·`saveDoc` 직행·`adopt` 경로가 코어 경유로 바뀜 |
 | `features/studio/useAutosaveScheduler.test.ts` · `.hook.test.tsx` | 일부 변경 | 저장 호출 대상·dispose·감시 phase |
 | `components/studio/StudioLayout.test.tsx` · `SaveStatus.test.tsx` · `ConflictCallout.test.tsx` | 일부 변경 | acquire/seed·상태 판정 출처·충돌 버튼 |
-| `data/persistence/localSync.test.ts` · `confirmDoc.test.ts` · `imagePersist.test.ts` | 추가 위주 | 포트 메서드·엄격 imageOps(맵 없는 참조 = 제출 0으로 동작 변경 — 기존 "조용히 건너뜀" 단언이 있으면 RED) |
+| `data/persistence/localSync.test.ts` · `confirmDoc.test.ts` · `imagePersist.test.ts` | 추가 위주 | 포트 메서드·엄격 imageOps(포트 `commit` 전용 — 맵 없는 참조 = 제출 0). 공유 `imageOps`·`flush`는 그대로라 기존 "조용히 건너뜀" 단언은 GREEN 유지(r1 · 12.1 #4) |
 | `features/studio/saveStatusText.test.ts` | 추가 | 새 문구 |
 | `features/studio/snapshotRevision.test.tsx` · `exportFlow.test.ts` | 변경 가능 | 스냅샷 복원·내보내기 전 저장이 코어 경유(6.4) |
 | `components/studio/StudioLayout.test.tsx`의 링크 이탈 보류 단언 | 변경 | 저장 대기 제거(3절 · RS6-AC-U11) |
@@ -379,7 +381,18 @@
 | `T_hang` 저장 정지 중 탭 닫기 | 미확인 변경 소멸, IDB는 직전 커밋 또는 이번 트랜잭션 전부/전무 | alert 고지 |
 | 이미지 ingest 중 이탈 | 고른 이미지 소실 | UX-5 G9 |
 | stale 탭의 초안 | 저장 불가 → 새로고침 시 소멸 | 상태 문구 |
-| 이미지 증명 = 존재만(바이트 비교 0) · OBS-2/BD-2(다른 프로젝트 같은 id 통과) | 제품 이미지 id = `imageRecordId(projectId, localId)`(`localSync.ts:202`)라 BD-2는 비도달 [L1-추적] | — |
+| 이미지 증명 = 존재만(바이트 비교 0) · OBS-2/BD-2(다른 프로젝트 같은 id 통과) | 제품 이미지 id = `imageRecordId(projectId, localId)`(정의 `imageRecord.ts:20` · 사용 `localSync.ts:206`)라 BD-2는 비도달 [L1-추적]. 단 코어 imageIds는 localId(`recordRefs`)라 포트가 prefix를 빠뜨리면 원인이 되살아난다 → 포트 시그니처에 projectId 고정(1.3) | RS6-AC-U15 |
+| CE-4 남는 경로(r1 판정) | ① autosave 진행 중 dirty `confirm` ② 편집기 "저장 확인" 진행 중 `/projects` 행 "저장 확인" ③ 스냅샷·내보내기 전 `core.save()` — 셋 다 코어 chain 직렬이라 같은 doc 쓰기 1회가 더 날 뿐 손실 0 [L1-추적 `saveCore.ts:132-137,182-196`] | 잔존 허용(낮음) — 화면 dedupe는 같은 버튼 연타만(3절 공통 행) |
+
+### 12.1 남은 저장 결함 12건 중 r0 누락 5건 판정 (r1 · QA-REVIEW 2절 · 출처 `origin/main:dev/active/backlog-rs-status/REPORT.md`)
+
+| # | 결함 | r1 판정 | 근거·규칙 |
+|---|---|---|---|
+| 3 | RS4-R2 편집기 저장 성공해도 기억 남음(`SPEC-4.md:175,318`) | **해결(L5)** | 코어 `saved`(local 커밋) 뒤 같은 projectId `PendingRecord`를 해제한다(CP4가 하려던 승계). L5가 `PendingRecord`를 코어 상태로 대체하면 같은 결과 — RS6-AC-U16 |
+| 4 | RS4-B1 편집기 밖 `startDoc` 재생 = 이미지 없는 커밋(`SPEC-4.md:200`) | **결정: 엄격 imageOps = 포트 `commit` 전용.** 공유 `imageOps`·`flush` 경로는 지금처럼 맵 없는 참조를 건너뛴다(공유로 바꾸면 재생 flush가 throw → `PendingStart` 고착 위험 [L3]). → 레지스트리에 코어가 있으면 **해결**(재생 = `core.replace`, 바인딩 실림 · dirty면 거절 → `PendingStart` 유지) · 없으면 **범위 밖** | 새 Blob은 편집기 ingest에서만 생기고 그 탭의 코어 바인딩에 남는다 → 코어 없는 탭의 재생에서 빠지는 이미지는 이미 다른 탭·크래시로 잃은 참조뿐 [L1-추적]. 별건 RS4-B1(SPEC-4) 유지 |
+| 10 | STALE/CLEARED 이동 보류 · 오프라인 보류 · 섹션 연산 청크 대기 중 편집(`save-on-leave/REPORT.md:92,93,95`) | **범위 밖(지금 동작 유지)** | 3.1-3이 `stale`·`cleared`·`offline` = 보류를 지금대로 둔다. 섹션 연산 대기 중 편집은 `edit()` 전이라 코어에 없음(UX-5 G9와 같은 부류). 바꾸려면 새 MQ |
+| 11 | RS-AC-08d IDB 쪽 미단언(B-ER-01 잔여) | **범위 밖** | restart 화면 단언 잔여 — RS6 연결 경로와 무관. BACKLOG B-ER-01 행에서 처리 |
+| 12 | B-RS-01 개정 15 실측 몫 +0.02·+0.03 초과 결정 대기 | **범위 밖** | save-on-leave 커밋 4개(`4d878bed`·`5d6ff9e6`·`7db2c0b2`·`33e0c0cb`)가 base `c7a7a2a8` 조상 [L1 `git merge-base --is-ancestor`] → 그 몫은 L0 S6-base(128.09/129.40)에 이미 들어 있다. 개정 16 결정 3이 raw 기준선 판정을 정규화로 바꿨으므로(`ADR-004-performance-budgets.md:267`) L0 판정선 128.53/131.51과 별개 [L1-추적]. 결정 대기는 BACKLOG에 그대로 |
 
 ## 13. 대체 / 차이 (기존 문서 수정 0)
 

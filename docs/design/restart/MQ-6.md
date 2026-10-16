@@ -8,7 +8,7 @@
 
 | # | 선택지 | 트레이드오프 |
 |---|---|---|
-| ★A | **코어 상태기 + `LocalSync` 포트.** `LocalSync`(data 내부)에 포트 메서드 5개(mode·head·commit·verify·image) 추가, `ProjectRepository`(공개)에 코어 접근자 1개 추가. 레코드 형식·스키마·PageDoc 변경 0 | 사실: 코어를 그대로 쓰면 `core-doc`/`core-image` 레코드·문서별 세대·별도 직렬 체인이 제품과 충돌한다(I6 6.1). 비용: 하네스 테스트를 제품 포트 위에서 다시 써야 한다(L1). 공개 인터페이스 +1 |
+| ★A | **코어 상태기 + `LocalSync` 포트.** `LocalSync`(data 내부)에 포트 메서드 5개(mode·head·commit·verify·image) 추가, `ProjectRepository`(공개)에 코어 접근자 1개 추가. 레코드 형식·스키마·PageDoc 변경 0 | 사실: 코어를 그대로 쓰면 `core-doc`/`core-image` 레코드·문서별 세대·별도 직렬 체인이 제품과 충돌한다(I6 6.1). 비용: 하네스 테스트를 제품 포트 위에서 다시 써야 한다(L1). 공개 인터페이스 +1. 포트 `commit`은 기존 `write` 대신 "코어 doc + DocBook snapshots" 레코드 변형(LocalSync 내부 변경, I6 5절 G1). **MC 계약 변경 포함**: 커밋마다 문서별 세대 재읽기(I6b)를 잠금 획득 때 `fresh()` 1회로 대체(I6 D6-3) — h4·h5 일부·h6-3은 잠금 기반 테스트로 대체(RS6-AC-U1 ②) |
 | B | 코어를 그대로 import, 레코드를 `core-doc`으로 이전 | 하네스 37건을 그대로 쓴다. 대신 스키마 이전·`meta.generation` 이중화·H4 회귀 위험(I6 6.1). PageDoc/스키마 계약 변경 = 별도 ADR |
 | C | 연결 보류(코어는 하네스로만 유지) | 비용 0. RS4-R1·R8·C5 P1 5건이 열린 채 남는다 |
 
@@ -51,7 +51,3 @@
 | ★A | L0 S6c 수치가 나오면 그 수치(정규화·raw 둘 다)로 판정. 초과면 그때 상향 여부 결정 | 사실: 지금 여유 정규화 0.44KB · raw 0.60KB. 기존 실측(CP4 +0.80 정규화 · C5 장부 S5a-r +417B raw — 다른 base)은 모두 여유 밖이다. 코어 자체는 미측정 |
 | B | 측정 전에 상향 폭을 미리 승인 | 수치 근거 없음 — 권하지 않음 |
 | C | 상향 없음 확정 → L0 FAIL이면 MQ-6-4 C(범위 축소) | 편집기 밖 확인만 남고 RS4-R1·R8 열림 |
-
-## MQ-6-7 새 의존성
-
-- 필요 없음(사실: 코어·포트는 기존 `StudioPersistence`·`writerLock`·`writeQueue`만 쓴다). 결정 항목 아님 — 기록만.

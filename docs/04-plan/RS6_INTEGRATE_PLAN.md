@@ -1,7 +1,7 @@
 # RS6_INTEGRATE_PLAN — 저장 코어 제품 연결 Developer 레인 계획
 
 - 상태: **r0 계획 — 실행 승인 아님.** 설계 = `docs/design/restart/INTEGRATE-6.md`(이하 **I6**) r0. 결정 대기 = `docs/design/restart/MQ-6.md`. 작성 Designer · 2026-10-17 · base `c7a7a2a8`.
-- 착수 조건: **L0(측정 관문) PASS** + MQ-6-1·MQ-6-3 결정. L0 FAIL이면 L1 이후 전부 보류하고 MQ-6-6(예산)으로 간다.
+- 착수 조건: L0는 **MQ-6-1 ★A 가정으로 결정 전 착수 가능**(앱 커밋 0). L1 이후 = **L0 PASS** + MQ-6-1·MQ-6-3 결정. L0 FAIL이면 L1 이후 전부 보류하고 MQ-6-6(예산)으로 간다.
 - 시간 추정은 전부 **추정(L3)** 이다. 근거는 비슷한 범위의 지난 레인(rs5-spike·rs4-cp4-measure = 측정 1레인 · save-core-fix = 코어 수정 1레인)의 규모 감각뿐이며 실측이 아니다.
 
 ## 0. 순서 한눈에
@@ -13,7 +13,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 
 | 레인 | 산출물(1개) | 쓰기 경로(겹침 검사용) | 선행 | 병렬 | 턴 상한 | 시간(추정) |
 |---|---|---|---|---|---|---|
-| **L0** 측정 관문 | `dev/active/rs6-measure/REPORT.md`(S6-base·S6a~d 수치·패치) | `dev/active/rs6-measure/`만 (앱 패치는 측정 뒤 원복, 커밋 0) | MQ-6-1 | 없음 | 60 | 1.5~2.5시간 |
+| **L0** 측정 관문 | `dev/active/rs6-measure/REPORT.md`(S6-base·S6a~d 수치·패치) | `dev/active/rs6-measure/`만 (앱 패치는 측정 뒤 원복, 커밋 0) | 없음(★A 가정) | 없음 | 60 | 1.5~2.5시간 |
 | **L1** 포트·코어 이식 | 코어 모듈 + `LocalSync` 포트 + 하네스 의미 재현 테스트 | `app/src/features/studio/save/**`(신설) · `app/src/data/persistence/localSync.ts` · `imageOps.ts` · 그 테스트 | L0 PASS · MQ-6-1 · MQ-6-2 | 없음 | 90 | 4~6시간 |
 | **L2** liveness | 감시·포기 토큰 + 상수 1곳 | `save/**`(L1과 같은 디렉터리 — 그래서 직렬) · `useAutosaveScheduler.ts` | L1 · MQ-6-3 | 없음 | 60 | 2~3시간 |
 | **L3** 편집기 배선(CP4 흡수) | `useDocSave`·스케줄러·`StudioLayout`이 코어 경유 | `features/studio/useDocSave.ts` · `useAutosaveScheduler.ts` · `studioRepository.ts` · `components/studio/StudioLayout.tsx` · `SnapshotPreview.tsx`·`SnapshotDialog.tsx`·`useExportFlow.ts`(호출부만) | L2 | 없음(L2와 스케줄러 겹침) | 90 | 5~8시간 |
@@ -45,11 +45,11 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | CP | RED | GREEN |
 |---|---|---|
 | CP1 | 하네스 h1·h2 의미를 `createMemoryPersistence` + 제품 `LocalSync` 포트 위에서(제출 mark 고정·직렬·confirm 증명) | 코어 상태기 이식(`saveCore.ts` 로직, 레코드 접근 제거) + 포트 `mode`·`head`·`verify` |
-| CP2 | h3·h6 이미지(동결 바인딩·엄격 참조 → 제출 0 · 실패 시 문서·이미지 함께 0) + 기존 `imagePersist`·`imageRecord` 회귀 | 포트 `commit` = `write`→`queue.submit`→`committed`(도장·cleared·saved 유지) + 엄격 `imageOps` |
+| CP2 | h3·h6 이미지(동결 바인딩·엄격 참조 → 제출 0 · 실패 시 문서·이미지 함께 0) + 기존 `imagePersist`·`imageRecord` 회귀 + 문서 필드 = 코어 doc·스냅샷 = DocBook(I6 5절 G1) | 포트 `commit` = "코어 doc + DocBook snapshots" 레코드 → `queue.submit`→`committed`(도장·cleared·saved 유지) + 엄격 `imageOps` |
 | CP3 | h4·h5(readonly·stale·discard·replace·lease) + RS6-AC-U10(cleared 직전 save) | 포트 `mode` = gate·cleared 결합 · discard·replace |
 | CP4 | RS6-AC-G2 import 가드 + C5 T10·T13(시드 확인 쓰기 0 · 같은 내용 재확인 쓰기 0) | 레지스트리를 `LocalSync`에 매달기 · 가드 테스트 |
 
-- 하네스 37건 → 제품 테스트 이름 대응표를 REPORT에(RS6-AC-U1).
+- 하네스 37건 → 3분류 대응표(이식/잠금 기반 대체/폐기)를 REPORT에(RS6-AC-U1).
 - 금지: 레코드 형식 변경(MQ-6-1 B를 고르지 않는 한) · `StudioPersistence` 변경 · 새 의존성.
 
 ## 3. L2 — liveness (RS6-AC-U4·U5·U11)

@@ -13,7 +13,8 @@
 3. **liveness(LV-1·LV-2)는 "취소 0 · 관찰 시간 제한 · 결과 버리지 않음"** 규칙으로 닫는다(3절). IDB 트랜잭션은 취소할 수 없으므로, 시간 제한은 **표시 전환과 사용자 선택**에만 쓴다. discard 읽기 정지는 **포기(abandon) 토큰**으로 가드를 풀고 늦은 결과를 무시한다 — 코어 내부 동작 변경이다(MC I7 문장 변경). 공개 인터페이스는 아니지만 MC 계약을 바꾸므로 MQ-6-3에 함께 올린다.
 4. **CP4(편집기 인계 · RS4-R1)는 RS6에 흡수한다**(★ MQ-6-4 A). 코어는 탭 수명 객체이고 편집기는 `acquire`/`release`로 빌려 쓴다. 그래서 "편집기 밖 미확인 기억 → 재진입 인계"가 코어 구조 안에 이미 있다. `PendingDraft` 경로(SPEC-4 3.3-5)를 따로 만들 이유가 없다. 다만 **바이트는 상쇄를 가정하지 않는다** — 흡수는 "같은 측정 1회로 판정"이라는 뜻이고, 상쇄는 대체 코드 제거를 같은 스파이크에서 실측했을 때만 인정한다(7절).
 5. **예산: 지금 실측된 어떤 연결안도 여유 안에 없다.** main 여유 = 정규화 0.44KB · raw 0.60KB [L1 `studio-preload-slim/REPORT.md`]. 기존 실측: CP4 조합+a **+0.80**(정규화) [L1 `rs4-cp4-measure/REPORT-M2.md:1`], C5 장부 S5a-r +417B · S5b +753B(raw, preload-slim 이전 base) [L1 `rs5-spike/REPORT.md` 3절]. **코어 자체의 바이트는 미측정이다.** 그래서 RS6 첫 레인은 **측정 관문(L0)**이고, 통과 전에는 구현 레인을 시작하지 않는다(8절).
-6. 남는 손실: 탭이 죽으면(모바일 백그라운드 종료·크래시·경고 무시) 미확인 초안은 사라진다. 코어는 탭 메모리이고 초안 영속은 새 스키마라 범위 밖이다(9절).
+6. 새 의존성은 필요 없다 — 코어·포트는 기존 `StudioPersistence`·`writerLock`·`writeQueue`만 쓴다.
+7. 남는 손실: 탭이 죽으면(모바일 백그라운드 종료·크래시·경고 무시) 미확인 초안은 사라진다. 코어는 탭 메모리이고 초안 영속은 새 스키마라 범위 밖이다(9절).
 
 ## 1. 경계 매핑표 — 코어 API·불변식 → 제품
 
@@ -208,7 +209,7 @@
 | `saving` (+ `saving-slow`) | `view().inflight` (+ 3절 감시) | LV-1 |
 | `unconfirmed` | `confirmed.proof === "hydrated"` 이고 편집기 밖 미확인 기록이 있음, 또는 마지막 결과 `failed`인데 편집기 밖 | UX-5 2.2 "한 상태에 버튼 1개" 규칙 유지 |
 | `image-missing` | 결과 `image-missing` | 슬롯 식별 UX-5 G7 |
-| `conflicted`(편집기 phase `stale` 포함) | 결과 `stale` + 이 탭 writer + `head(projectId)` ≠ 증명 → **같은 탭 다른 경로 교체**(스냅샷 복원·restart) / `replace` `rejected{dirty}` | 아래 8.2 G2·G4 |
+| `conflicted`(편집기 phase `stale` 포함) | **같은 탭 교체** = `replace`의 거절(`rejected{dirty}`·`{epoch}`) — 복원·restart·충돌 해결이 미저장 편집과 부딪힘 · **다른 탭** = 포트 `mode()`(`readonly`·`stale` — 이 경우는 `stale` 행으로 보냄) · IDB head 불일치는 `verify` 실패(`not-committed`)로만 다룬다(커밋마다 head 재읽기는 없음 — D6-3) | 아래 8.2 G2·G4 |
 | 영구 확인 | `confirm()` = `confirmed` · 그 뒤 `view().mark` 변화 0 · local · 포트 정상 | UX-5 3절 5조건 |
 | `newer` | `confirm()` = `newer` 또는 `save()` `newer:true` | 상태 글자는 새 세대 기준(UX-5 3절) |
 
@@ -296,7 +297,7 @@
 
 | ID | 기준 | 종류 |
 |---|---|---|
-| RS6-AC-U1 | 하네스 h1~h6 37건의 **의미**를 제품 포트 위에서 재현(코어 + `LocalSync` 포트 + `createMemoryPersistence`). 이름 대응표를 REPORT에 | [U] |
+| RS6-AC-U1 | 하네스 h1~h6 37건을 **3분류 대응표**로 REPORT에: ① **이식**(제품 포트 위에서 같은 의미 재현 — 코어 + `LocalSync` 포트 + `createMemoryPersistence`) ② **잠금 기반 대체**("같은 persistence 위 코어 여러 개 = 다른 탭"을 흉내 낸 h4·h5 일부·h6-3 CE-3a → `writerLock`·`localSync` 테스트와 RS6-AC-B3로) ③ **폐기**(제품에 없는 경로 — 사유 1줄). ①은 전부 GREEN | [U] |
 | RS6-AC-U2 | C5 T1~T19 중 코어로 닫히는 것(T1·T2·T3·T5·T5b·T10·T12·T13·T16) + rs5-review CX-1(확인 직전 편집·확인 중 편집) RED→GREEN | [U] |
 | RS6-AC-U3 | 편집기 저장 실패 시 DocBook revision 변화 0(G1 — C5 F2 반전) | [U] |
 | RS6-AC-U4 | LV-1: 커밋 지연 주입 → `T_slow` 뒤 `saving-slow` · 편집 계속 수용 · 해제 뒤 `newer` 처리 · 추가 save 제출 0 | [U] |
@@ -350,7 +351,8 @@
 |---|---|---|---|
 | D6-1 | C5 2.3 `SaveLedgerApi`(`mark`/`publish`/`save(token, seq)`/`subscribe`) | 코어 API(`edit`/`save`/`confirm`/`discard`/`replace`/`retryStart`/`acquire`/`release`/`view`) | 하네스 37건·QA로 확정된 쪽을 쓴다. C5 P1 5건(rs5-review)이 코어에서는 구조로 닫힘(dirty = mark 비교) |
 | D6-2 | C5 2.5 "`ProjectRepository.ledger?`" | 코어 접근자 + `LocalSync` 포트(MQ-6-1) | 이름·모양만 다름 — 공개 인터페이스 추가 1은 같음 |
-| D6-3 | MC I6b 커밋마다 문서별 세대 재읽기 | 잠금 획득 때 `fresh()` 1회 + 배타 잠금 | 4절 |
+| D6-3 | MC I6b 커밋마다 문서별 세대 재읽기 | 잠금 획득 때 `fresh()` 1회 + 배타 잠금 — **MC 계약 변경**(MQ-6-1 A에 포함) | 4절 |
+| D6-9 | UX-5 7절 링크 행 — `leave()` 이동 보류(저장 대기) | `edit()` 등록만 끝났으면 저장 완료를 기다리지 않고 이동. `failed`·`readonly`·`stale`이면 지금처럼 보류 | 3절 LV-1 공통 행 · 6.5 고착 해소 |
 | D6-4 | MC I7 "읽기가 끝나지 않으면 가드도 안 풀림" | 포기 토큰 `blocked{timeout}` | LV-2 · MQ-6-3 |
 | D6-5 | SPEC-4 CP4(`PendingDraft`·`hold`·`studioHandoff`) | 코어 lease + seed로 흡수 | 7절 · MQ-6-4 |
 | D6-6 | UX-5 G6(마운트 중 confirm 거짓 확인) | 코어 confirm이 dirty면 save 후 verify → G6 해소. 노출 규칙(MQ-5-3 ★A)은 유지 | 8.2 |

@@ -22,7 +22,8 @@
 | MQ-6-4 | CP4 흡수 | A 흡수 |
 | MQ-6-5 | 코어 메서드 없는 버튼 3개 | A 기존 메서드 + `replace` 조합 |
 | MQ-6-6 | 예산(L0 뒤에만) | A 수치 나온 뒤 판정 |
-| MQ-6-7 | 새 의존성 | 불필요(기록만) |
+
+- 새 의존성: 필요 없음(결정 항목 아님 — I6 0절).
 
 ## 3. 측정 선행 항목 (L0 — `RS6_INTEGRATE_PLAN.md` 1절)
 
@@ -49,7 +50,7 @@
 
 - D6-3 표기 정정 · I6 이미지 GC delete와 코어 "delete op 0" 차이 명시 · BD-1 판정에 같은 탭 직접 IDB 쓰기 예외(6.2) 연결.
 - 금지 경로 diff: `git diff --stat c7a7a2a8 -- app docs/decisions docs/06-handoff/BACKLOG.md docs/design/restart/{CONTRACT-5,UX-5,SPEC-4}.md dev/active/backlog-rs-status` 빈 출력.
-- advisor 호출 1회 시도 → rate-limit으로 미실행(검토는 자체 1회만).
+- advisor: 1차(작성 전) 호출은 rate-limit으로 실행되지 않음. 2차(마감 전) 검토 실행 → 반영 4건: ① 문서 필드 작성자 = 코어·스냅샷 = DocBook 단일화 + 포트 `commit` 레코드 변형 + `conflicted` 판정 출처 정정(I6 5절 G1·8.1) ② RS6-AC-U1 3분류(이식/잠금 기반 대체/폐기) + D6-3을 MC 변경으로 MQ-6-1에 명시 ③ D6-9 링크 이탈 차이 추가 ④ MQ-6-7(결정 아님) 제거 → I6 0절 · L0 선행 조건을 "★A 가정으로 결정 전 착수"로.
 
 ## 7. 필요한 것
 

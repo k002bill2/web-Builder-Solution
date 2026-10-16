@@ -23,12 +23,13 @@
 
 ## r1 보완 (BRIEF-R1 · QA-REVIEW 6절 권고 1~7만)
 - [x] R1-0 BRIEF-R1 커밋 (`75bb5c11`)
-- [ ] R1-3 [P1·R2] 코어 생성 시점·레지스트리 소유·포트 없는 동안 save (I6 2.2·9.2 · PLAN L1) — 다른 항목의 전제라 먼저
-- [ ] R1-1 [P1·R1] lease 해제 save · 탭 수준 beforeunload · 예외 목록 · AC · StudioLeave 14건 표 (I6 3·7·D6-9)
-- [ ] R1-2 [P1·R7] G1 DocBook 경로 규칙 · RED AC · 6.4 `deleteSnapshot`
-- [ ] R1-4 [P2] MQ 링크 이탈 규칙 · MQ-6-1 ADR-007 관계·포트 표면
-- [ ] R1-5 [P2·R5] S6c 제거 목록 고정 · 상쇄 조건
-- [ ] R1-6 [P2] 12건 누락 5건 판정 · RS4-B1 · OBS-2/BD-2 AC · CE-4
-- [ ] R1-7 [P2·R6] PLAN 쓰기 경로 4파일 · I6 11절 StudioLeave · QA 1절 행 번호 정정
-- [ ] R1-8 자체 검토 1회 (옛 문구 grep 0 · 금지 경로 diff 0 · `git diff --check`)
-- [ ] R1-9 REPORT "r1 보완" 절 + 최종 커밋
+- [x] R1-3 [P1·R2] 코어 생성 시점·레지스트리 소유·포트 없는 동안 save (I6 2.2·9.2 · PLAN L1) — 다른 항목의 전제라 먼저 — `1395bda4`
+- [x] R1-1 [P1·R1] lease 해제 save · 탭 수준 beforeunload · 예외 목록 · AC · StudioLeave 14건 표 (I6 3·7·D6-9) — `702d4743`
+- [x] R1-2 [P1·R7] G1 DocBook 경로 규칙 · RED AC · 6.4 `deleteSnapshot` — `ec8c4b89`
+- [x] R1-4 [P2] MQ 링크 이탈 규칙 · MQ-6-1 ADR-007 관계·포트 표면 — `b85c1fc5`
+- [x] R1-5 [P2·R5] S6c 제거 목록 고정 · 상쇄 조건 — `9b65c01a`
+- [x] R1-6 [P2] 12건 누락 5건 판정 · RS4-B1 · OBS-2/BD-2 AC · CE-4 — `9ec5006f`
+- [x] R1-7 [P2·R6] PLAN 쓰기 경로 4파일 · I6 11절 StudioLeave · QA 1절 행 번호 정정 — `047b43ba`
+- [x] R1-8 자체 검토 1회 (옛 문구 grep 0 · 금지 경로 diff 0 · `git diff --check`) — 옛 문구 grep 0 · 금지 경로 diff 빈 출력 · --check 통과
+- [x] R1-9 REPORT "r1 보완" 절 + 최종 커밋 — `a8a46073`
+- r1 로그: 권고 3(R2)을 먼저 반영(레지스트리 위치가 1·4·6·7의 전제). advisor 착수 전 1회 반영. 자체 정정 1건(save-on-leave 근거 행 :93→:90).

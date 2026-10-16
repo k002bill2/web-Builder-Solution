@@ -346,10 +346,10 @@ index 6f792f42..fdc2072d 100644
 +  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, confirm };
  }
 diff --git a/app/vite.config.ts b/app/vite.config.ts
-index a1b1642b..259e9581 100644
+index a1b1642b..caeadda8 100644
 --- a/app/vite.config.ts
 +++ b/app/vite.config.ts
-@@ -11,6 +11,23 @@ import { thumbnailsPlugin } from "./src/thumbs/vitePlugin";
+@@ -11,6 +11,25 @@ import { thumbnailsPlugin } from "./src/thumbs/vitePlugin";
   * 모듈 스크립트는 CORS 요청이라 서버가 `Access-Control-Allow-Origin: null`을 돌려줘야 실행된다 — dev·preview 둘 다.
   * 정적 호스팅 요구사항: 앱 JS·CSS 응답에 같은 헤더(REPORT). 그 밖 출처는 Vite 기본(로컬 호스트만)과 같다.
   */
@@ -364,7 +364,9 @@ index a1b1642b..259e9581 100644
 +  }
 +  return seen;
 +};
-+const resolveDependencies = (_f: string, deps: string[], { hostId }: { hostId: string }) => {
++const resolveDependencies = (_f: string, deps: string[], { hostId, hostType }: { hostId: string; hostType: string }) => {
++  // HTML 엔트리 preload 태그(hostType "html")는 그대로 둔다 — 첫 로드 워터폴 방지
++  if (hostType !== "js") return deps;
 +  const entries = Object.keys(bundleRef).filter((k) => bundleRef[k]?.isEntry);
 +  const loaded = staticClosure([hostId, ...entries]);
 +  return deps.filter((d) => !loaded.has(d));
@@ -373,7 +375,7 @@ index a1b1642b..259e9581 100644
  const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/] };
  
  /**
-@@ -19,7 +36,7 @@ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(
+@@ -19,7 +38,7 @@ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(
   * 불투명 출처 iframe은 부모와 HTTP 캐시를 나누지 않으므로 공유 청크로 얻는 내려받기 이득도 없다. 번들 검사는 두 manifest를 합쳐 엔트리 이름으로 판정한다.
   */
  export default defineConfig(({ mode }) => ({
@@ -382,7 +384,7 @@ index a1b1642b..259e9581 100644
    server: { cors },
    preview: { cors },
    build:
-@@ -31,6 +48,7 @@ export default defineConfig(({ mode }) => ({
+@@ -31,6 +50,7 @@ export default defineConfig(({ mode }) => ({
          : {
            // scripts/check-bundle-size.mjs가 초기 청크를 manifest로 계산한다
            manifest: true,
@@ -390,3 +392,87 @@ index a1b1642b..259e9581 100644
            // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
            assetsInlineLimit: notInlinedIconLimit,
            // 편집기 엔진 공유 청크 1개(issue + runGate) — 목록·근거: src/build/studioEngineChunk.ts
+diff --git a/app/src/features/studio/studioHandoff.tsx b/app/src/features/studio/studioHandoff.tsx
+new file mode 100644
+index 00000000..7a4cc7aa
+--- /dev/null
++++ b/app/src/features/studio/studioHandoff.tsx
+@@ -0,0 +1,78 @@
++/**
++ * 편집기 진입 인계 본문(RESTART SPEC-4 5.3 · CP4 측정 스파이크) — 기억(PendingStart·PendingRecord)이 있을 때만 받는 청크.
++ * 상태 글자 · "저장 확인"(useDocSave.confirm = retry 또는 confirmDoc) · 결과 알림 · 3.2 토큰 해제.
++ */
++import { useRef, useState } from "react";
++import { projectErrorCode, type ProjectRepository } from "../../data/projectRepository";
++import { Button } from "../../components/ds/Button";
++import { release, ticketOf, type Held } from "../pending/pendingWrites";
++
++const T = {
++  status: "브라우저 저장을 확인하지 못했습니다",
++  confirm: "저장 확인",
++  working: "확인하는 중…",
++  ok: "브라우저 저장을 확인했습니다",
++  notApplied: " — 새로 시작(편집 시작)은 반영되지 않았습니다",
++  readOnly: "다른 탭에서 편집 중이라 저장을 확인하지 못했습니다 — 그 탭을 닫은 뒤 저장 확인을 다시 누르세요",
++  stale: "다른 탭에서 바뀐 내용이 있어 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다",
++  cleared: "이 브라우저 데이터가 지워져 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다",
++  images: "이 문서의 일부 이미지는 이 탭에서 더 저장할 수 없습니다 — 새로고침하면 확인되지 않은 변경이 사라집니다",
++  notYet: (why: string) => `아직 저장을 확인하지 못했습니다 · ${why}`,
++};
++/** 4.3 사유 — 탭 사유는 INFRA 문장 끝(infra.ts 문장 — import하면 영속 청크가 따라온다, useDocSave 주석)으로 가린다 */
++const stuckOf = (code: string | undefined, message: string) =>
++  code === "IMAGES_MISSING" ? T.images : message.includes("다른 탭에서 바뀐") ? T.stale : message.includes("데이터가 지워졌") ? T.cleared : undefined;
++
++export default function StudioHandoff({
++  held,
++  repository,
++  projectId,
++  sameAsOrigin,
++  confirm,
++  onDone,
++}: {
++  readonly held: Held;
++  readonly repository: ProjectRepository;
++  readonly projectId: string;
++  readonly sameAsOrigin: () => boolean;
++  readonly confirm: () => Promise<void>;
++  readonly onDone: () => void;
++}) {
++  const [busy, setBusy] = useState(false);
++  const [result, setResult] = useState<{ readonly ok: boolean; readonly text: string; readonly stuck?: boolean }>();
++  const running = useRef(false);
++  const run = async () => {
++    if (running.current) return;
++    running.current = true;
++    setBusy(true);
++    const ticket = ticketOf(repository, projectId);
++    try {
++      await confirm();
++      release(repository, projectId, ticket, "confirmed");
++      setResult({ ok: true, text: T.ok + (held.kind === "start" && sameAsOrigin() ? T.notApplied : "") });
++      onDone();
++    } catch (error) {
++      const code = projectErrorCode(error);
++      if (code === "NOT_FOUND") release(repository, projectId, ticket, "not-applied-absent");
++      const message = String((error as Error)?.message ?? "");
++      const stuck = stuckOf(code, message);
++      setResult({ ok: false, text: stuck ?? (message.includes("탭에서 편집 중") ? T.readOnly : T.notYet(message)), stuck: Boolean(stuck) });
++    } finally {
++      running.current = false;
++      setBusy(false);
++    }
++  };
++  return (
++    <div className="flex min-w-0 items-center gap-2">
++      {!result?.ok && <p className="text-caption1 text-label-alternative">{T.status}</p>}
++      {!result?.ok && !result?.stuck && (
++        <Button variant="outline" size="sm" onClick={run} aria-busy={busy || undefined} aria-disabled={busy || undefined}>
++          {busy ? T.working : T.confirm}
++        </Button>
++      )}
++      <p role={result?.ok ? "status" : "alert"} className="sr-only">
++        {result?.text ?? ""}
++      </p>
++    </div>
++  );
++}

@@ -186,7 +186,7 @@ dist/assets/api-3gz18o8j.js                             56.53 kB │ gzip: 15.93
 dist/assets/StudioLayout-DUsRsKRZ.js                    58.89 kB │ gzip: 19.51 kB
 dist/assets/index-BaAgVHNX.js                          271.56 kB │ gzip: 87.02 kB
 
-✓ built in 281ms
+✓ built in 267ms
 (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
   - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
   - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:6:35). Add the file extension
@@ -208,7 +208,7 @@ dist/assets/KitSerifKR-700-B3ikZB6l.woff2             362.68 kB
 dist/assets/render-ncA71k8b.css                        43.94 kB │ gzip:  8.90 kB
 dist/assets/render-DO4ujvGn.js                        271.17 kB │ gzip: 85.07 kB
 
-✓ built in 122ms
+✓ built in 117ms
 [bundle] 공통 JS (gzip, 참고): 89.34KB
   - assets/index-BaAgVHNX.js 86.11KB
   - assets/react-yIOJJ3r4.js 3.23KB

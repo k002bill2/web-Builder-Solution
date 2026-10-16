@@ -45,10 +45,10 @@ transforming...
 rendering chunks...
 computing gzip size...
 dist/assets/arrow-right-Do6NaTe6.svg                     0.22 kB │ gzip:  0.17 kB
-dist/index.html                                          0.39 kB │ gzip:  0.26 kB
 dist/assets/chevron-down-UGy2Q_vR.svg                    0.44 kB │ gzip:  0.26 kB
 dist/assets/chevron-left-C1r_0PK-.svg                    0.45 kB │ gzip:  0.26 kB
 dist/assets/check-DwDeeBet.svg                           0.45 kB │ gzip:  0.28 kB
+dist/index.html                                          0.47 kB │ gzip:  0.29 kB
 dist/assets/search-DSSU1Eym.svg                          0.59 kB │ gzip:  0.31 kB
 dist/assets/circle-check-Bs3I_2Hu.svg                    0.61 kB │ gzip:  0.36 kB
 dist/assets/bookmark-fill-Di8oDBsW.svg                   0.76 kB │ gzip:  0.40 kB
@@ -208,7 +208,7 @@ dist/assets/KitSerifKR-700-B3ikZB6l.woff2             362.68 kB
 dist/assets/render-ncA71k8b.css                        43.94 kB │ gzip:  8.90 kB
 dist/assets/render-DO4ujvGn.js                        271.17 kB │ gzip: 85.07 kB
 
-✓ built in 125ms
+✓ built in 128ms
 [bundle] 공통 JS (gzip, 참고): 89.10KB
   - assets/index-PHi-KHVq.js 85.87KB
   - assets/react-yIOJJ3r4.js 3.23KB

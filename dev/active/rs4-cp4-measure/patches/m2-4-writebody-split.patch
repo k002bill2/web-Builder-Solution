@@ -40,14 +40,24 @@ index e3d6a1ce..e70322e1 100644
 -export const loadBoardInput = retryableImport(() => import("../domain/boardInput"));
 -/** 3안 계산 본문(composeCandidates·lintPlan, 2a-04c) ← requestGeneration·retryFailed("3안 만들기"·"다시 시도" onClick). 진입 findJob·getJob 폴링은 받지 않는다 */
 -export const loadGenerate = retryableImport(() => import("./memoryGenerate"));
---- new file app/src/data/boardWriteLoader.ts
-/** M2 후보 4(측정용): 보드 쓰기 본문 로더 — writeBodyLoader에서 분리(단일 importer: memoryCompareBoardRepository) */
-import { retryableImport } from "./chunkRetry";
-
-export const loadBoardConfirm = retryableImport(() => import("./memoryBoardConfirm"));
-export const loadBoardInput = retryableImport(() => import("../domain/boardInput"));
---- new file app/src/data/generateLoader.ts
-/** M2 후보 4(측정용): 3안 계산 본문 로더 — writeBodyLoader에서 분리(단일 importer: memoryGenerationRepository) */
-import { retryableImport } from "./chunkRetry";
-
-export const loadGenerate = retryableImport(() => import("./memoryGenerate"));
+diff --git a/app/src/data/boardWriteLoader.ts b/app/src/data/boardWriteLoader.ts
+new file mode 100644
+index 00000000..bab787cc
+--- /dev/null
++++ b/app/src/data/boardWriteLoader.ts
+@@ -0,0 +1,5 @@
++/** M2 후보 4(측정용): 보드 쓰기 본문 로더 — writeBodyLoader에서 분리(단일 importer: memoryCompareBoardRepository) */
++import { retryableImport } from "./chunkRetry";
++
++export const loadBoardConfirm = retryableImport(() => import("./memoryBoardConfirm"));
++export const loadBoardInput = retryableImport(() => import("../domain/boardInput"));
+diff --git a/app/src/data/generateLoader.ts b/app/src/data/generateLoader.ts
+new file mode 100644
+index 00000000..2f2bbc54
+--- /dev/null
++++ b/app/src/data/generateLoader.ts
+@@ -0,0 +1,4 @@
++/** M2 후보 4(측정용): 3안 계산 본문 로더 — writeBodyLoader에서 분리(단일 importer: memoryGenerationRepository) */
++import { retryableImport } from "./chunkRetry";
++
++export const loadGenerate = retryableImport(() => import("./memoryGenerate"));

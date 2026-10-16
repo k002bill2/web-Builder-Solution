@@ -312,10 +312,10 @@ Not implemented: Window's scrollTo() method
 
  Test Files  315 passed (315)
       Tests  2842 passed (2842)
-   Start at  00:53:23
-   Duration  54.81s (environment 45%, tests 31%, setup 9%, transform 9%, import 6%, worker 1%)
+   Start at  00:57:53
+   Duration  52.33s (environment 44%, tests 33%, setup 9%, transform 8%, import 6%, worker 1%)
 
-Environment  jsdom was created 315 times · 206.49s total, 45% of tracked time
+Environment  jsdom was created 315 times · 190.90s total, 44% of tracked time
              create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
              learn more: https://vitest.dev/guide/improving-performance#test-environments
 

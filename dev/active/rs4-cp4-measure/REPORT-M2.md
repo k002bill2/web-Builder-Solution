@@ -1,6 +1,6 @@
 상향 필요: 정규화 +0.80 KB · raw 한도 +0.70 KB (조합+배치안 a 기준, UNMEASURED 하한)
 
-CP4와 무관한 main 적용 가치: **있음** — 조합(후보 1+2)만으로 `/studio` raw 여유 0.14 → 0.60KB · 정규화 여유 0.06 → 0.44KB, 모든 라우트 첫 화면 −0.24~0.28KB(증가 라우트 0). 단 별 작업으로 리뷰·테스트 추가 필요(아래 "주의").
+CP4와 무관한 main 적용 가치: **있음** — 조합(후보 1+2)만으로 `/studio` raw 여유 0.14 → 0.60KB · 정규화 여유 0.06 → 0.44KB, 모든 라우트 첫 화면 −0.25~0.28KB(증가 라우트 0). 단 별 작업으로 리뷰·테스트 추가 필요(아래 "주의").
 
 # RS4-CP4-MEASURE REPORT-M2 — `/studio` 동작 변화 0 감량 후보 실측
 
@@ -30,9 +30,10 @@ CP4와 무관한 main 적용 가치: **있음** — 조합(후보 1+2)만으로 
 
 ## 후보별 판정
 1. **후보 1 — 채택(조합).** `build.modulePreload.resolveDependencies`로 호스트 청크·엔트리의 정적 import 닫힘(이미 실행되어 받은 청크)을 preload 목록에서 뺀다. 번들은 `generateBundle`(order pre) 플러그인으로 잡는다. 패치 `patches/m2-1-preload-dedup.patch`. 모든 라우트 감소 또는 같음.
+   - **HTML 가드(검토 반영)**: Vite는 `resolveDependencies`를 HTML 엔트리 preload 태그에도 부른다(`node.js:31752`). 첫 빌드는 가드가 없어 `dist/index.html`의 `<link rel=modulepreload href=react-*.js>`까지 지웠다(0.47 → 0.39 kB — 첫 로드 워터폴 = 동작 변화). `hostType !== "js"`면 그대로 돌려주는 가드를 넣어 후보 1·조합·조합+a를 다시 빌드했다 → index.html 0.47 kB · react modulepreload 링크 유지(사실, `raw/m2-1-build.txt`·`m2-combo-build.txt`·`m2-combo-m1a-build.txt`). JS 합계 수치는 가드 전과 같다(index.html은 합계 밖).
 2. **후보 2 — 채택(조합).** `modulePreload.polyfill: false`. 패치 `patches/m2-2-polyfill-off.patch`. 모든 라우트 −0.20~0.25.
    - 미지원 브라우저 영향(1줄): Vite 8 기본 target `baseline-widely-available` = chrome111 · edge111 · firefox114 · safari16.4 · ios16.4(`node_modules/vite/dist/node/chunks/node.js:699`, L1) 중 `<link rel=modulepreload>` 미지원은 Firefox 114·Safari/iOS 16.4~16.x뿐(지원 시작 Firefox 115 · Safari 17 — MDN/caniuse 기준, L2·이번에 원문 재확인 안 함) → 그 브라우저에서 index.html의 정적 청크 미리 받기만 빠지고(모듈 그래프 순서대로 받음 = 워터폴) 동작은 같다. 동적 import 프리로드는 헬퍼가 `relList.supports` 분기로 처리해 polyfill과 무관.
-3. **후보 4 — 기각.** `/studio` −0.06(정규화)이지만 청크 재배치로 공통 react 청크 +0.053KB(3,227 → 3,280B) → 모든 라우트 첫 화면 +0.04~0.05(`/profile` 99.88, `/catalog` 100.34). 작은 공유 청크·런타임 청크는 새로 생기지 않았고 오히려 `fonts`·`generationRepository`·`compareBoardRepository` 청크가 사라짐. 또한 테스트 이음새 5곳(`vi.mock("../data/writeBodyLoader")` — WriteBodyLoad·BoardInputLoad·ProfileGenerateLoad·ProfileCandidates·chunkRetryWiring)이 깨져 `tsc`가 실패 → 측정은 tsc를 뺀 빌드 단계(build-thumbs → vite build ×2 → check-bundle-size)로 했다. 패치 `patches/m2-4-writebody-split.patch`(새 파일 2개는 패치 끝에 원문 첨부).
+3. **후보 4 — 기각.** `/studio` −0.06(정규화)이지만 청크 재배치로 공통 react 청크 +0.053KB(3,227 → 3,280B) → 모든 라우트 첫 화면 +0.04~0.05(`/profile` 99.88, `/catalog` 100.34). 작은 공유 청크·런타임 청크는 새로 생기지 않았고 오히려 `fonts`·`generationRepository`·`compareBoardRepository` 청크가 사라짐. 또한 테스트 이음새 5곳(`vi.mock("../data/writeBodyLoader")` — WriteBodyLoad·BoardInputLoad·ProfileGenerateLoad·ProfileCandidates·chunkRetryWiring)이 깨져 `tsc`가 실패 → 측정은 tsc를 뺀 빌드 단계(build-thumbs → vite build ×2 → check-bundle-size)로 했다. 패치 `patches/m2-4-writebody-split.patch`(새 파일 2개 포함 — `git diff --no-index`로 붙임).
 4. **후보 3 — 실측 효과 0(1회 시도).** react 청크(CJS interop + react, 28청크가 import)를 엔트리로 합치려 `preserveEntrySignatures: "allow-extension"`을 줬으나 Vite가 앱 빌드에 이미 `false`(`node.js:25982`)를 줘서 변화 0 — 엔트리 서명은 원인이 아니다. rolldown `optimization.chunkOptimization.mergeCommonChunks`(기본 true)가 react를 합치지 않는 실제 이유는 미확인(L3: 순환 청크 의존 회피 추정). 패치 `patches/m2-3-entry-signature.patch`.
 
 ## 주의 (main 적용 시)
@@ -41,7 +42,7 @@ CP4와 무관한 main 적용 가치: **있음** — 조합(후보 1+2)만으로 
 - 측정 패치의 vite.config 코드는 측정용이라 주석·타입이 최소다. 그대로 커밋하지 않는다.
 
 ## 사실 / 추정 / 미확인
-- 사실(L1): 표 전부, 단순 합 일치(−0.38), 후보 4의 react 청크 +53B·tsc 실패 5곳, 후보 3 변화 0, 조합+a 런타임 청크 없음, 마지막 base 재현.
+- 사실(L1): 표 전부, 패치 6개 `git apply --check` 통과(m2-1·m2-2·m2-3·m2-4·m2-combo-1-2·m2-combo-m1a — 조합+a 패치는 `studioHandoff.tsx` 새 파일 포함), 단순 합 일치(−0.38), 후보 4의 react 청크 +53B·tsc 실패 5곳, 후보 3 변화 0, 조합+a 런타임 청크 없음, 마지막 base 재현.
 - 추정(L2~L3): modulepreload 지원 시작 버전(L2), 후보 3 실패 원인(L3), UNMEASURED를 더한 실제 상향 폭(+0.05~0.1 더 클 가능성, L3).
 - 미확인: 후보 5·6·B분류(범위 밖, 실측 안 함), 브라우저 동작.
 

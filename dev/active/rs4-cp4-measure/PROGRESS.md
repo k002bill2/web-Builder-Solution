@@ -16,7 +16,7 @@
 
 ## M2 실측 (BRIEF-M2, 2026-10-17)
 - [x] M2-0. BRIEF-M2·PROGRESS 커밋
-- [x] M2-1. 후보 1 preload 중복 제거 — /studio 128.32·129.63 (채택)
+- [x] M2-1. 후보 1 preload 중복 제거 — /studio 128.32·129.63 (채택, HTML 가드 추가 후 재빌드·index.html preload 유지 확인)
 - [x] M2-2. 후보 2 polyfill:false — 128.24·129.63 (채택)
 - [x] M2-3. 후보 4 writeBodyLoader 분리 — 128.41·129.70, 공통 +0.06·테스트 이음새 5곳 깨짐 (기각)
 - [x] M2-4. 조합 1+2 — 128.09·129.40

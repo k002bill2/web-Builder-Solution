@@ -285,6 +285,8 @@ export function ProjectsPage({
   const { heldOf, ready } = pendingRows;
   // 목록은 미확인 행 모듈이 온 뒤 그린다 — 가져오기 알림의 첫 행동 포커스도 그 뒤
   const importedNotice = useImportedNotice(session, announce, items !== null && ready, page, heading);
+  // 로딩 상태와 완료 화면(빈 상태·저장소 영역)이 겹치지 않게 — 미확인 행 모듈이 오거나 실패한 뒤에 그린다
+  const settled = items !== null && (ready || pendingRows.failed);
 
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null);
   const openDelete = (projectId: string) => {
@@ -349,7 +351,7 @@ export function ProjectsPage({
           <Callout tone="negative" title="목록을 확인하지 못했습니다 — 저장을 확인하지 못한 프로젝트가 있는지 알 수 없습니다" action={<Button size="sm" variant="outline" onClick={pendingRows.retry}>다시 시도</Button>} />
         </div>
       )}
-      {items !== null && items.length === 0 && <ProjectsEmpty persistence={repository.persistence} />}
+      {settled && items.length === 0 && <ProjectsEmpty persistence={repository.persistence} />}
       {items !== null && ready && items.length > 0 && (
         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft}
           rename={rename}
@@ -368,7 +370,7 @@ export function ProjectsPage({
           <ExportDialogSlot target={exporting} deps={exportDeps} onClose={closeExport} />
         </Suspense>
       )}
-      {items !== null && <BrowserStorageSection persistence={repository.persistence} count={items.length} />}
+      {settled && <BrowserStorageSection persistence={repository.persistence} count={items.length} />}
     </div>
   );
 }

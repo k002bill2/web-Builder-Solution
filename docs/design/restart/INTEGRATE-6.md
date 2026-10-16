@@ -43,7 +43,7 @@
 | I3 confirm wrote:true = 재읽기 증명 | 포트 `verify` = `persistence.get("docs")` hash·revision 비교 + 이미지 레코드 재읽기 | 신설(포트) | 코어 `verify` :174를 제품 레코드 모양으로 |
 | I4 confirm wrote:false | 포트 `verify` + `gate.mode === "writer"` | 신설(포트) | QA-1(rs5-review) 해소 경로 |
 | I5 비영속 | `persistence === "memory"` → 포트 없음 → `not-persistent`. `navigator.locks` 없음 → gate `unsupported` | 유지 | UX-5 `memory-only`·`unsupported` |
-| I6 원자·이미지 | 포트 `commit`이 문서 put + 바인딩 이미지 put + 상태 레코드·meta(도장)를 **한 `queue.submit`** 으로. 참조 이미지가 바인딩에도 IDB에도 없으면 제출 0 | 변경 | 지금 `imageOps`는 맵 없는 참조를 조용히 건너뜀(C5 F4) → 엄격 모드 필요 |
+| I6 원자·이미지 | 포트 `commit`이 문서 put + 바인딩 이미지 put + 상태 레코드·meta(도장)를 **한 `queue.submit`** 으로. 참조 이미지가 바인딩에도 IDB에도 없으면 제출 0 | 변경 | 지금 `imageOps`는 맵 없는 참조를 조용히 건너뜀(C5 F4) → 엄격 모드 필요. 제품 `imageOps`의 참조 밖 id **delete(GC)** 는 코어 계약("delete op 0")과 다르다 → 포트가 GC delete를 같은 트랜잭션에 계속 싣되, discard는 delete를 내지 않는다(CX-3 유지). 편집기 맵 cleanup 삭제(`memoryProjectRepository.ts:138-149`)는 코어 바인딩이 대신하므로 L3에서 정리 [L1-추적] |
 | I6b 예상 세대 | 제품 = **잠금 획득 때 `fresh()` 1회**(meta.generation == hydrated)[L1 `localSync.ts:99-103`] + 탭 수명 잠금 보유(`writerLock.ts:2-3`). 커밋마다 IDB 재읽기 불필요 — 4절 | 대체 | 코어의 문서별 세대 읽기를 제품 잠금 규칙으로 대체 |
 | I7 discard 배타 | 코어 그대로 + 3절 포기 토큰 | 변경(코어) | LV-2 |
 | I8 replace 거절 | 코어 그대로. `adopt` 중 편집(F12)은 `dirty` 거절로 막힘 | 유지 | QA-3 해소 |
@@ -74,7 +74,7 @@
 | `loadDeferredStudio`는 앱 시작 때 1회 | `main.tsx:30` |
 | 쓰기 큐는 `LocalSync`마다 1개, 탭 전역 직렬 | `localSync.ts:154` · C5 F10 |
 
-→ **코어가 `LocalSync` 포트만 쓰면 같은 탭에서 어댑터 2개는 생기지 않는다.** final-qa의 BD-1 재현(`openIdbPersistence` 2회)은 제품 코드에 없는 경로다. 단 이것은 **구조 관례**이고 타입이 막지 않는다.
+→ **코어가 `LocalSync` 포트만 쓰면 같은 탭에서 어댑터 2개는 생기지 않는다**(같은 탭의 `StudioPersistence` 밖 IDB 쓰기 3곳은 6.2 — 전부 멈춤 뒤 새로고침). final-qa의 BD-1 재현(`openIdbPersistence` 2회)은 제품 코드에 없는 경로다. 단 이것은 **구조 관례**이고 타입이 막지 않는다.
 
 ### 2.2 최소안 (구현 레인 규칙)
 
@@ -350,7 +350,7 @@
 |---|---|---|---|
 | D6-1 | C5 2.3 `SaveLedgerApi`(`mark`/`publish`/`save(token, seq)`/`subscribe`) | 코어 API(`edit`/`save`/`confirm`/`discard`/`replace`/`retryStart`/`acquire`/`release`/`view`) | 하네스 37건·QA로 확정된 쪽을 쓴다. C5 P1 5건(rs5-review)이 코어에서는 구조로 닫힘(dirty = mark 비교) |
 | D6-2 | C5 2.5 "`ProjectRepository.ledger?`" | 코어 접근자 + `LocalSync` 포트(MQ-6-1) | 이름·모양만 다름 — 공개 인터페이스 추가 1은 같음 |
-| D6-3 | C5 I6b 성격(MC) 커밋마다 세대 재읽기 | 잠금 획득 때 `fresh()` 1회 + 배타 잠금 | 4절 |
+| D6-3 | MC I6b 커밋마다 문서별 세대 재읽기 | 잠금 획득 때 `fresh()` 1회 + 배타 잠금 | 4절 |
 | D6-4 | MC I7 "읽기가 끝나지 않으면 가드도 안 풀림" | 포기 토큰 `blocked{timeout}` | LV-2 · MQ-6-3 |
 | D6-5 | SPEC-4 CP4(`PendingDraft`·`hold`·`studioHandoff`) | 코어 lease + seed로 흡수 | 7절 · MQ-6-4 |
 | D6-6 | UX-5 G6(마운트 중 confirm 거짓 확인) | 코어 confirm이 dirty면 save 후 verify → G6 해소. 노출 규칙(MQ-5-3 ★A)은 유지 | 8.2 |

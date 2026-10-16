@@ -1,0 +1,45 @@
+diff --git a/app/vite.config.ts b/app/vite.config.ts
+index a1b1642b..259e9581 100644
+--- a/app/vite.config.ts
++++ b/app/vite.config.ts
+@@ -11,6 +11,23 @@ import { thumbnailsPlugin } from "./src/thumbs/vitePlugin";
+  * 모듈 스크립트는 CORS 요청이라 서버가 `Access-Control-Allow-Origin: null`을 돌려줘야 실행된다 — dev·preview 둘 다.
+  * 정적 호스팅 요구사항: 앱 JS·CSS 응답에 같은 헤더(REPORT). 그 밖 출처는 Vite 기본(로컬 호스트만)과 같다.
+  */
++// M2 후보 1(측정용): 이미 정적으로 받은 청크(호스트·엔트리의 정적 import 닫힘)를 preload 목록에서 뺀다
++let bundleRef: Record<string, { type: string; imports?: string[]; isEntry?: boolean }> = {};
++const captureBundle = { name: "m2-capture-bundle", enforce: "pre" as const, generateBundle: { order: "pre" as const, handler(_o: unknown, b: typeof bundleRef) { bundleRef = b; } } };
++const staticClosure = (start: string[], seen = new Set<string>()): Set<string> => {
++  for (const f of start) {
++    if (seen.has(f)) continue;
++    seen.add(f);
++    staticClosure(bundleRef[f]?.imports ?? [], seen);
++  }
++  return seen;
++};
++const resolveDependencies = (_f: string, deps: string[], { hostId }: { hostId: string }) => {
++  const entries = Object.keys(bundleRef).filter((k) => bundleRef[k]?.isEntry);
++  const loaded = staticClosure([hostId, ...entries]);
++  return deps.filter((d) => !loaded.has(d));
++};
++
+ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/] };
+ 
+ /**
+@@ -19,7 +36,7 @@ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(
+  * 불투명 출처 iframe은 부모와 HTTP 캐시를 나누지 않으므로 공유 청크로 얻는 내려받기 이득도 없다. 번들 검사는 두 manifest를 합쳐 엔트리 이름으로 판정한다.
+  */
+ export default defineConfig(({ mode }) => ({
+-  plugins: [react(), tailwindcss(), thumbnailsPlugin()],
++  plugins: [react(), tailwindcss(), thumbnailsPlugin(), captureBundle],
+   server: { cors },
+   preview: { cors },
+   build:
+@@ -31,6 +48,7 @@ export default defineConfig(({ mode }) => ({
+         : {
+           // scripts/check-bundle-size.mjs가 초기 청크를 manifest로 계산한다
+           manifest: true,
++          modulePreload: { resolveDependencies, polyfill: false },
+           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
+           assetsInlineLimit: notInlinedIconLimit,
+           // 편집기 엔진 공유 청크 1개(issue + runGate) — 목록·근거: src/build/studioEngineChunk.ts

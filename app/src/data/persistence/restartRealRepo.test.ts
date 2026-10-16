@@ -9,7 +9,7 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { hashDoc } from "../../engine/ops/hash";
 import { pendingOf } from "../../features/pending/pendingWrites";
 import { CANDIDATE_TEXT } from "../../features/profile/generationText";
-import { restartOnce, startEdit } from "../../features/profile/restartFlow";
+import { openOf, restartOnce, startEdit } from "../../features/profile/restartFlow";
 import { RESTART_TEXT } from "../../features/profile/restartText";
 import { retryPending } from "../../features/projects/pendingRetry";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
@@ -118,6 +118,28 @@ describe("RS3-AC-05 create 커밋 확인 판정표 — 실저장소 단계 주�
     expect(await startEdit(t.repo, "project-1", 1, "B")).toEqual(C_E3);
     expect(pendingOf(t.repo, "project-1")).toBeUndefined();
   });
+
+  // SPEC-3 7절 RS3-AC-05 "before 읽기 실패 + now = 요청 쌍 → C-E5" · SPEC-4 4.1 F-6(origin unknown + now 문서 있음 = C-E5)
+  it("before 읽기 실패 + response 단계 실패(now = 요청 쌍) → C-E5 · 기억 held unknown", async () => {
+    const t = await tab();
+    const before = once((c) => c.method === "getDoc" && c.phase === "request");
+    const lost = once((c) => c.method === "startDoc" && c.phase === "response");
+    t.inject.fail = (c) => before(c) ?? lost(c);
+    expect(await startEdit(t.repo, "project-1", 1, "B")).toMatchObject({ alert: RESTART_TEXT.createUnknown, retry: true, held: "unknown" });
+    expect(await t.repo.getDoc("project-1")).toMatchObject({ candidateId: "B", profileVersion: 1 });
+    expect(pendingOf(t.repo, "project-1")).toMatchObject({ kind: "start", mode: "create", held: "unknown", origin: { kind: "unknown" } });
+  });
+
+  // SPEC-3 7절 RS3-AC-05 "C-E4 상태에서 편집기 이동 0" · SPEC-3 5절 "이동 금지: C-E4·C-E5 상태에서는 편집기로 보내지 않는다"
+  it("C-E4 상태에서 같은 안·다른 안 편집 시작 · 재시도(flush 계속 실패) 모두 편집기 이동 0", async () => {
+    const t = await tab();
+    t.gate.fail = true;
+    expect(await startEdit(t.repo, "project-1", 1, "B")).toMatchObject(C_E4);
+    for (const out of [await startEdit(t.repo, "project-1", 1, "B"), await startEdit(t.repo, "project-1", 1, "C"), await startEdit(t.repo, "project-1", 1, "B", true)]) {
+      expect(out).not.toHaveProperty("go");
+      expect(out).toMatchObject(C_E4);
+    }
+  });
 });
 
 describe("RS3-AC-07b 진행된 revision에서 게이트 유지 — 실저장소 IDB 단언", () => {
@@ -141,6 +163,58 @@ describe("RS3-AC-07b 진행된 revision에서 게이트 유지 — 실저장소 
     await settle();
     expect((await t.stored())?.doc).toEqual(await t.repo.getDoc("project-1"));
     expect((await t.stored())?.doc.meta.title).toBe("편집");
+    expect(pendingOf(t.repo, "project-1")).toBeUndefined();
+  });
+
+  // SPEC-3 7절 RS3-AC-07b "/projects 재시도와 프로필 R-E4 재시도 모두 flush 계속 실패 → 기억 유지 · 링크 0 · P-U3/R-E4 · \"반영되지 않았다\" 문장 0"
+  it("restart R-E4 → 편집 저장 quota(revision +2) → 프로필 R-E4 재시도 flush 계속 실패 = R-E4 유지 · 미반영 문장 0 → 성공 → IDB = 메모리", async () => {
+    const t = await tab();
+    const { doc } = await t.repo.startDoc("project-1", 1, "A", "create");
+    await settle();
+    t.gate.fail = true;
+    expect(await restartOnce(t.repo, "project-1", { selected: "B", version: 1, doc })).toEqual({ held: "unconfirmed" });
+    const started = (await t.repo.getDoc("project-1"))!;
+    await expect(t.repo.saveDoc("project-1", started.revision, edit(started, "편집"))).rejects.toBeTruthy();
+    expect((await t.repo.getDoc("project-1"))!.revision).toBe(doc.revision + 2);
+    const entry = await startEdit(t.repo, "project-1", 1, "C");
+    expect(entry).toMatchObject({ open: { selected: "B", held: "unconfirmed" } });
+    const open = openOf(pendingOf(t.repo, "project-1")!)!;
+    const again = await restartOnce(t.repo, "project-1", open);
+    expect(again).toMatchObject({ held: "unconfirmed" });
+    expect(JSON.stringify(again)).not.toContain("반영되지 않았");
+    expect(RESTART_TEXT.unconfirmed(open.doc)).not.toContain("반영되지 않았");
+    expect(pendingOf(t.repo, "project-1")).toMatchObject({ kind: "start", mode: "restart", selected: "B", held: "unconfirmed" });
+    expect((await t.stored())?.doc.candidateId).toBe("A");
+    t.gate.fail = false;
+    expect(await restartOnce(t.repo, "project-1", openOf(pendingOf(t.repo, "project-1")!)!)).toMatchObject({ done: {} });
+    await settle();
+    expect((await t.stored())?.doc).toEqual(await t.repo.getDoc("project-1"));
+    expect((await t.stored())?.doc).toMatchObject({ candidateId: "B", meta: { title: "편집" } });
+    expect(pendingOf(t.repo, "project-1")).toBeUndefined();
+  });
+
+  // SPEC-3 7절 RS3-AC-07b "create(C-E4)도 같다" · "\"반영되지 않았다\" 문장 0"
+  it("create C-E4 → 편집 저장 quota → /projects·프로필 재시도 flush 계속 실패 = C-E4/P-U3 유지 · 미반영 문장 0 → 성공 → IDB = 메모리 · 기억 삭제", async () => {
+    const t = await tab();
+    t.gate.fail = true;
+    expect(await startEdit(t.repo, "project-1", 1, "B")).toMatchObject(C_E4);
+    const created = (await t.repo.getDoc("project-1"))!;
+    await expect(t.repo.saveDoc("project-1", created.revision, edit(created, "편집"))).rejects.toBeTruthy();
+    expect((await t.repo.getDoc("project-1"))!.revision).toBe(created.revision + 1);
+    const projects = await retryPending(t.repo, pendingOf(t.repo, "project-1")!);
+    expect(projects.ok).toBe(false);
+    expect(projects.text).not.toContain("반영되지 않았");
+    expect(pendingOf(t.repo, "project-1")).toMatchObject({ kind: "start", mode: "create", selected: "B", held: "unconfirmed" });
+    const profile = await startEdit(t.repo, "project-1", 1, "B", true);
+    expect(profile).toMatchObject(C_E4);
+    expect(JSON.stringify(profile)).not.toContain("반영되지 않았");
+    expect(pendingOf(t.repo, "project-1")).toMatchObject({ kind: "start", mode: "create", held: "unconfirmed" });
+    expect(await t.stored()).toBeUndefined();
+    t.gate.fail = false;
+    expect((await retryPending(t.repo, pendingOf(t.repo, "project-1")!)).ok).toBe(true);
+    await settle();
+    expect((await t.stored())?.doc).toEqual(await t.repo.getDoc("project-1"));
+    expect((await t.stored())?.doc).toMatchObject({ candidateId: "B", meta: { title: "편집" } });
     expect(pendingOf(t.repo, "project-1")).toBeUndefined();
   });
 });

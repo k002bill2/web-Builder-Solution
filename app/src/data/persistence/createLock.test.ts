@@ -3,7 +3,6 @@
  * 거절되면 메모리 문서·멱등 기록·목록·IDB·큐 제출 모두 0(갈라짐 0). 잠금 소유자는 탭당 LocalSync 쓰기 문 하나 — 흐름별 잠금 0.
  * 브라우저 1개 = 메모리 가짜 영속 1개 + 잠금 가짜 registry 1개(restartLock.test.ts와 같은 모양).
  */
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { isTerminal } from "../../domain/generation";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
@@ -19,7 +18,7 @@ import { CLEARED_TAB, READ_ONLY_TAB, STALE_TAB } from "./infra";
 import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type StudioPersistence, type WriteOp } from "./studioPersistence";
 import type { TabLink } from "./tabLink";
-import { WRITER_LOCK, type WriterLocks } from "./writerLock";
+import { WRITER_LOCK, tryLock, type WriterLocks } from "./writerLock";
 
 const imports = {
   ...STUDIO_IMPORTS,
@@ -148,6 +147,44 @@ describe("RS3-AC-04 같은 탭 잠금 소유 공통", () => {
     await expect(projects.startDoc("project-1", 1, "B", "create")).resolves.toMatchObject({ doc: { candidateId: "B" } });
   });
 
+  it("②-b 파괴 흐름 잠금: 잡은 동안 재요청 = 재사용(true) · 다른 탭은 못 잡음 · 놓고 다시 잡으면 실제로 다시 잡는다", async () => {
+    const { browser } = await seeded();
+    const locks = browser.tab();
+    const link = createLinkNetwork().tab();
+    const other = browser.tab();
+    const hold = tabLockHold(link, locks);
+    expect(await hold.acquire()).toBe(true);
+    // 이미 쥐고 있으면 재사용 — Web Locks 재진입 불가라 다시 tryLock 하면 false
+    expect(await tabLockHold(link, locks).acquire()).toBe(true);
+    hold.release();
+    await settle();
+    expect(await hold.acquire()).toBe(true);
+    // 다시 잡은 잠금이 진짜 잠금인지 — 다른 탭 tryLock 은 실패
+    expect(await tryLock(other)).toBeUndefined();
+    hold.release();
+    await settle();
+    const otherRelease = await tryLock(other);
+    expect(otherRelease).toBeTypeOf("function");
+    otherRelease?.();
+  });
+
+  it("②-c 쓰기 탭 파괴 흐름 = 싱크 보유 잠금 재사용(true) · release 뒤에도 같은 탭 쓰기 계속", async () => {
+    const { persistence, browser } = await seeded();
+    const locks = browser.tab();
+    const link = createLinkNetwork().tab();
+    const a = await openTab(persistence, locks, link);
+    const projects = await a.projects();
+    await projects.renameProject("project-1", 1, "쓰기 탭");
+    await settle();
+    expect(link.own()?.isWriter()).toBe(true);
+    const hold = tabLockHold(link, locks);
+    expect(await hold.acquire()).toBe(true);
+    hold.release();
+    await settle();
+    expect(await tryLock(browser.tab())).toBeUndefined();
+    await expect(projects.startDoc("project-1", 1, "B", "create")).resolves.toMatchObject({ doc: { candidateId: "B" } });
+  });
+
   it("③ 쓰기 탭 파괴 흐름 실패(싱크 멈춤) 뒤 create → 지워짐 사유(새로고침 안내) · 쓰기 0", async () => {
     const { persistence, browser } = await seeded();
     const locks = browser.tab();
@@ -165,8 +202,5 @@ describe("RS3-AC-04 같은 탭 잠금 소유 공통", () => {
     expect(docWrites(a.writes)).toHaveLength(before);
   });
 
-  it("프로필·/projects 흐름 코드에서 tryLock 직접 호출 0(파괴 흐름 공유 tabLockHold만)", () => {
-    const files = ["../../features/profile/restartFlow.ts", "../../features/profile/RestartDialog.tsx", "../../features/profile/CandidatesSection.tsx", "../../components/projects/ProjectRow.tsx"];
-    for (const file of files) expect(readFileSync(new URL(file, import.meta.url), "utf8")).not.toMatch(/tryLock/);
-  });
+  // 프로필·/projects 흐름 코드의 tryLock 직접 호출 0 — import 그래프 가드로 이동: src/test/tryLockGuard.test.ts
 });

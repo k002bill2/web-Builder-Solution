@@ -1,0 +1,70 @@
+# 임시 mutation: core/saveCore.ts attach().detach를 v0처럼 바인딩 폐기(`attached = new Map()`)로 바꾼 상태 — 실행 뒤 원복(커밋 안 함)
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-harness/dev/active/save-core-harness
+
+ ❯ test/h3.test.ts (4 tests | 2 failed) 10ms
+   ❯ H3 이미지 바인딩·원자 실패·재시도 (4)
+     × 다른 탭이 잠금 보유(readonly 거절) → detach → 잠금 해제 → 재시도: 바인딩 동결 보존 · 리로드 Blob 일치 · delete op 0 7ms
+     × transaction abort(confirm 경로): failed → detach → confirm 재시도 confirmed · 문서/이미지 함께 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > 다른 탭이 잠금 보유(readonly 거절) → detach → 잠금 해제 → 재시도: 바인딩 동결 보존 · 리로드 Blob 일치 · delete op 0
+AssertionError: expected { status: 'failed', …(1) } to match object { status: 'confirmed', …(2) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "receipt": {
+-     "hash": "d141d853",
+-     "imageIds": [
+-       "img-b",
+-     ],
+-   },
+-   "status": "confirmed",
+-   "wrote": true,
++   "status": "failed",
+  }
+
+ ❯ test/h3.test.ts:31:34
+     29|     held.release();
+     30|     await new Promise((r) => setTimeout(r, 0));
+     31|     expect(await core.confirm()).toMatchObject({ status: "confirmed", …
+       |                                  ^
+     32|     expect(onlyDocAndImagePuts(db.ops)).toBe(true);
+     33|     const reloaded = await openSaveCore({ projectId: P, persistence: d…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/h3.test.ts > H3 이미지 바인딩·원자 실패·재시도 > transaction abort(confirm 경로): failed → detach → confirm 재시도 confirmed · 문서/이미지 함께
+AssertionError: expected { status: 'failed', …(1) } to match object { status: 'confirmed', wrote: true }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "status": "confirmed",
+-   "wrote": true,
++   "status": "failed",
+  }
+
+ ❯ test/h3.test.ts:61:34
+     59|     expect([await readStored(db.persistence, P), await readImage(db.pe…
+     60|     view.detach();
+     61|     expect(await core.confirm()).toMatchObject({ status: "confirmed", …
+       |                                  ^
+     62|     expect(await (await readImage(db.persistence, "img-b"))?.text()).t…
+     63|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  02:11:56
+   Duration  135ms (transform 63%, tests 17%, import 16%, worker 3%)
+
+exit 1

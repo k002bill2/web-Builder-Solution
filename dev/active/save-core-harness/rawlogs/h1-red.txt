@@ -1,0 +1,65 @@
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/save-core-harness/dev/active/save-core-harness
+
+ ❯ test/h1.test.ts (3 tests | 2 failed) 13ms
+   ❯ H1 저장 중 편집·cleanup·늦은 완료 (3)
+     × 커밋 전 편집 B + detach → A 완료: newer=true · dirty · confirmed=A(≠B) · B 문서/Blob 보존 → 재저장으로 B+Blob 영속 7ms
+     × 늦은 callback: A 커밋 보류 중 B 저장 시작 → A가 나중에 풀려도 IDB·confirmed는 B(세대로 식별) 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/h1.test.ts > H1 저장 중 편집·cleanup·늦은 완료 > 커밋 전 편집 B + detach → A 완료: newer=true · dirty · confirmed=A(≠B) · B 문서/Blob 보존 → 재저장으로 B+Blob 영속
+AssertionError: expected { status: 'saved', …(2) } to match object { status: 'saved', newer: true, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "newer": true,
++   "newer": false,
+    "receipt": {
+      "hash": "7f488f7f",
+    },
+    "status": "saved",
+  }
+
+ ❯ test/h1.test.ts:23:20
+     21|     gate.release();
+     22|     const result = await pending;
+     23|     expect(result).toMatchObject({ status: "saved", newer: true, recei…
+       |                    ^
+     24|     const v = core.view();
+     25|     expect(v.dirty).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/h1.test.ts > H1 저장 중 편집·cleanup·늦은 완료 > 늦은 callback: A 커밋 보류 중 B 저장 시작 → A가 나중에 풀려도 IDB·confirmed는 B(세대로 식별)
+AssertionError: expected { status: 'saved', …(2) } to match object { status: 'saved', newer: true }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "newer": true,
++   "newer": false,
+    "status": "saved",
+  }
+
+ ❯ test/h1.test.ts:63:16
+     61|     gate.release();
+     62|     const [rA, rB] = await Promise.all([pA, pB]);
+     63|     expect(rA).toMatchObject({ status: "saved", newer: true });
+       |                ^
+     64|     expect(rB).toMatchObject({ status: "saved", newer: false, receipt:…
+     65|     if (rA.status !== "saved" || rB.status !== "saved") throw new Erro…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  02:02:06
+   Duration  129ms (transform 56%, tests 24%, import 16%, worker 4%)
+
+exit 1

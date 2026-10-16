@@ -1,0 +1,13 @@
+diff --git a/app/vite.config.ts b/app/vite.config.ts
+index a1b1642b..c7353d15 100644
+--- a/app/vite.config.ts
++++ b/app/vite.config.ts
+@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => ({
+           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
+           assetsInlineLimit: notInlinedIconLimit,
+           // 편집기 엔진 공유 청크 1개(issue + runGate) — 목록·근거: src/build/studioEngineChunk.ts
+-          rollupOptions: { output: { codeSplitting: { groups: [{ name: "issue", test: studioEngineChunk, includeDependenciesRecursively: false }] } } },
++          rollupOptions: { preserveEntrySignatures: "allow-extension", output: { codeSplitting: { groups: [{ name: "issue", test: studioEngineChunk, includeDependenciesRecursively: false }] } } },
+         },
+   test: {
+     environment: "jsdom",

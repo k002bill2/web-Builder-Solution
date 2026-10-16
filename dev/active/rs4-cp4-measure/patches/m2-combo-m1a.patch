@@ -1,0 +1,478 @@
+diff --git a/app/src/components/studio/StudioLayout.tsx b/app/src/components/studio/StudioLayout.tsx
+index ae35d336..213735c4 100644
+--- a/app/src/components/studio/StudioLayout.tsx
++++ b/app/src/components/studio/StudioLayout.tsx
+@@ -43,6 +43,7 @@ import { ExportRetryAlert } from "./ExportRetryAlert";
+ import { PngSave } from "./PngSave";
+ import { emitEditorEvent } from "../../features/studio/editorEvents";
+ import type { ImageKeeper, RenderImages } from "../../features/studio/images/store/types";
++import { hold, pendingOf } from "../../features/pending/pendingWrites";
+ 
+ const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+ /** 미저장 편집이 남은 채 멈춘 저장 상태 — PNG 준비 전 이유로 저장 상태 문장을 보인다(P2-a) */
+@@ -51,6 +52,8 @@ const UNSAVED: ReadonlySet<AutosaveState["phase"]> = new Set(["failed", "offline
+ const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
+ /** 내보내기 경고 확인 대화상자 · 결과(조작 뒤, S-B5) — 내보내기 버튼을 누른 뒤에만 받는다 */
+ const ExportConfirmDialog = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportConfirmDialog })));
++/** 편집기 진입 인계 본문(RESTART SPEC-4 5.3) — 진입 때 미확인 기억(start·record)이 있을 때만 자동으로 받는다 */
++const StudioHandoff = lazy(() => import("../../features/studio/studioHandoff"));
+ const ExportResultView = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportResultView })));
+ 
+ /**
+@@ -77,7 +80,20 @@ export function StudioLayout({
+   readonly focusHeading: boolean;
+ }) {
+   const saveRepository = useMemo(() => toDocSaveRepository(repository), [repository]);
+-  const save = useDocSave({ repository: saveRepository, projectId: project.projectId, initialDoc });
++  // 인계(5.3) — 진입 때 기억 1회 조회. draft = 내용 복원(dirty · 충돌이면 stale), start·record = 미확인
++  const [held] = useState(() => pendingOf(repository, project.projectId));
++  const draft = held?.kind === "draft" ? held : undefined;
++  const [startDoc] = useState(() => (draft?.doc as PageDoc | undefined) ?? initialDoc);
++  const [confirmed, setConfirmed] = useState(false);
++  // 떠남(5.3 · 3.3-5) — 이 cleanup은 저장 훅보다 먼저 선언해 hold가 리스너 해제보다 먼저 돈다
++  const leaveHold = useRef<() => void>(undefined);
++  useEffect(() => () => leaveHold.current?.(), []);
++  const save = useDocSave({
++    repository: saveRepository,
++    projectId: project.projectId,
++    initialDoc: startDoc,
++    initial: draft ? (draft.conflict ? { phase: "stale", latest: draft.conflict.latest as PageDoc | undefined } : { phase: "dirty" }) : held ? { phase: "unconfirmed" } : undefined,
++  });
+   const doc = save.doc;
+   const [resolving, setResolving] = useState(false);
+   const mode = useLayoutMode();
+@@ -305,7 +321,14 @@ export function StudioLayout({
+   );
+ 
+   // 캔버스 images 맵(SPEC m2c 5.1) — 패널 청크의 보관소가 채우고 비운다. 편집 틀이 사라지면 함께 놓인다
+-  const [images, setImages] = useState<RenderImages>();
++  const [images, setImages] = useState<RenderImages | undefined>(() => draft?.images as RenderImages | undefined);
++  useEffect(() => {
++    leaveHold.current = () => {
++      const phase = save.state.phase;
++      if (phase === "idle" || phase === "saved" || (held && !draft && !confirmed && phase === "failed" && save.doc === startDoc)) return;
++      hold(repository, project.projectId, { doc: save.doc, images, conflict: save.conflict, head: save.doc });
++    };
++  });
+   // 로컬 영속 이미지(ADR-007 P1b · Codex 제약 2) — 맵 등록 + 마운트 때 복원 시작(본문은 별도 청크)
+   useEffect(() => (repository as ImageKeeper).images?.(project.projectId, images, setImages), [repository, project.projectId, images]);
+   const undoDoc = ops.canUndoLast ? undoTarget?.before : undefined;
+@@ -341,7 +364,25 @@ export function StudioLayout({
+   );
+ 
+   const docTag = docTagText(doc);
+-  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
++  const handing = held && !draft;
++  const origin = held?.kind === "start" && held.origin.kind === "doc" ? held.origin.head : undefined;
++  const saveStatus = (
++    <>
++      {handing && (
++        <Suspense fallback={null}>
++          <StudioHandoff
++            held={held}
++            repository={repository}
++            projectId={project.projectId}
++            sameAsOrigin={() => origin?.candidateId === doc.candidateId && origin?.profileVersion === doc.profileVersion}
++            confirm={save.confirm}
++            onDone={() => setConfirmed(true)}
++          />
++        </Suspense>
++      )}
++      {(!handing || confirmed) && <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />}
++    </>
++  );
+   const conflict = (
+     <>
+       {snaps.layer}
+diff --git a/app/src/features/pending/pendingText.ts b/app/src/features/pending/pendingText.ts
+index 3862f333..6250b19e 100644
+--- a/app/src/features/pending/pendingText.ts
++++ b/app/src/features/pending/pendingText.ts
+@@ -11,6 +11,10 @@ export const PENDING_TEXT = Object.freeze({
+   create: (version: number, selected: string) => `편집 시작한 문서(${selected}안 · v${version})가 브라우저에 저장됐는지 확인하지 못했습니다`,
+   unknown: (version: number, selected: string) => `${selected}안 · v${version}로 바뀌었는지 확인하지 못했습니다`,
+   record: (head?: Head) => `이 문서${at(head)}가 브라우저에 저장됐는지 확인하지 못했습니다`,
++  draft: (head?: Head) => `편집기에서 저장을 확인하지 못한 편집이 있습니다${at(head)}`,
++  draftConflict: "다른 변경과 충돌한 편집이 있습니다 — 편집기에서 어느 쪽을 남길지 고르세요",
++  draftBlocked: "이 탭은 더 저장할 수 없습니다 — 새로고침하면 이 편집은 사라집니다",
++  continueInEditor: "편집기에서 이어 저장",
+   retrySave: "저장 다시 시도",
+   confirm: "저장 확인",
+   working: "확인하는 중…",
+diff --git a/app/src/features/pending/pendingWrites.ts b/app/src/features/pending/pendingWrites.ts
+index bbdf4eb9..9a08b79b 100644
+--- a/app/src/features/pending/pendingWrites.ts
++++ b/app/src/features/pending/pendingWrites.ts
+@@ -29,7 +29,20 @@ export interface PendingRecord {
+   readonly head?: DocHead;
+ }
+ 
+-export type Pending = PendingStart | PendingRecord;
++/** 편집기에서 저장을 확인하지 못한 편집(CP4) — 떠날 때 cleanup에서 보관 · 재진입 때 복원 */
++export interface PendingDraft {
++  readonly kind: "draft";
++  readonly projectId: string;
++  readonly doc: unknown;
++  readonly images?: unknown;
++  readonly conflict?: { readonly latest?: unknown };
++  readonly blocked?: boolean;
++  readonly settling?: Promise<unknown>;
++  readonly under?: PendingStart | PendingRecord;
++  readonly head?: DocHead;
++}
++
++export type Pending = PendingStart | PendingRecord | PendingDraft;
+ export type Held = Pending & { readonly token: number };
+ /** 요청 시작 때 잡는 세대 — 끝날 때 그대로여야 전이한다 */
+ export interface Ticket {
+@@ -102,6 +115,24 @@ export function settle(repo: object, projectId: string, ticket: Ticket, next: Pe
+   return true;
+ }
+ 
++/** 편집기 떠남 — 지금 기억 위에 draft를 놓는다(이전 draft면 그 under를 잇는다). 세대 확인 없이 적용 */
++export function hold(repo: object, projectId: string, draft: Omit<PendingDraft, "kind" | "projectId" | "under">) {
++  const now = pendingOf(repo, projectId);
++  const under = now?.kind === "draft" ? now.under : now;
++  return settle(repo, projectId, ticketOf(repo, projectId), { ...draft, kind: "draft", projectId, under });
++}
++
++/** 토큰 해제 — 시작 때 잡은 토큰이 지금 기억과 같을 때만 지운다(늦은 해제가 새 draft를 지우지 않는다 · N1). draft면 under만 지운다 */
++export function release(repo: object, projectId: string, ticket: Ticket, why: ReleaseWhy) {
++  const now = pendingOf(repo, projectId);
++  if (!now) return false;
++  if (now.token !== ticket.token) {
++    if (now.kind !== "draft" || !now.under) return false;
++    return settle(repo, projectId, ticketOf(repo, projectId), { ...now, under: undefined });
++  }
++  return settle(repo, projectId, ticketOf(repo, projectId), undefined, why);
++}
++
+ /** 진행 중 요청 보호 — 끝나기 전(커밋 여부를 모르는 구간) 새로고침을 경고한다. 판정·기억 전이는 work 안에서 끝내야 카운트가 0을 거치지 않는다 */
+ export async function guarding<T>(work: () => Promise<T>): Promise<T> {
+   inflight += 1;
+diff --git a/app/src/features/projects/pendingRows.ts b/app/src/features/projects/pendingRows.ts
+index 889e4db7..bb8e39e2 100644
+--- a/app/src/features/projects/pendingRows.ts
++++ b/app/src/features/projects/pendingRows.ts
+@@ -10,6 +10,10 @@ export { DiscardConfirm, pendingOf, subscribe };
+ 
+ /** P-U1 상태 글자 · 주 버튼 이름 */
+ export function describePending(p: Pending): { readonly status: string; readonly label: string } {
++  if (p.kind === "draft") {
++    const status = p.blocked ? P.draftBlocked : p.conflict ? P.draftConflict : P.draft(p.head);
++    return { status, label: p.blocked ? "" : P.continueInEditor };
++  }
+   const status =
+     p.kind === "record" ? P.record(p.head) : p.held === "unknown" ? P.unknown(p.version, p.selected) : p.mode === "restart" ? P.restart(p.version, p.selected) : P.create(p.version, p.selected);
+   return { status, label: p.kind === "record" ? P.confirm : P.retrySave };
+diff --git a/app/src/features/studio/studioRepository.ts b/app/src/features/studio/studioRepository.ts
+index 229ba8f6..5c04a189 100644
+--- a/app/src/features/studio/studioRepository.ts
++++ b/app/src/features/studio/studioRepository.ts
+@@ -15,6 +15,7 @@ export function toDocSaveRepository(repository: ProjectRepository): DocSaveRepos
+   return {
+     persistence: repository.persistence,
+     saveDoc: (projectId, expectedRevision, doc) => repository.saveDoc(projectId, expectedRevision, doc),
++    confirmDoc: (projectId) => repository.confirmDoc(projectId),
+     resolveConflict: async (projectId, choice, myDoc) => {
+       const resolved = await repository.resolveConflict(projectId, choice, myDoc);
+       if (!isPageDoc(resolved)) throw new ProjectRepositoryError("SCHEMA_INVALID", "충돌 해결 결과가 편집 문서 모양이 아닙니다");
+diff --git a/app/src/features/studio/useAutosaveScheduler.ts b/app/src/features/studio/useAutosaveScheduler.ts
+index 280c68c4..351bc1b1 100644
+--- a/app/src/features/studio/useAutosaveScheduler.ts
++++ b/app/src/features/studio/useAutosaveScheduler.ts
+@@ -42,6 +42,8 @@ export interface AutosaveOptions<T> {
+   readonly isOnline?: () => boolean;
+   readonly onChange: (state: AutosaveState) => void;
+   readonly now?: () => number;
++  /** 시작 상태(RESTART SPEC-4 5.3 인계 — 미확인 = failed 계열 · 충돌 draft = stale) */
++  readonly initial?: AutosaveState;
+ }
+ 
+ export interface AutosaveScheduler<T> {
+@@ -52,6 +54,8 @@ export interface AutosaveScheduler<T> {
+   resume(): void;
+   settle(): void;
+   dispose(): void;
++  /** 저장 전 변경 또는 진행 중 저장이 있나(5.3 저장 확인 ①) */
++  busy(): boolean;
+ }
+ 
+ export const AUTOSAVE_DEBOUNCE_MS = 2000;
+@@ -85,6 +89,14 @@ class Scheduler<T> implements AutosaveScheduler<T> {
+ 
+   constructor(options: AutosaveOptions<T>) {
+     this.options = options;
++    if (options.initial) {
++      this.state = options.initial;
++      this.stale = options.initial.phase === "stale";
++    }
++  }
++
++  busy(): boolean {
++    return this.saving || this.pending();
+   }
+ 
+   change(doc: T): void {
+@@ -239,9 +251,11 @@ export interface UseAutosaveOptions<T> {
+   readonly persistence: ProjectPersistence;
+   readonly debounceMs?: number;
+   readonly maxWaitMs?: number;
++  readonly initial?: AutosaveState;
+ }
+ 
+ export interface UseAutosave<T> {
++  readonly busy: () => boolean;
+   readonly state: AutosaveState;
+   readonly change: (doc: T) => void;
+   readonly retry: () => AutosavePhase | undefined;
+@@ -250,8 +264,9 @@ export interface UseAutosave<T> {
+ }
+ 
+ /** 얇은 훅 — window online/offline 연결, 떠나기 경고(needsUnloadGuard일 때만 등록), unmount 정리 */
+-export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWaitMs }: UseAutosaveOptions<T>): UseAutosave<T> {
+-  const [state, setState] = useState<AutosaveState>(IDLE);
++export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWaitMs, initial }: UseAutosaveOptions<T>): UseAutosave<T> {
++  const [state, setState] = useState<AutosaveState>(initial ?? IDLE);
++  const initialRef = useRef(initial);
+   const saveRef = useRef(save);
+   const schedulerRef = useRef<AutosaveScheduler<T> | null>(null);
+ 
+@@ -266,6 +281,7 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
+       maxWaitMs,
+       isOnline: () => navigator.onLine,
+       onChange: setState,
++      initial: initialRef.current,
+     });
+     schedulerRef.current = scheduler;
+     const goOnline = () => scheduler.setOnline(true);
+@@ -295,5 +311,6 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
+   const retry = useCallback(() => schedulerRef.current?.retry(), []);
+   const resume = useCallback(() => schedulerRef.current?.resume(), []);
+   const settle = useCallback(() => schedulerRef.current?.settle(), []);
+-  return { state, change, retry, resume, settle };
++  const busy = useCallback(() => schedulerRef.current?.busy() ?? false, []);
++  return { state, change, retry, resume, settle, busy };
+ }
+diff --git a/app/src/features/studio/useDocSave.ts b/app/src/features/studio/useDocSave.ts
+index 6f792f42..fdc2072d 100644
+--- a/app/src/features/studio/useDocSave.ts
++++ b/app/src/features/studio/useDocSave.ts
+@@ -22,6 +22,7 @@ export interface DocSaveRepository {
+   readonly persistence: ProjectPersistence;
+   saveDoc(projectId: string, expectedRevision: number, doc: PageDoc): Promise<DocHead>;
+   resolveConflict(projectId: string, choice: ConflictChoice, myDoc: PageDoc): Promise<PageDoc>;
++  confirmDoc?(projectId: string): Promise<void>;
+ }
+ 
+ export interface UseDocSaveOptions {
+@@ -30,6 +31,8 @@ export interface UseDocSaveOptions {
+   readonly initialDoc: PageDoc;
+   readonly debounceMs?: number;
+   readonly maxWaitMs?: number;
++  /** 인계 시작 상태(RESTART SPEC-4 5.3): unconfirmed = 미확인 기억 · dirty = draft 복원 · stale = 충돌 draft(latest 동봉) */
++  readonly initial?: { readonly phase: "unconfirmed" | "dirty" | "stale"; readonly latest?: PageDoc };
+ }
+ 
+ export interface DocConflict {
+@@ -52,12 +55,18 @@ export interface UseDocSave {
+   readonly flushed: () => Promise<boolean>;
+   readonly adopt: (write: (revision: number) => Promise<PageDoc>) => Promise<PageDoc | undefined>;
+   readonly leave: () => Promise<boolean> | undefined;
++  /** "저장 확인"(5.3) — 저장 전 변경·진행 중 저장이 있으면 retry(실제 저장), 없으면 confirmDoc 1회. resolve 때 변경이 없을 때만 saved */
++  readonly confirm: () => Promise<void>;
+ }
+ 
+-export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
++const UNCONFIRMED = Object.freeze({ phase: "failed", failure: "error" }) as AutosaveState;
++const STALE = Object.freeze({ phase: "stale" }) as AutosaveState;
++
++export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs, initial }: UseDocSaveOptions): UseDocSave {
+   const [doc, setDoc] = useState(initialDoc);
+   const docRef = useRef(initialDoc);
+-  const [latest, setLatest] = useState<PageDoc | undefined>(undefined);
++  const [latest, setLatest] = useState<PageDoc | undefined>(initial?.latest);
++  const edits = useRef(0);
+   const revisionRef = useRef(initialDoc.revision);
+   /** 이번 이탈 중 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없는 로컬 폴백)을 받았나 — `leave()`가 지우고 저장마다 새로 정한다(Codex r2 P1) */
+   const readOnly = useRef(false);
+@@ -79,14 +88,26 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+     [repository, projectId],
+   );
+ 
+-  const autosave = useAutosaveScheduler<PageDoc>({ save, persistence: repository.persistence, debounceMs, maxWaitMs });
++  const autosave = useAutosaveScheduler<PageDoc>({
++    save,
++    persistence: repository.persistence,
++    debounceMs,
++    maxWaitMs,
++    initial: initial?.phase === "unconfirmed" ? UNCONFIRMED : initial?.phase === "stale" ? STALE : undefined,
++  });
+   const { change, settle } = autosave;
++  // draft 복원 = 첫 edit로 dirty(자동 저장이 실제 저장)
++  useEffect(() => {
++    if (initial?.phase === "dirty") change(initialDoc);
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
+   // 스케줄러 단계를 동기로 따라간다 — 같은 흐름에서 edit 직후 flushed()·adopt()가 effect 전 단계(idle·saved)를 보고 저장 없이 끝나지 않게(Codex r1 P2).
+   // 규칙은 스케줄러 change()와 같다: idle·saved → dirty, 그 밖(저장 중·실패 등)은 그대로
+   const phase = useRef<AutosaveState["phase"]>("idle");
+   const edit = useCallback(
+     (next: PageDoc) => {
+       docRef.current = next;
++      edits.current += 1;
+       setDoc(next);
+       change(next);
+       if (phase.current === "idle" || phase.current === "saved") phase.current = "dirty";
+@@ -146,7 +167,19 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+     return flushed().then((ok) => ok || readOnly.current);
+   }, [retry, flushed]);
+ 
++  const { busy } = autosave;
++  const confirm = useCallback(async () => {
++    if (busy()) {
++      retry();
++      if (!(await flushed())) throw new Error("아직 저장을 확인하지 못했습니다");
++      return;
++    }
++    const before = edits.current;
++    await repository.confirmDoc?.(projectId);
++    if (edits.current === before && !busy()) settle();
++  }, [busy, retry, flushed, repository, projectId, settle]);
++
+   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
+   const savedRevision = useCallback(() => revisionRef.current, []);
+-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave };
++  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, confirm };
+ }
+diff --git a/app/vite.config.ts b/app/vite.config.ts
+index a1b1642b..caeadda8 100644
+--- a/app/vite.config.ts
++++ b/app/vite.config.ts
+@@ -11,6 +11,25 @@ import { thumbnailsPlugin } from "./src/thumbs/vitePlugin";
+  * 모듈 스크립트는 CORS 요청이라 서버가 `Access-Control-Allow-Origin: null`을 돌려줘야 실행된다 — dev·preview 둘 다.
+  * 정적 호스팅 요구사항: 앱 JS·CSS 응답에 같은 헤더(REPORT). 그 밖 출처는 Vite 기본(로컬 호스트만)과 같다.
+  */
++// M2 후보 1(측정용): 이미 정적으로 받은 청크(호스트·엔트리의 정적 import 닫힘)를 preload 목록에서 뺀다
++let bundleRef: Record<string, { type: string; imports?: string[]; isEntry?: boolean }> = {};
++const captureBundle = { name: "m2-capture-bundle", enforce: "pre" as const, generateBundle: { order: "pre" as const, handler(_o: unknown, b: typeof bundleRef) { bundleRef = b; } } };
++const staticClosure = (start: string[], seen = new Set<string>()): Set<string> => {
++  for (const f of start) {
++    if (seen.has(f)) continue;
++    seen.add(f);
++    staticClosure(bundleRef[f]?.imports ?? [], seen);
++  }
++  return seen;
++};
++const resolveDependencies = (_f: string, deps: string[], { hostId, hostType }: { hostId: string; hostType: string }) => {
++  // HTML 엔트리 preload 태그(hostType "html")는 그대로 둔다 — 첫 로드 워터폴 방지
++  if (hostType !== "js") return deps;
++  const entries = Object.keys(bundleRef).filter((k) => bundleRef[k]?.isEntry);
++  const loaded = staticClosure([hostId, ...entries]);
++  return deps.filter((d) => !loaded.has(d));
++};
++
+ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/] };
+ 
+ /**
+@@ -19,7 +38,7 @@ const cors = { origin: ["null", /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(
+  * 불투명 출처 iframe은 부모와 HTTP 캐시를 나누지 않으므로 공유 청크로 얻는 내려받기 이득도 없다. 번들 검사는 두 manifest를 합쳐 엔트리 이름으로 판정한다.
+  */
+ export default defineConfig(({ mode }) => ({
+-  plugins: [react(), tailwindcss(), thumbnailsPlugin()],
++  plugins: [react(), tailwindcss(), thumbnailsPlugin(), captureBundle],
+   server: { cors },
+   preview: { cors },
+   build:
+@@ -31,6 +50,7 @@ export default defineConfig(({ mode }) => ({
+         : {
+           // scripts/check-bundle-size.mjs가 초기 청크를 manifest로 계산한다
+           manifest: true,
++          modulePreload: { resolveDependencies, polyfill: false },
+           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
+           assetsInlineLimit: notInlinedIconLimit,
+           // 편집기 엔진 공유 청크 1개(issue + runGate) — 목록·근거: src/build/studioEngineChunk.ts
+diff --git a/app/src/features/studio/studioHandoff.tsx b/app/src/features/studio/studioHandoff.tsx
+new file mode 100644
+index 00000000..7a4cc7aa
+--- /dev/null
++++ b/app/src/features/studio/studioHandoff.tsx
+@@ -0,0 +1,78 @@
++/**
++ * 편집기 진입 인계 본문(RESTART SPEC-4 5.3 · CP4 측정 스파이크) — 기억(PendingStart·PendingRecord)이 있을 때만 받는 청크.
++ * 상태 글자 · "저장 확인"(useDocSave.confirm = retry 또는 confirmDoc) · 결과 알림 · 3.2 토큰 해제.
++ */
++import { useRef, useState } from "react";
++import { projectErrorCode, type ProjectRepository } from "../../data/projectRepository";
++import { Button } from "../../components/ds/Button";
++import { release, ticketOf, type Held } from "../pending/pendingWrites";
++
++const T = {
++  status: "브라우저 저장을 확인하지 못했습니다",
++  confirm: "저장 확인",
++  working: "확인하는 중…",
++  ok: "브라우저 저장을 확인했습니다",
++  notApplied: " — 새로 시작(편집 시작)은 반영되지 않았습니다",
++  readOnly: "다른 탭에서 편집 중이라 저장을 확인하지 못했습니다 — 그 탭을 닫은 뒤 저장 확인을 다시 누르세요",
++  stale: "다른 탭에서 바뀐 내용이 있어 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다",
++  cleared: "이 브라우저 데이터가 지워져 이 탭은 더 저장할 수 없습니다 — 이 탭의 확인되지 않은 변경은 새로고침하면 사라집니다",
++  images: "이 문서의 일부 이미지는 이 탭에서 더 저장할 수 없습니다 — 새로고침하면 확인되지 않은 변경이 사라집니다",
++  notYet: (why: string) => `아직 저장을 확인하지 못했습니다 · ${why}`,
++};
++/** 4.3 사유 — 탭 사유는 INFRA 문장 끝(infra.ts 문장 — import하면 영속 청크가 따라온다, useDocSave 주석)으로 가린다 */
++const stuckOf = (code: string | undefined, message: string) =>
++  code === "IMAGES_MISSING" ? T.images : message.includes("다른 탭에서 바뀐") ? T.stale : message.includes("데이터가 지워졌") ? T.cleared : undefined;
++
++export default function StudioHandoff({
++  held,
++  repository,
++  projectId,
++  sameAsOrigin,
++  confirm,
++  onDone,
++}: {
++  readonly held: Held;
++  readonly repository: ProjectRepository;
++  readonly projectId: string;
++  readonly sameAsOrigin: () => boolean;
++  readonly confirm: () => Promise<void>;
++  readonly onDone: () => void;
++}) {
++  const [busy, setBusy] = useState(false);
++  const [result, setResult] = useState<{ readonly ok: boolean; readonly text: string; readonly stuck?: boolean }>();
++  const running = useRef(false);
++  const run = async () => {
++    if (running.current) return;
++    running.current = true;
++    setBusy(true);
++    const ticket = ticketOf(repository, projectId);
++    try {
++      await confirm();
++      release(repository, projectId, ticket, "confirmed");
++      setResult({ ok: true, text: T.ok + (held.kind === "start" && sameAsOrigin() ? T.notApplied : "") });
++      onDone();
++    } catch (error) {
++      const code = projectErrorCode(error);
++      if (code === "NOT_FOUND") release(repository, projectId, ticket, "not-applied-absent");
++      const message = String((error as Error)?.message ?? "");
++      const stuck = stuckOf(code, message);
++      setResult({ ok: false, text: stuck ?? (message.includes("탭에서 편집 중") ? T.readOnly : T.notYet(message)), stuck: Boolean(stuck) });
++    } finally {
++      running.current = false;
++      setBusy(false);
++    }
++  };
++  return (
++    <div className="flex min-w-0 items-center gap-2">
++      {!result?.ok && <p className="text-caption1 text-label-alternative">{T.status}</p>}
++      {!result?.ok && !result?.stuck && (
++        <Button variant="outline" size="sm" onClick={run} aria-busy={busy || undefined} aria-disabled={busy || undefined}>
++          {busy ? T.working : T.confirm}
++        </Button>
++      )}
++      <p role={result?.ok ? "status" : "alert"} className="sr-only">
++        {result?.text ?? ""}
++      </p>
++    </div>
++  );
++}

@@ -1,0 +1,3 @@
+## 종료 readback
+lsof 4367 exit 1
+pgrep exit 1

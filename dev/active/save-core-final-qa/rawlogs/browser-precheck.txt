@@ -1,0 +1,8 @@
+## pwd
+/Users/younghwankang/orca/workspaces/web-builder-solution/save-core-final-qa
+## lsof -nP -iTCP:4367 -sTCP:LISTEN
+exit 1
+## pgrep -f save-core-qa/browser/vite.config|save-core-final-qa/browser
+exit 1
+## 사용자 5480 접근 0 — 이 런에서 5480 요청 없음(명령 이력)
+lsof after kill1 exit 1

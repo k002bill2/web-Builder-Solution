@@ -1,0 +1,24 @@
+{ taskSpaceId: 24 }
+origin http://127.0.0.1:4367/ db save-core-qa-finalqa-1791914266597
+databases-before []
+1-save {"save":{"gen":1,"hash":"be408eb0"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+locks-after-save {"held":["design-studio-writer"],"pending":[]}
+2-afterReload {"hydrated":{"hash":"be408eb0","imageIds":["img"],"generation":1,"mark":0,"proof":"hydrated"},"confirm":{"status":"confirmed","gen":1,"proof":"fresh"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+3-abortWrite(fresh page) {"save":"INFRA: 저장 — 브라우저 저장소에 접근하지 못했습니다","snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+4-afterAbortReload {"hydrated":{"hash":"be408eb0","imageIds":["img"],"generation":1,"mark":0,"proof":"hydrated"},"confirm":{"status":"confirmed","gen":1,"proof":"fresh"},"snap":{"body":"A","generation":1,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+5-locks(fresh A) {"held":[],"pending":[]}
+6-A-open {"confirmed":1}
+7-B-open {"confirmed":1}
+8-B-save {"status":"saved","gen":2}
+9-locks(B 보유) {"held":["design-studio-writer"],"pending":[]}
+10-A-confirm(B 보유 중) {"status":"failed","reason":"readonly"}
+11-locks(B 닫힘 뒤) {"held":[],"pending":[]}
+12-A-confirm(B 닫힘 뒤) {"status":"failed","reason":"stale"}
+13-A-dirty-save {"status":"failed","reason":"stale","newer":false}
+14-final-snapshot {"hydrated":{"hash":"a0cfd55c","imageIds":["img"],"generation":2,"mark":0,"proof":"hydrated"},"confirm":{"status":"confirmed","gen":2,"proof":"fresh"},"snap":{"body":"B2","generation":2,"hashOk":true,"images":["img"],"bytes":"bytes-A"}}
+15-cleanup {"results":["save-core-qa-finalqa-1791914266597:deleted"],"after":[]}
+16-databases-after []
+17-locks-after-reload {"held":[],"pending":[]}
+taskSpaceId 24 (finish는 자기 프로브 뒤 1회)
+
+exit 0

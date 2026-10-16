@@ -15,6 +15,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 import { BASELINE_FILE, checkBundle, normalizeHashes } from "./bundleBudget.mjs";
+import { checkPreload } from "./preloadGuard.mjs";
 import { thumbsVersion } from "./thumbsVersion.mjs";
 
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
@@ -214,7 +215,14 @@ function checkThumbnails() {
   console.log(`[bundle] 썸네일 ${(ids ?? []).length}장 · 버전 ${version} · 가드 ${issues.length === 0 ? "통과" : "실패"}`);
   return issues;
 }
-const failures = [...budgetFailures, ...checkThumbnails()];
+// preload 중복 제거·polyfill off 산출물 가드(STUDIO-PRELOAD-SLIM — 판정: preloadGuard.mjs). 앱 manifest만 — 렌더 문서 빌드는 이 설정 밖
+const { lines: preloadLines, failures: preloadFailures } = checkPreload({
+  manifest: readManifest(".vite/manifest.json"),
+  codeOf: (file) => readFileSync(join(DIST, file), "utf8"),
+  indexHtml: existsSync(join(DIST, "index.html")) ? readFileSync(join(DIST, "index.html"), "utf8") : "",
+});
+for (const line of preloadLines) console.log(line);
+const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures];
 if (failures.length > 0) {
   for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
   process.exit(1);

@@ -1,0 +1,148 @@
+diff --git a/app/src/data/memoryProjectRepository.ts b/app/src/data/memoryProjectRepository.ts
+index 294eaae..c46eecc 100644
+--- a/app/src/data/memoryProjectRepository.ts
++++ b/app/src/data/memoryProjectRepository.ts
+@@ -10,6 +10,7 @@
+ import { retryableImport } from "./chunkRetry";
+ import type { DocBook } from "./memoryDocBook";
+ import { createSharedLoader } from "./sharedLoader";
++import { createSaveLedger } from "./saveLedger";
+ import { type ExportGenerators, type Project, type ProjectRepository, type ProjectSummary } from "./projectRepository";
+ import type { LocalEntry } from "./persistence/entryRead";
+ import type { LocalSync } from "./persistence/localSync";
+@@ -105,6 +106,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
+ 
+   return {
+     persistence: local ? "local" : "memory",
++    ledger: createSaveLedger(!!local),
+     listProjects: async () => store.projects().map(summaryOf).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
+     getProject: async (projectId) => {
+       const project = projectOf(projectId);
+diff --git a/app/src/data/projectRepository.ts b/app/src/data/projectRepository.ts
+index 9f12c22..8b61b13 100644
+--- a/app/src/data/projectRepository.ts
++++ b/app/src/data/projectRepository.ts
+@@ -140,6 +140,8 @@ export interface ExportRequestResult {
+ 
+ export interface ProjectRepository<TDoc extends DocHead = DocHead> {
+   readonly persistence: ProjectPersistence;
++  /** RS5 스파이크 — CONTRACT-5 2.5 공개 interface 추가 1(제안) */
++  readonly ledger?: import("./saveLedger").SaveLedgerApi;
+   /** GET /projects — 마지막 변경(`updatedAt`) 내림차순 (J-S04) */
+   listProjects(): Promise<readonly ProjectSummary[]>;
+   /** GET /projects/{id} — 없으면 undefined(E-S02, 예외 아님) */
+diff --git a/app/src/data/saveLedger.ts b/app/src/data/saveLedger.ts
+new file mode 100644
+index 0000000..7ef3591
+--- /dev/null
++++ b/app/src/data/saveLedger.ts
+@@ -0,0 +1,109 @@
++/**
++ * RS5 스파이크 — CONTRACT-5 8.2 1행(진입 최소 장부)만. 제품 구현 아님 · 측정 뒤 원복.
++ * 상태 Map · view · acquire · release · publish · mark · I8 beforeunload 토글. save·confirm·retryStart 본문 = 없음(조작 뒤 · 미측정).
++ */
++import type { DocHead } from "./projectRepository";
++import type { RenderImages } from "../features/studio/images/store/types";
++
++export interface DraftInput {
++  readonly doc: DocHead;
++  readonly hash: string;
++  readonly images: RenderImages;
++}
++interface Draft extends DraftInput {
++  readonly seq: number;
++  readonly baseEpoch: number;
++}
++interface Ledger {
++  latest?: Draft;
++  nextSeq: number;
++  epoch: number;
++  dirtyMark: number;
++  publishedMark: number;
++  conflicted?: DocHead;
++  memHead?: DocHead;
++  memSeq: number;
++  confirmedSeq: number;
++  lease?: object;
++  inflight?: Promise<unknown>;
++  start?: unknown;
++}
++export interface LedgerView {
++  readonly latest?: Draft;
++  readonly conflicted?: DocHead;
++  readonly memHead?: DocHead;
++  readonly unconfirmed: boolean;
++}
++export interface SaveLedgerApi {
++  acquire(projectId: string): { readonly token: object; readonly seed: LedgerView };
++  release(token: object, last?: DraftInput): void;
++  mark(token: object): void;
++  publish(token: object, input: DraftInput): number | "superseded";
++  view(projectId: string): LedgerView;
++}
++
++export function createSaveLedger(local: boolean): SaveLedgerApi {
++  const ledgers = new Map<string, Ledger>();
++  const owners = new WeakMap<object, string>();
++  const of = (projectId: string) => {
++    let ledger = ledgers.get(projectId);
++    if (!ledger) ledgers.set(projectId, (ledger = { nextSeq: 1, epoch: 0, dirtyMark: 0, publishedMark: 0, memSeq: 0, confirmedSeq: 0 }));
++    return ledger;
++  };
++  /** I9 — 대체된 임대의 호출은 쓰기 0 */
++  const leased = (token: object) => {
++    const ledger = ledgers.get(owners.get(token) ?? "");
++    return ledger?.lease === token ? ledger : undefined;
++  };
++  /** I8 술어 */
++  const unconfirmed = (l: Ledger) => l.dirtyMark > l.publishedMark || (!!l.latest && l.latest.seq > l.confirmedSeq) || !!l.inflight || !!l.start || !!l.conflicted;
++  const block = (event: BeforeUnloadEvent) => {
++    event.preventDefault();
++    event.returnValue = "";
++  };
++  let guarded = false;
++  /** 모든 전이 끝에서 재계산 — 0↔1 토글 주체 1개 */
++  const guard = () => {
++    const next = local && [...ledgers.values()].some(unconfirmed);
++    if (next === guarded) return;
++    guarded = next;
++    if (next) window.addEventListener("beforeunload", block);
++    else window.removeEventListener("beforeunload", block);
++  };
++  const view = (projectId: string): LedgerView => {
++    const { latest, conflicted, memHead } = of(projectId);
++    return { latest, conflicted, memHead, unconfirmed: unconfirmed(of(projectId)) };
++  };
++  const publish = (token: object, input: DraftInput) => {
++    const ledger = leased(token);
++    if (!ledger) return "superseded" as const;
++    const seq = ledger.nextSeq++;
++    ledger.latest = Object.freeze({ ...input, seq, baseEpoch: ledger.epoch });
++    ledger.publishedMark = ledger.dirtyMark;
++    guard();
++    return seq;
++  };
++  return {
++    acquire: (projectId) => {
++      const token = {};
++      owners.set(token, projectId);
++      of(projectId).lease = token;
++      return { token, seed: view(projectId) };
++    },
++    release: (token, last) => {
++      const ledger = leased(token);
++      if (!ledger) return;
++      if (last) publish(token, last);
++      ledger.lease = undefined;
++      guard();
++    },
++    mark: (token) => {
++      const ledger = leased(token);
++      if (!ledger) return;
++      ledger.dirtyMark += 1;
++      guard();
++    },
++    publish,
++    view,
++  };
++}

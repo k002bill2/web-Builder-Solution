@@ -64,14 +64,14 @@
 |---|---|---|
 | RS4-AC-07 `/projects` 행 (`PendingStart` create·restart) | **통과** | P-U1 글자 · "편집기 열기" 0 · "저장 다시 시도"·"버리고 새로고침" · P-U5 캡션(02). 실패 재시도 = `role=alert` + 포커스 유지(03). 주입 해제 뒤 재시도 = P-U2 `role=status` + 포커스 = 되살아난 "편집기 열기" · IDB docs 1건(04). 다른 행 변화 0 |
 | RS4-AC-08 폐기 확인 | **통과** | `alertdialog` 이름 "확인되지 않은 변경 버리기" · 첫 포커스 = 취소 · Esc = 닫힘 + 포커스 = 보조 버튼 + 기억 유지(06). 확인 → reload 1회(navigation `reload`) · 경고창 없이 진행 · 미확인 0 · IDB = 이전 문서 `A v1`(07) |
-| RS4-AC-09 새로고침 한계 | **부분** | R-E4(05) 뒤 CDP `Input.dispatchMouseEvent` 1회 → `location.reload()`: reload는 일어났고 IDB = 이전 문서 `A v1`만 · 미확인 표시 0. **`Page.javascriptDialogOpening` 이벤트는 받지 못했다.** 합성 `beforeunload`에는 `defaultPrevented: true`라 리스너 등록은 확인했다. 경고창이 안 뜬 원인(신뢰 입력 미인정 / Ego Lite의 다이얼로그 처리)은 가리지 못했다 — 실제 경고창 표시는 미확인으로 남긴다(무손실 단정 0) |
+| RS4-AC-09 새로고침 한계 | **통과(사람 확인 포함)** | ① 자동: R-E4(05) 뒤 CDP `Input.dispatchMouseEvent` 1회 → `location.reload()` = 경고창 이벤트 0(CDP 입력은 sticky activation으로 인정되지 않은 것으로 추정) · reload 뒤 IDB = 이전 문서 `A v1`만 · 미확인 표시 0. ② 사람(qa-9, 2026-10-16): R-E4 대화상자를 연 채 사용자가 직접 클릭 + `Cmd+R` → **"사이트를 새로고침하시겠습니까? 변경사항이 저장되지 않을 수 있습니다" 경고창 표시**(사용자 캡처). 합성 `beforeunload` `defaultPrevented: true`. ③ 첫 사람 시도(qa-8)는 대화상자를 닫은 뒤 넘겨 경고창 0이었다(원인 미확정). ④ 경고창에서 "새로고침"을 누른 뒤 앱 탭(p1)을 읽었더니 주입 변수·미확인 문구가 남아 있었다(그 탭 문서는 다시 로드되지 않음) — 떠나기 뒤 상태는 ①의 자동 결과로만 확인됐다 |
 | RS4-AC-10 멀티 탭 잠금 | **핵심 통과 · 일부 미실행** | 탭 A가 `/studio/project-1`에서 실제 편집 → "저장됨"(writer 취득). 탭 B 새로 로드 → 문서 없는 프로젝트 2 "A안으로 편집 시작" = "다른 탭에서 편집 중이라 편집을 시작하지 않았습니다"(C-E2) · IDB docs 전후 `[project-1:Av1]` 동일 · B `/projects` 미확인 0(08). **미실행**: 탭 B `PendingRecord` "저장 확인" READ_ONLY 문형 · A 닫힘 뒤 B 확인 성공/STALE(실브라우저에서 B에 `PendingRecord`를 만드는 경로를 꾸리지 못함) |
 | RS4-AC-14 접근성·가림 | **통과** | 1280·1024·390 모두 행 버튼 6개 뷰포트 밖 0 · 겹침 0 · 가로 스크롤 0(02). 상태는 글자로 표시 · 결과 알림 행 안 한 자리 |
 
 - Codex r3 반영분(`stuck` 포커스 폴백)은 실브라우저에서 `stuck` 상태를 만들지 못해 단위 테스트로만 확인했다.
 
 ## 6. 미실행 · 남은 것
-- 브라우저 QA 미확인: `beforeunload` 실제 경고창 표시(AC-09) · AC-10 `PendingRecord` READ_ONLY/STALE 경로 · `stuck` 포커스 실브라우저(5절).
+- 브라우저 QA 미확인: AC-09 사람 경로의 "떠나기 뒤" 상태(4절 ④) · AC-10 `PendingRecord` READ_ONLY/STALE 경로 · `stuck` 포커스 실브라우저(5절).
 - 모듈 로드 실패 UI는 단위 테스트가 없다.
 - CP4(편집기 인계 · `PendingDraft` · history 재진입 거짓 idle)는 하지 않았다. 남은 위험 RS4-R1·R2·R8은 그대로다.
 - push · main 병합은 사용자 승인이 필요하다.

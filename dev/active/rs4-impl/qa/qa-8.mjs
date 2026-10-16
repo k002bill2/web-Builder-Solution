@@ -1,0 +1,21 @@
+// RS4 QA 8 — AC-09 사람 확인용: 프로젝트 1 프로필 → B안 선택 → put 실패 주입 → B안으로 새로 시작 → R-E4 상태에서 사용자에게 넘김
+const task = await taskSpace("rs4-impl qa manual");
+console.log({ spaceId: task.spaceId });
+const page = task.page("p1");
+const has = (re) => page.waitForFunction((src) => [...document.querySelectorAll("button")].some((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).replace(/\s+/g, " ").trim())), re, { timeout: 20000 });
+const btn = (re, sc = "") => page.evaluate(([src, s]) => { const el = [...document.querySelectorAll(`${s} button`)].find((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).replace(/\s+/g, " ").trim())); if (!el) return "missing:" + src; el.click(); return "ok"; }, [re, sc]);
+await page.goto("http://127.0.0.1:4381/projects");
+await page.waitForFunction(() => [...document.querySelectorAll("a")].some((a) => /헤어살롱 프로젝트 프로필 보기$/.test(a.getAttribute("aria-label") || "")), undefined, { timeout: 15000 });
+await page.evaluate(() => [...document.querySelectorAll("a")].find((a) => /헤어살롱 프로젝트 프로필 보기$/.test(a.getAttribute("aria-label") || "")).click());
+await has("^B안 선택$");
+await btn("^B안 선택$");
+await has("^B안으로 편집 시작$");
+await page.evaluate(() => { const orig = IDBObjectStore.prototype.put; window.__failPut = true; IDBObjectStore.prototype.put = function (...a) { if (window.__failPut) throw new DOMException("quota (QA 주입)", "QuotaExceededError"); return orig.apply(this, a); }; });
+await btn("^B안으로 편집 시작$");
+await page.waitForSelector("dialog[open]", { timeout: 15000 });
+await btn("^B안으로 새로 시작$", "dialog[open]");
+await page.waitForFunction(() => /새로 시작했지만 브라우저에 저장됐는지 확인하지 못했습니다/.test(document.body.innerText), undefined, { timeout: 10000 });
+await btn("^취소$", "dialog[open]");
+console.log(await page.evaluate(() => ({ path: location.pathname, pending: /확인하지 못했습니다/.test(document.body.innerText) })));
+await task.handOff();
+console.log("handed off");

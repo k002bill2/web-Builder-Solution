@@ -9,7 +9,7 @@
 - [x] 게이트 4종 + 정규화 예산(멈춤 128.53/131.51) + Codex review
 - [x] REPORT · 커밋(push 0)
 - [x] Codex r3(2026-10-16) — P2 1건(stuck 포커스) 반영 `d8ff4929` · 3라운드 상한 도달, 반영분 미재검토
-- [x] 브라우저 QA(Ego Lite) — AC-07·08·14 통과 · AC-10 핵심 통과 · AC-09 부분(경고창 이벤트 미수신) — REPORT 5절
+- [x] 브라우저 QA(Ego Lite) — AC-07·08·14 통과 · AC-10 핵심 통과 · AC-09 통과(사람 클릭+Cmd+R 경고창 표시) — REPORT 5절
 - [ ] BLOCKED: push/병합 — 사용자 승인 · CP4 — 예산 배분 결정
 
 ## Codex review r1 (codex-r1.txt) — P2 4건 전부 반영

@@ -13,21 +13,28 @@ const format = (kb) => `${kb.toFixed(2)}KB`;
 const over = (kb, limit) => Number(kb.toFixed(2)) > Number(limit.toFixed(2));
 export const BASELINE_FILE = "scripts/m2cBaseline.json";
 const isKb = (v) => typeof v === "number" && Number.isFinite(v) && v > 0;
-/** M2c 기준선(SPEC m2c 7절 · IMG-AC-29) — { base, eagerKb: {시나리오: KB}, toleranceKb, renderJsStopKb } */
+const isKbMap = (m) => typeof m === "object" && m !== null && Object.values(m).every(isKb);
+/** M2c 기준선(SPEC m2c 7절 · IMG-AC-29) — { base, eagerKb: {시나리오: KB}, normEagerKb?: {시나리오: KB}(개정 16), toleranceKb, renderJsStopKb } */
 const isBaseline = (b) =>
-  typeof b === "object" && b !== null && typeof b.base === "string" && typeof b.eagerKb === "object" && b.eagerKb !== null &&
-  Object.values(b.eagerKb).every(isKb) && isKb(b.toleranceKb) && isKb(b.renderJsStopKb);
+  typeof b === "object" && b !== null && typeof b.base === "string" && isKbMap(b.eagerKb) &&
+  (b.normEagerKb === undefined || isKbMap(b.normEagerKb)) && isKb(b.toleranceKb) && isKb(b.renderJsStopKb);
+
+/**
+ * 해시 정규화(ADR-004 개정 16) — Vite 청크 이름 `이름-해시8.js|css`의 해시를 지운다. 어느 모듈이든 바뀌면 청크 해시가 바뀌고
+ * 그 이름을 담은 importer의 gzip이 흔들린다(rs4-spike2 대조 N: /studio와 무관한 1글자 → −22B). 기준선 판정은 이 흔들림을 뺀 크기로 한다.
+ */
+export const normalizeHashes = (code) => code.replace(/-[A-Za-z0-9_-]{8}(\.(?:js|css))/g, "$1");
 
 /**
  * baseline: undefined = 한도 판정만(개정 전) · 객체 = 한도 + 기준선 판정(시나리오 진입 > 기준선 + 허용 · 렌더 JS > 멈춤선 = 실패) · null·형식 틀림 = 실패.
  * 한도 값(100·125·시나리오 한도·90·30)은 기준선과 무관하게 그대로 판정한다.
  */
-export function checkBundle({ manifest, sizeOf, scenarios, renderAuto = [], baseline }) {
+export function checkBundle({ manifest, sizeOf, normSizeOf, scenarios, renderAuto = [], baseline }) {
   const lines = [];
   const failures = [];
   const guard = baseline === undefined ? undefined : isBaseline(baseline) ? baseline : null;
   if (guard === null) failures.push(`M2c 기준선 파일이 없거나 형식이 틀립니다 (${BASELINE_FILE})`);
-  for (const name of Object.keys(guard?.eagerKb ?? {}).filter((n) => !scenarios.some((s) => s.name === n))) {
+  for (const name of [...new Set([...Object.keys(guard?.eagerKb ?? {}), ...Object.keys(guard?.normEagerKb ?? {})])].filter((n) => !scenarios.some((s) => s.name === n))) {
     failures.push(`M2c 기준선: 시나리오 ${name}가 SCENARIOS에 없습니다`);
   }
   const sumKb = (files) => [...files].reduce((total, file) => total + sizeOf(file), 0);
@@ -79,6 +86,17 @@ export function checkBundle({ manifest, sizeOf, scenarios, renderAuto = [], base
       }
       if (routeKb > routeBudgetKb) failures.push(`${name}: 첫 화면 ${format(routeKb)} > ${routeBudgetKb}KB`);
       if (eagerKb > eagerBudgetKb) failures.push(`${name}: 진입 직후 자동 로드 포함 ${format(eagerKb)} > ${eagerBudgetKb}KB`);
+      const norm = guard?.normEagerKb?.[name];
+      if (norm !== undefined) {
+        // 개정 16 — 기준선은 해시 정규화 크기로만 판정(raw는 참고). 정규화 함수가 없으면 조용히 raw로 돌아가지 않는다
+        if (!normSizeOf) failures.push(`${name}: 해시 정규화 기준선이 있는데 정규화 크기 함수가 없습니다`);
+        else {
+          const normKb = [...eagerFiles].reduce((total, file) => total + normSizeOf(file), 0);
+          lines.push(`[bundle]   ${name} 해시 정규화 진입 ${format(normKb)} · 기준선 ${format(norm)} + ${format(guard.toleranceKb)} (멈춤 > ${format(norm + guard.toleranceKb)}) — raw ${format(eagerKb)}는 참고(해시 이름 흔들림 포함)`);
+          if (over(normKb, norm + guard.toleranceKb)) failures.push(`${name}: 해시 정규화 진입 ${format(normKb)} > 기준선 ${format(norm)} + ${format(guard.toleranceKb)}`);
+        }
+        continue;
+      }
       const base = guard?.eagerKb[name];
       if (base !== undefined) {
         lines.push(`[bundle]   ${name} M2c 기준선 ${format(base)} + ${format(guard.toleranceKb)} (멈춤 > ${format(base + guard.toleranceKb)})`);

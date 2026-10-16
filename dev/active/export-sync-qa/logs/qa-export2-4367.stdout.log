@@ -1,0 +1,4 @@
+X before {"btn":["검사 · 내보내기","React 프로젝트(zip) 내보내기","정적 HTML 내보내기","PNG 내려받기"],"status":[],"alert":["<p role=\"alert\" class=\"sr-only\"></p>"]}
+X after click +656ms {"btn":["검사 · 내보내기","React 프로젝트(zip) 내보내기","정적 HTML 내보내기","PNG 내려받기"],"status":[],"alert":["<p role=\"alert\" class=\"sr-only\"></p>"]}
+X shot "/Users/younghwankang/orca/workspaces/web-builder-solution/export-sync-qa/dev/active/export-sync-qa/shots/export-4367.png 154204B"
+

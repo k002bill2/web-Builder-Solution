@@ -1,0 +1,7 @@
+npm ci exit=0
+typecheck exit=0
+lint exit=0
+vitest exit=0
+build exit=0
+diff-check(572fdef..dcce2ec) exit=0
+listen-check exit=1 (1 = 리슨 0)

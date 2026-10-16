@@ -1,0 +1,36 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a13ba4-d542-76c3-b3f5-5f456ee61409).
+[codex] Turn started (01a13ba4-d94a-7040-9e05-8d41e7eabc7f).
+[codex] Assistant message captured: `93f8111` 대비 diff와 SPEC-3의 지정 전이·인수 조건을 읽기 전용으로 검토합니다.
+[codex] Running command: /bin/zsh -lc 'pwd; git status --short; git diff 93f8111 -- docs/design/restart/SPEC-3.md; rg ...
+[codex] Command failed: /bin/zsh -lc 'pwd; git status --short; git diff 93f8111 -- docs/design/restart/SPEC-3.md; rg ... (exit 1)
+[codex] Running command: /bin/zsh -lc "cat /Users/younghwankang/.agents/skills/review/SKILL.md; rg -n 'rs23|SPEC-3|web...
+[codex] Command failed: /bin/zsh -lc "cat /Users/younghwankang/.agents/skills/review/SKILL.md; rg -n 'rs23|SPEC-3|web... (exit 1)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-3.md | sed -n '125,220p'; nl -ba app/src/featur...
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-3.md | sed -n '125,220p'; nl -ba app/src/featur... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat dev/active/rs23-spec/final-gate/QA-JUDGMENT.md; cat dev/active/rs23-spec/fi...
+[codex] Command completed: /bin/zsh -lc 'cat dev/active/rs23-spec/final-gate/QA-JUDGMENT.md; cat dev/active/rs23-spec/fi... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/useDocSave.ts | sed -n '40,165p'; nl -ba app/src...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/useDocSave.ts | sed -n '40,165p'; nl -ba app/src... (exit 0)
+[codex] Assistant message captured: SPEC-3에 두 가지 차단 위험이 남습니다. create 재시도의 `before` 판정은 기억 삭제 규칙과 충돌하고, R-E6/C-E6의 “한 번 저장” 안내는 편집...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/SaveStatus.tsx | sed -n '1,90p'; rg -n 'saveDo...
+[codex] Command failed: /bin/zsh -lc "nl -ba app/src/components/studio/SaveStatus.tsx | sed -n '1,90p'; rg -n 'saveDo... (exit 2)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "SPEC-3 구현 착수 보류: create 재시도 판정 충돌과 R-E6/C-E6의 실행 ...
+[codex] Turn completed.
+# Codex Adversarial Review
+
+Target: branch diff against 93f8111
+Verdict: needs-attention
+
+SPEC-3 구현 착수 보류: create 재시도 판정 충돌과 R-E6/C-E6의 실행 불가능한 복구 안내가 남아 있습니다. diff와 저장 경로를 읽기 전용으로 대조했으며 런타임 테스트는 수행하지 않았습니다.
+
+Findings:
+- [high] [P1] create 재시도가 미확인 기억을 잘못 삭제할 수 있습니다 (docs/design/restart/SPEC-3.md:133-135)
+  5.1은 요청 직전 before에 문서가 있으면 음성으로 판정하고, 153행은 재시도 실패에도 같은 순서를 요구합니다. 최초 create 커밋 후 flush 실패로 C-E4가 된 경우 재시도의 before에는 이미 문서가 있습니다. 같은 키는 memoryDocBook.ts:374-376에서 재생되지만 flush가 다시 실패하면 이 규칙대로는 기억이 삭제됩니다. 이는 6절 3-1과 충돌하며, 구현 선택에 따라 IDB 저장 확인 없이 목록 게이트가 풀려 미저장 문서와 후속 편집의 손실 위험을 숨깁니다.
+  Recommendation: 최초 요청과 기억 기반 재시도의 판정을 분리하고 최초 before를 보존하십시오. 재시도의 before 문서 존재를 음성 근거로 사용하지 않도록 153행도 수정하고, C-E4 → 동일 키 재생 → flush 연속 실패에서 기억·링크 차단 유지 테스트를 명시하십시오.
+- [medium] [P2] R-E6/C-E6는 실행할 수 없는 저장 안내와 함께 게이트를 해제합니다 (docs/design/restart/SPEC-3.md:194-195)
+  RS3-AC-07d의 편집 commit 후 저장 실패 경로에서 STALE_DOC 재시도는 flush 없이 끝납니다. 그런데 R-E6/C-E6는 기억을 삭제하고 링크를 복원하면서 '편집기에서 한 번 저장하면 확인됩니다'라고 안내합니다. 재진입한 편집기는 idle이며(useAutosaveScheduler.ts:59), '다시 저장' 버튼은 failed일 때만 표시됩니다(SaveStatus.tsx:57-60). 새 편집 없이는 저장이 실행되지 않고 idle에는 언로드 경고도 없습니다. 따라서 안내를 따르려는 사용자가 저장 수단 없이 미저장 편집을 새로고침으로 잃을 수 있습니다.
+  Recommendation: 종결 후에도 후속 편집의 저장 미확인 상태를 보존하고 실제 실행 가능한 재시도 경로를 정의하십시오. 현재 범위를 유지한다면 최소한 '내용을 편집해 자동 저장 성공을 확인'하도록 안내와 손실 경고를 수정하고, RS3-AC-07d에 재진입 후 복구 행동·IDB 확인 검증을 추가하십시오.
+
+Next steps:
+- SPEC-3의 create 재시도 판정을 최초 before 기준으로 통일하십시오.

@@ -395,6 +395,7 @@
 | D6-7 | UX-5 "바뀐 문서 쓰기" = `discard`? | `discard` 아님 — 코어 discard는 자기 증명으로 복귀 | 8.2 · MQ-6-5 |
 | D6-8 | C5 8.3 S5a~c 판정선 raw 129900/132940 | 정규화 128.53/131.51 + raw 130/134 | ADR-004 개정 16 |
 | D6-10 | MC `openSaveCore` "`docs/{projectId}`를 읽어 초안·`hydrated` 설정"(async 열기) | 편집기 마운트 때 **동기 생성** · seed = 편집기가 받은 문서 · IDB 머리는 첫 save·confirm 때 포트가 읽음 — **MC 계약 변경**(MQ-6-1 A에 포함) | 2.2-2 ① · QA R2 |
+| D6-11 | SPEC-4 RS4-AC-06 "`useAutosaveScheduler` 경고 테스트·`StudioLeave`(B-RS-01) 테스트 전부 변경 없이 통과 · dirty 편집 뒤 앱 안 링크 이탈 = 저장 대기 그대로"(`SPEC-4.md:349`) | `StudioLeave` 유지 7 · 의미 변경 6 · 이전 1(3.1-4 표) · dirty 링크 이탈 = 해제 save 뒤 즉시 이동 · 편집기 경고는 레지스트리 경고로 이전 | 3.1 · 결정 = MQ-6-7 |
 
 ## 변경 이력
 - r0 (2026-10-17) — 최초 작성. 코드 0 · 측정 0 · Codex 0.

@@ -1,0 +1,13 @@
+diff --git a/app/vite.config.ts b/app/vite.config.ts
+index a1b1642b..bb9dee91 100644
+--- a/app/vite.config.ts
++++ b/app/vite.config.ts
+@@ -31,6 +31,8 @@ export default defineConfig(({ mode }) => ({
+         : {
+           // scripts/check-bundle-size.mjs가 초기 청크를 manifest로 계산한다
+           manifest: true,
++          // M2 후보 2(측정용)
++          modulePreload: { polyfill: false },
+           // 파일로 둘 아이콘 목록·근거: src/build/notInlinedIcons.ts
+           assetsInlineLimit: notInlinedIconLimit,
+           // 편집기 엔진 공유 청크 1개(issue + runGate) — 목록·근거: src/build/studioEngineChunk.ts

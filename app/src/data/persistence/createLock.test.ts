@@ -3,7 +3,6 @@
  * 거절되면 메모리 문서·멱등 기록·목록·IDB·큐 제출 모두 0(갈라짐 0). 잠금 소유자는 탭당 LocalSync 쓰기 문 하나 — 흐름별 잠금 0.
  * 브라우저 1개 = 메모리 가짜 영속 1개 + 잠금 가짜 registry 1개(restartLock.test.ts와 같은 모양).
  */
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { isTerminal } from "../../domain/generation";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
@@ -203,8 +202,5 @@ describe("RS3-AC-04 같은 탭 잠금 소유 공통", () => {
     expect(docWrites(a.writes)).toHaveLength(before);
   });
 
-  it("프로필·/projects 흐름 코드에서 tryLock 직접 호출 0(파괴 흐름 공유 tabLockHold만)", () => {
-    const files = ["../../features/profile/restartFlow.ts", "../../features/profile/RestartDialog.tsx", "../../features/profile/CandidatesSection.tsx", "../../components/projects/ProjectRow.tsx"];
-    for (const file of files) expect(readFileSync(new URL(file, import.meta.url), "utf8")).not.toMatch(/tryLock/);
-  });
+  // 프로필·/projects 흐름 코드의 tryLock 직접 호출 0 — import 그래프 가드로 이동: src/test/tryLockGuard.test.ts
 });

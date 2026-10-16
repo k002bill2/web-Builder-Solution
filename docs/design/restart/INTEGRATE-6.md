@@ -1,6 +1,6 @@
 # INTEGRATE-6 — 저장 코어 ↔ 제품 연결 설계 (RS6 입력)
 
-- 상태: **r0 설계안 — 구현 승인 아님 · 코드 0 · 측정 0 · 실화면 확인 0.** 작성 Designer(Orca Claude Code) · 발주 Jarvis 2026-10-17 · 회수 Jarvis.
+- 상태: **r1 설계안 — 구현 승인 아님 · 코드 0 · 측정 0 · 실화면 확인 0.** 작성 Designer(Orca Claude Code) · 발주 Jarvis 2026-10-17 · 회수 Jarvis.
 - base `c7a7a2a8`(main — studio-preload-slim 병합 뒤). 앱 코드는 읽기만 했다.
 - 입력: 코어 `dev/active/save-core-harness/core/saveCore.ts`(이하 **코어**) · `MINIMAL-CONTRACT.md`(이하 **MC**, I1~I9·G1~G8) · `save-core-fix/REPORT.md` · `save-core-final-qa/REPORT.md`(H1~H5 · BD-1/BD-2 · LV-1/LV-2) · `CONTRACT-5.md`(이하 **C5**) · `UX-5.md` · `SPEC-4.md` · `rs5-review`·`rs5-spike`·`rs4-cp4-measure` REPORT · ADR-004 개정 13·16.
 - 이 문서는 C5·UX-5·SPEC-4·ADR·BACKLOG를 **수정하지 않는다.** 다르게 하는 곳은 10절 "대체/차이"에 적는다. 새 저장소 인터페이스·예산 상향·엔진/PageDoc 계약·새 의존성은 전부 `MQ-6.md`로만 올린다.
@@ -60,8 +60,8 @@
 | `verify(projectId, receipt)` | IDB 재읽기 증명(문서 hash·revision + 참조 이미지 레코드 존재) | `confirm` :197-207의 이미지 키 검사 + 문서 재읽기 |
 | `image(projectId, localId)` | 코어 바인딩에 없는 참조 이미지의 IDB 레코드 존재. 이미지 키는 **`imageRecordId(projectId, localId)`로만** 만든다(OBS-2/BD-2 재발 방지 — r1, RS6-AC-U15) | `keys("images")`/`get("images")` |
 
-- 이 포트는 `LocalSync`(data 내부 인터페이스, `localSync.ts:43-56`)에 메서드를 더한다. `ProjectRepository`(공개)에는 **코어 접근자 1개**(`saveCore(projectId)` 또는 `studioRepository` 경유)가 더해진다 → 둘 다 MQ-6-1.
-- 문서 모양: 코어 `CoreDoc{revision, body, imageIds}`는 하네스용 축약이다. 제품에서는 `PageDoc` + `DocHead`(revision·hash)를 쓰고, `imageIds` = 기존 `recordRefs(record)`(:201)로 계산한다. **PageDoc·엔진 계약 변경 0**이 목표다. 바뀌어야 하면 MQ.
+- 이 포트는 `LocalSync`(data 내부 인터페이스, `localSync.ts:45-60`)에 메서드를 더한다. 저장소에는 **코어 접근자 1개**가 더해진다 — ★ 모양 = `ImageKeeper`와 같은 선택적 능력 인터페이스(`ProjectRepository & CoreKeeper`, MQ-6-1 ADR-007 관계 행) → 둘 다 MQ-6-1.
+- 문서 모양: 코어 `CoreDoc{revision, body, imageIds}`는 하네스용 축약이다. 제품에서는 `PageDoc` + `DocHead`(revision·hash)를 쓰고, `imageIds` = 기존 `recordRefs(record)`(사용 `localSync.ts:205` · 정의 `imageRecord.ts:23`)로 계산한다. **PageDoc·엔진 계약 변경 0**이 목표다. 바뀌어야 하면 MQ.
 
 ## 2. 같은 탭 단일 소유자 (BD-1 · CE-3a 다른 어댑터 객체)
 
@@ -69,7 +69,7 @@
 
 | 사실 | 근거 [L1] |
 |---|---|
-| IDB를 여는 함수는 `openIdbPersistence` 하나, 호출자는 `openLocalSync` 기본 인자뿐 | `idbPersistence.ts:59` · `localSync.ts:92` (grep: 그 밖 호출 0, 테스트 제외) |
+| `StudioPersistence` 어댑터를 여는 함수는 `openIdbPersistence` 하나, 호출자는 `openLocalSync` 기본 인자뿐. 그 밖 `factory.open` 5곳(`entryRead.ts:29` · `storageCheck.ts:54` · `readProject.ts:94` · `deleteProject.ts:89` · `writeImport.ts:48`)·`deleteDatabase` 1곳(`clearBrowserData.ts:52`)은 어댑터가 아닌 1회성 읽기·쓰기(진입 읽기·6.2) — r1 정정(QA F2) | `idbPersistence.ts:59,62` · `localSync.ts:92` |
 | `openLocalSync`는 `createDeferredStudio`의 `sync` 공유 로더로만 열린다 | `deferredStudio.ts:40,45` · `memoryProjectRepository.ts:49` `openLocal` |
 | 공유 로더는 성공한 Promise를 탭 수명 동안 재사용, 실패면 비우고 다음에 다시 연다(실패 쪽은 `persistence.close()` 뒤 throw) | `sharedLoader.ts:5-13` · `localSync.ts:117-120` |
 | `loadDeferredStudio`는 앱 시작 때 1회 | `main.tsx:30` |
@@ -89,7 +89,7 @@
 
 ### 2.3 같은 프로젝트 코어 2개 (같은 탭)
 
-- 편집기 재마운트·StrictMode·레이아웃 모드 전환(`StudioLayout.tsx:86-92` 하위 재마운트, UX-5 5.6)은 **코어를 새로 열지 않는다** — 레지스트리에서 같은 코어를 받고 `acquire(mountId)`만 다시 한다(MC H5-6 멱등).
+- 편집기 재마운트·StrictMode·레이아웃 모드 전환(모드별 렌더 분기로 하위 트리 재마운트 — `StudioLayout.tsx:86-92`는 그 모드 state, r1 정정 QA F15 · UX-5 5.6)은 **코어를 새로 열지 않는다** — 레지스트리에서 같은 코어를 받고 `acquire(mountId)`만 다시 한다(MC H5-6 멱등).
 - 코어를 닫는 경우는 3가지뿐: 프로젝트 삭제 · `cleared` · `stale` 뒤 사용자 새로고침(OBS-1 — 재열기 외 회복 없음 유지). 닫기 API는 코어에 없다(MC 4 CE-3a 근거 "close = 인터페이스 확장") → 레지스트리에서 지우는 것으로 대신하고 늦은 resolve는 레지스트리 밖 코어에만 기록된다(화면 영향 0).
 
 ## 3. liveness — LV-1 · LV-2 (시간 제한 · 취소 · 표시)
@@ -215,7 +215,7 @@
 ### 6.5 liveness 현재 사실 (서브에이전트 ②)
 
 - `AbortController` 0건 · 저장 경로 `Promise.race` 0건 · IDB 무응답 타임아웃 0(`idbPersistence.ts:56,64-66`은 오류·abort·blocked만).
-- 저장 정지 시: "저장 중…" 무기한(`saveStatusText.ts:45`) · "다시 저장" 없음(`SaveStatus.tsx:57`, `retry` no-op :102) · `flushed()` 미완 → **앱 안 링크 이동이 막히고 `leaving.current`가 남아 다시 눌러도 무시**(`StudioLayout.tsx:135-142`) · 스냅샷 생성·복원 대기 · `writeQueue` 뒤 쓰기 전부 막힘. 빠져나갈 길 = 새로고침·탭 닫기뿐.
+- 저장 정지 시: "저장 중…" 무기한(`saveStatusText.ts:45`) · "다시 저장" 없음(`SaveStatus.tsx:57` · `retry` no-op = `useAutosaveScheduler.ts:101-102` — r1 정정 QA F13) · `flushed()` 미완 → **앱 안 링크 이동이 막히고 `leaving.current`가 남아 다시 눌러도 무시**(`StudioLayout.tsx:135-142`) · 스냅샷 생성·복원 대기 · `writeQueue` 뒤 쓰기 전부 막힘. 빠져나갈 길 = 새로고침·탭 닫기뿐.
 
 ## 7. CP4 흡수 판정 (RS4-R1)
 
@@ -365,7 +365,7 @@
 | `data/persistence/localSync.test.ts` · `confirmDoc.test.ts` · `imagePersist.test.ts` | 추가 위주 | 포트 메서드·엄격 imageOps(포트 `commit` 전용 — 맵 없는 참조 = 제출 0). 공유 `imageOps`·`flush`는 그대로라 기존 "조용히 건너뜀" 단언은 GREEN 유지(r1 · 12.1 #4) |
 | `features/studio/saveStatusText.test.ts` | 추가 | 새 문구 |
 | `features/studio/snapshotRevision.test.tsx` · `exportFlow.test.ts` | 변경 가능 | 스냅샷 복원·내보내기 전 저장이 코어 경유(6.4) |
-| `components/studio/StudioLayout.test.tsx`의 링크 이탈 보류 단언 | 변경 | 저장 대기 제거(3절 · RS6-AC-U11) |
+| `components/studio/StudioLeave.test.tsx`(14건 — r1 정정) | 유지 7 · 의미 변경 6 · 이전 1 | 3.1-4 표대로 · RS6-AC-U11·U12·U13 |
 | `features/pending/pendingWrites.test.ts` · `pages/ProjectsPending.test.tsx` | 확인 필요 | `PendingRecord` 대체 여부(6.3) |
 | `data/chunkRetryWiring.test.ts` · `test/pendingImportGuard.test.ts` | 확인 필요 | 청크 경계·import 가드 |
 
@@ -412,3 +412,4 @@
 
 ## 변경 이력
 - r0 (2026-10-17) — 최초 작성. 코드 0 · 측정 0 · Codex 0.
+- r1 (2026-10-17) — QA-REVIEW 6절 권고 1~7 반영(BRIEF-R1): 3.1 lease 해제 save·탭 수준 경고·이탈 예외 지금 동작 기준·`StudioLeave` 14건 표 · 2.2-2 코어 동기 생성·레지스트리 = 저장소 인스턴스·포트 없는 save · 5절 G1 DocBook 경로 재쓰기 규칙·6.4 `deleteSnapshot` · 12.1 누락 5건 판정 · 1.3 포트 이미지 projectId · D6-10·D6-11 · RS6-AC-U12~U16 · 행 번호 정정(QA F2·F4·F9·F11~F15).

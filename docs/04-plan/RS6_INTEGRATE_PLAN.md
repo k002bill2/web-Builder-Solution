@@ -1,7 +1,7 @@
 # RS6_INTEGRATE_PLAN — 저장 코어 제품 연결 Developer 레인 계획
 
-- 상태: **r0 계획 — 실행 승인 아님.** 설계 = `docs/design/restart/INTEGRATE-6.md`(이하 **I6**) r0. 결정 대기 = `docs/design/restart/MQ-6.md`. 작성 Designer · 2026-10-17 · base `c7a7a2a8`.
-- 착수 조건: L0는 **MQ-6-1 ★A 가정으로 결정 전 착수 가능**(앱 커밋 0). L1 이후 = **L0 PASS** + MQ-6-1·MQ-6-3 결정. L0 FAIL이면 L1 이후 전부 보류하고 MQ-6-6(예산)으로 간다.
+- 상태: **r1 계획 — 실행 승인 아님.** 설계 = `docs/design/restart/INTEGRATE-6.md`(이하 **I6**) r1. 결정 대기 = `docs/design/restart/MQ-6.md`. 작성 Designer · 2026-10-17 · base `c7a7a2a8`.
+- 착수 조건: L0는 **MQ-6-1 ★A 가정으로 결정 전 착수 가능**(앱 커밋 0). L1 이후 = **L0 PASS** + MQ-6-1·MQ-6-3 결정(L3는 MQ-6-7도). L0 FAIL이면 L1 이후 전부 보류하고 MQ-6-6(예산)으로 간다.
 - 시간 추정은 전부 **추정(L3)** 이다. 근거는 비슷한 범위의 지난 레인(rs5-spike·rs4-cp4-measure = 측정 1레인 · save-core-fix = 코어 수정 1레인)의 규모 감각뿐이며 실측이 아니다.
 
 ## 0. 순서 한눈에
@@ -14,9 +14,9 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | 레인 | 산출물(1개) | 쓰기 경로(겹침 검사용) | 선행 | 병렬 | 턴 상한 | 시간(추정) |
 |---|---|---|---|---|---|---|
 | **L0** 측정 관문 | `dev/active/rs6-measure/REPORT.md`(S6-base·S6a~d 수치·패치) | `dev/active/rs6-measure/`만 (앱 패치는 측정 뒤 원복, 커밋 0) | 없음(★A 가정) | 없음 | 60 | 1.5~2.5시간 |
-| **L1** 포트·코어 이식 | 코어 모듈 + `LocalSync` 포트 + 하네스 의미 재현 테스트 | `app/src/features/studio/save/**`(신설) · `app/src/data/persistence/localSync.ts` · `imageOps.ts` · 그 테스트 | L0 PASS · MQ-6-1 · MQ-6-2 | 없음 | 90 | 4~6시간 |
+| **L1** 포트·코어 이식 | 코어 모듈 + `LocalSync` 포트 + 레지스트리 + 하네스 의미 재현 테스트 | `app/src/features/studio/save/**`(신설) · `app/src/data/persistence/localSync.ts` · `imageOps.ts` · **`data/projectRepository.ts`**(접근자 능력 인터페이스) · **`data/memoryProjectRepository.ts`**(레지스트리·접근자·DocBook 경로 chain 뒤 규칙) · **`data/memoryDocBook.ts`**(G1 — saved 뒤 DocBook 맞춤·재쓰기 레코드) · 그 테스트 | L0 PASS · MQ-6-1 · MQ-6-2 | 없음 | 90 | 4~6시간 |
 | **L2** liveness | 감시·포기 토큰 + 상수 1곳 | `save/**`(L1과 같은 디렉터리 — 그래서 직렬) · `useAutosaveScheduler.ts` | L1 · MQ-6-3 | 없음 | 60 | 2~3시간 |
-| **L3** 편집기 배선(CP4 흡수) | `useDocSave`·스케줄러·`StudioLayout`이 코어 경유 | `features/studio/useDocSave.ts` · `useAutosaveScheduler.ts` · `studioRepository.ts` · `components/studio/StudioLayout.tsx` · `SnapshotPreview.tsx`·`SnapshotDialog.tsx`·`useExportFlow.ts`(호출부만) | L2 | 없음(L2와 스케줄러 겹침) | 90 | 5~8시간 |
+| **L3** 편집기 배선(CP4 흡수) | `useDocSave`·스케줄러·`StudioLayout`이 코어 경유 | `features/studio/useDocSave.ts` · `useAutosaveScheduler.ts` · `studioRepository.ts` · **`features/studio/useStudioDoc.ts`**(재진입 seed = `view()`) · **`data/memoryProjectRepository.ts`**(탭 수준 `beforeunload` = 레지스트리 — L1 뒤 직렬) · `components/studio/StudioLayout.tsx` · `SnapshotPreview.tsx`·`SnapshotDialog.tsx`·`useExportFlow.ts`(호출부만) · 테스트 `StudioLeave.test.tsx`(I6 3.1-4) | L2 · MQ-6-7 | 없음(L2와 스케줄러 겹침) | 90 | 5~8시간 |
 | **L4** UX 상태·버튼 | `SaveStatus`·`ConflictCallout`·폐기 대화상자·문구 | `components/studio/SaveStatus.tsx` · `ConflictCallout.tsx` · `features/studio/saveStatusText.ts` · 새 대화상자 1개 | L3 · MQ-6-5 | **L5와 병렬 가능**(경로 겹침 0) | 70 | 3~5시간 |
 | **L5** `/projects`·프로필 연결 | 행 "저장 확인"→`confirm` · `PendingRecord` 대체 여부 · `starter` 주입 | `features/projects/pendingRows.ts` · `components/projects/**` · `features/profile/restartFlow.ts` · `features/pending/**` | L3 | L4와 병렬 | 70 | 3~4시간 |
 | **QA** | `dev/active/rs6-qa/REPORT.md` | `dev/active/rs6-qa/`만 | L4·L5 | 없음 | 60 | 2~3시간 |
@@ -45,7 +45,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | CP | RED | GREEN |
 |---|---|---|
 | CP1 | 하네스 h1·h2 의미를 `createMemoryPersistence` + 제품 `LocalSync` 포트 위에서(제출 mark 고정·직렬·confirm 증명) | 코어 상태기 이식(`saveCore.ts` 로직, 레코드 접근 제거) + 포트 `mode`·`head`·`verify` |
-| CP2 | h3·h6 이미지(동결 바인딩·엄격 참조 → 제출 0 · 실패 시 문서·이미지 함께 0) + 기존 `imagePersist`·`imageRecord` 회귀 + 문서 필드 = 코어 doc·스냅샷 = DocBook(I6 5절 G1) | 포트 `commit` = "코어 doc + DocBook snapshots" 레코드 → `queue.submit`→`committed`(도장·cleared·saved 유지) + 엄격 `imageOps` |
+| CP2 | h3·h6 이미지(동결 바인딩·엄격 참조 → 제출 0 · 실패 시 문서·이미지 함께 0) + 기존 `imagePersist`·`imageRecord` 회귀 + 문서 필드 = 코어 doc·스냅샷 = DocBook(I6 5절 G1) + **RS6-AC-U14**(코어 commit 중 `deleteSnapshot`·`createSnapshot`·`confirmDoc`) + **RS6-AC-U15**(포트 이미지 키 projectId) | 포트 `commit` = "코어 doc + DocBook snapshots" 레코드 → `queue.submit`→`committed`(도장·cleared·saved 유지) + 엄격 `imageOps` |
 | CP3 | h4·h5(readonly·stale·discard·replace·lease) + RS6-AC-U10(cleared 직전 save) | 포트 `mode` = gate·cleared 결합 · discard·replace |
 | CP4 | RS6-AC-G2 import 가드 + C5 T10·T13(시드 확인 쓰기 0 · 같은 내용 재확인 쓰기 0) + 동기 생성·포트 늦게 붙이기(I6 2.2-2 ①③ — 포트 로드 전 `edit`·`view` 동작 · local `save()` = 포트 대기 · memory `save()` = DocBook 커밋 뒤 `not-persistent`) | 레지스트리를 저장소 인스턴스(`memoryProjectRepository`)에 매달기 · 가드 테스트 |
 
@@ -69,7 +69,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 | CP1 | `change`마다 `core.edit` 1회 · dispose 뒤 디바운스 편집 보존(F9) · StrictMode 같은 토큰(U6) | `useDocSave` edit 경로 · `acquire`/`release` effect |
 | CP2 | 저장 실패 시 DocBook revision 변화 0(U3) · 재진입 seed = `view()`(거짓 STALE 0, C5 T2) | 저장 대상 = `core.save()` · DocBook 반영은 saved 뒤 |
 | CP3 | 충돌 해결·스냅샷 복원·내보내기 전 저장이 코어 경유(I6 6.4) · dirty면 복원 거절 안내 | `replace` 경유 · `flushed` → `core.save()` |
-| CP4 | 링크 이탈 저장 대기 제거(U11) · POP 재진입 상태 이어짐(C5 T1) · 레이아웃 재마운트 같은 코어(U7) | `flushBeforeLeave` 규칙 변경 |
+| CP4 | 링크 이탈 저장 대기 제거(U11) · 디바운스 대기 중 이탈 = 해제 save 1회·탭 경고(U12) · 예외 목록·`StudioLeave` 대응(U13) · POP 재진입 상태 이어짐(C5 T1) · 레이아웃 재마운트 같은 코어(U7) | lease 해제 save · `flushBeforeLeave` 규칙 변경(MQ-6-7) · 편집기 경고 → 레지스트리 경고 |
 
 - 대체 코드 제거는 L0 REPORT의 S6c 제거 목록(파일:행)과 같게 한다. 다르면 머지 전 L0 도구로 재측정하고 수치를 REPORT에(r1).
 - CP4(SPEC-4 8.4) 패치(`rs4-cp4-measure/patches/`)는 **참고만** — `PendingDraft`·`hold`·`studioHandoff`는 만들지 않는다(I6 7절).
@@ -88,7 +88,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 
 | CP | RED | GREEN |
 |---|---|---|
-| CP1 | 행 "저장 확인" → `confirm` 1회 · 성공 포커스(UX5-AC-08) | `pendingRows` 연결 |
+| CP1 | 행 "저장 확인" → `confirm` 1회 · 성공 포커스(UX5-AC-08) · 편집기 저장 성공 뒤 기억 0(RS6-AC-U16 · RS4-R2) | `pendingRows` 연결 · 코어 `saved` 뒤 `PendingRecord` 해제 |
 | CP2 | `PendingStart` 유지 · "시작 다시 시도" → `retryStart`(starter 주입) | `restartFlow` 연결 |
 | CP3 | 편집기 밖 이미지 확인(C5 T5 · RS6-AC-B2 단위판) | 코어 바인딩 경유 |
 
@@ -107,3 +107,7 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 - 같은 RED가 2회 수정에도 안 풀리면 멈추고 근본 원인 보고(전역 verification 규칙).
 - 레인이 턴 상한 80%에 닿으면 새 조사 중단 → REPORT 마감.
 - 쓰기 경로가 표 밖으로 나가야 하면 멈추고 Jarvis에 범위 확인.
+
+## 변경 이력
+- r0 (2026-10-17) — 최초 작성.
+- r1 (2026-10-17) — QA-REVIEW 6절 권고 반영: L1·L3 쓰기 경로 4파일(`projectRepository`·`memoryProjectRepository`·`memoryDocBook`·`useStudioDoc`) · L0 S6c 제거 목록 고정·상쇄 조건 · 레지스트리 = 저장소 인스턴스 · RS6-AC-U12~U16 배정 · L3 선행 MQ-6-7.

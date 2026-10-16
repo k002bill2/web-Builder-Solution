@@ -1,0 +1,14 @@
+[bundle] 공통 JS (gzip, 참고): 89.34KB
+[bundle] /catalog 첫 화면 합계: 100.30KB / 예산 101KB · 진입 직후 자동 로드 포함: 102.64KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.72KB / 예산 100KB · 진입 직후 자동 로드 포함: 100.06KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 99.23KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.07KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 99.23KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.07KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 120.62KB / 예산 125KB
+[bundle] /profile (3안 있음) 첫 화면 합계: 99.83KB / 예산 100KB · 진입 직후 자동 로드 포함: 123.10KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 99.43KB / 예산 100KB · 진입 직후 자동 로드 포함: 108.72KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.79KB / 예산 100KB · 진입 직후 자동 로드 포함: 129.86KB / 예산 130KB
+[bundle]   /studio/:projectId 해시 정규화 진입 128.47KB · 기준선 128.50KB + 0.03KB (멈춤 > 128.53KB) — raw 129.86KB는 참고(해시 이름 흔들림 포함)
+[bundle] /studio/:projectId (저장 데이터 복원 진입) 첫 화면 합계: 91.79KB / 예산 100KB · 진입 직후 자동 로드 포함: 132.90KB / 예산 134KB
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.45KB · 기준선 131.48KB + 0.03KB (멈춤 > 131.51KB) — raw 132.90KB는 참고(해시 이름 흔들림 포함)
+[bundle] 렌더 문서(render.html) JS 합계: 84.22KB / 예산 90KB · CSS 합계: 8.89KB / 예산 30KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)

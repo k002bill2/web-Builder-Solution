@@ -20,7 +20,7 @@
 | `/profile (3안 있음)` 첫 화면 · 진입 직후 | 100 · 125 | 99.83 · 123.10 | — | — | (base만 기록) |
 | `/projects` 첫 화면 · 진입 직후 | 100 · 125 | 99.42 · 108.70 | 99.44 · 108.78 | 99.44 · 108.88 | 안 |
 
-원문: `raw/base-size.txt` · `raw/s3-size.txt` · `raw/s3-reduced-size.txt` (base 빌드 `npm run build` exit 0, 스파이크 빌드 2회 모두 예산 검사로 exit 1).
+원문: `raw/{base,s3,s3-reduced}-size.txt` · 빌드 원문 `raw/{base,s3,s3-reduced,final}-build.txt` (base 빌드 `npm run build` exit 0, 스파이크 빌드 2회 모두 예산 검사로 exit 1).
 
 ## 바이트 구성 (사실 — dist 청크 gzip, Node zlib 기본 레벨)
 
@@ -37,19 +37,19 @@
 
 ## 해석 (추정 · L3)
 - 여유가 0.06KB(128.47 → 128.53)라 **조회 모듈 청크 1개 + import 1개의 고정 오버헤드만으로 초과**한다. 인계 UI·저장 확인 버튼·cleanup `hold`(실구현)는 아직 0B인데도 넘는다.
-- `studioHandoff`를 "조건 참 시나리오"로 분리 분류하면(측정 목록 변경 — MQ-4-3, 이번 레인 범위 밖) 감량안은 약 +0.09KB로 줄지만 그래도 0.06 여유를 넘을 것으로 추정(미측정).
+- SPEC 9절대로 `studioHandoff`(100B)를 "조건 참" 시나리오로 분리 분류해도(측정 목록 변경 — MQ-4-3, 이번 레인 범위 밖) 기본 `/studio`는 128.66 − 0.10 = **128.56 > 128.53**, 복원 131.64 − 0.10 = **131.54 > 131.51** — 여전히 초과. 실측 청크 크기로 산술 도출(L2), 그 분류로 빌드한 측정은 없음.
 - S2(정적 인계)는 SPEC 9절 r0 기록 +922B raw로 더 크다 — 이번 레인은 BRIEF대로 S3만 측정.
 
 ## 게이트 (스파이크 폐기 후 · fresh)
 | 명령 (`app/`) | 결과 |
 |---|---|
-| `npm run build` | exit 0 (base, 깨끗한 트리 — 위 base 열) |
+| `npm run build` | exit 0 (복원 후 fresh — `raw/final-build.txt`: 정규화 128.47 · 복원 131.45 · `/projects` 108.70, base와 같음) |
 | `npm run typecheck` | exit 0 (복원 후) |
 | `npm run lint` | exit 0 (복원 후) |
-| `npm test -- --run` | 아래 "테스트" 참조 |
+| `npm test -- --run` | exit 0 — Test Files 313 passed (313) · Tests 2830 passed (2830) = base `3454702f`와 같음(코드 변경 0) |
 
 - 복원 확인(사실): `git status --short` → `?? dev/active/rs4-cp4/` 만, `git diff --stat` 빈 출력.
-- 복원 후 `npm run build` 재실행은 하지 않음(미확인) — 소스가 base와 같아 base 수치와 같을 것(추정).
+- 테스트는 복원 직후 시작했다. 복원 명령과 같은 순간에 띄웠으므로 시작 시점이 겹쳤을 가능성은 낮지만 0은 아니다(추정). 결과는 base 수와 같다.
 
 ## 범위 밖 / 후속
 - CP1·CP2(RS4-AC-05·06·11·18~23) 미착수 — 관문 실패.

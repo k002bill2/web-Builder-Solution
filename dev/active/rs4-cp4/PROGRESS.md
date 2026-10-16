@@ -8,4 +8,4 @@
 - [ ] CP1 — BLOCKED: CP0 예산 관문 실패(판정선 128.53/131.51 초과, 수정 금지). 배분 결정 필요(Jarvis → 영환님)
 - [ ] CP2 — BLOCKED: 같은 이유
 - [ ] CP3 — BLOCKED: 이번 레인 범위 밖(BRIEF) + CP2 미착수로 재측정 대상 없음
-- [x] 최종 게이트 typecheck·lint exit 0 / test는 REPORT 참조
+- [x] 최종 게이트(복원 후 fresh): typecheck 0 · lint 0 · test 313 files / 2830 tests exit 0 · build exit 0(128.47 / 131.45)

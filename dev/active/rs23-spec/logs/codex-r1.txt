@@ -1,0 +1,60 @@
+[codex] Starting Codex task thread.
+[codex] Thread ready (01a130e5-e511-7d91-86e4-9fed2bb734ec).
+[codex] Turn started (01a130e5-e8d9-7de3-b024-b2723ca242b3).
+[codex] Assistant message captured: `93f8111..HEAD` 설계 diff와 실제 저장·잠금·재시도 경로를 대조해, 출시를 막을 근거가 있는 P1/P2만 보고하겠습니다.
+[codex] Running command: /bin/zsh -lc 'git diff 93f8111 -- docs/design/restart/SPEC-3.md docs/design/restart/MQ-3.md'
+[codex] Command completed: /bin/zsh -lc 'git diff 93f8111 -- docs/design/restart/SPEC-3.md docs/design/restart/MQ-3.md' (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat /Users/younghwankang/.agents/skills/review/SKILL.md'
+[codex] Command completed: /bin/zsh -lc 'cat /Users/younghwankang/.agents/skills/review/SKILL.md' (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'rs23|restart|web-builder' '/Users/younghwankang/Library/Application Supp...
+[codex] Command completed: /bin/zsh -lc "rg -n 'rs23|restart|web-builder' '/Users/younghwankang/Library/Application Supp... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg --files -g AGENTS.md -g '*restartFlow*' -g '*writerLock*' -g '*tabLockHold*'...
+[codex] Command completed: /bin/zsh -lc "rg --files -g AGENTS.md -g '*restartFlow*' -g '*writerLock*' -g '*tabLockHold*'... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-3.md | sed -n '90,180p'"
+[codex] Command completed: /bin/zsh -lc "nl -ba docs/design/restart/SPEC-3.md | sed -n '90,180p'" (exit 0)
+[codex] Running command: /bin/zsh -lc 'nl -ba app/src/data/memoryProjectRepository.ts'
+[codex] Command completed: /bin/zsh -lc 'nl -ba app/src/data/memoryProjectRepository.ts' (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/studio/useExportFlow.ts app/src/features/studio/useDocSave...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/studio/useExportFlow.ts app/src/features/studio/useDocSave... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/data/persistence/writerLock.ts app/src/features/projects/tabLockHol...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/data/persistence/writerLock.ts app/src/features/projects/tabLockHol... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '335,460p'; cat app/src/features/...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '335,460p'; cat app/src/features/... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '350,430p'; nl -ba app/src/featur...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/memoryDocBook.ts | sed -n '350,430p'; nl -ba app/src/featur... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/studio/useExportFlow.ts | sed -n '40,110p'; nl -ba app/...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/studio/useExportFlow.ts | sed -n '40,110p'; nl -ba app/... (exit 0)
+[codex] Running command: /bin/zsh -lc "rg -n 'startCommit|startKeys|starts|replay|requestExport|save\\(' app/src/data/...
+[codex] Command completed: /bin/zsh -lc "rg -n 'startCommit|startKeys|starts|replay|requestExport|save\\(' app/src/data/... (exit 0)
+[codex] Assistant message captured: 가드가 문서 존재 판정보다 먼저 실행되면, 읽기 전용 탭에서 이미 저장된 문서를 여는 경로도 막힙니다. 또 history 재진입 후 revision이 바뀐 경우, 재시...
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/data/persistence/writeQueue.ts | sed -n '30,115p'; nl -ba app/sr...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/data/persistence/writeQueue.ts | sed -n '30,115p'; nl -ba app/sr... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/features/profile/CandidatesSection.tsx | sed -n '85,120p;230,285...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/features/profile/CandidatesSection.tsx | sed -n '85,120p;230,285... (exit 0)
+[codex] Running command: /bin/zsh -lc "git diff --stat; git show HEAD:docs/design/restart/SPEC-3.md | nl -ba | sed -n ...
+[codex] Command failed: /bin/zsh -lc "git diff --stat; git show HEAD:docs/design/restart/SPEC-3.md | nl -ba | sed -n ... (exit 2)
+[codex] Running command: /bin/zsh -lc "rg -n 'leave|beforeunload|popstate|proceed|blocker' app/src/features/studio/Stu...
+[codex] Command failed: /bin/zsh -lc "rg -n 'leave|beforeunload|popstate|proceed|blocker' app/src/features/studio/Stu... (exit 1)
+[codex] Running command: /bin/zsh -lc "rg -n 'popstate|save.leave|leave\\(\\)|useBlocker' app/src; rg --files app/src ...
+[codex] Command completed: /bin/zsh -lc "rg -n 'popstate|save.leave|leave\\(\\)|useBlocker' app/src; rg --files app/src ... (exit 0)
+[codex] Running command: /bin/zsh -lc "nl -ba app/src/components/studio/StudioLayout.tsx | sed -n '120,170p'; git rev-...
+[codex] Command completed: /bin/zsh -lc "nl -ba app/src/components/studio/StudioLayout.tsx | sed -n '120,170p'; git rev-... (exit 0)
+[codex] Assistant message captured: { "verdict": "needs-attention", "summary": "설계 승인 보류: 저장된 문서의 정상 진입을 막는 회귀와 미확인 게이트를 잘못 해제하는 ...
+[codex] Turn completed.
+# Codex Adversarial Review
+
+Target: branch diff against 93f8111
+Verdict: needs-attention
+
+설계 승인 보류: 저장된 문서의 정상 진입을 막는 회귀와 미확인 게이트를 잘못 해제하는 경로가 있습니다. 88f7e2c의 diff와 app/src를 읽기 전용으로 대조했습니다. 구현·테스트·번들 실측은 수행하지 않았습니다.
+
+Findings:
+- [high] [P1] revision이 진행된 restart를 미커밋으로 판정해 게이트를 해제합니다 (docs/design/restart/SPEC-3.md:165-167)
+  R-E4 뒤 history로 편집기에 들어가 편집 저장이 quota로 실패하면, 메모리 revision은 원래 revision+2가 됩니다(memoryDocBook.ts:364-366). history로 목록에 돌아와 같은 startDoc을 재생해도 flush가 계속 실패하면, 기존 committed()는 revision+1만 인정하므로 'no'를 반환합니다(restartFlow.ts:59-62). 이 규칙은 기억을 삭제하고 링크를 복원하며 '새로 시작이 반영되지 않았다'고 표시합니다. 실제로는 restart와 후속 편집 모두 메모리에만 남아 있습니다. 복원된 링크로 다시 들어가면 저장 상태가 idle이라 새로고침 시 편집 내용을 경고 없이 잃을 수 있습니다. StudioLayout.tsx:133-145의 이탈 가드는 링크 클릭만 처리하므로 history 이동은 이 시나리오를 막지 않습니다.
+  Recommendation: 후속 revision을 '미커밋'으로 단정하지 말고 미확인 게이트를 유지하도록 규칙을 바꾸십시오. R-E4 → history 진입 → 편집 저장 quota 실패 → history 복귀 → 재생 flush 실패 테스트를 추가하고, 기억·링크 차단 유지와 편집 내용 보존을 검증하십시오.
+- [medium] [P2] create 가드를 판정 앞에 두면 저장된 문서 열기도 차단됩니다 (docs/design/restart/SPEC-3.md:131-133)
+  조건만 제거하면 guardWrite가 DOC_EXISTS 판정보다 먼저 실행됩니다(memoryProjectRepository.ts:122, memoryDocBook.ts:384-385). 다른 탭이 writer인 상태에서 이미 IDB에 저장된 같은 안·버전 문서를 프로필에서 열면, 기존 DOC_EXISTS → judge → 편집기 이동 대신 READ_ONLY_TAB이 발생합니다. 이어 5.1의 candidate+version 검사에 기존 저장 문서가 일치해 C-E4로 오판되고, 목록 링크까지 숨겨집니다. 다른 안을 선택해도 기존 restart 대화상자 진입이 차단됩니다. 실제 기존 테스트(restartLock.test.ts:136-142)는 잠금 보유 중 저장 문서의 DOC_EXISTS 반환을 검증하므로, 이를 교체하면 정상 읽기 경로 회귀를 숨깁니다. '잃는 기능은 저장 안 되는 편집기뿐'이라는 RS3-D5 설명도 성립하지 않습니다.
+  Recommendation: 기존 문서의 DOC_EXISTS 읽기 판정을 보존하고, 실제 신규 create 커밋 전에 가드를 적용하도록 순서를 설계하십시오. 기존 잠금 중 DOC_EXISTS 테스트를 유지하고, 저장된 같은 쌍을 C-E4로 분류하거나 registry에 등록하지 않는 회귀 기준을 추가하십시오.
+
+Next steps:
+- 두 실패 시나리오를 SPEC-3의 판정 규칙과 수용 기준에 반영하십시오.

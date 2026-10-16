@@ -127,7 +127,7 @@
 
 | gap | 결정 | 근거 |
 |---|---|---|
-| G1 메모리 커밋 층(DocBook) | **편집기 저장 경로에서 DocBook 메모리 커밋을 코어 커밋 뒤로 옮긴다**: 코어 `saved` resolve → DocBook에 같은 문서를 반영(`memHead` 동기). 실패면 DocBook 변경 0. → C5 F2(실패해도 revision +1)·F3(`revisionRef` 경쟁)·QA-4(discard가 메모리 커밋분을 못 되돌림)를 함께 닫는다. 다른 화면(스냅샷·restart·export)은 DocBook을 계속 읽는다 | C5 F2·F3 · rs5-review QA-4 |
+| G1 메모리 커밋 층(DocBook) | **필드별 작성자 1명**: `docs/{projectId}` 레코드의 **문서 필드 작성자 = 코어 단독**, **스냅샷 필드(`snapshots`·`snapshotSeq`) 작성자 = DocBook**, 둘 다 같은 `writeQueue`로 직렬. 포트 `commit`은 기존 `write`(`localSync.ts:155-157` — 레코드를 `book.docOf`에서 만듦)를 그대로 쓰지 않고, **"코어 동결 doc + 제출 시점 DocBook snapshots"로 레코드를 만드는 변형**을 쓴다(그대로 쓰면 아직 DocBook에 없는 코어 doc 대신 옛 문서가 써진다). 코어 `saved` resolve 뒤 DocBook 문서를 같은 doc으로 맞춘다(`memHead` 동기) · 실패면 DocBook 변경 0. restart·복원·충돌 해결은 6.4대로 `core.replace` 경유라 문서 필드를 DocBook이 직접 바꾸는 경로가 남지 않는다. → C5 F2·F3·QA-4를 함께 닫는다. 다른 화면은 DocBook을 계속 읽는다 | C5 F2·F3 · rs5-review QA-4 · 6.4 |
 | G2 디바운스 | `change`마다 `core.edit(doc, newBlobs)` **동기 1회**. 스케줄러 디바운스는 **save 시점**만 정한다. 비용 = 동결 사본 1개(엔진 문서 객체는 이미 불변이면 얕은 동결) | MC G2 · C5 I8 `mark` |
 | G7 lease ↔ 재seed | 마운트 effect: `token = acquire(mountId)` → `view()`로 doc·바인딩·dirty를 받아 편집기 state를 다시 seed(StrictMode 2회째도 같은 토큰이라 결과 같음). render 중에는 `view()`만 | C5 4.5 StrictMode 행 · MC H5-6 |
 | G8 start 상태 | 코어는 `retryStart`만 있고 `held` 상태가 없다 → start 상태는 **기존 `pendingWrites` `PendingStart`를 유지**(이미 main, `/projects`·프로필이 읽음). 코어는 start-pending 동안 save를 막지 않는다 → UX-5 G10 ★(편집기 진입 막기 + 편집기 안 Callout) 그대로 | SPEC-4 3절 · UX-5 G10 |

@@ -1,0 +1,44 @@
+// RS4 QA 5 — (새로고침 뒤 프로필) put 실패 주입 → B안 새로 시작 → R-E4 → 합성 beforeunload로 리스너 등록 확인 → 대화상자 취소 → /projects → 폐기 확인(AC-08): alertdialog·첫 포커스=취소·Esc=취소(포커스 복귀) → 확인 → 새로고침 → 미확인 0 · IDB A안 v1
+const task = await taskSpace(1);
+const page = task.page("p1");
+const SHOTS = "/Users/younghwankang/orca/workspaces/web-builder-solution/rs4-impl/dev/active/rs4-impl/qa/shots";
+const norm = 'replace(/\\s+/g, " ").trim()';
+const has = (re) => page.waitForFunction((src) => [...document.querySelectorAll("button")].some((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).replace(/\s+/g, " ").trim())), re, { timeout: 20000 });
+const btn = (re, scope = "") => page.evaluate(([src, sc]) => { const el = [...document.querySelectorAll(`${sc} button`)].find((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).replace(/\s+/g, " ").trim())); if (!el) return "missing:" + src; el.click(); return "ok"; }, [re, scope]);
+const focus = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") || document.activeElement?.textContent?.trim().slice(0, 40));
+await has("^B안 선택$");
+await btn("^B안 선택$");
+await has("^B안으로 편집 시작$");
+await page.evaluate(() => { const orig = IDBObjectStore.prototype.put; window.__failPut = true; IDBObjectStore.prototype.put = function (...a) { if (window.__failPut) throw new DOMException("quota (QA 주입)", "QuotaExceededError"); return orig.apply(this, a); }; });
+await btn("^B안으로 편집 시작$");
+await page.waitForSelector("dialog[open]", { timeout: 15000 });
+await btn("^B안으로 새로 시작$", "dialog[open]");
+await page.waitForFunction(() => /새로 시작했지만 브라우저에 저장됐는지 확인하지 못했습니다/.test(document.body.innerText), undefined, { timeout: 10000 });
+// 리스너 등록 확인(합성 이벤트 — 브라우저 경고창과는 별개)
+console.log("== 합성 beforeunload", JSON.stringify(await page.evaluate(() => { const e = new Event("beforeunload", { cancelable: true }); window.dispatchEvent(e); return { defaultPrevented: e.defaultPrevented, returnValue: e.returnValue }; })));
+await btn("^취소$", "dialog[open]");
+await page.waitForTimeout(300);
+await page.evaluate(() => [...document.querySelectorAll("a")].find((a) => a.textContent.trim() === "프로젝트").click());
+await page.waitForFunction(() => location.pathname === "/projects", undefined, { timeout: 10000 });
+await has("버리고 새로고침$");
+console.log("== /projects 행", await page.evaluate(() => [...document.querySelectorAll("li")].find((l) => /버리고 새로고침/.test(l.innerText))?.innerText.split("\n").filter(Boolean).slice(0, 6)));
+const discardName = await page.evaluate(() => [...document.querySelectorAll("button")].find((b) => /버리고 새로고침$/.test(b.getAttribute("aria-label") || "")).getAttribute("aria-label"));
+await page.click(`loc=role:button[name='${discardName}']`, { label: "버리고 새로고침 열기" });
+await page.waitForSelector("[role=alertdialog]", { timeout: 5000 });
+const dlg = await page.evaluate(() => { const d = document.querySelector("[role=alertdialog]"); return { name: document.getElementById(d.getAttribute("aria-labelledby"))?.textContent, desc: document.getElementById(d.getAttribute("aria-describedby"))?.textContent, buttons: [...d.querySelectorAll("button")].map((b) => b.textContent.trim()) }; });
+console.log("== alertdialog", JSON.stringify(dlg), "포커스:", await focus());
+await page.screenshot({ path: `${SHOTS}/06-discard-confirm-1280.png` });
+await page.keyboard.press("Escape");
+await page.waitForTimeout(300);
+console.log("== Esc 뒤", { dialog: await page.evaluate(() => !!document.querySelector("[role=alertdialog]")), focus: await focus(), pendingText: await page.evaluate(() => /확인하지 못했습니다/.test(document.body.innerText)) });
+await page.click(`loc=role:button[name='${discardName}']`, { label: "버리고 새로고침 다시" });
+await page.waitForSelector("[role=alertdialog]", { timeout: 5000 });
+await page.evaluate(() => [...document.querySelectorAll("[role=alertdialog] button")].find((b) => b.textContent.trim() === "버리고 새로고침").click());
+await page.waitForTimeout(2500);
+console.log("== 확인 뒤", JSON.stringify(await page.evaluate(async () => {
+  const db = await new Promise((r) => { const q = indexedDB.open("design-studio"); q.onsuccess = () => r(q.result); });
+  const d = await new Promise((r) => { const q = db.transaction("docs").objectStore("docs").getAll(); q.onsuccess = () => r(q.result); });
+  db.close();
+  return { nav: performance.getEntriesByType("navigation")[0]?.type, path: location.pathname, failPutVar: "__failPut" in window, pendingText: /확인하지 못했습니다/.test(document.body.innerText), editorLink: [...document.querySelectorAll("a")].some((a) => /편집기 열기$/.test(a.getAttribute("aria-label") || "")), docs: d.map((x) => `${x.id}:${x.data.doc.candidateId}v${x.data.doc.profileVersion}`) };
+})));
+await page.screenshot({ path: `${SHOTS}/07-after-discard-1280.png` });

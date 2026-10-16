@@ -56,12 +56,22 @@
   - `/profile` 진입 직후가 +0.54 늘었다. "증분 0 목표"는 지키지 못했지만 한도 125 안이다.
   - 측정 목록(`check-bundle-size.mjs`)에 `/projects`의 auto와 afterAction 키를 추가했다. 판정선 변경은 없다.
 
-## 5. 미실행 · 남은 것
-- 브라우저 QA(Ego Lite)를 하지 않았다:
-  - RS4-AC-07~10·14 [E]
-  - 멀티 탭 잠금 실제 취득
-  - `beforeunload` 실제 표시(CDP `Page.javascriptDialogOpening`)
-  - RS4-AC-09 새로고침 한계
+## 5. 브라우저 QA (Ego Lite · 2026-10-16 · `d8ff4929` 빌드 + `vite preview` 127.0.0.1:4381)
+- 스크립트 `qa/qa-1.mjs`~`qa-7.mjs` · 캡처 `qa/shots/01~08`. 앱 안 클릭으로만 이동했다(새로고침은 AC-08·09 확인 때만).
+- 미확인 상태 만들기: 페이지 안에서 `IDBObjectStore.prototype.put`이 `QuotaExceededError`를 던지게 주입했다(QA 전용 · 앱 코드 변경 0). 메모리 커밋 뒤 flush INFRA라 실제 경로와 같은 분기다.
+
+| AC | 결과 | 근거 |
+|---|---|---|
+| RS4-AC-07 `/projects` 행 (`PendingStart` create·restart) | **통과** | P-U1 글자 · "편집기 열기" 0 · "저장 다시 시도"·"버리고 새로고침" · P-U5 캡션(02). 실패 재시도 = `role=alert` + 포커스 유지(03). 주입 해제 뒤 재시도 = P-U2 `role=status` + 포커스 = 되살아난 "편집기 열기" · IDB docs 1건(04). 다른 행 변화 0 |
+| RS4-AC-08 폐기 확인 | **통과** | `alertdialog` 이름 "확인되지 않은 변경 버리기" · 첫 포커스 = 취소 · Esc = 닫힘 + 포커스 = 보조 버튼 + 기억 유지(06). 확인 → reload 1회(navigation `reload`) · 경고창 없이 진행 · 미확인 0 · IDB = 이전 문서 `A v1`(07) |
+| RS4-AC-09 새로고침 한계 | **부분** | R-E4(05) 뒤 CDP `Input.dispatchMouseEvent` 1회 → `location.reload()`: reload는 일어났고 IDB = 이전 문서 `A v1`만 · 미확인 표시 0. **`Page.javascriptDialogOpening` 이벤트는 받지 못했다.** 합성 `beforeunload`에는 `defaultPrevented: true`라 리스너 등록은 확인했다. 경고창이 안 뜬 원인(신뢰 입력 미인정 / Ego Lite의 다이얼로그 처리)은 가리지 못했다 — 실제 경고창 표시는 미확인으로 남긴다(무손실 단정 0) |
+| RS4-AC-10 멀티 탭 잠금 | **핵심 통과 · 일부 미실행** | 탭 A가 `/studio/project-1`에서 실제 편집 → "저장됨"(writer 취득). 탭 B 새로 로드 → 문서 없는 프로젝트 2 "A안으로 편집 시작" = "다른 탭에서 편집 중이라 편집을 시작하지 않았습니다"(C-E2) · IDB docs 전후 `[project-1:Av1]` 동일 · B `/projects` 미확인 0(08). **미실행**: 탭 B `PendingRecord` "저장 확인" READ_ONLY 문형 · A 닫힘 뒤 B 확인 성공/STALE(실브라우저에서 B에 `PendingRecord`를 만드는 경로를 꾸리지 못함) |
+| RS4-AC-14 접근성·가림 | **통과** | 1280·1024·390 모두 행 버튼 6개 뷰포트 밖 0 · 겹침 0 · 가로 스크롤 0(02). 상태는 글자로 표시 · 결과 알림 행 안 한 자리 |
+
+- Codex r3 반영분(`stuck` 포커스 폴백)은 실브라우저에서 `stuck` 상태를 만들지 못해 단위 테스트로만 확인했다.
+
+## 6. 미실행 · 남은 것
+- 브라우저 QA 미확인: `beforeunload` 실제 경고창 표시(AC-09) · AC-10 `PendingRecord` READ_ONLY/STALE 경로 · `stuck` 포커스 실브라우저(5절).
 - 모듈 로드 실패 UI는 단위 테스트가 없다.
 - CP4(편집기 인계 · `PendingDraft` · history 재진입 거짓 idle)는 하지 않았다. 남은 위험 RS4-R1·R2·R8은 그대로다.
 - push · main 병합은 사용자 승인이 필요하다.

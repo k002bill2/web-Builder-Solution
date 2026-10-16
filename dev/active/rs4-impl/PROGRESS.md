@@ -8,8 +8,9 @@
 - [x] CP3 — /projects 행(P-U1~5 · 다시 시도/저장 확인 · 버리고 새로고침 확인)
 - [x] 게이트 4종 + 정규화 예산(멈춤 128.53/131.51) + Codex review
 - [x] REPORT · 커밋(push 0)
-- [ ] BLOCKED: Codex r3 — usage limit(07:22 이후 재시도 가능, codex-r3.txt) · r2 반영분 미재검토
-- [ ] BLOCKED: 브라우저 QA(Ego Lite RS4-AC-07~10·14) · push/병합 — 사용자 승인
+- [x] Codex r3(2026-10-16) — P2 1건(stuck 포커스) 반영 `d8ff4929` · 3라운드 상한 도달, 반영분 미재검토
+- [x] 브라우저 QA(Ego Lite) — AC-07·08·14 통과 · AC-10 핵심 통과 · AC-09 부분(경고창 이벤트 미수신) — REPORT 5절
+- [ ] BLOCKED: push/병합 — 사용자 승인 · CP4 — 예산 배분 결정
 
 ## Codex review r1 (codex-r1.txt) — P2 4건 전부 반영
 - ① 표시 모듈 로드 실패 → 목록 게이트 유지 + "다시 시도"(Callout) ② 재시도 성공 → 목록 재조회(useProjectList.reload) + 링크 생긴 뒤 포커스 ③ 기억 변경 구독(pendingWrites.subscribe) → 그려진 목록 재판정 ④ 확인 불가(stale·cleared·IMAGES_MISSING) → 주 버튼 숨김·폐기만.

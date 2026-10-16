@@ -1,0 +1,36 @@
+// RS4 QA 7 — AC-10: 탭 A(p1) writer 유지 중 탭 B(p2) 새로 로드 → 프로젝트 2(문서 없음) 프로필 → A안 선택 → A안으로 편집 시작(create) → C-E2 · IDB docs 변화 0 · B 기억 0(/projects 미확인 0)
+const task = await taskSpace(1);
+const SHOTS = "/Users/younghwankang/orca/workspaces/web-builder-solution/rs4-impl/dev/active/rs4-impl/qa/shots";
+const pages = await task.pages();
+const b = pages.find((p) => p.label === "p2") ?? (await task.newPage());
+console.log({ b: b.label });
+const has = (re) => b.waitForFunction((src) => [...document.querySelectorAll("button")].some((x) => new RegExp(src).test((x.getAttribute("aria-label") || x.textContent).replace(/\s+/g, " ").trim())), re, { timeout: 20000 });
+const btn = (re) => b.evaluate((src) => { const el = [...document.querySelectorAll("button")].find((x) => new RegExp(src).test((x.getAttribute("aria-label") || x.textContent).replace(/\s+/g, " ").trim())); if (!el) return "missing:" + src; el.click(); return "ok"; }, re);
+const idb = () => b.evaluate(async () => {
+  const db = await new Promise((r) => { const q = indexedDB.open("design-studio"); q.onsuccess = () => r(q.result); });
+  const d = await new Promise((r) => { const q = db.transaction("docs").objectStore("docs").getAll(); q.onsuccess = () => r(q.result); });
+  db.close();
+  return d.map((x) => `${x.id}:${x.data.doc.candidateId}v${x.data.doc.profileVersion}`);
+});
+await b.cdp("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+await b.goto("http://127.0.0.1:4381/projects");
+await b.waitForFunction(() => [...document.querySelectorAll("a")].some((a) => /동네 치과 클리닉 프로젝트 프로필 보기$/.test(a.getAttribute("aria-label") || "")), undefined, { timeout: 15000 });
+const before = await idb();
+await b.evaluate(() => [...document.querySelectorAll("a")].find((a) => /동네 치과 클리닉 프로젝트 프로필 보기$/.test(a.getAttribute("aria-label") || "")).click());
+await b.waitForFunction(() => /^\/profile\//.test(location.pathname), undefined, { timeout: 10000 });
+await b.waitForTimeout(1500);
+console.log("== B 프로필", await b.evaluate(() => [...document.querySelectorAll("main button")].map((x) => (x.getAttribute("aria-label") || x.textContent).replace(/\s+/g, " ").trim()).filter((t) => /안|편집|3안/.test(t))));
+await has("^A안 선택$");
+console.log(await btn("^A안 선택$"));
+await has("^A안으로 편집 시작$");
+console.log(await btn("^A안으로 편집 시작$"));
+await b.waitForTimeout(2500);
+const res = await b.evaluate(() => ({ path: location.pathname, alerts: [...document.querySelectorAll('[role="alert"],[role="status"]')].map((n) => n.innerText.trim()).filter(Boolean), retry: [...document.querySelectorAll("button")].map((x) => x.textContent.trim()).filter((t) => /다시|저장/.test(t)) }));
+console.log("== B 결과", JSON.stringify(res, null, 1));
+await b.screenshot({ path: `${SHOTS}/08-tabB-create-readonly-1280.png` });
+const after = await idb();
+console.log("== IDB docs", { before, after });
+await b.evaluate(() => [...document.querySelectorAll("a")].find((a) => a.textContent.trim() === "프로젝트").click());
+await b.waitForFunction(() => location.pathname === "/projects", undefined, { timeout: 10000 });
+await b.waitForTimeout(800);
+console.log("== B /projects 미확인", await b.evaluate(() => /확인하지 못했습니다/.test(document.body.innerText)));

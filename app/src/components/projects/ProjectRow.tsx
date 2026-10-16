@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { ProjectRowView } from "../../features/projects/projectListView";
 import type { RenameDraft } from "../../features/projects/renameDraft";
@@ -5,6 +6,18 @@ import { Button } from "../ds/Button";
 import { RenameField, type RenameSubmitOutcome } from "./RenameField";
 
 const ACTION_LINK = "ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover";
+
+/** 미확인 기억이 있는 행(RESTART SPEC-4 5.2) — 글자·폐기 확인은 진입 직후 모듈(pendingRows)이 넘긴다. 결과 알림은 행 안 한 자리 */
+export interface PendingRow {
+  /** 기억이 있을 때만 — P-U1 상태 글자 · 주 버튼 이름 · P-U5 캡션 · 진행 중 글자 */
+  readonly pending?: { readonly status: string; readonly label: string; readonly caption: string; readonly working: string };
+  readonly busy?: boolean;
+  readonly result?: { readonly ok: boolean; readonly text: string; readonly key: number; readonly stuck?: boolean };
+  readonly onRetry: (projectId: string) => void;
+  /** local 영속에서만 폐기(새로고침) */
+  readonly Discard?: (props: { readonly label?: string }) => ReactNode;
+  readonly discardLabel?: string;
+}
 
 export interface RenameHandlers {
   readonly onOpen: (projectId: string) => void;
@@ -24,7 +37,9 @@ export function ProjectRow({
   rename,
   onExport,
   onDelete,
+  held,
 }: {
+  readonly held?: PendingRow;
   readonly row: ProjectRowView;
   readonly draft?: RenameDraft;
   readonly rename: RenameHandlers;
@@ -33,6 +48,7 @@ export function ProjectRow({
   /** 있을 때만 "삭제"(P1D-SPEC J-S12 — local만) */
   readonly onDelete?: (projectId: string) => void;
 }) {
+  const pending = held?.pending;
   return (
     <li className="flex flex-col gap-2 border-b border-line-neutral py-4">
       {draft ? (
@@ -46,10 +62,24 @@ export function ProjectRow({
         <time dateTime={row.dateTime} className="ds-caption1 text-label-alternative">
           {row.timeText}
         </time>
+        {pending && <span className="ds-caption1 text-status-negative-text">{pending.status}</span>}
       </p>
       <div className="flex flex-wrap items-center gap-3">
-        {row.editorHref && (
-          <Link to={row.editorHref} aria-label={`${row.name} 편집기 열기`} className={ACTION_LINK}>
+        {pending && !held.result?.stuck && (
+          <Button
+            variant="outline"
+            size="sm"
+            data-retry-for={row.projectId}
+            aria-label={`${row.name} ${pending.label}`}
+            aria-busy={held.busy || undefined}
+            aria-disabled={held.busy || undefined}
+            onClick={() => !held.busy && held.onRetry(row.projectId)}
+          >
+            {held.busy ? pending.working : pending.label}
+          </Button>
+        )}
+        {!pending && row.editorHref && (
+          <Link to={row.editorHref} data-editor-for={row.projectId} aria-label={`${row.name} 편집기 열기`} className={ACTION_LINK}>
             편집기 열기
           </Link>
         )}
@@ -64,12 +94,23 @@ export function ProjectRow({
             파일로 내보내기
           </Button>
         )}
+        {pending && held.Discard && (
+          <span data-discard-for={row.projectId} className="contents">
+            <held.Discard label={`${row.name} ${held.discardLabel}`} />
+          </span>
+        )}
         {onDelete && (
           <Button variant="outline" size="sm" data-delete-for={row.projectId} aria-label={`${row.name} 삭제`} onClick={() => onDelete(row.projectId)}>
             삭제
           </Button>
         )}
       </div>
+      {pending && <p className="ds-caption1 text-label-alternative">{pending.caption}</p>}
+      {held?.result && (
+        <p key={held.result.key} data-result-for={row.projectId} tabIndex={-1} role={held.result.ok ? "status" : "alert"} className={held.result.ok ? "ds-body3" : "ds-body3 text-status-negative-text"}>
+          {held.result.text}
+        </p>
+      )}
     </li>
   );
 }

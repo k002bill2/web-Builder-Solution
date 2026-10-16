@@ -1,0 +1,52 @@
+[codex] Starting Codex review thread.
+[codex] Thread ready (01a13bc9-c3de-7a43-954b-6874e8ef6e2e).
+[codex] Reviewer started: changes against 'e3e22520'
+[codex] Running command: /bin/zsh -lc "git diff e3e22520fab8f27537c63746ebe028e1d4c47e28 --stat; pwd; find .. -name AG...
+[codex] Command failed: /bin/zsh -lc "git diff e3e22520fab8f27537c63746ebe028e1d4c47e28 --stat; pwd; find .. -name AG... (exit 1)
+[codex] Running command: /bin/zsh -lc 'git diff e3e22520fab8f27537c63746ebe028e1d4c47e28'
+[codex] Command completed: /bin/zsh -lc 'git diff e3e22520fab8f27537c63746ebe028e1d4c47e28' (exit 0)
+[codex] Running command: /bin/zsh -lc 'for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/youn...
+[codex] Command completed: /bin/zsh -lc 'for p in /AGENTS.md /Users/AGENTS.md /Users/younghwankang/AGENTS.md /Users/youn... (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff e3e22520 -- app/src/features/profile/restartFlow.ts app/src/data/persi...
+[codex] Command completed: /bin/zsh -lc 'git diff e3e22520 -- app/src/features/profile/restartFlow.ts app/src/data/persi... (exit 0)
+[codex] Running command: /bin/zsh -lc 'cat app/src/data/persistence/localSync.ts app/src/data/persistence/writeQueue.ts'
+[codex] Command completed: /bin/zsh -lc 'cat app/src/data/persistence/localSync.ts app/src/data/persistence/writeQueue.ts' (exit 0)
+[codex] Running command: /bin/zsh -lc 'git diff e3e22520 -- app/src/features/profile/RestartDialog.tsx app/src/feature...
+[codex] Command completed: /bin/zsh -lc 'git diff e3e22520 -- app/src/features/profile/RestartDialog.tsx app/src/feature... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '65,170p' app/src/data/persistence/writeQueue.ts; cat app/src/data/persi...
+[codex] Command completed: /bin/zsh -lc "sed -n '65,170p' app/src/data/persistence/writeQueue.ts; cat app/src/data/persi... (exit 0)
+[codex] Running command: /bin/zsh -lc "ls -d app/node_modules 2>/dev/null; git status --short; find . -name 'AGENTS*' ...
+[codex] Command completed: /bin/zsh -lc "ls -d app/node_modules 2>/dev/null; git status --short; find . -name 'AGENTS*' ... (exit 0)
+[codex] Running command: /bin/zsh -lc "sed -n '1,80p' app/src/pages/ProjectsPage.tsx; cat app/src/features/projects/us...
+[codex] Command completed: /bin/zsh -lc "sed -n '1,80p' app/src/pages/ProjectsPage.tsx; cat app/src/features/projects/us... (exit 0)
+[codex] Running command: /bin/zsh -lc 'npm test -- --run src/features/pending src/features/profile/restartFlow.test.ts...
+[codex] Command failed: /bin/zsh -lc 'npm test -- --run src/features/pending src/features/profile/restartFlow.test.ts... (exit 1)
+[codex] Running command: /bin/zsh -lc 'npm test -- --run --configLoader runner src/features/pending src/features/profi...
+[codex] Running command: /bin/zsh -lc 'cat app/src/features/projects/useProjectList.ts; git diff e3e22520 -- app/src/f...
+[codex] Command completed: /bin/zsh -lc 'cat app/src/features/projects/useProjectList.ts; git diff e3e22520 -- app/src/f... (exit 0)
+[codex] Command failed: /bin/zsh -lc 'npm test -- --run --configLoader runner src/features/pending src/features/profi... (exit 1)
+[codex] Running command: /bin/zsh -lc "git diff --check e3e22520; nl -ba app/src/data/persistence/localSync.ts | sed -...
+[codex] Command completed: /bin/zsh -lc "git diff --check e3e22520; nl -ba app/src/data/persistence/localSync.ts | sed -... (exit 0)
+[codex] Review output captured.
+[codex] Reviewer finished.
+[codex] Assistant message captured: 미확인 상태의 목록 게이트와 재시도 후 행 갱신에 결함이 있어 수정이 필요합니다. 관련 테스트 실행은 시도했으나 읽기 전용 환경의 EPERM 오류로 테스트가 시작되지 ...
+[codex] Turn completed.
+# Codex Review
+
+Target: branch diff against e3e22520
+
+미확인 상태의 목록 게이트와 재시도 후 행 갱신에 결함이 있어 수정이 필요합니다. 관련 테스트 실행은 시도했으나 읽기 전용 환경의 EPERM 오류로 테스트가 시작되지 않아 통과 여부는 확인하지 못했습니다.
+
+Full review comments:
+
+- [P2] 기억 조회 청크 로드 실패 시 목록 게이트를 유지하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-impl/app/src/pages/ProjectsPage.tsx:200-202
+  `pendingRows` 청크 로드가 실패하면 `mod`를 `null`로 설정하여 목록을 표시하지만, `pendingOf()`는 항상 `undefined`가 됩니다. 프로필에서 이미 미확인 기억을 만든 뒤 네트워크 오류로 이 청크만 받지 못한 경우에도 기억과 무관하게 '편집기 열기'가 노출됩니다. 기억 모듈이 이미 로드됐다는 사실은 목록 표시 청크의 로드 성공을 보장하지 않으므로, 실패 상태에서는 목록 게이트를 유지하고 재시도 또는 오류 상태를 제공해야 합니다.
+
+- [P2] 재시도 성공 후 프로젝트 요약을 다시 조회하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-impl/app/src/pages/ProjectsPage.tsx:212-216
+  문서 생성 전 실패와 후속 읽기 실패로 `PendingStart`가 만들어진 경우, 목록 진입 시 프로젝트 요약의 `hasDoc`는 `false`일 수 있습니다. 여기서 재시도가 문서를 생성해도 결과 상태만 갱신하고, `useProjectList`는 저장소가 바뀌지 않는 한 다시 조회하지 않습니다. 따라서 성공 메시지는 나오지만 '편집기 열기' 링크가 생성되지 않고 포커스도 복원되지 않습니다. 재시도 완료 후 해당 행의 문서 정보와 변경 시각을 다시 조회하여 목록에 반영해야 합니다.
+
+- [P2] 미확인 기억의 변경을 구독하여 행을 갱신하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-impl/app/src/pages/ProjectsPage.tsx:206-207
+  프로필의 편집 시작 요청이 진행 중일 때 헤더로 `/projects`에 이동하면, 목록이 렌더된 이후 요청 실패 판정이 `settle()`로 미확인 기억을 만들 수 있습니다. 이 조회는 React 상태나 변경 구독에 연결되지 않아 행이 다시 렌더되지 않으므로, 이미 표시된 '편집기 열기'가 그대로 남고 재시도·폐기 UI가 나타나지 않습니다. 요청 완료로 발생하는 기억 변경을 구독하여 목록이 즉시 다시 판정되도록 해야 합니다.
+
+- [P2] 재시도 불가능한 확인 결과를 행 버튼에 반영하세요 — /Users/younghwankang/orca/workspaces/web-builder-solution/rs4-impl/app/src/features/projects/pendingRetry.ts:21-23
+  `confirmDoc`가 `IMAGES_MISSING`, 낡은 탭 또는 데이터 삭제 오류를 반환하면 `confirmFailed()`는 `retry: false`로 판정하지만, 이 함수는 그 정보를 버립니다. 기억은 `record`로 유지되고 행은 기억 종류만으로 '저장 확인' 버튼을 계속 표시하므로, 더 저장할 수 없다는 알림 이후에도 불가능한 확인을 반복하게 됩니다. 재시도 가능 여부를 행 상태에 전달하여 이러한 결과에서는 주 버튼을 숨기고 폐기 동작만 유지해야 합니다.

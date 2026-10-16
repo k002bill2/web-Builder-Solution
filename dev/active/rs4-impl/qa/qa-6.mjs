@@ -1,0 +1,32 @@
+// RS4 QA 6 — 탭 A(p1): 프로젝트 2 만들기(문서 없음 · 3안까지) → /projects → 프로젝트 1 편집기 열기 → 실제 편집 → 저장됨(writer 잠금 취득)
+const task = await taskSpace(1);
+const page = task.page("p1");
+const has = (re) => page.waitForFunction((src) => [...document.querySelectorAll("button")].some((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).replace(/\s+/g, " ").trim())), re, { timeout: 20000 });
+const btn = (re) => page.evaluate((src) => { const el = [...document.querySelectorAll("button")].find((b) => new RegExp(src).test((b.getAttribute("aria-label") || b.textContent).replace(/\s+/g, " ").trim())); if (!el) return "missing:" + src; el.click(); return "ok"; }, re);
+const link = (re) => page.evaluate((src) => { const el = [...document.querySelectorAll("a")].find((a) => new RegExp(src).test((a.getAttribute("aria-label") || a.textContent).replace(/\s+/g, " ").trim())); if (!el) return "missing:" + src; el.click(); return "ok"; }, re);
+console.log(await page.evaluate(() => { const el = [...document.querySelectorAll("a,button")].find((a) => a.textContent.trim() === "카탈로그에서 고르기"); el?.click(); return el?.tagName ?? "missing"; }));
+await has("비교 추가$");
+for (const n of ["동네 치과 클리닉", "로컬 베이커리"]) console.log(await btn(`^${n} 비교 추가$`));
+console.log(await link("^비교 보드$"));
+await page.waitForFunction(() => location.pathname === "/compare", undefined, { timeout: 10000 });
+await has("^이 레퍼런스로 전부 선택: A");
+console.log(await btn("^이 레퍼런스로 전부 선택: A"));
+await page.waitForTimeout(800);
+console.log(await btn("^프로필 확정"));
+await has("^3안 만들기");
+console.log(await page.evaluate(() => location.pathname));
+console.log(await btn("^3안 만들기"));
+await has("^A안 선택$");
+// 프로젝트 1 편집기 — 앱 안 링크
+console.log(await link("^프로젝트$"));
+await page.waitForFunction(() => location.pathname === "/projects", undefined, { timeout: 10000 });
+await page.waitForFunction(() => [...document.querySelectorAll("a")].some((a) => /편집기 열기$/.test(a.getAttribute("aria-label") || "")), undefined, { timeout: 10000 });
+console.log(await page.evaluate(() => [...document.querySelectorAll("li")].map((l) => l.innerText.split("\n").filter(Boolean).slice(0, 3).join(" | "))));
+console.log(await link("편집기 열기$"));
+await page.waitForFunction(() => /^\/studio\//.test(location.pathname) && document.querySelectorAll("[id^='field-']").length > 0, undefined, { timeout: 15000 });
+const field = await page.evaluate(() => { const el = [...document.querySelectorAll("input[id^='field-'],textarea[id^='field-']")].find((e) => e.type !== "file"); return el?.id; });
+console.log({ field, path: await page.evaluate(() => location.pathname) });
+await page.click(`#${field}`, { label: "필드 편집" });
+await page.keyboard.type(" QA");
+await page.waitForFunction(() => /저장됨/.test(document.body.innerText), undefined, { timeout: 15000 });
+console.log("== A 저장", await page.evaluate(() => [...document.querySelectorAll("[role=status]")].map((n) => n.textContent.trim()).filter(Boolean)));

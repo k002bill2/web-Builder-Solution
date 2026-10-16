@@ -1,8 +1,10 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router";
+import { Button } from "../components/ds/Button";
+import { Callout } from "../components/ds/Callout";
 import { BrowserStorageSection } from "../components/projects/BrowserStorageSection";
 import { ProjectList } from "../components/projects/ProjectList";
-import type { RenameHandlers } from "../components/projects/ProjectRow";
+import type { PendingRow, RenameHandlers } from "../components/projects/ProjectRow";
 import type { RenameSubmitOutcome } from "../components/projects/RenameField";
 import type { DeleteTarget } from "../components/projects/DeleteProjectDialogSlot";
 import type { ExportDeps, ExportTarget } from "../components/projects/ExportProjectFileDialogSlot";
@@ -188,6 +190,76 @@ function useImportedNotice(session: Session | undefined, announce: (text: string
   return found !== null;
 }
 
+/**
+ * 미확인 기억 행(RESTART SPEC-4 5.2) — 기억은 동기 조회(쓰기 0), 다시 시도·저장 확인 본문은 조작 뒤 청크.
+ * 결과 = 행 안 알림 · 성공이면 되살아난 "편집기 열기"로, 실패면 그 버튼에, 더 확인할 수 없으면 폐기 버튼·결과 알림에 포커스를 둔다.
+ */
+function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivElement | null>, reload: () => void, items: unknown) {
+  // 진입 직후 자동 import — 오기 전에는 목록을 그리지 않는다(ready = false). 실패 = 기억 조회 불가(기억은 같은 공유 청크에만 있으므로 그 청크가 없으면 기억도 없다)
+  // 실패해도 목록 게이트는 유지한다(이미 기억이 있을 수 있다 — Codex review P2) — 다시 시도 = 다시 받기
+  const [mod, setMod] = useState<typeof import("../features/projects/pendingRows") | null>();
+  const [attempt, setAttempt] = useState(0);
+  const [, setSeen] = useState(0);
+  useEffect(() => {
+    let live = true;
+    import("../features/projects/pendingRows").then(
+      (loaded) => live && setMod(loaded),
+      () => live && setMod(null),
+    );
+    return () => void (live = false);
+  }, [attempt]);
+  // 늦게 끝난 요청이 만든·지운 기억으로 행을 다시 판정
+  useEffect(() => mod?.subscribe(() => setSeen((n) => n + 1)), [mod]);
+  const pendingOf = (projectId: string) => mod?.pendingOf(repository, projectId);
+  /** 결과 뒤 포커스 의도(그려진 뒤 한 번 옮기고 지운다) */
+  const focusFor = useRef<string>(undefined);
+  const [state, setState] = useState<{ readonly busy?: string; readonly results: ReadonlyMap<string, { readonly ok: boolean; readonly text: string; readonly key: number; readonly stuck?: boolean }> }>({ results: new Map() });
+  const onRetry = async (projectId: string) => {
+    const pending = pendingOf(projectId);
+    if (!pending || state.busy) return;
+    focusFor.current = undefined;
+    setState((s) => ({ ...s, busy: projectId }));
+    const out = await import("../features/projects/pendingRetry").then(
+      (mod) => mod.retryPending(repository, pending),
+      () => ({ ok: false, text: "저장을 확인하지 못했습니다 — 잠시 뒤 다시 시도하세요" }),
+    );
+    if (out.ok) reload();
+    focusFor.current = projectId;
+    setState((s) => ({ busy: undefined, results: new Map(s.results).set(projectId, { ...out, key: (s.results.get(projectId)?.key ?? 0) + 1 }) }));
+  };
+  // 결과가 그려진 뒤 포커스 — 성공이면 되살아난 링크(목록 재조회 뒤 생길 수 있다), 아니면 그 버튼. 옮긴 뒤 의도를 지운다(다시 끌어가지 않게)
+  useEffect(() => {
+    const id = focusFor.current;
+    if (!id) return;
+    const box = page.current;
+    const pick = (selector: string, key: "editorFor" | "retryFor" | "discardFor" | "resultFor") => box && Array.from(box.querySelectorAll<HTMLElement>(selector)).find((el) => el.dataset[key] === id);
+    // 더 확인할 수 없으면(stuck) 재시도 버튼이 사라진다 — 남은 행동(폐기)으로, 그것도 없으면(memory) 행 안 결과 알림으로(Codex review r3 P2)
+    const stuck = state.results.get(id)?.stuck;
+    const target =
+      pick("[data-editor-for]", "editorFor") ??
+      pick("[data-retry-for]", "retryFor") ??
+      (stuck ? (pick("[data-discard-for]", "discardFor")?.querySelector<HTMLElement>("button") ?? pick("[data-result-for]", "resultFor")) : undefined);
+    if (!target) return;
+    target.focus();
+    focusFor.current = undefined;
+  }, [state, page, items]);
+  const heldOf = (projectId: string): PendingRow | undefined => {
+    const pending = pendingOf(projectId);
+    const result = state.results.get(projectId);
+    if (!pending && !result) return undefined;
+    const local = repository.persistence === "local";
+    return {
+      pending: pending && mod ? { ...mod.describePending(pending), caption: mod.ROW_TEXT.caption, working: mod.ROW_TEXT.working } : undefined,
+      busy: state.busy === projectId,
+      result,
+      onRetry: (id) => void onRetry(id),
+      Discard: local ? mod?.DiscardConfirm : undefined,
+      discardLabel: mod?.ROW_TEXT.discard,
+    };
+  };
+  return { heldOf, ready: Boolean(mod), failed: mod === null, retry: () => (setMod(undefined), setAttempt((n) => n + 1)) };
+}
+
 /** DS-2A-05 `/projects` 프로젝트 목록 (SPEC 2.4 J-S01~J-S08). 라우트 연결은 a1-β */
 export function ProjectsPage({
   repository,
@@ -204,12 +276,16 @@ export function ProjectsPage({
   /** 내보내기 의존성 — 테스트 주입(없으면 대화상자 청크가 브라우저 기본값을 푼다) */
   readonly exportDeps?: ExportDeps;
 }) {
-  const { items, replace } = useProjectList(repository);
+  const { items, replace, reload } = useProjectList(repository);
   const [notice, setNotice] = useState<Notice>({ text: "", key: 0 });
   const announce = useCallback((text: string) => setNotice((n) => ({ text, key: n.key + 1 })), []);
   const { draft, setDraft, page, close, submit } = useRename(repository, replace, announce);
   const { heading, focusable } = useDeletedNotice(session, announce);
-  const importedNotice = useImportedNotice(session, announce, items !== null, page, heading);
+  const pendingRows = usePendingRows(repository, page, reload, items);
+  const { heldOf, ready } = pendingRows;
+  // 목록은 미확인 행 모듈이 온 뒤 그린다 — 가져오기 알림의 첫 행동 포커스도 그 뒤
+  const importedNotice = useImportedNotice(session, announce, items !== null && ready, page, heading);
+
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null);
   const openDelete = (projectId: string) => {
     const found = items?.find((s) => s.projectId === projectId);
@@ -238,6 +314,7 @@ export function ProjectsPage({
     const buttons = page.current?.querySelectorAll<HTMLElement>("[data-export-for]") ?? [];
     Array.from(buttons).find((el) => el.dataset.exportFor === exporting.projectId)?.focus();
   };
+
   const at = now().getTime();
   const rename: RenameHandlers = {
     onOpen: (projectId) => {
@@ -266,13 +343,19 @@ export function ProjectsPage({
       <p role="status" aria-label="프로젝트 알림" className="sr-only">
         {notice.text && <span key={notice.key}>{notice.text}</span>}
       </p>
-      {items === null && <LoadingState />}
+      {(items === null || (!ready && !pendingRows.failed)) && <LoadingState />}
+      {items !== null && pendingRows.failed && (
+        <div role="alert">
+          <Callout tone="negative" title="목록을 확인하지 못했습니다 — 저장을 확인하지 못한 프로젝트가 있는지 알 수 없습니다" action={<Button size="sm" variant="outline" onClick={pendingRows.retry}>다시 시도</Button>} />
+        </div>
+      )}
       {items !== null && items.length === 0 && <ProjectsEmpty persistence={repository.persistence} />}
-      {items !== null && items.length > 0 && (
+      {items !== null && ready && items.length > 0 && (
         <ProjectList rows={sortProjects(items).map((s) => projectRowView(s, at))} draft={draft}
           rename={rename}
           onExport={repository.persistence === "local" ? openExport : undefined}
           onDelete={repository.persistence === "local" ? openDelete : undefined}
+          heldOf={heldOf}
         />
       )}
       {deleting && (

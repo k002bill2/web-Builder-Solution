@@ -8,13 +8,15 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "../../components/ds/Button";
 import { useProfileRepository } from "../../data/ProfileRepositoryContext";
 import type { ProjectRepository, StudioEntryState } from "../../data/projectRepository";
-import { committed, contrastFails, remember, shapeOf, type RestartOpen } from "./restartFlow";
+import { DiscardConfirm } from "../pending/DiscardConfirm";
+import { confirmRestart, contrastFails, restartOnce, shapeOf, type RestartOpen } from "./restartFlow";
 import { RESTART_TEXT as T, TAB_REASON, contrastText } from "./restartText";
 
 export { startEdit } from "./restartFlow";
+export { DiscardConfirm } from "../pending/DiscardConfirm";
 
 const FULL = "w-full md:w-auto";
-/** ready = 처음 · same = STALE_DOC 최신이 고른 안(R-E1b) · unconfirmed = R-E4 · unknown = R-E5 */
+/** ready = 처음 · same = STALE_DOC 최신이 고른 안(R-E1b) · unconfirmed = R-E4 · unknown = R-E5 · record = R-E6(새로 시작 미반영 · 저장 확인 전 — SPEC-4) */
 type Mode = "ready" | "same" | NonNullable<RestartOpen["held"]>;
 
 export default function RestartDialog({
@@ -42,12 +44,16 @@ export default function RestartDialog({
   const [busy, setBusy] = useState(false);
   /** 연타 막기 — 상태는 다음 렌더까지 옛 값이라 ref로 */
   const running = useRef(false);
-  const [alert, setAlert] = useState(
-    open.held && { text: open.held === "unconfirmed" ? T.unconfirmed(open.doc) : T.unknown, retry: false, key: 0 },
+  const heldText = (state: NonNullable<RestartOpen["held"]>, at?: typeof doc) =>
+    state === "record" ? T.notApplied(at) : `${state === "unconfirmed" ? T.unconfirmed(at ?? doc) : T.unknown} · ${T.leaveWarning}`;
+  const [alert, setAlert] = useState<{ readonly text: string; readonly retry: boolean; readonly key: number; readonly ok?: boolean } | undefined>(
+    open.held && { text: heldText(open.held, open.doc), retry: false, key: 0 },
   );
+  /** 저장 확인을 더 할 수 없는 사유(stale·cleared·이미지) — 주 버튼 숨김, 폐기만 */
+  const [stuck, setStuck] = useState(false);
   /** R-D5 — 그 줄을 계산한 문서 버전과 함께(STALE_DOC로 doc이 바뀌면 옛 줄을 쓰지 않는다) */
   const [contrast, setContrast] = useState<{ readonly from: number; readonly text?: string }>();
-  const held = mode === "unconfirmed" || mode === "unknown";
+  const held = mode === "unconfirmed" || mode === "unknown" || mode === "record";
 
   useEffect(() => {
     const el = dialog.current;
@@ -74,17 +80,10 @@ export default function RestartDialog({
     dialog.current?.close();
     onClose();
   };
-  const show = (text: string, retry: boolean) => setAlert((a) => ({ text, retry, key: (a?.key ?? 0) + 1 }));
+  const show = (text: string, retry: boolean, ok?: boolean) => setAlert((a) => ({ text, retry, key: (a?.key ?? 0) + 1, ok }));
 
-  /** 3.3.1 — 커밋 확인 양성·불가 = 기억하고 R-E4·R-E5 · 음성 = 기억 지우고 코드·사유로 */
-  const settle = (error: unknown, check: "yes" | "no" | "unknown") => {
-    if (check !== "no") {
-      const state = check === "yes" ? "unconfirmed" : "unknown";
-      remember(repo, projectId, { selected, version, doc, held: state });
-      setMode(state);
-      return show(state === "unconfirmed" ? T.unconfirmed(doc) : T.unknown, false);
-    }
-    remember(repo, projectId);
+  /** 음성(쓰기 0 확실) = 코드·사유로 — 기억 전이는 restartOnce가 끝냈다(SPEC-4 4.1·4.2) */
+  const settle = (error: unknown) => {
     setMode("ready");
     const { code, alert: text, doc: latest, message = "" } = shapeOf(error);
     if (code === "STALE_DOC" && latest) {
@@ -103,13 +102,28 @@ export default function RestartDialog({
     if (running.current) return;
     running.current = true;
     setBusy(true);
-    try {
-      const started = await repo.startDoc(projectId, version, selected, "restart", doc.revision);
-      remember(repo, projectId);
+    if (mode === "record") {
+      // R-E6 저장 확인(confirmDoc) — 성공이면 기억 해제 뒤 지금 문서로 다시 판정(확인 전 이동 0)
+      const out = await confirmRestart(repo, projectId);
+      if ("failed" in out) {
+        setStuck(!out.failed.retry);
+        show(out.failed.alert, false);
+      } else {
+        const latest = out.doc ?? doc;
+        setDoc(latest);
+        setMode(latest.candidateId === selected ? "same" : "ready");
+        show(T.confirmed, false, true);
+      }
+    } else {
+      const out = await restartOnce(repo, projectId, { selected, version, doc, ...(held && { held: mode }) });
       // 성공 state = editNotice만(RS-D9 — changes가 있으면 편집기가 R-N1을 접는다)
-      return go({ editNotice: T.done(selected, version, doc, started.changeNotice) });
-    } catch (error: unknown) {
-      settle(error, await committed(repo, projectId, { selected, version, doc }));
+      if ("done" in out) return go({ editNotice: T.done(selected, version, doc, out.done.changeNotice) });
+      if ("reason" in out) settle(out.reason);
+      else {
+        if (out.held === "record" && out.doc) setDoc(out.doc);
+        setMode(out.held);
+        show(heldText(out.held, out.held === "record" ? out.doc : doc), false);
+      }
     }
     running.current = false;
     setBusy(false);
@@ -136,8 +150,8 @@ export default function RestartDialog({
         {contrast?.from === doc.profileVersion && contrast.text && doc.profileVersion !== version && <p className="ds-body3">{contrast.text}</p>}
         <p className="ds-caption1 text-label-alternative">{T.keep}</p>
         {alert && (
-          <div key={alert.key} role="alert" className="flex flex-col items-start gap-2">
-            <p className="ds-body3 text-status-negative-text">{alert.text}</p>
+          <div key={alert.key} role={alert.ok ? "status" : "alert"} className="flex flex-col items-start gap-2">
+            <p className={alert.ok ? "ds-body3" : "ds-body3 text-status-negative-text"}>{alert.text}</p>
             {alert.retry && mode === "ready" && (
               <Button size="sm" variant="outline" aria-disabled={busy || undefined} onClick={() => void run()}>
                 {T.retry}
@@ -145,6 +159,7 @@ export default function RestartDialog({
             )}
           </div>
         )}
+        {held && repo.persistence === "local" && <DiscardConfirm />}
         {/* DOM = 취소 → (편집기 열기) → 주 버튼(대화상자 관례 RS-D4) · <768 세로 쌓기 주 버튼 맨 위(col-reverse) · ≥768 끝 정렬 한 줄 */}
         <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
           <Button variant="outline" className={FULL} aria-disabled={busy || undefined} onClick={dismiss}>
@@ -155,9 +170,9 @@ export default function RestartDialog({
               {T.open(doc)}
             </Button>
           )}
-          {mode !== "same" && (
+          {mode !== "same" && !stuck && (
             <Button className={FULL} aria-busy={busy || undefined} aria-disabled={busy || undefined} onClick={() => void run()}>
-              {busy ? T.starting : held ? T.retry : T.start(selected)}
+              {busy ? (mode === "record" ? T.confirming : T.starting) : mode === "record" ? T.confirm : held ? T.retry : T.start(selected)}
             </Button>
           )}
         </div>

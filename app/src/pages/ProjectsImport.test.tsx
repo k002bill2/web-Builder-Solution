@@ -41,6 +41,7 @@ const repository = (persistence: ProjectPersistence, items: readonly ProjectSumm
   resolveConflict: unused,
   requestExport: unused,
   getExportJob: unused,
+  confirmDoc: unused,
 });
 
 function session(initial: Record<string, string> = {}) {

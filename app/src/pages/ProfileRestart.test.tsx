@@ -358,7 +358,7 @@ describe("3.3.1 실패 판정 순서 — 커밋 확인 먼저 (RS-AC-07·07b·07
   });
 
   it("커밋 확인 음성 INFRA 그 밖 사유 → R-E3 + ' · ' + 첫 ' — ' 뒤 사유 · 사유 상수 = infra.ts 값(RS-R8)", async () => {
-    expect(TAB_REASON).toEqual({ readonly: READ_ONLY_TAB, stale: STALE_TAB });
+    expect(TAB_REASON).toEqual({ readonly: READ_ONLY_TAB, stale: STALE_TAB, cleared: CLEARED_TAB });
     const { dialog, repo, u } = await openDialog();
     const spy = vi.spyOn(repo, "startDoc").mockRejectedValueOnce(new ProjectRepositoryError("INFRA", "저장 — 브라우저 저장 공간이 부족합니다"));
     await u.click(primary(dialog));
@@ -420,7 +420,7 @@ describe("미확인 기억 (RS-AC-08d)", () => {
     expect((router.state.location.state as StudioEntryState).editNotice).toMatch(/^B안 · 프로필 v1로 새로 시작했습니다/);
   });
 
-  it("R-E5 → 취소 → 다시 편집 시작 → 다시 시도에서 커밋 확인 음성 → 기억 삭제 + F4 흐름(R-E3 · 다음 편집 시작은 create)", async () => {
+  it("R-E5 → 취소 → 다시 편집 시작 → 다시 시도에서 요청 전 그대로 → (SPEC-4 RS4-D5) 기억 삭제 대신 R-E6 '저장 확인' → 확인 뒤 F4 흐름(다음 편집 시작은 create)", async () => {
     let step = 0;
     const { dialog, u, repo, button } = await openDialog({
       fail: (call) => {
@@ -437,8 +437,12 @@ describe("미확인 기억 (RS-AC-08d)", () => {
     const again = await screen.findByRole("dialog", { name: "B안으로 새로 시작할까요?" });
     expect(within(again).getByRole("alert")).toHaveTextContent(/^새로 시작됐는지 확인하지 못했습니다/);
     await u.click(within(again).getByRole("button", { name: "다시 시도" }));
-    await waitFor(() => expect(within(again).getByRole("alert")).toHaveTextContent(/^새로 시작하지 못했습니다/));
-    expect(buttonsOf(again)).toEqual(["다시 시도", "취소", "편집기 열기 (A안 · v1 편집 중)", "B안으로 새로 시작"]);
+    // 요청 전 그대로 = 새로 시작 미반영일 뿐 저장 확정이 아니다 — 기억은 PendingRecord, 확인 전 이동·편집기 열기 0
+    await waitFor(() => expect(within(again).getByRole("alert")).toHaveTextContent(/^새로 시작은 반영되지 않았습니다/));
+    expect(buttonsOf(again)).toEqual(["취소", "저장 확인"]);
+    await u.click(within(again).getByRole("button", { name: "저장 확인" }));
+    await waitFor(() => expect(within(again).getByRole("status")).toHaveTextContent("저장을 확인했습니다"));
+    expect(buttonsOf(again)).toEqual(["취소", "편집기 열기 (A안 · v1 편집 중)", "B안으로 새로 시작"]);
     await u.click(within(again).getByRole("button", { name: "취소" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     const spy = vi.spyOn(repo, "startDoc");
@@ -471,10 +475,11 @@ describe("create 재생 재판정 (RS-AC-17 · R-C3)", () => {
   });
 
   it("재생 뒤 getDoc 실패 → F1 이동(F2·F3 알림 없음)", async () => {
-    let armed = false;
-    const { u, region, router } = await replayed((call) => (call.method === "getDoc" && armed ? ((armed = false), new Error("read")) : undefined));
+    // SPEC-4 F1 — create 전 origin 읽기(getDoc 1회)를 지나 재생 뒤 재판정 getDoc을 실패시킨다
+    let armed = 0;
+    const { u, region, router } = await replayed((call) => (call.method === "getDoc" && armed > 0 && (armed -= 1) === 0 ? new Error("read") : undefined));
     const button = await pick(u, region, "B");
-    armed = true;
+    armed = 3; // fail 훅은 getDoc마다 request·response 2번 불린다 — origin 읽기 2번을 지나 재판정 getDoc request에서 실패
     await u.click(button);
     await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
     // F1 = 지금 그대로 {changes, editNotice: changeNotice} — F2·F3 편집 알림(R-C3·R-C2) 없음
@@ -535,5 +540,28 @@ describe("R-D5 판정 = 편집기 게이트 대비 줄 판정 (RS-AC-12 · RS-D6
     expect(versions.map(contrastFails)).toEqual([gate[0]!.length, gate[1]!.length, undefined]);
     expect(gate[2]!.length).toBeGreaterThan(0);
     expect(contrastText(1, contrastFails(versions[0]!), 3, contrastFails(versions[2]!))).toBeUndefined();
+  });
+});
+
+describe("create 미확인 Callout (SPEC-4 C-E4 · RS4-AC-01 화면)", () => {
+  it("편집 시작 커밋 뒤 응답 실패 → C-E4 Callout + '저장 다시 시도'(이동 0) → 다른 안을 눌러도 같은 Callout(요청 0) → 저장 다시 시도 = 재생 → 이동", async () => {
+    let lost = false;
+    const { u, region, router, repo } = await open("/profile/profile-1", undefined, {
+      fail: (call) => (call.method === "startDoc" && call.phase === "response" && !lost ? ((lost = true), new Error("response lost")) : undefined),
+    });
+    await generate(u, region);
+    await u.click(await pick(u, region, "B"));
+    const alert = await within(region).findByRole("alert");
+    expect(alert).toHaveTextContent("편집 문서를 만들었지만 브라우저에 저장됐는지 확인하지 못했습니다");
+    expect(router.state.location.pathname).toBe("/profile/profile-1");
+    // memory 영속 — 폐기(새로고침) 버튼 없음
+    expect(within(alert).getAllByRole("button").map((b) => b.textContent)).toEqual(["저장 다시 시도"]);
+    const spy = vi.spyOn(repo, "startDoc");
+    await u.click(await pick(u, region, "C"));
+    await waitFor(() => expect(within(region).getByRole("alert")).toHaveTextContent("편집 문서를 만들었지만"));
+    expect(spy).not.toHaveBeenCalled();
+    await u.click(within(within(region).getByRole("alert")).getByRole("button", { name: "저장 다시 시도" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/studio/project-1"));
+    expect(spy.mock.calls).toEqual([["project-1", 1, "B", "create"]]);
   });
 });

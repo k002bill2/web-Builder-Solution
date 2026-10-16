@@ -34,6 +34,7 @@ import { nextSeqId, seqOf } from "./seqId";
 import { checkSaveDoc, judgeExport, writeStartDoc } from "./startDocWrite";
 import type { DocRecord, LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
+import type { RenderImages } from "../features/studio/images/store/types";
 import { deepFreeze, type StudioReader } from "./studioStore";
 
 interface DocState {
@@ -77,6 +78,8 @@ export interface DocBook {
     via: (work: (commit: () => void) => ExportOutcome) => Promise<ExportOutcome>,
   ) => Promise<ExportRequestResult>;
   readonly jobOf: (jobId: string) => ExportJob | undefined;
+  /** confirmDoc 본문(RESTART SPEC-4 3.5) — 로컬 영속이면 싱크 confirm(진입 청크 연결 최소화), 메모리 영속이면 확인할 계층 없음 */
+  readonly confirm: (projectId: string, images?: RenderImages) => Promise<void>;
   /** 수동 스냅샷(E-S28) — 모양(이름 30자) → NOT_FOUND → 저장된 문서 사본. 문서 revision은 그대로. 인자 = 저장소 메서드 인자 그대로(진입 청크 연결 최소화) */
   readonly createSnapshot: (args: readonly [projectId: string, name?: string], commit: () => void) => ProjectSnapshot<DocHead>;
   /** 수동만(아니면 SCHEMA_INVALID) · 없는 id = 변화 0으로 성공(재시도 멱등 — 저장소가 flush를 다시 낸다) · 지우면 `snapshotSeq` 상향 (P1D-SPEC 1.1) */
@@ -142,7 +145,7 @@ const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
 export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
 
 /** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷) · 저장 기준 revision 보정(내 미확인 쓰기 위에 얹기) */
-export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs" | "base">): DocBook {
+export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs" | "base"> & Partial<Pick<LocalSync, "confirm">>): DocBook {
   const seed = local?.docs ?? new Map<string, DocRecord>();
   /**
    * 앱 경로 생성기 — 주입 생성기가 없고 슬롯(STATIC_HTML_SLOT)이 채워졌을 때만, 처음 쓸 때 생성기 청크를 받는다.
@@ -264,7 +267,8 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
     }
   }
 
-  return {
+  const book: DocBook = {
+    confirm: async (projectId, images) => local?.confirm?.(projectId, book, images),
     docOf: (projectId) => state.docs.get(projectId),
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
     snapshotSeqOf: (projectId) => state.snapshotSeq.get(projectId) ?? 0,
@@ -405,4 +409,5 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       return result;
     },
   };
+  return book;
 }

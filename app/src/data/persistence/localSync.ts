@@ -25,6 +25,8 @@ import type { DocRecord, LocalEntry } from "./entryRead";
 import { openIdbPersistence } from "./idbPersistence";
 import { CLEARED_TAB, READ_ONLY_TAB, STALE_TAB, toInfra } from "./infra";
 import { imageOps } from "./imageOps";
+import { imageRecordId, recordRefs } from "./imageRecord";
+import { imageMeta } from "../../features/studio/images/store/imageStore";
 import { jobPut, readJobRecord } from "./jobRecord";
 import type { StudioPersistence, WriteOp } from "./studioPersistence";
 import type { RenderImages } from "../../features/studio/images/store/types";
@@ -46,6 +48,8 @@ export interface LocalSync {
   saveState(state: StudioState): void;
   /** 문서 쓰기 뒤 — 그 프로젝트의 지금 문서·스냅샷(DocBook). images = 편집 틀 맵(P1b — 참조 이미지를 같은 트랜잭션에) */
   flush(projectId: string, book: BookView, images?: RenderImages): Promise<void>;
+  /** confirmDoc(RESTART SPEC-4 3.5) — 진행 중·실패 기록을 끝낸 뒤 IDB 이미지 키로 참조를 확인하고(진행 중 이미지는 근거 아님) flush. 빠지면 쓰기 0 · IMAGES_MISSING */
+  confirm(projectId: string, book: BookView, images?: RenderImages): Promise<void>;
   /** DocBook save가 판정 전에 부른다 — current = 지금 메모리 문서 */
   base(projectId: string, expectedRevision: number, current: DocHead | undefined, hash: string): number;
   /** 첫 저장 1회 안내(P1C-D5 · SPEC 1.4) — 쓰기 탭이고 meta `firstSaveNotice`가 없으면 키를 큐로 제출하고 true(커밋을 기다리지 않는다 — 실패면 다음 호출에 다시 true).
@@ -190,6 +194,18 @@ export async function openLocalSync(
       cleared
         ? Promise.reject(toInfra(undefined, "저장", CLEARED_TAB))
         : gate.mode === "writer" ? write(projectId, book, images) : gate.enter().then((mode) => (mode === "writer" ? write(projectId, book, images) : Promise.reject(blocked(mode)))),
+    confirm: async (projectId, book, images) => {
+      if (cleared) throw toInfra(undefined, "저장", CLEARED_TAB);
+      const mode = gate.mode === "writer" ? gate.mode : await gate.enter();
+      if (mode !== "writer") throw blocked(mode);
+      const doc = book.docOf(projectId);
+      if (!doc) throw new ProjectRepositoryError("NOT_FOUND", projectId);
+      await queue.retry(projectId);
+      const have = new Set(await persistence.keys("images"));
+      const refs = recordRefs({ doc, snapshots: book.snapshotsOf(projectId) });
+      if ([...refs].some((id) => !have.has(imageRecordId(projectId, id)) && !(images?.[id] && imageMeta(images[id])))) throw new ProjectRepositoryError("IMAGES_MISSING", projectId);
+      return write(projectId, book, images);
+    },
     base: (projectId, expectedRevision, current, hash) =>
       current && current.hash !== hash && current === submitted.get(projectId)?.doc && queue.status(projectId) === "unconfirmed" && current.revision > expectedRevision
         ? current.revision

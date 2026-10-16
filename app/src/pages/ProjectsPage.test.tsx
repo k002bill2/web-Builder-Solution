@@ -69,6 +69,7 @@ function repositoryWith(over: Partial<ProjectRepository>): ProjectRepository {
     resolveConflict: unused,
     requestExport: unused,
     getExportJob: unused,
+    confirmDoc: unused,
     ...over,
   };
 }

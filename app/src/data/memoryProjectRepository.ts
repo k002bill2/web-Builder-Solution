@@ -119,7 +119,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     saveDoc: (projectId, expectedRevision, doc) => kept(projectId, bookOf().then((docs) => call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)))),
     // restart = 판정 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 메모리·IDB 쓰기 0으로 던진다(갈라짐 0)
     startDoc: (projectId, profileVersion, candidateId, mode, expectedRevision) =>
-      kept(projectId, bookOf().then(async (docs) => (mode === "restart" && (await (await local?.sync())?.guardWrite()), call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit))))),
+      kept(projectId, bookOf().then(async (docs) => ((mode === "restart" || !docs.docOf(projectId)) && (await (await local?.sync())?.guardWrite()), call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit))))),
     listSnapshots: async (projectId) => {
       const first = await entered(projectId);
       return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];
@@ -128,6 +128,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     deleteSnapshot: write("deleteSnapshot"),
     restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: write("resolveConflict"),
+    confirmDoc: async (projectId) => (await bookOf()).confirm(projectId, maps.get(projectId)),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
     requestExport: (projectId, format, docRevision) =>
       kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),

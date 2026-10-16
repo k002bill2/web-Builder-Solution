@@ -15,7 +15,10 @@
 - 저장소 영역·빈 상태가 미확인 행 모듈 도착(또는 실패) 뒤에 나타난다 — 로딩과 완료 화면 겹침 제거. 실패 시(`role=alert`)에는 기존처럼 빈 상태·저장소 영역을 그린다.
 - `LoadingState`의 라벨 없는 status 자체는 앱 공통 컴포넌트라 건드리지 않았다(이제 완료 화면과 공존하지 않음).
 
-## 검증
-- `npx vitest run src/pages/ProjectsPage.test.tsx` ×20: 20 pass
-- 전체 `npx vitest run`: full1 exit 0 — 각 314 files / 2831 tests 통과(base 313/2830 + 회귀 1)
-- 게이트: typecheck 0 (실행 중 끝나지 않은 항목은 미확인 — lint·build 결과와 build `/projects` 수치는 run 종료 시점까지 기록 못 했으면 미확인)
+## 검증 (fresh, `app/`, 수정 커밋 2135c73a 기준)
+- `npx vitest run src/pages/ProjectsPage.test.tsx` ×20: 20 pass / 0 fail
+- 전체 `npx vitest run` ×3: full1·full2·full3 모두 exit 0, 각 314 files / 2831 tests 통과 (base 313/2830 + 회귀 테스트 1 file·1 test)
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm run build` exit 0
+- build `/projects`: 첫 화면 합계 99.43KB / 예산 100KB · 진입 직후 자동 로드 포함 108.72KB / 예산 125KB (`ProjectsRoute` 청크 22.44 kB, gzip 7.90 kB). base 수치는 측정하지 않음(미확인) — 변경은 조건식 1개라 영향은 수 바이트로 추정
+- 참고: 첫 시도의 lint·build·전체 2~3회는 셸 백그라운드(&)가 도구 셸 종료와 함께 죽어 결과가 없었고, 위 수치는 재실행 결과다
+- Codex 검증: 브리프 금지로 미실행

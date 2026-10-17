@@ -6,15 +6,19 @@
 import { hashDoc } from "../../../engine/ops/hash";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { retainedIds } from "../images/store/imageStore";
-import { DISCARD_GIVE_UP_MS } from "./liveness";
-import type { CoreIo, DiscardResult, Receipt, SaveResult } from "./saveCore";
+import type { CoreIo, CoreState, DiscardResult, Receipt, SaveResult } from "./saveCore";
 
 const reasonOf = (error: unknown, fallback = "not-committed") => (error as { reason?: string } | undefined)?.reason ?? fallback;
+/** discard 읽기가 이 시간 안에 끝나지 않으면 포기 — `blocked{timeout}` · 가드 해제 · 늦은 결과 버림(LV-2 · 잠정 MQ-6-3b — 근거 `dev/active/rs6-l2-liveness/REPORT.md`) */
+export const DISCARD_GIVE_UP_MS = 5000;
 /** L1 QA note 3: 포트 판정·재읽기(mode·verify) throw = reject 아님 → `failed{infra}`(거짓 saved 0 — 전진은 성공 뒤에만) */
 const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string }> => run().catch((error: unknown) => ({ infra: reasonOf(error, "infra") }));
 
 export const coreIo: CoreIo = {
   async save(s, link): Promise<SaveResult> {
+    // 편집 틀 이미지 맵 → 코어 바인딩(탭 수명 — 편집기를 떠난 뒤 save도 Blob을 싣는다)
+    const map = link.images?.();
+    if (map) s.attached = { ...s.attached, ...map };
     // CE-2: 제출 doc·바인딩·mark를 같은 동기 구간에서 동결(edit·replace는 늘 새 객체를 할당 — 참조 캡처 = 사본)
     const target = s.doc;
     const bound = s.attached;
@@ -23,13 +27,14 @@ export const coreIo: CoreIo = {
     const { port } = link;
     // I5: 영속 없음(memory) = DocBook 메모리 커밋(지금 saveDoc 판정 그대로) 뒤 not-persistent — 영속 증명(confirmed)은 만들지 않는다
     if (!port) {
+      let revision: number;
       try {
-        link.book({ ...target, hash: hashDoc(target) });
+        revision = link.book({ ...target, hash: hashDoc(target) }).revision;
       } catch (error) {
         return { status: "failed", reason: reasonOf(error), newer: newer() };
       }
       s.savedMark = Math.max(s.savedMark, submitted);
-      return { status: "failed", reason: "not-persistent", newer: newer() };
+      return { status: "failed", reason: "not-persistent", newer: newer(), revision };
     }
     const mode = await safely(() => port.mode());
     if (mode !== "writer") return { status: "failed", reason: typeof mode === "string" ? mode : mode.infra, newer: newer() };
@@ -125,3 +130,24 @@ export const coreIo: CoreIo = {
     return { status: "replaced", epoch: s.epoch };
   },
 };
+
+/**
+ * RS6-L3a CP0(L1 QA note 2 · I6 6.4) — DocBook이 revision을 올리는 쓰기(복원·충돌 해결·restart)와 코어 기준 맞춤. 코어가 있는 프로젝트에서 DocBook이 부른다(같은 동기 구간).
+ * 쓰기 전 판정: 코어 save 진행 중이거나 덮어쓸 미저장 편집이 있으면 쓰기 0(충돌 해결은 내 초안이 입력이라 dirty 허용).
+ */
+export const unsettled = (s: CoreState, draft = false) => s.inflight > 0 || (!draft && s.mark > s.savedMark);
+/**
+ * 쓰기 뒤 맞춤 — 코어 기준 = 쓴 문서(confirmed hash·revision · 다음 save = 그 revision + 1, 같은 revision 덮어쓰기 0) · epoch +1(옛 replace 요청 거절).
+ * 초안 = 쓴 문서(clean) — `mine`이고 초안이 쓴 문서와 다르면(요청 뒤 새 편집) 초안 유지(dirty). 복귀 바인딩 = 쓴 문서가 참조한 것만(CX-3).
+ */
+export function rebase(s: CoreState, doc: PageDoc, mine = false) {
+  if (!mine || hashDoc(s.doc) === doc.hash) {
+    s.doc = doc;
+    s.mark += 1;
+    s.savedMark = s.mark;
+  }
+  s.confirmed = { hash: doc.hash, revision: doc.revision, mark: s.savedMark, proof: "committed" };
+  s.epoch += 1;
+  const refs = retainedIds(doc, undefined);
+  s.committed = Object.fromEntries(Object.entries(s.attached).filter(([id]) => refs.has(id)));
+}

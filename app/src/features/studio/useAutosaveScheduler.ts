@@ -21,6 +21,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectErrorCode, type ProjectPersistence } from "../../data/projectRepository";
+import { watchSaving } from "./save/liveness";
 
 export type AutosavePhase = "idle" | "dirty" | "saving" | "saved" | "failed" | "offline" | "stale";
 export type AutosaveFailure = "error" | "offline";
@@ -264,12 +265,14 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
   }, [save]);
 
   useEffect(() => {
+    // LV-1 감시(RS6-L3a) — 표지(slow·hang)만 붙인다 · dispose 때 스케줄러와 함께 stop(L2 QA 7절 2)
+    const watch = watchSaving(setState);
     const scheduler = createAutosaveScheduler<T>({
       save: (doc) => saveRef.current(doc),
       debounceMs,
       maxWaitMs,
       isOnline: () => navigator.onLine,
-      onChange: setState,
+      onChange: watch.onChange,
     });
     schedulerRef.current = scheduler;
     const goOnline = () => scheduler.setOnline(true);
@@ -280,6 +283,7 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
       window.removeEventListener("online", goOnline);
       window.removeEventListener("offline", goOffline);
       scheduler.dispose();
+      watch.stop();
       schedulerRef.current = null;
     };
   }, [debounceMs, maxWaitMs]);

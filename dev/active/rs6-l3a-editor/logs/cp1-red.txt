@@ -1,0 +1,100 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3-editor/app
+
+ ❯ src/features/studio/useAutosaveScheduler.watch.test.tsx (2 tests | 1 failed) 18ms
+   ❯ RS6-L3a CP1 · useAutosaveScheduler 감시 결선 (2)
+     × 저장이 SAVE_SLOW_MS를 넘으면 slow · SAVE_HANG_MS면 hang 차례 — phase는 saving 그대로 15ms
+ ❯ src/features/studio/useDocSaveCore.test.tsx (3 tests | 3 failed) 280ms
+   ❯ RS6-L3a CP1 · 편집 경로 = core.edit (G2) (2)
+     × change마다 core.edit 동기 1회 · 코어 초안 = 마지막 편집 154ms
+     × F9: 디바운스 대기 중 언마운트 → 코어 초안·dirty 보존 · 저장 0 91ms
+   ❯ RS6-L3a CP1 · lease (G7 · RS6-AC-U6) (1)
+     × StrictMode mount→cleanup→mount: 같은 토큰 · 코어 새로 열기 0 · 편집 없으면 mark 변화 0 · 언마운트 뒤 release 34ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useAutosaveScheduler.watch.test.tsx > RS6-L3a CP1 · useAutosaveScheduler 감시 결선 > 저장이 SAVE_SLOW_MS를 넘으면 slow · SAVE_HANG_MS면 hang 차례 — phase는 saving 그대로
+AssertionError: expected { phase: 'saving' } to match object { phase: 'saving', slow: true }
+
+- Expected
++ Received
+
+  {
+    "phase": "saving",
+-   "slow": true,
+  }
+
+ ❯ src/features/studio/useAutosaveScheduler.watch.test.tsx:26:34
+     24|     expect(result.current.state.slow).toBeUndefined();
+     25|     await act(() => vi.advanceTimersByTimeAsync(SAVE_SLOW_MS));
+     26|     expect(result.current.state).toMatchObject({ phase: "saving", slow…
+       |                                  ^
+     27|     await act(() => vi.advanceTimersByTimeAsync(SAVE_HANG_MS - SAVE_SL…
+     28|     expect(result.current.state).toMatchObject({ phase: "saving", slow…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · 편집 경로 = core.edit (G2) > change마다 core.edit 동기 1회 · 코어 초안 = 마지막 편집
+AssertionError: expected "edit" to be called 1 times, but got 0 times
+ ❯ src/features/studio/useDocSaveCore.test.tsx:20:18
+     18|     const { result } = renderHook(() => useDocSave({ repository: repo,…
+     19|     act(() => result.current.edit(edited(doc, "1")));
+     20|     expect(edit).toHaveBeenCalledTimes(1);
+       |                  ^
+     21|     act(() => result.current.edit(edited(doc, "2")));
+     22|     expect(edit).toHaveBeenCalledTimes(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · 편집 경로 = core.edit (G2) > F9: 디바운스 대기 중 언마운트 → 코어 초안·dirty 보존 · 저장 0
+AssertionError: expected { doc: { …(10) }, mark: +0, …(5) } to match object { Object (dirty, doc) }
+(19 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "dirty": true,
++   "dirty": false,
+    "doc": {
+      "meta": {
+-       "title": "pending",
++       "title": "",
+      },
+    },
+  }
+
+ ❯ src/features/studio/useDocSaveCore.test.tsx:36:22
+     34|     await new Promise((r) => setTimeout(r, 40));
+     35|     expect(save).not.toHaveBeenCalled();
+     36|     expect(c.view()).toMatchObject({ dirty: true, doc: { meta: { title…
+       |                      ^
+     37|   });
+     38| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · lease (G7 · RS6-AC-U6) > StrictMode mount→cleanup→mount: 같은 토큰 · 코어 새로 열기 0 · 편집 없으면 mark 변화 0 · 언마운트 뒤 release
+AssertionError: expected 0 to be greater than or equal to 2
+ ❯ src/features/studio/useDocSaveCore.test.tsx:49:39
+     47|     const { unmount } = renderHook(() => useDocSave({ repository: repo…
+     48|     await ticks(2);
+     49|     expect(acquire.mock.calls.length).toBeGreaterThanOrEqual(2);
+       |                                       ^
+     50|     const tokens = new Set(acquire.mock.results.map((r) => r.value as …
+     51|     expect(tokens.size).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 1 passed (5)
+   Start at  15:14:51
+   Duration  1.30s (environment 57%, tests 15%, transform 13%, setup 11%, import 4%)
+

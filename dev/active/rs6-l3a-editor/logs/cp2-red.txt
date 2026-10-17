@@ -1,0 +1,192 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3-editor/app
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > 로컬: 스케줄러 저장 1회 = core.save 1회 · saveDoc 0 · IDB·DocBook = 편집 · savedRevision = 커밋 revision
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > 로컬: 스케줄러 저장 1회 = core.save 1회 · saveDoc 0 · IDB·DocBook = 편집 · savedRevision = 커밋 revision
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > U3: 커밋 실패 → failed · DocBook revision·IDB 변화 0 · 코어 초안 dirty 보존
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > U3: 커밋 실패 → failed · DocBook revision·IDB 변화 0 · 코어 초안 dirty 보존
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > memory 모드: core.save(not-persistent) = 저장됨 · savedRevision = DocBook revision
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > memory 모드: core.save(not-persistent) = 저장됨 · savedRevision = DocBook revision
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > readonly(다른 탭 writer): core.save failed{readonly} → failed · leave() = true(이탈 허용) · 쓰기 0
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > readonly(다른 탭 writer): core.save failed{readonly} → failed · leave() = true(이탈 허용) · 쓰기 0
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx (5 tests | 5 failed) 1472ms
+   ❯ RS6-L3a CP2 · 저장 대상 = core.save (5)
+     × 로컬: 스케줄러 저장 1회 = core.save 1회 · saveDoc 0 · IDB·DocBook = 편집 · savedRevision = 커밋 revision 180ms
+     × U3: 커밋 실패 → failed · DocBook revision·IDB 변화 0 · 코어 초안 dirty 보존 80ms
+     × memory 모드: core.save(not-persistent) = 저장됨 · savedRevision = DocBook revision 77ms
+     × C5 T2: 디바운스 중 언마운트 → 재진입(getDoc 문서) seed = 코어 초안 · 저장 1회 · STALE 0 · IDB = 초안 1037ms
+     × readonly(다른 탭 writer): core.save failed{readonly} → failed · leave() = true(이탈 허용) · 쓰기 0 95ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > 로컬: 스케줄러 저장 1회 = core.save 1회 · saveDoc 0 · IDB·DocBook = 편집 · savedRevision = 커밋 revision
+AssertionError: expected "save" to be called 1 times, but got 0 times
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx:22:18
+     20|     act(() => result.current.edit(edited(doc, "편집")));
+     21|     await vi.waitFor(() => expect(result.current.state.phase).toBe("sa…
+     22|     expect(save).toHaveBeenCalledTimes(1);
+       |                  ^
+     23|     expect(saveDoc).not.toHaveBeenCalled();
+     24|     const stored = await db.doc();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > U3: 커밋 실패 → failed · DocBook revision·IDB 변화 0 · 코어 초안 dirty 보존
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx:37:52
+     35|     act(() => result.current.edit(edited(doc, "실패할 편집")));
+     36|     await vi.waitFor(() => expect(result.current.state.phase).toBe("fa…
+     37|     expect((await repo.getDoc(PROJECT))?.revision).toBe(doc.revision);
+       |                                                    ^
+     38|     expect((await db.doc())?.doc.revision).toBe(doc.revision);
+     39|     expect(c.view()).toMatchObject({ dirty: true, doc: { meta: { title…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > memory 모드: core.save(not-persistent) = 저장됨 · savedRevision = DocBook revision
+AssertionError: expected "save" to be called 1 times, but got 0 times
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx:49:18
+     47|     act(() => result.current.edit(edited(doc, "메모리 편집")));
+     48|     await vi.waitFor(() => expect(result.current.state.phase).toBe("sa…
+     49|     expect(save).toHaveBeenCalledTimes(1);
+       |                  ^
+     50|     const latest = await repo.getDoc(PROJECT);
+     51|     expect([latest?.meta.title, latest?.revision]).toEqual(["메모리 편집", …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > C5 T2: 디바운스 중 언마운트 → 재진입(getDoc 문서) seed = 코어 초안 · 저장 1회 · STALE 0 · IDB = 초안
+AssertionError: expected 'idle' to be 'saved' // Object.is equality
+
+Expected: "saved"
+Received: "idle"
+
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx:71:69
+     69|     });
+     70|     expect(again.result.current.doc.meta.title).toBe("초안");
+     71|     await vi.waitFor(() => expect(again.result.current.state.phase).to…
+       |                                                                     ^
+     72|     expect(save).toHaveBeenCalledTimes(1);
+     73|     expect(phases).not.toContain("stale");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > readonly(다른 탭 writer): core.save failed{readonly} → failed · leave() = true(이탈 허용) · 쓰기 0
+AssertionError: expected "save" to be called at least once
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx:86:18
+     84|     act(() => result.current.edit(edited(b.seed, "B")));
+     85|     await vi.waitFor(() => expect(result.current.state.phase).toBe("fa…
+     86|     expect(save).toHaveBeenCalled();
+       |                  ^
+     87|     let left: boolean | undefined;
+     88|     await act(async () => void (left = await result.current.leave()));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  15:20:06
+   Duration  2.21s (tests 69%, environment 16%, transform 9%, import 3%, setup 3%)
+

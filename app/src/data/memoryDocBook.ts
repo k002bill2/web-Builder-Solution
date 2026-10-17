@@ -35,8 +35,8 @@ import { checkSaveDoc, judgeExport, writeStartDoc } from "./startDocWrite";
 import type { DocRecord, LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
 import type { RenderImages } from "../features/studio/images/store/types";
-import { coreIo } from "../features/studio/save/coreIo";
-import type { CoreLink } from "../features/studio/save/saveCore";
+import { coreIo, rebase, unsettled } from "../features/studio/save/coreIo";
+import type { CoreLink, CoreState } from "../features/studio/save/saveCore";
 import { deepFreeze, type StudioReader } from "./studioStore";
 
 interface DocState {
@@ -69,6 +69,7 @@ export interface DocBook {
   readonly start: (
     args: { projectId: string; profileVersion: number; candidateId: string; mode: StartDocMode; expectedRevision?: number },
     commit: () => void,
+    core?: CoreState,
   ) => StartDocResult<DocHead>;
   /**
    * 8.3.2 판정 1~8(동기, `via` = 저장소의 call — delay·fail 주입) → 새 잡·재실행이면 커밋 뒤 생성기를 돌린다(응답을 기다리지 않는다 — jobOf로 본다).
@@ -87,12 +88,13 @@ export interface DocBook {
   /** 수동만(아니면 SCHEMA_INVALID) · 없는 id = 변화 0으로 성공(재시도 멱등 — 저장소가 flush를 다시 낸다) · 지우면 `snapshotSeq` 상향 (P1D-SPEC 1.1) */
   readonly deleteSnapshot: (args: readonly [projectId: string, snapshotId: string], commit: () => void) => void;
   /** 복원(E-S30) — 모양 → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) → "복원 전" auto·restore + 새 revision(스냅샷 내용). 기존 스냅샷은 그대로 */
-  readonly restoreSnapshot: (args: readonly [projectId: string, snapshotId: string, expectedRevision: number], commit: () => void) => DocHead;
+  readonly restoreSnapshot: (args: readonly [projectId: string, snapshotId: string, expectedRevision: number], commit: () => void, core?: CoreState) => DocHead;
   /**
    * 충돌 해결(E-S09) — 모양(선택 · 내 문서 L4 검증) → NOT_FOUND → auto·conflict 보존 1개 + mine = 내 문서 저장(최신 revision + 1) / theirs = 저장된 문서 그대로.
    * 보존 대상 = 덮이는 쪽(mine → 저장된 문서 · theirs → 내 편집)
    */
-  readonly resolveConflict: (args: readonly [projectId: string, choice: ConflictChoice, myDoc: DocHead], commit: () => void) => DocHead;
+  readonly resolveConflict: (args: readonly [projectId: string, choice: ConflictChoice, myDoc: DocHead], commit: () => void, core?: CoreState) => DocHead;
+  /* restoreSnapshot·resolveConflict·start의 `core` = 그 프로젝트 저장 코어 상태(있으면) — 판정 뒤 쓰기 전 `unsettled`면 STALE_DOC(쓰기 0) · 쓰기 뒤 `rebase`(RS6-L3a CP0) */
   /** 저장 코어 saved 뒤 맞춤(INTEGRATE-6 G1) — 메모리 문서 = 코어가 커밋한 문서 그대로(같은 객체 — 싱크 멱등 재생이 같은 레코드를 다시 쓰지 않게). 문서 없는 프로젝트 = 변화 0 */
   readonly adopt: (projectId: string, doc: DocHead) => void;
 }
@@ -108,6 +110,12 @@ export type StaticHtmlFactory = (store: StudioReader) => ExportGenerator;
 type Slot = { [STATIC_HTML_SLOT]?: () => Promise<StaticHtmlFactory> };
 
 const fail = (code: "NOT_FOUND" | "SCHEMA_INVALID", message: string) => new ProjectRepositoryError(code, message);
+/** 저장소 문서 = 엔진 문서(isPageDoc) — engine import 0으로 코어 문서 타입을 받는다(엔진 import 가드) */
+type Rebased = Parameters<typeof rebase>[1];
+/** CP0 — 코어 save 진행 중·미저장 편집 위 revision 쓰기 = STALE_DOC(쓰기 0 · 최신 동봉) */
+const settled = (core: CoreState | undefined, current: DocHead, draft?: boolean) => {
+  if (core && unsettled(core, draft)) throw new ProjectRepositoryError("STALE_DOC", "저장 코어 미확정", { doc: current });
+};
 const isMode = (mode: unknown): mode is StartDocMode => mode === "create" || mode === "restart";
 const isVersion = (n: unknown): n is number => typeof n === "number" && Number.isSafeInteger(n) && n >= 1;
 const isFormat = (f: unknown): f is ExportFormat => f === "react-zip" || f === "static-html";
@@ -148,8 +156,9 @@ function copyOf(baseReferenceId: string): Readonly<Record<string, string>> | und
 const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
 export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
 /** 코어 링크 조립(조작 뒤 — 진입 레지스트리는 청크·DocBook·싱크만 넘긴다, 감량 ①′). io = 이 청크 한 곳(④b) · 포트 = local만 */
-export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | undefined, now: () => string): CoreLink => ({
+export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | undefined, now: () => string, images?: CoreLink["images"]): CoreLink => ({
   projectId,
+  images,
   io: coreIo,
   port: sync?.corePort(docs),
   now,
@@ -317,7 +326,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
         snapshotSeq: new Map(state.snapshotSeq).set(projectId, Math.max(state.snapshotSeq.get(projectId) ?? 0, seqOf("snapshot", snapshotId))),
       };
     },
-    restoreSnapshot: ([projectId, snapshotId, expectedRevision], commit) => {
+    restoreSnapshot: ([projectId, snapshotId, expectedRevision], commit, core) => {
       if (typeof projectId !== "string" || typeof snapshotId !== "string" || !Number.isSafeInteger(expectedRevision)) throw fail("SCHEMA_INVALID", "restoreSnapshot 인자");
       const key = `${snapshotId}|${expectedRevision}`;
       const last = state.restores.get(projectId);
@@ -330,6 +339,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const createdAt = now();
       const before = snapshotOf(nextSnapshotId(projectId, list), current, createdAt, { kind: "auto", reason: "restore", name: timedName("복원 전", createdAt) });
       const doc = deepFreeze({ ...source.doc, revision: current.revision + 1, updatedAt: createdAt });
+      settled(core, current);
       commit();
       state = {
         ...state,
@@ -337,9 +347,10 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
         ...withAuto(projectId, list, before, snapshotId),
         restores: new Map(state.restores).set(projectId, { key, doc }),
       };
+      if (core) rebase(core, doc as Rebased);
       return doc;
     },
-    resolveConflict: ([projectId, choice, myDoc], commit) => {
+    resolveConflict: ([projectId, choice, myDoc], commit, core) => {
       if (typeof projectId !== "string" || (choice !== "mine" && choice !== "theirs")) throw fail("SCHEMA_INVALID", "resolveConflict 인자");
       const checked = checkSaveDoc(projectId, myDoc);
       if (!checked.ok) throw fail("SCHEMA_INVALID", checked.message);
@@ -349,8 +360,10 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const list = state.snapshots.get(projectId) ?? [];
       const kept = snapshotOf(nextSnapshotId(projectId, list), choice === "mine" ? current : deepFreeze({ ...myDoc }), createdAt, { kind: "auto", reason: "conflict", name: timedName("충돌 보존", createdAt) });
       const doc = choice === "mine" ? deepFreeze({ ...myDoc, revision: current.revision + 1, updatedAt: createdAt }) : current;
+      settled(core, current, true);
       commit();
       state = { ...state, docs: new Map(state.docs).set(projectId, doc), ...withAuto(projectId, list, kept) };
+      if (core) rebase(core, doc as Rebased, choice === "mine");
       return doc;
     },
     requestExport: async (args, injected, via) => {
@@ -386,7 +399,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       state = { ...state, docs: new Map(state.docs).set(projectId, saved), saves: new Map(state.saves).set(projectId, { key, doc: saved }) };
       return saved;
     },
-    start: ({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit) => {
+    start: ({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit, core) => {
       // 1 모양
       if (typeof projectId !== "string" || !isVersion(profileVersion) || typeof candidateId !== "string" || !isMode(mode)) throw fail("SCHEMA_INVALID", "startDoc 인자");
       if (mode === "restart" && !(typeof expectedRevision === "number" && Number.isSafeInteger(expectedRevision))) throw fail("SCHEMA_INVALID", "restart는 expectedRevision 필수");
@@ -415,6 +428,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       const kept = current
         ? withAuto(projectId, snapshots, snapshotOf(nextSnapshotId(projectId, snapshots), current, updatedAt, { kind: "auto", reason: "restart", name: "새로 시작 전" }))
         : { snapshots: new Map(state.snapshots).set(projectId, snapshots) };
+      if (current) settled(core, current);
       commit();
       state = {
         ...state,
@@ -422,6 +436,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
         ...kept,
         starts: new Map(state.starts).set(projectId, { key, result }),
       };
+      if (core) rebase(core, doc as Rebased);
       return result;
     },
   };

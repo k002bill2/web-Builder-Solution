@@ -1,0 +1,206 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3-editor/app
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts (8 tests | 8 failed) 355ms
+   ❯ RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 (8)
+     × 복원 뒤 코어 save = 복원 revision + 1 · IDB = DocBook · 코어 초안 = 복원 문서 131ms
+     × 충돌 해결 mine 뒤 코어 save = 해결 revision + 1 · 내 초안 = 해결 문서면 dirty 0 32ms
+     × 충돌 해결 mine 요청 뒤 새 편집 = 초안 유지 · dirty · 다음 save = 해결 revision + 1 34ms
+     × 충돌 해결 theirs 뒤 코어 초안 = 저장된 문서 · 다음 save = 그 revision + 1 31ms
+     × restart(편집기 밖) 뒤 재진입 seed = 같은 코어의 새 문서 · 다음 save = restart revision + 1 32ms
+     × 미저장 편집이 있으면 복원 = STALE_DOC · DocBook·스냅샷·코어 초안 변화 0 32ms
+     × 코어 save 진행 중 복원 = 그 save 뒤 판정 → STALE_DOC · IDB = 코어 save 33ms
+     × memory 모드: 복원 뒤 코어 초안 = 복원 문서 · 다음 save = DocBook revision + 1 29ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 복원 뒤 코어 save = 복원 revision + 1 · IDB = DocBook · 코어 초안 = 복원 문서
+AssertionError: expected { doc: { …(10) }, mark: 2, …(5) } to match object { dirty: false, …(1) }
+(20 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "dirty": false,
+    "doc": {
+-     "hash": "fnv1a64:320125b04a29e471",
++     "hash": "fnv1a64:0680bf9c28fdfb16",
+    },
+  }
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:28:22
+     26|     const restored = await repo.restoreSnapshot(PROJECT, snap.snapshot…
+     27|     expect(restored.revision).toBe(revision + 2);
+     28|     expect(c.view()).toMatchObject({ dirty: false, doc: { hash: restor…
+       |                      ^
+     29|     c.edit(edited(restored, "C"));
+     30|     const result = await c.save();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 충돌 해결 mine 뒤 코어 save = 해결 revision + 1 · 내 초안 = 해결 문서면 dirty 0
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:42:28
+     40|     c.edit(mine);
+     41|     const resolved = await repo.resolveConflict(PROJECT, "mine", mine);
+     42|     expect(c.view().dirty).toBe(false);
+       |                            ^
+     43|     c.edit(edited(doc, "N"));
+     44|     expect(await c.save()).toMatchObject({ status: "saved", receipt: {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 충돌 해결 mine 요청 뒤 새 편집 = 초안 유지 · dirty · 다음 save = 해결 revision + 1
+AssertionError: expected { status: 'saved', …(2) } to match object { status: 'saved', …(1) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "receipt": {
+-     "revision": 4,
++     "revision": 3,
+    },
+    "status": "saved",
+  }
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:56:28
+     54|     const resolved = await pending;
+     55|     expect(c.view()).toMatchObject({ dirty: true, doc: { meta: { title…
+     56|     expect(await c.save()).toMatchObject({ status: "saved", receipt: {…
+       |                            ^
+     57|   });
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 충돌 해결 theirs 뒤 코어 초안 = 저장된 문서 · 다음 save = 그 revision + 1
+AssertionError: expected { doc: { …(10) }, mark: 2, …(5) } to match object { dirty: false, …(1) }
+(20 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "dirty": false,
++   "dirty": true,
+    "doc": {
+-     "hash": "fnv1a64:320125b04a29e471",
++     "hash": "fnv1a64:791998868afae175",
+    },
+  }
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:63:22
+     61|     c.edit(edited(doc, "M"));
+     62|     const theirs = await repo.resolveConflict(PROJECT, "theirs", edite…
+     63|     expect(c.view()).toMatchObject({ dirty: false, doc: { hash: theirs…
+       |                      ^
+     64|     c.edit(edited(theirs, "T"));
+     65|     expect(await c.save()).toMatchObject({ status: "saved", receipt: {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > restart(편집기 밖) 뒤 재진입 seed = 같은 코어의 새 문서 · 다음 save = restart revision + 1
+AssertionError: expected { doc: { …(10) }, mark: 1, …(5) } to match object { dirty: false, doc: { …(2) } }
+(19 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "dirty": false,
+    "doc": {
+-     "candidateId": "A",
+-     "hash": "fnv1a64:6ceb0c400d828e2d",
++     "candidateId": "B",
++     "hash": "fnv1a64:320125b04a29e471",
+    },
+  }
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:74:26
+     72|     const again = repo.core!(PROJECT, restarted);
+     73|     expect(again).toBe(c);
+     74|     expect(again.view()).toMatchObject({ dirty: false, doc: { hash: re…
+       |                          ^
+     75|     again.edit(edited(restarted, "R"));
+     76|     expect(await again.save()).toMatchObject({ status: "saved", receip…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 미저장 편집이 있으면 복원 = STALE_DOC · DocBook·스냅샷·코어 초안 변화 0
+AssertionError: expected { projectId: 'project-1', …(9) } to be an instance of ProjectRepositoryError
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:86:19
+     84|     const before = repo.listSnapshots(PROJECT);
+     85|     const error = await repo.restoreSnapshot(PROJECT, snap.snapshotId,…
+     86|     expect(error).toBeInstanceOf(ProjectRepositoryError);
+       |                   ^
+     87|     expect((error as ProjectRepositoryError).code).toBe("STALE_DOC");
+     88|     expect((await repo.getDoc(PROJECT))?.revision).toBe(revision);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 코어 save 진행 중 복원 = 그 save 뒤 판정 → STALE_DOC · IDB = 코어 save
+AssertionError: expected undefined to be 'STALE_DOC' // Object.is equality
+
+- Expected:
+"STALE_DOC"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:102:64
+    100|     gate.release();
+    101|     expect(await saving).toMatchObject({ status: "saved", receipt: { r…
+    102|     expect(((await restoring) as ProjectRepositoryError).code).toBe("S…
+       |                                                                ^
+    103|     const stored = await db.doc();
+    104|     expect([stored?.doc.revision, stored?.doc.meta.title]).toEqual([re…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > memory 모드: 복원 뒤 코어 초안 = 복원 문서 · 다음 save = DocBook revision + 1
+AssertionError: expected { doc: { …(10) }, mark: 2, …(5) } to match object { dirty: false, …(1) }
+(20 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "dirty": false,
+    "doc": {
+-     "hash": "fnv1a64:320125b04a29e471",
++     "hash": "fnv1a64:0680bf9c28fdfb16",
+    },
+  }
+
+ ❯ src/features/studio/save/saveCore.rebase.test.ts:113:22
+    111|     await c.save();
+    112|     const restored = await repo.restoreSnapshot(PROJECT, snap.snapshot…
+    113|     expect(c.view()).toMatchObject({ dirty: false, doc: { hash: restor…
+       |                      ^
+    114|     c.edit(edited(restored, "C"));
+    115|     await c.save();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  15:09:20
+   Duration  1.39s (environment 42%, tests 27%, transform 16%, setup 9%, import 6%)
+

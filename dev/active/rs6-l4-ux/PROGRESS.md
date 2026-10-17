@@ -30,7 +30,8 @@
 - [x] M1-CP2. 누적 129.67/131.03/132.65/134.06 (`raw/measure-cp2-build.txt` · `patches/measure-cp2.patch`)
 - [x] M1-CP3. 누적 129.68/131.03/132.66/134.07 · epoch +1 테스트 변이 RED 확인 (`raw/measure-cp3-*` · `patches/measure-cp3.patch`)
 - [x] M1-CP4. 누적 129.72/131.08/132.70/134.11 (`raw/measure-cp4-build.txt` · `patches/measure-cp4.patch`)
-- [ ] M2. 상쇄 후보 조사·실측 · 조합 1회 — 서브에이전트 조사 완료(`raw/measure-m2-subagent-survey.md`)
-- [ ] M3. 설계 질문 2건 근거
-- [ ] M4. 패치 보존 → 자기 변경 복원 → base 재빌드 dist sha 동일 · 게이트
-- [ ] M5. REPORT-MEASURE.md + 커밋
+- [x] M2. 상쇄 A표 4건 실측(−0.29·−0.09·−0.05·−0.14) · 조합 M2d 129.15/130.47/132.13 · B표 3건 조사만 (서브에이전트 Explore 1개 — `raw/measure-m2-subagent-survey.md`)
+- [x] M3. ① stale 행 변형 129.12/130.43/132.10 exit 0 · 테스트 4 깨짐 ② 1곳 유지 +0.17(간선 시 +0.46)
+- [x] M4. 패치 9개 보존·apply --check ok → 복원(diff 0·porcelain 0) → dist sha 동일 · typecheck·lint·test(331/2957)·build 0
+- [x] M5. REPORT-MEASURE.md + 커밋
+- Codex·Ego Lite: 브리프 금지로 생략

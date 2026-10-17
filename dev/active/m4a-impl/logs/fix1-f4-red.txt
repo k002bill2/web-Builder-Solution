@@ -1,0 +1,5 @@
+     × zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14) 3451ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/components/studio/ExportFlow.test.tsx > 형식 버튼 (M4-a EXP-AC-01 · Q18 A) > zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)
+TestingLibraryElementError: Unable to find an element with the text: 정적 사이트(zip)를 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text
+      Tests  1 failed | 16 skipped (17)

@@ -1,0 +1,5 @@
+     × L-2 F-14 제외 = CSS의 url(data:font/…;base64,<base64>)만 — 주석 경계(Codex)·문자열 안 url(data:)·notice·zip 글꼴 경로(QA M2a)·data 글꼴 두 개 사이(QA M2c)의 브랜드 = 실패 39ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > FIX1 AppSec·QA (M-1·M-2·L-1·L-2) > L-2 F-14 제외 = CSS의 url(data:font/…;base64,<base64>)만 — 주석 경계(Codex)·문자열 안 url(data:)·notice·zip 글꼴 경로(QA M2a)·data 글꼴 두 개 사이(QA M2c)의 브랜드 = 실패
+AssertionError: expected [Function] to throw an error
+      Tests  1 failed | 1 passed | 24 skipped (26)

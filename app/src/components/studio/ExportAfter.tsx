@@ -63,7 +63,8 @@ const NEXT: Readonly<Record<ExportFormat, string>> = {
   "static-zip": "정적 사이트(zip)는 생성기 연결 후 내보낼 수 있습니다",
 };
 const KEEP = "지금 문서는 자동으로 저장됩니다 — 이 시점을 따로 남기려면 '스냅샷'에서 저장하세요";
-const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip", "static-html": "정적 HTML", "static-zip": "정적 사이트(zip)" };
+/** 성공 제목의 형식 이름 + 목적격 조사(받침 유무가 형식마다 달라 이름에 붙인다) */
+const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip을", "static-html": "정적 HTML을", "static-zip": "정적 사이트(zip)를" };
 /** 내려받기 차단은 페이지가 알 수 없다(SPEC 6.1 · Q14 A) — 성공 Callout에 늘 1줄 */
 const BLOCKED_HINT = "내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요";
 
@@ -110,7 +111,7 @@ export function ExportResultView({ result, onFirstFallback }: { readonly result:
       <div role="status">
         <Callout
           tone="info"
-          title={`${NAME[result.format]}을 만들었습니다 · 내보내기 전 상태는 스냅샷 '${result.snapshotName}'에 있습니다`}
+          title={`${NAME[result.format]} 만들었습니다 · 내보내기 전 상태는 스냅샷 '${result.snapshotName}'에 있습니다`}
           action={download && <DownloadLink href={download.href} fileName={download.fileName} />}
         >
           {download && <span className="text-label-alternative">결과 해시 {download.hash}</span>}

@@ -50,6 +50,7 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 | `components/studio/ExportChunkFailure.test.tsx` | 버튼 이름 "정적 HTML 내보내기" | "HTML 파일 1개 내보내기" | 7.3 |
 | `components/studio/PngSave.test.tsx:122` | 버튼 이름 "정적 HTML 내보내기" | "HTML 파일 1개 내보내기" | 7.3(파일 표에 명시) — 아래 편차 2번 |
 | `features/studio/exportFlow.test.ts` · `components/studio/ExportResultNotes.test.tsx` | 3MB 안내 "zip 내보내기는 다음 단계에서 지원합니다" | "정적 사이트(zip)는 이미지를 파일로 나눠 담습니다" | 2.5 · EXP-AC-16 |
+| `components/studio/ExportFlow.test.tsx` (FIX1) | "정적 사이트(zip)을 만들었습니다" | "정적 사이트(zip)를 만들었습니다" | 조사 정정(약화 아님) — BRIEF-FIX1 4항 |
 | `staticMarkup.ts` 실패 문구 | "정적 HTML 이미지는 data: 단일 파일만 허용합니다" | "정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님" | 기존 테스트 `toThrow("정적 HTML 이미지")` 그대로 통과 |
 
 ## 3. 편차·결정 (한 줄씩)
@@ -113,10 +114,44 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 - **환경:** 첫 preview는 백그라운드 기본 시간 한도(10분)로 종료되어 다시 띄웠습니다. 수정 build 뒤에는 한 번 더 띄웠습니다. 마지막에 둘 다 종료했습니다: `lsof -nP -iTCP:4395 -sTCP:LISTEN` → 출력 없음 exit 1 · 4396(http.server)도 exit 1. IDB `design-studio` 삭제(남은 DB 0) · `finish({keep:[]})` 완료.
 - 내려받은 파일·해제 폴더·입력 이미지는 저장소 밖(`/tmp/m4a-r2-ego/`)에 두었습니다. 저장소에는 스크린샷 6장만 커밋합니다.
 
-## 9. 열린 항목 (Jarvis)
+## 9. FIX1 (BRIEF-FIX1 · base a834eb88 — AppSec M-1·M-2·L-1·L-2 · QA M2a·M2c · 문구 1)
+**결론(FIX1):** AppSec M-1·M-2·L-1·L-2와 QA 변이 생존 M2a·M2c, 문구 1건을 TDD로 고쳤습니다(항목마다 RED 로그). M2a·M2c는 이제 FAIL로 잡힙니다(`logs/fix1-f2-mutations.txt`). Codex 1회는 needs-attention(P2 2 · P3 1)이었고, P2-1(루트 template)을 반영했습니다. P2-2·P3은 사유를 남기고 반영하지 않았습니다(아래 Codex 표). 최종 게이트: typecheck 0 · lint 0 · test 353파일 **3134 passed** · build exit 0. 예산은 진입 **128.71** · 복원 **131.69**로 개정 18 기준선과 같습니다(**증분 0**, 기준선 파일 수정 0). 렌더 JS는 84.29/90입니다. 기존 단언 약화·skip 0(조사 1건은 정정).
+
+| 항목 | 수정 | RED → GREEN | 커밋 |
+|---|---|---|---|
+| F1 M-1·M-2 | `staticMarkup.ts` `clean()` — 지우는 요소를 `localName` 소문자 Set 비교로(기존 4종 + `template`·`animate`·`set`·`animatemotion`·`animatetransform`). template를 지우면 안쪽(fragment)도 함께 사라집니다 | 퍼즈 M06·M07·M12·M13·M41·M42·M43 + animateMotion·animateTransform + 대문자 `SET`·`ANIMATE` 9건 → 결과 `<script` 1개(고정) · `onerror`·`evil.example`·`javascript:`·`<template`·`shadowrootmode`·`<animate`·`<set` 0. RED `logs/fix1-f1-red.txt`(1 실패) → staticHtml+zip 8파일 116 passed | 053ab4ff |
+| F2 L-2 | `staticMarkup.ts` F-14 제외 정규식을 `url(data:font/…;base64,<base64 글자>)`로 좁히고(`CSS_FONT_DATA_URL`) **CSS 입력에만** 적용 — `assertNoBrand(site, css, [notice, STATIC_MENU_SCRIPT])`. notice·고정 스크립트는 치환 없이 검사 | Codex 주석 경계(무따옴표·따옴표) · `content:"url(data:…)"`(B03) · notice `url(data:Design Studio)` · zip 글꼴 경로 `assets/fonts/<브랜드>-400.woff2`(M2a 포착) · data 글꼴 2개 사이 규칙(M2c 포착) = 실패, 실제 인라인 글꼴(따옴표 유무·zip) = 통과. RED `logs/fix1-f2-red.txt` → 117 passed. **변이 증명** `logs/fix1-f2-mutations.txt`: M2a·M2c 각각 1 실패 → 복원 26 passed | a6bace1b |
+| F3 L-1 | `staticMarkup.ts` `CSS_URL`을 엄격형(큰따옴표·작은따옴표·무따옴표[공백·따옴표·괄호 0])으로 바꾸고 `cssUrls()`가 "`url(` 출현 수 = 엄격 매치 수"가 아니면 실패. 킷 CSS(`assertNoExternalCss`)는 CSS 이스케이프를 해석한 텍스트로 검사하고 `@import`·`image-set(` 1개라도 실패. 본문 CSS(`hasExternalCss`)는 `\` 금지가 이미 있어 수 비교만 추가 | 따옴표 섞인 url() — 본문 style(M28·M29)·style 요소(M30)·킷 CSS(C06 + `'…)…'`) · 킷 `@\69mport`(C03)·`u\72l(`(C04)·`image-set(`(C05) html·zip 양쪽 = 실패. Tailwind 이스케이프 선택자(`.md\:grid`·`\[…\(45deg\,red\)\]`·`.\31 0`)·`content:"\201C"`·따옴표 data: url = 통과. RED `logs/fix1-f3-red.txt` → 118 passed. 실제 build CSS 확인은 F5 | 8436d515 |
+| F4 문구 | `components/studio/ExportAfter.tsx` 성공 제목의 `NAME`에 목적격 조사를 형식별로 붙임("zip을" · "정적 HTML을" · "정적 사이트(zip)를"). 공용 템플릿의 고정 "을"을 없앰 — HTML 쪽 문장은 그대로 | `ExportFlow.test.tsx` 기존 단언 "정적 사이트(zip)을 만들었습니다" → "를"로 **정정(약화 아님)** · RED `logs/fix1-f4-red.txt` → components/studio 41파일 300 passed | 86b74a22 |
+| F5 게이트·예산 | 코드 변경 0 | typecheck exit 0 · lint exit 0 · test 353파일 **3133 passed** · build exit 0(`logs/*-fix1.txt`). 진입 **128.71 · 복원 131.69 = 개정 18 기준선(증분 0, 기준선 갱신 없음)** · 렌더 JS 84.29/90. 실제 build 킷 CSS(`render-ncA71k8b.css`, url 6 · 이스케이프 선택자 다수)를 `buildStaticHtml`에 넣어 html(글꼴 data:)·zip(assets/fonts) 둘 다 통과 — 임시 vitest 실행 뒤 삭제(`logs/fix1-real-css.txt`). 킷 이스케이프(`@\69mport`·`u\72l(`)는 같은 출현 수 방식으로 잡혀 범위에 포함(정상 빌드 깨짐 0) | b3a3df09 |
+
+### FIX1 Codex (1회 · 반영 1회)
+- 실행: `codex-companion adversarial-review --scope branch --base a834eb88 "<관점 4개: 제거 우회 · F-14 경계 · url 출현 수·이스케이프 우회/오탐 · 조사 회귀>"`. 원문 `logs/codex-fix1.txt`. 판정 needs-attention. ExportAfter 조사 변경은 회귀 0.
+| # | 지적 | 처리 | 근거 |
+|---|---|---|---|
+| P2-1 | 사이트 루트 자체가 `<template data-site-root shadowrootmode>`면 `querySelectorAll("*")` 밖이라 내용이 그대로 나감(기준 커밋부터 있던 결함) | **반영** — 루트 localName이 제거 대상이면 "사이트 루트가 없는 마크업" 실패 | RED `logs/codex-fix1-red.txt`(template·script·대문자 TEMPLATE 루트 3건) → 119 passed → 전체 3134 passed(`logs/*-fix1-codex.txt`) |
+| P2-2 | 문자열 안 `content:"url("`·`url(`이 든 Tailwind 이스케이프 선택자도 출현 수에 잡혀 정상 CSS가 실패(오탐) | **미반영(의도된 fail-closed)** | BRIEF-FIX1 3항이 "출현 수 = 엄격 매치 수, 다르면 실패"를 지정했습니다. 실제 build 킷 CSS에는 해당 모양이 0이고 통과를 확인했습니다(`logs/fix1-real-css.txt`). 본문 CSS는 렌더 style(`kitVars`)뿐이라 따옴표가 막혀 있습니다. 토큰 문맥 파서는 새 설계라 후속 판단(Jarvis)으로 넘깁니다. 킷 CSS에 `url(` 글자가 든 content·임의값 클래스를 추가하면 내보내기가 실패합니다 — 이를 회귀 신호로 씁니다 |
+| P3 | 글꼴 data URL 모양(`url(data:font/woff2;base64,<base64 글자>)`)이 CSS 문자열·주석 안에 있으면 그 안의 브랜드 글자도 제외됨 | **미반영(기록)** | BRIEF 2항·AppSec 패치가 정한 범위(base64 글자 한정 — 주석·규칙 경계를 넘지 못함)는 지켰습니다. 남는 경우는 생성기 고정 CSS의 문자열·주석에 글꼴 URL 모양과 base64 글자의 브랜드를 함께 넣는 경우뿐입니다. 고치려면 CSS 토큰화가 필요해 P2-2와 같은 후속으로 묶습니다 |
+- 반영은 1회까지라 재리뷰는 돌리지 않았습니다. 재반영 뒤 예산: 진입 128.71 · 복원 131.69(증분 0) · 렌더 JS 84.29.
+- **FIX1 커밋(base a834eb88 → HEAD):** 38208e8d 브리프 · 053ab4ff F1 · a6bace1b F2 · ca1f1c40 F2 변이 증명 · 8436d515 F3 · 86b74a22 F4 · b3a3df09 F5 · 43cc977b 이월 표 · 0b50e78b Codex 반영 · (이 REPORT 마감 커밋). amend·rebase·push 0. 서브에이전트 0(BRIEF "불필요").
+
+### FIX1 범위 밖 이월 (BRIEF-FIX1 "범위 밖")
+| 항목 | 내용 | 이월 사유 |
+|---|---|---|
+| L-3 | `storeZip.ts` `BAD_NAME`이 허용표보다 약함(`a/./b`·`a//b`·Windows 금지 문자) | 현재 호출자가 허용표를 먼저 거쳐 도달 불가 · BRIEF 범위 밖 |
+| L-4 | zip DOS 시각 로컬 시간대 의존(같은 revision · 기기 간 해시 차이) | SPEC 2.4 "로컬 시각" 명시 — 설계 판단 필요 |
+| L-5 | SPEC 4.3 "LICENSES.md F-14" 미구현 | 내용이 상수·고정 계열뿐 — SPEC 불일치 기록 |
+| L-6 | `exportFileStem` bidi·제로폭 문자 · 예약 이름 부분 일치 | 자기 기기 표시에만 영향 |
+| Info I-1~I-4 | postMessage `*` · noscript mXSS · ZIP_MAX 사후 검사 · 일반 template | I-4(일반 template)는 F1로 함께 제거됨. 나머지는 기록만 |
+| EXP-AC-14 | 용량 초과 refused 경로(저장소 `memoryDocBook runJob`) | 쓰기 범위 밖(저장소 코드) — 3절 편차 3 |
+| `readProject` 신뢰 경계 | 프로젝트 파일 가져오기 → `validatePageDoc` 심층 검토 | AppSec [미확인] — 별도 레인 |
+| CSP meta(AppSec 항목 6 권고) | 생성기 고정 CSP meta | 새 설계 — SPEC 개정 후보 |
+
+## 10. 열린 항목 (Jarvis)
 1. EXP-AC-R3 실화면 20MB+ — BLOCKED(턴 상한). 단위 EXP-AC-17만 확인했습니다.
 2. EXP-AC-R5 Windows 탐색기 해제 — QA 몫입니다.
-3. 09c4309d Codex 미검토 — 다음 레인에서 1회를 권고합니다.
-4. "정적 사이트(zip)을" 조사 오류 — 문안 후속입니다.
+3. 09c4309d Codex 미검토 — AppSec 레인이 Codex 1회로 검토(L-2) → FIX1 F2에서 반영.
+4. ~~"정적 사이트(zip)을" 조사 오류~~ — FIX1 F4에서 해소.
 5. EXP-AC-R4 실패 alert는 최종 build에서 다시 보지 않았습니다.
 6. 턴: BRIEF-R2 상한 50턴을 넘겼습니다(Ego Lite 진단·재실측 때문입니다).
+7. FIX1 Codex P2-2(url 출현 수 오탐 — 문자열 속 `url(`)·P3(문자열·주석 속 글꼴 URL 모양) — CSS 토큰화 후속 판단(9절 FIX1 Codex 표).

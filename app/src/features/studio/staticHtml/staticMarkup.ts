@@ -32,16 +32,35 @@ export interface StaticHtmlParts {
 
 const ZIP_FONT = /^assets\/fonts\/[A-Za-z]+-\d{3}\.woff2$/;
 const ZIP_IMAGE = /^assets\/images\/img-\d{2,3}\.(webp|jpg|png)$/;
-const CSS_URL = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
-
-function assertNoExternalCss(css: string, target: "html" | "zip") {
-  const urls = [...css.matchAll(CSS_URL)].map((m) => m[2]!.trim());
-  if (/@import/i.test(css) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
+/** CSS url() 값 = 큰따옴표 · 작은따옴표 · 무따옴표(공백·따옴표·괄호 0) 중 하나. 따옴표가 섞이면 매치되지 않는다 → 출현 수 비교가 잡는다(AppSec L-1) */
+const CSS_URL = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^'"()\s]*))\s*\)/gi;
+/** url() 값 목록 — `url(` 출현 수와 엄격 매치 수가 다르면(읽지 못한 url()이 있으면) null */
+function cssUrls(css: string): string[] | null {
+  const urls = [...css.matchAll(CSS_URL)].map((m) => (m[1] ?? m[2] ?? m[3] ?? "").trim());
+  return urls.length === (css.match(/url\(/gi) ?? []).length ? urls : null;
 }
+/** CSS 이스케이프 해석(`\69` → i · `\:` → :) — 킷 CSS의 `@\69mport`·`u\72l(`를 브라우저처럼 글자로 본다. Tailwind 이스케이프 선택자·content 글자는 url(·@import가 되지 않는다 */
+const CSS_ESCAPE = /\\(?:([0-9a-f]{1,6})[ \t\n\r\f]?|([^\n\r\f0-9a-f]))/gi;
+const unescapeCss = (css: string) =>
+  css.replace(CSS_ESCAPE, (_, hex: string | undefined, ch: string | undefined) => (hex ? String.fromCodePoint(Math.min(parseInt(hex, 16) || 0xfffd, 0x10ffff)) : (ch ?? "")));
+
+/** 킷 CSS — url()은 data: 또는 (zip) assets/fonts만 · @import·image-set 0 · 읽지 못한 url() 0 (이스케이프 해석 뒤) */
+function assertNoExternalCss(css: string, target: "html" | "zip") {
+  const plain = unescapeCss(css);
+  const urls = cssUrls(plain);
+  if (urls === null || /@import|image-set\(/i.test(plain) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
+}
+
+/**
+ * 지우는 요소(localName 소문자 비교 — SVG animateMotion 등 대소문자 무관).
+ * template = 안쪽이 querySelectorAll 밖이라 검사가 닿지 않고 열람 시 declarative shadow DOM이 된다(AppSec M-1) ·
+ * SVG animate·set·animateMotion·animateTransform = URL 속성을 열람 시점에 바꾼다(AppSec M-2)
+ */
+const REMOVED = new Set(["script", "iframe", "object", "embed", "template", "animate", "set", "animatemotion", "animatetransform"]);
 
 /** 편집기 흔적·실행 코드 제거 — 불활성 문서 안에서만 다룬다 */
 function clean(site: Element) {
-  for (const el of site.querySelectorAll("script, iframe, object, embed")) el.remove();
+  for (const el of site.querySelectorAll("*")) if (REMOVED.has(el.localName.toLowerCase())) el.remove();
   for (const el of [site, ...site.querySelectorAll("*")]) {
     for (const { name } of [...el.attributes]) {
       if (name.startsWith("on") || (name.startsWith("data-") && !KEPT_DATA.has(name))) el.removeAttribute(name);
@@ -84,7 +103,10 @@ function assertLinks(site: Element) {
 
 /** 본문 CSS(style 속성·요소) — url()은 data:만 · @import·image-set·이스케이프(\) 0(이스케이프는 url(·@import를 글자로 숨긴다) */
 const CSS_TRICK = /@import|image-set\(|\\/i;
-const hasExternalCss = (css: string) => CSS_TRICK.test(css) || [...css.matchAll(CSS_URL)].some((m) => !m[2]!.trim().startsWith("data:"));
+const hasExternalCss = (css: string) => {
+  const urls = cssUrls(css);
+  return CSS_TRICK.test(css) || urls === null || urls.some((u) => !u.startsWith("data:"));
+};
 
 /** F-13 그 밖 URL 자리 — action·formaction·poster·background·ping 0 · src는 img만 · href(xlink 포함)는 # 조각만 · 본문 link·base·meta 0 · 본문 CSS 외부 요청 0 */
 function assertNoExternalSources(site: Element) {
@@ -103,11 +125,14 @@ function assertNoExternalSources(site: Element) {
 
 /** F-14 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 — 사용자 글자(본문·alt·title·description)는 보지 않는다 */
 const BRAND = new RegExp(`${brand.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}|${["a", "p", "f", "s"].join("")}`, "i");
-/** CSS의 data: 본문(인라인 글꼴 base64)은 글자가 아니다 — 무작위 base64에 4글자가 우연히 들어가 거짓 실패했다(Ego Lite R2) */
-const CSS_DATA_URL = /url\(\s*(['"]?)data:[^'")]*\1\s*\)/gi;
-function assertNoBrand(site: Element, fixed: readonly string[]) {
+/**
+ * CSS의 인라인 글꼴 base64는 글자가 아니다 — 무작위 base64에 4글자가 우연히 들어가 거짓 실패했다(Ego Lite R2).
+ * 제외는 CSS 입력의 `url(data:font/…;base64,<base64 글자>)`만(AppSec L-2) — base64 글자에 공백·`*`·`{`가 없어 주석·규칙 경계를 넘지 못한다 · notice·고정 스크립트는 그대로 검사
+ */
+const CSS_FONT_DATA_URL = /url\(\s*(['"]?)data:font\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]*\1\s*\)/gi;
+function assertNoBrand(site: Element, css: string, fixed: readonly string[]) {
   const names = [site, ...site.querySelectorAll("*")].flatMap((el) => [el.getAttribute("class") ?? "", ...[...el.attributes].map((a) => a.name)]);
-  if ([...fixed.map((text) => text.replace(CSS_DATA_URL, "url()")), ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
+  if ([css.replace(CSS_FONT_DATA_URL, "url()"), ...fixed, ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
 }
 
 export function buildStaticHtml({ markup, css, title, description, notice, images = {}, target = "html" }: StaticHtmlParts): string {
@@ -116,7 +141,8 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   page.documentElement.setAttribute("lang", "ko");
   page.body.innerHTML = markup;
   const site = page.body.firstElementChild;
-  if (!site?.hasAttribute("data-site-root") || page.body.childElementCount !== 1) throw new Error("사이트 루트가 없는 마크업입니다");
+  // 루트 자체가 제거 대상이면 실패 — clean()의 querySelectorAll("*")은 루트를 보지 않는다(Codex FIX1)
+  if (!site?.hasAttribute("data-site-root") || page.body.childElementCount !== 1 || REMOVED.has(site.localName.toLowerCase())) throw new Error("사이트 루트가 없는 마크업입니다");
   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw new Error("구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다");
   clean(site);
@@ -130,7 +156,7 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   if ([...site.querySelectorAll("img")].some((img) => !imageSrc.test(img.getAttribute("src") ?? "") || img.hasAttribute("srcset"))) throw new Error("정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님");
   assertLinks(site);
   assertNoExternalSources(site);
-  assertNoBrand(site, [notice ?? "", css, STATIC_MENU_SCRIPT]);
+  assertNoBrand(site, css, [notice ?? "", STATIC_MENU_SCRIPT]);
 
   const head = page.head;
   head.replaceChildren();

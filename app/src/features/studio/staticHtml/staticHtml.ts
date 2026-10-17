@@ -12,7 +12,7 @@ import { readRenderMessage, type FontBytes, type FrameRect, type KitTokenInput, 
 import { docKitTokens } from "../docPurpose";
 import { DEV_SERVER_UNSUPPORTED } from "./devServer";
 import { IMAGE_FAILED, exportImages, type ExportSummary, type ReadImage } from "./exportImages";
-import { FONT_FAILED, FONT_TIMEOUT_MS, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "./siteFontEmbed";
+import { FONT_FAILED, FONT_TIMEOUT_MS, base64, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "./siteFontEmbed";
 import { buildStaticHtml } from "./staticMarkup";
 
 export { IMAGE_FAILED };
@@ -82,6 +82,8 @@ export function renderAndSerialize(
   fonts: readonly FontBytes[] = [],
   /** 쓰는 이미지(SPEC m2c 5.1 — id당 1장). 내보내기 render는 늘 loading "eager" — 렌더 문서가 decode를 기다린 뒤 rects를 보낸다(5.3) */
   images: Readonly<Record<string, RenderImage>> = {},
+  /** 참조 직렬화(M4-a Q17 B) — 이미지를 `image:<id>`로 받는다(정적 HTML·zip). PNG는 data URL 그대로(끔) */
+  refs = false,
 ): Promise<{ readonly markup: string; readonly rects: readonly FrameRect[] }> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let rects: readonly FrameRect[] = [];
@@ -98,7 +100,7 @@ export function renderAndSerialize(
       } else if (message?.type === "rects" && stage === "render" && settled(message.rects)) {
         stage = "serialize";
         rects = message.rects;
-        channel.send({ type: "serialize" });
+        channel.send(refs ? { type: "serialize", refs } : { type: "serialize" });
       } else if (message?.type === "error" && !tolerated.includes(message.code)) {
         reject(new Error(message.code === "IMAGE_DECODE_FAILED" ? IMAGE_FAILED : `렌더 문서 오류 ${message.code}`));
       }
@@ -115,6 +117,12 @@ export async function kitCss(fetchText: (url: string) => Promise<string>): Promi
   const hrefs = [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") ?? "").filter(Boolean);
   if (hrefs.length === 0) throw new Error(import.meta.env.DEV ? DEV_SERVER_UNSUPPORTED : "render.html에 스타일시트가 없습니다");
   return (await Promise.all(hrefs.map(fetchText))).join("\n");
+}
+
+/** 참조 직렬화의 단일 HTML 결과 src — 부모가 가진 Blob → data URL(id당 1개) */
+async function imageDataUrls(images: Readonly<Record<string, RenderImage>>): Promise<Record<string, string>> {
+  const entries = await Promise.all(Object.entries(images).map(async ([id, { blob }]) => [id, `data:${blob.type};base64,${base64(await blob.arrayBuffer())}`] as const));
+  return Object.fromEntries(entries);
 }
 
 const hex12 = async (bytes: Uint8Array<ArrayBuffer>) =>
@@ -166,8 +174,8 @@ export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<Sta
       throw new ProjectRepositoryError("JOB_TIMEOUT", FONT_FAILED);
     });
     const { images, lost } = exportImages(doc, readImage);
-    const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images);
-    const page = buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, title: doc.meta.title, description: doc.meta.description, notice: fonts.notice });
+    const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images, true);
+    const page = buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, title: doc.meta.title, description: doc.meta.description, notice: fonts.notice, images: await imageDataUrls(images) });
     const bytes = new TextEncoder().encode(page);
     const resultHash = await hex12(bytes);
     release(projectId);

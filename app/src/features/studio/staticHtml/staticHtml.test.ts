@@ -214,6 +214,44 @@ describe("정적 HTML 글꼴 (M2B-4a SPEC 2.4 · MF-AC-U7·G4·B9)", () => {
   });
 });
 
+describe("참조 직렬화 (M4-a Q17 B · Q5 A — 단일 HTML도 같은 경로 · EXP-AC-17)", () => {
+  const ID = "11111111-1111-4111-8111-111111111111";
+  const withHeroImage = () => {
+    const doc = { ...DOC, sections: DOC.sections.map((s) => (s.type === "hero" ? { ...s, slots: { ...s.slots, image: { ...(s.slots.image as object), source: ID } } } : s)) } as PageDoc;
+    const site = drawDoc(DOC).querySelector("[data-site-root]")!;
+    const img = site.ownerDocument.createElement("img");
+    img.setAttribute("src", `image:${ID}`);
+    img.setAttribute("alt", "가게 외관");
+    site.querySelector("header")!.append(img);
+    return { doc, markup: site.outerHTML };
+  };
+
+  it("serialize{refs: true}를 보낸다 · 렌더 문서가 준 image:<id>를 부모 Blob의 data URL로 바꾼다", async () => {
+    const { doc, markup } = withHeroImage();
+    const frame = fakeFrame((m, post) => post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup }));
+    const urls = fakeUrls();
+    const blob = new Blob([new Uint8Array([1, 2, 3])], { type: "image/webp" });
+    const readImage = (id: string) => (id === ID ? { variants: { 1920: blob }, width: 1920, height: 1080 } : undefined);
+    await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api, readImage })({ ...input, doc });
+    expect(frame.sent[1]).toEqual({ type: "serialize", refs: true });
+    const html = await urls.blobs[0]!.text();
+    expect(html).toContain('src="data:image/webp;base64,AQID"');
+    expect(html).not.toContain("image:");
+  });
+
+  it("EXP-AC-17: 이미지 20MB 문서 — markup은 이미지 크기와 무관(< 1MB, HTML_MAX 그대로) · 결과 HTML 성공", async () => {
+    const { doc, markup } = withHeroImage();
+    expect(markup.length).toBeLessThan(1_000_000);
+    const frame = fakeFrame((m, post) => post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup }));
+    const urls = fakeUrls();
+    const big = new Blob([new Uint8Array(20 * 1024 * 1024)], { type: "image/jpeg" });
+    const readImage = (id: string) => (id === ID ? { variants: { 1920: big }, width: 1920, height: 1080 } : undefined);
+    const made = await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api, readImage, timeoutMs: 60_000 })({ ...input, doc });
+    expect(made.resultHash).toMatch(/^[0-9a-f]{12}$/);
+    expect(urls.blobs[0]!.size).toBeGreaterThan(20 * 1024 * 1024);
+  }, 60_000);
+});
+
 describe("숨은 렌더 iframe (openRenderFrame)", () => {
   it("sandbox = allow-scripts 그대로(allow-same-origin 0) · /render.html · 화면 밖 · 접근성 트리 밖 · 그 iframe에서 온 메시지만 · close = 제거", () => {
     const channel = openRenderFrame();

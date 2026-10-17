@@ -1,0 +1,165 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-impl/app
+
+ ❯ src/render/protocol.test.ts (18 tests | 1 failed) 11ms
+   ❯ 직렬화 메시지 (M2A-3b G2 — serialize 부모→렌더 · html 렌더→부모) (3)
+     × serialize{refs: true}(M4-a Q17 B 참조 직렬화) — true만 남기고 그 밖 값은 버린다 4ms
+ ❯ src/render/objectUrls.test.ts (5 tests | 1 failed) 7ms
+   ❯ object URL 보관 (K4) (5)
+     × idOf(M4-a Q17 B) — 지금 들고 있는 object URL → 이미지 id · 모르는 URL·해제된 URL = 빈 글자 2ms
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts (17 tests | 2 failed) 514ms
+   ❯ 참조 직렬화 (M4-a Q17 B · Q5 A — 단일 HTML도 같은 경로 · EXP-AC-17) (2)
+     × serialize{refs: true}를 보낸다 · 렌더 문서가 준 image:<id>를 부모 Blob의 data URL로 바꾼다 26ms
+     × EXP-AC-17: 이미지 20MB 문서 — markup은 이미지 크기와 무관(< 1MB, HTML_MAX 그대로) · 결과 HTML 성공 50ms
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (16 tests | 1 failed) 952ms
+   ❯ 정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4) (3)
+     × M4-a Q17 B 참조 직렬화: img src = image:<id> → images[id](부모 Blob에서 만든 src)로 바꾼 뒤 같은 규칙 검사 · 모르는 id·빈 id = 실패 4ms
+ ❯ src/render/RenderApp.test.tsx (20 tests | 1 failed) 1381ms
+   ❯ 렌더 문서 수신기 (14)
+     × serialize{refs: true}(M4-a Q17 B) → img src = image:<id>(이미지 바이트 0 · data URL 0) · refs 없으면 지금처럼 data URL 1025ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/render/RenderApp.test.tsx > 렌더 문서 수신기 > serialize{refs: true}(M4-a Q17 B) → img src = image:<id>(이미지 바이트 0 · data URL 0) · refs 없으면 지금처럼 data URL
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/render/RenderApp.test.tsx:116:49
+    114|     fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT…
+    115|     fromParent({ type: "serialize", refs: true });
+    116|     await vi.waitFor(() => expect(sent("html")).toHaveLength(1));
+       |                                                 ^
+    117|     const markup = (sent("html")[0] as { markup: string }).markup;
+    118|     expect(markup).toContain(`src="image:${id}"`);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/render/objectUrls.test.ts > object URL 보관 (K4) > idOf(M4-a Q17 B) — 지금 들고 있는 object URL → 이미지 id · 모르는 URL·해제된 URL = 빈 글자
+TypeError: cache.idOf is not a function
+ ❯ src/render/objectUrls.test.ts:43:18
+     41|     const cache = createObjectUrlCache(urlApi);
+     42|     const urls = cache.sync({ [ID_A]: new Blob(["a"]), [ID_B]: new Blo…
+     43|     expect(cache.idOf(urls[ID_B]!)).toBe(ID_B);
+       |                  ^
+     44|     expect(cache.idOf("blob:null/없음")).toBe("");
+     45|     cache.clear();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/render/protocol.test.ts > 직렬화 메시지 (M2A-3b G2 — serialize 부모→렌더 · html 렌더→부모) > serialize{refs: true}(M4-a Q17 B 참조 직렬화) — true만 남기고 그 밖 값은 버린다
+AssertionError: expected { type: 'serialize' } to deeply equal { type: 'serialize', refs: true }
+
+- Expected
++ Received
+
+  {
+-   "refs": true,
+    "type": "serialize",
+  }
+
+ ❯ src/render/protocol.test.ts:92:66
+     90|
+     91|   it("serialize{refs: true}(M4-a Q17 B 참조 직렬화) — true만 남기고 그 밖 값은 버린다"…
+     92|     expect(readParentMessage({ type: "serialize", refs: true })).toEqu…
+       |                                                                  ^
+     93|     expect(readParentMessage({ type: "serialize", refs: "yes" })).toEq…
+     94|     expect(readParentMessage({ type: "serialize", refs: false })).toEq…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 참조 직렬화 (M4-a Q17 B · Q5 A — 단일 HTML도 같은 경로 · EXP-AC-17) > serialize{refs: true}를 보낸다 · 렌더 문서가 준 image:<id>를 부모 Blob의 data URL로 바꾼다
+Error: 정적 HTML 이미지는 data: 단일 파일만 허용합니다
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:72:141
+     70|   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+     71|   // 이미지 = 단일 파일 data:만(SPEC m2c 5.2) · srcset 0(후보가 모두 data:로 들어가 크기만…
+     72|   if ([...site.querySelectorAll("img")].some((img) => !DATA_IMAGE.test…
+       |                                                                                                                                             ^
+     73|
+     74|   const head = page.head;
+ ❯ generate src/features/studio/staticHtml/staticHtml.ts:170:18
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:235:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 참조 직렬화 (M4-a Q17 B · Q5 A — 단일 HTML도 같은 경로 · EXP-AC-17) > EXP-AC-17: 이미지 20MB 문서 — markup은 이미지 크기와 무관(< 1MB, HTML_MAX 그대로) · 결과 HTML 성공
+Error: 정적 HTML 이미지는 data: 단일 파일만 허용합니다
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:72:141
+     70|   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+     71|   // 이미지 = 단일 파일 data:만(SPEC m2c 5.2) · srcset 0(후보가 모두 data:로 들어가 크기만…
+     72|   if ([...site.querySelectorAll("img")].some((img) => !DATA_IMAGE.test…
+       |                                                                                                                                             ^
+     73|
+     74|   const head = page.head;
+ ❯ generate src/features/studio/staticHtml/staticHtml.ts:170:18
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:249:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > 정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4) > M4-a Q17 B 참조 직렬화: img src = image:<id> → images[id](부모 Blob에서 만든 src)로 바꾼 뒤 같은 규칙 검사 · 모르는 id·빈 id = 실패
+Error: 정적 HTML 이미지는 data: 단일 파일만 허용합니다
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:72:141
+     70|   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+     71|   // 이미지 = 단일 파일 data:만(SPEC m2c 5.2) · srcset 0(후보가 모두 data:로 들어가 크기만…
+     72|   if ([...site.querySelectorAll("img")].some((img) => !DATA_IMAGE.test…
+       |                                                                                                                                             ^
+     73|
+     74|   const head = page.head;
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:189:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15845:13
+ ❯ processTicksAndRejections node:internal/process/task_queues:103:5
+ ❯ blobToDataUrl src/render/serializeSite.ts:8:23
+      6|
+      7| const blobToDataUrl: ToDataUrl = async (url) => {
+      8|   const blob = await (await fetch(url)).blob();
+       |                       ^
+      9|   return new Promise((resolve, reject) => {
+     10|     const reader = new FileReader();
+ ❯ serializeSite src/render/serializeSite.ts:21:107
+
+This error originated in "src/render/RenderApp.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "serialize{refs: true}(M4-a Q17 B) → img src = image:<id>(이미지 바이트 0 · data URL 0) · refs 없으면 지금처럼 data URL". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: Error: invalid method
+ ❯ makeNetworkError node:internal/deps/undici/undici:10147:35
+ ❯ schemeFetch node:internal/deps/undici/undici:11625:36
+ ❯ mainFetch node:internal/deps/undici/undici:11533:30
+ ❯ fetching node:internal/deps/undici/undici:11502:7
+ ❯ fetch node:internal/deps/undici/undici:11368:20
+ ❯ fetch node:internal/deps/undici/undici:15843:10
+ ❯ fetch node:internal/bootstrap/web/exposed-window-or-worker:83:12
+ ❯ blobToDataUrl src/render/serializeSite.ts:8:29
+ ❯ serializeSite src/render/serializeSite.ts:21:113
+ ❯ receive src/render/RenderApp.tsx:56:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  5 failed | 3 passed (8)
+      Tests  6 failed | 90 passed (96)
+     Errors  1 error
+   Start at  02:56:45
+   Duration  5.43s (environment 57%, transform 21%, tests 11%, setup 9%, import 2%, worker 1%)
+

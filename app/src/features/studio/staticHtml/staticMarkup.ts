@@ -21,6 +21,8 @@ export interface StaticHtmlParts {
   readonly description: string;
   /** 글꼴 라이선스 고지(M2B-4a G4 — 계열별 고정 문자열) → `<head>` 주석 1개 */
   readonly notice?: string;
+  /** 참조 직렬화(M4-a Q17 B) — 이미지 id → 결과 src. 렌더 문서가 준 `img src="image:<id>"`를 이것으로 바꾼다(없는 id = 실패) */
+  readonly images?: Readonly<Record<string, string>>;
 }
 
 function assertNoExternalCss(css: string) {
@@ -45,6 +47,15 @@ const URL_ATTRS = ["src", "href", "srcset", "poster"] as const;
 const BLOB_IN_LIST = /(^|[\s,])blob:/i;
 const BLOB_IN_CSS = /url\(\s*['"]?\s*blob:/i;
 const DATA_IMAGE = /^data:image\/(webp|jpeg|png);base64,/;
+const IMAGE_REF = "image:";
+/** `image:<id>` → images[id]. 모르는 id는 그대로 둔다 → 아래 이미지 규칙 검사가 실패시킨다 */
+function resolveImageRefs(site: Element, images: Readonly<Record<string, string>>) {
+  for (const img of site.querySelectorAll("img")) {
+    const src = img.getAttribute("src") ?? "";
+    const resolved = src.startsWith(IMAGE_REF) && Object.hasOwn(images, src.slice(IMAGE_REF.length)) ? images[src.slice(IMAGE_REF.length)] : undefined;
+    if (resolved) img.setAttribute("src", resolved);
+  }
+}
 function hasBlobUrl(site: Element): boolean {
   return [site, ...site.querySelectorAll("*")].some(
     (el) =>
@@ -54,7 +65,7 @@ function hasBlobUrl(site: Element): boolean {
   );
 }
 
-export function buildStaticHtml({ markup, css, title, description, notice }: StaticHtmlParts): string {
+export function buildStaticHtml({ markup, css, title, description, notice, images = {} }: StaticHtmlParts): string {
   assertNoExternalCss(css);
   const page = document.implementation.createHTMLDocument("");
   page.documentElement.setAttribute("lang", "ko");
@@ -64,6 +75,7 @@ export function buildStaticHtml({ markup, css, title, description, notice }: Sta
   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw new Error("구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다");
   clean(site);
+  resolveImageRefs(site, images);
   // 모션 재생 스위치(M2B-4b · SPEC 1.3 · MF-AC-U4) — 정적 HTML만, 사이트 루트에만. 안쪽에 들어온 것은 지운다
   for (const el of site.querySelectorAll("[data-motion-play]")) el.removeAttribute("data-motion-play");
   site.setAttribute("data-motion-play", "");

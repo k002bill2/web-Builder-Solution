@@ -53,7 +53,7 @@ export function RenderApp({ host }: { readonly host: Window }) {
       if (!message) return;
       // 내보내기(M2A-3b) — 지금 그린 사이트 루트를 돌려준다. 그리기 전이면 답하지 않는다(부모 시간 초과)
       if (message.type === "serialize") {
-        if (root.current) void serializeSite(root.current).then((markup) => markup && post({ type: "html", markup }));
+        if (root.current) void serializeSite(root.current, message.refs ? async (url) => `image:${urls.idOf(url)}` : undefined).then((markup) => markup && post({ type: "html", markup }));
         return;
       }
       if (message.type === "render") {

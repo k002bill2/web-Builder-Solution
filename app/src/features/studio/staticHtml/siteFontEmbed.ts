@@ -38,7 +38,8 @@ export function cssFontFaces(css: string): readonly { readonly family: string; r
 
 export const stripFontFaces = (css: string) => css.replace(FACE_RULE, "");
 
-const base64 = (data: ArrayBuffer) => {
+/** 바이트 → base64(32KB씩 — 인자 개수 상한 회피). 글꼴·이미지 data URL 공통 */
+export const base64 = (data: ArrayBuffer) => {
   const bytes = new Uint8Array(data);
   let text = "";
   for (let i = 0; i < bytes.length; i += 0x8000) text += String.fromCharCode(...bytes.subarray(i, i + 0x8000));

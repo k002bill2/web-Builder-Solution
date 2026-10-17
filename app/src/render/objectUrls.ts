@@ -31,6 +31,8 @@ export function createObjectUrlCache(api: UrlApi = URL) {
       held = next;
       return Object.fromEntries([...next].map(([id, entry]) => [id, entry.url]));
     },
+    /** object URL → 이미지 id(M4-a Q17 B 참조 직렬화). 모르는 URL = 빈 글자 → 부모가 실패로 본다 */
+    idOf: (url: string) => [...held].find(([, entry]) => entry.url === url)?.[0] ?? "",
     clear() {
       for (const entry of held.values()) api.revokeObjectURL(entry.url);
       held = new Map();

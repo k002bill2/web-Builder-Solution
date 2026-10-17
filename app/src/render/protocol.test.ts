@@ -88,6 +88,12 @@ describe("직렬화 메시지 (M2A-3b G2 — serialize 부모→렌더 · html �
     expect(readParentMessage({ type: "serialize", extra: 1 })).toEqual({ type: "serialize" });
   });
 
+  it("serialize{refs: true}(M4-a Q17 B 참조 직렬화) — true만 남기고 그 밖 값은 버린다", () => {
+    expect(readParentMessage({ type: "serialize", refs: true })).toEqual({ type: "serialize", refs: true });
+    expect(readParentMessage({ type: "serialize", refs: "yes" })).toEqual({ type: "serialize" });
+    expect(readParentMessage({ type: "serialize", refs: false })).toEqual({ type: "serialize" });
+  });
+
   it("html{markup} — 글자만 · 빈 글자·상한(HTML_MAX) 초과·글자 아님은 버린다 · 편집기 다리(readRenderMessage)는 html을 읽지 않는다", () => {
     expect(readHtmlMessage({ type: "html", markup: "<div data-site-root></div>" })).toEqual({ type: "html", markup: "<div data-site-root></div>" });
     expect(readHtmlMessage({ type: "html", markup: "" })).toBeUndefined();

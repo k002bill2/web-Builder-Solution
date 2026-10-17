@@ -181,4 +181,16 @@ describe("정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4)", () => {
     for (const bad of ['src="https://example.com/a.webp"', 'src="data:image/svg+xml;base64,AAAA"', 'src="data:image/gif;base64,AAAA"', 'src="/a.png"', 'src="data:image/webp;base64,AAAA" srcset="data:image/webp;base64,AAAA 2x"'])
       expect(() => buildStaticHtml({ ...parts, markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
   });
+
+  it("M4-a Q17 B 참조 직렬화: img src = image:<id> → images[id](부모 Blob에서 만든 src)로 바꾼 뒤 같은 규칙 검사 · 모르는 id·빈 id = 실패", () => {
+    const site = (img: string) => `<div data-site-root=""><img alt="" ${img}></div>`;
+    const parts = { css: "", title: "t", description: "d" };
+    const images = { "id-1": "data:image/webp;base64,QUJD", "id-2": "data:image/png;base64,REVG" };
+    const html = buildStaticHtml({ ...parts, images, markup: `<div data-site-root=""><img alt="" src="image:id-1"><img alt="" src="image:id-2"><img alt="" src="image:id-1"></div>` });
+    expect([...parse(html).querySelectorAll("img")].map((img) => img.getAttribute("src"))).toEqual([images["id-1"], images["id-2"], images["id-1"]]);
+    expect(html).not.toContain("image:");
+    for (const bad of ['src="image:id-3"', 'src="image:"']) expect(() => buildStaticHtml({ ...parts, images, markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
+    // images 없이 참조가 오면(부모가 표를 안 줌) 실패
+    expect(() => buildStaticHtml({ ...parts, markup: site('src="image:id-1"') })).toThrow("정적 HTML 이미지");
+  });
 });

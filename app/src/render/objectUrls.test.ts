@@ -37,6 +37,15 @@ describe("object URL 보관 (K4)", () => {
     expect(urlApi.revokeObjectURL).toHaveBeenCalledWith("blob:null/1");
   });
 
+  it("idOf(M4-a Q17 B) — 지금 들고 있는 object URL → 이미지 id · 모르는 URL·해제된 URL = 빈 글자", () => {
+    const cache = createObjectUrlCache(urlApi);
+    const urls = cache.sync({ [ID_A]: new Blob(["a"]), [ID_B]: new Blob(["b"]) }, new Set([ID_A, ID_B]));
+    expect(cache.idOf(urls[ID_B]!)).toBe(ID_B);
+    expect(cache.idOf("blob:null/없음")).toBe("");
+    cache.clear();
+    expect(cache.idOf(urls[ID_A]!)).toBe("");
+  });
+
   it("docImageIds — 켜진 이미지 슬롯의 로컬 id만(플레이스홀더·꺼짐 제외)", () => {
     const hero = SAMPLE_SECTIONS[1]!;
     const about = SAMPLE_SECTIONS[2]!;

@@ -49,7 +49,8 @@ export type ParentMessage =
   | { readonly type: "render"; readonly doc: unknown; readonly kitTokens?: KitTokenInput; readonly images?: Readonly<Record<string, RenderImage>>; readonly fonts?: readonly FontBytes[]; readonly loading?: "eager" }
   | { readonly type: "viewport"; readonly width: number }
   | { readonly type: "select"; readonly instanceId: string }
-  | { readonly type: "serialize" };
+  /** refs = 이미지를 data URL 대신 `image:<id>` 참조로(M4-a Q17 B — 바이트는 부모 Blob) */
+  | { readonly type: "serialize"; readonly refs?: true };
 export type RenderMessage =
   | { readonly type: "ready" }
   | { readonly type: "rects"; readonly rects: readonly FrameRect[] }
@@ -113,7 +114,7 @@ export function readParentMessage(data: unknown): ParentMessage | undefined {
     };
   if (data.type === "viewport" && isNumber(data.width)) return { type: "viewport", width: data.width };
   if (data.type === "select" && typeof data.instanceId === "string") return { type: "select", instanceId: data.instanceId };
-  if (data.type === "serialize") return { type: "serialize" };
+  if (data.type === "serialize") return { type: "serialize", ...(data.refs === true && { refs: true as const }) };
   return undefined;
 }
 

@@ -7,12 +7,21 @@
 
 ## 0. 결론
 
-**CP1~CP3 · note 1·3·4 완료 · note 2는 L3 전 조건으로 이월 · 예산 L2 목표 안.**
-- `/studio` 정규화 **128.63**(base 128.55 → **+0.08**, L2 목표 ≤ +0.10 · 상한 129.13). 복원 **131.61**(+0.08, 상한 132.11). raw **129.95** · 복원 132.98.
+**CP1~CP3 · note 1·3·4 완료 · note 2는 L3 전 조건으로 이월 · 진입 실측은 L2 목표 안. 단, 감시를 아직 배선하지 않았기 때문이다(아래 보정).**
+- `/studio` 정규화 **128.63**(base 128.55 → **+0.08**, 상한 129.13). 복원 **131.61**(+0.08, 상한 132.11). raw **129.95** · 복원 132.98.
+- **보정(추정)**: +0.08은 "L2 코드 중 지금 진입에 실린 몫"이다. I6 9.2는 감시 타이머를 진입(스케줄러 안)에 두는데, 이 레인은 감시(`watchSaving`)를 배선하지 않아 진입 밖에 있다.
+  - LV-1을 설계대로 진입에 포함하면 약 **+0.19**다(+0.08 + CP1 1차 실측 약 +0.11). L2 목표 0.10을 넘는다.
+  - 그래서 L3~L5에 실제로 남은 몫도 0.50이 아니라 약 **0.39**다(추정 — L3가 결선 뒤 실측).
 - 최종 fresh 게이트: typecheck 0 · lint 0 · test **326 파일 / 2924건** 통과(base 322/2902 대비 +4 파일 / +22건) · build 0.
 - 감량은 2회 했다. CP마다 1회이며, 모두 상한 초과 전에 했다.
   - CP1: 감시를 스케줄러 본문에서 `onChange` 데코레이터로 옮겼다(+0.11 → +0.00).
   - CP3: 알림 키를 별도 모듈로 분리했다(+0.15 → +0.06).
+
+**Jarvis 확인 사항 (이 레인을 막지 않음 · 결정 필요)**
+- (a) `SaveStatus.tsx` 수정은 PLAN L2 쓰기 경로 행(`save/**` · `useAutosaveScheduler.ts`) 밖이다. PLAN 8절은 이런 경우 멈추고 범위를 확인하라고 한다. 근거는 BRIEF CP3의 "`role=alert`/`aria-busy` 결선" 문구다. 변경 범위는 키 속성·`aria-busy`·마운트 차례 `useState` 1개이고 글자 0이다.
+- (b) 감시를 편집기 훅에 배선하지 않은 것은 I6 9.2 배치(진입·스케줄러 안)와 다르다. 배선과 그 증분(약 +0.1 추정)은 L3로 넘긴다.
+- (c) raw 판정선 여유가 0.05다(`/studio` 129.95 / `eagerBudgetKb` 130). 개정 17 raw 한도 130.5와 `check-bundle-size.mjs` 판정선 130이 어긋난다. L3 전에 판정선을 정해야 한다.
+- (d) "넘으면 감량 1회"를 **CP별**로 적용해 총 2회 감량했다(CP1·CP3). 레인 전체 1회로 해석하면 CP3 감량은 규칙 밖이다. 그 경우 CP3 1차 128.72는 L2 누적 +0.17이 되어 목표를 넘는다(상한 129.13 안).
 
 | 커밋 | 내용 |
 |---|---|
@@ -22,7 +31,8 @@
 | `653764d9` | CP3 `T_hang` alert 키 1회 · 재마운트 재발화 0 · `aria-busy` · 기준선 128.63/131.61 |
 | `03ee5405` | note 3 포트 `mode`·`verify` throw = `failed{infra}` |
 | `83343602` | note 4 HARNESS-MAP 집계 정정 · #28·#20 보강 테스트 |
-| (이 커밋) | REPORT · PROGRESS 마감 |
+| `78bfa972` | REPORT · PROGRESS 마감 |
+| (이 커밋) | REPORT 보정(예산 +0.19 추정 · Jarvis 확인 4건 · note 3 잔여 · 턴 마일스톤) |
 
 ## 1. AC 판정 (L2 몫)
 
@@ -39,7 +49,7 @@
 |---|---|---|
 | 1 discard connect 창 | **닫음** | `core.discard()`가 호출 시점 mark를 connect 전에 동기로 잡아 `io.discard(s, link, entered)`로 넘긴다. QA 4절 시나리오 B를 정식 테스트로 만들었다("note1 … 편집 C → blocked{newer} · C 보존"). 시나리오 A(`rejected{inflight}`) 회귀도 GREEN이다. 변이(진입 mark를 connect 뒤에 잡기)를 넣으면 RED 1이다(`logs/cp2-mut-note1.log`). `io.discard`의 `entered`는 **필수 인자**라서 옛 호출 모양(`link(io.discard(s, link))`)은 타입 오류가 난다 |
 | 2 DocBook 직접 쓰기 revision 충돌 | **이월 — 고치지 않음** | 4절 "L3 전 조건" |
-| 3 save·confirm reject | **닫음** | `coreIo` `safely()`가 `mode()`·`verify()` throw를 `failed{infra}`로 바꾼다(포트 오류에 `reason`이 있으면 그 값). `save/saveCore.reject.test.ts` 5건 RED 5("promise rejected … instead of resolving" · `logs/note3-red.log`) → GREEN이다. 거짓 saved 0: mode throw면 dirty·`hydrated`가 그대로이고, 저장 뒤 verify throw면 커밋은 됐으나 confirmed가 아니다 |
+| 3 save·confirm reject | **닫음(포트 `mode`·`verify` throw 경로만)** | 잔여: `core.link` 경유 confirm과 `core.discard()`는 connect(청크 로드) 실패 시 여전히 reject된다(save만 `failed{unavailable}`). 고치면 진입 바이트가 늘어 이 레인에서는 두었다 → L3·L4 호출처가 catch하거나 다음 레인에서 처리한다. — `coreIo` `safely()`가 `mode()`·`verify()` throw를 `failed{infra}`로 바꾼다(포트 오류에 `reason`이 있으면 그 값). `save/saveCore.reject.test.ts` 5건 RED 5("promise rejected … instead of resolving" · `logs/note3-red.log`) → GREEN이다. 거짓 saved 0: mode throw면 dirty·`hydrated`가 그대로이고, 저장 뒤 verify throw면 커밋은 됐으나 confirmed가 아니다 |
 | 4 HARNESS-MAP 집계 | **정정 + 보강 2건** | 집계를 ① 30 = 완전 25 + 부분 5(#9·#12·#28·#30·#32)로 바로잡았다. #20 근거가 0건이었다는 점도 명시했다. 보강 테스트: #28(discard 읽기 중 replace → `blocked{newer}` — 완전으로) · #20(IDB 재읽기 ≠ 마지막 증명 → `blocked{stale}` — 변이 RED 1 `logs/note4-mut-stale.log`). 보강 뒤 ① = 완전 26 + 부분 4 |
 
 ## 3. 다르게 한 것 (사유 1줄씩)
@@ -129,4 +139,5 @@
 - **사실 [L1 · 실행]**: 7절 수치(`logs/*-build.log`) · 최종 게이트(`logs/final-{typecheck,lint,test,build}.log` — 마지막 코드 변경 뒤 fresh) · RED 로그 4개 · 변이 3종 RED(`cp2-mut-note1` · `cp2-mut-token` · `note4-mut-stale`, 모두 원복 뒤 GREEN).
 - **추정 [L3]**: 감시를 훅에 붙일 때 진입 약 +0.1 · `SAVE_HANG_MS`·`DISCARD_GIVE_UP_MS` 값의 적정성(선례 없음).
 - **미확인**: 실제 IndexedDB 정지 상황에서의 동작(브라우저 0 — QA 레인) · 실제 스크린리더에서 `data-alert-key`만 있는 alert의 낭독(글자 0이라 낭독 0으로 예상 — L4가 글자를 채운다) · `aria-busy`가 상태 글자 `<p>`에 있을 때 AT가 어떻게 다루는지 · `/compare`·`/profile` −0.01~0.02 흔들림의 청크 원인.
+- **턴 마일스톤**: CP1 커밋(`32de59d4`)이 BRIEF "CP1 25턴 전"보다 약 3턴 늦었다(약 28턴째 — 셈은 추정). 원인은 CP1 1차 예산 초과 뒤 감량 재측정이다. CP2(약 38턴 · 50 전)와 70턴 중단선은 지켰다.
 - **로그 위치**: `logs/*.log`는 `.gitignore` 대상이라 커밋되지 않는다(로컬에만 있다 — L1과 같다).

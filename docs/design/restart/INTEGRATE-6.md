@@ -332,7 +332,7 @@
 | ID | 기준 | 종류 |
 |---|---|---|
 | RS6-AC-U1 | 하네스 h1~h6 37건을 **3분류 대응표**로 REPORT에: ① **이식**(제품 포트 위에서 같은 의미 재현 — 코어 + `LocalSync` 포트 + `createMemoryPersistence`) ② **잠금 기반 대체**("같은 persistence 위 코어 여러 개 = 다른 탭"을 흉내 낸 h4·h5 일부·h6-3 CE-3a → `writerLock`·`localSync` 테스트와 RS6-AC-B3로) ③ **폐기**(제품에 없는 경로 — 사유 1줄). ①은 전부 GREEN | [U] |
-| RS6-AC-U2 | C5 T1~T19 중 코어로 닫히는 것(T1·T2·T3·T5·T5b·T10·T12·T13·T16) + rs5-review CX-1(확인 직전 편집·확인 중 편집) RED→GREEN | [U] · (r2 주석) T16 상시 테스트 = 병렬 레인 `rs6-t16-guard` — 결과 SHA는 Jarvis가 머지 때 기입(최종 QA 판정 "부분" = T16 없음, `dev/active/rs6-qa/REPORT.md` 2절) |
+| RS6-AC-U2 | C5 T1~T19 중 코어로 닫히는 것(T1·T2·T3·T5·T5b·T10·T12·T13·T16) + rs5-review CX-1(확인 직전 편집·확인 중 편집) RED→GREEN | [U] · (r2 주석) T16 상시 테스트 = `rs6-t16-guard` PR #25 머지 `241a81da`(`StudioUnloadGuard.test.tsx` 5건 · 변이 4종 RED) |
 | RS6-AC-U3 | 편집기 저장 실패 시 DocBook revision 변화 0(G1 — C5 F2 반전) | [U] |
 | RS6-AC-U4 | LV-1: 커밋 지연 주입 → `T_slow` 뒤 `saving-slow` · 편집 계속 수용 · 해제 뒤 `newer` 처리 · 추가 save 제출 0 | [U] |
 | RS6-AC-U5 | LV-2: discard 읽기 정지 → `T_discard` 뒤 `blocked{timeout}` · 가드 해제 · 늦은 결과 버림(doc·바인딩·epoch 불변) · CE-1·CX-3 회귀 GREEN | [U] |

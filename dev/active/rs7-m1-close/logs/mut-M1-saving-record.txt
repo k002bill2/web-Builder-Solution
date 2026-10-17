@@ -1,0 +1,249 @@
+## mutation M1-saving-record
+diff --git a/app/src/features/projects/pendingRows.ts b/app/src/features/projects/pendingRows.ts
+index 28496175..6411ab20 100644
+--- a/app/src/features/projects/pendingRows.ts
++++ b/app/src/features/projects/pendingRows.ts
+@@ -39 +39 @@ export function describeRow(repo: object, projectId: string): RowState | undefin
+-  if (view && view.inflight > 0) return { status: C.saving, working: C.saving, open: true, quiet: true };
++  if (view && view.inflight > 0 && !pending) return { status: C.saving, working: C.saving, open: true, quiet: true };
+## test
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-m1-close/app
+ ❯ src/components/projects/ProjectsRowPriority.test.tsx (2 tests | 1 failed) 3406ms
+   ❯ M1 — 저장 중 + 미확인 기록 조합 행 (1)
+     × 상태 = '저장 중…' · '저장 확인' 버튼 0(저장 중이 미확인 기록보다 앞선다) 3047ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/components/projects/ProjectsRowPriority.test.tsx > M1 — 저장 중 + 미확인 기록 조합 행 > 상태 = '저장 중…' · '저장 확인' 버튼 0(저장 중이 미확인 기록보다 앞선다)
+TestingLibraryElementError: Unable to find an element with the text: 저장 중…. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col gap-2 border-b border-line-neutral py-4"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+  [36m>[39m
+    [0m모던 카페 브랜드 프로젝트[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-x-3 gap-y-1"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-body3"[39m
+    [36m>[39m
+      [0m프로필 v1[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m편집 중 · B안 · 프로필 v1[0m
+    [36m</span>[39m
+    [36m<time[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [33mdatetime[39m=[32m"2026-10-17T14:55:50.334Z"[39m
+    [36m>[39m
+      [0m방금 전[0m
+    [36m</time>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-status-negative-text"[39m
+    [36m>[39m
+      [0m저장하지 못했습니다[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 다시 저장"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-retry-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m다시 저장[0m
+    [36m</button>[39m
+    [36m<a[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 편집기 열기"[39m
+      [33mclass[39m=[32m"ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mdata-editor-for[39m=[32m"project-1"[39m
+      [33mhref[39m=[32m"/studio/project-1"[39m
+    [36m>[39m
+      [0m편집기 열기[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 프로필 보기"[39m
+      [33mclass[39m=[32m"ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/profile/profile-1"[39m
+    [36m>[39m
+      [0m프로필 보기[0m
+    [36m</a>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 이름 바꾸기"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-rename-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m이름 바꾸기[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 파일로 내보내기"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-export-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m파일로 내보내기[0m
+    [36m</button>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"contents"[39m
+      [33mdata-discard-for[39m=[32m"project-1"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"contents"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 버리고 새로고침"[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m버리고 새로고침[0m
+        [36m</button>[39m
+      [36m</span>[39m
+    [36m</span>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 삭제"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-delete-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m삭제[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m확인 전에 새로고침하거나 탭을 닫으면 확인되지 않은 변경이 사라집니다 — 이전에 저장된 상태로 돌아갑니다[0m
+  [36m</p>[39m
+[36m</li>[39m
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col gap-2 border-b border-line-neutral py-4"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+  [36m>[39m
+    [0m모던 카페 브랜드 프로젝트[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-x-3 gap-y-1"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-body3"[39m
+    [36m>[39m
+      [0m프로필 v1[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m편집 중 · B안 · 프로필 v1[0m
+    [36m</span>[39m
+    [36m<time[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [33mdatetime[39m=[32m"2026-10-17T14:55:50.334Z"[39m
+    [36m>[39m
+      [0m방금 전[0m
+    [36m</time>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-status-negative-text"[39m
+    [36m>[39m
+      [0m저장하지 못했습니다[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 다시 저장"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-retry-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m다시 저장[0m
+    [36m</button>[39m
+    [36m<a[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 편집기 열기"[39m
+      [33mclass[39m=[32m"ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mdata-editor-for[39m=[32m"project-1"[39m
+      [33mhref[39m=[32m"/studio/project-1"[39m
+    [36m>[39m
+      [0m편집기 열기[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 프로필 보기"[39m
+      [33mclass[39m=[32m"ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/profile/profile-1"[39m
+    [36m>[39m
+      [0m프로필 보기[0m
+    [36m</a>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 이름 바꾸기"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-rename-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m이름 바꾸기[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 파일로 내보내기"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-export-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m파일로 내보내기[0m
+    [36m</button>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"contents"[39m
+      [33mdata-discard-for[39m=[32m"project-1"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"contents"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 버리고 새로고침"[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m버리고 새로고침[0m
+        [36m</button>[39m
+      [36m</span>[39m
+    [36m</span>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 삭제"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-delete-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m삭제[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m확인 전에 새로고침하거나 탭을 닫으면 확인되지 않은 변경이 사라집니다 — 이전에 저장된 상태로 돌아갑니다[0m
+  [36m</p>[39m
+[36m</li>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/projects/ProjectsRowPriority.test.tsx:67:30
+     65|     const saving = c.save();
+     66|     const { row, name } = await show(repo);
+     67|     expect(await within(row).findByText("저장 중…")).toBeInTheDocument();
+       |                              ^
+     68|     expect(within(row).queryByRole("button", { name: `${name} 저장 확인` }…
+     69|     held.release();
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  23:55:47
+   Duration  6.09s (tests 57%, transform 27%, environment 11%, import 4%, setup 2%)
+exit=1

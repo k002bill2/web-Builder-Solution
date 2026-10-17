@@ -12,18 +12,16 @@
  * - 오프라인: 저장 시점에 `setOnline(false)` 또는 `isOnline()`이 false면 저장하지 않고 `offline`.
  *   `NETWORK` 거부도 `offline` — 브라우저가 온라인이면 `online` 이벤트가 오지 않으므로 다음 변경·`retry()`가 다시 시도한다.
  *   `setOnline(true)` → 미저장 변경이 있으면 즉시 저장 1회. `setOnline(false)`는 미저장 변경이 있을 때만 바로 `offline`을 알린다.
- * - `STALE_DOC` → `stale`. 저장 중 변경이 있었어도 `stale`. `resume()` 전까지 변경은 기록만 하고 저장·재시도하지 않는다.
- *   `resume()` → 미저장 변경이 있으면 즉시 저장, 없으면 `saved`(또는 `idle`).
- * - 그 밖의 예외(저장소 오류 아님 포함) → `failed`.
+ * - 그 밖의 예외(저장소 오류 아님 · `STALE_DOC` 포함) → `failed`. `stale` 단계·`resume()`은 RS7-A(B-RS-07)에서 제거 — 제품 도달 0.
  * - `failure`는 해결되지 않은 실패 종류로, 성공한 저장만 지운다(saving·dirty 동안 유지) — 연속 실패 알림 1회의 근거.
  *   실패를 지운 성공 상태에는 `recovered: true`.
- * - `settle()` = 충돌 해결(E-S09)로 저장소가 이미 정리한 뒤 — 미저장 변경을 저장된 것으로 보고 `saved`(STALE 해제, 저장 0회).
+ * - `settle()` = 저장소가 이미 정리한 뒤(복원 채택·저장 확인) — 미저장 변경을 저장된 것으로 보고 `saved`(저장 0회).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectErrorCode, type ProjectPersistence } from "../../data/projectRepository";
 import { watchSaving } from "./save/liveness";
 
-export type AutosavePhase = "idle" | "dirty" | "saving" | "saved" | "failed" | "offline" | "stale";
+export type AutosavePhase = "idle" | "dirty" | "saving" | "saved" | "failed" | "offline";
 export type AutosaveFailure = "error" | "offline";
 
 export interface AutosaveState {
@@ -54,7 +52,6 @@ export interface AutosaveScheduler<T> {
   /** 돌려주는 값 = 재시도 직후 단계(떠나기 대기가 effect 전에 읽는다, B-RS-01) */
   retry(): AutosavePhase;
   setOnline(online: boolean): void;
-  resume(): void;
   settle(): void;
   dispose(): void;
 }
@@ -68,7 +65,7 @@ function makeState(fields: AutosaveState): AutosaveState {
   return Object.freeze(Object.fromEntries(entries) as unknown as AutosaveState);
 }
 
-/** E-S10 — 메모리는 늘(새로고침하면 문서가 사라진다), 서버·로컬(ADR-007 P1)은 저장 전 변경·저장 중·실패·오프라인·STALE일 때만.
+/** E-S10 — 메모리는 늘(새로고침하면 문서가 사라진다), 서버·로컬(ADR-007 P1)은 저장 전 변경·저장 중·실패·오프라인일 때만.
  * RS6-L3b(I6 3.1-2): 실제 경고는 코어 레지스트리(`memoryProjectRepository`)가 같은 규칙(코어 dirty·inflight · memory 늘)으로 소유한다 — 이 훅은 등록하지 않는다 */
 export function needsUnloadGuard(persistence: ProjectPersistence, phase: AutosavePhase): boolean {
   if (persistence === "memory") return true;
@@ -83,7 +80,6 @@ class Scheduler<T> implements AutosaveScheduler<T> {
   private maxWaitTimer: ReturnType<typeof setTimeout> | undefined;
   private saving = false;
   private flushAfterSave = false;
-  private stale = false;
   private online = true;
   private disposed = false;
   private state: AutosaveState = IDLE;
@@ -97,7 +93,6 @@ class Scheduler<T> implements AutosaveScheduler<T> {
     if (this.disposed) return;
     this.doc = doc;
     this.version += 1;
-    if (this.stale) return;
     this.armTimers();
     if (this.state.phase === "idle" || this.state.phase === "saved") {
       this.emit({ phase: "dirty", lastSavedAt: this.state.lastSavedAt });
@@ -105,32 +100,20 @@ class Scheduler<T> implements AutosaveScheduler<T> {
   }
 
   retry(): AutosavePhase {
-    if (!(this.disposed || this.stale || this.saving || !this.pending())) this.flush();
+    if (!(this.disposed || this.saving || !this.pending())) this.flush();
     return this.state.phase;
   }
 
   setOnline(online: boolean): void {
     if (this.disposed) return;
     this.online = online;
-    if (this.stale || this.saving || !this.pending()) return;
+    if (this.saving || !this.pending()) return;
     if (online) this.flush();
     else this.emitOffline();
   }
 
-  resume(): void {
-    if (this.disposed || !this.stale) return;
-    this.stale = false;
-    if (this.pending()) {
-      this.flush();
-      return;
-    }
-    const { lastSavedAt, failure } = this.state;
-    this.emit({ phase: lastSavedAt === undefined ? "idle" : "saved", lastSavedAt, failure });
-  }
-
   settle(): void {
     if (this.disposed) return;
-    this.stale = false;
     this.flushAfterSave = false;
     this.clearTimers();
     this.savedVersion = this.version;
@@ -176,7 +159,7 @@ class Scheduler<T> implements AutosaveScheduler<T> {
 
   private flush(): void {
     this.clearTimers();
-    if (this.disposed || this.stale || this.saving || !this.pending()) return;
+    if (this.disposed || this.saving || !this.pending()) return;
     if (!this.isOnline()) {
       this.emitOffline();
       return;
@@ -214,12 +197,8 @@ class Scheduler<T> implements AutosaveScheduler<T> {
     this.saving = false;
     this.flushAfterSave = false;
     const code = projectErrorCode(error);
-    const { lastSavedAt, failure } = this.state;
-    if (code === "STALE_DOC") {
-      this.stale = true;
-      this.clearTimers();
-      this.emit({ phase: "stale", lastSavedAt, failure });
-    } else if (code === "NETWORK") {
+    const { lastSavedAt } = this.state;
+    if (code === "NETWORK") {
       this.emit({ phase: "offline", lastSavedAt, failure: "offline" });
     } else {
       this.emit({ phase: "failed", lastSavedAt, failure: "error" });
@@ -251,7 +230,6 @@ export interface UseAutosave<T> {
   readonly state: AutosaveState;
   readonly change: (doc: T) => void;
   readonly retry: () => AutosavePhase | undefined;
-  readonly resume: () => void;
   readonly settle: () => void;
 }
 
@@ -291,7 +269,6 @@ export function useAutosaveScheduler<T>({ save, debounceMs, maxWaitMs }: UseAuto
 
   const change = useCallback((doc: T) => schedulerRef.current?.change(doc), []);
   const retry = useCallback(() => schedulerRef.current?.retry(), []);
-  const resume = useCallback(() => schedulerRef.current?.resume(), []);
   const settle = useCallback(() => schedulerRef.current?.settle(), []);
-  return { state, change, retry, resume, settle };
+  return { state, change, retry, settle };
 }

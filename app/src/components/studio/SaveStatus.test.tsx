@@ -5,7 +5,6 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { useDocSave, type DocSaveRepository } from "../../features/studio/useDocSave";
-import { SAVE_STALE_ALERT } from "../../features/studio/saveStatusText";
 import { SaveStatus } from "./SaveStatus";
 import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
@@ -79,22 +78,18 @@ describe("SaveStatus — 실패·오프라인 (E-AC-09)", () => {
   });
 });
 
-describe("SaveStatus — STALE_DOC (E-S09 · 6.3 alert 1회)", () => {
-  it("saving → stale alert · 재렌더에 같은 노드 · failed → stale 문장 교체 · settle(saved) → alert 비움·status 0", () => {
+// RS7-A(B-RS-07): 이전 "STALE_DOC — saving → stale alert …"(phase stale 제거) → 이후 같은 규칙을 failed로(같은 노드 · saved → 비움 · status 0)
+describe("SaveStatus — 실패 alert 1곳 (6.3 alert 1회)", () => {
+  it("saving → failed alert · 재렌더에 같은 노드 · saved → alert 비움·status 0", () => {
     const onAnnounce = vi.fn();
     const at = (state: AutosaveState) => <SaveStatus state={state} persistence="memory" onRetry={() => undefined} onAnnounce={onAnnounce} />;
     const { rerender } = render(at({ phase: "saving" }));
-    rerender(at({ phase: "stale" }));
-    const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent(SAVE_STALE_ALERT);
-    expect(screen.getByText("다른 곳에서 이 문서가 바뀌었습니다")).toBeInTheDocument();
-    const node = alert.firstChild;
-    rerender(at({ phase: "stale" }));
-    expect(alert.firstChild).toBe(node);
     rerender(at({ phase: "failed", failure: "error" }));
+    const alert = screen.getByRole("alert");
     expect(alert).toHaveTextContent("저장하지 못했습니다");
-    rerender(at({ phase: "stale", failure: "error" }));
-    expect(alert).toHaveTextContent(SAVE_STALE_ALERT);
+    const node = alert.firstChild;
+    rerender(at({ phase: "failed", failure: "error" }));
+    expect(alert.firstChild).toBe(node);
     rerender(at({ phase: "saved", lastSavedAt: Date.now() }));
     expect(alert).toHaveTextContent("");
     expect(screen.getAllByRole("alert")).toHaveLength(1);

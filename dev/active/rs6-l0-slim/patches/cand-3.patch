@@ -1,0 +1,28 @@
+--- /tmp/s6c-slim-orig/src/features/studio/useDocSave.ts	2026-10-17 12:17:34
++++ src/features/studio/useDocSave.ts	2026-10-17 12:18:39
+@@ -61,7 +61,6 @@
+   const initialDoc = core.view().doc;
+   const [doc, setDoc] = useState(initialDoc);
+   const docRef = useRef(initialDoc);
+-  const [latest, setLatest] = useState<PageDoc | undefined>(undefined);
+   /** 이번 이탈 중 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없는 로컬 폴백)을 받았나 — `leave()`가 지우고 저장마다 새로 정한다(Codex r2 P1) */
+   const readOnly = useRef(false);
+ 
+@@ -102,7 +101,6 @@
+     async (choice: ConflictChoice) => {
+       const mine = docRef.current;
+       const resolved = await repository.resolveConflict(projectId, choice, { ...mine, hash: hashDoc(mine) });
+-      setLatest(undefined);
+       if (choice === "theirs") {
+         docRef.current = resolved;
+         setDoc(resolved);
+@@ -150,7 +148,8 @@
+     return flushed().then((ok) => ok || readOnly.current);
+   }, [retry, flushed]);
+ 
+-  const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
++  // 최신 문서 동봉은 코어 save 결과에 없다(S6c부터 latest 늘 undefined) — 충돌 본문은 L2·L4
++  const conflict: DocConflict | undefined = autosave.state.phase === "stale" ? {} : undefined;
+   const savedRevision = useCallback(() => core.view().confirmed?.revision ?? initialDoc.revision, [core, initialDoc.revision]);
+   return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave };
+ }

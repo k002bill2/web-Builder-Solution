@@ -1,0 +1,25 @@
+--- /tmp/s6c-slim-orig/src/features/studio/save/saveCore.ts	2026-10-17 12:17:34
++++ src/features/studio/save/saveCore.ts	2026-10-17 12:17:47
+@@ -79,9 +79,8 @@
+       return s.mark;
+     },
+     save,
+-    confirm: () => connect().then((link) => link.io.confirm(s, link, projectId, save)),
+-    discard: () => connect().then((link) => link.io.discard(s, link, projectId)),
+-    replace: (next: PageDoc, request: ReplaceRequest, blobs?: RenderImages) => connect().then((link) => link.io.replace(s, next, request, blobs)),
++    /** 조작 뒤 io 위임 1개(confirm·discard·replace) — 호출자가 io 함수를 고른다 */
++    link: <T>(run: (io: CoreIo, s: CoreState, link: CoreLink) => T) => connect().then((link) => run(link.io, s, link)),
+     /** 같은 mountId 재요청(StrictMode) = 같은 토큰 · release 뒤 = 새 토큰 */
+     acquire(mountId: string) {
+       if (live?.mountId === mountId) return live.token;
+--- /tmp/s6c-slim-orig/src/features/studio/useDocSave.ts	2026-10-17 12:17:34
++++ src/features/studio/useDocSave.ts	2026-10-17 12:17:47
+@@ -134,7 +134,7 @@
+       if (!(await flushed())) return undefined;
+       const next = await write(core.view().confirmed?.revision ?? initialDoc.revision);
+       // 문서 교체 = core.replace(I6 6.4 — 미저장 편집이면 거절)
+-      if ((await core.replace(next, { intent: "replace", expectedEpoch: core.view().epoch })).status !== "replaced") return undefined;
++      if ((await core.link((io, s) => io.replace(s, next, { intent: "replace", expectedEpoch: core.view().epoch }))).status !== "replaced") return undefined;
+       docRef.current = next;
+       setDoc(next);
+       settle();

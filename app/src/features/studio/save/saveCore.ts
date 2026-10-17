@@ -111,10 +111,10 @@ export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, 
       if (live?.token === token) live = undefined;
     },
     retryStart: async () => starter?.(),
-    /** 진입 동기 몫(G7 재seed = doc·바인딩·dirty + epoch·confirmed) — mark·inflight는 L2(상태 표시)가 다시 붙인다(감량 ②′) */
+    /** 진입 동기 몫(G7 재seed = doc·바인딩·dirty + epoch·confirmed) · mark·inflight = 상태 표시 출처(I6 8.1 `saving` = inflight > 0 · LV-1) */
     view() {
-      const { doc, mark, savedMark, epoch, confirmed, attached } = s;
-      return { doc, dirty: mark > savedMark, epoch, confirmed, images: attached };
+      const { doc, mark, savedMark, inflight, epoch, confirmed, attached } = s;
+      return { doc, mark, inflight, dirty: mark > savedMark, epoch, confirmed, images: attached };
     },
   };
 }

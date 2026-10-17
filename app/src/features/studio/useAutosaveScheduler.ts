@@ -33,6 +33,10 @@ export interface AutosaveState {
   readonly failure?: AutosaveFailure;
   /** 실패를 지운 첫 성공 상태 */
   readonly recovered?: boolean;
+  /** LV-1 감시 표지(`save/liveness.ts` watchSaving — phase는 saving 그대로): 저장이 `SAVE_SLOW_MS`를 넘김 */
+  readonly slow?: true;
+  /** LV-1 감시 표지: 저장이 `SAVE_HANG_MS`를 넘김 — 그 저장 차례 번호(재마운트가 같은 정지를 다시 알리지 않게) */
+  readonly hang?: number;
 }
 
 export interface AutosaveOptions<T> {

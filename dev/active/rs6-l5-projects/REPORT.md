@@ -10,16 +10,20 @@
 - **예산**: `/studio` 정규화 **129.09 (+0.00)**, 복원 **132.07 (+0.00)**. 목표였던 증분 0을 지켰다. `m2cBaseline.json`·`bundleBudget.test.mjs`·`check-bundle-size.mjs`는 수정하지 않았다.
 - **게이트 fresh**: typecheck 0 · lint 0 · test **332 / 2968** (base 331/2957 + 1 / +11) · build exit 0.
 - **Codex review**: 1회(`--scope branch --base aca09805`), 지적 0건(`logs/codex-review-1.log`).
+- **승인 요청 — PLAN 쓰기 표 밖 3파일(PLAN 8절 "범위 확인")**: `data/memoryProjectRepository.ts`(반환 객체 `cores` 1줄) · `features/studio/save/saveCore.ts`(`CoreKeeper.cores?` 타입만) · `pages/ProjectsPage.tsx`(배선).
+  - 코어를 만들지 않고 레지스트리를 읽을 다른 방법이 없어, CP1b에 접근자가 필요했다.
+  - `/studio`·복원 진입 증분은 0이고, L4 경로와 겹치는 곳도 0이다.
+  - 전부 로컬 커밋 `28747748`에 있고 push하지 않았으므로 되돌릴 수 있다. 승인 여부는 Jarvis가 정한다.
 
 ## AC 판정
 | AC | 판정 | 근거 |
 |---|---|---|
-| RS6-AC-U11 나머지(`/projects` 행 "저장 중…") | PASS [U]·실화면 | `ProjectsCoreRows.test.tsx` "저장 중 → idle 뒤 일반 행"이 다른 이벤트 없이 복귀한다. 실화면은 지연 주입으로 1280·390에서 확인했다 |
+| RS6-AC-U11 나머지(`/projects` 행 "저장 중…") | PASS [U] · 실화면 관측(판정 QA) | `ProjectsCoreRows.test.tsx` "저장 중 → idle 뒤 일반 행"이 다른 이벤트 없이 복귀한다. 실화면은 지연 주입으로 1280·390에서 확인했다 |
 | 인계 note 1(해제 save 실패 표시) | PASS [U] | 실패 행은 "저장하지 못했습니다" + "다시 저장"이다. 버튼은 `core.save`를 1회만 호출하고 연타해도 1회다. 성공하면 status "다시 저장했습니다", 일반 행, 포커스 = 편집기 열기, IDB = 마지막 편집이 된다. 실패(readonly)면 alert에 UX-5 원문을 내고 포커스를 유지한다. reject는 실패로 매핑한다(거짓 saved 0, 진행 표시 해제) |
 | CP1 행 "저장 확인" → confirm 1회 · UX5-AC-08 | PASS [U] | 기록 + 코어(clean·커밋) 상태에서 `core.link`(confirm)를 1회 부르고 `confirmDoc`는 0회다. 쓰기 0(C5 T13). 기억 0, 포커스 = 편집기 열기 |
 | RS6-AC-U16(RS4-R2) | PASS [U] | 기록 뒤 코어가 local 커밋에 성공하면 행 기억이 0이 된다. 반대로 저장이 없으면 기억을 유지한다 |
 | CP2 PendingStart 유지 · "시작 다시 시도" | PASS [U] | 코어 저장이 성공해도 시작 대기는 풀리지 않는다. "시작 다시 시도"를 연타해도 starter(재생 = `startDoc`)는 1회다. 진행 중 `aria-busy`. "저장 확인" DOM 0(UX5-AC-11) |
-| CP3 · RS6-AC-B2 단위판(C5 T5) | PASS [U]·실화면 일부 | 새 이미지를 편집하고 해제 save가 실패해 편집 틀 맵이 없어도, "다시 저장"이 코어 바인딩으로 이미지 레코드까지 커밋한다. 실화면은 이미지를 고른 직후 이탈 → 새로고침 → IDB images 1건으로 확인했다 |
+| CP3 · RS6-AC-B2 단위판(C5 T5) | PASS [U] · 실화면 관측(판정 QA) | 새 이미지를 편집하고 해제 save가 실패해 편집 틀 맵이 없어도, "다시 저장"이 코어 바인딩으로 이미지 레코드까지 커밋한다. 실화면은 이미지를 고른 직후 이탈 → 새로고침 → IDB images 1건으로 확인했다 |
 
 ## 예산 (fresh `npm run build`, 같은 머신)
 | 라우트 | base | 최종 | 증분 | 한도 |
@@ -72,7 +76,7 @@
 2. 지연을 주입했다: 페이지 안에서 `design-studio` 전 store에 readwrite 트랜잭션을 3~4초 점유한 뒤 같은 흐름을 반복했다. 결과는 행 "저장 중…"(편집기 열기 유지 · 버튼 0 · 캡션) → 2023ms 뒤 일반 행이다(다른 이벤트 없음). 1280·390 스크린샷: `shots/1280-saving.png`·`1280-saved.png`·`390-saving.png`·`390-saved.png`·`1280-after-leave.png`.
 3. 새로고침 뒤 마지막 편집 "폭 390 이탈 편집"이 복원됐다.
 4. 이미지: 편집기에서 이미지를 고르고 바로 링크로 이탈했다 → 일반 행 → 새로고침 → IDB `images` = `project-1/4a758fcb-766f-4dcf-8c4f-6299bfa58779` 1건, 문서 참조와 일치.
-5. **BLOCKED(단위로 갈음)**: 해제 save **실패** 주입과 `PendingStart` 행("시작 다시 시도")은 앱 안에서 만들 경로가 없다(IDB 쓰기 실패·restart 실패 주입 0). `ProjectsCoreRows.test.tsx`·`ProjectsPending.test.tsx`로 판정했다.
+5. **BLOCKED(단위로 갈음)**: 이번 Ego Lite 1회(BRIEF 상한)에서는 실패를 주입하지 않았다. 그래서 해제 save 실패 행과 `PendingStart` 행("시작 다시 시도")은 실화면 관측이 없다. `ProjectsCoreRows.test.tsx`·`ProjectsPending.test.tsx`로 판정했다.
 6. 정리: IDB `design-studio` 삭제(`databases()` = []) · `finish` · `listTaskSpaces` 0 · 서버 종료(4381 리슨 0) · 5480 무접촉.
 
 ## 검증 명령 (fresh)
@@ -84,6 +88,10 @@
 
 ## QA 게이트 인계
 - 실화면 PASS 주장은 QA만 한다. 이 레인은 위 관측만 남긴다.
+- QA 실패 주입 방법(제안·미검증): 페이지 안에서 `IDBDatabase.prototype.transaction`을 감싸 `"readwrite"`일 때 1회 throw하게 만들고, 확인 뒤 원복한다.
+  - 편집 → 링크 이탈 → 행 "저장하지 못했습니다" → 원복 → "다시 저장" 성공
+  - restart 실패 → `PendingStart` 행 → "시작 다시 시도"
+  - 390에서 실패 행 확인
 - QA가 볼 것:
   - 실패 행(앱 안 주입 수단이 생기면)
   - `PendingStart` 행 실화면
@@ -91,6 +99,11 @@
   - 390에서 실패 행 버튼 줄바꿈
 - 남은 일: `/profile` "저장 다시 시도" → "시작 다시 시도"(D1) · 코어 starter 주입점(편집기 생성 경로 — L4 이후).
 - L3b note 2(링크 이미지 경로 순서 의존)는 이 레인 범위 밖이다. FIX1(`keep`)이 이미 머지돼 있고, 실화면 4번은 이미지 저장을 확인했다.
+
+## 잔여 (UX-5와 다른 점 — 코드 미수정 · 사유 1줄씩)
+1. **실패 행 첫 문구가 늘 "저장하지 못했습니다"다.** 코어가 마지막 결과를 저장하지 않아, readonly·stale 원문은 "다시 저장"을 누른 뒤에야 보인다.
+2. **image-missing 결과 뒤에도 "다시 저장" 버튼이 남는다.** UX-5 image-missing 행에는 "편집기 열기"만 있고, 다시 눌러도 같은 실패다. `pendingRetry.ts`의 `failed()`가 image-missing을 stuck으로 보지 않는다. 고칠 때는 stuck 목록에 1줄을 더하면 된다.
+3. **`retryRow` 폴백이 거짓 성공을 낼 수 있다.** 기억도 코어도 없을 때 `{ ok: true, "다시 저장했습니다" }`를 돌려준다. 클릭과 청크 로드 사이에 행 상태가 사라지는 경합에서만 도달하지만, 저장 없는 성공 문구다. 고칠 때는 `ok: false` 없이 결과 0으로 바꾼다.
 
 ## 사실 / 추정 / 미확인
 - **사실**: 위 게이트·변이·예산 수치와 실화면 관측(명령 출력·스크린샷).

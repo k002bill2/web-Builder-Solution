@@ -11,7 +11,7 @@
 - [x] 5. CP2 PendingStart 유지 · "시작 다시 시도" → retryStart · restartFlow 연결 — RED → GREEN
 - [x] 6. CP3 편집기 밖 이미지 확인 (코어 바인딩 경유) — RED → GREEN
 - [x] 7. fresh typecheck · lint · test · build (예산 표 · /studio 증분 0)
-- [x] 8. Ego Lite 실화면 (1280·390) + 정리
+- [x] 8. Ego Lite 실화면 (1280·390) + 정리 — BLOCKED: 실패 행·PendingStart 행 실화면 미관측(이번 1회에 실패 주입 안 함, 단위로 갈음)
 - [x] 9. Codex review 1회 — 지적 0 → 반영 불필요
 - [x] 10. REPORT.md · PROGRESS 마감 · 커밋
 
@@ -53,5 +53,5 @@
 - 지연 주입(페이지 안에서 `design-studio` 전 store readwrite 트랜잭션 3~4초 점유) → 행 "저장 중…"(편집기 열기 유지·버튼 0·캡션) → 2.0초 뒤 다른 이벤트 없이 일반 행. 1280·390 스크린샷 `shots/`.
 - 새로고침 뒤 마지막 편집("폭 390 이탈 편집") 복원.
 - 이미지: 편집기 이미지 고르기 → 바로 링크 이탈 → 일반 행 → 새로고침 → IDB `images` = `project-1/4a758fcb…` 1건 · 문서 참조 일치.
-- BLOCKED(단위로 갈음): 해제 save **실패** 주입·`PendingStart` 행("시작 다시 시도")은 앱 안에서 만들 수 없음(IDB 쓰기 실패·restart 실패 주입 경로 없음) → `ProjectsCoreRows.test.tsx`·`ProjectsPending.test.tsx`.
+- BLOCKED: 이번 Ego Lite 1회에서 실패 주입을 하지 않음 — 해제 save 실패 행·`PendingStart` 행 실화면 없음 → 단위(`ProjectsCoreRows.test.tsx`·`ProjectsPending.test.tsx`)로 갈음 · QA 주입 방법은 REPORT 인계
 - 정리: IDB `design-studio` 삭제(databases [] 확인) · finish · listTaskSpaces 0 · 서버 종료(리슨 0) · 5480 무접촉.

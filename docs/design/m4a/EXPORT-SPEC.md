@@ -309,6 +309,12 @@ APPNOTE 6.3.10 기준(출처 7절). 필수 필드만:
 
 ---
 
+## 8a. 결정 기록 (Jarvis, 2026-10-18 — 영환님 "추천안 자동으로 적용해서 계속 진행해")
+
+- Q1~Q19 **전부 ★안 채택**: Q1 A(링크 게이트 줄은 M4-a-2·개정 18 대상으로 분리, 본체는 생성기 안 F-11·F-12) · Q2 A · Q3 A · Q4 A · Q5 A(단일 HTML도 참조 직렬화) · Q6 B(`updatedAt`) · Q7 A(64MB) · Q8 A · Q9 A(문안·법무 확인은 Hemingway·영환님 — 릴리스 게이트 전 확인 항목) · Q10 A · Q11 A · Q12 A · Q13 A(M4-a-2) · Q14 A · Q15 A · Q16 A · **Q17 B**(스파이크 `dev/active/m4a-zip-spike/REPORT.md`: 렌더 JS +0.07KB, 84.22→약 84.29/90 — 예산 문제 없음) · **Q18 A**(React zip 버튼 M4-b까지 제외, zip 위·HTML 아래 — 영환님 자동 적용 지시로 확정) · **Q19 A**(글꼴 파일 분리 + `OFL.txt` — Chromium `file://` 로드 확인, Safari·Firefox는 릴리스 게이트 QA).
+- 스파이크 실측: store zip 작성기 gzip 914B · `/studio` 진입 증분 0 · 조작 뒤 exportFlow +1.06KB · ZIP64 불필요 · zip 단계 30MB ≈ 250ms(Node). 전체 파이프라인 8초 안 여부는 구현 QA 확인(Q15 재검 조건).
+- 예산 조건(결정 1): `/studio` 진입 증분 0. 구현 실측이 +0.01이라도 나오면 멈추고 개정 18 상신.
+
 ## 8. 설계 질문 (★ = 권장)
 
 | # | 질문 | 선택지 | ★ |

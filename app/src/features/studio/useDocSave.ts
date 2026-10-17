@@ -2,7 +2,7 @@
  * 편집 문서 자동 저장 훅 (DS-2A-05 SPEC 5.10 · E-S06~E-S10 · E-AC-07). 타이밍·실패·오프라인·STALE 멈춤·떠나기 경고는
  * a1-α `useAutosaveScheduler`를 그대로 쓰고, 이 훅은 저장 코어 연결만 한다(INTEGRATE-6 2.2-2 · RS6-L3b CP-A — 코어 없는 saveDoc 경로 제거):
  * - 저장 = `core.save()`(코어 초안 · revision·hash는 코어 io) — 결과 reason으로 판정(readonly·unsupported = 이 탭 저장 0이 정상).
- * - 화면 문서는 늘 내 편집이다 — `STALE_DOC`이어도 바꾸지 않고 최신 문서만 `conflict.latest`로 따로 둔다(E-S09 · 출처 = 포트 `head`, 다른 탭 커밋).
+ * - 화면 문서는 늘 내 편집이다. 다른 탭 커밋(포트 stale)은 I6 8.1 `stale` 환경 행(failed + 출처 reason) — 충돌 영역·최신 문서 읽기 0(RS6-L4 R2).
  * - `resolve(choice)` = 저장소 `resolveConflict`(보존 스냅샷 + 저장 한 트랜잭션, 8.3) 1회 → 성공이면 스케줄러 `settle`(추가 저장 0).
  *   "다른 편집 불러오기"는 돌려받은 최신 문서를 화면 문서로. 거부는 그대로 돌려주고 STALE을 유지한다(고르기 전 자동 저장 0).
  * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·충돌·오프라인이면 false.
@@ -37,10 +37,8 @@ export interface UseDocSaveOptions {
   readonly maxWaitMs?: number;
 }
 
-export interface DocConflict {
-  /** STALE_DOC에 동봉된 최신 문서(없으면 undefined) */
-  readonly latest?: PageDoc;
-}
+/** 충돌 영역(스케줄러 stale 단계) — RS6-L4 R2 뒤 제품 도달 경로 0(REPORT 도달 경로 표) · 최신 문서 결선은 감량 1회로 뺐다 */
+export type DocConflict = Readonly<Record<string, never>>;
 
 export interface UseDocSave {
   readonly doc: PageDoc;
@@ -69,7 +67,6 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   const [core] = useState(() => repository.core(projectId, initialDoc));
   const [doc, setDoc] = useState(() => core.view().doc);
   const docRef = useRef(doc);
-  const [latest, setLatest] = useState<PageDoc | undefined>(undefined);
   const revisionRef = useRef(initialDoc.revision);
   /** 이번 이탈 중 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없는 로컬 폴백)을 받았나 — `leave()`가 지우고 저장마다 새로 정한다(Codex r2 P1) */
   const readOnly = useRef(false);
@@ -137,7 +134,6 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
       const mine = docRef.current;
       const resolved = await repository.resolveConflict(projectId, choice, { ...mine, hash: hashDoc(mine) });
       revisionRef.current = resolved.revision;
-      setLatest(undefined);
       if (choice === "theirs") {
         docRef.current = resolved;
         setDoc(resolved);
@@ -190,7 +186,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   /** 확인 결과 → 출처(SaveActions · 조작 뒤) — 성공이면 reason 지우고 스케줄러 settle(추가 저장 0) */
   const report = useCallback((next?: { readonly reason: string; readonly text?: string }) => (setReason(next), next || settle()), [settle]);
 
-  const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
+  const conflict = autosave.state.phase === "stale" ? {} : undefined;
   const savedRevision = useCallback(() => revisionRef.current, []);
   const { inflight, dirty } = core.view();
   const source = { ...reason, inflight, dirty };

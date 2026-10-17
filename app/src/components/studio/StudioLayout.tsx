@@ -334,7 +334,7 @@ export function StudioLayout({
       {snaps.layer}
       {save.conflict && (
         <Suspense fallback={null}>
-          <ConflictCallout latestRevision={save.conflict.latest?.revision} resolve={save.resolve} heading={heading} onNotice={setNotice} refresh={snaps.refresh} />
+          <ConflictCallout resolve={save.resolve} heading={heading} onNotice={setNotice} refresh={snaps.refresh} />
         </Suspense>
       )}
     </>

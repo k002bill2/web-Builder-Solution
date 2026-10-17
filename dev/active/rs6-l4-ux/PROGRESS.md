@@ -42,8 +42,8 @@
 - [x] R2. CP2 저장 확인·다시 저장·폐기 대화상자 — RED(신규 2파일 import 실패 + report 1, `logs/r2-cp2-red.txt`) → GREEN 26/26(`logs/r2-cp2-green.txt`) · 전체 2990/2991→StudioLayout 가짜 타이머 findBy 수정 후 통과 · M2a 구조(SaveActions lazy)로 바로 작성 · build 129.52(중간, `logs/r2-cp2-build.txt`)
 - [x] R3. CP3 ConflictCallout 두 선택·포커스·replace epoch +1 — RED 3/5(`logs/r2-cp3-red.txt`) → GREEN 5/5 · epoch 변이 RED 2(`logs/r2-cp3-epoch-mutation-red.txt`)→복원 PASS · 전체 336/2994 통과 · build 129.31(중간 — M2b 포함, M2c·M2d 전, `logs/r2-cp3-build.txt`)
 - [x] R4. CP4 문구·금지 문구 0·memory 모드 — RED 2/25(slow 알림 · 저장 먼저 실패 문장, `logs/r2-cp4-red.txt`) · 금지 문구 가드 8건은 첫 실행부터 GREEN(가드 성격) · memory U9는 CP2 버튼 테스트 → GREEN 25/25 · 전체 338/3005 · build 129.32(중간 — M2c·M2d 전, `logs/r2-cp4-build.txt`)
-- [ ] R5. 상쇄 M2a~M2d (`src/build/` 목록 모듈) — 실측
-- [ ] R6. 예산 판정 · 기준선 파일 갱신(상한 안일 때)
+- [x] R5. 상쇄 M2a~M2d — M2a·M2b는 CP2·CP3 구조로 · M2c·M2d = `src/build/sharedDataChunks.ts`(RED `logs/r2-m2-red.txt` → 3/3) · 조합 129.14/130.46/132.12(`logs/r2-m2-build.txt`) — 멈춤선 +0.02
+- [x] R6. 예산 — 감량 1회(conflict.latest 진입 결선 제거, 동작 변화 0) → 129.11/130.43/132.09/133.46 exit 0(`logs/r2-reduce1-build.txt`) · 기준선 `m2cBaseline.json`·`bundleBudget.test.mjs` 실측 갱신 · fresh test 339/3008 · build exit 0(`logs/r2-final-*`)
 - [ ] R7. Ego Lite 실화면 (1280·390 · stale 2탭)
 - [ ] R8. Codex review (`--scope branch --base aca09805`) · 반영 1회
 - [ ] R9. fresh typecheck·lint·test·build

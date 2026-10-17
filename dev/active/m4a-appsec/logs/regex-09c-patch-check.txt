@@ -1,0 +1,4 @@
+codex | 현행 브랜드검출: false | 제안패치 브랜드검출: true
+codexFont | 현행 브랜드검출: false | 제안패치 브랜드검출: true
+realFont | 현행 브랜드검출: false | 제안패치 브랜드검출: false
+B03 | 현행 브랜드검출: false | 제안패치 브랜드검출: true

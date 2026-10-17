@@ -1,0 +1,35 @@
+--- /tmp/s6c-a/src/features/studio/save/saveCore.ts	2026-10-17 12:22:27
++++ src/features/studio/save/saveCore.ts	2026-10-17 12:22:27
+@@ -64,13 +64,8 @@
+   const s: CoreState = { doc: seed, mark: 0, savedMark: 0, inflight: 0, epoch: 0, confirmed: { hash: seed.hash, revision: seed.revision, mark: 0, proof: "hydrated" }, attached: {}, committed: {}, discarding: false, chain: Promise.resolve() };
+   let leases = 0;
+   let live: { readonly mountId: string; readonly token: number } | undefined;
+-  const save = (): Promise<SaveResult> => {
+-    if (s.discarding) return Promise.resolve({ status: "failed", reason: "discarding", newer: false });
+-    s.inflight += 1;
+-    const run = s.chain.then(connect).then((link) => link.io.save(s, link, projectId)).finally(() => (s.inflight -= 1));
+-    s.chain = run.catch(() => undefined);
+-    return run;
+-  };
++  // B안: 직렬 chain·inflight·discarding 판정은 io(save) — inflight 증가가 connect 뒤로 밀린다
++  const save = (): Promise<SaveResult> => connect().then((link) => link.io.save(s, link, projectId));
+   return {
+     edit(next: PageDoc, blobs?: RenderImages) {
+       s.doc = next;
+--- /tmp/s6c-a/src/features/studio/save/coreIo.ts	2026-10-17 12:22:27
++++ src/features/studio/save/coreIo.ts	2026-10-17 12:22:27
+@@ -46,7 +46,13 @@
+ }
+ 
+ export const coreIo: CoreIo = {
+-  save: saveNow,
++  save(s, link, projectId) {
++    if (s.discarding) return Promise.resolve({ status: "failed", reason: "discarding", newer: false });
++    s.inflight += 1;
++    const run = s.chain.then(() => saveNow(s, link, projectId)).finally(() => (s.inflight -= 1));
++    s.chain = run.catch(() => undefined);
++    return run;
++  },
+   async confirm(s, link, projectId, save) {
+     if (!link.port) return { status: "failed", reason: "not-persistent" };
+     const entered = s.mark;

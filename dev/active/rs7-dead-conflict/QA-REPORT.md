@@ -2,7 +2,12 @@
 
 대상 `k002bill2/rs7-dead-conflict` tip `99e33ac8` · base `73289c90` · QA 브리프 `QA-BRIEF.md` · 로그 `logs/qa/`
 
-## 0. 판정 — (초안 · 변이·실화면 진행 중)
+## 0. 판정 — **PASS**
+- 지운 코드(편집기 phase `stale` → `conflict` → ConflictCallout → `resolve` → 어댑터 `resolveConflict`)는 base `73289c90`에서 **제품 도달 0**이었다(1절 — 코드 사슬 + 임시 테스트 7/7). 도달 경로가 있던 코드 삭제 0.
+- 지운·바꾼 테스트는 도달 0 경로 전용이거나 같은 단언을 다른 단계로 이전했다. 살아 있는 동작 단언 삭제 0(2절 표).
+- 살아 있는 경로(reason `stale` 행·복원 STALE_DOC·discard reload) 변이 5종 전부 기존 테스트 FAIL(3절).
+- 예산 Developer 수치와 일치(128.66·131.64·raw 129.96) · fresh 4게이트 exit 0 · 340/3018(4·6절).
+- 실화면: stale 행·버리고 새로고침·링크 이탈 뒤 IDB 반영(Developer 미확인 항목 → **확인**)·스냅샷 복원 통과(5절).
 
 ## 1. CP0 독립 재증명 — 지운 경로는 도달 0이었다 (사실 · 코드 사슬 + 임시 테스트)
 
@@ -75,7 +80,26 @@
 | `m2cBaseline.json` | normEagerKb 128.66·131.64 · eagerKb 129.96·132.99 · base·toleranceKb 무변경 | = 실측 | 일치 |
 | `check-bundle-size.mjs` | diff 0줄 | 무변경 | 일치 |
 
-## 5. 실화면 — (진행 중)
+## 5. 실화면 (사실 · Ego Lite space 27 · `npx vite preview --host 127.0.0.1 --port 4389 --strictPort`(dist = fresh 게이트 빌드) · 앱 안 클릭만)
+| 단계 | 관측 | 판정 |
+|------|------|------|
+| 새 프로젝트 → 카탈로그(모던 카페·동네 치과 비교 추가) → 비교 보드 A 전부 선택 → 프로필 확정 v1 → 3안 만들기 → A안으로 편집 시작 | `/studio/project-1` | 통과 |
+| 탭A 제목 "탭A 편집 1" | "이 브라우저에 저장됨 · 방금" | 통과 |
+| 탭B(p2) `/projects` → 편집기 열기 | 제목 "탭A 편집 1" | 통과 |
+| 탭A "탭A 편집 2" 저장 → 탭A 닫기 → 탭B "탭B 편집" | 상태 "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요" · alert 1개(같은 문장) · 버튼 "버리고 새로고침"만(다시 저장·내 편집·불러오기 0) · "다른 곳에서 이 문서가 바뀌었습니다" 0 | 통과 |
+| 버리고 새로고침 → 대화상자 [취소·버리기] → 버리기 | 새로고침 뒤 제목 "탭A 편집 2"(다른 탭 커밋) · 탭B 편집 덮어쓰기 0 | 통과 |
+| "이탈 직전 편집" 입력 직후 "프로젝트로 돌아가기" 링크 | `/projects` 이동 · **IDB `design-studio`/`docs`에 "이탈 직전 편집" 존재** | 통과(Developer 미확인 → 확인) |
+| 편집기 다시 열기 | 제목 "이탈 직전 편집" | 통과 |
+| 스냅샷 "지금 상태 저장"(수동 · 21:37) → "복원 전 편집" 저장됨 → 미리보기 → 이 스냅샷으로 복원 | 제목 "이탈 직전 편집" · 알림 "스냅샷 '수동 · 21:37'으로 복원했습니다 · 복원 전 상태는 '복원 전 · 21:37'에 있습니다" · 저장됨 | 통과 |
+| 정리 | `Storage.clearDataForOrigin(http://127.0.0.1:4389, indexeddb·local_storage)` → `/projects` 프로젝트 0(앱이 열며 빈 `design-studio` DB 재생성 — 데이터 0) · `finish({keep:[]})` · `listTaskSpaces()` = `[]` | 완료 |
+
+## 7. preview 종료 (마지막 커밋 직전)
+`pkill -f "vite preview --host 127.0.0.1 --port 4389"` → `lsof -nP -iTCP:4389 -sTCP:LISTEN` **출력 0줄(exit 1)** · `git status --short -- app/` 0줄(앱 변경 0). 5480 무접촉.
+
+## 사실 / 추정 / 미확인
+- 사실: 1~7절 전부(명령·로그 근거).
+- 추정: 없음.
+- 미확인: 없음. 범위 메모 — CP0는 base 제품 조립(memoryProjectRepository·coreLink·localSync 포트) 기준이다. 향후 `link.align`·`link.images`에 throw하는 구현이 들어오면 STALE_DOC가 다시 스케줄러에 닿을 수 있다(현재는 `failed`로 처리되어 안전 쪽).
 
 ## 6. fresh 게이트 (사실)
 | 게이트 | 결과 | 로그 |

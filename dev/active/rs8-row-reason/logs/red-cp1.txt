@@ -1,0 +1,179 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs8-row-reason/app
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts (8 tests | 7 failed) 13ms
+   ❯ RS8-2 CP1 — view().reason 기록·해제 (8)
+     × save failed{readonly} → reason = readonly · view()는 포트 mode를 부르지 않는다 · 다음 saved → 해제 5ms
+     × 마지막 결과가 이긴다 — stale 뒤 cleared → cleared · 편집(결과 아님)은 지우지 않는다 1ms
+     × 포트 판정 throw = failed{infra} → reason = infra · commit reject(image-missing) → reason = image-missing 1ms
+     × memory 모드: 메모리 커밋 실패 → 그 reason · 다음 not-persistent(성공) → 해제 1ms
+     × discard(discarded) → 해제 · blocked(초안 보존)면 그대로 1ms
+     × rebase(clean 맞춤) → 해제 1ms
+     × rebase(mine · 요청 뒤 새 편집 → dirty 유지) → 해제(마지막 결과는 이 쓰기 성공) 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > save failed{readonly} → reason = readonly · view()는 포트 mode를 부르지 않는다 · 다음 saved → 해제
+AssertionError: expected { doc: { …(10) }, mark: 1, …(5) } to match object { dirty: true, reason: 'readonly' }
+(20 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "dirty": true,
+-   "reason": "readonly",
+  }
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:38:22
+     36|     await expect(c.save()).resolves.toMatchObject({ status: "failed", …
+     37|     const before = calls.mode;
+     38|     expect(c.view()).toMatchObject({ dirty: true, reason: "readonly" }…
+       |                      ^
+     39|     expect(calls.mode).toBe(before);
+     40|     await expect(c.save()).resolves.toMatchObject({ status: "saved" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > 마지막 결과가 이긴다 — stale 뒤 cleared → cleared · 편집(결과 아님)은 지우지 않는다
+AssertionError: expected undefined to be 'stale' // Object.is equality
+
+- Expected:
+"stale"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:48:29
+     46|     c.edit(edited(doc, "B"));
+     47|     await c.save();
+     48|     expect(c.view().reason).toBe("stale");
+       |                             ^
+     49|     await c.save();
+     50|     expect(c.view().reason).toBe("cleared");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > 포트 판정 throw = failed{infra} → reason = infra · commit reject(image-missing) → reason = image-missing
+AssertionError: expected undefined to be 'infra' // Object.is equality
+
+- Expected:
+"infra"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:63:29
+     61|     c.edit(edited(doc, "B"));
+     62|     await c.save();
+     63|     expect(c.view().reason).toBe("infra");
+       |                             ^
+     64|     fail = false;
+     65|     await c.save();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > memory 모드: 메모리 커밋 실패 → 그 reason · 다음 not-persistent(성공) → 해제
+AssertionError: expected undefined to be 'conflict' // Object.is equality
+
+- Expected:
+"conflict"
+
++ Received:
+undefined
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:88:29
+     86|     c.edit(edited(doc, "B"));
+     87|     await expect(c.save()).resolves.toMatchObject({ status: "failed", …
+     88|     expect(c.view().reason).toBe("conflict");
+       |                             ^
+     89|     await expect(c.save()).resolves.toMatchObject({ status: "failed", …
+     90|     expect(c.view()).toMatchObject({ dirty: false, reason: undefined }…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > discard(discarded) → 해제 · blocked(초안 보존)면 그대로
+AssertionError: expected { doc: { …(10) }, mark: 1, …(5) } to match object { dirty: false, reason: undefined }
+(20 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "dirty": false,
+-   "reason": undefined,
+  }
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:98:22
+     96|     await c.save();
+     97|     await expect(c.discard()).resolves.toMatchObject({ status: "discar…
+     98|     expect(c.view()).toMatchObject({ dirty: false, reason: undefined }…
+       |                      ^
+     99|
+    100|     const kept = coreWith(["readonly"], { verify: async () => false });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > rebase(clean 맞춤) → 해제
+AssertionError: expected { doc: { …(10) }, mark: 2, …(5) } to match object { dirty: false, …(2) }
+(15 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "confirmed": {
+      "proof": "rebased",
+    },
+    "dirty": false,
+-   "reason": undefined,
+  }
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:113:22
+    111|     const restored = { ...edited(doc, "복원"), revision: doc.revision + …
+    112|     await c.link((_, s) => rebase(s, restored));
+    113|     expect(c.view()).toMatchObject({ dirty: false, reason: undefined, …
+       |                      ^
+    114|   });
+    115|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > rebase(mine · 요청 뒤 새 편집 → dirty 유지) → 해제(마지막 결과는 이 쓰기 성공)
+AssertionError: expected { doc: { …(10) }, mark: 2, …(5) } to match object { Object (dirty, reason, ...) }
+(15 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "confirmed": {
+      "proof": "rebased",
+    },
+    "dirty": true,
+-   "reason": undefined,
+  }
+
+ ❯ src/features/studio/save/saveCore.reason.test.ts:123:22
+    121|     c.edit(edited(doc, "그 뒤 편집"));
+    122|     await c.link((_, s) => rebase(s, written, true));
+    123|     expect(c.view()).toMatchObject({ dirty: true, reason: undefined, c…
+       |                      ^
+    124|   });
+    125| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed (8)
+   Start at  02:09:19
+   Duration  1.07s (environment 56%, transform 24%, setup 11%, import 8%, tests 1%)
+

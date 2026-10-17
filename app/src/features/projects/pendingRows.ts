@@ -7,7 +7,7 @@ import type { CoreKeeper, SaveCore } from "../studio/save/saveCore";
 import { DiscardConfirm } from "../pending/DiscardConfirm";
 import { PENDING_TEXT as P } from "../pending/pendingText";
 import { pendingOf, settle, subscribe, ticketOf, type Pending } from "../pending/pendingWrites";
-import { CORE_ROW_TEXT as C } from "./coreRowText";
+import { CORE_REASON_TEXT as R, CORE_ROW_TEXT as C, stuckOf } from "./coreRowText";
 
 export { DiscardConfirm, pendingOf, subscribe };
 
@@ -37,7 +37,8 @@ export function describeRow(repo: object, projectId: string): RowState | undefin
   if (pending?.kind === "start") return { ...describePending(pending), working: P.working };
   const view = coreOf(repo, projectId)?.view();
   if (view && view.inflight > 0) return { status: C.saving, working: C.saving, open: true, quiet: true };
-  if (view?.dirty) return { status: C.failed, label: C.saveAgain, working: C.saving, open: true };
+  // B-RS-09 첫 표시: 사유 = 코어 마지막 save 결과(view().reason — 읽기 전용, 포트 mode·잠금 요청 0 · RS8-2) · stale·cleared·unsupported = 다시 저장해도 같은 결과 → 버튼 숨김 · readonly = 그 탭을 닫은 뒤 다시 저장
+  if (view?.dirty) return { status: (view.reason && R[view.reason]) || C.failed, label: stuckOf(view.reason) ? undefined : C.saveAgain, working: C.saving, open: true };
   return pending && { ...describePending(pending), working: P.working };
 }
 

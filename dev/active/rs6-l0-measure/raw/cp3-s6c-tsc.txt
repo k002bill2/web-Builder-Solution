@@ -1,0 +1,16 @@
+src/components/studio/SaveStatus.test.tsx(106,27): error TS2345: Argument of type '{ repository: DocSaveRepository; projectId: string; initialDoc: PageDoc; }' is not assignable to parameter of type 'UseDocSaveOptions'.
+src/components/studio/SaveStatus.test.tsx(126,52): error TS2353: Object literal may only specify known properties, and 'saveDoc' does not exist in type 'DocSaveRepository'.
+src/features/studio/snapshotRevision.test.tsx(59,52): error TS2345: Argument of type '{ repository: ProjectRepository<PageDoc>; projectId: string; initialDoc: PageDoc; debounceMs: number; }' is not assignable to parameter of type 'UseDocSaveOptions'.
+src/features/studio/useDocSave.test.tsx(33,5): error TS2353: Object literal may only specify known properties, and 'saveDoc' does not exist in type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSave.test.tsx(72,38): error TS2345: Argument of type '{ repository: DocSaveRepository & { persistence: ProjectPersistence; }; projectId: string; initialDoc: PageDoc; }' is not assignable to parameter of type 'UseDocSaveOptions'.
+src/features/studio/useDocSave.test.tsx(155,52): error TS2345: Argument of type '{ repository: ProjectRepository<PageDoc>; projectId: string; initialDoc: PageDoc; debounceMs: number; }' is not assignable to parameter of type 'UseDocSaveOptions'.
+src/features/studio/useDocSave.test.tsx(216,19): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSave.test.tsx(232,19): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSave.test.tsx(246,19): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSave.test.tsx(262,19): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSaveWrite.test.tsx(19,5): error TS2353: Object literal may only specify known properties, and 'saveDoc' does not exist in type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSaveWrite.test.tsx(63,89): error TS2345: Argument of type '{ repository: DocSaveRepository & { persistence: ProjectPersistence; }; projectId: string; initialDoc: PageDoc; debounceMs: number; }' is not assignable to parameter of type 'UseDocSaveOptions'.
+src/features/studio/useDocSaveWrite.test.tsx(78,25): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSaveWrite.test.tsx(100,25): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSaveWrite.test.tsx(103,25): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.
+src/features/studio/useDocSaveWrite.test.tsx(117,25): error TS2339: Property 'saveDoc' does not exist on type 'DocSaveRepository & { persistence: ProjectPersistence; }'.

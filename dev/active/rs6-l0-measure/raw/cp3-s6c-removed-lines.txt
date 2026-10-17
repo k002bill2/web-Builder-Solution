@@ -1,0 +1,59 @@
+@@ -17,0 +18 @@ import { useDocSave } from "../../features/studio/useDocSave";
+@@ -80 +81,3 @@ export function StudioLayout({
+-  const save = useDocSave({ repository: saveRepository, projectId: project.projectId, initialDoc });
+@@ -144,0 +145,2 @@ const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
+@@ -148 +150 @@ export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()
+-export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs" | "base"> & Partial<Pick<LocalSync, "confirm">>): DocBook {
+@@ -358 +360 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
+-      const expectedRevision = local?.base(projectId, requested, state.docs.get(projectId), doc.hash) ?? requested;
+@@ -35,0 +36,2 @@ import { createWriterGate, type WriterLocks, type WriterMode } from "./writerLoc
+@@ -53,2 +54,0 @@ export interface LocalSync {
+-  /** DocBook save가 판정 전에 부른다 — current = 지금 메모리 문서 */
+-  base(projectId: string, expectedRevision: number, current: DocHead | undefined, hash: string): number;
+@@ -59,0 +60,4 @@ export interface LocalSync {
+@@ -209,4 +212,0 @@ export async function openLocalSync(
+-    base: (projectId, expectedRevision, current, hash) =>
+-      current && current.hash !== hash && current === submitted.get(projectId)?.doc && queue.status(projectId) === "unconfirmed" && current.revision > expectedRevision
+-        ? current.revision
+-        : expectedRevision,
+@@ -217,0 +218,23 @@ export async function openLocalSync(
+@@ -17 +16,0 @@ export function toDocSaveRepository(repository: ProjectRepository): DocSaveRepos
+-    saveDoc: (projectId, expectedRevision, doc) => repository.saveDoc(projectId, expectedRevision, doc),
+@@ -14,2 +14,2 @@
+-import { useCallback, useEffect, useRef, useState } from "react";
+-import { projectErrorCode, type ConflictChoice, type DocHead, type ProjectPersistence } from "../../data/projectRepository";
+@@ -18,0 +19 @@ import { useAutosaveScheduler, type AutosaveState } from "./useAutosaveScheduler
+@@ -23 +23,0 @@ export interface DocSaveRepository {
+-  saveDoc(projectId: string, expectedRevision: number, doc: PageDoc): Promise<DocHead>;
+@@ -32,0 +33,2 @@ export interface UseDocSaveOptions {
+@@ -57 +59,3 @@ export interface UseDocSave {
+-export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
+@@ -61 +64,0 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-  const revisionRef = useRef(initialDoc.revision);
+@@ -67,11 +70,4 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-      const revision = revisionRef.current;
+-      try {
+-        const saved = await repository.saveDoc(projectId, revision, { ...next, revision, hash: hashDoc(next) });
+-        revisionRef.current = saved.revision;
+-        readOnly.current = false;
+-      } catch (error) {
+-        // 사유 문장(`infra.ts` READ_ONLY_TAB)으로 가린다 — 그 모듈을 import하면 영속 청크가 진입으로 올라온다(+0.76KB 실측). 문장이 바뀌면 StudioLeave 테스트가 잡는다
+-        readOnly.current = String((error as Error)?.message).includes("탭에서 편집 중") || (repository.persistence === "local" && !navigator.locks);
+-        if (projectErrorCode(error) === "STALE_DOC") setLatest((error as { readonly doc?: PageDoc }).doc);
+-        throw error;
+-      }
+@@ -79 +75 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-    [repository, projectId],
+@@ -81,0 +78,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+@@ -89,0 +93 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+@@ -94 +98 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-    [change],
+@@ -101 +104,0 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-      revisionRef.current = resolved.revision;
+@@ -132,2 +135,3 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-      const next = await write(revisionRef.current);
+-      revisionRef.current = next.revision;
+@@ -139 +143 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-    [flushed, settle],
+@@ -150 +154 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+-  const savedRevision = useCallback(() => revisionRef.current, []);

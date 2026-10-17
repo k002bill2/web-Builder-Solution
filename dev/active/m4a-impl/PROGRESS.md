@@ -13,9 +13,10 @@
 - [x] 예산: 개정 18(8aa9a60f)로 해제 — R2 fresh build 진입 128.71 · 복원 131.69 = 기준선(증분 0, 기준선 갱신 불필요)
 - [x] fresh typecheck·lint·test·build (3105 passed · build exit 0)
 - [x] R2 fresh 게이트(병합 뒤): typecheck 0 · lint 0 · test 353파일 3127 passed · build exit 0 (`logs/*-r2.txt`)
-- [ ] Ego Lite 1회 — BLOCKED: 결정 1 멈춤(+0.01) — 개정 18 판단 후 재개(Ego Lite → Codex 순) · preview 미실행, lsof 4395 리스너 0 기록
+- [x] Ego Lite 1회(R2, space 36) — 결함 1건 발견·수정(09c4309d) 뒤 재실측: R1·R2·R4 통과 · R5 unzip -t 통과(Windows는 QA) · R1b 관찰 · R3 BLOCKED: 실화면 20MB+ 미실행(입력 한도로 10장+ 필요, 시간) — 단위 EXP-AC-17만 · preview 종료 lsof 4395·4396 리스너 0 · IDB 삭제 · finish({keep:[]})
 - [x] Codex 1회(R2, `adversarial-review --scope branch --base d8e548e5` + 관점 4개) — needs-attention P2 2건 → 반영 1회(TDD RED `logs/codex-fix-red.txt` → GREEN 3129 passed · 진입 128.71 불변) `logs/codex-r2.txt`
 - [x] REPORT 최종 · untracked 0
+- [x] R2 REPORT 갱신(결론 · 1절 개정 18 행 · EXP-AC-02·14 부분 사유 · 7절 Codex · 8절 Ego Lite R1~R5)
 
 ## 로그
 - Ego Lite 1차(space 36): zip OK · 단일 HTML 실패 → CDP 예외 정지로 원인 = F-14 브랜드 검사가 인라인 글꼴 base64까지 검사(우연 4글자) → TDD 수정(`logs/ego-fix-red.txt` → 3130 passed · 진입 128.71) → 새 build로 재실측

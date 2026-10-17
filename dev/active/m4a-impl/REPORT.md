@@ -1,6 +1,8 @@
 # M4-a-2 REPORT — 정적 zip 내보내기 구현
 
-**결론: CP1~CP5 구현 완료, 단위 게이트(typecheck · lint · test 350파일 3105건 · build exit 0) 통과. 결정 1에 따라 멈춤: `/studio` 정규화 진입이 128.66 → 128.67(+0.01)이고, 감량 1회 뒤에도 남았습니다. 개정 18 판단은 Jarvis 몫입니다. 그래서 Ego Lite와 Codex review는 실행하지 않았습니다(BLOCKED).**
+**결론(R2 갱신): 개정 18(8aa9a60f)로 예산 멈춤이 풀렸고, BLOCKED 3건(fresh 게이트 · Ego Lite · Codex)을 마쳤습니다. 진입 128.71 · 복원 131.69 = 개정 18 기준선(증분 0, 기준선 갱신 없음). Codex P2 2건은 반영했습니다. Ego Lite에서 단일 HTML 거짓 실패 1건(F-14 브랜드 검사가 인라인 글꼴 base64까지 검사)을 찾아 TDD로 고쳤습니다. 최종 게이트: test 353파일 3130 passed · build exit 0. EXP-AC-R1·R2·R4·R5 통과, R1b 관찰 기록, R3은 BLOCKED(실화면 20MB+ 미실행 — 단위 EXP-AC-17로만 확인).**
+
+_(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 표 마지막 행과 7·8절에 있습니다.)_
 
 근거 수준: 단위·빌드 = L1(실행 출력, 로그 `logs/`). 실화면 = 미실행.
 - build exit 0은 스크립트 허용치(+0.03 · 멈춤선 128.69) 안이라는 뜻일 뿐입니다. 결정 1의 "진입 증분 0"을 통과했다는 뜻이 아닙니다.
@@ -12,6 +14,10 @@
 | CP2 (protocol `serialize{refs}`) | 128.66 (0) | 131.64 (0) | 129.97 | 84.29 (+0.07, 스파이크 실측과 같음) | `logs/build-cp2b.txt` |
 | CP5 (버튼 글자 · `static-zip` 키) | **128.67 (+0.01)** | **131.65 (+0.01)** | 129.96 | 84.29 | `logs/build-cp5.txt` |
 | 감량 1회 (`isFormat` → `includes`) | 128.67 (+0.01) | 131.65 (+0.01) | 129.97 | 84.29 | `logs/build-cp5-trim.txt` |
+| **개정 18 기준선**(8aa9a60f · 128.71 · 131.69 — 병합 #36·#37 포함) | 128.71 | 131.69 | — | — | ADR-004 개정 18 |
+| R2 병합 뒤 fresh | 128.71 (0) | 131.69 (0) | 130.00 | 84.29 | `logs/build-r2.txt` |
+| R2 Codex 반영 뒤 | 128.71 (0) | 131.69 (0) | 130.00 | 84.29 | `logs/build-r2-fix.txt` |
+| R2 Ego Lite 수정 뒤(최종) | 128.71 (0) | 131.69 (0) | 130.01 | 84.29 | `logs/build-r2-ego.txt` |
 
 - **원인 청크(기준선 → CP5, Vite gzip):**
   - 판정에 잡히는 진입 증분은 `StudioLayout` 19.58 → 19.59입니다. ExportButtons 버튼 글자 2개를 바꿨고(SPEC 1.2 A · Q18 A), 버튼 수와 부품은 그대로입니다.
@@ -32,10 +38,10 @@
 
 ### 수용 기준 (U = 단위 통과)
 - **통과(U):** EXP-AC-01 · 03 · 04 · 05 · 06 · 07 · 08 · 09 · 10 · 11 · 12 · 13 · 15 · 16 · 17
-- **부분:** EXP-AC-02 — 기존 흐름 테스트에서 `static-zip` 요청 1회와 형식별 안내까지 확인했습니다. E-AC-28~30 시나리오 전체를 zip으로 다시 돌리지는 않았습니다.
-- **부분:** EXP-AC-14 — 아래 편차 3번 참고.
-- **미달:** EXP-AC-19 — 진입 +0.01(1절).
-- **BLOCKED:** EXP-AC-R1~R5(실화면) — 결정 1 멈춤.
+- **부분:** EXP-AC-02 — 기존 흐름 테스트에서 `static-zip` 요청 1회와 형식별 안내까지 확인했습니다. E-AC-28~30 시나리오 전체를 zip으로 다시 돌리지는 않았습니다. R2 실화면에서는 zip·HTML 성공 흐름 1회씩만 확인했습니다(실패 분류 전부는 아님).
+- **부분:** EXP-AC-14 — 아래 편차 3번 참고. 용량 초과는 SPEC 6.1의 refused가 아니라 재시도 가능 경로(alert + 사유 문구)로 보입니다. 저장소(`memoryDocBook runJob`) 변경이 쓰기 범위 밖이라 그대로 두었습니다.
+- **해소:** EXP-AC-19 — R1 진입 +0.01은 개정 18 몫 안으로 기준선에 반영되었습니다. R2 최종 진입 증분은 0입니다(1절).
+- **실화면 R1~R5:** 8절 표를 보세요.
 
 ### 기존 단언 변경 (SPEC 7절 근거 · 약화·skip 0)
 | 파일 | 이전 | 이후 | 근거 |
@@ -84,3 +90,24 @@
 | 2 | 양방향 참조를 index.html 전체 정규식으로 모아 본문 글자의 `assets/...` 경로 때문에 정상 zip이 실패 | `staticZip.ts` — DOM 파싱 뒤 실제 URL 자리(img src · style 요소·속성 url())만 참조로 셈 | `staticZip.test.ts` "참조 = 실제 URL 자리만(Codex R2)" |
 - **RED → GREEN:** `logs/codex-fix-red.txt`(2 실패) → 전체 typecheck 0 · lint 0 · test 353파일 3129 passed · build exit 0 · 진입 128.71 · 복원 131.69 불변(`logs/*-r2-fix.txt`).
 - 반영은 1회까지라 재리뷰는 돌리지 않았습니다.
+
+## 8. R2 Ego Lite (BRIEF-R2 2항) — build + `vite preview --port 4395 --strictPort` · space 36
+- **문서:** 모던 카페 A v1 → 보정값 v2 → B안 새로 시작 → SEO 입력(게이트 차단 0) → Hero 1200×800 · About 800×800 이미지(PNG 입력 → WebP 저장) · 대체텍스트 입력.
+- **1차 실측에서 결함 1건:** zip은 성공했지만 단일 HTML이 "내보내지 못했습니다"로 실패했고, 다시 눌러도 같았습니다. CDP `Debugger.setPauseOnExceptions`로 잡은 원인은 `Error: 정적 HTML 브랜드 문자열이 있습니다`였습니다. CP4의 F-14 검사가 head CSS 전체를 보는데, 단일 HTML은 글꼴을 `url(data:font/woff2;base64,…)`로 넣습니다. 그래서 base64 안에 우연히 금지 4글자(대소문자 무시)가 들어가면 실패합니다. 540KB 글꼴 기준으로 대략 절반 확률입니다. zip은 글꼴이 파일 경로라 걸리지 않습니다.
+  - 수정: `staticMarkup.ts` `assertNoBrand`가 CSS의 `url(data:…)` 본문을 비우고 검사합니다. data: 밖 CSS의 브랜드는 그대로 실패합니다.
+  - RED `logs/ego-fix-red.txt` → GREEN 3130 passed. 커밋 09c4309d. 새 build로 처음부터 다시 측정했습니다.
+- **2차(최종 build) 결과:** zip 1.1초 · 0.6MB(이미지 2장 · 글꼴 2개) · 단일 HTML 0.4초 · 0.8MB(이미지 2장 포함). 두 결과 모두 내려받았습니다. 내려받기는 결과 줄의 `a download` 링크로 합니다(자동 시작 없음 — 설계대로).
+
+| AC | 판정 | 근거 |
+|---|---|---|
+| EXP-AC-R1 | **통과** | `ditto -xk`(보관 유틸리티와 같은 엔진)로 해제 → `python3 -m http.server 4396` → 1280·390에서 이미지 2장(1200×800 · 800×800)과 Pretendard 400·700이 `loaded`입니다. 가로 넘침 0. 화면은 미리보기 구성과 같습니다(`shots/r2-zip-http-1280.png` · `r2-zip-http-390.png`). Finder 더블클릭 해제는 하지 않았습니다. |
+| EXP-AC-R1b(관찰) | 기록 | Ego Lite(Chromium) `file://`: zip 폴더는 이미지 2장 로드, `document.fonts.check` 400·700 true(`shots/r2-zip-file-1280.png`). 단일 HTML `file://`도 data: 이미지 2장과 글꼴 loaded(`shots/r2-html-file-1280.png`). Safari는 확인하지 않았습니다. Q19 재판정 사유는 관찰되지 않았습니다. |
+| EXP-AC-R2 | **통과** | 페이지 요청은 `/assets/images/img-01·02.webp`와 `/assets/fonts/Pretendard-400·700.woff2`, 4건 모두 200입니다. 외부 요청 0. 서버 로그의 404 1건은 브라우저가 스스로 요청한 `/favicon.ico`입니다. 문서가 참조한 것이 아닙니다(head `link`는 F-15로 금지). index.html 안의 `https://tailwindcss.com`은 CSS 라이선스 주석이라 요청이 생기지 않습니다. |
+| EXP-AC-R3 | **BLOCKED** | 실화면 20MB+ 문서는 만들지 않았습니다. 입력 한도(파일 10MB · 저장 1920폭 WebP 0.82)라서 노이즈 이미지 10장 이상을 슬롯마다 올려야 하고, 남은 시간에 못 했습니다. 단위 EXP-AC-17(20MB 이미지 문서 성공)만 근거입니다. |
+| EXP-AC-R4 | **통과** | 390 폭 기준: 성공 status 1개, alert 글자 0. 포커스는 누른 "정적 사이트(zip) 내보내기" 버튼에 남습니다. 버튼은 351×40, 내려받기 링크는 48×32(WCAG 2.5.8 24px 이상). 1280에서 버튼은 252×40으로 zip이 위, HTML이 아래입니다(`shots/r2-1280-buttons.png` · `r2-390-buttons.png`). 접근성 snapshot에 status·alert 영역이 각 1개 있습니다. |
+| EXP-AC-R5 | **통과(일부)** | `unzip -t` → "No errors detected"(exit 0) · `unzip -l` 7파일(index.html · LICENSES.md · OFL.txt · 글꼴 2 · 이미지 2). Windows 탐색기는 환경이 없어 QA 몫으로 넘깁니다. |
+
+- **내려받기 차단 보조 문장:** 두 형식의 성공 Callout 모두 "내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요"를 표시합니다(Q14).
+- **관찰(이번 범위에서 고치지 않음):** 성공 제목 "정적 사이트(zip)을 만들었습니다" — 조사가 "를"이어야 맞습니다. 형식 이름 뒤에 고정 조사를 붙이는 문구입니다. 문안 담당(Hemingway) 후속으로 넘깁니다.
+- **환경:** 첫 preview는 백그라운드 기본 시간 한도(10분)로 종료되어 다시 띄웠습니다. 수정 build 뒤에는 한 번 더 띄웠습니다. 마지막에 둘 다 종료했습니다: `lsof -nP -iTCP:4395 -sTCP:LISTEN` → 출력 없음 exit 1 · 4396(http.server)도 exit 1. IDB `design-studio` 삭제(남은 DB 0) · `finish({keep:[]})` 완료.
+- 내려받은 파일·해제 폴더·입력 이미지는 저장소 밖(`/tmp/m4a-r2-ego/`)에 두었습니다. 저장소에는 스크린샷 6장만 커밋합니다.

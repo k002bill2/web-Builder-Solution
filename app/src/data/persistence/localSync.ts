@@ -33,6 +33,7 @@ import type { RenderImages } from "../../features/studio/images/store/types";
 import { tabLink, type TabLink } from "./tabLink";
 import { createWriteQueue } from "./writeQueue";
 import { createWriterGate, type WriterLocks, type WriterMode } from "./writerLock";
+import type { CorePort } from "../../features/studio/save/saveCore";
 
 /** DocBook 중 싱크가 읽는 부분 */
 export interface BookView {
@@ -57,6 +58,8 @@ export interface LocalSync {
   firstSave(live?: () => boolean): Promise<boolean>;
   /** 되돌리기 어려운 쓰기(restart) 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 flush와 같은 INFRA 사유로 던진다(호출자는 쓰기 0) */
   guardWrite(): Promise<void>;
+  /** 저장 코어 포트(INTEGRATE-6 1.3) — 레코드 = 코어 동결 doc + 제출 시점 DocBook 스냅샷(G1) · 쓰기 = write → queue.submit → committed(도장·cleared·saved 유지) */
+  corePort(book: BookView): CorePort;
 }
 
 const unreadable = () => new ProjectRepositoryError("INFRA", "열기 — 저장된 데이터를 읽지 못했습니다");
@@ -84,6 +87,8 @@ const GENERATION = "generation";
 const NOTICE = "firstSaveNotice";
 const blocked = (mode: WriterMode) => toInfra(undefined, "저장", ...(mode === "readonly" ? [READ_ONLY_TAB] : mode === "stale" ? [STALE_TAB] : []));
 const ignore = () => undefined;
+/** 포트 실패 — 코어 reason(INTEGRATE-6 8.3)을 코드로 넘긴다(문자열 매칭 0) */
+const fault = (reason: string, cause?: unknown) => Object.assign(new Error(reason, { cause }), { reason });
 
 const headOf = ({ projectId, revision, hash, profileVersion, candidateId, updatedAt }: DocHead): DocHead => ({ projectId, revision, hash, profileVersion, candidateId, updatedAt });
 
@@ -214,6 +219,31 @@ export async function openLocalSync(
       if (cleared) throw toInfra(undefined, "저장", CLEARED_TAB);
       const mode = await gate.enter();
       if (mode !== "writer") throw blocked(mode);
+    },
+    corePort: (book) => {
+      const recordOf = async (projectId: string) => ((await persistence.get("docs", projectId)) as { data?: DocRecord } | undefined)?.data;
+      return {
+        mode: async () => (cleared ? "cleared" : gate.mode === "writer" ? gate.mode : await gate.enter()),
+        head: async (projectId) => (await recordOf(projectId))?.doc as never,
+        commit: async (projectId, doc, bound) => {
+          // L4 검증(DocBook save와 같은 함수) — 모양 밖 문서를 쓰면 다음 열기가 unreadable
+          if (!checkSaveDoc(projectId, doc).ok) throw fault("schema");
+          // 엄격 이미지(I6 — 포트 commit 전용): 참조 이미지는 바인딩(메타 있음) 또는 IDB 레코드(재읽기 키)여야 한다. 진행 중 put은 근거 아님 · 빠지면 제출 0
+          const record = { doc, snapshots: book.snapshotsOf(projectId) };
+          const unbound = [...recordRefs(record)].filter((id) => !(bound[id] && imageMeta(bound[id])));
+          const have = unbound.length ? new Set(await persistence.keys("images")) : undefined;
+          if (unbound.some((id) => !have!.has(imageRecordId(projectId, id)))) throw fault("image-missing");
+          await write(projectId, { docOf: () => doc, snapshotsOf: () => record.snapshots, snapshotSeqOf: book.snapshotSeqOf }, bound).catch((error: unknown) => {
+            throw fault(cleared ? "cleared" : "infra", error);
+          });
+        },
+        verify: async (projectId, receipt) => {
+          const record = await recordOf(projectId);
+          if (record?.doc.hash !== receipt.hash || record.doc.revision !== receipt.revision) return false;
+          const have = new Set(await persistence.keys("images"));
+          return [...recordRefs(record)].every((id) => have.has(imageRecordId(projectId, id)));
+        },
+      };
     },
     // 상태 쓰기(saveState)가 먼저 잠금을 요청했으면 그 제출 뒤에 낸다 — 같은 enter 시도를 기다린다
     firstSave: async (live = () => true) => {

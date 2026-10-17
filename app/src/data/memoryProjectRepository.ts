@@ -15,6 +15,7 @@ import type { LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
 import type { StudioStore } from "./studioStore";
 import type { ImageKeeper, RenderImages } from "../features/studio/images/store/types";
+import { createSaveCore, type CoreKeeper, type SaveCore } from "../features/studio/save/saveCore";
 
 export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
 type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
@@ -48,7 +49,7 @@ const loadImageRestore = retryableImport(() => import("./persistence/imageRestor
 
 export const openLocal = async (entry: LocalEntry) => (await loadDocBook()).openLocalSync(entry);
 
-export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper {
+export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper & CoreKeeper {
   const { store, now = () => new Date().toISOString(), generators = {}, local } = options;
   const entry = local?.entry;
   const counts = new Map<ProjectMethod, number>();
@@ -63,7 +64,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
   /** 문서 쓰기가 끝난 뒤 그 프로젝트 레코드를 IDB 커밋까지 기다린다(Codex 제약 3 — "저장됨"은 이 뒤) */
   /** 맵은 부를 때 잡아 둔다 — 저장 중 편집기를 떠나 등록이 풀려도 그 저장은 이미지까지 쓴다(BRIEF-R2 ②) */
   const kept = <T>(projectId: string, work: Promise<T>, held = maps.get(projectId)) =>
-    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!, maps.get(projectId) ?? held), result)) : work;
+    local ? work.then(async (result) => (await cores.get(projectId)?.idle(), await (await local.sync()).flush(projectId, book!, maps.get(projectId) ?? held), result)) : work;
 
   /** work는 동기 — `commit()`을 부른 뒤에만 state를 바꾼다(던지면 변화 0) */
   async function call<T>(method: ProjectMethod, work: (commit: () => void) => T): Promise<T> {
@@ -87,6 +88,9 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     <K extends SnapshotWrite>(method: K) =>
     (...args: Parameters<DocBook[K]>[0]) =>
       kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
+  /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — 저장소 인스턴스 소유(모듈 전역 0) · 편집기 첫 마운트 때 동기 생성 · 포트·io는 첫 save 때(조작 뒤 청크) */
+  const cores = new Map<string, SaveCore>();
+  const link = (projectId: string) => Promise.all([loadDocBook(), bookOf(), local?.sync()]).then(([mod, docs, sync]) => mod.coreLink(projectId, docs, sync, now));
   /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
   const entered = async (projectId: string) => {
     const first = entry?.doc?.doc.projectId === projectId ? entry.doc : undefined;
@@ -128,11 +132,17 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     deleteSnapshot: write("deleteSnapshot"),
     restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: write("resolveConflict"),
-    confirmDoc: async (projectId) => (await bookOf()).confirm(projectId, maps.get(projectId)),
+    // G1(I6 5절 r1): DocBook 경로 레코드 재쓰기는 그 코어 chain 뒤 — 문서 필드 = 코어가 마지막 커밋한 문서(saved 뒤 DocBook 맞춤)
+    confirmDoc: async (projectId) => (await cores.get(projectId)?.idle(), (await bookOf()).confirm(projectId, maps.get(projectId))),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
     requestExport: (projectId, format, docRevision) =>
       kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),
     getExportJob: async (jobId) => book?.jobOf(jobId),
+    core: (projectId, seed) => {
+      let core = cores.get(projectId);
+      if (!core) cores.set(projectId, (core = createSaveCore(seed, () => link(projectId))));
+      return core;
+    },
     ...(local && {
       images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
         maps.set(projectId, map);

@@ -14,8 +14,9 @@ import { StudioLayout } from "./StudioLayout";
 import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
 /**
- * 편집기 이탈 저장 (B-RS-01 · MQ-S5) — 앱 안 링크로 떠날 때 마지막 화면 편집이 저장소에 반영된 뒤 이동한다.
- * 반영 실패면 이동을 보류하고 기존 저장 실패 안내("저장하지 못했습니다" · "다시 저장")를 쓴다. 읽기 전용 탭(저장 0이 정상)은 막지 않는다.
+ * 편집기 이탈 저장 (B-RS-01 · MQ-S5 → RS6-L3b MQ-6-7 A · INTEGRATE-6 3.1) — 앱 안 링크는 저장을 기다리지 않고 이동하고, 마지막 편집은
+ * 클릭 시점 저장 1회 또는 lease 해제 save가 코어에서 저장한다(탭 수명). 예외(클릭 시점 상태): 오프라인 · STALE · 실패(읽기 전용·잠금 없음 외) = 보류 —
+ * 지금 동작 그대로(저장 1회 → 성공이면 이동, 아니면 기존 실패 안내 "저장하지 못했습니다" · "다시 저장"). 읽기 전용 탭(저장 0이 정상)은 막지 않는다.
  */
 const PROJECT: Project = {
   projectId: "project-1",
@@ -107,7 +108,8 @@ afterEach(() => {
 });
 
 describe("편집기 이탈 저장 (B-RS-01)", () => {
-  it("저장 진행 중 추가 편집 → 앱 안 이동 = 마지막 편집까지 저장소에 반영된 뒤 이동 1회", async () => {
+  // 3.1-4 :99 의미 변경 — 저장 뒤 이동 → 즉시 이동 · 해제 save가 진행 중 저장 뒤 마지막 편집 1회(chain)
+  it("저장 진행 중 추가 편집 → 앱 안 이동 = 즉시 이동 1회 · 해제 뒤 저장소 = 마지막 편집(lease 해제 save)", async () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);
     type("첫 편집");
@@ -115,6 +117,7 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(repo.save).toHaveBeenCalledTimes(1);
     type("마지막 편집");
     leave();
+    expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
     await repo.release();
     while (repo.waiting()) await repo.release();
     expect(titleOf(repo.stored())).toBe("마지막 편집");
@@ -122,47 +125,67 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(arrivals).toHaveLength(1);
   });
 
-  it("저장 전 변경 → 이동은 저장이 끝날 때까지 기다린다(그동안 편집기 유지)", async () => {
+  // 3.1-4 :114 의미 변경 → RS6-AC-U12(링크): 대기 0 · 저장 1회 · 해제 뒤 저장소 = 편집
+  it("U12 저장 전 변경(디바운스 대기) → 즉시 이동 · 저장 1회(대기 없음) · 해제 뒤 저장소 = 편집", async () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);
     type("떠나기 전 편집");
     leave();
     expect(repo.save).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText("프로젝트 목록")).toBeNull();
-    await repo.release();
-    expect(titleOf(repo.stored())).toBe("떠나기 전 편집");
     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
     expect(arrivals).toHaveLength(1);
+    await repo.release();
+    expect(titleOf(repo.stored())).toBe("떠나기 전 편집");
+    expect(repo.save).toHaveBeenCalledTimes(1);
   });
 
-  it("저장 실패 → 이동 보류 · 기존 실패 안내('저장하지 못했습니다' · '다시 저장') · 다음 클릭은 다시 저장해 보고 성공하면 이동", async () => {
+  // 3.1-4 :127 의미 변경(앞 절반) — 클릭 시점 dirty면 즉시 이동(뒤 실패는 /projects 행 + 탭 경고 몫)
+  it("저장 전 변경 클릭 = 즉시 이동 — 그 저장이 뒤에 실패해도 이동은 1회 그대로", async () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);
     type("실패할 편집");
     leave();
+    expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
+    await repo.release(new Error("boom"));
+    expect(arrivals).toHaveLength(1);
+  });
+
+  // 3.1-4 :127 뒤 절반 유지 — 시작 상태를 failed로 옮김
+  it("저장 실패 → 이동 보류 · 기존 실패 안내('저장하지 못했습니다' · '다시 저장') · 다음 클릭은 다시 저장해 보고 성공하면 이동", async () => {
+    const repo = heldRepository();
+    const { arrivals } = draw(repo.repository);
+    type("실패할 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(new Error("boom"));
+    leave();
+    expect(repo.save).toHaveBeenCalledTimes(2);
     await repo.release(new Error("boom"));
     expect(screen.queryByText("프로젝트 목록")).toBeNull();
     expect(screen.getByRole("banner")).toHaveTextContent("저장하지 못했습니다");
     expect(screen.getByRole("button", { name: "다시 저장" })).toBeInTheDocument();
     expect(arrivals).toHaveLength(0);
     leave();
-    expect(repo.save).toHaveBeenCalledTimes(2);
+    expect(repo.save).toHaveBeenCalledTimes(3);
     await repo.release();
     expect(titleOf(repo.stored())).toBe("실패할 편집");
     expect(arrivals).toHaveLength(1);
   });
 
-  it("저장을 기다리는 동안 링크 연타 = 저장 1회 · 이동 1회", async () => {
+  // 3.1-4 :144 이전 — 대기는 보류 경로에만 남는다: failed 상태 클릭 대기 중 연타 = 저장 1회(이번 이탈) · 이동 1회
+  it("저장 실패 상태에서 저장을 기다리는 동안 링크 연타 = 저장 1회 · 이동 1회", async () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);
     type("연타 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(new Error("boom"));
     leave();
     leave();
     leave();
-    expect(repo.save).toHaveBeenCalledTimes(1);
+    // 자동 저장 1회(실패) + 이번 이탈 저장 1회
+    expect(repo.save).toHaveBeenCalledTimes(2);
     await repo.release();
     await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(repo.save).toHaveBeenCalledTimes(1);
+    expect(repo.save).toHaveBeenCalledTimes(2);
     expect(arrivals).toHaveLength(1);
   });
 
@@ -192,7 +215,8 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(arrivals).toHaveLength(1);
   });
 
-  it("읽기 전용 거절 뒤 쓰기 가능해진 탭(다른 탭 닫힘) = 지난 거절로 건너뛰지 않고 저장 뒤 이동(Codex r1 P1)", async () => {
+  // 3.1-4 :184 의미 변경 — 즉시 이동 · 저장이 writer를 잡고 반영(지난 거절로 건너뛰지 않음)
+  it("읽기 전용 거절 뒤 쓰기 가능해진 탭(다른 탭 닫힘) = 지난 거절로 건너뛰지 않고 저장 · 즉시 이동 + 저장소 반영(Codex r1 P1)", async () => {
     const repo = heldRepository();
     const { arrivals } = draw(repo.repository);
     type("거절된 편집");
@@ -201,7 +225,7 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     type("쓰기 가능해진 뒤 편집");
     leave();
     expect(repo.save).toHaveBeenCalledTimes(2);
-    expect(screen.queryByText("프로젝트 목록")).toBeNull();
+    expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
     await repo.release();
     expect(titleOf(repo.stored())).toBe("쓰기 가능해진 뒤 편집");
     expect(arrivals).toHaveLength(1);
@@ -233,20 +257,26 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(screen.queryByText("프로젝트 목록")).toBeNull();
   });
 
+  // 3.1-4 :225 의미 변경 — 시작 상태를 failed로 옮기면 보류 단언 유지
   it("Web Locks 없어도 메모리 저장 실패는 보류(잠금 폴백은 로컬 저장만, Codex r2 P2)", async () => {
     withoutLocks();
     const repo = heldRepository("memory");
     draw(repo.repository);
     type("메모리 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(new Error("청크 로드 실패"));
     leave();
     await repo.release(new Error("청크 로드 실패"));
     expect(screen.queryByText("프로젝트 목록")).toBeNull();
   });
 
+  // 3.1-4 :235 의미 변경 — 같음
   it("Web Locks 있는 브라우저의 일반 저장 실패는 그대로 보류", async () => {
     const repo = heldRepository();
     draw(repo.repository);
     type("메모리 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(toInfra(undefined, "저장"));
     leave();
     await repo.release(toInfra(undefined, "저장"));
     expect(screen.queryByText("프로젝트 목록")).toBeNull();
@@ -260,11 +290,12 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     expect(repo.save).not.toHaveBeenCalled();
   });
 
+  // 유지 — 실패 상태는 자동 저장으로 만든다(RS6-L3b: 저장 전 변경 클릭은 이제 즉시 이동이라 실패 화면에 남지 않는다)
   it("저장 실패 중에도 내려받기 링크(a[download] — 내보내기 결과)는 가로채지 않는다 · 저장 대기 0(RESUME-1)", async () => {
     const repo = heldRepository();
     draw(repo.repository);
     type("실패할 편집");
-    leave();
+    await act(() => vi.advanceTimersByTimeAsync(2000));
     await repo.release(new Error("boom"));
     expect(screen.getByRole("banner")).toHaveTextContent("저장하지 못했습니다");
     const download = Object.assign(document.createElement("a"), { href: "blob:site", download: "site.zip", textContent: "내려받기" });

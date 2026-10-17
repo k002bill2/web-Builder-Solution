@@ -144,6 +144,8 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),
     getExportJob: async (jobId) => book?.jobOf(jobId),
     core: (projectId, seed) => {
+      // 탭 수준 떠나기 경고 = 레지스트리(I6 3.1-2) — 코어 중 미저장·저장 중이 있으면(memory = 코어가 있으면 늘). 판정은 이벤트 때(편집기를 떠난 뒤에도)
+      if (!cores.size) addEventListener("beforeunload", (event) => [...cores.values()].some((c) => !local || c.view().dirty || c.view().inflight > 0) && event.preventDefault());
       let core = cores.get(projectId);
       if (!core) cores.set(projectId, (core = createSaveCore(seed, () => link(projectId))));
       return core;

@@ -8,8 +8,10 @@
  * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·충돌·오프라인이면 false.
  * - `adopt(write)` = 저장소 revision을 올리는 쓰기(스냅샷 복원)를 저장 훅 경로로 — 저장 먼저 → `write(저장 revision)` 1회 →
  *   돌려받은 문서·revision·스케줄러(`settle`, 추가 저장 0)를 함께 갱신. 저장하지 못했으면 쓰기 0 · undefined.
- * - `leave()` = 앱 안 이동 전(B-RS-01) — 저장할 것이 없으면 undefined(바로 이동). 그 밖이면 지금 저장(실패·오프라인도 1회 다시)하고
- *   `flushed()` 결과 — 이번 이탈 중 저장이 읽기 전용 거절(저장 0이 정상)이면 true. 지난 거절은 쓰지 않는다(다른 탭이 닫혔거나 오프라인일 수 있다, Codex r1·r2 P1).
+ * - `leave()` = 앱 안 이동 전(MQ-6-7 A · INTEGRATE-6 3.1-3) — 판정 순서 ① 오프라인 ② STALE ③ 실패(읽기 전용·잠금 없음 외) = 보류:
+ *   지금 저장 1회 하고 `flushed()` 결과(이번 이탈 중 저장이 읽기 전용 거절이면 true — 지난 거절은 쓰지 않는다, Codex r1·r2 P1).
+ *   ④ 그 밖 = undefined(바로 이동) · 저장할 것이 있으면 지금 1회 낸다(기다리지 않음 — 코어가 탭 수명으로 끝낸다).
+ * - lease 해제(진짜 언마운트 — 링크·POP·재마운트 공통, 3.1-1): 마지막 제출 뒤 편집이 있으면 `core.save()` 1회(기다리지 않음).
  */
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ProjectRepositoryError, type ConflictChoice, type ProjectPersistence } from "../../data/projectRepository";
@@ -65,13 +67,16 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   const revisionRef = useRef(initialDoc.revision);
   /** 이번 이탈 중 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없는 로컬 폴백)을 받았나 — `leave()`가 지우고 저장마다 새로 정한다(Codex r2 P1) */
   const readOnly = useRef(false);
+  /** 마지막으로 코어 save에 실은 mark — lease 해제 save는 그 뒤 편집이 있을 때만(3.1-1 · U7 최대 1회) */
+  const submitted = useRef(core.view().dirty ? 0 : core.view().mark);
 
   const save = useCallback(async () => {
     // 저장 대상 = 코어 초안(G1 — DocBook 반영은 saved 뒤 코어가 · 실패면 DocBook 변화 0, U3). not-persistent(memory) = 메모리 커밋 성공(I5)
+    submitted.current = core.view().mark;
     const result = await core.save();
     const { reason } = result as { readonly reason?: string };
-    // revision 있는 failed = not-persistent뿐(memory 메모리 커밋 revision)
-    const saved = result.status === "saved" ? result.receipt.revision : result.revision;
+    // 저장됨 = saved 또는 not-persistent(memory 메모리 커밋 revision)뿐 — 다른 failed가 revision을 실어도 저장됨 아님(L3a QA 4절 2)
+    const saved = result.status === "saved" ? result.receipt.revision : reason === "not-persistent" ? result.revision : undefined;
     // readonly·unsupported = 이 탭 저장 0이 정상(이탈 허용 판정)
     readOnly.current = reason === "readonly" || reason === "unsupported";
     if (saved === undefined) {
@@ -109,7 +114,12 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     if (dirty) change(doc);
     return () => {
       lease.current = undefined;
-      queueMicrotask(() => lease.current === undefined && core.release(token));
+      queueMicrotask(() => {
+        if (lease.current !== undefined) return;
+        // 3.1-1 lease 해제 save — 결과를 기다리지 않는다(실패는 /projects 행·탭 경고 몫)
+        if (core.view().mark > submitted.current) void core.save().catch(() => undefined);
+        core.release(token);
+      });
     };
   }, [core, mountId, change]);
 
@@ -159,7 +169,10 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   );
 
   const leave = useCallback(() => {
-    if (phase.current === "idle" || phase.current === "saved") return undefined;
+    const now = phase.current;
+    if (now === "idle" || now === "saved") return undefined;
+    // ④ 이동 — 지금 저장 1회(저장 중이면 해제 save가 뒤를 잇는다) · 기다리지 않는다
+    if (navigator.onLine && now !== "stale" && (now !== "failed" || readOnly.current)) return void retry();
     readOnly.current = false;
     phase.current = retry() ?? phase.current;
     return flushed().then((ok) => ok || readOnly.current);

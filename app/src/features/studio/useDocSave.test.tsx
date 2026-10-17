@@ -75,11 +75,6 @@ function renderDocSave(repo: DocSaveRepository & { persistence: ProjectPersisten
   return renderHook(() => useDocSave({ repository: repo, projectId: initialDoc.projectId, initialDoc }));
 }
 
-function unloadBlocked(): boolean {
-  const event = new Event("beforeunload", { cancelable: true });
-  window.dispatchEvent(event);
-  return event.defaultPrevented;
-}
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -166,35 +161,7 @@ describe("useDocSave — 실제 메모리 저장소 연속 저장", () => {
   });
 });
 
-describe("useDocSave — 떠나기 경고 (E-AC-12 · server 목)", () => {
-  it("server: 변경 없음 미등록 · 실패 때 등록", async () => {
-    const doc = sampleDoc();
-    const m = mockRepo(doc, "server");
-    const { result, unmount } = renderDocSave(m.repo, doc);
-    expect(unloadBlocked()).toBe(false);
-    m.failOnce(new ProjectRepositoryError("INFRA", "down"));
-    act(() => result.current.edit(titled(doc, "하나")));
-    await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(result.current.state.phase).toBe("failed");
-    expect(unloadBlocked()).toBe(true);
-    unmount();
-  });
-
-  it("server: STALE_DOC 때 등록 · memory는 늘 등록", async () => {
-    const doc = sampleDoc();
-    const m = mockRepo(doc, "server");
-    const { result, unmount } = renderDocSave(m.repo, doc);
-    m.bumpElsewhere("다른 탭");
-    act(() => result.current.edit(titled(doc, "내 편집")));
-    await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(result.current.state.phase).toBe("stale");
-    expect(unloadBlocked()).toBe(true);
-    unmount();
-    const mem = renderDocSave(mockRepo(doc, "memory").repo, doc);
-    expect(unloadBlocked()).toBe(true);
-    mem.unmount();
-  });
-});
+// RS6-L3b(I6 3.1-2 · D6-11): "떠나기 경고(E-AC-12 · server 목)" 2건은 경고 소유가 코어 레지스트리로 옮겨 `useDocSaveLeave.test.tsx`(실제 저장소)로 이전
 
 describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
   async function staleSetup() {

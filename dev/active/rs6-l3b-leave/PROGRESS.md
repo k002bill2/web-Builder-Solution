@@ -25,3 +25,12 @@
 - CP-B 일부: `SaveResult.revision` = not-persistent만(RED `logs/cpB-red-revision.txt` → GREEN) · L3a 인계 2(restart STALE_DOC) = lease 해제 save로 사라짐 테스트.
 - CP-C 게이트: 전체 331/2951 GREEN(`logs/cpC-full-test.txt`) · build exit 0 · 정규화 129.03 / 복원 132.01 · raw 130.36 / 133.39 → 기준선 실측 갱신.
 - 마감 advisor 지적 반영: U13 판정 ②(STALE)·③(cleared) StudioLeave 새 행 2 · 분기 변이 RED 확인(`logs/u13-red-*.txt`) · 훅 소비자 1곳·저장소 탭당 1개 확인 · 콘솔 수집 범위 문장 정정 · 커밋 방식 메모.
+
+## FIX1 — 이미지 고른 직후 이탈 순서 의존 (BRIEF-FIX1)
+- [x] F0. BRIEF-FIX1·PROGRESS 커밋
+- [ ] F1. 원인 확인 · 선택안(a/b/c) 결정 · 근거 기록
+- [ ] F2. RED (링크 leave+같은 태스크 언마운트 · POP 언마운트 · 재진입 뒤 글자 편집 failed 고착 0) → `logs/fix1-*`
+- [ ] F3. 구현 → GREEN · 기존 imagePersist·imageRecord·이미지 undo·SnapshotImages 회귀 GREEN
+- [ ] F4. 게이트 fresh: typecheck · lint · test · build · 예산(개정 17)
+- [ ] F5. Ego Lite (4379 · 링크 이탈 · 뒤로 · 정리)
+- [ ] F6. REPORT "FIX1" 절 · Codex 검증 · 커밋

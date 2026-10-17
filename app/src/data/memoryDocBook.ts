@@ -37,7 +37,6 @@ import type { LocalSync } from "./persistence/localSync";
 import type { RenderImages } from "../features/studio/images/store/types";
 import { coreIo, rebase, unsettled } from "../features/studio/save/coreIo";
 import type { CoreLink, CoreState } from "../features/studio/save/saveCore";
-import type { PageDoc } from "../engine/contracts/pageDoc";
 import { deepFreeze, type StudioReader } from "./studioStore";
 
 interface DocState {
@@ -111,6 +110,8 @@ export type StaticHtmlFactory = (store: StudioReader) => ExportGenerator;
 type Slot = { [STATIC_HTML_SLOT]?: () => Promise<StaticHtmlFactory> };
 
 const fail = (code: "NOT_FOUND" | "SCHEMA_INVALID", message: string) => new ProjectRepositoryError(code, message);
+/** 저장소 문서 = 엔진 문서(isPageDoc) — engine import 0으로 코어 문서 타입을 받는다(엔진 import 가드) */
+type Rebased = Parameters<typeof rebase>[1];
 /** CP0 — 코어 save 진행 중·미저장 편집 위 revision 쓰기 = STALE_DOC(쓰기 0 · 최신 동봉) */
 const settled = (core: CoreState | undefined, current: DocHead, draft?: boolean) => {
   if (core && unsettled(core, draft)) throw new ProjectRepositoryError("STALE_DOC", "저장 코어 미확정", { doc: current });
@@ -345,7 +346,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
         ...withAuto(projectId, list, before, snapshotId),
         restores: new Map(state.restores).set(projectId, { key, doc }),
       };
-      if (core) rebase(core, doc as PageDoc);
+      if (core) rebase(core, doc as Rebased);
       return doc;
     },
     resolveConflict: ([projectId, choice, myDoc], commit, core) => {
@@ -361,7 +362,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       settled(core, current, true);
       commit();
       state = { ...state, docs: new Map(state.docs).set(projectId, doc), ...withAuto(projectId, list, kept) };
-      if (core) rebase(core, doc as PageDoc, choice === "mine");
+      if (core) rebase(core, doc as Rebased, choice === "mine");
       return doc;
     },
     requestExport: async (args, injected, via) => {
@@ -434,7 +435,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
         ...kept,
         starts: new Map(state.starts).set(projectId, { key, result }),
       };
-      if (core) rebase(core, doc as PageDoc);
+      if (core) rebase(core, doc as Rebased);
       return result;
     },
   };

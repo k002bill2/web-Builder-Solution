@@ -6,10 +6,11 @@
 import { hashDoc } from "../../../engine/ops/hash";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { retainedIds } from "../images/store/imageStore";
-import { DISCARD_GIVE_UP_MS } from "./liveness";
 import type { CoreIo, CoreState, DiscardResult, Receipt, SaveResult } from "./saveCore";
 
 const reasonOf = (error: unknown, fallback = "not-committed") => (error as { reason?: string } | undefined)?.reason ?? fallback;
+/** discard 읽기가 이 시간 안에 끝나지 않으면 포기 — `blocked{timeout}` · 가드 해제 · 늦은 결과 버림(LV-2 · 잠정 MQ-6-3b — 근거 `dev/active/rs6-l2-liveness/REPORT.md`) */
+export const DISCARD_GIVE_UP_MS = 5000;
 /** L1 QA note 3: 포트 판정·재읽기(mode·verify) throw = reject 아님 → `failed{infra}`(거짓 saved 0 — 전진은 성공 뒤에만) */
 const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string }> => run().catch((error: unknown) => ({ infra: reasonOf(error, "infra") }));
 
@@ -23,13 +24,14 @@ export const coreIo: CoreIo = {
     const { port } = link;
     // I5: 영속 없음(memory) = DocBook 메모리 커밋(지금 saveDoc 판정 그대로) 뒤 not-persistent — 영속 증명(confirmed)은 만들지 않는다
     if (!port) {
+      let revision: number;
       try {
-        link.book({ ...target, hash: hashDoc(target) });
+        revision = link.book({ ...target, hash: hashDoc(target) }).revision;
       } catch (error) {
         return { status: "failed", reason: reasonOf(error), newer: newer() };
       }
       s.savedMark = Math.max(s.savedMark, submitted);
-      return { status: "failed", reason: "not-persistent", newer: newer() };
+      return { status: "failed", reason: "not-persistent", newer: newer(), revision };
     }
     const mode = await safely(() => port.mode());
     if (mode !== "writer") return { status: "failed", reason: typeof mode === "string" ? mode : mode.infra, newer: newer() };

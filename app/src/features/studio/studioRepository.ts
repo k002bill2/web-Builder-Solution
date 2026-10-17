@@ -1,6 +1,7 @@
 import { ProjectRepositoryError, type DocHead, type ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { DocSaveRepository } from "./useDocSave";
+import type { CoreKeeper } from "./save/saveCore";
 
 /**
  * 저장소 문서(`DocHead`)가 편집 문서(`PageDoc`)인지 — 저장소 문서는 엔진이 만든 것만 있다(startDoc = createDocFromCandidate · saveDoc = validatePageDoc).
@@ -14,6 +15,7 @@ export function isPageDoc(doc: DocHead): doc is PageDoc {
 export function toDocSaveRepository(repository: ProjectRepository): DocSaveRepository {
   return {
     persistence: repository.persistence,
+    core: (repository as ProjectRepository & CoreKeeper).core,
     saveDoc: (projectId, expectedRevision, doc) => repository.saveDoc(projectId, expectedRevision, doc),
     resolveConflict: async (projectId, choice, myDoc) => {
       const resolved = await repository.resolveConflict(projectId, choice, myDoc);

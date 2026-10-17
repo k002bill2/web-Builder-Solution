@@ -3,7 +3,7 @@
  * 코어가 열린 프로젝트에서 세 경로 뒤 다음 코어 save는 같은 revision으로 덮어쓰지 않는다(정상 다음 revision 또는 STALE).
  * 저장소·코어 층 규칙만 — 화면 호출처(SnapshotPreview·ConflictCallout·restartFlow) 전환은 L3b.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ProjectRepositoryError } from "../../../data/projectRepository";
 import { PROJECT, edited, startedRig } from "./testRig";
 
@@ -114,5 +114,15 @@ describe("RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준", () => {
     c.edit(edited(restored, "C"));
     await c.save();
     expect((await repo.getDoc(PROJECT))?.revision).toBe(restored.revision + 1);
+  });
+
+  it("reject 매핑(L2 QA 4절 3 · 문서 교체 진입점 core.link): 코어 연결 reject → 복원 reject · DocBook·스냅샷 변화 0", async () => {
+    const { repo, c, revision } = await savedRig();
+    const snap = await repo.createSnapshot(PROJECT, "기준");
+    const before = await repo.listSnapshots(PROJECT);
+    vi.spyOn(c, "link").mockRejectedValueOnce(new Error("chunk"));
+    await expect(repo.restoreSnapshot(PROJECT, snap.snapshotId, revision)).rejects.toThrow("chunk");
+    expect((await repo.getDoc(PROJECT))?.revision).toBe(revision);
+    expect(await repo.listSnapshots(PROJECT)).toEqual(before);
   });
 });

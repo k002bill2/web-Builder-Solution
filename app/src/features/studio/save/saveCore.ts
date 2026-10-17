@@ -17,7 +17,8 @@ export interface Receipt {
   /** hydrated = 생성 seed · committed = 이 코어 트랜잭션 완료 · fresh = 확인 시점 IDB 재읽기 */
   readonly proof: "hydrated" | "committed" | "fresh";
 }
-export type SaveResult = { readonly status: "saved"; readonly receipt: Receipt; readonly newer: boolean } | { readonly status: "failed"; readonly reason: string; readonly newer: boolean };
+/** `revision` = memory 모드(not-persistent) DocBook 메모리 커밋 revision — 영속 증명(receipt) 아님(I5) · 편집기 `savedRevision` 출처(RS6-L3a CP2) */
+export type SaveResult = { readonly status: "saved"; readonly receipt: Receipt; readonly newer: boolean } | { readonly status: "failed"; readonly reason: string; readonly newer: boolean; readonly revision?: number };
 export type ConfirmResult = { readonly status: "confirmed"; readonly wrote: boolean; readonly receipt: Receipt } | { readonly status: "newer"; readonly receipt: Receipt } | { readonly status: "failed"; readonly reason: string };
 export type DiscardResult = { readonly status: "discarded"; readonly restored: Receipt } | { readonly status: "rejected" | "blocked"; readonly reason: string };
 export type ReplaceResult = { readonly status: "replaced"; readonly epoch: number } | { readonly status: "rejected"; readonly reason: string };

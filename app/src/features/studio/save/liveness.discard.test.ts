@@ -3,7 +3,7 @@
  * 장치 준비(앱 흐름)는 실제 타이머, discard부터 가짜 타이머(시간 = 상수 참조).
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DISCARD_GIVE_UP_MS } from "./liveness";
+import { DISCARD_GIVE_UP_MS } from "./coreIo";
 import { bindOf, confirmOf, edited, startedRig, ticks, uuid, withImage } from "./testRig";
 
 afterEach(() => vi.useRealTimers());

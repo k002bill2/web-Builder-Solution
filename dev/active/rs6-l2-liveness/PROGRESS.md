@@ -10,9 +10,9 @@
 - [x] 4. CP3 `T_hang` alert 1회 · 재마운트 재발화 0 · 키 상수/`role=alert`/`aria-busy` — RED → GREEN · 예산
 - [x] 5. L1 QA note 3 (`port.mode()`·`port.verify()` throw → `failed{infra}`) — RED → GREEN
 - [x] 6. L1 QA note 4 (HARNESS-MAP 집계 정정 · 가능 시 #28 등 보강)
-- [ ] 7. L1 QA note 2 → REPORT "L3 전 조건" 이월 (고치지 않음)
-- [ ] 8. 마감 게이트 fresh (typecheck·lint·test·build + 전 라우트 번들 표)
-- [ ] 9. REPORT.md (AC 판정·notes·L3 전 조건·시간 잠정값·예산 표·MC I7 문장·사실/추정/미확인) 커밋
+- [x] 7. L1 QA note 2 → REPORT "L3 전 조건" 이월 (고치지 않음)
+- [x] 8. 마감 게이트 fresh (typecheck·lint·test·build + 전 라우트 번들 표)
+- [x] 9. REPORT.md (AC 판정·notes·L3 전 조건·시간 잠정값·예산 표·MC I7 문장·사실/추정/미확인) 커밋
 
 ## 예산 (ADR-004 개정 17 · L2 목표 ≤ +0.10 정규화)
 | 시점 | `/studio` 정규화 | raw | 비고 |
@@ -22,6 +22,7 @@
 | CP1 감량(감시 = `watchSaving` onChange 데코레이터, 미배선) | 128.55 (+0.00) · 131.54 (+0.01) | 129.89 · 132.92 | 기준선 변경 0 · 감시 결합 비용(≈+0.1 추정 — 1차 실측)은 L3가 훅에 붙일 때 진입에 실린다 |
 | CP3 1차(키를 `liveness.ts`에 둠) | 128.72 (+0.15) · 131.70 | 130.10(한도 130 초과) · 133.13 | 감량 1회 |
 | CP3 감량(키 = `save/alertKeys.ts` 분리) | 128.63 (+0.06 · L2 누적 +0.08) · 131.61 (+0.05 · 누적 +0.08) | 129.96 · 132.99 | 기준선 128.63·131.61 · eagerKb 129.96·132.99 · note CP3 · bundleBudget.test 2줄 |
+| 최종 fresh (`logs/final-build.log`) | 128.63 (L2 +0.08) · 131.61 (+0.08) | 129.95 · 132.98 | typecheck 0 · lint 0 · test 326/2924 · build 0 |
 | note 3 (coreIo `safely` — 조작 뒤 청크) | 128.63 (+0.00) · 131.61 | 129.95 · 132.98 | 기준선 변경 0 |
 | CP2 (`core.discard()` 동기 진입 + `discards` 필드 진입 · 포기 판정은 coreIo 조작 뒤) | 128.57 (+0.02) · 131.56 (+0.03) | 129.90 · 132.93 | 기준선 갱신 normEagerKb 128.57·131.56 · eagerKb 129.90·132.93 · note "개정 17 배분 RS6-L2 CP2" · bundleBudget.test 기대값 2줄 |
 

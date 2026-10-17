@@ -1,6 +1,7 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import type { ProjectPersistence } from "../../data/projectRepository";
 import { SAVE_FAILED_TEXT, SAVE_STALE_ALERT, saveAnnouncement, saveStatusText } from "../../features/studio/saveStatusText";
+import { SAVE_HANG_ALERT } from "../../features/studio/save/alertKeys";
 import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { Button } from "../ds/Button";
 
@@ -40,6 +41,10 @@ export function SaveStatus({
     return () => clearInterval(timer);
   }, [ticking]);
 
+  // LV-1 T_hang alert 1회 — 마운트 때 이미 같은 정지(차례)였으면 다시 알리지 않는다(레이아웃 재마운트 · UX5-AC-01). 문구 본문은 L4(키만)
+  const [mountedHang] = useState(state.hang);
+  const hang = state.hang !== undefined && state.hang !== mountedHang;
+
   const prevRef = useRef(state);
   const announceRef = useRef(onAnnounce);
   useEffect(() => {
@@ -53,13 +58,15 @@ export function SaveStatus({
 
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <p className="text-caption1 text-label-alternative">{saveStatusText(state, persistence, now())}</p>
+      <p className="text-caption1 text-label-alternative" aria-busy={state.phase === "saving" || undefined}>
+        {saveStatusText(state, persistence, now())}
+      </p>
       {state.phase === "failed" && (
         <Button variant="outline" size="sm" onClick={onRetry}>
           다시 저장
         </Button>
       )}
-      <p role="alert" className="sr-only">
+      <p role="alert" className="sr-only" data-alert-key={hang ? SAVE_HANG_ALERT : undefined}>
         {alertText(state)}
       </p>
     </div>

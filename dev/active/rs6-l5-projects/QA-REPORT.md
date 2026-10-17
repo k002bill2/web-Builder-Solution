@@ -7,6 +7,8 @@
 - 1차 FAIL 1건(U16: rebase 뒤 IDB flush 실패를 커밋으로 믿고 기억 해제)은 **FIX1로 닫혔다**. 재현 시도 3경로(restoreSnapshot · resolveConflict mine · restart `DocBook.start`) 모두 기억 유지.
 - `"rebased"` 추가로 생긴 새 거짓 saved/confirmed 경로 **0** — `proof` 판독자는 U16(`pendingRows.ts:56`) 1곳뿐(grep).
 - flush 실패 뒤 "저장 확인" = 쓰기 탭 재쓰기 → 확인 → 기억 해제(임시 테스트로 확인). 재쓰기도 실패하면 alert · 기억 유지.
+- REPORT 잔여 3(`retryRow` 폴백 "다시 저장했습니다") 판정 = **notes(FAIL 아님) · 추정(코드 근거)**: 폴백은 클릭 시점엔 행에 버튼이 있었는데(onRetry 가드 = `describeRow` label 필수) 청크 로드 사이 기억·dirty가 모두 사라진 경합에서만 탄다. 기억 해제(`settle(..., undefined, …)`) 호출은 전부 `"confirmed"`(확인 뒤) 또는 `not-applied-absent`(restartFlow:121)이고(grep 8곳), 코어 clean 전환(`savedMark` 전진)은 commit 성공(coreIo:48)·verify 뒤 discard(:101)·memory 모드(:36)·`rebase`(:147)뿐이다. `rebase`는 편집기 안 복원·충돌 해결·새로 시작에서만 불려 `/projects` 화면 위 경합으로는 도달 경로를 찾지 못했다. 문구가 부정확(저장 0인데 "다시 저장했습니다")한 것은 그대로 note.
+- 범위 밖 관측(미확인): 기억이 **없는** 프로젝트에서 rebase flush가 실패하면 코어는 clean(`rebase`가 savedMark 전진)이라 `/projects` 행은 일반 행이다. 편집기 쪽 reject 처리가 기억을 남기는지는 이번에 확인하지 않았다(FIX1 변경과 무관 — FIX1 전에도 같음).
 - notes: 생존 변이 3종의 테스트 공백(2절, 모두 거짓 saved 아님) · restart 경로 FIX1 회귀 테스트 없음 · REPORT 잔여 1~3.
 - 실화면: 실제 `navigator.locks` 잠금으로 해제 save 실패 행 → readonly alert → 잠금 해제 뒤 "다시 저장" 성공 · IDB 마지막 편집 확인(1280·390). PendingStart 실화면 = BLOCKED(4절).
 - 게이트 fresh: typecheck 0 · lint 0 · 332/2971 · build 0 · `/studio` 129.09 · 복원 132.07(기대값 그대로).
@@ -68,7 +70,7 @@
 | 탭 B(p2): `/projects` 새로 진입 → 편집기 열기 → 제목 "B탭 마지막 편집" 입력 → "프로젝트로 돌아가기" | 편집기 "저장하지 못했습니다" · 행 = "저장하지 못했습니다" + "다시 저장" + "편집기 열기" | `qa-shots/r2-1280-failed-row-locked.png` |
 | 잠금 유지 중 "다시 저장" | `role=alert` "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다" · 포커스 = 다시 저장 버튼 · 거짓 saved 0. **1차 REPORT 미확인("다른 탭 잠금이 실화면 행 문구로 나오는지") 해소** | `r2-1280-retry-readonly.png` · `r2-390-retry-readonly.png` |
 | 탭 A 닫기 → held 0 → "다시 저장" | `role=status` "다시 저장했습니다" · 일반 행 · 포커스 = 편집기 열기 · held = 탭 B · IDB `design-studio/docs/project-1` = rev 2 · 제목 "B탭 마지막 편집" | `r2-1280-retry-success.png` · 명령 출력 |
-| PendingStart 행 | **BLOCKED** — 탭 C(p3, readonly)에서 "B안으로 새로 시작" → 잠금 확인 단계에서 거절("다른 탭에서 편집 중이라 새로 시작하지 않았습니다") → 쓰기 0 → 기억 0 → `/projects` 행 = 일반(정상 동작). PendingStart는 쓰기 뒤 결과 미확인(flush 실패 등)일 때만 생겨 주입 없이 실화면에서 만들 경로가 없다. 단위 테스트(`ProjectsPending.test.tsx` CP2)로만 확인 | 명령 출력 |
+| PendingStart 행 | **BLOCKED** — 탭 C(p3, readonly)에서 "B안으로 새로 시작" → 잠금 확인 단계에서 거절("다른 탭에서 편집 중이라 새로 시작하지 않았습니다") → 쓰기 0 → 기억 0 → `/projects` 행 = 일반(정상 동작). (사실) 쓰기 전 거절이라 기억 0. (추정) PendingStart는 쓰기 뒤 결과 미확인(flush 실패 등)일 때 생기므로 주입 없이 실화면에서 만들 경로를 찾지 못했다. 단위 테스트(`ProjectsPending.test.tsx` CP2)로만 확인 | 명령 출력 |
 | 정리 | `Storage.clearDataForOrigin(http://localhost:4383, indexeddb·local_storage·cache_storage·service_workers)` → `indexedDB.databases()` = [] · `finish({keep:[]})` · `listTaskSpaces()` = space 19 `rs6-l5-qa`(ownership user — 1차 run 잔여, 사용자 소유라 미접촉)만 · preview kill → 438x·5480 리슨 0 · 5480 무접촉 | 명령 출력 |
 - R2 시작 시점(2턴) 438x·5480 리슨 = 0 — 1차 run의 4382 잔존은 이미 없었다(사실).
 - preview는 1회 백그라운드 기본 시한(10분)으로 끊겨 같은 포트로 재기동했다(관측 영향 0 — 탭 상태는 브라우저에 있음).
@@ -94,5 +96,8 @@
 3. FIX1 restart 경로(`DocBook.start` flush 실패 → 기억 유지) 회귀 테스트 1개 — 지금은 같은 `rebase` 줄이라 FIX1 테스트가 간접 보호.
 4. REPORT 잔여 1~3(첫 실패 문구 · image-missing 뒤 다시 저장 · `retryRow` 폴백 성공 문구)은 그대로 열려 있다.
 
-## 8. 서브에이전트
+## 8. 예산
+- 브리프 상한 55턴을 넘겼다(약 70턴). 실화면용 프로젝트를 새 origin(4383)에서 앱 흐름(카탈로그 → 비교 → 확정 → 3안 → 편집 시작)으로 만드느라 선택자 재시도가 많았다.
+
+## 9. 서브에이전트
 - R2: 0개(단일 레인 · 순차 의존 — 실화면은 탭 순서 의존).

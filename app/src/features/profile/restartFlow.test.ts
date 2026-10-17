@@ -33,7 +33,7 @@ describe("create 최초 요청(4.1)", () => {
   it("F-7 커밋 뒤 실패(문서 없음 → 요청 쌍) = C-E4 · 기억 origin absent", async () => {
     const repo = fake({ docs: [undefined, head("B", 1)], start: [() => Promise.reject(infra("quota"))] });
     const out = await startEdit(repo, "p", 1, "B");
-    expect(out).toMatchObject({ held: "unconfirmed", retry: true, label: "저장 다시 시도" });
+    expect(out).toMatchObject({ held: "unconfirmed", retry: true, label: "시작 다시 시도" });
     expect(pendingOf(repo, "p")).toMatchObject({ kind: "start", mode: "create", origin: { kind: "absent" }, held: "unconfirmed" });
   });
 

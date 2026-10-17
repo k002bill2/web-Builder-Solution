@@ -149,11 +149,11 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
 
   it("기준선 파일 = /studio 감량분 잠금 기준선 고정(ADR-004 개정 15 배분 B-RS-01·MQ-S2 — main 합산 실측 129.87 · 저장 데이터 복원 진입 132.91(개정 11·12 · BRIEF-R2 ③ · BRIEF-R3 ②③ 포함) · base 4f0e730 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 배분 레인이 올리면 이 기대값도 그 커밋에서 함께 갱신", () => {
     const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json", import.meta.url), "utf8"));
-    expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 130.43, "/studio/:projectId (저장 데이터 복원 진입)": 133.46 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
+    expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 129.96, "/studio/:projectId (저장 데이터 복원 진입)": 132.99 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId", "/studio/:projectId (저장 데이터 복원 진입)"]);
     // ADR-004 개정 16 — 판정은 해시 정규화 기준선(앱 93f8111 실측)
-    // 개정 17 배분 RS6-L4 실측 갱신(129.11 · 132.09)
-    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 129.11, "/studio/:projectId (저장 데이터 복원 진입)": 132.09 });
+    // 개정 17 배분 RS6-L4 실측 갱신(129.11 · 132.09) → RS7-A 도달 0 정리 실측 하향(128.66 · 131.64)
+    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 128.66, "/studio/:projectId (저장 데이터 복원 진입)": 131.64 });
   });
 });
 

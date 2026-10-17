@@ -1,0 +1,4 @@
+[["본문으로 건너뛰기","#main-content"],["Design Studio","/catalog"],["카탈로그","/catalog"],["보관함","/catalog?tab=saved"],["비교 보드","/compare"],["프로젝트","/projects"],["새 프로젝트","/compare?new=1"],["새 프로젝트 시작","/compare?new=1"],["프로필 보기","/profile/profile-1"]]
+{ href: '/profile/profile-1' }
+{"url":"/profile/profile-1","h":["디자인 프로필","프로필 값","역할 팔레트와 대비","전역 조정","버전","생성된 3안"],"buttons":["보정값 쓰기","여유","촘촘","기본 AA","강화","L0 없음","L1 낮음","L2 중간","예약","문의","판매","정하지 않음","조정 저장 (v2)","선택됨","이 안 선택","이 안 선택","3안 실제 화면으로 비교","A안으로 편집 시작"],"alerts":[],"hasRetryStart":false}
+

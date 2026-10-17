@@ -45,11 +45,9 @@ import type { ImageKeeper, RenderImages } from "../../features/studio/images/sto
 
 const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 /** 미저장 편집이 남은 채 멈춘 저장 상태 — PNG 준비 전 이유로 저장 상태 문장을 보인다(P2-a) */
-const UNSAVED: ReadonlySet<AutosaveState["phase"]> = new Set(["failed", "offline", "stale"]);
+const UNSAVED: ReadonlySet<AutosaveState["phase"]> = new Set(["failed", "offline"]);
 /** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
 const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
-/** 충돌 Callout = 충돌 때만(RS6-L4 감량 — 조작 뒤 청크) */
-const ConflictCallout = lazy(() => import("./ConflictCallout").then((m) => ({ default: m.ConflictCallout })));
 /** 내보내기 경고 확인 대화상자 · 결과(조작 뒤, S-B5) — 내보내기 버튼을 누른 뒤에만 받는다 */
 const ExportConfirmDialog = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportConfirmDialog })));
 const ExportResultView = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportResultView })));
@@ -329,16 +327,6 @@ export function StudioLayout({
 
   const docTag = docTagText(doc);
   const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} actions={save} onAnnounce={setNotice} />;
-  const conflict = (
-    <>
-      {snaps.layer}
-      {save.conflict && (
-        <Suspense fallback={null}>
-          <ConflictCallout resolve={save.resolve} heading={heading} onNotice={setNotice} refresh={snaps.refresh} />
-        </Suspense>
-      )}
-    </>
-  );
   const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : snaps.onUndo} />;
   const nav = (
     <SectionNav
@@ -445,7 +433,7 @@ export function StudioLayout({
             { id: "gate", label: "검사", panel: gate },
           ]}
         />
-        <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{conflict}{widths}</>} />
+        <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable={false} head={<>{snaps.layer}{widths}</>} />
       </div>
     );
   }
@@ -479,7 +467,7 @@ export function StudioLayout({
         </StudioToolbar>
         <div className="flex min-h-0 flex-1">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+            <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={snaps.layer} />
           </div>
           <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
             {noticeRegion}
@@ -514,7 +502,7 @@ export function StudioLayout({
           <ThemePanel doc={doc} profileId={project.profileId} {...theme.panel} />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={conflict} />
+          <StructureCanvas kitTokens={canvasTokens} images={images} doc={shown} selectedId={selectedId} onSelect={setSelected} onIssue={focusIssue} onDrawn={setDrawn} view={view} scrollable head={snaps.layer} />
         </div>
         <div className={`${COLUMN} w-75 flex-none border-l border-line-normal`}>
           {edit}

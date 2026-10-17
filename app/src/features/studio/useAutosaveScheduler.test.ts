@@ -245,53 +245,23 @@ describe("createAutosaveScheduler — 실패·오프라인·STALE (E-S07~E-S09)"
     expect(offlineNotices).toHaveLength(1);
   });
 
-  it("STALE_DOC → stale, 이후 변경은 저장 0회, resume → 즉시 저장", async () => {
+  // RS7-A(B-RS-07): 스케줄러 `stale` 단계·`resume()` 제거(제품 도달 0 — REPORT CP0). 이전 3건("STALE_DOC → stale … resume" ·
+  // "저장 중 변경이 있어도 STALE_DOC 거부면 stale" · "resume — 남은 변경 즉시 저장") → 이후 1건: STALE_DOC도 일반 실패
+  it("STALE_DOC 거부 = 일반 실패(failed · alert 1회) — 특별 단계 0 · 다음 변경은 디바운스대로 다시 저장", async () => {
     const save = vi.fn<(doc: string) => Promise<unknown>>()
       .mockRejectedValueOnce(new ProjectRepositoryError("STALE_DOC", "stale"))
       .mockResolvedValue(undefined);
     const { scheduler, states, last } = setup(save);
     scheduler.change("a");
     await vi.advanceTimersByTimeAsync(2000);
-    expect(last().phase).toBe("stale");
+    expect(last()).toMatchObject({ phase: "failed", failure: "error" });
+    expect(states.some((s) => (s.phase as string) === "stale")).toBe(false);
     scheduler.change("b");
-    scheduler.retry();
-    await vi.advanceTimersByTimeAsync(60_000);
-    expect(save).toHaveBeenCalledTimes(1);
-    expect(last().phase).toBe("stale");
-    scheduler.resume();
-    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(2000);
     expect(save).toHaveBeenCalledTimes(2);
     expect(save).toHaveBeenLastCalledWith("b");
     expect(last().phase).toBe("saved");
     expect(announcementsOf(states).filter((a) => a.kind === "alert")).toHaveLength(1);
-  });
-
-  it("저장 중 변경이 있어도 STALE_DOC 거부면 stale", async () => {
-    const first = deferred();
-    const { scheduler, saveMock, last } = setup(vi.fn<(doc: string) => Promise<unknown>>()
-      .mockReturnValueOnce(first.promise)
-      .mockResolvedValue(undefined));
-    scheduler.change("a");
-    await vi.advanceTimersByTimeAsync(2000);
-    scheduler.change("b");
-    first.reject(new ProjectRepositoryError("STALE_DOC", "stale"));
-    await vi.advanceTimersByTimeAsync(60_000);
-    expect(last().phase).toBe("stale");
-    expect(saveMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("resume — 저장 못 한 변경이 남아 있으면 즉시 다시 저장", async () => {
-    const save = vi.fn<(doc: string) => Promise<unknown>>()
-      .mockRejectedValueOnce(new ProjectRepositoryError("STALE_DOC", "stale"))
-      .mockResolvedValue(undefined);
-    const { scheduler, last } = setup(save);
-    scheduler.change("a");
-    await vi.advanceTimersByTimeAsync(2000);
-    scheduler.resume();
-    await vi.advanceTimersByTimeAsync(0);
-    expect(save).toHaveBeenCalledTimes(2);
-    expect(save).toHaveBeenLastCalledWith("a");
-    expect(last().phase).toBe("saved");
   });
 
   it("retry — 저장할 것이 없거나 저장 중이면 아무것도 하지 않는다", async () => {
@@ -344,26 +314,28 @@ describe("createAutosaveScheduler — 실패·오프라인·STALE (E-S07~E-S09)"
 });
 
 describe("needsUnloadGuard (E-S10)", () => {
-  it("메모리는 늘 true, 서버는 저장 전 변경·저장 중·실패·오프라인·STALE일 때만", () => {
-    for (const phase of ["idle", "dirty", "saving", "saved", "failed", "offline", "stale"] as const) {
+  // RS7-A: 단계 목록에서 "stale" 제거(단계 삭제 — 타입이 막는다)
+  it("메모리는 늘 true, 서버는 저장 전 변경·저장 중·실패·오프라인일 때만", () => {
+    for (const phase of ["idle", "dirty", "saving", "saved", "failed", "offline"] as const) {
       expect(needsUnloadGuard("memory", phase)).toBe(true);
     }
     expect(needsUnloadGuard("server", "idle")).toBe(false);
     expect(needsUnloadGuard("server", "saved")).toBe(false);
-    for (const phase of ["dirty", "saving", "failed", "offline", "stale"] as const) {
+    for (const phase of ["dirty", "saving", "failed", "offline"] as const) {
       expect(needsUnloadGuard("server", phase)).toBe(true);
     }
   });
 
   it("로컬 영속(ADR-007 P1)은 서버와 같은 조건 — 저장됨·변경 없음이면 경고 0", () => {
-    for (const phase of ["idle", "dirty", "saving", "saved", "failed", "offline", "stale"] as const) {
+    for (const phase of ["idle", "dirty", "saving", "saved", "failed", "offline"] as const) {
       expect(needsUnloadGuard("local", phase)).toBe(needsUnloadGuard("server", phase));
     }
   });
 });
 
 describe("createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4)", () => {
-  it("STALE 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장", async () => {
+  // RS7-A: 이전 "STALE 중 settle"(stale 단계 제거) → 이후 실패 중 settle(같은 STALE_DOC 거부 = failed) — 나머지 단언 그대로
+  it("실패 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장", async () => {
     const save = vi.fn<(doc: string) => Promise<unknown>>()
       .mockRejectedValueOnce(new ProjectRepositoryError("STALE_DOC", "stale"))
       .mockResolvedValue(undefined);
@@ -371,7 +343,7 @@ describe("createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2
     scheduler.change("a");
     await vi.advanceTimersByTimeAsync(2000);
     scheduler.change("b");
-    expect(last().phase).toBe("stale");
+    expect(last().phase).toBe("failed");
     scheduler.settle();
     expect(last()).toMatchObject({ phase: "saved" });
     expect(last().lastSavedAt).toBe(Date.now());

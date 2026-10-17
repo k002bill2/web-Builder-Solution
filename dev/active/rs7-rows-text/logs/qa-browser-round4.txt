@@ -1,0 +1,12 @@
+ElementResolutionError: Selector a[href="/projects"] matched 2 elements (2 visible, 0 hidden). Candidates: 1. a "프로젝트" (visible); 2. a "프로젝트: 모던 카페 브랜드 프로젝트" (visible). Use a current snapshot ref or a more specific role, text, or CSS selector.
+    at ambiguityError (file:////[eval1]:10648:12)
+    at rawSelectorCountError (file:////[eval1]:10193:12)
+    at async findUniqueRawSelectorContext (file:////[eval1]:10128:19)
+    at async resolveRawSelectorObjectId (file:////[eval1]:10097:19)
+    at async clickInPage (file:////[eval1]:14298:20)
+    at async #retryElementAction (file:////[eval1]:19141:24)
+    at async file:////[eval1]:19242:29
+    at async file:////[eval1]:16940:28
+
+ego's nodejs process exited with code 1.
+listen4388_exit=1

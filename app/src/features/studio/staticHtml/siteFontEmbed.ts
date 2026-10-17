@@ -38,7 +38,8 @@ export function cssFontFaces(css: string): readonly { readonly family: string; r
 
 export const stripFontFaces = (css: string) => css.replace(FACE_RULE, "");
 
-const base64 = (data: ArrayBuffer) => {
+/** 바이트 → base64(32KB씩 — 인자 개수 상한 회피). 글꼴·이미지 data URL 공통 */
+export const base64 = (data: ArrayBuffer) => {
   const bytes = new Uint8Array(data);
   let text = "";
   for (let i = 0; i < bytes.length; i += 0x8000) text += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
@@ -54,7 +55,12 @@ const COPYRIGHT: Readonly<Record<string, string>> = {
     "Kit Serif KR is a Modified Version of Noto Serif KR (Copyright 2017-2024 Adobe; upstream OFL.txt: Copyright 2012 Google Inc. All Rights Reserved.), subset and renamed. Licensed under the SIL Open Font License 1.1.",
 };
 const LICENSE = ofl.slice(ofl.indexOf("This Font Software is licensed")).trim();
-export const fontNotice = (family: string) => `\nFonts: ${COPYRIGHT[family] ?? family}\n\n${LICENSE}\n`;
+/** 계열 저작권 문장 + OFL 전문 — 단일 HTML `<head>` 주석 · zip `assets/fonts/OFL.txt`·LICENSES.md 공통 */
+export const fontLicenseText = (family: string) => `${COPYRIGHT[family] ?? family}\n\n${LICENSE}\n`;
+export const fontNotice = (family: string) => `\nFonts: ${fontLicenseText(family)}`;
+/** `@font-face` 규칙 1개 — src = data URL(단일 HTML) 또는 zip 상대 경로 */
+export const faceRule = (face: { readonly family: string; readonly weight: number }, src: string) =>
+  `@font-face{font-family:"${face.family}";font-weight:${face.weight};font-style:normal;font-display:swap;src:url(${src}) format("woff2")}`;
 
 export interface SiteFonts {
   /** 렌더 문서에 넘길 바이트(측정용) */
@@ -92,7 +98,7 @@ export async function loadSiteFonts(
     return {
       bytes,
       css: bytes
-        .map((f) => `@font-face{font-family:"${f.family}";font-weight:${f.weight};font-style:normal;font-display:swap;src:url(data:font/woff2;base64,${base64(f.data)}) format("woff2")}`)
+        .map((f) => faceRule(f, `data:font/woff2;base64,${base64(f.data)}`))
         .join(""),
       notice: fontNotice(faces[0]!.family),
     };

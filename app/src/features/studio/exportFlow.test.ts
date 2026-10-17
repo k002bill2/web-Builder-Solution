@@ -43,13 +43,18 @@ describe("내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25)", () =
 
   it("3MB 경계 — 3MB 이하 안내 0 · 넘으면 한 줄 안내(차단 0)", () => {
     expect(exportNotes({ bytes: 3 * MB, images: 1, lost: 0 })).toHaveLength(1);
-    expect(exportNotes({ bytes: 3 * MB + 1, images: 1, lost: 0 })[1]).toBe("메일 첨부에는 클 수 있습니다 — zip 내보내기는 다음 단계에서 지원합니다");
+    expect(exportNotes({ bytes: 3 * MB + 1, images: 1, lost: 0 })[1]).toBe("메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다");
+  });
+
+  it("M4-a zip 결과 줄 — 3MB 넘어도 메일 안내 0 · 잃은 이미지 줄은 같음 · EXP-AC-16 HTML 안내에 '다음 단계' 0", () => {
+    expect(exportNotes({ bytes: 30 * MB, images: 5, lost: 1, fonts: 2 }, "static-zip")).toEqual(["zip 1개 · 30.0MB (이미지 5장 · 글꼴 2개)", "이미지 1장을 다시 골라야 해 자체 그래픽으로 넣었습니다"]);
+    expect(exportNotes({ bytes: 4 * MB, images: 1, lost: 0 }).join("")).not.toContain("다음 단계");
   });
 
   it("잃은 이미지 = 마지막 줄 '이미지 N장을 다시 골라야 해 자체 그래픽으로 넣었습니다'", () => {
     expect(exportNotes({ bytes: 3.5 * MB, images: 2, lost: 2 })).toEqual([
       "HTML 1개 · 3.5MB (이미지 2장 포함)",
-      "메일 첨부에는 클 수 있습니다 — zip 내보내기는 다음 단계에서 지원합니다",
+      "메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다",
       "이미지 2장을 다시 골라야 해 자체 그래픽으로 넣었습니다",
     ]);
   });
@@ -77,6 +82,23 @@ describe("앱 경로 생성기 주입 (SPEC m2c 5.1 — ExportGenerator 계약 �
     made.run.mockRejectedValueOnce(new Error("이미지를 그리지 못했습니다")).mockRejectedValueOnce(new Error("다른 실패"));
     expect(await requestExportOnce(repository, "p1", "static-html", 5)).toEqual({ kind: "retryable", format: "static-html", reason: "이미지를 그리지 못했습니다" });
     expect(await requestExportOnce(repository, "p1", "static-html", 6)).toEqual({ kind: "retryable", format: "static-html" });
+  });
+
+  it("M4-a 용량 초과(shown 표식 실패 — ZipTooLargeError) → retryable + 사유 = 생성기 문구 그대로(SPEC 6.1 · EXP-AC-14 사유 경로)", async () => {
+    const repository = await repositoryRunningSlot();
+    const text = "묶음이 70.0MB로 상한 64MB를 넘어 만들지 않았습니다 — 큰 이미지를 줄여 주세요";
+    made.run.mockRejectedValueOnce(Object.assign(new Error(text), { shown: true }));
+    expect(await requestExportOnce(repository, "p1", "static-zip", 5)).toEqual({ kind: "retryable", format: "static-zip", reason: text });
+  });
+
+  it("M4-a zip 완료 → 내려받기 이름 <이름>_r<rev>.zip · 결과 줄 'zip 1개 · N.NMB (이미지 k장 · 글꼴 f개)'", async () => {
+    const repository = await repositoryRunningSlot();
+    made.run.mockImplementationOnce(async () => {
+      made.deps.at(-1)!.onBuilt!("blob:zip-1", { bytes: 4.2 * MB, images: 2, lost: 0, fonts: 2 });
+      return { downloadRef: "blob:zip-1", resultHash: "0123456789ab" };
+    });
+    const result = await requestExportOnce(repository, "p1", "static-zip", 5);
+    expect(result).toMatchObject({ kind: "done", format: "static-zip", download: { href: "blob:zip-1", fileName: "가게_r5.zip" }, notes: ["zip 1개 · 4.2MB (이미지 2장 · 글꼴 2개)"] });
   });
 
   it("dev 서버라 킷 CSS를 못 읽음(DEV_SERVER_UNSUPPORTED) → retryable + 사유로 preview 안내", async () => {

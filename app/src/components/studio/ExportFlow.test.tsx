@@ -44,8 +44,9 @@ const clean = (over: Partial<PageDoc> = {}) => {
   return withSections(doc, doc.sections.filter((s) => s.type !== "cta-band"));
 };
 const gateRegion = () => screen.getByRole("region", { name: "품질 게이트" });
-const zip = () => within(gateRegion()).getByRole("button", { name: /React 프로젝트\(zip\) 내보내기|내보내는 중…/ });
-const html = () => within(gateRegion()).getByRole("button", { name: /정적 HTML 내보내기|내보내는 중…/ });
+// M4-a SPEC 7절(EXP-AC-01·Q18 A) — 이전: "React 프로젝트(zip) 내보내기"·"정적 HTML 내보내기" → 이후: "정적 사이트(zip) 내보내기"·"HTML 파일 1개 내보내기"
+const zip = () => within(gateRegion()).getByRole("button", { name: /정적 사이트\(zip\) 내보내기|내보내는 중…/ });
+const html = () => within(gateRegion()).getByRole("button", { name: /HTML 파일 1개 내보내기|내보내는 중…/ });
 
 async function open(doc: PageDoc, repository: Partial<ProjectRepository> = {}) {
   const requestExport = vi.fn(repository.requestExport ?? (async () => Promise.reject(new ProjectRepositoryError("GENERATOR_UNAVAILABLE", "기본"))));
@@ -59,6 +60,31 @@ function listen() {
   window.addEventListener(EDITOR_EVENT, handler);
   return { events, stop: () => window.removeEventListener(EDITOR_EVENT, handler) };
 }
+
+describe("형식 버튼 (M4-a EXP-AC-01 · Q18 A)", () => {
+  it("버튼 = '정적 사이트(zip) 내보내기' → 'HTML 파일 1개 내보내기' 순서 2개 · React zip 버튼 0", async () => {
+    await open(clean());
+    const names = within(gateRegion())
+      .getAllByRole("button")
+      .map((b) => b.textContent)
+      .filter((t) => /내보내기$/.test(t ?? ""));
+    expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기"]);
+    expect(within(gateRegion()).queryByRole("button", { name: /React/ })).not.toBeInTheDocument();
+  });
+
+  it("zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {
+    const job: ExportJob = { jobId: "export-1", format: "static-zip", docRevision: 3, state: "queued", retryable: false };
+    const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: true }));
+    const getExportJob = async () => ({ ...job, state: "succeeded" as const, downloadRef: "blob:http://127.0.0.1/zip", resultHash: "0123456789ab" });
+    await open(clean(), { requestExport, getExportJob });
+    act(() => void fireEvent.click(zip()));
+    const done = await within(gateRegion()).findByText("정적 사이트(zip)를 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다", undefined, { timeout: 3000 });
+    const box = done.closest("[role=status]") as HTMLElement;
+    expect(within(box).getByRole("link", { name: "내려받기" })).toHaveAttribute("download", "동네-치과-클리닉-프로젝트_r3.zip");
+    expect(box.textContent).toContain("내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요");
+    expect(requestExport).toHaveBeenCalledWith("project-1", "static-zip", 3);
+  });
+});
 
 describe("버튼 사전 차단 · 이유 (SPEC 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18)", () => {
   it("게이트 차단 + 폴백 → 두 버튼 aria-disabled · 이유 ul 순서 게이트 → 구조 미리보기 · aria-describedby 같은 순서 · 눌러도 요청 0", async () => {
@@ -105,7 +131,9 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(requestExport).toHaveBeenCalledWith("project-1", "static-html", 3);
     expect(within(gateRegion()).queryByRole("alert")).not.toBeInTheDocument();
     act(() => void fireEvent.click(zip()));
-    await within(gateRegion()).findByText(/^React 프로젝트\(zip\)는 코드 생성기 연결 후\(M4\) 내보낼 수 있습니다/);
+    // M4-a SPEC 7절 — 이전: react-zip "코드 생성기 연결 후(M4)" → 이후: static-zip 형식별 informative 문구
+    await within(gateRegion()).findByText(/^정적 사이트\(zip\)는 생성기 연결 후 내보낼 수 있습니다/);
+    expect(requestExport).toHaveBeenLastCalledWith("project-1", "static-zip", 3);
     stop();
     expect(events.map((e) => e.name)).toEqual(["export_requested", "export_failed", "export_requested", "export_failed"]);
     expect(events[1]).toEqual({ name: "export_failed", reason: "GENERATOR_UNAVAILABLE" });

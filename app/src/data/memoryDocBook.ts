@@ -118,7 +118,7 @@ const settled = (core: CoreState | undefined, current: DocHead, draft?: boolean)
 };
 const isMode = (mode: unknown): mode is StartDocMode => mode === "create" || mode === "restart";
 const isVersion = (n: unknown): n is number => typeof n === "number" && Number.isSafeInteger(n) && n >= 1;
-const isFormat = (f: unknown): f is ExportFormat => f === "react-zip" || f === "static-html";
+const isFormat = (f: unknown): f is ExportFormat => f === "react-zip" || f === "static-html" || f === "static-zip";
 /** 주입 시각(ISO)의 로컬 시:분 — 대화상자 캡션(`toLocaleTimeString`)과 같은 시계(ISO `slice`는 UTC라 KST에서 9시간 어긋났다) */
 const hhmm = (iso: string) => {
   const d = new Date(iso);
@@ -185,7 +185,7 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
           throw error;
         },
       ));
-    return format === "static-html" && load ? async (input) => (await generator(load))(input) : undefined;
+    return format !== "react-zip" && load ? async (input) => (await generator(load))(input) : undefined;
   };
   let state: DocState = {
     docs: new Map([...seed].map(([id, r]) => [id, r.doc])),

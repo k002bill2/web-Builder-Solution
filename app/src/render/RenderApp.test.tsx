@@ -105,6 +105,20 @@ describe("렌더 문서 수신기", () => {
     expect(revoke).toHaveBeenCalledWith("blob:null/1");
   });
 
+  it("serialize{refs: true}(M4-a Q17 B) → img src = image:<id>(이미지 바이트 0 · data URL 0) · refs 없으면 지금처럼 data URL", async () => {
+    Object.assign(URL, { createObjectURL: vi.fn(() => "blob:null/7"), revokeObjectURL: vi.fn() });
+    const id = "11111111-1111-4111-8111-111111111111";
+    const hero = sampleDoc().sections[1]!;
+    const withImage = { ...sampleDoc(), sections: sampleDoc().sections.map((s) => (s === hero ? { ...s, slots: { ...s.slots, image: { kind: "image", enabled: true, source: id, alt: "가게", decorative: false } } } : s)) };
+    render(<RenderApp host={window} />);
+    fromParent({ type: "render", doc: withImage, kitTokens: SAMPLE_KIT_TOKENS, images: { [id]: { blob: new Blob(["x"]), width: 4, height: 3 } } });
+    fromParent({ type: "serialize", refs: true });
+    await vi.waitFor(() => expect(sent("html")).toHaveLength(1));
+    const markup = (sent("html")[0] as { markup: string }).markup;
+    expect(markup).toContain(`src="image:${id}"`);
+    expect(markup).not.toMatch(/blob:|data:image/);
+  });
+
   describe("내보내기 이미지 decode 대기 (IMG-AC-26b 렌더 쪽 · SPEC m2c 5.3-2~4)", () => {
     const id = "11111111-1111-4111-8111-111111111111";
     const hero = sampleDoc().sections[1]!;

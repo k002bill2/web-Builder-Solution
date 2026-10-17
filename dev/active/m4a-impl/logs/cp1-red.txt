@@ -1,0 +1,261 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-a35f9a039630e0c96/app
+
+ ❯ src/features/studio/zip/storeZip.test.ts (24 tests | 24 failed) 17ms
+   ❯ storeZip (M4-a-2 CP1) (24)
+     × CRC-32 표준 벡터 3ms
+     × 순수 파서 — 이름·version 10·flags 0·store·CRC·시각 필드 0ms
+     × 1980 미만 시각은 1980-01-01 00:00:00으로 고정 0ms
+     × 표현할 수 없는 시각(Invalid Date · 2108년 이후)은 거절 2ms
+     × 빈 목록 = EOCD 22바이트 0ms
+     × 본문 복사 0 — 입력 data가 같은 참조로 조각에 들어간다 · Blob 형식 0ms
+     × 결정성 — 같은 입력·같은 date 두 번 → 바이트 동일 0ms
+     × unzip -t · zipinfo(stor) · unzip -p 본문 일치(macOS 기본 도구) 0ms
+     × 경로 거절 — 선행 / 0ms
+     × 경로 거절 — .. 세그먼트(앞) 0ms
+     × 경로 거절 — .. 세그먼트(가운데) 0ms
+     × 경로 거절 — .. 세그먼트(끝) 0ms
+     × 경로 거절 — 역슬래시 0ms
+     × 경로 거절 — 콜론 0ms
+     × 경로 거절 — 빈 이름 0ms
+     × 경로 거절 — 디렉터리 entry 0ms
+     × 경로 거절 — 비 ASCII 0ms
+     × 경로 거절 — 제어 문자 탭 0ms
+     × 경로 거절 — DEL 0ms
+     × 경로 거절 — 100자 초과 0ms
+     × 경로 거절 — 같은 이름 · 대소문자만 다른 중복 0ms
+     × 경로 허용 — a..b/c.txt · 공백 · 정확히 100자 0ms
+     × ZIP64 거절 — 항목 65,535개 이상 5ms
+     × ZIP64 거절 — 크기 상한(주입): 단일 항목 초과 · 누적 offset·중앙 디렉터리 초과 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 24 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > CRC-32 표준 벡터
+Error: 미구현
+ ❯ crc32 src/features/studio/zip/storeZip.ts:11:9
+      9|
+     10| export function crc32(_data: Uint8Array): number {
+     11|   throw new Error("미구현");
+       |         ^
+     12| }
+     13|
+ ❯ src/features/studio/zip/storeZip.test.ts:88:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 순수 파서 — 이름·version 10·flags 0·store·CRC·시각 필드
+Error: 미구현
+ ❯ zipParts src/features/studio/zip/storeZip.ts:15:9
+     13|
+     14| export function zipParts(_entries: readonly ZipEntry[], _date: Date, _…
+     15|   throw new Error("미구현");
+       |         ^
+     16| }
+     17|
+ ❯ src/features/studio/zip/storeZip.test.ts:93:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 1980 미만 시각은 1980-01-01 00:00:00으로 고정
+Error: 미구현
+ ❯ zipParts src/features/studio/zip/storeZip.ts:15:9
+     13|
+     14| export function zipParts(_entries: readonly ZipEntry[], _date: Date, _…
+     15|   throw new Error("미구현");
+       |         ^
+     16| }
+     17|
+ ❯ src/features/studio/zip/storeZip.test.ts:103:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 표현할 수 없는 시각(Invalid Date · 2108년 이후)은 거절
+AssertionError: expected [Function] to throw error matching /시각/ but got '미구현'
+
+- Expected:
+/시각/
+
++ Received:
+"미구현"
+
+ ❯ src/features/studio/zip/storeZip.test.ts:108:64
+    106|
+    107|   it("표현할 수 없는 시각(Invalid Date · 2108년 이후)은 거절", () => {
+    108|     expect(() => zipParts(one("a.txt"), new Date(Number.NaN))).toThrow…
+       |                                                                ^
+    109|     expect(() => zipParts(one("a.txt"), new Date(2108, 0, 1))).toThrow…
+    110|     expect(() => zipParts(one("a.txt"), new Date(2107, 11, 31, 23, 59,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 빈 목록 = EOCD 22바이트
+Error: 미구현
+ ❯ zipParts src/features/studio/zip/storeZip.ts:15:9
+     13|
+     14| export function zipParts(_entries: readonly ZipEntry[], _date: Date, _…
+     15|   throw new Error("미구현");
+       |         ^
+     16| }
+     17|
+ ❯ src/features/studio/zip/storeZip.test.ts:114:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 본문 복사 0 — 입력 data가 같은 참조로 조각에 들어간다 · Blob 형식
+Error: 미구현
+ ❯ zipParts src/features/studio/zip/storeZip.ts:15:9
+     13|
+     14| export function zipParts(_entries: readonly ZipEntry[], _date: Date, _…
+     15|   throw new Error("미구현");
+       |         ^
+     16| }
+     17|
+ ❯ src/features/studio/zip/storeZip.test.ts:120:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 결정성 — 같은 입력·같은 date 두 번 → 바이트 동일
+Error: 미구현
+ ❯ storeZip src/features/studio/zip/storeZip.ts:19:9
+     17|
+     18| export function storeZip(_entries: readonly ZipEntry[], _date: Date): …
+     19|   throw new Error("미구현");
+       |         ^
+     20| }
+     21|
+ ❯ src/features/studio/zip/storeZip.test.ts:126:36
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > unzip -t · zipinfo(stor) · unzip -p 본문 일치(macOS 기본 도구)
+Error: 미구현
+ ❯ storeZip src/features/studio/zip/storeZip.ts:19:9
+     17|
+     18| export function storeZip(_entries: readonly ZipEntry[], _date: Date): …
+     19|   throw new Error("미구현");
+       |         ^
+     20| }
+     21|
+ ❯ src/features/studio/zip/storeZip.test.ts:134:43
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 선행 /
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — .. 세그먼트(앞)
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — .. 세그먼트(가운데)
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — .. 세그먼트(끝)
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 역슬래시
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 콜론
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 빈 이름
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 디렉터리 entry
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 비 ASCII
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 제어 문자 탭
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — DEL
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 100자 초과
+AssertionError: expected [Function] to throw error matching /ZIP 경로/ but got '미구현'
+
+- Expected:
+/ZIP 경로/
+
++ Received:
+"미구현"
+
+ ❯ src/features/studio/zip/storeZip.test.ts:157:45
+    155|     ["100자 초과", "a".repeat(101)],
+    156|   ])("경로 거절 — %s", (_label, name) => {
+    157|     expect(() => zipParts(one(name), DATE)).toThrow(/ZIP 경로/);
+       |                                             ^
+    158|   });
+    159|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 거절 — 같은 이름 · 대소문자만 다른 중복
+AssertionError: expected [Function] to throw error matching /중복/ but got '미구현'
+
+- Expected:
+/중복/
+
++ Received:
+"미구현"
+
+ ❯ src/features/studio/zip/storeZip.test.ts:161:70
+    159|
+    160|   it("경로 거절 — 같은 이름 · 대소문자만 다른 중복", () => {
+    161|     expect(() => zipParts([...one("a.txt"), ...one("a.txt")], DATE)).t…
+       |                                                                      ^
+    162|     expect(() => zipParts([...one("a.txt"), ...one("A.TXT")], DATE)).t…
+    163|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > 경로 허용 — a..b/c.txt · 공백 · 정확히 100자
+AssertionError: expected [Function] to not throw an error but 'Error: 미구현' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: 미구현"
+
+ ❯ src/features/studio/zip/storeZip.test.ts:166:112
+    164|
+    165|   it("경로 허용 — a..b/c.txt · 공백 · 정확히 100자", () => {
+    166|     for (const name of ["a..b/c.txt", "a b.txt", "a".repeat(100)]) exp…
+       |                                                                                                                ^
+    167|   });
+    168|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > ZIP64 거절 — 항목 65,535개 이상
+AssertionError: expected [Function] to throw error matching /항목/ but got '미구현'
+
+- Expected:
+/항목/
+
++ Received:
+"미구현"
+
+ ❯ src/features/studio/zip/storeZip.test.ts:172:48
+    170|     const empty = new Uint8Array(0);
+    171|     const many = (n: number) => Array.from({ length: n }, (_, i) => ({…
+    172|     expect(() => zipParts(many(65_536), DATE)).toThrow(/항목/);
+       |                                                ^
+    173|     expect(() => zipParts(many(65_535), DATE)).toThrow(/항목/);
+    174|     expect(() => zipParts(many(65_534), DATE)).not.toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/24]⎯
+
+ FAIL  src/features/studio/zip/storeZip.test.ts > storeZip (M4-a-2 CP1) > ZIP64 거절 — 크기 상한(주입): 단일 항목 초과 · 누적 offset·중앙 디렉터리 초과
+AssertionError: expected [Function] to throw error matching /ZIP64/ but got '미구현'
+
+- Expected:
+/ZIP64/
+
++ Received:
+"미구현"
+
+ ❯ src/features/studio/zip/storeZip.test.ts:178:62
+    176|
+    177|   it("ZIP64 거절 — 크기 상한(주입): 단일 항목 초과 · 누적 offset·중앙 디렉터리 초과", () => {
+    178|     expect(() => zipParts(one("a.txt"), DATE, { max32: 0 })).toThrow(/…
+       |                                                              ^
+    179|     expect(() => zipParts([{ name: "a.txt", data: new Uint8Array(200) …
+    180|     // 각 로컬 = 30 + 5 + 10 = 45B → 두 개 90B는 상한 100 안, 중앙 디렉터리(46 + 5) ×…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/24]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  24 failed (24)
+   Start at  02:58:13
+   Duration  371ms (setup 53%, transform 27%, tests 11%, import 5%, worker 3%)
+

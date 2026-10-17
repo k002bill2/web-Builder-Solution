@@ -28,7 +28,7 @@ vi.mock("./ExportAfter", () => {
 
 const SERIES = { profileId: "profile-1", latestVersion: 2, versions: [sampleTheme().profile] } as unknown as ProfileSeries;
 const gateRegion = () => screen.getByRole("region", { name: "품질 게이트" });
-const html = () => within(gateRegion()).getByRole("button", { name: /정적 HTML 내보내기|내보내는 중…/ });
+const html = () => within(gateRegion()).getByRole("button", { name: /HTML 파일 1개 내보내기|내보내는 중…/ });
 
 describe("결과 청크는 내보내기 청크를 런타임 import하지 않는다 (M2A-3a Codex P2-1 r3)", () => {
   // 첫 exportFlow 로드가 실패한 브라우저는 그 URL을 기억한다 — 재시도로 exportFlow를 복구해도 원래 URL을 import하는 결과 청크는 거부된다

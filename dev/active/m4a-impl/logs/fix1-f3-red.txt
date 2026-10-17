@@ -1,0 +1,5 @@
+     × L-1 url( 출현 수 = 엄격 매치 수 — 따옴표 섞인 url()(본문 style·style 요소·킷 CSS)·킷 CSS 이스케이프(@\69mport·u\72l()·image-set = 실패 · Tailwind 이스케이프 선택자·content 글자·data: url은 통과 27ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > FIX1 AppSec·QA (M-1·M-2·L-1·L-2) > L-1 url( 출현 수 = 엄격 매치 수 — 따옴표 섞인 url()(본문 style·style 요소·킷 CSS)·킷 CSS 이스케이프(@\69mport·u\72l()·image-set = 실패 · Tailwind 이스케이프 선택자·content 글자·data: url은 통과
+AssertionError: <div style="background:url(&quot;https://evil.example/a'b&quot;)"></div>: expected [Function] to throw an error
+      Tests  1 failed | 2 passed | 24 skipped (27)

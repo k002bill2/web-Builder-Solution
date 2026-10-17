@@ -181,4 +181,167 @@ describe("정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4)", () => {
     for (const bad of ['src="https://example.com/a.webp"', 'src="data:image/svg+xml;base64,AAAA"', 'src="data:image/gif;base64,AAAA"', 'src="/a.png"', 'src="data:image/webp;base64,AAAA" srcset="data:image/webp;base64,AAAA 2x"'])
       expect(() => buildStaticHtml({ ...parts, markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
   });
+
+  it("M4-a Q17 B 참조 직렬화: img src = image:<id> → images[id](부모 Blob에서 만든 src)로 바꾼 뒤 같은 규칙 검사 · 모르는 id·빈 id = 실패", () => {
+    const site = (img: string) => `<div data-site-root=""><img alt="" ${img}></div>`;
+    const parts = { css: "", title: "t", description: "d" };
+    const images = { "id-1": "data:image/webp;base64,QUJD", "id-2": "data:image/png;base64,REVG" };
+    const html = buildStaticHtml({ ...parts, images, markup: `<div data-site-root=""><img alt="" src="image:id-1"><img alt="" src="image:id-2"><img alt="" src="image:id-1"></div>` });
+    expect([...parse(html).querySelectorAll("img")].map((img) => img.getAttribute("src"))).toEqual([images["id-1"], images["id-2"], images["id-1"]]);
+    expect(html).not.toContain("image:");
+    for (const bad of ['src="image:id-3"', 'src="image:"']) expect(() => buildStaticHtml({ ...parts, images, markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
+    // images 없이 참조가 오면(부모가 표를 안 줌) 실패
+    expect(() => buildStaticHtml({ ...parts, markup: site('src="image:id-1"') })).toThrow("정적 HTML 이미지");
+  });
+});
+
+describe("M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15)", () => {
+  const parts = { css: CSS, title: "모던 카페", description: "스페셜티 커피" };
+  const inject = (extra: string) => siteMarkup().replace("</header>", `${extra}</header>`);
+  const firstSectionId = () => parse(build()).querySelector("[data-kit][id]")!.id;
+
+  it("zip 대상: img src = assets/images/img-NN.(webp|jpg|png)만 · data: img 0 · srcset 0", () => {
+    const site = (img: string) => `<div data-site-root=""><img alt="" ${img}></div>`;
+    for (const name of ["img-01.webp", "img-02.jpg", "img-100.png"]) expect(buildStaticHtml({ ...parts, target: "zip", markup: site(`src="assets/images/${name}"`) })).toContain(`src="assets/images/${name}"`);
+    for (const bad of ['src="data:image/webp;base64,AAAA"', 'src="assets/images/a.webp"', 'src="assets/images/img-1.webp"', 'src="../assets/images/img-01.webp"', 'src="assets/images/img-01.gif"', 'src="assets/images/img-01.webp" srcset="assets/images/img-01.webp 2x"'])
+      expect(() => buildStaticHtml({ ...parts, target: "zip", markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
+    // 단일 HTML은 assets 경로를 받지 않는다
+    expect(() => buildStaticHtml({ ...parts, markup: site('src="assets/images/img-01.webp"') })).toThrow("정적 HTML 이미지");
+  });
+
+  it("zip 대상: CSS url() = data: 또는 assets/fonts/<계열>-<굵기>.woff2만 · @import 0 · 단일 HTML은 data:만", () => {
+    const font = '@font-face{font-family:"Kit Sans KR";src:url(assets/fonts/KitSansKR-400.woff2) format("woff2")}';
+    expect(buildStaticHtml({ ...parts, target: "zip", markup: siteMarkup(), css: CSS + font })).toContain("url(assets/fonts/KitSansKR-400.woff2)");
+    for (const bad of ["url(assets/fonts/../x.woff2)", "url(/assets/fonts/KitSansKR-400.woff2)", "url(assets/fonts/Kit-Sans-400.woff2)", "url(https://x.test/a.woff2)"])
+      expect(() => buildStaticHtml({ ...parts, target: "zip", markup: siteMarkup(), css: `.a{src:${bad}}` }), bad).toThrow(/외부 요청/);
+    expect(() => buildStaticHtml({ ...parts, markup: siteMarkup(), css: CSS + font })).toThrow(/외부 요청/);
+  });
+
+  it("F-11·EXP-AC-11: a[href]는 # 같은 문서 앵커만 — http·mailto·tel·javascript·data·상대 경로 = 실패", () => {
+    for (const href of ["https://x.test", "http://x.test", "mailto:a@b.c", "tel:010", "javascript:alert(1)", "data:text/html,x", "page.html", "/a"])
+      expect(() => build({ markup: inject(`<a href="${href}">x</a>`) }), href).toThrow("정적 HTML 링크");
+  });
+
+  it("F-12·EXP-AC-12: # 앵커 대상 id가 문서에 없으면 실패 · 있으면 통과 · 빈 # = 실패", () => {
+    expect(() => build({ markup: inject(`<a href="#${firstSectionId()}">x</a>`) })).not.toThrow();
+    for (const href of ["#s-x", "#"]) expect(() => build({ markup: inject(`<a href="${href}">x</a>`) }), href).toThrow("정적 HTML 링크");
+  });
+
+  it("F-13: action·formaction·poster · img 밖 src · style url()의 data: 아닌 값 = 실패", () => {
+    for (const bad of ['<form action="https://x.test"></form>', '<button formaction="/x">x</button>', '<video poster="a.png"></video>', '<audio src="a.mp3"></audio>', '<div style="background:url(a.png)"></div>'])
+      expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HTML 외부 출처");
+    expect(() => build({ markup: inject('<div style="background:url(data:image/png;base64,AA)"></div>') })).not.toThrow();
+  });
+
+  it("F-13 우회(Codex R2): a 밖 href·xlink:href의 # 아닌 값 · 본문 link·base·meta · 본문 style의 @import·url() · style 속성 URL( 대소문자·CSS 이스케이프·image-set = 실패", () => {
+    for (const bad of [
+      '<svg><image href="https://x.test/a.png"></image></svg>',
+      '<svg><image xlink:href="https://x.test/a.png"></image></svg>',
+      '<link rel="stylesheet" href="https://x.test/a.css">',
+      '<base href="https://x.test/">',
+      '<meta http-equiv="refresh" content="0;url=https://x.test">',
+      '<style>@import "https://x.test/a.css";</style>',
+      "<style>.a{background:url(https://x.test/a.png)}</style>",
+      '<div style="background:URL(https://x.test/a.png)"></div>',
+      '<div style="background:u\\72l(https://x.test/a.png)"></div>',
+      '<div style="background-image:image-set(\'https://x.test/a.png\' 1x)"></div>',
+    ])
+      expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HTML 외부 출처");
+    // 같은 문서 조각 참조(svg use)는 외부 요청이 아니다
+    expect(() => build({ markup: inject('<svg><use href="#x"></use></svg>') })).not.toThrow();
+  });
+
+  it("F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과", () => {
+    const legacy = ["a", "p", "f", "s"].join("");
+    expect(() => build({ markup: inject("<p>Design Studio 상호</p>"), title: "Design Studio", description: "design studio" })).not.toThrow();
+    expect(() => build({ notice: "made by Design Studio" })).toThrow("정적 HTML 브랜드");
+    expect(() => build({ css: `${CSS}.x{--${legacy}-a:1}` })).toThrow("정적 HTML 브랜드");
+    expect(() => build({ markup: inject(`<p class="${legacy.toUpperCase()}-x">x</p>`) })).toThrow("정적 HTML 브랜드");
+  });
+
+  it("F-14 data: 본문 제외(Ego Lite R2): 인라인 글꼴 base64에 우연히 든 글자는 브랜드가 아니다 · data: 밖 CSS의 브랜드는 그대로 실패", () => {
+    const legacy = ["a", "p", "f", "s"].join("");
+    const face = (payload: string) => `@font-face{font-family:"Kit Sans KR";src:url(data:font/woff2;base64,AAAA${payload}BBBB) format("woff2")}`;
+    expect(() => build({ css: CSS + face(legacy.toUpperCase()) })).not.toThrow();
+    expect(() => build({ css: `${CSS}${face("")}.${legacy}-x{color:red}` })).toThrow("정적 HTML 브랜드");
+  });
+});
+
+
+describe("FIX1 AppSec·QA (M-1·M-2·L-1·L-2)", () => {
+  const inject = (extra: string) => siteMarkup().replace("</header>", `${extra}</header>`);
+  /** 결과에 남으면 안 되는 것 — 고정 스크립트 밖 script · on* · 외부 출처 · javascript: · template · SMIL */
+  const expectInert = (html: string) => {
+    expect(html.split("<script").length - 1).toBe(1);
+    for (const bad of ["onerror", "evil.example", "javascript:", "<template", "shadowrootmode", "<animate", "<set", "<SET", "attributename"]) expect(html, bad).not.toContain(bad);
+  };
+
+  it("M-1 template(declarative shadow DOM)·M-2 SVG animate·set·animateMotion·animateTransform = 제거(대소문자 무관) — 퍼즈 M06·M07·M12·M13·M41·M42·M43", () => {
+    const fuzz = {
+      M06: '<svg><a><animate attributeName="href" values="javascript:alert(1)"></animate><text>x</text></a></svg>',
+      M07: '<svg><a><set attributeName="href" to="javascript:alert(1)"></set><text>x</text></a></svg>',
+      M12: '<div><template shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><script>alert(2)</script></template></div>',
+      M13: '<div><template shadowrootmode="open"><a href="https://evil.example/phish">x</a><style>@import url(https://evil.example/c.css)</style></template></div>',
+      M41: '<svg><image><set attributeName="href" to="https://evil.example/x"></set></image></svg>',
+      M42: '<svg><image><animate attributeName="xlink:href" values="https://evil.example/x"></animate></image></svg>',
+      M43: '<div><template shadowrootmode="open"><div><template shadowrootmode="open"><script>alert(3)</script></template></div></template></div>',
+      motion: '<svg><a><animateMotion attributeName="href" values="javascript:alert(1)"></animateMotion><animateTransform attributeName="href" values="javascript:alert(1)"></animateTransform></a></svg>',
+      upper: '<svg><image><SET attributeName="href" to="https://evil.example/x"></SET><ANIMATE attributeName="href" values="https://evil.example/x"></ANIMATE></image></svg>',
+    };
+    for (const [name, extra] of Object.entries(fuzz)) {
+      let html = "";
+      expect(() => (html = build({ markup: inject(extra) })), name).not.toThrow();
+      expectInert(html);
+    }
+  });
+
+  it("L-2 F-14 제외 = CSS의 url(data:font/…;base64,<base64>)만 — 주석 경계(Codex)·문자열 안 url(data:)·notice·zip 글꼴 경로(QA M2a)·data 글꼴 두 개 사이(QA M2c)의 브랜드 = 실패", () => {
+    const legacy = ["a", "p", "f", "s"].join("");
+    const Legacy = legacy[0]!.toUpperCase() + legacy.slice(1);
+    const face = (src: string) => `@font-face{font-family:"Kit Sans KR";src:url(${src}) format("woff2")}`;
+    const font = (payload: string) => face(`data:font/woff2;base64,AAAA${payload}BBBB`);
+    // 실제 인라인 글꼴(따옴표 유무·zip 대상)의 base64 안 글자는 그대로 통과
+    expect(() => build({ css: CSS + font(legacy.toUpperCase()) + face(`"data:font/woff2;base64,${Legacy}+/=="`) })).not.toThrow();
+    expect(() => buildStaticHtml({ markup: siteMarkup(), title: "t", description: "d", target: "zip", css: CSS + font(legacy) })).not.toThrow();
+    // Codex 주석 경계 입력 — 이스케이프 아닌 출현 수 검사(L-1)가 먼저 막을 수도 있다: 어느 쪽이든 실패
+    expect(() => build({ css: `${CSS}/* url(data: */ .${legacy}-banner{color:red} /* ) */` })).toThrow(/정적 HTML (브랜드|CSS에 외부 요청)/);
+    for (const css of [
+      `${CSS}/* url("data: */ .${legacy}-banner{color:red} /* ") */`,
+      `${CSS}.q{content:"url(data:${legacy})"}`,
+      `${CSS}${font("CCCC")}.${legacy}-x{color:red}${font("DDDD")}`,
+    ])
+      expect(() => build({ css }), css).toThrow("정적 HTML 브랜드");
+    expect(() => build({ notice: "Generated by url(data:Design Studio)" })).toThrow("정적 HTML 브랜드");
+    expect(() => buildStaticHtml({ markup: siteMarkup(), title: "t", description: "d", target: "zip", css: CSS + face(`assets/fonts/${Legacy}-400.woff2`) })).toThrow("정적 HTML 브랜드");
+  });
+
+  it("L-1 url( 출현 수 = 엄격 매치 수 — 따옴표 섞인 url()(본문 style·style 요소·킷 CSS)·킷 CSS 이스케이프(@\\69mport·u\\72l()·image-set = 실패 · Tailwind 이스케이프 선택자·content 글자·data: url은 통과", () => {
+    for (const bad of [
+      `<div style="background:url(&quot;https://evil.example/a'b&quot;)"></div>`,
+      `<div style="background:url('https://evil.example/a)b')"></div>`,
+      `<style>.q{background:url("https://evil.example/a'b")}</style>`,
+    ])
+      expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HTML 외부 출처");
+    for (const bad of [
+      `.x{background:url("https://evil.example/a'b")}`,
+      `.x{background:url('https://evil.example/a)b')}`,
+      '@\\69mport "https://evil.example/c.css";',
+      ".x{background:u\\72l(https://evil.example/x)}",
+      '.x{background-image:image-set("https://evil.example/x.png" 1x)}',
+    ])
+      for (const target of ["html", "zip"] as const) expect(() => build({ target, css: CSS + bad }), `${target} ${bad}`).toThrow(/외부 요청/);
+    const tailwind = '.md\\:grid{display:grid}.q::before{content:"\\201C"}.bg-\\[repeating-linear-gradient\\(45deg\\,red\\)\\]{color:red}.\\31 0{color:red}';
+    const ok = `${CSS}${tailwind}.a{background:url("data:image/png;base64,AA")}.b{background:url('data:image/png;base64,AA')}.c{background:url( data:image/png;base64,AA )}`;
+    expect(() => build({ css: ok })).not.toThrow();
+    expect(() => build({ markup: inject(`<div style="background:url('data:image/png;base64,AA')"></div>`) })).not.toThrow();
+  });
+
+  it("Codex FIX1: 사이트 루트 자체가 제거 대상(template·script·svg animate 류)이면 실패 — 루트는 querySelectorAll('*') 밖이다", () => {
+    for (const root of [
+      '<template data-site-root="" shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><script>alert(2)</script></template>',
+      '<script data-site-root="">alert(1)</script>',
+      '<TEMPLATE data-site-root=""><p>x</p></TEMPLATE>',
+    ])
+      expect(() => build({ markup: root }), root).toThrow("사이트 루트가 없는 마크업입니다");
+  });
 });

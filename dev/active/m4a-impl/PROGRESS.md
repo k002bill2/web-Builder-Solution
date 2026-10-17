@@ -26,3 +26,13 @@
 - CP1 c568e661 · CP2 c7863aeb · CP3+CP4 575576b8 · CP5 fe4671a1
 - 예산: CP2 정규화 0 → CP5 +0.01(StudioLayout gzip 19.58→19.59 버튼 글자) → 감량 1회(isFormat includes) 효과 없음·되돌림 → 멈춤
 - 편차: data 3파일(SPEC 1.3) · PngSave.test.tsx:122 병렬 겹침(hunk 분리) · 용량 초과 = 재시도 사유 경로 — REPORT 3절
+
+## FIX1 (BRIEF-FIX1 · base a834eb88)
+- [x] F0. BRIEF-FIX1·PROGRESS 커밋
+- [ ] F1. M-1·M-2 — `clean()`에 template·animate·set·animateMotion·animateTransform(localName) · RED 퍼즈 M06·M07·M12·M13·M41·M42·M43
+- [ ] F2. L-2 — F-14 제외를 CSS의 `url(data:font/…;base64,…)`로만 · RED 주석 경계·notice·M2a·M2c
+- [ ] F3. L-1 — `url(`·`image-set(`·`@import` 출현 수 = 엄격 매치 수 · 킷 이스케이프
+- [ ] F4. 문구 "정적 사이트(zip)을" → "를"
+- [ ] F5. fresh typecheck·lint·test·build · 예산(진입 128.71 · 복원 131.69 증분 0)
+- [ ] F6. Codex 1회(`adversarial-review --scope branch --base a834eb88`) · 반영 1회
+- [ ] F7. REPORT 9절 FIX1 · untracked 0

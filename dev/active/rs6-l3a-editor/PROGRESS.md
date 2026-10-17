@@ -10,9 +10,9 @@
 - [x] CP2: core.save 경유 · saved 뒤 DocBook · 실패 시 revision 0 · seed=view() · latest 정리 (RED→GREEN)
 - [x] reject 매핑 (L2 QA 4절 catch 1~3) — 이 레인 호출처 2곳(useDocSave save · CP0 core.link) 가드 테스트
 - [x] CP마다 예산 측정 (정규화·raw) — CP0 128.67 · CP1+CP2 129.04 (목표 +0.25 초과 · 상한 안)
-- [ ] Ego Lite 1회
-- [ ] 마감 게이트 typecheck·lint·test·build
-- [ ] REPORT.md
+- [x] Ego Lite 1회 (space 12 · 4375 · 오류 0/243 · 정리 완료 — 이미지 업로드는 미실시, 단위 테스트로 갈음)
+- [x] 마감 게이트 typecheck·lint·test·build (fresh 전부 exit 0 · 330/2945)
+- [x] REPORT.md
 
 ## 기록
 

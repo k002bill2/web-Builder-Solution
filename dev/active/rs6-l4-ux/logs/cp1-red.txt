@@ -1,0 +1,269 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app
+
+ ❯ src/features/studio/saveStatusText.source.test.ts (14 tests | 8 failed) 9ms
+   ❯ RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) (14)
+     × unsupported = 결과 reason unsupported(포트 mode) 3ms
+     × readonly = 결과 reason readonly(포트 mode) 1ms
+     × cleared = 결과 reason cleared(포트 mode) 0ms
+     × image-missing = 결과 reason image-missing 0ms
+     × dirty = view().dirty && !inflight (스케줄러 단계가 아직 idle이어도) 1ms
+     × saving = view().inflight (POP 재진입 — 해제 save 진행 중, 스케줄러 idle) 0ms
+     × saving-slow(LV-1) = saving 문구 뒤 꼬리 · 꼬리 없는 saving과 구별 0ms
+     × 환경 reason이 단계 재시도(saving)보다 이긴다(UX-5 2.2 readonly > saving) · 저장 성공 뒤 reason이 지워지면 보통 문구 0ms
+ ❯ src/components/studio/SaveStatus.source.test.tsx (3 tests | 3 failed) 100ms
+   ❯ RS6-L4 CP1 · SaveStatus 출처 결선 (3)
+     × 포트 readonly 거절 → 상태 글자 = readonly 문구(문자열 '저장하지 못했습니다' 아님) · alert 같은 문구 1곳 81ms
+     × POP 재진입(C5 T1) — 앞 lease 해제 save 진행 중이면 '저장 중…' · 끝나면 다시 그려 '저장 중…' 아님 11ms
+     × T_hang → alert <p>에 hang 문구 · aria-busy 상태 글자에는 hang 문구 0 6ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SaveStatus.source.test.tsx > RS6-L4 CP1 · SaveStatus 출처 결선 > 포트 readonly 거절 → 상태 글자 = readonly 문구(문자열 '저장하지 못했습니다' 아님) · alert 같은 문구 1곳
+TestingLibraryElementError: Unable to find an element with the text: 다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다, which matches selector 'p:not([role])'. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<input[39m
+      [33maria-label[39m=[32m"제목"[39m
+      [33mvalue[39m=[32m"하나"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m저장하지 못했습니다[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m다시 저장[0m
+      [36m</button>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m>[39m
+        [0m저장하지 못했습니다[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/SaveStatus.source.test.tsx:36:19
+     34|     fireEvent.change(screen.getByRole("textbox", { name: "제목" }), { ta…
+     35|     await act(() => vi.advanceTimersByTimeAsync(2000));
+     36|     expect(screen.getByText("다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다", { selector…
+       |                   ^
+     37|     expect(screen.getByRole("alert")).toHaveTextContent("다른 탭에서 편집 중이라…
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  src/components/studio/SaveStatus.source.test.tsx > RS6-L4 CP1 · SaveStatus 출처 결선 > POP 재진입(C5 T1) — 앞 lease 해제 save 진행 중이면 '저장 중…' · 끝나면 다시 그려 '저장 중…' 아님
+TestingLibraryElementError: Unable to find an element with the text: 저장 중…. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+  [36m<div>[39m
+    [36m<input[39m
+      [33maria-label[39m=[32m"제목"[39m
+      [33mvalue[39m=[32m"떠나기 전"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m저장 전 변경 있음[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/SaveStatus.source.test.tsx:51:19
+     49|     expect(saveDoc).toHaveBeenCalledTimes(1);
+     50|     render(<Harness repo={repo} initialDoc={doc} />);
+     51|     expect(screen.getByText("저장 중…")).toBeInTheDocument();
+       |                   ^
+     52|     await act(async () => finish?.());
+     53|     await act(() => vi.advanceTimersByTimeAsync(0));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  src/components/studio/SaveStatus.source.test.tsx > RS6-L4 CP1 · SaveStatus 출처 결선 > T_hang → alert <p>에 hang 문구 · aria-busy 상태 글자에는 hang 문구 0
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  undefined[39m
+Received:
+[31m[39m
+ ❯ src/components/studio/SaveStatus.source.test.tsx:61:39
+     59|     const { rerender } = render(at());
+     60|     rerender(at(1));
+     61|     expect(screen.getByRole("alert")).toHaveTextContent(SAVE_HANG_TEXT…
+       |                                       ^
+     62|     expect(SAVE_HANG_TEXT).toBe("브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않…
+     63|     const busy = document.querySelector("[aria-busy=true]");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > unsupported = 결과 reason unsupported(포트 mode)
+AssertionError: expected '저장하지 못했습니다' to be '이 브라우저는 저장소를 쓸 수 없어 이 탭에만 저장합니다' // Object.is equality
+
+Expected: "이 브라우저는 저장소를 쓸 수 없어 이 탭에만 저장합니다"
+Received: "저장하지 못했습니다"
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:26:65
+     24|     ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", …
+     25|   ] as const)("%s", (_, phase, persistence, source, text) => {
+     26|     expect(saveStatusText({ phase }, persistence, NOW, source)).toBe(t…
+       |                                                                 ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > readonly = 결과 reason readonly(포트 mode)
+AssertionError: expected '저장하지 못했습니다' to be '다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다' // Object.is equality
+
+Expected: "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다"
+Received: "저장하지 못했습니다"
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:26:65
+     24|     ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", …
+     25|   ] as const)("%s", (_, phase, persistence, source, text) => {
+     26|     expect(saveStatusText({ phase }, persistence, NOW, source)).toBe(t…
+       |                                                                 ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > cleared = 결과 reason cleared(포트 mode)
+AssertionError: expected '저장하지 못했습니다' to be '이 브라우저 데이터가 지워졌습니다 — 새로고침하세요' // Object.is equality
+
+Expected: "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요"
+Received: "저장하지 못했습니다"
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:26:65
+     24|     ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", …
+     25|   ] as const)("%s", (_, phase, persistence, source, text) => {
+     26|     expect(saveStatusText({ phase }, persistence, NOW, source)).toBe(t…
+       |                                                                 ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > image-missing = 결과 reason image-missing
+AssertionError: expected '저장하지 못했습니다' to be '이미지를 저장하지 못했습니다' // Object.is equality
+
+Expected: "이미지를 저장하지 못했습니다"
+Received: "저장하지 못했습니다"
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:26:65
+     24|     ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", …
+     25|   ] as const)("%s", (_, phase, persistence, source, text) => {
+     26|     expect(saveStatusText({ phase }, persistence, NOW, source)).toBe(t…
+       |                                                                 ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > dirty = view().dirty && !inflight (스케줄러 단계가 아직 idle이어도)
+AssertionError: expected '' to be '저장 전 변경 있음' // Object.is equality
+
+- Expected
++ Received
+
+- 저장 전 변경 있음
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:26:65
+     24|     ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", …
+     25|   ] as const)("%s", (_, phase, persistence, source, text) => {
+     26|     expect(saveStatusText({ phase }, persistence, NOW, source)).toBe(t…
+       |                                                                 ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > saving = view().inflight (POP 재진입 — 해제 save 진행 중, 스케줄러 idle)
+AssertionError: expected '' to be '저장 중…' // Object.is equality
+
+- Expected
++ Received
+
+- 저장 중…
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:26:65
+     24|     ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", …
+     25|   ] as const)("%s", (_, phase, persistence, source, text) => {
+     26|     expect(saveStatusText({ phase }, persistence, NOW, source)).toBe(t…
+       |                                                                 ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > saving-slow(LV-1) = saving 문구 뒤 꼬리 · 꼬리 없는 saving과 구별
+AssertionError: expected '저장 중…' to be '저장 중…undefined' // Object.is equality
+
+Expected: "저장 중…undefined"
+Received: "저장 중…"
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:30:92
+     28|
+     29|   it("saving-slow(LV-1) = saving 문구 뒤 꼬리 · 꼬리 없는 saving과 구별", () => {
+     30|     expect(saveStatusText({ phase: "saving", slow: true }, "local", NO…
+       |                                                                                            ^
+     31|     expect(SAVE_SLOW_TAIL).toBe(" · 브라우저 응답이 늦습니다");
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP1 · 상태 판정 출처 (I6 8.1) > 환경 reason이 단계 재시도(saving)보다 이긴다(UX-5 2.2 readonly > saving) · 저장 성공 뒤 reason이 지워지면 보통 문구
+AssertionError: expected '저장 중…' to be '다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다' // Object.is equality
+
+Expected: "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다"
+Received: "저장 중…"
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:35:100
+     33|
+     34|   it("환경 reason이 단계 재시도(saving)보다 이긴다(UX-5 2.2 readonly > saving) · 저장…
+     35|     expect(saveStatusText({ phase: "saving" }, "local", NOW, { reason:…
+       |                                                                                                    ^
+     36|     expect(saveStatusText({ phase: "saving" }, "local", NOW, { infligh…
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  11 failed | 6 passed (17)
+   Start at  17:27:34
+   Duration  1.04s (environment 67%, setup 13%, transform 11%, tests 6%, import 2%, worker 1%)
+

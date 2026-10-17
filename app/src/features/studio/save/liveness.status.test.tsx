@@ -63,8 +63,9 @@ describe("RS6-L2 CP3 · T_hang alert", () => {
   it("aria-busy = 저장 중(slow 포함)만 · 끝나면 해제", () => {
     const { rerender } = render(at({ phase: "saving" }));
     expect(screen.getByText("저장 중…")).toHaveAttribute("aria-busy", "true");
+    // RS6-L4 CP1: slow = LV-1 꼬리(I6 3절) — 글자는 바뀌어도 aria-busy는 그대로
     rerender(at({ phase: "saving", slow: true }));
-    expect(screen.getByText("저장 중…")).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByText("저장 중… · 브라우저 응답이 늦습니다")).toHaveAttribute("aria-busy", "true");
     rerender(at({ phase: "saved", lastSavedAt: Date.now() }));
     expect(screen.getByText(/이 브라우저에 저장됨/)).not.toHaveAttribute("aria-busy");
   });

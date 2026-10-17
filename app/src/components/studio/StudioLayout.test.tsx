@@ -150,7 +150,8 @@ describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () =
     expect(save).not.toHaveBeenCalled();
   });
 
-  it("STALE_DOC → 캔버스 위 ConflictCallout(r7) · 내 편집 유지 · 알림 영역 1개", async () => {
+  // RS6-L4 R2(I6 8.1 · Jarvis 결정 ①): 다른 탭 커밋(포트 stale) = `stale` 환경 행 — 충돌 Callout 대신 상태 글자·alert 1곳 + "버리고 새로고침"
+  it("다른 탭 stale(포트) → stale 환경 행(글자·alert) · 충돌 Callout 0 · 내 편집 유지 · 알림 영역 1개", async () => {
     const latest = sampleDoc({ revision: 7 });
     const { repository } = fakeRepository(async () => {
       throw new ProjectRepositoryError("STALE_DOC", "stale", { doc: latest });
@@ -158,8 +159,14 @@ describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () =
     draw(repository);
     act(() => void fireEvent.change(within(editRegion()).getByRole("textbox", { name: /^제목/ }), { target: { value: "내 편집" } }));
     await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(within(canvas()).getByText("다른 곳에서 이 문서가 바뀌었습니다(r7)")).toBeInTheDocument();
-    expect(within(canvas()).getByRole("button", { name: "내 편집으로 저장" })).toBeInTheDocument();
+    expect(within(screen.getByRole("banner")).getByText("다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요", { selector: "p:not([role])" })).toBeInTheDocument();
+    expect(screen.getByRole("alert", { name: "" })).toHaveTextContent("다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요");
+    expect(within(canvas()).queryByText(/다른 곳에서 이 문서가 바뀌었습니다/)).toBeNull();
+    expect(within(canvas()).queryByRole("button", { name: "내 편집으로 저장" })).toBeNull();
+    // 버튼 1개 규칙(UX-5 2.2 · I6 8.2) — "다시 저장" 대신 "버리고 새로고침"(조작 뒤 SaveActions)
+    await act(async () => void (await import("./SaveActions"), await vi.advanceTimersByTimeAsync(0)));
+    expect(within(screen.getByRole("banner")).getByRole("button", { name: "버리고 새로고침" })).toBeInTheDocument();
+    expect(within(screen.getByRole("banner")).queryByRole("button", { name: "다시 저장" })).toBeNull();
     expect(within(editRegion()).getByRole("textbox", { name: /^제목/ })).toHaveValue("내 편집");
     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
   });
@@ -171,7 +178,8 @@ describe("PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — �
   const cases: ReadonlyArray<readonly [string, () => Error, string]> = [
     ["failed", () => new Error("boom"), "저장하지 못했습니다"],
     ["offline", () => new ProjectRepositoryError("NETWORK", "offline"), "오프라인 — 연결되면 저장합니다"],
-    ["stale", () => new ProjectRepositoryError("STALE_DOC", "stale", { doc: sampleDoc({ revision: 7 }) }), "다른 곳에서 이 문서가 바뀌었습니다"],
+    // RS6-L4 R2(I6 8.1): 다른 탭 커밋 = stale 환경 행 문구(이전: 충돌 제목 "다른 곳에서 이 문서가 바뀌었습니다")
+    ["stale", () => new ProjectRepositoryError("STALE_DOC", "stale", { doc: sampleDoc({ revision: 7 }) }), "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요"],
   ];
   it.each(cases)("저장 %s → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로", async (_phase, error, reason) => {
     const { repository } = fakeRepository(async () => {

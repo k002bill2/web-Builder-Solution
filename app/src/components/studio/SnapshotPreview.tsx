@@ -72,7 +72,7 @@ export default function SnapshotPreview({
 }) {
   const box = useRef<HTMLDivElement>(null);
   const busy = useRef(false);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<false | string>(false);
   // 복원 요청 중에는 돌아가기도 잠근다 — 돌아가 입력하면 늦게 온 복원 결과가 그 입력을 덮는다(Codex r1 P1)
   const [restoring, setRestoring] = useState(false);
   useLayoutEffect(() => {
@@ -95,12 +95,13 @@ export default function SnapshotPreview({
         if (!isDoc(restored)) throw new Error("복원 결과가 편집 문서 모양이 아닙니다");
         return restored;
       });
-      if (!after) throw new Error("저장하지 못해 복원하지 않았습니다");
+      // 저장 먼저 실패 = 복원 0(L3b 인계 — "저장 뒤 다시 복원" 전용 문장)
+      if (!after) return setFailed("저장하지 못해 복원하지 않았습니다 · 저장한 뒤 다시 복원하세요");
       // 이름 조회는 보조 — 실패해도 복원은 끝났다(알림·되돌리기 그대로 · Codex r2 P2)
       const kept = await repository.listSnapshots(projectId).then((list) => list.at(-1)?.name, () => undefined);
       onRestored(before, after, `스냅샷 '${snapshot.name}'으로 복원했습니다 · 복원 전 상태는 ${kept ? `'${kept}'` : "스냅샷 목록"}에 있습니다`);
     } catch {
-      setFailed(true);
+      setFailed("복원하지 못했습니다 · 다시 시도");
     } finally {
       busy.current = false;
       setRestoring(false);
@@ -115,7 +116,7 @@ export default function SnapshotPreview({
         <div className="ds-body3">
           <p id={REASON_ID}>스냅샷을 보는 중에는 편집할 수 없습니다</p>
           {restoring && <p>복원하는 중입니다 · 끝나면 편집으로 돌아갑니다</p>}
-          {failed && <p role="alert">복원하지 못했습니다 · 다시 시도</p>}
+          {failed && <p role="alert">{failed}</p>}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" onClick={() => void restore()}>

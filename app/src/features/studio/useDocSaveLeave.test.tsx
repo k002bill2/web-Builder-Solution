@@ -102,12 +102,14 @@ describe("RS6-L3b CP-C · lease 해제 save · 탭 수준 경고", () => {
     expect(unloadBlocked()).toBe(true);
   });
 
-  it("탭 수준 경고: STALE 때 등록", async () => {
+  // RS6-L4 R2(I6 8.1): 포트 stale = `stale` 환경 행(failed + reason stale) — 이전 단계 "stale"(충돌)
+  it("탭 수준 경고: 다른 탭 stale(stale 환경 행) 때 등록", async () => {
     const { repo, doc, core } = await startedRig();
     vi.spyOn(core(), "save").mockResolvedValue({ status: "failed", reason: "stale", newer: false });
     const { result, unmount } = hook({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 5 });
     act(() => result.current.edit(edited(doc, "내 편집")));
-    await vi.waitFor(() => expect(result.current.state.phase).toBe("stale"));
+    await vi.waitFor(() => expect(result.current.state.phase).toBe("failed"));
+    expect(result.current.source.reason).toBe("stale");
     expect(unloadBlocked()).toBe(true);
     unmount();
   });

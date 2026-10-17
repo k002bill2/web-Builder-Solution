@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app
+
+ ❯ src/features/studio/saveStatusText.source.test.ts (16 tests | 1 failed) 7ms
+   ❯ RS6-L4 CP4 · LV-1 slow 진입 알림(I6 3절·8.4) (2)
+     × saving → saving-slow 진입 = status 1회(꼬리 문구) · 이미 slow면 다시 알리지 않음 3ms
+ ❯ src/components/studio/SnapshotPreview.saveFirst.test.tsx (1 test | 1 failed) 81ms
+   ❯ RS6-L4 CP4 · 스냅샷 복원 저장 먼저 실패 (1)
+     × adopt = undefined(저장 먼저 실패) → '저장하지 못해 복원하지 않았습니다 · 저장한 뒤 다시 복원하세요' alert · restoreSnapshot 0 · onRestored 0 80ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SnapshotPreview.saveFirst.test.tsx > RS6-L4 CP4 · 스냅샷 복원 저장 먼저 실패 > adopt = undefined(저장 먼저 실패) → '저장하지 못해 복원하지 않았습니다 · 저장한 뒤 다시 복원하세요' alert · restoreSnapshot 0 · onRestored 0
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^저장하지 못해 복원하지 않았습니다 · 저장한 뒤 다시 복원하세요$/[39m
+Received:
+[31m  복원하지 못했습니다 · 다시 시도[39m
+ ❯ src/components/studio/SnapshotPreview.saveFirst.test.tsx:28:39
+     26|     );
+     27|     await act(async () => void fireEvent.click(screen.getByRole("butto…
+     28|     expect(screen.getByRole("alert")).toHaveTextContent(/^저장하지 못해 복원하지…
+       |                                       ^
+     29|     expect(restoreSnapshot).not.toHaveBeenCalled();
+     30|     expect(onRestored).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts > RS6-L4 CP4 · LV-1 slow 진입 알림(I6 3절·8.4) > saving → saving-slow 진입 = status 1회(꼬리 문구) · 이미 slow면 다시 알리지 않음
+AssertionError: expected undefined to deeply equal { kind: 'status', …(1) }
+
+- Expected:
+{
+  "kind": "status",
+  "text": "저장 중… · 브라우저 응답이 늦습니다",
+}
+
++ Received:
+undefined
+
+ ❯ src/features/studio/saveStatusText.source.test.ts:50:84
+     48| describe("RS6-L4 CP4 · LV-1 slow 진입 알림(I6 3절·8.4)", () => {
+     49|   it("saving → saving-slow 진입 = status 1회(꼬리 문구) · 이미 slow면 다시 알리지 않음"…
+     50|     expect(saveAnnouncement({ phase: "saving" }, { phase: "saving", sl…
+       |                                                                                    ^
+     51|     expect(saveAnnouncement({ phase: "saving", slow: true }, { phase: …
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  2 failed | 23 passed (25)
+   Start at  18:38:57
+   Duration  775ms (environment 65%, tests 13%, setup 12%, transform 8%, import 1%, worker 1%)
+

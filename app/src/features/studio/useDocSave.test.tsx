@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { READ_ONLY_TAB } from "../../data/persistence/infra";
 import { createMemoryCompareBoardRepository } from "../../data/memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "../../data/memoryGenerationRepository";
 import { createMemoryProjectRepository } from "../../data/memoryProjectRepository";
@@ -174,16 +175,25 @@ describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
     return { doc, m, hook, theirs };
   }
 
-  it("화면 문서 = 내 편집 · conflict.latest = 최신 · 고르기 전 자동 저장 0회", async () => {
+  // RS6-L4 R2(I6 8.1 · Jarvis 결정 ①): 다른 탭 커밋(포트 stale) = `stale` 환경 행 — 충돌 영역(conflict) 대신 failed + 출처 reason stale
+  it("다른 탭 stale(포트) = failed + 출처 reason stale(문구) · 충돌 영역 없음 · 화면 문서 = 내 편집 · 다른 탭 문서로 덮지 않음", async () => {
     const { m, hook, theirs } = await staleSetup();
     const { result } = hook;
-    expect(result.current.state.phase).toBe("stale");
+    expect(result.current.state.phase).toBe("failed");
+    expect(result.current.source).toMatchObject({ reason: "stale", text: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요" });
     expect(result.current.doc.meta.title).toBe("내 편집");
-    expect(result.current.conflict?.latest).toEqual(theirs);
+    expect(result.current.conflict).toBeUndefined();
+    expect(result.current.doc).not.toEqual(theirs);
+    // 이전: stale 단계 = 고르기 전 자동 저장 0 · 이후(failed 행): 편집·retry는 저장을 내지만 포트가 모두 거절 — 다른 탭 커밋을 덮지 않고 stale 행 그대로
     act(() => result.current.edit(titled(result.current.doc, "내 편집 2")));
     act(() => result.current.retry());
     await act(() => vi.advanceTimersByTimeAsync(60_000));
-    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
+    const settled = await Promise.allSettled(vi.mocked(m.repo.saveDoc).mock.results.map((r) => r.value));
+    expect(settled.length).toBeGreaterThan(1);
+    expect(settled.every((r) => r.status === "rejected")).toBe(true);
+    expect(result.current.doc.meta.title).toBe("내 편집 2");
+    expect(result.current.state.phase).toBe("failed");
+    expect(result.current.source.reason).toBe("stale");
   });
 
   it("\"내 편집으로 저장\" → resolveConflict(mine, 내 최신 문서) 1회 · 추가 saveDoc 0 · 다음 편집은 새 revision으로 저장", async () => {
@@ -220,14 +230,35 @@ describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
     expect(result.current.state.phase).toBe("saved");
   });
 
-  it("해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 STALE 그대로(자동 저장 0)", async () => {
+  // RS6-L4 R2(I6 8.1): 포트 stale은 이제 failed(stale 환경 행) — 해결 거부 뒤에도 그 단계·출처 그대로
+  it("해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 stale 환경 행 그대로(자동 저장 0)", async () => {
     const { m, hook } = await staleSetup();
     const { result } = hook;
     vi.mocked(m.repo.resolveConflict).mockRejectedValueOnce(new ProjectRepositoryError("NOT_FOUND", "project-1"));
     await act(async () => {
       await expect(result.current.resolve("mine")).rejects.toMatchObject({ code: "NOT_FOUND" });
     });
-    expect(result.current.state.phase).toBe("stale");
+    expect(result.current.state.phase).toBe("failed");
+    expect(result.current.source.reason).toBe("stale");
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("RS6-L4 CP2 · report(저장 확인 결과 → 출처)", () => {
+  it("readonly 실패 → report() = reason 지움 · 스케줄러 settle(추가 저장 0) · report(reason) = 그 reason", async () => {
+    const doc = sampleDoc();
+    const m = mockRepo(doc, "local");
+    const { result } = renderDocSave(m.repo, doc);
+    m.failOnce(new ProjectRepositoryError("INFRA", `저장 — ${READ_ONLY_TAB}`));
+    act(() => result.current.edit(titled(doc, "읽기 전용")));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    expect(result.current.source.reason).toBe("readonly");
+    act(() => result.current.report({ reason: "newer", text: "x" }));
+    expect(result.current.source).toMatchObject({ reason: "newer", text: "x" });
+    act(() => result.current.report());
+    expect(result.current.source.reason).toBeUndefined();
+    expect(result.current.state.phase).toBe("saved");
     await act(() => vi.advanceTimersByTimeAsync(60_000));
     expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
   });

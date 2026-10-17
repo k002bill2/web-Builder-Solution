@@ -1,0 +1,810 @@
+diff --git a/app/src/components/studio/ConflictCallout.tsx b/app/src/components/studio/ConflictCallout.tsx
+index 1d690e65..28b6ca12 100644
+--- a/app/src/components/studio/ConflictCallout.tsx
++++ b/app/src/components/studio/ConflictCallout.tsx
+@@ -1,3 +1,4 @@
++import { useId } from "react";
+ import type { ConflictChoice } from "../../data/projectRepository";
+ import { SAVE_STALE_TEXT } from "../../features/studio/saveStatusText";
+ import { Button } from "../ds/Button";
+@@ -15,8 +16,10 @@ export function ConflictCallout({
+   /** STALE_DOC에 동봉된 최신 revision — 제목 "(r12)" */
+   readonly latestRevision?: number;
+   readonly busy?: boolean;
+-  readonly onChoose: (choice: ConflictChoice) => void;
++  /** 성공 = status 문장(문서 단위, UX-5 5.5)을 받아 알리고 h1로 포커스 · 실패 = 누른 버튼에 포커스 유지(UX5-AC-05) */
++  readonly onChoose: (choice: ConflictChoice, done: string) => void;
+ }) {
++  const id = useId();
+   const title = latestRevision === undefined ? SAVE_STALE_TEXT : `${SAVE_STALE_TEXT}(r${latestRevision})`;
+   return (
+     <Callout
+@@ -24,16 +27,22 @@ export function ConflictCallout({
+       title={title}
+       action={
+         <>
+-          <Button variant="primary" size="sm" disabled={busy} onClick={() => onChoose("mine")}>
++          <Button variant="primary" size="sm" aria-busy={busy || undefined} aria-disabled={busy || undefined} aria-describedby={`${id}-m`} onClick={() => !busy && onChoose("mine", "내 초안으로 저장했습니다 — 바뀐 문서는 스냅샷 '충돌 보존'에 남겼습니다")}>
+             내 편집으로 저장
+           </Button>
+-          <Button variant="outline" size="sm" disabled={busy} onClick={() => onChoose("theirs")}>
++          <Button variant="outline" size="sm" aria-busy={busy || undefined} aria-disabled={busy || undefined} aria-describedby={`${id}-t`} onClick={() => !busy && onChoose("theirs", "바뀐 문서를 불러왔습니다 — 내 초안 문서는 스냅샷 '충돌 보존'에 남겼습니다")}>
+             다른 편집 불러오기
+           </Button>
++          <p id={`${id}-m`} className="sr-only">
++            바뀐 문서는 스냅샷 '충돌 보존'으로 남기고 내 초안으로 덮어씁니다
++          </p>
++          <p id={`${id}-t`} className="sr-only">
++            내 초안은 스냅샷 '충돌 보존'으로 남기고 바뀐 문서를 불러옵니다
++          </p>
+         </>
+       }
+     >
+-      내 편집은 그대로 두었습니다
++      내 편집은 그대로 두었습니다. 고르기 전에는 저장하지 않습니다.
+     </Callout>
+   );
+ }
+diff --git a/app/src/components/studio/SaveStatus.tsx b/app/src/components/studio/SaveStatus.tsx
+index 86b21d3e..6dc7dd02 100644
+--- a/app/src/components/studio/SaveStatus.tsx
++++ b/app/src/components/studio/SaveStatus.tsx
+@@ -1,17 +1,22 @@
+-import { useEffect, useReducer, useRef, useState } from "react";
++import { lazy, Suspense, type ComponentProps, useEffect, useReducer, useRef, useState } from "react";
+ import type { ProjectPersistence } from "../../data/projectRepository";
+-import { SAVE_FAILED_TEXT, SAVE_STALE_ALERT, saveAnnouncement, saveStatusText } from "../../features/studio/saveStatusText";
++import { isSaving, SAVE_FAILED_TEXT, SAVE_HANG_TEXT, SAVE_STALE_ALERT, saveAnnouncement, saveStatusText, type SaveSource } from "../../features/studio/saveStatusText";
+ import { SAVE_HANG_ALERT } from "../../features/studio/save/alertKeys";
+ import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
+ import { Button } from "../ds/Button";
+ 
++/** 환경 reason 버튼·폐기 확인 = reason이 있을 때만 받는다(조작 뒤 · RS6-L4 M2) */
++const SaveActions = lazy(() => import("./SaveActions"));
++const ENV = new Set(["readonly", "stale", "cleared"]);
++
+ /** 상대 시각 갱신 주기 — 표시 단위가 초라서 1초 */
+ const TICK_MS = 1000;
+ 
+ /** 저장 실패 alert 문장(SPEC 6.3) — 실패가 풀릴 때까지 같은 글자라 연속 실패에 다시 낭독되지 않는다 */
+-function alertText(state: AutosaveState): string {
++function alertText(state: AutosaveState, source: SaveSource, hang: boolean): string {
+   if (state.phase === "stale") return SAVE_STALE_ALERT;
+-  return state.failure === "error" ? SAVE_FAILED_TEXT : "";
++  if (hang) return SAVE_HANG_TEXT;
++  return state.failure === "error" ? (source.text ?? SAVE_FAILED_TEXT) : "";
+ }
+ 
+ /**
+@@ -23,16 +28,23 @@ function alertText(state: AutosaveState): string {
+ export function SaveStatus({
+   state,
+   persistence,
++  source = {},
+   onRetry,
++  actions,
+   onAnnounce,
+   now = Date.now,
+ }: {
+   readonly state: AutosaveState;
+   readonly persistence: ProjectPersistence;
++  /** 판정 출처(I6 8.1) — `useDocSave().source` */
++  readonly source?: SaveSource;
+   readonly onRetry: () => void;
++  /** "저장 확인"(I6 8.2 `confirm`) · "버리고 새로고침"(`discard` + reload) 재료 — 없으면 버튼 0 */
++  readonly actions?: Pick<ComponentProps<typeof SaveActions>, "core" | "report">;
+   readonly onAnnounce?: (text: string) => void;
+   readonly now?: () => number;
+ }) {
++
+   const [, tick] = useReducer((n: number) => n + 1, 0);
+   const ticking = state.phase === "saved" && state.lastSavedAt !== undefined;
+   useEffect(() => {
+@@ -58,16 +70,25 @@ export function SaveStatus({
+ 
+   return (
+     <div className="flex min-w-0 items-center gap-2">
+-      <p className="text-caption1 text-label-alternative" aria-busy={state.phase === "saving" || undefined}>
+-        {saveStatusText(state, persistence, now())}
++      <p className="text-caption1 text-label-alternative" aria-busy={isSaving(state, source) || undefined}>
++        {saveStatusText(state, persistence, now(), source)}
+       </p>
+-      {state.phase === "failed" && (
+-        <Button variant="outline" size="sm" onClick={onRetry}>
+-          다시 저장
+-        </Button>
++      {/* 버튼 1개 규칙(UX-5 2.2) — 환경 reason(readonly·stale·cleared) = 조작 뒤 SaveActions · 그 밖 실패 = "다시 저장" */}
++      {source.reason && ENV.has(source.reason) ? (
++        actions && (
++          <Suspense fallback={null}>
++            <SaveActions reason={source.reason} dirty={source.dirty} persistence={persistence} {...actions} />
++          </Suspense>
++        )
++      ) : (
++        state.phase === "failed" && (
++          <Button variant="outline" size="sm" aria-busy={isSaving(state, source) || undefined} aria-disabled={isSaving(state, source) || undefined} onClick={() => !isSaving(state, source) && onRetry()}>
++            다시 저장
++          </Button>
++        )
+       )}
+       <p role="alert" className="sr-only" data-alert-key={hang ? SAVE_HANG_ALERT : undefined}>
+-        {alertText(state)}
++        {alertText(state, source, hang)}
+       </p>
+     </div>
+   );
+diff --git a/app/src/components/studio/SnapshotPreview.tsx b/app/src/components/studio/SnapshotPreview.tsx
+index be5403fd..40b54826 100644
+--- a/app/src/components/studio/SnapshotPreview.tsx
++++ b/app/src/components/studio/SnapshotPreview.tsx
+@@ -72,7 +72,7 @@ export default function SnapshotPreview({
+ }) {
+   const box = useRef<HTMLDivElement>(null);
+   const busy = useRef(false);
+-  const [failed, setFailed] = useState(false);
++  const [failed, setFailed] = useState<false | string>(false);
+   // 복원 요청 중에는 돌아가기도 잠근다 — 돌아가 입력하면 늦게 온 복원 결과가 그 입력을 덮는다(Codex r1 P1)
+   const [restoring, setRestoring] = useState(false);
+   useLayoutEffect(() => {
+@@ -95,12 +95,13 @@ export default function SnapshotPreview({
+         if (!isDoc(restored)) throw new Error("복원 결과가 편집 문서 모양이 아닙니다");
+         return restored;
+       });
+-      if (!after) throw new Error("저장하지 못해 복원하지 않았습니다");
++      // 저장 먼저 실패 = 복원 0(L3b 인계 — "저장 뒤 다시 복원" 전용 문장)
++      if (!after) return setFailed("저장하지 못해 복원하지 않았습니다 · 저장한 뒤 다시 복원하세요");
+       // 이름 조회는 보조 — 실패해도 복원은 끝났다(알림·되돌리기 그대로 · Codex r2 P2)
+       const kept = await repository.listSnapshots(projectId).then((list) => list.at(-1)?.name, () => undefined);
+       onRestored(before, after, `스냅샷 '${snapshot.name}'으로 복원했습니다 · 복원 전 상태는 ${kept ? `'${kept}'` : "스냅샷 목록"}에 있습니다`);
+     } catch {
+-      setFailed(true);
++      setFailed("복원하지 못했습니다 · 다시 시도");
+     } finally {
+       busy.current = false;
+       setRestoring(false);
+@@ -115,7 +116,7 @@ export default function SnapshotPreview({
+         <div className="ds-body3">
+           <p id={REASON_ID}>스냅샷을 보는 중에는 편집할 수 없습니다</p>
+           {restoring && <p>복원하는 중입니다 · 끝나면 편집으로 돌아갑니다</p>}
+-          {failed && <p role="alert">복원하지 못했습니다 · 다시 시도</p>}
++          {failed && <p role="alert">{failed}</p>}
+         </div>
+         <div className="flex flex-wrap gap-2">
+           <Button size="sm" onClick={() => void restore()}>
+diff --git a/app/src/components/studio/StudioLayout.tsx b/app/src/components/studio/StudioLayout.tsx
+index ae35d336..77f3de61 100644
+--- a/app/src/components/studio/StudioLayout.tsx
++++ b/app/src/components/studio/StudioLayout.tsx
+@@ -17,7 +17,6 @@ import { toDocSaveRepository } from "../../features/studio/studioRepository";
+ import { useDocSave } from "../../features/studio/useDocSave";
+ import { saveStatusText } from "../../features/studio/saveStatusText";
+ import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
+-import { ConflictCallout } from "./ConflictCallout";
+ import { EditFields } from "./EditFields";
+ import { SaveStatus } from "./SaveStatus";
+ import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName, variantName } from "../../features/studio/selection";
+@@ -49,6 +48,8 @@ const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
+ const UNSAVED: ReadonlySet<AutosaveState["phase"]> = new Set(["failed", "offline", "stale"]);
+ /** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
+ const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
++/** 충돌 Callout = 충돌 때만(RS6-L4 감량 — 조작 뒤 청크) */
++const ConflictCallout = lazy(() => import("./ConflictCallout").then((m) => ({ default: m.ConflictCallout })));
+ /** 내보내기 경고 확인 대화상자 · 결과(조작 뒤, S-B5) — 내보내기 버튼을 누른 뒤에만 받는다 */
+ const ExportConfirmDialog = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportConfirmDialog })));
+ const ExportResultView = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportResultView })));
+@@ -113,11 +114,11 @@ export function StudioLayout({
+ 
+   const { resolve } = save;
+   const choose = useCallback(
+-    (choice: ConflictChoice) => {
++    (choice: ConflictChoice, done: string) => {
+       setResolving(true);
+-      // 해결 거부 → STALE 유지(훅) + 알림 1문장(유추 문장, REPORT)
++      // 해결 거부 → STALE 유지(훅) + 알림 1문장(유추 문장, REPORT) · 성공 = Callout이 사라지므로 h1 포커스 + 문서 단위 status(UX5-AC-05)
+       resolve(choice)
+-        .then(snaps.refresh)
++        .then(() => (heading.current?.focus(), setNotice(done), snaps.refresh()))
+         .catch(() => setNotice("충돌을 해결하지 못했습니다 — 다시 골라 주세요"))
+         .finally(() => setResolving(false));
+     },
+@@ -341,11 +342,15 @@ export function StudioLayout({
+   );
+ 
+   const docTag = docTagText(doc);
+-  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
++  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} actions={save} onAnnounce={setNotice} />;
+   const conflict = (
+     <>
+       {snaps.layer}
+-      {save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />}
++      {save.conflict && (
++        <Suspense fallback={null}>
++          <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />
++        </Suspense>
++      )}
+     </>
+   );
+   const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : snaps.onUndo} />;
+diff --git a/app/src/features/studio/save/coreIo.ts b/app/src/features/studio/save/coreIo.ts
+index 89369126..5286e3d2 100644
+--- a/app/src/features/studio/save/coreIo.ts
++++ b/app/src/features/studio/save/coreIo.ts
+@@ -6,6 +6,7 @@
+ import { hashDoc } from "../../../engine/ops/hash";
+ import type { PageDoc } from "../../../engine/contracts/pageDoc";
+ import { retainedIds } from "../images/store/imageStore";
++import { reasonText } from "./reasonText";
+ import type { CoreIo, CoreState, DiscardResult, Receipt, SaveResult } from "./saveCore";
+ 
+ const reasonOf = (error: unknown, fallback = "not-committed") => (error as { reason?: string } | undefined)?.reason ?? fallback;
+@@ -15,6 +16,7 @@ export const DISCARD_GIVE_UP_MS = 5000;
+ const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string }> => run().catch((error: unknown) => ({ infra: reasonOf(error, "infra") }));
+ 
+ export const coreIo: CoreIo = {
++  text: reasonText,
+   async save(s, link): Promise<SaveResult> {
+     // 편집 틀 이미지 맵 → 코어 바인딩(탭 수명 — 편집기를 떠난 뒤 save도 Blob을 싣는다)
+     const map = link.images?.();
+diff --git a/app/src/features/studio/save/saveCore.ts b/app/src/features/studio/save/saveCore.ts
+index 150983a7..0135422a 100644
+--- a/app/src/features/studio/save/saveCore.ts
++++ b/app/src/features/studio/save/saveCore.ts
+@@ -62,6 +62,8 @@ export interface CoreIo {
+   /** `entered` = 호출 시점 mark(connect 전 동기 — `core.discard()`가 잡는다) */
+   discard(s: CoreState, link: CoreLink, entered: number): Promise<DiscardResult>;
+   replace(s: CoreState, next: PageDoc, request: ReplaceRequest, blobs?: RenderImages): ReplaceResult;
++  /** reason → 상태 글자(UX-5 2.3 · RS6-L4 — 문구는 조작 뒤 청크) */
++  text(reason: string): string | undefined;
+ }
+ 
+ /** io + 포트(local만) + DocBook 연결 — 조립은 DocBook 청크(`coreLink`) */
+diff --git a/app/src/features/studio/saveStatusText.ts b/app/src/features/studio/saveStatusText.ts
+index 75979d1f..d34fb76b 100644
+--- a/app/src/features/studio/saveStatusText.ts
++++ b/app/src/features/studio/saveStatusText.ts
+@@ -22,6 +22,22 @@ export const SAVE_OFFLINE_TEXT = "오프라인 — 연결되면 저장합니다"
+ export const SAVE_STALE_TEXT = "다른 곳에서 이 문서가 바뀌었습니다";
+ export const SAVE_STALE_ALERT = "다른 곳에서 이 문서가 바뀌었습니다. 내 편집은 그대로 두었습니다";
+ export const SAVE_RECOVERED_TEXT = "다시 저장했습니다";
++/** LV-1 `saving-slow` 꼬리(INTEGRATE-6 3절) */
++export const SAVE_SLOW_TAIL = " · 브라우저 응답이 늦습니다";
++/** LV-1 `T_hang` alert 1회(키 `SAVE_HANG_ALERT` · INTEGRATE-6 3절) */
++/** LV-2 discard 시간 초과(키 `DISCARD_TIMEOUT_ALERT` · INTEGRATE-6 3절·8.3) — 폐기 대화상자(조작 뒤)가 쓴다 */
++export const DISCARD_TIMEOUT_TEXT = "버리지 못했습니다 — 변경은 그대로 있습니다";
++export const SAVE_HANG_TEXT = "브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다";
++
++/** 판정 출처(INTEGRATE-6 8.1) — 코어 `view()`(inflight·dirty) + 마지막 저장 결과 reason(포트 `mode()`·결과). 저장 성공이면 reason 없음 */
++export interface SaveSource {
++  readonly reason?: string;
++  /** reason 문구(조작 뒤 청크 `save/reasonText.ts` — 저장 실패 결과와 함께 받는다) · 없으면 ★"저장하지 못했습니다" */
++  readonly text?: string;
++  readonly inflight?: number;
++  readonly dirty?: boolean;
++}
++
+ 
+ export function relativeTimeText(elapsedMs: number): string {
+   if (elapsedMs < 5 * SECOND) return "방금";
+@@ -35,7 +51,13 @@ function savedText(state: AutosaveState, persistence: ProjectPersistence, now: n
+   return state.lastSavedAt === undefined ? label : `${label} · ${relativeTimeText(now - state.lastSavedAt)}`;
+ }
+ 
+-export function saveStatusText(state: AutosaveState, persistence: ProjectPersistence, now: number): string {
++/** 저장 중 = 코어 inflight(출처 없으면 스케줄러 단계) — POP 재진입 때 앞 해제 save가 진행 중이면 스케줄러가 idle이어도 저장 중 */
++export const isSaving = (state: AutosaveState, source: SaveSource = {}) => (source.inflight ?? 0) > 0 || state.phase === "saving";
++
++export function saveStatusText(state: AutosaveState, persistence: ProjectPersistence, now: number, source: SaveSource = {}): string {
++  if (source.text && state.phase !== "stale") return source.text;
++  if (state.phase !== "offline" && isSaving(state, source)) return state.slow ? `저장 중…${SAVE_SLOW_TAIL}` : "저장 중…";
++  if (source.dirty && state.phase !== "failed" && state.phase !== "offline" && state.phase !== "stale") return "저장 전 변경 있음";
+   switch (state.phase) {
+     case "idle":
+       return "";
+@@ -57,6 +79,8 @@ export function saveStatusText(state: AutosaveState, persistence: ProjectPersist
+ /** 이웃한 두 상태 사이의 알림 — 없으면 undefined */
+ export function saveAnnouncement(prev: AutosaveState, next: AutosaveState): SaveAnnouncement | undefined {
+   if (next.phase === "stale") return prev.phase === "stale" ? undefined : { kind: "alert", text: SAVE_STALE_ALERT };
++  // LV-1 `saving-slow` 진입 = 꼬리 status 1회(I6 3절·8.4)
++  if (next.slow && !prev.slow) return { kind: "status", text: `저장 중…${SAVE_SLOW_TAIL}` };
+   if (next.recovered && prev.failure !== undefined) return { kind: "status", text: SAVE_RECOVERED_TEXT };
+   if (next.failure === prev.failure) return undefined;
+   if (next.failure === "error") return { kind: "alert", text: SAVE_FAILED_TEXT };
+diff --git a/app/src/features/studio/useDocSave.ts b/app/src/features/studio/useDocSave.ts
+index 3f88b322..97253821 100644
+--- a/app/src/features/studio/useDocSave.ts
++++ b/app/src/features/studio/useDocSave.ts
+@@ -13,11 +13,12 @@
+  *   ④ 그 밖 = undefined(바로 이동) · 저장할 것이 있으면 지금 1회 낸다(기다리지 않음 — 코어가 탭 수명으로 끝낸다).
+  * - lease 해제(진짜 언마운트 — 링크·POP·재마운트 공통, 3.1-1): 마지막 제출 뒤 편집이 있으면 `core.save()` 1회(기다리지 않음).
+  */
+-import { useCallback, useEffect, useId, useRef, useState } from "react";
++import { useCallback, useEffect, useId, useReducer, useRef, useState } from "react";
+ import { ProjectRepositoryError, type ConflictChoice, type ProjectPersistence } from "../../data/projectRepository";
+ import type { PageDoc } from "../../engine/contracts/pageDoc";
+ import { hashDoc } from "../../engine/ops/hash";
+ import { useAutosaveScheduler, type AutosaveState } from "./useAutosaveScheduler";
++import type { SaveSource } from "./saveStatusText";
+ import type { SaveCore } from "./save/saveCore";
+ 
+ /** 저장소 중 이 훅이 쓰는 부분(ProjectRepository<PageDoc>의 부분 구조) */
+@@ -56,6 +57,11 @@ export interface UseDocSave {
+   readonly flushed: () => Promise<boolean>;
+   readonly adopt: (write: (revision: number) => Promise<PageDoc>) => Promise<PageDoc | undefined>;
+   readonly leave: () => Promise<boolean> | undefined;
++  /** 상태 판정 출처(INTEGRATE-6 8.1 · RS6-L4 CP1) — 코어 view(inflight·dirty) + 마지막 저장 결과 reason(성공이면 없음) */
++  readonly source: SaveSource;
++  readonly core: SaveCore;
++  /** "저장 확인" 결과 → 출처(SaveActions가 부른다) */
++  readonly report: (next?: { readonly reason: string; readonly text?: string }) => void;
+ }
+ 
+ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
+@@ -70,6 +76,8 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+   /** 마지막으로 코어 save에 실은 mark — lease 해제 save는 그 뒤 편집이 있을 때만(3.1-1 · U7 최대 1회) */
+   const submitted = useRef(core.view().dirty ? 0 : core.view().mark);
+ 
++  const [reason, setReason] = useState<{ readonly reason: string; readonly text?: string }>();
++  const [, redraw] = useReducer((n: number) => n + 1, 0);
+   const save = useCallback(async () => {
+     // 저장 대상 = 코어 초안(G1 — DocBook 반영은 saved 뒤 코어가 · 실패면 DocBook 변화 0, U3). not-persistent(memory) = 메모리 커밋 성공(I5)
+     submitted.current = core.view().mark;
+@@ -79,6 +87,8 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+     const saved = result.status === "saved" ? result.receipt.revision : reason === "not-persistent" ? result.revision : undefined;
+     // readonly·unsupported = 이 탭 저장 0이 정상(이탈 허용 판정)
+     readOnly.current = reason === "readonly" || reason === "unsupported";
++    // 실패 reason 문구 = 조작 뒤 청크(io 이미 받음) — 받지 못하면 ★"저장하지 못했습니다"
++    setReason(saved === undefined ? { reason: String(reason), text: await core.link((io) => io.text(String(reason))).catch(() => undefined) } : undefined);
+     if (saved === undefined) {
+       // 최신 문서 = 다른 탭이 커밋한 레코드(포트 head — 조작 뒤 청크). 읽지 못하면 없음
+       if (reason === "stale") setLatest(await core.link((_, __, link) => link.port?.head(projectId)).catch(() => undefined));
+@@ -110,8 +120,10 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+   useEffect(() => {
+     const token = (lease.current = core.acquire(mountId));
+     // 재진입 seed가 미저장 초안이면(F9 뒤) 다시 저장 차례에 올린다 — 코어 기준이라 거짓 STALE 0(C5 T2)
+-    const { dirty, doc } = core.view();
++    const { dirty, doc, inflight } = core.view();
+     if (dirty) change(doc);
++    // POP 재진입(C5 T1) — 앞 해제 save가 진행 중이면 상태 글자 = 저장 중(출처 inflight) · 끝나면 다시 그린다
++    if (inflight) void core.idle().then(redraw);
+     return () => {
+       lease.current = undefined;
+       queueMicrotask(() => {
+@@ -121,7 +133,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+         core.release(token);
+       });
+     };
+-  }, [core, mountId, change]);
++  }, [core, mountId, change, redraw]);
+ 
+   const resolve = useCallback(
+     async (choice: ConflictChoice) => {
+@@ -178,7 +190,12 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
+     return flushed().then((ok) => ok || readOnly.current);
+   }, [retry, flushed]);
+ 
++  /** 확인 결과 → 출처(SaveActions · 조작 뒤) — 성공이면 reason 지우고 스케줄러 settle(추가 저장 0) */
++  const report = useCallback((next?: { readonly reason: string; readonly text?: string }) => (setReason(next), next || settle()), [settle]);
++
+   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
+   const savedRevision = useCallback(() => revisionRef.current, []);
+-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave };
++  const { inflight, dirty } = core.view();
++  const source = { ...reason, inflight, dirty };
++  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, source, core, report };
+ }
+diff --git a/app/src/components/studio/DiscardDialog.tsx b/app/src/components/studio/DiscardDialog.tsx
+new file mode 100644
+index 00000000..712e750f
+--- /dev/null
++++ b/app/src/components/studio/DiscardDialog.tsx
+@@ -0,0 +1,76 @@
++import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
++import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/saveStatusText";
++import { DISCARD_TIMEOUT_ALERT } from "../../features/studio/save/alertKeys";
++import { Button } from "../ds/Button";
++
++/**
++ * 폐기 확인(UX-5 6.3 · INTEGRATE-6 8.2 "버리고 새로고침") — 조작 뒤 청크(버튼을 눌러야 받는다). `role=alertdialog` + `showModal()`.
++ * 열 때 포커스 = "취소" · Esc = 취소 · 진행 중 aria-busy·aria-disabled(연타 1회) · 시간 초과면 alert + 포커스 "취소" 유지(I6 8.4).
++ * 포커스 복귀(여는 버튼)는 여는 쪽이 맡는다.
++ */
++export default function DiscardDialog({ discard, onClose }: { readonly discard: () => Promise<string>; readonly onClose: () => void }) {
++  const id = useId();
++  const dialog = useRef<HTMLDialogElement>(null);
++  const running = useRef(false);
++  const [busy, setBusy] = useState(false);
++  const [error, setError] = useState({ text: "", key: 0, timeout: false });
++
++  useEffect(() => {
++    const el = dialog.current;
++    if (el && !el.open) el.showModal();
++  }, []);
++  const focusCancel = () => dialog.current?.querySelector<HTMLButtonElement>("[data-cancel]")?.focus();
++  useLayoutEffect(focusCancel, []);
++
++  const dismiss = () => {
++    dialog.current?.close();
++    onClose();
++  };
++  const run = async () => {
++    if (running.current) return;
++    running.current = true;
++    setBusy(true);
++    const result = await discard();
++    if (result === "done") return;
++    running.current = false;
++    setBusy(false);
++    setError((e) => ({ text: result === "timeout" ? DISCARD_TIMEOUT_TEXT : "버리지 못했습니다 — 다시 시도해 주세요", key: e.key + 1, timeout: result === "timeout" }));
++    focusCancel();
++  };
++
++  return (
++    <dialog
++      ref={dialog}
++      role="alertdialog"
++      aria-labelledby={`${id}-t`}
++      aria-describedby={`${id}-d`}
++      onCancel={(event) => {
++        event.preventDefault();
++        if (!busy) dismiss();
++      }}
++      className="m-auto w-full max-w-lg rounded-lg border border-line-normal bg-background-normal p-6 text-label-normal"
++    >
++      <div className="flex flex-col gap-4">
++        <h2 id={`${id}-t`} className="ds-heading2">
++          확인되지 않은 변경 버리기
++        </h2>
++        <p id={`${id}-d`} className="ds-body3">
++          이 문서의 확인되지 않은 변경과 새로 고른 이미지가 사라집니다. 마지막으로 확인된 저장 상태로 돌아갑니다.
++        </p>
++        {error.text && (
++          <p key={error.key} role="alert" data-alert-key={error.timeout ? DISCARD_TIMEOUT_ALERT : undefined} className="ds-caption1 text-status-negative-text">
++            {error.text}
++          </p>
++        )}
++        <div className="flex justify-end gap-2">
++          <Button data-cancel variant="outline" size="sm" aria-disabled={busy || undefined} onClick={() => !busy && dismiss()}>
++            취소
++          </Button>
++          <Button size="sm" aria-busy={busy || undefined} aria-disabled={busy || undefined} onClick={() => void run()}>
++            {busy ? "버리는 중…" : "버리기"}
++          </Button>
++        </div>
++      </div>
++    </dialog>
++  );
++}
+diff --git a/app/src/components/studio/SaveActions.tsx b/app/src/components/studio/SaveActions.tsx
+new file mode 100644
+index 00000000..a087a600
+--- /dev/null
++++ b/app/src/components/studio/SaveActions.tsx
+@@ -0,0 +1,77 @@
++import { useRef, useState } from "react";
++import type { ProjectPersistence } from "../../data/projectRepository";
++import type { ConfirmResult, SaveCore } from "../../features/studio/save/saveCore";
++import { Button } from "../ds/Button";
++import DiscardDialog from "./DiscardDialog";
++
++/**
++ * 환경 reason 버튼(UX-5 2.3 · INTEGRATE-6 8.2) — 조작 뒤 청크(저장 결과에 reason이 있을 때만 받는다 · RS6-L4 M2 상쇄).
++ * readonly = "저장 확인"(`confirm` 1회 · dirty·memory면 숨김, MQ-5-3 A · U9) · stale·cleared = "버리고 새로고침"(`discard` + reload, 폐기 확인 경유).
++ * 연타 = 진행 중 promise 공유(CE-4) · 진행 중 aria-busy·aria-disabled(`disabled` 금지 — UX5-AC-07) · reject = failed/blocked 매핑(거짓 확인 0).
++ */
++export default function SaveActions({
++  core,
++  reason,
++  dirty,
++  persistence,
++  report,
++}: {
++  readonly core: SaveCore;
++  readonly reason: string;
++  readonly dirty?: boolean;
++  readonly persistence: ProjectPersistence;
++  /** 확인 결과 → 훅 출처(성공 = undefined → 스케줄러 settle) */
++  readonly report: (next?: { readonly reason: string; readonly text?: string }) => void;
++}) {
++  const [busy, setBusy] = useState(false);
++  const [open, setOpen] = useState(false);
++  const running = useRef<Promise<void>>(undefined);
++  const root = useRef<HTMLSpanElement>(null);
++
++  const confirm = () =>
++    (running.current ??= (setBusy(true),
++    core
++      .link(async (io, s, link) => {
++        const result: ConfirmResult = await io.confirm(s, link, core.save).catch(() => ({ status: "failed", reason: "unavailable" }) as const);
++        if (result.status === "confirmed") return undefined;
++        const next = result.status === "newer" ? "newer" : result.reason;
++        return { reason: next, text: io.text(next) };
++      })
++      .then((run) => run)
++      .catch(() => ({ reason: "unavailable" }))
++      .then(report)
++      .finally(() => ((running.current = undefined), setBusy(false)))));
++
++  const discard = () =>
++    core.discard().then(
++      (result) => {
++        // stale·cleared = 코어가 blocked — 초안 폐기는 reload가 한다(I6 8.2)
++        if (result.status === "discarded" || result.reason === "stale" || result.reason === "cleared") return location.reload(), "done";
++        return result.reason;
++      },
++      () => "failed",
++    );
++
++  if (reason === "readonly")
++    return dirty || persistence === "memory" ? null : (
++      <Button variant="outline" size="sm" aria-busy={busy || undefined} aria-disabled={busy || undefined} onClick={() => void confirm()}>
++        저장 확인
++      </Button>
++    );
++  return (
++    <span ref={root}>
++      <Button data-discard variant="outline" size="sm" onClick={() => setOpen(true)}>
++        버리고 새로고침
++      </Button>
++      {open && (
++        <DiscardDialog
++          discard={discard}
++          onClose={() => {
++            setOpen(false);
++            root.current?.querySelector<HTMLButtonElement>("[data-discard]")?.focus();
++          }}
++        />
++      )}
++    </span>
++  );
++}
+diff --git a/app/src/components/studio/SaveStatus.buttons.test.tsx b/app/src/components/studio/SaveStatus.buttons.test.tsx
+new file mode 100644
+index 00000000..7209d9ec
+--- /dev/null
++++ b/app/src/components/studio/SaveStatus.buttons.test.tsx
+@@ -0,0 +1,44 @@
++/**
++ * RS6-L4 CP2·CP4 — 버튼 1:1(RS6-AC-U8) · memory "저장 확인" DOM 0(U9) · 연타 1회.
++ */
++import { fireEvent, render, screen } from "@testing-library/react";
++import type { SaveCore } from "../../features/studio/save/saveCore";
++import { describe, expect, it, vi } from "vitest";
++import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
++import { SaveStatus } from "./SaveStatus";
++
++const failed = { phase: "failed", failure: "error" } as AutosaveState;
++
++describe("RS6-L4 SaveStatus 버튼", () => {
++  it("readonly = '저장 확인' 1개 · 연타 = confirm(core.link) 1회 · aria-busy", async () => {
++    let finish = (_: unknown) => {};
++    const link = vi.fn(() => new Promise((done) => (finish = done)));
++    const core = { link, save: vi.fn(), discard: vi.fn() } as unknown as SaveCore;
++    render(<SaveStatus state={failed} persistence="local" source={{ reason: "readonly" }} onRetry={vi.fn()} actions={{ core, report: vi.fn() }} />);
++    const button = await screen.findByRole("button", { name: "저장 확인" });
++    fireEvent.click(button);
++    fireEvent.click(button);
++    expect(link).toHaveBeenCalledTimes(1);
++    expect(button.getAttribute("aria-busy")).toBe("true");
++    expect(screen.queryByRole("button", { name: "다시 저장" })).toBeNull();
++    finish(undefined);
++  });
++
++  it("memory = '저장 확인' DOM 0 · '브라우저에 저장됨' 0 (U9)", async () => {
++    const core = { link: vi.fn(), save: vi.fn(), discard: vi.fn() } as unknown as SaveCore;
++    const { container } = render(<SaveStatus state={failed} persistence="memory" source={{ reason: "readonly" }} onRetry={vi.fn()} actions={{ core, report: vi.fn() }} />);
++    await import("./SaveActions");
++    await new Promise((done) => setTimeout(done, 0));
++    expect(screen.queryByRole("button", { name: "저장 확인" })).toBeNull();
++    render(<SaveStatus state={{ phase: "saved", lastSavedAt: 0 } as AutosaveState} persistence="memory" onRetry={vi.fn()} now={() => 0} />);
++    expect(document.body.textContent).not.toContain("브라우저에 저장됨");
++    expect(container).toBeTruthy();
++  });
++
++  it("failed(그 밖) = '다시 저장' → retry 1회", () => {
++    const onRetry = vi.fn();
++    render(<SaveStatus state={failed} persistence="local" onRetry={onRetry} />);
++    fireEvent.click(screen.getByRole("button", { name: "다시 저장" }));
++    expect(onRetry).toHaveBeenCalledTimes(1);
++  });
++});
+diff --git a/app/src/components/studio/SaveStatus.source.test.tsx b/app/src/components/studio/SaveStatus.source.test.tsx
+new file mode 100644
+index 00000000..104b77f8
+--- /dev/null
++++ b/app/src/components/studio/SaveStatus.source.test.tsx
+@@ -0,0 +1,67 @@
++/**
++ * RS6-L4 CP1 — SaveStatus 판정 출처 결선(I6 8.1): 훅 `useDocSave().source`(코어 view + 마지막 결과 reason) → 상태 글자 ·
++ * LV-1 `T_hang` alert 문구(`role=alert` `<p>` — aria-busy 붙는 상태 글자에는 넣지 않는다, L2 QA 7절 3).
++ */
++import { act, fireEvent, render, screen } from "@testing-library/react";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { ProjectRepositoryError } from "../../data/projectRepository";
++import { READ_ONLY_TAB } from "../../data/persistence/infra";
++import type { PageDoc } from "../../engine/contracts/pageDoc";
++import { sampleDoc } from "../../engine/testing/sampleDoc";
++import { useDocSave, type DocSaveRepository } from "../../features/studio/useDocSave";
++import { SAVE_HANG_TEXT } from "../../features/studio/saveStatusText";
++import { withSaveCore } from "../../features/studio/testing/coreFixture";
++import { SaveStatus } from "./SaveStatus";
++
++beforeEach(() => vi.useFakeTimers());
++afterEach(() => vi.useRealTimers());
++
++function Harness({ repo, initialDoc }: { repo: DocSaveRepository; initialDoc: PageDoc }) {
++  const save = useDocSave({ repository: repo, projectId: initialDoc.projectId, initialDoc });
++  return (
++    <>
++      <input aria-label="제목" value={save.doc.meta.title} onChange={(e) => save.edit({ ...save.doc, meta: { ...save.doc.meta, title: e.target.value } })} />
++      <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} />
++    </>
++  );
++}
++
++describe("RS6-L4 CP1 · SaveStatus 출처 결선", () => {
++  it("포트 readonly 거절 → 상태 글자 = readonly 문구(문자열 '저장하지 못했습니다' 아님) · alert 같은 문구 1곳", async () => {
++    const doc = sampleDoc();
++    const saveDoc = vi.fn(async () => Promise.reject(new ProjectRepositoryError("INFRA", `저장 — ${READ_ONLY_TAB}`)));
++    render(<Harness repo={withSaveCore({ persistence: "local" as const, saveDoc, resolveConflict: vi.fn() })} initialDoc={doc} />);
++    fireEvent.change(screen.getByRole("textbox", { name: "제목" }), { target: { value: "하나" } });
++    await act(() => vi.advanceTimersByTimeAsync(2000));
++    expect(screen.getByText("다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다", { selector: "p:not([role])" })).toBeInTheDocument();
++    expect(screen.getByRole("alert")).toHaveTextContent("다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다");
++  });
++
++  it("POP 재진입(C5 T1) — 앞 lease 해제 save 진행 중이면 '저장 중…' · 끝나면 다시 그려 '저장 중…' 아님", async () => {
++    const doc = sampleDoc();
++    let finish: (() => void) | undefined;
++    const saveDoc = vi.fn((_p: string, _r: number, next: PageDoc) => new Promise((done) => (finish = () => done({ ...next, revision: next.revision + 1 }))));
++    const repo = withSaveCore({ persistence: "local" as const, saveDoc, resolveConflict: vi.fn() });
++    const first = render(<Harness repo={repo} initialDoc={doc} />);
++    fireEvent.change(screen.getByRole("textbox", { name: "제목" }), { target: { value: "떠나기 전" } });
++    first.unmount();
++    await act(() => vi.advanceTimersByTimeAsync(0));
++    expect(saveDoc).toHaveBeenCalledTimes(1);
++    render(<Harness repo={repo} initialDoc={doc} />);
++    expect(screen.getByText("저장 중…")).toBeInTheDocument();
++    await act(async () => finish?.());
++    await act(() => vi.advanceTimersByTimeAsync(0));
++    expect(screen.queryByText("저장 중…")).toBeNull();
++  });
++
++  it("T_hang → alert <p>에 hang 문구 · aria-busy 상태 글자에는 hang 문구 0", () => {
++    const at = (hang?: number) => <SaveStatus state={{ phase: "saving", slow: true, ...(hang && { hang }) }} persistence="local" source={{ inflight: 1 }} onRetry={() => undefined} />;
++    const { rerender } = render(at());
++    rerender(at(1));
++    expect(screen.getByRole("alert")).toHaveTextContent(SAVE_HANG_TEXT);
++    expect(SAVE_HANG_TEXT).toBe("브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다");
++    const busy = document.querySelector("[aria-busy=true]");
++    expect(busy).not.toBeNull();
++    expect(busy).not.toHaveTextContent("응답하지 않습니다");
++  });
++});
+diff --git a/app/src/features/studio/save/reasonText.ts b/app/src/features/studio/save/reasonText.ts
+new file mode 100644
+index 00000000..9872f36b
+--- /dev/null
++++ b/app/src/features/studio/save/reasonText.ts
+@@ -0,0 +1,11 @@
++/**
++ * 환경·결과 reason → 상태 글자(UX-5 2.3 · INTEGRATE-6 8.1·8.3) — 조작 뒤 청크(coreIo가 import). 실패 결과에만 쓰이므로 진입에 두지 않는다
++ * (RS6-L4 감량: 진입 `saveStatusText.ts`에 두면 /studio 정규화 +0.18). 그 밖 reason = 문구 없음 → ★"저장하지 못했습니다"(진입 `saveStatusText.ts`).
++ */
++const REASON_TEXT: Readonly<Record<string, string>> = {
++  cleared: "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요",
++  readonly: "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다",
++  "image-missing": "이미지를 저장하지 못했습니다",
++  unsupported: "이 브라우저는 저장소를 쓸 수 없어 이 탭에만 저장합니다",
++};
++export const reasonText = (reason: string): string | undefined => REASON_TEXT[reason];
+diff --git a/app/src/features/studio/save/saveCore.epoch.test.ts b/app/src/features/studio/save/saveCore.epoch.test.ts
+new file mode 100644
+index 00000000..6cbed531
+--- /dev/null
++++ b/app/src/features/studio/save/saveCore.epoch.test.ts
+@@ -0,0 +1,20 @@
++/**
++ * RS6-L4 CP3(MQ-6-5 A · L3a QA M2b) — 충돌 두 선택 = 저장소 `resolveConflict`(같은 동기 구간 `rebase`) 1회 → 코어 epoch +1(옛 replace 요청 거절).
++ * 뒤이은 `coreIo.replace` 호출은 하지 않는다(REPORT 7절 — replace는 savedMark를 안 맞춰 epoch +2·추가 저장).
++ */
++import { describe, expect, it } from "vitest";
++import { PROJECT, edited, startedRig } from "./testRig";
++
++describe("RS6-L4 CP3 · 충돌 선택 뒤 epoch +1", () => {
++  it.each(["mine", "theirs"] as const)("%s 선택 = epoch +1 · dirty 0", async (choice) => {
++    const rig = await startedRig();
++    const c = rig.core();
++    c.edit(edited(rig.doc, "A"));
++    await c.save();
++    const mine = edited(rig.doc, "M");
++    c.edit(mine);
++    const before = c.view().epoch;
++    await rig.repo.resolveConflict(PROJECT, choice, mine);
++    expect(c.view()).toMatchObject({ epoch: before + 1, dirty: false });
++  });
++});
+diff --git a/app/src/features/studio/saveStatusText.source.test.ts b/app/src/features/studio/saveStatusText.source.test.ts
+new file mode 100644
+index 00000000..ceb68aa6
+--- /dev/null
++++ b/app/src/features/studio/saveStatusText.source.test.ts
+@@ -0,0 +1,46 @@
++/**
++ * RS6-L4 CP1 — 상태 판정 출처(INTEGRATE-6 8.1) 출처별 1행. 입력 = 스케줄러 단계 + persistence + 코어 `view()`(inflight·dirty) + 마지막 저장 결과 reason(포트 `mode()`·결과).
++ * 문구 원문 = UX-5 2.3(★ = 기존 문구 재사용).
++ */
++import { describe, expect, it } from "vitest";
++import { SAVE_SLOW_TAIL, saveStatusText } from "./saveStatusText";
++import { reasonText } from "./save/reasonText";
++
++const NOW = 1_000_000;
++
++describe("RS6-L4 CP1 · 상태 판정 출처 (I6 8.1)", () => {
++  it.each([
++    // [I6 8.1 행, 단계, persistence, 출처, 기대 문구]
++    ["memory-only = persistence memory(not-persistent 저장 = 메모리 커밋)", "saved", "memory", {}, "이 탭에 저장됨"],
++    ["unsupported = 결과 reason unsupported(포트 mode)", "failed", "local", { reason: "unsupported" }, "이 브라우저는 저장소를 쓸 수 없어 이 탭에만 저장합니다"],
++    ["readonly = 결과 reason readonly(포트 mode)", "failed", "local", { reason: "readonly" }, "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다"],
++    ["cleared = 결과 reason cleared(포트 mode)", "failed", "local", { reason: "cleared" }, "이 브라우저 데이터가 지워졌습니다 — 새로고침하세요"],
++    ["image-missing = 결과 reason image-missing", "failed", "local", { reason: "image-missing" }, "이미지를 저장하지 못했습니다"],
++    ["dirty = view().dirty && !inflight (스케줄러 단계가 아직 idle이어도)", "idle", "local", { dirty: true, inflight: 0 }, "저장 전 변경 있음"],
++    ["saving = view().inflight (POP 재진입 — 해제 save 진행 중, 스케줄러 idle)", "idle", "local", { dirty: true, inflight: 1 }, "저장 중…"],
++    ["failed(그 밖 사유 not-committed) = ★저장하지 못했습니다", "failed", "local", { reason: "not-committed" }, "저장하지 못했습니다"],
++    ["영구 확인 = local saved", "saved", "local", { inflight: 0 }, "이 브라우저에 저장됨"],
++    ["offline = 스케줄러 offline(navigator.onLine)", "offline", "local", { inflight: 0 }, "오프라인 — 연결되면 저장합니다"],
++    // I6 8.1은 다른 탭 stale(포트 mode)을 stale 행으로 보내지만, 이 레인은 지금 매핑(→ 충돌 영역 STALE_DOC)을 유지한다 — REPORT 이탈 표
++    ["포트 mode stale = 지금 매핑 유지(충돌 영역 · STALE_DOC)", "stale", "local", { reason: "stale" }, "다른 곳에서 이 문서가 바뀌었습니다"],
++  ] as const)("%s", (_, phase, persistence, source, text) => {
++    // reason 문구 = 조작 뒤 청크(`save/reasonText.ts`) — 훅이 실패 결과와 함께 source.text로 싣는다
++    const withText = "reason" in source ? { ...source, text: reasonText(source.reason) } : source;
++    expect(saveStatusText({ phase }, persistence, NOW, withText)).toBe(text);
++  });
++
++  it("saving-slow(LV-1) = saving 문구 뒤 꼬리 · 꼬리 없는 saving과 구별", () => {
++    expect(saveStatusText({ phase: "saving", slow: true }, "local", NOW, { inflight: 1 })).toBe(`저장 중…${SAVE_SLOW_TAIL}`);
++    expect(SAVE_SLOW_TAIL).toBe(" · 브라우저 응답이 늦습니다");
++  });
++
++  it("환경 reason이 단계 재시도(saving)보다 이긴다(UX-5 2.2 readonly > saving) · 저장 성공 뒤 reason이 지워지면 보통 문구", () => {
++    expect(saveStatusText({ phase: "saving" }, "local", NOW, { reason: "readonly", text: reasonText("readonly"), inflight: 1 })).toBe("다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다");
++    expect(saveStatusText({ phase: "saving" }, "local", NOW, { inflight: 1 })).toBe("저장 중…");
++  });
++
++  it("memory 모드 어떤 출처에서도 '브라우저에 저장됨' 0 (UX5-AC-09 · U9)", () => {
++    for (const source of [{}, { inflight: 0 }, { reason: "not-persistent" }])
++      expect(saveStatusText({ phase: "saved", lastSavedAt: NOW }, "memory", NOW, source)).not.toContain("브라우저에 저장됨");
++  });
++});
+diff --git a/app/src/test/saveForbiddenText.test.ts b/app/src/test/saveForbiddenText.test.ts
+new file mode 100644
+index 00000000..69357415
+--- /dev/null
++++ b/app/src/test/saveForbiddenText.test.ts
+@@ -0,0 +1,27 @@
++/**
++ * RS6-AC-G3 · UX5-AC-14 — UX-5 2.4 금지 문구가 앱 소스(테스트 제외)에 0건. 주석은 화면 문구가 아니라 뺀다
++ * (`features/pending/DiscardConfirm.tsx:3` 주석 "자동 복구가 아니다" — 부정 서술).
++ */
++import { readdirSync, readFileSync, statSync } from "node:fs";
++import { join } from "node:path";
++import { describe, expect, it } from "vitest";
++
++const FORBIDDEN = ["저장 버튼을 누르세요", "⌘S", "Ctrl+S로 저장", "편집기에서 한 번 저장하세요", "자동 복구", "안전하게 보관됩니다", "모든 편집이 저장됐습니다", "방금 편집이 저장됐습니다"];
++const ROOT = join(__dirname, "..");
++
++/** 블록·줄 주석 제거(문자열 안 `//`는 URL뿐이라 금지 문구와 겹치지 않는다) */
++const code = (path: string) => readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
++
++function sources(dir: string): string[] {
++  return readdirSync(dir).flatMap((name) => {
++    const path = join(dir, name);
++    if (statSync(path).isDirectory()) return sources(path);
++    return /\.(ts|tsx)$/.test(name) && !/\.test\.tsx?$/.test(name) ? [path] : [];
++  });
++}
++
++describe("RS6-AC-G3 금지 문구 0", () => {
++  it.each(FORBIDDEN)("%s = 0건", (text) => {
++    expect(sources(ROOT).filter((path) => code(path).includes(text))).toEqual([]);
++  });
++});

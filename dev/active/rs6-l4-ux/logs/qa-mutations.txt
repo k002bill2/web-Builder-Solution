@@ -1,0 +1,62 @@
+=== M1-confirm-dedupe
+ app/src/components/studio/SaveActions.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+=== M2-discard-reject-map
+ app/src/components/studio/SaveActions.tsx | 1 -
+ 1 file changed, 1 deletion(-)
+     × discard reject → '버리지 못했습니다' alert · reload 0(거짓 폐기 0) 3009ms
+ FAIL  src/components/studio/SaveActions.test.tsx > RS6-L4 CP2 · 버리고 새로고침(discard 1:1 · 폐기 확인) > discard reject → '버리지 못했습니다' alert · reload 0(거짓 폐기 0)
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+=== M3-stale-to-STALE_DOC
+ app/src/features/studio/useDocSave.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+=== M4-dialog-first-focus
+ app/src/components/studio/DiscardDialog.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+     × 열면 alertdialog · 첫 포커스 '취소' · Esc = 닫힘 + 연 버튼으로 포커스 복귀 · discard 0 18ms
+ FAIL  src/components/studio/SaveActions.test.tsx > RS6-L4 CP2 · 버리고 새로고침(discard 1:1 · 폐기 확인) > 열면 alertdialog · 첫 포커스 '취소' · Esc = 닫힘 + 연 버튼으로 포커스 복귀 · discard 0
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+=== M5-guard-comment-strip
+ app/src/test/saveForbiddenText.test.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+     × 자동 복구 = 0건 19ms
+ FAIL  src/test/saveForbiddenText.test.ts > RS6-AC-G3 금지 문구 0 > 자동 복구 = 0건
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+=== M1 rerun
+
+ ❯ src/components/studio/SaveStatus.buttons.test.tsx (6 tests | 1 failed) 389ms
+   ❯ RS6-L4 SaveStatus 버튼 (6)
+     × readonly = '저장 확인' 1개 · 연타 = confirm(core.link) 1회 · aria-busy·aria-disabled(disabled 아님) 367ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SaveStatus.buttons.test.tsx > RS6-L4 SaveStatus 버튼 > readonly = '저장 확인' 1개 · 연타 = confirm(core.link) 1회 · aria-busy·aria-disabled(disabled 아님)
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+ ❯ src/components/studio/SaveStatus.buttons.test.tsx:21:18
+     19|     fireEvent.click(button);
+     20|     fireEvent.click(button);
+     21|     expect(link).toHaveBeenCalledTimes(1);
+       |                  ^
+     22|     expect(button.getAttribute("aria-busy")).toBe("true");
+     23|     expect(button.getAttribute("aria-disabled")).toBe("true");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 15 passed (16)
+   Start at  18:57:38
+   Duration  1.00s (environment 45%, tests 35%, transform 9%, setup 8%, import 2%)
+
+=== M3 rerun
+ FAIL  src/components/studio/FieldUndo.test.tsx > 기록 밖 문서 교체 — Codex r1 P2-3 > 묶음 열린 채 다른 탭 stale → stale 행(불러오기 버튼 0) · 같은 칸 입력 → Ctrl+Z = 내 앞 편집(다른 탭 값 0)
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > 다른 탭 stale(포트) → stale 환경 행(글자·alert) · 충돌 Callout 0 · 내 편집 유지 · 알림 영역 1개
+ FAIL  src/components/studio/StudioLayout.test.tsx > PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) > 저장 stale → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > 다른 탭 stale(포트) = failed + 출처 reason stale(문구) · 충돌 영역 없음 · 화면 문서 = 내 편집 · 다른 탭 문서로 덮지 않음
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > 해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 stale 환경 행 그대로(자동 저장 0)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 탭 수준 경고: 다른 탭 stale(stale 환경 행) 때 등록
+ Test Files  4 failed (4)
+      Tests  6 failed | 38 passed (44)

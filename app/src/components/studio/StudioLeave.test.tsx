@@ -195,7 +195,8 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     type("읽기 전용 편집");
     await act(() => vi.advanceTimersByTimeAsync(2000));
     await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));
-    expect(screen.getByRole("banner")).toHaveTextContent("저장하지 못했습니다");
+    // RS6-L4 CP1: 실패 글자 = 출처 reason 문구(UX-5 2.3 readonly 행) — 이전 ★"저장하지 못했습니다"
+    expect(screen.getByRole("banner")).toHaveTextContent("다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다");
     leave();
     expect(repo.save).toHaveBeenCalledTimes(2);
     await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));

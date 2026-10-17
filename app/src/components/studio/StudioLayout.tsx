@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import type { ConflictChoice, Project, ProjectRepository } from "../../data/projectRepository";
+import type { Project, ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { PreviewView } from "../../features/detail/previewView";
 import { useLayoutMode } from "../../features/studio/layoutMode";
@@ -17,7 +17,6 @@ import { toDocSaveRepository } from "../../features/studio/studioRepository";
 import { useDocSave } from "../../features/studio/useDocSave";
 import { saveStatusText } from "../../features/studio/saveStatusText";
 import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
-import { ConflictCallout } from "./ConflictCallout";
 import { EditFields } from "./EditFields";
 import { SaveStatus } from "./SaveStatus";
 import { docTagText, initialSelection, PAGE_INFO_ID, resolveSelection, sectionName, selectedSection, selectionName, variantName } from "../../features/studio/selection";
@@ -49,6 +48,8 @@ const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto p-4";
 const UNSAVED: ReadonlySet<AutosaveState["phase"]> = new Set(["failed", "offline", "stale"]);
 /** 섹션 추가 대화상자 — "섹션 추가"를 눌렀을 때만 받는다(조작 뒤, S-B5) */
 const AddSectionDialog = lazy(() => import("./AddSectionDialog"));
+/** 충돌 Callout = 충돌 때만(RS6-L4 감량 — 조작 뒤 청크) */
+const ConflictCallout = lazy(() => import("./ConflictCallout").then((m) => ({ default: m.ConflictCallout })));
 /** 내보내기 경고 확인 대화상자 · 결과(조작 뒤, S-B5) — 내보내기 버튼을 누른 뒤에만 받는다 */
 const ExportConfirmDialog = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportConfirmDialog })));
 const ExportResultView = lazy(() => import("./ExportAfter").then((m) => ({ default: m.ExportResultView })));
@@ -79,7 +80,6 @@ export function StudioLayout({
   const saveRepository = useMemo(() => toDocSaveRepository(repository), [repository]);
   const save = useDocSave({ repository: saveRepository, projectId: project.projectId, initialDoc });
   const doc = save.doc;
-  const [resolving, setResolving] = useState(false);
   const mode = useLayoutMode();
   const heading = useRef<HTMLHeadingElement>(null);
   const focused = useRef(false);
@@ -110,19 +110,6 @@ export function StudioLayout({
     focused.current = true;
     heading.current?.focus();
   }, [focusHeading]);
-
-  const { resolve } = save;
-  const choose = useCallback(
-    (choice: ConflictChoice) => {
-      setResolving(true);
-      // 해결 거부 → STALE 유지(훅) + 알림 1문장(유추 문장, REPORT)
-      resolve(choice)
-        .then(snaps.refresh)
-        .catch(() => setNotice("충돌을 해결하지 못했습니다 — 다시 골라 주세요"))
-        .finally(() => setResolving(false));
-    },
-    [resolve, snaps.refresh],
-  );
 
   // 앱 안 링크(돌아가기 · 프로필 보기)로 떠날 때 마지막 화면 편집까지 저장한 뒤 이동한다(E-S10 · B-RS-01) — 틀이 사라지면 스케줄러가
   // 디바운스·저장 중 편집을 버린다. 저장할 것이 없으면 그대로 이동 · 기다리는 동안 다시 누름은 무시 · 저장하지 못하면 이동 보류(저장 상태가 실패 안내·"다시 저장")
@@ -341,11 +328,15 @@ export function StudioLayout({
   );
 
   const docTag = docTagText(doc);
-  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
+  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} actions={save} onAnnounce={setNotice} />;
   const conflict = (
     <>
       {snaps.layer}
-      {save.conflict && <ConflictCallout latestRevision={save.conflict.latest?.revision} busy={resolving} onChoose={choose} />}
+      {save.conflict && (
+        <Suspense fallback={null}>
+          <ConflictCallout resolve={save.resolve} heading={heading} onNotice={setNotice} refresh={snaps.refresh} />
+        </Suspense>
+      )}
     </>
   );
   const noticeRegion = <NoticeRegion text={notice} detail={entrySummary && notice === entrySummary ? entryNotice : undefined} onUndo={ops.canUndoLast ? undo : snaps.onUndo} />;
@@ -407,7 +398,7 @@ export function StudioLayout({
               저장 실패·오프라인·충돌이면 이유 = 저장 상태 문장 */}
           <PngSave
             ready={drawn && (save.state.phase === "idle" || save.state.phase === "saved")}
-            reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0) : undefined}
+            reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0, save.source) : undefined}
             view={view}
             fallbackCount={fallbacks.length}
             capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }), ...(images && { images }) })}

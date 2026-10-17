@@ -6,6 +6,7 @@
 import { hashDoc } from "../../../engine/ops/hash";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { retainedIds } from "../images/store/imageStore";
+import { reasonText } from "./reasonText";
 import type { CoreIo, CoreState, DiscardResult, Receipt, SaveResult } from "./saveCore";
 
 const reasonOf = (error: unknown, fallback = "not-committed") => (error as { reason?: string } | undefined)?.reason ?? fallback;
@@ -15,6 +16,7 @@ export const DISCARD_GIVE_UP_MS = 5000;
 const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string }> => run().catch((error: unknown) => ({ infra: reasonOf(error, "infra") }));
 
 export const coreIo: CoreIo = {
+  text: reasonText,
   async save(s, link): Promise<SaveResult> {
     // 편집 틀 이미지 맵 → 코어 바인딩(탭 수명 — 편집기를 떠난 뒤 save도 Blob을 싣는다)
     const map = link.images?.();

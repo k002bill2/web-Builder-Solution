@@ -9,7 +9,7 @@
 - [x] 3. CP2 LV-2 포기 토큰 (`blocked{timeout}`) + MC I7 주석 + L1 QA note 1 (`blocked{newer}`) — RED → GREEN · 예산
 - [x] 4. CP3 `T_hang` alert 1회 · 재마운트 재발화 0 · 키 상수/`role=alert`/`aria-busy` — RED → GREEN · 예산
 - [x] 5. L1 QA note 3 (`port.mode()`·`port.verify()` throw → `failed{infra}`) — RED → GREEN
-- [ ] 6. L1 QA note 4 (HARNESS-MAP 집계 정정 · 가능 시 #28 등 보강)
+- [x] 6. L1 QA note 4 (HARNESS-MAP 집계 정정 · 가능 시 #28 등 보강)
 - [ ] 7. L1 QA note 2 → REPORT "L3 전 조건" 이월 (고치지 않음)
 - [ ] 8. 마감 게이트 fresh (typecheck·lint·test·build + 전 라우트 번들 표)
 - [ ] 9. REPORT.md (AC 판정·notes·L3 전 조건·시간 잠정값·예산 표·MC I7 문장·사실/추정/미확인) 커밋
@@ -35,6 +35,7 @@
 
 - CP3 예측: `liveness.status.test.tsx` 3건 RED 3(키 상수 없음 · aria-busy 없음). 실측 3/3 RED (`logs/cp3-red.log`). GREEN 3/3 · 전체 325/2918 · `SaveStatus.test.tsx` 기존 GREEN(변경 0).
 - note 3 예측: `saveCore.reject.test.ts` 5건 RED 5(reject). 실측 5/5 RED — "promise rejected … instead of resolving" (`logs/note3-red.log`). GREEN 5/5 · 전체 326/2923.
+- note 4: HARNESS-MAP 집계 정정(완전 25 + 부분 5 · #12·#30 부분 표기 · #20 근거 0 명시) · 보강 테스트 2건(#28 replace · #20 discard stale) — #20은 구현 뒤 추가한 회귀 테스트라 변이로 검출력 확인(verify 판정 제거 → RED 1, `logs/note4-mut-stale.log`, 원복). 보강 뒤 ① = 완전 26 + 부분 4.
 
 ## 결정·차이
 - `saving-slow` = `phase:"saving"` + `slow:true` 표지(I6 8.1 "(+)" 표기). 사유: 새 phase 리터럴이면 `useDocSave.ts:120` 떠나기 대기(`now === "saving"`)가 정지 중 false로 풀리고(L3 동작 변경) `saveStatusText` exhaustive switch(L4 본문)를 고쳐야 한다.

@@ -126,4 +126,15 @@ describe("RS6-L2 CP2 · L1 QA note 1 — discard 진입 = 호출 시점(connect 
     expect(await discarding).toEqual({ status: "blocked", reason: "newer" });
     expect(c.view().doc.meta.title).toBe("교체");
   });
+
+  it("#20 보강 · discard: IDB 재읽기 ≠ 마지막 증명(거짓 성공으로 IDB = 옛 문서) → blocked{stale} · 초안·dirty 보존(HARNESS-MAP h5:58)", async () => {
+    const { db, core, doc } = await startedRig();
+    const c = core();
+    c.edit(edited(doc, "A"));
+    db.dropNext();
+    expect(await c.save()).toMatchObject({ status: "saved" });
+    c.edit(edited(doc, "B"));
+    expect(await c.discard()).toEqual({ status: "blocked", reason: "stale" });
+    expect([c.view().doc.meta.title, c.view().dirty, c.view().epoch]).toEqual(["B", true, 0]);
+  });
 });

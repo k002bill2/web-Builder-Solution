@@ -12,6 +12,6 @@ base `73289c90` · 브랜치 `k002bill2/rs7-mutation-gaps` · 쓰기: 새 `*.tes
 - [x] L1 IMG-meta — RED 1
 - [x] L3a M2b 복원·restart epoch 단언 — RED 2
 - [x] RS7-A 겹침 판정 — 대상 0 (REPORT 2절)
-- [ ] fresh typecheck · lint · test 2회 연속 GREEN · build 1회
-- [ ] Codex review 1회 (`--scope branch --base 73289c90`)
-- [ ] REPORT.md 최종(초안 커밋됨)
+- [x] fresh typecheck · lint · test 2회 연속 GREEN(343/3033 ×2) · build 1회 exit 0
+- [x] Codex review 1회 (`--scope branch --base 73289c90`) — 지적 0
+- [x] REPORT.md 최종

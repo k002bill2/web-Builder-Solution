@@ -33,16 +33,18 @@ base `73289c90` · 브랜치 `k002bill2/rs7-mutation-gaps` · 2026-10-17 · 앱 
   3. 다른 탭 코어(바인딩 0 · IDB 이미지 참조)로 B 커밋을 이미지 키 읽기에서 보류한 채 confirmDoc → 변이에서도 확인이 B 커밋 뒤에 끝났다(쓰기 추가 0). 확인 쪽이 어디서 기다리는지는 시간 상한으로 끝까지 추적하지 못했다(**미확인**).
 - 판정: "도달 불가"로 단정하지 않는다 — 근거가 추적 미완. **Low · 테스트 공백 유지**. 다음 후보: 확인 경로 대기 지점(DocBook `confirm` → LocalSync `confirm` 사이)을 계측한 뒤 그 앞에서 코어 commit 제출을 보류하는 장치(testRig에 keys 보류 helper)가 필요하다 — testRig 수정은 이 레인 범위(새 파일만) 밖.
 
-## 4. 게이트 (fresh)
+## 4. 게이트 (fresh · 테스트 커밋 `9510b1bc` 위)
 | 게이트 | 결과 | 로그 |
 |---|---|---|
-| `npm run typecheck` | 대기 | `logs/gate-typecheck.txt` |
-| `npm run lint` | 대기 | `logs/gate-lint.txt` |
-| `npm test -- --run` ×2 | 대기 | `logs/gate-test-{1,2}.txt` |
-| `npm run build` | 대기 | `logs/gate-build.txt` |
+| `npm run typecheck` | exit 0 | `logs/gate-typecheck.txt` |
+| `npm run lint` | exit 0(1차 exit 1 = 새 테스트 미사용 인자 → `9510b1bc`에서 수정 · M3 RED 재확인) | `logs/gate-lint.txt` |
+| `npm test -- --run` 1회차 | 343 파일 / 3033 통과 · exit 0 | `logs/gate-test-1.txt` |
+| `npm test -- --run` 2회차(연속) | 343 / 3033 · exit 0 — flaky 0 | `logs/gate-test-2.txt` |
+| `npm run build` | exit 0 · `/studio` 정규화 129.12 · 복원 132.10 · raw 130.43 · `/projects` 99.08 / 109.53 · `/profile` 99.52 | `logs/gate-build.txt` |
+- base 341/3027 대비 +2 파일 / +6 테스트 = 이 레인 새 파일 2개(4 + 2건). 번들 증분 0(테스트 파일만 — 예산 수치 = BRIEF 기준값 그대로).
 
 ## 5. Codex review
-- `review --scope branch --base 73289c90` 1회 — 대기.
+- `review --scope branch --base 73289c90` 1회 — **지적 0**("수정이 필요한 결함은 발견하지 못했습니다"). Codex 쪽 테스트 실행은 샌드박스(읽기 전용)라 못 했다고 스스로 밝힘 — 테스트 실행 근거는 4절 로컬 게이트. 로그 `logs/codex-review.txt`.
 
 ## 6. 사실 / 추정 / 미확인
 - 사실: 1절 RED·GREEN 수치(로그) · 변이 헝크(로그 diff).

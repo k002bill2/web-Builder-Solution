@@ -204,6 +204,7 @@
 | L1 내보내기 UI | **통과 with note** | 아래 |
 | L3 해제 | **통과** (Archive Utility 더블클릭 = 미확인) | 아래 |
 | L4 로컬 서버 | **통과** | 아래 |
+| L6 `file://` | **통과** (Chromium) | 아래 |
 
 - **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
   - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
@@ -226,3 +227,8 @@
   - 요청 = `index.html` + `assets/images/img-01·02.webp` + `assets/fonts/Pretendard-400·700.woff2` 전부 200(재방문 304) · **외부 요청 0** · 404 0(favicon 요청도 없음).
   - 단일 `.html` 1280·390: 이미지 2개 `data:image/webp` 로드 · 글꼴 400/700 loaded · `performance` 리소스 0 · 서버 요청 = 문서 1건 · 넘침 0.
   - 두 형태 모두 `<script>` 1개(고정 메뉴). 화면: 헤더·Hero 이미지·카피·About 순서가 편집기 미리보기(`r02`)와 같고 390에서 "메뉴" 버튼으로 접힘.
+
+- **L6** (Ego 1280 · `file:///tmp/m4a-qa-live/site/zip/index.html` · `…/single.html`) [사실] `shots/L6-zip-1280.png`
+  - zip 폴더: 상대 경로 이미지 2개 로드(1200×800 · 800×800) · 상대 경로 `@font-face` Pretendard 400/700 **loaded** · `fonts.check` true · 넘침 0.
+  - 단일 HTML: data: 이미지 2개 · 글꼴 400/700 loaded · 넘침 0.
+  - R1b 관찰: Chromium `file://`에서는 상대 경로 글꼴이 적용됩니다. Safari·Firefox `file://`(Q19 재판정 트리거)는 L7·L8 = 미확인. (`performance` 리소스 항목은 `file://`에서 기록되지 않아 요청 목록은 L4로 갈음)

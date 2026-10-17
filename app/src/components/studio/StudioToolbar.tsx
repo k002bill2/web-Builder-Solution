@@ -12,6 +12,7 @@ export function StudioToolbar({
   headingRef,
   children,
   subline,
+  sticky,
 }: {
   readonly projectName: string;
   readonly docTag?: string;
@@ -20,12 +21,14 @@ export function StudioToolbar({
   readonly children?: ReactNode;
   /** h1 아래 줄(<1024 저장 상태) */
   readonly subline?: ReactNode;
+  /** 탭 배치(문서 스크롤) — 위에 붙여 h1·저장 상태 줄을 화면 안에 둔다(UX-POLISH-1 B-RS-12) */
+  readonly sticky?: boolean;
 }) {
   useEffect(() => {
     document.title = `${projectName} 편집`;
   }, [projectName]);
   return (
-    <header className="flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2">
+    <header className={`${sticky ? "sticky top-0 z-10 " : ""}flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2`}>
       <Link
         to="/projects"
         aria-label="프로젝트로 돌아가기"

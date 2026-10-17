@@ -150,6 +150,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
       if (!core) cores.set(projectId, (core = createSaveCore(seed, () => link(projectId))));
       return core;
     },
+    cores,
     ...(local && {
       images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
         maps.set(projectId, map);

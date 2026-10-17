@@ -146,7 +146,8 @@ export function rebase(s: CoreState, doc: PageDoc, mine = false) {
     s.mark += 1;
     s.savedMark = s.mark;
   }
-  s.confirmed = { hash: doc.hash, revision: doc.revision, mark: s.savedMark, proof: "committed" };
+  // proof = rebased: 메모리 쓰기 직후라 flush 성공을 모른다 — U16(기억 해제)은 코어 커밋(committed)만 믿는다(RS6-L5 FIX1)
+  s.confirmed = { hash: doc.hash, revision: doc.revision, mark: s.savedMark, proof: "rebased" };
   s.epoch += 1;
   const refs = retainedIds(doc, undefined);
   s.committed = Object.fromEntries(Object.entries(s.attached).filter(([id]) => refs.has(id)));

@@ -9,8 +9,8 @@ const ACTION_LINK = "ds-label inline-flex h-8 items-center text-primary hover:te
 
 /** 미확인 기억이 있는 행(RESTART SPEC-4 5.2) — 글자·폐기 확인은 진입 직후 모듈(pendingRows)이 넘긴다. 결과 알림은 행 안 한 자리 */
 export interface PendingRow {
-  /** 기억이 있을 때만 — P-U1 상태 글자 · 주 버튼 이름 · P-U5 캡션 · 진행 중 글자 */
-  readonly pending?: { readonly status: string; readonly label: string; readonly caption: string; readonly working: string };
+  /** 기억·코어 상태가 있을 때만 — P-U1 상태 글자 · 주 버튼 이름(없으면 버튼 0) · P-U5 캡션 · 진행 중 글자 · open = "편집기 열기" 유지 · quiet = 실패 색 아님(RS6-L5) */
+  readonly pending?: { readonly status: string; readonly label?: string; readonly caption: string; readonly working: string; readonly open?: boolean; readonly quiet?: boolean };
   readonly busy?: boolean;
   readonly result?: { readonly ok: boolean; readonly text: string; readonly key: number; readonly stuck?: boolean };
   readonly onRetry: (projectId: string) => void;
@@ -62,10 +62,10 @@ export function ProjectRow({
         <time dateTime={row.dateTime} className="ds-caption1 text-label-alternative">
           {row.timeText}
         </time>
-        {pending && <span className="ds-caption1 text-status-negative-text">{pending.status}</span>}
+        {pending && <span className={pending.quiet ? "ds-caption1 text-label-alternative" : "ds-caption1 text-status-negative-text"}>{pending.status}</span>}
       </p>
       <div className="flex flex-wrap items-center gap-3">
-        {pending && !held.result?.stuck && (
+        {pending && pending.label && !held.result?.stuck && (
           <Button
             variant="outline"
             size="sm"
@@ -78,7 +78,7 @@ export function ProjectRow({
             {held.busy ? pending.working : pending.label}
           </Button>
         )}
-        {!pending && row.editorHref && (
+        {(!pending || pending.open) && row.editorHref && (
           <Link to={row.editorHref} data-editor-for={row.projectId} aria-label={`${row.name} 편집기 열기`} className={ACTION_LINK}>
             편집기 열기
           </Link>

@@ -1,6 +1,6 @@
 # RS6-L0-SLIM PROGRESS
 
-- [ ] CP1: base build 재현(128.09/129.40) · s6c.patch 적용 → S6c 재현(128.75/130.06)
+- [x] CP1: base 128.09/129.40 · dist 149 sha = L0 base 동일 · S6c 128.75/130.06 · 복원 131.74/133.09 (잡음 0, L0와 일치) · tsc 테스트 16건 동일
 - [ ] CP2-①: memoryProjectRepository confirm·discard·replace → link 1개
 - [ ] CP2-②: view() 객체 구성 축소
 - [ ] CP2-③: useDocSave resolve·latest 코어 경유 축소

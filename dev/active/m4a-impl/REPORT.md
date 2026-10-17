@@ -74,3 +74,13 @@
 
 ## 6. 서브에이전트
 - **CP1 storeZip:** worker 1개, `isolation: worktree`. 24건 통과 보고를 받은 뒤 메인에서 파일을 복사해 다시 실행했고 24 passed를 확인했습니다. 커밋은 c568e661입니다. worktree(`.claude/worktrees/agent-a35f9a039630e0c96`)와 브랜치는 제거했습니다.
+
+## 7. R2 Codex (BRIEF-R2 3항)
+- **실행:** `codex-companion adversarial-review --scope branch --base d8e548e5 "<관점 4개: zip-slip · 금지 패턴 우회 · 참조 직렬화 누락 이미지 · 거짓 성공>"` 1회. `review` 서브커맨드는 관점 텍스트를 받지 않아 adversarial-review로 돌렸습니다. 결과 원문 `logs/codex-r2.txt`.
+- **판정:** needs-attention. Codex가 경로 순회·미해결 이미지·ZIP_MAX 초과는 거부되는 것을 확인했고, 다음 P2 2건을 냈습니다.
+| # | 지적 | 반영 | 테스트 |
+|---|---|---|---|
+| 1 | F-13 우회: a 밖 요소의 외부 `href`(SVG image)·본문 `link`·본문 `style`의 `@import`·style 속성 `URL(`(대문자)이 통과 | `staticMarkup.ts` — href(xlink 포함)는 `#` 조각만 · 본문 `link/base/meta` 0 · `background`·`ping` 속성 0 · 본문 CSS(style 속성·요소)는 url() data:만 + `@import`·`image-set(`·이스케이프 `\` 0 · `url(` 대소문자 무시 | `staticMarkup.test.ts` "F-13 우회(Codex R2)" 10건 + svg `use href="#x"` 통과 |
+| 2 | 양방향 참조를 index.html 전체 정규식으로 모아 본문 글자의 `assets/...` 경로 때문에 정상 zip이 실패 | `staticZip.ts` — DOM 파싱 뒤 실제 URL 자리(img src · style 요소·속성 url())만 참조로 셈 | `staticZip.test.ts` "참조 = 실제 URL 자리만(Codex R2)" |
+- **RED → GREEN:** `logs/codex-fix-red.txt`(2 실패) → 전체 typecheck 0 · lint 0 · test 353파일 3129 passed · build exit 0 · 진입 128.71 · 복원 131.69 불변(`logs/*-r2-fix.txt`).
+- 반영은 1회까지라 재리뷰는 돌리지 않았습니다.

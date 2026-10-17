@@ -1,0 +1,58 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-impl/app
+
+ ❯ src/features/studio/zip/staticZip.test.ts (18 tests | 1 failed) 10ms
+   ❯ zip 허용표 (SPEC 4.3 · EXP-AC-05·07·09) (13)
+     × 참조 = 실제 URL 자리만(Codex R2) — 본문·alt·title 글자의 assets/ 경로는 참조가 아니다 3ms
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (23 tests | 1 failed) 802ms
+   ❯ M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) (7)
+     × F-13 우회(Codex R2): a 밖 href·xlink:href의 # 아닌 값 · 본문 link·base·meta · 본문 style의 @import·url() · style 속성 URL( 대소문자·CSS 이스케이프·image-set = 실패 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-13 우회(Codex R2): a 밖 href·xlink:href의 # 아닌 값 · 본문 link·base·meta · 본문 style의 @import·url() · style 속성 URL( 대소문자·CSS 이스케이프·image-set = 실패
+AssertionError: <svg><image href="https://x.test/a.png"></image></svg>: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:249:57
+    247|       '<div style="background-image:image-set(\'https://x.test/a.png\'…
+    248|     ])
+    249|       expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HT…
+       |                                                         ^
+    250|     // 같은 문서 조각 참조(svg use)는 외부 요청이 아니다
+    251|     expect(() => build({ markup: inject('<svg><use href="#x"></use></s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/studio/zip/staticZip.test.ts > zip 허용표 (SPEC 4.3 · EXP-AC-05·07·09) > 참조 = 실제 URL 자리만(Codex R2) — 본문·alt·title 글자의 assets/ 경로는 참조가 아니다
+AssertionError: expected [Function] to not throw an error but 'Error: zip 허용표 위반: index.html이 가리키는 파…' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: zip 허용표 위반: index.html이 가리키는 파일이 없음"
+
+ ❯ src/features/studio/zip/staticZip.test.ts:85:49
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 39 passed (41)
+   Start at  04:23:47
+   Duration  1.80s (environment 47%, tests 33%, transform 10%, setup 9%, import 1%)
+

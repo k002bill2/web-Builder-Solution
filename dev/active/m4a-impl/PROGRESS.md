@@ -14,11 +14,11 @@
 - [x] fresh typecheck·lint·test·build (3105 passed · build exit 0)
 - [x] R2 fresh 게이트(병합 뒤): typecheck 0 · lint 0 · test 353파일 3127 passed · build exit 0 (`logs/*-r2.txt`)
 - [ ] Ego Lite 1회 — BLOCKED: 결정 1 멈춤(+0.01) — 개정 18 판단 후 재개(Ego Lite → Codex 순) · preview 미실행, lsof 4395 리스너 0 기록
-- [ ] Codex review 1회 — BLOCKED: 결정 1 멈춤(+0.01) — 개정 18 판단 후 재개(Ego Lite → Codex 순)
+- [x] Codex 1회(R2, `adversarial-review --scope branch --base d8e548e5` + 관점 4개) — needs-attention P2 2건 → 반영 1회(TDD RED `logs/codex-fix-red.txt` → GREEN 3129 passed · 진입 128.71 불변) `logs/codex-r2.txt`
 - [x] REPORT 최종 · untracked 0
 
 ## 로그
-- R2(BRIEF-R2): fresh 게이트 통과 → Ego Lite → Codex → REPORT
+- R2(BRIEF-R2): fresh 게이트 통과 → Codex 먼저(수정이 생기면 Ego Lite가 최종 코드를 보도록) → Ego Lite → REPORT
 - 02:49 착수 · CP1 서브에이전트(worktree) ∥ 메인 CP2
 - CP1 c568e661 · CP2 c7863aeb · CP3+CP4 575576b8 · CP5 fe4671a1
 - 예산: CP2 정규화 0 → CP5 +0.01(StudioLayout gzip 19.58→19.59 버튼 글자) → 감량 1회(isFormat includes) 효과 없음·되돌림 → 멈춤

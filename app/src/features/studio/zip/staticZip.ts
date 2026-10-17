@@ -48,6 +48,15 @@ const fail = (why: string): never => {
   throw new Error(`zip 허용표 위반: ${why}`);
 };
 
+const CSS_URL = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
+/** 실제 URL 자리(img src · style 요소·속성의 url())만 참조로 센다 — 본문·alt·title 글자의 경로는 참조가 아니다 */
+function referencedAssets(html: string): Set<string> {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const css = [...doc.querySelectorAll("style")].map((el) => el.textContent ?? "").concat([...doc.querySelectorAll("[style]")].map((el) => el.getAttribute("style") ?? ""));
+  const urls = [...[...doc.querySelectorAll("img[src]")].map((img) => img.getAttribute("src")!), ...css.flatMap((text) => [...text.matchAll(CSS_URL)].map((m) => m[2]!.trim()))];
+  return new Set(urls.filter((url) => url.startsWith("assets/")));
+}
+
 /** 4.3 허용표 — 파일 종류·개수·서명 + index.html ↔ assets 양방향 참조(고아 0 · 끊긴 참조 0, OFL.txt는 참조 대상 아님) */
 export function checkZipEntries(entries: readonly ZipEntry[]): void {
   const names = entries.map((e) => e.name);
@@ -61,8 +70,7 @@ export function checkZipEntries(entries: readonly ZipEntry[]): void {
   if (count(OFL) !== (fonts.length > 0 ? 1 : 0)) fail("OFL.txt는 글꼴이 있을 때만 정확히 1개");
   if (fonts.some((f) => head(f.data, 4) !== "wOF2")) fail("woff2 서명이 아닌 글꼴");
   if (images.some((i) => !SIGNATURE[i.name.slice(i.name.lastIndexOf(".") + 1)]!(i.data))) fail("확장자와 서명이 다른 이미지");
-  const html = new TextDecoder().decode(entries.find((e) => e.name === "index.html")!.data);
-  const referenced = new Set([...html.matchAll(/assets\/(?:fonts|images)\/[A-Za-z0-9.-]+/g)].map((m) => m[0]));
+  const referenced = referencedAssets(new TextDecoder().decode(entries.find((e) => e.name === "index.html")!.data));
   const assets = new Set([...fonts, ...images].map((e) => e.name));
   if ([...referenced].some((ref) => !assets.has(ref))) fail("index.html이 가리키는 파일이 없음");
   if ([...assets].some((name) => !referenced.has(name))) fail("index.html이 참조하지 않는 파일");

@@ -233,6 +233,24 @@ describe("M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15)", () => 
     expect(() => build({ markup: inject('<div style="background:url(data:image/png;base64,AA)"></div>') })).not.toThrow();
   });
 
+  it("F-13 우회(Codex R2): a 밖 href·xlink:href의 # 아닌 값 · 본문 link·base·meta · 본문 style의 @import·url() · style 속성 URL( 대소문자·CSS 이스케이프·image-set = 실패", () => {
+    for (const bad of [
+      '<svg><image href="https://x.test/a.png"></image></svg>',
+      '<svg><image xlink:href="https://x.test/a.png"></image></svg>',
+      '<link rel="stylesheet" href="https://x.test/a.css">',
+      '<base href="https://x.test/">',
+      '<meta http-equiv="refresh" content="0;url=https://x.test">',
+      '<style>@import "https://x.test/a.css";</style>',
+      "<style>.a{background:url(https://x.test/a.png)}</style>",
+      '<div style="background:URL(https://x.test/a.png)"></div>',
+      '<div style="background:u\\72l(https://x.test/a.png)"></div>',
+      '<div style="background-image:image-set(\'https://x.test/a.png\' 1x)"></div>',
+    ])
+      expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HTML 외부 출처");
+    // 같은 문서 조각 참조(svg use)는 외부 요청이 아니다
+    expect(() => build({ markup: inject('<svg><use href="#x"></use></svg>') })).not.toThrow();
+  });
+
   it("F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과", () => {
     const legacy = ["a", "p", "f", "s"].join("");
     expect(() => build({ markup: inject("<p>Design Studio 상호</p>"), title: "Design Studio", description: "design studio" })).not.toThrow();

@@ -32,7 +32,7 @@ export interface StaticHtmlParts {
 
 const ZIP_FONT = /^assets\/fonts\/[A-Za-z]+-\d{3}\.woff2$/;
 const ZIP_IMAGE = /^assets\/images\/img-\d{2,3}\.(webp|jpg|png)$/;
-const CSS_URL = /url\(\s*(['"]?)([^'")]*)\1\s*\)/g;
+const CSS_URL = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
 
 function assertNoExternalCss(css: string, target: "html" | "zip") {
   const urls = [...css.matchAll(CSS_URL)].map((m) => m[2]!.trim());
@@ -82,14 +82,22 @@ function assertLinks(site: Element) {
   }
 }
 
-/** F-13 그 밖 URL 자리 — action·formaction·poster 0 · src는 img만 · style url()은 data:만 */
+/** 본문 CSS(style 속성·요소) — url()은 data:만 · @import·image-set·이스케이프(\) 0(이스케이프는 url(·@import를 글자로 숨긴다) */
+const CSS_TRICK = /@import|image-set\(|\\/i;
+const hasExternalCss = (css: string) => CSS_TRICK.test(css) || [...css.matchAll(CSS_URL)].some((m) => !m[2]!.trim().startsWith("data:"));
+
+/** F-13 그 밖 URL 자리 — action·formaction·poster·background·ping 0 · src는 img만 · href(xlink 포함)는 # 조각만 · 본문 link·base·meta 0 · 본문 CSS 외부 요청 0 */
 function assertNoExternalSources(site: Element) {
-  const bad = [site, ...site.querySelectorAll("*")].some(
-    (el) =>
-      ["action", "formaction", "poster"].some((name) => el.hasAttribute(name)) ||
-      (el.localName !== "img" && (el.hasAttribute("src") || el.hasAttribute("srcset"))) ||
-      [...(el.getAttribute("style") ?? "").matchAll(CSS_URL)].some((m) => !m[2]!.trim().startsWith("data:")),
-  );
+  const bad =
+    site.querySelector("link, base, meta") !== null ||
+    [site, ...site.querySelectorAll("*")].some(
+      (el) =>
+        ["action", "formaction", "poster", "background", "ping"].some((name) => el.hasAttribute(name)) ||
+        (el.localName !== "img" && (el.hasAttribute("src") || el.hasAttribute("srcset"))) ||
+        [...el.attributes].some((a) => a.localName === "href" && !a.value.trim().startsWith("#")) ||
+        hasExternalCss(el.getAttribute("style") ?? "") ||
+        (el.localName === "style" && hasExternalCss(el.textContent ?? "")),
+    );
   if (bad) throw new Error("정적 HTML 외부 출처가 있습니다");
 }
 

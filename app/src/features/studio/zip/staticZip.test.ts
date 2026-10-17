@@ -77,6 +77,17 @@ describe("zip 허용표 (SPEC 4.3 · EXP-AC-05·07·09)", () => {
     expect(() => checkZipEntries(mutate(valid()))).toThrow(/zip/);
   });
 
+  it("참조 = 실제 URL 자리만(Codex R2) — 본문·alt·title 글자의 assets/ 경로는 참조가 아니다", () => {
+    const text = 'assets/images/img-09.png src="assets/fonts/KitSansKR-700.woff2" url(assets/images/img-08.png)';
+    const withText = valid().map((x) =>
+      x.name === "index.html" ? entry("index.html", html(`<p title="assets/images/img-07.png">${text}</p><img alt="assets/images/img-06.png" src="assets/images/img-01.webp"><img src="assets/images/img-02.jpg">`, FONT_CSS)) : x,
+    );
+    expect(() => checkZipEntries(withText)).not.toThrow();
+    // 글자 안 경로가 실제 참조를 대신하지 못한다 — img 없이 글자만 있으면 고아
+    const onlyText = valid().map((x) => (x.name === "index.html" ? entry("index.html", html("<p>assets/images/img-01.webp assets/images/img-02.jpg</p>", FONT_CSS)) : x));
+    expect(() => checkZipEntries(onlyText)).toThrow(/zip/);
+  });
+
   it("글꼴 0개면 OFL.txt도 0이어야 한다", () => {
     const noFont = valid().filter((x) => !x.name.startsWith("assets/fonts/")).map((x) => (x.name === "index.html" ? entry("index.html", html('<img src="assets/images/img-01.webp"><img src="assets/images/img-02.jpg">')) : x));
     expect(() => checkZipEntries(noFont)).not.toThrow();

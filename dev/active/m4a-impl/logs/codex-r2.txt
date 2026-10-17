@@ -1,0 +1,20 @@
+# Codex Adversarial Review
+
+Target: branch diff against d8e548e5
+Verdict: needs-attention
+
+출하 보류: 외부 요청 검사 우회와 정상 텍스트에 의한 ZIP 생성 실패를 재현했습니다. 경로 순회·미해결 이미지·ZIP_MAX 초과는 거부됐습니다. 파일 변경 없이 소스 기반 메모리 내 실행으로 확인했으며 전체 테스트는 실행하지 않았습니다.
+
+Findings:
+- [medium] [P2] 외부 href와 CSS 요청이 검사를 통과합니다 (app/src/features/studio/staticHtml/staticMarkup.ts:86-91)
+  새 외부 출처 검사는 href를 검사하지 않고 style 속성의 소문자 url()만 확인합니다. buildZipSite에 SVG image의 외부 href, 본문의 link rel="stylesheet", style의 @import, style 속성의 URL(https://...)을 각각 전달하면 모두 성공하고 외부 URL이 ZIP에 남습니다. 렌더러가 이런 마크업을 반환하면 외부 요청이 있는 결과를 성공으로 처리합니다. 현재 문서 입력만으로 해당 마크업을 주입하는 경로까지 확인한 것은 아닙니다.
+  Recommendation: a 이외 요소의 href·네임스페이스 URL 속성도 검증하고, 본문 link/style/base/meta를 제거하거나 거부하세요. CSS는 대소문자·이스케이프를 해석하는 파서로 검사하고 해당 우회 입력의 회귀 테스트를 추가하세요.
+- [medium] [P2] 사용자 텍스트를 파일 참조로 오인해 내보내기를 차단합니다 (app/src/features/studio/zip/staticZip.ts:64-68)
+  참조 집합을 index.html 전체의 정규식 검색으로 만들기 때문에 제목·설명·본문·alt의 글자까지 파일 참조로 취급합니다. 이미지가 없는 문서에서 제목 또는 본문을 assets/images/img-01.png로 설정하면 buildZipSite가 'index.html이 가리키는 파일이 없음'으로 실패합니다. 실제 파일 참조가 없는 정상 콘텐츠인데 ZIP 내보내기가 차단되며, 콘텐츠를 바꾸지 않는 재시도는 계속 실패합니다.
+  Recommendation: HTML의 실제 리소스 URL 속성과 CSS url()에서만 참조를 수집하세요. 제목·본문·alt에 파일 경로 문자열이 있어도 ZIP 생성이 성공하는 회귀 테스트를 추가하세요.
+
+Next steps:
+- 외부 URL 검사와 참조 수집을 수정한 뒤 재현 입력으로 회귀 검증하세요.
+
+Codex session ID: 01a14b4f-a1b7-7a31-9654-ccf866b0526e
+Resume in Codex: codex resume 01a14b4f-a1b7-7a31-9654-ccf866b0526e

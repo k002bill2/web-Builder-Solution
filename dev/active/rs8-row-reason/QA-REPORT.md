@@ -24,5 +24,6 @@
 ## 4. 예산 fresh (`npm run build`)
 - `/studio` 128.66 · 복원 131.65 · `/projects` 99.09 / 109.54 — 브리프 값과 일치.
 
-## 5. fresh 게이트 (tip d2bc8702)
-- typecheck exit 0 · lint exit 0 · vitest 349 files / 3049 tests passed · build exit 0(bundle 가드 통과).
+## 5. fresh 게이트 (QA 재실행 2026-10-18, 앱 코드 = tip d2bc8702 · HEAD 문서 커밋만 추가) — `logs/qa-gates.txt`
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npx vitest run` exit 0 — 349 files / 3049 tests passed · `npm run build` exit 0(bundle 가드 통과).
+- 예산 같은 빌드: `/studio` 정규화 128.66 · 복원 정규화 131.65 · `/projects` 첫 99.09 / 진입 109.54 — 4절과 일치.

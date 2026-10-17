@@ -10,6 +10,6 @@
 - [x] 2b. 변이: 해제 규칙 각각 제거 → FAIL 확인 (매번 되돌림)
 - [x] 3. 행 문구·버튼: UX-5 2.3 원문 대조 · stale "다시 저장" 숨김 · 2벌 가드
 - [x] 4. 예산 fresh: /studio 128.66 · 복원 131.65 · /projects 99.09/109.54
-- [ ] 5. fresh 게이트: typecheck·lint·test(349/3049)·build
+- [x] 5. fresh 게이트: typecheck·lint·test(349/3049)·build
 - [x] 6. QA-REPORT 초안 커밋 (15턴 이내)
 - [ ] 7. preview 종료 · lsof 0 기록 · git status 빈 값 · 최종 커밋

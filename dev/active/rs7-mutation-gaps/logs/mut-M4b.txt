@@ -1,0 +1,20 @@
+### M4b (src/pages/ProjectsPage.tsx)
+ app/src/pages/ProjectsPage.tsx | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+diff --git a/app/src/pages/ProjectsPage.tsx b/app/src/pages/ProjectsPage.tsx
+index fbd8f158..6e1040fb 100644
+--- a/app/src/pages/ProjectsPage.tsx
++++ b/app/src/pages/ProjectsPage.tsx
+@@ -225,2 +225 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
+-      .then((mod) => mod.retryRow(repository, projectId))
+-      .catch(() => ({ ok: false, text: "저장을 확인하지 못했습니다 — 잠시 뒤 다시 시도하세요" }));
++      .then((mod) => mod.retryRow(repository, projectId));
+     × retryRow reject → alert 실패 문구 · busy 해제(aria-busy 0) · 포커스 = 그 버튼 · 기억 유지 3163ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/pages/ProjectsRetryGuard.test.tsx > RS7-C · L5 M4b 페이지 retry reject = 실패 결과 > retryRow reject → alert 실패 문구 · busy 해제(aria-busy 0) · 포커스 = 그 버튼 · 기억 유지
+     66|     expect(await within(rowOf("가게 홈페이지")).findByRole("alert")).toHaveT…
+     68|     expect(after).not.toHaveAttribute("aria-busy", "true");
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+      Tests  1 failed | 1 passed (2)
+     Errors  1 error

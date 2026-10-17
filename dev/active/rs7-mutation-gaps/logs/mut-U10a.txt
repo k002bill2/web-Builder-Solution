@@ -1,0 +1,17 @@
+### U10a (src/data/persistence/localSync.ts)
+ app/src/data/persistence/localSync.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/app/src/data/persistence/localSync.ts b/app/src/data/persistence/localSync.ts
+index 44f9d13d..d6c0dbbb 100644
+--- a/app/src/data/persistence/localSync.ts
++++ b/app/src/data/persistence/localSync.ts
+@@ -219 +219 @@ export async function openLocalSync(
+-        mode: async () => (cleared ? "cleared" : gate.mode === "writer" ? gate.mode : await gate.enter()),
++        mode: async () => (gate.mode === "writer" ? gate.mode : await gate.enter()),
+     × cleared 수신 뒤 clean 코어 확인 → failed{cleared}(writer로 재읽기 0) 169ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/save/saveCore.mutationGaps.test.ts > RS7-C · L1 U10-a 포트 mode = cleared > cleared 수신 뒤 clean 코어 확인 → failed{cleared}(writer로 재읽기 0)
+AssertionError: expected { status: 'failed', reason: 'infra' } to deeply equal { status: 'failed', reason: 'cleared' }
+- Expected
++ Received
+      Tests  1 failed | 3 passed (4)

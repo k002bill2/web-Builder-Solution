@@ -1,0 +1,20 @@
+### M3 (src/pages/ProjectsPage.tsx)
+ app/src/pages/ProjectsPage.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/app/src/pages/ProjectsPage.tsx b/app/src/pages/ProjectsPage.tsx
+index fbd8f158..136320ae 100644
+--- a/app/src/pages/ProjectsPage.tsx
++++ b/app/src/pages/ProjectsPage.tsx
+@@ -220 +220 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
+-    if (!mod?.describeRow(repository, projectId)?.label || state.busy) return;
++    if (!mod?.describeRow(repository, projectId)?.label) return;
+     × p1 재시도 진행 중 p2 재시도 클릭 → retryRow 1회(p1)만 · p1 끝난 뒤 p2 재시도 가능 40ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/pages/ProjectsRetryGuard.test.tsx > RS7-C · L5 M3 페이지 busy guard = 한 번에 한 행 > p1 재시도 진행 중 p2 재시도 클릭 → retryRow 1회(p1)만 · p1 끝난 뒤 p2 재시도 가능
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+     80|     await waitFor(() => expect(retryRow).toHaveBeenCalledTimes(1));
+     82|     expect(retryRow).toHaveBeenCalledTimes(1);
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+      Tests  1 failed | 1 passed (2)
+     Errors  1 error

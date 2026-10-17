@@ -10,8 +10,8 @@
 - [x] CP2 이미지 동결·엄격 참조 · 포트 commit · G1 · U14 · U15 — RED → GREEN · 예산
 - [x] CP3 h4·h5 · U10 · mode = gate·cleared — RED → GREEN · 예산
 - [x] CP4 G2 import 가드 · 동기 생성·포트 늦게 붙이기 · CoreKeeper 레지스트리 — RED → GREEN · 예산
-- [ ] 마감 게이트 fresh typecheck·lint·test·build
-- [ ] REPORT.md (AC 판정 · 37건 표 · 예산 표 · 깨진 테스트 대조 · ④b vs 9.2 · 사실/추정/미확인)
+- [x] 마감 게이트 fresh typecheck·lint·test·build (CP4 게이트 = 마지막 코드 변경 뒤 fresh: typecheck 0 · lint 0 · build 0 · 322/2902)
+- [x] REPORT.md (AC 판정 · 37건 표 · 예산 표 · 깨진 테스트 대조 · ④b vs 9.2 · 사실/추정/미확인)
 
 ## 예산 표 (정규화 /studio · 복원 · raw)
 | 시점 | /studio 정규화 | 복원 | raw eager | 비고 |
@@ -40,3 +40,4 @@
 - CP4 RED: `logs/cp4-red.log` — 2 failed / 8(예측 1). 초과 1 = 가드 정규식이 주석 속 "import … from"을 값 import로 잡은 테스트 결함 → 주석 제거 뒤 판정(구현 변경 아님). 실질 RED = memory 모드 1. 가드 변이 확인: saveCore.ts에 coreIo 값 import 추가 → 가드 1 FAIL(`logs/cp4-guard-mutation.log`) → 원복.
 - CP4 GREEN = coreIo memory 분기(DocBook save 뒤 not-persistent · savedMark 전진) · CoreLink.book 기준 = 지금 메모리 revision.
 - CP4 GREEN 게이트(fresh): typecheck 0 · lint 0 · build 0 · test 322 files / 2902 passed — `logs/cp4-*.log`.
+- 서브에이전트 결과: analyzer(읽기 전용) 1회 — 37건 3분류(①30 ②6 ③1) → `HARNESS-MAP.md`로 통합. 쓰기 서브에이전트 0.

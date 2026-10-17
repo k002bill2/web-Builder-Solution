@@ -9,7 +9,8 @@
 - [x] 4. 회귀: PNG·단일 HTML(Q5)·게이트 8줄·편집기 저장 무변화 · 변이 3종 FAIL
 - [x] 5. 문구: 조사("(zip)을"→"를") · EXPORT-SPEC 문구 키 대조표
 - [x] 6. LIVE-PLAN.md (브라우저 설치 확인 포함)
-- [ ] 7. 마감: 변이 원복 · preview 미기동/포트 0 · untracked 0 · 최종 판정
+- [x] 7. 마감: 변이 원복 · preview 미기동/포트 0 · untracked 0 · 최종 판정
 - 4 결과: 무변화 확인 · 변이 7종 중 5 잡힘 · M2a·M2c 생존 = 테스트 공백 G1·G2(패치 제안 REPORT 4c) — 2차 run(재개)
 - 5 결과: 조사 오류 재현(ExportAfter.tsx:113 · 테스트가 틀린 문장 고정) · export.fail.pattern 미구현(편차 미기록) · 나머지 키 일치
 - 2 결과: 통과 15 · 통과 with notes 1(13) · 부분 2(02·14 사유 확인) · 이월 1(18) · 바뀐 단언 약화 0
+- 7 결과: 1차 PASS with notes · 노트 5 · 열린 항목 4(QA-REPORT 7절)

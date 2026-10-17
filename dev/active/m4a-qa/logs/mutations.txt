@@ -70,3 +70,6 @@ restored:  M ../dev/active/m4a-qa/logs/mutations.txt
  FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — M2a 보강 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
 restored:  M ../dev/active/m4a-qa/logs/mutations.txt 
+## 4c 합친 패치(REPORT 그대로) 원본 1회 실행
+ Tests 26 passed (26)
+restored:  M dev/active/m4a-qa/logs/mutations.txt 

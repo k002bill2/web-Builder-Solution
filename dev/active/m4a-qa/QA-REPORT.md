@@ -1,6 +1,6 @@
 # M4-a-4 QA REPORT — 정적 zip 내보내기 릴리스 게이트 1차(정적·회귀·생성물)
 
-**잠정 판정: 미정(진행 중) — 항목 1~6 결과가 채워지면 확정합니다.**
+**1차 판정: PASS with notes** (정적·회귀·생성물 범위) — 릴리스 최종 판정은 2차 실화면(`LIVE-PLAN.md`) 이후입니다. 근거·노트 = 7절.
 
 - 대상: `k002bill2/m4a-qa` = m4a-impl tip `a834eb88` · main 분기점 `b75483ee`
 - 근거 표기: [사실] 실행 출력·코드 직접 확인(L1) · [추정] 코드 읽기 판단(L3) · [미확인] 이번 run에서 확인 못 함
@@ -55,7 +55,7 @@
 | 19 예산 진입 증분 0 | 해소 | 1절 build `[bundle]` 실측 | 통과 |
 
 ### 바뀐 기존 단언 — 이전/이후 (약화 여부)
-- Developer REPORT 2절 표 5행을 4a의 `git diff` 삭제 9줄과 1:1 대조 → 전부 **문구 교체**이고 단언 수·강도 감소 0, skip 0. 이후 쪽은 오히려 `static-zip` 요청 형식 단언·React 버튼 0 단언이 늘었습니다. 판정: **약화 아님**.
+- Developer REPORT 2절 표 5행을 4a의 `git diff` 삭제 9줄과 1:1 대조 → 전부 **문구 교체(+ import 1줄)**이고 단언 수·강도 감소 0, skip 0. 이후 쪽은 오히려 `static-zip` 요청 형식 단언·React 버튼 0 단언이 늘었습니다. 판정: **약화 아님**.
 - 예외 1건: `ExportFlow.test.tsx`의 새 단언이 조사 오류 문장을 고정(5a) — 약화는 아니지만 수정 시 함께 바꿔야 함.
 
 ## 3. 생성물 검증 (Node) — 통과 [사실]
@@ -91,8 +91,8 @@
 | 편집기 저장 흐름 | 편집기·저장 테스트 | diff 0 (소스 변경도 `editorEvents.ts` 이벤트 형식 유니온에 `static-zip` 추가뿐) | 무변화 |
 | PNG 내보내기 | `PngSave.test.tsx` | 1줄 — 버튼 이름 `정적 HTML 내보내기` → `HTML 파일 1개 내보내기` | 이름만 바뀜(약화 아님) |
 | 단일 HTML(Q5 참조 직렬화) | `staticHtml.test.ts` +137/−0 · `staticMarkup.test.ts` +85/−0 | 기존 단언 삭제 0 · 참조 경로 단언 추가 | 무변화 + 보강 |
-| 버튼·문구 | `ExportFlow` · `ExportChunkFailure` · `ExportResultNotes` · `exportFlow.test.ts` | 테스트 삭제 줄 9줄 전부 문구 교체(React zip → 정적 사이트(zip) · "zip 내보내기는 다음 단계" → "이미지를 파일로 나눠 담습니다") · 단언 개수 감소 0 | 약화 아님 |
-- 테스트 전체 diff: 14파일 +647/−9 — 삭제 9줄은 위 문구 교체와 1:1. fresh 전체 test 353/3130 통과(1절).
+| 버튼·문구 | `ExportFlow` · `ExportChunkFailure` · `ExportResultNotes` · `exportFlow.test.ts` | 테스트 삭제 줄 9줄 = 문구 교체 8줄 + `exportFileName.test.ts` import 확장 1줄(React zip → 정적 사이트(zip) · "zip 내보내기는 다음 단계" → "이미지를 파일로 나눠 담습니다") · 단언 개수 감소 0 | 약화 아님 |
+- 테스트 전체 diff: 14파일 +647/−9 — 삭제 9줄 = 위 문구 교체 8줄 + import 1줄. fresh 전체 test 353/3130 통과(1절).
 
 ### 4b. 변이 — 로그 `logs/mutations.txt` (매번 `git checkout` 원복 · 원복 뒤 `git status` = 로그 파일만)
 | # | 변이 | 결과 | 판정 |
@@ -110,7 +110,7 @@
 ### 4c. 테스트 공백 — 수정 제안(패치 · 커밋 안 함 · QA가 임시로 넣어 원본 통과 / 변이 실패 확인)
 - **G1 (M2a 생존)**: zip 대상은 `assets/fonts/<계열>-<굵기>.woff2`가 외부 요청 검사를 통과하므로, F-14 제외를 모든 `url()`로 넓혀도 그 경로 안 브랜드 글자를 못 잡습니다. [추정] 지금 글꼴 계열은 고정(Pretendard)이라 실사용 위험은 낮음.
 - **G2 (M2c 생존)**: 기존 테스트는 브랜드가 마지막 `)` 뒤에 있어 탐욕 매치가 삼키지 못합니다. data: 글꼴 2개 사이의 고정 CSS 브랜드를 숨기는 회귀를 못 잡습니다. [추정] 실제 킷 CSS는 400·700 두 @font-face를 연달아 쓰므로 G2가 G1보다 현실적.
-- 검증: 원본 25/25 통과 · M2a → QA-M2a FAIL · M2c → QA-M2c FAIL (`logs/mutations.txt` "QA 보강" 절).
+- 검증(두 run에 나눠 확인): QA-M2c = 원본 통과 · M2c FAIL(첫 run — 같은 run의 QA-M2a는 `parts` 미정의로 작성 오류) · QA-M2a = 원본 25/25 · M2a FAIL(재시도 run) · 아래 합친 패치를 원본에 그대로 넣은 1회 실행 26/26 통과 — 합친 패치로 변이 재실행은 하지 않음(`logs/mutations.txt` "QA 보강"·"4c 합친 패치" 절).
 ```diff
 --- a/app/src/features/studio/staticHtml/staticMarkup.test.ts  (파일 끝에 추가)
 +describe("F-14 data: 제외 범위 (QA G1·G2)", () => {
@@ -161,3 +161,31 @@
 
 ## 6. LIVE-PLAN — 작성 완료 [사실]
 - `dev/active/m4a-qa/LIVE-PLAN.md`: 브라우저 설치 실측(Ego Lite·Chrome·Edge·Safari 있음 · **Firefox 없음** · Archive Utility 있음) · 매트릭스 L1~L10 실행 순서·예상 턴(≈ 26) · 자동(ego-browser)/수동(Safari) 구분 · Firefox·Windows 탐색기 BLOCKED.
+
+## 7. 최종 판정 (1차) — PASS with notes
+### 7a. FAIL 조건 대조
+| 조건 | 판정 | 근거 |
+|---|---|---|
+| 거짓 성공 | 해당 없음 | 3절 실제 파일 무결성·구성·바이트 일치 · 4b 변이 대표 3종 FAIL(성공을 꾸며내는 경로를 테스트가 잡음) · 용량 초과·금지 패턴은 실패로 끝남(성공 표시 0) |
+| 회귀 | 해당 없음 | 4a 게이트·편집기 저장 테스트 diff 0 · PNG·단일 HTML 단언 삭제 0 · 3절 F-14 실바이트 재현(09c4309d 수정이 실제 글꼴에서 성공) · fresh test 3130/3130 |
+| 예산 초과 | 해당 없음 | 1절 `/studio` 128.71 · 복원 131.69 · 렌더 JS 84.29/90 · 다른 라우트 증가 0 |
+
+### 7b. 노트 (심각도 순 · 릴리스 차단 아님)
+1. EXP-AC-14 부분 — 용량 초과가 SPEC 6.1 refused가 아니라 retryable(재시도 버튼 노출). 문구·상한 동작은 맞음 (2절 · Developer 편차 3).
+2. `export.fail.pattern` 문장 미구현 — F-11~F-15 실패는 일반 재시도 문구로 보임 [추정] · Developer 편차 목록에 없음 (5b).
+3. 성공 제목 조사 오류 "정적 사이트(zip)을" → "를" — 테스트가 틀린 문장을 고정 · 패치 5a.
+4. EXP-AC-02 부분 — 차단·경고·저장 먼저 시나리오를 zip 형식으로 돌린 테스트 없음 (2절).
+5. 테스트 공백 G1·G2(F-14 제외 범위 변이 M2a·M2c 생존 · 패치 4c 검증됨) · ZIP_MAX 경계(64MB±1B) 테스트 없음(기록만).
+
+### 7c. 열린 항목 (Jarvis · 2차)
+- 09c4309d(F-14 data: 제외 수정) Codex 미검토 — 이번 run은 브리프상 Codex 금지라 QA 범위 밖. 다음 레인 1회 권고(Developer 9절 3번).
+- `PngSave.test.tsx:122` 수정이 `rs8-ux-fix`와 같은 파일 — 병합 순서·충돌은 Jarvis 판단(Developer 편차 2).
+- 실화면 R1~R5 = QA 미확인(2차) · R3 큰 문서 = Developer BLOCKED → LIVE-PLAN L9 · Firefox 미설치·Windows 탐색기 없음 = BLOCKED.
+- [사실] QA 대상은 `a834eb88`. 이후 m4a-impl tip이 `38208e8d`로 진행됨(`38208e8d docs(m4a-impl): FIX1 브리프·PROGRESS 체크리스트;`) — 그 커밋은 이 판정 범위 밖.
+
+### 7d. 마감 상태 [사실]
+- preview·http.server: 이번 run 미기동 · `lsof -nP -iTCP:4395 -sTCP:LISTEN` exit 1 · `:4396` exit 1.
+- 변이·임시 테스트: 매번 `git checkout` 원복(로그의 `restored:` 줄) · 앱·테스트 커밋 0.
+- 임시 worktree `/tmp/m4a-qa-main`: 디렉터리 없음 · `git worktree list`에 미등록(`prune -v` 출력 0).
+- `git status --short`: 마감 커밋 뒤 빈 값.
+

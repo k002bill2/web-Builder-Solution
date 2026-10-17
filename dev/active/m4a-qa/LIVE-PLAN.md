@@ -23,8 +23,8 @@
 | L1 | 내보내기 UI | Ego × 1280 · 390 | zip · HTML | 버튼 순서·크기 · 성공 status 1 · alert 0 · 포커스 = 누른 버튼 · 내려받기 링크 ≥ 24px · 성공 제목 조사(수정 반영 여부) · 차단 보조 문장 (R4) | ego-browser | 3 |
 | L2 | 실패 alert | Ego × 390 | zip | 실패 경로 1개 유발(예: 렌더 청크 차단 또는 F-패턴 주입 불가 시 시간 초과) → alert 1개 · 문구가 `export.fail.pattern`/일반 문구 중 무엇인지 기록 (R4 잔여 · 5b) | ego-browser | 3 |
 | L3 | 해제 | — | zip | `open -a "Archive Utility"` 해제 폴더 vs `ditto -xk` `diff -r` 동일 · `unzip -t` 0 오류 · 파일 7개(이미지 2) (R1·R5) | Bash | 1 |
-| L4 | 로컬 서버 | Ego × 1280 · 390 | zip | `python3 -m http.server 4396` · 이미지 2·글꼴 400/700 loaded · 가로 넘침 0 · 요청 전부 `assets/*` 200 · 외부 0 · 404 = favicon만 (R1·R2) · 미리보기 스크린샷과 비교 | ego-browser | 3 |
-| L5 | 로컬 서버 | Safari × 1280 · 390 | zip | 같은 URL 수동 열기 · 이미지·글꼴 눈 확인 · `screencapture` (R1) | 수동 | 2 |
+| L4 | 로컬 서버 | Ego × 1280 · 390 | zip · HTML | `python3 -m http.server 4396` · 이미지 2·글꼴 400/700 loaded · 가로 넘침 0 · 요청 전부 `assets/*` 200 · 외부 0 · 404 = favicon만 (R1·R2) · 미리보기 스크린샷과 비교 · **단일 `.html`도 같은 서버로 1280·390**(data: 이미지·글꼴 loaded · 요청 = 문서 1건) | ego-browser | 4 |
+| L5 | 로컬 서버 | Safari × 1280 · 390 | zip · HTML | 같은 URL(폴더 index.html + 단일 .html) 수동 열기 · 이미지·글꼴 눈 확인 · `screencapture` (R1) | 수동 | 3 |
 | L6 | `file://` | Ego × 1280 | zip · HTML | 폴더 `index.html` · 단일 HTML 직접 열기 → `document.fonts.check` 400/700 · 이미지 로드 (R1b 관찰) | ego-browser | 2 |
 | L7 | `file://` | Safari × 1280 | zip · HTML | 같은 2파일 수동 열기 — 상대 경로 `@font-face` 적용 여부(Q19 재판정 트리거) (R1b) | 수동 | 2 |
 | L8 | Firefox 열 | Firefox × 1280 · 390 | zip · HTML | L4·L6 반복 | 수동 | BLOCKED(미설치) |
@@ -38,5 +38,5 @@
 3. 스크린샷만 `dev/active/m4a-qa/shots/`에 커밋 · 내려받은 파일은 저장소 밖 · `git status --short` 빈 값.
 
 ## 4. 예산
-- 합계 예상 ≈ 26턴(+BLOCKED 행 제외) · 상한 권고 40턴. 순서 우선: L1 → L3 → L4 → L6 → L2 → L10 → L9 → L5·L7(수동, 사용자 참여 필요) → L8.
+- 합계 예상 ≈ 28턴(+BLOCKED 행 제외) · 상한 권고 40턴. 순서 우선: L1 → L3 → L4 → L6 → L2 → L10 → L9 → L5·L7(수동, 사용자 참여 필요) → L8.
 - 수동 행(L5·L7·Safari)은 무인 run에서는 할 수 없으므로 **사용자 동석 run** 또는 미확인 기록. [추정] 무인 2차는 Ego 행 + Bash 행만 가능.

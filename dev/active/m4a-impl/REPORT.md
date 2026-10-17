@@ -4,7 +4,7 @@
 
 _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 표 마지막 행과 7·8절에 있습니다.)_
 
-근거 수준: 단위·빌드 = L1(실행 출력, 로그 `logs/`). 실화면 = 미실행.
+근거 수준: 단위·빌드 = L1(실행 출력, 로그 `logs/`). 실화면 = R1 미실행 → R2에서 실행(L1, 8절).
 - build exit 0은 스크립트 허용치(+0.03 · 멈춤선 128.69) 안이라는 뜻일 뿐입니다. 결정 1의 "진입 증분 0"을 통과했다는 뜻이 아닙니다.
 
 ## 1. 예산 (결정 1 — 진입 증분 0) · 기준선 파일 수정 0
@@ -75,8 +75,8 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 - **test:** `cd app && npx vitest run` → Test Files 350 passed · Tests 3105 passed (`logs/test-cp5.txt`)
 - **build:** `cd app && npm run build` → exit 0, 전 라우트 + 렌더 문서 (`logs/build-cp5.txt`)
 - **preview:** 이번 레인에서 띄우지 않았습니다. `lsof -nP -iTCP:4395 -sTCP:LISTEN` → 출력 없음, exit 1(리스너 0).
-- **Ego Lite: BLOCKED** — 결정 1 멈춤(+0.01). 개정 18 판단 뒤 재개합니다. 할 일: zip 내려받기 → `unzip -l/-t` → `file://` 이미지·글꼴 → 단일 HTML → 1280·390.
-- **Codex review(`--scope branch --base d8e548e5`): BLOCKED** — 같은 사유입니다. 재개 순서는 Ego Lite → Codex입니다.
+- **Ego Lite: BLOCKED** — 결정 1 멈춤(+0.01). 개정 18 판단 뒤 재개합니다. 할 일: zip 내려받기 → `unzip -l/-t` → `file://` 이미지·글꼴 → 단일 HTML → 1280·390. → **R2에서 해소, 8절**
+- **Codex review(`--scope branch --base d8e548e5`): BLOCKED** — 같은 사유입니다. 재개 순서는 Ego Lite → Codex입니다. → **R2에서 해소, 7절**
 
 ## 6. 서브에이전트
 - **CP1 storeZip:** worker 1개, `isolation: worktree`. 24건 통과 보고를 받은 뒤 메인에서 파일을 복사해 다시 실행했고 24 passed를 확인했습니다. 커밋은 c568e661입니다. worktree(`.claude/worktrees/agent-a35f9a039630e0c96`)와 브랜치는 제거했습니다.
@@ -90,10 +90,11 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 | 2 | 양방향 참조를 index.html 전체 정규식으로 모아 본문 글자의 `assets/...` 경로 때문에 정상 zip이 실패 | `staticZip.ts` — DOM 파싱 뒤 실제 URL 자리(img src · style 요소·속성 url())만 참조로 셈 | `staticZip.test.ts` "참조 = 실제 URL 자리만(Codex R2)" |
 - **RED → GREEN:** `logs/codex-fix-red.txt`(2 실패) → 전체 typecheck 0 · lint 0 · test 353파일 3129 passed · build exit 0 · 진입 128.71 · 복원 131.69 불변(`logs/*-r2-fix.txt`).
 - 반영은 1회까지라 재리뷰는 돌리지 않았습니다.
+- **Codex 미검토 커밋:** 09c4309d(8절 F-14 수정 — 보안 검사의 범위를 좁히는 변경)는 Codex 뒤에 들어갔습니다. BRIEF-R2의 Codex 1회 상한을 지켜 독립 검증이 0입니다. **다음 레인에서 09c4309d 범위로 Codex 1회를 권고**합니다(판단: Jarvis).
 
 ## 8. R2 Ego Lite (BRIEF-R2 2항) — build + `vite preview --port 4395 --strictPort` · space 36
 - **문서:** 모던 카페 A v1 → 보정값 v2 → B안 새로 시작 → SEO 입력(게이트 차단 0) → Hero 1200×800 · About 800×800 이미지(PNG 입력 → WebP 저장) · 대체텍스트 입력.
-- **1차 실측에서 결함 1건:** zip은 성공했지만 단일 HTML이 "내보내지 못했습니다"로 실패했고, 다시 눌러도 같았습니다. CDP `Debugger.setPauseOnExceptions`로 잡은 원인은 `Error: 정적 HTML 브랜드 문자열이 있습니다`였습니다. CP4의 F-14 검사가 head CSS 전체를 보는데, 단일 HTML은 글꼴을 `url(data:font/woff2;base64,…)`로 넣습니다. 그래서 base64 안에 우연히 금지 4글자(대소문자 무시)가 들어가면 실패합니다. 540KB 글꼴 기준으로 대략 절반 확률입니다. zip은 글꼴이 파일 경로라 걸리지 않습니다.
+- **1차 실측에서 결함 1건:** zip은 성공했지만 단일 HTML이 "내보내지 못했습니다"로 실패했고, 다시 눌러도 같았습니다. CDP `Debugger.setPauseOnExceptions`로 잡은 원인은 `Error: 정적 HTML 브랜드 문자열이 있습니다`였습니다. CP4의 F-14 검사가 head CSS 전체를 보는데, 단일 HTML은 글꼴을 `url(data:font/woff2;base64,…)`로 넣습니다. Pretendard 글꼴의 base64 안에 금지 4글자(대소문자 무시)가 들어 있어 실패합니다. 글꼴 바이트는 build마다 고정이라 **매번 같은 실패**입니다. 다시 눌러도 같았던 것과 맞습니다. 즉 **CP4(575576b8)부터 Pretendard 킷 단일 HTML 내보내기가 매번 실패하던 회귀**입니다(main 미반영 · 단위 테스트는 가짜 글꼴이라 놓쳤습니다). zip은 글꼴이 파일 경로라 걸리지 않습니다.
   - 수정: `staticMarkup.ts` `assertNoBrand`가 CSS의 `url(data:…)` 본문을 비우고 검사합니다. data: 밖 CSS의 브랜드는 그대로 실패합니다.
   - RED `logs/ego-fix-red.txt` → GREEN 3130 passed. 커밋 09c4309d. 새 build로 처음부터 다시 측정했습니다.
 - **2차(최종 build) 결과:** zip 1.1초 · 0.6MB(이미지 2장 · 글꼴 2개) · 단일 HTML 0.4초 · 0.8MB(이미지 2장 포함). 두 결과 모두 내려받았습니다. 내려받기는 결과 줄의 `a download` 링크로 합니다(자동 시작 없음 — 설계대로).
@@ -103,11 +104,19 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 | EXP-AC-R1 | **통과** | `ditto -xk`(보관 유틸리티와 같은 엔진)로 해제 → `python3 -m http.server 4396` → 1280·390에서 이미지 2장(1200×800 · 800×800)과 Pretendard 400·700이 `loaded`입니다. 가로 넘침 0. 화면은 미리보기 구성과 같습니다(`shots/r2-zip-http-1280.png` · `r2-zip-http-390.png`). Finder 더블클릭 해제는 하지 않았습니다. |
 | EXP-AC-R1b(관찰) | 기록 | Ego Lite(Chromium) `file://`: zip 폴더는 이미지 2장 로드, `document.fonts.check` 400·700 true(`shots/r2-zip-file-1280.png`). 단일 HTML `file://`도 data: 이미지 2장과 글꼴 loaded(`shots/r2-html-file-1280.png`). Safari는 확인하지 않았습니다. Q19 재판정 사유는 관찰되지 않았습니다. |
 | EXP-AC-R2 | **통과** | 페이지 요청은 `/assets/images/img-01·02.webp`와 `/assets/fonts/Pretendard-400·700.woff2`, 4건 모두 200입니다. 외부 요청 0. 서버 로그의 404 1건은 브라우저가 스스로 요청한 `/favicon.ico`입니다. 문서가 참조한 것이 아닙니다(head `link`는 F-15로 금지). index.html 안의 `https://tailwindcss.com`은 CSS 라이선스 주석이라 요청이 생기지 않습니다. |
-| EXP-AC-R3 | **BLOCKED** | 실화면 20MB+ 문서는 만들지 않았습니다. 입력 한도(파일 10MB · 저장 1920폭 WebP 0.82)라서 노이즈 이미지 10장 이상을 슬롯마다 올려야 하고, 남은 시간에 못 했습니다. 단위 EXP-AC-17(20MB 이미지 문서 성공)만 근거입니다. |
-| EXP-AC-R4 | **통과** | 390 폭 기준: 성공 status 1개, alert 글자 0. 포커스는 누른 "정적 사이트(zip) 내보내기" 버튼에 남습니다. 버튼은 351×40, 내려받기 링크는 48×32(WCAG 2.5.8 24px 이상). 1280에서 버튼은 252×40으로 zip이 위, HTML이 아래입니다(`shots/r2-1280-buttons.png` · `r2-390-buttons.png`). 접근성 snapshot에 status·alert 영역이 각 1개 있습니다. |
+| EXP-AC-R3 | **BLOCKED** | 실화면 20MB+ 문서는 만들지 않았습니다. 입력 한도(파일 10MB · 저장 1920폭 WebP 0.82)라서 노이즈 이미지 10장 이상을 슬롯마다 올려야 합니다. 이 레인은 이미 BRIEF-R2 턴 상한(50턴)을 넘겨 새 측정을 열지 않았습니다. 단위 EXP-AC-17(20MB 이미지 문서 성공)만 근거입니다. |
+| EXP-AC-R4 | **부분** | 실패 alert 1개는 **수정 전 build** 1차 실측에서만 관찰했습니다("내보내지 못했습니다 · 다시 시도" 1개, role=alert). 최종 build에서 실패 경로는 다시 보지 않았습니다. 최종 build, 390 폭 기준: 성공 status 1개, alert 글자 0. 포커스는 누른 "정적 사이트(zip) 내보내기" 버튼에 남습니다. 버튼은 351×40, 내려받기 링크는 48×32(WCAG 2.5.8 24px 이상). 1280에서 버튼은 252×40으로 zip이 위, HTML이 아래입니다(`shots/r2-1280-buttons.png` · `r2-390-buttons.png`). 접근성 snapshot에 status·alert 영역이 각 1개 있습니다. |
 | EXP-AC-R5 | **통과(일부)** | `unzip -t` → "No errors detected"(exit 0) · `unzip -l` 7파일(index.html · LICENSES.md · OFL.txt · 글꼴 2 · 이미지 2). Windows 탐색기는 환경이 없어 QA 몫으로 넘깁니다. |
 
 - **내려받기 차단 보조 문장:** 두 형식의 성공 Callout 모두 "내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요"를 표시합니다(Q14).
 - **관찰(이번 범위에서 고치지 않음):** 성공 제목 "정적 사이트(zip)을 만들었습니다" — 조사가 "를"이어야 맞습니다. 형식 이름 뒤에 고정 조사를 붙이는 문구입니다. 문안 담당(Hemingway) 후속으로 넘깁니다.
 - **환경:** 첫 preview는 백그라운드 기본 시간 한도(10분)로 종료되어 다시 띄웠습니다. 수정 build 뒤에는 한 번 더 띄웠습니다. 마지막에 둘 다 종료했습니다: `lsof -nP -iTCP:4395 -sTCP:LISTEN` → 출력 없음 exit 1 · 4396(http.server)도 exit 1. IDB `design-studio` 삭제(남은 DB 0) · `finish({keep:[]})` 완료.
 - 내려받은 파일·해제 폴더·입력 이미지는 저장소 밖(`/tmp/m4a-r2-ego/`)에 두었습니다. 저장소에는 스크린샷 6장만 커밋합니다.
+
+## 9. 열린 항목 (Jarvis)
+1. EXP-AC-R3 실화면 20MB+ — BLOCKED(턴 상한). 단위 EXP-AC-17만 확인했습니다.
+2. EXP-AC-R5 Windows 탐색기 해제 — QA 몫입니다.
+3. 09c4309d Codex 미검토 — 다음 레인에서 1회를 권고합니다.
+4. "정적 사이트(zip)을" 조사 오류 — 문안 후속입니다.
+5. EXP-AC-R4 실패 alert는 최종 build에서 다시 보지 않았습니다.
+6. 턴: BRIEF-R2 상한 50턴을 넘겼습니다(Ego Lite 진단·재실측 때문입니다).

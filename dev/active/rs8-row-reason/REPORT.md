@@ -1,6 +1,6 @@
 # RS8-2 REPORT — `view().reason` · `/projects` stale 행 첫 표시 (B-RS-09)
 
-base `494a7c6f` · 브랜치 `k002bill2/rs8-row-reason` · 커밋 `dea3d226`(BRIEF·PROGRESS) → `2099fa86`(CP1) → `087f88bb`(CP2) → 문서 커밋
+base `494a7c6f` · 브랜치 `k002bill2/rs8-row-reason` · 커밋 `dea3d226`(BRIEF·PROGRESS) → `2099fa86`(CP1) → `087f88bb`(CP2) → `586d97ec`(REPORT 초안) → 마감 문서 커밋
 
 ## 0. 결론
 - **B-RS-09 해소(최소안)**: `/projects` 저장 실패 행이 **첫 표시부터** UX-5 2.3 사유 문구를 보인다(stale·cleared = "다시 저장" 숨김 · readonly = 버튼 유지). 사유 출처 = 코어 `view().reason`(마지막 save 결과, 읽기 전용).
@@ -74,8 +74,10 @@ base `494a7c6f` · 브랜치 `k002bill2/rs8-row-reason` · 커밋 `dea3d226`(BRI
 - CP2 RED `logs/red-cp2.txt`(6 실패/10) → GREEN `green-cp2.txt` · 변이 `mutation-probe.txt`.
 - 기존 단언 약화·skip 0.
 
-## 7. Codex review
-- (아래 갱신)
+## 7. Codex review — `logs/codex-adversarial-review.txt`
+- 1회 · `adversarial-review --scope branch --base 494a7c6f` + 관점(잠금 · 거짓 상태 · `/studio` 진입 바이트). 기본 `review`는 관점 텍스트를 받지 않아(`codex-companion.mjs:271-274`) 시작 직후 중단하고 이것으로 바꿨다(완료된 review 0회).
+- **Verdict: approve · No material findings.**
+- (사실) Codex 측 테스트 5파일은 샌드박스 임시 디렉터리 EPERM으로 실행 전 차단 · 새 빌드 미수행 → Codex의 "다음 단계"(테스트·빌드)는 5절 fresh 실행(같은 코드 tip `087f88bb`)이 해당.
 
 ## 8. 미결·후속
 - `unavailable`·`discarding` 결과는 reason 미갱신(1절) — 문구 영향 없음, 필요하면 후속.

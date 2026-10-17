@@ -9,5 +9,5 @@ base `494a7c6f` · 브랜치 `k002bill2/rs8-row-reason`
 - [x] 4. 예산 실측 — /studio 128.66(+0.00) · 복원 131.65(+0.01) · /projects 첫 99.09 · 진입 109.54 (/studio·복원 ≤ +0.05, /projects 첫 ≤ 99.5)
 - [x] 5. Ego Lite 2탭 검증 + preview 종료(lsof 0) — logs/ego-two-tab.txt
 - [x] 6. fresh typecheck·lint·test·build (349/3049)
-- [ ] 7. Codex review 1회 (`--scope branch --base 494a7c6f`)
-- [ ] 8. REPORT 커밋 · git status 빈 값
+- [x] 7. Codex review 1회 (adversarial · branch base 494a7c6f · 관점 명시) — approve, 지적 0
+- [x] 8. REPORT 커밋 · git status 빈 값

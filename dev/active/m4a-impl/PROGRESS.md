@@ -32,7 +32,7 @@
 - [x] F1. M-1·M-2 — `clean()`에 template·animate·set·animateMotion·animateTransform(localName) · RED 퍼즈 M06·M07·M12·M13·M41·M42·M43
 - [x] F2. L-2 — F-14 제외를 CSS의 `url(data:font/…;base64,…)`로만 · RED 주석 경계·notice·M2a·M2c
 - [x] F3. L-1 — `url(`·`image-set(`·`@import` 출현 수 = 엄격 매치 수 · 킷 이스케이프
-- [ ] F4. 문구 "정적 사이트(zip)을" → "를"
+- [x] F4. 문구 "정적 사이트(zip)을" → "를"
 - [ ] F5. fresh typecheck·lint·test·build · 예산(진입 128.71 · 복원 131.69 증분 0)
 - [ ] F6. Codex 1회(`adversarial-review --scope branch --base a834eb88`) · 반영 1회
 - [ ] F7. REPORT 9절 FIX1 · untracked 0

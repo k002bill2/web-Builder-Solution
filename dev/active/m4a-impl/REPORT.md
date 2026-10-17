@@ -50,6 +50,7 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 | `components/studio/ExportChunkFailure.test.tsx` | 버튼 이름 "정적 HTML 내보내기" | "HTML 파일 1개 내보내기" | 7.3 |
 | `components/studio/PngSave.test.tsx:122` | 버튼 이름 "정적 HTML 내보내기" | "HTML 파일 1개 내보내기" | 7.3(파일 표에 명시) — 아래 편차 2번 |
 | `features/studio/exportFlow.test.ts` · `components/studio/ExportResultNotes.test.tsx` | 3MB 안내 "zip 내보내기는 다음 단계에서 지원합니다" | "정적 사이트(zip)는 이미지를 파일로 나눠 담습니다" | 2.5 · EXP-AC-16 |
+| `components/studio/ExportFlow.test.tsx` (FIX1) | "정적 사이트(zip)을 만들었습니다" | "정적 사이트(zip)를 만들었습니다" | 조사 정정(약화 아님) — BRIEF-FIX1 4항 |
 | `staticMarkup.ts` 실패 문구 | "정적 HTML 이미지는 data: 단일 파일만 허용합니다" | "정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님" | 기존 테스트 `toThrow("정적 HTML 이미지")` 그대로 통과 |
 
 ## 3. 편차·결정 (한 줄씩)
@@ -120,13 +121,14 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 |---|---|---|---|
 | F1 M-1·M-2 | `staticMarkup.ts` `clean()` — 지우는 요소를 `localName` 소문자 Set 비교로(기존 4종 + `template`·`animate`·`set`·`animatemotion`·`animatetransform`). template를 지우면 안쪽(fragment)도 함께 사라집니다 | 퍼즈 M06·M07·M12·M13·M41·M42·M43 + animateMotion·animateTransform + 대문자 `SET`·`ANIMATE` 9건 → 결과 `<script` 1개(고정) · `onerror`·`evil.example`·`javascript:`·`<template`·`shadowrootmode`·`<animate`·`<set` 0. RED `logs/fix1-f1-red.txt`(1 실패) → staticHtml+zip 8파일 116 passed | 053ab4ff |
 | F2 L-2 | `staticMarkup.ts` F-14 제외 정규식을 `url(data:font/…;base64,<base64 글자>)`로 좁히고(`CSS_FONT_DATA_URL`) **CSS 입력에만** 적용 — `assertNoBrand(site, css, [notice, STATIC_MENU_SCRIPT])`. notice·고정 스크립트는 치환 없이 검사 | Codex 주석 경계(무따옴표·따옴표) · `content:"url(data:…)"`(B03) · notice `url(data:Design Studio)` · zip 글꼴 경로 `assets/fonts/<브랜드>-400.woff2`(M2a 포착) · data 글꼴 2개 사이 규칙(M2c 포착) = 실패, 실제 인라인 글꼴(따옴표 유무·zip) = 통과. RED `logs/fix1-f2-red.txt` → 117 passed. **변이 증명** `logs/fix1-f2-mutations.txt`: M2a·M2c 각각 1 실패 → 복원 26 passed | a6bace1b |
-| F3 L-1 | `staticMarkup.ts` `CSS_URL`을 엄격형(큰따옴표·작은따옴표·무따옴표[공백·따옴표·괄호 0])으로 바꾸고 `cssUrls()`가 "`url(` 출현 수 = 엄격 매치 수"가 아니면 실패. 킷 CSS(`assertNoExternalCss`)는 CSS 이스케이프를 해석한 텍스트로 검사하고 `@import`·`image-set(` 1개라도 실패. 본문 CSS(`hasExternalCss`)는 `\` 금지가 이미 있어 수 비교만 추가 | 따옴표 섞인 url() — 본문 style(M28·M29)·style 요소(M30)·킷 CSS(C06 + `'…)…'`) · 킷 `@\69mport`(C03)·`u\72l(`(C04)·`image-set(`(C05) html·zip 양쪽 = 실패. Tailwind 이스케이프 선택자(`.md\:grid`·`\[…\(45deg\,red\)\]`·`.\31 0`)·`content:"\201C"`·따옴표 data: url = 통과. RED `logs/fix1-f3-red.txt` → 118 passed. 실제 build CSS 확인은 F5 | (이 커밋) |
+| F3 L-1 | `staticMarkup.ts` `CSS_URL`을 엄격형(큰따옴표·작은따옴표·무따옴표[공백·따옴표·괄호 0])으로 바꾸고 `cssUrls()`가 "`url(` 출현 수 = 엄격 매치 수"가 아니면 실패. 킷 CSS(`assertNoExternalCss`)는 CSS 이스케이프를 해석한 텍스트로 검사하고 `@import`·`image-set(` 1개라도 실패. 본문 CSS(`hasExternalCss`)는 `\` 금지가 이미 있어 수 비교만 추가 | 따옴표 섞인 url() — 본문 style(M28·M29)·style 요소(M30)·킷 CSS(C06 + `'…)…'`) · 킷 `@\69mport`(C03)·`u\72l(`(C04)·`image-set(`(C05) html·zip 양쪽 = 실패. Tailwind 이스케이프 선택자(`.md\:grid`·`\[…\(45deg\,red\)\]`·`.\31 0`)·`content:"\201C"`·따옴표 data: url = 통과. RED `logs/fix1-f3-red.txt` → 118 passed. 실제 build CSS 확인은 F5 | 8436d515 |
+| F4 문구 | `components/studio/ExportAfter.tsx` 성공 제목의 `NAME`에 목적격 조사를 형식별로 붙임("zip을" · "정적 HTML을" · "정적 사이트(zip)를"). 공용 템플릿의 고정 "을"을 없앰 — HTML 쪽 문장은 그대로 | `ExportFlow.test.tsx` 기존 단언 "정적 사이트(zip)을 만들었습니다" → "를"로 **정정(약화 아님)** · RED `logs/fix1-f4-red.txt` → components/studio 41파일 300 passed | (이 커밋) |
 
 
 ## 10. 열린 항목 (Jarvis)
 1. EXP-AC-R3 실화면 20MB+ — BLOCKED(턴 상한). 단위 EXP-AC-17만 확인했습니다.
 2. EXP-AC-R5 Windows 탐색기 해제 — QA 몫입니다.
 3. 09c4309d Codex 미검토 — 다음 레인에서 1회를 권고합니다.
-4. "정적 사이트(zip)을" 조사 오류 — 문안 후속입니다.
+4. ~~"정적 사이트(zip)을" 조사 오류~~ — FIX1 F4에서 해소.
 5. EXP-AC-R4 실패 alert는 최종 build에서 다시 보지 않았습니다.
 6. 턴: BRIEF-R2 상한 50턴을 넘겼습니다(Ego Lite 진단·재실측 때문입니다).

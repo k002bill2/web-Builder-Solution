@@ -1,0 +1,292 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-impl/app
+
+ ❯ src/features/studio/zip/staticZip.test.ts (0 test)
+ ❯ src/features/studio/zip/licenses.test.ts (0 test)
+ ❯ src/features/studio/staticHtml/exportFileName.test.ts (10 tests | 1 failed) 6ms
+   ❯ 내보내기 파일 이름 (K-AC-32 · HTML판) (10)
+     × EXP-AC-15 zip판 = <정리된 이름>_r<revision>.zip (같은 정리 규칙) 2ms
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (22 tests | 6 failed) 592ms
+   ❯ M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) (6)
+     × zip 대상: img src = assets/images/img-NN.(webp|jpg|png)만 · data: img 0 · srcset 0 4ms
+     × zip 대상: CSS url() = data: 또는 assets/fonts/<계열>-<굵기>.woff2만 · @import 0 · 단일 HTML은 data:만 5ms
+     × F-11·EXP-AC-11: a[href]는 # 같은 문서 앵커만 — http·mailto·tel·javascript·data·상대 경로 = 실패 20ms
+     × F-12·EXP-AC-12: # 앵커 대상 id가 문서에 없으면 실패 · 있으면 통과 · 빈 # = 실패 42ms
+     × F-13: action·formaction·poster · img 밖 src · style url()의 data: 아닌 값 = 실패 14ms
+     × F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과 27ms
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts (23 tests | 6 failed) 3132ms
+   ❯ 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) (6)
+     × Blob application/zip · entry = index.html → LICENSES.md → 글꼴(이름순)+OFL.txt → 이미지 · 해시 = zip 바이트 SHA-256 앞 12자리 20ms
+     × index.html: img src = assets/images/img-01.webp · data:image 0 · @font-face src = assets/fonts 상대 경로 · head 주석 = LICENSES.md 안내 1줄 14ms
+     × EXP-AC-04 결정성: 같은 문서·revision 두 번 → 같은 해시 · zip 시각 = 문서 updatedAt(Q6) 14ms
+     × onBuilt 요약 = {바이트, 이미지 1, 잃은 0, 글꼴 2} 13ms
+     × zip과 단일 HTML을 번갈아 만들어도 서로의 내려받기 URL을 해제하지 않는다(형식별 보관) · release = 둘 다 해제 27ms
+     × ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0 2129ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/zip/licenses.test.ts [ src/features/studio/zip/licenses.test.ts ]
+Error: Failed to resolve import "./licenses" from "src/features/studio/zip/licenses.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-impl/app/src/features/studio/zip/licenses.test.ts:3:33
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  import { brand } from "../../../brand/brand.config";
+  3  |  import { licensesMarkdown } from "./licenses";
+     |                                    ^
+  4  |  /** M4-a SPEC 3절 · EXP-AC-10 — LICENSES.md 구조(문안은 Hemingway 후속 — 자리표시 문장) */
+  5  |  const INPUT = {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/features/studio/zip/staticZip.test.ts [ src/features/studio/zip/staticZip.test.ts ]
+Error: Failed to resolve import "./staticZip" from "src/features/studio/zip/staticZip.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-impl/app/src/features/studio/zip/staticZip.test.ts:3:102
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  import { ZIP_MAX, checkZipEntries, fontFileName, imageFileNames, orderZipEntries, tooLargeText } from "./staticZip";
+     |                                                                                                         ^
+  3  |  /** M4-a SPEC 2.1·2.2·2.4·2.5·4.3 — zip 구성·이름·순서·허용표 */
+  4  |  const enc = new TextEncoder();
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/staticHtml/exportFileName.test.ts > 내보내기 파일 이름 (K-AC-32 · HTML판) > EXP-AC-15 zip판 = <정리된 이름>_r<revision>.zip (같은 정리 규칙)
+TypeError: staticZipFileName is not a function
+ ❯ src/features/studio/staticHtml/exportFileName.test.ts:30:12
+     28|
+     29|   it("EXP-AC-15 zip판 = <정리된 이름>_r<revision>.zip (같은 정리 규칙)", () => {
+     30|     expect(staticZipFileName("  강남 카페/리브랜딩:2호점  ", 12)).toBe("강남-카페-리브…
+       |            ^
+     31|     expect(staticZipFileName("con", 1)).toBe("page-con_r1.zip");
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > Blob application/zip · entry = index.html → LICENSES.md → 글꼴(이름순)+OFL.txt → 이미지 · 해시 = zip 바이트 SHA-256 앞 12자리
+RangeError: Offset is outside the bounds of the DataView
+ ❯ unzipEntries src/features/studio/staticHtml/staticHtml.test.ts:262:20
+    260|   const out = new Map<string, Uint8Array>();
+    261|   for (let i = 0; i < v.getUint16(end + 10, true); i++) {
+    262|     const size = v.getUint32(at + 20, true);
+       |                    ^
+    263|     const nameLen = v.getUint16(at + 28, true);
+    264|     const local = v.getUint32(at + 42, true);
+ ❯ make src/features/studio/staticHtml/staticHtml.test.ts:293:70
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:297:44
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > index.html: img src = assets/images/img-01.webp · data:image 0 · @font-face src = assets/fonts 상대 경로 · head 주석 = LICENSES.md 안내 1줄
+RangeError: Offset is outside the bounds of the DataView
+ ❯ unzipEntries src/features/studio/staticHtml/staticHtml.test.ts:262:20
+    260|   const out = new Map<string, Uint8Array>();
+    261|   for (let i = 0; i < v.getUint16(end + 10, true); i++) {
+    262|     const size = v.getUint32(at + 20, true);
+       |                    ^
+    263|     const nameLen = v.getUint16(at + 28, true);
+    264|     const local = v.getUint32(at + 42, true);
+ ❯ make src/features/studio/staticHtml/staticHtml.test.ts:293:70
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:305:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > EXP-AC-04 결정성: 같은 문서·revision 두 번 → 같은 해시 · zip 시각 = 문서 updatedAt(Q6)
+RangeError: Offset is outside the bounds of the DataView
+ ❯ unzipEntries src/features/studio/staticHtml/staticHtml.test.ts:262:20
+    260|   const out = new Map<string, Uint8Array>();
+    261|   for (let i = 0; i < v.getUint16(end + 10, true); i++) {
+    262|     const size = v.getUint32(at + 20, true);
+       |                    ^
+    263|     const nameLen = v.getUint16(at + 28, true);
+    264|     const local = v.getUint32(at + 42, true);
+ ❯ make src/features/studio/staticHtml/staticHtml.test.ts:293:70
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:316:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > onBuilt 요약 = {바이트, 이미지 1, 잃은 0, 글꼴 2}
+RangeError: Offset is outside the bounds of the DataView
+ ❯ unzipEntries src/features/studio/staticHtml/staticHtml.test.ts:262:20
+    260|   const out = new Map<string, Uint8Array>();
+    261|   for (let i = 0; i < v.getUint16(end + 10, true); i++) {
+    262|     const size = v.getUint32(at + 20, true);
+       |                    ^
+    263|     const nameLen = v.getUint16(at + 28, true);
+    264|     const local = v.getUint32(at + 42, true);
+ ❯ make src/features/studio/staticHtml/staticHtml.test.ts:293:70
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:325:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > zip과 단일 HTML을 번갈아 만들어도 서로의 내려받기 URL을 해제하지 않는다(형식별 보관) · release = 둘 다 해제
+AssertionError: expected [ 'blob:test/1' ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "blob:test/1",
++ ]
+
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:336:26
+    334|     const zip = await generate({ ...input, format: "static-zip", doc }…
+    335|     const html = await generate({ ...input, doc });
+    336|     expect(urls.revoked).toEqual([]);
+       |                          ^
+    337|     generate.release("project-1");
+    338|     expect(urls.revoked.sort()).toEqual([zip.downloadRef, html.downloa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
+AssertionError: promise resolved "{ downloadRef: 'blob:test/1', …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "downloadRef": "blob:test/1",
++   "resultHash": "8d97e914f090",
+  }
+
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:349:25
+    347|     const readImage = (id: string) => (id === ID ? { variants: { 1920:…
+    348|     const failed = createStaticHtmlGenerator(STORE, { open: frame.open…
+    349|     await expect(failed).rejects.toThrow("상한 64MB");
+       |                         ^
+    350|     expect(urls.blobs).toEqual([]);
+    351|   }, 60_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > zip 대상: img src = assets/images/img-NN.(webp|jpg|png)만 · data: img 0 · srcset 0
+Error: 정적 HTML 이미지는 data: 단일 파일만 허용합니다
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:84:141
+     82|   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
+     83|   // 이미지 = 단일 파일 data:만(SPEC m2c 5.2) · srcset 0(후보가 모두 data:로 들어가 크기만…
+     84|   if ([...site.querySelectorAll("img")].some((img) => !DATA_IMAGE.test…
+       |                                                                                                                                             ^
+     85|
+     86|   const head = page.head;
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:205:77
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > zip 대상: CSS url() = data: 또는 assets/fonts/<계열>-<굵기>.woff2만 · @import 0 · 단일 HTML은 data:만
+Error: 정적 HTML CSS에 외부 요청이 있습니다
+ ❯ assertNoExternalCss src/features/studio/staticHtml/staticMarkup.ts:30:79
+     28| function assertNoExternalCss(css: string) {
+     29|   const urls = [...css.matchAll(/url\(\s*(['"]?)([^'")]*)\1\s*\)/g)].m…
+     30|   if (/@import/i.test(css) || urls.some((u) => !u.startsWith("data:"))…
+       |                                                                               ^
+     31| }
+     32|
+ ❯ buildStaticHtml src/features/studio/staticHtml/staticMarkup.ts:69:3
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:214:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-11·EXP-AC-11: a[href]는 # 같은 문서 앵커만 — http·mailto·tel·javascript·data·상대 경로 = 실패
+AssertionError: https://x.test: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:222:80
+    220|   it("F-11·EXP-AC-11: a[href]는 # 같은 문서 앵커만 — http·mailto·tel·javascrip…
+    221|     for (const href of ["https://x.test", "http://x.test", "mailto:a@b…
+    222|       expect(() => build({ markup: inject(`<a href="${href}">x</a>`) }…
+       |                                                                                ^
+    223|   });
+    224|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-12·EXP-AC-12: # 앵커 대상 id가 문서에 없으면 실패 · 있으면 통과 · 빈 # = 실패
+AssertionError: #s-x: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:227:112
+    225|   it("F-12·EXP-AC-12: # 앵커 대상 id가 문서에 없으면 실패 · 있으면 통과 · 빈 # = 실패", () …
+    226|     expect(() => build({ markup: inject(`<a href="#${firstSectionId()}…
+    227|     for (const href of ["#s-x", "#"]) expect(() => build({ markup: inj…
+       |                                                                                                                ^
+    228|   });
+    229|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-13: action·formaction·poster · img 밖 src · style url()의 data: 아닌 값 = 실패
+AssertionError: <form action="https://x.test"></form>: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:232:57
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:239:62
+    237|     const legacy = ["a", "p", "f", "s"].join("");
+    238|     expect(() => build({ markup: inject("<p>Design Studio 상호</p>"), ti…
+    239|     expect(() => build({ notice: "made by Design Studio" })).toThrow("…
+       |                                                              ^
+    240|     expect(() => build({ css: `${CSS}.x{--${legacy}-a:1}` })).toThrow(…
+    241|     expect(() => build({ markup: inject(`<p class="${legacy.toUpperCas…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯
+
+
+ Test Files  5 failed | 3 passed (8)
+      Tests  13 failed | 77 passed (90)
+   Start at  03:01:33
+   Duration  4.61s (environment 49%, tests 32%, setup 9%, transform 8%, import 2%)
+

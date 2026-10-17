@@ -2,7 +2,10 @@
  * 정적 HTML 문서 조립 (M2A-3b G2·G3 · m2a 0.11·K2 · K-AC-06·08) — 렌더 문서가 돌려준 사이트 루트 마크업 + 킷 CSS → 완전한 문서 1개.
  * 사용자 글자는 DOM으로만 넣는다(title·meta content = 속성/글자 대입, 마크업 = 불활성 문서의 innerHTML — 문자열 이어 붙이기 0).
  * 결과 규칙: 고정 스크립트(STATIC_MENU_SCRIPT) 외 script 0 · on* 0 · details[open] 0 · 편집기 흔적(CSS가 안 쓰는 data-*) 0 · 폴백 섹션 = 실패 · blob: = 실패 · img src = data:image/(webp|jpeg|png);base64,만(srcset 0) · CSS 외부 요청 = 실패.
+ * zip 대상(M4-a SPEC 4.1 zip 열): img src = `assets/images/img-NN.ext`만 · CSS url() = data: 또는 `assets/fonts/*.woff2`.
+ * 두 대상 공통(SPEC 4.2): F-11 링크 = 같은 문서 앵커만 · F-12 앵커 대상 존재 · F-13 그 밖 URL 속성 외부 출처 0 · F-14 고정 부분 브랜드 0 · F-15 head 외부 요소 0.
  */
+import { brand } from "../../../brand/brand.config";
 
 /**
  * 생성기 고정 인라인 스크립트 (2a-05 SPEC r4.12 · K-AC-12) — 메뉴 시트(`[popover]`) 안 같은 문서 앵커를 누르면 그 시트를 닫는다.
@@ -23,11 +26,17 @@ export interface StaticHtmlParts {
   readonly notice?: string;
   /** 참조 직렬화(M4-a Q17 B) — 이미지 id → 결과 src. 렌더 문서가 준 `img src="image:<id>"`를 이것으로 바꾼다(없는 id = 실패) */
   readonly images?: Readonly<Record<string, string>>;
+  /** 결과 형식 — html = 파일 1개(data: 인라인) · zip = assets 상대 경로(M4-a) */
+  readonly target?: "html" | "zip";
 }
 
-function assertNoExternalCss(css: string) {
-  const urls = [...css.matchAll(/url\(\s*(['"]?)([^'")]*)\1\s*\)/g)].map((m) => m[2]!.trim());
-  if (/@import/i.test(css) || urls.some((u) => !u.startsWith("data:"))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
+const ZIP_FONT = /^assets\/fonts\/[A-Za-z]+-\d{3}\.woff2$/;
+const ZIP_IMAGE = /^assets\/images\/img-\d{2,3}\.(webp|jpg|png)$/;
+const CSS_URL = /url\(\s*(['"]?)([^'")]*)\1\s*\)/g;
+
+function assertNoExternalCss(css: string, target: "html" | "zip") {
+  const urls = [...css.matchAll(CSS_URL)].map((m) => m[2]!.trim());
+  if (/@import/i.test(css) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
 }
 
 /** 편집기 흔적·실행 코드 제거 — 불활성 문서 안에서만 다룬다 */
@@ -65,8 +74,34 @@ function hasBlobUrl(site: Element): boolean {
   );
 }
 
-export function buildStaticHtml({ markup, css, title, description, notice, images = {} }: StaticHtmlParts): string {
-  assertNoExternalCss(css);
+/** F-11·F-12 링크 = 같은 문서 앵커만 · 대상 id 존재 */
+function assertLinks(site: Element) {
+  for (const a of site.querySelectorAll("a[href]")) {
+    const href = a.getAttribute("href") ?? "";
+    if (!href.startsWith("#") || href.length < 2 || !site.ownerDocument.getElementById(href.slice(1))) throw new Error(`정적 HTML 링크는 같은 문서 앵커만 허용합니다: ${href}`);
+  }
+}
+
+/** F-13 그 밖 URL 자리 — action·formaction·poster 0 · src는 img만 · style url()은 data:만 */
+function assertNoExternalSources(site: Element) {
+  const bad = [site, ...site.querySelectorAll("*")].some(
+    (el) =>
+      ["action", "formaction", "poster"].some((name) => el.hasAttribute(name)) ||
+      (el.localName !== "img" && (el.hasAttribute("src") || el.hasAttribute("srcset"))) ||
+      [...(el.getAttribute("style") ?? "").matchAll(CSS_URL)].some((m) => !m[2]!.trim().startsWith("data:")),
+  );
+  if (bad) throw new Error("정적 HTML 외부 출처가 있습니다");
+}
+
+/** F-14 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 — 사용자 글자(본문·alt·title·description)는 보지 않는다 */
+const BRAND = new RegExp(`${brand.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}|${["a", "p", "f", "s"].join("")}`, "i");
+function assertNoBrand(site: Element, fixed: readonly string[]) {
+  const names = [site, ...site.querySelectorAll("*")].flatMap((el) => [el.getAttribute("class") ?? "", ...[...el.attributes].map((a) => a.name)]);
+  if ([...fixed, ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
+}
+
+export function buildStaticHtml({ markup, css, title, description, notice, images = {}, target = "html" }: StaticHtmlParts): string {
+  assertNoExternalCss(css, target);
   const page = document.implementation.createHTMLDocument("");
   page.documentElement.setAttribute("lang", "ko");
   page.body.innerHTML = markup;
@@ -81,7 +116,11 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   site.setAttribute("data-motion-play", "");
   if (hasBlobUrl(site)) throw new Error("정적 HTML에 blob: URL이 남았습니다");
   // 이미지 = 단일 파일 data:만(SPEC m2c 5.2) · srcset 0(후보가 모두 data:로 들어가 크기만 는다 — zip은 M4)
-  if ([...site.querySelectorAll("img")].some((img) => !DATA_IMAGE.test(img.getAttribute("src") ?? "") || img.hasAttribute("srcset"))) throw new Error("정적 HTML 이미지는 data: 단일 파일만 허용합니다");
+  const imageSrc = target === "zip" ? ZIP_IMAGE : DATA_IMAGE;
+  if ([...site.querySelectorAll("img")].some((img) => !imageSrc.test(img.getAttribute("src") ?? "") || img.hasAttribute("srcset"))) throw new Error("정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님");
+  assertLinks(site);
+  assertNoExternalSources(site);
+  assertNoBrand(site, [notice ?? "", css, STATIC_MENU_SCRIPT]);
 
   const head = page.head;
   head.replaceChildren();
@@ -103,5 +142,7 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   const script = page.createElement("script");
   script.textContent = STATIC_MENU_SCRIPT;
   head.append(script);
+  // F-15 — head는 위에서 처음부터 만든다(방어 단언)
+  if (head.querySelector("base, link, meta[http-equiv]")) throw new Error("정적 HTML head에 외부 요소가 있습니다");
   return `<!doctype html>\n${page.documentElement.outerHTML}`;
 }

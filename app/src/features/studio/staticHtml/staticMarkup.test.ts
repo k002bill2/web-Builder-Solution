@@ -194,3 +194,51 @@ describe("정적 HTML 글꼴 고지 (M2B-4a MF-AC-G4)", () => {
     expect(() => buildStaticHtml({ ...parts, markup: site('src="image:id-1"') })).toThrow("정적 HTML 이미지");
   });
 });
+
+describe("M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15)", () => {
+  const parts = { css: CSS, title: "모던 카페", description: "스페셜티 커피" };
+  const inject = (extra: string) => siteMarkup().replace("</header>", `${extra}</header>`);
+  const firstSectionId = () => parse(build()).querySelector("[data-kit][id]")!.id;
+
+  it("zip 대상: img src = assets/images/img-NN.(webp|jpg|png)만 · data: img 0 · srcset 0", () => {
+    const site = (img: string) => `<div data-site-root=""><img alt="" ${img}></div>`;
+    for (const name of ["img-01.webp", "img-02.jpg", "img-100.png"]) expect(buildStaticHtml({ ...parts, target: "zip", markup: site(`src="assets/images/${name}"`) })).toContain(`src="assets/images/${name}"`);
+    for (const bad of ['src="data:image/webp;base64,AAAA"', 'src="assets/images/a.webp"', 'src="assets/images/img-1.webp"', 'src="../assets/images/img-01.webp"', 'src="assets/images/img-01.gif"', 'src="assets/images/img-01.webp" srcset="assets/images/img-01.webp 2x"'])
+      expect(() => buildStaticHtml({ ...parts, target: "zip", markup: site(bad) }), bad).toThrow("정적 HTML 이미지");
+    // 단일 HTML은 assets 경로를 받지 않는다
+    expect(() => buildStaticHtml({ ...parts, markup: site('src="assets/images/img-01.webp"') })).toThrow("정적 HTML 이미지");
+  });
+
+  it("zip 대상: CSS url() = data: 또는 assets/fonts/<계열>-<굵기>.woff2만 · @import 0 · 단일 HTML은 data:만", () => {
+    const font = '@font-face{font-family:"Kit Sans KR";src:url(assets/fonts/KitSansKR-400.woff2) format("woff2")}';
+    expect(buildStaticHtml({ ...parts, target: "zip", markup: siteMarkup(), css: CSS + font })).toContain("url(assets/fonts/KitSansKR-400.woff2)");
+    for (const bad of ["url(assets/fonts/../x.woff2)", "url(/assets/fonts/KitSansKR-400.woff2)", "url(assets/fonts/Kit-Sans-400.woff2)", "url(https://x.test/a.woff2)"])
+      expect(() => buildStaticHtml({ ...parts, target: "zip", markup: siteMarkup(), css: `.a{src:${bad}}` }), bad).toThrow(/외부 요청/);
+    expect(() => buildStaticHtml({ ...parts, markup: siteMarkup(), css: CSS + font })).toThrow(/외부 요청/);
+  });
+
+  it("F-11·EXP-AC-11: a[href]는 # 같은 문서 앵커만 — http·mailto·tel·javascript·data·상대 경로 = 실패", () => {
+    for (const href of ["https://x.test", "http://x.test", "mailto:a@b.c", "tel:010", "javascript:alert(1)", "data:text/html,x", "page.html", "/a"])
+      expect(() => build({ markup: inject(`<a href="${href}">x</a>`) }), href).toThrow("정적 HTML 링크");
+  });
+
+  it("F-12·EXP-AC-12: # 앵커 대상 id가 문서에 없으면 실패 · 있으면 통과 · 빈 # = 실패", () => {
+    expect(() => build({ markup: inject(`<a href="#${firstSectionId()}">x</a>`) })).not.toThrow();
+    for (const href of ["#s-x", "#"]) expect(() => build({ markup: inject(`<a href="${href}">x</a>`) }), href).toThrow("정적 HTML 링크");
+  });
+
+  it("F-13: action·formaction·poster · img 밖 src · style url()의 data: 아닌 값 = 실패", () => {
+    for (const bad of ['<form action="https://x.test"></form>', '<button formaction="/x">x</button>', '<video poster="a.png"></video>', '<audio src="a.mp3"></audio>', '<div style="background:url(a.png)"></div>'])
+      expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HTML 외부 출처");
+    expect(() => build({ markup: inject('<div style="background:url(data:image/png;base64,AA)"></div>') })).not.toThrow();
+  });
+
+  it("F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과", () => {
+    const legacy = ["a", "p", "f", "s"].join("");
+    expect(() => build({ markup: inject("<p>Design Studio 상호</p>"), title: "Design Studio", description: "design studio" })).not.toThrow();
+    expect(() => build({ notice: "made by Design Studio" })).toThrow("정적 HTML 브랜드");
+    expect(() => build({ css: `${CSS}.x{--${legacy}-a:1}` })).toThrow("정적 HTML 브랜드");
+    expect(() => build({ markup: inject(`<p class="${legacy.toUpperCase()}-x">x</p>`) })).toThrow("정적 HTML 브랜드");
+  });
+});
+

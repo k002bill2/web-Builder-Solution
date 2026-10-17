@@ -18,3 +18,6 @@ export function exportFileStem(name: string): string {
 
 /** 정적 HTML판 — 폭 표기 없음(REPORT 8절): `<이름>_r<revision>.html` */
 export const staticHtmlFileName = (projectName: string, revision: number) => `${exportFileStem(projectName)}_r${revision}.html`;
+
+/** 정적 사이트(zip)판 (M4-a SPEC 2.3 · EXP-AC-15): `<이름>_r<revision>.zip` */
+export const staticZipFileName = (projectName: string, revision: number) => `${exportFileStem(projectName)}_r${revision}.zip`;

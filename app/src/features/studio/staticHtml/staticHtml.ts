@@ -4,7 +4,7 @@
  * 킷 CSS = 같은 출처 `/render.html`의 스타일시트 텍스트(불투명 출처 iframe 안 cssRules는 못 읽는다 — 부모가 읽는다) → 인라인 `<style>`.
  * 결과 = Blob(text/html;charset=utf-8) object URL + 결과 바이트 SHA-256 앞 12자리. 시간 초과 = JOB_TIMEOUT, 그 밖 = INFRA(저장소가 기록).
  */
-import { ProjectRepositoryError, type DocHead, type ExportGenerator } from "../../../data/projectRepository";
+import { ProjectRepositoryError, type DocHead, type ExportFormat, type ExportGenerator } from "../../../data/projectRepository";
 import type { StudioReader } from "../../../data/studioStore";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { readHtmlMessage } from "../../../render/htmlMessage";
@@ -14,6 +14,7 @@ import { DEV_SERVER_UNSUPPORTED } from "./devServer";
 import { IMAGE_FAILED, exportImages, type ExportSummary, type ReadImage } from "./exportImages";
 import { FONT_FAILED, FONT_TIMEOUT_MS, base64, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "./siteFontEmbed";
 import { buildStaticHtml } from "./staticMarkup";
+import { buildZipSite } from "../zip/zipSite";
 
 export { IMAGE_FAILED };
 export { DEV_SERVER_UNSUPPORTED };
@@ -155,13 +156,15 @@ export type StaticHtmlGenerator = ExportGenerator & {
 /** 저장소(store)당 1개 — 프로젝트별 마지막 object URL을 들고, 같은 프로젝트를 다시 만들면 이전 것을 해제한다 */
 export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<StaticHtmlDeps> = {}): StaticHtmlGenerator {
   const { open = openRenderFrame, fetchText = defaultFetchText, urls = URL, timeoutMs = TIMEOUT_MS, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS, readImage = () => undefined, onBuilt } = deps;
+  // 키 = 프로젝트|형식 — zip·단일 HTML을 번갈아 만들어도 다른 형식의 살아 있는 잡 URL을 해제하지 않는다(같은 revision 멱등 재요청 = 같은 URL)
   const held = new Map<string, string>();
-  const release = (projectId: string) => {
-    const url = held.get(projectId);
+  const drop = (key: string) => {
+    const url = held.get(key);
     if (url) urls.revokeObjectURL(url);
-    held.delete(projectId);
+    held.delete(key);
   };
-  const generate = async ({ projectId, doc: head }: { readonly projectId: string; readonly doc: DocHead }) => {
+  const release = (projectId: string) => [...held.keys()].filter((key) => key.startsWith(`${projectId}|`)).forEach(drop);
+  const generate = async ({ projectId, format, doc: head }: { readonly projectId: string; readonly format: ExportFormat; readonly doc: DocHead }) => {
     const doc = head as PageDoc;
     const project = store.projects().find((p) => p.projectId === projectId);
     const versions = project ? store.versions(project.profileId) : [];
@@ -175,13 +178,21 @@ export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<Sta
     });
     const { images, lost } = exportImages(doc, readImage);
     const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images, true);
-    const page = buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, title: doc.meta.title, description: doc.meta.description, notice: fonts.notice, images: await imageDataUrls(images) });
-    const bytes = new TextEncoder().encode(page);
-    const resultHash = await hex12(bytes);
-    release(projectId);
-    const downloadRef = urls.createObjectURL(new Blob([bytes], { type: "text/html;charset=utf-8" }));
-    held.set(projectId, downloadRef);
-    onBuilt?.(downloadRef, { bytes: bytes.length, images: Object.keys(images).length, lost });
+    const text = { title: doc.meta.title, description: doc.meta.description };
+    const built =
+      format === "static-zip"
+        ? { ...(await buildZipSite({ markup, css: stripFontFaces(css), ...text, fonts: fonts.bytes, images, lost, date: new Date(head.updatedAt) })), type: "application/zip" }
+        : {
+            data: new TextEncoder().encode(buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, ...text, notice: fonts.notice, images: await imageDataUrls(images) })),
+            images: Object.keys(images).length,
+            type: "text/html;charset=utf-8",
+          };
+    const resultHash = await hex12(built.data);
+    const key = `${projectId}|${format}`;
+    drop(key);
+    const downloadRef = urls.createObjectURL(new Blob([built.data], { type: built.type }));
+    held.set(key, downloadRef);
+    onBuilt?.(downloadRef, { bytes: built.data.length, images: built.images, lost, ...("fonts" in built && { fonts: built.fonts }) });
     return { downloadRef, resultHash };
   };
   return Object.assign(generate, { release });

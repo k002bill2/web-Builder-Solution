@@ -15,6 +15,8 @@ export interface ExportSummary {
   readonly bytes: number;
   readonly images: number;
   readonly lost: number;
+  /** zip만 — 동봉 글꼴 파일 수(M4-a 결과 줄) */
+  readonly fonts?: number;
 }
 
 /** 렌더 문서가 내보내기 이미지 decode에 실패(error IMAGE_DECODE_FAILED — SPEC m2c 5.3-3) — 조용히 빠뜨리지 않고 실패 */

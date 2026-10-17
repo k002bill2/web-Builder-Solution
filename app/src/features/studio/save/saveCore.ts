@@ -14,8 +14,8 @@ export interface Receipt {
   readonly hash: string;
   readonly revision: number;
   readonly mark: number;
-  /** hydrated = 생성 seed · committed = 이 코어 트랜잭션 완료 · fresh = 확인 시점 IDB 재읽기 */
-  readonly proof: "hydrated" | "committed" | "fresh";
+  /** hydrated = 생성 seed · committed = 이 코어 트랜잭션 완료 · fresh = 확인 시점 IDB 재읽기 · rebased = DocBook 메모리 쓰기 맞춤(IDB flush 증명 아님 — RS6-L5 FIX1) */
+  readonly proof: "hydrated" | "committed" | "fresh" | "rebased";
 }
 /** `revision` = memory 모드(not-persistent) DocBook 메모리 커밋 revision — 영속 증명(receipt) 아님(I5) · 편집기 `savedRevision` 출처(RS6-L3a CP2) */
 export type SaveResult = { readonly status: "saved"; readonly receipt: Receipt; readonly newer: boolean } | { readonly status: "failed"; readonly reason: string; readonly newer: boolean; readonly revision?: number };

@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { imageRecordId } from "../../data/persistence/imageRecord";
 import { discardAndReload, pendingOf, settle, ticketOf } from "../../features/pending/pendingWrites";
 import { PROJECT, bindOf, edited, startedRig, ticks, uuid, withImage } from "../../features/studio/save/testRig";
+import { watchCores } from "../../features/projects/pendingRows";
 import { ProjectsPage } from "../../pages/ProjectsPage";
 
 afterEach(() => discardAndReload(() => undefined));
@@ -174,6 +175,56 @@ describe("PendingRecord + 코어 — CP1 · UX5-AC-08 · RS6-AC-U16", () => {
     await ticks();
     expect(pendingOf(repo, PROJECT)).toBeDefined();
     expect(within(row).getByRole("button", { name: `${name} 저장 확인` })).toBeInTheDocument();
+  });
+
+  it("U16 FIX1: 기억 뒤 복원(restoreSnapshot) flush 실패 → 메모리 rebase만 · IDB 그대로 → 기억 유지 · '저장 확인' 그대로", async () => {
+    const { db, repo, doc, core } = await startedRig();
+    const c = core();
+    const snap = await repo.createSnapshot(PROJECT, "기준");
+    record(repo, c.view().confirmed!.revision);
+    const stored = (await db.doc())!.doc.revision;
+    db.failNext("AbortError");
+    await expect(repo.restoreSnapshot(PROJECT, snap.snapshotId, doc.revision)).rejects.toBeDefined();
+    expect((await repo.getDoc(PROJECT))!.revision).toBe(doc.revision + 1);
+    expect((await db.doc())!.doc.revision).toBe(stored);
+    const { row, name } = await show(repo);
+    await ticks();
+    expect(pendingOf(repo, PROJECT)).toBeDefined();
+    expect(within(row).getByRole("button", { name: `${name} 저장 확인` })).toBeInTheDocument();
+  });
+
+  it("U16 FIX1: 기억 뒤 충돌 해결(resolveConflict mine) flush 실패 → 기억 유지 · '저장 확인' 그대로", async () => {
+    const { db, repo, doc, core } = await startedRig();
+    const c = core();
+    record(repo, c.view().confirmed!.revision);
+    const stored = (await db.doc())!.doc.revision;
+    const mine = edited(doc, "내 문서");
+    c.edit(mine);
+    db.failNext("AbortError");
+    await expect(repo.resolveConflict(PROJECT, "mine", mine)).rejects.toBeDefined();
+    expect((await repo.getDoc(PROJECT))!.revision).toBe(doc.revision + 1);
+    expect((await db.doc())!.doc.revision).toBe(stored);
+    const { row, name } = await show(repo);
+    await ticks();
+    expect(pendingOf(repo, PROJECT)).toBeDefined();
+    expect(within(row).getByRole("button", { name: `${name} 저장 확인` })).toBeInTheDocument();
+  });
+
+  it("U16 FIX1 정상: 복원 flush 성공만으로는 기억 유지(메모리 rebase ≠ 코어 커밋) → 다음 코어 save 커밋 → 기억 0", async () => {
+    const { db, repo, doc, core } = await startedRig();
+    const c = core();
+    const snap = await repo.createSnapshot(PROJECT, "기준");
+    record(repo, c.view().confirmed!.revision);
+    const restored = await repo.restoreSnapshot(PROJECT, snap.snapshotId, doc.revision);
+    expect((await db.doc())!.doc.revision).toBe(restored.revision);
+    watchCores(repo, () => undefined);
+    expect(pendingOf(repo, PROJECT)).toBeDefined();
+    c.edit(edited(restored, "복원 뒤 저장"));
+    expect((await c.save()).status).toBe("saved");
+    const { row, name } = await show(repo);
+    await waitFor(() => expect(pendingOf(repo, PROJECT)).toBeUndefined());
+    expect(within(row).queryByRole("button", { name: `${name} 저장 확인` })).not.toBeInTheDocument();
+    expect(within(row).getByRole("link", { name: `${name} 편집기 열기` })).toBeInTheDocument();
   });
 
   it("PendingStart 유지: 코어 저장 성공이 있어도 시작 대기 기억은 풀지 않는다 · '시작 다시 시도'만", async () => {

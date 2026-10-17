@@ -35,6 +35,8 @@ import { checkSaveDoc, judgeExport, writeStartDoc } from "./startDocWrite";
 import type { DocRecord, LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
 import type { RenderImages } from "../features/studio/images/store/types";
+import { coreIo } from "../features/studio/save/coreIo";
+import type { CoreLink } from "../features/studio/save/saveCore";
 import { deepFreeze, type StudioReader } from "./studioStore";
 
 interface DocState {
@@ -91,6 +93,8 @@ export interface DocBook {
    * 보존 대상 = 덮이는 쪽(mine → 저장된 문서 · theirs → 내 편집)
    */
   readonly resolveConflict: (args: readonly [projectId: string, choice: ConflictChoice, myDoc: DocHead], commit: () => void) => DocHead;
+  /** 저장 코어 saved 뒤 맞춤(INTEGRATE-6 G1) — 메모리 문서 = 코어가 커밋한 문서 그대로(같은 객체 — 싱크 멱등 재생이 같은 레코드를 다시 쓰지 않게). 문서 없는 프로젝트 = 변화 0 */
+  readonly adopt: (projectId: string, doc: DocHead) => void;
 }
 
 /**
@@ -143,6 +147,15 @@ function copyOf(baseReferenceId: string): Readonly<Record<string, string>> | und
 /** 로컬 영속 싱크 열기 — 조작 뒤 청크(이 파일)에서 한 번 더 받는다: 진입 청크의 미리받기 목록에 싱크 의존(zod 등)을 싣지 않는다. 실패 뒤 재시도 = 새 URL(F1) */
 const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
 export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
+/** 코어 링크 조립(조작 뒤 — 진입 레지스트리는 청크·DocBook·싱크만 넘긴다, 감량 ①′). io = 이 청크 한 곳(④b) · 포트 = local만 */
+export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | undefined, now: () => string): CoreLink => ({
+  projectId,
+  io: coreIo,
+  port: sync?.corePort(docs),
+  now,
+  book: (doc, revision) => docs.save(projectId, revision, doc, () => undefined) as ReturnType<CoreLink["book"]>,
+  align: (doc) => docs.adopt(projectId, doc),
+});
 
 /** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷) · 저장 기준 revision 보정(내 미확인 쓰기 위에 얹기) */
 export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs" | "base"> & Partial<Pick<LocalSync, "confirm">>): DocBook {
@@ -270,6 +283,9 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
   const book: DocBook = {
     confirm: async (projectId, images) => local?.confirm?.(projectId, book, images),
     docOf: (projectId) => state.docs.get(projectId),
+    adopt: (projectId, doc) => {
+      if (state.docs.has(projectId)) state = { ...state, docs: new Map(state.docs).set(projectId, deepFreeze(doc)) };
+    },
     snapshotsOf: (projectId) => state.snapshots.get(projectId) ?? [],
     snapshotSeqOf: (projectId) => state.snapshotSeq.get(projectId) ?? 0,
     jobOf: (jobId) => state.jobs.get(jobId),

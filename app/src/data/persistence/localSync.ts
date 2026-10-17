@@ -33,6 +33,7 @@ import type { RenderImages } from "../../features/studio/images/store/types";
 import { tabLink, type TabLink } from "./tabLink";
 import { createWriteQueue } from "./writeQueue";
 import { createWriterGate, type WriterLocks, type WriterMode } from "./writerLock";
+import type { CorePort } from "../../features/studio/save/saveCore";
 
 /** DocBook 중 싱크가 읽는 부분 */
 export interface BookView {
@@ -57,6 +58,8 @@ export interface LocalSync {
   firstSave(live?: () => boolean): Promise<boolean>;
   /** 되돌리기 어려운 쓰기(restart) 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 flush와 같은 INFRA 사유로 던진다(호출자는 쓰기 0) */
   guardWrite(): Promise<void>;
+  /** 저장 코어 포트(INTEGRATE-6 1.3) — 레코드 = 코어 동결 doc + 제출 시점 DocBook 스냅샷(G1) · 쓰기 = write → queue.submit → committed(도장·cleared·saved 유지) */
+  corePort(book: BookView): CorePort;
 }
 
 const unreadable = () => new ProjectRepositoryError("INFRA", "열기 — 저장된 데이터를 읽지 못했습니다");
@@ -214,6 +217,20 @@ export async function openLocalSync(
       if (cleared) throw toInfra(undefined, "저장", CLEARED_TAB);
       const mode = await gate.enter();
       if (mode !== "writer") throw blocked(mode);
+    },
+    corePort: (book) => {
+      const recordOf = async (projectId: string) => ((await persistence.get("docs", projectId)) as { data?: DocRecord } | undefined)?.data;
+      return {
+        mode: async () => (cleared ? "cleared" : gate.mode === "writer" ? gate.mode : await gate.enter()),
+        head: async (projectId) => (await recordOf(projectId))?.doc as never,
+        commit: async (projectId, doc, bound) => {
+          await write(projectId, { docOf: () => doc, snapshotsOf: book.snapshotsOf, snapshotSeqOf: book.snapshotSeqOf }, bound);
+        },
+        verify: async (projectId, receipt) => {
+          const record = await recordOf(projectId);
+          return record?.doc.hash === receipt.hash && record.doc.revision === receipt.revision;
+        },
+      };
     },
     // 상태 쓰기(saveState)가 먼저 잠금을 요청했으면 그 제출 뒤에 낸다 — 같은 enter 시도를 기다린다
     firstSave: async (live = () => true) => {

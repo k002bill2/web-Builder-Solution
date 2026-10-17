@@ -15,6 +15,7 @@ import type { LocalEntry } from "./persistence/entryRead";
 import type { LocalSync } from "./persistence/localSync";
 import type { StudioStore } from "./studioStore";
 import type { ImageKeeper, RenderImages } from "../features/studio/images/store/types";
+import { createSaveCore, type CoreKeeper, type SaveCore } from "../features/studio/save/saveCore";
 
 export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
 type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
@@ -48,7 +49,7 @@ const loadImageRestore = retryableImport(() => import("./persistence/imageRestor
 
 export const openLocal = async (entry: LocalEntry) => (await loadDocBook()).openLocalSync(entry);
 
-export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper {
+export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper & CoreKeeper {
   const { store, now = () => new Date().toISOString(), generators = {}, local } = options;
   const entry = local?.entry;
   const counts = new Map<ProjectMethod, number>();
@@ -87,6 +88,9 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     <K extends SnapshotWrite>(method: K) =>
     (...args: Parameters<DocBook[K]>[0]) =>
       kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
+  /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — 저장소 인스턴스 소유(모듈 전역 0) · 편집기 첫 마운트 때 동기 생성 · 포트·io는 첫 save 때(조작 뒤 청크) */
+  const cores = new Map<string, SaveCore>();
+  const link = (projectId: string) => Promise.all([loadDocBook(), bookOf(), local?.sync()]).then(([mod, docs, sync]) => mod.coreLink(projectId, docs, sync, now));
   /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
   const entered = async (projectId: string) => {
     const first = entry?.doc?.doc.projectId === projectId ? entry.doc : undefined;
@@ -133,6 +137,11 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     requestExport: (projectId, format, docRevision) =>
       kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),
     getExportJob: async (jobId) => book?.jobOf(jobId),
+    core: (projectId, seed) => {
+      let core = cores.get(projectId);
+      if (!core) cores.set(projectId, (core = createSaveCore(seed, () => link(projectId))));
+      return core;
+    },
     ...(local && {
       images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
         maps.set(projectId, map);

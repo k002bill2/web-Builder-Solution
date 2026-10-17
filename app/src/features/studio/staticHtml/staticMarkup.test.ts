@@ -267,3 +267,31 @@ describe("M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15)", () => 
   });
 });
 
+
+describe("FIX1 AppSec·QA (M-1·M-2·L-1·L-2)", () => {
+  const inject = (extra: string) => siteMarkup().replace("</header>", `${extra}</header>`);
+  /** 결과에 남으면 안 되는 것 — 고정 스크립트 밖 script · on* · 외부 출처 · javascript: · template · SMIL */
+  const expectInert = (html: string) => {
+    expect(html.split("<script").length - 1).toBe(1);
+    for (const bad of ["onerror", "evil.example", "javascript:", "<template", "shadowrootmode", "<animate", "<set", "<SET", "attributename"]) expect(html, bad).not.toContain(bad);
+  };
+
+  it("M-1 template(declarative shadow DOM)·M-2 SVG animate·set·animateMotion·animateTransform = 제거(대소문자 무관) — 퍼즈 M06·M07·M12·M13·M41·M42·M43", () => {
+    const fuzz = {
+      M06: '<svg><a><animate attributeName="href" values="javascript:alert(1)"></animate><text>x</text></a></svg>',
+      M07: '<svg><a><set attributeName="href" to="javascript:alert(1)"></set><text>x</text></a></svg>',
+      M12: '<div><template shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><script>alert(2)</script></template></div>',
+      M13: '<div><template shadowrootmode="open"><a href="https://evil.example/phish">x</a><style>@import url(https://evil.example/c.css)</style></template></div>',
+      M41: '<svg><image><set attributeName="href" to="https://evil.example/x"></set></image></svg>',
+      M42: '<svg><image><animate attributeName="xlink:href" values="https://evil.example/x"></animate></image></svg>',
+      M43: '<div><template shadowrootmode="open"><div><template shadowrootmode="open"><script>alert(3)</script></template></div></template></div>',
+      motion: '<svg><a><animateMotion attributeName="href" values="javascript:alert(1)"></animateMotion><animateTransform attributeName="href" values="javascript:alert(1)"></animateTransform></a></svg>',
+      upper: '<svg><image><SET attributeName="href" to="https://evil.example/x"></SET><ANIMATE attributeName="href" values="https://evil.example/x"></ANIMATE></image></svg>',
+    };
+    for (const [name, extra] of Object.entries(fuzz)) {
+      let html = "";
+      expect(() => (html = build({ markup: inject(extra) })), name).not.toThrow();
+      expectInert(html);
+    }
+  });
+});

@@ -19,7 +19,7 @@
 - [x] R2 REPORT 갱신(결론 · 1절 개정 18 행 · EXP-AC-02·14 부분 사유 · 7절 Codex · 8절 Ego Lite R1~R5)
 
 ## 로그
-- 열린 항목: 09c4309d Codex 미검토(다음 레인 1회 권고) · R3 · R5 Windows · "(zip)을" 조사 — REPORT 9절
+- 열린 항목: 09c4309d Codex 미검토(다음 레인 1회 권고) · R3 · R5 Windows · "(zip)을" 조사 — REPORT 10절(9절 = FIX1)
 - Ego Lite 1차(space 36): zip OK · 단일 HTML 실패 → CDP 예외 정지로 원인 = F-14 브랜드 검사가 인라인 글꼴 base64까지 검사(우연 4글자) → TDD 수정(`logs/ego-fix-red.txt` → 3130 passed · 진입 128.71) → 새 build로 재실측
 - R2(BRIEF-R2): fresh 게이트 통과 → Codex 먼저(수정이 생기면 Ego Lite가 최종 코드를 보도록) → Ego Lite → REPORT
 - 02:49 착수 · CP1 서브에이전트(worktree) ∥ 메인 CP2
@@ -29,7 +29,7 @@
 
 ## FIX1 (BRIEF-FIX1 · base a834eb88)
 - [x] F0. BRIEF-FIX1·PROGRESS 커밋
-- [ ] F1. M-1·M-2 — `clean()`에 template·animate·set·animateMotion·animateTransform(localName) · RED 퍼즈 M06·M07·M12·M13·M41·M42·M43
+- [x] F1. M-1·M-2 — `clean()`에 template·animate·set·animateMotion·animateTransform(localName) · RED 퍼즈 M06·M07·M12·M13·M41·M42·M43
 - [ ] F2. L-2 — F-14 제외를 CSS의 `url(data:font/…;base64,…)`로만 · RED 주석 경계·notice·M2a·M2c
 - [ ] F3. L-1 — `url(`·`image-set(`·`@import` 출현 수 = 엄격 매치 수 · 킷 이스케이프
 - [ ] F4. 문구 "정적 사이트(zip)을" → "를"

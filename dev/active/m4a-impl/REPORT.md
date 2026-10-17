@@ -113,7 +113,14 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 - **환경:** 첫 preview는 백그라운드 기본 시간 한도(10분)로 종료되어 다시 띄웠습니다. 수정 build 뒤에는 한 번 더 띄웠습니다. 마지막에 둘 다 종료했습니다: `lsof -nP -iTCP:4395 -sTCP:LISTEN` → 출력 없음 exit 1 · 4396(http.server)도 exit 1. IDB `design-studio` 삭제(남은 DB 0) · `finish({keep:[]})` 완료.
 - 내려받은 파일·해제 폴더·입력 이미지는 저장소 밖(`/tmp/m4a-r2-ego/`)에 두었습니다. 저장소에는 스크린샷 6장만 커밋합니다.
 
-## 9. 열린 항목 (Jarvis)
+## 9. FIX1 (BRIEF-FIX1 · base a834eb88 — AppSec M-1·M-2·L-1·L-2 · QA M2a·M2c · 문구 1)
+**결론(진행 중):** 아래 표가 항목별 결과입니다.
+
+| 항목 | 수정 | RED → GREEN | 커밋 |
+|---|---|---|---|
+| F1 M-1·M-2 | `staticMarkup.ts` `clean()` — 지우는 요소를 `localName` 소문자 Set 비교로(기존 4종 + `template`·`animate`·`set`·`animatemotion`·`animatetransform`). template를 지우면 안쪽(fragment)도 함께 사라집니다 | 퍼즈 M06·M07·M12·M13·M41·M42·M43 + animateMotion·animateTransform + 대문자 `SET`·`ANIMATE` 9건 → 결과 `<script` 1개(고정) · `onerror`·`evil.example`·`javascript:`·`<template`·`shadowrootmode`·`<animate`·`<set` 0. RED `logs/fix1-f1-red.txt`(1 실패) → staticHtml+zip 8파일 116 passed | (이 커밋) |
+
+## 10. 열린 항목 (Jarvis)
 1. EXP-AC-R3 실화면 20MB+ — BLOCKED(턴 상한). 단위 EXP-AC-17만 확인했습니다.
 2. EXP-AC-R5 Windows 탐색기 해제 — QA 몫입니다.
 3. 09c4309d Codex 미검토 — 다음 레인에서 1회를 권고합니다.

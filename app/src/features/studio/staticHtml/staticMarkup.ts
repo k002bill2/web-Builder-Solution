@@ -39,9 +39,16 @@ function assertNoExternalCss(css: string, target: "html" | "zip") {
   if (/@import/i.test(css) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
 }
 
+/**
+ * 지우는 요소(localName 소문자 비교 — SVG animateMotion 등 대소문자 무관).
+ * template = 안쪽이 querySelectorAll 밖이라 검사가 닿지 않고 열람 시 declarative shadow DOM이 된다(AppSec M-1) ·
+ * SVG animate·set·animateMotion·animateTransform = URL 속성을 열람 시점에 바꾼다(AppSec M-2)
+ */
+const REMOVED = new Set(["script", "iframe", "object", "embed", "template", "animate", "set", "animatemotion", "animatetransform"]);
+
 /** 편집기 흔적·실행 코드 제거 — 불활성 문서 안에서만 다룬다 */
 function clean(site: Element) {
-  for (const el of site.querySelectorAll("script, iframe, object, embed")) el.remove();
+  for (const el of site.querySelectorAll("*")) if (REMOVED.has(el.localName.toLowerCase())) el.remove();
   for (const el of [site, ...site.querySelectorAll("*")]) {
     for (const { name } of [...el.attributes]) {
       if (name.startsWith("on") || (name.startsWith("data-") && !KEPT_DATA.has(name))) el.removeAttribute(name);

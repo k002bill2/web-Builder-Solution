@@ -1,0 +1,5 @@
+     × M-1 template(declarative shadow DOM)·M-2 SVG animate·set·animateMotion·animateTransform = 제거(대소문자 무관) — 퍼즈 M06·M07·M12·M13·M41·M42·M43 58ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > FIX1 AppSec·QA (M-1·M-2·L-1·L-2) > M-1 template(declarative shadow DOM)·M-2 SVG animate·set·animateMotion·animateTransform = 제거(대소문자 무관) — 퍼즈 M06·M07·M12·M13·M41·M42·M43
+AssertionError: javascript:: expected '<!doctype html>\n<html lang="ko"><hea…' not to contain 'javascript:'
+      Tests  1 failed | 24 skipped (25)

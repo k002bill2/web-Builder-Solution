@@ -57,8 +57,47 @@
 
 - 한계 [미확인]: 픽스처의 킷 CSS는 단위 테스트용 짧은 문자열입니다. 실제 build `render.css`(Tailwind 라이선스 주석 `https://tailwindcss.com` 포함 — Developer R2 관찰)는 2차 실화면에서 봅니다. 렌더 문서도 가짜 채널이라 실제 iframe 직렬화 결과가 아닙니다.
 
-## 4. 회귀 · 변이
-(진행 중)
+## 4. 회귀 · 변이 — 통과 with notes (테스트 공백 2건) [사실]
+### 4a. 기존 흐름 무변화 — `git diff b75483ee..HEAD` 대조
+| 영역 | 테스트 파일 | 이전 → 이후 | 판정 |
+|---|---|---|---|
+| 게이트 8줄 | `GatePanel.test.tsx` · `engine/gate/runGate.test.ts` | diff 0 | 무변화 |
+| 편집기 저장 흐름 | 편집기·저장 테스트 | diff 0 (소스 변경도 `editorEvents.ts` 이벤트 형식 유니온에 `static-zip` 추가뿐) | 무변화 |
+| PNG 내보내기 | `PngSave.test.tsx` | 1줄 — 버튼 이름 `정적 HTML 내보내기` → `HTML 파일 1개 내보내기` | 이름만 바뀜(약화 아님) |
+| 단일 HTML(Q5 참조 직렬화) | `staticHtml.test.ts` +137/−0 · `staticMarkup.test.ts` +85/−0 | 기존 단언 삭제 0 · 참조 경로 단언 추가 | 무변화 + 보강 |
+| 버튼·문구 | `ExportFlow` · `ExportChunkFailure` · `ExportResultNotes` · `exportFlow.test.ts` | 테스트 삭제 줄 9줄 전부 문구 교체(React zip → 정적 사이트(zip) · "zip 내보내기는 다음 단계" → "이미지를 파일로 나눠 담습니다") · 단언 개수 감소 0 | 약화 아님 |
+- 테스트 전체 diff: 14파일 +647/−9 — 삭제 9줄은 위 문구 교체와 1:1. fresh 전체 test 353/3130 통과(1절).
+
+### 4b. 변이 — 로그 `logs/mutations.txt` (매번 `git checkout` 원복 · 원복 뒤 `git status` = 로그 파일만)
+| # | 변이 | 결과 | 판정 |
+|---|---|---|---|
+| M1a | 단일 HTML 참조 Blob 합침 제거 | 3 FAIL | 잡힘 |
+| M1b | zip 이미지 entry(부모 Blob) 제거 | 6 FAIL | 잡힘 |
+| M2a | F-14 제외 = `data:` 조건 없이 모든 `url()` | 146 통과 | **생존 — 공백 G1** |
+| M2b | F-14 제외 = 고정 부분 전체 비움 | 2 FAIL | 잡힘 |
+| M2c | F-14 제외 = `data:` 뒤 탐욕 매치(`.*`) | 146 통과 | **생존 — 공백 G2** |
+| M3 | ZIP_MAX 검사 제거 | 1 FAIL | 잡힘 |
+| M3b | ZIP_MAX 경계 완화(`> ZIP_MAX + 2MB`, 실효 66MB) | 1 FAIL (115 중) | 잡힘 |
+- 브리프 변이 3종(참조 Blob 합침 / F-14 제외 범위 확대 / ZIP_MAX) 모두 대표 변이는 FAIL. 다만 F-14 확대 3변형 중 2개가 생존.
+- [추정] M3b가 잡힌 것은 테스트 입력이 65MB(상한 +1MB)라서입니다. +1MB 미만 완화(예: `>=` ↔ `>`)는 잡지 못합니다 — 경계 테스트(정확히 64MB / 64MB+1B)가 없음. 64MB 버퍼 테스트가 느려 굳이 넣을 가치는 낮아 **기록만** 합니다.
+
+### 4c. 테스트 공백 — 수정 제안(패치 · 커밋 안 함 · QA가 임시로 넣어 원본 통과 / 변이 실패 확인)
+- **G1 (M2a 생존)**: zip 대상은 `assets/fonts/<계열>-<굵기>.woff2`가 외부 요청 검사를 통과하므로, F-14 제외를 모든 `url()`로 넓혀도 그 경로 안 브랜드 글자를 못 잡습니다. [추정] 지금 글꼴 계열은 고정(Pretendard)이라 실사용 위험은 낮음.
+- **G2 (M2c 생존)**: 기존 테스트는 브랜드가 마지막 `)` 뒤에 있어 탐욕 매치가 삼키지 못합니다. data: 글꼴 2개 사이의 고정 CSS 브랜드를 숨기는 회귀를 못 잡습니다. [추정] 실제 킷 CSS는 400·700 두 @font-face를 연달아 쓰므로 G2가 G1보다 현실적.
+- 검증: 원본 25/25 통과 · M2a → QA-M2a FAIL · M2c → QA-M2c FAIL (`logs/mutations.txt` "QA 보강" 절).
+```diff
+--- a/app/src/features/studio/staticHtml/staticMarkup.test.ts  (파일 끝에 추가)
++describe("F-14 data: 제외 범위 (QA G1·G2)", () => {
++  const legacy = ["a", "p", "f", "s"].join("");
++  const face = `@font-face{font-family:"Kit Sans KR";src:url(data:font/woff2;base64,AAAABBBB) format("woff2")}`;
++  it("data: 글꼴 두 개 사이 CSS의 브랜드 = 실패 (탐욕 매치 금지)", () => {
++    expect(() => build({ css: `${CSS}${face}.${legacy}-x{color:red}${face}` })).toThrow("정적 HTML 브랜드");
++  });
++  it("zip 글꼴 상대 경로 url()의 브랜드 = 실패 (data: 아닌 url()은 제외 안 함)", () => {
++    expect(() => build({ target: "zip", markup: siteMarkup(), css: `${CSS}@font-face{font-family:"K";src:url(assets/fonts/${legacy}-400.woff2) format("woff2")}` })).toThrow("정적 HTML 브랜드");
++  });
++});
+```
 
 ## 5. 문구
 (진행 중)

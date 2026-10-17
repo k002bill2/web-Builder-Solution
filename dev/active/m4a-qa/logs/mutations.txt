@@ -34,3 +34,39 @@
   × ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
 restored: ?? dev/active/m4a-qa/logs/mutations.txt
 
+## M3b ZIP_MAX 경계 완화(> ZIP_MAX + 2MB — 실효 상한 66MB)
+ exit=1 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 114 passed (115)
+     × ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0 417ms
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
+restored:  M ../dev/active/m4a-qa/logs/mutations.txt 
+## QA 보강 테스트(임시 · 커밋 안 함) — 원본 / M2a / M2c
+[원본]
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 4ms
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 25 passed (26)
+[M2a] 107:const CSS_DATA_URL = /url\([^)]*\)/gi;
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 4ms
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 25 passed (26)
+[M2c] 107:const CSS_DATA_URL = /url\(\s*(['"]?)data:.*\1\s*\)/gi;
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 1ms
+ × QA-M2c: data: 글꼴 두 개 사이 CSS의 브랜드 = 실패 14ms
+ 274| it("QA-M2c: data: 글꼴 두 개 사이 CSS의 브랜드 = 실패", () => {
+ 277| it("QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패", () => {
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2c: data: 글꼴 두 개 사이 CSS의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 2 failed | 24 passed (26)
+restored:  M ../dev/active/m4a-qa/logs/mutations.txt 
+## QA-M2a 보강 재시도(build 헬퍼 — 앞 시도는 'parts is not defined' 테스트 작성 오류)
+[원본]
+ Tests 25 passed (25)
+[M2a] 107:const CSS_DATA_URL = /url\([^)]*\)/gi;
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 14ms
+ 273| it("QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패", () => {
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — M2a 보강 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+restored:  M ../dev/active/m4a-qa/logs/mutations.txt 

@@ -1,0 +1,269 @@
+diff --git a/app/src/features/studio/exportFlow.ts b/app/src/features/studio/exportFlow.ts
+index 1b9a999a..2f54ff1b 100644
+--- a/app/src/features/studio/exportFlow.ts
++++ b/app/src/features/studio/exportFlow.ts
+@@ -10,6 +10,9 @@ import type { RenderImages } from "./images/store/types";
+ import { staticHtmlFileName } from "./staticHtml/exportFileName";
+ import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
+ import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary } from "./staticHtml/exportImages";
++// M4-a-1 스파이크 S4 — zip 작성기·이미지 분리를 조작 뒤 청크에 싣는다(측정용)
++export { storeZip, zipParts } from "./zip/storeZip";
++export { splitImages } from "./zip/splitImages";
+ 
+ export type ExportResult =
+   | { readonly kind: "unavailable"; readonly format: ExportFormat }
+diff --git a/app/src/features/studio/zip/splitImages.test.ts b/app/src/features/studio/zip/splitImages.test.ts
+new file mode 100644
+index 00000000..a29d59bd
+--- /dev/null
++++ b/app/src/features/studio/zip/splitImages.test.ts
+@@ -0,0 +1,17 @@
++import { describe, expect, it } from "vitest";
++import { splitImages } from "./splitImages";
++
++const b64 = (bytes: number[]) => btoa(String.fromCharCode(...bytes));
++
++describe("splitImages (M4-a-1 S2)", () => {
++  it("data: img → assets/images/<crc>-<len>.<ext> · 같은 바이트는 1개 파일 · data: 아닌 src는 그대로", () => {
++    const page = document.implementation.createHTMLDocument("");
++    page.body.innerHTML = `<div data-site-root><img src="data:image/webp;base64,${b64([1, 2, 3])}"><img src="data:image/jpeg;base64,${b64([9, 9])}"><img src="data:image/webp;base64,${b64([1, 2, 3])}"><img src="x.png"></div>`;
++    const site = page.body.firstElementChild!;
++    const files = splitImages(site);
++    expect(files.map((f) => f.name)).toEqual([expect.stringMatching(/^assets\/images\/[0-9a-f]{8}-3\.webp$/), expect.stringMatching(/^assets\/images\/[0-9a-f]{8}-2\.jpg$/)]);
++    expect([...files[0]!.data]).toEqual([1, 2, 3]);
++    const srcs = [...site.querySelectorAll("img")].map((img) => img.getAttribute("src"));
++    expect(srcs).toEqual([files[0]!.name, files[1]!.name, files[0]!.name, "x.png"]);
++  });
++});
+diff --git a/app/src/features/studio/zip/splitImages.ts b/app/src/features/studio/zip/splitImages.ts
+new file mode 100644
+index 00000000..58b2d277
+--- /dev/null
++++ b/app/src/features/studio/zip/splitImages.ts
+@@ -0,0 +1,29 @@
++/**
++ * 이미지 분리 (M4-a-1 스파이크 S2) — 정적 HTML 마크업(불활성 문서의 사이트 루트)의 `img src="data:image/…;base64,"`를
++ * `assets/images/<hash>.<ext>` 참조로 바꾸고 파일 목록을 돌려준다. 해시 = CRC-32 8자리 + 바이트 길이(동기 · 같은 바이트는 1개 파일).
++ * 렌더 문서는 그대로(data URL 직렬화) — 부모 쪽(조작 뒤 청크)만 바뀐다.
++ */
++import { crc32, type ZipEntry } from "./storeZip";
++
++const DATA_IMAGE = /^data:image\/(webp|jpeg|png);base64,/;
++
++const fromBase64 = (text: string) => {
++  const binary = atob(text);
++  const bytes = new Uint8Array(binary.length);
++  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
++  return bytes;
++};
++
++export function splitImages(site: Element): ZipEntry[] {
++  const files = new Map<string, Uint8Array>();
++  for (const img of site.querySelectorAll("img")) {
++    const src = img.getAttribute("src") ?? "";
++    const type = DATA_IMAGE.exec(src)?.[1];
++    if (!type) continue;
++    const data = fromBase64(src.slice(src.indexOf(",") + 1));
++    const name = `assets/images/${crc32(data).toString(16).padStart(8, "0")}-${data.length.toString(36)}.${type === "jpeg" ? "jpg" : type}`;
++    files.set(name, data);
++    img.setAttribute("src", name);
++  }
++  return [...files].map(([name, data]) => ({ name, data }));
++}
+diff --git a/app/src/features/studio/zip/storeZip.test.ts b/app/src/features/studio/zip/storeZip.test.ts
+new file mode 100644
+index 00000000..c3ef353a
+--- /dev/null
++++ b/app/src/features/studio/zip/storeZip.test.ts
+@@ -0,0 +1,86 @@
++// @vitest-environment node
++import { execFileSync } from "node:child_process";
++import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { afterAll, describe, expect, it } from "vitest";
++import { crc32, storeZip, zipParts, type ZipEntry } from "./storeZip";
++
++const dir = mkdtempSync(join(tmpdir(), "m4a-zip-"));
++afterAll(() => rmSync(dir, { recursive: true, force: true }));
++const enc = new TextEncoder();
++const bytesOf = (parts: Uint8Array[]) => new Uint8Array(Buffer.concat(parts));
++
++/** 순수 파서 — EOCD → 중앙 디렉터리 → 로컬 헤더 → 본문 · CRC 재계산 */
++function parse(zip: Uint8Array) {
++  const v = new DataView(zip.buffer, zip.byteOffset, zip.byteLength);
++  const e = zip.length - 22;
++  expect(v.getUint32(e, true)).toBe(0x06054b50);
++  const count = v.getUint16(e + 10, true);
++  let at = v.getUint32(e + 16, true);
++  const out: { name: string; flags: number; method: number; data: Uint8Array }[] = [];
++  for (let i = 0; i < count; i++) {
++    expect(v.getUint32(at, true)).toBe(0x02014b50);
++    const flags = v.getUint16(at + 8, true);
++    const method = v.getUint16(at + 10, true);
++    const crc = v.getUint32(at + 16, true);
++    const size = v.getUint32(at + 20, true);
++    const nameLen = v.getUint16(at + 28, true);
++    const local = v.getUint32(at + 42, true);
++    const name = new TextDecoder().decode(zip.subarray(at + 46, at + 46 + nameLen));
++    expect(v.getUint32(local, true)).toBe(0x04034b50);
++    const start = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
++    const data = zip.subarray(start, start + size);
++    expect(crc32(data)).toBe(crc);
++    out.push({ name, flags, method, data });
++    at += 46 + nameLen;
++  }
++  return out;
++}
++
++const sample: ZipEntry[] = [
++  { name: "index.html", data: enc.encode("<!doctype html><title>안녕</title>") },
++  { name: "assets/images/0a1b2c3d-1k.webp", data: new Uint8Array(4096).map((_, i) => (i * 31) & 0xff) },
++  { name: "assets/fonts/KitSansKR-400.woff2", data: new Uint8Array(0) },
++  { name: "한글 이름.txt", data: enc.encode("본문") },
++];
++
++describe("storeZip (M4-a-1 S1)", () => {
++  it("CRC-32 표준 벡터", () => {
++    expect(crc32(enc.encode("123456789"))).toBe(0xcbf43926);
++    expect(crc32(new Uint8Array(0))).toBe(0);
++  });
++
++  it("순수 파서 — 항목·UTF-8 플래그·store·CRC 일치", () => {
++    const entries = parse(bytesOf(zipParts(sample, new Date(2026, 9, 18, 12, 30, 10))));
++    expect(entries.map((e) => e.name)).toEqual(sample.map((e) => e.name));
++    for (const [i, e] of entries.entries()) {
++      expect(e.flags).toBe(0x0800);
++      expect(e.method).toBe(0);
++      expect(Buffer.from(e.data).equals(Buffer.from(sample[i]!.data))).toBe(true);
++    }
++  });
++
++  it("빈 목록 = EOCD 22바이트", () => {
++    expect(bytesOf(zipParts([])).length).toBe(22);
++  });
++
++  it("unzip -t · zipinfo · unzip -p · ditto -x -k(macOS Archive Utility 엔진 근사)로 연다", async () => {
++    const file = join(dir, "site.zip");
++    writeFileSync(file, Buffer.from(await storeZip(sample, new Date(2026, 9, 18, 12, 30, 10)).arrayBuffer()));
++    expect(execFileSync("unzip", ["-t", file]).toString()).toContain("No errors detected");
++    const info = execFileSync("zipinfo", [file]).toString();
++    expect(info).toContain("4 files");
++    expect(info).toContain("stor");
++    expect(execFileSync("unzip", ["-p", file, "index.html"]).toString()).toBe("<!doctype html><title>안녕</title>");
++    const out = join(dir, "ditto");
++    execFileSync("ditto", ["-x", "-k", file, out]);
++    expect(readFileSync(join(out, "assets/images/0a1b2c3d-1k.webp")).equals(Buffer.from(sample[1]!.data))).toBe(true);
++    expect(readFileSync(join(out, "한글 이름.txt"), "utf8")).toBe("본문");
++  });
++
++  it("경로 검사 — 앞 / · .. · \\ · 빈 이름은 실패", () => {
++    for (const name of ["/a", "../a", "a/../b", "a\\b", ""]) expect(() => zipParts([{ name, data: new Uint8Array(1) }])).toThrow();
++    expect(() => zipParts([{ name: "a..b/c.txt", data: new Uint8Array(1) }])).not.toThrow();
++  });
++});
+diff --git a/app/src/features/studio/zip/storeZip.ts b/app/src/features/studio/zip/storeZip.ts
+new file mode 100644
+index 00000000..6fac7b3d
+--- /dev/null
++++ b/app/src/features/studio/zip/storeZip.ts
+@@ -0,0 +1,84 @@
++/**
++ * store(무압축) ZIP 작성기 (M4-a-1 스파이크 · 의존성 0) — 로컬 헤더 · 중앙 디렉터리 · EOCD · CRC-32 · UTF-8 이름(플래그 bit 11).
++ * 데이터 기술자(bit 3) 0 · ZIP64 0 — 크기·오프셋이 4GiB-1 이상이거나 항목이 65535개를 넘으면 실패(이미지 보관 한도 30MB라 닿지 않는다).
++ * 결과는 조각 배열(Uint8Array[]) — 본문을 복사하지 않고 Blob 조각으로 넘긴다.
++ */
++export interface ZipEntry {
++  /** `/` 구분 상대 경로(앞 `/`·`..`·`\` 금지) */
++  readonly name: string;
++  readonly data: Uint8Array;
++}
++
++const CRC_TABLE = /* @__PURE__ */ (() => {
++  const table = new Uint32Array(256);
++  for (let n = 0; n < 256; n++) {
++    let c = n;
++    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
++    table[n] = c >>> 0;
++  }
++  return table;
++})();
++
++export function crc32(data: Uint8Array): number {
++  let c = 0xffffffff;
++  for (let i = 0; i < data.length; i++) c = CRC_TABLE[(c ^ data[i]!) & 0xff]! ^ (c >>> 8);
++  return (c ^ 0xffffffff) >>> 0;
++}
++
++const MAX32 = 0xffffffff;
++const BAD_NAME = /(^\/)|(^|\/)\.\.(\/|$)|\\|^$/;
++
++export function zipParts(entries: readonly ZipEntry[], date = new Date()): Uint8Array[] {
++  if (entries.length > 0xffff) throw new Error("ZIP 항목이 너무 많습니다");
++  const time = (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1);
++  const day = ((Math.max(1980, date.getFullYear()) - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
++  const encoder = new TextEncoder();
++  const parts: Uint8Array[] = [];
++  const central: Uint8Array[] = [];
++  let offset = 0;
++  for (const { name, data } of entries) {
++    if (BAD_NAME.test(name)) throw new Error(`ZIP 경로가 올바르지 않습니다: ${name}`);
++    const bytes = encoder.encode(name);
++    const crc = crc32(data);
++    if (offset + 30 + bytes.length + data.length >= MAX32) throw new Error("ZIP64가 필요한 크기입니다");
++    // 공통 필드(버전 2.0 · UTF-8 · store · 시각 · CRC · 크기 2번 · 이름 길이 · extra 0)
++    const common = (view: DataView, at: number) => {
++      view.setUint16(at, 20, true);
++      view.setUint16(at + 2, 0x0800, true);
++      view.setUint16(at + 4, 0, true);
++      view.setUint16(at + 6, time, true);
++      view.setUint16(at + 8, day, true);
++      view.setUint32(at + 10, crc, true);
++      view.setUint32(at + 14, data.length, true);
++      view.setUint32(at + 18, data.length, true);
++      view.setUint16(at + 22, bytes.length, true);
++    };
++    const local = new Uint8Array(30 + bytes.length);
++    const lv = new DataView(local.buffer);
++    lv.setUint32(0, 0x04034b50, true);
++    common(lv, 4);
++    local.set(bytes, 30);
++    const head = new Uint8Array(46 + bytes.length);
++    const hv = new DataView(head.buffer);
++    hv.setUint32(0, 0x02014b50, true);
++    hv.setUint16(4, 20, true);
++    common(hv, 6);
++    hv.setUint32(42, offset, true);
++    head.set(bytes, 46);
++    parts.push(local, data);
++    central.push(head);
++    offset += local.length + data.length;
++  }
++  const size = central.reduce((sum, head) => sum + head.length, 0);
++  if (offset + size >= MAX32) throw new Error("ZIP64가 필요한 크기입니다");
++  const end = new Uint8Array(22);
++  const ev = new DataView(end.buffer);
++  ev.setUint32(0, 0x06054b50, true);
++  ev.setUint16(8, entries.length, true);
++  ev.setUint16(10, entries.length, true);
++  ev.setUint32(12, size, true);
++  ev.setUint32(16, offset, true);
++  return [...parts, ...central, end];
++}
++
++export const storeZip = (entries: readonly ZipEntry[], date?: Date) => new Blob(zipParts(entries, date) as BlobPart[], { type: "application/zip" });
+diff --git a/app/src/render/htmlMessage.ts b/app/src/render/htmlMessage.ts
+index 8e20c5e3..0ff868c4 100644
+--- a/app/src/render/htmlMessage.ts
++++ b/app/src/render/htmlMessage.ts
+@@ -7,8 +7,8 @@ import type { HtmlMessage } from "./protocol";
+ /** html 마크업 상한(글자 수) — 섹션 ≤ 11 · 이미지 ≤ 64(data URL)를 넉넉히 덮는다 */
+ export const HTML_MAX = 8_000_000;
+ 
+-export function readHtmlMessage(data: unknown): HtmlMessage | undefined {
++export function readHtmlMessage(data: unknown, max = HTML_MAX): HtmlMessage | undefined {
+   if (typeof data !== "object" || data === null) return undefined;
+   const { type, markup } = data as { readonly type?: unknown; readonly markup?: unknown };
+-  return type === "html" && typeof markup === "string" && markup.length > 0 && markup.length <= HTML_MAX ? { type: "html", markup } : undefined;
++  return type === "html" && typeof markup === "string" && markup.length > 0 && markup.length <= max ? { type: "html", markup } : undefined;
+ }

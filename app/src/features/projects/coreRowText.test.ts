@@ -5,11 +5,19 @@
  */
 import { describe, expect, it } from "vitest";
 import { reasonText } from "../studio/save/reasonText";
-import { CORE_REASON_TEXT } from "./coreRowText";
+import { CORE_REASON_TEXT, stuckOf } from "./coreRowText";
 
 describe("행 사유 문구 = 편집기 사유 문구(UX-5 2.3 원문 1개)", () => {
   it.each(["stale", "cleared", "readonly", "unsupported"])("%s", (reason) => {
     expect(CORE_REASON_TEXT[reason]).toBeTruthy();
     expect(CORE_REASON_TEXT[reason]).toBe(reasonText(reason));
+  });
+
+  it("버튼 숨김 reason = stale·cleared·unsupported(readonly는 그 탭을 닫은 뒤 다시 저장)", () => {
+    expect(["stale", "cleared", "unsupported", "readonly", "writer", "image-missing", undefined].map(stuckOf)).toEqual([true, true, true, false, false, false, false]);
+  });
+
+  it("image-missing은 행 첫 표시 문구에 없다(다시 저장 결과에만 — pendingRetry) · 첫 표시 = 일반 실패 문구", () => {
+    expect(CORE_REASON_TEXT["image-missing"]).toBeUndefined();
   });
 });

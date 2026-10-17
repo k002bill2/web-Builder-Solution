@@ -1,0 +1,9 @@
+[S5] 이미지 8장 × 3.75MB = 30.0MB · markup 41.9M자 · zip 30.39MB
+     base64 디코드 73ms · crc32+이름 85ms · zipParts+Blob 89ms · 합 246ms · unzip -t OK
+     메모리 시작 rss 76MB · heap 8MB · arrayBuffers 0MB → 직후 rss 243MB · heap 52MB · arrayBuffers 91MB
+[S5] 이미지 64장 × 0.47MB = 30.0MB · markup 41.9M자 · zip 30.40MB
+     base64 디코드 78ms · crc32+이름 89ms · zipParts+Blob 94ms · 합 261ms · unzip -t OK
+     메모리 시작 rss 281MB · heap 48MB · arrayBuffers 121MB → 직후 rss 381MB · heap 44MB · arrayBuffers 152MB
+[S5] 이미지 1장 × 30.00MB = 30.0MB · markup 41.9M자 · zip 30.39MB
+     base64 디코드 82ms · crc32+이름 82ms · zipParts+Blob 85ms · 합 250ms · unzip -t OK
+     메모리 시작 rss 437MB · heap 44MB · arrayBuffers 152MB → 직후 rss 648MB · heap 114MB · arrayBuffers 212MB

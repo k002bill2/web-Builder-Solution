@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-impl/app
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts (24 tests | 1 failed) 964ms
+   ❯ M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) (8)
+     × F-14 data: 본문 제외(Ego Lite R2): 인라인 글꼴 base64에 우연히 든 글자는 브랜드가 아니다 · data: 밖 CSS의 브랜드는 그대로 실패 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-14 data: 본문 제외(Ego Lite R2): 인라인 글꼴 base64에 우연히 든 글자는 브랜드가 아니다 · data: 밖 CSS의 브랜드는 그대로 실패
+AssertionError: expected [Function] to not throw an error but 'Error: 정적 HTML 브랜드 문자열이 있습니다' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: 정적 HTML 브랜드 문자열이 있습니다"
+
+ ❯ src/features/studio/staticHtml/staticMarkup.test.ts:265:72
+    263|     const legacy = ["a", "p", "f", "s"].join("");
+    264|     const face = (payload: string) => `@font-face{font-family:"Kit San…
+    265|     expect(() => build({ css: CSS + face(legacy.toUpperCase()) })).not…
+       |                                                                        ^
+    266|     expect(() => build({ css: `${CSS}${face("")}.${legacy}-x{color:red…
+    267|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 23 passed (24)
+   Start at  04:38:58
+   Duration  1.89s (tests 54%, environment 30%, transform 9%, setup 5%, import 2%)
+

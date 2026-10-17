@@ -258,5 +258,12 @@ describe("M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15)", () => 
     expect(() => build({ css: `${CSS}.x{--${legacy}-a:1}` })).toThrow("정적 HTML 브랜드");
     expect(() => build({ markup: inject(`<p class="${legacy.toUpperCase()}-x">x</p>`) })).toThrow("정적 HTML 브랜드");
   });
+
+  it("F-14 data: 본문 제외(Ego Lite R2): 인라인 글꼴 base64에 우연히 든 글자는 브랜드가 아니다 · data: 밖 CSS의 브랜드는 그대로 실패", () => {
+    const legacy = ["a", "p", "f", "s"].join("");
+    const face = (payload: string) => `@font-face{font-family:"Kit Sans KR";src:url(data:font/woff2;base64,AAAA${payload}BBBB) format("woff2")}`;
+    expect(() => build({ css: CSS + face(legacy.toUpperCase()) })).not.toThrow();
+    expect(() => build({ css: `${CSS}${face("")}.${legacy}-x{color:red}` })).toThrow("정적 HTML 브랜드");
+  });
 });
 

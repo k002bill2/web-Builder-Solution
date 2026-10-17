@@ -103,9 +103,11 @@ function assertNoExternalSources(site: Element) {
 
 /** F-14 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 — 사용자 글자(본문·alt·title·description)는 보지 않는다 */
 const BRAND = new RegExp(`${brand.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}|${["a", "p", "f", "s"].join("")}`, "i");
+/** CSS의 data: 본문(인라인 글꼴 base64)은 글자가 아니다 — 무작위 base64에 4글자가 우연히 들어가 거짓 실패했다(Ego Lite R2) */
+const CSS_DATA_URL = /url\(\s*(['"]?)data:[^'")]*\1\s*\)/gi;
 function assertNoBrand(site: Element, fixed: readonly string[]) {
   const names = [site, ...site.querySelectorAll("*")].flatMap((el) => [el.getAttribute("class") ?? "", ...[...el.attributes].map((a) => a.name)]);
-  if ([...fixed, ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
+  if ([...fixed.map((text) => text.replace(CSS_DATA_URL, "url()")), ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
 }
 
 export function buildStaticHtml({ markup, css, title, description, notice, images = {}, target = "html" }: StaticHtmlParts): string {

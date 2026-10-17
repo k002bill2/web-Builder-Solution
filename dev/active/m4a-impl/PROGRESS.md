@@ -18,6 +18,7 @@
 - [x] REPORT 최종 · untracked 0
 
 ## 로그
+- Ego Lite 1차(space 36): zip OK · 단일 HTML 실패 → CDP 예외 정지로 원인 = F-14 브랜드 검사가 인라인 글꼴 base64까지 검사(우연 4글자) → TDD 수정(`logs/ego-fix-red.txt` → 3130 passed · 진입 128.71) → 새 build로 재실측
 - R2(BRIEF-R2): fresh 게이트 통과 → Codex 먼저(수정이 생기면 Ego Lite가 최종 코드를 보도록) → Ego Lite → REPORT
 - 02:49 착수 · CP1 서브에이전트(worktree) ∥ 메인 CP2
 - CP1 c568e661 · CP2 c7863aeb · CP3+CP4 575576b8 · CP5 fe4671a1

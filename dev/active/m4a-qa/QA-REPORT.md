@@ -205,6 +205,7 @@
 | L3 해제 | **통과** (Archive Utility 더블클릭 = 미확인) | 아래 |
 | L4 로컬 서버 | **통과** | 아래 |
 | L6 `file://` | **통과** (Chromium) | 아래 |
+| L10 render.css 외부 문자열 | **통과** | 아래 |
 
 - **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
   - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
@@ -232,3 +233,9 @@
   - zip 폴더: 상대 경로 이미지 2개 로드(1200×800 · 800×800) · 상대 경로 `@font-face` Pretendard 400/700 **loaded** · `fonts.check` true · 넘침 0.
   - 단일 HTML: data: 이미지 2개 · 글꼴 400/700 loaded · 넘침 0.
   - R1b 관찰: Chromium `file://`에서는 상대 경로 글꼴이 적용됩니다. Safari·Firefox `file://`(Q19 재판정 트리거)는 L7·L8 = 미확인. (`performance` 리소스 항목은 `file://`에서 기록되지 않아 요청 목록은 L4로 갈음)
+
+- **L10** (Bash · `logs/scan.py` → 실제 내보낸 `index.html`·단일 HTML) [사실] `logs/live/L10-scan.txt`
+  - 외부 요청 후보(URL 속성·CSS `url()`·`@import`) **0** · `link`/`iframe`/`base`/`object`/`embed` 0 · `script` 1(고정 메뉴) · `href` = `#s-contact-1`(같은 문서 앵커)만.
+  - CSS `url()` = zip: `assets/fonts/Pretendard-400·700.woff2` · 단일: `data:font/woff2`.
+  - 문자열 `http(s)://`: zip 1건 = render.css의 `/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */` **CSS 주석**(scan.py는 HTML 주석만 세어 "주석 안 0"으로 표시 — 위치 301 내용으로 CSS 주석임을 확인) · 단일 3건 = 위 1 + `<head>` 라이선스 HTML 주석 2(Pretendard GitHub · SIL OFL). 요청을 만드는 위치 0 → 1차 3절 한계 보완 완료.
+  - `<form>` 1개(문의 폼) — `action`·`method` 속성 없음, 외부 전송 경로 없음.

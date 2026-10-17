@@ -1,0 +1,18 @@
+== site/zip/index.html 53795 chars
+ tags link/script/iframe/base/meta/img/form: {'link': 0, 'script': 1, 'iframe': 0, 'base': 0, 'meta': 3, 'img': 2, 'form': 1, 'object': 0, 'embed': 0}
+ URL attrs: [('a', 'href', '#s-contact-1'), ('img', 'src', 'assets/images/img-01.webp'), ('img', 'src', 'assets/images/img-02.webp')]
+ CSS url(): ['assets/fonts/Pretendard-400.woff2', 'assets/fonts/Pretendard-700.woff2']  @import: 0
+ 외부 요청 후보(속성·CSS url): 0 []
+ blob: 등장 0 · image: 마커 0
+ 문자열 http(s):// 전체 1 · 그중 주석 안 0
+    301 indcss v4.3.3 | MIT License | https://tailwindcss.com */ @layer properties{
+== site/single.html 795339 chars
+ tags link/script/iframe/base/meta/img/form: {'link': 0, 'script': 1, 'iframe': 0, 'base': 0, 'meta': 3, 'img': 2, 'form': 1, 'object': 0, 'embed': 0}
+ URL attrs: [('a', 'href', '#s-contact-1'), ('img', 'src', 'data:image/webp;base')]
+ CSS url(): ['data:font/woff2;base64,d']  @import: 0
+ 외부 요청 후보(속성·CSS url): 0 []
+ blob: 등장 0 · image: 마커 0
+ 문자열 http(s):// 전체 3 · 그중 주석 안 2
+    272 ight (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard), w
+    497 also available with a FAQ at: https://scripts.sil.org/OFL   ---------------
+    4705 indcss v4.3.3 | MIT License | https://tailwindcss.com */ @layer properties{

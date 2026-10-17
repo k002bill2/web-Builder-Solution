@@ -1,0 +1,66 @@
+// QA M4-a-4 임시 — 생성물을 실제 파일로 쓴다(커밋 금지 · 실행 뒤 삭제)
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import type { StudioReader } from "../../../data/studioStore";
+import type { PageDoc } from "../../../engine/contracts/pageDoc";
+import { sampleDoc } from "../../../engine/testing/sampleDoc";
+import { sampleTheme } from "../../../engine/testing/sampleTheme";
+import type { ParentMessage } from "../../../render/protocol";
+import { drawDoc, without } from "../../../render/testing/drawKit";
+import { createStaticHtmlGenerator, type RenderChannel } from "./staticHtml";
+import { staticHtmlFileName, staticZipFileName } from "./exportFileName";
+
+const OUT = "/tmp/m4a-qa-out";
+const PROFILE = sampleTheme().profile;
+const DOC: PageDoc = { ...without(sampleDoc(), "cta-band"), profileVersion: PROFILE.version, meta: { title: "모던 카페", description: "스페셜티 커피" } };
+const STORE = { projects: () => [{ projectId: "project-1", profileId: "profile-1" }], versions: (id: string) => (id === "profile-1" ? [PROFILE] : []) } as unknown as StudioReader;
+const FILES: Readonly<Record<string, string>> = {
+  "/render.html": '<!doctype html><html><head><script type="module" src="/assets/render.js"></script><link rel="stylesheet" crossorigin href="/assets/render.css"></head><body></body></html>',
+  "/assets/render.css":
+    '[data-site-root]{color:var(--site-ink)}@font-face{font-family:"Pretendard";font-weight:400;font-display:swap;src:url(/assets/P-400.woff2) format("woff2")}@font-face{font-family:"Pretendard";font-weight:700;font-display:swap;src:url(/assets/P-700.woff2) format("woff2")}',
+};
+const FONT_DIR = `${process.cwd()}/src/assets/fonts/`;
+const real = (name: string) => { const b = readFileSync(FONT_DIR + name); return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer; };
+const fetchBytes = async (url: string) => real(url.includes("700") ? "Pretendard-Bold.subset.woff2" : "Pretendard-Regular.subset.woff2");
+const fetchText = async (url: string) => { const t = FILES[url]; if (t === undefined) throw new Error(`404 ${url}`); return t; };
+const A = "11111111-1111-4111-8111-111111111111";
+const B = "22222222-2222-4222-8222-222222222222";
+const C = "33333333-3333-4333-8333-333333333333";
+const bytes = (p: string) => new Uint8Array(readFileSync(p));
+const PNG = bytes("/tmp/m4a-qa-src/a.png");
+const JPG = bytes("/tmp/m4a-qa-src/b.jpg");
+const WEBP = bytes("/tmp/m4a-qa-src/c.webp");
+
+function setup() {
+  const doc = { ...DOC, sections: DOC.sections.map((s) => (s.type === "hero" ? { ...s, slots: { ...s.slots, image: { ...(s.slots.image as object), source: A }, qaB: { enabled: true, source: B }, qaC: { enabled: true, source: C } } } : s)) } as PageDoc;
+  const site = drawDoc(DOC).querySelector("[data-site-root]")!;
+  for (const [id, alt] of [[A, "가게 외관"], [B, "원두"], [A, "가게 외관 2"], [C, "라떼"]] as const) {
+    const img = site.ownerDocument.createElement("img");
+    img.setAttribute("src", `image:${id}`);
+    img.setAttribute("alt", alt);
+    site.querySelector("header")!.append(img);
+  }
+  const markup = site.outerHTML;
+  const images: Record<string, Blob> = { [A]: new Blob([PNG], { type: "image/png" }), [B]: new Blob([JPG], { type: "image/jpeg" }), [C]: new Blob([WEBP], { type: "image/webp" }) };
+  const readImage = (id: string) => (images[id] ? { variants: { 1920: images[id]! }, width: 1920, height: 1080 } : undefined);
+  const open = (): RenderChannel => {
+    let receive: (d: unknown) => void = () => {};
+    return {
+      send: (m: ParentMessage) => queueMicrotask(() => receive(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup })),
+      listen: (fn) => { receive = fn; queueMicrotask(() => fn({ type: "ready" })); },
+      close: () => {},
+    };
+  };
+  return { doc, readImage, open };
+}
+
+it("QA 생성물 쓰기", async () => {
+  mkdirSync(OUT, { recursive: true });
+  for (const format of ["static-zip", "static-html"] as const) {
+    const blobs: Blob[] = [];
+    const { doc, readImage, open } = setup();
+    const made = await createStaticHtmlGenerator(STORE, { open, fetchText, fetchBytes, readImage, urls: { createObjectURL: (b: Blob) => (blobs.push(b), "blob:qa"), revokeObjectURL: () => {} } })({ projectId: "project-1", format, doc });
+    const name = format === "static-zip" ? staticZipFileName("모던 카페 홈페이지", 3) : staticHtmlFileName("모던 카페 홈페이지", 3);
+    writeFileSync(`${OUT}/${name}`, new Uint8Array(await blobs[0]!.arrayBuffer()));
+    writeFileSync(`${OUT}/${format}.hash`, `${made.resultHash}\n${name}\n`);
+  }
+});

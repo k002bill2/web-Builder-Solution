@@ -1,0 +1,75 @@
+## M1a 단일HTML 참조 Blob 합침 제거
+ exit=1 ['Tests  3 failed | 143 passed (146)']
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > zip과 단일 HTML을 번갈아 만들어도 서로의 내려받기 URL을 해제하지 않는다(형식별 보관) · release = 둘 다 해제
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 참조 직렬화 (M4-a Q17 B · Q5 A — 단일 HTML도 같은 경로 · EXP-AC-17) > EXP-AC-17: 이미지 20MB 문서 — markup은 이미지 크기와 무관(< 1MB, HTML_MAX 그대로) · 결과 HTML 성공
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 참조 직렬화 (M4-a Q17 B · Q5 A — 단일 HTML도 같은 경로 · EXP-AC-17) > serialize{refs: true}를 보낸다 · 렌더 문서가 준 image:<id>를 부모 Blob의 data URL로 바꾼다
+  × EXP-AC-17: 이미지 20MB 문서 — markup은 이미지 크기와 무관(< 1MB, HTML_MAX 그대로) · 결과 HTML 성공
+  × serialize{refs: true}를 보낸다 · 렌더 문서가 준 image:<id>를 부모 Blob의 data URL로 바꾼다
+  × zip과 단일 HTML을 번갈아 만들어도 서로의 내려받기 URL을 해제하지 않는다(형식별 보관) · release = 둘 다 해제
+## M1b zip 이미지 entry(부모 Blob) 제거
+ exit=1 ['Tests  6 failed | 140 passed (146)']
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > Blob application/zip · entry = index.html → LICENSES.md → 글꼴(이름순)+OFL.txt → 이미지 · 해시 = zip 바이트 SHA-256 앞 12자리
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > EXP-AC-04 결정성: 같은 문서·revision 두 번 → 같은 해시 · zip 시각 = 문서 updatedAt(Q6)
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > index.html: img src = assets/images/img-01.webp · data:image 0 · @font-face src = assets/fonts 상대 경로 · head 주석 = LICENSES.md 안내 1줄
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > onBuilt 요약 = {바이트, 이미지 1, 잃은 0, 글꼴 2}
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > zip과 단일 HTML을 번갈아 만들어도 서로의 내려받기 URL을 해제하지 않는다(형식별 보관) · release = 둘 다 해제
+  × Blob application/zip · entry = index.html → LICENSES.md → 글꼴(이름순)+OFL.txt → 이미지 · 해시 = zip 바이트 SHA-256 앞 12자리
+  × EXP-AC-04 결정성: 같은 문서·revision 두 번 → 같은 해시 · zip 시각 = 문서 updatedAt(Q6)
+## M2a F-14 제외 = data: 조건 없이 모든 url()
+ exit=0 ['Tests  146 passed (146)']
+
+## M2b F-14 제외 = 고정 부분 전체 비움
+ exit=1 ['Tests  2 failed | 144 passed (146)']
+  FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-14 data: 본문 제외(Ego Lite R2): 인라인 글꼴 base64에 우연히 든 글자는 브랜드가 아니다 · data: 밖 CSS의 브랜드는 그대로 실패
+  FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > M4-a 금지 패턴 확장 (SPEC 4.1 zip 열 · 4.2 F-11~F-15) > F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과
+  × F-14 data: 본문 제외(Ego Lite R2): 인라인 글꼴 base64에 우연히 든 글자는 브랜드가 아니다 · data: 밖 CSS의 브랜드는 그대로 실패
+  × F-14·EXP-AC-13: 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 = 실패 · 사용자 글자의 'Design Studio'는 통과
+## M2c F-14 제외 = data: 뒤 탐욕 매치
+ exit=0 ['Tests  146 passed (146)']
+
+## M3 ZIP_MAX 검사 제거
+ exit=1 ['Tests  1 failed | 145 passed (146)']
+  FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
+  × ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
+restored: ?? dev/active/m4a-qa/logs/mutations.txt
+
+## M3b ZIP_MAX 경계 완화(> ZIP_MAX + 2MB — 실효 상한 66MB)
+ exit=1 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 114 passed (115)
+     × ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0 417ms
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > 정적 사이트(zip) 생성기 (M4-a CP3 · SPEC 2절 · EXP-AC-03~09·15) > ZIP_MAX 초과 → 실패(사유 문구 '상한 64MB') · 결과 파일 0
+restored:  M ../dev/active/m4a-qa/logs/mutations.txt 
+## QA 보강 테스트(임시 · 커밋 안 함) — 원본 / M2a / M2c
+[원본]
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 4ms
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 25 passed (26)
+[M2a] 107:const CSS_DATA_URL = /url\([^)]*\)/gi;
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 4ms
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 1 failed | 25 passed (26)
+[M2c] 107:const CSS_DATA_URL = /url\(\s*(['"]?)data:.*\1\s*\)/gi;
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 1ms
+ × QA-M2c: data: 글꼴 두 개 사이 CSS의 브랜드 = 실패 14ms
+ 274| it("QA-M2c: data: 글꼴 두 개 사이 CSS의 브랜드 = 실패", () => {
+ 277| it("QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패", () => {
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — 변이 공백 보강 제안 > QA-M2c: data: 글꼴 두 개 사이 CSS의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ Tests 2 failed | 24 passed (26)
+restored:  M ../dev/active/m4a-qa/logs/mutations.txt 
+## QA-M2a 보강 재시도(build 헬퍼 — 앞 시도는 'parts is not defined' 테스트 작성 오류)
+[원본]
+ Tests 25 passed (25)
+[M2a] 107:const CSS_DATA_URL = /url\([^)]*\)/gi;
+ × QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패 14ms
+ 273| it("QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패", () => {
+ FAIL src/features/studio/staticHtml/staticMarkup.test.ts > QA 임시 — M2a 보강 > QA-M2a: zip 글꼴 상대 경로 url()의 브랜드 = 실패
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+restored:  M ../dev/active/m4a-qa/logs/mutations.txt 
+## 4c 합친 패치(REPORT 그대로) 원본 1회 실행
+ Tests 26 passed (26)
+restored:  M dev/active/m4a-qa/logs/mutations.txt 

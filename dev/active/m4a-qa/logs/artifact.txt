@@ -1,0 +1,41 @@
+Archive:  모던-카페-홈페이지_r3.zip
+    testing: index.html               OK
+    testing: LICENSES.md              OK
+    testing: assets/fonts/OFL.txt     OK
+    testing: assets/fonts/Pretendard-400.woff2   OK
+    testing: assets/fonts/Pretendard-700.woff2   OK
+    testing: assets/images/img-01.png   OK
+    testing: assets/images/img-02.jpg   OK
+    testing: assets/images/img-03.webp   OK
+No errors detected in compressed data of 모던-카페-홈페이지_r3.zip.
+Archive:  모던-카페-홈페이지_r3.zip
+Zip file size: 559148 bytes, number of entries: 8
+-rw----     1.0 fat     9459 b- stor 26-Sep-26 09:00 index.html
+-rw----     1.0 fat     5468 b- stor 26-Sep-26 09:00 LICENSES.md
+-rw----     1.0 fat     4434 b- stor 26-Sep-26 09:00 assets/fonts/OFL.txt
+-rw----     1.0 fat   267096 b- stor 26-Sep-26 09:00 assets/fonts/Pretendard-400.woff2
+-rw----     1.0 fat   270784 b- stor 26-Sep-26 09:00 assets/fonts/Pretendard-700.woff2
+-rw----     1.0 fat       79 b- stor 26-Sep-26 09:00 assets/images/img-01.png
+-rw----     1.0 fat      776 b- stor 26-Sep-26 09:00 assets/images/img-02.jpg
+-rw----     1.0 fat       62 b- stor 26-Sep-26 09:00 assets/images/img-03.webp
+8 files, 558158 bytes uncompressed, 558158 bytes compressed:  0.0%
+== x-ditto/index.html 8794 chars
+ tags link/script/iframe/base/meta/img/form: {'link': 0, 'script': 1, 'iframe': 0, 'base': 0, 'meta': 3, 'img': 4, 'form': 1, 'object': 0, 'embed': 0}
+ URL attrs: [('a', 'href', '#s-s-about'), ('a', 'href', '#s-s-contact'), ('a', 'href', '#s-s-services'), ('img', 'src', 'assets/images/img-01.png'), ('img', 'src', 'assets/images/img-02.jpg'), ('img', 'src', 'assets/images/img-03.webp')]
+ CSS url(): ['assets/fonts/Pretendard-400.woff2', 'assets/fonts/Pretendard-700.woff2']  @import: 0
+ 외부 요청 후보(속성·CSS url): 0 []
+ blob: 등장 0 · image: 마커 0
+ 문자열 http(s):// 전체 0 · 그중 주석 안 0
+== 모던-카페-홈페이지_r3.html 731683 chars
+ tags link/script/iframe/base/meta/img/form: {'link': 0, 'script': 1, 'iframe': 0, 'base': 0, 'meta': 3, 'img': 4, 'form': 1, 'object': 0, 'embed': 0}
+ URL attrs: [('a', 'href', '#s-s-about'), ('a', 'href', '#s-s-contact'), ('a', 'href', '#s-s-services'), ('img', 'src', 'data:image/jpeg;base'), ('img', 'src', 'data:image/png;base6'), ('img', 'src', 'data:image/webp;base')]
+ CSS url(): ['data:font/woff2;base64,d']  @import: 0
+ 외부 요청 후보(속성·CSS url): 0 []
+ blob: 등장 0 · image: 마커 0
+ 문자열 http(s):// 전체 2 · 그중 주석 안 2
+    251 ight (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard), w
+    476 also available with a FAQ at: https://scripts.sil.org/OFL   ---------------
+5e745212e62e
+모던-카페-홈페이지_r3.zip
+ab19b57ee40d
+모던-카페-홈페이지_r3.html

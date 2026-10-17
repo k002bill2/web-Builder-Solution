@@ -276,7 +276,7 @@
 
 ### 8.4 접근성 (UX5-AC 승계 + 추가)
 
-- alert = `SaveStatus` 1곳, status = 편집 알림 1곳(UX5-AC-01). `saving-slow` 꼬리는 status 1회, `T_hang`은 alert 1회.
+- alert = 편집기 셸 안 `SaveStatus` 1곳 · `showModal` 대화상자는 대화상자 안 결과 alert 1곳(바깥 inert — LV-2 승계), status = 편집 알림 1곳(UX5-AC-01). (UX-POLISH-1 C-1, 2026-10-18) `saving-slow` 꼬리는 status 1회, `T_hang`은 alert 1회.
 - 버튼 진행 중 `aria-busy` + `aria-disabled`, `disabled` 금지(UX5-AC-07). 연타 = 진행 중 promise 공유.
 - 재진입 seed `conflicted`에서만 포커스 이동(UX5-AC-04). 폐기 대화상자 시간 초과 시 포커스 "취소" 유지.
 

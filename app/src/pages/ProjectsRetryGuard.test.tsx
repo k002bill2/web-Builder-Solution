@@ -73,7 +73,7 @@ describe("RS7-C · L5 M4b 페이지 retry reject = 실패 결과", () => {
 
 describe("RS7-C · L5 M3 페이지 busy guard = 한 번에 한 행", () => {
   it("p1 재시도 진행 중 p2 재시도 클릭 → retryRow 1회(p1)만 · p1 끝난 뒤 p2 재시도 가능", async () => {
-    let finish = (_: { ok: boolean; text: string }) => undefined as void;
+    let finish: (out: { ok: boolean; text: string }) => void = () => undefined;
     retryRow.mockImplementationOnce(() => new Promise((done) => (finish = done)));
     await pendingPage("p1", "p2");
     await userEvent.click(within(rowOf("가게 홈페이지")).getByRole("button", { name: "가게 홈페이지 시작 다시 시도" }));

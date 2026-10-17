@@ -1,4 +1,5 @@
 L4 전체(CP1~4, 상쇄 반영) /studio 정규화 129.15 · raw 130.47 · 복원 132.13 → 필요 상향: 정규화 +0.02 · raw +0 · 복원 +0.02 (UNMEASURED 하한)
+vite 청크 그룹(M2c·M2d) 미채택 시: M2b 129.34 · 130.70 · 132.32 → 필요 상향 +0.21 · +0.20 · +0.21 (위 결론 줄은 M2a~M2d 4건 전부 채택 전제)
 
 # RS6-L4 MEASURE REPORT — L4 전체 진입 증분 실측 + 상쇄 후보
 
@@ -13,7 +14,7 @@ L4 전체(CP1~4, 상쇄 반영) /studio 정규화 129.15 · raw 130.47 · 복원
 
 1. **상쇄를 반영한 L4 전체(M2d)는 정규화·복원 모두 상한을 0.02 넘는다. raw는 한도 안이다.**
    - 상쇄 전 L4 전체(CP4)는 129.72였다. 상쇄 4건으로 −0.57을 줄였다.
-2. **설계 질문 ①을 I6 8.1안(다른 탭 stale → `stale` 행)으로 정하면 상향 0으로 들어간다.**
+2. **설계 질문 ①을 I6 8.1안(다른 탭 stale → `stale` 행)으로 정하면 상향 0으로 들어간다(M2a~M2d 전부 채택 전제).**
    - 이때 129.12 · 130.43 · 132.10 · 133.46이고, build는 exit 0이다.
    - 대가: 기존 테스트 4건의 의미가 바뀐다(4절 ①).
 3. **설계 질문 ②: 문구를 1곳(`saveStatusText.ts`)에 두면 분리안보다 +0.17 비싸다.**
@@ -33,11 +34,11 @@ L4 전체(CP1~4, 상쇄 반영) /studio 정규화 129.15 · raw 130.47 · 복원
 | M2c(+저장소 청크 합침) | `measure-m2c` | 129.29 (−0.05) | 130.65 | 132.27 | 133.68 | 99.07 / 108.99 | 99.54 / 120.09 | 1 | `raw/measure-m2c-chunkmerge-build.txt` |
 | **M2d(+프로필 청크 합침) = 조합** | `measure-m2d` | **129.15** (−0.14) | **130.47** | **132.13** | 133.50 | 99.04 / 108.92 | 99.51 / 119.93 | 1 | `raw/measure-m2d-profilemerge-build.txt` |
 | M3① 변형(M2d + stale 행) | `measure-m3a-stale-row` | 129.12 | 130.43 | 132.10 | 133.46 | 99.05 / 108.93 | 99.52 / 119.94 | **0** | `raw/measure-m3a-stale-row-build.txt` |
-| M3② 변형(문구 1곳 + coreIo 간선) | (파일 3개 교체 — 4절) | 129.61 | 130.95 | 132.59 | 133.98 | 99.06 / 108.95 | 99.53 / 119.94 | 1 | `raw/measure-m3b-onetext-build.txt` |
+| M3② 변형(문구 1곳 + coreIo 간선) | 패치 없음(M2d 위 편집 3개 — 4절②) | 129.61 | 130.95 | 132.59 | 133.98 | 99.06 / 108.95 | 99.53 / 119.94 | 1 | `raw/measure-m3b-onetext-build.txt` |
 | M3②b 변형(문구 1곳 · 간선 없음) | `measure-m3b2-onetext` | 129.32 | 130.65 | 132.30 | 133.68 | 99.05 / 108.93 | 99.53 / 119.95 | 1 | `raw/measure-m3b2-onetext-noedge-build.txt` |
 | 마감 base 재빌드 | — | 129.09 | 130.42 | 132.07 | 133.45 | 99.16 / 109.04 | 99.56 / 120.10 | 0 | `raw/measure-final-build.txt` |
 
-- 모든 빌드에서 preload 가드는 17개 청크로 base와 같았다. 진입에 새 청크가 끌려온 경우는 M3②뿐이다. 그 경우는 공유 청크 `saveStatusText` 1.00KB로, preload 목록 수는 같았지만 진입 합계에 들어갔다.
+- 13개 빌드 로그 모두 preload 가드 17개 청크로 base와 같았다(`grep "preload 목록" raw/measure-*-build.txt`). 진입에 새 청크가 끌려온 경우는 M3②뿐이다. 그 경우는 공유 청크 `saveStatusText` 1.00KB로, preload 목록 수는 같았지만 진입 합계에 들어갔다.
 
 ## 2. M1 — CP별로 붙인 것 (실제 동작 · typecheck 통과 · 빈 stub 0)
 
@@ -63,7 +64,7 @@ L4 전체(CP1~4, 상쇄 반영) /studio 정규화 129.15 · raw 130.47 · 복원
 |---|---|---|---|---|
 | M2a | L4 새 코드: 환경 reason 버튼·confirm/discard 본문·폐기 대화상자를 lazy `SaveActions` 청크로 옮김(reason이 있을 때만 받는다) | **−0.29** | 기존 동작 변화 0. L4 새 버튼은 실패 결과 뒤 청크 로드 1회 후에 나타난다. reason 문구도 이미 같은 시점에 `core.link`로 받는다 | 새 청크 SaveActions 1.45KB(조작 뒤) |
 | M2b | L4: 충돌 선택 핸들러(`choose` · busy 상태)를 이미 lazy인 ConflictCallout 청크로 옮김 | **−0.09** | 변화 0. 핸들러는 Callout이 그려진 뒤에만 불린다 | ConflictCallout 0.71 → 0.85 |
-| M2c | vite `codeSplitting` 그룹: `data/projectRepository` + `features/projects/useProjectRepository`를 한 청크로 합침 | **−0.05** | 변화 0(청크 경계만 바뀜) | `/projects` 첫 화면 −0.09 |
+| M2c | vite `codeSplitting` 그룹: `data/projectRepository` + `features/projects/useProjectRepository`를 한 청크로 합침 | **−0.05** | 변화 0(청크 경계만 바뀜) | `/projects` 첫 화면 −0.09 · `/projects` = L5 레인 라우트 — 채택 시 L5와 조율 |
 | M2d | vite 그룹: `domain/profileContrast` + `domain/effectiveProfile` 합침 | **−0.14** | 변화 0 | 판정 밖 `/compare` 조작 뒤 `memoryProfileAdjust` +0.66(18.73 → 19.39) · `/profile` 자동 −0.17 |
 
 - M2c·M2d는 `vite.config.ts`를 바꾼다. 브리프 금지 목록(기준선·ADR·`check-bundle-size.mjs`·`bundleBudget*`)에는 들지 않는다. 다만 채택하면 `src/build/` 목록 모듈로 옮기는 정리가 필요하다(선례 `studioEngineChunk.ts`).
@@ -95,7 +96,7 @@ L4 전체(CP1~4, 상쇄 반영) /studio 정규화 129.15 · raw 130.47 · 복원
 | 안 | 실측 | 차이(M2d 대비) |
 |---|---|---|
 | 분리(지금 패치) = M2d | 129.15 · 130.47 · 132.13 | — |
-| 1곳 + `coreIo`가 `saveStatusText`를 import | 129.61 · 130.95 · 132.59 | **+0.46** — 새 공유 청크 `saveStatusText` 1.00KB가 진입에 들어간다(L2 +0.15와 같은 패턴) |
+| 1곳 + `coreIo`가 `saveStatusText`를 import(패치 없음 — M2d 위 편집 3개: `REASON_TEXT`·`reasonText`를 `saveStatusText.ts`로 옮김 · `coreIo.ts` import를 `../saveStatusText`로 · `reasonText.ts` 삭제 + `saveStatusText.source.test.ts` import 경로 교체) | 129.61 · 130.95 · 132.59 | **+0.46** — 새 공유 청크 `saveStatusText` 1.00KB가 진입에 들어간다(L2 +0.15와 같은 패턴) |
 | 1곳 + 간선 없음(`SaveStatus`가 직접 매핑 · `io.text` 미사용) | 129.32 · 130.65 · 132.30 | **+0.17** |
 
 - RS6-AC-G3 문면은 "3절 새 문구 = `saveStatusText.ts` 1곳"이다. 분리안에서 `reasonText.ts`에 있는 문구는 UX-5 2.3 환경 문구(readonly·cleared·unsupported·image-missing)다. **3절(LV) 문구(slow 꼬리·hang·discard timeout)는 모두 `saveStatusText.ts`에 있다.** 문면으로는 G3와 충돌하지 않는다고 판단한다(해석 확인은 Jarvis/QA).

@@ -1,0 +1,60 @@
+ app/src/features/studio/save/coreIo.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M1-saved-no-clear exit=1  Tests 2 failed | 16 passed (18)
+     × memory 모드: 메모리 커밋 실패 → 그 reason · 다음 not-persistent(성공) → 해제 2ms
+     × save failed{readonly} → reason = readonly · view()는 포트 mode를 부르지 않는다 · 다음 saved → 해제 7ms
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > memory 모드: 메모리 커밋 실패 → 그 reason · 다음 not-persistent(성공) → 해제
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > save failed{readonly} → reason = readonly · view()는 포트 mode를 부르지 않는다 · 다음 saved → 해제
+M1-saved-no-clear reverted(diff 0)
+ app/src/features/studio/save/coreIo.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M2-not-persistent-recorded exit=1  Tests 1 failed | 17 passed (18)
+     × memory 모드: 메모리 커밋 실패 → 그 reason · 다음 not-persistent(성공) → 해제 5ms
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > memory 모드: 메모리 커밋 실패 → 그 reason · 다음 not-persistent(성공) → 해제
+M2-not-persistent-recorded reverted(diff 0)
+ app/src/features/studio/save/coreIo.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M3-discard-no-clear exit=1  Tests 1 failed | 17 passed (18)
+     × discard(discarded) → 해제 · blocked(초안 보존)면 그대로 5ms
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > discard(discarded) → 해제 · blocked(초안 보존)면 그대로
+M3-discard-no-clear reverted(diff 0)
+ app/src/features/studio/save/coreIo.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M4-rebase-no-clear exit=1  Tests 2 failed | 16 passed (18)
+     × rebase(clean 맞춤) → 해제 5ms
+     × rebase(mine · 요청 뒤 새 편집 → dirty 유지) → 해제(마지막 결과는 이 쓰기 성공) 1ms
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > rebase(clean 맞춤) → 해제
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > rebase(mine · 요청 뒤 새 편집 → dirty 유지) → 해제(마지막 결과는 이 쓰기 성공)
+M4-rebase-no-clear reverted(diff 0)
+ app/src/features/projects/pendingRows.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M5a-row-ignores-reason exit=1  Tests 4 failed | 14 passed (18)
+     × 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지 213ms
+     × 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도) 39ms
+     × cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0 58ms
+     × readonly 탭 → 첫 표시~갱신 뒤까지 locks.request 0 · core.link(포트 mode → gate.enter 경로) 0 · save 0 · 잡힌 잠금 = A 탭 것뿐 36ms
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 잠금 회귀 가드 — 행 판정·표시 중 잠금 요청·포트 mode 0 (RS8-2 · Codex P2) > readonly 탭 → 첫 표시~갱신 뒤까지 locks.request 0 · core.link(포트 mode → gate.enter 경로) 0 ·
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지
+M5a-row-ignores-reason reverted(diff 0)
+ app/src/features/projects/pendingRows.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M5b-row-button-always exit=1  Tests 2 failed | 16 passed (18)
+     × 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지 231ms
+     × cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0 65ms
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0
+M5b-row-button-always reverted(diff 0)
+ app/src/features/projects/coreRowText.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+M5c-stuck-includes-readonly exit=1  Tests 2 failed | 16 passed (18)
+     × 버튼 숨김 reason = stale·cleared·unsupported(readonly는 그 탭을 닫은 뒤 다시 저장) 4ms
+     × 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도) 49ms
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도)
+ FAIL  src/features/projects/coreRowText.test.ts > 행 사유 문구 = 편집기 사유 문구(UX-5 2.3 원문 1개) > 버튼 숨김 reason = stale·cleared·unsupported(readonly는 그 탭을 닫은 뒤 다시 저장)
+M5c-stuck-includes-readonly reverted(diff 0)
+ app/src/features/studio/save/saveCore.ts | 1 +
+ 1 file changed, 1 insertion(+)
+M6-edit-clears exit=1  Tests 1 failed | 17 passed (18)
+     × 마지막 결과가 이긴다 — stale 뒤 cleared → cleared · 편집(결과 아님)은 지우지 않는다 3ms
+ FAIL  src/features/studio/save/saveCore.reason.test.ts > RS8-2 CP1 — view().reason 기록·해제 > 마지막 결과가 이긴다 — stale 뒤 cleared → cleared · 편집(결과 아님)은 지우지 않는다
+M6-edit-clears reverted(diff 0)

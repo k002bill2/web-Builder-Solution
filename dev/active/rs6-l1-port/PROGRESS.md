@@ -8,7 +8,7 @@
 - [x] 1. 하네스 37건 3분류 대응표(서브에이전트 읽기 전용) → REPORT
 - [x] CP1 코어 상태기 이식 + 포트 mode·head·verify (h1·h2) — RED 예측 → RED 로그 → GREEN 커밋 · 예산
 - [x] CP2 이미지 동결·엄격 참조 · 포트 commit · G1 · U14 · U15 — RED → GREEN · 예산
-- [ ] CP3 h4·h5 · U10 · mode = gate·cleared — RED → GREEN · 예산
+- [x] CP3 h4·h5 · U10 · mode = gate·cleared — RED → GREEN · 예산
 - [ ] CP4 G2 import 가드 · 동기 생성·포트 늦게 붙이기 · CoreKeeper 레지스트리 — RED → GREEN · 예산
 - [ ] 마감 게이트 fresh typecheck·lint·test·build
 - [ ] REPORT.md (AC 판정 · 37건 표 · 예산 표 · 깨진 테스트 대조 · ④b vs 9.2 · 사실/추정/미확인)
@@ -19,6 +19,7 @@
 | base 0c196b81 | 128.09 | 131.07 | 129.40 (복원 132.43) | BRIEF·L0 기준 |
 | CP1 | 128.53 (+0.44) | 131.52 (+0.45) | 129.84 (복원 132.87) | 기준선 128.50→128.53 · 131.48→131.52 · eagerKb 129.84·132.87 (개정 17 배분 RS6-L1) · raw ≤130 → eagerBudgetKb 변경 불필요 |
 | CP2 | 128.55 (+0.02) | 131.53 (+0.01) | 129.88 (복원 132.92) | 기준선 128.55·131.53 · eagerKb 129.88·132.92 · catalog 첫 100.07 · profile 첫 99.58 · projects 첫 99.17(전부 한도 안, base 대비 +0.02) |
+| CP3 | 128.55 (0) | 131.53 (0) | 129.87 (복원 132.90) | 진입 증분 0(io는 DocBook 청크) → 기준선 변경 없음 |
 
 ## 로그
 - 0b 정본 읽기 완료 · 37건 대응표 = `HARNESS-MAP.md`(서브에이전트 analyzer 1회, 읽기 전용 — ①30 ②6 ③1).
@@ -31,3 +32,6 @@
 - CP2 RED: `logs/cp2-red.log` — 8 failed / 14(예측 7±1). 8번째 = U15 가드가 jsdom에서 `new URL` 실패(환경) → 가드는 CP4 node 가드 파일로 이동, 실질 RED 7. U15 단언 테스트는 순서 결함(바인딩이 남아 있어 두 번째 save가 정당하게 saved)으로 순서만 고침 — CP1 코드에서도 첫 save가 saved라 RED 유지.
 - CP2 GREEN 게이트(fresh): tsc 0 · lint 0 · build 0 · test 319 files / 2880 passed — `logs/cp2-*.log`.
 - 설계 메모: CE-2 문서 사본 = 얕은 사본(I6 G2 "엔진 문서는 불변이면 얕은"). 하네스 h6-125는 imageIds 배열(중첩) 변경까지 봤다 → 제품 테스트는 최상위 필드 교체만 단언(차이, REPORT).
+- **CP3 RED 예측**: 새 테스트 14건(`save/saveCore.modes.test.ts`) 중 9 FAIL(discard 8 · replace 1 — io 스텁 "unimplemented"). 통과 예상 5: starter·lease(상태부 CP1) · 두 탭 readonly/unsupported·stale·U10(포트 mode·cleared는 CP1·CP2에 있음).
+- CP3 RED: `logs/cp3-red.log` — 9 failed / 14(예측 9 일치). GREEN = coreIo discard·replace + CX-3 커밋 바인딩 = 참조 이미지만(retainedIds).
+- CP3 GREEN 게이트(fresh): tsc 0 · lint 0 · build 0 · test 320 files / 2894 passed — `logs/cp3-*.log`.

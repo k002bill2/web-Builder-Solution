@@ -14,6 +14,7 @@ import type { RenderImages } from "../images/store/types";
 import { FIXTURE_CATALOG, boardOf } from "../../../test/compareFixtures";
 import { STUDIO_IMPORTS, createDeferredStudio } from "../../../data/deferredStudio";
 import type { ProjectRepository } from "../../../data/projectRepository";
+import { checkEnvelope } from "../../../data/persistence/envelope";
 import type { DocRecord, LocalEntry } from "../../../data/persistence/entryRead";
 import { createLinkNetwork } from "../../../data/persistence/fakeTabLink";
 import { createLockRegistry } from "../../../data/persistence/fakeLocks";
@@ -59,11 +60,17 @@ export function harnessDb() {
   const drops = new Map<number, (ops: readonly WriteOp[]) => readonly WriteOp[]>();
   const ops: (readonly WriteOp[])[] = [];
   /** 다음 docs 읽기를 막는다(확인·폐기 재읽기 await 사이 편집 재현) */
+  let readFail: unknown;
   let readGate: { readonly store: string; readonly gate: Deferred; readonly reached: Deferred } | undefined;
   const inner = createMemoryPersistence({ commit: (n) => holds.get(n)?.promise, fail: (n) => fails.get(n) });
   const persistence: StudioPersistence = {
     ...inner,
     get: async (store, id) => {
+      if (store === "docs" && readFail) {
+        const error = readFail;
+        readFail = undefined;
+        throw error;
+      }
       const held = store === readGate?.store ? readGate : undefined;
       if (held) {
         readGate = undefined;
@@ -101,6 +108,10 @@ export function harnessDb() {
       readGate = held;
       return { reached: held.reached.promise, release: held.gate.release };
     },
+    /** 다음 docs 읽기를 던지게 한다 */
+    failRead() {
+      readFail = new DOMException("injected", "AbortError");
+    },
     since: (start: number) => ops.slice(start),
     async doc(projectId = PROJECT) {
       return ((await persistence.get("docs", projectId)) as { data?: Omit<DocRecord, "doc"> & { readonly doc: PageDoc } } | undefined)?.data;
@@ -115,7 +126,8 @@ export const edited = (doc: PageDoc, title: string): PageDoc => {
 };
 
 export interface TabOptions {
-  readonly locks?: WriterLocks | undefined;
+  /** null = navigator.locks 없음(unsupported) */
+  readonly locks?: WriterLocks | null;
   readonly link?: TabLink;
   readonly entry?: LocalEntry;
   /** 메모리 모드(로컬 영속 없음) */
@@ -123,7 +135,7 @@ export interface TabOptions {
 }
 
 export function studioTab(db: HarnessDb, { locks = createLockRegistry().tab(), link = createLinkNetwork().tab(), entry = {}, memory }: TabOptions = {}) {
-  return createDeferredStudio(async () => FIXTURE_CATALOG, imports, memory ? undefined : { entry, sync: (e) => openLocalSync(e, async () => db.persistence, locks, link) });
+  return createDeferredStudio(async () => FIXTURE_CATALOG, imports, memory ? undefined : { entry, sync: (e) => openLocalSync(e, async () => db.persistence, locks ?? undefined, link) });
 }
 
 /** 확정 → 3안 → B안 편집 시작(앱 흐름) → 설정 쓰기가 가라앉을 때까지 */
@@ -165,3 +177,17 @@ export const bindOf = (doc: PageDoc, id: LocalImageId, img: IngestedImage = imag
   const { section } = imageSlotOf(doc);
   return addImage({}, id, img, slotTarget(section.type, section.variant));
 };
+
+/** 영속 레코드 → 진입 결과(진입 읽기와 같은 봉투 확인) — 새로고침·다른 탭 */
+export async function entryFrom(persistence: StudioPersistence, projectId = PROJECT): Promise<LocalEntry> {
+  const state = checkEnvelope(await persistence.get("studio", "state"), "state", "state");
+  const doc = checkEnvelope(await persistence.get("docs", projectId), "doc", projectId);
+  return { ...(state.status === "ok" && { state: state.data as LocalEntry["state"] }), ...(doc.status === "ok" && { doc: doc.data as LocalEntry["doc"] }) };
+}
+
+/** 같은 브라우저의 다른 탭 — 같은 영속 · 진입 = 지금 레코드 · 코어 seed = getDoc */
+export async function otherTab(db: HarnessDb, options: TabOptions) {
+  const repo = (await studioTab(db, { ...options, entry: await entryFrom(db.persistence) }).projects()) as Repo;
+  const seed = (await repo.getDoc(PROJECT))!;
+  return { repo, seed, core: repo.core!(PROJECT, seed) };
+}

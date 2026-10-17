@@ -5,6 +5,7 @@
  */
 import { hashDoc } from "../../../engine/ops/hash";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
+import { retainedIds } from "../images/store/imageStore";
 import type { CoreIo, Receipt, SaveResult } from "./saveCore";
 
 const reasonOf = (error: unknown) => (error as { reason?: string } | undefined)?.reason ?? "not-committed";
@@ -30,7 +31,9 @@ export const coreIo: CoreIo = {
     const receipt: Receipt = { hash: next.hash, revision: next.revision, mark: submitted, proof: "committed" };
     s.savedMark = Math.max(s.savedMark, submitted);
     s.confirmed = receipt;
-    s.committed = bound;
+    // CX-3: discard 복귀용 = 이 커밋 문서가 참조한 바인딩만
+    const refs = retainedIds(next, undefined);
+    s.committed = Object.fromEntries(Object.entries(bound).filter(([id]) => refs.has(id)));
     link.align(next);
     return { status: "saved", receipt, newer: newer() };
   },
@@ -54,10 +57,41 @@ export const coreIo: CoreIo = {
     if (s.mark > result.receipt.mark) return { status: "newer", receipt: result.receipt };
     return { status: "confirmed", wrote: true, receipt: result.receipt };
   },
-  async discard() {
-    return { status: "rejected", reason: "unimplemented" };
+  /** H5·CE-1: 진행 중이면 거절 · 복귀 근거(IDB 재읽기 = 마지막 증명)가 있을 때만 폐기, 없으면 blocked(초안 보존) · 진입~끝 배타(finally 해제) */
+  async discard(s, link) {
+    if (s.discarding) return { status: "rejected", reason: "discarding" };
+    if (s.inflight > 0) return { status: "rejected", reason: "inflight" };
+    const { port, projectId } = link;
+    if (!port) return { status: "blocked", reason: "not-persistent" };
+    const proof = s.confirmed;
+    if (!proof) return { status: "blocked", reason: "no-saved-state" };
+    s.discarding = true;
+    try {
+      const entered = s.mark;
+      const head = await port.head(projectId);
+      if (!head || !(await port.verify(projectId, proof))) return { status: "blocked", reason: "stale" };
+      // 진입 뒤(await 사이) 편집이 있으면 그 초안을 버리지 않는다(바인딩도 보존)
+      if (s.mark !== entered) return { status: "blocked", reason: "newer" };
+      s.doc = head;
+      // CX-3: 바인딩 = 복귀 문서 커밋 때 실린 이미지만 · delete op 0
+      s.attached = s.committed;
+      s.savedMark = s.mark;
+      s.epoch += 1;
+      return { status: "discarded", restored: { ...proof, proof: "fresh" } };
+    } finally {
+      s.discarding = false;
+    }
   },
-  replace() {
-    return { status: "rejected", reason: "unimplemented" };
+  /** H5·I8: 문서 교체는 명시 intent + 예상 epoch · 진행 중/미저장 편집이면 거절(덮어쓰기 0) */
+  replace(s, next, request, blobs) {
+    if (request.intent !== "replace") return { status: "rejected", reason: "intent-required" };
+    if (s.inflight > 0) return { status: "rejected", reason: "inflight" };
+    if (s.mark > s.savedMark) return { status: "rejected", reason: "dirty" };
+    if (request.expectedEpoch !== s.epoch) return { status: "rejected", reason: "epoch" };
+    s.doc = { ...next };
+    if (blobs) s.attached = { ...s.attached, ...blobs };
+    s.mark += 1;
+    s.epoch += 1;
+    return { status: "replaced", epoch: s.epoch };
   },
 };

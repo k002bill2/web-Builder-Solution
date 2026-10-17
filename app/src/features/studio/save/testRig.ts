@@ -3,8 +3,14 @@
  * 싱크 = 제품 `openLocalSync`(포트 구현), 저장소 = 앱 조립(createDeferredStudio). 실제 IndexedDB 아님. 테스트 전용 — 앱 코드는 import하지 않는다.
  */
 import { isTerminal } from "../../../domain/generation";
-import type { PageDoc } from "../../../engine/contracts/pageDoc";
+import type { ImageSlotValue, LocalImageId, PageDoc } from "../../../engine/contracts/pageDoc";
 import { hashDoc } from "../../../engine/ops/hash";
+import { setSlot } from "../../../engine/ops/slotOps";
+import { makePng } from "../images/ingest/fixtures/imageBytes";
+import { widthLadder } from "../images/ingest/ladder";
+import type { IngestedImage } from "../images/ingest/types";
+import { addImage, slotTarget } from "../images/store/imageStore";
+import type { RenderImages } from "../images/store/types";
 import { FIXTURE_CATALOG, boardOf } from "../../../test/compareFixtures";
 import { STUDIO_IMPORTS, createDeferredStudio } from "../../../data/deferredStudio";
 import type { ProjectRepository } from "../../../data/projectRepository";
@@ -53,12 +59,12 @@ export function harnessDb() {
   const drops = new Map<number, (ops: readonly WriteOp[]) => readonly WriteOp[]>();
   const ops: (readonly WriteOp[])[] = [];
   /** 다음 docs 읽기를 막는다(확인·폐기 재읽기 await 사이 편집 재현) */
-  let readGate: { readonly gate: Deferred; readonly reached: Deferred } | undefined;
+  let readGate: { readonly store: string; readonly gate: Deferred; readonly reached: Deferred } | undefined;
   const inner = createMemoryPersistence({ commit: (n) => holds.get(n)?.promise, fail: (n) => fails.get(n) });
   const persistence: StudioPersistence = {
     ...inner,
     get: async (store, id) => {
-      const held = store === "docs" ? readGate : undefined;
+      const held = store === readGate?.store ? readGate : undefined;
       if (held) {
         readGate = undefined;
         held.reached.release();
@@ -89,9 +95,9 @@ export function harnessDb() {
     dropNext(keep: (ops: readonly WriteOp[]) => readonly WriteOp[] = () => []) {
       drops.set(next(), keep);
     },
-    /** 다음 docs 읽기를 막는다 — reached = 그 읽기에 닿음 · release = 진행 */
-    holdRead() {
-      const held = { gate: deferred(), reached: deferred() };
+    /** 다음 store 읽기(get)를 막는다 — reached = 그 읽기에 닿음 · release = 진행 */
+    holdRead(store: "docs" | "meta" = "docs") {
+      const held = { store, gate: deferred(), reached: deferred() };
       readGate = held;
       return { reached: held.reached.promise, release: held.gate.release };
     },
@@ -137,3 +143,25 @@ export async function startedRig(options: TabOptions = {}) {
 
 /** 코어 io 위임(①) 호출 모양 — 화면(L3·L4)이 부를 방식 그대로 */
 export const confirmOf = (core: SaveCore) => core.link((io, s, link) => io.confirm(s, link, core.save));
+
+export const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}` as LocalImageId;
+const png = (width: number) => new Blob([new Uint8Array(makePng({ width, height: 10 }))], { type: "image/png" });
+export const image = (width = 800): IngestedImage => {
+  const variants = Object.fromEntries(widthLadder(width).map((w) => [w, png(w)]));
+  return { variants, width, height: 400, format: "png", bytes: Object.values(variants).reduce((sum, b) => sum + b.size, 0) };
+};
+const imageSlotOf = (doc: PageDoc) => {
+  for (const section of doc.sections) for (const [key, v] of Object.entries(section.slots)) if (typeof v === "object" && v.kind === "image") return { section, key };
+  throw new Error("이미지 슬롯 없음");
+};
+/** 첫 이미지 슬롯에 로컬 이미지 id를 건 문서 */
+export const withImage = (doc: PageDoc, id: LocalImageId): PageDoc => {
+  const { section, key } = imageSlotOf(doc);
+  const next = setSlot(doc, section.instanceId, key, { ...(section.slots[key] as ImageSlotValue), enabled: true, source: id });
+  return { ...next, hash: hashDoc(next) };
+};
+/** 편집기 ingest 결과 바인딩(Blob + 메타) */
+export const bindOf = (doc: PageDoc, id: LocalImageId, img: IngestedImage = image()): RenderImages => {
+  const { section } = imageSlotOf(doc);
+  return addImage({}, id, img, slotTarget(section.type, section.variant));
+};

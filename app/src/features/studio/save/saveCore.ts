@@ -89,7 +89,8 @@ export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, 
   };
   return {
     edit(next: PageDoc, blobs?: RenderImages) {
-      s.doc = next;
+      // CE-2: 초안 = 사본(호출자 객체를 나중에 바꿔도 불변) — 엔진 문서는 불변 계약이라 얕은 사본(I6 G2)
+      s.doc = { ...next };
       s.mark += 1;
       if (blobs) s.attached = { ...s.attached, ...blobs };
       return s.mark;

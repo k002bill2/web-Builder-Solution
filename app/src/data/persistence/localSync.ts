@@ -87,6 +87,8 @@ const GENERATION = "generation";
 const NOTICE = "firstSaveNotice";
 const blocked = (mode: WriterMode) => toInfra(undefined, "저장", ...(mode === "readonly" ? [READ_ONLY_TAB] : mode === "stale" ? [STALE_TAB] : []));
 const ignore = () => undefined;
+/** 포트 실패 — 코어 reason(INTEGRATE-6 8.3)을 코드로 넘긴다(문자열 매칭 0) */
+const fault = (reason: string, cause?: unknown) => Object.assign(new Error(reason, { cause }), { reason });
 
 const headOf = ({ projectId, revision, hash, profileVersion, candidateId, updatedAt }: DocHead): DocHead => ({ projectId, revision, hash, profileVersion, candidateId, updatedAt });
 
@@ -224,11 +226,22 @@ export async function openLocalSync(
         mode: async () => (cleared ? "cleared" : gate.mode === "writer" ? gate.mode : await gate.enter()),
         head: async (projectId) => (await recordOf(projectId))?.doc as never,
         commit: async (projectId, doc, bound) => {
-          await write(projectId, { docOf: () => doc, snapshotsOf: book.snapshotsOf, snapshotSeqOf: book.snapshotSeqOf }, bound);
+          // L4 검증(DocBook save와 같은 함수) — 모양 밖 문서를 쓰면 다음 열기가 unreadable
+          if (!checkSaveDoc(projectId, doc).ok) throw fault("schema");
+          // 엄격 이미지(I6 — 포트 commit 전용): 참조 이미지는 바인딩(메타 있음) 또는 IDB 레코드(재읽기 키)여야 한다. 진행 중 put은 근거 아님 · 빠지면 제출 0
+          const record = { doc, snapshots: book.snapshotsOf(projectId) };
+          const unbound = [...recordRefs(record)].filter((id) => !(bound[id] && imageMeta(bound[id])));
+          const have = unbound.length ? new Set(await persistence.keys("images")) : undefined;
+          if (unbound.some((id) => !have!.has(imageRecordId(projectId, id)))) throw fault("image-missing");
+          await write(projectId, { docOf: () => doc, snapshotsOf: () => record.snapshots, snapshotSeqOf: book.snapshotSeqOf }, bound).catch((error: unknown) => {
+            throw fault(cleared ? "cleared" : "infra", error);
+          });
         },
         verify: async (projectId, receipt) => {
           const record = await recordOf(projectId);
-          return record?.doc.hash === receipt.hash && record.doc.revision === receipt.revision;
+          if (record?.doc.hash !== receipt.hash || record.doc.revision !== receipt.revision) return false;
+          const have = new Set(await persistence.keys("images"));
+          return [...recordRefs(record)].every((id) => have.has(imageRecordId(projectId, id)));
         },
       };
     },

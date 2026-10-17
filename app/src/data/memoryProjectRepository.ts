@@ -64,7 +64,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
   /** 문서 쓰기가 끝난 뒤 그 프로젝트 레코드를 IDB 커밋까지 기다린다(Codex 제약 3 — "저장됨"은 이 뒤) */
   /** 맵은 부를 때 잡아 둔다 — 저장 중 편집기를 떠나 등록이 풀려도 그 저장은 이미지까지 쓴다(BRIEF-R2 ②) */
   const kept = <T>(projectId: string, work: Promise<T>, held = maps.get(projectId)) =>
-    local ? work.then(async (result) => (await (await local.sync()).flush(projectId, book!, maps.get(projectId) ?? held), result)) : work;
+    local ? work.then(async (result) => (await cores.get(projectId)?.idle(), await (await local.sync()).flush(projectId, book!, maps.get(projectId) ?? held), result)) : work;
 
   /** work는 동기 — `commit()`을 부른 뒤에만 state를 바꾼다(던지면 변화 0) */
   async function call<T>(method: ProjectMethod, work: (commit: () => void) => T): Promise<T> {
@@ -132,7 +132,8 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     deleteSnapshot: write("deleteSnapshot"),
     restoreSnapshot: write("restoreSnapshot"),
     resolveConflict: write("resolveConflict"),
-    confirmDoc: async (projectId) => (await bookOf()).confirm(projectId, maps.get(projectId)),
+    // G1(I6 5절 r1): DocBook 경로 레코드 재쓰기는 그 코어 chain 뒤 — 문서 필드 = 코어가 마지막 커밋한 문서(saved 뒤 DocBook 맞춤)
+    confirmDoc: async (projectId) => (await cores.get(projectId)?.idle(), (await bookOf()).confirm(projectId, maps.get(projectId))),
     // 8.3.2 — 판정·쓰기·잡 실행 본문은 조작 뒤 청크(memoryDocBook). 여기는 call 주입(delay·fail)만 넘긴다
     requestExport: (projectId, format, docRevision) =>
       kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),

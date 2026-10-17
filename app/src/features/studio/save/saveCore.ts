@@ -2,6 +2,10 @@
  * 저장 코어 상태 부분(INTEGRATE-6 9.2 진입 몫 · 하네스 `save-core-harness/core/saveCore.ts` 이식) — 초안·mark·바인딩·epoch·lease·직렬 chain.
  * 동기 생성(2.2-2 ① · D6-10 — 열 때 IDB 읽기 0). io(save 본문·confirm·discard·replace)와 포트는 조작 뒤 청크 — `connect()`가 받는다(값 import 0, 타입만).
  * 영속 레코드 접근 0: 코어는 `StudioPersistence`를 받지 않고 포트(CorePort, LocalSync 구현)만 쓴다(2.2-1).
+ *
+ * MC I7 변경(RS6-L2 · MQ-6-3 A · INTEGRATE-6 D6-4) — 옛 문장 "읽기가 끝나지 않으면 가드도 풀리지 않는다(liveness)"를 다음으로 바꾼다:
+ * "discard 읽기가 `DISCARD_GIVE_UP_MS` 안에 끝나지 않으면 포기 토큰을 무효화하고 가드를 풀며 `blocked{timeout}`을 돌려준다.
+ *  늦게 온 읽기 결과는 버린다(doc·바인딩·savedMark·epoch 변경 0, 초안·바인딩 보존). 진입 = 호출 시점(connect 전 동기 mark)." — 취소 0 · 자동 재시도 0.
  */
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import type { RenderImages } from "../images/store/types";
@@ -33,6 +37,8 @@ export interface CoreState {
   attached: RenderImages;
   committed: RenderImages;
   discarding: boolean;
+  /** LV-2 포기 토큰 — discard 차례 번호. 포기·끝나면 올려서 늦은 읽기 결과를 버린다 */
+  discards: number;
   chain: Promise<unknown>;
 }
 
@@ -52,7 +58,8 @@ export interface CorePort {
 export interface CoreIo {
   save(s: CoreState, link: CoreLink): Promise<SaveResult>;
   confirm(s: CoreState, link: CoreLink, save: () => Promise<SaveResult>): Promise<ConfirmResult>;
-  discard(s: CoreState, link: CoreLink): Promise<DiscardResult>;
+  /** `entered` = 호출 시점 mark(connect 전 동기 — `core.discard()`가 잡는다) */
+  discard(s: CoreState, link: CoreLink, entered: number): Promise<DiscardResult>;
   replace(s: CoreState, next: PageDoc, request: ReplaceRequest, blobs?: RenderImages): ReplaceResult;
 }
 
@@ -70,7 +77,7 @@ export interface CoreLink {
 }
 
 export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, starter?: () => Promise<void>) {
-  const s: CoreState = { doc: seed, mark: 0, savedMark: 0, inflight: 0, epoch: 0, confirmed: { hash: seed.hash, revision: seed.revision, mark: 0, proof: "hydrated" }, attached: {}, committed: {}, discarding: false, chain: Promise.resolve() };
+  const s: CoreState = { doc: seed, mark: 0, savedMark: 0, inflight: 0, epoch: 0, confirmed: { hash: seed.hash, revision: seed.revision, mark: 0, proof: "hydrated" }, attached: {}, committed: {}, discarding: false, discards: 0, chain: Promise.resolve() };
   let leases = 0;
   let live: { readonly mountId: string; readonly token: number } | undefined;
   const save = (): Promise<SaveResult> => {
@@ -96,7 +103,12 @@ export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, 
       return s.mark;
     },
     save,
-    /** 조작 뒤 io 위임 1개(confirm·discard·replace) — 호출자가 io 함수를 고른다 */
+    /** 진입 = 호출 시점 mark(동기) — connect 대기 중 들어온 편집·교체도 newer로 막는다(L1 QA note 1 · 하네스 "첫 await 전 진입") */
+    discard() {
+      const entered = s.mark;
+      return connect().then((link) => link.io.discard(s, link, entered));
+    },
+    /** 조작 뒤 io 위임 1개(confirm·replace) — 호출자가 io 함수를 고른다 */
     link: <T>(run: (io: CoreIo, s: CoreState, link: CoreLink) => T) => connect().then((link) => run(link.io, s, link)),
     /** 지금까지 낸 save가 끝난 뒤(G1 — DocBook 경로 레코드 재쓰기는 이 뒤) */
     idle: () => s.chain,

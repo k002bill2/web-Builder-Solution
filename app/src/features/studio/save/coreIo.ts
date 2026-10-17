@@ -6,7 +6,8 @@
 import { hashDoc } from "../../../engine/ops/hash";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { retainedIds } from "../images/store/imageStore";
-import type { CoreIo, Receipt, SaveResult } from "./saveCore";
+import { DISCARD_GIVE_UP_MS } from "./liveness";
+import type { CoreIo, DiscardResult, Receipt, SaveResult } from "./saveCore";
 
 const reasonOf = (error: unknown) => (error as { reason?: string } | undefined)?.reason ?? "not-committed";
 
@@ -65,8 +66,9 @@ export const coreIo: CoreIo = {
     if (s.mark > result.receipt.mark) return { status: "newer", receipt: result.receipt };
     return { status: "confirmed", wrote: true, receipt: result.receipt };
   },
-  /** H5·CE-1: 진행 중이면 거절 · 복귀 근거(IDB 재읽기 = 마지막 증명)가 있을 때만 폐기, 없으면 blocked(초안 보존) · 진입~끝 배타(finally 해제) */
-  async discard(s, link) {
+  /** H5·CE-1: 진행 중이면 거절 · 복귀 근거(IDB 재읽기 = 마지막 증명)가 있을 때만 폐기, 없으면 blocked(초안 보존) · 진입~끝 배타
+   * LV-2(MC I7 변경): 읽기가 `DISCARD_GIVE_UP_MS` 안에 안 끝나면 포기 — blocked{timeout} · 배타 해제 · 토큰을 올려 늦은 결과를 버린다 */
+  async discard(s, link, entered) {
     if (s.discarding) return { status: "rejected", reason: "discarding" };
     if (s.inflight > 0) return { status: "rejected", reason: "inflight" };
     const { port, projectId } = link;
@@ -74,11 +76,15 @@ export const coreIo: CoreIo = {
     const proof = s.confirmed;
     if (!proof) return { status: "blocked", reason: "no-saved-state" };
     s.discarding = true;
-    try {
-      const entered = s.mark;
+    const token = (s.discards += 1);
+    const live = () => s.discards === token;
+    const read = (async (): Promise<DiscardResult | undefined> => {
       const head = await port.head(projectId);
+      if (!live()) return undefined;
       if (!head || !(await port.verify(projectId, proof))) return { status: "blocked", reason: "stale" };
-      // 진입 뒤(await 사이) 편집이 있으면 그 초안을 버리지 않는다(바인딩도 보존)
+      // 포기 뒤 늦게 온 결과 = 버림(doc·바인딩·savedMark·epoch 변경 0)
+      if (!live()) return undefined;
+      // 진입 뒤(호출~await 사이) 편집·교체가 있으면 그 초안을 버리지 않는다(바인딩도 보존)
       if (s.mark !== entered) return { status: "blocked", reason: "newer" };
       s.doc = head;
       // CX-3: 바인딩 = 복귀 문서 커밋 때 실린 이미지만 · delete op 0
@@ -86,8 +92,20 @@ export const coreIo: CoreIo = {
       s.savedMark = s.mark;
       s.epoch += 1;
       return { status: "discarded", restored: { ...proof, proof: "fresh" } };
+    })();
+    // 포기한 읽기의 늦은 reject는 삼킨다(결과는 이미 timeout)
+    read.catch(() => undefined);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const giveUp = new Promise<DiscardResult>((done) => (timer = setTimeout(() => done({ status: "blocked", reason: "timeout" }), DISCARD_GIVE_UP_MS)));
+    try {
+      return (await Promise.race([read, giveUp]))!;
     } finally {
-      s.discarding = false;
+      clearTimeout(timer);
+      // 이 차례가 아직 현재일 때만 배타를 푼다 — 포기 뒤 다음 discard의 배타를 늦은 끝이 풀지 않게
+      if (live()) {
+        s.discarding = false;
+        s.discards += 1;
+      }
     }
   },
   /** H5·I8: 문서 교체는 명시 intent + 예상 epoch · 진행 중/미저장 편집이면 거절(덮어쓰기 0) */

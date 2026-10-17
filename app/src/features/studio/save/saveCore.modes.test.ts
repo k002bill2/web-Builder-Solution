@@ -9,7 +9,7 @@ import { imageRecordId } from "../../../data/persistence/imageRecord";
 import { createSaveCore, type CoreLink, type SaveCore } from "./saveCore";
 import { PROJECT, bindOf, confirmOf, edited, image, otherTab, startedRig, ticks, uuid, withImage } from "./testRig";
 
-const discardOf = (core: SaveCore) => core.link((io, s, link) => io.discard(s, link));
+const discardOf = (core: SaveCore) => core.discard();
 const replaceOf = (core: SaveCore, ...args: Parameters<CoreLink["io"]["replace"]> extends [unknown, ...infer R] ? R : never) => core.link((io, s) => io.replace(s, ...args));
 
 describe("RS6-L1 CP3 · h5 discard", () => {

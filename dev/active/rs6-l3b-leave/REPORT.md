@@ -189,3 +189,61 @@
 
 - 사용 0. BRIEF 권장(픽스처 이전 ∥ 폴백 제거)을 따르지 않은 사유: 픽스처 의미(포트 reason 매핑 · rebase 자리 · commit 타이밍)를 메인이 먼저 정해야 했다. 정한 뒤 남은 편집은 소량(파일 11개, 기계적)이었다. 같은 파일(`useDocSave.ts`·테스트)을 두 흐름이 건드리게 되어 병렬 이득보다 통합 비용이 컸다.
 - Codex 검증: BRIEF "Codex 0"에 따라 실행하지 않았다.
+
+## FIX1 — 이미지 고른 직후 이탈: 맵 삭제 순서 의존 제거 (BRIEF-FIX1 · QA note 2 · 1절 #9)
+
+**결론 [L1]**: 링크·POP 둘 다 편집 틀 cleanup(`maps.delete`)과 해제·이탈 save의 순서와 무관하게 이미지까지 커밋한다. 같은 뿌리인 POP 이미지 소실(main과 같은 기존 결함)도 함께 닫았다. 커밋 `402e4692`.
+
+### 선택안 = (a) cleanup 시점 동기 바인딩
+- 원인: `coreIo.save`는 `connect` await 뒤에 `link.images()`(= `maps.get`)를 읽는다. 같은 태스크에서 언마운트하면 편집 틀 effect cleanup이 그보다 먼저 맵을 지운다. 그래서 `image-missing`이 난다(RED 로그의 `reason: "image-missing"`).
+- 수정(제품 2파일, +6줄):
+  - `saveCore.ts` `keep(blobs)`: 초안(`s.doc` 직렬화)이 참조하는 id만 `attached`에 합친다. mark·dirty는 바꾸지 않는다.
+  - `memoryProjectRepository.ts` `images` cleanup: `maps.delete` 앞에서 그 등록의 맵으로 `cores.get(id)?.keep(map)`를 동기 호출한다.
+- 순서와 무관한 이유: cleanup은 commit 안에서 동기로 돈다. save가 맵을 읽는 시점은 늘 await 뒤다. 그래서 어느 시점에 읽든 Blob은 맵이나 바인딩 둘 중 한 곳에 있다.
+- (b) 기각:
+  - cleanup 때 잡은 `idle()`에는 microtask로 뒤따르는 해제 save가 들어 있지 않다. 순서 의존이 남는다.
+  - `images` dep가 바뀔 때마다 cleanup 뒤 곧바로 `maps.set`이 온다. 미룬 delete가 새 맵을 지울 수 있다.
+- (c) 기각: ingest 경로와 `edit` 호출부까지 바뀐다(범위 밖). L3a가 막혔던 이유("ingest 직후 맵 state 미갱신")도 그대로다.
+- GC 규칙: 묶는 집합은 초안 참조 ⊆ 다음 save가 `link.images()`로 어차피 합칠 맵이다. 그래서 탭 수명 동안 쥐는 Blob 종류는 늘지 않는다. 별도 해제 장치는 두지 않았다. 필터는 테스트로 고정했다(변이 RED).
+- `imagePersist.test.ts:241`("편집기 이탈 = 이미지 맵 해제")은 수정 없이 GREEN이다. 그 테스트에는 코어가 없다.
+
+### 테스트 (`useDocSaveLeave.test.tsx` FIX1 describe · 실제 저장소 testRig)
+| 테스트 | RED(수정 전) | GREEN |
+|---|---|---|
+| 링크: ingest 직후 `leave()` + 같은 태스크 cleanup·언마운트 → images 1 · 문서 hash 일치 · dirty 0 | FAIL — save `failed{image-missing}` | PASS |
+| POP: ingest 직후 cleanup·언마운트 → 해제 save가 이미지까지 · 재진입 복원 · 글자 편집 `saved`(failed 고착 0) | FAIL — `failed` | PASS |
+| 순서 반대(언마운트 먼저 · cleanup 나중) | FAIL — IDB hash 불일치 | PASS |
+| cleanup = 초안 참조 Blob만 바인딩 · mark·dirty 불변 | (GC 고정 — 구현과 함께) | PASS |
+- 변이: ① 필터 제거 → 1 FAIL(`logs/fix1-mutation-filter.txt`) ② `keep` 호출 제거 → 4 FAIL(`logs/fix1-mutation-nokeep.txt`). 둘 다 원복했고 GREEN이다.
+- 로그: `logs/fix1-red.txt`(3 failed) · `logs/fix1-green.txt`.
+- 기존 단언 약화·skip은 0이다. 기존 `imagePersist`·`imageRecord`·이미지 undo·SnapshotImages는 전체 스위트 안에서 GREEN이다.
+
+### 예산 (개정 17 결정 2 — 실측 갱신)
+| | 정규화 `/studio` | 정규화 복원 | raw `/studio` | raw 복원 |
+|---|---|---|---|---|
+| FIX1 전 | 129.03 | 132.01 | 130.36 | 133.39 |
+| FIX1 | **129.09** (+0.06) | **132.07** (+0.06) | 130.42 | 133.45 |
+| 상한·한도 | 129.13 | 132.11 | 130.5 | 134 |
+- 상한 안이라 감량은 하지 않았다. 남은 여유는 정규화 0.04 · raw 0.08이다(L4·L5 몫).
+- `m2cBaseline.json`과 그 고정 테스트(`bundleBudget.test.mjs`)를 같은 커밋에서 갱신했다.
+
+### 검증 (fresh, 이 세션)
+| 명령 | 결과 |
+|---|---|
+| `npm run typecheck` | exit 0 |
+| `npm run lint` | exit 0 |
+| `npm test -- --run` | 331 files / **2957** passed(+4) · `logs/fix1-full-test.txt` |
+| `npm run build` | 1차: 기준선 +0.03 초과로 exit 1(129.09 · 132.07). 기준선 실측 갱신 뒤 exit 0 · `logs/fix1-build.txt` |
+| Codex review(`branch --base fe576728`) | 지적 0. Codex 샌드박스는 vite 설정 해석 때문에 테스트를 직접 돌리지 못했다 · `logs/fix1-codex-r1.txt` |
+
+### 실화면 (Ego Lite space 17 · `vite preview` 127.0.0.1:4379 · build = `402e4692`)
+| 단계 | 결과 | 판정 |
+|---|---|---|
+| (a) 이미지 교체 직후 링크 | 페이지 안 MutationObserver가 "640 × 400"이 표시되는 순간(32ms) 경고 true를 보고 같은 콜백에서 "프로젝트로 돌아가기"를 클릭했다 → `/projects` · IDB images 1 · rev 2 · 문서 source = 그 로컬 id(`qa-shots/fix1-a-image-link-leave-projects.png`) → 재진입 "640 × 400 · WebP 1KB" 복원(`fix1-a-reentry-restored.png`) | PASS |
+| (b) 이미지 교체 직후 뒤로(POP) | "800 × 500"이 표시되는 순간(43ms) 같은 콜백에서 `history.back()` → `/projects` · IDB images 1(새 id, 옛 id는 참조 밖이라 삭제) · rev 3 · 문서 참조 일치 → 재진입 "800 × 500" 복원 → 부제 편집 → IDB rev 4에 반영(failed 고착 0)(`fix1-b-pop-reentry-edit.png`) | PASS |
+| 정리 | `Storage.clearDataForOrigin`(그 origin만) → `indexedDB.databases()` = `[]` · localStorage 0 · `finish({keep:[]})` · `listTaskSpaces()` = `[]` · preview 종료 · 4379 리슨 0 · 5480 무접촉 | 완료 |
+
+### 남은 것
+- 없음(이 BRIEF 범위). QA-REPORT 7절의 L4 조건 1~4와 L5(note 1)는 그대로 인계한다.
+- 사실/추정: 실화면은 각 경로 1회 관찰이다. 순서 무관성의 근거는 훅 수준 테스트(같은 태스크 · 두 순서)다 [L1]. 실화면은 그 보강이다.
+- 서브에이전트 0(BRIEF "불필요").

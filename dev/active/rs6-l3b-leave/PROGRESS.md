@@ -28,9 +28,14 @@
 
 ## FIX1 — 이미지 고른 직후 이탈 순서 의존 (BRIEF-FIX1)
 - [x] F0. BRIEF-FIX1·PROGRESS 커밋
-- [ ] F1. 원인 확인 · 선택안(a/b/c) 결정 · 근거 기록
-- [ ] F2. RED (링크 leave+같은 태스크 언마운트 · POP 언마운트 · 재진입 뒤 글자 편집 failed 고착 0) → `logs/fix1-*`
-- [ ] F3. 구현 → GREEN · 기존 imagePersist·imageRecord·이미지 undo·SnapshotImages 회귀 GREEN
-- [ ] F4. 게이트 fresh: typecheck · lint · test · build · 예산(개정 17)
-- [ ] F5. Ego Lite (4379 · 링크 이탈 · 뒤로 · 정리)
-- [ ] F6. REPORT "FIX1" 절 · Codex 검증 · 커밋
+- [x] F1. 원인 확인 · 선택안(a/b/c) 결정 · 근거 기록
+- [x] F2. RED (링크 leave+같은 태스크 언마운트 · POP 언마운트 · 재진입 뒤 글자 편집 failed 고착 0) → `logs/fix1-*`
+- [x] F3. 구현 → GREEN · 기존 imagePersist·imageRecord·이미지 undo·SnapshotImages 회귀 GREEN
+- [x] F4. 게이트 fresh: typecheck · lint · test · build · 예산(개정 17)
+- [x] F5. Ego Lite (4379 · 링크 이탈 · 뒤로 · 정리)
+- [x] F6. REPORT "FIX1" 절 · Codex 검증 · 커밋
+- F1: 선택 (a) — cleanup에서 maps.delete 전 `core.keep(map)`(초안 참조 id만 · mark 불변). (b)·(c) 기각 사유 = REPORT FIX1 절.
+- F2·F3: RED 3(`logs/fix1-red.txt` — image-missing) → GREEN 12/12 · 필터 고정 1건 추가 · 변이 2/2 RED(필터·keep 제거).
+- F4: typecheck·lint exit 0 · test 331/2957 · build 1차 기준선 +0.03 초과(129.09·132.07, 상한 안) → 개정 17 실측 갱신 뒤 exit 0. 커밋 `402e4692`.
+- F5: Ego Lite space 17 · 4379 — (a) 링크 · (b) POP + 재진입 글자 편집 PASS · 정리 완료.
+- F6: Codex r1 지적 0(`logs/fix1-codex-r1.txt`) · REPORT FIX1 절.

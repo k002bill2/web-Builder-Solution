@@ -189,3 +189,25 @@
 - 임시 worktree `/tmp/m4a-qa-main`: 디렉터리 없음 · `git worktree list`에 미등록(`prune -v` 출력 0).
 - `git status --short`: 마감 커밋 뒤 빈 값.
 
+
+## 8. 2차 실화면 (무인 Chromium 행) — 진행 중
+대상 tip `ee09160c`(1차 + FIX1 `41385e10`) · Ego Lite(Chromium) TaskSpace 37 · preview `127.0.0.1:4395` · 출력 `/tmp/m4a-qa-live/` · 스크립트 `logs/live/`
+
+### 8.0 fresh 게이트 — 통과 [사실]
+`logs/live-{typecheck,lint,test,build}.txt`: typecheck exit 0 · lint exit 0 · Test Files 353 · **Tests 3134 passed** · build exit 0 · `/studio` 정규화 **128.71** · 복원 **131.69** · 렌더 JS 84.29/90 · CSS 8.89/30.
+
+### 8.1 준비 [사실]
+경로 A(모던 카페 A v1 → 보정값 v2 → B안 새로 시작 → SEO 제목·설명) → 차단 0 · Hero 1200×800(→ WebP 8KB) · About 800×800(→ WebP 6KB) 업로드 + 대체텍스트. 이동은 앱 안 클릭만.
+
+| 행 | 결과 | 근거 |
+|---|---|---|
+| L1 내보내기 UI | **통과 with note** | 아래 |
+
+- **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
+  - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
+  - 성공 status 1개 · alert 0 · 포커스 = 누른 버튼(4회 모두) · 내려받기 링크 48×32(≥ 24px).
+  - **성공 제목 조사(FIX1 F4)**: "정적 사이트(zip)**를** 만들었습니다" — 수정 반영 확인. HTML = "정적 HTML을 만들었습니다".
+  - 요약 줄: zip "zip 1개 · 0.6MB (이미지 2장 · 글꼴 2개)" · HTML "HTML 1개 · 0.8MB (이미지 2장 포함)". 생성 1.0~1.6초.
+  - 결정성: 같은 문서 재내보내기 결과 해시 동일(zip `54f08f25dc24` · HTML `073383c0fbc4`) · 1280/390 저장 파일 바이트 크기 동일(zip 618,705B · HTML 796,635B).
+  - 차단 보조 문장: 1차 시작 시 "SEO 메타 차단 2" 상태에서 두 버튼 aria-disabled + "첫 차단으로 이동" 노출 확인(r01 로그).
+  - note: Ego Lite에서 클릭 직후 **자동 내려받기 이벤트는 30초 안에 관측되지 않았고**, 화면의 "내려받기" 링크 클릭으로 저장했습니다. 앱은 이 경우를 위해 "내려받기가 시작되지 않으면…" 문장과 링크를 둡니다. [추정] Ego TaskSpace의 download 이벤트가 비동기 프로그램 클릭을 잡지 않는 도구 한계일 수 있음 — 실제 Chrome 자동 내려받기는 [미확인].

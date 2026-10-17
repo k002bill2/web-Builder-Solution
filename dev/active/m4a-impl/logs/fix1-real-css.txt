@@ -1,0 +1,3 @@
+# FIX1 F3 실제 build CSS 확인 — 임시 vitest(실행 뒤 삭제) · build-fix1.txt 직후 dist
+ ✓ src/features/studio/staticHtml/tmpRealCss.test.ts > 실제 build 킷 CSS dist/assets/render-ncA71k8b.css (url 6 · 이스케이프 선택자 포함) — html(글꼴 data:)·zip(assets/fonts) 통과 73ms
+      Tests  1 passed (1)

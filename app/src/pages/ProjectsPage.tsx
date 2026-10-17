@@ -210,19 +210,20 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
   }, [attempt]);
   // 늦게 끝난 요청이 만든·지운 기억으로 행을 다시 판정
   useEffect(() => mod?.subscribe(() => setSeen((n) => n + 1)), [mod]);
+  // 저장 코어(RS6-L5) — 구독이 없어 그린 뒤마다: 저장 중이면 끝난 뒤 다시 판정 · 커밋 성공한 코어의 미확인 기록 해제(U16)
+  useEffect(() => mod?.watchCores(repository, () => setSeen((n) => n + 1)));
   const pendingOf = (projectId: string) => mod?.pendingOf(repository, projectId);
   /** 결과 뒤 포커스 의도(그려진 뒤 한 번 옮기고 지운다) */
   const focusFor = useRef<string>(undefined);
   const [state, setState] = useState<{ readonly busy?: string; readonly results: ReadonlyMap<string, { readonly ok: boolean; readonly text: string; readonly key: number; readonly stuck?: boolean }> }>({ results: new Map() });
   const onRetry = async (projectId: string) => {
-    const pending = pendingOf(projectId);
-    if (!pending || state.busy) return;
+    if (!mod?.describeRow(repository, projectId)?.label || state.busy) return;
     focusFor.current = undefined;
     setState((s) => ({ ...s, busy: projectId }));
-    const out = await import("../features/projects/pendingRetry").then(
-      (mod) => mod.retryPending(repository, pending),
-      () => ({ ok: false, text: "저장을 확인하지 못했습니다 — 잠시 뒤 다시 시도하세요" }),
-    );
+    // 청크 실패·본문 reject 모두 실패 결과로(진행 표시가 남지 않게 · 거짓 성공 0)
+    const out = await import("../features/projects/pendingRetry")
+      .then((mod) => mod.retryRow(repository, projectId))
+      .catch(() => ({ ok: false, text: "저장을 확인하지 못했습니다 — 잠시 뒤 다시 시도하세요" }));
     if (out.ok) reload();
     focusFor.current = projectId;
     setState((s) => ({ busy: undefined, results: new Map(s.results).set(projectId, { ...out, key: (s.results.get(projectId)?.key ?? 0) + 1 }) }));
@@ -234,9 +235,10 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
     const box = page.current;
     const pick = (selector: string, key: "editorFor" | "retryFor" | "discardFor" | "resultFor") => box && Array.from(box.querySelectorAll<HTMLElement>(selector)).find((el) => el.dataset[key] === id);
     // 더 확인할 수 없으면(stuck) 재시도 버튼이 사라진다 — 남은 행동(폐기)으로, 그것도 없으면(memory) 행 안 결과 알림으로(Codex review r3 P2)
-    const stuck = state.results.get(id)?.stuck;
+    const { ok, stuck } = state.results.get(id) ?? {};
+    // 실패면 포커스 유지(UX5-AC-08) — 코어 행은 실패 중에도 "편집기 열기"가 있어 성공일 때만 링크로
     const target =
-      pick("[data-editor-for]", "editorFor") ??
+      (ok ? pick("[data-editor-for]", "editorFor") : undefined) ??
       pick("[data-retry-for]", "retryFor") ??
       (stuck ? (pick("[data-discard-for]", "discardFor")?.querySelector<HTMLElement>("button") ?? pick("[data-result-for]", "resultFor")) : undefined);
     if (!target) return;
@@ -244,16 +246,16 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
     focusFor.current = undefined;
   }, [state, page, items]);
   const heldOf = (projectId: string): PendingRow | undefined => {
-    const pending = pendingOf(projectId);
+    const row = mod?.describeRow(repository, projectId);
     const result = state.results.get(projectId);
-    if (!pending && !result) return undefined;
+    if (!row && !result) return undefined;
     const local = repository.persistence === "local";
     return {
-      pending: pending && mod ? { ...mod.describePending(pending), caption: mod.ROW_TEXT.caption, working: mod.ROW_TEXT.working } : undefined,
+      pending: row && mod ? { ...row, caption: mod.ROW_TEXT.caption } : undefined,
       busy: state.busy === projectId,
       result,
       onRetry: (id) => void onRetry(id),
-      Discard: local ? mod?.DiscardConfirm : undefined,
+      Discard: local && pendingOf(projectId) ? mod?.DiscardConfirm : undefined,
       discardLabel: mod?.ROW_TEXT.discard,
     };
   };

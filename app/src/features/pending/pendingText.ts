@@ -11,7 +11,8 @@ export const PENDING_TEXT = Object.freeze({
   create: (version: number, selected: string) => `편집 시작한 문서(${selected}안 · v${version})가 브라우저에 저장됐는지 확인하지 못했습니다`,
   unknown: (version: number, selected: string) => `${selected}안 · v${version}로 바뀌었는지 확인하지 못했습니다`,
   record: (head?: Head) => `이 문서${at(head)}가 브라우저에 저장됐는지 확인하지 못했습니다`,
-  retrySave: "저장 다시 시도",
+  // UX-5 4.1 · 14절 D1 — 시작(create·restart) 재생은 "저장"이 아니라 "시작 다시 시도"(저장 확인과 분리)
+  retryStart: "시작 다시 시도",
   confirm: "저장 확인",
   working: "확인하는 중…",
   // P-U5 — 상시 캡션

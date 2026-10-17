@@ -1,0 +1,13 @@
+# FIX1 F2 변이 증명 — CSS_FONT_DATA_URL 줄을 QA 변이(M2a·M2c)로 바꾼 뒤 staticMarkup.test.ts 실행 → 복원(git checkout)
+## M2a 117:const CSS_FONT_DATA_URL = /url\([^)]*\)/gi;
+     × L-2 F-14 제외 = CSS의 url(data:font/…;base64,<base64>)만 — 주석 경계(Codex)·문자열 안 url(data:)·notice·zip 글꼴 경로(QA M2a)·data 글꼴 두 개 사이(QA M2c)의 브랜드 = 실패 30ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw an error
+      Tests  1 failed | 25 passed (26)
+## M2c 117:const CSS_FONT_DATA_URL = /url\(\s*(['"]?)data:.*\1\s*\)/gi;
+     × L-2 F-14 제외 = CSS의 url(data:font/…;base64,<base64>)만 — 주석 경계(Codex)·문자열 안 url(data:)·notice·zip 글꼴 경로(QA M2a)·data 글꼴 두 개 사이(QA M2c)의 브랜드 = 실패 30ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw an error
+      Tests  1 failed | 25 passed (26)
+## 복원 뒤 117:const CSS_FONT_DATA_URL = /url\(\s*(['"]?)data:font\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]*\1\s*\)/gi;
+      Tests  26 passed (26)

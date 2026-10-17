@@ -118,7 +118,9 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 
 | 항목 | 수정 | RED → GREEN | 커밋 |
 |---|---|---|---|
-| F1 M-1·M-2 | `staticMarkup.ts` `clean()` — 지우는 요소를 `localName` 소문자 Set 비교로(기존 4종 + `template`·`animate`·`set`·`animatemotion`·`animatetransform`). template를 지우면 안쪽(fragment)도 함께 사라집니다 | 퍼즈 M06·M07·M12·M13·M41·M42·M43 + animateMotion·animateTransform + 대문자 `SET`·`ANIMATE` 9건 → 결과 `<script` 1개(고정) · `onerror`·`evil.example`·`javascript:`·`<template`·`shadowrootmode`·`<animate`·`<set` 0. RED `logs/fix1-f1-red.txt`(1 실패) → staticHtml+zip 8파일 116 passed | (이 커밋) |
+| F1 M-1·M-2 | `staticMarkup.ts` `clean()` — 지우는 요소를 `localName` 소문자 Set 비교로(기존 4종 + `template`·`animate`·`set`·`animatemotion`·`animatetransform`). template를 지우면 안쪽(fragment)도 함께 사라집니다 | 퍼즈 M06·M07·M12·M13·M41·M42·M43 + animateMotion·animateTransform + 대문자 `SET`·`ANIMATE` 9건 → 결과 `<script` 1개(고정) · `onerror`·`evil.example`·`javascript:`·`<template`·`shadowrootmode`·`<animate`·`<set` 0. RED `logs/fix1-f1-red.txt`(1 실패) → staticHtml+zip 8파일 116 passed | 053ab4ff |
+| F2 L-2 | `staticMarkup.ts` F-14 제외 정규식을 `url(data:font/…;base64,<base64 글자>)`로 좁히고(`CSS_FONT_DATA_URL`) **CSS 입력에만** 적용 — `assertNoBrand(site, css, [notice, STATIC_MENU_SCRIPT])`. notice·고정 스크립트는 치환 없이 검사 | Codex 주석 경계(무따옴표·따옴표) · `content:"url(data:…)"`(B03) · notice `url(data:Design Studio)` · zip 글꼴 경로 `assets/fonts/<브랜드>-400.woff2`(M2a 포착) · data 글꼴 2개 사이 규칙(M2c 포착) = 실패, 실제 인라인 글꼴(따옴표 유무·zip) = 통과. RED `logs/fix1-f2-red.txt` → 117 passed. **변이 증명** `logs/fix1-f2-mutations.txt`: M2a·M2c 각각 1 실패 → 복원 26 passed | a6bace1b |
+
 
 ## 10. 열린 항목 (Jarvis)
 1. EXP-AC-R3 실화면 20MB+ — BLOCKED(턴 상한). 단위 EXP-AC-17만 확인했습니다.

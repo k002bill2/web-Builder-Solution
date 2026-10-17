@@ -8,11 +8,16 @@
 
 **PASS with notes**
 
-- 이 레인의 AC(U3·U10·U14·U15·G2)는 변이로 검출력이 확인됐다. 편집기 배선은 0이고 기존 저장 경로 동작 변화도 0이다. 실브라우저 회귀는 깨끗했고 fresh 게이트 4개도 모두 통과했다(322/2902, 번들 = REPORT 4절과 같음).
-- notes(이 레인 차단은 아님, L3 전에 처리 필요):
-  1. **[Medium · 잠재 손실 · L3 전 수정 권고]** discard의 connect 창. `discard` 호출 뒤 connect가 풀리기 전에 들어온 **편집(저장 없이)**이 조용히 버려진다(`discarded`). 하네스 의미는 `blocked{newer}`이고, 임시 테스트로 재현했다(4절). REPORT 7절의 "손실 0"은 save가 끼어든 경우에만 맞다.
-  2. **[Low · 검출력 갭]** 생존 변이 3건. 셋 다 다른 방어층이 결과를 지키고 있어 지금 손실은 없다(1절).
-  3. HARNESS-MAP 검토 결과는 3절에 있다.
+- 이 레인의 AC 가운데 **U10·U14·U15·G2와 엄격 이미지**는 변이로 검출력을 확인했다. U3는 변이를 돌리지 않았다. 편집기 배선은 0이고 기존 저장 경로 동작 변화도 0이다. 실브라우저 회귀는 깨끗했고 fresh 게이트 4개도 모두 통과했다(322/2902, 번들 = REPORT 4절과 같음).
+- **브리프 기대와 다른 점 2건**
+  1. 브리프에 적힌 그대로 U15 변이(키 = 로컬 id만)를 넣으면 **U15 테스트는 RED가 되지 않는다.** 판정이 실패 쪽으로 닫혀 h3-3·h6-7이 RED가 된다. U15 테스트가 잡는 것은 "다른 프로젝트 레코드를 받아들이는" 변이(접미사 일치)이며, 이 변이는 RED 1이었다.
+  2. 기존 테스트 M/D는 0이 아니라 **M=1**이다(`scripts/bundleBudget.test.mjs`의 기대값 2줄). 개정 17 결정 2 절차에 따른 예외이고 REPORT 5절에 적혀 있다. D=0.
+- notes — 이 레인을 막지는 않지만 **L3 착수 전에 처리해야 한다**
+  1. **[Medium · 잠재 손실]** discard의 connect 창. `discard` 호출 뒤 connect가 풀리기 전에 들어온 **편집**(저장 없이)이 조용히 버려진다(`discarded`). 바인딩도 `committed`로 덮인다. 하네스 의미는 `blocked{newer}`이다. 임시 테스트로 재현했다(4절). REPORT 7절의 "손실 0"은 save가 끼어든 경우에만 맞다.
+  2. **[Medium · 잠재 · L3 차단 조건 권고]** `restoreSnapshot`·`resolveConflict`·`startDoc(restart)`는 아직 DocBook에 바로 쓴다. 코어 revision(`confirmed.revision + 1`)이 모르는 사이에 revision이 바뀌므로, 배선 뒤에는 같은 revision 번호로 덮어쓸 수 있다. 지금은 호출처가 0이라 도달하지 않는다. REPORT 8절 "남는 일"에 이 항목이 빠져 있다(3.2).
+  3. **[Low~Medium · 계약 공백]** `save()`·`confirm()`이 `failed`를 돌려주지 않고 reject될 수 있다. `port.mode()`·`port.verify()`가 try 밖에 있기 때문이다. REPORT 6절 5항 "reject 아님"은 connect 실패에만 맞는다. savedMark는 전진하지 않으므로 거짓 "저장됨"은 없다.
+  4. **[Medium · 테스트 공백]** HARNESS-MAP 집계를 고쳐야 한다. ① 30건은 "완전 27 + 부분 3"이 아니라 **완전 25 + 부분 5**다(#12·#30 추가). ② #20의 "discard stale을 ①로 재현" 주장은 근거 테스트가 0건이다. 손실 경로는 0이다(3절).
+  5. **[Low]** 생존 변이 3건이 있다. 셋 모두 다른 방어층이 결과를 지켜 지금 손실은 0이다(1절).
 
 ## 1. 변이 표 (각 변이 → `npx vitest run src/features/studio/save/` 46건)
 
@@ -50,7 +55,37 @@
 
 ## 3. 대응표·차이 검토 (심각도)
 
-(서브에이전트 결과 반영 — 아래 3.1·3.2)
+읽기 전용 서브에이전트(code-explorer) 1개가 수행했다. 메인은 4절 임시 테스트로 discard 판정을 교차 확인했다. 서브에이전트의 나머지 임시 테스트 초안(X1·X2·X3·W-e)은 턴 한도 때문에 실행하지 않았다(**미확인**).
+
+### 3.1 HARNESS-MAP ②·③·PARTIAL
+
+| # | 분류 | 판정 | 심각도 | 근거 |
+|---|---|---|---|---|
+| 13 h4:35 | ② | 사유 적합(D6-3 `INTEGRATE-6.md:404` · 4절 `:151`) | Low | `writerLock.test.ts:120-170` · 포트 `saveCore.modes.test.ts:176-187`. confirm(wrote:false)가 stale이 되는 직접 단언은 없다 — 같은 `port.mode()`를 쓰므로 합성으로 성립한다(추정) |
+| 15 h4:53 | ② | 적합 | Low | `writerLock.test.ts:81` · `createLock.test.ts:79` · `modes.test.ts:168·172` |
+| 16 h4:60 | ② | 적합 | Low | `writerLock.test.ts:120-141` · `createLock.test.ts:98-111` · `modes.test.ts:176-187` |
+| 20 h5:58 | ② | ② 사유는 적합. **"discard stale은 ①로 재현(CP3)" 주장은 근거 0** — save 테스트에 discard `blocked{stale}` 단언이 없다 | Low(코드: `coreIo.ts` discard는 초안을 보존하며 막는다) · Medium(맵 신뢰도) | grep `stale` = save·confirm 단언뿐 |
+| 34 h6:172 | ② | 사유 적합. 인용한 `writeQueue.test.ts:44`는 순서 보장일 뿐이다 → `saveCore.port.test.ts:10-16`(레지스트리) · `saveCoreGuard.test.ts`로 바꿔야 한다 | Low | `INTEGRATE-6.md:92` |
+| 35 h6:189 | ② | 적합. `createLock.test.ts:150` 인용은 부적절하다 → `:123` · `saveCore.port.test.ts:49` | Low | `writerLock.test.ts:204` · `writeQueue.test.ts:57` |
+| 33 h6:161 | ③ | 폐기는 타당하다. 사유 문구는 "제품에 없는 경로"보다 "설계가 존재 판정으로 좁힘"(`INTEGRATE-6.md:60-61`)이 맞다 | Low | 키 존재만 본다(`localSync.ts` commit·verify) · 교차 프로젝트 방어는 U15 |
+| #9 h3:14 | PARTIAL | readonly로 거절되면 `s.attached`를 건드리기 전에 return하고, 재시도하면 `bound`로 put한다 → **손실 경로 0** | Low | `coreIo.ts` save 초반 return · 테스트 공백뿐 |
+| #28 h6:92 | PARTIAL | replace는 `mark += 1`을 하므로, discard의 `s.mark !== entered` 검사가 edit와 같은 경로로 막는다 → **손실 0**(connect 창은 0절 note 1 별건) | Low | `coreIo.ts` replace·discard |
+| #32 h6:150 | PARTIAL | discard 뒤 `attached = {}`가 되고, 다음 save는 IDB 키 존재로 통과한다. X가 없으면 `image-missing` → **손실 0** | Low | `imageOps.ts:29`(참조 id delete 0) |
+| **#12 h3:65(추가)** | ①→부분 | 테스트 제목은 "새 레지스트리(재열기)"인데 본문은 같은 코어라 바인딩이 남아 있다. "IDB에만 있고 바인딩은 없음" 양성 분기를 검사하는 테스트가 0건이다(새로고침 뒤 첫 저장 = 가장 흔한 흐름). 코드는 정상으로 읽힌다 | **Medium(테스트 공백)** | `saveCore.images.test.ts:40-48` |
+| **#30 h6:125(추가)** | ①→부분 | 중첩 변경 단언이 빠져 있다 — 7절의 의도된 차이(얕은 사본)이다 | Low | `images.test.ts:95-102` |
+
+### 3.2 REPORT 7절 행별 판정
+
+| 행 | 판정 | 심각도 |
+|---|---|---|
+| memory 모드 savedMark | `link.book()`이 throw하지 않고 반환한 뒤에만 전진한다(`coreIo.ts` save memory 분기). 실패하면 먼저 return하므로 dirty가 유지된다 → **거짓 "저장됨" 0**(메인 코드 대조 일치). 주의: (a) L2는 memory 모드에서 `dirty=false`를 "저장됨" 문구로 내보내지 않도록 분기해야 한다. (b) `coreLink.book`은 기대 revision = 현재 revision이라 STALE 판정이 구조적으로 꺼진다(단일 작성자 전제). (c) 실패 reason이 기본값 `not-committed`가 되어 confirm 재읽기 실패와 문자열이 겹친다 | Low · L2 주의 Medium |
+| CE-2 얕은 사본 | 불변 전제가 코드상 성립한다. `PageDoc` readonly · 비테스트 코드에서 doc 대상 제자리 변경 grep 0 · DocBook·`adopt`가 `deepFreeze`하므로 변경이 있으면 TypeError로 드러난다(조용한 손상 아님). 한계: grep은 별칭 변수를 놓칠 수 있다 | Low |
+| 커밋마다 세대 재읽기 제거 | D6-3 승인 사항. 잠금을 탭 수명 동안 쥐고 획득할 때 `fresh()` | Low |
+| 레지스트리 CP1 | 절차 변경. 예산(/projects +0.47)은 L5로 넘어간다 | 없음 |
+| 포트 `image()` 접음 | 구현은 정상. 양성 경로 테스트 공백(#12) | Medium(테스트) |
+| 포트 reason 단순화 | quota·abort 구분 없음(L4). 부수 발견: `save()`·`confirm()` reject 가능(0절 note 3) | Low~Medium |
+| discard 진입이 connect 뒤 | save 경쟁: 동기 `inflight += 1`이라 `rejected{inflight}` 또는 `failed{discarding}` → 안전(임시 테스트 A로 확인). **edit 경쟁: 후퇴**(임시 테스트 B · 0절 note 1) | Medium(잠재) |
+| (6절 ②) DocBook 직행 쓰기와 revision 기준 | 0절 note 2 | Medium(잠재 · L3 차단 권고) |
 
 ## 4. REPORT 7절 차이 — 임시 테스트
 
@@ -90,4 +125,4 @@
 
 - **사실 [L1 · 실행]**: 6절 게이트 · 1절 변이 11종 결과 · 4절 임시 테스트 A/B · 5절 브라우저 흐름과 오류 0 · 2절 diff·grep.
 - **추정 [L2]**: U14-b 생존 사유(queue.retry 대기 덕분) — 코드 읽기 근거만 있다. discard 창이 L3에서 실사용 손실로 이어질 가능성 — 배선 방식에 달려 있다.
-- **미확인**: IMG-meta 변이의 실손실 여부(메타 없는 바인딩이 생기는 실경로가 있는지) · 1회차 브라우저 흐름 전 구간의 콘솔 로그.
+- **미확인**: 서브에이전트 초안 X1(#12 양성 경로)·X2(#20 discard stale)·X3(memory 실패)·W-e(reject) 미실행 · IMG-meta 변이의 실손실 여부(메타 없는 바인딩이 생기는 실경로가 있는지) · 1회차 브라우저 흐름 전 구간의 콘솔 로그.

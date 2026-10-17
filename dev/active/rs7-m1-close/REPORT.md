@@ -1,7 +1,7 @@
 # RS7-M1 마무리 REPORT — L5 M1 테스트 · BACKLOG 상태 갱신
 
 base `bcaa9832` · 브랜치 `k002bill2/rs7-m1-close` · 2026-10-17 · 앱(비테스트) 코드 변경 0 · 기존 테스트 수정 0
-커밋: `1e78884c`(BRIEF·PROGRESS) · `76bab1e4`(새 테스트 + 변이 로그) · `8afa6a9c`(BACKLOG) · 이 REPORT 커밋
+커밋: `1e78884c`(BRIEF·PROGRESS) · `76bab1e4`(새 테스트 + 변이 로그) · `8afa6a9c`(BACKLOG) · `7014eba3`(REPORT·게이트 로그) · 이 Codex 로그 커밋
 
 ## 0. 판정
 - L5 M1 **검출** — 새 파일 `app/src/components/projects/ProjectsRowPriority.test.tsx`(2건) · 변이 3종 모두 RED → 복원 GREEN.
@@ -34,6 +34,9 @@ base `bcaa9832` · 브랜치 `k002bill2/rs7-m1-close` · 2026-10-17 · 앱(비�
 | `npm run lint` | exit 0 | `logs/gate-lint.txt` |
 | `npm test -- --run` | 347 파일 / 3035 통과 · exit 0 (base 346/3033 + 1 파일 / +2 테스트) | `logs/gate-test.txt` |
 - preview 미기동(실화면 검증 범위 아님) → 포트 정리 대상 0.
+
+## 4b. Codex review
+- `review --scope branch --base bcaa9832` 1회 — **지적 0**("수정이 필요한 결함은 발견하지 못했습니다" · `git diff --check` 통과). Codex 쪽 테스트 재실행은 샌드박스 EPERM으로 못 했다고 밝힘 — 실행 근거는 4절 로컬 게이트. 로그 `logs/codex-review.txt`.
 
 ## 5. BACKLOG 변경 행 (`docs/06-handoff/BACKLOG.md`만)
 - B-RS-06 ✅ PR #27 · B-RS-07 ✅ PR #27 · B-RS-08 🔶(PR #29 5종 + M1 · 남은 U14-b) · B-RS-09 열림 유지 + 재개 조건 · B-RS-15 ✅ PR #28 · B-RS-16 RS7-B QA BLOCKED 1줄 · B-RS-17 ✅ PR #28 · **B-RS-18 신규**(전체 스위트 간헐 실패 — `rs7-flaky-hunt` 결과는 Jarvis 기입).

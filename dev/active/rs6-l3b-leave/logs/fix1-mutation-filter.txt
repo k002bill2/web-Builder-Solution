@@ -1,0 +1,42 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx (12 tests | 1 failed) 1121ms
+   ❯ FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) (4)
+     × 편집 틀 cleanup = 초안이 참조하는 Blob만 바인딩 · mark·dirty 변화 0(탭 수명 보유 = 다음 save가 묶을 집합 안) 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) > 편집 틀 cleanup = 초안이 참조하는 Blob만 바인딩 · mark·dirty 변화 0(탭 수명 보유 = 다음 save가 묶을 집합 안)
+AssertionError: expected [ …(2) ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
+    "00000000-0000-4000-8000-000000000001",
++   "00000000-0000-4000-8000-000000000002",
+  ]
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:182:47
+    180|     const before = core().view();
+    181|     frame(repo, { ...bindOf(next, uuid(1)), ...bindOf(next, uuid(2)) }…
+    182|     expect(Object.keys(core().view().images)).toEqual([uuid(1)]);
+       |                                               ^
+    183|     expect([core().view().mark, core().view().dirty]).toEqual([before.…
+    184|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 passed (12)
+   Start at  17:06:51
+   Duration  1.88s (tests 62%, environment 20%, transform 11%, import 3%, setup 3%)
+

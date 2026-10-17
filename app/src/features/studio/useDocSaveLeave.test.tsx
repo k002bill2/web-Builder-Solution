@@ -4,8 +4,11 @@
  */
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { imageRecordId } from "../../data/persistence/imageRecord";
+import { IMAGE_READ } from "../../data/persistence/imageRestore";
+import type { ImageKeeper, RenderImages } from "./images/store/types";
 import { useDocSave } from "./useDocSave";
-import { PROJECT, edited, startedRig } from "./save/testRig";
+import { PROJECT, bindOf, edited, startedRig, uuid, withImage, type Repo } from "./save/testRig";
 
 const hook = (props: Parameters<typeof useDocSave>[0]) => renderHook(() => useDocSave(props));
 function unloadBlocked(): boolean {
@@ -13,7 +16,11 @@ function unloadBlocked(): boolean {
   window.dispatchEvent(event);
   return event.defaultPrevented;
 }
-afterEach(() => vi.restoreAllMocks());
+const originalRead = IMAGE_READ.read;
+afterEach(() => {
+  vi.restoreAllMocks();
+  IMAGE_READ.read = originalRead;
+});
 
 describe("RS6-L3b CP-C · lease 해제 save · 탭 수준 경고", () => {
   it("U12: 디바운스 대기 중 POP 언마운트 → lease 해제 save 1회 · 편집기 밖에서도 탭 닫기 경고 on(레지스트리) · 저장 끝나면 off · IDB = 마지막 편집", async () => {
@@ -111,5 +118,81 @@ describe("RS6-L3b CP-C · lease 해제 save · 탭 수준 경고", () => {
     unmount();
     await act(async () => undefined);
     expect(unloadBlocked()).toBe(true);
+  });
+});
+
+/** 편집 틀 흉내(StudioLayout 이미지 effect) — 맵 등록 · `release` = 편집 틀 effect cleanup(언마운트와 같은 commit) */
+function frame(repo: Repo, map: RenderImages | undefined) {
+  let images = map;
+  const publish = vi.fn((update: (prev: RenderImages | undefined) => RenderImages | undefined) => void (images = update(images)));
+  const release = (repo as Repo & ImageKeeper).images!(PROJECT, map, publish);
+  return { publish, release, images: () => images };
+}
+
+// FIX1(QA note 2 · 1절 #9) — 이미지 고른 직후(디바운스 안) 이탈: 편집 틀 cleanup이 맵을 지워도 해제·이탈 save가 이미지까지 커밋(commit 순서 무관)
+describe("FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관)", () => {
+  it("링크: ingest 직후 leave() + 같은 태스크에서 편집 틀 cleanup·언마운트 → IDB images 1 · 문서 참조 일치 · dirty 0", async () => {
+    const { db, repo, doc, core } = await startedRig();
+    const save = vi.spyOn(core(), "save");
+    const { result, unmount } = hook({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 60_000 });
+    const next = withImage(doc, uuid(1));
+    act(() => result.current.edit(next));
+    const view = frame(repo, bindOf(next, uuid(1)));
+    void result.current.leave();
+    view.release();
+    unmount();
+    await vi.waitFor(() => expect(save).toHaveBeenCalled());
+    await core().idle();
+    expect(await Promise.all(save.mock.results.map((r) => r.value))).toEqual([expect.objectContaining({ status: "saved" })]);
+    expect(await db.persistence.keys("images")).toEqual([imageRecordId(PROJECT, uuid(1))]);
+    expect((await db.doc())?.doc.hash).toBe(next.hash);
+    expect(core().view().dirty).toBe(false);
+  });
+
+  it("POP: ingest 직후 편집 틀 cleanup·언마운트(저장 대기 없음) → 해제 save가 이미지까지 커밋 · 재진입 이미지 복원 · 글자 편집 saved(failed 고착 0)", async () => {
+    const { db, repo, doc, core } = await startedRig();
+    IMAGE_READ.read = (key) => db.persistence.get("images", key);
+    const save = vi.spyOn(core(), "save");
+    const first = hook({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 60_000 });
+    const next = withImage(doc, uuid(1));
+    act(() => first.result.current.edit(next));
+    frame(repo, bindOf(next, uuid(1))).release();
+    first.unmount();
+    await vi.waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+    await core().idle();
+    expect(await save.mock.results[0]!.value).toMatchObject({ status: "saved" });
+    expect(await db.persistence.keys("images")).toEqual([imageRecordId(PROJECT, uuid(1))]);
+    expect((await db.doc())?.doc.hash).toBe(next.hash);
+
+    const view = frame(repo, undefined);
+    await vi.waitFor(() => expect(view.images()?.[uuid(1)]).toBeDefined());
+    const again = hook({ repository: repo, projectId: PROJECT, initialDoc: (await repo.getDoc(PROJECT))!, debounceMs: 5 });
+    act(() => again.result.current.edit(edited(again.result.current.doc, "재진입 뒤 글자")));
+    await vi.waitFor(() => expect(again.result.current.state.phase).toBe("saved"));
+    expect((await db.doc())?.doc.meta.title).toBe("재진입 뒤 글자");
+    again.unmount();
+  });
+
+  it("편집 틀 cleanup = 초안이 참조하는 Blob만 바인딩 · mark·dirty 변화 0(탭 수명 보유 = 다음 save가 묶을 집합 안)", async () => {
+    const { repo, doc, core } = await startedRig();
+    const next = withImage(doc, uuid(1));
+    core().edit(next);
+    const before = core().view();
+    frame(repo, { ...bindOf(next, uuid(1)), ...bindOf(next, uuid(2)) }).release();
+    expect(Object.keys(core().view().images)).toEqual([uuid(1)]);
+    expect([core().view().mark, core().view().dirty]).toEqual([before.mark, before.dirty]);
+  });
+
+  it("순서 반대(언마운트 먼저 · 편집 틀 cleanup 나중, 같은 태스크)도 같다", async () => {
+    const { db, repo, doc, core } = await startedRig();
+    const { result, unmount } = hook({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 60_000 });
+    const next = withImage(doc, uuid(1));
+    act(() => result.current.edit(next));
+    const view = frame(repo, bindOf(next, uuid(1)));
+    unmount();
+    view.release();
+    await vi.waitFor(async () => expect((await db.doc())?.doc.hash).toBe(next.hash));
+    expect(await db.persistence.keys("images")).toEqual([imageRecordId(PROJECT, uuid(1))]);
+    expect(core().view().dirty).toBe(false);
   });
 });

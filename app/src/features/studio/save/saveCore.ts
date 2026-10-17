@@ -106,6 +106,11 @@ export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, 
       return s.mark;
     },
     save,
+    /** 편집 틀 맵 중 초안이 참조하는 Blob만 바인딩에(mark 변화 0) — 편집 틀 cleanup이 맵을 지우기 전 동기로(FIX1 · 해제 save가 맵을 읽는 시점과 무관) */
+    keep(blobs: RenderImages) {
+      const held = JSON.stringify(s.doc);
+      s.attached = { ...s.attached, ...Object.fromEntries(Object.entries(blobs).filter(([id]) => held.includes(id))) };
+    },
     /** 진입 = 호출 시점 mark(동기) — connect 대기 중 들어온 편집·교체도 newer로 막는다(L1 QA note 1 · 하네스 "첫 await 전 진입") */
     discard() {
       const entered = s.mark;

@@ -163,7 +163,8 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
             })
             .catch(() => undefined);
         // 편집 틀 effect cleanup — 편집기를 떠나면 등록을 푼다(Blob·메타가 앱 수명 동안 남지 않게 · Codex r1 P2)
-        return () => maps.delete(projectId);
+        // FIX1(QA note 2): 지우기 전 초안 참조 Blob을 코어 바인딩에 — 이탈·해제 save가 commit 순서와 무관하게 이미지까지 쓴다
+        return () => (map && cores.get(projectId)?.keep(map), maps.delete(projectId));
       },
     }),
   };

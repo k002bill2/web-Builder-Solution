@@ -159,5 +159,5 @@
 | (SPEC 밖) 생성기 없음 안내 | 정적 사이트(zip)는 생성기 연결 후 내보낼 수 있습니다 | `ExportAfter.tsx` | 조사 맞음(는) |
 - `export.fail.pattern` [추정 — 코드 읽기]: F-11~F-15 단언은 `shown` 표식 없는 `Error`라 `exportFlow`의 일반 재시도 실패 문구("내보내지 못했습니다 · 다시 시도")로 보입니다. 사용자에게 거짓 성공은 아니고 alert 자리도 같지만, SPEC 6.1 문장이 아니며 Developer REPORT 3절 편차 목록에 없습니다. 판정: 문구 편차(경미) — 문안 후속(Hemingway)과 함께 처리 권고. 실화면 문구는 2차 run에서 확인.
 
-## 6. LIVE-PLAN
-(진행 중)
+## 6. LIVE-PLAN — 작성 완료 [사실]
+- `dev/active/m4a-qa/LIVE-PLAN.md`: 브라우저 설치 실측(Ego Lite·Chrome·Edge·Safari 있음 · **Firefox 없음** · Archive Utility 있음) · 매트릭스 L1~L10 실행 순서·예상 턴(≈ 26) · 자동(ego-browser)/수동(Safari) 구분 · Firefox·Windows 탐색기 BLOCKED.

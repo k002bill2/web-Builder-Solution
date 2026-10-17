@@ -1,0 +1,12 @@
+=== mutate src/features/projects/coreRowText.ts
+-  stale: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요",
++  stale: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요!",
+     × stale 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 3 passed (4)
+=== mutate src/features/studio/save/reasonText.ts
+-  stale: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요",
++  stale: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요!",
+     × stale 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 3 passed (4)

@@ -1,0 +1,13 @@
+=== s/retryPending(repo, pending) : gone;/retryPending(repo, pending) : { ok: true, text: C.saved };/
+-  if (pending?.kind === "start" || !core) return pending ? retryPending(repo, pending) : gone;
++  if (pending?.kind === "start" || !core) return pending ? retryPending(repo, pending) : { ok: true, text: C.saved };
+     × 기억·코어 모두 없음 → ok(새로고침) · 무문구 · 쓰기 0 139ms
+     × 미확인 기록 행 '저장 확인' 클릭 직후 기억이 풀림 → 성공 문구 0 · 행 = 일반 행 216ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 1 passed (3)
+=== s/confirmCore(repo, core, projectId) : gone;/confirmCore(repo, core, projectId) : { ok: true, text: C.saved };/
+-  return pending ? confirmCore(repo, core, projectId) : gone;
++  return pending ? confirmCore(repo, core, projectId) : { ok: true, text: C.saved };
+     × 코어 clean · 기억 없음 → ok(새로고침) · 무문구 · save 0 32ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 2 passed (3)

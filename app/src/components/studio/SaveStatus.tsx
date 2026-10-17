@@ -1,6 +1,6 @@
 import { lazy, Suspense, type ComponentProps, useEffect, useReducer, useRef, useState } from "react";
 import type { ProjectPersistence } from "../../data/projectRepository";
-import { isSaving, SAVE_FAILED_TEXT, SAVE_HANG_TEXT, SAVE_STALE_ALERT, saveAnnouncement, saveStatusText, type SaveSource } from "../../features/studio/saveStatusText";
+import { isSaving, SAVE_FAILED_TEXT, SAVE_HANG_TEXT, saveAnnouncement, saveStatusText, type SaveSource } from "../../features/studio/saveStatusText";
 import { SAVE_HANG_ALERT } from "../../features/studio/save/alertKeys";
 import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { Button } from "../ds/Button";
@@ -14,7 +14,6 @@ const TICK_MS = 1000;
 
 /** 저장 실패 alert 문장(SPEC 6.3) — 실패가 풀릴 때까지 같은 글자라 연속 실패에 다시 낭독되지 않는다 */
 function alertText(state: AutosaveState, source: SaveSource, hang: boolean): string {
-  if (state.phase === "stale") return SAVE_STALE_ALERT;
   // LV-1 T_hang 문구 = alert `<p>`에만(aria-busy 상태 글자에 넣지 않는다 — L2 QA 7절 3)
   if (hang) return SAVE_HANG_TEXT;
   return state.failure === "error" ? (source.text ?? SAVE_FAILED_TEXT) : "";
@@ -22,7 +21,7 @@ function alertText(state: AutosaveState, source: SaveSource, hang: boolean): str
 
 /**
  * 저장 상태 (SPEC E-S06~E-S09 · 6.3 · E-AC-08·09). 상태 글자는 라이브 영역 **밖**(상대 시각 낭독 금지).
- * - 실패·STALE = 자체 `role=alert` 1곳(6.3 "저장 실패" 행). 오프라인·회복 status 문장은 `onAnnounce`로 올린다 —
+ * - 실패 = 자체 `role=alert` 1곳(6.3 "저장 실패" 행). 오프라인·회복 status 문장은 `onAnnounce`로 올린다 —
  *   `role=status` "편집 알림" 영역은 화면에 1개(E-AC-33, 셸 소유)라 여기서 만들지 않는다. 평상시 저장은 알리지 않는다.
  * - "다시 저장"은 실패 때만(E-S07). 오프라인은 `online` 이벤트가 저장한다(E-S08). 상태 글자는 자르지 않는다(E-S33 — 말줄임은 툴바 이름만).
  */

@@ -1,4 +1,4 @@
-import { ProjectRepositoryError, type DocHead, type ProjectRepository } from "../../data/projectRepository";
+import type { DocHead, ProjectRepository } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import type { DocSaveRepository } from "./useDocSave";
 import type { CoreKeeper } from "./save/saveCore";
@@ -11,16 +11,11 @@ export function isPageDoc(doc: DocHead): doc is PageDoc {
   return "sections" in doc && Array.isArray(doc.sections) && "meta" in doc && typeof doc.meta === "object" && doc.meta !== null;
 }
 
-/** 프로젝트 저장소(`ProjectRepository<DocHead>`) → 자동 저장 훅 저장소(`DocSaveRepository`) 어댑터. 저장 결과는 머리만 쓰고, 충돌 해결 결과는 모양을 확인한다 */
+/** 프로젝트 저장소(`ProjectRepository<DocHead>`) → 자동 저장 훅 저장소(`DocSaveRepository`) 어댑터(충돌 해결 결선은 RS7-A에서 제거 — 제품 도달 0) */
 export function toDocSaveRepository(repository: ProjectRepository): DocSaveRepository {
   return {
     persistence: repository.persistence,
     // 제품 저장소는 늘 코어 레지스트리가 있다(memoryProjectRepository · RS6-L3a QA 3절)
     core: (repository as ProjectRepository & CoreKeeper).core!,
-    resolveConflict: async (projectId, choice, myDoc) => {
-      const resolved = await repository.resolveConflict(projectId, choice, myDoc);
-      if (!isPageDoc(resolved)) throw new ProjectRepositoryError("SCHEMA_INVALID", "충돌 해결 결과가 편집 문서 모양이 아닙니다");
-      return resolved;
-    },
   };
 }

@@ -25,7 +25,7 @@ describe("saveStatusText (E-S06~E-S09)", () => {
     expect(saveStatusText({ phase: "saving" }, "server", NOW)).toBe("저장 중…");
     expect(saveStatusText({ phase: "failed", failure: "error" }, "memory", NOW)).toBe("저장하지 못했습니다");
     expect(saveStatusText({ phase: "offline", failure: "offline" }, "server", NOW)).toBe("오프라인 — 연결되면 저장합니다");
-    expect(saveStatusText({ phase: "stale" }, "server", NOW)).toBe("다른 곳에서 이 문서가 바뀌었습니다");
+    // RS7-A(B-RS-07): 이전 phase "stale" → "다른 곳에서 이 문서가 바뀌었습니다" 줄 삭제 — 단계 제거(타입이 막는다). 다른 탭 stale 행은 saveStatusText.source.test
   });
 
   it("저장됨 — 메모리는 '이 탭에 저장됨', 서버는 '저장됨' + 상대 시각", () => {
@@ -78,11 +78,5 @@ describe("saveAnnouncement — 단계가 바뀔 때만 (5.10 · 6.3)", () => {
     ).toBeUndefined();
   });
 
-  it("STALE_DOC 진입은 alert 1회", () => {
-    expect(saveAnnouncement({ phase: "saving" }, { phase: "stale" })).toEqual({
-      kind: "alert",
-      text: "다른 곳에서 이 문서가 바뀌었습니다. 내 편집은 그대로 두었습니다",
-    });
-    expect(saveAnnouncement({ phase: "stale" }, { phase: "stale" })).toBeUndefined();
-  });
+  // RS7-A(B-RS-07): "STALE_DOC 진입은 alert 1회" 삭제 — phase "stale" 제거(제품 도달 0, REPORT CP0)
 });

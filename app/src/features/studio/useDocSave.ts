@@ -3,20 +3,18 @@
  * a1-α `useAutosaveScheduler`를 그대로 쓰고, 이 훅은 저장 코어 연결만 한다(INTEGRATE-6 2.2-2 · RS6-L3b CP-A — 코어 없는 saveDoc 경로 제거):
  * - 저장 = `core.save()`(코어 초안 · revision·hash는 코어 io) — 결과 reason으로 판정(readonly·unsupported = 이 탭 저장 0이 정상).
  * - 화면 문서는 늘 내 편집이다. 다른 탭 커밋(포트 stale)은 I6 8.1 `stale` 환경 행(failed + 출처 reason) — 충돌 영역·최신 문서 읽기 0(RS6-L4 R2).
- * - `resolve(choice)` = 저장소 `resolveConflict`(보존 스냅샷 + 저장 한 트랜잭션, 8.3) 1회 → 성공이면 스케줄러 `settle`(추가 저장 0).
- *   "다른 편집 불러오기"는 돌려받은 최신 문서를 화면 문서로. 거부는 그대로 돌려주고 STALE을 유지한다(고르기 전 자동 저장 0).
- * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·충돌·오프라인이면 false.
+ * - 충돌 영역·해결(`conflict`·`resolve` → 저장소 `resolveConflict`)은 RS7-A(B-RS-07)에서 제거 — RS6-L4 R2 뒤 제품 도달 0(`dev/active/rs7-dead-conflict/REPORT.md` CP0).
+ * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·오프라인이면 false.
  * - `adopt(write)` = 저장소 revision을 올리는 쓰기(스냅샷 복원)를 저장 훅 경로로 — 저장 먼저 → `write(저장 revision)` 1회 →
  *   돌려받은 문서·revision·스케줄러(`settle`, 추가 저장 0)를 함께 갱신. 저장하지 못했으면 쓰기 0 · undefined.
- * - `leave()` = 앱 안 이동 전(MQ-6-7 A · INTEGRATE-6 3.1-3) — 판정 순서 ① 오프라인 ② STALE ③ 실패(읽기 전용·잠금 없음 외) = 보류:
+ * - `leave()` = 앱 안 이동 전(MQ-6-7 A · INTEGRATE-6 3.1-3) — 판정 순서 ① 오프라인 ② 실패(읽기 전용·잠금 없음 외 — 다른 탭 stale 행 포함) = 보류(RS7-A: STALE 단계 제거):
  *   지금 저장 1회 하고 `flushed()` 결과(이번 이탈 중 저장이 읽기 전용 거절이면 true — 지난 거절은 쓰지 않는다, Codex r1·r2 P1).
- *   ④ 그 밖 = undefined(바로 이동) · 저장할 것이 있으면 지금 1회 낸다(기다리지 않음 — 코어가 탭 수명으로 끝낸다).
+ *   ③ 그 밖 = undefined(바로 이동) · 저장할 것이 있으면 지금 1회 낸다(기다리지 않음 — 코어가 탭 수명으로 끝낸다).
  * - lease 해제(진짜 언마운트 — 링크·POP·재마운트 공통, 3.1-1): 마지막 제출 뒤 편집이 있으면 `core.save()` 1회(기다리지 않음).
  */
 import { useCallback, useEffect, useId, useReducer, useRef, useState } from "react";
-import { ProjectRepositoryError, type ConflictChoice, type ProjectPersistence } from "../../data/projectRepository";
+import { ProjectRepositoryError, type ProjectPersistence } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
-import { hashDoc } from "../../engine/ops/hash";
 import { useAutosaveScheduler, type AutosaveState } from "./useAutosaveScheduler";
 import type { SaveSource } from "./saveStatusText";
 import type { SaveCore } from "./save/saveCore";
@@ -24,7 +22,6 @@ import type { SaveCore } from "./save/saveCore";
 /** 저장소 중 이 훅이 쓰는 부분(ProjectRepository<PageDoc>의 부분 구조) */
 export interface DocSaveRepository {
   readonly persistence: ProjectPersistence;
-  resolveConflict(projectId: string, choice: ConflictChoice, myDoc: PageDoc): Promise<PageDoc>;
   /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — seed·편집·저장이 코어 경유 */
   readonly core: (projectId: string, seed: PageDoc) => SaveCore;
 }
@@ -37,21 +34,15 @@ export interface UseDocSaveOptions {
   readonly maxWaitMs?: number;
 }
 
-/** 충돌 영역(스케줄러 stale 단계) — RS6-L4 R2 뒤 제품 도달 경로 0(REPORT 도달 경로 표) · 최신 문서 결선은 감량 1회로 뺐다 */
-export type DocConflict = Readonly<Record<string, never>>;
-
 export interface UseDocSave {
   readonly doc: PageDoc;
   readonly state: AutosaveState;
   readonly persistence: ProjectPersistence;
-  /** STALE_DOC일 때만 */
-  readonly conflict?: DocConflict;
   readonly edit: (next: PageDoc) => void;
   /** 돌려주는 값 = 재시도 직후 단계(스케줄러) — effect에서 그대로 return하지 않는다 */
   readonly retry: () => AutosaveState["phase"] | undefined;
   /** 저장소에 저장된 마지막 revision(내보내기 요청 revision — 5.13 "저장 먼저" 뒤에 읽는다) */
   readonly savedRevision: () => number;
-  readonly resolve: (choice: ConflictChoice) => Promise<void>;
   readonly flushed: () => Promise<boolean>;
   readonly adopt: (write: (revision: number) => Promise<PageDoc>) => Promise<PageDoc | undefined>;
   readonly leave: () => Promise<boolean> | undefined;
@@ -129,22 +120,6 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     };
   }, [core, mountId, change, redraw]);
 
-  const resolve = useCallback(
-    async (choice: ConflictChoice) => {
-      const mine = docRef.current;
-      const resolved = await repository.resolveConflict(projectId, choice, { ...mine, hash: hashDoc(mine) });
-      revisionRef.current = resolved.revision;
-      if (choice === "theirs") {
-        docRef.current = resolved;
-        setDoc(resolved);
-      }
-      settle();
-      // 해결 요청 중에 생긴 내 편집은 다시 미저장으로 둔다("내 편집으로 저장"만 — 불러오기는 최신으로 바꿨다)
-      if (choice === "mine" && docRef.current !== mine) change(docRef.current);
-    },
-    [repository, projectId, settle, change],
-  );
-
   // 저장 먼저 기다리는 쪽 — 렌더마다 상태를 보고 저장 중이면 기다리고, 저장 전 변경이면 바로 저장, 그 밖이면 결과를 돌려준다
   const { retry } = autosave;
   const current = autosave.state.phase;
@@ -176,8 +151,8 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   const leave = useCallback(() => {
     const now = phase.current;
     if (now === "idle" || now === "saved") return undefined;
-    // ④ 이동 — 지금 저장 1회(저장 중이면 해제 save가 뒤를 잇는다) · 기다리지 않는다
-    if (navigator.onLine && now !== "stale" && (now !== "failed" || readOnly.current)) return void retry();
+    // ③ 이동 — 지금 저장 1회(저장 중이면 해제 save가 뒤를 잇는다) · 기다리지 않는다
+    if (navigator.onLine && (now !== "failed" || readOnly.current)) return void retry();
     readOnly.current = false;
     phase.current = retry() ?? phase.current;
     return flushed().then((ok) => ok || readOnly.current);
@@ -186,9 +161,8 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   /** 확인 결과 → 출처(SaveActions · 조작 뒤) — 성공이면 reason 지우고 스케줄러 settle(추가 저장 0) */
   const report = useCallback((next?: { readonly reason: string; readonly text?: string }) => (setReason(next), next || settle()), [settle]);
 
-  const conflict = autosave.state.phase === "stale" ? {} : undefined;
   const savedRevision = useCallback(() => revisionRef.current, []);
   const { inflight, dirty } = core.view();
   const source = { ...reason, inflight, dirty };
-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, source, core, report };
+  return { doc, state: autosave.state, persistence: repository.persistence, edit, retry, savedRevision, flushed, adopt, leave, source, core, report };
 }

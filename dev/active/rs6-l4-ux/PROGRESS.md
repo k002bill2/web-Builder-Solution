@@ -23,3 +23,14 @@
 - 패치 상태 전체 스위트: 2971/2974 — 실패 3 = 문구·배치 변경 예상 깨짐(REPORT 4절 표).
 - 앱 코드 base로 되돌림 · 패치 보존 · fresh 게이트 4개 통과(REPORT 9절).
 - 서브에이전트: 0개.
+
+## MEASURE 레인 (`BRIEF-MEASURE.md`, 측정 전용 · 앱 커밋 0)
+- [ ] M-0. BRIEF-MEASURE·PROGRESS 커밋
+- [ ] M0. base build 재현 · cp1-reduce1 적용 재현
+- [ ] M1-CP2. 저장 확인·다시 저장·폐기 대화상자 누적 build
+- [ ] M1-CP3. ConflictCallout 두 선택·포커스·rebase epoch +1 누적 build
+- [ ] M1-CP4. 문구·금지 문구 가드·memory 모드 누적 build
+- [ ] M2. 상쇄 후보 조사·실측 · 조합 1회
+- [ ] M3. 설계 질문 2건 근거
+- [ ] M4. 패치 보존 → 자기 변경 복원 → base 재빌드 dist sha 동일 · 게이트
+- [ ] M5. REPORT-MEASURE.md + 커밋

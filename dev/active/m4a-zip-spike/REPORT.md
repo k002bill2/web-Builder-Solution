@@ -2,7 +2,7 @@
 
 **결론: store zip 실현 가능 · 작성기 gzip 914 B(단독 minify, 분리 포함 조작 뒤 청크 +1.06KB) · /studio 진입 증분 0(정규화 128.66 → 128.66 · 복원 131.64 → 131.64 · raw 129.96 → 129.96) · 조작 뒤 exportFlow +1.06KB(3.32 → 4.38) · HTML_MAX 해소 = 조건부(부모만 바꾸는 A안은 상한을 올려야 함 → 미해소 / 렌더 참조 직렬화 B안은 해소, 렌더 JS +0.07KB) · ZIP64 불필요(30MB ≪ 4GiB-1)**
 
-근거 수준: S1·S4·S5 = L1(실행 출력) · S2 B안 비용 = L1(빌드), B안 동작 = L2(타입체크·기존 테스트, 브라우저 미실행) · S3 file:// 글꼴 = 아래 표기.
+근거 수준: S1·S4·S5 = L1(실행 출력) · S2 B안 비용 = L1(빌드), B안 동작 = L2(타입체크·패치 적용 상태 전체 테스트 3041 통과, 브라우저 왕복 미실행) · S3 file:// 글꼴 = L1(Chromium 1회) / Safari·Firefox 미확인.
 
 ## 0. 기준선 (사실 — fresh build, base cee15e71 = a520e770 + 문서만)
 - `npm run build` exit 0 (17.7s) → `raw/build-baseline.txt`
@@ -54,7 +54,9 @@
 - 현재: `loadSiteFonts`가 계열 1개 × 굵기 ≤ 2를 받아 `@font-face … src:url(data:font/woff2;base64,…)` CSS + 렌더 측정용 `bytes`(ArrayBuffer) 반환.
 - 분리 경로: 같은 `bytes`를 그대로 `assets/fonts/<File>-<weight>.woff2` 항목으로 → CSS `src:url(assets/fonts/…)`. `assertNoExternalCss`는 zip 모드에서 `assets/` 상대 url 허용으로 바꿔야 한다. 고지는 `<head>` 주석 대신(또는 함께) `assets/fonts/OFL.txt`(4,388 B) 동봉이 OFL 관례.
 - 크기(사실 — 파일): Kit Sans KR 400 172,048 B + 700 175,888 B = **347,936 B**(인라인 base64 ≈ 463.9K자) · Kit Serif KR 352,812 + 362,684 = **715,496 B**(≈ 954K자). zip 분리 시 base64 33% 절감.
-- 위험: `file://`로 연 index.html의 상대 경로 `@font-face`는 Chromium이 출처 null CORS로 막는 것으로 알려져 있다(추정 — 아래 4절 실화면 확인 참고). 그렇다면 글꼴은 **CSS 인라인 유지**(현행)가 더블클릭 사용에 안전하고, 이미지만 분리한다.
+- `file://` 실화면 확인(사실 — 브라우저 1회, ego-browser Chromium 154): 압축 푼 폴더 구조(`index.html` + `assets/fonts/KitSansKR-400.woff2` + `assets/images/x.png`)를 `file:///…/index.html`로 열어 `document.fonts.load` = 1면 · 상태 `loaded` · `check` true · 이미지 naturalWidth 1. → Chromium에서 **상대 경로 글꼴·이미지 모두 로드**. 처음 세운 "출처 null CORS 차단" 추정은 이 브라우저에서 틀렸다.
+- (미확인) Safari·Firefox의 `file://` 상대 경로 글꼴. Firefox는 같은 폴더·하위 폴더 허용 정책으로 알려져 있음(추정). 브라우저별 차이가 걱정이면 글꼴만 인라인 유지가 안전한 대안(크기 +33%).
+- 권고: 글꼴도 `assets/fonts/` 분리 + `OFL.txt` 동봉(★, Chromium 확인) — Safari 확인은 M4-a 구현 QA 항목으로.
 
 ## 4. S4 청크 배치 (사실 — `raw/build-s4.txt`)
 - 패치: `exportFlow.ts`가 `storeZip`·`zipParts`·`splitImages`를 재수출(조작 뒤 청크 배치) + `readHtmlMessage(data, max)`.
@@ -83,9 +85,15 @@
 - 브라우저 실측은 하지 않았다(미확인) — Node 근사로 시간 1초 미만, 생성기 상한 8초 안.
 
 ## 6. 미확인 · 다음
-- Archive Utility GUI 더블클릭 · 브라우저 실화면 zip 내려받기(선택 항목, 미실행).
+- Archive Utility GUI 더블클릭 · 브라우저 실화면 zip 내려받기(미실행). 브라우저 1회는 S3 file:// 글꼴 확인에 썼다.
+- Safari·Firefox `file://` 상대 경로 글꼴.
 - B안 렌더 참조 직렬화의 실제 내보내기 왕복(렌더 문서 ↔ 부모)은 타입체크·기존 테스트까지만.
-- 결정 필요: (1) 이미지 분리 A/B(★B) (2) 글꼴 인라인 유지 vs 분리 (3) 단일 HTML의 B-M2C-01 처리.
+- 결정 필요: (1) 이미지 분리 A/B(★B) (2) 글꼴 분리(★, Chromium 확인) vs 인라인 유지 (3) 단일 HTML의 B-M2C-01 처리.
 
-## 7. 검증·정리 기록
-(마감 시 채움)
+## 7. 검증·정리 기록 (사실)
+- 패치 적용 상태 전체 테스트: `cd app && npx vitest run` → `Test Files 349 passed · Tests 3041 passed` (`raw/vitest-all-patched.txt`, S1~S4 + S2b 모두 적용)
+- B안 타입체크: `npx tsc --noEmit -p tsconfig.json` → 오류 0
+- 빌드 3회 모두 exit 0: `raw/build-baseline.txt` · `raw/build-s4.txt` · `raw/build-s2b-render-refs.txt`(S4 패치 위에 B안 추가)
+- 복원: `git checkout --` 자기 변경 5개 파일 + `app/src/features/studio/zip` 삭제 → `git diff -- app/` 빈 값 · `git apply --check` 두 패치 모두 통과(재현 가능)
+- preview 서버: 띄우지 않음(브라우저 확인은 `file://` 임시 폴더, 삭제함) → lsof 대상 포트 없음
+- 서브에이전트: 사용 안 함(S2 경로는 파일 5개라 직접 읽음)

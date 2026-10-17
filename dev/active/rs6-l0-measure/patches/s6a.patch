@@ -1,0 +1,336 @@
+diff --git a/app/src/data/memoryDocBook.ts b/app/src/data/memoryDocBook.ts
+index bb9ab74d..36e80cb6 100644
+--- a/app/src/data/memoryDocBook.ts
++++ b/app/src/data/memoryDocBook.ts
+@@ -142,6 +142,8 @@ function copyOf(baseReferenceId: string): Readonly<Record<string, string>> | und
+ 
+ /** 로컬 영속 싱크 열기 — 조작 뒤 청크(이 파일)에서 한 번 더 받는다: 진입 청크의 미리받기 목록에 싱크 의존(zod 등)을 싣지 않는다. 실패 뒤 재시도 = 새 URL(F1) */
+ const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
++/** memory 모드 코어 io(포트 없음) — local 모드는 싱크의 coreIo(같은 모듈) */
++export { coreIo } from "../features/studio/save/coreIo";
+ export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
+ 
+ /** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷) · 저장 기준 revision 보정(내 미확인 쓰기 위에 얹기) */
+diff --git a/app/src/data/memoryProjectRepository.ts b/app/src/data/memoryProjectRepository.ts
+index 6ee05579..8dc03be0 100644
+--- a/app/src/data/memoryProjectRepository.ts
++++ b/app/src/data/memoryProjectRepository.ts
+@@ -15,6 +15,7 @@ import type { LocalEntry } from "./persistence/entryRead";
+ import type { LocalSync } from "./persistence/localSync";
+ import type { StudioStore } from "./studioStore";
+ import type { ImageKeeper, RenderImages } from "../features/studio/images/store/types";
++import { createSaveCore, type CoreKeeper, type CoreLink, type SaveCore } from "../features/studio/save/saveCore";
+ 
+ export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
+ type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
+@@ -48,7 +49,7 @@ const loadImageRestore = retryableImport(() => import("./persistence/imageRestor
+ 
+ export const openLocal = async (entry: LocalEntry) => (await loadDocBook()).openLocalSync(entry);
+ 
+-export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper {
++export function createMemoryProjectRepository(options: MemoryProjectOptions): ProjectRepository & ImageKeeper & CoreKeeper {
+   const { store, now = () => new Date().toISOString(), generators = {}, local } = options;
+   const entry = local?.entry;
+   const counts = new Map<ProjectMethod, number>();
+@@ -87,6 +88,13 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
+     <K extends SnapshotWrite>(method: K) =>
+     (...args: Parameters<DocBook[K]>[0]) =>
+       kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
++  /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — 저장소 인스턴스 소유 · 편집기 첫 마운트 때 동기 생성 · 포트는 첫 save 때 */
++  const cores = new Map<string, SaveCore>();
++  const link = async (projectId: string): Promise<CoreLink> => {
++    const [mod, docs, sync] = await Promise.all([loadDocBook(), bookOf(), local?.sync()]);
++    const book = (doc: Parameters<CoreLink["book"]>[0], revision: number) => docs.save(projectId, revision, doc, () => undefined);
++    return sync ? { io: sync.coreIo, port: sync.corePort(docs), book } : { io: mod.coreIo, port: undefined, book };
++  };
+   /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
+   const entered = async (projectId: string) => {
+     const first = entry?.doc?.doc.projectId === projectId ? entry.doc : undefined;
+@@ -133,6 +141,11 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
+     requestExport: (projectId, format, docRevision) =>
+       kept(projectId, bookOf().then((docs) => docs.requestExport({ projectId, format, docRevision }, generators[format], (work) => call("requestExport", work)))),
+     getExportJob: async (jobId) => book?.jobOf(jobId),
++    core: (projectId, seed) => {
++      let core = cores.get(projectId);
++      if (!core) cores.set(projectId, (core = createSaveCore(projectId, seed, () => link(projectId))));
++      return core;
++    },
+     ...(local && {
+       images: (projectId: string, map: RenderImages | undefined, publish: Parameters<NonNullable<ImageKeeper["images"]>>[2]) => {
+         maps.set(projectId, map);
+diff --git a/app/src/data/persistence/localSync.ts b/app/src/data/persistence/localSync.ts
+index 3500badf..63fa2dbc 100644
+--- a/app/src/data/persistence/localSync.ts
++++ b/app/src/data/persistence/localSync.ts
+@@ -33,6 +33,8 @@ import type { RenderImages } from "../../features/studio/images/store/types";
+ import { tabLink, type TabLink } from "./tabLink";
+ import { createWriteQueue } from "./writeQueue";
+ import { createWriterGate, type WriterLocks, type WriterMode } from "./writerLock";
++import { coreIo } from "../../features/studio/save/coreIo";
++import type { CoreIo, CorePort } from "../../features/studio/save/saveCore";
+ 
+ /** DocBook 중 싱크가 읽는 부분 */
+ export interface BookView {
+@@ -57,6 +59,10 @@ export interface LocalSync {
+   firstSave(live?: () => boolean): Promise<boolean>;
+   /** 되돌리기 어려운 쓰기(restart) 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 flush와 같은 INFRA 사유로 던진다(호출자는 쓰기 0) */
+   guardWrite(): Promise<void>;
++  /** 저장 코어 io 본문(INTEGRATE-6 9.2 — 포트와 같은 청크) */
++  readonly coreIo: CoreIo;
++  /** 저장 코어 포트(INTEGRATE-6 1.3) — 레코드 = 코어 동결 doc + 제출 시점 DocBook 스냅샷(G1) */
++  corePort(book: BookView): CorePort;
+ }
+ 
+ const unreadable = () => new ProjectRepositoryError("INFRA", "열기 — 저장된 데이터를 읽지 못했습니다");
+@@ -215,6 +221,29 @@ export async function openLocalSync(
+       const mode = await gate.enter();
+       if (mode !== "writer") throw blocked(mode);
+     },
++    coreIo,
++    corePort: (book) => ({
++      mode: async () => (cleared ? "cleared" : gate.mode === "writer" ? gate.mode : await gate.enter()),
++      head: async (projectId) => {
++        const raw = (await persistence.get("docs", projectId)) as { data?: DocRecord } | undefined;
++        return raw?.data && { revision: raw.data.doc.revision, hash: raw.data.doc.hash };
++      },
++      stored: async (projectId) => ((await persistence.get("docs", projectId)) as { data?: DocRecord } | undefined)?.data?.doc as never,
++      commit: async (projectId, doc, bound) => {
++        // 엄격 이미지(I6): 참조 이미지가 바인딩에도 IDB에도 없으면 제출 0
++        const refs = recordRefs({ doc, snapshots: book.snapshotsOf(projectId) });
++        const have = new Set([...stored, ...inflight.keys()]);
++        if ([...refs].some((id) => !have.has(imageRecordId(projectId, id)) && !(bound[id] && imageMeta(bound[id])))) throw new ProjectRepositoryError("IMAGES_MISSING", projectId);
++        const view: BookView = { docOf: () => doc, snapshotsOf: book.snapshotsOf, snapshotSeqOf: book.snapshotSeqOf };
++        await write(projectId, view, bound);
++      },
++      verify: async (projectId, receipt) => {
++        const raw = (await persistence.get("docs", projectId)) as { data?: DocRecord } | undefined;
++        if (raw?.data?.doc.hash !== receipt.hash || raw.data.doc.revision !== receipt.revision) return false;
++        const have = new Set(await persistence.keys("images"));
++        return [...recordRefs(raw.data)].every((id) => have.has(imageRecordId(projectId, id)));
++      },
++    }),
+     // 상태 쓰기(saveState)가 먼저 잠금을 요청했으면 그 제출 뒤에 낸다 — 같은 enter 시도를 기다린다
+     firstSave: async (live = () => true) => {
+       try {
+diff --git a/app/src/features/studio/save/coreIo.ts b/app/src/features/studio/save/coreIo.ts
+new file mode 100644
+index 00000000..2f92e481
+--- /dev/null
++++ b/app/src/features/studio/save/coreIo.ts
+@@ -0,0 +1,102 @@
++/**
++ * 저장 코어 io 부분(INTEGRATE-6 9.2 조작 뒤 몫) — save 본문·confirm·discard·replace. 하네스 saveCore.ts 의미(I1~I8)를 포트 위로 옮겼다.
++ * 영속 접근은 포트만(2.2-1). memory 모드(포트 없음) = DocBook 메모리 커밋 뒤 not-persistent(I5).
++ */
++import { hashDoc } from "../../../engine/ops/hash";
++import type { PageDoc } from "../../../engine/contracts/pageDoc";
++import type { RenderImages } from "../images/store/types";
++import type { CoreIo, CoreLink, CoreState, Receipt, SaveResult } from "./saveCore";
++
++const reasonOf = (error: unknown) => (error as { code?: string })?.code ?? String((error as Error)?.message);
++
++async function saveNow(s: CoreState, link: CoreLink, projectId: string): Promise<SaveResult> {
++  // CE-2: 제출 doc·바인딩·mark를 같은 동기 구간에서 동결
++  const target = s.doc;
++  const bound = s.attached;
++  const submitted = s.mark;
++  const newer = () => s.mark > submitted;
++  const base = s.confirmed?.revision ?? target.revision;
++  const next: PageDoc = Object.freeze({ ...target, revision: base + 1, hash: hashDoc(target) });
++  if (!link.port) {
++    try {
++      link.book(target, base);
++    } catch (error) {
++      return { status: "failed", reason: reasonOf(error), newer: newer() };
++    }
++    return { status: "failed", reason: "not-persistent", newer: newer() };
++  }
++  const mode = await link.port.mode();
++  if (mode !== "writer") return { status: "failed", reason: mode, newer: newer() };
++  try {
++    await link.port.commit(projectId, next, bound);
++  } catch (error) {
++    return { status: "failed", reason: reasonOf(error), newer: newer() };
++  }
++  const receipt: Receipt = { hash: next.hash, revision: next.revision, mark: submitted, proof: "committed" };
++  s.savedMark = Math.max(s.savedMark, submitted);
++  s.confirmed = receipt;
++  s.committed = bound;
++  // saved 뒤 DocBook 맞춤(G1) — 실패면 IDB는 이미 커밋, 메모리만 다음 저장이 맞춘다
++  try {
++    link.book(target, base);
++  } catch {
++    /* 다른 화면 메모리 머리 맞춤 실패 — 저장 결과는 saved */
++  }
++  return { status: "saved", receipt, newer: newer() };
++}
++
++export const coreIo: CoreIo = {
++  save: saveNow,
++  async confirm(s, link, projectId, save) {
++    if (!link.port) return { status: "failed", reason: "not-persistent" };
++    const entered = s.mark;
++    if (s.mark <= s.savedMark && s.confirmed) {
++      const mode = await link.port.mode();
++      if (mode !== "writer") return { status: "failed", reason: mode };
++      const proof = s.confirmed;
++      if (!(await link.port.verify(projectId, proof))) return { status: "failed", reason: "stale" };
++      if (s.mark !== entered) return { status: "newer", receipt: { ...proof, proof: "fresh" } };
++      return { status: "confirmed", wrote: false, receipt: { ...proof, proof: "fresh" } };
++    }
++    const result = await save();
++    if (result.status === "failed") return { status: "failed", reason: result.reason };
++    if (!(await link.port.verify(projectId, result.receipt))) return { status: "failed", reason: "not-committed" };
++    if (s.mark > result.receipt.mark) return { status: "newer", receipt: result.receipt };
++    return { status: "confirmed", wrote: true, receipt: result.receipt };
++  },
++  async discard(s, link, projectId) {
++    if (s.discarding) return { status: "rejected", reason: "discarding" };
++    if (s.inflight > 0) return { status: "rejected", reason: "inflight" };
++    if (!link.port) return { status: "blocked", reason: "not-persistent" };
++    const proof = s.confirmed;
++    if (!proof) return { status: "blocked", reason: "no-saved-state" };
++    s.discarding = true;
++    try {
++      const entered = s.mark;
++      const head = await link.port.head(projectId);
++      if (!head || !(await link.port.verify(projectId, proof))) return { status: "blocked", reason: "stale" };
++      if (s.mark !== entered) return { status: "blocked", reason: "newer" };
++      const stored = await link.port.stored(projectId);
++      if (!stored) return { status: "blocked", reason: "stale" };
++      s.doc = stored;
++      // CX-3: 바인딩 = 복귀 문서 커밋 때 실린 이미지만
++      s.attached = s.committed;
++      s.savedMark = s.mark;
++      s.epoch += 1;
++      return { status: "discarded", restored: { ...proof, proof: "fresh" } };
++    } finally {
++      s.discarding = false;
++    }
++  },
++  replace(s, next, request, blobs?: RenderImages) {
++    if (request.intent !== "replace") return { status: "rejected", reason: "intent-required" };
++    if (s.inflight > 0) return { status: "rejected", reason: "inflight" };
++    if (s.mark > s.savedMark) return { status: "rejected", reason: "dirty" };
++    if (request.expectedEpoch !== s.epoch) return { status: "rejected", reason: "epoch" };
++    s.doc = next;
++    if (blobs) s.attached = { ...s.attached, ...blobs };
++    s.mark += 1;
++    s.epoch += 1;
++    return { status: "replaced", epoch: s.epoch };
++  },
++};
+diff --git a/app/src/features/studio/save/saveCore.ts b/app/src/features/studio/save/saveCore.ts
+new file mode 100644
+index 00000000..960fdef3
+--- /dev/null
++++ b/app/src/features/studio/save/saveCore.ts
+@@ -0,0 +1,108 @@
++/**
++ * 저장 코어 상태 부분(INTEGRATE-6 9.2 진입 몫) — 초안·mark·바인딩·epoch·lease·직렬 chain. 동기 생성(2.2-2 ①).
++ * io(save 본문·confirm·discard·replace·verify)와 포트는 조작 뒤 청크 — `connect()`가 받는다(값 import 0, 타입만).
++ */
++import type { PageDoc } from "../../../engine/contracts/pageDoc";
++import type { RenderImages } from "../images/store/types";
++
++export interface Receipt {
++  readonly hash: string;
++  readonly revision: number;
++  readonly mark: number;
++  readonly proof: "hydrated" | "committed" | "fresh";
++}
++export type SaveResult = { readonly status: "saved"; readonly receipt: Receipt; readonly newer: boolean } | { readonly status: "failed"; readonly reason: string; readonly newer: boolean };
++export type ConfirmResult = { readonly status: "confirmed"; readonly wrote: boolean; readonly receipt: Receipt } | { readonly status: "newer"; readonly receipt: Receipt } | { readonly status: "failed"; readonly reason: string };
++export type DiscardResult = { readonly status: "discarded"; readonly restored: Receipt } | { readonly status: "rejected" | "blocked"; readonly reason: string };
++export type ReplaceResult = { readonly status: "replaced"; readonly epoch: number } | { readonly status: "rejected"; readonly reason: string };
++export interface ReplaceRequest {
++  readonly intent?: "replace";
++  readonly expectedEpoch?: number;
++}
++
++/** 코어 가변 상태 — io 청크가 같은 객체를 읽고 쓴다 */
++export interface CoreState {
++  doc: PageDoc;
++  mark: number;
++  savedMark: number;
++  inflight: number;
++  epoch: number;
++  confirmed: Receipt | undefined;
++  attached: RenderImages;
++  committed: RenderImages;
++  discarding: boolean;
++  chain: Promise<unknown>;
++}
++
++/** 포트(1.3) — 제품 LocalSync가 구현 */
++export interface CorePort {
++  mode(): Promise<string>;
++  head(projectId: string): Promise<{ readonly revision: number; readonly hash: string } | undefined>;
++  commit(projectId: string, doc: PageDoc, bound: RenderImages): Promise<void>;
++  verify(projectId: string, receipt: Receipt): Promise<boolean>;
++  /** discard 복귀 문서(마지막 커밋 레코드의 문서) */
++  stored(projectId: string): Promise<PageDoc | undefined>;
++}
++
++/** 조작 뒤 io 본문 */
++export interface CoreIo {
++  save(s: CoreState, link: CoreLink, projectId: string): Promise<SaveResult>;
++  confirm(s: CoreState, link: CoreLink, projectId: string, save: () => Promise<SaveResult>): Promise<ConfirmResult>;
++  discard(s: CoreState, link: CoreLink, projectId: string): Promise<DiscardResult>;
++  replace(s: CoreState, next: PageDoc, request: ReplaceRequest, blobs?: RenderImages): ReplaceResult;
++}
++
++/** io + 포트(local만) + 메모리 커밋(DocBook) */
++export interface CoreLink {
++  readonly io: CoreIo;
++  readonly port: CorePort | undefined;
++  /** DocBook 메모리 커밋(saved 뒤 맞춤 · memory 모드 저장) */
++  readonly book: (doc: PageDoc, revision: number) => unknown;
++}
++
++export function createSaveCore(projectId: string, seed: PageDoc, connect: () => Promise<CoreLink>, starter?: () => Promise<void>) {
++  const s: CoreState = { doc: seed, mark: 0, savedMark: 0, inflight: 0, epoch: 0, confirmed: { hash: seed.hash, revision: seed.revision, mark: 0, proof: "hydrated" }, attached: {}, committed: {}, discarding: false, chain: Promise.resolve() };
++  let leases = 0;
++  let live: { readonly mountId: string; readonly token: number } | undefined;
++  const save = (): Promise<SaveResult> => {
++    if (s.discarding) return Promise.resolve({ status: "failed", reason: "discarding", newer: false });
++    s.inflight += 1;
++    const run = s.chain.then(connect).then((link) => link.io.save(s, link, projectId)).finally(() => (s.inflight -= 1));
++    s.chain = run.catch(() => undefined);
++    return run;
++  };
++  return {
++    edit(next: PageDoc, blobs?: RenderImages) {
++      s.doc = next;
++      s.mark += 1;
++      if (blobs) s.attached = { ...s.attached, ...blobs };
++      return s.mark;
++    },
++    save,
++    confirm: () => connect().then((link) => link.io.confirm(s, link, projectId, save)),
++    discard: () => connect().then((link) => link.io.discard(s, link, projectId)),
++    replace: (next: PageDoc, request: ReplaceRequest, blobs?: RenderImages) => connect().then((link) => link.io.replace(s, next, request, blobs)),
++    /** 같은 mountId 재요청(StrictMode) = 같은 토큰 · release 뒤 = 새 토큰 */
++    acquire(mountId: string) {
++      if (live?.mountId === mountId) return live.token;
++      leases += 1;
++      live = { mountId, token: leases };
++      return leases;
++    },
++    release(token: number) {
++      if (live?.token === token) live = undefined;
++    },
++    retryStart: async () => starter?.(),
++    view() {
++      const { doc, mark, savedMark, inflight, epoch, confirmed, attached } = s;
++      return { doc, mark, dirty: mark > savedMark, inflight: inflight > 0, epoch, confirmed, images: attached };
++    },
++  };
++}
++
++export type SaveCore = ReturnType<typeof createSaveCore>;
++
++/** 저장소 능력(선택) — ImageKeeper와 같은 모양(MQ-6-1) */
++export interface CoreKeeper {
++  readonly core?: (projectId: string, seed: PageDoc) => SaveCore;
++}

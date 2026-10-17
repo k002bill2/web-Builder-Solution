@@ -260,8 +260,8 @@
 
 | 명령 | 결과 | 로그 |
 |---|---|---|
-| `npm run typecheck` | exit 0 | (최종 커밋 전 실행) |
-| `npm run lint` | exit 0 | 같음 |
+| `npm run typecheck` | exit 0 | `logs/r2-final-typecheck.txt` |
+| `npm run lint` | exit 0 | `logs/r2-final-lint.txt` |
 | `npx vitest run` | **339 files / 3008 tests passed** (base 331/2957 + 51) | `logs/r2-final-test.txt` |
 | `npm run build` | **exit 0** · 129.11 / 132.09 | `logs/r2-final-build.txt` |
 

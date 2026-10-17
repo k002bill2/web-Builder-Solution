@@ -163,3 +163,116 @@
   - 전체 L4 증분 +0.3~0.5.
   - 다른 탭 stale에서 resolveConflict 실패.
 - **미확인**: CP2~CP4 실측 · 실화면 · 다중 탭 · ConflictCallout lazy 첫 그림 지연(충돌 진입 때 청크 로드 1회)이 alert·포커스 규칙(UX5-AC-04)에 주는 영향.
+
+---
+
+# R2 — L4 전체 구현 재개 (BRIEF-R2 · M3a 조합 · 상향 0)
+
+**결론: L4 CP1~CP4 + 상쇄 M2a~M2d를 구현했다. 최종 /studio 정규화 129.11 · raw 130.43 · 복원 132.09 · 복원 raw 133.46 · build exit 0 — 멈춤선(129.12 · 132.10 · raw 130.5) 안. 감량 1회(`conflict.latest` 진입 결선 제거, 동작 변화 0)를 썼다. 상향 요청 0.**
+
+- 커밋: `5eb5acc8`(착수) · `ca464895`(CP1) · `2acb803a`(CP2) · `f13969c3`(CP3) · `eec2087b`(CP4) · `27fb024b`(M2c·M2d · 감량 · 기준선) · REPORT 커밋(이 절).
+- Codex review r1(`--scope branch --base aca09805`): **지적 0건**(`logs/r2-codex.txt`). 반영 라운드 없음.
+- 주의: CP1~CP4 중간 커밋은 build가 예산 검사로 exit 1이었다(129.35 → 129.52 → 129.31 → 129.32). 상쇄 전 중간값이라 예상한 상태였고, 마지막 커밋 `27fb024b`에서 exit 0이 됐다.
+
+## R2-1. 예산 표 (같은 머신 · `npm run build` 출력)
+
+| 단계 | /studio 정규화 | raw | 복원 정규화 | 복원 raw | build | 로그 |
+|---|---|---|---|---|---|---|
+| base | 129.09 | 130.42 | 132.07 | 133.45 | 0 | `logs/base-build.txt` |
+| CP1 | 129.35 | 130.67 | 132.33 | 133.70 | 1 | `logs/r2-cp1-build.txt` |
+| CP2(+M2a 구조) | 129.52 | 130.87 | 132.50 | 133.91 | 1 | `logs/r2-cp2-build.txt` |
+| CP3(+M2b · Callout lazy) | 129.31 | 130.68 | 132.29 | 133.71 | 1 | `logs/r2-cp3-build.txt` |
+| CP4 | 129.32 | 130.68 | 132.30 | 133.71 | 1 | `logs/r2-cp4-build.txt` |
+| +M2c·M2d(`src/build/sharedDataChunks.ts`) | 129.14 | 130.46 | 132.12 | 133.50 | 1 | `logs/r2-m2-build.txt` |
+| **감량 1회(conflict.latest 결선 제거)** | **129.11** | **130.43** | **132.09** | **133.46** | **0** | `logs/r2-reduce1-build.txt` |
+| 기준선 갱신 뒤 fresh | 129.11 | 130.43 | 132.09 | 133.46 | 0 | `logs/r2-final-build.txt` |
+
+- 판정 밖 라우트(fresh): `/projects` 첫 99.06 · 자동 108.93 · `/profile` 첫 99.52 · 자동 119.94 · `/compare` 첫 98.94 · 자동 122.63. `/compare` 조작 뒤 `memoryProfileAdjust` +0.66(MEASURE 실측, M2d 대가 — 판정 밖) · preload 가드 17개 청크 그대로.
+- MEASURE M3a(129.12)보다 1차가 +0.02 컸다. 이유(추정 L2): PNG 이유 문장에 `source` 전달(아래 R2-3 ②) · `SaveActions.reload` 주입 · 테스트용 분기.
+- 기준선: `app/scripts/m2cBaseline.json`(eagerKb 130.43·133.46 · normEagerKb 129.11·132.09 · note "개정 17 배분 RS6-L4") · `app/scripts/bundleBudget.test.mjs` 기대값 같은 커밋에서 갱신. `check-bundle-size.mjs` 수정 0.
+
+## R2-2. Jarvis 결정 반영
+
+1. **① I6 8.1안**: 포트 stale → `useDocSave.save`가 `INFRA`로 던진다(failed + 출처 reason `stale`) → 상태 글자·alert "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요" + "버리고 새로고침"(폐기 확인 → `core.discard()` → reload).
+2. **② 분리안 유지**: 3절(LV) 문구(slow 꼬리 · hang · discard timeout) = 진입 `saveStatusText.ts` / UX-5 2.3 환경 문구(stale·cleared·readonly·image-missing·unsupported) = 조작 뒤 `save/reasonText.ts`(`coreIo.text`). 근거 1줄: RS6-AC-G3 문면은 "3절 새 문구 = `saveStatusText.ts` 1곳"이고 3절 문구는 모두 그 파일에 있다 — 환경 문구는 3절 문구가 아니다.
+3. **③ 상쇄 M2a~M2d 전부 채택**: M2a = `SaveActions` lazy(CP2에서 바로 이 구조로) · M2b = 충돌 핸들러를 `ConflictCallout` 청크로(CP3) · M2c·M2d = `src/build/sharedDataChunks.ts` 목록 모듈(선례 `studioEngineChunk.ts`, 가드 테스트 3건) — `vite.config.ts`는 `...sharedDataChunkGroups()`만 펼친다.
+
+### 도달 경로 표 (ConflictCallout · resolve — 삭제는 범위 밖, QA 판정)
+
+| 경로 | R2 전 | R2 뒤 |
+|---|---|---|
+| 포트 stale(다른 탭 커밋) → 스케줄러 `stale` 단계 → `save.conflict` → ConflictCallout | 있음 | **0** — save가 STALE_DOC을 던지지 않는다(INFRA) |
+| 그 밖 STALE_DOC 출처(스케줄러에 들어오는 오류) | save 1곳뿐 | 0 |
+| `useDocSave.resolve` 호출처 | ConflictCallout 버튼 | ConflictCallout 버튼만(제품 도달 0) · 단위 테스트(useDocSave 3건 · ConflictCallout 3건)는 유지 |
+| `conflict.latest`(포트 head 읽기) | 있음 | **제거(감량 1회)** — `DocConflict`는 빈 객체 · `latestRevision` prop은 Callout에 optional로 남김 |
+
+## R2-3. 테스트 의미 교체 · 예상 깨짐 (이전/이후 — 단언 약화 아님)
+
+| 테스트 | 이전 | 이후 | 근거 | 약화 아님 근거 |
+|---|---|---|---|---|
+| `useDocSave.test` "다른 탭 stale(포트)…" | phase `stale` · `conflict.latest = theirs` · 고르기 전 saveDoc 1회 | phase `failed` · `source = {reason: stale, 문구}` · conflict 없음 · 화면 = 내 편집 · 편집+retry 뒤 saveDoc 시도는 모두 reject(덮어쓰기 0) | I6 8.1 stale 행 | 단언 수 늘림(출처·문구·덮어쓰기 0 추가). "자동 저장 0" → "시도는 있으나 모두 거절" — failed는 재시도하는 단계라 실제 동작을 그대로 단언 |
+| `useDocSave.test` "해결 실패…" | reject + phase `stale` | reject + phase `failed` + reason `stale` | 같음 | 같은 강도 + reason 단언 추가 |
+| `StudioLayout.test` "다른 탭 stale(포트) → stale 환경 행" | 캔버스 Callout(r7) · "내 편집으로 저장" | 배너 상태 글자·alert = stale 문구 · Callout 0 · "버리고 새로고침" 있음 · "다시 저장" 0 · 내 편집 유지 · 알림 영역 1 | I6 8.1 · UX-5 2.2 버튼 1개 | 부재 단언 + 새 버튼 단언 추가 |
+| `StudioLayout.test` PNG 이유(stale) | "다른 곳에서 이 문서가 바뀌었습니다" | stale 환경 문구(PNG 이유 = 저장 상태 문장 — `saveStatusText(..., save.source)`) | 같음 | 같은 정확 일치 |
+| `FieldUndo.test` P2-3(**MEASURE 밖 추가 발견**) | 충돌 "다른 편집 불러오기"(기록 밖 교체) 뒤 Ctrl+Z = 불러온 문서 | 다른 탭 stale → stale 행(불러오기 버튼 0) · Ctrl+Z = 내 앞 편집 "첫 편집"(정확 일치) · 부제 = 원래 값 · 다른 탭 값 0 | I6 8.1 — 기록 밖 교체 경로 자체가 제품에서 사라짐(버리고 새로고침 = reload) | 정확 일치 단언 유지 · 다른 탭 값 부재 단언 |
+| `useDocSaveLeave.test` 탭 경고(**추가 발견**) | phase `stale`에서 경고 등록 | phase `failed` + reason `stale`에서 경고 등록 | 같음 | 같은 강도 + reason |
+| `StudioLeave.test:198` 읽기 전용 | "저장하지 못했습니다" | "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다" | UX-5 2.3 readonly | 같은 강도(문구 교체) |
+| `liveness.status.test` aria-busy slow | "저장 중…" | "저장 중… · 브라우저 응답이 늦습니다" + aria-busy | I6 3절 LV-1 꼬리 | 같은 강도 |
+| `ConflictCallout.test` 2건 | `onChoose` props · 본문 1문장 · `toBeDisabled` | `resolve` props · UX-5 5.2 본문 2문장 · `aria-disabled`(포커스 유지) + 성공/실패 포커스 테스트 1건 추가 | UX5-AC-05·07 · M2b | disabled → aria-disabled는 UX5-AC-07 요구 |
+
+- MEASURE의 "StudioLayout STALE→Callout 동기 getBy" 예상 깨짐은 stale 행 전환으로 테스트 자체가 위 표 3행으로 바뀌었다.
+
+## R2-4. TDD 로그
+
+| CP | RED | GREEN | 비고 |
+|---|---|---|---|
+| CP1 | 9 failed / 46 (`logs/r2-cp1-red.txt`) — 예측(새 테스트 + 의미 교체 6건 RED) 일치 | 60/60 (`logs/r2-cp1-green.txt`) | 전체 스위트에서 포트 stale 의존 2건 추가 발견 → 교체 |
+| CP2 | 신규 2파일 import 실패 + `report` 1건 (`logs/r2-cp2-red.txt`) | 26/26 (`logs/r2-cp2-green.txt`) | 패치에 없던 `SaveActions.test`(confirm 매핑 5 · 폐기 대화상자 5) 새로 씀 |
+| CP3 | 3 failed / 5 (`logs/r2-cp3-red.txt`) | 5/5 (`logs/r2-cp3-green.txt`) | epoch +1: `rebase`의 `s.epoch += 1` 변이 → 2 FAIL(`logs/r2-cp3-epoch-mutation-red.txt`) → 복원 PASS |
+| CP4 | 2 failed / 25 (`logs/r2-cp4-red.txt`) | 25/25 (`logs/r2-cp4-green.txt`) | 금지 문구 가드 8건은 가드라 첫 실행부터 GREEN · `SnapshotPreview.saveFirst.test` 새로 씀 |
+| M2 | import 실패 (`logs/r2-m2-red.txt`) | 3/3 | — |
+
+## R2-5. AC 판정 (단위·실화면 근거)
+
+| AC | 판정 | 근거 |
+|---|---|---|
+| RS6-AC-U8(버튼 ↔ 코어 1:1) | 충족 | `SaveStatus.buttons.test` · `SaveActions.test`(confirm=`core.link`→`io.confirm` 1회 · discard=`core.discard()` 1회 · 연타 1회) |
+| RS6-AC-U9(memory) | 충족 | memory "저장 확인" DOM 0 · "브라우저에 저장됨" 0(단위) |
+| RS6-AC-G3(문구 1곳·금지 문구 0) | 충족(해석 R2-2 ②) | `saveForbiddenText.test` 8건 · 3절 문구 = `saveStatusText.ts` |
+| UX5-AC-01 hang alert 위치 | 충족 | `SaveStatus.source.test` T_hang |
+| UX5-AC-04·06 폐기 대화상자 포커스 | 충족 | 단위 + 실화면(첫 포커스 "취소" · Esc → "버리고 새로고침" 복귀) |
+| UX5-AC-05 충돌 성공/실패 포커스 | 단위 충족 · 실화면 도달 경로 0 | `ConflictCallout.test` 3번째 |
+| UX5-AC-07 aria-disabled | 충족 | 버튼 전부 `disabled` 대신 aria-disabled |
+| UX5-AC-12·14 | 충족 | 문구 원문 단언 · 금지 문구 가드 |
+
+## R2-6. 실화면 (Ego Lite · preview `--port 4380 --strictPort` · 1280·390)
+
+- 경로: IDB 초기화 → 카탈로그 → 비교 → 프로필 확정 → 3안 → A안 편집 시작(`/studio/project-1`). 모두 앱 안 클릭.
+- 1280 저장: "이 브라우저에 저장됨 · 방금"(`shots/r2-1280-saved.png`).
+- **readonly(2탭)**: 탭2 편집 → 글자·alert = "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다". `navigator.locks.query().held = [design-studio-writer:exclusive]`(실측). "저장 확인"은 저장 전 변경이 있어 숨김(MQ-5-3 A 규칙대로) — 변경 없는 readonly 화면은 이번에 보지 못했다(미확인).
+- **stale(2탭)**: 탭1 열기 → 탭2 저장 → 탭2 닫기 → 탭1 편집 → 글자·alert = "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요" + "버리고 새로고침" 1개 · 충돌 Callout 0(`shots/r2-1280-stale-row.png`). 이 시점 locks held = [](실측).
+  - 키보드만: 버튼 focus → Enter → `role=alertdialog` "확인되지 않은 변경 버리기" · 첫 포커스 "취소"(`shots/r2-1280-discard-dialog.png`) → Esc → 닫힘 · 포커스 "버리고 새로고침". 다시 열어 Tab → "버리기" → Enter → reload · 상태 글자 빈 값(편집 전).
+  - 390: 같은 글자·버튼 · `scrollWidth` 375(가로 넘침 0)(`shots/r2-390-stale-row.png`).
+- 못 본 것(미확인): 저장 중·느림 꼬리(실 IDB가 빨라 재현 안 함 — 단위 테스트로만) · 실패 "다시 저장" 실화면 · 충돌 Callout(도달 경로 0).
+- 정리: IDB 삭제(남은 DB 0) · `task.finish({keep: []})` · preview 종료 · 4380 리슨 0 · 5480 리슨 0(무접촉).
+
+## R2-7. 마감 게이트 (fresh)
+
+| 명령 | 결과 | 로그 |
+|---|---|---|
+| `npm run typecheck` | exit 0 | (최종 커밋 전 실행) |
+| `npm run lint` | exit 0 | 같음 |
+| `npx vitest run` | **339 files / 3008 tests passed** (base 331/2957 + 51) | `logs/r2-final-test.txt` |
+| `npm run build` | **exit 0** · 129.11 / 132.09 | `logs/r2-final-build.txt` |
+
+## R2-8. 병렬·범위
+
+- L5 경로(`features/projects/**` 등) 수정 0. `saveCore.ts`는 `CoreIo.text` 1줄 · `coreIo.ts`는 import + `text:` 2줄만 — L5의 3줄과 다른 부분(머지 순서 L5 먼저, 충돌 판단 Jarvis).
+- `src/build/sharedDataChunks.ts`의 `projectRepository` 짝은 L5 레인 라우트 `/projects` 첫 화면을 −0.09 바꾼다(M2c) — 머지 때 조율 필요.
+- 엔진·PageDoc·레코드·스키마·의존성 변경 0. 서브에이전트 0개(사유: 쓰기 파일이 서로 겹치고 순차 TDD라 분할 이득 없음).
+
+## R2-9. 사실 / 추정 / 미확인
+
+- **사실 [L1]**: R2-1 수치(build 출력) · R2-4 테스트 결과 · Codex 지적 0 · 실화면 R2-6 관측값.
+- **추정 [L2]**: MEASURE 대비 +0.02의 원인 배분.
+- **미확인**: 변경 없는 readonly "저장 확인" 실화면 · 저장 중/느림 실화면 · `confirm` 실제 IDB 결과(단위 목만).

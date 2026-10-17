@@ -44,7 +44,7 @@
 - [x] R4. CP4 문구·금지 문구 0·memory 모드 — RED 2/25(slow 알림 · 저장 먼저 실패 문장, `logs/r2-cp4-red.txt`) · 금지 문구 가드 8건은 첫 실행부터 GREEN(가드 성격) · memory U9는 CP2 버튼 테스트 → GREEN 25/25 · 전체 338/3005 · build 129.32(중간 — M2c·M2d 전, `logs/r2-cp4-build.txt`)
 - [x] R5. 상쇄 M2a~M2d — M2a·M2b는 CP2·CP3 구조로 · M2c·M2d = `src/build/sharedDataChunks.ts`(RED `logs/r2-m2-red.txt` → 3/3) · 조합 129.14/130.46/132.12(`logs/r2-m2-build.txt`) — 멈춤선 +0.02
 - [x] R6. 예산 — 감량 1회(conflict.latest 진입 결선 제거, 동작 변화 0) → 129.11/130.43/132.09/133.46 exit 0(`logs/r2-reduce1-build.txt`) · 기준선 `m2cBaseline.json`·`bundleBudget.test.mjs` 실측 갱신 · fresh test 339/3008 · build exit 0(`logs/r2-final-*`)
-- [ ] R7. Ego Lite 실화면 (1280·390 · stale 2탭)
-- [ ] R8. Codex review (`--scope branch --base aca09805`) · 반영 1회
-- [ ] R9. fresh typecheck·lint·test·build
-- [ ] R10. REPORT.md R2 절 + 커밋
+- [x] R7. Ego Lite 실화면 — 1280 저장 · readonly 2탭(locks held 기록) · stale 2탭 행·폐기 대화상자 키보드 · 390 넘침 0 · 정리 완료(REPORT R2-6)
+- [x] R8. Codex review r1 — 지적 0건(`logs/r2-codex.txt`) · 반영 불필요
+- [x] R9. fresh typecheck·lint 0 · test 339/3008 · build exit 0 129.11/132.09
+- [x] R10. REPORT.md R2 절 + 커밋

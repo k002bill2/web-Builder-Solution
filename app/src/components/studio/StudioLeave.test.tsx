@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ProfileRepositoryProvider } from "../../data/ProfileRepositoryContext";
 import type { GenerationRepository } from "../../data/generationRepository";
 import type { ProfileRepository } from "../../data/profileRepository";
-import type { Project, ProjectRepository } from "../../data/projectRepository";
+import { ProjectRepositoryError, type Project, type ProjectRepository } from "../../data/projectRepository";
 import { READ_ONLY_TAB, toInfra } from "../../data/persistence/infra";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
@@ -280,6 +280,24 @@ describe("편집기 이탈 저장 (B-RS-01)", () => {
     leave();
     await repo.release(toInfra(undefined, "저장"));
     expect(screen.queryByText("프로젝트 목록")).toBeNull();
+  });
+
+  // RS6-AC-U13 판정 ②·③(I6 3.1-3): 클릭 시점 STALE · 지워진 탭(cleared — 실패 reason) = 보류(지금 leave() 그대로) — 저장 전 변경이 남아 있어도 이동 0
+  it.each([
+    ["STALE(다른 탭이 바꿈)", () => new ProjectRepositoryError("STALE_DOC", "stale", { doc: sampleDoc({ revision: 9 }) })],
+    ["cleared(이 브라우저 데이터 지워짐)", () => Object.assign(new Error("cleared"), { reason: "cleared" })],
+  ] as const)("%s 상태에서 앱 안 링크 = 보류 · 이동 0", async (_name, error) => {
+    const repo = heldRepository();
+    const { arrivals } = draw(repo.repository);
+    type("보류될 편집");
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    await repo.release(error());
+    type("그 뒤 편집");
+    leave();
+    await act(() => vi.advanceTimersByTimeAsync(0));
+    while (repo.waiting()) await repo.release(error());
+    expect(screen.queryByText("프로젝트 목록")).toBeNull();
+    expect(arrivals).toHaveLength(0);
   });
 
   it("수정 키(Ctrl·Meta·Shift·Alt) 클릭은 이 탭을 떠나지 않으므로 가로채지 않는다(Codex r1 P2)", () => {

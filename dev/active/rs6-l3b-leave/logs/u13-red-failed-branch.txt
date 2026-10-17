@@ -1,0 +1,148 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+ ❯ src/components/studio/StudioLeave.test.tsx (17 tests | 5 failed) 748ms
+   ❯ 편집기 이탈 저장 (B-RS-01) (17)
+     × 저장 실패 → 이동 보류 · 기존 실패 안내('저장하지 못했습니다' · '다시 저장') · 다음 클릭은 다시 저장해 보고 성공하면 이동 50ms
+     × 저장 실패 상태에서 저장을 기다리는 동안 링크 연타 = 저장 1회 · 이동 1회 47ms
+     × Web Locks 없어도 메모리 저장 실패는 보류(잠금 폴백은 로컬 저장만, Codex r2 P2) 26ms
+     × Web Locks 있는 브라우저의 일반 저장 실패는 그대로 보류 28ms
+     × cleared(이 브라우저 데이터 지워짐) 상태에서 앱 안 링크 = 보류 · 이동 0 35ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 실패 → 이동 보류 · 기존 실패 안내('저장하지 못했습니다' · '다시 저장') · 다음 클릭은 다시 저장해 보고 성공하면 이동
+AssertionError: expected <p></p> to be null
+
+- Expected:
+null
+
++ Received:
+<p>
+  프로젝트 목록
+</p>
+
+ ❯ src/components/studio/StudioLeave.test.tsx:163:43
+    161|     expect(repo.save).toHaveBeenCalledTimes(2);
+    162|     await repo.release(new Error("boom"));
+    163|     expect(screen.queryByText("프로젝트 목록")).toBeNull();
+       |                                           ^
+    164|     expect(screen.getByRole("banner")).toHaveTextContent("저장하지 못했습니다");
+    165|     expect(screen.getByRole("button", { name: "다시 저장" })).toBeInTheDoc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 실패 상태에서 저장을 기다리는 동안 링크 연타 = 저장 1회 · 이동 1회
+TestingLibraryElementError: Unable to find an accessible element with the role "link" and name "프로젝트로 돌아가기"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<p>[39m
+      [0m프로젝트 목록[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ backLink src/components/studio/StudioLeave.test.tsx:92:31
+     90| const editRegion = () => screen.getByRole("region", { name: /^편집 · / }…
+     91| const type = (value: string) => act(() => void fireEvent.change(within…
+     92| const backLink = () => screen.getByRole("link", { name: "프로젝트로 돌아가기" }…
+       |                               ^
+     93| const leave = () => act(() => void fireEvent.click(backLink()));
+     94| const titleOf = (doc: PageDoc | undefined) => doc?.sections.find((s) =…
+ ❯ src/components/studio/StudioLeave.test.tsx:93:52
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ leave src/components/studio/StudioLeave.test.tsx:93:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > Web Locks 없어도 메모리 저장 실패는 보류(잠금 폴백은 로컬 저장만, Codex r2 P2)
+AssertionError: expected <p></p> to be null
+
+- Expected:
+null
+
++ Received:
+<p>
+  프로젝트 목록
+</p>
+
+ ❯ src/components/studio/StudioLeave.test.tsx:270:43
+    268|     leave();
+    269|     await repo.release(new Error("청크 로드 실패"));
+    270|     expect(screen.queryByText("프로젝트 목록")).toBeNull();
+       |                                           ^
+    271|   });
+    272|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > Web Locks 있는 브라우저의 일반 저장 실패는 그대로 보류
+AssertionError: expected <p></p> to be null
+
+- Expected:
+null
+
++ Received:
+<p>
+  프로젝트 목록
+</p>
+
+ ❯ src/components/studio/StudioLeave.test.tsx:282:43
+    280|     leave();
+    281|     await repo.release(toInfra(undefined, "저장"));
+    282|     expect(screen.queryByText("프로젝트 목록")).toBeNull();
+       |                                           ^
+    283|   });
+    284|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > cleared(이 브라우저 데이터 지워짐) 상태에서 앱 안 링크 = 보류 · 이동 0
+AssertionError: expected <p></p> to be null
+
+- Expected:
+null
+
++ Received:
+<p>
+  프로젝트 목록
+</p>
+
+ ❯ src/components/studio/StudioLeave.test.tsx:299:43
+    297|     await act(() => vi.advanceTimersByTimeAsync(0));
+    298|     while (repo.waiting()) await repo.release(error());
+    299|     expect(screen.queryByText("프로젝트 목록")).toBeNull();
+       |                                           ^
+    300|     expect(arrivals).toHaveLength(0);
+    301|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 12 passed (17)
+   Start at  16:38:19
+   Duration  1.54s (tests 51%, environment 25%, transform 16%, import 4%, setup 4%)
+

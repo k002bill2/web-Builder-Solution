@@ -1,2 +1,2 @@
-TSC 0
 LINT 0
+TSC 0

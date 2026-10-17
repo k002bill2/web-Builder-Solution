@@ -11,7 +11,7 @@
 - [x] CP-B 화면 호출처 전환 (PLAN CP3) — latest·revision 좁힘·인계 2 구현 · adopt·resolve·export = 이미 코어 경유(추적) · `core.link` confirm/`discard` reject 매핑·replace 결선: BLOCKED: 이 레인에 호출처 없음(L4·L5 — REPORT 3절)
 - [x] CP-C 링크 이탈·POP·beforeunload (PLAN CP4 · MQ-6-7 A)
 - [x] Ego Lite 1회 (space 14 · 4377 · 정리 완료)
-- [x] 게이트 fresh: typecheck · lint · test(331/2951) · build(129.03)
+- [x] 게이트 fresh: typecheck · lint · test(331/2953) · build(129.03)
 - [x] REPORT.md
 
 ## 로그
@@ -24,3 +24,4 @@
 - CP-C 연쇄 변경(I6 3.1-1·3.1-2 · D6-11): F9 "저장 0" → "해제 save 1 · 커밋 전 초안 보존" · readonly leave() true → undefined(이동) · 스케줄러 훅 경고 3건 + useDocSave 경고 2건 → useDocSaveLeave 레지스트리 테스트로 이전 · StudioLeave :252 실패 상태 준비를 자동 저장으로.
 - CP-B 일부: `SaveResult.revision` = not-persistent만(RED `logs/cpB-red-revision.txt` → GREEN) · L3a 인계 2(restart STALE_DOC) = lease 해제 save로 사라짐 테스트.
 - CP-C 게이트: 전체 331/2951 GREEN(`logs/cpC-full-test.txt`) · build exit 0 · 정규화 129.03 / 복원 132.01 · raw 130.36 / 133.39 → 기준선 실측 갱신.
+- 마감 advisor 지적 반영: U13 판정 ②(STALE)·③(cleared) StudioLeave 새 행 2 · 분기 변이 RED 확인(`logs/u13-red-*.txt`) · 훅 소비자 1곳·저장소 탭당 1개 확인 · 콘솔 수집 범위 문장 정정 · 커밋 방식 메모.

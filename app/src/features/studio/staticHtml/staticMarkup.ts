@@ -110,11 +110,14 @@ function assertNoExternalSources(site: Element) {
 
 /** F-14 생성기 고정 부분(주석·CSS·class·data-* 이름)의 브랜드 문자열 — 사용자 글자(본문·alt·title·description)는 보지 않는다 */
 const BRAND = new RegExp(`${brand.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}|${["a", "p", "f", "s"].join("")}`, "i");
-/** CSS의 data: 본문(인라인 글꼴 base64)은 글자가 아니다 — 무작위 base64에 4글자가 우연히 들어가 거짓 실패했다(Ego Lite R2) */
-const CSS_DATA_URL = /url\(\s*(['"]?)data:[^'")]*\1\s*\)/gi;
-function assertNoBrand(site: Element, fixed: readonly string[]) {
+/**
+ * CSS의 인라인 글꼴 base64는 글자가 아니다 — 무작위 base64에 4글자가 우연히 들어가 거짓 실패했다(Ego Lite R2).
+ * 제외는 CSS 입력의 `url(data:font/…;base64,<base64 글자>)`만(AppSec L-2) — base64 글자에 공백·`*`·`{`가 없어 주석·규칙 경계를 넘지 못한다 · notice·고정 스크립트는 그대로 검사
+ */
+const CSS_FONT_DATA_URL = /url\(\s*(['"]?)data:font\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]*\1\s*\)/gi;
+function assertNoBrand(site: Element, css: string, fixed: readonly string[]) {
   const names = [site, ...site.querySelectorAll("*")].flatMap((el) => [el.getAttribute("class") ?? "", ...[...el.attributes].map((a) => a.name)]);
-  if ([...fixed.map((text) => text.replace(CSS_DATA_URL, "url()")), ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
+  if ([css.replace(CSS_FONT_DATA_URL, "url()"), ...fixed, ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
 }
 
 export function buildStaticHtml({ markup, css, title, description, notice, images = {}, target = "html" }: StaticHtmlParts): string {
@@ -137,7 +140,7 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   if ([...site.querySelectorAll("img")].some((img) => !imageSrc.test(img.getAttribute("src") ?? "") || img.hasAttribute("srcset"))) throw new Error("정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님");
   assertLinks(site);
   assertNoExternalSources(site);
-  assertNoBrand(site, [notice ?? "", css, STATIC_MENU_SCRIPT]);
+  assertNoBrand(site, css, [notice ?? "", STATIC_MENU_SCRIPT]);
 
   const head = page.head;
   head.replaceChildren();

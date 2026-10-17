@@ -46,7 +46,7 @@
 | build | `npm run build` | exit 0 (bundle 가드 통과 · 4절) |
 | Codex | `codex-companion review --scope branch --base ead47dcd` (1회) | P2 1건: 같은 PNG 재저장 시 편집 알림 글자 불변 → 재낭독 0 → 반영(RED→GREEN). 재리뷰는 BRIEF "1회"라 미실시 |
 
-### Ego Lite (preview `--port 4394 --strictPort`, IDB 초기화 → 카탈로그 → 비교 → 모던 카페 전부 선택 → 프로필 확정 → 3안 → A안 → 편집 시작 — 로그 `logs/ego-1.json`·`ego-2.json`)
+### Ego Lite (preview `--port 4394 --strictPort`, IDB 초기화 → 카탈로그 → 비교 → 모던 카페 전부 선택 → 프로필 확정 → 3안 → A안 → 편집 시작 — 로그 `logs/ego-2.json` — 1280+·1024 첫 관측은 스크린샷 시간 초과로 파일 미기록, 수치는 아래 표)
 | AC | 관측 | 판정 |
 |---|---|---|
 | UXP-AC-07 1280·1024(그리고 1877) | header `position: static` · top auto · z auto · 높이 52 · status 1개(편집 알림) · 가로 넘침 0 | 통과(배치 무변화) |

@@ -8,11 +8,11 @@
   - [x] A1 `useDocSave` 코어 없는 폴백 제거 + 폴백 의존 테스트 → 코어 있는 저장소 이전(단언 유지)
   - [x] A2 S6c 제거 목록(L0 REPORT 3절) 적용 · `LocalSync.base`·DocBook `base` 우회 삭제
   - [x] A3 상쇄 실측(정규화·raw·복원) 기준선 파일 갱신 · 커밋
-- [ ] CP-B 화면 호출처 전환 (PLAN CP3)
+- [x] CP-B 화면 호출처 전환 (PLAN CP3) — latest·revision 좁힘·인계 2 구현 · adopt·resolve·export = 이미 코어 경유(추적) · `core.link` confirm/`discard` reject 매핑·replace 결선: BLOCKED: 이 레인에 호출처 없음(L4·L5 — REPORT 3절)
 - [x] CP-C 링크 이탈·POP·beforeunload (PLAN CP4 · MQ-6-7 A)
-- [ ] Ego Lite 1회
-- [ ] 게이트 fresh: typecheck · lint · test · build
-- [ ] REPORT.md
+- [x] Ego Lite 1회 (space 14 · 4377 · 정리 완료)
+- [x] 게이트 fresh: typecheck · lint · test(331/2951) · build(129.03)
+- [x] REPORT.md
 
 ## 로그
 - CP-A RED 예측: 픽스처만 코어로 옮기면 `conflict.latest` 단언 2건(useDocSave.test:212 · StudioLayout.test:157)만 RED. 실측 RED 2 = 예측 일치(`logs/cpA-red-latest.txt`). 출처 = 포트 `head`(조작 뒤) 추가로 GREEN(`logs/cpA-green-latest.txt`) — BRIEF CP-B 항목을 CP-A로 당김(advisor 권고).

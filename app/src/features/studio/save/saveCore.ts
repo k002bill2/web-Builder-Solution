@@ -75,6 +75,8 @@ export interface CoreLink {
   readonly book: (doc: PageDoc) => PageDoc;
   /** saved 뒤 DocBook 문서 = 커밋한 문서 그대로(G1 — 실패면 호출 0) */
   readonly align: (doc: PageDoc) => void;
+  /** 편집 틀 이미지 맵(저장소 `images` 등록) — save 시작 때 코어 바인딩에 합친다(RS6-L3a · 기존 saveDoc 경로가 flush 때 맵을 싣던 것과 같은 시점 — ingest 직후 편집은 맵 state 갱신 전이라 edit 때는 못 받는다) */
+  readonly images?: () => RenderImages | undefined;
 }
 
 export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, starter?: () => Promise<void>) {

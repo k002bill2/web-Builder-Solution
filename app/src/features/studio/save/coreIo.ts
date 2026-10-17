@@ -16,6 +16,9 @@ const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string 
 
 export const coreIo: CoreIo = {
   async save(s, link): Promise<SaveResult> {
+    // 편집 틀 이미지 맵 → 코어 바인딩(탭 수명 — 편집기를 떠난 뒤 save도 Blob을 싣는다)
+    const map = link.images?.();
+    if (map) s.attached = { ...s.attached, ...map };
     // CE-2: 제출 doc·바인딩·mark를 같은 동기 구간에서 동결(edit·replace는 늘 새 객체를 할당 — 참조 캡처 = 사본)
     const target = s.doc;
     const bound = s.attached;

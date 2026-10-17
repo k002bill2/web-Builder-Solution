@@ -156,8 +156,9 @@ function copyOf(baseReferenceId: string): Readonly<Record<string, string>> | und
 const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
 export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
 /** 코어 링크 조립(조작 뒤 — 진입 레지스트리는 청크·DocBook·싱크만 넘긴다, 감량 ①′). io = 이 청크 한 곳(④b) · 포트 = local만 */
-export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | undefined, now: () => string): CoreLink => ({
+export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | undefined, now: () => string, images?: CoreLink["images"]): CoreLink => ({
   projectId,
+  images,
   io: coreIo,
   port: sync?.corePort(docs),
   now,

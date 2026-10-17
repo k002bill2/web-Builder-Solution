@@ -6,7 +6,8 @@ import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { createLockRegistry } from "../../data/persistence/fakeLocks";
 import { useDocSave } from "./useDocSave";
-import { PROJECT, edited, otherTab, startedRig } from "./save/testRig";
+import type { ImageKeeper } from "./images/store/types";
+import { PROJECT, bindOf, edited, otherTab, startedRig, uuid, withImage, type Repo } from "./save/testRig";
 
 const hook = (props: Parameters<typeof useDocSave>[0]) => renderHook(() => useDocSave(props));
 
@@ -101,5 +102,18 @@ describe("RS6-L3a CP2 · 저장 대상 = core.save", () => {
     act(() => result.current.edit(edited(doc, "x")));
     await vi.waitFor(() => expect(result.current.state.phase).toBe("failed"));
     expect((await repo.getDoc(PROJECT))?.revision).toBe(doc.revision);
+  });
+
+  it("새 이미지 편집 저장: 편집 틀 이미지 맵(images 등록 — StudioLayout과 같은 경로)이 저장 시점 코어 바인딩으로 실려 IDB 이미지 레코드까지 커밋 · saved", async () => {
+    const { db, repo, doc } = await startedRig();
+    const id = uuid(1);
+    const map = bindOf(doc, id);
+    const off = (repo as Repo & ImageKeeper).images!(PROJECT, map, () => undefined);
+    const { result } = hook({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 5 });
+    act(() => result.current.edit(withImage(doc, id)));
+    await vi.waitFor(() => expect(result.current.state.phase).not.toMatch(/dirty|saving|idle/));
+    expect(result.current.state.phase).toBe("saved");
+    expect((await db.persistence.keys("images")).some((key) => key.includes(id))).toBe(true);
+    off?.();
   });
 });

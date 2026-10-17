@@ -95,7 +95,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     const core = cores.get(projectId);
     return core && (await core.idle(), await core.link((_, s) => s));
   };
-  const link = (projectId: string) => Promise.all([loadDocBook(), bookOf(), local?.sync()]).then(([mod, docs, sync]) => mod.coreLink(projectId, docs, sync, now));
+  const link = (projectId: string) => Promise.all([loadDocBook(), bookOf(), local?.sync()]).then(([mod, docs, sync]) => mod.coreLink(projectId, docs, sync, now, () => maps.get(projectId)));
   /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
   const entered = async (projectId: string) => {
     const first = entry?.doc?.doc.projectId === projectId ? entry.doc : undefined;

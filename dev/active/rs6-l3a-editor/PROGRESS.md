@@ -42,3 +42,8 @@
 - 전체: 330 파일 / 2944 통과(base 2924 + CP0 9 + CP1 5 + CP2 6). 깨진 기존 테스트 0 · 바뀐 기존 단언 0(import 경로 1줄만).
 - 예산: 정규화 /studio 129.04 · 복원 132.02 · raw 130.39 · 133.43 → raw 첫 130 초과 → `eagerBudgetKb` 130.5(개정 17 결정 2). L3a 목표(+0.25) 초과 +0.41 · 상한(129.13) 안 → 멈춤 아님, REPORT에 수치.
 - `latest`: 코어 경로는 설정 안 함(STALE 동봉 문서 없음 → undefined). 상태 제거는 기존 단언 2건(useDocSave.test:212 · StudioLayout.test:157) 삭제가 필요해 약화 금지와 충돌 → 코어 없는 폴백 경로에만 남김 · 제거는 L3b(충돌 UI).
+
+### 이미지 바인딩 회귀 수정 (advisor 지적 → RED 확인 → GREEN)
+- 코어 경로는 `kept` flush(편집 틀 맵을 싣던 곳)를 안 거쳐 새 이미지 편집 저장이 `failed{image-missing}`(RED 실측: phase failed). mock 저장소 테스트는 기존 경로라 못 잡았다.
+- 수정: `CoreLink.images`(저장소 `maps.get`) → `coreIo.save` 시작 때 코어 바인딩에 합침(탭 수명). edit 때가 아니라 save 때인 이유: ingest 직후 편집은 맵 state 갱신 전.
+- 전체 330 / 2945 통과 · 예산 정규화 129.04 · 복원 132.03(허용 안 · 기준선 그대로).

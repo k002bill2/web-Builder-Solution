@@ -225,6 +225,7 @@
 | FIX1 | **129.09** (+0.06) | **132.07** (+0.06) | 130.42 | 133.45 |
 | 상한·한도 | 129.13 | 132.11 | 130.5 | 134 |
 - 상한 안이라 감량은 하지 않았다. 남은 여유는 정규화 0.04 · raw 0.08이다(L4·L5 몫).
+- L3b CP-C 목표(129.04 이하)는 넘었다. BRIEF-FIX1 상한(129.13)은 지켰다.
 - `m2cBaseline.json`과 그 고정 테스트(`bundleBudget.test.mjs`)를 같은 커밋에서 갱신했다.
 
 ### 검증 (fresh, 이 세션)
@@ -232,7 +233,7 @@
 |---|---|
 | `npm run typecheck` | exit 0 |
 | `npm run lint` | exit 0 |
-| `npm test -- --run` | 331 files / **2957** passed(+4) · `logs/fix1-full-test.txt` |
+| `npm test -- --run` | 331 files / **2957** passed(+4). 기준선 갱신 뒤 tip에서 lint와 함께 다시 실행했다(exit 0) · `logs/fix1-full-test.txt` |
 | `npm run build` | 1차: 기준선 +0.03 초과로 exit 1(129.09 · 132.07). 기준선 실측 갱신 뒤 exit 0 · `logs/fix1-build.txt` |
 | Codex review(`branch --base fe576728`) | 지적 0. Codex 샌드박스는 vite 설정 해석 때문에 테스트를 직접 돌리지 못했다 · `logs/fix1-codex-r1.txt` |
 
@@ -245,5 +246,6 @@
 
 ### 남은 것
 - 없음(이 BRIEF 범위). QA-REPORT 7절의 L4 조건 1~4와 L5(note 1)는 그대로 인계한다.
+- 실화면 판정력: 링크 (a)는 수정 전에도 PASS였다(QA (f)). 그래서 수정 효과를 가려내는 관찰은 (b) POP이다. 수정 전에는 이미지가 소실됐다.
 - 사실/추정: 실화면은 각 경로 1회 관찰이다. 순서 무관성의 근거는 훅 수준 테스트(같은 태스크 · 두 순서)다 [L1]. 실화면은 그 보강이다.
 - 서브에이전트 0(BRIEF "불필요").

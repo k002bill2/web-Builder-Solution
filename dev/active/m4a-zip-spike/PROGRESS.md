@@ -8,4 +8,4 @@
 - [x] S5 큰 문서(≈30MB) 시간·메모리
 - [x] REPORT 초안 커밋
 - [x] patches/ 보존 · app/ 복원 · untracked 0
-- [ ] Codex 검증
+- [x] Codex 검증 (r1 결함 0)

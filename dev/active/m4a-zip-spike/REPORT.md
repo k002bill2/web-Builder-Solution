@@ -1,3 +1,5 @@
+store zip 실현 가능 · 작성기 gzip 914 B · /studio 진입 증분 0 · 조작 뒤 +1.06KB · HTML_MAX 해소 = B안만(A안 미해소) · ZIP64 불필요
+
 # M4-a-1 REPORT — store zip 자체 작성 · 이미지 분리 실측 스파이크
 
 **결론: store zip 실현 가능 · 작성기 gzip 914 B(단독 minify, 분리 포함 조작 뒤 청크 +1.06KB) · /studio 진입 증분 0(정규화 128.66 → 128.66 · 복원 131.64 → 131.64 · raw 129.96 → 129.96) · 조작 뒤 exportFlow +1.06KB(3.32 → 4.38) · HTML_MAX 해소 = 조건부(부모만 바꾸는 A안은 상한을 올려야 함 → 미해소 / 렌더 참조 직렬화 B안은 해소, 렌더 JS +0.07KB) · ZIP64 불필요(30MB ≪ 4GiB-1)**
@@ -42,7 +44,7 @@
 | 변경 | `buildStaticHtml` 안 `clean`·blob 검사 뒤, data-only 검사 대신 `splitImages(site)`(data URL → `assets/images/<crc8>-<len36>.<ext>` + 파일) · `readHtmlMessage(data, max)` 상한 인자 | `serialize{refs:true}` → 렌더 문서가 `blob:` 대신 `image:<id>`로 직렬화(objectUrls `idOf`) → 부모가 이미 가진 `images[id].blob`을 파일로 |
 | HTML_MAX | **미해소** — 전송은 여전히 41.9M자. zip 경로만 상한을 ≥ 42M으로 올려야 한다 | **해소** — 마크업에 이미지 바이트 0(섹션·글자만) |
 | 렌더 문서 예산 | JS 84.22 → 84.22 (0) | JS 84.22 → **84.29 (+0.07KB)** / 90 · 멈춤선 89.7 안. CSS 0 (`raw/build-s2b-render-refs.txt`) |
-| /studio 진입 | 0 | 0 (정규화 128.66 그대로 — protocol 변경 포함) |
+| /studio 진입 | 0 (진입 청크 수정 없음) | 진입 청크(`protocol.ts`) **수정함** · 측정 0.00KB(정규화 128.66 그대로, 0.01 해상도 · 허용 0.03 안) |
 | 메모리(30MB) | base64 문자열 ~42M자가 렌더·부모 양쪽 + atob 바이너리 문자열 + 바이트 | Blob 원본 그대로(복사 1회 = zip Blob) |
 | 패치 | `patches/s1-s4-zip-writer-split-wire.patch` | `patches/s2b-render-refs-mode.patch` |
 - **권고(★B)**: zip은 B안. HTML_MAX를 근본 해소하고 base64 왕복이 없다. 렌더 +0.07KB는 예산 여유 5.4KB 대비 작다. A안은 렌더 무변경이 장점이지만 상한 상향(B-M2C-01 재론)이 필요.
@@ -82,7 +84,7 @@
 | 64장 × 0.47MB | 41.9M자 | 30.40MB | 78ms | 89ms | 94ms | 261ms | OK |
 | 1장 × 30MB | 41.9M자 | 30.39MB | 82ms | 82ms | 85ms | 250ms | OK |
 - 메모리(첫 구성, 시작 대비): rss +167MB · arrayBuffers +91MB(원본 30 + 디코드 30 + Blob 복사 30). B안은 디코드 30MB·base64 문자열이 빠진다(추정).
-- 브라우저 실측은 하지 않았다(미확인) — Node 근사로 시간 1초 미만, 생성기 상한 8초 안.
+- zip 단계(디코드·crc·zipParts) ≈ 250ms = 사실(Node). 전체 파이프라인이 생성기 상한 8초 안인지는 **미확인** — 재지 않은 구간: 렌더 문서 FileReader data URL 변환(30MB) · 42M자 postMessage · `buildStaticHtml` innerHTML 42M자 파싱(A안). B안은 앞 둘이 빠진다(추정).
 
 ## 6. 미확인 · 다음
 - Archive Utility GUI 더블클릭 · 브라우저 실화면 zip 내려받기(미실행). 브라우저 1회는 S3 file:// 글꼴 확인에 썼다.
@@ -97,3 +99,4 @@
 - 복원: `git checkout --` 자기 변경 5개 파일 + `app/src/features/studio/zip` 삭제 → `git diff -- app/` 빈 값 · `git apply --check` 두 패치 모두 통과(재현 가능)
 - preview 서버: 띄우지 않음(브라우저 확인은 `file://` 임시 폴더, 삭제함) → lsof 대상 포트 없음
 - 서브에이전트: 사용 안 함(S2 경로는 파일 5개라 직접 읽음)
+- Codex 검증 r1: `review --scope branch --base a520e770` → "수정이 필요한 결함은 발견하지 못했습니다"(`raw/codex-r1.txt`). 1라운드로 종료.

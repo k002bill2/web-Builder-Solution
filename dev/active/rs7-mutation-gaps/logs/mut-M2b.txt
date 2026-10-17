@@ -1,0 +1,21 @@
+### M2b (src/features/studio/save/coreIo.ts)
+ app/src/features/studio/save/coreIo.ts | 1 -
+ 1 file changed, 1 deletion(-)
+diff --git a/app/src/features/studio/save/coreIo.ts b/app/src/features/studio/save/coreIo.ts
+index 57540897..14640a6b 100644
+--- a/app/src/features/studio/save/coreIo.ts
++++ b/app/src/features/studio/save/coreIo.ts
+@@ -153 +152,0 @@ export function rebase(s: CoreState, doc: PageDoc, mine = false) {
+-  s.epoch += 1;
+     × 복원 뒤 epoch +1 · 옛 epoch replace = rejected{epoch} · 새 epoch replace = replaced 33ms
+     × restart(편집기 밖) 뒤 epoch +1 · 옛 epoch replace = rejected{epoch} · 코어 초안 = restart 문서 28ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/save/saveCore.mutationGaps.test.ts > RS7-C · L3a M2b rebase epoch +1(충돌 경로 밖) > 복원 뒤 epoch +1 · 옛 epoch replace = rejected{epoch} · 새 epoch replace = replaced
+AssertionError: expected +0 to be 1 // Object.is equality
+- Expected
++ Received
+ FAIL  src/features/studio/save/saveCore.mutationGaps.test.ts > RS7-C · L3a M2b rebase epoch +1(충돌 경로 밖) > restart(편집기 밖) 뒤 epoch +1 · 옛 epoch replace = rejected{epoch} · 코어 초안 = restart 문서
+AssertionError: expected +0 to be 1 // Object.is equality
+- Expected
++ Received
+      Tests  2 failed | 2 passed (4)

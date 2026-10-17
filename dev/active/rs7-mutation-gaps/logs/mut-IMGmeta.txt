@@ -1,0 +1,17 @@
+### IMGmeta (src/data/persistence/localSync.ts)
+ app/src/data/persistence/localSync.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/app/src/data/persistence/localSync.ts b/app/src/data/persistence/localSync.ts
+index 44f9d13d..9823d927 100644
+--- a/app/src/data/persistence/localSync.ts
++++ b/app/src/data/persistence/localSync.ts
+@@ -226 +226 @@ export async function openLocalSync(
+-          const unbound = [...recordRefs(record)].filter((id) => !(bound[id] && imageMeta(bound[id])));
++          const unbound = [...recordRefs(record)].filter((id) => !bound[id]);
+     × ingest를 거치지 않은 Blob 바인딩(메타 0) · IDB 레코드 0 → failed{image-missing} · 제출 0 · dirty 35ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/save/saveCore.mutationGaps.test.ts > RS7-C · L1 IMG-meta 메타 없는 바인딩 > ingest를 거치지 않은 Blob 바인딩(메타 0) · IDB 레코드 0 → failed{image-missing} · 제출 0 · dirty
+AssertionError: expected { status: 'saved', …(2) } to match object { status: 'failed', …(1) }
+- Expected
++ Received
+      Tests  1 failed | 3 passed (4)

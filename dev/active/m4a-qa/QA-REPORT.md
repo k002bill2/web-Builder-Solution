@@ -29,8 +29,34 @@
   - `/studio` 정규화 main 128.70 → 128.71(+0.01) · 복원 131.68 → 131.69(+0.01) = ADR-004 개정 18 M4-a 몫(+0.10) 안. 기준선 파일 `m2cBaseline.json`은 개정 18 커밋(8aa9a60f)에서 128.71·131.69로 갱신됨 — Developer REPORT 1절의 "기준선 파일 수정 0"은 **M4-a 구현 커밋 범위 한정**으로 읽어야 맞습니다(사실 기록, 결함 아님).
   - 렌더 JS main 84.22 → 84.29(+0.07) = 스파이크 실측과 같음(SPEC 8a Q17 B).
 
-## 2. EXP-AC 판정표
-(진행 중)
+## 2. EXP-AC 판정표 — Developer 판정 재현 (재실행 최소) [사실 + 추정 표기]
+근거 방식: ① 1절 fresh 전체 test 353/3130 통과(모든 U 테스트 실행 증거) ② 테스트 이름의 AC 태그 `grep` ③ 4절 변이(테스트가 실제로 그 기능을 지키는지) ④ 3절 생성물 실측. 개별 재실행은 하지 않았습니다.
+
+| AC | Developer | QA 근거 | QA 판정 |
+|---|---|---|---|
+| 01 버튼 2개·순서·React 0 | 통과 | `ExportFlow.test.tsx` "형식 버튼" 순서 단언 · 소스 `ExportButtons.tsx` 대조(5b) | 통과 |
+| 02 흐름(검사→차단→경고→저장→1회) | 부분 | 태그 테스트 0건. `ExportFlow.test.tsx` zip 완료 테스트가 `requestExport("project-1","static-zip",3)` 1회만 단언 · E-AC-28~30 차단·경고·저장 먼저 시나리오는 `static-html`로만 돎 | **부분 — 사유 확인**. [추정] 흐름 코드가 형식 무관(`format !== "react-zip"` 분기 1곳)이라 위험은 낮음 |
+| 03 zip 바이트(서명·stored·CRC·EOCD·시각) | 통과 | `storeZip.test.ts`(CP1 24건) · `staticHtml.test.ts` · 3절 `unzip -t`·`zipinfo -v` 실측 · M1b 6 FAIL | 통과 |
+| 04 결정성 | 통과 | 태그 테스트 · 3절 같은 입력 2회 해시 동일 · M1b FAIL | 통과 |
+| 05 허용표·순서·디렉터리 0·ASCII | 통과 | `staticZip.test.ts` · 3절 entry 순서·디렉터리 0 실측 | 통과 |
+| 06 고유 id·번호·확장자 | 통과 | `staticZip.test.ts` · 3절 같은 id 2슬롯 → 파일 1 실측 | 통과 |
+| 07 data:image 0·고아 0 | 통과 | `staticZip.test.ts` · 3절 scan(`data:` img 0 in zip) | 통과 |
+| 08 참조 직렬화 markup < 1MB | 통과 | 태그는 17 테스트에 함께("markup은 이미지 크기와 무관 < 1MB") · M1a 3 FAIL | 통과 |
+| 09 글꼴 상대 경로·wOF2·≤2 | 통과 | `staticHtml`·`staticZip` 테스트 · 3절 실제 Pretendard `file` = WOFF2 | 통과 |
+| 10 LICENSES.md | 통과 | `licenses.test.ts` · 3절 내용 실측(5절 순서·OFL 전문·목록 = entry·사용자 글자 0) | 통과 |
+| 11 F-11 링크 | 통과 | `staticMarkup.test.ts` 태그 | 통과 |
+| 12 F-12 앵커 대상 | 통과 | `staticMarkup.test.ts` 태그 | 통과 |
+| 13 F-14 브랜드 | 통과 | `staticMarkup.test.ts` · M2b FAIL · **M2a·M2c 생존(G1·G2)** | **통과 with notes** — 제외 범위 테스트 공백(4c) |
+| 14 ZIP_MAX → refused·키·alert 1 | 부분 | `exportFlow.test.ts` 단언 = `kind: "retryable"` + 사유 문구 · M3·M3b FAIL | **부분 — 사유 확인**(Developer 편차 3: `memoryDocBook runJob`이 모든 생성기 실패를 retryable로 기록). 문구 일치 · 상한 동작 확인 · 재시도 버튼이 보이는 점만 SPEC과 다름 |
+| 15 `<stem>_r<rev>.zip` | 통과 | `exportFileName.test.ts` · 3절 한글 이름 NFC | 통과 |
+| 16 3MB 안내 "다음 단계" 0 | 통과 | `exportFlow.test.ts` · 5b 소스 0건 | 통과 |
+| 17 단일 HTML 참조 경로·20MB 성공 | 통과 | `staticHtml.test.ts` · M1a FAIL · 기존 정적 HTML 단언 삭제 0(4a) | 통과 |
+| 18 링크 게이트 줄 | 이월 | 소스·테스트 0건 · 게이트 테스트 diff 0(4a) | 해당 없음 — M4-a-2b 이월(Q1 A) |
+| 19 예산 진입 증분 0 | 해소 | 1절 build `[bundle]` 실측 | 통과 |
+
+### 바뀐 기존 단언 — 이전/이후 (약화 여부)
+- Developer REPORT 2절 표 5행을 4a의 `git diff` 삭제 9줄과 1:1 대조 → 전부 **문구 교체**이고 단언 수·강도 감소 0, skip 0. 이후 쪽은 오히려 `static-zip` 요청 형식 단언·React 버튼 0 단언이 늘었습니다. 판정: **약화 아님**.
+- 예외 1건: `ExportFlow.test.tsx`의 새 단언이 조사 오류 문장을 고정(5a) — 약화는 아니지만 수정 시 함께 바꿔야 함.
 
 ## 3. 생성물 검증 (Node) — 통과 [사실]
 방법: 단위 테스트 픽스처(`staticHtml.test.ts`의 DOC·STORE·FILES·가짜 렌더 채널)를 복제한 임시 테스트 `app/src/features/studio/staticHtml/qaArtifact.test.ts`(커밋 안 함 · 실행 뒤 삭제)로 실제 생성기 `createStaticHtmlGenerator`를 돌려 `/tmp/m4a-qa-out/`에 파일로 썼습니다. 픽스처 대비 바꾼 입력 2가지:

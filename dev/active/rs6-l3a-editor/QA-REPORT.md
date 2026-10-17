@@ -10,7 +10,7 @@
   - 새 이미지 Blob은 IDB `images`에 커밋되고 새로고침 뒤 복원된다.
   - 스냅샷 복원 뒤 편집은 rev 6 = 복원 rev 5 + 1이다. 덮어쓰기 0.
 - **note**:
-  1. 변이 2종 생존: rebase `savedMark` 갱신 제거, rebase `epoch` 갱신 제거. 테스트 공백이다. 2절 참고.
+  1. 변이 1종 생존: rebase `epoch` 갱신 제거(제품 호출처 없는 `replace`만 영향). 테스트 공백이다. 2절 참고.
   2. `StudioLeave` 14건 중 10건 계약이 코어 경로에서 테스트로 미검증이다. 핵심 3건은 QA 임시 테스트로 확인했다(삭제함). 3절 참고.
   3. 계약 변경 2건은 수용 가능하다. 4절 참고.
 
@@ -31,8 +31,8 @@
 | # | 변이 | 실행 테스트 | 결과 |
 |---|---|---|---|
 | M1 | CP0 dirty 거절 제거(`settled` 무력화) | saveCore.rebase | **FAIL 1** (미저장 편집 복원 = STALE_DOC) |
-| M2a | rebase `s.savedMark = s.mark` 제거 | saveCore.rebase | **생존** (9/9 통과) |
-| M2b | rebase `s.epoch += 1` 제거 | saveCore.rebase | **생존** (9/9 통과) |
+| M2a | rebase `s.savedMark = s.mark` 제거(앵커 재실행) | save/ 전체 + useDocSaveCore* + snapshotRevision (13파일) | **FAIL 5** (복원·mine·theirs·restart·memory 복원) |
+| M2b | rebase `s.epoch += 1` 제거 | 같은 13파일 88건 | **생존** (88/88 통과) |
 | M2c | rebase `s.confirmed` 갱신 제거 | saveCore.rebase | FAIL 4 |
 | M3 | `core?.edit(next)` 제거 | useDocSaveCore·save + QA 임시 | FAIL 10 |
 | M4 | lease 즉시 release | useDocSaveCore | FAIL 1 (StrictMode) |
@@ -40,10 +40,7 @@
 | M6 | `watch.stop()` 제거 | useAutosaveScheduler.watch | FAIL 1 (남은 타이머 0) |
 | M7(QA 추가) | 코어 경로 save가 `core.save()` 없이 즉시 성공 | QA 임시 이탈 테스트 | FAIL 3 (임시 테스트가 이탈 저장을 실제로 잡음) |
 
-- **M2a 영향** [L1 코드]: 복원·충돌 해결·restart 뒤 코어가 `mark > savedMark`(dirty)로 남는다.
-  - 그러면 다음 CP0 쓰기(두 번째 복원 등)가 `unsettled` → `STALE_DOC`으로 잘못 거절된다.
-  - 재진입 때 복원 문서를 한 번 더 저장한다(revision +1).
-  - 손실은 아니고, 거절·불필요 저장이다. 테스트에 "rebase 뒤 `view().dirty === false`" 단언이 없다.
+- **M2a 1차 실행 무효 기록**: 앵커 없는 정규식이 `coreIo.ts:101`(discard 경로의 같은 텍스트)에 먼저 걸려 "생존"으로 잘못 나왔다(diffstat `1 insertion, 2 deletions`). `rebase` 블록 앵커 + `git diff`로 헝크 위치를 확인한 뒤 재실행했고 FAIL 5다. 변이는 적용 직후 헝크 위치를 확인해야 한다.
 - **M2b 영향**: `replace`(epoch 비교, `coreIo.ts:125`)는 제품 호출처가 0이라 지금은 관찰되지 않는다. L3b·L4가 replace를 결선할 때 테스트 필요.
 
 ## 3. 폴백·미검증 범위 (읽기 전용 서브에이전트 조사 + 메인 확인)
@@ -113,7 +110,7 @@
 - **미확인**: 충돌 해결 실화면(다중 탭), slow·hang 표지 실경로, readonly 실화면, 코어 경로 StudioLeave ①④⑥⑦⑨⑩⑪.
 - **L3b 조건**:
   1. POP·탭 닫기 저장 주체(MQ-6-7 A lease 해제 save). 지금은 POP 뒤 재진입 없이 새로고침하면 경고 없이 유실된다(main과 같음).
-  2. rebase 뒤 `view().dirty === false` 단언 추가(M2a 생존 해소). replace 결선 시 epoch 단언(M2b).
+  2. replace 결선 시 rebase 뒤 epoch +1 단언 추가(M2b 생존 해소).
   3. `StudioLeave`를 코어 있는 저장소로 이전하거나 코어 경로 대응 테스트를 추가한다(폴백 제거와 함께. 상쇄 후보와 같은 작업).
   4. `SaveResult.revision` 사용을 `not-persistent`로 좁힌다.
   5. 코어 경로 `conflict.latest` 출처(REPORT 8절 4).

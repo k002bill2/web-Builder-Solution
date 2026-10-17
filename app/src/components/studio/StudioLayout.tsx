@@ -341,7 +341,7 @@ export function StudioLayout({
   );
 
   const docTag = docTagText(doc);
-  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} onRetry={save.retry} onAnnounce={setNotice} />;
+  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} onAnnounce={setNotice} />;
   const conflict = (
     <>
       {snaps.layer}
@@ -407,7 +407,7 @@ export function StudioLayout({
               저장 실패·오프라인·충돌이면 이유 = 저장 상태 문장 */}
           <PngSave
             ready={drawn && (save.state.phase === "idle" || save.state.phase === "saved")}
-            reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0) : undefined}
+            reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0, save.source) : undefined}
             view={view}
             fallbackCount={fallbacks.length}
             capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }), ...(images && { images }) })}

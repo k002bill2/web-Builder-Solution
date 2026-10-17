@@ -62,6 +62,8 @@ export interface CoreIo {
   /** `entered` = 호출 시점 mark(connect 전 동기 — `core.discard()`가 잡는다) */
   discard(s: CoreState, link: CoreLink, entered: number): Promise<DiscardResult>;
   replace(s: CoreState, next: PageDoc, request: ReplaceRequest, blobs?: RenderImages): ReplaceResult;
+  /** reason → 상태 글자(UX-5 2.3 · RS6-L4 — 문구는 조작 뒤 청크) */
+  text(reason: string): string | undefined;
 }
 
 /** io + 포트(local만) + DocBook 연결 — 조립은 DocBook 청크(`coreLink`) */

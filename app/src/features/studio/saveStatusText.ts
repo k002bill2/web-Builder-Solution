@@ -22,6 +22,19 @@ export const SAVE_OFFLINE_TEXT = "오프라인 — 연결되면 저장합니다"
 export const SAVE_STALE_TEXT = "다른 곳에서 이 문서가 바뀌었습니다";
 export const SAVE_STALE_ALERT = "다른 곳에서 이 문서가 바뀌었습니다. 내 편집은 그대로 두었습니다";
 export const SAVE_RECOVERED_TEXT = "다시 저장했습니다";
+/** LV-1 `saving-slow` 꼬리(INTEGRATE-6 3절) */
+export const SAVE_SLOW_TAIL = " · 브라우저 응답이 늦습니다";
+/** LV-1 `T_hang` alert 1회(키 `SAVE_HANG_ALERT` · INTEGRATE-6 3절) */
+export const SAVE_HANG_TEXT = "브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다";
+
+/** 판정 출처(INTEGRATE-6 8.1) — 코어 `view()`(inflight·dirty) + 마지막 저장 결과 reason(포트 `mode()`·결과). 저장 성공이면 reason 없음 */
+export interface SaveSource {
+  readonly reason?: string;
+  /** reason 문구(조작 뒤 청크 `save/reasonText.ts` — 저장 실패 결과와 함께 받는다) · 없으면 ★"저장하지 못했습니다" */
+  readonly text?: string;
+  readonly inflight?: number;
+  readonly dirty?: boolean;
+}
 
 export function relativeTimeText(elapsedMs: number): string {
   if (elapsedMs < 5 * SECOND) return "방금";
@@ -35,7 +48,14 @@ function savedText(state: AutosaveState, persistence: ProjectPersistence, now: n
   return state.lastSavedAt === undefined ? label : `${label} · ${relativeTimeText(now - state.lastSavedAt)}`;
 }
 
-export function saveStatusText(state: AutosaveState, persistence: ProjectPersistence, now: number): string {
+/** 저장 중 = 코어 inflight(출처 없으면 스케줄러 단계) — POP 재진입 때 앞 해제 save가 진행 중이면 스케줄러가 idle이어도 저장 중 */
+export const isSaving = (state: AutosaveState, source: SaveSource = {}) => (source.inflight ?? 0) > 0 || state.phase === "saving";
+
+/** 판정 순서(UX-5 2.2): 충돌 > 환경 reason 문구 > offline > 저장 중(slow 꼬리) > 저장 전 변경(view().dirty) > 단계 */
+export function saveStatusText(state: AutosaveState, persistence: ProjectPersistence, now: number, source: SaveSource = {}): string {
+  if (source.text && state.phase !== "stale") return source.text;
+  if (state.phase !== "offline" && isSaving(state, source)) return state.slow ? `저장 중…${SAVE_SLOW_TAIL}` : "저장 중…";
+  if (source.dirty && state.phase !== "failed" && state.phase !== "offline" && state.phase !== "stale") return "저장 전 변경 있음";
   switch (state.phase) {
     case "idle":
       return "";

@@ -147,7 +147,9 @@ describe("미리보기 · 읽기 전용 탭 — FU-AC-10 · 12", () => {
 });
 
 describe("기록 밖 문서 교체 — Codex r1 P2-3", () => {
-  it("묶음 열린 채 충돌 '다른 편집 불러오기' 뒤 같은 칸 입력 → Ctrl+Z = 불러온 문서(다른 탭 값을 덮지 않음)", async () => {
+  // RS6-L4 R2(I6 8.1 · Jarvis 결정 ①): 다른 탭 커밋(포트 stale)은 충돌 Callout("다른 편집 불러오기")이 아니라 `stale` 환경 행이다.
+  // 이전: 불러오기(기록 밖 교체) 뒤 Ctrl+Z = 불러온 문서 · 이후: 기록 밖 교체 자체가 없다 — 다른 탭 값은 화면에 들어오지 않고(버리고 새로고침 = reload), Ctrl+Z는 내 기록만 되돌린다
+  it("묶음 열린 채 다른 탭 stale → stale 행(불러오기 버튼 0) · 같은 칸 입력 → Ctrl+Z = 내 앞 편집(다른 탭 값 0)", async () => {
     const theirs = setSlot(sampleDoc({ revision: 7 }), "s-hero", "subtitle", "다른 탭 부제");
     await openStudio({
       repository: {
@@ -155,19 +157,17 @@ describe("기록 밖 문서 교체 — Codex r1 P2-3", () => {
         resolveConflict: async () => theirs,
       },
     });
+    const before = box(/^부제/).value;
     typeIn(/^제목/, "첫 편집");
-    await screen.findByRole("button", { name: "다른 편집 불러오기" }, { timeout: 4000 });
-    // 묶음을 열어 둔 채(600ms 안 · blur 없음) 불러오기 → 같은 칸 입력
+    await within(screen.getByRole("banner")).findByText("다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요", { selector: "p:not([role])" }, { timeout: 4000 });
+    expect(screen.queryByRole("button", { name: "다른 편집 불러오기" })).toBeNull();
     typeIn(/^제목/, "첫 편집 둘");
-    await settle();
-    act(() => void fireEvent.click(screen.getByRole("button", { name: "다른 편집 불러오기" })));
-    await waitFor(() => expect(box(/^부제/).value).toBe("다른 탭 부제"));
-    const latestTitle = box(/^제목/).value;
-    typeIn(/^제목/, `${latestTitle}!`);
     await settle();
     act(() => void fireEvent.blur(box(/^제목/)));
     await key(CTRL_Z);
-    await waitFor(() => expect(box(/^제목/).value).toBe(latestTitle));
-    expect(box(/^부제/).value).toBe("다른 탭 부제");
+    // 저장 거절을 기다리는 동안(600ms 넘음) 앞 묶음은 닫혔다 — Ctrl+Z 1회 = 둘째 입력만
+    await waitFor(() => expect(box(/^제목/).value).toBe("첫 편집"));
+    expect(box(/^부제/).value).toBe(before);
+    expect(box(/^부제/).value).not.toBe("다른 탭 부제");
   }, 10_000);
 });

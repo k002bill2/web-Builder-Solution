@@ -1,0 +1,405 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app
+
+ ❯ src/features/studio/saveStatusText.source.test.ts (0 test)
+ ❯ src/features/studio/save/liveness.status.test.tsx (3 tests | 1 failed) 92ms
+   ❯ RS6-L2 CP3 · T_hang alert (3)
+     × aria-busy = 저장 중(slow 포함)만 · 끝나면 해제 6ms
+ ❯ src/components/studio/SaveStatus.source.test.tsx (3 tests | 3 failed) 97ms
+   ❯ RS6-L4 CP1 · SaveStatus 출처 결선 (3)
+     × 포트 readonly 거절 → 상태 글자 = readonly 문구(문자열 '저장하지 못했습니다' 아님) · alert 같은 문구 1곳 81ms
+     × POP 재진입(C5 T1) — 앞 lease 해제 save 진행 중이면 '저장 중…' · 끝나면 다시 그려 '저장 중…' 아님 9ms
+     × T_hang → alert <p>에 hang 문구 · aria-busy 상태 글자에는 hang 문구 0 5ms
+ ❯ src/features/studio/useDocSave.test.tsx (9 tests | 2 failed) 294ms
+   ❯ useDocSave — STALE_DOC 충돌 (E-AC-10) (4)
+     × 다른 탭 stale(포트) = failed + 출처 reason stale(문구) · 충돌 영역 없음 · 화면 문서 = 내 편집 · 다른 탭 문서로 덮지 않음 5ms
+     × 해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 stale 환경 행 그대로(자동 저장 0) 2ms
+ ❯ src/components/studio/StudioLayout.test.tsx (14 tests | 2 failed) 738ms
+   ❯ 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) (4)
+     × 다른 탭 stale(포트) → stale 환경 행(글자·alert) · 충돌 Callout 0 · 내 편집 유지 · 알림 영역 1개 42ms
+   ❯ PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) (4)
+     × 저장 stale → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로 57ms
+ ❯ src/components/studio/StudioLeave.test.tsx (17 tests | 1 failed) 810ms
+   ❯ 편집기 이탈 저장 (B-RS-01) (17)
+     × 읽기 전용 탭(저장 거절 READ_ONLY_TAB) = 다시 저장해 보고 또 거절이면 이동을 막지 않는다 · 저장소 반영 0 42ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/saveStatusText.source.test.ts [ src/features/studio/saveStatusText.source.test.ts ]
+Error: Failed to resolve import "./save/reasonText" from "src/features/studio/saveStatusText.source.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app/src/features/studio/saveStatusText.source.test.ts:7:27
+  5  |  import { describe, expect, it } from "vitest";
+  6  |  import { SAVE_SLOW_TAIL, saveStatusText } from "./saveStatusText";
+  7  |  import { reasonText } from "./save/reasonText";
+     |                              ^
+  8  |  const NOW = 1e6;
+  9  |  describe("RS6-L4 CP1 · 상태 판정 출처 (I6 8.1)", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SaveStatus.source.test.tsx > RS6-L4 CP1 · SaveStatus 출처 결선 > 포트 readonly 거절 → 상태 글자 = readonly 문구(문자열 '저장하지 못했습니다' 아님) · alert 같은 문구 1곳
+TestingLibraryElementError: Unable to find an element with the text: 다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다, which matches selector 'p:not([role])'. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<input[39m
+      [33maria-label[39m=[32m"제목"[39m
+      [33mvalue[39m=[32m"하나"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m저장하지 못했습니다[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m다시 저장[0m
+      [36m</button>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m>[39m
+        [0m저장하지 못했습니다[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/SaveStatus.source.test.tsx:36:19
+     34|     fireEvent.change(screen.getByRole("textbox", { name: "제목" }), { ta…
+     35|     await act(() => vi.advanceTimersByTimeAsync(2000));
+     36|     expect(screen.getByText("다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다", { selector…
+       |                   ^
+     37|     expect(screen.getByRole("alert")).toHaveTextContent("다른 탭에서 편집 중이라…
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/components/studio/SaveStatus.source.test.tsx > RS6-L4 CP1 · SaveStatus 출처 결선 > POP 재진입(C5 T1) — 앞 lease 해제 save 진행 중이면 '저장 중…' · 끝나면 다시 그려 '저장 중…' 아님
+TestingLibraryElementError: Unable to find an element with the text: 저장 중…. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+  [36m<div>[39m
+    [36m<input[39m
+      [33maria-label[39m=[32m"제목"[39m
+      [33mvalue[39m=[32m"떠나기 전"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m저장 전 변경 있음[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/SaveStatus.source.test.tsx:51:19
+     49|     expect(saveDoc).toHaveBeenCalledTimes(1);
+     50|     render(<Harness repo={repo} initialDoc={doc} />);
+     51|     expect(screen.getByText("저장 중…")).toBeInTheDocument();
+       |                   ^
+     52|     await act(async () => finish?.());
+     53|     await act(() => vi.advanceTimersByTimeAsync(0));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/components/studio/SaveStatus.source.test.tsx > RS6-L4 CP1 · SaveStatus 출처 결선 > T_hang → alert <p>에 hang 문구 · aria-busy 상태 글자에는 hang 문구 0
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  undefined[39m
+Received:
+[31m[39m
+ ❯ src/components/studio/SaveStatus.source.test.tsx:61:39
+     59|     const { rerender } = render(at());
+     60|     rerender(at(1));
+     61|     expect(screen.getByRole("alert")).toHaveTextContent(SAVE_HANG_TEXT…
+       |                                       ^
+     62|     expect(SAVE_HANG_TEXT).toBe("브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않…
+     63|     const busy = document.querySelector("[aria-busy=true]");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > 다른 탭 stale(포트) → stale 환경 행(글자·alert) · 충돌 Callout 0 · 내 편집 유지 · 알림 영역 1개
+TestingLibraryElementError: Unable to find an element with the text: 다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요, which matches selector 'p:not([role])'. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<header[39m
+  [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+[36m>[39m
+  [36m<a[39m
+    [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/projects"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+    [36m/>[39m
+  [36m</a>[39m
+  [36m<h1[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+  [36m>[39m
+    [0m동네 치과 클리닉 프로젝트[0m
+  [36m</h1>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+  [36m>[39m
+    [0mcandidate-a안 · 프로필 v2[0m
+  [36m</span>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+  [36m>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m다른 곳에서 이 문서가 바뀌었습니다[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"sr-only"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [0m다른 곳에서 이 문서가 바뀌었습니다. 내 편집은 그대로 두었습니다[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"contents"[39m
+    [33mdata-preview-keep[39m=[32m"true"[39m
+  [36m>[39m
+    [36m<fieldset[39m
+      [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+    [36m>[39m
+      [36m<legend[39m
+        [33mclass[39m=[32m"sr-only"[39m
+      [36m>[39m
+        [0m미리보기 폭[0m
+      [36m</legend>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33mchecked[39m=[32m""[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mname[39m=[32m"studio-preview-width"[39m
+            [33mtype[39m=[32m"radio"[39m
+            [33mvalue[39m=[32m"desktop"[39m
+          [36m/>[39m
+          [0m데스크톱[0m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mname[39m=[32m"studio-preview-width"[39m
+            [33mtype[39m=[32m"radio"[39m
+            [33mvalue[39m=[32m"tablet"[39m
+          [36m/>[39m
+          [0m태블릿[0m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mname[39m=[32m"studio-preview-width"[39m
+            [33mtype[39m=[32m"radio"[39m
+            [33mvalue[39m=[32m"mobile"[39m
+          [36m/>[39m
+          [0m모바일[0m
+        [36m</label>[39m
+      [36m</div>[39m
+    [36m</fieldset>[39m
+  [36m</div>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+    [33mid[39m=[32m"studio-snapshot"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m스냅샷[0m
+  [36m</button>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"relative flex-none"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-expanded[39m=[32m"false"[39m
+      [33maria-haspopup[39m=[32m"menu"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+      [33mid[39m=[32m"studio-more"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m더보기[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:bg-fill-strong aria-disabled:text-label-disable aria-disabled:hover:bg-fill-strong"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m검사 · 내보내기[0m
+  [36m</button>[39m
+[36m</header>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:162:47
+    160|     act(() => void fireEvent.change(within(editRegion()).getByRole("te…
+    161|     await act(() => vi.advanceTimersByTimeAsync(2000));
+    162|     expect(within(screen.getByRole("banner")).getByText("다른 탭에서 바뀐 내용이…
+       |                                               ^
+    163|     expect(screen.getByRole("alert", { name: "" })).toHaveTextContent(…
+    164|     expect(within(canvas()).queryByText(/다른 곳에서 이 문서가 바뀌었습니다/)).toBeNu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — 파일 이름 revision = 저장된 문서) > 저장 stale → PNG aria-disabled + 이유 = 저장 상태 문장(describedby 첫 id) · 캡션은 그대로
+AssertionError: expected '다른 곳에서 이 문서가 바뀌었습니다' to be '다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요' // Object.is equality
+
+Expected: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요"
+Received: "다른 곳에서 이 문서가 바뀌었습니다"
+
+ ❯ src/components/studio/StudioLayout.test.tsx:192:26
+    190|     await act(() => vi.advanceTimersByTimeAsync(2000));
+    191|     expect(pngButton()).toHaveAttribute("aria-disabled", "true");
+    192|     expect(reasons()[0]).toBe(reason);
+       |                          ^
+    193|     expect(reasons()[1]).toMatch(/^지금 미리보기 폭.+의 페이지 전체를 한 장으로 저장합니다\./…
+    194|     offline?.mockRestore();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 읽기 전용 탭(저장 거절 READ_ONLY_TAB) = 다시 저장해 보고 또 거절이면 이동을 막지 않는다 · 저장소 반영 0
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다[39m
+Received:
+[31m  동네 치과 클리닉 프로젝트candidate-a안 · 프로필 v2저장하지 못했습니다다시 저장저장하지 못했습니다미리보기 폭데스크톱태블릿모바일스냅샷더보기검사 · 내보내기[39m
+ ❯ src/components/studio/StudioLeave.test.tsx:199:40
+    197|     await repo.release(toInfra(undefined, "저장", READ_ONLY_TAB));
+    198|     // RS6-L4 CP1: 실패 글자 = 출처 reason 문구(UX-5 2.3 readonly 행) — 이전 ★"저장…
+    199|     expect(screen.getByRole("banner")).toHaveTextContent("다른 탭에서 편집 중이…
+       |                                        ^
+    200|     leave();
+    201|     expect(repo.save).toHaveBeenCalledTimes(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > 다른 탭 stale(포트) = failed + 출처 reason stale(문구) · 충돌 영역 없음 · 화면 문서 = 내 편집 · 다른 탭 문서로 덮지 않음
+AssertionError: expected 'stale' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "stale"
+
+ ❯ src/features/studio/useDocSave.test.tsx:181:40
+    179|     const { m, hook, theirs } = await staleSetup();
+    180|     const { result } = hook;
+    181|     expect(result.current.state.phase).toBe("failed");
+       |                                        ^
+    182|     expect(result.current.source).toMatchObject({ reason: "stale", tex…
+    183|     expect(result.current.doc.meta.title).toBe("내 편집");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > 해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 stale 환경 행 그대로(자동 저장 0)
+AssertionError: expected 'stale' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "stale"
+
+ ❯ src/features/studio/useDocSave.test.tsx:234:40
+    232|       await expect(result.current.resolve("mine")).rejects.toMatchObje…
+    233|     });
+    234|     expect(result.current.state.phase).toBe("failed");
+       |                                        ^
+    235|     expect(result.current.source.reason).toBe("stale");
+    236|     await act(() => vi.advanceTimersByTimeAsync(60_000));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  src/features/studio/save/liveness.status.test.tsx > RS6-L2 CP3 · T_hang alert > aria-busy = 저장 중(slow 포함)만 · 끝나면 해제
+TestingLibraryElementError: Unable to find an element with the text: 저장 중… · 브라우저 응답이 늦습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+      [36m>[39m
+        [0m저장 중…[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/studio/save/liveness.status.test.tsx:68:19
+     66|     // RS6-L4 CP1: slow = LV-1 꼬리(I6 3절) — 글자는 바뀌어도 aria-busy는 그대로
+     67|     rerender(at({ phase: "saving", slow: true }));
+     68|     expect(screen.getByText("저장 중… · 브라우저 응답이 늦습니다")).toHaveAttribute(…
+       |                   ^
+     69|     rerender(at({ phase: "saved", lastSavedAt: Date.now() }));
+     70|     expect(screen.getByText(/이 브라우저에 저장됨/)).not.toHaveAttribute("aria-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  6 failed (6)
+      Tests  9 failed | 37 passed (46)
+   Start at  18:26:25
+   Duration  1.93s (environment 42%, tests 28%, transform 18%, setup 9%, import 3%)
+

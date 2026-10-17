@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import type { ProjectPersistence } from "../../data/projectRepository";
-import { SAVE_FAILED_TEXT, SAVE_STALE_ALERT, saveAnnouncement, saveStatusText } from "../../features/studio/saveStatusText";
+import { isSaving, SAVE_FAILED_TEXT, SAVE_HANG_TEXT, SAVE_STALE_ALERT, saveAnnouncement, saveStatusText, type SaveSource } from "../../features/studio/saveStatusText";
 import { SAVE_HANG_ALERT } from "../../features/studio/save/alertKeys";
 import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { Button } from "../ds/Button";
@@ -9,9 +9,11 @@ import { Button } from "../ds/Button";
 const TICK_MS = 1000;
 
 /** 저장 실패 alert 문장(SPEC 6.3) — 실패가 풀릴 때까지 같은 글자라 연속 실패에 다시 낭독되지 않는다 */
-function alertText(state: AutosaveState): string {
+function alertText(state: AutosaveState, source: SaveSource, hang: boolean): string {
   if (state.phase === "stale") return SAVE_STALE_ALERT;
-  return state.failure === "error" ? SAVE_FAILED_TEXT : "";
+  // LV-1 T_hang 문구 = alert `<p>`에만(aria-busy 상태 글자에 넣지 않는다 — L2 QA 7절 3)
+  if (hang) return SAVE_HANG_TEXT;
+  return state.failure === "error" ? (source.text ?? SAVE_FAILED_TEXT) : "";
 }
 
 /**
@@ -23,12 +25,15 @@ function alertText(state: AutosaveState): string {
 export function SaveStatus({
   state,
   persistence,
+  source = {},
   onRetry,
   onAnnounce,
   now = Date.now,
 }: {
   readonly state: AutosaveState;
   readonly persistence: ProjectPersistence;
+  /** 판정 출처(I6 8.1) — `useDocSave().source` */
+  readonly source?: SaveSource;
   readonly onRetry: () => void;
   readonly onAnnounce?: (text: string) => void;
   readonly now?: () => number;
@@ -58,8 +63,8 @@ export function SaveStatus({
 
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <p className="text-caption1 text-label-alternative" aria-busy={state.phase === "saving" || undefined}>
-        {saveStatusText(state, persistence, now())}
+      <p className="text-caption1 text-label-alternative" aria-busy={isSaving(state, source) || undefined}>
+        {saveStatusText(state, persistence, now(), source)}
       </p>
       {state.phase === "failed" && (
         <Button variant="outline" size="sm" onClick={onRetry}>
@@ -67,7 +72,7 @@ export function SaveStatus({
         </Button>
       )}
       <p role="alert" className="sr-only" data-alert-key={hang ? SAVE_HANG_ALERT : undefined}>
-        {alertText(state)}
+        {alertText(state, source, hang)}
       </p>
     </div>
   );

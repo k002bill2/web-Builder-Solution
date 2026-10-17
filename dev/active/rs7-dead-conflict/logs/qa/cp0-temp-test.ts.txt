@@ -1,0 +1,56 @@
+// QA 임시 — 커밋 금지. io.save 밖 throw 후보가 STALE_DOC로 core.save를 reject시키는가
+import { describe, expect, it } from "vitest";
+import { sampleDoc } from "../../../engine/testing/sampleDoc";
+import { hashDoc } from "../../../engine/ops/hash";
+import { ProjectRepositoryError } from "../../../data/projectRepository";
+import { coreLink, createDocBook, type DocBook } from "../../../data/memoryDocBook";
+import type { StudioReader } from "../../../data/studioStore";
+import { retainedIds } from "../images/store/imageStore";
+import { createSaveCore, type CoreLink, type CorePort } from "./saveCore";
+import { coreIo } from "./coreIo";
+import { PROJECT, edited } from "./testRig";
+
+const stale = () => new ProjectRepositoryError("STALE_DOC", "qa", { doc: sampleDoc() });
+const port = (over: Partial<CorePort> = {}): CorePort => ({ mode: async () => "writer", head: async () => sampleDoc(), commit: async () => undefined, verify: async () => true, ...over });
+const base = (over: Partial<CoreLink>): CoreLink => ({ projectId: PROJECT, io: coreIo, port: port(), now: () => "2026-10-17T00:00:00.000Z", book: (d) => d, align: () => undefined, ...over });
+const run = (link: CoreLink) => {
+  const doc = sampleDoc();
+  const c = createSaveCore(doc, async () => link);
+  c.edit(edited(doc, "B"));
+  return c.save();
+};
+
+describe("QA CP0 — core.save STALE_DOC reject 채널", () => {
+  it("port.commit STALE_DOC → resolve(failed) · reject 0", async () => {
+    await expect(run(base({ port: port({ commit: async () => Promise.reject(stale()) }) }))).resolves.toMatchObject({ status: "failed" });
+  });
+  it("memory book STALE_DOC → resolve(failed) · reject 0", async () => {
+    await expect(run(base({ port: undefined, book: () => { throw stale(); } }))).resolves.toMatchObject({ status: "failed" });
+  });
+  it("mode/verify STALE_DOC → resolve(failed)", async () => {
+    await expect(run(base({ port: port({ mode: async () => Promise.reject(stale()) }) }))).resolves.toMatchObject({ status: "failed" });
+  });
+  it("connect STALE_DOC → resolve(failed unavailable)", async () => {
+    const doc = sampleDoc();
+    const c = createSaveCore(doc, async () => Promise.reject(stale()));
+    await expect(c.save()).resolves.toMatchObject({ status: "failed", reason: "unavailable" });
+  });
+  it("대조: align STALE_DOC throw면 reject(채널은 존재 — 제품 값이 던지지 않아야 도달 0)", async () => {
+    await expect(run(base({ align: () => { throw stale(); } }))).rejects.toMatchObject({ code: "STALE_DOC" });
+  });
+  it("대조: images STALE_DOC throw면 reject", async () => {
+    await expect(run(base({ images: () => { throw stale(); } }))).rejects.toMatchObject({ code: "STALE_DOC" });
+  });
+  it("제품 coreLink: align=docs.adopt · images=maps.get · hashDoc · retainedIds 모두 던지지 않음", async () => {
+    const docs: DocBook = createDocBook({} as StudioReader, () => "2026-10-17T00:00:00.000Z");
+    const maps = new Map();
+    const link = coreLink(PROJECT, docs, undefined, () => "t", () => maps.get(PROJECT));
+    const doc = sampleDoc();
+    expect(() => link.align(doc)).not.toThrow();
+    expect(() => link.images?.()).not.toThrow();
+    expect(() => hashDoc(doc)).not.toThrow();
+    expect(() => retainedIds(doc, undefined)).not.toThrow();
+    // 제품 링크로 port 없이 저장 — book = docs.save(docOf 기준 revision) → 문서 없음 NOT_FOUND = failed(reject 0)
+    await expect(run(link)).resolves.toMatchObject({ status: "failed" });
+  });
+});

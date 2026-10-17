@@ -1,0 +1,38 @@
+[base #1] rc=0 60s args=''       Tests  3033 passed (3033)
+[base #2] rc=0 55s args=''       Tests  3033 passed (3033)
+[base #3] rc=0 64s args=''       Tests  3033 passed (3033)
+[base #4] rc=0 98s args=''       Tests  3033 passed (3033)
+[base #5] rc=0 61s args=''       Tests  3033 passed (3033)
+[base #6] rc=0 51s args=''       Tests  3033 passed (3033)
+[base #7] rc=0 51s args=''       Tests  3033 passed (3033)
+[base #8] rc=0 50s args=''       Tests  3033 passed (3033)
+[base #9] rc=0 51s args=''       Tests  3033 passed (3033)
+[base #10] rc=1 51s args=''       Tests  1 failed | 3032 passed (3033)
+  FAIL /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-flaky-hunt/app/src/components/studio/FieldUndo.test.tsx :: 미리보기 · 읽기 전용 탭 — FU-AC-10 · 12 묶음 열린 채 미리보기 열기 = 묶음 닫힘 · 편집으로 돌아가 Ctrl+Z = 그 필드 기록 
+     AssertionError: expected false to be true // Object.is equality
+         at /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-flaky-hunt/app/src/components/studio/FieldUndo.test.tsx:128:31
+         at file:///Users/younghwankang/orca/workspaces/web-builder-solution/rs7-flaky-hunt/app/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2783:20
+[base #11] rc=0 51s args=''       Tests  3033 passed (3033)
+[base #12] rc=0 56s args=''       Tests  3033 passed (3033)
+[base #13] rc=0 51s args=''       Tests  3033 passed (3033)
+[base #14] rc=0 52s args=''       Tests  3033 passed (3033)
+[base #15] rc=0 55s args=''       Tests  3033 passed (3033)
+[base] stopped at 15 (time budget; 1 fail at #10)
+file-alone: ok=12 bad=0
+file-under-load(10 concurrent x3): bad=0/30
+[verify #1] rc=0 60s args=''       Tests  3033 passed (3033)
+[verify #2] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #3] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #4] rc=0 51s args=''       Tests  3033 passed (3033)
+[verify #5] rc=0 53s args=''       Tests  3033 passed (3033)
+[verify #6] rc=0 51s args=''       Tests  3033 passed (3033)
+[verify #7] rc=0 51s args=''       Tests  3033 passed (3033)
+[verify #8] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #9] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #10] rc=0 51s args=''       Tests  3033 passed (3033)
+[verify #11] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #12] rc=0 51s args=''       Tests  3033 passed (3033)
+[verify #13] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #14] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify #15] rc=0 50s args=''       Tests  3033 passed (3033)
+[verify] DONE

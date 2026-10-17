@@ -4,10 +4,10 @@
 - 간헐 실패 테스트 식별: `app/src/components/studio/FieldUndo.test.tsx` › "미리보기 · 읽기 전용 탭 — FU-AC-10 · 12 › 묶음 열린 채 미리보기 열기 = 묶음 닫힘 · 편집으로 돌아가 Ctrl+Z = 그 필드 기록" (128행 `expect(await key(CTRL_Z)).toBe(true)` → `false`).
 - 원인: **테스트 쪽 타이밍 가정**. 앱 결함 아님(아래 근거). 수정은 테스트 1줄(+주석 1줄).
 - 수정 커밋: `4227bb52` (test: FieldUndo 미리보기 Ctrl+Z 전 passive effect 대기)
-- 수정 후 전체 스위트 15회: (아래 "검증" 표 참조)
+- 수정 후 전체 스위트 15회 연속 GREEN (`[verify #1~15]` 모두 `3033 passed (3033)`)
 
 ## 1. 식별 (logs/runs.txt)
-- 수정 전 전체 `npx vitest run` 직렬 15회(25회 계획, 시간 예산으로 15회에서 중단): **1 failed / 15** — `[base #10] 1 failed | 3032 passed (3033)`, 실패 1건 = 위 FieldUndo 테스트. 원문: `logs/base-10.out`·`logs/base-10.json`.
+- 수정 전 전체 `npx vitest run` 직렬 15회(25회 계획, 시간 예산으로 15회에서 중단): **1 failed / 15** — `[base #10] 1 failed | 3032 passed (3033)`, 실패 1건 = 위 FieldUndo 테스트. 원문: `logs/base-10.out`·`logs/base-10.failed.json`.
 - 실패가 나왔으므로 shuffle·pool 변형(브리프 "실패 0이면")은 실행하지 않음. 참고: Vitest 5.0.1 기본 pool = `forks`(`npx vitest --help`) — `--pool=forks` 변형은 baseline과 동일 조건.
 
 ## 2. 원인
@@ -31,7 +31,7 @@
 ## 4. 검증
 - 파일 단독: `npx vitest run src/components/studio/FieldUndo.test.tsx` → 8 passed.
 - `npm run typecheck` 통과 · `npx eslint src/components/studio/FieldUndo.test.tsx` 통과.
-- 수정 후 전체 스위트 15회: VERIFY_RESULT
+- 수정 후 전체 스위트 직렬 15회(`dev/active/rs7-flaky-hunt/loop.sh verify 15` = `npx vitest run --reporter=default --reporter=json`): **15/15 GREEN**, 매 회 `Tests 3033 passed (3033)` · rc=0 · 50~60s (logs/runs.txt `[verify #1]`~`[verify #15]`). 실행 중 Codex review·typecheck·lint가 같이 돌아 부하가 더 있었음.
 
 ## 정적 조사 후보(서브에이전트 읽기 전용 1개 · 미재현 · 수정 안 함)
 이번 실행에서 실패하지 않은 후보 — 추측 수정 금지에 따라 기록만 한다.
@@ -47,4 +47,5 @@
 
 ## 기타
 - preview 서버 미기동(포트 확인 불필요).
-- Codex 검증: CODEX_RESULT
+- Codex 검증: `codex-companion review --scope branch --base bcaa9832` → 조치 필요 결함 없음(1라운드).
+- 로그: `logs/runs.txt`(전 회차 요약 + 실패 원문) · `logs/base-10.out`(실패 회차 원본 출력) · `logs/base-10.failed.json`(JSON 리포트 1.4MB에서 요약 필드 + 실패 파일 항목만 남김). 통과 회차 원본은 스크립트가 지움. 반복 스크립트 `loop.sh` 커밋.

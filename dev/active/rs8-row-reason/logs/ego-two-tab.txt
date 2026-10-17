@@ -1,0 +1,15 @@
+# RS8-2 Ego Lite 2탭 (2026-10-18) — vite preview --port 4390 --strictPort (fresh build, tip 087f88bb) · space 29 "rs8-row-reason-qa" · 앱 안 클릭으로만 이동(B 탭 첫 진입 goto /projects 1회 = IDB 진입)
+준비: Storage.clearDataForOrigin(http://localhost:4390) → indexedDB.databases() = []
+탭 A(p1): 카탈로그 → 비교 추가(모던 카페 브랜드·로컬 베이커리) → 비교 보드 → A 전부 선택 → 프로필 확정(v1) → 3안 만들기 → A안 선택 → A안으로 편집 시작
+  /studio/project-1 · navigator.locks.query().held = [design-studio-writer exclusive 6CBF981DB3B0C5778CB0C30D67B56A17]
+탭 B(p2): /projects → "편집기 열기" → Hero 제목 "B탭 마지막 편집" 입력 → 편집기 알림 "다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다"
+  (여기부터 B 탭 navigator.locks.request 래핑 계수 + MutationObserver로 /projects 행 첫 그림 기록)
+  → "프로젝트로 돌아가기" 링크 클릭
+결과:
+  requests = [{ name: design-studio-writer, path: /studio/project-1 }]  ← 편집기 이탈(lease 해제) save 1회. /projects 경로 요청 0
+  first(행 첫 그림) text: "… 다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다 · 다시 저장 · 편집기 열기 …" — "저장하지 못했습니다" 일반 문구 0
+  first buttons: [다시 저장, 편집기 열기, 프로필 보기, 이름 바꾸기, 파일로 내보내기, 삭제]
+  3s 뒤: 같은 문구·같은 버튼 · requests 그대로 1(/studio)
+  B 탭 query().held = [design-studio-writer exclusive 6CBF981D…] (= A 탭 clientId — B 탭 writer 없음)
+  A 탭 query().held = 같음
+스크린샷: Page.captureScreenshot CDP timeout(백그라운드 탭) — 미취득, 텍스트 기록으로 대신

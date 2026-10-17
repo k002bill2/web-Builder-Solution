@@ -1,0 +1,55 @@
+# 임시 퍼즈 결과 (tip a834eb88, jsdom)
+M01 img onerror 외부 | THROW | 정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님
+M02 a javascript: | THROW | 정적 HTML 링크는 같은 문서 앵커만 허용합니다: javascript:alert(1)
+M03 a 엔티티 javascript: | THROW | 정적 HTML 링크는 같은 문서 앵커만 허용합니다: javascript:alert(1)
+M04 a 널바이트 | THROW | 정적 HTML 링크는 같은 문서 앵커만 허용합니다: java�script:alert(1)
+M05 svg a xlink:href js | THROW | 정적 HTML 링크는 같은 문서 앵커만 허용합니다: 
+M06 svg animate href→js | PASS(통과) | 위험 잔존: javascript: … 문의하기</a></div><svg><a><animate attributeName="href" values="javascript:alert(1)"></animate><text>x</text></a></svg></header><main style="--c
+M07 svg set href→js | PASS(통과) | 위험 잔존: javascript: … -sheet">문의하기</a></div><svg><a><set attributeName="href" to="javascript:alert(1)"></set><text>x</text></a></svg></header><main style="--canva
+M08 svg foreignObject img | THROW | 정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님
+M09 svg image href | THROW | 정적 HTML 외부 출처가 있습니다
+M10 svg use data: | THROW | 정적 HTML 외부 출처가 있습니다
+M11 svg script | PASS(통과) | 위험 표식 없음
+M12 template shadowroot img onerror+script | PASS(통과) | 위험 잔존: shadowrootmode … class="kit-cta kit-cta--sheet">문의하기</a></div><div><template shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><scri
+M13 template shadowroot 외부 a | PASS(통과) | 위험 잔존: shadowrootmode … class="kit-cta kit-cta--sheet">문의하기</a></div><div><template shadowrootmode="open"><a href="https://evil.example/phish">x</a><style>@import u
+M14 template(일반) script | PASS(통과) | 위험 잔존: <script … act" class="kit-cta kit-cta--sheet">문의하기</a></div><template><script>alert(1)</script></template></header><main style="--canvas-primary: rgb(
+M15 iframe srcdoc | PASS(통과) | 위험 표식 없음
+M16 object/embed | PASS(통과) | 위험 표식 없음
+M17 body meta refresh | THROW | 정적 HTML 외부 출처가 있습니다
+M18 form action | THROW | 정적 HTML 외부 출처가 있습니다
+M19 button formaction | THROW | 정적 HTML 외부 출처가 있습니다
+M20 math href | THROW | 정적 HTML 외부 출처가 있습니다
+M21 input image src | THROW | 정적 HTML 외부 출처가 있습니다
+M22 link stylesheet | THROW | 정적 HTML 외부 출처가 있습니다
+M23 style @import | THROW | 정적 HTML 외부 출처가 있습니다
+M24 style url 외부 | THROW | 정적 HTML 외부 출처가 있습니다
+M25 style url 엔티티 | THROW | 정적 HTML 외부 출처가 있습니다
+M26 style url 이스케이프 | THROW | 정적 HTML 외부 출처가 있습니다
+M27 style image-set | THROW | 정적 HTML 외부 출처가 있습니다
+M28 style url 큰따옴표 안 작은따옴표 | PASS(통과) | 위험 잔존: https://evil … -cta--sheet">문의하기</a></div><div style="background:url(&quot;https://evil.example/a'b&quot;)"></div></header><main style="--canvas-primary: r
+M29 style url 작은따옴표 안 괄호 | PASS(통과) | 위험 잔존: https://evil … a kit-cta--sheet">문의하기</a></div><div style="background:url('https://evil.example/a)b')"></div></header><main style="--canvas-primary: rgb(10
+M30 style 요소 url 따옴표 섞기 | PASS(통과) | 위험 잔존: https://evil … cta kit-cta--sheet">문의하기</a></div><style>.q{background:url("https://evil.example/a'b")}</style></header><main style="--canvas-primary: rgb(1
+M31 style data:svg 안 외부 image | PASS(통과) | 위험 표식 없음
+M32 style data:svg 따옴표 섞기 외부 | PASS(통과) | 위험 잔존: https://evil … vg+xml,<svg xmlns='http://www.w3.org/2000/svg'><image href='https://evil.example/x'/><script>alert(1)</script></svg>&quot;)"></div></header>
+M33 noscript mXSS | THROW | 정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님
+M34 a ping | THROW | 정적 HTML 링크는 같은 문서 앵커만 허용합니다: #
+M35 video poster/audio src | THROW | 정적 HTML 외부 출처가 있습니다
+M36 img data:svg (html) | THROW | 정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님
+M37 img 외부 (zip) | THROW | 정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님
+M38 img data:png (zip) | THROW | 정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님
+M39 svg style 외부 | THROW | 정적 HTML 외부 출처가 있습니다
+M40 svg feImage | THROW | 정적 HTML 외부 출처가 있습니다
+C01 킷CSS 외부 url | THROW | 정적 HTML CSS에 외부 요청이 있습니다
+C02 킷CSS @import | THROW | 정적 HTML CSS에 외부 요청이 있습니다
+C03 킷CSS @import 이스케이프 | PASS(통과) | 위험 잔존: https://evil … ]{color:var(--site-ink)}[data-kit]{display:block}@\69mport "https://evil.example/c.css";</style><script>document.addEventListener("click",fu
+C04 킷CSS url 이스케이프 | PASS(통과) | 위험 잔존: https://evil … ar(--site-ink)}[data-kit]{display:block}.x{background:u\72l(https://evil.example/x)}</style><script>document.addEventListener("click",functi
+C05 킷CSS image-set 문자열 | PASS(통과) | 위험 잔존: https://evil … nk)}[data-kit]{display:block}.x{background-image:image-set("https://evil.example/x.png" 1x)}</style><script>document.addEventListener("click
+C06 킷CSS url 따옴표 섞기 | PASS(통과) | 위험 잔존: https://evil … var(--site-ink)}[data-kit]{display:block}.x{background:url("https://evil.example/a'b")}</style><script>document.addEventListener("click",fun
+C07 킷CSS url zip 폰트 경로 탈출 | PASS(통과) | 위험 표식 없음
+C08 킷CSS data:svg 외부(브랜드 제외 영향) | PASS(통과) | 위험 잔존: https://evil … block}.x{background:url(data:image/svg+xml,<svg><image href=https://evil.example/x /></svg>)}</style><script>document.addEventListener("clic
+B01 09c 브랜드 data: 안 | PASS(통과) | 위험 표식 없음
+B02 09c 브랜드 문자열 안 url(data:) | THROW | 정적 HTML 브랜드 문자열이 있습니다
+B03 09c 브랜드 content 안 url(data:apfs) | PASS(통과) | 위험 표식 없음
+B04 09c 브랜드 data: 밖(대조) | THROW | 정적 HTML 브랜드 문자열이 있습니다
+B05 09c 브랜드 따옴표 data: | PASS(통과) | 위험 표식 없음
+B06 09c 브랜드 주석 안 url(data:) | PASS(통과) | 위험 표식 없음

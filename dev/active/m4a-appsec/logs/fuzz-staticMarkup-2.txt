@@ -1,0 +1,5 @@
+# 임시 퍼즈 2 (tip a834eb88, jsdom)
+M41 svg image + set href 외부(F-13) | PASS(통과) | 잔존: https://evil.example/x
+M42 svg animate xlink:href 외부 | PASS(통과) | 잔존: https://evil.example/x
+M34b a ping(유효 앵커) | THROW | 정적 HTML 외부 출처가 있습니다
+M43 template 깊이 중첩 shadowroot | PASS(통과) | 잔존: <script>alert

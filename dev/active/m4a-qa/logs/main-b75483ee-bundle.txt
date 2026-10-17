@@ -1,0 +1,10 @@
+[bundle] /catalog 첫 화면 합계: 100.05KB / 예산 101KB · 진입 직후 자동 로드 포함: 102.39KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.46KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.79KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.67KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.67KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.53KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.94KB / 예산 125KB
+[bundle] /profile (3안 있음) 첫 화면 합계: 99.53KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.42KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 99.09KB / 예산 100KB · 진입 직후 자동 로드 포함: 109.54KB / 예산 125KB
+[bundle]   /studio/:projectId 해시 정규화 진입 128.70KB · 기준선 128.70KB + 0.03KB (멈춤 > 128.73KB) — raw 130.01KB는 참고(해시 이름 흔들림 포함)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.68KB · 기준선 131.68KB + 0.03KB (멈춤 > 131.71KB) — raw 133.05KB는 참고(해시 이름 흔들림 포함)
+[bundle] 렌더 문서(render.html) JS 합계: 84.22KB / 예산 90KB · CSS 합계: 8.89KB / 예산 30KB

@@ -261,12 +261,12 @@
 
 | ID | 기준 |
 |---|---|
-| UX5-AC-01 | 상태 전환 알림은 진입 때 1회만이다. 연속 실패와 레이아웃 재마운트로는 다시 알리지 않는다. alert는 `SaveStatus` 1곳, status는 편집 알림 1곳이다(E-AC-33 유지). |
+| UX5-AC-01 | 상태 전환 알림은 진입 때 1회만이다. 연속 실패와 레이아웃 재마운트로는 다시 알리지 않는다. alert는 편집기 셸 안 `SaveStatus` 1곳(`showModal` 대화상자 안 결과 alert 1곳은 별도 — 바깥 inert), status는 편집 알림 1곳이다(E-AC-33 유지). (UX-POLISH-1 C-1) |
 | UX5-AC-02 | 상대 시각("· N초 전")은 라이브 영역 밖에 둔다(기존 B-14). |
 | UX5-AC-03 | 충돌 Callout의 두 버튼은 Tab 순서 = 시각 순서 = 주→보조다. 각 버튼은 결과 1줄을 `aria-describedby`로 읽는다. |
 | UX5-AC-04 | 충돌 진입(마운트 중)에서 포커스는 이동하지 않는다. seed `conflicted` 재마운트에서는 충돌 영역 제목으로 이동한다. · **(r0b 주석 2026-10-17)** 제품 도달 0(RS6 L4 결정 ① — 다른 탭 stale = stale 행), 단위 검증만(`ConflictCallout.test.tsx`) · 충돌 경로가 다시 생기면 재판정. 근거 `dev/active/rs6-l4-ux/REPORT.md` R2-2 · `dev/active/rs6-qa/REPORT.md` 3절 UX5-AC-04·05 |
 | UX5-AC-05 | 선택 성공 뒤 포커스는 편집기 h1, 실패 뒤에는 누른 버튼이다. 포커스가 `body`로 떨어지지 않는다. · **(r0b 주석 2026-10-17)** 제품 도달 0(RS6 L4 결정 ① — 다른 탭 stale = stale 행), 단위 검증만(`ConflictCallout.test.tsx`) · 충돌 경로가 다시 생기면 재판정. 근거 `dev/active/rs6-l4-ux/REPORT.md` R2-2 · `dev/active/rs6-qa/REPORT.md` 3절 UX5-AC-04·05 |
-| UX5-AC-06 | 확인 대화상자: 열면 "취소"에 포커스, Esc = 취소, Tab은 대화상자 안에서 순환(`showModal`), 닫히면 연 버튼으로 복귀한다. 연 버튼이 사라졌으면 그 영역 제목이나 h1로 간다. |
+| UX5-AC-06 | 확인 대화상자: 열면 "취소"에 포커스, Esc = 취소, Tab·Shift+Tab은 대화상자 밖 문서 요소로 가지 않는다(`showModal` 바깥 inert — 브라우저 UI 경유는 플랫폼 동작으로 허용, UX-POLISH-1 C-2), 닫히면 연 버튼으로 복귀한다. 연 버튼이 사라졌으면 그 영역 제목이나 h1로 간다. |
 | UX5-AC-07 | 진행 중에는 `aria-busy` + `aria-disabled`로 표시하고, Enter·Space 연타는 요청 1회만 만든다. `disabled`는 쓰지 않는다(포커스 유지). |
 | UX5-AC-08 | `/projects` 행 "저장 확인" 성공 뒤 포커스는 그 행 "편집기 열기"(SPEC-4 승계)로 간다. 실패면 포커스를 유지하고 alert를 낸다. |
 | UX5-AC-09 | memory 모드에서 "저장 확인" 버튼이 DOM에 없고, 어떤 경로에서도 "브라우저에 저장됨" 문구가 나오지 않는다. |

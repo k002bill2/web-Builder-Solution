@@ -1,11 +1,11 @@
 # M4-a-1 PROGRESS — store zip 스파이크
 
-- [ ] BRIEF·PROGRESS 커밋
-- [ ] S1 store zip 작성기 + 단위 테스트 + gzip 크기
+- [x] BRIEF·PROGRESS 커밋 (cee15e71)
+- [x] S1 store zip 작성기 + 단위 테스트 + gzip 크기
 - [ ] S2 이미지 분리 경로 (staticHtml/exportImages · HTML_MAX · 렌더 문서 예산)
 - [ ] S3 폰트 동봉 경로·크기
 - [ ] S4 청크 배치 build 판정 (/studio 증분 · 조작 뒤 증분 · 다른 라우트)
 - [ ] S5 큰 문서(≈30MB) 시간·메모리
-- [ ] REPORT 초안 커밋
+- [x] REPORT 초안 커밋
 - [ ] patches/ 보존 · app/ 복원 · untracked 0
 - [ ] Codex 검증

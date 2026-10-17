@@ -3,7 +3,7 @@
  * 문구 원문 = UX-5 2.3(★ = 기존 문구 재사용).
  */
 import { describe, expect, it } from "vitest";
-import { SAVE_SLOW_TAIL, saveStatusText } from "./saveStatusText";
+import { DISCARD_TIMEOUT_TEXT, SAVE_HANG_TEXT, SAVE_SLOW_TAIL, saveAnnouncement, saveStatusText } from "./saveStatusText";
 import { reasonText } from "./save/reasonText";
 
 const NOW = 1_000_000;
@@ -42,5 +42,17 @@ describe("RS6-L4 CP1 · 상태 판정 출처 (I6 8.1)", () => {
   it("memory 모드 어떤 출처에서도 '브라우저에 저장됨' 0 (UX5-AC-09 · U9)", () => {
     for (const source of [{}, { inflight: 0 }, { reason: "not-persistent" }])
       expect(saveStatusText({ phase: "saved", lastSavedAt: NOW }, "memory", NOW, source)).not.toContain("브라우저에 저장됨");
+  });
+});
+
+describe("RS6-L4 CP4 · LV-1 slow 진입 알림(I6 3절·8.4)", () => {
+  it("saving → saving-slow 진입 = status 1회(꼬리 문구) · 이미 slow면 다시 알리지 않음", () => {
+    expect(saveAnnouncement({ phase: "saving" }, { phase: "saving", slow: true })).toEqual({ kind: "status", text: `저장 중…${SAVE_SLOW_TAIL}` });
+    expect(saveAnnouncement({ phase: "saving", slow: true }, { phase: "saving", slow: true })).toBeUndefined();
+  });
+
+  it("문구 원문(UX-5 · I6 3절) — discard 시간 초과 · hang", () => {
+    expect(DISCARD_TIMEOUT_TEXT).toBe("버리지 못했습니다 — 변경은 그대로 있습니다");
+    expect(SAVE_HANG_TEXT).toBe("브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다");
   });
 });

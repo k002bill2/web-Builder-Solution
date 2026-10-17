@@ -41,7 +41,7 @@
 - [x] R1. CP1 SaveStatus 판정 출처(I6 8.1 · stale 행) — RED 9/46(`logs/r2-cp1-red.txt`, 예측 = 새 테스트 + 의미 교체 6건 전부 RED) → GREEN 60/60(`logs/r2-cp1-green.txt`) · 전체 스위트에서 포트 stale 의존 2건 추가 발견(FieldUndo P2-3 · useDocSaveLeave STALE 경고) → I6 8.1 근거로 교체 · build 129.35(중간 — ConflictCallout lazy·M2 전, `logs/r2-cp1-build.txt`)
 - [x] R2. CP2 저장 확인·다시 저장·폐기 대화상자 — RED(신규 2파일 import 실패 + report 1, `logs/r2-cp2-red.txt`) → GREEN 26/26(`logs/r2-cp2-green.txt`) · 전체 2990/2991→StudioLayout 가짜 타이머 findBy 수정 후 통과 · M2a 구조(SaveActions lazy)로 바로 작성 · build 129.52(중간, `logs/r2-cp2-build.txt`)
 - [x] R3. CP3 ConflictCallout 두 선택·포커스·replace epoch +1 — RED 3/5(`logs/r2-cp3-red.txt`) → GREEN 5/5 · epoch 변이 RED 2(`logs/r2-cp3-epoch-mutation-red.txt`)→복원 PASS · 전체 336/2994 통과 · build 129.31(중간 — M2b 포함, M2c·M2d 전, `logs/r2-cp3-build.txt`)
-- [ ] R4. CP4 문구·금지 문구 0·memory 모드 — RED `logs/r2-cp4-red.txt` → GREEN
+- [x] R4. CP4 문구·금지 문구 0·memory 모드 — RED 2/25(slow 알림 · 저장 먼저 실패 문장, `logs/r2-cp4-red.txt`) · 금지 문구 가드 8건은 첫 실행부터 GREEN(가드 성격) · memory U9는 CP2 버튼 테스트 → GREEN 25/25 · 전체 338/3005 · build 129.32(중간 — M2c·M2d 전, `logs/r2-cp4-build.txt`)
 - [ ] R5. 상쇄 M2a~M2d (`src/build/` 목록 모듈) — 실측
 - [ ] R6. 예산 판정 · 기준선 파일 갱신(상한 안일 때)
 - [ ] R7. Ego Lite 실화면 (1280·390 · stale 2탭)

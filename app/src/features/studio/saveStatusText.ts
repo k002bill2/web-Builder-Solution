@@ -79,6 +79,8 @@ export function saveStatusText(state: AutosaveState, persistence: ProjectPersist
 /** 이웃한 두 상태 사이의 알림 — 없으면 undefined */
 export function saveAnnouncement(prev: AutosaveState, next: AutosaveState): SaveAnnouncement | undefined {
   if (next.phase === "stale") return prev.phase === "stale" ? undefined : { kind: "alert", text: SAVE_STALE_ALERT };
+  // LV-1 `saving-slow` 진입 = 꼬리 status 1회(I6 3절·8.4)
+  if (next.slow && !prev.slow) return { kind: "status", text: `저장 중…${SAVE_SLOW_TAIL}` };
   if (next.recovered && prev.failure !== undefined) return { kind: "status", text: SAVE_RECOVERED_TEXT };
   if (next.failure === prev.failure) return undefined;
   if (next.failure === "error") return { kind: "alert", text: SAVE_FAILED_TEXT };

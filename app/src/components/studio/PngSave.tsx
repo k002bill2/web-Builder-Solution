@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { retryableImport } from "../../data/chunkRetry";
 import type { PreviewView } from "../../features/detail/previewView";
 import type { PngRequest } from "../../features/studio/png/pngCapture";
@@ -42,6 +42,16 @@ export function PngSave({
   readonly onAnnounce?: (text: string) => void;
 }) {
   const [state, setState] = useState<{ readonly busy?: true; readonly failed?: string }>({});
+  // 같은 문장을 다시 올리면 편집 알림 글자가 그대로라 낭독이 없다 — 빈 글자를 먼저 올리고 다음 틱에 문장(Codex r1 P2)
+  const announced = useRef<string | undefined>(undefined);
+  const announce = (done: string) => {
+    if (done !== announced.current) {
+      announced.current = done;
+      return onAnnounce?.(done);
+    }
+    onAnnounce?.("");
+    setTimeout(() => onAnnounce?.(done), 0);
+  };
   const press = () => {
     if (!ready || state.busy) return;
     setState({ busy: true });
@@ -50,7 +60,7 @@ export function PngSave({
       .then(
         (done) => {
           setState({});
-          onAnnounce?.(done);
+          announce(done);
         },
         (error: unknown) => {
           void loadPng().then((png) => png.reportFailure(error), () => undefined);

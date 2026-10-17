@@ -99,6 +99,20 @@ describe("PNG 버튼 4상태 (m2a 3.3 · K-AC-19)", () => {
   });
 });
 
+describe("같은 PNG 다시 저장 (Codex r1 P2 — 성공 문장이 같아도 다시 알린다)", () => {
+  it("성공 문장이 직전과 같으면 빈 글자를 먼저 올린 뒤 같은 문장 — 편집 알림 글자가 바뀌어 다시 낭독", async () => {
+    png.savePng.mockResolvedValue("PNG를 내려받았습니다 · 가게_1280_r3.png");
+    const onAnnounce = vi.fn<(text: string) => void>();
+    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} onAnnounce={onAnnounce} />);
+    fireEvent.click(button());
+    await waitFor(() => expect(onAnnounce).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(button()).not.toHaveAttribute("aria-busy"));
+    fireEvent.click(button());
+    await waitFor(() => expect(onAnnounce).toHaveBeenCalledTimes(3));
+    expect(onAnnounce.mock.calls.map(([text]) => text)).toEqual(["PNG를 내려받았습니다 · 가게_1280_r3.png", "", "PNG를 내려받았습니다 · 가게_1280_r3.png"]);
+  });
+});
+
 describe("PNG 이미지 decode 실패 (SPEC m2c 5.3-3 · IMG-AC-26b 부모 쪽)", () => {
   it("캡처 오류 코드 IMAGE_DECODE_FAILED → alert '이미지를 그리지 못했습니다 — 다시 눌러 주세요'", async () => {
     png.savePng.mockRejectedValueOnce(Object.assign(new Error("이미지를 그리지 못했습니다"), { code: "IMAGE_DECODE_FAILED" }));

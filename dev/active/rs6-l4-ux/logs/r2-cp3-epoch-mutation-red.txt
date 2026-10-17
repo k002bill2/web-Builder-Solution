@@ -1,0 +1,46 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app
+
+ ❯ src/features/studio/save/saveCore.epoch.test.ts (2 tests | 2 failed) 156ms
+   ❯ RS6-L4 CP3 · 충돌 선택 뒤 epoch +1 (2)
+     × mine 선택 = epoch +1 · dirty 0 122ms
+     × theirs 선택 = epoch +1 · dirty 0 33ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/save/saveCore.epoch.test.ts > RS6-L4 CP3 · 충돌 선택 뒤 epoch +1 > mine 선택 = epoch +1 · dirty 0
+ FAIL  src/features/studio/save/saveCore.epoch.test.ts > RS6-L4 CP3 · 충돌 선택 뒤 epoch +1 > theirs 선택 = epoch +1 · dirty 0
+AssertionError: expected { doc: { …(10) }, mark: 3, …(5) } to match object { epoch: 1, dirty: false }
+(19 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "dirty": false,
+-   "epoch": 1,
++   "epoch": 0,
+  }
+
+ ❯ src/features/studio/save/saveCore.epoch.test.ts:18:22
+     16|     const before = c.view().epoch;
+     17|     await rig.repo.resolveConflict(PROJECT, choice, mine);
+     18|     expect(c.view()).toMatchObject({ epoch: before + 1, dirty: false }…
+       |                      ^
+     19|   });
+     20| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  18:36:56
+   Duration  865ms (environment 43%, transform 23%, tests 20%, setup 7%, import 7%)
+

@@ -1,0 +1,16 @@
+# 변이: 09c4309d 이전 staticMarkup.ts(09c4309d^)로 되돌린 뒤 같은 퍼즈 — tip 결과와 diff
+50c50
+< B01 09c 브랜드 data: 안 | PASS(통과) | 위험 표식 없음
+---
+> B01 09c 브랜드 data: 안 | THROW | 정적 HTML 브랜드 문자열이 있습니다
+52c52
+< B03 09c 브랜드 content 안 url(data:apfs) | PASS(통과) | 위험 표식 없음
+---
+> B03 09c 브랜드 content 안 url(data:apfs) | THROW | 정적 HTML 브랜드 문자열이 있습니다
+54,55c54,55
+< B05 09c 브랜드 따옴표 data: | PASS(통과) | 위험 표식 없음
+< B06 09c 브랜드 주석 안 url(data:) | PASS(통과) | 위험 표식 없음
+---
+> B05 09c 브랜드 따옴표 data: | THROW | 정적 HTML 브랜드 문자열이 있습니다
+> B06 09c 브랜드 주석 안 url(data:) | THROW | 정적 HTML 브랜드 문자열이 있습니다
+# diff 종료 (exit 1) — 복원: git checkout -- staticMarkup.ts, git diff 빈 값 확인

@@ -1,0 +1,6 @@
+# 임시 패치(clean 선택자 + template, animate, set, animateMotion, animateTransform) 검증 — 되돌림 완료
+M12 | 제거됨
+M13 | 제거됨
+M06 | 제거됨
+M41 | 제거됨
+# 패치 적용 상태 staticHtml+zip 전체:  Test Files  9 passed (9)       Tests  116 passed (116) 

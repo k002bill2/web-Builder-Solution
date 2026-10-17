@@ -63,8 +63,8 @@ export interface CoreLink {
   readonly port: CorePort | undefined;
   /** 저장 시각(DocBook과 같은 주입 시계) */
   readonly now: () => string;
-  /** memory 모드 저장 = DocBook 메모리 커밋(판정 그대로) — 저장된 문서 */
-  readonly book: (doc: PageDoc, revision: number) => PageDoc;
+  /** memory 모드 저장 = DocBook 메모리 커밋(판정 그대로 · 기준 = 지금 메모리 revision — 이 탭 문서 필드 작성자는 코어 1명) — 저장된 문서 */
+  readonly book: (doc: PageDoc) => PageDoc;
   /** saved 뒤 DocBook 문서 = 커밋한 문서 그대로(G1 — 실패면 호출 0) */
   readonly align: (doc: PageDoc) => void;
 }

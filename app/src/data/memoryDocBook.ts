@@ -153,7 +153,7 @@ export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | und
   io: coreIo,
   port: sync?.corePort(docs),
   now,
-  book: (doc, revision) => docs.save(projectId, revision, doc, () => undefined) as ReturnType<CoreLink["book"]>,
+  book: (doc) => docs.save(projectId, docs.docOf(projectId)?.revision ?? doc.revision, doc, () => undefined) as ReturnType<CoreLink["book"]>,
   align: (doc) => docs.adopt(projectId, doc),
 });
 

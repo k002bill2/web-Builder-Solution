@@ -9,7 +9,7 @@
 - [x] CP1 코어 상태기 이식 + 포트 mode·head·verify (h1·h2) — RED 예측 → RED 로그 → GREEN 커밋 · 예산
 - [x] CP2 이미지 동결·엄격 참조 · 포트 commit · G1 · U14 · U15 — RED → GREEN · 예산
 - [x] CP3 h4·h5 · U10 · mode = gate·cleared — RED → GREEN · 예산
-- [ ] CP4 G2 import 가드 · 동기 생성·포트 늦게 붙이기 · CoreKeeper 레지스트리 — RED → GREEN · 예산
+- [x] CP4 G2 import 가드 · 동기 생성·포트 늦게 붙이기 · CoreKeeper 레지스트리 — RED → GREEN · 예산
 - [ ] 마감 게이트 fresh typecheck·lint·test·build
 - [ ] REPORT.md (AC 판정 · 37건 표 · 예산 표 · 깨진 테스트 대조 · ④b vs 9.2 · 사실/추정/미확인)
 
@@ -20,6 +20,7 @@
 | CP1 | 128.53 (+0.44) | 131.52 (+0.45) | 129.84 (복원 132.87) | 기준선 128.50→128.53 · 131.48→131.52 · eagerKb 129.84·132.87 (개정 17 배분 RS6-L1) · raw ≤130 → eagerBudgetKb 변경 불필요 |
 | CP2 | 128.55 (+0.02) | 131.53 (+0.01) | 129.88 (복원 132.92) | 기준선 128.55·131.53 · eagerKb 129.88·132.92 · catalog 첫 100.07 · profile 첫 99.58 · projects 첫 99.17(전부 한도 안, base 대비 +0.02) |
 | CP3 | 128.55 (0) | 131.53 (0) | 129.87 (복원 132.90) | 진입 증분 0(io는 DocBook 청크) → 기준선 변경 없음 |
+| CP4 | 128.55 (0) | 131.53 (0) | 129.88 (복원 132.92) | 진입 증분 0 · 다른 라우트 catalog 100.06/102.39 · profile 99.56/120.12 · projects 99.15/108.85 |
 
 ## 로그
 - 0b 정본 읽기 완료 · 37건 대응표 = `HARNESS-MAP.md`(서브에이전트 analyzer 1회, 읽기 전용 — ①30 ②6 ③1).
@@ -35,3 +36,7 @@
 - **CP3 RED 예측**: 새 테스트 14건(`save/saveCore.modes.test.ts`) 중 9 FAIL(discard 8 · replace 1 — io 스텁 "unimplemented"). 통과 예상 5: starter·lease(상태부 CP1) · 두 탭 readonly/unsupported·stale·U10(포트 mode·cleared는 CP1·CP2에 있음).
 - CP3 RED: `logs/cp3-red.log` — 9 failed / 14(예측 9 일치). GREEN = coreIo discard·replace + CX-3 커밋 바인딩 = 참조 이미지만(retainedIds).
 - CP3 GREEN 게이트(fresh): tsc 0 · lint 0 · build 0 · test 320 files / 2894 passed — `logs/cp3-*.log`.
+- **CP4 RED 예측**: 새 테스트 8건(가드 6 `saveCoreGuard.test.ts` · lazy 2 `saveCore.lazy.test.ts`) 중 1 FAIL(memory 모드 — DocBook 커밋 없음). 가드 6·포트 늦게 붙이기 1은 CP1~3 구조가 이미 만족(가드 = 구조 고정 목적, 회귀 RED는 아래 변이 확인).
+- CP4 RED: `logs/cp4-red.log` — 2 failed / 8(예측 1). 초과 1 = 가드 정규식이 주석 속 "import … from"을 값 import로 잡은 테스트 결함 → 주석 제거 뒤 판정(구현 변경 아님). 실질 RED = memory 모드 1. 가드 변이 확인: saveCore.ts에 coreIo 값 import 추가 → 가드 1 FAIL(`logs/cp4-guard-mutation.log`) → 원복.
+- CP4 GREEN = coreIo memory 분기(DocBook save 뒤 not-persistent · savedMark 전진) · CoreLink.book 기준 = 지금 메모리 revision.
+- CP4 GREEN 게이트(fresh): typecheck 0 · lint 0 · build 0 · test 322 files / 2902 passed — `logs/cp4-*.log`.

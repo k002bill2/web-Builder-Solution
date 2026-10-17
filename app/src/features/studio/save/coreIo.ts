@@ -18,8 +18,16 @@ export const coreIo: CoreIo = {
     const submitted = s.mark;
     const newer = () => s.mark > submitted;
     const { port } = link;
-    // I5: 영속 없음
-    if (!port) return { status: "failed", reason: "not-persistent", newer: newer() };
+    // I5: 영속 없음(memory) = DocBook 메모리 커밋(지금 saveDoc 판정 그대로) 뒤 not-persistent — 영속 증명(confirmed)은 만들지 않는다
+    if (!port) {
+      try {
+        link.book({ ...target, hash: hashDoc(target) });
+      } catch (error) {
+        return { status: "failed", reason: reasonOf(error), newer: newer() };
+      }
+      s.savedMark = Math.max(s.savedMark, submitted);
+      return { status: "failed", reason: "not-persistent", newer: newer() };
+    }
     const mode = await port.mode();
     if (mode !== "writer") return { status: "failed", reason: mode, newer: newer() };
     const next: PageDoc = Object.freeze({ ...target, revision: (s.confirmed?.revision ?? target.revision) + 1, hash: hashDoc(target), updatedAt: link.now() });

@@ -14,3 +14,19 @@
 - 5 결과: 조사 오류 재현(ExportAfter.tsx:113 · 테스트가 틀린 문장 고정) · export.fail.pattern 미구현(편차 미기록) · 나머지 키 일치
 - 2 결과: 통과 15 · 통과 with notes 1(13) · 부분 2(02·14 사유 확인) · 이월 1(18) · 바뀐 단언 약화 0
 - 7 결과: 1차 PASS with notes · 노트 5 · 열린 항목 4(QA-REPORT 7절)
+
+# 2차(실화면 · 무인 Chromium 행) — QA-BRIEF-LIVE
+
+대상: tip `ee09160c`(1차 + FIX1 `41385e10`) · 시작 2026-10-18 · 출력 `/tmp/m4a-qa-live/`
+
+- [ ] 0. fresh 게이트(test 3134 · build · /studio 128.71 · 복원 131.69)
+- [ ] 1. 준비: build · preview 4395 · 경로 A 문서 · 이미지 2장 업로드
+- [ ] L1 내보내기 UI (Ego 1280·390 · 조사 "정적 사이트(zip)를")
+- [ ] L3 해제 (ditto -xk · unzip -t · 파일 7 · Archive Utility = 미확인)
+- [ ] L4 로컬 서버 4396 (Ego 1280·390 · zip 폴더 + 단일 HTML)
+- [ ] L6 file:// (Ego 1280)
+- [ ] L10 render.css 외부 문자열 scan
+- [ ] L2 실패 alert (Ego 390)
+- [ ] L9 큰 문서 R3 (6턴 한도)
+- [ ] L5·L7·L8 = 미확인(무인 run 범위 밖) 기록
+- [ ] 마감: preview·http.server 종료 · lsof 0 · IDB 삭제 · finish · shots 커밋 · untracked 0 · 판정

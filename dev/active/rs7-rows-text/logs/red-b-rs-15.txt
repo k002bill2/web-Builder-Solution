@@ -1,0 +1,133 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-rows-text/app
+
+ ❯ src/features/projects/pendingRetry.test.ts (2 tests | 2 failed) 183ms
+   ❯ retryRow 폴백 — 거짓 성공 문구 0 (2)
+     × 기억·코어 모두 없음 → ok(새로고침) · 무문구 · 쓰기 0 153ms
+     × 코어 clean · 기억 없음 → ok(새로고침) · 무문구 · save 0 29ms
+stderr | src/components/projects/ProjectsRetryRace.test.tsx > 클릭~청크 로드 경합 — B-RS-15 > 미확인 기록 행 '저장 확인' 클릭 직후 기억이 풀림 → 성공 문구 0 · 행 = 일반 행
+An update to ProjectsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/projects/ProjectsRetryRace.test.tsx > 클릭~청크 로드 경합 — B-RS-15 > 미확인 기록 행 '저장 확인' 클릭 직후 기억이 풀림 → 성공 문구 0 · 행 = 일반 행
+An update to ProjectsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to ProjectsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/projects/ProjectsRetryRace.test.tsx > 클릭~청크 로드 경합 — B-RS-15 > 미확인 기록 행 '저장 확인' 클릭 직후 기억이 풀림 → 성공 문구 0 · 행 = 일반 행
+An update to ProjectsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/components/projects/ProjectsRetryRace.test.tsx (1 test | 1 failed) 227ms
+   ❯ 클릭~청크 로드 경합 — B-RS-15 (1)
+     × 미확인 기록 행 '저장 확인' 클릭 직후 기억이 풀림 → 성공 문구 0 · 행 = 일반 행 225ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/projects/ProjectsRetryRace.test.tsx > 클릭~청크 로드 경합 — B-RS-15 > 미확인 기록 행 '저장 확인' 클릭 직후 기억이 풀림 → 성공 문구 0 · 행 = 일반 행
+Error: [2mexpect([22m[31melement[39m[2m).not.toHaveTextContent()[22m
+
+Expected element not to have text content:
+[32m  다시 저장했습니다[39m
+Received:
+[31m  모던 카페 브랜드 프로젝트프로필 v1편집 중 · B안 · 프로필 v1방금 전편집기 열기프로필 보기이름 바꾸기파일로 내보내기삭제다시 저장했습니다[39m
+ ❯ src/components/projects/ProjectsRetryRace.test.tsx:31:21
+     29|     await waitFor(() => expect(within(row).queryByText("확인하는 중…")).not…
+     30|     await ticks();
+     31|     expect(row).not.toHaveTextContent("다시 저장했습니다");
+       |                     ^
+     32|     expect(within(row).queryByRole("button", { name: `${name} 저장 확인` }…
+     33|     expect(within(row).getByRole("link", { name: `${name} 편집기 열기` })).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/projects/pendingRetry.test.ts > retryRow 폴백 — 거짓 성공 문구 0 > 기억·코어 모두 없음 → ok(새로고침) · 무문구 · 쓰기 0
+AssertionError: expected { ok: true, text: '다시 저장했습니다' } to deeply equal { ok: true, text: '' }
+
+- Expected
++ Received
+
+  {
+    "ok": true,
+-   "text": "",
++   "text": "다시 저장했습니다",
+  }
+
+ ❯ src/features/projects/pendingRetry.test.ts:16:43
+     14|     const { db, repo } = await startedRig();
+     15|     const writes = db.ops.length;
+     16|     expect(await retryRow(repo, PROJECT)).toEqual({ ok: true, text: ""…
+       |                                           ^
+     17|     expect(db.ops.length).toBe(writes);
+     18|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/projects/pendingRetry.test.ts > retryRow 폴백 — 거짓 성공 문구 0 > 코어 clean · 기억 없음 → ok(새로고침) · 무문구 · save 0
+AssertionError: expected { ok: true, text: '다시 저장했습니다' } to deeply equal { ok: true, text: '' }
+
+- Expected
++ Received
+
+  {
+    "ok": true,
+-   "text": "",
++   "text": "다시 저장했습니다",
+  }
+
+ ❯ src/features/projects/pendingRetry.test.ts:24:43
+     22|     core();
+     23|     const writes = db.ops.length;
+     24|     expect(await retryRow(repo, PROJECT)).toEqual({ ok: true, text: ""…
+       |                                           ^
+     25|     expect(db.ops.length).toBe(writes);
+     26|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed (3)
+   Start at  20:23:00
+   Duration  1.20s (environment 37%, transform 28%, tests 19%, import 9%, setup 6%)
+

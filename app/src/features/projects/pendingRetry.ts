@@ -66,11 +66,14 @@ async function confirmCore(repo: ProjectRepository, core: SaveCore, projectId: s
   });
 }
 
+/** 클릭~청크 로드 사이에 행 상태가 사라짐(기억 풀림·코어 clean) — 이번 클릭은 저장 0이라 성공 문구 없이 행만 새로고침(B-RS-15) */
+const gone: RetryOut = { ok: true, text: "" };
+
 /** 행 주 버튼 — 그 행 상태(pendingRows.describeRow와 같은 우선순위)의 method 1개 */
 export async function retryRow(repo: ProjectRepository, projectId: string): Promise<RetryOut> {
   const pending = pendingOf(repo, projectId);
   const core = coreOf(repo, projectId);
-  if (pending?.kind === "start" || !core) return pending ? retryPending(repo, pending) : { ok: true, text: C.saved };
+  if (pending?.kind === "start" || !core) return pending ? retryPending(repo, pending) : gone;
   if (core.view().dirty) return saveAgain(core);
-  return pending ? confirmCore(repo, core, projectId) : { ok: true, text: C.saved };
+  return pending ? confirmCore(repo, core, projectId) : gone;
 }

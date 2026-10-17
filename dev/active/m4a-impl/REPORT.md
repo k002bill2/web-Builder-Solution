@@ -125,6 +125,17 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 | F4 문구 | `components/studio/ExportAfter.tsx` 성공 제목의 `NAME`에 목적격 조사를 형식별로 붙임("zip을" · "정적 HTML을" · "정적 사이트(zip)를"). 공용 템플릿의 고정 "을"을 없앰 — HTML 쪽 문장은 그대로 | `ExportFlow.test.tsx` 기존 단언 "정적 사이트(zip)을 만들었습니다" → "를"로 **정정(약화 아님)** · RED `logs/fix1-f4-red.txt` → components/studio 41파일 300 passed | 86b74a22 |
 | F5 게이트·예산 | 코드 변경 0 | typecheck exit 0 · lint exit 0 · test 353파일 **3133 passed** · build exit 0(`logs/*-fix1.txt`). 진입 **128.71 · 복원 131.69 = 개정 18 기준선(증분 0, 기준선 갱신 없음)** · 렌더 JS 84.29/90. 실제 build 킷 CSS(`render-ncA71k8b.css`, url 6 · 이스케이프 선택자 다수)를 `buildStaticHtml`에 넣어 html(글꼴 data:)·zip(assets/fonts) 둘 다 통과 — 임시 vitest 실행 뒤 삭제(`logs/fix1-real-css.txt`). 킷 이스케이프(`@\69mport`·`u\72l(`)는 같은 출현 수 방식으로 잡혀 범위에 포함(정상 빌드 깨짐 0) | (이 커밋) |
 
+### FIX1 범위 밖 이월 (BRIEF-FIX1 "범위 밖")
+| 항목 | 내용 | 이월 사유 |
+|---|---|---|
+| L-3 | `storeZip.ts` `BAD_NAME`이 허용표보다 약함(`a/./b`·`a//b`·Windows 금지 문자) | 현재 호출자가 허용표를 먼저 거쳐 도달 불가 · BRIEF 범위 밖 |
+| L-4 | zip DOS 시각 로컬 시간대 의존(같은 revision · 기기 간 해시 차이) | SPEC 2.4 "로컬 시각" 명시 — 설계 판단 필요 |
+| L-5 | SPEC 4.3 "LICENSES.md F-14" 미구현 | 내용이 상수·고정 계열뿐 — SPEC 불일치 기록 |
+| L-6 | `exportFileStem` bidi·제로폭 문자 · 예약 이름 부분 일치 | 자기 기기 표시에만 영향 |
+| Info I-1~I-4 | postMessage `*` · noscript mXSS · ZIP_MAX 사후 검사 · 일반 template | I-4(일반 template)는 F1로 함께 제거됨. 나머지는 기록만 |
+| EXP-AC-14 | 용량 초과 refused 경로(저장소 `memoryDocBook runJob`) | 쓰기 범위 밖(저장소 코드) — 3절 편차 3 |
+| `readProject` 신뢰 경계 | 프로젝트 파일 가져오기 → `validatePageDoc` 심층 검토 | AppSec [미확인] — 별도 레인 |
+| CSP meta(AppSec 항목 6 권고) | 생성기 고정 CSP meta | 새 설계 — SPEC 개정 후보 |
 
 ## 10. 열린 항목 (Jarvis)
 1. EXP-AC-R3 실화면 20MB+ — BLOCKED(턴 상한). 단위 EXP-AC-17만 확인했습니다.

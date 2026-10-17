@@ -99,8 +99,39 @@
 +});
 ```
 
-## 5. 문구
-(진행 중)
+## 5. 문구 — 조사 오류 1건 확인 · 키 미구현 1건 [사실]
+### 5a. 성공 문장 조사
+- [사실] `app/src/components/studio/ExportAfter.tsx:113` = `` `${NAME[result.format]}을 만들었습니다 · …` `` — 형식 이름 뒤 고정 조사 `을`. `NAME["static-zip"] = "정적 사이트(zip)"` → 화면 **"정적 사이트(zip)을 만들었습니다"**. 조사는 괄호 앞 말("사이트", 받침 없음)에 맞춰 **"를"**이 맞습니다. `static-html`("정적 HTML을" — 에이치티엠엘, 받침 ㄹ)은 맞음.
+- [사실] 테스트 `ExportFlow.test.tsx`가 틀린 문장 `"정적 사이트(zip)을 만들었습니다 · …"`를 **그대로 고정**하고 있어, 문구를 고치면 이 단언도 함께 바꿔야 합니다. Developer REPORT 8절·9절 4번에 이미 관찰로 기록(문안 후속) — QA 재현 일치.
+- 수정 제안(커밋 안 함): 저장소에 이미 받침 판정 도우미(`objectOf` — `features/studio/opNotice.ts` 등)가 있으나 괄호 처리 규칙이 달라, 형식별 목적어를 표로 두는 편이 단순합니다.
+```diff
+--- a/app/src/components/studio/ExportAfter.tsx
+-const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip", "static-html": "정적 HTML", "static-zip": "정적 사이트(zip)" };
++const NAME: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip", "static-html": "정적 HTML", "static-zip": "정적 사이트(zip)" };
++/** 성공 제목의 목적어 — 조사는 괄호 앞 말에 맞춘다("사이트(zip)를") */
++const MADE: Readonly<Record<ExportFormat, string>> = { "react-zip": "zip을", "static-html": "정적 HTML을", "static-zip": "정적 사이트(zip)를" };
+@@ :113
+-          title={`${NAME[result.format]}을 만들었습니다 · 내보내기 전 상태는 스냅샷 '${result.snapshotName}'에 있습니다`}
++          title={`${MADE[result.format]} 만들었습니다 · 내보내기 전 상태는 스냅샷 '${result.snapshotName}'에 있습니다`}
+--- a/app/src/components/studio/ExportFlow.test.tsx
+-    const done = await within(gateRegion()).findByText("정적 사이트(zip)을 만들었습니다 · …
++    const done = await within(gateRegion()).findByText("정적 사이트(zip)를 만들었습니다 · …
+```
+- 판정: 결함(경미 · 문구) — 릴리스 차단 아님, 수정 권고.
+
+### 5b. EXPORT-SPEC 문구 키 ↔ 화면 문자열 대조 (`grep -rF` · 테스트 파일 제외)
+| SPEC 위치 · 키 | SPEC 문장 | 화면 문자열 위치 | 판정 |
+|---|---|---|---|
+| 1.2 버튼 1 | 정적 사이트(zip) 내보내기 | `ExportButtons.tsx` | 일치 |
+| 1.2 버튼 2 | HTML 파일 1개 내보내기 | `ExportButtons.tsx` | 일치 |
+| 2.5 `export.note.htmlLarge` | 메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다 | `exportFlow.ts` · 옛 "다음 단계에서 지원" 소스 0건 | 일치 |
+| 2.5 결과 줄 | zip 1개 · {n}MB (이미지 {k}장 · 글꼴 {f}개) | `exportFlow.ts` | 일치 |
+| 6.1 `export.fail.tooLarge` | 묶음이 {n}MB로 상한 64MB를 넘어 만들지 않았습니다 — 큰 이미지를 줄여 주세요 | `zip/staticZip.ts` `tooLargeText` | 문장 일치 · 자리는 refused 아님(EXP-AC-14 부분 — 2절) |
+| 6.1 `export.hint.blocked` | 내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요 | `ExportAfter.tsx` (성공 Callout, 두 형식) | 일치 |
+| 6.1 `export.fail.pattern` | 내보낼 수 없는 내용이 있어 멈췄습니다 — 문제가 계속되면 알려 주세요 | **소스 0건** | **미구현 — 편차 미기록** |
+| 5.2 `gate.row.links` · `gate.links.*` 4개 | 링크 · … | 소스 0건 | 해당 없음 — EXP-AC-18 이월(M4-a-2b, Developer REPORT 4절) |
+| (SPEC 밖) 생성기 없음 안내 | 정적 사이트(zip)는 생성기 연결 후 내보낼 수 있습니다 | `ExportAfter.tsx` | 조사 맞음(는) |
+- `export.fail.pattern` [추정 — 코드 읽기]: F-11~F-15 단언은 `shown` 표식 없는 `Error`라 `exportFlow`의 일반 재시도 실패 문구("내보내지 못했습니다 · 다시 시도")로 보입니다. 사용자에게 거짓 성공은 아니고 alert 자리도 같지만, SPEC 6.1 문장이 아니며 Developer REPORT 3절 편차 목록에 없습니다. 판정: 문구 편차(경미) — 문안 후속(Hemingway)과 함께 처리 권고. 실화면 문구는 2차 run에서 확인.
 
 ## 6. LIVE-PLAN
 (진행 중)

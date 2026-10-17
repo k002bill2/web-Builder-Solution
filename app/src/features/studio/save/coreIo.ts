@@ -7,7 +7,7 @@ import { hashDoc } from "../../../engine/ops/hash";
 import type { PageDoc } from "../../../engine/contracts/pageDoc";
 import { retainedIds } from "../images/store/imageStore";
 import { reasonText } from "./reasonText";
-import type { CoreIo, CoreState, DiscardResult, Receipt, SaveResult } from "./saveCore";
+import type { CoreIo, CoreLink, CoreState, DiscardResult, Receipt, SaveResult } from "./saveCore";
 
 const reasonOf = (error: unknown, fallback = "not-committed") => (error as { reason?: string } | undefined)?.reason ?? fallback;
 /** discard 읽기가 이 시간 안에 끝나지 않으면 포기 — `blocked{timeout}` · 가드 해제 · 늦은 결과 버림(LV-2 · 잠정 MQ-6-3b — 근거 `dev/active/rs6-l2-liveness/REPORT.md`) */
@@ -15,45 +15,53 @@ export const DISCARD_GIVE_UP_MS = 5000;
 /** L1 QA note 3: 포트 판정·재읽기(mode·verify) throw = reject 아님 → `failed{infra}`(거짓 saved 0 — 전진은 성공 뒤에만) */
 const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string }> => run().catch((error: unknown) => ({ infra: reasonOf(error, "infra") }));
 
-export const coreIo: CoreIo = {
-  text: reasonText,
-  async save(s, link): Promise<SaveResult> {
-    // 편집 틀 이미지 맵 → 코어 바인딩(탭 수명 — 편집기를 떠난 뒤 save도 Blob을 싣는다)
-    const map = link.images?.();
-    if (map) s.attached = { ...s.attached, ...map };
-    // CE-2: 제출 doc·바인딩·mark를 같은 동기 구간에서 동결(edit·replace는 늘 새 객체를 할당 — 참조 캡처 = 사본)
-    const target = s.doc;
-    const bound = s.attached;
-    const submitted = s.mark;
-    const newer = () => s.mark > submitted;
-    const { port } = link;
-    // I5: 영속 없음(memory) = DocBook 메모리 커밋(지금 saveDoc 판정 그대로) 뒤 not-persistent — 영속 증명(confirmed)은 만들지 않는다
-    if (!port) {
-      let revision: number;
-      try {
-        revision = link.book({ ...target, hash: hashDoc(target) }).revision;
-      } catch (error) {
-        return { status: "failed", reason: reasonOf(error), newer: newer() };
-      }
-      s.savedMark = Math.max(s.savedMark, submitted);
-      return { status: "failed", reason: "not-persistent", newer: newer(), revision };
-    }
-    const mode = await safely(() => port.mode());
-    if (mode !== "writer") return { status: "failed", reason: typeof mode === "string" ? mode : mode.infra, newer: newer() };
-    const next: PageDoc = Object.freeze({ ...target, revision: (s.confirmed?.revision ?? target.revision) + 1, hash: hashDoc(target), updatedAt: link.now() });
+/** save 본문 — 결과 사유 기록은 `coreIo.save`가 한 곳에서(RS8-2) */
+async function commitDraft(s: CoreState, link: CoreLink): Promise<SaveResult> {
+  // 편집 틀 이미지 맵 → 코어 바인딩(탭 수명 — 편집기를 떠난 뒤 save도 Blob을 싣는다)
+  const map = link.images?.();
+  if (map) s.attached = { ...s.attached, ...map };
+  // CE-2: 제출 doc·바인딩·mark를 같은 동기 구간에서 동결(edit·replace는 늘 새 객체를 할당 — 참조 캡처 = 사본)
+  const target = s.doc;
+  const bound = s.attached;
+  const submitted = s.mark;
+  const newer = () => s.mark > submitted;
+  const { port } = link;
+  // I5: 영속 없음(memory) = DocBook 메모리 커밋(지금 saveDoc 판정 그대로) 뒤 not-persistent — 영속 증명(confirmed)은 만들지 않는다
+  if (!port) {
+    let revision: number;
     try {
-      await port.commit(link.projectId, next, bound);
+      revision = link.book({ ...target, hash: hashDoc(target) }).revision;
     } catch (error) {
       return { status: "failed", reason: reasonOf(error), newer: newer() };
     }
-    const receipt: Receipt = { hash: next.hash, revision: next.revision, mark: submitted, proof: "committed" };
     s.savedMark = Math.max(s.savedMark, submitted);
-    s.confirmed = receipt;
-    // CX-3: discard 복귀용 = 이 커밋 문서가 참조한 바인딩만
-    const refs = retainedIds(next, undefined);
-    s.committed = Object.fromEntries(Object.entries(bound).filter(([id]) => refs.has(id)));
-    link.align(next);
-    return { status: "saved", receipt, newer: newer() };
+    return { status: "failed", reason: "not-persistent", newer: newer(), revision };
+  }
+  const mode = await safely(() => port.mode());
+  if (mode !== "writer") return { status: "failed", reason: typeof mode === "string" ? mode : mode.infra, newer: newer() };
+  const next: PageDoc = Object.freeze({ ...target, revision: (s.confirmed?.revision ?? target.revision) + 1, hash: hashDoc(target), updatedAt: link.now() });
+  try {
+    await port.commit(link.projectId, next, bound);
+  } catch (error) {
+    return { status: "failed", reason: reasonOf(error), newer: newer() };
+  }
+  const receipt: Receipt = { hash: next.hash, revision: next.revision, mark: submitted, proof: "committed" };
+  s.savedMark = Math.max(s.savedMark, submitted);
+  s.confirmed = receipt;
+  // CX-3: discard 복귀용 = 이 커밋 문서가 참조한 바인딩만
+  const refs = retainedIds(next, undefined);
+  s.committed = Object.fromEntries(Object.entries(bound).filter(([id]) => refs.has(id)));
+  link.align(next);
+  return { status: "saved", receipt, newer: newer() };
+}
+
+export const coreIo: CoreIo = {
+  text: reasonText,
+  /** RS8-2(B-RS-09): 마지막 결과 사유 = view().reason — failed만 기록(not-persistent = 메모리 커밋 성공), saved는 해제 */
+  async save(s, link) {
+    const out = await commitDraft(s, link);
+    s.reason = out.status === "failed" && out.reason !== "not-persistent" ? out.reason : undefined;
+    return out;
   },
   /** I3·I4: dirty면 최신 초안을 저장(진행 중 저장 뒤 직렬) 후 재읽기 증명 · 아니면 writer + 재읽기 = 마지막 증명일 때만 wrote:false */
   async confirm(s, link, save) {
@@ -102,6 +110,7 @@ export const coreIo: CoreIo = {
       s.attached = s.committed;
       s.savedMark = s.mark;
       s.epoch += 1;
+      s.reason = undefined;
       return { status: "discarded", restored: { ...proof, proof: "fresh" } };
     })();
     // 포기한 읽기의 늦은 reject는 삼킨다(결과는 이미 timeout)
@@ -151,6 +160,8 @@ export function rebase(s: CoreState, doc: PageDoc, mine = false) {
   // proof = rebased: 메모리 쓰기 직후라 flush 성공을 모른다 — U16(기억 해제)은 코어 커밋(committed)만 믿는다(RS6-L5 FIX1)
   s.confirmed = { hash: doc.hash, revision: doc.revision, mark: s.savedMark, proof: "rebased" };
   s.epoch += 1;
+  // 마지막 결과 = 이 쓰기 성공(두 분기 모두 — 초안 유지 분기의 dirty는 다음 save가 판정) · RS8-2
+  s.reason = undefined;
   const refs = retainedIds(doc, undefined);
   s.committed = Object.fromEntries(Object.entries(s.attached).filter(([id]) => refs.has(id)));
 }

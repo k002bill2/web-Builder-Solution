@@ -1,0 +1,6 @@
+M1-lease-save ['⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯', ' Test Files  3 failed | 328 passed (331)', '      Tests  8 failed | 2945 passed (2953)'] restored-clean
+M2-registry ['⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯', ' Test Files  1 failed | 330 passed (331)', '      Tests  5 failed | 2948 passed (2953)'] restored-clean
+M3-order23 ['⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯', ' Test Files  1 failed | 330 passed (331)', '      Tests  6 failed | 2947 passed (2953)'] restored-clean
+M4-new-core ['⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯', ' Test Files  7 failed | 324 passed (331)', '      Tests  20 failed | 2933 passed (2953)'] restored-clean
+M5-revision ['⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯', ' Test Files  1 failed | 330 passed (331)', '      Tests  1 failed | 2952 passed (2953)'] restored-clean
+done

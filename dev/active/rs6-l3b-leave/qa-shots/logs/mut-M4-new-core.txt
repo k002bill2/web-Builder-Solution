@@ -1,0 +1,23 @@
+      Tests  20 failed | 2933 passed (2953)
+ FAIL  src/features/studio/save/saveCore.images.test.ts > RS6-L1 CP2 · h3 이미지 원자 · 엄격 참조 > h3-4 뒤 절반 · IDB에 이미 있는 이미지는 바인딩 없이 저장 · 새 레지스트리(재열기)도 같음
+ FAIL  src/features/studio/save/saveCore.modes.test.ts > RS6-L1 CP3 · 포트 mode = gate·cleared (실제 두 탭) > h4-4 제품판 — 다른 탭이 진입 뒤 썼으면 잠금을 잡아도 stale · 덮어쓰기 0
+ FAIL  src/features/studio/save/saveCore.port.test.ts > RS6-L1 CP1 · 레지스트리(2.2-2) > 같은 projectId = 같은 코어(동기 생성) · 저장소 인스턴스마다 따로(모듈 전역 0)
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > restart(편집기 밖) 뒤 재진입 seed = 같은 코어의 새 문서 · 다음 save = restart revision + 1
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > 로컬: 스케줄러 저장 1회 = core.save 1회 · saveDoc 0 · IDB·DocBook = 편집 · savedRevision = 커밋 revision
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > C5 T2: 디바운스 중 언마운트 → 재진입(getDoc 문서) seed = 코어 초안 · 저장 1회 · STALE 0 · IDB = 초안
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0)
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > memory 모드: core.save(not-persistent) = 저장됨 · savedRevision = DocBook revision
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > readonly(다른 탭 writer): core.save failed{readonly} → failed · leave() = true(이탈 허용) · 쓰기 0
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > reject 매핑(L2 QA 4절): core.save reject → failed · 거짓 saved 0 · DocBook 변화 0
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > U3: 커밋 실패 → failed · DocBook revision·IDB 변화 0 · 코어 초안 dirty 보존
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · 편집 경로 = core.edit (G2) > change마다 core.edit 동기 1회 · 코어 초안 = 마지막 편집
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · 편집 경로 = core.edit (G2) > F9: 디바운스 대기 중 언마운트 → 스케줄러 저장 0 · lease 해제 save 1회 · 커밋 전까지 코어 초안·dirty 보존
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · lease (G7 · RS6-AC-U6) > StrictMode mount→cleanup→mount: 같은 토큰 · 코어 새로 열기 0 · 편집 없으면 mark 변화 0 · 언마운트 뒤 release
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 저장 진행 중 언마운트(마지막 편집이 이미 제출됨) = 해제 save 0 · 진행 중 저장이 끝나면 경고 off
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 편집 없이 언마운트 = lease 해제 save 0 · 경고 0(로컬)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 탭 수준 경고: 변경 없음 미등록 · 저장 실패 때 등록(편집기 안 · 언마운트 뒤 둘 다)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 탭 수준 경고: STALE 때 등록
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U12: 디바운스 대기 중 POP 언마운트 → lease 해제 save 1회 · 편집기 밖에서도 탭 닫기 경고 on(레지스트리) · 저장 끝나면 off · IDB = 마지막 편집
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U7: 재마운트(새 mountId) = 같은 코어 · 초안 이어짐 · lease 해제 save 최대 1회
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  7 failed | 324 passed (331)

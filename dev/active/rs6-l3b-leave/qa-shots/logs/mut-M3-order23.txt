@@ -1,0 +1,9 @@
+      Tests  6 failed | 2947 passed (2953)
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 실패 → 이동 보류 · 기존 실패 안내('저장하지 못했습니다' · '다시 저장') · 다음 클릭은 다시 저장해 보고 성공하면 이동
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 실패 상태에서 저장을 기다리는 동안 링크 연타 = 저장 1회 · 이동 1회
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > cleared(이 브라우저 데이터 지워짐) 상태에서 앱 안 링크 = 보류 · 이동 0
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > STALE(다른 탭이 바꿈) 상태에서 앱 안 링크 = 보류 · 이동 0
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > Web Locks 있는 브라우저의 일반 저장 실패는 그대로 보류
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > Web Locks 없어도 메모리 저장 실패는 보류(잠금 폴백은 로컬 저장만, Codex r2 P2)
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 330 passed (331)

@@ -1,0 +1,11 @@
+      Tests  8 failed | 2945 passed (2953)
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 진행 중 추가 편집 → 앱 안 이동 = 즉시 이동 1회 · 해제 뒤 저장소 = 마지막 편집(lease 해제 save)
+ FAIL  src/features/studio/useDocSaveCore.test.tsx > RS6-L3a CP1 · 편집 경로 = core.edit (G2) > F9: 디바운스 대기 중 언마운트 → 스케줄러 저장 0 · lease 해제 save 1회 · 커밋 전까지 코어 초안·dirty 보존
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 저장 진행 중 언마운트(마지막 편집이 이미 제출됨) = 해제 save 0 · 진행 중 저장이 끝나면 경고 off
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 편집 없이 언마운트 = lease 해제 save 0 · 경고 0(로컬)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 탭 수준 경고: 변경 없음 미등록 · 저장 실패 때 등록(편집기 안 · 언마운트 뒤 둘 다)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > L3a 인계 2: 편집 → 디바운스 중 POP → 편집기 밖 restart = lease 해제 save 뒤라 STALE_DOC 0(코어 dirty 거절 사라짐)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U12: 디바운스 대기 중 POP 언마운트 → lease 해제 save 1회 · 편집기 밖에서도 탭 닫기 경고 on(레지스트리) · 저장 끝나면 off · IDB = 마지막 편집
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U7: 재마운트(새 mountId) = 같은 코어 · 초안 이어짐 · lease 해제 save 최대 1회
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  3 failed | 328 passed (331)

@@ -1,0 +1,4 @@
+      Tests  1 failed | 2952 passed (2953)
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0)
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 330 passed (331)

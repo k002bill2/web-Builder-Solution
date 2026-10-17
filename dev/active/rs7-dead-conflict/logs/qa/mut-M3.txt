@@ -1,0 +1,13 @@
+== M3 src/components/studio/SaveActions.tsx
+diff:  1 file changed, 1 insertion(+), 1 deletion(-)
+-        if (result.status === "discarded" || result.reason === "stale" || result.reason === "cleared") return reload(), "done";
++        if (result.status === "discarded" || result.reason === "stale" || result.reason === "cleared") return "done";
+     × '버리기' 연타 = discard 1회 · discarded → reload 46ms
+     × blocked{stale} = 코어가 막음 → reload가 초안을 버린다(I6 8.2) 3038ms
+ FAIL  src/components/studio/SaveActions.test.tsx > RS6-L4 CP2 · 버리고 새로고침(discard 1:1 · 폐기 확인) > '버리기' 연타 = discard 1회 · discarded → reload
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ FAIL  src/components/studio/SaveActions.test.tsx > RS6-L4 CP2 · 버리고 새로고침(discard 1:1 · 폐기 확인) > blocked{stale} = 코어가 막음 → reload가 초안을 버린다(I6 8.2)
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ Test Files  1 failed | 339 passed (340)
+      Tests  2 failed | 3016 passed (3018)
+restored:        0 changes

@@ -1,0 +1,11 @@
+== M2b src/components/studio/SaveStatus.tsx
+diff:  1 file changed, 1 insertion(+), 1 deletion(-)
+-const ENV: ReadonlySet<string> = new Set(["readonly", "stale", "cleared"]);
++const ENV: ReadonlySet<string> = new Set(["readonly", "cleared"]);
+     × 다른 탭 stale(포트) → stale 환경 행(글자·alert) · 충돌 Callout 0 · 내 편집 유지 · 알림 영역 1개 146ms
+     × stale = '버리고 새로고침' 1개 · '다시 저장' 0 3005ms
+ FAIL  src/components/studio/SaveStatus.buttons.test.tsx > RS6-L4 SaveStatus 버튼 > stale = '버리고 새로고침' 1개 · '다시 저장' 0
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > 다른 탭 stale(포트) → stale 환경 행(글자·alert) · 충돌 Callout 0 · 내 편집 유지 · 알림 영역 1개
+ Test Files  2 failed | 338 passed (340)
+      Tests  2 failed | 3016 passed (3018)
+restored:        0 changes

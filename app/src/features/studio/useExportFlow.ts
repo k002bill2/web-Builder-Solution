@@ -85,7 +85,7 @@ export function useExportFlow({
   useEffect(() => {
     if (!waitingSave) return;
     if (phase === "dirty") return void flushSave();
-    if (phase !== "saved" && phase !== "failed" && phase !== "stale" && phase !== "offline") return;
+    if (phase !== "saved" && phase !== "failed" && phase !== "offline") return;
     let live = true;
     void Promise.resolve().then(() => {
       if (!live) return;

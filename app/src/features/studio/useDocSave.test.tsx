@@ -4,7 +4,7 @@ import { READ_ONLY_TAB } from "../../data/persistence/infra";
 import { createMemoryCompareBoardRepository } from "../../data/memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "../../data/memoryGenerationRepository";
 import { createMemoryProjectRepository } from "../../data/memoryProjectRepository";
-import { ProjectRepositoryError, type ConflictChoice, type ProjectPersistence, type ProjectRepository } from "../../data/projectRepository";
+import { ProjectRepositoryError, type ProjectPersistence, type ProjectRepository } from "../../data/projectRepository";
 import { createStudioStore } from "../../data/studioStore";
 import { isTerminal } from "../../domain/generation";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
@@ -44,10 +44,6 @@ function mockRepo(initial: PageDoc, persistence: ProjectPersistence = "memory") 
       }
       if (expectedRevision !== stored.revision) throw new ProjectRepositoryError("STALE_DOC", "stale", { doc: stored });
       stored = { ...doc, revision: stored.revision + 1 };
-      return stored;
-    }),
-    resolveConflict: vi.fn(async (_projectId: string, choice: ConflictChoice, myDoc: PageDoc) => {
-      stored = choice === "mine" ? { ...myDoc, revision: stored.revision + 1 } : stored;
       return stored;
     }),
   });
@@ -182,7 +178,9 @@ describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
     expect(result.current.state.phase).toBe("failed");
     expect(result.current.source).toMatchObject({ reason: "stale", text: "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요" });
     expect(result.current.doc.meta.title).toBe("내 편집");
-    expect(result.current.conflict).toBeUndefined();
+    // RS7-A(B-RS-07): 충돌 영역·해결 경로 제거 — 이전 `conflict` toBeUndefined → 이후 키 자체 0(resolve 포함, 단언 강화)
+    expect(result.current).not.toHaveProperty("conflict");
+    expect(result.current).not.toHaveProperty("resolve");
     expect(result.current.doc).not.toEqual(theirs);
     // 이전: stale 단계 = 고르기 전 자동 저장 0 · 이후(failed 행): 편집·retry는 저장을 내지만 포트가 모두 거절 — 다른 탭 커밋을 덮지 않고 stale 행 그대로
     act(() => result.current.edit(titled(result.current.doc, "내 편집 2")));
@@ -196,53 +194,7 @@ describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
     expect(result.current.source.reason).toBe("stale");
   });
 
-  it("\"내 편집으로 저장\" → resolveConflict(mine, 내 최신 문서) 1회 · 추가 saveDoc 0 · 다음 편집은 새 revision으로 저장", async () => {
-    const { m, hook } = await staleSetup();
-    const { result } = hook;
-    act(() => result.current.edit(titled(result.current.doc, "내 편집 2")));
-    await act(() => result.current.resolve("mine"));
-    expect(m.repo.resolveConflict).toHaveBeenCalledTimes(1);
-    const [, choice, mine] = vi.mocked(m.repo.resolveConflict).mock.calls[0]!;
-    expect(choice).toBe("mine");
-    expect(mine.meta.title).toBe("내 편집 2");
-    expect(mine.hash).toBe(hashDoc(mine));
-    expect(result.current.state.phase).toBe("saved");
-    expect(result.current.conflict).toBeUndefined();
-    await act(() => vi.advanceTimersByTimeAsync(60_000));
-    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
-    act(() => result.current.edit(titled(result.current.doc, "해결 뒤")));
-    await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(m.calls.at(-1)!.expectedRevision).toBe(5);
-    expect(result.current.state.phase).toBe("saved");
-  });
-
-  it("\"다른 편집 불러오기\" → 화면 문서 = 최신 · 내 문서 저장 0회", async () => {
-    const { m, hook, theirs } = await staleSetup();
-    const { result } = hook;
-    await act(() => result.current.resolve("theirs"));
-    expect(result.current.doc).toEqual(theirs);
-    expect(result.current.state.phase).toBe("saved");
-    await act(() => vi.advanceTimersByTimeAsync(60_000));
-    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
-    act(() => result.current.edit(titled(result.current.doc, "최신 위에 편집")));
-    await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(m.calls.at(-1)!.expectedRevision).toBe(theirs.revision);
-    expect(result.current.state.phase).toBe("saved");
-  });
-
-  // RS6-L4 R2(I6 8.1): 포트 stale은 이제 failed(stale 환경 행) — 해결 거부 뒤에도 그 단계·출처 그대로
-  it("해결 실패(스냅샷 API 없음 등) → 거부를 돌려주고 stale 환경 행 그대로(자동 저장 0)", async () => {
-    const { m, hook } = await staleSetup();
-    const { result } = hook;
-    vi.mocked(m.repo.resolveConflict).mockRejectedValueOnce(new ProjectRepositoryError("NOT_FOUND", "project-1"));
-    await act(async () => {
-      await expect(result.current.resolve("mine")).rejects.toMatchObject({ code: "NOT_FOUND" });
-    });
-    expect(result.current.state.phase).toBe("failed");
-    expect(result.current.source.reason).toBe("stale");
-    await act(() => vi.advanceTimersByTimeAsync(60_000));
-    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
-  });
+  // RS7-A(B-RS-07): "내 편집으로 저장"·"다른 편집 불러오기"·"해결 실패" 3건 삭제 — `resolve` 제거(제품 도달 0, REPORT CP0·CP1 표)
 });
 
 describe("RS6-L4 CP2 · report(저장 확인 결과 → 출처)", () => {

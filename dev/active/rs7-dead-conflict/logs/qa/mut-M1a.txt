@@ -1,0 +1,16 @@
+== M1a src/data/memoryDocBook.ts
+diff:  1 file changed, 1 deletion(-)
+-      if (current.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${expectedRevision} ≠ ${current.revision}`, { doc: current });
+     × 코어 save 진행 중 복원 = 그 save 뒤 판정 → STALE_DOC · IDB = 코어 save 55ms
+     × 판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) · 실패면 스냅샷 0 추가 8ms
+ FAIL  src/data/memoryProjectRepository.test.ts > restoreSnapshot (ER-AC-S2 · 2a-05 E-S30 · E-AC-31) > 판정 순서 — 모양(SCHEMA_INVALID) → NOT_FOUND(프로젝트·문서·스냅샷) → STALE_DOC(최신 동봉) · 실패면 스냅샷 0 추가
+AssertionError: promise resolved "{ projectId: 'project-1', …(9) }" instead of rejecting
+- Expected
++ Received
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 코어 save 진행 중 복원 = 그 save 뒤 판정 → STALE_DOC · IDB = 코어 save
+AssertionError: expected undefined to be 'STALE_DOC' // Object.is equality
+- Expected:
++ Received:
+ Test Files  2 failed | 338 passed (340)
+      Tests  2 failed | 3016 passed (3018)
+restored:        0 changes

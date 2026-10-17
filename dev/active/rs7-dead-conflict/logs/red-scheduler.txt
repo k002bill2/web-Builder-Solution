@@ -1,0 +1,62 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-dead-conflict/app
+
+ ❯ src/features/studio/useAutosaveScheduler.test.ts (22 tests | 2 failed) 74ms
+   ❯ createAutosaveScheduler — 실패·오프라인·STALE (E-S07~E-S09) (13)
+     × STALE_DOC 거부 = 일반 실패(failed · alert 1회) — 특별 단계 0 · 다음 변경은 디바운스대로 다시 저장 13ms
+   ❯ createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4) (2)
+     × 실패 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useAutosaveScheduler.test.ts > createAutosaveScheduler — 실패·오프라인·STALE (E-S07~E-S09) > STALE_DOC 거부 = 일반 실패(failed · alert 1회) — 특별 단계 0 · 다음 변경은 디바운스대로 다시 저장
+AssertionError: expected { phase: 'stale' } to match object { phase: 'failed', failure: 'error' }
+
+- Expected
++ Received
+
+  {
+-   "failure": "error",
+-   "phase": "failed",
++   "phase": "stale",
+  }
+
+ ❯ src/features/studio/useAutosaveScheduler.test.ts:257:20
+    255|     scheduler.change("a");
+    256|     await vi.advanceTimersByTimeAsync(2000);
+    257|     expect(last()).toMatchObject({ phase: "failed", failure: "error" }…
+       |                    ^
+    258|     expect(states.some((s) => (s.phase as string) === "stale")).toBe(f…
+    259|     scheduler.change("b");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/studio/useAutosaveScheduler.test.ts > createAutosaveScheduler — settle (E-S09 충돌 해결 뒤, EDITOR-A2-FIELDS F4) > 실패 중 settle → 미저장 변경을 저장된 것으로 정리 · saved · 저장 0회 · 다음 변경은 다시 디바운스 저장
+AssertionError: expected 'stale' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "stale"
+
+ ❯ src/features/studio/useAutosaveScheduler.test.ts:345:26
+    343|     await vi.advanceTimersByTimeAsync(2000);
+    344|     scheduler.change("b");
+    345|     expect(last().phase).toBe("failed");
+       |                          ^
+    346|     scheduler.settle();
+    347|     expect(last()).toMatchObject({ phase: "saved" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  2 failed | 35 passed (37)
+   Start at  20:21:08
+   Duration  2.35s (environment 61%, transform 18%, setup 13%, tests 6%, import 2%, worker 1%)
+

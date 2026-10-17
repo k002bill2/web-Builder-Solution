@@ -119,7 +119,7 @@ describe("편집기 안 PNG 묶음 (K-AC-19 · E-AC-50 — 게이트 차단·폴
     const { saved } = await openStudio({ doc, series: SERIES, repository: { requestExport } });
     const gate = screen.getByRole("region", { name: "품질 게이트" });
     await waitFor(() => expect(within(gate).queryByText("검사하는 중입니다")).not.toBeInTheDocument());
-    expect(within(gate).getByRole("button", { name: "정적 HTML 내보내기" })).toHaveAttribute("aria-disabled", "true");
+    expect(within(gate).getByRole("button", { name: "HTML 파일 1개 내보내기" })).toHaveAttribute("aria-disabled", "true");
     const pngButton = within(gate).getByRole("button", { name: "PNG 내려받기" });
     await waitFor(() => expect(pngButton).not.toHaveAttribute("aria-disabled"));
     expect(pngButton.getAttribute("aria-describedby")).not.toMatch(/export-reason/);

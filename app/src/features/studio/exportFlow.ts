@@ -7,7 +7,7 @@ import { projectErrorCode, type ExportFormat, type ExportGenerator, type ExportJ
 import type { StudioReader } from "../../data/studioStore";
 import { emitEditorEvent } from "./editorEvents";
 import type { RenderImages } from "./images/store/types";
-import { staticHtmlFileName } from "./staticHtml/exportFileName";
+import { staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
 import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
 import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary } from "./staticHtml/exportImages";
 
@@ -48,7 +48,8 @@ const failReasons = new Map<string, string>();
     return (input) =>
       generate(input)
         .catch((error: unknown) => {
-          if (error instanceof Error && REASONS.includes(error.message)) failReasons.set(input.projectId, error.message);
+          // shown = 생성기가 사용자에게 보일 문구로 만든 실패(M4-a zip 용량 초과)
+          if (error instanceof Error && (REASONS.includes(error.message) || "shown" in error)) failReasons.set(input.projectId, error.message);
           throw error;
         })
         .finally(() => requestImages.delete(input.projectId));
@@ -56,10 +57,12 @@ const failReasons = new Map<string, string>();
 };
 
 const MB = 1024 * 1024;
-/** 결과 줄(MQ-C3 ★A · SPEC m2c 5.2): 크기 표시 → 3MB 넘으면 안내(차단 0) → 잃은 이미지 개수 */
-export const exportNotes = ({ bytes, images, lost }: ExportSummary): string[] => [
-  `HTML 1개 · ${(bytes / MB).toFixed(1)}MB${images > 0 ? ` (이미지 ${images}장 포함)` : ""}`,
-  ...(bytes > 3 * MB ? ["메일 첨부에는 클 수 있습니다 — zip 내보내기는 다음 단계에서 지원합니다"] : []),
+/** 결과 줄(MQ-C3 ★A · SPEC m2c 5.2 · M4-a 2.5): 크기 표시 → (HTML만) 3MB 넘으면 안내(차단 0) → 잃은 이미지 개수 */
+export const exportNotes = ({ bytes, images, lost, fonts = 0 }: ExportSummary, format: ExportFormat = "static-html"): string[] => [
+  format === "static-zip"
+    ? `zip 1개 · ${(bytes / MB).toFixed(1)}MB (이미지 ${images}장 · 글꼴 ${fonts}개)`
+    : `HTML 1개 · ${(bytes / MB).toFixed(1)}MB${images > 0 ? ` (이미지 ${images}장 포함)` : ""}`,
+  ...(format !== "static-zip" && bytes > 3 * MB ? ["메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다"] : []),
   ...(lost > 0 ? [lostImageText(lost)] : []),
 ];
 
@@ -92,9 +95,9 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
     if (job.state === "succeeded") {
       emitEditorEvent({ name: "export_succeeded", format });
       const name = (await repository.getProject(projectId))?.name ?? "";
-      const download = job.downloadRef && { href: job.downloadRef, fileName: staticHtmlFileName(name, job.docRevision), hash: job.resultHash ?? "" };
+      const download = job.downloadRef && { href: job.downloadRef, fileName: (format === "static-zip" ? staticZipFileName : staticHtmlFileName)(name, job.docRevision), hash: job.resultHash ?? "" };
       const summary = job.downloadRef ? summaries.get(job.downloadRef) : undefined;
-      return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }), ...(summary && { notes: exportNotes(summary) }) };
+      return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }), ...(summary && { notes: exportNotes(summary, format) }) };
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });
     const reason = failReasons.get(projectId);

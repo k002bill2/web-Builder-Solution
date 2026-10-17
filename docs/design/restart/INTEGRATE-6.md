@@ -1,6 +1,7 @@
 # INTEGRATE-6 — 저장 코어 ↔ 제품 연결 설계 (RS6 입력)
 
-- 상태: **r1 설계안 — 구현 승인 아님 · 코드 0 · 측정 0 · 실화면 확인 0.** 작성 Designer(Orca Claude Code) · 발주 Jarvis 2026-10-17 · 회수 Jarvis.
+- 상태: **r2 — RS6 종료 문면 정정(10절 RS6-AC-B2·B3·B4·U8만, 10.1 표) · 설계 본문(0~9·11~13절) 변경 0.** RS6 구현 L0~L5·최종 QA 완료(PR #15~#24, QA = `dev/active/rs6-qa/REPORT.md` PASS with notes). 작성 Designer(Orca Claude Code) · 발주 Jarvis 2026-10-17 · 회수 Jarvis.
+  - r1 상태 줄(이력 보존): "r1 설계안 — 구현 승인 아님 · 코드 0 · 측정 0 · 실화면 확인 0."
 - base `c7a7a2a8`(main — studio-preload-slim 병합 뒤). 앱 코드는 읽기만 했다.
 - 입력: 코어 `dev/active/save-core-harness/core/saveCore.ts`(이하 **코어**) · `MINIMAL-CONTRACT.md`(이하 **MC**, I1~I9·G1~G8) · `save-core-fix/REPORT.md` · `save-core-final-qa/REPORT.md`(H1~H5 · BD-1/BD-2 · LV-1/LV-2) · `CONTRACT-5.md`(이하 **C5**) · `UX-5.md` · `SPEC-4.md` · `rs5-review`·`rs5-spike`·`rs4-cp4-measure` REPORT · ADR-004 개정 13·16.
 - 이 문서는 C5·UX-5·SPEC-4·ADR·BACKLOG를 **수정하지 않는다.** 다르게 하는 곳은 10절 "대체/차이"에 적는다. 새 저장소 인터페이스·예산 상향·엔진/PageDoc 계약·새 의존성은 전부 `MQ-6.md`로만 올린다.
@@ -331,13 +332,13 @@
 | ID | 기준 | 종류 |
 |---|---|---|
 | RS6-AC-U1 | 하네스 h1~h6 37건을 **3분류 대응표**로 REPORT에: ① **이식**(제품 포트 위에서 같은 의미 재현 — 코어 + `LocalSync` 포트 + `createMemoryPersistence`) ② **잠금 기반 대체**("같은 persistence 위 코어 여러 개 = 다른 탭"을 흉내 낸 h4·h5 일부·h6-3 CE-3a → `writerLock`·`localSync` 테스트와 RS6-AC-B3로) ③ **폐기**(제품에 없는 경로 — 사유 1줄). ①은 전부 GREEN | [U] |
-| RS6-AC-U2 | C5 T1~T19 중 코어로 닫히는 것(T1·T2·T3·T5·T5b·T10·T12·T13·T16) + rs5-review CX-1(확인 직전 편집·확인 중 편집) RED→GREEN | [U] |
+| RS6-AC-U2 | C5 T1~T19 중 코어로 닫히는 것(T1·T2·T3·T5·T5b·T10·T12·T13·T16) + rs5-review CX-1(확인 직전 편집·확인 중 편집) RED→GREEN | [U] · (r2 주석) T16 상시 테스트 = `rs6-t16-guard` PR #25 머지 `241a81da`(`StudioUnloadGuard.test.tsx` 5건 · 변이 4종 RED) |
 | RS6-AC-U3 | 편집기 저장 실패 시 DocBook revision 변화 0(G1 — C5 F2 반전) | [U] |
 | RS6-AC-U4 | LV-1: 커밋 지연 주입 → `T_slow` 뒤 `saving-slow` · 편집 계속 수용 · 해제 뒤 `newer` 처리 · 추가 save 제출 0 | [U] |
 | RS6-AC-U5 | LV-2: discard 읽기 정지 → `T_discard` 뒤 `blocked{timeout}` · 가드 해제 · 늦은 결과 버림(doc·바인딩·epoch 불변) · CE-1·CX-3 회귀 GREEN | [U] |
 | RS6-AC-U6 | StrictMode mount→cleanup→mount: 같은 토큰 · 코어 새로 열기 0 · 편집 없으면 mark 변화 0 | [U] |
 | RS6-AC-U7 | 레이아웃 모드 전환 재마운트 → 같은 코어 · 알림 재발화 0(UX5-AC-01) · lease 해제 save 최대 1회(편집 없으면 0) | [U] |
-| RS6-AC-U8 | 버튼 1:1(8.2) — 각 버튼 클릭이 해당 코어 메서드 1회만 호출(스파이), 연타 1회 | [U] |
+| RS6-AC-U8 | 버튼 1:1(8.2) — 각 버튼 클릭이 해당 코어 메서드 1회만 호출(스파이), 연타 1회. 편집기 "저장 확인"은 제품 도달 0(readonly는 저장 실패에서만 생기고 그때 dirty라 숨김 — MQ-5-3 A)이라 **단위로만 검증**한다 · 경로가 다시 생기면 실화면 재판정 (r2 정정 — 10.1) | [U] |
 | RS6-AC-U10 | 삭제·가져오기·지우기 흐름의 `stop()` 직전 진행 중 코어 save → cleared 이후 쓰기 0(6.2) | [U] |
 | RS6-AC-U11 | 저장 정지(지연 주입) 중 앱 안 링크 → 이동함 · 코어 inflight 유지 · `/projects` 행 "저장 중…" · 해제 뒤 IDB = 마지막 편집(6.5 고착 해소) | [U] |
 | RS6-AC-U9 | memory 모드: "저장 확인" DOM 0 · "브라우저에 저장됨" 0(UX5-AC-09) | [U] |
@@ -350,9 +351,20 @@
 | RS6-AC-G2 | import 그래프: `openIdbPersistence` 호출 1곳 · 코어 모듈 → `idbPersistence` import 0 · 코어 io 부분이 진입 closure에 없음 | [G] |
 | RS6-AC-G3 | UX-5 2.4 금지 문구 0건(UX5-AC-14) + 3절 새 문구가 `saveStatusText.ts` 1곳 | [G] |
 | RS6-AC-B1 | POP 재진입: 편집 → 뒤로 → 앞으로 → 상태 글자 이어짐 · 저장 뒤 새로고침 시 마지막 편집 복원 | [B] |
-| RS6-AC-B2 | 이미지 바인딩: 새 이미지 편집 → POP → `/projects` "저장 확인" → 새로고침 → 이미지 복원 | [B] |
-| RS6-AC-B3 | 멀티탭 실제 잠금: A writer → B `readonly` 문구 → A 닫기 → B "저장 확인" → `stale` 문구(final-qa 5-1 #11~13을 제품 화면으로) | [B] |
-| RS6-AC-B4 | 390·1024·1280에서 상태 글자·충돌 Callout 노출(UX5-AC-12) | [B] |
+| RS6-AC-B2 | 이미지 바인딩: 새 이미지 편집 → POP → 이탈 해제 save 성공 → `/projects` 행 기억 0(RS6-AC-U16) → 새로고침 → 이미지 복원 (r2 정정 — 10.1) | [B] |
+| RS6-AC-B3 | 멀티탭 실제 잠금: A writer → B `readonly` 문구 → A 닫기 → B 편집 저장 → `stale` 문구 + "버리고 새로고침"(final-qa 5-1 #11~13을 제품 화면으로) (r2 정정 — 10.1) | [B] |
+| RS6-AC-B4 | 390·1024·1280에서 상태 글자 노출(UX5-AC-12). 충돌 Callout은 제품 도달 0(RS6 L4 결정 ① — 다른 탭 stale = stale 행)이라 실화면 대상 밖 · 단위(`ConflictCallout.test.tsx`)만 · 충돌 경로가 다시 생기면 재판정 (r2 정정 — 10.1) | [B] |
+
+### 10.1 r2 문면 정정 (RS6 종료 · 2026-10-17 사용자 "일괄" = 최종 QA 4절 ★안 — MQ-6 결정 기록)
+
+판정 기준을 낮추지 않는다. 제품에 없는 단계만 실제 경로로 바꾸고, 도달 0인 대상은 "단위로만 · 재판정 조건"을 적는다. 최종 QA 판정(B2 부분 · B3 충족(경로 대체) · B4 부분 · U8 충족(단위))은 그대로 기록으로 남는다.
+
+| ID | 이전 문면(r1 원문) | 이후 문면(r2) | 근거 |
+|---|---|---|---|
+| RS6-AC-B2 | 이미지 바인딩: 새 이미지 편집 → POP → `/projects` "저장 확인" → 새로고침 → 이미지 복원 | 이미지 바인딩: 새 이미지 편집 → POP → 이탈 해제 save 성공 → `/projects` 행 기억 0(RS6-AC-U16) → 새로고침 → 이미지 복원 | 해제 save가 성공하면 행 기억이 0이라(U16 설계) "저장 확인" 단계는 성공 경로에서 도달 불가 — `dev/active/rs6-qa/REPORT.md` 2절 B2 · 3절 B2-1~4(IDB images 1건 · rev 6 · "저장 확인" 행 없음 · 새로고침 복원 64×36) |
+| RS6-AC-B3 | 멀티탭 실제 잠금: A writer → B `readonly` 문구 → A 닫기 → B "저장 확인" → `stale` 문구(final-qa 5-1 #11~13을 제품 화면으로) | 멀티탭 실제 잠금: A writer → B `readonly` 문구 → A 닫기 → B 편집 저장 → `stale` 문구 + "버리고 새로고침"(final-qa 5-1 #11~13을 제품 화면으로) | 편집기 "저장 확인" 제품 도달 0(L4 N1 — readonly·stale 동안 DOM 0) · 편집 저장으로 stale 도달·덮어쓰기 0 — `dev/active/rs6-l4-ux/QA-REPORT.md` 0절 N1 · `dev/active/rs6-qa/REPORT.md` 2절 B3 · 3절 B3-0~5 · 4절 1 |
+| RS6-AC-B4 | 390·1024·1280에서 상태 글자·충돌 Callout 노출(UX5-AC-12) | 390·1024·1280에서 상태 글자 노출(UX5-AC-12). 충돌 Callout = 제품 도달 0 · 단위만 · 경로가 다시 생기면 재판정 | L4 결정 ①(I6 8.1안 — 포트 stale = INFRA → stale 행, ConflictCallout 도달 0) — `dev/active/rs6-l4-ux/REPORT.md` R2-2 ① · 도달 경로 표 · `dev/active/rs6-qa/REPORT.md` 2절 B4 · 3절 UX5-AC-04·05. **390 상태 줄이 내부 스크롤 위치에 따라 화면 밖(y −410)인 점은 이 정정으로 통과가 되지 않는다** — 판정 "부분" 유지 · BACKLOG B-RS-12 |
+| RS6-AC-U8 | 버튼 1:1(8.2) — 각 버튼 클릭이 해당 코어 메서드 1회만 호출(스파이), 연타 1회 | 같은 기준 + 범위 주석: 편집기 "저장 확인"은 제품 도달 0이라 단위로만 검증 · 경로가 다시 생기면 실화면 재판정 | 기준(스파이 1:1 · 연타 1회) 변경 0 — `dev/active/rs6-l4-ux/QA-REPORT.md` N1 · 1절 · 변이 M1 FAIL · `dev/active/rs6-qa/REPORT.md` 2절 U8 |
 
 ## 11. 깨질 기존 테스트 (예상 — 실행 0)
 
@@ -414,3 +426,4 @@
 ## 변경 이력
 - r0 (2026-10-17) — 최초 작성. 코드 0 · 측정 0 · Codex 0.
 - r1 (2026-10-17) — QA-REVIEW 6절 권고 1~7 반영(BRIEF-R1): 3.1 lease 해제 save·탭 수준 경고·이탈 예외 지금 동작 기준·`StudioLeave` 14건 표 · 2.2-2 코어 동기 생성·레지스트리 = 저장소 인스턴스·포트 없는 save · 5절 G1 DocBook 경로 재쓰기 규칙·6.4 `deleteSnapshot` · 12.1 누락 5건 판정 · 1.3 포트 이미지 projectId · D6-10·D6-11 · RS6-AC-U12~U16 · 행 번호 정정(QA F2·F4·F9·F11~F15).
+- r2 (2026-10-17) — RS6 종료(BRIEF `dev/active/rs6-close-docs/BRIEF.md` · 사용자 "일괄"): 10절 RS6-AC-B2·B3·B4·U8 문면 정정 + 10.1 이전→이후·근거 표 · U2 행 T16 레인 주석 · 상태 줄 r2. 설계 본문 변경 0.

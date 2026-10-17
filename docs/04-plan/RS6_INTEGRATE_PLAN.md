@@ -1,6 +1,7 @@
 # RS6_INTEGRATE_PLAN — 저장 코어 제품 연결 Developer 레인 계획
 
-- 상태: **r1 계획 — 실행 승인 아님.** 설계 = `docs/design/restart/INTEGRATE-6.md`(이하 **I6**) r1. 결정 대기 = `docs/design/restart/MQ-6.md`. 작성 Designer · 2026-10-17 · base `c7a7a2a8`.
+- 상태: **r2 — 실행 완료. L0~L5·QA 완료**(PR #15·#16 L0 측정·감량 · #17 ADR-004 개정 17(문서) · #18 L1 · #19 L2 · #20 L3a · #21 L3b · #22 L5 · #23 L4 · #24 최종 QA = PASS with notes `dev/active/rs6-qa/REPORT.md`). 종료 결정 = MQ-6 결정 기록 2026-10-17 "RS6 종료 4건". **종료 조건**: 이 문서 레인(`rs6-close-docs`) + T16 레인(`rs6-t16-guard`) 머지 — Jarvis 확인. 설계 = `docs/design/restart/INTEGRATE-6.md`(이하 **I6**) r2. 작성 Designer · 2026-10-17 · base `c7a7a2a8`.
+  - r1 상태 줄(이력 보존): "r1 계획 — 실행 승인 아님. 설계 = I6 r1. 결정 대기 = `docs/design/restart/MQ-6.md`."
 - 착수 조건: L0는 **MQ-6-1 ★A 가정으로 결정 전 착수 가능**(앱 커밋 0). L1 이후 = **L0 PASS** + MQ-6-1·MQ-6-3 결정(L3는 MQ-6-7도). L0 FAIL이면 L1 이후 전부 보류하고 MQ-6-6(예산)으로 간다.
 - 시간 추정은 전부 **추정(L3)** 이다. 근거는 비슷한 범위의 지난 레인(rs5-spike·rs4-cp4-measure = 측정 1레인 · save-core-fix = 코어 수정 1레인)의 규모 감각뿐이며 실측이 아니다.
 
@@ -111,3 +112,4 @@ L0 측정 관문(필수 선행) ──PASS──▶ L1 포트·코어 이식 ─
 ## 변경 이력
 - r0 (2026-10-17) — 최초 작성.
 - r1 (2026-10-17) — QA-REVIEW 6절 권고 반영: L1·L3 쓰기 경로 4파일(`projectRepository`·`memoryProjectRepository`·`memoryDocBook`·`useStudioDoc`) · L0 S6c 제거 목록 고정·상쇄 조건 · 레지스트리 = 저장소 인스턴스 · RS6-AC-U12~U16 배정 · L3 선행 MQ-6-7.
+- r2 (2026-10-17) — RS6 종료: 상태 줄을 실행 완료(L0~L5·QA · PR #15~#24)·종료 조건으로 교체(이전 문구는 상태 줄 아래 보존). 계획 본문 변경 0.

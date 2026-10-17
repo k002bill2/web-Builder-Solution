@@ -55,3 +55,12 @@
 - 이미지: 편집기 이미지 고르기 → 바로 링크 이탈 → 일반 행 → 새로고침 → IDB `images` = `project-1/4a758fcb…` 1건 · 문서 참조 일치.
 - BLOCKED: 이번 Ego Lite 1회에서 실패 주입을 하지 않음 — 해제 save 실패 행·`PendingStart` 행 실화면 없음 → 단위(`ProjectsCoreRows.test.tsx`·`ProjectsPending.test.tsx`)로 갈음 · QA 주입 방법은 REPORT 인계
 - 정리: IDB `design-studio` 삭제(databases [] 확인) · finish · listTaskSpaces 0 · 서버 종료(리슨 0) · 5480 무접촉.
+
+## FIX1 (BRIEF-FIX1, 2026-10-17) — U16 rebase 뒤 flush 실패 기억 해제
+- [x] F0. BRIEF-FIX1·PROGRESS 커밋
+- [ ] F1. 원인 확인 (rebase proof · flush 실패 경로 · U16 판정) · 선택안(a/b/c) 결정 · 영향 표
+- [ ] F2. RED — restoreSnapshot·resolveConflict 뒤 flush 실패 → 기억 유지·"저장 확인" (`logs/fix1-red.log`)
+- [ ] F3. GREEN — 최소 수정 + 정상 경로(flush 성공 → 다음 save 커밋 → 해제)
+- [ ] F4. fresh 게이트 typecheck·lint·test·build · `/studio` 증분 0
+- [ ] F5. Codex review 1회 (`--scope branch --base 40b50234`) · 반영
+- [ ] F6. REPORT "FIX1" 절 · 커밋

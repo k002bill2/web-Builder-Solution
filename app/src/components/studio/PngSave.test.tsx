@@ -65,10 +65,11 @@ describe("PNG 버튼 4상태 (m2a 3.3 · K-AC-19)", () => {
     expect(png.savePng).not.toHaveBeenCalled();
   });
 
-  it("진행 → aria-busy + 'PNG 만드는 중…' · 두 번 누름 무시 → 성공 role=status 문장 · 버튼 원래 글자", async () => {
+  it("진행 → aria-busy + 'PNG 만드는 중…' · 두 번 누름 무시 → 성공 문장은 onAnnounce 1회(편집 알림 — UXP-AC-04) · 자체 role=status 0 · 버튼 원래 글자", async () => {
     const run = deferred();
     png.savePng.mockReturnValue(run.promise);
-    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} />);
+    const onAnnounce = vi.fn<(text: string) => void>();
+    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} onAnnounce={onAnnounce} />);
     fireEvent.click(button());
     await waitFor(() => expect(button()).toHaveAttribute("aria-busy", "true"));
     expect(button()).toHaveTextContent("PNG 만드는 중…");
@@ -76,20 +77,39 @@ describe("PNG 버튼 4상태 (m2a 3.3 · K-AC-19)", () => {
     await act(async () => run.resolve("PNG를 내려받았습니다 · 가게_1280_r3.png"));
     expect(png.savePng).toHaveBeenCalledTimes(1);
     expect(png.savePng).toHaveBeenCalledWith(REQUEST);
-    expect(screen.getByRole("status")).toHaveTextContent("PNG를 내려받았습니다 · 가게_1280_r3.png");
+    expect(onAnnounce).toHaveBeenCalledTimes(1);
+    expect(onAnnounce).toHaveBeenCalledWith("PNG를 내려받았습니다 · 가게_1280_r3.png");
+    expect(screen.queryByRole("status")).toBeNull();
     expect(button()).toHaveTextContent("PNG 내려받기");
     expect(button()).not.toHaveAttribute("aria-busy");
   });
 
   it("실패 → role=alert 'PNG를 만들지 못했습니다 — 다시 눌러 주세요' · png_failed 보고 · 같은 버튼으로 다시 시도", async () => {
     png.savePng.mockRejectedValueOnce(new Error("x")).mockResolvedValueOnce("PNG를 내려받았습니다 · 가게_1280_r3.png");
-    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} />);
+    const onAnnounce = vi.fn<(text: string) => void>();
+    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} onAnnounce={onAnnounce} />);
     fireEvent.click(button());
     expect(await screen.findByRole("alert")).toHaveTextContent("PNG를 만들지 못했습니다 — 다시 눌러 주세요");
     await waitFor(() => expect(png.reportFailure).toHaveBeenCalledTimes(1));
+    expect(onAnnounce).not.toHaveBeenCalled();
     fireEvent.click(button());
-    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("PNG를 내려받았습니다"));
+    await waitFor(() => expect(onAnnounce).toHaveBeenCalledWith("PNG를 내려받았습니다 · 가게_1280_r3.png"));
+    expect(screen.queryByRole("status")).toBeNull();
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
+
+describe("같은 PNG 다시 저장 (Codex r1 P2 — 성공 문장이 같아도 다시 알린다)", () => {
+  it("성공 문장이 직전과 같으면 빈 글자를 먼저 올린 뒤 같은 문장 — 편집 알림 글자가 바뀌어 다시 낭독", async () => {
+    png.savePng.mockResolvedValue("PNG를 내려받았습니다 · 가게_1280_r3.png");
+    const onAnnounce = vi.fn<(text: string) => void>();
+    render(<PngSave ready view="desktop" fallbackCount={0} capture={() => REQUEST} onAnnounce={onAnnounce} />);
+    fireEvent.click(button());
+    await waitFor(() => expect(onAnnounce).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(button()).not.toHaveAttribute("aria-busy"));
+    fireEvent.click(button());
+    await waitFor(() => expect(onAnnounce).toHaveBeenCalledTimes(3));
+    expect(onAnnounce.mock.calls.map(([text]) => text)).toEqual(["PNG를 내려받았습니다 · 가게_1280_r3.png", "", "PNG를 내려받았습니다 · 가게_1280_r3.png"]);
   });
 });
 
@@ -133,5 +153,27 @@ describe("편집기 안 PNG 묶음 (K-AC-19 · E-AC-50 — 게이트 차단·폴
     expect(request.doc.sections.map((s) => s.instanceId)).toEqual(doc.sections.map((s) => s.instanceId));
     expect(request.kitTokens?.palette.primary).toBeTruthy();
     expect(requestExport).not.toHaveBeenCalled();
+  });
+});
+
+describe("편집기 셸 status = 편집 알림 1개 (UX-POLISH-1 B-RS-11 · UXP-AC-03·04 · E-AC-33)", () => {
+  it.each([390, 1024, 1280])("폭 %i — 셸 안 role=status는 '편집 알림' 1개(PngSave 자체 status 0)", async (width) => {
+    await openStudio({ width });
+    // ImageSlotPanel sr-only status는 이미지 슬롯을 고를 때만 — 이 기본 화면에는 없다(8절 후속 후보, 계수에서 따로 빼지 않음)
+    const statuses = screen.getAllByRole("status");
+    expect(statuses).toHaveLength(1);
+    expect(statuses[0]).toHaveAccessibleName("편집 알림");
+  });
+
+  it("1280 · PNG 성공 → 편집 알림 글자 = 성공 문장 · 품질 게이트(PngSave) 안 role=status 0", async () => {
+    png.savePng.mockResolvedValue("PNG를 내려받았습니다 · 동네_1280_r1.png");
+    await openStudio();
+    const gate = screen.getByRole("region", { name: "품질 게이트" });
+    const pngButton = within(gate).getByRole("button", { name: "PNG 내려받기" });
+    await waitFor(() => expect(pngButton).not.toHaveAttribute("aria-disabled"));
+    act(() => void fireEvent.click(pngButton));
+    await waitFor(() => expect(screen.getByRole("status", { name: "편집 알림" })).toHaveTextContent("PNG를 내려받았습니다 · 동네_1280_r1.png"));
+    expect(within(gate).queryByRole("status")).toBeNull();
+    expect(screen.getAllByRole("status")).toHaveLength(1);
   });
 });

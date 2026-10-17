@@ -1,0 +1,114 @@
+{
+ "1280": {
+  "w": 1280,
+  "pos": "static",
+  "top": "auto",
+  "z": "auto",
+  "rect": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 52,
+   "top": 0,
+   "right": 1280,
+   "bottom": 52,
+   "left": 0
+  },
+  "scrollY": 0,
+  "maxScroll": 0,
+  "statuses": [
+   {
+    "name": "편집 알림",
+    "text": "바뀐 점 4개구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이",
+    "hidden": false
+   }
+  ],
+  "overflowX": 0
+ },
+ "download": "모던-카페-브랜드-프로젝트_1280_r1.png",
+ "after png": {
+  "w": 1280,
+  "pos": "static",
+  "top": "auto",
+  "z": "auto",
+  "rect": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 52,
+   "top": 0,
+   "right": 1280,
+   "bottom": 52,
+   "left": 0
+  },
+  "scrollY": 0,
+  "maxScroll": 0,
+  "statuses": [
+   {
+    "name": "편집 알림",
+    "text": "PNG를 내려받았습니다 · 모던-카페-브랜드-프로젝트_1280_r1.png",
+    "hidden": false
+   }
+  ],
+  "overflowX": 0
+ },
+ "ax status": [
+  {
+   "name": "편집 알림"
+  }
+ ],
+ "390 top": {
+  "w": 390,
+  "pos": "sticky",
+  "top": "0px",
+  "z": "10",
+  "rect": {
+   "x": 0,
+   "y": 0,
+   "width": 375,
+   "height": 57,
+   "top": 0,
+   "right": 375,
+   "bottom": 57,
+   "left": 0
+  },
+  "subTop": 48,
+  "scrollY": 0,
+  "maxScroll": 394,
+  "statuses": [
+   {
+    "name": "편집 알림",
+    "text": "PNG를 내려받았습니다 · 모던-카페-브랜드-프로젝트_1280_r1.png",
+    "hidden": false
+   }
+  ],
+  "overflowX": -15
+ },
+ "390 bottom": {
+  "w": 390,
+  "pos": "sticky",
+  "top": "0px",
+  "z": "10",
+  "rect": {
+   "x": 0,
+   "y": 0,
+   "width": 375,
+   "height": 57,
+   "top": 0,
+   "right": 375,
+   "bottom": 57,
+   "left": 0
+  },
+  "subTop": 48,
+  "scrollY": 394,
+  "maxScroll": 394,
+  "statuses": [
+   {
+    "name": "편집 알림",
+    "text": "PNG를 내려받았습니다 · 모던-카페-브랜드-프로젝트_1280_r1.png",
+    "hidden": false
+   }
+  ],
+  "overflowX": -15
+ }
+}

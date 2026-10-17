@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { retryableImport } from "../../data/chunkRetry";
 import type { PreviewView } from "../../features/detail/previewView";
 import type { PngRequest } from "../../features/studio/png/pngCapture";
@@ -22,6 +22,7 @@ const failureText = (error: unknown): string => {
 /**
  * PNG 내려받기 (m2a 3.3 · K-AC-19) — 내보내기 묶음 다음. `requestExport` 밖, 게이트·폴백 차단과 무관하게 열림(이유 목록과 describedby 분리).
  * 성공 문장·계측은 캡처 청크가 만든다. 실패 문장은 여기 — 캡처 청크를 받지 못해도 떠야 한다(M2A-3a Codex P2-1 r2).
+ * 성공 문장은 자체 status 없이 `onAnnounce`로 편집 알림에 올린다(셸 status 1곳 — UX-POLISH-1 B-RS-11 · E-AC-33).
  */
 export function PngSave({
   ready,
@@ -29,6 +30,7 @@ export function PngSave({
   view,
   fallbackCount,
   capture,
+  onAnnounce,
 }: {
   readonly ready: boolean;
   /** 준비 전 이유 — 기본 = 캔버스·저장 대기 문장 */
@@ -36,15 +38,30 @@ export function PngSave({
   readonly view: PreviewView;
   readonly fallbackCount: number;
   readonly capture: () => PngRequest;
+  /** 성공 문장 → 편집 알림(SaveStatus와 같은 패턴) */
+  readonly onAnnounce?: (text: string) => void;
 }) {
-  const [state, setState] = useState<{ readonly busy?: true; readonly done?: string; readonly failed?: string }>({});
+  const [state, setState] = useState<{ readonly busy?: true; readonly failed?: string }>({});
+  // 같은 문장을 다시 올리면 편집 알림 글자가 그대로라 낭독이 없다 — 빈 글자를 먼저 올리고 다음 틱에 문장(Codex r1 P2)
+  const announced = useRef<string | undefined>(undefined);
+  const announce = (done: string) => {
+    if (done !== announced.current) {
+      announced.current = done;
+      return onAnnounce?.(done);
+    }
+    onAnnounce?.("");
+    setTimeout(() => onAnnounce?.(done), 0);
+  };
   const press = () => {
     if (!ready || state.busy) return;
     setState({ busy: true });
     loadPng()
       .then((png) => png.savePng(capture()))
       .then(
-        (done) => setState({ done }),
+        (done) => {
+          setState({});
+          announce(done);
+        },
         (error: unknown) => {
           void loadPng().then((png) => png.reportFailure(error), () => undefined);
           setState({ failed: failureText(error) });
@@ -72,9 +89,6 @@ export function PngSave({
       <p id="png-caption" className="ds-caption1 text-label-alternative">
         지금 미리보기 폭({PREVIEW_WIDTH_OPTIONS.find((o) => o.value === view)?.label} · {FRAME_REM[view] * 16})의 페이지 전체를 한 장으로 저장합니다.
         {fallbackCount > 0 && ` 구조 미리보기 섹션 ${fallbackCount}개는 표식과 함께 담깁니다.`}
-      </p>
-      <p role="status" className="ds-caption1">
-        {state.done}
       </p>
       {state.failed && (
         <p role="alert" className="ds-caption1 text-status-negative-text">

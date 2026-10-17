@@ -341,7 +341,7 @@ export function StudioLayout({
   );
 
   const docTag = docTagText(doc);
-  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} onAnnounce={setNotice} />;
+  const saveStatus = <SaveStatus state={save.state} persistence={save.persistence} source={save.source} onRetry={save.retry} actions={save} onAnnounce={setNotice} />;
   const conflict = (
     <>
       {snaps.layer}

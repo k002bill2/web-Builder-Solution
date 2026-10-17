@@ -163,6 +163,10 @@ describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () =
     expect(screen.getByRole("alert", { name: "" })).toHaveTextContent("다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요");
     expect(within(canvas()).queryByText(/다른 곳에서 이 문서가 바뀌었습니다/)).toBeNull();
     expect(within(canvas()).queryByRole("button", { name: "내 편집으로 저장" })).toBeNull();
+    // 버튼 1개 규칙(UX-5 2.2 · I6 8.2) — "다시 저장" 대신 "버리고 새로고침"(조작 뒤 SaveActions)
+    await act(async () => void (await import("./SaveActions"), await vi.advanceTimersByTimeAsync(0)));
+    expect(within(screen.getByRole("banner")).getByRole("button", { name: "버리고 새로고침" })).toBeInTheDocument();
+    expect(within(screen.getByRole("banner")).queryByRole("button", { name: "다시 저장" })).toBeNull();
     expect(within(editRegion()).getByRole("textbox", { name: /^제목/ })).toHaveValue("내 편집");
     expect(screen.getAllByRole("status", { name: "편집 알림" })).toHaveLength(1);
   });

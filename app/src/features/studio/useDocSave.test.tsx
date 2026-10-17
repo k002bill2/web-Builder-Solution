@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { READ_ONLY_TAB } from "../../data/persistence/infra";
 import { createMemoryCompareBoardRepository } from "../../data/memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "../../data/memoryGenerationRepository";
 import { createMemoryProjectRepository } from "../../data/memoryProjectRepository";
@@ -239,6 +240,25 @@ describe("useDocSave — STALE_DOC 충돌 (E-AC-10)", () => {
     });
     expect(result.current.state.phase).toBe("failed");
     expect(result.current.source.reason).toBe("stale");
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("RS6-L4 CP2 · report(저장 확인 결과 → 출처)", () => {
+  it("readonly 실패 → report() = reason 지움 · 스케줄러 settle(추가 저장 0) · report(reason) = 그 reason", async () => {
+    const doc = sampleDoc();
+    const m = mockRepo(doc, "local");
+    const { result } = renderDocSave(m.repo, doc);
+    m.failOnce(new ProjectRepositoryError("INFRA", `저장 — ${READ_ONLY_TAB}`));
+    act(() => result.current.edit(titled(doc, "읽기 전용")));
+    await act(() => vi.advanceTimersByTimeAsync(2000));
+    expect(result.current.source.reason).toBe("readonly");
+    act(() => result.current.report({ reason: "newer", text: "x" }));
+    expect(result.current.source).toMatchObject({ reason: "newer", text: "x" });
+    act(() => result.current.report());
+    expect(result.current.source.reason).toBeUndefined();
+    expect(result.current.state.phase).toBe("saved");
     await act(() => vi.advanceTimersByTimeAsync(60_000));
     expect(m.repo.saveDoc).toHaveBeenCalledTimes(1);
   });

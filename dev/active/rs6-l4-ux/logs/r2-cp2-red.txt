@@ -1,0 +1,82 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app
+
+ ❯ src/components/studio/SaveStatus.buttons.test.tsx (0 test)
+ ❯ src/components/studio/SaveActions.test.tsx (0 test)
+ ❯ src/features/studio/useDocSave.test.tsx (10 tests | 1 failed) 268ms
+   ❯ RS6-L4 CP2 · report(저장 확인 결과 → 출처) (1)
+     × readonly 실패 → report() = reason 지움 · 스케줄러 settle(추가 저장 0) · report(reason) = 그 reason 4ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SaveActions.test.tsx [ src/components/studio/SaveActions.test.tsx ]
+Error: Failed to resolve import "./SaveActions" from "src/components/studio/SaveActions.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app/src/components/studio/SaveActions.test.tsx:9:24
+  6  |  import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/saveStatusText";
+  7  |  import { DISCARD_TIMEOUT_ALERT } from "../../features/studio/save/alertKeys";
+  8  |  import SaveActions from "./SaveActions";
+     |                           ^
+  9  |  var _jsxFileName = "/Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app/src/components/studio/Sav...
+  10 |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/studio/SaveStatus.buttons.test.tsx [ src/components/studio/SaveStatus.buttons.test.tsx ]
+Error: Failed to resolve import "./SaveActions" from "src/components/studio/SaveStatus.buttons.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l4-ux/app/src/components/studio/SaveStatus.buttons.test.tsx:38:17
+  81 |  			columnNumber: 12
+  82 |  		}, this));
+  83 |  		await import("./SaveActions");
+     |                 ^
+  84 |  		await new Promise((done) => setTimeout(done, 0));
+  85 |  		expect(screen.queryByRole("button")).toBeNull();
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > RS6-L4 CP2 · report(저장 확인 결과 → 출처) > readonly 실패 → report() = reason 지움 · 스케줄러 settle(추가 저장 0) · report(reason) = 그 reason
+TypeError: result.current.report is not a function
+ ❯ src/features/studio/useDocSave.test.tsx:257:30
+    255|     await act(() => vi.advanceTimersByTimeAsync(2000));
+    256|     expect(result.current.source.reason).toBe("readonly");
+    257|     act(() => result.current.report({ reason: "newer", text: "x" }));
+       |                              ^
+    258|     expect(result.current.source).toMatchObject({ reason: "newer", tex…
+    259|     act(() => result.current.report());
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/studio/useDocSave.test.tsx:257:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  1 failed | 9 passed (10)
+   Start at  18:33:41
+   Duration  1.03s (environment 61%, tests 14%, transform 12%, setup 11%, import 1%, worker 1%)
+

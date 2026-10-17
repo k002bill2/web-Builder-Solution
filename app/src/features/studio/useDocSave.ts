@@ -60,6 +60,8 @@ export interface UseDocSave {
   /** 상태 판정 출처(INTEGRATE-6 8.1 · RS6-L4 CP1) — 코어 view(inflight·dirty) + 마지막 저장 결과 reason(성공이면 없음) */
   readonly source: SaveSource;
   readonly core: SaveCore;
+  /** "저장 확인" 결과 → 출처(SaveActions가 부른다) */
+  readonly report: (next?: { readonly reason: string; readonly text?: string }) => void;
 }
 
 export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
@@ -185,9 +187,12 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     return flushed().then((ok) => ok || readOnly.current);
   }, [retry, flushed]);
 
+  /** 확인 결과 → 출처(SaveActions · 조작 뒤) — 성공이면 reason 지우고 스케줄러 settle(추가 저장 0) */
+  const report = useCallback((next?: { readonly reason: string; readonly text?: string }) => (setReason(next), next || settle()), [settle]);
+
   const conflict = autosave.state.phase === "stale" ? { latest } : undefined;
   const savedRevision = useCallback(() => revisionRef.current, []);
   const { inflight, dirty } = core.view();
   const source = { ...reason, inflight, dirty };
-  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, source, core };
+  return { doc, state: autosave.state, persistence: repository.persistence, conflict, edit, retry, savedRevision, resolve, flushed, adopt, leave, source, core, report };
 }

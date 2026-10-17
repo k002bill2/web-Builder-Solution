@@ -39,7 +39,7 @@
 ## R2 레인 (`BRIEF-R2.md`, L4 전체 구현 재개 · M3a 조합 · 상향 0)
 - [x] R0. BRIEF-R2·PROGRESS 커밋
 - [x] R1. CP1 SaveStatus 판정 출처(I6 8.1 · stale 행) — RED 9/46(`logs/r2-cp1-red.txt`, 예측 = 새 테스트 + 의미 교체 6건 전부 RED) → GREEN 60/60(`logs/r2-cp1-green.txt`) · 전체 스위트에서 포트 stale 의존 2건 추가 발견(FieldUndo P2-3 · useDocSaveLeave STALE 경고) → I6 8.1 근거로 교체 · build 129.35(중간 — ConflictCallout lazy·M2 전, `logs/r2-cp1-build.txt`)
-- [ ] R2. CP2 저장 확인·다시 저장·폐기 대화상자 — RED `logs/r2-cp2-red.txt` → GREEN
+- [x] R2. CP2 저장 확인·다시 저장·폐기 대화상자 — RED(신규 2파일 import 실패 + report 1, `logs/r2-cp2-red.txt`) → GREEN 26/26(`logs/r2-cp2-green.txt`) · 전체 2990/2991→StudioLayout 가짜 타이머 findBy 수정 후 통과 · M2a 구조(SaveActions lazy)로 바로 작성 · build 129.52(중간, `logs/r2-cp2-build.txt`)
 - [ ] R3. CP3 ConflictCallout 두 선택·포커스·replace epoch +1 — RED `logs/r2-cp3-red.txt` → GREEN
 - [ ] R4. CP4 문구·금지 문구 0·memory 모드 — RED `logs/r2-cp4-red.txt` → GREEN
 - [ ] R5. 상쇄 M2a~M2d (`src/build/` 목록 모듈) — 실측

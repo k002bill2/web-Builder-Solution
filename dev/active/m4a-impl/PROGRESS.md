@@ -34,5 +34,5 @@
 - [x] F3. L-1 — `url(`·`image-set(`·`@import` 출현 수 = 엄격 매치 수 · 킷 이스케이프
 - [x] F4. 문구 "정적 사이트(zip)을" → "를"
 - [x] F5. fresh typecheck·lint·test·build · 예산(진입 128.71 · 복원 131.69 증분 0)
-- [ ] F6. Codex 1회(`adversarial-review --scope branch --base a834eb88`) · 반영 1회
+- [x] F6. Codex 1회(`adversarial-review --scope branch --base a834eb88`) · 반영 1회 — needs-attention P2 2·P3 1 → P2-1 반영(3134 passed · 진입 128.71) · P2-2·P3 사유 기록(REPORT 9절)
 - [ ] F7. REPORT 9절 FIX1 · untracked 0

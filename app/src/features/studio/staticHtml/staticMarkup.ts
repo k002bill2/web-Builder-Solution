@@ -141,7 +141,8 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   page.documentElement.setAttribute("lang", "ko");
   page.body.innerHTML = markup;
   const site = page.body.firstElementChild;
-  if (!site?.hasAttribute("data-site-root") || page.body.childElementCount !== 1) throw new Error("사이트 루트가 없는 마크업입니다");
+  // 루트 자체가 제거 대상이면 실패 — clean()의 querySelectorAll("*")은 루트를 보지 않는다(Codex FIX1)
+  if (!site?.hasAttribute("data-site-root") || page.body.childElementCount !== 1 || REMOVED.has(site.localName.toLowerCase())) throw new Error("사이트 루트가 없는 마크업입니다");
   // 폴백(구조 미리보기)은 표식을 지우기 전에 판정 — 8.3.2 7단계가 막지만 생성기도 방어
   if (site.querySelector("[data-fallback], [data-kit-marker]")) throw new Error("구조 미리보기 섹션이 있어 정적 HTML을 만들지 않습니다");
   clean(site);

@@ -335,4 +335,13 @@ describe("FIX1 AppSec·QA (M-1·M-2·L-1·L-2)", () => {
     expect(() => build({ css: ok })).not.toThrow();
     expect(() => build({ markup: inject(`<div style="background:url('data:image/png;base64,AA')"></div>`) })).not.toThrow();
   });
+
+  it("Codex FIX1: 사이트 루트 자체가 제거 대상(template·script·svg animate 류)이면 실패 — 루트는 querySelectorAll('*') 밖이다", () => {
+    for (const root of [
+      '<template data-site-root="" shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><script>alert(2)</script></template>',
+      '<script data-site-root="">alert(1)</script>',
+      '<TEMPLATE data-site-root=""><p>x</p></TEMPLATE>',
+    ])
+      expect(() => build({ markup: root }), root).toThrow("사이트 루트가 없는 마크업입니다");
+  });
 });

@@ -115,7 +115,7 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 - 내려받은 파일·해제 폴더·입력 이미지는 저장소 밖(`/tmp/m4a-r2-ego/`)에 두었습니다. 저장소에는 스크린샷 6장만 커밋합니다.
 
 ## 9. FIX1 (BRIEF-FIX1 · base a834eb88 — AppSec M-1·M-2·L-1·L-2 · QA M2a·M2c · 문구 1)
-**결론(진행 중):** 아래 표가 항목별 결과입니다.
+**결론(FIX1):** AppSec M-1·M-2·L-1·L-2와 QA 변이 생존 M2a·M2c, 문구 1건을 TDD로 고쳤습니다(항목마다 RED 로그). M2a·M2c는 이제 FAIL로 잡힙니다(`logs/fix1-f2-mutations.txt`). Codex 1회는 needs-attention(P2 2 · P3 1)이었고, P2-1(루트 template)을 반영했습니다. P2-2·P3은 사유를 남기고 반영하지 않았습니다(아래 Codex 표). 최종 게이트: typecheck 0 · lint 0 · test 353파일 **3134 passed** · build exit 0. 예산은 진입 **128.71** · 복원 **131.69**로 개정 18 기준선과 같습니다(**증분 0**, 기준선 파일 수정 0). 렌더 JS는 84.29/90입니다. 기존 단언 약화·skip 0(조사 1건은 정정).
 
 | 항목 | 수정 | RED → GREEN | 커밋 |
 |---|---|---|---|
@@ -123,7 +123,16 @@ _(아래 1~6절 첫 줄까지는 R1 마감 기록입니다. R2 결과는 1절 �
 | F2 L-2 | `staticMarkup.ts` F-14 제외 정규식을 `url(data:font/…;base64,<base64 글자>)`로 좁히고(`CSS_FONT_DATA_URL`) **CSS 입력에만** 적용 — `assertNoBrand(site, css, [notice, STATIC_MENU_SCRIPT])`. notice·고정 스크립트는 치환 없이 검사 | Codex 주석 경계(무따옴표·따옴표) · `content:"url(data:…)"`(B03) · notice `url(data:Design Studio)` · zip 글꼴 경로 `assets/fonts/<브랜드>-400.woff2`(M2a 포착) · data 글꼴 2개 사이 규칙(M2c 포착) = 실패, 실제 인라인 글꼴(따옴표 유무·zip) = 통과. RED `logs/fix1-f2-red.txt` → 117 passed. **변이 증명** `logs/fix1-f2-mutations.txt`: M2a·M2c 각각 1 실패 → 복원 26 passed | a6bace1b |
 | F3 L-1 | `staticMarkup.ts` `CSS_URL`을 엄격형(큰따옴표·작은따옴표·무따옴표[공백·따옴표·괄호 0])으로 바꾸고 `cssUrls()`가 "`url(` 출현 수 = 엄격 매치 수"가 아니면 실패. 킷 CSS(`assertNoExternalCss`)는 CSS 이스케이프를 해석한 텍스트로 검사하고 `@import`·`image-set(` 1개라도 실패. 본문 CSS(`hasExternalCss`)는 `\` 금지가 이미 있어 수 비교만 추가 | 따옴표 섞인 url() — 본문 style(M28·M29)·style 요소(M30)·킷 CSS(C06 + `'…)…'`) · 킷 `@\69mport`(C03)·`u\72l(`(C04)·`image-set(`(C05) html·zip 양쪽 = 실패. Tailwind 이스케이프 선택자(`.md\:grid`·`\[…\(45deg\,red\)\]`·`.\31 0`)·`content:"\201C"`·따옴표 data: url = 통과. RED `logs/fix1-f3-red.txt` → 118 passed. 실제 build CSS 확인은 F5 | 8436d515 |
 | F4 문구 | `components/studio/ExportAfter.tsx` 성공 제목의 `NAME`에 목적격 조사를 형식별로 붙임("zip을" · "정적 HTML을" · "정적 사이트(zip)를"). 공용 템플릿의 고정 "을"을 없앰 — HTML 쪽 문장은 그대로 | `ExportFlow.test.tsx` 기존 단언 "정적 사이트(zip)을 만들었습니다" → "를"로 **정정(약화 아님)** · RED `logs/fix1-f4-red.txt` → components/studio 41파일 300 passed | 86b74a22 |
-| F5 게이트·예산 | 코드 변경 0 | typecheck exit 0 · lint exit 0 · test 353파일 **3133 passed** · build exit 0(`logs/*-fix1.txt`). 진입 **128.71 · 복원 131.69 = 개정 18 기준선(증분 0, 기준선 갱신 없음)** · 렌더 JS 84.29/90. 실제 build 킷 CSS(`render-ncA71k8b.css`, url 6 · 이스케이프 선택자 다수)를 `buildStaticHtml`에 넣어 html(글꼴 data:)·zip(assets/fonts) 둘 다 통과 — 임시 vitest 실행 뒤 삭제(`logs/fix1-real-css.txt`). 킷 이스케이프(`@\69mport`·`u\72l(`)는 같은 출현 수 방식으로 잡혀 범위에 포함(정상 빌드 깨짐 0) | (이 커밋) |
+| F5 게이트·예산 | 코드 변경 0 | typecheck exit 0 · lint exit 0 · test 353파일 **3133 passed** · build exit 0(`logs/*-fix1.txt`). 진입 **128.71 · 복원 131.69 = 개정 18 기준선(증분 0, 기준선 갱신 없음)** · 렌더 JS 84.29/90. 실제 build 킷 CSS(`render-ncA71k8b.css`, url 6 · 이스케이프 선택자 다수)를 `buildStaticHtml`에 넣어 html(글꼴 data:)·zip(assets/fonts) 둘 다 통과 — 임시 vitest 실행 뒤 삭제(`logs/fix1-real-css.txt`). 킷 이스케이프(`@\69mport`·`u\72l(`)는 같은 출현 수 방식으로 잡혀 범위에 포함(정상 빌드 깨짐 0) | b3a3df09 |
+
+### FIX1 Codex (1회 · 반영 1회)
+- 실행: `codex-companion adversarial-review --scope branch --base a834eb88 "<관점 4개: 제거 우회 · F-14 경계 · url 출현 수·이스케이프 우회/오탐 · 조사 회귀>"`. 원문 `logs/codex-fix1.txt`. 판정 needs-attention. ExportAfter 조사 변경은 회귀 0.
+| # | 지적 | 처리 | 근거 |
+|---|---|---|---|
+| P2-1 | 사이트 루트 자체가 `<template data-site-root shadowrootmode>`면 `querySelectorAll("*")` 밖이라 내용이 그대로 나감(기준 커밋부터 있던 결함) | **반영** — 루트 localName이 제거 대상이면 "사이트 루트가 없는 마크업" 실패 | RED `logs/codex-fix1-red.txt`(template·script·대문자 TEMPLATE 루트 3건) → 119 passed → 전체 3134 passed(`logs/*-fix1-codex.txt`) |
+| P2-2 | 문자열 안 `content:"url("`·`url(`이 든 Tailwind 이스케이프 선택자도 출현 수에 잡혀 정상 CSS가 실패(오탐) | **미반영(의도된 fail-closed)** | BRIEF-FIX1 3항이 "출현 수 = 엄격 매치 수, 다르면 실패"를 지정했습니다. 실제 build 킷 CSS에는 해당 모양이 0이고 통과를 확인했습니다(`logs/fix1-real-css.txt`). 본문 CSS는 렌더 style(`kitVars`)뿐이라 따옴표가 막혀 있습니다. 토큰 문맥 파서는 새 설계라 후속 판단(Jarvis)으로 넘깁니다. 킷 CSS에 `url(` 글자가 든 content·임의값 클래스를 추가하면 내보내기가 실패합니다 — 이를 회귀 신호로 씁니다 |
+| P3 | 글꼴 data URL 모양(`url(data:font/woff2;base64,<base64 글자>)`)이 CSS 문자열·주석 안에 있으면 그 안의 브랜드 글자도 제외됨 | **미반영(기록)** | BRIEF 2항·AppSec 패치가 정한 범위(base64 글자 한정 — 주석·규칙 경계를 넘지 못함)는 지켰습니다. 남는 경우는 생성기 고정 CSS의 문자열·주석에 글꼴 URL 모양과 base64 글자의 브랜드를 함께 넣는 경우뿐입니다. 고치려면 CSS 토큰화가 필요해 P2-2와 같은 후속으로 묶습니다 |
+- 반영은 1회까지라 재리뷰는 돌리지 않았습니다. 재반영 뒤 예산: 진입 128.71 · 복원 131.69(증분 0) · 렌더 JS 84.29.
 
 ### FIX1 범위 밖 이월 (BRIEF-FIX1 "범위 밖")
 | 항목 | 내용 | 이월 사유 |

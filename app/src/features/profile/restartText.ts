@@ -69,12 +69,12 @@ export const RESTART_TEXT = Object.freeze({
   createReadonly: "다른 탭에서 편집 중이라 편집을 시작하지 않았습니다 — 그 탭을 닫은 뒤 다시 시도하세요",
   createStaleTab: "다른 탭에서 바뀐 내용이 있어 편집을 시작하지 않았습니다 — 새로고침한 뒤 다시 고르세요",
   createCleared: "이 브라우저 데이터가 지워져 편집을 시작하지 않았습니다 — 새로고침하세요",
-  createUnconfirmed: "편집 문서를 만들었지만 브라우저에 저장됐는지 확인하지 못했습니다 — 저장 다시 시도를 누르면 같은 요청으로 저장을 이어 갑니다. 확인 전에 새로고침하거나 탭을 닫으면 이 편집 문서는 사라집니다",
-  createUnknown: "편집 문서를 만들었는지 확인하지 못했습니다 — 저장 다시 시도는 같은 요청이라 두 번 만들어지지 않습니다",
+  createUnconfirmed: "편집 문서를 만들었지만 브라우저에 저장됐는지 확인하지 못했습니다 — 시작 다시 시도를 누르면 같은 요청으로 저장을 이어 갑니다. 확인 전에 새로고침하거나 탭을 닫으면 이 편집 문서는 사라집니다",
+  createUnknown: "편집 문서를 만들었는지 확인하지 못했습니다 — 시작 다시 시도는 같은 요청이라 두 번 만들어지지 않습니다",
   createNotApplied: (doc?: Pick<DocLike, "candidateId" | "profileVersion">) =>
     `편집 시작은 반영되지 않았습니다${doc ? ` — 이 프로젝트에는 이미 문서(${doc.candidateId}안 · v${doc.profileVersion})가 있습니다` : ""}. 그 문서가 브라우저에 저장됐는지는 아직 확인하지 않았습니다 — 저장 확인을 누르면 확인한 뒤 엽니다`,
   createNotAppliedAbsent: "편집 시작이 반영되지 않았습니다 — 프로필에서 다시 고르세요",
-  retrySave: "저장 다시 시도",
+  retrySave: "시작 다시 시도",
 });
 
 /** R-D5 — 두 버전 대비 결과가 다를 때만 한 줄(글자로 통과/미달). 한쪽이라도 판정 불가(undefined)면 줄 없음(RS-D6) */

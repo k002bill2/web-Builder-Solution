@@ -315,6 +315,11 @@ APPNOTE 6.3.10 기준(출처 7절). 필수 필드만:
 - 스파이크 실측: store zip 작성기 gzip 914B · `/studio` 진입 증분 0 · 조작 뒤 exportFlow +1.06KB · ZIP64 불필요 · zip 단계 30MB ≈ 250ms(Node). 전체 파이프라인 8초 안 여부는 구현 QA 확인(Q15 재검 조건).
 - 예산 조건(결정 1): `/studio` 진입 증분 0. 구현 실측이 +0.01이라도 나오면 멈추고 개정 18 상신.
 
+## 8b. 구현·검증 기록 (Jarvis, 2026-10-18)
+- 구현 PR #38(`f61e2da9`) · AppSec 기록 #39 · QA 기록 #40. ADR-004 개정 18(M4-a 몫 +0.10, 사용 +0.01 → 남은 0.09).
+- 릴리스 게이트 종합 **PASS with notes**: Chromium 실화면 R1·R2·R4·R5 통과 · AppSec Critical·High 0(Medium 2 → FIX1 해소).
+- 남은 것: Q1 A 게이트 링크 줄(M4-a-2b) · LICENSES 최종 문안(Hemingway) · BACKLOG B-M4A-01~10(Safari·Firefox·R3 20MB+ 실화면 포함).
+
 ## 8. 설계 질문 (★ = 권장)
 
 | # | 질문 | 선택지 | ★ |

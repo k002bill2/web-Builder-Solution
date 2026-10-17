@@ -7,7 +7,7 @@ import type { CoreKeeper, SaveCore } from "../studio/save/saveCore";
 import { DiscardConfirm } from "../pending/DiscardConfirm";
 import { PENDING_TEXT as P } from "../pending/pendingText";
 import { pendingOf, settle, subscribe, ticketOf, type Pending } from "../pending/pendingWrites";
-import { CORE_REASON_TEXT as R, CORE_ROW_TEXT as C, stuckOf } from "./coreRowText";
+import { CORE_ROW_TEXT as C } from "./coreRowText";
 
 export { DiscardConfirm, pendingOf, subscribe };
 
@@ -31,31 +31,13 @@ export interface RowState {
   readonly quiet?: boolean;
 }
 
-/** 코어 → 포트 환경(writer·readonly·stale·cleared·unsupported) — 행 판정은 동기라 목록을 그리기 전에 읽어 둔다(B-RS-09) */
-const envs = new WeakMap<SaveCore, string | undefined>();
-
-/**
- * 저장 실패로 초안이 걸린 코어(dirty · 저장 중 아님)만 포트 mode를 읽는다(confirmCore와 같은 호출 — readonly면 잠금을 다시 요청한다).
- * 목록 게이트가 이 뒤에 열린다 → 첫 표시부터 사유 문구(UX-5 2.3). 읽기 실패 = 모름(일반 실패 문구) · reject 0.
- */
-export const probeCores = (repo: object) =>
-  Promise.all(
-    [...((repo as CoreKeeper).cores?.values() ?? [])].map(async (core) => {
-      const view = core.view();
-      if (view.dirty && !view.inflight) envs.set(core, await core.link((_, __, link) => link.port?.mode()).catch(() => undefined));
-    }),
-  );
-
-/** 한 행 상태 1개(UX-5 2.2 "한 상태에 버튼 1개") — 시작 대기는 코어 상태보다 앞선다(UX-5 4.1) · 환경 사유 > 저장 중 > 저장 실패(2.2) */
+/** 한 행 상태 1개(UX-5 2.2 "한 상태에 버튼 1개") — 시작 대기는 코어 상태보다 앞선다(UX-5 4.1) */
 export function describeRow(repo: object, projectId: string): RowState | undefined {
   const pending = pendingOf(repo, projectId);
   if (pending?.kind === "start") return { ...describePending(pending), working: P.working };
-  const core = coreOf(repo, projectId);
-  const view = core?.view();
+  const view = coreOf(repo, projectId)?.view();
   if (view && view.inflight > 0) return { status: C.saving, working: C.saving, open: true, quiet: true };
-  // stale·cleared·unsupported = 다시 저장해도 같은 결과(pendingRetry `failed`와 같은 규칙) → 버튼 숨김 · readonly = 그 탭을 닫은 뒤 다시 저장
-  const env = core && envs.get(core);
-  if (view?.dirty) return { status: (env && R[env]) || C.failed, label: stuckOf(env) ? undefined : C.saveAgain, working: C.saving, open: true };
+  if (view?.dirty) return { status: C.failed, label: C.saveAgain, working: C.saving, open: true };
   return pending && { ...describePending(pending), working: P.working };
 }
 
@@ -68,8 +50,7 @@ export function watchCores(repo: object, onChange: () => void): () => void {
   let live = true;
   (repo as CoreKeeper).cores?.forEach((core, projectId) => {
     const view = core.view();
-    // 저장이 끝나면 환경을 다시 읽고(실패했으면 사유 문구) 다시 판정
-    if (view.inflight > 0) void core.idle().then(() => probeCores(repo)).then(() => live && onChange());
+    if (view.inflight > 0) void core.idle().then(() => live && onChange());
     const pending = pendingOf(repo, projectId);
     const proof = view.confirmed;
     if (pending?.kind === "record" && pending.head && !view.dirty && view.inflight === 0 && proof?.proof === "committed" && proof.revision > pending.head.revision)

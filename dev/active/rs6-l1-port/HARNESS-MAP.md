@@ -4,6 +4,10 @@
 
 합계 37 = ① 이식 30 · ② 잠금 기반 대체 6 · ③ 폐기 1 (h1 3 · h2 5 · h3 4 · h4 4 · h5 7 · h6 14).
 
+**집계 정정(RS6-L2 · L1 QA-REPORT 0절 note 4):** ① 30건 = **완전 25 + 부분 5**(#9·#12·#28·#30·#32). L1 REPORT의 "완전 27 + 부분 3"은 #12·#30을 빠뜨렸다. #20의 "discard stale을 ①로 재현(CP3)" 주장은 L1 시점 근거 테스트 **0건**이었다.
+- RS6-L2 보강: #28 → `save/liveness.discard.test.ts` "#28 보강"(discard 읽기 중 replace 수용 → blocked{newer} · 교체 초안 보존)으로 **완전**. #20 discard stale → 같은 파일 "#20 보강"(IDB 재읽기 ≠ 마지막 증명 → blocked{stale} · 초안 보존, 변이 RED 1 `rs6-l2-liveness/logs/note4-mut-stale.log`)으로 근거 1건(② 분류는 그대로 — 다른 탭 기록 자체는 잠금 기반 대체).
+- 보강 뒤 ① = 완전 26 + 부분 4(#9·#12·#30·#32).
+
 | # | 하네스 | 의미 | 분류 | 제품 대응 |
 |---|---|---|---|---|
 | 1 | h1:11 | 커밋 전 편집 B → A 완료 newer · dirty · confirmed=A · B 보존 → 재저장 B 영속 | ① CP1 | detach 호출 제거(제품에 attach/detach 없음 — I6 1.1 삭제), 바인딩 보존 의미만 |
@@ -14,10 +18,10 @@
 | 6 | h2:53 | wrote:false 확인 중 편집 → newer | ① CP1 | |
 | 7 | h2:61 | 메모리 폴백 save·confirm failed{not-persistent} · confirmed 영속 증명 없음 | ① CP4 | memory 모드 = DocBook 커밋 뒤 not-persistent (savedMark 전진 — 차이, REPORT) |
 | 8 | h2:69 | unsupported(locks 없음) → confirm failed · 쓰기 0 | ① CP3 | |
-| 9 | h3:14 | readonly 거절 → 잠금 해제 → 재시도: 바인딩 동결 보존 · delete 0 | ① CP2 | 두 탭 실제 fakeLocks |
+| 9 | h3:14 | readonly 거절 → 잠금 해제 → 재시도: 바인딩 동결 보존 · delete 0 | ① CP2 (**부분** — 바인딩 동결 단언 없음 · L1 REPORT 1절) | 두 탭 실제 fakeLocks |
 | 10 | h3:38 | quota 실패: 문서·이미지 0 → 재시도 둘 다 | ① CP2 | |
 | 11 | h3:52 | confirm 경로 abort → 재시도 confirmed · 함께 | ① CP2 | |
-| 12 | h3:65 | 부족 이미지 → 제출 0 · image-missing / IDB에 있으면 바인딩 없이 통과 | ① CP2 | |
+| 12 | h3:65 | 부족 이미지 → 제출 0 · image-missing / IDB에 있으면 바인딩 없이 통과 | ① CP2 (**부분** — L1 QA: "IDB에만 있고 바인딩 없음" 양성 분기 테스트 0 · `saveCore.images.test.ts:40-48`은 같은 코어라 바인딩이 남음) | |
 | 13 | h4:35 | 탭 B 저장·닫힘 → A wrote:false confirm stale | ② | writerLock.test.ts:120·:152 · RS6-AC-B3 (제품 세대 검사 = 잠금 획득 때 fresh, D6-3) |
 | 14 | h4:46 | 아무도 안 쓴 writer 탭 wrote:false = IDB 재읽기 proof fresh | ① CP1 | 단일 탭 재현 가능 |
 | 15 | h4:53 | 읽기 전용 탭 confirm → failed readonly | ② | writerLock.test.ts:81 · createLock.test.ts:79 · RS6-AC-B3 (+ 제품 2탭 포트 테스트 CP3) |
@@ -25,7 +29,7 @@
 | 17 | h5:21 | 저장 진행 중 discard → rejected{inflight} | ① CP3 | |
 | 18 | h5:34 | 커밋 안 된 초안 discard → 저장 상태 복귀 · 부활 0 | ① CP3 | |
 | 19 | h5:46 | discard 중 편집 → blocked{newer} · 보존 | ① CP3 | |
-| 20 | h5:58 | 다른 탭 기록 → discard blocked{stale} | ② (부분) | writerLock.test.ts:315·:120 · discard stale 자체는 verify 불일치로 ① 재현(CP3) |
+| 20 | h5:58 | 다른 탭 기록 → discard blocked{stale} | ② (부분) | writerLock.test.ts:315·:120 · discard stale 자체(verify 불일치)의 ① 재현 근거는 L1에 **0건**이었다(L1 QA) → RS6-L2 `liveness.discard.test.ts` "#20 보강" |
 | 21 | h5:68 | replace 거절(dirty·intent·epoch·inflight) · 옛 완료 비덮어쓰기 | ① CP3 | |
 | 22 | h5:86 | confirm은 starter 호출 0 · retryStart만 | ① CP3 | |
 | 23 | h5:96 | lease 같은 mountId = 같은 토큰 · release 뒤 새 토큰 | ① CP3 | |
@@ -33,11 +37,11 @@
 | 25 | h6:50 | discard 중 dirty confirm · 두 번째 discard 거절 | ① CP3 | |
 | 26 | h6:63 | discard 읽기 throw → finally 가드 해제 | ① CP3 | |
 | 27 | h6:74 | discard 읽기 지연 중 edit 수용 → blocked{newer} | ① CP3 | |
-| 28 | h6:92 | discard 중 edit·replace 수용 → blocked{newer} | ① CP3 | |
+| 28 | h6:92 | discard 중 edit·replace 수용 → blocked{newer} | ① CP3 (L1 부분 — replace 미단언 → RS6-L2 "#28 보강"으로 완전) | |
 | 29 | h6:103 | writer 확인 대기 중 같은 id 다른 Blob 편집 → 커밋 = 편집 시점 Blob(동결) | ① CP2 | |
-| 30 | h6:125 | edit·replace 뒤 호출자 객체 변경 → 코어 초안 불변 | ① CP2 | |
+| 30 | h6:125 | edit·replace 뒤 호출자 객체 변경 → 코어 초안 불변 | ① CP2 (**부분** — 중첩 변경 단언 없음 · 얕은 사본은 L1 REPORT 7절 의도된 차이) | |
 | 31 | h6:139 | 순차 discard → 바인딩 = 커밋된 X · 폐기 Blob 미포함 | ① CP3 | discard 필요라 CP3로 |
-| 32 | h6:150 | 재열기 코어 discard → 폐기 Blob 제거 · IDB X로 저장 | ① CP3 | 재열기 = 새 레지스트리 동기 seed(D6-10) |
+| 32 | h6:150 | 재열기 코어 discard → 폐기 Blob 제거 · IDB X로 저장 | ① CP3 (**부분** — IDB X 재저장 미단언 · L1 REPORT 1절) | 재열기 = 새 레지스트리 동기 seed(D6-10) |
 | 33 | h6:161 | 키에 코어 이미지가 아닌 레코드 → image-missing | ③ | 코어 고유 레코드 형식(`kind:"core-image"`) 판정 — 제품 이미지 확인은 키 존재(`imageRecordId`) |
 | 34 | h6:172 | 한 탭 코어 2개 gate 공유 동시 save → 하나 stale | ② | writeQueue.test.ts:44 · writerLock.test.ts:120 · 구조: 레지스트리 = 프로젝트당 코어 1개 + 탭당 LocalSync 1개(RS6-AC-G2 가드 CP4) |
 | 35 | h6:189 | 연속 save 세대 1·2·3 · 재열기 · 실패 뒤 진입 | ② | writerLock.test.ts:204 · createLock.test.ts:150 · writeQueue.test.ts:57 · RS6-AC-B3 |

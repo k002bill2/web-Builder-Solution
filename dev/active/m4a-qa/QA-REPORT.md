@@ -206,6 +206,7 @@
 | L4 로컬 서버 | **통과** | 아래 |
 | L6 `file://` | **통과** (Chromium) | 아래 |
 | L10 render.css 외부 문자열 | **통과** | 아래 |
+| L2 실패 alert | **통과 with note** (다시 시도 = 같은 탭 복구 불가) | 아래 |
 
 - **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
   - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
@@ -239,3 +240,8 @@
   - CSS `url()` = zip: `assets/fonts/Pretendard-400·700.woff2` · 단일: `data:font/woff2`.
   - 문자열 `http(s)://`: zip 1건 = render.css의 `/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */` **CSS 주석**(scan.py는 HTML 주석만 세어 "주석 안 0"으로 표시 — 위치 301 내용으로 CSS 주석임을 확인) · 단일 3건 = 위 1 + `<head>` 라이선스 HTML 주석 2(Pretendard GitHub · SIL OFL). 요청을 만드는 위치 0 → 1차 3절 한계 보완 완료.
   - `<form>` 1개(문의 폼) — `action`·`method` 속성 없음, 외부 전송 경로 없음.
+
+- **L2** (Ego 390 · 새 탭 p2에서 `/studio/project-1` 복원 진입 · CDP `Network.setBlockedURLs` = `staticHtml-*`·`exportFlow-*` 청크 차단) [사실] `shots/L2-390-fail.png` · `logs/live/r07~r11`
+  - 시도 1(r07·r08): 이미 열린 편집기에서 `render.html` 차단 → 실패 유발 안 됨(미리보기 iframe이 이미 로드된 render 문서를 재사용 · 90초 alert 0 · 기존 성공 status 유지). 결함 아님 — 유발 수단이 맞지 않았음.
+  - 시도 2(r09): 청크 차단 상태로 zip 클릭 → **0.2초 만에 alert 1개** "내보내지 못했습니다" + "다시 시도" 버튼 · 성공 status 0(거짓 성공 없음) · 포커스 = 누른 zip 버튼. 사유 문장(reason)은 비어 일반 문구만 — **`export.fail.pattern` 문구는 관측 안 됨**(청크 실패 경로라 F-패턴 실패가 아님. F-패턴 경로는 브라우저에서 주입 수단이 없어 단위 테스트 근거만 — 1차 5절 "키 미구현" 노트 유지).
+  - note — **다시 시도 복구 불가(같은 탭)**: 차단을 푼 뒤 "다시 시도" 2회(60초·30초) 모두 실패 alert 유지. 진단(r11): 같은 청크 `fetch` = 200인데 `import()`는 "Failed to fetch dynamically imported module" — Chromium이 실패한 동적 import를 모듈 맵에 남겨 같은 URL 재시도가 안 되는 플랫폼 동작. 실제 사용자 영향 = 일시 네트워크 실패 뒤에는 새로고침해야 내보내기가 됨(문서는 "이 브라우저에 저장"이라 새로고침 안전). 재시도 클릭 뒤 포커스가 BODY로 빠지는 것도 관측. FAIL 기준(거짓 성공·외부 요청·스크립트·누락·예산) 해당 없음 → 후속 개선 후보로 이월.

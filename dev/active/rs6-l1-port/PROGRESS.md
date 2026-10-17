@@ -41,3 +41,4 @@
 - CP4 GREEN = coreIo memory 분기(DocBook save 뒤 not-persistent · savedMark 전진) · CoreLink.book 기준 = 지금 메모리 revision.
 - CP4 GREEN 게이트(fresh): typecheck 0 · lint 0 · build 0 · test 322 files / 2902 passed — `logs/cp4-*.log`.
 - 서브에이전트 결과: analyzer(읽기 전용) 1회 — 37건 3분류(①30 ②6 ③1) → `HARNESS-MAP.md`로 통합. 쓰기 서브에이전트 0.
+- 마감 보정(advisor 점검): REPORT U1 판정 PARTIAL로 정정 · 전 라우트 번들 표 추가 · `/projects` 진입 +0.47(레지스트리 몫) 명시.

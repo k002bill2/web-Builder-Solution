@@ -21,7 +21,7 @@
 
 | AC | 판정 | 근거 |
 |---|---|---|
-| RS6-AC-U1 | **PASS(대응표) · ① 부분 3** | `HARNESS-MAP.md` 37건 = ① 30 · ② 6 · ③ 1. ① 30건 중 27건은 같은 의미로 완전 이식했다. 나머지 3건은 부분 이식이다: #9 h3-14(두 탭 readonly→회수는 있으나 바인딩 동결 단언 없음) · #28 h6-92(discard 중 edit만, replace 수용 미단언) · #32 h6-150(폐기 Blob 제거만, IDB X 재저장 미단언) |
+| RS6-AC-U1 | **PARTIAL — 대응표 완료 · ① 27/30 완전 GREEN · 3 부분**(AC 문구 "①은 전부 GREEN" 미충족) | `HARNESS-MAP.md` 37건 = ① 30 · ② 6 · ③ 1. ① 30건 중 27건은 같은 의미로 완전 이식했다. 나머지 3건은 부분 이식이다: #9 h3-14(두 탭 readonly→회수는 있으나 바인딩 동결 단언 없음) · #28 h6-92(discard 중 edit만, replace 수용 미단언) · #32 h6-150(폐기 Blob 제거만, IDB X 재저장 미단언) |
 | RS6-AC-U2 | **PARTIAL(L1 몫만)** | L1에서 닫은 것: T10(시드 확인 쓰기 0) · T13(같은 내용 재확인 쓰기 0) · CX-1(확인 중 편집 = newer: h2-2·h2-3). T1·T2·T3·T5·T5b·T12·T16은 편집기 배선(L3) 몫이다 |
 | RS6-AC-U3 | PASS | `saveCore.images.test.ts` "U3" — 실패면 DocBook revision 변화 0, 성공이면 DocBook 문서 = 커밋 문서(같은 revision·hash·updatedAt) |
 | RS6-AC-U10 | PASS | `saveCore.modes.test.ts` "U10" — cleared 뒤 코어 쓰기 0 · 다음 save `failed{cleared}` |
@@ -76,6 +76,21 @@
   - **주의(추정)**: L0-slim A안(편집기 배선 포함)은 128.61이었다. L1만으로 128.55이므로, L3 편집기 배선과 L2·L4 표시가 같은 몫을 나눠 써야 한다.
 - 진입 증분의 출처: `saveCore.ts` 상태부와 `memoryProjectRepository` 레지스트리·`link`·`idle` 대기다. 둘 다 PROJECT_AUTO 진입 closure에 있다.
   - io(coreIo)·포트(corePort)·DocBook `coreLink`·`adopt`는 조작 뒤 청크에 있다(가드로 고정).
+- **전 라우트 번들 표(최종 CP4 빌드 `logs/cp4-build.log`)** — base 열은 L0 표에 있는 값만 적었다. 나머지는 미측정(L0 표 밖)이며 base 빌드를 다시 돌리지 않았다.
+
+| 라우트 | 첫 화면 / 예산 | 진입 / 예산 | base 진입 |
+|---|---|---|---|
+| /catalog | 100.06 / 101 | 102.39 / 125 | 102.39 |
+| /references/:id | 97.47 / 100 | 99.81 / 125 | 미측정(L0 표 밖) |
+| /compare | 98.96 / 100 | 122.71 / 125 | 미측정(L0 표 밖) |
+| /compare (조정 있음) | 98.96 / 100 | 122.71 / 125 | 미측정(L0 표 밖) |
+| /profile | 99.56 / 100 | 120.12 / 125 | 120.10 |
+| /profile (3안 있음) | 99.56 / 100 | 122.59 / 125 | 미측정(L0 표 밖) |
+| /projects | 99.15 / 100 | **108.85** / 125 | 108.38 (**+0.47**) |
+| /studio/:projectId | 91.54 / 100 | 129.88 / 130 (정규화 128.55) | 129.40 (정규화 128.09) |
+| /studio/:projectId (복원 진입) | 91.54 / 100 | 132.92 / 134 (정규화 131.53) | 132.43 (정규화 131.07) |
+
+- `/projects` 진입 +0.47은 흔들림이 아니다. `memoryProjectRepository`(레지스트리·`createSaveCore` 상태부)가 `/projects` 진입에도 실리기 때문이다 [L1-추적: 증분 크기가 /studio와 거의 같다]. 한도 125 안이지만 L5(/projects)가 이 몫을 물려받는다.
 - 판정선 기록: `check-bundle-size.mjs` `eagerBudgetKb`는 130 그대로다. raw가 130을 넘지 않았다(129.88).
 - `bundleBudget.test.mjs` 기대값 2줄(eagerKb·normEagerKb)을 CP1·CP2 커밋에서 실측으로 갱신했다(개정 17 결정 2 절차).
 
@@ -127,5 +142,5 @@
 
 - **사실 [L1 · 실행]**: 위 4절 수치(`logs/cp*-build.log`) · 게이트 결과(`logs/cp4-{typecheck,lint,build,test}.log` — 마지막 코드 변경 뒤 fresh) · RED 로그 4개 · 가드 변이 RED.
 - **추정 [L3]**: L3 배선 후 누적이 상한에 근접할 수 있다(4절 주의). discard connect 창의 안전성은 코드 읽기 근거만 있다(테스트 0).
-- **미확인**: 실제 IndexedDB·실제 Web Locks 동작(브라우저 0 — QA 레인) · `/profile` 첫 화면 99.58(CP2)·99.56(최종) 한도 100 근접 · 다른 라우트 +0.02 흔들림의 청크 원인 미분석.
+- **미확인**: 실제 IndexedDB·실제 Web Locks 동작(브라우저 0 — QA 레인) · `/profile` 첫 화면 99.58(CP2)·99.56(최종) 한도 100 근접 · catalog·profile 첫 화면 ±0.02 흔들림의 청크 원인 미분석. (`/projects` 진입 +0.47은 흔들림이 아니라 레지스트리 몫 — 4절.)
 - **남는 일(다음 레인)**: L3에서 `LocalSync.base`·DocBook `base` 우회와 S6c 제거 목록 적용, 편집기 배선 · L2에서 `view()` mark·inflight 복귀와 감시 · 포트 reason quota 분류(L4 필요 시).

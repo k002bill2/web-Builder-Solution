@@ -2,12 +2,14 @@
 
 대상 tip `d2bc8702` (base `494a7c6f`) · QA 브랜치 커밋은 문서·로그만.
 
-## 판정: (진행 중 — 초안)
+## 판정: **PASS with notes** (Jarvis 회수 판정 2026-10-18 — QA run 2회 모두 판정 확정 전 중단, 아래 QA 근거로 판정)
+- QA가 직접 확인: 1 잠금 코드 추적 · 1b 스파이(렌더+재렌더 5회 잠금 요청 0, 클릭 뒤 1 = 정상) · 2 reason 수명 · 2b 변이 8종 전부 FAIL · 3 문구 UX-5 원문 일치 · 4 예산 · 5 fresh 게이트 349/3049.
+- notes: ① 1c 실화면 2탭은 QA 미실행 — Developer Ego Lite(`logs/ego-two-tab.txt`: /projects 경로 잠금 요청 0, 첫 그림 = readonly 문구, B 탭 writer 없음)로 대체(독립 실화면 아님) ② connect 실패 `unavailable`·`discarding` 때 직전 reason 유지(Low, 직전 사실이라 거짓 아님) ③ QA가 띄운 preview 4392는 Jarvis가 종료(리슨 0 확인).
 
 ## 1. 잠금 회귀
 - (사실·코드 추적) `/projects` 경로: `describeRow` → `coreOf().view()`(필드 복사만) · `watchCores` → `view()`·`idle()`(=`s.chain`, connect 0)·`settle`(메모리 기억만) · 버튼 전 `connect`/`link`/`port.mode`/`gate.enter` 호출 0. `BrowserStorageSection`의 `locks`는 대화상자(클릭 뒤) 청크로만 전달.
 - (사실·스파이 임시 테스트, `logs/qa-spy.txt`) readonly 탭 B: 렌더 + 재렌더 5회(watchCores 재판정) + ticks → `[request, link, save, discard] = [0,0,0,0]` · stale 탭: `[0,0,0]`. 클릭("다시 저장") 뒤 request 1 · save 1 · 잠금 holder = B(정상 — 클릭 뒤 획득).
-- 실화면 2탭: (미실행 — 진행 중)
+- 실화면 2탭: QA 미실행(run 중단) — Developer `logs/ego-two-tab.txt`로 대체 기록
 
 ## 2. view().reason 수명
 - (사실·코드 추적 `git diff 494a7c6f d2bc8702`) 기록 지점 = `coreIo.save` 래퍼 1곳(`s.reason = failed && ≠not-persistent ? reason : undefined`) · 해제 = saved·not-persistent(같은 래퍼) · `discard` discarded 분기(blocked는 유지) · `rebase` 두 분기 · 재시도 성공 = 같은 save 래퍼(saved)라 해제. `confirm`의 dirty 경로 save는 `saveCore.ts:97` `link.io.save` = 래퍼 경유.

@@ -203,6 +203,7 @@
 |---|---|---|
 | L1 내보내기 UI | **통과 with note** | 아래 |
 | L3 해제 | **통과** (Archive Utility 더블클릭 = 미확인) | 아래 |
+| L4 로컬 서버 | **통과** | 아래 |
 
 - **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
   - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
@@ -219,3 +220,9 @@
   - `ditto -xk` 해제 폴더 vs `unzip` 해제 폴더 `diff -r` = 0 · `file`: webp 2 = Web/P · woff2 2 = WOFF2.
   - index.html: `<img>` 2개 alt = 입력한 대체텍스트("카페 내부 전경" · "바리스타가 커피를 내리는 모습") · 상대 경로 `assets/images/…` · `<script>` 1개 = 고정 메뉴 스크립트(popover 닫기, SPEC F-07 허용).
   - **Archive Utility 더블클릭 = 미확인**(GUI 실행이라 무인 run에서 결과 확인 불가 — 브리프 지시대로 `ditto -xk` 결과만 사용).
+
+- **L4** (Ego 1280·390 · `python3 -m http.server 4396 --bind 127.0.0.1` · zip 해제 폴더 `/zip/index.html` + 단일 `/single.html`) [사실] `shots/L4-*.png` · 서버 로그 `logs/live/L4-httpserver.log`
+  - zip 폴더 1280·390: `<img>` 2개 로드(1200×800 · 800×800) · `document.fonts` Pretendard 400/700 **loaded** · `fonts.check` 400·700 true · 가로 넘침 0.
+  - 요청 = `index.html` + `assets/images/img-01·02.webp` + `assets/fonts/Pretendard-400·700.woff2` 전부 200(재방문 304) · **외부 요청 0** · 404 0(favicon 요청도 없음).
+  - 단일 `.html` 1280·390: 이미지 2개 `data:image/webp` 로드 · 글꼴 400/700 loaded · `performance` 리소스 0 · 서버 요청 = 문서 1건 · 넘침 0.
+  - 두 형태 모두 `<script>` 1개(고정 메뉴). 화면: 헤더·Hero 이미지·카피·About 순서가 편집기 미리보기(`r02`)와 같고 390에서 "메뉴" 버튼으로 접힘.

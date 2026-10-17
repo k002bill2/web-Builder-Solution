@@ -25,9 +25,9 @@
 - 서브에이전트: 0개.
 
 ## MEASURE 레인 (`BRIEF-MEASURE.md`, 측정 전용 · 앱 커밋 0)
-- [ ] M-0. BRIEF-MEASURE·PROGRESS 커밋
-- [ ] M0. base build 재현 · cp1-reduce1 적용 재현
-- [ ] M1-CP2. 저장 확인·다시 저장·폐기 대화상자 누적 build
+- [x] M-0. BRIEF-MEASURE·PROGRESS 커밋 (`ec2d8aab`)
+- [x] M0. base 129.09/130.42/132.07/133.45 재현 · cp1 129.25/130.58/132.24/133.61 재현 (`raw/measure-m0-*`)
+- [x] M1-CP2. 누적 129.67/131.03/132.65/134.06 (`raw/measure-cp2-build.txt` · `patches/measure-cp2.patch`)
 - [ ] M1-CP3. ConflictCallout 두 선택·포커스·rebase epoch +1 누적 build
 - [ ] M1-CP4. 문구·금지 문구 가드·memory 모드 누적 build
 - [ ] M2. 상쇄 후보 조사·실측 · 조합 1회

@@ -72,13 +72,13 @@ describe("형식 버튼 (M4-a EXP-AC-01 · Q18 A)", () => {
     expect(within(gateRegion()).queryByRole("button", { name: /React/ })).not.toBeInTheDocument();
   });
 
-  it("zip 완료 → '정적 사이트(zip)을 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {
+  it("zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {
     const job: ExportJob = { jobId: "export-1", format: "static-zip", docRevision: 3, state: "queued", retryable: false };
     const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: true }));
     const getExportJob = async () => ({ ...job, state: "succeeded" as const, downloadRef: "blob:http://127.0.0.1/zip", resultHash: "0123456789ab" });
     await open(clean(), { requestExport, getExportJob });
     act(() => void fireEvent.click(zip()));
-    const done = await within(gateRegion()).findByText("정적 사이트(zip)을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다", undefined, { timeout: 3000 });
+    const done = await within(gateRegion()).findByText("정적 사이트(zip)를 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다", undefined, { timeout: 3000 });
     const box = done.closest("[role=status]") as HTMLElement;
     expect(within(box).getByRole("link", { name: "내려받기" })).toHaveAttribute("download", "동네-치과-클리닉-프로젝트_r3.zip");
     expect(box.textContent).toContain("내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요");

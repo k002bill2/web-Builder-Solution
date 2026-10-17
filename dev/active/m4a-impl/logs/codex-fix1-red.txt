@@ -1,0 +1,5 @@
+     × Codex FIX1: 사이트 루트 자체가 제거 대상(template·script·svg animate 류)이면 실패 — 루트는 querySelectorAll('*') 밖이다 39ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/studio/staticHtml/staticMarkup.test.ts > FIX1 AppSec·QA (M-1·M-2·L-1·L-2) > Codex FIX1: 사이트 루트 자체가 제거 대상(template·script·svg animate 류)이면 실패 — 루트는 querySelectorAll('*') 밖이다
+AssertionError: <template data-site-root="" shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><script>alert(2)</script></template>: expected [Function] to throw an error
+      Tests  1 failed | 27 skipped (28)

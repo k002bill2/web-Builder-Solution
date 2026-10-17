@@ -202,12 +202,13 @@ function usePendingRows(repository: ProjectRepository, page: RefObject<HTMLDivEl
   const [, setSeen] = useState(0);
   useEffect(() => {
     let live = true;
+    // 저장 실패 코어의 환경(stale 등)을 읽은 뒤 연다 — 첫 표시부터 사유 문구(B-RS-09 · probeCores는 reject 0)
     import("../features/projects/pendingRows").then(
-      (loaded) => live && setMod(loaded),
+      (loaded) => loaded.probeCores(repository).then(() => live && setMod(loaded)),
       () => live && setMod(null),
     );
     return () => void (live = false);
-  }, [attempt]);
+  }, [attempt, repository]);
   // 늦게 끝난 요청이 만든·지운 기억으로 행을 다시 판정
   useEffect(() => mod?.subscribe(() => setSeen((n) => n + 1)), [mod]);
   // 저장 코어(RS6-L5) — 구독이 없어 그린 뒤마다: 저장 중이면 끝난 뒤 다시 판정 · 커밋 성공한 코어의 미확인 기록 해제(U16)

@@ -1,0 +1,20 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-rows-text/app
+
+
+ Test Files  24 passed (24)
+      Tests  225 passed (225)
+   Start at  20:27:36
+   Duration  4.50s (environment 48%, tests 27%, transform 10%, setup 9%, import 6%)
+
+Environment  jsdom was created 24 times · 16.94s total, 48% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

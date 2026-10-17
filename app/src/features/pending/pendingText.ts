@@ -17,8 +17,7 @@ export const PENDING_TEXT = Object.freeze({
   working: "확인하는 중…",
   // P-U5 — 상시 캡션
   caption: "확인 전에 새로고침하거나 탭을 닫으면 확인되지 않은 변경이 사라집니다 — 이전에 저장된 상태로 돌아갑니다",
-  // P-U2 — 성공
-  confirmed: "저장을 확인했습니다 — 편집기를 열 수 있습니다",
+  // P-U2 성공 문구는 조작 뒤 청크(pendingRetry)에만 둔다 — 진입 직후 청크 바이트(B-RS-09 상쇄)
   // 폐기 확인(5.5)
   discard: "버리고 새로고침",
   discardTitle: "확인되지 않은 변경 버리기",

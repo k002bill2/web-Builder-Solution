@@ -7,7 +7,7 @@
 - [x] CP2-④: 상태부 lazy 모듈 = 불가(첫 view seed·edit 동기) · react +53B 원인 = localSync의 coreIo 정적 import → DocBook 청크 네임스페이스 합성(`__export` 헬퍼). ④b → 128.68/129.99 (−71B) `patches/cand-4.patch`
 - [x] CP2-①' (①의 연장): link 조립을 DocBook 청크 `coreLink`로 (−21B) `patches/cand-5-on-combo.patch`
 - [x] CP2-조합: A안 ①+②'+③+④b+①' = **128.61/129.95 · 복원 131.60/132.98** (정규화 +0.08 초과 · raw 통과)
-- [x] CP2-B1(B표, 미적용): save chain·inflight를 io로 → (②원안 포함) 128.51/129.83 · 복원 131.50/132.86 — inflight 시점 변화 · 9.2 분할 변경 `patches/B1-save-chain-to-io.patch`
+- [x] CP2-B1(B표, 미적용): save chain·inflight를 io로 → (②원안 포함) 128.51/129.83 · 복원 131.50/132.86 — inflight 시점 변화(9.2 위반 아님) `patches/B1-save-chain-to-io.patch` · A안+B1(G7 유지) 실측 128.54/129.88 · 복원 131.52/132.92 (+0.01 초과) → 원복 · full build · dist sha 다시 동일
 - [x] CP3: `patches/s6c-slim.patch`(base 누적 8파일) · 원복 · apply --check OK · 재적용 sha 8/8 OK 뒤 재원복 · full build exit 0 128.09/129.40 · dist 149 sha IDENTICAL
 - [x] CP4: fresh typecheck 0 · lint 0 · test 317/2856 · build 0 · `git diff -- app/` 빈 출력
 - [x] REPORT.md 작성(결론 첫 줄)

@@ -9,3 +9,12 @@
 - [ ] 4. Ego Lite 실화면 (preview 4382 · 해제 save 실패 행 → 다시 저장 · PendingStart · 1280·390 · 정리)
 - [x] 5. fresh 게이트 — typecheck 0 · lint 0 · test 332/2968 · build 0 · /studio 129.09/130.44 · /projects 99.18/109.64 · 기존 테스트 = 라벨 교체 + 새 it 1개(약화 0)
 - [ ] 6. QA-REPORT 작성 · 커밋
+
+## R2 (QA-BRIEF-R2 · tip `f576340c` · FIX1 `0911b900` 재검증) — 2026-10-17
+- [x] R0. QA-BRIEF-R2·QA-PROGRESS 커밋
+- [ ] R1. FIX1 재검증 — restoreSnapshot·resolveConflict flush 실패 재현(임시 테스트) · `rebased` 판독 경로 grep(편집기 표시·confirm·discard·`DocBook.start`) · flush 실패 뒤 "저장 확인" → 재쓰기 → 해제(임시 테스트) · 변이 `rebased`→`committed` FAIL
+- [ ] R2. 1차 생존 변이 3종(M1 · M3 · M4b) 테스트 공백 심각도 판정(수정 금지)
+- [ ] R3. 접근성 (1차 3번)
+- [ ] R4. Ego Lite 실화면 (preview 4383 · writer 잠금 → 해제 save 실패 행 → 다시 저장 · PendingStart · 1280·390 · 정리 · 리슨 0 · 4382 잔존 확인)
+- [ ] R5. fresh 게이트 (기대 332/2971 · /studio 129.09 · 복원 132.07)
+- [ ] R6. QA-REPORT 초안 커밋 → 보강 커밋

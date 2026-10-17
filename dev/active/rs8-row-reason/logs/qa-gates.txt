@@ -1,0 +1,26 @@
+typecheck exit=0
+lint exit=0
+test exit=0
+build exit=0
+ Test Files  349 passed (349)
+      Tests  3049 passed (3049)
+[bundle] /catalog 첫 화면 합계: 100.05KB / 예산 101KB · 진입 직후 자동 로드 포함: 102.38KB / 예산 125KB
+[bundle] /references/:id 첫 화면 합계: 97.46KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.79KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.66KB / 예산 125KB
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.95KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.66KB / 예산 125KB
+[bundle] /profile 첫 화면 합계: 99.52KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.93KB / 예산 125KB
+[bundle] /profile (3안 있음) 첫 화면 합계: 99.52KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.40KB / 예산 125KB
+[bundle] /projects 첫 화면 합계: 99.09KB / 예산 100KB · 진입 직후 자동 로드 포함: 109.54KB / 예산 125KB
+[bundle] /studio/:projectId 첫 화면 합계: 91.33KB / 예산 100KB · 진입 직후 자동 로드 포함: 129.97KB / 예산 130.5KB
+[bundle]   /studio/:projectId 해시 정규화 진입 128.66KB · 기준선 128.66KB + 0.03KB (멈춤 > 128.69KB) — raw 129.97KB는 참고(해시 이름 흔들림 포함)
+[bundle] /studio/:projectId (저장 데이터 복원 진입) 첫 화면 합계: 91.33KB / 예산 100KB · 진입 직후 자동 로드 포함: 133.00KB / 예산 134KB
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/docEngine.ts: +3.85KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/VariantOptions.tsx: +1.10KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.43KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/exportFlow.ts: +2.32KB (3개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/ExportAfter.tsx: +1.70KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/png/pngCapture.ts: +9.24KB (4개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/ImageSlotPanel.tsx: +3.88KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/images/ingest/index.ts: +2.50KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.65KB · 기준선 131.64KB + 0.03KB (멈춤 > 131.67KB) — raw 133.00KB는 참고(해시 이름 흔들림 포함)

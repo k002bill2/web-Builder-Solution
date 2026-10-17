@@ -41,6 +41,8 @@ export interface CoreState {
   /** LV-2 포기 토큰 — discard 차례 번호. 포기·끝나면 올려서 늦은 읽기 결과를 버린다 */
   discards: number;
   chain: Promise<unknown>;
+  /** 마지막 save 결과 사유(RS8-2 · B-RS-09) — io가 기록·해제(saved·not-persistent·discarded·rebased). 읽기 전용 view 출처 — 포트·잠금 호출 0 */
+  reason?: string;
 }
 
 /** 포트(1.3) — 제품 LocalSync가 구현. 이미지 키는 포트 안에서 `imageRecordId(projectId, localId)`로만(RS6-AC-U15) */
@@ -133,10 +135,10 @@ export function createSaveCore(seed: PageDoc, connect: () => Promise<CoreLink>, 
       if (live?.token === token) live = undefined;
     },
     retryStart: async () => starter?.(),
-    /** 진입 동기 몫(G7 재seed = doc·바인딩·dirty + epoch·confirmed) · mark·inflight = 상태 표시 출처(I6 8.1 `saving` = inflight > 0 · LV-1) */
+    /** 진입 동기 몫(G7 재seed = doc·바인딩·dirty + epoch·confirmed) · mark·inflight = 상태 표시 출처(I6 8.1 `saving` = inflight > 0 · LV-1) · reason = 마지막 save 실패 사유(`/projects` 행 첫 표시) */
     view() {
-      const { doc, mark, savedMark, inflight, epoch, confirmed, attached } = s;
-      return { doc, mark, inflight, dirty: mark > savedMark, epoch, confirmed, images: attached };
+      const { doc, mark, savedMark, inflight, epoch, confirmed, attached, reason } = s;
+      return { doc, mark, inflight, dirty: mark > savedMark, epoch, confirmed, images: attached, reason };
     },
   };
 }

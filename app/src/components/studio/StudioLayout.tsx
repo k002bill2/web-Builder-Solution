@@ -389,6 +389,7 @@ export function StudioLayout({
             reason={drawn && UNSAVED.has(save.state.phase) ? saveStatusText(save.state, save.persistence, 0, save.source) : undefined}
             view={view}
             fallbackCount={fallbacks.length}
+            onAnnounce={setNotice}
             capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }), ...(images && { images }) })}
           />
         </>
@@ -407,7 +408,7 @@ export function StudioLayout({
   if (mode === "tabs") {
     return (
       <div ref={root} onClickCapture={flushBeforeLeave} className="flex flex-col">
-        <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus}>
+        <StudioToolbar projectName={project.name} headingRef={heading} subline={saveStatus} sticky>
           {snaps.button}
           {more}
           {gateButton}

@@ -1,0 +1,124 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-rows-text/app
+
+ ❯ src/features/profile/restartText.test.ts (2 tests | 2 failed) 6ms
+   ❯ 시작 재생 라벨 — UX-5 D1 (2)
+     × 주 버튼 = '시작 다시 시도'(`/projects` 행 retryStart와 같은 원문) 4ms
+     × C-E4·C-E6 알림이 인용하는 버튼 이름 = '시작 다시 시도' · '저장 다시 시도' 0 1ms
+ ❯ src/features/profile/restartFlow.test.ts (11 tests | 1 failed) 76ms
+   ❯ create 최초 요청(4.1) (3)
+     × F-7 커밋 뒤 실패(문서 없음 → 요청 쌍) = C-E4 · 기억 origin absent 10ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/pages/ProfileRestart.test.tsx (29 tests | 1 failed) 10119ms
+   ❯ create 미확인 Callout (SPEC-4 C-E4 · RS4-AC-01 화면) (1)
+     × 편집 시작 커밋 뒤 응답 실패 → C-E4 Callout + '시작 다시 시도'(이동 0) → 다른 안을 눌러도 같은 Callout(요청 0) → 시작 다시 시도 = 재생 → 이동 254ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ProfileRestart.test.tsx > create 미확인 Callout (SPEC-4 C-E4 · RS4-AC-01 화면) > 편집 시작 커밋 뒤 응답 실패 → C-E4 Callout + '시작 다시 시도'(이동 0) → 다른 안을 눌러도 같은 Callout(요청 0) → 시작 다시 시도 = 재생 → 이동
+AssertionError: expected [ '저장 다시 시도' ] to deeply equal [ '시작 다시 시도' ]
+
+- Expected
++ Received
+
+  [
+-   "시작 다시 시도",
++   "저장 다시 시도",
+  ]
+
+ ❯ src/pages/ProfileRestart.test.tsx:558:76
+    556|     expect(router.state.location.pathname).toBe("/profile/profile-1");
+    557|     // memory 영속 — 폐기(새로고침) 버튼 없음
+    558|     expect(within(alert).getAllByRole("button").map((b) => b.textConte…
+       |                                                                            ^
+    559|     const spy = vi.spyOn(repo, "startDoc");
+    560|     await u.click(await pick(u, region, "C"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/features/profile/restartFlow.test.ts > create 최초 요청(4.1) > F-7 커밋 뒤 실패(문서 없음 → 요청 쌍) = C-E4 · 기억 origin absent
+AssertionError: expected { …(4) } to match object { held: 'unconfirmed', …(2) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "held": "unconfirmed",
+-   "label": "시작 다시 시도",
++   "label": "저장 다시 시도",
+    "retry": true,
+  }
+
+ ❯ src/features/profile/restartFlow.test.ts:36:17
+     34|     const repo = fake({ docs: [undefined, head("B", 1)], start: [() =>…
+     35|     const out = await startEdit(repo, "p", 1, "B");
+     36|     expect(out).toMatchObject({ held: "unconfirmed", retry: true, labe…
+       |                 ^
+     37|     expect(pendingOf(repo, "p")).toMatchObject({ kind: "start", mode: …
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/features/profile/restartText.test.ts > 시작 재생 라벨 — UX-5 D1 > 주 버튼 = '시작 다시 시도'(`/projects` 행 retryStart와 같은 원문)
+AssertionError: expected '저장 다시 시도' to be '시작 다시 시도' // Object.is equality
+
+Expected: "시작 다시 시도"
+Received: "저장 다시 시도"
+
+ ❯ src/features/profile/restartText.test.ts:11:25
+      9| describe("시작 재생 라벨 — UX-5 D1", () => {
+     10|   it("주 버튼 = '시작 다시 시도'(`/projects` 행 retryStart와 같은 원문)", () => {
+     11|     expect(T.retrySave).toBe("시작 다시 시도");
+       |                         ^
+     12|     expect(T.retrySave).toBe(PENDING_TEXT.retryStart);
+     13|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/features/profile/restartText.test.ts > 시작 재생 라벨 — UX-5 D1 > C-E4·C-E6 알림이 인용하는 버튼 이름 = '시작 다시 시도' · '저장 다시 시도' 0
+AssertionError: expected '편집 문서를 만들었지만 브라우저에 저장됐는지 확인하지 못했습니다 —…' to contain '시작 다시 시도'
+
+Expected: "시작 다시 시도"
+Received: "편집 문서를 만들었지만 브라우저에 저장됐는지 확인하지 못했습니다 — 저장 다시 시도를 누르면 같은 요청으로 저장을 이어 갑니다. 확인 전에 새로고침하거나 탭을 닫으면 이 편집 문서는 사라집니다"
+
+ ❯ src/features/profile/restartText.test.ts:17:20
+     15|   it("C-E4·C-E6 알림이 인용하는 버튼 이름 = '시작 다시 시도' · '저장 다시 시도' 0", () => {
+     16|     for (const text of [T.createUnconfirmed, T.createUnknown]) {
+     17|       expect(text).toContain("시작 다시 시도");
+       |                    ^
+     18|       expect(text).not.toContain("저장 다시 시도");
+     19|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  4 failed | 38 passed (42)
+   Start at  20:21:54
+   Duration  16.81s (tests 52%, transform 27%, environment 16%, setup 3%, import 3%)
+
+  Transform  transforming modules took 5.29s · 27% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

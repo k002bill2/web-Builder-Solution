@@ -1,0 +1,78 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs7-rows-text/app
+
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx (3 tests | 3 failed) 356ms
+   ❯ 코어 환경 사유 행 — 첫 표시 (B-RS-09) (3)
+     × 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지 255ms
+     × cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0 59ms
+     × 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도) 40ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="ds-caption1 text-status-negative-text"
+>
+  저장하지 못했습니다
+</span> instead[39m
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:44:55
+     42|     expect(await b.core.save()).toMatchObject({ status: "failed", reas…
+     43|     const { row, name } = await firstRow(b.repo);
+     44|     expect(within(row).queryByText("저장하지 못했습니다")).not.toBeInTheDocumen…
+       |                                                       ^
+     45|     expect(within(row).queryByRole("button", { name: `${name} 다시 저장` }…
+     46|     expect(within(row).getByText(STALE)).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="ds-caption1 text-status-negative-text"
+>
+  저장하지 못했습니다
+</span> instead[39m
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:62:55
+     60|     expect(await c.save()).toMatchObject({ status: "failed", reason: "…
+     61|     const { row, name } = await firstRow(repo);
+     62|     expect(within(row).queryByText("저장하지 못했습니다")).not.toBeInTheDocumen…
+       |                                                       ^
+     63|     expect(within(row).getByText(CLEARED)).toBeInTheDocument();
+     64|     expect(within(row).queryByRole("button", { name: `${name} 다시 저장` }…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도)
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="ds-caption1 text-status-negative-text"
+>
+  저장하지 못했습니다
+</span> instead[39m
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:74:55
+     72|     expect(await b.core.save()).toMatchObject({ status: "failed", reas…
+     73|     const { row, name } = await firstRow(b.repo);
+     74|     expect(within(row).queryByText("저장하지 못했습니다")).not.toBeInTheDocumen…
+       |                                                       ^
+     75|     expect(within(row).getByText(READONLY)).toBeInTheDocument();
+     76|     expect(within(row).getByRole("button", { name: `${name} 다시 저장` }))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  20:23:57
+   Duration  1.29s (environment 30%, tests 30%, transform 26%, import 9%, setup 5%)
+

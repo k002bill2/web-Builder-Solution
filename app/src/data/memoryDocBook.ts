@@ -166,8 +166,8 @@ export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | und
   align: (doc) => docs.adopt(projectId, doc),
 });
 
-/** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷) · 저장 기준 revision 보정(내 미확인 쓰기 위에 얹기) */
-export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs" | "base"> & Partial<Pick<LocalSync, "confirm">>): DocBook {
+/** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷). 저장 기준 revision 보정(`base`)은 RS6-L3b에서 제거 — 편집기 저장은 코어 경유(실패 시 DocBook 변화 0) */
+export function createDocBook(store: StudioReader, now: () => string, local?: Pick<LocalSync, "docs"> & Partial<Pick<LocalSync, "confirm">>): DocBook {
   const seed = local?.docs ?? new Map<string, DocRecord>();
   /**
    * 앱 경로 생성기 — 주입 생성기가 없고 슬롯(STATIC_HTML_SLOT)이 채워졌을 때만, 처음 쓸 때 생성기 청크를 받는다.
@@ -384,16 +384,15 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
     },
     save: (projectId, requested, doc, commit) => {
       if (!Number.isSafeInteger(requested)) throw fail("SCHEMA_INVALID", `revision ${requested}`);
-      const expectedRevision = local?.base(projectId, requested, state.docs.get(projectId), doc.hash) ?? requested;
       const checked = checkSaveDoc(projectId, doc);
       if (!checked.ok) throw fail("SCHEMA_INVALID", checked.message);
-      // 멱등 키 = 요청의 원래 revision — 보정(local.base)된 요청의 재시도도 같은 키로 재생된다(A 실패 → B 실패 → B 재시도)
+      // 멱등 키 = (요청 revision, hash)
       const key = `${requested}|${doc.hash}`;
       const last = state.saves.get(projectId);
       if (last?.key === key) return last.doc;
       const current = state.docs.get(projectId);
       if (!projectOf(projectId) || !current) throw fail("NOT_FOUND", projectId);
-      if (current.revision !== expectedRevision) throw new ProjectRepositoryError("STALE_DOC", `revision ${expectedRevision} ≠ ${current.revision}`, { doc: current });
+      if (current.revision !== requested) throw new ProjectRepositoryError("STALE_DOC", `revision ${requested} ≠ ${current.revision}`, { doc: current });
       const saved = deepFreeze({ ...doc, revision: current.revision + 1, updatedAt: now() });
       commit();
       state = { ...state, docs: new Map(state.docs).set(projectId, saved), saves: new Map(state.saves).set(projectId, { key, doc: saved }) };

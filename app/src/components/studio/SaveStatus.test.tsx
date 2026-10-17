@@ -7,6 +7,7 @@ import type { AutosaveState } from "../../features/studio/useAutosaveScheduler";
 import { useDocSave, type DocSaveRepository } from "../../features/studio/useDocSave";
 import { SAVE_STALE_ALERT } from "../../features/studio/saveStatusText";
 import { SaveStatus } from "./SaveStatus";
+import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -123,7 +124,7 @@ describe("SaveStatus + useDocSave (E-AC-09 흐름)", () => {
       return { ...next, revision };
     });
     const onAnnounce = vi.fn();
-    render(<Harness repo={{ persistence: "memory", saveDoc, resolveConflict: vi.fn() }} initialDoc={doc} onAnnounce={onAnnounce} />);
+    render(<Harness repo={withSaveCore({ persistence: "memory" as const, saveDoc, resolveConflict: vi.fn() })} initialDoc={doc} onAnnounce={onAnnounce} />);
     const input = screen.getByRole("textbox", { name: "제목" });
     const type = (value: string) => fireEvent.change(input, { target: { value } });
     type("하나");

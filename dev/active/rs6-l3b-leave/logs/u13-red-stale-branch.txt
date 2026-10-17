@@ -1,0 +1,42 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+ ❯ src/components/studio/StudioLeave.test.tsx (17 tests | 1 failed) 811ms
+   ❯ 편집기 이탈 저장 (B-RS-01) (17)
+     × STALE(다른 탭이 바꿈) 상태에서 앱 안 링크 = 보류 · 이동 0 39ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > STALE(다른 탭이 바꿈) 상태에서 앱 안 링크 = 보류 · 이동 0
+AssertionError: expected <p></p> to be null
+
+- Expected:
+null
+
++ Received:
+<p>
+  프로젝트 목록
+</p>
+
+ ❯ src/components/studio/StudioLeave.test.tsx:299:43
+    297|     await act(() => vi.advanceTimersByTimeAsync(0));
+    298|     while (repo.waiting()) await repo.release(error());
+    299|     expect(screen.queryByText("프로젝트 목록")).toBeNull();
+       |                                           ^
+    300|     expect(arrivals).toHaveLength(0);
+    301|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 passed (17)
+   Start at  16:38:08
+   Duration  1.60s (tests 53%, environment 23%, transform 15%, setup 4%, import 4%)
+

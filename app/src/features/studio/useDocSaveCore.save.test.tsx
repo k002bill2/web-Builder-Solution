@@ -85,14 +85,21 @@ describe("RS6-L3a CP2 · 저장 대상 = core.save", () => {
     act(() => result.current.edit(edited(b.seed, "B")));
     await vi.waitFor(() => expect(result.current.state.phase).toBe("failed"));
     expect(save).toHaveBeenCalled();
-    // act 밖에서 시작한 약속을 렌더를 흘려 가며 기다린다(snapshotRevision.test `settle`과 같은 방식)
+    // RS6-L3b(I6 3.1-3 ④): 클릭 시점 readonly = 이동 — leave()는 기다릴 것 없이 undefined(이탈 허용) · 그 저장도 거절돼 쓰기 0
     let left: Promise<boolean> | undefined;
     act(() => void (left = result.current.leave()));
-    let done: boolean | undefined;
-    void left!.then((v) => (done = v));
-    while (done === undefined) await act(async () => void (await new Promise((r) => setTimeout(r, 0))));
-    expect(done).toBe(true);
+    expect(left).toBeUndefined();
+    await act(async () => void (await new Promise((r) => setTimeout(r, 0))));
     expect(db.since(start)).toEqual([]);
+  });
+
+  it("L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0)", async () => {
+    const { repo, doc, core } = await startedRig();
+    vi.spyOn(core(), "save").mockResolvedValue({ status: "failed", reason: "readonly", newer: false, revision: doc.revision + 1 });
+    const { result } = hook({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 5 });
+    act(() => result.current.edit(edited(doc, "x")));
+    await vi.waitFor(() => expect(result.current.state.phase).toBe("failed"));
+    expect(result.current.savedRevision()).toBe(doc.revision);
   });
 
   it("reject 매핑(L2 QA 4절): core.save reject → failed · 거짓 saved 0 · DocBook 변화 0", async () => {

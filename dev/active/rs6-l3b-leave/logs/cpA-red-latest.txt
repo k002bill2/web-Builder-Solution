@@ -1,0 +1,299 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+ ❯ src/features/studio/useDocSave.test.tsx (11 tests | 1 failed) 276ms
+   ❯ useDocSave — STALE_DOC 충돌 (E-AC-10) (4)
+     × 화면 문서 = 내 편집 · conflict.latest = 최신 · 고르기 전 자동 저장 0회 5ms
+ ❯ src/components/studio/StudioLayout.test.tsx (14 tests | 1 failed) 747ms
+   ❯ 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) (4)
+     × STALE_DOC → 캔버스 위 ConflictCallout(r7) · 내 편집 유지 · 알림 영역 1개 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLayout.test.tsx > 자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10) > STALE_DOC → 캔버스 위 ConflictCallout(r7) · 내 편집 유지 · 알림 영역 1개
+TestingLibraryElementError: Unable to find an element with the text: 다른 곳에서 이 문서가 바뀌었습니다(r7). This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"studio-canvas-heading"[39m
+  [33mclass[39m=[32m"flex min-w-0 flex-col gap-2 bg-fill-alternative p-3 min-h-0 overflow-y-auto"[39m
+  [33mtabindex[39m=[32m"0"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+    [33mid[39m=[32m"studio-canvas-heading"[39m
+  [36m>[39m
+    [0m페이지 미리보기[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m구조 미리보기 (F0) — 섹션 구성과 실제 문구만 보여 줍니다. 실제 모양으로 그린 섹션은 아직 없습니다.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-cautionary-bg"[39m
+    [33mdata-tone[39m=[32m"warning"[39m
+  [36m>[39m
+    [36m<i[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"ds-icon size-5 mt-0.5 flex-none text-status-cautionary"[39m
+      [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/warning.svg\");"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1.5 text-label-normal"[39m
+    [36m>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"ds-label"[39m
+      [36m>[39m
+        [0m다른 곳에서 이 문서가 바뀌었습니다[0m
+      [36m</h3>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ds-body3"[39m
+      [36m>[39m
+        [0m내 편집은 그대로 두었습니다[0m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m내 편집으로 저장[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m다른 편집 불러오기[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative mx-auto w-fit"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"max-w-none overflow-hidden rounded-md bg-background-normal outline outline-line-normal"[39m
+        [33mstyle[39m=[32m"width: 80rem;"[39m
+      [36m>[39m
+        [36m<iframe[39m
+          [33mclass[39m=[32m"block min-h-40 w-full border-0"[39m
+          [33msandbox[39m=[32m"allow-scripts"[39m
+          [33msrc[39m=[32m"/render.html"[39m
+          [33mstyle[39m=[32m"height: 796px;"[39m
+          [33mtitle[39m=[32m"페이지 미리보기 화면"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"pointer-events-none absolute inset-0"[39m
+        [33mdata-canvas-overlay[39m=[32m"true"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"absolute"[39m
+          [33mstyle[39m=[32m"left: 0px; top: 100px; width: 800px; height: 96px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"absolute inset-0 border-2 border-primary"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"absolute top-0 left-0 rounded-sm bg-primary px-2 py-0.5 text-caption2 font-bold text-on-primary"[39m
+          [36m>[39m
+            [0mHero[0m
+            [0m · [0m
+            [0m풀블리드 이미지 + 좌측 카피[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLayout.test.tsx:161:29
+    159|     act(() => void fireEvent.change(within(editRegion()).getByRole("te…
+    160|     await act(() => vi.advanceTimersByTimeAsync(2000));
+    161|     expect(within(canvas()).getByText("다른 곳에서 이 문서가 바뀌었습니다(r7)")).toBe…
+       |                             ^
+    162|     expect(within(canvas()).getByRole("button", { name: "내 편집으로 저장" })…
+    163|     expect(within(editRegion()).getByRole("textbox", { name: /^제목/ }))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/studio/useDocSave.test.tsx > useDocSave — STALE_DOC 충돌 (E-AC-10) > 화면 문서 = 내 편집 · conflict.latest = 최신 · 고르기 전 자동 저장 0회
+AssertionError: expected undefined to deeply equal { projectId: 'project-1', …(9) }
+
+- Expected:
+{
+  "candidateId": "candidate-a",
+  "generatorVersion": "0.1.0",
+  "hash": "",
+  "libraryVersion": "1.4",
+  "meta": {
+    "description": "브랜드를 소개하는 페이지입니다.",
+    "title": "다른 탭 편집",
+  },
+  "profileVersion": 2,
+  "projectId": "project-1",
+  "revision": 4,
+  "sections": [
+    {
+      "instanceId": "s-header",
+      "motion": "L1",
+      "slots": {
+        "brand": "브랜드 이름",
+        "cta": "문의하기",
+        "nav": "소개 · 서비스 · 문의",
+      },
+      "tone": "base",
+      "type": "header",
+      "variant": "sticky-right-cta",
+    },
+    {
+      "instanceId": "s-hero",
+      "motion": "L1",
+      "slots": {
+        "cta": "시작하기",
+        "image": {
+          "alt": "",
+          "decorative": false,
+          "enabled": true,
+          "kind": "image",
+          "source": {
+            "kind": "placeholder",
+            "patternId": "diagonal",
+          },
+        },
+        "subtitle": "무엇을 누구에게 제공하는지 한두 문장으로 적습니다.",
+        "title": "한 문장으로 소개하는 제목",
+      },
+      "tone": "alt",
+      "type": "hero",
+      "variant": "fullbleed-left",
+    },
+    {
+      "instanceId": "s-about",
+      "motion": "L1",
+      "slots": {
+        "body": "브랜드가 하는 일을 소개합니다.",
+        "heading": "소개",
+        "image": {
+          "alt": "",
+          "decorative": false,
+          "enabled": true,
+          "kind": "image",
+          "source": {
+            "kind": "placeholder",
+            "patternId": "diagonal",
+          },
+        },
+      },
+      "tone": "base",
+      "type": "about",
+      "variant": "story",
+    },
+    {
+      "instanceId": "s-services",
+      "motion": "L1",
+      "slots": {
+        "card1Body": "항목을 짧게 설명합니다.",
+        "card1Title": "항목 1",
+        "card2Body": "항목을 짧게 설명합니다.",
+        "card2Title": "항목 2",
+        "card3Body": "항목을 짧게 설명합니다.",
+        "card3Title": "항목 3",
+        "heading": "서비스",
+        "intro": "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
+      },
+      "tone": "alt",
+      "type": "services",
+      "variant": "cards-3",
+    },
+    {
+      "instanceId": "s-faq",
+      "motion": "L1",
+      "slots": {
+        "a1": "답변을 적습니다.",
+        "a2": "답변을 적습니다.",
+        "a3": "답변을 적습니다.",
+        "heading": "자주 묻는 질문",
+        "q1": "자주 묻는 질문",
+        "q2": "자주 묻는 질문",
+        "q3": "자주 묻는 질문",
+      },
+      "tone": "base",
+      "type": "faq",
+      "variant": "accordion",
+    },
+    {
+      "instanceId": "s-contact",
+      "motion": "L1",
+      "slots": {
+        "consent": "개인정보 수집·이용에 동의합니다.",
+        "heading": "문의",
+        "intro": "이 섹션에서 전하려는 내용을 한두 문장으로 적습니다.",
+        "submit": "문의하기",
+      },
+      "tone": "alt",
+      "type": "contact",
+      "variant": "form",
+    },
+    {
+      "instanceId": "s-cta",
+      "motion": "L1",
+      "slots": {
+        "body": "다음 행동을 한 문장으로 권합니다.",
+        "cta": "문의하기",
+        "heading": "지금 시작하세요",
+      },
+      "tone": "base",
+      "type": "cta-band",
+      "variant": "banner",
+    },
+    {
+      "instanceId": "s-footer",
+      "motion": "L1",
+      "slots": {
+        "businessInfo": "상호 · 대표 · 사업자등록번호 · 주소",
+        "copyright": "© 브랜드 이름",
+        "links": "이용약관 · 개인정보처리방침",
+      },
+      "tone": "alt",
+      "type": "footer",
+      "variant": "biz-extended",
+    },
+  ],
+  "updatedAt": "2026-09-26T00:00:00.000Z",
+}
+
++ Received:
+undefined
+
+ ❯ src/features/studio/useDocSave.test.tsx:215:45
+    213|     expect(result.current.state.phase).toBe("stale");
+    214|     expect(result.current.doc.meta.title).toBe("내 편집");
+    215|     expect(result.current.conflict?.latest).toEqual(theirs);
+       |                                             ^
+    216|     act(() => result.current.edit(titled(result.current.doc, "내 편집 2")…
+    217|     act(() => result.current.retry());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 23 passed (25)
+   Start at  16:03:36
+   Duration  1.60s (tests 42%, environment 30%, transform 18%, setup 5%, import 4%)
+

@@ -11,6 +11,7 @@ import { withAlt } from "../../engine/testing/gateKit";
 import { section } from "../../engine/testing/sampleDoc";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
 import { useDocSave } from "./useDocSave";
+import type { CoreKeeper } from "./save/saveCore";
 
 /**
  * ER-AC-S10 (EDITOR-REST SPEC r1 3.2) — 실메모리 저장소 통합: 복원(저장 훅 경로 adopt) → 편집 → 저장 → 내보내기 요청까지 revision이 끊기지 않는다.
@@ -38,7 +39,7 @@ async function setup() {
   for (let i = 0; i < 10 && !isTerminal(job.state); i++) job = await gen.getJob(job.jobId);
   let ticks = 0;
   const now = () => `2026-10-06T14:0${ticks++ % 10}:00.000Z`;
-  const repo = createMemoryProjectRepository({ store, now, generators: { "static-html": fake } }) as ProjectRepository<PageDoc>;
+  const repo = createMemoryProjectRepository({ store, now, generators: { "static-html": fake } }) as ProjectRepository<PageDoc> & Required<CoreKeeper>;
   const { doc } = await repo.startDoc("project-1", 1, "A", "create");
   return { repo, doc };
 }

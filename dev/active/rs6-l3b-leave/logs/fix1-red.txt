@@ -1,0 +1,98 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+stderr | src/features/studio/useDocSaveLeave.test.tsx > FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) > 링크: ingest 직후 leave() + 같은 태스크에서 편집 틀 cleanup·언마운트 → IDB images 1 · 문서 참조 일치 · dirty 0
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx (11 tests | 3 failed) 1930ms
+   ❯ FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) (3)
+     × 링크: ingest 직후 leave() + 같은 태스크에서 편집 틀 cleanup·언마운트 → IDB images 1 · 문서 참조 일치 · dirty 0 40ms
+     × POP: ingest 직후 편집 틀 cleanup·언마운트(저장 대기 없음) → 해제 save가 이미지까지 커밋 · 재진입 이미지 복원 · 글자 편집 saved(failed 고착 0) 85ms
+     × 순서 반대(언마운트 먼저 · 편집 틀 cleanup 나중, 같은 태스크)도 같다 1040ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) > 링크: ingest 직후 leave() + 같은 태스크에서 편집 틀 cleanup·언마운트 → IDB images 1 · 문서 참조 일치 · dirty 0
+AssertionError: expected [ { status: 'failed', …(2) } ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "status": "saved",
++     "newer": false,
++     "reason": "image-missing",
++     "status": "failed",
+    },
+  ]
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:146:70
+    144|     await vi.waitFor(() => expect(save).toHaveBeenCalled());
+    145|     await core().idle();
+    146|     expect(await Promise.all(save.mock.results.map((r) => r.value))).t…
+       |                                                                      ^
+    147|     expect(await db.persistence.keys("images")).toEqual([imageRecordId…
+    148|     expect((await db.doc())?.doc.hash).toBe(next.hash);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) > POP: ingest 직후 편집 틀 cleanup·언마운트(저장 대기 없음) → 해제 save가 이미지까지 커밋 · 재진입 이미지 복원 · 글자 편집 saved(failed 고착 0)
+AssertionError: expected { status: 'failed', …(2) } to match object { status: 'saved' }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "status": "saved",
++   "status": "failed",
+  }
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:163:47
+    161|     await vi.waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+    162|     await core().idle();
+    163|     expect(await save.mock.results[0]!.value).toMatchObject({ status: …
+       |                                               ^
+    164|     expect(await db.persistence.keys("images")).toEqual([imageRecordId…
+    165|     expect((await db.doc())?.doc.hash).toBe(next.hash);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > FIX1 · 이미지 고른 직후 이탈 = 해제 save가 이미지까지(맵 삭제 순서 무관) > 순서 반대(언마운트 먼저 · 편집 틀 cleanup 나중, 같은 태스크)도 같다
+AssertionError: expected 'fnv1a64:06c630f93cbb3c26' to be 'fnv1a64:2db7bd4083180f7e' // Object.is equality
+
+Expected: "fnv1a64:2db7bd4083180f7e"
+Received: "fnv1a64:06c630f93cbb3c26"
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:184:69
+    182|     unmount();
+    183|     view.release();
+    184|     await vi.waitFor(async () => expect((await db.doc())?.doc.hash).to…
+       |                                                                     ^
+    185|     expect(await db.persistence.keys("images")).toEqual([imageRecordId…
+    186|     expect(core().view().dirty).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 8 passed (11)
+   Start at  17:06:14
+   Duration  2.89s (tests 69%, environment 18%, transform 7%, setup 3%, import 2%)
+

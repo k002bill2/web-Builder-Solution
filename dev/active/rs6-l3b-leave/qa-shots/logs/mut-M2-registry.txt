@@ -1,0 +1,8 @@
+      Tests  5 failed | 2948 passed (2953)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 저장 진행 중 언마운트(마지막 편집이 이미 제출됨) = 해제 save 0 · 진행 중 저장이 끝나면 경고 off
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 탭 수준 경고: 변경 없음 미등록 · 저장 실패 때 등록(편집기 안 · 언마운트 뒤 둘 다)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 탭 수준 경고: STALE 때 등록
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > memory 모드: 코어가 있으면 탭 닫기 경고 늘(편집기를 떠난 뒤에도 — needsUnloadGuard 메모리 승계)
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U12: 디바운스 대기 중 POP 언마운트 → lease 해제 save 1회 · 편집기 밖에서도 탭 닫기 경고 on(레지스트리) · 저장 끝나면 off · IDB = 마지막 편집
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 330 passed (331)

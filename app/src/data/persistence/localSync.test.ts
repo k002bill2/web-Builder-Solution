@@ -14,6 +14,7 @@ import type { LocalEntry } from "./entryRead";
 import { openLocalSync } from "./localSync";
 import { createMemoryPersistence, type MemoryPersistenceOptions, type StudioPersistence } from "./studioPersistence";
 import { soloLocks } from "./fakeLocks";
+import type { CoreKeeper } from "../../features/studio/save/saveCore";
 
 const imports = {
   ...STUDIO_IMPORTS,
@@ -165,17 +166,21 @@ describe("저장됨 = IDB 커밋 확인 뒤 (Codex 제약 3)", () => {
     expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc).toEqual(saved);
   });
 
+  // RS6-L3b CP-A(S6c — `LocalSync.base` 보정 제거): 편집기 저장 = 코어 경유. 실패는 DocBook revision을 올리지 않으므로(U3) 재시도 = +1 · 보정 0
   it("A 실패 → B 실패 → B 재시도: 보정된 요청도 원래 revision으로 멱등 재생된다(STALE_DOC 아님 — Codex r1 P2)", async () => {
     const { gate, persistence } = gated();
     const { projects, doc } = await started(persistence);
+    const core = (projects as ProjectRepository<PageDoc> & Required<CoreKeeper>).core("project-1", doc);
     const b = edit(doc, "B 편집");
     gate.fail = true;
-    expect(await codeOf(projects.saveDoc("project-1", doc.revision, edit(doc, "A 편집")))).toBe("INFRA");
-    expect(await codeOf(projects.saveDoc("project-1", doc.revision, b))).toBe("INFRA");
+    core.edit(edit(doc, "A 편집"));
+    expect(await core.save()).toMatchObject({ status: "failed" });
+    core.edit(b);
+    expect(await core.save()).toMatchObject({ status: "failed" });
     gate.fail = false;
-    const saved = await projects.saveDoc("project-1", doc.revision, b);
-    expect(saved).toMatchObject({ revision: doc.revision + 2, hash: b.hash });
-    expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc).toEqual(saved);
+    const saved = await core.save();
+    expect(saved).toMatchObject({ status: "saved", receipt: { revision: doc.revision + 1, hash: b.hash } });
+    expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc).toMatchObject({ revision: doc.revision + 1, hash: b.hash });
   });
 
   it("스냅샷 복원 IDB 실패 → 같은 요청 재시도: 멱등 재생으로 미확인 쓰기를 재제출해 저장된다(STALE_DOC 아님 — Codex r2 P2)", async () => {
@@ -193,14 +198,17 @@ describe("저장됨 = IDB 커밋 확인 뒤 (Codex 제약 3)", () => {
     expect(stored.data.snapshots).toEqual(await projects.listSnapshots("project-1"));
   });
 
+  // RS6-L3b CP-A(S6c — `LocalSync.base` 우회 제거): 편집기 저장 = 코어 경유. 실패한 저장은 DocBook revision을 올리지 않으므로(U3) 다음 저장은 +1
   it("IDB 실패 → 더 편집 → 다음 저장: 내 미확인 쓰기 위에 얹는다(STALE_DOC 아님)", async () => {
     const { gate, persistence } = gated();
     const { projects, doc } = await started(persistence);
+    const core = (projects as ProjectRepository<PageDoc> & Required<CoreKeeper>).core("project-1", doc);
     gate.fail = true;
-    expect(await codeOf(projects.saveDoc("project-1", doc.revision, edit(doc, "첫 편집")))).toBe("INFRA");
+    core.edit(edit(doc, "첫 편집"));
+    expect(await core.save()).toMatchObject({ status: "failed" });
     gate.fail = false;
-    const saved = await projects.saveDoc("project-1", doc.revision, edit(doc, "둘째 편집"));
-    expect(saved).toMatchObject({ revision: doc.revision + 2 });
+    core.edit(edit(doc, "둘째 편집"));
+    expect(await core.save()).toMatchObject({ status: "saved", receipt: { revision: doc.revision + 1 } });
     expect(((await persistence.get("docs", "project-1")) as { data: { doc: PageDoc } }).data.doc.meta.title).toBe("둘째 편집");
   });
 });

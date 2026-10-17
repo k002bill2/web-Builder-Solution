@@ -23,17 +23,20 @@ describe("RS6-L3a CP1 · 편집 경로 = core.edit (G2)", () => {
     expect(c.view()).toMatchObject({ dirty: true, doc: { meta: { title: "2" } } });
   });
 
-  it("F9: 디바운스 대기 중 언마운트 → 코어 초안·dirty 보존 · 저장 0", async () => {
-    const { repo, doc, core } = await startedRig();
+  // RS6-L3b(MQ-6-7 A · I6 3.1-1): 언마운트 저장 주체 = lease 해제 save 1회(스케줄러 dispose 저장은 그대로 0) — "저장 0" → "해제 save 1 · 커밋 전 초안 보존"
+  it("F9: 디바운스 대기 중 언마운트 → 스케줄러 저장 0 · lease 해제 save 1회 · 커밋 전까지 코어 초안·dirty 보존", async () => {
+    const { db, repo, doc, core } = await startedRig();
     const c = core();
     const save = vi.spyOn(c, "save");
+    const gate = db.hold();
     const { result, unmount } = renderHook(() => useDocSave({ repository: repo, projectId: PROJECT, initialDoc: doc, debounceMs: 20 }));
     act(() => result.current.edit(edited(doc, "pending")));
     unmount();
     await ticks(10);
     await new Promise((r) => setTimeout(r, 40));
-    expect(save).not.toHaveBeenCalled();
+    expect(save).toHaveBeenCalledTimes(1);
     expect(c.view()).toMatchObject({ dirty: true, doc: { meta: { title: "pending" } } });
+    gate.release();
   });
 });
 

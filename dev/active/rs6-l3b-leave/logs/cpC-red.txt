@@ -1,0 +1,684 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+stderr | src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > U12 저장 전 변경(디바운스 대기) → 즉시 이동 · 저장 1회(대기 없음) · 해제 뒤 저장소 = 편집
+An update to StudioLayout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 전 변경 클릭 = 즉시 이동 — 그 저장이 뒤에 실패해도 이동은 1회 그대로
+An update to StudioLayout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/components/studio/StudioLeave.test.tsx (15 tests | 4 failed) 735ms
+   ❯ 편집기 이탈 저장 (B-RS-01) (15)
+     × 저장 진행 중 추가 편집 → 앱 안 이동 = 즉시 이동 1회 · 해제 뒤 저장소 = 마지막 편집(lease 해제 save) 160ms
+     × U12 저장 전 변경(디바운스 대기) → 즉시 이동 · 저장 1회(대기 없음) · 해제 뒤 저장소 = 편집 47ms
+     × 저장 전 변경 클릭 = 즉시 이동 — 그 저장이 뒤에 실패해도 이동은 1회 그대로 44ms
+     × 읽기 전용 거절 뒤 쓰기 가능해진 탭(다른 탭 닫힘) = 지난 거절로 건너뛰지 않고 저장 · 즉시 이동 + 저장소 반영(Codex r1 P1) 54ms
+stderr | src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 저장 진행 중 언마운트(마지막 편집이 이미 제출됨) = 해제 save 0 · 진행 중 저장이 끝나면 경고 off
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx (5 tests | 4 failed) 2326ms
+   ❯ RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 (5)
+     × U12: 디바운스 대기 중 POP 언마운트 → lease 해제 save 1회 · 편집기 밖에서도 탭 닫기 경고 on(레지스트리) · 저장 끝나면 off · IDB = 마지막 편집 1129ms
+     × 저장 진행 중 언마운트(마지막 편집이 이미 제출됨) = 해제 save 0 · 진행 중 저장이 끝나면 경고 off 85ms
+     × U7: 재마운트(새 mountId) = 같은 코어 · 초안 이어짐 · lease 해제 save 최대 1회 1039ms
+     × memory 모드: 코어가 있으면 탭 닫기 경고 늘(편집기를 떠난 뒤에도 — needsUnloadGuard 메모리 승계) 39ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 진행 중 추가 편집 → 앱 안 이동 = 즉시 이동 1회 · 해제 뒤 저장소 = 마지막 편집(lease 해제 save)
+TestingLibraryElementError: Unable to find an element with the text: 프로젝트 목록. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+          [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/projects"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+        [36m>[39m
+          [0m동네 치과 클리닉 프로젝트[0m
+        [36m</h1>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+        [36m>[39m
+          [0mcandidate-a안 · 프로필 v2[0m
+        [36m</span>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m저장 중…[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"alert"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"contents"[39m
+          [33mdata-preview-keep[39m=[32m"true"[39m
+        [36m>[39m
+          [36m<fieldset[39m
+            [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+          [36m>[39m
+            [36m<legend[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m미리보기 폭[0m
+            [36m</legend>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"desktop"[39m
+                [36m/>[39m
+                [0m데스크톱[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"tablet"[39m
+                [36m/>[39m
+                [0m태블릿[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"mobile"[39m
+                [36m/>[39m
+                [0m모바일[0m
+              [36m</label>[39m
+            [36m</div>[39m
+          [36m</fieldset>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+          [33mid[39m=[32m"studio-snapshot"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m스냅샷[0m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"relative flex-none"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"menu"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+            [33mid[39m=[32m"studio-more"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m더보기[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scal...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLeave.test.tsx:120:19
+    118|     type("마지막 편집");
+    119|     leave();
+    120|     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
+       |                   ^
+    121|     await repo.release();
+    122|     while (repo.waiting()) await repo.release();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > U12 저장 전 변경(디바운스 대기) → 즉시 이동 · 저장 1회(대기 없음) · 해제 뒤 저장소 = 편집
+TestingLibraryElementError: Unable to find an element with the text: 프로젝트 목록. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+          [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/projects"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+        [36m>[39m
+          [0m동네 치과 클리닉 프로젝트[0m
+        [36m</h1>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+        [36m>[39m
+          [0mcandidate-a안 · 프로필 v2[0m
+        [36m</span>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m저장 중…[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"alert"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"contents"[39m
+          [33mdata-preview-keep[39m=[32m"true"[39m
+        [36m>[39m
+          [36m<fieldset[39m
+            [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+          [36m>[39m
+            [36m<legend[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m미리보기 폭[0m
+            [36m</legend>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"desktop"[39m
+                [36m/>[39m
+                [0m데스크톱[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"tablet"[39m
+                [36m/>[39m
+                [0m태블릿[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"mobile"[39m
+                [36m/>[39m
+                [0m모바일[0m
+              [36m</label>[39m
+            [36m</div>[39m
+          [36m</fieldset>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+          [33mid[39m=[32m"studio-snapshot"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m스냅샷[0m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"relative flex-none"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"menu"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+            [33mid[39m=[32m"studio-more"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m더보기[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scal...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLeave.test.tsx:135:19
+    133|     leave();
+    134|     expect(repo.save).toHaveBeenCalledTimes(1);
+    135|     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
+       |                   ^
+    136|     expect(arrivals).toHaveLength(1);
+    137|     await repo.release();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 저장 전 변경 클릭 = 즉시 이동 — 그 저장이 뒤에 실패해도 이동은 1회 그대로
+TestingLibraryElementError: Unable to find an element with the text: 프로젝트 목록. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+          [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/projects"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+        [36m>[39m
+          [0m동네 치과 클리닉 프로젝트[0m
+        [36m</h1>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+        [36m>[39m
+          [0mcandidate-a안 · 프로필 v2[0m
+        [36m</span>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m저장 중…[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"alert"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"contents"[39m
+          [33mdata-preview-keep[39m=[32m"true"[39m
+        [36m>[39m
+          [36m<fieldset[39m
+            [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+          [36m>[39m
+            [36m<legend[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m미리보기 폭[0m
+            [36m</legend>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"desktop"[39m
+                [36m/>[39m
+                [0m데스크톱[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"tablet"[39m
+                [36m/>[39m
+                [0m태블릿[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"mobile"[39m
+                [36m/>[39m
+                [0m모바일[0m
+              [36m</label>[39m
+            [36m</div>[39m
+          [36m</fieldset>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+          [33mid[39m=[32m"studio-snapshot"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m스냅샷[0m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"relative flex-none"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"menu"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+            [33mid[39m=[32m"studio-more"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m더보기[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scal...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLeave.test.tsx:148:19
+    146|     type("실패할 편집");
+    147|     leave();
+    148|     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
+       |                   ^
+    149|     await repo.release(new Error("boom"));
+    150|     expect(arrivals).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/components/studio/StudioLeave.test.tsx > 편집기 이탈 저장 (B-RS-01) > 읽기 전용 거절 뒤 쓰기 가능해진 탭(다른 탭 닫힘) = 지난 거절로 건너뛰지 않고 저장 · 즉시 이동 + 저장소 반영(Codex r1 P1)
+TestingLibraryElementError: Unable to find an element with the text: 프로젝트 목록. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+          [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/projects"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+          [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+        [36m>[39m
+          [0m동네 치과 클리닉 프로젝트[0m
+        [36m</h1>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+        [36m>[39m
+          [0mcandidate-a안 · 프로필 v2[0m
+        [36m</span>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+          [36m>[39m
+            [0m저장 중…[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"sr-only"[39m
+            [33mrole[39m=[32m"alert"[39m
+          [36m>[39m
+            [0m저장하지 못했습니다[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"contents"[39m
+          [33mdata-preview-keep[39m=[32m"true"[39m
+        [36m>[39m
+          [36m<fieldset[39m
+            [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+          [36m>[39m
+            [36m<legend[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m미리보기 폭[0m
+            [36m</legend>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"desktop"[39m
+                [36m/>[39m
+                [0m데스크톱[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"tablet"[39m
+                [36m/>[39m
+                [0m태블릿[0m
+              [36m</label>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mname[39m=[32m"studio-preview-width"[39m
+                  [33mtype[39m=[32m"radio"[39m
+                  [33mvalue[39m=[32m"mobile"[39m
+                [36m/>[39m
+                [0m모바일[0m
+              [36m</label>[39m
+            [36m</div>[39m
+          [36m</fieldset>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+          [33mid[39m=[32m"studio-snapshot"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m스냅샷[0m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"relative flex-none"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"menu"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+            [33mid[39m=[32m"studio-more"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m더보기[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:sc...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/StudioLeave.test.tsx:228:19
+    226|     leave();
+    227|     expect(repo.save).toHaveBeenCalledTimes(2);
+    228|     expect(screen.getByText("프로젝트 목록")).toBeInTheDocument();
+       |                   ^
+    229|     await repo.release();
+    230|     expect(titleOf(repo.stored())).toBe("쓰기 가능해진 뒤 편집");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U12: 디바운스 대기 중 POP 언마운트 → lease 해제 save 1회 · 편집기 밖에서도 탭 닫기 경고 on(레지스트리) · 저장 끝나면 off · IDB = 마지막 편집
+AssertionError: expected "save" to be called 1 times, but got 0 times
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:26:41
+     24|     const gate = db.hold();
+     25|     unmount();
+     26|     await vi.waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+       |                                         ^
+     27|     expect(unloadBlocked()).toBe(true);
+     28|     gate.release();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > 저장 진행 중 언마운트(마지막 편집이 이미 제출됨) = 해제 save 0 · 진행 중 저장이 끝나면 경고 off
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:53:29
+     51|     unmount();
+     52|     await act(async () => undefined);
+     53|     expect(unloadBlocked()).toBe(true);
+       |                             ^
+     54|     gate.release();
+     55|     await vi.waitFor(() => expect(unloadBlocked()).toBe(false));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > U7: 재마운트(새 mountId) = 같은 코어 · 초안 이어짐 · lease 해제 save 최대 1회
+AssertionError: expected '' to be '재마운트 전' // Object.is equality
+
+- Expected
++ Received
+
+- 재마운트 전
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:68:75
+     66|     const again = hook({ repository: repo, projectId: PROJECT, initial…
+     67|     expect(again.result.current.doc.meta.title).toBe("재마운트 전");
+     68|     await vi.waitFor(async () => expect((await db.doc())?.doc.meta.tit…
+       |                                                                           ^
+     69|     expect(save).toHaveBeenCalledTimes(1);
+     70|     again.unmount();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/features/studio/useDocSaveLeave.test.tsx > RS6-L3b CP-C · lease 해제 save · 탭 수준 경고 > memory 모드: 코어가 있으면 탭 닫기 경고 늘(편집기를 떠난 뒤에도 — needsUnloadGuard 메모리 승계)
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/studio/useDocSaveLeave.test.tsx:78:29
+     76|     unmount();
+     77|     await act(async () => undefined);
+     78|     expect(unloadBlocked()).toBe(true);
+       |                             ^
+     79|   });
+     80| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  8 failed | 12 passed (20)
+   Start at  16:12:31
+   Duration  3.18s (tests 66%, environment 17%, transform 11%, setup 3%, import 3%)
+

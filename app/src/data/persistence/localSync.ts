@@ -6,7 +6,6 @@
  * - saveState: store 커밋 뒤 상태 레코드(StudioState + 문서 머리) put — 응답을 기다리지 않는다. 실패는 다음 쓰기(같은 레코드)가 최신 의도로 덮는다.
  * - flush: 문서 쓰기 뒤 문서 레코드 + 상태 레코드를 한 트랜잭션으로 — IDB 커밋 확인 뒤 resolve("저장됨"은 이 뒤). 같은 내용을 이미 제출했으면
  *   (멱등 재생) 미확인 기록 재제출(retry). 큐가 받은 제출만 기억한다 — 복제 실패는 재생 때 다시 제출해 같은 INFRA(재시도로 풀리지 않는 실패, 거짓 "저장됨" 0).
- * - base: IDB 실패 뒤 메모리 revision만 오른 상태에서 다음 편집 저장을 내 미확인 쓰기 위에 얹는다(STALE_DOC 아님).
  * - 다중 탭(P1C-D2 · SPEC 1.5): 쓰기마다 `meta` generation을 +1(상태 레코드 `gen`에도 같은 값 — 진입이 읽는 레코드라 진입 바이트 0).
  *   상태 레코드 + 세대는 큐 도장(stamp)으로만 낸다 — 재시도·미확인 재제출 커밋도 새 세대(Codex r1 P1).
  *   첫 쓰기 때 writerLock 획득 → 최신성 확인(진입 gen = 지금 meta gen · 진입 때 있던 상태 레코드가 그대로) 통과 시에만 쓴다.
@@ -51,8 +50,6 @@ export interface LocalSync {
   flush(projectId: string, book: BookView, images?: RenderImages): Promise<void>;
   /** confirmDoc(RESTART SPEC-4 3.5) — 진행 중·실패 기록을 끝낸 뒤 IDB 이미지 키로 참조를 확인하고(진행 중 이미지는 근거 아님) flush. 빠지면 쓰기 0 · IMAGES_MISSING */
   confirm(projectId: string, book: BookView, images?: RenderImages): Promise<void>;
-  /** DocBook save가 판정 전에 부른다 — current = 지금 메모리 문서 */
-  base(projectId: string, expectedRevision: number, current: DocHead | undefined, hash: string): number;
   /** 첫 저장 1회 안내(P1C-D5 · SPEC 1.4) — 쓰기 탭이고 meta `firstSaveNotice`가 없으면 키를 큐로 제출하고 true(커밋을 기다리지 않는다 — 실패면 다음 호출에 다시 true).
    * `live`가 false면(호출자가 이미 시간 초과로 안내를 버림) 키를 쓰지 않고 false — 안내하지 않은 판정이 키를 소비하지 않게(Codex r1 P2) */
   firstSave(live?: () => boolean): Promise<boolean>;
@@ -211,10 +208,6 @@ export async function openLocalSync(
       if ([...refs].some((id) => !have.has(imageRecordId(projectId, id)) && !(images?.[id] && imageMeta(images[id])))) throw new ProjectRepositoryError("IMAGES_MISSING", projectId);
       return write(projectId, book, images);
     },
-    base: (projectId, expectedRevision, current, hash) =>
-      current && current.hash !== hash && current === submitted.get(projectId)?.doc && queue.status(projectId) === "unconfirmed" && current.revision > expectedRevision
-        ? current.revision
-        : expectedRevision,
     guardWrite: async () => {
       if (cleared) throw toInfra(undefined, "저장", CLEARED_TAB);
       const mode = await gate.enter();

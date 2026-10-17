@@ -200,6 +200,8 @@ describe("Codex r1 P2 — 삭제 확인과 저장·미리보기 직렬화", () =
     act(() => void fireEvent.click(dialog.getByRole("button", { name: "수동 2 미리보기" })));
     act(() => void fireEvent.click(dialog.getByRole("button", { name: "수동 2 삭제" })));
     confirmGone();
+    // 코어 경유 저장은 commit이 몇 마이크로태스크 뒤에 닿는다(RS6-L3b CP-A) — 그 저장이 저장소에 닿은 뒤 푼다
+    await vi.waitFor(() => expect(release).toBeTypeOf("function"));
     await act(async () => release());
     expect(await screen.findByRole("heading", { name: "스냅샷 '수동 2'를 보고 있습니다 · 편집은 멈췄습니다" })).toBeInTheDocument();
     confirmGone();

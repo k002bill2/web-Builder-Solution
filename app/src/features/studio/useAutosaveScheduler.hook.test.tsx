@@ -1,7 +1,7 @@
 import { act, render, renderHook, screen } from "@testing-library/react";
 import { useEffect, useRef, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ProjectRepositoryError, type ProjectPersistence } from "../../data/projectRepository";
+import type { ProjectPersistence } from "../../data/projectRepository";
 import { saveAnnouncement, saveStatusText } from "./saveStatusText";
 import { useAutosaveScheduler, type AutosaveState } from "./useAutosaveScheduler";
 
@@ -27,40 +27,20 @@ function unloadBlocked(): boolean {
   return event.defaultPrevented;
 }
 
-describe("useAutosaveScheduler — beforeunload (E-AC-12)", () => {
-  it("memory — 변경이 없어도 등록", () => {
-    const { unmount } = renderHook(() => useAutosaveScheduler<string>({ save: () => Promise.resolve(), persistence: "memory" }));
-    expect(unloadBlocked()).toBe(true);
-    unmount();
+// RS6-L3b(I6 3.1-2 · D6-11): 떠나기 경고 소유 = 코어 레지스트리 — 이 훅의 memory·server·실패·STALE 등록 단언 3건은
+// `useDocSaveLeave.test.tsx` "탭 수준 경고"(실제 저장소 레지스트리)로 이전했다. 여기서는 훅이 등록하지 않음(리스너 중복 0)만 본다
+describe("useAutosaveScheduler — beforeunload (E-AC-12 → 레지스트리)", () => {
+  it("훅은 beforeunload를 등록하지 않는다(memory·server · 변경·실패 모두) — 경고는 코어 레지스트리", async () => {
+    const save = vi.fn<(doc: string) => Promise<unknown>>().mockRejectedValueOnce(new Error("x"));
+    const memory = renderHook(() => useAutosaveScheduler<string>({ save: () => Promise.resolve(), persistence: "memory" }));
     expect(unloadBlocked()).toBe(false);
-  });
-
-  it("server — 변경 없음 미등록 · 변경 시 등록 · 저장되면 해제", async () => {
-    const { result, unmount } = renderHook(() =>
-      useAutosaveScheduler<string>({ save: () => Promise.resolve(), persistence: "server" }),
-    );
-    expect(unloadBlocked()).toBe(false);
-    act(() => result.current.change("a"));
-    expect(unloadBlocked()).toBe(true);
-    await act(() => vi.advanceTimersByTimeAsync(2000));
-    expect(result.current.state.phase).toBe("saved");
-    expect(unloadBlocked()).toBe(false);
-    unmount();
-  });
-
-  it("server — 실패·STALE 때 등록", async () => {
-    const save = vi.fn<(doc: string) => Promise<unknown>>()
-      .mockRejectedValueOnce(new Error("x"))
-      .mockRejectedValueOnce(new ProjectRepositoryError("STALE_DOC", "stale"));
+    memory.unmount();
     const { result, unmount } = renderHook(() => useAutosaveScheduler<string>({ save, persistence: "server" }));
     act(() => result.current.change("a"));
+    expect(unloadBlocked()).toBe(false);
     await act(() => vi.advanceTimersByTimeAsync(2000));
     expect(result.current.state.phase).toBe("failed");
-    expect(unloadBlocked()).toBe(true);
-    act(() => result.current.retry());
-    await act(() => vi.advanceTimersByTimeAsync(0));
-    expect(result.current.state.phase).toBe("stale");
-    expect(unloadBlocked()).toBe(true);
+    expect(unloadBlocked()).toBe(false);
     unmount();
   });
 
@@ -73,7 +53,8 @@ describe("useAutosaveScheduler — beforeunload (E-AC-12)", () => {
     unmount();
     await vi.advanceTimersByTimeAsync(60_000);
     expect(save).not.toHaveBeenCalled();
-    for (const type of ["online", "offline", "beforeunload"]) {
+    expect(add.mock.calls.filter(([t]) => t === "beforeunload")).toHaveLength(0);
+    for (const type of ["online", "offline"]) {
       const added = add.mock.calls.filter(([t]) => t === type).map(([, fn]) => fn);
       const removed = remove.mock.calls.filter(([t]) => t === type).map(([, fn]) => fn);
       expect(added.length).toBeGreaterThan(0);

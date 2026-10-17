@@ -1,0 +1,61 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0)
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0)
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx (8 tests | 1 failed) 1744ms
+   ❯ RS6-L3a CP2 · 저장 대상 = core.save (8)
+     × L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0) 1051ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/useDocSaveCore.save.test.tsx > RS6-L3a CP2 · 저장 대상 = core.save > L3a QA 4절 2: revision 있는 failed는 not-persistent만 저장됨 — 다른 reason이 revision을 실어도 failed(거짓 저장됨 0)
+AssertionError: expected 'saved' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "saved"
+
+ ❯ src/features/studio/useDocSaveCore.save.test.tsx:101:63
+     99|     const { result } = hook({ repository: repo, projectId: PROJECT, in…
+    100|     act(() => result.current.edit(edited(doc, "x")));
+    101|     await vi.waitFor(() => expect(result.current.state.phase).toBe("fa…
+       |                                                               ^
+    102|     expect(result.current.savedRevision()).toBe(doc.revision);
+    103|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  16:16:46
+   Duration  2.53s (tests 71%, environment 15%, transform 8%, import 3%, setup 3%)
+

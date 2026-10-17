@@ -68,7 +68,8 @@ function makeState(fields: AutosaveState): AutosaveState {
   return Object.freeze(Object.fromEntries(entries) as unknown as AutosaveState);
 }
 
-/** E-S10 — 메모리는 늘(새로고침하면 문서가 사라진다), 서버·로컬(ADR-007 P1)은 저장 전 변경·저장 중·실패·오프라인·STALE일 때만 */
+/** E-S10 — 메모리는 늘(새로고침하면 문서가 사라진다), 서버·로컬(ADR-007 P1)은 저장 전 변경·저장 중·실패·오프라인·STALE일 때만.
+ * RS6-L3b(I6 3.1-2): 실제 경고는 코어 레지스트리(`memoryProjectRepository`)가 같은 규칙(코어 dirty·inflight · memory 늘)으로 소유한다 — 이 훅은 등록하지 않는다 */
 export function needsUnloadGuard(persistence: ProjectPersistence, phase: AutosavePhase): boolean {
   if (persistence === "memory") return true;
   return phase !== "idle" && phase !== "saved";
@@ -254,8 +255,8 @@ export interface UseAutosave<T> {
   readonly settle: () => void;
 }
 
-/** 얇은 훅 — window online/offline 연결, 떠나기 경고(needsUnloadGuard일 때만 등록), unmount 정리 */
-export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWaitMs }: UseAutosaveOptions<T>): UseAutosave<T> {
+/** 얇은 훅 — window online/offline 연결, unmount 정리. 떠나기 경고는 코어 레지스트리 몫(RS6-L3b · I6 3.1-2 — 리스너 중복 0) */
+export function useAutosaveScheduler<T>({ save, debounceMs, maxWaitMs }: UseAutosaveOptions<T>): UseAutosave<T> {
   const [state, setState] = useState<AutosaveState>(IDLE);
   const saveRef = useRef(save);
   const schedulerRef = useRef<AutosaveScheduler<T> | null>(null);
@@ -287,17 +288,6 @@ export function useAutosaveScheduler<T>({ save, persistence, debounceMs, maxWait
       schedulerRef.current = null;
     };
   }, [debounceMs, maxWaitMs]);
-
-  const guard = needsUnloadGuard(persistence, state.phase);
-  useEffect(() => {
-    if (!guard) return undefined;
-    const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [guard]);
 
   const change = useCallback((doc: T) => schedulerRef.current?.change(doc), []);
   const retry = useCallback(() => schedulerRef.current?.retry(), []);

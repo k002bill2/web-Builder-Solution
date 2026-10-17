@@ -10,6 +10,7 @@ import { sampleDoc } from "../../engine/testing/sampleDoc";
 import type { IngestResult } from "../../features/studio/images/ingest";
 import { connectRenderFrame } from "../../features/studio/testing/renderFrame";
 import { StudioLayout } from "./StudioLayout";
+import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
 /**
  * 편집 틀 ↔ 이미지 패널 ↔ 캔버스 연결 (SPEC m2c 2.1 · 5.1 · 7절 · IMG-AC-12). 진입 층 = "이미지 편집 (N)" 펼침 1개 —
@@ -34,7 +35,10 @@ const PROJECT: Project = {
   createdAt: "2026-09-27T00:00:00.000Z",
   updatedAt: "2026-09-27T00:00:00.000Z",
 };
-const repository = { persistence: "memory", saveDoc: vi.fn(async (_id: string, revision: number, doc: unknown) => ({ ...(doc as object), revision: revision + 1 })), resolveConflict: vi.fn() } as unknown as ProjectRepository;
+/** 코어 있는 저장소(RS6-L3b CP-A) — 모듈 하나를 테스트끼리 쓰므로 코어 레지스트리는 테스트마다 비운다 */
+const fixture = withSaveCore({ persistence: "memory", saveDoc: vi.fn(async (_id: string, revision: number, doc: unknown) => ({ ...(doc as object), revision: revision + 1 })), resolveConflict: vi.fn() });
+const repository = fixture as unknown as ProjectRepository;
+beforeEach(() => fixture.cores.clear());
 const NO_PROFILE = { getProfile: async () => undefined } as unknown as ProfileRepository;
 const UNUSED = () => Promise.reject(new Error("이 테스트는 쓰지 않는다"));
 const webp = (bytes: number) => new Blob([new Uint8Array(bytes)], { type: "image/webp" });

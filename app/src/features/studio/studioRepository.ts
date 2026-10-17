@@ -15,8 +15,8 @@ export function isPageDoc(doc: DocHead): doc is PageDoc {
 export function toDocSaveRepository(repository: ProjectRepository): DocSaveRepository {
   return {
     persistence: repository.persistence,
-    core: (repository as ProjectRepository & CoreKeeper).core,
-    saveDoc: (projectId, expectedRevision, doc) => repository.saveDoc(projectId, expectedRevision, doc),
+    // 제품 저장소는 늘 코어 레지스트리가 있다(memoryProjectRepository · RS6-L3a QA 3절)
+    core: (repository as ProjectRepository & CoreKeeper).core!,
     resolveConflict: async (projectId, choice, myDoc) => {
       const resolved = await repository.resolveConflict(projectId, choice, myDoc);
       if (!isPageDoc(resolved)) throw new ProjectRepositoryError("SCHEMA_INVALID", "충돌 해결 결과가 편집 문서 모양이 아닙니다");

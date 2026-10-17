@@ -7,6 +7,7 @@ import type { ProfileSeries } from "../../../domain/profile";
 import { sampleDoc } from "../../../engine/testing/sampleDoc";
 import { renderApp } from "../../../test/renderApp";
 import { connectRenderFrame } from "./renderFrame";
+import { withSaveCore } from "./coreFixture";
 
 /** 테스트 전용(제품 코드가 import하지 않는다) — 편집기 연산 테스트 공용 (EDITOR-A3-1) — StudioShell.test와 같은 셋업을 문서·프로필 주입으로 */
 export const STUDIO_PROJECT: Project = {
@@ -19,7 +20,7 @@ export const STUDIO_PROJECT: Project = {
   updatedAt: "2026-09-27T00:00:00.000Z",
 };
 
-/** 화면이 쓰는 조회·저장만 — 저장은 받은 문서를 기록한다 */
+/** 화면이 쓰는 조회·저장만 — 저장은 받은 문서를 기록한다 · 코어 있는 저장소(RS6-L3b CP-A — 편집기 저장 = 제품 코어 경유, `coreFixture`) */
 export function stubProjectRepository(doc: PageDoc, extra: Partial<ProjectRepository> = {}) {
   const saved: PageDoc[] = [];
   const repository = {
@@ -31,8 +32,8 @@ export function stubProjectRepository(doc: PageDoc, extra: Partial<ProjectReposi
       return { ...next, revision: revision + 1 };
     },
     ...extra,
-  } as unknown as ProjectRepository;
-  return { repository, saved };
+  };
+  return { repository: withSaveCore(repository) as unknown as ProjectRepository, saved };
 }
 
 /** 프로필 조회만 — 목적·모션 파생(docPurpose)용 */

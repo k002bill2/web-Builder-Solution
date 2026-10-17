@@ -58,9 +58,9 @@
 
 ## FIX1 (BRIEF-FIX1, 2026-10-17) — U16 rebase 뒤 flush 실패 기억 해제
 - [x] F0. BRIEF-FIX1·PROGRESS 커밋
-- [ ] F1. 원인 확인 (rebase proof · flush 실패 경로 · U16 판정) · 선택안(a/b/c) 결정 · 영향 표
-- [ ] F2. RED — restoreSnapshot·resolveConflict 뒤 flush 실패 → 기억 유지·"저장 확인" (`logs/fix1-red.log`)
-- [ ] F3. GREEN — 최소 수정 + 정상 경로(flush 성공 → 다음 save 커밋 → 해제)
-- [ ] F4. fresh 게이트 typecheck·lint·test·build · `/studio` 증분 0
-- [ ] F5. Codex review 1회 (`--scope branch --base 40b50234`) · 반영
-- [ ] F6. REPORT "FIX1" 절 · 커밋
+- [x] F1. 원인 확인 · 선택안 (a) rebase proof = `rebased` · 영향 표 (REPORT FIX1)
+- [x] F2. RED 3 FAIL(pendingOf undefined) — restoreSnapshot·resolveConflict 뒤 flush 실패 → 기억 유지·"저장 확인" (`logs/fix1-red.log`)
+- [x] F3. GREEN `0911b900` — 13/13 · 되돌리기 3 FAIL(`logs/fix1-revert.log`)
+- [x] F4. fresh typecheck 0 · lint 0 · test 332/2971 · build 0 · `/studio` 129.09(+0.00) · 복원 132.07(+0.00)
+- [x] F5. Codex review 1회 (`--scope branch --base 40b50234`) → 지적 0 · 반영 불필요
+- [x] F6. REPORT "FIX1" 절 · 커밋

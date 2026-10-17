@@ -112,3 +112,45 @@
 
 ## 서브에이전트
 - 0개(BRIEF "서브에이전트 분할: 불필요").
+
+## FIX1 — U16 rebase 뒤 flush 실패 기억 해제 (BRIEF-FIX1 · QA-PROGRESS 1번 FAIL)
+- **원인**: `rebase`(`coreIo.ts`)가 DocBook **메모리** 쓰기 직후 `confirmed.proof = "committed"`를 썼다. IDB flush(`memoryProjectRepository.kept`)는 그 뒤에 돈다. flush가 실패해도 U16(`pendingRows.ts` `watchCores`)은 `committed` + 새 revision을 보고 PendingRecord를 풀었다.
+- **선택안 (a)**: rebase proof = 새 값 `"rebased"`(메모리 맞춤 · IDB 증명 아님). `committed`는 코어 `save`의 포트 commit 성공에서만 생긴다. 바꾼 줄: `coreIo.ts` rebase 1줄, `saveCore.ts` `Receipt.proof` union·주석.
+  - (b)를 버린 이유: U16 판정에 IDB 재읽기를 넣으면 `/projects` 진입 바이트가 늘고 판정이 비동기가 된다.
+  - (c)를 버린 이유: flush 결과를 코어에 넘기려면 `memoryProjectRepository.ts`(`kept`)를 고쳐야 한다. 이 수정의 허용 경로 밖이다.
+  - confirm 성공 시 `committed`로 올리는 코드는 넣지 않았다. 시드 confirm 뒤 `hydrated` 유지를 단언하는 기존 테스트(`saveCore.port.test.ts:114`)가 있다. `/projects` "저장 확인"은 confirm 결과로 `pendingRetry`가 직접 settle하므로 해제 경로가 이미 있다.
+
+### 영향 표 (`proof` 값 추가)
+| 판정 | `proof` 읽음? | 영향 |
+|---|---|---|
+| U16 (`pendingRows.ts:56`) | 예 — 유일한 판독자 | rebase 뒤에는 해제 안 함. 다음 코어 save 커밋이나 "저장 확인" 1클릭 뒤에만 해제 |
+| 코어 save (`coreIo.save`) | 아니오 (`confirmed.revision`만) | 변화 0 — L3a CP0 "다음 save = rebase revision + 1" 유지(`saveCore.rebase.test.ts` 통과) |
+| confirm (`coreIo.confirm`) | 아니오 (`s.confirmed`를 `verify`에 넘김, 결과 proof = fresh) | 변화 0 |
+| discard (`coreIo.discard`) | 아니오 (`verify` 근거로만 씀) | 변화 0 |
+| 편집기 상태 표시 (L4 `SaveStatus`·`saveStatusText`) | 아니오 (grep 0) | 변화 0 · L4 경로 접촉 0 |
+| restart (`DocBook.start` → `rebase`) | 같은 rebase | 같은 수정이 함께 적용됨 (테스트 추가는 범위 밖) |
+
+- **동작 변화**: flush가 **성공한** rebase 뒤에도 U16이 바로 풀지 않는다. 다음 코어 save 커밋이나 "저장 확인"까지 기억이 남는다. 거짓 해제 0을 위한 대가이고, BRIEF가 정한 정상 경로와 같다.
+
+### 테스트 (`components/projects/ProjectsCoreRows.test.tsx` +3 it)
+- RED (`logs/fix1-red.log`): 3 FAIL. 이유는 예측대로 `pendingOf` = undefined(기억이 풀림, 192·209·221줄).
+  1. restoreSnapshot flush 실패 → 메모리 revision +1 · IDB revision 그대로 → 기억 유지 · "저장 확인" 노출
+  2. resolveConflict(mine) flush 실패 → 같은 단언
+  3. 정상: 복원 flush 성공 → 기억 유지 → 다음 코어 save 커밋 → 기억 0
+- GREEN: 프로젝트 행 + `features/studio/save` 12 파일 / 100 통과 (`logs/fix1-green.log`).
+- Red-Green 역검증 (`logs/fix1-revert.log`): `"committed"`로 되돌리면 3 FAIL, 복원하면 13/13 통과.
+- 기존 단언 약화 0 · skip 0.
+
+### 게이트 (fresh)
+- `npm run typecheck` → 0 · `npm run lint` → 0
+- `npm test -- --run` → 332 파일 / 2971 통과 (이전 2968 + 3)
+- `npm run build` → 0
+
+### 예산 (`logs/fix1-build.log`)
+- `/studio` 정규화 129.09 (+0.00) · 복원 132.07 (+0.00)
+- `/projects` 99.19 / 109.64. 이전 99.18 대비 +0.01이지만 `/projects` 청크 소스는 바꾸지 않았다(해시 흔들림 추정).
+- 기준선·`check-bundle-size.mjs` 수정 0.
+
+- 커밋: `0911b900` (코드). `logs/`는 gitignore 대상이라 로컬에만 있다.
+- Codex `review --scope branch --base 40b50234` → 지적 0. "증명 타입과 모든 소비 경로 검토, 새 결함 없음." Codex 쪽 테스트는 샌드박스 EPERM으로 실행하지 못했다. 테스트 증거는 위 fresh 게이트(로컬)다.
+- 남은 일: 재QA(접근성·실화면 — QA-PROGRESS 3·4번). 브라우저 확인은 이 수정에서 하지 않았다(BRIEF "브라우저 불필요").

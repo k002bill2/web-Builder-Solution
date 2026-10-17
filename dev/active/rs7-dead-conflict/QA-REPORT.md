@@ -53,7 +53,16 @@
 | saveStatusText phase stale 문구 1줄 · STALE 진입 alert 1건 | 도달 0 전용 | stale 행 문구는 reasonText·source 테스트 몫 |
 | SaveStatus "STALE_DOC — saving → stale alert" | 이전 | 같은 노드 유지·saved 비움·status 0을 failed로 단언 |
 
-## 3. 회귀 변이 — (진행 중)
+## 3. 회귀 변이 (사실 · 매번 전체 `vitest run` 후 `git checkout -- app/` · 복원 뒤 `git status -- app/` 0 · `logs/qa/mut-*.txt`)
+| ID | 변이 | 결과 | 잡은 테스트 |
+|------|------|------|------|
+| M1a | `memoryDocBook.restoreSnapshot` revision 불일치 STALE_DOC throw 삭제 | **FAIL 2** (3016/3018) | memoryProjectRepository.test 판정 순서 · saveCore.rebase.test "코어 save 진행 중 복원 → STALE_DOC" |
+| M1b | `restoreSnapshot`의 `settled(core, current)`(코어 미확정 STALE_DOC) 삭제 | **FAIL 1** | saveCore.rebase.test "미저장 편집이 있으면 복원 = STALE_DOC" |
+| M2a | `reasonText` `stale` 문구 매핑 삭제 | **FAIL 5** | useDocSave.test "다른 탭 stale(포트)" · StudioLayout.test stale 환경 행·PNG 이유 · FieldUndo.test · saveStatusText.source.test |
+| M2b | `SaveStatus` ENV에서 `"stale"` 삭제 | **FAIL 2** | SaveStatus.buttons.test "버리고 새로고침 1개" · StudioLayout.test stale 환경 행 |
+| M3 | `SaveActions.discard` `reload()` 삭제 | **FAIL 2** | SaveActions.test "discarded → reload" · "blocked{stale} → reload" |
+
+→ 살아 있는 stale 행·복원 STALE_DOC·discard reload는 이번 diff 뒤에도 기존 테스트가 지킨다.
 
 ## 4. 예산 (사실 · fresh `npm run build` exit 0 · `logs/qa/build.txt`)
 | 항목 | 실측 | 기대 | 판정 |

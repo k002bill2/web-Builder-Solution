@@ -1,0 +1,9 @@
+== M1b src/data/memoryDocBook.ts
+diff:  1 file changed, 1 deletion(-)
+-      settled(core, current);
+     × 미저장 편집이 있으면 복원 = STALE_DOC · DocBook·스냅샷·코어 초안 변화 0 33ms
+ FAIL  src/features/studio/save/saveCore.rebase.test.ts > RS6-L3a CP0 · DocBook revision 쓰기 뒤 코어 기준 > 미저장 편집이 있으면 복원 = STALE_DOC · DocBook·스냅샷·코어 초안 변화 0
+AssertionError: expected { projectId: 'project-1', …(9) } to be an instance of ProjectRepositoryError
+ Test Files  1 failed | 339 passed (340)
+      Tests  1 failed | 3017 passed (3018)
+restored:        0 changes

@@ -1,6 +1,11 @@
 # RS7-A REPORT — 도달 0 충돌 경로 정리 (B-RS-07) · `/studio` 여유 (B-RS-06)
 
-base `73289c90` · 브랜치 `k002bill2/rs7-dead-conflict` · (초안 — 결론은 마감 때)
+base `73289c90` · 브랜치 `k002bill2/rs7-dead-conflict`
+
+## 0. 결론 — **PASS**
+- CP0: 편집기 충돌 경로(phase `stale` → `conflict` → ConflictCallout → `resolve`) 제품 도달 0 증명 → 제거(`73db17ea`).
+- 예산: `/studio` 정규화 129.12 → **128.66** · 복원 132.10 → **131.64** (−0.46 · 여유 0.01 → 0.47) · raw 129.96 · 132.99 · `/projects` 99.08 · `/profile` 99.52 (증분 0). 기준선 하향 같은 커밋.
+- fresh 4게이트 exit 0 · 테스트 **340/3018**(base 341/3027 − 파일 1 · −9건, 아래 표) · Codex review 지적 0 · 실화면 stale 행·버리고 새로고침·편집·이탈 회귀 0(이탈 뒤 IDB 반영은 미확인).
 
 ## CP0. 도달 증명 (삭제 전)
 
@@ -72,3 +77,34 @@ base `73289c90` · 브랜치 `k002bill2/rs7-dead-conflict` · (초안 — 결론
 
 ## CP2. 문서 정합 메모 (인계)
 - UX5-AC-04·05 · RS6-AC-B4 문서·주석은 수정하지 않았다(문서 레인 아님). **충돌 경로(편집기 충돌 영역·해결 선택)를 재도입하면 UX5-AC-04·05·RS6-AC-B4를 재판정**하고, 스케줄러 `stale` 단계·`ConflictCallout`은 git `73db17ea^`에서 되살린다.
+
+## 검증 (fresh · 커밋 `73db17ea` 위)
+| 게이트 | 명령 | 결과 | 로그 |
+|------|------|------|------|
+| typecheck | `npm run typecheck` | exit 0 | `logs/gate-typecheck.txt` |
+| lint | `npm run lint` | exit 0 | `logs/gate-lint.txt` |
+| test | `npm test -- --run` | exit 0 · 340 files / 3018 tests passed | `logs/gate-test.txt` |
+| build | `npm run build` | exit 0 · 정규화 128.66 · 131.64 = 기준선 · 멈춤선 128.69 · 131.67 | `logs/gate-build.txt` |
+| Codex | `codex-companion review --scope branch --base 73289c90` | 지적 0("수정이 필요한 결함은 발견하지 못했습니다") | `logs/codex-review.txt` |
+
+## 실화면 (Ego Lite · `npx vite preview --host 127.0.0.1 --port 4386 --strictPort` · 앱 안 클릭)
+| 단계 | 관측 | 판정 |
+|------|------|------|
+| 새 프로젝트 → 카탈로그(모던 카페·동네 치과) → A 전부 선택 → 프로필 v1 → 3안 → A안 편집 시작 | `/studio/project-1` · held `design-studio-writer:exclusive` | 통과 |
+| 탭A 편집 | "이 브라우저에 저장됨 · 방금" | 통과 |
+| 탭B(`/projects` → 편집기 열기) · 탭A 다시 편집·저장 · 탭A 닫기 | held `[]` | 통과 |
+| 탭B 편집 | 상태 줄 "다른 탭에서 바뀐 내용이 있습니다 — 새로고침한 뒤 편집하세요" + "버리고 새로고침" 1개 · alert 1개(같은 문장) · "다른 곳에서 이 문서가 바뀌었습니다"·"내 편집으로 저장"·"다른 편집 불러오기" **0** | 통과 |
+| 버리고 새로고침 → 대화상자 [취소·버리기] → 버리기 | 새로고침 · 제목 = "탭A 편집 2"(다른 탭 커밋) · 탭B 편집 덮어쓰기 0 | 통과 |
+| 새로고침 뒤 편집 | 3.5s 시점 "저장 중…"(저장 진행 관측) | 통과(저장 완료 글자는 미관측) |
+| 편집 직후 "프로젝트로 돌아가기" | `/projects` 이동 | 통과 |
+| 이탈 뒤 IDB 최종 편집 반영 | — | **미확인**: 확인 직전 preview가 백그라운드 시간 제한으로 종료되고 태스크 공간이 사라짐. 단위 `StudioLeave.test`·`useDocSaveLeave.test` GREEN |
+| 정리 | `lsof -iTCP:4386 -sTCP:LISTEN` 빈 출력(exit 1) | 리슨 0 |
+- 스크린샷 1회 시도 = CDP 타임아웃(배경 탭) — 관측은 DOM 텍스트로 대신.
+
+## 사실 / 추정 / 미확인
+- 사실: 위 CP0 사슬 · 게이트 4종 · 예산 수치 · Codex 0 · 실화면 표의 "통과" 행.
+- 추정: CP1a의 무관 경로 +0.01 = 해시 흔들림.
+- 미확인: 실화면 이탈 뒤 IDB 최종 반영(단위로만).
+
+## 다른 레인 접촉
+- 쓰기 = `components/studio/**`·`features/studio/**`·`app/scripts/m2cBaseline.json`·`app/scripts/bundleBudget.test.mjs`·`dev/active/rs7-dead-conflict/**`만. `features/projects`·`components/projects`·`features/pending`·`features/profile`·`data/**`·`vite.config.ts`·`src/build/**` 변경 0(`memoryDocBook.ts`도 유지라 변경 0).

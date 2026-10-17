@@ -202,6 +202,7 @@
 | 행 | 결과 | 근거 |
 |---|---|---|
 | L1 내보내기 UI | **통과 with note** | 아래 |
+| L3 해제 | **통과** (Archive Utility 더블클릭 = 미확인) | 아래 |
 
 - **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
   - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
@@ -211,3 +212,10 @@
   - 결정성: 같은 문서 재내보내기 결과 해시 동일(zip `54f08f25dc24` · HTML `073383c0fbc4`) · 1280/390 저장 파일 바이트 크기 동일(zip 618,705B · HTML 796,635B).
   - 차단 보조 문장: 1차 시작 시 "SEO 메타 차단 2" 상태에서 두 버튼 aria-disabled + "첫 차단으로 이동" 노출 확인(r01 로그).
   - note: Ego Lite에서 클릭 직후 **자동 내려받기 이벤트는 30초 안에 관측되지 않았고**, 화면의 "내려받기" 링크 클릭으로 저장했습니다. 앱은 이 경우를 위해 "내려받기가 시작되지 않으면…" 문장과 링크를 둡니다. [추정] Ego TaskSpace의 download 이벤트가 비동기 프로그램 클릭을 잡지 않는 도구 한계일 수 있음 — 실제 Chrome 자동 내려받기는 [미확인].
+
+- **L3** (Bash) [사실]
+  - 1280·390에서 저장한 zip 2개 `cmp` 동일 · SHA-256 `54f08f25dc24…` = 화면 "결과 해시" 앞 12자와 일치.
+  - `unzip -t` "No errors detected" exit 0 · 파일 **7개**(index.html · LICENSES.md · assets/fonts/OFL.txt · Pretendard-400/700.woff2 · assets/images/img-01/02.webp — 이미지 2).
+  - `ditto -xk` 해제 폴더 vs `unzip` 해제 폴더 `diff -r` = 0 · `file`: webp 2 = Web/P · woff2 2 = WOFF2.
+  - index.html: `<img>` 2개 alt = 입력한 대체텍스트("카페 내부 전경" · "바리스타가 커피를 내리는 모습") · 상대 경로 `assets/images/…` · `<script>` 1개 = 고정 메뉴 스크립트(popover 닫기, SPEC F-07 허용).
+  - **Archive Utility 더블클릭 = 미확인**(GUI 실행이라 무인 run에서 결과 확인 불가 — 브리프 지시대로 `ditto -xk` 결과만 사용).

@@ -14,4 +14,5 @@
 - [x] 4. 변이 5종 — 전부 FAIL(8·5·6·20·1) · 매번 restored-clean
 - [x] 5. Ego Lite 실화면 (a)~(e) + 콘솔·네트워크 0 + 정리(IDB [] · finish · listTaskSpaces [] · 4378 리슨 0)
 - [x] 6. fresh 게이트 typecheck·lint·test(331/2953)·build(129.03/130.36 · 132.01/133.39)
-- [x] 7. QA-REPORT 작성·커밋 — 판정 PASS with notes
+- [x] 7. QA-REPORT 작성·커밋 — 판정 PASS with notes (note 2 이미지 순서 의존 = 잠재 High · Jarvis 판단)
+- [x] 8. advisor 지적 — 이미지 + 해제 save 경로 확인(임시 테스트 3 · 실화면 (f))

@@ -19,7 +19,7 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M2B-07 | ✅ 결정·구현(M2C-TODO T-1) → QA 기준선 재생성 | M2B-6 QA 사양 결정(P3) | 비활성 예약 폼이 사양(QB-11 흐리지 않음)대로 활성처럼 보임 — 안내 문구 외 시각 단서 추가 여부 | Designer 판단 |
 | B-M2B-08 | ✅ 원기록 작성(m2a r3 5절) | M2B-6 QA 루브릭 | m2a K1 7변형(about/story·contact/form·faq/accordion·footer/biz-extended·header/sticky-right-cta·hero/fullbleed-left·services/cards-3) TR-POL-04 루브릭 원기록 보강 | Designer 문서 |
 | B-M2B-09 | M2B-6 QA 미검증 | QB-13·14(BOUND), BODY QB-14·15, MF-AC-B1·B2·B5·B7·B9, CMP QB3~6·B5·B6, 실제 로컬 이미지 갤러리, Safari·Firefox — Ego Lite 렌더 정지 환경 한계. 포그라운드 Chrome 등 실측 환경에서 재검 | QA 재검 |
-| B-M2C-01 | M2C-4 Codex r1·r2 | 렌더 직렬화 메시지 상한 `HTML_MAX` 8,000,000자(`render/htmlMessage.ts`) < 이미지 보관 한도 30MB — 큰 이미지 문서의 정적 HTML이 html 메시지 폐기 → 시간 초과로 실패 가능. 상한·전송 방식·사전 크기 안내 결정 | 렌더 쪽 레인 또는 M4 zip |
+| B-M2C-01 | M2C-4 Codex r1·r2 | 렌더 직렬화 메시지 상한 `HTML_MAX` 8,000,000자(`render/htmlMessage.ts`) < 이미지 보관 한도 30MB — 큰 이미지 문서의 정적 HTML이 html 메시지 폐기 → 시간 초과로 실패 가능. 상한·전송 방식·사전 크기 안내 결정 | 렌더 쪽 레인 또는 M4 zip · **✅ 닫힘 2026-10-18 — PR #38 M4-a 참조 직렬화(Q17 B): 이미지는 렌더 메시지에서 빠지고 부모 Blob으로 합침, `HTML_MAX` 유지 · 20MB 이미지 문서 단위 성공(EXP-AC-17) · 실화면 20MB+는 UI로 생성 불가(QA L9 BLOCKED)** |
 | B-M2C-02 | ✅ M2C-P3 수정(merge) | M2C-5 QA D-1(P3) | IMG-AC-29 — `check-bundle-size` /studio 조작 뒤 목록에 ImageSlotPanel·ingest·imageStore·exportImages 미표시(판정 영향 없음). afterAction 키 추가만 | Developer(scripts 추가만) |
 | B-M2C-03 | ✅ QB-10 전제 정정(m2c r3)·MQ-S1 ★A → QA T-5 | M2C-5 QA D-2(P3·사양) | QB-10 잃은 이미지 경로가 제품 흐름으로 도달 불가 — 새로고침 시 프로젝트 자체가 사라짐(서버 0). SPEC 9절 QB-10 전제 정정 또는 보관 방식(MQ-C2 B) 재론 | Designer 문서 · ⏳ ADR-007 채택(로컬 IndexedDB 영속) — P1 레인으로 해소 예정 |
 | B-M2C-04 | ✅ M2C-P3 수정(merge) | M2C-5 QA D-3(P3) | 1280→1024 폭 변경 시 열어 둔 "이미지 편집" 펼침이 닫힘(작업 위치 유실) | Developer |
@@ -71,4 +71,14 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-RS-16 | RS6 L5 QA-REPORT 4절 · B-RS-03 | `PendingStart` 행("시작 다시 시도") 실화면 미관측 — 쓰기 뒤 결과 미확인일 때만 생겨 주입 없이 실화면 경로 없음(추정) · 단위 `ProjectsPending.test.tsx` CP2만 | 미정(Jarvis 배정) · RS7-B QA(2026-10-17)에서도 실화면 BLOCKED — PendingStart 생성 불가(IDB put 예외 주입 1회 = 잠금 오류 경로로 분류 · `dev/active/rs7-rows-text/QA-REPORT.md` 4) · 단위 대체: `ProjectsRowPriority.test.tsx`(RS7-M1) · **✅ 수용 닫힘 2026-10-18 — 단위 가드 `ProjectsRowPriority.test.tsx`·`ProjectsPending.test.tsx`로 수용, 실화면 생성 수단 없음(RS8-1 REPORT 3절)** |
 | B-RS-17 | RS6 L5 REPORT | `/profile` "저장 다시 시도"(`restartText`) — UX-5 D1("시작 다시 시도") 미적용. L5 쓰기 표 밖 · `/profile` 첫 화면 여유 0.44 | 미정(Jarvis 배정) · ✅ RS7-B PR #28 닫힘(2026-10-17 — `/profile` 시작 재생 버튼 "시작 다시 시도"(UX-5 D1) · 인용 알림 2문장 라벨 치환 · `dev/active/rs7-rows-text/REPORT.md`) |
 | B-RS-18 | RS7-C 병합 검증 | 전체 스위트 간헐 실패 1건 — RS7-C 병합 검증 6회 중 1회 실패 · 원인 미식별 | ✅ PR #30 (`4227bb52` · 머지 `f87e5ad1`) 닫힘 — 식별 `FieldUndo.test.tsx` "미리보기 열기 → Ctrl+Z"(heading 직후 같은 틱 키 입력, 잠금 갱신 useEffect 전) · 테스트 1줄 수정 · 수정 후 전체 15/15 GREEN · RS7-C 때 실패와 동일 테스트인지는 미확정(당시 이름 미기록) |
+| B-M4A-01 | M4-a AppSec L-3 | `storeZip.ts` `BAD_NAME`이 허용표보다 약함(`a/./b`·`a//b`·Windows 금지 문자) — 현재 호출자가 허용표를 먼저 거쳐 도달 불가 | Low · 방어 심층화 |
+| B-M4A-02 | M4-a AppSec L-4 | zip DOS 시각이 로컬 시간대 의존 → 같은 revision이라도 기기 간 zip 해시 다름(SPEC 2.4 "로컬 시각") | Low · SPEC 판단(UTC 고정 여부) |
+| B-M4A-03 | M4-a AppSec L-5 | SPEC 4.3 "LICENSES.md F-14" 미구현(내용은 상수뿐) | Low · LICENSES 문안 레인 때 함께 |
+| B-M4A-04 | M4-a AppSec L-6 | `exportFileStem` bidi·제로폭 문자 · 예약 이름 부분 일치 | Low |
+| B-M4A-05 | M4-a FIX1 Codex P2-2·P3 | CSS `url(` 출현 수 검사는 정규식 기반 fail-closed — 문자열 안 `url(`·Tailwind 임의값 클래스가 생기면 내보내기 실패(오탐), 글꼴 data URL 모양 안 브랜드 글자 제외. 근본 해결 = CSS 토큰화(새 설계) | Low · 킷 CSS에 해당 모양 추가 시 회귀 신호 |
+| B-M4A-06 | M4-a QA 5 | `export.fail.pattern` 문구 키 미구현 — 금지 패턴 실패가 일반 실패 문구로 나옴 | Low · 문구 |
+| B-M4A-07 | M4-a REPORT 편차 3 · EXP-AC-14 | 용량 초과(ZIP_MAX)가 refused가 아니라 재시도 가능 실패로 처리(`memoryDocBook runJob`) | Low · 저장소 코드 |
+| B-M4A-08 | M4-a QA 2차 L2 | 렌더 청크 로드 실패 뒤 같은 탭 "다시 시도"가 복구되지 않음 — Chromium이 실패한 동적 import를 모듈 맵에 남김(플랫폼 동작). 새로고침 안내 또는 import URL 재시도 전략 필요 | Medium · UX |
+| B-M4A-09 | M4-a QA 2차 L5·L7·L8 · R5 | Safari(수동)·Firefox(미설치) 실화면 · Archive Utility 더블클릭 · Windows 탐색기 해제 미확인 — Q19(`file://` 글꼴) 재판정 트리거 포함 | M5 호스팅 전 릴리스 체크 |
+| B-M4A-10 | M4-a AppSec 미확인 · 항목 6 | `readProject`(프로젝트 파일 가져오기) → `validatePageDoc` 신뢰 경계 심층 검토 · 내보낸 HTML CSP meta(새 설계 — SPEC 개정 후보) | Medium · 별도 Security 레인 |
 | B-RS-19 | RS7 flaky-hunt REPORT 2절 · 정적 조사 | ① 앱: 미리보기 잠금(`StudioLayout.tsx:247-252` `historyKeys.locked`)이 passive effect에서 갱신 — 커밋~effect 사이 수 ms 동안 Ctrl+Z가 편집 되돌리기로 가로채질 수 있는 이론상 창(실사용 영향 미미 추정, 미재현) · layout effect/render 값 이전 검토 ② 미재현 flaky 후보 2건: `CompareDialog.test.tsx:161-170`(shouldAdvanceTime + 7800ms) · `imagePersist.test.ts:93`(waitFor 1000ms 타임아웃 삼킴) | 미정(Jarvis 배정) |

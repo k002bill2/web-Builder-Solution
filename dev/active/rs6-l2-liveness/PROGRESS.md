@@ -8,7 +8,7 @@
 - [x] 2. CP1 LV-1 저장 감시 (`saving-slow`, view() mark·inflight) — RED 예측 → RED 로그 → GREEN 커밋 · 예산 기록
 - [x] 3. CP2 LV-2 포기 토큰 (`blocked{timeout}`) + MC I7 주석 + L1 QA note 1 (`blocked{newer}`) — RED → GREEN · 예산
 - [x] 4. CP3 `T_hang` alert 1회 · 재마운트 재발화 0 · 키 상수/`role=alert`/`aria-busy` — RED → GREEN · 예산
-- [ ] 5. L1 QA note 3 (`port.mode()`·`port.verify()` throw → `failed{infra}`) — RED → GREEN
+- [x] 5. L1 QA note 3 (`port.mode()`·`port.verify()` throw → `failed{infra}`) — RED → GREEN
 - [ ] 6. L1 QA note 4 (HARNESS-MAP 집계 정정 · 가능 시 #28 등 보강)
 - [ ] 7. L1 QA note 2 → REPORT "L3 전 조건" 이월 (고치지 않음)
 - [ ] 8. 마감 게이트 fresh (typecheck·lint·test·build + 전 라우트 번들 표)
@@ -22,6 +22,7 @@
 | CP1 감량(감시 = `watchSaving` onChange 데코레이터, 미배선) | 128.55 (+0.00) · 131.54 (+0.01) | 129.89 · 132.92 | 기준선 변경 0 · 감시 결합 비용(≈+0.1 추정 — 1차 실측)은 L3가 훅에 붙일 때 진입에 실린다 |
 | CP3 1차(키를 `liveness.ts`에 둠) | 128.72 (+0.15) · 131.70 | 130.10(한도 130 초과) · 133.13 | 감량 1회 |
 | CP3 감량(키 = `save/alertKeys.ts` 분리) | 128.63 (+0.06 · L2 누적 +0.08) · 131.61 (+0.05 · 누적 +0.08) | 129.96 · 132.99 | 기준선 128.63·131.61 · eagerKb 129.96·132.99 · note CP3 · bundleBudget.test 2줄 |
+| note 3 (coreIo `safely` — 조작 뒤 청크) | 128.63 (+0.00) · 131.61 | 129.95 · 132.98 | 기준선 변경 0 |
 | CP2 (`core.discard()` 동기 진입 + `discards` 필드 진입 · 포기 판정은 coreIo 조작 뒤) | 128.57 (+0.02) · 131.56 (+0.03) | 129.90 · 132.93 | 기준선 갱신 normEagerKb 128.57·131.56 · eagerKb 129.90·132.93 · note "개정 17 배분 RS6-L2 CP2" · bundleBudget.test 기대값 2줄 |
 
 ## RED 예측 · 로그
@@ -33,6 +34,7 @@
   - 기존 테스트 변경: `saveCore.modes.test.ts` 헬퍼 `discardOf` 1줄 = `core.discard()`(제품 경로로 — 단언 변경 0 · CE-1·CX-3 h6-7·h6-8 포함 14건 GREEN).
 
 - CP3 예측: `liveness.status.test.tsx` 3건 RED 3(키 상수 없음 · aria-busy 없음). 실측 3/3 RED (`logs/cp3-red.log`). GREEN 3/3 · 전체 325/2918 · `SaveStatus.test.tsx` 기존 GREEN(변경 0).
+- note 3 예측: `saveCore.reject.test.ts` 5건 RED 5(reject). 실측 5/5 RED — "promise rejected … instead of resolving" (`logs/note3-red.log`). GREEN 5/5 · 전체 326/2923.
 
 ## 결정·차이
 - `saving-slow` = `phase:"saving"` + `slow:true` 표지(I6 8.1 "(+)" 표기). 사유: 새 phase 리터럴이면 `useDocSave.ts:120` 떠나기 대기(`now === "saving"`)가 정지 중 false로 풀리고(L3 동작 변경) `saveStatusText` exhaustive switch(L4 본문)를 고쳐야 한다.

@@ -9,7 +9,9 @@ import { retainedIds } from "../images/store/imageStore";
 import { DISCARD_GIVE_UP_MS } from "./liveness";
 import type { CoreIo, DiscardResult, Receipt, SaveResult } from "./saveCore";
 
-const reasonOf = (error: unknown) => (error as { reason?: string } | undefined)?.reason ?? "not-committed";
+const reasonOf = (error: unknown, fallback = "not-committed") => (error as { reason?: string } | undefined)?.reason ?? fallback;
+/** L1 QA note 3: 포트 판정·재읽기(mode·verify) throw = reject 아님 → `failed{infra}`(거짓 saved 0 — 전진은 성공 뒤에만) */
+const safely = <T>(run: () => Promise<T>): Promise<T | { readonly infra: string }> => run().catch((error: unknown) => ({ infra: reasonOf(error, "infra") }));
 
 export const coreIo: CoreIo = {
   async save(s, link): Promise<SaveResult> {
@@ -29,8 +31,8 @@ export const coreIo: CoreIo = {
       s.savedMark = Math.max(s.savedMark, submitted);
       return { status: "failed", reason: "not-persistent", newer: newer() };
     }
-    const mode = await port.mode();
-    if (mode !== "writer") return { status: "failed", reason: mode, newer: newer() };
+    const mode = await safely(() => port.mode());
+    if (mode !== "writer") return { status: "failed", reason: typeof mode === "string" ? mode : mode.infra, newer: newer() };
     const next: PageDoc = Object.freeze({ ...target, revision: (s.confirmed?.revision ?? target.revision) + 1, hash: hashDoc(target), updatedAt: link.now() });
     try {
       await port.commit(link.projectId, next, bound);
@@ -52,17 +54,19 @@ export const coreIo: CoreIo = {
     if (!port) return { status: "failed", reason: "not-persistent" };
     const entered = s.mark;
     if (s.mark <= s.savedMark && s.confirmed) {
-      const mode = await port.mode();
-      if (mode !== "writer") return { status: "failed", reason: mode };
+      const mode = await safely(() => port.mode());
+      if (mode !== "writer") return { status: "failed", reason: typeof mode === "string" ? mode : mode.infra };
       const proof = s.confirmed;
-      if (!(await port.verify(projectId, proof))) return { status: "failed", reason: "stale" };
+      const fresh = await safely(() => port.verify(projectId, proof));
+      if (fresh !== true) return { status: "failed", reason: fresh ? fresh.infra : "stale" };
       // 진입 뒤(await 사이) 편집이 있으면 확정 아님
       if (s.mark !== entered) return { status: "newer", receipt: { ...proof, proof: "fresh" } };
       return { status: "confirmed", wrote: false, receipt: { ...proof, proof: "fresh" } };
     }
     const result = await save();
     if (result.status === "failed") return { status: "failed", reason: result.reason };
-    if (!(await port.verify(projectId, result.receipt))) return { status: "failed", reason: "not-committed" };
+    const fresh = await safely(() => port.verify(projectId, result.receipt));
+    if (fresh !== true) return { status: "failed", reason: fresh ? fresh.infra : "not-committed" };
     if (s.mark > result.receipt.mark) return { status: "newer", receipt: result.receipt };
     return { status: "confirmed", wrote: true, receipt: result.receipt };
   },

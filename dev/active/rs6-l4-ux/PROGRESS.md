@@ -35,3 +35,16 @@
 - [x] M4. 패치 9개 보존·apply --check ok → 복원(diff 0·porcelain 0) → dist sha 동일 · typecheck·lint·test(331/2957)·build 0
 - [x] M5. REPORT-MEASURE.md + 커밋
 - Codex·Ego Lite: 브리프 금지로 생략
+
+## R2 레인 (`BRIEF-R2.md`, L4 전체 구현 재개 · M3a 조합 · 상향 0)
+- [x] R0. BRIEF-R2·PROGRESS 커밋
+- [ ] R1. CP1 SaveStatus 판정 출처(I6 8.1 · stale 행) — RED `logs/r2-cp1-red.txt` → GREEN
+- [ ] R2. CP2 저장 확인·다시 저장·폐기 대화상자 — RED `logs/r2-cp2-red.txt` → GREEN
+- [ ] R3. CP3 ConflictCallout 두 선택·포커스·replace epoch +1 — RED `logs/r2-cp3-red.txt` → GREEN
+- [ ] R4. CP4 문구·금지 문구 0·memory 모드 — RED `logs/r2-cp4-red.txt` → GREEN
+- [ ] R5. 상쇄 M2a~M2d (`src/build/` 목록 모듈) — 실측
+- [ ] R6. 예산 판정 · 기준선 파일 갱신(상한 안일 때)
+- [ ] R7. Ego Lite 실화면 (1280·390 · stale 2탭)
+- [ ] R8. Codex review (`--scope branch --base aca09805`) · 반영 1회
+- [ ] R9. fresh typecheck·lint·test·build
+- [ ] R10. REPORT.md R2 절 + 커밋

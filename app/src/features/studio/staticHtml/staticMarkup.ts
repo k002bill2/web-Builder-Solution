@@ -32,11 +32,23 @@ export interface StaticHtmlParts {
 
 const ZIP_FONT = /^assets\/fonts\/[A-Za-z]+-\d{3}\.woff2$/;
 const ZIP_IMAGE = /^assets\/images\/img-\d{2,3}\.(webp|jpg|png)$/;
-const CSS_URL = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
+/** CSS url() 값 = 큰따옴표 · 작은따옴표 · 무따옴표(공백·따옴표·괄호 0) 중 하나. 따옴표가 섞이면 매치되지 않는다 → 출현 수 비교가 잡는다(AppSec L-1) */
+const CSS_URL = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^'"()\s]*))\s*\)/gi;
+/** url() 값 목록 — `url(` 출현 수와 엄격 매치 수가 다르면(읽지 못한 url()이 있으면) null */
+function cssUrls(css: string): string[] | null {
+  const urls = [...css.matchAll(CSS_URL)].map((m) => (m[1] ?? m[2] ?? m[3] ?? "").trim());
+  return urls.length === (css.match(/url\(/gi) ?? []).length ? urls : null;
+}
+/** CSS 이스케이프 해석(`\69` → i · `\:` → :) — 킷 CSS의 `@\69mport`·`u\72l(`를 브라우저처럼 글자로 본다. Tailwind 이스케이프 선택자·content 글자는 url(·@import가 되지 않는다 */
+const CSS_ESCAPE = /\\(?:([0-9a-f]{1,6})[ \t\n\r\f]?|([^\n\r\f0-9a-f]))/gi;
+const unescapeCss = (css: string) =>
+  css.replace(CSS_ESCAPE, (_, hex: string | undefined, ch: string | undefined) => (hex ? String.fromCodePoint(Math.min(parseInt(hex, 16) || 0xfffd, 0x10ffff)) : (ch ?? "")));
 
+/** 킷 CSS — url()은 data: 또는 (zip) assets/fonts만 · @import·image-set 0 · 읽지 못한 url() 0 (이스케이프 해석 뒤) */
 function assertNoExternalCss(css: string, target: "html" | "zip") {
-  const urls = [...css.matchAll(CSS_URL)].map((m) => m[2]!.trim());
-  if (/@import/i.test(css) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
+  const plain = unescapeCss(css);
+  const urls = cssUrls(plain);
+  if (urls === null || /@import|image-set\(/i.test(plain) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
 }
 
 /**
@@ -91,7 +103,10 @@ function assertLinks(site: Element) {
 
 /** 본문 CSS(style 속성·요소) — url()은 data:만 · @import·image-set·이스케이프(\) 0(이스케이프는 url(·@import를 글자로 숨긴다) */
 const CSS_TRICK = /@import|image-set\(|\\/i;
-const hasExternalCss = (css: string) => CSS_TRICK.test(css) || [...css.matchAll(CSS_URL)].some((m) => !m[2]!.trim().startsWith("data:"));
+const hasExternalCss = (css: string) => {
+  const urls = cssUrls(css);
+  return CSS_TRICK.test(css) || urls === null || urls.some((u) => !u.startsWith("data:"));
+};
 
 /** F-13 그 밖 URL 자리 — action·formaction·poster·background·ping 0 · src는 img만 · href(xlink 포함)는 # 조각만 · 본문 link·base·meta 0 · 본문 CSS 외부 요청 0 */
 function assertNoExternalSources(site: Element) {

@@ -1,4 +1,7 @@
-# M4-a-4 QA REPORT — 정적 zip 내보내기 릴리스 게이트 1차(정적·회귀·생성물)
+# M4-a-4 QA REPORT — 정적 zip 내보내기 릴리스 게이트 1차(정적·회귀·생성물) · 2차(실화면)
+
+**2차 판정(실화면 · 무인 Chromium 행): PASS with notes** — L1·L3·L4·L6·L10·L2 통과(노트 2: 자동 내려받기 미관측 · 실패 뒤 다시 시도 같은 탭 복구 불가) · L9 BLOCKED(20MB+ 문서 UI로 생성 불가 · 도달 최대 1.1MB 통과) · L5·L7·L8 미확인(무인 run 범위 밖). FAIL 기준(거짓 성공·외부 요청·스크립트 실행·이미지·글꼴 누락·예산 초과) 해당 0. 근거 = 8절.
+**릴리스 게이트 종합 판정: PASS with notes** (1차 PASS with notes + AppSec PASS + FIX1 반영 확인(조사 "(zip)를" · test 3134) + 2차 PASS with notes) — 조건: Safari·Firefox 실화면(L5·L7·L8)과 R3 20MB+(L9)는 미확인/BLOCKED로 남아 사용자 동석 run 또는 후속 확인 대상.
 
 **1차 판정: PASS with notes** (정적·회귀·생성물 범위) — 릴리스 최종 판정은 2차 실화면(`LIVE-PLAN.md`) 이후입니다. 근거·노트 = 7절.
 
@@ -190,7 +193,7 @@
 - `git status --short`: 마감 커밋 뒤 빈 값.
 
 
-## 8. 2차 실화면 (무인 Chromium 행) — 진행 중
+## 8. 2차 실화면 (무인 Chromium 행) — PASS with notes
 대상 tip `ee09160c`(1차 + FIX1 `41385e10`) · Ego Lite(Chromium) TaskSpace 37 · preview `127.0.0.1:4395` · 출력 `/tmp/m4a-qa-live/` · 스크립트 `logs/live/`
 
 ### 8.0 fresh 게이트 — 통과 [사실]
@@ -208,6 +211,8 @@
 | L10 render.css 외부 문자열 | **통과** | 아래 |
 | L2 실패 alert | **통과 with note** (다시 시도 = 같은 탭 복구 불가) | 아래 |
 | L9 큰 문서(R3) | **BLOCKED**(20MB+ 문서를 UI로 만들 수 없음) · 도달 최대치는 통과 | 아래 |
+| L5 Safari 로컬 서버 · L7 Safari `file://` | **미확인**(무인 run 범위 밖 · Safari 수동 행) | 자동화 시도 안 함 |
+| L8 Firefox | **미확인**(무인 run 범위 밖 · 미설치) | 설치 시도 안 함 |
 
 - **L1** (Ego 1280·390, zip·HTML) [사실] `shots/L1-*.png`
   - 버튼 순서 zip → HTML → (PNG 별도 구역) · 크기 1280 = 252×40 · 390 = 366×40(검사 탭).
@@ -251,3 +256,9 @@
   - 노이즈 PNG 1800×1800(각 9.7MB, 입력 한도 10MB 안) 12장 준비 → 이 문서의 이미지 슬롯은 **5개**(Hero 1 · About 1 · Portfolio 3 · Services 0)뿐. Portfolio 3장은 수집 단계 WebP 0.82 재인코딩 결과 **각 173KB**(손실 압축이 노이즈를 크게 줄임 · 소스상 바이트 상한 코드는 없음 `images/ingest/format.ts:13` · `fileType.ts:8` 10MB는 입력 한도).
   - 결과: zip **2.05초** 성공 · "zip 1개 · 1.1MB (이미지 5장 · 글꼴 2개)" · `unzip -t` 오류 0 · 저장 1,148,995B · SHA-256 앞 12자 = 화면 해시 `9bdb1b53f032` 일치. 단일 HTML **0.73초** 성공 · "HTML 1개 · 1.4MB" · 1,503,462B · 해시 `ce3e29e866d6` 일치. alert 0.
   - **BLOCKED(R3 목표 미도달)**: 이미지 20MB+ 문서는 현재 UI 경로로 만들 수 없음 — 슬롯 수(5)와 WebP 재인코딩 때문에 도달 가능한 최대가 약 1MB대. 20MB+ 생성 성능은 앱 UI 밖(테스트 주입) 수단이 필요하며 무인 실화면 run 범위 밖. [추정] 같은 이유로 실사용에서도 20MB+ 문서는 현 슬롯 구성에서는 드묾 — 슬롯이 늘어나는 기능이 생기면 재측정.
+
+### 8.9 마감 [사실]
+- preview(4395)·http.server(4396) 종료 → `lsof -nP -iTCP:4395 -sTCP:LISTEN` 출력 없음 · `:4396` 출력 없음.
+- IDB `design-studio` 삭제(삭제 뒤 `indexedDB.databases()` = []) · localStorage 비움 · TaskSpace 37 `finish({keep:[]})`.
+- 내려받은 파일·해제 폴더·노이즈 PNG는 `/tmp/m4a-qa-live/`(저장소 밖). 저장소에는 스크린샷(`shots/L1·L2·L4·L6`)·스크립트(`logs/live/`)·로그만 커밋. 앱·테스트 코드 변경 0.
+- 열린 항목(2차 신규): ① 실패 뒤 "다시 시도"가 같은 탭에서 복구 못 함(Chromium 동적 import 실패 캐시 · 포커스 BODY) — 후속 개선 후보 ② Ego 자동 내려받기 미관측 — 실제 Chrome 확인 필요 ③ R3 20MB+ 측정 수단(테스트 주입) ④ Safari·Firefox 행(L5·L7·L8)·Archive Utility 더블클릭.

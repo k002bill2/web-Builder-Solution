@@ -19,14 +19,15 @@
 
 대상: tip `ee09160c`(1차 + FIX1 `41385e10`) · 시작 2026-10-18 · 출력 `/tmp/m4a-qa-live/`
 
-- [ ] 0. fresh 게이트(test 3134 · build · /studio 128.71 · 복원 131.69)
-- [ ] 1. 준비: build · preview 4395 · 경로 A 문서 · 이미지 2장 업로드
-- [ ] L1 내보내기 UI (Ego 1280·390 · 조사 "정적 사이트(zip)를")
-- [ ] L3 해제 (ditto -xk · unzip -t · 파일 7 · Archive Utility = 미확인)
-- [ ] L4 로컬 서버 4396 (Ego 1280·390 · zip 폴더 + 단일 HTML)
-- [ ] L6 file:// (Ego 1280)
-- [ ] L10 render.css 외부 문자열 scan
-- [ ] L2 실패 alert (Ego 390)
-- [ ] L9 큰 문서 R3 (6턴 한도)
-- [ ] L5·L7·L8 = 미확인(무인 run 범위 밖) 기록
-- [ ] 마감: preview·http.server 종료 · lsof 0 · IDB 삭제 · finish · shots 커밋 · untracked 0 · 판정
+- [x] 0. fresh 게이트(test 3134 · build · /studio 128.71 · 복원 131.69)
+- [x] 1. 준비: build · preview 4395 · 경로 A 문서 · 이미지 2장 업로드
+- [x] L1 내보내기 UI (Ego 1280·390 · 조사 "정적 사이트(zip)를")
+- [x] L3 해제 (ditto -xk · unzip -t · 파일 7 · Archive Utility = 미확인)
+- [x] L4 로컬 서버 4396 (Ego 1280·390 · zip 폴더 + 단일 HTML)
+- [x] L6 file:// (Ego 1280)
+- [x] L10 render.css 외부 문자열 scan
+- [x] L2 실패 alert (Ego 390)
+- [x] L9 큰 문서 R3 (4턴) — BLOCKED: 슬롯 5개·WebP 재인코딩으로 20MB+ 문서 UI 생성 불가(도달 최대 1.1MB 통과)
+- [x] L5·L7·L8 = 미확인(무인 run 범위 밖) 기록 — BLOCKED: Safari 수동·Firefox 미설치
+- [x] 마감: preview·http.server 종료 · lsof 0 · IDB 삭제 · finish · shots 커밋 · untracked 0 · 판정
+- 결과: 2차 PASS with notes · 종합 PASS with notes (QA-REPORT 첫머리 · 8절)

@@ -3,17 +3,23 @@
 브랜치 `k002bill2/rs6-l4-ux` · base `aca09805` · 브리프 `BRIEF.md`.
 
 ## 체크리스트
-- [ ] 0. BRIEF·PROGRESS 커밋
-- [ ] 1. 정본 읽기 (PLAN 5절 L4 · I6 8절 · UX-5 · L2/L3b 인계) + 대응표(서브에이전트 읽기 전용)
-- [ ] 2. CP1 SaveStatus 판정 출처 교체 — RED 예측 → RED 로그 → GREEN 커밋 · build 실측
-- [ ] 3. CP2 저장 확인·다시 저장·폐기 대화상자 — 1:1 스파이·연타 1회·aria·reject 매핑 · build 실측
-- [ ] 4. CP3 ConflictCallout 두 선택·포커스·replace 결선 + epoch +1 · build 실측
-- [ ] 5. CP4 문구 saveStatusText.ts · 금지 문구 0 · memory 모드 · build 실측
-- [ ] 6. 예산 기준선 갱신 (`m2cBaseline.json`·`bundleBudget.test.mjs`, note "개정 17 배분 RS6-L4") 또는 초과 보고
-- [ ] 7. Ego Lite 실화면 (preview 4380, 1280·390) + 정리
-- [ ] 8. Codex review (`--scope branch --base aca09805`) + 반영 1회
-- [ ] 9. fresh typecheck·lint·test·build 마감
-- [ ] 10. REPORT.md 작성 + 커밋
+- [x] 0. BRIEF·PROGRESS 커밋 (`4b8f088f`)
+- [x] 1. 정본 읽기 (PLAN 5절 L4 · I6 8절·3절·10절 · UX-5 전문 · L2/L3a/L3b 인계) — 대응표 서브에이전트는 쓰지 않음(사유: 메인이 이미 직접 읽음 · REPORT 11절)
+- [x] 2. CP1 SaveStatus 판정 출처 교체 — RED 11(`logs/cp1-red.txt`) → GREEN 17/17 · build 129.52 초과 → 감량 1회 129.25 초과 → **정지**. 코드는 `patches/cp1-reduce1.patch`(미커밋)
+- [ ] 3. CP2 저장 확인·다시 저장·폐기 대화상자 — BLOCKED: 예산 정지(BRIEF "감량 1회 뒤 멈춤")
+- [ ] 4. CP3 ConflictCallout 두 선택·포커스·replace(=rebase) epoch +1 — BLOCKED: 예산 정지
+- [ ] 5. CP4 문구 · 금지 문구 0 · memory 모드 — BLOCKED: 예산 정지
+- [x] 6. 예산 — 상한 초과 보고(REPORT 0~3·6절). 기준선 파일 변경 0(상한 밖이라 갱신 대상 아님)
+- [ ] 7. Ego Lite 실화면 — BLOCKED: 예산 정지로 브랜치 앱 코드 = base(볼 변경 없음)
+- [x] 8. Codex review r1 (`logs/codex-r1.txt` — P1 예산 · P2 slow status 알림, 정지로 반영 0)
+- [x] 9. fresh typecheck·lint·test(331/2957)·build(129.09) 마감 — 브랜치 = base 앱 코드
+- [x] 10. REPORT.md 작성 + 커밋
 
 ## 로그
-- 2026-10-17 착수.
+- 2026-10-17 착수 · base build 129.09 / 132.07 · raw 130.42 / 133.45 (`logs/base-build.txt`).
+- CP1 RED 예측: 새 출처 행(reason 문구 4 · inflight · dirty · slow 꼬리 · hang alert · 훅 결선) RED, memory·saved·offline·not-committed·stale 행은 지금 동작이라 GREEN. 실측 RED 11 / GREEN 6 = 예측 일치(`logs/cp1-red.txt`).
+- CP1 GREEN 1차 build: 129.52(+0.43) · raw 130.86 · 복원 132.50 — 상한 초과(`logs/cp1-build.txt`). 문자열만 약 180B(gzip -9 추정).
+- 감량 1회(상쇄 조사 포함): ① ConflictCallout lazy ② 환경 reason 문구 → 조작 뒤 `save/reasonText.ts`(coreIo.text) → 129.25 · raw 130.58 · 복원 132.24 — 여전히 초과(`logs/cp1-reduce1-build.txt`) → BRIEF 규칙대로 새 구현 정지.
+- 패치 상태 전체 스위트: 2971/2974 — 실패 3 = 문구·배치 변경 예상 깨짐(REPORT 4절 표).
+- 앱 코드 base로 되돌림 · 패치 보존 · fresh 게이트 4개 통과(REPORT 9절).
+- 서브에이전트: 0개.

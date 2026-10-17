@@ -144,4 +144,6 @@ export type SaveCore = ReturnType<typeof createSaveCore>;
 /** 저장소 능력(선택) — ImageKeeper와 같은 모양(MQ-6-1 · 공개 ProjectRepository 직접 확장 0) */
 export interface CoreKeeper {
   readonly core?: (projectId: string, seed: PageDoc) => SaveCore;
+  /** 레지스트리 읽기(생성 0) — 편집기 밖(`/projects` 행)이 코어 상태를 본다(RS6-L5) */
+  readonly cores?: ReadonlyMap<string, SaveCore>;
 }

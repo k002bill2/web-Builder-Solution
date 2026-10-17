@@ -28,9 +28,9 @@
 - [x] M-0. BRIEF-MEASURE·PROGRESS 커밋 (`ec2d8aab`)
 - [x] M0. base 129.09/130.42/132.07/133.45 재현 · cp1 129.25/130.58/132.24/133.61 재현 (`raw/measure-m0-*`)
 - [x] M1-CP2. 누적 129.67/131.03/132.65/134.06 (`raw/measure-cp2-build.txt` · `patches/measure-cp2.patch`)
-- [ ] M1-CP3. ConflictCallout 두 선택·포커스·rebase epoch +1 누적 build
-- [ ] M1-CP4. 문구·금지 문구 가드·memory 모드 누적 build
-- [ ] M2. 상쇄 후보 조사·실측 · 조합 1회
+- [x] M1-CP3. 누적 129.68/131.03/132.66/134.07 · epoch +1 테스트 변이 RED 확인 (`raw/measure-cp3-*` · `patches/measure-cp3.patch`)
+- [x] M1-CP4. 누적 129.72/131.08/132.70/134.11 (`raw/measure-cp4-build.txt` · `patches/measure-cp4.patch`)
+- [ ] M2. 상쇄 후보 조사·실측 · 조합 1회 — 서브에이전트 조사 완료(`raw/measure-m2-subagent-survey.md`)
 - [ ] M3. 설계 질문 2건 근거
 - [ ] M4. 패치 보존 → 자기 변경 복원 → base 재빌드 dist sha 동일 · 게이트
 - [ ] M5. REPORT-MEASURE.md + 커밋

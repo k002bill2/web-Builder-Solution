@@ -87,9 +87,14 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
   const write =
     <K extends SnapshotWrite>(method: K) =>
     (...args: Parameters<DocBook[K]>[0]) =>
-      kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
+      kept(args[0], bookOf().then(async (docs) => ((core) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void, s: typeof core) => ReturnType<DocBook[K]>)(args, commit, core)))(await coreState(args[0]))));
   /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — 저장소 인스턴스 소유(모듈 전역 0) · 편집기 첫 마운트 때 동기 생성 · 포트·io는 첫 save 때(조작 뒤 청크) */
   const cores = new Map<string, SaveCore>();
+  /** RS6-L3a CP0(L1 QA note 2) — revision을 올리는 DocBook 쓰기는 그 코어 chain 뒤 · 판정·기준 맞춤은 DocBook 청크(코어 상태를 넘긴다) */
+  const coreState = async (projectId: string) => {
+    const core = cores.get(projectId);
+    return core && (await core.idle(), await core.link((_, s) => s));
+  };
   const link = (projectId: string) => Promise.all([loadDocBook(), bookOf(), local?.sync()]).then(([mod, docs, sync]) => mod.coreLink(projectId, docs, sync, now));
   /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
   const entered = async (projectId: string) => {
@@ -123,7 +128,7 @@ export function createMemoryProjectRepository(options: MemoryProjectOptions): Pr
     saveDoc: (projectId, expectedRevision, doc) => kept(projectId, bookOf().then((docs) => call("saveDoc", (commit) => docs.save(projectId, expectedRevision, doc, commit)))),
     // restart = 판정 전 잠금 확인(RESTART MQ-S2 ★A) — 쓰기 탭이 아니면 메모리·IDB 쓰기 0으로 던진다(갈라짐 0)
     startDoc: (projectId, profileVersion, candidateId, mode, expectedRevision) =>
-      kept(projectId, bookOf().then(async (docs) => ((mode === "restart" || !docs.docOf(projectId)) && (await (await local?.sync())?.guardWrite()), call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit))))),
+      kept(projectId, bookOf().then(async (docs) => ((mode === "restart" || !docs.docOf(projectId)) && (await (await local?.sync())?.guardWrite()), ((core) => call("startDoc", (commit) => docs.start({ projectId, profileVersion, candidateId, mode, expectedRevision }, commit, core)))(await coreState(projectId))))),
     listSnapshots: async (projectId) => {
       const first = await entered(projectId);
       return book?.snapshotsOf(projectId) ?? first?.snapshots ?? [];

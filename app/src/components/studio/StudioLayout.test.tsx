@@ -9,6 +9,7 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { connectRenderFrame } from "../../features/studio/testing/renderFrame";
 import { StudioLayout } from "./StudioLayout";
+import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
 /**
  * A2-F 부품 연결 (EDITOR-A2-SHELL S7 — RESUME-1): 편집 패널 필드 · 페이지 정보 · 저장 상태 · 충돌 Callout · 자동 저장.
@@ -26,7 +27,7 @@ const PROJECT: Project = {
 
 function fakeRepository(saveDoc: ProjectRepository["saveDoc"] = async (_id, revision, doc) => ({ ...doc, revision: revision + 1 })) {
   const save = vi.fn(saveDoc);
-  const repository = { persistence: "memory", saveDoc: save, resolveConflict: vi.fn() } as unknown as ProjectRepository;
+  const repository = withSaveCore({ persistence: "memory", saveDoc: save, resolveConflict: vi.fn() }) as unknown as ProjectRepository;
   return { repository, save };
 }
 
@@ -131,11 +132,13 @@ describe("자동 저장 · 저장 상태 (S7 · E-AC-07·08 · SPEC 5.10)", () =
     expect(screen.getByRole("status", { name: "편집 알림" }).textContent).toBe("");
   });
 
-  it("편집 직후 앱 안 링크(프로젝트로 돌아가기)로 떠나면 디바운스를 기다리지 않고 바로 저장 1회(Codex r1 P2)", () => {
+  it("편집 직후 앱 안 링크(프로젝트로 돌아가기)로 떠나면 디바운스를 기다리지 않고 바로 저장 1회(Codex r1 P2)", async () => {
     const { repository, save } = fakeRepository();
     draw(repository);
     act(() => void fireEvent.change(within(editRegion()).getByRole("textbox", { name: /^제목/ }), { target: { value: "떠나기 전 편집" } }));
     act(() => void fireEvent.click(screen.getByRole("link", { name: "프로젝트로 돌아가기" })));
+    // 코어 경유 저장은 commit(이 saveDoc)이 몇 마이크로태스크 뒤에 닿는다(RS6-L3b CP-A) — 타이머는 진행하지 않는다(디바운스 0)
+    await act(() => vi.advanceTimersByTimeAsync(0));
     expect(save).toHaveBeenCalledTimes(1);
     expect(save.mock.calls[0]![2]).toMatchObject({ sections: expect.arrayContaining([expect.objectContaining({ slots: expect.objectContaining({ title: "떠나기 전 편집" }) })]) });
   });
@@ -174,6 +177,8 @@ describe("PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — �
     const { repository } = fakeRepository(async () => {
       throw error();
     });
+    // 코어 경로(RS6-L3b CP-A)는 저장 실패를 NETWORK로 던지지 않는다(제품 포트 = IDB) — 오프라인은 저장 시점 navigator.onLine으로 만든다
+    const offline = _phase === "offline" ? vi.spyOn(navigator, "onLine", "get").mockReturnValue(false) : undefined;
     draw(repository);
     await act(() => vi.advanceTimersByTimeAsync(50));
     expect(pngButton()).not.toHaveAttribute("aria-disabled");
@@ -182,6 +187,7 @@ describe("PNG 준비 조건 = 자동 저장 idle · saved (M2A-CLOSE P2-a — �
     expect(pngButton()).toHaveAttribute("aria-disabled", "true");
     expect(reasons()[0]).toBe(reason);
     expect(reasons()[1]).toMatch(/^지금 미리보기 폭.+의 페이지 전체를 한 장으로 저장합니다\./);
+    offline?.mockRestore();
   });
 
   it("저장 saved → PNG 열림", async () => {

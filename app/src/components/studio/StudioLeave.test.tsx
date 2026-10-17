@@ -11,6 +11,7 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { connectRenderFrame } from "../../features/studio/testing/renderFrame";
 import { StudioLayout } from "./StudioLayout";
+import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
 /**
  * 편집기 이탈 저장 (B-RS-01 · MQ-S5) — 앱 안 링크로 떠날 때 마지막 화면 편집이 저장소에 반영된 뒤 이동한다.
@@ -33,18 +34,28 @@ type Outcome = "ok" | Error;
 function heldRepository(persistence: "memory" | "local" = "memory") {
   const held: ((outcome: Outcome) => void)[] = [];
   let stored: PageDoc | undefined;
-  const save = vi.fn(
-    (_id: string, revision: number, doc: PageDoc) =>
-      new Promise((resolve, reject) =>
-        held.push((outcome) => {
-          if (outcome !== "ok") return reject(outcome);
-          stored = doc;
-          resolve({ ...doc, revision: revision + 1 });
-        }),
-      ),
-  );
-  const repository = { persistence, saveDoc: save, resolveConflict: vi.fn() } as unknown as ProjectRepository;
+  const commit = (_id: string, revision: number, doc: PageDoc) =>
+    new Promise((resolve, reject) =>
+      held.push((outcome) => {
+        if (outcome !== "ok") return reject(outcome);
+        stored = doc;
+        resolve({ ...doc, revision: revision + 1 });
+      }),
+    );
+  // 코어 있는 저장소(RS6-L3b CP-A) — 저장 1회 = 코어 save 1회(동기 호출 시점에 센다) · 대기·결과 = 가짜 포트 commit(이 저장소 saveDoc)
+  const save = vi.fn();
+  const fixture = withSaveCore({ persistence, saveDoc: commit, resolveConflict: vi.fn() });
+  const coreOf = fixture.core;
+  fixture.core = (id, seed) => {
+    const core = coreOf(id, seed);
+    const run = core.save;
+    if (!vi.isMockFunction(run)) core.save = vi.fn(() => (save(), run()));
+    return core;
+  };
+  const repository = fixture as unknown as ProjectRepository;
   const release = async (outcome: Outcome = "ok") => {
+    // 코어 save가 commit에 닿을 때까지(마이크로태스크) 흘린 뒤 푼다
+    await act(() => vi.advanceTimersByTimeAsync(0));
     await act(async () => held.shift()!(outcome));
     await act(() => vi.advanceTimersByTimeAsync(0));
   };

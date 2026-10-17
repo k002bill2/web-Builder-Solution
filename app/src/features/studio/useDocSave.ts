@@ -1,8 +1,8 @@
 /**
  * 편집 문서 자동 저장 훅 (DS-2A-05 SPEC 5.10 · E-S06~E-S10 · E-AC-07). 타이밍·실패·오프라인·STALE 멈춤·떠나기 경고는
- * a1-α `useAutosaveScheduler`를 그대로 쓰고, 이 훅은 저장소 연결만 한다:
- * - 저장 요청 = 문서 전체 + `expectedRevision`(마지막으로 저장소가 돌려준 revision) + `hashDoc` 해시(멱등 키 (revision, hash), 8.3).
- * - 화면 문서는 늘 내 편집이다 — `STALE_DOC`이어도 바꾸지 않고 최신 문서만 `conflict.latest`로 따로 둔다(E-S09).
+ * a1-α `useAutosaveScheduler`를 그대로 쓰고, 이 훅은 저장 코어 연결만 한다(INTEGRATE-6 2.2-2 · RS6-L3b CP-A — 코어 없는 saveDoc 경로 제거):
+ * - 저장 = `core.save()`(코어 초안 · revision·hash는 코어 io) — 결과 reason으로 판정(readonly·unsupported = 이 탭 저장 0이 정상).
+ * - 화면 문서는 늘 내 편집이다 — `STALE_DOC`이어도 바꾸지 않고 최신 문서만 `conflict.latest`로 따로 둔다(E-S09 · 출처 = 포트 `head`, 다른 탭 커밋).
  * - `resolve(choice)` = 저장소 `resolveConflict`(보존 스냅샷 + 저장 한 트랜잭션, 8.3) 1회 → 성공이면 스케줄러 `settle`(추가 저장 0).
  *   "다른 편집 불러오기"는 돌려받은 최신 문서를 화면 문서로. 거부는 그대로 돌려주고 STALE을 유지한다(고르기 전 자동 저장 0).
  * - `flushed()` = 저장 먼저(ER SPEC r1 3.2 · 5.13 순서) — 진행 중 저장을 기다리고 저장 전 변경을 바로 저장. 저장됨이면 true, 실패·충돌·오프라인이면 false.
@@ -12,7 +12,7 @@
  *   `flushed()` 결과 — 이번 이탈 중 저장이 읽기 전용 거절(저장 0이 정상)이면 true. 지난 거절은 쓰지 않는다(다른 탭이 닫혔거나 오프라인일 수 있다, Codex r1·r2 P1).
  */
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { ProjectRepositoryError, projectErrorCode, type ConflictChoice, type DocHead, type ProjectPersistence } from "../../data/projectRepository";
+import { ProjectRepositoryError, type ConflictChoice, type ProjectPersistence } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { hashDoc } from "../../engine/ops/hash";
 import { useAutosaveScheduler, type AutosaveState } from "./useAutosaveScheduler";
@@ -21,10 +21,9 @@ import type { SaveCore } from "./save/saveCore";
 /** 저장소 중 이 훅이 쓰는 부분(ProjectRepository<PageDoc>의 부분 구조) */
 export interface DocSaveRepository {
   readonly persistence: ProjectPersistence;
-  saveDoc(projectId: string, expectedRevision: number, doc: PageDoc): Promise<DocHead>;
   resolveConflict(projectId: string, choice: ConflictChoice, myDoc: PageDoc): Promise<PageDoc>;
-  /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2 · RS6-L3a) — 있으면 seed·편집·저장이 코어 경유. 없으면(코어 없는 저장소) 위 saveDoc 경로 그대로 */
-  readonly core?: (projectId: string, seed: PageDoc) => SaveCore;
+  /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — seed·편집·저장이 코어 경유 */
+  readonly core: (projectId: string, seed: PageDoc) => SaveCore;
 }
 
 export interface UseDocSaveOptions {
@@ -59,42 +58,29 @@ export interface UseDocSave {
 
 export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxWaitMs }: UseDocSaveOptions): UseDocSave {
   // 코어 = 탭 수명(레지스트리 동기 생성 · 같은 projectId 재마운트 = 같은 코어) — seed = 코어 초안(G7)
-  const [core] = useState(() => repository.core?.(projectId, initialDoc));
-  const [doc, setDoc] = useState(() => core?.view().doc ?? initialDoc);
+  const [core] = useState(() => repository.core(projectId, initialDoc));
+  const [doc, setDoc] = useState(() => core.view().doc);
   const docRef = useRef(doc);
   const [latest, setLatest] = useState<PageDoc | undefined>(undefined);
   const revisionRef = useRef(initialDoc.revision);
   /** 이번 이탈 중 저장이 읽기 전용 탭 거절(P1C-SPEC 1.5 — 다른 탭 잠금 · Web Locks 없는 로컬 폴백)을 받았나 — `leave()`가 지우고 저장마다 새로 정한다(Codex r2 P1) */
   const readOnly = useRef(false);
 
-  const save = useCallback(
-    async (next: PageDoc) => {
-      if (core) {
-        // 저장 대상 = 코어 초안(G1 — DocBook 반영은 saved 뒤 코어가 · 실패면 DocBook 변화 0, U3). not-persistent(memory) = 메모리 커밋 성공(I5)
-        const result = await core.save();
-        const { reason } = result as { readonly reason?: string };
-        // revision 있는 failed = not-persistent뿐(memory 메모리 커밋 revision)
-        const saved = result.status === "saved" ? result.receipt.revision : result.revision;
-        // readonly·unsupported = 이 탭 저장 0이 정상(이탈 허용 판정 — 기존 사유 문장 판정과 같은 의미)
-        readOnly.current = reason === "readonly" || reason === "unsupported";
-        if (saved === undefined) throw new ProjectRepositoryError(reason === "stale" ? "STALE_DOC" : "INFRA", String(reason));
-        revisionRef.current = saved;
-        return;
-      }
-      const revision = revisionRef.current;
-      try {
-        const saved = await repository.saveDoc(projectId, revision, { ...next, revision, hash: hashDoc(next) });
-        revisionRef.current = saved.revision;
-        readOnly.current = false;
-      } catch (error) {
-        // 사유 문장(`infra.ts` READ_ONLY_TAB)으로 가린다 — 그 모듈을 import하면 영속 청크가 진입으로 올라온다(+0.76KB 실측). 문장이 바뀌면 StudioLeave 테스트가 잡는다
-        readOnly.current = String((error as Error)?.message).includes("탭에서 편집 중") || (repository.persistence === "local" && !navigator.locks);
-        if (projectErrorCode(error) === "STALE_DOC") setLatest((error as { readonly doc?: PageDoc }).doc);
-        throw error;
-      }
-    },
-    [repository, projectId, core],
-  );
+  const save = useCallback(async () => {
+    // 저장 대상 = 코어 초안(G1 — DocBook 반영은 saved 뒤 코어가 · 실패면 DocBook 변화 0, U3). not-persistent(memory) = 메모리 커밋 성공(I5)
+    const result = await core.save();
+    const { reason } = result as { readonly reason?: string };
+    // revision 있는 failed = not-persistent뿐(memory 메모리 커밋 revision)
+    const saved = result.status === "saved" ? result.receipt.revision : result.revision;
+    // readonly·unsupported = 이 탭 저장 0이 정상(이탈 허용 판정)
+    readOnly.current = reason === "readonly" || reason === "unsupported";
+    if (saved === undefined) {
+      // 최신 문서 = 다른 탭이 커밋한 레코드(포트 head — 조작 뒤 청크). 읽지 못하면 없음
+      if (reason === "stale") setLatest(await core.link((_, __, link) => link.port?.head(projectId)).catch(() => undefined));
+      throw new ProjectRepositoryError(reason === "stale" ? "STALE_DOC" : "INFRA", String(reason));
+    }
+    revisionRef.current = saved;
+  }, [projectId, core]);
 
   const autosave = useAutosaveScheduler<PageDoc>({ save, persistence: repository.persistence, debounceMs, maxWaitMs });
   const { change, settle } = autosave;
@@ -105,7 +91,7 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
     (next: PageDoc) => {
       docRef.current = next;
       // G2: 편집마다 코어 초안 동기 1회 — 디바운스는 저장 시점만 정한다(언마운트 뒤에도 초안 보존, F9)
-      core?.edit(next);
+      core.edit(next);
       setDoc(next);
       change(next);
       if (phase.current === "idle" || phase.current === "saved") phase.current = "dirty";
@@ -117,7 +103,6 @@ export function useDocSave({ repository, projectId, initialDoc, debounceMs, maxW
   const mountId = useId();
   const lease = useRef<number>(undefined);
   useEffect(() => {
-    if (!core) return;
     const token = (lease.current = core.acquire(mountId));
     // 재진입 seed가 미저장 초안이면(F9 뒤) 다시 저장 차례에 올린다 — 코어 기준이라 거짓 STALE 0(C5 T2)
     const { dirty, doc } = core.view();

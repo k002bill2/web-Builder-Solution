@@ -11,6 +11,8 @@ import { hashDoc } from "../../engine/ops/hash";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
 import { boardOf, FIXTURE_CATALOG } from "../../test/compareFixtures";
 import { useDocSave, type DocSaveRepository } from "./useDocSave";
+import { withSaveCore } from "./testing/coreFixture";
+import type { CoreKeeper } from "./save/saveCore";
 
 const titled = (doc: PageDoc, title: string): PageDoc => ({ ...doc, meta: { ...doc.meta, title } });
 
@@ -28,7 +30,8 @@ function mockRepo(initial: PageDoc, persistence: ProjectPersistence = "memory") 
   const calls: { expectedRevision: number; doc: PageDoc }[] = [];
   let gate: Promise<void> | undefined;
   let failNext: Error | undefined;
-  const repo: DocSaveRepository & { persistence: ProjectPersistence } = {
+  // 코어 있는 저장소(RS6-L3b CP-A) — 저장 = 제품 코어 경유 · 가짜 포트 commit이 이 saveDoc을 부른다
+  const repo = withSaveCore({
     persistence,
     saveDoc: vi.fn(async (_projectId: string, expectedRevision: number, doc: PageDoc) => {
       calls.push({ expectedRevision, doc });
@@ -46,7 +49,7 @@ function mockRepo(initial: PageDoc, persistence: ProjectPersistence = "memory") 
       stored = choice === "mine" ? { ...myDoc, revision: stored.revision + 1 } : stored;
       return stored;
     }),
-  };
+  });
   return {
     repo,
     calls,
@@ -150,7 +153,7 @@ describe("useDocSave — 실제 메모리 저장소 연속 저장", () => {
     const gen = createMemoryGenerationRepository({ store });
     let job = await gen.requestGeneration("profile-1", 1);
     for (let i = 0; i < 10 && !isTerminal(job.state); i++) job = await gen.getJob(job.jobId);
-    const repo = createMemoryProjectRepository({ store }) as unknown as ProjectRepository<PageDoc>;
+    const repo = createMemoryProjectRepository({ store }) as unknown as ProjectRepository<PageDoc> & Required<CoreKeeper>;
     const { doc } = await repo.startDoc("project-1", 1, "B", "create");
     const { result } = renderHook(() => useDocSave({ repository: repo, projectId: "project-1", initialDoc: doc, debounceMs: 5 }));
     act(() => result.current.edit(titled(doc, "첫 편집")));

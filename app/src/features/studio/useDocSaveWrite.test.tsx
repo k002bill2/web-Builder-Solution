@@ -3,7 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 import { ProjectRepositoryError, type ProjectPersistence } from "../../data/projectRepository";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { sampleDoc } from "../../engine/testing/sampleDoc";
-import { useDocSave, type DocSaveRepository } from "./useDocSave";
+import { useDocSave } from "./useDocSave";
+import { rebasing, withSaveCore } from "./testing/coreFixture";
 
 /** ER-AC-S9 · S10 (EDITOR-REST SPEC r1 3.2) — 스냅샷·복원은 저장 먼저, 복원 결과는 저장 훅 경로로(revision·스케줄러 동기화) */
 const titled = (doc: PageDoc, title: string): PageDoc => ({ ...doc, meta: { ...doc.meta, title } });
@@ -14,8 +15,8 @@ function repo(initial: PageDoc) {
   let open = () => {};
   let failNext = false;
   const order: string[] = [];
-  const repository: DocSaveRepository & { persistence: ProjectPersistence } = {
-    persistence: "memory",
+  const repository = {
+    persistence: "memory" as ProjectPersistence,
     saveDoc: vi.fn(async (_p: string, expectedRevision: number, doc: PageDoc) => {
       order.push(`save:${expectedRevision}`);
       if (gate) await gate;
@@ -37,8 +38,12 @@ function repo(initial: PageDoc) {
     stored = { ...titled(stored, "복원본"), revision: stored.revision + 1 };
     return stored;
   });
+  // 코어 있는 저장소(RS6-L3b CP-A) — 복원 흉내도 제품 DocBook처럼 코어 chain 뒤에서 쓰고 코어 기준을 맞춘다(projectId "p")
+  const fixture = withSaveCore(repository);
+  const write = restore.getMockImplementation()!;
+  restore.mockImplementation(rebasing(fixture.cores)(async (_p: string, revision: number) => write(revision)).bind(undefined, "p") as typeof write);
   return {
-    repository,
+    repository: fixture,
     restore,
     order,
     stored: () => stored,

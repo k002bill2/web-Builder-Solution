@@ -1,0 +1,15 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:7:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:8:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-l3b-leave/app
+
+
+ Test Files  2 passed (2)
+      Tests  25 passed (25)
+   Start at  16:09:58
+   Duration  1.58s (tests 40%, environment 32%, transform 18%, setup 6%, import 4%)
+

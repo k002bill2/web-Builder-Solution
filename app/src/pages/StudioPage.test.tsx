@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Project, ProjectRepository, StudioEntryState } from "../data/projectRepository";
 import { sampleDoc } from "../engine/testing/sampleDoc";
 import { renderApp } from "../test/renderApp";
+import { withSaveCore } from "../features/studio/testing/coreFixture";
 
 /** 편집기 문서 분기 · 편집 알림 · 진입 포커스 (EDITOR-A2-SHELL S1 — QA D1~D3, E-AC-02·33) */
 const PROJECT: Project = {
@@ -16,12 +17,14 @@ const PROJECT: Project = {
 };
 const NOTICE = "이미 편집 중인 문서를 엽니다 (B안 · 프로필 v1)";
 
-/** 화면이 쓰는 조회 2개만 — 나머지 메서드는 이 테스트에서 부르지 않는다 */
+/** 화면이 쓰는 조회 2개만 — 나머지 메서드는 이 테스트에서 부르지 않는다 · 코어 레지스트리(RS6-L3b CP-A — 편집 틀 마운트가 코어를 받는다, 저장 0) */
 function stubProjects(withDoc: boolean) {
-  const repository = {
+  const repository = withSaveCore({
+    persistence: "memory",
+    saveDoc: () => Promise.reject(new Error("이 테스트는 저장하지 않는다")),
     getProject: async (id: string) => (id === PROJECT.projectId ? PROJECT : undefined),
     getDoc: async (id: string) => (withDoc && id === PROJECT.projectId ? sampleDoc() : undefined),
-  } as unknown as ProjectRepository;
+  }) as unknown as ProjectRepository;
   return () => Promise.resolve(repository);
 }
 

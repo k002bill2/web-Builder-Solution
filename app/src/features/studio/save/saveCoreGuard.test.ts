@@ -21,7 +21,9 @@ const product = listFiles(SRC)
     (f) =>
       /\.(ts|tsx)$/.test(f) &&
       !/\.test\.tsx?$/.test(f) &&
-      !f.endsWith("save/testRig.ts"),
+      !f.endsWith("save/testRig.ts") &&
+      // 테스트 장치(RS6-L3b CP-A — 코어 있는 저장소 흉내, testRig와 같은 테스트 전용)
+      !f.endsWith("testing/coreFixture.ts"),
   )
   .map((path) => ({
     rel: relative(SRC, path),

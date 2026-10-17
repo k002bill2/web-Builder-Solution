@@ -6,6 +6,7 @@ import { PREVIEW_VIEWS } from "../features/detail/previewView";
 import { variantName } from "../features/studio/selection";
 import { renderApp } from "../test/renderApp";
 import { connectRenderFrame, frameSays } from "../features/studio/testing/renderFrame";
+import { withSaveCore } from "../features/studio/testing/coreFixture";
 
 /** 캔버스 캡션 3상태 중 하나(m2a 3.4 — 문구 자체는 canvasCaption.test가 본다) */
 const CANVAS_CAPTION_PATTERN = /^(구조 미리보기 \(F0\)|실제 렌더 \(F1( · 일부)?\)) — /;
@@ -28,8 +29,9 @@ function stubProjects() {
     getProject: async (id: string) => (id === PROJECT.projectId ? PROJECT : undefined),
     getDoc: async (id: string) => (id === PROJECT.projectId ? sampleDoc() : undefined),
     saveDoc: async (_id: string, revision: number, doc: object) => ({ ...doc, revision: revision + 1 }),
-  } as unknown as ProjectRepository;
-  return () => Promise.resolve(repository);
+  };
+  const wrapped = withSaveCore(repository) as unknown as ProjectRepository;
+  return () => Promise.resolve(wrapped);
 }
 
 const original = window.matchMedia;

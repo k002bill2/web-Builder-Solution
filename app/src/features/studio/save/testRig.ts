@@ -25,7 +25,7 @@ import type { WriterLocks } from "../../../data/persistence/writerLock";
 import type { CoreKeeper, SaveCore } from "./saveCore";
 
 export const PROJECT = "project-1";
-export type Repo = ProjectRepository<PageDoc> & CoreKeeper;
+export type Repo = ProjectRepository<PageDoc> & Required<CoreKeeper>;
 
 const imports = {
   ...STUDIO_IMPORTS,

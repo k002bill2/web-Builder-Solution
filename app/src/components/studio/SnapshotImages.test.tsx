@@ -10,6 +10,7 @@ import { sampleDoc } from "../../engine/testing/sampleDoc";
 import type { IngestResult } from "../../features/studio/images/ingest";
 import { connectRenderFrame } from "../../features/studio/testing/renderFrame";
 import { StudioLayout } from "./StudioLayout";
+import { withSaveCore } from "../../features/studio/testing/coreFixture";
 
 /** ER-AC-S6 화면 (EDITOR-REST SPEC r1 3.2) — 스냅샷 문서도 이미지 참조 집합에 든다: A → 스냅샷 → 교체 → 복원 = A 유지 */
 const ingest = vi.hoisted(() => vi.fn<(file: File) => Promise<IngestResult>>());
@@ -49,8 +50,8 @@ function snapshotRepo(initial: PageDoc) {
       return s;
     },
     restoreSnapshot: async (_id: string, snapshotId: string, revision: number) => (stored = { ...snaps.find((s) => s.snapshotId === snapshotId)!.doc, revision: revision + 1 }),
-  } as unknown as ProjectRepository;
-  return repository;
+  };
+  return withSaveCore(repository) as unknown as ProjectRepository;
 }
 
 type RenderMessage = { type: string; doc: PageDoc; images?: Record<string, { blob: Blob }> };

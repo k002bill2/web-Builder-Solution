@@ -1,0 +1,15 @@
+--- /tmp/s6c-slim-orig/src/features/studio/save/saveCore.ts	2026-10-17 12:17:34
++++ src/features/studio/save/saveCore.ts	2026-10-17 12:18:14
+@@ -93,9 +93,10 @@
+       if (live?.token === token) live = undefined;
+     },
+     retryStart: async () => starter?.(),
++    /** 진입 동기 몫만(seed doc·epoch·confirmed) — dirty·inflight·mark·images는 조작 뒤(L2) io가 조립 */
+     view() {
+-      const { doc, mark, savedMark, inflight, epoch, confirmed, attached } = s;
+-      return { doc, mark, dirty: mark > savedMark, inflight: inflight > 0, epoch, confirmed, images: attached };
++      const { doc, epoch, confirmed } = s;
++      return { doc, epoch, confirmed };
+     },
+   };
+ }

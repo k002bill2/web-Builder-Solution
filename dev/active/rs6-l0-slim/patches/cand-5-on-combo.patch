@@ -1,0 +1,52 @@
+--- /tmp/s6c-combo/src/data/memoryProjectRepository.ts	2026-10-17 12:21:32
++++ src/data/memoryProjectRepository.ts	2026-10-17 12:21:45
+@@ -15,7 +15,7 @@
+ import type { LocalSync } from "./persistence/localSync";
+ import type { StudioStore } from "./studioStore";
+ import type { ImageKeeper, RenderImages } from "../features/studio/images/store/types";
+-import { createSaveCore, type CoreKeeper, type CoreLink, type SaveCore } from "../features/studio/save/saveCore";
++import { createSaveCore, type CoreKeeper, type SaveCore } from "../features/studio/save/saveCore";
+ 
+ export type ProjectMethod = "getDoc" | "saveDoc" | "startDoc" | "requestExport" | "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
+ type SnapshotWrite = "createSnapshot" | "restoreSnapshot" | "resolveConflict" | "deleteSnapshot";
+@@ -90,12 +90,8 @@
+       kept(args[0], bookOf().then((docs) => call(method, (commit) => (docs[method] as (a: typeof args, c: () => void) => ReturnType<DocBook[K]>)(args, commit))));
+   /** 저장 코어 레지스트리(INTEGRATE-6 2.2-2) — 저장소 인스턴스 소유 · 편집기 첫 마운트 때 동기 생성 · 포트는 첫 save 때 */
+   const cores = new Map<string, SaveCore>();
+-  const link = async (projectId: string): Promise<CoreLink> => {
+-    const [mod, docs, sync] = await Promise.all([loadDocBook(), bookOf(), local?.sync()]);
+-    const book = (doc: Parameters<CoreLink["book"]>[0], revision: number) => docs.save(projectId, revision, doc, () => undefined);
+-    // io = DocBook 청크 한 곳(싱크가 정적 import하면 DocBook 청크가 공유 청크가 돼 네임스페이스 헬퍼가 common react 청크로 간다 +53B)
+-    return { io: mod.coreIo, port: sync?.corePort(docs), book };
+-  };
++  // 조립은 DocBook 청크(coreLink) — io를 싱크가 정적 import하면 DocBook 청크가 공유 청크가 돼 네임스페이스 헬퍼가 common react 청크로 간다(+53B)
++  const link = (projectId: string) => Promise.all([loadDocBook(), bookOf(), local?.sync()]).then(([mod, docs, sync]) => mod.coreLink(projectId, docs, sync));
+   /** 쓰기 전 읽기(getDoc·listSnapshots) — 진입 레코드(문서 + 스냅샷). 진입 문서가 아닌데 머리가 있으면(/projects → 앱 안 이동) 시드를 기다린다 */
+   const entered = async (projectId: string) => {
+     const first = entry?.doc?.doc.projectId === projectId ? entry.doc : undefined;
+--- /tmp/s6c-combo/src/data/memoryDocBook.ts	2026-10-17 12:21:32
++++ src/data/memoryDocBook.ts	2026-10-17 12:21:45
+@@ -35,6 +35,8 @@
+ import type { DocRecord, LocalEntry } from "./persistence/entryRead";
+ import type { LocalSync } from "./persistence/localSync";
+ import type { RenderImages } from "../features/studio/images/store/types";
++import { coreIo } from "../features/studio/save/coreIo";
++import type { CoreLink } from "../features/studio/save/saveCore";
+ import { deepFreeze, type StudioReader } from "./studioStore";
+ 
+ interface DocState {
+@@ -142,8 +144,12 @@
+ 
+ /** 로컬 영속 싱크 열기 — 조작 뒤 청크(이 파일)에서 한 번 더 받는다: 진입 청크의 미리받기 목록에 싱크 의존(zod 등)을 싣지 않는다. 실패 뒤 재시도 = 새 URL(F1) */
+ const loadLocalSync = retryableImport(() => import("./persistence/localSync"));
+-/** 코어 io(memory·local 공통 — local은 포트만 싱크에서) */
+-export { coreIo } from "../features/studio/save/coreIo";
++/** 코어 링크 조립(조작 뒤 — 진입 레지스트리는 청크·DocBook·싱크만 넘긴다). io = 이 청크 한 곳 · 포트 = local만 */
++export const coreLink = (projectId: string, docs: DocBook, sync: LocalSync | undefined): CoreLink => ({
++  io: coreIo,
++  port: sync?.corePort(docs),
++  book: (doc, revision) => docs.save(projectId, revision, doc, () => undefined),
++});
+ export const openLocalSync = async (entry: LocalEntry) => (await loadLocalSync()).openLocalSync(entry);
+ 
+ /** `local` = 로컬 영속 싱크(ADR-007) — 시드(검증한 문서·스냅샷) · 저장 기준 revision 보정(내 미확인 쓰기 위에 얹기) */

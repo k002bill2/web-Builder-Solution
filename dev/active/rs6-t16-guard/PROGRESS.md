@@ -6,5 +6,5 @@
 - [x] 3. GREEN 확인 (5/5)
 - [x] 4. 변이 RED: dirty / inflight / 리스너 / (+memory) — logs/, 매번 checkout·복원 확인
 - [x] 5. typecheck · lint · 전체 스위트 3회 GREEN(341/3027) · build 1회(129.12 그대로)
-- [ ] 6. Codex review 1회 (--scope branch --base af76d10b)
-- [ ] 7. REPORT.md 작성 · 커밋
+- [x] 6. Codex review 1회 (--scope branch --base af76d10b) — 지적 0
+- [x] 7. REPORT.md 작성 · 커밋

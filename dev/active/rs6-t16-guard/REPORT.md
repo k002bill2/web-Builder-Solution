@@ -25,10 +25,10 @@
 ## 변이 표 (매번 `git checkout -- app/src/data/memoryProjectRepository.ts` · 복원 확인 `git diff --quiet`)
 | 변이 | 148줄 변경 | 결과 | 로그 |
 |---|---|---|---|
-| M1 dirty 조건 제거 | `\|\| c.view().dirty` 삭제 | 4 failed / 1 passed (1·2·3흐름, 2b, 6, 4) | `logs/M1-no-dirty.log` |
-| M2 inflight 조건 제거 | `\|\| c.view().inflight > 0` 삭제 | 1 failed (2b) | `logs/M2-no-inflight.log` |
-| M3 리스너 등록 제거 | 148줄 주석 처리 | 5 failed | `logs/M3-no-listener.log` |
-| M4(추가) memory 규칙 제거 | `!local \|\|` 삭제 | 1 failed (5 memory) | `logs/M4-no-memory-rule.log` |
+| M1 dirty 조건 제거 | `\|\| c.view().dirty` 삭제 | 4 failed / 1 passed (1·2·3흐름, 2b, 6, 4) | `logs/M1-no-dirty.txt` |
+| M2 inflight 조건 제거 | `\|\| c.view().inflight > 0` 삭제 | 1 failed (2b) | `logs/M2-no-inflight.txt` |
+| M3 리스너 등록 제거 | 148줄 주석 처리 | 5 failed | `logs/M3-no-listener.txt` |
+| M4(추가) memory 규칙 제거 | `!local \|\|` 삭제 | 1 failed (5 memory) | `logs/M4-no-memory-rule.txt` |
 
 M1에서 2b도 실패한 것은 앞 테스트(1)가 중간 실패로 hold를 풀지 않아 inflight 코어가 window 리스너에 남은 연쇄 — 각 변이를 적어도 1건이 직접 잡는다는 판정에는 영향 없음.
 
@@ -36,14 +36,14 @@ M1에서 2b도 실패한 것은 앞 테스트(1)가 중간 실패로 hold를 풀
 | 명령 | 결과 | 로그 |
 |---|---|---|
 | `npx vitest run src/components/studio/StudioUnloadGuard.test.tsx` | 5 passed | — |
-| `npm run typecheck` | exit 0 | `logs/typecheck.log` |
-| `npm run lint` | exit 0 | `logs/lint.log` |
-| `npm test -- --run` ×3 | 3회 모두 exit 0 · 341 files / 3027 tests (base 340/3022 + 1/5) | `logs/suite-{1,2,3}.log` |
-| `npm run build` (확인용) | exit 0 · `/studio` 정규화 129.12 (기준선 129.11) · 복원 132.10 — 그대로 | `logs/build.log` |
-| Codex review `--scope branch --base af76d10b` | 아래 | `logs/codex-review.log` |
+| `npm run typecheck` | exit 0 | `logs/typecheck.txt` |
+| `npm run lint` | exit 0 | `logs/lint.txt` |
+| `npm test -- --run` ×3 | 3회 모두 exit 0 · 341 files / 3027 tests (base 340/3022 + 1/5) | `logs/suite-{1,2,3}.txt` |
+| `npm run build` (확인용) | exit 0 · `/studio` 정규화 129.12 (기준선 129.11) · 복원 132.10 — 그대로 | `logs/build.txt` |
+| Codex review `--scope branch --base af76d10b` | 아래 | `logs/codex-review.txt` |
 
 ## Codex
-(결과 기입 예정)
+1회 실행(`node codex-companion.mjs review --scope branch --base af76d10b`) — **지적 0건** ("수정이 필요한 결함은 발견하지 못했습니다"). Codex 자체 테스트 실행은 샌드박스 EPERM으로 차단 — 실행 증거는 위 fresh 3회 스위트로 대신한다.
 
 ## 목업·범위 메모
 - 앱 코드·기준선·예산·`docs/**` 변경 0. 기존 테스트 단언 변경 0. push·원격 쓰기 0. 브라우저 0.

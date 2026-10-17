@@ -1,0 +1,43 @@
+-      if (!cores.size) addEventListener("beforeunload", (event) => [...cores.values()].some((c) => !local || c.view().dirty || c.view().inflight > 0) && event.preventDefault());
++      if (!cores.size) addEventListener("beforeunload", (event) => [...cores.values()].some((c) => !local || c.view().dirty) && event.preventDefault());
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-t16-guard/app
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx (5 tests | 1 failed) 631ms
+   ❯ RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) (5)
+     × 저장 진행 중 · 초안 변경 없음(dirty 0 · inflight 1) = 경고 on → 커밋 완료 = off 57ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioUnloadGuard.test.tsx > RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) > 저장 진행 중 · 초안 변경 없음(dirty 0 · inflight 1) = 경고 on → 커밋 완료 = off
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx:83:29
+     81|     await flush();
+     82|     expect(core().view()).toMatchObject({ dirty: false, inflight: 1 });
+     83|     expect(unloadBlocked()).toBe(true);
+       |                             ^
+     84|     gate.release();
+     85|     await act(async () => void (await run));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  19:33:06
+   Duration  1.61s (tests 41%, transform 24%, environment 24%, import 7%, setup 4%)
+

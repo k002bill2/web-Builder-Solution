@@ -1,0 +1,103 @@
+-      if (!cores.size) addEventListener("beforeunload", (event) => [...cores.values()].some((c) => !local || c.view().dirty || c.view().inflight > 0) && event.preventDefault());
++      if (!cores.size) addEventListener("beforeunload", (event) => [...cores.values()].some((c) => !local || c.view().inflight > 0) && event.preventDefault());
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs6-t16-guard/app
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx (5 tests | 4 failed) 588ms
+   ❯ RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) (5)
+     × 편집 직후 디바운스 대기(저장 시작 전) = 경고 on → 저장 진행 중(commit 대기) = on → 커밋 완료 = off 265ms
+     × 저장 진행 중 · 초안 변경 없음(dirty 0 · inflight 1) = 경고 on → 커밋 완료 = off 51ms
+     × 편집기 링크 이탈 직후(디바운스 미완) = 편집기 밖에서도 경고 on → 해제 save 커밋 = off 128ms
+     × 저장 실패(failed · 코어 dirty) = 경고 on → 다시 저장 성공 = off 80ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/StudioUnloadGuard.test.tsx > RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) > 편집 직후 디바운스 대기(저장 시작 전) = 경고 on → 저장 진행 중(commit 대기) = on → 커밋 완료 = off
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx:64:29
+     62|     await flush();
+     63|     expect(core().view()).toMatchObject({ dirty: true, inflight: 0 });
+     64|     expect(unloadBlocked()).toBe(true);
+       |                             ^
+     65|
+     66|     await act(() => vi.advanceTimersByTimeAsync(AUTOSAVE_DEBOUNCE_MS));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/components/studio/StudioUnloadGuard.test.tsx > RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) > 저장 진행 중 · 초안 변경 없음(dirty 0 · inflight 1) = 경고 on → 커밋 완료 = off
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx:87:29
+     85|     await act(async () => void (await run));
+     86|     expect(core().view().inflight).toBe(0);
+     87|     expect(unloadBlocked()).toBe(false);
+       |                             ^
+     88|   });
+     89|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/components/studio/StudioUnloadGuard.test.tsx > RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) > 편집기 링크 이탈 직후(디바운스 미완) = 편집기 밖에서도 경고 on → 해제 save 커밋 = off
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx:101:29
+     99|     await vi.waitFor(() => expect(core().view()).toMatchObject({ dirty…
+    100|     expect(JSON.stringify((await db.doc())?.doc)).toContain("떠나기 직전");
+    101|     expect(unloadBlocked()).toBe(false);
+       |                             ^
+    102|   });
+    103|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/components/studio/StudioUnloadGuard.test.tsx > RS6 T16 · 편집기 안 탭 닫기 경고(코어 레지스트리 · 실제 저장소) > 저장 실패(failed · 코어 dirty) = 경고 on → 다시 저장 성공 = off
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/components/studio/StudioUnloadGuard.test.tsx:114:29
+    112|     await act(async () => void (await core().save()));
+    113|     expect(core().view().dirty).toBe(false);
+    114|     expect(unloadBlocked()).toBe(false);
+       |                             ^
+    115|   });
+    116|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  19:33:04
+   Duration  1.55s (tests 40%, environment 25%, transform 23%, import 7%, setup 4%)
+

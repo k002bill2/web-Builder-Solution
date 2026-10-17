@@ -1,0 +1,46 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs8-row-reason/app
+
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx (4 tests | 1 failed) 394ms
+   ❯ 잠금 회귀 가드 — 행 판정·표시 중 잠금 요청·포트 mode 0 (RS8-2 · Codex P2) (1)
+     × readonly 탭 → 첫 표시~갱신 뒤까지 locks.request 0 · core.link(포트 mode → gate.enter 경로) 0 · save 0 · 잡힌 잠금 = A 탭 것뿐 41ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 잠금 회귀 가드 — 행 판정·표시 중 잠금 요청·포트 mode 0 (RS8-2 · Codex P2) > readonly 탭 → 첫 표시~갱신 뒤까지 locks.request 0 · core.link(포트 mode → gate.enter 경로) 0 · save 0 · 잡힌 잠금 = A 탭 것뿐
+AssertionError: expected [ 1, 1, +0 ] to deeply equal [ +0, +0, +0 ]
+
+- Expected
++ Received
+
+  [
+-   0,
+-   0,
++   1,
++   1,
+    0,
+  ]
+
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:97:89
+     95|     const { row } = await firstRow(b.repo);
+     96|     expect(within(row).getByText(READONLY)).toBeInTheDocument();
+     97|     expect([request.mock.calls.length, link.mock.calls.length, save.mo…
+       |                                                                                         ^
+     98|     await ticks();
+     99|     expect(within(row).getByText(READONLY)).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  02:12:15
+   Duration  1.33s (tests 32%, environment 30%, transform 25%, import 8%, setup 5%)
+

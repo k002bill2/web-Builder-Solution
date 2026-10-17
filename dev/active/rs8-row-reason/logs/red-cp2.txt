@@ -1,0 +1,225 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/rs8-row-reason/app
+
+ ❯ src/features/projects/coreRowText.test.ts (6 tests | 2 failed) 5ms
+   ❯ 행 사유 문구 = 편집기 사유 문구(UX-5 2.3 원문 1개) (6)
+     × 버튼 숨김 reason = stale·cleared·unsupported(readonly는 그 탭을 닫은 뒤 다시 저장) 1ms
+     × image-missing은 행 첫 표시 문구에 없다(다시 저장 결과에만 — pendingRetry) · 첫 표시 = 일반 실패 문구 1ms
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx (4 tests | 4 failed) 352ms
+   ❯ 코어 환경 사유 행 — 첫 표시 (B-RS-09) (3)
+     × 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지 212ms
+     × cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0 61ms
+     × 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도) 40ms
+   ❯ 잠금 회귀 가드 — 행 판정·표시 중 잠금 요청·포트 mode 0 (RS8-2 · Codex P2) (1)
+     × readonly 탭 → 첫 표시~갱신 뒤까지 locks.request 0 · core.link(포트 mode → gate.enter 경로) 0 · save 0 · 잡힌 잠금 = A 탭 것뿐 37ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭 stale → 첫 표시 = UX-5 stale 문구 · '다시 저장' 0 · 일반 실패 문구 0 · 편집기 열기 유지
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="ds-caption1 text-status-negative-text"
+>
+  저장하지 못했습니다
+</span> instead[39m
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:45:55
+     43|     expect(await b.core.save()).toMatchObject({ status: "failed", reas…
+     44|     const { row, name } = await firstRow(b.repo);
+     45|     expect(within(row).queryByText("저장하지 못했습니다")).not.toBeInTheDocumen…
+       |                                                       ^
+     46|     expect(within(row).queryByRole("button", { name: `${name} 다시 저장` }…
+     47|     expect(within(row).getByText(STALE)).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > cleared → 첫 표시 = UX-5 cleared 문구 · 저장 버튼 0
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="ds-caption1 text-status-negative-text"
+>
+  저장하지 못했습니다
+</span> instead[39m
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:63:55
+     61|     expect(await c.save()).toMatchObject({ status: "failed", reason: "…
+     62|     const { row, name } = await firstRow(repo);
+     63|     expect(within(row).queryByText("저장하지 못했습니다")).not.toBeInTheDocumen…
+       |                                                       ^
+     64|     expect(within(row).getByText(CLEARED)).toBeInTheDocument();
+     65|     expect(within(row).queryByRole("button", { name: `${name} 다시 저장` }…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 코어 환경 사유 행 — 첫 표시 (B-RS-09) > 다른 탭이 writer(readonly) → 첫 표시 = UX-5 readonly 문구 + '다시 저장' 유지(그 탭을 닫은 뒤 재시도)
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="ds-caption1 text-status-negative-text"
+>
+  저장하지 못했습니다
+</span> instead[39m
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:75:55
+     73|     expect(await b.core.save()).toMatchObject({ status: "failed", reas…
+     74|     const { row, name } = await firstRow(b.repo);
+     75|     expect(within(row).queryByText("저장하지 못했습니다")).not.toBeInTheDocumen…
+       |                                                       ^
+     76|     expect(within(row).getByText(READONLY)).toBeInTheDocument();
+     77|     expect(within(row).getByRole("button", { name: `${name} 다시 저장` }))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/components/projects/ProjectsReasonRows.test.tsx > 잠금 회귀 가드 — 행 판정·표시 중 잠금 요청·포트 mode 0 (RS8-2 · Codex P2) > readonly 탭 → 첫 표시~갱신 뒤까지 locks.request 0 · core.link(포트 mode → gate.enter 경로) 0 · save 0 · 잡힌 잠금 = A 탭 것뿐
+TestingLibraryElementError: Unable to find an element with the text: 다른 탭에서 편집 중이라 이 탭은 저장하지 않습니다. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mclass[39m=[32m"flex flex-col gap-2 border-b border-line-neutral py-4"[39m
+[36m>[39m
+  [36m<h2[39m
+    [33mclass[39m=[32m"ds-heading2"[39m
+  [36m>[39m
+    [0m모던 카페 브랜드 프로젝트[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-x-3 gap-y-1"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-body3"[39m
+    [36m>[39m
+      [0m프로필 v1[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m편집 중 · B안 · 프로필 v1[0m
+    [36m</span>[39m
+    [36m<time[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+      [33mdatetime[39m=[32m"2026-10-17T17:11:36.711Z"[39m
+    [36m>[39m
+      [0m방금 전[0m
+    [36m</time>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"ds-caption1 text-status-negative-text"[39m
+    [36m>[39m
+      [0m저장하지 못했습니다[0m
+    [36m</span>[39m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-3"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 다시 저장"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-retry-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m다시 저장[0m
+    [36m</button>[39m
+    [36m<a[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 편집기 열기"[39m
+      [33mclass[39m=[32m"ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mdata-editor-for[39m=[32m"project-1"[39m
+      [33mhref[39m=[32m"/studio/project-1"[39m
+    [36m>[39m
+      [0m편집기 열기[0m
+    [36m</a>[39m
+    [36m<a[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 프로필 보기"[39m
+      [33mclass[39m=[32m"ds-label inline-flex h-8 items-center text-primary hover:text-primary-hover"[39m
+      [33mdata-discover[39m=[32m"true"[39m
+      [33mhref[39m=[32m"/profile/profile-1"[39m
+    [36m>[39m
+      [0m프로필 보기[0m
+    [36m</a>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 이름 바꾸기"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-rename-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m이름 바꾸기[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 파일로 내보내기"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-export-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m파일로 내보내기[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"모던 카페 브랜드 프로젝트 삭제"[39m
+      [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+      [33mdata-delete-for[39m=[32m"project-1"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m삭제[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m>[39m
+    [0m확인 전에 새로고침하거나 탭을 닫으면 확인되지 않은 변경이 사라집니다 — 이전에 저장된 상태로 돌아갑니다[0m
+  [36m</p>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/projects/ProjectsReasonRows.test.tsx:96:24
+     94|     const save = vi.spyOn(b.core, "save");
+     95|     const { row } = await firstRow(b.repo);
+     96|     expect(within(row).getByText(READONLY)).toBeInTheDocument();
+       |                        ^
+     97|     expect([request.mock.calls.length, link.mock.calls.length, save.mo…
+     98|     await ticks();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/features/projects/coreRowText.test.ts > 행 사유 문구 = 편집기 사유 문구(UX-5 2.3 원문 1개) > 버튼 숨김 reason = stale·cleared·unsupported(readonly는 그 탭을 닫은 뒤 다시 저장)
+TypeError: undefined is not a function
+ ❯ src/features/projects/coreRowText.test.ts:17:98
+     15|
+     16|   it("버튼 숨김 reason = stale·cleared·unsupported(readonly는 그 탭을 닫은 뒤 다시 …
+     17|     expect(["stale", "cleared", "unsupported", "readonly", "writer", "…
+       |                                                                                                  ^
+     18|   });
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/features/projects/coreRowText.test.ts > 행 사유 문구 = 편집기 사유 문구(UX-5 2.3 원문 1개) > image-missing은 행 첫 표시 문구에 없다(다시 저장 결과에만 — pendingRetry) · 첫 표시 = 일반 실패 문구
+AssertionError: expected '이미지가 빠져 있어 저장을 확인하지 못했습니다' to be undefined
+
+- Expected:
+undefined
+
++ Received:
+"이미지가 빠져 있어 저장을 확인하지 못했습니다"
+
+ ❯ src/features/projects/coreRowText.test.ts:21:47
+     19|
+     20|   it("image-missing은 행 첫 표시 문구에 없다(다시 저장 결과에만 — pendingRetry) · 첫 표시 =…
+     21|     expect(CORE_REASON_TEXT["image-missing"]).toBeUndefined();
+       |                                               ^
+     22|   });
+     23| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  6 failed | 4 passed (10)
+   Start at  02:11:35
+   Duration  1.28s (environment 46%, tests 21%, transform 19%, setup 8%, import 6%)
+

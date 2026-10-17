@@ -125,6 +125,8 @@ describe("미리보기 · 읽기 전용 탭 — FU-AC-10 · 12", () => {
     const previewButton = await dialog.findByRole("button", { name: "수동 1 미리보기" });
     act(() => void fireEvent.click(previewButton));
     await screen.findByRole("heading", { name: "스냅샷 '수동 1'를 보고 있습니다 · 편집은 멈췄습니다" });
+    // 단축키 잠금(historyKeys.locked)은 heading을 그린 커밋 뒤 passive effect가 채운다 — 부하에서 effect보다 Ctrl+Z가 먼저 가는 간헐 실패(RS7-FLAKY)
+    await settle();
     expect(await key(CTRL_Z)).toBe(true);
     act(() => void fireEvent.click(screen.getByRole("button", { name: "편집으로 돌아가기" })));
     await waitFor(() => expect(box(/^제목/).value).toBe("새 제목"));

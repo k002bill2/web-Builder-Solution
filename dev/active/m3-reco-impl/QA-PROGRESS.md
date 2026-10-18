@@ -26,8 +26,8 @@
 - [x] L3. 1절 주 흐름 1280 (#1~#11)
 - [x] L4. 1절 주 흐름 390 (#1~#11 · 가로 넘침 0)
 - [x] L5. 2절 E1·E2·E3·E6·E7·E8 (1280 + 390 스크린샷)
-- [ ] L6. 판정: 2차 + 종합 1줄을 QA-REPORT 첫머리에
-- [ ] L7. 마감: preview 종료·리슨 0 기록 · IDB 삭제·finish({keep:[]}) · `git status --short` 빈 값
+- [x] L6. 판정: 2차 + 종합 1줄을 QA-REPORT 첫머리에 (2차 run에서 첫머리 반영 · R5가 갱신)
+- [x] L7. 마감: preview 종료·리슨 0 기록 · IDB 삭제·finish({keep:[]}) · `git status --short` 빈 값 (2차 8.3에 기록 · R6 재실행)
 
 # R3(FIX1 재확인) — 브리프 `QA-BRIEF-R3.md` · 대상 tip `3c9e410f`(FIX1 코드 `15334ed5`) · 보고 QA-REPORT 9절
 

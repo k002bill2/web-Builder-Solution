@@ -1,0 +1,19 @@
+
+added 45 packages in 18s
+
+> site@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 52 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                              0.42 kB │ gzip:  0.27 kB
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-CBGsW19f.css               6.65 kB │ gzip:  2.01 kB
+dist/assets/index-BQ18O4NJ.js              246.32 kB │ gzip: 76.22 kB
+
+✓ built in 225ms
+( npm install --no-audit --no-fund && npm run build; )  1.75s user 0.24s system 9% cpu 20.040 total

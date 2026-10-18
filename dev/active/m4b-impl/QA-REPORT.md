@@ -82,3 +82,16 @@
 - P1: M6 회귀 가드(위). P2: 복원 예산 여유 0(1절) · react-zip UI 흐름 테스트 · 진입 가드 단위 테스트. P3: react-zip 3MB 초과 메일 안내 0 단언(5절) · 2절 부분 항목.
 - [미확인] R1·R2·R3·R4·C2 — 2차(`QA-LIVE-PLAN.md`) / CI 결정 후.
 - 서브에이전트: 1개(code-explorer, 읽기 전용 · 2절 AC 판독) — 결과 통합, 핵심 지적(AC-18 가짜 오류)은 M6으로 실측 확인.
+
+## 10. 2차 실화면 (QA-BRIEF-LIVE · tip `06ca2b39`)
+- 환경 [사실]: `cd app && npm run build`(exit 0, 가드 통과 · 생성기 청크 `reactZip-CeIQjct9.js` gzip 54.31KB) → `npx vite preview --host 127.0.0.1 --port 4399 --strictPort`. 브라우저 = ego-browser(TaskSpace 50, p1). 뷰포트 override는 측정 스크립트마다 그 안에서 `Emulation.setDeviceMetricsOverride` 후 `innerWidth` 기록(override 없는 스크립트는 1877 — 스크립트 간 유지 안 됨 확인).
+- 문서 [사실]: IDB·localStorage 비움 → 모던 카페 A v1 → 보정값 쓰기 v2 → 3안 v2 → B안 새로 시작 → SEO 제목·설명 → `/studio/project-1` 게이트 8항 중 7 통과·성능 예산 "측정 전", 내보내기 3버튼 활성. 이미지 문서 = 같은 문서 Portfolio "이미지 벽돌형" 슬롯 3개에 webp·jpg·png(1200×800/1000/1200) + 대체텍스트 → 앱이 3장 모두 WebP로 변환(`1200 × 800 · WebP 2KB` 등), 게이트 통과 유지.
+
+### 10.1 R1 앱 실제 경로 zip — **PASS**
+| 행 | 결과 | 근거 |
+|---|---|---|
+| 버튼 → 내려받기 | PASS | "React 프로젝트(zip) 내보내기" 클릭 → status "zip을 만들었습니다…" + 링크 "내려받기" `download=모던-카페-브랜드-프로젝트_r3_react.zip`(RZ-AC-19 `<이름>_r<rev>_react.zip` 형식) → download 이벤트로 저장 742,778 B. 경고 대화상자 없음(게이트 차단 0 문서) |
+| docker node:22 | PASS | `$TMPDIR/qa-live/cafe/src0`(저장소 밖) `:ro` → 복사 후 `npm ci` exit 0 · `npm run build` exit 0 · JS 249.21KB(gzip 77.33) · CSS 30.67KB(gzip 5.98) → C3 PASS. `raw/qa-live-r1-cafe-node22.txt` |
+| kit/lock 바이트 비교 | **PASS — 동일** | 1차 vitest 경로 `$TMPDIR/qa-rz/m2`와 `cmp`: `src/kit/kit.css` 38,217 B · `src/kit/motion.css` 5,627 B · `package-lock.json` 50,419 B 모두 SAME → 앱 실제 경로 `kitCss` fetch 값 = fs 원문. 나머지 차이(index.html·README·LICENSES·fonts.css·site.json·images 폴더)는 문서가 달라서(1차 = fixture `ref-a` M2) [사실: 파일 목록 `diff -rq`] |
+| 이미지 문서 | PASS | `_r6_react.zip` 749,908 B · `src/assets/images/img-01~03.webp` = 3장(고른 수와 같음) · 결과 줄 "이미지 3장 · 글꼴 2개" · `site.json` UUID 정규식 0건 · kit/lock 역시 SAME · docker `npm ci` 0 · build 0 · JS 258.16KB(gzip 81.09 ≤90). 이미지가 각 2~3KB라 vite 기본 inline(4KB 미만) → dist에 별도 파일 없이 JS에 포함 [사실: JS +8.9KB] — 결함 아님. `raw/qa-live-r1-img-node22.txt` |
+- 관찰: 성공 뒤 `document.activeElement` = 누른 "React 프로젝트(zip) 내보내기" 버튼(R4 포커스 행 선행 증거).

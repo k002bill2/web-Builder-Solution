@@ -18,11 +18,11 @@
 
 대상 tip `06ca2b39`. 순서 R1 → R4 → R2, 절마다 QA-REPORT 10절 커밋.
 
-- [ ] 0. 준비: build + preview 4399, 문서 준비(모던 카페 + 보정값 v2 + 새로 시작)
-- [ ] R1-a. 앱 버튼 → `_react.zip` 내려받기 · 파일 이름
-- [ ] R1-b. $TMPDIR 풀기 · docker node:22 `npm ci && npm run build` exit 0
-- [ ] R1-c. 1차 테스트 경로 zip과 `src/kit/*.css`·`package-lock.json` 바이트 비교
-- [ ] R1-d. 이미지 문서 1회 (UUID 0)
+- [x] 0. 준비: build + preview 4399, 문서 준비(모던 카페 + 보정값 v2 + 새로 시작)
+- [x] R1-a. 앱 버튼 → `_react.zip` 내려받기 · 파일 이름
+- [x] R1-b. $TMPDIR 풀기 · docker node:22 `npm ci && npm run build` exit 0
+- [x] R1-c. 1차 테스트 경로 zip과 `src/kit/*.css`·`package-lock.json` 바이트 비교
+- [x] R1-d. 이미지 문서 1회 (UUID 0)
 - [ ] R4. 1280·390 status 1 · 결과 줄 원문 · 메일 0 · 청크 차단→alert→재시도 성공 · 포커스 · 390 버튼
 - [ ] R2. 1280·390 정규화 DOM · 390 메뉴 · masonry
 - [ ] 마감: preview 종료·리슨 0 · IDB 삭제 · 판정 1줄 · git status 빈 값

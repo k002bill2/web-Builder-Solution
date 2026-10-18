@@ -143,3 +143,374 @@
   ]
  }
 ]
+## 주 흐름 1~7
+[
+ {
+  "s": 1,
+  "url": "/catalog?industry=medical&audience=family&purpose=booking",
+  "h1": [
+   "레퍼런스 카탈로그"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [],
+  "busy": 0,
+  "focus": "INPUT ",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 0,
+   "RecoApply": 0,
+   "recoApplyFlow": 0
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [],
+  "listCards": 1
+ },
+ {
+  "s": 2,
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [],
+  "busy": 0,
+  "focus": "SECTION 추천 결과",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 0,
+   "recoApplyFlow": 0
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [],
+  "busySeen": true
+ },
+ {
+  "s": 3,
+  "cards": [
+   {
+    "id": "gen-medical-1",
+    "rank": "1",
+    "score": "60",
+    "reasons": "필수 섹션 충족 예약 · 업종 일치 의료 · 타깃 일치 가족",
+    "applied": false,
+    "ow": 0
+   },
+   {
+    "id": "gen-medical-3",
+    "rank": "2",
+    "score": "60",
+    "reasons": "필수 섹션 충족 예약 · 업종 일치 의료 · 타깃 일치 가족",
+    "applied": false,
+    "ow": 0
+   },
+   {
+    "id": "gen-beauty-3",
+    "rank": "3",
+    "score": "45",
+    "reasons": "필수 섹션 충족 예약 · 타깃 일치 가족 · 목적 일치 예약",
+    "applied": false,
+    "ow": 0
+   }
+  ],
+  "tray": "비교 보드 0 / 6"
+ },
+ {
+  "s": 4,
+  "focus": "근거 펼치기",
+  "expanded": "true",
+  "items": [
+   "업종 일치 의료 15/15",
+   "목적 일치 예약 10/10",
+   "콘셉트 미입력 0/10",
+   "필수 섹션 충족 예약 20/20",
+   "타깃 일치 가족 15/15",
+   "접근성 미측정 0/0",
+   "성능 미측정 0/0"
+  ],
+  "panelText": "업종 일치 의료 15/15 목적 일치 예약 10/10 콘셉트 미입력 0/10 필수 섹션 충족 예약 20/20 타깃 일치 가족 15/15 접근성 미측정 0/0 성능 미측정 0/0",
+  "cardOw": 0,
+  "overflow": 0
+ },
+ {
+  "s": 5,
+  "cards": [
+   "1:gen-medical-1:60",
+   "2:gen-medical-3:60",
+   "3:gen-beauty-3:45",
+   "4:gen-education-4:45",
+   "5:ref-c:40"
+  ],
+  "moreBtn": false,
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [],
+  "busy": 0,
+  "focus": "BODY 본문으로 건너뛰기결과로 건너뛰기Design Studio카탈로그보관함비교 보드프로젝트새 프로젝트강영추천레퍼런스",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 0,
+   "recoApplyFlow": 0
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": []
+ },
+ {
+  "s": 6,
+  "trayBefore": "비교 보드 0 / 6",
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [],
+  "busy": 0,
+  "focus": "BUTTON 취소",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 1,
+   "recoApplyFlow": 1
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [
+   "의료 · 신뢰 텍스트형 적용의료 · 신뢰 텍스트형을(를) 비교 보드에 담고 10개 항목을 이 레퍼런스로 고릅니다.Hero · 새로 고름 → 의료 · 신뢰 텍스트형메뉴 · 새로 고름 → 의료 · 신뢰 텍스트형CTA · 새로 고름 → 의료 · 신뢰 텍스트형팔레트 · 새로 고름 → 의료 · 신뢰 텍스트형폰트 · 새로 고름 → 의료 · 신뢰 텍스트형카드 · 새로 고름 → 의료 · 신뢰 텍스트형이미지 비율 · 새로 고름 → 의료 · 신뢰 텍스트형모션 · 새로 고름 → 의료 · 신뢰 텍스트형모바일 · 새로 고름 → 의료 · 신뢰 텍스트형Foo"
+  ],
+  "dlg": {
+   "ow": 0,
+   "rect": 512,
+   "vw": 1280,
+   "rows": [
+    "Hero · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "메뉴 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "CTA · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "팔레트 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "폰트 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "카드 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "이미지 비율 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "모션 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "모바일 · 새로 고름 → 의료 · 신뢰 텍스트형",
+    "Footer · 새로 고름 → 의료 · 신뢰 텍스트형"
+   ]
+  }
+ },
+ {
+  "s": 7,
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [],
+  "busy": 0,
+  "focus": "BUTTON 이 추천 적용",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 1,
+   "recoApplyFlow": 1
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [],
+  "trayAfter": "비교 보드 0 / 6",
+  "applied": 0
+ }
+]
+## 주 흐름 8~11
+[
+ {
+  "s": "8-dialog",
+  "focusOpen": "취소",
+  "focusAfterTab": "적용"
+ },
+ {
+  "s": 8,
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [
+   "의료 · 신뢰 텍스트형 추천을 적용했습니다."
+  ],
+  "statusAll": [
+   "의료 · 신뢰 텍스트형 추천을 적용했습니다."
+  ],
+  "alert": [],
+  "busy": 0,
+  "focus": "BUTTON 되돌리기",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 1,
+   "recoApplyFlow": 1
+  },
+  "tray": "비교 보드 1 / 6의료 · 신뢰 텍스트형 추천을 적용했습니다.의료 · 신뢰 텍스트형비교 보드",
+  "dialog": [],
+  "statusLog": [
+   "status:의료 · 신뢰 텍스트형 추천을 적용했습니다."
+  ],
+  "trayNow": "비교 보드 1 / 6",
+  "card1": "일치 가족 근거 펼치기 업종 일치 의료 15/15 목적 일치 예약 10/10 콘셉트 미입력 0/10 필수 섹션 충족 예약 20/20 타깃 일치 가족 15/15 접근성 미측정 0/0 성능 미측정 0/0 적용됨 되돌리기"
+ },
+ {
+  "s": 9,
+  "url": "/compare",
+  "text": "비교 보드 1 / 6개 비교 중 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다 레퍼런스 추가 비교할 레퍼런스가 1개입니다 하나 더 담으면 항목별로 골라 조합할 수 있습니다. 지금은 열의 ‘이 레퍼런스로 프로필 만들기’로 이 레퍼런스 구성을 그대로 쓸 수 있습니다. 레퍼런스 1개, 비교 항목 12개 A 의료 · 신뢰 텍스트형 의료 라이선스: 자체 제작 생성 조합 이 레퍼런스로 프로필 만들기 Hero 구성 텍스트 중심 카피 메뉴 구조 5개 · 투명 헤더 CTA 위치 하단 고정 버튼 섹션 수 비교 정보 8개 팔레트 #A13D2D · 브릭 폰트 Noto Serif KR 700 / 400 카드 스타일 엘리베이티드 · 라이트 이미지 비율 4:5 모션 낮음 모바일 구조 단일 컬럼 · 하단 탭 메뉴 Footer 확장형 사업자정보 접근성·성능 비교 정보 접근성·성능 미측정 프로필 초안 확정 전 고른 요소가 여기에 담기고, 고르지 않은 항목은 Hero를 고른 레퍼런스의 값으로 채워집니다. Hero 구성 A · 의료 · 신뢰 텍스트형 텍스트 중심 카피 메뉴 구조 A · 의료 · 신뢰 텍스트형 5개 · 투명 헤더 CTA 위치 A · 의료 · 신뢰 텍스트형 하단 고정 버튼 팔레트 A · 의료 · 신뢰 텍스트형 #A13D2D · 브릭 폰트 A · 의료 · 신뢰 텍스트형 Noto Serif KR 700 / 400 카드 스타일 A · 의료 · 신뢰 텍스트형 엘리베이티드 · 라이트 이미지 비율 A · 의료 · 신뢰 텍스트형 4:5 모션 A · 의료 · 신뢰 텍스트형 낮음 모바일 구조 A · 의료 · 신뢰 텍스트형 단일 컬럼 · 하단 탭 메뉴 Footer A · 의료 · 신뢰 텍스트형 확장형 사업자정보 사용자 스타일 대표색 선택 안 함 Pretendard Noto Sans KR Noto Serif KR 새 프로젝트 '의료 · 신뢰 텍스트형 프로젝트'를 만듭니다 · 이름은 프로젝트 목록에서 바꿀 수 있습니다 프로필 확정 (v1) 초안 비우기",
+  "overflow": 0
+ },
+ {
+  "s": 10,
+  "url": "http://localhost:4399/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "card1": " · 반응형 지원 접근성·성능 미측정 의료 · 신뢰 텍스트형 저장 의료 · 신뢰 텍스트형 비교 중, 비교에서 빼기 1위 60점 필수 섹션 충족 예약 · 업종 일치 의료 · 타깃 일치 가족 근거 펼치기 적용됨 되돌리기",
+  "undoBtn": [
+   null
+  ]
+ },
+ {
+  "s": 11,
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [
+   "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+  ],
+  "statusAll": [
+   "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+  ],
+  "alert": [],
+  "busy": 0,
+  "focus": "BUTTON 이 추천 적용",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 1,
+   "recoApplyFlow": 1
+  },
+  "tray": "비교 보드 0 / 6의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다.카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [],
+  "statusLog": [
+   "status:의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다.",
+   "status:의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+  ],
+  "trayNow": "비교 보드 0 / 6",
+  "card1": " 신뢰 · 깔끔한 · 반응형 지원 접근성·성능 미측정 의료 · 신뢰 텍스트형 저장 의료 · 신뢰 텍스트형 비교 추가 1위 60점 필수 섹션 충족 예약 · 업종 일치 의료 · 타깃 일치 가족 근거 펼치기 이 추천 적용"
+ },
+ {
+  "s": "11-compare",
+  "url": "/compare",
+  "text": "비교 보드 0 / 6개 비교 중 · 항목마다 원하는 요소를 고르면 프로필 초안에 담깁니다 비교할 레퍼런스가 없습니다 카탈로그에서 ‘비교 추가’로 2~6개를 담으면 항목별로 비교할 수 있습니다 카탈로그에서 고르기",
+  "overflow": 0
+ }
+]
+## status 중복 재현
+[
+ {
+  "A": "apply",
+  "st": [
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 0,
+    "text": ""
+   },
+   "status:의료 · 신뢰 텍스트형 추천을 적용했습니다.",
+   "status:의료 · 신뢰 텍스트형 추천을 적용했습니다.",
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 128,
+    "text": "의료 · 신뢰 텍스트형 추천을 적용했습니다."
+   }
+  ]
+ },
+ {
+  "A": "undo",
+  "focus": "이 추천 적용",
+  "st": [
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 0,
+    "text": "의료 · 신뢰 텍스트형 추천을 적용했습니다."
+   },
+   "status:의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다.",
+   "status:의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다.",
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 1248,
+    "text": "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+   },
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 58,
+    "text": "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+   }
+  ]
+ },
+ {
+  "B": "before-undo",
+  "st": [
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 0,
+    "text": ""
+   }
+  ]
+ },
+ {
+  "B": "undo",
+  "focus": "이 추천 적용",
+  "st": [
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 0,
+    "text": ""
+   },
+   "status:의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다.",
+   "status:의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다.",
+   {
+    "id": 4,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 5298,
+    "text": "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+   },
+   {
+    "id": 4,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 4108,
+    "text": "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+   },
+   {
+    "id": 1,
+    "role": "status",
+    "where": "비교 트레이",
+    "t": 114,
+    "text": "의료 · 신뢰 텍스트형 추천 적용을 되돌렸습니다."
+   }
+  ],
+  "tray": "비교 보드 0 / 6"
+ }
+]

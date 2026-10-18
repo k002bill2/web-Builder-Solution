@@ -65,9 +65,9 @@ export function reactZipEntries({ doc, kitTokens, fonts, css }: Omit<ReactZipInp
   ];
 }
 
-export function buildReactZip(input: ReactZipInput): Uint8Array {
+export function buildReactZip(input: ReactZipInput): Uint8Array<ArrayBuffer> {
   const parts = zipParts(reactZipEntries(input), input.date);
-  const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
+  const out = new Uint8Array(new ArrayBuffer(parts.reduce((n, p) => n + p.length, 0)));
   parts.reduce((at, p) => (out.set(p, at), at + p.length), 0);
   return out;
 }

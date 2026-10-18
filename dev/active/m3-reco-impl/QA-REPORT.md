@@ -177,7 +177,7 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 
 | # | 확인 | 결과 | 판정 |
 |---|---|---|---|
-| E4 | 화면 청크 차단 → alert · 다시 시도 → 카드 | 미확인 | — |
+| E4 | 화면 청크 차단 → alert · 다시 시도 → 카드 | 차단(`RecoView` 응답 0) → h1 "추천" · alert 1 "추천을 불러오지 못했습니다." + "다시 시도" · status 0 · 넘침 0 ✅. **차단 해제 뒤 "다시 시도" → 새 요청 0 · alert 그대로 · 카드 0(2회 반복 동일)**. 원인: 브라우저 모듈 맵이 실패한 `import()`를 캐시 — 같은 페이지에서 `import('/assets/RecoView-CpMYkhU4.js')` reject · `?bust=1` 붙이면 200 ok. 단위 테스트(`CatalogPageRecoLoad.test:41`)는 로더 목이라 못 잡음. 부수: 다시 시도 직후 포커스 BODY | **FAIL(행) — 결함 D1** |
 | E5 | 적용 청크 차단 → alert · "적용됨" 0 · 트레이 불변 | 미확인 | — |
 
 ### 8.1 주 흐름

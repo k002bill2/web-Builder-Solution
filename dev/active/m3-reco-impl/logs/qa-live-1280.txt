@@ -1,0 +1,58 @@
+## E4
+[
+ {
+  "step": "blocked",
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [
+   "추천을 불러오지 못했습니다.다시 시도"
+  ],
+  "busy": 0,
+  "focus": "SECTION 추천 결과",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 0,
+   "recoApplyFlow": 0
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [],
+  "resStatus": [
+   0
+  ]
+ },
+ "no cards Error: page.waitForFunction timed out after 10000ms on page p1; last URL was \"http://localhost:4399/catalog?industry=medical&audience=family&purpose=booking&tab=rec\"; last title was \"Design Studio\".",
+ {
+  "step": "retry",
+  "url": "/catalog?industry=medical&audience=family&purpose=booking&tab=rec",
+  "h1": [
+   "추천"
+  ],
+  "status": [],
+  "statusAll": [],
+  "alert": [
+   "추천을 불러오지 못했습니다.다시 시도"
+  ],
+  "busy": 0,
+  "focus": "BODY 본문으로 건너뛰기결과로 건너뛰기Design Studio카탈로그보관함비교 보드프로젝트새 프로젝트강영추천레퍼런스",
+  "overflow": 0,
+  "chunks": {
+   "RecoView": 1,
+   "RecoApply": 0,
+   "recoApplyFlow": 0
+  },
+  "tray": "비교 보드 0 / 6카드의 ‘비교 추가’로 최대 6개까지 담을 수 있습니다비교 보드",
+  "dialog": [],
+  "cards": 0
+ }
+]
+## E4 재현 확인 (차단 해제 뒤, 같은 페이지)
+- 첫 시도: 차단을 별도 스크립트에서 걸어 세션 종료로 풀림 → RecoView 200 수신(절차 오류, 앱 결함 아님) → 한 스크립트 안에서 차단·조작·해제로 재실행.
+- page 안 import('/assets/RecoView-CpMYkhU4.js') → reject "Failed to fetch dynamically imported module" · 새 요청 0
+- import('/assets/RecoView-CpMYkhU4.js?bust=1') → ok · 새 요청 1 (200)
+- "다시 시도" 2회째 클릭 → alert 그대로 · 카드 0
+- "다시 시도" 클릭 직후 포커스 BODY(alert 제거 → 스켈레톤, 포커스 대상 사라짐)

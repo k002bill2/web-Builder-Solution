@@ -1,0 +1,14 @@
+uname=Linux aarch64 node=v22.23.3 npm=10.9.9
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm_ci_exit=0 build_exit=0
+computing gzip size...
+dist/index.html                              0.47 kB │ gzip:  0.32 kB
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-BPHr-n2i.js              250.12 kB │ gzip: 77.70 kB
+
+✓ built in 245ms
+docker exit 0

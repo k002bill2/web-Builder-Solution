@@ -1,0 +1,17 @@
+uname=Linux aarch64 node=v22.23.3 npm=10.9.9
+m1 npm_ci_exit=0 build_exit=0
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-NB7fd1H6.js              246.61 kB │ gzip: 76.35 kB
+
+✓ built in 192ms
+m1 npm_install_exit=0 build_exit=0
+m2 npm_ci_exit=0 build_exit=0
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-Dl9ZqcJK.js              249.62 kB │ gzip: 77.63 kB
+
+✓ built in 162ms
+m2 npm_install_exit=0 build_exit=0

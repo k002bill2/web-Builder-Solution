@@ -15,11 +15,12 @@ import { IMAGE_FAILED, exportImages, type ExportSummary, type ReadImage } from "
 import { FONT_FAILED, FONT_TIMEOUT_MS, base64, defaultFetchBytes, loadSiteFonts, stripFontFaces, type FetchBytes } from "./siteFontEmbed";
 import { buildStaticHtml } from "./staticMarkup";
 import { buildZipSite } from "../zip/zipSite";
+import { RENDER_DOC_SRC, defaultFetchText, hex12, kitCss } from "./kitCss";
 
 export { IMAGE_FAILED };
 export { DEV_SERVER_UNSUPPORTED };
+export { defaultFetchText, kitCss };
 
-const RENDER_DOC_SRC = "/render.html";
 /** 숨은 iframe 준비·그리기·직렬화 전체 상한 — exportFlow 조회 상한(10초)보다 짧게 */
 const TIMEOUT_MS = 8000;
 
@@ -112,28 +113,11 @@ export function renderAndSerialize(
   });
 }
 
-/** `/render.html`의 스타일시트 텍스트 — 빌드 산출물 기준(dev 서버는 CSS를 JS로 넣어 링크가 없다 → 실패) */
-export async function kitCss(fetchText: (url: string) => Promise<string>): Promise<string> {
-  const page = new DOMParser().parseFromString(await fetchText(RENDER_DOC_SRC), "text/html");
-  const hrefs = [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") ?? "").filter(Boolean);
-  if (hrefs.length === 0) throw new Error(import.meta.env.DEV ? DEV_SERVER_UNSUPPORTED : "render.html에 스타일시트가 없습니다");
-  return (await Promise.all(hrefs.map(fetchText))).join("\n");
-}
-
 /** 참조 직렬화의 단일 HTML 결과 src — 부모가 가진 Blob → data URL(id당 1개) */
 async function imageDataUrls(images: Readonly<Record<string, RenderImage>>): Promise<Record<string, string>> {
   const entries = await Promise.all(Object.entries(images).map(async ([id, { blob }]) => [id, `data:${blob.type};base64,${base64(await blob.arrayBuffer())}`] as const));
   return Object.fromEntries(entries);
 }
-
-const hex12 = async (bytes: Uint8Array<ArrayBuffer>) =>
-  [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 12);
-
-export const defaultFetchText = async (url: string) => {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`${url} ${response.status}`);
-  return response.text();
-};
 
 export interface StaticHtmlDeps {
   readonly open: () => RenderChannel;

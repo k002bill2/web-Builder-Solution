@@ -9,7 +9,7 @@ import type { ZipEntry } from "./storeZip";
 export const ZIP_MAX = 64 * 1024 * 1024;
 export const tooLargeText = (bytes: number) => `묶음이 ${(bytes / (1024 * 1024)).toFixed(1)}MB로 상한 64MB를 넘어 만들지 않았습니다 — 큰 이미지를 줄여 주세요`;
 
-const EXT: Readonly<Record<string, string>> = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" };
+export const EXT: Readonly<Record<string, string>> = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" };
 
 /** 렌더 문서가 준 `image:<id>` 첫 등장 순 → `assets/images/img-NN.<ext>`(01부터 · 100장부터 3자리). markup에 없는 id는 파일 0 */
 export function imageFileNames(markup: string, images: Readonly<Record<string, RenderImage>>): ReadonlyMap<string, string> {
@@ -38,7 +38,7 @@ const FONT = /^assets\/fonts\/[A-Za-z]+-\d{3}\.woff2$/;
 const IMAGE = /^assets\/images\/img-\d{2,3}\.(webp|jpg|png)$/;
 const OFL = "assets/fonts/OFL.txt";
 const head = (data: Uint8Array, length: number) => String.fromCharCode(...data.subarray(0, length));
-const SIGNATURE: Readonly<Record<string, (data: Uint8Array) => boolean>> = {
+export const SIGNATURE: Readonly<Record<string, (data: Uint8Array) => boolean>> = {
   webp: (d) => head(d, 4) === "RIFF" && String.fromCharCode(...d.subarray(8, 12)) === "WEBP",
   jpg: (d) => d[0] === 0xff && d[1] === 0xd8 && d[2] === 0xff,
   png: (d) => d[0] === 0x89 && head(d, 4).slice(1) === "PNG",

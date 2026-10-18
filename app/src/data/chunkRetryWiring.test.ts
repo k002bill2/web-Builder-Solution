@@ -24,12 +24,13 @@ describe("조작 뒤 로더 배선", () => {
     expect(modules.map(marker).sort()).toEqual(["CarryOverNotice", "carryOverAdjustments", "composeFor", "createBoardConfirmer", "parseBoardInput", "parseBoardInput", "revertIn"]);
   });
 
-  it("P2-2 정적 HTML 생성기 슬롯 로더(exportFlow)도 retryableImport로 싼다 — 받는 모듈 = 생성기 청크", async () => {
+  it("P2-2 생성기 슬롯 로더(exportFlow)도 retryableImport로 싼다 — 받는 모듈 = 정적 HTML 생성기 청크 · React zip 생성기 청크(M4-b RZQ-02 A, 별도 슬롯)", async () => {
     const before = wrapped.length;
     await import("../features/studio/exportFlow");
     const added = wrapped.slice(before);
-    expect(added).toHaveLength(1);
-    expect("createStaticHtmlGenerator" in (await added[0]!())).toBe(true);
+    expect(added).toHaveLength(2);
+    const loaded = await Promise.all(added.map((load) => load()));
+    expect(loaded.map((m) => ["createStaticHtmlGenerator", "createReactZipGenerator"].filter((name) => name in m))).toEqual([["createStaticHtmlGenerator"], ["createReactZipGenerator"]]);
   });
 
   it("영속 싱크 청크(localSync)도 retryableImport로 싼다 — Codex r2 P2(실패 뒤 재시도 = 새 URL)", async () => {

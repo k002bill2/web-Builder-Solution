@@ -1,17 +1,15 @@
 /**
  * React zip 사용자 문구 자리 상수 (REACTZIP-SPEC 7a — [문안 미정] 키는 Hemingway가 쓰고 Jarvis가 반영한다).
  * 지금 값은 자리 표시용이다. 테스트는 키 존재·자리만 단언한다. 키 이름 = SPEC `export.*` 관례.
- * 진입(ExportButtons)은 버튼 글자 모듈(reactZipLabel)만 import한다 — 이 파일은 조작 뒤 청크(exportFlow·생성기)에서만 쓴다.
+ * 모듈 경계 = 청크 경계: 버튼 글자(reactZipLabel — 진입) · 결과 줄(reactZipNotes — exportFlow) · 나머지(이 파일 — 생성기 청크).
+ * 생성기 청크가 exportFlow 청크의 모듈을 import하면 exportFlow에 namespace 헬퍼가 생겨 공통 청크가 는다(E1 실측 +0.05).
  */
 
 // export.format.reactZip — 진입 청크 분리 때문에 reactZipLabel.ts에 둔다(같은 자리 상수 모음의 일부)
 export { REACT_ZIP_FORMAT_LABEL } from "./reactZipLabel";
 
-const MB = 1024 * 1024;
-// TODO(copy): export.note.reactZip — 크기·이미지 수·글꼴 수
-export const reactZipNote = (bytes: number, images: number, fonts: number) => `React 프로젝트 zip 1개 · ${(bytes / MB).toFixed(1)}MB (이미지 ${images}장 · 글꼴 ${fonts}개)`;
-// TODO(copy): export.note.reactZipNext — 압축 해제 → npm ci → npm run dev, Node 버전 조건
-export const REACT_ZIP_NEXT = "압축을 풀고 npm ci → npm run dev 로 실행합니다 (Node 20.19 이상 또는 22.12 이상)";
+// export.note.reactZip · export.note.reactZipNext — exportFlow 청크 전용이라 reactZipNotes.ts에 둔다(같은 자리 상수 모음의 일부)
+export { REACT_ZIP_NEXT, reactZipNote } from "./reactZipNotes";
 
 /** zip 안 README.md (RZQ-04 A — 실행 방법·Node 조건·서브셋 글꼴 고지) */
 // TODO(copy): README 본문
@@ -40,3 +38,6 @@ export const LICENSES_SITE_CODE = `## 사이트 코드
 
 src/kit/*, src/PageDocument.tsx, src/main.tsx, src/images.ts, src/types/*, 설정 파일은 디자인 도구가 만든 산출물입니다. 제약 없이 사용·수정할 수 있습니다.
 `;
+
+// TODO(copy): export.fail.pattern — 생성기 단언 실패(허용표·킷 원문·site.json 검증). M4-a EXPORT-SPEC 6.1 문안 재사용
+export const REACT_ZIP_FAIL_PATTERN = "내보낼 수 없는 내용이 있어 멈췄습니다 — 문제가 계속되면 알려 주세요";

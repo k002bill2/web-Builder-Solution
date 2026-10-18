@@ -8,7 +8,7 @@ import type { StudioReader } from "../../data/studioStore";
 import { emitEditorEvent } from "./editorEvents";
 import { exportChunk } from "./exportFlowFails";
 import type { RenderImages } from "./images/store/types";
-import { REACT_ZIP_NEXT, reactZipNote } from "./reactZip/reactZipText";
+import { REACT_ZIP_NEXT, reactZipNote } from "./reactZip/reactZipNotes";
 import { reactZipFileName, staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
 import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
 import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary, type ReadImage } from "./staticHtml/exportImages";

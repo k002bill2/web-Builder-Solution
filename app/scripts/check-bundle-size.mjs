@@ -231,11 +231,12 @@ function checkThumbnails() {
 }
 /**
  * React zip 진입 정적 포함 0 (REACTZIP-SPEC 5.4 · ADR-004 개정 20 결정 2) — `/studio` 두 시나리오의 진입 집합(공통 + 페이지 정적 닫힘 + 자동 dynamic import 닫힘)에
- * 생성기 청크 파일 · 킷 원문 표식(kit.css 첫 줄) · lock 표식(`"lockfileVersion"`)이 0개. 생성기 청크가 manifest에 없으면 실패(가드가 조용히 꺼지지 않게)
+ * 생성기 청크 파일 · 킷 원문 표식(kit.css 첫 줄) · lock 표식(lockfileVersion)이 0개 · 생성기 청크에는 두 표식이 있음. 생성기 청크가 manifest에 없으면 실패(가드가 조용히 꺼지지 않게)
  */
 const REACT_ZIP_GENERATOR = "src/features/studio/reactZip/reactZip.ts";
 const KIT_CSS_MARK = "M2A-2a K3";
-const LOCK_MARK = '"lockfileVersion"';
+// 따옴표 없이 — 미니파이 문자열 안에서는 `\"lockfileVersion\"`처럼 이스케이프되어 따옴표 포함 표식이 늘 빠진다
+const LOCK_MARK = "lockfileVersion";
 function checkReactZipEntry() {
   const generator = manifest[REACT_ZIP_GENERATOR]?.file;
   if (!generator) return [`React zip 생성기 청크(${REACT_ZIP_GENERATOR})가 manifest에 없습니다`];
@@ -248,6 +249,10 @@ function checkReactZipEntry() {
     return seen;
   };
   const issues = [];
+  // 양성 검사 — 생성기 청크(정적 닫힘)에 표식이 실제로 있어야 부재 검사가 뜻을 가진다(vitest css:false 빈 CSS 함정의 빌드 쪽 확인, SPEC 5.2)
+  const own = [...closure(REACT_ZIP_GENERATOR, new Set())].map((file) => readFileSync(join(DIST, file), "utf8")).join("\n");
+  if (!own.includes(KIT_CSS_MARK)) issues.push(`React zip 생성기 청크에 킷 원문 표식 ${KIT_CSS_MARK} 없음`);
+  if (!own.includes(LOCK_MARK)) issues.push(`React zip 생성기 청크에 lock 표식 ${LOCK_MARK} 없음`);
   for (const scenario of SCENARIOS.filter((s) => s.name.startsWith("/studio/"))) {
     const files = new Set();
     for (const key of ["index.html", scenario.page, ...scenario.auto]) closure(key, files);

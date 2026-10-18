@@ -1,0 +1,4 @@
+# E2 lock 생성 (2026-10-18) — 명령: docker run --rm -v $TMPDIR/m4b2-lock:/w -w /w node:22 sh -c 'npm install --no-audit --no-fund' (빈 디렉터리 + template/package.json.tpl만)
+uname=Linux aarch64 node=v22.23.3 npm=10.9.9
+exit=0
+npm ls --all exit=0 (같은 컨테이너 재실행) · lockfileVersion 3 · 설치 항목 86 · 50,419 B · 라이선스 MIT 57 · Apache-2.0 2 · ISC 2 · MPL-2.0 24(lightningcss + 바인딩 · vite/node_modules/lightningcss 포함) · BSD-3-Clause 1 · motion 0 · integrity 누락 0

@@ -1,0 +1,39 @@
+Unable to find image 'node:20.19-slim' locally
+20.19-slim: Pulling from library/node
+c9887d685317: Pulling fs layer
+e397ed5be7c9: Pulling fs layer
+33bdc9671af8: Pulling fs layer
+866ff8a10a17: Pulling fs layer
+b9e29ac057b1: Pulling fs layer
+c9887d685317: Download complete
+33bdc9671af8: Download complete
+e397ed5be7c9: Download complete
+b9e29ac057b1: Download complete
+866ff8a10a17: Download complete
+33bdc9671af8: Pull complete
+e397ed5be7c9: Pull complete
+b52da92db67a: Download complete
+c9887d685317: Pull complete
+b9e29ac057b1: Pull complete
+866ff8a10a17: Pull complete
+b9e48bee40bb: Download complete
+Digest: sha256:b342de02eb4a57cd6986290a69833d20818508db8078dba0197a024193410aee
+Status: Downloaded newer image for node:20.19-slim
+uname=Linux aarch64 node=v20.19.6 npm=10.8.2
+m1 npm_ci_exit=0 build_exit=0
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-NB7fd1H6.js              246.61 kB │ gzip: 76.35 kB
+
+✓ built in 414ms
+m1 npm_install_exit=0 build_exit=0
+m2 npm_ci_exit=0 build_exit=0
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-Dl9ZqcJK.js              249.62 kB │ gzip: 77.63 kB
+
+✓ built in 235ms
+m2 npm_install_exit=0 build_exit=0
+docker_exit=0

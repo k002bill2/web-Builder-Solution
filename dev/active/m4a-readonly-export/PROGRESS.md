@@ -10,3 +10,10 @@
 - [x] E2 Ego Lite 1회 (2탭, preview --port 4400 --strictPort)
 - [x] E2 Codex adversarial 1회 + 반영 1회 (approve · 지적 0 → 반영 0)
 - [x] 마감: preview 종료·리슨 0, git status 빈 값, REPORT 결론
+
+## FIX1 (BRIEF-FIX1)
+- [x] BRIEF-FIX1 커밋 (3cf5c277)
+- [x] N2 문구 — ExportAfter lazy · RED→GREEN (194c0061)
+- [x] N1 회귀 가드 2줄 · M3b 변이 FAIL 확인·되돌림 (4265cf4a)
+- [x] fresh typecheck·lint·test(3148)·build · 예산 128.79/131.77 증분 0
+- [x] REPORT FIX1 절 · untracked 0

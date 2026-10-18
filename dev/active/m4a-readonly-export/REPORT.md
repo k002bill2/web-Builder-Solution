@@ -64,3 +64,18 @@
 - 5555fab5 게이트·Ego 로그
 - 30aadf27 REPORT·PROGRESS 마감
 - (이 커밋) 예산 문구 정정
+
+## FIX1 — QA N1·N2 반영 (BRIEF-FIX1, base b501ad19)
+- 결론: N2 문구 · N1 회귀 가드 반영. fresh 4게이트 통과 · 예산 증분 0. Codex 0(BRIEF — 문자열·테스트만), 브라우저 0.
+- **N2 문구** (커밋 194c0061): `components/studio/ExportAfter.tsx`(lazy)에만 `READ_ONLY_TEXT` 추가 — refused `code === "READ_ONLY"`이면 본문 = 새 문장, 제목 "내보내지 못했습니다" 유지. 판별 상수 `exportFlow.ts:81` `READ_ONLY_TAB`·결과 `reason`은 그대로(판별·`exportFlowReadonly.test.ts` toEqual 고정 유지). 문형 근거 `dialogText.ts:2·5` · `restartText.ts:47`.
+
+| | alert `textContent` 정확 일치 (`ExportFlow.test.tsx:350`) |
+|---|---|
+| 이전 | `내보내지 못했습니다` + `다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다` |
+| 이후 | `내보내지 못했습니다` + `다른 탭에서 편집 중이라 내보내지 못했습니다 — 그 탭을 닫은 뒤 다시 내보내세요` |
+
+  - TDD: 단언 먼저 정정 → RED 1 failed / 19 passed → 구현 → GREEN 20/20.
+- **N1 회귀 가드** (커밋 4265cf4a): `exportFlowReadonly.test.ts`에 `toInfra(undefined, "저장", STALE_TAB)`·`CLEARED_TAB` → `retryable` 2줄. 변이 M3b(`endsWith(READ_ONLY_TAB)` → `includes("다른 탭에서")`) = 대상 2파일 **FAIL 1 / 21 passed**(이전 생존) — 원문 `logs/fix1/mut-M3b.txt`. `git checkout -- src/features/studio/exportFlow.ts` 후 `git status` 변경 0 확인.
+- **fresh 게이트** (`logs/fix1/`): typecheck exit 0 · lint exit 0 · test **356 files / 3148 tests passed** exit 0 · build exit 0.
+- **예산**: `/studio` 해시 정규화 **128.79**(기준선 128.79, +0.00) · 복원 **131.77**(기준선 131.77, +0.00). raw 130.09 / 133.13(참고).
+- 단언 약화 0 · skip 0 · push 0.

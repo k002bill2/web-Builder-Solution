@@ -64,6 +64,11 @@ describe("SSR 대조 — 이미지 문서 M2 (RZ-AC-13 · 2.3.1 변환 뒤 DOM �
     const fromApp = Object.fromEntries(Object.entries(keyOf).map(([id, key]) => [`blob:app/${id}`, key]));
     const fromZip = { "/assets/img-01.webp": "img-01", "/assets/img-02.jpg": "img-02", "/assets/img-03.png": "img-03" };
     expect(app.match(/data-media="image"/g)?.length).toBe(4);
+    // masonry 실제 이미지 칸 = 원본 비율 aspect(imageSizes) — 양쪽 모두 마크업에 있어야 대조가 의미 있다
+    const aspects = ['style="aspect-ratio:1000 / 1000"', 'style="aspect-ratio:800 / 600"'];
+    expect(app).toContain('data-section="portfolio/masonry"');
+    expect(app.match(/style="aspect-ratio:[^"]+"/g)).toEqual(aspects);
+    expect(zip.match(/style="aspect-ratio:[^"]+"/g)).toEqual(aspects);
     expect(normalize(zip, fromZip)).toBe(normalize(app, fromApp));
   });
 });

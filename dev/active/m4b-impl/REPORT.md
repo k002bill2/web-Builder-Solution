@@ -85,3 +85,40 @@
 
 ## 서브에이전트
 - 사용 0(읽기 전용 조사도 직접 수행).
+
+## FIX1 (BRIEF-FIX1 · 2026-10-18) — 문안 반영 · QA 1차 P1~P3 · 원격 자동 허용 제거
+> 결론: **완료 — 6항목 전부 반영, 게이트 4종 fresh 통과, 예산 판정선 안(감량 불필요).** 원격 명령 0 · 브라우저·Codex 미사용(브리프 지시).
+
+| # | 항목 | 커밋 | 근거 |
+|---|---|---|---|
+| 0 | BRIEF-FIX1·COPY 커밋 | `c3abb85d` | — |
+| 1 | 문안 COPY.md 글자 그대로 · `TODO(copy)` 0 | `dfe3834f` | `reactZipCopy.test.ts` — COPY.md 블록을 읽어 원문 일치(버튼·결과 줄·다음 할 일·README 전문·LICENSES 1·2·4절) · {files} = 실제 entry 수 · TODO(copy) 0 가드 |
+| 2 | P1 M6 가드 | `1d94dbb3` | `ReactZipError.retry === false` + 실제 `buildReactZip` 허용표 위반(이미지 서명 불일치, cause `허용표 …`) → refused · 사유 `export.fail.pattern` |
+| 3 | P2 UI 흐름 · 진입 가드 단위 | `2e0c84b2` · `0511e643` | `ExportFlow.test.tsx` react-zip: 편집→다시 검사→확인 대화상자→요청 시점 저장 1건→requestExport 1회 `("project-1","react-zip",4)` · `scripts/reactZipEntryGuard.test.mjs` 음성 3·양성 4·정상 0 |
+| 4 | P3 3MB 초과 메일 안내 0 | `b4813fe9` | `exportNotes({bytes:3*MB+1,…},"react-zip")` = [크기 줄, 다음 할 일] 정확 일치 |
+| 5 | `.claude/settings.json` push·pull 허용 2줄 삭제 | `a2876fc8` | diff −2줄만 · `json.load` 유효 · hooks 변경 0 |
+
+### 변이 확인 (매번 되돌림 · `git diff --stat` 빈 값 확인)
+| 변이 | 결과 |
+|---|---|
+| M6 `ReactZipError.retry = true` | **FAIL** — 새 테스트(retry 단언) · retry 단언을 지운 사본에서도 흐름 단언이 `retryable ≠ refused`로 FAIL |
+| react-zip 가지에 메일 안내 추가 | **FAIL** — P3 단언 |
+| ExportButtons react-zip 형식 값 → `static-zip` | **FAIL** — UI 흐름 단언 |
+| 가드 "진입에 생성기 청크" 검사 끔 | **FAIL** — 가드 음성 단언 |
+
+### fresh 게이트 · 예산
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npx vitest --run` **371 files / 3353 tests passed** (QA 369/3342 → +2 files · +11 tests) · `npm run build` exit 0.
+
+| 지표 | QA 1차 tip | FIX1 | 판정선 | 판정 |
+|---|---|---|---|---|
+| `/studio` 정규화 진입 | 128.82 | **128.82** | ≤128.83 | PASS |
+| 복원 진입 정규화 | 131.81 | **131.81** | ≤131.81 | PASS(여유 0 그대로 — 버튼 라벨이 COPY와 이미 같아 진입 바이트 변화 0 · 감량 미실시) |
+| 렌더 JS · CSS | 84.30 · 8.89 | 84.30 · 8.89 | 증분 0 | PASS |
+| 진입 정적 포함 0 가드 | 통과 | 통과 · 생성기 청크 gzip 54.31KB(53.49 → +0.82, README·LICENSES 문안 증가분 — 판정 밖) | — | PASS |
+
+### 브리프와 다르게 한 부분
+- `check-bundle-size.mjs`: "함수 export만"으로는 import 시점에 dist 판정·`process.exit`이 돌아 테스트가 불가 → 판정·출력·종료를 `isMain`(직접 실행) 블록으로 감쌈. 빌드 로그 예산 줄·가드 통과 줄 그대로, 직접 실행 exit 0 확인.
+- 4절 표: 기존 `LOCK_LICENSES`(설치 86개 · lock 대조 단언 유지)에서 직접 의존성 9개를 뺀 `TRANSITIVE_LICENSES`(77개: MIT 49 · Apache-2.0 1 · ISC 2 · MPL-2.0 24 · BSD-3-Clause 1)를 표로 출력 — 테스트가 lock에서 직접 재집계해 대조.
+- `export.fail.pattern`: COPY.md에 없음 — 현행 문구가 M4-a EXPORT-SPEC 6.1 확정 문안과 같아 TODO 표식만 제거. LICENSES 3·5·6·7절은 COPY.md 결정대로 현행 유지(TODO 표식만 제거).
+- 기존 단언 교체 2곳(강화 방향): `template.test.ts` "파일 56개" → 1절 머리 전문 일치 · 절 제목 "## 사이트 코드" → "## 사이트 코드 — 킷 소스". `exportFlowReactZip.test.ts`·`ExportFlow.test.tsx`는 상수 자기참조에 원문 리터럴 단언 추가.
+- 서브에이전트: 사용 0(항목이 작고 같은 테스트 파일을 공유해 분할 이득 없음).

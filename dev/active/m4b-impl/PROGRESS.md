@@ -24,3 +24,12 @@
 - E4: 테스트 경로 zip(M1·M2) docker node:22 · node:20.19-slim(v20.19.6) npm ci&&build · npm install&&build exit 0. JS 76.35/77.63KB · CSS 5.98KB gzip.
 - 서브에이전트: 사용 0.
 - Codex r1: 생성 전체 상한 · 단언·용량 refused 반영. 정적 HTML kitCss 상한 없음은 diff 밖(별건).
+
+## FIX1 (BRIEF-FIX1, 2026-10-18)
+- [x] 0 BRIEF-FIX1·COPY 커밋 (c3abb85d)
+- [x] 5 .claude/settings.json git push·pull 허용 2줄 삭제 (a2876fc8)
+- [x] 1 문안 COPY.md 글자 그대로 · TODO(copy) 0 · 하위 의존성 표 lock 대조 (dfe3834f)
+- [x] 2 P1 M6 가드(ReactZipError.retry · 실제 허용표 위반 → refused) · 변이 M6 FAIL 기록 (1d94dbb3)
+- [x] 3 P2 react-zip UI 흐름 · 진입 정적 포함 0 가드 단위 테스트 (2e0c84b2 · 0511e643)
+- [x] 4 P3 react-zip 3MB 초과 메일 안내 0 (b4813fe9)
+- [x] 6 fresh 게이트 4종(371/3353) · 예산 128.82·131.81 · REPORT FIX1 절

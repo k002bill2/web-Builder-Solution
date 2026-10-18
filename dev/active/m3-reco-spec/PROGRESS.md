@@ -15,5 +15,5 @@
 - [x] §6 RECO-AC-NN · T-REC/E2E-S4 대응표
 - [x] §7 설계 질문 (★권장)
 - [x] Codex 1회 (--help 없이) — needs-attention 5건 전부 반영(SPEC r1 8절)
-- [x] preview 관찰(필요 시) → 불필요(소스 L1) · 미기동 — 마감 때 lsof 4398 0 기록
-- [ ] 마감: git status --short 빈 값 · REPORT 최종
+- [x] preview 관찰(필요 시) → 불필요(소스 L1) · 미기동 · `lsof -nP -iTCP:4398 -sTCP:LISTEN` 0줄
+- [x] 마감: git status --short 빈 값 · 앱 코드 diff 0(a0068764..HEAD `app/` 0파일) · REPORT 최종

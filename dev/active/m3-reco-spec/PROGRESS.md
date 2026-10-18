@@ -14,6 +14,6 @@
 - [x] §5 예산 추정 (ADR-004 개정 17·18 대비)
 - [x] §6 RECO-AC-NN · T-REC/E2E-S4 대응표
 - [x] §7 설계 질문 (★권장)
-- [ ] Codex 1회 (--help 없이)
+- [x] Codex 1회 (--help 없이) — needs-attention 5건 전부 반영(SPEC r1 8절)
 - [x] preview 관찰(필요 시) → 불필요(소스 L1) · 미기동 — 마감 때 lsof 4398 0 기록
 - [ ] 마감: git status --short 빈 값 · REPORT 최종

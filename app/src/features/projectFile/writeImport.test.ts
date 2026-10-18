@@ -11,7 +11,7 @@ import { readImageRecord } from "../../data/persistence/imageRecord";
 import { openLocalSync } from "../../data/persistence/localSync";
 import { createMemoryPersistence } from "../../data/persistence/studioPersistence";
 import { WRITER_LOCK } from "../../data/persistence/writerLock";
-import { fakeDeps, fileImage, jsonFile, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
+import { fakeDeps, fileImage, jsonFile, seedFile, seedProject, seedSeries, uid } from "../../test/projectFileFixtures";
 import { checkFile, type CheckedFile } from "./checkFile";
 import {
   IMPORTED_KEY,
@@ -34,7 +34,7 @@ const IM10 = "가져오지 못했습니다 — 다시 시도하세요";
 const IM11 = "브라우저 저장 공간이 부족해 가져오지 못했습니다 — 쓰지 않는 프로젝트를 지운 뒤 다시 시도하세요";
 const IM4 = "파일 내용이 손상되어 가져올 수 없습니다";
 
-async function checked(images = [fileImage("a", 500, 300)]): Promise<CheckedFile> {
+async function checked(images = [fileImage(uid("a"), 500, 300)]): Promise<CheckedFile> {
   const result = await checkFile(jsonFile(seedFile({}, images)), fakeDeps().deps);
   if (!result.ok) throw new Error(result.message);
   return result.file;
@@ -153,7 +153,7 @@ const fullDb = (state: unknown, opts?: FakeOpts) =>
       studio: new Map([["state", state]]),
       docs: new Map([["project-1", env("doc", "project-1", { doc: {}, snapshots: [] })]]),
       snapshots: new Map(),
-      images: new Map([["project-1/a", env("image", "project-1/a", {})]]),
+      images: new Map([[`project-1/${uid("a")}`, env("image", `project-1/${uid("a")}`, {})]]),
       board: new Map(),
       saved: new Map(),
     },
@@ -176,8 +176,8 @@ describe("runImport — 한 IDB 트랜잭션 (3.5 ②)", () => {
     expect(state.data.gen).toBe(1);
     expect(idb.stores.get("meta")!.get("generation")).toEqual(env("generation", "generation", 1));
     expect(idb.stores.get("docs")!.get("project-1")).toMatchObject({ schemaVersion: SCHEMA_VERSION, kind: "doc", id: "project-1" });
-    const image = idb.stores.get("images")!.get("project-1/a") as { data: Record<string, unknown> };
-    expect(image).toMatchObject({ schemaVersion: SCHEMA_VERSION, kind: "image", id: "project-1/a" });
+    const image = idb.stores.get("images")!.get(`project-1/${uid("a")}`) as { data: Record<string, unknown> };
+    expect(image).toMatchObject({ schemaVersion: SCHEMA_VERSION, kind: "image", id: `project-1/${uid("a")}` });
     expect(Object.keys(image.data).sort()).toEqual(["bytes", "format", "height", "variants", "width"]);
     expect(idb.closed()).toBe(1);
   });
@@ -192,7 +192,7 @@ describe("runImport — 한 IDB 트랜잭션 (3.5 ②)", () => {
     expect([...state.data.series.keys()]).toEqual(["profile-1", "profile-2"]);
     expect(state.data.gen).toBe(8);
     expect(idb.stores.get("docs")!.get("project-1")).toEqual(env("doc", "project-1", { doc: {}, snapshots: [] }));
-    expect([...idb.stores.get("images")!.keys()]).toEqual(["project-1/a", "project-2/a"]);
+    expect([...idb.stores.get("images")!.keys()]).toEqual([`project-1/${uid("a")}`, `project-2/${uid("a")}`]);
     await expect(runImport(idb.factory, file, NOW)).resolves.toMatchObject({ status: "done", projectId: "project-3" });
   });
 
@@ -204,7 +204,7 @@ describe("runImport — 한 IDB 트랜잭션 (3.5 ②)", () => {
     await persistence.write([{ type: "put", store: "docs", record: idb.stores.get("docs")!.get("project-2") as never }]);
     const sync = await openLocalSync({ state }, async () => persistence, soloLocks());
     expect(sync.docs.get("project-2")?.doc.projectId).toBe("project-2");
-    await expect(readImageRecord(idb.stores.get("images")!.get("project-2/a"), "project-2/a")).resolves.toMatchObject({ width: 500, height: 300, format: "png" });
+    await expect(readImageRecord(idb.stores.get("images")!.get(`project-2/${uid("a")}`), `project-2/${uid("a")}`)).resolves.toMatchObject({ width: 500, height: 300, format: "png" });
   });
 
   it("AC-P07 상태 봉투 schemaVersion 99 · Map 아닌 필드 → unreadable · abort · 쓰기 0", async () => {

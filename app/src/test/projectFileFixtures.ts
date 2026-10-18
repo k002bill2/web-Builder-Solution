@@ -123,6 +123,9 @@ export function toBase64(bytes: Uint8Array): string {
   return btoa(pieces.join(""));
 }
 
+/** 결정적 UUID v4 소문자(LOCAL_IMAGE_ID 모양) — 가져오기는 이 모양의 localId만 받는다(SEC L-3). tag는 6자 이하 · 글자 코드 16진 12자리 */
+export const uid = (tag: string): string => `00000000-0000-4000-8000-${[...tag].map((c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("").padStart(12, "0")}`;
+
 export function fileImage(localId: string, width: number, height: number, format: FileImage["format"] = "png", over: Partial<FileImage> = {}): FileImage {
   const ladder = [640, 1280, 1920].filter((s) => s <= width);
   const widths = width < 1920 && !ladder.includes(width) ? [...ladder, width] : ladder;

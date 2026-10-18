@@ -10,13 +10,13 @@ import { createMemoryPersistence } from "../../data/persistence/studioPersistenc
 import { checkSaveDoc } from "../../data/startDocWrite";
 import { hashDoc } from "../../engine/ops/hash";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
-import { fakeDeps, fileImage, jsonFile, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
+import { fakeDeps, fileImage, jsonFile, seedFile, seedProject, seedSeries, uid } from "../../test/projectFileFixtures";
 import { checkFile, type CheckedFile } from "./checkFile";
 import { mergeImport, rekeyImport } from "./rekey";
 
 const NOW = "2026-10-08T10:00:00.000Z";
 
-async function checked(over: Parameters<typeof seedFile>[0] = {}, images = [fileImage("a", 500, 300)]): Promise<CheckedFile> {
+async function checked(over: Parameters<typeof seedFile>[0] = {}, images = [fileImage(uid("a"), 500, 300)]): Promise<CheckedFile> {
   const result = await checkFile(jsonFile(seedFile(over, images)), fakeDeps().deps);
   if (!result.ok) throw new Error(result.message);
   return result.file;
@@ -57,7 +57,7 @@ describe("rekeyImport 치환 규칙 (3.4)", () => {
       expect(checkSaveDoc("project-2", s.doc).ok).toBe(true);
     });
     expect(plan.head).toEqual({ projectId: "project-2", revision: doc.doc.revision, hash: doc.doc.hash, profileVersion: doc.doc.profileVersion, candidateId: doc.doc.candidateId, updatedAt: doc.doc.updatedAt });
-    expect(plan.images.map((im) => [im.key, im.image])).toEqual([["project-2/a", file.images[0]]]);
+    expect(plan.images.map((im) => [im.key, im.image])).toEqual([[`project-2/${uid("a")}`, file.images[0]]]);
   });
 
   it("AC-P03 — 대상 project-1·profile-1 + 같은 id 파일 → project-2 · 기존 값 그대로 · 같은 파일 2회 = project-3 · seq 불변", async () => {

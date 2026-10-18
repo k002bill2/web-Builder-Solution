@@ -110,7 +110,7 @@ M4     Security(AppSec) · QA(릴리스 게이트) · Codex(diff 리뷰) → Jar
 | 2.2 | 섹션 12유형 × 2변형 명세 | Designer | 24 명세 |
 | 2.3 | 섹션 구현(3~4변형 배치 handoff) | Developer B | 변형별 T-KIT + 시각 스냅샷 |
 | 2.4 | composer(결정적 SectionPlan, seed) + 조합 lint R-01~R-15 | Developer B | T-CMP, T-LNT |
-| 2.5 | codegen(React+Tailwind+motion 프로젝트 파일) + 정적 build | Developer B | T-GEN, zip 빌드 테스트 |
+| 2.5 | codegen(React+Tailwind+motion 프로젝트 파일) + 정적 build | Developer B | T-GEN, zip 빌드 테스트 · **2026-10-18 M4-b React zip(킷 소스 동봉+site.json, motion/react 제외 — REACTZIP-SPEC r1) · docker node:22·20.19 빌드 0 · QA 조건부 PASS(R2 [미확인] B-M4B-01)** |
 | 2.6 | 생성 잡 오케스트레이터(backend↔워커, timeout, 멱등) | Developer A | T-JOB |
 | 2.7 | 루브릭·유사도·근거 3개 승인 | Designer | 24/24 |
 | 2.8 | 워커 격리 검토 | Security | 차단 이슈 0 |

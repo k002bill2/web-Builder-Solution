@@ -96,4 +96,11 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-SEC-04 | SEC-M4A-10 4절 | 내보낸 HTML·zip에 생성기 고정 CSP meta(메뉴 스크립트 sha256 고정+대조 테스트) — 보조 방어, SPEC 개정 후 구현 | Medium · SPEC(Designer) |
 | B-SEC-05 | SEC-FIX-1 QA-1 | `checkImages.test`에 헤더가 사다리보다 작은 경우(639×480·640×479 → IM-6·디코드 0) 단언 추가 — 변이 M2(`===`→`<=`) 생존 | Low · 테스트 |
 | B-SEC-06 | SEC-FIX-1 QA-2 | 한 프로젝트만 렌더 범위 밖 값이면 파일 내보내기 EX-6이 "브라우저 데이터 지우기"(전체 삭제)로 안내 — 원인·문구 분리(그 프로젝트 삭제 안내) | Low · 문구(Hemingway) |
+| B-M4B-01 | M4-b-2 QA 2차 R2 | React zip 실화면 렌더 대비(1280·390 정규화 DOM·390 메뉴 닫힘·이미지 masonry) [미확인] — 앱 렌더 iframe DOM 수집 불가. 오프라인 SSR 30변형 대조·스파이크 스크린샷 바이트 동일로 대체 근거 | Medium · M5 전 릴리스 체크 |
+| B-M4B-02 | M4-b-1 7a · RZ-AC-C2 | React zip windows·macOS `npm ci && npm run build` [미확인] — CI 신설(RZQ-10) 결정과 함께 | Medium · M5 |
+| B-M4B-03 | M4-b 문안 · 영환님 "1" | LICENSES 4절 NOTICE 동봉·소스 공개 의무(Apache-2.0 typescript·MPL-2.0 lightningcss) 법무 확인 — zip에서 제외한 문장 | 릴리스 게이트 · 법무 |
+| B-M4B-04 | M4-b-2 운영 | 승인 없는 원격 쓰기 1건(19:31 `git pull --no-rebase` + `k002bill2/m4b-impl` 브랜치 생성) 원인 미확인 — worker 대화 기록·Codex 세션에 명령 없음. 저장소 `.claude/settings.json` push·pull 자동 허용은 제거(`a2876fc8`). 저장소 밖 Claude Code 설정·hooks 점검 | Medium · 운영 |
+| B-M4B-05 | M4-b-2 QA 1·2차 | 복원 진입 131.81 = 판정선(여유 0) · `/studio` 여유 0.01 — 다음 `/studio` 진입 변경 전 감량 또는 개정 선행 | Medium · 예산 |
+| B-M4B-06 | M4-b-2 QA 2차 R4 P3 | 내보내기 "다시 시도" 성공 뒤 포커스가 BODY(공용 경로 — 정적 형식 포함) | Low · 접근성 |
+| B-M4B-07 | M4-b-2 QA 1차 2절 | RZ-AC 부분 충족 단언 보강(08 kitTokens·motion 값 · 13 masonry aspect · 17 LICENSES 경로 목록 · 09 정적 zip 글꼴 직접 비교 · 04 `?retry=1` 단일 테스트) | Low · 테스트 |
 | B-RS-19 | RS7 flaky-hunt REPORT 2절 · 정적 조사 | ① 앱: 미리보기 잠금(`StudioLayout.tsx:247-252` `historyKeys.locked`)이 passive effect에서 갱신 — 커밋~effect 사이 수 ms 동안 Ctrl+Z가 편집 되돌리기로 가로채질 수 있는 이론상 창(실사용 영향 미미 추정, 미재현) · layout effect/render 값 이전 검토 ② 미재현 flaky 후보 2건: `CompareDialog.test.tsx:161-170`(shouldAdvanceTime + 7800ms) · `imagePersist.test.ts:93`(waitFor 1000ms 타임아웃 삼킴) | 미정(Jarvis 배정) |

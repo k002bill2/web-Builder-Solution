@@ -4,7 +4,7 @@
 > 앱 커밋 0 · 앱 package.json 변경 0. 시제품은 `patches/`에만 있습니다. 임시 빌드는 모두 `$TMPDIR/m4b`에서 했습니다(앱 사본 포함).
 
 ## 결론 줄
-`실현 가능(실측) · 생성기 = (a)안(킷 소스 ?raw 동봉 + site.json 주입) · 위치 제안 `app/src/features/studio/reactZip/`(staticHtml 청크에서 동적 import) · 조작 뒤 청크 reactZip 36.83KB gzip(raw 135.09KB · 시제품 생성기 2파일 약 170줄) · /studio 진입 증분 +0.01(버튼+배선: 정규화 128.80→128.81 · 복원 131.78→131.79 · 렌더 84.29 불변) · 산출 zip 의존성 = react·react-dom 19.3.0 · motion 14.3.0 / dev: vite 8.3.1 · @vitejs/plugin-react 6.1.1 · tailwindcss·@tailwindcss/vite 4.3.3 · typescript 6.0.3 · @types/react·@types/react-dom 19.3.0 · 빌드 검증 = $TMPDIR에 풀어 npm install && npm run build(tsc --noEmit && vite build) exit 0, ego-browser로 렌더 문서와 비교: DOM 정규화 일치 · 64요소 위치·크기 차이 0 · 1280×900 첫 화면 스크린샷 바이트 동일`
+`실현 가능(실측) · 생성기 = (a)안(킷 소스 ?raw 동봉 + site.json 주입) · 위치 제안 app/src/features/studio/reactZip/(staticHtml 청크에서 동적 import) · 조작 뒤 청크 reactZip 36.83KB gzip(raw 135.09KB · 시제품 생성기 2파일 약 170줄) · /studio 진입 증분 +0.01(버튼+배선: 정규화 128.80→128.81 · 복원 131.78→131.79 · 렌더 84.29 불변) · 산출 zip 의존성 = react·react-dom 19.3.0 · motion 14.3.0 / dev: vite 8.3.1 · @vitejs/plugin-react 6.1.1 · tailwindcss·@tailwindcss/vite 4.3.3 · typescript 6.0.3 · @types/react·@types/react-dom 19.3.0 · 빌드 검증 = $TMPDIR에 풀어 npm install && npm run build(tsc --noEmit && vite build) exit 0, ego-browser로 렌더 문서와 비교: DOM 정규화 일치 · 64요소 위치·크기 차이 0 · 1280×900 첫 화면 스크린샷 바이트 동일`
 
 ## 1. 코드 생성 방식
 

@@ -1,0 +1,18 @@
+## profileShape-family-range.diff 임시 적용 — vitest src/features/projectFile src/kit src/render src/features/profile src/test: 84 files / 546 tests passed
+## 퍼즈 판정 변화(diff base→patched)
+30c30
+< S01 family CSS break | PASS import 
+---
+> S01 family CSS break | REJECT IM-4 
+36c36
+< S07 headingWeight 1e9 | PASS import 
+---
+> S07 headingWeight 1e9 | REJECT IM-4 
+45c45
+< S16 scale 0 / sectionGap -1 | PASS import 
+---
+> S16 scale 0 / sectionGap -1 | REJECT IM-4 
+## 패치 후 S02~S04
+S02 family constructor | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=[] fontStack="\"constructor\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Go | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S03 family __proto__ | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=[] fontStack="\"__proto__\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Goth | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S04 family toString | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=[] fontStack="\"toString\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothi | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true

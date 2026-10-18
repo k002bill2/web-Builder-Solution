@@ -23,6 +23,6 @@
 - [x] R1-b. $TMPDIR 풀기 · docker node:22 `npm ci && npm run build` exit 0
 - [x] R1-c. 1차 테스트 경로 zip과 `src/kit/*.css`·`package-lock.json` 바이트 비교
 - [x] R1-d. 이미지 문서 1회 (UUID 0)
-- [ ] R4. 1280·390 status 1 · 결과 줄 원문 · 메일 0 · 청크 차단→alert→재시도 성공 · 포커스 · 390 버튼
+- [x] R4. 1280·390 status 1 · 결과 줄 원문 · 메일 0 · 청크 차단→alert→재시도 성공 · 포커스 · 390 버튼
 - [ ] R2. 1280·390 정규화 DOM · 390 메뉴 · masonry
 - [ ] 마감: preview 종료·리슨 0 · IDB 삭제 · 판정 1줄 · git status 빈 값

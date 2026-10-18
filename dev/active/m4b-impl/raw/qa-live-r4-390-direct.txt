@@ -1,0 +1,2 @@
+X {"innerWidth":390,"oldMarkerLeft":false,"snap":"내보내기 전 · 20:14","now":"20:15","statusFilled":1,"alertFilled":0,"line":["zip 1개 · 0.7MB (이미지 3장 · 글꼴 2개)","압축을 푼 폴더에서 npm ci → npm run dev 순서로 실행하세요. Node.js 버전 조건은 ^20.19.0 || >=22.12.0입니다."],"mail":false,"active":"BUTTON:React 프로젝트(zip) 내보내기"}
+

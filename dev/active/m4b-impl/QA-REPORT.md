@@ -95,3 +95,22 @@
 | kit/lock 바이트 비교 | **PASS — 동일** | 1차 vitest 경로 `$TMPDIR/qa-rz/m2`와 `cmp`: `src/kit/kit.css` 38,217 B · `src/kit/motion.css` 5,627 B · `package-lock.json` 50,419 B 모두 SAME → 앱 실제 경로 `kitCss` fetch 값 = fs 원문. 나머지 차이(index.html·README·LICENSES·fonts.css·site.json·images 폴더)는 문서가 달라서(1차 = fixture `ref-a` M2) [사실: 파일 목록 `diff -rq`] |
 | 이미지 문서 | PASS | `_r6_react.zip` 749,908 B · `src/assets/images/img-01~03.webp` = 3장(고른 수와 같음) · 결과 줄 "이미지 3장 · 글꼴 2개" · `site.json` UUID 정규식 0건 · kit/lock 역시 SAME · docker `npm ci` 0 · build 0 · JS 258.16KB(gzip 81.09 ≤90). 이미지가 각 2~3KB라 vite 기본 inline(4KB 미만) → dist에 별도 파일 없이 JS에 포함 [사실: JS +8.9KB] — 결함 아님. `raw/qa-live-r1-img-node22.txt` |
 - 관찰: 성공 뒤 `document.activeElement` = 누른 "React 프로젝트(zip) 내보내기" 버튼(R4 포커스 행 선행 증거).
+
+### 10.2 R4 status/alert · 포커스 — **PASS (관찰 P3 1건)**
+- 방법 [사실]: 편집 잠금(다른 탭 편집 중 → "다른 탭에서 편집 중이라 내보내지 못했습니다" alert)을 피하려 p1을 닫고 p2 단독. 스크립트마다 그 안에서 뷰포트 override + `Network.setBlockedURLs ["*reactZip-*"]` → `/projects` goto(IDB 복원) → "편집기 열기" 클릭 → (390은 "검사" 탭) → React zip 클릭 → 차단 해제 → "다시 시도". 로그 `raw/qa-live-r4-1280.txt` · `raw/qa-live-r4-390.txt` · `raw/qa-live-r4-390-direct.txt`, 스크린샷 `raw/qa-live-shots/r4-*`.
+
+| 행 | 1280 | 390 |
+|---|---|---|
+| innerWidth 기록 | 1280 (모든 단계) | 390 (모든 단계, scrollWidth 375 = 스크롤바) |
+| 성공 status 1 | 직접 성공(R1 문서) status 1 · 재시도 성공 status 1 | 재시도 성공 status 1 · 직접 성공(Enter) status 1 — 앞 결과 노드 교체 확인 |
+| 결과 줄 = COPY.md 원문 | `zip 1개 · 0.7MB (이미지 3장 · 글꼴 2개)` + `압축을 푼 폴더에서 npm ci → npm run dev 순서로 실행하세요. Node.js 버전 조건은 ^20.19.0 \|\| >=22.12.0입니다.` — 자리표시자 외 글자 일치 | 같음 |
+| 메일 안내 0 | `/메일/` 본문 0 | 0 |
+| 청크 차단 → alert · 다시 시도 | alert 1개 "내보내지 못했습니다 / 다시 시도" · status 비어 있음 | 같음 |
+| 해제 → 성공 | 요청 `reactZip-CeIQjct9.js` → `…js?retry=1` 2건 · status 1 · alert 비움 | 같음(2건) |
+| 포커스 | 차단 직후·직접 성공 뒤 = 누른 "React 프로젝트(zip) 내보내기" 버튼 · **재시도 성공 뒤 = BODY** | 같음 |
+| 버튼 줄바꿈·잘림 | 3버튼 1줄(Range rect 1) · 252×40 · scrollWidth=clientWidth | 3버튼 1줄 · 351×40 · 간격 8 · 잘림 0 |
+
+- 중복 판정 [사실]: 채워진 status는 내보내기 결과 1개뿐. 다른 status("편집 알림" — 새로 시작·이미지 알림)는 별도 영역이라 중복 아님. 빈 alert·status 각 1개는 미리 깔린 live region.
+- 관찰(P3, 이번 diff 밖): 재시도 성공 뒤 포커스가 BODY로 빠진다 — "다시 시도" 버튼이 사라지면서 생긴다. 공용 `components/studio/ExportRetryAlert.tsx`(정적 zip·HTML 공용, 1차·M2A 경로)라 React zip 고유 결함이 아니고 FAIL 기준(거짓 성공·거짓 다시 시도·중복)에도 해당하지 않는다. 권고: 재시도 성공 시 누른 형식 버튼으로 포커스 복귀(다음 레인).
+- [미확인] 3MB 초과 react-zip 실화면: 문서가 0.7MB라 유도 불가(이미지는 앱이 WebP로 변환·축소). 근거는 FIX1 단위 테스트 `b4813fe9`(P3 react-zip 3MB 초과 메일 안내 0).
+- 자동화 주의: 390 직접 클릭은 ego `page.click`이 "header intercepts"로 거절(DOM `elementFromPoint` = 버튼 자체 → 앱 결함 아님), 좌표 클릭은 스크롤로 빗나감 → 키보드 focus+Enter로 측정.

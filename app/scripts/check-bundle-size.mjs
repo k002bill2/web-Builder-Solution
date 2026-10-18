@@ -10,7 +10,7 @@
 // gzip 크기는 Node zlib 기본 레벨, KB = 1000 bytes (Vite 빌드 출력 표기와 같은 단위).
 // Vite 8 빌드 출력의 gzip 값은 네이티브 리포터라 이 값보다 약 1% 크게 나온다(예: 86.58 vs 87.47). 둘 다 예산 안에 두도록 여유를 둔다.
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
@@ -186,8 +186,6 @@ const readBaseline = () => {
   }
 };
 
-const { lines, failures: budgetFailures } = checkBundle({ manifest, sizeOf, normSizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
-for (const line of lines) console.log(line);
 
 /**
  * 썸네일(M3P-2 · ADR-004 개정 7 결정 1) — 예산 판정 밖, 크기 출력 + 가드만:
@@ -237,10 +235,10 @@ const REACT_ZIP_GENERATOR = "src/features/studio/reactZip/reactZip.ts";
 const KIT_CSS_MARK = "M2A-2a K3";
 // 따옴표 없이 — 미니파이 문자열 안에서는 `\"lockfileVersion\"`처럼 이스케이프되어 따옴표 포함 표식이 늘 빠진다
 const LOCK_MARK = "lockfileVersion";
-function checkReactZipEntry() {
+/** 판정만(부작용 없음 — reactZipEntryGuard.test.mjs): manifest · 파일 본문 · kit.css 첫 줄 · 시나리오 → 위반 목록 */
+export function reactZipEntryIssues({ manifest, codeOf, kitHead, scenarios }) {
   const generator = manifest[REACT_ZIP_GENERATOR]?.file;
   if (!generator) return [`React zip 생성기 청크(${REACT_ZIP_GENERATOR})가 manifest에 없습니다`];
-  const kitHead = readFileSync(fileURLToPath(new URL("../src/kit/kit.css", import.meta.url)), "utf8").split("\n")[0];
   if (!kitHead.includes(KIT_CSS_MARK)) return [`킷 원문 표식 ${KIT_CSS_MARK}가 src/kit/kit.css 첫 줄에 없습니다 — 표식을 갱신하세요`];
   const closure = (key, seen) => {
     if (!manifest[key] || seen.has(manifest[key].file)) return seen;
@@ -250,31 +248,43 @@ function checkReactZipEntry() {
   };
   const issues = [];
   // 양성 검사 — 생성기 청크(정적 닫힘)에 표식이 실제로 있어야 부재 검사가 뜻을 가진다(vitest css:false 빈 CSS 함정의 빌드 쪽 확인, SPEC 5.2)
-  const own = [...closure(REACT_ZIP_GENERATOR, new Set())].map((file) => readFileSync(join(DIST, file), "utf8")).join("\n");
+  const own = [...closure(REACT_ZIP_GENERATOR, new Set())].map(codeOf).join("\n");
   if (!own.includes(KIT_CSS_MARK)) issues.push(`React zip 생성기 청크에 킷 원문 표식 ${KIT_CSS_MARK} 없음`);
   if (!own.includes(LOCK_MARK)) issues.push(`React zip 생성기 청크에 lock 표식 ${LOCK_MARK} 없음`);
-  for (const scenario of SCENARIOS.filter((s) => s.name.startsWith("/studio/"))) {
+  for (const scenario of scenarios.filter((s) => s.name.startsWith("/studio/"))) {
     const files = new Set();
     for (const key of ["index.html", scenario.page, ...scenario.auto]) closure(key, files);
     if (files.has(generator)) issues.push(`${scenario.name} 진입에 React zip 생성기 청크 ${generator}`);
     for (const file of files) {
-      const code = readFileSync(join(DIST, file), "utf8");
+      const code = codeOf(file);
       if (code.includes(KIT_CSS_MARK)) issues.push(`${scenario.name} 진입 ${file}에 킷 원문 표식`);
       if (code.includes(LOCK_MARK)) issues.push(`${scenario.name} 진입 ${file}에 lock 표식`);
     }
   }
-  console.log(`[bundle] React zip 진입 정적 포함 0 가드 ${issues.length === 0 ? "통과" : "실패"} · 생성기 청크 ${generator} gzip ${sizeOf(generator).toFixed(2)}KB (판정 밖)`);
   return issues;
 }
-// preload 중복 제거·polyfill off 산출물 가드(STUDIO-PRELOAD-SLIM — 판정: preloadGuard.mjs). 앱 manifest만 — 렌더 문서 빌드는 이 설정 밖
-const { lines: preloadLines, failures: preloadFailures } = checkPreload({
-  manifest: readManifest(".vite/manifest.json"),
-  codeOf: (file) => readFileSync(join(DIST, file), "utf8"),
-  indexHtml: existsSync(join(DIST, "index.html")) ? readFileSync(join(DIST, "index.html"), "utf8") : "",
-});
-for (const line of preloadLines) console.log(line);
-const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures, ...checkReactZipEntry()];
-if (failures.length > 0) {
-  for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
-  process.exit(1);
+function checkReactZipEntry() {
+  const kitHead = readFileSync(fileURLToPath(new URL("../src/kit/kit.css", import.meta.url)), "utf8").split("\n")[0];
+  const issues = reactZipEntryIssues({ manifest, codeOf: (file) => readFileSync(join(DIST, file), "utf8"), kitHead, scenarios: SCENARIOS });
+  const generator = manifest[REACT_ZIP_GENERATOR]?.file;
+  if (generator) console.log(`[bundle] React zip 진입 정적 포함 0 가드 ${issues.length === 0 ? "통과" : "실패"} · 생성기 청크 ${generator} gzip ${sizeOf(generator).toFixed(2)}KB (판정 밖)`);
+  return issues;
+}
+// 직접 실행(node scripts/check-bundle-size.mjs)일 때만 판정·출력·종료 — 테스트가 판정 함수를 import해도 dist를 읽거나 종료하지 않게
+const isMain = Boolean(process.argv[1]) && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  const { lines, failures: budgetFailures } = checkBundle({ manifest, sizeOf, normSizeOf, scenarios: SCENARIOS, renderAuto: RENDER_AUTO, baseline: readBaseline() });
+  for (const line of lines) console.log(line);
+  // preload 중복 제거·polyfill off 산출물 가드(STUDIO-PRELOAD-SLIM — 판정: preloadGuard.mjs). 앱 manifest만 — 렌더 문서 빌드는 이 설정 밖
+  const { lines: preloadLines, failures: preloadFailures } = checkPreload({
+    manifest: readManifest(".vite/manifest.json"),
+    codeOf: (file) => readFileSync(join(DIST, file), "utf8"),
+    indexHtml: existsSync(join(DIST, "index.html")) ? readFileSync(join(DIST, "index.html"), "utf8") : "",
+  });
+  for (const line of preloadLines) console.log(line);
+  const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures, ...checkReactZipEntry()];
+  if (failures.length > 0) {
+    for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
+    process.exit(1);
+  }
 }

@@ -269,3 +269,13 @@ ego-browser v2.1.0 · TaskSpace 45 · preview `--port 4399 --strictPort`(리슨 
 
 - status 기록 전체: 적용 1 · "비교 보드를 불러오는 중…"(`/compare` 화면의 로딩 status — 추천 알림 중복 아님) · 되돌림 1. 중복 0.
 - 참고(판정 밖): #10 뒤로 직후 포커스 BODY(SPEC 규정 없음, 2차와 같음).
+
+### 9.4 N1 · N2 · N4 실화면 — **PASS (3건 해소)**
+
+원문 `logs/qa-r3-notes.txt`(N1·N4) · `logs/qa-r3-390.txt`(N2). 폭 override는 각 스크립트 안에서 걸고 innerWidth 기록.
+
+| note | innerWidth | 결과 | 판정 |
+|---|---|---|---|
+| N1 "더 보기" 뒤 포커스 | 1280 | "추천 2개 더 보기" 클릭 → 카드 5(gen-medical-1·gen-medical-3·gen-beauty-3·gen-education-4·ref-c) · 포커스 A "교육 · 활기찬 센터형"(`href=/references/gen-education-4`, `#gen-education-4-title` 안) = **4번째 카드 제목** | **PASS** |
+| N2 390 대화상자 Tab 순서 | 390 | 버튼 위치 "취소" top 581 · "적용" top 629(위→아래 = 취소 → 적용) · Tab 순서 열림 "취소" → "적용" — **시각 순서와 같음** (`shots/r3-390-08-dialog.png`). "적용" 다음 Tab은 문서 밖(activeElement BODY — 판정 밖) | **PASS** |
+| N4 비활성 버튼 설명 | 1280 | 전체 탭에서 6개 담음(트레이 6/6) → 업종 "의료" → 추천 받기(`industry=medical&tab=rec`) · 보드에 없는 gen-medical-1·2·3 "이 추천 적용" 모두 aria-disabled=true · `aria-describedby="<id>-limit"` → 표시된 문구 "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요." · **AX 트리 description에 같은 문구** (`shots/r3-N4-1280.png`) | **PASS** |

@@ -133,7 +133,7 @@ interface SiteJsonV1 {
 - 규칙(★ RZQ-13 A — 모양 유지 + 중립 상수):
   1. `ExportDoc` = `PageDoc`과 **같은 필드 집합**. 생성기는 원문을 펼치지 않고 필드를 하나씩 골라 새 객체를 만든다(허용 목록 방식 — 원문에 필드가 늘어도 새지 않는다).
   2. 내부 필드 값 = 고정 중립 상수: `projectId` `"site"` · `revision` `0` · `hash` `""` · `profileVersion` `0` · `candidateId` `""` · `libraryVersion`·`generatorVersion` `""` · `updatedAt` `""`. [사실] 킷은 `sections`만 읽는다(`kit/text.ts:29-44`) → DOM 영향 0. 결정성도 유지된다.
-  3. `meta`·`sections` = 원문 값 그대로(이미지 `source`만 아래 3.1 규칙으로 바꾼다).
+  3. `meta`·`sections` = 원문 값(이미지 `source`만 아래 3.1 규칙으로 바꾼다). 섹션도 같은 허용 목록 방식으로 새로 만든다 — [사실] `SectionInstance` 필드 6개(`instanceId`·`type`·`variant`·`motion`·`tone`·`slots`)는 모두 렌더 입력이다(`engine/contracts/pageDoc.ts:64-73`). 계약에 필드가 늘면 허용 목록에 넣을지 그때 정한다(기본 = 빼기).
   3.1 이미지 `source` 변환 — `exportImages`가 실제로 바이트를 고른 id만 키를 받는다 [사실 `exportImages.ts:25-38` — enabled이고 바이트가 있는 id만 `images`에 들어가고, 없으면 `lost++`]:
 
   | 원문 `source` | 슬롯 상태 | 변환 | 이유 |
@@ -245,6 +245,7 @@ interface SiteJsonV1 {
 
 - **이미지 입력 조건**: A에는 생성기가 zip에 담은 것과 **같은 파생본**(`exportImages`·`pickVariant`가 고른 Blob)의 objectURL을 넣는다. 다른 파생본(편집기 미리보기용 작은 폭 등)을 넣으면 픽셀 비교가 설계상 실패한다.
 - 단위 대조(오프라인, ★ RZQ-12 A): 생성기가 만든 entry 중 `src/**`를 `app/node_modules/.cache/react-zip-fidelity/<케이스>/`에 풀고, 그 `src/PageDocument.tsx`를 동적 import해 `renderToStaticMarkup`한다. 같은 입력으로 앱 `render/PageDocument`도 SSR해 같은 정규화 후 비교한다(thumbs SSR 선례 `thumbs/entry.tsx` [사실 REPORT 1절]). 템플릿이 아니라 **실제 산출 파일**을 대조하므로 경로·타입 치환 실수도 잡는다. `react`는 앱 `node_modules`에서 해석된다(상위 디렉터리). 30개 변형 전부 · 모든 CI.
+  - [미확인] vitest가 `node_modules` 아래 `.tsx`를 변환하는지(외부 의존성으로 건너뛸 수 있음) — 구현 첫 단계에서 확인하고, 안 되면 gitignore된 `app/` 아래 다른 경로를 쓴다.
 
 ### 4.2 앱 DS 값 누수 — Q6 A (템플릿에 값 복사)
 
@@ -290,7 +291,7 @@ interface SiteJsonV1 {
 | RZ-AC-05 | U | 읽기 전용 탭(INFRA + `READ_ONLY_TAB`)에서 react-zip → refused `READ_ONLY` · "다시 시도" 0 |
 | RZ-AC-06 | U | entry 집합 = 2.4 허용표만 · 순서 2.4 · 디렉터리 entry 0 · 경로 ASCII · 킷 entry 집합 = 킷 목록 · 빈 원문 0 |
 | RZ-AC-07 | U | 같은 문서·revision 두 번 생성 → 결과 해시 동일 |
-| RZ-AC-08 | U | `site.json` = 2.3 스키마 · 내부 필드 = 2.3.1 중립 상수 · 이미지 `source` 자리 UUID 0 · 잃은·끈 이미지 = placeholder · 이미지 키 ↔ entry ↔ doc 참조 무결성 |
+| RZ-AC-08 | U | `site.json` = 2.3 스키마 · 내부 필드 = 2.3.1 중립 상수 · 문서·섹션 키 집합 = 허용 목록 · 이미지 `source` 자리 UUID 0 · 잃은·끈 이미지 = placeholder · 이미지 키 ↔ entry ↔ doc 참조 무결성 |
 | RZ-AC-09 | U | 글꼴 entry 바이트 = 같은 문서의 정적 zip 글꼴 entry 바이트 · `OFL.txt` = `fontLicenseText` |
 | RZ-AC-10 | U | `package.json` = 9개 정확 고정 · `motion` 0 · `engines.node` = `^20.19.0 \|\| >=22.12.0` · `build` = `tsc --noEmit && vite build` |
 | RZ-AC-11 | U | lock 대조(3.2-5) 전 항목 |

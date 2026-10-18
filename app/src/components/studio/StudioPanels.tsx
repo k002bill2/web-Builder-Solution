@@ -133,9 +133,9 @@ export function EditPanel({ name, head, children }: { readonly name: string; rea
 
 /**
  * 품질 게이트 · 내보내기(6.1 h2 · h3 · 5.12 · 5.13). h2 `tabIndex=-1` = 툴바 "검사 · 내보내기" 이동 대상(E-S26).
- * `children` = 게이트 8줄(GateList) · `exports` = 내보내기 묶음(없으면 생성기 안내 문장)
+ * `children` = 게이트 8줄(GateList) · `exports` = 내보내기 묶음(편집 틀이 늘 넘긴다 — M2 이전 생성기 안내 폴백은 BUDGET-TRIM-1에서 뺐다)
  */
-export function GatePanel({ children, exports }: { readonly children?: ReactNode; readonly exports?: ReactNode }) {
+export function GatePanel({ children, exports }: { readonly children?: ReactNode; readonly exports: ReactNode }) {
   return (
     <section aria-labelledby="studio-gate-heading" className="flex flex-col gap-2">
       <h2 id="studio-gate-heading" tabIndex={-1} className={H2}>
@@ -143,7 +143,7 @@ export function GatePanel({ children, exports }: { readonly children?: ReactNode
       </h2>
       {children}
       <h3 className="ds-label">내보내기</h3>
-      {exports ?? <p className={CAPTION}>코드 생성기 연결 후(M2) 내보낼 수 있습니다.</p>}
+      {exports}
     </section>
   );
 }

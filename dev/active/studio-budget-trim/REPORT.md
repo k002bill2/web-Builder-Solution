@@ -67,7 +67,8 @@ base `601471ff` · 판정 = 해시 정규화 gzip(check-bundle-size.mjs) · 기�
 ## 2. 감량 (항목별 — 정규화 KB, 전 시나리오 diff = `e0-scenarios.mjs` vs `e0-base.txt`)
 | # | 항목 | /studio | 복원 | 다른 라우트·렌더 | 커밋 |
 |---|---|---:|---:|---|---|
-| T1 | 폐기 대화상자 전용 문구 `DISCARD_TIMEOUT_TEXT`를 진입 모듈 saveStatusText → `save/discardText`(DiscardDialog만 import = SaveActions 조작 뒤 청크). 문구 바이트 동일 · 새 import() 0 | 128.82 → 128.80 | 131.81 → 131.78 | 0 | (T1) |
+| T1 | 폐기 대화상자 전용 문구 `DISCARD_TIMEOUT_TEXT`를 진입 모듈 saveStatusText → `save/discardText`(DiscardDialog만 import = SaveActions 조작 뒤 청크). 문구 바이트 동일 · 새 import() 0 | 128.82 → 128.80 | 131.81 → 131.78 | 0 | 22a4b552 |
+| T2 | GatePanel `exports ??` 폴백 문장("코드 생성기 연결 후(M2) 내보낼 수 있습니다.") 제거 — 유일한 호출(StudioLayout)이 늘 버튼 묶음을 넘겨 앱에서 도달 불가. `exports` 필수 prop | 128.80 → 128.76 | 131.78 → 131.75 | 0 | (T2) |
 
 ## 3. 새 실측
 (진행 중)

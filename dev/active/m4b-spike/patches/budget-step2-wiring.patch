@@ -1,0 +1,59 @@
+--- a/app/src/components/studio/ExportButtons.tsx
++++ b/app/src/components/studio/ExportButtons.tsx
+@@ -9,7 +9,7 @@
+ 
+ const FORMATS: readonly { readonly format: ExportFormat; readonly label: string }[] = [
+   { format: "static-zip", label: "정적 사이트(zip) 내보내기" },
+-  { format: "static-html", label: "HTML 파일 1개 내보내기" },
++  { format: "static-html", label: "HTML 파일 1개 내보내기" },  { format: "react-zip", label: "React 프로젝트(zip) 내보내기" },
+ ];
+ 
+ /**
+--- a/app/src/data/memoryDocBook.ts
++++ b/app/src/data/memoryDocBook.ts
+@@ -174,7 +174,7 @@
+    * react-zip은 M4까지 없음(GENERATOR_UNAVAILABLE). 생성기는 store당 1개(object URL 보관·해제).
+    */
+   let browser: Promise<ExportGenerator> | undefined;
+-  const appGenerator = (format: ExportFormat): ExportGenerator | undefined => {
++  const appGenerator = (_format: ExportFormat): ExportGenerator | undefined => {
+     const load = (globalThis as Slot)[STATIC_HTML_SLOT];
+     // 청크 로드 실패는 기억하지 않는다(P2-2) — 다음 실행(재시도)이 슬롯 로더를 다시 부른다
+     const generator = (from: () => Promise<StaticHtmlFactory>) =>
+@@ -185,7 +185,7 @@
+           throw error;
+         },
+       ));
+-    return format !== "react-zip" && load ? async (input) => (await generator(load))(input) : undefined;
++    return load ? async (input) => (await generator(load))(input) : undefined;
+   };
+   let state: DocState = {
+     docs: new Map([...seed].map(([id, r]) => [id, r.doc])),
+--- a/app/src/features/studio/staticHtml/staticHtml.ts
++++ b/app/src/features/studio/staticHtml/staticHtml.ts
+@@ -177,10 +177,12 @@
+       throw new ProjectRepositoryError("JOB_TIMEOUT", FONT_FAILED);
+     });
+     const { images, lost } = exportImages(doc, readImage);
+-    const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images, true);
++    const { markup } = format === "react-zip" ? { markup: "" } : await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images, true);
+     const text = { title: doc.meta.title, description: doc.meta.description };
+     const built =
+-      format === "static-zip"
++      format === "react-zip"
++        ? { data: (await import("../reactZip/reactZip")).buildReactZip({ doc, kitTokens, fonts: fonts.bytes, date: new Date(head.updatedAt) }), images: 0, type: "application/zip" }
++        : format === "static-zip"
+         ? { ...(await buildZipSite({ markup, css: stripFontFaces(css), ...text, fonts: fonts.bytes, images, lost, date: new Date(head.updatedAt) })), type: "application/zip" }
+         : {
+             data: new TextEncoder().encode(buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, ...text, notice: fonts.notice, images: await imageDataUrls(images) })),
+--- a/app/src/features/studio/exportFlow.ts
++++ b/app/src/features/studio/exportFlow.ts
+@@ -109,7 +109,7 @@
+     if (job.state === "succeeded") {
+       emitEditorEvent({ name: "export_succeeded", format });
+       const name = (await repository.getProject(projectId))?.name ?? "";
+-      const download = job.downloadRef && { href: job.downloadRef, fileName: (format === "static-zip" ? staticZipFileName : staticHtmlFileName)(name, job.docRevision), hash: job.resultHash ?? "" };
++      const download = job.downloadRef && { href: job.downloadRef, fileName: (format !== "static-html" ? staticZipFileName : staticHtmlFileName)(name, job.docRevision), hash: job.resultHash ?? "" };
+       const summary = job.downloadRef ? summaries.get(job.downloadRef) : undefined;
+       return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }), ...(summary && { notes: exportNotes(summary, format) }) };
+     }

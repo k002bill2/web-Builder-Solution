@@ -1,0 +1,12 @@
+site@0.0.0 /private/var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/m4b/site
+├── @tailwindcss/vite@4.3.3
+├── @types/react-dom@19.3.0
+├── @types/react@19.3.0
+├── @vitejs/plugin-react@6.1.1
+├── motion@14.3.0
+├── react-dom@19.3.0
+├── react@19.3.0
+├── tailwindcss@4.3.3
+├── typescript@6.0.3
+└── vite@8.3.1
+

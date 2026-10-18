@@ -1,0 +1,85 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /private/var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/m4b/appcopy/app
+
+ ❯ src/data/memoryExport.test.ts (19 tests | 1 failed) 299ms
+   ❯ 앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT) (3)
+     × 슬롯이 비면(기본) static-html도 GENERATOR_UNAVAILABLE · 채우면 브라우저 생성기(처음 쓸 때 공장 1회) → 잡 succeeded · 받은 문서 = 잡의 스냅샷 문서 · react-zip은 계속 GENERATOR_UNAVAILABLE · 주입 생성기가 있으면 그것이 먼저 5ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (20 tests | 1 failed) 4833ms
+   ❯ 형식 버튼 (M4-a EXP-AC-01 · Q18 A) (2)
+     × 버튼 = '정적 사이트(zip) 내보내기' → 'HTML 파일 1개 내보내기' 순서 2개 · React zip 버튼 0 428ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/data/memoryExport.test.ts > 앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT) > 슬롯이 비면(기본) static-html도 GENERATOR_UNAVAILABLE · 채우면 브라우저 생성기(처음 쓸 때 공장 1회) → 잡 succeeded · 받은 문서 = 잡의 스냅샷 문서 · react-zip은 계속 GENERATOR_UNAVAILABLE · 주입 생성기가 있으면 그것이 먼저
+AssertionError: expected 'ok' to be 'GENERATOR_UNAVAILABLE' // Object.is equality
+
+Expected: "GENERATOR_UNAVAILABLE"
+Received: "ok"
+
+ ❯ src/data/memoryExport.test.ts:271:86
+    269|     expect(await codeOf(repo.requestExport("project-1", "static-html",…
+    270|     slot[STATIC_HTML_SLOT] = async () => fakeFactory;
+    271|     expect(await codeOf(repo.requestExport("project-1", "react-zip", d…
+       |                                                                                      ^
+    272|     const { job } = await repo.requestExport("project-1", "static-html…
+    273|     let current = job;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > 형식 버튼 (M4-a EXP-AC-01 · Q18 A) > 버튼 = '정적 사이트(zip) 내보내기' → 'HTML 파일 1개 내보내기' 순서 2개 · React zip 버튼 0
+AssertionError: expected [ '정적 사이트(zip) 내보내기', …(2) ] to deeply equal [ '정적 사이트(zip) 내보내기', …(1) ]
+
+- Expected
++ Received
+
+  [
+    "정적 사이트(zip) 내보내기",
+    "HTML 파일 1개 내보내기",
++   "React 프로젝트(zip) 내보내기",
+  ]
+
+ ❯ src/components/studio/ExportFlow.test.tsx:72:19
+     70|       .map((b) => b.textContent)
+     71|       .filter((t) => /내보내기$/.test(t ?? ""));
+     72|     expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기"]);
+       |                   ^
+     73|     expect(within(gateRegion()).queryByRole("button", { name: /React/ …
+     74|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 37 passed (39)
+   Start at  18:21:42
+   Duration  6.80s (tests 63%, environment 15%, transform 15%, import 3%, setup 3%)
+

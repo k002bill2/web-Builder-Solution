@@ -43,7 +43,9 @@
 | `licenseStatus = external_observed` | ✕ (사전 제외) | FR-CAT-04 · T-REC-05 |
 | 킷 변형 · 3안 후보 · 디자인 프로필 | ✕ | FR-SEL-03은 레퍼런스 추천. 프로필 자체 추천은 범위 밖 — 필요하면 별건 |
 
-- 후보 수 [미확인 — 조사 대기]: 큐레이션 6 + 생성 21(썸네일 21장 빌드 로그 L1, `ref-a~f` + `gen-*`) = 27로 추정.
+- 후보 수 [사실]: **21개** = 큐레이션 6(`fixtures/references.ts:9-118`, ref-a~f, 점수 측정됨) + 생성 15(`fixtures/generatedReferences.ts`, 생성기 산출물 — 손 수정 금지, 전부 internal·미측정). 빌드 썸네일 21장과 일치.
+- 업종 분포 [사실]: cafe-fnb 3(ref-a·f + gen 2) · beauty 4 · medical 4(ref-c + gen 3) · education 4 · professional 4 · fitness 1(ref-d) · **retail 0**. → 어떤 업종도 단독으로 5개를 못 채우는 경우가 있다(medical 4 · fitness 1 · retail 0).
+- `external_observed` 레퍼런스는 픽스처에 0개 [사실] → T-REC-05는 테스트에서 후보를 주입해 검증.
 - 업종 일치 강제 여부: 업종이 입력돼도 다른 업종 후보를 **제외하지 않는다**(점수로만 밀림). 업종 일치 후보가 3개 미만이어도 카드 3개를 채울 수 있게 하기 위함. 대신 카드에 "업종 다름" 근거가 보인다(2.4).
 
 ---
@@ -65,7 +67,7 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 | `performance` | 15 | 측정값 s → `⌊s × 15 / 100⌋` | — |
 
 - 태그일치 35 = industry 15 + purpose 10 + mood 10 (TRD 괄호 "업종·목적·무드" 세 하위 항목을 같은 비중에 가깝게 — 업종을 조금 더 무겁게) [추정 — 하위 배분은 TRD에 없음, RQ-05].
-- **미측정 점수**(`scores.status === "unmeasured"`, `reference.ts` UnmeasuredScores) — 이 초안의 결정 규칙: **0점 + 근거 "미측정"**(지어내지 않는다, CURATION). 이 규칙은 생성 레퍼런스(21개 추정)를 큐레이션 6개보다 최대 30점 불리하게 만든다 → **RQ-02(★B: 품질 2항목은 순위 점수에서 빼고 표시만)**.
+- **미측정 점수**(`scores.status === "unmeasured"`, `reference.ts:48-51` UnmeasuredScores) — 이 초안의 결정 규칙: **0점 + 근거 "미측정"**(지어내지 않는다, CURATION). 이 규칙은 생성 레퍼런스 15개를 큐레이션 6개보다 최대 30점 불리하게 만든다(큐레이션 측정값 89~98 → 품질 2항목 합 25~28점, `references.ts`) → **RQ-02(★B: 품질 2항목은 순위 점수에서 빼고 표시만)**. 참고: 카탈로그 점수순도 미측정을 −1로 맨 뒤에 둔다(`data/referenceRepository.ts:45-51`) [사실].
 - 점수 표시는 "NN점"(합). 만점은 `reco-v1` 배점 합(100 — RQ-02 B면 70).
 
 ### 2.2 목적별 필수 섹션 (`sections` 항목)
@@ -76,12 +78,13 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 | inquiry | `contact` 또는 `cta-band` 1개 이상 | 같은 파일 isInquiry [사실] |
 | sales | [미확인] — 엔진에 판매 필수 섹션 판정 없음으로 보임 | RQ-06 |
 
-- 재료: 레퍼런스 **상세**의 섹션 구성(`ReferenceDetail.sections`, `domain/referenceDetail.ts:28`). 목록 레코드(`DesignReference`)에는 섹션이 없다 [사실] → 추천 청크가 상세 픽스처를 받아야 한다(5절 예산). 상세 `SectionEntry` → 엔진 `SectionType` 대응이 기계적으로 되는지 [미확인 — 조사 대기].
+- 재료: 레퍼런스 **상세**의 섹션 구성(`ReferenceDetail.sections`, `domain/referenceDetail.ts:28`) — 큐레이션 `fixtures/referenceDetails.ts`, 생성 `fixtures/generatedReferenceDetails.ts`. 둘 다 "상세 = 렌더 1:1" 규칙(M3P-7, `referenceDetails.ts:8`) [사실]. 목록 레코드(`DesignReference`)에는 섹션이 없다 [사실] → 추천 청크가 상세 섹션을 받아야 한다(5절 예산).
+- `SectionEntry = { name, variant }`(`referenceDetail.ts:12-15`, 예 `{ name: "Hero", variant: "fullbleed-left" }`) [사실]. `name` → 엔진 `SectionType` 대응(소문자화로 되는지, "CTA Band" 같은 다단어) [미확인] — 구현 E0에서 21개 전수 대응표를 테스트로 고정(RECO-AC-05).
 - 엔진 `structureIssues`를 직접 import하지 않는다 — 엔진 레지스트리를 카탈로그 청크로 끌고 온다 [추정]. 추천 모듈은 위 2개 판정과 같은 의미의 **표(목적 → 섹션 타입 집합)** 를 가진다. 엔진과 표가 갈라지는 것을 막는 가드 테스트 1개(RECO-AC-05).
 
 ### 2.3 정렬 · 동점 · 결정성
 
-1. 정렬 키: (총점 내림차순, `ref.id` **코드 단위** 오름차순 — `a < b` 비교, `localeCompare` 금지(로캘 의존)).
+1. 정렬 키: (총점 내림차순, `ref.id` **코드 단위** 오름차순 — `a < b` 비교, `localeCompare` 금지(로캘 의존)). 기존 코드 관례와의 차이 [사실]: 카탈로그 점수순은 tie-break 없이 입력 순서(안정 정렬)에 맡기고(`referenceRepository.ts:45-51`), `internalCompose.ts:306`은 `localeCompare`를 쓴다. id가 ASCII(`ref-*`·`gen-*`)라 현재 데이터에서는 결과가 같지만 추천은 명시 비교로 고정한다.
 2. 반환 개수 `RECO_LIMIT` = 5(정본 FR-SEL-03·T-REC-01). 화면 첫 노출은 3장 + 나머지 펼치기 — **RQ-07**.
 3. 총점 0인 후보는 반환하지 않는다. 반환 후보가 0이면 "근거 부족"(3.4).
 4. 비결정 요소 0: `Date`·`Math.random`·로캘 정렬·`Set` 순회 순서에 기대는 출력 금지. 입력 배열은 1.1 정규화.
@@ -135,8 +138,9 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 | 0 보기 | 카드·근거 | **없음**(T-REC-06) |
 | 1 미리보기 | "이 추천 적용" → 확인 대화상자(기존 `dialog` 패턴). 내용: 무엇이 바뀌는지 목록 키 `reco.apply.preview.*` — A: "비교 보드에 {title}을(를) 담습니다 · 지금 {n}/6" | **없음** |
 | 2 적용 | 대화상자 "적용" | A: 트레이 `add(id)` 1회. 트레이 6개 꽉 참이면 적용 버튼 비활성 + 이유(기존 `COMPARE_LIMIT_NOTICE` 재사용) |
-| 3 되돌리기 | 셸 status로 적용 알림 + 카드 안 "되돌리기" 버튼(이번 세션·이 화면에서만) | A: 트레이 `remove(id)`. 적용 전에 이미 트레이에 있던 id면 적용 버튼 자체가 "이미 담김"(비활성) — 되돌리기가 사용자의 기존 선택을 지우지 않게 |
+| 3 되돌리기 | 페이지 status(3.6)로 적용 알림 + 카드 안 "되돌리기" 버튼(이번 세션·이 화면에서만) | A: 트레이 `remove(id)`. 적용 전에 이미 트레이에 있던 id면 적용 버튼 자체가 "이미 담김"(비활성) — 되돌리기가 사용자의 기존 선택을 지우지 않게 |
 
+- 현황 [사실]: 상세의 "템플릿으로 가져오기"는 자리 문구뿐(`components/detail/DetailSidebar.tsx:19,77-78`). 프로필 `selection_mode`는 보드에서 레퍼런스 1개만 고르고 커스텀 스타일이 없으면 `"template"`(`domain/profileDraft.ts:190`, `domain/compareBoard.ts:166`). `ProfileOrigin`에 추천 값 없음(`domain/profile.ts:13`).
 - B(레퍼런스 1개를 프로필 초안으로 통째로 — FR-SEL-01 템플릿 선택 경로)를 고르면 1단계 미리보기에 "Hero·카드·Footer·색·글꼴이 {title} 것으로 바뀝니다" + 현재 초안과의 차이 목록, 3단계 되돌리기 = 이전 초안 복원. 이 경로는 보드·프로필 쓰기 계약을 건드려 **엔진/데이터 계약 질의 대상**(4.2).
 - E2E-S4 "승인 → 프로필 반영"과 A의 차이: A는 프로필 반영이 `/compare` 확정 단계(기존 3.3 흐름)로 한 번 더 미뤄진다. 6절 대응표에 기록.
 
@@ -146,11 +150,11 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 |---|---|---|---|
 | 근거 부족 | 업종·목적 둘 다 없음, 또는 반환 0 | `reco.empty.noBrief` + "업종 고르기"(업종 칩으로 포커스) · "목적 고르기"(레일 목적 그룹으로 — <1024면 레일 펼침) | 없음(정적 안내) |
 | 결과 적음 | 반환 1~2개 | 있는 만큼 카드 + `reco.few` 한 줄 | 없음 |
-| 로딩 | 추천 청크 받는 중 | 결과 영역 `aria-busy="true"` + 카드 자리 스켈레톤 3장(기존 로딩 패턴) | 없음(셸 status 남용 금지) |
-| 오류 | 청크 로드 실패·계산 예외 | 결과 영역 안 `reco.error` + "다시 시도" | 셸 **alert** 1회 |
-| 정상 | 반환 ≥ 3 | 카드 3장 + 더 보기 | 필터 변경으로 재계산될 때만 셸 **status**: `reco.status.updated`({n}개) |
-| 적용됨 | 3.3 단계 2 | 카드 "적용됨" + 되돌리기 | 셸 status `reco.status.applied` |
-| 되돌림 | 3.3 단계 3 | 카드 원상태 | 셸 status `reco.status.undone` |
+| 로딩 | 추천 청크 받는 중 | 결과 영역 `aria-busy="true"` + 카드 자리 스켈레톤 3장(기존 로딩 패턴) | 없음(`LoadingState`의 status를 쓰지 않는다 — 페이지 status 1 유지) |
+| 오류 | 청크 로드 실패·계산 예외 | 결과 영역 안 `role=alert` 줄 `reco.error` + "다시 시도" | 그 alert 1개(화면의 유일한 alert) |
+| 정상 | 반환 ≥ 3 | 카드 3장 + 더 보기 | 필터 변경으로 재계산될 때만 페이지 status(3.6): `reco.status.updated`({n}개) |
+| 적용됨 | 3.3 단계 2 | 카드 "적용됨" + 되돌리기 | 페이지 status `reco.status.applied` |
+| 되돌림 | 3.3 단계 3 | 카드 원상태 | 페이지 status `reco.status.undone` |
 
 ### 3.5 반응형 (390 / 1280)
 
@@ -161,12 +165,14 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 
 - 실화면 관찰: **하지 않음** — 진입·자리 문구·카드 그리드는 소스 L1로 확인(`CatalogPage.tsx:104-130`). preview 미기동.
 
-### 3.6 포커스 · live region (셸 status 1 · alert 1 원칙)
+### 3.6 포커스 · live region (화면당 status 1 · alert 1 원칙)
 
 1. "추천 받기"로 rec 탭에 들어가면 포커스 → 결과 영역(`CATALOG_RESULTS_ID`, `tabIndex=-1` 기존) [사실 — 요소 존재].
 2. 근거 펼치기: 포커스는 버튼에 머문다. 펼친 목록은 버튼 바로 뒤 DOM 순서.
 3. 대화상자: 열 때 첫 버튼("적용" 아님 — "취소")에 포커스, 닫으면 "이 추천 적용" 버튼으로 복귀. 적용 후에는 같은 카드의 "되돌리기"로, 되돌린 뒤에는 "이 추천 적용"으로.
-4. 새 `role=status`·`role=alert`·`aria-live` 요소 0. 셸 announce 경로만 쓴다 [미확인 — 훅 이름 조사 대기].
+4. **알림 영역 — status 1 · alert 1** [사실 확인 결과]: 앱 셸(`AppLayout`)에는 공용 live region이 **없다**(`LoadingState`의 status·`RouteErrorBoundary`의 alert만). 화면마다 항상 그려 둔 sr-only `<p role="status">` + `<span key>`(`Announcement{text,key}`, `components/compare/DraftPanel.tsx:33-37`) 패턴을 쓰고, 공용 announce 훅은 없다(각 화면이 콜백을 props로 내림). `/catalog`에는 이미 `role=status` 1개가 있다 — 비교 트레이 필의 `notice`(`components/catalog/CompareTrayBar.tsx:97`, `CatalogPage.tsx` `setNotice`).
+   - ★ 추천 알림(재계산·적용·되돌림)은 **그 기존 status를 같이 쓴다**: `CatalogPage`의 `notice`를 `Announcement{text,key}`로 바꿔 같은 문장도 다시 읽히게 한다. 새 `role=status` 0 → 페이지 status 1 유지. 트레이 필이 접히거나 비어 있을 때도 status 요소가 DOM에 남는지 [미확인 — 구현 E0에서 확인, 없으면 RQ-09].
+   - alert는 추천 결과 영역의 오류 줄 1개만(3.4). 새 `aria-live` 속성 0.
 5. 필터 변경 재계산 알림은 디바운스 없이 "결과가 바뀐 경우에만" 1회(같은 순위면 알림 0).
 
 ---
@@ -254,7 +260,7 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 
 | 정본 | 대응 | 차이 |
 |---|---|---|
-| T-REC-01 (병·의원·학부모·예약 → 5개, 내림차순) | AC-01 · 입력 `{industry: medical, audience: [family], purpose: [booking]}` | "학부모" 값 없음 → `family`로 대응. 의료 레퍼런스 수가 5 미만이면 다른 업종 후보로 채워짐(1.2) [미확인 — 개수 조사 대기] |
+| T-REC-01 (병·의원·학부모·예약 → 5개, 내림차순) | AC-01 · 입력 `{industry: medical, audience: [family], purpose: [booking]}` | "학부모" 값 없음 → `family`로 대응. medical 레퍼런스는 4개(ref-c + gen-medical-1~3) [사실] → 5위는 다른 업종 후보(1.2 "업종 불일치 제외 안 함" 덕분에 5개 충족) |
 | T-REC-02 (동점 id 사전순) | AC-02 | 사전순 = 코드 단위(로캘 정렬 아님)로 명확화 |
 | T-REC-03 (근거 3개) | AC-04 | 0점 항목은 근거로 안 씀 → 3개 미만 가능(입력이 적을 때) — 정본 문구와 차이 |
 | T-REC-04 (LLM OFF 동작·실패 시 규칙 근거) | AC-03(LLM 없음 기본) | LLM 경로 미구현 — ON 케이스는 범위 밖(P2, rs8 C안 "제외") |
@@ -276,7 +282,9 @@ TRD 6.1 가중치(0.35/0.20/0.15/0.15/0.15)를 **정수 점수**로 옮긴다. �
 | RQ-05 | 태그일치 35의 하위 배분 | A 업종 15·목적 10·무드 10 · B 균등 12·12·11 | ★A — 업종이 첫 신호(PRD 시나리오 1) | 점수 규칙 |
 | RQ-06 | 판매(sales) 필수 섹션 + 엔진 표 공유 | A 판매는 `sections` 항목 0점 고정(근거 "판정 없음") + 추천 쪽 표 + 가드 테스트 · B 엔진이 목적별 필수 섹션 표를 export(C4) | ★A — 엔진 공개 면 변경 0. B는 엔진 계약 | **엔진 계약** |
 | RQ-07 | 반환 5 vs 화면 3 | A 엔진 5 반환 · 화면 3장 + "2개 더 보기" · B 엔진·화면 모두 3(정본 T-REC-01·FR-SEL-03 개정) · C 5장 모두 노출 | ★A — 정본(5)과 BRIEF(카드 3) 둘 다 만족 | 정본 충돌 |
+| RQ-09 | 추천 알림을 둘 status | A 카탈로그 기존 트레이 status(`notice`) 공유 · B 추천 영역 전용 sr-only status 추가(트레이 status는 그대로 → 화면 status 2) | ★A — 화면당 status 1 원칙. 트레이 status가 조건부 렌더면 상시 렌더로 옮기는 것까지 A 범위 | UX·접근성 |
 | RQ-08 | 프로필에 추천 출처 기록 | A 기록 안 함 · B `source_reference_ids` + `scoring_version` 저장(C3) | ★A — 저장 스키마 변경 0. 출처 기록이 필요해지면 프로필 v 다음 레인 | **엔진·저장 계약** |
 
+- 기존 테스트 영향 [사실]: `pages/CatalogPage.test.tsx:198-215`(V2-AC-21)가 rec 탭 자리 문구를 고정한다 — 구현 레인이 RECO-AC-08 기준으로 바꾼다(명세 범위 안의 의도된 변경).
 - 예산 상향 질문: **없음**(5절 추정 범위 안). 구현 E0 실측이 `/catalog` 첫 화면 100.90 또는 다른 라우트 ±0.03을 넘으면 그때 재상신.
 - 새 의존성: **없음**.

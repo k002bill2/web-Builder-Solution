@@ -15,7 +15,7 @@
 - [x] E4 fresh 게이트 (typecheck · lint · test · build · bundle check)
 - [x] E4 Ego Lite 390·1280 (preview 4399)
 - [x] E4 Codex adversarial 1회 + 반영 1회
-- [ ] 마감: preview 종료·리슨 0 · untracked 0 · REPORT 결론
+- [x] 마감: preview 종료·리슨 0 · untracked 0 · REPORT 결론
 
 ## 로그
 - 2026-10-18 착수 · 0b9c5b65 BRIEF·PROGRESS
@@ -27,3 +27,4 @@
 - E4 Ego Lite 24cc594d: 1280·390 필터→추천→근거→적용→/compare 초안 10행→되돌리기 · 넘침 0 · preview 종료 lsof 4399 = 0
 - E1 서브에이전트 worktree 정리: node_modules 심링크 삭제 → `git worktree remove` → 브랜치 m3-reco-e1 삭제(c664b2d9는 89490499로 반영됨)
 - Codex adversarial 1회: P2 1건(뒤 적용 실패 시 앞 되돌리기 기록 소실) → RED→GREEN 반영 · 최종 게이트 tc 0 · lint 0 · 3200 통과 · build 0 · 기준선 128.72·131.70 갱신
+- 마감 확인: lsof 4399 LISTEN = 0 · git status --short(node_modules 외) 0 · REPORT 0절 결론 · 커밋 0b9c5b65·0c15fd78·2a9be5a5·89490499·4e4e8623·24cc594d·cd6dc2cd

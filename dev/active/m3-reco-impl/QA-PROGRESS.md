@@ -21,7 +21,7 @@
 # 2차(실화면) — 브리프 `QA-BRIEF-LIVE.md` · 계획 `QA-LIVE-PLAN.md` · 대상 tip `d59455d8`
 
 - [x] L0. QA-BRIEF-LIVE·QA-PROGRESS 커밋
-- [ ] L1. 0절 준비: build · preview 4399 · 리슨 확인 · QA-REPORT 8절 골격
+- [x] L1. 0절 준비: build · preview 4399 · 리슨 확인 · QA-REPORT 8절 골격
 - [ ] L2. 0′절 실패 상태 먼저: E4(화면 청크 차단) · E5(적용 청크 차단)
 - [ ] L3. 1절 주 흐름 1280 (#1~#11)
 - [ ] L4. 1절 주 흐름 390 (#1~#11 · 가로 넘침 0)

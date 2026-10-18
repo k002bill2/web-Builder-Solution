@@ -168,3 +168,26 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 - 주 흐름 11단계(1280 → 390 반복): 필터(의료·예약·가족) → 추천 받기(RecoView 청크 요청 1, 적용 청크 0) → 1~3위·근거 → 근거 펼치기 7항목 → 2개 더 보기 → 적용 미리보기(적용 청크 요청 1) → 취소 → 키보드로 적용 → `/compare` 초안 10행 → 뒤로 → 키보드로 되돌리기 → `/compare` 적용 전 확인.
 - 빈·실패·경계 8종: 근거 부족 포커스 · 리테일 0개 · 피트니스 1개 · 화면 청크 차단(CDP `Network.setBlockedURLs`) · 적용 청크 차단 · 열 6 꽉 참 · 적용 뒤 보드 변경 stale · 필터 알림 1회/0회. 저장 reject·revision 충돌은 메모리 저장소라 실화면 재현 불가 → 단위 증거로 갈음.
 - 예상 약 20턴(추정, 실패 재현 시 +5).
+
+## 8. 2차 실화면 run (QA-BRIEF-LIVE · tip `d59455d8`) — 진행 중
+
+도구 ego-browser(Ego Lite) v2.1.0만 · `npm run build` exit 0(가드 통과) → `npm run preview -- --port 4399 --strictPort` · 리슨 확인 `127.0.0.1:4399 (LISTEN)` · 청크 `RecoView-CpMYkhU4.js` · `RecoApply-DfQrAdlV.js` · `recoApplyFlow-8Aue5ZeE.js`. 요청 수는 `performance.getEntriesByType('resource')`로 셈. 스크린샷 `shots/`, 원문 `logs/qa-live-*.txt`.
+
+### 8.0′ 실패 상태 먼저 (E4·E5)
+
+| # | 확인 | 결과 | 판정 |
+|---|---|---|---|
+| E4 | 화면 청크 차단 → alert · 다시 시도 → 카드 | 미확인 | — |
+| E5 | 적용 청크 차단 → alert · "적용됨" 0 · 트레이 불변 | 미확인 | — |
+
+### 8.1 주 흐름
+
+| # | 확인 | 1280 | 390 |
+|---|---|---|---|
+| 1~11 | (QA-LIVE-PLAN 1절) | 미확인 | 미확인 |
+
+### 8.2 빈·경계 상태
+
+| # | 결과 | 판정 |
+|---|---|---|
+| E1·E2·E3·E6·E7·E8 | 미확인 | — |

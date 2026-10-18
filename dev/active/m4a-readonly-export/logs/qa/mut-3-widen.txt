@@ -1,0 +1,68 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-readonly-export/app
+
+ ❯ src/features/studio/exportFlowReadonly.test.ts (2 tests | 1 failed) 383ms
+   ❯ B-M4A-12 읽기 전용 탭 내보내기 (2)
+     × 그 밖 INFRA(저장 공간 부족·사유 없는 INFRA)는 그대로 재시도 가능 · 사유 0 4ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/exportFlowReadonly.test.ts > B-M4A-12 읽기 전용 탭 내보내기 > 그 밖 INFRA(저장 공간 부족·사유 없는 INFRA)는 그대로 재시도 가능 · 사유 0
+AssertionError: expected { kind: 'refused', …(3) } to deeply equal { kind: 'retryable', …(1) }
+
+- Expected
++ Received
+
+  {
++   "code": "READ_ONLY",
+    "format": "static-html",
+-   "kind": "retryable",
++   "kind": "refused",
++   "reason": "다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다",
+  }
+
+ ❯ src/features/studio/exportFlowReadonly.test.ts:35:82
+     33|   it("그 밖 INFRA(저장 공간 부족·사유 없는 INFRA)는 그대로 재시도 가능 · 사유 0", async () =>…
+     34|     const quota = toInfra(Object.assign(new Error("q"), { name: "Quota…
+     35|     expect(await requestExportOnce(rejecting(quota), PROJECT, "static-…
+       |                                                                                  ^
+     36|     expect(await requestExportOnce(rejecting(new ProjectRepositoryErro…
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 21 passed (22)
+   Start at  15:09:42
+   Duration  6.37s (tests 71%, transform 13%, environment 11%, import 3%, setup 2%)
+

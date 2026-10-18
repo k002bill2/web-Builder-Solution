@@ -8,9 +8,9 @@ import type { DesignProfileInput } from "../../domain/compareBoard";
 import type { ProfileVersion } from "../../domain/profile";
 import { fontStack, siteFaces } from "../../kit/siteFonts";
 import { readParentMessage } from "../../render/protocol";
-import { jsonFile, seedDoc, seedFile, seedSeries } from "../../test/projectFileFixtures";
+import { jsonFile, seedDoc, seedDocRecord, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
 import { docKitTokens } from "../studio/docPurpose";
-import { checkFile } from "./checkFile";
+import { checkFile, recordsHold } from "./checkFile";
 
 type Mutable<T> = { -readonly [K in keyof T]: Mutable<T[K]> };
 type Base = Mutable<DesignProfileInput>;
@@ -82,5 +82,30 @@ describe("SEC L-1 S02~S04 프로토타입 키 글꼴 = 허용 밖 계열(면 0 �
   it("허용 3종은 그대로 별칭", () => {
     expect(siteFaces({ family: "Noto Sans KR", headingWeight: 700, bodyWeight: 400 })).toEqual([{ family: "Kit Sans KR", weight: 700 }, { family: "Kit Sans KR", weight: 400 }]);
     expect(fontStack("Pretendard").startsWith('"Pretendard", ')).toBe(true);
+  });
+});
+
+describe("Codex r1 — 범위는 렌더될 버전(최신 · 문서 · 스냅샷)만, 과거 버전은 모양만", () => {
+  /** v1만 범위 밖(scale 0.9) · 문서·스냅샷·최신 = v2 */
+  const pastOnly = () => seedSeries().map((v) => (v.version === 1 ? { ...v, base: { ...v.base, typography_tokens: { ...v.base.typography_tokens, scale: 0.9 } } } : v));
+  it("과거 v1만 범위 밖 = 가져오기 PASS · 렌더 수락 · 파일 내보내기(recordsHold) 통과 — 정상 프로젝트 백업을 막지 않는다", async () => {
+    const series = pastOnly();
+    expect(rendered(series)).toBe(true);
+    expect(await imported(series)).toBe(true);
+    expect(recordsHold({ project: seedProject(), series, doc: seedDocRecord() })).toBe(true);
+  });
+  it("스냅샷이 범위 밖 v1을 가리킴 = IM-4(복원하면 렌더가 버린다)", async () => {
+    const record = seedDocRecord();
+    const doc = { ...record, snapshots: [{ ...record.snapshots[0]!, profileVersion: 1 }, ...record.snapshots.slice(1)] };
+    const result = await checkFile(jsonFile(seedFile({ series: pastOnly(), doc })));
+    expect(result.ok).toBe(false);
+  });
+  it("문서 없음 + 최신 버전 범위 밖 = IM-4(다음 생성이 최신 버전을 쓴다)", async () => {
+    const series = seedSeries().map((v) => (v.version === 2 ? { ...v, base: { ...v.base, spacing_tokens: { ...v.base.spacing_tokens, sectionGap: 513 } } } : v));
+    expect((await checkFile(jsonFile(seedFile({ series, doc: null })))).ok).toBe(false);
+  });
+  it("과거 버전도 모양(타입)은 계속 본다 — scale 문자열 = IM-4", async () => {
+    const series = seedSeries().map((v) => (v.version === 1 ? { ...v, base: { ...v.base, typography_tokens: { ...v.base.typography_tokens, scale: "1" as unknown as number } } } : v));
+    expect(await imported(series)).toBe(false);
   });
 });

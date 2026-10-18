@@ -78,8 +78,11 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M4A-05 | M4-a FIX1 Codex P2-2·P3 | CSS `url(` 출현 수 검사는 정규식 기반 fail-closed — 문자열 안 `url(`·Tailwind 임의값 클래스가 생기면 내보내기 실패(오탐), 글꼴 data URL 모양 안 브랜드 글자 제외. 근본 해결 = CSS 토큰화(새 설계) | Low · 킷 CSS에 해당 모양 추가 시 회귀 신호 |
 | B-M4A-06 | M4-a QA 5 | `export.fail.pattern` 문구 키 미구현 — 금지 패턴 실패가 일반 실패 문구로 나옴 | Low · 문구 |
 | B-M4A-07 | M4-a REPORT 편차 3 · EXP-AC-14 | 용량 초과(ZIP_MAX)가 refused가 아니라 재시도 가능 실패로 처리(`memoryDocBook runJob`) | Low · 저장소 코드 |
-| B-M4A-08 | M4-a QA 2차 L2 | 렌더 청크 로드 실패 뒤 같은 탭 "다시 시도"가 복구되지 않음 — Chromium이 실패한 동적 import를 모듈 맵에 남김(플랫폼 동작). 새로고침 안내 또는 import URL 재시도 전략 필요 | Medium · UX |
+| B-M4A-08 | M4-a QA 2차 L2 | 렌더 청크 로드 실패 뒤 같은 탭 "다시 시도"가 복구되지 않음 — Chromium이 실패한 동적 import를 모듈 맵에 남김(플랫폼 동작). 새로고침 안내 또는 import URL 재시도 전략 필요 | Medium · UX · **✅ 닫힘 2026-10-18 — M4-a-6: 내보내기 import 전부 `retryableImport` 확인(QA L2는 원래 URL 재요청이라 앱 경로 미시험) · 2회 연속 실패 시 새로고침 안내 · Ego L4 단일 탭 차단→해제→복구 성공 · QA PASS with notes** |
 | B-M4A-09 | M4-a QA 2차 L5·L7·L8 · R5 | Safari(수동)·Firefox(미설치) 실화면 · Archive Utility 더블클릭 · Windows 탐색기 해제 미확인 — Q19(`file://` 글꼴) 재판정 트리거 포함 | M5 호스팅 전 릴리스 체크 |
 | B-M4A-10 | M4-a AppSec 미확인 · 항목 6 | `readProject`(프로젝트 파일 가져오기) → `validatePageDoc` 신뢰 경계 심층 검토 · 내보낸 HTML CSP meta(새 설계 — SPEC 개정 후보) | Medium · 별도 Security 레인 |
 | B-M4A-11 | M4-a EXPORT-SPEC 5절 · Q1 A | 게이트 링크 줄(9번째 줄 `gate.row.links` — 경고 2종: 메뉴 끊김·CTA 대상 없음). 차단 검사는 생성기 F-11·F-12로 이미 보장 · 진입·auto 증분 약 0.2~0.5KB(미측정)로 개정 18 남은 몫 0.09 초과 + `GateRowId` 엔진 계약 변경 필요 | 영환님 2026-10-18 "1" — 이월 · 재개 시 측정 레인 → 개정 19 상신 |
+| B-M4A-12 | M4-a-6 Ego L3·QA 5절 | 읽기 전용 두 번째 탭에서 내보내기 = INFRA 실패 + 사유 없는 "다시 시도"(그 탭에선 성공 불가 — 거짓 다시 시도, E-S27 위반 후보). main에도 같은 경로(회귀 아님). 탭 잠금(`tabLockHold`)으로 스냅샷 쓰기 실패 추정 → 읽기 전용 사유 표시 필요 | Medium · UX |
+| B-M4A-13 | M4-a-6 Codex r1 #2 | 저장되지 않은 편집이 있어도 "새로고침한 뒤 다시 시도하세요" — 저장 상태별 안내는 `StudioLayout` 전달 필요(beforeunload 경고가 완화) | Low |
+| B-M4A-14 | M4-a-6 QA 노트 1·3 · REPORT 후속 3 | 계수 래퍼 배선 회귀 가드 없음(변이 M3a 생존) · 생성기 청크 `?retry=N` 실화면 미시험 · 진입 청크 약 0.01 감량 여지(래퍼를 useExportFlow 거부 처리로 접기) | Low · 테스트·예산 |
 | B-RS-19 | RS7 flaky-hunt REPORT 2절 · 정적 조사 | ① 앱: 미리보기 잠금(`StudioLayout.tsx:247-252` `historyKeys.locked`)이 passive effect에서 갱신 — 커밋~effect 사이 수 ms 동안 Ctrl+Z가 편집 되돌리기로 가로채질 수 있는 이론상 창(실사용 영향 미미 추정, 미재현) · layout effect/render 값 이전 검토 ② 미재현 flaky 후보 2건: `CompareDialog.test.tsx:161-170`(shouldAdvanceTime + 7800ms) · `imagePersist.test.ts:93`(waitFor 1000ms 타임아웃 삼킴) | 미정(Jarvis 배정) |

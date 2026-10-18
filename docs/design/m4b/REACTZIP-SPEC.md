@@ -103,7 +103,7 @@ src/assets/images/img-<NN>.<webp|jpg|png>  업로드 이미지(2.2)
 2. 번호 = 문서 섹션 순서 → 슬롯 순서에서 id 첫 등장 순(01부터, 99 초과 시 3자리) — 정적 zip과 같다.
 3. 확장자 = Blob type(`image/webp`·`image/jpeg`·`image/png` → `webp`·`jpg`·`png`). 그 밖 = 생성 실패.
 4. 참조(★ RZQ-05 A): `site.json.doc` 안 이미지 참조 id를 **`img-NN` 키로 바꿔** 넣는다. 로컬 UUID가 산출물에 남지 않는다. `src/images.ts`가 `./assets/images/img-NN.ext` → Vite가 해시 붙인 URL로 바꾼다. `PageDocument`는 키 → URL 맵을 킷 이미지 슬롯에 넘긴다(앱의 id → objectURL 표 자리).
-   - [미확인] 킷 DOM이 이미지 id를 `data-*`에 그대로 내보내는지 — 그렇다면 DOM 정규화 규칙(4.1)에 "이미지 키 치환"을 넣는다. 구현 첫 단계에서 grep으로 확정.
+   - [사실] 킷 `<img>`는 id를 DOM에 내보내지 않는다 — 속성은 `data-media="image"`·`src`·`alt`·`width`·`height`·`style`·`fetchPriority`/`loading`·`className`뿐이다(`kit/Media.tsx:45-55`). 키 치환은 DOM에 흔적을 남기지 않으므로 DOM 정규화는 `src`만 다룬다(4.1).
 5. 잃은 이미지 = 파일 없이 킷 자체 그래픽(현행) · 결과 줄 `lostImageText`.
 6. 같은 id를 여러 슬롯이 쓰면 파일 1개 · 키 1개.
 
@@ -154,7 +154,7 @@ interface SiteJsonV1 {
 - M4-a 정적 zip과 **같은 바이트**를 쓴다(`loadSiteFonts` → 쓰는 계열 1 × 굵기 ≤ 2, 이름 `fontFileName`) [사실 `zip/staticZip.ts:28`]. 새 서브셋을 만들지 않는다.
 - `fonts.css` = `faceRule(face, "./assets/fonts/<이름>")` 재사용 + `[data-site-root] { font-synthesis: none; }`(스파이크 그대로) [사실 `reactZip.ts:48`].
 - 고지: 서브셋이라 내보낸 뒤 문구를 고치면 서브셋 밖 글자는 대체 글꼴로 보인다 [추정 REPORT 6절] → README·LICENSES 고지 항목(문안 Hemingway).
-- [미확인] 스파이크 zip의 Pretendard 2면은 267KB·271KB로 M4-a 서브셋(약 172~176KB)보다 크다 — 시제품이 다른 경로(전체 면)를 썼는지 구현 때 확인하고, 결과는 M4-a와 같은 바이트여야 한다(RZ-AC-09).
+- [사실] 스파이크 zip의 Pretendard 2면(267,096 B · 270,784 B)은 앱 `assets/fonts/Pretendard-{Regular,Bold}.subset.woff2`와 같은 크기다 — Pretendard는 업스트림 공식 서브셋 무수정이고(`kit/siteFonts.ts:3`), Kit Sans KR(172,048 · 175,888 B)·Kit Serif KR은 수정 서브셋이다. 계열마다 크기가 다를 뿐 M4-a와 같은 원천이다(RZ-AC-09가 바이트 동일을 고정).
 
 ---
 
@@ -211,7 +211,7 @@ interface SiteJsonV1 {
 
 | 층 | 기준 | 정규화 |
 |---|---|---|
-| DOM | `[data-site-root]` outerHTML이 정규화 후 **문자 단위 동일** | ① `data-motion-play` 속성 제거(B만 켜는 재생 스위치 — 정적 내보내기와 같음) ② `img src` → 이미지 키(`img-NN`)로 치환(A = `blob:` · B = 해시 URL) ③ (2.2-4 [미확인] 결과에 따라) 이미지 id `data-*` → 키 치환. 그 밖 정규화 0 |
+| DOM | `[data-site-root]` outerHTML이 정규화 후 **문자 단위 동일** | ① `data-motion-play` 속성 제거(B만 켜는 재생 스위치 — 정적 내보내기와 같음) ② `img[data-media="image"]`의 `src` → 이미지 키(`img-NN`)로 치환(A = `blob:` · B = 해시 URL). 그 밖 정규화 0 |
 | 배치 | 비교 요소(섹션·제목·본문·이미지·버튼)의 위치·크기 차이 0 · 문서 높이 동일 | 계산 스타일 차이는 기록만(스파이크: line-height 22 vs 21px, 배치 영향 0) |
 | 픽셀 | 같은 브라우저·같은 기기에서 첫 화면 스크린샷 **바이트 동일** 목표(스파이크 1280×900 `cmp` 동일) · 같지 않으면 다른 픽셀 비율을 기록하고 원인(글꼴 로드 시점·이미지 디코드)을 판정한다 — 원인 미상이면 실패 | 글꼴 `document.fonts.ready` 뒤 · 모션 끝난 뒤(또는 `prefers-reduced-motion`) 캡처 |
 
@@ -227,7 +227,7 @@ interface SiteJsonV1 {
 ### 4.3 메뉴 닫기 스크립트 (필수)
 
 - [사실 REPORT 1절 차이 2] 정적 내보내기는 `STATIC_MENU_SCRIPT`(앵커 클릭 시 popover 닫기, `staticMarkup.ts:14`)를 붙인다. 시제품에는 없다.
-- 규칙: `src/main.tsx` 템플릿에 **같은 동작**의 리스너 1개를 둔다(문서 click 위임 → `[popover]` 안 `a[href^="#"]` 클릭이면 그 popover `hidePopover()`).
+- 규칙: `src/main.tsx` 템플릿에 **같은 동작**의 리스너 1개를 둔다 — `STATIC_MENU_SCRIPT`와 같은 판정(문서 click 위임 → `closest('a[href^="#"]')` → 그 앵커의 `closest("[popover]")` → `hidePopover`가 함수면 호출) [사실 `staticMarkup.ts:14-15`]. 원문은 ES5 문자열이라 strict TS에서 `e.target.closest`가 타입 오류이므로 문자열을 그대로 붙이지 않고 TS로 옮긴다(`e.target instanceof Element` 확인).
 - 동작 동등성: 정적 HTML과 zip을 같은 시나리오(390 폭 · 햄버거 메뉴 열기 → 항목 클릭)로 돌려 popover 닫힘 + 앵커 이동을 확인한다(RZ-AC-15·R2).
 
 ### 4.4 검증 매트릭스
@@ -353,7 +353,7 @@ interface SiteJsonV1 {
 |---|---|---|
 | — | 없음(r0 기준) | 진입 몫 +0.03은 개정 20으로 이미 승인 · 생성기는 앱 기존 모듈만 import(앱 새 의존성 0 [사실 REPORT 2절]) · 엔진 계약(`engine/contracts/*`) 변경 0 — 타입은 원문 복사 · 백엔드 0(브라우저 안 생성) |
 
-- 조건부: 구현 실측이 +0.03을 넘으면(5.4) 새 개정 상신 = 사용자 질의. 2.2-4 [미확인]이 킷 DOM 변경을 요구하면(이미지 id `data-*` 제거 등) 렌더·정적 내보내기 영향이라 별도 질의.
+- 조건부: 구현 실측이 +0.03을 넘으면(5.4) 새 개정 상신 = 사용자 질의. 충실도 대조(4.1)가 킷 DOM 변경을 요구하면 렌더·PNG·정적 내보내기 영향이라 별도 질의(Q6 B 백로그와 같은 경로).
 
 ---
 

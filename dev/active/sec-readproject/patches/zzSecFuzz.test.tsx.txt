@@ -1,0 +1,186 @@
+// SEC-M4A-10 임시 퍼즈 — 커밋 금지(patches/·logs/에만 보존)
+import { render, cleanup } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { fakeDeps, fakeImageBytes, fileImage, jsonFile, fileOf, seedDocRecord, seedFile, seedProject, seedSeries, toBase64 } from "../../test/projectFileFixtures";
+import { hashDoc } from "../../engine/ops/hash";
+import { checkFile } from "./checkFile";
+import { rekeyImport, mergeImport } from "./rekey";
+import { docKitTokens } from "../studio/docPurpose";
+import { readParentMessage } from "../../render/protocol";
+import { PageDocument } from "../../render/PageDocument";
+import { kitVars } from "../../kit/tokens";
+import { siteFaces, fontStack } from "../../kit/siteFonts";
+import { buildStaticHtml } from "../studio/staticHtml/staticMarkup";
+import type { PageDoc } from "../../engine/contracts/pageDoc";
+
+type J = any; // eslint-disable-line @typescript-eslint/no-explicit-any
+const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
+const UUID = "0f8fad5b-d9cb-4ce1-9c47-4f6b7e3c2a1d";
+const XSS = `"><img src=x onerror=alert(1)><script>alert(2)</script>`;
+
+/** 문서 슬롯 변형 — 해시 재계산(문서·스냅샷 모두 같은 문서로) */
+function withDoc(mut: (doc: J) => void) {
+  const rec: J = clone(seedDocRecord());
+  mut(rec.doc);
+  rec.doc.hash = hashDoc(rec.doc as PageDoc);
+  rec.snapshots = rec.snapshots.map((s: J) => ({ ...s, doc: rec.doc, hash: rec.doc.hash }));
+  return seedFile({ doc: rec });
+}
+const firstText = (doc: J) => {
+  for (const s of doc.sections) for (const [k, v] of Object.entries(s.slots)) if (typeof v === "string") return [s, k] as const;
+  throw new Error("no text slot");
+};
+const firstImage = (doc: J) => {
+  for (const s of doc.sections) for (const [k, v] of Object.entries(s.slots)) if (v && typeof v === "object") return [s, k] as const;
+  throw new Error("no image slot");
+};
+const withSeries = (mut: (base: J, v: J) => void) => {
+  const series: J = clone(seedSeries());
+  series.forEach((v: J) => mut(v.base, v));
+  return seedFile({ series });
+};
+
+const CASES: Array<[string, () => unknown, string?]> = [
+  // ── 문서(validatePageDoc)
+  ["D01 slot text <script>", () => withDoc((d) => { const [s, k] = firstText(d); s.slots[k] = `<script>alert(1)</script>`; })],
+  ["D02 slot text attr-break", () => withDoc((d) => { const [s, k] = firstText(d); s.slots[k] = XSS; })],
+  ["D03 meta.title </title><script>", () => withDoc((d) => { d.meta.title = `</title><script>alert(1)</script>`; })],
+  ["D04 meta.description quote-break", () => withDoc((d) => { d.meta.description = `"><meta http-equiv=refresh content="0;url=https://evil.example">`; })],
+  ["D05 image source javascript:", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = "javascript:alert(1)"; })],
+  ["D06 image source data:svg", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = "data:image/svg+xml,<svg onload=alert(1)>"; })],
+  ["D07 image source blob:", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = "blob:https://x/" + UUID; })],
+  ["D08 image source https", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = "https://evil.example/a.png"; })],
+  ["D09 image source UUID uppercase", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = UUID.toUpperCase(); })],
+  ["D10 image source valid UUID (no image)", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = UUID; })],
+  ["D11 placeholder patternId attr-break", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].source = { kind: "placeholder", patternId: `x" onerror="alert(1)` }; })],
+  ["D12 image alt XSS", () => withDoc((d) => { const [s, k] = firstImage(d); s.slots[k].alt = XSS; s.slots[k].decorative = false; })],
+  ["D13 extra doc key dangerouslySetInnerHTML", () => withDoc((d) => { d.dangerouslySetInnerHTML = { __html: "<script>" }; })],
+  ["D14 slots __proto__ (JSON own key)", () => JSON.parse(JSON.stringify(withDoc(() => undefined)).replace(`"slots":{`, `"slots":{"__proto__":{"polluted":1},`))],
+  ["D15 slot key constructor", () => withDoc((d) => { d.sections[0].slots.constructor = "x"; })],
+  ["D16 unknown variant", () => withDoc((d) => { d.sections[0].variant = "<script>"; })],
+  ["D17 33 sections", () => withDoc((d) => { while (d.sections.length < 33) d.sections.push({ ...d.sections[0], instanceId: `i${d.sections.length}` }); })],
+  ["D18 slot text 2001 chars", () => withDoc((d) => { const [s, k] = firstText(d); s.slots[k] = "a".repeat(2001); })],
+  ["D19 slot nested object", () => withDoc((d) => { const [s, k] = firstText(d); s.slots[k] = { a: { b: { c: 1 } } }; })],
+  ["D20 hash mismatch", () => { const f: J = clone(seedFile()); f.doc.doc.meta.title = "changed"; return f; }],
+  ["D21 candidateId javascript:x", () => withDoc((d) => { d.candidateId = "javascript:x"; })],
+  ["D22 section tone/motion bad", () => withDoc((d) => { d.sections[0].motion = "L3"; })],
+  ["D23 instanceId attr-break", () => withDoc((d) => { d.sections[0].instanceId = `x" onclick="alert(1)`; })],
+  // ── 프로젝트 레코드
+  ["P01 project.name <script>", () => seedFile({ project: { ...seedProject(), name: `<script>alert(1)</script>` } })],
+  ["P02 project extra hasDoc/candidateId/docSavedAt", () => seedFile({ doc: null, project: { ...seedProject(), hasDoc: true, candidateId: XSS, docSavedAt: "9999-12-31T00:00:00.000Z", latestProfileVersion: 99 } })],
+  ["P03 project __proto__ (JSON own key)", () => JSON.parse(JSON.stringify(seedFile()).replace(`"project":{`, `"project":{"__proto__":{"polluted":"yes","hasDoc":true},`))],
+  ["P04 project createdAt garbage", () => seedFile({ project: { ...seedProject(), createdAt: XSS } })],
+  ["P05 project revision float", () => seedFile({ project: { ...seedProject(), revision: 1.5 } })],
+  ["P06 top-level __proto__", () => JSON.parse(JSON.stringify(seedFile()).replace(`{"format"`, `{"__proto__":{"polluted":1},"format"`))],
+  // ── 프로필 계열
+  ["S01 family CSS break", () => withSeries((b) => { b.typography_tokens.family = `x"; } body{background:url(https://evil.example/a)} .y{`; })],
+  ["S02 family constructor", () => withSeries((b) => { b.typography_tokens.family = "constructor"; })],
+  ["S03 family __proto__", () => withSeries((b) => { b.typography_tokens.family = "__proto__"; })],
+  ["S04 family toString", () => withSeries((b) => { b.typography_tokens.family = "toString"; })],
+  ["S05 color $value CSS", () => withSeries((b) => { b.color_tokens.primary.$value = "red;background:url(https://evil.example)"; })],
+  ["S06 color extra field", () => withSeries((b) => { b.color_tokens.primary.$extra = XSS; })],
+  ["S07 headingWeight 1e9", () => withSeries((b) => { b.typography_tokens.headingWeight = 1e9; })],
+  ["S08 section_plan type __proto__", () => withSeries((b) => { b.section_plan = [{ type: "__proto__", variant: "x" }]; })],
+  ["S09 source_reference_ids javascript:", () => withSeries((b) => { b.source_reference_ids = ["javascript:alert(1)", XSS]; })],
+  ["S10 visual_direction XSS", () => withSeries((b) => { b.visual_direction = XSS; })],
+  ["S11 corrections from javascript:", () => withSeries((_b, v) => { v.adjustments = { corrections: [{ role: "ink", from: "javascript:x", to: "#111111", check: "C-4" }] }; })],
+  ["S12 purpose toString", () => withSeries((_b, v) => { v.adjustments = { purpose: "toString" }; })],
+  ["S13 spacing grid string", () => withSeries((b) => { b.spacing_tokens.grid = XSS; })],
+  ["S14 card_style.style unknown", () => withSeries((b) => { b.component_choices.card_style.style = XSS; })],
+  ["S15 media_ratio XSS", () => withSeries((b) => { b.component_choices.media_ratio = XSS; })],
+  ["S16 scale 0 / sectionGap -1", () => withSeries((b) => { b.typography_tokens.scale = 0; b.spacing_tokens.sectionGap = -1; })],
+  // ── 스냅샷·봉투
+  ["N01 snapshot name XSS + extra key", () => { const f: J = clone(seedFile()); f.doc.snapshots[0].name = XSS; f.doc.snapshots[0].evil = XSS; return f; }],
+  ["N02 DocRecord extra key", () => { const f: J = clone(seedFile()); f.doc.evil = { nested: XSS }; return f; }],
+  ["N03 snapshot reason toString", () => { const f: J = clone(seedFile()); f.doc.snapshots[0].reason = "toString"; return f; }],
+  ["N04 snapshotSeq string", () => { const f: J = clone(seedFile()); f.doc.snapshotSeq = "2"; return f; }],
+  // ── 크기·구조
+  ["Z01 series 3000 versions", () => { const s: J = seedSeries(); const many = Array.from({ length: 3000 }, (_, i) => ({ ...s[1], version: i + 1 })); const f: J = seedFile({ series: many }); return f; }],
+  ["Z02 deep nesting 200k", () => "RAW:" + `{"format":"design-studio-project","formatVersion":1,"schemaVersion":1,"exportedAt":"x","project":${"[".repeat(200000)}${"]".repeat(200000)}}`],
+  ["Z03 doc.sections 1e5 array", () => withDoc((d) => { d.sections = Array.from({ length: 100000 }, () => d.sections[0]); })],
+  ["Z04 not JSON", () => "RAW:<html><script>alert(1)</script>"],
+  ["Z05 formatVersion 2", () => seedFile({ formatVersion: 2 })],
+  // ── 이미지
+  ["I01 format svg+xml", () => seedFile({}, [{ ...fileImage(UUID, 640, 480), format: "svg+xml" as J }])],
+  ["I02 format constructor", () => seedFile({}, [{ ...fileImage(UUID, 640, 480), format: "constructor" as J }])],
+  ["I03 localId non-UUID XSS", () => seedFile({}, [fileImage(XSS.replace(/\//g, ""), 640, 480)])],
+  ["I04 localId ..", () => seedFile({}, [fileImage("..", 640, 480)])],
+  ["I05 png magic + HTML polyglot", () => { const b = new Uint8Array([...fakeImageBytes("png", 640, 480), ...new TextEncoder().encode("<html><script>alert(1)</script>")]); return seedFile({}, [{ ...fileImage(UUID, 640, 480), bytes: b.length, variants: { "640": toBase64(b) } }]); }],
+  ["I06 svg bytes declared png", () => { const b = new TextEncoder().encode(`<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>`); return seedFile({}, [{ ...fileImage(UUID, 640, 480), bytes: b.length, variants: { "640": toBase64(b) } }]); }],
+  ["I07 declared 16384x2441 actual 640x480", () => { const im = fileImage(UUID, 640, 480); return seedFile({}, [{ ...im, width: 16384, height: 2441, variants: { "640": im.variants["640"]!, "1280": im.variants["640"]!, "1920": im.variants["640"]! }, bytes: im.bytes * 3 }]); }],
+  ["I08 bytes negative", () => seedFile({}, [{ ...fileImage(UUID, 640, 480), bytes: -1 }])],
+  ["I09 25 images", () => seedFile({}, Array.from({ length: 25 }, (_, i) => fileImage(UUID.slice(0, -2) + String(i).padStart(2, "0"), 640, 480)))],
+  ["I10 base64 with whitespace", () => { const im = fileImage(UUID, 640, 480); return seedFile({}, [{ ...im, variants: { "640": " " + im.variants["640"]!.slice(1) } }]); }],
+  ["I11 data URL as variant", () => { const im = fileImage(UUID, 640, 480); return seedFile({}, [{ ...im, variants: { "640": "data:image/png;base64," + im.variants["640"] } }]); }],
+  ["I12 variants __proto__ key", () => JSON.parse(JSON.stringify(seedFile({}, [fileImage(UUID, 640, 480)])).replace(`"variants":{`, `"variants":{"__proto__":"AAAA",`))],
+  ["I13 duplicate localId", () => seedFile({}, [fileImage(UUID, 640, 480), fileImage(UUID, 640, 480)])],
+];
+
+const BAD = [/<script/i, /\son[a-z]+=/i, /javascript:/i, /url\(\s*['"]?https?:/i, /evil\.example/i];
+const leaks = (html: string) => {
+  const d = new DOMParser().parseFromString(html, "text/html");
+  const hits: string[] = [];
+  const scripts = [...d.querySelectorAll("script")].filter((s) => !s.closest("head"));
+  if (scripts.length) hits.push(`script x${scripts.length}`);
+  for (const el of d.querySelectorAll("*")) for (const a of el.attributes) {
+    if (/^on/i.test(a.name)) hits.push(`attr ${a.name}`);
+    if (/^(href|src|action|formaction|xlink:href)$/i.test(a.name) && /^\s*(javascript:|https?:)/i.test(a.value)) hits.push(`url ${a.name}=${a.value.slice(0, 30)}`);
+    if (a.name === "style" && /url\(\s*['"]?https?:/i.test(a.value)) hits.push("style url");
+  }
+  if (d.querySelector("meta[http-equiv], base, link, iframe, object, embed, template")) hits.push("bad element");
+  return hits;
+};
+
+async function probe(name: string, make: () => unknown) {
+  const value = make();
+  const file = typeof value === "string" && value.startsWith("RAW:") ? fileOf(value.slice(4)) : jsonFile(value);
+  const t0 = performance.now();
+  const checked = await checkFile(file, fakeDeps().deps);
+  const ms = Math.round(performance.now() - t0);
+  if (!checked.ok) return `${name} | REJECT ${checked.code} | ${ms}ms`;
+  const out: string[] = [`${name} | PASS import | ${ms}ms`];
+  const polluted = ({} as J).polluted !== undefined || ({} as J).hasDoc !== undefined;
+  out.push(`protoPolluted=${polluted}`);
+  const plan = rekeyImport(checked.file, undefined, "2026-10-18T00:00:00.000Z");
+  if (!plan.ok) return `${out.join(" | ")} | rekey REJECT`;
+  const state = mergeImport(undefined, plan.plan);
+  const stored = structuredClone(state.projects.get(plan.plan.projectId)) as J;
+  out.push(`storedProjectKeys=${Object.keys(stored).join(",")}`);
+  if (Object.getPrototypeOf(stored) !== Object.prototype) out.push("storedProjectProto=CHANGED");
+  const doc = plan.plan.doc?.doc as PageDoc | undefined;
+  const kit = docKitTokens({ profileId: plan.plan.profileId, versions: plan.plan.series } as J, doc?.profileVersion ?? plan.plan.series.length);
+  const msg = readParentMessage({ type: "render", doc: doc ?? {}, ...(kit && { kitTokens: kit }) });
+  out.push(`kitTokens=${kit ? "built" : "none"} renderMsg=${msg ? "accepted" : "DROPPED"}`);
+  if (kit) {
+    try {
+      out.push(`siteFaces=${JSON.stringify(siteFaces(kit.type).map((f) => String(f.family)))} fontStack=${JSON.stringify(fontStack(kit.type.family)).slice(0, 80)}`);
+      const vars = kitVars(kit);
+      out.push(`kitVarLeaks=${JSON.stringify(leaks(Object.values(vars).join(";")))}`);
+    } catch (e) {
+      out.push(`kit THROW ${(e as Error).message.slice(0, 60)}`);
+    }
+  }
+  if (doc && msg) {
+    try {
+      const { container } = render(<PageDocument doc={doc} kitTokens={msg.type === "render" ? msg.kitTokens : undefined} />);
+      const markup = container.innerHTML;
+      out.push(`renderLeaks=${JSON.stringify(leaks(markup))}`);
+      const html = buildStaticHtml({ markup: (container.firstElementChild as Element).outerHTML, css: "", title: doc.meta.title, description: doc.meta.description });
+      out.push(`staticLeaks=${JSON.stringify(leaks(html.replace(/<script>[^]*?<\/script>/, "")))} titleEsc=${html.includes("&lt;/title&gt;") || !doc.meta.title.includes("<")}`);
+    } catch (e) {
+      out.push(`render/static THROW ${(e as Error).message.slice(0, 80)}`);
+    } finally {
+      cleanup();
+    }
+  }
+  return out.join(" | ");
+}
+
+describe("SEC fuzz", () => {
+  it("runs all cases", async () => {
+    const lines: string[] = [];
+    for (const [name, make] of CASES) lines.push(await probe(name, make).catch((e) => `${name} | PROBE THROW ${(e as Error).message.slice(0, 100)}`));
+    (await import("node:fs")).writeFileSync(process.env.SECFUZZ_OUT ?? "/tmp/secfuzz.txt", lines.join("\n") + "\n");
+    expect(lines.length).toBe(CASES.length);
+  }, 120_000);
+});

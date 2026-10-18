@@ -1,0 +1,21 @@
+diff --git a/app/src/features/projectFile/checkImages.ts b/app/src/features/projectFile/checkImages.ts
+index 7fa16f7c..a560d6fc 100644
+--- a/app/src/features/projectFile/checkImages.ts
++++ b/app/src/features/projectFile/checkImages.ts
+@@ -6,6 +6,7 @@
+  */
+ import { browserIngestDeps, type IngestBitmap, type IngestDeps } from "../studio/images/ingest/deps";
+ import { formatFromMagic } from "../studio/images/ingest/fileType";
++import { readImageHeader } from "../studio/images/ingest/header";
+ import { chooseFormat, type EncodeChoice } from "../studio/images/ingest/format";
+ import { variantHeight, widthLadder } from "../studio/images/ingest/ladder";
+ import { exceedsPixelLimit, MAX_SIDE } from "../studio/images/ingest/limits";
+@@ -62,6 +63,8 @@ async function ruledVariants(image: Loose): Promise<readonly (readonly [number,
+   if (entries.length !== ladder.length || entries.some(([w], i) => w !== String(ladder[i]))) return undefined;
+   const decoded = entries.map(([, text]) => decodeBase64(text));
+   if (decoded.some((b) => b === undefined)) return undefined;
++  // 디코드 전 헤더 = 사다리 치수(압축 폭탄 — 업로드 V5와 같은 파서). 선언 width·height만 믿지 않는다
++  if (decoded.some((b, i) => { const h = readImageHeader(format, b!); return h === null || h.width !== ladder[i] || h.height !== variantHeight(width, height, ladder[i]!); })) return undefined;
+   const blobs = decoded.map((b) => new Blob([b as BlobPart], { type: `image/${format}` }));
+   if (bytes !== blobs.reduce((sum, blob) => sum + blob.size, 0)) return undefined;
+   const heads = await Promise.all(blobs.map(headOf));

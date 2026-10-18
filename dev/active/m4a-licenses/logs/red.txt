@@ -1,0 +1,371 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-licenses/app
+
+ ❯ src/features/studio/zip/licenses.test.ts (8 tests | 4 failed) 32ms
+   ❯ LICENSES.md (EXP-AC-10) (8)
+     × 머리 = 묶음 파일 수 · 글꼴 절 = 파일 경로 · 저작권 문장 · SIL Open Font License 1.1 · Reserved Font Name · 라이선스 전문 · assets/fonts/OFL.txt 안내 12ms
+     × 이미지 절 = 파일 목록 그대로 · 0장이면 '동봉한 사용자 업로드 이미지가 없습니다.' 1줄 · 잃은 이미지는 그래픽 절에 개수 1줄 3ms
+     × 글꼴 없음(허용 밖 계열) = 글꼴 절 '동봉한 글꼴 파일이 없습니다.' · OFL.txt 안내 0 1ms
+     × 고정 문안 = COPY.md 1절 '이후' 글자 그대로 · 문단은 고정 문장만(사용자 글자 0) 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/zip/licenses.test.ts > LICENSES.md (EXP-AC-10) > 머리 = 묶음 파일 수 · 글꼴 절 = 파일 경로 · 저작권 문장 · SIL Open Font License 1.1 · Reserved Font Name · 라이선스 전문 · assets/fonts/OFL.txt 안내
+AssertionError: expected '# LICENSES\n\n이 묶음은 파일 7개입니다 — index.…' to contain '이 묶음에는 사이트 파일(index.html), 권리·이용 조건 안…'
+
+- Expected
++ Received
+
+- 이 묶음에는 사이트 파일(index.html), 권리·이용 조건 안내(LICENSES.md), 동봉 자산을 포함해 총 7개 파일이 들어 있습니다.
++ # LICENSES
++
++ 이 묶음은 파일 7개입니다 — index.html · LICENSES.md · assets/.
++
++ ## 글꼴 — Kit Sans KR
++
++ - assets/fonts/KitSansKR-400.woff2
++ - assets/fonts/KitSansKR-700.woff2
++
++ 라이선스: SIL Open Font License 1.1 (Reserved Font Name 고지는 아래 저작권 문장을 따릅니다). 전문은 assets/fonts/OFL.txt에도 있습니다.
++
++ ```text
++ Kit Sans KR is a Modified Version of Noto Sans KR (Copyright 2014-2021 Adobe, with Reserved Font Name 'Source'), subset and renamed. Licensed under the SIL Open Font License 1.1.
++
++ This Font Software is licensed under the SIL Open Font License, Version 1.1.
++ This license is copied below, and is also available with a FAQ at:
++ https://scripts.sil.org/OFL
++
++
++ -----------------------------------------------------------
++ SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
++ -----------------------------------------------------------
++
++ PREAMBLE
++ The goals of the Open Font License (OFL) are to stimulate worldwide
++ development of collaborative font projects, to support the font creation
++ efforts of academic and linguistic communities, and to provide a free and
++ open framework in which fonts may be shared and improved in partnership
++ with others.
++
++ The OFL allows the licensed fonts to be used, studied, modified and
++ redistributed freely as long as they are not sold by themselves. The
++ fonts, including any derivative works, can be bundled, embedded, 
++ redistributed and/or sold with any software provided that any reserved
++ names are not used by derivative works. The fonts and derivatives,
++ however, cannot be released under any other type of license. The
++ requirement for fonts to remain under this license does not apply
++ to any document created using the fonts or their derivatives.
++
++ DEFINITIONS
++ "Font Software" refers to the set of files released by the Copyright
++ Holder(s) under this license and clearly marked as such. This may
++ include source files, build scripts and documentation.
++
++ "Reserved Font Name" refers to any names specified as such after the
++ copyright statement(s).
++
++ "Original Version" refers to the collection of Font Software components as
++ distributed by the Copyright Holder(s).
++
++ "Modified Version" refers to any derivative made by adding to, deleting,
++ or substituting -- in part or in whole -- any of the components of the
++ Original Version, by changing formats or by porting the Font Software to a
++ new environment.
++
++ "Author" refers to any designer, engineer, programmer, technical
++ writer or other person who contributed to the Font Software.
++
++ PERMISSION & CONDITIONS
++ Permission is hereby granted, free of charge, to any person obtaining
++ a copy of the Font Software, to use, study, copy, merge, embed, modify,
++ redistribute, and sell modified and unmodified copies of the Font
++ Software, subject to the following conditions:
++
++ 1) Neither the Font Software nor any of its individual components,
++ in Original or Modified Versions, may be sold by itself.
++
++ 2) Original or Modified Versions of the Font Software may be bundled,
++ redistributed and/or sold with any software, provided that each copy
++ contains the above copyright notice and this license. These can be
++ included either as stand-alone text files, human-readable headers or
++ in the appropriate machine-readable metadata fields within text or
++ binary files as long as those fields can be easily viewed by the user.
++
++ 3) No Modified Version of the Font Software may use the Reserved Font
++ Name(s) unless explicit written permission is granted by the corresponding
++ Copyright Holder. This restriction only applies to the primary font name as
++ presented to the users.
++
++ 4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
++ Software shall not be used to promote, endorse or advertise any
++ Modified Version, except to acknowledge the contribution(s) of the
++ Copyright Holder(s) and the Author(s) or with their explicit written
++ permission.
++
++ 5) The Font Software, modified or unmodified, in part or in whole,
++ must be distributed entirely under this license, and must not be
++ distributed under any other license. The requirement for fonts to
++ remain under this license does not apply to any document created
++ using the Font Software.
++
++ TERMINATION
++ This license becomes null and void if any of the above conditions are
++ not met.
++
++ DISCLAIMER
++ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
++ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
++ OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
++ COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
++ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
++ OTHER DEALINGS IN THE FONT SOFTWARE.
++ ```
++
++ ## 이미지 — 사용자 업로드
++
++ - assets/images/img-01.webp
++ - assets/images/img-02.jpg
++
++ 이 이미지는 사이트를 만든 사용자가 올린 것이며 권리는 올린 사람에게 있습니다. 생성 도구는 이 이미지에 권리를 주장하지 않습니다.
++
++ ## 그래픽 — 자체 생성
++
++ 이미지가 없는 슬롯의 그래픽(인라인 SVG·CSS)은 생성 도구가 만든 것으로, 제약 없이 사용·수정할 수 있습니다.
++
++ ## 코드·스타일
++
++ index.html 안 CSS·메뉴 스크립트는 생성 도구의 산출물로, 제약 없이 사용·수정할 수 있습니다. 서드파티 코드는 없습니다.
++
+
+ ❯ src/features/studio/zip/licenses.test.ts:37:16
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/features/studio/zip/licenses.test.ts > LICENSES.md (EXP-AC-10) > 이미지 절 = 파일 목록 그대로 · 0장이면 '동봉한 사용자 업로드 이미지가 없습니다.' 1줄 · 잃은 이미지는 그래픽 절에 개수 1줄
+AssertionError: expected '# LICENSES\n\n이 묶음은 파일 5개입니다 — index.…' to contain '동봉한 사용자 업로드 이미지가 없습니다.'
+
+- Expected
++ Received
+
+- 동봉한 사용자 업로드 이미지가 없습니다.
++ # LICENSES
++
++ 이 묶음은 파일 5개입니다 — index.html · LICENSES.md · assets/.
++
++ ## 글꼴 — Kit Sans KR
++
++ - assets/fonts/KitSansKR-400.woff2
++ - assets/fonts/KitSansKR-700.woff2
++
++ 라이선스: SIL Open Font License 1.1 (Reserved Font Name 고지는 아래 저작권 문장을 따릅니다). 전문은 assets/fonts/OFL.txt에도 있습니다.
++
++ ```text
++ Kit Sans KR is a Modified Version of Noto Sans KR (Copyright 2014-2021 Adobe, with Reserved Font Name 'Source'), subset and renamed. Licensed under the SIL Open Font License 1.1.
++
++ This Font Software is licensed under the SIL Open Font License, Version 1.1.
++ This license is copied below, and is also available with a FAQ at:
++ https://scripts.sil.org/OFL
++
++
++ -----------------------------------------------------------
++ SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
++ -----------------------------------------------------------
++
++ PREAMBLE
++ The goals of the Open Font License (OFL) are to stimulate worldwide
++ development of collaborative font projects, to support the font creation
++ efforts of academic and linguistic communities, and to provide a free and
++ open framework in which fonts may be shared and improved in partnership
++ with others.
++
++ The OFL allows the licensed fonts to be used, studied, modified and
++ redistributed freely as long as they are not sold by themselves. The
++ fonts, including any derivative works, can be bundled, embedded, 
++ redistributed and/or sold with any software provided that any reserved
++ names are not used by derivative works. The fonts and derivatives,
++ however, cannot be released under any other type of license. The
++ requirement for fonts to remain under this license does not apply
++ to any document created using the fonts or their derivatives.
++
++ DEFINITIONS
++ "Font Software" refers to the set of files released by the Copyright
++ Holder(s) under this license and clearly marked as such. This may
++ include source files, build scripts and documentation.
++
++ "Reserved Font Name" refers to any names specified as such after the
++ copyright statement(s).
++
++ "Original Version" refers to the collection of Font Software components as
++ distributed by the Copyright Holder(s).
++
++ "Modified Version" refers to any derivative made by adding to, deleting,
++ or substituting -- in part or in whole -- any of the components of the
++ Original Version, by changing formats or by porting the Font Software to a
++ new environment.
++
++ "Author" refers to any designer, engineer, programmer, technical
++ writer or other person who contributed to the Font Software.
++
++ PERMISSION & CONDITIONS
++ Permission is hereby granted, free of charge, to any person obtaining
++ a copy of the Font Software, to use, study, copy, merge, embed, modify,
++ redistribute, and sell modified and unmodified copies of the Font
++ Software, subject to the following conditions:
++
++ 1) Neither the Font Software nor any of its individual components,
++ in Original or Modified Versions, may be sold by itself.
++
++ 2) Original or Modified Versions of the Font Software may be bundled,
++ redistributed and/or sold with any software, provided that each copy
++ contains the above copyright notice and this license. These can be
++ included either as stand-alone text files, human-readable headers or
++ in the appropriate machine-readable metadata fields within text or
++ binary files as long as those fields can be easily viewed by the user.
++
++ 3) No Modified Version of the Font Software may use the Reserved Font
++ Name(s) unless explicit written permission is granted by the corresponding
++ Copyright Holder. This restriction only applies to the primary font name as
++ presented to the users.
++
++ 4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
++ Software shall not be used to promote, endorse or advertise any
++ Modified Version, except to acknowledge the contribution(s) of the
++ Copyright Holder(s) and the Author(s) or with their explicit written
++ permission.
++
++ 5) The Font Software, modified or unmodified, in part or in whole,
++ must be distributed entirely under this license, and must not be
++ distributed under any other license. The requirement for fonts to
++ remain under this license does not apply to any document created
++ using the Font Software.
++
++ TERMINATION
++ This license becomes null and void if any of the above conditions are
++ not met.
++
++ DISCLAIMER
++ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
++ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
++ OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
++ COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
++ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
++ OTHER DEALINGS IN THE FONT SOFTWARE.
++ ```
++
++ ## 이미지 — 사용자 업로드
++
++ 올린 이미지 없음.
++
++ 이 이미지는 사이트를 만든 사용자가 올린 것이며 권리는 올린 사람에게 있습니다. 생성 도구는 이 이미지에 권리를 주장하지 않습니다.
++
++ ## 그래픽 — 자체 생성
++
++ 이미지가 없는 슬롯의 그래픽(인라인 SVG·CSS)은 생성 도구가 만든 것으로, 제약 없이 사용·수정할 수 있습니다.
++
++ 다시 골라야 하는 이미지 2장은 자체 그래픽으로 넣었습니다.
++
++ ## 코드·스타일
++
++ index.html 안 CSS·메뉴 스크립트는 생성 도구의 산출물로, 제약 없이 사용·수정할 수 있습니다. 서드파티 코드는 없습니다.
++
+
+ ❯ src/features/studio/zip/licenses.test.ts:46:18
+     44|     for (const name of INPUT.images) expect(md).toContain(`- ${name}`);
+     45|     const none = licensesMarkdown({ ...INPUT, images: [], lost: 2 });
+     46|     expect(none).toContain(COPY.noImage);
+       |                  ^
+     47|     expect(none).toContain(COPY.lost(2));
+     48|     expect(licensesMarkdown({ ...INPUT, lost: 0 })).not.toMatch(/잃은|다시…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/features/studio/zip/licenses.test.ts > LICENSES.md (EXP-AC-10) > 글꼴 없음(허용 밖 계열) = 글꼴 절 '동봉한 글꼴 파일이 없습니다.' · OFL.txt 안내 0
+AssertionError: expected '# LICENSES\n\n이 묶음은 파일 4개입니다 — index.…' to contain '동봉한 글꼴 파일이 없습니다.'
+
+- Expected
++ Received
+
+- 동봉한 글꼴 파일이 없습니다.
++ # LICENSES
++
++ 이 묶음은 파일 4개입니다 — index.html · LICENSES.md · assets/.
++
++ ## 글꼴
++
++ 동봉한 글꼴 없음.
++
++ ## 이미지 — 사용자 업로드
++
++ - assets/images/img-01.webp
++ - assets/images/img-02.jpg
++
++ 이 이미지는 사이트를 만든 사용자가 올린 것이며 권리는 올린 사람에게 있습니다. 생성 도구는 이 이미지에 권리를 주장하지 않습니다.
++
++ ## 그래픽 — 자체 생성
++
++ 이미지가 없는 슬롯의 그래픽(인라인 SVG·CSS)은 생성 도구가 만든 것으로, 제약 없이 사용·수정할 수 있습니다.
++
++ ## 코드·스타일
++
++ index.html 안 CSS·메뉴 스크립트는 생성 도구의 산출물로, 제약 없이 사용·수정할 수 있습니다. 서드파티 코드는 없습니다.
++
+
+ ❯ src/features/studio/zip/licenses.test.ts:54:16
+     52|     const md = licensesMarkdown({ ...INPUT, family: undefined, fonts: …
+     53|     expect(headings(md)[1]).toBe("## 글꼴");
+     54|     expect(md).toContain(COPY.noFont);
+       |                ^
+     55|     expect(md).not.toContain("OFL.txt");
+     56|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/features/studio/zip/licenses.test.ts > LICENSES.md (EXP-AC-10) > 고정 문안 = COPY.md 1절 '이후' 글자 그대로 · 문단은 고정 문장만(사용자 글자 0)
+AssertionError: expected [ …(5) ] to deeply equal [ …(5) ]
+
+- Expected
++ Received
+
+  [
+-   "이 묶음에는 사이트 파일(index.html), 권리·이용 조건 안내(LICENSES.md), 동봉 자산을 포함해 총 7개 파일이 들어 있습니다.",
+-   "동봉한 글꼴에는 SIL Open Font License 1.1이 적용됩니다. 원본 글꼴과 수정 사항은 아래 고지를 참고하세요. 원본에서 글자 일부를 추리거나 파일 형식을 변환한 글꼴은 이 라이선스에서 수정본(Modified Version)으로 정의합니다. 예약 글꼴 이름(Reserved Font Name)은 아래 저작권 고지에 명시된 이름을 뜻합니다. 수정본에서 해당 이름을 사용자에게 표시되는 주된 글꼴 이름으로 사용하려면 해당 저작권자의 명시적인 서면 허가가 필요합니다. 라이선스 전문은 아래와 assets/fonts/OFL.txt에 있습니다.",
+-   "이 절의 이미지 파일은 사이트를 만든 사용자가 업로드한 자료입니다. 이미지의 권리는 해당 권리자에게 있으며, 업로드한 사용자는 이용·배포에 필요한 권한을 확인해야 합니다. 생성 도구는 업로드한 이미지에 대한 권리를 주장하지 않습니다.",
+-   "이미지가 없거나 누락된 자리에 표시되는 자체 그래픽(인라인 SVG·CSS)은 생성 도구의 산출물입니다. 생성 도구는 이 자체 그래픽에 대한 권리를 주장하지 않으며, 제약 없이 사용·수정할 수 있습니다.",
+-   "index.html 안의 CSS와 메뉴 스크립트는 생성 도구의 산출물입니다. 생성 도구는 이 코드·스타일에 대한 권리를 주장하지 않으며, 제약 없이 사용·수정할 수 있습니다. 이 코드·스타일에는 제3자 코드가 포함되어 있지 않습니다.",
++   "이 묶음은 파일 7개입니다 — index.html · LICENSES.md · assets/.",
++   "라이선스: SIL Open Font License 1.1 (Reserved Font Name 고지는 아래 저작권 문장을 따릅니다). 전문은 assets/fonts/OFL.txt에도 있습니다.",
++   "이 이미지는 사이트를 만든 사용자가 올린 것이며 권리는 올린 사람에게 있습니다. 생성 도구는 이 이미지에 권리를 주장하지 않습니다.",
++   "이미지가 없는 슬롯의 그래픽(인라인 SVG·CSS)은 생성 도구가 만든 것으로, 제약 없이 사용·수정할 수 있습니다.",
++   "index.html 안 CSS·메뉴 스크립트는 생성 도구의 산출물로, 제약 없이 사용·수정할 수 있습니다. 서드파티 코드는 없습니다.",
+  ]
+
+ ❯ src/features/studio/zip/licenses.test.ts:66:44
+     64|
+     65|   it("고정 문안 = COPY.md 1절 '이후' 글자 그대로 · 문단은 고정 문장만(사용자 글자 0)", () => {
+     66|     expect(prose(licensesMarkdown(INPUT))).toEqual([COPY.head(7), COPY…
+       |                                            ^
+     67|     expect(prose(licensesMarkdown({ family: undefined, fonts: [], imag…
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 4 passed (8)
+   Start at  13:11:23
+   Duration  840ms (environment 75%, setup 14%, transform 6%, tests 4%, import 1%, worker 1%)
+

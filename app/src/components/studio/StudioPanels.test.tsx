@@ -16,5 +16,7 @@ describe("GatePanel 내보내기 묶음", () => {
   it("빈 묶음이어도 생성기 안내 폴백 문장을 만들지 않는다", () => {
     render(<GatePanel exports={null}>게이트</GatePanel>);
     expect(screen.queryByText(/코드 생성기 연결 후/)).toBeNull();
+    // 문장과 무관하게 — 내보내기 제목 뒤에 아무것도 그리지 않는다(다른 폴백 재삽입 차단)
+    expect(screen.getByRole("heading", { level: 3, name: "내보내기" }).nextSibling).toBeNull();
   });
 });

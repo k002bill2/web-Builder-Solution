@@ -99,11 +99,57 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 
 - **note 3 (테스트 공백, 코드 결함 아님)**: AC-16 "`addReference`/`savePicks`가 resolve하기 **전에는** '적용됨'·status 0"을 직접 재는 단언이 없다. 기존 테스트는 실패·충돌 **뒤** 상태만 본다 → m3-1c처럼 "저장 전 낙관 표시 → 실패면 원복"하는 거짓 성공(스크린리더에는 '적용했습니다'가 이미 읽힘, status 문장은 실패 뒤에도 남음)을 막지 못한다. 현재 코드는 정적으로 저장 뒤에만 표시하므로 FAIL 아님. 권고(Developer 후속, 1건): 지연 `savePicks`(deferred promise) 목으로 "적용" 클릭 직후 `queryByText("적용됨")` null · status 비어 있음 · `aria-busy` 버튼을 단언하고 resolve 뒤 표시를 단언하는 테스트 1개.
 
-## 4. 로드 조건 · 변이 1종
-(진행 중)
+## 4. 로드 조건 · 변이 1종 — PASS
 
-## 5. 바뀐 기존 단언 이전/이후 · RECO-AC-01~17 판정표
-(진행 중)
+- 코드: `CatalogPage.tsx` effect가 `isRec`일 때만 `loadRecoView()`(`recoLoader.ts` = `import("./RecoView")`) · 적용 청크는 RecoView onClick의 `loadRecoApply()`만. 정적 import 0(`git grep` 기준 RecoView·RecoApply·recoApplyFlow를 정적으로 부르는 곳은 로더·타입 import뿐).
+- 테스트: `CatalogPageRecoLoad.test.tsx:23` — 로더 모듈을 감싸 호출 수를 센다(tab=all 0 → "추천 받기" 뒤 1 · 근거 펼치기까지 적용 로더 0 → "이 추천 적용" 뒤 1).
+
+| 변이 | 내용 | 단위 테스트 | 검사기 build | 판정 |
+|---|---|---|---|---|
+| **m4-a 정적 import로 바꾸기**(브리프 지정) | `import RecoViewStatic from ".../RecoView"` + 로더를 `Promise.resolve` 대체 | **FAIL 2/53**(로드 조건 · 청크 실패 재시도) | (미실행) | ✅ 잡힘 |
+| (사각 확인) m4-b 로더 호출 유지 + 정적 side-effect import 추가 | `import "../components/reco/RecoView";` 1줄 | 통과 16/16 — 살아남음 | **exit 1** · `/catalog` 첫 화면 104.23 > 101 · `/catalog (추천)` 104.23 > 101 | ✅ 검사기가 잡음 |
+
+- 해석: 로드 조건 테스트는 "로더 호출 수"를 재므로 m4-b(로더는 그대로 부르면서 모듈을 정적으로도 끌어옴)는 못 잡는다. 이 사각은 SPEC 5절 설계대로 검사기 크기 판정이 메운다 — 두 겹을 함께 돌리는 현재 게이트(`npm run build`에 검사기 포함)에서는 회귀가 통과하지 못한다. 결함 아님(note 5, 정보).
+- 되돌림: 각 변이 뒤 `git checkout -- src/pages/CatalogPage.tsx`, dirty 0. m4-b build가 남긴 `dist/`는 원본으로 다시 build(6절 직전 기록).
+
+## 5. 바뀐 기존 단언 이전/이후 · RECO-AC-01~17 판정표 — PASS with notes
+
+main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-filter=MDR 36e825a6 HEAD -- app`): 테스트 2 · 소스 5. 삭제·이름 바꿈 0. `bundleBudget.test.mjs`·`m2cBaseline.json`은 main과 같음(병합 때 main 값 유지 — 단언 손실 0).
+
+### 5.1 바뀐 기존 단언
+
+| 파일:줄 | 이전(main) | 이후(tip) | 강도 | 근거 |
+|---|---|---|---|---|
+| `pages/CatalogPage.test.tsx:198-210` V2-AC-21 | h1 "추천" · 자리 문구 "브리프 기반 추천은 다음 단계에서 제공됩니다." **있음** · "전체 보기" → h1 카탈로그 + tab만 지움 | h1 "추천" 그대로 · `region "추천 결과"` 안 article ≥ 1 · 자리 문구 **없음** · "전체 보기" 단언 그대로 | **같음 이상**(자리 문구 단언 → 결과 존재 + 자리 문구 부재 2개로 교체, 링크 단언 유지) | RECO-SPEC 7절 "기존 테스트 영향" · RECO-AC-08 — 명세가 지정한 의도된 변경 |
+| `components/catalog/CompareTrayBar.test.tsx:116` 한도 알림 | `notice="…"`(문자열 prop) | `notice={{ text: "…", key: 1 }}`(Announcement) | **같음**(status 텍스트 단언 동일, prop 형태만) | RQ-09 A(같은 문장 재알림 key) |
+
+- 약화 0. 기존 소스 변경 5개(`check-bundle-size.mjs` 시나리오 1행 추가 · `CompareTrayBar` notice 타입 · `ReferenceCard` children 슬롯 · `CompareTrayContext` `runQueued: enqueue` 노출 · `CatalogPage` rec 분기)는 전부 기존 테스트 361 files 통과 상태에서 들어갔다(1절).
+
+### 5.2 RECO-AC 단위 판정표 (1차 = 정적·단위 기준, [V]는 2차 run에서 실화면 확인)
+
+| AC | 내용(요약) | 증거 | 1차 판정 |
+|---|---|---|---|
+| 01 | 노출 후보만 · 총점 내림차순 · 최대 5 | `recommend.test.ts:94-127` · M2-1 | ✅ |
+| 02 | 동점 id 코드 단위 · 셔플 10회 동일 | `:130`·`:145` · M2-1 FAIL | ✅ |
+| 03 | 2회 깊은 동일 · 동결 · 입력 불변 | `:162` | ✅ |
+| 04 | 근거 정확히 3 · 정렬 · 0점 채움 · breakdown 7 | `:184-223` · `CatalogPageReco.test:39`(7항목) | ✅ |
+| 05 | 파생 표 21행 × R-04/R-03 엔진 대조 + 반례 3 | `recommendSectionFit.test.ts` · M2-3 FAIL | ✅ |
+| 06 | 미측정 = unmeasured · 지어낸 숫자 0 | `:261`·`:270` · M2-2 FAIL | ✅ |
+| 07 | external_observed 0 | `:280` 대조 | ✅ |
+| 08 | 업종·목적 없음 → 근거 부족 + 고르기 포커스 [U]+[V] | `CatalogPageReco.test:52` · V2-AC-21 정정 | ✅ [U] · [V] 2차 |
+| 09 | 진입·펼치기·필터 변경 쓰기 0 (T-REC-06) | `:65` 쓰기 5종 0 · picks 불변 | ✅ |
+| 10 | 미리보기 취소 0 · 적용(열 ≤1 + savePicks 1) → 초안 · 되돌리기 깊은 동일 [U]+[V] | `:86`(10행 picks · 되돌리기 picks·columns 깊은 동일) · `:171`(/compare 다녀옴) | ✅ [U] · note 6 · [V] 2차 |
+| 11 | 열 6 꽉 참 비활성 · 열에 있으면 추가 0 · stale 되돌리기 비활성 | `:191`·`:210`·`:249` | ✅ · note 4 |
+| 12 | status 0 신설(트레이 공유) · alert 1 · aria-live 0 · 같은 결과 알림 0 | `:76`·`:236` | ✅ |
+| 13 | 390·1280 넘침 0 · 키보드만 [V] | Developer Ego Lite(`logs/e4-ego-lite.txt`) — QA 미재현 | ⏸ 2차 run(`QA-LIVE-PLAN.md`) |
+| 14 | (a) 로드 조건 (b) 검사기 `/catalog (추천)` ≤ 125 · `/catalog` ≤ 100.90 · 다른 라우트 ±0.03 | `CatalogPageRecoLoad.test` · m4-a FAIL · m4-b 검사기 FAIL · 1.1 표 | ✅ |
+| 15 | 근거 문구 키 표에서만 · hex/px 0 | `recoText.ts` · `noHardcodedStyle.test` 통과(361 files) | ✅ · note 7 |
+| 16 | 저장 resolve 전 "적용됨"·status 0 · reject → alert + 재시도(savePicks만) · 충돌 · 되돌리기 실패 같은 규칙 | 코드 `recoApplyFlow.ts:78-122`·`RecoView.tsx:132-166` · `:123`·`:149`·`:221` · m3-1a FAIL | ✅ (코드) · **note 3**(resolve 전 단언 없음 — m3-1c 생존) |
+| 17 | 공용 청크 증분 표 · ±0.03 · `/studio` 정규화 | 1·1.1절 재현(공통 +0.01 · `/studio` +0.01) | ✅ · note 1 |
+
+- note 4: `CatalogPageReco.test.tsx:254` 카드 고르기 조건 `queryByRole("link", { name: "" })`는 카드 링크가 제목 링크 1개(이름 = 제목, `ReferenceCard.tsx:118`)뿐이라 늘 null → 조건이 공회전해 항상 첫 카드를 고른다. 지금은 첫 카드(gen-medical-1)가 꽉 찬 6열 밖이라 단언이 유효하지만, 순위가 바뀌면 의도와 다른 카드를 볼 수 있다(테스트 견고성, 결함 아님).
+- note 6: AC-10 "초안 패널이 그 레퍼런스 선택을 보임"은 단위에서 저장소 picks 10행으로만 확인 — `/compare` 초안 패널 화면 표시는 단위 단언 없음 → 2차 run 주 흐름 9단계.
+- note 7: `noHardcodedStyle.test`는 hex·px만 검사 — "하드코딩 문장 0"은 자동 가드가 없다. 정적 확인: RecoView·RecoApply 문장은 전부 `recoText` 키 · 예외는 CatalogPage 청크 실패 문장 2개(Developer REPORT 4절에 사유 기록, 키 `reco.error`·`reco.retry`와 같은 문장).
 
 ## 6. 2차 실화면 계획
 `QA-LIVE-PLAN.md` (작성 예정)

@@ -220,3 +220,23 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 - notes 모음: N1 "더 보기" 뒤 포커스 BODY · N2 390 대화상자 시각 순서(적용 위)와 Tab 순서(취소 → 적용) 반대 · N3 근거 부족·결과 적음 전환 시 "0개로/1개로" status(SPEC 3.4 표 vs 3.6-5) · N4 비활성 이유 문구 `aria-describedby` 없음 · D1 부수: "다시 시도" 직후 포커스 BODY.
 - **결함 D1 (Developer 후속 필수)**: `recoLoader.ts`의 `import("./RecoView")`와 적용 청크 로더가 실패 뒤 같은 URL을 다시 import → 브라우저가 캐시된 실패로 즉시 reject. 단위 테스트는 로더 목이라 통과. 재현: 청크 차단 → 실패 → 차단 해제 → "다시 시도" → 새 요청 0. 같은 페이지에서 `?bust=1`을 붙인 import는 200 ok.
 - 마감: ego-browser IndexedDB `design-studio` 삭제(`Storage.clearDataForOrigin` origin `http://localhost:4399` · indexeddb만, 뒤 목록 []) · `task.finish({ keep: [] })` 완료 · preview(PID 95310) 종료 → `lsof -nP -iTCP:4399 -sTCP:LISTEN` **출력 없음(리슨 0)**. 앱·테스트 코드 변경 0 · Codex 미사용 · push 0 · 서브에이전트 0(브라우저 세션 1개를 순서대로 써야 해 병렬 불가).
+
+## 9. R3 — FIX1 재확인 (QA-BRIEF-R3 · tip `3c9e410f`, FIX1 코드 `15334ed5`)
+
+### 9.1 게이트 · 예산 — PASS
+
+fresh(`app/`, 순서대로): typecheck exit 0 · lint exit 0 · test exit 0 **Test Files 361 passed (361) · Tests 3219 passed (3219)** · build exit 0(검사기 통과). 로그 `logs/qa-r3-test.txt` · `logs/qa-r3-build.txt`.
+
+| 시나리오 | Developer FIX1 | QA R3 | main `36e825a6`(분기점, 1.1) | 증분 | 판정 |
+|---|---|---|---|---|---|
+| `/catalog` 첫 / 진입 | 100.76 / 103.10 | **100.76** / 103.10 | 100.04 / 102.38 | +0.72 / +0.72 | 첫 ≤ 100.90 멈춤선 ✅(여유 0.14) · 검사기 101 ✅ — D1b 수용분 +0.30 포함(결정권자 "1") |
+| `/catalog (추천)` 첫 / 진입 | — / 109.53 | 100.76 / **109.53** | — | — | 진입 ≤ 125 ✅ |
+| `/references/:id` | 97.46 / 99.80 | 97.46 / 99.80 | 97.45 / 99.79 | +0.01 / +0.01 | ✅ |
+| `/compare` · `(조정)` | 98.96 / 122.65 | 98.96 / 122.65 | 98.95 / 122.65 | +0.01 / 0 | ✅ |
+| `/profile` · `(3안)` | 99.53 / 119.92 · 122.40 | 99.53 / 119.92 · 122.40 | 99.53 / 119.93 · 122.41 | 0 / −0.01 | ✅ |
+| `/projects` | 99.08 / 109.52 | 99.08 / 109.52 | 99.08 / 109.53 | 0 / −0.01 | ✅ |
+| `/studio` 정규화 | 128.80 | **128.80** | 128.79 | +0.01 | ✅ (멈춤 > 128.82) |
+| `/studio (복원)` 정규화 | 131.78 | **131.78** | 131.77 | +0.01 | ✅ (멈춤 > 131.80) |
+
+- 다른 라우트 main 대비 −0.01~+0.01(±0.03 안). 비교 기준은 이 브랜치의 분기점 `36e825a6`(1.1 실측 재사용). 참고: main은 그 뒤 `520d40b5`(m4a 내보내기, app 4파일)로 진행 — R3에서 재빌드 안 함(이 브랜치 증분 판정과 무관).
+- 청크: `RecoView-Bb50hv-z.js` · `RecoApply-DoOVcK2A.js` · `recoApplyFlow-8Aue5ZeE.js` · `chunkRetry-W0I4Gx5e.js`.

@@ -32,7 +32,7 @@
 # R3(FIX1 재확인) — 브리프 `QA-BRIEF-R3.md` · 대상 tip `3c9e410f`(FIX1 코드 `15334ed5`) · 보고 QA-REPORT 9절
 
 - [x] R0. QA-BRIEF-R3·QA-PROGRESS 커밋
-- [ ] R1. fresh typecheck·lint·test(361/3219)·build · 예산(`/catalog` 100.76 · `/catalog (추천)` · `/studio` 128.80 · 복원 131.78 · 다른 라우트 main 대비)
+- [x] R1. fresh typecheck·lint·test(361/3219)·build · 예산(`/catalog` 100.76 · `/catalog (추천)` · `/studio` 128.80 · 복원 131.78 · 다른 라우트 main 대비)
 - [ ] R2. D1 실화면: 화면 청크 차단→alert→해제→다시 시도→`RecoView-*.js?retry=1`→카드 3·포커스≠BODY·트레이 1개 유지 · 적용 청크 동일→대화상자
 - [ ] R3. 390 #8~11 재측정(폭 override·측정 같은 스크립트, 단계마다 innerWidth=390 기록)
 - [ ] R4. N1·N2·N4 실화면

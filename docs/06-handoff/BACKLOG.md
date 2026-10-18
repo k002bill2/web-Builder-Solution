@@ -85,4 +85,9 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M4A-12 | M4-a-6 Ego L3·QA 5절 | 읽기 전용 두 번째 탭에서 내보내기 = INFRA 실패 + 사유 없는 "다시 시도"(그 탭에선 성공 불가 — 거짓 다시 시도, E-S27 위반 후보). main에도 같은 경로(회귀 아님). 탭 잠금(`tabLockHold`)으로 스냅샷 쓰기 실패 추정 → 읽기 전용 사유 표시 필요 | Medium · UX |
 | B-M4A-13 | M4-a-6 Codex r1 #2 | 저장되지 않은 편집이 있어도 "새로고침한 뒤 다시 시도하세요" — 저장 상태별 안내는 `StudioLayout` 전달 필요(beforeunload 경고가 완화) | Low |
 | B-M4A-14 | M4-a-6 QA 노트 1·3 · REPORT 후속 3 | 계수 래퍼 배선 회귀 가드 없음(변이 M3a 생존) · 생성기 청크 `?retry=N` 실화면 미시험 · 진입 청크 약 0.01 감량 여지(래퍼를 useExportFlow 거부 처리로 접기) | Low · 테스트·예산 |
+| B-M3-01 | M3-1 QA 2차 N3 | RECO-SPEC 3.4 표(근거 부족·결과 적음 = 알림 없음)와 3.6-5(결과가 바뀌면 1회)가 상충 — 구현은 3.6-5를 따름("추천이 0개로/1개로 바뀌었습니다") | Low · SPEC 정정(Designer) |
+| B-M3-02 | M3-1 REPORT E1 | 큐레이션 6개(ref-a~d 등) `purpose: booking` 태그인데 예약 섹션이 없어 예약 브리프에서 섹션 20점 손실 | Low · 큐레이션 데이터 |
+| B-M3-03 | M3-1 R2 · ADR-004 개정 19 | `/catalog` 첫 화면 여유 0.14 — 동적 import 프리로드 래퍼(`__vite__mapDeps` ≈0.07 + 로더 ≈0.03) 설정 변경·첫 화면 청크 분해(공용 셸·트레이·필터) 점검 | Medium · 다음 `/catalog` 기능 전 선행 |
+| B-M3-04 | M3-1 QA 1차 note 5 | 로드 조건 단위 테스트는 로더 호출 수만 잼 — 정적 side-effect import는 검사기(build)만 잡고, 첫 화면 0.54KB 미만 정적 포함은 둘 다 통과 | Low · 테스트 |
+| B-M3-05 | M3-1 FIX2 전제 표 | 비교 트레이·보드·추천 되돌리기 기록이 새로고침에 사라짐(메모리 구현, 영속 범위 밖) — 보드 영속화 여부 결정 | Medium · 제품 결정(저장 범위) |
 | B-RS-19 | RS7 flaky-hunt REPORT 2절 · 정적 조사 | ① 앱: 미리보기 잠금(`StudioLayout.tsx:247-252` `historyKeys.locked`)이 passive effect에서 갱신 — 커밋~effect 사이 수 ms 동안 Ctrl+Z가 편집 되돌리기로 가로채질 수 있는 이론상 창(실사용 영향 미미 추정, 미재현) · layout effect/render 값 이전 검토 ② 미재현 flaky 후보 2건: `CompareDialog.test.tsx:161-170`(shouldAdvanceTime + 7800ms) · `imagePersist.test.ts:93`(waitFor 1000ms 타임아웃 삼킴) | 미정(Jarvis 배정) |

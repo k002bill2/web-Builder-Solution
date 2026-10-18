@@ -1,0 +1,893 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ab17bb7f5985a6401/app
+
+ ❯ src/domain/recommend.test.ts (21 tests | 21 failed) 8ms
+   ❯ parseRecoBrief · hasRecoBrief (3)
+     × 카탈로그 필터 → 정규화(중복 제거 + 코드 단위 정렬 · concept → mood · 동결) 3ms
+     × 없는 필드는 빈 배열 · 업종 없으면 키도 없다 · 입력 불변 0ms
+     × 업종 또는 목적이 있어야 계산한다(타깃·무드만은 근거 부족) 0ms
+   ❯ recommend — 순위 (RECO-AC-01 · T-REC-01) (4)
+     × T-REC-01 병·의원·family·예약 → 정확히 5개 · 총점 내림차순 · 상위 4 = medical 4개 0ms
+     × 후보가 많아도 최대 RECO_LIMIT 0ms
+     × 총점 0 후보는 반환하지 않는다 0ms
+     × 업종·목적 둘 다 없으면 계산하지 않는다 → 동결 빈 배열 0ms
+   ❯ recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) (4)
+     × 동점은 id 코드 단위 오름차순(로캘 아님) 0ms
+     × 입력 배열 순서를 10회 섞어도 결과가 깊은 동일 0ms
+     × brief 배열 순서·중복이 결과를 바꾸지 않는다 0ms
+     × 같은 입력 2회 → 깊은 동일 · 결과 전 단계 동결 · 입력 불변 0ms
+   ❯ recommend — 근거 (RECO-AC-04 · T-REC-03) (3)
+     × 결과마다 근거 정확히 3개 (점수 내림차순, 항목 순) · breakdown 7항목 항목 순 0ms
+     × 반례: 업종만 입력 + 미측정 생성 후보 → 근거 3개 중 2개는 0점 no-input 0ms
+     × 반례: 목적 불일치는 0점 miss로 채운다 0ms
+   ❯ recommend — 항목 점수 (4)
+     × purpose — 교집합 있으면 10, matched = 교집합 코드 순 0ms
+     × mood — 교집합 × 5, 최대 10 · 2개 이상 match · 1개 partial · 0 miss 0ms
+     × audience — 교집합 있으면 15, 없으면 miss 0ms
+     × sections — sales는 k에서 빠진다: [booking, inquiry, sales] k=2, m=1 → partial 10 0ms
+   ❯ recommend — 품질 항목 (RECO-AC-06 · RQ-02 B) (2)
+     × 미측정 후보는 unmeasured · value 키 없음 · 0/0 0ms
+     × 측정 후보는 value = 픽스처 측정값 · 점수는 0/0(순위 밖) 0ms
+   ❯ recommend — 후보 집합 (RECO-AC-07 · T-REC-05) (1)
+     × external_observed 후보는 완전 일치여도 제외된다(대조: internal이면 1위) 0ms
+ ❯ src/domain/recommendSectionFit.test.ts (29 tests | 24 failed) 15ms
+   ❯ RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) (25)
+     × 표는 후보 21개 id를 정확히 가진다 5ms
+     × ref-a — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 1ms
+     × ref-b — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × ref-c — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × ref-d — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × ref-e — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × ref-f — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-beauty-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-beauty-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-beauty-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-cafe-fnb-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-cafe-fnb-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-education-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-education-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-education-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-education-4 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-medical-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-medical-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-medical-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-professional-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-professional-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × gen-professional-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 0ms
+     × 표 전체 = 엔진 파생 결과 (행 값 순서 booking → inquiry · 동결) 1ms
+     × 공허 통과 방지 — booking 충족 행 ≥ 1 · inquiry 충족 행 ≥ 1 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 45 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/recommend.test.ts > parseRecoBrief · hasRecoBrief > 카탈로그 필터 → 정규화(중복 제거 + 코드 단위 정렬 · concept → mood · 동결)
+Error: E1 미구현
+ ❯ parseRecoBrief src/domain/recommend.ts:66:9
+     64| export function parseRecoBrief(filters: Pick<ReferenceQuery, "industry…
+     65|   void filters;
+     66|   throw new Error("E1 미구현");
+       |         ^
+     67| }
+     68|
+ ❯ src/domain/recommend.test.ts:64:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > parseRecoBrief · hasRecoBrief > 없는 필드는 빈 배열 · 업종 없으면 키도 없다 · 입력 불변
+Error: E1 미구현
+ ❯ parseRecoBrief src/domain/recommend.ts:66:9
+     64| export function parseRecoBrief(filters: Pick<ReferenceQuery, "industry…
+     65|   void filters;
+     66|   throw new Error("E1 미구현");
+       |         ^
+     67| }
+     68|
+ ❯ src/domain/recommend.test.ts:79:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > parseRecoBrief · hasRecoBrief > 업종 또는 목적이 있어야 계산한다(타깃·무드만은 근거 부족)
+Error: E1 미구현
+ ❯ hasRecoBrief src/domain/recommend.ts:72:9
+     70| export function hasRecoBrief(brief: RecoBrief): boolean {
+     71|   void brief;
+     72|   throw new Error("E1 미구현");
+       |         ^
+     73| }
+     74|
+ ❯ src/domain/recommend.test.ts:86:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > T-REC-01 병·의원·family·예약 → 정확히 5개 · 총점 내림차순 · 상위 4 = medical 4개
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:95:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > 후보가 많아도 최대 RECO_LIMIT
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:106:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > 총점 0 후보는 반환하지 않는다
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:110:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > 업종·목적 둘 다 없으면 계산하지 않는다 → 동결 빈 배열
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:116:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > 동점은 id 코드 단위 오름차순(로캘 아님)
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:124:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > 입력 배열 순서를 10회 섞어도 결과가 깊은 동일
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:141:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > brief 배열 순서·중복이 결과를 바꾸지 않는다
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:152:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > 같은 입력 2회 → 깊은 동일 · 결과 전 단계 동결 · 입력 불변
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:158:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 근거 (RECO-AC-04 · T-REC-03) > 결과마다 근거 정확히 3개 (점수 내림차순, 항목 순) · breakdown 7항목 항목 순
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:178:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 근거 (RECO-AC-04 · T-REC-03) > 반례: 업종만 입력 + 미측정 생성 후보 → 근거 3개 중 2개는 0점 no-input
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:198:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 근거 (RECO-AC-04 · T-REC-03) > 반례: 목적 불일치는 0점 miss로 채운다
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:209:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 항목 점수 > purpose — 교집합 있으면 10, matched = 교집합 코드 순
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ scoreOf src/domain/recommend.test.ts:221:22
+ ❯ src/domain/recommend.test.ts:227:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 항목 점수 > mood — 교집합 × 5, 최대 10 · 2개 이상 match · 1개 partial · 0 miss
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ scoreOf src/domain/recommend.test.ts:221:22
+ ❯ src/domain/recommend.test.ts:233:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 항목 점수 > audience — 교집합 있으면 15, 없으면 miss
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ scoreOf src/domain/recommend.test.ts:221:22
+ ❯ src/domain/recommend.test.ts:239:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 항목 점수 > sections — sales는 k에서 빠진다: [booking, inquiry, sales] k=2, m=1 → partial 10
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ scoreOf src/domain/recommend.test.ts:221:22
+ ❯ src/domain/recommend.test.ts:245:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 품질 항목 (RECO-AC-06 · RQ-02 B) > 미측정 후보는 unmeasured · value 키 없음 · 0/0
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:255:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 품질 항목 (RECO-AC-06 · RQ-02 B) > 측정 후보는 value = 픽스처 측정값 · 점수는 0/0(순위 밖)
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:266:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/45]⎯
+
+ FAIL  src/domain/recommend.test.ts > recommend — 후보 집합 (RECO-AC-07 · T-REC-05) > external_observed 후보는 완전 일치여도 제외된다(대조: internal이면 1위)
+Error: E1 미구현
+ ❯ recommend src/domain/recommend.ts:80:9
+     78|   void references;
+     79|   void fit;
+     80|   throw new Error("E1 미구현");
+       |         ^
+     81| }
+     82|
+ ❯ src/domain/recommend.test.ts:277:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > 표는 후보 21개 id를 정확히 가진다
+AssertionError: expected [] to deeply equal [ 'gen-beauty-1', …(20) ]
+
+- Expected
++ Received
+
+- [
+-   "gen-beauty-1",
+-   "gen-beauty-2",
+-   "gen-beauty-3",
+-   "gen-cafe-fnb-1",
+-   "gen-cafe-fnb-2",
+-   "gen-education-1",
+-   "gen-education-2",
+-   "gen-education-3",
+-   "gen-education-4",
+-   "gen-medical-1",
+-   "gen-medical-2",
+-   "gen-medical-3",
+-   "gen-professional-1",
+-   "gen-professional-2",
+-   "gen-professional-3",
+-   "ref-a",
+-   "ref-b",
+-   "ref-c",
+-   "ref-d",
+-   "ref-e",
+-   "ref-f",
+- ]
++ []
+
+ ❯ src/domain/recommendSectionFit.test.ts:61:50
+     59|   it("표는 후보 21개 id를 정확히 가진다", () => {
+     60|     expect(allIds).toHaveLength(21);
+     61|     expect(Object.keys(RECO_SECTION_FIT).sort()).toEqual([...allIds].s…
+       |                                                  ^
+     62|   });
+     63|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-a — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: ref-a inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-b — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: ref-b inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-c — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: ref-c inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-d — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: ref-d inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-e — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: ref-e inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-f — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: ref-f inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-beauty-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-beauty-1 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-beauty-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-beauty-2 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-beauty-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-beauty-3 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-cafe-fnb-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-cafe-fnb-1 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-cafe-fnb-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-cafe-fnb-2 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-education-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-education-1 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-education-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-education-2 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-education-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-education-3 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-education-4 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-education-4 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-medical-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-medical-1 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-medical-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-medical-2 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-medical-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-medical-3 booking: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-professional-1 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-professional-1 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-professional-2 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-professional-2 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > gen-professional-3 — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+AssertionError: gen-professional-3 inquiry: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/domain/recommendSectionFit.test.ts:76:80
+     74|     const row = RECO_SECTION_FIT[id] ?? [];
+     75|     for (const purpose of FIT_PURPOSES) {
+     76|       expect(ruleIssues(placements, purpose).length === 0, `${id} ${pu…
+       |                                                                                ^
+     77|     }
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > 표 전체 = 엔진 파생 결과 (행 값 순서 booking → inquiry · 동결)
+AssertionError: expected {} to deeply equal { 'ref-a': [ 'inquiry' ], …(20) }
+
+- Expected
++ Received
+
+- {
+-   "gen-beauty-1": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-beauty-2": [
+-     "inquiry",
+-   ],
+-   "gen-beauty-3": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-cafe-fnb-1": [
+-     "inquiry",
+-   ],
+-   "gen-cafe-fnb-2": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-education-1": [
+-     "inquiry",
+-   ],
+-   "gen-education-2": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-education-3": [
+-     "inquiry",
+-   ],
+-   "gen-education-4": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-medical-1": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-medical-2": [
+-     "inquiry",
+-   ],
+-   "gen-medical-3": [
+-     "booking",
+-     "inquiry",
+-   ],
+-   "gen-professional-1": [
+-     "inquiry",
+-   ],
+-   "gen-professional-2": [
+-     "inquiry",
+-   ],
+-   "gen-professional-3": [
+-     "inquiry",
+-   ],
+-   "ref-a": [
+-     "inquiry",
+-   ],
+-   "ref-b": [
+-     "inquiry",
+-   ],
+-   "ref-c": [
+-     "inquiry",
+-   ],
+-   "ref-d": [
+-     "inquiry",
+-   ],
+-   "ref-e": [
+-     "inquiry",
+-   ],
+-   "ref-f": [
+-     "inquiry",
+-   ],
+- }
++ {}
+
+ ❯ src/domain/recommendSectionFit.test.ts:82:30
+     80|   it("표 전체 = 엔진 파생 결과 (행 값 순서 booking → inquiry · 동결)", () => {
+     81|     const derived = Object.fromEntries(allIds.map((id) => [id, derived…
+     82|     expect(RECO_SECTION_FIT).toEqual(derived);
+       |                              ^
+     83|     expect(Object.isFrozen(RECO_SECTION_FIT)).toBe(true);
+     84|     for (const row of Object.values(RECO_SECTION_FIT)) expect(Object.i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/45]⎯
+
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > 공허 통과 방지 — booking 충족 행 ≥ 1 · inquiry 충족 행 ≥ 1
+AssertionError: expected 0 to be greater than or equal to 1
+ ❯ src/domain/recommendSectionFit.test.ts:89:62
+     87|   it("공허 통과 방지 — booking 충족 행 ≥ 1 · inquiry 충족 행 ≥ 1", () => {
+     88|     const rows = Object.values(RECO_SECTION_FIT);
+     89|     expect(rows.filter((r) => r.includes("booking")).length).toBeGreat…
+       |                                                              ^
+     90|     expect(rows.filter((r) => r.includes("inquiry")).length).toBeGreat…
+     91|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/45]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  45 failed | 5 passed (50)
+   Start at  14:05:00
+   Duration  914ms (environment 65%, transform 16%, setup 15%, import 2%, tests 2%, worker 1%)
+

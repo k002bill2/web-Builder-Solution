@@ -4,6 +4,20 @@
 
 ## 0. 결론
 
+### FIX2 (BRIEF-FIX2, 2026-10-18) — 0번 전제 확인에서 멈춤 (BLOCKED)
+- **결론: 트레이·보드가 새로고침에 사라진다 → 브리프 0번 멈춤 조건. 1~6번(D1b revert · "새로고침" 버튼 · 예산 · Ego) 미착수, 코드 변경 0.** 커밋: c17ecb20 BRIEF-FIX2 · (이 REPORT 커밋).
+- 전제 표 (새로고침 = `location.reload()` 뒤 남는 것, 코드 근거):
+
+| 상태 | 새로고침 뒤 | 근거 |
+|------|------|------|
+| 카탈로그 필터·탭(`?tab=rec` 등) | **유지** — URL 쿼리에서 다시 파싱 | `app/src/pages/CatalogPage.tsx:31-32` `useSearchParams` → `parseCatalogParams` |
+| 비교 트레이 | **사라짐** — 트레이는 보드 저장소를 읽음 | `app/src/pages/CatalogPage.tsx:36` `useCompareTray` → `app/src/features/compare/CompareTrayContext.tsx:14,67` `CompareBoardRepository.getBoard` |
+| 비교 보드(열·선택 행, 추천 적용 결과 포함) | **사라짐** — 메모리 구현, 영속 범위 밖 | `app/src/main.tsx:28` "메모리 구현은 새로고침하면 비어 있다" · `app/src/data/deferredStudio.ts:51` "보드는 영속 범위 밖 — 새로고침마다 빈 보드" (IndexedDB 영속은 `/studio/:id` 프로젝트 진입 entry만 — `deferredStudio.ts` `readEntry`) |
+| 추천 적용 되돌리기 기록 | **사라짐** — 모듈 수준 WeakMap(세션 메모리) | `app/src/components/reco/RecoView.tsx:44,85` `lastApplied` |
+
+- 함의: 화면 청크 실패 alert를 "새로고침"으로 바꾸면 필터는 남지만 **트레이에 담은 레퍼런스·보드 편집·되돌리기 기록은 잃는다**. "입력이 사라지지 않음" 전제가 깨지므로 영환님 결정이 다시 필요하다.
+- 결정 선택지(권고 순): (a) D1b 수용(현 tip 그대로 — "다시 시도"가 `?retry=1`로 실제 재요청, 입력 유지 · `/catalog` 100.76, +0.30) · (b) "새로고침" 안내로 가되 문구에 "비교 트레이는 비워집니다"를 명시(사실 고지 — 문구 길이만큼 예산 +α, 100.50 초과 가능) · (c) 트레이 담김 0일 때만 "새로고침", 1개 이상이면 D1b "다시 시도"(분기 = 예산 둘 다 부담). **권고 (a)**: 입력 보존·실제 복구가 되는 유일한 안이고 초과분 0.30은 멈춤선 100.90·검사기 101 안.
+
 ### FIX1 (BRIEF-FIX1, 2026-10-18) — QA D1 · N1·N2·N4 · 1차 note 3
 - **결론: 기능 5항목 완료·검증, 단 D1b(화면 청크 감싸기)는 예산 결정 대기(BLOCKED).** 커밋: e825fcdb BRIEF · 8e93d64a D1a · b379e0ee D1b · dcebcc52 N1 · d1de5406 N4 · 059909dc N2 · 15334ed5 note 3.
 - **D1a** 적용 청크 2개(RecoApply·recoApplyFlow)를 각각 `retryableImport`(소스에서 청크 파일을 하나만 읽으므로 `Promise.all` 안에서 따로) · 화면 청크 "다시 시도" 포커스 = 결과 영역 · 적용 재시도 재실패 = 새 alert "다시 시도"(say 시점 포커스가 옛 alert 안이면). 배선 가드 `chunkRetryWiring.test` RED(감싼 로더 기대 3 · 실제 0 → 1 failed / 3 passed, `logs/fix1-d1-red.txt`) → GREEN. 브리프 RED 문장 "1회 실패 뒤 재시도 = 다른 URL → 성공"의 증거는 셋의 합: ① 메커니즘 = 기존 `chunkRetry.test`(실패 → `?retry=1` → 성공) ② 배선 = `chunkRetryWiring.test` 로더 3개 ③ 실화면 = Ego `RecoView-*.js?retry=1` 뒤 카드 3. Vitest 소스는 `import("./RecoView")`(`.js` 없음)라 재시도 URL 경로가 폴백으로 가 단위에서 직접 잴 수 없다.

@@ -54,3 +54,13 @@
 - 감량 1회 실측 = D1a 단독 build(`logs/fix1-d1a-build.txt`): `/catalog` 100.48/102.82(+0.02/+0.03) · 추천 진입 109.46 · 다른 라우트 ±0.01 · /studio 128.80 · 복원 131.78. 초과분 +0.29 전부 = 화면 로더 감싸기(chunkRetry 청크). lazy import 감량은 기각(오프라인이면 chunkRetry 자신의 실패가 캐시돼 D1 재발 + 검사기 SCENARIOS 밖 — 쓰기 경로 밖)
 - D1b(별도 커밋, `git revert` 1회로 뺄 수 있음): `/catalog` 100.77/103.11 · 추천 진입 109.47 — 멈춤선 100.90·검사기 101 안, 브리프 +0.05 밖
 - N1·N4·N2 RED 확인 뒤 GREEN(N2 = 클래스 가드 — jsdom 배치 없음, 실배치는 Ego 390) · note 3 = 현재 코드 통과 → m3-1c 변이(저장 전 setApplied·announce) FAIL → 원복 PASS(`logs/fix1-note3-mutant.txt`)
+
+## FIX2 체크리스트 (BRIEF-FIX2)
+- [x] BRIEF-FIX2 커밋 c17ecb20
+- [x] 0. 전제 확인 — 필터 = URL 유지 · 트레이·보드 = 메모리(새로고침 시 빈 보드) · 되돌리기 기록 = WeakMap(소실). REPORT 0절 FIX2 표
+- [ ] 1. D1b revert — BLOCKED: 0번 멈춤 조건(트레이·보드가 새로고침에 사라짐) — 영환님 재결정 필요
+- [ ] 2. 화면 청크 실패 alert "새로고침" — BLOCKED: 0번 멈춤 조건
+- [ ] 3. 예산 ≤ 100.50 — BLOCKED: 0번 멈춤 조건(변경 0 → 현 tip 100.76 그대로)
+- [x] 4. 적용 청크(D1a) 그대로 — 변경 0
+- [ ] 5. fresh 게이트·Ego — BLOCKED: 코드 변경 0이라 미실행(문서만 커밋), preview 미기동
+- [x] 6. REPORT FIX2 절 — 전제 표 · 선택지(권고 a = D1b 수용)

@@ -1,0 +1,22 @@
+=== M2-2 품질 2항목 순위 포함
+-  accessibility: 0,
+-  performance: 0,
++  accessibility: 15,
++  performance: 15,
+-  return reason(item, 0, "match", EMPTY, scores[item]);
++  return reason(item, Math.floor((scores[item] * 15) / 100), "match", EMPTY, scores[item]);
+     × T-REC-01 병·의원·family·예약 → 정확히 5개 · 총점 내림차순 · 동점 id 순 (실측 고정) 5ms
+     × 총점 0 후보는 반환하지 않는다 3ms
+     × 동점은 id 코드 단위 오름차순(로캘 아님) 1ms
+     × 미측정 후보는 unmeasured · value 키 없음 · 0/0 1ms
+     × 측정 후보는 value = 픽스처 측정값 · 점수는 0/0(순위 밖) 0ms
+     × external_observed 후보는 완전 일치여도 제외된다(대조: internal이면 1위) 1ms
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > T-REC-01 병·의원·family·예약 → 정확히 5개 · 총점 내림차순 · 동점 id 순 (실측 고정)
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > 총점 0 후보는 반환하지 않는다
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > 동점은 id 코드 단위 오름차순(로캘 아님)
+ FAIL  src/domain/recommend.test.ts > recommend — 품질 항목 (RECO-AC-06 · RQ-02 B) > 미측정 후보는 unmeasured · value 키 없음 · 0/0
+ FAIL  src/domain/recommend.test.ts > recommend — 품질 항목 (RECO-AC-06 · RQ-02 B) > 측정 후보는 value = 픽스처 측정값 · 점수는 0/0(순위 밖)
+ FAIL  src/domain/recommend.test.ts > recommend — 후보 집합 (RECO-AC-07 · T-REC-05) > external_observed 후보는 완전 일치여도 제외된다(대조: internal이면 1위)
+ Test Files  1 failed | 2 passed (3)
+      Tests  6 failed | 58 passed (64)
+reverted: 0 dirty

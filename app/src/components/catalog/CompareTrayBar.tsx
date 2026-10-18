@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type FocusEvent, type KeyboardEvent } from "react";
 import type { DesignReference } from "../../domain/reference";
+import type { Announcement } from "../compare/DraftPanel";
 import { COMPARE_LIMIT } from "../../features/compare/compareTray";
 import { Button } from "../ds/Button";
 import { Icon } from "../ds/Icon";
@@ -28,7 +29,8 @@ export function CompareTrayBar({
   onOpen,
 }: {
   readonly references: readonly DesignReference[];
-  readonly notice: string | null;
+  /** 페이지 status 1자리(트레이 한도 · 추천 재계산·적용·되돌림 — RECO-SPEC 3.6 RQ-09 A). key가 바뀌면 같은 문장도 다시 읽힌다 */
+  readonly notice: Announcement | null;
   readonly onRemove: (id: string) => void;
   readonly onOpen: () => void;
 }) {
@@ -96,7 +98,9 @@ export function CompareTrayBar({
           <div className="absolute bottom-full left-1/2 mb-2 flex w-80 max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col items-center gap-2">
             <p role="status" className="ds-caption1">
               {notice && (
-                <span className="block rounded-md bg-surface-inverse px-3 py-2 text-on-surface-inverse shadow-4">{notice}</span>
+                <span key={notice.key} className="block rounded-md bg-surface-inverse px-3 py-2 text-on-surface-inverse shadow-4">
+                  {notice.text}
+                </span>
               )}
             </p>
             <div

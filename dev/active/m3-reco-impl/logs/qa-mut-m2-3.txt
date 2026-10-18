@@ -1,0 +1,10 @@
+=== M2-3 파생 표 1행 변경 ref-a INQUIRY→BOTH
+-  "ref-a": INQUIRY,
++  "ref-a": BOTH,
+     × ref-a — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry 3ms
+     × 표 전체 = 엔진 파생 결과 (행 값 순서 booking → inquiry · 동결) 2ms
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > ref-a — booking: R-04 이슈 0 ⇔ 표에 booking · inquiry: R-03 이슈 0 ⇔ 표에 inquiry
+ FAIL  src/domain/recommendSectionFit.test.ts > RECO_SECTION_FIT 엔진 대조 가드 (RECO-AC-05) > 표 전체 = 엔진 파생 결과 (행 값 순서 booking → inquiry · 동결)
+ Test Files  1 failed | 2 passed (3)
+      Tests  2 failed | 62 passed (64)
+reverted: 0 dirty

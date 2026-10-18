@@ -1,0 +1,16 @@
+=== M2-1 동점 규칙 뒤집기
+-    .sort((a, b) => b.total - a.total || byCodeUnit(a.referenceId, b.referenceId));
++    .sort((a, b) => b.total - a.total || byCodeUnit(b.referenceId, a.referenceId));
+     × T-REC-01 병·의원·family·예약 → 정확히 5개 · 총점 내림차순 · 동점 id 순 (실측 고정) 4ms
+     × 총점 0 후보는 반환하지 않는다 1ms
+     × 동점은 id 코드 단위 오름차순(로캘 아님) 1ms
+     × 입력 배열 순서를 10회 섞어도 결과가 깊은 동일 1ms
+     × external_observed 후보는 완전 일치여도 제외된다(대조: internal이면 1위) 1ms
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > T-REC-01 병·의원·family·예약 → 정확히 5개 · 총점 내림차순 · 동점 id 순 (실측 고정)
+ FAIL  src/domain/recommend.test.ts > recommend — 순위 (RECO-AC-01 · T-REC-01) > 총점 0 후보는 반환하지 않는다
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > 동점은 id 코드 단위 오름차순(로캘 아님)
+ FAIL  src/domain/recommend.test.ts > recommend — 동점·결정성 (RECO-AC-02 · AC-03 · T-REC-02) > 입력 배열 순서를 10회 섞어도 결과가 깊은 동일
+ FAIL  src/domain/recommend.test.ts > recommend — 후보 집합 (RECO-AC-07 · T-REC-05) > external_observed 후보는 완전 일치여도 제외된다(대조: internal이면 1위)
+ Test Files  1 failed | 2 passed (3)
+      Tests  5 failed | 59 passed (64)
+reverted: 0 dirty

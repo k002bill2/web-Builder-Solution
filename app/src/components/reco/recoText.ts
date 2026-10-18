@@ -1,0 +1,63 @@
+/**
+ * 추천 화면 문구 키 표 (RECO-SPEC 2.4 · 3.4 · AC-15) — 화면은 이 표의 키로만 문장을 만든다(하드코딩 문장 0).
+ * 값은 임시 문안 — 최종 문안은 Hemingway 후속(키·자리표시 `{label}`·`{points}`·`{max}`·`{value}`·`{n}`·`{title}`·`{rank}`는 그대로 둔다).
+ */
+export const RECO_TEXT: Readonly<Record<string, string>> = Object.freeze({
+  "reco.reason.industry.match": "업종 일치 {label}",
+  "reco.reason.industry.miss": "업종 다름",
+  "reco.reason.industry.no-input": "업종 미입력",
+  "reco.reason.purpose.match": "목적 일치 {label}",
+  "reco.reason.purpose.miss": "목적 다름",
+  "reco.reason.purpose.no-input": "목적 미입력",
+  "reco.reason.mood.match": "콘셉트 일치 {label}",
+  "reco.reason.mood.partial": "콘셉트 일부 일치 {label}",
+  "reco.reason.mood.miss": "콘셉트 다름",
+  "reco.reason.mood.no-input": "콘셉트 미입력",
+  "reco.reason.sections.match": "필수 섹션 충족 {label}",
+  "reco.reason.sections.partial": "필수 섹션 일부 충족 {label}",
+  "reco.reason.sections.miss": "필수 섹션 부족",
+  "reco.reason.sections.no-input": "필수 섹션 판정 목적 없음",
+  "reco.reason.audience.match": "타깃 일치 {label}",
+  "reco.reason.audience.miss": "타깃 다름",
+  "reco.reason.audience.no-input": "타깃 미입력",
+  "reco.reason.accessibility.match": "접근성 {value}(순위 미반영)",
+  "reco.reason.accessibility.unmeasured": "접근성 미측정",
+  "reco.reason.performance.match": "성능 {value}(순위 미반영)",
+  "reco.reason.performance.unmeasured": "성능 미측정",
+  "reco.item.points": "{points}/{max}",
+  "reco.brief.summary": "{label} 기준 추천",
+  "reco.region.label": "추천 결과",
+  "reco.rank": "{rank}위",
+  "reco.total": "{points}점",
+  "reco.reasons.toggle": "근거 펼치기",
+  "reco.reasons.label": "추천 근거",
+  "reco.more": "추천 {n}개 더 보기",
+  "reco.few": "조건에 맞는 추천이 {n}개뿐입니다.",
+  "reco.empty.noBrief": "업종이나 목적을 고르면 추천을 계산합니다.",
+  "reco.empty.pickIndustry": "업종 고르기",
+  "reco.empty.pickPurpose": "목적 고르기",
+  "reco.error": "추천을 불러오지 못했습니다.",
+  "reco.retry": "다시 시도",
+  "reco.status.updated": "추천이 {n}개로 바뀌었습니다.",
+  "reco.status.applied": "{title} 추천을 적용했습니다.",
+  "reco.status.undone": "{title} 추천 적용을 되돌렸습니다.",
+  "reco.apply": "이 추천 적용",
+  "reco.apply.pending": "적용 중…",
+  "reco.apply.done": "적용됨",
+  "reco.apply.error": "추천을 적용하지 못했습니다.",
+  "reco.apply.conflict": "보드가 바뀌었습니다. 미리보기를 다시 열어 주세요.",
+  "reco.apply.preview.title": "{title} 적용",
+  "reco.apply.preview.body": "{title}을(를) 비교 보드에 담고 {n}개 항목을 이 레퍼런스로 고릅니다.",
+  "reco.apply.preview.keep": "색·글꼴 직접 지정은 그대로 둡니다. 적용 뒤 되돌릴 수 있습니다.",
+  "reco.apply.preview.new": "새로 고름",
+  "reco.apply.preview.confirm": "적용",
+  "reco.apply.preview.cancel": "취소",
+  "reco.undo": "되돌리기",
+  "reco.undo.error": "되돌리지 못했습니다.",
+  "reco.undo.stale": "적용 뒤 보드가 바뀌어 되돌릴 수 없습니다.",
+});
+
+/** 키 → 문장. 자리표시는 `{name}` — 없는 키는 키 그대로(누락이 화면에 드러나게) */
+export function recoText(key: string, params: Readonly<Record<string, string | number>> = {}): string {
+  return (RECO_TEXT[key] ?? key).replace(/\{(\w+)\}/g, (whole, name: string) => String(params[name] ?? whole));
+}

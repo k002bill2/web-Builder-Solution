@@ -1,0 +1,8 @@
+=== m3-1c 저장 전 낙관 표시 + 실패 시 앞 기록 복원
++    const prev = applied;
++    setApplied({ referenceId: id, before: plan.before, added: false, revision: plan.revision });
++    announce(recoText("reco.status.applied", { title: titleOf(id) }));
++    if (outcome.kind !== "applied") setApplied(prev);
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+reverted: 0 dirty

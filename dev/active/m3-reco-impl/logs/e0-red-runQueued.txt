@@ -1,0 +1,55 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m3-reco-impl/app
+
+ ❯ src/features/compare/trayRunQueued.test.tsx (2 tests | 2 failed) 120ms
+   ❯ 트레이 통로 runQueued (RECO-SPEC 3.3 C2 · RQ-11) (2)
+     × 요청을 트레이 큐 순서대로 실행하고, 끝난 보드를 트레이에 반영한다 65ms
+     × 요청이 실패해도 큐는 이어지고 트레이는 저장소 보드로 다시 맞춘다 — 결과 판정은 호출자 몫 53ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/compare/trayRunQueued.test.tsx > 트레이 통로 runQueued (RECO-SPEC 3.3 C2 · RQ-11) > 요청을 트레이 큐 순서대로 실행하고, 끝난 보드를 트레이에 반영한다
+TypeError: hook.result.current.runQueued is not a function
+ ❯ src/features/compare/trayRunQueued.test.tsx:22:33
+     20|     await act(async () => {
+     21|       hook.result.current.add("ref-b");
+     22|       await hook.result.current.runQueued(async () => {
+       |                                 ^
+     23|         order.push(`run:${(await repository.getBoard()).board.columns.…
+     24|         return (await repository.addReference("ref-c")).board;
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/compare/trayRunQueued.test.tsx:20:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/compare/trayRunQueued.test.tsx > 트레이 통로 runQueued (RECO-SPEC 3.3 C2 · RQ-11) > 요청이 실패해도 큐는 이어지고 트레이는 저장소 보드로 다시 맞춘다 — 결과 판정은 호출자 몫
+TypeError: hook.result.current.runQueued is not a function
+ ❯ src/features/compare/trayRunQueued.test.tsx:35:33
+     33|     await waitFor(() => expect(hook.result.current.loaded).toBe(true));
+     34|     await act(async () => {
+     35|       await hook.result.current.runQueued(() => Promise.reject(new Err…
+       |                                 ^
+     36|     });
+     37|     expect(hook.result.current.tray).toEqual(["ref-a"]);
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:890:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ src/features/compare/trayRunQueued.test.tsx:34:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  13:54:51
+   Duration  842ms (environment 58%, tests 16%, transform 14%, setup 9%, import 3%, worker 1%)
+

@@ -120,9 +120,9 @@ M4     Security(AppSec) · QA(릴리스 게이트) · Codex(diff 리뷰) → Jar
 | # | 작업 | 담당 | 완료 조건 |
 |---|---|---|---|
 | 3.1 | 선택 3모드 UX·편집 화면 설계(빈/로딩/오류/경고 상태) | Designer | 화면 설계 + 수용 기준 |
-| 3.2 | 추천 점수 API(규칙 기반, 근거) | Developer A+B | T-REC |
+| 3.2 | 추천 점수 API(규칙 기반, 근거) | Developer A+B | T-REC · **2026-10-18 브라우저 단독 `domain/recommend.ts` reco-v1(RECO-SPEC r1)** |
 | 3.3 | 템플릿 선택·스타일 조합(요소 picks → 프로필) UI | Developer C | E2E-S2, S3 |
-| 3.4 | 추천 모드 UI(승인 후 적용) | Developer C | E2E-S4 |
+| 3.4 | 추천 모드 UI(승인 후 적용) | Developer C | E2E-S4 · **2026-10-18 `tab=rec` · 적용→`/compare` 초안→되돌리기 · QA 종합 PASS with notes** |
 | 3.5 | 섹션 편집·테마 스왑·3뷰포트·자동저장·스냅샷 | Developer C | E2E-S5~S7 |
 | 3.6 | 마이크로카피 | Hemingway | 카피 시트 |
 | 3.7 | 독립 검증 | QA | QA PASS |

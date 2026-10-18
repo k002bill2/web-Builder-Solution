@@ -1,0 +1,11 @@
+{ space: 44 }
+width 1280
+E4 blocked {"alert":"추천을 불러오지 못했습니다.다시 시도","cards":0,"url":"?industry=medical&purpose=booking&tab=rec"}
+E4 focus right after retry {"tag":"SECTION","id":"catalog-results"}
+E4 after retry {"cards":3,"alert":0,"focus":"catalog-results","reco":["/assets/RecoView-Bb50hv-z.js","/assets/RecoView-Bb50hv-z.js?retry=1"],"overflow":false}
+390 width 390
+N1 focus {"text":"뷰티 · 밝은 그리드형","card":4,"cards":5}
+N2 390 dialog {"buttons":[{"t":"취소","top":581,"left":25},{"t":"적용","top":629,"left":25}],"focus":"취소","dialogW":375,"overflow":false}
+N2 390 after Tab "적용"
+N2 1280 dialog {"buttons":[{"t":"취소","top":622,"left":740},{"t":"적용","top":622,"left":806}],"focus":"취소","dialogW":512,"overflow":false}
+

@@ -1,0 +1,444 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m3-reco-impl/app
+
+ ❯ src/pages/CatalogReco.test.tsx (9 tests | 1 failed) 1003ms
+   ❯ 승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16) (4)
+     × Codex r1 P2: A 적용 뒤 B 적용이 실패해도 A의 되돌리기 기록은 남고, 되돌리면 적용 전과 깊은 동일 102ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/CatalogReco.test.tsx > 승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16) > Codex r1 P2: A 적용 뒤 B 적용이 실패해도 A의 되돌리기 기록은 남고, 되돌리면 적용 전과 깊은 동일
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "되돌리기"
+
+Here are the accessible roles:
+
+  img:
+
+  Name "의료 · 신뢰 텍스트형 썸네일 (자체 렌더 플레이스홀더)":
+  [36m<div[39m
+    [33maria-label[39m=[32m"의료 · 신뢰 텍스트형 썸네일 (자체 렌더 플레이스홀더)"[39m
+    [33mclass[39m=[32m"relative flex aspect-video flex-col gap-1.5 rounded-lg bg-background-alternative px-3.5 py-3 sm:aspect-[4/3]"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "의료 · 신뢰 텍스트형":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ds-body2 font-semibold text-label-normal"[39m
+    [33mid[39m=[32m"gen-medical-1-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "의료 · 신뢰 텍스트형":
+  [36m<a[39m
+    [33mclass[39m=[32m"line-clamp-2 rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/references/gen-medical-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 mt-0.5 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption2 text-label-alternative"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption2 mt-1 text-label-alternative tabular-nums"[39m
+  [36m/>[39m
+
+  --------------------------------------------------img:
+
+  Name "대표 색상 #A13D2D · #FBEEEA · #2D1C18":
+  [36m<span[39m
+    [33maria-label[39m=[32m"대표 색상 #A13D2D · #FBEEEA · #2D1C18"[39m
+    [33mclass[39m=[32m"inline-flex gap-1"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "의료 · 신뢰 텍스트형 저장":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm transition-colors duration-(--duration-fast) ease-standard hover:bg-fill-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring) text-label-alternative hover:text-label-normal"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "의료 · 신뢰 텍스트형 비교 중, 비교에서 빼기":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm transition-colors duration-(--duration-fast) ease-standard hover:bg-fill-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring) text-primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-label flex items-center gap-2 text-label-normal tabular-nums"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "근거 펼치기":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"gen-medical-1-reasons"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"ds-caption1 self-start rounded-xs text-primary-text hover:underline focus-visible:shadow-(--focus-ring) focus-visible:outline-none"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "이 추천 적용":
+  [36m<button[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 w-full"[39m
+    [33mdata-reco-focus[39m=[32m"apply:gen-medical-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<article[39m
+  [33maria-labelledby[39m=[32m"gen-medical-1-title"[39m
+  [33mclass[39m=[32m"flex flex-col gap-2"[39m
+[36m>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"의료 · 신뢰 텍스트형 썸네일 (자체 렌더 플레이스홀더)"[39m
+    [33mclass[39m=[32m"relative flex aspect-video flex-col gap-1.5 rounded-lg bg-background-alternative px-3.5 py-3 sm:aspect-[4/3]"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex h-1.25 w-full justify-between"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"h-1.25 w-7 rounded-[--spacing(0.5)]"[39m
+        [33mstyle[39m=[32m"background-color: rgb(45, 28, 24);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"h-1.25 w-12 rounded-[--spacing(0.5)] bg-line-normal"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-1 items-end rounded-[--spacing(1.5)] p-2.5"[39m
+      [33mstyle[39m=[32m"background-color: rgb(161, 61, 45);"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"h-2 w-[44%] rounded-[--spacing(0.5)] opacity-90"[39m
+        [33mstyle[39m=[32m"background-color: rgb(251, 238, 234);"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex h-5.5 gap-1.5"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex-1 rounded-xs border border-line-alternative bg-surface-elevated"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex-1 rounded-xs border border-line-alternative bg-surface-elevated"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"flex-1 rounded-xs border border-line-alternative bg-surface-elevated"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"sr-only"[39m
+    [36m>[39m
+      [0m라이선스: [0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-accent-green bg-accent-green-bg h-5 px-1.5 rounded-xs text-caption2"[39m
+    [36m>[39m
+      [0m자체 제작[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex items-center gap-1 whitespace-nowrap font-semibold leading-none text-label-neutral bg-fill-strong h-5 px-1.5 rounded-xs text-caption2"[39m
+    [36m>[39m
+      [0m생성 조합[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m>[39m
+    [36m<h3[39m
+      [33mclass[39m=[32m"ds-body2 font-semibold text-label-normal"[39m
+      [33mid[39m=[32m"gen-medical-1-title"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"line-clamp-2 rounded-xs hover:text-primary focus-visible:shadow-(--focus-ring) focus-visible:outline-none"[39m
+        [33mdata-discover[39m=[32m"true"[39m
+        [33mhref[39m=[32m"/references/gen-medical-1"[39m
+      [36m>[39m
+        [0m의료 · 신뢰 텍스트형[0m
+      [36m</a>[39m
+    [36m</h3>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 mt-0.5 text-label-alternative"[39m
+    [36m>[39m
+      [0m의료[0m
+      [0m · [0m
+      [0m텍스트 히어로[0m
+      [0m · 모션 [0m
+      [0m낮음[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption2 text-label-alternative"[39m
+    [36m>[39m
+      [0m신뢰 · 깔끔한 · 반응형 지원[0m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption2 mt-1 text-label-alternative tabular-nums"[39m
+    [36m>[39m
+      [0m접근성·성능 미측정[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between gap-2"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33maria-label[39m=[32m"대표 색상 #A13D2D · #FBEEEA · #2D1C18"[39m
+      [33mclass[39m=[32m"inline-flex gap-1"[39m
+      [33mrole[39m=[32m"img"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"size-3 rounded-full border border-line-alternative"[39m
+        [33mstyle[39m=[32m"background-color: rgb(161, 61, 45);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"size-3 rounded-full border border-line-alternative"[39m
+        [33mstyle[39m=[32m"background-color: rgb(251, 238, 234);"[39m
+      [36m/>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"size-3 rounded-full border border-line-alternative"[39m
+        [33mstyle[39m=[32m"background-color: rgb(45, 28, 24);"[39m
+      [36m/>[39m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"inline-flex gap-1"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm transition-colors duration-(--duration-fast) ease-standard hover:bg-fill-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring) text-label-alternative hover:text-label-normal"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-5 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/bookmark.svg\");"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m의료 · 신뢰 텍스트형 저장[0m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex size-8 flex-none cursor-pointer items-center justify-center rounded-sm transition-colors duration-(--duration-fast) ease-standard hover:bg-fill-normal focus-visible:outline-none focus-visible:shadow-(--focus-ring) text-primary"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-5 "[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/check.svg\");"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m의료 · 신뢰 텍스트형 비교 중, 비교에서 빼기[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"mt-2 flex flex-col gap-2 border-t border-line-alternative pt-2"[39m
+  [36m>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-label flex items-center gap-2 text-label-normal tabular-nums"[39m
+    [36m>[39m
+      [36m<span>[39m
+        [0m1위[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-primary-text"[39m
+      [36m>[39m
+        [0m60점[0m
+      [36m</span>[39m
+    [36m</p>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"ds-caption1 text-label-alternative"[39m
+    [36m>[39m
+      [0m필수 섹션 충족 예약 · 업종 일치 의료 · 타깃 일치 가족[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33maria-controls[39m=[32m"gen-medical-1-reasons"[39m
+      [33maria-expanded[39m=[32m"false"[39m
+      [33mclass[39m=[32m"ds-caption1 self-start rounded-xs text-primary-text hover:underline focus-visible:shadow-(--focus-ring) focus-visible:outline-none"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m근거 펼치기[0m
+    [36m</button>[39m
+    [36m<ul[39m
+      [33maria-label[39m=[32m"추천 근거"[39m
+      [33mclass[39m=[32m"ds-caption1 flex flex-col gap-0.5 text-label-alternative"[39m
+      [33mhidden[39m=[32m""[39m
+      [33mid[39m=[32m"gen-medical-1-reasons"[39m
+    [36m>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m업종 일치 의료[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m15/15[0m
+        [36m</span>[39m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m목적 일치 예약[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m10/10[0m
+        [36m</span>[39m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m콘셉트 미입력[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m0/10[0m
+        [36m</span>[39m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m필수 섹션 충족 예약[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m20/20[0m
+        [36m</span>[39m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m타깃 일치 가족[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m15/15[0m
+        [36m</span>[39m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m접근성 미측정[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m0/0[0m
+        [36m</span>[39m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mclass[39m=[32m"flex justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"min-w-0 break-words"[39m
+        [36m>[39m
+          [0m성능 미측정[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex-none tabular-nums"[39m
+        [36m>[39m
+          [0m0/0[0m
+        [36m</span>[39m
+      [36m</li>[39m
+    [36m</ul>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col gap-1"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 border-transparent bg-primary text-on-primary enabled:hover:bg-primary-hover disabled:bg-fill-strong disabled:text-label-disable h-8 px-3 rounded-sm text-caption1 w-full"[39m
+        [33mdata-reco-focus[39m=[32m"apply:gen-medical-1"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m이 추천 적용[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</article>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/CatalogReco.test.tsx:163:38
+    161|     await userEvent.click(within(await screen.findByRole("dialog")).ge…
+    162|     expect(await screen.findByRole("alert")).toHaveTextContent("추천을 적용…
+    163|     await userEvent.click(within(a!).getByRole("button", { name: "되돌리기…
+       |                                      ^
+    164|     await waitFor(async () => {
+    165|       const reverted = (await repo.getBoard()).board;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  14:31:06
+   Duration  2.93s (tests 35%, transform 31%, environment 21%, import 9%, setup 4%)
+

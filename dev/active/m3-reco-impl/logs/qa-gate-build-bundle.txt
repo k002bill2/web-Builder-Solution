@@ -1,0 +1,81 @@
+[bundle] 공통 JS (gzip, 참고): 89.10KB
+[bundle] /catalog 첫 화면 합계: 100.46KB / 예산 101KB · 진입 직후 자동 로드 포함: 102.79KB / 예산 125KB
+[bundle] /catalog (추천) 첫 화면 합계: 100.46KB / 예산 101KB · 진입 직후 자동 로드 포함: 109.07KB / 예산 125KB
+[bundle]   /catalog (추천) 조작 뒤 src/components/reco/RecoApply.tsx: +1.02KB (2개 파일, 예산 판정 밖)
+[bundle]   /catalog (추천) 조작 뒤 src/components/reco/recoApplyFlow.ts: +1.01KB (2개 파일, 예산 판정 밖)
+[bundle] /references/:id 첫 화면 합계: 97.46KB / 예산 100KB · 진입 직후 자동 로드 포함: 99.80KB / 예산 125KB
+[bundle] /compare 첫 화면 합계: 98.96KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.67KB / 예산 125KB
+[bundle]   /compare 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.79KB (4개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryBoardConfirm.ts: +2.41KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/profileAdjustments.ts: +1.65KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/data/memoryProfileAdjust.ts: +19.39KB (4개 파일, 예산 판정 밖)
+[bundle]   /compare 조작 뒤 src/domain/boardInput.ts: +17.29KB (3개 파일, 예산 판정 밖)
+[bundle] /compare (조정 있음) 첫 화면 합계: 98.96KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.67KB / 예산 125KB
+[bundle]   /compare (조정 있음) 조작 뒤 src/features/compare/carryOverPanel.tsx: +2.79KB (4개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryBoardConfirm.ts: +2.41KB (3개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/profileAdjustments.ts: +1.65KB (2개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +19.39KB (4개 파일, 예산 판정 밖)
+[bundle]   /compare (조정 있음) 조작 뒤 src/domain/boardInput.ts: +17.29KB (3개 파일, 예산 판정 밖)
+[bundle] /profile 첫 화면 합계: 99.53KB / 예산 100KB · 진입 직후 자동 로드 포함: 119.94KB / 예산 125KB
+[bundle]   /profile 조작 뒤 src/data/memoryProfileAdjust.ts: +18.34KB (3개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryGenerate.ts: +5.69KB (3개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/data/memoryProjectRepository.ts: +2.44KB (1개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/features/profile/CompareDialog.tsx: +22.77KB (5개 파일, 예산 판정 밖)
+[bundle]   /profile 조작 뒤 src/features/profile/RestartDialog.tsx: +6.99KB (3개 파일, 예산 판정 밖)
+[bundle] /profile (3안 있음) 첫 화면 합계: 99.53KB / 예산 100KB · 진입 직후 자동 로드 포함: 122.41KB / 예산 125KB
+[bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryProfileAdjust.ts: +18.34KB (3개 파일, 예산 판정 밖)
+[bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryGenerate.ts: +5.69KB (3개 파일, 예산 판정 밖)
+[bundle]   /profile (3안 있음) 조작 뒤 src/data/memoryProjectRepository.ts: +2.44KB (1개 파일, 예산 판정 밖)
+[bundle]   /profile (3안 있음) 조작 뒤 src/features/profile/CompareDialog.tsx: +22.77KB (5개 파일, 예산 판정 밖)
+[bundle]   /profile (3안 있음) 조작 뒤 src/features/profile/RestartDialog.tsx: +6.99KB (3개 파일, 예산 판정 밖)
+[bundle] /projects 첫 화면 합계: 99.09KB / 예산 100KB · 진입 직후 자동 로드 포함: 109.54KB / 예산 125KB
+[bundle]   /projects 조작 뒤 src/features/projects/pendingRetry.ts: +7.62KB (6개 파일, 예산 판정 밖)
+[bundle] /studio/:projectId 첫 화면 합계: 91.33KB / 예산 100KB · 진입 직후 자동 로드 포함: 130.11KB / 예산 130.5KB
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/docEngine.ts: +3.85KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/VariantOptions.tsx: +1.10KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.43KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/exportFlow.ts: +3.43KB (4개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ExportAfter.tsx: +1.79KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/png/pngCapture.ts: +14.74KB (5개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/components/studio/ImageSlotPanel.tsx: +4.88KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 조작 뒤 src/features/studio/images/ingest/index.ts: +3.06KB (3개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId 해시 정규화 진입 128.80KB · 기준선 128.79KB + 0.03KB (멈춤 > 128.82KB) — raw 130.11KB는 참고(해시 이름 흔들림 포함)
+[bundle] /studio/:projectId (저장 데이터 복원 진입) 첫 화면 합계: 91.33KB / 예산 100KB · 진입 직후 자동 로드 포함: 133.14KB / 예산 134KB
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/docEngine.ts: +3.85KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/AddSectionDialog.tsx: +1.17KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/VariantOptions.tsx: +1.10KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/ContactOwnerNote.tsx: +0.43KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/exportFlow.ts: +2.42KB (3개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/ExportAfter.tsx: +1.79KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/png/pngCapture.ts: +13.73KB (4개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/components/studio/ImageSlotPanel.tsx: +3.88KB (1개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 조작 뒤 src/features/studio/images/ingest/index.ts: +2.50KB (2개 파일, 예산 판정 밖)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.78KB · 기준선 131.77KB + 0.03KB (멈춤 > 131.80KB) — raw 133.14KB는 참고(해시 이름 흔들림 포함)
+[bundle] 렌더 문서(render.html) JS 합계: 84.29KB / 예산 90KB · CSS 합계: 8.89KB / 예산 30KB
+[bundle]   렌더 문서 중 앱과 공유: 없음 (합 0.00KB, 양쪽에 다 센다)
+[bundle] preload 가드: preload 목록 19개 청크 · index.html modulepreload 1개 · polyfill 검사 — 통과
+[bundle] 썸네일 thumbs/ref-a.svg 53.10KB · gzip 12.12KB (판정 밖)
+[bundle] 썸네일 thumbs/ref-b.svg 50.00KB · gzip 11.26KB (판정 밖)
+[bundle] 썸네일 thumbs/ref-c.svg 50.09KB · gzip 11.54KB (판정 밖)
+[bundle] 썸네일 thumbs/ref-d.svg 49.85KB · gzip 11.31KB (판정 밖)
+[bundle] 썸네일 thumbs/ref-e.svg 49.22KB · gzip 11.15KB (판정 밖)
+[bundle] 썸네일 thumbs/ref-f.svg 50.76KB · gzip 11.45KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-beauty-1.svg 49.46KB · gzip 11.55KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-beauty-2.svg 49.99KB · gzip 11.46KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-beauty-3.svg 51.07KB · gzip 11.76KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-cafe-fnb-1.svg 51.75KB · gzip 11.64KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-cafe-fnb-2.svg 51.20KB · gzip 11.81KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-education-1.svg 50.42KB · gzip 11.58KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-education-2.svg 51.10KB · gzip 11.87KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-education-3.svg 51.35KB · gzip 11.68KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-education-4.svg 49.46KB · gzip 11.61KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-medical-1.svg 49.93KB · gzip 11.67KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-medical-2.svg 51.65KB · gzip 11.70KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-medical-3.svg 50.12KB · gzip 11.64KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-professional-1.svg 52.00KB · gzip 11.80KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-professional-2.svg 52.50KB · gzip 11.83KB (판정 밖)
+[bundle] 썸네일 thumbs/gen-professional-3.svg 50.99KB · gzip 11.68KB (판정 밖)
+[bundle] 썸네일 21장 · 버전 86342b48 · 가드 통과
+EXIT 0
+EXIT 0

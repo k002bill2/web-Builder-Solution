@@ -1,0 +1,32 @@
+N1 cards ["apply:gen-medical-1","apply:gen-medical-3","apply:gen-beauty-3","apply:gen-education-4","apply:ref-c"] focus {"innerWidth":1280,"tag":"A","text":"교육 · 활기찬 센터형","href":"/references/gen-education-4","inTitle":"gen-education-4-title"}
+N4 added ["동네 치과 클리닉 비교 추가","부티크 법률사무소 비교 추가","모던 카페 브랜드 비교 추가","로컬 베이커리 비교 추가","프리미엄 헤어살롱 비교 추가","필라테스 스튜디오 비교 추가"]
+N4 {
+ "innerWidth": 1280,
+ "url": "/catalog?industry=medical&tab=rec",
+ "tray": "비교 보드 6 / 6동네 ",
+ "btns": [
+  {
+   "id": "apply:gen-medical-1",
+   "disabled": "true",
+   "describedby": "gen-medical-1-limit",
+   "descText": "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.",
+   "descHidden": false
+  },
+  {
+   "id": "apply:gen-medical-2",
+   "disabled": "true",
+   "describedby": "gen-medical-2-limit",
+   "descText": "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.",
+   "descHidden": false
+  },
+  {
+   "id": "apply:gen-medical-3",
+   "disabled": "true",
+   "describedby": "gen-medical-3-limit",
+   "descText": "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.",
+   "descHidden": false
+  }
+ ]
+}
+N4 AX [{"name":"이 추천 적용","description":"비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.","disabled":true},{"name":"이 추천 적용","description":"비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.","disabled":true},{"name":"이 추천 적용","description":"비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요.","disabled":true}]
+

@@ -20,6 +20,11 @@ interface CompareTrayValue {
   readonly takeReleasedNotices: () => readonly string[];
   /** 진행 중인 트레이 변경(추가·빼기)이 모두 끝날 때 — 보드 화면은 그 뒤에 조회한다 (Codex R1) */
   readonly whenIdle: () => Promise<unknown>;
+  /**
+   * 추천 적용 통로(RECO-SPEC 3.3 C2 · RQ-11 A) — 요청을 트레이 큐에 넣고 그 차례가 끝나면 resolve한다. 결과 보드는 트레이에 반영된다.
+   * 실패는 큐가 삼키고 저장소 보드로 다시 맞춘다 — 성공·실패 판정은 요청 안에서 호출자가 한다(공용 청크 증분 최소, 본문은 rec 청크)
+   */
+  readonly runQueued: (request: () => Promise<CompareBoard>) => Promise<unknown>;
 }
 
 const CompareTrayContext = createContext<CompareTrayValue | null>(null);
@@ -119,8 +124,8 @@ export function CompareTrayProvider({
   const tray = useMemo<CompareTray>(() => (trayKey ? trayKey.split("\n") : []), [trayKey]);
   const whenIdle = useCallback(() => queue.current, []);
   const value = useMemo(
-    () => ({ tray, board, add, remove, repository, loaded, sync, takeReleasedNotices, whenIdle }),
-    [tray, board, add, remove, repository, loaded, sync, takeReleasedNotices, whenIdle],
+    () => ({ tray, board, add, remove, repository, loaded, sync, takeReleasedNotices, whenIdle, runQueued: enqueue }),
+    [tray, board, add, remove, repository, loaded, sync, takeReleasedNotices, whenIdle, enqueue],
   );
   return <CompareTrayContext.Provider value={value}>{children}</CompareTrayContext.Provider>;
 }

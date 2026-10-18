@@ -1,12 +1,14 @@
-import { useId, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { CatalogHero } from "../components/catalog/CatalogHero";
 import { CatalogToolbar } from "../components/catalog/CatalogToolbar";
 import { CompareTrayBar } from "../components/catalog/CompareTrayBar";
 import { FilterRail } from "../components/catalog/FilterRail";
 import { ReferenceCard } from "../components/catalog/ReferenceCard";
+import type { Announcement } from "../components/compare/DraftPanel";
 import { LICENSE_LABEL } from "../components/catalog/SourceTags";
 import { CATALOG_RESULTS_ID } from "../components/layout/SkipLinks";
+import { loadRecoView } from "../components/reco/recoLoader";
 import {
   clearRailFilters,
   parseCatalogParams,
@@ -33,7 +35,10 @@ export function CatalogPage() {
   const { saved, toggle: toggleSaved } = useSavedReferences();
   const { tray, add, remove } = useCompareTray();
   const trayReferences = useTrayReferences(tray);
-  const [notice, setNotice] = useState<string | null>(null);
+  /** 페이지 status 1자리 — 트레이 한도 알림 + 추천 알림 공유(RECO-SPEC 3.6 RQ-09 A). key로 같은 문장도 다시 읽힌다 */
+  const [notice, setAnnouncement] = useState<Announcement | null>(null);
+  const noticeKey = useRef(0);
+  const setNotice = useCallback((text: string | null) => setAnnouncement(text === null ? null : { text, key: (noticeKey.current += 1) }), []);
   const counts = useFacetCounts(state.filters, items, state.tab === "saved" ? saved : undefined);
   const selectionCount = railSelectionCount(state.filters);
   const railId = useId();
@@ -42,7 +47,21 @@ export function CatalogPage() {
 
   const update = (patch: Partial<CatalogState>) => setSearchParams(toCatalogParams({ ...state, ...patch }));
   const savedItems = items.filter((r) => saved.has(r.id));
-  const visible = state.tab === "saved" ? savedItems : state.tab === "rec" ? [] : items;
+  const isRec = state.tab === "rec";
+  const visible = state.tab === "saved" ? savedItems : isRec ? [] : items;
+  /** 추천 화면 청크 — `tab=rec`일 때만 받는다(RECO-AC-14a). undefined = 받는 중(스켈레톤) · null = 실패(결과 영역 alert + 다시 시도) */
+  const [RecoView, setRecoView] = useState<(typeof import("../components/reco/RecoView"))["default"] | null>();
+  useEffect(() => {
+    if (!isRec || RecoView !== undefined) return;
+    let live = true;
+    loadRecoView().then(
+      (m) => live && setRecoView(() => m.default),
+      () => live && setRecoView(null),
+    );
+    return () => {
+      live = false;
+    };
+  }, [isRec, RecoView]);
 
   const toggleCompare = (id: string) => {
     if (tray.includes(id)) {
@@ -67,7 +86,10 @@ export function CatalogPage() {
         <CatalogHero
           title={hero.title}
           subtitle={loaded ? hero.subtitle : undefined}
-          onRecommend={() => update({ tab: "rec" })}
+          onRecommend={() => {
+            update({ tab: "rec" });
+            document.getElementById(CATALOG_RESULTS_ID)?.focus();
+          }}
         />
         <CatalogToolbar
           industry={state.filters.industry}
@@ -100,17 +122,49 @@ export function CatalogPage() {
             }}
             onReset={() => update({ filters: clearRailFilters(state.filters) })}
           />
-          <section id={CATALOG_RESULTS_ID} tabIndex={-1} aria-label="레퍼런스 목록" className="min-w-0 focus:outline-none">
-            {state.tab === "rec" ? (
-              <div className="py-16 text-center">
-                <p className="ds-body2 text-label-alternative">브리프 기반 추천은 다음 단계에서 제공됩니다.</p>
+          <section id={CATALOG_RESULTS_ID} tabIndex={-1} aria-label={isRec ? "추천 결과" : "레퍼런스 목록"} className="min-w-0 focus:outline-none">
+            {isRec ? (
+              <>
                 <Link
                   to={{ search: toCatalogParams({ ...state, tab: "all" }).toString() }}
-                  className="ds-label mt-2 inline-block text-primary-text hover:underline"
+                  className="ds-label mb-3 inline-block text-primary-text hover:underline"
                 >
                   전체 보기
                 </Link>
-              </div>
+                {RecoView ? (
+                  <RecoView
+                    filters={state.filters}
+                    saved={saved}
+                    onToggleSave={toggleSaved}
+                    onToggleCompare={toggleCompare}
+                    announce={setNotice}
+                    openRail={() => setRailOpen(true)}
+                    known={trayReferences}
+                  />
+                ) : RecoView === null ? (
+                  // 청크 실패 문구 = 키 reco.error·reco.retry(키 표는 그 청크 안이라 첫 화면에는 문장만 — RECO-SPEC 3.4 오류)
+                  <div role="alert" className="flex items-center gap-2 py-8">
+                    <p className="ds-body3 text-status-negative-text">추천을 불러오지 못했습니다.</p>
+                    <button
+                      type="button"
+                      className="ds-label text-primary-text hover:underline"
+                      onClick={() => {
+                        // 버튼이 사라져도 포커스가 BODY로 가지 않게 결과 영역에 둔다(SPEC 3.6 · QA D1 부수)
+                        document.getElementById(CATALOG_RESULTS_ID)?.focus();
+                        setRecoView(undefined);
+                      }}
+                    >
+                      다시 시도
+                    </button>
+                  </div>
+                ) : (
+                  <div aria-busy="true" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {[0, 1, 2].map((n) => (
+                      <div key={n} className="aspect-4/3 animate-pulse rounded-lg bg-fill-normal" />
+                    ))}
+                  </div>
+                )}
+              </>
             ) : loaded && visible.length === 0 ? (
               <div className="py-16 text-center">
                 <p className="ds-body1 text-label-normal">조건에 맞는 레퍼런스가 없습니다</p>

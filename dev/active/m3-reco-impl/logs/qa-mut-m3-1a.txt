@@ -1,0 +1,9 @@
+=== m3-1a 적용 성공을 저장 전에 표시(실패해도 유지)
++    setApplied({ referenceId: id, before: plan.before, added: false, revision: plan.revision });
++    announce(recoText("reco.status.applied", { title: titleOf(id) }));
+     × RECO-AC-16: 선택 저장 실패면 '적용됨' 0 · alert 1 + 다시 시도 → 재시도는 선택 저장만 58ms
+     × Codex r1 P2: A 적용 뒤 B 적용이 실패해도 A의 되돌리기 기록은 남고, 되돌리면 적용 전과 깊은 동일 112ms
+     × RECO-AC-16: 미리보기 뒤 보드가 바뀌면 적용은 충돌 alert + 쓰기 0(열 추가·선택 저장) 55ms
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 failed | 13 passed (16)
+reverted: 0 dirty

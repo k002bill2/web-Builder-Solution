@@ -4,7 +4,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { ConfirmResult, CoreIo, DiscardResult, SaveCore } from "../../features/studio/save/saveCore";
-import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/saveStatusText";
+import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/save/discardText";
 import { DISCARD_TIMEOUT_ALERT } from "../../features/studio/save/alertKeys";
 import SaveActions from "./SaveActions";
 

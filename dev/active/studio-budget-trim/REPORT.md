@@ -64,8 +64,10 @@ base `601471ff` · 판정 = 해시 정규화 gzip(check-bundle-size.mjs) · 기�
 - RS8: PngSave `onAnnounce` · StudioToolbar `sticky` · saveCore `view().reason`
 - 청크 경계: facade `gateCheck`(0.07 — 청크 전체가 경계 비용) · 복원 4청크(imageStore·imageRecord·ladder·imageRestore)
 
-## 2. 감량 (항목별)
-(진행 중)
+## 2. 감량 (항목별 — 정규화 KB, 전 시나리오 diff = `e0-scenarios.mjs` vs `e0-base.txt`)
+| # | 항목 | /studio | 복원 | 다른 라우트·렌더 | 커밋 |
+|---|---|---:|---:|---|---|
+| T1 | 폐기 대화상자 전용 문구 `DISCARD_TIMEOUT_TEXT`를 진입 모듈 saveStatusText → `save/discardText`(DiscardDialog만 import = SaveActions 조작 뒤 청크). 문구 바이트 동일 · 새 import() 0 | 128.82 → 128.80 | 131.81 → 131.78 | 0 | (T1) |
 
 ## 3. 새 실측
 (진행 중)

@@ -1,5 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/saveStatusText";
+import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/save/discardText";
 import { DISCARD_TIMEOUT_ALERT } from "../../features/studio/save/alertKeys";
 import { Button } from "../ds/Button";
 

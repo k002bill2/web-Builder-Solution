@@ -24,8 +24,7 @@ export const SAVE_RECOVERED_TEXT = "다시 저장했습니다";
 export const SAVE_SLOW_TAIL = " · 브라우저 응답이 늦습니다";
 /** LV-1 `T_hang` alert 1회(키 `SAVE_HANG_ALERT` · INTEGRATE-6 3절) */
 export const SAVE_HANG_TEXT = "브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다";
-/** LV-2 discard 시간 초과(키 `DISCARD_TIMEOUT_ALERT` · INTEGRATE-6 3절·8.3) — 폐기 대화상자(조작 뒤)가 쓴다 */
-export const DISCARD_TIMEOUT_TEXT = "버리지 못했습니다 — 변경은 그대로 있습니다";
+/** LV-2 discard 시간 초과 문구는 폐기 대화상자 전용 — save/discardText(조작 뒤 청크) */
 
 /** 판정 출처(INTEGRATE-6 8.1) — 코어 `view()`(inflight·dirty) + 마지막 저장 결과 reason(포트 `mode()`·결과). 저장 성공이면 reason 없음 */
 export interface SaveSource {

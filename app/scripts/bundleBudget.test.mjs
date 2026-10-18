@@ -152,8 +152,8 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
     expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 130.10, "/studio/:projectId (저장 데이터 복원 진입)": 133.13 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId", "/studio/:projectId (저장 데이터 복원 진입)"]);
     // ADR-004 개정 16 — 판정은 해시 정규화 기준선(앱 93f8111 실측)
-    // 개정 17 배분 RS6-L4 실측 갱신(129.11 · 132.09) → RS7-A 도달 0 정리 실측 하향(128.66 · 131.64) → RS8-UX-FIX 실측 상향(128.70 · 131.68) → 개정 18 M4-a-2 실측 상향(128.71 · 131.69) → 개정 18 M4-a-6 실측 상향(128.79 · 131.77) → 개정 20 M4-b 기준선(base 631190c7 실측 128.80 · 131.78 — 판정 128.83 · 131.81)
-    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 128.80, "/studio/:projectId (저장 데이터 복원 진입)": 131.78 });
+    // 개정 17 배분 RS6-L4 실측 갱신(129.11 · 132.09) → RS7-A 도달 0 정리 실측 하향(128.66 · 131.64) → RS8-UX-FIX 실측 상향(128.70 · 131.68) → 개정 18 M4-a-2 실측 상향(128.71 · 131.69) → 개정 18 M4-a-6 실측 상향(128.79 · 131.77) → 개정 20 M4-b 기준선(base 631190c7 실측 128.80 · 131.78 — 판정 128.83 · 131.81) → 개정 21 BUDGET-TRIM-1 실측 하향(128.76 · 131.75)
+    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 128.76, "/studio/:projectId (저장 데이터 복원 진입)": 131.75 });
   });
 });
 

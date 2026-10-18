@@ -3,7 +3,9 @@
  * 문구 원문 = UX-5 2.3(★ = 기존 문구 재사용).
  */
 import { describe, expect, it } from "vitest";
-import { DISCARD_TIMEOUT_TEXT, SAVE_HANG_TEXT, SAVE_SLOW_TAIL, saveAnnouncement, saveStatusText } from "./saveStatusText";
+import * as saveStatusTextModule from "./saveStatusText";
+import { SAVE_HANG_TEXT, SAVE_SLOW_TAIL, saveAnnouncement, saveStatusText } from "./saveStatusText";
+import { DISCARD_TIMEOUT_TEXT } from "./save/discardText";
 import { reasonText } from "./save/reasonText";
 
 const NOW = 1_000_000;
@@ -54,5 +56,9 @@ describe("RS6-L4 CP4 · LV-1 slow 진입 알림(I6 3절·8.4)", () => {
   it("문구 원문(UX-5 · I6 3절) — discard 시간 초과 · hang", () => {
     expect(DISCARD_TIMEOUT_TEXT).toBe("버리지 못했습니다 — 변경은 그대로 있습니다");
     expect(SAVE_HANG_TEXT).toBe("브라우저가 저장에 응답하지 않습니다 — 이 탭을 닫으면 확인되지 않은 변경이 사라질 수 있습니다");
+  });
+
+  it("진입 모듈(편집기 청크)은 폐기 대화상자 전용 문구를 갖지 않는다 — 조작 뒤 청크 save/discardText(BUDGET-TRIM-1)", () => {
+    expect(saveStatusTextModule).not.toHaveProperty("DISCARD_TIMEOUT_TEXT");
   });
 });

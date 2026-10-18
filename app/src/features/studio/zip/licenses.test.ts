@@ -75,7 +75,7 @@ describe("LICENSES.md (EXP-AC-10)", () => {
     }
   });
 
-  it("F-14 대상 문자열 0 — brand.name · apfs(대소문자 무시) · --apfs- (글꼴 있음·없음 두 분기)", () => {
+  it("F-14 대상 문자열 0 — brand.name · 이전 브랜드 4글자(대소문자 무시) · 이전 토큰 접두어 (글꼴 있음·없음 두 분기)", () => {
     const legacy = ["a", "p", "f", "s"].join("");
     for (const input of [INPUT, { ...INPUT, family: undefined, fonts: [], images: [], lost: 1 }]) {
       const md = licensesMarkdown(input).toLowerCase();

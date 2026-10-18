@@ -13,7 +13,7 @@
 - [x] 8. §6 LICENSES.md 항목
 - [x] 9. §7 설계 질문 RZQ (사용자 질의 분리)
 - [x] 10. Codex adversarial 1회 반영
-- [ ] 11. 마감 — git status 빈 값, push 0
+- [x] 11. 마감 — git status 빈 값, push 0
 
 ## 로그
 - 2026-10-18 시작. 서브에이전트 분할: 문서 1개 단일 작성이라 불필요.
@@ -21,3 +21,4 @@
 - 미확인 2건 해소(e930363f) · 조언자 지적 반영(faf7dd43): 킷 정규식 숫자 허용 · site.json.images 크기 · body 상속값 전부(line-height) · SSR 대조=실제 산출 파일 · CI 부재 [사실] → RZQ-10~12.
 - Codex adversarial-review 1회 완료(--scope branch --base a1c404a0): needs-attention · P1 2 · P2 2 → 전부 반영(0494cec6, SPEC 8.1 기록). 추가 라운드 없음(BRIEF 1회 규칙).
 - 서브에이전트: 0개(문서 1개 단일 작성 — 분할 불필요).
+- 마감: untracked 0 확인 · push 0 · 앱 코드 변경 0(`git diff --stat a1c404a0 -- app` 빈 값).

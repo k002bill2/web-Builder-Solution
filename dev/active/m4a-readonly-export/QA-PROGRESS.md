@@ -2,8 +2,8 @@
 
 대상 tip `ef73f7e3` / base `36e825a6`. 규칙: 브라우저·Codex 금지, 앱·테스트 커밋 금지, 변이는 매번 되돌림.
 
-- [ ] 0. QA-BRIEF·QA-PROGRESS 커밋
-- [ ] 1. fresh typecheck·lint·test·build · 예산 /studio·복원 · StudioLayout assets/infra- 참조 0
+- [x] 0. QA-BRIEF·QA-PROGRESS 커밋
+- [x] 1. fresh typecheck·lint·test·build · 예산 /studio·복원 · StudioLayout assets/infra- 참조 0
 - [ ] 2. 판별 정확성 + 변이 3종(상수 1글자·판별 제거·INFRA 확대) FAIL 확인
 - [ ] 3. 거짓 성공 0 · 거짓 사유 0 · 쓰기 탭 회귀 0
 - [ ] 4. restartFlow.ts:51 불일치 검토·권고

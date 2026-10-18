@@ -4,7 +4,11 @@
 
 ## 판정: (진행 중)
 
-## 1. fresh 게이트·번들 재현 — 진행 중
+## 1. fresh 게이트·번들 재현 — PASS
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npm test -- --run` exit 0 — **372 파일 / 3356 통과** · `npm run build` exit 0 (가드: 썸네일·React zip 진입 0 통과)
+- build 출력: `/studio/:projectId 해시 정규화 진입 128.76KB`(멈춤 > 128.83) · `(저장 데이터 복원 진입) 해시 정규화 진입 131.75KB`(멈춤 > 131.81) · raw 130.07 · 133.10 — REPORT 수치 재현
+- `node e0-scenarios.mjs app/dist` 출력 ↔ `e0-after.txt` **diff 0**. ↔ `e0-base.txt` 차이는 /studio·복원 진입 직후 2줄뿐(128.82→128.76 · 131.81→131.75) → 다른 라우트 첫 화면·진입 직후·render.html JS 증분 0
+- dist 확인: T1 문구는 `assets/SaveActions-*.js`(조작 뒤 청크)에 1회 — DiscardDialog와 같은 청크(3절 청크 실패 경로 근거) · T2 폴백 문장 `생성기 연결 후(M2)`는 dist 전체 0건
 
 ## 2. T2 "도달 불가" 주장 — PASS
 - `GatePanel` 참조 전수(`grep -rn GatePanel app/src`, 테스트 제외): 정의 `StudioPanels.tsx:138` · import·사용 `StudioLayout.tsx:27·374` 1곳뿐. `StudioPanels`를 import하는 다른 모듈은 `useThemeSwap.tsx:8`(`ThemeDialogSlot`만). render.html 진입·lazy import 경로에 GatePanel 없음
@@ -17,4 +21,7 @@
 - 테스트 단언: `SaveActions.test.tsx:80-87`(timeout → alert에 문구·`data-alert-key`·포커스 '취소'·reload 0) · `saveStatusText.source.test.ts:57`(문구 리터럴 `toBe`) · `:61-63`(진입 모듈에 키 없음)
 - 청크 실패 경로: `discardText`는 `DiscardDialog`만 정적 import하고 `DiscardDialog`는 `SaveActions`(조작 뒤 lazy 청크)가 정적 import → 문구는 대화상자와 같은 청크(또는 같은 정적 그래프)에 실림. 대화상자가 그려졌다면 문구 모듈도 이미 로드됨 → "대화상자는 떴는데 문구만 없는" 새 경로 0 (빌드 manifest 확인은 1절에서)
 ## 4. 변이 — 진행 중
-## 5. 단언 약화·skip — 진행 중
+## 5. 단언 약화·skip — PASS (0건)
+- `git diff 601471ff..5c532a08 --stat -- app`: 앱 7파일, 테스트 3파일. 테스트 diff의 `-` 줄은 import 2줄뿐 — 삭제된 `expect` 0 · `.skip/.only/.todo/xit/xdescribe` 추가 0. 저장소 전체 `app/src`의 skip·only·todo 0건
+- base `601471ff`에 폴백 문장을 단언하던 테스트 없음(`git grep "생성기 연결 후(M2)" 601471ff -- app/src` = 소스 1줄) → T2로 지워진 단언 0
+- 기존 T1 단언(`SaveActions.test.tsx:84` 문구 · `:85` 키 · `saveStatusText.source.test.ts:57` 리터럴)은 import 경로만 바뀌고 그대로

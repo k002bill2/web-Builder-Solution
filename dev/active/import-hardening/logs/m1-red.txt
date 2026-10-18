@@ -1,0 +1,16 @@
+     × png: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0 4ms
+     × webp: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0 1ms
+     × jpeg: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0 0ms
+     × 헤더가 사다리와 1px 다름(641×480 · 640×481) = IM-6 · 디코드 0 — 디코더가 선언 치수를 내도 2ms
+     × 헤더를 못 읽음(서명만 · IHDR 없음) = IM-6 · 디코드 0 1ms
+     × 여러 변형본 중 마지막 하나만 폭탄 = IM-6 · 디코드 0(앞 변형본도 디코드 전에 거절) 2ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/features/projectFile/checkImages.test.ts > SEC M-1 압축 폭탄 — 디코드 전 실제 헤더 = 사다리 (업로드 V5와 같은 파서) > png: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0
+ FAIL  src/features/projectFile/checkImages.test.ts > SEC M-1 압축 폭탄 — 디코드 전 실제 헤더 = 사다리 (업로드 V5와 같은 파서) > webp: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0
+ FAIL  src/features/projectFile/checkImages.test.ts > SEC M-1 압축 폭탄 — 디코드 전 실제 헤더 = 사다리 (업로드 V5와 같은 파서) > jpeg: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0
+AssertionError: expected 1 to be +0 // Object.is equality
+ FAIL  src/features/projectFile/checkImages.test.ts > SEC M-1 압축 폭탄 — 디코드 전 실제 헤더 = 사다리 (업로드 V5와 같은 파서) > 헤더가 사다리와 1px 다름(641×480 · 640×481) = IM-6 · 디코드 0 — 디코더가 선언 치수를 내도
+AssertionError: expected { ok: true, images: [ { …(6) } ] } to deeply equal { ok: false, code: 'IM-6', …(1) }
+AssertionError: expected 1 to be +0 // Object.is equality
+AssertionError: expected { ok: true, images: [ { …(6) } ] } to deeply equal { ok: false, code: 'IM-6', …(1) }
+      Tests  6 failed | 17 passed (23)

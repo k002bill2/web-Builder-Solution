@@ -61,12 +61,48 @@ describe("⑤ 규칙 = IM-6", () => {
   });
   it("디코드 치수 ≠ 사다리(폭·높이) = IM-6 · bitmap 닫음", async () => {
     const image = fileImage("a", 500, 300);
-    const calls = await rejected([{ ...image, variants: { 500: toBase64(fakeImageBytes("png", 499, 300)) } }], "IM-6");
-    await rejected([{ ...image, variants: { 500: toBase64(fakeImageBytes("png", 500, 301)) } }], "IM-6");
+    // 헤더 = 사다리(500×300)인데 디코더가 다른 치수를 낸다 — 헤더 검사를 지나 디코드 경로까지 간다
+    const header = { width: 500, height: 300 };
+    const calls = await rejected([{ ...image, variants: { 500: toBase64(fakeImageBytes("png", 499, 300, "", header)) } }], "IM-6");
+    expect(calls.decoded).toBe(1);
     expect(calls.closed).toBe(calls.decoded);
+    const taller = await rejected([{ ...image, variants: { 500: toBase64(fakeImageBytes("png", 500, 301, "", header)) } }], "IM-6");
+    expect([taller.decoded, taller.closed]).toEqual([1, 1]);
   });
   it("인코더가 다른 형식을 내면(webp 미지원 → png) = IM-6", async () => {
     await rejected([fileImage("a", 500, 300, "webp")], "IM-6", { encodeType: "image/png" });
+  });
+});
+
+describe("SEC M-1 압축 폭탄 — 디코드 전 실제 헤더 = 사다리 (업로드 V5와 같은 파서)", () => {
+  /** 선언 640×480 · 변형본 1개(640) — 실제 바이트만 바꾼다. bytes는 실제 길이(선언 합 검사 통과) */
+  const declared640 = (bytes: Uint8Array) => ({ ...fileImage("a", 640, 480), bytes: bytes.length, variants: { 640: toBase64(bytes) } });
+  for (const format of ["png", "webp", "jpeg"] as const) {
+    it(`${format}: 선언 640×480 · 실제 헤더 16384×16384 = IM-6 · 디코드 0`, async () => {
+      const bomb = fakeImageBytes(format, 16_384, 16_384);
+      expect(readImageHeader(format, bomb)).toMatchObject({ width: 16_384, height: 16_384 });
+      const calls = await rejected([{ ...declared640(bomb), format }], "IM-6");
+      expect(calls.decoded).toBe(0);
+    });
+  }
+  it("헤더가 사다리와 1px 다름(641×480 · 640×481) = IM-6 · 디코드 0 — 디코더가 선언 치수를 내도", async () => {
+    for (const header of [{ width: 641, height: 480 }, { width: 640, height: 481 }]) {
+      const calls = await rejected([declared640(fakeImageBytes("png", 640, 480, "", header))], "IM-6");
+      expect(calls.decoded).toBe(0);
+    }
+  });
+  it("헤더를 못 읽음(서명만 · IHDR 없음) = IM-6 · 디코드 0", async () => {
+    const signatureOnly = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0, 0, 0, 0, 0, ...new TextEncoder().encode("640x480")]);
+    expect(readImageHeader("png", signatureOnly)).toBeNull();
+    const calls = await rejected([declared640(signatureOnly)], "IM-6");
+    expect(calls.decoded).toBe(0);
+  });
+  it("여러 변형본 중 마지막 하나만 폭탄 = IM-6 · 디코드 0(앞 변형본도 디코드 전에 거절)", async () => {
+    const image = fileImage("a", 1500, 900);
+    const bomb = fakeImageBytes("png", 1500, 900, "", { width: 16_384, height: 16_384 });
+    const good = Object.values(image.variants).slice(0, 2).map((b64) => atob(b64).length);
+    const calls = await rejected([{ ...image, bytes: good[0]! + good[1]! + bomb.length, variants: { ...image.variants, 1500: toBase64(bomb) } }], "IM-6");
+    expect(calls.decoded).toBe(0);
   });
 });
 

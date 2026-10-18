@@ -1,0 +1,20 @@
+# E4 Ego Lite (ego-browser v2.1.0, TaskSpace 41) — preview `vite preview --port 4399 --strictPort` (dist = 4e4e8623 build)
+# 이동은 앱 안 클릭·history.back만(메모리 저장소 — 새로고침·주소 입력 0, 첫 진입 goto /catalog 1회)
+
+## 1280 (Emulation.setDeviceMetricsOverride 1280×900)
+- 업종 칩 "의료" 클릭 + 레일 "콘텐츠 목적 > 예약" 클릭 → URL ?industry=medical&purpose=booking → "추천 받기" → URL …&tab=rec, 포커스 = 섹션 "추천 결과"
+- 카드 3: 1위 45점 의료·신뢰 텍스트형 / 2위 45점 의료·깔끔한 그리드형 / 3위 30점 뷰티·세련된 센터형 · "추천 2개 더 보기" · overflow 0 · role=status 1
+- 근거 펼치기(키보드 Enter): aria-expanded=true, 7항목 [업종 일치 의료 15/15, 목적 일치 예약 10/10, 콘셉트 미입력 0/10, 필수 섹션 충족 예약 20/20, 타깃 미입력 0/15, 접근성 미측정 0/0, 성능 미측정 0/0]
+- Tab → "이 추천 적용" Enter → dialog: 10행 "새로 고름 → 제목", 포커스 "취소", dialog overflow 0
+- Tab → "적용" Enter → status "의료 · 신뢰 텍스트형 추천을 적용했습니다." · 포커스 "되돌리기" · alert 0
+- Enter(되돌리기) → status "…추천 적용을 되돌렸습니다." · 포커스 "이 추천 적용" · 트레이 "비교 보드 0 / 6"(적용 전과 동일)
+- 다시 적용 → 트레이 "비교 보드 열기" 클릭 → /compare: 열 A 의료·신뢰 텍스트형, 프로필 초안 패널 10행 전부 "A · 의료 · 신뢰 텍스트형" (E2E-S4 초안 반영)
+
+## 390 (390×844 mobile) — history.back으로 /catalog?…&tab=rec 복귀
+- 목록 overflow 0 · 카드 넘침 0 · 근거 펼침 뒤 overflow 0
+- 2번째 카드 키보드: 근거 펼치기 → Tab → 적용 → dialog left 0 right 390 overflow 0 포커스 "취소", 차이 목록 "Hero · 의료 · 신뢰 텍스트형 → 의료 · 깔끔한 그리드형"(지금 값 → 새 값)
+- 적용 → 포커스 "되돌리기" overflow 0 → 되돌리기 → 포커스 "이 추천 적용", 트레이 1 / 6(적용 전 상태)
+- 스크린샷: /tmp/m3reco-ego/{1280-rec,1280-dialog,1280-compare,390-dialog,390-applied}.png (저장소 밖)
+
+## 종료
+- pkill vite preview 4399 → `lsof -nP -iTCP:4399 -sTCP:LISTEN | wc -l` = 0

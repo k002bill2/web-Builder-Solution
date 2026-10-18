@@ -1,7 +1,7 @@
 /**
  * M3-1 추천 화면 (RECO-SPEC 3절 · RECO-AC-08~13·16) — `/catalog?tab=rec`. 후보는 생성 레퍼런스 포함 21개(실제 카드 로더).
  */
-import { screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, onTestFinished, vi } from "vitest";
 import type { CompareBoardRepository } from "../data/compareBoardRepository";
@@ -166,6 +166,84 @@ describe("승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16)", () => {
       expect(reverted.picks).toEqual(before.picks);
       expect(reverted.columns).toEqual(before.columns);
     });
+  });
+
+  it("되돌리기는 세션 안 이동 뒤에도 남는다: 적용 → /compare 초안 → 뒤로 → 되돌리기 = 적용 전과 깊은 동일 (BRIEF E4 · SPEC 3.3)", async () => {
+    const { repo } = spiedBoard();
+    const before = (await repo.getBoard()).board;
+    const { router } = renderApp(T_REC_01, undefined, repo);
+    const first = (await cards())[0]!;
+    await userEvent.click(within(first).getByRole("button", { name: "이 추천 적용" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "적용" }));
+    await within(first).findByRole("button", { name: "되돌리기" });
+    await userEvent.click(screen.getByRole("button", { name: "비교 보드 열기" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "비교 보드" })).toBeInTheDocument();
+    router.navigate(-1);
+    const again = (await cards())[0]!;
+    await userEvent.click(await within(again).findByRole("button", { name: "되돌리기" }));
+    await waitFor(async () => {
+      const reverted = (await repo.getBoard()).board;
+      expect(reverted.picks).toEqual(before.picks);
+      expect(reverted.columns).toEqual(before.columns);
+    });
+  });
+
+  it("RECO-AC-11: 이미 열에 있는 (생성) 레퍼런스면 열 추가 0 · 선택 저장 1", async () => {
+    const probe = spiedBoard();
+    renderApp(T_REC_01, undefined, probe.repo);
+    const topId = within((await cards())[0]!).getAllByRole("link")[0]!.getAttribute("href")!.split("/").at(-1)!;
+    cleanup();
+    // 생성 레퍼런스는 저장소 addReference가 비교 카탈로그를 넓힐 때 담긴다(memoryCompareBoardRepository 규칙) — 실제 경로로 미리 담는다
+    const { repo, spies } = spiedBoard();
+    await repo.addReference(topId);
+    spies.addReference.mockClear();
+    renderApp(T_REC_01, undefined, repo);
+    const first = (await cards())[0]!;
+    await userEvent.click(within(first).getByRole("button", { name: "이 추천 적용" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "적용" }));
+    expect(await within(first).findByText("적용됨")).toBeInTheDocument();
+    expect(spies.addReference).not.toHaveBeenCalled();
+    expect(spies.savePicks).toHaveBeenCalledTimes(1);
+    expect(new Set(Object.values((await repo.getBoard()).board.picks))).toEqual(new Set([topId]));
+  });
+
+  it("RECO-AC-11: 적용 뒤 보드가 바뀌면(다른 카드 비교 추가) 되돌리기 비활성 + 이유", async () => {
+    renderApp(T_REC_01);
+    const [first, second] = await cards();
+    await userEvent.click(within(first!).getByRole("button", { name: "이 추천 적용" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "적용" }));
+    const undo = await within(first!).findByRole("button", { name: "되돌리기" });
+    await userEvent.click(within(second!).getByRole("button", { name: /비교 추가$/ }));
+    await waitFor(() => expect(undo).toHaveAttribute("aria-disabled", "true"));
+    expect(within(first!).getByText("적용 뒤 보드가 바뀌어 되돌릴 수 없습니다.")).toBeInTheDocument();
+  });
+
+  it("RECO-AC-16: 미리보기 뒤 보드가 바뀌면 적용은 충돌 alert + 쓰기 0(열 추가·선택 저장)", async () => {
+    const { repo, spies } = spiedBoard();
+    renderApp(T_REC_01, undefined, repo);
+    const first = (await cards())[0]!;
+    await userEvent.click(within(first).getByRole("button", { name: "이 추천 적용" }));
+    const dialog = await screen.findByRole("dialog");
+    await repo.addReference("ref-b");
+    spies.addReference.mockClear();
+    await userEvent.click(within(dialog).getByRole("button", { name: "적용" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("보드가 바뀌었습니다");
+    expect(spies.addReference).not.toHaveBeenCalled();
+    expect(spies.savePicks).not.toHaveBeenCalled();
+    expect(within(first).queryByText("적용됨")).toBeNull();
+  });
+
+  it("RECO-AC-12: 결과가 바뀌는 필터 변경은 status 1회, 결과가 같은 필터 변경은 알림 0", async () => {
+    renderApp(T_REC_01);
+    await cards();
+    const status = screen.getByRole("status");
+    expect(status).toBeEmptyDOMElement();
+    const layout = within(screen.getByRole("group", { name: "레이아웃" }));
+    await userEvent.click(layout.getAllByRole("checkbox")[0]!);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(status).toBeEmptyDOMElement();
+    await userEvent.click(within(screen.getByRole("group", { name: "업종" })).getByRole("button", { name: /뷰티/ }));
+    await waitFor(() => expect(status).toHaveTextContent(/^추천이 \d+개로 바뀌었습니다\.$/));
   });
 
   it("RECO-AC-11: 열 6개 꽉 참 + 미포함이면 적용 비활성 + 이유", async () => {

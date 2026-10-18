@@ -195,7 +195,7 @@ describe("카탈로그 상단 v2 (SPEC 4.2 r2)", () => {
     expect(new URLSearchParams(router.state.location.search).get("license")).toBe("internal,licensed");
   });
 
-  // RECO-AC-08로 정정(M3-1): 자리 문구 → 추천 결과 영역. 업종이 있으므로 결과 카드가 나온다(근거 부족 상태는 CatalogReco.test)
+  // RECO-AC-08로 정정(M3-1): 자리 문구 → 추천 결과 영역. 업종이 있으므로 결과 카드가 나온다(근거 부족 상태는 CatalogPageReco.test)
   it("?tab=rec 는 h1 '추천' + 추천 결과 영역 + '전체 보기' 링크, 링크는 tab만 지운다 (V2-AC-21 · RECO-AC-08)", async () => {
     const { router } = renderApp("/catalog?tab=rec&industry=beauty&sort=latest");
     expect(await screen.findByRole("heading", { level: 1, name: "추천" })).toBeInTheDocument();

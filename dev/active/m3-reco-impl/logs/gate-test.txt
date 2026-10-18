@@ -314,13 +314,16 @@ Not implemented: Window's scrollTo() method
 Not implemented: Window's scrollTo() method
 Not implemented: Window's scrollTo() method
 Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
 
  Test Files  359 passed (359)
-      Tests  3200 passed (3200)
-   Start at  14:32:02
-   Duration  55.42s (environment 43%, tests 33%, transform 9%, setup 9%, import 6%)
+      Tests  3206 passed (3206)
+   Start at  14:40:19
+   Duration  54.47s (environment 43%, tests 33%, transform 9%, setup 8%, import 6%)
 
-Environment  jsdom was created 359 times · 196.06s total, 43% of tracked time
+Environment  jsdom was created 359 times · 193.02s total, 43% of tracked time
              create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
              learn more: https://vitest.dev/guide/improving-performance#test-environments
 

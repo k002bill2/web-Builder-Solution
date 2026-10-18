@@ -28,3 +28,4 @@
 - E1 서브에이전트 worktree 정리: node_modules 심링크 삭제 → `git worktree remove` → 브랜치 m3-reco-e1 삭제(c664b2d9는 89490499로 반영됨)
 - Codex adversarial 1회: P2 1건(뒤 적용 실패 시 앞 되돌리기 기록 소실) → RED→GREEN 반영 · 최종 게이트 tc 0 · lint 0 · 3200 통과 · build 0 · 기준선 128.72·131.70 갱신
 - 마감 확인: lsof 4399 LISTEN = 0 · git status --short(node_modules 외) 0 · REPORT 0절 결론 · 커밋 0b9c5b65·0c15fd78·2a9be5a5·89490499·4e4e8623·24cc594d·cd6dc2cd
+- 마감 점검(advisor) 반영: 테스트 파일명 쓰기 경로 정리 · 되돌리기 세션 유지(WeakMap) · AC-11/12/16·청크 실패 테스트 6개 추가(`logs/fu-red.txt` 2 실패 → `logs/fu-green.txt` 78/78) · bundleBudget.test 기준선 기대값 갱신 · fresh 게이트 tc 0 · lint 0 · 3206 통과 · build 0 · Ego 2차 · lsof 4399 0

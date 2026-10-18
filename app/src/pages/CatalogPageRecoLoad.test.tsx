@@ -37,4 +37,15 @@ describe("추천 번들 분류 근거 — tab=all 진입에 추천 청크 요청
     await screen.findByRole("dialog");
     expect(loads.apply).toHaveBeenCalledTimes(1);
   });
+
+  it("화면 청크 로드 실패면 결과 영역 alert + 다시 시도 → 카드", async () => {
+    loads.view.mockRejectedValueOnce(new Error("Failed to fetch dynamically imported module"));
+    renderApp("/catalog?tab=rec&industry=medical&purpose=booking");
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("추천을 불러오지 못했습니다.");
+    await userEvent.click(within(alert).getByRole("button", { name: "다시 시도" }));
+    const region = await screen.findByRole("region", { name: "추천 결과" });
+    expect(await within(region).findAllByRole("article")).not.toHaveLength(0);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
 });

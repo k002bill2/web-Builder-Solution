@@ -18,3 +18,9 @@
 
 ## 종료
 - pkill vite preview 4399 → `lsof -nP -iTCP:4399 -sTCP:LISTEN | wc -l` = 0
+
+## 2차 (advisor 지적 — BRIEF E4 순서 "적용 → /compare 초안 → 되돌리기") · 세션 되돌리기 기록 반영 빌드
+- 1280: goto /catalog 1회 → 의료 + 콘텐츠 목적 예약 → 추천 받기 → 1위 적용 → status "적용했습니다" · 트레이 1 / 6
+- "비교 보드 열기" → /compare 초안 "Hero 구성 A · 의료 · 신뢰 텍스트형"
+- history.back → /catalog?…tab=rec 에 "되돌리기" 그대로 → 키보드 Enter → status "…추천 적용을 되돌렸습니다." · 트레이 0 / 6 · 포커스 "이 추천 적용" · overflow 0
+- 종료: pkill → lsof -nP -iTCP:4399 -sTCP:LISTEN = 0

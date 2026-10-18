@@ -37,6 +37,12 @@ interface Busy {
   readonly kind: "apply" | "undo";
 }
 
+/**
+ * 마지막 성공 적용의 되돌리기 기록 — 화면을 떠났다 돌아와도(같은 세션, 예: /compare 초안 확인 뒤) 되돌릴 수 있게 모듈에 둔다.
+ * 키 = 보드 저장소 인스턴스(새로고침·테스트 렌더마다 새로 — 저장하지 않는다, SPEC 4.3). 보드가 바뀌었는지는 revision 비교로 판정
+ */
+const lastApplied = new WeakMap<object, UndoTicket>();
+
 interface Alert {
   readonly text: string;
   readonly retry?: () => void;
@@ -76,7 +82,12 @@ export default function RecoView({
   const [more, setMore] = useState(false);
   const [busy, setBusy] = useState<Busy | null>(null);
   /** 마지막으로 성공한 적용의 되돌리기 기록 — 보드 revision이 다르면 stale(비활성) */
-  const [applied, setApplied] = useState<UndoTicket | null>(null);
+  const [applied, setTicket] = useState<UndoTicket | null>(() => lastApplied.get(repository) ?? null);
+  const setApplied = (ticket: UndoTicket | null) => {
+    if (ticket) lastApplied.set(repository, ticket);
+    else lastApplied.delete(repository);
+    setTicket(ticket);
+  };
   const [alert, setAlert] = useState<Alert | null>(null);
   const [dialog, setDialog] = useState<{ readonly mod: ApplyModule; readonly plan: ApplyPlan } | null>(null);
   const focusNext = useRef<string | null>(null);

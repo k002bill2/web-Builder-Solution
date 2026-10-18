@@ -100,7 +100,7 @@ const SCENARIOS = [
   // M3-1 추천(RECO-SPEC 5절 · RECO-AC-14b) — `tab=rec` 진입 때 자동: 추천 화면 청크(RecoView = 점수·파생 표·카드 줄·문구 키 표 ← CatalogPage effect의 loadRecoView)
   //  + 후보 목록이 받는 생성 카드 청크(useCatalogRepository GENERATED_CARDS — 기본 진입도 받지만 /catalog 행은 세지 않는다, 여기서는 보수적으로 센다).
   // 조작 뒤: 미리보기 대화상자(RecoApply)·적용 본문(recoApplyFlow) ← "이 추천 적용"·"되돌리기" onClick의 loadRecoApply. 기본 진입(tab=all)에서 추천 청크를 받지 않는 것은
-  // 크기로 증명되지 않는다 — RecoLoad.test "번들 분류 근거"가 로더 호출 0을 확인한다
+  // 크기로 증명되지 않는다 — CatalogPageRecoLoad.test "번들 분류 근거"가 로더 호출 0을 확인한다
   {
     name: "/catalog (추천)",
     page: "src/pages/CatalogPage.tsx",

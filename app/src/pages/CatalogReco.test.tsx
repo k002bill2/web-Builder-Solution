@@ -146,6 +146,28 @@ describe("승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16)", () => {
     expect(screen.queryAllByRole("alert")).toHaveLength(0);
   });
 
+  it("Codex r1 P2: A 적용 뒤 B 적용이 실패해도 A의 되돌리기 기록은 남고, 되돌리면 적용 전과 깊은 동일", async () => {
+    const { repo } = spiedBoard({
+      fail: (call) => (call.method === "addReference" && call.phase === "request" && call.seq === 2 ? new Error("열 추가 실패") : undefined),
+    });
+    const before = (await repo.getBoard()).board;
+    renderApp(T_REC_01, undefined, repo);
+    const [a, b] = await cards();
+    await userEvent.click(within(a!).getByRole("button", { name: "이 추천 적용" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "적용" }));
+    await within(a!).findByRole("button", { name: "되돌리기" });
+
+    await userEvent.click(within(b!).getByRole("button", { name: "이 추천 적용" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "적용" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("추천을 적용하지 못했습니다.");
+    await userEvent.click(within(a!).getByRole("button", { name: "되돌리기" }));
+    await waitFor(async () => {
+      const reverted = (await repo.getBoard()).board;
+      expect(reverted.picks).toEqual(before.picks);
+      expect(reverted.columns).toEqual(before.columns);
+    });
+  });
+
   it("RECO-AC-11: 열 6개 꽉 참 + 미포함이면 적용 비활성 + 이유", async () => {
     const full = ["ref-a", "ref-b", "ref-d", "ref-e", "ref-f", "gen-beauty-1"];
     const { repo } = spiedBoard({ initialBoard: boardOf(full) });

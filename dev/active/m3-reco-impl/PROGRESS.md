@@ -12,9 +12,9 @@
 - [x] E2 `tab=rec` 화면 (카드 3 + 2개 더 보기 · 근거 · 상태 · status 공유 · 로드 조건 테스트 · V2-AC-21 정정)
 - [x] E3 승인 후 적용 (미리보기 차이 → 적용 → 되돌리기 · T-REC-06)
 - [x] E4 검사기 SCENARIOS "/catalog (추천)" 행
-- [ ] E4 fresh 게이트 (typecheck · lint · test · build · bundle check)
-- [ ] E4 Ego Lite 390·1280 (preview 4399)
-- [ ] E4 Codex adversarial 1회 + 반영 1회
+- [x] E4 fresh 게이트 (typecheck · lint · test · build · bundle check)
+- [x] E4 Ego Lite 390·1280 (preview 4399)
+- [x] E4 Codex adversarial 1회 + 반영 1회
 - [ ] 마감: preview 종료·리슨 0 · untracked 0 · REPORT 결론
 
 ## 로그
@@ -24,3 +24,6 @@
 - E2/E3 메인: RED `logs/e2-red.txt`(9 실패) → RecoView·RecoApply·recoText·recoLoader·CatalogPage·CompareTrayBar(Announcement)·ReferenceCard(children)
 - E1 서브에이전트 완료: worktree `/Users/younghwankang/Work/web-builder-solution/.claude/worktrees/agent-ab17bb7f5985a6401`(브랜치 m3-reco-e1 · c664b2d9) → cherry-pick 89490499. 50/50. T-REC-01 결과 수용(REPORT 발견 1)
 - E2/E3 GREEN 47/47 · 전체 3199 통과 · lint 0 · 예산 감량 1회(원인 2개 제거) 뒤 build exit 0
+- E4 Ego Lite 24cc594d: 1280·390 필터→추천→근거→적용→/compare 초안 10행→되돌리기 · 넘침 0 · preview 종료 lsof 4399 = 0
+- E1 서브에이전트 worktree 정리: node_modules 심링크 삭제 → `git worktree remove` → 브랜치 m3-reco-e1 삭제(c664b2d9는 89490499로 반영됨)
+- Codex adversarial 1회: P2 1건(뒤 적용 실패 시 앞 되돌리기 기록 소실) → RED→GREEN 반영 · 최종 게이트 tc 0 · lint 0 · 3200 통과 · build 0 · 기준선 128.72·131.70 갱신

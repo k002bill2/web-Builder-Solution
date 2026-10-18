@@ -1,8 +1,12 @@
-# M3-1 REPORT — 추천 모드 구현 (초안 · E0 마감)
+# M3-1 REPORT — 추천 모드 구현
 
 브랜치 `k002bill2/m3-reco-impl` · base `268226f2` · 정본 `docs/design/m3/RECO-SPEC.md` r1 + 7a
 
-## 0. 결론 (진행 중)
+## 0. 결론
+- **완료**: RECO-SPEC r1 + 7a(RQ-01~11 ★안)대로 추천 모드(점수 reco-v1 · 근거 3 · tab=rec 화면 · 승인 후 적용 → 되돌리기)를 구현했다. 엔진 계약 변경 0 · 저장 스키마 변경 0 · 새 의존성 0 · `features/studio` 접촉 0.
+- **예산(RQ-11 A 조건부 → 충족)**: `/studio` 정규화 128.72 ≤ 128.74 · 복원 진입 131.70 · 다른 라우트 첫 화면·진입 ±0.03 이내 · `/catalog` 첫 화면 100.47 ≤ 멈춤선 100.90 · `/catalog (추천)` 진입 109.04 ≤ 125. 감량 1회(원인 2개 제거) 뒤 통과 — ADR-004 새 개정 상신 불필요. 기준선 `m2cBaseline.json` 실측 갱신(128.72·131.70)은 최종 커밋에서 1회.
+- **게이트(fresh)**: typecheck 0 · lint 0 · vitest 359 files / 3200 tests 통과 · build exit 0(검사기 포함). Ego Lite 390·1280 통과(`logs/e4-ego-lite.txt`). Codex adversarial 1회 → P2 1건 반영(7절).
+- **발견 1(범위 밖)**: 큐레이션 6개는 예약 섹션이 없어 예약 브리프에서 섹션 20점을 잃는다(ref-a~d는 `purpose: booking` 태그) — 큐레이션 레인 판단 필요(3절 E1).
 - E0 예산 관문 **통과** — Provider 통로 `runQueued`(= 기존 `enqueue` 노출, 본문 0) 증분: 공통 +0.01 · `/studio` 정규화 128.72 ≤ 128.74 · 다른 라우트 ±0.01~0.03 이내 → RQ-11 A 조건 충족, 계속.
 - 21개 레퍼런스 비교 행 커버리지: 전부 선택 가능 10/10행 (SPEC 3.3 [미확인] 해소).
 
@@ -75,3 +79,29 @@
 |---|---|---|---|
 | `pages/CatalogPage.test.tsx` V2-AC-21 | `?tab=rec&industry=beauty` → 자리 문구 "브리프 기반 추천은 다음 단계에서 제공됩니다." 단언 | 같은 URL → `region "추천 결과"` 안 카드 ≥ 1 + 자리 문구 없음. "전체 보기" → tab만 지움 단언은 그대로 | RECO-SPEC 7절 "기존 테스트 영향" · RECO-AC-08 |
 | `components/catalog/CompareTrayBar.test.tsx` 한도 알림 | `notice="…"`(문자열) | `notice={{ text: "…", key: 1 }}`(Announcement) — 단언 동일 | RQ-09 A(같은 문장 재알림 key) |
+
+## 6. 수용 기준 대응 (RECO-AC)
+| AC | 증거 |
+|---|---|
+| 01·02·03·04·06·07 · T-REC-01~05 | `domain/recommend.test.ts`(21개 실픽스처, LCG 셔플 10회, 동결·불변, 근거 3·breakdown 7, 미측정 value 0, external_observed 제외) |
+| 05 | `domain/recommendSectionFit.test.ts` — 21행 × R-04·R-03만 엔진 대조 + 정의 존재 + 반례 3 |
+| 08 | `CatalogReco.test` 근거 부족 + 업종 칩·"콘텐츠 목적" 레일 포커스 · V2-AC-21 정정 |
+| 09 · T-REC-06 | `CatalogReco.test` 진입·펼치기·필터 변경 쓰기 호출 0 · picks 불변 |
+| 10 · 16 | `CatalogReco.test` 취소 쓰기 0 · 적용(저장 resolve 뒤 "적용됨"·status) · 되돌리기 깊은 동일 · savePicks 실패 → alert + 재시도는 savePicks만 · Codex 회귀(뒤 적용 실패 후 앞 되돌리기) |
+| 11 | 열 6 꽉 참 → aria-disabled + COMPARE_LIMIT_NOTICE (revision stale → 되돌리기 비활성은 코드 경로, 단위 테스트 없음) |
+| 12 | status 1(트레이 공유) · alert 0(정상) · aria-live 0 |
+| 13 | Ego Lite 390·1280 넘침 0 · 키보드만 적용·되돌리기 |
+| 14 | (a) `RecoLoad.test` tab=all 0 → 1 · 적용 청크 누름 전 0 (b) 검사기 `/catalog (추천)` 109.04 ≤ 125 · `/catalog` 100.47 ≤ 100.90 |
+| 15 | 문구 키 표 `components/reco/recoText.ts` · `noHardcodedStyle.test` 통과 (예외: 청크 실패 문장 1줄 — 4절) |
+| 17 | 1절 표 |
+
+## 7. Codex adversarial-review (1회, `--scope branch --base 268226f2`, 원문 `/tmp` 출력 요약)
+| # | 지적 | 판정 | 반영 |
+|---|---|---|---|
+| 1 | [P2] 뒤 추천 적용이 실패하면 앞 적용의 되돌리기 기록(UndoTicket)이 pending 상태에 덮여 사라짐 (`RecoView.tsx:128-130`) | 타당 — RED 재현(`logs/codex-r1-red.txt`) | 진행 상태(Busy)와 마지막 성공 UndoTicket 분리, 회귀 테스트 추가 → GREEN(`logs/codex-r1-green.txt`) |
+- 라운드: 1회 + 반영 1회(BRIEF). 재리뷰 없음.
+
+## 8. 미결 · 후속
+- 근거 문구 최종 문안(Hemingway) — 키 표 `recoText.ts` 임시 문안.
+- 발견 1(큐레이션 예약 섹션·태그 불일치) 큐레이션 레인 결정.
+- 되돌리기는 이번 화면·세션 한정(SPEC 4.3) — `/compare`에 다녀오면 카드 상태가 초기화되어 되돌리기 버튼이 사라진다(Ego Lite에서 확인, 명세대로).

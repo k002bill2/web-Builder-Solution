@@ -31,9 +31,11 @@ function reasonText(r: RecoReason): string {
   return recoText(r.key, { label: r.matched.map((id) => LABELS[id] ?? id).join("·"), points: r.points, max: r.max, value: r.value ?? "" });
 }
 
-type Phase =
-  | { readonly id: string; readonly kind: "pending" }
-  | { readonly id: string; readonly kind: "applied" | "undoing"; readonly ticket: UndoTicket };
+/** 진행 중 작업 — 마지막 성공의 되돌리기 기록(UndoTicket)과 분리한다: 뒤 적용이 실패해도 앞 적용의 되돌리기를 잃지 않게(Codex r1 P2) */
+interface Busy {
+  readonly id: string;
+  readonly kind: "apply" | "undo";
+}
 
 interface Alert {
   readonly text: string;
@@ -72,7 +74,9 @@ export default function RecoView({
     }
   }, [filters, items, attempt]);
   const [more, setMore] = useState(false);
-  const [phase, setPhase] = useState<Phase | null>(null);
+  const [busy, setBusy] = useState<Busy | null>(null);
+  /** 마지막으로 성공한 적용의 되돌리기 기록 — 보드 revision이 다르면 stale(비활성) */
+  const [applied, setApplied] = useState<UndoTicket | null>(null);
   const [alert, setAlert] = useState<Alert | null>(null);
   const [dialog, setDialog] = useState<{ readonly mod: ApplyModule; readonly plan: ApplyPlan } | null>(null);
   const focusNext = useRef<string | null>(null);
@@ -116,37 +120,37 @@ export default function RecoView({
 
   const apply = async (mod: ApplyModule, plan: ApplyPlan, progress?: ApplyProgress) => {
     const id = plan.referenceId;
-    setPhase({ id, kind: "pending" });
+    setBusy({ id, kind: "apply" });
     const outcome = await mod.runApply(runQueued, repository, plan, progress);
+    setBusy(null);
     if (outcome.kind === "applied") {
-      setPhase({ id, kind: "applied", ticket: { referenceId: id, before: plan.before, added: outcome.added, revision: outcome.revision } });
+      setApplied({ referenceId: id, before: plan.before, added: outcome.added, revision: outcome.revision });
       setAlert(null);
       announce(recoText("reco.status.applied", { title: titleOf(id) }));
       focusLater(`undo:${id}`);
       return;
     }
-    setPhase(null);
     if (outcome.kind === "conflict") say(recoText("reco.apply.conflict"), () => void openPreview(id));
     else say(recoText("reco.apply.error"), () => void apply(mod, plan, outcome.progress));
   };
 
   const undo = async (mod: ApplyModule, ticket: UndoTicket) => {
     const id = ticket.referenceId;
-    setPhase({ id, kind: "undoing", ticket });
+    setBusy({ id, kind: "undo" });
     const outcome = await mod.runUndo(runQueued, repository, ticket);
+    setBusy(null);
     if (outcome.kind === "undone") {
-      setPhase(null);
+      setApplied(null);
       setAlert(null);
       announce(recoText("reco.status.undone", { title: titleOf(id) }));
       focusLater(`apply:${id}`);
       return;
     }
     if (outcome.kind === "stale") {
-      setPhase({ id, kind: "applied", ticket });
       say(recoText("reco.undo.stale"));
       return;
     }
-    setPhase({ id, kind: "applied", ticket: outcome.ticket });
+    setApplied(outcome.ticket);
     say(recoText("reco.undo.error"), () => void undo(mod, outcome.ticket));
   };
 
@@ -219,7 +223,8 @@ export default function RecoView({
         {shown.map((result, index) => {
           const reference = byId.get(result.referenceId);
           if (!reference) return null;
-          const mine = phase?.id === result.referenceId ? phase : null;
+          const ticket = applied?.referenceId === result.referenceId ? applied : null;
+          const working = busy?.id === result.referenceId ? busy.kind : null;
           return (
             <ReferenceCard
               key={result.referenceId}
@@ -232,14 +237,15 @@ export default function RecoView({
               <RecoLines
                 rank={index + 1}
                 result={result}
-                phase={mine}
+                working={working}
+                applied={ticket !== null}
                 blocked={tray.length >= COMPARE_LIMIT && !tray.includes(result.referenceId)}
-                undoStale={mine?.kind === "applied" && board.revision !== mine.ticket.revision}
+                undoStale={ticket !== null && board.revision !== ticket.revision}
                 onApply={() => void openPreview(result.referenceId)}
                 onUndo={() => {
-                  if (mine?.kind !== "applied") return;
+                  if (!ticket || busy) return;
                   void loadRecoApply().then(
-                    (mod) => undo(mod, mine.ticket),
+                    (mod) => undo(mod, ticket),
                     () => say(recoText("reco.undo.error")),
                   );
                 }}
@@ -276,7 +282,8 @@ export default function RecoView({
 function RecoLines({
   rank,
   result,
-  phase,
+  working,
+  applied,
   blocked,
   undoStale,
   onApply,
@@ -284,7 +291,8 @@ function RecoLines({
 }: {
   readonly rank: number;
   readonly result: RecoResult;
-  readonly phase: Phase | null;
+  readonly working: Busy["kind"] | null;
+  readonly applied: boolean;
   readonly blocked: boolean;
   readonly undoStale: boolean;
   readonly onApply: () => void;
@@ -293,8 +301,8 @@ function RecoLines({
   const [open, setOpen] = useState(false);
   const listId = `${result.referenceId}-reasons`;
   const id = result.referenceId;
-  const pending = phase?.kind === "pending";
-  const applied = phase?.kind === "applied" || phase?.kind === "undoing";
+  const pending = working === "apply";
+  const undoing = working === "undo";
   return (
     <div className="mt-2 flex flex-col gap-2 border-t border-line-alternative pt-2">
       <p className="ds-label flex items-center gap-2 text-label-normal tabular-nums">
@@ -327,10 +335,10 @@ function RecoLines({
             variant="outline"
             size="sm"
             fullWidth
-            aria-busy={phase?.kind === "undoing" || undefined}
-            aria-disabled={undoStale || phase?.kind === "undoing" || undefined}
+            aria-busy={undoing || undefined}
+            aria-disabled={undoStale || undoing || undefined}
             onClick={() => {
-              if (!undoStale && phase?.kind === "applied") onUndo();
+              if (!undoStale && !undoing) onUndo();
             }}
           >
             {recoText("reco.undo")}

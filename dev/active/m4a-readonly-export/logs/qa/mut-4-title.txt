@@ -1,0 +1,60 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-readonly-export/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (20 tests | 1 failed) 5658ms
+   ❯ B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0 (3)
+     × 저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 사유 · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0 68ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0 > 저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 사유 · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0
+AssertionError: expected '품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다…' to be '내보내지 못했습니다다른 탭에서 편집 중입니다 — 이 탭의 변경은 저…' // Object.is equality
+
+Expected: "내보내지 못했습니다다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다"
+Received: "품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다"
+
+ ❯ src/components/studio/ExportFlow.test.tsx:350:31
+    348|     act(() => void fireEvent.click(zip()));
+    349|     const alert = await within(gateRegion()).findByRole("alert");
+    350|     expect(alert.textContent).toBe(`내보내지 못했습니다${READ_ONLY_TAB}`);
+       |                               ^
+    351|     expect(within(gateRegion()).queryByRole("button", { name: "다시 시도" …
+    352|     expect(within(gateRegion()).queryByText(/만들었습니다/)).not.toBeInTheDo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 passed (20)
+   Start at  15:10:06
+   Duration  7.05s (tests 81%, transform 10%, environment 5%, import 3%, setup 1%)
+

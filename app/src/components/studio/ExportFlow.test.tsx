@@ -187,6 +187,29 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(requestExport).toHaveBeenCalledWith("project-1", "static-html", 4);
   });
 
+  it("React zip(RZ-AC-01·02): 편집(경고 생김) → 다시 검사 → 저장 먼저 → 확인 대화상자 → 확인 = requestExport 1회(형식 react-zip · 저장된 revision)", async () => {
+    // 요청 시점에 저장이 끝났는지(저장 먼저) — 요청이 본 저장 건수
+    const seen: { saved?: readonly PageDoc[]; atRequest?: number } = {};
+    const { requestExport, saved } = await open(clean(), {
+      requestExport: async () => {
+        seen.atRequest = seen.saved!.length;
+        return Promise.reject(new ProjectRepositoryError("GENERATOR_UNAVAILABLE", "기본"));
+      },
+    });
+    seen.saved = saved;
+    const react = () => within(gateRegion()).getByRole("button", { name: /React 프로젝트\(zip\) 내보내기|내보내는 중…/ });
+    act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));
+    act(() => void fireEvent.change(screen.getByRole("textbox", { name: /^제목/ }), { target: { value: "가".repeat(80) } }));
+    act(() => void fireEvent.click(react()));
+    const dialog = await screen.findByRole("dialog", { name: "경고 1건이 있습니다" });
+    expect(requestExport).not.toHaveBeenCalled();
+    act(() => void fireEvent.click(within(dialog).getByRole("button", { name: "경고를 확인했습니다 · 내보내기" })));
+    await waitFor(() => expect(requestExport).toHaveBeenCalledTimes(1));
+    expect(seen.atRequest).toBe(1);
+    expect(saved[0]!.meta.title).toBe("가".repeat(80));
+    expect(requestExport).toHaveBeenCalledWith("project-1", "react-zip", 4);
+  });
+
   it("재시도 가능 실패(JOB_TIMEOUT) → alert '내보내지 못했습니다' + '다시 시도'(같은 요청 다시) · 새 스냅샷이면 snapshot_created 1회", async () => {
     const job: ExportJob = { jobId: "export-1", format: "static-html", docRevision: 3, state: "queued", retryable: false };
     const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: requestExport.mock.calls.length === 1 }));

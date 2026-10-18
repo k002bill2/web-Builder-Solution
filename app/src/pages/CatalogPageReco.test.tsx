@@ -264,4 +264,15 @@ describe("승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16)", () => {
     });
     expect(screen.getAllByText(COMPARE_LIMIT_NOTICE).length).toBeGreaterThan(0);
   });
+
+  it("QA N4: 비활성 '이 추천 적용'은 이유 문구를 aria-describedby로 읽는다", async () => {
+    const full = ["ref-a", "ref-b", "ref-d", "ref-e", "ref-f", "gen-beauty-1"];
+    const { repo } = spiedBoard({ initialBoard: boardOf(full) });
+    renderApp(T_REC_01, undefined, repo);
+    await waitFor(async () => {
+      const blocked = (await cards()).flatMap((c) => within(c).getAllByRole("button", { name: "이 추천 적용" })).filter((b) => b.getAttribute("aria-disabled") === "true");
+      expect(blocked).not.toHaveLength(0);
+      for (const button of blocked) expect(button).toHaveAccessibleDescription(COMPARE_LIMIT_NOTICE);
+    });
+  });
 });

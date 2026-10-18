@@ -271,7 +271,11 @@ export default function RecoView({
         })}
       </div>
       {!more && results.length > FIRST && (
-        <Button variant="assistive" size="sm" className="mt-4" onClick={() => {
+        <Button
+          variant="assistive"
+          size="sm"
+          className="mt-4"
+          onClick={() => {
             // 버튼이 사라지므로 포커스는 새로 보이는 첫 카드(4위) 제목으로(BODY 0 · QA N1)
             focusLater(results[FIRST]!.referenceId);
             setMore(true);
@@ -374,13 +378,18 @@ function RecoLines({
             fullWidth
             aria-busy={pending || undefined}
             aria-disabled={blocked || pending || undefined}
+            aria-describedby={blocked ? `${id}-limit` : undefined}
             onClick={() => {
               if (!blocked && !pending) onApply();
             }}
           >
             {pending ? recoText("reco.apply.pending") : recoText("reco.apply")}
           </Button>
-          {blocked && <p className="ds-caption2 text-label-alternative">{COMPARE_LIMIT_NOTICE}</p>}
+          {blocked && (
+            <p id={`${id}-limit`} className="ds-caption2 text-label-alternative">
+              {COMPARE_LIMIT_NOTICE}
+            </p>
+          )}
         </div>
       )}
     </div>

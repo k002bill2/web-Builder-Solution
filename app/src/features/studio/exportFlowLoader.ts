@@ -3,5 +3,15 @@
  * 한 줄짜리 모듈로 떼어 둔 것은 화면 테스트가 로드 실패를 주입하기 위해서다(M2A-3a Codex P2-1).
  */
 import { retryableImport } from "../../data/chunkRetry";
+import { exportChunk } from "./exportFlowFails";
 
-export const loadExportFlow = retryableImport(() => import("./exportFlow"));
+/** 로드 실패 = 내보내기 청크 실패 시도 1회(B-M4A-08) */
+export const trackExportChunk =
+  <M,>(load: () => Promise<M>) =>
+  () =>
+    load().catch((error: unknown) => {
+      exportChunk.fails += 1;
+      throw error;
+    });
+
+export const loadExportFlow = trackExportChunk(retryableImport(() => import("./exportFlow")));

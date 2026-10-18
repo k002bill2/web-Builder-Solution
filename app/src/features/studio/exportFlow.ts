@@ -6,6 +6,7 @@ import { retryableImport } from "../../data/chunkRetry";
 import { projectErrorCode, type ExportFormat, type ExportGenerator, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
 import type { StudioReader } from "../../data/studioStore";
 import { emitEditorEvent } from "./editorEvents";
+import { exportChunk } from "./exportFlowFails";
 import type { RenderImages } from "./images/store/types";
 import { staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
 import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
@@ -41,8 +42,17 @@ const summaries = new Map<string, ExportSummary>();
 /** 생성기 실패 중 사유를 보여 줄 것 → 프로젝트별 사유 */
 const REASONS: readonly string[] = [IMAGE_FAILED, DEV_SERVER_UNSUPPORTED];
 const failReasons = new Map<string, string>();
+// 내보내기 청크 연속 실패(B-M4A-08) = 마지막으로 청크를 받은 뒤의 로드 실패 수 — 이 청크를 받았으면 0, 생성기는 로드가 끝날 때 센다
+// (요청·잡이 아니라 로드 결과에 붙인다 — 응답 실패·조회 종료 뒤 늦게 온 실패도 센다, Codex r1 P2)
+exportChunk.fails = 0;
 (globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => {
-  const { createStaticHtmlGenerator } = await loadGenerator();
+  const { createStaticHtmlGenerator } = await loadGenerator().then(
+    (generator) => ((exportChunk.fails = 0), generator),
+    (error: unknown) => {
+      exportChunk.fails += 1;
+      throw error;
+    },
+  );
   return (store: StudioReader): ExportGenerator => {
     const generate = createStaticHtmlGenerator(store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary) });
     return (input) =>

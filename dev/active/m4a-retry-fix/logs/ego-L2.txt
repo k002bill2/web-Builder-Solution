@@ -1,0 +1,14 @@
+SPACE 38
+X idb reset []
+X B v2 gate {"btn":["검사 · 내보내기","SEO 메타차단 2","정적 사이트(zip) 내보내기[disabled]","HTML 파일 1개 내보내기[disabled]","첫 차단으로 이동","PNG 내려받기"],"status":["B안 · 프로필 v2로 새로 시작했습니다 · 이전 문서(A안 · v1)는 스냅샷 '새로 시작 전'에 있습니다 · 구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼"],"alert":[]}
+X gate after SEO {"btn":["검사 · 내보내기","정적 사이트(zip) 내보내기","HTML 파일 1개 내보내기","PNG 내려받기"],"status":["B안 · 프로필 v2로 새로 시작했습니다 · 이전 문서(A안 · v1)는 스냅샷 '새로 시작 전'에 있습니다 · 구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼"],"alert":[]}
+X url "http://localhost:4397/studio/project-1"
+X sections ["Hero대형 이미지 + 하단 카피","Hero대형 이미지 + 하단 카피","About이야기 + 이미지","About이야기 + 이미지","Portfolio이미지 벽돌형","Portfolio이미지 벽돌형","섹션 추가","필수 섹션통과"]
+X attempt1 blocked {"status":[],"alert":["내보내지 못했습니다다시 시도"],"alertBtns":["다시 시도"],"chunks":["exportFlow-pBIuUNIV.js"]}
+X attempt2 blocked {"status":[],"alert":["내보내지 못했습니다새로고침한 뒤 다시 시도하세요다시 시도"],"alertBtns":["다시 시도"],"chunks":["exportFlow-pBIuUNIV.js","exportFlow-pBIuUNIV.js?retry=1"]}
+X wait3 "Error: page.waitForFunction timed out after 60000ms on page p2; last URL was \"http://localhost:4397/"
+X attempt3 unblocked ms 60146
+X attempt3 unblocked {"status":[],"alert":["내보내지 못했습니다다시 시도"],"alertBtns":["다시 시도"],"chunks":["exportFlow-pBIuUNIV.js","exportFlow-pBIuUNIV.js?retry=1","exportFlow-pBIuUNIV.js?retry=2","staticHtml-DLTa0GFO.js"]}
+DONE
+
+exit 0

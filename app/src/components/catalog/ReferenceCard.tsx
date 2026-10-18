@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import type { DesignReference } from "../../domain/reference";
 import { INDUSTRY_LABELS, LAYOUT_LABELS, MOTION_LABELS, VISUAL_TAG_LABELS } from "../../fixtures/catalogFilters";
@@ -12,6 +12,8 @@ export interface ReferenceCardProps {
   readonly inTray: boolean;
   readonly onToggleSave: (id: string) => void;
   readonly onToggleCompare: (id: string) => void;
+  /** 카드 아래 덧붙임(추천 줄 — RECO-SPEC 3.2) */
+  readonly children?: ReactNode;
 }
 
 /**
@@ -104,7 +106,7 @@ function CardIconButton({
 const monthDay = (iso: string) => iso.slice(5).replace("-", ".");
 
 /** 2a-01 카탈로그 카드 v2 (SPEC 4.2 "카드 FR-CAT-02"·"카드 버튼", C-03·C-04). */
-export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onToggleCompare }: ReferenceCardProps) {
+export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onToggleCompare, children }: ReferenceCardProps) {
   const titleId = `${r.id}-title`;
   const tags = r.visualTags.map((t) => VISUAL_TAG_LABELS[t]);
   return (
@@ -153,6 +155,7 @@ export function ReferenceCard({ reference: r, saved, inTray, onToggleSave, onTog
           />
         </span>
       </div>
+      {children}
     </article>
   );
 }

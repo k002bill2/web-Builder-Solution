@@ -113,7 +113,7 @@ describe("플로팅 비교 필 (SPEC 4.5 C-05 · V2-AC-24)", () => {
     expect(status).toBeEmptyDOMElement();
     expect(status.className).not.toMatch(/\bhidden\b/);
     rerender(
-      <CompareTrayBar references={[]} notice="비교 보드에는 최대 6개까지 담을 수 있습니다" onRemove={vi.fn()} onOpen={vi.fn()} />,
+      <CompareTrayBar references={[]} notice={{ text: "비교 보드에는 최대 6개까지 담을 수 있습니다", key: 1 }} onRemove={vi.fn()} onOpen={vi.fn()} />,
     );
     expect(within(screen.getByRole("region", { name: "비교 트레이" })).getByRole("status")).toHaveTextContent(
       "비교 보드에는 최대 6개까지 담을 수 있습니다",

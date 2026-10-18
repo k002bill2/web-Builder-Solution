@@ -97,6 +97,17 @@ const SCENARIOS = [
   // ADR-004 개정 7 결정 2·3 — 카드 실렌더 썸네일(img·실패 복귀·생성 조합 Tag 공존)이 고정 경로 상쇄 뒤에도 99.90을 넘어(100.05) 이 라우트 첫 화면 한도만 101(멈춤선 100.90).
   // 늘어난 몫은 썸네일 연결에만. 다시 올리자는 요청은 첫 화면 청크 구조 점검(공용 셸·트레이·필터 분해) 결과와 함께만(결정 4)
   { name: "/catalog", page: "src/pages/CatalogPage.tsx", auto: EAGER_DYNAMIC, routeBudgetKb: 101 },
+  // M3-1 추천(RECO-SPEC 5절 · RECO-AC-14b) — `tab=rec` 진입 때 자동: 추천 화면 청크(RecoView = 점수·파생 표·카드 줄·문구 키 표 ← CatalogPage effect의 loadRecoView)
+  //  + 후보 목록이 받는 생성 카드 청크(useCatalogRepository GENERATED_CARDS — 기본 진입도 받지만 /catalog 행은 세지 않는다, 여기서는 보수적으로 센다).
+  // 조작 뒤: 미리보기 대화상자(RecoApply)·적용 본문(recoApplyFlow) ← "이 추천 적용"·"되돌리기" onClick의 loadRecoApply. 기본 진입(tab=all)에서 추천 청크를 받지 않는 것은
+  // 크기로 증명되지 않는다 — RecoLoad.test "번들 분류 근거"가 로더 호출 0을 확인한다
+  {
+    name: "/catalog (추천)",
+    page: "src/pages/CatalogPage.tsx",
+    auto: [...EAGER_DYNAMIC, "src/fixtures/generatedReferences.ts", "src/components/reco/RecoView.tsx"],
+    afterAction: ["src/components/reco/RecoApply.tsx", "src/components/reco/recoApplyFlow.ts"],
+    routeBudgetKb: 101,
+  },
   { name: "/references/:id", page: "src/pages/ReferenceDetailPage.tsx", auto: EAGER_DYNAMIC },
   { name: "/compare", page: "src/pages/CompareBoardPage.tsx", auto: [...EAGER_DYNAMIC, ...COMPARE_AUTO], afterAction: COMPARE_AFTER_ACTION },
   // 확정한 프로필의 최신 버전에 조정이 있을 때 — 자동으로 더 받는 dynamic import가 없다(캡션은 인라인 계산, CarryOverCaption은 엔진 청크).

@@ -23,11 +23,55 @@
 - 음수 증분은 청크 해시 이름 흔들림(raw) — 판정은 정규화 기준.
 - 감량: 불필요(판정선 안). 기준선 `m2cBaseline.json` 실측 갱신(7a)은 **E4 최종 실측 커밋에서 1회** — 지금 128.72로 올리면 검사기 멈춤선이 128.75가 되어 RQ-11 절대선 128.74보다 느슨해진다. RQ-11 판정은 원 기준선(128.71) 대비 절대값으로 REPORT에서 따로 한다.
 
+### E2 최종 실측 (`logs/gate-build.txt`, build exit 0)
+
+| 시나리오 | base 첫 화면 / 진입 | 최종 첫 화면 / 진입 | 증분 | 판정 |
+|---|---|---|---|---|
+| 공통 JS | 89.09 | 89.09 | 0 | — |
+| `/catalog` | 100.05 / 102.39 | 100.46 / 102.80 | +0.41 / +0.41 | 첫 화면 ≤ 100.90 멈춤선 ✅ (rec 분기·로더·status Announcement·카드 children) |
+| `/catalog (추천)` 신설 | — | 100.46 / 109.03 | — | ≤ 125 ✅ · 조작 뒤 RecoApply +0.79 · recoApplyFlow 별도 |
+| `/references/:id` | 97.46 / 99.80 | 97.45 / 99.79 | −0.01 | ✅ |
+| `/compare` | 98.95 / 122.66 | 98.94 / 122.63 | −0.01 / −0.03 | ✅ |
+| `/profile` | 99.52 / 119.92 | 99.52 / 119.91 | 0 / −0.01 | ✅ |
+| `/profile (3안)` | 99.52 / 122.40 | 99.52 / 122.39 | 0 / −0.01 | ✅ |
+| `/projects` | 99.09 / 109.53 | 99.08 / 109.52 | −0.01 | ✅ |
+| `/studio` 정규화 | 128.71 | 128.72 | +0.01 | ≤ 128.74 ✅ (RQ-11) |
+| `/studio (복원)` 정규화 | 131.69 | 131.70 | +0.01 | ≤ 131.72 ✅ |
+
 ## 2. 생성 레퍼런스 비교 행 커버리지 (`logs/e0-coverage-21.txt`)
 - 21개(큐레이션 6 + 생성 15) 전부 `available`, 선택 가능 행 10/10 (binding null 0). → 적용 시 picks 대상 = 10행 전부.
 
 ## 3. 단계별 진행
-- E0 ✅ · E1 ⏳ · E2 ⏳ · E3 ⏳ · E4 ⏳
+- E0 ✅ · E1 ✅ (서브에이전트 worktree → cherry-pick 89490499) · E2 ✅ · E3 ✅ · E4 진행
+
+### E1 (T-REC-01~05 · RECO-AC-01~07 · AC-05 가드) — `logs/e1-red.txt`(45 실패) → `logs/e1-green.txt`(50/50)
+- `RECO_SECTION_FIT` 21행(엔진 `requiredSectionIssues` R-04·R-03만 걸러 대조): `[booking, inquiry]` 7 = gen-beauty-1·3, gen-cafe-fnb-2, gen-education-2·4, gen-medical-1·3 · `[inquiry]` 14 = ref-a~f, gen-beauty-2, gen-cafe-fnb-1, gen-education-1·3, gen-medical-2, gen-professional-1~3.
+- T-REC-01(`medical · family · booking`) 상위 5: gen-medical-1 60 · gen-medical-3 60 · gen-beauty-3 45 · gen-education-4 45 · ref-c 40 — AC-01(5개·내림차순) 충족. SPEC 6절 대응표 "medical 4개 + 다른 업종 1"과 다름(아래 발견 1).
+- **발견 1 (데이터, 범위 밖 — 후속 큐레이션 판단)**: 큐레이션 6개는 상세 섹션에 예약 변형(`contact/booking`)이 없어 R-04 불충족인데 ref-a·b·c·d는 `purpose: booking` 태그. 예약 목적 브리프에서 큐레이션 후보는 섹션 20점을 늘 잃는다(gen-medical-2도 문의만 충족 → 5위 밖). 배점·표·픽스처는 바꾸지 않았다(엔진 판정 그대로가 RQ-06 A의 의도). 태그 정정 또는 상세 섹션 보강은 큐레이션 레인 결정 사항.
+
+### E2·E3 (RECO-AC-08~12·14a·16) — `logs/e2-red.txt`(9 실패) → `logs/e2-green.txt`(47/47)
+- 화면 청크 `RecoView`(tab=rec effect 로드) · 적용 청크 `RecoApply`+`recoApplyFlow`(onClick 로드, `recoApplyLoader`) · 로드 조건 테스트 `RecoLoad.test`(tab=all 0 → 추천 받기 1 → 적용 누름 전 0 → 1).
+- 적용 = `runQueued` 안에서 getBoard(revision 대조) → (열 없으면) addReference → getComparison binding 있는 행 → savePicks. 결과는 요청 안 기록으로만 판정(AC-16). 되돌리기 = savePicks(적용 전) → 새로 넣은 열이면 removeReference. 트레이 보드 revision ≠ 적용 revision이면 되돌리기 비활성.
+
+### E2 예산 감량 1회 기록 (AC-17)
+- 1차 실측: 공통 89.40(+0.30) · `/studio` 정규화 128.98 → **실패**. 원인 ① 추천 청크가 `domain/compareBoard` 값(PICKABLE_ROW_IDS·rowDef)을 import → 번들러가 compareBoard를 index에서 떼어 공유 청크(0.74)로.
+- 2차: `components/reco/recoRows.ts`(행 표 사본 + `recoRows.test` 단일 정의 대조 가드) → 공통 89.15 · `/studio` 128.77 → 여전히 초과. 원인 ② `RecoApply`가 RecoView 청크의 `recoText`를 import → 동적 import 대상 청크가 다른 청크에 export → namespace 객체 도우미(`__export`)가 공용 react 청크에 +0.05.
+- 3차(감량 1회 완료): 대화상자에 문구 함수를 props로 전달 → 공통 89.09(= base) · `/studio` 128.72 · 복원 131.70 → **통과**. (1·2·3차는 같은 감량 단계 안의 원인 제거 — 기능 변경 0)
 
 ## 4. 목업·명세와 다르게 한 부분
 - `runQueued`는 기존 `enqueue`를 그대로 노출(새 함수 본문 0) — 성공·실패 판정은 요청 안에서 호출자(rec 청크)가 한다. 공용 청크 증분 최소화 목적.
+- 파생 표 파일명 `domain/recommendSectionFit.ts`(SPEC 4.1 제안 `recoSectionFit.ts`) — BRIEF 쓰기 경로 `domain/recommend*`에 맞춤. 상수명 `RECO_SECTION_FIT`은 SPEC 그대로.
+- 품질 2항목 측정값 근거는 상태 `match` + `value`(SPEC 2.4 상태 5종 안에서 표현, 순위 점수 0/0).
+- 부제 `reco.brief.summary`는 h1 부제가 아니라 미표시 — 키 표가 rec 청크 안이라 첫 화면(`/catalog` 멈춤선)에 문구 표를 싣지 않으려고. 입력 요약은 필터 칩·레일이 이미 보인다.
+- 청크 로드 실패 alert 문장은 첫 화면(CatalogPage)에 키 `reco.error`·`reco.retry`와 같은 문장으로 직접 둔다(키 표는 그 청크 안).
+- 미리보기 차이 목록의 값 = 행별로 고른 **레퍼런스 제목**(지금 → 새). 비교 셀 라벨은 미리보기에서 받지 않는다(생성 레퍼런스는 담기 전 비교 카탈로그 밖 — 적용 시점에 `getComparison`으로 binding 있는 행만 저장).
+- 적용 실패·충돌 alert는 카드 안이 아니라 추천 결과 영역 위 1자리(SPEC 3.4 "화면 alert 1 — 같은 자리 재사용").
+- 390 폭 순위·총점 줄은 제목 줄 오른쪽이 아니라 카드 아래 추천 줄 첫 줄(카드 본문은 기존 `ReferenceCard` 그대로 재사용 — children 슬롯만 추가).
+- `RecoApply`(대화상자)와 `recoApplyFlow`(본문)를 한 로더가 함께 받는다 — 컴포넌트 파일 비컴포넌트 export 경고(react-refresh) 회피.
+
+## 5. 기존 테스트 정정 (의도된 변경)
+
+| 파일 | 이전 | 이후 | 근거 |
+|---|---|---|---|
+| `pages/CatalogPage.test.tsx` V2-AC-21 | `?tab=rec&industry=beauty` → 자리 문구 "브리프 기반 추천은 다음 단계에서 제공됩니다." 단언 | 같은 URL → `region "추천 결과"` 안 카드 ≥ 1 + 자리 문구 없음. "전체 보기" → tab만 지움 단언은 그대로 | RECO-SPEC 7절 "기존 테스트 영향" · RECO-AC-08 |
+| `components/catalog/CompareTrayBar.test.tsx` 한도 알림 | `notice="…"`(문자열) | `notice={{ text: "…", key: 1 }}`(Announcement) — 단언 동일 | RQ-09 A(같은 문장 재알림 key) |

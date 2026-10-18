@@ -63,6 +63,12 @@ describe("site.json (RZ-AC-08 · 2.3.1)", () => {
     expect(Object.keys(site)).toEqual(["schema", "doc", "kitTokens", "motion", "mainStyle", "images"]);
     expect(site.schema).toBe(1);
     expect(site.doc).toMatchObject({ projectId: "site", revision: 0, hash: "", profileVersion: 0, candidateId: "", libraryVersion: "", generatorVersion: "", updatedAt: "" });
+    expect(Object.keys(site.doc)).toEqual(["projectId", "revision", "hash", "profileVersion", "candidateId", "libraryVersion", "generatorVersion", "updatedAt", "meta", "sections"]);
+    expect(site.kitTokens).toEqual(c.kitTokens);
+    // 실효 모션 = 앱 렌더와 같은 값(L0 = 키 없음) · main 변수 = 팔레트 → --canvas-*
+    expect(site.motion).toEqual({ "header-1": "L1", "hero-1": "L1", "about-1": "L1", "services-1": "L1" });
+    const p = c.kitTokens.palette;
+    expect(site.mainStyle).toEqual({ "--canvas-primary": p.primary, "--canvas-surface": p.surface, "--canvas-ink": p.ink, "--canvas-muted": p.muted, "--canvas-bg": p.bg });
     expect(site.doc.meta).toEqual(c.doc.meta);
     expect(site.doc.sections.map((s) => Object.keys(s))).toEqual(c.doc.sections.map(() => ["instanceId", "type", "variant", "motion", "tone", "slots"]));
   });

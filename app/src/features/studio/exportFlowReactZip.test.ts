@@ -19,7 +19,7 @@ vi.mock("./reactZip/reactZip", () => {
 vi.mock("./staticHtml/staticHtml", () => {
   throw new Error("React zip 경로는 정적 HTML 생성기 청크를 받지 않는다");
 });
-const { requestExportOnce } = await import("./exportFlow");
+const { exportNotes, requestExportOnce } = await import("./exportFlow");
 
 const MB = 1024 * 1024;
 const SLOT = Symbol.for("design-studio/react-zip-generator");
@@ -69,6 +69,13 @@ describe("React zip 생성기 청크 (RZ-AC-04 · B-M4A-08과 같은 계수)", (
     expect(result.kind === "done" && result.notes).toEqual([reactZipNote(1.5 * MB, 2, 2), REACT_ZIP_NEXT]);
     // COPY.md 확정 문안 글자 그대로(FIX1)
     expect(result.kind === "done" && result.notes).toEqual(["zip 1개 · 1.5MB (이미지 2장 · 글꼴 2개)", "압축을 푼 폴더에서 npm ci → npm run dev 순서로 실행하세요. Node.js 버전 조건은 ^20.19.0 || >=22.12.0입니다."]);
+  });
+
+  it("3MB 초과 react-zip → 메일 첨부 안내 0 (결과 줄 = 크기 + 다음 할 일만 · QA 5절 P3)", () => {
+    expect(exportNotes({ bytes: 3 * MB + 1, images: 0, lost: 0, fonts: 0 }, "react-zip")).toEqual([
+      "zip 1개 · 3.0MB (이미지 0장 · 글꼴 0개)",
+      "압축을 푼 폴더에서 npm ci → npm run dev 순서로 실행하세요. Node.js 버전 조건은 ^20.19.0 || >=22.12.0입니다.",
+    ]);
   });
 
   it("잃은 이미지 → 결과 줄 끝에 현행 lostImageText", async () => {

@@ -3,9 +3,16 @@
 대상 tip `62d3aec2`(main `36e825a6` 병합 포함) · 브리프 `QA-BRIEF.md` · 정본 `docs/design/m3/RECO-SPEC.md` r1 + 7a · Developer `REPORT.md`
 QA 실행: Orca + Claude Code, 2026-10-18. 브라우저 미사용(2차 run 계획 `QA-LIVE-PLAN.md`). Codex 미사용. 앱·테스트 코드 커밋 0.
 
-## 0. 판정 (잠정 — 초안)
+## 0. 판정 — **PASS with notes** (1차 정적·회귀 확정)
 
-**잠정: 검증 진행 중** — 항목 1~6 결과가 채워지면 확정. 현재까지 정적 읽기(엔진 `recommend.ts`·`recommendSectionFit.ts`·`recommend.test.ts`)에서 결정성·근거 규칙 위반 발견 0.
+- FAIL 조건(거짓 성공 · 승인 전 변경 · 결정성 깨짐 · 회귀) **0건**. 게이트 4종 fresh 통과(361 files / 3212 tests), 예산 표 Developer 수치와 소수 둘째 자리까지 일치, main 대비 다른 라우트 증분 0~+0.02.
+- 변이 6종(브리프 지정) 전부 FAIL로 잡힘: M2-1 동점 뒤집기 5 · M2-2 품질 순위 포함 6 · M2-3 파생 표 1행 2 · m3-1a 저장 전 성공 표시 3 · m3-2 되돌리기 기록 덮어쓰기 1 · m4-a 정적 import 2. 매번 `git checkout`으로 되돌림, 앱·테스트 코드 커밋 0.
+- 추가 경계 변이 2종은 살아남음 → notes:
+  - **note 3 (권고 1건, Developer 후속)**: AC-16 "저장 resolve **전** '적용됨'·status 0"을 직접 재는 단언이 없다. m3-1c(저장 전 낙관 표시 → 실패 시 앞 기록 복원)가 16/16 통과. 현재 코드는 저장 확인 뒤에만 표시(`RecoView.tsx:137-141`)라 결함은 아님. 지연 `savePicks` 목으로 클릭 직후 "적용됨" 0 · status 빈 값을 단언하는 테스트 1개를 권고.
+  - note 5 (정보): m4-b(로더 유지 + 정적 side-effect import)는 단위 테스트를 통과하지만 검사기 build가 `/catalog` 104.23 > 101로 실패 — 설계대로 두 겹이 함께 막음.
+- 그 밖 notes: 1 AC-17 "모든 라우트 ±0.03" 문장과 `/catalog` +0.42(AC-14b 멈춤선 안)의 해석 · 2 가중치 단언 자기 참조(간접 고정으로 잡힘) · 4 AC-11 꽉 참 테스트의 카드 고르기 조건 공회전 · 6 AC-10 초안 패널 화면 표시는 단위 미단언 · 7 "하드코딩 문장 0" 자동 가드 없음(정적 확인 통과, 예외 2문장은 Developer REPORT 4절에 기록).
+- 보류: RECO-AC-13(390·1280 넘침 · 키보드만)과 AC-08·10의 [V] 부분은 2차 실화면 run(`QA-LIVE-PLAN.md`)에서 판정. 1차 판정은 이 보류를 포함하지 않는다.
+- 결정권자 질문(Developer가 이미 올린 것, QA 재현만): `/catalog` 첫 화면 100.46 — 목표 100.15 미달 +0.31, 멈춤선 100.90 안. QA는 판정선(멈춤선) 기준 통과로 본다.
 
 ## 1. 게이트 · 예산 재현 — PASS
 
@@ -101,7 +108,7 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 
 ## 4. 로드 조건 · 변이 1종 — PASS
 
-- 코드: `CatalogPage.tsx` effect가 `isRec`일 때만 `loadRecoView()`(`recoLoader.ts` = `import("./RecoView")`) · 적용 청크는 RecoView onClick의 `loadRecoApply()`만. 정적 import 0(`git grep` 기준 RecoView·RecoApply·recoApplyFlow를 정적으로 부르는 곳은 로더·타입 import뿐).
+- 코드: `CatalogPage.tsx` effect가 `isRec`일 때만 `loadRecoView()`(`recoLoader.ts` = `import("./RecoView")`) · 적용 청크는 RecoView onClick의 `loadRecoApply()`만. 값 정적 import 0 — `git grep`(테스트 제외) 결과 RecoView·RecoApply·recoApplyFlow를 부르는 곳은 로더 2개(`recoLoader.ts:5`·`recoApplyLoader.ts:6`, 동적 `import()`)와 타입 위치뿐(`CatalogPage.tsx:53` `typeof import(...)` · `RecoView.tsx:17`·`RecoApply.tsx:4` `import type` — 빌드에서 지워짐).
 - 테스트: `CatalogPageRecoLoad.test.tsx:23` — 로더 모듈을 감싸 호출 수를 센다(tab=all 0 → "추천 받기" 뒤 1 · 근거 펼치기까지 적용 로더 0 → "이 추천 적용" 뒤 1).
 
 | 변이 | 내용 | 단위 테스트 | 검사기 build | 판정 |
@@ -110,7 +117,7 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 | (사각 확인) m4-b 로더 호출 유지 + 정적 side-effect import 추가 | `import "../components/reco/RecoView";` 1줄 | 통과 16/16 — 살아남음 | **exit 1** · `/catalog` 첫 화면 104.23 > 101 · `/catalog (추천)` 104.23 > 101 | ✅ 검사기가 잡음 |
 
 - 해석: 로드 조건 테스트는 "로더 호출 수"를 재므로 m4-b(로더는 그대로 부르면서 모듈을 정적으로도 끌어옴)는 못 잡는다. 이 사각은 SPEC 5절 설계대로 검사기 크기 판정이 메운다 — 두 겹을 함께 돌리는 현재 게이트(`npm run build`에 검사기 포함)에서는 회귀가 통과하지 못한다. 결함 아님(note 5, 정보).
-- 되돌림: 각 변이 뒤 `git checkout -- src/pages/CatalogPage.tsx`, dirty 0. m4-b build가 남긴 `dist/`는 원본으로 다시 build(6절 직전 기록).
+- 되돌림: 각 변이 뒤 `git checkout -- src/pages/CatalogPage.tsx`, dirty 0. m4-b build가 남긴 `dist/`는 원본 tip으로 다시 `npm run build` → exit 0 · `/catalog` 100.46 · `/catalog (추천)` 진입 109.07 · `/studio` 128.80 · 복원 131.78(1절과 동일).
 
 ## 5. 바뀐 기존 단언 이전/이후 · RECO-AC-01~17 판정표 — PASS with notes
 
@@ -151,5 +158,9 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 - note 6: AC-10 "초안 패널이 그 레퍼런스 선택을 보임"은 단위에서 저장소 picks 10행으로만 확인 — `/compare` 초안 패널 화면 표시는 단위 단언 없음 → 2차 run 주 흐름 9단계.
 - note 7: `noHardcodedStyle.test`는 hex·px만 검사 — "하드코딩 문장 0"은 자동 가드가 없다. 정적 확인: RecoView·RecoApply 문장은 전부 `recoText` 키 · 예외는 CatalogPage 청크 실패 문장 2개(Developer REPORT 4절에 사유 기록, 키 `reco.error`·`reco.retry`와 같은 문장).
 
-## 6. 2차 실화면 계획
-`QA-LIVE-PLAN.md` (작성 예정)
+## 6. 2차 실화면 계획 — 작성 완료(`QA-LIVE-PLAN.md`, 실행 안 함)
+
+- 도구 ego-browser(Ego Lite)만 · preview 4399 · 이동은 앱 안 클릭만(새로고침 = 메모리 store 초기화) · 폭은 CDP `setDeviceMetricsOverride` 390·1280.
+- 주 흐름 11단계(1280 → 390 반복): 필터(의료·예약·가족) → 추천 받기(RecoView 청크 요청 1, 적용 청크 0) → 1~3위·근거 → 근거 펼치기 7항목 → 2개 더 보기 → 적용 미리보기(적용 청크 요청 1) → 취소 → 키보드로 적용 → `/compare` 초안 10행 → 뒤로 → 키보드로 되돌리기 → `/compare` 적용 전 확인.
+- 빈·실패·경계 8종: 근거 부족 포커스 · 리테일 0개 · 피트니스 1개 · 화면 청크 차단(CDP `Network.setBlockedURLs`) · 적용 청크 차단 · 열 6 꽉 참 · 적용 뒤 보드 변경 stale · 필터 알림 1회/0회. 저장 reject·revision 충돌은 메모리 저장소라 실화면 재현 불가 → 단위 증거로 갈음.
+- 예상 약 20턴(추정, 실패 재현 시 +5).

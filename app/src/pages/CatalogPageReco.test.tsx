@@ -91,6 +91,19 @@ describe("추천 화면 (RECO-SPEC 3.2·3.4)", () => {
 });
 
 describe("승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16)", () => {
+  it("QA N2: 대화상자 버튼 줄은 DOM 순서(취소 → 적용) 그대로 보인다 — 좁은 폭 reverse·order 0(Tab 순서 = 시각 순서)", async () => {
+    renderApp(T_REC_01);
+    const first = (await cards())[0]!;
+    await userEvent.click(within(first).getByRole("button", { name: "이 추천 적용" }));
+    const dialog = await screen.findByRole("dialog");
+    const cancel = within(dialog).getByRole("button", { name: "취소" });
+    const confirm = within(dialog).getByRole("button", { name: "적용" });
+    expect(cancel.parentElement).toBe(confirm.parentElement);
+    expect(cancel.compareDocumentPosition(confirm) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    for (const el of [cancel.parentElement!, cancel, confirm]) expect(el.className).not.toMatch(/(^|\s)([\w-]+:)*(flex-col-reverse|flex-row-reverse|order-)/);
+    expect(cancel).toHaveFocus();
+  });
+
   it("미리보기 '취소'면 쓰기 0 · '적용'이면 저장 확인 뒤 적용됨 + status, 되돌리기는 적용 전과 깊은 동일", async () => {
     const { repo, writes } = spiedBoard();
     const before = (await repo.getBoard()).board;

@@ -56,7 +56,8 @@ export default function ApplyDialog({
           ))}
         </ul>
         <p className="ds-caption1 text-label-alternative">{recoText("reco.apply.preview.keep")}</p>
-        <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
+        {/* 좁은 폭도 DOM 순서(취소 → 적용) 그대로 쌓는다 — 시각 순서 = Tab 순서(QA N2). md 이상 배치는 그대로 */}
+        <div className="flex flex-col gap-2 md:flex-row md:justify-end">
           <Button variant="outline" className="w-full md:w-auto" onClick={() => close(onCancel)}>
             {recoText("reco.apply.preview.cancel")}
           </Button>

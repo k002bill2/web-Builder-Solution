@@ -1,16 +1,17 @@
 # M4-b-2 QA-REPORT 1차 — React zip 정적·회귀 (브라우저 미사용)
 
+> **판정 확정: 조건부 PASS — P1 1건(M6 변이 생존 · RZ-AC-18 통합 공백), P2 2건(복원 예산 여유 0 · react-zip UI 흐름·진입 가드 단위 테스트 부재). R1·R2·R4는 2차 실화면(`QA-LIVE-PLAN.md`).**
 > 대상 tip `89d88dbf` · 2026-10-18 · 표기 [사실]=실행·파일 근거 · [추정] · [미확인]. 앱·테스트 코드 커밋 0, 변이는 매번 `git checkout --` 로 되돌림.
 
-## 판정 (초안 — 항목 진행 중)
+## 판정 (확정)
 | # | 항목 | 판정 | 근거 |
 |---|---|---|---|
 | 1 | fresh 게이트·예산·진입 가드 | **PASS · 위험 1(복원 여유 0)** | 아래 1절 |
 | 2 | RZ-AC 재판독 | **조건부 PASS — 충족 14 · 부분 8 · 미충족 0 (이름만 맞는 테스트 0, 약한 단언 8)** | 아래 2절 |
-| 3 | 변이 6종 | 진행 중 | |
+| 3 | 변이 6종 | **5/6 잡힘 · M6 생존(P1)** | 아래 3절 |
 | 4 | docker node:22 zip 빌드 | **PASS(앱 테스트 경로 산출)** | 아래 4절 |
 | 5 | 메일 첨부 안내 × react-zip 3MB 초과 | **PASS(코드) · 테스트 공백 1건** | 아래 5절 |
-| 6 | QA-LIVE-PLAN | 진행 중 | |
+| 6 | QA-LIVE-PLAN | **작성(계획만)** | `QA-LIVE-PLAN.md` |
 
 ## 5. `exportFlow` 메일 첨부 안내 (Hemingway 지적)
 - [사실] 브리프의 `exportFlow.ts:76`은 base `631190c7` 기준 줄 번호다. tip에서는 `app/src/features/studio/exportFlow.ts:91`.
@@ -57,3 +58,27 @@
 | 11 | 충족(약) | `template.test.ts:14-67` | 3.2-5 (a)~(g) 전부 단언 · 개별 음성은 integrity·라이선스뿐. 변이 M3a·M3b 잡힘 |
 
 - 우선 보강 권고(구현 레인): ① M6을 잡는 통합 단언 — 실제 `ReactZipError`를 흐름에 통과시켜 refused 확인 ② react-zip UI 흐름 1건 ③ 진입 가드 단위 테스트(표식 주입 음성·양성).
+
+## 3. 변이 6종 (매번 `git checkout --` 되돌림 · 앱 코드 커밋 0)
+- 실행: `$TMPDIR/qa-rz/mutate.sh`(bash) — 치환 1곳 → `npx vitest --run src/features/studio/reactZip src/features/studio/exportFlowReactZip.test.ts src/features/studio/exportFlow.test.ts`(기준선 7 files / 81 tests passed) → 되돌림 → `git status` 빈 값 확인. 가드 변이는 `npm run build`.
+- 주의 기록: 첫 실행은 zsh가 `$T`를 단어 분리하지 않아 "No test files found"(exit 1)로 **가짜 FAIL** — 무효 처리하고 bash 배열로 재실행했다. 아래가 재실행 결과.
+
+| # | 변이 | 위치 | 결과 | 잡은 테스트 |
+|---|---|---|---|---|
+| M1 | 허용표 밖 파일 1개 허용(`other.length > 0` → `> 1`) | `checkReactZipEntries.ts:61` | **FAIL 1** | `checkReactZipEntries.test.ts` "허용표 밖 파일 → 실패" |
+| M2 | site.json UUID→키 치환 제거(키 대신 원래 UUID) | `siteJson.ts:36` | **FAIL 19** | reactZip.test 결정성·스키마·이미지 source UUID 0·브랜드 · checkReactZipEntries "정상 M2 = 위반 0" 등 |
+| M3a | lock integrity 대조 줄 삭제 | `template.test.ts:21` | **FAIL 1** | "하위 항목 integrity 누락 → 실패" |
+| M3b | lock 템플릿에서 integrity 1줄 삭제 | `template/package-lock.json.tpl:30` | **FAIL 3** | "정상 lock = 위반 0" 외 2 |
+| M4 | 메뉴 리스너 `hidePopover()` 호출 제거 | `templates.ts:52` | **FAIL 1** | "popover 안 # 앵커 클릭 → hidePopover 1회" |
+| M5a | 진입 가드 킷 표식 → 없는 문자열 | `check-bundle-size.mjs:237` | **build exit 1** | 표식 자기 검사("kit.css 첫 줄에 없습니다") |
+| M5b | 킷 표식 → `react` | 같은 곳 | **build exit 1** | 같은 자기 검사(음성 검사까지 못 감) |
+| M5c | lock 표식 → `createRoot`(진입 index에도 있음) | `check-bundle-size.mjs:239` | **build exit 1** | 음성 검사 "진입 assets/index-*.js에 lock 표식" — 두 시나리오 모두 |
+| M6 | 단언·용량 실패를 재시도 가능으로(`ReactZipError.retry = false` → `true`) | `reactZip.ts:27` | **생존 — 대상 81 · 전체 369 files / 3342 tests 전부 통과** | 없음 |
+
+- M6 원인 [사실]: `exportFlowReactZip.test.ts:82-89`이 `Object.assign(new Error("문구"), {shown:true, retry:false})` 가짜 오류를 생성기 mock에 넣는다. 실제 `ReactZipError`의 `retry` 값은 어느 테스트도 보지 않는다 → Codex r1 #2 수정(단언·용량 = 재시도 없는 거절)이 **회귀 가드 없이** 남아 있다. 권고(P1, 구현 레인): `expect(new ReactZipError("x").retry).toBe(false)` 1줄 + 실제 `buildReactZip` 단언 실패를 흐름에 통과시켜 `refused` 확인 1건.
+- 가드 양성/음성: 양성(생성기 청크에 표식 있음)은 M5a의 표식 자기 검사 + 정상 빌드 "가드 통과"로, 음성(진입 집합에 표식 0)은 M5c로 확인. 가드 자체의 단위 테스트는 없다(2절 AC-20).
+
+## 남은 것 · 다음 레인
+- P1: M6 회귀 가드(위). P2: 복원 예산 여유 0(1절) · react-zip UI 흐름 테스트 · 진입 가드 단위 테스트. P3: react-zip 3MB 초과 메일 안내 0 단언(5절) · 2절 부분 항목.
+- [미확인] R1·R2·R3·R4·C2 — 2차(`QA-LIVE-PLAN.md`) / CI 결정 후.
+- 서브에이전트: 1개(code-explorer, 읽기 전용 · 2절 AC 판독) — 결과 통합, 핵심 지적(AC-18 가짜 오류)은 M6으로 실측 확인.

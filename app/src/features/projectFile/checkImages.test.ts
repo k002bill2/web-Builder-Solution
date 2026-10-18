@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { readImageRecord } from "../../data/persistence/imageRecord";
+import { readImageHeader } from "../studio/images/ingest/header";
 import { fakeDeps, fakeImageBytes, fileImage, jsonFile, seedFile, toBase64 } from "../../test/projectFileFixtures";
 import { checkFile } from "./checkFile";
 import { checkImages } from "./checkImages";
@@ -17,6 +18,12 @@ async function rejected(images: readonly unknown[], code: ImportCode, options?: 
   expect(await checkImages(images, deps)).toEqual(fail(code));
   return calls;
 }
+
+describe("픽스처 = 실제 헤더(readImageHeader가 읽는 치수)", () => {
+  it("png · jpeg · webp 헤더 치수 = 인자", () => {
+    for (const format of ["png", "jpeg", "webp"] as const) expect(readImageHeader(format, fakeImageBytes(format, 1280, 768))).toMatchObject({ width: 1280, height: 768 });
+  });
+});
 
 describe("⑤ 한도 = IM-5 (디코드 전)", () => {
   it("25개 = IM-5 · 디코드 0", async () => {

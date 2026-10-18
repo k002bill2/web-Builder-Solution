@@ -3,7 +3,7 @@
  * 실제 경로(가짜 Web Locks 두 탭): requestExport 판정 뒤 `kept` flush가 쓰기 탭이 아니라 INFRA(READ_ONLY_TAB)로 거절한다.
  */
 import { ProjectRepositoryError, type ProjectRepository } from "../../data/projectRepository";
-import { READ_ONLY_TAB, toInfra } from "../../data/persistence/infra";
+import { CLEARED_TAB, READ_ONLY_TAB, STALE_TAB, toInfra } from "../../data/persistence/infra";
 import { createLockRegistry } from "../../data/persistence/fakeLocks";
 import { PROJECT, otherTab, startedRig } from "./save/testRig";
 
@@ -30,9 +30,12 @@ describe("B-M4A-12 읽기 전용 탭 내보내기", () => {
     expect(writer).toMatchObject({ kind: "done", format: "static-html" });
   });
 
-  it("그 밖 INFRA(저장 공간 부족·사유 없는 INFRA)는 그대로 재시도 가능 · 사유 0", async () => {
+  it("그 밖 INFRA(저장 공간 부족·사유 없는 INFRA·STALE_TAB·CLEARED_TAB)는 그대로 재시도 가능 · 사유 0", async () => {
     const quota = toInfra(Object.assign(new Error("q"), { name: "QuotaExceededError" }), "저장");
     expect(await requestExportOnce(rejecting(quota), PROJECT, "static-html", 1)).toEqual({ kind: "retryable", format: "static-html" });
     expect(await requestExportOnce(rejecting(new ProjectRepositoryError("INFRA", "연결")), PROJECT, "static-zip", 1)).toEqual({ kind: "retryable", format: "static-zip" });
+    // 같은 INFRA·같은 flush 경로의 다른 탭 사유 — 판별을 느슨하게(예: includes("다른 탭에서")) 바꾸는 회귀를 잡는다
+    expect(await requestExportOnce(rejecting(toInfra(undefined, "저장", STALE_TAB)), PROJECT, "static-html", 1)).toEqual({ kind: "retryable", format: "static-html" });
+    expect(await requestExportOnce(rejecting(toInfra(undefined, "저장", CLEARED_TAB)), PROJECT, "static-html", 1)).toEqual({ kind: "retryable", format: "static-html" });
   });
 });

@@ -1,6 +1,6 @@
 # M4-b REACTZIP-SPEC — React 프로젝트(zip) 내보내기 명세
 
-- 작성: Designer (M4-b-1) · 2026-10-18 · r0
+- 작성: Designer (M4-b-1) · 2026-10-18 · r1 (r0 초안 + 조언자 보강 + Codex adversarial 1회 지적 4건 반영)
 - 범위: 내보내기 형식 **React 프로젝트(zip)**(`react-zip`) — 진입·상태 · 산출 zip 구성·허용표 · 의존성·lock · 충실도 계약 · 수용 기준·테스트 · LICENSES 항목 · 설계 질문. 정적 zip·HTML 1개·PNG는 M4-a(`docs/design/m4a/EXPORT-SPEC.md` r1) 그대로다.
 - 정본(이 문서가 따르는 결정): 스파이크 `dev/active/m4b-spike/REPORT.md`(결론 줄·2절·5절) · PRD FR-PUB-02(2026-10-18 개정 — `motion/react` 제외, 버전 고정 + package-lock 동봉) · TRD:70(산출 스택) · TRD:314(내보내기 zip 빌드 성공률 100%) · EXPORT-SPEC r1(버튼·결과·실패·Q18) · ADR-004 개정 20(M4-b 진입 몫 +0.03).
 - 영환님 결정(2026-10-18 "1"): Q1 (a)안(킷 소스 `?raw` 동봉 + `site.json`) · Q2 개정 20 +0.03 · Q3 버전 고정 + lock 동봉 · Q7 `motion/react` 제외(PRD 개정).
@@ -86,8 +86,8 @@ src/images.ts                    고정 템플릿 — import.meta.glob("./assets
 src/index.css                    @import "tailwindcss" + ./kit/kit.css + ./kit/motion.css + body 기본값(4.2 Q6 A) + ./fonts.css
 src/fonts.css                    쓰는 계열·굵기 @font-face만(faceRule 재사용, src = ./assets/fonts/<이름>)
 src/site.json                    2.3 스키마
-src/types/pageDoc.ts             타입 원문(경로만 치환)
-src/types/protocol.ts            타입 원문(MotionPreset만 치환)
+src/types/pageDoc.ts             타입 원문 + 치환 2개(2.3.1): MotionPreset import → 리터럴 유니온 · LocalImageId 브랜드 → 내보내기 키 타입
+src/types/protocol.ts            타입 원문(import 경로만 치환)
 src/kit/<킷 원문>                 app/src/kit/ 의 테스트 제외 .ts/.tsx + kit.css + motion.css
 src/assets/fonts/<Family>-<weight>.woff2   쓰는 계열 1 × 굵기 ≤ 2 (M4-a와 같은 서브셋 바이트)
 src/assets/fonts/OFL.txt         fontLicenseText(family)
@@ -104,7 +104,7 @@ src/assets/images/img-<NN>.<webp|jpg|png>  업로드 이미지(2.2)
 3. 확장자 = Blob type(`image/webp`·`image/jpeg`·`image/png` → `webp`·`jpg`·`png`). 그 밖 = 생성 실패.
 4. 참조(★ RZQ-05 A): `site.json.doc` 안 이미지 참조 id를 **`img-NN` 키로 바꿔** 넣는다. 로컬 UUID가 산출물에 남지 않는다. `src/images.ts`가 `./assets/images/img-NN.ext` → Vite가 해시 붙인 URL로 바꾼다. `PageDocument`는 키 → URL 맵(앱의 `images` 자리)과 `site.json.images`의 크기 맵(앱의 `imageSizes` 자리)을 넘긴다.
    - [사실] 킷 `<img>`는 id를 DOM에 내보내지 않는다 — 속성은 `data-media="image"`·`src`·`alt`·`width`·`height`·`style`·`fetchPriority`/`loading`·`className`뿐이다(`kit/Media.tsx:45-55`). 키 치환은 DOM에 흔적을 남기지 않으므로 DOM 정규화는 `src`만 다룬다(4.1).
-5. 잃은 이미지 = 파일 없이 킷 자체 그래픽(현행) · 결과 줄 `lostImageText`.
+5. 잃은 이미지 = 파일 없이 킷 자체 그래픽(현행) · `source`는 placeholder로 바꾼다(2.3.1 3.1) · 결과 줄 `lostImageText`.
 6. 같은 id를 여러 슬롯이 쓰면 파일 1개 · 키 1개.
 
 ### 2.3 `site.json` 스키마 (v1)
@@ -112,7 +112,7 @@ src/assets/images/img-<NN>.<webp|jpg|png>  업로드 이미지(2.2)
 ```ts
 interface SiteJsonV1 {
   readonly schema: 1;                                   // 이후 구조 변경 시 올린다
-  readonly doc: PageDoc;                                // 저장된 revision 문서. 폴백 표식·편집기 전용 필드 제외판 · 이미지 참조 = "img-NN"
+  readonly doc: ExportDoc;                              // 2.3.1 — PageDoc 모양 유지 · 내부 필드 = 중립 상수 · 이미지 source = 내보내기 키 또는 플레이스홀더
   readonly kitTokens: KitTokenInput;                    // 문서 킷 토큰(팔레트·타이포·간격 — 앱 입력 그대로)
   readonly motion: Readonly<Record<string, MotionPreset>>; // instanceId → 실효 모션(생성 시점 sectionMotion.motionOf + firstScreenIds 계산 결과, 엔진 코드 동봉 0)
   readonly mainStyle: Readonly<Record<`--${string}`, string>>; // canvasVars(kitTokens.palette) 결과 — main 요소 CSS 변수
@@ -125,7 +125,30 @@ interface SiteJsonV1 {
 - [사실] 앱 `render/PageDocument`는 문서 밖 이미지 값 2개를 받는다 — `images`(id → URL)·`imageSizes`(id → 원본 width·height)(`render/PageDocument.tsx:17-29`). 킷 `Media`는 `images[image.source]`로 URL을 고르고 `aspect`로 원본 비율 칸을 그린다(`kit/Media.tsx:13-33`). 그래서 `images` 값은 파일 이름만이 아니라 크기를 함께 담는다 — 빠지면 masonry 칸 비율이 달라져 4.1 배치 기준이 깨진다.
 - `loading`(내보내기 render 전용 `"eager"`)은 zip에서 넘기지 않는다(★ RZQ-11 A — 실제 사이트는 킷 기본값: hero 즉시 + 그 밖 lazy).
 - 사용자 글자는 `doc` 안에만 있다(본문·alt·meta). 앱 내부 값(프로젝트 id·사용자 이름·저장 시각·잡 id)은 넣지 않는다.
-- 생성기는 직렬화 전에 위 형태를 런타임 검증한다(경계 검증 원칙). 실패 = 1.3 "생성기 단언".
+- 생성기는 직렬화 전에 위 형태를 런타임 검증한다(경계 검증 원칙 — 타입 단언으로 대신하지 않는다). 실패 = 1.3 "생성기 단언".
+
+#### 2.3.1 `ExportDoc` — 내보내기 문서 계약 (Codex r1 P1 반영)
+
+- 문제: [사실] `PageDoc`은 `projectId`·`revision`·`hash`·`profileVersion`·`candidateId`·`libraryVersion`·`generatorVersion`·`updatedAt`을 필수로 갖고(`engine/contracts/pageDoc.ts:82-98`), 이미지 `source`를 UUID 브랜드 타입 `LocalImageId`로 제한한다(`:39-47`). 킷은 원문 그대로 `kitLinks(doc: PageDoc)`·`heroTop(doc: PageDoc)`를 쓴다(`kit/text.ts:1,29,44`). 원문 문서를 넣으면 내부 정보가 새고, 필드를 지우면 킷 타입이 깨진다. 스파이크는 문서 전체를 직렬화했다(`reactZip.ts:58`) — 이 문제의 해결 근거가 아니다.
+- 규칙(★ RZQ-13 A — 모양 유지 + 중립 상수):
+  1. `ExportDoc` = `PageDoc`과 **같은 필드 집합**. 생성기는 원문을 펼치지 않고 필드를 하나씩 골라 새 객체를 만든다(허용 목록 방식 — 원문에 필드가 늘어도 새지 않는다).
+  2. 내부 필드 값 = 고정 중립 상수: `projectId` `"site"` · `revision` `0` · `hash` `""` · `profileVersion` `0` · `candidateId` `""` · `libraryVersion`·`generatorVersion` `""` · `updatedAt` `""`. [사실] 킷은 `sections`만 읽는다(`kit/text.ts:29-44`) → DOM 영향 0. 결정성도 유지된다.
+  3. `meta`·`sections` = 원문 값 그대로(이미지 `source`만 아래 3.1 규칙으로 바꾼다).
+  3.1 이미지 `source` 변환 — `exportImages`가 실제로 바이트를 고른 id만 키를 받는다 [사실 `exportImages.ts:25-38` — enabled이고 바이트가 있는 id만 `images`에 들어가고, 없으면 `lost++`]:
+
+  | 원문 `source` | 슬롯 상태 | 변환 | 이유 |
+  |---|---|---|---|
+  | `LocalImageId` | `enabled` + 바이트 있음 | `img-NN` 키 | 2.2 번호 규칙 |
+  | `LocalImageId` | `enabled` + 바이트 없음(잃은 이미지) | `{ kind: "placeholder", patternId: "diagonal" }` | [사실] 앱 `Media`는 URL 없는 로컬 id를 `"diagonal"` 무늬로 그린다(`kit/Media.tsx:34-36`) → 같은 DOM |
+  | `LocalImageId` | `enabled: false` | `{ kind: "placeholder", patternId: "diagonal" }` | [사실] 킷은 끈 슬롯 값을 읽지 않는다(`kit/text.ts:13` — `enabled`일 때만 값) → DOM 영향 0 · UUID 제거 |
+  | `PlaceholderSource` | 무관 | 그대로 | — |
+
+  4. zip `src/types/pageDoc.ts` 치환 2개(생성기 고정 규칙, 허용표가 결과를 검사):
+     - `import type { MotionPreset } from "../../domain/compareBoard";` → `type MotionPreset = "L0" | "L1" | "L2";` [사실 MotionPreset import는 `pageDoc.ts:5`에 있다 · 스파이크 `reactZip.ts:59`와 같음]
+     - `export type LocalImageId = string & { readonly __brand: "LocalImageId" };` → ``export type LocalImageId = `img-${string}`;`` (산출물 안에서 이미지 키를 뜻한다)
+     - `protocol.ts`는 import 경로만 바꾼다(스파이크 `reactZip.ts:60`과 같음).
+  5. zip 쪽 경계: JSON import는 넓은 타입(`string`)이라 `src/main.tsx`에서 **한 번만** `site as unknown as SiteJson`으로 좁힌다(`SiteJson`은 `src/PageDocument.tsx`가 export). 내용 보장은 생성기 런타임 검증(위)과 RZ-AC-08이 맡는다. 산출물에 런타임 검증 코드를 넣지 않는다(번들·파일 최소).
+- 검증: RZ-AC-08이 ① 내부 필드 = 중립 상수 ② UUID 모양 문자열 0(`site.json` 전체 문자열 검색) ③ `img-NN` 참조 집합 = `images` 키 집합 ④ 잃은·끈 이미지 슬롯 = placeholder를 각각 확인한다. RZ-AC-13이 이 변환 뒤 DOM 동일을 확인한다(M2 문서에 잃은 이미지·끈 슬롯 포함).
 - 결정성: `JSON.stringify(value, null, 2) + "\n"` · 키 순서 = 위 순서 고정. 같은 revision → 같은 바이트.
 
 ### 2.4 허용표 (`checkReactZipEntries` — M4-a `checkZipEntries`와 분리)
@@ -139,7 +162,7 @@ interface SiteJsonV1 {
 | `README.md` · `LICENSES.md` | 각 정확히 1 | 브랜드 문자열 0(M4-a F-14 규칙) · LICENSES 필수 절(6절) 존재 |
 | `src/fonts.css` | 정확히 1 | `url()` = `./assets/fonts/[A-Za-z]+-\d{3}\.woff2`만 · `@import` 0 |
 | `src/site.json` | 정확히 1 | 2.3 스키마 통과 |
-| `src/types/(pageDoc\|protocol)\.ts` | 정확히 2 | 생성기 원문 상수와 동일 |
+| `src/types/(pageDoc\|protocol)\.ts` | 정확히 2 | **2.3.1 치환을 마친** 원문과 동일 · 허용 트리 밖 import 0(`domain/*`·`engine/*` 경로 0) |
 | `src/kit/[A-Za-z][A-Za-z0-9]*\.(tsx?\|css)` | **킷 목록과 정확히 같은 집합** | 생성기 원문과 동일 · 빈 원문 0(스파이크 함정 — `css: false`면 `?raw` CSS가 빈 문자열) |
 | `src/assets/fonts/[A-Za-z]+-\d{3}\.woff2` | 1~2 | 첫 4바이트 `wOF2` |
 | `src/assets/fonts/OFL.txt` | 정확히 1 (글꼴 ≥ 1일 때) | 계열 고지 포함 |
@@ -147,7 +170,7 @@ interface SiteJsonV1 {
 
 - 킷 이름에는 숫자가 들어간다(`ServicesCards3.tsx`·`PricingTiers2.tsx`·`StatisticsStats3.tsx`·`TestimonialsQuotes2.tsx`) [사실 `raw/zip-listing.txt`] — 위 패턴은 첫 글자만 영문으로 묶는다.
 - 공통(M4-a 4.3 승계): 경로 ASCII · `/` 구분 · 선행 `/`·`..`·`\`·`:` 0 · 대소문자만 다른 중복 0 · 길이 ≤ 100자.
-- **참조 무결성**: `site.json.images`의 값 집합 = `src/assets/images/*` entry 집합 · `doc` 안 `img-NN` 참조 = `images` 키 집합 · `fonts.css`의 `url()` = 글꼴 entry 집합(고아 0 · 끊긴 참조 0).
+- **참조 무결성**: `site.json.images`의 `file` 집합 = `src/assets/images/*` entry 집합 · `doc` 안 `img-NN` 참조 = `images` 키 집합(잃은·끈 슬롯은 2.3.1에서 placeholder가 되므로 키가 없다) · `fonts.css`의 `url()` = 글꼴 entry 집합(고아 0 · 끊긴 참조 0).
 - 개수 상한: 고정 파일 15 + 킷(스파이크 38) + 글꼴 ≤ 3 + 이미지 ≤ 64 → 약 120 [추정] — entry < 65,535(ZIP64 불필요).
 - 크기 상한: 정적 zip과 같은 `ZIP_MAX` 64MB 재사용(이미지 보관 30MB + 고정 파일 약 0.2MB + 글꼴 ≤ 0.6MB) [추정 — 스파이크 이미지 0 문서 681,956 B].
 - entry 순서(결정적): `package.json` → `package-lock.json` → `index.html` → `vite.config.ts` → `tsconfig.json` → `README.md` → `LICENSES.md` → `src/*` 고정 파일(이름순) → `src/types/*` → `src/kit/*`(이름순) → `src/assets/fonts/*`(이름순) → `src/assets/images/*`(번호순).
@@ -190,7 +213,7 @@ interface SiteJsonV1 {
 2. **생성 환경**: Linux(ubuntu, Node 22 LTS 계열 · npm 버전 기록) — 스파이크 Q3 권장. [사실] 저장소에 CI 설정이 아직 없다(`.github/` 없음) → CI 신설 여부 = RZQ-10. CI가 없을 동안은 Linux 컨테이너에서 같은 명령을 돌린다. 이유: mac에서 만든 lock에도 linux·win32 선택 바인딩 38항목이 들어 있지만 다른 OS `npm ci`는 미실측 [사실 REPORT 5절 Q3].
 3. **생성 명령**(CI 잡 `react-zip-lock`, 수동 트리거): 빈 디렉터리에 템플릿 `package.json`만 쓰고 `npm install --no-audit --no-fund` → 산출 `package-lock.json`을 아티팩트로 올린다. 사람이 받아 원본 위치에 커밋한다(CI가 저장소에 직접 쓰지 않는다).
 4. **갱신 조건**: 3.1 버전 표 변경 · 앱 의존성 갱신으로 RZ-AC-12 실패 · 보안 공지 대응. 갱신 PR에는 lock diff와 6절 라이선스 표 갱신을 함께 넣는다.
-5. **대조 테스트(오프라인 단위, 매 CI)**: lock의 `lockfileVersion` = 3 · `packages[""].dependencies`·`devDependencies`·`engines` = 템플릿 `package.json`과 정확히 같음 · `motion` 항목 0 · `packages["node_modules/<9개>"].version` = 3.1 표 · 모든 `resolved`가 `https://registry.npmjs.org/`로 시작 · 모든 비-링크 항목에 `integrity` 존재 · 라이선스 필드 집합 ⊆ 허용 집합(MIT·Apache-2.0·ISC·BSD-2/3-Clause·0BSD·MPL-2.0(devDep 한정)) — 새 라이선스 종류가 나타나면 실패.
+5. **대조 테스트(오프라인 단위, 매 CI)**: lock의 `lockfileVersion` = 3 · `packages[""].dependencies`·`devDependencies`·`engines` = 템플릿 `package.json`과 정확히 같음 · `motion` 항목 0 · `packages["node_modules/<9개>"].version` = 3.1 표 · 루트 `packages[""]`는 위 메타데이터 대조로만 검사하고, **그 밖 설치 항목**(`node_modules/…` 키 · `link: true` 제외)은 모두 `resolved`가 `https://registry.npmjs.org/`로 시작 · `integrity` 존재 [사실 — npm lock의 루트 항목에는 `integrity`가 없다(Codex r1이 앱 `package-lock.json`으로 확인)] · 테스트는 정상 lock 통과와 하위 항목 `integrity` 누락 실패를 각각 확인 · 라이선스 필드 집합 ⊆ 허용 집합(MIT·Apache-2.0·ISC·BSD-2/3-Clause·0BSD·MPL-2.0(devDep 한정)) — 새 라이선스 종류가 나타나면 실패.
 6. **설치 안내**: README·결과 안내는 `npm ci`를 권한다(lock 그대로 설치). PRD 수용 문구 `npm install && npm run build`도 lock이 있으면 같은 집합을 설치한다 [추정 — npm은 lock과 package.json이 맞으면 lock을 따른다]. CI 잡(5.3)은 둘 다 돈다.
 
 ### 3.3 `engines` (스파이크 Q9 ★)
@@ -267,7 +290,7 @@ interface SiteJsonV1 {
 | RZ-AC-05 | U | 읽기 전용 탭(INFRA + `READ_ONLY_TAB`)에서 react-zip → refused `READ_ONLY` · "다시 시도" 0 |
 | RZ-AC-06 | U | entry 집합 = 2.4 허용표만 · 순서 2.4 · 디렉터리 entry 0 · 경로 ASCII · 킷 entry 집합 = 킷 목록 · 빈 원문 0 |
 | RZ-AC-07 | U | 같은 문서·revision 두 번 생성 → 결과 해시 동일 |
-| RZ-AC-08 | U | `site.json` = 2.3 스키마 · 로컬 UUID 0 · 이미지 키 ↔ entry ↔ doc 참조 무결성 |
+| RZ-AC-08 | U | `site.json` = 2.3 스키마 · 내부 필드 = 2.3.1 중립 상수 · UUID 모양 문자열 0 · 잃은·끈 이미지 = placeholder · 이미지 키 ↔ entry ↔ doc 참조 무결성 |
 | RZ-AC-09 | U | 글꼴 entry 바이트 = 같은 문서의 정적 zip 글꼴 entry 바이트 · `OFL.txt` = `fontLicenseText` |
 | RZ-AC-10 | U | `package.json` = 9개 정확 고정 · `motion` 0 · `engines.node` = `^20.19.0 \|\| >=22.12.0` · `build` = `tsc --noEmit && vite build` |
 | RZ-AC-11 | U | lock 대조(3.2-5) 전 항목 |
@@ -358,6 +381,7 @@ interface SiteJsonV1 {
 | RZQ-09 | lock 생성 Node 버전 | A Node 22 LTS 계열(TRD 생성기 Node 22와 같음) · B engines 최소(20.19) | **A** — lock v3는 두 버전 모두 읽는다 [추정] |
 | RZQ-10 | CI 신설(현재 `.github/` 없음) | A GitHub Actions 신설 — 오프라인 테스트 + `react-zip-build`·`react-zip-lock` · B CI 없이 구현·QA 레인이 로컬·Linux 컨테이너에서 실행하고 로그로 남김 | **A** — TRD:314 "zip 빌드 성공률 100%"를 매번 확인할 자리. 인프라는 미정(CLAUDE.md)이라 Jarvis 판단 · 원격 push는 영환님 승인 후 |
 | RZQ-11 | zip의 이미지 로드 방식 | A 킷 기본값(hero 즉시 · 그 밖 lazy) · B 내보내기 render처럼 전부 eager | **A** — 실제 사이트 성능. 대조는 4.1 정규화 ③으로 처리 |
+| RZQ-13 | `site.json.doc`의 내부 필드 처리(2.3.1) | A `PageDoc` 모양 유지 + 내부 필드 중립 상수 · B 별도 축소 타입(`meta`·`sections`만) + 킷 `kitLinks`·`heroTop` 시그니처를 `Pick<PageDoc, "sections">`로 변경 | **A** — 킷 원문·앱 렌더 변경 0. B는 킷(렌더·PNG·정적 내보내기 공용) 변경이라 별건 |
 | RZQ-12 | SSR 대조 대상 | A 생성기가 만든 실제 산출 파일을 `node_modules/.cache`에 풀어 import · B 템플릿 원본을 별칭으로 import | **A** — 산출물 자체를 검사 · 앱 설정(별칭) 변경 0 |
 
 ### 7.1 사용자 질의 대상 (예산 상향 · 엔진 계약 · 앱 새 의존성 · 백엔드)
@@ -371,6 +395,18 @@ interface SiteJsonV1 {
 ---
 
 ## 8. 출처·관찰 기록
+
+### 8.1 Codex 검증 (1회 · `adversarial-review --scope branch --base a1c404a0`)
+
+- 판정 needs-attention · 지적 4건 — **전부 반영**(r1). 킷 38개 파일명은 2.4 정규식 통과 확인(Codex).
+
+| # | 등급 | 지적 | 반영 |
+|---|---|---|---|
+| 1 | P1 | `site.json.doc`이 `PageDoc` 필수 필드·`LocalImageId` 브랜드와 충돌 | 2.3.1 `ExportDoc`(모양 유지·중립 상수·필드 허용 목록) · RZQ-13 |
+| 2 | P1 | `MotionPreset` 치환 대상이 `protocol.ts`가 아니라 `pageDoc.ts` | 2.1 트리·2.4 허용표·2.3.1-4 정정 |
+| 3 | P2 | 잃은·끈 이미지 `source` 변환이 참조 무결성과 충돌 | 2.3.1 3.1 변환표(placeholder `diagonal`) · 2.4 무결성 문구 |
+| 4 | P2 | lock 루트 `packages[""]`에는 `integrity`가 없어 정상 lock이 실패 | 3.2-5 루트 제외 · 통과/실패 테스트 쌍 |
+
 
 - 외부 리서치 0. CI 설정 없음 = `ls .github` 결과(No such file or directory). 라이선스·버전·engines = 메인 체크아웃 `app/node_modules/<이름>/package.json`(2026-10-18 로컬 읽기) · 스파이크 `raw/zip-package.json`·`raw/zip-npm-ls.txt`·`raw/zip-listing.txt`.
 - 실화면 관찰: 이번 레인은 명세만 — preview·ego-browser 미실행. 실측은 RZ-AC-R*·C*로 구현·QA 레인이 한다.

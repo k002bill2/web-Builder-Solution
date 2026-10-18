@@ -395,6 +395,15 @@ interface SiteJsonV1 {
 
 ---
 
+## 7a. 결정 기록 (Jarvis 2026-10-18 — 영환님 자동 진행 원칙 "★안 자동 적용")
+
+- RZQ-01~09 · 11 · 12 · 13: **★ A 전부 채택.**
+- **RZQ-10 CI 신설: B로 시작(★ A 보류).** 근거: 비공개 저장소의 GitHub Actions 분 과금·windows/macOS 러너 배수는 비용 결정이고, 저장소에 CI가 없는 상태에서 신설은 새 인프라라 사전 질의 대상. 그동안 구현·QA 레인이 **로컬 Linux 컨테이너(docker `node:22`)** 에서 `react-zip-build`·`react-zip-lock` 단계를 돌리고 로그를 PROGRESS에 남긴다. RZ-AC-C1·C2는 "로컬 Linux 컨테이너 실측"으로 판정하고, windows·macOS(RZQ-07)는 CI 결정 전까지 [미확인]으로 둔다(M5 전 릴리스 체크 — B-M4A-09와 같은 경로).
+- 문구 [문안 미정] 키(`export.format.reactZip`·`export.note.reactZip`·`export.note.reactZipNext`·README·LICENSES 머리·킷 소스 절)는 Hemingway가 쓰고 Jarvis가 대조해 구현 레인에 반영한다. 구현은 한 파일의 자리 상수로 먼저 진행한다.
+- 사용자 질의 대상(7.1): 없음 — 단 RZQ-10 A(CI 신설)는 영환님 결정 시 재개.
+
+---
+
 ## 8. 출처·관찰 기록
 
 ### 8.1 Codex 검증 (1회 · `adversarial-review --scope branch --base a1c404a0`)

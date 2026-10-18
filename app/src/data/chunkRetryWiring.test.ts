@@ -37,4 +37,15 @@ describe("조작 뒤 로더 배선", () => {
     const modules = await Promise.all(wrapped.map((load) => load()));
     expect(modules.filter((m) => "openLocalSync" in m && !("createDocBook" in m))).toHaveLength(1);
   });
+
+  it("QA D1: 추천 적용 청크 2개(RecoApply·recoApplyFlow)도 각각 retryableImport로 싼다 — 실패 뒤 다시 시도 = 실패한 청크만 새 URL", async () => {
+    const before = wrapped.length;
+    await import("../components/reco/recoApplyLoader");
+    const added = wrapped.slice(before);
+    expect(added).toHaveLength(2);
+    const [dialog, flow] = await Promise.all(added.map((load) => load()));
+    expect(dialog!.default).toBe((await import("../components/reco/RecoApply")).default);
+    expect("runApply" in flow! && !("default" in flow!)).toBe(true);
+  });
+
 });

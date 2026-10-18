@@ -145,7 +145,15 @@ export function CatalogPage() {
                   // 청크 실패 문구 = 키 reco.error·reco.retry(키 표는 그 청크 안이라 첫 화면에는 문장만 — RECO-SPEC 3.4 오류)
                   <div role="alert" className="flex items-center gap-2 py-8">
                     <p className="ds-body3 text-status-negative-text">추천을 불러오지 못했습니다.</p>
-                    <button type="button" className="ds-label text-primary-text hover:underline" onClick={() => setRecoView(undefined)}>
+                    <button
+                      type="button"
+                      className="ds-label text-primary-text hover:underline"
+                      onClick={() => {
+                        // 버튼이 사라져도 포커스가 BODY로 가지 않게 결과 영역에 둔다(SPEC 3.6 · QA D1 부수)
+                        document.getElementById(CATALOG_RESULTS_ID)?.focus();
+                        setRecoView(undefined);
+                      }}
+                    >
                       다시 시도
                     </button>
                   </div>

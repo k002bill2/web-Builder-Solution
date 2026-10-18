@@ -1,0 +1,15 @@
+     44|     await import("../components/reco/recoApplyLoader");
+     45|     const added = wrapped.slice(before);
+     46|     expect(added).toHaveLength(3);
+       |                   ^
+     47|     const [view, dialog, flow] = await Promise.all(added.map((load) =>…
+     48|     expect(view!.default).toBe((await import("../components/reco/RecoV…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  15:27:51
+   Duration  1.20s (environment 56%, tests 30%, setup 10%, transform 3%, import 1%)
+

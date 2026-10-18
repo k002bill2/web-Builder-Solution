@@ -92,7 +92,11 @@ export default function RecoView({
   const [dialog, setDialog] = useState<{ readonly mod: ApplyModule; readonly plan: ApplyPlan } | null>(null);
   const focusNext = useRef<string | null>(null);
   const alertKey = useRef(0);
-  const say = (text: string, retry?: () => void) => setAlert({ text, retry, key: (alertKey.current += 1) });
+  const say = (text: string, retry?: () => void) => {
+    // 새 alert는 다시 마운트된다(key) — 포커스가 옛 alert 안이었으면 새 "다시 시도"로 옮긴다(BODY 0, SPEC 3.6 · QA D1 부수)
+    if (retry && document.activeElement?.closest("[data-reco-alert]")) focusLater("retry");
+    setAlert({ text, retry, key: (alertKey.current += 1) });
+  };
 
   const byId = useMemo(() => new Map([...known, ...items].map((r) => [r.id, r])), [known, items]);
   const titleOf = (id: string) => byId.get(id)?.title ?? id;
@@ -166,10 +170,10 @@ export default function RecoView({
   };
 
   const alertLine = alert && (
-    <div key={alert.key} role="alert" className="mb-4 flex flex-wrap items-center gap-2 rounded-md bg-fill-normal px-4 py-3">
+    <div key={alert.key} role="alert" data-reco-alert className="mb-4 flex flex-wrap items-center gap-2 rounded-md bg-fill-normal px-4 py-3">
       <p className="ds-body3 text-status-negative-text">{alert.text}</p>
       {alert.retry && (
-        <Button size="sm" variant="outline" onClick={alert.retry}>
+        <Button data-reco-focus="retry" size="sm" variant="outline" onClick={alert.retry}>
           {recoText("reco.retry")}
         </Button>
       )}

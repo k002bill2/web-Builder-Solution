@@ -36,3 +36,18 @@
 - [x] R2-3 fresh typecheck·lint·test·build
 - [x] R2-4 REPORT 0·1절 갱신 · preview 리슨 0 · untracked 0
 - R2 bf8329e4 병합(기준선 main 128.79·131.77) · /studio 128.80 · 복원 131.78 · 13f17354 감량 1회 /catalog 100.48→100.46 · 게이트 tc 0 · lint 0 · 361/3212 · build 0 · Ego 생략(DOM 변화 0) · preview 미기동
+
+## FIX1 체크리스트 (BRIEF-FIX1)
+- [x] BRIEF-FIX1 커밋 e825fcdb
+- [ ] D1a 적용 청크 2개 retryableImport + 재시도 포커스(결과 영역 · 새 alert "다시 시도")
+- [ ] D1b 화면 청크 retryableImport — 예산 판정
+- [ ] N1 "2개 더 보기" 뒤 포커스 = 4번째 카드 제목
+- [ ] N2 390 대화상자 시각 순서 = DOM(Tab) 순서
+- [ ] N4 비활성 "이 추천 적용" aria-describedby
+- [ ] note 3 지연 savePicks — 클릭 직후 "적용됨" 0 · status 빈 값
+- [ ] fresh typecheck·lint·test·build
+- [ ] Ego Lite 1회(E4 차단→해제→다시 시도→카드 · 390 Tab 순서)
+- [ ] Codex adversarial 1회 + 반영 1회
+- [ ] 마감: preview 종료·리슨 0 · untracked 0 · REPORT
+- FIX1 로그: D1 RED `logs/fix1-d1-red.txt`(배선 가드 0/3) · 결과 영역 포커스 Red-Green(수정 제거 FAIL → 복원 PASS)
+- D1 전체 build(`logs/fix1-d1-build.txt`): `/catalog` 100.46 → **100.77**(+0.31 > +0.05). 원인 = chunkRetry 청크(gz 306B)가 `/catalog` 첫 화면에 새로 들어옴 — 브리프 전제("이미 진입 직후 청크")는 `/catalog`엔 해당 없음(진입도 102.79→103.11). 감량 1회 = 화면 로더 감싸기 분리(D1a/D1b) 실측

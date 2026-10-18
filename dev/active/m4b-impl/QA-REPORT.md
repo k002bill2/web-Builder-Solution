@@ -1,4 +1,6 @@
-# M4-b-2 QA-REPORT 1차 — React zip 정적·회귀 (브라우저 미사용)
+# M4-b-2 QA-REPORT 1차 — React zip 정적·회귀 (브라우저 미사용) · 2차 실화면(10절)
+
+> **2차 판정 확정: 조건부 PASS — R1 PASS(앱 실제 경로 zip docker node:22 빌드 0 · kit/lock 바이트 동일 · 이미지 문서 UUID 0) · R4 PASS(1280·390 alert→다시 시도→성공 · status 1 · 결과 줄 원문 · 메일 0 · 줄바꿈 0, P3 재시도 뒤 포커스 BODY = 공용 경로) · R2 [미확인](앱 렌더 iframe DOM 수집 불가 · 50턴 상한). FAIL 기준 해당 0. 종합(1·2차): 조건부 PASS — 1차 P1 M6은 FIX1 `1d94dbb3`로 가드됨(REPORT FIX1), 남은 조건 = R2 실화면 렌더 대비 1회.** (10절)
 
 > **판정 확정: 조건부 PASS — P1 1건(M6 변이 생존 · RZ-AC-18 통합 공백), P2 2건(복원 예산 여유 0 · react-zip UI 흐름·진입 가드 단위 테스트 부재). R1·R2·R4는 2차 실화면(`QA-LIVE-PLAN.md`).**
 > 대상 tip `89d88dbf` · 2026-10-18 · 표기 [사실]=실행·파일 근거 · [추정] · [미확인]. 앱·테스트 코드 커밋 0, 변이는 매번 `git checkout --` 로 되돌림.
@@ -114,3 +116,11 @@
 - 관찰(P3, 이번 diff 밖): 재시도 성공 뒤 포커스가 BODY로 빠진다 — "다시 시도" 버튼이 사라지면서 생긴다. 공용 `components/studio/ExportRetryAlert.tsx`(정적 zip·HTML 공용, 1차·M2A 경로)라 React zip 고유 결함이 아니고 FAIL 기준(거짓 성공·거짓 다시 시도·중복)에도 해당하지 않는다. 권고: 재시도 성공 시 누른 형식 버튼으로 포커스 복귀(다음 레인).
 - [미확인] 3MB 초과 react-zip 실화면: 문서가 0.7MB라 유도 불가(이미지는 앱이 WebP로 변환·축소). 근거는 FIX1 단위 테스트 `b4813fe9`(P3 react-zip 3MB 초과 메일 안내 0).
 - 자동화 주의: 390 직접 클릭은 ego `page.click`이 "header intercepts"로 거절(DOM `elementFromPoint` = 버튼 자체 → 앱 결함 아님), 좌표 클릭은 스크롤로 빗나감 → 키보드 focus+Enter로 측정.
+
+### 10.3 R2 렌더 대비 — **[미확인] (50턴 상한으로 마감)**
+- A(앱 렌더 iframe) 수집 실패 [사실]: 편집기 미리보기 `iframe[src=/render.html]`은 `contentDocument` = null(sandbox · 교차 출처), `Page.getFrameTree` 자식 프레임에도 없음(프로세스 분리 OOPIF로 추정 [추정]). 다음 시도 경로: `task.cdp("Target.getTargets")`로 iframe 타깃에 붙어 `Runtime.evaluate`, 또는 SPEC 4.1대로 `render.html`을 직접 열고 같은 `render` 메시지 전달.
+- B(zip 사이트) [사실]: 이미지 문서 zip을 `$TMPDIR/qa-live/img/run`에서 로컬 `npm ci` 0 · `npm run build` 0 → `vite preview --port 4400`(HTML `<title>모던 카페</title>` 응답 확인). 측정 스크립트의 대기 조건(`fonts loaded && 모든 img.complete`)이 20초 안에 참이 되지 않아 타임아웃 — 첫 화면 밖 `loading="lazy"` 이미지가 complete 되지 않은 탓으로 추정 [추정]. 결함 판정 근거 아님.
+- 미확인 행: 1280·390 정규화 DOM 비교 · 390 메뉴 열기→항목 클릭→닫힘 · masonry `aspect`·이미지 표시. 단위 근거는 `fidelity.test.tsx`(SPEC 4.1 RZQ-12 SSR 대조)·`templates.ts` 메뉴 변이 M4 FAIL(1차 3절)뿐 — 실화면 재시도 필요(스크립트 `$TMPDIR/qa-live/scripts/r2*.mjs` 구조 재사용 가능: 대기 조건을 첫 화면 이미지로 좁힐 것).
+
+### 10.4 마감 [사실]
+- preview 4399·4400 종료 → `lsof -nP -iTCP:4399 -sTCP:LISTEN` 0줄 · 4400 0줄. IDB `design-studio` 삭제(남은 DB 0)·localStorage 비움 → TaskSpace 50 `finish({keep:[]})`. 산출 zip·풀린 폴더는 `$TMPDIR/qa-live/`(저장소 밖). 앱·테스트 코드 변경 0 · 원격 명령 0 · Codex 0.

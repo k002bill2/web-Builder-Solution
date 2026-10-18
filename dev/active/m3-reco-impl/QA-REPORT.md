@@ -6,10 +6,10 @@ QA 실행: Orca + Claude Code, 2026-10-18. 브라우저 미사용(2차 run 계�
 ## 0. 판정 — **PASS with notes** (1차 정적·회귀 확정)
 
 - FAIL 조건(거짓 성공 · 승인 전 변경 · 결정성 깨짐 · 회귀) **0건**. 게이트 4종 fresh 통과(361 files / 3212 tests), 예산 표 Developer 수치와 소수 둘째 자리까지 일치, main 대비 다른 라우트 증분 0~+0.02.
-- 변이 6종(브리프 지정) 전부 FAIL로 잡힘: M2-1 동점 뒤집기 5 · M2-2 품질 순위 포함 6 · M2-3 파생 표 1행 2 · m3-1a 저장 전 성공 표시 3 · m3-2 되돌리기 기록 덮어쓰기 1 · m4-a 정적 import 2. 매번 `git checkout`으로 되돌림, 앱·테스트 코드 커밋 0.
+- 변이(브리프 지정 6종) 결과: M2-1 동점 뒤집기 FAIL 5 · M2-2 품질 순위 포함 FAIL 6 · M2-3 파생 표 1행 FAIL 2 · m3-1a 저장 전 성공 표시 FAIL 3 · m3-2 되돌리기 기록 덮어쓰기 FAIL 1 · 로드 조건(정적 import) — **단위 테스트는 로더 호출 조건만 막고(m4-a FAIL 2), 첫 화면 정적 포함은 검사기(build exit 1)가 막는다(m4-b·m4-c 단위 통과 · 검사기 실패). 두 겹 게이트를 함께 돌려야 막힌다.** 매번 `git checkout`으로 되돌림, 앱·테스트 코드 커밋 0. 원문 `logs/qa-mut-*.txt`.
 - 추가 경계 변이 2종은 살아남음 → notes:
   - **note 3 (권고 1건, Developer 후속)**: AC-16 "저장 resolve **전** '적용됨'·status 0"을 직접 재는 단언이 없다. m3-1c(저장 전 낙관 표시 → 실패 시 앞 기록 복원)가 16/16 통과. 현재 코드는 저장 확인 뒤에만 표시(`RecoView.tsx:137-141`)라 결함은 아님. 지연 `savePicks` 목으로 클릭 직후 "적용됨" 0 · status 빈 값을 단언하는 테스트 1개를 권고.
-  - note 5 (정보): m4-b(로더 유지 + 정적 side-effect import)는 단위 테스트를 통과하지만 검사기 build가 `/catalog` 104.23 > 101로 실패 — 설계대로 두 겹이 함께 막음.
+  - note 5: 로드 조건 단위 테스트는 "로더 호출 수"만 잰다 — m4-b(로더 유지 + 정적 side-effect import)·m4-c(`recoLoader.ts` 안쪽을 정적 import로, 호출 모양 유지)는 단위 테스트를 통과하고 검사기 build만 실패(`/catalog` 104.23·104.31 > 101). 검사기 첫 화면 예산 여유는 101 − 100.46 = **0.54KB** — 이보다 작은 정적 포함은 검사기도 통과하며, 멈춤선 100.90은 검사기가 판정하지 않는다(REPORT 수치로 사람이 판정).
 - 그 밖 notes: 1 AC-17 "모든 라우트 ±0.03" 문장과 `/catalog` +0.42(AC-14b 멈춤선 안)의 해석 · 2 가중치 단언 자기 참조(간접 고정으로 잡힘) · 4 AC-11 꽉 참 테스트의 카드 고르기 조건 공회전 · 6 AC-10 초안 패널 화면 표시는 단위 미단언 · 7 "하드코딩 문장 0" 자동 가드 없음(정적 확인 통과, 예외 2문장은 Developer REPORT 4절에 기록).
 - 보류: RECO-AC-13(390·1280 넘침 · 키보드만)과 AC-08·10의 [V] 부분은 2차 실화면 run(`QA-LIVE-PLAN.md`)에서 판정. 1차 판정은 이 보류를 포함하지 않는다.
 - 결정권자 질문(Developer가 이미 올린 것, QA 재현만): `/catalog` 첫 화면 100.46 — 목표 100.15 미달 +0.31, 멈춤선 100.90 안. QA는 판정선(멈춤선) 기준 통과로 본다.
@@ -55,7 +55,8 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 | `/studio` 정규화 | 128.79 | 128.80 | +0.01 | ✅ (멈춤 > 128.82) |
 | `/studio (복원)` 정규화 | 131.77 | 131.78 | +0.01 | ✅ (멈춤 > 131.80) |
 
-- 주의: AC-17 문장 "모든 라우트 첫 화면·진입 ±0.03"을 글자대로 읽으면 `/catalog` +0.42가 걸린다. AC-14(b)가 `/catalog`만 멈춤선 100.90으로 따로 두고, AC-17 제목이 "공용 청크(index-*) 증분"이라 QA는 `/catalog`를 AC-14(b)로 판정했다 — 해석 note 1.
+- 로그: `logs/qa-gate-*.txt`(tip) · `logs/qa-main-36e825a6-bundle.txt`(main).
+- 주의: AC-17 문장 "모든 라우트 첫 화면·진입 ±0.03"을 글자대로 읽으면 `/catalog` +0.42가 걸린다. AC-14(b)가 `/catalog`만 멈춤선 100.90으로 따로 두고, AC-17 제목이 "공용 청크(index-*) 증분"이라 QA는 `/catalog`를 AC-14(b)로 판정했다 — 해석 note 1. 근거 문구: SPEC 7절 "구현 E0 실측이 `/catalog` 첫 화면 100.90 또는 다른 라우트 ±0.03을 넘으면 재상신"(`/catalog`와 다른 라우트를 따로 둔다).
 - 참고(판정 밖): `/catalog` 첫 화면 목표 100.15 미달(+0.31)은 Developer가 결정권자 질문으로 이미 올림(REPORT 0절 R2) — QA는 수치 재현만 확인, 판정은 멈춤선 기준.
 
 ## 2. 결정성·근거 (T-REC-01~05) · 변이 3종 — PASS
@@ -80,7 +81,7 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 | M2-2 품질 항목 순위 포함 | 가중치 a11y·perf 0 → 15 · 측정값 `⌊s×15/100⌋` 점수화 | **FAIL 6/64** | T-REC-01(max 70) · 미측정 0/0 · 측정 0/0 · 동점 · external 대조(총점 70) |
 | M2-3 파생 표 1행 변경 | `"ref-a": INQUIRY` → `BOTH` | **FAIL 2/64** | ref-a 엔진 대조 행 · 표 전체 = 엔진 파생 |
 
-- 로그: `/tmp/qa-m3/m2-{1,2,3}.txt`(세션 임시 — 위 표가 요약 원문).
+- 로그: `logs/qa-mut-m2-{1,2,3}.txt`.
 - note 2(테스트 관찰, 결함 아님): `RECO_WEIGHTS` 7개 값을 한 줄로 고정하는 단언은 없고 `b.max === RECO_WEIGHTS[b.item]`(`recommend.test.ts:197`)은 자기 참조다. 다만 T-REC-01 총점·max 70·mood 단언이 값을 간접 고정해 가중치 변이는 잡힌다(M2-2로 확인).
 
 ## 3. 승인 전 변경 0 · 적용·되돌리기 · 변이 2종 — PASS with notes
@@ -104,7 +105,8 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 | (경계) m3-1b 저장 전 표시 + 실패 시 지움 | 1a + 실패면 `setApplied(null)` | FAIL 1/16 | Codex P2만(부수적으로 — 앞 기록을 지워서 걸림) |
 | (경계) **m3-1c 저장 전 표시 + 실패 시 앞 기록 복원** | 1a + 실패면 이전 기록 복원 | **통과 16/16 — 살아남음** | 없음 |
 
-- **note 3 (테스트 공백, 코드 결함 아님)**: AC-16 "`addReference`/`savePicks`가 resolve하기 **전에는** '적용됨'·status 0"을 직접 재는 단언이 없다. 기존 테스트는 실패·충돌 **뒤** 상태만 본다 → m3-1c처럼 "저장 전 낙관 표시 → 실패면 원복"하는 거짓 성공(스크린리더에는 '적용했습니다'가 이미 읽힘, status 문장은 실패 뒤에도 남음)을 막지 못한다. 현재 코드는 정적으로 저장 뒤에만 표시하므로 FAIL 아님. 권고(Developer 후속, 1건): 지연 `savePicks`(deferred promise) 목으로 "적용" 클릭 직후 `queryByText("적용됨")` null · status 비어 있음 · `aria-busy` 버튼을 단언하고 resolve 뒤 표시를 단언하는 테스트 1개.
+- 로그: `logs/qa-mut-m3-{1a,1b,1c,2}.txt`.
+- **note 3 (테스트 공백, 코드 결함 아님)**: AC-16 "`addReference`/`savePicks`가 resolve하기 **전에는** '적용됨'·status 0"을 직접 재는 단언이 없다. 기존 테스트는 실패·충돌 **뒤** 상태만 본다 → m3-1c처럼 "저장 전 낙관 표시 → 실패면 원복"하는 거짓 성공(스크린리더에는 '적용했습니다'가 이미 읽힘, status 문장은 실패 뒤에도 남음)을 막지 못한다. 현재 코드는 정적으로 저장 뒤에만 표시하므로 FAIL 아님. 권고(Developer 후속, 1건): 지연 `savePicks`(deferred promise) 목으로 "적용" 클릭 직후 `queryByText("적용됨")` null · status 비어 있음 · `aria-busy` 버튼을 단언하고 resolve 뒤 표시를 단언하는 테스트 1개. 더 싼 대안: 기존 `CatalogPageReco.test.tsx:123` 테스트에서 alert 뒤 `status`에 "적용했습니다"가 없음을 단언하는 한 줄 — m3-1c(실패 뒤에도 status 문장이 남음)를 잡는다.
 
 ## 4. 로드 조건 · 변이 1종 — PASS
 
@@ -114,9 +116,11 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 | 변이 | 내용 | 단위 테스트 | 검사기 build | 판정 |
 |---|---|---|---|---|
 | **m4-a 정적 import로 바꾸기**(브리프 지정) | `import RecoViewStatic from ".../RecoView"` + 로더를 `Promise.resolve` 대체 | **FAIL 2/53**(로드 조건 · 청크 실패 재시도) | (미실행) | ✅ 잡힘 |
-| (사각 확인) m4-b 로더 호출 유지 + 정적 side-effect import 추가 | `import "../components/reco/RecoView";` 1줄 | 통과 16/16 — 살아남음 | **exit 1** · `/catalog` 첫 화면 104.23 > 101 · `/catalog (추천)` 104.23 > 101 | ✅ 검사기가 잡음 |
+| (사각 확인) m4-b 로더 호출 유지 + 정적 side-effect import 추가 | `import "../components/reco/RecoView";` 1줄 | 통과 16/16 — 살아남음 | **exit 1** · `/catalog` 첫 화면 104.23 > 101 · `/catalog (추천)` 104.23 > 101 | 검사기만 잡음 |
+| (사각 확인) **m4-c 로더 안쪽을 정적 import로**(글자 그대로의 "정적 import로 바꾸기") | `recoLoader.ts`: `import * as RecoView from "./RecoView"; export const loadRecoView = () => Promise.resolve(RecoView);` | 통과 53/53 — 살아남음(테스트 목이 `actual.loadRecoView`를 감싸 호출 수 그대로) | **exit 1** · `/catalog` 104.31 > 101 · `/catalog (추천)` manifest에 RecoView 없음 · `/studio` 128.85 > 128.82 · 복원 131.84 > 131.80 | 검사기만 잡음 |
 
-- 해석: 로드 조건 테스트는 "로더 호출 수"를 재므로 m4-b(로더는 그대로 부르면서 모듈을 정적으로도 끌어옴)는 못 잡는다. 이 사각은 SPEC 5절 설계대로 검사기 크기 판정이 메운다 — 두 겹을 함께 돌리는 현재 게이트(`npm run build`에 검사기 포함)에서는 회귀가 통과하지 못한다. 결함 아님(note 5, 정보).
+- 해석(브리프 질문 "tab=all에서 rec 청크 안 받음 테스트가 실제로 막는가"에 대한 답): **단독으로는 아니다.** 단위 테스트는 로더 호출 조건(tab=all 0 · tab=rec 1 · 적용 누름 전 0)만 막고, 청크가 첫 화면에 정적으로 섞이는 회귀(m4-b·m4-c)는 검사기 크기 판정이 막는다(SPEC 5절이 처음부터 둘을 나눈 설계 — 검사기는 로드 조건을, 단위는 크기를 증명하지 못한다). 현재 완료 게이트(test + build 검사기)를 함께 돌리면 4종 모두 막힌다. 남는 사각: 0.54KB 미만 정적 포함(note 5). 결함 아님.
+- 로그: `logs/qa-mut-m4-a.txt` · `logs/qa-mut-m4-b-build.txt` · `logs/qa-mut-m4-c.txt`.
 - 되돌림: 각 변이 뒤 `git checkout -- src/pages/CatalogPage.tsx`, dirty 0. m4-b build가 남긴 `dist/`는 원본 tip으로 다시 `npm run build` → exit 0 · `/catalog` 100.46 · `/catalog (추천)` 진입 109.07 · `/studio` 128.80 · 복원 131.78(1절과 동일).
 
 ## 5. 바뀐 기존 단언 이전/이후 · RECO-AC-01~17 판정표 — PASS with notes

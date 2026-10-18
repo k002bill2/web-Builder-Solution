@@ -1,0 +1,5 @@
+[bundle] /catalog 첫 화면 합계: 104.23KB / 예산 101KB · 진입 직후 자동 로드 포함: 106.56KB / 예산 125KB
+[bundle] /catalog (추천) 첫 화면 합계: 104.23KB / 예산 101KB · 진입 직후 자동 로드 포함: 107.95KB / 예산 125KB
+[bundle] 예산 검사 실패 — /catalog: 첫 화면 104.23KB > 101KB
+[bundle] 예산 검사 실패 — /catalog (추천): 첫 화면 104.23KB > 101KB
+build EXIT 1 · 단위(CatalogPageRecoLoad·CatalogPageReco) 16/16 통과

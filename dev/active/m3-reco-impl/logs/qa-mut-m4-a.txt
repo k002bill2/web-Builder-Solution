@@ -1,0 +1,6 @@
+=== m4-a 정적 import로 바꾸기(로더 우회)
+     × tab=all 0 → '추천 받기' 뒤 화면 청크 1 · 적용 청크는 '이 추천 적용' 누름 뒤에만 225ms
+     × 화면 청크 로드 실패면 결과 영역 alert + 다시 시도 → 카드 3019ms
+ Test Files  1 failed | 2 passed (3)
+      Tests  2 failed | 51 passed (53)
+reverted: 0 dirty

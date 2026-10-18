@@ -1,0 +1,13 @@
+=== m4-c recoLoader 안쪽을 정적 import로(로더 호출 모양 유지)
+-export const loadRecoView = () => import("./RecoView");
++import * as RecoView from "./RecoView";
++export const loadRecoView = () => Promise.resolve(RecoView);
+ Test Files  3 passed (3)
+      Tests  53 passed (53)
+build EXIT 1
+[bundle] /catalog 첫 화면 합계: 104.31KB / 예산 101KB · 진입 직후 자동 로드 포함: 106.65KB / 예산 125KB
+[bundle] 예산 검사 실패 — /catalog: 첫 화면 104.31KB > 101KB
+[bundle] 예산 검사 실패 — /catalog (추천): manifest에 src/components/reco/RecoView.tsx가 없습니다 (경로 변경 시 SCENARIOS를 고치세요)
+[bundle] 예산 검사 실패 — /studio/:projectId: 해시 정규화 진입 128.85KB > 기준선 128.79KB + 0.03KB
+[bundle] 예산 검사 실패 — /studio/:projectId (저장 데이터 복원 진입): 해시 정규화 진입 131.84KB > 기준선 131.77KB + 0.03KB
+reverted: 0 dirty

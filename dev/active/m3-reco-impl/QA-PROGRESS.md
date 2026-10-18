@@ -10,4 +10,10 @@
 - [x] 5. 바뀐 기존 단언 이전/이후 표(약화 0) · RECO-AC-01~17 판정표
 - [x] 6. QA-LIVE-PLAN.md 작성
 - [x] 7. QA-REPORT 초안(잠정 판정) → 최종 판정
-- [ ] 8. 마감: `git status --short` 빈 값 · 변이 전부 되돌림 확인
+- [x] 8. 마감: `git status --short` 빈 값 · 변이 전부 되돌림 확인
+
+## 기록
+- 서브에이전트 0(브리프 항목이 순차 의존 — 같은 작업 트리에서 변이를 하나씩 적용·되돌림해야 해 병렬 불가).
+- 임시 worktree `/tmp/qa-m3-main`(main `36e825a6` 비교 빌드) — 빌드 뒤 `git worktree remove` 완료.
+- 변이 9종(브리프 6 + 경계 3) 매번 `git checkout` 되돌림 · 변이 build 뒤 원본 재빌드 exit 0(100.46 일치).
+- 판정: PASS with notes(QA-REPORT 0절). 2차 실화면 run = QA-LIVE-PLAN.md.

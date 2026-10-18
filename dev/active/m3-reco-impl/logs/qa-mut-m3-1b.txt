@@ -1,0 +1,8 @@
+=== m3-1b 적용 성공을 저장 전에 표시(실패 시 지움)
++    setApplied({ referenceId: id, before: plan.before, added: false, revision: plan.revision });
++    announce(recoText("reco.status.applied", { title: titleOf(id) }));
++    if (outcome.kind !== "applied") setApplied(null);
+     × Codex r1 P2: A 적용 뒤 B 적용이 실패해도 A의 되돌리기 기록은 남고, 되돌리면 적용 전과 깊은 동일 114ms
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 15 passed (16)
+reverted: 0 dirty

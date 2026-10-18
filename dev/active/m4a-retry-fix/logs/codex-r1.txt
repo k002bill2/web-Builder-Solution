@@ -1,0 +1,17 @@
+# Codex Adversarial Review
+
+Target: branch diff against a0068764
+Verdict: needs-attention
+
+출시 보류: 연속 청크 실패 계수가 유실되고, 저장 안전성을 확인하지 않은 새로고침 안내가 표시됩니다. 소스 기반 메모리 재현으로 계수 오류를 확인했으며 전체 테스트는 실행하지 않았습니다.
+
+Findings:
+- [medium] [P2] 요청 종료 뒤 도착한 청크 실패를 계수에서 누락합니다 (app/src/features/studio/exportFlow.ts:89-94)
+  memoryDocBook.requestExport는 응답이 실패해도 finally에서 생성 작업을 시작합니다. 응답 유실 또는 settle의 10초 대기 종료로 requestOnce가 먼저 끝나면, 이 finally는 아직 false인 generatorFailed를 보고 계수를 0으로 초기화합니다. 이후 import가 거부되어도 계수를 갱신하는 경로는 없습니다. 응답 실패 뒤 청크 실패를 도착시키는 메모리 재현에서 두 번 모두 retryable이 반환됐지만 계수는 계속 0이었습니다. 다른 프로젝트 요청도 같은 플래그를 초기화하므로 진행 중 요청의 실패를 지울 수 있습니다.
+  Recommendation: 실패 상태를 요청 또는 잡별로 연결하고 실제 청크 로드 결과가 확정될 때 정확히 한 번 반영하세요. 응답 유실·폴링 종료 이후의 import 거부와 프로젝트 간 동시 요청을 검증하세요.
+- [medium] [P2] 저장되지 않은 편집에도 새로고침을 안내합니다 (app/src/components/studio/ExportRetryAlert.tsx:27)
+  새 안내는 실패 횟수만 확인하며 저장 상태와 영속 여부를 받지 않습니다. 두 번 실패한 뒤 사용자가 편집하거나 내보내기 대기 중 추가 편집하면, dirty·saving·failed·offline 상태에서도 새로고침 안내가 유지됩니다. 이는 BRIEF의 '저장 상태가 안전할 때만' 조건을 위반합니다. 기존 beforeunload 경고는 저장 완료를 보장하지 않으므로, 안내를 따라 이동을 확정하면 미저장 변경이 소실될 수 있습니다.
+  Recommendation: 현재 저장 상태와 영속 여부를 전달해 안전한 경우에만 새로고침을 안내하세요. 저장 중이거나 미저장 변경이 있으면 저장 완료 또는 저장 복구를 먼저 안내하고, 실패 후 추가 편집 시나리오를 검증하세요.
+
+Next steps:
+- 요청별 실패 계수와 저장 안전성 조건을 수정한 뒤 지연 실패·동시 요청·실패 후 추가 편집 회귀 테스트를 실행하세요.

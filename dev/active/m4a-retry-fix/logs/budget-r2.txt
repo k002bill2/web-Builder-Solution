@@ -1,0 +1,7 @@
+249:[bundle] /studio/:projectId 첫 화면 합계: 91.33KB / 예산 100KB · 진입 직후 자동 로드 포함: 130.09KB / 예산 130.5KB
+259:[bundle]   /studio/:projectId 해시 정규화 진입 128.79KB · 기준선 128.79KB + 0.03KB (멈춤 > 128.82KB) — raw 130.09KB는 참고(해시 이름 흔들림 포함)
+260:[bundle] /studio/:projectId (저장 데이터 복원 진입) 첫 화면 합계: 91.33KB / 예산 100KB · 진입 직후 자동 로드 포함: 133.12KB / 예산 134KB
+270:[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.77KB · 기준선 131.77KB + 0.03KB (멈춤 > 131.80KB) — raw 133.12KB는 참고(해시 이름 흔들림 포함)
+
+# 진입 청크(StudioLayout-C09Fmy_Z.js) 증분 조각별 gzip 몫 (python gzip -9, 조각 제거 시 감소량)
+문구 `새로고침한 뒤 다시 시도하세요` 25B · 로더 계수 래퍼 23B · 표시 분기(fails>1?) 8B · 계수 객체 8B

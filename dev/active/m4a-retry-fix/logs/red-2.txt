@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-retry-fix/app
+
+ ❯ src/features/studio/exportFlowChunk.test.ts (2 tests | 1 failed) 6ms
+   ❯ 생성기 청크 로드 실패 횟수 (B-M4A-08) (2)
+     × 응답이 먼저 실패하고 생성기 청크 실패가 나중에 와도 센다 — 요청 종료가 계수를 지우지 않는다(Codex r1 P2) 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/exportFlowChunk.test.ts > 생성기 청크 로드 실패 횟수 (B-M4A-08) > 응답이 먼저 실패하고 생성기 청크 실패가 나중에 와도 센다 — 요청 종료가 계수를 지우지 않는다(Codex r1 P2)
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/features/studio/exportFlowChunk.test.ts:45:31
+     43|     expect(await requestExportOnce(repository, "p2", "static-html", 1)…
+     44|     await late;
+     45|     expect(exportChunk.fails).toBe(1);
+       |                               ^
+     46|   });
+     47|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  13:51:56
+   Duration  563ms (environment 73%, setup 12%, transform 11%, import 2%, tests 1%, worker 1%)
+

@@ -76,8 +76,28 @@ fresh 실행(QA, tip `62d3aec2`, `app/`에서 순서대로):
 - 로그: `/tmp/qa-m3/m2-{1,2,3}.txt`(세션 임시 — 위 표가 요약 원문).
 - note 2(테스트 관찰, 결함 아님): `RECO_WEIGHTS` 7개 값을 한 줄로 고정하는 단언은 없고 `b.max === RECO_WEIGHTS[b.item]`(`recommend.test.ts:197`)은 자기 참조다. 다만 T-REC-01 총점·max 70·mood 단언이 값을 간접 고정해 가중치 변이는 잡힌다(M2-2로 확인).
 
-## 3. 승인 전 변경 0 · 적용·되돌리기 · 변이 2종
-(진행 중)
+## 3. 승인 전 변경 0 · 적용·되돌리기 · 변이 2종 — PASS with notes
+
+정적 대조:
+
+| 규칙 | 코드 | 테스트 | 판정 |
+|---|---|---|---|
+| 승인 전 변경 0 (T-REC-06 · AC-09) | RecoView 진입·펼치기·필터는 읽기만(`useReferenceList`·`recommend`) · 미리보기 `previewApply`는 `whenIdle` 뒤 `getBoard`만(`recoApplyFlow.ts:54-68`) | `CatalogPageReco.test.tsx:65` 쓰기 5종(addReference·removeReference·savePicks·confirmProfile·createProfileVersion) 0 + picks 불변 · `:86` 미리보기 → 취소 쓰기 0 | ✅ |
+| 적용 = 저장 확인 뒤 성공 (AC-16) | `runApply`는 큐 요청 안에서 `savePicks` resolve 뒤에만 `applied`(`recoApplyFlow.ts:95-96`) · 화면은 `outcome.kind === "applied"`일 때만 `setApplied`·status(`RecoView.tsx:137-141`) | `:123` savePicks 1회 실패 → "적용됨" 0 · alert 1 · 재시도는 savePicks만(addReference 1회) · `:221` revision 충돌 → 쓰기 0 | ✅ (코드) · note 3 |
+| 되돌리기 세션 유지 | 모듈 `WeakMap<repository, UndoTicket>`(`RecoView.tsx:44`) — 새로고침이면 사라짐(SPEC 4.3) | `:171` 적용 → `/compare` → 뒤로 → 되돌리기 = 적용 전 picks·columns 깊은 동일 | ✅ |
+| 뒤 적용 실패 시 앞 기록 보존 (Codex r1 P2) | 진행(Busy)과 마지막 성공 기록 분리 — 실패 분기는 `setApplied`를 부르지 않음 | `:149` A 적용 → B addReference 실패 → A 되돌리기 = 적용 전 깊은 동일 | ✅ |
+| 되돌리기 stale (AC-11) | `board.revision !== ticket.revision` → aria-disabled + 이유 | `:210` | ✅ |
+
+변이(각각 `RecoView.tsx`에 적용 → `npx vitest run CatalogPageReco.test.tsx CatalogPageRecoLoad.test.tsx` → `git checkout`, 되돌린 뒤 dirty 0):
+
+| 변이 | 내용 | 결과 | 잡은 테스트 |
+|---|---|---|---|
+| m3-1a 적용 성공을 저장 전에 표시 | `runApply` 전에 `setApplied` + status "적용했습니다" | **FAIL 3/16** | AC-16 저장 실패 · Codex P2 · AC-16 충돌 |
+| m3-2 되돌리기 기록 덮어쓰기 | 적용 시작 시 `setApplied(null)` | **FAIL 1/16** | Codex r1 P2 회귀 |
+| (경계) m3-1b 저장 전 표시 + 실패 시 지움 | 1a + 실패면 `setApplied(null)` | FAIL 1/16 | Codex P2만(부수적으로 — 앞 기록을 지워서 걸림) |
+| (경계) **m3-1c 저장 전 표시 + 실패 시 앞 기록 복원** | 1a + 실패면 이전 기록 복원 | **통과 16/16 — 살아남음** | 없음 |
+
+- **note 3 (테스트 공백, 코드 결함 아님)**: AC-16 "`addReference`/`savePicks`가 resolve하기 **전에는** '적용됨'·status 0"을 직접 재는 단언이 없다. 기존 테스트는 실패·충돌 **뒤** 상태만 본다 → m3-1c처럼 "저장 전 낙관 표시 → 실패면 원복"하는 거짓 성공(스크린리더에는 '적용했습니다'가 이미 읽힘, status 문장은 실패 뒤에도 남음)을 막지 못한다. 현재 코드는 정적으로 저장 뒤에만 표시하므로 FAIL 아님. 권고(Developer 후속, 1건): 지연 `savePicks`(deferred promise) 목으로 "적용" 클릭 직후 `queryByText("적용됨")` null · status 비어 있음 · `aria-busy` 버튼을 단언하고 resolve 뒤 표시를 단언하는 테스트 1개.
 
 ## 4. 로드 조건 · 변이 1종
 (진행 중)

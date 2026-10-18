@@ -17,3 +17,14 @@
 - 임시 worktree `/tmp/qa-m3-main`(main `36e825a6` 비교 빌드) — 빌드 뒤 `git worktree remove` 완료.
 - 변이 9종(브리프 6 + 경계 3) 매번 `git checkout` 되돌림 · 변이 build 뒤 원본 재빌드 exit 0(100.46 일치).
 - 판정: PASS with notes(QA-REPORT 0절). 2차 실화면 run = QA-LIVE-PLAN.md.
+
+# 2차(실화면) — 브리프 `QA-BRIEF-LIVE.md` · 계획 `QA-LIVE-PLAN.md` · 대상 tip `d59455d8`
+
+- [x] L0. QA-BRIEF-LIVE·QA-PROGRESS 커밋
+- [ ] L1. 0절 준비: build · preview 4399 · 리슨 확인 · QA-REPORT 8절 골격
+- [ ] L2. 0′절 실패 상태 먼저: E4(화면 청크 차단) · E5(적용 청크 차단)
+- [ ] L3. 1절 주 흐름 1280 (#1~#11)
+- [ ] L4. 1절 주 흐름 390 (#1~#11 · 가로 넘침 0)
+- [ ] L5. 2절 E1·E2·E3·E6·E7·E8 (1280 + 390 스크린샷)
+- [ ] L6. 판정: 2차 + 종합 1줄을 QA-REPORT 첫머리에
+- [ ] L7. 마감: preview 종료·리슨 0 기록 · IDB 삭제·finish({keep:[]}) · `git status --short` 빈 값

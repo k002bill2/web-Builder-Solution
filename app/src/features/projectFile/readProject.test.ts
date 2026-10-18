@@ -264,7 +264,7 @@ describe("exportImageOf = readImageRecord parity (리터럴 복제 — 진입 cl
     expect([EXPORT_MAX_SIDE, EXPORT_MAX_PIXELS, EXPORT_WIDTH_STEPS]).toEqual([MAX_SIDE, MAX_PIXELS, [...WIDTH_STEPS]]);
   });
 
-  const blobOf = (format: string, w: number) => new Blob([fakeImageBytes(format, w, 10) as BlobPart]);
+  const blobOf = (format: string, w: number, type = `image/${format}`) => new Blob([fakeImageBytes(format, w, 10) as BlobPart], { type });
   const valid = (width: number, height: number, format = "png") => {
     const variants = Object.fromEntries(widthLadder(width).map((w) => [w, blobOf(format, w)]));
     return { variants, width, height, format, bytes: Object.values(variants).reduce((sum, b) => sum + b.size, 0) };
@@ -293,6 +293,8 @@ describe("exportImageOf = readImageRecord parity (리터럴 복제 — 진입 cl
     ["높이 소수", env("image", id, { ...base, height: 1.5 })],
     ["폭 0", env("image", id, { ...base, width: 0 })],
     ["변형본 Blob 아님", env("image", id, { ...base, variants: { 640: "x", 800: base.variants[800] } })],
+    ...["image/svg+xml", "text/html", "", "image/jpeg"].map((type) => [`Blob.type ${type || "빈 값"}(SEC L-4)`, env("image", id, { ...base, variants: { 640: blobOf("png", 640, type), 800: blobOf("png", 800, type) } })] as [string, unknown]),
+    ["한 단만 Blob.type svg+xml(SEC L-4)", env("image", id, { ...base, variants: { ...base.variants, 800: blobOf("png", 800, "image/svg+xml") } })],
   ];
 
   it.each(corpus)("%s → 원본과 같은 판정", async (_, record) => {

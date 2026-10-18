@@ -12,8 +12,11 @@ base `2531ebf8` · 브랜치 `k002bill2/import-lows` · 근거 `dev/active/sec-r
 - parity: `IMPORT_IMAGE_ID.source`·`EXPORT_IMAGE_ID.source` = `LOCAL_IMAGE_ID.source`(테스트에서만 engine import).
 
 ## 2. B-SEC-03 저장 이미지 Blob.type
-- 변경: (작성 중)
-- RED/GREEN: (작성 중)
+- 변경: `data/persistence/imageRecord.ts` `readImageRecord` — 변형본 하나라도 `blob.type !== image/<format>`이면 undefined → 기존 잃은 이미지 경로(`imageRestore` "불량·없는 레코드 id만 빠진다" 그대로, 새 경로 0). `readProject.ts` `exportImageOf` 같은 줄 리터럴 복제(parity 말뭉치).
+- 허용 = `image/${format}` 정확히 일치(형식 3종 × 형식과 같은 MIME). 정규화(덮어쓰기) 대신 거절을 고른 이유: 저장 레코드를 고치면 쓰기 경로가 생기고, 업로드·가져오기는 이미 `out.type === choice.type`이라 정상 레코드는 걸리지 않는다.
+- RED: imageRecord "Blob.type ≠ image/<형식>" FAIL · parity "말뭉치 통과 9" FAIL(14) → GREEN 335/335(persistence+projectFile) · 전체 3372/3372.
+- 변이: readImageRecord 검사 제거 → 7 FAIL · exportImageOf 검사 제거 → 5 FAIL. 복원 후 GREEN.
+- 픽스처: parity `blobOf`에 `{ type: image/<format> }`(이전: type 없음 — 실제 저장 레코드는 항상 type 있음). 테스트 케이스 `IMAGE/PNG`는 Blob 생성자가 소문자로 정규화해 정상과 같아져 뺐다.
 
 ## 3. B-SEC-01 문서 밖 레코드 모르는 키
 - 변경: (작성 중)

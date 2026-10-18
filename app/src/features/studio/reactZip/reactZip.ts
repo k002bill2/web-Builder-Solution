@@ -23,7 +23,12 @@ import { IMAGES_TS, INDEX_CSS, MAIN_TSX, PACKAGE_JSON, PACKAGE_LOCK, PAGE_DOCUME
 /** 사유를 사용자에게 보일 실패(단언 · 용량) — exportFlow가 `shown`을 보고 사유를 싣는다. 진단은 cause */
 export class ReactZipError extends Error {
   readonly shown = true;
+  /** 같은 문서로 다시 해도 같은 결과 — exportFlow가 재시도 없는 거절로 보인다(SPEC 1.3) */
+  readonly retry = false;
 }
+
+/** 생성 전체 상한(render.html·CSS·글꼴 조회 포함) — exportFlow 조회 상한(10초)보다 짧게. 넘으면 JOB_TIMEOUT으로 잡을 끝낸다(Codex r1) */
+const TIMEOUT_MS = 8000;
 
 export interface ReactZipInput {
   readonly doc: PageDoc;
@@ -112,6 +117,8 @@ export interface ReactZipDeps {
   /** 글꼴 바이트 받기 · 상한(정적 형식과 같은 loadSiteFonts 경로) */
   readonly fetchBytes: FetchBytes;
   readonly fontTimeoutMs: number;
+  /** 생성 전체 상한 */
+  readonly timeoutMs: number;
   /** 보관소 이미지 읽기(파생본 전부 — exportFlow 주입) */
   readonly readImage: ReadImage;
   readonly onBuilt: (downloadRef: string, summary: ExportSummary) => void;
@@ -119,7 +126,7 @@ export interface ReactZipDeps {
 
 /** 저장소(store)당 1개 — 프로젝트별 마지막 object URL을 들고, 같은 프로젝트를 다시 만들면 이전 것을 해제한다(정적 생성기와 같은 규칙) */
 export function createReactZipGenerator(store: StudioReader, deps: Partial<ReactZipDeps> = {}): ExportGenerator {
-  const { fetchText = defaultFetchText, urls = URL, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS, readImage = () => undefined, onBuilt } = deps;
+  const { fetchText = defaultFetchText, urls = URL, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS, timeoutMs = TIMEOUT_MS, readImage = () => undefined, onBuilt } = deps;
   const held = new Map<string, string>();
   return async ({ projectId, format, doc: head }: { readonly projectId: string; readonly format: ExportFormat; readonly doc: DocHead }) => {
     const doc = head as PageDoc;
@@ -127,11 +134,17 @@ export function createReactZipGenerator(store: StudioReader, deps: Partial<React
     const versions = project ? store.versions(project.profileId) : [];
     const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion);
     if (!kitTokens) throw new Error("킷 토큰을 만들 수 없는 문서입니다");
-    const fonts = await loadSiteFonts(await kitCss(fetchText), kitTokens.type, fetchBytes, fontTimeoutMs).catch(() => {
-      throw new ProjectRepositoryError("JOB_TIMEOUT", FONT_FAILED);
-    });
-    const { images, lost } = exportImages(doc, readImage);
-    const data = await buildReactZip({ doc, kitTokens, fonts: fonts.bytes, images, lost, date: new Date(head.updatedAt) });
+    const build = async () => {
+      const fonts = await loadSiteFonts(await kitCss(fetchText), kitTokens.type, fetchBytes, fontTimeoutMs).catch(() => {
+        throw new ProjectRepositoryError("JOB_TIMEOUT", FONT_FAILED);
+      });
+      const { images, lost } = exportImages(doc, readImage);
+      return { data: await buildReactZip({ doc, kitTokens, fonts: fonts.bytes, images, lost, date: new Date(head.updatedAt) }), fonts, images, lost };
+    };
+    // 늦게 끝난 생성은 결과를 게시하지 않는다 — URL·onBuilt는 상한 안에 끝난 경우만
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const expired = new Promise<never>((_, reject) => (timer = setTimeout(() => reject(new ProjectRepositoryError("JOB_TIMEOUT", "React zip 생성 시간 초과")), timeoutMs)));
+    const { data, fonts, images, lost } = await Promise.race([build(), expired]).finally(() => clearTimeout(timer));
     const resultHash = await hex12(data);
     const key = `${projectId}|${format}`;
     const previous = held.get(key);

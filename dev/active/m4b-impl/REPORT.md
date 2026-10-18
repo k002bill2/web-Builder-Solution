@@ -1,6 +1,6 @@
 # M4-b-2 REPORT — React zip 내보내기 구현
 
-> 상태: **E0~E4(빌드) 완료 · Ego Lite 실화면 1회 BLOCKED(턴 예산)** · base `631190c7` · 2026-10-18. 표기: [사실]=실행·파일 근거 · [추정] · [미확인].
+> 상태: **E0~E4(빌드) 완료 · Codex 1회 반영 · Ego Lite 실화면 1회 BLOCKED(BRIEF 턴 상한 — 105턴부터 마감)** · base `631190c7` · 2026-10-18. 표기: [사실]=실행·파일 근거 · [추정] · [미확인].
 
 ## 결론 줄
 `React zip 내보내기 구현(E0~E3 + E4 빌드) · /studio 정규화 128.82 · 복원 131.80(판정 128.83·131.81 안, 감량 2회 — E0·E1 각 1회) · 다른 라우트·렌더 증분 0 · 생성기 청크 53.29KB gzip(조작 뒤) · 산출 zip(M1·M2)을 docker node:22·node:20.19에서 npm ci && npm run build · npm install && npm run build 전부 exit 0 · 30변형 + 이미지 문서 SSR 대조 통과 · Ego Lite 실화면(RZ-AC-R1·R2·R4)은 미실행`
@@ -13,7 +13,8 @@
 | `4f38494c` | E0 예산 실측 · REPORT 초안 |
 | `c1d3c18b` | E1·E2 생성기 · 허용표 · lock 고정 |
 | `fd3046dd` | E3 충실도 SSR 대조 |
-| (마감 커밋) | Codex 반영 · REPORT·PROGRESS 마감 |
+| `3106050b` | REPORT 판정표·예산 |
+| (이 커밋 — `git log -1`) | Codex r1 반영(생성 전체 상한 · 단언·용량 = 거절) · REPORT·PROGRESS 마감 |
 
 ## 예산 (`npm run build` → `check-bundle-size.mjs`, 해시 정규화 gzip KB)
 | 단계 | /studio 정규화 | 복원 진입 정규화 | raw /studio · 복원 | 렌더 JS | 다른 라우트 | 판정 |
@@ -48,7 +49,7 @@
 | 15 메뉴 리스너 | PASS | `template.test.ts`(jsdom) |
 | 16 브랜드 0 | PASS | `reactZip.test.ts` |
 | 17 LICENSES | PASS | `template.test.ts`(lock 라이선스 집계 = 상수) |
-| 18 용량·단언 실패 | PASS(문구 경로는 아래 차이 참조) | `checkReactZipEntries.test.ts` · `exportFlowReactZip.test.ts` |
+| 18 용량·단언 실패 | PASS(Codex r1 반영 — refused + 사유, 다시 시도 없음) | `checkReactZipEntries.test.ts` · `exportFlowReactZip.test.ts` |
 | 19 파일 이름 | PASS | `exportFileName.test.ts` · `exportFlowReactZip.test.ts` |
 | 20 예산 | PASS | 위 예산 표 |
 | C1 npm ci/install + build | PASS(로컬 Linux 컨테이너 — 7a) | `raw/zip-build-node22.txt`(v22.23.3) · `raw/zip-build-node20.txt`(v20.19.6) — M1·M2 각 4개 exit 0. **단 zip은 vitest 경로(CSS 주입) 산출** |
@@ -59,13 +60,24 @@
 | R3 20MB+ 시간 | [미확인] | 미실행 |
 | R4 status/alert·포커스 | **BLOCKED** | 같은 이유 |
 
-## Codex 검증
-(마감 커밋에 기록)
+## Codex 검증 (1회 · `adversarial-review --scope branch --base 631190c7`)
+- 판정 needs-attention · 지적 2건(medium) — **둘 다 반영(1회)**.
+
+| # | 지적 | 반영 |
+|---|---|---|
+| 1 | `kitCss` 조회가 멈추면 상한이 없어 잡이 running으로 남고, 같은 revision 재시도가 복구되지 않음 | 생성 전체(render.html·CSS·글꼴·생성)에 8초 상한 → JOB_TIMEOUT · 늦게 끝난 생성은 URL·onBuilt 게시 0 (`reactZipGenerator.test.ts`) |
+| 2 | 단언·용량 실패가 INFRA retryable로 전달되어 "다시 시도"가 보임(SPEC 1.3·RZ-AC-18 위반) | `ReactZipError.retry = false` → exportFlow가 refused + 사유(재시도 없음) · 다음 일시 장애에는 표식 미잔류 (`exportFlowReactZip.test.ts`) |
+
+- 남긴 것: 정적 HTML 생성기도 `kitCss` 조회에 상한이 없다(같은 구조) — 이번 diff 밖이라 고치지 않음(별건 후보).
+
+## 마감 검증 (fresh)
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npx vitest --run` 368 files / 3297 tests passed · `npm run build` exit 0(예산·가드 통과, /studio 128.82 · 복원 131.80 · 렌더 84.29 · 생성기 청크 53.40KB).
+- preview·dev 서버 미기동(리슨 0) · `git status --short` 빈 값.
 
 ## 목업·SPEC과 다르게 한 부분
 - 문구 자리 상수: `reactZipText.ts`가 모음이지만 버튼 글자는 `reactZipLabel.ts`(진입), 결과 줄은 `reactZipNotes.ts`(exportFlow)에 두고 다시 내보낸다 — 모듈 경계가 청크 경계라 한 파일이면 진입 +0.16 · 공통 +0.05(E0·E1 실측).
 - SSR 대조 풀 위치: SPEC `node_modules/.cache/…` 대신 gitignore된 `app/.vite/react-zip-fidelity/`(afterAll 삭제). node_modules 경로는 미시도. 정규화 ②를 React SSR의 `<link rel="preload" as="image" href>`에도 적용(SSR 전용 산출물 — 브라우저에서는 head로 간다).
-- 단언 실패: `ReactZipError(shown)` + 사유 = `export.fail.pattern` 자리 문구 → 현행 **재시도 가능 실패 자리(사유 표시, "다시 시도" 있음)**. SPEC 1.3의 "다시 시도 없음"은 화면(ExportAfter) 변경이 필요해 하지 않았다(정적 zip 허용표 실패도 현행 재시도 자리).
+- 단언·용량 실패: refused 자리(사유 = `export.fail.pattern` 자리 문구 또는 현행 `tooLargeText`) — SPEC은 단언 실패를 "재시도 가능 실패와 같은 자리"라 했으나 ExportAfter 변경 없이 "다시 시도 없음"을 지키려고 refused 자리를 썼다(Codex r1).
 - 성공 Callout 제목은 현행 `NAME["react-zip"]`("zip을 만들었습니다")을 그대로 쓴다 — [문안 미정].
 - 킷 동봉 = `app/src/kit` 테스트 제외 39파일 중 `fonts.css`를 뺀 38(zip은 자기 `src/fonts.css`를 쓴다).
 - 쓰기 경로 밖 변경: `components/studio/ExportButtons.tsx`(FORMATS 1줄) · `data/memoryDocBook.ts`(슬롯) — SPEC 1.1·1.2·5.4가 진입 변화로 허용한 항목. `data/chunkRetryWiring.test.ts`·`data/memoryExport.test.ts`는 예상된 단언 교체(M4-a 단언).

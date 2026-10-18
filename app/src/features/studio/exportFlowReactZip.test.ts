@@ -79,10 +79,13 @@ describe("React zip 생성기 청크 (RZ-AC-04 · B-M4A-08과 같은 계수)", (
     expect(result.kind === "done" && result.notes?.at(-1)).toBe("이미지 1장을 다시 골라야 해 자체 그래픽으로 넣었습니다");
   });
 
-  it("생성기 단언·용량 초과(shown 표식) → retryable + 사유 = 생성기 문구(RZ-AC-18 사유 경로)", async () => {
+  it("생성기 단언·용량 초과(shown · retry false) → refused + 사유 = 생성기 문구 · 다시 시도 없음(RZ-AC-18 · SPEC 1.3, Codex r1)", async () => {
     const repository = repositoryCallingSlot();
-    made.run.mockRejectedValueOnce(Object.assign(new Error("문구"), { shown: true }));
-    expect(await requestExportOnce(repository, "p1", "react-zip", 5)).toEqual({ kind: "retryable", format: "react-zip", reason: "문구" });
+    made.run.mockRejectedValueOnce(Object.assign(new Error("문구"), { shown: true, retry: false }));
+    expect(await requestExportOnce(repository, "p1", "react-zip", 5)).toEqual({ kind: "refused", format: "react-zip", code: "INFRA", reason: "문구" });
+    // 다음 요청이 재시도 가능 실패면 거절 표식이 남지 않는다
+    made.run.mockRejectedValueOnce(new Error("일시 장애"));
+    expect(await requestExportOnce(repository, "p1", "react-zip", 5)).toEqual({ kind: "retryable", format: "react-zip" });
   });
 
   it("읽기 전용 탭(INFRA + READ_ONLY_TAB) → refused READ_ONLY · 다시 시도 0 (RZ-AC-05)", async () => {

@@ -46,6 +46,7 @@ const summaries = new Map<string, ExportSummary>();
 /** 생성기 실패 중 사유를 보여 줄 것 → 프로젝트별 사유 */
 const REASONS: readonly string[] = [IMAGE_FAILED, DEV_SERVER_UNSUPPORTED];
 const failReasons = new Map<string, string>();
+const refusals = new Set<string>();
 // 내보내기 청크 연속 실패(B-M4A-08) = 마지막으로 청크를 받은 뒤의 로드 실패 수 — 이 청크를 받았으면 0, 생성기는 로드가 끝날 때 센다
 // (요청·잡이 아니라 로드 결과에 붙인다 — 응답 실패·조회 종료 뒤 늦게 온 실패도 센다, Codex r1 P2)
 exportChunk.fails = 0;
@@ -67,6 +68,9 @@ function fill<M>(key: symbol, load: () => Promise<M>, create: (chunk: M, store: 
           .catch((error: unknown) => {
             // shown = 생성기가 사용자에게 보일 문구로 만든 실패(M4-a zip 용량 초과 · React zip 단언)
             if (error instanceof Error && (REASONS.includes(error.message) || "shown" in error)) failReasons.set(input.projectId, error.message);
+            // retry false = 같은 문서로 다시 해도 같은 실패(React zip 단언·용량 — REACTZIP-SPEC 1.3) → 재시도 없는 거절
+            if (error instanceof Error && "retry" in error && error.retry === false) refusals.add(input.projectId);
+            else refusals.delete(input.projectId);
             throw error;
           })
           .finally(() => requestImages.delete(input.projectId));
@@ -107,6 +111,7 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
 export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
   failReasons.delete(projectId);
+  refusals.delete(projectId);
   if (images) requestImages.set(projectId, images);
   else requestImages.delete(projectId);
   try {
@@ -126,6 +131,7 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });
     const reason = failReasons.get(projectId);
+    if (reason && refusals.has(projectId)) return { kind: "refused", format, code: job.errorCode ?? "INFRA", reason };
     return job.retryable || job.state !== "failed" ? { kind: "retryable", format, ...(reason && { reason }) } : { kind: "refused", format, code: job.errorCode ?? "UNKNOWN" };
   } catch (error) {
     const code = projectErrorCode(error) ?? "UNKNOWN";

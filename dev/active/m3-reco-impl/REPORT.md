@@ -12,7 +12,7 @@
 |------|------|------|
 | 카탈로그 필터·탭(`?tab=rec` 등) | **유지** — URL 쿼리에서 다시 파싱 | `app/src/pages/CatalogPage.tsx:31-32` `useSearchParams` → `parseCatalogParams` |
 | 비교 트레이 | **사라짐** — 트레이는 보드 저장소를 읽음 | `app/src/pages/CatalogPage.tsx:36` `useCompareTray` → `app/src/features/compare/CompareTrayContext.tsx:14,67` `CompareBoardRepository.getBoard` |
-| 비교 보드(열·선택 행, 추천 적용 결과 포함) | **사라짐** — 메모리 구현, 영속 범위 밖 | `app/src/main.tsx:28` "메모리 구현은 새로고침하면 비어 있다" · `app/src/data/deferredStudio.ts:51` "보드는 영속 범위 밖 — 새로고침마다 빈 보드" (IndexedDB 영속은 `/studio/:id` 프로젝트 진입 entry만 — `deferredStudio.ts` `readEntry`) |
+| 비교 보드(열·선택 행, 추천 적용 결과 포함) | **사라짐** — 메모리 구현, 영속 범위 밖 | `app/src/main.tsx:28` "메모리 구현은 새로고침하면 비어 있다" · `app/src/data/deferredStudio.ts:51` "보드는 영속 범위 밖 — 새로고침마다 빈 보드" (IndexedDB 진입 하이드레이션 `readEntry`는 상태 레코드(프로필·프로젝트)·`/studio/:id` 문서만 — 보드는 그 밖, 세션마다 새 `boardId`) |
 | 추천 적용 되돌리기 기록 | **사라짐** — 모듈 수준 WeakMap(세션 메모리) | `app/src/components/reco/RecoView.tsx:44,85` `lastApplied` |
 
 - 함의: 화면 청크 실패 alert를 "새로고침"으로 바꾸면 필터는 남지만 **트레이에 담은 레퍼런스·보드 편집·되돌리기 기록은 잃는다**. "입력이 사라지지 않음" 전제가 깨지므로 영환님 결정이 다시 필요하다.

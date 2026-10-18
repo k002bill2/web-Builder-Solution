@@ -62,3 +62,6 @@ raw 130.01·133.04(참고). licenses.ts는 조작 뒤 청크.
 - COPY.md 3절 법무성 문장 확인(영환님) · Pretendard 수정본 여부 미확인 — 이번 범위 밖.
 - 명세 3절 '이미지 0장이면 1줄'과 현행(빈 상태 뒤 권리 안내 출력) 차이 — COPY.md 전제대로 구조 변경 0.
 - 서브에이전트 0 · Codex 0(BRIEF "Codex 불필요").
+- B-M4A-03(BACKLOG:76 "LICENSES.md F-14 미구현 · LICENSES 문안 레인 때 함께"): 이번 레인은 `licenses.test.ts` 단위 단언(F-14 대상 문자열 0, 글꼴 있음·없음 두 분기)까지만 반영. 내보내기 런타임 F-14 검사기를 LICENSES.md까지 넓히는 변경은 BRIEF 쓰기 경로 밖이라 하지 않음 — 닫을지 Jarvis 판단.
+- BRIEF 규칙 이탈 1건: "REPORT 초안 10턴 안" 미준수(약 14턴째 작성). 최대 30턴 안 마감.
+- 커밋: e26e9efc(BRIEF·PROGRESS·COPY) · ef47aeef(문안 교체+테스트) · ff64eaa8(테스트 제목 수정) · e18b4dc2(REPORT·PROGRESS) · 이 커밋(REPORT 5절 보강).

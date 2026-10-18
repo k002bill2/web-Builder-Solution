@@ -36,6 +36,6 @@
 - [x] R2. D1 실화면: 화면 청크 차단→alert→해제→다시 시도→`RecoView-*.js?retry=1`→카드 3·포커스≠BODY·트레이 1개 유지 · 적용 청크 동일→대화상자
 - [x] R3. 390 #8~11 재측정(폭 override·측정 같은 스크립트, 단계마다 innerWidth=390 기록)
 - [x] R4. N1·N2·N4 실화면
-- [ ] R5. 판정: R3 + 종합(1차·2차·R3) 1줄 QA-REPORT 첫머리
-- [ ] R6. 마감: preview 종료·리슨 0 · IDB 삭제·finish({keep:[]}) · `git status --short` 빈 값
+- [x] R5. 판정: R3 + 종합(1차·2차·R3) 1줄 QA-REPORT 첫머리
+- [x] R6. 마감: preview 종료·리슨 0 · IDB 삭제·finish({keep:[]}) · `git status --short` 빈 값
 - (2차 L6·L7은 2차 run에서 QA-REPORT 첫머리·8절에 이미 반영됨 — R5·R6이 대체)

@@ -3,6 +3,8 @@
 대상 tip `62d3aec2`(main `36e825a6` 병합 포함) · 브리프 `QA-BRIEF.md` · 정본 `docs/design/m3/RECO-SPEC.md` r1 + 7a · Developer `REPORT.md`
 QA 실행: Orca + Claude Code, 2026-10-18. 브라우저 미사용(2차 run 계획 `QA-LIVE-PLAN.md`). Codex 미사용. 앱·테스트 코드 커밋 0.
 
+> **R3 판정(FIX1 재확인, tip `3c9e410f`): PASS** — D1 해소(화면·적용 청크 모두 "다시 시도" → `?retry=1` 재요청 → 카드 3·대화상자, 트레이 1개 유지) · 390 #8~11 innerWidth 390에서 PASS · N1·N2·N4 해소 · 게이트 4종(361/3219)·예산(`/catalog` 100.76 ≤ 100.90) 재현. **종합 판정(1차 + 2차 + R3): PASS with notes** — FAIL 5종(거짓 성공 · 거짓 다시 시도 · 승인 전 변경 · 입력 손실 · status/alert 중복) 0건, 필수 수정 0. 남은 notes: N3(SPEC 3.4 표 vs 3.6-5 해석) · 1차 note 3(AC-16 저장 전 표시 단언 권고) · note 5(로드 조건 두 겹 게이트) · `/catalog` 여유 0.14. R3 상세 9절.
+
 > **2차 판정(실화면): PASS with notes — 결함 D1 필수 수정** · **종합 판정(1차 + 2차): PASS with notes — 결함 D1 필수 수정**. FAIL 4종(거짓 성공 · 승인 전 변경 · status/alert 중복 · 데이터 손실) 0건. D1 = 화면·적용 청크 로드 실패 뒤 "다시 시도"가 새 요청 0으로 끝나 새로고침 말고는 복구 경로가 없음(브라우저 모듈 맵 실패 캐시, 8.0′ E4). 2차 상세 8절.
 
 ## 0. 판정 — **PASS with notes** (1차 정적·회귀 확정)
@@ -279,3 +281,9 @@ ego-browser v2.1.0 · TaskSpace 45 · preview `--port 4399 --strictPort`(리슨 
 | N1 "더 보기" 뒤 포커스 | 1280 | "추천 2개 더 보기" 클릭 → 카드 5(gen-medical-1·gen-medical-3·gen-beauty-3·gen-education-4·ref-c) · 포커스 A "교육 · 활기찬 센터형"(`href=/references/gen-education-4`, `#gen-education-4-title` 안) = **4번째 카드 제목** | **PASS** |
 | N2 390 대화상자 Tab 순서 | 390 | 버튼 위치 "취소" top 581 · "적용" top 629(위→아래 = 취소 → 적용) · Tab 순서 열림 "취소" → "적용" — **시각 순서와 같음** (`shots/r3-390-08-dialog.png`). "적용" 다음 Tab은 문서 밖(activeElement BODY — 판정 밖) | **PASS** |
 | N4 비활성 버튼 설명 | 1280 | 전체 탭에서 6개 담음(트레이 6/6) → 업종 "의료" → 추천 받기(`industry=medical&tab=rec`) · 보드에 없는 gen-medical-1·2·3 "이 추천 적용" 모두 aria-disabled=true · `aria-describedby="<id>-limit"` → 표시된 문구 "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요." · **AX 트리 description에 같은 문구** (`shots/r3-N4-1280.png`) | **PASS** |
+
+### 9.5 R3 판정 · 마감
+
+- **R3: PASS** · **종합(1차 + 2차 + R3): PASS with notes** — 첫머리 참조. FAIL 조건 0건. 2차 결함 D1과 notes N1·N2·N4·D1 부수(포커스 BODY) 해소, N3·1차 note 3·5는 그대로(Developer/SPEC 후속, 필수 아님).
+- 마감: ego-browser IndexedDB `design-studio` 삭제(`Storage.clearDataForOrigin` origin `http://localhost:4399` · indexeddb만 — 전 `['design-studio']` → 뒤 `[]`) · 폭 override 해제 · `task.finish({ keep: [] })` 완료(TaskSpace 45) · preview 종료 → `lsof -nP -iTCP:4399 -sTCP:LISTEN` **출력 없음(리슨 0)**.
+- 앱·테스트 코드 변경 0 · Codex 미사용 · push 0 · 서브에이전트 0(브라우저 세션 1개를 순서대로 써야 해 병렬 불가 · 게이트는 단일 명령 순차).

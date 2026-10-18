@@ -1,0 +1,19 @@
+     × S01 family CSS break 10ms
+     × S07 headingWeight 1e9 3ms
+     × S16 scale 0 / sectionGap -1 2ms
+     × family 빈 문자열 2ms
+     × family 65자 6ms
+     × family 한글 2ms
+     × headingWeight 99 2ms
+     × bodyWeight 901 3ms
+     × scale 0.99 3ms
+     × scale 2.01 2ms
+     × sectionGap 513 3ms
+     × grid 0.5 4ms
+     × grid 65 2ms
+     × grid 1000000 2ms
+     × constructor 1ms
+     × __proto__ 0ms
+     × toString 0ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  17 failed | 17 passed (34)

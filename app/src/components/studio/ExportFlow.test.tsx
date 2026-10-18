@@ -1,6 +1,7 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProjectRepositoryError, type ExportJob, type ProjectRepository } from "../../data/projectRepository";
+import { READ_ONLY_TAB, toInfra } from "../../data/persistence/infra";
 import type { ProfileSeries } from "../../domain/profile";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { passingDoc, withPhoto } from "../../engine/testing/gateKit";
@@ -337,5 +338,29 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(within(gateRegion()).queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
     act(() => void fireEvent.click(within(gateRegion()).getByRole("button", { name: "첫 구조 미리보기 섹션으로 이동" })));
     await screen.findByRole("heading", { level: 2, name: "편집 · About" });
+  });
+});
+
+describe("B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0", () => {
+  it("저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 사유 · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0", async () => {
+    const requestExport = async () => Promise.reject(toInfra(undefined, "저장", READ_ONLY_TAB));
+    await open(clean(), { requestExport });
+    act(() => void fireEvent.click(zip()));
+    const alert = await within(gateRegion()).findByRole("alert");
+    expect(alert.textContent).toBe(`내보내지 못했습니다${READ_ONLY_TAB}`);
+    expect(within(gateRegion()).queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
+    expect(within(gateRegion()).queryByText(/만들었습니다/)).not.toBeInTheDocument();
+  });
+
+  it("회귀 0: 재시도 거절 문구 그대로 — STALE_DOC = '다른 곳에서 문서가 바뀌어…'", async () => {
+    await open(clean(), { requestExport: async () => Promise.reject(new ProjectRepositoryError("STALE_DOC", "r")) });
+    act(() => void fireEvent.click(html()));
+    expect((await within(gateRegion()).findByRole("alert")).textContent).toBe("다른 곳에서 문서가 바뀌어 내보내지 않았습니다");
+  });
+
+  it("회귀 0: GATE_FAILED = 게이트 차단 문구", async () => {
+    await open(clean(), { requestExport: async () => Promise.reject(new ProjectRepositoryError("GATE_FAILED", "g")) });
+    act(() => void fireEvent.click(html()));
+    expect((await within(gateRegion()).findByRole("alert")).textContent).toBe("품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요");
   });
 });

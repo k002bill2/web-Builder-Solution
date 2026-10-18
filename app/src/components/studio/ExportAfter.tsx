@@ -125,7 +125,12 @@ export function ExportResultView({ result, onFirstFallback }: { readonly result:
   }
   return (
     <div role="alert">
-      <Callout tone="negative" title={result.code === "STALE_DOC" ? "다른 곳에서 문서가 바뀌어 내보내지 않았습니다" : "품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요"} />
+      <Callout
+        tone="negative"
+        title={result.reason ? "내보내지 못했습니다" : result.code === "STALE_DOC" ? "다른 곳에서 문서가 바뀌어 내보내지 않았습니다" : "품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요"}
+      >
+        {result.reason}
+      </Callout>
     </div>
   );
 }

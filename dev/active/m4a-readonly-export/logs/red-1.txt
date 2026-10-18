@@ -1,0 +1,87 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-readonly-export/app
+
+ ❯ src/features/studio/exportFlowReadonly.test.ts (2 tests | 1 failed) 128ms
+   ❯ B-M4A-12 읽기 전용 탭 내보내기 (2)
+     × 다른 탭이 쓰기 탭 → 이 탭 내보내기 = refused READ_ONLY(사유 READ_ONLY_TAB · 재시도 불가) · 쓰기 탭 내보내기 = done 126ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/ExportFlow.test.tsx (20 tests | 1 failed) 4882ms
+   ❯ B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0 (3)
+     × 저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 사유 · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0 63ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ExportFlow.test.tsx > B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0 > 저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 사유 · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0
+AssertionError: expected '내보내지 못했습니다다시 시도' to be '내보내지 못했습니다다른 탭에서 편집 중입니다 — 이 탭의 변경은 저…' // Object.is equality
+
+Expected: "내보내지 못했습니다다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다"
+Received: "내보내지 못했습니다다시 시도"
+
+ ❯ src/components/studio/ExportFlow.test.tsx:350:31
+    348|     act(() => void fireEvent.click(zip()));
+    349|     const alert = await within(gateRegion()).findByRole("alert");
+    350|     expect(alert.textContent).toBe(`내보내지 못했습니다${READ_ONLY_TAB}`);
+       |                               ^
+    351|     expect(within(gateRegion()).queryByRole("button", { name: "다시 시도" …
+    352|     expect(within(gateRegion()).queryByText(/만들었습니다/)).not.toBeInTheDo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/studio/exportFlowReadonly.test.ts > B-M4A-12 읽기 전용 탭 내보내기 > 다른 탭이 쓰기 탭 → 이 탭 내보내기 = refused READ_ONLY(사유 READ_ONLY_TAB · 재시도 불가) · 쓰기 탭 내보내기 = done
+AssertionError: expected { kind: 'retryable', …(1) } to deeply equal { kind: 'refused', …(3) }
+
+- Expected
++ Received
+
+  {
+-   "code": "READ_ONLY",
+    "format": "static-html",
+-   "kind": "refused",
+-   "reason": "다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다",
++   "kind": "retryable",
+  }
+
+ ❯ src/features/studio/exportFlowReadonly.test.ts:28:20
+     26|     const b = await otherTab(a.db, { locks: locks.tab() });
+     27|     const second = await requestExportOnce(b.repo, PROJECT, "static-ht…
+     28|     expect(second).toEqual({ kind: "refused", format: "static-html", c…
+       |                    ^
+     29|     const writer = await requestExportOnce(a.repo, PROJECT, "static-ht…
+     30|     expect(writer).toMatchObject({ kind: "done", format: "static-html"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 20 passed (22)
+   Start at  14:59:05
+   Duration  6.31s (tests 70%, transform 14%, environment 11%, import 3%, setup 2%)
+

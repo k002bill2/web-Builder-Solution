@@ -121,4 +121,6 @@
 - 4절 표: 기존 `LOCK_LICENSES`(설치 86개 · lock 대조 단언 유지)에서 직접 의존성 9개를 뺀 `TRANSITIVE_LICENSES`(77개: MIT 49 · Apache-2.0 1 · ISC 2 · MPL-2.0 24 · BSD-3-Clause 1)를 표로 출력 — 테스트가 lock에서 직접 재집계해 대조.
 - `export.fail.pattern`: COPY.md에 없음 — 현행 문구가 M4-a EXPORT-SPEC 6.1 확정 문안과 같아 TODO 표식만 제거. LICENSES 3·5·6·7절은 COPY.md 결정대로 현행 유지(TODO 표식만 제거).
 - 기존 단언 교체 2곳(강화 방향): `template.test.ts` "파일 56개" → 1절 머리 전문 일치 · 절 제목 "## 사이트 코드" → "## 사이트 코드 — 킷 소스". `exportFlowReactZip.test.ts`·`ExportFlow.test.tsx`는 상수 자기참조에 원문 리터럴 단언 추가.
+- 주의: `reactZipCopy.test`는 `testing/copyDoc.ts`로 `dev/active/m4b-impl/COPY.md`를 읽는다 — 작업 폴더를 옮기거나 보관하면 실패하므로 그때 경로 갱신 또는 문안을 테스트 상수로 이전.
+- UI 흐름 실제 순서 = 확인 대화상자 → 확인 → 저장 → requestExport(대화상자 시점 저장 0건 · 요청 시점 1건). `2e0c84b2` 커밋 메시지의 "검사→저장→확인" 순서 표기는 오기(테스트 제목은 후속 커밋에서 정정).
 - 서브에이전트: 사용 0(항목이 작고 같은 테스트 파일을 공유해 분할 이득 없음).

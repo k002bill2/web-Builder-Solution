@@ -187,8 +187,8 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(requestExport).toHaveBeenCalledWith("project-1", "static-html", 4);
   });
 
-  it("React zip(RZ-AC-01·02): 편집(경고 생김) → 다시 검사 → 저장 먼저 → 확인 대화상자 → 확인 = requestExport 1회(형식 react-zip · 저장된 revision)", async () => {
-    // 요청 시점에 저장이 끝났는지(저장 먼저) — 요청이 본 저장 건수
+  it("React zip(RZ-AC-01·02): 편집(경고 생김) → 다시 검사 → 확인 대화상자 → 확인 → 저장 → requestExport 1회(형식 react-zip · 저장된 revision)", async () => {
+    // 요청 시점에 저장이 끝났는지(저장 뒤 요청) — 요청이 본 저장 건수
     const seen: { saved?: readonly PageDoc[]; atRequest?: number } = {};
     const { requestExport, saved } = await open(clean(), {
       requestExport: async () => {

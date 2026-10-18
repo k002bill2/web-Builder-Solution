@@ -1,0 +1,5 @@
+     × QA 1차 note 3: 선택 저장이 끝나기 전에는 '적용됨' 0 · status 빈 값 · 적용 중 aria-busy → 저장 뒤에만 표시 279ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: expected <p …(1)></p> to be null
+      Tests  1 failed | 17 skipped (18)
+      Tests  18 passed (18)

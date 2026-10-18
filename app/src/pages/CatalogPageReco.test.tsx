@@ -104,6 +104,29 @@ describe("승인 후 적용 (RECO-SPEC 3.3 · AC-10·11·16)", () => {
     expect(cancel).toHaveFocus();
   });
 
+  it("QA 1차 note 3: 선택 저장이 끝나기 전에는 '적용됨' 0 · status 빈 값 · 적용 중 aria-busy → 저장 뒤에만 표시", async () => {
+    const repo = createMemoryCompareBoardRepository({ catalog: FIXTURE_CATALOG, initialBoard: boardOf(["ref-a"], { hero: "ref-a" }) });
+    const save = repo.savePicks.bind(repo);
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    vi.spyOn(repo, "savePicks").mockImplementation(async (...args) => {
+      await gate;
+      return save(...args);
+    });
+    renderApp(T_REC_01, undefined, repo);
+    const first = (await cards())[0]!;
+    const title = within(first).getByRole("heading", { level: 3 }).textContent!;
+    await userEvent.click(within(first).getByRole("button", { name: "이 추천 적용" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "적용" }));
+    await waitFor(() => expect(repo.savePicks).toHaveBeenCalledTimes(1));
+    expect(within(first).queryByText("적용됨")).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent(/^$/);
+    expect(within(first).getByRole("button", { name: /적용/ })).toHaveAttribute("aria-busy", "true");
+    release();
+    expect(await within(first).findByText("적용됨")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(`${title} 추천을 적용했습니다.`));
+  });
+
   it("미리보기 '취소'면 쓰기 0 · '적용'이면 저장 확인 뒤 적용됨 + status, 되돌리기는 적용 전과 깊은 동일", async () => {
     const { repo, writes } = spiedBoard();
     const before = (await repo.getBoard()).board;

@@ -1,0 +1,5 @@
+## 패치 전 (base)
+header={"width":16384,"height":16384,"alpha":true} exceeds=true result=IM-6 order=decode 33B>close
+## 패치 임시 적용 (checkImages-header-before-decode.diff)
+header={"width":16384,"height":16384,"alpha":true} exceeds=true result=IM-6 order=
+## 패치 적용 시 projectFile 스위트: Failed Tests 25 — 원인: test/projectFileFixtures.ts fakeImageBytes = 서명16B+'WxH' 텍스트(실제 IHDR/SOF/VP8 헤더 없음) → readImageHeader null. 픽스처를 실제 헤더 바이트로 바꾸는 개정 필요(Developer)

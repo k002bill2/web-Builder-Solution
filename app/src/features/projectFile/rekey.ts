@@ -5,7 +5,7 @@
  * 재매김 뒤 ④ 규칙(checkSaveDoc(새 id)·계열·이름)을 다시 통과해야 계획을 낸다 — 열기가 깨지면 모든 프로젝트가 INFRA(F4).
  */
 import type { DocRecord, LocalState } from "../../data/persistence/entryRead";
-import type { DocHead, Project } from "../../data/projectRepository";
+import type { DocHead, Project, ProjectSnapshot } from "../../data/projectRepository";
 import { nextSeqId } from "../../data/seqId";
 import { rekeyDoc } from "../../data/startDocWrite";
 import type { ProfileVersion } from "../../domain/profile";
@@ -29,22 +29,34 @@ export interface ImportPlan {
   readonly images: readonly { readonly key: string; readonly image: CheckedImage }[];
 }
 
+/**
+ * 문서 밖 레코드 = 아는 키만(SEC L-2) — 파일의 모르는 키(`hasDoc`·`candidateId`·`__proto__` 등)가 studio/state·docs에 저장되고 다음 내보내기에 다시 실리지 않게.
+ * 키 목록 = 타입의 키 전부(Record<keyof T, true>) — 타입에 필드가 늘면 여기서 컴파일이 깨진다(조용히 버리지 않는다). 문서 본문(doc)·base·adjustments 안쪽은 ④ 규칙이 본다.
+ */
+const PROJECT_KEYS: Record<keyof Project, true> = { projectId: true, name: true, revision: true, profileId: true, baseReferenceId: true, createdAt: true, updatedAt: true };
+const VERSION_KEYS: Record<keyof ProfileVersion, true> = { profileId: true, version: true, origin: true, basedOn: true, boardRevision: true, baseReferenceId: true, base: true, adjustments: true, dropped: true, createdAt: true };
+const RECORD_KEYS: Record<keyof DocRecord, true> = { doc: true, snapshots: true, snapshotSeq: true };
+const SNAPSHOT_KEYS: Record<keyof ProjectSnapshot<DocHead>, true> = { snapshotId: true, projectId: true, kind: true, reason: true, name: true, createdAt: true, doc: true, profileVersion: true, candidateId: true, hash: true };
+function pick<T extends object>(value: T, keys: Record<keyof T, true>): T {
+  return Object.fromEntries(Object.keys(keys).filter((key) => Object.hasOwn(value, key)).map((key) => [key, value[key as keyof T]])) as T;
+}
+
 /** localSync headOf와 같은 필드 */
 const headOf = ({ projectId, revision, hash, profileVersion, candidateId, updatedAt }: DocHead): DocHead => ({ projectId, revision, hash, profileVersion, candidateId, updatedAt });
 
 function rekeyRecord(record: DocRecord, projectId: string): DocRecord {
   const snapshots = record.snapshots.map((snapshot) => {
     const doc = rekeyDoc(snapshot.doc, projectId);
-    return { ...snapshot, projectId, doc, hash: doc.hash };
+    return { ...pick(snapshot, SNAPSHOT_KEYS), projectId, doc, hash: doc.hash };
   });
-  return { ...record, doc: rekeyDoc(record.doc, projectId), snapshots };
+  return { ...pick(record, RECORD_KEYS), doc: rekeyDoc(record.doc, projectId), snapshots };
 }
 
 export function rekeyImport(file: CheckedFile, target: ImportTarget, now: string): { readonly ok: true; readonly plan: ImportPlan } | CheckFailure {
   const projectId = nextSeqId("project", target?.projects.keys() ?? [], target?.seq?.project);
   const profileId = nextSeqId("profile", target?.series.keys() ?? [], target?.seq?.profile);
-  const project: Project = { ...file.project, projectId, profileId, updatedAt: now };
-  const series = file.series.map((version) => ({ ...version, profileId }));
+  const project: Project = { ...pick(file.project, PROJECT_KEYS), projectId, profileId, updatedAt: now };
+  const series = file.series.map((version) => ({ ...pick(version, VERSION_KEYS), profileId }));
   const doc = file.doc && rekeyRecord(file.doc, projectId);
   if (!recordsHold({ project, series, doc })) return failure("IM-4");
   return {

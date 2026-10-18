@@ -19,8 +19,10 @@ base `2531ebf8` · 브랜치 `k002bill2/import-lows` · 근거 `dev/active/sec-r
 - 픽스처: parity `blobOf`에 `{ type: image/<format> }`(이전: type 없음 — 실제 저장 레코드는 항상 type 있음). 테스트 케이스 `IMAGE/PNG`는 Blob 생성자가 소문자로 정규화해 정상과 같아져 뺐다.
 
 ## 3. B-SEC-01 문서 밖 레코드 모르는 키
-- 변경: (작성 중)
-- 범위 밖(남김): (작성 중)
+- 변경: `rekey.ts` `pick` + 키 목록 4개(`Record<keyof Project | ProfileVersion | DocRecord | ProjectSnapshot, true>`) — 타입 키 전부라 타입에 필드가 늘면 컴파일이 깨진다(조용한 유실 0). 저장 스키마·엔진 계약 변경 0(저장 모양 = 기존 타입 그대로).
+- RED: 새 2건 FAIL(project 키 13개 · series `__proto__` 포함) → GREEN 175/175(projectFile).
+- 변이: project pick 제거 → 1 FAIL · snapshot pick 제거 → 1 FAIL. 복원 후 GREEN.
+- 범위 밖(남김): 문서 본문(`doc`)·`base`·`adjustments` 안쪽 키 = ④ 규칙(checkSaveDoc·profileShape) 몫 — 이번 정규화 대상 아님. 이미 저장된(수정 전 가져온) 레코드의 모르는 키는 그대로(쓰기 경로 추가 0).
 
 ## 4. 퍼즈 67건 판정 변화 표
 | 케이스 | 전 | 후 | 사유 |

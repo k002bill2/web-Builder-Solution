@@ -49,19 +49,19 @@ export function CatalogPage() {
   const savedItems = items.filter((r) => saved.has(r.id));
   const isRec = state.tab === "rec";
   const visible = state.tab === "saved" ? savedItems : isRec ? [] : items;
-  /** 추천 화면 청크 — `tab=rec`일 때만 받는다(RECO-AC-14a). 실패면 결과 영역 alert + 다시 시도 */
-  const [reco, setReco] = useState<{ readonly View?: (typeof import("../components/reco/RecoView"))["default"]; readonly failed?: boolean }>({});
+  /** 추천 화면 청크 — `tab=rec`일 때만 받는다(RECO-AC-14a). undefined = 받는 중(스켈레톤) · null = 실패(결과 영역 alert + 다시 시도) */
+  const [RecoView, setRecoView] = useState<(typeof import("../components/reco/RecoView"))["default"] | null>();
   useEffect(() => {
-    if (!isRec || reco.View || reco.failed) return;
+    if (!isRec || RecoView !== undefined) return;
     let live = true;
     loadRecoView().then(
-      (m) => live && setReco({ View: m.default }),
-      () => live && setReco({ failed: true }),
+      (m) => live && setRecoView(() => m.default),
+      () => live && setRecoView(null),
     );
     return () => {
       live = false;
     };
-  }, [isRec, reco]);
+  }, [isRec, RecoView]);
 
   const toggleCompare = (id: string) => {
     if (tray.includes(id)) {
@@ -131,8 +131,8 @@ export function CatalogPage() {
                 >
                   전체 보기
                 </Link>
-                {reco.View ? (
-                  <reco.View
+                {RecoView ? (
+                  <RecoView
                     filters={state.filters}
                     saved={saved}
                     onToggleSave={toggleSaved}
@@ -141,11 +141,11 @@ export function CatalogPage() {
                     openRail={() => setRailOpen(true)}
                     known={trayReferences}
                   />
-                ) : reco.failed ? (
+                ) : RecoView === null ? (
                   // 청크 실패 문구 = 키 reco.error·reco.retry(키 표는 그 청크 안이라 첫 화면에는 문장만 — RECO-SPEC 3.4 오류)
                   <div role="alert" className="flex items-center gap-2 py-8">
                     <p className="ds-body3 text-status-negative-text">추천을 불러오지 못했습니다.</p>
-                    <button type="button" className="ds-label text-primary-text hover:underline" onClick={() => setReco({})}>
+                    <button type="button" className="ds-label text-primary-text hover:underline" onClick={() => setRecoView(undefined)}>
                       다시 시도
                     </button>
                   </div>

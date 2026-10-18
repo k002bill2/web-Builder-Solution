@@ -39,8 +39,8 @@
 
 ## FIX1 체크리스트 (BRIEF-FIX1)
 - [x] BRIEF-FIX1 커밋 e825fcdb
-- [ ] D1a 적용 청크 2개 retryableImport + 재시도 포커스(결과 영역 · 새 alert "다시 시도")
-- [ ] D1b 화면 청크 retryableImport — 예산 판정
+- [x] D1a 8e93d64a 적용 청크 2개 retryableImport + 재시도 포커스(결과 영역 · 새 alert "다시 시도")
+- [x] D1b 화면 청크 retryableImport — 예산 판정 → BLOCKED: `/catalog` 첫 화면 +0.31(> +0.05) 수용/revert 결정 필요(Jarvis)
 - [ ] N1 "2개 더 보기" 뒤 포커스 = 4번째 카드 제목
 - [ ] N2 390 대화상자 시각 순서 = DOM(Tab) 순서
 - [ ] N4 비활성 "이 추천 적용" aria-describedby
@@ -51,3 +51,5 @@
 - [ ] 마감: preview 종료·리슨 0 · untracked 0 · REPORT
 - FIX1 로그: D1 RED `logs/fix1-d1-red.txt`(배선 가드 0/3) · 결과 영역 포커스 Red-Green(수정 제거 FAIL → 복원 PASS)
 - D1 전체 build(`logs/fix1-d1-build.txt`): `/catalog` 100.46 → **100.77**(+0.31 > +0.05). 원인 = chunkRetry 청크(gz 306B)가 `/catalog` 첫 화면에 새로 들어옴 — 브리프 전제("이미 진입 직후 청크")는 `/catalog`엔 해당 없음(진입도 102.79→103.11). 감량 1회 = 화면 로더 감싸기 분리(D1a/D1b) 실측
+- 감량 1회 실측 = D1a 단독 build(`logs/fix1-d1a-build.txt`): `/catalog` 100.48/102.82(+0.02/+0.03) · 추천 진입 109.46 · 다른 라우트 ±0.01 · /studio 128.80 · 복원 131.78. 초과분 +0.29 전부 = 화면 로더 감싸기(chunkRetry 청크). lazy import 감량은 기각(오프라인이면 chunkRetry 자신의 실패가 캐시돼 D1 재발 + 검사기 SCENARIOS 밖 — 쓰기 경로 밖)
+- D1b(별도 커밋, `git revert` 1회로 뺄 수 있음): `/catalog` 100.77/103.11 · 추천 진입 109.47 — 멈춤선 100.90·검사기 101 안, 브리프 +0.05 밖

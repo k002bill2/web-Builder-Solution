@@ -48,4 +48,11 @@ describe("조작 뒤 로더 배선", () => {
     expect("runApply" in flow! && !("default" in flow!)).toBe(true);
   });
 
+  it("QA D1: 추천 화면 청크(RecoView)도 retryableImport로 싼다 — 실패 뒤 '다시 시도' = 새 URL", async () => {
+    const before = wrapped.length;
+    await import("../components/reco/recoLoader");
+    const added = wrapped.slice(before);
+    expect(added).toHaveLength(1);
+    expect((await added[0]!()).default).toBe((await import("../components/reco/RecoView")).default);
+  });
 });

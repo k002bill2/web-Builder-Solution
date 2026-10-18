@@ -90,4 +90,10 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-M3-03 | M3-1 R2 · ADR-004 개정 19 | `/catalog` 첫 화면 여유 0.14 — 동적 import 프리로드 래퍼(`__vite__mapDeps` ≈0.07 + 로더 ≈0.03) 설정 변경·첫 화면 청크 분해(공용 셸·트레이·필터) 점검 | Medium · 다음 `/catalog` 기능 전 선행 |
 | B-M3-04 | M3-1 QA 1차 note 5 | 로드 조건 단위 테스트는 로더 호출 수만 잼 — 정적 side-effect import는 검사기(build)만 잡고, 첫 화면 0.54KB 미만 정적 포함은 둘 다 통과 | Low · 테스트 |
 | B-M3-05 | M3-1 FIX2 전제 표 | 비교 트레이·보드·추천 되돌리기 기록이 새로고침에 사라짐(메모리 구현, 영속 범위 밖) — 보드 영속화 여부 결정 | Medium · 제품 결정(저장 범위) |
+| B-SEC-01 | SEC-M4A-10 L-2 | 가져오기: 문서 밖 레코드(project·series·DocRecord 봉투·스냅샷 머리)의 모르는 필드가 그대로 저장·재내보내기 | Low · 허용 키 정규화 |
+| B-SEC-02 | SEC-M4A-10 L-3 | 가져오기 이미지 `localId` 형식 미검사 — UUID 아닌 id 고아 레코드 | Low |
+| B-SEC-03 | SEC-M4A-10 L-4 | 저장 이미지 레코드 `Blob.type` 미검사 — 손상 레코드 1건으로 내보내기 전체 실패 | Low |
+| B-SEC-04 | SEC-M4A-10 4절 | 내보낸 HTML·zip에 생성기 고정 CSP meta(메뉴 스크립트 sha256 고정+대조 테스트) — 보조 방어, SPEC 개정 후 구현 | Medium · SPEC(Designer) |
+| B-SEC-05 | SEC-FIX-1 QA-1 | `checkImages.test`에 헤더가 사다리보다 작은 경우(639×480·640×479 → IM-6·디코드 0) 단언 추가 — 변이 M2(`===`→`<=`) 생존 | Low · 테스트 |
+| B-SEC-06 | SEC-FIX-1 QA-2 | 한 프로젝트만 렌더 범위 밖 값이면 파일 내보내기 EX-6이 "브라우저 데이터 지우기"(전체 삭제)로 안내 — 원인·문구 분리(그 프로젝트 삭제 안내) | Low · 문구(Hemingway) |
 | B-RS-19 | RS7 flaky-hunt REPORT 2절 · 정적 조사 | ① 앱: 미리보기 잠금(`StudioLayout.tsx:247-252` `historyKeys.locked`)이 passive effect에서 갱신 — 커밋~effect 사이 수 ms 동안 Ctrl+Z가 편집 되돌리기로 가로채질 수 있는 이론상 창(실사용 영향 미미 추정, 미재현) · layout effect/render 값 이전 검토 ② 미재현 flaky 후보 2건: `CompareDialog.test.tsx:161-170`(shouldAdvanceTime + 7800ms) · `imagePersist.test.ts:93`(waitFor 1000ms 타임아웃 삼킴) | 미정(Jarvis 배정) |

@@ -266,3 +266,75 @@
   "overflow": 0
  }
 ]
+## 2절 390
+[
+ {
+  "E": "6/7",
+  "url": "?industry=beauty&tab=rec",
+  "ids": [
+   "gen-beauty-1",
+   "gen-beauty-2",
+   "gen-beauty-3"
+  ],
+  "head": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 세련된 센터형 뷰티 · 센터 히어로 · 모션 낮음 세련된 · 미니멀 · 반응형 지원 접근성·성능 미측정 뷰티 ",
+  "focus": "SECTION 추천 결과",
+  "railVisible": true,
+  "overflow": 0
+ },
+ {
+  "E": 1,
+  "url": "?tab=rec",
+  "ids": [],
+  "head": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "BUTTON 전체\n21",
+  "railVisible": true,
+  "overflow": 0
+ },
+ {
+  "E": "1-purpose",
+  "url": "?tab=rec",
+  "ids": [],
+  "head": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "INPUT 예약\n11",
+  "railVisible": true,
+  "overflow": 0
+ },
+ {
+  "E": "1-esc",
+  "url": "?tab=rec",
+  "ids": [],
+  "head": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "INPUT 예약\n11",
+  "railVisible": true,
+  "overflow": 0
+ },
+ {
+  "E": "1-industry",
+  "url": "?tab=rec",
+  "ids": [],
+  "head": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "BUTTON 전체\n21",
+  "railVisible": true,
+  "overflow": 0
+ },
+ {
+  "E": 2,
+  "url": "?industry=retail&tab=rec",
+  "ids": [],
+  "head": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "BUTTON 리테일\n0",
+  "railVisible": true,
+  "overflow": 0
+ },
+ {
+  "E": 3,
+  "url": "?industry=fitness&tab=rec",
+  "ids": [
+   "ref-d"
+  ],
+  "head": "전체 보기 조건에 맞는 추천이 1개뿐입니다. 라이선스: 자체 제작 필라테스 스튜디오 피트니스 · 그리드 히어로 · 모션 높음 활기찬 · 밝은 · 반응형 지원 접근",
+  "focus": "BUTTON 피트니스\n1",
+  "railVisible": true,
+  "overflow": 0
+ }
+]

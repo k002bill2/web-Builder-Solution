@@ -697,3 +697,322 @@
  }
 ]
 ## 비고: 위 "주 흐름 1~7" 두 번째 블록은 390 치환 실수로 1280에서 한 번 더 돈 재현(vw 1280) — 결과 동일.
+## 2절 E1·E2·E3·E8
+[
+ {
+  "E": 1,
+  "cards": 0,
+  "text": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "SECTION 추천 결과",
+  "overflow": 0,
+  "st": []
+ },
+ {
+  "E": "1-industry",
+  "cards": 0,
+  "text": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "BUTTON 전체\n9",
+  "overflow": 0
+ },
+ {
+  "E": "1-purpose",
+  "cards": 0,
+  "text": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "INPUT 예약\n5",
+  "overflow": 0
+ },
+ {
+  "E": 2,
+  "url": "http://localhost:4399/catalog?industry=retail&audience=family&tab=rec",
+  "cards": 3,
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍스트형 뷰티 · 텍스트 히어로 · 모션 중간 따뜻한 · 절제 · 반응형 지원 접근성·성능 미측정 뷰티 · 따뜻한 텍스트형 저장 뷰티 · 따뜻한 텍스트형 비교 추가 1위 15점 타깃 일치 가족 · 업종 다름 · 목적 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 밝은 그리드형 뷰티 · 그리드 히어로 · 모션 중간 밝은 · 활기찬 · 반응형 지원 접근성·성능 미측정 뷰티 · 밝",
+  "focus": "BUTTON 리테일\n0",
+  "overflow": 0,
+  "st": [
+   "status:추천이 5개로 바뀌었습니다."
+  ]
+ },
+ {
+  "E": 3,
+  "cards": 3,
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍스트형 뷰티 · 텍스트 히어로 · 모션 중간 따뜻한 · 절제 · 반응형 지원 접근성·성능 미측정 뷰티 · 따뜻한 텍스트형 저장 뷰티 · 따뜻한 텍스트형 비교 추가 1위 15점 타깃 일치 가족 · 업종 다름 · 목적 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 밝은 그리드형 뷰티 · 그리드 히어로 · 모션 중간 밝은 · 활기찬 · 반응형 지원 접근성·성능 미측정 뷰티 · 밝",
+  "focus": "BUTTON 피트니스\n0",
+  "overflow": 0,
+  "more": true,
+  "st": []
+ },
+ {
+  "E": "8-beauty",
+  "cards": 3,
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍스트형 뷰티 · 텍스트 히어로 · 모션 중간 따뜻한 · 절제 · 반응형 지원 접근성·성능 미측정 뷰티 · 따뜻한 텍스트형 저장 뷰티 · 따뜻한 텍스트형 비교 추가 1위 30점 업종 일치 뷰티 · 타깃 일치 가족 · 목적 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 밝은 그리드형 뷰티 · 그리드 히어로 · 모션 중간 밝은 · 활기찬 · 반응형 지원 접근성·성능 미측정 뷰티 ",
+  "focus": "BUTTON 뷰티\n2",
+  "overflow": 0,
+  "st": []
+ },
+ {
+  "E": "8-layout",
+  "url": "http://localhost:4399/catalog?industry=beauty&audience=family&layout=grid&tab=rec",
+  "cards": 3,
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍스트형 뷰티 · 텍스트 히어로 · 모션 중간 따뜻한 · 절제 · 반응형 지원 접근성·성능 미측정 뷰티 · 따뜻한 텍스트형 저장 뷰티 · 따뜻한 텍스트형 비교 추가 1위 30점 업종 일치 뷰티 · 타깃 일치 가족 · 목적 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 밝은 그리드형 뷰티 · 그리드 히어로 · 모션 중간 밝은 · 활기찬 · 반응형 지원 접근성·성능 미측정 뷰티 ",
+  "focus": "INPUT 그리드\n1",
+  "overflow": 0,
+  "st": []
+ },
+ {
+  "E": "8-layout-off",
+  "cards": 3,
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍스트형 뷰티 · 텍스트 히어로 · 모션 중간 따뜻한 · 절제 · 반응형 지원 접근성·성능 미측정 뷰티 · 따뜻한 텍스트형 저장 뷰티 · 따뜻한 텍스트형 비교 추가 1위 30점 업종 일치 뷰티 · 타깃 일치 가족 · 목적 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 밝은 그리드형 뷰티 · 그리드 히어로 · 모션 중간 밝은 · 활기찬 · 반응형 지원 접근성·성능 미측정 뷰티 ",
+  "focus": "INPUT 그리드\n1",
+  "overflow": 0,
+  "st": []
+ }
+]
+## 2절 재실행(가족 해제) E2·E3·E8·E7
+[
+ {
+  "observer": true
+ },
+ {
+  "E": 2,
+  "url": "?industry=retail&tab=rec",
+  "ids": [],
+  "text": "전체 보기 업종이나 목적을 고르면 추천을 계산합니다. 업종 고르기 목적 고르기",
+  "focus": "BUTTON 리테일\n0",
+  "overflow": 0,
+  "st": [
+   "status:추천이 0개로 바뀌었습니다."
+  ]
+ },
+ {
+  "E": 3,
+  "url": "?industry=fitness&tab=rec",
+  "ids": [
+   "ref-d"
+  ],
+  "text": "전체 보기 조건에 맞는 추천이 1개뿐입니다. 라이선스: 자체 제작 필라테스 스튜디오 피트니스 · 그리드 히어로 · 모션 높음 활기찬 · 밝은 · 반응형 지원 접근성 89 · 성능 84 · 09.20 측정 필라테스 스튜디오 저장 필라테스 스튜디오 비교 추가 1위 15점 업종 일치 피트니스 · 목적 미입력 · 콘셉트 미입력 근거 펼치기 이 추천 적용",
+  "focus": "BUTTON 피트니스\n1",
+  "overflow": 0,
+  "more": false,
+  "st": [
+   "status:추천이 1개로 바뀌었습니다."
+  ]
+ },
+ {
+  "E": "8-beauty",
+  "url": "?industry=beauty&tab=rec",
+  "ids": [
+   "gen-beauty-1",
+   "gen-beauty-2",
+   "gen-beauty-3"
+  ],
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 세련된 센터형 뷰티 · 센터 히어로 · 모션 낮음 세련된 · 미니멀 · 반응형 지원 접근성·성능 미측정 뷰티 · 세련된 센터형 저장 뷰티 · 세련된 센터형 비교 추가 1위 15점 업종 일치 뷰티 · 목적 미입력 · 콘셉트 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍",
+  "focus": "BUTTON 뷰티\n4",
+  "overflow": 0,
+  "st": [
+   "status:추천이 4개로 바뀌었습니다."
+  ]
+ },
+ {
+  "E": "8-layout",
+  "url": "?industry=beauty&layout=grid&tab=rec",
+  "ids": [
+   "gen-beauty-1",
+   "gen-beauty-2",
+   "gen-beauty-3"
+  ],
+  "text": "전체 보기 라이선스: 자체 제작 생성 조합 뷰티 · 세련된 센터형 뷰티 · 센터 히어로 · 모션 낮음 세련된 · 미니멀 · 반응형 지원 접근성·성능 미측정 뷰티 · 세련된 센터형 저장 뷰티 · 세련된 센터형 비교 추가 1위 15점 업종 일치 뷰티 · 목적 미입력 · 콘셉트 미입력 근거 펼치기 이 추천 적용 라이선스: 자체 제작 생성 조합 뷰티 · 따뜻한 텍",
+  "focus": "INPUT ",
+  "overflow": 0,
+  "st": []
+ },
+ {
+  "name": "E7",
+  "error": "ElementResolutionError: page.click timed out after 3000ms: Locator [aria-label=\"추천 결과\"] button:has-text(\"비교 추가\") >> nth=0 matched 0 elements"
+ }
+]
+## 2절 E7·E6
+[
+ {
+  "start": "",
+  "tray": null,
+  "cards": []
+ },
+ {
+  "name": "E7",
+  "error": "ElementResolutionError: page.click timed out after 3000ms: Locator [aria-label=\"추천 결과\"] button[aria-label$=\"비교 추가\"] >> nth=0 matched 0 elements"
+ },
+ {
+  "name": "E6",
+  "error": "ElementResolutionError: page.click timed out after 3000ms: Locator a:has-text(\"전체 보기\") matched 0 elements"
+ }
+]
+## 2절 E7·E6
+[
+ {
+  "start": "?industry=beauty&layout=grid&tab=rec",
+  "tray": "비교 보드 1 / 6",
+  "cards": [
+   {
+    "id": "gen-beauty-1",
+    "apply": [],
+    "undo": [
+     {
+      "t": "되돌리기",
+      "dis": null,
+      "desc": null
+     }
+    ],
+    "applied": true,
+    "extra": []
+   },
+   {
+    "id": "gen-beauty-2",
+    "apply": [
+     {
+      "t": "이 추천 적용",
+      "dis": null,
+      "desc": null
+     }
+    ],
+    "undo": [],
+    "applied": false,
+    "extra": []
+   },
+   {
+    "id": "gen-beauty-3",
+    "apply": [
+     {
+      "t": "이 추천 적용",
+      "dis": null,
+      "desc": null
+     }
+    ],
+    "undo": [],
+    "applied": false,
+    "extra": []
+   }
+  ]
+ },
+ {
+  "E": 7,
+  "tray": "비교 보드 2 / 6",
+  "cards": [
+   {
+    "id": "gen-beauty-1",
+    "apply": [],
+    "undo": [
+     {
+      "t": "되돌리기",
+      "dis": "true",
+      "desc": null
+     }
+    ],
+    "applied": true,
+    "extra": [
+     "적용 뒤 보드가 바뀌어 되돌릴 수 없습니다."
+    ]
+   },
+   {
+    "id": "gen-beauty-2",
+    "apply": [
+     {
+      "t": "이 추천 적용",
+      "dis": null,
+      "desc": null
+     }
+    ],
+    "undo": [],
+    "applied": false,
+    "extra": []
+   },
+   {
+    "id": "gen-beauty-3",
+    "apply": [
+     {
+      "t": "이 추천 적용",
+      "dis": null,
+      "desc": null
+     }
+    ],
+    "undo": [],
+    "applied": false,
+    "extra": []
+   }
+  ],
+  "st": [
+   "status:불러오는 중…"
+  ]
+ },
+ {
+  "name": "E6",
+  "error": "ElementResolutionError: page.click timed out after 3000ms: Locator button:has-text(\"null 비교 추가\") matched 0 elements"
+ }
+]
+## 2절 E7(위 edge3 재실행 출력은 콘솔) · E6
+[
+ {
+  "at": "/catalog?industry=beauty",
+  "tray": "비교 보드 2 / 6"
+ },
+ {
+  "reset": ""
+ },
+ {
+  "E": "6-tray",
+  "tray": "비교 보드 6 / 6",
+  "url": "",
+  "st": []
+ },
+ {
+  "E": 6,
+  "url": "?industry=beauty&tab=rec",
+  "tray": "비교 보드 6 / 6",
+  "cards": [
+   {
+    "id": "gen-beauty-1",
+    "apply": [],
+    "undo": [
+     {
+      "t": "되돌리기",
+      "dis": "true",
+      "desc": null
+     }
+    ],
+    "applied": true,
+    "extra": [
+     "적용 뒤 보드가 바뀌어 되돌릴 수 없습니다."
+    ]
+   },
+   {
+    "id": "gen-beauty-2",
+    "apply": [
+     {
+      "t": "이 추천 적용",
+      "dis": null,
+      "desc": null
+     }
+    ],
+    "undo": [],
+    "applied": false,
+    "extra": []
+   },
+   {
+    "id": "gen-beauty-3",
+    "apply": [
+     {
+      "t": "이 추천 적용",
+      "dis": "true",
+      "desc": null
+     }
+    ],
+    "undo": [],
+    "applied": false,
+    "extra": [
+     "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요."
+    ]
+   }
+  ],
+  "overflow": 0,
+  "st": []
+ }
+]

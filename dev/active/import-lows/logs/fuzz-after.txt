@@ -1,0 +1,67 @@
+D01 slot text <script> | PASS import | 2ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D02 slot text attr-break | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D03 meta.title </title><script> | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D04 meta.description quote-break | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D05 image source javascript: | REJECT IM-4 | 0ms
+D06 image source data:svg | REJECT IM-4 | 0ms
+D07 image source blob: | REJECT IM-4 | 0ms
+D08 image source https | REJECT IM-4 | 0ms
+D09 image source UUID uppercase | REJECT IM-4 | 0ms
+D10 image source valid UUID (no image) | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D11 placeholder patternId attr-break | REJECT IM-4 | 0ms
+D12 image alt XSS | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D13 extra doc key dangerouslySetInnerHTML | REJECT IM-4 | 0ms
+D14 slots __proto__ (JSON own key) | REJECT IM-4 | 0ms
+D15 slot key constructor | REJECT IM-4 | 0ms
+D16 unknown variant | REJECT IM-4 | 0ms
+D17 33 sections | REJECT IM-4 | 0ms
+D18 slot text 2001 chars | REJECT IM-4 | 0ms
+D19 slot nested object | REJECT IM-4 | 0ms
+D20 hash mismatch | REJECT IM-4 | 0ms
+D21 candidateId javascript:x | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+D22 section tone/motion bad | REJECT IM-4 | 0ms
+D23 instanceId attr-break | REJECT IM-4 | 0ms
+P01 project.name <script> | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+P02 project extra hasDoc/candidateId/docSavedAt | PASS import | 0ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[]
+P03 project __proto__ (JSON own key) | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+P04 project createdAt garbage | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+P05 project revision float | REJECT IM-4 | 0ms
+P06 top-level __proto__ | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S01 family CSS break | REJECT IM-4 | 2ms
+S02 family constructor | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=[] fontStack="\"constructor\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Go | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S03 family __proto__ | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=[] fontStack="\"__proto__\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Goth | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S04 family toString | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=[] fontStack="\"toString\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothi | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S05 color $value CSS | REJECT IM-4 | 0ms
+S06 color extra field | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S07 headingWeight 1e9 | REJECT IM-4 | 1ms
+S08 section_plan type __proto__ | REJECT IM-4 | 0ms
+S09 source_reference_ids javascript: | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S10 visual_direction XSS | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S11 corrections from javascript: | REJECT IM-4 | 0ms
+S12 purpose toString | REJECT IM-4 | 0ms
+S13 spacing grid string | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S14 card_style.style unknown | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S15 media_ratio XSS | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+S16 scale 0 / sectionGap -1 | REJECT IM-4 | 1ms
+N01 snapshot name XSS + extra key | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+N02 DocRecord extra key | PASS import | 1ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+N03 snapshot reason toString | REJECT IM-4 | 0ms
+N04 snapshotSeq string | REJECT IM-4 | 0ms
+Z01 series 3000 versions | PASS import | 17ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+Z02 deep nesting 200k | REJECT IM-2 | 11ms
+Z03 doc.sections 1e5 array | REJECT IM-4 | 277ms
+Z04 not JSON | REJECT IM-2 | 0ms
+Z05 formatVersion 2 | REJECT IM-3 | 0ms
+I01 format svg+xml | REJECT IM-6 | 1ms
+I02 format constructor | REJECT IM-6 | 1ms
+I03 localId non-UUID XSS | REJECT IM-6 | 1ms
+I04 localId .. | REJECT IM-6 | 1ms
+I05 png magic + HTML polyglot | PASS import | 2ms | protoPolluted=false | storedProjectKeys=projectId,name,revision,profileId,baseReferenceId,createdAt,updatedAt | kitTokens=built renderMsg=accepted | siteFaces=["Pretendard","Pretendard"] fontStack="\"Pretendard\", system-ui, -apple-system, \"Apple SD Gothic Neo\", \"Malgun Got | kitVarLeaks=[] | renderLeaks=[] | staticLeaks=[] titleEsc=true
+I06 svg bytes declared png | REJECT IM-6 | 1ms
+I07 declared 16384x2441 actual 640x480 | REJECT IM-6 | 1ms
+I08 bytes negative | REJECT IM-6 | 1ms
+I09 25 images | REJECT IM-5 | 1ms
+I10 base64 with whitespace | REJECT IM-6 | 1ms
+I11 data URL as variant | REJECT IM-6 | 1ms
+I12 variants __proto__ key | REJECT IM-6 | 1ms
+I13 duplicate localId | REJECT IM-6 | 1ms

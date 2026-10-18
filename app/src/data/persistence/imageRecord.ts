@@ -34,12 +34,11 @@ export async function readImageRecord(record: unknown, id: string): Promise<Inge
   const { variants, width, height, format, bytes } = data ?? {};
   if (!isSide(width) || !isSide(height) || exceedsPixelLimit(width, height) || !FORMATS.includes(format as string) || !variants || typeof variants !== "object") return undefined;
   const entries = Object.entries(variants);
+  // Blob.type = 정적 HTML data URL MIME·zip 확장자 — image/<형식> 밖이면 내보내기 전체가 실패하므로 그 이미지만 잃은 이미지(SEC L-4)
   const ladder = widthLadder(width).map(String);
-  if (entries.length !== ladder.length || entries.some(([w, blob], i) => w !== ladder[i] || !(blob instanceof Blob))) return undefined;
+  if (entries.length !== ladder.length || entries.some(([w, blob], i) => w !== ladder[i] || !(blob instanceof Blob) || blob.type !== `image/${format}`)) return undefined;
   const blobs = entries.map(([, blob]) => blob as Blob);
   if (bytes !== blobs.reduce((sum, blob) => sum + blob.size, 0)) return undefined;
-  // Blob.type = 정적 HTML data URL MIME·zip 확장자 — image/<형식> 밖이면 내보내기 전체가 실패하므로 그 이미지만 잃은 이미지(SEC L-4)
-  if (blobs.some((blob) => blob.type !== `image/${format}`)) return undefined;
   const heads = await Promise.all(blobs.map(async (blob) => formatFromMagic(new Uint8Array(await blob.slice(0, 16).arrayBuffer()))));
   return heads.every((f) => f === format) ? { variants: variants as IngestedImage["variants"], width, height, format: format as IngestedImage["format"], bytes } : undefined;
 }

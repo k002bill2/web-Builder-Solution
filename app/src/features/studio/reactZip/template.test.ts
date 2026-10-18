@@ -128,6 +128,13 @@ describe("LICENSES.md (RZ-AC-17 · 6절)", () => {
     expect(md).toContain("총 56개 파일이 들어 있습니다.");
     expect(reactZipLicenses(input)).toBe(md);
   });
+  it("5절 글꼴 파일 경로 · 6절 이미지 파일 경로 목록 = 입력 경로 그대로(6절 표)", () => {
+    const fonts = ["src/assets/fonts/Pretendard-400.woff2", "src/assets/fonts/Pretendard-700.woff2"];
+    const images = ["src/assets/images/img-01.webp", "src/assets/images/img-02.jpg"];
+    const md = reactZipLicenses({ ...input, fonts, images });
+    expect(md).toContain(`Pretendard — ${fonts[0]}, ${fonts[1]} · SIL Open Font License 1.1 · 전문: src/assets/fonts/OFL.txt`);
+    expect(md).toContain(`## 이미지\n\n- ${images[0]}\n- ${images[1]}\n\n올린 이미지의 권리는 올린 사람에게 있습니다.`);
+  });
   it("이미지 0 = '올린 이미지 없음' 1줄 · 글꼴 0 분기", () => {
     const md = reactZipLicenses({ files: 50, fonts: [], images: [], lost: 0 });
     expect(md).toContain("올린 이미지 없음");

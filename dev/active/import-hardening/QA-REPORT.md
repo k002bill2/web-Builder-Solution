@@ -45,3 +45,11 @@
 - 보안 영향 [사실 코드 + 추정]: 작은 헤더는 디코드 메모리가 선언 치수(이미 `exceedsPixelLimit` 검사) 이하라 **폭탄 경로는 아니다**. 디코드 뒤 `reencode`의 `bitmap.width !== width` 검사(`checkImages.ts:84`)가 정직한 디코더에서는 IM-6으로 막는다. 다만 "디코드 전 정확히 같음"이라는 REPORT §1 주장("사다리와 정확히 같음을 요구")을 회귀로 고정하지 못한다 → 누군가 `<=`로 바꿔도 CI가 모른다.
 - 권고(Developer, 미적용 — QA는 테스트 코드 커밋 금지): `checkImages.test` "1px 다름" 케이스에 **639×480 · 640×479** 추가, 기대 IM-6 · `calls.decoded = 0`. M2를 다시 적용해 FAIL 확인(Red-Green).
 → 4종 중 3종 잡힘. **조건부 PASS (QA-1 Low)**.
+
+## 4. 픽스처·테스트 이전/이후 — 단언 약화 0 [사실 — `git diff 5c98507c..19d3337a -- app/`]
+- 변경 테스트·픽스처 파일 3개: `checkImages.test.ts`(+47/−2) · `profileShape.range.test.ts`(신규 111) · `test/projectFileFixtures.ts`(+36/−10). 그 밖 테스트 파일 변경 0.
+- 테스트 파일에서 **삭제된 줄 = 2줄뿐**(`checkImages.test` "디코드 치수 ≠ 사다리"의 `rejected(... 499×300 / 500×301)` 호출). 대체 줄은 같은 IM-6 기대 + **`calls.decoded === 1` · 두 번째 `[decoded, closed] = [1, 1]` 추가** → 강화(헤더 = 500×300 고정이라 디코드 경로를 계속 탄다. 그대로 뒀다면 헤더 단계 거절로 `0 === 0` 공허 통과). REPORT §3 서술과 일치.
+- `checkImages.test` 단언 수: `expect(` 23 → 32 · `it(` 16 → 21 (감소 0).
+- 픽스처 커밋 `b3bd90c8`: `checkImages.test` 삭제 줄 0(헤더 일치 테스트 +7만), 나머지는 `fakeImageBytes` 바이트 모양(서명 16B → 실제 헤더 40B)·디코더 `.slice(HEADER_BYTES)` — 기존 단언을 바꾸지 않고 통과(REPORT: 206 passed).
+- 픽스처 바이트 모양 변경이 다른 스위트의 바이트 수·형식 단언을 느슨하게 했는지: fresh 전체 3269 통과 · 바이트 수는 `fileImage`가 실제 길이로 계산 [사실, 항목 1·2].
+→ **PASS**.

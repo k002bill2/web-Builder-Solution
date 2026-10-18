@@ -63,8 +63,8 @@ const gridOk = (v: unknown) => {
   const grid = Number.parseFloat(v);
   return !(Number.isFinite(grid) && grid > 0) || inRange(grid, 1, 64);
 };
-const typographyOk = (t: unknown) => isObject(t) && familyOk(t.family) && inRange(t.headingWeight, 100, 900) && inRange(t.bodyWeight, 100, 900) && inRange(t.scale, 1, 2);
-const spacingOk = (s: unknown) => isObject(s) && gridOk(s.grid) && inRange(s.sectionGap, 0, 512);
+const typographyOk = (t: unknown) => isObject(t) && isString(t.family) && [t.headingWeight, t.bodyWeight, t.scale].every(isNumber);
+const spacingOk = (s: unknown) => isObject(s) && isString(s.grid) && isNumber(s.sectionGap);
 const planOk = (plan: unknown) => Array.isArray(plan) && plan.every((s) => isObject(s) && keyOf(SECTION_TYPES)(s.type) && isString(s.variant));
 /** profileFields choice·cardRow·librarySection — 문자열 아니면 FieldRow.value로 그대로 렌더링된다 */
 const boundOk = (v: unknown) => isObject(v) && isString(v.variant);
@@ -98,3 +98,14 @@ const droppedOk = (d: unknown) =>
 export const profileVersionShapeOk = (v: Loose): boolean =>
   isOrigin(v.origin) && isString(v.baseReferenceId) && isString(v.createdAt) && baseOk(v.base) && adjustmentsOk(v.adjustments) &&
   optional(v.basedOn, isInt) && optional(v.boardRevision, isInt) && optional(v.dropped, droppedOk);
+
+/**
+ * 렌더될 버전(최신 · 문서 · 스냅샷이 가리키는 버전)의 타이포·간격 = 렌더 범위 (SEC L-1, Codex r1).
+ * 과거 버전은 모양만 본다 — 범위 밖 과거 버전 하나 때문에 정상 프로젝트의 파일 내보내기(recordsHold 공유)가 막히지 않게. 모양 검사(profileVersionShapeOk)를 지난 버전에만 부른다
+ */
+export const profileVersionRenderOk = (v: Loose): boolean => {
+  const { typography_tokens: t, spacing_tokens: s } = v.base as Loose;
+  const type = t as Loose;
+  const space = s as Loose;
+  return familyOk(type.family) && inRange(type.headingWeight, 100, 900) && inRange(type.bodyWeight, 100, 900) && inRange(type.scale, 1, 2) && gridOk(space.grid) && inRange(space.sectionGap, 0, 512);
+};

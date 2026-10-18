@@ -136,7 +136,7 @@ M4     Security(AppSec) · QA(릴리스 게이트) · Codex(diff 리뷰) → Jar
 | 4.3 | 사용량 원장·감사 로그 연동 | Developer A | T-API-USAGE |
 | 4.4 | AppSec 검토(조직 분리·업로드·워커·미리보기 URL·산출물) | Security | 차단 0 |
 | 4.5 | 릴리스 게이트 | QA | PASS |
-| 4.6 | 운영 문서(큐레이션·장애 대응·게이트 해석) | Hemingway (Jarvis 사실 확인) | 문서 |
+| 4.6 | 운영 문서(큐레이션·장애 대응·게이트 해석) | Hemingway (Jarvis 사실 확인) | 문서 · **2026-10-18 `docs/06-handoff/ops/{GATE-GUIDE,INCIDENT,CURATION}.md`** |
 
 ### M5 발행 (P1, 1~2주)
 

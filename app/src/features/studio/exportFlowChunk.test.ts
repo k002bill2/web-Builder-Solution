@@ -28,6 +28,23 @@ function repositoryCallingSlot(): ProjectRepository {
 }
 
 describe("생성기 청크 로드 실패 횟수 (B-M4A-08)", () => {
+  // 생성기를 받기 전이어야 한다(받은 생성기는 기억 — 다음 로드 0) → 이 파일 첫 테스트
+  it("응답이 먼저 실패하고 생성기 청크 실패가 나중에 와도 센다 — 요청 종료가 계수를 지우지 않는다(Codex r1 P2)", async () => {
+    exportChunk.fails = 0;
+    load.failures = 1;
+    const slot = (globalThis as unknown as Record<symbol, () => Promise<unknown>>)[SLOT]!;
+    let late: Promise<unknown> = Promise.resolve();
+    const repository = {
+      requestExport: async () => {
+        late = slot().catch(() => undefined);
+        throw new Error("응답 유실");
+      },
+    } as unknown as ProjectRepository;
+    expect(await requestExportOnce(repository, "p2", "static-html", 1)).toEqual({ kind: "retryable", format: "static-html" });
+    await late;
+    expect(exportChunk.fails).toBe(1);
+  });
+
   it("생성기 청크 2회 연속 실패 → 1 → 2 · 다음 시도 성공 → 0", async () => {
     exportChunk.fails = 0;
     load.failures = 2;
@@ -39,4 +56,5 @@ describe("생성기 청크 로드 실패 횟수 (B-M4A-08)", () => {
     expect((await requestExportOnce(repository, "p1", "static-html", 1)).kind).toBe("done");
     expect(exportChunk.fails).toBe(0);
   });
+
 });

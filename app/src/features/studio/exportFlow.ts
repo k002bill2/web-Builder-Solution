@@ -42,13 +42,17 @@ const summaries = new Map<string, ExportSummary>();
 /** 생성기 실패 중 사유를 보여 줄 것 → 프로젝트별 사유 */
 const REASONS: readonly string[] = [IMAGE_FAILED, DEV_SERVER_UNSUPPORTED];
 const failReasons = new Map<string, string>();
-/** 이번 요청에서 생성기 청크를 받지 못했다(B-M4A-08 — 내보내기 청크 연속 실패로 센다) */
-let generatorFailed = false;
+// 내보내기 청크 연속 실패(B-M4A-08) = 마지막으로 청크를 받은 뒤의 로드 실패 수 — 이 청크를 받았으면 0, 생성기는 로드가 끝날 때 센다
+// (요청·잡이 아니라 로드 결과에 붙인다 — 응답 실패·조회 종료 뒤 늦게 온 실패도 센다, Codex r1 P2)
+exportChunk.fails = 0;
 (globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => {
-  const { createStaticHtmlGenerator } = await loadGenerator().catch((error: unknown) => {
-    generatorFailed = true;
-    throw error;
-  });
+  const { createStaticHtmlGenerator } = await loadGenerator().then(
+    (generator) => ((exportChunk.fails = 0), generator),
+    (error: unknown) => {
+      exportChunk.fails += 1;
+      throw error;
+    },
+  );
   return (store: StudioReader): ExportGenerator => {
     const generate = createStaticHtmlGenerator(store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary) });
     return (input) =>
@@ -85,17 +89,7 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
   return current;
 }
 
-// 이 청크를 받았으면 이번 시도의 청크 실패는 생성기뿐 — 생성기도 받았으면(또는 이미 받아 뒀으면) 연속 실패를 끊는다(B-M4A-08)
-export async function requestExportOnce(...args: Parameters<typeof requestOnce>): Promise<ExportResult> {
-  generatorFailed = false;
-  try {
-    return await requestOnce(...args);
-  } finally {
-    exportChunk.fails = generatorFailed ? exportChunk.fails + 1 : 0;
-  }
-}
-
-async function requestOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
+export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
   failReasons.delete(projectId);
   if (images) requestImages.set(projectId, images);

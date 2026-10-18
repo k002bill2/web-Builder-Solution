@@ -67,7 +67,7 @@ AOS Backend (FastAPI)
 | Dashboard | AOS React 19 · TS · Tailwind 4 · Zustand · Vite | 신규 페이지는 `React.lazy` |
 | 대시보드 편집 UI | Puck(MIT) PoC → 채택 여부 M1 결정 ⚖️ | 계약→config 어댑터로 격리. 대안: 자체 섹션 리스트 편집기 |
 | 생성기 | Node 22 + TypeScript strict 모노레포 패키지 | `packages/design-studio/*` |
-| 생성 산출물 스택 | React + TypeScript + Tailwind CSS 4 + `motion/react` + Vite | 사용자 문서 6.5 |
+| 생성 산출물 스택 | React + TypeScript + Tailwind CSS 4 + Vite(모션 = 킷 CSS keyframes, `motion/react` 제외 — 2026-10-18 결정 · 버전 고정 + package-lock 동봉) | 사용자 문서 6.5 |
 | 토큰 | W3C DTCG 2025.10 JSON → Tailwind 4 `@theme` CSS 변수 | TRD-D-01 |
 | 스키마 | zod(TS) → JSON Schema → Pydantic 모델 생성/검증 | 단일 소스 |
 | 품질 검사 | axe-core, Lighthouse CI, Playwright 스크린샷 | TDD 참조 |

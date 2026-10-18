@@ -138,7 +138,7 @@
 | ID | 요구사항 | 우선 | 수용 기준 | 출처 |
 |---|---|---|---|---|
 | FR-PUB-01 | 품질 게이트: 대비 AA·대체텍스트·헤딩 순서·필수 섹션·모션 예산·SEO 메타·성능 예산 | P0 | 차단 0일 때만 내보내기/발행 | PRD-C-08, PRD-E-06·07·09 |
-| FR-PUB-02 | 코드 내보내기: React + Tailwind + motion/react 프로젝트 zip, 의존성 허용 목록만 | P0 | zip에서 `npm install && npm run build` 성공 | 사용자 문서 4F·6.6 |
+| FR-PUB-02 | 코드 내보내기: React + Tailwind 프로젝트 zip(모션은 CSS keyframes — 2026-10-18 영환님 "1", `motion/react` 제외), 의존성 허용 목록(버전 고정 + package-lock 동봉)만 | P0 | zip에서 `npm install && npm run build` 성공 | 사용자 문서 4F·6.6 |
 | FR-PUB-03 | 정적 HTML 내보내기 | P0 | 로컬 웹서버에서 미리보기와 동일 | PRD-E-03 |
 | FR-PUB-04 | 서브도메인 발행·상태 표시·롤백 | P1 | 발행 p95 ≤2분, 롤백 ≤1분 | PRD-E-02, TRD-E-07 |
 | FR-PUB-05 | 커스텀 도메인·TLS | P2 | — | 사용자 문서 5.3 |

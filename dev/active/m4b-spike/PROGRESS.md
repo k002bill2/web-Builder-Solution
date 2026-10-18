@@ -7,7 +7,7 @@
 - [x] 4. /studio 진입 증분 실측 — 버튼 +0.01 · 배선 +0.01(128.81 · 복원 131.79 · 렌더 84.29)
 - [x] 5. 결정 질문 Q1~Q8(★4) + 사용자 질의 표 U1~U3
 - [x] 6. REPORT 초안(잠정 결론 줄) — 10턴 안 (d62c3c9f) → 완료본 갱신
-- [ ] 7. 마감: Codex 1회 · git status 빈 값(node_modules 외) · git diff -- app/ 빈 값 · 커밋 SHA 보고
+- [x] 7. 마감: Codex 1회(지적 0) · git status 빈 값(node_modules 외) · git diff -- app/ 빈 값 · 커밋 SHA 보고
 
 ## 로그
 - 기준 빌드(41fcfd25 그대로): /studio 정규화 128.80(멈춤 128.82) · 복원 131.78 · 렌더 JS 84.29/90 — raw/baseline-bundle.txt. 빌드 뒤 git status 빈 값.
@@ -15,3 +15,4 @@
 - 시제품: 1차 zip은 vitest css:false로 kit.css 0바이트였는데도 빌드는 성공 → 충실도 비교에서 발견, CSS 주입 + 빈 원문 throw로 수정. 2차에서 카드 본문 16 vs 14px(앱 DS body3 누수) → index.css에 값 복사 → 3차 DOM 일치 · 스타일 차이 2(line-height, 배치 0) · 스크린샷 바이트 동일.
 - 앱 추적 파일 직접 수정(예산 측정용)은 권한 분류기가 거절 → $TMPDIR/m4b/appcopy(git archive + node_modules 복제)에서 b0/b1/b2 빌드. 사본 b0 = 저장소 기준과 같은 값.
 - 앱 안 임시 파일 app/src/features/studio/reactZip/ → patches/reactZip 보존 후 삭제.
+- Codex 1회 지적 0 · 미리보기 서버 4317·4318 종료(lsof 빈 값) · $TMPDIR/m4b(appcopy 185MB 포함)는 저장소 밖에 남김.

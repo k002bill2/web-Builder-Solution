@@ -1,6 +1,6 @@
 # CSP-SPEC — 내보낸 HTML·zip 고정 CSP 명세 (B-SEC-04)
 
-- 작성: Designer · 2026-10-18 · r0 (초안)
+- 작성: Designer · 2026-10-18 · r0 (초안) · 2026-10-19 r1 (2단계 grep 확정 3건 · Codex adversarial 반영)
 - 범위: 내보내기 산출물 3형식에 **생성기 고정 CSP**를 넣는 규칙. 형식별 정책 · 메뉴 스크립트 해시 · 렌더 불변 계약 · React zip 빌드 산출물 처리 · 수용 기준 · 테스트 계획 · 예산 · 설계 질문.
 - 범위 밖: 앱 자체(`index.html`·`render.html`)의 CSP·배포 헤더(SEC REPORT I-6 — 별건) · PNG(리소스 로드 없음) · 마크업 검사(F-03~F-15) 완화. **CSP는 보조 방어**이며 마크업 검사를 대체하지 않는다(SEC REPORT 4절 "보장 범위").
 - 정본: `dev/active/sec-readproject/REPORT.md` 4절(CSP 권고안·메뉴 스크립트 sha256) · `docs/design/m4a/EXPORT-SPEC.md` r1(4.1·4.2 금지 패턴, 7.1 EXP-AC) · `docs/design/m4b/REACTZIP-SPEC.md` r1(2.4 허용표, 4.1 충실도, 4.3 메뉴 리스너, 5.4 예산).
@@ -30,6 +30,9 @@
 | React zip 메뉴 | `MENU_LISTENER`가 `src/main.tsx`에 들어가 **번들된다**(인라인 스크립트 아님) | [사실] `templates.ts:46-53` · REACTZIP-SPEC 4.3 |
 | 예산 분류 | `exportFlow.ts`·`reactZip/reactZip.ts` = `STUDIO_AFTER_ACTION`(판정 밖·크기만 출력) | [사실] `scripts/check-bundle-size.mjs:58-66` |
 | 현행 CSP | 산출물 3형식 모두 CSP 0 | [사실] F-15가 막고 있음 · templates.ts에 없음 |
+| 산출물 소비처 | `buildStaticHtml` 호출 = `staticHtml.ts:170`(html) · `zipSite.ts:33`(zip) 2곳뿐 · 앱 안 `srcdoc`·iframe 재로드 0 → CSP meta가 **앱 화면·PNG 캡처에 영향 0**(다운로드 파일에만 적용) | [사실] grep `buildStaticHtml(`·`srcdoc` |
+| 킷 CSS의 `url()` | `kitCss` = `/render.html` 빌드 CSS. 빌드 산출물의 `url()`은 `@font-face` 6개(`/assets/*.woff2`)뿐 → 생성기가 `stripFontFaces`로 제거(`staticHtml.ts:168,170`). 킷 ts·tsx의 `style`에 `url(` 0 | [사실] 메인 checkout `app/dist/assets/render-ncA71k8b.css` grep · `src/kit` grep |
+| 결과 해시 | `hex12(결과 바이트)`(`staticHtml.ts:174` · `reactZip.ts:148`) — meta 추가로 **값이 바뀐다**(같은 문서 전·후 비교 시 정상 차이) | [사실] |
 
 해시 재계산 명령(이 레인, `app/`에서):
 ```bash
@@ -78,14 +81,20 @@ default-src 'none'; script-src 'sha256-xjxofTFd/IqBuzOkEPYsAa9W0LrdyNf+WbGn8wE5E
 | `default-src` | `'none'` | 1.1과 같음 |
 | `script-src` | 1.1과 같은 해시 | 같은 `STATIC_MENU_SCRIPT`(같은 `buildStaticHtml`) |
 | `style-src` | `'unsafe-inline'` | head `<style>`(킷 CSS + `@font-face src: url(assets/fonts/…)`) · 루트·`Media` `style` · ★ `assets/site.css`로 분리하지 않음(EXPORT-SPEC Q4) |
-| `img-src` | `'self'` (+ `data:` — 1.2.1) | `<img src="assets/images/img-NN.ext">` |
-| `font-src` | `'self'` (+ `data:` — 1.2.1) | `@font-face url(assets/fonts/<Family>-<weight>.woff2)` |
+| `img-src` | `'self'` | `<img src="assets/images/img-NN.ext">` · `data:` 불필요(1.2.1) |
+| `font-src` | `'self'` | `@font-face url(assets/fonts/<Family>-<weight>.woff2)` · `data:` 불필요(1.2.1) |
 | `base-uri` · `form-action` | `'none'` | — |
 
-#### 1.2.1 zip에 `data:`가 필요한가 [미확인 → 2단계 grep으로 확정]
+상수(1줄):
+```
+default-src 'none'; script-src 'sha256-xjxofTFd/IqBuzOkEPYsAa9W0LrdyNf+WbGn8wE5EAg='; style-src 'unsafe-inline'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'
+```
 
-- 생성기 규칙상 zip의 `img src`는 `assets/images/…`만이다([사실] `staticMarkup.ts` `ZIP_IMAGE`). 그러나 CSS `url()`은 zip에서도 `data:`를 허용한다(`assertNoExternalCss` — `data:` 또는 `assets/fonts`).
-- 킷·렌더 CSS(`kit.css`·`motion.css`·render CSS)에 `url(data:…)`가 있으면 그 자리를 위해 `data:`가 필요하다(배경 이미지면 `img-src`, 글꼴이면 `font-src`). 0건이면 zip에서 `data:`를 뺀다 — 결과는 r1에 기록.
+#### 1.2.1 zip에 `data:`가 필요한가 — **불필요 [사실, r1 확정]**
+
+- 생성기 규칙상 zip의 `img src`는 `assets/images/…`만이다([사실] `staticMarkup.ts:34` `ZIP_IMAGE`). 그러나 CSS 검사는 zip에서도 `data:`를 허용한다(`assertNoExternalCss:51` — `data:` 또는 `assets/fonts` · 본문 CSS `:108` — `data:`만).
+- 확인 결과: 킷 CSS의 `url()`은 `@font-face`뿐이고 생성기가 지운다 · 킷 `style`에 `url(` 0 · zip 글꼴은 `assets/fonts` 파일(0절). → zip 산출물에 `data:` 리소스 0 → **zip 정책에서 `data:`를 뺀다.**
+- 남는 위험 = **검사와 CSP의 어긋남**: 나중에 킷 CSS·`style`에 `url(data:…)`가 생기면 마크업 검사는 통과하고 CSP가 조용히 막아 zip 화면만 달라진다. → CSP-AC-11이 zip `index.html`의 `data:` 0을 단언해 그 시점에 테스트가 실패하게 한다(그때 이 절을 개정).
 
 #### 1.2.2 `'self'`의 한계 (SEC REPORT 4절 승계)
 
@@ -114,7 +123,7 @@ export default defineConfig({ plugins: [react(), tailwindcss(), csp] });
 ```
 
 - 새 패키지 0 → `package.json`·`package-lock.json` 불변 · 앱 새 의존성 0. CSP 플러그인 패키지를 쓰는 안은 새 의존성이라 채택하지 않는다(쓰려면 사용자 질의).
-- API 이름(`apply: "build"`·`transformIndexHtml` 반환 태그 배열·`injectTo: "head-prepend"`)은 구현 첫 단계에서 `app/node_modules/vite`의 타입 파일로 확인한다 [미확인 → 2단계 grep].
+- API 이름 [사실, r1 확인]: React zip이 고정하는 `vite` 8.3.1(`reactZip/licenses.ts:18` · 앱 `package.json:40`과 같은 버전)의 `dist/node/index.d.ts` — `apply?: "serve" | "build" | …`(:2208) · `injectTo?: "head" | "body" | "head-prepend" | "body-prepend"`(:1962) · `assetsInlineLimit?:`(:2845). 확인 위치 = 메인 checkout `app/node_modules`(이 worktree는 `node_modules` 없음). `transformIndexHtml` 반환 형태(태그 배열)는 구현이 타입으로 한 번 더 확인한다.
 - `head-prepend`는 meta를 charset 앞에 둔다. charset 선언은 문서 첫 1024바이트 안이면 되고 CSP meta는 약 200B라 문제없다 [추정]. 핵심 조건은 **Vite가 head에 넣는 `<script type="module">`·`<link rel="stylesheet">`보다 앞**이다.
 - dev 서버 영향: `apply: "build"`라 0. `vite preview`는 `dist/`를 그대로 서빙 → **preview에는 CSP가 걸린다**(충실도 대조 4.1 B가 CSP 아래에서 돈다 — 3.2).
 
@@ -205,6 +214,7 @@ default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; f
 | CSP-AC-08 | U | 정책 상수 형식: `default-src 'none'` 시작 · 지시어 집합 = 1절 표와 정확히 같음 · `'unsafe-eval'` 0 · `script-src`에 `'unsafe-inline'` 0 · `http:`·`https:`·`*` 0 · 브랜드 문자열 0(F-14) |
 | CSP-AC-09 | U | React zip `vite.config.ts` entry = 새 템플릿 상수 바이트 동일(REACTZIP 2.4 행 갱신) · 그 안 CSP 문자열 = `REACT_ZIP_CSP` 상수 · `apply: "build"` 포함 · 소스 `index.html` entry에 `http-equiv` 0 |
 | CSP-AC-10 | U | 예산: `check-bundle-size` `/studio` 진입·auto 증분 0 · 렌더 JS 90KB·CSS 30KB 판정 불변 · REACTZIP 5.4 진입 정적 클로저 검사(생성기 표식 0) 통과 |
+| CSP-AC-11 | U | zip `index.html`: head `<style>`·`style` 속성·`img src`에 `data:` 0 — zip 정책(`data:` 없음)과 마크업 검사 허용 범위의 어긋남을 잡는다(1.2.1) |
 | CSP-AC-C1 | C | React zip 산출물 `npm ci && npm run build` 성공 → `dist/index.html`: CSP meta 1개 · head 첫 자식 · 인라인 `<script>` 0 · `vite preview`에서 로드·메뉴 시나리오 CSP 위반 0(컨테이너 headless 또는 R4로 대체) |
 | CSP-AC-C2 | C | `npm run dev` 기동 → 첫 화면 렌더·HMR 동작(dev 영향 0 확인) · dev HTML에 CSP meta 0 |
 | CSP-AC-R1 | R | 정적 HTML(경로 A 문서 — 모던 카페+보정값 v2+새로 시작)을 CSP 전·후로 생성 → 1280·390 첫 화면 스크린샷 바이트 동일(3.1 픽셀) · 위반 0 |
@@ -222,10 +232,10 @@ default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; f
 
 | 파일 | 이유 |
 |---|---|
-| `features/studio/staticHtml/staticMarkup.test.ts` | head 구조·`meta[http-equiv]` throw 단언(F-15) · 스크립트·head 순서 단언 [추정 — 2단계 grep] |
-| `features/studio/staticHtml/staticHtml.test.ts` | 결과 문자열 단언(`<script>` 매치는 유지 — 영향은 head 단언에 한정) [추정] |
+| `features/studio/staticHtml/staticMarkup.test.ts` | [사실] `:242` `meta http-equiv="refresh"` 주입 → throw 단언 — **유지**(refresh는 개정 F-15에서도 throw). head 구조·순서 단언이 있으면 CSP meta 1개만큼 갱신 |
+| `features/studio/staticHtml/staticHtml.test.ts` | [사실] head 관련 단언 있음(grep `head`) · 결과 해시(`hex12`) 고정값 단언이 있으면 갱신 |
 | `kit/bodyVariants2a/2b/2c.test.tsx` · `heroVariants.test.tsx` · `boundVariants.test.tsx` | `buildStaticHtml` 결과의 script 단언 — script 단언 자체는 불변, head·meta 개수 단언이 있으면 영향 [추정] |
-| `features/studio/zip/staticZip.test.ts` | `index.html` 내용 단언 [추정] |
+| `features/studio/zip/staticZip.test.ts` | [사실] head 관련 단언 있음(grep `head`) — `index.html` 내용 |
 | `features/studio/reactZip/checkReactZipEntries.test.ts` · `template.test.ts` · `reactZip.test.ts` | `vite.config.ts` 바이트 동일 상수 변경 |
 
 5. **C 레인**: REACTZIP 7a(RZQ-10 B)대로 docker `node:22`에서 `react-zip-build`를 **다시 실행**(vite.config.ts가 바뀌었으므로 이전 C1 결과는 증거 불인정) → `dist/index.html` 검사 + dev 기동 확인 로그를 PROGRESS에 남긴다.

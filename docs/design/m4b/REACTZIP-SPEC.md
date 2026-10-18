@@ -148,7 +148,7 @@ interface SiteJsonV1 {
      - `export type LocalImageId = string & { readonly __brand: "LocalImageId" };` → ``export type LocalImageId = `img-${string}`;`` (산출물 안에서 이미지 키를 뜻한다)
      - `protocol.ts`는 import 경로만 바꾼다(스파이크 `reactZip.ts:60`과 같음).
   5. zip 쪽 경계: JSON import는 넓은 타입(`string`)이라 `src/main.tsx`에서 **한 번만** `site as unknown as SiteJson`으로 좁힌다(`SiteJson`은 `src/PageDocument.tsx`가 export). 내용 보장은 생성기 런타임 검증(위)과 RZ-AC-08이 맡는다. 산출물에 런타임 검증 코드를 넣지 않는다(번들·파일 최소).
-- 검증: RZ-AC-08이 ① 내부 필드 = 중립 상수 ② UUID 모양 문자열 0(`site.json` 전체 문자열 검색) ③ `img-NN` 참조 집합 = `images` 키 집합 ④ 잃은·끈 이미지 슬롯 = placeholder를 각각 확인한다. RZ-AC-13이 이 변환 뒤 DOM 동일을 확인한다(M2 문서에 잃은 이미지·끈 슬롯 포함).
+- 검증: RZ-AC-08이 ① 내부 필드 = 중립 상수 ② 이미지 `source` 자리에 UUID 0 — 검색 범위는 이미지 슬롯 값이다. 섹션 `instanceId`는 앵커 `#s-<id>`로 이미 DOM에 나가는 값이라 내부 정보가 아니다(참조 문서 실측 `header-1` 모양 [사실 `raw/render-input.json`] · 새로 추가한 섹션의 id 형식은 [미확인] — 구현 때 확인) ③ `img-NN` 참조 집합 = `images` 키 집합 ④ 잃은·끈 이미지 슬롯 = placeholder를 각각 확인한다. RZ-AC-13이 이 변환 뒤 DOM 동일을 확인한다(M2 문서에 잃은 이미지·끈 슬롯 포함).
 - 결정성: `JSON.stringify(value, null, 2) + "\n"` · 키 순서 = 위 순서 고정. 같은 revision → 같은 바이트.
 
 ### 2.4 허용표 (`checkReactZipEntries` — M4-a `checkZipEntries`와 분리)
@@ -290,7 +290,7 @@ interface SiteJsonV1 {
 | RZ-AC-05 | U | 읽기 전용 탭(INFRA + `READ_ONLY_TAB`)에서 react-zip → refused `READ_ONLY` · "다시 시도" 0 |
 | RZ-AC-06 | U | entry 집합 = 2.4 허용표만 · 순서 2.4 · 디렉터리 entry 0 · 경로 ASCII · 킷 entry 집합 = 킷 목록 · 빈 원문 0 |
 | RZ-AC-07 | U | 같은 문서·revision 두 번 생성 → 결과 해시 동일 |
-| RZ-AC-08 | U | `site.json` = 2.3 스키마 · 내부 필드 = 2.3.1 중립 상수 · UUID 모양 문자열 0 · 잃은·끈 이미지 = placeholder · 이미지 키 ↔ entry ↔ doc 참조 무결성 |
+| RZ-AC-08 | U | `site.json` = 2.3 스키마 · 내부 필드 = 2.3.1 중립 상수 · 이미지 `source` 자리 UUID 0 · 잃은·끈 이미지 = placeholder · 이미지 키 ↔ entry ↔ doc 참조 무결성 |
 | RZ-AC-09 | U | 글꼴 entry 바이트 = 같은 문서의 정적 zip 글꼴 entry 바이트 · `OFL.txt` = `fontLicenseText` |
 | RZ-AC-10 | U | `package.json` = 9개 정확 고정 · `motion` 0 · `engines.node` = `^20.19.0 \|\| >=22.12.0` · `build` = `tsc --noEmit && vite build` |
 | RZ-AC-11 | U | lock 대조(3.2-5) 전 항목 |

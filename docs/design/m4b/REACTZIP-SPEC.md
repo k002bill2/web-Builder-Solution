@@ -102,7 +102,7 @@ src/assets/images/img-<NN>.<webp|jpg|png>  업로드 이미지(2.2)
 1. 고르는 바이트 = 정적 zip과 같은 `exportImages` 규칙(id당 1장 · 목표 폭 = 그 id 슬롯 최대 · `pickVariant`) [사실 EXPORT-SPEC 2.2-2].
 2. 번호 = 문서 섹션 순서 → 슬롯 순서에서 id 첫 등장 순(01부터, 99 초과 시 3자리) — 정적 zip과 같다.
 3. 확장자 = Blob type(`image/webp`·`image/jpeg`·`image/png` → `webp`·`jpg`·`png`). 그 밖 = 생성 실패.
-4. 참조(★ RZQ-05 A): `site.json.doc` 안 이미지 참조 id를 **`img-NN` 키로 바꿔** 넣는다. 로컬 UUID가 산출물에 남지 않는다. `src/images.ts`가 `./assets/images/img-NN.ext` → Vite가 해시 붙인 URL로 바꾼다. `PageDocument`는 키 → URL 맵을 킷 이미지 슬롯에 넘긴다(앱의 id → objectURL 표 자리).
+4. 참조(★ RZQ-05 A): `site.json.doc` 안 이미지 참조 id를 **`img-NN` 키로 바꿔** 넣는다. 로컬 UUID가 산출물에 남지 않는다. `src/images.ts`가 `./assets/images/img-NN.ext` → Vite가 해시 붙인 URL로 바꾼다. `PageDocument`는 키 → URL 맵(앱의 `images` 자리)과 `site.json.images`의 크기 맵(앱의 `imageSizes` 자리)을 넘긴다.
    - [사실] 킷 `<img>`는 id를 DOM에 내보내지 않는다 — 속성은 `data-media="image"`·`src`·`alt`·`width`·`height`·`style`·`fetchPriority`/`loading`·`className`뿐이다(`kit/Media.tsx:45-55`). 키 치환은 DOM에 흔적을 남기지 않으므로 DOM 정규화는 `src`만 다룬다(4.1).
 5. 잃은 이미지 = 파일 없이 킷 자체 그래픽(현행) · 결과 줄 `lostImageText`.
 6. 같은 id를 여러 슬롯이 쓰면 파일 1개 · 키 1개.
@@ -116,11 +116,14 @@ interface SiteJsonV1 {
   readonly kitTokens: KitTokenInput;                    // 문서 킷 토큰(팔레트·타이포·간격 — 앱 입력 그대로)
   readonly motion: Readonly<Record<string, MotionPreset>>; // instanceId → 실효 모션(생성 시점 sectionMotion.motionOf + firstScreenIds 계산 결과, 엔진 코드 동봉 0)
   readonly mainStyle: Readonly<Record<`--${string}`, string>>; // canvasVars(kitTokens.palette) 결과 — main 요소 CSS 변수
-  readonly images: Readonly<Record<string, string>>;   // "img-NN" → "img-NN.ext" (파일 이름만, 경로 0)
+  readonly images: Readonly<Record<string, { readonly file: string; readonly width: number; readonly height: number }>>;
+  // "img-NN" → 파일 이름(경로 0) + 원본 크기. 크기 = 앱 PageDocument의 imageSizes(SPEC m2c 3절 — masonry 원본 비율)와 같은 값
 }
 ```
 
 - 스파이크 실측 필드는 `{ doc, kitTokens, motion, mainStyle }` 4개 [사실 `patches/reactZip/reactZip.ts:58`]. `schema`·`images`는 이 SPEC이 더한다.
+- [사실] 앱 `render/PageDocument`는 문서 밖 이미지 값 2개를 받는다 — `images`(id → URL)·`imageSizes`(id → 원본 width·height)(`render/PageDocument.tsx:17-29`). 킷 `Media`는 `images[image.source]`로 URL을 고르고 `aspect`로 원본 비율 칸을 그린다(`kit/Media.tsx:13-33`). 그래서 `images` 값은 파일 이름만이 아니라 크기를 함께 담는다 — 빠지면 masonry 칸 비율이 달라져 4.1 배치 기준이 깨진다.
+- `loading`(내보내기 render 전용 `"eager"`)은 zip에서 넘기지 않는다(★ RZQ-11 A — 실제 사이트는 킷 기본값: hero 즉시 + 그 밖 lazy).
 - 사용자 글자는 `doc` 안에만 있다(본문·alt·meta). 앱 내부 값(프로젝트 id·사용자 이름·저장 시각·잡 id)은 넣지 않는다.
 - 생성기는 직렬화 전에 위 형태를 런타임 검증한다(경계 검증 원칙). 실패 = 1.3 "생성기 단언".
 - 결정성: `JSON.stringify(value, null, 2) + "\n"` · 키 순서 = 위 순서 고정. 같은 revision → 같은 바이트.
@@ -137,11 +140,12 @@ interface SiteJsonV1 {
 | `src/fonts.css` | 정확히 1 | `url()` = `./assets/fonts/[A-Za-z]+-\d{3}\.woff2`만 · `@import` 0 |
 | `src/site.json` | 정확히 1 | 2.3 스키마 통과 |
 | `src/types/(pageDoc\|protocol)\.ts` | 정확히 2 | 생성기 원문 상수와 동일 |
-| `src/kit/[A-Za-z]+\.(tsx?\|css)` | **킷 목록과 정확히 같은 집합** | 생성기 원문과 동일 · 빈 원문 0(스파이크 함정 — `css: false`면 `?raw` CSS가 빈 문자열) |
+| `src/kit/[A-Za-z][A-Za-z0-9]*\.(tsx?\|css)` | **킷 목록과 정확히 같은 집합** | 생성기 원문과 동일 · 빈 원문 0(스파이크 함정 — `css: false`면 `?raw` CSS가 빈 문자열) |
 | `src/assets/fonts/[A-Za-z]+-\d{3}\.woff2` | 1~2 | 첫 4바이트 `wOF2` |
 | `src/assets/fonts/OFL.txt` | 정확히 1 (글꼴 ≥ 1일 때) | 계열 고지 포함 |
 | `src/assets/images/img-\d{2,3}\.(webp\|jpg\|png)` | 0~64 | 확장자 ↔ 서명(RIFF/WEBP · FFD8FF · 89504E47) |
 
+- 킷 이름에는 숫자가 들어간다(`ServicesCards3.tsx`·`PricingTiers2.tsx`·`StatisticsStats3.tsx`·`TestimonialsQuotes2.tsx`) [사실 `raw/zip-listing.txt`] — 위 패턴은 첫 글자만 영문으로 묶는다.
 - 공통(M4-a 4.3 승계): 경로 ASCII · `/` 구분 · 선행 `/`·`..`·`\`·`:` 0 · 대소문자만 다른 중복 0 · 길이 ≤ 100자.
 - **참조 무결성**: `site.json.images`의 값 집합 = `src/assets/images/*` entry 집합 · `doc` 안 `img-NN` 참조 = `images` 키 집합 · `fonts.css`의 `url()` = 글꼴 entry 집합(고아 0 · 끊긴 참조 0).
 - 개수 상한: 고정 파일 15 + 킷(스파이크 38) + 글꼴 ≤ 3 + 이미지 ≤ 64 → 약 120 [추정] — entry < 65,535(ZIP64 불필요).
@@ -181,11 +185,12 @@ interface SiteJsonV1 {
 
 ### 3.2 `package-lock.json` 생성·갱신 절차
 
-1. **원본 위치**: 생성기 디렉터리의 고정 파일(예: `reactZip/template/package-lock.json`)을 `?raw`로 생성기 청크에 넣는다. 크기 52,758 B · gzip 약 10.3KB(스파이크, `motion` 포함 기준) [사실 REPORT 2절].
-2. **생성 환경**: Linux CI(ubuntu, Node 22 LTS 계열 · npm 버전 기록) — 스파이크 Q3 권장. 이유: mac에서 만든 lock에도 linux·win32 선택 바인딩 38항목이 들어 있지만 다른 OS `npm ci`는 미실측 [사실 REPORT 5절 Q3].
+1. **원본 위치**: 생성기 디렉터리의 고정 파일 `reactZip/template/package-lock.json.tpl`·`package.json.tpl`을 `?raw`로 생성기 청크에 넣는다. 확장자 `.tpl` = `app/src` 안에 진짜 `package.json`이 생겨 중첩 패키지 경계·의존성 스캐너 대상이 되는 것을 막는다. 크기 52,758 B · gzip 약 10.3KB(스파이크, `motion` 포함 기준) [사실 REPORT 2절].
+   - 스파이크 lock은 `motion` 포함·`engines` 추가 전 산출물이라 **그대로 쓰지 않고 재생성**한다.
+2. **생성 환경**: Linux(ubuntu, Node 22 LTS 계열 · npm 버전 기록) — 스파이크 Q3 권장. [사실] 저장소에 CI 설정이 아직 없다(`.github/` 없음) → CI 신설 여부 = RZQ-10. CI가 없을 동안은 Linux 컨테이너에서 같은 명령을 돌린다. 이유: mac에서 만든 lock에도 linux·win32 선택 바인딩 38항목이 들어 있지만 다른 OS `npm ci`는 미실측 [사실 REPORT 5절 Q3].
 3. **생성 명령**(CI 잡 `react-zip-lock`, 수동 트리거): 빈 디렉터리에 템플릿 `package.json`만 쓰고 `npm install --no-audit --no-fund` → 산출 `package-lock.json`을 아티팩트로 올린다. 사람이 받아 원본 위치에 커밋한다(CI가 저장소에 직접 쓰지 않는다).
 4. **갱신 조건**: 3.1 버전 표 변경 · 앱 의존성 갱신으로 RZ-AC-12 실패 · 보안 공지 대응. 갱신 PR에는 lock diff와 6절 라이선스 표 갱신을 함께 넣는다.
-5. **대조 테스트(오프라인 단위, 매 CI)**: lock의 `lockfileVersion` = 3 · `packages[""].dependencies`·`devDependencies` = 템플릿 `package.json`과 정확히 같음 · `packages["node_modules/<9개>"].version` = 3.1 표 · 모든 `resolved`가 `https://registry.npmjs.org/`로 시작 · 모든 비-링크 항목에 `integrity` 존재 · 라이선스 필드 집합 ⊆ 허용 집합(MIT·Apache-2.0·ISC·BSD-2/3-Clause·0BSD·MPL-2.0(devDep 한정)) — 새 라이선스 종류가 나타나면 실패.
+5. **대조 테스트(오프라인 단위, 매 CI)**: lock의 `lockfileVersion` = 3 · `packages[""].dependencies`·`devDependencies`·`engines` = 템플릿 `package.json`과 정확히 같음 · `motion` 항목 0 · `packages["node_modules/<9개>"].version` = 3.1 표 · 모든 `resolved`가 `https://registry.npmjs.org/`로 시작 · 모든 비-링크 항목에 `integrity` 존재 · 라이선스 필드 집합 ⊆ 허용 집합(MIT·Apache-2.0·ISC·BSD-2/3-Clause·0BSD·MPL-2.0(devDep 한정)) — 새 라이선스 종류가 나타나면 실패.
 6. **설치 안내**: README·결과 안내는 `npm ci`를 권한다(lock 그대로 설치). PRD 수용 문구 `npm install && npm run build`도 lock이 있으면 같은 집합을 설치한다 [추정 — npm은 lock과 package.json이 맞으면 lock을 따른다]. CI 잡(5.3)은 둘 다 돈다.
 
 ### 3.3 `engines` (스파이크 Q9 ★)
@@ -211,17 +216,20 @@ interface SiteJsonV1 {
 
 | 층 | 기준 | 정규화 |
 |---|---|---|
-| DOM | `[data-site-root]` outerHTML이 정규화 후 **문자 단위 동일** | ① `data-motion-play` 속성 제거(B만 켜는 재생 스위치 — 정적 내보내기와 같음) ② `img[data-media="image"]`의 `src` → 이미지 키(`img-NN`)로 치환(A = `blob:` · B = 해시 URL). 그 밖 정규화 0 |
+| DOM | `[data-site-root]` outerHTML이 정규화 후 **문자 단위 동일** | ① `data-motion-play` 속성 제거(B만 켜는 재생 스위치 — 정적 내보내기와 같음) ② `img[data-media="image"]`의 `src` → 이미지 키(`img-NN`)로 치환(A = `blob:` · B = 해시 URL) ③ A를 내보내기 render(`loading: "eager"`)로 그렸다면 `img`의 `loading` 속성 제거(RZQ-11). 그 밖 정규화 0 |
 | 배치 | 비교 요소(섹션·제목·본문·이미지·버튼)의 위치·크기 차이 0 · 문서 높이 동일 | 계산 스타일 차이는 기록만(스파이크: line-height 22 vs 21px, 배치 영향 0) |
 | 픽셀 | 같은 브라우저·같은 기기에서 첫 화면 스크린샷 **바이트 동일** 목표(스파이크 1280×900 `cmp` 동일) · 같지 않으면 다른 픽셀 비율을 기록하고 원인(글꼴 로드 시점·이미지 디코드)을 판정한다 — 원인 미상이면 실패 | 글꼴 `document.fonts.ready` 뒤 · 모션 끝난 뒤(또는 `prefers-reduced-motion`) 캡처 |
 
-- 단위 대조(오프라인): 앱 `render/PageDocument`와 zip `src/PageDocument`를 각각 `renderToStaticMarkup`해 같은 정규화 후 비교한다(thumbs SSR 선례 `thumbs/entry.tsx`) [사실 REPORT 1절]. 30개 변형 전부 · 모든 CI.
+- **이미지 입력 조건**: A에는 생성기가 zip에 담은 것과 **같은 파생본**(`exportImages`·`pickVariant`가 고른 Blob)의 objectURL을 넣는다. 다른 파생본(편집기 미리보기용 작은 폭 등)을 넣으면 픽셀 비교가 설계상 실패한다.
+- 단위 대조(오프라인, ★ RZQ-12 A): 생성기가 만든 entry 중 `src/**`를 `app/node_modules/.cache/react-zip-fidelity/<케이스>/`에 풀고, 그 `src/PageDocument.tsx`를 동적 import해 `renderToStaticMarkup`한다. 같은 입력으로 앱 `render/PageDocument`도 SSR해 같은 정규화 후 비교한다(thumbs SSR 선례 `thumbs/entry.tsx` [사실 REPORT 1절]). 템플릿이 아니라 **실제 산출 파일**을 대조하므로 경로·타입 치환 실수도 잡는다. `react`는 앱 `node_modules`에서 해석된다(상위 디렉터리). 30개 변형 전부 · 모든 CI.
 
 ### 4.2 앱 DS 값 누수 — Q6 A (템플릿에 값 복사)
 
 - [사실 REPORT 1절 차이 1] 킷이 글자 크기·색을 정하지 않은 요소는 렌더 문서에서 앱 `styles/tokens/base.css` body 값(body3 14px · `--label-normal` · 흰 배경)을 상속한다.
 - 규칙: zip `src/index.css`에 그 값을 **rem/rgb 값으로 복사**한다(스파이크 방식). 앱 토큰 이름(`--label-normal` 등)·앱 CSS 파일은 산출물에 넣지 않는다.
-- 어긋남 가드: 단위 테스트가 앱 `base.css` body 규칙(크기·줄 높이·색·배경)과 템플릿 값이 같은지 대조한다. 앱 토큰이 바뀌면 이 테스트가 실패해 템플릿을 같이 고치게 한다.
+- 복사 범위 = 앱 `base.css` `body`의 **상속되는 속성 전부**: `font-size`(body3) · `line-height`(body3) · `color` · `background` · `word-break: keep-all` · `overflow-wrap: anywhere` · `-webkit-font-smoothing`·`-moz-osx-font-smoothing` · `text-rendering` [사실 `styles/tokens/base.css:12-25`]. `font-family`는 `[data-site-root]`의 사이트 글꼴이 덮으므로 복사하지 않는다 [추정 — 스파이크 템플릿과 같음].
+- [사실] 스파이크 템플릿은 `line-height`를 빠뜨렸다(`patches/reactZip/templates.ts:99-110`). 스파이크 실측의 루트·main `line-height` 22 vs 21px 차이가 이것 때문일 가능성이 높다 [추정] — 구현은 넣고 차이 0을 확인한다.
+- 어긋남 가드: 단위 테스트가 앱 `base.css` `body` 규칙(위 속성 전부, 토큰은 앱 토큰 파일에서 값으로 풀어서)과 템플릿 값을 대조한다. 앱 토큰이 바뀌면 이 테스트가 실패해 템플릿을 같이 고치게 한다.
 - 근본 해결(킷이 `[data-site-root]` 기본값을 직접 정함 — Q6 B)은 렌더·PNG·정적 내보내기에 모두 영향이 있어 별건 백로그.
 
 ### 4.3 메뉴 닫기 스크립트 (필수)
@@ -264,8 +272,8 @@ interface SiteJsonV1 {
 | RZ-AC-10 | U | `package.json` = 9개 정확 고정 · `motion` 0 · `engines.node` = `^20.19.0 \|\| >=22.12.0` · `build` = `tsc --noEmit && vite build` |
 | RZ-AC-11 | U | lock 대조(3.2-5) 전 항목 |
 | RZ-AC-12 | U | 3.1 버전 = 앱 설치 버전(앱 lock 기준) — 어긋나면 실패 |
-| RZ-AC-13 | U | 30개 변형 SSR DOM 정규화 동일(4.1) |
-| RZ-AC-14 | U | 템플릿 body 값 = 앱 `base.css` body 값(4.2) |
+| RZ-AC-13 | U | 30개 변형: 실제 산출 `src/PageDocument.tsx` SSR = 앱 `render/PageDocument` SSR(정규화 후, 4.1) · 이미지 문서는 masonry `aspect` 포함 |
+| RZ-AC-14 | U | 템플릿 body 값 = 앱 `base.css` body의 상속 속성 전부(4.2 — line-height 포함) |
 | RZ-AC-15 | U | `main.tsx` 메뉴 리스너: popover 안 `#` 앵커 클릭 → `hidePopover` 호출(jsdom) |
 | RZ-AC-16 | U | 생성기 고정 부분(템플릿·README·LICENSES)에 브랜드 문자열·`apfs` 0 · 사용자 글자는 `site.json`·`index.html` meta에만 |
 | RZ-AC-17 | U | LICENSES.md 필수 항목(6절) 존재 · 결정적 · 의존성 표 = 3.1 + lock 라이선스 집합 |
@@ -296,6 +304,8 @@ interface SiteJsonV1 {
 - 깨질 기존 테스트(예상, 스파이크 실측 [사실 `raw/tests-b2-wiring.txt`]): `ExportFlow.test.tsx` "React zip 버튼 0" · `memoryExport.test.ts` "react-zip은 계속 GENERATOR_UNAVAILABLE". 둘 다 M4-a 단언이 바뀌는 예상 변경이다.
 
 ### 5.3 CI 잡 설계 (네트워크 필요 단계 분리)
+
+- [사실] 저장소에 CI 설정이 없다(`.github/` 없음, 2026-10-18). 아래 잡은 **신설**이다 — RZQ-10. 신설 전에는 같은 단계를 구현·QA 레인이 로컬(Linux 컨테이너 포함)에서 돌리고 로그를 PROGRESS에 남긴다.
 
 - `react-zip-build`(네트워크 · PR 필수 체크 후보): ① 오프라인 단계 — vitest로 매트릭스 M1·M2 zip을 `$RUNNER_TEMP`에 쓴다(생성기 함수 직접 호출, CSS 주입) ② 네트워크 단계 — 빈 디렉터리에 `unzip` → `npm ci --no-audit --no-fund` → `npm run build` → 산출 크기 기록(C3) → 같은 zip으로 `npm install && npm run build`(C1 PRD 문구).
 - 행렬: ubuntu × Node 20.19·22 필수 · windows·macOS × Node 22는 RZQ-07(★ 주 1회 + lock 갱신 PR).
@@ -346,6 +356,9 @@ interface SiteJsonV1 {
 | RZQ-07 | windows·macOS CI 러너 | A 주 1회 + lock 갱신 PR에서만 · B 모든 PR · C 하지 않음 | **A** — 비용 대비 lock 플랫폼 위험만 잡는다 |
 | RZQ-08 | 픽셀 비교 기준 | A 같은 브라우저·기기에서 바이트 동일 목표 + 원인 판정 · B 허용 오차(예: 0.1% 픽셀) | **A** — 스파이크가 바이트 동일을 보였다. 허용 오차는 실패 원인을 숨긴다 |
 | RZQ-09 | lock 생성 Node 버전 | A Node 22 LTS 계열(TRD 생성기 Node 22와 같음) · B engines 최소(20.19) | **A** — lock v3는 두 버전 모두 읽는다 [추정] |
+| RZQ-10 | CI 신설(현재 `.github/` 없음) | A GitHub Actions 신설 — 오프라인 테스트 + `react-zip-build`·`react-zip-lock` · B CI 없이 구현·QA 레인이 로컬·Linux 컨테이너에서 실행하고 로그로 남김 | **A** — TRD:314 "zip 빌드 성공률 100%"를 매번 확인할 자리. 인프라는 미정(CLAUDE.md)이라 Jarvis 판단 · 원격 push는 영환님 승인 후 |
+| RZQ-11 | zip의 이미지 로드 방식 | A 킷 기본값(hero 즉시 · 그 밖 lazy) · B 내보내기 render처럼 전부 eager | **A** — 실제 사이트 성능. 대조는 4.1 정규화 ③으로 처리 |
+| RZQ-12 | SSR 대조 대상 | A 생성기가 만든 실제 산출 파일을 `node_modules/.cache`에 풀어 import · B 템플릿 원본을 별칭으로 import | **A** — 산출물 자체를 검사 · 앱 설정(별칭) 변경 0 |
 
 ### 7.1 사용자 질의 대상 (예산 상향 · 엔진 계약 · 앱 새 의존성 · 백엔드)
 
@@ -359,5 +372,5 @@ interface SiteJsonV1 {
 
 ## 8. 출처·관찰 기록
 
-- 외부 리서치 0. 라이선스·버전·engines = 메인 체크아웃 `app/node_modules/<이름>/package.json`(2026-10-18 로컬 읽기) · 스파이크 `raw/zip-package.json`·`raw/zip-npm-ls.txt`·`raw/zip-listing.txt`.
+- 외부 리서치 0. CI 설정 없음 = `ls .github` 결과(No such file or directory). 라이선스·버전·engines = 메인 체크아웃 `app/node_modules/<이름>/package.json`(2026-10-18 로컬 읽기) · 스파이크 `raw/zip-package.json`·`raw/zip-npm-ls.txt`·`raw/zip-listing.txt`.
 - 실화면 관찰: 이번 레인은 명세만 — preview·ego-browser 미실행. 실측은 RZ-AC-R*·C*로 구현·QA 레인이 한다.

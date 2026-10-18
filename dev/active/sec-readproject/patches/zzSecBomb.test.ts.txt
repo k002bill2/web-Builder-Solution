@@ -1,0 +1,28 @@
+// SEC-M4A-10 임시 — 커밋 금지
+import { expect, it } from "vitest";
+import { fileImage, toBase64 } from "../../test/projectFileFixtures";
+import { readImageHeader, exceedsPixelLimit } from "../studio/images/ingest/header";
+import { checkImages } from "./checkImages";
+
+const UUID = "0f8fad5b-d9cb-4ce1-9c47-4f6b7e3c2a1d";
+/** PNG 서명 + IHDR(16384×16384, 8bit RGBA) — CRC 0(헤더 파서는 보지 않음) */
+const ihdr = (w: number, h: number) => {
+  const b = new Uint8Array(33);
+  b.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52]);
+  new DataView(b.buffer).setUint32(16, w); new DataView(b.buffer).setUint32(20, h);
+  b[24] = 8; b[25] = 6;
+  return b;
+};
+it("bomb: declared 640x480, IHDR 16384x16384 → decode reached before reject", async () => {
+  const bytes = ihdr(16384, 16384);
+  const header = readImageHeader("png", bytes);
+  const order: string[] = [];
+  const deps = {
+    createImageBitmap: async (blob: Blob) => { order.push(`decode ${blob.size}B`); return { width: 16384, height: 16384, close: () => order.push("close") }; },
+    encode: async () => { order.push("encode"); return new Blob([]); },
+  };
+  const result = await checkImages([{ ...fileImage(UUID, 640, 480), bytes: bytes.length, variants: { "640": toBase64(bytes) } }], deps as never);
+  const line = `header=${JSON.stringify(header)} exceeds=${exceedsPixelLimit(header!.width, header!.height)} result=${result.ok ? "ok" : result.code} order=${order.join(">")}`;
+  (await import("node:fs")).writeFileSync("/tmp/secbomb-patched.txt", line + "\n");
+  expect(result.ok).toBe(false);
+});

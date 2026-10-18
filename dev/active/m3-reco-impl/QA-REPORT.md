@@ -255,3 +255,17 @@ ego-browser v2.1.0 · TaskSpace 45 · preview `--port 4399 --strictPort`(리슨 
 | 취소 | 대화상자 닫힘 · 포커스 "이 추천 적용" · 트레이 1/6 불변 · "적용됨" 0 | ✅ |
 
 - 2차 D1 부수(다시 시도 직후 포커스 BODY)도 해소: 화면 쪽은 결과 SECTION, 적용 쪽은 대화상자 "취소".
+
+### 9.3 390 #8~11 재측정 — **PASS** (2차 "폭 미검증" 해소)
+
+한 스크립트 안에서 `Emulation.setDeviceMetricsOverride` 390×844 → `goto(/catalog?industry=medical&audience=family&purpose=booking&tab=rec)`(새 문서 = 트레이 0부터) → #8~11 → 단계마다 `innerWidth` 기록. status는 이 스크립트에서 새로 건 MutationObserver 1개로 셈(2차 8.1 #11 도구 중복 교훈). 원문 `logs/qa-r3-390.txt`.
+
+| # | innerWidth | 결과 | 판정 |
+|---|---|---|---|
+| 8 키보드 Enter → Tab → Enter | 390 | 1위 "이 추천 적용" 포커스 → Enter → 대화상자(폭 375) · 포커스 "취소" → Tab "적용" → Enter · status 1회 "의료 · 신뢰 텍스트형 추천을 적용했습니다." · "적용됨" 1 · 포커스 "되돌리기" · 트레이 0 → 1/6 · 넘침 0(scrollWidth − innerWidth = −15, 스크롤바) | **PASS** |
+| 9 비교 보드 → `/compare` | 390 | h1 "비교 보드" · "A · 의료 · 신뢰 텍스트형" 12곳(열 A + 초안 10행) · 빈 보드 아님 · 넘침 0 (`shots/r3-390-09-compare.png`) | **PASS** |
+| 10 history.back → `tab=rec` | 390 | "적용됨" 1 · "되돌리기" aria-disabled 없음 · 트레이 1/6 · 넘침 0 | **PASS** |
+| 11 되돌리기(키보드 Enter) | 390 | status 1회 "…추천 적용을 되돌렸습니다." · "적용됨" 0 · 포커스 "이 추천 적용" · 트레이 0/6 · `/compare` "비교할 레퍼런스가 없습니다"(innerWidth 390) (`shots/r3-390-11-undone.png`) | **PASS** |
+
+- status 기록 전체: 적용 1 · "비교 보드를 불러오는 중…"(`/compare` 화면의 로딩 status — 추천 알림 중복 아님) · 되돌림 1. 중복 0.
+- 참고(판정 밖): #10 뒤로 직후 포커스 BODY(SPEC 규정 없음, 2차와 같음).

@@ -1,8 +1,8 @@
 /**
- * React zip LICENSES.md (REACTZIP-SPEC 6절) — 고정 순서 · 결정적(시각·사용자·프로젝트 이름 0) · 브랜드 0. 문안은 [문안 미정](reactZipText 자리 상수).
+ * React zip LICENSES.md (REACTZIP-SPEC 6절) — 고정 순서 · 결정적(시각·사용자·프로젝트 이름 0) · 브랜드 0. 1·2·4절 문안 = COPY.md 확정본(reactZipText) · 3·5·6·7절 = 현행 유지(COPY.md 결정).
  * 의존성 표 = 3.1 고정 · 하위 의존성 라이선스 개수 = lock과 함께 고정한 상수(생성 시점 계산 0 — template.test가 lock과 대조, RZ-AC-17).
  */
-import { LICENSES_SITE_CODE, licensesHead } from "./reactZipText";
+import { LICENSES_SITE_CODE, licensesHead, licensesTransitive } from "./reactZipText";
 
 export interface DirectDep {
   readonly name: string;
@@ -25,6 +25,12 @@ export const DIRECT_DEPS: readonly DirectDep[] = [
 ];
 /** lock(template/package-lock.json.tpl) 설치 항목 86개의 라이선스 종류별 개수 — lock을 갱신하면 같이 갱신(template.test 대조) */
 export const LOCK_LICENSES: Readonly<Record<string, number>> = { MIT: 57, "Apache-2.0": 2, ISC: 2, "MPL-2.0": 24, "BSD-3-Clause": 1 };
+/** 하위 의존성(직접 의존성 9개·루트 제외) 라이선스 종류별 개수 — LICENSES 4절 표(reactZipCopy.test가 lock과 대조) */
+export const TRANSITIVE_LICENSES: Readonly<Record<string, number>> = Object.fromEntries(
+  Object.entries(LOCK_LICENSES)
+    .map(([license, n]) => [license, n - DIRECT_DEPS.filter((d) => d.license === license).length] as const)
+    .filter(([, n]) => n > 0),
+);
 
 export interface ReactZipLicenseInput {
   /** zip 안 파일 수(LICENSES.md 포함) */
@@ -35,17 +41,14 @@ export interface ReactZipLicenseInput {
   readonly lost: number;
 }
 
-// TODO(copy): 3~7절 제목·문장 — 항목·출처·라이선스 종류만 고정(SPEC 6절)
 export function reactZipLicenses({ files, family, fonts, images, lost }: ReactZipLicenseInput): string {
   const deps = DIRECT_DEPS.map((d) => `| ${d.name} | ${d.version} | ${d.kind} | ${d.license} | ${d.url} |`).join("\n");
-  const counts = Object.entries(LOCK_LICENSES)
-    .map(([license, n]) => `- ${license}: ${n}`)
-    .join("\n");
+  const table = ["| 라이선스 | 하위 패키지 수 |", "|---|---|", ...Object.entries(TRANSITIVE_LICENSES).map(([license, n]) => `| ${license} | ${n} |`)].join("\n");
   return [
     licensesHead(files),
     LICENSES_SITE_CODE,
     `## npm 직접 의존성\n\n| 패키지 | 버전 | 구분 | 라이선스 | 출처 |\n|---|---|---|---|---|\n${deps}\n`,
-    `## 하위 의존성\n\npackage-lock.json이 고정한 설치 항목의 라이선스 종류별 개수입니다.\n\n${counts}\n\nMPL-2.0 lightningcss(플랫폼 바인딩 포함)는 Tailwind 빌드 도구의 하위 devDependency이며 산출 사이트 번들에 포함되지 않습니다. 출처: https://github.com/parcel-bundler/lightningcss\n`,
+    licensesTransitive(table),
     family
       ? `## 글꼴\n\n${family} — ${fonts.join(", ")} · SIL Open Font License 1.1 · 전문: src/assets/fonts/OFL.txt\n\n이 글꼴은 서브셋입니다. 문구를 고치면 서브셋에 없는 글자는 대체 글꼴로 보일 수 있습니다.\n`
       : `## 글꼴\n\n동봉한 글꼴 없음\n`,

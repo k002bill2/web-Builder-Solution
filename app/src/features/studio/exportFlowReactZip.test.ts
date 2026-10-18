@@ -58,7 +58,7 @@ describe("React zip 생성기 청크 (RZ-AC-04 · B-M4A-08과 같은 계수)", (
     expect(made.loads).toBe(2);
   });
 
-  it("완료 → 내려받기 이름 <이름>_r<rev>_react.zip(RZ-AC-19) · 결과 줄 = 자리 상수(크기·이미지·글꼴) + 다음 할 일 안내", async () => {
+  it("완료 → 내려받기 이름 <이름>_r<rev>_react.zip(RZ-AC-19) · 결과 줄 = export.note.reactZip(크기·이미지·글꼴) + 다음 할 일 안내", async () => {
     const repository = repositoryCallingSlot();
     made.run.mockImplementationOnce(async () => {
       made.deps.at(-1)!.onBuilt!("blob:react-2", { bytes: 1.5 * MB, images: 2, lost: 0, fonts: 2 });
@@ -67,6 +67,8 @@ describe("React zip 생성기 청크 (RZ-AC-04 · B-M4A-08과 같은 계수)", (
     const result = await requestExportOnce(repository, "p1", "react-zip", 5);
     expect(result).toMatchObject({ kind: "done", format: "react-zip", download: { href: "blob:react-2", fileName: "가게_r5_react.zip", hash: "0123456789ab" } });
     expect(result.kind === "done" && result.notes).toEqual([reactZipNote(1.5 * MB, 2, 2), REACT_ZIP_NEXT]);
+    // COPY.md 확정 문안 글자 그대로(FIX1)
+    expect(result.kind === "done" && result.notes).toEqual(["zip 1개 · 1.5MB (이미지 2장 · 글꼴 2개)", "압축을 푼 폴더에서 npm ci → npm run dev 순서로 실행하세요. Node.js 버전 조건은 ^20.19.0 || >=22.12.0입니다."]);
   });
 
   it("잃은 이미지 → 결과 줄 끝에 현행 lostImageText", async () => {

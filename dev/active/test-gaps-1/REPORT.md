@@ -20,12 +20,13 @@ RED = 변이에서 기존 테스트 통과(생존 재현) · FAIL = 새 단언�
 | B-M4B-08 | M2a `StudioPanels.tsx:146` `{exports ?? <p className="ds-body">생성기 준비 중입니다.</p>}`(다른 문장 폴백) | `StudioPanels.test.tsx` 2/2 통과 | 같은 파일 — `exports={null}`일 때 h3 "내보내기".nextSibling = null | 1 failed/2 — `expected <p class="ds-body"></p> to be null` | 2/2 | `aee369ec` |
 | B-M3-04 | m4-b `CatalogPage.tsx` `import "../components/reco/RecoView";` 1줄 | `CatalogPageRecoLoad.test.tsx` 3/3 통과 | 새 `src/test/recoImportGuard.test.ts` — 소스 전체 정적 간선 0 · 동적 간선 = 로더 2개 3건 · 검출기 자체 | 1 failed/3 — `+ "pages/CatalogPage.tsx → ../components/reco/RecoView"` | 3/3 | `6527ec03` |
 | B-M3-04 | m4-c `recoLoader.ts` = `import * as RecoView from "./RecoView"; export const loadRecoView = () => Promise.resolve(RecoView);` | `CatalogPageRecoLoad.test.tsx` 3/3 통과 | (같은 가드) | 2 failed/3 — 정적 `recoLoader.ts → ./RecoView` · 동적 목록에서 `recoLoader.ts → ./RecoView` 빠짐 | 3/3 | `6527ec03` |
+| B-RS-08 L1 U14-b | `memoryProjectRepository.ts:141` confirmDoc의 `await cores.get(projectId)?.idle()` 제거 | save+data 61파일 중 기존 497/497 통과(서브에이전트: features·pages·components 포함 2260/2260) | 새 `features/studio/save/confirmDoc.coreIdle.test.ts` — 다른 탭 코어 commit을 `keys("images")` 순번 게이트로 `port.commit`~`link.align` 사이에 세운 채 confirmDoc → 끝 IDB 문서 = 코어 커밋 B | 1 failed — `expected 'A' to be 'B'` | 원본 5회 연속 1/1(메인) · 서브에이전트 11회 | `a00c3215` |
 | B-RS-08 L5 M1 | — | — | 이미 RS7-M1에서 닫힘(BACKLOG 원문 · `ProjectsRowPriority.test.tsx`) | — | — | 작업 0 |
 
 
 ## 3. 서브에이전트
 - A(worktree): B-M4B-07 — 진행 중
-- B(worktree): B-RS-08 U14-b — 진행 중(30분 상한)
+- B(worktree `worktree-agent-ae86468a3f9c0be36`): B-RS-08 U14-b — 검출 성공. 앞선 3회 실패 원인 = 확인이 B 제출 **전**에 쓰면 `submitted`=A라 retry만(쓰기 0) — 노출 구간은 `coreIo.ts` `port.commit`~`link.align` 사이뿐(`localSync.ts:161`). 메인이 변이 재실행으로 재검증.
 
 ## 4. 게이트
 (작성 중)

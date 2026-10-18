@@ -1,12 +1,14 @@
 /**
  * 가져오기 ⑤ 이미지 (P2-SPEC 3.3 ⑤ · Jarvis 채택 결정 2 · THREATS T4 "디코드·재인코딩 재통과").
  * 한도(디코드 전, IM-5) → 레코드 규칙(readImageRecord와 같은 규칙: 형식·변·픽셀·사다리·bytes 합·머리 서명 + 엄격 base64, IM-6)
+ * → 디코드 전 실제 헤더 = 사다리 치수(압축 폭탄 — 업로드 V5와 같은 파서 readImageHeader, SEC M-1. 선언 width·height만 믿지 않는다, IM-6)
  * → 변형본마다 디코드 성공 + 치수 = 사다리 → **업로드 경로와 같은 인코더**(IngestDeps.encode · chooseFormat 설정)로 다시 인코딩한 바이트를 돌려준다.
  * 재인코딩이 덧붙은 바이트(폴리글롯)·메타데이터를 지운다. 변형본은 1개씩 디코드하고 bitmap은 성공·실패 모두 닫는다.
  */
 import { browserIngestDeps, type IngestBitmap, type IngestDeps } from "../studio/images/ingest/deps";
 import { formatFromMagic } from "../studio/images/ingest/fileType";
 import { chooseFormat, type EncodeChoice } from "../studio/images/ingest/format";
+import { readImageHeader } from "../studio/images/ingest/header";
 import { variantHeight, widthLadder } from "../studio/images/ingest/ladder";
 import { exceedsPixelLimit, MAX_SIDE } from "../studio/images/ingest/limits";
 import type { ImageFormat } from "../studio/images/ingest/types";
@@ -53,6 +55,12 @@ function decodeBase64(text: unknown): Uint8Array | undefined {
 
 const headOf = async (blob: Blob) => formatFromMagic(new Uint8Array(await blob.slice(0, MAGIC_BYTES).arrayBuffer()));
 
+/** 실제 바이트 헤더 치수 = 그 변형본의 사다리 치수 — 디코드 전에 본다 */
+const headerFits = (format: ImageFormat, bytes: Uint8Array, width: number, height: number) => {
+  const header = readImageHeader(format, bytes);
+  return header !== null && header.width === width && header.height === height;
+};
+
 /** 레코드 규칙 → 원본 변형본 Blob(사다리 순) · 규칙 밖 = undefined */
 async function ruledVariants(image: Loose): Promise<readonly (readonly [number, Blob])[] | undefined> {
   const { width, height, format, bytes, variants } = image;
@@ -62,6 +70,7 @@ async function ruledVariants(image: Loose): Promise<readonly (readonly [number, 
   if (entries.length !== ladder.length || entries.some(([w], i) => w !== String(ladder[i]))) return undefined;
   const decoded = entries.map(([, text]) => decodeBase64(text));
   if (decoded.some((b) => b === undefined)) return undefined;
+  if (!decoded.every((b, i) => headerFits(format, b!, ladder[i]!, variantHeight(width, height, ladder[i]!)))) return undefined;
   const blobs = decoded.map((b) => new Blob([b as BlobPart], { type: `image/${format}` }));
   if (bytes !== blobs.reduce((sum, blob) => sum + blob.size, 0)) return undefined;
   const heads = await Promise.all(blobs.map(headOf));

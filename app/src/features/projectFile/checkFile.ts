@@ -11,7 +11,7 @@ import type { ProfileVersion } from "../../domain/profile";
 import { validateProjectName } from "../../domain/projectName";
 import type { IngestDeps } from "../studio/images/ingest/deps";
 import { checkImages, type CheckedImage } from "./checkImages";
-import { profileVersionShapeOk } from "./profileShape";
+import { profileVersionRenderOk, profileVersionShapeOk } from "./profileShape";
 import { FILE_FORMAT, FORMAT_VERSION, MAX_FILE_BYTES, SCHEMA, failure, type CheckFailure, type ImportCode } from "./format";
 
 export interface CheckedFile {
@@ -85,8 +85,17 @@ function recordsOk(top: Loose): boolean {
   if (!projectOk(project)) return false;
   const series = top.series as unknown[];
   if (!seriesOk(series, project.profileId as string)) return false;
-  return top.doc === null || docOk(top.doc as Loose, project.projectId as string, series.length);
+  if (top.doc !== null && !docOk(top.doc as Loose, project.projectId as string, series.length)) return false;
+  return renderedVersions(series.length, top.doc as Loose | null).every((n) => profileVersionRenderOk(series[n - 1] as Loose));
 }
+
+/** 렌더될 프로필 버전 = 최신(다음 생성) + 문서 + 스냅샷 머리·스냅샷 문서(복원) — docOk가 모두 1..n임을 이미 봤다 */
+const renderedVersions = (latest: number, record: Loose | null): readonly number[] => {
+  if (record === null) return [latest];
+  const doc = record.doc as Loose;
+  const snapshots = record.snapshots as readonly Loose[];
+  return [...new Set([latest, doc.profileVersion as number, ...snapshots.flatMap((s) => [s.profileVersion as number, (s.doc as Loose).profileVersion as number])])];
+};
 
 async function parse(file: Pick<Blob, "text">): Promise<unknown> {
   try {

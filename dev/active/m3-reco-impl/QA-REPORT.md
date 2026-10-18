@@ -240,3 +240,18 @@ fresh(`app/`, 순서대로): typecheck exit 0 · lint exit 0 · test exit 0 **Te
 
 - 다른 라우트 main 대비 −0.01~+0.01(±0.03 안). 비교 기준은 이 브랜치의 분기점 `36e825a6`(1.1 실측 재사용). 참고: main은 그 뒤 `520d40b5`(m4a 내보내기, app 4파일)로 진행 — R3에서 재빌드 안 함(이 브랜치 증분 판정과 무관).
 - 청크: `RecoView-Bb50hv-z.js` · `RecoApply-DoOVcK2A.js` · `recoApplyFlow-8Aue5ZeE.js` · `chunkRetry-W0I4Gx5e.js`.
+
+### 9.2 D1 실화면 — **PASS (D1 해소)**
+
+ego-browser v2.1.0 · TaskSpace 45 · preview `--port 4399 --strictPort`(리슨 `127.0.0.1:4399` 확인) · 폭 override·차단(`Network.setBlockedURLs`)·캐시 끄기를 **측정과 같은 스크립트 안에서** 걸고 각 상태에 `innerWidth` 기록(전부 1280). 요청은 `performance.getEntriesByType('resource')`. 원문 `logs/qa-r3-d1.txt`.
+
+| 단계 | 결과 | 판정 |
+|---|---|---|
+| 준비 | 전체 탭(의료·예약·가족)에서 "비교 추가" 1회 → 트레이 "비교 보드 1 / 6 · 동네 치과 클리닉" · rec 청크 0 | — |
+| 화면 청크 차단 → "추천 받기" | h1 "추천" · `tab=rec` · alert 1 "추천을 불러오지 못했습니다. 다시 시도" · status 빈 값 · `RecoView-Bb50hv-z.js` 요청 1(차단) · 트레이 1/6 | ✅ |
+| 해제 → "다시 시도" | **`/assets/RecoView-Bb50hv-z.js?retry=1` 요청** · alert 0 · 카드 3 · 포커스 SECTION(결과 영역 — BODY 아님) · **트레이 1/6 "동네 치과 클리닉" 유지** · status 중복 0 (`shots/r3-D1-view-recovered-1280.png`) | **PASS** |
+| 적용 청크 차단 → 1위 "이 추천 적용" | `RecoApply-DoOVcK2A.js`·`recoApplyFlow-8Aue5ZeE.js` 요청 1씩(차단) · alert 1 "추천을 적용하지 못했습니다. 다시 시도" · 대화상자 0 · "적용됨" 0 · 트레이 1/6 · 포커스 "이 추천 적용" | ✅ (승인 전 변경 0) |
+| 해제 → "다시 시도" | **`RecoApply-…js?retry=1` · `recoApplyFlow-…js?retry=1` 요청** · alert 0 · 대화상자 "의료 · 신뢰 텍스트형 적용" · 포커스 "취소" · 트레이 1/6 (`shots/r3-D1-apply-recovered-1280.png`) | **PASS** |
+| 취소 | 대화상자 닫힘 · 포커스 "이 추천 적용" · 트레이 1/6 불변 · "적용됨" 0 | ✅ |
+
+- 2차 D1 부수(다시 시도 직후 포커스 BODY)도 해소: 화면 쪽은 결과 SECTION, 적용 쪽은 대화상자 "취소".

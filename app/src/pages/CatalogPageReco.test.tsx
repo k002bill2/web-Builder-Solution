@@ -36,6 +36,14 @@ describe("추천 화면 (RECO-SPEC 3.2·3.4)", () => {
     expect(within((await cards())[4]!).getByText("5위")).toBeInTheDocument();
   });
 
+  it("QA N1: '2개 더 보기'가 사라지면 포커스는 4번째 카드 제목(BODY 0)", async () => {
+    renderApp(T_REC_01);
+    await waitFor(async () => expect(await cards()).toHaveLength(3));
+    await userEvent.click(screen.getByRole("button", { name: "추천 2개 더 보기" }));
+    const fourth = (await cards())[3]!;
+    await waitFor(() => expect(within(fourth).getByRole("heading", { level: 3 }).querySelector("a")).toHaveFocus());
+  });
+
   it("근거 펼치기는 aria-expanded 버튼 + 7항목 목록, 포커스는 버튼에 머문다", async () => {
     renderApp(T_REC_01);
     const first = (await cards())[0]!;

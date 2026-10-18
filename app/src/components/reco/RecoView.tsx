@@ -116,7 +116,8 @@ export default function RecoView({
     const target = focusNext.current;
     if (target === null) return;
     focusNext.current = null;
-    document.querySelector<HTMLElement>(`[data-reco-focus="${target}"]`)?.focus();
+    // 버튼 표식이 없으면 카드 id — 그 카드 제목 링크(ReferenceCard `${id}-title`)
+    (document.querySelector<HTMLElement>(`[data-reco-focus="${target}"]`) ?? document.getElementById(`${target}-title`)?.querySelector("a"))?.focus();
   });
 
   const focusLater = (id: string) => {
@@ -270,7 +271,12 @@ export default function RecoView({
         })}
       </div>
       {!more && results.length > FIRST && (
-        <Button variant="assistive" size="sm" className="mt-4" onClick={() => setMore(true)}>
+        <Button variant="assistive" size="sm" className="mt-4" onClick={() => {
+            // 버튼이 사라지므로 포커스는 새로 보이는 첫 카드(4위) 제목으로(BODY 0 · QA N1)
+            focusLater(results[FIRST]!.referenceId);
+            setMore(true);
+          }}
+        >
           {recoText("reco.more", { n: results.length - FIRST })}
         </Button>
       )}

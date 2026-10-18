@@ -266,6 +266,7 @@ default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; f
 | CQ-05 | React zip `style-src` | A `'self'`(React style = CSSOM) · B `'self' 'unsafe-inline'` | **A** — CSP-AC-C1·R4 위반 0이면 확정, 위반 1건이라도 나오면 B로 바꾸고 기록 |
 | CQ-06 | React zip 작은 이미지의 `data:` 인라인 | A `img-src 'self' data:` 유지 · B 템플릿에 `build.assetsInlineLimit: 0` 추가 후 `img-src 'self'` | **A** — 템플릿 변경 최소 · 이미지 `data:`는 외부 요청이 아니다 |
 | CQ-07 | 구현 순서 | A html·zip·React zip 한 PR · B html 먼저(실측 위험 0), zip·React zip은 R3·C1 실측 뒤 | **B** — html은 `'self'`·빌드 도구 [미확인]이 없다. zip·React zip은 실측 결과로 CQ-03·05 확정 후 |
+| CQ-08 | zip 정책의 `data:`(1.2.1) | A `data:` 없음 + CSP-AC-11 가드(어긋나면 테스트 실패 → 그때 개정) · B zip 생성기 검사도 `data:`를 거부하도록 좁힘(F 규칙 개정) · C 미래 대비로 `data:`를 미리 연다 | **A** — 쓰지 않는 리소스는 열지 않는다(1.0) · B는 마크업 검사 개정이라 이 레인 범위 밖(필요해지면 별건) |
 
 ### 5.1 사용자 질의 대상 (예산 상향 · 엔진 계약 · 새 의존성 · 백엔드)
 
@@ -281,4 +282,5 @@ default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; f
 
 - 외부 리서치 0. 브라우저·Vite 동작 서술 중 코드로 확인하지 않은 것은 전부 [추정]/[미확인]으로 표시했다.
 - 로컬 확인: 해시 재계산(0절 명령) · `staticMarkup.ts`·`zipSite.ts`·`templates.ts`·`headerParts.tsx`·`ContactForm.tsx`·`Media.tsx`·`render/PageDocument.tsx`·`check-bundle-size.mjs` 읽기.
-- Codex: (r1에서 기록)
+- Codex adversarial-review 1회(2026-10-19, `--scope branch --base 2531ebf8`, r1 `c0441256` 대상): **verdict approve · No material findings**. 검토 범위 = 리소스 허용 범위·재파싱 해시 검증·build 전용 주입·회귀 AC(코드 대조). 빌드·브라우저 실측은 하지 않음 → CSP-AC-C*·R*가 구현·QA 레인 몫으로 남는다.
+- r1 이후 추가: CQ-08(zip `data:` 결정) — Codex 대상 커밋 뒤 표 1행 추가, 정책 값 변경 0.

@@ -92,4 +92,4 @@ check-bundle-size 출력: `/studio/:projectId 해시 정규화 진입 128.76KB` 
 
 ## 4. 검증
 - typecheck 0 · lint 0 · test 372 파일 / 3356 통과 · build exit 0 (예산 검사 포함)
-- Codex adversarial (`--scope branch --base 601471ff`): (진행 중)
+- Codex adversarial 1회 (`adversarial-review --scope branch --base 601471ff`, thread 01a14ec9): **Verdict approve · No material findings** — 실제 호출에서 폴백 도달 불가 · 문구·접근성 속성·기존 단언 유지 · /studio 128.76 · 복원 131.75 · 다른 라우트·렌더 동일 확인. Codex 쪽 테스트는 읽기 전용 샌드박스 EPERM으로 미실행 → 반영 1회 = 그 지적(쓰기 가능 환경에서 테스트·새 빌드)대로 로컬 재실행: fresh build exit 0(128.76 · 131.75 · 가드 통과, `e0-after.txt`와 동일) · 관련 테스트 3파일 29건 통과. 코드 수정 지적 0이라 코드 반영 없음

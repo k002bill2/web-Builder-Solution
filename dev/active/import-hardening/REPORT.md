@@ -27,17 +27,19 @@ base `5c98507c` · 브랜치 `k002bill2/import-hardening` · 2026-10-18 · Devel
 | 디코드 치수 ≠ 사다리(`checkImages.test`) | 바이트 499×300·500×301(헤더 개념 없음) · `closed === decoded` | 헤더 = 500×300, 디코더 글자 = 499×300·500×301 · **`decoded === 1` 추가** · 두 번째도 `[1,1]` | M-1 뒤 그대로 두면 헤더 단계에서 먼저 거절돼 `0 === 0`으로 공허 통과 → 디코드 경로를 계속 보게 강화 |
 | 추가 | — | 픽스처 헤더 = readImageHeader 치수(3형식) · M-1 6건 · L-1 34건 | — |
 
-## 4. 예산
+## 4. 예산 [사실 — `npm run build` base(5c98507c, 코드 변경 전) vs 이후(1c4d563d), `logs/build-{base,after}.txt`]
 | 라우트 | base | 이후 | 증분 |
 |---|---|---|---|
-| /projects 첫 화면 | | | |
-| /projects 진입 | | | |
-| /studio 진입 (128.80) | | | |
-| 복원 (131.78) | | | |
-| /catalog (100.77) | | | |
+| /projects 첫 화면 | 99.09 | 99.08 | −0.01 |
+| /projects 진입 직후 | 109.54 | 109.53 | −0.01 |
+| /studio 해시 정규화 진입 (128.80) | 128.80 | 128.80 | 0 (멈춤 > 128.82) |
+| 복원 진입 해시 정규화 (131.78) | 131.78 | 131.78 | 0 (멈춤 > 131.80) |
+| /catalog 첫 화면 (100.77) | 100.77 | 100.76 | −0.01 |
+| 렌더 문서 JS | 84.29 | 84.30 | +0.01 (`siteFonts` hasOwn — 예산 90) |
+- 진입 증분 0 → 감량 불필요. ±0.01 = 해시 이름 흔들림 범위. `readImageHeader`는 업로드 변환기와 공유 청크(`header-*.js`, gzip 1.27KB)로 들어가 진입 합계에 잡히지 않는다(가져오기 조작 뒤) [사실, 진입 합계 불변].
 
-## 5. 게이트
-(작성 예정)
+## 5. 게이트 (fresh, 1c4d563d)
+- `npm run typecheck` exit 0 · `npm run lint` exit 0 · `npx vitest --run` **363 files / 3265 tests passed** exit 0 · `npm run build` exit 0(번들 가드·preload 가드 통과).
 
 ## 6. Codex adversarial
 (작성 예정)

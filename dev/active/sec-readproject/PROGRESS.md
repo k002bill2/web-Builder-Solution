@@ -9,8 +9,8 @@
 - [x] 4. CSP 권고안 — REPORT 4절 (해시 필요)
 - [x] 5. 심각도 M1·L4 + 패치 2건 (patches/, 검증 로그 logs/)
 - [x] 6. REPORT 초안(잠정 결론) — 10턴 안
-- [ ] 7. Codex 1회 (선택)
-- [ ] 8. 마감 — git status 빈 값 · git diff -- app/ 빈 값
+- [x] 7. Codex adversarial-review 1회 — P2 2건 수용 (logs/codex-adversarial.txt)
+- [x] 8. 마감 — git status 빈 값 · git diff -- app/ 빈 값 (커밋 후 확인)
 
 ## 서브에이전트
 - (기록 예정)

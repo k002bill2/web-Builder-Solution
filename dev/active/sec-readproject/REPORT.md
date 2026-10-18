@@ -8,9 +8,10 @@
 **PASS(머지 차단 없음) — Critical/High 0 · Medium 1 · Low 4 · Info 다수.**
 
 - 마크업·스크립트 주입: 퍼즈 67건 중 렌더 iframe 마크업·정적 HTML(`buildStaticHtml`)에 `<script>`·`on*` 속성·`javascript:`/외부 URL 속성·외부 `url()` style·`meta[http-equiv]`/`base`/`link`/`iframe`/`template`이 **남은 경우 0** [사실, jsdom DOM 파싱 판정 `logs/fuzz-import.txt`].
-  근거: 문서는 `validatePageDoc`(모르는 키·오염 키 거부·이미지 source = UUID v4/플레이스홀더만), 사용자 글자는 React 글자·속성·`textContent`로만 나간다.
+  근거: 슬롯 값이 URL·style 속성으로 가는 경로 0 [사실 grep `href=|src=|srcSet|style=` kit·render]: href = `#s-${instanceId}`(`kit/text.ts:23` · instanceId는 `STRICT_ID`)뿐, img src = 부모가 준 UUID 키 맵(`kit/Media.tsx:33`), style = `kitVars`/`canvasVars`(팔레트 `isCssValue`). 슬롯 글자는 React 글자뿐 — 그래서 퍼즈가 첫 텍스트 슬롯 하나만 바꿔도 다른 섹션 유형으로 일반화된다.
+  문서는 `validatePageDoc`(모르는 키·오염 키 거부·이미지 source = UUID v4/플레이스홀더만), 사용자 글자는 React 글자·속성·`textContent`로만 나간다.
 - 남은 결함은 전부 **가용성(그 탭·그 프로젝트)** 과 **검증 비대칭(가져오기가 받는 값 ⊋ 렌더가 받는 값)** 이다.
-- 이전 AppSec REPORT 도달성 4번 [미확인] 해소: 가져오기 경로로 렌더 문서 침해·raw HTML 슬롯에 이르는 길은 없다 [사실] → 그 REPORT의 M-1(`<template>`)·M-2(SMIL)는 여전히 Medium(도달 경로 없음) 유지.
+- 이전 AppSec REPORT 도달성 4번 [미확인] 해소: 가져오기 경로로 렌더 문서 침해·raw HTML 슬롯에 이르는 길은 없다 [사실] → 그 REPORT의 AS-M1(`<template>`)·AS-M2(SMIL)는 여전히 Medium(도달 경로 없음) 유지. (이 문서에서 `AS-` = m4a-appsec REPORT 지적 번호)
 - 용어 주의: BRIEF의 `readProject.ts`는 **내보내기 읽기**(IDB → 파일)다. 가져오기 신뢰 경계 = `checkFile.ts`(①~④) · `checkImages.ts`(⑤) · `rekey.ts` · `writeImport.ts` [사실].
 
 ## 1. 가져오기 데이터 흐름 (파일 → 저장 → 렌더/내보내기)
@@ -56,6 +57,8 @@
 - [사실] `profileShape.ts:55-56`은 `family` 임의 문자열·숫자 범위 없음. 렌더 경계 `isKitTokens`는 `/^[\w -]+$/`·100~900·1~2·0~512. 퍼즈 S01(`x"; } body{background:url(https://evil…)}`)·S07(굵기 1e9)·S16(scale 0) → **가져오기 PASS · 렌더 메시지 DROPPED**(편집 캔버스·미리보기·PNG·정적 내보내기 전부 실패/시간 초과). 주입은 렌더 경계가 막음 [사실] — `kitVars`에 외부 `url()`이 만들어지지만 `kitVars` 호출처는 `PageDocument`뿐이고 그 앞에 `readParentMessage`가 있다(`kitCssText`는 테스트만 호출) [사실 grep].
 - [사실] S02~S04 `family` = `constructor`·`__proto__`·`toString`: 정규식 통과 → `siteFaces`의 `ALIAS[type.family]`(`kit/siteFonts.ts:25`)가 `Object.prototype` 멤버를 집어 family = 함수/객체 → 내보내기 `loadSiteFonts`가 규칙을 못 찾아 FontLoadError(내보내기 실패) · 캔버스는 `"function Object() { [native code] }"` 글꼴 이름(무해).
 - 패치(`patches/profileShape-family-range.diff`, 임시 적용 검증 `logs/patch-profileShape-check.txt`): profileShape에 렌더와 같은 범위 + `siteFonts` `Object.hasOwn`. **84 files / 546 tests 통과**, S01·S07·S16 → IM-4, S02~S04 → `siteFaces=[]`(정상 폴백). 다른 66건 판정 불변. 원복함.
+- **부분 해결 [사실, Codex 재현]**: 패치는 `spacing_tokens.grid`를 검사하지 않는다. `docKitTokens`가 `parseFloat(grid)`(NaN·≤0이면 8)로 바꾸고 렌더는 1~64만 받으므로 `grid` = `"0.5"`·`"65"`·`"1000000"`은 패치 후에도 가져오기 PASS·렌더 DROPPED. 보강 요건(미검증): `const g = parseFloat(grid); !(Number.isFinite(g) && g > 0) || (g >= 1 && g <= 64)` + 경계값(0.5·1·64·65) 회귀 테스트. 판정 L-1(Low) 불변 — 가용성만.
+- 부작용(반영 시 판단 필요) [사실]: `recordsHold`는 가져오기·재매김뿐 아니라 **파일 내보내기(`readProject.ts:120`)** 도 쓴다 → 범위 밖 값을 이미 가진 기존 프로젝트는 파일 내보내기가 EX-6(unreadable)로 바뀐다. 또 가져오기가 열기(checkState)보다 엄격해진다. 정상 경로의 계열 이름은 `domain/fonts.ts:20-22` 3종(Pretendard·Noto Sans KR·Noto Serif KR) = ASCII라 `/^[\w -]+$/`에 걸리지 않음 [사실 grep]. 더 좁히려면 `isAllowedFontFamily`(`domain/fonts.ts:26`)를 리터럴 복제.
 
 ### L-2 (Low) 문서 밖 레코드의 모르는 필드가 그대로 저장·재수출됨
 - [사실] `rekeyImport`가 `{...file.project}`·`{...version}`·`{...snapshot}`·`{...record}`로 원문을 펼친다. P02의 `candidateId`·`docSavedAt`·`latestProfileVersion` 등이 `studio/state`에 저장된다.
@@ -100,9 +103,12 @@
 ```
 **zip(`index.html`):** 위와 같되 `img-src 'self' data:; font-src 'self' data:`.
 
-- **인라인 스크립트 해시: 필요하다.** `'unsafe-inline'` 없이 메뉴 스크립트를 살리려면 해시(위 값 = 현재 `STATIC_MENU_SCRIPT`의 sha256, `logs` 재현: `node -e` 로 원문 해시)가 필요하다. 상수가 바뀌면 해시도 바뀌므로 **생성기가 런타임에 계산하지 말고 상수 옆에 고정 + 테스트로 대조**를 권고(바뀌면 테스트 실패). 대안: 메뉴 스크립트를 없애고 `popover` 닫기를 CSS/HTML(`popovertarget` 버튼)로 대체하면 `script-src 'none'`.
-- `style-src 'unsafe-inline'`이 불가피: 루트 `style` 속성이 프로필마다 다르다(`'unsafe-hashes'` + 속성별 해시는 가능하나 생성 복잡). 이미지·글꼴·connect가 막혀 CSS 기반 외부 요청·유출 경로는 0.
-- 효과: 이전 AppSec M-1(`<template shadowrootmode>` 안 script·외부 img)·M-2(SMIL `href`)·L-1(따옴표 섞인 `url()`)이 **열람 시점에 무력화**된다(meta CSP는 shadow root 안에도 적용 [사실(스펙)]).
+- **인라인 스크립트 해시: 필요하다.** `'unsafe-inline'` 없이 메뉴 스크립트를 살리려면 해시(위 값 = 현재 `STATIC_MENU_SCRIPT`의 sha256 — `logs/csp-hash.txt`, Codex도 일치 확인)가 필요하다. 상수가 바뀌면 해시도 바뀌므로 **생성기가 런타임에 계산하지 말고 상수 옆에 고정 + 테스트로 대조**를 권고(바뀌면 테스트 실패). 대안: 메뉴 스크립트를 없애고 `popover` 닫기를 CSS/HTML(`popovertarget` 버튼)로 대체하면 `script-src 'none'`.
+- `style-src 'unsafe-inline'`이 불가피: 루트 `style` 속성이 프로필마다 다르다(`'unsafe-hashes'` + 속성별 해시는 가능하나 생성 복잡). 
+- **보장 범위 (Codex 지적 수용)**: CSP는 **보조 방어**다 — 마크업 검사(F-08~F-15)·AS-M1/AS-M2 패치(`template`·SMIL 제거)를 대체하지 않는다.
+  - html 단일 파일안: 외부 이미지·글꼴·스크립트·fetch 요청은 차단. 그러나 **일반 링크 탐색(`<a href=https://…>`)은 CSP가 막지 않는다**(`form-action`은 폼만) → 링크 규칙 F-11이 계속 필요. SMIL `href`로 만든 링크의 클릭 탐색도 CSP 밖 → AS-M2 "무력화"는 `javascript:` 실행(해시 불일치로 차단)과 외부 리소스 요청에 한정.
+  - zip안: `'self'`는 assets 경로만이 아니라 **같은 출처 전체**를 허용 → HTTP(S)로 게시하면 `/collect?v=…` 같은 같은 출처 요청이 가능(다른 출처는 차단). zip은 마크업 검사를 주 방어로 유지.
+- 효과: 이전 AppSec AS-M1(`<template shadowrootmode>` 안 script·외부 img)·AS-M2(SMIL `href`)·AS-L1(따옴표 섞인 `url()`)이 **열람 시점에 무력화**된다(meta CSP는 shadow root 안에도 적용 [사실(스펙)]).
 - 단서 [사실]: F-15가 `meta[http-equiv]`가 있으면 throw(`staticMarkup.ts:182`) → 생성기 고정 CSP meta 1개를 예외로 하는 규칙 개정 필요(“정확히 그 문자열 1개만 허용”). meta CSP는 `frame-ancestors`·`report-uri`·`sandbox`를 무시한다. `file://`로 연 zip에서 `'self'` 매칭은 브라우저마다 다르다 [미확인] — `'self'`가 안 맞으면 zip 이미지·글꼴이 막히므로 **zip은 브라우저 실측 후 채택**. html 단일 파일안은 `'self'`를 쓰지 않아 이 문제 없음.
 - 순서: CSP meta는 `<head>` 첫 자식이어야 그 앞 요소에 적용 공백이 없다.
 
@@ -115,6 +121,12 @@
 | 3 | 이미지 Blob | **M-1** · L-4 · I-1·I-2·I-7 | 3절 · `logs/bomb-header-check.txt` |
 | 4 | CSP | 권고안 | 4절 · 해시 필요 |
 | 5 | 심각도·패치 | M1·L4 | `patches/` 2건 검증(1건은 픽스처 개정 필요) |
+
+## Codex adversarial-review (1회, `logs/codex-adversarial.txt`)
+- 명령: `adversarial-review --scope branch --base 41fcfd25 "<REPORT 판정 반박 focus>"`. 판정 needs-attention. 요약: **가져오기 → 스크립트 주입 반례 없음 · 메뉴 스크립트 해시 일치**.
+- [medium][P2] L-1 패치가 `grid` 범위 미검사 → **수용**(사실, Codex가 메모리 적용으로 재현). L-1에 "부분 해결" + 보강 요건 추가. 심각도 Low 불변.
+- [medium][P2] CSP를 유출 완전 차단책으로 쓴 문구 과장(zip `'self'` = 같은 출처 전체, 링크 탐색 미차단) → **수용**. 4절 "보장 범위" 추가, CSP = 보조 방어로 정정. 결함이 아니라 권고 문서의 정확성 문제.
+- 재실행 없음(BRIEF 1회 한도).
 
 ## 서브에이전트
 - code-explorer 1개(읽기 전용, 항목 3 이미지 Blob·sandbox·CSP·크기 폭탄) — 완료. M-1·L-4·I-1·I-6·I-7 반영. M-1 핵심 주장은 메인이 테스트로 실증, L-4는 메인이 코드 경로 일부(`checkImages.ts:79`) 재확인.

@@ -1,0 +1,3 @@
+STATIC_MENU_SCRIPT len=196 sha256-xjxofTFd/IqBuzOkEPYsAa9W0LrdyNf+WbGn8wE5EAg=
+buildStaticHtml: script.textContent = STATIC_MENU_SCRIPT (staticMarkup.ts:179) — HTML 직렬화는 script 본문을 이스케이프하지 않음, 본문에 </script 없음: true
+Codex adversarial-review도 해시 일치 확인(logs/codex-adversarial.txt)

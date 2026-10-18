@@ -6,7 +6,7 @@
 | # | 항목 | 판정 | 근거 |
 |---|---|---|---|
 | 1 | fresh 게이트·예산·진입 가드 | **PASS · 위험 1(복원 여유 0)** | 아래 1절 |
-| 2 | RZ-AC 재판독 | 진행 중 | |
+| 2 | RZ-AC 재판독 | **조건부 PASS — 충족 14 · 부분 8 · 미충족 0 (이름만 맞는 테스트 0, 약한 단언 8)** | 아래 2절 |
 | 3 | 변이 6종 | 진행 중 | |
 | 4 | docker node:22 zip 빌드 | **PASS(앱 테스트 경로 산출)** | 아래 4절 |
 | 5 | 메일 첨부 안내 × react-zip 3MB 초과 | **PASS(코드) · 테스트 공백 1건** | 아래 5절 |
@@ -38,3 +38,22 @@
 - 실행: `docker run --rm -v $TMPDIR/qa-rz/m2:/src:ro node:22` 안에서 복사 후 `npm ci && npm run build`.
 - [사실] `node=v22.23.3 npm=10.9.9 Linux aarch64` · `npm_ci_exit=0 build_exit=0` · JS 250.12KB(gzip 77.70) · CSS 30.67KB(gzip 5.98) → C3(≤90/30 gzip) PASS. 로그 `raw/qa-zip-build-node22.txt`.
 - 차이 기록: REPORT M2 JS 249.62/77.63 → 이번 250.12/77.70 [추정: main 병합 후 킷 원문 변화 또는 date 차이 — 판정 영향 없음].
+
+## 2. RZ-AC 판정표 재판독 (테스트가 AC 하위 조건을 실제로 단언하는가)
+- 방법: 읽기 전용 서브에이전트(code-explorer, 테스트 미실행)가 SPEC 5.1 문장을 하위 조건으로 쪼개 각 테스트의 expect를 판독 → QA가 핵심 항목(18·20·11·15)을 3절 변이로 실측 교차 확인.
+- 결론: "제목만 AC를 말하고 단언이 없는" 테스트 **0**. 단 하위 조건 일부가 비어 있는 **부분 8건**. 03·05·06·07·10·12·14·15·16·19·C1·C3 + 08·11(핵심 조건 충족) 은 충족.
+
+| ID | 판정 | 근거 | 빈 하위 조건 |
+|---|---|---|---|
+| 02 | 부분 | `data/memoryExport.test.ts:103` | react-zip **UI 흐름**(검사→차단→확인→저장→requestExport 1회) 단언 0 — ExportFlow.test.tsx에 react-zip 0건. REPORT "기존 경로 공유" 근거뿐 |
+| 18 | 부분 | `checkReactZipEntries.test.ts:62-72` · `exportFlowReactZip.test.ts:82-89` | 흐름 테스트가 **가짜 오류**(`Object.assign(new Error, {shown, retry:false})`) — 실제 `ReactZipError`→refused 통합 미검증. **변이 M6 생존으로 실증**(3절). tooLarge는 문구 정규식만 |
+| 20 | 부분 | `scripts/bundleBudget.test.mjs:150-157` · `check-bundle-size.mjs:233-278` | 진입 정적 포함 0 가드 **단위 테스트 0** — 빌드 스크립트 안에서만 동작(3절 M5가 빌드로 확인) |
+| 13 | 부분 | `fidelity.test.tsx:42-69` | M2의 masonry `aspect` 마크업 존재 단언 0(data-media 개수만) |
+| 08 | 부분 | `reactZip.test.ts:52-72` | kitTokens·motion·mainStyle 값 단언 0 · doc 최상위 키 집합이 `toMatchObject`(여분 키 못 잡음) |
+| 17 | 부분 | `template.test.ts:116-132` | SPEC 6절 일부(이미지·글꼴 경로 목록, 잃은 이미지 N장, 하위 의존성 개수 출력) 미단언 · 결정성 = 같은 함수 2회 |
+| 04 | 부분 | `exportFlowReactZip.test.ts:49-59` 외 2 | react-zip 청크 `?retry=1` 성공 단일 테스트 0(세 테스트 합성) |
+| 09 | 부분 | `reactZip.test.ts:75-86` | 같은 문서 **정적 zip** 글꼴 entry와 직접 비교 0(입력 바이트 대조) |
+| 01 | 부분(경미) | `ExportFlow.test.tsx:67-74` | 형식 값 `static-zip·static-html·react-zip` 미단언(글자·순서만) |
+| 11 | 충족(약) | `template.test.ts:14-67` | 3.2-5 (a)~(g) 전부 단언 · 개별 음성은 integrity·라이선스뿐. 변이 M3a·M3b 잡힘 |
+
+- 우선 보강 권고(구현 레인): ① M6을 잡는 통합 단언 — 실제 `ReactZipError`를 흐름에 통과시켜 refused 확인 ② react-zip UI 흐름 1건 ③ 진입 가드 단위 테스트(표식 주입 음성·양성).

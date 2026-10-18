@@ -73,7 +73,7 @@ export interface DocBook {
   ) => StartDocResult<DocHead>;
   /**
    * 8.3.2 판정 1~8(동기, `via` = 저장소의 call — delay·fail 주입) → 새 잡·재실행이면 커밋 뒤 생성기를 돌린다(응답을 기다리지 않는다 — jobOf로 본다).
-   * `generate` = 요청 형식의 주입 생성기 — 없으면 앱 경로 슬롯(STATIC_HTML_SLOT), 그것도 없으면 6단계 GENERATOR_UNAVAILABLE
+   * `generate` = 요청 형식의 주입 생성기 — 없으면 앱 경로 슬롯(STATIC_HTML_SLOT · react-zip은 REACT_ZIP_SLOT), 그것도 없으면 6단계 GENERATOR_UNAVAILABLE
    */
   readonly requestExport: (
     args: { projectId: string; format: ExportFormat; docRevision: number },
@@ -106,8 +106,10 @@ export interface DocBook {
  * 채우기 전(내보내기를 누르기 전)·테스트 기본 = 비어 있음 → 주입 생성기가 없으면 6단계 GENERATOR_UNAVAILABLE(3a 기본값 그대로).
  */
 export const STATIC_HTML_SLOT = Symbol.for("design-studio/static-html-generator");
+/** React zip 생성기 자리(REACTZIP-SPEC 1.2) — 같은 전역 심볼 방식 · exportFlow가 별도 retryableImport로 채운다 */
+export const REACT_ZIP_SLOT = Symbol.for("design-studio/react-zip-generator");
 export type StaticHtmlFactory = (store: StudioReader) => ExportGenerator;
-type Slot = { [STATIC_HTML_SLOT]?: () => Promise<StaticHtmlFactory> };
+type Slot = Partial<Record<symbol, () => Promise<StaticHtmlFactory>>>;
 
 const fail = (code: "NOT_FOUND" | "SCHEMA_INVALID", message: string) => new ProjectRepositoryError(code, message);
 /** 저장소 문서 = 엔진 문서(isPageDoc) — engine import 0으로 코어 문서 타입을 받는다(엔진 import 가드) */
@@ -171,21 +173,22 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
   const seed = local?.docs ?? new Map<string, DocRecord>();
   /**
    * 앱 경로 생성기 — 주입 생성기가 없고 슬롯(STATIC_HTML_SLOT)이 채워졌을 때만, 처음 쓸 때 생성기 청크를 받는다.
-   * react-zip은 M4까지 없음(GENERATOR_UNAVAILABLE). 생성기는 store당 1개(object URL 보관·해제).
+   * react-zip = 자기 슬롯(REACT_ZIP_SLOT, M4-b). 생성기는 store·슬롯당 1개(object URL 보관·해제).
    */
-  let browser: Promise<ExportGenerator> | undefined;
+  const browser: Record<symbol, Promise<ExportGenerator> | undefined> = {};
   const appGenerator = (format: ExportFormat): ExportGenerator | undefined => {
-    const load = (globalThis as Slot)[STATIC_HTML_SLOT];
+    const key = format === "react-zip" ? REACT_ZIP_SLOT : STATIC_HTML_SLOT;
+    const load = (globalThis as Slot)[key];
     // 청크 로드 실패는 기억하지 않는다(P2-2) — 다음 실행(재시도)이 슬롯 로더를 다시 부른다
     const generator = (from: () => Promise<StaticHtmlFactory>) =>
-      (browser ??= from().then(
+      (browser[key] ??= from().then(
         (factory) => factory(store),
         (error: unknown) => {
-          browser = undefined;
+          browser[key] = undefined;
           throw error;
         },
       ));
-    return format !== "react-zip" && load ? async (input) => (await generator(load))(input) : undefined;
+    return load ? async (input) => (await generator(load))(input) : undefined;
   };
   let state: DocState = {
     docs: new Map([...seed].map(([id, r]) => [id, r.doc])),

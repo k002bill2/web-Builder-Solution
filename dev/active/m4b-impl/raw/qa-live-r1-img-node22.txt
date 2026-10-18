@@ -1,0 +1,11 @@
+node=v22.23.3 npm=10.9.9 Linux aarch64
+npm_ci_exit=0 build_exit=0
+rendering chunks...
+computing gzip size...
+dist/index.html                              0.51 kB │ gzip:  0.36 kB
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C6zrwPH_.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-DX7xvAlb.js              258.16 kB │ gzip: 81.09 kB
+
+✓ built in 245ms

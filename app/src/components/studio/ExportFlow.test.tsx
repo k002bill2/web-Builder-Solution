@@ -8,6 +8,7 @@ import { passingDoc, withPhoto } from "../../engine/testing/gateKit";
 import { section, withSections } from "../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../engine/testing/sampleTheme";
 import { EDITOR_EVENT, type EditorEvent } from "../../features/studio/editorEvents";
+import { REACT_ZIP_FORMAT_LABEL } from "../../features/studio/reactZip/reactZipText";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 
 afterEach(restoreViewport);
@@ -63,14 +64,14 @@ function listen() {
 }
 
 describe("형식 버튼 (M4-a EXP-AC-01 · Q18 A)", () => {
-  it("버튼 = '정적 사이트(zip) 내보내기' → 'HTML 파일 1개 내보내기' 순서 2개 · React zip 버튼 0", async () => {
+  it("버튼 = 정적 zip → HTML 1개 → React zip 순서 3개 (RZ-AC-01 · RZQ-01 A — React zip 글자 = export.format.reactZip 확정 문안)", async () => {
     await open(clean());
     const names = within(gateRegion())
       .getAllByRole("button")
       .map((b) => b.textContent)
-      .filter((t) => /내보내기$/.test(t ?? ""));
-    expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기"]);
-    expect(within(gateRegion()).queryByRole("button", { name: /React/ })).not.toBeInTheDocument();
+      .filter((t) => t === REACT_ZIP_FORMAT_LABEL || /내보내기$/.test(t ?? ""));
+    expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기", REACT_ZIP_FORMAT_LABEL]);
+    expect(REACT_ZIP_FORMAT_LABEL).toBe("React 프로젝트(zip) 내보내기");
   });
 
   it("zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {
@@ -184,6 +185,29 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(saved).toHaveLength(1);
     expect(saved[0]!.meta.title).toBe("새 제목");
     expect(requestExport).toHaveBeenCalledWith("project-1", "static-html", 4);
+  });
+
+  it("React zip(RZ-AC-01·02): 편집(경고 생김) → 다시 검사 → 확인 대화상자 → 확인 → 저장 → requestExport 1회(형식 react-zip · 저장된 revision)", async () => {
+    // 요청 시점에 저장이 끝났는지(저장 뒤 요청) — 요청이 본 저장 건수
+    const seen: { saved?: readonly PageDoc[]; atRequest?: number } = {};
+    const { requestExport, saved } = await open(clean(), {
+      requestExport: async () => {
+        seen.atRequest = seen.saved!.length;
+        return Promise.reject(new ProjectRepositoryError("GENERATOR_UNAVAILABLE", "기본"));
+      },
+    });
+    seen.saved = saved;
+    const react = () => within(gateRegion()).getByRole("button", { name: /React 프로젝트\(zip\) 내보내기|내보내는 중…/ });
+    act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));
+    act(() => void fireEvent.change(screen.getByRole("textbox", { name: /^제목/ }), { target: { value: "가".repeat(80) } }));
+    act(() => void fireEvent.click(react()));
+    const dialog = await screen.findByRole("dialog", { name: "경고 1건이 있습니다" });
+    expect(requestExport).not.toHaveBeenCalled();
+    act(() => void fireEvent.click(within(dialog).getByRole("button", { name: "경고를 확인했습니다 · 내보내기" })));
+    await waitFor(() => expect(requestExport).toHaveBeenCalledTimes(1));
+    expect(seen.atRequest).toBe(1);
+    expect(saved[0]!.meta.title).toBe("가".repeat(80));
+    expect(requestExport).toHaveBeenCalledWith("project-1", "react-zip", 4);
   });
 
   it("재시도 가능 실패(JOB_TIMEOUT) → alert '내보내지 못했습니다' + '다시 시도'(같은 요청 다시) · 새 스냅샷이면 snapshot_created 1회", async () => {

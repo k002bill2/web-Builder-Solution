@@ -8,9 +8,10 @@ import type { StudioReader } from "../../data/studioStore";
 import { emitEditorEvent } from "./editorEvents";
 import { exportChunk } from "./exportFlowFails";
 import type { RenderImages } from "./images/store/types";
-import { staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
+import { REACT_ZIP_NEXT, reactZipNote } from "./reactZip/reactZipNotes";
+import { reactZipFileName, staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
 import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
-import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary } from "./staticHtml/exportImages";
+import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary, type ReadImage } from "./staticHtml/exportImages";
 
 export type ExportResult =
   | { readonly kind: "unavailable"; readonly format: ExportFormat }
@@ -37,39 +38,53 @@ export type ExportResult =
 // 놓는 때 = 잡이 끝났을 때(생성기 종료 · 조회한 잡이 끝남). 잡은 응답과 따로 돌므로 응답 실패로는 놓지 않는다(Codex r2)
 // 요약은 내려받기 참조 키(같은 revision 멱등 재생도 같은 참조)
 const loadGenerator = retryableImport(() => import("./staticHtml/staticHtml"));
+// React zip 생성기(REACTZIP-SPEC 1.2 RZQ-02 A) — 별도 슬롯·별도 청크. 정적 HTML 청크를 거치지 않는다. 로드 결과는 같은 계수(B-M4A-08)
+const loadReactZip = retryableImport(() => import("./reactZip/reactZip"));
 const requestImages = new Map<string, RenderImages>();
 const readRequestImage = (id: string) => [...requestImages.values()].map((images) => imageReader(images)(id)).find(Boolean);
 const summaries = new Map<string, ExportSummary>();
 /** 생성기 실패 중 사유를 보여 줄 것 → 프로젝트별 사유 */
 const REASONS: readonly string[] = [IMAGE_FAILED, DEV_SERVER_UNSUPPORTED];
 const failReasons = new Map<string, string>();
+const refusals = new Set<string>();
 // 내보내기 청크 연속 실패(B-M4A-08) = 마지막으로 청크를 받은 뒤의 로드 실패 수 — 이 청크를 받았으면 0, 생성기는 로드가 끝날 때 센다
 // (요청·잡이 아니라 로드 결과에 붙인다 — 응답 실패·조회 종료 뒤 늦게 온 실패도 센다, Codex r1 P2)
 exportChunk.fails = 0;
-(globalThis as Record<symbol, unknown>)[Symbol.for("design-studio/static-html-generator")] ??= async () => {
-  const { createStaticHtmlGenerator } = await loadGenerator().then(
-    (generator) => ((exportChunk.fails = 0), generator),
-    (error: unknown) => {
-      exportChunk.fails += 1;
-      throw error;
-    },
-  );
-  return (store: StudioReader): ExportGenerator => {
-    const generate = createStaticHtmlGenerator(store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary) });
-    return (input) =>
-      generate(input)
-        .catch((error: unknown) => {
-          // shown = 생성기가 사용자에게 보일 문구로 만든 실패(M4-a zip 용량 초과)
-          if (error instanceof Error && (REASONS.includes(error.message) || "shown" in error)) failReasons.set(input.projectId, error.message);
-          throw error;
-        })
-        .finally(() => requestImages.delete(input.projectId));
+type GeneratorDeps = { readonly readImage: ReadImage; readonly onBuilt: (downloadRef: string, summary: ExportSummary) => void };
+/** 생성기 슬롯 채우기(memoryDocBook 슬롯과 같은 키) — 청크를 받으면 계수 0, 못 받으면 +1 · 생성기 실패 사유·이미지 맵 정리는 형식 무관 */
+function fill<M>(key: symbol, load: () => Promise<M>, create: (chunk: M, store: StudioReader, deps: GeneratorDeps) => ExportGenerator) {
+  (globalThis as Record<symbol, unknown>)[key] ??= async () => {
+    const chunk = await load().then(
+      (loaded) => ((exportChunk.fails = 0), loaded),
+      (error: unknown) => {
+        exportChunk.fails += 1;
+        throw error;
+      },
+    );
+    return (store: StudioReader): ExportGenerator => {
+      const generate = create(chunk, store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary) });
+      return (input) =>
+        generate(input)
+          .catch((error: unknown) => {
+            // shown = 생성기가 사용자에게 보일 문구로 만든 실패(M4-a zip 용량 초과 · React zip 단언)
+            if (error instanceof Error && (REASONS.includes(error.message) || "shown" in error)) failReasons.set(input.projectId, error.message);
+            // retry false = 같은 문서로 다시 해도 같은 실패(React zip 단언·용량 — REACTZIP-SPEC 1.3) → 재시도 없는 거절
+            if (error instanceof Error && "retry" in error && error.retry === false) refusals.add(input.projectId);
+            else refusals.delete(input.projectId);
+            throw error;
+          })
+          .finally(() => requestImages.delete(input.projectId));
+    };
   };
-};
+}
+fill(Symbol.for("design-studio/static-html-generator"), loadGenerator, (chunk, store, deps) => chunk.createStaticHtmlGenerator(store, deps));
+fill(Symbol.for("design-studio/react-zip-generator"), loadReactZip, (chunk, store, deps) => chunk.createReactZipGenerator(store, deps));
 
 const MB = 1024 * 1024;
+const FILE_NAME: Readonly<Record<ExportFormat, (projectName: string, revision: number) => string>> = { "static-zip": staticZipFileName, "static-html": staticHtmlFileName, "react-zip": reactZipFileName };
 /** 결과 줄(MQ-C3 ★A · SPEC m2c 5.2 · M4-a 2.5): 크기 표시 → (HTML만) 3MB 넘으면 안내(차단 0) → 잃은 이미지 개수 */
-export const exportNotes = ({ bytes, images, lost, fonts = 0 }: ExportSummary, format: ExportFormat = "static-html"): string[] => [
+export const exportNotes = ({ bytes, images, lost, fonts = 0 }: ExportSummary, format: ExportFormat = "static-html"): string[] =>
+  format === "react-zip" ? [reactZipNote(bytes, images, fonts), REACT_ZIP_NEXT, ...(lost > 0 ? [lostImageText(lost)] : [])] : [
   format === "static-zip"
     ? `zip 1개 · ${(bytes / MB).toFixed(1)}MB (이미지 ${images}장 · 글꼴 ${fonts}개)`
     : `HTML 1개 · ${(bytes / MB).toFixed(1)}MB${images > 0 ? ` (이미지 ${images}장 포함)` : ""}`,
@@ -96,6 +111,7 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
 export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
   failReasons.delete(projectId);
+  refusals.delete(projectId);
   if (images) requestImages.set(projectId, images);
   else requestImages.delete(projectId);
   try {
@@ -109,12 +125,13 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
     if (job.state === "succeeded") {
       emitEditorEvent({ name: "export_succeeded", format });
       const name = (await repository.getProject(projectId))?.name ?? "";
-      const download = job.downloadRef && { href: job.downloadRef, fileName: (format === "static-zip" ? staticZipFileName : staticHtmlFileName)(name, job.docRevision), hash: job.resultHash ?? "" };
+      const download = job.downloadRef && { href: job.downloadRef, fileName: FILE_NAME[format](name, job.docRevision), hash: job.resultHash ?? "" };
       const summary = job.downloadRef ? summaries.get(job.downloadRef) : undefined;
       return { kind: "done", format, snapshotName: result.snapshotName, ...(download && { download }), ...(summary && { notes: exportNotes(summary, format) }) };
     }
     emitEditorEvent({ name: "export_failed", reason: job.errorCode ?? "UNKNOWN" });
     const reason = failReasons.get(projectId);
+    if (reason && refusals.has(projectId)) return { kind: "refused", format, code: job.errorCode ?? "INFRA", reason };
     return job.retryable || job.state !== "failed" ? { kind: "retryable", format, ...(reason && { reason }) } : { kind: "refused", format, code: job.errorCode ?? "UNKNOWN" };
   } catch (error) {
     const code = projectErrorCode(error) ?? "UNKNOWN";

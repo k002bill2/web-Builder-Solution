@@ -12,7 +12,7 @@ import { section } from "../engine/testing/sampleDoc";
 import { FIXTURE_CATALOG, boardOf } from "../test/compareFixtures";
 import { createMemoryCompareBoardRepository } from "./memoryCompareBoardRepository";
 import { createMemoryGenerationRepository } from "./memoryGenerationRepository";
-import { STATIC_HTML_SLOT } from "./memoryDocBook";
+import { REACT_ZIP_SLOT, STATIC_HTML_SLOT } from "./memoryDocBook";
 import { createMemoryProjectRepository, type ProjectCall } from "./memoryProjectRepository";
 import { ProjectRepositoryError, type ExportGenerator, type ExportGenerators, type ProjectRepository } from "./projectRepository";
 import { createStudioStore } from "./studioStore";
@@ -254,8 +254,12 @@ describe("화면은 스냅샷을 만들지 않는다 (E-AC-30 · E-AC-43)", () =
 });
 
 describe("앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT)", () => {
-  const slot = globalThis as { [STATIC_HTML_SLOT]?: unknown };
-  afterEach(() => void delete slot[STATIC_HTML_SLOT]);
+  const slot = globalThis as { [STATIC_HTML_SLOT]?: unknown; [REACT_ZIP_SLOT]?: unknown };
+  // exportFlow 청크는 React zip 슬롯도 채운다(M4-b) — 정적 슬롯만 채운 경우의 판정을 보려고 둘 다 비운다
+  afterEach(() => {
+    delete slot[STATIC_HTML_SLOT];
+    delete slot[REACT_ZIP_SLOT];
+  });
 
   it("exportFlow 청크가 받히면 슬롯이 채워진다(같은 키)", async () => {
     expect(slot[STATIC_HTML_SLOT]).toBeUndefined();
@@ -303,6 +307,60 @@ describe("앱 경로 생성기 슬롯 (M2A-3b G3 — STATIC_HTML_SLOT)", () => {
     const again = await repo.requestExport("project-1", "static-html", doc.revision);
     expect(again.job.jobId).toBe(job.jobId);
     expect(await settle(job.jobId)).toMatchObject({ state: "succeeded", downloadRef: "blob:browser" });
+    expect(loads).toBe(2);
+  });
+});
+
+describe("React zip 생성기 슬롯 (M4-b REACTZIP-SPEC 1.2 — REACT_ZIP_SLOT · RZ-AC-03)", () => {
+  const slot = globalThis as { [STATIC_HTML_SLOT]?: unknown; [REACT_ZIP_SLOT]?: unknown };
+  afterEach(() => {
+    delete slot[STATIC_HTML_SLOT];
+    delete slot[REACT_ZIP_SLOT];
+  });
+  const settle = async (repo: ProjectRepository<PageDoc>, jobId: string) => {
+    let current = (await repo.getExportJob(jobId))!;
+    for (let i = 0; i < 20 && (current.state === "queued" || current.state === "running"); i++) current = (await new Promise((r) => setTimeout(r, 0)), (await repo.getExportJob(jobId))!);
+    return current;
+  };
+
+  it("슬롯 키 = Symbol.for('design-studio/react-zip-generator') · exportFlow 청크가 받히면 채워진다", async () => {
+    expect(REACT_ZIP_SLOT).toBe(Symbol.for("design-studio/react-zip-generator"));
+    expect(slot[REACT_ZIP_SLOT]).toBeUndefined();
+    vi.resetModules();
+    await import("../features/studio/exportFlow");
+    expect(typeof slot[REACT_ZIP_SLOT]).toBe("function");
+  });
+
+  it("react-zip = 자기 슬롯 생성기로 잡 succeeded(GENERATOR_UNAVAILABLE 0) · 정적 슬롯 생성기는 부르지 않는다 · 잡 형식 react-zip이 기록 재읽기(isFormat)를 통과", async () => {
+    const { repo, save } = await setup();
+    const doc = await save(RENDERED);
+    const zipInputs: unknown[] = [];
+    slot[STATIC_HTML_SLOT] = async () => fakeFactory;
+    slot[REACT_ZIP_SLOT] = async () => () => async (input: unknown) => (zipInputs.push(input), { downloadRef: "blob:react", resultHash: "r-1" });
+    const before = browser.made;
+    const { job } = await repo.requestExport("project-1", "react-zip", doc.revision);
+    expect(job.format).toBe("react-zip");
+    expect(await settle(repo, job.jobId)).toMatchObject({ format: "react-zip", state: "succeeded", downloadRef: "blob:react", resultHash: "r-1" });
+    expect(zipInputs).toEqual([{ projectId: "project-1", format: "react-zip", doc }]);
+    expect(browser.made).toBe(before);
+    // 같은 저장소에서 정적 형식은 정적 슬롯(생성기 캐시가 형식별)
+    const { job: html } = await repo.requestExport("project-1", "static-html", doc.revision);
+    expect(await settle(repo, html.jobId)).toMatchObject({ state: "succeeded", downloadRef: "blob:browser" });
+  });
+
+  it("react-zip 슬롯 첫 로드 실패 → 잡 INFRA(재시도 가능) → 다시 시도 → 슬롯 로더를 다시 불러 성공(실패를 기억하지 않는다)", async () => {
+    const { repo, save } = await setup();
+    const doc = await save(RENDERED);
+    let loads = 0;
+    slot[REACT_ZIP_SLOT] = async () => {
+      loads++;
+      if (loads === 1) throw new TypeError("Failed to fetch dynamically imported module");
+      return () => async () => ({ downloadRef: "blob:react", resultHash: "r-1" });
+    };
+    const { job } = await repo.requestExport("project-1", "react-zip", doc.revision);
+    expect(await settle(repo, job.jobId)).toMatchObject({ state: "failed", errorCode: "INFRA", retryable: true });
+    await repo.requestExport("project-1", "react-zip", doc.revision);
+    expect(await settle(repo, job.jobId)).toMatchObject({ state: "succeeded", downloadRef: "blob:react" });
     expect(loads).toBe(2);
   });
 });

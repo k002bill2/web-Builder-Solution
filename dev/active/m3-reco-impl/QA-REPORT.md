@@ -3,6 +3,8 @@
 대상 tip `62d3aec2`(main `36e825a6` 병합 포함) · 브리프 `QA-BRIEF.md` · 정본 `docs/design/m3/RECO-SPEC.md` r1 + 7a · Developer `REPORT.md`
 QA 실행: Orca + Claude Code, 2026-10-18. 브라우저 미사용(2차 run 계획 `QA-LIVE-PLAN.md`). Codex 미사용. 앱·테스트 코드 커밋 0.
 
+> **2차 판정(실화면): PASS with notes — 결함 D1 필수 수정** · **종합 판정(1차 + 2차): PASS with notes — 결함 D1 필수 수정**. FAIL 4종(거짓 성공 · 승인 전 변경 · status/alert 중복 · 데이터 손실) 0건. D1 = 화면·적용 청크 로드 실패 뒤 "다시 시도"가 새 요청 0으로 끝나 새로고침 말고는 복구 경로가 없음(브라우저 모듈 맵 실패 캐시, 8.0′ E4). 2차 상세 8절.
+
 ## 0. 판정 — **PASS with notes** (1차 정적·회귀 확정)
 
 - FAIL 조건(거짓 성공 · 승인 전 변경 · 결정성 깨짐 · 회귀) **0건**. 게이트 4종 fresh 통과(361 files / 3212 tests), 예산 표 Developer 수치와 소수 둘째 자리까지 일치, main 대비 다른 라우트 증분 0~+0.02.
@@ -11,7 +13,7 @@ QA 실행: Orca + Claude Code, 2026-10-18. 브라우저 미사용(2차 run 계�
   - **note 3 (권고 1건, Developer 후속)**: AC-16 "저장 resolve **전** '적용됨'·status 0"을 직접 재는 단언이 없다. m3-1c(저장 전 낙관 표시 → 실패 시 앞 기록 복원)가 16/16 통과. 현재 코드는 저장 확인 뒤에만 표시(`RecoView.tsx:137-141`)라 결함은 아님. 지연 `savePicks` 목으로 클릭 직후 "적용됨" 0 · status 빈 값을 단언하는 테스트 1개를 권고.
   - note 5: 로드 조건 단위 테스트는 "로더 호출 수"만 잰다 — m4-b(로더 유지 + 정적 side-effect import)·m4-c(`recoLoader.ts` 안쪽을 정적 import로, 호출 모양 유지)는 단위 테스트를 통과하고 검사기 build만 실패(`/catalog` 104.23·104.31 > 101). 검사기 첫 화면 예산 여유는 101 − 100.46 = **0.54KB** — 이보다 작은 정적 포함은 검사기도 통과하며, 멈춤선 100.90은 검사기가 판정하지 않는다(REPORT 수치로 사람이 판정).
 - 그 밖 notes: 1 AC-17 "모든 라우트 ±0.03" 문장과 `/catalog` +0.42(AC-14b 멈춤선 안)의 해석 · 2 가중치 단언 자기 참조(간접 고정으로 잡힘) · 4 AC-11 꽉 참 테스트의 카드 고르기 조건 공회전 · 6 AC-10 초안 패널 화면 표시는 단위 미단언 · 7 "하드코딩 문장 0" 자동 가드 없음(정적 확인 통과, 예외 2문장은 Developer REPORT 4절에 기록).
-- 보류: RECO-AC-13(390·1280 넘침 · 키보드만)과 AC-08·10의 [V] 부분은 2차 실화면 run(`QA-LIVE-PLAN.md`)에서 판정. 1차 판정은 이 보류를 포함하지 않는다.
+- 보류였던 RECO-AC-13(390·1280 넘침 · 키보드만)과 AC-08·10의 [V] 부분 → 2차(8절)에서 판정: 넘침 0(1280·390 측정 지점 전부) · 키보드만 적용·되돌리기 가능(1280 기준 폭 ≈1865 — 8.3 폭 정정) · AC-08 포커스 이동 PASS · AC-10 초안 반영·되돌리기 PASS. 단 390 키보드 #8~11은 폭 미검증.
 - 결정권자 질문(Developer가 이미 올린 것, QA 재현만): `/catalog` 첫 화면 100.46 — 목표 100.15 미달 +0.31, 멈춤선 100.90 안. QA는 판정선(멈춤선) 기준 통과로 본다.
 
 ## 1. 게이트 · 예산 재현 — PASS
@@ -149,8 +151,8 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 | 07 | external_observed 0 | `:280` 대조 | ✅ |
 | 08 | 업종·목적 없음 → 근거 부족 + 고르기 포커스 [U]+[V] | `CatalogPageReco.test:52` · V2-AC-21 정정 | ✅ [U] · [V] 2차 |
 | 09 | 진입·펼치기·필터 변경 쓰기 0 (T-REC-06) | `:65` 쓰기 5종 0 · picks 불변 | ✅ |
-| 10 | 미리보기 취소 0 · 적용(열 ≤1 + savePicks 1) → 초안 · 되돌리기 깊은 동일 [U]+[V] | `:86`(10행 picks · 되돌리기 picks·columns 깊은 동일) · `:171`(/compare 다녀옴) | ✅ [U] · note 6 · [V] 2차 |
-| 11 | 열 6 꽉 참 비활성 · 열에 있으면 추가 0 · stale 되돌리기 비활성 | `:191`·`:210`·`:249` | ✅ · note 4 |
+| 10 | 미리보기 취소 0 · 적용(열 ≤1 + savePicks 1) → 초안 · 되돌리기 깊은 동일 [U]+[V] | `:86`(10행 picks · 되돌리기 picks·columns 깊은 동일) · `:171`(/compare 다녀옴) | **폭 미검증**(override 풀림 — 실제 ≈1865에서 돎, 결과는 1280 칸과 같음: ✅ [U] · note 6 · [V] 2차) |
+| 11 | 열 6 꽉 참 비활성 · 열에 있으면 추가 0 · stale 되돌리기 비활성 | `:191`·`:210`·`:249` | **폭 미검증**(override 풀림 — 실제 ≈1865에서 돎, 결과는 1280 칸과 같음: ✅ · note 4) |
 | 12 | status 0 신설(트레이 공유) · alert 1 · aria-live 0 · 같은 결과 알림 0 | `:76`·`:236` | ✅ |
 | 13 | 390·1280 넘침 0 · 키보드만 [V] | Developer Ego Lite(`logs/e4-ego-lite.txt`) — QA 미재현 | ⏸ 2차 run(`QA-LIVE-PLAN.md`) |
 | 14 | (a) 로드 조건 (b) 검사기 `/catalog (추천)` ≤ 125 · `/catalog` ≤ 100.90 · 다른 라우트 ±0.03 | `CatalogPageRecoLoad.test` · m4-a FAIL · m4-b 검사기 FAIL · 1.1 표 | ✅ |
@@ -169,7 +171,7 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 - 빈·실패·경계 8종: 근거 부족 포커스 · 리테일 0개 · 피트니스 1개 · 화면 청크 차단(CDP `Network.setBlockedURLs`) · 적용 청크 차단 · 열 6 꽉 참 · 적용 뒤 보드 변경 stale · 필터 알림 1회/0회. 저장 reject·revision 충돌은 메모리 저장소라 실화면 재현 불가 → 단위 증거로 갈음.
 - 예상 약 20턴(추정, 실패 재현 시 +5).
 
-## 8. 2차 실화면 run (QA-BRIEF-LIVE · tip `d59455d8`) — 진행 중
+## 8. 2차 실화면 run (QA-BRIEF-LIVE · tip `d59455d8`) — PASS with notes(결함 D1)
 
 도구 ego-browser(Ego Lite) v2.1.0만 · `npm run build` exit 0(가드 통과) → `npm run preview -- --port 4399 --strictPort` · 리슨 확인 `127.0.0.1:4399 (LISTEN)` · 청크 `RecoView-CpMYkhU4.js` · `RecoApply-DfQrAdlV.js` · `recoApplyFlow-8Aue5ZeE.js`. 요청 수는 `performance.getEntriesByType('resource')`로 셈. 스크린샷 `shots/`, 원문 `logs/qa-live-*.txt`.
 
@@ -191,8 +193,8 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 | 5 | 2개 더 보기 | 카드 5 · 4 gen-education-4 45 · 5 ref-c 40 · 버튼 사라짐 ✅. note N1: 버튼이 사라지며 포커스 BODY(SPEC 3.6에 규정 없음) | 카드 5 · 버튼 사라짐 ✅ · N1 동일(포커스 BODY) |
 | 6 | 적용 대화상자 | 차이 10행(Hero~Footer "새로 고름 → 의료 · 신뢰 텍스트형") · 포커스 "취소" · 대화상자 넘침 0(512/1280) · 이때 RecoApply 1 · recoApplyFlow 1 ✅ | 10행 · 포커스 "취소" · 대화상자 375/390 · 넘침 0 ✅ · note N2: 시각 순서는 "적용" 위 · "취소" 아래인데 Tab 순서는 취소 → 적용(`shots/live-390-06-dialog.png`) |
 | 7 | 취소 | 대화상자 닫힘 · 포커스 "이 추천 적용" · 트레이 0/6 → 0/6 · "적용됨" 0 ✅ (승인 전 변경 0) | 트레이 0/6 불변 · 포커스 복귀 ✅ |
-| 8 | 키보드 Enter → Tab → Enter | 열 때 포커스 "취소" → Tab "적용" → Enter · "적용됨" · status 1회 "의료 · 신뢰 텍스트형 추천을 적용했습니다."(트레이 status 노드 1개) · 포커스 "되돌리기" · 트레이 0 → 1/6 ✅ | status 1회 · 포커스 "되돌리기" · 트레이 1/6 ✅ |
-| 9 | 비교 보드 열기 → `/compare` | 열 A 의료 · 신뢰 텍스트형 · 프로필 초안 10행 모두 "A · 의료 · 신뢰 텍스트형" ✅ (E2E-S4) | 초안 10행 A ✅ · 넘침 0 |
+| 8 | 키보드 Enter → Tab → Enter | 열 때 포커스 "취소" → Tab "적용" → Enter · "적용됨" · status 1회 "의료 · 신뢰 텍스트형 추천을 적용했습니다."(트레이 status 노드 1개) · 포커스 "되돌리기" · 트레이 0 → 1/6 ✅ | **폭 미검증**(override 풀림 — 실제 ≈1865에서 돎, 결과는 1280 칸과 같음: status 1회 · 포커스 "되돌리기" · 트레이 1/6 ✅) |
+| 9 | 비교 보드 열기 → `/compare` | 열 A 의료 · 신뢰 텍스트형 · 프로필 초안 10행 모두 "A · 의료 · 신뢰 텍스트형" ✅ (E2E-S4) | **폭 미검증**(override 풀림 — 실제 ≈1865에서 돎, 결과는 1280 칸과 같음: 초안 10행 A ✅ · 넘침 0) |
 | 10 | history.back → `tab=rec` | 1위 카드 "적용됨" · "되돌리기"(aria-disabled 없음) 그대로 ✅ | "적용됨"·"되돌리기" 유지 ✅ |
 | 11 | 되돌리기(키보드 Enter) | status 1회 "…추천 적용을 되돌렸습니다." · 포커스 "이 추천 적용" · 트레이 0/6 · `/compare` "비교할 레퍼런스가 없습니다"(적용 전 빈 보드·초안과 같음) ✅. status 중복 의심 1건은 측정 도구 탓(앞 스크립트의 MutationObserver가 남아 중복 기록) — 노드 식별 재현으로 새 관찰기 기준 1회 확인(`logs/qa-live-1280.txt` "status 중복 재현") | status 1회(관찰기 1개로 고정해 재측정) · 포커스 "이 추천 적용" · `/compare` 빈 보드 ✅ |
 
@@ -207,3 +209,14 @@ main `36e825a6` 대비 수정된 기존 파일(`git diff --name-status --diff-fi
 | E7 적용 뒤 보드 변경 | 뷰티 1위 적용 → 2위 "비교 추가" → 트레이 2/6 · 1위 "되돌리기" aria-disabled=true + "적용 뒤 보드가 바뀌어 되돌릴 수 없습니다." · 상세 화면 왕복 뒤에도 "적용됨" 유지 | **PASS** (AC-11) |
 | E6 열 6 꽉 참 | 트레이 6/6 → 뷰티 추천: 보드에 없는 gen-beauty-3 "이 추천 적용" aria-disabled=true + "비교 보드에는 최대 6개까지 담을 수 있습니다. 다른 레퍼런스를 빼고 추가하세요." · 보드에 있는 gen-beauty-2는 활성 · 넘침 0 | **PASS** (AC-11). note N4: 이유 문구가 버튼에 `aria-describedby`로 연결돼 있지 않음(`RecoView.tsx:350·366` aria-disabled만) |
 | 저장 실패·revision 충돌 | 메모리 저장소라 실화면 재현 불가 → 1차 단위 증거(`CatalogPageReco.test`)로 갈음 | — |
+
+### 8.3 폭 정정 · 알림 영역 · 마감
+
+- **폭 정정(QA 절차 결함)**: CDP `Emulation.setDeviceMetricsOverride`도 `Network.setBlockedURLs`처럼 스크립트(세션)가 끝나면 풀린다 — 마감 스크립트 첫 줄 `innerWidth` = **1865**(창 폭). override를 스크립트 안에서 건 run만 표시 폭이 맞다:
+  - 맞음: E4·E5(1280) · 주 흐름 #1~7(1280 · 390) · 2절 첫 run E1(1280) · 2절 390 run(E1·E2·E3·E6/E7 화면 — `logs/qa-live-390.txt` "2절 390").
+  - ≈1865에서 돎: 주 흐름 #8~11("1280" 칸 · "390" 칸 둘 다) · status 중복 재현 · 2절 재실행 E2·E3·E8 · E7 · E6. 1280 이상은 같은 `xl` 배치라 1280 칸 결과로 인정하되 표기만 정정, **390 키보드 적용·되돌리기(#8~11)는 미검증**으로 남긴다(브리프 45턴 규칙으로 재실행 안 함).
+- **RQ-09 알림 영역 개수**(마감 시점 `/catalog?industry=fitness&tab=rec`, 빈 노드 포함): `role=status` **1**(비교 트레이) · `role=alert` 0 · `aria-live` 0 ✅. 실패 상태에서는 alert 1(E4·E5).
+- 실화면에서 못 보는 것: "적용됨이 저장 전 표시"는 메모리 저장소가 즉시 resolve라 관찰 불가 → 1차 note 3 유지. "근거 펼치기"는 PLAN #4대로 1위만 펼침.
+- notes 모음: N1 "더 보기" 뒤 포커스 BODY · N2 390 대화상자 시각 순서(적용 위)와 Tab 순서(취소 → 적용) 반대 · N3 근거 부족·결과 적음 전환 시 "0개로/1개로" status(SPEC 3.4 표 vs 3.6-5) · N4 비활성 이유 문구 `aria-describedby` 없음 · D1 부수: "다시 시도" 직후 포커스 BODY.
+- **결함 D1 (Developer 후속 필수)**: `recoLoader.ts`의 `import("./RecoView")`와 적용 청크 로더가 실패 뒤 같은 URL을 다시 import → 브라우저가 캐시된 실패로 즉시 reject. 단위 테스트는 로더 목이라 통과. 재현: 청크 차단 → 실패 → 차단 해제 → "다시 시도" → 새 요청 0. 같은 페이지에서 `?bust=1`을 붙인 import는 200 ok.
+- 마감: ego-browser IndexedDB `design-studio` 삭제(`Storage.clearDataForOrigin` origin `http://localhost:4399` · indexeddb만, 뒤 목록 []) · `task.finish({ keep: [] })` 완료 · preview(PID 95310) 종료 → `lsof -nP -iTCP:4399 -sTCP:LISTEN` **출력 없음(리슨 0)**. 앱·테스트 코드 변경 0 · Codex 미사용 · push 0 · 서브에이전트 0(브라우저 세션 1개를 순서대로 써야 해 병렬 불가).

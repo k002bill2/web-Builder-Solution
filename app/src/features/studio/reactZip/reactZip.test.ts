@@ -5,6 +5,10 @@ import { ID, KIT_CSS, m1 as m1Of, m2 as m2Of } from "../testing/reactZipFixture"
 const m1 = () => m1Of(referenceRenderInput("ref-a"));
 const m2 = () => m2Of(referenceRenderInput("ref-a"));
 import { fontFileName } from "../zip/staticZip";
+import { buildZipSite } from "../zip/zipSite";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { PageDocument } from "../../../render/PageDocument";
 import { fontLicenseText } from "../staticHtml/siteFontEmbed";
 import { buildReactZip, reactZipEntries } from "./reactZip";
 import { README_MD } from "./reactZipText";
@@ -63,6 +67,12 @@ describe("site.json (RZ-AC-08 · 2.3.1)", () => {
     expect(Object.keys(site)).toEqual(["schema", "doc", "kitTokens", "motion", "mainStyle", "images"]);
     expect(site.schema).toBe(1);
     expect(site.doc).toMatchObject({ projectId: "site", revision: 0, hash: "", profileVersion: 0, candidateId: "", libraryVersion: "", generatorVersion: "", updatedAt: "" });
+    expect(Object.keys(site.doc)).toEqual(["projectId", "revision", "hash", "profileVersion", "candidateId", "libraryVersion", "generatorVersion", "updatedAt", "meta", "sections"]);
+    expect(site.kitTokens).toEqual(c.kitTokens);
+    // 실효 모션 = 앱 렌더와 같은 값(L0 = 키 없음) · main 변수 = 팔레트 → --canvas-*
+    expect(site.motion).toEqual({ "header-1": "L1", "hero-1": "L1", "about-1": "L1", "services-1": "L1" });
+    const p = c.kitTokens.palette;
+    expect(site.mainStyle).toEqual({ "--canvas-primary": p.primary, "--canvas-surface": p.surface, "--canvas-ink": p.ink, "--canvas-muted": p.muted, "--canvas-bg": p.bg });
     expect(site.doc.meta).toEqual(c.doc.meta);
     expect(site.doc.sections.map((s) => Object.keys(s))).toEqual(c.doc.sections.map(() => ["instanceId", "type", "variant", "motion", "tone", "slots"]));
   });
@@ -93,7 +103,35 @@ describe("글꼴 (RZ-AC-09)", () => {
     expect(textOf(entries, "src/assets/fonts/OFL.txt")).toBe(fontLicenseText(c.fonts[0]!.family));
     expect(textOf(entries, "src/fonts.css")).toContain('src:url(./assets/fonts/Pretendard-400.woff2) format("woff2")');
   });
+
+  it("같은 문서 정적 zip과 직접 대조 — 두 zip 바이트를 풀어 글꼴 entry(이름·바이트)·OFL.txt가 같다", async () => {
+    const c = m1();
+    const date = new Date(c.doc.updatedAt);
+    const react = unzipEntries(await buildReactZip({ ...c, date, css: KIT_CSS }));
+    const statics = unzipEntries((await buildZipSite({ markup: renderToStaticMarkup(createElement(PageDocument, { doc: c.doc, kitTokens: c.kitTokens })), css: "", title: c.doc.meta.title, description: c.doc.meta.description, fonts: c.fonts, images: {}, lost: 0, date })).data);
+    const staticFonts = [...statics.keys()].filter((n) => n.startsWith("assets/fonts/")).sort();
+    expect(staticFonts).toEqual(["assets/fonts/OFL.txt", "assets/fonts/Pretendard-400.woff2", "assets/fonts/Pretendard-700.woff2"]);
+    expect([...react.keys()].filter((n) => n.startsWith("src/assets/fonts/")).sort()).toEqual(staticFonts.map((n) => `src/${n}`));
+    for (const name of staticFonts) expect(Buffer.from(react.get(`src/${name}`)!).equals(Buffer.from(statics.get(name)!)), name).toBe(true);
+  });
 });
+
+/** 중앙 디렉터리로 entry 이름·본문을 읽는 테스트용 파서(store 전용 — staticHtml.test와 같은 방식) */
+function unzipEntries(zip: Uint8Array) {
+  const v = new DataView(zip.buffer, zip.byteOffset, zip.byteLength);
+  const end = zip.length - 22;
+  let at = v.getUint32(end + 16, true);
+  const out = new Map<string, Uint8Array>();
+  for (let i = 0; i < v.getUint16(end + 10, true); i++) {
+    const size = v.getUint32(at + 20, true);
+    const nameLen = v.getUint16(at + 28, true);
+    const local = v.getUint32(at + 42, true);
+    const start = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
+    out.set(dec.decode(zip.subarray(at + 46, at + 46 + nameLen)), zip.subarray(start, start + size));
+    at += 46 + nameLen;
+  }
+  return out;
+}
 
 describe("브랜드·사용자 글자 (RZ-AC-16)", () => {
   it("고정 부분(템플릿·README·LICENSES·main·PageDocument)에 브랜드 문자열·이전 브랜드 4글자 0 · 사용자 글자(meta 제목)는 site.json·index.html에만", async () => {

@@ -91,6 +91,12 @@ describe("SEC M-1 압축 폭탄 — 디코드 전 실제 헤더 = 사다리 (업
       expect(calls.decoded).toBe(0);
     }
   });
+  it("헤더가 사다리보다 1px 작음(639×480 · 640×479) = IM-6 · 디코드 0 — 디코더가 선언 치수를 내도", async () => {
+    for (const header of [{ width: 639, height: 480 }, { width: 640, height: 479 }]) {
+      const calls = await rejected([declared640(fakeImageBytes("png", 640, 480, "", header))], "IM-6");
+      expect(calls.decoded).toBe(0);
+    }
+  });
   it("헤더를 못 읽음(서명만 · IHDR 없음) = IM-6 · 디코드 0", async () => {
     const signatureOnly = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0, 0, 0, 0, 0, ...new TextEncoder().encode("640x480")]);
     expect(readImageHeader("png", signatureOnly)).toBeNull();

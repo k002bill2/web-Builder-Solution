@@ -23,3 +23,11 @@
 | /catalog 첫 화면 | 100.77 | 100.77 | 0 |
 | 렌더 문서 JS | 84.29 | 84.30 | +0.01 (예산 90) |
 → 진입 증분 0 재현. **PASS**.
+
+## 2. Security 퍼즈 67건 + 폭탄 재실행 [사실]
+- 방법: `sec-readproject/patches/zzSecFuzz.test.tsx.txt`·`zzSecBomb.test.ts.txt`를 `app/src/features/projectFile/`에 임시 복사 → `npx vitest --run` 2 files / 2 tests passed → **즉시 삭제**(`git status --short` 빈 값 확인). 결과 `logs/qa-fuzz-after.txt`(67줄).
+- **M-1 폭탄**: 선언 640×480 + IHDR 16384² → `result=IM-6 order=` (빈 값 = **디코드 0회**). 이전 Security 실증은 디코드 1회 뒤 IM-6.
+- **L-1 대상**: S01(family CSS 깨기)·S07(굵기 1e9)·S16(scale 0·sectionGap −1) = 이전 `PASS import · renderMsg=DROPPED` → 이후 **REJECT IM-4**.
+- S02~S04(family `constructor`·`__proto__`·`toString`): 가져오기 PASS·렌더 accepted 그대로, `siteFaces` = 함수/객체 이름 → **`[]`(정상 폴백)** — `Object.hasOwn` 효과. 판정 줄의 나머지 필드 동일.
+- **그 밖 60건 판정 불변**: 시간(ms) 제거 후 `diff` = 위 7줄만 다름. 이후 분포 PASS 27 · IM-2 2 · IM-3 1 · IM-4 27 · IM-5 1 · IM-6 9. `renderMsg=DROPPED` **0건**, render/static/kitVar 누출 0건.
+→ **PASS**.

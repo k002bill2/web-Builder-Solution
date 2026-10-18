@@ -342,12 +342,12 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
 });
 
 describe("B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0", () => {
-  it("저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 사유 · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0", async () => {
+  it("저장 거절 READ_ONLY_TAB → alert '내보내지 못했습니다' + 읽기 전용 회복 안내(restartText 문형) · '다시 시도' 0 · 게이트 차단 문구 0 · 성공 표시 0", async () => {
     const requestExport = async () => Promise.reject(toInfra(undefined, "저장", READ_ONLY_TAB));
     await open(clean(), { requestExport });
     act(() => void fireEvent.click(zip()));
     const alert = await within(gateRegion()).findByRole("alert");
-    expect(alert.textContent).toBe(`내보내지 못했습니다${READ_ONLY_TAB}`);
+    expect(alert.textContent).toBe("내보내지 못했습니다다른 탭에서 편집 중이라 내보내지 못했습니다 — 그 탭을 닫은 뒤 다시 내보내세요");
     expect(within(gateRegion()).queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
     expect(within(gateRegion()).queryByText(/만들었습니다/)).not.toBeInTheDocument();
   });

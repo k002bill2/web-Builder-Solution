@@ -10,6 +10,9 @@ import { Callout } from "../ds/Callout";
  * 내보내기 조작 뒤 부품 (DS-2A-05 S-B5 — 내보내기 버튼을 눌렀을 때만 받는다): 경고 확인 대화상자(E-S24) · 결과(E-S27 · m2a 3.2 B).
  */
 
+/** 읽기 전용 탭 거절(B-M4A-12) 본문 — 지우기·가져오기·새로 시작과 같은 문형(`dialogText.ts` BUSY_TEXT · `restartText.ts` readonly), 동사만 다름. 판별은 `exportFlow.ts`가 code READ_ONLY로 한다 */
+const READ_ONLY_TEXT = "다른 탭에서 편집 중이라 내보내지 못했습니다 — 그 탭을 닫은 뒤 다시 내보내세요";
+
 /** E-S24 · Q8=A — 경고 목록 + "경고를 확인했습니다 · 내보내기" / "취소". 체크박스 확인 없음. 모달(`showModal`) · Esc = 취소 · 닫히면 연 버튼으로 포커스 */
 export function ExportConfirmDialog({ report, onConfirm, onCancel }: { readonly report: GateReport; readonly onConfirm: () => void; readonly onCancel: () => void }) {
   const id = useId();
@@ -129,7 +132,7 @@ export function ExportResultView({ result, onFirstFallback }: { readonly result:
         tone="negative"
         title={result.reason ? "내보내지 못했습니다" : result.code === "STALE_DOC" ? "다른 곳에서 문서가 바뀌어 내보내지 않았습니다" : "품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요"}
       >
-        {result.reason}
+        {result.code === "READ_ONLY" ? READ_ONLY_TEXT : result.reason}
       </Callout>
     </div>
   );

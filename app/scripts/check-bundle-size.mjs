@@ -61,6 +61,8 @@ const STUDIO_AFTER_ACTION = [
   "src/components/studio/VariantOptions.tsx",
   "src/components/studio/ContactOwnerNote.tsx",
   "src/features/studio/exportFlow.ts",
+  // React zip 생성기(REACTZIP-SPEC 5.4 · RZQ-02 A): exportFlow loadReactZip ← React zip 버튼 onClick(·"다시 시도") — 크기만 출력
+  "src/features/studio/reactZip/reactZip.ts",
   "src/components/studio/ExportAfter.tsx",
   // PNG 캡처(m2a 3.3 — M2A-3c): PngSave "PNG 내려받기" onClick → loadPng
   "src/features/studio/png/pngCapture.ts",
@@ -227,6 +229,38 @@ function checkThumbnails() {
   console.log(`[bundle] 썸네일 ${(ids ?? []).length}장 · 버전 ${version} · 가드 ${issues.length === 0 ? "통과" : "실패"}`);
   return issues;
 }
+/**
+ * React zip 진입 정적 포함 0 (REACTZIP-SPEC 5.4 · ADR-004 개정 20 결정 2) — `/studio` 두 시나리오의 진입 집합(공통 + 페이지 정적 닫힘 + 자동 dynamic import 닫힘)에
+ * 생성기 청크 파일 · 킷 원문 표식(kit.css 첫 줄) · lock 표식(`"lockfileVersion"`)이 0개. 생성기 청크가 manifest에 없으면 실패(가드가 조용히 꺼지지 않게)
+ */
+const REACT_ZIP_GENERATOR = "src/features/studio/reactZip/reactZip.ts";
+const KIT_CSS_MARK = "M2A-2a K3";
+const LOCK_MARK = '"lockfileVersion"';
+function checkReactZipEntry() {
+  const generator = manifest[REACT_ZIP_GENERATOR]?.file;
+  if (!generator) return [`React zip 생성기 청크(${REACT_ZIP_GENERATOR})가 manifest에 없습니다`];
+  const kitHead = readFileSync(fileURLToPath(new URL("../src/kit/kit.css", import.meta.url)), "utf8").split("\n")[0];
+  if (!kitHead.includes(KIT_CSS_MARK)) return [`킷 원문 표식 ${KIT_CSS_MARK}가 src/kit/kit.css 첫 줄에 없습니다 — 표식을 갱신하세요`];
+  const closure = (key, seen) => {
+    if (!manifest[key] || seen.has(manifest[key].file)) return seen;
+    seen.add(manifest[key].file);
+    for (const dep of manifest[key].imports ?? []) closure(dep, seen);
+    return seen;
+  };
+  const issues = [];
+  for (const scenario of SCENARIOS.filter((s) => s.name.startsWith("/studio/"))) {
+    const files = new Set();
+    for (const key of ["index.html", scenario.page, ...scenario.auto]) closure(key, files);
+    if (files.has(generator)) issues.push(`${scenario.name} 진입에 React zip 생성기 청크 ${generator}`);
+    for (const file of files) {
+      const code = readFileSync(join(DIST, file), "utf8");
+      if (code.includes(KIT_CSS_MARK)) issues.push(`${scenario.name} 진입 ${file}에 킷 원문 표식`);
+      if (code.includes(LOCK_MARK)) issues.push(`${scenario.name} 진입 ${file}에 lock 표식`);
+    }
+  }
+  console.log(`[bundle] React zip 진입 정적 포함 0 가드 ${issues.length === 0 ? "통과" : "실패"} · 생성기 청크 ${generator} gzip ${sizeOf(generator).toFixed(2)}KB (판정 밖)`);
+  return issues;
+}
 // preload 중복 제거·polyfill off 산출물 가드(STUDIO-PRELOAD-SLIM — 판정: preloadGuard.mjs). 앱 manifest만 — 렌더 문서 빌드는 이 설정 밖
 const { lines: preloadLines, failures: preloadFailures } = checkPreload({
   manifest: readManifest(".vite/manifest.json"),
@@ -234,7 +268,7 @@ const { lines: preloadLines, failures: preloadFailures } = checkPreload({
   indexHtml: existsSync(join(DIST, "index.html")) ? readFileSync(join(DIST, "index.html"), "utf8") : "",
 });
 for (const line of preloadLines) console.log(line);
-const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures];
+const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures, ...checkReactZipEntry()];
 if (failures.length > 0) {
   for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
   process.exit(1);

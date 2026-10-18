@@ -8,6 +8,7 @@ import { passingDoc, withPhoto } from "../../engine/testing/gateKit";
 import { section, withSections } from "../../engine/testing/sampleDoc";
 import { sampleTheme } from "../../engine/testing/sampleTheme";
 import { EDITOR_EVENT, type EditorEvent } from "../../features/studio/editorEvents";
+import { REACT_ZIP_FORMAT_LABEL } from "../../features/studio/reactZip/reactZipText";
 import { openStudio, restoreViewport } from "../../features/studio/testing/openStudio";
 
 afterEach(restoreViewport);
@@ -63,14 +64,13 @@ function listen() {
 }
 
 describe("형식 버튼 (M4-a EXP-AC-01 · Q18 A)", () => {
-  it("버튼 = '정적 사이트(zip) 내보내기' → 'HTML 파일 1개 내보내기' 순서 2개 · React zip 버튼 0", async () => {
+  it("버튼 = 정적 zip → HTML 1개 → React zip 순서 3개 (RZ-AC-01 · RZQ-01 A — React zip 글자 = 자리 상수 export.format.reactZip)", async () => {
     await open(clean());
     const names = within(gateRegion())
       .getAllByRole("button")
       .map((b) => b.textContent)
-      .filter((t) => /내보내기$/.test(t ?? ""));
-    expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기"]);
-    expect(within(gateRegion()).queryByRole("button", { name: /React/ })).not.toBeInTheDocument();
+      .filter((t) => t === REACT_ZIP_FORMAT_LABEL || /내보내기$/.test(t ?? ""));
+    expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기", REACT_ZIP_FORMAT_LABEL]);
   });
 
   it("zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {

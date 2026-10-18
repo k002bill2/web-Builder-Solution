@@ -21,3 +21,6 @@ export const staticHtmlFileName = (projectName: string, revision: number) => `${
 
 /** 정적 사이트(zip)판 (M4-a SPEC 2.3 · EXP-AC-15): `<이름>_r<revision>.zip` */
 export const staticZipFileName = (projectName: string, revision: number) => `${exportFileStem(projectName)}_r${revision}.zip`;
+
+/** React 프로젝트(zip)판 (REACTZIP-SPEC 1.3 RZQ-03 A · RZ-AC-19): `<이름>_r<revision>_react.zip` — 정적 zip과 같은 폴더에 받아도 덮어쓰지 않는다 */
+export const reactZipFileName = (projectName: string, revision: number) => `${exportFileStem(projectName)}_r${revision}_react.zip`;

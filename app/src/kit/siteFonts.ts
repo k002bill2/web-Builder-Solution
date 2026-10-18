@@ -15,14 +15,15 @@ export interface SiteFace {
 /** 커밋한 굵기는 400·700뿐 — 그 밖 값은 가까운 쪽(파일 없는 굵기를 브라우저가 가짜로 만들지 않게) */
 export const siteWeight = (weight: number): SiteWeight => (weight > 550 ? 700 : 400);
 
-const aliasOf = (family: string) => ALIAS[family] ?? family;
+/** 자기 키만 — "constructor"·"__proto__" 같은 프로토타입 키가 함수·객체를 집지 않게(SEC L-1 S02~S04) */
+const aliasOf = (family: string) => (Object.hasOwn(ALIAS, family) ? ALIAS[family]! : family);
 
 /** 별칭을 맨 앞에 — 사용자 컴퓨터의 원본 설치 글꼴이 잡히지 않게. 시스템 글꼴 이름은 대체 이름일 뿐 파일을 싣지 않는다 */
 export const fontStack = (family: string) => `"${aliasOf(family)}", ${/serif/i.test(family) && !/sans/i.test(family) ? SERIF : SANS}`;
 
 /** 사이트가 실제로 쓰는 면 = 계열 1개 × 대응 굵기(제목·본문, 같으면 1개). 허용 밖 계열 = 0 */
 export function siteFaces(type: { readonly family: string; readonly headingWeight: number; readonly bodyWeight: number }): readonly SiteFace[] {
-  const family = ALIAS[type.family];
-  if (!family) return [];
+  if (!Object.hasOwn(ALIAS, type.family)) return [];
+  const family = ALIAS[type.family]!;
   return [...new Set([siteWeight(type.headingWeight), siteWeight(type.bodyWeight)])].map((weight) => ({ family, weight }));
 }

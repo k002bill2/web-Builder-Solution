@@ -92,14 +92,30 @@ export function seedFile(over: Partial<Record<keyof ProjectFile, unknown>> = {},
 export const fileOf = (text: string, size = new TextEncoder().encode(text).length) => ({ size, text: async () => text });
 export const jsonFile = (value: unknown) => fileOf(JSON.stringify(value));
 
-// ── 이미지(⑤) — 가짜 바이트 = 형식 서명 16바이트 + "가로x세로" · 가짜 디코더는 그 치수를 읽고 가짜 인코더는 "re:" 표시를 붙인다
-const MAGIC: Readonly<Record<string, readonly number[]>> = {
-  png: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0, 0, 0, 0, 0],
-  jpeg: [0xff, 0xd8, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  webp: [0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, 0, 0, 0, 0],
-};
-export const fakeImageBytes = (format: string, width: number, height: number, mark = ""): Uint8Array =>
-  new Uint8Array([...MAGIC[format]!, ...new TextEncoder().encode(`${mark}${width}x${height}`)]);
+// ── 이미지(⑤) — 가짜 바이트 = 실제 헤더 40바이트(PNG 서명+IHDR · JPEG SOI+SOF0 · WebP RIFF+VP8X — readImageHeader가 읽는 모양) + "가로x세로"
+//    가짜 디코더는 헤더 뒤 글자의 치수를 읽고 가짜 인코더는 "re:" 표시를 붙인다. header를 따로 주면 헤더 치수 ≠ 디코드 치수(디코더 불일치 검사용)
+const HEADER_BYTES = 40;
+export function fakeImageHeader(format: string, width: number, height: number): Uint8Array {
+  const b = new Uint8Array(HEADER_BYTES);
+  const view = new DataView(b.buffer);
+  if (format === "jpeg") {
+    b.set([0xff, 0xd8, 0xff, 0xc0, 0, 17, 8]);
+    view.setUint16(7, height);
+    view.setUint16(9, width);
+  } else if (format === "webp") {
+    b.set([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, 0x56, 0x50, 0x38, 0x58, 10, 0, 0, 0]);
+    view.setUint32(24, width - 1, true);
+    view.setUint32(27, height - 1, true);
+  } else {
+    b.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52]);
+    view.setUint32(16, width);
+    view.setUint32(20, height);
+    b.set([8, 6], 24);
+  }
+  return b;
+}
+export const fakeImageBytes = (format: string, width: number, height: number, mark = "", header = { width, height }): Uint8Array =>
+  new Uint8Array([...fakeImageHeader(format, header.width, header.height), ...new TextEncoder().encode(`${mark}${width}x${height}`)]);
 /** 조각 단위(큰 바이트도 spread 한도 안) */
 export function toBase64(bytes: Uint8Array): string {
   const pieces: string[] = [];
@@ -127,7 +143,7 @@ export function fakeDeps(options: { readonly failDecode?: boolean; readonly enco
   const deps = {
     createImageBitmap: async (source: Blob | { width: number; height: number }) => {
       if (options.failDecode) throw new Error("decode");
-      const text = new TextDecoder().decode(new Uint8Array(await (source as Blob).arrayBuffer()).slice(16));
+      const text = new TextDecoder().decode(new Uint8Array(await (source as Blob).arrayBuffer()).slice(HEADER_BYTES));
       const match = /^(?:re:)?(\d+)x(\d+)/.exec(text);
       const [width, height] = [Number(match?.[1]), Number(match?.[2])];
       calls.decoded += 1;
@@ -136,7 +152,7 @@ export function fakeDeps(options: { readonly failDecode?: boolean; readonly enco
     encode: async (bitmap: { width: number; height: number }, type: string, quality?: number) => {
       calls.encodes.push({ type, ...(quality !== undefined && { quality }) });
       const format = type.replace("image/", "");
-      return new Blob([fakeImageBytes(MAGIC[format] ? format : "png", bitmap.width, bitmap.height, "re:") as BlobPart], { type: options.encodeType ?? type });
+      return new Blob([fakeImageBytes(format, bitmap.width, bitmap.height, "re:") as BlobPart], { type: options.encodeType ?? type });
     },
     drawScaled: async () => {
       throw new Error("재인코딩은 축소하지 않는다");

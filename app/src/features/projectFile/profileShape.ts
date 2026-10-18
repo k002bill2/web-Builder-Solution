@@ -52,6 +52,17 @@ const TONES: Readonly<Record<SurfaceTone, true>> = { light: true, dark: true };
 const isPurpose = (v: unknown) => v === "none" || keyOf(PURPOSES)(v);
 
 const colorsOk = (tokens: unknown) => isObject(tokens) && PALETTE_ROLES.every((role) => isObject(tokens[role]) && isHex(tokens[role].$value));
+const inRange = (v: unknown, min: number, max: number) => isNumber(v) && v >= min && v <= max;
+/**
+ * 렌더 경계(render/protocol isKitTokens)와 같은 범위 — 리터럴 복제(렌더를 값으로 import하지 않는다 · profileShape.range.test가 양쪽을 같은 입력으로 본다).
+ * 밖이면 렌더 메시지가 버려져 그 프로젝트가 그려지지·내보내지지 않는다(SEC L-1). grid = docKitTokens 규칙(parseFloat, 유한·>0 아니면 8로 바꾼다)으로 읽은 값이 1~64
+ */
+const familyOk = (v: unknown) => isString(v) && v.length > 0 && v.length <= 64 && /^[\w -]+$/.test(v);
+const gridOk = (v: unknown) => {
+  if (!isString(v)) return false;
+  const grid = Number.parseFloat(v);
+  return !(Number.isFinite(grid) && grid > 0) || inRange(grid, 1, 64);
+};
 const typographyOk = (t: unknown) => isObject(t) && isString(t.family) && [t.headingWeight, t.bodyWeight, t.scale].every(isNumber);
 const spacingOk = (s: unknown) => isObject(s) && isString(s.grid) && isNumber(s.sectionGap);
 const planOk = (plan: unknown) => Array.isArray(plan) && plan.every((s) => isObject(s) && keyOf(SECTION_TYPES)(s.type) && isString(s.variant));
@@ -87,3 +98,14 @@ const droppedOk = (d: unknown) =>
 export const profileVersionShapeOk = (v: Loose): boolean =>
   isOrigin(v.origin) && isString(v.baseReferenceId) && isString(v.createdAt) && baseOk(v.base) && adjustmentsOk(v.adjustments) &&
   optional(v.basedOn, isInt) && optional(v.boardRevision, isInt) && optional(v.dropped, droppedOk);
+
+/**
+ * 렌더될 버전(최신 · 문서 · 스냅샷이 가리키는 버전)의 타이포·간격 = 렌더 범위 (SEC L-1, Codex r1).
+ * 과거 버전은 모양만 본다 — 범위 밖 과거 버전 하나 때문에 정상 프로젝트의 파일 내보내기(recordsHold 공유)가 막히지 않게. 모양 검사(profileVersionShapeOk)를 지난 버전에만 부른다
+ */
+export const profileVersionRenderOk = (v: Loose): boolean => {
+  const { typography_tokens: t, spacing_tokens: s } = v.base as Loose;
+  const type = t as Loose;
+  const space = s as Loose;
+  return familyOk(type.family) && inRange(type.headingWeight, 100, 900) && inRange(type.bodyWeight, 100, 900) && inRange(type.scale, 1, 2) && gridOk(space.grid) && inRange(space.sectionGap, 0, 512);
+};

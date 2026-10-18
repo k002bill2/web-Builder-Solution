@@ -90,6 +90,23 @@ describe("React zip 생성기 청크 (RZ-AC-04 · B-M4A-08과 같은 계수)", (
     expect(await requestExportOnce(repository, "p1", "react-zip", 5)).toEqual({ kind: "retryable", format: "react-zip" });
   });
 
+  it("실제 ReactZipError(허용표 위반 — 이미지 서명 불일치) → refused + 사유 = export.fail.pattern · 다시 시도 없음 (QA 변이 M6 · RZ-AC-18)", async () => {
+    const { ReactZipError, buildReactZip } = await vi.importActual<typeof import("./reactZip/reactZip")>("./reactZip/reactZip");
+    expect(new ReactZipError("x").retry).toBe(false);
+    const { KIT_CSS, m2 } = await import("./testing/reactZipFixture");
+    const { referenceRenderInput } = await import("../../thumbs/referenceDoc");
+    const c = m2(referenceRenderInput("ref-a"));
+    const [id, image] = Object.entries(c.images)[0]!;
+    // type은 그대로 · 바이트만 서명 불일치 → imageKeys는 통과하고 허용표 검사(checkReactZipEntries)가 잡는다
+    const input = { ...c, images: { ...c.images, [id]: { ...image, blob: new Blob(["not an image"], { type: image.blob.type }) } }, date: new Date(c.doc.updatedAt), css: KIT_CSS };
+    const error = await buildReactZip(input).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ReactZipError);
+    expect((error as Error).cause).toMatch(/^허용표 /);
+    const repository = repositoryCallingSlot();
+    made.run.mockImplementationOnce(() => buildReactZip(input));
+    expect(await requestExportOnce(repository, "p1", "react-zip", 5)).toEqual({ kind: "refused", format: "react-zip", code: "INFRA", reason: "내보낼 수 없는 내용이 있어 멈췄습니다 — 문제가 계속되면 알려 주세요" });
+  });
+
   it("읽기 전용 탭(INFRA + READ_ONLY_TAB) → refused READ_ONLY · 다시 시도 0 (RZ-AC-05)", async () => {
     const READ_ONLY_TAB = "다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다";
     const { ProjectRepositoryError } = await import("../../data/projectRepository");

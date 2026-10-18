@@ -4,6 +4,17 @@
 
 ## 0. 결론
 
+### FIX1 (BRIEF-FIX1, 2026-10-18) — QA D1 · N1·N2·N4 · 1차 note 3
+- **결론: 기능 5항목 완료·검증, 단 D1b(화면 청크 감싸기)는 예산 결정 대기(BLOCKED).** 커밋: e825fcdb BRIEF · 8e93d64a D1a · b379e0ee D1b · dcebcc52 N1 · d1de5406 N4 · 059909dc N2 · 15334ed5 note 3.
+- **D1a** 적용 청크 2개(RecoApply·recoApplyFlow)를 각각 `retryableImport`(소스에서 청크 파일을 하나만 읽으므로 `Promise.all` 안에서 따로) · 화면 청크 "다시 시도" 포커스 = 결과 영역 · 적용 재시도 재실패 = 새 alert "다시 시도"(say 시점 포커스가 옛 alert 안이면). 배선 가드 `chunkRetryWiring.test` RED 0/… → GREEN.
+- **D1b** `loadRecoView = retryableImport(() => import("./RecoView"))` — Ego: 차단 → alert → 해제 → "다시 시도" → `/assets/RecoView-*.js?retry=1` 요청 → 카드 3 · alert 0 · 포커스 `#catalog-results`(BODY 0).
+- **예산(BLOCKED — 결정 필요)**: 브리프 전제 "chunkRetry는 이미 진입 직후 청크에 있음"은 `/catalog`엔 해당하지 않는다(진입도 102.79 → 103.11). chunkRetry 청크 gz 306B가 `/catalog` 첫 화면에 새로 들어와 **100.46 → 100.76(+0.30) > +0.05**. 감량 1회 = D1a 단독 실측(`logs/fix1-d1a-build.txt`) **100.48(+0.02)** — 초과분 전부가 화면 로더 감싸기. lazy import(실패 시점에 chunkRetry를 받기) 감량은 기각: 오프라인이면 chunkRetry 청크 자신의 실패가 캐시돼 D1 재발 + 검사기 SCENARIOS 밖(쓰기 경로 밖). 최종(`logs/fix1-final-build.txt`): `/catalog` 100.76/103.10 · `/catalog (추천)` 진입 109.53(≤125) · `/references` 97.46/99.80 · `/compare` 98.96/122.65 · `/profile` 99.53/119.92 · `(3안)` 122.40 · `/projects` 99.08/109.52 · `/studio` 정규화 **128.80**(≤128.80 ✅) · 복원 131.78. 멈춤선 100.90·검사기 101 안. 선택지: (a) **수용**(E4 해결) · (b) `git revert b379e0ee`(→ 100.48, E4 미해결 — 새로고침 말고 복구 경로 0으로 돌아감). **권고 (a)**: 여유 0.14 남고, 대안은 결함 존속.
+- **N1** "2개 더 보기" 뒤 포커스 = 4위 카드 제목 링크(Ego 390: 4/5번째 카드 "뷰티 · 밝은 그리드형"). **N2** `flex-col-reverse` → `flex-col` — Ego 390: 취소 top 581 · 적용 top 629 · 열 때 "취소" → Tab "적용" · 375폭 넘침 0 / 1280: 같은 줄 취소(740)·적용(806) 무변화. **N4** 비활성 버튼 `aria-describedby` → 이유 문구(`toHaveAccessibleDescription`). **note 3** 지연 savePicks 목: 클릭 직후 "적용됨" 0 · status 빈 값 · aria-busy → resolve 뒤 표시 — m3-1c 변이 FAIL → 원복 PASS(`logs/fix1-note3-mutant.txt`).
+- **N3**(근거 부족 상태 알림 SPEC 내부 상충)은 바꾸지 않음 — SPEC 3.6-5(결과가 바뀌면 1회)를 따름. BACKLOG는 Jarvis.
+- 남김(범위 밖 한 줄): RecoView 내부 계산 실패 분기("failed" in computed)의 "다시 시도"도 key 재마운트라 재실패 시 포커스 BODY 가능 — recommend() 예외 경로라 실화면 재현 경로 없음, 이번 미수정.
+- **게이트(fresh, tip 15334ed5)**: typecheck 0 · lint 0 · vitest 361 files / 3219 tests 통과(`logs/fix1-test.txt`) · build exit 0 + 검사기 통과. Ego Lite 1회(`logs/fix1-ego.txt`, TaskSpace 44, override·차단 같은 스크립트) · preview 종료 · 4399 리슨 0.
+- **Codex adversarial 1회**(`--scope branch --base b59c66e7`, `logs/fix1-codex.txt`): needs-attention — P2 1건 = 위 예산 초과(이미 BLOCKED로 기록, 같은 결론). 재시도·포커스·저장 경로 추가 결함 0. 반영 = 수용/revert 결정을 위해 D1b를 단독 커밋으로 분리(코드 변경 없음).
+
 ### R2 (BRIEF-R2, 2026-10-18) — main 병합 · `/catalog` 감량 1회
 - **병합** `bf8329e4`(origin/main `36e825a6` PR #45 B-M4A-08): 충돌 2파일(`m2cBaseline.json`·`bundleBudget.test.mjs`)은 main 값 128.79·131.77 그대로 — 이 브랜치 상향(128.72·131.70)은 버림(두 파일에서 이 브랜치가 바꾼 것은 기준선 값·note뿐임을 `git diff 268226f2 606af16d`로 확인, 단언 손실 0). 병합 fresh build(`logs/r2-merge-build.txt`): `/studio` 정규화 **128.80**(≤ 128.82 ✅) · 복원 **131.78**(≤ 131.80 ✅). **`/studio` 증분 = 128.80 − 128.79 = +0.01** · 복원 증분 = 131.78 − 131.77 = +0.01.
 - **감량 1회** `13f17354`: 추천 청크 상태 `{View?, failed?}` → 값 하나(`undefined` 받는 중 · `null` 실패 · 컴포넌트). DOM·ARIA·로드 조건 변화 0(`CatalogPageRecoLoad`·`CatalogPageReco` 16/16). CatalogPage 청크 gzip 7376 → 7347B · **`/catalog` 첫 화면 100.48 → 100.46**(base 100.05 대비 +0.41). 수치는 raw gzip(해시 정규화 아님) — 해시 이름 흔들림 최대 약 0.02라 감량 효과는 경계값. **목표 ≤ 100.15 미달(차이 0.31)** — 동작 변화 0 수단으로는 닿지 않는다(아래 원인별 B 표).

@@ -10,5 +10,5 @@ base: `5c98507c` · 브랜치 `k002bill2/import-hardening` · push 0
 - [x] 5. L-1 GREEN: profileShape = isKitTokens 범위 + grid 보강 — `1c4d563d`
 - [x] 6. 예산 실측 (/projects 첫 화면·진입, /studio, 복원, /catalog) — 진입 증분 0, 감량 불필요
 - [x] 7. fresh typecheck·lint·test·build — 363/3265 passed, build 0
-- [ ] 8. Codex adversarial 1회 + 반영 1회
-- [ ] 9. REPORT 결론·커밋 SHA, untracked 0
+- [x] 8. Codex adversarial 1회 + 반영 1회 — `2bce497e·f1afc2f4`
+- [x] 9. REPORT 결론 — Jarvis 회수(턴 상한)

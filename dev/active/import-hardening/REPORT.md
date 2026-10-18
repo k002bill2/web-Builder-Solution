@@ -3,9 +3,13 @@
 base `5c98507c` · 브랜치 `k002bill2/import-hardening` · 2026-10-18 · Developer(Claude Code, Opus 5.5). push 0.
 표기: [사실]=코드·실행 확인 · [추정] · [미확인].
 
-## 결론 (초안 — 작업 중)
-- M-1: 진행 중
-- L-1: 진행 중
+## 결론 (Jarvis 회수 확정 2026-10-18 — run이 51턴 턴 상한으로 마감 직전 중단, 코드·Codex 반영은 커밋 완료)
+- **M-1 해결**: 디코드 전 실제 헤더 = 사다리 치수 확인, 불일치 IM-6(새 문구 0) — RED 6 → GREEN, 폭탄 디코드 0 (`9a6ab4a5`→`f9fbbad8`).
+- **L-1 해결**: 가져오기 범위 = 렌더 `isKitTokens` 범위 + grid 보강 + 글꼴 `Object.hasOwn` — parity 표 29행, 가져오기 PASS·렌더 DROPPED 0 (`3629f484`→`1c4d563d`).
+- **Codex r1 반영**: 렌더 범위 검사는 렌더될 버전(최신·문서·스냅샷)에만 — 과거 버전만 범위 밖이면 막지 않음 (`2bce497e`→`f1afc2f4`).
+- **게이트(Jarvis fresh 재실행, tip `f1afc2f4`)**: typecheck 0 · lint 0 · 363 files / 3269 tests · build 0.
+- **예산**: `/projects` 첫 99.09 · `/studio` 128.80 · 복원 131.78 · `/catalog` 100.77 — 진입 증분 0.
+- 남은 확인: 부작용(범위 밖 값을 가진 기존 프로젝트의 파일 내보내기 EX-6) 판단 — QA.
 
 ## 1. M-1 — 디코드 전 실제 헤더 확인 [사실]
 - `checkImages.ts` `ruledVariants`: base64 디코드 직후 · Blob/디코드(`createImageBitmap`) 전에 변형본마다 `headerFits` = `readImageHeader(format, bytes)`(업로드 V5와 같은 파서) 치수 = (사다리 폭, `variantHeight`). 불일치·헤더 없음 = `undefined` → **IM-6(기존 코드, 새 문구 0)**.

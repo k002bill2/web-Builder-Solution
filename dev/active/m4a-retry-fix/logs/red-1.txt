@@ -1,0 +1,291 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-retry-fix/app
+
+ ❯ src/features/studio/exportFlowLoader.test.ts (2 tests | 2 failed) 4ms
+   ❯ 내보내기 청크 로드 실패 횟수 (B-M4A-08) (2)
+     × 첫 로드 실패 1회 → 다시 시도는 같은 청크를 다른 URL(?retry=1)로 받아 성공 2ms
+     × 2회 연속 실패 → 횟수 2(새로고침 안내) · 매번 다른 URL(?retry=1, ?retry=2) 0ms
+ ❯ src/components/studio/ExportRetryAlert.test.tsx (4 tests | 4 failed) 76ms
+   ❯ 재시도 가능 실패 alert (E-S27) (4)
+     × B-M4A-08 — 내보내기 청크를 2회 연속 받지 못했으면 새로고침 안내 · 다시 시도는 남긴다(새 URL로 다시 받는다) 2ms
+     × B-M4A-08 — 청크 실패 1회·청크 실패가 아닌 실패(0)는 새로고침 안내 0 0ms
+     × 사유가 있어도 다시 시도 버튼을 보인다 66ms
+     × dev 서버 사유(DEV_SERVER_UNSUPPORTED) → 안내만 · 다시 시도 버튼 0(다시 눌러도 같은 실패) 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > B-M4A-08 — 내보내기 청크를 2회 연속 받지 못했으면 새로고침 안내 · 다시 시도는 남긴다(새 URL로 다시 받는다)
+TypeError: Cannot set properties of undefined (setting 'fails')
+ ❯ src/components/studio/ExportRetryAlert.test.tsx:11:17
+      9|
+     10|   it("B-M4A-08 — 내보내기 청크를 2회 연속 받지 못했으면 새로고침 안내 · 다시 시도는 남긴다(새 URL로 다시…
+     11|     exportChunk.fails = 2;
+       |                 ^
+     12|     render(<ExportRetryAlert onRetry={() => undefined} />);
+     13|     expect(screen.getByRole("alert")).toHaveTextContent(EXPORT_RELOAD);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > B-M4A-08 — 내보내기 청크를 2회 연속 받지 못했으면 새로고침 안내 · 다시 시도는 남긴다(새 URL로 다시 받는다)
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > B-M4A-08 — 청크 실패 1회·청크 실패가 아닌 실패(0)는 새로고침 안내 0
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > 사유가 있어도 다시 시도 버튼을 보인다
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > dev 서버 사유(DEV_SERVER_UNSUPPORTED) → 안내만 · 다시 시도 버튼 0(다시 눌러도 같은 실패)
+TypeError: Cannot set properties of undefined (setting 'fails')
+ ❯ src/components/studio/ExportRetryAlert.test.tsx:8:37
+      6|
+      7| describe("재시도 가능 실패 alert (E-S27)", () => {
+      8|   afterEach(() => void (exportChunk.fails = 0));
+       |                                     ^
+      9|
+     10|   it("B-M4A-08 — 내보내기 청크를 2회 연속 받지 못했으면 새로고침 안내 · 다시 시도는 남긴다(새 URL로 다시…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > B-M4A-08 — 청크 실패 1회·청크 실패가 아닌 실패(0)는 새로고침 안내 0
+TypeError: Cannot set properties of undefined (setting 'fails')
+ ❯ src/components/studio/ExportRetryAlert.test.tsx:20:19
+     18|   it("B-M4A-08 — 청크 실패 1회·청크 실패가 아닌 실패(0)는 새로고침 안내 0", () => {
+     19|     for (const fails of [0, 1]) {
+     20|       exportChunk.fails = fails;
+       |                   ^
+     21|       const { unmount } = render(<ExportRetryAlert onRetry={() => unde…
+     22|       expect(screen.getByRole("alert")).not.toHaveTextContent("새로고침");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/components/studio/ExportRetryAlert.test.tsx > 재시도 가능 실패 alert (E-S27) > dev 서버 사유(DEV_SERVER_UNSUPPORTED) → 안내만 · 다시 시도 버튼 0(다시 눌러도 같은 실패)
+TestingLibraryElementError: Found multiple elements with the role "alert"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mrole[39m=[32m"alert"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-negative-bg"[39m
+    [33mdata-tone[39m=[32m"negative"[39m
+  [36m>[39m
+    [36m<i[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"ds-icon size-5 mt-0.5 flex-none text-status-negative"[39m
+      [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/warning.svg\");"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1.5 text-label-normal"[39m
+    [36m>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"ds-label"[39m
+      [36m>[39m
+        [0m내보내지 못했습니다[0m
+      [36m</h3>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ds-body3"[39m
+      [36m>[39m
+        [0m이미지를 그리지 못했습니다[0m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m다시 시도[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mrole[39m=[32m"alert"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-negative-bg"[39m
+    [33mdata-tone[39m=[32m"negative"[39m
+  [36m>[39m
+    [36m<i[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mclass[39m=[32m"ds-icon size-5 mt-0.5 flex-none text-status-negative"[39m
+      [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/warning.svg\");"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1.5 text-label-normal"[39m
+    [36m>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"ds-label"[39m
+      [36m>[39m
+        [0m내보내지 못했습니다[0m
+      [36m</h3>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ds-body3"[39m
+      [36m>[39m
+        [0m개발 서버에서는 스타일시트를 읽을 수 없습니다 — npm run build 후 vite preview에서 확인해 주세요[0m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-negative-bg"[39m
+        [33mdata-tone[39m=[32m"negative"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-5 mt-0.5 flex-none text-status-negative"[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/warning.svg\");"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+          [36m>[39m
+            [0m내보내지 못했습니다[0m
+          [36m</h3>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ds-body3"[39m
+          [36m>[39m
+            [0m이미지를 그리지 못했습니다[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m다시 시도[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex gap-2.5 rounded-md p-3.5 bg-status-negative-bg"[39m
+        [33mdata-tone[39m=[32m"negative"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"ds-icon size-5 mt-0.5 flex-none text-status-negative"[39m
+          [33mstyle[39m=[32m"--icon: url(\"/src/assets/icons/warning.svg\");"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 flex-1 flex-col gap-1.5 text-label-normal"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ds-label"[39m
+          [36m>[39m
+            [0m내보내지 못했습니다[0m
+          [36m</h3>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ds-body3"[39m
+          [36m>[39m
+            [0m개발 서버에서는 스타일시트를 읽을 수 없습니다 — npm run build 후 vite preview에서 확인해 주세요[0m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/studio/ExportRetryAlert.test.tsx:35:19
+     33|   it("dev 서버 사유(DEV_SERVER_UNSUPPORTED) → 안내만 · 다시 시도 버튼 0(다시 눌러도 같은 실…
+     34|     render(<ExportRetryAlert onRetry={() => undefined} reason={DEV_SER…
+     35|     expect(screen.getByRole("alert")).toHaveTextContent(DEV_SERVER_UNS…
+       |                   ^
+     36|     expect(screen.queryByRole("button", { name: "다시 시도" })).toBeNull();
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/features/studio/exportFlowLoader.test.ts > 내보내기 청크 로드 실패 횟수 (B-M4A-08) > 첫 로드 실패 1회 → 다시 시도는 같은 청크를 다른 URL(?retry=1)로 받아 성공
+TypeError: Cannot set properties of undefined (setting 'fails')
+ ❯ src/features/studio/exportFlowLoader.test.ts:8:17
+      6| describe("내보내기 청크 로드 실패 횟수 (B-M4A-08)", () => {
+      7|   it("첫 로드 실패 1회 → 다시 시도는 같은 청크를 다른 URL(?retry=1)로 받아 성공", async () =>…
+      8|     exportChunk.fails = 0;
+       |                 ^
+      9|     const flow = { requestExportOnce: () => undefined };
+     10|     const { loader, staticImport, retries } = cachedChunkFailure("expo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/features/studio/exportFlowLoader.test.ts > 내보내기 청크 로드 실패 횟수 (B-M4A-08) > 2회 연속 실패 → 횟수 2(새로고침 안내) · 매번 다른 URL(?retry=1, ?retry=2)
+TypeError: Cannot set properties of undefined (setting 'fails')
+ ❯ src/features/studio/exportFlowLoader.test.ts:20:17
+     18|
+     19|   it("2회 연속 실패 → 횟수 2(새로고침 안내) · 매번 다른 URL(?retry=1, ?retry=2)", async…
+     20|     exportChunk.fails = 0;
+       |                 ^
+     21|     const network = { failures: 1 };
+     22|     const { loader, retries } = cachedChunkFailure("exportFlow-B8b.js"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  6 failed (6)
+   Start at  13:34:49
+   Duration  1.05s (environment 73%, setup 12%, transform 8%, tests 5%, import 2%, worker 1%)
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/m4a-retry-fix/app
+
+ ❯ src/features/studio/exportFlowChunk.test.ts (1 test | 1 failed) 3ms
+   ❯ 생성기 청크 로드 실패 횟수 (B-M4A-08) (1)
+     × 생성기 청크 2회 연속 실패 → 1 → 2 · 다음 시도 성공 → 0 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/exportFlowChunk.test.ts > 생성기 청크 로드 실패 횟수 (B-M4A-08) > 생성기 청크 2회 연속 실패 → 1 → 2 · 다음 시도 성공 → 0
+TypeError: Cannot set properties of undefined (setting 'fails')
+ ❯ src/features/studio/exportFlowChunk.test.ts:32:17
+     30| describe("생성기 청크 로드 실패 횟수 (B-M4A-08)", () => {
+     31|   it("생성기 청크 2회 연속 실패 → 1 → 2 · 다음 시도 성공 → 0", async () => {
+     32|     exportChunk.fails = 0;
+       |                 ^
+     33|     load.failures = 2;
+     34|     const repository = repositoryCallingSlot();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  13:35:11
+   Duration  754ms (environment 76%, setup 14%, transform 8%, import 1%, worker 1%, tests 1%)
+

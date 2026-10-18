@@ -34,7 +34,7 @@
 |---|---|---|---|
 | `/studio` 정규화 | 128.79 | 0(진입 변경 0) | 1차 **128.80(+0.01)** → 감량 뒤 **128.79(+0.00)** |
 | `/studio` 복원 정규화 | 131.77 | 0 | 1차 131.78(+0.01) → 감량 뒤 **131.77(+0.00)** |
-- 1차 원인(manifest): `exportFlow.ts`가 `data/persistence/infra.ts`를 import하자 Rollup이 공유 청크 `infra-*.js`(0.51KB gzip)를 새로 만들고, 진입 `StudioLayout-*`의 동적 import preload 목록에 그 경로가 붙었다(+0.01). 판정선(+0.01 초과 시 감량)에 걸려 **감량 1회**: restartText `TAB_REASON` 선례(RS-R8)대로 값만 `exportFlow.ts`에 두고 일치는 `exportFlowReadonly.test.ts`(결과 reason = infra `READ_ONLY_TAB` toEqual)가 고정. 감량 뒤 `StudioLayout-*`의 `assets/infra-` 참조 0, 공유 청크 0.
+- 1차 원인(manifest): `exportFlow.ts`가 `data/persistence/infra.ts`를 import하자 Rollup이 공유 청크 `infra-*.js`(0.51KB gzip)를 새로 만들고, 진입 `StudioLayout-*`의 동적 import preload 목록에 그 경로가 붙었다(+0.01). 판정선(+0.01 **초과** 시 감량)은 넘지 않았으나 남은 몫 0.01을 전부 쓰므로 **선제 감량 1회**: restartText `TAB_REASON` 선례(RS-R8)대로 값만 `exportFlow.ts`에 두고 일치는 `exportFlowReadonly.test.ts`(결과 reason = infra `READ_ONLY_TAB` toEqual)가 고정. 감량 뒤 `StudioLayout-*`의 `assets/infra-` 참조 0, 공유 청크 0.
 - raw 130.10 / 133.13(기준 130.09 / 133.12) — 해시 이름 흔들림(M4-a-6 QA 노트 5와 같은 성질) [추정].
 
 ## 수정 (TDD) — 커밋 43433764
@@ -62,4 +62,5 @@
 - aff3f3f9 REPORT 초안(E0)
 - 43433764 수정(TDD)
 - 5555fab5 게이트·Ego 로그
-- (이 커밋) REPORT·PROGRESS 마감
+- 30aadf27 REPORT·PROGRESS 마감
+- (이 커밋) 예산 문구 정정

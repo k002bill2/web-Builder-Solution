@@ -26,7 +26,8 @@ export type ExportResult =
       /** 결과 줄(MQ-C3 ★A) — 크기 · 3MB 초과 안내 · 잃은 이미지 */
       readonly notes?: readonly string[];
     }
-  | { readonly kind: "refused"; readonly format: ExportFormat; readonly code: string };
+  /** reason = 재시도로 풀리지 않는 거절 사유(읽기 전용 탭 — B-M4A-12) */
+  | { readonly kind: "refused"; readonly format: ExportFormat; readonly code: string; readonly reason?: string };
 
 // 앱 경로 정적 HTML 생성기 등록(M2A-3b) — 이 청크(내보내기 버튼을 누른 뒤)가 생성기 청크를 import해야 편집기 청크와 코드를 나눠 쓴다.
 // 저장소 쪽은 모듈이 아니라 전역 심볼 슬롯으로 받는다(memoryDocBook STATIC_HTML_SLOT — 같은 키, 청크 분리 0)
@@ -76,6 +77,9 @@ export const exportNotes = ({ bytes, images, lost, fonts = 0 }: ExportSummary, f
   ...(lost > 0 ? [lostImageText(lost)] : []),
 ];
 
+/** 읽기 전용 탭 저장 거절 사유(`data/persistence/infra.ts` READ_ONLY_TAB과 같은 값 — import하면 공유 청크가 생겨 진입 preload 목록이 는다. 일치는 테스트가 고정) */
+const READ_ONLY_TAB = "다른 탭에서 편집 중입니다 — 이 탭의 변경은 저장하지 않습니다";
+
 const POLL_MS = 250;
 const POLL_MAX = 40;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -117,6 +121,8 @@ export async function requestExportOnce(repository: ProjectRepository, projectId
     emitEditorEvent({ name: "export_failed", reason: code });
     if (code === "GENERATOR_UNAVAILABLE") return { kind: "unavailable", format };
     if (code === "UNRENDERED_SECTIONS") return { kind: "unrendered", format, sections: (error as { readonly sections?: readonly string[] }).sections ?? [] };
+    // 다른 탭이 쓰기 탭 = 판정 뒤 저장(flush)이 거절된다 — 이 탭에서 다시 눌러도 같은 거절이라 "다시 시도" 대신 사유(B-M4A-12)
+    if (code === "INFRA" && (error as Error).message.endsWith(READ_ONLY_TAB)) return { kind: "refused", format, code: "READ_ONLY", reason: READ_ONLY_TAB };
     if (code === "JOB_TIMEOUT" || code === "INFRA" || code === "NETWORK" || code === "UNKNOWN") return { kind: "retryable", format };
     return { kind: "refused", format, code };
   }

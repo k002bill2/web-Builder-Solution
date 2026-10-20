@@ -1,7 +1,7 @@
 # CSP-2 REPORT — 정적 zip·React zip CSP (E0 실측 → E1 구현)
 
 - 브랜치 `k002bill2/csp-zip` · base `4e2cf602`(origin/main, PR #57 static-html CSP 포함) · 정본 CSP-SPEC r1 + 5a
-- 상태: **E1 구현 완료 · 게이트·Codex 결과는 아래**
+- 상태: **완료 — E0·E1 구현·게이트·Codex 반영 확정(결론 절)**
 
 ## E0 실측 결과
 
@@ -52,3 +52,19 @@
 - `VITE_CONFIG`의 plugin 객체에 `const csp: Plugin` 타입 주석 — SPEC 1.3.1 모양은 주석 없음. 리터럴 `"build"`·`"head-prepend"` 좁힘을 타입으로 보장(산출 tsconfig `include: ["src"]`라 빌드 영향 0, 런타임 동일).
 - E0 측정 빌드는 `patches/vite.config.e0.ts`(`as const` 판) — 증거 불인정 원칙(4.2.5)대로 E1에서 실제 생성기 산출로 C1·C2·R4를 다시 돌렸다.
 - 산출 경로 = vitest 임시 파일(`e0Out.tmp.test.ts`, 커밋 0 · 게이트 전 삭제) — 앱 버튼 경로가 아니다. React zip 이미지 문서는 m2 픽스처(1×1 이미지) · 정적 zip CSS = 앱 빌드 `render-*.css`.
+
+## 게이트 (CSP-AC-10)
+- 1차 run(`logs/e1-gates.txt`, Codex 반영 전): typecheck 0 · lint 0 · test 378 파일/3414 통과 · build 0.
+- Jarvis 확인(tip + Codex 반영 상태): typecheck 0 · lint 0 · `vitest --maxWorkers=4` 379/3416(가드 테스트 +1 파일·+2) · build 0 · `/studio` 128.76KB(기준선 128.76) · 복원 131.76KB(기준선 131.75 + 흔들림 0.01, 멈춤 > 131.78) · 렌더 JS 84.30/90 · CSS 8.89/30 · zip CSS 가드 통과 · 4399 리슨 0 · docker 잔존 0. → 예산 증분 0.
+
+## Codex (adversarial 1회 · 반영 1회)
+- 지적(P2): CSP-AC-11 검사는 킷 CSS **원문**만 본다. 정적 zip `<style>`은 렌더 문서 **빌드** CSS(Tailwind 산출, `stripFontFaces`)이고 `STATIC_CSP_ZIP`은 `data:`를 열지 않으므로, 빌드 CSS에 `url(data:…)`가 생기면 마크업 테스트는 통과하고 zip 화면만 CSP에 조용히 막힌다.
+- 반영: `app/scripts/zipCssGuard.mjs`(신규, 순수 함수 `zipCssDataUrls` — `@font-face` 밖 `url(data:` 대소문자 무시·따옴표 3종) · `zipCssGuard.test.mjs`(2) · `check-bundle-size.mjs` — `render.html` 빌드 CSS에 적용, 1개 이상이면 빌드 실패. 커밋 `9a3b6b48`.
+- 증거: RED = 가드 파일 없음으로 suite 실패(`logs/e1-codex-fix-red.txt`) → GREEN 2/2(`logs/e1-codex-fix-green.txt`) · 빌드 출력 "정적 zip CSP 가드(… 0개) 통과" · **변이 1회**(R2): `DATA_URL` `/gi`→`/g` → 대소문자 케이스 FAIL(1 failed/1 passed) → 되돌림 2/2(`logs/r2-guard-mutation.txt`).
+- 판정: **반영 완료**. 남은 Codex 지적 없음. Codex 재실행은 하지 않았다(BRIEF-R2 금지 — 반영분은 위 RED/GREEN·변이로만 검증).
+- 기록 한계: Codex 원문 출력은 1차 run에서 파일로 남기지 않아 위 요약은 반영 코드·주석(`zipCssGuard.mjs` 머리 "CSP-2 Codex P2") 기준이다.
+
+## 결론
+- **CSP-2 완료.** 정적 zip = `STATIC_CSP_ZIP`(CQ-03 A, Chromium `file://` 위반 0) · React zip = `vite.config` build 전용 CSP plugin(CQ-05 A, docker 빌드·preview 위반 0, dev HMR 유지). AC-02·04·06·07·08·09·11·C1·C2·R3·R4 통과, AC-10 예산 증분 0.
+- 미실행·미확인: CSP-AC-R2(정적 zip 웹서버 열람, BRIEF 범위 밖) · Safari·Firefox `file://` [미확인] · R4 라이브 픽셀 대조(SSR 단위만).
+- 머지 전 남은 일: push·PR은 사용자 승인 대상(이번 run은 push·pull·fetch 0).

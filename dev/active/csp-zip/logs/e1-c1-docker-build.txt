@@ -1,0 +1,38 @@
+v22.23.3
+10.9.9
+
+added 44 packages in 2s
+
+> site@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 56 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                              0.72 kB │ gzip:  0.41 kB
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-BPHr-n2i.js              250.12 kB │ gzip: 77.70 kB
+
+✓ built in 351ms
+BUILD_EXIT=0
+--- dist/index.html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;self&#39;; style-src &#39;self&#39;; img-src &#39;self&#39; data:; font-src &#39;self&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>모던카페고유제목</title>
+    <meta name="description" content="모던카페고유설명" />
+    <script type="module" crossorigin src="/assets/index-BPHr-n2i.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C3z6Eb9T.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

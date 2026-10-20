@@ -1,0 +1,15 @@
+  ➜  Local:   http://localhost:4399/
+  ➜  Network: http://172.17.0.3:4399/  eth0
+npm error path /w
+npm error command failed
+npm error signal SIGTERM
+npm error command sh -c vite preview --port 4399 --strictPort --host 0.0.0.0
+npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm error A complete log of this run can be found in: /root/.npm/_logs/2026-10-20T09_20_16_593Z-debug-0.log
+## preview 종료 후 2026-10-20 18:21:07
+docker ps(csp-e0-preview): 0
+lsof -iTCP:4399 -sTCP:LISTEN 줄 수: 0

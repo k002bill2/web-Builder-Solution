@@ -9,9 +9,19 @@
 - 복원 진입 **131.75KB** (기준선 131.75) — BRIEF 131.76 대비 −0.01, 개발자 REPORT 131.75와 동일. 증가 아님 → 통과
 - 렌더 문서 JS **84.30**/90 · CSS **8.89**/30 — REPORT 값 그대로 재현(불변) · 'React zip 진입 정적 포함 0 가드 통과'
 
-## 2. 변이 5종
-| # | 변이 | 결과 |
-|---|---|---|
+## 2. 변이 5종 — 전부 FAIL로 잡힘 (스크립트 /tmp/qa-mut.py · `npx vitest run src/features/studio/staticHtml --maxWorkers=4` · 매 변이 후 원문 복원, `git status --short` 빈 값 확인)
+| # | 변이 (`staticMarkup.ts`) | 결과 | 잡은 테스트(대표) |
+|---|---|---|---|
+| M1 | 해시 상수 1글자(`xjxo`→`Xjxo`) | **FAIL** 15/96 | AC-03 Node crypto 대조 · AC-04 4종 · AC-05 · AC-08 SPEC 문자 동일 · AC-01/07 |
+| M2 | 정책 script-src에 `'unsafe-inline'` 추가 | **FAIL** 10/96 | AC-08 "script-src에 'unsafe-inline' 0" · SPEC 1.1 문자 동일 · AC-01/07 |
+| M3 | CSP meta를 head 끝(script 뒤)으로 | **FAIL** 49/96 | 생성기 내부 `assertStaticHead`가 throw → AC-01·04·06·07 + 기존 정적 HTML 테스트 전반 |
+| M4 | `assertStaticHead`의 `equiv.length === 1` 제거 | **FAIL** 1/96 | AC-06 "두 번째 meta[http-equiv](refresh·CSP 중복·대소문자) 주입 = throw" |
+| M5 | zip 대상에도 meta 삽입(조건 제거) | **FAIL** 11/96 | AC-01 "zip 출력 CSP meta 0 · base 바이트 동일" + zip 생성 테스트 10건(내부 가드 throw) |
+
+가드 완화 2차(테스트가 가드 없이도 잡는지 — QA 추가):
+- M3b = M3 + 가드의 위치 조건(`head.children[1] === csp`) 제거 → **FAIL** 5/96 (AC-01 4 픽스처 "charset 다음 2번째" · AC-06 위치) — 테스트가 출력 위치를 직접 단언함
+- M5b = M5 + 가드 zip 분기 `=== 0`→`<= 1` → **FAIL** 2/96 (AC-01 zip 바이트 동일 · AC-06 zip 0만 통과) — 테스트가 zip 출력을 직접 단언함
+- 관찰: M4는 1건으로만 잡힘(단일 방어선). 결함 아님, 기록만.
 
 ## 3. CSP-AC 판정표 재판독
 (진행 중)

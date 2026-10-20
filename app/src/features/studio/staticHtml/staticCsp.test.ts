@@ -46,10 +46,10 @@ describe("CSP-AC-01 static-html head — CSP meta 1개 · charset 다음 2번째
     expect(metas[0]!.getAttribute("content")).toBe(SPEC_CSP_HTML);
   });
 
-  it("1단계 범위: zip 대상 출력은 CSP meta 0 · base 출력과 바이트 동일(zip 정책은 2단계)", async () => {
+  it("zip 대상 출력은 html 정책을 쓰지 않는다(2단계 — zip 정책·기준 픽스처는 staticCspZip.test.ts)", () => {
     const zip = buildStaticHtml({ ...parts, markup: siteMarkup(), target: "zip" });
-    expect(zip).not.toContain("http-equiv");
-    await expect(zip).toMatchFileSnapshot("./__fixtures__/csp-base-zip-basic.html");
+    expect(zip).not.toContain(STATIC_CSP_HTML);
+    expect(zip.split("http-equiv")).toHaveLength(2);
   });
 });
 
@@ -121,14 +121,13 @@ describe("CSP-AC-06 F-15 개정 — head meta[http-equiv] = 정확히 1개 · �
     expect(() => assertStaticHead(renamed, "html")).toThrow("정적 HTML head");
   });
 
-  it("base·link = throw(현행 유지) · zip 대상은 meta[http-equiv] 0만 통과(1단계)", () => {
+  it("base·link = throw(현행 유지) · html 정책 head를 zip 대상으로 검사 = throw(정책 교차)", () => {
     for (const extra of ['<base href="https://x.test/">', '<link rel="stylesheet" href="https://x.test/a.css">']) {
       const head = validHead();
       head.insertAdjacentHTML("beforeend", extra);
       expect(() => assertStaticHead(head, "html"), extra).toThrow("정적 HTML head");
     }
     expect(() => assertStaticHead(validHead(), "zip")).toThrow("정적 HTML head");
-    expect(() => assertStaticHead(parse(buildStaticHtml({ ...parts, markup: siteMarkup(), target: "zip" })).head, "zip")).not.toThrow();
   });
 });
 

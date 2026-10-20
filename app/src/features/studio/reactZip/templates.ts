@@ -25,11 +25,23 @@ export const indexHtml = (title: string, description: string) => `<!doctype html
 </html>
 `;
 
-export const VITE_CONFIG = `import { defineConfig } from "vite";
+/** React zip 빌드 산출물 CSP(CSP-SPEC 1.3.2 · CQ-05 A · CQ-06 A) — vite.config.ts가 build에서만 dist/index.html head 맨 앞에 넣는다 */
+export const REACT_ZIP_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'";
+
+/** CQ-04 A — 인라인 plugin(apply: "build") · 새 의존성 0 · 소스 index.html 불변(dev 서버 영향 0, SPEC 1.3.1) */
+export const VITE_CONFIG = `import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig({ plugins: [react(), tailwindcss()] });
+// 빌드 산출물(dist/index.html)에만 고정 Content-Security-Policy meta를 넣는다 — 개발 서버(npm run dev)에는 넣지 않는다
+const CSP = ${JSON.stringify(REACT_ZIP_CSP)};
+const csp: Plugin = {
+  name: "site-csp",
+  apply: "build",
+  transformIndexHtml: () => [{ tag: "meta", attrs: { "http-equiv": "Content-Security-Policy", content: CSP }, injectTo: "head-prepend" }],
+};
+
+export default defineConfig({ plugins: [react(), tailwindcss(), csp] });
 `;
 
 export const TSCONFIG =

@@ -1,0 +1,38 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/build/notInlinedIcons" without a file extension (vite.config.ts:5:37). Add the file extension
+  - import "./src/build/preloadDedup" without a file extension (vite.config.ts:6:36). Add the file extension
+  - import "./src/build/sharedDataChunks" without a file extension (vite.config.ts:7:39). Add the file extension
+  - import "./src/build/studioEngineChunk" without a file extension (vite.config.ts:8:35). Add the file extension
+  - import "./src/thumbs/vitePlugin" without a file extension (vite.config.ts:9:34). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/csp-zip/app
+
+Not implemented: navigation to another Document
+ ❯ src/features/studio/zip/e0Out.tmp.test.ts (1 test | 1 failed) 5ms
+   × E0 산출 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/studio/zip/e0Out.tmp.test.ts > E0 산출
+TypeError: The "path" argument must be of type string or an instance of Buffer or URL. Received undefined
+ ❯ src/features/studio/zip/e0Out.tmp.test.ts:16:3
+     14| it("E0 산출", async () => {
+     15|   const out = process.env.E0_OUT!;
+     16|   mkdirSync(out, { recursive: true });
+       |   ^
+     17|   const c = m2(referenceRenderInput("ref-a"));
+     18|   const date = new Date("2026-10-20T00:00:00Z");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 71 passed (72)
+      Tests  1 failed | 634 passed (635)
+   Start at  18:25:26
+   Duration  15.74s (environment 52%, tests 28%, setup 10%, transform 6%, import 4%, worker 1%)
+
+Environment  jsdom was created 72 times · 29.45s total, 52% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

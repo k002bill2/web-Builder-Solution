@@ -15,8 +15,18 @@
 예산(`check-bundle-size` 출력): `/studio` 정규화 **128.76KB**(기준선 128.76, 멈춤 > 128.79) · 복원 **131.76KB**(기준선 131.75, 멈춤 > 131.78) · 렌더 JS **84.30**/90 · CSS **8.89**/30 · "정적 zip CSP 가드(렌더 CSS @font-face 밖 url(data:) 0개) 통과" · React zip 진입 정적 포함 0 가드 통과 → BRIEF 기대값 전부 **재현**.
 
 
-## 2. 변이 5종
-(진행 중)
+## 2. 변이 5종 (각각 적용 → 대상 테스트 → `git checkout`으로 되돌림 · 로그 `logs/qa-mutations.txt`)
+| # | 변이 | 실행 테스트 | 결과 | 잡은 단언 |
+|---|---|---|---|---|
+| M1 | `STATIC_CSP_ZIP` `img-src 'self'` → `'self' data:` | `staticHtml/` | **FAIL** | AC-07 픽스처 2건 mismatch · meta 1회(split 길이) · SPEC 문자 동일 · 지시어 집합 |
+| M2 | zip meta 제거(`if (target === "html") meta(...)`) | `staticHtml/` | **FAIL** | AC-02·04·06·07·11(zip) 전부 + `assertStaticHead` throw로 zip export 테스트(Blob·index.html·결정성)까지 연쇄 실패 |
+| M3 | 템플릿 plugin `apply: "build"` 줄 삭제(항상 적용) | `reactZip/` | **FAIL** | `toContain('apply: "build"')` · 실행형 테스트 `csp.apply` = undefined |
+| M4 | `injectTo: "head-prepend"` → `"body"` | `reactZip/` | **FAIL** | `toContain('injectTo: "head-prepend"')` · `transformIndexHtml()` 반환 deepEqual |
+| M5 | `zipCssGuard` `.replace(FACE_RULE, "")` 제거 | `scripts/zipCssGuard.test.mjs` | **FAIL** | "@font-face 안 url()은 보지 않는다" — `['url(data:']` ≠ `[]` |
+
+- 5/5 변이가 테스트로 잡힘. 각 변이 뒤 `restored: clean` · 최종 `git status`에 앱·픽스처 변경 0(파일 스냅샷은 `run` 모드라 덮어쓰지 않음).
+- 관찰: M3·M4는 템플릿 **문자열** 단언 + `new Function` 실행형 단언 2겹. 실제 Vite가 `apply`/`injectTo`를 해석한 결과는 E1 docker 로그(C1 head 첫 자식 · C2 dev meta 0)가 유일한 증거 — 단위 테스트 범위 밖.
+
 
 ## 3. CSP-AC 판정표 재판독
 (진행 중)

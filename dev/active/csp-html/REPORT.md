@@ -24,9 +24,9 @@
 | CSP-AC-06(html) | 통과 | refresh·CSP 중복·소문자 변형·content 1글자·위치 2종·누락·http-equiv 변경·base·link → throw, 정상 통과 |
 | CSP-AC-07(html) | 통과 | 새 출력에서 meta 1개 제거 = base 픽스처 바이트 동일(html 4) · zip 출력 = base 동일 |
 | CSP-AC-08 | 통과 | SPEC 1.1 문자 동일 · 지시어 집합 · 금지 토큰 0 · 브랜드 0 |
-| CSP-AC-10 | 통과 | `npm run build` check-bundle-size: `/studio` 128.76KB(증분 0) · 복원 131.75KB(증분 0) · 렌더 JS 84.30/90 · CSS 8.89/30 · React zip 진입 정적 포함 0 가드 통과 |
+| CSP-AC-10 | 통과 | `npm run build` check-bundle-size: `/studio` 128.76KB(증분 0) · 복원 131.75KB(증분 0) · 렌더 JS 84.30/90 · CSS 8.89/30 · build 로그 'React zip 진입 정적 포함 0 가드 통과' |
 | CSP-AC-R1 | 통과 | 경로 A 문서 앱 내보내기 → CSP 전·후 1280 `3e4a42d6…` 동일 · 390 `1f7c3722…` 동일 · 위반 0 |
-| CSP-AC-R5(html) | 통과 | 390 메뉴 시트 열기 → 앵커 탭 → 닫힘 · 대조군(해시 불일치) = 열린 채 |
+| CSP-AC-R5(html) | 통과 | 390 메뉴 시트 열기 → 앵커 탭 → 닫힘(after·before 모두) — 해시 일치 스크립트 실행 확인 |
 
 RED 증거: 구현 전 `staticMarkup.ts`(`c1c8ba0a`)로 현 테스트 실행 → 22 failed · 1 passed(통과 1 = zip 불변 = 의도).
 
@@ -38,6 +38,7 @@ RED 증거: 구현 전 `staticMarkup.ts`(`c1c8ba0a`)로 현 테스트 실행 →
 - F-15를 `assertStaticHead(head, target)`로 export — head를 처음부터 만들어 주입 경로가 없으므로 AC-06을 순수 함수로 검사.
 - AC-07 = base 출력 파일 스냅샷(4.2.3 "새 스냅샷 대신"과 다름) — 변경 전 출력이 있어야 바이트 비교가 성립.
 - R1 before = 앱 내보내기 after에서 CSP meta 1개를 지운 파일 — base 빌드를 따로 띄우지 않았다. AC-07이 "meta 제거 = base 출력 바이트 동일"을 보장하므로 동등.
+- R5 대조군(`"click"`→`"clicK"`)은 열린 채였지만 동작 자체가 바뀌는 변경이라 CSP 차단 증거로 쓰지 않는다 — 해시 강제는 AC-03·04·05. R5 실행(r03)엔 위반 리스너가 없었고, R1의 위반 0은 리스너 양성 대조 없이 측정.
 - R1·R5 열람 = `vite preview` 4399가 dist/csp-r1/의 두 파일을 서빙(BRIEF 지정 포트). 측정 후 삭제.
 
 ## 예산

@@ -76,7 +76,7 @@
 package.json                     고정 템플릿(3절) — name "site" · private · type module · engines · scripts · 버전 고정 의존성 9개
 package-lock.json                고정 문자열(3.2 — Linux CI 산출본)
 index.html                       title·description = 문서 meta(HTML 이스케이프) · <div id="root"> · /src/main.tsx
-vite.config.ts                   plugins: react() · tailwindcss()
+vite.config.ts                   plugins: react() · tailwindcss() · site-csp(인라인 plugin, apply build — dist/index.html head 맨 앞 CSP meta, CSP-SPEC 1.3)
 tsconfig.json                    strict · moduleResolution bundler · resolveJsonModule · types vite/client
 README.md                        [문안 미정] 실행 방법·Node 조건·서브셋 글꼴 고지 (★ RZQ-04 A)
 LICENSES.md                      6절 항목
@@ -158,7 +158,7 @@ interface SiteJsonV1 {
 | `package.json` | 정확히 1 | 템플릿 상수와 바이트 동일 |
 | `package-lock.json` | 정확히 1 | 템플릿 상수와 바이트 동일(3.2 대조 테스트가 내용 보장) |
 | `index.html` | 정확히 1 | `<script>` = `/src/main.tsx` 1개 · 외부 URL 0 · title·description 이스케이프 |
-| `vite.config.ts` · `tsconfig.json` · `src/main.tsx` · `src/PageDocument.tsx` · `src/images.ts` · `src/index.css` | 각 정확히 1 | 템플릿 상수와 바이트 동일 |
+| `vite.config.ts` · `tsconfig.json` · `src/main.tsx` · `src/PageDocument.tsx` · `src/images.ts` · `src/index.css` | 각 정확히 1 | 템플릿 상수와 바이트 동일(`vite.config.ts` = CSP plugin 포함 템플릿 · CSP 문자열 = `REACT_ZIP_CSP`, CSP-AC-09) |
 | `README.md` · `LICENSES.md` | 각 정확히 1 | 브랜드 문자열 0(M4-a F-14 규칙) · LICENSES 필수 절(6절) 존재 |
 | `src/fonts.css` | 정확히 1 | `url()` = `./assets/fonts/[A-Za-z]+-\d{3}\.woff2`만 · `@import` 0 |
 | `src/site.json` | 정확히 1 | 2.3 스키마 통과 |
@@ -304,7 +304,7 @@ interface SiteJsonV1 {
 | RZ-AC-18 | U | `ZIP_MAX` 초과 → refused `export.fail.tooLarge` · 단언 실패 → `export.fail.pattern` |
 | RZ-AC-19 | U | 파일 이름 `<stem>_r<rev>_react.zip`(K-AC-32 케이스 재사용) |
 | RZ-AC-20 | U | 예산: `/studio` 정규화 진입 ≤ 128.83 · 복원 ≤ 131.81(개정 20) · 진입 정적 클로저에 생성기·킷 원문·lock 0(5.4 가드) |
-| RZ-AC-C1 | C | 매트릭스 M1·M2 문서 zip을 풀어 `npm ci && npm run build` exit 0 · `npm install && npm run build` exit 0(PRD 문구) — ubuntu Node 20.19 · 22 |
+| RZ-AC-C1 | C | 매트릭스 M1·M2 문서 zip을 풀어 `npm ci && npm run build` exit 0 · `npm install && npm run build` exit 0(PRD 문구) — ubuntu Node 20.19 · 22 · **고정 템플릿(`vite.config.ts`·lock 등)이 바뀌면 이전 결과는 증거 불인정 → 재실행**(CSP-SPEC 4.2.5) |
 | RZ-AC-C2 | C | 같은 zip을 windows·macOS 러너에서 `npm ci && npm run build` exit 0(lock 플랫폼 바인딩) — ★ RZQ-07 |
 | RZ-AC-C3 | C | 빌드 산출 JS ≤ 90KB · CSS ≤ 30KB gzip(TRD 산출물 예산 — 스파이크 76.22 / 5.97) 기록·판정 |
 | RZ-AC-R1 | R | 앱 실제 경로(버튼 → 생성기 청크 → 내려받기)로 받은 zip이 C1과 같은 결과(스파이크 미확인 항목) |

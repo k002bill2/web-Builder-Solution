@@ -161,7 +161,7 @@ APPNOTE 6.3.10 기준(출처 7절). 필수 필드만:
 | F-04 | `on*` 속성 | 제거 | 같음 |
 | F-05 | `data-*` 중 킷이 안 쓰는 것 | 제거 | 같음 |
 | F-06 | `details[open]` | 제거 | 같음 |
-| F-07 | 고정 스크립트(`STATIC_MENU_SCRIPT`) 외 script | 결과에 1개만 — html은 CSP `script-src`가 그 sha256(`STATIC_MENU_SCRIPT_HASH`)만 허용(CSP-SPEC 2.1 · 해시는 F-07을 대체하지 않는다) | 같음 |
+| F-07 | 고정 스크립트(`STATIC_MENU_SCRIPT`) 외 script | 결과에 1개만 — html·zip 모두 CSP `script-src`가 그 sha256(`STATIC_MENU_SCRIPT_HASH`)만 허용(CSP-SPEC 2.1 · 해시는 F-07을 대체하지 않는다) | 같음 |
 | F-08 | `blob:` (URL 속성·style 속성·style 요소) | 실패 | 같음 |
 | F-09 | `img src` = `data:image/(webp\|jpeg\|png);base64,`만 · `srcset` 0 | 실패 | **바뀜**: `src` = `^assets/images/img-\d{2,3}\.(webp\|jpg\|png)$`만 · data: img 0 · srcset 0 |
 | F-10 | CSS `@import` · `url()`이 data: 아님 | 실패 | **바뀜**: `url()` = `data:` 또는 `^assets/fonts/[A-Za-z]+-\d{3}\.woff2$`만 · `@import` 0 |
@@ -174,7 +174,7 @@ APPNOTE 6.3.10 기준(출처 7절). 필수 필드만:
 | F-12 | `#` 앵커 대상 `id`가 문서 안에 존재 | 실패 | 5절 링크 검사의 생성기 쪽 방어(게이트가 놓쳐도 결과에 깨진 링크 0) |
 | F-13 | 그 밖 URL 속성(`src`·`href`·`poster`·`action`·`formaction`·`srcset`·`style url()`)의 외부 출처 | 실패 | [사실] 킷 문의 폼 `<form>`에 `action` 없음(`kit/ContactForm.tsx:78`) → 현행 결과는 통과. `action`·`formaction`은 값이 있으면 실패(외부·같은 문서 무관) |
 | F-14 | 브랜드 문자열 | 실패 | **생성기 고정 부분에만**: `<head>` 주석·CSS·스크립트·클래스·`data-*` 이름·LICENSES.md. 대상 문자열 = `brand.name`·`apfs`(대소문자 무시)·`--apfs-`. **사용자 글자(본문·alt·title·description)는 제외** — 사용자 업종이 "디자인 스튜디오"일 수 있다 |
-| F-15 | `<meta http-equiv="refresh">`·`<base>`·`<link rel=preload/prefetch>` 외부 | 실패 — **예외: html은 CSP meta 정확히 1개**(head 두 번째 자식 · `Content-Security-Policy` · content = `STATIC_CSP_HTML` 문자 동일, CSP-SPEC r1 3.1 · 5a 1단계). 그 밖 `meta[http-equiv]` = 실패 · zip은 CSP meta 0(2단계에서 `STATIC_CSP_ZIP` 예외 추가) | `head`는 생성기가 처음부터 만든다(`head.replaceChildren()` [사실]) — 방어 단언 `assertStaticHead(head, target)` |
+| F-15 | `<meta http-equiv="refresh">`·`<base>`·`<link rel=preload/prefetch>` 외부 | 실패 — **예외: CSP meta 정확히 1개**(head 두 번째 자식 · `Content-Security-Policy` · content = html `STATIC_CSP_HTML` / zip `STATIC_CSP_ZIP` 문자 동일 — 교차 = 실패, CSP-SPEC r1 3.1 · 5a 1·2단계). 그 밖 `meta[http-equiv]` = 실패 | `head`는 생성기가 처음부터 만든다(`head.replaceChildren()` [사실]) — 방어 단언 `assertStaticHead(head, target)` |
 
 ### 4.3 zip 파일 목록 허용표
 
@@ -284,7 +284,7 @@ APPNOTE 6.3.10 기준(출처 7절). 필수 필드만:
 | EXP-AC-R4 | R | 성공 status·실패 alert가 접근성 트리에서 각 1개(P-1/P-3 범위) · 포커스가 누른 버튼에 남음 · 390에서 버튼·링크 터치 가능 |
 | EXP-AC-R5 | R | `unzip -t` 오류 0 · Windows 탐색기 "압축 풀기" 확인(가능하면 — 불가 시 QA 기록) |
 
-- CSP(B-SEC-04): 정적 HTML 고정 CSP 수용 기준은 `docs/design/csp/CSP-SPEC.md` 4.1 CSP-AC-* — 1단계(html) 구현 = CSP-AC-01·03~08·10·R1·R5.
+- CSP(B-SEC-04): 정적 HTML 고정 CSP 수용 기준은 `docs/design/csp/CSP-SPEC.md` 4.1 CSP-AC-* — 1단계(html) 구현 = CSP-AC-01·03~08·10·R1·R5 · 2단계(zip·React zip, CSP-2) = CSP-AC-02·04·06·07·08(zip)·09·11·C1·C2·R3·R4.
 
 ### 7.2 예산 제약
 

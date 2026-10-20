@@ -1,4 +1,4 @@
-# B-M2B-05 TYPESCALE SPEC — 3안 제목 비율 축(`axes.typeScale`) 전달: 영향 범위 명세 (r0)
+# B-M2B-05 TYPESCALE SPEC — 3안 제목 비율 축(`axes.typeScale`) 전달: 영향 범위 명세 (r1)
 
 - 작성: Designer(B-M2B-05 명세 레인, 앱 코드 0 · 외부 리서치 0) · 2026-10-20 · base `cedbf587`
 - 발주: Jarvis 2026-10-20 (영환님 "1" — ★A: 영향 범위 명세 먼저, **계약 변경 단계에서 재승인**)
@@ -43,7 +43,7 @@
 | 17 | React zip | `features/studio/reactZip/reactZip.ts:135`(같은 `docKitTokens`) → `siteJson.ts`(`kitTokens` = `KitTokenInput` 그대로) → 산출물 `kitVars`가 다시 계산(`templates.ts:99·127`) | 프로필 base `scale` | — |
 
 ### 1.2 사라지는 곳 한 줄 요약
-- **실질 소실은 9번 한 곳**이다(`memoryDocBook.ts:425`). 단 값을 넣은 뒤에는 **13번이 두 번째 소실 후보**다 — `validatePageDoc`은 통과한 입력을 그대로 돌려주지 않고 `:129-143`에서 필드를 골라 새 객체를 만든다. 이 결과를 저장(`checkSaveDoc`)·가져오기(`checkFile.ts:62`)·렌더 문서(`RenderApp.tsx:60`)가 쓰므로, 허용 목록에만 넣고 읽는 줄을 빼면 가져오기·렌더에서 값이 소리 없이 사라진다. 10~12번은 받을 자리가 없어서 이어지는 결과이고, 14~17번은 문서가 아니라 **프로필 버전**에서 비율을 읽어서 생기는 결과다.
+- **실질 소실은 9번 한 곳**이다(`memoryDocBook.ts:425`). 단 값을 넣은 뒤에는 **13번이 두 번째 소실 후보**다 — `validatePageDoc`은 통과한 입력을 그대로 돌려주지 않고 `:129-143`에서 필드를 골라 새 객체를 만든다. 허용 목록에만 넣고 읽는 줄을 빼면: 저장·가져오기·IDB 복원은 `checkSaveDoc`이 재구성 결과의 해시를 저장 해시와 비교하므로(`startDocWrite.ts:94-98` · `hash.ts:36-40`) 소리 없는 소실이 아니라 **해시 불일치 실패**(IDB = 문서 레코드 전체 `unreadable`, `localSync.ts:79`)가 되고, 렌더 문서(`RenderApp.tsx:60`)에서는 값이 빠진 채 그려진다(Codex r1 P2 정정). 10~12번은 받을 자리가 없어서 이어지는 결과이고, 14~17번은 문서가 아니라 **프로필 버전**에서 비율을 읽어서 생기는 결과다.
 - restart(`startDoc(…, "restart")`)도 같은 `writeStartDoc` 경로를 탄다 → 같은 지점에서 사라진다(`memoryDocBook.ts:425`, mode 공통).
 
 ### 1.3 계약별 엄격도 (새 값이 들어올 때 무엇이 막는가, [L1])
@@ -127,7 +127,7 @@
 
 | | ★B | A | C |
 |---|---|---|---|
-| 코드 되돌리기 | 쉬움 — 커밋 되돌리기. 단 그동안 만든 문서에 `typeScale`이 남는다 → 되돌린 코드의 `validatePageDoc`이 그 문서를 **거부**한다(허용 목록). IDB 복원은 `checkSaveDoc` 실패 = 그 프로젝트 문서 레코드 전체 `unreadable`(`localSync.ts:79`, L1)이라 **문서를 열 수 없게 된다** — 되돌리기의 실제 비용. 되돌리기 전 "필드 무시(허용만)" 단계를 두면 안전(4.2 T1 수용 기준) | 가장 쉬움(저장 데이터 0) | 어려움 — 만든 프로필 버전은 불변 이력이라 남는다 |
+| 코드 되돌리기 | 쉬움 — 커밋 되돌리기. 단 그동안 만든 문서에 `typeScale`이 남는다 → 되돌린 코드의 `validatePageDoc`이 그 문서를 **거부**한다(허용 목록). "허용만"으로도 안전하지 않다 — 재구성에서 값을 빼면 해시 불일치로 `checkSaveDoc`이 실패한다. 안전한 되돌리기 하한 = T1(허용 + 값 검사 + **재구성 값 보존**). IDB 복원은 `checkSaveDoc` 실패 = 그 프로젝트 문서 레코드 전체 `unreadable`(`localSync.ts:79`, L1)이라 **문서를 열 수 없게 된다** — 되돌리기의 실제 비용. 되돌리기 전 "필드 무시(허용만)" 단계를 두면 안전(4.2 T1 수용 기준) | 가장 쉬움(저장 데이터 0) | 어려움 — 만든 프로필 버전은 불변 이력이라 남는다 |
 | 데이터 | 선택 필드라 마이그레이션 0 | 0 | 이력 정리 불가 |
 
 ### 2.6 추천과 이유
@@ -172,16 +172,17 @@
 | TS-AC-12 | G | `npm run build` `check-bundle-size`: `/studio`·복원 진입 정규화 ≤ 판정선, 렌더 JS ≤ 89.70. 넘으면 실패로 보고(UQ-4) |
 | TS-AC-13 | B | 1280: 프로필 비율 1.25인 프로젝트에서 C안(1.333) 비교 열의 제목 크기 = C안 편집 시작 뒤 편집기 제목 크기 = 내보낸 정적 HTML 제목 크기(계산된 `font-size` 대조) |
 | TS-AC-15 | U | 내보내기 게이트 결과: 같은 문서의 `typeScale`만 바꿔도 `runGate` 결과 같음(비율 무관 확인) |
-| TS-AC-14 | U | 되돌리기 안전: 값이 든 문서를 "필드 허용만 하는" 검증(T1 결과)으로 읽어도 통과(되돌린 코드가 저장 문서를 거부하지 않는 단계 확인) |
+| TS-AC-14 | U | 되돌리기 안전(Codex r1 P2): T2가 만든 문서·스냅샷(값 있음)을 **T1 코드만으로** `checkSaveDoc` 통과 · IDB 복원(`localSync.ts:79`) 성공 · 가져오기(`checkFile`) 성공 · 재저장 성공, 각 경로 뒤 `typeScale`·해시 그대로 |
+| TS-AC-16 | U·B | 스냅샷 전환(Codex r1 P2): 같은 `profileVersion`에서 `typeScale`이 다른 스냅샷의 미리보기 진입·종료·복원마다 캔버스 `kitTokens.type.scale` = 보이는 문서의 값, 복원 뒤 PNG·정적 HTML 내보내기 값 = 복원된 문서 값 |
 
 ### 4.2 구현 단계 (각 단계 = 커밋 1개 이상 · 끝마다 typecheck·lint·test·build 4개 + 예산 기록)
 
 | 단계 | 내용 | 승인 |
 |---|---|---|
 | T0 | 측정·테스트만: 현행 고정 문서 해시·`docKitTokens` 결과 고정 테스트(TS-AC-04 후반·11의 기준선) · 예산 기준선 확인 | 불필요(앱 동작 변경 0) |
-| **T1** | **엔진 계약**: `PageDoc.typeScale?` · `validatePageDoc` 선택 키·범위 · 엔진 `CandidatePlan.typeScale?` → `createDocFromCandidate` 기록(TS-AC-03·11·14) | **★ 사용자 재승인(UQ-1·UQ-2)** |
+| **T1** | **엔진 계약**: `PageDoc.typeScale?` · `validatePageDoc` 선택 키·범위·**재구성 값 보존**(T1 단독 = 되돌리기 하한) · 엔진 `CandidatePlan.typeScale?` → `createDocFromCandidate` 기록(TS-AC-03·11·14) | **★ 사용자 재승인(UQ-1·UQ-2)** |
 | T2 | 저장 경로: `StartDocInput.typeScale` · `memoryDocBook.ts:425` 전달 · restart 같은 경로 · 가져오기 왕복(TS-AC-01·02·08) | T1 승인에 포함 |
-| T3 | 렌더 입력: `docKitTokens` 인자 · 호출부(`StudioLayout.tsx:312·315`, `staticHtml.ts:155`, `reactZip.ts:135`) · `compareKitTokens` 열별 · 캡션·접미 삭제(TS-AC-04~07·09·10) · 예산 실측(TS-AC-12) | 예산 넘으면 UQ-4 |
+| T3 | 렌더 입력: `docKitTokens` 인자 · 호출부(`StudioLayout.tsx:312·315` — **`useMemo` 의존성에 `doc.typeScale`·`shown.typeScale` 추가**, 지금은 `series`·`profileVersion`뿐이라 같은 버전 스냅샷 전환 때 옛 토큰이 남는다 · TS-AC-16, `staticHtml.ts:155`, `reactZip.ts:135`) · `compareKitTokens` 열별 · 캡션·접미 삭제(TS-AC-04~07·09·10) · 예산 실측(TS-AC-12) | 예산 넘으면 UQ-4 |
 | T4 | 문서 정정: SPEC-COMPARE3 2.4-2·2.5·F10 · MQ-M2B5-2 기록 · REACTZIP-SPEC 2.3.1-1("`ExportDoc` = `PageDoc`과 같은 필드 집합" → "선택 필드 `typeScale` 제외") · BACKLOG B-M2B-05 닫힘 · 브라우저 확인(TS-AC-13) | 불필요 |
 
 ---
@@ -213,4 +214,5 @@
 | 되돌린 앱이 IDB 문서를 읽지 못함 | `localSync.ts:79` — T1(허용 + 값 검사)을 먼저 내고 T2(쓰기)를 뒤에 둔다. 되돌리기는 T2만 되돌리는 것을 기본으로 한다(T1은 남김) |
 
 ## 7. 기록
+- r1 2026-10-20 Codex adversarial r1(needs-attention, P2 2건) 반영: 되돌리기 하한 = 재구성 값 보존 · 해시 불일치 실패 정정(1.2·2.5·TS-AC-14) · 스냅샷 전환 의존성(T3·TS-AC-16).
 - r0 2026-10-20 Designer 초안 — 코드 흐름 조사 2건(생성·편집 시작 경로 / 렌더·내보내기 경로, 읽기 전용 서브에이전트) + 핵심 줄 직접 대조.

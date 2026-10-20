@@ -1,0 +1,18 @@
+## typecheck
+exit=0
+## lint
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+exit=0
+## test
+ Test Files  378 passed (378)
+      Tests  3414 passed (3414)
+exit=0
+## build
+exit=0
+[bundle]   /studio/:projectId 해시 정규화 진입 128.76KB · 기준선 128.76KB + 0.03KB (멈춤 > 128.79KB) — raw 130.08KB는 참고(해시 이름 흔들림 포함)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.76KB · 기준선 131.75KB + 0.03KB (멈춤 > 131.78KB) — raw 133.12KB는 참고(해시 이름 흔들림 포함)
+[bundle] 렌더 문서(render.html) JS 합계: 84.30KB / 예산 90KB · CSS 합계: 8.89KB / 예산 30KB
+[bundle] React zip 진입 정적 포함 0 가드 통과 · 생성기 청크 assets/reactZip-C85f3geP.js gzip 54.56KB (판정 밖)

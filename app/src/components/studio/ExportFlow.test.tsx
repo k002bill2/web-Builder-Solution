@@ -388,3 +388,41 @@ describe("B-M4A-12 읽기 전용 탭 — 거짓 '다시 시도' 0", () => {
     expect((await within(gateRegion()).findByRole("alert")).textContent).toBe("품질 게이트 차단이 있어 내보내지 않았습니다 — 차단을 고친 뒤 다시 내보내세요");
   });
 });
+
+// B-M4B-06: '다시 시도'는 성공하면 사라진다(재시도 안내 언마운트) — 포커스가 BODY로 빠지지 않고 결과(내려받기 링크)로 간다. 공용 결과 경로라 형식마다
+describe("B-M4B-06 다시 시도 성공 뒤 포커스", () => {
+  it.each([
+    ["static-html", html],
+    ["static-zip", zip],
+    ["react-zip", () => within(gateRegion()).getByRole("button", { name: new RegExp(`${REACT_ZIP_FORMAT_LABEL.replace(/[()]/g, "\\$&")}|내보내는 중…`) })],
+  ] as const)("%s: 재시도 가능 실패 → '다시 시도'(포커스) → 완료 = 포커스는 결과의 '내려받기' 링크 · BODY 아님", async (format, button) => {
+    const job: ExportJob = { jobId: "export-1", format, docRevision: 3, state: "queued", retryable: false };
+    const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: requestExport.mock.calls.length === 1 }));
+    let attempt = 0;
+    const getExportJob = async () =>
+      ++attempt === 1
+        ? { ...job, state: "failed" as const, errorCode: "JOB_TIMEOUT" as const, retryable: true }
+        : { ...job, state: "succeeded" as const, downloadRef: "blob:http://127.0.0.1/abc", resultHash: "0123456789ab" };
+    await open(clean(), { requestExport, getExportJob });
+    act(() => void fireEvent.click(button()));
+    const retry = within(await within(gateRegion()).findByRole("alert")).getByRole("button", { name: "다시 시도" });
+    act(() => retry.focus());
+    expect(document.activeElement).toBe(retry);
+    act(() => void fireEvent.click(retry));
+    const box = (await within(gateRegion()).findByText(/만들었습니다 · 내보내기 전 상태는 스냅샷/, undefined, { timeout: 3000 })).closest("[role=status]") as HTMLElement;
+    const link = within(box).getByRole("link", { name: "내려받기" });
+    await waitFor(() => expect(document.activeElement).toBe(link));
+    expect(document.activeElement).not.toBe(document.body);
+  });
+
+  it("처음 내보내기 성공(다시 시도 아님) → 누른 형식 버튼이 포커스를 지킨다(결과로 빼앗지 않음)", async () => {
+    const job: ExportJob = { jobId: "export-1", format: "static-html", docRevision: 3, state: "queued", retryable: false };
+    const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: true }));
+    const getExportJob = async () => ({ ...job, state: "succeeded" as const, downloadRef: "blob:http://127.0.0.1/abc", resultHash: "0123456789ab" });
+    await open(clean(), { requestExport, getExportJob });
+    act(() => html().focus());
+    act(() => void fireEvent.click(html()));
+    await within(gateRegion()).findByRole("link", { name: "내려받기" }, { timeout: 3000 });
+    expect(document.activeElement).toBe(html());
+  });
+});

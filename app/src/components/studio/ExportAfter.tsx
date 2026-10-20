@@ -77,8 +77,13 @@ const BLOCKED_HINT = "내려받기가 시작되지 않으면 브라우저의 다
  * 해제는 같은 프로젝트의 새 결과가 나올 때 생성기가 한다(프로젝트당 살아 있는 URL ≤ 1 — M2A-CLOSE P2-1)
  */
 function DownloadLink({ href, fileName }: { readonly href: string; readonly fileName: string }) {
+  const link = useRef<HTMLAnchorElement>(null);
+  // B-M4B-06: '다시 시도'로 성공하면 누른 버튼이 사라져 포커스가 BODY로 빠진다 — 그때만 결과로 받는다(처음 성공은 누른 형식 버튼이 지킨다)
+  useEffect(() => {
+    if (!document.activeElement || document.activeElement === document.body) link.current?.focus();
+  }, []);
   return (
-    <a href={href} download={fileName} className="ds-label inline-flex min-h-8 items-center text-primary hover:text-primary-hover">
+    <a ref={link} href={href} download={fileName} className="ds-label inline-flex min-h-8 items-center text-primary hover:text-primary-hover">
       내려받기
     </a>
   );

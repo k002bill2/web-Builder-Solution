@@ -17,6 +17,7 @@ import { gzipSync } from "node:zlib";
 import { BASELINE_FILE, checkBundle, normalizeHashes } from "./bundleBudget.mjs";
 import { checkPreload } from "./preloadGuard.mjs";
 import { thumbsVersion } from "./thumbsVersion.mjs";
+import { zipCssDataUrls } from "./zipCssGuard.mjs";
 
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
 
@@ -282,7 +283,11 @@ if (isMain) {
     indexHtml: existsSync(join(DIST, "index.html")) ? readFileSync(join(DIST, "index.html"), "utf8") : "",
   });
   for (const line of preloadLines) console.log(line);
-  const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures, ...checkReactZipEntry()];
+  // 정적 zip CSP(data: 없음)와 렌더 문서 빌드 CSS의 어긋남(CSP-AC-11 — 판정: zipCssGuard.mjs)
+  const zipCssData = zipCssDataUrls((manifest["render.html"]?.css ?? []).map((file) => readFileSync(join(DIST, file), "utf8")).join("\n"));
+  console.log(`[bundle] 정적 zip CSP 가드(렌더 CSS @font-face 밖 url(data:) ${zipCssData.length}개) ${zipCssData.length === 0 ? "통과" : "실패"}`);
+  const zipCssFailures = zipCssData.length === 0 ? [] : [`렌더 문서 CSS에 url(data:) ${zipCssData.length}개 — 정적 zip CSP(STATIC_CSP_ZIP)가 막는다(CSP-SPEC 1.2.1 개정 필요)`];
+  const failures = [...budgetFailures, ...checkThumbnails(), ...preloadFailures, ...checkReactZipEntry(), ...zipCssFailures];
   if (failures.length > 0) {
     for (const failure of failures) console.error(`[bundle] 예산 검사 실패 — ${failure}`);
     process.exit(1);

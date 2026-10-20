@@ -31,7 +31,12 @@
 
 
 ## 5. React zip 템플릿 ↔ lock·허용표·RZ-AC · 새 의존성
-(진행 중)
+- 새 의존성 0: `git diff main...bf17d779 -- app/package.json app/package-lock.json app/src/features/studio/reactZip/template` = 빈 diff(산출 `package.json.tpl`·`package-lock.json.tpl` 불변). 템플릿의 `type Plugin`은 기존 직접 의존성 `vite`에서 import(새 패키지 아님).
+- 허용표(REACTZIP 2.4): `checkReactZipEntries.ts:19` `"vite.config.ts": VITE_CONFIG` · `reactZip.ts:81` `textEntry("vite.config.ts", VITE_CONFIG)` — 생성기와 검사기가 **같은 상수**를 쓰므로 바이트 동일 계약 유지. SPEC 2.4 행도 "CSP plugin 포함 템플릿"으로 개정됨.
+- lock 대조(`template.test.ts` RZ-AC-10·11·12·14·15·17): lock·package 템플릿 불변이라 영향 없음 — 1절 전체 테스트 결과로 재확인.
+- C3 산출 예산: `e1-c1-docker-build.txt` JS 77.70KB · CSS 5.98KB gzip ≤ 90/30 — 통과.
+- **관찰(갭)**: 개정된 RZ-AC-C1은 "고정 템플릿(`vite.config.ts`)이 바뀌면 이전 결과 증거 불인정 → 재실행"이고 행렬은 **Node 20.19 · 22**다. CSP-2 로그는 `node:22`(v22.23.3) **`npm ci`만** 있다 — Node 20.19와 `npm install && npm run build`(PRD 문구) 재실행 기록 없음. CSP-AC-C1(CSP-SPEC) 자체는 통과로 보되, RZ-AC-C1 행렬 완결은 미확인.
+
 
 ## 판정
 (미확정)

@@ -106,9 +106,15 @@ async function checkOne(image: Loose, deps: IngestDeps): Promise<CheckedImage | 
   }
 }
 
+/**
+ * 문서가 참조할 수 있는 id = engine LOCAL_IMAGE_ID(UUID v4 소문자) 리터럴 복제 — engine을 값으로 import하지 않는다(6절 · checkImages.test parity).
+ * 아니면 렌더·내보내기 도달 0인 고아 레코드가 탭 한도만 차지한다(SEC L-3) — IM-6
+ */
+export const IMPORT_IMAGE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
 const idOk = (image: unknown, i: number, all: readonly unknown[]): image is Loose => {
   const id = (image as Loose | null)?.localId;
-  return typeof id === "string" && id !== "" && !id.includes("/") && all.findIndex((o) => (o as Loose | null)?.localId === id) === i;
+  return typeof id === "string" && IMPORT_IMAGE_ID.test(id) && all.findIndex((o) => (o as Loose | null)?.localId === id) === i;
 };
 
 export async function checkImages(images: readonly unknown[], deps: IngestDeps = browserIngestDeps): Promise<{ readonly ok: true; readonly images: readonly CheckedImage[] } | CheckFailure> {

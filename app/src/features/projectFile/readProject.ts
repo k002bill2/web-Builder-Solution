@@ -50,6 +50,8 @@ export const EXPORT_MAX_SIDE = 16_384;
 export const EXPORT_MAX_PIXELS = 40_000_000;
 /** ladder.WIDTH_STEPS · 1920 */
 export const EXPORT_WIDTH_STEPS: readonly number[] = [640, 1280, 1920];
+/** engine LOCAL_IMAGE_ID(UUID v4 소문자) — 가져오기 checkImages가 아니면 파일 전체를 IM-6으로 거절한다(SEC L-3). 문서가 참조할 수 없는 고아 레코드 */
+export const EXPORT_IMAGE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const isSide = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 1 && (v as number) <= EXPORT_MAX_SIDE;
 const exceedsPixelLimit = (w: number, h: number) => w > EXPORT_MAX_SIDE || h > EXPORT_MAX_SIDE || w * h > EXPORT_MAX_PIXELS;
 const widthLadder = (width: number): number[] => {
@@ -72,7 +74,7 @@ export async function exportImageOf(record: unknown, id: string): Promise<Ingest
   if (!isSide(width) || !isSide(height) || exceedsPixelLimit(width, height) || !FORMATS.includes(format as string) || !variants || typeof variants !== "object") return undefined;
   const entries = Object.entries(variants);
   const ladder = widthLadder(width).map(String);
-  if (entries.length !== ladder.length || entries.some(([w, blob], i) => w !== ladder[i] || !(blob instanceof Blob))) return undefined;
+  if (entries.length !== ladder.length || entries.some(([w, blob], i) => w !== ladder[i] || !(blob instanceof Blob) || blob.type !== `image/${format}`)) return undefined;
   const blobs = entries.map(([, blob]) => blob as Blob);
   if (bytes !== blobs.reduce((sum, blob) => sum + blob.size, 0)) return undefined;
   const heads = await Promise.all(blobs.map(async (blob) => formatFromMagic(new Uint8Array(await blob.slice(0, 16).arrayBuffer()))));
@@ -120,7 +122,8 @@ export async function readProject(factory: IDBFactory, projectId: string): Promi
   const checked = await Promise.all(raw.images.map(([key, record]) => exportImageOf(record, key)));
   const images = raw.images.flatMap(([key], i) => {
     const image = checked[i];
-    return image ? [{ localId: key.slice(projectId.length + 1), image }] : [];
+    const localId = key.slice(projectId.length + 1);
+    return image && EXPORT_IMAGE_ID.test(localId) ? [{ localId, image }] : [];
   });
   return { status: "ok", source: { ...raw.source, images } };
 }

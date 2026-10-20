@@ -77,6 +77,10 @@ describe("readImageRecord — 저장 규칙과 1:1(widthLadder · formatFromMagi
     ["bytes ≠ 변형본 합", (img: IngestedImage) => [envelopeOf(id, { ...img, bytes: img.bytes + 1 })]],
     ["변 길이·픽셀 한도 밖 · 정수 아님", (img: IngestedImage) => [envelopeOf(id, { ...img, height: 16_385 }), envelopeOf(id, image(8000, 6000)), envelopeOf(id, { ...img, height: 1.5 })]],
     ["변형본이 Blob 아님", (img: IngestedImage) => [envelopeOf(id, { ...img, variants: { 640: "x", 800: img.variants[800] } })]],
+    // SEC L-4 — 정적 HTML data URL MIME = blob.type 그대로라 svg+xml·text/html 레코드 하나가 내보내기 전체를 실패시킨다 → 그 이미지만 잃은 이미지
+    ["변형본 Blob.type ≠ image/<형식>(svg+xml · text/html · 빈 값 · 다른 형식 · 한 단만)", (img: IngestedImage) =>
+      [...["image/svg+xml", "text/html", "", "image/jpeg"].map((type) => envelopeOf(id, { ...img, variants: Object.fromEntries(Object.entries(img.variants).map(([w, b]) => [w, new Blob([b!], { type })])) })),
+        envelopeOf(id, { ...img, variants: { ...img.variants, 800: new Blob([img.variants[800]!], { type: "image/svg+xml" }) } })]],
   ])("%s → undefined(잃은 이미지 경로)", async (_, bad) => {
     for (const record of bad(image())) expect(await readImageRecord(record, id)).toBeUndefined();
   });

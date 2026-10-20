@@ -278,6 +278,14 @@ default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; f
 
 ---
 
+## 5a. 결정 기록 (Jarvis 2026-10-20 — 영환님 "1" · 자동 진행 원칙 "★안 자동 적용")
+
+- CQ-01~08: **★ 전부 채택** — CQ-01 A · CQ-02 A · CQ-03 A(Chromium `file://` 실패 시 C로 전환 — 실측 레인 판정) · CQ-04 A · CQ-05 A(위반 1건이면 B) · CQ-06 A · **CQ-07 B(정적 HTML 1개 먼저)** · CQ-08 A.
+- 구현 1단계 = `static-html`만(CSP-AC-01·03·04·05·06(html)·07(html)·08·10·R1·R5(html)). zip·React zip은 CSP-AC-R3·C1 실측 레인 뒤 2단계.
+- 사용자 질의 대상: 없음(5.1).
+
+---
+
 ## 6. 출처·관찰 기록
 
 - 외부 리서치 0. 브라우저·Vite 동작 서술 중 코드로 확인하지 않은 것은 전부 [추정]/[미확인]으로 표시했다.

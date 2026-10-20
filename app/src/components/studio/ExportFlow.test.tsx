@@ -394,6 +394,7 @@ describe("B-M4B-06 다시 시도 성공 뒤 포커스", () => {
   it.each([
     ["static-html", html],
     ["static-zip", zip],
+    ["react-zip", () => within(gateRegion()).getByRole("button", { name: new RegExp(`${REACT_ZIP_FORMAT_LABEL.replace(/[()]/g, "\\$&")}|내보내는 중…`) })],
   ] as const)("%s: 재시도 가능 실패 → '다시 시도'(포커스) → 완료 = 포커스는 결과의 '내려받기' 링크 · BODY 아님", async (format, button) => {
     const job: ExportJob = { jobId: "export-1", format, docRevision: 3, state: "queued", retryable: false };
     const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: requestExport.mock.calls.length === 1 }));

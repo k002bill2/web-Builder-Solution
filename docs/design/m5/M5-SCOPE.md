@@ -32,7 +32,7 @@
 - DEVELOPMENT_PLAN M5(P1, 1~2주): "서브도메인 발행·상태기계·롤백·미리보기 공유·발행 사이트 보안 헤더. 호스팅 결정(ADR-004) 후 착수" — `docs/04-plan/DEVELOPMENT_PLAN.md:22,141-143` [L1].
   - **주의**: ADR-004는 성능 예산 ADR이며 호스팅 결정을 담지 않는다(`docs/decisions/ADR-004-performance-budgets.md` 전체에 "호스팅" 0건) [L1]. 호스팅 결정은 **새 ADR**(다음 빈 번호, ADR-008 후보)로 받는 것을 전제로 쓴다 → MQ-M5-01.
   - ADR-004가 M5에 주는 제약은 **렌더 문서(생성 홈페이지) 예산 JS ≤90KB · CSS ≤30KB**(`ADR-004…:15`)다. 발행본은 같은 산출물이므로 같은 예산을 그대로 진다.
-- TRD 데이터 모델: `page_snapshot.kind[auto|manual|published]` · `deployment(id, project_id, artifact_hash, state, promoted_at, rolled_back_at) -- P1` · `generated_project.preview_url(서명된 만료 URL)` — `docs/03-trd/TRD.md:167-175` [L1].
+- TRD 데이터 모델: `page_snapshot.kind[auto|manual|published]` · `deployment(id, project_id, artifact_hash, state, promoted_at, rolled_back_at) -- P1` · `generated_project.preview_url(서명된 만료 URL)` — `docs/03-trd/TRD.md:165-175` [L1].
 - TRD API: `POST /api/design-studio/projects/{id}/publish` · `…/rollback`(권한 publisher) · `GET …/preview`(서명된 미리보기 URL) — `TRD.md:202,205` [L1]. 역할 viewer·editor·**publisher**·curator, AOS `project_access` 검사 전제 — `TRD.md:183` [L1].
 - TRD 보안: TR-SEC-08 미리보기 URL 서명·만료(24h)·noindex, 발행 사이트 보안 헤더(CSP·HSTS·nosniff·Referrer-Policy) · TR-SEC-10 비밀(호스팅·DNS 토큰)은 **AOS 비밀 저장 방식 재사용**, 로그 출력 금지 · TR-SEC-11 감사 로그(발행·롤백 포함) — `TRD.md:290,292,293` [L1].
 - TRD 12절 결정 필요 2(객체 저장소·호스팅 사업자) · 3(생성 워커 실행 환경) · 5(AOS 내 노출 방식) — `TRD.md:319-327` [L1]. M5는 2를 반드시, 5를 간접으로(계정·권한 위치) 건드린다.

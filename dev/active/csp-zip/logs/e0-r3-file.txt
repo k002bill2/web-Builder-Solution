@@ -1,0 +1,157 @@
+{ space: 12 }
+[
+ {
+  "name": "static-zip+CSP(file)",
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/csp-e0/static-csp/index.html",
+  "load1280": {
+   "csp": 1,
+   "images": [
+    {
+     "src": "assets/images/img-01.webp",
+     "ok": true
+    },
+    {
+     "src": "assets/images/img-02.jpg",
+     "ok": true
+    },
+    {
+     "src": "assets/images/img-03.png",
+     "ok": true
+    },
+    {
+     "src": "assets/images/img-01.webp",
+     "ok": true
+    }
+   ],
+   "fonts": [
+    "Pretendard/400:loaded",
+    "Pretendard/700:loaded"
+   ],
+   "fontCheck": true,
+   "bodyFont": "Pretendard, system-ui, -apple-system, \"A",
+   "violations": []
+  },
+  "menu": {
+   "sheetId": "m-header-1",
+   "openAfterClick": true,
+   "anchor": "#s-contact-1",
+   "after": {
+    "open": false,
+    "hash": "#s-contact-1",
+    "scrollY": 3296
+   }
+  },
+  "violationsMenu": [],
+  "positiveControl": {
+   "executed": false,
+   "newViolations": [
+    {
+     "d": "script-src-elem",
+     "u": "inline",
+     "s": ""
+    }
+   ]
+  }
+ },
+ {
+  "name": "static-zip 무CSP 대조(file)",
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/csp-e0/static/index.html",
+  "load1280": {
+   "csp": 0,
+   "images": [
+    {
+     "src": "assets/images/img-01.webp",
+     "ok": true
+    },
+    {
+     "src": "assets/images/img-02.jpg",
+     "ok": true
+    },
+    {
+     "src": "assets/images/img-03.png",
+     "ok": true
+    },
+    {
+     "src": "assets/images/img-01.webp",
+     "ok": true
+    }
+   ],
+   "fonts": [
+    "Pretendard/400:loaded",
+    "Pretendard/700:loaded"
+   ],
+   "fontCheck": true,
+   "bodyFont": "Pretendard, system-ui, -apple-system, \"A",
+   "violations": []
+  },
+  "menu": {
+   "sheetId": "m-header-1",
+   "openAfterClick": true,
+   "anchor": "#s-contact-1",
+   "after": {
+    "open": false,
+    "hash": "#s-contact-1",
+    "scrollY": 3296
+   }
+  },
+  "violationsMenu": [],
+  "positiveControl": {
+   "executed": true,
+   "newViolations": []
+  }
+ },
+ {
+  "name": "static-html(file)",
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/csp-e0/static.html",
+  "load1280": {
+   "csp": 1,
+   "images": [
+    {
+     "src": "data:image/webp;base64,UklGRiIAAABXRUJQV",
+     "ok": true
+    },
+    {
+     "src": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA",
+     "ok": true
+    },
+    {
+     "src": "data:image/png;base64,iVBORw0KGgoAAAANSU",
+     "ok": true
+    },
+    {
+     "src": "data:image/webp;base64,UklGRiIAAABXRUJQV",
+     "ok": true
+    }
+   ],
+   "fonts": [
+    "Pretendard/400:loaded",
+    "Pretendard/700:loaded"
+   ],
+   "fontCheck": true,
+   "bodyFont": "Pretendard, system-ui, -apple-system, \"A",
+   "violations": []
+  },
+  "menu": {
+   "sheetId": "m-header-1",
+   "openAfterClick": true,
+   "anchor": "#s-contact-1",
+   "after": {
+    "open": false,
+    "hash": "#s-contact-1",
+    "scrollY": 3296
+   }
+  },
+  "violationsMenu": [],
+  "positiveControl": {
+   "executed": false,
+   "newViolations": [
+    {
+     "d": "script-src-elem",
+     "u": "inline",
+     "s": ""
+    }
+   ]
+  }
+ }
+]
+

@@ -4,8 +4,16 @@
 - 제약: 브라우저·docker·Codex 금지 → 런타임 항목은 **기존 로그 재판독**만(재실행 0)
 - 상태: **초안 — 진행 중**
 
-## 1. fresh 게이트·예산
-(진행 중)
+## 1. fresh 게이트·예산 (tip 상태, 2026-10-20 18:36 실행)
+| 게이트 | 명령 (`app/`) | 결과 |
+|---|---|---|
+| typecheck | `npm run typecheck` | exit 0 |
+| lint | `npm run lint` | exit 0 |
+| test | `npx vitest run --maxWorkers=4` | **379 files / 3416 tests passed** · exit 0 |
+| build | `npm run build` | exit 0 |
+
+예산(`check-bundle-size` 출력): `/studio` 정규화 **128.76KB**(기준선 128.76, 멈춤 > 128.79) · 복원 **131.76KB**(기준선 131.75, 멈춤 > 131.78) · 렌더 JS **84.30**/90 · CSS **8.89**/30 · "정적 zip CSP 가드(렌더 CSS @font-face 밖 url(data:) 0개) 통과" · React zip 진입 정적 포함 0 가드 통과 → BRIEF 기대값 전부 **재현**.
+
 
 ## 2. 변이 5종
 (진행 중)

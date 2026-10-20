@@ -23,8 +23,20 @@
 - M5b = M5 + 가드 zip 분기 `=== 0`→`<= 1` → **FAIL** 2/96 (AC-01 zip 바이트 동일 · AC-06 zip 0만 통과) — 테스트가 zip 출력을 직접 단언함
 - 관찰: M4는 1건으로만 잡힘(단일 방어선). 결함 아님, 기록만.
 
-## 3. CSP-AC 판정표 재판독
-(진행 중)
+## 3. CSP-AC 판정표 재판독 — 일치 (관찰 1)
+| AC | SPEC 요구 | 테스트 단언(staticCsp.test.ts) | QA |
+|---|---|---|---|
+| 01 | meta 정확히 1 · 두 번째 자식 · content 문자 동일 | 4 픽스처마다 `toHaveLength(1)` · `children[1]` · `STATIC_CSP_HTML`·SPEC 문자열 둘 다 | 일치 (M3b가 직접 잡음) |
+| 03 | 상수 = Node crypto sha256 | `scriptHashOf(STATIC_MENU_SCRIPT)` · SPEC 값 · 정책 안 해시 | 일치 (M1) |
+| 04 | 최종 HTML 재파싱 유일 script sha256 = 정책 해시 | `DOMParser` 재파싱 · script 1·meta 1 · 해시 비교 | 일치 (html만 — 1단계) |
+| 05 | 1글자 사본으로 판정 실패 | `"click"`→`"clicK"` 사본 → `scriptMatchesPolicy` false · 원문 true | 일치 |
+| 06 | 두 번째 meta·content 1글자·위치 → throw, 정상 통과 | refresh·CSP 중복·대소문자·content·위치 2종·누락·http-equiv 값·base·link | 일치 (M4·M3b) |
+| 07 | meta 제거 = 기준 픽스처 바이트 동일 | `toMatchFileSnapshot(csp-base-*.html)` html 4 + zip 1 | 일치 — 픽스처 `c1c8ba0a`(생성기 = base `ec32f407`과 diff 0) 이후 변경 0 · 픽스처 안 `http-equiv` 0 |
+| 08 | 형식·금지 토큰·브랜드 0 | 지시어 집합·`'unsafe-eval'`·`'unsafe-inline'`(script-src)·스킴·브랜드 | 일치 (M2) · SPEC 1.1 정책 문자열 = 테스트 상수(grep 1종) |
+| 10 | 예산 증분 0 · 렌더 불변 · React zip 가드 | 빌드 스크립트(단위 테스트 아님) | 1번에서 재현 |
+
+- RED 재현: `git show c1c8ba0a:…/staticMarkup.ts`를 작업 트리에 놓고 `npx vitest run src/features/studio/staticHtml/staticCsp.test.ts --maxWorkers=4` → **22 failed · 1 passed (23)** · 통과 1 = zip 불변 테스트. REPORT 기록과 일치. 실행 후 `git checkout`으로 복원.
+- 관찰(P3): SPEC AC-07은 "기존 정적 HTML 테스트 문서 전부"인데 구현은 대표 픽스처 html 4개 + zip 1개. REPORT '스펙과 다르게 한 부분'에 이 축소는 적혀 있지 않음(스냅샷 방식만 적힘). 출력 경로가 하나(`buildStaticHtml`)라 위험은 낮음.
 
 ## 4. Ego 로그 재판독 (재실행 없음)
 - 위치: `/tmp/csp-r2/`(저장소 밖, 커밋 안 됨). 남은 것 = PNG 4개·after.html·r01~r03.mjs·preview.log·codex.log. **실행 stdout 로그(R1/R5 콘솔 출력)는 저장되지 않음.**

@@ -21,11 +21,12 @@
 | M1 | `STATIC_CSP_ZIP` `img-src 'self'` → `'self' data:` | `staticHtml/` | **FAIL** | AC-07 픽스처 2건 mismatch · meta 1회(split 길이) · SPEC 문자 동일 · 지시어 집합 |
 | M2 | zip meta 제거(`if (target === "html") meta(...)`) | `staticHtml/` | **FAIL** | AC-02·04·06·07·11(zip) 전부 + `assertStaticHead` throw로 zip export 테스트(Blob·index.html·결정성)까지 연쇄 실패 |
 | M3 | 템플릿 plugin `apply: "build"` 줄 삭제(항상 적용) | `reactZip/` | **FAIL** | `toContain('apply: "build"')` · 실행형 테스트 `csp.apply` = undefined |
+| M3b | `apply: "build"` → `"serve"` | `reactZip/` | **FAIL** | `toContain('apply: "build"')` · `csp.apply` = 'serve' ≠ 'build' |
 | M4 | `injectTo: "head-prepend"` → `"body"` | `reactZip/` | **FAIL** | `toContain('injectTo: "head-prepend"')` · `transformIndexHtml()` 반환 deepEqual |
 | M5 | `zipCssGuard` `.replace(FACE_RULE, "")` 제거 | `scripts/zipCssGuard.test.mjs` | **FAIL** | "@font-face 안 url()은 보지 않는다" — `['url(data:']` ≠ `[]` |
 
-- 5/5 변이가 테스트로 잡힘. 각 변이 뒤 `restored: clean` · 최종 `git status`에 앱·픽스처 변경 0(파일 스냅샷은 `run` 모드라 덮어쓰지 않음).
-- 관찰: M3·M4는 템플릿 **문자열** 단언 + `new Function` 실행형 단언 2겹. 실제 Vite가 `apply`/`injectTo`를 해석한 결과는 E1 docker 로그(C1 head 첫 자식 · C2 dev meta 0)가 유일한 증거 — 단위 테스트 범위 밖.
+- 6/6 변이(BRIEF 5종 + M3 "serve" 판)가 테스트로 잡힘. 각 변이 뒤 `restored: clean` · 최종 `git status`에 앱·픽스처 변경 0(파일 스냅샷은 `run` 모드라 덮어쓰지 않음).
+- 관찰: M3·M4는 템플릿 **문자열** 단언 + `new Function` 실행형 단언 2겹. 실제 Vite가 `apply`/`injectTo`를 해석한 결과는 E1 docker 로그(C1 head 첫 자식 · C2 dev meta 0)가 유일한 증거 — 단위 테스트 범위 밖. 그 로그가 E1 템플릿으로 빌드됐다는 것은 REPORT 진술이다(아래 C1 단서).
 
 
 ## 3. CSP-AC 판정표 재판독 (REPORT 표 ↔ 실제 단언·로그)
@@ -39,7 +40,7 @@
 | AC-09 | 통과 | `reactZipCsp.test.ts` 4건(SPEC 1.3.2 리터럴 · 템플릿 문자열 · 실행형 transformIndexHtml · 소스 index.html http-equiv 0) + 허용표가 같은 `VITE_CONFIG` 상수(5절) · M3·M4 FAIL | 뒷받침됨 |
 | AC-10 | 게이트 | 1절 fresh 재현 128.76 · 131.76 · 84.30/8.89 · React zip 진입 가드 | 뒷받침됨 |
 | AC-11 | 통과(범위 주의) | 단위: 킷 CSS 원문만(`:132-140`, 양성 대조 포함). 빌드 CSS는 Codex 반영 `zipCssGuard`가 `npm run build`에서 판정 — fresh 빌드 "0개 통과" · M5 FAIL | 뒷받침됨(빌드 가드로 한계 보완) |
-| C1 | 통과 | `e1-c1-docker-build.txt` 실제 생성기 · node:22 `npm ci && npm run build` exit 0 · dist head 첫 자식 meta · 인라인 0 · preview 위반 0(`e1-r4-preview.txt`) | 뒷받침됨 (RZ-AC-C1 Node 20.19 행렬은 5절 갭) |
+| C1 | 통과 | `e1-c1-docker-build.txt` 실제 생성기(**출처 = REPORT 진술, 로그로 미검증** — 로그에 `vite.config.ts` 원문·zip 해시 없음 · E0 패치 설정과 dist 해시 `index-BPHr-n2i.js`·`index-C3z6Eb9T.css`·meta 동일이라 로그로 구별 불가) · node:22 `npm ci && npm run build` exit 0 · dist head 첫 자식 meta · 인라인 0 · preview 위반 0(`e1-r4-preview.txt`) | 뒷받침됨 (RZ-AC-C1 Node 20.19 행렬은 5절 갭) |
 | C2 | 통과 | `e1-c2-dev.txt` http-equiv 0 · HMR noReload | 뒷받침됨 |
 | R3 | 통과(Chromium) | `e0-r3-file.txt` — **E0 임시 삽입본**(문자 동일 정책) · 이미지·글꼴·메뉴 = 무CSP 대조와 동일 · 양성 대조 유효 · Safari·Firefox [미확인] | 뒷받침됨(관찰 AC · 실제 생성기 출력 재측정 없음 [L2]) |
 | R4 | 통과(범위 주의) | `e1-r4-preview.txt` 390 메뉴 닫힘·hash · 위반 0 · 양성 대조. SPEC 4.1 R4는 "REACTZIP 4.1 대조 통과"까지 — 라이브 대조 없음, SSR 단위(`fidelity.test.tsx`)만 | **부분** — REPORT가 범위 주의로 스스로 밝힘 |
@@ -52,11 +53,11 @@
 |---|---|---|---|
 | `e0-r3-file.txt` 정적 zip+CSP `file://` | `load1280.violations []` · `violationsMenu []` · csp 1 · 이미지 4/4 ok · Pretendard 400·700 loaded · 메뉴 open→`#s-contact-1`→open:false | `executed:false` · `newViolations` 1(`script-src-elem` inline) | **일치** |
 | 같은 파일 무CSP 대조 | csp 0 · 위반 0 · 이미지·글꼴·메뉴 동일 | `executed:true` · 위반 0 (CSP 없음 = 정상 — 리스너는 CSP 있을 때만 발화) | **일치**(대조군 유효) |
-| 같은 파일 static-html `file://` (**B-SEC-08 R1·R5**) | csp 1 · 이미지 4/4(data:) · 위반 0 · 메뉴 닫힘(R5) | executed:false · 위반 1 | **일치** — R1 위반 0·R5 닫힘이 양성 대조와 함께 보존됨 |
+| 같은 파일 static-html `file://` (**B-SEC-08 R1·R5**) | csp 1 · 이미지 4/4(data:) · 위반 0 · 메뉴 닫힘(R5) | executed:false · 위반 1 | **일치(단서)** — 실행 출력 보존(B-SEC-08 요구)은 충족. 단 문서 = `m2(ref-a)`이지 CSP-AC-R1 정의 문서(경로 A: 모던 카페+보정값 v2+새로 시작)가 아니고 스크린샷 바이트 동일 단언도 없음 |
 | `e0-c1-docker-build.txt` | node v22.23.3 · npm 10.9.9 · `BUILD_EXIT=0` | — | 빌드 성공만 기록. meta 위치·인라인 0은 이 파일에 없음 → E1 로그로 확인(아래) |
 | `e0-c1-preview-measure.txt` | csp 1 · 위반 0(로드·메뉴) · 메뉴 닫힘 · `--site-primary #8B5E3C` | executed:false · 위반 1 | **일치**. 주의: `inlineScripts:1`은 `measure()`(양성 대조 주입) **뒤**에 센 값(`scripts/e0-c1-preview.mjs`) → 주입 script 1개 = 원래 0과 모순 아님. 단 이 로그 단독으로 "인라인 0"을 증명하지는 못함 |
 | `e0-c1-preview-lazy.txt` | 스크롤 뒤 이미지 4/4 complete | — | 1280 `ok:false` 1건 = lazy 미로딩 설명과 일치 |
-| `e1-c1-docker-build.txt` (실제 생성기) | `BUILD_EXIT=0` · `dist/index.html` 원문: CSP meta 1 · **head 첫 자식** · content(엔티티 디코드) = 1.3.2 상수 · 인라인 script 0(module `src` 1 + stylesheet link 1) | — | **일치** — C1 정적 계약(SPEC 195행) 직접 증거 |
+| `e1-c1-docker-build.txt` (실제 생성기 — REPORT 진술, 로그로 미검증) | `BUILD_EXIT=0` · `dist/index.html` 원문: CSP meta 1 · **head 첫 자식** · content(엔티티 디코드) = 1.3.2 상수 · 인라인 script 0(module `src` 1 + stylesheet link 1) | — | **일치** — C1 정적 계약(SPEC 195행) 직접 증거 |
 | `e1-r4-preview.txt` (실제 생성기) | csp 1 · 위반 0 · 390 메뉴 open→anchor→닫힘 · hash `#s-contact-1` | executed:false · 위반 1 | **일치**. 관찰: 1280 이미지 3번 `ok:false`·`waitTimeout` — E1에선 lazy 재확인 로그 없음(E0와 같은 문서·같은 JS 해시 `index-BPHr-n2i.js`라 같은 원인으로 추정, [추정]) |
 | `e1-c2-dev.txt` | dev HTML `http-equiv` 0 · `/@vite/client` 1 · react-refresh 인라인 프리앰블 1 · first csp 0 · 섹션 10 · outline `rgb(26,38,32)`→`rgb(1,2,3)` noReload | — (dev엔 CSP가 없어야 정상) | **일치** |
 | 종료 확인 | `e0-c1-preview.txt`·`e1-r4-preview-server.txt`·`e1-c2-dev.txt` 끝: docker 0 · 4399 LISTEN 0 | — | 일치 |
@@ -73,15 +74,17 @@
 
 
 ## 판정
-**PASS (머지 차단 결함 0 · 관찰 3건)**
+**PASS (머지 차단 결함 0 · 관찰 4건)**
 - 1 fresh 게이트 4종 exit 0 · 379/3416 · 예산 4값·zip CSS 가드 BRIEF 값 그대로 재현.
-- 2 변이 5/5 FAIL로 잡힘 · 전부 되돌림.
+- 2 변이 6/6(BRIEF 5종 + serve 판) FAIL로 잡힘 · 전부 되돌림.
 - 3 AC-02·04·06·07·08·09·10·11·C1·C2·R3 뒷받침됨 · R4 = 부분(REACTZIP 4.1 라이브 대조 없음, REPORT가 이미 밝힘).
 - 4 로그의 위반 0 주장과 양성 대조(위반 1·미실행)가 모두 실제로 찍혀 있음 · B-SEC-08 R1·R5 보존 확인.
 - 5 새 의존성 0 · lock·package 템플릿 불변 · 허용표 = 같은 상수.
 
-관찰(차단 아님, 후속 판단 대상):
+관찰(차단 아님, 후속 판단 대상 — 5는 참고):
 1. RZ-AC-C1 행렬(Node **20.19**·22 · `npm install` 경로) — 템플릿 변경 후 재실행 기록은 node:22 `npm ci`뿐. CSP-AC-C1 자체는 충족.
 2. R3는 E0 임시 삽입본 측정 — 실제 생성기 zip의 `file://` 재측정 없음(AC-07로 동등성 [추정 L2]).
-3. E1 R4 1280 이미지 1장 `ok:false` — E0 lazy 재확인과 같은 원인으로 추정, E1 재확인 로그 없음.
+3. C1·C2·R4 로그가 E1 실제 생성기 산출이라는 것은 REPORT 진술 — 로그에 설정 원문·zip 해시 없음(E0 dist와 해시 동일).
+4. B-SEC-08 행: 실행 출력 보존은 충족, R1 정의 문서(경로 A)·스크린샷 바이트 동일 재측정은 아님.
+5. E1 R4 1280 이미지 1장 `ok:false` — E0 lazy 재확인과 같은 원인으로 추정, E1 재확인 로그 없음.
 

@@ -130,3 +130,26 @@ AssertionError: expected [ 'url(data:' ] to deeply equal []
  Test Files  1 failed (1)
       Tests  1 failed | 1 passed (2)
 restored: clean
+## M3b apply "build" → "serve" — diff
+diff --git a/app/src/features/studio/reactZip/templates.ts b/app/src/features/studio/reactZip/templates.ts
+index c635b61c..05c51c2b 100644
+--- a/app/src/features/studio/reactZip/templates.ts
++++ b/app/src/features/studio/reactZip/templates.ts
+@@ -37,7 +37,7 @@ import tailwindcss from "@tailwindcss/vite";
+ const CSP = ${JSON.stringify(REACT_ZIP_CSP)};
+ const csp: Plugin = {
+   name: "site-csp",
+-  apply: "build",
++  apply: "serve",
+   transformIndexHtml: () => [{ tag: "meta", attrs: { "http-equiv": "Content-Security-Policy", content: CSP }, injectTo: "head-prepend" }],
+ };
+ 
+     × vite.config.ts = CSP 상수 1개 · apply: "build" · head-prepend meta 주입 · plugins 끝에 csp 5ms
+     × vite.config.ts 템플릿을 그대로 실행한 plugin이 meta 태그 1개를 돌려준다(transformIndexHtml 반환 형태) 1ms
+ FAIL  src/features/studio/reactZip/reactZipCsp.test.ts > CSP-AC-09 React zip — vite.config.ts 템플릿에 build 전용 CSP plugin · 소스 index.html은 meta 0 > vite.config.ts = CSP 상수 1개 · apply: "build" · head-prepend meta 주입 · plugins 끝에 csp
+AssertionError: expected 'import { defineConfig, type Plugin } …' to contain 'apply: "build"'
+ FAIL  src/features/studio/reactZip/reactZipCsp.test.ts > CSP-AC-09 React zip — vite.config.ts 템플릿에 build 전용 CSP plugin · 소스 index.html은 meta 0 > vite.config.ts 템플릿을 그대로 실행한 plugin이 meta 태그 1개를 돌려준다(transformIndexHtml 반환 형태)
+AssertionError: expected 'serve' to be 'build' // Object.is equality
+ Test Files  1 failed | 6 passed (7)
+      Tests  2 failed | 73 passed (75)
+restored: clean

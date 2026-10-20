@@ -28,8 +28,24 @@
 - 관찰: M3·M4는 템플릿 **문자열** 단언 + `new Function` 실행형 단언 2겹. 실제 Vite가 `apply`/`injectTo`를 해석한 결과는 E1 docker 로그(C1 head 첫 자식 · C2 dev meta 0)가 유일한 증거 — 단위 테스트 범위 밖.
 
 
-## 3. CSP-AC 판정표 재판독
-(진행 중)
+## 3. CSP-AC 판정표 재판독 (REPORT 표 ↔ 실제 단언·로그)
+| AC | REPORT | QA 재판독 근거 | QA 판정 |
+|---|---|---|---|
+| AC-02 | 통과 | `staticCspZip.test.ts:50-55` meta 1 · `children[1]` · content = SPEC 1.2 리터럴(`SPEC_CSP_ZIP`, 생성기 상수와 독립) · M2 FAIL | 뒷받침됨 |
+| AC-04(zip) | 통과 | `:58-65` 재파싱 유일 script sha256 = 정책 안 해시 · 정책 해시 = 상수 · M2 FAIL | 뒷받침됨 |
+| AC-06(zip) | 통과 | `:73-98` 정상 통과 · html 정책 교차 · content 1글자 · 누락 · refresh · CSP 중복 · base · link · 위치(late) → throw | 뒷받침됨 |
+| AC-07(zip) | 통과 | `:37-43` meta 제거 = `__fixtures__/csp-base-zip-*.html`(toMatchFileSnapshot) + meta 정확히 1회 · M1·M2 FAIL. 문서 범위는 픽스처 2건(basic·assets) | 뒷받침됨 |
+| AC-08(zip) | 통과 | `:103-117` 지시어 집합 deepEqual · `data:`·http(s)·`*`·`'unsafe-eval'`·report/sandbox 0 · 브랜드 0 · M1 FAIL | 뒷받침됨 |
+| AC-09 | 통과 | `reactZipCsp.test.ts` 4건(SPEC 1.3.2 리터럴 · 템플릿 문자열 · 실행형 transformIndexHtml · 소스 index.html http-equiv 0) + 허용표가 같은 `VITE_CONFIG` 상수(5절) · M3·M4 FAIL | 뒷받침됨 |
+| AC-10 | 게이트 | 1절 fresh 재현 128.76 · 131.76 · 84.30/8.89 · React zip 진입 가드 | 뒷받침됨 |
+| AC-11 | 통과(범위 주의) | 단위: 킷 CSS 원문만(`:132-140`, 양성 대조 포함). 빌드 CSS는 Codex 반영 `zipCssGuard`가 `npm run build`에서 판정 — fresh 빌드 "0개 통과" · M5 FAIL | 뒷받침됨(빌드 가드로 한계 보완) |
+| C1 | 통과 | `e1-c1-docker-build.txt` 실제 생성기 · node:22 `npm ci && npm run build` exit 0 · dist head 첫 자식 meta · 인라인 0 · preview 위반 0(`e1-r4-preview.txt`) | 뒷받침됨 (RZ-AC-C1 Node 20.19 행렬은 5절 갭) |
+| C2 | 통과 | `e1-c2-dev.txt` http-equiv 0 · HMR noReload | 뒷받침됨 |
+| R3 | 통과(Chromium) | `e0-r3-file.txt` — **E0 임시 삽입본**(문자 동일 정책) · 이미지·글꼴·메뉴 = 무CSP 대조와 동일 · 양성 대조 유효 · Safari·Firefox [미확인] | 뒷받침됨(관찰 AC · 실제 생성기 출력 재측정 없음 [L2]) |
+| R4 | 통과(범위 주의) | `e1-r4-preview.txt` 390 메뉴 닫힘·hash · 위반 0 · 양성 대조. SPEC 4.1 R4는 "REACTZIP 4.1 대조 통과"까지 — 라이브 대조 없음, SSR 단위(`fidelity.test.tsx`)만 | **부분** — REPORT가 범위 주의로 스스로 밝힘 |
+
+- REPORT의 서술 1건 보정: E0 표 "인라인 `<script>` 0"의 E0 로그(`e0-c1-preview-measure.txt`)는 양성 대조 **뒤** 센 `inlineScripts:1`이라 단독 증거가 아니다. E1 `dist/index.html` 원문(`e1-c1-docker-build.txt`)이 직접 증거 → 결론 영향 없음.
+
 
 ## 4. 로그 재판독 (재실행 0 — 파일만 읽음)
 | 로그 | 위반 0 주장 | 양성 대조(해시 밖 인라인 script) | 판독 |

@@ -1,9 +1,12 @@
-# IMPORT-LOWS REPORT (초안)
+# IMPORT-LOWS REPORT
 
 base `2531ebf8` · 브랜치 `k002bill2/import-lows` · 근거 `dev/active/sec-readproject/REPORT.md` L-2(B-SEC-01)·L-3(B-SEC-02)·L-4(B-SEC-03)
 
 ## 결론
-- (작성 중)
+- B-SEC-01·02·03 세 건 모두 반영 완료(RED→GREEN·변이 확인). 스키마·엔진 계약 변경 0.
+- 게이트 4종 fresh 통과(5절) · 퍼즈 REJECT/PASS 37/30 → 42/25, 마크업 주입 0(4절).
+- 예산: /studio 0 · 복원 진입 +0.01KB(131.76 — 멈춤선 131.78 미만, 6절).
+- Codex adversarial 1회 = approve · 지적 0 → 반영 0, 반영 후 재게이트 해당 없음(7절).
 
 ## 1. B-SEC-02 가져오기 이미지 localId = UUID v4
 - 변경: `checkImages.ts` `IMPORT_IMAGE_ID`(engine `LOCAL_IMAGE_ID` 리터럴 복제) — 아니면 기존 IM-6(새 문구 0). `readProject.ts` `EXPORT_IMAGE_ID` — 내보내기는 UUID 아닌 키 레코드를 싣지 않는다(수정 전 가져온 `project-N/a`가 남아 있으면 내보낸 파일 전체가 IM-6이 되는 회귀 차단 · 기존 "실패 레코드 제외" 불변식과 같은 결).
@@ -54,6 +57,9 @@ B-SEC-03(Blob.type)은 퍼즈 범위 밖(퍼즈는 가져오기 파일 경로 �
 - `/studio/:projectId`(저장 데이터 복원 진입) 해시 정규화 131.75 → 131.77 → 감량 1회(Blob.type 검사를 사다리 `some` 조건에 합침) → **131.76KB (+0.01KB, 멈춤선 > 131.78 미만 · 가드 통과)**. 원인 = `readImageRecord`가 복원 진입 청크 — 조건 1개는 줄일 수 없는 최소. BRIEF "감량 1회 뒤 멈춤"에 따라 추가 감량 없음.
 - 그 밖 진입 합계 ±0.01KB(`/catalog`·`/compare`·`/projects`) = raw 해시 이름 흔들림(이번 diff는 그 진입 모듈 0).
 ## 7. Codex adversarial
+- 1회: `codex-companion adversarial-review --scope branch --base 2531ebf8` (HEAD `323113ab`) → **Verdict: approve · No material findings.** 정적 검토(Codex는 테스트 재실행 안 함 — 게이트는 5절 fresh 실행이 근거).
+- 반영 0건 → 코드 변경 0 · 복원 진입 131.76KB 그대로 · BRIEF-R3 3항 "반영이 있을 때만"에 따라 재게이트 생략.
+
 ## 8. 목업·규칙과 다르게 한 것 / 픽스처 개정
 픽스처 `uid(tag)` 추가(`projectFileFixtures.ts` — `00000000-0000-4000-8000-<글자코드 16진 12자리>`). 단언은 정확값 유지(`expect.any` 0).
 
@@ -65,3 +71,4 @@ B-SEC-03(Blob.type)은 퍼즈 범위 밖(퍼즈는 가져오기 파일 경로 �
 | rekey·writeImport.test | `fileImage("a")`·`project-N/a` | `fileImage(uid("a"))`·`` `project-N/${uid("a")}` `` |
 | readProject.test | `project-1/{a,b,c,d,zz,good,bad}`·`project-10/a`·localId 단언 | 같은 키를 `uid()`로 · 새 SEC L-3 테스트만 일부러 `project-1/a` |
 ## 9. 커밋
+`75aeb5a5` BRIEF·PROGRESS · `dd12af42` REPORT 초안 · `2dda31e2` BRIEF-R2 · `67e6d863` B-SEC-02 · `5a23a18d` B-SEC-03 · `517d81b5` B-SEC-01 · `84936340` 감량·로그 · `323113ab` BRIEF-R3·REPORT 4–6절 · (이 커밋) REPORT 확정. push 안 함.

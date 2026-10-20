@@ -9,7 +9,7 @@ base `2531ebf8` · 브랜치 `k002bill2/import-lows` · 시작 2026-10-18
 - [x] 4. 퍼즈 67건 재실행(임시·되돌림) — 판정 변화 표
 - [x] 5. fresh typecheck·lint·test·build
 - [x] 6. 예산 진입 증분 — /studio 0 · 복원 진입 +0.01KB(감량 1회 후 · 가드 통과, REPORT 6절)
-- [ ] 7. Codex adversarial 1회·반영 1회
-- [ ] 8. REPORT 확정 · git status 빈 값
+- [x] 7. Codex adversarial 1회 = approve · 지적 0 → 반영 0 (REPORT 7절)
+- [x] 8. REPORT 확정 · git status 빈 값
 
 ## 메모

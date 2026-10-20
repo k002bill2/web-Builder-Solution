@@ -4,6 +4,7 @@
  * 결과 규칙: 고정 스크립트(STATIC_MENU_SCRIPT) 외 script 0 · on* 0 · details[open] 0 · 편집기 흔적(CSS가 안 쓰는 data-*) 0 · 폴백 섹션 = 실패 · blob: = 실패 · img src = data:image/(webp|jpeg|png);base64,만(srcset 0) · CSS 외부 요청 = 실패.
  * zip 대상(M4-a SPEC 4.1 zip 열): img src = `assets/images/img-NN.ext`만 · CSS url() = data: 또는 `assets/fonts/*.woff2`.
  * 두 대상 공통(SPEC 4.2): F-11 링크 = 같은 문서 앵커만 · F-12 앵커 대상 존재 · F-13 그 밖 URL 속성 외부 출처 0 · F-14 고정 부분 브랜드 0 · F-15 head 외부 요소 0.
+ * CSP(CSP-SPEC r1 1.1 · 5a 1단계): html 대상 head = charset 다음 2번째에 고정 CSP meta 1개(STATIC_CSP_HTML) · zip 대상 = CSP meta 0(2단계).
  */
 import { brand } from "../../../brand/brand.config";
 
@@ -13,6 +14,10 @@ import { brand } from "../../../brand/brand.config";
  */
 export const STATIC_MENU_SCRIPT =
   'document.addEventListener("click",function(e){var t=e.target,a=t&&t.closest?t.closest(\'a[href^="#"]\'):null,p=a?a.closest("[popover]"):null;if(p&&typeof p.hidePopover=="function")p.hidePopover()});';
+/** STATIC_MENU_SCRIPT의 sha256(CSP-SPEC 2.1) — 손으로 고정한다(런타임 계산 0). 스크립트를 고치면 갱신 — 대조 테스트(staticCsp.test.ts)가 강제 */
+export const STATIC_MENU_SCRIPT_HASH = "sha256-xjxofTFd/IqBuzOkEPYsAa9W0LrdyNf+WbGn8wE5EAg=";
+/** 정적 HTML 1개 고정 CSP(CSP-SPEC 1.1) — 문서 값 0 · 문서마다 바이트 동일 */
+export const STATIC_CSP_HTML = `default-src 'none'; script-src '${STATIC_MENU_SCRIPT_HASH}'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'`;
 
 /** 킷·렌더 CSS가 선택자로 쓰는 data-* (kit.css · render.css) — 나머지 data-*는 편집기 흔적이라 지운다 */
 const KEPT_DATA = new Set(["data-site-root", "data-kit", "data-layout", "data-tone", "data-always", "data-motion", "data-motion-play"]);
@@ -135,6 +140,20 @@ function assertNoBrand(site: Element, css: string, fixed: readonly string[]) {
   if ([css.replace(CSS_FONT_DATA_URL, "url()"), ...fixed, ...names].some((text) => BRAND.test(text))) throw new Error("정적 HTML 브랜드 문자열이 있습니다");
 }
 
+/**
+ * F-15(CSP-SPEC 3.1 개정) — head에 base·link 0 · meta[http-equiv]는 html 대상만 정확히 1개(두 번째 자식 · Content-Security-Policy · content = STATIC_CSP_HTML 문자 동일).
+ * zip 대상은 meta[http-equiv] 0(2단계 전까지 현행).
+ */
+export function assertStaticHead(head: HTMLHeadElement, target: "html" | "zip") {
+  const equiv = head.querySelectorAll("meta[http-equiv]");
+  const csp = equiv[0];
+  const cspOk =
+    target === "html"
+      ? equiv.length === 1 && head.children[1] === csp && csp?.getAttribute("http-equiv") === "Content-Security-Policy" && csp.getAttribute("content") === STATIC_CSP_HTML
+      : equiv.length === 0;
+  if (!cspOk || head.querySelector("base, link")) throw new Error("정적 HTML head에 외부 요소가 있습니다");
+}
+
 export function buildStaticHtml({ markup, css, title, description, notice, images = {}, target = "html" }: StaticHtmlParts): string {
   assertNoExternalCss(css, target);
   const page = document.implementation.createHTMLDocument("");
@@ -156,7 +175,7 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   if ([...site.querySelectorAll("img")].some((img) => !imageSrc.test(img.getAttribute("src") ?? "") || img.hasAttribute("srcset"))) throw new Error("정적 HTML 이미지 규칙 위반 — data: 단일 파일(zip은 assets/images) 아님");
   assertLinks(site);
   assertNoExternalSources(site);
-  assertNoBrand(site, css, [notice ?? "", STATIC_MENU_SCRIPT]);
+  assertNoBrand(site, css, [notice ?? "", STATIC_MENU_SCRIPT, STATIC_CSP_HTML]);
 
   const head = page.head;
   head.replaceChildren();
@@ -166,6 +185,7 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
     head.append(el);
   };
   meta({ charset: "utf-8" });
+  if (target === "html") meta({ "http-equiv": "Content-Security-Policy", content: STATIC_CSP_HTML });
   meta({ name: "viewport", content: "width=device-width, initial-scale=1" });
   const titleEl = page.createElement("title");
   titleEl.textContent = title;
@@ -179,6 +199,6 @@ export function buildStaticHtml({ markup, css, title, description, notice, image
   script.textContent = STATIC_MENU_SCRIPT;
   head.append(script);
   // F-15 — head는 위에서 처음부터 만든다(방어 단언)
-  if (head.querySelector("base, link, meta[http-equiv]")) throw new Error("정적 HTML head에 외부 요소가 있습니다");
+  assertStaticHead(head, target);
   return `<!doctype html>\n${page.documentElement.outerHTML}`;
 }

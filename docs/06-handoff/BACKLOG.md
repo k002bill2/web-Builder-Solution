@@ -93,10 +93,11 @@ M1-UI-01-FIX 이후 handoff에 포함한다. 판단 기준은 ADR-003(기능·�
 | B-SEC-01 | SEC-M4A-10 L-2 | 가져오기: 문서 밖 레코드(project·series·DocRecord 봉투·스냅샷 머리)의 모르는 필드가 그대로 저장·재내보내기 | Low · 허용 키 정규화 · ✅ **닫힘 2026-10-20 IMPORT-LOWS** |
 | B-SEC-02 | SEC-M4A-10 L-3 | 가져오기 이미지 `localId` 형식 미검사 — UUID 아닌 id 고아 레코드 | Low · ✅ **닫힘 2026-10-20 IMPORT-LOWS** |
 | B-SEC-03 | SEC-M4A-10 L-4 | 저장 이미지 레코드 `Blob.type` 미검사 — 손상 레코드 1건으로 내보내기 전체 실패 | Low · ✅ **닫힘 2026-10-20 IMPORT-LOWS** |
-| B-SEC-04 | SEC-M4A-10 4절 | 내보낸 HTML·zip에 생성기 고정 CSP meta(메뉴 스크립트 sha256 고정+대조 테스트) — 보조 방어, SPEC 개정 후 구현 | Medium · SPEC(Designer) |
+| B-SEC-04 | SEC-M4A-10 4절 | 내보낸 HTML·zip에 생성기 고정 CSP meta(메뉴 스크립트 sha256 고정+대조 테스트) — 보조 방어, SPEC 개정 후 구현 | Medium · SPEC(Designer) · 🔶 **1단계 static-html 완료 2026-10-20 PR #57**(CSP-SPEC r1 5a) — zip·React zip은 2단계(CSP-2) |
 | B-SEC-05 | SEC-FIX-1 QA-1 | `checkImages.test`에 헤더가 사다리보다 작은 경우(639×480·640×479 → IM-6·디코드 0) 단언 추가 — 변이 M2(`===`→`<=`) 생존 | Low · 테스트 · ✅ **닫힘 2026-10-18 TEST-GAPS-1** `b81712ba` 헤더<사다리 IM-6 |
 | B-SEC-06 | SEC-FIX-1 QA-2 | 한 프로젝트만 렌더 범위 밖 값이면 파일 내보내기 EX-6이 "브라우저 데이터 지우기"(전체 삭제)로 안내 — 원인·문구 분리(그 프로젝트 삭제 안내) | Low · 문구(Hemingway) |
 | B-SEC-07 | IMPORT-LOWS QA 4항·3항 | 결합 테스트 부재(Blob.type 손상 1 + 정상 1 → 결과 줄 lostImageText 1회) · 실 IndexedDB 기존 프로필로 열기·편집·내보내기 확인 미실시(코드 경로 근거만) · 복원 진입 131.76(여유 0.02) | Low · 테스트·QA |
+| B-SEC-08 | CSP-1 QA 4항 | static-html 실화면 R1 "위반 0"·R5 "390 메뉴 시트 닫힘" 실행 출력 미보존(스크린샷 바이트 동일만 재해시 확인) — CSP-2 실화면에서 stdout을 `logs/`에 tee로 남겨 재확인 · 관찰: 중복 meta 가드(M4)는 단일 테스트 방어선 | Low · QA |
 | B-M4B-01 | M4-b-2 QA 2차 R2 | React zip 실화면 렌더 대비(1280·390 정규화 DOM·390 메뉴 닫힘·이미지 masonry) [미확인] — 앱 렌더 iframe DOM 수집 불가. 오프라인 SSR 30변형 대조·스파이크 스크린샷 바이트 동일로 대체 근거 | Medium · M5 전 릴리스 체크 |
 | B-M4B-02 | M4-b-1 7a · RZ-AC-C2 | React zip windows·macOS `npm ci && npm run build` [미확인] — CI 신설(RZQ-10) 결정과 함께 | Medium · M5 |
 | B-M4B-03 | M4-b 문안 · 영환님 "1" | LICENSES 4절 NOTICE 동봉·소스 공개 의무(Apache-2.0 typescript·MPL-2.0 lightningcss) 법무 확인 — zip에서 제외한 문장 | 릴리스 게이트 · 법무 |

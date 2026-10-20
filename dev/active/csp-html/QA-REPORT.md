@@ -21,5 +21,6 @@
 - after.html: `http-equiv` 1개, 정책 문자열 확인. before.html·tampered.html은 남아 있지 않음(REPORT "측정 후 삭제"와 일치).
 - 위반 0 · R5 시트 닫힘: 스크립트(r02 리스너·r03 클릭 흐름)는 주장과 맞는 측정을 하지만 **출력 로그가 없어 QA가 재판독 불가** → 미확인(증거 부재).
 
-## 5. zip·React zip 코드 diff
-(진행 중)
+## 5. zip·React zip 코드 diff — 통과
+- `git diff --stat ec32f407 -- app/src/features/studio/zip app/src/features/studio/reactZip` → 출력 없음 · exit 0. 두 경로 실존(추적 파일 24개) — 빈 diff가 경로 오타 때문이 아님.
+- 브랜치 앱 변경은 `staticHtml/` 7파일뿐(`git diff --stat ec32f407 8775e440 -- app`: 202+/2-).

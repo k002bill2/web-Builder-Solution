@@ -45,8 +45,9 @@ RED 증거: 구현 전 `staticMarkup.ts`(`c1c8ba0a`)로 현 테스트 실행 →
 - base(BRIEF) `/studio` 128.76KB · 복원 131.76KB → 변경 후 128.76KB · 131.75KB = 증분 0. 감량 불필요.
 
 ## Codex
-(adversarial 1회 · 반영 1회 — 아래 채움)
+- adversarial 1회: `codex-companion adversarial-review --scope branch --base ec32f407`(thread 01a1588b) → **Verdict: approve · No material findings**. CSP 위치·정책 우회·직렬화·F-15 경로 검토, 스크립트 196바이트 sha256 = 상수·픽스처 5개 일치. Codex는 격리 조건 미확보로 테스트·브라우저 재실행 안 함(우리 fresh 게이트·Ego로 보완).
+- 반영 1회: 지적 0 → 코드 변경 없음.
 
 ## 커밋
 - `0c379708` BRIEF·PROGRESS 보존 · `71e96df9` REPORT 초안 · `c1c8ba0a` AC-07 픽스처 · `6bedabe4` meta·해시·F-15 · `af6e875c` EXPORT-SPEC 개정
-- R2: `3822670e` BRIEF-R2·PROGRESS · `afa1324e` RED 증거 · `bf4d0554` 게이트·예산 · `2a371b9e` R1·R5
+- R2: `3822670e` BRIEF-R2·PROGRESS · `afa1324e` RED 증거 · `bf4d0554` 게이트·예산 · `2a371b9e` R1·R5 · `b42b4cb4` REPORT 결과 · `37cc3820` R5 대조군 해석 정정 · (마감 커밋 = 이 파일 포함 커밋)

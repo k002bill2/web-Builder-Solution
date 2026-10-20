@@ -12,8 +12,8 @@ base `ec32f407` · 브랜치 `k002bill2/csp-html` · 정본 `docs/design/csp/CSP
 - [x] 6. 게이트 typecheck·lint·test·build
 - [x] 7. /studio 진입·복원 증분 0 확인(렌더 JS·CSS 판정 불변)
 - [x] 8. 실화면 R1(1280·390 전·후 바이트 동일·위반 0)·R5(390 메뉴 시트 닫힘) — Ego Lite 1회, preview 4399 종료·리슨 0
-- [ ] 9. Codex adversarial 1회 + 반영 1회
-- [ ] 10. REPORT 마감 · `git status --short` 빈 값
+- [x] 9. Codex adversarial 1회 + 반영 1회
+- [x] 10. REPORT 마감 · `git status --short` 빈 값
 
 ## 로그
 - R1 run(10:36 rate_limit 중단) 완료분: `0c379708` BRIEF·PROGRESS · `71e96df9` REPORT 초안 · `c1c8ba0a` AC-07 픽스처 · `6bedabe4` meta·해시·F-15(RED 22 실패 → GREEN) · `af6e875c` EXPORT-SPEC 4.4 개정
@@ -25,3 +25,5 @@ base `ec32f407` · 브랜치 `k002bill2/csp-html` · 정본 `docs/design/csp/CSP
   - R1: 1280 before·after 스크린샷 sha256 `3e4a42d637081873` 동일 · 390 `1f7c37224414b879` 동일 · securitypolicyviolation 0(양쪽, CDP addScriptToEvaluateOnNewDocument 리스너) · after meta[http-equiv] 1 / before 0
   - R5(390): after = 메뉴 시트 열림 → 시트 안 `#s-contact-1` 탭 → **닫힘**(스크립트 실행) · before 동일 · 대조군 tampered(`"click"`→`"clicK"`) = 시트 열린 채 — 동작을 바꾸는 변경이라 CSP 차단과 구분 불가(참고만). 해시 강제 판정 = AC-03·04·05(단위). r03(R5)은 새 프로세스라 위반 리스너 미등록
   - 종료: `pkill -f "vite preview --port 4399"` → `lsof -nP -iTCP:4399 -sTCP:LISTEN` 출력 0줄 · TaskSpace finish({keep:[]}) · dist/csp-r1 삭제
+- R2-5 Codex adversarial(branch, base ec32f407) = approve · 지적 0 → 반영 대상 없음
+- R2-6 REPORT 확정 · 마감 `git status --short` 빈 값 확인

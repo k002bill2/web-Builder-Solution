@@ -5,4 +5,4 @@
 - [x] 3. CSP-AC 판정표 재판독 · RED 22 실패 기록
 - [x] 4. Ego 로그 재판독(R1 바이트 동일·위반 0 · R5 시트 닫힘) — PNG 해시 일치 · 위반 0·R5 출력 로그 미보존(미확인)
 - [x] 5. zip·React zip 코드 diff 0 (vs ec32f407)
-- [ ] 판정 확정 · git status 빈 값
+- [x] 판정 확정 · git status 빈 값

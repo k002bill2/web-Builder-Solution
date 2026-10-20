@@ -1,7 +1,11 @@
 # CSP-1 QA-REPORT — static-html 고정 CSP 독립 검증
 
 - 대상 tip `8775e440` · base `ec32f407` · QA 2026-10-20 · 정적·회귀(브라우저 미사용, Ego는 산출물 재판독)
-- 판정: **(작성 중)**
+- 판정: **PASS (조건부 — 실화면 2개 주장은 증거 부재로 미확인)**
+  - 정적·회귀 1·2·3·5: 전부 통과 — 게이트 4개 fresh 통과, 변이 5종 + 2차 2종 모두 FAIL로 잡힘, RED 22 실패 재현, zip·React zip diff 0
+  - 4(Ego): R1 스크린샷 바이트 동일은 PNG 재해시로 **확인**. R1 위반 0 · R5 시트 닫힘은 실행 stdout이 남지 않아 **미확인**(스크립트는 측정 방식이 맞음 · 재실행 금지라 QA가 만들 수 없음). 차단 사유 아님 — 해시 강제는 AC-03·04·05 단위로 보장, R1 위반 0은 REPORT 스스로 '양성 대조 없이 측정'이라 적음
+  - 결함 0 · 관찰 2(M4 단일 방어선 · AC-07 범위 축소 미기재)
+- 권고: 다음 실화면 레인은 Ego stdout을 `dev/active/<task>/logs/`에 `tee`로 남긴다(이번엔 저장소에 logs/가 없음).
 
 ## 1. fresh 게이트·예산 — 통과 (QA fresh 실행, 로그 /tmp/qa-*.log)
 - `npx tsc --noEmit -p tsconfig.json` exit 0 · `npm run lint` exit 0 · `npx vitest run --maxWorkers=4` 376 files · **3387 passed** · exit 0 · `npm run build` exit 0

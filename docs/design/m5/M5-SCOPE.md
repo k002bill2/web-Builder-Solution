@@ -10,15 +10,21 @@
 
 ### 1.1 앱은 브라우저 전용이다
 
-[조사 반영 예정 — 코드 출발점 조사 결과로 파일:줄 채움]
-
-| 항목 | 현재 | 근거 |
+| 항목 | 현재 | 근거 [L1] |
 |---|---|---|
-| 저장 | IndexedDB 로컬 영속 + 파일 묶음(JSON+base64). 서버 영속은 "공유 기능 착수 시 별도 ADR" | ADR-007 P0·P4·P7 `docs/decisions/ADR-007-local-persistence.md:9,15,16` [L1] |
-| 서버·계정 | 없음. 독립 앱, 인증·조직·사용량 원장은 "자체 구현 필요(후속 단계)", 백엔드 미정 | `docs/decisions/ADR-001-standalone-repo-1a.md:13,18,20` [L1] |
-| 내보내기 | 3형식 | FR-PUB-02·03 `docs/02-prd/PRD.md:141-142` [L1] |
-| CSP | 내보낸 산출물 HTML 안 meta | |
-| 배포 | Vercel 프리뷰(제품 앱)만, 고객 사이트 호스팅 없음 | |
+| 저장 | IndexedDB DB `design-studio`(봉투 `SCHEMA_VERSION = 1`, DB_VERSION 2), store 7개 `meta·studio·docs·snapshots·images·board·saved` + 프로젝트 파일(.json) 내보내기·가져오기. 서버 영속은 "공유 기능 착수 시 별도 ADR" | `app/src/data/persistence/envelope.ts:5-8` · `idbPersistence.ts:13` · `features/projectFile/format.ts:12` · ADR-007 P7 `docs/decisions/ADR-007-local-persistence.md:16` |
+| 네트워크 | 서버 API 호출 0. 테스트 외 `fetch` 3곳은 모두 같은 출처·`blob:` 자원 읽기(렌더 스타일시트·글꼴·이미지 data URL). XMLHttpRequest·axios·WebSocket 0 | `features/studio/staticHtml/kitCss.ts:22` · `siteFontEmbed.ts:22` · `render/serializeSite.ts:8` |
+| 저장소 인터페이스 | 주석은 REST 모양("GET /projects", "POST /projects/{id}/export"), 구현은 메모리+IDB | `data/projectRepository.ts:146,166` · `data/memoryProjectRepository.ts:143-144` |
+| 계정·인증·권한 | login·auth·oauth·jwt·password·account·credential 등 **0건**. `token`은 저장 lease, `session`은 sessionStorage 1회 알림 플래그. 역할(viewer·editor·publisher·curator)은 문서에만 | `features/studio/save/saveCore.ts:89-135` · `TRD.md:183` |
+| 비밀·환경변수 | `.env.example` 없음(`.gitignore:7-9`만), `import.meta.env`는 `DEV` 확인 3곳, `process.env` 0 | `kitCss.ts:13` · `components/studio/PngSave.tsx:18` · `ExportRetryAlert.tsx:13` |
+| 내보내기 3형식 | `ExportFormat = "react-zip" \| "static-html" \| "static-zip"` — 산출물은 `blob:` URL로 내려받기만, 서버 전송 0 | `data/projectRepository.ts:95` · `features/studio/staticHtml/staticHtml.ts:141,168,177` · `features/studio/reactZip/reactZip.ts:101,128` · `features/studio/exportFlow.ts:111` |
+| 품질 게이트 | 8줄(contrast·alt-text·heading-order·required-sections·motion-budget·seo-meta·text-length·performance), 대비 AA 4.5 미만 = 차단 R-08. block ≥1이면 내보내기 중단, warn ≥1이면 확인. 내보내기 때 "내보내기 전" 자동 스냅샷 | `engine/contracts/records.ts:27-36` · `domain/contrast.ts:7` · `engine/gate/contrastRow.ts:28` · `features/studio/useExportFlow.ts:73-79` · `projectRepository.ts:165` |
+| CSP | 산출물 HTML 안 **meta 1개**: 정적 HTML `default-src 'none'; script-src '<메뉴 해시>'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'`, 정적 zip은 img·font `'self'`, React zip은 build plugin이 `dist/index.html`에 주입. meta가 무시하는 `frame-ancestors`·`report-uri`·`report-to`·`sandbox`는 넣지 않기로 함. **앱 자체(`index.html`·`render.html`)에는 CSP 없음** | `features/studio/staticHtml/staticMarkup.ts:20,22,147-152,187` · `features/studio/reactZip/templates.ts:29,36-41` · `docs/design/csp/CSP-SPEC.md:53` · `app/index.html:3-7` |
+| 서버 헤더·배포 설정 | `vercel.json`·`netlify.toml`·`_headers`·`wrangler.toml`·Dockerfile **없음**. 유일한 헤더 설정은 vite dev·preview CORS(렌더 iframe용 `Access-Control-Allow-Origin: null`, 주석 "정적 호스팅 요구사항: 앱 JS·CSS 응답에 같은 헤더") | `app/vite.config.ts:14,26,35-36` |
+| CI | `.github/` **없음** — CI 0. React zip RZQ-10은 B(로컬 Linux 컨테이너)로 시작 | `docs/design/m4b/REACTZIP-SPEC.md:332,401` |
+| Vercel 프리뷰 | 저장소 안 설정·코드로는 **확인 불가**(BRIEF `:10`만 언급) — 저장소 밖 Git 연동으로 추정 [추정] | `dev/active/m5-scope/BRIEF.md` |
+| 발행 흔적 | `SnapshotKind`에 `"published"`가 타입으로만 존재(라벨 "게시", 파일 가져오기 검증). **만드는 코드 0**. publish(이미지 setter 이름 오탐 제외)·rollback·share·subdomain·tenant·deploy 관련 코드 0 | `data/projectRepository.ts:91` · `engine/contracts/records.ts:24` · `components/studio/SnapshotDialog.tsx:9` · `features/projectFile/checkFile.ts:35` |
+| 발행 단위 후보 | release 개념 없음. 쓸 수 있는 식별자: `projectId` · `PageDoc.revision`(저장마다 +1)·`hash`(내용 해시) · 스냅샷 `snapshotId` · `ExportJob.resultHash` | `engine/contracts/pageDoc.ts:82-98` · `projectRepository.ts:31-43,63,98-122` |
 
 ### 1.2 정본 문서가 전제하는 M5
 
@@ -79,9 +85,9 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 ### M5-a 제품 CI
 
 - 목적: 제품 저장소의 typecheck·lint·test·build를 사람 손이 아닌 필수 check로 만든다. **고객 발행 게이트와 별개**다(원장: "제품 PR CI와 고객 publish gate를 분리") [53][58].
-- 원장 사실: PRIVATE Actions 포함분 Free 2,000 · Pro/Team 3,000 · Enterprise Cloud 50,000분/월, Linux 2-core 초과 단가 $0.006/분 — "PRIVATE라 곧 유료"는 틀린 전제 [53]. 현재 GitHub 플랜·잔여분·private branch 보호 자격은 미확인 [53][58].
+- 원장 사실: PRIVATE Actions 포함분 Free 2,000 · Pro/Team 3,000 · Enterprise Cloud 50,000분/월, Linux 2-core 초과 단가 $0.006/분 — "PRIVATE라 곧 유료"는 틀린 전제 [53]. 현재 GitHub 플랜·잔여분은 미확인 [53](L135, L350). **PRIVATE 저장소의 protected branch(필수 check 강제)는 GitHub Pro/Team/Enterprise에서만** — Free private에서 필수 check 강제를 보장하면 안 된다 [58](L144, L313). 분 단위 job별 올림·사용량은 repo owner pool 차감 [54](L130–131).
 - 범위: Linux 러너 1종, 필수 check = `npm run typecheck` · `npm run lint` · `npm test -- --run` · `npm run build`(CLAUDE.md 완료 기준과 같음).
-- **한계**: 원장 ★은 Linux 전용이다. B-M4B-02(windows·macOS `npm ci`)는 M5-a만으로 닫히지 않는다 — windows·macOS 러너 추가(분당 단가 다름 [L3 확인 필요]) 또는 수동 확인 유지 중 선택 → MQ-M5-02.
+- **한계**: 원장 ★은 Linux 전용이다. B-M4B-02(windows·macOS `npm ci`)는 M5-a만으로 닫히지 않는다 — windows·macOS 러너 추가(초과 단가 Windows $0.010·macOS $0.062/분 vs Linux 2-core $0.006/분 [53][54](L121–125), OS별 포함분 차감 배수 [미확인](L127)) 또는 수동 확인 유지 중 선택 → MQ-M5-02.
 - 의존: MQ-M5-02(CI 신설·플랜·필수 check) 결정. 원격 저장소 연결·push는 사용자 승인 사항(CLAUDE.md 규칙 7).
 - 종료 기준: 기본 브랜치 보호에 4개 check가 필수로 걸리고, 의도적으로 실패시킨 PR 1건이 병합 차단됨을 확인.
 - 측정: PR 1건의 check 실행 로그 · 차단 화면 · 월 사용 분(첫 2주 실측).
@@ -90,7 +96,7 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 
 - 목적: **원장 ★의 "조건"을 실측으로 판정**한다. 원장은 ★을 "채택 확정이 아니라 tenant별 원자적 release 전환·24시간 preview 만료·발행/rollback 성능을 검증한다는 조건의 판단"으로 둔다 [17][28][30]. M5-b가 그 검증이다.
 - 범위: 1.3의 최소 집합 S1~S6, tenant 1개(서브도메인 1개), 계정 1개 수동 발급, UI는 개발자용 최소(버튼 1개 + 결과 텍스트). 미리보기 공유·커스텀 도메인 제외.
-- 의존: M5-0 진행 중(병렬 가능하나 공개 전 종료) · MQ-M5-01·03·04·05·06 결정 · 계정 생성 승인(이 레인은 계정 생성 0).
+- 의존: M5-0 진행 중(병렬 가능하나 공개 전 종료) · MQ-M5-01·03·04·05·06·07·08 결정 · 계정 생성 승인(이 레인은 계정 생성 0).
 - 종료 기준(전부 실측):
   1. 발행 p95 ≤2분 · 롤백 ≤1분 — 아래 2.1 정의로, 표본·사이트 크기·동시성은 측정 전에 고정.
   2. 원자성: 전환 중 방문자가 구·신 release의 **섞인 asset**을 받지 않음(HTML 신 + CSS 구 등 0건).
@@ -103,7 +109,7 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 
 - 목적: 사용자에게 보이는 발행 흐름(4절)을 편집기에 넣는다.
 - 범위: 발행 전 게이트 재사용(FR-PUB-01) → 발행 확인 → 진행 상태(업로드·검증·전환) → 성공/실패 → release 목록·롤백 · "현재 공개 중" 표시 · 감사 로그 표시(최소).
-- 원장 판단: "발행 중·검증 중·전환 완료·실패·rollback 완료 상태를 구분하는 UI가 필요" · "작업 API 성공과 방문자가 보는 버전 검증을 동일시하지 않는다"(원장 5절 Designer 묶음) [인용 번호 없음 — 원장 판단 문장].
+- 원장 판단: "발행 중·검증 중·전환 완료·실패·rollback 완료 상태를 구분하는 UI가 필요" · "작업 API 성공과 방문자가 보는 버전 검증을 동일시하지 않는다"(원장 L366–367, 인용 번호 없는 원장 판단 문장).
 - 카피 금지(원장 5절): "발행 2분/rollback 1분 보장" · "preview 주소만 알면 24h 뒤 자동 비공개" · "고객 사이트 무제한 무료"를 확정 카피로 쓰지 않는다.
 - 의존: M5-b 종료. ADR-004 `/studio` 진입 예산(현 129KB 한도) — 발행 UI는 조작 뒤 dynamic import로 둬야 함 [추정: 진입 증가분 미측정].
 - 종료 기준: PUB-AC-01~10(4.2) 통과 · typecheck·lint·test·build · `/studio` 진입 예산 초과 0.
@@ -124,18 +130,21 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 
 ### 2.1 시간 수용 기준 정의 (원장 2.3 "시간 수용 기준 제안" 출발)
 
-[조사 반영 예정 — 원장 2.3 원문 요지로 시작·종료 시점 확정]
+원장 2.3 제안(원장 표기 "추정", L59): "이미 wildcard DNS/TLS가 준비된 상태에서 사용자 발행 클릭→validation→업로드→전환→외부 관측까지를 발행 시간으로 측정하고, 신규 도메인 DNS/TLS provisioning은 분리 계측". 롤백의 시작·종료 정의는 원장에 따로 없다 — 아래는 같은 원칙을 롤백에 옮긴 초안이다.
 
 초안 정의:
-- **발행 시간** = 사용자가 "발행" 확인을 누른 시각(서버 수신) → **공개 URL에서 새 release의 HTML과 그 HTML이 참조하는 모든 asset이 새 해시로 응답한 첫 시각**. 작업 API의 "성공" 응답 시각이 아니다(원장 5절 Designer 묶음).
+- **전제**: tenant의 서브도메인 DNS·TLS는 이미 준비됨. 첫 발행의 DNS/TLS provisioning 시간은 **별도 지표**로 기록하고 p95 ≤2분에 넣지 않는다(원장 L59).
+- **발행 시간** = 사용자가 "발행" 확인을 누른 시각(클라이언트 기록) → 게이트 확인 → 업로드 → 전환 → **외부 관측: 공개 URL에서 새 release의 HTML과 그 HTML이 참조하는 모든 asset이 새 해시로 응답한 첫 시각**. 작업 API의 "성공" 응답 시각이 아니다(원장 L367).
+- 원자성은 "불변 release 참조 전환"으로 판정하며 "전 세계 동시 전환"과 구별한다(원장 L33). 외부 관측 지점(지역 수)은 측정 전에 고정.
 - **롤백 시간** = "롤백" 확인 시각 → 공개 URL이 지정한 이전 release의 HTML·asset 해시로 응답한 첫 시각.
-- p95 표본·지역·사이트 크기(작은/큰)·동시성은 **측정 전에** 정의(원장 6절 4). 원장은 어느 후보도 이 SLA를 계약상 보장한다고 판정하지 않는다 [15][23][63].
+- p95 표본·지역·사이트 크기(작은/큰)·동시성은 **측정 전에** 정의(원장 L378). 원장은 어느 후보도 이 SLA를 계약상 보장한다고 판정하지 않았고 "instant"를 숫자 SLA로 바꾸지 않았다 [15][23][63](L12, L349).
+- 초안 표본(제안, 확정은 M5-b 착수 시): 사이트 2종(작은 = 시드 문서 1페이지·이미지 0 / 큰 = 이미지 24개 상한) × 발행 20회 이상 × 동시 1·3 [추정].
 
 ---
 
 ## 3. 호스팅 후보 아키텍처 스케치
 
-[조사 반영 예정 — 원장 후보별 위험 추출 결과로 인용 번호 보강]
+원장은 ★ 외에 2·3위를 매기지 않았다. B·C는 원장 서술(wildcard·빠른 rollback / signed URL·헤더 정책)을 보고 이 문서가 고른 비교 대상이다. 원장 인용은 `[N]`(원장 줄 `L`)로 단다.
 
 공통 모델(TRD에 맞춤, 새 모델을 만들지 않음):
 
@@ -150,32 +159,64 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 미리보기 = releases/… 직접 노출 없이, 서명 토큰(project_id·artifact_hash·exp) 검사 후 응답
 ```
 
-- release = `deployment(artifact_hash, state, promoted_at, rolled_back_at)` 1행 + `page_snapshot.kind=published` 1행(TRD `:173,175`) [L1].
-- **CSP meta와 서버 헤더의 관계**: 지금 산출물은 HTML 안 CSP meta를 갖는다(1.1). meta CSP는 `frame-ancestors`·`report-uri`·`sandbox`를 지원하지 않고, HSTS·nosniff·Referrer-Policy(헤더형)는 meta로 대신할 수 없다 [L3 확인 필요]. 따라서 발행본은 **서버 헤더가 정본**이고 meta는 내보내기(zip·`file://`)용으로 유지한다. 둘이 같이 있으면 브라우저는 두 정책을 모두 적용(교집합)하므로 서버 헤더가 meta보다 넓으면 meta가 사실상 상한이 된다 [L3 확인 필요] → M5-b 종료 기준 5에서 두 정책을 같은 생성기에서 만들어 불일치 0을 확인.
+- release = `deployment(artifact_hash, state, promoted_at, rolled_back_at)` 1행 + `page_snapshot.kind=published` 1행(TRD `:173,175`) [L1]. 앱 쪽에서는 발행 시 `"published"` 스냅샷을 처음으로 **만들고**(지금은 타입만 있음, 1.1), `artifact_hash` = 업로드한 정적 산출물의 내용 해시(`ExportJob.resultHash`와 같은 계산)로 둔다. 같은 `PageDoc.hash`를 다시 발행하면 같은 release로 본다(멱등).
+- 발행 산출물 = **정적 zip과 같은 생성기 출력**(`buildStaticHtml` target `"zip"`) — 정적 사이트이므로 원장 전제 "고객 사이트는 정적"(원장 L31)과 맞는다. React zip은 발행 대상이 아니다(빌드가 필요해 발행 2분 예산에 Git 빌드를 넣지 말라는 원장 L148과 충돌).
+- **CSP meta와 서버 헤더의 관계**: 지금 산출물은 HTML 안 CSP meta 1개를 갖는다(1.1). meta CSP가 무시하는 `frame-ancestors`·`report-uri`·`report-to`·`sandbox`는 이미 넣지 않기로 했다(`CSP-SPEC.md:53`) [L1]. HSTS·nosniff·Referrer-Policy·`X-Robots-Tag`는 응답 헤더 전용이라 meta로 대신할 수 없다 [L3 확인 필요]. 따라서 발행본은 **서버 헤더가 정본**이고 meta는 내보내기(zip·`file://`)용으로 유지한다. 둘이 같이 있으면 브라우저는 두 정책을 모두 적용(교집합)하므로 서버 헤더가 meta보다 넓으면 meta가 사실상 상한이 된다 [L3 확인 필요] → M5-b 종료 기준 5에서 두 정책을 같은 생성기에서 만들어 불일치 0을 확인.
 
-### 후보 A ★ Cloudflare Workers for Platforms + R2 (원장 조건부 추천)
+### 후보 A ★ Cloudflare Workers for Platforms + R2 (원장 조건부 추천, 원장 L9)
 
-- 매핑: wildcard Workers Route로 `*.{도메인}` 수신 → dispatch Worker가 Host→tenant 결정 [17][28]. Cloudflare Pages 단독은 wildcard custom domain을 직접 지원하지 않으므로 Pages는 후보가 아니다 [13].
-- 원자적 전환: R2 강한 일관성 위의 **불변 release + tenant별 활성 참조 전환** — 단, 이는 "설계안이지 기성 rollback 상품이 아니다". 캐시된 포인터 · 외부 asset 우회 · 동시 쓰기 · 구 release 보존을 수용 시험에 넣어야 한다 [22][66].
-- 미리보기 만료: dispatch Worker(엣지)에서 서명·만료 검사. WfP user Worker에는 Version URL이 없어 자체 설계 필수 [27].
-- 보안 헤더: dispatch Worker가 응답 헤더 주입 [조사 반영 예정].
-- 제품 위험: 약관 — WfP는 End Users 대상 기능 제공을 명시한 약관 예외가 확인됨, **일반 Workers $5 플랜만으로 같은 재판매 허용을 단정하지 않음** [17][28][30] · wildcard TLS 깊이를 먼저 고정해야 함 [13][17][31] · rollback 범위 = 제품이 직접 구현(플랫폼 rollback 아님) [22][66] · 비용 WfP $25/월부터 + R2 종량 [28].
+- **Host→tenant→release**: wildcard DNS(proxied) + `*.{도메인}/*` Workers Route → 단일 신뢰 라우터(dispatch) Worker가 Host로 tenant 결정 [17](원장 L41·L201–203). R2 객체를 Host→tenant→release→파일로 매핑하는 것은 원장도 "설계 추정"(L41). 정적 전용이면 tenant별 user Worker 없이 고정 사업자 코드만 쓰는 구성이 가능하다는 판단(L42). Workers Custom Domain 기능과 Route를 혼동하지 않는다(L41).
+- **원자적 전환 지점**: 불변 release 전부 업로드·검증 → tenant별 active-release 참조 **1회 교체**. "설계안이지 기성 rollback 상품이 아니다" — 원자성·동시 쓰기 제어(CAS)·release 보존·소요 시간은 **제품 구현 책임 [미확인]** [22][66](L55, L361). cached custom domain 경로는 stale 객체가 TTL까지 남을 수 있고 Worker binding 접근은 캐시 영향 없음 [22](L223–224) → **R2는 Worker binding으로만 읽고 R2 공개 도메인을 열지 않는다.**
+- **롤백 범위**: tenant 단위(참조가 tenant별). 일반 Workers version rollback(최근 100개, R2 데이터 복구 안 함 [23][24][25], L225–227)은 WfP user Worker에 그대로 적용된다고 보장되지 않는다(L55) → 플랫폼 rollback에 기대지 않는다.
+- **미리보기 만료 집행 위치**: 라우터 Worker(엣지)에서 서명·`exp` 검사, **모든 asset 요청**에 적용. WfP user Worker에는 Version URL이 없다(일반 Worker Version URL은 켜면 public) [27](L67, L234–235) → 자체 설계 필수, [미구현].
+- **보안 헤더 위치**: R2 응답에는 라우터 Worker가 헤더를 붙인다 — `_headers`(Static Assets 기능 [26])는 R2 응답에 자동 적용되지 않음 [66](L79).
+- **와일드카드 TLS 깊이**: Universal SSL은 apex + **1단계** subdomain만 [31](L242–243). `{slug}.publish.{도메인}` 같은 2단계는 추가 인증서 전략 필요 → **발행 도메인 구조를 `{slug}.{발행 전용 apex}` 1단계로 고정**하는 것을 M5-b 전제로 둔다(원장 L360 "wildcard TLS 깊이부터 고정"). P2 Cloudflare for SaaS: 100 hostnames 포함·추가 $0.10/hostname, 고객 측 wildcard custom hostname은 Enterprise 전용 [32][69](L244–246).
+- **약관**: Developer Platform 특약 §10 WfP "End Users on your Internet Properties" 예외 [30](L104, L241) — Cloudflare 계정/API 재판매 허가가 아님. self-serve §2.2.1(a)는 접근권 판매·제3자 대리 가입 금지 [29](L239), 일반 $5 Workers로 예외를 넓히지 않음(L340). §8 불법·유해 콘텐츠 통지 없는 차단 가능 [30](L240). R2 결합·우리 과금 모델 최종 적합성 [미확인].
+- **비용**: WfP $25/월(20M req·60M CPU-ms·1,000 scripts 포함, 초과 $0.30/M req 등) · R2 Standard $0.015/GB-월, Class A $4.50/M · B $0.36/M, egress 무료(무료분 10GB·A 1M·B 10M) [21][28](L89–90, L215–221). 라우터 경유·R2 서빙은 과금 대상(static assets 직서빙만 무료) [20](L41). $5와 $25 결합 청구 [미확인](L90).
+- **기타 위험**: R2 기반 논리 사이트 수·publish API throughput 한도 [미확인] · 일반 Workers 500개 한도를 WfP 한도로 보지 않음(L42).
+- **원장 전제**: "고객 사이트는 정적, **플랫폼 소유 라우터는 허용**" — 라우터 자체가 금지되면 재검토(L31) → MQ-M5-07.
 
-### 후보 B Vercel (wildcard 도메인 + 배포 승격)
+### 후보 B Vercel (wildcard 도메인 + 플랫폼 rollback)
 
-- 매핑: wildcard 도메인 지원 [1][11] [조사 반영 예정: tenant 매핑 방식].
-- 원자적 전환·롤백: 플랫폼 rollback이 있고 문서상 "수초" — end-to-end p95 SLA는 아님 [15].
-- 미리보기 만료: 일반 multi-tenant preview URL은 Enterprise 전용 [1][11] → 자체 서명 계층이 별도로 필요.
-- 제품 위험: 일반 서비스 약관의 **재판매 제한** [1][11] · 비용 Pro $20부터 [3][19][21] · 기존 제품 앱 Vercel 프리뷰와는 **별건**(원장 5절 PM 묶음 — 이 결과만으로 이전·삭제하지 않음).
+- **Host→tenant→release**: 모든 플랜 wildcard 지원 [1](L156). 단일 wildcard 프로젝트 안에서 Host 기반 tenant 라우팅은 별도 구현("추정", L39). wildcard는 Vercel NS 또는 DNS challenge 위임 필요 [1](L39, L77).
+- **원자적 전환 지점**: `POST /v13/deployments` → READY 확인 [10](L52, L184) → 승격. rollback `POST /v1/projects/{projectId}/rollback/{deploymentId}`, routing layer에서 "within seconds"·재빌드 없음 [62][63](L321–322) — end-to-end p95 SLA 아님 [15].
+- **롤백 범위 위험**: 단일 프로젝트 rollback은 **모든 tenant를 함께 되돌린다**(L52). tenant별 rollback이 필요하면 tenant당 프로젝트(도메인 soft limit Pro 100,000/project, 배포 6,000/일 — L157, L161) 또는 자체 참조 전환이 필요. rollback 뒤 production auto-assignment 꺼짐(L175). Hobby는 직전 1개만·비상업 [5](L174, L87).
+- **미리보기 만료 집행 위치**: 플랫폼 preview는 기본 public, branch URL 추측 가능 [6](L65, L176–177), retention이 정각 만료가 아님(보통 48h 이내, 최대 30일) [7](L178) → **24h 거부 수단으로 부적합**. multi-tenant preview URL은 Enterprise 전용 [1](L158). 자체 서명 계층(Edge Middleware 등 [L3 확인 필요])이 필요.
+- **보안 헤더 위치**: `vercel.json` headers [9](L77).
+- **TLS**: verified domain SSL 자동, custom cert 업로드는 Enterprise [1](L159, L77).
+- **약관**: 일반 약관 §11 "sublicense, resell … or otherwise commercially exploit" [11](L102, L185) — Platforms 문서와 충돌, 별도 서면 확인 필요(L339).
+- **비용**: Pro $20/월($20 credit·CDN 1TB·1M req, 추가 seat $20), 실제 합계 [미확인] [3][4](L87).
+- **기존 제품 앱 Vercel 프리뷰와 별건**: 이 결과만으로 이전·삭제하지 않는다(원장 L370).
 
 ### 후보 C AWS S3 + CloudFront
 
-- [조사 반영 예정: 원장의 AWS 근거로 매핑·전환·헤더·약관 채움] · 비용 CloudFront flat-rate Pro $15/distribution [21][42].
+- **Host→tenant→release**: standard distribution에 wildcard alias + SAN, edge 함수에서 Host→S3 prefix 라우팅을 직접 구현 [45][46](L44). 대안 multi-tenant distribution은 계정당 20개 [L60, L284, L317].
+- **원자적 전환 지점**: S3는 **단일 key만 원자적**, 여러 key 동시 갱신 불가 [65](L327–328) · CloudFront 설정 전파는 edge마다 비동시 [48](L288) → versioned filename [47](L285–286) + 작은 참조 객체 1개 교체를 직접 설계. 1분 목표 판정 보류(L57).
+- **미리보기 만료 집행 위치**: CloudFront signed URL이 요청마다 만료 검사 [50](L69, L291–292). **HTML만 서명하면 나머지 asset은 보호되지 않음** → signed cookie 또는 경로 전체 서명 [L3 확인 필요].
+- **보안 헤더 위치**: response headers policy로 CSP·HSTS·noindex를 코드 없이 적용 [49](L81, L289–290) — 후보 중 헤더 관리가 가장 선언적.
+- **TLS**: distribution당 인증서 1개 [45](L279), ACM DNS 검증 자동 갱신 [51](L293–294), 초기 발급 지연 [미확인](L81).
+- **약관**: §6.1 End Users 대상 서비스 제공 · §2.4 자격증명 판매 금지 [52](L106, L295–296), 최종 법무 [미확인].
+- **비용**: flat-rate Free $0(1M req·100GB) · Pro $15/distribution(10M·50TB·S3 50GB credit) · PAYG Asia $0.120/GB · S3 $0.023/GB [42][43][44](L92).
+- **제품 위험**: 라우팅·서명·전환을 가장 많이 직접 짓는다(운영 부담). 1인 운영 PoC 기준 구현량이 가장 크다 [추정].
+
+### 후보 비교 요약
+
+| 관점 | A ★ WfP+R2 | B Vercel | C S3+CloudFront |
+|---|---|---|---|
+| Host→tenant | 라우터 Worker(자체) [17] | wildcard 프로젝트 + 자체 라우팅 [1] | edge 함수(자체) [45][46] |
+| 원자적 전환 | 참조 1회 교체(자체 CAS) [22][66] | 플랫폼 승격 [10] | 참조 객체 1개(단일 key 원자) [65] |
+| rollback 범위 | tenant 단위(자체) | **프로젝트 전체**(L52) | tenant 단위(자체) |
+| 미리보기 24h | 라우터에서 자체 서명 [27] | 플랫폼 preview 부적합 [6][7] | signed URL/cookie [50] |
+| 서버 헤더 | 라우터가 주입 [66] | `vercel.json` [9] | headers policy [49] |
+| 와일드카드 TLS | 1단계만 [31] | NS/DNS 위임 [1] | 인증서 1개/dist [45] |
+| 약관 | WfP 예외 있음 [30], 일반 Workers 아님 [29] | 재판매 제한 [11] | End Users 조항 [52] |
+| 첫 비용 | $25 + R2 종량 [28] | $20 + seat [3] | $0~$15/dist [42] |
 
 ### 제외 후보 (원장 근거)
 
-- Cloudflare Pages 단독: wildcard custom domain 미지원 [13].
-- Netlify: 별도 서면 합의 없는 서비스 재판매 제한(서비스 구독계약) [41] · 가격 Personal $9/Pro $20부터 [33].
+- Cloudflare Pages 단독: wildcard custom domain 미지원 [13], preview hash URL 영구 접근 [14](L40, L66).
+- Netlify: 서비스 구독계약 §2.4(a) 재판매 제한 [41] · API deploy 3회/분·100회/일 [36] · preview URL 예측 가능 [38] · 한 프로젝트 초과 시 전체 pause [33](L43, L56, L68, L91, L105).
+- Firebase: 원장 범위 밖(L348).
 
 ---
 
@@ -223,11 +264,14 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 | ID | 질의 | ★ 제안 | 근거 |
 |---|---|---|---|
 | MQ-M5-01 | 고객 사이트 호스팅 사업자 · 결정 ADR 번호 | ★ **Cloudflare WfP + R2를 "검증 대상"으로 선택**, ADR(ADR-008 후보) 상태는 "계약 적합성 확인·preview 24h 우회 차단·발행 p95/rollback 실측 통과 전 보류" | 원장 1절 [17][28][30] · 5절 PM 묶음 · DEV_PLAN `:143` "ADR-004"는 성능 ADR이라 호스팅 ADR이 따로 필요 [L1] |
-| MQ-M5-02 | 제품 CI 신설 — 플랜·필수 check·OS 범위 | ★ GitHub Actions Linux 1종 · 필수 check 4개(typecheck·lint·test·build) · windows·macOS는 B-M4B-02 닫을 때 1회 수동 또는 별도 러너(추가 결정) | 원장 [53][58] · B-M4B-02 `BACKLOG.md:103` · 원격·push 사용자 승인(CLAUDE.md 7) |
+| MQ-M5-02 | 제품 CI 신설 — 플랜·필수 check·OS 범위 | ★ GitHub Actions Linux 1종 · 필수 check 4개(typecheck·lint·test·build) · windows·macOS는 B-M4B-02 닫을 때 1회 수동 또는 별도 러너(추가 결정). **필수 check 강제가 목적이면 PRIVATE 저장소는 Pro/Team 플랜 필요** — 현재 플랜 확인 | 원장 [53][54][58](L135, L144) · B-M4B-02 `BACKLOG.md:103` · 원격·push 사용자 승인(CLAUDE.md 7) |
 | MQ-M5-03 | 백엔드 위치 — AOS 이관 vs 독립 | ★ **독립(최소 발행 서버)** — M5-b 최소 집합 S1~S6만. AOS 이관은 TRD v0.2 전제와 맞지만 ADR-001(AOS 미변경)과 충돌 | TRD TR-SEC-10 "AOS 비밀 저장 재사용"·`:183` AOS `project_access` 전제 vs ADR-001 `:7,18` 독립·자체 구현 · ADR-007 P7 "자체 인프라 vs ADR-001 개정" |
 | MQ-M5-04 | 계정·인증 | ★ M5-b는 **수동 발급 계정 1개**(셀프 가입·조직 없음), 인증 방식은 MQ-M5-03 결정에 따름. 계정 2개 이상 전 서버 측 게이트 재검증 범위 결정 | TRD 4.6 `:183` · TR-SEC-02 · 1.3 위험 |
-| MQ-M5-05 | 비용 상한 | ★ PoC 월 상한을 숫자로 정해 ADR에 기록(원장 단가: WfP $25+R2 종량, Workers $5와 별도, Vercel Pro $20, Netlify Personal $9/Pro $20, CloudFront flat-rate Pro $15/distribution) · 초기 tenant 수·월 발행 수 입력 필요 | 원장 5절 [3][19][21][28][33][42] · 6절 "빈 입력값" |
+| MQ-M5-05 | 비용 상한 | ★ PoC 월 상한을 숫자로 정해 ADR에 기록(원장 단가: WfP $25+R2 종량 [21][28], 일반 Workers $5와 별도, Vercel Pro $20 [3][4], Netlify Personal $9/Pro $20(원장 L91), CloudFront flat-rate Pro $15/distribution [42]) + CI(Free 2,000분 안이면 $0 [53]) · 초기 tenant 수·월 발행 수 입력 필요 | 원장 L364–365 · L380 "빈 입력값" · 월 총액·손익분기 [미확인](L96) |
 | MQ-M5-06 | 법무 — 약관 서면 확인 | ★ 사업자에 "정적 고객 사이트를 우리 도메인에 유료 제공, 고객에게 사업자 계정/API 접근권은 판매하지 않음"을 명시해 **서면 계약 적합성 확인** 후 M5-b 공개 · B-M4B-03(NOTICE·소스 공개 의무) 같이 확인 | 원장 6절 3 · 1절 2 [1][11][13][41] · `BACKLOG.md:104` |
+
+| MQ-M5-07 | 정본 해석 — (a) 플랫폼 소유 라우터(엣지 코드) 허용 여부 (b) TR-SEC-08(서명·24h·보안 헤더)을 M5 필수로 유지 | ★ (a) 허용 — 고객 산출물은 정적, 라우터·만료 검사 코드는 사업자 소유 (b) 필수 유지(가점으로 낮추지 않음) | 원장 L31 "라우터도 금지라면 Workers+R2 추천은 재검토" · L343 "정본 수정 없이 가점으로 낮추면 안 됨" · 6절 2 · `TRD.md:290` [L1] |
+| MQ-M5-08 | 발행 도메인 구조 | ★ `{slug}.{발행 전용 apex}` **1단계** 고정(제품 앱 도메인과 분리) — 2단계(`{slug}.publish.…`)는 추가 인증서 전략 필요 | 원장 [31](L242–243, L360) · 제품 앱과 고객 사이트를 다른 apex로 두면 쿠키·출처가 섞이지 않음 [L3 확인 필요] |
 
 이 레인이 하지 않은 것: 계정 생성 · 사업자 문의 · 외부 발송 · 원격 쓰기 · 앱 코드 변경 · 외부 리서치.
 

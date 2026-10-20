@@ -10,13 +10,13 @@ import { createMemoryPersistence } from "../../data/persistence/studioPersistenc
 import { checkSaveDoc } from "../../data/startDocWrite";
 import { hashDoc } from "../../engine/ops/hash";
 import type { PageDoc } from "../../engine/contracts/pageDoc";
-import { fakeDeps, fileImage, jsonFile, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
+import { fakeDeps, fileImage, jsonFile, seedFile, seedProject, seedSeries, uid } from "../../test/projectFileFixtures";
 import { checkFile, type CheckedFile } from "./checkFile";
 import { mergeImport, rekeyImport } from "./rekey";
 
 const NOW = "2026-10-08T10:00:00.000Z";
 
-async function checked(over: Parameters<typeof seedFile>[0] = {}, images = [fileImage("a", 500, 300)]): Promise<CheckedFile> {
+async function checked(over: Parameters<typeof seedFile>[0] = {}, images = [fileImage(uid("a"), 500, 300)]): Promise<CheckedFile> {
   const result = await checkFile(jsonFile(seedFile(over, images)), fakeDeps().deps);
   if (!result.ok) throw new Error(result.message);
   return result.file;
@@ -57,7 +57,7 @@ describe("rekeyImport 치환 규칙 (3.4)", () => {
       expect(checkSaveDoc("project-2", s.doc).ok).toBe(true);
     });
     expect(plan.head).toEqual({ projectId: "project-2", revision: doc.doc.revision, hash: doc.doc.hash, profileVersion: doc.doc.profileVersion, candidateId: doc.doc.candidateId, updatedAt: doc.doc.updatedAt });
-    expect(plan.images.map((im) => [im.key, im.image])).toEqual([["project-2/a", file.images[0]]]);
+    expect(plan.images.map((im) => [im.key, im.image])).toEqual([[`project-2/${uid("a")}`, file.images[0]]]);
   });
 
   it("AC-P03 — 대상 project-1·profile-1 + 같은 id 파일 → project-2 · 기존 값 그대로 · 같은 파일 2회 = project-3 · seq 불변", async () => {
@@ -88,6 +88,35 @@ describe("rekeyImport 치환 규칙 (3.4)", () => {
     const merged = mergeImport(undefined, plan);
     expect(merged.heads.has("project-1")).toBe(false);
     expect(merged.projects.get("project-1")?.name).toBe("강남 카페");
+  });
+});
+
+describe("SEC L-2 — 문서 밖 레코드(project·series·DocRecord 봉투·스냅샷 머리) = 아는 키만 저장 · 아는 선택 키는 그대로", () => {
+  const evil = JSON.parse('{"__proto__":{"polluted":1},"evil":"<img src=x onerror=alert(1)>"}') as Record<string, unknown>;
+  const keys = (v: object) => Object.keys(v).sort();
+
+  it("project에 hasDoc·candidateId·docSavedAt·latestProfileVersion·__proto__ → plan.project 키 = Project 7개", async () => {
+    const file = await checked({ doc: null, project: { ...seedProject(), hasDoc: true, candidateId: "A", docSavedAt: "9999-12-31T00:00:00.000Z", latestProfileVersion: 99, ...evil } });
+    const plan = planned(rekeyImport(file, undefined, NOW));
+    expect(keys(plan.project)).toEqual(["baseReferenceId", "createdAt", "name", "profileId", "projectId", "revision", "updatedAt"]);
+    expect(Object.getPrototypeOf(plan.project)).toBe(Object.prototype);
+  });
+
+  it("series 버전 · DocRecord 봉투 · 스냅샷 머리의 모르는 키 → 빠짐 · basedOn·boardRevision·dropped·reason·snapshotSeq는 그대로", async () => {
+    const [v1, v2] = seedSeries();
+    const doc = JSON.parse(JSON.stringify(seedFile().doc)) as Record<string, unknown> & { snapshots: Record<string, unknown>[] };
+    const file = await checked({
+      series: [{ ...v1, ...evil }, { ...v2, origin: "revert", basedOn: 1, dropped: [] }],
+      doc: { ...doc, ...evil, snapshots: doc.snapshots.map((snapshot) => ({ ...snapshot, ...evil })) },
+    });
+    const plan = planned(rekeyImport(file, undefined, NOW));
+    expect(plan.series.map(keys)).toEqual([
+      ["adjustments", "base", "baseReferenceId", "boardRevision", "createdAt", "origin", "profileId", "version"],
+      ["adjustments", "base", "baseReferenceId", "basedOn", "createdAt", "dropped", "origin", "profileId", "version"],
+    ]);
+    expect(keys(plan.doc!)).toEqual(["doc", "snapshotSeq", "snapshots"]);
+    const head = ["candidateId", "createdAt", "doc", "hash", "kind", "name", "profileVersion", "projectId", "snapshotId"];
+    expect(plan.doc!.snapshots.map(keys)).toEqual([head, [...head.slice(0, 8), "reason", ...head.slice(8)], head]);
   });
 });
 

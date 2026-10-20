@@ -4,13 +4,14 @@
  */
 import { describe, expect, it } from "vitest";
 import { DB_NAME, SCHEMA_VERSION } from "../../data/persistence/envelope";
-import { fakeDeps, fakeImageBytes, seedDocRecord, seedProject, seedSeries } from "../../test/projectFileFixtures";
+import { fakeDeps, fakeImageBytes, seedDocRecord, seedProject, seedSeries, uid } from "../../test/projectFileFixtures";
 import { checkFile } from "./checkFile";
 import { encodeProjectFile } from "./encode";
 import { readImageRecord } from "../../data/persistence/imageRecord";
 import { WIDTH_STEPS, widthLadder } from "../studio/images/ingest/ladder";
 import { MAX_PIXELS, MAX_SIDE } from "../studio/images/ingest/limits";
-import { EXPORT_DB_NAME, EXPORT_MAX_PIXELS, EXPORT_MAX_SIDE, EXPORT_WIDTH_STEPS, exportImageOf, readProject } from "./readProject";
+import { LOCAL_IMAGE_ID } from "../../engine/validate/localImageId";
+import { EXPORT_DB_NAME, EXPORT_IMAGE_ID, EXPORT_MAX_PIXELS, EXPORT_MAX_SIDE, EXPORT_WIDTH_STEPS, exportImageOf, readProject } from "./readProject";
 
 const env = (kind: string, id: string, data: unknown, schemaVersion = SCHEMA_VERSION) => ({ schemaVersion, kind, id, data });
 
@@ -100,9 +101,9 @@ function seeded(over: { state?: unknown; doc?: unknown; images?: ReadonlyMap<str
     images:
       over.images ??
       new Map([
-        ["project-1/b", env("image", "project-1/b", image("bb"))],
-        ["project-1/a", env("image", "project-1/a", image("a"))],
-        ["project-10/a", env("image", "project-10/a", image("x"))],
+        [`project-1/${uid("b")}`, env("image", `project-1/${uid("b")}`, image("bb"))],
+        [`project-1/${uid("a")}`, env("image", `project-1/${uid("a")}`, image("a"))],
+        [`project-10/${uid("a")}`, env("image", `project-10/${uid("a")}`, image("x"))],
       ]),
   });
 }
@@ -126,8 +127,8 @@ describe("readProject — 읽기 한 트랜잭션 (P2-SPEC 3.6)", () => {
     expect(series.every((v) => v.profileId === "profile-1")).toBe(true);
     expect(doc).toEqual(docData);
     // 슬래시 포함 접두 — project-10/a 무접촉
-    expect(images.map((i) => i.localId).sort()).toEqual(["a", "b"]);
-    expect(images.find((i) => i.localId === "b")!.image).toEqual(image("bb"));
+    expect(images.map((i) => i.localId).sort()).toEqual([uid("a"), uid("b")]);
+    expect(images.find((i) => i.localId === uid("b"))!.image).toEqual(image("bb"));
   });
 
   it("문서 레코드 없음 = doc null(편집 문서를 아직 만들지 않은 프로젝트)", async () => {
@@ -137,13 +138,13 @@ describe("readProject — 읽기 한 트랜잭션 (P2-SPEC 3.6)", () => {
 
   it("깨진 이미지 레코드(봉투 id 불일치·변형본 아님)는 건너뛴다 — 열기에서도 잃은 이미지", async () => {
     const images = new Map<string, unknown>([
-      ["project-1/a", env("image", "project-1/a", image("a"))],
-      ["project-1/b", env("image", "project-1/zz", image("b"))],
-      ["project-1/c", env("image", "project-1/c", { ...image("c"), variants: { 640: "문자열" } })],
-      ["project-1/d", env("image", "project-1/d", image("d"), 2)],
+      [`project-1/${uid("a")}`, env("image", `project-1/${uid("a")}`, image("a"))],
+      [`project-1/${uid("b")}`, env("image", `project-1/${uid("zz")}`, image("b"))],
+      [`project-1/${uid("c")}`, env("image", `project-1/${uid("c")}`, { ...image("c"), variants: { 640: "문자열" } })],
+      [`project-1/${uid("d")}`, env("image", `project-1/${uid("d")}`, image("d"), 2)],
     ]);
     const result = await readProject(seeded({ images }).factory, "project-1");
-    expect(result.status === "ok" && result.source.images.map((i) => i.localId)).toEqual(["a"]);
+    expect(result.status === "ok" && result.source.images.map((i) => i.localId)).toEqual([uid("a")]);
   });
 });
 
@@ -158,15 +159,15 @@ describe("Codex r1 — 이미지 레코드는 저장 규칙 전체(readImageReco
 
   it("width 1280 + variants 640만 · variants {} → 제외 · 나머지 정상 이미지는 포함", async () => {
     const images = new Map<string, unknown>([
-      ["project-1/a", env("image", "project-1/a", image("a"))],
-      ["project-1/b", env("image", "project-1/b", shortLadder())],
-      ["project-1/c", env("image", "project-1/c", emptyVariants)],
-      ["project-1/d", env("image", "project-1/d", image("d"))],
+      [`project-1/${uid("a")}`, env("image", `project-1/${uid("a")}`, image("a"))],
+      [`project-1/${uid("b")}`, env("image", `project-1/${uid("b")}`, shortLadder())],
+      [`project-1/${uid("c")}`, env("image", `project-1/${uid("c")}`, emptyVariants)],
+      [`project-1/${uid("d")}`, env("image", `project-1/${uid("d")}`, image("d"))],
     ]);
     const result = await readProject(seeded({ images }).factory, "project-1");
     expect(result.status).toBe("ok");
     if (result.status !== "ok") return;
-    expect(result.source.images.map((i) => i.localId)).toEqual(["a", "d"]);
+    expect(result.source.images.map((i) => i.localId)).toEqual([uid("a"), uid("d")]);
     expect(result.source.images[0]!.image).toEqual(image("a"));
   });
 
@@ -176,8 +177,8 @@ describe("Codex r1 — 이미지 레코드는 저장 규칙 전체(readImageReco
       studio: new Map([["state", env("state", "state", stateData({ projects: new Map([["project-1", seedProject()]]), series: new Map([["profile-1", seedSeries()]]) }))]]),
       docs: new Map([["project-1", env("doc", "project-1", seedDocRecord())]]),
       images: new Map<string, unknown>([
-        ["project-1/good", env("image", "project-1/good", { variants: { 640: good }, width: 640, height: 480, format: "png", bytes: good.size })],
-        ["project-1/bad", env("image", "project-1/bad", shortLadder())],
+        [`project-1/${uid("good")}`, env("image", `project-1/${uid("good")}`, { variants: { 640: good }, width: 640, height: 480, format: "png", bytes: good.size })],
+        [`project-1/${uid("bad")}`, env("image", `project-1/${uid("bad")}`, shortLadder())],
       ]),
     });
     const read = await readProject(idb.factory, "project-1");
@@ -187,7 +188,31 @@ describe("Codex r1 — 이미지 레코드는 저장 규칙 전체(readImageReco
     const checked = await checkFile(encoded.blob, fakeDeps().deps);
     expect(checked).toMatchObject({ ok: true });
     if (!checked.ok) return;
-    expect(checked.file.images.map((i) => [i.localId, i.width, Object.keys(i.variants)])).toEqual([["good", 640, ["640"]]]);
+    expect(checked.file.images.map((i) => [i.localId, i.width, Object.keys(i.variants)])).toEqual([[uid("good"), 640, ["640"]]]);
+  });
+});
+
+describe("SEC L-3 — 가져오기가 거절할 localId(UUID v4 아님)는 싣지 않는다 · 파일 전체 IM-6 대신 그 레코드만 제외", () => {
+  it("id 규칙 = engine LOCAL_IMAGE_ID (parity — 리터럴 복제)", () => {
+    expect(EXPORT_IMAGE_ID.source).toBe(LOCAL_IMAGE_ID.source);
+  });
+
+  it("수정 전 가져온 project-1/a(UUID 아님) + 정상 UUID → readProject = UUID만 · encode → checkFile(L1) ok", async () => {
+    const plain = () => {
+      const blob = new Blob([fakeImageBytes("png", 640, 480) as BlobPart], { type: "image/png" });
+      return { variants: { 640: blob }, width: 640, height: 480, format: "png", bytes: blob.size };
+    };
+    const images = new Map([
+      ["project-1/a", env("image", "project-1/a", plain())],
+      [`project-1/${uid("b")}`, env("image", `project-1/${uid("b")}`, plain())],
+    ]);
+    const read = await readProject(seeded({ images }).factory, "project-1");
+    if (read.status !== "ok") throw new Error(read.status);
+    expect(read.source.images.map((i) => i.localId)).toEqual([uid("b")]);
+    const encoded = await encodeProjectFile({ ...read.source, exportedAt: "2026-10-08T09:12:33.000Z" });
+    if (!encoded.ok) throw new Error(encoded.message);
+    const checked = await checkFile(encoded.blob, fakeDeps().deps);
+    expect(checked.ok && checked.file.images.map((i) => i.localId)).toEqual([uid("b")]);
   });
 });
 
@@ -217,8 +242,8 @@ describe("Codex r2 — 문서·스냅샷·계열·프로젝트도 가져오기�
       return { variants: { 640: blob }, width: 640, height: 480, format: "png", bytes: blob.size };
     };
     const images = new Map([
-      ["project-1/a", env("image", "project-1/a", plain())],
-      ["project-1/b", env("image", "project-1/b", plain())],
+      [`project-1/${uid("a")}`, env("image", `project-1/${uid("a")}`, plain())],
+      [`project-1/${uid("b")}`, env("image", `project-1/${uid("b")}`, plain())],
     ]);
     const read = await readProject(seeded({ images }).factory, "project-1");
     if (read.status !== "ok") throw new Error(read.status);
@@ -230,7 +255,7 @@ describe("Codex r2 — 문서·스냅샷·계열·프로젝트도 가져오기�
     expect(checked.file.project).toEqual(read.source.project);
     expect(checked.file.series).toEqual(read.source.series);
     expect(checked.file.doc).toEqual(read.source.doc);
-    expect(checked.file.images.map((i) => i.localId).sort()).toEqual(["a", "b"]);
+    expect(checked.file.images.map((i) => i.localId).sort()).toEqual([uid("a"), uid("b")]);
   });
 });
 
@@ -239,12 +264,12 @@ describe("exportImageOf = readImageRecord parity (리터럴 복제 — 진입 cl
     expect([EXPORT_MAX_SIDE, EXPORT_MAX_PIXELS, EXPORT_WIDTH_STEPS]).toEqual([MAX_SIDE, MAX_PIXELS, [...WIDTH_STEPS]]);
   });
 
-  const blobOf = (format: string, w: number) => new Blob([fakeImageBytes(format, w, 10) as BlobPart]);
+  const blobOf = (format: string, w: number, type = `image/${format}`) => new Blob([fakeImageBytes(format, w, 10) as BlobPart], { type });
   const valid = (width: number, height: number, format = "png") => {
     const variants = Object.fromEntries(widthLadder(width).map((w) => [w, blobOf(format, w)]));
     return { variants, width, height, format, bytes: Object.values(variants).reduce((sum, b) => sum + b.size, 0) };
   };
-  const id = "project-1/x";
+  const id = `project-1/${uid("x")}`;
   const base = valid(800, 400);
   const corpus: Array<[string, unknown]> = [
     ...[500, 640, 800, 1280, 1500, 1920, 2400].map((w) => [`정상 png ${w}`, env("image", id, valid(w, 300))] as [string, unknown]),
@@ -253,7 +278,7 @@ describe("exportImageOf = readImageRecord parity (리터럴 복제 — 진입 cl
     ["레코드 없음", undefined],
     ["null", null],
     ["kind 다름", env("doc", id, base)],
-    ["id 다름", env("image", "project-1/y", base)],
+    ["id 다름", env("image", `project-1/${uid("y")}`, base)],
     ["schemaVersion 2", env("image", id, base, 2)],
     ["data null", env("image", id, null)],
     ["형식 gif", env("image", id, { ...base, format: "gif" })],
@@ -268,6 +293,8 @@ describe("exportImageOf = readImageRecord parity (리터럴 복제 — 진입 cl
     ["높이 소수", env("image", id, { ...base, height: 1.5 })],
     ["폭 0", env("image", id, { ...base, width: 0 })],
     ["변형본 Blob 아님", env("image", id, { ...base, variants: { 640: "x", 800: base.variants[800] } })],
+    ...["image/svg+xml", "text/html", "", "image/jpeg"].map((type) => [`Blob.type ${type || "빈 값"}(SEC L-4)`, env("image", id, { ...base, variants: { 640: blobOf("png", 640, type), 800: blobOf("png", 800, type) } })] as [string, unknown]),
+    ["한 단만 Blob.type svg+xml(SEC L-4)", env("image", id, { ...base, variants: { ...base.variants, 800: blobOf("png", 800, "image/svg+xml") } })],
   ];
 
   it.each(corpus)("%s → 원본과 같은 판정", async (_, record) => {

@@ -3,8 +3,11 @@
 - 대상 tip `8775e440` · base `ec32f407` · QA 2026-10-20 · 정적·회귀(브라우저 미사용, Ego는 산출물 재판독)
 - 판정: **(작성 중)**
 
-## 1. fresh 게이트·예산
-(진행 중)
+## 1. fresh 게이트·예산 — 통과 (QA fresh 실행, 로그 /tmp/qa-*.log)
+- `npx tsc --noEmit -p tsconfig.json` exit 0 · `npm run lint` exit 0 · `npx vitest run --maxWorkers=4` 376 files · **3387 passed** · exit 0 · `npm run build` exit 0
+- `/studio/:projectId` 해시 정규화 **128.76KB** (기준선 128.76 · 멈춤 > 128.79) — BRIEF 값 일치
+- 복원 진입 **131.75KB** (기준선 131.75) — BRIEF 131.76 대비 −0.01, 개발자 REPORT 131.75와 동일. 증가 아님 → 통과
+- 렌더 문서 JS **84.30**/90 · CSS **8.89**/30 — REPORT 값 그대로 재현(불변) · 'React zip 진입 정적 포함 0 가드 통과'
 
 ## 2. 변이 5종
 | # | 변이 | 결과 |

@@ -33,10 +33,10 @@
   - **주의**: ADR-004는 성능 예산 ADR이며 호스팅 결정을 담지 않는다(`docs/decisions/ADR-004-performance-budgets.md` 전체에 "호스팅" 0건) [L1]. 호스팅 결정은 **새 ADR**(다음 빈 번호, ADR-008 후보)로 받는 것을 전제로 쓴다 → MQ-M5-01.
   - ADR-004가 M5에 주는 제약은 **렌더 문서(생성 홈페이지) 예산 JS ≤90KB · CSS ≤30KB**(`ADR-004…:15`)다. 발행본은 같은 산출물이므로 같은 예산을 그대로 진다.
 - TRD 데이터 모델: `page_snapshot.kind[auto|manual|published]` · `deployment(id, project_id, artifact_hash, state, promoted_at, rolled_back_at) -- P1` · `generated_project.preview_url(서명된 만료 URL)` — `docs/03-trd/TRD.md:167-175` [L1].
-- TRD API: `POST /api/design-studio/projects/{id}/publish` · `…/rollback`(권한 publisher) · `GET …/preview`(서명된 미리보기 URL) — `TRD.md:203,205` [L1]. 역할 viewer·editor·**publisher**·curator, AOS `project_access` 검사 전제 — `TRD.md:183` [L1].
+- TRD API: `POST /api/design-studio/projects/{id}/publish` · `…/rollback`(권한 publisher) · `GET …/preview`(서명된 미리보기 URL) — `TRD.md:202,205` [L1]. 역할 viewer·editor·**publisher**·curator, AOS `project_access` 검사 전제 — `TRD.md:183` [L1].
 - TRD 보안: TR-SEC-08 미리보기 URL 서명·만료(24h)·noindex, 발행 사이트 보안 헤더(CSP·HSTS·nosniff·Referrer-Policy) · TR-SEC-10 비밀(호스팅·DNS 토큰)은 **AOS 비밀 저장 방식 재사용**, 로그 출력 금지 · TR-SEC-11 감사 로그(발행·롤백 포함) — `TRD.md:290,292,293` [L1].
 - TRD 12절 결정 필요 2(객체 저장소·호스팅 사업자) · 3(생성 워커 실행 환경) · 5(AOS 내 노출 방식) — `TRD.md:319-327` [L1]. M5는 2를 반드시, 5를 간접으로(계정·권한 위치) 건드린다.
-- 관측: "발행 실패(P1)" 지표·경보 — `TRD.md:312` [L1].
+- 관측: "발행 실패(P1)" 지표·경보 — `TRD.md:315` [L1].
 
 ### 1.3 M5가 처음 요구하는 것 — 백엔드·계정·권한·비밀 저장
 
@@ -162,6 +162,7 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 ```
 
 - **asset 고정 규칙(필수)**: 지금 zip 생성기는 `assets/images/img-01.webp`·`assets/fonts/…` 같은 **상대 경로**를 만든다(`app/src/features/studio/zip/staticZip.ts:22` · `zipSite.ts:31-32`) [L1]. 요청마다 활성 포인터를 조회하면 구 HTML을 받은 방문자의 후속 asset 요청이 신 release로 매핑되어 섞인다. 따라서 HTML이 참조하는 **모든 asset URL과 캐시 키는 tenant·불변 release에 고정**한다(예: 발행 경로에서 `/_r/{artifact_hash}/assets/…` 접두 — 생성 단계에서 넣을지 업로드 단계에서 바꿀지는 M5-b 설계). HTML 문서는 짧은 캐시(재검증), release asset은 불변 장기 캐시 [L3 확인 필요]. 원장도 "캐시된 포인터·외부 asset 우회"를 수용 시험 대상으로 꼽는다 [22][66](L361).
+  - **해시 순환 방지**: `artifact_hash`는 경로 접두를 넣기 **전** 생성기 출력의 manifest로 계산한다. 접두에는 그 값(또는 `deployment.id`)을 쓴다 — 접두를 넣은 HTML로 해시를 다시 계산하지 않는다.
 - release = `deployment(artifact_hash, state, promoted_at, rolled_back_at)` 1행 + `page_snapshot.kind=published` 1행(TRD `:173,175`) [L1]. 앱 쪽에서는 발행 시 `"published"` 스냅샷을 처음으로 **만들고**(지금은 타입만 있음, 1.1), **release 동일성 = 검증된 산출물 manifest(파일 경로·각 파일 내용 해시 목록)의 내용 해시**(`artifact_hash`). `PageDoc.hash`로 정하지 않는다 — 생성기는 문서 밖 입력(현재 CSS·글꼴·이미지 저장소 Blob, 이미지 유실 시 폴백)에도 의존하므로(`app/src/features/studio/staticHtml/staticHtml.ts:157-174` · `staticHtml/exportImages.ts:26-36`) [L1] 같은 문서 해시에서 다른 산출물이 나올 수 있다. **요청 재시도용 멱등 키**(발행 요청 1건 = 키 1개)는 release 동일성과 분리한다. 의미 정리: (i) 같은 manifest 해시 재발행 = 새 업로드 없이 기존 release를 다시 승격(롤백 후 재승격 포함, `deployment` 행은 새로 남겨 이력 유지) (ii) 같은 문서·다른 manifest = 새 release.
 - 발행 산출물 = **정적 zip과 같은 생성기 출력**(`buildStaticHtml` target `"zip"`) — 정적 사이트이므로 원장 전제 "고객 사이트는 정적"(원장 L31)과 맞는다. React zip은 발행 대상이 아니다(빌드가 필요해 발행 2분 예산에 Git 빌드를 넣지 말라는 원장 L148과 충돌).
 - **CSP meta와 서버 헤더의 관계**: 지금 산출물은 HTML 안 CSP meta 1개를 갖는다(1.1). meta CSP가 무시하는 `frame-ancestors`·`report-uri`·`report-to`·`sandbox`는 이미 넣지 않기로 했다(`CSP-SPEC.md:53`) [L1]. HSTS·nosniff·Referrer-Policy·`X-Robots-Tag`는 응답 헤더 전용이라 meta로 대신할 수 없다 [L3 확인 필요]. 따라서 발행본은 **서버 헤더가 정본**이고 meta는 내보내기(zip·`file://`)용으로 유지한다. 둘이 같이 있으면 브라우저는 두 정책을 모두 적용(교집합)하므로 서버 헤더가 meta보다 넓으면 meta가 사실상 상한이 된다 [L3 확인 필요] → M5-b 종료 기준 5에서 두 정책을 같은 생성기에서 만들어 불일치 0을 확인.
@@ -277,9 +278,9 @@ M5-0·M5-a는 서로 독립이고 호스팅 결정 전에 시작할 수 있다. 
 |---|---|---|---|
 | MQ-M5-01 | 고객 사이트 호스팅 사업자 · 결정 ADR 번호 | ★ **Cloudflare WfP + R2를 "검증 대상"으로 선택**, ADR(ADR-008 후보) 상태는 "계약 적합성 확인·preview 24h 우회 차단·발행 p95/rollback 실측 통과 전 보류" | 원장 1절 [17][28][30] · 5절 PM 묶음 · DEV_PLAN `:143` "ADR-004"는 성능 ADR이라 호스팅 ADR이 따로 필요 [L1] |
 | MQ-M5-02 | 제품 CI 신설 — 플랜·필수 check·OS 범위 | ★ GitHub Actions Linux 1종 · 필수 check 4개(typecheck·lint·test·build) · windows·macOS는 B-M4B-02 닫을 때 1회 수동 또는 별도 러너(추가 결정). **필수 check 강제가 목적이면 PRIVATE 저장소는 Pro/Team 플랜 필요** — 현재 플랜 확인 | 원장 [53][54][58](L135, L144) · B-M4B-02 `BACKLOG.md:103` · 원격·push 사용자 승인(CLAUDE.md 7) |
-| MQ-M5-03 | 백엔드 위치 — AOS 이관 vs 독립 | ★ **독립(최소 발행 서버)** — M5-b 최소 집합 S1~S6만. AOS 이관은 TRD v0.2 전제와 맞지만 ADR-001(AOS 미변경)과 충돌 | TRD TR-SEC-10 "AOS 비밀 저장 재사용"·`:183` AOS `project_access` 전제 vs ADR-001 `:7,18` 독립·자체 구현 · ADR-007 P7 "자체 인프라 vs ADR-001 개정" |
+| MQ-M5-03 | 백엔드 위치 — AOS 이관 vs 독립 | ★ **독립(최소 발행 서버)** — M5-b 최소 집합 S1~S6만. AOS 이관은 TRD v0.2 전제와 맞지만 ADR-001(AOS 미변경)과 충돌 | TRD TR-SEC-10 "AOS 비밀 저장 재사용"·`:183` AOS `project_access` 전제 vs ADR-001 `:7,17,19` 독립·자체 구현·백엔드 미정 · ADR-007 P7 "자체 인프라 vs ADR-001 개정" |
 | MQ-M5-04 | 계정·인증 | ★ M5-b는 **수동 발급 계정 1개**(셀프 가입·조직 없음), 인증 방식은 MQ-M5-03 결정에 따름. 계정 2개 이상 전 서버 측 게이트 재검증 범위 결정 | TRD 4.6 `:183` · TR-SEC-02 · 1.3 위험 |
-| MQ-M5-05 | 비용 상한 | ★ PoC 월 상한을 숫자로 정해 ADR에 기록(원장 단가: WfP $25+R2 종량 [21][28], 일반 Workers $5와 별도, Vercel Pro $20 [3][4], Netlify Personal $9/Pro $20(원장 L91), CloudFront flat-rate Pro $15/distribution [42]) + CI(Free 2,000분 안이면 $0 [53]) · 초기 tenant 수·월 발행 수 입력 필요 | 원장 L364–365 · L380 "빈 입력값" · 월 총액·손익분기 [미확인](L96) |
+| MQ-M5-05 | 비용 상한 | ★ PoC 월 상한을 숫자로 정해 ADR에 기록(원장 단가: WfP $25+R2 종량 [21][28], 일반 Workers $5와 별도, Vercel Pro $20 [3][4], Netlify Personal $9/Pro $20(원장 L91), CloudFront flat-rate Pro $15/distribution [42]) + CI(Free 2,000분 안이면 $0 [53]) · 초기 tenant 수·월 발행 수 입력 필요 | 원장 L368 · L380 "빈 입력값" · 월 총액·손익분기 [미확인](L96) |
 | MQ-M5-06 | 법무 — 약관 서면 확인 | ★ 사업자에 "정적 고객 사이트를 우리 도메인에 유료 제공, 고객에게 사업자 계정/API 접근권은 판매하지 않음"을 명시해 **서면 계약 적합성 확인** 후 M5-b 공개 · B-M4B-03(NOTICE·소스 공개 의무) 같이 확인 | 원장 6절 3 · 1절 2 [1][11][13][41] · `BACKLOG.md:104` |
 
 | MQ-M5-07 | 정본 해석 — (a) 플랫폼 소유 라우터(엣지 코드) 허용 여부 (b) TR-SEC-08(서명·24h·보안 헤더)을 M5 필수로 유지 | ★ (a) 허용 — 고객 산출물은 정적, 라우터·만료 검사 코드는 사업자 소유 (b) 필수 유지(가점으로 낮추지 않음) | 원장 L31 "라우터도 금지라면 Workers+R2 추천은 재검토" · L343 "정본 수정 없이 가점으로 낮추면 안 됨" · 6절 2 · `TRD.md:290` [L1] |

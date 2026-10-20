@@ -25,14 +25,34 @@ base `2531ebf8` · 브랜치 `k002bill2/import-lows` · 근거 `dev/active/sec-r
 - 범위 밖(남김): 문서 본문(`doc`)·`base`·`adjustments` 안쪽 키 = ④ 규칙(checkSaveDoc·profileShape) 몫 — 이번 정규화 대상 아님. 이미 저장된(수정 전 가져온) 레코드의 모르는 키는 그대로(쓰기 경로 추가 0).
 
 ## 4. 퍼즈 67건 판정 변화 표
+임시 `zzSecFuzz.test.tsx`(sec-readproject/patches 원본 그대로) 실행 → 삭제(`git status` 무변). 전 = `sec-readproject/logs/fuzz-import.txt` · 후 = `logs/fuzz-after.txt`. REJECT/PASS 37/30 → 42/25. 마크업 주입 0 유지(`renderLeaks`·`staticLeaks` 전부 `[]`).
+
 | 케이스 | 전 | 후 | 사유 |
 |---|---|---|---|
+| P02 project extra hasDoc/candidateId/docSavedAt | PASS · 저장 키 11개 | PASS · 저장 키 7개 | **이번 B-SEC-01** |
+| P03 project `__proto__` | PASS · 저장 키 `__proto__` 포함 | PASS · 7개 | **이번 B-SEC-01** |
+| I03 localId 비UUID XSS | PASS | REJECT IM-6 | **이번 B-SEC-02** |
+| I04 localId `..` | PASS | REJECT IM-6 | **이번 B-SEC-02** |
+| S01 family CSS break · S07 headingWeight 1e9 · S16 scale 0 | PASS(renderMsg DROPPED) | REJECT IM-4 | base `2531ebf8`에 이미 반영된 profileShape 범위 패치(이번 diff는 profileShape·kit 0) |
+| S02·S03·S04 family constructor/`__proto__`/toString | PASS · siteFaces 이상 값 | PASS · siteFaces `[]` | 같은 이유(base 반영분) |
 
-## 5. 게이트
+B-SEC-03(Blob.type)은 퍼즈 범위 밖(퍼즈는 가져오기 파일 경로 — 저장 레코드는 단위 테스트 7+5건이 본다).
+
+## 5. 게이트 (fresh, app/)
 | 게이트 | 명령 | 결과 |
 |---|---|---|
+| typecheck | `npm run typecheck` | exit 0 |
+| lint | `npm run lint` | exit 0 |
+| test | `npx vitest --run` | 375 files · 3374 passed · exit 0 |
+| build | `npm run build` | exit 0 (`logs/build-after.txt`) |
+
+참고: 첫 전체 실행(B-SEC-02 미커밋 상태)에서 projectFile 밖 11파일(pages·kit·reactZip)이 실패 → 단독 재실행 144/144 통과 · 이후 전체 실행 3회 모두 통과 = 부하 플레이크(이번 diff 무관).
 
 ## 6. 예산
+기준 `logs/build-base.txt`(base) ↔ `logs/build-after.txt`.
+- `/studio/:projectId` 해시 정규화 진입 128.76 → 128.76KB (**0**).
+- `/studio/:projectId`(저장 데이터 복원 진입) 해시 정규화 131.75 → 131.77 → 감량 1회(Blob.type 검사를 사다리 `some` 조건에 합침) → **131.76KB (+0.01KB, 멈춤선 > 131.78 미만 · 가드 통과)**. 원인 = `readImageRecord`가 복원 진입 청크 — 조건 1개는 줄일 수 없는 최소. BRIEF "감량 1회 뒤 멈춤"에 따라 추가 감량 없음.
+- 그 밖 진입 합계 ±0.01KB(`/catalog`·`/compare`·`/projects`) = raw 해시 이름 흔들림(이번 diff는 그 진입 모듈 0).
 ## 7. Codex adversarial
 ## 8. 목업·규칙과 다르게 한 것 / 픽스처 개정
 픽스처 `uid(tag)` 추가(`projectFileFixtures.ts` — `00000000-0000-4000-8000-<글자코드 16진 12자리>`). 단언은 정확값 유지(`expect.any` 0).

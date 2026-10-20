@@ -56,7 +56,8 @@
 | `site.json` v1 `kitTokens` | `siteJson.ts:80-99`(`siteJsonProblems`) | 최상위 키·`schema === 1`만, `kitTokens` 내용 검사 0 |
 | 프로필 버전(가져오기) | `features/projectFile/profileShape.ts:66`(`typographyOk` 숫자만) · `:98-100`(`profileVersionShapeOk` — base 키 허용 목록 없음) · `:105-111`(렌더 버전 scale 1~2) | 모양·범위 |
 | 조정 `adjustments` | `domain/adjustmentSchema.ts:29·41-42`(`ADJUSTMENT_KEYS`) · `profileShape.ts:88-95` | 허용 목록 — `scale` 키 없음 |
-| 문서 재구성 | `validatePageDoc.ts:129-143`(허용 필드만 다시 담음) · 가져오기 `features/projectFile/rekey.ts:39·45`(스냅샷 키 목록·`headOf` = 머리 필드만 — 문서 본문은 검증 결과 경유 [L3 추정, 확인 필요]) | **필드 나열식 — 새 필드는 읽는 줄 추가 필요** |
+| 문서 재구성 | `validatePageDoc.ts:129-143`(허용 필드만 다시 담음) · 가져오기 재키 `features/projectFile/rekey.ts:49·52` → `data/startDocWrite.ts:102-105` `rekeyDoc` = `{...doc, projectId}`(펼침 — 새 필드 유지) · `rekey.ts:45` `headOf`는 머리 필드만(문서 본문 아님) | 검증 재구성만 필드 나열식 — 새 필드는 읽는 줄 추가 필요 |
+| IDB 복원 | `data/persistence/localSync.ts:79`(`checkSaveDoc(...).ok`만 보고 **원래 데이터를 그대로** 시드) · `:223` | 검증 통과 = 값 유지 · **검증 실패 = 그 프로젝트 문서 레코드 전체 읽기 불가(`unreadable`)** |
 | 내보내기 게이트(대비 AA 등) | `engine/gate/*` — `scale`·`typography` 참조 0(L1 grep) | 비율 무관 → 게이트 판정 변화 0 |
 | 문서 해시 | `engine/ops/hash.ts:35-41`(`hash`·`revision`·`updatedAt`만 제외) | 새 필드는 값이 있을 때만 해시를 바꾼다(없는 키는 직렬화에 없음) |
 | 영속 봉투 | `data/persistence/envelope.ts:5`(`SCHEMA_VERSION = 1`) · `:28-34`(버전 다르면 mismatch) | 레코드 버전 — 선택 필드 추가는 버전 그대로 통과 [L3 추정 — `idbPersistence.ts`·`entryRead.ts` 미확인, 확인 필요] |
@@ -91,10 +92,10 @@
 | 엔진 `engine/contracts/pageDoc.ts:82-98` | **변경** — `readonly typeScale?: number` | 0 | 0 |
 | 엔진 변환 `createDocFromCandidate.ts:26-32·57-81` | **변경** — 엔진 `CandidatePlan.typeScale?` → 문서에 기록(범위 검사 = `BAD_VALUE`) | 0 | 0 |
 | 문서 검증 `validatePageDoc.ts:34·125·129-143` | **변경** — 선택 키 허용 + 값 검사(유한수 · 1~2, `protocol.ts:83`과 같은 범위) + **재구성 객체에 읽는 줄 추가**(없으면 넣지 않음 — 기존 문서 모양 그대로) | 0 | 0 |
-| 가져오기 재키 `features/projectFile/rekey.ts` | 확인 — 문서 본문을 필드 나열로 다시 만드는 곳이면 함께 변경 [확인 필요] | 0 | 0 |
+| 가져오기 재키 `rekeyDoc`(`startDocWrite.ts:102-105`) | 0 — 펼침이라 유지(L1) | 0 | 0 |
 | 내보내기 게이트 `engine/gate/*` | 0(scale 참조 0, L1 grep) | 0 | 0 |
 | 어댑터 `startDocWrite.ts:30-41·73-79` · 저장소 `memoryDocBook.ts:425` | 변경 — `typeScale: plan.axes.typeScale` 전달 | 0 | 변경(새 버전 쓰기 + 잡 버전 분리) |
-| 저장 스키마 `envelope.ts:5`(`SCHEMA_VERSION`) | 그대로 1 [L3 추정 — 선택 필드, 확인 필요] | 0 | 그대로(새 origin 값) |
+| 저장 스키마 `envelope.ts:5`(`SCHEMA_VERSION`) | 그대로 1 — IDB 복원은 봉투 + `checkSaveDoc`만 본다(`localSync.ts:74-80`, L1) | 0 | 그대로(새 origin 값) |
 | 가져오기 `checkFile.ts:62` · `profileShape.ts` | 문서 = `validatePageDoc` 경유로 자동 · `profileShape` 0 | 0 | `isOrigin`·`profileShape.parity` 변경 |
 | 마이그레이션·기존 데이터 | 0 — 필드 없는 문서 = 프로필 비율(현행 결과 유지) | **기존 B·C 문서 결과가 바뀐다**(마이그레이션 없음 = 소리 없는 변경) | 0(새 문서만) |
 | 렌더 프로토콜 `render/protocol.ts` | 0(값만 — 필요 시 렌더 문서 `validatePageDoc` 재검증이 새 키를 받음) | 0 | 0 |
@@ -126,7 +127,7 @@
 
 | | ★B | A | C |
 |---|---|---|---|
-| 코드 되돌리기 | 쉬움 — 커밋 되돌리기. 단 그동안 만든 문서에 `typeScale`이 남는다 → 되돌린 코드의 `validatePageDoc`이 그 문서를 **거부**한다(허용 목록). 되돌리기 전 "필드 무시(허용만)" 단계를 두면 안전(4.2 T1 수용 기준) | 가장 쉬움(저장 데이터 0) | 어려움 — 만든 프로필 버전은 불변 이력이라 남는다 |
+| 코드 되돌리기 | 쉬움 — 커밋 되돌리기. 단 그동안 만든 문서에 `typeScale`이 남는다 → 되돌린 코드의 `validatePageDoc`이 그 문서를 **거부**한다(허용 목록). IDB 복원은 `checkSaveDoc` 실패 = 그 프로젝트 문서 레코드 전체 `unreadable`(`localSync.ts:79`, L1)이라 **문서를 열 수 없게 된다** — 되돌리기의 실제 비용. 되돌리기 전 "필드 무시(허용만)" 단계를 두면 안전(4.2 T1 수용 기준) | 가장 쉬움(저장 데이터 0) | 어려움 — 만든 프로필 버전은 불변 이력이라 남는다 |
 | 데이터 | 선택 필드라 마이그레이션 0 | 0 | 이력 정리 불가 |
 
 ### 2.6 추천과 이유
@@ -209,7 +210,7 @@
 | 되돌린 코드가 새 문서를 거부 | T1에서 "허용 + 값 검사"를 먼저 배포, 쓰기(T2)는 그 뒤(TS-AC-14) |
 | 비교 복제본(`comparePreviews.ts`)과 `docKitTokens` 어긋남 | TS-AC-05 대조 테스트(현행 `comparePreviews.test.ts` 확장) |
 | 예산 초과 | TS-AC-12 → 감량 1회 → UQ-4 |
-| 영속 레코드가 선택 필드를 거부 | `idbPersistence.ts`·`entryRead.ts` 레코드 검증 [확인 필요] — T0에서 확인, 거부하면 UQ-2에 스키마 버전 문제로 올린다 |
+| 되돌린 앱이 IDB 문서를 읽지 못함 | `localSync.ts:79` — T1(허용 + 값 검사)을 먼저 내고 T2(쓰기)를 뒤에 둔다. 되돌리기는 T2만 되돌리는 것을 기본으로 한다(T1은 남김) |
 
 ## 7. 기록
 - r0 2026-10-20 Designer 초안 — 코드 흐름 조사 2건(생성·편집 시작 경로 / 렌더·내보내기 경로, 읽기 전용 서브에이전트) + 핵심 줄 직접 대조.

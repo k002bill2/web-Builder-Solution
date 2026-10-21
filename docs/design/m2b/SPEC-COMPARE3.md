@@ -20,7 +20,7 @@
 | F7 | 구조안 → 편집 문서 = `writeStartDoc`(`data/startDocWrite.ts`, 순수·동기): 대응표 `mapVariant`(표 밖 = `UNKNOWN_VARIANT`) → `createDocFromCandidate` → 예시 문구(`sampleCopy`). 엔진 예외 = `BAD_VALUE`. 바뀐 쌍 알림 `changeNotice` | `startDocWrite.ts:66~91` · `engineVariantMap.ts` |
 | F8 | `data/`에서 엔진 import 허용 파일은 `startDocWrite.ts` 하나. `features/profile/**`는 엔진 import 금지. 허용: `pages/StudioPage.tsx`·`components/studio/**`·`features/studio/**`·`render/**`·`kit/**` | `engine/engineImportGuard.test.ts:27` |
 | F9 | 킷 토큰 = `docKitTokens(series, profileVersion)`(type-only import 파일) — 팔레트(보정 반영)·글꼴·**base `scale`**·간격·카드·미디어 비율 | `features/studio/docPurpose.ts:42~57` |
-| F10 | **3안 `axes.typeScale`(제목 비율 축)은 PageDoc에도 KitTokenInput에도 전달되지 않는다** — 편집 시작 뒤 B·C안도 프로필 비율로 그려진다 | `generation.ts:24` · `createDocFromCandidate.ts` · F9 → **MQ-M2B5-2** |
+| F10 | **3안 `axes.typeScale`(제목 비율 축)은 PageDoc에도 KitTokenInput에도 전달되지 않는다** — 편집 시작 뒤 B·C안도 프로필 비율로 그려진다 | `generation.ts:24` · `createDocFromCandidate.ts` · F9 → **MQ-M2B5-2** · **정정 2026-10-21 (TYPESCALE-IMPL T4)**: before "전달되지 않는다" → after "`PageDoc.typeScale?`에 기록되고 `docKitTokens(…, typeScale?)`로 킷 토큰 `type.scale`까지 전달된다" — 근거: B-M2B-05 ★B 구현(T1 `7f94cc4b` · T2 `12adddfe` · T3 `1a2aa779` 병합 `3a4dd1fb`) · ADR-004 개정 22 `3e5dfbc7` |
 | F11 | 실렌더 변형 = `SECTION_DEFINITIONS` 전부(30/30) — 대응표를 통과한 섹션은 킷 토큰이 있으면 모두 킷으로 그린다 | `renderedVariants.ts:9` |
 | F12 | 네이티브 `dialog` + `showModal()` 패턴이 이미 있다(Esc = 취소, 닫히면 연 버튼으로 포커스). jsdom에는 `showModal` 대체만 있고 바깥 inert는 흉내 내지 않는다 | `AddSectionDialog.tsx` · `ExportAfter.tsx` · `test/setup.ts:13~` |
 | F13 | 정적 HTML 내보내기 숨은 iframe 상한 8000ms(`TIMEOUT_MS`) | `staticHtml/staticHtml.ts:18` |
@@ -104,10 +104,12 @@ manifest closure로 잰 `/profile` 진입 집합 대비 증가: `CandidateResult
    - **동일성 보장 범위(Codex R1 P1)**: "미리보기 = 편집 시작 결과"는 **새 문서 생성**(`startDoc(..., "create")` 성공)에만 성립한다. 프로젝트에 이미 편집 문서가 있으면 `DOC_EXISTS` → 기존 문서(다른 안·이전 버전일 수 있음)를 그대로 연다 [L1 `CandidatesSection.tsx:75~80` · `memoryDocBook.ts:237~238` · `ProfileCandidates.test.tsx:294~301`].
    - 그래서 대화상자를 열 때 프로젝트에 편집 문서가 있음을 알 수 있으면 캡션 1 대신 "이 프로젝트에는 이미 편집 중인 문서가 있습니다 — 편집 시작은 그 문서를 엽니다(이 미리보기로 바뀌지 않음)."를 보인다. 알 수 있는 경로가 비교 청크 밖(프로젝트 저장소 로드 = `memoryProjectRepository` 조작 뒤 청크)이면 **조회하지 않고** 두 문장을 함께 보인다: 캡션 1 + "이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다." (조회 추가 = 진입 예산 영향 → 하지 않는다). 선택한 안으로 기존 문서를 교체하는 restart(확인·스냅샷·revision)는 이번 범위 밖.
 2. (★MQ-M2B5-2 A) "제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 {scale}로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요."
+   - **정정 2026-10-21 (TYPESCALE-IMPL T4)**: before 캡션 2 표시 · 3안 공통 프로필 비율 → after 캡션 2 삭제 · 열마다 그 안의 `typeScale`로 그림(`compareKitTokens` 열별) — 근거: TYPESCALE-SPEC r1 ★B T3(`1a2aa779`, 병합 `3a4dd1fb`). 미리보기 = 편집 시작 결과 원칙은 비율 축까지 유지된다.
 - 3안 영역 상시 캡션 `CANDIDATE_TEXT.preview`("…실제 페이지는 생성기 연결 후(M2) 만들어집니다.")는 이제 사실과 다르다 → **"구조 미리보기 — 섹션 구성·비율·모션 배정입니다. 실제 화면은 '3안 실제 화면으로 비교'에서 봅니다."**로 바꾼다(`generationText.ts`, 같은 엔진 청크 — 증가 ±수 바이트).
 
 ### 2.5 안 이름 · 차이 축 · lint · 선택과의 관계
 - 차이 요약 글자 = 카드와 **같은 함수**: `heroText(axes) · GRID_LABELS[grid] · scaleText(plan, profileScale)`(CandidateCard export). 비율은 MQ-M2B5-2 A에서 "비율 1.2 (구조안)"처럼 접미 "(구조안)"을 붙여 프레임과 다를 수 있음을 글자로 알린다.
+  - **정정 2026-10-21 (TYPESCALE-IMPL T4)**: before 접미 "(구조안)" → after 접미 삭제(프레임이 그 안의 비율로 그려져 글자와 같다) — 근거: TYPESCALE-SPEC r1 T3(`1a2aa779`, 병합 `3a4dd1fb`).
 - 바뀐 쌍: 변환 결과 `changeNotice`가 있으면 요약 아래 한 줄(편집기가 실제로 여는 변형 — F7). 예: "구조안의 섹션 2개를 편집기 변형으로 바꿔 열었습니다 — 소개 2단 소개 → story …".
 - lint: Tag "경고 N"(카드와 같은 `severity === "block"` 수) — 상세 규칙 문장은 카드 `상세`에만(중복 0).
 - 선택(★MQ-M2B5-4 A): 열마다 "이 안 선택"(`aria-pressed`, 접근 이름 "A안 선택") = 3안 영역과 **같은 핸들러** `gen.select(job.jobId, id)` · 같은 `busy`. 선택하면 카드·대화상자 양쪽이 같은 상태로 바뀐다(상태 1개).
@@ -133,6 +135,7 @@ manifest closure로 잰 `/profile` 진입 집합 대비 증가: `CandidateResult
   - `"preview"`는 `LOOSE_ID`(`/^[A-Za-z0-9][A-Za-z0-9._:-]*$/`) 통과 [L1]. 시각 고정 = 결정성(같은 안 → 같은 해시).
   - 저장소 쓰기 0: `startDoc`·`loadProjects`를 부르지 않는다. 프로젝트가 없는 프로필(`series.project` 없음)도 동작.
 - 킷 토큰 = `docKitTokens(series, viewed.version)` 1회(3안 공통). MQ-M2B5-2 A에서 `type.scale` 덮어쓰기 0.
+  - **정정 2026-10-21 (TYPESCALE-IMPL T4)**: before 3안 공통 `docKitTokens` 1회 · 덮어쓰기 0 → after 열마다 그 안의 `typeScale`을 넣은 킷 토큰(`compareKitTokens` 열별) — 근거: TYPESCALE-SPEC r1 ★B T3(`1a2aa779`, 병합 `3a4dd1fb`).
   - `docKitTokens`는 `features/studio/docPurpose.ts`(type-only import)라 값 import 시 공유 청크 분할로 `/studio`가 늘 수 있다 → 비교 청크에서 import하고 `/studio` 진입을 단계마다 실측(멈춤선 127.70). 늘면 함수 복제 + `src/test/kitTokens.test.ts` 방식 대조 가드로 바꾼다(Developer 판단 → 보고).
 - 변환 위치(Developer가 시제품 실측으로 선택, 둘 다 조작 뒤):
   - **(a) 기본**: 부모 비교 청크가 `data/startDocWrite.ts`를 import. 이 파일에 `judgeExport`(→ `runGate`)도 있어 같은 청크로 끌려올 수 있다 → 비교 청크 증가 [L3 추정 +10~19KB].

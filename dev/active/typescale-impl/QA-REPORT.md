@@ -71,3 +71,7 @@ QA 대상 tip `8bd6657d`(+ QA 커밋만) · 정적 QA · 앱 코드·테스트 �
 - TS-AC-13 재실측: render.html OOPIF에 `Target.attachToTarget`으로 붙어 h1 font-size 측정 · SPEC대로 프로필 비율 1.25 프로젝트 사용.
 - TS-AC-10 보강: 정적 HTML 직렬화 결과의 `--site-t1` 값 직접 단언.
 - 참고: `validatePageDoc`는 `{ typeScale: undefined }`(메모리 객체)도 거부 — JSON 경로에선 발생 불가, 메모리 경로는 `memoryDocBook`/`writeStartDoc`/`createDocFromCandidate`가 undefined면 키를 넣지 않음(확인).
+
+## 8. Jarvis 회수 확정 (2026-10-21)
+- 판정 **조건부 PASS 수용**(★ — 코드 결함 0, 최우선 판정 통과). TS-AC-13·16·10 미충족분은 머지 전 필수가 아니라 BACKLOG **B-M2B-05c**(TS-AC-16 컴포넌트 테스트 · M4 생존) · **B-M2B-05d**(TS-AC-13 OOPIF 재실측, 프로필 1.25) · **B-M2B-05e**(TS-AC-10 `--site-t1` 단언)로 이관.
+- 회수 확인: QA `claude_result_meta.subtype=success` · 15턴 · QA-PROGRESS 미완 0 · `git diff -- app/` 0 · 게이트 수치 Jarvis 측정과 일치.

@@ -1,6 +1,19 @@
 # TYPESCALE-IMPL REPORT
 
-## 0. 결론
+## 0. 결론 (갱신 2026-10-21 · T4)
+- **T0~T3 완료·병합**: T3 `1a2aa779` → 병합 `3a4dd1fb`. ADR-004 **개정 22** `3e5dfbc7`(B-M2B-05 몫 +0.03 · 기준선 `/studio` 128.79 · 복원 131.79, 판정 128.82 · 131.82). tip `9d45bdac` fresh 게이트: typecheck·lint 0 · test 384/3459 · build exit 0 · 렌더 JS 84.38(`logs/adr22-*.txt`). 아래 UQ-4 멈춤 기록은 개정 22로 해소.
+- **T4 완료(TS-AC-13 수치만 BLOCKED)**: 문서 정정 `46865f21`(SPEC-COMPARE3 F10·2.4-2·2.5·3.2 · MQ-M2B5-2 대체 · REACTZIP 2.3.1-1 "선택 필드 `typeScale` 제외" · TYPESCALE-SPEC 상태줄 — 옛 문장 보존 + before→after) · BACKLOG `35edcc27`(B-M2B-05 ✅ 닫힘 · B-M2B-05b 파일 끝 추가). 앱 코드 변경 0.
+- **TS-AC-13 [B]**: 실화면 흐름은 통과 — preview 4399(1280)에서 3안 카드 비율 A 1.2(프로필) · B 1.25 · C 1.333 확인 → C안 편집 시작 → `/studio/project-2` 진입(`logs/t4-ego-run1.txt`). **편집 캔버스 제목의 계산된 font-size는 BLOCKED**: 캔버스 `render.html`이 sandbox iframe(OOPIF)이라 `contentDocument` 접근 불가·`Page.getFrameTree`에 자식 프레임 없음(`logs/t4-ego-run1-measure.txt`) — 시간 예산(15분) 안에 Target 부착 방식을 못 함. 다음: ego-browser에서 `Target.getTargets`/`Target.attachToTarget`으로 render.html 대상에 붙어 `h1` font-size 측정(C 1.333 vs A 1.2 비교). 단위 근거는 T3 테스트(TS-AC-04~07·16).
+- preview 종료: `lsof -nP -iTCP:4399 -sTCP:LISTEN` LISTEN 0줄(`logs/t4-ego-port-after.txt`).
+
+| TS-AC | 판정 |
+|---|---|
+| 01·02·03·08·11·14 | 통과(T1·T2 단위) |
+| 04~07·09·10·16 | 통과(T3 단위·가드, 병합 `3a4dd1fb`) |
+| 12 예산 | 통과(개정 22 기준선 128.79·131.79) |
+| 13 브라우저 | 부분 — 흐름 통과 · 캔버스 font-size 실측 BLOCKED(OOPIF) |
+
+## 0-a. (이전 결론 — 2026-10-20, 보존)
 - **T0~T2 완료·게이트 통과**(브랜치 `k002bill2/typescale-impl`). 엔진 계약 `PageDoc.typeScale?` · 검증 허용·범위(1~2)·재구성 보존 · 편집 시작·restart 기록까지 들어갔다. 렌더는 아직 프로필 비율(T3 미병합) — 사용자에게 보이는 변화 0, 되돌리기 하한(TS-AC-14) 충족.
 - **T3는 예산 멈춤(UQ-4)**: 감량 1회 뒤에도 복원 진입 정규화 **131.79 > 판정선 131.78**(`/studio` 128.79 = 판정선, 여유 0). 브리프대로 T3에서 멈췄다. T3 구현·테스트는 별도 브랜치 `k002bill2/typescale-impl-t3-budget`(커밋 `1a2aa779`)에 보존 — tsc·vite·test 통과, 실패는 `check-bundle-size`뿐.
 - **T4 BLOCKED**(T3 미병합이라 문서 정정·B-M2B-05 닫힘·Ego TS-AC-13을 하면 사실과 다른 기록이 된다).

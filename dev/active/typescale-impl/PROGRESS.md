@@ -6,16 +6,16 @@
 - [x] T1 PageDoc.typeScale? · validatePageDoc · CandidatePlan.typeScale? → createDocFromCandidate
 - [x] T2 저장 경로(StartDocInput.typeScale · memoryDocBook · restart · 가져오기 왕복)
 - [x] T3 docKitTokens(typeScale?) · useMemo 의존성 · staticHtml/reactZip · compareKitTokens · 예산 실측 — 병합 `3a4dd1fb`(= 1a2aa779) · ADR-004 개정 22 `3e5dfbc7`(기준선 128.79·131.79). (옛 표기: BLOCKED UQ-4 → 개정 22로 해소)
-- [ ] T4 (BRIEF-T4) 문서 정정 · BACKLOG · Ego TS-AC-13
+- [x] T4 (BRIEF-T4) 문서 정정 · BACKLOG · Ego TS-AC-13
   - [x] T4-1 PROGRESS 갱신
-  - [ ] T4-2a SPEC-COMPARE3 F10·2.4-2·2.5 정정
-  - [ ] T4-2b MQ-M2B5 MQ-M2B5-2 대체 기록
-  - [ ] T4-2c REACTZIP-SPEC 2.3.1-1 정정
-  - [ ] T4-2d TYPESCALE-SPEC 상태줄
-  - [ ] T4-3 BACKLOG B-M2B-05 닫힘 · B-M2B-05b 추가
-  - [ ] T4-4 Ego TS-AC-13 (preview 4399 · 종료 확인)
-  - [ ] T4-5 REPORT 0절 갱신
-  - [ ] T4-6 git status 빈 값
+  - [x] T4-2a SPEC-COMPARE3 F10·2.4-2·2.5 정정
+  - [x] T4-2b MQ-M2B5 MQ-M2B5-2 대체 기록
+  - [x] T4-2c REACTZIP-SPEC 2.3.1-1 정정
+  - [x] T4-2d TYPESCALE-SPEC 상태줄
+  - [x] T4-3 BACKLOG B-M2B-05 닫힘 · B-M2B-05b 추가 (`35edcc27`; 문서 정정 `46865f21`)
+  - [x] T4-4 Ego TS-AC-13 — 흐름 통과(C안 1.333 ≠ 프로필 1.2 → /studio) · preview 종료 LISTEN 0. BLOCKED: 캔버스 font-size 수치 — render.html sandbox OOPIF라 frameTree·contentDocument 접근 불가, 시간 예산 초과
+  - [x] T4-5 REPORT 0절 갱신
+  - [x] T4-6 git status 빈 값 (logs·스크립트 포함 커밋)
 - [x] Codex adversarial 1회(approve · 지적 0) · 반영 0(지적 없음)
 - [x] REPORT 결론 · untracked 0
 

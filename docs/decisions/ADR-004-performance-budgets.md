@@ -335,3 +335,15 @@ TRD 8절의 "초기 JS ≤ 90KB gzip"은 **생성되는 홈페이지(export)** �
 2. **상한 129.13·132.11 · raw 130.5·134 · 렌더 · 다른 라우트 · 판정 로직 변경 0.** 개정 18 M4-a 남은 몫·개정 20 M4-b 몫은 소진으로 닫는다 — 이후 `/studio` 진입 증분은 기준선 대비 0.03 안이거나 새 개정.
 3. 실측: QA fresh 128.76 · 131.75 · raw 130.07 · 133.10(`dev/active/studio-budget-trim/QA-REPORT.md` 1절).
 
+## 개정 22 (영환님 2026-10-21 "1A" · 문안 Jarvis — B-M2B-05 제목 비율 축 몫 · 복원 기준선 실측 재기록 · 상한 불변)
+
+### 배경
+- TYPESCALE-IMPL(`docs/design/m2b/TYPESCALE-SPEC.md` r1 ★B · `dev/active/typescale-impl/REPORT.md`) T3 렌더 입력(`docKitTokens(…, typeScale?)` · `StudioLayout` `useMemo` 의존성)이 `/studio` 진입 청크에 든다. 감량 1회(docPalette 중복 조회 제거) 뒤 정규화 실측 `/studio` **128.79**(판정선 128.79, 여유 0) · 복원 진입 **131.79 > 판정선 131.78** → UQ-4 멈춤.
+- 원인 분해: 복원 진입 출발점(main `8d65fa9e`)이 이미 기록 기준선 131.75보다 **+0.01(131.76)** — PR #56 import-lows 유래 drift. T3 자체 증분은 +0.03(허용치와 같음).
+- 실측: typescale-impl `3a4dd1fb`(T0~T2 `4fd35750` + T3 `1a2aa779` 병합) `npm run build` — `dev/active/typescale-impl/logs/adr22-build-measure.txt`.
+
+### 결정
+1. 복원 진입 기준선을 출발점 실측 **131.76으로 재기록**(drift 흡수)하고, **B-M2B-05 몫 +0.03**을 배정한다.
+2. 새 기준선 = 실측: `/studio` **128.79** · 복원 진입 **131.79**(판정선 각 +0.03 = 128.82 · 131.82). raw 참고 130.12 · 133.16.
+3. **상한 129.13 · 132.11 · raw 130.5 · 복원 raw 134 · 렌더 문서 JS 90/CSS 30 · toleranceKb 0.03 · 다른 라우트 · 판정 로직 변경 0.**
+4. 이 몫은 B-M2B-05(T3)로 소진한다. B-M2B-05b(편집기 비율 UI) 등 이후 `/studio` 진입 증분은 기준선 대비 0.03 안이거나 새 개정.

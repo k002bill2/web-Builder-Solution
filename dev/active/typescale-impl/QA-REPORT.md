@@ -52,7 +52,7 @@ QA 대상 tip `8bd6657d`(+ QA 커밋만) · 정적 QA · 앱 코드·테스트 �
 | `scripts/bundleBudget.test.mjs` | eagerKb 130.10/133.13 → 130.12/133.16 · normEagerKb 128.76/131.75 → 128.79/131.79 | ADR-004 개정 22 기준선 재기록과 일치(값 갱신, 단언 형태 동일) |
 | `features/profile/comparePreviews.test.ts` | it 제목 "3안 공통, 비율 덮어쓰기 0" → "비율 없음 = 프로필 비율"(expect 줄 변경 0) + TS-AC-05 열별 테스트 추가 | SPEC 4.2 T3 "3안 공통 scale 단언 → 열별" 의도대로 |
 | `reactZip/reactZipGenerator.test.ts` | mock을 `vi.fn`으로 감쌈(반환값 동일) + 테스트 추가 | 약화 없음 |
-그 외 test diff는 추가(+)만. 삭제된 `expect` 줄은 위 3줄(CompareDialog 2 · bundleBudget 2 값 갱신)뿐. skip/only 추가 0(diff 내 `it.skip`/`.only` 없음).
+그 외 test diff는 추가(+)만. 삭제된 `expect` 줄은 4줄(CompareDialog 2 · bundleBudget 2 값 갱신)뿐. skip/only 추가 0(diff 내 `it.skip`/`.only` 없음).
 
 ## 5. 변이 (`logs/qa-mutations.txt`, 각 적용 → 테스트 → `git checkout -- app/` → "reverted OK")
 | ID | 변이 | 실행 범위 | 결과 |

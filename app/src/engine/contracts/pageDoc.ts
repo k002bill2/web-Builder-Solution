@@ -91,6 +91,8 @@ export interface PageDoc {
   readonly candidateId: string;
   readonly libraryVersion: string;
   readonly generatorVersion: string;
+  /** 제목 비율(TYPESCALE ★B) — 편집 시작 때 안의 `axes.typeScale`(1~2). 없으면 프로필 버전 비율(기존 문서) */
+  readonly typeScale?: number;
   readonly meta: PageMeta;
   readonly sections: readonly SectionInstance[];
   /** 저장소가 정한다(연산은 바꾸지 않는다 — 결정성) */

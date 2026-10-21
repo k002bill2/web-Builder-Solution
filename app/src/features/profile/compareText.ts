@@ -14,9 +14,6 @@ export const COMPARE_TEXT = Object.freeze({
   pending: "만드는 중",
 });
 
-/** 캡션 2 (★MQ-M2B5-2 A) — 비율 축은 편집 문서에 전달되지 않는다(F10) */
-export const scaleNotice = (scale: number) => `제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 ${scale}로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.`;
-
 /** 종결 범주 (3.4) — 그림 · 그림(기본 모양) · 구조 미리보기 · 지연 · 생성 실패 */
 export type FrameCategory = "drawn" | "plain" | "structure" | "delay" | "failed";
 

@@ -4,6 +4,7 @@
  *   모션 = min(구조안 motion ?? L1, 정의 상한)(Q-18 A · r4.2 — 구조안 motion은 선택, 없으면 L1), 톤 = normalizeDoc(R-05), 메타 빈 값, revision 1, hash = hashDoc.
  * - 거부(EngineOpError): 모르는 type/variant → UNKNOWN_VARIANT(먼저) · R-01·R-02 위반 → BAD_VALUE(게이트와 같은 structureIssues,
  *   첫 원인 문장) · 프로필 버전·id·시각 모양 → BAD_VALUE(저장 경계와 같은 validatePageDoc).
+ * - 구조안 typeScale(선택)은 그대로 문서에 적는다(TYPESCALE ★B) — 없으면 키 0.
  * - projectId·updatedAt은 저장소 값이라 세 번째 인자로 받는다 · libraryVersion·generatorVersion은 구조안의 것(Q-17).
  */
 import type { SectionPlanEntry } from "../../domain/compareBoard";
@@ -29,6 +30,8 @@ export interface CandidatePlan {
   readonly sections: readonly CandidatePlanSection[];
   readonly libraryVersion: string;
   readonly generatorVersion: string;
+  /** 안의 제목 비율(TYPESCALE ★B) — 있으면 문서에 적는다. 범위(1~2)는 validatePageDoc이 본다(밖 = BAD_VALUE) */
+  readonly typeScale?: number;
 }
 
 /** 저장소가 정하는 값(8.3.1 startDoc) — 엔진은 만들지 않는다(결정성) */
@@ -70,6 +73,7 @@ export function createDocFromCandidate(plan: CandidatePlan, profileVersion: numb
     candidateId: plan.candidateId,
     libraryVersion: plan.libraryVersion,
     generatorVersion: plan.generatorVersion,
+    ...(plan.typeScale !== undefined && { typeScale: plan.typeScale }),
     meta: { title: "", description: "" },
     sections,
     updatedAt: start.updatedAt,

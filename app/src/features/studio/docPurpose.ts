@@ -1,5 +1,5 @@
 import type { MotionPreset } from "../../domain/compareBoard";
-import type { ProfileSeries } from "../../domain/profile";
+import type { ProfileSeries, ProfileVersion } from "../../domain/profile";
 import type { ColorTokens as CanvasTokens } from "../../domain/compareBoard";
 import type { Purpose } from "../../engine/ops/rules";
 import type { CanvasPalette, KitCardStyle, KitTokenInput } from "../../render/protocol";
@@ -21,8 +21,10 @@ export function docMotionPreset(series: ProfileSeries | undefined, profileVersio
 }
 
 /** 캔버스 색(A3-Q7 · 5.7) — 같은 버전의 팔레트 역할 5개, 보정(corrections)은 나중 것이 이긴다. 버전이 없으면 undefined(중립 토큰) */
-export function docPalette(series: ProfileSeries | undefined, profileVersion: number): CanvasPalette | undefined {
-  const version = versionOf(series, profileVersion);
+export const docPalette = (series: ProfileSeries | undefined, profileVersion: number) => paletteOf(versionOf(series, profileVersion));
+
+/** docKitTokens가 이미 찾은 버전으로 부른다(조회 1회 — TYPESCALE T3 진입 예산 감량) */
+function paletteOf(version: ProfileVersion | undefined): CanvasPalette | undefined {
   // 팔레트가 없는 버전(부분 레코드)도 편집은 계속 — 중립 토큰
   const tokens = version?.base.color_tokens as Partial<CanvasTokens> | undefined;
   if (!version || !tokens?.primary) return undefined;
@@ -38,10 +40,11 @@ const pick = <T extends string>(list: readonly T[], value: string | undefined, f
  * 킷 토큰 입력 (M2A-2a K1 · m2a 0.2 · MQ-1) — 같은 버전의 값 + 조정. 팔레트 = docPalette(보정 반영), sectionGap = base 값 + density
  * (촘촘 환산은 렌더 문서 생성기 kit/tokens — effectiveProfile을 부모 청크에 넣지 않는다, /studio 진입 예산. 같은 규칙인지 src/test/kitTokens.test.ts가 대조).
  * 팔레트·글꼴이 없는 버전(부분 레코드)·버전 없음 = undefined → 렌더 문서는 킷을 그리지 않고 error, 폴백은 중립 토큰으로 계속.
+ * 제목 비율 = 문서 `typeScale`(TYPESCALE ★B) ?? 버전 base 비율 — 필드 없는 기존 문서는 현행과 같은 결과.
  */
-export function docKitTokens(series: ProfileSeries | undefined, profileVersion: number): KitTokenInput | undefined {
+export function docKitTokens(series: ProfileSeries | undefined, profileVersion: number, typeScale?: number): KitTokenInput | undefined {
   const version = versionOf(series, profileVersion);
-  const palette = docPalette(series, profileVersion);
+  const palette = paletteOf(version);
   if (!version || !palette || !version.base.typography_tokens) return undefined;
   const { typography_tokens, spacing_tokens, component_choices: choices = {} } = version.base;
   const { family, headingWeight, bodyWeight, scale } = typography_tokens;
@@ -49,7 +52,7 @@ export function docKitTokens(series: ProfileSeries | undefined, profileVersion: 
   return {
     palette,
     card: { tone: choices.card_style?.surfaceTone === "dark" ? "dark" : "light", style: pick(CARD_STYLES, choices.card_style?.style, "bordered-md") },
-    type: { family, headingWeight, bodyWeight, scale },
+    type: { family, headingWeight, bodyWeight, scale: typeScale ?? scale },
     space: { grid: Number.isFinite(grid) && grid > 0 ? grid : 8, sectionGap: spacing_tokens.sectionGap, density: version.adjustments.density ?? "comfortable" },
     mediaRatio: pick(RATIOS, choices.media_ratio, "4:5"),
   };

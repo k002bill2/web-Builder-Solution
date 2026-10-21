@@ -1,0 +1,5 @@
+TypeError: Cannot read properties of undefined (reading 'id')
+    at file:////[eval2]:7:92
+{ frame: undefined }
+
+ego's nodejs process exited with code 1.

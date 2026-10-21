@@ -31,12 +31,19 @@ function isIsoTime(value: string): boolean {
   return dayValid && hour! < 24 && minute! < 60 && second < 60 && offH < 24 && offM < 60;
 }
 
-const DOC_KEYS = ["projectId", "revision", "hash", "profileVersion", "candidateId", "libraryVersion", "generatorVersion", "meta", "sections", "updatedAt"];
+const DOC_KEYS = ["projectId", "revision", "hash", "profileVersion", "candidateId", "libraryVersion", "generatorVersion", "typeScale", "meta", "sections", "updatedAt"];
 const SECTION_KEYS = ["instanceId", "type", "variant", "motion", "tone", "slots"];
 const IMAGE_KEYS = ["kind", "enabled", "source", "alt", "decorative"];
 
 const text = (r: Reader, value: unknown, path: string) => readString(r, value, path, { max: LIMITS.text });
 const strictId = (r: Reader, value: unknown, path: string) => readString(r, value, path, { min: 1, max: LIMITS.id, pattern: STRICT_ID });
+
+/** 선택 필드 제목 비율 — 유한수 1~2(렌더 프로토콜 type.scale 범위와 같다) */
+function readTypeScale(r: Reader, value: unknown, path: string): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value) && value >= 1 && value <= 2) return value;
+  r.add(path, "1~2 사이 숫자여야 합니다");
+  return undefined;
+}
 
 function readTime(r: Reader, value: unknown, path: string): string | undefined {
   const time = readString(r, value, path, { min: 1, max: 40 });
@@ -126,6 +133,8 @@ function readDoc(input: unknown): ValidationResult<PageDoc> {
   if (!rec) return finish(r, () => input as PageDoc);
   const get = (key: string) => r.field(rec, key, "$");
   const metaRec = r.record(get("meta"), "$.meta", ["title", "description"]);
+  // 선택 키 — 있을 때만 읽고 담는다(없는 문서는 키 0 = 기존 모양·해시 그대로)
+  const typeScale = Object.hasOwn(rec, "typeScale") ? readTypeScale(r, rec.typeScale, "$.typeScale") : undefined;
   const doc = {
     projectId: readString(r, get("projectId"), "$.projectId", { min: 1, max: LIMITS.id, pattern: LOOSE_ID }),
     revision: readInt(r, get("revision"), "$.revision", 0),
@@ -134,6 +143,7 @@ function readDoc(input: unknown): ValidationResult<PageDoc> {
     candidateId: readString(r, get("candidateId"), "$.candidateId", { min: 1, max: LIMITS.id, pattern: LOOSE_ID }),
     libraryVersion: readString(r, get("libraryVersion"), "$.libraryVersion", { min: 1, max: LIMITS.version, pattern: VERSION }),
     generatorVersion: readString(r, get("generatorVersion"), "$.generatorVersion", { min: 1, max: LIMITS.version, pattern: VERSION }),
+    ...(typeScale !== undefined && { typeScale }),
     meta: metaRec && {
       title: text(r, r.field(metaRec, "title", "$.meta"), "$.meta.title"),
       description: text(r, r.field(metaRec, "description", "$.meta"), "$.meta.description"),

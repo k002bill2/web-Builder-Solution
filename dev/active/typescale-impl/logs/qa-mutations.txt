@@ -1,0 +1,76 @@
+=== M1: src/engine/validate/validatePageDoc.ts :: s/value <= 2\)/value <= 3)/
+ app/src/engine/validate/validatePageDoc.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+     × 범위 밖 값 파일 = 가져오기 거부(기존 checkFile 실패 경로) 6ms
+     × 값 있음 = 문서에 · 없음 = 키 0 · 범위 밖 = BAD_VALUE(쓰기 0) 6ms
+     × 범위 밖 2.5 = BAD_VALUE 3ms
+     × 2.01 = 거부($.typeScale) 4ms
+ FAIL  src/data/startDocTypeScale.test.ts > writeStartDoc 어댑터 — typeScale 전달 > 값 있음 = 문서에 · 없음 = 키 0 · 범위 밖 = BAD_VALUE(쓰기 0)
+ FAIL  src/data/persistence/typeScaleRollback.test.ts > TS-AC-14 되돌리기 하한 — 값 있는 문서가 T1 코드만으로 모든 읽기 경로를 통과 > 범위 밖 값 파일 = 가져오기 거부(기존 checkFile 실패 경로)
+ FAIL  src/engine/doc/createDocFromCandidate.test.ts > TYPESCALE ★B — 구조안 typeScale → 문서 기록 > 범위 밖 2.5 = BAD_VALUE
+ FAIL  src/engine/validate/validatePageDoc.test.ts > TYPESCALE TS-AC-03 — 선택 키 typeScale(1~2) · 재구성 값 보존 > 2.01 = 거부($.typeScale)
+ Test Files  4 failed | 49 passed (53)
+      Tests  4 failed | 515 passed (519)
+reverted OK
+=== M2: src/engine/validate/validatePageDoc.ts :: s/
+\s*\.\.\.\(typeScale !== undefined && \{ typeScale \}\),//
+ app/src/engine/validate/validatePageDoc.ts | 1 -
+ 1 file changed, 1 deletion(-)
+     × 유한수 1 = 통과 · 결과 문서에 같은 값 3ms
+     × 유한수 1.2 = 통과 · 결과 문서에 같은 값 0ms
+     × 유한수 1.333 = 통과 · 결과 문서에 같은 값 0ms
+     × 유한수 2 = 통과 · 결과 문서에 같은 값 0ms
+     × 값 있음 = 문서에 같은 값 · hash = hashDoc(값 포함) · 값 없음 = 키 0(기존 모양·해시) 3ms
+     × A안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc 85ms
+     × B안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc 2ms
+     × C안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc 2ms
+     × B로 시작 → C로 restart = 문서 C 비율 · 스냅샷 '새로 시작 전' = B 비율 2ms
+     × 값 있음 = 문서에 · 없음 = 키 0 · 범위 밖 = BAD_VALUE(쓰기 0) 1ms
+     × 저장 검사(checkSaveDoc) · 재저장 검증 결과에 같은 값·해시 7ms
+     × IDB 복원(localSync) — 값 있는 문서·스냅샷 저장 → 새 store 복원 = 같은 문서 · 복원 뒤 재저장도 값 유지 31ms
+     × 가져오기(checkFile) — 문서·스냅샷에 값 있는 파일 = 통과 · 재키(rekeyDoc) 뒤 값 그대로·해시 재계산 3ms
+     × TS-AC-08 왕복 — 값 있는 문서 내보내기(encodeProjectFile) → 가져오기(checkFile) = 같은 값·해시 2ms
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-01 편집 시작 = 안의 비율을 문서에 > A안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-01 편집 시작 = 안의 비율을 문서에 > B안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-01 편집 시작 = 안의 비율을 문서에 > C안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-02 새로 시작(restart) — 새 안의 비율 · 자동 스냅샷 옛 문서는 옛 값 > B로 시작 → C로 restart = 문서 C 비율 · 스냅샷 '새로 시작 전' = B 비율
+ FAIL  src/data/startDocTypeScale.test.ts > writeStartDoc 어댑터 — typeScale 전달 > 값 있음 = 문서에 · 없음 = 키 0 · 범위 밖 = BAD_VALUE(쓰기 0)
+ FAIL  src/engine/doc/createDocFromCandidate.test.ts > TYPESCALE ★B — 구조안 typeScale → 문서 기록 > 값 있음 = 문서에 같은 값 · hash = hashDoc(값 포함) · 값 없음 = 키 0(기존 모양·해시)
+ FAIL  src/engine/validate/validatePageDoc.test.ts > TYPESCALE TS-AC-03 — 선택 키 typeScale(1~2) · 재구성 값 보존 > 유한수 1 = 통과 · 결과 문서에 같은 값
+ FAIL  src/engine/validate/validatePageDoc.test.ts > TYPESCALE TS-AC-03 — 선택 키 typeScale(1~2) · 재구성 값 보존 > 유한수 1.2 = 통과 · 결과 문서에 같은 값
+ FAIL  src/engine/validate/validatePageDoc.test.ts > TYPESCALE TS-AC-03 — 선택 키 typeScale(1~2) · 재구성 값 보존 > 유한수 1.333 = 통과 · 결과 문서에 같은 값
+ FAIL  src/engine/validate/validatePageDoc.test.ts > TYPESCALE TS-AC-03 — 선택 키 typeScale(1~2) · 재구성 값 보존 > 유한수 2 = 통과 · 결과 문서에 같은 값
+ FAIL  src/data/persistence/typeScaleRollback.test.ts > TS-AC-14 되돌리기 하한 — 값 있는 문서가 T1 코드만으로 모든 읽기 경로를 통과 > 저장 검사(checkSaveDoc) · 재저장 검증 결과에 같은 값·해시
+reverted OK
+=== M3: src/data/memoryDocBook.ts :: s/\.\.\.\(typeof typeScale === "number" && \{ typeScale \}\), //
+ app/src/data/memoryDocBook.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+     × A안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc 125ms
+     × B안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc 2ms
+     × C안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc 2ms
+     × B로 시작 → C로 restart = 문서 C 비율 · 스냅샷 '새로 시작 전' = B 비율 2ms
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-01 편집 시작 = 안의 비율을 문서에 > A안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-01 편집 시작 = 안의 비율을 문서에 > B안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-01 편집 시작 = 안의 비율을 문서에 > C안 create → doc.typeScale = plan.axes.typeScale · hash = hashDoc
+ FAIL  src/data/startDocTypeScale.test.ts > TS-AC-02 새로 시작(restart) — 새 안의 비율 · 자동 스냅샷 옛 문서는 옛 값 > B로 시작 → C로 restart = 문서 C 비율 · 스냅샷 '새로 시작 전' = B 비율
+ Test Files  1 failed | 47 passed (48)
+      Tests  4 failed | 389 passed (393)
+reverted OK
+=== M4: src/components/studio/StudioLayout.tsx :: s/, doc\.profileVersion, doc\.typeScale\]/, doc.profileVersion]/; s/, shown\.profileVersion, shown\.typeScale\]/, shown.profileVersion]/
+ app/src/components/studio/StudioLayout.tsx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+ Test Files  151 passed (151)
+      Tests  1363 passed (1363)
+reverted OK
+=== M5: src/features/studio/docPurpose.ts :: s/scale: typeScale \?\? scale/scale/
+ app/src/features/studio/docPurpose.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+     × 문서 typeScale 있음 → render.kitTokens.type.scale = 그 값 · 없음 = 프로필 비율 15ms
+     × TS-AC-05 열별 토큰 — 같은 (버전, typeScale) = docKitTokens와 같은 값 · type.scale = 각 안 axes.typeScale · 미리보기 문서 = 그 비율 7ms
+     × 값 있음 = type.scale이 그 값(나머지 같음) · 없음 = 현행과 같은 결과 6ms
+ FAIL  src/features/profile/comparePreviews.test.ts > 미리보기 문서 변환 (SPEC 3.2 · CMP-AC-U5) > TS-AC-05 열별 토큰 — 같은 (버전, typeScale) = docKitTokens와 같은 값 · type.scale = 각 안 axes.typeScale · 미리보기 문서 = 그 비율
+ FAIL  src/features/studio/kitTokenInput.test.ts > TS-AC-04 제목 비율 = 문서 typeScale ?? 버전 비율 > 값 있음 = type.scale이 그 값(나머지 같음) · 없음 = 현행과 같은 결과
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > TS-AC-10 정적 HTML 킷 토큰 = 문서 제목 비율 > 문서 typeScale 있음 → render.kitTokens.type.scale = 그 값 · 없음 = 프로필 비율
+ Test Files  3 failed | 125 passed (128)
+      Tests  3 failed | 1105 passed (1108)
+reverted OK

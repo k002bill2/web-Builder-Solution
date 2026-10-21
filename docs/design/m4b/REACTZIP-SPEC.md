@@ -131,7 +131,7 @@ interface SiteJsonV1 {
 
 - 문제: [사실] `PageDoc`은 `projectId`·`revision`·`hash`·`profileVersion`·`candidateId`·`libraryVersion`·`generatorVersion`·`updatedAt`을 필수로 갖고(`engine/contracts/pageDoc.ts:82-98`), 이미지 `source`를 UUID 브랜드 타입 `LocalImageId`로 제한한다(`:39-47`). 킷은 원문 그대로 `kitLinks(doc: PageDoc)`·`heroTop(doc: PageDoc)`를 쓴다(`kit/text.ts:1,29,44`). 원문 문서를 넣으면 내부 정보가 새고, 필드를 지우면 킷 타입이 깨진다. 스파이크는 문서 전체를 직렬화했다(`reactZip.ts:58`) — 이 문제의 해결 근거가 아니다.
 - 규칙(★ RZQ-13 A — 모양 유지 + 중립 상수):
-  1. `ExportDoc` = `PageDoc`과 **같은 필드 집합**. 생성기는 원문을 펼치지 않고 필드를 하나씩 골라 새 객체를 만든다(허용 목록 방식 — 원문에 필드가 늘어도 새지 않는다).
+  1. `ExportDoc` = `PageDoc`과 **같은 필드 집합**(→ **정정 2026-10-21 (TYPESCALE-IMPL T4)**: before "`PageDoc`과 같은 필드 집합" → after "`PageDoc`과 같은 필드 집합 — 선택 필드 `typeScale` 제외". `ExportDoc`에 새 키 없음 · 비율은 `kitTokens.type.scale` 값으로만 반영 · `site.json` schema 1 유지. 근거: TYPESCALE-SPEC r1 186행(4.2 T4)·104행 · T3 `1a2aa779`). 생성기는 원문을 펼치지 않고 필드를 하나씩 골라 새 객체를 만든다(허용 목록 방식 — 원문에 필드가 늘어도 새지 않는다).
   2. 내부 필드 값 = 고정 중립 상수: `projectId` `"site"` · `revision` `0` · `hash` `""` · `profileVersion` `0` · `candidateId` `""` · `libraryVersion`·`generatorVersion` `""` · `updatedAt` `""`. [사실] 킷은 `sections`만 읽는다(`kit/text.ts:29-44`) → DOM 영향 0. 결정성도 유지된다.
   3. `meta`·`sections` = 원문 값(이미지 `source`만 아래 3.1 규칙으로 바꾼다). 섹션도 같은 허용 목록 방식으로 새로 만든다 — [사실] `SectionInstance` 필드 6개(`instanceId`·`type`·`variant`·`motion`·`tone`·`slots`)는 모두 렌더 입력이다(`engine/contracts/pageDoc.ts:64-73`). 계약에 필드가 늘면 허용 목록에 넣을지 그때 정한다(기본 = 빼기).
   3.1 이미지 `source` 변환 — `exportImages`가 실제로 바이트를 고른 id만 키를 받는다 [사실 `exportImages.ts:25-38` — enabled이고 바이트가 있는 id만 `images`에 들어가고, 없으면 `lost++`]:

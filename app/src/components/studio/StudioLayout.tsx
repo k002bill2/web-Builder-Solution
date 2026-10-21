@@ -309,10 +309,10 @@ export function StudioLayout({
   const current = selectedSection(doc, selectedId);
   const purpose = docPurpose(ops.series, doc.profileVersion);
   // 캔버스 킷 토큰 입력(팔레트 포함, MQ-1) = 목적과 같은 조회 결과(ops.series)의 문서 버전 적용값 — 두 번 부르지 않는다
-  const kitTokens = useMemo(() => docKitTokens(ops.series, doc.profileVersion), [ops.series, doc.profileVersion]);
-  // 미리보기 캔버스 = 스냅샷 문서의 프로필 버전 팔레트(Codex r1 P2)
+  const kitTokens = useMemo(() => docKitTokens(ops.series, doc.profileVersion, doc.typeScale), [ops.series, doc.profileVersion, doc.typeScale]);
+  // 미리보기 캔버스 = 스냅샷 문서의 프로필 버전 팔레트(Codex r1 P2) · 제목 비율(TS-AC-16 — 같은 버전 스냅샷 전환도 다시 계산)
   const shown = snaps.preview?.doc ?? doc;
-  const canvasTokens = useMemo(() => docKitTokens(ops.series, shown.profileVersion), [ops.series, shown.profileVersion]);
+  const canvasTokens = useMemo(() => docKitTokens(ops.series, shown.profileVersion, shown.typeScale), [ops.series, shown.profileVersion, shown.typeScale]);
   // 순서 부품(5.2) — 선택 섹션이 있을 때만(페이지 정보는 이동·삭제 없음). 같은 부품을 배치마다 그린다
   const opControls = current && (
     <SectionOpControls

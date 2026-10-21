@@ -239,17 +239,17 @@ describe("대화상자 알림 role=status (SPEC 3.4 · CMP-AC-U7)", () => {
 });
 
 describe("캡션 · 요약 (SPEC 2.4 · 2.5 · CMP-AC-U11·U12)", () => {
-  it("캡션 1(동일성 범위 + 기존 문서 안내) · 캡션 2(프로필 비율) · 요약 비율 접미 '(구조안)'", async () => {
+  it("캡션 1(동일성 범위 + 기존 문서 안내) · 비율 고지 캡션 0 · 요약 비율 접미 '(구조안)' 0 (TS-AC-06)", async () => {
     const { dialog, props } = await mountDialog();
     expect(dialog).toHaveTextContent(
       "실제 화면 미리보기 — 3안 모두 예시 문구로 그렸습니다. 이 프로젝트에 편집 문서가 없으면 편집 시작이 이 문서로 시작합니다. 이미 편집 중인 문서가 있으면 편집 시작은 그 문서를 엽니다.",
     );
-    const scale = props.viewed.base.typography_tokens.scale;
-    expect(dialog).toHaveTextContent(`제목 비율 축은 아직 편집 문서에 반영되지 않아 3안 모두 프로필 비율 ${scale}로 그렸습니다 — 비율 차이는 카드의 구조 미리보기에서 보세요.`);
+    expect(dialog).not.toHaveTextContent("제목 비율 축은 아직 편집 문서에 반영되지 않아");
     const a = props.job.candidates[0]!;
     if (a.status !== "succeeded") throw new Error("A안 성공 전제");
     expect(column(dialog, "A")).toHaveTextContent(`${parts.heroText(a.plan.axes)} · `);
-    expect(column(dialog, "A")).toHaveTextContent(`${parts.scaleText(a.plan, props.profileScale)} (구조안)`);
+    expect(column(dialog, "A")).toHaveTextContent(parts.scaleText(a.plan, props.profileScale));
+    expect(dialog).not.toHaveTextContent("(구조안)");
   });
 });
 

@@ -77,6 +77,15 @@ describe("site.json (RZ-AC-08 · 2.3.1)", () => {
     expect(site.doc.sections.map((s) => Object.keys(s))).toEqual(c.doc.sections.map(() => ["instanceId", "type", "variant", "motion", "tone", "slots"]));
   });
 
+  it("TS-AC-09 문서 typeScale — site.json doc 키 = 현행 10개(새 키 0) · kitTokens.type.scale = 문서 값 · schema 1", async () => {
+    const c = m2();
+    const scaled = { ...c, doc: { ...c.doc, typeScale: 1.333 }, kitTokens: { ...c.kitTokens, type: { ...c.kitTokens.type, scale: 1.333 } } };
+    const site = JSON.parse(textOf(await entriesOf(scaled), "src/site.json")) as SiteJsonV1;
+    expect(site.schema).toBe(1);
+    expect(Object.keys(site.doc)).toEqual(["projectId", "revision", "hash", "profileVersion", "candidateId", "libraryVersion", "generatorVersion", "updatedAt", "meta", "sections"]);
+    expect(site.kitTokens.type.scale).toBe(1.333);
+  });
+
   it("이미지 source — 고른 id = img-NN(같은 id 2슬롯 = 키 1개) · 잃은·끈 로컬 id = placeholder diagonal · UUID 0 · 참조 = images 키 = 이미지 entry", async () => {
     const entries = await entriesOf(m2());
     const json = textOf(entries, "src/site.json");

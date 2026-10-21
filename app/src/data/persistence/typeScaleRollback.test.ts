@@ -8,8 +8,9 @@ import type { PageDoc } from "../../engine/contracts/pageDoc";
 import { hashDoc } from "../../engine/ops/hash";
 import { validatePageDoc } from "../../engine/validate/validatePageDoc";
 import { checkFile } from "../../features/projectFile/checkFile";
+import { encodeProjectFile } from "../../features/projectFile/encode";
 import { FIXTURE_CATALOG, boardOf } from "../../test/compareFixtures";
-import { jsonFile, seedDocRecord, seedFile } from "../../test/projectFileFixtures";
+import { fileOf, jsonFile, seedDocRecord, seedFile, seedProject, seedSeries } from "../../test/projectFileFixtures";
 import { STUDIO_IMPORTS, createDeferredStudio } from "../deferredStudio";
 import type { ProjectRepository } from "../projectRepository";
 import { checkSaveDoc, rekeyDoc } from "../startDocWrite";
@@ -89,6 +90,16 @@ describe("TS-AC-14 되돌리기 하한 — 값 있는 문서가 T1 코드만으�
     const rekeyed = rekeyDoc(imported, "project-9");
     expect(rekeyed.typeScale).toBe(1.333);
     expect(checkSaveDoc("project-9", rekeyed).ok).toBe(true);
+  });
+
+  it("TS-AC-08 왕복 — 값 있는 문서 내보내기(encodeProjectFile) → 가져오기(checkFile) = 같은 값·해시", async () => {
+    const record = seedDocRecord();
+    const doc = withScale(record.doc as PageDoc, 1.333);
+    const encoded = await encodeProjectFile({ project: seedProject(), series: seedSeries(), doc: { ...record, doc }, images: [], exportedAt: "2026-10-21T00:00:00.000Z" });
+    if (!encoded.ok) throw new Error(encoded.message);
+    const result = await checkFile(fileOf(await encoded.blob.text()));
+    if (!result.ok) throw new Error(result.message);
+    expect(result.file.doc!.doc).toEqual(doc);
   });
 
   it("범위 밖 값 파일 = 가져오기 거부(기존 checkFile 실패 경로)", async () => {

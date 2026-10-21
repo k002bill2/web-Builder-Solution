@@ -1,0 +1,12 @@
+## TZ=Asia/Seoul
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/test-gaps-ts/app
+
+
+ Test Files  1 passed (1)
+      Tests  25 passed (25)
+   Start at  11:16:55
+   Duration  1.04s (environment 43%, tests 30%, transform 16%, setup 7%, import 3%, worker 1%)
+

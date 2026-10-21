@@ -15,5 +15,5 @@
 ## CI
 - `.github/workflows/ci.yml` (GitHub Actions · ubuntu-latest · Node 22 · `pull_request`→main · `push` main · `permissions: contents: read`).
 - 필수 check 이름 = job 이름 `typecheck` · `lint` · `test` · `build` (branch protection에 그대로 쓴다 — 바꾸지 않는다).
-- 로컬 재현(`app/`에서 같은 순서): `npm ci && npm run typecheck && npm run lint && TZ=Asia/Seoul npx vitest run --maxWorkers=2 && npm run build`.
-- `test` job은 `TZ=Asia/Seoul`로 돈다(KST 고정 기대 테스트 — `dev/active/ci-github/REPORT.md`). `build`는 번들 예산 검사를 포함한다.
+- 로컬 재현(`app/`에서 같은 순서): `npm ci && npm run typecheck && npm run lint && npx vitest run --maxWorkers=2 && npm run build`.
+- `test` job은 TZ를 고정하지 않는다(시:분 기대값은 테스트가 로컬 시계로 계산 — B-CI-01). `build`는 번들 예산 검사를 포함한다.

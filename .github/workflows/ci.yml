@@ -54,9 +54,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      # memoryProjectRepository.test.ts가 KST 시:분을 고정 기대한다(REPORT 참조). 테스트가 TZ를 스스로 주입하면 지운다.
-      TZ: Asia/Seoul
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

@@ -13,7 +13,7 @@ import type { WirePalette } from "./CandidateCard";
 import { CompareColumn } from "./CompareColumn";
 import { COMPARE_WIDTH_OPTIONS, type CompareView } from "./compareFrame";
 import { compareKitTokens, comparePreviews } from "./comparePreviews";
-import { categoryText, COMPARE_TEXT, scaleNotice, totalText, type FrameCategory } from "./compareText";
+import { categoryText, COMPARE_TEXT, totalText, type FrameCategory } from "./compareText";
 import type { CopyReference } from "../../data/industryCopy";
 
 export type CandidateParts = Pick<typeof import("./CandidateResults"), "Wireframe" | "heroText" | "scaleText">;
@@ -90,7 +90,8 @@ export default function CompareDialog(props: CompareDialogProps) {
   const { candidates, libraryVersion, generatorVersion } = job;
   // 선택이 바뀌어도 문서는 그대로(재전송 0) — 잡의 안·버전과 보는 버전만 본다
   const previews = useMemo(() => comparePreviews({ candidates, libraryVersion, generatorVersion }, viewed, base), [candidates, libraryVersion, generatorVersion, viewed, base]);
-  const kitTokens = useMemo(() => compareKitTokens(viewed), [viewed]);
+  // 열마다 그 안의 제목 비율(TYPESCALE ★B) — 편집 시작 뒤 편집기와 같은 토큰
+  const kitTokens = useMemo(() => new Map(previews.map((p) => [p.id, compareKitTokens(viewed, p.kind === "doc" ? p.plan.axes.typeScale : undefined)])), [previews, viewed]);
   const wide = useWide();
   const [view, setView] = useState<CompareView>("desktop");
   const [shown, setShown] = useState<CandidateId>(job.selected ?? "A");
@@ -128,7 +129,6 @@ export default function CompareDialog(props: CompareDialogProps) {
             3안 실제 화면 비교
           </h2>
           <p className="ds-caption1 text-label-alternative">{COMPARE_TEXT.same}</p>
-          <p className="ds-caption1 text-label-alternative">{scaleNotice(viewed.base.typography_tokens.scale)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegmentedControl label="미리보기 폭" size="sm" options={COMPARE_WIDTH_OPTIONS} value={view} onChange={setView} />
@@ -165,7 +165,7 @@ export default function CompareDialog(props: CompareDialogProps) {
               <CompareColumn
                 key={p.id}
                 preview={p}
-                kitTokens={kitTokens}
+                kitTokens={kitTokens.get(p.id)}
                 view={view}
                 parts={props.parts}
                 palette={props.palette}

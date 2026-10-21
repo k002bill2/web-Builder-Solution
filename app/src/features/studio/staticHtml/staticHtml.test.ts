@@ -370,3 +370,15 @@ describe("숨은 렌더 iframe (openRenderFrame)", () => {
     expect(got).toHaveLength(1);
   });
 });
+
+describe("TS-AC-10 정적 HTML 킷 토큰 = 문서 제목 비율", () => {
+  it("문서 typeScale 있음 → render.kitTokens.type.scale = 그 값 · 없음 = 프로필 비율", async () => {
+    const scaled = { ...DOC, typeScale: 1.333 };
+    const frame = fakeFrame();
+    await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: fakeUrls().api })({ ...input, doc: scaled });
+    expect((frame.sent[0] as Extract<ParentMessage, { type: "render" }>).kitTokens?.type.scale).toBe(1.333);
+    const plain = fakeFrame();
+    await createStaticHtmlGenerator(STORE, { open: plain.open, fetchText, fetchBytes, urls: fakeUrls().api })(input);
+    expect((plain.sent[0] as Extract<ParentMessage, { type: "render" }>).kitTokens?.type.scale).toBe(PROFILE.base.typography_tokens.scale);
+  });
+});

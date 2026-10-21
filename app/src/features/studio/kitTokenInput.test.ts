@@ -56,3 +56,13 @@ describe("docKitTokens — 킷 토큰 입력 (M2A-2a K1 · m2a 0.2 · MQ-1)", ()
     expect(docKitTokens(series(version(1, {}, noColor)), 1)).toBeUndefined();
   });
 });
+
+describe("TS-AC-04 제목 비율 = 문서 typeScale ?? 버전 비율", () => {
+  it("값 있음 = type.scale이 그 값(나머지 같음) · 없음 = 현행과 같은 결과", () => {
+    const s = series(version(1, {}));
+    const base = docKitTokens(s, 1)!;
+    expect(docKitTokens(s, 1, undefined)).toEqual(base);
+    expect(base.type.scale).toBe(1.25);
+    expect(docKitTokens(s, 1, 1.333)).toEqual({ ...base, type: { ...base.type, scale: 1.333 } });
+  });
+});

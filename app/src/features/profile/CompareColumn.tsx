@@ -96,7 +96,7 @@ export function CompareColumn({
       </div>
       {plan && (
         <p className="ds-caption1 text-label-alternative">
-          {parts.heroText(plan.axes)} · {GRID_LABELS[plan.axes.grid]} · {parts.scaleText(plan, profileScale)} (구조안)
+          {parts.heroText(plan.axes)} · {GRID_LABELS[plan.axes.grid]} · {parts.scaleText(plan, profileScale)}
         </p>
       )}
       {write?.ok && write.changeNotice && <p className="ds-caption1 text-label-alternative">{write.changeNotice}</p>}

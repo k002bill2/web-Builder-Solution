@@ -11,3 +11,9 @@
 - 기본 브랜치 `main`에 직접 작업하지 않는다. 기능은 Orca worktree에서 진행한다.
 - 원격 저장소 연결·push는 영환님 승인 후.
 - 테스트 먼저 작성한다 (`docs/05-tdd/TDD.md`).
+
+## CI
+- `.github/workflows/ci.yml` (GitHub Actions · ubuntu-latest · Node 22 · `pull_request`→main · `push` main · `permissions: contents: read`).
+- 필수 check 이름 = job 이름 `typecheck` · `lint` · `test` · `build` (branch protection에 그대로 쓴다 — 바꾸지 않는다).
+- 로컬 재현(`app/`에서 같은 순서): `npm ci && npm run typecheck && npm run lint && TZ=Asia/Seoul npx vitest run --maxWorkers=2 && npm run build`.
+- `test` job은 `TZ=Asia/Seoul`로 돈다(KST 고정 기대 테스트 — `dev/active/ci-github/REPORT.md`). `build`는 번들 예산 검사를 포함한다.

@@ -14,7 +14,8 @@ worktree `~/orca/workspaces/web-builder-solution/typescale-impl` · 브랜치 `k
 2. 문서 정정(옛 문장 삭제 금지 — "before → after + 근거" 형식, 정정 표기):
    - `docs/design/m2b/SPEC-COMPARE3.md` F10(23행) · 106·110·135행 근처의 MQ-M2B5-2 A 전제(비율 미반영·"(구조안)" 접미) — T3로 해소됨을 표기.
    - `docs/design/m2b/MQ-M2B5.md` MQ-M2B5-2 — B-M2B-05(TYPESCALE ★B)로 대체됨 기록.
-   - `docs/design/m4b/REACTZIP-SPEC.md` 2.3.1 관련 1항(typeScale이 ExportDoc/kitTokens에 반영되는 점 — 정본 TYPESCALE-SPEC 4.2 T4의 "REACTZIP-SPEC 2.3.1-1" 정의대로).
+   - `docs/design/m4b/REACTZIP-SPEC.md` 2.3.1-1: "`ExportDoc` = `PageDoc`과 같은 필드 집합" → "선택 필드 `typeScale` 제외"(정본 TYPESCALE-SPEC 186행 그대로 — ExportDoc에 새 키 없음, 비율은 kitTokens 값으로만 반영).
+   - SPEC-COMPARE3 2.4-2·2.5도 정본 186행 범위에 포함.
    - TYPESCALE-SPEC 상태줄에 구현·개정 22 기록 1줄.
 3. `docs/06-handoff/BACKLOG.md`: B-M2B-05 행 `✅ 닫힘 2026-10-21 TYPESCALE-IMPL`(커밋 SHA들 · 개정 22) · 새 행 **B-M2B-05b**(편집기 비율 UI — 사용자가 편집 중 비율 변경, `/studio` 진입 증분은 새 개정 필요 명시)를 **파일 끝에 추가**(다른 행 수정 금지).
 4. Ego 실화면 TS-AC-13 1회: `npm run build && npx vite preview --port 4399 --strictPort` → B 또는 C안(typeScale ≠ 프로필)으로 편집 시작 → 편집 캔버스 제목 비율이 그 안의 값으로 그려짐 확인(계산된 font-size 등 수치 기록). 모든 stdout은 `dev/active/typescale-impl/logs/t4-ego-*.txt`로 tee. 끝나면 preview 종료 + `lsof -nP -iTCP:4399 -sTCP:LISTEN` 결과(0) 기록. 25턴 안에 안 되면 BLOCKED로 기록하고 마감.

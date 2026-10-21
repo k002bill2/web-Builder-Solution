@@ -33,6 +33,8 @@ export interface StartDocInput {
   readonly libraryVersion: string;
   readonly generatorVersion: string;
   readonly profileVersion: number;
+  /** 안의 제목 비율(TYPESCALE ★B, `plan.axes.typeScale`) — 있으면 문서에 적는다. 없으면 프로필 버전 비율 */
+  readonly typeScale?: number;
   /** DocStart — 저장소가 정한 값(주입 now 한 번) */
   readonly projectId: string;
   readonly updatedAt: string;
@@ -73,7 +75,7 @@ export function writeStartDoc(input: StartDocInput): StartDocWrite {
   const mapped = input.sections.map((s) => ({ type: s.type, variant: mapVariant(s.type, s.variant)!, motion: s.motion }));
   try {
     const doc = withSampleCopy(createDocFromCandidate(
-      { candidateId: input.candidateId, sections: mapped, libraryVersion: input.libraryVersion, generatorVersion: input.generatorVersion },
+      { candidateId: input.candidateId, sections: mapped, libraryVersion: input.libraryVersion, generatorVersion: input.generatorVersion, ...(input.typeScale !== undefined && { typeScale: input.typeScale }) },
       input.profileVersion,
       { projectId: input.projectId, updatedAt: input.updatedAt },
     ), input.copy);

@@ -65,11 +65,23 @@ describe("미리보기 문서 변환 (SPEC 3.2 · CMP-AC-U5)", () => {
     expect(preview.kind === "doc" && preview.write).toMatchObject({ ok: false, reason: "UNKNOWN_VARIANT" });
   });
 
-  it("킷 토큰 = 문서 프로필 버전 docKitTokens(전체 계열)와 같은 값 — 3안 공통, 비율 덮어쓰기 0", async () => {
+  it("킷 토큰 = 문서 프로필 버전 docKitTokens(전체 계열)와 같은 값 — 비율 없음 = 프로필 비율", async () => {
     const { series, viewed } = await fixture();
     const tokens = compareKitTokens(viewed);
     expect(tokens).toEqual(docKitTokens(series, viewed.version));
     expect(tokens?.type.scale).toBe(viewed.base.typography_tokens.scale);
+  });
+
+  it("TS-AC-05 열별 토큰 — 같은 (버전, typeScale) = docKitTokens와 같은 값 · type.scale = 각 안 axes.typeScale · 미리보기 문서 = 그 비율", async () => {
+    const { series, viewed, job } = await fixture();
+    for (const preview of comparePreviews(job, viewed)) {
+      if (preview.kind !== "doc") throw new Error("성공 안 전제");
+      const scale = preview.plan.axes.typeScale;
+      const tokens = compareKitTokens(viewed, scale);
+      expect(tokens).toEqual(docKitTokens(series, viewed.version, scale));
+      expect(tokens?.type.scale).toBe(scale);
+      expect(preview.write.ok && preview.write.doc.typeScale).toBe(scale);
+    }
   });
 
   it("복제 대조 — 보정(나중 것 우선)·촘촘·어두운 카드·미디어 비율·부분 레코드(팔레트·글꼴 없음)도 docKitTokens와 같은 값", async () => {

@@ -185,3 +185,23 @@ describe("validatePageDoc — 프로토타입 오염 키", () => {
     expect(issuesOf(raw((d) => (d.meta = new Date(0))))).toContain("$.meta");
   });
 });
+
+describe("TYPESCALE TS-AC-03 — 선택 키 typeScale(1~2) · 재구성 값 보존", () => {
+  const base = () => raw() as Record<string, unknown>;
+  it("없음 = 통과 · 결과에 키 0", () => {
+    const checked = validatePageDoc(base());
+    expect(checked.ok && Object.hasOwn(checked.value, "typeScale")).toBe(false);
+  });
+  it.each([1, 1.2, 1.333, 2])("유한수 %s = 통과 · 결과 문서에 같은 값", (typeScale) => {
+    const checked = validatePageDoc({ ...base(), typeScale });
+    expect(checked.ok && checked.value.typeScale).toBe(typeScale);
+  });
+  it.each(["1.25", Number.NaN, Infinity, 0.99, 2.01, -1.2, null, undefined])("%s = 거부($.typeScale)", (typeScale) => {
+    const checked = validatePageDoc({ ...base(), typeScale });
+    expect(checked.ok).toBe(false);
+    expect(!checked.ok && checked.issues.map((i) => i.path)).toContain("$.typeScale");
+  });
+  it("그 밖의 새 최상위 키는 여전히 거부", () => {
+    expect(validatePageDoc({ ...base(), typeScale: 1.25, headingScale: 1.25 }).ok).toBe(false);
+  });
+});

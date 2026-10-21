@@ -422,7 +422,9 @@ export function createDocBook(store: StudioReader, now: () => string, local?: Pi
       // 5 쓰기 — 어댑터(8.2.1) · restart = 스냅샷 + 교체(revision 현재 + 1) · 멱등 기록 — 한 번에
       const updatedAt = now();
       const copy = copyOf(baseReferenceId);
-      const made = writeStartDoc({ candidateId, sections: plan.sections, libraryVersion: job.libraryVersion, generatorVersion: job.generatorVersion, profileVersion, projectId, updatedAt, ...(copy && { copy }) });
+      // 제목 비율 = 안의 축 값(TYPESCALE ★B) — 영속 잡 axes는 모양 검사가 느슨해 숫자일 때만 넘긴다(범위는 엔진 검증)
+      const typeScale = plan.axes?.typeScale;
+      const made = writeStartDoc({ candidateId, sections: plan.sections, libraryVersion: job.libraryVersion, generatorVersion: job.generatorVersion, profileVersion, projectId, updatedAt, ...(typeof typeScale === "number" && { typeScale }), ...(copy && { copy }) });
       if (!made.ok) throw new ProjectRepositoryError("UNKNOWN_VARIANT", made.reason, { alert: made.alert });
       const doc: DocHead = deepFreeze(current ? { ...made.doc, revision: current.revision + 1 } : made.doc);
       const result: StartDocResult<DocHead> = deepFreeze({ doc, changes: made.changes, ...(made.changeNotice && { changeNotice: made.changeNotice }) });

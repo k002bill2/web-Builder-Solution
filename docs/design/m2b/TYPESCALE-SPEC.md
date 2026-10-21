@@ -4,6 +4,7 @@
 - 발주: Jarvis 2026-10-20 (영환님 "1" — ★A: 영향 범위 명세 먼저, **계약 변경 단계에서 재승인**)
 - 상위 근거: BACKLOG B-M2B-05 · `docs/design/m2b/MQ-M2B5.md` MQ-M2B5-2(★A 결정, C = 이 티켓) · `docs/design/m2b/SPEC-COMPARE3.md` F9·F10·2.4·2.5 · `docs/design/2a-04/SPEC.md:468` · `docs/design/m4b/REACTZIP-SPEC.md` 2.3(`site.json` v1)
 - 표기: [L1] 이 worktree 파일 직접 확인 · [L3 추정] 실측 전 · [확인 필요] 구현 레인 실측 대상. 경로는 `app/src/` 기준.
+- 상태(2026-10-21): ★B 구현 완료 — T0 `e3f8f8b8` · T1 `7f94cc4b` · T2 `12adddfe` · T3 `1a2aa779`(병합 `3a4dd1fb`) · T4 문서 정정(TYPESCALE-IMPL). 예산은 ADR-004 **개정 22** `3e5dfbc7`(B-M2B-05 몫 +0.03 → 기준선 `/studio` 128.79 · 복원 131.79).
 - 이 문서는 **결정하지 않는다**. 방안·계약 목록·질문을 정리하고, 엔진 계약·저장 스키마·새 의존성·예산 상향은 5.2 "사용자 질의"로 넘긴다.
 
 ---

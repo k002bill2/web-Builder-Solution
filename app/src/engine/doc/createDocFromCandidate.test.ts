@@ -128,3 +128,18 @@ describe("createDocFromCandidate (SPEC 8.2 · 8.3.1 — 구조안 → 새 문서
     expect(validatePageDoc(doc).ok).toBe(true);
   });
 });
+
+describe("TYPESCALE ★B — 구조안 typeScale → 문서 기록", () => {
+  it("값 있음 = 문서에 같은 값 · hash = hashDoc(값 포함) · 값 없음 = 키 0(기존 모양·해시)", () => {
+    const withScale = createDocFromCandidate({ ...plan(), typeScale: 1.333 }, 3, START);
+    const without = createDocFromCandidate(plan(), 3, START);
+    expect(withScale.typeScale).toBe(1.333);
+    expect(withScale.hash).toBe(hashDoc(withScale));
+    expect(withScale.hash).not.toBe(without.hash);
+    expect(Object.hasOwn(without, "typeScale")).toBe(false);
+    expect({ ...withScale, typeScale: undefined, hash: without.hash }).toEqual({ ...without, typeScale: undefined });
+  });
+  it.each([0.5, 2.5, Number.NaN])("범위 밖 %s = BAD_VALUE", (typeScale) => {
+    expect(codeOf(() => createDocFromCandidate({ ...plan(), typeScale }, 3, START))).toMatch(/^BAD_VALUE .*\$\.typeScale/);
+  });
+});

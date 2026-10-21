@@ -264,6 +264,20 @@ describe("Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트", () =
     await waitFor(() => expect(frame.lastDoc().profileVersion).toBe(2));
     expect(frame.lastKitTokens()?.palette.primary).toBe(V2);
   });
+
+  it("같은 profileVersion · 다른 typeScale 스냅샷 → 미리보기 캔버스 type.scale = 스냅샷 값 · 돌아가면 편집 문서 값(TS-AC-16 · B-M2B-05c)", async () => {
+    const r = snapshotRepo({ ...sampleDoc({ profileVersion: 2 }), typeScale: 1.5 }, 1);
+    const { frame } = await openStudio({ doc: { ...sampleDoc({ profileVersion: 2 }), typeScale: 1.2 }, series: SERIES, repository: r.repository });
+    await waitFor(() => expect(frame.lastKitTokens()?.type.scale).toBe(1.2));
+    const dialog = await openDialog();
+    await previewFirst(dialog, "수동 1");
+    await waitFor(() => expect(frame.lastDoc().typeScale).toBe(1.5));
+    expect(frame.lastDoc().profileVersion).toBe(2);
+    expect(frame.lastKitTokens()?.type.scale).toBe(1.5);
+    act(() => void fireEvent.click(screen.getByRole("button", { name: "편집으로 돌아가기" })));
+    await waitFor(() => expect(frame.lastDoc().typeScale).toBe(1.2));
+    expect(frame.lastKitTokens()?.type.scale).toBe(1.2);
+  });
 });
 
 describe("Codex r2 지적 · 툴바 시각 — 미리보기 진입 저장 실패 · 복원 뒤 목록 실패", () => {

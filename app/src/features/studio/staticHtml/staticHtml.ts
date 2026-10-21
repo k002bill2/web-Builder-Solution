@@ -152,7 +152,7 @@ export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<Sta
     const doc = head as PageDoc;
     const project = store.projects().find((p) => p.projectId === projectId);
     const versions = project ? store.versions(project.profileId) : [];
-    const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion);
+    const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion, doc.typeScale);
     if (!kitTokens) throw new Error("킷 토큰을 만들 수 없는 문서입니다");
     const css = await kitCss(fetchText);
     // 글꼴 실패 = 내보내기 실패(시간 초과와 같은 재시도 경로 · 렌더 문서를 열지 않는다). 전체 상한은 글꼴 시간을 포함한다

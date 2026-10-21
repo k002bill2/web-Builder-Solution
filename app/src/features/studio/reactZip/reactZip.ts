@@ -132,7 +132,7 @@ export function createReactZipGenerator(store: StudioReader, deps: Partial<React
     const doc = head as PageDoc;
     const project = store.projects().find((p) => p.projectId === projectId);
     const versions = project ? store.versions(project.profileId) : [];
-    const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion);
+    const kitTokens = project && docKitTokens({ profileId: project.profileId, versions, latestVersion: versions.at(-1)?.version ?? 0 }, doc.profileVersion, doc.typeScale);
     if (!kitTokens) throw new Error("킷 토큰을 만들 수 없는 문서입니다");
     const build = async () => {
       const fonts = await loadSiteFonts(await kitCss(fetchText), kitTokens.type, fetchBytes, fontTimeoutMs).catch(() => {

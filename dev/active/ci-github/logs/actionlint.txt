@@ -5,5 +5,5 @@ verbose: Linting .github/workflows/ci.yml
 verbose: Using project at /Users/younghwankang/orca/workspaces/web-builder-solution/ci-github
 verbose: Found 0 parse errors in 0 ms for .github/workflows/ci.yml
 verbose: Rule "pyflakes" was disabled: exec: "pyflakes": executable file not found in $PATH
-verbose: Found total 0 errors in 37 ms for .github/workflows/ci.yml
+verbose: Found total 0 errors in 98 ms for .github/workflows/ci.yml
 actionlint exit=0

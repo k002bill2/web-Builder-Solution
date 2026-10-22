@@ -1,0 +1,7 @@
+ElementResolutionError: page.click timed out after 3000ms: Locator loc=role:button[name='이 레퍼런스로 전부 선택: A 모던 카페 브랜드'] matched 0 elements
+    at #retryElementAction (file:////[eval1]:19158:27)
+    at async file:////[eval1]:19242:29
+    at async file:////[eval1]:16940:28
+{ compareButtons: [] }
+
+ego's nodejs process exited with code 1.

@@ -1,0 +1,18 @@
+{
+ "target": {
+  "type": "iframe",
+  "url": "http://localhost:4399/render.html",
+  "attached": true
+ },
+ "sessionId": "79A27B77F9CFFA576024BD4EC8F8D38E",
+ "events": [
+  "{\"method\":\"Target.attachedToTarget\",\"params\":{\"sessionId\":\"79A27B77F9CFFA576024BD4EC8F8D38E\",\"targetInfo\":{\"targetId\":\"E3CCE1A2DAC2D4A1CEEFD9268A2A9FC9\",\"type\":\"iframe\",\"title\":\"http://localhost:4399/render.html\",\"url\":\"http://localhost:4399/render.html\",\"attached\":true,\"parentId\":\"8F1169D2C765964EE88CABA8847A7505\",\"canAccessOpener\":false,\"parentFrameId\":\"8F1169D2C765964EE88CABA8847A7505\",\"browser",
+  "{\"method\":\"Target.receivedMessageFromTarget\",\"params\":{\"sessionId\":\"79A27B77F9CFFA576024BD4EC8F8D38E\",\"message\":\"{\\\"id\\\":1,\\\"result\\\":{\\\"result\\\":{\\\"type\\\":\\\"string\\\",\\\"value\\\":\\\"{\\\\\\\"u\\\\\\\":\\\\\\\"/render.html\\\\\\\",\\\\\\\"h\\\\\\\":[\\\\\\\"67.3392px\\\\\\\"],\\\\\\\"t1\\\\\\\":\\\\\\\"1.333rem\\\\\\\"}\\\"}}}\",\"targetId\":\"E3CCE1A2DAC2D4A1CEEFD9268A2A9FC9\"},\"sessionId\":\"19FBFE956198E5543B4E7260506AD103\"}"
+ ],
+ "pierce": {
+  "len": 98109,
+  "hasRender": true,
+  "h1InTree": true
+ }
+}
+

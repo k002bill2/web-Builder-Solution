@@ -1,0 +1,9 @@
+{
+ "err": "TypeError: Cannot read properties of undefined (reading 'targetId')",
+ "pierce": {
+  "len": 96097,
+  "hasRender": false,
+  "h1InTree": true
+ }
+}
+

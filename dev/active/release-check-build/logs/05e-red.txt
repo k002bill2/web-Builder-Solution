@@ -1,0 +1,606 @@
+# 변이: src/features/studio/docPurpose.ts:55 'scale: typeScale ?? scale' → 'scale' (임시)
+diff --git a/app/src/features/studio/docPurpose.ts b/app/src/features/studio/docPurpose.ts
+index d14e36a3..38666be7 100644
+--- a/app/src/features/studio/docPurpose.ts
++++ b/app/src/features/studio/docPurpose.ts
+@@ -52,7 +52,7 @@ export function docKitTokens(series: ProfileSeries | undefined, profileVersion:
+   return {
+     palette,
+     card: { tone: choices.card_style?.surfaceTone === "dark" ? "dark" : "light", style: pick(CARD_STYLES, choices.card_style?.style, "bordered-md") },
+-    type: { family, headingWeight, bodyWeight, scale: typeScale ?? scale },
++    type: { family, headingWeight, bodyWeight, scale },
+     space: { grid: Number.isFinite(grid) && grid > 0 ? grid : 8, sectionGap: spacing_tokens.sectionGap, density: version.adjustments.density ?? "comfortable" },
+     mediaRatio: pick(RATIOS, choices.media_ratio, "4:5"),
+   };
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.1 /Users/younghwankang/orca/workspaces/web-builder-solution/release-check-build/app
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts (25 tests | 2 failed) 1787ms
+   ❯ TS-AC-10 정적 HTML 킷 토큰 = 문서 제목 비율 (2)
+     × 문서 typeScale 있음 → render.kitTokens.type.scale = 그 값 · 없음 = 프로필 비율 17ms
+     × B-M2B-05e 직렬화 결과 문자열의 --site-t1 = 문서 typeScale rem · 없음 = 프로필 비율 rem 24ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/components/studio/SnapshotFlow.test.tsx (20 tests | 1 failed) 12269ms
+   ❯ Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트 (3)
+     × 같은 profileVersion · 다른 typeScale 스냅샷 → 미리보기 캔버스 type.scale = 스냅샷 값 · 돌아가면 편집 문서 값(TS-AC-16 · B-M2B-05c) 3047ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: navigation to another Document
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/features/profile/comparePreviews.test.ts (10 tests | 1 failed) 63ms
+   ❯ 미리보기 문서 변환 (SPEC 3.2 · CMP-AC-U5) (6)
+     × TS-AC-05 열별 토큰 — 같은 (버전, typeScale) = docKitTokens와 같은 값 · type.scale = 각 안 axes.typeScale · 미리보기 문서 = 그 비율 7ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ src/features/studio/kitTokenInput.test.ts (4 tests | 1 failed) 8ms
+   ❯ TS-AC-04 제목 비율 = 문서 typeScale ?? 버전 비율 (1)
+     × 값 있음 = type.scale이 그 값(나머지 같음) · 없음 = 현행과 같은 결과 5ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/studio/SnapshotFlow.test.tsx > Codex r1 지적 — 복원 중 잠금 · 미리보기 팔레트 > 같은 profileVersion · 다른 typeScale 스냅샷 → 미리보기 캔버스 type.scale = 스냅샷 값 · 돌아가면 편집 문서 값(TS-AC-16 · B-M2B-05c)
+AssertionError: expected 1.25 to be 1.2 // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0m동네 치과 클리닉 프로젝트 편집[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-dvh bg-background-normal text-label-normal"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"ds-label sr-only rounded-md bg-surface-inverse px-4 py-2.5 text-on-surface-inverse shadow-4 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:outline-none focus:shadow-(--focus-ring)"[39m
+          [33mhref[39m=[32m"#main-content"[39m
+        [36m>[39m
+          [0m본문으로 건너뛰기[0m
+        [36m</a>[39m
+        [36m<main[39m
+          [33mclass[39m=[32m"focus:outline-none"[39m
+          [33mid[39m=[32m"main-content"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-dvh flex-col"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex min-h-13 flex-none flex-wrap items-center gap-2 border-b border-line-normal bg-background-normal px-3 py-2"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"프로젝트로 돌아가기"[39m
+                [33mclass[39m=[32m"inline-flex size-8 flex-none items-center justify-center rounded-md text-label-neutral hover:bg-fill-normal"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/projects"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"ml-1 size-2.5 rotate-45 border-b-2 border-l-2 border-current"[39m
+                [36m/>[39m
+              [36m</a>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"min-w-0 flex-1 truncate text-body1 font-bold focus:outline-none"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+                [33mtitle[39m=[32m"동네 치과 클리닉 프로젝트"[39m
+              [36m>[39m
+                [0m동네 치과 클리닉 프로젝트[0m
+              [36m</h1>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ds-caption1 flex-none rounded-sm bg-fill-strong px-2 py-0.5 text-label-neutral"[39m
+              [36m>[39m
+                [0mcandidate-a안 · 프로필 v2[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-w-0 items-center gap-2"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-caption1 text-label-alternative"[39m
+                [36m/>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                  [33mrole[39m=[32m"alert"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"contents"[39m
+                [33mdata-preview-keep[39m=[32m"true"[39m
+              [36m>[39m
+                [36m<fieldset[39m
+                  [33mclass[39m=[32m"flex flex-none items-center gap-2"[39m
+                [36m>[39m
+                  [36m<legend[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                  [36m>[39m
+                    [0m미리보기 폭[0m
+                  [36m</legend>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex rounded-md bg-fill-normal p-0.5"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mchecked[39m=[32m""[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"desktop"[39m
+                      [36m/>[39m
+                      [0m데스크톱[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"tablet"[39m
+                      [36m/>[39m
+                      [0m태블릿[0m
+                    [36m</label>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ds-label cursor-pointer rounded-sm px-3 py-1 text-label-neutral has-checked:bg-background-normal has-checked:text-label-normal has-checked:shadow-sm has-focus-visible:shadow-(--focus-ring)"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mclass[39m=[32m"sr-only"[39m
+                        [33mname[39m=[32m"studio-preview-width"[39m
+                        [33mtype[39m=[32m"radio"[39m
+                        [33mvalue[39m=[32m"mobile"[39m
+                      [36m/>[39m
+                      [0m모바일[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                [36m</fieldset>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none cursor-pointer border font-semibold leading-none tracking-(--tracking-snug) transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-standard focus-visible:outline-none focus-visible:shadow-(--focus-ring) active:scale-97 disabled:cursor-not-allowed disabled:active:scale-100 bg-background-normal text-label-normal border-line-normal enabled:hover:bg-fill-normal enabled:hover:border-line-strong disabled:text-label-disable disabled:border-line-alternative h-8 px-3 rounded-sm text-caption1 flex-none aria-disabled:cursor-not-allowed aria-disabled:text-label-disable"[39m
+                [33mid[39m=[32m"studio-snapshot"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m스냅샷[0m
+              [36m</button>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative flex-none"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"f...
+
+- Expected
++ Received
+
+- 1.2
++ 1.25
+
+ ❯ src/components/studio/SnapshotFlow.test.tsx:271:67
+    269|     const r = snapshotRepo({ ...sampleDoc({ profileVersion: 2 }), type…
+    270|     const { frame } = await openStudio({ doc: { ...sampleDoc({ profile…
+    271|     await waitFor(() => expect(frame.lastKitTokens()?.type.scale).toBe…
+       |                                                                   ^
+    272|     const dialog = await openDialog();
+    273|     await previewFirst(dialog, "수동 1");
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/features/profile/comparePreviews.test.ts > 미리보기 문서 변환 (SPEC 3.2 · CMP-AC-U5) > TS-AC-05 열별 토큰 — 같은 (버전, typeScale) = docKitTokens와 같은 값 · type.scale = 각 안 axes.typeScale · 미리보기 문서 = 그 비율
+AssertionError: expected { palette: { …(5) }, …(4) } to deeply equal { palette: { …(5) }, …(4) }
+
+- Expected
++ Received
+
+@@ -18,8 +18,8 @@
+    },
+    "type": {
+      "bodyWeight": 400,
+      "family": "Pretendard",
+      "headingWeight": 700,
+-     "scale": 1.25,
++     "scale": 1.2,
+    },
+  }
+
+ ❯ src/features/profile/comparePreviews.test.ts:81:22
+     79|       const scale = preview.plan.axes.typeScale;
+     80|       const tokens = compareKitTokens(viewed, scale);
+     81|       expect(tokens).toEqual(docKitTokens(series, viewed.version, scal…
+       |                      ^
+     82|       expect(tokens?.type.scale).toBe(scale);
+     83|       expect(preview.write.ok && preview.write.doc.typeScale).toBe(sca…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/features/studio/kitTokenInput.test.ts > TS-AC-04 제목 비율 = 문서 typeScale ?? 버전 비율 > 값 있음 = type.scale이 그 값(나머지 같음) · 없음 = 현행과 같은 결과
+AssertionError: expected { palette: { …(5) }, …(4) } to deeply equal { palette: { …(5) }, …(4) }
+
+- Expected
++ Received
+
+@@ -18,8 +18,8 @@
+    },
+    "type": {
+      "bodyWeight": 400,
+      "family": "Noto Serif KR",
+      "headingWeight": 700,
+-     "scale": 1.333,
++     "scale": 1.25,
+    },
+  }
+
+ ❯ src/features/studio/kitTokenInput.test.ts:66:39
+     64|     expect(docKitTokens(s, 1, undefined)).toEqual(base);
+     65|     expect(base.type.scale).toBe(1.25);
+     66|     expect(docKitTokens(s, 1, 1.333)).toEqual({ ...base, type: { ...ba…
+       |                                       ^
+     67|   });
+     68| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > TS-AC-10 정적 HTML 킷 토큰 = 문서 제목 비율 > 문서 typeScale 있음 → render.kitTokens.type.scale = 그 값 · 없음 = 프로필 비율
+AssertionError: expected 1.25 to be 1.333 // Object.is equality
+
+- Expected
++ Received
+
+- 1.333
++ 1.25
+
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:379:97
+    377|     const frame = fakeFrame();
+    378|     await createStaticHtmlGenerator(STORE, { open: frame.open, fetchTe…
+    379|     expect((frame.sent[0] as Extract<ParentMessage, { type: "render" }…
+       |                                                                                                 ^
+    380|     const plain = fakeFrame();
+    381|     await createStaticHtmlGenerator(STORE, { open: plain.open, fetchTe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/features/studio/staticHtml/staticHtml.test.ts > TS-AC-10 정적 HTML 킷 토큰 = 문서 제목 비율 > B-M2B-05e 직렬화 결과 문자열의 --site-t1 = 문서 typeScale rem · 없음 = 프로필 비율 rem
+AssertionError: expected '1.25rem' to be '1.333rem' // Object.is equality
+
+Expected: "1.333rem"
+Received: "1.25rem"
+
+ ❯ src/features/studio/staticHtml/staticHtml.test.ts:399:54
+    397|     const profileScale = PROFILE.base.typography_tokens.scale;
+    398|     expect(profileScale).not.toBe(1.333);
+    399|     expect(await t1Of({ ...DOC, typeScale: 1.333 })).toBe(rem(1.333));
+       |                                                      ^
+    400|     expect(await t1Of(DOC)).toBe(rem(profileScale));
+    401|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  4 failed | 380 passed (384)
+      Tests  5 failed | 3456 passed (3461)
+   Start at  23:08:02
+   Duration  114.05s (environment 43%, tests 38%, setup 8%, import 6%, transform 5%)
+
+Environment  jsdom was created 384 times · 179.56s total, 43% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

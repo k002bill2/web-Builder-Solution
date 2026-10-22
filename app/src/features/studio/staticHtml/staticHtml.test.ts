@@ -381,4 +381,22 @@ describe("TS-AC-10 정적 HTML 킷 토큰 = 문서 제목 비율", () => {
     await createStaticHtmlGenerator(STORE, { open: plain.open, fetchText, fetchBytes, urls: fakeUrls().api })(input);
     expect((plain.sent[0] as Extract<ParentMessage, { type: "render" }>).kitTokens?.type.scale).toBe(PROFILE.base.typography_tokens.scale);
   });
+
+  it("B-M2B-05e 직렬화 결과 문자열의 --site-t1 = 문서 typeScale rem · 없음 = 프로필 비율 rem", async () => {
+    const t1Of = async (doc: PageDoc) => {
+      let render: Extract<ParentMessage, { type: "render" }> | undefined;
+      const frame = fakeFrame((m, post) => {
+        if (m.type === "render") render = m;
+        post(m.type === "render" ? { type: "rects", rects: [] } : { type: "html", markup: drawDoc(render!.doc as PageDoc, {}, render!.kitTokens).querySelector("[data-site-root]")!.outerHTML });
+      });
+      const urls = fakeUrls();
+      await createStaticHtmlGenerator(STORE, { open: frame.open, fetchText, fetchBytes, urls: urls.api })({ ...input, doc });
+      return (await urls.blobs[0]!.text()).match(/--site-t1:\s*([^;"]+)/)?.[1];
+    };
+    const rem = (scale: number) => `${Number(scale.toFixed(4))}rem`;
+    const profileScale = PROFILE.base.typography_tokens.scale;
+    expect(profileScale).not.toBe(1.333);
+    expect(await t1Of({ ...DOC, typeScale: 1.333 })).toBe(rem(1.333));
+    expect(await t1Of(DOC)).toBe(rem(profileScale));
+  });
 });

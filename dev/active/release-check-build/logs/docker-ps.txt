@@ -1,0 +1,6 @@
+youtube-maker-n8n-1 youtube-maker-n8n
+image-maker-backend image-maker-backend
+shared-postgres postgres:15-alpine
+open-webui ghcr.io/open-webui/open-webui:main
+shared-redis redis:7-alpine
+shared-qdrant qdrant/qdrant:latest

@@ -1,0 +1,3 @@
+release-check-live r2b {"spaceId":29,"closedSpace":true,"keptManagedLabels":[],"closedManagedLabels":["p1"],"preservedUnmanagedCount":0}
+release-check-live r2b-2 {"spaceId":30,"closedSpace":true,"keptManagedLabels":[],"closedManagedLabels":["p1"],"preservedUnmanagedCount":0}
+

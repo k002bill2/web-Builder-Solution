@@ -1,4 +1,4 @@
-**판정: B-M2B-05d = PASS(R2a — C 67.3392px·1.333rem ≠ A 48.8288px·1.25rem, 둘 다 계산식 일치) · B-SEC-09 ②④ = BLOCKED(미착수 — R2b 예정)**
+**판정: B-M2B-05d = PASS(R2a — C 67.3392px·1.333rem ≠ A 48.8288px·1.25rem, 둘 다 계산식 일치) · B-SEC-09 ②④ = BLOCKED(R2b — 정적 zip 미확보: 품질 게이트 차단, 통과 경로가 B안 편집 시작에서 멈춤)**
 
 # RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-22
 
@@ -23,12 +23,22 @@
 - R2a: `프로필 확정` 버튼은 `missing`(전부 선택 후 바로 3안 만들기 단계로 진행) — 흐름에는 영향 없음. 브리프 지정 로그명 `logs/r2a-A.txt`는 1차 실패 로그로 남겼고(덮어쓰기 금지), 성공 로그는 `logs/r2a-A3.txt`.
 
 ## 2. B-SEC-09 ②④ — 정적 zip file://
-BLOCKED: 실행 상한(약 15분) 안에 항목 1 이후 착수 못 함. 미실행.
+**판정 (R2b): BLOCKED** — 앱 버튼으로 정적 zip을 받지 못해 ②④ file:// 실측 전부 미실행 (`logs/r2b-export.txt` · `logs/r2b-file.txt`).
+
+| 단계 | 결과 | 근거 |
+|---|---|---|
+| A v1 문서(이미지 섹션 있음) zip 버튼 | 다운로드 60s 없음 — 품질 게이트 차단 3건(대비 AA C-5 muted/bg 3.8:1, SEO 메타 2) "고치면 열립니다" | `logs/r2b-export-run.txt` · `scripts/r2b-export.mjs` |
+| 게이트 통과 경로(보정값 v2 → 3안 v2 → B안 새로 시작 → SEO) | 보정 저장 v2까지 성공, "B안으로 편집 시작" 클릭 후 대화상자·/studio 이동 없음(3회) | `logs/r2b-export2~7-run.txt` · `scripts/r2b-export2·4·5·7.mjs` |
+| zip 경로·sha256·바이트 / CSP·이미지 n/n·fonts·390 메뉴·양성 대조 | 미실행 | `logs/r2b-file.txt` |
+
+- 원인 추정(확인 필요): 같은 TaskSpace 이전 실행 상태 잔존(profile-6) 또는 B안 편집 시작 버튼 무반응. 앱 결함인지 스크립트 문제인지 미판별.
+- 다음 실행 권고: 새 TaskSpace 한 번의 스크립트로 qa-flow2 경로 실행, 보정값 쓰기 뒤 대기를 2s 이상으로, B안 편집 시작 직후 화면 텍스트를 먼저 덤프.
 
 ## 범위 밖
 Safari·Firefox·Windows·Archive Utility는 범위 밖(수동 — 사람 필요).
 
 ## 정리
+- R2b: preview 4399 사전 lsof 0줄(`logs/r2b-lsof-before.txt`) · 종료 후 0줄(`logs/r2b-lsof-after.txt`) · TaskSpace `release-check-live r2b`/`r2b-2` → `finish({keep:[]})` (`logs/r2b-ego-finish.txt`) · `$TMPDIR/r2b-zip` 삭제.
 - R2a: preview 4399 사전 lsof 0줄(`logs/r2a-lsof-before.txt`) · 종료 후 0줄(`logs/r2a-lsof-after.txt`) · TaskSpace `release-check-live r2a`/`r2a-2`/`r2a-3` → `finish({keep:[]})` (`logs/r2a-ego-finish.txt`).
 - preview 4399: 사전 `lsof -nP -iTCP:4399 -sTCP:LISTEN` 0줄(`logs/lsof-before.txt`) · 종료 후 0줄(`logs/lsof-after.txt`).
 - ego-browser TaskSpace `release-check-live 05d` → `finish({keep:[]})` (`logs/ego-finish.txt`).

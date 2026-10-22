@@ -1,0 +1,6 @@
+Error: page.waitForFunction timed out after 30000ms on page p1; last URL was "http://localhost:4399/profile/profile-6"; last title was "디자인 프로필 · Design Studio".
+    at waitForFunctionTimeoutError (file:////[eval1]:19509:12)
+    at file:////[eval1]:18834:19
+    at async file:////[eval1]:16940:28
+
+ego's nodejs process exited with code 1.

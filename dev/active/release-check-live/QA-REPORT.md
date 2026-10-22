@@ -1,4 +1,4 @@
-**판정: B-M2B-05d = PASS(R2a — C 67.3392px·1.333rem ≠ A 48.8288px·1.25rem, 둘 다 계산식 일치) · B-SEC-09 ②④ = BLOCKED(R2b — 정적 zip 미확보: 품질 게이트 차단, 통과 경로가 B안 편집 시작에서 멈춤)**
+# RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-22 · B-M2B-05d PASS · B-SEC-09 ②④ BLOCKED(R3: 생성기 직접 호출 2회 실패, 시간 상한)
 
 # RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-22
 
@@ -46,3 +46,10 @@ Safari·Firefox·Windows·Archive Utility는 범위 밖(수동 — 사람 필요
 ## 다음 실행 권고
 1. 05d A안: 새 TaskSpace(또는 탭 새로 열기)로 비교 목록 상태 초기화 후 `PICK=A` → `scripts/d05-oopif2.mjs`. 기대 48.828px · 1.25rem.
 2. B-SEC-09 ②④: 별도 실행으로 BRIEF §2 그대로.
+
+### 2-R3. 실제 생성기 정적 zip file:// (BRIEF-R3, 방법 1) — 판정: B-SEC-09 ②④ BLOCKED
+- 방법: dev 서버(4399) 페이지에서 `createStaticHtmlGenerator(store)("static-zip")` 직접 호출(UI 클릭 대신 모듈 직접 호출, 렌더 iframe은 실제 `openRenderFrame`). 한계: dev 서버 `render.html`엔 stylesheet link가 없어(`DEV_SERVER_UNSUPPORTED`, 설계상) `fetchText`만 `kit/fonts.css`·`kit.css`·`motion.css` `?raw` 원문으로 주입.
+- 1차: `JOB_TIMEOUT 글꼴을 불러오지 못했습니다` — 주입 CSS에 @font-face 없음 (`logs/r3-export-run.txt`).
+- 2차: 글꼴 통과 → `exportImages`/`pickVariant`에서 `TypeError` — QA 스크립트의 `readImage` 반환 형태가 imageStore 레코드(variants)와 다름. 제품 결함 아님(입력 형태 오류) (`logs/r3-export2-run.txt`).
+- zip 미확보 → file:// 실측(CSP·이미지 ④·폰트·390 메뉴·양성 대조) 미실행. 방법 2 미착수. 사유: 실행 시간 상한 15분 소진.
+- 마감: dev 서버 종료, `lsof -nP -iTCP:4399 -sTCP:LISTEN` 0줄 (`logs/r3-lsof-after.txt`).

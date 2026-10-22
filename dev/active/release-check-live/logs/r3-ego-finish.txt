@@ -1,0 +1,6 @@
+TypeError: task.finish options must be an object. Expected: await task.finish({ keep })
+    at validatePublicApiOptions (file:////[eval1]:7331:15)
+    at TaskSpace.finish (file:////[eval1]:18118:9)
+    at file:////[eval2]:1:69
+
+ego's nodejs process exited with code 1.

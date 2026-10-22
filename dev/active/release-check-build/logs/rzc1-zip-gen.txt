@@ -1,0 +1,7 @@
+# zip 산출 = 테스트 경로(vitest 임시 파일 zzRcbOut.test.ts — 실행 직후 삭제, 커밋 0). 앱 버튼 경로 아님(선례 m4b-impl·csp-zip과 같음).
+# buildReactZip({ ...m1|m2(referenceRenderInput("ref-a")), date: new Date(doc.updatedAt), css: KIT_CSS }) — app/src/features/studio/testing/reactZipFixture
+# base HEAD b6a5104f (앱 소스 = main 2f03e500)
+78f17508a8265b985571a5e4c0122a0595051ba32d4f63bcf8dc0a247f9dba71  m1.zip
+604013780197f80015839ab5c63415ac45056bf01a655c6fe6761652d993dd33  m2.zip
+739269 m1.zip
+744922 m2.zip

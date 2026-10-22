@@ -1,0 +1,34 @@
+image=node:20.19-slim zip_sha256=78f17508a8265b985571a5e4c0122a0595051ba32d4f63bcf8dc0a247f9dba71
+uname=Linux aarch64 node=v20.19.6 npm=10.8.2 M=m1 mode=ci
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+computing gzip size...
+dist/index.html                              0.67 kB │ gzip:  0.36 kB
+dist/assets/Pretendard-400-BZqc2FCe.woff2  267.09 kB
+dist/assets/Pretendard-700-NvQkMce4.woff2  270.78 kB
+dist/assets/index-C3z6Eb9T.css              30.67 kB │ gzip:  5.98 kB
+dist/assets/index-XVGqLETP.js              246.63 kB │ gzip: 76.36 kB
+
+✓ built in 1.38s
+install_exit=0 build_exit=0
+--- dist/index.html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;self&#39;; style-src &#39;self&#39;; img-src &#39;self&#39; data:; font-src &#39;self&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <meta name="description" content="" />
+    <script type="module" crossorigin src="/assets/index-XVGqLETP.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C3z6Eb9T.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+csp_meta_head_first_child=true inline_script_count=0 script_total=1
+RESULT exit=0
+docker_exit=0

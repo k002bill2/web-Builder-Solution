@@ -9,7 +9,7 @@
 | 프로필 | A 모던 카페 전부 선택 → 프로필 카드 `비율 1.25` | `logs/d05-run-C.txt` 3행 |
 | 3안 카드 비율 | A 1.25 · B 1.2 · C 1.333 | 같은 행 |
 | 선택 안 | C(1.333) → `/studio/project-3` | `logs/d05-run-C.txt` |
-| 캔버스 h1(render.html OOPIF, 1280) | **67.3392px**, `--site-t1` **1.333rem**, root 16px | `logs/d05-oopif2-C.txt`·`logs/d05-oopif3-C.txt`(1차 실행분, 이후 덮어씀 — 아래 주의) |
+| 캔버스 h1(render.html OOPIF, 1280) | **67.3392px**, `--site-t1` **1.333rem**, root 16px | `logs/d05-oopif2-C.txt`(원본 남아 있음 — Jarvis 정정: `67.3392px`·`1.333rem` 1건 grep 확인) |
 | 계산식 | h1 = `--site-t5` = 1.333^5 rem → 16×4.2087 = 67.339px (일치) · 프로필 1.25면 48.828px | python 계산 |
 | A안 대조 (1차) | **미취득** — 재실행 시 비교 보드 `전부 선택` 버튼 0개(비교 목록 메모리/저장 상태 토글 추정) | `logs/d05-run-A.txt` |
 | A안 대조 (R2a) | 선택 안 A(1.25, 카드 문구 "비율 1.25") → `/studio/project-4` · 캔버스 h1 "아침을 여는 한 잔의 커피" **48.8288px**, `--site-t1` **1.25rem**, `--site-t5` 3.0518rem, root 16px, 1280 | `logs/r2a-A3.txt` · `scripts/r2a-A3.mjs` |

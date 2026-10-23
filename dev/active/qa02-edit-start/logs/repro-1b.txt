@@ -1,0 +1,6 @@
+[ego-browser:notice] Ego Lite update is available (current 0.6.0.16). Finish the current browser task, then ask the user before running `ego-browser upgrade`; re-read the ego-browser Skill afterward.
+before {"path":"/profile/profile-6","dialogOpen":["B안으로 새로 시작할까요?\n\n지금 편집 중인 문서: A안 · 프로필 v1 · 마지막 변경 10월 24일 02:07 — 이 탭에 있는 이 상태 그대로 스냅샷에 남습니다\n\n지금 문서는 스냅샷 '새로 시작 전'으로 남고, B안 · 프로필 v2로 새 문서를 만듭니다. 지금 문서의 문구·이미지는 새 문서로 옮겨지지 않습니다.\n\n되돌리려면 편집기의 '스냅샷'에서 '새"],"alerts":["B안을 선택했습니다"],"errors":[]}
+dialog buttons ["\"취소\"","\"편집기 열기 (A안 · v1 편집 중)\"","\"B안으로 새로 시작\""]
+after 1s {"path":"/studio/project-6","dialogOpen":[],"alerts":["B안 · 프로필 v2로 새로 시작했습니다 · 이전 문서(A안 · v1)는 스냅샷 '새로 시작 전'에 있습니다 · 구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼"],"errors":[]}
+after 3s {"path":"/studio/project-6","dialogOpen":[],"alerts":["B안 · 프로필 v2로 새로 시작했습니다 · 이전 문서(A안 · v1)는 스냅샷 '새로 시작 전'에 있습니다 · 구조안의 섹션 4개를 편집기 변형으로 바꿔 열었습니다 — About 2단 소개 → 이야기 + 이미지 · Services 마소니 → 카드 벽돌형 · Testimonials 캐러셀 → 후기 2개 · Contact 지도 + 폼 → 문의 폼"],"errors":[]}
+

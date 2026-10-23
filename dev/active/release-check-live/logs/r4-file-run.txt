@@ -1,0 +1,8 @@
+Error: page label not found: f1. Managed Pages in task space 40: p1. task.page(label) only refers to an existing Page; create one with await task.newPage()
+    at [describeMissingPage] (file:////[eval1]:18200:16)
+    at async file:////[eval1]:19069:19
+    at async #resolve (file:////[eval1]:19066:23)
+    at async Page.cdp (file:////[eval1]:18866:22)
+    at async file:////[eval2]:8:1
+
+ego's nodejs process exited with code 1.

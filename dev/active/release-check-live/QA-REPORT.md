@@ -1,4 +1,4 @@
-# RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-22 · B-M2B-05d PASS · B-SEC-09 ②④ BLOCKED(R3: 생성기 직접 호출 2회 실패, 시간 상한)
+# RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-23 · B-M2B-05d PASS · B-SEC-09 ②④ PASS(R4: 실제 생성기 모듈 직접 호출 zip, dev 서버 테스트 경로 수준 — 2-R4 한계 참조)
 
 # RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-22
 
@@ -53,3 +53,21 @@ Safari·Firefox·Windows·Archive Utility는 범위 밖(수동 — 사람 필요
 - 2차: 글꼴 통과 → `exportImages`/`pickVariant`에서 `TypeError` — QA 스크립트의 `readImage` 반환 형태가 imageStore 레코드(variants)와 다름. 제품 결함 아님(입력 형태 오류) (`logs/r3-export2-run.txt`).
 - zip 미확보 → file:// 실측(CSP·이미지 ④·폰트·390 메뉴·양성 대조) 미실행. 방법 2 미착수. 사유: 실행 시간 상한 15분 소진.
 - 마감: dev 서버 종료, `lsof -nP -iTCP:4399 -sTCP:LISTEN` 0줄 (`logs/r3-lsof-after.txt`).
+
+### 2-R4. 실제 생성기 정적 zip file:// (BRIEF-R4, readImage 계약 수정) — 판정: B-SEC-09 ②④ PASS (한계 있음)
+- 수정: `scripts/r4-export.mjs` = `r3-export2.mjs` 사본, `readImage`만 `{ variants: {640,1280,1920: png}, width: 1000, height: 1000 }`로 교체(+ TaskSpace 이름 `r4`·저장 경로 `r4-zip`).
+- zip 확보 1차 성공: `summary {bytes 602570, images 1, lost 0, fonts 2}` · sha256 `70f80e9c…354411` · 항목 6개(index.html·LICENSES.md·fonts 3·img-01.png) (`logs/r4-export.txt`).
+- file:// 실측 (`logs/r4-file.txt`, 3회째 성공 — 1·2회는 QA 스크립트 오류: page label·앵커 선택자 모호):
+
+| 항목 | 1280 | 390 |
+|---|---|---|
+| innerWidth | 1280 | 390 |
+| CSP meta | 1 | 1 |
+| securitypolicyviolation | 0 | 0 |
+| 끝까지 스크롤 후 이미지 complete && naturalWidth>0 (④) | 2/2 | 2/2 |
+| document.fonts | loaded (Pretendard 400·700 loaded) | loaded |
+| 메뉴 열기→앵커→닫힘 | — | 열림 1 → `#s-s-about` 클릭 → 열림 0 · hash `#s-s-about` · 대상 존재 · 위반 0 |
+| 양성 대조(사본 head에 인라인 `<script>window.__ran=1`) | 위반 1 (`script-src-elem inline`) · 실행 안 됨(`__ran` false) | — |
+
+- **한계**: UI 버튼 클릭 대신 모듈(`createStaticHtmlGenerator`) 직접 호출이며, dev 서버라 `render.html` stylesheet 대신 `fetchText`로 kit·fonts·motion CSS를 `?raw` 주입한 테스트 경로 수준이다. 생성기·렌더 iframe(`openRenderFrame`)·이미지 내보내기·zip 조립은 실제 코드. 이미지 입력은 1×1 PNG 고정 variants(실제 imageStore 레코드 아님). 앱 버튼 경로(preview·실 업로드 이미지)는 미검증 → 수동 릴리스 체크 권장.
+- 마감: dev 서버 종료 `lsof` 0줄 (`logs/r4-lsof-after.txt`) · TaskSpace 2개 finish (`logs/r4-ego-finish.txt`) · `$TMPDIR/r4-*` 삭제.

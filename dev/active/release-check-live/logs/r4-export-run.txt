@@ -1,0 +1,2 @@
+{"ok":true,"slots":2,"resultHash":"70f80e9c4b76","summary":{"bytes":602570,"images":1,"lost":0,"fonts":2}}
+

@@ -1,0 +1,2 @@
+$ lsof -nP -iTCP:4399 -sTCP:LISTEN (2026-10-23 21:13:40)
+lines=0

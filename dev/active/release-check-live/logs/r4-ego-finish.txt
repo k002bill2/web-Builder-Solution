@@ -1,0 +1,3 @@
+finish r4 ok
+
+r4 file TaskSpace: finish ok (logs/r4-file-run3.txt 끝줄)

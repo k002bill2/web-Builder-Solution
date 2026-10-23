@@ -1,0 +1,47 @@
+TypeError: task.finish keep must be "all" or an array of unique non-empty Page labels. Expected: await task.finish({ keep })
+    at validatePublicApiOptions (file:////[eval1]:7345:23)
+    at TaskSpace.finish (file:////[eval1]:18118:9)
+    at file:////[eval2]:38:12
+{
+ "w1280": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index.html",
+  "innerWidth": 1280,
+  "cspMeta": 1,
+  "violations": [],
+  "imgs": "2/2",
+  "fontsStatus": "loaded",
+  "faces": [
+   "Pretendard 700 loaded",
+   "Pretendard 400 loaded"
+  ],
+  "check700": true,
+  "check400": true
+ },
+ "w390": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index.html",
+  "innerWidth": 390,
+  "cspMeta": 1,
+  "violations": [],
+  "imgs": "2/2",
+  "fontsStatus": "loaded",
+  "faces": [
+   "Pretendard 700 loaded",
+   "Pretendard 400 loaded"
+  ],
+  "check700": true,
+  "check400": true
+ },
+ "menu": {
+  "before": {
+   "open": 0,
+   "hash": ""
+  },
+  "afterOpen": {
+   "open": 1,
+   "anchor": "#s-s-about"
+  }
+ },
+ "err": "ElementResolutionError: Selector :popover-open a[href^='#'] matched 4 elements (4 visible, 0 hidden). Candidates: 1. a \"소개\" (visible); 2. a \"서비스\" (visible); 3. a \"문의\" (visible). Use a current snapshot ref or a more specific role, text, or CSS selector.\n    at ambiguityError (file:////[eval1]:10648:12)\n    at rawSelectorCountError (file:////[eval1]:10193:12)\n    at async findUniqueRawSelectorContext (file:////[eval1]:10128:19)\n    at async resolveRawSelectorObjectId (file:////[eval1]:10097:19)\n    at async clickInPage (file:////[eval1]:14298:20)\n    at async #retryElementAction (file:////[eval1]:19141:24)\n    at async file:////[eval1]:19242:29\n    at async file:////[eval1]:16940:28"
+}
+
+ego's nodejs process exited with code 1.

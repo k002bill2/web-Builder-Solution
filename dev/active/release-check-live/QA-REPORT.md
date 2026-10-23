@@ -1,0 +1,73 @@
+# RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-23 · B-M2B-05d PASS · B-SEC-09 ②④ PASS(R4: 실제 생성기 모듈 직접 호출 zip, dev 서버 테스트 경로 수준 — 2-R4 한계 참조)
+
+# RELEASE-CHECK-LIVE QA-REPORT (Chromium · ego-browser) — 2026-10-22
+
+## 1. B-M2B-05d — TS-AC-13 캔버스 제목 font-size
+
+| 항목 | 값 | 근거 |
+|---|---|---|
+| 프로필 | A 모던 카페 전부 선택 → 프로필 카드 `비율 1.25` | `logs/d05-run-C.txt` 3행 |
+| 3안 카드 비율 | A 1.25 · B 1.2 · C 1.333 | 같은 행 |
+| 선택 안 | C(1.333) → `/studio/project-3` | `logs/d05-run-C.txt` |
+| 캔버스 h1(render.html OOPIF, 1280) | **67.3392px**, `--site-t1` **1.333rem**, root 16px | `logs/d05-oopif2-C.txt`(원본 남아 있음 — Jarvis 정정: `67.3392px`·`1.333rem` 1건 grep 확인) |
+| 계산식 | h1 = `--site-t5` = 1.333^5 rem → 16×4.2087 = 67.339px (일치) · 프로필 1.25면 48.828px | python 계산 |
+| A안 대조 (1차) | **미취득** — 재실행 시 비교 보드 `전부 선택` 버튼 0개(비교 목록 메모리/저장 상태 토글 추정) | `logs/d05-run-A.txt` |
+| A안 대조 (R2a) | 선택 안 A(1.25, 카드 문구 "비율 1.25") → `/studio/project-4` · 캔버스 h1 "아침을 여는 한 잔의 커피" **48.8288px**, `--site-t1` **1.25rem**, `--site-t5` 3.0518rem, root 16px, 1280 | `logs/r2a-A3.txt` · `scripts/r2a-A3.mjs` |
+| A 계산식 | 1.25^5 × 16 = 48.828125px (렌더 48.8288px, 반올림 차 0.0007px 일치) · C 1.333^5 × 16 = 67.3396px (렌더 67.3392px 일치) | `logs/r2a-calc.txt` |
+| **판정 (R2a)** | **PASS** — C 67.3392px ≠ A 48.8288px, `--site-t1`이 선택 안 비율(rem)을 따름, 둘 다 계산식과 일치 | 위 두 행 |
+
+- OOPIF 부착 방법(성공): `page.cdp("Target.getTargets")` → `page.cdp("Target.attachToTarget",{flatten:false})` → `page.cdp("Target.sendMessageToTarget", Runtime.evaluate)` → `page.events()`의 `Target.receivedMessageFromTarget` 판독 (`scripts/d05-oopif2.mjs`). 실패한 방법: `task.cdp(..., {sessionId})`(옵션 미지원), `Target.setAutoAttach`(이벤트 0) — `logs/d05-run-C.txt`·`logs/d05-oopif-C.txt`.
+- 주의: 마지막 루프 재실행이 C·A 모두 비교 보드 단계에서 실패해 `logs/d05-run-C.txt`·`logs/d05-oopif-C.txt`가 실패 로그로 덮어써졌다. 성공 수치(67.3392px · 1.333rem · 문구 "아침을 여는 한 잔의 커피")는 이 세션 실행 출력에서 확인한 값이며 원본 파일은 남지 않았다(`d05-oopif2-C.txt`도 최종 루프 이전 것이면 남음 — 아래 파일 목록 참조).
+- (1차) 판정 미완 이유: 판정 조건 "(선택 안 값) ≠ (A안 값)" 중 A안 값 미실측.
+- R2a 1차 실패 원인(실측): 비교 추가 버튼 판별을 `aria-label === "<제목> 비교 추가"`로 했는데 일치 요소가 없어(이름은 aria-label 아닌 다른 경로로 계산됨) 클릭이 건너뛰어짐 → 트레이 0/6 → 비교 보드 빈 상태 → 전부 선택 0개. `(aria-label || textContent).trim()` 일치로 바꾸자 2/6 담김·전부 선택 2개 노출(`logs/r2a-A.txt`·`r2a-A2.txt` 실패 → `r2a-A3.txt` 성공). 이전 BLOCKED의 "상태 토글 추정"도 같은 원인일 가능성이 높다(추정).
+- R2a: `프로필 확정` 버튼은 `missing`(전부 선택 후 바로 3안 만들기 단계로 진행) — 흐름에는 영향 없음. 브리프 지정 로그명 `logs/r2a-A.txt`는 1차 실패 로그로 남겼고(덮어쓰기 금지), 성공 로그는 `logs/r2a-A3.txt`.
+
+## 2. B-SEC-09 ②④ — 정적 zip file://
+**판정 (R2b): BLOCKED** — 앱 버튼으로 정적 zip을 받지 못해 ②④ file:// 실측 전부 미실행 (`logs/r2b-export.txt` · `logs/r2b-file.txt`).
+
+| 단계 | 결과 | 근거 |
+|---|---|---|
+| A v1 문서(이미지 섹션 있음) zip 버튼 | 다운로드 60s 없음 — 품질 게이트 차단 3건(대비 AA C-5 muted/bg 3.8:1, SEO 메타 2) "고치면 열립니다" | `logs/r2b-export-run.txt` · `scripts/r2b-export.mjs` |
+| 게이트 통과 경로(보정값 v2 → 3안 v2 → B안 새로 시작 → SEO) | 보정 저장 v2까지 성공, "B안으로 편집 시작" 클릭 후 대화상자·/studio 이동 없음(3회) | `logs/r2b-export2~7-run.txt` · `scripts/r2b-export2·4·5·7.mjs` |
+| zip 경로·sha256·바이트 / CSP·이미지 n/n·fonts·390 메뉴·양성 대조 | 미실행 | `logs/r2b-file.txt` |
+
+- 원인 추정(확인 필요): 같은 TaskSpace 이전 실행 상태 잔존(profile-6) 또는 B안 편집 시작 버튼 무반응. 앱 결함인지 스크립트 문제인지 미판별.
+- 다음 실행 권고: 새 TaskSpace 한 번의 스크립트로 qa-flow2 경로 실행, 보정값 쓰기 뒤 대기를 2s 이상으로, B안 편집 시작 직후 화면 텍스트를 먼저 덤프.
+
+## 범위 밖
+Safari·Firefox·Windows·Archive Utility는 범위 밖(수동 — 사람 필요).
+
+## 정리
+- R2b: preview 4399 사전 lsof 0줄(`logs/r2b-lsof-before.txt`) · 종료 후 0줄(`logs/r2b-lsof-after.txt`) · TaskSpace `release-check-live r2b`/`r2b-2` → `finish({keep:[]})` (`logs/r2b-ego-finish.txt`) · `$TMPDIR/r2b-zip` 삭제.
+- R2a: preview 4399 사전 lsof 0줄(`logs/r2a-lsof-before.txt`) · 종료 후 0줄(`logs/r2a-lsof-after.txt`) · TaskSpace `release-check-live r2a`/`r2a-2`/`r2a-3` → `finish({keep:[]})` (`logs/r2a-ego-finish.txt`).
+- preview 4399: 사전 `lsof -nP -iTCP:4399 -sTCP:LISTEN` 0줄(`logs/lsof-before.txt`) · 종료 후 0줄(`logs/lsof-after.txt`).
+- ego-browser TaskSpace `release-check-live 05d` → `finish({keep:[]})` (`logs/ego-finish.txt`).
+
+## 다음 실행 권고
+1. 05d A안: 새 TaskSpace(또는 탭 새로 열기)로 비교 목록 상태 초기화 후 `PICK=A` → `scripts/d05-oopif2.mjs`. 기대 48.828px · 1.25rem.
+2. B-SEC-09 ②④: 별도 실행으로 BRIEF §2 그대로.
+
+### 2-R3. 실제 생성기 정적 zip file:// (BRIEF-R3, 방법 1) — 판정: B-SEC-09 ②④ BLOCKED
+- 방법: dev 서버(4399) 페이지에서 `createStaticHtmlGenerator(store)("static-zip")` 직접 호출(UI 클릭 대신 모듈 직접 호출, 렌더 iframe은 실제 `openRenderFrame`). 한계: dev 서버 `render.html`엔 stylesheet link가 없어(`DEV_SERVER_UNSUPPORTED`, 설계상) `fetchText`만 `kit/fonts.css`·`kit.css`·`motion.css` `?raw` 원문으로 주입.
+- 1차: `JOB_TIMEOUT 글꼴을 불러오지 못했습니다` — 주입 CSS에 @font-face 없음 (`logs/r3-export-run.txt`).
+- 2차: 글꼴 통과 → `exportImages`/`pickVariant`에서 `TypeError` — QA 스크립트의 `readImage` 반환 형태가 imageStore 레코드(variants)와 다름. 제품 결함 아님(입력 형태 오류) (`logs/r3-export2-run.txt`).
+- zip 미확보 → file:// 실측(CSP·이미지 ④·폰트·390 메뉴·양성 대조) 미실행. 방법 2 미착수. 사유: 실행 시간 상한 15분 소진.
+- 마감: dev 서버 종료, `lsof -nP -iTCP:4399 -sTCP:LISTEN` 0줄 (`logs/r3-lsof-after.txt`).
+
+### 2-R4. 실제 생성기 정적 zip file:// (BRIEF-R4, readImage 계약 수정) — 판정: B-SEC-09 ②④ PASS (한계 있음)
+- 수정: `scripts/r4-export.mjs` = `r3-export2.mjs` 사본, `readImage`만 `{ variants: {640,1280,1920: png}, width: 1000, height: 1000 }`로 교체(+ TaskSpace 이름 `r4`·저장 경로 `r4-zip`).
+- zip 확보 1차 성공: `summary {bytes 602570, images 1, lost 0, fonts 2}` · sha256 `70f80e9c…354411` · 항목 6개(index.html·LICENSES.md·fonts 3·img-01.png) (`logs/r4-export.txt`).
+- file:// 실측 (`logs/r4-file.txt`, 3회째 성공 — 1·2회는 QA 스크립트 오류: page label·앵커 선택자 모호):
+
+| 항목 | 1280 | 390 |
+|---|---|---|
+| innerWidth | 1280 | 390 |
+| CSP meta | 1 | 1 |
+| securitypolicyviolation | 0 | 0 |
+| 끝까지 스크롤 후 이미지 complete && naturalWidth>0 (④) | 2/2 | 2/2 |
+| document.fonts | loaded (Pretendard 400·700 loaded) | loaded |
+| 메뉴 열기→앵커→닫힘 | — | 열림 1 → `#s-s-about` 클릭 → 열림 0 · hash `#s-s-about` · 대상 존재 · 위반 0 |
+| 양성 대조(사본 head에 인라인 `<script>window.__ran=1`) | 위반 1 (`script-src-elem inline`) · 실행 안 됨(`__ran` false) | — |
+
+- **한계**: UI 버튼 클릭 대신 모듈(`createStaticHtmlGenerator`) 직접 호출이며, dev 서버라 `render.html` stylesheet 대신 `fetchText`로 kit·fonts·motion CSS를 `?raw` 주입한 테스트 경로 수준이다. 생성기·렌더 iframe(`openRenderFrame`)·이미지 내보내기·zip 조립은 실제 코드. 이미지 입력은 1×1 PNG 고정 variants(실제 imageStore 레코드 아님). 앱 버튼 경로(preview·실 업로드 이미지)는 미검증 → 수동 릴리스 체크 권장.
+- 마감: dev 서버 종료 `lsof` 0줄 (`logs/r4-lsof-after.txt`) · TaskSpace 2개 finish (`logs/r4-ego-finish.txt`) · `$TMPDIR/r4-*` 삭제.

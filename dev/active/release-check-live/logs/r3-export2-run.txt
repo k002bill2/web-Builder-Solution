@@ -1,0 +1,2 @@
+{"ok":false,"err":"TypeError: Cannot convert undefined or null to object\n    at Object.keys (<anonymous>)\n    at pickVariant (http://localhost:4399/src/features/studio/images/store/imageStore.ts:58:24)\n    at exportImages (http://localhost:4399/src/features/studio/staticHtml/exportImages.ts:12:25)\n    at generate (http://localhost:4399/src/features/studio/staticHtml/staticHtml.ts:148:28)\n    at async <anonymous>:20:15\n    at async __egoPageEvaluate (<anonymous>:2:16)"}
+

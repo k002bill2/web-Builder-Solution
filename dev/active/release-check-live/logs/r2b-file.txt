@@ -1,0 +1,1 @@
+R2b file:// 실측 — BLOCKED: zip 미확보(logs/r2b-export.txt). ditto 풀기·CSP·이미지 n/n·fonts·390 메뉴·양성 대조 모두 미실행.

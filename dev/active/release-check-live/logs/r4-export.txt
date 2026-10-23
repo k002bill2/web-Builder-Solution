@@ -1,0 +1,12 @@
+# R4 export (scripts/r4-export.mjs, 1차 시도 성공) 2026-10-23 21:14:00
+{"ok":true,"slots":2,"resultHash":"70f80e9c4b76","summary":{"bytes":602570,"images":1,"lost":0,"fonts":2}}
+
+sha256: 70f80e9c4b76d988cf6b8188e81b0d7cae4720527a8a8881deff0351ec354411
+bytes: 602570
+$ zipinfo -1 site.zip
+index.html
+LICENSES.md
+assets/fonts/OFL.txt
+assets/fonts/Pretendard-400.woff2
+assets/fonts/Pretendard-700.woff2
+assets/images/img-01.png

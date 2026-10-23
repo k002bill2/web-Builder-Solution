@@ -1,0 +1,55 @@
+{
+ "w1280": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index.html",
+  "innerWidth": 1280,
+  "cspMeta": 1,
+  "violations": [],
+  "imgs": "2/2",
+  "fontsStatus": "loaded",
+  "faces": [
+   "Pretendard 700 loaded",
+   "Pretendard 400 loaded"
+  ],
+  "check700": true,
+  "check400": true
+ },
+ "w390": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index.html",
+  "innerWidth": 390,
+  "cspMeta": 1,
+  "violations": [],
+  "imgs": "2/2",
+  "fontsStatus": "loaded",
+  "faces": [
+   "Pretendard 700 loaded",
+   "Pretendard 400 loaded"
+  ],
+  "check700": true,
+  "check400": true
+ },
+ "menu": {
+  "before": {
+   "open": 0,
+   "hash": ""
+  },
+  "afterOpen": {
+   "open": 1,
+   "anchor": "#s-s-about"
+  },
+  "afterAnchor": {
+   "open": 0,
+   "hash": "#s-s-about",
+   "targetExists": true,
+   "violations": []
+  }
+ },
+ "positive": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index-pos.html",
+  "violations": [
+   "script-src-elem inline"
+  ],
+  "ran": false
+ }
+}
+finish ok
+

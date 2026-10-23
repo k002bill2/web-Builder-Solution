@@ -1,0 +1,59 @@
+# R4 file:// 실측 (scripts/r4-file.mjs) 2026-10-23 21:15:15
+zip sha256 70f80e9c4b76d988cf6b8188e81b0d7cae4720527a8a8881deff0351ec354411 → ditto -xk $TMPDIR/r4-site
+시도: run1 page label 오류(logs/r4-file-run.txt) · run2 앵커 선택자 모호(logs/r4-file-run2.txt, 1280·390 측정값은 run3와 동일) · run3 성공(아래)
+양성 대조 사본: index-pos.html = index.html의 </head> 앞에 <script>window.__ran=1</script> 삽입
+{
+ "w1280": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index.html",
+  "innerWidth": 1280,
+  "cspMeta": 1,
+  "violations": [],
+  "imgs": "2/2",
+  "fontsStatus": "loaded",
+  "faces": [
+   "Pretendard 700 loaded",
+   "Pretendard 400 loaded"
+  ],
+  "check700": true,
+  "check400": true
+ },
+ "w390": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index.html",
+  "innerWidth": 390,
+  "cspMeta": 1,
+  "violations": [],
+  "imgs": "2/2",
+  "fontsStatus": "loaded",
+  "faces": [
+   "Pretendard 700 loaded",
+   "Pretendard 400 loaded"
+  ],
+  "check700": true,
+  "check400": true
+ },
+ "menu": {
+  "before": {
+   "open": 0,
+   "hash": ""
+  },
+  "afterOpen": {
+   "open": 1,
+   "anchor": "#s-s-about"
+  },
+  "afterAnchor": {
+   "open": 0,
+   "hash": "#s-s-about",
+   "targetExists": true,
+   "violations": []
+  }
+ },
+ "positive": {
+  "url": "file:///var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T/r4-site/index-pos.html",
+  "violations": [
+   "script-src-elem inline"
+  ],
+  "ran": false
+ }
+}
+finish ok
+

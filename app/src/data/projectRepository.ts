@@ -92,7 +92,8 @@ export type SnapshotKind = "manual" | "auto" | "published";
 export type SnapshotReason = "export" | "restore" | "conflict" | "restart";
 export type ConflictChoice = "mine" | "theirs";
 /** static-zip = 정적 사이트 묶음(M4-a SPEC 1.3) · react-zip = M4-b까지 생성기 없음(잡 기록 호환으로 키 유지) */
-export type ExportFormat = "react-zip" | "static-html" | "static-zip";
+/** sample-zip = 디자인 샘플 묶음(SAMPLE-SPEC r0 2.3) — 정적 HTML 슬롯 생성기가 만든다 */
+export type ExportFormat = "react-zip" | "static-html" | "static-zip" | "sample-zip";
 export type ExportJobState = "queued" | "running" | "succeeded" | "failed";
 
 /** 스냅샷(8.1) — 문서 사본은 불변 */

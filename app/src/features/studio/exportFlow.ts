@@ -9,7 +9,9 @@ import { emitEditorEvent } from "./editorEvents";
 import { exportChunk } from "./exportFlowFails";
 import type { RenderImages } from "./images/store/types";
 import { REACT_ZIP_NEXT, reactZipNote } from "./reactZip/reactZipNotes";
-import { reactZipFileName, staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
+import { reactZipFileName, sampleZipFileName, staticHtmlFileName, staticZipFileName } from "./staticHtml/exportFileName";
+import type { PreviewView } from "../detail/previewView";
+import type { SampleCapture } from "./staticHtml/staticHtml";
 import { DEV_SERVER_UNSUPPORTED } from "./staticHtml/devServer";
 import { IMAGE_FAILED, imageReader, lostImageText, type ExportSummary, type ReadImage } from "./staticHtml/exportImages";
 
@@ -41,6 +43,14 @@ const loadGenerator = retryableImport(() => import("./staticHtml/staticHtml"));
 // React zip 생성기(REACTZIP-SPEC 1.2 RZQ-02 A) — 별도 슬롯·별도 청크. 정적 HTML 청크를 거치지 않는다. 로드 결과는 같은 계수(B-M4A-08)
 const loadReactZip = retryableImport(() => import("./reactZip/reactZip"));
 const requestImages = new Map<string, RenderImages>();
+/** 샘플 묶음 PNG 폭(SAMPLE-SPEC r0 2.3 — 지금 미리보기 폭) · PNG 캡처 청크는 샘플 묶음을 만들 때만 받는다 */
+const requestViews = new Map<string, PreviewView>();
+const loadPng = retryableImport(() => import("./png/pngCapture"));
+const capture: SampleCapture = async ({ projectId, doc, kitTokens, revision }) => {
+  const png = await loadPng();
+  const { blob } = await png.capturePng({ doc, kitTokens, view: requestViews.get(projectId) ?? "desktop", name: "", revision, images: requestImages.get(projectId) }, png.DEFAULT_DEPS);
+  return new Uint8Array(await blob.arrayBuffer());
+};
 const readRequestImage = (id: string) => [...requestImages.values()].map((images) => imageReader(images)(id)).find(Boolean);
 const summaries = new Map<string, ExportSummary>();
 /** 생성기 실패 중 사유를 보여 줄 것 → 프로젝트별 사유 */
@@ -50,7 +60,7 @@ const refusals = new Set<string>();
 // 내보내기 청크 연속 실패(B-M4A-08) = 마지막으로 청크를 받은 뒤의 로드 실패 수 — 이 청크를 받았으면 0, 생성기는 로드가 끝날 때 센다
 // (요청·잡이 아니라 로드 결과에 붙인다 — 응답 실패·조회 종료 뒤 늦게 온 실패도 센다, Codex r1 P2)
 exportChunk.fails = 0;
-type GeneratorDeps = { readonly readImage: ReadImage; readonly onBuilt: (downloadRef: string, summary: ExportSummary) => void };
+type GeneratorDeps = { readonly readImage: ReadImage; readonly onBuilt: (downloadRef: string, summary: ExportSummary) => void; readonly capture: SampleCapture };
 /** 생성기 슬롯 채우기(memoryDocBook 슬롯과 같은 키) — 청크를 받으면 계수 0, 못 받으면 +1 · 생성기 실패 사유·이미지 맵 정리는 형식 무관 */
 function fill<M>(key: symbol, load: () => Promise<M>, create: (chunk: M, store: StudioReader, deps: GeneratorDeps) => ExportGenerator) {
   (globalThis as Record<symbol, unknown>)[key] ??= async () => {
@@ -62,7 +72,7 @@ function fill<M>(key: symbol, load: () => Promise<M>, create: (chunk: M, store: 
       },
     );
     return (store: StudioReader): ExportGenerator => {
-      const generate = create(chunk, store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary) });
+      const generate = create(chunk, store, { readImage: readRequestImage, onBuilt: (ref, summary) => summaries.set(ref, summary), capture });
       return (input) =>
         generate(input)
           .catch((error: unknown) => {
@@ -81,14 +91,16 @@ fill(Symbol.for("design-studio/static-html-generator"), loadGenerator, (chunk, s
 fill(Symbol.for("design-studio/react-zip-generator"), loadReactZip, (chunk, store, deps) => chunk.createReactZipGenerator(store, deps));
 
 const MB = 1024 * 1024;
-const FILE_NAME: Readonly<Record<ExportFormat, (projectName: string, revision: number) => string>> = { "static-zip": staticZipFileName, "static-html": staticHtmlFileName, "react-zip": reactZipFileName };
+const FILE_NAME: Readonly<Record<ExportFormat, (projectName: string, revision: number) => string>> = { "static-zip": staticZipFileName, "static-html": staticHtmlFileName, "react-zip": reactZipFileName, "sample-zip": sampleZipFileName };
 /** 결과 줄(MQ-C3 ★A · SPEC m2c 5.2 · M4-a 2.5): 크기 표시 → (HTML만) 3MB 넘으면 안내(차단 0) → 잃은 이미지 개수 */
 export const exportNotes = ({ bytes, images, lost, fonts = 0 }: ExportSummary, format: ExportFormat = "static-html"): string[] =>
   format === "react-zip" ? [reactZipNote(bytes, images, fonts), REACT_ZIP_NEXT, ...(lost > 0 ? [lostImageText(lost)] : [])] : [
-  format === "static-zip"
+  format === "sample-zip"
+    ? `디자인 샘플 묶음(zip) · 파일 5개 · ${(bytes / MB).toFixed(1)}MB`
+    : format === "static-zip"
     ? `zip 1개 · ${(bytes / MB).toFixed(1)}MB (이미지 ${images}장 · 글꼴 ${fonts}개)`
     : `HTML 1개 · ${(bytes / MB).toFixed(1)}MB${images > 0 ? ` (이미지 ${images}장 포함)` : ""}`,
-  ...(format !== "static-zip" && bytes > 3 * MB ? ["메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다"] : []),
+  ...(format === "static-html" && bytes > 3 * MB ? ["메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다"] : []),
   ...(lost > 0 ? [lostImageText(lost)] : []),
 ];
 
@@ -108,12 +120,14 @@ async function settle(repository: ProjectRepository, job: ExportJob): Promise<Ex
   return current;
 }
 
-export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void): Promise<ExportResult> {
+export async function requestExportOnce(repository: ProjectRepository, projectId: string, format: ExportFormat, revision: number, images?: RenderImages, onSnapshot?: () => void, view?: PreviewView): Promise<ExportResult> {
   emitEditorEvent({ name: "export_requested", format });
   failReasons.delete(projectId);
   refusals.delete(projectId);
   if (images) requestImages.set(projectId, images);
   else requestImages.delete(projectId);
+  if (view) requestViews.set(projectId, view);
+  else requestViews.delete(projectId);
   try {
     const result = await repository.requestExport(projectId, format, revision);
     // 스냅샷 생성 응답 시점에 참조 집합을 갱신한다 — 잡을 기다리는 동안 이미지를 바꿔도 "내보내기 전" 스냅샷 Blob을 놓지 않게(B-ER-06)

@@ -158,7 +158,7 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, MAX_CANVAS_HEIGHT / remPx()), fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
+export const DEFAULT_DEPS: PngDeps = { open: (widthRem) => openCaptureFrame(widthRem, MAX_CANVAS_HEIGHT / remPx()), fetchText: defaultFetchText, draw: drawPng, download: downloadBlob, timeoutMs: TIMEOUT_MS };
 
 /** 누름 → 캡처 → 내려받기 · 계측(코드·개수·열거값만 — 이름·파일 이름 0). 성공 문장을 돌려준다 */
 export async function savePng(request: PngRequest, deps: PngDeps = DEFAULT_DEPS): Promise<string> {

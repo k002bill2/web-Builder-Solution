@@ -354,7 +354,7 @@ export function StudioLayout({
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
-  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images, onSnapshot: snaps.refresh });
+  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images, onSnapshot: snaps.refresh, view });
   const exportResult = exportFlow.result;
   // "내보내기 전" 스냅샷이 생겼을 수 있다 — 목록(참조 집합)을 다시 읽는다(ER-AC-S7)
   const { refresh: refreshSnapshots } = snaps;

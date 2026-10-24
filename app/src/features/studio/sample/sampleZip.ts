@@ -1,4 +1,4 @@
-import { exportFileStem } from "../staticHtml/exportFileName";
+export { sampleZipFileName } from "../staticHtml/exportFileName";
 import { storeZip, type ZipEntry } from "../zip/storeZip";
 
 /**
@@ -31,5 +31,3 @@ export function sampleZipEntries(parts: SampleParts): readonly ZipEntry[] {
 
 export const sampleZip = (parts: SampleParts, date: Date): Blob => storeZip(sampleZipEntries(parts), date);
 
-/** `<이름>_r<revision>_sample.zip` — 정적·React zip과 같은 폴더에 받아도 덮어쓰지 않는다 */
-export const sampleZipFileName = (projectName: string, revision: number) => `${exportFileStem(projectName)}_r${revision}_sample.zip`;

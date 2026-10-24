@@ -1,0 +1,8 @@
+X links ["본문으로 건너뛰기→#main-content","결과로 건너뛰기→#catalog-results","Design Studio→/catalog","카탈로그→/catalog","보관함→/catalog?tab=saved","비교 보드→/compare","프로젝트→/projects","새 프로젝트→/compare?new=1","동네 치과 클리닉→/references/ref-c","부티크 법률사무소→/references/ref-e","모던 카페 브랜드→/references/ref-a","로컬 베이커리→/references/ref-f","프리미엄 헤어살롱→/references/ref-b","필라테스 스튜디오→/references/ref-d","뷰티 · 세련된 센터형→/references/gen-beauty-1"]
+X go projects "clicked"
+X open project "편집기 열기"
+X scroll "ok"
+X visible export buttons ["검사 · 내보내기","PNG 내려받기","디자인 샘플 내려받기","HTML 파일 1개 내보내기","HTML 샘플 묶음(zip) 내보내기","React 코드 샘플(zip) 내보내기"]
+X console errors []
+X finished
+

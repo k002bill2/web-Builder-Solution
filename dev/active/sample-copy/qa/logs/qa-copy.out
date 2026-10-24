@@ -1,0 +1,15 @@
+X idb reset ["design-studio"]
+X compare footer warning []
+X compare footer warning after select ["확장형 사업자정보","확장형 사업자정보"]
+X path "/studio/project-1"
+X canonical help ["대표 주소(canonical)","샘플에는 대표 주소가 필요하지 않습니다"]
+X open gate tab "clicked"
+X export buttons (DOM) [{"t":"검사 · 내보내기","top":10,"left":1166,"disabled":false},{"t":"PNG 내려받기","top":867,"left":997,"disabled":false},{"t":"디자인 샘플 내려받기","top":959,"left":997,"disabled":false},{"t":"HTML 파일 1개 내보내기","top":1007,"left":997,"disabled":false},{"t":"HTML 샘플 묶음(zip) 내보내기","top":1055,"left":997,"disabled":false},{"t":"React 코드 샘플(zip) 내보내기","top":1103,"left":997,"disabled":false}]
+X export order (by top,left) ["검사 · 내보내기","PNG 내려받기","디자인 샘플 내려받기","HTML 파일 1개 내보내기","HTML 샘플 묶음(zip) 내보내기","React 코드 샘플(zip) 내보내기"]
+X banned (export open) {"발행":0,"정적 사이트":0,"게시":0}
+X click zip "clicked"
+X dlErr "Error: page.waitForEvent(\"download\") timed out after 90000ms"
+X result line ["HTML 샘플 묶음(zip) 내보내기","HTML 샘플 묶음(zip)을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 02:35'에 있습니다"]
+X FATAL "Error: ENOENT: no such file or directory, open 'undefined/모던-카페-브랜드-프로젝트_r3.zip'"
+X console errors []
+

@@ -1,0 +1,27 @@
+// 이어서 — 폴백 링크로 zip 확보(1차는 ZIPDIR 전달 실패) → 금지어 → 스냅샷 대화상자 금지어 → 콘솔 → finish
+const ZIPDIR = "/var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T//sc-zip.WJi5";
+const D = "/Users/younghwankang/orca/workspaces/web-builder-solution/sample-copy/dev/active/sample-copy/qa";
+const { writeFile } = await import("node:fs/promises");
+const task = await taskSpace("sample-copy qa-1");
+const page = task.page("p1");
+const out = {};
+const log = (k, v) => { out[k] = v; console.log("X", k, JSON.stringify(v).slice(0, 1500)); };
+const banned = () => page.evaluate(() => { const t = document.body.innerText; return Object.fromEntries(["발행", "정적 사이트", "게시"].map((w) => [w, (t.match(new RegExp(w, "g")) || []).length])); });
+await page.cdp("Runtime.enable", {}); await page.cdp("Log.enable", {}); await page.events();
+log("path", await page.evaluate(() => location.pathname));
+log("result line", await page.evaluate(() => (document.body.innerText.match(/[^\n]*HTML 샘플 묶음\(zip\)을[^\n]*/g) || [])));
+log("fallback el", await page.evaluate(() => [...document.querySelectorAll("a")].filter((e) => e.textContent.trim() === "내려받기").map((e) => ({ href: e.href.slice(0, 40), download: e.getAttribute("download") }))));
+const r = await page.evaluate(async () => { const a = [...document.querySelectorAll("a")].find((e) => e.textContent.trim() === "내려받기" && e.href.startsWith("blob:")); if (!a) return null; const b = await (await fetch(a.href)).arrayBuffer(); let s = ""; const u = new Uint8Array(b); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return { name: a.getAttribute("download"), b64: btoa(s) }; });
+if (r) { await writeFile(`${ZIPDIR}/${r.name}`, Buffer.from(r.b64, "base64")); log("zip saved", { via: "fallback blob link", name: r.name }); } else log("zip saved", null);
+log("banned (export open, after zip)", await banned());
+log("open snapshot", await page.evaluate(() => { const b = [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "스냅샷"); if (!b) return "missing"; b.click(); return "clicked"; }));
+await page.waitForSelector("dialog[open]", { timeout: 15000 }).catch((e) => log("snap err", String(e).slice(0, 150)));
+await page.waitForTimeout(800);
+log("snapshot dialog open", await page.evaluate(() => document.querySelector("dialog[open]")?.innerText.slice(0, 200) ?? null));
+log("banned (snapshot open)", await banned());
+await page.screenshot({ path: `${D}/screens/04-snapshot-dialog-1280.png` });
+const ev = await page.events();
+log("console errors", ev.filter((e) => (e.method === "Runtime.consoleAPICalled" && e.params.type === "error") || e.method === "Runtime.exceptionThrown" || (e.method === "Log.entryAdded" && e.params.entry.level === "error")).map((e) => JSON.stringify(e.params).slice(0, 300)));
+await writeFile(`${D}/logs/qa-copy-2.json`, JSON.stringify(out, null, 1));
+await task.finish({ keep: [] });
+console.log("X finished");

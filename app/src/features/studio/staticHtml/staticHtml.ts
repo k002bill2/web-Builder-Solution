@@ -16,6 +16,8 @@ import { FONT_FAILED, FONT_TIMEOUT_MS, base64, defaultFetchBytes, loadSiteFonts,
 import { buildStaticHtml } from "./staticMarkup";
 import { buildZipSite } from "../zip/zipSite";
 import { RENDER_DOC_SRC, defaultFetchText, hex12, kitCss } from "./kitCss";
+import { designTokensJson, sectionsJson } from "../sample/sampleJson";
+import { sampleZip } from "../sample/sampleZip";
 
 export { IMAGE_FAILED };
 export { DEV_SERVER_UNSUPPORTED };
@@ -131,7 +133,14 @@ export interface StaticHtmlDeps {
   readonly readImage: ReadImage;
   /** 결과 요약 알림(크기 표시 — 생성기 계약 `{downloadRef, resultHash}` 밖) */
   readonly onBuilt: (downloadRef: string, summary: ExportSummary) => void;
+  /** 샘플 묶음 PNG(현재 미리보기 폭) 찍기 — 없으면 샘플 묶음은 실패 */
+  readonly capture: SampleCapture;
 }
+/** 샘플 묶음 PNG 바이트 — 실패하면 묶음 전체 실패(부분 묶음 0 · SAMPLE-SPEC r0 2.3) */
+export type SampleCapture = (input: { readonly projectId: string; readonly doc: PageDoc; readonly kitTokens: KitTokenInput; readonly revision: number }) => Promise<Uint8Array>;
+/** 샘플 묶음 PNG 실패 사유(shown — exportFlow가 사유 줄로 보인다) */
+export const SAMPLE_PNG_FAILED = "시안 PNG를 만들지 못해 디자인 샘플 묶음을 만들지 않았습니다";
+const samplePngFailed = () => Object.assign(new Error(SAMPLE_PNG_FAILED), { shown: true });
 export type StaticHtmlGenerator = ExportGenerator & {
   /** 편집기 이탈 — 그 프로젝트의 내려받기 object URL 해제 */
   readonly release: (projectId: string) => void;
@@ -139,7 +148,7 @@ export type StaticHtmlGenerator = ExportGenerator & {
 
 /** 저장소(store)당 1개 — 프로젝트별 마지막 object URL을 들고, 같은 프로젝트를 다시 만들면 이전 것을 해제한다 */
 export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<StaticHtmlDeps> = {}): StaticHtmlGenerator {
-  const { open = openRenderFrame, fetchText = defaultFetchText, urls = URL, timeoutMs = TIMEOUT_MS, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS, readImage = () => undefined, onBuilt } = deps;
+  const { open = openRenderFrame, fetchText = defaultFetchText, urls = URL, timeoutMs = TIMEOUT_MS, fetchBytes = defaultFetchBytes, fontTimeoutMs = FONT_TIMEOUT_MS, readImage = () => undefined, onBuilt, capture } = deps;
   // 키 = 프로젝트|형식 — zip·단일 HTML을 번갈아 만들어도 다른 형식의 살아 있는 잡 URL을 해제하지 않는다(같은 revision 멱등 재요청 = 같은 URL)
   const held = new Map<string, string>();
   const drop = (key: string) => {
@@ -163,11 +172,24 @@ export function createStaticHtmlGenerator(store: StudioReader, deps: Partial<Sta
     const { images, lost } = exportImages(doc, readImage);
     const { markup } = await renderAndSerialize(open(), doc, kitTokens, Math.max(0, timeoutMs - (Date.now() - started)), undefined, [], fonts.bytes, images, true);
     const text = { title: doc.meta.title, description: doc.meta.description };
+    const htmlBytes = async () => new TextEncoder().encode(buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, ...text, notice: fonts.notice, images: await imageDataUrls(images) }));
+    // 샘플 묶음 = 정적 HTML 1개 결과 + 지금 폭 PNG + JSON 2개 + README(SAMPLE-SPEC r0 2.3) — PNG 실패 = 묶음 실패
+    const buildSample = async () => {
+      const html = await htmlBytes();
+      if (!capture) throw samplePngFailed();
+      const png = await capture({ projectId, doc, kitTokens, revision: head.revision }).catch(() => {
+        throw samplePngFailed();
+      });
+      const zip = sampleZip({ png, html, tokensJson: designTokensJson(kitTokens, doc), sectionsJson: sectionsJson(doc) }, new Date(head.updatedAt));
+      return { data: new Uint8Array(await zip.arrayBuffer()), images: Object.keys(images).length, fonts: fonts.bytes.length, type: "application/zip" };
+    };
     const built =
       format === "static-zip"
         ? { ...(await buildZipSite({ markup, css: stripFontFaces(css), ...text, fonts: fonts.bytes, images, lost, date: new Date(head.updatedAt) })), type: "application/zip" }
+        : format === "sample-zip"
+        ? await buildSample()
         : {
-            data: new TextEncoder().encode(buildStaticHtml({ markup, css: stripFontFaces(css) + fonts.css, ...text, notice: fonts.notice, images: await imageDataUrls(images) })),
+            data: await htmlBytes(),
             images: Object.keys(images).length,
             type: "text/html;charset=utf-8",
           };

@@ -1,0 +1,5 @@
+X fallback el [{"tag":"A","href":"blob:http://localhost:4399/4c103553-5150-4f8e-92e4-df8310a2a","download":"모던-카페-브랜드-프로젝트_r3_sample.zip"}]
+X click "A"
+X download "모던-카페-브랜드-프로젝트_r3_sample.zip"
+X saved "event"
+

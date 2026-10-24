@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ExportFormat, ProjectRepository } from "../../data/projectRepository";
+import type { PreviewView } from "../detail/previewView";
 import type { GateReport } from "../../engine/contracts/records";
 import type { ExportResult } from "./exportFlow";
 import type { RenderImages } from "./images/store/types";
@@ -19,6 +20,7 @@ export function useExportFlow({
   gate,
   images,
   onSnapshot,
+  view,
 }: {
   readonly repository: ProjectRepository;
   readonly projectId: string;
@@ -28,6 +30,8 @@ export function useExportFlow({
   readonly images?: RenderImages;
   /** "내보내기 전" 스냅샷 생성 응답 직후 — 참조 집합(스냅샷 목록)을 다시 읽는다(B-ER-06) */
   readonly onSnapshot?: () => void;
+  /** 지금 미리보기 폭 — 샘플 묶음 PNG를 이 폭으로 찍는다(SAMPLE-SPEC r0 2.3) */
+  readonly view?: PreviewView;
 }) {
   const [running, setRunning] = useState<ExportFormat>();
   const [waitingSave, setWaitingSave] = useState<ExportFormat>();
@@ -45,13 +49,13 @@ export function useExportFlow({
       setRequested(revision);
       // 청크 로드 실패(오프라인·청크 교체)도 재시도 가능 결과로 — 실행 상태를 남기지 않는다(M2A-3a Codex P2-1)
       const next = await loadExportFlow().then(
-        (flow) => flow.requestExportOnce(repository, projectId, format, revision, images, onSnapshot),
+        (flow) => flow.requestExportOnce(repository, projectId, format, revision, images, onSnapshot, view),
         (): ExportResult => ({ kind: "retryable", format }),
       );
       setResult(next);
       setRunning(undefined);
     },
-    [repository, projectId, savedRevision, images, onSnapshot],
+    [repository, projectId, savedRevision, images, onSnapshot, view],
   );
 
   const phase = save.state.phase;

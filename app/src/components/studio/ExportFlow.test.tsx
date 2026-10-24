@@ -64,13 +64,13 @@ function listen() {
 }
 
 describe("형식 버튼 (M4-a EXP-AC-01 · Q18 A)", () => {
-  it("버튼 = 정적 zip → HTML 1개 → React zip 순서 3개 (RZ-AC-01 · RZQ-01 A — React zip 글자 = export.format.reactZip 확정 문안)", async () => {
+  it("버튼 = HTML 1개 → 정적 zip → React zip 순서 3개 (MQ-SMP-03 A · RZ-AC-01 · RZQ-01 A — React zip 글자 = export.format.reactZip 확정 문안)", async () => {
     await open(clean());
     const names = within(gateRegion())
       .getAllByRole("button")
       .map((b) => b.textContent)
       .filter((t) => t === REACT_ZIP_FORMAT_LABEL || /내보내기$/.test(t ?? ""));
-    expect(names).toEqual(["정적 사이트(zip) 내보내기", "HTML 파일 1개 내보내기", REACT_ZIP_FORMAT_LABEL]);
+    expect(names).toEqual(["HTML 파일 1개 내보내기", "정적 사이트(zip) 내보내기", REACT_ZIP_FORMAT_LABEL]);
     expect(REACT_ZIP_FORMAT_LABEL).toBe("React 프로젝트(zip) 내보내기");
   });
 

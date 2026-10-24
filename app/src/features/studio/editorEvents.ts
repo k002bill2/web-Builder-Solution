@@ -6,8 +6,8 @@ export const EDITOR_EVENT = "studio:editor";
 
 export type EditorEvent =
   | { readonly name: "gate_checked"; readonly block_count: number; readonly warn_count: number }
-  | { readonly name: "export_requested"; readonly format: "react-zip" | "static-html" | "static-zip" }
-  | { readonly name: "export_succeeded"; readonly format: "react-zip" | "static-html" | "static-zip" }
+  | { readonly name: "export_requested"; readonly format: "react-zip" | "static-html" | "static-zip" | "sample-zip" }
+  | { readonly name: "export_succeeded"; readonly format: "react-zip" | "static-html" | "static-zip" | "sample-zip" }
   | { readonly name: "export_failed"; readonly reason: string }
   | { readonly name: "snapshot_created"; readonly kind: "auto"; readonly reason: "export" }
   | { readonly name: "png_requested"; readonly view: "desktop" | "tablet" | "mobile" }

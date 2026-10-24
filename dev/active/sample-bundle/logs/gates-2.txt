@@ -1,0 +1,20 @@
+
+> design-studio-app@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+typecheck EXIT=0
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+lint EXIT=0
+      Tests  3483 passed (3483)
+   Start at  01:31:17
+   Duration  171.18s (environment 43%, tests 41%, setup 8%, import 5%, transform 3%)
+
+Environment  jsdom was created 387 times · 133.42s total, 43% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+vitest EXIT=0
+build EXIT=1

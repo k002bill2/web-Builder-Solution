@@ -67,7 +67,10 @@ const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "obj
 const isText = (v: unknown, max = 64): v is string => typeof v === "string" && v.length > 0 && v.length <= max;
 const isNumber = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 /** CSS 값으로 들어가는 글자 — 선언을 끊는 문자(; { } < > 따옴표 \\) 0 */
-const isCssValue = (v: unknown): v is string => isText(v, 128) && !/[;{}<>"'\\]/.test(v);
+const isCssValue = (v: unknown): v is string => isText(v, 128) && !/[;{}<>"'\\@]|\/\*/.test(v) && isAllowedFunctions(v);
+/** BL-4 (THREAT-MODEL T09) — 함수 표기는 색 함수만(url·image-set·expression·var·env 등 그 외 `ident(` 거부) */
+const ALLOWED_FUNCTIONS = new Set(["rgb", "rgba", "hsl", "hsla"]);
+const isAllowedFunctions = (v: string) => [...v.matchAll(/([\w-]*)\s*\(/g)].every((m) => ALLOWED_FUNCTIONS.has(m[1]!.toLowerCase()));
 const isPalette = (v: unknown): v is CanvasPalette => isObject(v) && PALETTE_ROLES.every((role) => isCssValue(v[role]));
 const inRange = (v: unknown, min: number, max: number) => isNumber(v) && v >= min && v <= max;
 const isKitTokens = (v: unknown): v is KitTokenInput => {

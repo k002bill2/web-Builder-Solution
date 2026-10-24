@@ -354,7 +354,7 @@ export function StudioLayout({
     </EditPanel>
   );
   // 내보내기 사전 차단 이유(5.13 · m2a 3.2 A) — 순서 = 게이트 → 구조 미리보기(8.3.2 5 → 7)
-  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images, onSnapshot: snaps.refresh });
+  const exportFlow = useExportFlow({ repository, projectId: project.projectId, save, gate: gateState, images, onSnapshot: snaps.refresh, view });
   const exportResult = exportFlow.result;
   // "내보내기 전" 스냅샷이 생겼을 수 있다 — 목록(참조 집합)을 다시 읽는다(ER-AC-S7)
   const { refresh: refreshSnapshots } = snaps;
@@ -374,14 +374,6 @@ export function StudioLayout({
     <GatePanel
       exports={
         <>
-          <ExportButtons reasons={reasons} busy={exportFlow.busy} onExport={(format) => void exportFlow.start(format)} />
-          {exportResult?.kind === "retryable" && <ExportRetryAlert onRetry={exportFlow.retry} reason={exportResult.reason} />}
-          {((exportResult && exportResult.kind !== "retryable") || exportFlow.confirming) && (
-            <Suspense fallback={null}>
-              {exportResult && exportResult.kind !== "retryable" && <ExportResultView result={exportResult} onFirstFallback={goToSection} />}
-              {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
-            </Suspense>
-          )}
           {/* 준비 = 캔버스를 그림 + 자동 저장 idle·saved(파일 이름 revision = 캡처한 문서 — 3c REPORT 8절 · M2A-CLOSE P2-a).
               저장 실패·오프라인·충돌이면 이유 = 저장 상태 문장 */}
           <PngSave
@@ -392,6 +384,14 @@ export function StudioLayout({
             onAnnounce={setNotice}
             capture={() => ({ doc, view, name: project.name, revision: save.savedRevision(), ...(kitTokens && { kitTokens }), ...(images && { images }) })}
           />
+          <ExportButtons reasons={reasons} busy={exportFlow.busy} onExport={(format) => void exportFlow.start(format)} />
+          {exportResult?.kind === "retryable" && <ExportRetryAlert onRetry={exportFlow.retry} reason={exportResult.reason} />}
+          {((exportResult && exportResult.kind !== "retryable") || exportFlow.confirming) && (
+            <Suspense fallback={null}>
+              {exportResult && exportResult.kind !== "retryable" && <ExportResultView result={exportResult} onFirstFallback={goToSection} />}
+              {exportFlow.confirming && <ExportConfirmDialog report={exportFlow.confirming.report} onConfirm={exportFlow.confirm} onCancel={exportFlow.cancel} />}
+            </Suspense>
+          )}
         </>
       }
     >

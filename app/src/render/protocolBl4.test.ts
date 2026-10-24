@@ -13,7 +13,7 @@ describe("팔레트 값 함수 표기 거부 (BL-4)", () => {
     },
   );
 
-  it.each(["#2F5D50", "rgb(255 255 255)", "rgba(0, 0, 0, 0.5)", "hsl(120 50% 50%)", "hsla(120, 50%, 50%, 0.4)", "white"])("현행 형식 %s 는 통과", (value) => {
+  it.each([SAMPLE_KIT_TOKENS.palette.primary, "rgb(255 255 255)", "rgba(0, 0, 0, 0.5)", "hsla(120, 50%, 50%, 0.4)", "white"])("현행 형식 %s 는 통과", (value) => {
     expect(readParentMessage(withPrimary(value))).toBeDefined();
   });
 });

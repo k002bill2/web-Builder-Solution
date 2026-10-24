@@ -9,13 +9,13 @@ export interface ExportReason {
 }
 
 const FORMATS: readonly { readonly format: ExportFormat; readonly label: string }[] = [
-  { format: "static-zip", label: "정적 사이트(zip) 내보내기" },
   { format: "static-html", label: "HTML 파일 1개 내보내기" },
+  { format: "static-zip", label: "정적 사이트(zip) 내보내기" },
   { format: "react-zip", label: REACT_ZIP_FORMAT_LABEL },
 ];
 
 /**
- * 내보내기 버튼 세 개(M4-a Q18 A — zip 위 · HTML 가운데 · React zip 아래, REACTZIP-SPEC RZQ-01 A) · 사전 차단 이유 (DS-2A-05 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18). outline, 아이콘 없음(S-B7).
+ * 내보내기 버튼 세 개(MQ-SMP-03 A — HTML 1개 → 정적 zip → React zip, PNG는 그 위 StudioLayout) · 사전 차단 이유 (DS-2A-05 5.13 · m2a 3.2 A · E-AC-29·50 · K-AC-18). outline, 아이콘 없음(S-B7).
  * 이유 ≥ 1 → 모든 버튼 `aria-disabled` + `aria-describedby` = 이유 id들(목록 순서 = 게이트 → 구조 미리보기, 8.3.2 5 → 7). 누르면 아무 요청도 하지 않는다.
  */
 export function ExportButtons({ reasons, busy, onExport }: { readonly reasons: readonly ExportReason[]; readonly busy: ExportFormat | undefined; readonly onExport: (format: ExportFormat) => void }) {

@@ -100,7 +100,7 @@ export const exportNotes = ({ bytes, images, lost, fonts = 0 }: ExportSummary, f
     : format === "static-zip"
     ? `zip 1개 · ${(bytes / MB).toFixed(1)}MB (이미지 ${images}장 · 글꼴 ${fonts}개)`
     : `HTML 1개 · ${(bytes / MB).toFixed(1)}MB${images > 0 ? ` (이미지 ${images}장 포함)` : ""}`,
-  ...(format === "static-html" && bytes > 3 * MB ? ["메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다"] : []),
+  ...(format === "static-html" && bytes > 3 * MB ? ["메일 첨부에는 클 수 있습니다 — HTML 샘플 묶음(zip)은 이미지를 파일로 나눠 담습니다"] : []),
   ...(lost > 0 ? [lostImageText(lost)] : []),
 ];
 

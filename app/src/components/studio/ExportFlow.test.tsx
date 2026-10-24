@@ -47,7 +47,7 @@ const clean = (over: Partial<PageDoc> = {}) => {
 };
 const gateRegion = () => screen.getByRole("region", { name: "품질 게이트" });
 // M4-a SPEC 7절(EXP-AC-01·Q18 A) — 이전: "React 프로젝트(zip) 내보내기"·"정적 HTML 내보내기" → 이후: "정적 사이트(zip) 내보내기"·"HTML 파일 1개 내보내기"
-const zip = () => within(gateRegion()).getByRole("button", { name: /정적 사이트\(zip\) 내보내기|내보내는 중…/ });
+const zip = () => within(gateRegion()).getByRole("button", { name: /HTML 샘플 묶음\(zip\) 내보내기|내보내는 중…/ });
 const html = () => within(gateRegion()).getByRole("button", { name: /HTML 파일 1개 내보내기|내보내는 중…/ });
 
 async function open(doc: PageDoc, repository: Partial<ProjectRepository> = {}) {
@@ -70,17 +70,17 @@ describe("형식 버튼 (M4-a EXP-AC-01 · Q18 A)", () => {
       .getAllByRole("button")
       .map((b) => b.textContent)
       .filter((t) => t === REACT_ZIP_FORMAT_LABEL || /내보내기$/.test(t ?? ""));
-    expect(names).toEqual(["HTML 파일 1개 내보내기", "정적 사이트(zip) 내보내기", REACT_ZIP_FORMAT_LABEL]);
-    expect(REACT_ZIP_FORMAT_LABEL).toBe("React 프로젝트(zip) 내보내기");
+    expect(names).toEqual(["HTML 파일 1개 내보내기", "HTML 샘플 묶음(zip) 내보내기", REACT_ZIP_FORMAT_LABEL]);
+    expect(REACT_ZIP_FORMAT_LABEL).toBe("React 코드 샘플(zip) 내보내기");
   });
 
-  it("zip 완료 → '정적 사이트(zip)를 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {
+  it("zip 완료 → 'HTML 샘플 묶음(zip)을 만들었습니다' · 내려받기 a download = <이름>_r<rev>.zip · 내려받기 차단 보조 문장(Q14)", async () => {
     const job: ExportJob = { jobId: "export-1", format: "static-zip", docRevision: 3, state: "queued", retryable: false };
     const requestExport = vi.fn(async () => ({ job, snapshotId: "snapshot-1", snapshotName: "내보내기 전 · 14:02", wrote: true }));
     const getExportJob = async () => ({ ...job, state: "succeeded" as const, downloadRef: "blob:http://127.0.0.1/zip", resultHash: "0123456789ab" });
     await open(clean(), { requestExport, getExportJob });
     act(() => void fireEvent.click(zip()));
-    const done = await within(gateRegion()).findByText("정적 사이트(zip)를 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다", undefined, { timeout: 3000 });
+    const done = await within(gateRegion()).findByText("HTML 샘플 묶음(zip)을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 14:02'에 있습니다", undefined, { timeout: 3000 });
     const box = done.closest("[role=status]") as HTMLElement;
     expect(within(box).getByRole("link", { name: "내려받기" })).toHaveAttribute("download", "동네-치과-클리닉-프로젝트_r3.zip");
     expect(box.textContent).toContain("내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요");
@@ -134,7 +134,7 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
     expect(within(gateRegion()).queryByRole("alert")).not.toBeInTheDocument();
     act(() => void fireEvent.click(zip()));
     // M4-a SPEC 7절 — 이전: react-zip "코드 생성기 연결 후(M4)" → 이후: static-zip 형식별 informative 문구
-    await within(gateRegion()).findByText(/^정적 사이트\(zip\)는 생성기 연결 후 내보낼 수 있습니다/);
+    await within(gateRegion()).findByText(/^HTML 샘플 묶음\(zip\)은 생성기 연결 후 내보낼 수 있습니다/);
     expect(requestExport).toHaveBeenLastCalledWith("project-1", "static-zip", 3);
     stop();
     expect(events.map((e) => e.name)).toEqual(["export_requested", "export_failed", "export_requested", "export_failed"]);
@@ -197,7 +197,7 @@ describe("내보내기 시작 · 결과 (SPEC 5.13 · E-S24 · E-S27 · E-AC-28�
       },
     });
     seen.saved = saved;
-    const react = () => within(gateRegion()).getByRole("button", { name: /React 프로젝트\(zip\) 내보내기|내보내는 중…/ });
+    const react = () => within(gateRegion()).getByRole("button", { name: /React 코드 샘플\(zip\) 내보내기|내보내는 중…/ });
     act(() => void fireEvent.click(screen.getByRole("button", { name: /^페이지 정보/ })));
     act(() => void fireEvent.change(screen.getByRole("textbox", { name: /^제목/ }), { target: { value: "가".repeat(80) } }));
     act(() => void fireEvent.click(react()));

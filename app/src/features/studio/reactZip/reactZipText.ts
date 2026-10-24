@@ -12,7 +12,7 @@ export { REACT_ZIP_FORMAT_LABEL } from "./reactZipLabel";
 export { REACT_ZIP_NEXT, reactZipNote } from "./reactZipNotes";
 
 /** zip 안 README.md (RZQ-04 A — 실행 방법·Node 조건·서브셋 글꼴 고지) */
-export const README_MD = `# 사이트 프로젝트
+export const README_MD = `# 디자인 샘플 프로젝트
 
 사이트 소스와 이미지·글꼴, 실행·빌드 설정이 들어 있는 프로젝트입니다.
 
@@ -49,7 +49,7 @@ node_modules는 이 묶음에 들어 있지 않습니다. npm ci를 실행할 �
 
 ## 빌드와 확인
 
-의존성을 설치한 뒤 다음 명령으로 배포용 파일을 만드세요.
+의존성을 설치한 뒤 다음 명령으로 빌드용 파일을 만드세요.
 
 \`\`\`sh
 npm run build
@@ -87,7 +87,7 @@ export const licensesHead = (files: number) => `# LICENSES
 node_modules는 이 묶음에 들어 있지 않습니다. 의존성 패키지는 npm ci를 실행할 때 패키지 레지스트리에서 받습니다.
 `;
 /** LICENSES.md 2절 사이트 코드 — 킷 소스(SPEC 6절 2 — M4-a Q9 A와 같은 결정) */
-export const LICENSES_SITE_CODE = `## 사이트 코드 — 킷 소스
+export const LICENSES_SITE_CODE = `## 샘플 코드 — 킷 소스
 
 src/kit/*, src/PageDocument.tsx, src/main.tsx, src/images.ts, src/types/* 및 실행·빌드 설정 파일은 생성 도구의 산출물입니다.
 

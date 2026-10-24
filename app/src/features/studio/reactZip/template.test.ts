@@ -115,7 +115,7 @@ describe("LICENSES.md (RZ-AC-17 · 6절)", () => {
   const input = { files: 56, family: "Pretendard", fonts: ["src/assets/fonts/Pretendard-400.woff2"], images: ["src/assets/images/img-01.webp"], lost: 1 };
   it("필수 절 순서 · 의존성 표 = 3.1 9행 · 하위 라이선스 개수 = lock 집계 · lightningcss MPL 고지 · 결정적", () => {
     const md = reactZipLicenses(input);
-    const order = ["# LICENSES", "## 사이트 코드 — 킷 소스", "## npm 직접 의존성", "## 하위 의존성", "## 글꼴", "## 이미지", "## 그래픽"].map((t) => md.indexOf(t));
+    const order = ["# LICENSES", "## 샘플 코드 — 킷 소스", "## npm 직접 의존성", "## 하위 의존성", "## 글꼴", "## 이미지", "## 그래픽"].map((t) => md.indexOf(t));
     expect(order.every((at, i) => at >= 0 && (i === 0 || at > order[i - 1]!))).toBe(true);
     for (const d of DIRECT_DEPS) expect(md).toContain(`| ${d.name} | ${d.version} | ${d.kind} | ${d.license} | ${d.url} |`);
     const counted: Record<string, number> = {};

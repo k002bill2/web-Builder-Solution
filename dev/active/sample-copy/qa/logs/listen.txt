@@ -1,0 +1,8 @@
+# LISTEN before 2026-10-25 02:34:09
+(4399 lines above; empty = free)
+# LISTEN after 2026-10-25 02:37:39
+(4399 LISTEN lines above; empty = 0줄)
+# LISTEN before rerun 2026-10-25 02:38:04
+(empty = free)
+# LISTEN after rerun 2026-10-25 02:38:18
+(empty = 0줄)

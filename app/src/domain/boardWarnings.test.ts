@@ -57,7 +57,7 @@ describe("R-12 사업자정보 Footer (AC-13)", () => {
   it("AC-13: Footer를 B(미니멀 · 링크만)로 고르면 경고 + 사업자정보 Footer가 있는 열로 바꾸기, 누르면 C로 바뀐다", () => {
     const board = boardOf(IDS, { hero: "ref-a", footer: "ref-b" });
     const warning = warningsOf(board, results).find((w) => w.rule === "R-12");
-    expect(warning).toMatchObject({ tone: "warning", message: "발행 전에 사업자정보가 있는 푸터가 필요합니다" });
+    expect(warning).toMatchObject({ tone: "warning", message: "실제 사이트로 쓰려면 사업자정보가 있는 푸터가 필요합니다" });
     const toC = warning!.fixes.find((f) => f.kind === "pick-column" && f.referenceId === "ref-c");
     expect(toC).toEqual({ kind: "pick-column", rowId: "footer", referenceId: "ref-c", columnLabel: "C", actionLabel: "C의 Footer로 바꾸기" });
     const applied = togglePick(board, results, "footer", "ref-c");

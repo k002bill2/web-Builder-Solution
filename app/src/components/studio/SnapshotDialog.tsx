@@ -6,7 +6,7 @@ import type { Snapshot, SnapshotLayerProps } from "./useSnapshots";
 const CAPTION = "ds-caption1 text-label-alternative";
 const RECENT = 10;
 const REASON: Record<SnapshotReason, string> = { export: "내보내기 전", restore: "복원 전", conflict: "충돌 보존", restart: "새로 시작 전" };
-const kindText = (s: Snapshot) => (s.kind === "manual" ? "수동" : s.kind === "published" ? "게시" : `자동${s.reason ? ` · ${REASON[s.reason]}` : ""}`);
+const kindText = (s: Snapshot) => (s.kind === "manual" ? "수동" : s.kind === "published" ? "확정" : `자동${s.reason ? ` · ${REASON[s.reason]}` : ""}`);
 const timeText = (iso: string) => new Date(iso).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
 /** ClearDataDialog `FAIL_TEXT`와 같은 문장(P1D-SPEC SN-7) */
 const FAIL_TEXT = "지우지 못했습니다 — 다시 시도하세요";

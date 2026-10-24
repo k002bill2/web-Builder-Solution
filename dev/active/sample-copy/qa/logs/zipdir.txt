@@ -1,0 +1,1 @@
+ZIPDIR=/var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T//sc-zip.WJi5

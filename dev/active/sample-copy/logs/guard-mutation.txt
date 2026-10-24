@@ -1,0 +1,9 @@
+## 변이: ExportButtons.tsx C4 라벨을 '정적 사이트(zip) 내보내기'로 되돌림
+     × '정적 사이트' 0건 24ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/test/noPublishCopy.test.ts > SMP-AC-A05 구축·발행 약속 문구 가드 > '정적 사이트' 0건
++   "components/studio/ExportButtons.tsx: { format: \"static-zip\", label: \"정적 사이트(zip) 내보내기\" },",
+      Tests  1 failed | 4 passed (5)
+EXIT(변이)=1
+## 원복 후
+      Tests  5 passed (5)

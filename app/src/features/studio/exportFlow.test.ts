@@ -43,7 +43,7 @@ describe("내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25)", () =
 
   it("3MB 경계 — 3MB 이하 안내 0 · 넘으면 한 줄 안내(차단 0)", () => {
     expect(exportNotes({ bytes: 3 * MB, images: 1, lost: 0 })).toHaveLength(1);
-    expect(exportNotes({ bytes: 3 * MB + 1, images: 1, lost: 0 })[1]).toBe("메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다");
+    expect(exportNotes({ bytes: 3 * MB + 1, images: 1, lost: 0 })[1]).toBe("메일 첨부에는 클 수 있습니다 — HTML 샘플 묶음(zip)은 이미지를 파일로 나눠 담습니다");
   });
 
   it("M4-a zip 결과 줄 — 3MB 넘어도 메일 안내 0 · 잃은 이미지 줄은 같음 · EXP-AC-16 HTML 안내에 '다음 단계' 0", () => {
@@ -54,7 +54,7 @@ describe("내보내기 결과 크기 표시 (MQ-C3 ★A · IMG-AC-24·25)", () =
   it("잃은 이미지 = 마지막 줄 '이미지 N장을 다시 골라야 해 자체 그래픽으로 넣었습니다'", () => {
     expect(exportNotes({ bytes: 3.5 * MB, images: 2, lost: 2 })).toEqual([
       "HTML 1개 · 3.5MB (이미지 2장 포함)",
-      "메일 첨부에는 클 수 있습니다 — 정적 사이트(zip)는 이미지를 파일로 나눠 담습니다",
+      "메일 첨부에는 클 수 있습니다 — HTML 샘플 묶음(zip)은 이미지를 파일로 나눠 담습니다",
       "이미지 2장을 다시 골라야 해 자체 그래픽으로 넣었습니다",
     ]);
   });

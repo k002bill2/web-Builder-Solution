@@ -33,7 +33,7 @@ describe("PageInfoFields (SPEC 5.6 \"페이지 정보\" · R-11)", () => {
     expect(screen.getAllByText("(필수)")).toHaveLength(2);
     expect(screen.getByText("5 / 60자")).toBeInTheDocument();
     expect(screen.getByText("2 / 160자")).toBeInTheDocument();
-    expect(screen.getByText("발행 주소가 정해지면 채웁니다(2a-05b)")).toBeInTheDocument();
+    expect(screen.getByText("샘플에는 대표 주소가 필요하지 않습니다")).toBeInTheDocument();
     expect(title.getAttribute("aria-describedby")?.split(" ")[0]).toBe("canvas-seo-title");
   });
 

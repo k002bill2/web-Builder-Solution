@@ -44,7 +44,7 @@ export function PageInfoFields({
       ))}
       <div className="flex flex-col gap-1">
         <p className="ds-label text-label-normal">대표 주소(canonical)</p>
-        <p className="text-caption1 text-label-alternative">발행 주소가 정해지면 채웁니다(2a-05b)</p>
+        <p className="text-caption1 text-label-alternative">샘플에는 대표 주소가 필요하지 않습니다</p>
       </div>
     </div>
   );

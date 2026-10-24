@@ -1,0 +1,22 @@
+# zip (저장소 밖, 커밋 안 함)
+path: /var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T//sc-zip.WJi5/모던-카페-브랜드-프로젝트_r3.zip
+81fb6aa5734017966076b04dbf355487c148ee5db1ae2a2e7d09cd465b45aca6  /var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T//sc-zip.WJi5/모던-카페-브랜드-프로젝트_r3.zip
+bytes: 605748
+## entries
+Archive:  /var/folders/jh/3l0ptrs90gl5vk9_z2t7r4900000gn/T//sc-zip.WJi5/모던-카페-브랜드-프로젝트_r3.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+    56424  10-25-2026 02:35   index.html
+     6394  10-25-2026 02:35   LICENSES.md
+     4434  10-25-2026 02:35   assets/fonts/OFL.txt
+   267096  10-25-2026 02:35   assets/fonts/Pretendard-400.woff2
+   270784  10-25-2026 02:35   assets/fonts/Pretendard-700.woff2
+---------                     -------
+   605132                     5 files
+## LICENSES.md grep
+샘플 파일(index.html): 1
+사이트 파일: 0
+## LICENSES.md lines with 파일
+3:이 묶음에는 샘플 파일(index.html), 권리·이용 조건 안내(LICENSES.md), 동봉 자산을 포함해 총 5개 파일이 들어 있습니다.
+10:동봉한 글꼴에는 SIL Open Font License 1.1이 적용됩니다. 원본 글꼴과 수정 사항은 아래 고지를 참고하세요. 원본에서 글자 일부를 추리거나 파일 형식을 변환한 글꼴은 이 라이선스에서 수정본(Modified Version)으로 정의합니다. 예약 글꼴 이름(Reserved Font Name)은 아래 저작권 고지에 명시된 이름을 뜻합니다. 수정본에서 해당 이름을 사용자에게 표시되는 주된 글꼴 이름으로 사용하려면 해당 저작권자의 명시적인 서면 허가가 필요합니다. 라이선스 전문은 아래와 assets/fonts/OFL.txt에 있습니다.
+112:이 절의 이미지 파일은 샘플을 만든 사용자가 업로드한 자료입니다. 이미지의 권리는 해당 권리자에게 있으며, 업로드한 사용자는 이용·배포에 필요한 권한을 확인해야 합니다. 생성 도구는 업로드한 이미지에 대한 권리를 주장하지 않습니다.

@@ -1,0 +1,29 @@
+{
+ "path": "/studio/project-1",
+ "result line": [
+  "HTML 샘플 묶음(zip)을 만들었습니다 · 내보내기 전 상태는 스냅샷 '내보내기 전 · 02:35'에 있습니다"
+ ],
+ "fallback el": [
+  {
+   "href": "blob:http://localhost:4399/614ccd19-e9ac",
+   "download": "모던-카페-브랜드-프로젝트_r3.zip"
+  }
+ ],
+ "zip saved": {
+  "via": "fallback blob link",
+  "name": "모던-카페-브랜드-프로젝트_r3.zip"
+ },
+ "banned (export open, after zip)": {
+  "발행": 0,
+  "정적 사이트": 0,
+  "게시": 0
+ },
+ "open snapshot": "clicked",
+ "snapshot dialog open": "스냅샷\n이름(30자까지 · 비우면 \"수동 · 시:분\")\n지금 상태 저장\n\n자동 스냅샷은 최근 20개만 보관합니다 — 오래 남기려면 '지금 상태 저장'으로 만드세요\n\n내보내기 전 · 02:35\n\n자동 · 내보내기 전 · 02:35 · 프로필 v2 · B안\n\n미리보기\n\n새로 시작 전\n\n자동 · 새로 시작 전 · 02:35 · 프로필 v1 · A안\n\n미리보기\n닫",
+ "banned (snapshot open)": {
+  "발행": 0,
+  "정적 사이트": 0,
+  "게시": 0
+ },
+ "console errors": []
+}

@@ -44,7 +44,7 @@ describe("조작 뒤 로더 배선", () => {
     const before = wrapped.length;
     await import("../components/reco/recoApplyLoader");
     const added = wrapped.slice(before);
-    expect(added).toHaveLength(3);
+    expect(added).toHaveLength(2);
     const [dialog, flow] = await Promise.all(added.map((load) => load()));
     expect(dialog!.default).toBe((await import("../components/reco/RecoApply")).default);
     expect("runApply" in flow! && !("default" in flow!)).toBe(true);

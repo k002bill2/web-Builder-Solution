@@ -1,0 +1,19 @@
+## typecheck
+> design-studio-app@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+EXIT=0
+## lint
+
+> design-studio-app@0.1.0 lint
+> eslint .
+
+EXIT=0
+## vitest
+ Test Files  390 passed (390)
+      Tests  3492 passed (3492)
+EXIT=0
+## build
+[bundle]   /studio/:projectId 해시 정규화 진입 128.83KB · 기준선 128.84KB + 0.03KB (멈춤 > 128.87KB) — raw 130.15KB는 참고(해시 이름 흔들림 포함)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.83KB · 기준선 131.84KB + 0.03KB (멈춤 > 131.87KB) — raw 133.19KB는 참고(해시 이름 흔들림 포함)
+EXIT=0

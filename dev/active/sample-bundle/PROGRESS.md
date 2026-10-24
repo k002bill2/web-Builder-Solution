@@ -23,3 +23,11 @@
 - [x] 게이트 logs/gates.txt
 - [x] REPORT.md
 - [x] git status 빈 값
+
+## CONTINUE-1
+- [x] 브리프 커밋 5c18f127
+- [x] 항목 1 배선 + 버튼 (39a255de) — typecheck·lint EXIT 0
+- [ ] chunkRetryWiring.test.ts "QA D1 추천 적용 청크" 실패 1건 — BLOCKED: 시간 상한. 원인 추정: staticHtml 생성기 청크가 sampleJson(kit/tokens·siteFonts)을 import → P2-2 테스트가 생성기를 load할 때 recoApplyLoader 그래프의 retryableImport 모듈이 먼저 캐시돼 계수 3→2(테스트 순서 의존). 다음: 해당 공유 모듈 확인 후 테스트 격리 또는 import 경로 조정
+- [ ] 항목 2 테스트(A01·순서·게이트 차단) — BLOCKED: 시간 상한
+- [ ] 항목 3 번들 재측정 logs/bundle-2.txt — BLOCKED: 시간 상한
+- [ ] 마감 게이트 logs/gates-2.txt · REPORT CONTINUE-1 절 — BLOCKED: 시간 상한

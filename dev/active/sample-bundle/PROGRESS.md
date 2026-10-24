@@ -31,3 +31,12 @@
 - [ ] 항목 2 테스트(A01·순서·게이트 차단) — BLOCKED: 시간 상한
 - [ ] 항목 3 번들 재측정 logs/bundle-2.txt — BLOCKED: 시간 상한
 - [ ] 마감 게이트 logs/gates-2.txt · REPORT CONTINUE-1 절 — BLOCKED: 시간 상한
+
+## CONTINUE-2
+- [x] 브리프 커밋 417e696c
+- [x] 항목 1 A01 컴포넌트 테스트 (f612edb9)
+- [x] 항목 2 순서·차단·readonly 단언 (f612edb9)
+- [x] 항목 3 변이 3종 (sampleJson.ts) + REPORT 표 — M1b 생존 → 보강 374761a3
+- [x] REPORT CONTINUE-2 절
+- [x] status/diff 빈 값
+- [ ] gates-3 vitest 전부 통과 — BLOCKED: 1 failed | 3486 passed, 실패 이름 미확인(시간 상한). 새 파일만 돌리면 10/10 PASS · typecheck·lint EXIT 0

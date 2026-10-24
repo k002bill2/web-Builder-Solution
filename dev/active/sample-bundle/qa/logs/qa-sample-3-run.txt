@@ -1,0 +1,5 @@
+X path "/studio/project-1"
+X section candidates {"dataSection":0,"lists":[{"label":"","n":9,"first":["Header고정 헤더 · 우측 C","Hero대형 이미지 + 하단 카피","About이야기 + 이미지","Services카드 벽돌형","Portfolio이미지 벽돌형","Testimonials후기 2개","FAQ펼침 목록","Contact문의 폼","Footer확장형 사업자정보"]},{"label":"검사 항목","n":8,"first":["대비 AA통과","대체텍스트통과","헤딩 순서통과","필수 섹션통과","모션 예산통과","SEO 메타통과","글자 수통과","성능 예산측정 전생성기 연결 후 "]}],"sectionWords":[]}
+X html {"title":"모던 카페","h":4728,"sections":9,"text":756,"imgs":0}
+X shot "/Users/younghwankang/orca/workspaces/web-builder-solution/sample-bundle/dev/active/sample-bundle/qa/shots/design-html-file-1280.png"
+

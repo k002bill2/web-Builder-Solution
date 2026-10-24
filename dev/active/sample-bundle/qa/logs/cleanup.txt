@@ -1,0 +1,5 @@
+["p1"]
+closed 1
+
+--- after stop (expect empty):
+lsof lines=       0

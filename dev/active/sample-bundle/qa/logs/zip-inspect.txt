@@ -1,0 +1,24 @@
+d4c30094b7d46e501cbb24d4699bf2c200dce8c4ddaa247399070d1f1dc2a237  download/모던-카페-브랜드-프로젝트_r3_sample.zip
+Archive:  download/모던-카페-브랜드-프로젝트_r3_sample.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+   360239  10-25-2026 01:55   design.png
+   777982  10-25-2026 01:55   design.html
+     3010  10-25-2026 01:55   design-tokens.json
+     1216  10-25-2026 01:55   sections.json
+      324  10-25-2026 01:55   README.txt
+---------                     -------
+  1142771                     5 files
+00000000: 8950 4e47 0d0a 1a0a                      .PNG....
+/private/tmp/qa-sample-x/design.png
+  pixelWidth: 1280
+  pixelHeight: 4735
+schema design-sample/tokens@0 source {'kind': 'internal', 'profileVersion': 2, 'candidateId': 'B', 'generatorVersion': 'preview-1', 'libraryVersion': '1.4'} cssVars 43
+px count 0
+sections 9 ['header', 'hero', 'about', 'services', 'portfolio', 'testimonials', 'faq', 'contact', 'footer']
+instanceId 0 slot 0
+디자인 샘플 묶음 — 파일 5개
+design.png: 시안 화면 이미지(현재 미리보기 폭)
+design.html: 시안 HTML 1개(글꼴·이미지 포함)
+design-tokens.json: 색·글꼴·간격·모서리 토큰과 CSS 변수(--site-*)
+sections.json: 섹션 순서·유형·변형·톤·모션(글·이미지 값 없음)

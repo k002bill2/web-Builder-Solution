@@ -1,0 +1,9 @@
+typecheck EXIT=0
+> design-studio-app@0.1.0 lint
+> eslint .
+
+lint EXIT=0
+ Test Files  387 passed (387)
+      Tests  3483 passed (3483)
+vitest EXIT=0
+build EXIT=0 (순서 이동·sample 모듈 포함 빌드, 이후 변경은 테스트 파일 2개뿐)

@@ -1,0 +1,8 @@
+typecheck EXIT=0
+lint EXIT=0
+ Test Files  389 passed (389)
+      Tests  3487 passed (3487)
+vitest EXIT=0
+build EXIT=0
+[bundle]   /studio/:projectId 해시 정규화 진입 128.84KB · 기준선 128.84KB + 0.03KB (멈춤 > 128.87KB) — raw 130.15KB는 참고(해시 이름 흔들림 포함)
+[bundle]   /studio/:projectId (저장 데이터 복원 진입) 해시 정규화 진입 131.84KB · 기준선 131.84KB + 0.03KB (멈춤 > 131.87KB) — raw 133.20KB는 참고(해시 이름 흔들림 포함)

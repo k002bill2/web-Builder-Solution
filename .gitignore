@@ -14,3 +14,10 @@ test-results/
 .claude/settings.json.bak*
 .claude/.settings-backups
 .claude/settings.local.json
+
+# 로컬 비밀·에이전트 산출물 (보안 감사 2026-10-18 F-03)
+.mcp.json
+.claude/worktrees/
+*.pem
+*.key
+*.p12

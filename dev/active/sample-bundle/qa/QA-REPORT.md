@@ -28,7 +28,7 @@
 - 스크립트 `scripts/qa-sample.mjs`(본 흐름) · `qa-sample-dl2.mjs`(폴백 다운로드) · `qa-sample-3.mjs`(섹션 수·file:// 렌더) · `qa-console-probe.mjs`
 - 로그 `logs/qa-sample-run.txt`·`logs/qa-sample.json`·`logs/qa-sample-dl2-run.txt`·`logs/qa-sample-3-run.txt`·`logs/zip-inspect.txt`·`logs/qa-console-probe.txt`·`logs/build.log`·`logs/cleanup.txt`
 - 스크린샷 `shots/export-area-1280.png`(클릭 전) · `shots/export-after-1280.png`(결과 줄) · `shots/design-html-file-1280.png`
-- 다운로드 `download/모던-카페-브랜드-프로젝트_r3_sample.zip`
+- 다운로드 zip은 저장소에 커밋하지 않음(Jarvis 2026-10-25 — 바이너리 선례 방지). 근거 = 위 sha256 `d4c30094…a237` · `logs/zip-inspect.txt` 엔트리 목록. 원본은 저장소 밖 Jarvis scratch `sample-bundle-qa/`에 보관
 
 ## 마감
 

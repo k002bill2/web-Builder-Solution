@@ -28,7 +28,7 @@ const IMAGE = /^src\/assets\/images\/img-\d{2,3}\.(webp|jpg|png)$/;
 const KIT = /^src\/kit\/[A-Za-z][A-Za-z0-9]*\.(tsx?|css)$/;
 const OFL = "src/assets/fonts/OFL.txt";
 const SINGLE = ["package.json", "package-lock.json", "index.html", "vite.config.ts", "tsconfig.json", "README.md", "LICENSES.md", "src/PageDocument.tsx", "src/fonts.css", "src/images.ts", "src/index.css", "src/main.tsx", "src/site.json"];
-const LICENSE_SECTIONS = ["## 사이트 코드", "## npm 직접 의존성", "## 하위 의존성", "## 글꼴", "## 이미지", "## 그래픽"];
+const LICENSE_SECTIONS = ["## 샘플 코드", "## npm 직접 의존성", "## 하위 의존성", "## 글꼴", "## 이미지", "## 그래픽"];
 
 /** 2.4 entry 순서 — 고정 파일 → src/* 고정(이름순) → types → kit(이름순) → 글꼴(이름순) → 이미지(번호순) */
 const rank = (name: string) => {

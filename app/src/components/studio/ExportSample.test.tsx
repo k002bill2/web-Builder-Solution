@@ -70,7 +70,7 @@ describe("디자인 샘플 묶음 버튼 (SMP-AC-A01)", () => {
 describe("내보내기 영역 순서 · 차단 (MQ-SMP-03 A · SMP-AC-A06)", () => {
   it("순서 = PNG → 샘플 묶음 → HTML 1개 → 정적 zip → React zip · 숨김 0", async () => {
     await open(clean());
-    const wanted = ["PNG 내려받기", "디자인 샘플 내려받기", "HTML 파일 1개 내보내기", "정적 사이트(zip) 내보내기", REACT_ZIP_FORMAT_LABEL];
+    const wanted = ["PNG 내려받기", "디자인 샘플 내려받기", "HTML 파일 1개 내보내기", "HTML 샘플 묶음(zip) 내보내기", REACT_ZIP_FORMAT_LABEL];
     const buttons = within(gateRegion()).getAllByRole("button").filter((b) => wanted.includes(b.textContent ?? ""));
     expect(buttons.map((b) => b.textContent)).toEqual(wanted);
     for (const button of buttons) {

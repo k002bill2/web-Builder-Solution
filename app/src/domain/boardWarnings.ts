@@ -72,7 +72,7 @@ function footerWarning(board: CompareBoard, results: readonly ComparisonResult[]
   const alternatives = columnsWhere(board, results, "footer", (r) => r.comparison?.cells.footer.meta?.hasBusinessInfo === true, "Footer");
   const variant = resolveVariant(SECTION_LIBRARY, "footer", cell.binding.variant)?.def.businessInfoVariant;
   const auto: WarningFix[] = variant ? [{ kind: "auto-business-variant", variant, message: "확정 시 같은 모양의 사업자정보 확장 변형으로 바꿉니다" }] : [];
-  return { rule: "R-12", tone: "warning", title: "사업자정보 푸터 필요", message: "발행 전에 사업자정보가 있는 푸터가 필요합니다", fixes: alternatives.length > 0 ? alternatives : auto };
+  return { rule: "R-12", tone: "warning", title: "사업자정보 푸터 필요", message: "실제 사이트로 쓰려면 사업자정보가 있는 푸터가 필요합니다", fixes: alternatives.length > 0 ? alternatives : auto };
 }
 
 export function evaluateBoardWarnings(board: CompareBoard, results: readonly ComparisonResult[], draft: ReadyDraft): readonly BoardWarning[] {

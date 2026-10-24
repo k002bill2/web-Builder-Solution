@@ -11,7 +11,7 @@ export interface ExportReason {
 const FORMATS: readonly { readonly format: ExportFormat; readonly label: string }[] = [
   { format: "sample-zip", label: "디자인 샘플 내려받기" },
   { format: "static-html", label: "HTML 파일 1개 내보내기" },
-  { format: "static-zip", label: "정적 사이트(zip) 내보내기" },
+  { format: "static-zip", label: "HTML 샘플 묶음(zip) 내보내기" },
   { format: "react-zip", label: REACT_ZIP_FORMAT_LABEL },
 ];
 

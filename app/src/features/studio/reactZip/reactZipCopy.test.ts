@@ -10,18 +10,26 @@ import { PACKAGE_LOCK } from "./templates";
 /** COPY.md 확정 문안 글자 그대로(FIX1) — 자리표시자 {size}{images}{fonts}{files}{transitiveLicenseTable}만 실제 값 */
 const MB = 1024 * 1024;
 type Lock = { packages: Record<string, { license?: string; link?: boolean }> };
+/** SAMPLE-COPY(SAMPLE-SPEC 3.1 C7·C8) — COPY.md 이후 바뀐 사용자 노출 문구. COPY.md는 m4b 이력이라 고치지 않고 여기서 치환한다 */
+const SAMPLE_COPY: readonly (readonly [string, string])[] = [
+  ["React 프로젝트(zip) 내보내기", "React 코드 샘플(zip) 내보내기"],
+  ["# 사이트 프로젝트", "# 디자인 샘플 프로젝트"],
+  ["배포용 파일을 만드세요", "빌드용 파일을 만드세요"],
+  ["## 사이트 코드 — 킷 소스", "## 샘플 코드 — 킷 소스"],
+];
+const sampleCopy = (text: string) => SAMPLE_COPY.reduce((acc, [from, to]) => acc.replace(from, to), text);
 
 describe("React zip 문안 = COPY.md 원문", () => {
   it("버튼 · 결과 줄 · 다음 할 일", () => {
-    expect(REACT_ZIP_FORMAT_LABEL).toBe(copyBlock("export.format.reactZip (버튼)"));
+    expect(REACT_ZIP_FORMAT_LABEL).toBe(sampleCopy(copyBlock("export.format.reactZip (버튼)")));
     expect(reactZipNote(1.5 * MB, 2, 3)).toBe(copyBlock("export.note.reactZip (성공 결과 줄)").replace("{size}", "1.5MB").replace("{images}", "2").replace("{fonts}", "3"));
     expect(REACT_ZIP_NEXT).toBe(copyBlock("export.note.reactZipNext (다음 할 일)"));
   });
 
   it("README.md 전문 · LICENSES 1절 머리 · 2절 킷 소스", () => {
-    expect(README_MD).toBe(`${copyBlock("README.md (전문)")}\n`);
+    expect(README_MD).toBe(`${sampleCopy(copyBlock("README.md (전문)"))}\n`);
     expect(licensesHead(56)).toBe(`${copyBlock("LICENSES.md 1절 머리").replace("{files}", "56")}\n`);
-    expect(LICENSES_SITE_CODE).toBe(`${copyBlock("LICENSES.md 2절 사이트 코드(킷 소스)")}\n`);
+    expect(LICENSES_SITE_CODE).toBe(`${sampleCopy(copyBlock("LICENSES.md 2절 사이트 코드(킷 소스)"))}\n`);
   });
 
   it("4절 하위 의존성 — 표 = 고정 lock에서 직접 의존성 9개·루트 제외한 라이선스 종류별 개수", () => {

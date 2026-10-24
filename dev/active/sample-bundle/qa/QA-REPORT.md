@@ -19,7 +19,7 @@
 
 ## 결함·노트
 
-- **N1 (노트, 결함 판단 보류) — 버튼 클릭 직후 자동 다운로드가 ego-browser에서 download 이벤트를 내지 않음.** 재현: 위 흐름 → "디자인 샘플 내려받기" 클릭 전 `page.waitForEvent("download", 90s)` 대기 → 결과 줄은 정상 표시되나 이벤트 타임아웃(`logs/qa-sample-run.txt` dlErr). 결과 줄의 폴백 링크 "내려받기"(`<a href=blob: download=…_r3_sample.zip>`)를 누르면 즉시 download 이벤트 발생·저장 성공(`logs/qa-sample-dl2-run.txt`). 앱은 "내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요" 안내와 폴백 링크를 제공하므로 사용자 흐름은 막히지 않음. 자동 다운로드 미발생이 앱(비동기 생성 뒤 user activation 소실 등) 원인인지 ego-browser 자동화 환경 원인인지는 이번 범위에서 미판정 — 일반 Chrome 수동 1회 확인 권고.
+- **N1 (노트, 결함 판단 보류) — 버튼 클릭 직후 자동 다운로드가 ego-browser에서 download 이벤트를 내지 않음.** 재현: 위 흐름 → "디자인 샘플 내려받기" 클릭 전 `page.waitForEvent("download", 90s)` 대기 → 결과 줄은 정상 표시되나 이벤트 타임아웃(`logs/qa-sample-run.txt` dlErr). 결과 줄의 폴백 링크 "내려받기"(`<a href=blob: download=…_r3_sample.zip>`)를 누르면 즉시 download 이벤트 발생·저장 성공(`logs/qa-sample-dl2-run.txt`). 앱은 "내려받기가 시작되지 않으면 브라우저의 다운로드 권한을 확인하세요" 안내와 폴백 링크를 제공하므로 사용자 흐름은 막히지 않음. 자동 다운로드 미발생이 앱(비동기 생성 뒤 user activation 소실 등) 원인인지 ego-browser 자동화 환경 원인인지는 이번 범위에서 미판정 — 일반 Chrome 수동 1회 확인 권고. **→ ✅ 닫힘 2026-10-25: 영환님 일반 Chrome 수동 확인 — `vite preview`(main `a82cccbd`, 127.0.0.1:4173)에서 "디자인 샘플 내려받기" 클릭 → zip 자동 내려받기 정상. N1 = ego-browser 자동화 환경 한계(앱 결함 아님, M4-a QA 관찰과 같음).** 참고: 같은 확인을 dev 서버(5480)에서 먼저 시도했을 때는 의도된 안내 `DEV_SERVER_UNSUPPORTED`(`staticHtml/kitCss.ts:13`)로 실패 — 환경 차이, 결함 아님.
 - N2: 품질 게이트 "성능 예산"은 "측정 전 · 생성기 연결 후 측정"으로 표시(통과 집계 밖). 기존 동작.
 - N3: 시드 문서(A안 v1)는 대비 AA 차단으로 내보내기 비활성 — 기존 메모대로 보정값 v2 + B안 새로 시작 경로로 통과시켰다(결함 아님).
 

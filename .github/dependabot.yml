@@ -1,0 +1,14 @@
+# 의존성 업데이트 알림 (보안 감사 2026-10-18 F-04). package.json 은 정확 버전 고정 — increase 로 유지.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+    versioning-strategy: increase
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

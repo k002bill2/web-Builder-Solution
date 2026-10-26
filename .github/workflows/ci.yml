@@ -81,3 +81,16 @@ jobs:
       - run: npm ci
       # tsc → build-thumbs → vite build ×2 → check-bundle-size(번들 예산 검사)
       - run: npm run build
+
+  # 의존성 취약점(보안 감사 2026-10-18 F-04) — 런타임(prod) 의존성만. branch protection 필수 check 아님.
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: npm audit --omit=dev --audit-level=moderate

@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import type { ClearResult } from "../../features/projects/clearBrowserData";
 import { BACKUP_TEXT, BUSY_TEXT, FAIL_TEXT } from "../../features/projects/dialogText";
 import { Button } from "../ds/Button";
@@ -26,7 +26,8 @@ export default function ClearDataDialog({
   const running = useRef(false);
   const [error, setError] = useState({ text: "", key: 0 });
 
-  useEffect(() => {
+  // 포커스 layout effect보다 먼저 연다 — 닫힌 dialog(display:none) 안은 focus()가 무시된다
+  useLayoutEffect(() => {
     const el = dialog.current;
     if (el && !el.open) el.showModal();
   }, []);

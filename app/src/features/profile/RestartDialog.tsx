@@ -55,7 +55,8 @@ export default function RestartDialog({
   const [contrast, setContrast] = useState<{ readonly from: number; readonly text?: string }>();
   const held = mode === "unconfirmed" || mode === "unknown" || mode === "record";
 
-  useEffect(() => {
+  // 포커스 layout effect보다 먼저 연다 — 닫힌 dialog(display:none) 안은 focus()가 무시된다
+  useLayoutEffect(() => {
     const el = dialog.current;
     if (el && !el.open) el.showModal();
   }, []);

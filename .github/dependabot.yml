@@ -7,6 +7,10 @@ updates:
       interval: weekly
     versioning-strategy: increase
     open-pull-requests-limit: 5
+    ignore:
+      # TS 7 은 typescript-eslint 8.x 피어 범위(<6.1.0) 밖 — 지원 릴리스 전까지 major 보류 (PR #76 닫음)
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

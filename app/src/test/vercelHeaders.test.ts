@@ -11,7 +11,10 @@ const FILE = fileURLToPath(new URL("../../vercel.json", import.meta.url));
 const CSP_KEYS = ["Content-Security-Policy", "Content-Security-Policy-Report-Only"];
 
 type Rule = { readonly source: string; readonly headers: readonly { readonly key: string; readonly value: string }[] };
-const rules = (): readonly Rule[] => (JSON.parse(readFileSync(FILE, "utf8")) as { headers?: Rule[] }).headers ?? [];
+type Rewrite = { readonly source: string; readonly destination: string };
+type Config = { readonly headers?: readonly Rule[]; readonly rewrites?: readonly Rewrite[] };
+const config = (): Config => JSON.parse(readFileSync(FILE, "utf8")) as Config;
+const rules = (): readonly Rule[] => config().headers ?? [];
 const matching = (path: string) => rules().filter((rule) => new RegExp(`^${rule.source}$`).test(path));
 const ruleFor = (path: string): Rule => {
   const found = matching(path);
@@ -79,5 +82,27 @@ describe("vercel.json 배포 헤더", () => {
     expect(csp.get("frame-ancestors")).toEqual(["'self'"]);
     expect(csp.get("frame-src")).toEqual(["'none'"]);
     expect(csp.get("connect-src")).toEqual(["'self'", "blob:"]);
+  });
+});
+
+/**
+ * SPA 폴백(#87) — 앱 경로 직접 진입(새로고침·링크)은 index.html로. Vercel은 정적 파일을 먼저 찾고 없을 때만 rewrites를 적용한다.
+ * 정적 경로(assets·thumbs·render.html)는 폴백하지 않는다 — 없는 해시 청크가 index.html(text/html)로 오면 404 대신 MIME 오류가 난다.
+ */
+describe("vercel.json SPA 폴백", () => {
+  const rewritten = (path: string) => (config().rewrites ?? []).filter((r) => new RegExp(`^${r.source}$`).test(path));
+
+  it("앱 경로는 정확히 하나의 rewrite로 /index.html에 간다", () => {
+    for (const path of ["/catalog", "/references/abc", "/compare", "/profile/p1", "/projects", "/studio/x1", "/없는경로", "/render.htmlx"]) {
+      const found = rewritten(path);
+      expect(found, path).toHaveLength(1);
+      expect(found[0]!.destination, path).toBe("/index.html");
+    }
+  });
+
+  it("정적 경로는 폴백하지 않는다(없는 파일은 404)", () => {
+    for (const path of ["/assets/index-old.js", "/assets/x/y.css", "/thumbs/x.svg", RENDER]) {
+      expect(rewritten(path), path).toHaveLength(0);
+    }
   });
 });

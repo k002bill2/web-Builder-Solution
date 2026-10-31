@@ -5,6 +5,9 @@
 import * as z from "zod/mini";
 import type { AdjustmentRange, PaletteCorrection, ProfileAdjustments } from "./profile";
 
+// CSP가 zod의 JIT 시험(new Function)을 위반으로 기록한다 — 스키마를 만들기 전에 끈다(#89 · src/test/zodJitless.test.ts)
+z.config({ jitless: true });
+
 export { DEFAULT_ADJUSTMENT_RANGE } from "./profile";
 
 const HEX_RRGGBB = /^#[0-9A-F]{6}$/i;

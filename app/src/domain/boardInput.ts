@@ -9,6 +9,9 @@ import * as z from "zod/mini";
 import type { CustomStyle, PickableRowId, Picks } from "./compareBoard";
 import { FONT_OPTIONS, type AllowedFontId } from "./fonts";
 
+// CSP가 zod의 JIT 시험(new Function)을 위반으로 기록한다 — 스키마를 만들기 전에 끈다(#89 · src/test/zodJitless.test.ts)
+z.config({ jitless: true });
+
 export const PRIMARY_COLOR_ERROR = "대표색은 #RRGGBB 형식의 6자리 hex로 입력하세요 (예: #8B5E3C)";
 export const FONT_ERROR = "허용 목록에서 사용할 수 있는 폰트를 고르세요";
 

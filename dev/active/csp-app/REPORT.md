@@ -35,3 +35,17 @@
 ## 강제 전환 조건 (후속)
 1. 프로덕션 도메인이 정해지면 `has: [{ "type": "host", "value": "<prod>" }]`로 그 호스트에만 `Content-Security-Policy`를 걸고, 프리뷰는 Report-Only로 둔다(Vercel 툴바·Preview Comments 보존).
 2. 선택: ①·②의 콘솔 기록 정리.
+
+## 후속 #89 — 콘솔 위반 정리 (2026-10-31)
+- ① zod eval: **해결.** zod를 쓰는 세 모듈(`jobRecord.ts`·`adjustmentSchema.ts`·`boardInput.ts`)이 스키마를 만들기 전에 `z.config({ jitless: true })`를 부른다. zod는 `z.object`를 **만들 때** JIT 시험을 하므로(`zod/v4/core/schemas.js` `allowsEval.value`) 진입점이 아니라 각 모듈 안이어야 한다. 공용 설정 모듈은 두지 않았다(조작 뒤 청크 3곳이 공유 청크를 새로 만든다). 가드: `app/src/test/zodJitless.test.ts`(zod를 import하는 모듈을 찾아 각각 불러온 뒤 jitless 확인). 번들: 공통 JS +0.02 · `/studio` +0.01(ADR-004 toleranceKb 0.03 안). 실측(강제 CSP 로컬 서버 · Ego Lite · 카탈로그→비교→프로필→보정값 v2→3안): 수정 전 main 빌드 `script-src` eval 1건(zod 청크) → 이 브랜치 0건. `__zod_globalConfig.jitless === true` 확인.
+- ② 비렌더 문서 style: **설계상 남긴다.** 강제 CSP(`style-src 'self'`) 시험 페이지(Ego Lite)에서 방식별 위반을 셌다.
+
+| 방식 | 위반 |
+|---|---|
+| `createHTMLDocument` + `innerHTML`(style 속성 2) | style-src-attr 2 |
+| `createHTMLDocument` + `createElement("style")` | style-src-elem 1 |
+| `createHTMLDocument` + `setAttribute("style")` | style-src-attr 1 |
+| `DOMParser.parseFromString`(style 속성 + `<style>`) | elem 1 · attr 1 |
+| `<template>.innerHTML`(style 속성 + `<style>`) | attr 1 |
+
+  내보낸 HTML의 `style=""` 2개는 사이트 테마 토큰(`--site-primary` 등 CSS 변수)이다. 마크업을 어떤 DOM으로 파싱해도 위반이 기록되므로 0으로 만들려면 DOM 없이 문자열로 정리해야 한다. 그러면 `clean()`(script·on*·외부 출처 제거)을 정규식으로 해야 해서 정리 경계가 약해진다. 차단이 아니라 기록일 뿐이고 결과물은 그대로이므로(위 실측) 남긴다. 강제 전환(#88) 뒤 report-uri를 붙이면 이 위반은 내보내기 1회마다 기록되므로 그때 필터한다.

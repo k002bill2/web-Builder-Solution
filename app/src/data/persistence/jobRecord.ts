@@ -10,6 +10,9 @@ import type { StoredJob } from "../studioStore";
 import { SCHEMA_VERSION, type Envelope } from "./envelope";
 import type { WriteOp } from "./studioPersistence";
 
+// CSP가 zod의 JIT 시험(new Function)을 위반으로 기록한다 — 스키마를 만들기 전에 끈다(#89 · src/test/zodJitless.test.ts)
+z.config({ jitless: true });
+
 export const JOB_KIND = "job";
 
 const candidateId = z.enum(CANDIDATE_IDS);

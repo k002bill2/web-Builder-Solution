@@ -13,8 +13,8 @@ export interface DirectDep {
 }
 /** 3.1 버전 고정 9개(TR-SEC-06 의존성 허용 목록) */
 export const DIRECT_DEPS: readonly DirectDep[] = [
-  { name: "react", version: "19.3.0", kind: "dependencies", license: "MIT", url: "https://github.com/react/react" },
-  { name: "react-dom", version: "19.3.0", kind: "dependencies", license: "MIT", url: "https://github.com/react/react" },
+  { name: "react", version: "19.3.1", kind: "dependencies", license: "MIT", url: "https://github.com/react/react" },
+  { name: "react-dom", version: "19.3.1", kind: "dependencies", license: "MIT", url: "https://github.com/react/react" },
   { name: "vite", version: "8.3.1", kind: "devDependencies", license: "MIT", url: "https://github.com/vitejs/vite" },
   { name: "@vitejs/plugin-react", version: "6.1.1", kind: "devDependencies", license: "MIT", url: "https://github.com/vitejs/vite-plugin-react" },
   { name: "tailwindcss", version: "4.3.3", kind: "devDependencies", license: "MIT", url: "https://github.com/tailwindlabs/tailwindcss" },

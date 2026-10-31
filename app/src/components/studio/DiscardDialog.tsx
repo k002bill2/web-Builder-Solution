@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { DISCARD_TIMEOUT_TEXT } from "../../features/studio/save/discardText";
 import { DISCARD_TIMEOUT_ALERT } from "../../features/studio/save/alertKeys";
 import { Button } from "../ds/Button";
@@ -15,7 +15,8 @@ export default function DiscardDialog({ discard, onClose }: { readonly discard: 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState({ text: "", key: 0, timeout: false });
 
-  useEffect(() => {
+  // 포커스 layout effect보다 먼저 연다 — 닫힌 dialog(display:none) 안은 focus()가 무시된다
+  useLayoutEffect(() => {
     const el = dialog.current;
     if (el && !el.open) el.showModal();
   }, []);

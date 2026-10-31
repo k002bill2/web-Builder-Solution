@@ -336,6 +336,16 @@ describe("FIX1 AppSec·QA (M-1·M-2·L-1·L-2)", () => {
     expect(() => build({ markup: inject(`<div style="background:url('data:image/png;base64,AA')"></div>`) })).not.toThrow();
   });
 
+  it("보안 감사 F-06: 문자열 URL을 받는 CSS 함수(image()·src()·cross-fade()·element()) = 실패 — 본문 style·style 요소·킷 CSS(이스케이프 포함)", () => {
+    const funcs = ['image("https://evil.example/a.png")', 'src("https://evil.example/a.png")', 'cross-fade("https://evil.example/a.png", red)', "-moz-element(#x)", 'IMAGE("https://evil.example/a.png")'];
+    for (const fn of funcs) {
+      for (const bad of [`<div style="background-image:${fn.replace(/"/g, "&quot;")}"></div>`, `<style>.q{background-image:${fn}}</style>`])
+        expect(() => build({ markup: inject(bad) }), bad).toThrow("정적 HTML 외부 출처");
+      for (const target of ["html", "zip"] as const) expect(() => build({ target, css: `${CSS}.x{background-image:${fn}}` }), `${target} ${fn}`).toThrow(/외부 요청/);
+    }
+    expect(() => build({ target: "html", css: `${CSS}.x{background-image:\\69mage("https://evil.example/a.png")}` })).toThrow(/외부 요청/);
+  });
+
   it("Codex FIX1: 사이트 루트 자체가 제거 대상(template·script·svg animate 류)이면 실패 — 루트는 querySelectorAll('*') 밖이다", () => {
     for (const root of [
       '<template data-site-root="" shadowrootmode="open"><img src="https://evil.example/x" onerror="alert(1)"><script>alert(2)</script></template>',

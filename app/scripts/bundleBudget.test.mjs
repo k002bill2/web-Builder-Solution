@@ -149,11 +149,11 @@ describe("checkBundle — M2c 기준선 가드 (IMG-AC-29)", () => {
 
   it("기준선 파일 = /studio 감량분 잠금 기준선 고정(ADR-004 개정 15 배분 B-RS-01·MQ-S2 — main 합산 실측 129.87 · 저장 데이터 복원 진입 132.91(개정 11·12 · BRIEF-R2 ③ · BRIEF-R3 ②③ 포함) · base 4f0e730 · 허용 0.03 · 렌더 JS 멈춤선 89.70) — 배분 레인이 올리면 이 기대값도 그 커밋에서 함께 갱신", () => {
     const file = JSON.parse(readFileSync(new URL("./m2cBaseline.json", import.meta.url), "utf8"));
-    expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 130.15, "/studio/:projectId (저장 데이터 복원 진입)": 133.2 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
+    expect(file).toMatchObject({ base: "4f0e730", eagerKb: { "/studio/:projectId": 130.26, "/studio/:projectId (저장 데이터 복원 진입)": 133.3 }, toleranceKb: 0.03, renderJsStopKb: 89.7 });
     expect(Object.keys(file.eagerKb)).toEqual(["/studio/:projectId", "/studio/:projectId (저장 데이터 복원 진입)"]);
     // ADR-004 개정 16 — 판정은 해시 정규화 기준선(앱 93f8111 실측)
-    // 개정 17 배분 RS6-L4 실측 갱신(129.11 · 132.09) → RS7-A 도달 0 정리 실측 하향(128.66 · 131.64) → RS8-UX-FIX 실측 상향(128.70 · 131.68) → 개정 18 M4-a-2 실측 상향(128.71 · 131.69) → 개정 18 M4-a-6 실측 상향(128.79 · 131.77) → 개정 20 M4-b 기준선(base 631190c7 실측 128.80 · 131.78 — 판정 128.83 · 131.81) → 개정 21 BUDGET-TRIM-1 실측 하향(128.76 · 131.75) → 개정 22 B-M2B-05 TYPESCALE T3(복원 출발점 실측 131.76 재기록 + 몫 +0.03 — 실측 128.79 · 131.79) → 개정 23 SAMPLE-BUNDLE 샘플 묶음 몫 +0.05(실측 128.84 · 131.84)
-    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 128.84, "/studio/:projectId (저장 데이터 복원 진입)": 131.84 });
+    // 개정 17 배분 RS6-L4 실측 갱신(129.11 · 132.09) → RS7-A 도달 0 정리 실측 하향(128.66 · 131.64) → RS8-UX-FIX 실측 상향(128.70 · 131.68) → 개정 18 M4-a-2 실측 상향(128.71 · 131.69) → 개정 18 M4-a-6 실측 상향(128.79 · 131.77) → 개정 20 M4-b 기준선(base 631190c7 실측 128.80 · 131.78 — 판정 128.83 · 131.81) → 개정 21 BUDGET-TRIM-1 실측 하향(128.76 · 131.75) → 개정 22 B-M2B-05 TYPESCALE T3(복원 출발점 실측 131.76 재기록 + 몫 +0.03 — 실측 128.79 · 131.79) → 개정 23 SAMPLE-BUNDLE 샘플 묶음 몫 +0.05(실측 128.84 · 131.84) → 개정 24 react-router 8.5.0 의존성 몫 +0.10(실측 128.94 · 131.94)
+    expect(file.normEagerKb).toEqual({ "/studio/:projectId": 128.94, "/studio/:projectId (저장 데이터 복원 진입)": 131.94 });
   });
 });
 

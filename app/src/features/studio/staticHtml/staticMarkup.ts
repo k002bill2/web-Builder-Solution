@@ -52,11 +52,14 @@ const CSS_ESCAPE = /\\(?:([0-9a-f]{1,6})[ \t\n\r\f]?|([^\n\r\f0-9a-f]))/gi;
 const unescapeCss = (css: string) =>
   css.replace(CSS_ESCAPE, (_, hex: string | undefined, ch: string | undefined) => (hex ? String.fromCodePoint(Math.min(parseInt(hex, 16) || 0xfffd, 0x10ffff)) : (ch ?? "")));
 
-/** 킷 CSS — url()은 data: 또는 (zip) assets/fonts만 · @import·image-set 0 · 읽지 못한 url() 0 (이스케이프 해석 뒤) */
+/** url() 밖에서 외부 요청을 만드는 CSS — @import · 문자열 URL을 받는 함수(image-set·image·src·cross-fade·element — 보안 감사 F-06) */
+const CSS_FETCH = /@import|image-set\(|image\(|src\(|cross-fade\(|element\(/i;
+
+/** 킷 CSS — url()은 data: 또는 (zip) assets/fonts만 · CSS_FETCH 0 · 읽지 못한 url() 0 (이스케이프 해석 뒤) */
 function assertNoExternalCss(css: string, target: "html" | "zip") {
   const plain = unescapeCss(css);
   const urls = cssUrls(plain);
-  if (urls === null || /@import|image-set\(/i.test(plain) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
+  if (urls === null || CSS_FETCH.test(plain) || urls.some((u) => !u.startsWith("data:") && !(target === "zip" && ZIP_FONT.test(u)))) throw new Error("정적 HTML CSS에 외부 요청이 있습니다");
 }
 
 /**
@@ -109,11 +112,10 @@ function assertLinks(site: Element) {
   }
 }
 
-/** 본문 CSS(style 속성·요소) — url()은 data:만 · @import·image-set·이스케이프(\) 0(이스케이프는 url(·@import를 글자로 숨긴다) */
-const CSS_TRICK = /@import|image-set\(|\\/i;
+/** 본문 CSS(style 속성·요소) — url()은 data:만 · CSS_FETCH·이스케이프(\) 0(이스케이프는 url(·@import를 글자로 숨긴다) */
 const hasExternalCss = (css: string) => {
   const urls = cssUrls(css);
-  return CSS_TRICK.test(css) || urls === null || urls.some((u) => !u.startsWith("data:"));
+  return CSS_FETCH.test(css) || css.includes("\\") || urls === null || urls.some((u) => !u.startsWith("data:"));
 };
 
 /** F-13 그 밖 URL 자리 — action·formaction·poster·background·ping 0 · src는 img만 · href(xlink 포함)는 # 조각만 · 본문 link·base·meta 0 · 본문 CSS 외부 요청 0 */

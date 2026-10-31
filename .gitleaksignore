@@ -1,0 +1,4 @@
+# gitleaks 오탐 (보안 감사 2026-10-18 F-10) — 테스트 픽스처 ID 상수 `KEY = "ref-…"`이며 비밀값이 아니다.
+# git 이력 스캔(gitleaks git)·작업 트리 스캔(gitleaks dir) fingerprint 둘 다 등록한다.
+ca1f2e690c314b022f3622647c4d65adf9f52bfd:dev/active/m3p-3/thumbnail-over-budget.patch:generic-api-key:39
+dev/active/m3p-3/thumbnail-over-budget.patch:generic-api-key:39

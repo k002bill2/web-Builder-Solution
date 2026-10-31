@@ -64,6 +64,9 @@
       "Bash(git commit:*)",
       "Bash(git branch:*)",
       "Bash(git checkout:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)"
     ]
   }
 }
